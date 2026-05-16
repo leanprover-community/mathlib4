@@ -6,7 +6,7 @@ Authors: Mario Carneiro, Wojciech Nawrocki
 module
 
 public import Mathlib.Data.Nat.Notation
-public import Mathlib.Util.CompileInductive
+import Mathlib.Util.CompileInductive
 
 /-!
 # Binary tree
