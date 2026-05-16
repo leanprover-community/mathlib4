@@ -87,16 +87,23 @@ lemma coe_neg (f : H) : ⇑(-f) = -f := (coeCLM 𝕜).map_neg (M₂ := X → V) 
 @[simp]
 lemma coe_smul (f : H) (c : 𝕜) : ⇑(c • f) = c • f := (coeCLM 𝕜).map_smul ..
 
+variable (H) in
+/-- Point evaluation `fun f ↦ f x`. -/
+def eval (x : X) : H →L[𝕜] V := .proj x ∘L coeCLM 𝕜
+
 @[simp]
-lemma continuous_eval (x : X) : Continuous (fun (f : H) ↦ f x) := by
-  simp_rw [← coeCLM_apply]
-  fun_prop
+lemma eval_eq (x : X) : eval H x = .proj x ∘L coeCLM 𝕜 := coe_inj.mp rfl
+
+lemma eval_apply (x : X) (f : H) : eval H x f = f x := by
+  simp
 
 variable (H) [CompleteSpace H] [CompleteSpace V]
 
-/-- The kernel functions of a reproducing kernel Hilbert space are the adjoint of
-the point evaluation. -/
-def kerFun (x : X) : V →L[𝕜] H := (.proj x ∘L coeCLM 𝕜).adjoint
+/-- The kernel functions of a reproducing kernel Hilbert space are the adjoint of the point
+evaluation. -/
+def kerFun (x : X) : V →L[𝕜] H := (eval H x).adjoint
+
+lemma kerFun_eq_adjoint_eval (x : X) : kerFun H x = (eval H x).adjoint := coe_inj.mp rfl
 
 /-- The kernel of a reproducing kernel Hilbert space is a matrix of entries given by the
 kernel functions. -/
@@ -161,6 +168,64 @@ theorem posSemidef_kernel : (kernel H).PosSemidef := by
   · simp [Finsupp.sum_apply'', Finsupp.sum_inner, star, adjoint_inner_left,
       kernel_inner, -inner_kerFun, -kerFun_inner]
     simp [← Finsupp.sum_inner, ← Finsupp.inner_sum, -kerFun_inner, -inner_kerFun]
+
+section Lipschitz
+
+variable (𝕜 X V) in
+/-- Type copy of domain `X` meant for being equipped with the kernel metric, abbreviated `KMD`. -/
+@[nolint unusedArguments]
+def KernelMetricDomain [RKHS 𝕜 H X V] : Type _ := X
+
+variable (𝕜 V) in
+/-- `toKMD` is the identity function to the `KernelMetricDomain 𝕜 X V H` of a `X`. -/
+def toKMD : X ≃ KernelMetricDomain 𝕜 X V H := Equiv.refl _
+
+variable (𝕜 V) in
+/-- `ofKMD` is the identity function from the `KernelMetricDomain 𝕜 X V H` to `X`. -/
+def ofKMD : KernelMetricDomain 𝕜 X V H ≃ X := Equiv.refl _
+
+omit [CompleteSpace H] [CompleteSpace V] in
+@[simp] theorem toKMD_symm_eq : (toKMD 𝕜 V H).symm = ofKMD 𝕜 V H := by rfl
+
+omit [CompleteSpace H] [CompleteSpace V] in
+@[simp] theorem ofKMD_symm_eq : (ofKMD 𝕜 V H).symm = toKMD 𝕜 V H := by rfl
+
+omit [CompleteSpace H] [CompleteSpace V] in
+@[simp] theorem ofKMD_toKMD (x : X) : ofKMD 𝕜 V H (toKMD 𝕜 V H x) = x := by rfl
+
+omit [CompleteSpace H] [CompleteSpace V] in
+@[simp]
+theorem toKMD_ofKMD (x : KernelMetricDomain 𝕜 X V H) :
+    toKMD 𝕜 V H (ofKMD 𝕜 V H x) = x := by
+  rfl
+
+variable (𝕜 X V) in
+instance instKMDPseudoEMetricSpace [RKHS 𝕜 H X V] :
+    PseudoEMetricSpace (KernelMetricDomain 𝕜 X V H) :=
+  PseudoEMetricSpace.induced ((kerFun H) ∘ ofKMD 𝕜 V H) inferInstance
+
+@[simp]
+lemma edist_KMD (x y : KernelMetricDomain 𝕜 X V H) :
+    edist x y = edist (kerFun H (ofKMD 𝕜 V H x)) (kerFun H (ofKMD 𝕜 V H y)) :=
+  rfl
+
+variable {H} in
+theorem lipschitzWith_ennnorm' (f : H) (x y : X) :
+    edist (f x) (f y) ≤ ‖f‖₊ * edist (kerFun H x) (kerFun H y) := by
+  by_cases h : f = 0
+  · simp [h]
+  simp_rw [edist_eq_enorm_sub, ← eval_apply, ← sub_apply]
+  grw [le_opENorm]
+  rw [← enorm_eq_nnnorm, mul_comm, ENNReal.mul_le_mul_iff_right (enorm_ne_zero.mpr h) enorm_ne_top]
+  simp_rw [kerFun_eq_adjoint_eval, ← LinearIsometryEquiv.map_sub, enorm_le_iff_norm_le,
+    LinearIsometryEquiv.norm_map, le_refl]
+
+variable {H} in
+theorem lipschitzWith_ennnorm (f : H) :
+    LipschitzWith ‖f‖₊ (f ∘ (ofKMD 𝕜 V H)) :=
+  fun x y => by simpa [edist_KMD] using lipschitzWith_ennnorm' f (ofKMD 𝕜 V H x) (ofKMD 𝕜 V H y)
+
+end Lipschitz
 
 /-!
 ## Construction of RKHS from kernel
