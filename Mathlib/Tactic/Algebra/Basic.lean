@@ -23,9 +23,9 @@ except that the constants are expressions in the base ring that are kept in ring
 This tactic is implemented using the machinery of `Ring.Common`
 
 * Normalized expressions are stored as an `Common.ExSum`, with a custom type for
-representing coefficients in `R`.
+  representing coefficients in `R`.
 * While `ring` stores coefficients as rational numbers normalized by `norm_num`, `algebra` stores
-coefficients as experssions in the base ring `R`, normalized by `ring`.
+  coefficients as experssions in the base ring `R`, normalized by `ring`.
 * These coefficients are sums, not products. The normal form of `a • x + b • x` is `(a + b) • x`.
 
 This tactic is used internally to implement the `polynomial` tactic.
@@ -466,7 +466,7 @@ and `S` that appear are comparable, in the sense that either `R` is an `S`-algeb
 `R`-algebra.
 
 * `algebra with R` uses the term `R` as the scalar ring, instead of attempting to infer it
-automatically.
+  automatically.
  -/
 elab (name := algebra) "algebra":tactic =>
   withMainContext do

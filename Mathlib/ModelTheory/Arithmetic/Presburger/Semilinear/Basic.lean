@@ -332,13 +332,13 @@ several private definitions:
 
 1. `base`, `periods`: the base vector and the set of periods of the proper linear set `s`.
 2. `basisSet`, `basis`: the linearly independent periods of `s` can be extended to a basis of
-  `ℚ ^ k`.
+   `ℚ ^ k`.
 3. `fundamentalDomain`: the set of vectors in `ℕ ^ k`, starting from `base`, with coordinates under
-  `basis` in `[0, 1) ^ k`.
+   `basis` in `[0, 1) ^ k`.
 4. `floor`, `fract`: every vector in `ℕ ^ k` can be decomposed into a `ℤ`-linear combination of
-  `basisSet` and a vector in `fundamentalDomain`.
+   `basisSet` and a vector in `fundamentalDomain`.
 5. `setOfFractNe`, `setOfFloorNeg`, `setOfFloorPos`: the complement of `s` is decomposed into three
-  semilinear sets.
+   semilinear sets.
 
 Closure of semilinear sets under complement and set difference follows.
 -/

@@ -35,7 +35,7 @@ cyclic group, as well as the fact that every finite integral domain is a field
   - `q-1` if `q-1 ∣ i`
   - `0`   otherwise
 3. `FiniteField.card`: The cardinality `q` is a power of the characteristic of `K`.
-  See `FiniteField.card'` for a variant.
+   See `FiniteField.card'` for a variant.
 
 ## Notation
 

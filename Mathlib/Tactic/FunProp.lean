@@ -69,30 +69,30 @@ This will display the trace of how `fun_prop` steps through the whole expression
 To set up `fun_prop` for a new function property, you have to:
 
 1. Mark the function property with the `fun_prop` attribute when defining it:
-```lean
-@[fun_prop]
-def Continuous (f : X → Y) := ...
-```
-or later on with:
-```lean
-attribute [fun_prop] Continuous
-```
+   ```lean
+   @[fun_prop]
+   def Continuous (f : X → Y) := ...
+   ```
+   or later on with:
+   ```lean
+   attribute [fun_prop] Continuous
+   ```
 
 2. Mark basic lambda calculus theorems. The bare minimum is the identity, constant, and composition
-theorems:
-```lean
-@[fun_prop]
-theorem continuous_id : Continuous (fun x ↦ x) := ...
+   theorems:
+   ```lean
+   @[fun_prop]
+   theorem continuous_id : Continuous (fun x ↦ x) := ...
 
-@[fun_prop]
-theorem continuous_const (y : Y) : Continuous (fun x ↦ y) := ...
+   @[fun_prop]
+   theorem continuous_const (y : Y) : Continuous (fun x ↦ y) := ...
 
-@[fun_prop]
-theorem continuous_comp (f : Y → Z) (g : X → Y) (hf : Continuous f) (hg : Continuous g) :
-  Continuous (fun x ↦ f (g x)) := ...
-```
-The constant theorem is not absolutely necessary as, for example, `IsLinearMap ℝ (fun x ↦ y)` does
-not hold, but we almost certainly want to mark it if it is available.
+   @[fun_prop]
+   theorem continuous_comp (f : Y → Z) (g : X → Y) (hf : Continuous f) (hg : Continuous g) :
+     Continuous (fun x ↦ f (g x)) := ...
+   ```
+   The constant theorem is not absolutely necessary as, for example, `IsLinearMap ℝ (fun x ↦ y)` does
+   not hold, but we almost certainly want to mark it if it is available.
 
 You should also provide theorems for `Prod.mk`, `Prod.fst`, and `Prod.snd`:
 ```lean
@@ -106,24 +106,24 @@ theorem continuous_prod_mk (f : X → Y) (g : X → Z) (hf : Continuous f) (hg :
 ```
 
 3. Mark function theorems. They can be stated simply as:
-```lean
-@[fun_prop]
-theorem continuous_neg : Continuous (fun x ↦ - x) := ...
+   ```lean
+   @[fun_prop]
+   theorem continuous_neg : Continuous (fun x ↦ - x) := ...
 
-@[fun_prop]
-theorem continuous_add : Continuous (fun x : X × X ↦ x.1 + x.2) := ...
-```
-where functions of multiple arguments have to be appropriately uncurried. Alternatively, they can
-be stated in compositional form as:
-```lean
-@[fun_prop]
-theorem continuous_neg (f : X → Y) (hf : Continuous f) : Continuous (fun x ↦ - f x) := ...
+   @[fun_prop]
+   theorem continuous_add : Continuous (fun x : X × X ↦ x.1 + x.2) := ...
+   ```
+   where functions of multiple arguments have to be appropriately uncurried. Alternatively, they can
+   be stated in compositional form as:
+   ```lean
+   @[fun_prop]
+   theorem continuous_neg (f : X → Y) (hf : Continuous f) : Continuous (fun x ↦ - f x) := ...
 
-@[fun_prop]
-theorem continuous_add (f g : X → Y) (hf : Continuous f) (hg : Continuous g) :
-  Continuous (fun x ↦ f x + g x) := ...
-```
-It is enough to provide function theorems in either form. It is mainly a matter of convenience.
+   @[fun_prop]
+   theorem continuous_add (f g : X → Y) (hf : Continuous f) (hg : Continuous g) :
+     Continuous (fun x ↦ f x + g x) := ...
+   ```
+   It is enough to provide function theorems in either form. It is mainly a matter of convenience.
 
 With such a basic setup, you should be able to prove the continuity of basic algebraic expressions.
 

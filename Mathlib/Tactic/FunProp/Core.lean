@@ -373,9 +373,9 @@ def applyTransitionRules (e : Expr) (funProp : Expr → FunPropM (Option Result)
 /-- Try to remove applied argument i.e. prove `P (fun x ↦ f x y)` from `P (fun x ↦ f x)`.
 
 For example
-  - `funPropDecl` is `FunPropDecl` for `Continuous`
-  - `e = q(Continuous fun x ↦ foo (bar x) y)`
-  - `fData` contains info on `fun x ↦ foo (bar x) y`
+- `funPropDecl` is `FunPropDecl` for `Continuous`
+- `e = q(Continuous fun x ↦ foo (bar x) y)`
+- `fData` contains info on `fun x ↦ foo (bar x) y`
 
 This tries to prove `Continuous fun x ↦ foo (bar x) y` from `Continuous fun x ↦ foo (bar x)`
 -/

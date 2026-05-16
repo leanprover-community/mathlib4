@@ -63,24 +63,24 @@ calls, and should be used sparingly. The default preprocessor set does not inclu
 There are two oracles that can be used in `linarith` so far.
 
 1. **Fourier-Motzkin elimination.**
-  This technique transforms a set of inequalities in `n` variables to an equisatisfiable set in
-  `n - 1` variables. Once all variables have been eliminated, we conclude that the original set was
-  unsatisfiable iff the comparison `0 < 0` is in the resulting set.
-  While performing this elimination, we track the history of each derived comparison. This allows us
-  to represent any comparison at any step as a positive combination of comparisons from the original
-  set. In particular, if we derive `0 < 0`, we can find our desired list of coefficients
-  by counting how many copies of each original comparison appear in the history.
-  This oracle was historically implemented earlier, and is sometimes faster on small states, but it
-  has [bugs](https://github.com/leanprover-community/mathlib4/issues/2717) and cannot handle
-  large problems. You can use it with `linarith (oracle := .fourierMotzkin)`.
+   This technique transforms a set of inequalities in `n` variables to an equisatisfiable set in
+   `n - 1` variables. Once all variables have been eliminated, we conclude that the original set was
+   unsatisfiable iff the comparison `0 < 0` is in the resulting set.
+   While performing this elimination, we track the history of each derived comparison. This allows us
+   to represent any comparison at any step as a positive combination of comparisons from the original
+   set. In particular, if we derive `0 < 0`, we can find our desired list of coefficients
+   by counting how many copies of each original comparison appear in the history.
+   This oracle was historically implemented earlier, and is sometimes faster on small states, but it
+   has [bugs](https://github.com/leanprover-community/mathlib4/issues/2717) and cannot handle
+   large problems. You can use it with `linarith (oracle := .fourierMotzkin)`.
 
 2. **Simplex Algorithm (default).**
-  This oracle reduces the search for an unsatisfiability certificate to some Linear Programming
-  problem. The problem is then solved by a standard Simplex Algorithm. We use
-  [Bland's pivot rule](https://en.wikipedia.org/wiki/Bland%27s_rule) to guarantee that the algorithm
-  terminates.
-  The default version of the algorithm operates with sparse matrices as it is usually faster. You
-  can invoke the dense version by `linarith (oracle := .simplexAlgorithmDense)`.
+   This oracle reduces the search for an unsatisfiability certificate to some Linear Programming
+   problem. The problem is then solved by a standard Simplex Algorithm. We use
+   [Bland's pivot rule](https://en.wikipedia.org/wiki/Bland%27s_rule) to guarantee that the algorithm
+   terminates.
+   The default version of the algorithm operates with sparse matrices as it is usually faster. You
+   can invoke the dense version by `linarith (oracle := .simplexAlgorithmDense)`.
 
 ## Implementation details
 

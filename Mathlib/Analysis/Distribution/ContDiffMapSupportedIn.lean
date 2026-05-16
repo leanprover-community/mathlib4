@@ -335,7 +335,7 @@ open scoped Classical in
 This is in fact continuous (see `monoCLM`). Furthermore:
 * it is a topological embedding when `n₁ = n₂` and `K₁ ⊆ K₂` (not in Mathlib as of March 2026).
 * it maps bounded sets to compact sets when `n₁ ≥ n₂ + 1` and `K₁ ⊆ K₂` (not in Mathlib as of
-March 2026).
+  March 2026).
 
 The parameters `n₁, n₂, K₁, K₂` are implicit as they can often be inferred from context, or
 specified by a type ascription.
@@ -791,7 +791,7 @@ theorem seminorm_monoLM_eq {i : ℕ} (h₁ : n₁ = n₂) (h₂ : K₁ ≤ K₂)
 Furthermore:
 * it is a topological embedding when `n₁ = n₂` and `K₁ ⊆ K₂` (not in Mathlib as of March 2026).
 * it maps bounded sets to compact sets when `n₁ ≥ n₂ + 1` and `K₁ ⊆ K₂` (not in Mathlib as of
-March 2026).
+  March 2026).
 
 The parameters `n₁, n₂, K₁, K₂` are implicit as they can often be inferred from context, or
 specified by a type ascription.

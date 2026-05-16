@@ -119,9 +119,9 @@ An unconditional Schauder basis indexed by `β`.
 
 In the literature, this is known as:
 * An **Extended Basis** [Marti, Jürg T., Introduction to the theory of bases][MartiJurg1969]:
-Defined via convergence of the net of finite partial sums.
+  Defined via convergence of the net of finite partial sums.
 * An **Unconditional Basis** [Singer, Ivan., Bases in Banach spaces][Singer_1970]: On an arbitrary
-set, convergence is necessarily unconditional.
+  set, convergence is necessarily unconditional.
 
 This structure generalizes the classical Schauder basis by replacing sequential
 convergence with summability over the directed set of finite subsets.

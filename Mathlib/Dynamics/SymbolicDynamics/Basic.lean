@@ -45,16 +45,16 @@ so that the theory works not only for groups but also for cancellative monoids.
 ## Main definitions
 
 * `shift g x` — left translation: in additive notation `(shift v x) u = x (v + u)` (using the
-**left** action of `G` on configurations).
+  **left** action of `G` on configurations).
 * `cylinder U x` — configurations agreeing with `x` on a finite set `U ⊆ G`.
 * `Pattern A G` — a configuration which takes
-default value outside of a finite support, together with this support.
+  default value outside of a finite support, together with this support.
 * `Pattern.occursInAt p x g` — occurrence of `p` in `x` at translate `g`.
 * `forbidden F` — configurations avoiding every pattern in `F`.
 * `Subshift A G` — closed, shift-invariant subsets of the full shift.
 * `MulSubshift.ofForbidden F` — the subshift defined by forbidding a family of patterns.
 * `subshift_of_finite_type F` — a subshift of finite type defined by a finite set of
-forbidden patterns.
+  forbidden patterns.
 * `languageOn X U` — the set of patterns of shape `U` obtained by restricting some `x ∈ X`.
 
 ## Design choice: ambient vs. inner (subshift-relative) viewpoint

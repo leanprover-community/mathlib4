@@ -63,10 +63,10 @@ file `Mathlib/MeasureTheory/Integral/SetToL1.lean`).
   * `integral_eq_lintegral_of_nonneg_ae`          : `0 ≤ᵐ[μ] f → ∫ x, f x ∂μ = ∫⁻ x, f x ∂μ`
 
 4. (In the file `Mathlib/MeasureTheory/Integral/DominatedConvergence.lean`)
-  `tendsto_integral_of_dominated_convergence` : the Lebesgue dominated convergence theorem
+   `tendsto_integral_of_dominated_convergence` : the Lebesgue dominated convergence theorem
 
 5. (In `Mathlib/MeasureTheory/Integral/Bochner/Set.lean`) integration commutes with continuous
-  linear maps.
+   linear maps.
 
   * `ContinuousLinearMap.integral_comp_comm`
   * `LinearIsometry.integral_comp_comm`
