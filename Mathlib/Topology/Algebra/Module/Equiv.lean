@@ -1234,7 +1234,6 @@ theorem ringInverse_eq_inverse : Ring.inverse = inverse (R := R) (M := M) := by
 @[simp] theorem inverse_id : (ContinuousLinearMap.id R M).inverse = .id R M := by
   rw [← ringInverse_eq_inverse]
   exact Ring.inverse_one _
-
 namespace IsInvertible
 
 variable {f : M →L[R] M₂}
@@ -1289,6 +1288,29 @@ theorem _root_.ContinuousLinearMap.isInvertible_inverse_iff :
   ⟨.of_isInvertible_inverse, .inverse⟩
 
 end IsInvertible
+
+section IsHomeomorph
+
+variable {S M₁ : Type*} [Semiring S] {σ : R →+* S} {σ' : S →+* R} [RingHomInvPair σ σ']
+  [RingHomInvPair σ' σ] [TopologicalSpace M₁] [AddCommMonoid M₁] [Module S M₁]
+
+def ofIsHomeomorph (f : M ≃ₛₗ[σ] M₁) (hf : IsHomeomorph f.toEquiv) : M ≃SL[σ] M₁ where
+  __ := f
+  continuous_toFun := hf.continuous
+  continuous_invFun := by
+    rw [Equiv.isHomeomorph_iff] at hf
+    exact hf.2 -- nice?
+
+variable {f : M ≃ₛₗ[σ] M₁} (hf : IsHomeomorph f)
+
+@[simp]
+lemma ofIsHomeomorph_coe : (ofIsHomeomorph f hf).toLinearEquiv = f := by
+  dsimp only [ofIsHomeomorph]
+
+@[simp]
+lemma ofIsHomeomorph_apply (x : M) : (ofIsHomeomorph f hf) x = f x := by dsimp [ofIsHomeomorph]
+
+end IsHomeomorph
 
 /-- Composition of a map on a product with the exchange of the product factors -/
 theorem coprod_comp_prodComm [ContinuousAdd M] (f : M₂ →L[R] M) (g : M₃ →L[R] M) :
