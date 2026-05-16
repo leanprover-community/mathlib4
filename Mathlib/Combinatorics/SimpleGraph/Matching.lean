@@ -66,6 +66,14 @@ We say that the vertices in `M.support` are *matched* or *saturated*.
 -/
 def IsMatching (M : Subgraph G) : Prop := ∀ ⦃v⦄, v ∈ M.verts → ∃! w, M.Adj v w
 
+/-- An equivalence between the vertices of a matching and its darts -/
+@[simps]
+noncomputable def IsMatching.toDart (h : M.IsMatching) : M.verts ≃ M.coe.Dart where
+  toFun v := ⟨⟨v, _⟩, h v.property |>.choose_spec.left.coe⟩
+  invFun d := d.fst
+  left_inv v := by simp
+  right_inv d := by ext <;> simp [h d.fst.property |>.choose_spec.right d.snd d.adj]
+
 /-- Given a vertex, returns the unique edge of the matching it is incident to. -/
 noncomputable def IsMatching.toEdge (h : M.IsMatching) (v : M.verts) : M.edgeSet :=
   ⟨s(v, (h v.property).choose), (h v.property).choose_spec.1⟩
@@ -104,6 +112,17 @@ lemma IsMatching.not_adj_left_of_ne (hM : M.IsMatching) (hvw : v ≠ w) (huv : M
 
 lemma IsMatching.not_adj_right_of_ne (hM : M.IsMatching) (huv : u ≠ v) (huw : M.Adj u w) :
     ¬M.Adj v w := fun hvw ↦ huv <| hM.eq_of_adj_right huw hvw
+
+theorem IsMatching.cardinalMk_verts (h : M.IsMatching) :
+    Cardinal.mk M.verts = 2 * Cardinal.mk M.edgeSet := by
+  rw [h.toDart.cardinal_eq, cardinalMk_dart_eq_two_mul_cardinalMk_edgeSet,
+    ← image_coe_edgeSet_coe, Cardinal.mk_image_eq <| Sym2.map.injective Subtype.val_injective]
+
+theorem IsMatching.encard_verts (h : M.IsMatching) : M.verts.encard = 2 * M.edgeSet.encard := by
+  simpa using congr(Cardinal.toENat $h.cardinalMk_verts)
+
+theorem IsMatching.ncard_verts (h : M.IsMatching) : M.verts.ncard = 2 * M.edgeSet.ncard := by
+  simpa using congr(ENat.toNat $h.encard_verts)
 
 lemma IsMatching.sup (hM : M.IsMatching) (hM' : M'.IsMatching)
     (hd : Disjoint M.support M'.support) : (M ⊔ M').IsMatching := by

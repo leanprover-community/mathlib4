@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.BigOperators.Ring.Finset
 public import Mathlib.Combinatorics.SimpleGraph.Dart
 public import Mathlib.Combinatorics.SimpleGraph.Finite
+public import Mathlib.Data.Sym.Sym2.Card
 public import Mathlib.Data.ZMod.Basic
 
 /-!
@@ -168,5 +169,12 @@ theorem exists_ne_odd_degree_of_exists_odd_degree [Fintype V] [DecidableRel G.Ad
   rcases card_pos.mp hg' with ⟨w, hw⟩
   rw [mem_filter_univ] at hw
   exact ⟨w, hw⟩
+
+theorem cardinalMk_dart_eq_two_mul_cardinalMk_edgeSet :
+    Cardinal.mk G.Dart = 2 * Cardinal.mk G.edgeSet := by
+  change Cardinal.mk G.Dart = 2 * Cardinal.mk (Sym2.fromRel G.symm)
+  rw [← Sym2.cardinalMk_prod_eq_two_mul_cardinalMk_fromRel G.symm G.loopless]
+  apply Cardinal.mk_congr
+  exact ⟨fun d ↦ ⟨d.toProd, d.adj⟩, fun z ↦ ⟨z.val, z.property⟩, fun _ ↦ rfl, fun _ ↦ rfl⟩
 
 end SimpleGraph
