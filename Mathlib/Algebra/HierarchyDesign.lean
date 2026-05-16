@@ -232,7 +232,7 @@ Certain instances always apply during type-class resolution. For example, the in
 resolution problems of the form `AddGroup _`, and type-class inference will then do an
 exhaustive search to find a commutative group. These instances take a long time to fail.
 Other instances will only apply if the goal has a certain shape. For example
-`Int.instAddGroupInt : AddGroup ℤ` or
+`Int.instAddGroup : AddGroup ℤ` or
 `Prod.instAddGroup {α β} [AddGroup α] [AddGroup β] : AddGroup (α × β)`. Usually these instances
 will fail quickly, and when they apply, they are almost always the desired instance.
 For this reason, we want the instances of the second type (that only apply in specific cases) to

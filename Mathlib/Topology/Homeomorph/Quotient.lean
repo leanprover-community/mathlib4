@@ -19,7 +19,7 @@ variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
 
 namespace Quot
 
-/-- An homeomorphism `e : X ≃ₜ Y` generXtes an homeomorphism between quotient spaces,
+/-- A homeomorphism `e : X ≃ₜ Y` generates a homeomorphism between quotient spaces,
 if `rX x₁ x₂ ↔ rY (e x₁) (e x₂)`. -/
 protected def congr {rX : X → X → Prop} {rY : Y → Y → Prop} (e : X ≃ₜ Y)
     (eq : ∀ x₁ x₂, rX x₁ x₂ ↔ rY (e x₁) (e x₂)) : Quot rX ≃ₜ Quot rY where
@@ -31,7 +31,7 @@ protected def congr {rX : X → X → Prop} {rY : Y → Y → Prop} (e : X ≃�
 protected def congrRight {r r' : X → X → Prop} (eq : ∀ x₁ x₂, r x₁ x₂ ↔ r' x₁ x₂) :
     Quot r ≃ₜ Quot r' := Quot.congr (Homeomorph.refl X) eq
 
-/-- An homeomorphism `e : X ≃ₜ Y` generXtes an equivalence between the quotient space of `X`
+/-- A homeomorphism `e : X ≃ₜ Y` generates an equivalence between the quotient space of `X`
 by a relation `rX` and the quotient space of `Y` by the image of this relation under `e`. -/
 protected def congrLeft {r : X → X → Prop} (e : X ≃ₜ Y) :
     Quot r ≃ₜ Quot fun y₁ y₂ ↦ r (e.symm y₁) (e.symm y₂) :=
@@ -41,7 +41,7 @@ end Quot
 
 namespace Quotient
 
-/-- An homeomorphism `e : X ≃ₜ Y` generXtes an homeomorphism between quotient spaces,
+/-- A homeomorphism `e : X ≃ₜ Y` generates a homeomorphism between quotient spaces,
 if `rX x₁ x₂ ↔ rY (e x₁) (e x₂)`. -/
 protected def congr {rX : Setoid X} {rY : Setoid Y} (e : X ≃ₜ Y)
     (eq : ∀ x₁ x₂, rX x₁ x₂ ↔ rY (e x₁) (e x₂)) :
