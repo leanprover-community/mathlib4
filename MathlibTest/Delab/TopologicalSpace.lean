@@ -159,7 +159,7 @@ section unapplied
 -- TODO: should be `Continuous[induced g inferInstance, _]
 -- When `(try)SynthInstance` in `#check` is fixed, the delab should no longer trigger on the right.
 /-- info:
-Continuous[induced g inferInstance, inst✝] : (β → α) → Prop -/
+Continuous[induced g inferInstance, inferInstance] : (β → α) → Prop -/
 #guard_msgs(info) in
 #check Continuous[induced g inferInstance, (inferInstance : TopologicalSpace α)]
 
@@ -172,7 +172,7 @@ Continuous[induced g inferInstance, inst✝] : (β → α) → Prop -/
 -- TODO should be `Continuous[_, coinduced h inferInstance]`.
 -- When `(try)SynthInstance` in `#check` is fixed, the delab should no longer trigger on the left.
 /-- info:
-Continuous[inst✝, coinduced h inferInstance] : (α → β) → Prop -/
+Continuous[inferInstance, coinduced h inferInstance] : (α → β) → Prop -/
 #guard_msgs(info) in
 #check Continuous[(inferInstance : TopologicalSpace α), coinduced h inferInstance]
 
