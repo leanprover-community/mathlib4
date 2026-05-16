@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2020 Aaron Anderson, Jalex Stark. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Aaron Anderson, Jalex Stark
+Authors: Aaron Anderson, Jalex Stark, Slava Naprienko
 -/
 module
 
@@ -27,6 +27,10 @@ We give methods for computing coefficients of the characteristic polynomial.
 - `Matrix.trace_eq_neg_charpoly_coeff` proves that the trace is the negative of the (d-1)th
   coefficient of the characteristic polynomial, where d is the dimension of the matrix.
   For a nonzero ring, this is the second-highest coefficient.
+- `Matrix.coeff_det_one_add_X_smul_eq_sum_minors` proves that the k-th coefficient of
+  `det (1 + X • M)` equals the sum of all k×k principal minors of M.
+- `Matrix.charpoly_coeff_eq_sum_minors` expresses the coefficients of the characteristic
+  polynomial as signed sums of principal minors.
 - `Matrix.charpolyRev` the reverse of the characteristic polynomial.
 - `Matrix.reverse_charpoly` characterises the reverse of the characteristic polynomial.
 
@@ -367,6 +371,106 @@ lemma isNilpotent_charpoly_sub_pow_of_isNilpotent (hM : IsNilpotent M) :
     le_trans (natDegree_sub_le _ _) (by simp)
   rw [← isNilpotent_reflect_iff aux, reflect_sub, ← reverse, M.reverse_charpoly]
   simpa [p, hp]
+
+/-- The determinant of the matrix obtained by replacing rows outside `s` with identity rows
+equals the determinant of the principal submatrix indexed by `s`. -/
+lemma det_piecewise_one_eq_submatrix_det
+    (M : Matrix n n R) (s : Finset n) :
+    det (Matrix.of <| s.piecewise M.row (1 : Matrix n n R).row) =
+    (M.submatrix (↑) (↑) : Matrix s s R).det := by
+  let e := Equiv.sumCompl (fun x => x ∈ s)
+  let +generalize A : Matrix n n R := Matrix.of (s.piecewise M (1 : Matrix n n R))
+  rw [← Matrix.det_submatrix_equiv_self e A]
+  have h_blocks : A.submatrix e e =
+      Matrix.fromBlocks
+        (M.submatrix Subtype.val Subtype.val)
+        (M.submatrix Subtype.val Subtype.val) 0 1 := by
+    ext (i | i) (j | j) <;> dsimp [A, e]
+    · simp only [Finset.piecewise, if_pos i.prop]
+    · simp only [Finset.piecewise, if_pos i.prop]
+    · simp only [Finset.piecewise, if_neg i.prop]
+      exact Matrix.one_apply_ne (fun h => i.prop (h ▸ j.prop))
+    · simp only [Finset.piecewise, if_neg i.prop, Matrix.one_apply, Subtype.ext_iff]
+  rw [h_blocks, Matrix.det_fromBlocks_zero₂₁, Matrix.det_one, mul_one]
+
+/-- The k-th coefficient of `det (1 + X • M)` equals the sum of all k×k principal minors of M.
+This generalizes `coeff_det_one_add_X_smul_one` (the k = 1 case, which gives the trace)
+and `det_eq_sign_charpoly_coeff` (the k = n case, which gives the determinant). -/
+theorem coeff_det_one_add_X_smul_eq_sum_minors
+    (M : Matrix n n R) (k : ℕ) :
+    (det (1 + (X : R[X]) • M.map C)).coeff k =
+    ∑ s ∈ Finset.univ.powersetCard k,
+      (M.submatrix (Subtype.val : s → n) (Subtype.val : s → n)).det := by
+  simp only [det]
+  let D := (detRowAlternating : (n → R[X]) [⋀^n]→ₗ[R[X]] R[X])
+  rw [add_comm]
+  change (D (fun i => ((X : R[X]) • M.map C) i + (1 : Matrix n n R[X]) i)).coeff k = _
+  conv_lhs => rw [show (fun i ↦ ((X : R[X]) • M.map C) i + (1 : Matrix n n R[X]) i) =
+      (fun i => ((X : R[X]) • M.map C) i) + (fun i => (1 : Matrix n n R[X]) i) from rfl]
+  conv_lhs => rw [D.map_add_univ]
+  have h_map : ∀ s : Finset n,
+        (s.piecewise (fun i ↦ (M.map C) i)
+          (fun i ↦ (1 : Matrix n n R[X]) i) : Matrix n n R[X]) =
+        Matrix.map (s.piecewise M (1 : Matrix n n R)) C := by
+      intro s; ext i j
+      simp only [Finset.piecewise, Matrix.map_apply]
+      split_ifs with h <;> simp [Matrix.one_apply]
+  have h_det : ∀ s : Finset n,
+      D (s.piecewise (fun i ↦ (M.map C) i)
+        (fun i ↦ (1 : Matrix n n R[X]) i)) =
+      C (det (s.piecewise M (1 : Matrix n n R))) := by
+    intro s; change det _ = _
+    rw [h_map]; exact (RingHom.map_det C _).symm
+  calc (∑ s : Finset n, D (Finset.piecewise s (fun i ↦ ((X : R[X]) • M.map C) i)
+            (fun i ↦ (1 : Matrix n n R[X]) i))).coeff k
+      _ = (∑ s : Finset n, (X : R[X]) ^ s.card •
+            D (s.piecewise (fun i ↦ (M.map C) i)
+              (fun i ↦ (1 : Matrix n n R[X]) i))).coeff k := by
+        congr 2 with s
+        have h_smul : s.piecewise (fun i ↦ ((X : R[X]) • M.map C) i)
+            (fun i ↦ (1 : Matrix n n R[X]) i) =
+            fun i => (if i ∈ s then (X : R[X]) else 1) •
+              s.piecewise (fun i ↦ (M.map C) i) (fun i ↦ (1 : Matrix n n R[X]) i) i := by
+          funext i j
+          simp only [piecewise, Pi.smul_apply, smul_eq_mul, ite_mul, one_mul]
+          split_ifs <;> rfl
+        rw [h_smul, D.map_smul_univ]
+        congr 1
+        simp only [Finset.prod_ite_mem, Finset.univ_inter, Finset.prod_const]
+      _ = ∑ s : Finset n, ((X : R[X]) ^ s.card •
+            D (Finset.piecewise s (fun i ↦ (M.map C) i)
+              (fun i ↦ (1 : Matrix n n R[X]) i))).coeff k := by
+        simp only [Polynomial.finsetSum_coeff]
+      _ = _ := by
+        simp_rw [h_det, smul_eq_mul, mul_comm (X ^ _) (C _)]
+        simp_rw [C_mul_X_pow_eq_monomial, coeff_monomial]
+        rw [← Finset.sum_filter]
+        have h_set : Finset.univ.filter (fun s : Finset n => s.card = k) =
+            Finset.univ.powersetCard k := by
+          ext s; simp [Finset.mem_powersetCard]
+        rw [h_set]
+        exact Finset.sum_congr rfl fun s _ => det_piecewise_one_eq_submatrix_det M s
+
+/-- The coefficients of the characteristic polynomial are signed sums of principal minors.
+Specifically, the (n-k)-th coefficient of the characteristic polynomial of M equals
+`(-1)^k` times the sum of all k×k principal minors of M. -/
+theorem charpoly_coeff_eq_sum_minors
+    (M : Matrix n n R) (k : ℕ) (hk : k ≤ Fintype.card n) :
+    M.charpoly.coeff (Fintype.card n - k) =
+    (-1) ^ k * ∑ s ∈ Finset.univ.powersetCard k,
+      (M.submatrix (Subtype.val : s → n) (Subtype.val : s → n)).det := by
+  nontriviality R
+  have hnd := M.charpoly_natDegree_eq_dim
+  have hrev : M.charpoly.coeff (Fintype.card n - k) = M.charpoly.reverse.coeff k := by
+    simp [Polynomial.coeff_reverse, hnd, hk]
+  rw [hrev, M.reverse_charpoly]
+  have hcharpolyRev : M.charpolyRev = det (1 + (X : R[X]) • (-M).map C) := by
+    simp only [charpolyRev, sub_eq_add_neg]
+    congr 2
+    rw [Matrix.map_neg C (map_neg C) M, smul_neg]
+  rw [hcharpolyRev, coeff_det_one_add_X_smul_eq_sum_minors]
+  simp only [submatrix_neg, Pi.neg_apply, det_neg, Fintype.card_coe, mul_sum]
+  exact Finset.sum_congr rfl fun s hs => by rw [(Finset.mem_powersetCard.mp hs).2]
 
 end reverse
 
