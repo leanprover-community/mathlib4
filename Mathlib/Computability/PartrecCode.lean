@@ -838,7 +838,7 @@ private theorem hG : Primrec G := by
     conv =>
       congr
       · ext p
-        dsimp only []
+        beta_reduce
         erw [Option.bind_eq_bind, ← Option.map_eq_bind]
     refine Primrec.option_map ((hlup.comp <| L.pair <| (k.pair cg).pair n).comp Primrec.fst) ?_
     unfold Primrec₂

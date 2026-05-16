@@ -571,7 +571,7 @@ theorem colimitFlipCompColimIsoColimitCompColim_ι_ι_hom (j) (k) :
       (colimitFlipCompColimIsoColimitCompColim F).hom =
         (colimit.ι _ k ≫ colimit.ι (F ⋙ colim) j : _ ⟶ colimit (F ⋙ colim)) := by
   dsimp [colimitFlipCompColimIsoColimitCompColim]
-  slice_lhs 1 3 => simp only []
+  slice_lhs 1 3 => beta_reduce
   simp [Equivalence.unit]
 
 set_option backward.isDefEq.respectTransparency false in
@@ -581,7 +581,7 @@ theorem colimitFlipCompColimIsoColimitCompColim_ι_ι_inv (k) (j) :
       (colimitFlipCompColimIsoColimitCompColim F).inv =
         (colimit.ι _ j ≫ colimit.ι (F.flip ⋙ colim) k : _ ⟶ colimit (F.flip ⋙ colim)) := by
   dsimp [colimitFlipCompColimIsoColimitCompColim]
-  slice_lhs 1 3 => simp only []
+  slice_lhs 1 3 => beta_reduce
   simp [Equivalence.counitInv]
 
 end
@@ -712,7 +712,7 @@ theorem colimitCurrySwapCompColimIsoColimitCurryCompColim_ι_ι_hom {j} {k} :
         (colimit.ι _ k ≫ colimit.ι (curry.obj G ⋙ colim) j :
           _ ⟶ colimit (curry.obj G ⋙ colim)) := by
   dsimp [colimitCurrySwapCompColimIsoColimitCurryCompColim]
-  slice_lhs 1 3 => simp only []
+  slice_lhs 1 3 => beta_reduce
   simp
 
 set_option backward.isDefEq.respectTransparency false in
@@ -724,7 +724,7 @@ theorem colimitCurrySwapCompColimIsoColimitCurryCompColim_ι_ι_inv {j} {k} :
           colimit.ι (curry.obj _ ⋙ colim) k :
             _ ⟶ colimit (curry.obj (Prod.swap K J ⋙ G) ⋙ colim)) := by
   dsimp [colimitCurrySwapCompColimIsoColimitCurryCompColim]
-  slice_lhs 1 3 => simp only []
+  slice_lhs 1 3 => beta_reduce
   rw [colimitIsoColimitCurryCompColim_ι_ι_inv, HasColimit.isoOfEquivalence_inv_π]
   dsimp [Equivalence.counitInv]
   rw [CategoryTheory.Bifunctor.map_id]

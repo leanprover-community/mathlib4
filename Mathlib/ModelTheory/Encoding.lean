@@ -263,13 +263,11 @@ theorem listDecode_encode_list (l : List (Σ n, L.BoundedFormula α n)) :
     rw [length_map, length_finRange]
   | imp _ _ ih1 ih2 =>
     intro l
-    simp only [] at *
     rw [listEncode, List.append_assoc, cons_append, listDecode]
     simp only [ih1, ih2, length_cons, le_add_iff_nonneg_left, _root_.zero_le, ↓reduceDIte,
       getElem_cons_zero, getElem_cons_succ, sigmaImp_apply, drop_succ_cons, drop_zero]
   | all _ ih =>
     intro l
-    simp only [] at *
     rw [listEncode, cons_append, listDecode]
     simp only [ih, length_cons, le_add_iff_nonneg_left, _root_.zero_le, ↓reduceDIte,
       getElem_cons_zero, sigmaAll_apply, drop_succ_cons, drop_zero]
