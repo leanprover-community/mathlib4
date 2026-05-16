@@ -104,7 +104,7 @@ noncomputable def functorCoreMonoidalOfComp : F.CoreMonoidal := by
     -/
     simp only [comp_obj, μIso_hom, Iso.refl_hom, map_id, Category.id_comp, μIso_inv, Iso.refl_inv,
       MonoidalCategory.whiskerLeft_id, Category.comp_id, map_comp, Category.assoc,
-      ← comp_whiskerRight_assoc, map_δ_μ_assoc, Iso.inv_hom_id_app, id_whiskerRight,
+      ← comp_whiskerRight_assoc, δ_μ_map_assoc, Iso.inv_hom_id_app, id_whiskerRight,
       whisker_exchange_assoc, ← MonoidalCategory.whiskerLeft_comp_assoc, whiskerRight_tensor]
     simp [← whisker_exchange_assoc, tensor_whiskerLeft_symm, -tensor_whiskerLeft,
       ← LaxMonoidal.associativity_assoc G, ← Functor.map_comp]

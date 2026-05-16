@@ -110,10 +110,7 @@ def bifunctorComp₂₃Obj (F : C₁ ⥤ C₂₃ ⥤ C₄) (G₂₃ : C₂ ⥤ C
     { obj X₃ := (F.obj X₁).obj ((G₂₃.obj X₂).obj X₃)
       map φ := (F.obj X₁).map ((G₂₃.obj X₂).map φ) }
   map {X₂ Y₂} φ :=
-    { app X₃ := (F.obj X₁).map ((G₂₃.map φ).app X₃)
-      naturality X₃ Y₃ φ := by
-        dsimp
-        simp only [← Functor.map_comp, NatTrans.naturality] }
+    { app X₃ := (F.obj X₁).map ((G₂₃.map φ).app X₃) }
 
 /-- Given two bifunctors `F : C₁ ⥤ C₂₃ ⥤ C₄` and `G₂₃ : C₂ ⥤ C₃ ⥤ C₄`, this is
 the trifunctor `C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄` obtained by composition. -/
@@ -133,14 +130,11 @@ def bifunctorComp₂₃FunctorObj (F : C₁ ⥤ C₂₃ ⥤ C₄) :
   map {G₂₃ G₂₃'} φ :=
     { app X₁ :=
         { app X₂ :=
-            { app X₃ := (F.obj X₁).map ((φ.app X₂).app X₃)
-              naturality X₃ Y₃ f := by
-                dsimp
-                simp only [← Functor.map_comp, NatTrans.naturality] }
+            { app X₃ := (F.obj X₁).map ((φ.app X₂).app X₃) }
           naturality X₂ Y₂ f := by
             ext X₃
             dsimp
-            simp only [← NatTrans.comp_app, ← Functor.map_comp, NatTrans.naturality] } }
+            simp [← NatTrans.comp_app_map, -NatTrans.comp_app] } }
 
 /-- Auxiliary definition for `bifunctorComp₂₃Functor`. -/
 @[simps]
