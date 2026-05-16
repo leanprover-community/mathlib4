@@ -103,6 +103,9 @@ that occur in the formal sum `a`. -/
 def support (a : FreeAbelianGroup X) : Finset X :=
   a.toFinsupp.support
 
+theorem support_zero_iff (a : FreeAbelianGroup X) : a.support = ∅ ↔ a = 0 :=
+  Finsupp.support_eq_empty.trans (equivFinsupp X).map_eq_zero_iff
+
 @[simp]
 theorem mem_support_iff (x : X) (a : FreeAbelianGroup X) : x ∈ a.support ↔ coeff x a ≠ 0 := by
   rw [support, Finsupp.mem_support_iff]
