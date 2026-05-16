@@ -139,6 +139,9 @@ theorem of_eq_of_ne (i j : ι) (x : β i) (h : j ≠ i) : (of _ i x) j = 0 :=
 lemma of_apply {i : ι} (j : ι) (x : β i) : of β i x j = if h : i = j then Eq.recOn h x else 0 :=
   DFinsupp.single_apply
 
+theorem of_eq_of_eq {i j : ι} (h : i = j) (x : β i) : of β i x = of β j (h ▸ x) := by
+  subst h; rfl
+
 theorem mk_apply_of_mem {s : Finset ι} {f : ∀ i : (↑s : Set ι), β i.val} {n : ι} (hn : n ∈ s) :
     mk β s f n = f ⟨n, hn⟩ :=
   DFinsupp.mk_of_mem hn
