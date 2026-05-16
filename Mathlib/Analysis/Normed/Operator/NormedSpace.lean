@@ -275,6 +275,12 @@ if there is some positive constant C such that `C * ‖u‖ * ‖u‖ ≤ B u u`
 def IsCoercive [NormedAddCommGroup E] [NormedSpace ℝ E] (B : E →L[ℝ] E →L[ℝ] ℝ) : Prop :=
   ∃ C, 0 < C ∧ ∀ u, C * ‖u‖ * ‖u‖ ≤ B u u
 
+@[nontriviality]
+lemma isCoercive.of_subsingleton {V : Type*} [Subsingleton V]
+    [NormedAddCommGroup V] [NormedSpace ℝ V]
+    (F : V →L[ℝ] V →L[ℝ] ℝ) : IsCoercive F := by
+  use 1; constructor <;> simp [Subsingleton.eq_zero (α := V)]
+
 section Equicontinuous
 
 variable {ι : Type*} [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕜₂] {σ₁₂ : 𝕜 →+* 𝕜₂}
