@@ -155,7 +155,7 @@ theorem not_inr_lt_inl [LT α] [LT β] {a : α} {b : β} : ¬inr b < inl a :=
 
 section Preorder
 
-variable [Preorder α] [Preorder β]
+variable [Preorder α] [Preorder β] [Preorder γ]
 
 instance instPreorderSum : Preorder (α ⊕ β) :=
   { instLESum, instLTSum with
@@ -177,6 +177,24 @@ theorem inr_mono : Monotone (inr : β → α ⊕ β) := fun _ _ => LiftRel.inr
 theorem inl_strictMono : StrictMono (inl : α → α ⊕ β) := fun _ _ => LiftRel.inl
 
 theorem inr_strictMono : StrictMono (inr : β → α ⊕ β) := fun _ _ => LiftRel.inr
+
+theorem _root_.Monotone.sumElim {δ : Type*} [Preorder δ]
+    {f : α → β → γ} (hf : Monotone (Function.uncurry f))
+    {g : α → δ → γ} (hg : Monotone (Function.uncurry g))
+    {h : α → β ⊕ δ} (hh : Monotone h) :
+    Monotone (fun x ↦ (h x).elim (f x) (g x)) := by
+  intro x₁ x₂ hx
+  dsimp
+  have hhx := hh hx
+  generalize h x₁ = hx₁ at ⊢ hhx
+  generalize h x₂ = hx₂ at ⊢ hhx
+  cases hhx with
+  | inl hhx => exact hf (Prod.mk_le_mk.mpr ⟨hx, hhx⟩)
+  | inr hhx => exact hg (Prod.mk_le_mk.mpr ⟨hx, hhx⟩)
+
+theorem swap_mono : Monotone (Sum.swap : α ⊕ β → β ⊕ α) := by
+  intro _ _ hx
+  cases hx <;> simp [*]
 
 end Preorder
 
@@ -506,6 +524,28 @@ instance denselyOrdered_of_noMinOrder [LT α] [LT β] [DenselyOrdered α] [Dense
 end Lex
 
 end Sum
+
+/-! ### Order embeddings -/
+
+namespace OrderEmbedding
+
+variable [Preorder α] [Preorder β]
+
+/-- `Sum.inl` as an `OrderEmbedding`. -/
+@[simps]
+def inl : α ↪o α ⊕ β where
+  toFun := Sum.inl
+  inj' := Sum.inl_injective
+  map_rel_iff' := by simp
+
+/-- `Sum.inr` as an `OrderEmbedding`. -/
+@[simps]
+def inr : β ↪o α ⊕ β where
+  toFun := Sum.inr
+  inj' := Sum.inr_injective
+  map_rel_iff' := by simp
+
+end OrderEmbedding
 
 /-! ### Order isomorphisms -/
 
