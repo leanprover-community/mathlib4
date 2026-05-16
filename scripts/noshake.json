@@ -411,9 +411,9 @@
   "Mathlib.LinearAlgebra.DFinsupp": ["Mathlib.LinearAlgebra.Finsupp.SumProd"],
   "Mathlib.LinearAlgebra.Basic": ["Mathlib.Algebra.BigOperators.Group.Finset"],
   "Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional": ["Mathlib.Init.Core"],
-  "Mathlib.LinearAlgebra.AffineSpace.Defs": ["Mathlib.Algebra.AddTorsor.Defs"],
+  "Mathlib.LinearAlgebra.AffineSpace.Defs": ["Mathlib.Algebra.Torsor.Defs"],
   "Mathlib.LinearAlgebra.AffineSpace.Basic":
-  ["Mathlib.Algebra.AddTorsor", "Mathlib.Algebra.AddTorsor.Defs"],
+  ["Mathlib.Algebra.AddTorsor", "Mathlib.Algebra.Torsor.Defs"],
   "Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Defs":
   ["Mathlib.LinearAlgebra.AffineSpace.Defs"],
   "Mathlib.LinearAlgebra.AffineSpace.AffineMap":
