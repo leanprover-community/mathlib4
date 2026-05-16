@@ -23,6 +23,8 @@ It also contains several examples:
 - `finEncodingNatBool`  : a binary encoding of `ℕ` in a simple alphabet.
 - `finEncodingNatΓ'`    : a binary encoding of `ℕ` in the alphabet used for TM's.
 - `unaryFinEncodingNat` : a unary encoding of `ℕ`
+- `unaryPrefix`         : a self-delimiting unary prefix encoding of `ℕ`
+- `prefixPair`          : a self-delimiting encoding of a pair of lists
 - `finEncodingBoolBool` : an encoding of `Bool`.
 - `finEncodingList`     : an encoding of `List α` in the alphabet `α`.
 - `finEncodingPair`     : an encoding of `α × β` from encodings of `α` and `β`.
@@ -108,7 +110,7 @@ def encodeNat (n : ℕ) : List Bool :=
 /-- A decoding function from `List Bool` to the positive binary numbers. -/
 def decodePosNum : List Bool → PosNum
   | false :: l => PosNum.bit0 (decodePosNum l)
-  | true  :: l => ite (l = []) PosNum.one (PosNum.bit1 (decodePosNum l))
+  | true :: l => ite (l = []) PosNum.one (PosNum.bit1 (decodePosNum l))
   | _ => PosNum.one
 
 /-- A decoding function from `List Bool` to the binary numbers. -/
@@ -181,6 +183,59 @@ def unaryFinEncodingNat : FinEncoding ℕ where
   decode n := some (unaryDecodeNat n)
   decode_encode n := congr_arg _ (unary_decode_encode_nat n)
   ΓFin := Bool.fintype
+
+/-! ### Unary Prefix Coding -/
+
+/-- A self-delimiting unary prefix encoding of `ℕ` in `Bool`.
+    Encodes `n` as `n` `true`s followed by a `false`. -/
+def unaryPrefix (n : ℕ) : List Bool :=
+  List.replicate n true ++ [false]
+
+@[simp]
+lemma length_unaryPrefix (n : ℕ) : (unaryPrefix n).length = n + 1 := by
+  simp [unaryPrefix]
+
+@[simp]
+lemma unaryPrefix_ne_nil (n : ℕ) : unaryPrefix n ≠ [] := by
+  simp [unaryPrefix]
+
+@[simp]
+lemma takeWhile_unaryPrefix (n : ℕ) (p : List Bool) :
+    ((unaryPrefix n ++ p).takeWhile id).length = n := by
+  induction n with
+  | zero => rfl
+  | succ n ih => exact congrArg Nat.succ ih
+
+lemma drop_unaryPrefix (n : ℕ) (p : List Bool) :
+    (unaryPrefix n ++ p).drop (n + 1) = p := by
+  induction n with
+  | zero => rfl
+  | succ n ih => exact ih
+
+lemma unaryPrefix_append_inj {m n : ℕ} {a b : List Bool}
+    (h : unaryPrefix m ++ a = unaryPrefix n ++ b) : m = n ∧ a = b := by
+  have h_len : m = n := by simpa using congrArg (fun l => (l.takeWhile id).length) h
+  rw [h_len] at h
+  have h_drop : a = b := by simpa using congrArg (fun l => l.drop (n + 1)) h
+  exact ⟨h_len, h_drop⟩
+
+@[simp]
+lemma isPrefix_unaryPrefix_iff {m n : ℕ} : unaryPrefix m <+: unaryPrefix n ↔ m = n :=
+  ⟨fun ⟨_, h_eq⟩ ↦ (unaryPrefix_append_inj (h_eq.trans (List.append_nil _).symm)).1,
+   fun h ↦ h ▸ ⟨[], List.append_nil _⟩⟩
+
+lemma unaryPrefix_injective : Function.Injective unaryPrefix :=
+  fun _ _ h ↦ Nat.succ_injective (by simpa using congrArg List.length h)
+
+/-- A self-delimiting encoding of a pair of boolean lists. -/
+def prefixPair (x y : List Bool) : List Bool :=
+  unaryPrefix x.length ++ x ++ y
+
+lemma prefixPair_inj {x₁ y₁ x₂ y₂ : List Bool}
+    (h : prefixPair x₁ y₁ = prefixPair x₂ y₂) : x₁ = x₂ ∧ y₁ = y₂ := by
+  simp only [prefixPair, List.append_assoc] at h
+  have ⟨h_len, h_tail⟩ := unaryPrefix_append_inj h
+  exact List.append_inj h_tail h_len
 
 /-- An encoding function of `Bool` in `Bool`. -/
 def encodeBool : Bool → List Bool := pure
