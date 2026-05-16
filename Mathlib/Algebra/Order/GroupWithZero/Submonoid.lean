@@ -6,7 +6,7 @@ Authors: Chris Birkbeck
 module
 
 public import Mathlib.Algebra.Group.Submonoid.Defs
-public import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic
+public import Mathlib.Algebra.Order.GroupWithZero.Basic
 public import Mathlib.Order.Interval.Set.Defs
 
 /-!
