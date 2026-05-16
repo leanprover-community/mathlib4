@@ -196,13 +196,13 @@ lemma map_le_of_subsingleton (f : V ↪ W) [Subsingleton V] : G.map f ≤ G' := 
 yields the complete multipartite graph on the family.
 Two vertices are adjacent if and only if their indices are not equal. -/
 abbrev completeMultipartiteGraph {ι : Type*} (V : ι → Type*) : SimpleGraph (Σ i, V i) :=
-  SimpleGraph.comap Sigma.fst ⊤
+  .comap Sigma.fst ⊤
 
 /-- Equivalent types have equivalent simple graphs. -/
 @[simps apply]
 protected def _root_.Equiv.simpleGraph (e : V ≃ W) : SimpleGraph V ≃ SimpleGraph W where
-  toFun := SimpleGraph.comap e.symm
-  invFun := SimpleGraph.comap e
+  toFun := .comap e.symm
+  invFun := .comap e
   left_inv _ := by simp
   right_inv _ := by simp
 
@@ -484,10 +484,11 @@ noncomputable def isoInduceRange : G ≃g G'.induce (Set.range f) where
 
 /-- Given an injective function, there is an embedding from the comapped graph into the original
 graph. -/
--- Porting note: @[simps] does not work here since `f` is not a constructor application.
+-- Porting note: `@[simps]` does not work here since `f` is not a constructor application.
 -- `@[simps toEmbedding]` could work, but Floris suggested writing `comap_apply` for now.
-protected def comap (f : V ↪ W) (G : SimpleGraph W) : G.comap f ↪g G :=
-  { f with map_rel_iff' := by simp }
+protected def comap (f : V ↪ W) (G : SimpleGraph W) : G.comap f ↪g G where
+  __ := f
+  map_rel_iff' := by simp
 
 @[simp]
 theorem comap_apply (f : V ↪ W) (G : SimpleGraph W) (v : V) :
@@ -498,29 +499,31 @@ theorem comap_eq (f : H ↪g G) : G.comap f = H := by
   exact f.map_adj_iff
 
 /-- Given an injective function, there is an embedding from a graph into the mapped graph. -/
--- Porting note: @[simps] does not work here since `f` is not a constructor application.
+-- Porting note: `@[simps]` does not work here since `f` is not a constructor application.
 -- `@[simps toEmbedding]` could work, but Floris suggested writing `map_apply` for now.
-protected def map (f : V ↪ W) (G : SimpleGraph V) : G ↪g G.map f :=
-  { f with map_rel_iff' := by simp }
+protected def map (f : V ↪ W) (G : SimpleGraph V) : G ↪g G.map f where
+  __ := f
+  map_rel_iff' := by simp
 
 @[simp]
-theorem map_apply (f : V ↪ W) (G : SimpleGraph V) (v : V) :
-    SimpleGraph.Embedding.map f G v = f v := rfl
+theorem map_apply (f : V ↪ W) (G : SimpleGraph V) (v : V) : Embedding.map f G v = f v :=
+  rfl
 
 /-- Induced graphs embed in the original graph.
 
 Note that if `G.induce s = ⊤` (i.e., if `s` is a clique) then this gives the embedding of a
 complete graph. -/
 protected abbrev induce (s : Set V) : G.induce s ↪g G :=
-  SimpleGraph.Embedding.comap (Function.Embedding.subtype _) G
+  Embedding.comap (.subtype _) G
 
 /-- Graphs on a set of vertices embed in their `spanningCoe`. -/
 protected abbrev spanningCoe {s : Set V} (G : SimpleGraph s) : G ↪g G.spanningCoe :=
-  SimpleGraph.Embedding.map (Function.Embedding.subtype _) G
+  Embedding.map (.subtype _) G
 
 /-- Embeddings of types induce embeddings of complete graphs on those types. -/
-protected def completeGraph {α β : Type*} (f : α ↪ β) : completeGraph α ↪g completeGraph β :=
-  { f with map_rel_iff' := by simp }
+protected def completeGraph {α β : Type*} (f : α ↪ β) : completeGraph α ↪g completeGraph β where
+  __ := f
+  map_rel_iff' := by simp
 
 @[simp] lemma coe_completeGraph {α β : Type*} (f : α ↪ β) : ⇑(Embedding.completeGraph f) = f := rfl
 
@@ -670,34 +673,35 @@ theorem card_eq [Fintype V] [Fintype W] : Fintype.card V = Fintype.card W := by
 graph. -/
 -- Porting note: `@[simps]` does not work here anymore since `f` is not a constructor application.
 -- `@[simps toEmbedding]` could work, but Floris suggested writing `comap_apply` for now.
-protected def comap (f : V ≃ W) (G : SimpleGraph W) : G.comap f.toEmbedding ≃g G :=
-  { f with map_rel_iff' := by simp }
+protected def comap (f : V ≃ W) (G : SimpleGraph W) : G.comap f ≃g G where
+  __ := f
+  map_rel_iff' := by simp
 
 @[simp]
-lemma comap_apply (f : V ≃ W) (G : SimpleGraph W) (v : V) :
-    SimpleGraph.Iso.comap f G v = f v := rfl
+lemma comap_apply (f : V ≃ W) (G : SimpleGraph W) (v : V) : Iso.comap f G v = f v := rfl
 
 -- Porting note: `@[simps]` does not work here anymore since `f` is not a constructor application.
 -- `@[simps toEmbedding]` could work, but Floris suggested writing `map_apply` for now.
 @[simp]
 lemma comap_symm_apply (f : V ≃ W) (G : SimpleGraph W) (w : W) :
-    (SimpleGraph.Iso.comap f G).symm w = f.symm w := rfl
+    (Iso.comap f G).symm w = f.symm w := rfl
 
 /-- Given a bijective function, there is an isomorphism from a graph into the mapped graph. -/
-protected def map (f : V ≃ W) (G : SimpleGraph V) : G ≃g G.map f.toEmbedding :=
-  { f with map_rel_iff' := by aesop (add simp map_adj') }
+protected def map (f : V ≃ W) (G : SimpleGraph V) : G ≃g G.map f where
+  __ := f
+  map_rel_iff' := by aesop (add simp map_adj')
 
 @[simp]
-lemma map_apply (f : V ≃ W) (G : SimpleGraph V) (v : V) :
-    SimpleGraph.Iso.map f G v = f v := rfl
+lemma map_apply (f : V ≃ W) (G : SimpleGraph V) (v : V) : Iso.map f G v = f v := rfl
 
 @[simp]
 lemma map_symm_apply (f : V ≃ W) (G : SimpleGraph V) (w : W) :
-    (SimpleGraph.Iso.map f G).symm w = f.symm w := rfl
+    (Iso.map f G).symm w = f.symm w := rfl
 
 /-- Equivalences of types induce isomorphisms of complete graphs on those types. -/
-protected def completeGraph {α β : Type*} (f : α ≃ β) : completeGraph α ≃g completeGraph β :=
-  { f with map_rel_iff' := by simp }
+protected def completeGraph {α β : Type*} (f : α ≃ β) : completeGraph α ≃g completeGraph β where
+  __ := f
+  map_rel_iff' := by simp
 
 theorem toEmbedding_completeGraph {α β : Type*} (f : α ≃ β) :
     (Iso.completeGraph f).toEmbedding = Embedding.completeGraph f.toEmbedding :=
@@ -740,13 +744,12 @@ variable [Fintype V] {n : ℕ}
 
 /-- Given a graph over a finite vertex type `V` and a proof `hc` that `Fintype.card V = n`,
 `G.overFin n` is an isomorphic (as shown in `overFinIso`) graph over `Fin n`. -/
-def overFin (hc : Fintype.card V = n) : SimpleGraph (Fin n) where
-  Adj x y := G.Adj ((Fintype.equivFinOfCardEq hc).symm x) ((Fintype.equivFinOfCardEq hc).symm y)
-  symm x y := by simp_rw [adj_comm, imp_self]
+noncomputable def overFin (hc : Fintype.card V = n) : SimpleGraph (Fin n) :=
+  G.comap (Fintype.equivFinOfCardEq hc).symm
 
 /-- The isomorphism between `G` and `G.overFin hc`. -/
-noncomputable def overFinIso (hc : Fintype.card V = n) : G ≃g G.overFin hc := by
-  use Fintype.equivFinOfCardEq hc; simp [overFin]
+noncomputable def overFinIso (hc : Fintype.card V = n) : G ≃g G.overFin hc :=
+  .symm <| .comap ..
 
 end Finite
 
