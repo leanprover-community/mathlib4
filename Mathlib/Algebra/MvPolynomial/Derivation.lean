@@ -34,9 +34,10 @@ variable (R)
 /-- The derivation on `MvPolynomial σ R` that takes value `f i` on `X i`, as a linear map.
 Use `MvPolynomial.mkDerivation` instead. -/
 def mkDerivationₗ (f : σ → A) : MvPolynomial σ R →ₗ[R] A :=
-  Finsupp.lsum R fun xs : σ →₀ ℕ =>
+  Finsupp.lsum R (fun xs : σ →₀ ℕ =>
     (LinearMap.ringLmapEquivSelf R R A).symm <|
-      xs.sum fun i k => monomial (xs - Finsupp.single i 1) (k : R) • f i
+      xs.sum fun i k => monomial (xs - Finsupp.single i 1) (k : R) • f i)
+    ∘ₗ (AddMonoidAlgebra.coeffLinearEquiv R).toLinearMap
 
 end
 
@@ -83,6 +84,7 @@ theorem derivation_ext {D₁ D₂ : Derivation R (MvPolynomial σ R) A} (h : ∀
 
 variable [IsScalarTower R (MvPolynomial σ R) A]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem leibniz_iff_X (D : MvPolynomial σ R →ₗ[R] A) (h₁ : D 1 = 0) :
     (∀ p q, D (p * q) = p • D q + q • D p) ↔ ∀ s i, D (monomial s 1 * X i) =
     (monomial s 1 : MvPolynomial σ R) • D (X i) + (X i : MvPolynomial σ R) • D (monomial s 1) := by

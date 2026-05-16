@@ -325,7 +325,7 @@ variable {p q : R[X]} {ι : Type*}
 
 theorem degree_add_le (p q : R[X]) : degree (p + q) ≤ max (degree p) (degree q) := by
   simpa only [degree, ← support_toFinsupp, toFinsupp_add]
-    using AddMonoidAlgebra.sup_support_add_le _ _ _
+    using AddMonoidAlgebra.sup_support_coeff_add_le _ _ _
 
 theorem degree_add_le_of_degree_le {p q : R[X]} {n : ℕ} (hp : degree p ≤ n) (hq : degree q ≤ n) :
     degree (p + q) ≤ n :=
@@ -366,8 +366,6 @@ theorem natDegree_C_mul_X_pow_le (a : R) (n : ℕ) : natDegree (C a * X ^ n) ≤
   natDegree_le_iff_degree_le.2 <| degree_C_mul_X_pow_le _ _
 
 theorem degree_erase_le (p : R[X]) (n : ℕ) : degree (p.erase n) ≤ degree p := by
-  simp only [erase_def, AddMonoidAlgebra.erase, AddMonoidAlgebra.coeff, AddMonoidAlgebra.ofCoeff,
-    degree, support]
   apply sup_mono
   simpa using Finset.erase_subset ..
 
@@ -394,7 +392,7 @@ theorem degree_sum_le (s : Finset ι) (f : ι → R[X]) :
       _ ≤ _ := by rw [sup_cons]; exact max_le_max le_rfl ih
 
 theorem degree_mul_le (p q : R[X]) : degree (p * q) ≤ degree p + degree q := by
-  simpa [degree, ← support_toFinsupp] using AddMonoidAlgebra.sup_support_mul_le (by simp) ..
+  simpa [degree, ← support_toFinsupp] using AddMonoidAlgebra.sup_support_coeff_mul_le (by simp) ..
 
 theorem degree_mul_le_of_le {a b : WithBot ℕ} (hp : degree p ≤ a) (hq : degree q ≤ b) :
     degree (p * q) ≤ a + b := by grw [degree_mul_le, hp, hq]

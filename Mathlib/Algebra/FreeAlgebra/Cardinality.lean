@@ -8,6 +8,8 @@ module
 public import Mathlib.Algebra.FreeAlgebra
 public import Mathlib.SetTheory.Cardinal.Free
 
+import Mathlib.Algebra.MonoidAlgebra.Cardinal
+
 /-!
 # Cardinality of free algebras
 
@@ -31,18 +33,16 @@ variable (X : Type v)
 theorem cardinalMk_eq_max_lift [Nonempty X] [Nontrivial R] :
     #(FreeAlgebra R X) = Cardinal.lift.{v} #R ⊔ Cardinal.lift.{u} #X ⊔ ℵ₀ := by
   have hX := mk_freeMonoid X
-  rw [equivMonoidAlgebraFreeMonoid.toEquiv.cardinal_eq, MonoidAlgebra,
-    mk_finsupp_lift_of_infinite, hX, lift_max, lift_aleph0, sup_comm, ← sup_assoc]
+  rw [equivMonoidAlgebraFreeMonoid.toEquiv.cardinal_eq, MonoidAlgebra.cardinalMk_lift_of_infinite,
+    hX, lift_max, lift_aleph0, sup_assoc]
 
 @[simp]
 theorem cardinalMk_eq_lift [IsEmpty X] : #(FreeAlgebra R X) = Cardinal.lift.{v} #R := by
-  have := lift_mk_eq'.2 ⟨show (FreeMonoid X →₀ R) ≃ R from Equiv.finsuppUnique⟩
-  rw [lift_id'.{u, v}, lift_umax] at this
-  rwa [equivMonoidAlgebraFreeMonoid.toEquiv.cardinal_eq, MonoidAlgebra]
+  simp [equivMonoidAlgebraFreeMonoid.toEquiv.cardinal_eq, MonoidAlgebra.cardinalMk_lift_of_fintype]
 
 @[nontriviality]
 theorem cardinalMk_eq_one [Subsingleton R] : #(FreeAlgebra R X) = 1 := by
-  rw [equivMonoidAlgebraFreeMonoid.toEquiv.cardinal_eq, MonoidAlgebra, mk_eq_one]
+  rw [equivMonoidAlgebraFreeMonoid.toEquiv.cardinal_eq, mk_eq_one]
 
 theorem cardinalMk_le_max_lift :
     #(FreeAlgebra R X) ≤ Cardinal.lift.{v} #R ⊔ Cardinal.lift.{u} #X ⊔ ℵ₀ := by

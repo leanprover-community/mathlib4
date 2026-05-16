@@ -281,6 +281,9 @@ theorem mapDomain_notin_range {f : α → β} (x : α →₀ M) (a : β) (h : a 
   rw [mapDomain, sum_apply, sum]
   exact Finset.sum_eq_zero fun a' _ => single_eq_of_ne fun eq => h <| eq ▸ Set.mem_range_self _
 
+lemma mem_range_of_mapDomain_ne_zero {f : α → β} {x : α →₀ M} {b : β} (h : mapDomain f x b ≠ 0) :
+    b ∈ Set.range f := by contrapose! h; exact mapDomain_notin_range _ _ h
+
 @[simp]
 theorem mapDomain_id : mapDomain id v = v :=
   sum_single _
@@ -319,6 +322,16 @@ theorem mapDomain_equiv_apply {f : α ≃ β} (x : α →₀ M) (a : β) :
     mapDomain f x a = x (f.symm a) := by
   conv_lhs => rw [← f.apply_symm_apply a]
   exact mapDomain_apply f.injective _ _
+
+@[simp] lemma support_mapDomain_embedding (f : α ↪ β) (x : α →₀ M) :
+    (mapDomain f x).support = x.support.map f := by
+  ext b
+  simp only [mem_support_iff, ne_eq, mem_map]
+  refine ⟨fun h ↦ ?_, ?_⟩
+  · obtain ⟨a, rfl⟩ := mem_range_of_mapDomain_ne_zero h
+    exact ⟨a, by simpa [f.injective] using h⟩
+  · rintro ⟨a, ha, rfl⟩
+    simpa [f.injective]
 
 /-- `Finsupp.mapDomain` is an `AddMonoidHom`. -/
 @[simps]
