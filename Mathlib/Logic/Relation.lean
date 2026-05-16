@@ -497,7 +497,8 @@ end ReflTransGen
 
 namespace TransGen
 
-theorem to_reflTransGen : TransGen r ≤ ReflTransGen r := fun _ _ h ↦ by
+theorem to_reflTransGen : TransGen r ≤ ReflTransGen r := by
+  intro a _ h
   induction h with
   | single h => exact ReflTransGen.single _ _ h
   | tail _ bc ab => exact ReflTransGen.tail ab bc
@@ -640,13 +641,15 @@ theorem transGen_idem : TransGen (TransGen r) = TransGen r :=
   transGen_eq_self
 
 theorem TransGen.lift {p : β → β → Prop} (f : α → β) (h : r ≤ (p on f)) :
-    TransGen r ≤ (TransGen p on f) := fun _ _ hab ↦ by
+    TransGen r ≤ (TransGen p on f) := by
+  intro a _ hab
   induction hab with
   | single hac => exact TransGen.single (h a _ hac)
   | tail _ hcd hac => exact TransGen.tail hac (h _ _ hcd)
 
 theorem TransGen.lift' {p : β → β → Prop} (f : α → β) (h : r ≤ (TransGen p on f)) :
-    TransGen r ≤ (TransGen p on f) := fun _ _ hab ↦ by
+    TransGen r ≤ (TransGen p on f) := by
+  intro _ _ hab
   simpa [transGen_eq_self] using hab.lift f h
 
 theorem TransGen.closed {p : α → α → Prop} : r ≤ TransGen p → TransGen r ≤ TransGen p :=
@@ -662,7 +665,8 @@ theorem TransGen.mono {p : α → α → Prop} : r ≤ p → TransGen r ≤ Tran
 lemma transGen_minimal {r' : α → α → Prop} [IsTrans α r'] (h : r ≤ r') : TransGen r ≤ r' := by
   simpa [transGen_eq_self] using TransGen.mono h
 
-theorem TransGen.swap : swap (TransGen r) ≤ TransGen (swap r) := fun _ _ h ↦ by
+theorem TransGen.swap : swap (TransGen r) ≤ TransGen (swap r) := by
+  intro _ _ h
   induction h with
   | single h => exact TransGen.single h
   | tail _ hbc ih => exact ih.head hbc
@@ -732,14 +736,16 @@ theorem reflTransGen_idem : ReflTransGen (ReflTransGen r) = ReflTransGen r :=
   reflTransGen_eq_self
 
 theorem ReflTransGen.lift' {p : β → β → Prop} (f : α → β) (h : r ≤ (ReflTransGen p on f)) :
-    ReflTransGen r ≤ (ReflTransGen p on f) := fun _ _ hab ↦ by
+    ReflTransGen r ≤ (ReflTransGen p on f) := by
+  intro _ _ hab
   simpa [reflTransGen_eq_self] using hab.lift f h
 
 theorem reflTransGen_closed {p : α → α → Prop} :
     r ≤ ReflTransGen p → ReflTransGen r ≤ ReflTransGen p :=
   ReflTransGen.lift' id
 
-theorem ReflTransGen.swap : swap (ReflTransGen r) ≤ ReflTransGen (swap r) := fun _ _ h ↦ by
+theorem ReflTransGen.swap : swap (ReflTransGen r) ≤ ReflTransGen (swap r) := by
+  intro _ _ h
   induction h with
   | refl => rfl
   | tail _ hbc ih => exact ih.head hbc
@@ -795,7 +801,8 @@ see for example `Quot.eqvGen_exact` and `Quot.eqvGen_sound`. -/
 def setoid : Setoid α :=
   Setoid.mk _ (EqvGen.is_equivalence r)
 
-theorem mono {r p : α → α → Prop} (hrp : r ≤ p) : EqvGen r ≤ EqvGen p := fun _ _ h ↦ by
+theorem mono {r p : α → α → Prop} (hrp : r ≤ p) : EqvGen r ≤ EqvGen p := by
+  intro _ _ h
   induction h with
   | rel a b h => exact EqvGen.rel _ _ (hrp _ _ h)
   | refl => exact EqvGen.refl _
