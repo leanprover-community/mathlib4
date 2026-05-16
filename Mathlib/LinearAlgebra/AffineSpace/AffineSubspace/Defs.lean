@@ -997,7 +997,7 @@ theorem smul_vsub_rev_mem_vectorSpan_pair (r : k) (p₁ p₂ : P) :
 variable (k)
 
 /-- The line between two points, as an affine subspace. -/
-notation "line[" k ", " p₁ ", " p₂ "]" =>
+notation3 "line[" k ", " p₁ ", " p₂ "]" =>
   affineSpan k (insert p₁ (@singleton _ _ Set.instSingletonSet p₂))
 
 /-- The first of two points lies in their affine span. -/
