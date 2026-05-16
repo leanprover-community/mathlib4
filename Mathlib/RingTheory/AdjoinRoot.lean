@@ -12,6 +12,7 @@ public import Mathlib.RingTheory.Adjoin.Basic
 public import Mathlib.RingTheory.FinitePresentation
 public import Mathlib.RingTheory.FiniteType
 public import Mathlib.RingTheory.Ideal.Quotient.Noetherian
+public import Mathlib.RingTheory.Localization.Algebra
 public import Mathlib.RingTheory.PowerBasis
 public import Mathlib.RingTheory.PrincipalIdealDomain
 public import Mathlib.RingTheory.Polynomial.Quotient
@@ -257,7 +258,12 @@ theorem isRoot_root (f : R[X]) : IsRoot (f.map (of f)) (root f) := by
 theorem isAlgebraic_root (hf : f ≠ 0) : IsAlgebraic R (root f) :=
   ⟨f, hf, eval₂_root f⟩
 
-theorem of.injective_of_degree_ne_zero [IsDomain R] (hf : f.degree ≠ 0) :
+theorem isAlgebraic_of_noZeroDivisors [NoZeroDivisors R] (hf : f ≠ 0) (x : AdjoinRoot f) :
+    IsAlgebraic R x :=
+  Algebra.isAlgebraic_adjoin_singleton_iff.mpr (AdjoinRoot.isAlgebraic_root hf) x <|
+    by simp_rw [AdjoinRoot.adjoinRoot_eq_top, Algebra.mem_top]
+
+theorem of.injective_of_degree_ne_zero [NoZeroDivisors R] (hf : f.degree ≠ 0) :
     Function.Injective (AdjoinRoot.of f) := by
   rw [injective_iff_map_eq_zero]
   intro p hp
@@ -1057,3 +1063,36 @@ lemma Polynomial.Monic.exists_splits_map.{u}
   refine ⟨S, ‹_›, ‹_›, .trans (AdjoinRoot p) _, .trans (S := AdjoinRoot p), ‹_›, ?_⟩
   rw [IsScalarTower.algebraMap_eq R (AdjoinRoot p), ← Polynomial.map_map, hq, Polynomial.map_mul]
   exact .mul (by simp) hS
+
+section IsFractionRing
+
+attribute [local instance] algebra
+
+open scoped nonZeroDivisors
+
+variable [CommRing R] [CommRing K] [Algebra R K] {p : R[X]}
+
+/-- If `f : R → K` is an algebra map, then `K[X] / f(p)` is an algebra over `R[X] / p`. -/
+instance : Algebra (AdjoinRoot p) <| AdjoinRoot <| p.map <| algebraMap R K :=
+  Quotient.algebraQuotientOfLEComap <| le_comap_of_map_le <| by simp [map_span]
+
+/-- If `f : R → K` is the canonical map from a domain `R` to its fraction ring `K`, and `p` is a
+non-constant prime polynomial over `R`, then `K[X] / f(p)` is a fraction ring of `R[X] / p`. -/
+theorem AdjoinRoot.isFractionRing [IsDomain R] [IsFractionRing R K] (prime : Prime p)
+    (degree : p.degree ≠ 0) :
+    IsFractionRing (AdjoinRoot p) <| AdjoinRoot <| p.map <| algebraMap R K := by
+  rw [IsFractionRing, ← IsLocalization.iff_of_le_of_exists_dvd]
+  · have := isLocalization R⁰ K
+    exact IsLocalization.of_surjective (R⁰.map C) K[X] _ Quotient.mk_surjective _
+      Quotient.mk_surjective rfl <| fun _ h ↦ by
+        rcases mem_span_singleton'.mp <| Quotient.eq_zero_iff_mem.mp h with ⟨_, rfl⟩
+        exact mul_mem_left _ _ <| mem_map_of_mem _ <| Quotient.mk_singleton_self p
+  · have : IsDomain <| AdjoinRoot p := isDomain_of_prime prime
+    rintro _ ⟨_, ⟨_, h, rfl⟩, rfl⟩
+    exact mem_nonZeroDivisors_of_ne_zero <| mem_nonZeroDivisors_iff_ne_zero.mp h
+      ∘ (injective_iff_map_eq_zero _).mp (of.injective_of_degree_ne_zero degree) _
+  · intro _ h
+    rcases (isAlgebraic_of_noZeroDivisors prime.ne_zero _).exists_nonzero_dvd h with ⟨_, h, _, h'⟩
+    exact ⟨_, ⟨_, ⟨_, mem_nonZeroDivisors_of_ne_zero h, rfl⟩, rfl⟩, _, h'⟩
+
+end IsFractionRing
