@@ -182,7 +182,7 @@ theorem inv_def (f : X ≃ₜ X) : f⁻¹ = f.symm := rfl
 @[simp]
 theorem inv_apply (f : X ≃ₜ X) (x : X) : f⁻¹ x = f.symm x := rfl
 
-theorem mul_def (f g : X ≃ₜ X) : (f * g) = g.trans f := rfl
+theorem mul_def (f g : X ≃ₜ X) : f * g = g.trans f := rfl
 
 @[simp]
 theorem mul_apply (f g : X ≃ₜ X) (x : X) : (f * g) x = f (g x) := rfl
