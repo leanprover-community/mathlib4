@@ -276,4 +276,14 @@ def const {X Y : TopCat.{u}} (y : Y) : X ⟶ Y :=
 lemma const_apply {X Y : TopCat.{u}} (y : Y) (x : X) :
     const y x = y := rfl
 
+section Complement
+
+variable {X A B : TopCat} (f : A ⟶ X) (g : B ⟶ X)
+
+/-- Two morphisms `f : A ⟶ X` and `g : B ⟶ X` in `TopCat` are complements if their images are
+complements in `X`. -/
+protected abbrev IsCompl := _root_.IsCompl (Set.range f) (Set.range g)
+
+end Complement
+
 end TopCat
