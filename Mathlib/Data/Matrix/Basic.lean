@@ -431,7 +431,7 @@ theorem mapMatrix_neg [AddZeroClass α] [AddCommGroup β] (f : α →+ β) :
 @[simp]
 theorem mapMatrix_smul [Monoid A] [AddZeroClass α] [AddMonoid β] [DistribMulAction A β]
     (a : A) (f : α →+ β) :
-    (a • f).mapMatrix = (a • f.mapMatrix : Matrix m n α →+ _) := rfl
+    (a • f).mapMatrix = (a • (f.mapMatrix : _ →+ Matrix m n β)) := rfl
 
 end AddMonoidHom
 

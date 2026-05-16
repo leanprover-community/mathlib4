@@ -784,9 +784,15 @@ attribute [to_additive existing] isMulTorsionFree_iff
 /-- An additive commutative monoid is an additive monoid with commutative `(+)`. -/
 class AddCommMonoid (M : Type u) extends AddMonoid M, AddCommSemigroup M
 
+attribute [instance 1010] AddCommMonoid.toAddMonoid -- part of our main spine
+attribute [instance 1010] AddCommMonoid.toAddCommSemigroup -- part of our main spine
+
 /-- A commutative monoid is a monoid with commutative `(*)`. -/
 @[to_additive]
 class CommMonoid (M : Type u) extends Monoid M, CommSemigroup M
+
+attribute [instance 1010] CommMonoid.toMonoid -- part of our main spine
+attribute [instance 1010] CommMonoid.toCommSemigroup -- part of our main spine
 
 /- This is assigned default rather than low priority because it gives the most common examples
 of Dedekind-finite monoids and is used the most often. Benchmark results indicate default
