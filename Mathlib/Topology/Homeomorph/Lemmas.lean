@@ -491,7 +491,8 @@ noncomputable def homeomorph : X ≃ₜ Y where
       (Equiv.ofBijective f hf.bijective).left_inv
   toEquiv := Equiv.ofBijective f hf.bijective
 
-lemma coe_equiv {g : X ≃ Y} (hg : IsHomeomorph g) : hg.homeomorph = g := by simp [homeomorph]; rfl
+lemma coe_homeomorph_equiv {g : X ≃ Y} (hg : IsHomeomorph g) : hg.homeomorph = g := by
+  simp only [homeomorph, Equiv.ofBijective_coe]; rfl
 
 lemma coe_inv {g : X ≃ Y} (hg : IsHomeomorph g) : hg.homeomorph.invFun = g.invFun := by simp
 
