@@ -54,7 +54,7 @@ local elab "try_push_neg_at" cfg:optConfig h:ident : tactic => do
 
 local elab "try_push_neg" cfg:optConfig : tactic => do
   Push.push (← Push.elabPushConfig cfg) none (.const ``Not) (.targets #[] true)
-    (ifUnchanged := .silent)
+    (ifUnchanged := .warning)
 
 macro_rules
 | `(tactic| by_contra! $cfg $[$pat?]? $[: $ty?]?) => do
