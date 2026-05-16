@@ -324,6 +324,78 @@ lemma projectiveDimension_ne_top_iff (X : C) :
       simp only [ne_eq, WithBot.coe_eq_top, ENat.coe_ne_top, not_false_eq_true, true_iff]
       exact ⟨d, by simpa only [← projectiveDimension_le_iff] using hd.le⟩
 
+lemma Projective.projectiveDimension_le_zero (X : C) [Projective X] : projectiveDimension X ≤ 0 :=
+  (projectiveDimension_le_iff X 0).mpr (projective_iff_hasProjectiveDimensionLT_one.mp ‹_›)
+
+namespace ShortComplex
+
+namespace ShortExact
+
+variable {S : ShortComplex C} (hS : S.ShortExact)
+include hS
+
+lemma projectiveDimension_X₂_le_sup :
+    projectiveDimension S.X₂ ≤ projectiveDimension S.X₁ ⊔ projectiveDimension S.X₃ := by
+  refine le_of_forall_ge (fun N ↦ ?_)
+  induction N with
+  | bot =>
+    simpa [projectiveDimension_eq_bot_iff] using fun h1 h3 ↦ hS.1.isZero_of_both_isZero h1 h3
+  | coe N =>
+    induction N with
+    | top => simp
+    | coe n =>
+      simpa [projectiveDimension_le_iff] using hS.hasProjectiveDimensionLT_X₂ (n + 1)
+
+lemma projectiveDimension_X₃_le_sup :
+    projectiveDimension S.X₃ ≤ projectiveDimension S.X₂ ⊔ (projectiveDimension S.X₁ + 1) := by
+  refine le_of_forall_ge (fun N ↦ ?_)
+  induction N with
+  | bot =>
+    have := hS.3
+    simpa [projectiveDimension_eq_bot_iff] using fun h2 h1 ↦ h2.of_epi S.g
+  | coe N =>
+    induction N with
+    | top => simp
+    | coe n =>
+      simpa [projectiveDimension_le_iff, ENat.WithBot.add_one_le_natCast_iff,
+        projectiveDimension_lt_iff] using fun h2 h1 ↦ hS.hasProjectiveDimensionLT_X₃ n h1 h2
+
+lemma hasProjectiveDimension_X₁_succ_le_sup :
+    projectiveDimension S.X₁ + 1 ≤ (projectiveDimension S.X₂ + 1) ⊔ projectiveDimension S.X₃ := by
+  refine le_of_forall_ge (fun N ↦ ?_)
+  induction N with
+  | bot =>
+    have := hS.2
+    simpa [projectiveDimension_eq_bot_iff] using fun h2 h3 ↦ h2.of_mono S.f
+  | coe N =>
+    induction N with
+    | top => simp
+    | coe n =>
+      simpa [projectiveDimension_le_iff, ENat.WithBot.add_one_le_natCast_iff,
+        projectiveDimension_lt_iff] using fun h2 h3 ↦ hS.hasProjectiveDimensionLT_X₁ n h2 h3
+
+lemma projectiveDimension_X₃_eq_succ_of_not_projective (p : Projective S.X₂)
+    (np : ¬ Projective S.X₃) : projectiveDimension S.X₃ = projectiveDimension S.X₁ + 1 := by
+  refine le_antisymm (hS.projectiveDimension_X₃_le_sup.trans ?_)
+    (hS.hasProjectiveDimension_X₁_succ_le_sup.trans ?_)
+  · simp only [sup_le_iff, le_refl, and_true]
+    apply p.projectiveDimension_le_zero.trans
+    have : (0 : ℕ) ≤ projectiveDimension S.X₁ := by
+      rw [projectiveDimension_ge_iff, hasProjectiveDimensionLT_zero_iff_isZero]
+      by_contra isz
+      have := (isIso_iff_mono_and_epi S.g).mpr ⟨hS.1.mono_g (isz.eq_zero_of_src _), hS.3⟩
+      exact np (Projective.of_iso (asIso S.g) p)
+    exact zero_le_one.trans (ENat.WithBot.add_le_add_one_right_iff.mpr this)
+  · simp only [sup_le_iff, Std.le_refl, and_true]
+    apply (ENat.WithBot.add_le_add_one_right_iff.mpr p.projectiveDimension_le_zero).trans
+    rw [zero_add, ← Nat.cast_one, projectiveDimension_ge_iff,
+      ← projective_iff_hasProjectiveDimensionLT_one]
+    exact np
+
+end ShortExact
+
+end ShortComplex
+
 lemma projectiveDimension_eq_zero_iff (X : C) :
     projectiveDimension X = 0 ↔ Projective X ∧ ¬ Limits.IsZero X := by
   rw [← projectiveDimension_eq_bot_iff, projective_iff_hasProjectiveDimensionLE_zero,
