@@ -35,7 +35,7 @@ end Thin
 
 section Disconnected
 
-/-- A subgroupoid is totally disconnected if it only has loops. -/
+/-- A groupoid is totally disconnected if it only has loops. -/
 def IsTotallyDisconnected :=
   ∀ c d : C, (c ⟶ d) → c = d
 

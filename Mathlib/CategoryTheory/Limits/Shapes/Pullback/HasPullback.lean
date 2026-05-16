@@ -378,7 +378,7 @@ theorem pullback.mapDesc_comp {X Y S T S' : C} (f : X ⟶ T) (g : Y ⟶ T) (i : 
   cat_disch
 
 /-- If `f₁ = f₂` and `g₁ = g₂`, we may construct a canonical
-isomorphism `pushout f₁ g₁ ≅ pullback f₂ g₂` -/
+isomorphism `pushout f₁ g₁ ≅ pushout f₂ g₂` -/
 @[simps! hom]
 def pushout.congrHom {X Y Z : C} {f₁ f₂ : X ⟶ Y} {g₁ g₂ : X ⟶ Z} (h₁ : f₁ = f₂) (h₂ : g₁ = g₂)
     [HasPushout f₁ g₁] [HasPushout f₂ g₂] : pushout f₁ g₁ ≅ pushout f₂ g₂ :=

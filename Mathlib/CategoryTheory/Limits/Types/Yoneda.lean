@@ -56,7 +56,7 @@ def opCompYonedaSectionsEquiv (F : J ⥤ C) (X : C) :
   invFun τ := ⟨fun j => τ.app j.unop, fun {j j'} f => by simp [τ.naturality f.unop]⟩
 
 /-- Sections of `F ⋙ yoneda.obj X` identify to natural
-transformations `(const J).obj X ⟶ F`. -/
+transformations `((const J).obj (op X)) ⟶ F`. -/
 @[simps]
 def compYonedaSectionsEquiv (F : J ⥤ Cᵒᵖ) (X : C) :
     (F ⋙ yoneda.obj X).sections ≃ ((const J).obj (op X) ⟶ F) where

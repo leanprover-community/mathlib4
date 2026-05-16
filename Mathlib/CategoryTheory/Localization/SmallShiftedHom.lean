@@ -162,7 +162,7 @@ noncomputable def mk₀ [HasSmallLocalizedShiftedHom.{w} W M X Y]
     SmallShiftedHom.{w} W X Y m₀ :=
   SmallShiftedHom.mk _ (ShiftedHom.mk₀ _ hm₀ f)
 
-/-- The formal inverse in `SmallShiftedHom.{w} W Y X m₀` of a morphism `f : Y ⟶ X`
+/-- The formal inverse in `SmallShiftedHom.{w} W Y X m₀` of a morphism `f : X ⟶ Y`
 such that `W f`. -/
 noncomputable def mk₀Inv [HasSmallLocalizedShiftedHom.{w} W M Y X] [W.RespectsIso]
     (m₀ : M) (hm₀ : m₀ = 0) (f : X ⟶ Y) (hf : W f) :

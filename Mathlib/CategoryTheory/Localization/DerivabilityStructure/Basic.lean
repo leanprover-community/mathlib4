@@ -133,7 +133,7 @@ instance [W₁.ContainsIdentities] : (LocalizerMorphism.id W₁).IsRightDerivabi
   exact TwoSquare.guitartExact_id W₁.Q
 
 /-- A localizer morphism `Φ : LocalizerMorphism W₁ W₂` is a left derivability
-structure if it has left resolutions and the 2-square where the top and bottom functors
+structure if it has left resolutions and the 2-square where the left and right functors
 are localization functors for `W₁` and `W₂` is Guitart exact. -/
 class IsLeftDerivabilityStructure : Prop where
   hasLeftResolutions : Φ.HasLeftResolutions := by infer_instance

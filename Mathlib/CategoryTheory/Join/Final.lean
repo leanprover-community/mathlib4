@@ -13,7 +13,7 @@ public import Mathlib.CategoryTheory.Limits.IsConnected
 # (Co)Finality of the inclusions in joins of categories
 
 This file records the fact that `inclLeft C D : C ⥤ C ⋆ D` is initial if `C` is connected.
-Dually, `inclRight : C ⥤ C ⋆ D` is final if `D` is connected.
+Dually, `inclRight : D ⥤ C ⋆ D` is final if `D` is connected.
 
 -/
 

@@ -55,7 +55,7 @@ noncomputable def mapBifunctorMapObj (X : GradedObject I C₁) (Y : GradedObject
   (((mapBifunctor F I J).obj X).obj Y).mapObj p
 
 /-- The inclusion of `(F.obj (X i)).obj (Y j)` in `mapBifunctorMapObj F p X Y k`
-when `i + j = k`. -/
+when `p ⟨i, j⟩ = k`. -/
 noncomputable def ιMapBifunctorMapObj
     (X : GradedObject I C₁) (Y : GradedObject J C₂)
     [HasMap (((mapBifunctor F I J).obj X).obj Y) p]

@@ -175,7 +175,7 @@ variable {F G : ℕᵒᵖ ⥤ C} (app : ∀ (n : ℕ), F.obj ⟨n⟩ ⟶ G.obj �
 
 /-- Constructor for natural transformations `F ⟶ G` in `ℕᵒᵖ ⥤ C` which takes as inputs
 the morphisms `F.obj ⟨n⟩ ⟶ G.obj ⟨n⟩` for all `n : ℕ` and the naturality condition only
-for morphisms of the form `n ⟶ n + 1`. -/
+for morphisms of the form `⟨n + 1⟩ ⟶ ⟨n⟩`. -/
 @[simps!]
 def ofOpSequence : F ⟶ G where
   app n := app n.unop

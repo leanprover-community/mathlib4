@@ -162,7 +162,7 @@ same on the object level on three objects `X₁ X₂ X₃`).
 
 ```
             functor₁₂₃'                       X₁ ⊗ (X₂ ⊗ X₃)
-associator /          \ secondMap₁             /           \
+associator⁻¹ /        \ secondMap₁             /           \
           v            v                      v             v
      functor₁₂₃    functor₁₃₂'          (X₁ ⊗ X₂) ⊗ X₃    X₁ ⊗ (X₃ ⊗ X₂)
 firstMap₂ |            |secondMap₂            |             |

@@ -144,7 +144,7 @@ theorem hasLimits_of_hasColimits_of_isSeparating [HasColimits C] [WellPowered.{v
       hasLimitsOfShape_iff_isLeftAdjoint_const.2
         (isLeftAdjoint_of_preservesColimits_of_isSeparating hP _) }
 
-/-- A consequence of the special adjoint functor theorem: if `C` is complete, well-powered and
+/-- A consequence of the special adjoint functor theorem: if `C` is cocomplete, well-copowered and
     has a separator, then it is complete. -/
 theorem hasLimits_of_hasColimits_of_hasSeparator [HasColimits C] [HasSeparator C]
     [WellPowered.{v} Cᵒᵖ] : HasLimits C :=

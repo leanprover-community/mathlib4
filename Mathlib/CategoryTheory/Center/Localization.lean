@@ -31,7 +31,7 @@ variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
 namespace CatCenter
 
 /-- Given `r : CatCenter C` and `L : C ⥤ D` a localization functor with respect
-to `W : MorphismProperty D`, this is the induced element in `CatCenter D`
+to `W : MorphismProperty C`, this is the induced element in `CatCenter D`
 obtained by localization. -/
 noncomputable def localization : CatCenter D :=
   Localization.liftNatTrans L W L L (𝟭 D) (𝟭 D) (Functor.whiskerRight r L)

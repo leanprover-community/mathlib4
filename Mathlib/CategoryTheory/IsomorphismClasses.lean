@@ -13,7 +13,7 @@ public import Mathlib.CategoryTheory.Types.Basic
 # Objects of a category up to an isomorphism
 
 `IsIsomorphic X Y := Nonempty (X ≅ Y)` is an equivalence relation on the objects of a category.
-The quotient with respect to this relation defines a functor from our category to `Type`.
+The quotient with respect to this relation defines a functor from `Cat` to `Type`.
 -/
 
 @[expose] public section

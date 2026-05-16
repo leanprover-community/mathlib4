@@ -47,7 +47,7 @@ Here are the metatheorems we provide:
 * A morphism `f` is zero if and only if it is the zero function on pseudoelements.
 * A morphism `f` is an epimorphism if and only if it is surjective on pseudoelements.
 * A morphism `f` is a monomorphism if and only if it is injective on pseudoelements
-  if and only if `∀ a, f a = 0 → f = 0`.
+  if and only if `∀ a, f a = 0 → a = 0`.
 * A sequence `f, g` of morphisms is exact if and only if
   `∀ a, g (f a) = 0` and `∀ b, g b = 0 → ∃ a, f a = b`.
 * If `f` is a morphism and `a, a'` are such that `f a = f a'`, then there is some
