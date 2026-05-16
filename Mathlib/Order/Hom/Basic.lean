@@ -285,6 +285,14 @@ def id : α →o α :=
 instance : Inhabited (α →o α) :=
   ⟨id⟩
 
+variable (α β) in
+/-- Order homomorphisms are equivalent to relation homomorphisms between `LE` relations. -/
+def equivRelHom : (α →o β) ≃ @RelHom α β (· ≤ ·) (· ≤ ·) where
+  toFun f := ⟨f, @f.monotone⟩
+  invFun f := ⟨f, @f.map_rel⟩
+  left_inv _ := rfl
+  right_inv _ := rfl
+
 /-- The preorder structure of `α →o β` is pointwise inequality: `f ≤ g ↔ ∀ a, f a ≤ g a`. -/
 instance : Preorder (α →o β) :=
   @Preorder.lift (α →o β) (α → β) _ DFunLike.coe
@@ -928,6 +936,52 @@ from `α` and `β` to themselves are order-isomorphic. -/
 @[simps! apply symm_apply]
 def conj {α β} [Preorder α] [Preorder β] (f : α ≃o β) : (α →o α) ≃ (β →o β) :=
   arrowCongr f f
+
+/-- Transport an `OrderEmbedding` across a pair of `OrderIso`s, by pre- and post-composition.
+
+This is `Equiv.embeddingCongr`/`RelIso.relEmbeddingCongr` for `OrderEmbedding`. -/
+def orderEmbeddingCongr (f : α ≃o γ) (g : β ≃o δ) : (α ↪o β) ≃ (γ ↪o δ) :=
+  RelIso.relEmbeddingCongr f g
+
+@[simp]
+theorem orderEmbeddingCongr_apply (f : α ≃o γ) (g : β ≃o δ) (h : α ↪o β) :
+    orderEmbeddingCongr f g h = .trans (.trans f.symm h) g :=
+  rfl
+
+@[simp]
+theorem orderEmbeddingCongr_symm_apply (f : α ≃o γ) (g : β ≃o δ) (h : γ ↪o δ) :
+    (orderEmbeddingCongr f g).symm h = .trans (.trans f h) g.symm :=
+  rfl
+
+/-- Transport an `OrderIso` across a pair of `OrderIso`s, by pre- and post-composition.
+
+This is `Equiv.equivCongr`/`RelIso.relIsoCongr` for `OrderIso`. -/
+def orderIsoCongr (f : α ≃o γ) (g : β ≃o δ) : (α ≃o β) ≃ (γ ≃o δ) :=
+  RelIso.relIsoCongr f g
+
+@[simp]
+theorem orderIsoCongr_apply (f : α ≃o γ) (g : β ≃o δ) (h : α ≃o β) :
+    orderIsoCongr f g h = .trans (.trans f.symm h) g :=
+  rfl
+
+@[simp]
+theorem orderIsoCongr_symm_apply (f : α ≃o γ) (g : β ≃o δ) (h : γ ≃o δ) :
+    (orderIsoCongr f g).symm h = .trans (.trans f h) g.symm :=
+  rfl
+
+/-- A surjective order embedding is an order isomorphism. -/
+@[simps!]
+noncomputable def ofSurjective (f : α ↪o β) (hf : Function.Surjective f) : α ≃o β :=
+  RelIso.ofSurjective f hf
+
+/-- Surjective order embeddings are equivalent to order isomorphisms. -/
+@[simps apply symm_apply]
+noncomputable def embeddingSurjectiveEquivIso :
+    { f : α ↪o β // Function.Surjective f } ≃ (α ≃o β) where
+  toFun f := ofSurjective f f.prop
+  invFun f := ⟨f, f.surjective⟩
+  left_inv _ := rfl
+  right_inv _ := by ext; rfl
 
 /-- `Prod.swap` as an `OrderIso`. -/
 def prodComm : α × β ≃o β × α where
