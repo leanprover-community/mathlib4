@@ -135,6 +135,93 @@ instance exactPairingUnit : ExactPairing (𝟙_ C) (𝟙_ C) where
   coevaluation_evaluation' := by monoidal_coherence
   evaluation_coevaluation' := by monoidal_coherence
 
+/-- The tensor product of exact pairings. Given exact pairings `(X₁, Y₁)` and `(X₂, Y₂)`,
+we get an exact pairing `(X₁ ⊗ X₂, Y₂ ⊗ Y₁)`. Note the reversed order in the second factor. -/
+instance ExactPairing.tensor {X₁ X₂ Y₁ Y₂ : C} [ExactPairing X₁ Y₁] [ExactPairing X₂ Y₂] :
+    ExactPairing (X₁ ⊗ X₂) (Y₂ ⊗ Y₁) where
+  coevaluation' := η_ X₁ Y₁ ⊗≫ (X₁ ◁ η_ X₂ Y₂) ▷ Y₁ ⊗≫ 𝟙 _
+  evaluation' := 𝟙 _ ⊗≫ Y₂ ◁ (ε_ X₁ Y₁ ▷ X₂) ⊗≫ ε_ X₂ Y₂
+  coevaluation_evaluation' := by
+    calc
+      _ = (Y₂ ⊗ Y₁) ◁ η_ X₁ Y₁ ⊗≫
+          (Y₂ ⊗ Y₁) ◁ (X₁ ◁ η_ X₂ Y₂) ▷ Y₁ ⊗≫
+          (Y₂ ◁ (ε_ X₁ Y₁ ▷ X₂)) ▷ (Y₂ ⊗ Y₁) ⊗≫
+          ε_ X₂ Y₂ ▷ (Y₂ ⊗ Y₁) := by monoidal
+      -- Group η₂ and ε₁ so they compose with ≫ (both act on the Y₁⊗X₁ factor):
+      --
+      --   Y₂  Y₁      ╭── X₁ ────────────╮
+      --   │    │      │    ╭── X₂ ───╮   │
+      --   │    │      │    │         │   │
+      --   │    ╰──ε₁──╯    │         │   │
+      --   │                │         │   │
+      --   ╰────── ε₂ ──────╯         │   │
+      --                              Y₂  Y₁
+      --
+      _ = (Y₂ ⊗ Y₁) ◁ η_ X₁ Y₁ ⊗≫
+          Y₂ ◁ ((Y₁ ⊗ X₁) ◁ η_ X₂ Y₂ ≫ ε_ X₁ Y₁ ▷ (X₂ ⊗ Y₂)) ▷ Y₁ ⊗≫
+          ε_ X₂ Y₂ ▷ (Y₂ ⊗ Y₁) := by monoidal
+      -- Slide the η₂ cup past the ε₁ cap (whisker_exchange), separating the
+      -- two zigzags into independent snakes:
+      --
+      --   Y₂   Y₁
+      --   │    │   ╭─X₁──╮
+      --   │    │   │     │
+      --   │    ╰───╯     │       ← snake for (X₁, Y₁)
+      --   │              │
+      --   │  ╭─X₂──╮     │
+      --   │  │     │     │
+      --   ╰──╯     │     │       ← snake for (X₂, Y₂)
+      --            Y₂    Y₁
+      --
+      _ = (Y₂ ⊗ Y₁) ◁ η_ X₁ Y₁ ⊗≫
+          Y₂ ◁ (ε_ X₁ Y₁ ▷ (𝟙_ C) ≫ (𝟙_ C) ◁ η_ X₂ Y₂) ▷ Y₁ ⊗≫
+          ε_ X₂ Y₂ ▷ (Y₂ ⊗ Y₁) := by
+        rw [whisker_exchange]
+      -- Separate into two snakes and cancel each.
+      _ = 𝟙 _ ⊗≫ Y₂ ◁ (Y₁ ◁ η_ X₁ Y₁ ⊗≫ ε_ X₁ Y₁ ▷ Y₁) ⊗≫
+          (Y₂ ◁ η_ X₂ Y₂ ⊗≫ ε_ X₂ Y₂ ▷ Y₂) ▷ Y₁ ⊗≫ 𝟙 _ := by monoidal
+      _ = _ := by rw [coevaluation_evaluation'', coevaluation_evaluation'']; monoidal
+  evaluation_coevaluation' := by
+    calc
+      _ = η_ X₁ Y₁ ▷ (X₁ ⊗ X₂) ⊗≫
+          (X₁ ◁ η_ X₂ Y₂) ▷ (Y₁ ⊗ X₁ ⊗ X₂) ⊗≫
+          (X₁ ⊗ X₂) ◁ (Y₂ ◁ ε_ X₁ Y₁ ▷ X₂) ⊗≫
+          (X₁ ⊗ X₂) ◁ ε_ X₂ Y₂ := by monoidal
+      -- Group η₂ and ε₁ so they compose with ≫:
+      --
+      --   ╭── Y₁ ────────────╮       X₁   X₂
+      --   │    ╭── Y₂ ───╮   │       │    │
+      --   │    │         │   │       │    │
+      --   │    │         │   ╰──ε₁───╯    │
+      --   │    │         │                │
+      --   │    │         ╰──────── ε₂ ────╯
+      --   X₁   X₂
+      --
+      _ = η_ X₁ Y₁ ▷ (X₁ ⊗ X₂) ⊗≫
+          X₁ ◁ (η_ X₂ Y₂ ▷ (Y₁ ⊗ X₁) ≫ (X₂ ⊗ Y₂) ◁ ε_ X₁ Y₁) ▷ X₂ ⊗≫
+          (X₁ ⊗ X₂) ◁ ε_ X₂ Y₂ := by monoidal
+      -- Slide the ε₁ cap past the η₂ cup (← whisker_exchange), separating the
+      -- two zigzags into independent snakes:
+      --
+      --                 X₁   X₂
+      --   ╭──Y₁──╮      │    │
+      --   │      │      │    │
+      --   │      ╰──────╯    │       ← snake for (X₁, Y₁)
+      --   │                  │
+      --   │   ╭──Y₂──╮       │
+      --   │   │      │       │
+      --   │   │      ╰───────╯       ← snake for (X₂, Y₂)
+      --   X₁  X₂
+      --
+      _ = η_ X₁ Y₁ ▷ (X₁ ⊗ X₂) ⊗≫
+          X₁ ◁ ((𝟙_ C) ◁ ε_ X₁ Y₁ ≫ η_ X₂ Y₂ ▷ (𝟙_ C)) ▷ X₂ ⊗≫
+          (X₁ ⊗ X₂) ◁ ε_ X₂ Y₂ := by
+        rw [← whisker_exchange]
+      -- Separate into two snakes and cancel each.
+      _ = 𝟙 _ ⊗≫ (η_ X₁ Y₁ ▷ X₁ ⊗≫ X₁ ◁ ε_ X₁ Y₁) ▷ X₂ ⊗≫
+          X₁ ◁ (η_ X₂ Y₂ ▷ X₂ ⊗≫ X₂ ◁ ε_ X₂ Y₂) ⊗≫ 𝟙 _ := by monoidal
+      _ = _ := by rw [evaluation_coevaluation'', evaluation_coevaluation'']; monoidal
+
 /-- A class of objects which have a right dual. -/
 class HasRightDual (X : C) where
   /-- The right dual of the object `X`. -/
@@ -171,6 +258,20 @@ instance hasRightDualLeftDual {X : C} [HasLeftDual X] : HasRightDual ᘁX where
 
 instance hasLeftDualRightDual {X : C} [HasRightDual X] : HasLeftDual Xᘁ where
   leftDual := X
+
+/-- The tensor product of two objects with right duals has a right dual,
+given by the tensor product of the duals in the opposite order. -/
+@[implicit_reducible]
+def hasRightDualTensor {X Y : C} [HasRightDual X] [HasRightDual Y] :
+    HasRightDual (X ⊗ Y) where
+  rightDual := Yᘁ ⊗ Xᘁ
+
+/-- The tensor product of two objects with left duals has a left dual,
+given by the tensor product of the duals in the opposite order. -/
+@[implicit_reducible]
+def hasLeftDualTensor {X Y : C} [HasLeftDual X] [HasLeftDual Y] :
+    HasLeftDual (X ⊗ Y) where
+  leftDual := ᘁY ⊗ ᘁX
 
 @[simp]
 theorem leftDual_rightDual {X : C} [HasRightDual X] : ᘁXᘁ = X :=
@@ -578,6 +679,20 @@ theorem rightDualIso_id {X Y : C} (p : ExactPairing X Y) : rightDualIso p p = Is
 theorem leftDualIso_id {X Y : C} (p : ExactPairing X Y) : leftDualIso p p = Iso.refl X := by
   ext
   simp only [leftDualIso, Iso.refl_hom, @leftAdjointMate_id]
+
+/-- The right dual of a tensor product is isomorphic to the reversed tensor product of
+the right duals. -/
+def rightDualTensorIso (X Y : C) [HasRightDual X] [HasRightDual Y]
+    [HasRightDual (X ⊗ Y)] :
+    (X ⊗ Y)ᘁ ≅ Yᘁ ⊗ Xᘁ :=
+  rightDualIso HasRightDual.exact ExactPairing.tensor
+
+/-- The left dual of a tensor product is isomorphic to the reversed tensor product of
+the left duals. -/
+def leftDualTensorIso (X Y : C) [HasLeftDual X] [HasLeftDual Y]
+    [HasLeftDual (X ⊗ Y)] :
+    leftDual (X ⊗ Y) ≅ leftDual Y ⊗ leftDual X :=
+  leftDualIso HasLeftDual.exact ExactPairing.tensor
 
 /-- A right rigid monoidal category is one in which every object has a right dual. -/
 class RightRigidCategory (C : Type u) [Category.{v} C] [MonoidalCategory.{v} C] where
