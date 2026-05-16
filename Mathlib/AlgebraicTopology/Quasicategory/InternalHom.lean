@@ -27,8 +27,23 @@ namespace SSet
 
 open modelCategoryQuillen
 
-abbrev BdryHornPushouts :=
-  (I.{u}.arrowObj.map (pushoutProduct.obj Λ[2, 1].ι)).arrowMorphism
+abbrev bdryHornPushouts := I.{u}.strictMapArrow (pushoutProduct.obj Λ[2, 1].ι)
+
+lemma temp {A B : SSet.{u}} (f : A ⟶ B) (X : SSet.{u}) {T : SSet.{u}} (t : Limits.IsTerminal T) :
+    I.{u} ≤
+      (single ((MonoidalClosed.pre f).app X)).llp ↔
+    I.{u}.strictMapArrow (pushoutProduct.obj f) ≤
+      (single (t.from X)).llp := by
+  simp only [le_llp_iff_le_rlp, single_le_iff]
+  constructor
+  · rintro h _ _ g ⟨⟨_, _, _⟩, ⟨n⟩⟩
+    erw [PushoutProduct.hasLiftingProperty_mk_isTerminal_iff t]
+    exact h _ (boundary_ι_mem_I n)
+  · intro h _ _ _ ⟨n⟩
+    rw [← PushoutProduct.hasLiftingProperty_mk_isTerminal_iff t]
+    apply h (Arrow.mk f □ ∂Δ[n].ι).hom
+    constructor
+    exact boundary_ι_mem_I n
 
 open CartesianMonoidalCategory in
 local instance {C : Type u} [Category.{v} C] [CartesianMonoidalCategory C] (X : C) :
@@ -46,8 +61,26 @@ lemma BdryTensorS_le_monomorphisms (S : SSet) : I.{u}.map (tensorLeft S) ≤ mon
 
 lemma innerAnodyneExtensions_eq_retracts_transfiniteCompositions' :
     innerAnodyneExtensions = (transfiniteCompositions.{u}
-      (coproducts.{u} BdryHornPushouts.{u}).pushouts).retracts := by
-  sorry
+      (coproducts.{u} bdryHornPushouts.{u}).pushouts).retracts := by
+  apply le_antisymm
+  ·
+    rw [innerAnodyneExtensions_eq_retracts_transfiniteCompositions]
+    /-
+    rw [retracts_le_iff, transfiniteCompositions_le_iff, pushouts_le_iff, coproducts_le_iff,
+      innerAnodyneExtensions_eq_llp_rlp]
+    refine le_trans ?_ (retracts_le_llp_rlp _)
+    -/
+
+    let : (transfiniteCompositions.{u, u}
+        (coproducts.{u} bdryHornPushouts).pushouts).retracts.IsStableUnderRetracts := by
+      sorry
+    rw [retracts_le_iff]
+    --rw [← llp_rlp_of_hasSmallObjectArgument]
+
+    sorry
+  ·
+
+    sorry
 
 section ULift
 
@@ -93,44 +126,32 @@ lemma transfiniteCompositions_pushouts_coproducts :
 
 end Mono
 
-instance ihom_isQuasicategory {S T : SSet.{u}} [hT : Quasicategory T] :
-    Quasicategory ((ihom S).obj T) := by
+lemma quasicategory_iff_trivialFibration (T : SSet.{u}) :
+    Quasicategory T ↔ I.rlp ((MonoidalClosed.pre Λ[2, 1].ι).app T) := by
   rw [quasicategory_iff_from_innerFibration _ stdSimplex.isTerminalObj₀, innerFibration_iff,
     ← innerFibrations.single_le_iff, innerFibrations, ← MorphismProperty.le_llp_iff_le_rlp,
     ← coproducts_le_iff.{u}, ← pushouts_le_iff, ← transfiniteCompositions_le_iff.{u},
     ← retracts_le_iff, ← innerAnodyneExtensions_eq_retracts_transfiniteCompositions,
     innerAnodyneExtensions_eq_retracts_transfiniteCompositions', retracts_le_iff,
-    transfiniteCompositions_le_iff, pushouts_le_iff, coproducts_le_iff] at hT ⊢
-  ---
-  have h₁ : I ≤ (single ((MonoidalClosed.pre Λ[2, 1].ι).app T)).llp := by
-    · intro _ _ f ⟨n⟩
-      rw [single, llp_ofHoms_iff_hasLiftingProperty,
-        ← PushoutProduct.hasLiftingProperty_mk_isTerminal_iff (X := T) stdSimplex.isTerminalObj₀]
-      apply hT
-      · exact ⟨Arrow.mk ∂Δ[n].ι, boundary_ι_mem_I n, ⟨Iso.refl _⟩⟩
-      · exact prop_single (stdSimplex.isTerminalObj₀.from T)
-  ---
+    transfiniteCompositions_le_iff, pushouts_le_iff, coproducts_le_iff, ← temp, le_llp_iff_le_rlp,
+    single_le_iff]
+
+instance ihom_isQuasicategory {S T : SSet.{u}} [hT : Quasicategory T] :
+    Quasicategory ((ihom S).obj T) := by
+  rw [quasicategory_iff_trivialFibration, ← I.rlp.single_le_iff, ← le_llp_iff_le_rlp] at hT ⊢
   rw [← coproducts_le_iff.{u}, ← pushouts_le_iff, ← transfiniteCompositions_le_iff.{u},
-    transfiniteCompositions_pushouts_coproducts] at h₁
+    transfiniteCompositions_pushouts_coproducts] at hT
   ---
-  have h₄ : I ≤
-      (single ((ihom S).map ((MonoidalClosed.pre Λ[2, 1].ι).app T))).llp := by
+  have h : I ≤ (single ((ihom S).map ((MonoidalClosed.pre Λ[2, 1].ι).app T))).llp := by
+    rw [le_llp_iff_le_rlp, single_le_iff]
     intro _ _ _ ⟨n⟩
-    rw [single, llp_ofHoms_iff_hasLiftingProperty, ← (ihom.adjunction S).hasLiftingProperty_iff]
-    apply (BdryTensorS_le_monomorphisms S).trans h₁
+    rw [← (ihom.adjunction S).hasLiftingProperty_iff]
+    apply (BdryTensorS_le_monomorphisms S).trans hT
     · refine ⟨_, _, ⟨∂Δ[n].ι, ⟨boundary_ι_mem_I n, ⟨Iso.refl _⟩⟩⟩⟩
-    · exact prop_single ((MonoidalClosed.pre Λ[2, 1].ι).app T)
-  ---
-  suffices I ≤ (single ((MonoidalClosed.pre Λ[2, 1].ι).app ((ihom S).obj T))).llp by
-    intro _ _ f ⟨⟨_, _, _⟩, ⟨n⟩, ⟨e⟩⟩
-    have := this ∂Δ[n].ι (boundary_ι_mem_I n)
-    rw [llp_ofHoms_iff_hasLiftingProperty] at this ⊢
-    rw [← PushoutProduct.hasLiftingProperty_mk_isTerminal_iff
-      (X := (ihom S).obj T) stdSimplex.isTerminalObj₀] at this
-    rwa [← HasLiftingProperty.iff_of_arrow_iso_left e]
+    · exact prop_single _
   ---
   intro _ _ _ ⟨n⟩
-  have := h₄ ∂Δ[n].ι (boundary_ι_mem_I n)
+  have := h ∂Δ[n].ι (boundary_ι_mem_I n)
   rw [llp_ofHoms_iff_hasLiftingProperty] at this ⊢
   ---
   refine (HasLiftingProperty.iff_of_arrow_iso_right _ ?_).1 this

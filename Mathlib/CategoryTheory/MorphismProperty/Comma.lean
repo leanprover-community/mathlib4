@@ -153,6 +153,18 @@ lemma arrowMorphismObj_eq (W : MorphismProperty T) : W.arrowObj.arrowMorphism = 
 @[simp]
 lemma arrowObjMorphism_eq (W : ObjectProperty (Arrow T)) : W.arrowMorphism.arrowObj = W := rfl
 
+/-- The image (up to isomorphisms) of a `MorphismProperty A` by a functor `Arrow A ⥤ Arrow B` -/
+abbrev mapArrow (W : MorphismProperty A) (F : Arrow A ⥤ Arrow B) : MorphismProperty B :=
+  (W.arrowObj.map F).arrowMorphism
+
+/-- The image (up to isomorphisms) of a `MorphismProperty A` by a functor `Arrow A ⥤ Arrow B` -/
+abbrev strictMapArrow (W : MorphismProperty A) (F : Arrow A ⥤ Arrow B) : MorphismProperty B :=
+  (W.arrowObj.strictMap F).arrowMorphism
+
+/-- The inverse image of a `MorphismProperty B` by a functor `Arrow A ⥤ Arrow B` -/
+abbrev inverseImageArrow (W : MorphismProperty B) (F : Arrow A ⥤ Arrow B) : MorphismProperty A :=
+  (W.arrowObj.inverseImage F).arrowMorphism
+
 /-- The object property on `Under X` induced by a morphism property. -/
 def underObj (W : MorphismProperty T) {X : T} : ObjectProperty (Under X) := fun f ↦ W f.hom
 
