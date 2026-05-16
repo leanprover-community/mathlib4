@@ -283,7 +283,7 @@ and only if `i = j`. Since they can be defined on a priori not defeq types `Fin 
 theorem orderEmbOfFin_eq_orderEmbOfFin_iff {k l : ℕ} {s : Finset α} {i : Fin k} {j : Fin l}
     {h : s.card = k} {h' : s.card = l} :
     s.orderEmbOfFin h i = s.orderEmbOfFin h' j ↔ (i : ℕ) = (j : ℕ) := by
-  substs k l
+  subst k l
   exact (s.orderEmbOfFin rfl).eq_iff_eq.trans Fin.ext_iff
 
 /-- Given a finset `s` of size at least `k` in a linear order `α`, the map `orderEmbOfCardLe`
