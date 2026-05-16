@@ -173,6 +173,10 @@ theorem end_mem_tail_support_of_ne {u v : V} (h : u ≠ v) (p : G.Walk u v) : v 
   obtain ⟨_, _, _, rfl⟩ := exists_eq_cons_of_ne h p
   simp
 
+theorem suffix_support_cons (p : G.Walk v w) (hadj : G.Adj u v) :
+    p.support <:+ (p.cons hadj).support := by
+  simp
+
 theorem support_subset_support_cons {u v w : V} (p : G.Walk v w) (hadj : G.Adj u v) :
     p.support ⊆ (p.cons hadj).support := by
   simp
