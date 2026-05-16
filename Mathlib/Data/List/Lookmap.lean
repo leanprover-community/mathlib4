@@ -5,10 +5,10 @@ Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, M
 -/
 module
 
-public import Batteries.Logic
 public import Batteries.Data.List.Basic
-public import Mathlib.Init
 import all Init.Data.Array.Basic
+import Batteries.Logic
+import Mathlib.Init
 
 /-! ### lookmap -/
 
