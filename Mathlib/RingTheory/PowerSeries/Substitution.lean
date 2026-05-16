@@ -193,6 +193,10 @@ theorem subst_sub (ha : HasSubst a) (f g : PowerSeries R) :
     subst a (f - g) = subst a f - subst a g := by
   rw [← coe_substAlgHom ha, map_sub]
 
+theorem subst_zero_of_constantCoeff_zero {f : PowerSeries R} (hf : f.constantCoeff = 0) :
+    subst (0 : MvPowerSeries τ S) f = 0 :=
+  MvPowerSeries.subst_zero_of_constantCoeff_zero hf
+
 theorem subst_pow (ha : HasSubst a) (f : PowerSeries R) (n : ℕ) :
     subst a (f ^ n) = (subst a f) ^ n := by
   rw [← coe_substAlgHom ha, map_pow]
@@ -311,6 +315,16 @@ theorem subst_C (r : S) : (C r).subst a = MvPowerSeries.C r := MvPowerSeries.sub
 theorem subst_X (ha : HasSubst a) :
     subst a (X : R⟦X⟧) = a := by
   rw [← coe_substAlgHom ha, substAlgHom_X]
+
+/-- Given a power series `f`, if substition `f` into any power series is identity, then `f = X`. -/
+theorem subst_eq_id_iff_eq_X (f : PowerSeries R) (hf : HasSubst f) :
+    subst f = id ↔ f = X := by
+  constructor
+  · intro h
+    rw [← PowerSeries.subst_X hf (R := R), h, id_eq]
+  · intro h
+    funext
+    simp [h]
 
 omit [Algebra R S] in
 theorem map_subst {a : MvPowerSeries τ R} (ha : HasSubst a) {h : R →+* S} (f : PowerSeries R) :
