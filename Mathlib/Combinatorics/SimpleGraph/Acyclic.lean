@@ -170,6 +170,67 @@ theorem IsTree.coe_subgraphOfAdj {u v : V} (h : G.Adj u v) : G.subgraphOfAdj h |
   simp_all
   grind [IsCycle.snd_ne_penultimate]
 
+/-- The union of two acyclic graphs that share at most one vertex is acyclic. -/
+theorem IsAcyclic.coe_sup {G₁ G₂ : G.Subgraph} (h₁ : G₁.coe.IsAcyclic) (h₂ : G₂.coe.IsAcyclic)
+    (h : (G₁.verts ∩ G₂.verts).Subsingleton) : (G₁ ⊔ G₂).coe.IsAcyclic := by
+  intro v p hp
+  -- If the cycle is entirely contained within one of the subgraphs
+  by_cases! hp' : (∀ u ∈ p.support, u.val ∈ G₁.verts) ∨ (∀ u ∈ p.support, u.val ∈ G₂.verts)
+  · -- WLOG it's contained in the first one
+    wlog hp'₁ : ∀ u ∈ p.support, u.val ∈ G₁.verts
+    · have hp'₂ := hp'.resolve_left hp'₁
+      let p' := p.map <| Subgraph.inclusion <| sup_comm G₁ G₂ |>.le
+      have hp' : ∀ u ∈ p'.support, u.val ∈ G₂.verts := fun u hu ↦ by
+        obtain ⟨u', hu', rfl⟩ := p.support.mem_map.mp <| p.support_map _ ▸ hu
+        exact hp'₂ u' hu'
+      exact this h₂ h₁ (Set.inter_comm G₁.verts G₂.verts ▸ h) p'
+        (hp.map <| Subgraph.inclusion.injective _) (.inl hp') hp'
+    -- Then it must be induced from a walk in the first graph
+    let p' := p.map (G₁ ⊔ G₂).hom
+    have hp' : p'.IsCycle := hp.map Subgraph.hom_injective
+    let p'' := p'.mapToSubgraph.map <| Subgraph.inclusion <|
+      toSubgraph_le_iff hp'.not_nil (G' := G₁) |>.mpr fun e he ↦ by
+        obtain ⟨⟨u, v⟩, he', rfl⟩ := p.edges.mem_map.mp <| p.edges_map _ ▸ p'.mem_edgeSet.mp he
+        refine G₁.edgeSet_sup ▸ Subgraph.edgeSet_coe ▸ p.edges_subset_edgeSet he' |>.elim id ?_
+        refine fun he₂ ↦ False.elim <| he₂.ne <| h ?_ ?_
+        · exact ⟨hp'₁ u <| p.fst_mem_support_of_mem_edges he', he₂.fst_mem⟩
+        · exact ⟨hp'₁ v <| p.snd_mem_support_of_mem_edges he', he₂.snd_mem⟩
+    -- And that walk is also a cycle, but the first graph is acyclic, contradiction
+    exact h₁ p'' <| IsCycle.map (Subgraph.inclusion.injective _) <|
+      map_isCycle_iff_of_injective p'.toSubgraph.hom_injective |>.mp <|
+      map_mapToSubgraph_hom _ ▸ hp'
+  -- Otherwise, there are two vertices in the cycle, each not contained in one of the graphs
+  have ⟨⟨v₂, hpv₂, hnv₂⟩, ⟨v₁, hpv₁, hnv₁⟩⟩ := hp'
+  have hv₂ := v₂.prop.resolve_left hnv₂
+  classical
+  -- Consider the walk `pt` from `v₁` to `v₂` and the walk `pd` from `v₂` back to `v₁`
+  let p' := p.rotate v₁ hpv₁
+  have hp'v₂ := p.mem_support_rotate_iff v₁ hpv₁ |>.mpr hpv₂
+  let pt := p'.takeUntil v₂ hp'v₂
+  let pd := p'.dropUntil v₂ hp'v₂
+  -- Each must have a dart that crosses to the other subgraph
+  have ⟨d₁, hd₁, hd₁₁, hd₁₂⟩ := pt.exists_boundary_dart { v | v.val ∉ G₂.verts } hnv₁ (· hv₂)
+  have ⟨d₂, hd₂, hd₂₁, hd₂₂⟩ := pd.exists_boundary_dart { v | v.val ∈ G₂.verts } hv₂ hnv₁
+  -- `d₁.snd` and `d₂.fst` are common to both subgraphs so must be equal
+  have hd₁₂' : d₁.snd.val ∈ G₁.verts ∩ G₂.verts :=
+    ⟨d₁.edge_mem.resolve_right (hd₁₁ ·.fst_mem) |>.snd_mem, Set.not_notMem.mp hd₁₂⟩
+  have hd₂₁' : d₂.fst.val ∈ G₁.verts ∩ G₂.verts :=
+    ⟨d₂.edge_mem.resolve_right (hd₂₂ ·.snd_mem) |>.fst_mem, hd₂₁⟩
+  have hd₁₂'' := p'.dart_snd_mem_support_of_mem_darts <| p'.darts_takeUntil_subset hp'v₂ hd₁
+  -- Since `d₁.snd` and `d₂.fst` are on a cycle, that vertex can only appear once,
+  -- so `d₁`/`d₂` must be the last/first dart of `pt`/`pd` respectively
+  have hpd := firstDart_eq_of_count_support_append_eq_one hd₁ hd₂ (Subtype.ext <| h hd₁₂' hd₂₁') <|
+    p'.take_spec hp'v₂ ▸ (hp.rotate hpv₁).count_support_of_mem hd₁₂'' (hd₁₂ <| · ▸ hnv₁)
+  -- But that means that `d₁`/`d₂` are to/from `v₂` respectively,
+  -- so `v₂` is in both subgraphs and in particular it is in `G₁`, contradiction
+  exact hnv₂ <| (hpd ▸ rfl : v₂ = d₂.fst) ▸ hd₂₁'.left
+
+/-- The union of two trees that share exactly one vertex is a tree. -/
+theorem IsTree.coe_sup {G₁ G₂ : G.Subgraph} (h₁ : G₁.coe.IsTree) (h₂ : G₂.coe.IsTree) {v : V}
+    (h : G₁.verts ∩ G₂.verts = {v}) : (G₁ ⊔ G₂).coe.IsTree where
+  connected := Subgraph.connected_sup ⟨h₁.preconnected⟩ ⟨h₂.preconnected⟩ <| by simp [h]
+  isAcyclic := .coe_sup h₁.isAcyclic h₂.isAcyclic <| by simp [h]
+
 theorem isAcyclic_iff_forall_adj_isBridge :
     G.IsAcyclic ↔ ∀ ⦃v w : V⦄, G.Adj v w → G.IsBridge s(v, w) := by
   simp_rw [isBridge_iff_adj_and_forall_cycle_notMem]
