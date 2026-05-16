@@ -80,6 +80,37 @@ theorem IsGaloisGroup.top_iff : IsGaloisGroup (⊤ : Subgroup G) A B ↔ IsGaloi
 instance [IsGaloisGroup G A B] : IsGaloisGroup (⊤ : Subgroup G) A B :=
   IsGaloisGroup.top_iff.mpr ‹_›
 
+theorem IsGaloisGroup.of_algEquiv [hG : IsGaloisGroup G A B] (B' : Type*) [Semiring B']
+    [Algebra A B'] [MulSemiringAction G B'] (e : B ≃ₐ[A] B')
+    (he : ∀ (g : G) (x : B), e (g • x) = g • (e x)) :
+    IsGaloisGroup G A B' where
+  faithful := ⟨fun h ↦ hG.faithful.eq_of_smul_eq_smul fun b ↦ by simpa [← he] using h (e b)⟩
+  commutes := ⟨fun g a b' ↦ by
+    have h' {x'} : e.symm (g • x') = g • e.symm x' := by
+      apply e.injective
+      simp [he]
+    apply e.symm.injective
+    simpa [h', map_smul] using hG.commutes.smul_comm g a (e.symm b')⟩
+  isInvariant := ⟨fun x' hx' ↦ by
+    obtain ⟨a, ha⟩ := hG.isInvariant.isInvariant (e.symm x') (fun g ↦ by
+      apply e.injective
+      simp [he, hx'])
+    exact ⟨a, by rw [← e.commutes, ha, AlgEquiv.apply_symm_apply]⟩⟩
+
+theorem IsGaloisGroup.of_ringEquiv [hG : IsGaloisGroup G A B] [CommSemiring A'] [Algebra A' B]
+    (e : A ≃+* A') (he : ∀ a, algebraMap A' B (e a) = algebraMap A B a) :
+    IsGaloisGroup G A' B where
+  faithful := hG.faithful
+  commutes := ⟨by
+    intro g a' b
+    obtain ⟨a, rfl⟩ : ∃ a, e a = a' := e.surjective a'
+    rw [Algebra.smul_def, Algebra.smul_def, he, ← Algebra.smul_def, ← Algebra.smul_def]
+    exact hG.commutes.smul_comm g a b⟩
+  isInvariant := ⟨by
+    intro b h
+    obtain ⟨a, ha⟩ := hG.isInvariant.isInvariant b h
+    exact ⟨e a, by rw [he, ha]⟩⟩
+
 attribute [instance low] IsGaloisGroup.commutes IsGaloisGroup.isInvariant
 
 variable [FaithfulSMul A B] [hA : IsGaloisGroup G A B]
