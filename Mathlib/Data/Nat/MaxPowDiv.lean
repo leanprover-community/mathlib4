@@ -208,6 +208,42 @@ theorem _root_.padicValNat_base_mul {p n : ℕ} (hp : 1 < p) (hn : n ≠ 0) :
     padicValNat p (p * n) = padicValNat p n + 1 := by
   simp [padicValNat, *]
 
+/-- If `p ^ k ∣ n`, and `¬p ^ (k + 1) ∣ n`, then `padicValNat p n = k`. -/
+theorem _root_.padicValNat_eq_of_dvd_of_not_dvd {p n k : ℕ} (hk : p ^ k ∣ n)
+    (hsucc : ¬p ^ (k + 1) ∣ n) : padicValNat p n = k := by
+  have hp : p ≠ 1 := fun _ => by simp_all
+  have hn : n ≠ 0 := fun _ => by simp_all
+  exact Nat.eq_of_le_of_lt_succ
+    ((pow_dvd_iff_le_padicValNat hp hn).mp hk)
+    (Nat.lt_of_not_le ((pow_dvd_iff_le_padicValNat hp hn).not.mp hsucc))
+
+/-- If `m ≠ 0` and `padicValNat p m < padicValNat p n`, then `padicValNat p (n + m) =
+padicValNat p m`. -/
+theorem _root_.padicValNat_add_of_gt {p n m : ℕ} (hm : m ≠ 0)
+    (h : padicValNat p m < padicValNat p n) : padicValNat p (n + m) = padicValNat p m := by
+  have hp : p ≠ 1 := fun this => by simp_all
+  have hn : n ≠ 0 := fun this => by simp_all
+  apply padicValNat_eq_of_dvd_of_not_dvd
+  · apply Nat.dvd_add
+    · exact (pow_dvd_iff_le_padicValNat hp hn).mpr (Nat.le_of_lt h)
+    · simp [pow_padicValNat_dvd]
+  · rw [Nat.dvd_add_right]
+    · apply (pow_dvd_iff_le_padicValNat hp hm).not.mpr ?_
+      simp
+    apply (pow_dvd_iff_le_padicValNat hp hn).mpr
+    exact add_one_le_of_lt h
+
+/-- If `n ≠ 0`, `m ≠ 0`, and `padicValNat p m` and `padicValNat p n` are distinct, then
+`padicValNat p (n + m)` is the minimum of the two. -/
+theorem _root_.padicValNat_add_eq_min {p n m : ℕ} (hn : n ≠ 0) (hm : m ≠ 0)
+    (hpnm : padicValNat p n ≠ padicValNat p m) :
+    padicValNat p (n + m) = min (padicValNat p n) (padicValNat p m) := by
+  rcases Nat.lt_or_gt.mp hpnm with h | h
+  · rw [Nat.min_eq_left (Nat.le_of_lt h), Nat.add_comm]
+    apply padicValNat_add_of_gt hn h
+  · rw [Nat.min_eq_right (Nat.le_of_lt h)]
+    apply padicValNat_add_of_gt hm h
+
 @[simp]
 theorem divMaxPow_base_mul {p : ℕ} (hp : p ≠ 0) (n : ℕ) :
     (p * n).divMaxPow p = n.divMaxPow p := by
