@@ -5,7 +5,7 @@ Authors: Patrick Lutz, Oliver Nash
 -/
 module
 
-public import Mathlib.Init
+import Mathlib.Init
 
 /-!
 # Bracket Notation
