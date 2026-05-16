@@ -136,6 +136,7 @@ lemma of_isEffective_tensorProduct_of_faithfullyFlat
       ((TensorProduct.AlgebraTensorModule.distribBaseChange R T S S).injective) |>.mpr ‹_›
   · ext
     simp [← Algebra.TensorProduct.linearMap_comp_rid]
+    rfl
   · ext
     simp
 

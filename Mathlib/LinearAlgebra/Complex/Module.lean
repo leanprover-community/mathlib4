@@ -260,7 +260,7 @@ theorem conjAe_coe : ⇑conjAe = conj :=
 /-- The matrix representation of `conjAe`. -/
 @[simp]
 theorem toMatrix_conjAe :
-    LinearMap.toMatrix basisOneI basisOneI conjAe.toLinearMap = !![1, 0; 0, -1] := by
+    conjAe.toLinearEquiv.toLinearMap.toMatrix basisOneI basisOneI = !![1, 0; 0, -1] := by
   ext i j
   fin_cases i <;> fin_cases j <;> simp [LinearMap.toMatrix_apply]
 

@@ -107,14 +107,14 @@ lemma Ideal.comap_map_eq_self_of_faithfullyFlat (I : Ideal A) :
   have inj : Function.Injective
       ((quotIdealMapEquivTensorQuot B I).symm.toLinearMap.restrictScalars _ ∘ₗ
         TensorProduct.mk A B (A ⧸ I) 1) := by
-    rw [LinearMap.coe_comp]
-    exact (AlgEquiv.injective _).comp <|
+    rw [LinearMap.coe_comp, AlgEquiv.toLinearMap, ← LinearEquiv.restrictScalars_toLinearMap]
+    exact (LinearEquiv.injective _).comp <|
       Module.FaithfullyFlat.tensorProduct_mk_injective (A ⧸ I)
   intro x hx
   rw [Ideal.mem_comap] at hx
   rw [← Ideal.Quotient.eq_zero_iff_mem] at hx ⊢
   apply inj
-  have : ((quotIdealMapEquivTensorQuot B I).symm.toLinearMap.restrictScalars _ ∘ₗ
+  have : ((quotIdealMapEquivTensorQuot B I).symm.toLinearEquiv.toLinearMap.restrictScalars _ ∘ₗ
       TensorProduct.mk A B (A ⧸ I) 1) x = 0 := by
     simp [← Algebra.algebraMap_eq_smul_one, hx]
   simp [this]
