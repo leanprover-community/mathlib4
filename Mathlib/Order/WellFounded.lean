@@ -189,8 +189,8 @@ theorem WellFounded.min_le (h : WellFounded ((· < ·) : β → β → Prop))
     {x : β} {s : Set β} (hx : x ∈ s) : h.min s ⟨x, hx⟩ ≤ x :=
   not_lt.1 <| h.not_lt_min _ hx
 
-@[to_dual range_injOn_strictMono_of_wellFoundedGT]
-theorem Set.range_injOn_strictMono [WellFoundedLT β] :
+@[to_dual]
+theorem Set.range_injOn_strictMono_of_wellFoundedLT [WellFoundedLT β] :
     Set.InjOn Set.range { f : β → γ | StrictMono f } := by
   intro f hf g hg hfg
   ext a
@@ -207,20 +207,32 @@ theorem Set.range_injOn_strictMono [WellFoundedLT β] :
     rw [IH c this] at hc
     cases (hg.injective hc).not_lt this
 
-@[to_dual range_injOn_strictAnti_of_wellFoundedLT]
-theorem Set.range_injOn_strictAnti [WellFoundedGT β] :
+@[deprecated (since := "2026-05-15")]
+alias Set.range_injOn_strictMono := Set.range_injOn_strictMono_of_wellFoundedLT
+
+@[to_dual]
+theorem Set.range_injOn_strictAnti_of_wellFoundedGT [WellFoundedGT β] :
     Set.InjOn Set.range { f : β → γ | StrictAnti f } :=
-  fun _ hf _ hg ↦ Set.range_injOn_strictMono (β := βᵒᵈ) hf.dual hg.dual
+  fun _ hf _ hg ↦ Set.range_injOn_strictMono_of_wellFoundedLT (β := βᵒᵈ) hf.dual hg.dual
 
-@[to_dual range_inj_of_wellFoundedGT]
-theorem StrictMono.range_inj [WellFoundedLT β] {f g : β → γ}
+@[deprecated (since := "2026-05-15")]
+alias Set.range_injOn_strictAnti := Set.range_injOn_strictAnti_of_wellFoundedGT
+
+@[to_dual]
+theorem StrictMono.range_inj_of_wellFoundedLT [WellFoundedLT β] {f g : β → γ}
     (hf : StrictMono f) (hg : StrictMono g) : Set.range f = Set.range g ↔ f = g :=
-  Set.range_injOn_strictMono.eq_iff hf hg
+  Set.range_injOn_strictMono_of_wellFoundedLT.eq_iff hf hg
 
-@[to_dual range_inj_of_wellFoundedLT]
-theorem StrictAnti.range_inj [WellFoundedGT β] {f g : β → γ}
+@[deprecated (since := "2026-05-15")]
+alias StrictMono.range_inj := StrictMono.range_inj_of_wellFoundedLT
+
+@[to_dual]
+theorem StrictAnti.range_inj_of_wellFoundedGT [WellFoundedGT β] {f g : β → γ}
     (hf : StrictAnti f) (hg : StrictAnti g) : Set.range f = Set.range g ↔ f = g :=
-  Set.range_injOn_strictAnti.eq_iff hf hg
+  Set.range_injOn_strictAnti_of_wellFoundedGT.eq_iff hf hg
+
+@[deprecated (since := "2026-05-15")]
+alias StrictAnti.range_inj := StrictAnti.range_inj_of_wellFoundedGT
 
 /-- A strictly monotone function `f` on a well-order satisfies `x ≤ f x` for all `x`. -/
 @[to_dual le_id

@@ -155,9 +155,13 @@ theorem orderIsoOfSurjective_self_symm_apply (b : β) :
 end StrictMono
 
 /-- Two order embeddings on a well-order are equal provided that their ranges are equal. -/
-lemma OrderEmbedding.range_inj [LinearOrder α] [WellFoundedLT α] [Preorder β] {f g : α ↪o β} :
-    Set.range f = Set.range g ↔ f = g := by
-  rw [f.strictMono.range_inj g.strictMono, DFunLike.coe_fn_eq]
+@[to_dual]
+lemma OrderEmbedding.range_inj_of_wellFoundedLT [LinearOrder α] [WellFoundedLT α] [Preorder β]
+    {f g : α ↪o β} : Set.range f = Set.range g ↔ f = g := by
+  rw [f.strictMono.range_inj_of_wellFoundedLT g.strictMono, DFunLike.coe_fn_eq]
+
+@[deprecated (since := "2026-05-15")]
+alias OrderEmbedding.range_inj := OrderEmbedding.range_inj_of_wellFoundedLT
 
 namespace OrderIso
 
@@ -168,7 +172,8 @@ instance subsingleton_of_wellFoundedLT [LinearOrder α] [WellFoundedLT α] [Preo
     Subsingleton (α ≃o β) := by
   refine ⟨fun f g ↦ ?_⟩
   rw [OrderIso.ext_iff, ← coe_toOrderEmbedding, ← coe_toOrderEmbedding, DFunLike.coe_fn_eq,
-    ← OrderEmbedding.range_inj, coe_toOrderEmbedding, coe_toOrderEmbedding, range_eq, range_eq]
+    ← OrderEmbedding.range_inj_of_wellFoundedLT, coe_toOrderEmbedding, coe_toOrderEmbedding,
+    range_eq, range_eq]
 
 instance subsingleton_of_wellFoundedLT' [LinearOrder β] [WellFoundedLT β] [Preorder α] :
     Subsingleton (α ≃o β) := by
