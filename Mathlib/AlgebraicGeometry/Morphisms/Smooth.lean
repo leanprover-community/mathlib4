@@ -216,8 +216,9 @@ instance smoothOfRelativeDimension_comp {Z : Scheme.{u}} (g : Y ⟶ Z)
     have heq : (f ≫ g).appLE U₂ (X.basicOpen s) e = g.appLE U₂ V₂ e₂ ≫
         CommRingCat.ofHom (algebraMap Γ(Y, V₂) Γ(Y, Y.basicOpen r)) ≫
           f.appLE (Y.basicOpen r) (X.basicOpen s) e₁ := by
-      rw [RingHom.algebraMap_toAlgebra, CommRingCat.ofHom_hom,
-        g.appLE_map_assoc, Scheme.Hom.appLE_comp_appLE]
+      rw [RingHom.algebraMap_toAlgebra]
+      dsimp
+      rw [g.appLE_map_assoc, Scheme.Hom.appLE_comp_appLE]
     refine ⟨U₂, hU₂, X.basicOpen s, hV₁'.basicOpen s, hx₁, e, heq ▸ ?_⟩
     apply IsStandardSmoothOfRelativeDimension.comp ?_ hf₂
     haveI : IsLocalization.Away r Γ(Y, Y.basicOpen r) := hV₂.isLocalization_basicOpen r

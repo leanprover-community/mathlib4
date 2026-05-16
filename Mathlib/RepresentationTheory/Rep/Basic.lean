@@ -67,51 +67,18 @@ lemma of_V : (of ρ).V = X := by with_reducible rfl
 variable (X ρ) in
 lemma of_ρ : (of ρ).ρ = ρ := by with_reducible rfl
 
-set_option backward.privateInPublic true in
-/-- The type of morphisms in `Rep.{w} k G`. -/
-@[ext]
-structure Hom where
-  private mk ::
-  /-- The underlying `G`-equivariant linear map. -/
-  hom' : A.ρ.IntertwiningMap B.ρ
-
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
-instance : Category (Rep.{w} k G) where
-  Hom A B := Hom A B
-  id A := ⟨.id A.ρ⟩
-  comp f g := ⟨g.hom'.comp f.hom'⟩
-
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
-instance : ConcreteCategory (Rep.{w} k G) (fun A B ↦ A.ρ.IntertwiningMap B.ρ) where
-  hom := Hom.hom'
-  ofHom := Hom.mk
-
-variable {A B} in
-/-- Turn a morphism in `Rep` back into an `IntertwiningMap`. -/
-abbrev Hom.hom (f : Hom A B) := ConcreteCategory.hom (C := Rep k G) f
-
-variable {A B} in
-/-- Typecheck an `IntertwiningMap` as a morphism in `Rep`. -/
-abbrev ofHom (f : ρ.IntertwiningMap σ) : of ρ ⟶ of σ :=
-  ConcreteCategory.ofHom (C := Rep.{w} k G) f
-
-/-- Use the `ConcreteCategory.hom` projection for `@[simps]` lemmas. -/
-def Hom.Simps.hom (f : Hom A B) := f.hom
-
-initialize_simps_projections Hom (hom' → hom)
+mk_concrete_category (Rep.{w} k G) (fun A B ↦ A.ρ.IntertwiningMap B.ρ)
+  (fun A ↦ Representation.IntertwiningMap.id A.ρ) (fun g f ↦ g.comp f)
+  with_of_hom {X Y : Type w} [AddCommGroup X] [AddCommGroup Y] [Module k X] [Module k Y]
+  {ρ : Representation k G X} {σ : Representation k G Y}
+  hom_type (ρ.IntertwiningMap σ) from (of ρ) to (of σ)
 
 /-
 The results below duplicate the `ConcreteCategory` simp lemmas, but we can keep them for `dsimp`.
 -/
-@[simp] lemma hom_id : (𝟙 A : A ⟶ A).hom = .id A.ρ := rfl
-
 /- Provided for rewriting. -/
 lemma id_apply (a : A) : (𝟙 A : A ⟶ A) a = a := by
   simp [Representation.IntertwiningMap.id]
-
-@[simp] lemma hom_comp (f : A ⟶ B) (g : B ⟶ C) : (f ≫ g).hom = g.hom.comp f.hom := rfl
 
 /- Provided for rewriting. -/
 variable {A B C} in
@@ -125,9 +92,6 @@ lemma hom_comm_apply (f : A ⟶ B) (g : G) (a : A) : f.hom (A.ρ g a) = B.ρ g (
   simpa using congr($(f.hom.2 g) a)
 
 variable {Z : Type w} [AddCommGroup Z] [Module k Z] {τ : Representation k G Z}
-
-@[simp] lemma hom_ofHom (f : ρ.IntertwiningMap σ) : (ofHom f).hom = f := rfl
-@[simp] lemma ofHom_hom (f : A ⟶ B) : ofHom f.hom = f := rfl
 
 @[simp] lemma ofHom_id : ofHom (.id σ) = 𝟙 (of σ) := rfl
 

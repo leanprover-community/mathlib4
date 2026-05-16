@@ -57,59 +57,17 @@ lemma coe_of (X : Type v) [Ring X] [Algebra R X] : (of R X : Type v) = X :=
   rfl
 
 variable {R} in
-set_option backward.privateInPublic true in
-/-- The type of morphisms in `AlgCat R`. -/
-@[ext]
-structure Hom (A B : AlgCat.{v} R) where
-  private mk ::
-  /-- The underlying algebra map. -/
-  hom' : A →ₐ[R] B
-
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
-instance : Category (AlgCat.{v} R) where
-  Hom A B := Hom A B
-  id A := ⟨AlgHom.id R A⟩
-  comp f g := ⟨g.hom'.comp f.hom'⟩
-
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
-instance : ConcreteCategory (AlgCat.{v} R) (· →ₐ[R] ·) where
-  hom := Hom.hom'
-  ofHom := Hom.mk
-
-variable {R} in
-/-- Turn a morphism in `AlgCat` back into an `AlgHom`. -/
-abbrev Hom.hom {A B : AlgCat.{v} R} (f : Hom A B) :=
-  ConcreteCategory.hom (C := AlgCat R) f
-
-variable {R} in
-/-- Typecheck an `AlgHom` as a morphism in `AlgCat`. -/
-abbrev ofHom {A B : Type v} [Ring A] [Ring B] [Algebra R A] [Algebra R B] (f : A →ₐ[R] B) :
-    of R A ⟶ of R B :=
-  ConcreteCategory.ofHom (C := AlgCat R) f
-
-variable {R} in
-/-- Use the `ConcreteCategory.hom` projection for `@[simps]` lemmas. -/
-def Hom.Simps.hom (A B : AlgCat.{v} R) (f : Hom A B) :=
-  f.hom
-
-initialize_simps_projections Hom (hom' → hom)
+mk_concrete_category (AlgCat.{v} R) (· →ₐ[R] ·) (AlgHom.id R) AlgHom.comp
+  with_of_hom {A B : Type v} [Ring A] [Ring B] [Algebra R A] [Algebra R B]
+  hom_type (A →ₐ[R] B) from (of R A) to (of R B)
 
 /-!
 The results below duplicate the `ConcreteCategory` simp lemmas, but we can keep them for `dsimp`.
 -/
 
-@[simp]
-lemma hom_id {A : AlgCat.{v} R} : (𝟙 A : A ⟶ A).hom = AlgHom.id R A := rfl
-
 /- Provided for rewriting. -/
 lemma id_apply (A : AlgCat.{v} R) (a : A) :
     (𝟙 A : A ⟶ A) a = a := by simp
-
-@[simp]
-lemma hom_comp {A B C : AlgCat.{v} R} (f : A ⟶ B) (g : B ⟶ C) :
-    (f ≫ g).hom = g.hom.comp f.hom := rfl
 
 /- Provided for rewriting. -/
 lemma comp_apply {A B C : AlgCat.{v} R} (f : A ⟶ B) (g : B ⟶ C) (a : A) :
@@ -118,14 +76,6 @@ lemma comp_apply {A B C : AlgCat.{v} R} (f : A ⟶ B) (g : B ⟶ C) (a : A) :
 @[ext]
 lemma hom_ext {A B : AlgCat.{v} R} {f g : A ⟶ B} (hf : f.hom = g.hom) : f = g :=
   Hom.ext hf
-
-@[simp]
-lemma hom_ofHom {R : Type u} [CommRing R] {X Y : Type v} [Ring X] [Algebra R X] [Ring Y]
-    [Algebra R Y] (f : X →ₐ[R] Y) : (ofHom f).hom = f := rfl
-
-@[simp]
-lemma ofHom_hom {A B : AlgCat.{v} R} (f : A ⟶ B) :
-    ofHom (Hom.hom f) = f := rfl
 
 @[simp]
 lemma ofHom_id {X : Type v} [Ring X] [Algebra R X] : ofHom (AlgHom.id R X) = 𝟙 (of R X) := rfl
