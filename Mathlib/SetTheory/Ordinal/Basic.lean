@@ -611,6 +611,10 @@ theorem card_zero : card 0 = 0 := mk_eq_zero _
 @[simp]
 theorem card_one : card 1 = 1 := mk_eq_one _
 
+@[simp]
+theorem _root_.Cardinal.mk_toType (o : Ordinal) : #o.ToType = o.card :=
+  (Ordinal.card_type _).symm.trans <| by rw [Ordinal.type_toType]
+
 variable (r) in
 /-- The cardinality of a set is an upper-bound for the cardinality of the order type of the set's
 mex (minimum excluded value). See `not_lt_enum_ord_mk_min_compl` for the `α` version. -/
@@ -1026,12 +1030,7 @@ namespace Cardinal
 
 open Ordinal
 
-@[simp]
-theorem mk_toType (o : Ordinal) : #o.ToType = o.card :=
-  (Ordinal.card_type _).symm.trans <| by rw [Ordinal.type_toType]
-
-/-- The ordinal corresponding to a cardinal `c` is the least ordinal
-  whose cardinal is `c`. For the order-embedding version, see `ord.order_embedding`. -/
+/-- The ordinal corresponding to a cardinal `c` is the least ordinal whose cardinal is `c`. -/
 @[no_expose]
 def ord (c : Cardinal) : Ordinal :=
   Quot.liftOn c (fun α : Type u => ⨅ r : { r // IsWellOrder α r }, @type α r.1 r.2) <| by
@@ -1064,8 +1063,13 @@ theorem exists_ord_eq_type_lt (α) :
 theorem ord_le_type (r : α → α → Prop) [h : IsWellOrder α r] : ord #α ≤ type r :=
   ciInf_le' _ (Subtype.mk r h)
 
-theorem ord_le {c o} : ord c ≤ o ↔ c ≤ o.card := by
-  refine c.inductionOn fun α ↦ o.inductionOn fun β s _ ↦ ?_
+@[simp]
+theorem card_ord (c) : (ord c).card = c :=
+  c.inductionOn fun α ↦ let ⟨r, _, e⟩ := exists_ord_eq α; e ▸ card_type r
+
+/-- Galois connection between `Cardinal.ord` and `Ordinal.card`. -/
+theorem gc_ord_card : GaloisConnection ord card := by
+  refine fun c o ↦ c.inductionOn fun α ↦ o.inductionOn fun β s _ ↦ ?_
   let ⟨r, _, e⟩ := exists_ord_eq α
   constructor <;> intro h
   · rw [e] at h
@@ -1075,24 +1079,21 @@ theorem ord_le {c o} : ord c ≤ o ↔ c ≤ o.card := by
     have := RelEmbedding.isWellOrder g
     exact (ord_le_type _).trans g.ordinal_type_le
 
-theorem gc_ord_card : GaloisConnection ord card := fun _ _ => ord_le
+/-- Galois coinsertion between `Cardinal.ord` and `Ordinal.card`. -/
+def gciOrdCard : GaloisCoinsertion ord card :=
+  gc_ord_card.toGaloisCoinsertion fun c ↦ c.card_ord.le
+
+theorem ord_le {c o} : ord c ≤ o ↔ c ≤ o.card :=
+  gc_ord_card.le_iff_le
 
 theorem lt_ord {c o} : o < ord c ↔ o.card < c :=
   gc_ord_card.lt_iff_lt
-
-@[simp]
-theorem card_ord (c) : (ord c).card = c :=
-  c.inductionOn fun α ↦ let ⟨r, _, e⟩ := exists_ord_eq α; e ▸ card_type r
 
 theorem card_surjective : Function.Surjective card :=
   fun c ↦ ⟨_, card_ord c⟩
 
 theorem bddAbove_ord_image_iff {s : Set Cardinal} : BddAbove (ord '' s) ↔ BddAbove s :=
   gc_ord_card.bddAbove_l_image
-
-/-- Galois coinsertion between `Cardinal.ord` and `Ordinal.card`. -/
-def gciOrdCard : GaloisCoinsertion ord card :=
-  gc_ord_card.toGaloisCoinsertion fun c => c.card_ord.le
 
 theorem ord_card_le (o : Ordinal) : o.card.ord ≤ o :=
   gc_ord_card.l_u_le _
@@ -1120,6 +1121,9 @@ theorem ord_strictMono : StrictMono ord :=
 theorem ord_mono : Monotone ord :=
   gc_ord_card.monotone_l
 
+theorem ord_injective : Injective ord :=
+  ord_strictMono.injective
+
 @[simp]
 theorem ord_le_ord {c₁ c₂} : ord c₁ ≤ ord c₂ ↔ c₁ ≤ c₂ :=
   gciOrdCard.l_le_l_iff
@@ -1129,22 +1133,28 @@ theorem ord_lt_ord {c₁ c₂} : ord c₁ < ord c₂ ↔ c₁ < c₂ :=
   ord_strictMono.lt_iff_lt
 
 @[simp]
+theorem ord_inj {c₁ c₂} : ord c₁ = ord c₂ ↔ c₁ = c₂ :=
+  ord_injective.eq_iff
+
+@[simp]
 theorem ord_zero : ord 0 = 0 :=
   gc_ord_card.l_bot
 
 @[simp]
-theorem ord_nat (n : ℕ) : ord n = n := by
+theorem ord_natCast (n : ℕ) : ord n = n := by
   apply (ord_le.2 (card_nat n).ge).antisymm
   induction n with
   | zero => exact zero_le
   | succ n IH => exact (IH.trans_lt <| by simp).succ_le
 
-@[simp]
-theorem ord_ofNat (n : ℕ) [n.AtLeastTwo] : ord ofNat(n) = OfNat.ofNat n :=
-  ord_nat n
+@[deprecated (since := "2026-02-27")] alias ord_nat := ord_natCast
 
 @[simp]
-theorem ord_one : ord 1 = 1 := by simpa using ord_nat 1
+theorem ord_ofNat (n : ℕ) [n.AtLeastTwo] : ord ofNat(n) = OfNat.ofNat n :=
+  ord_natCast n
+
+@[simp]
+theorem ord_one : ord 1 = 1 := by simpa using ord_natCast 1
 
 theorem isNormal_ord : Order.IsNormal ord where
   strictMono := ord_strictMono
@@ -1195,14 +1205,6 @@ theorem card_typein_toType_lt (c : Cardinal) (x : c.ord.ToType) :
     card (typein (α := c.ord.ToType) (· < ·) x) < c :=
   mk_Iio_toType_ord_lt x
 
-theorem ord_injective : Injective ord := by
-  intro c c' h
-  rw [← card_ord c, ← card_ord c', h]
-
-@[simp]
-theorem ord_inj {a b : Cardinal} : a.ord = b.ord ↔ a = b :=
-  ord_injective.eq_iff
-
 @[simp]
 theorem ord_eq_zero {a : Cardinal} : a.ord = 0 ↔ a = 0 :=
   ord_injective.eq_iff' ord_zero
@@ -1238,11 +1240,12 @@ theorem ord_eq_omega0 {a : Cardinal} : a.ord = ω ↔ a = ℵ₀ :=
 /-- The ordinal corresponding to a cardinal `c` is the least ordinal
   whose cardinal is `c`. This is the order-embedding version. For the regular function, see `ord`.
 -/
+@[deprecated ord (since := "2026-02-27")]
 def ord.orderEmbedding : Cardinal ↪o Ordinal :=
-  RelEmbedding.orderEmbeddingOfLTEmbedding
-    (RelEmbedding.ofMonotone Cardinal.ord fun _ _ => Cardinal.ord_lt_ord.2)
+  OrderEmbedding.ofStrictMono _ fun _ _ ↦ Cardinal.ord_lt_ord.2
 
-@[simp]
+set_option linter.deprecated false in
+@[deprecated ord (since := "2026-02-27")]
 theorem ord.orderEmbedding_coe : (ord.orderEmbedding : Cardinal → Ordinal) = ord :=
   rfl
 
@@ -1259,7 +1262,7 @@ namespace Ordinal
 
 @[simp]
 theorem nat_le_card {o} {n : ℕ} : (n : Cardinal) ≤ card o ↔ (n : Ordinal) ≤ o := by
-  rw [← Cardinal.ord_le, Cardinal.ord_nat]
+  rw [← Cardinal.ord_le, Cardinal.ord_natCast]
 
 @[simp]
 theorem one_le_card {o} : 1 ≤ card o ↔ 1 ≤ o := by
