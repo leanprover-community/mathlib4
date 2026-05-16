@@ -6473,6 +6473,7 @@ public import Mathlib.RingTheory.Frobenius
 public import Mathlib.RingTheory.GradedAlgebra.AlgHom
 public import Mathlib.RingTheory.GradedAlgebra.Basic
 public import Mathlib.RingTheory.GradedAlgebra.FiniteType
+public import Mathlib.RingTheory.GradedAlgebra.Homogeneous.Hom
 public import Mathlib.RingTheory.GradedAlgebra.Homogeneous.Ideal
 public import Mathlib.RingTheory.GradedAlgebra.Homogeneous.Maps
 public import Mathlib.RingTheory.GradedAlgebra.Homogeneous.Submodule

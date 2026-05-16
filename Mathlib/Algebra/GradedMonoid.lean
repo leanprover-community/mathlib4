@@ -583,6 +583,35 @@ theorem list_prod_ofFn_mem_graded {n} (i : Fin n → ι) (r : Fin n → R) (h : 
   rw [List.ofFn_eq_map, List.ofFn_eq_map]
   exact list_prod_map_mem_graded _ _ _ fun _ _ => h _
 
+section commutative
+
+variable {ι R S : Type*} [SetLike S R] [CommMonoid R] [AddCommMonoid ι]
+variable {A : ι → S} [SetLike.GradedMonoid A]
+
+theorem finset_prod_mem_graded
+    {α} (t : Finset α) (i : α → ι) (r : α → R)
+    (h : ∀ j ∈ t, r j ∈ A (i j)) :
+    ∏ j ∈ t, r j ∈ A (∑ j ∈ t, i j) := by
+  classical
+  induction t using Finset.induction_on with
+  | empty => exact SetLike.one_mem_graded A
+  | insert a t ha ht =>
+    rw [Finset.prod_insert ha, Finset.sum_insert ha]
+    exact SetLike.mul_mem_graded
+      (h _ (t.mem_insert_self a))
+      (ht fun _ hs ↦ h _ (Finset.mem_insert_of_mem hs))
+
+theorem finset_prod_npow_mem_graded
+    {α} (t : Finset α) (i : α → ι) (r : α → R) (n : α → ℕ)
+    (h : ∀ j ∈ t, r j ∈ A (i j)) :
+    ∏ j ∈ t, r j ^ n j ∈ A (∑ j ∈ t, n j • i j) := by
+  apply finset_prod_mem_graded t
+    (i := fun j ↦ n j • i j) (r := fun j ↦ r j ^ n j)
+  intro j hj
+  exact SetLike.pow_mem_graded _ (h j hj)
+
+end commutative
+
 end SetLike
 
 /-- Build a `GMonoid` instance for a collection of subobjects. -/
