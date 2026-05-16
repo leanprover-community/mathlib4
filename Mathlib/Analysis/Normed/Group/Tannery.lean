@@ -5,7 +5,6 @@ Authors: David Loeffler
 -/
 module
 
-public import Mathlib.Analysis.RCLike.Basic
 public import Mathlib.Analysis.Normed.Group.InfiniteSum
 
 /-!

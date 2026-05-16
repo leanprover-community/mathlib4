@@ -6,7 +6,6 @@ Authors: Kevin H. Wilson
 module
 
 public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
-public import Mathlib.Data.Set.Function
 
 /-!
 # Comparing sums and integrals

@@ -6,7 +6,8 @@ Authors: Moritz Doll
 module
 
 public import Mathlib.Analysis.Distribution.FourierMultiplier
-public import Mathlib.Analysis.Fourier.LpSpace
+
+import Mathlib.Analysis.Fourier.LpSpace
 
 /-! # Sobolev spaces (Bessel potential spaces)
 

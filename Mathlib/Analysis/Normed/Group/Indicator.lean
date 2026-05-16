@@ -5,8 +5,9 @@ Authors: Zhouhang Zhou, Yury Kudryashov
 -/
 module
 
-public import Mathlib.Algebra.Order.Group.Indicator
 public import Mathlib.Analysis.Normed.Group.Basic
+
+import Mathlib.Algebra.Order.Group.Indicator
 
 /-!
 # Indicator function and (e)norm

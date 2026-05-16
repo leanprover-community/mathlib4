@@ -6,9 +6,9 @@ Authors: Alexander Bentkamp, Yury Kudryashov
 module
 
 public import Mathlib.Analysis.Convex.Between
-public import Mathlib.Analysis.Normed.Affine.AddTorsor
 public import Mathlib.Analysis.Normed.Affine.AddTorsorBases
-public import Mathlib.Analysis.Normed.Module.Convex
+
+import Mathlib.Analysis.Normed.Affine.AddTorsor
 
 /-!
 # Simplices in normed affine spaces

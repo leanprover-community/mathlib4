@@ -5,12 +5,13 @@ Authors: Anatole Dedecker, Eric Wieser, Yuyang Zhao
 -/
 module
 
-public import Mathlib.Algebra.Algebra.TransferInstance
-public import Mathlib.Algebra.Ring.Action.ConjAct
 public import Mathlib.Analysis.Analytic.ChangeOrigin
 public import Mathlib.Analysis.Complex.Basic
-public import Mathlib.Data.Nat.Choose.Cast
 public import Mathlib.Analysis.Analytic.OfScalars
+
+import Mathlib.Algebra.Algebra.TransferInstance
+import Mathlib.Algebra.Ring.Action.ConjAct
+import Mathlib.Data.Nat.Choose.Cast
 
 /-!
 # Exponential in a Banach algebra
