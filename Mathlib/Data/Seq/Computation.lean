@@ -6,10 +6,13 @@ Authors: Mario Carneiro
 module
 
 public import Mathlib.Data.Nat.Find
-public import Mathlib.Data.Stream.Init
 public import Mathlib.Logic.Relator
-public import Mathlib.Tactic.Common
-public import Batteries.Tactic.Lint.Simp
+public import Aesop.BuiltinRules
+public import Mathlib.Data.Stream.Defs
+public import Mathlib.Logic.Function.Defs
+public import Mathlib.Order.Defs.Unbundled
+public import Mathlib.Data.Stream.Init
+import Mathlib.Tactic.Common
 
 /-!
 # Coinductive formalization of unbounded computations.
