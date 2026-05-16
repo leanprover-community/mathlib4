@@ -25,176 +25,25 @@ open CategoryTheory MonoidalCategory MonoidalClosed Simplicial
 
 namespace CategoryTheory
 
-variable {C₁ C₂ C₃ : Type*} [Category* C₁] [Category* C₂] [Category* C₃]
-
+-- to be moved...
 namespace Functor.PushoutObjObj
 
-section
-
-variable {F G : C₁ ⥤ C₂ ⥤ C₃} {X₁ Y₁ : C₁} {X₂ Y₂ : C₂} {f₁ : X₁ ⟶ Y₁} {f₂ : X₂ ⟶ Y₂}
-  (sq : F.PushoutObjObj f₁ f₂) (e : F ≅ G)
-
-/-- Transport a `Functor.PushoutObjObj` structure via a natural isomorphim of functors. -/
-@[simps]
-def ofNatIso : G.PushoutObjObj f₁ f₂ where
-  pt := sq.pt
-  inl := (e.inv.app Y₁).app X₂ ≫ sq.inl
-  inr := (e.inv.app X₁).app Y₂ ≫ sq.inr
-  isPushout :=
-    sq.isPushout.of_iso ((e.app _).app _) ((e.app _).app _) ((e.app _).app _) (Iso.refl _)
-      (by simp) (by simp) (by simp) (by simp)
-
-@[simp, reassoc]
-lemma ofNatIso_ι :
-    (sq.ofNatIso e).ι = sq.ι ≫ (e.hom.app _).app _ := by
-  apply sq.hom_ext
-  · simp [← (sq.ofNatIso e).inl_ι]
-  · simp [← (sq.ofNatIso e).inr_ι]
-
-end
-
-section
-
-variable (F : C₁ ⥤ C₂ ⥤ C₃) {X₁ Y₁ : C₁} {X₂ Y₂ : C₂} (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂)
-  [PreservesColimitsOfShape (Discrete PEmpty.{1}) (F.flip.obj X₂)]
-  [PreservesColimitsOfShape (Discrete PEmpty.{1}) (F.flip.obj Y₂)]
-  (h : IsInitial X₁)
-
-/-- A `Functor.PushoutObjObj` structure for a functor `F : C₁ ⥤ C₂ ⥤ C₃` and
-morphisms `f₁ : X₁ ⟶ Y₁` and `f₂ : X₂ ⟶ Y₂` when `X₁` is initial and both
-`F.flip.obj X₂` and `F.flip.obj Y₂` preserve the initial object. -/
-@[simps]
-noncomputable def ofIsInitialLeft : F.PushoutObjObj f₁ f₂ where
-  pt := (F.obj Y₁).obj X₂
-  inl := 𝟙 _
-  inr := (IsInitial.isInitialObj (F.flip.obj _) _ h).to _
-  isPushout := by
-    let hX₂ := IsInitial.isInitialObj (F.flip.obj X₂) _ h
-    let hY₂ := IsInitial.isInitialObj (F.flip.obj Y₂) _ h
-    apply +allowSynthFailures IsPushout.of_vert_isIso
-    · exact isIso_of_isInitial hX₂ hY₂ _
-    · exact ⟨hX₂.hom_ext _ _⟩
-
-@[simp]
-lemma ofIsInitialLeft_ι : (ofIsInitialLeft F f₁ f₂ h).ι = (F.obj Y₁).map f₂ := by
-  simpa using (ofIsInitialLeft F f₁ f₂ h).inl_ι
-
-end
-
-section
-
-variable (F : C₁ ⥤ C₂ ⥤ C₃) {X₁ Y₁ : C₁} {X₂ Y₂ : C₂} (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂)
-  [PreservesColimitsOfShape (Discrete PEmpty.{1}) (F.obj X₁)]
-  [PreservesColimitsOfShape (Discrete PEmpty.{1}) (F.obj Y₁)]
-  (h : IsInitial X₂)
-
-/-- A `Functor.PushoutObjObj` structure for a functor `F : C₁ ⥤ C₂ ⥤ C₃` and
-morphisms `f₁ : X₁ ⟶ Y₁` and `f₂ : X₂ ⟶ Y₂` when `X₂` is initial and both
-`F.obj X₁` and `F.obj Y₁` preserve the initial object. -/
-@[simps]
-noncomputable def ofIsInitialRight : F.PushoutObjObj f₁ f₂ where
-  pt := (F.obj X₁).obj Y₂
-  inl := (IsInitial.isInitialObj (F.obj _) _ h).to _
-  inr := 𝟙 _
-  isPushout := by
-    let hX₁ := IsInitial.isInitialObj (F.obj X₁) _ h
-    let hY₁ := IsInitial.isInitialObj (F.obj Y₁) _ h
-    apply +allowSynthFailures IsPushout.of_horiz_isIso
-    · exact isIso_of_isInitial hX₁ hY₁ _
-    · exact ⟨hX₁.hom_ext _ _⟩
-
-@[simp]
-lemma ofIsInitialRight_ι : (ofIsInitialRight F f₁ f₂ h).ι = (F.map f₁).app Y₂ := by
-  simpa using (ofIsInitialRight F f₁ f₂ h).inr_ι
-
-end
-
-section
-
-variable [MonoidalCategory C₁]
-  {X₁ Y₁ X₂ Y₂ : C₁} (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂)
-
-section
-
-variable {f₁ f₂} [BraidedCategory C₁] {X₁ Y₁ X₂ Y₂ : C₁} {f₁ : X₁ ⟶ Y₁} {f₂ : X₂ ⟶ Y₂}
-  (sq : (curriedTensor C₁).PushoutObjObj f₁ f₂)
+variable {C : Type*} [Category* C] [MonoidalCategory C] [BraidedCategory C]
+  {X₁ Y₁ X₂ Y₂ : C} {f₁ : X₁ ⟶ Y₁} {f₂ : X₂ ⟶ Y₂}
+  (sq : (curriedTensor C).PushoutObjObj f₁ f₂)
 
 /-- In a braided monoidal category, from a `Functor.PushoutObjObj` structure for
 the bifunctor `curriedTensor` and two morphism `f₁` and `f₂`, one may
 obtain a similar structure for `f₂` and `f₁`. -/
 @[simps!]
-def flipTensor : (curriedTensor C₁).PushoutObjObj f₂ f₁ :=
+def flipTensor : (curriedTensor C).PushoutObjObj f₂ f₁ :=
   sq.flip.ofNatIso (BraidedCategory.curriedBraidingNatIso _).symm
 
 @[simp]
 lemma flipTensor_ι : dsimp% sq.flipTensor.ι = sq.ι ≫ (β_ _ _).inv := by
   simp [flipTensor]
 
-end
-
-end
-
 end Functor.PushoutObjObj
-
-namespace Functor.PullbackObjObj
-
-variable (G : C₁ᵒᵖ ⥤ C₃ ⥤ C₂) {X₁ Y₁ : C₁} (f₁ : X₁ ⟶ Y₁) {X₃ Y₃ : C₃} (f₃ : X₃ ⟶ Y₃)
-
-section
-
-variable [PreservesLimitsOfShape (Discrete PEmpty.{1}) (G.flip.obj X₃)]
-  [PreservesLimitsOfShape (Discrete PEmpty.{1}) (G.flip.obj Y₃)]
-  (h : IsInitial X₁)
-
-/-- A `Functor.PullbackObjObj` structure for a functor `G : C₁ᵒᵖ ⥤ C₃ ⥤ C₂` and
-morphisms `f₁ : X₁ ⟶ Y₁` and `f₃ : X₃ ⟶ Y₃` when `X₁` is initial and both
-`G.flip.obj X₃` and `G.flip.obj Y₃` preserve the terminal object. -/
-@[simps]
-noncomputable def ofIsInitial : G.PullbackObjObj f₁ f₃ where
-  pt := (G.obj (op Y₁)).obj Y₃
-  fst := (IsTerminal.isTerminalObj (G.flip.obj X₃) _ h.op).from _
-  snd := 𝟙 _
-  isPullback := by
-    let hX₃ := IsTerminal.isTerminalObj (G.flip.obj X₃) _ h.op
-    let hY₃ := IsTerminal.isTerminalObj (G.flip.obj Y₃) _ h.op
-    apply +allowSynthFailures IsPullback.of_vert_isIso
-    · exact isIso_of_isTerminal hX₃ hY₃ _
-    · exact ⟨hY₃.hom_ext _ _⟩
-
-@[simp]
-lemma ofIsInitial_π : (ofIsInitial G f₁ f₃ h).π = (G.obj (op Y₁)).map f₃ := by
-  simpa using (ofIsInitial G f₁ f₃ h).π_snd
-
-end
-
-section
-
-variable [PreservesLimitsOfShape (Discrete PEmpty.{1}) (G.obj (op X₁))]
-  [PreservesLimitsOfShape (Discrete PEmpty.{1}) (G.obj (op Y₁))]
-  (h : IsTerminal Y₃)
-
-/-- A `Functor.PullbackObjObj` structure for a functor `G : C₁ᵒᵖ ⥤ C₃ ⥤ C₂` and
-morphisms `f₁ : X₁ ⟶ Y₁` and `f₃ : X₃ ⟶ Y₃` when `Y₃` is terminal and both
-`G.obj X₁` and `G.obj Y₁` preserve the terminal object. -/
-@[simps]
-noncomputable def ofIsTerminal : G.PullbackObjObj f₁ f₃ where
-  pt := (G.obj (op X₁)).obj X₃
-  fst := 𝟙 _
-  snd := (IsTerminal.isTerminalObj (G.obj _) _ h).from _
-  isPullback := by
-    let hX₁ := IsTerminal.isTerminalObj (G.obj (op X₁)) _ h
-    let hY₁ := IsTerminal.isTerminalObj (G.obj (op Y₁)) _ h
-    apply +allowSynthFailures IsPullback.of_horiz_isIso
-    · exact isIso_of_isTerminal hY₁ hX₁ _
-    · exact ⟨hX₁.hom_ext _ _⟩
-
-@[simp]
-lemma ofIsTerminal_π : (ofIsTerminal G f₁ f₃ h).π = (G.map f₁.op).app X₃ := by
-  simpa using (ofIsTerminal G f₁ f₃ h).π_fst
-
-end
-
-end Functor.PullbackObjObj
 
 end CategoryTheory
 
