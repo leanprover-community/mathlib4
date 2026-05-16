@@ -241,3 +241,26 @@ end Linear
 end ContinuousLinearEquiv
 
 end CompactSets
+
+section Bug
+
+open scoped CompactConvergenceCLM
+
+variable {𝕜 : Type*} [NormedField 𝕜] {E F G : Type*}
+  [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
+  [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace F]
+  [AddCommGroup G] [Module 𝕜 G] [TopologicalSpace G]
+  [IsTopologicalAddGroup G] [ContinuousConstSMul 𝕜 G]
+
+lemma ContinuousLinearMap.precompCompactConvergenceCLM_apply_apply
+    (L : E →L[𝕜] F) (T : F →L_c[𝕜] G) (x : E) :
+    L.precompCompactConvergenceCLM G T x = T (L x) :=
+  rfl
+
+lemma foo {T : F →L_c[𝕜] G} :
+    (0 : E →L[𝕜] F).precompCompactConvergenceCLM G T = 0 := by
+  ext x
+  simp_rw [ContinuousLinearMap.precompCompactConvergenceCLM_apply_apply]
+  simp
+
+end Bug
