@@ -207,6 +207,16 @@ structure Type₁ where
   index : Fin (d + 1)
   isIndex : IsIndex x hd index.succ
 
+variable {x} in
+@[simps]
+def IsIndex.type₁ {hd : x.dim = d + 1} {i : Fin (d + 1)}
+    (h : IsIndex x hd i.succ) : Type₁.{u} k n where
+  x := x
+  d := d
+  hd := hd
+  index := i
+  isIndex := h
+
 namespace Type₁
 
 lemma ext_iff {s t : Type₁.{u} k n} :
@@ -395,11 +405,18 @@ lemma isType₂_δ : IsType₂ hl.δ := by
   dsimp [stdSimplex.δ_apply] at hl ht ⊢
   aesop
 
+variable {x} in
+lemma eq_of_isType₂_δ {u : (Subcomplex.unionProd.{u} Λ[m + 1, k.castSucc] ∂Δ[n]).N}
+    (hu : IsType₂ u) (i : Fin (d + 2))
+    (hu' : S.mk u.simplex = S.mk (((Δ[m + 1] ⊗ Δ[n])).δ i (x.cast hd).simplex)) :
+    i = l.castSucc ∨ i = l.succ := by
+  sorry
+
 end IsIndex
 
 lemma IsType₂.type₁_eq_of_δ_eq
-    {s : Type₁.{u} k n} {t : (Subcomplex.unionProd.{u} Λ[m + 1, k.castSucc] ∂Δ[n]).N}
-    (ht : IsType₂ t) (hst : s.δ = t) {d : ℕ} (hd : t.dim = d) :
+    {t : (Subcomplex.unionProd.{u} Λ[m + 1, k.castSucc] ∂Δ[n]).N}
+    (ht : IsType₂ t) (s : Type₁.{u} k n) (hst : s.δ = t) {d : ℕ} (hd : t.dim = d) :
     ht.type₁ hd = s := by
   subst hst hd
   rw [Type₁.ext_iff, Subcomplex.N.ext_iff, N.ext_iff]
@@ -430,6 +447,17 @@ lemma IsType₂.type₁_eq_of_δ_eq
 lemma Type₁.isType₂_δ (s : Type₁.{u} k n) : IsType₂ s.δ :=
   s.isIndex.isType₂_δ
 
+variable {x} in
+lemma IsIndex.δ_injective
+    {d : ℕ} {hd : x.dim = d + 1} {l : Fin (d + 1)} (hl : IsIndex x hd l.succ)
+    {y : (Subcomplex.unionProd.{u} Λ[m + 1, k.castSucc] ∂Δ[n]).N}
+    {d' : ℕ} {hd' : y.dim = d' + 1} {l' : Fin (d' + 1)} (hl' : IsIndex y hd' l'.succ)
+    (h : hl.δ = hl'.δ) :
+    x = y := by
+  have h₁ := hl.isType₂_δ.type₁_eq_of_δ_eq hl'.type₁ h.symm rfl
+  have h₂ := hl.isType₂_δ.type₁_eq_of_δ_eq hl.type₁ rfl rfl
+  exact congr_arg Type₁.x (h₂.symm.trans h₁)
+
 end pairingCore
 
 open pairingCore
@@ -452,8 +480,8 @@ noncomputable def pairingCore {m : ℕ} (k : Fin (m + 1)) (n : ℕ) :
     replace h : s.δ = t.δ := by rwa [Subcomplex.N.ext_iff, N.ext_iff]
     generalize hs : s.δ = u
     have hu' : IsType₂ u := by simpa only [hs] using s.isType₂_δ
-    rw [← hu'.type₁_eq_of_δ_eq hs rfl,
-      hu'.type₁_eq_of_δ_eq (h.symm.trans hs) rfl]
+    rw [← hu'.type₁_eq_of_δ_eq _ hs rfl,
+      hu'.type₁_eq_of_δ_eq _ (h.symm.trans hs) rfl]
   type₁_ne_type₂' s t hst := by
     replace hst : s.x = t.isIndex.δ := by
       rwa [Subcomplex.N.ext_iff, N.ext_iff, ← s.x.cast_eq_self s.hd]
@@ -488,6 +516,7 @@ lemma type₁_pairingCore {m : ℕ} (k : Fin (m + 1)) {n : ℕ}
     (pairingCore k n).type₁ s = s.x :=
   Subcomplex.N.cast_eq_self _ s.hd
 
+set_option backward.isDefEq.respectTransparency false in
 noncomputable def weakRankFunction {m : ℕ} (k : Fin (m + 1)) (n : ℕ) :
     (pairingCore.{u} k n).WeakRankFunction ℕ where
   rank s := (finset s.x rfl).card
@@ -500,12 +529,50 @@ noncomputable def weakRankFunction {m : ℕ} (k : Fin (m + 1)) (n : ℕ) :
     obtain rfl : dt = d + 1 := hdt
     simp only [ne_eq, pairingCore_ι, Type₁.ext_iff] at h₁
     change N.mk ((Δ[m + 1] ⊗ Δ[n]).δ is.castSucc s) _ < N.mk t _ at h₂
-    obtain ⟨f, hf, h⟩ := N.le_iff_exists_mono.1 h₂.le
+    obtain ⟨f, hf, hδ⟩ := N.le_iff_exists_mono.1 h₂.le
     dsimp at f hf
     obtain ⟨i, rfl⟩ := SimplexCategory.eq_δ_of_mono f
-    dsimp at h ⊢
-    have := hs.isType₂_δ
-    sorry
+    obtain rfl | rfl := ht.eq_of_isType₂_δ hs.isType₂_δ i (by
+      rw [S.ext_iff']
+      exact ⟨rfl, hδ.symm⟩)
+    · refine (h₁ (hs.δ_injective ht ?_)).elim
+      rw [Subcomplex.N.ext_iff, N.ext_iff, S.ext_iff']
+      exact ⟨rfl, hδ.symm⟩
+    · let Ss := finset (Subcomplex.N.mk s hs₁ hs₂) rfl
+      let St := finset (Subcomplex.N.mk t ht₁ ht₂) rfl
+      let Sδ := finset hs.δ rfl
+      replace hδ (i : Fin (d + 1)) :
+          s.1 (is.castSucc.succAbove i) = t.1 (it.succ.succAbove i) :=
+        DFunLike.congr_fun (congr_arg Prod.fst hδ.symm) i
+      have hSs (i : Fin (d + 1)) : i ∈ Sδ ↔ is.castSucc.succAbove i ∈ Ss := by
+        simp [Sδ, Ss, stdSimplex.δ_apply]
+      have hSt (i : Fin (d + 1)) : i ∈ Sδ ↔ it.succ.succAbove i ∈ St := by
+        simp [Sδ, St, stdSimplex.δ_apply, hδ]
+      suffices Ss.card = Sδ.card ∧ St.card = Sδ.card + 1 by grind
+      constructor
+      · suffices Ss = Finset.image is.castSucc.succAbove Sδ by
+          rw [this]
+          exact Finset.card_image_of_injective _ Fin.succAbove_right_injective
+        ext i
+        obtain rfl | ⟨i, rfl⟩ := is.castSucc.eq_self_or_eq_succAbove i
+        · have : is.castSucc ∉ Ss := fun h ↦ by
+            have : s.1 is.castSucc ≤ k.castSucc := by
+              simpa using (hs.simplex_fst_le_castSucc_iff is.castSucc).2 (by simp)
+            simp only [Subcomplex.N.mk_dim, mem_finset_iff, S.cast_simplex_rfl,
+              Subcomplex.N.mk_simplex, Ss] at h
+            simp [h] at this
+          simpa
+        · simp [hSs]
+      · suffices St = Finset.image it.succ.succAbove Sδ ∪ {it.succ} by
+          rw [this, Finset.card_union_of_disjoint (by simp),
+            Finset.card_image_of_injective _ Fin.succAbove_right_injective,
+            Finset.card_singleton]
+        ext i
+        obtain rfl | ⟨i, rfl⟩ := it.succ.eq_self_or_eq_succAbove i
+        · have : it.succ ∈ St := by
+            simpa [St, mem_finset_iff] using ht.simplex_fst_succ
+          simp [hSt, this]
+        · simp [hSt]
 
 instance {m : ℕ} (k : Fin (m + 1)) (n : ℕ) :
     (pairingCore.{u} k n).IsRegular :=
