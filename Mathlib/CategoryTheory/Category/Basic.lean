@@ -5,12 +5,14 @@ Authors: Stephen Morgan, Kim Morrison, Johannes Hölzl, Reid Barton
 -/
 module
 
-public import Mathlib.CategoryTheory.Category.Init
 public import Mathlib.Combinatorics.Quiver.Basic
-public import Mathlib.Tactic.PPWithUniv
-public import Mathlib.Tactic.CrossRefAttribute
-public import Mathlib.Tactic.Common
-public import Mathlib.Tactic.TryThis
+public import Aesop.BuiltinRules
+public import Aesop.Frontend.Tactic
+public import Mathlib.Tactic.Basic
+import Mathlib.CategoryTheory.Category.Init
+import Mathlib.Tactic.Common
+import Mathlib.Tactic.CrossRefAttribute
+import Mathlib.Tactic.TryThis
 
 /-!
 # Categories
