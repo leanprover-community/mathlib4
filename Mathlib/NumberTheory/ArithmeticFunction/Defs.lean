@@ -461,7 +461,7 @@ theorem map_prod {ι : Type*} [CommMonoidWithZero R] (g : ι → ℕ) {f : Arith
     induction s using Finset.induction_on with
     | empty => simp [hf]
     | insert _ _ has ih =>
-      rw [coe_insert, Set.pairwise_insert_of_symmetric (Coprime.symmetric.comap g)] at hs
+      rw [coe_insert, Set.pairwise_insert_of_symm] at hs
       rw [prod_insert has, prod_insert has, hf.map_mul_of_coprime, ih hs.1]
       exact Coprime.prod_right fun i hi => hs.2 _ hi (hi.ne_of_notMem has).symm
 

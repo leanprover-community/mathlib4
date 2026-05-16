@@ -577,90 +577,90 @@ variable {r r₁ r₂ : α → α → Prop}
 /-- Symmetric relations define a set on `Sym2 α` by taking all those pairs
 of elements that are related.
 -/
-def fromRel (sym : Symmetric r) : Set (Sym2 α) :=
-  setOf (lift ⟨r, fun _ _ => propext ⟨(sym ·), (sym ·)⟩⟩)
+def fromRel (sym : Std.Symm r) : Set (Sym2 α) :=
+  setOf <| lift ⟨r, fun _ _ ↦ propext ⟨symm, symm⟩⟩
 
 @[simp]
-theorem fromRel_prop {sym : Symmetric r} {a b : α} : s(a, b) ∈ fromRel sym ↔ r a b :=
+theorem fromRel_prop {sym : Std.Symm r} {a b : α} : s(a, b) ∈ fromRel sym ↔ r a b :=
   Iff.rfl
 
 @[deprecated (since := "2026-02-05")] alias fromRel_proj_prop := fromRel_prop
 
-theorem fromRel_mono_iff (sym₁ : Symmetric r₁) (sym₂ : Symmetric r₂) :
+theorem fromRel_mono_iff (sym₁ : Std.Symm r₁) (sym₂ : Std.Symm r₂) :
     fromRel sym₁ ⊆ fromRel sym₂ ↔ r₁ ≤ r₂ :=
   ⟨fun hle a b ↦ @hle s(a, b), fun hle ↦ Sym2.ind hle⟩
 
 @[gcongr]
 alias ⟨_, fromRel_mono⟩ := fromRel_mono_iff
 
-theorem fromRel_bot : fromRel (α := α) (r := ⊥) (fun _ _ ↦ id) = ∅ :=
+theorem fromRel_bot : fromRel (α := α) (r := ⊥) inferInstance = ∅ :=
   Set.eq_empty_of_forall_notMem <| Sym2.ind <| by simp
 
 @[simp]
-theorem fromRel_bot_iff {sym : Symmetric r} : fromRel sym = ∅ ↔ r = ⊥ := by
+theorem fromRel_bot_iff {sym : Std.Symm r} : fromRel sym = ∅ ↔ r = ⊥ := by
   refine ⟨fun h ↦ ?_, (· ▸ fromRel_bot)⟩
   ext x y
   simpa [h] using fromRel_prop (sym := sym)
 
-theorem fromRel_top : fromRel (α := α) (r := ⊤) (fun _ _ ↦ id) = .univ :=
+theorem fromRel_top : fromRel (α := α) (r := ⊤) inferInstance = .univ :=
   Set.eq_univ_of_forall <| Sym2.ind <| by simp
 
 @[simp]
-theorem fromRel_top_iff {sym : Symmetric r} : fromRel sym = .univ ↔ r = ⊤ := by
+theorem fromRel_top_iff {sym : Std.Symm r} : fromRel sym = .univ ↔ r = ⊤ := by
   refine ⟨fun h ↦ ?_, (· ▸ fromRel_top)⟩
   ext x y
   simpa [h] using fromRel_prop (sym := sym)
 
-theorem fromRel_ne : fromRel (fun (_ _ : α) z => z.symm : Symmetric Ne) = {z | ¬IsDiag z} := by
+theorem fromRel_ne : fromRel (α := α) (r := Ne) inferInstance = {z | ¬IsDiag z} := by
   ext z; exact z.ind (by simp)
 
-lemma diagSet_eq_fromRel_eq : diagSet = fromRel (α := α) eq_equivalence.symmetric := by
+lemma diagSet_eq_fromRel_eq : diagSet = fromRel (α := α) eq_equivalence.stdSymm := by
   ext ⟨a, b⟩; simp
 
-lemma diagSet_compl_eq_fromRel_ne : diagSetᶜ = fromRel (α := α) (r := Ne) (fun _ _ ↦ Ne.symm) := by
+lemma diagSet_compl_eq_fromRel_ne : diagSetᶜ = fromRel (α := α) (r := Ne) inferInstance := by
   ext ⟨a, b⟩; simp
 
-@[simp] lemma diagSet_subset_fromRel (hr : Symmetric r) : diagSet ⊆ fromRel hr ↔ Std.Refl r := by
+@[simp] lemma diagSet_subset_fromRel (hr : Std.Symm r) : diagSet ⊆ fromRel hr ↔ Std.Refl r := by
   simp [Set.subset_def, Sym2.forall, refl_def]
 
-@[simp] lemma disjoint_diagSet_fromRel (hr : Symmetric r) :
+@[simp] lemma disjoint_diagSet_fromRel (hr : Std.Symm r) :
     Disjoint diagSet (fromRel hr) ↔ Std.Irrefl r := by
   simp [Set.disjoint_left, Sym2.forall, irrefl_def]
 
-@[simp] lemma fromRel_subset_compl_diagSet (hr : Symmetric r) :
+@[simp] lemma fromRel_subset_compl_diagSet (hr : Std.Symm r) :
     fromRel hr ⊆ diagSetᶜ ↔ Std.Irrefl r := by simp [Set.subset_compl_iff_disjoint_left]
 
 @[deprecated diagSet_subset_fromRel (since := "2025-12-10")]
-theorem reflexive_iff_diagSet_subset_fromRel (sym : Symmetric r) :
+theorem reflexive_iff_diagSet_subset_fromRel (sym : Std.Symm r) :
     Std.Refl r ↔ diagSet ⊆ fromRel sym := by simp
 
 @[deprecated fromRel_subset_compl_diagSet (since := "2025-12-10")]
-theorem irreflexive_iff_fromRel_subset_diagSet_compl (sym : Symmetric r) :
+theorem irreflexive_iff_fromRel_subset_diagSet_compl (sym : Std.Symm r) :
     Std.Irrefl r ↔ fromRel sym ⊆ diagSetᶜ := by simp
 
-theorem fromRel_irrefl {sym : Symmetric r} : Std.Irrefl r ↔ ∀ {z}, z ∈ fromRel sym → ¬IsDiag z where
+theorem fromRel_irrefl {sym : Std.Symm r} : Std.Irrefl r ↔ ∀ {z}, z ∈ fromRel sym → ¬IsDiag z where
   mp := by intro ⟨h⟩; apply Sym2.ind; aesop
   mpr h := ⟨fun _ hr ↦ h (fromRel_prop.mpr hr) rfl⟩
 
 @[deprecated (since := "2026-02-12")] alias fromRel_irreflexive := fromRel_irrefl
 
-theorem mem_fromRel_irrefl_other_ne {sym : Symmetric r} (irrefl : Std.Irrefl r) {a : α}
+theorem mem_fromRel_irrefl_other_ne {sym : Std.Symm r} (irrefl : Std.Irrefl r) {a : α}
     {z : Sym2 α} (hz : z ∈ fromRel sym) (h : a ∈ z) : Mem.other h ≠ a :=
   other_ne (fromRel_irrefl.mp irrefl hz) h
 
-instance fromRel.decidablePred (sym : Symmetric r) [h : DecidableRel r] :
+instance fromRel.decidablePred (sym : Std.Symm r) [h : DecidableRel r] :
     DecidablePred (· ∈ Sym2.fromRel sym) := fun z => z.recOnSubsingleton h
 
-lemma fromRel_relationMap {r : α → α → Prop} (hr : Symmetric r) (f : α → β) :
-    fromRel (Relation.map_symmetric hr f) = Sym2.map f '' Sym2.fromRel hr := by
+lemma fromRel_relationMap {r : α → α → Prop} (hr : Std.Symm r) (f : α → β) :
+    fromRel (hr.map f) = Sym2.map f '' Sym2.fromRel hr := by
   ext ⟨a, b⟩
   simp only [fromRel_prop, Relation.Map, Set.mem_image, Sym2.exists, map_mk, Sym2.eq,
     rel_iff', Prod.mk.injEq, Prod.swap_prod_mk, and_or_left, exists_or, iff_self_or,
     forall_exists_index, and_imp]
-  exact fun c d hcd hc hd ↦ ⟨d, c, hr hcd, hd, hc⟩
+  exact fun c d hcd hc hd ↦ ⟨d, c, symm hcd, hd, hc⟩
 
 /-- The inverse to `Sym2.fromRel`. Given a set on `Sym2 α`, give a symmetric relation on `α`
-(see `Sym2.toRel_symmetric`). -/
+(see `Sym2.toRel_symm`). -/
 def ToRel (s : Set (Sym2 α)) (x y : α) : Prop :=
   s(x, y) ∈ s
 
@@ -668,12 +668,15 @@ def ToRel (s : Set (Sym2 α)) (x y : α) : Prop :=
 theorem toRel_prop (s : Set (Sym2 α)) (x y : α) : ToRel s x y ↔ s(x, y) ∈ s :=
   Iff.rfl
 
-theorem toRel_symmetric (s : Set (Sym2 α)) : Symmetric (ToRel s) := fun x y => by simp [eq_swap]
+instance toRel_symm (s : Set (Sym2 α)) : Std.Symm (ToRel s) where
+  symm x y := by simp [eq_swap]
 
-theorem toRel_fromRel (sym : Symmetric r) : ToRel (fromRel sym) = r :=
+@[deprecated (since := "2026-04-15")] alias toRel_symmetric := toRel_symm
+
+theorem toRel_fromRel (sym : Std.Symm r) : ToRel (fromRel sym) = r :=
   rfl
 
-theorem fromRel_toRel (s : Set (Sym2 α)) : fromRel (toRel_symmetric s) = s :=
+theorem fromRel_toRel (s : Set (Sym2 α)) : fromRel (toRel_symm s) = s :=
   Set.ext fun z => Sym2.ind (fun _ _ => Iff.rfl) z
 
 theorem toRel_mono_iff (s₁ s₂ : Set (Sym2 α)) : ToRel s₁ ≤ ToRel s₂ ↔ s₁ ⊆ s₂ :=
@@ -690,21 +693,21 @@ def toRelOrderEmbedding : Set (Sym2 α) ↪o (α → α → Prop) :=
 variable (α) in
 /-- `fromRel`/`ToRel` induce an order isomorphism between symmetric relations and `Sym2` sets -/
 @[simps]
-def fromRelOrderIso : { r : α → α → Prop // Symmetric r } ≃o Set (Sym2 α) where
+def fromRelOrderIso : { r : α → α → Prop // Std.Symm r } ≃o Set (Sym2 α) where
   toFun r := fromRel r.prop
-  invFun s := ⟨ToRel s, toRel_symmetric s⟩
+  invFun s := ⟨ToRel s, toRel_symm s⟩
   left_inv r := by simp [toRel_fromRel]
   right_inv s := by simp [fromRel_toRel]
   map_rel_iff' {r₁ r₂} := by simpa using fromRel_mono_iff ..
 
 /-- `fromRel` induces an order embedding from symmetric relations to `Sym2` sets. -/
 @[deprecated fromRelOrderIso (since := "2026-03-11")]
-def fromRelOrderEmbedding : { r : α → α → Prop // Symmetric r } ↪o Set (Sym2 α) :=
+def fromRelOrderEmbedding : { r : α → α → Prop // Std.Symm r } ↪o Set (Sym2 α) :=
   fromRelOrderIso α |>.toOrderEmbedding
 
 @[simp]
-theorem fromRel_eq_fromRel_iff_eq {r₁ r₂ : α → α → Prop} (sym₁ : Symmetric r₁)
-    (sym₂ : Symmetric r₂) : fromRel sym₁ = fromRel sym₂ ↔ r₁ = r₂ := by
+theorem fromRel_eq_fromRel_iff_eq {r₁ r₂ : α → α → Prop} (sym₁ : Std.Symm r₁) (sym₂ : Std.Symm r₂) :
+    fromRel sym₁ = fromRel sym₂ ↔ r₁ = r₂ := by
   rw [← Subtype.mk.injEq r₁ sym₁ r₂ sym₂, ← fromRelOrderIso α |>.eq_iff_eq]
   rfl
 
@@ -962,7 +965,7 @@ variable {s : Set α}
 /--
 For a set `s : Set α`, `s.sym2` is the set of all unordered pairs of elements from `s`.
 -/
-def sym2 (s : Set α) : Set (Sym2 α) := fromRel (r := fun x y ↦ x ∈ s ∧ y ∈ s) (fun _ _ => .symm)
+def sym2 (s : Set α) : Set (Sym2 α) := fromRel (r := fun x y ↦ x ∈ s ∧ y ∈ s) ⟨fun _ _ ↦ .symm⟩
 
 @[simp] lemma mk_mem_sym2_iff {x y : α} : s(x, y) ∈ s.sym2 ↔ x ∈ s ∧ y ∈ s := Iff.rfl
 

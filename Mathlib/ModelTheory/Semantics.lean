@@ -967,8 +967,9 @@ theorem realize_irreflexive : M ⊨ r.irreflexive ↔ Std.Irrefl fun x y : M => 
   exact forall_congr' fun _ ↦ not_congr realize_rel₂
 
 @[simp]
-theorem realize_symmetric : M ⊨ r.symmetric ↔ Symmetric fun x y : M => RelMap r ![x, y] :=
-  forall₂_congr fun _ _ ↦ imp_congr realize_rel₂ realize_rel₂
+theorem realize_symmetric : M ⊨ r.symmetric ↔ Std.Symm fun x y : M => RelMap r ![x, y] := by
+  rw [symm_def]
+  exact forall₂_congr fun _ _ ↦ imp_congr realize_rel₂ realize_rel₂
 
 @[simp]
 theorem realize_antisymmetric :

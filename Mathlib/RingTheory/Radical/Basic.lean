@@ -314,8 +314,7 @@ theorem radical_prod {ι : Type*} {f : ι → M} (s : Finset ι)
   | empty => simp
   | cons i s his ih =>
     simp only [Finset.prod_cons]
-    rw [Finset.coe_cons,
-      Set.pairwise_insert_of_symmetric_of_notMem (symmetric_isRelPrime.comap _) (by simpa)] at h
+    rw [Finset.coe_cons, Set.pairwise_insert_of_symm_of_notMem <| by simpa] at h
     rw [radical_mul, ih h.1]
     exact IsRelPrime.prod_right h.2
 

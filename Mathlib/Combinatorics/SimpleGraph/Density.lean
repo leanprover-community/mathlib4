@@ -244,24 +244,24 @@ section Symmetric
 variable {r : α → α → Prop} [DecidableRel r] {s t : Finset α} {a b : α}
 
 @[simp]
-theorem swap_mem_interedges_iff (hr : Symmetric r) {x : α × α} :
+theorem swap_mem_interedges_iff [Std.Symm r] {x : α × α} :
     x.swap ∈ interedges r s t ↔ x ∈ interedges r t s := by
-  rw [mem_interedges_iff, mem_interedges_iff, hr.iff]
+  rw [mem_interedges_iff, mem_interedges_iff, Std.Symm.iff (r := r)]
   exact and_left_comm
 
-theorem mk_mem_interedges_comm (hr : Symmetric r) :
+theorem mk_mem_interedges_comm [Std.Symm r] :
     (a, b) ∈ interedges r s t ↔ (b, a) ∈ interedges r t s :=
-  @swap_mem_interedges_iff _ _ _ _ _ hr (b, a)
+  swap_mem_interedges_iff (x := (b, a))
 
-theorem card_interedges_comm (hr : Symmetric r) (s t : Finset α) :
+theorem card_interedges_comm [Std.Symm r] (s t : Finset α) :
     #(interedges r s t) = #(interedges r t s) :=
-  Finset.card_bij (fun (x : α × α) _ ↦ x.swap) (fun _ ↦ (swap_mem_interedges_iff hr).2)
+  Finset.card_bij (fun (x : α × α) _ ↦ x.swap) (fun _ ↦ swap_mem_interedges_iff.mpr)
     (fun _ _ _ _ h ↦ Prod.swap_injective h) fun x h ↦
-    ⟨x.swap, (swap_mem_interedges_iff hr).2 h, x.swap_swap⟩
+    ⟨x.swap, swap_mem_interedges_iff.mpr h, x.swap_swap⟩
 
-theorem edgeDensity_comm (hr : Symmetric r) (s t : Finset α) :
+theorem edgeDensity_comm [Std.Symm r] (s t : Finset α) :
     edgeDensity r s t = edgeDensity r t s := by
-  rw [edgeDensity, mul_comm, card_interedges_comm hr, edgeDensity]
+  rw [edgeDensity, mul_comm, card_interedges_comm, edgeDensity]
 
 end Symmetric
 
@@ -367,13 +367,16 @@ theorem edgeDensity_empty_right (s : Finset α) : G.edgeDensity s ∅ = 0 :=
 
 @[simp]
 theorem swap_mem_interedges_iff {x : α × α} : x.swap ∈ G.interedges s t ↔ x ∈ G.interedges t s :=
-  Rel.swap_mem_interedges_iff G.symm
+  have := G.symm
+  Rel.swap_mem_interedges_iff
 
 theorem mk_mem_interedges_comm : (a, b) ∈ G.interedges s t ↔ (b, a) ∈ G.interedges t s :=
-  Rel.mk_mem_interedges_comm G.symm
+  have := G.symm
+  Rel.mk_mem_interedges_comm
 
 theorem edgeDensity_comm (s t : Finset α) : G.edgeDensity s t = G.edgeDensity t s :=
-  Rel.edgeDensity_comm G.symm s t
+  have := G.symm
+  Rel.edgeDensity_comm s t
 
 end SimpleGraph
 

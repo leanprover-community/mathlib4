@@ -44,7 +44,7 @@ instance : SemilatticeInf (Graph α β) where
     vertexSet := V(G) ∩ V(H)
     edgeSet := {e ∈ E(G) ∩ E(H) | ∀ x y, G.IsLink e x y ↔ H.IsLink e x y}
     IsLink e x y := G.IsLink e x y ∧ H.IsLink e x y
-    isLink_symm _ _ _ _ h := ⟨h.1.symm, h.2.symm⟩
+    isLink_symm _ _ := { symm _ _ h := ⟨h.1.symm, h.2.symm⟩ }
     eq_or_eq_of_isLink_of_isLink _ _ _ _ _ h h' := h.1.left_eq_or_eq h'.1
     edge_mem_iff_exists_isLink e := by
       simp only [edgeSet_eq_setOf_exists_isLink, mem_inter_iff, mem_setOf_eq]

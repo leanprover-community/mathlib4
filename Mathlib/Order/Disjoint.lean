@@ -61,8 +61,11 @@ theorem Disjoint.symm ⦃a b : α⦄ : Disjoint a b → Disjoint b a :=
   disjoint_comm.1
 
 @[to_dual]
-theorem symmetric_disjoint : Symmetric (Disjoint : α → α → Prop) :=
-  Disjoint.symm
+instance symm_disjoint : Std.Symm (Disjoint : α → α → Prop) where
+  symm := Disjoint.symm
+
+@[deprecated (since := "2026-04-15")] alias symmetric_codisjoint := symm_codisjoint
+@[to_dual existing, deprecated (since := "2026-04-15")] alias symmetric_disjoint := symm_disjoint
 
 @[to_dual (attr := simp, grind ←)]
 theorem disjoint_bot_left : Disjoint ⊥ a := fun _ hbot _ ↦ hbot

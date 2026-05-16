@@ -54,7 +54,10 @@ protected theorem eq (h : AEDisjoint μ s t) : μ (s ∩ t) = 0 :=
 @[symm]
 protected theorem symm (h : AEDisjoint μ s t) : AEDisjoint μ t s := by rwa [AEDisjoint, inter_comm]
 
-protected theorem symmetric : Symmetric (AEDisjoint μ) := fun _ _ => AEDisjoint.symm
+instance stdSymm : Std.Symm (AEDisjoint μ) where
+  symm _ _ := AEDisjoint.symm
+
+@[deprecated (since := "2026-04-15")] protected alias symmetric := AEDisjoint.stdSymm
 
 protected theorem comm : AEDisjoint μ s t ↔ AEDisjoint μ t s :=
   ⟨AEDisjoint.symm, AEDisjoint.symm⟩

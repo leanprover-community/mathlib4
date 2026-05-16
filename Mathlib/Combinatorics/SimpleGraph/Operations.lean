@@ -42,7 +42,7 @@ edge is removed if present. -/
 def replaceVertex : SimpleGraph V where
   Adj v w := if v = t then if w = t then False else G.Adj s w
                       else if w = t then G.Adj v s else G.Adj v w
-  symm v w := by dsimp only; split_ifs <;> simp [adj_comm]
+  symm.symm v w := by split_ifs <;> simp [adj_comm]
 
 /-- There is never an `s-t` edge in `G.replaceVertex s t`. -/
 lemma not_adj_replaceVertex_same : ¬(G.replaceVertex s t).Adj s t := by simp [replaceVertex]

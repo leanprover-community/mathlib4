@@ -39,7 +39,7 @@ def restrict (G : Graph α β) (E₀ : Set β) : Graph α β where
   vertexSet := V(G)
   edgeSet := E(G) ∩ E₀
   IsLink e x y := e ∈ E₀ ∧ G.IsLink e x y
-  isLink_symm e he x y h := ⟨h.1, h.2.symm⟩
+  isLink_symm e he := { symm x y h := ⟨h.1, h.2.symm⟩ }
   eq_or_eq_of_isLink_of_isLink _ _ _ _ _ h h' := h.2.left_eq_or_eq h'.2
   edge_mem_iff_exists_isLink e := ⟨fun h ↦ by simp [G.exists_isLink_of_mem_edgeSet h.1, h.2],
     fun ⟨x, y, h⟩ ↦ ⟨h.2.edge_mem, h.1⟩⟩
@@ -151,7 +151,7 @@ even though this is the standard use case) -/
 protected def induce (G : Graph α β) (X : Set α) : Graph α β where
   vertexSet := X
   IsLink e x y := G.IsLink e x y ∧ x ∈ X ∧ y ∈ X
-  isLink_symm _ _ x := by simp +contextual [G.isLink_comm (x := x)]
+  isLink_symm := by simp +contextual [symm_def, G.isLink_comm]
   eq_or_eq_of_isLink_of_isLink _ _ _ _ _ h h' := h.1.left_eq_or_eq h'.1
 
 lemma induce_le (hX : X ⊆ V(G)) : G.induce X ≤ G := ⟨hX, fun _ _ _ h ↦ h.1⟩

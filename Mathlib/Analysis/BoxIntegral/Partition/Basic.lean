@@ -570,7 +570,7 @@ def disjUnion (π₁ π₂ : Prepartition I) (h : Disjoint π₁.iUnion π₂.iU
   le_of_mem' _ hJ := (Finset.mem_union.1 hJ).elim π₁.le_of_mem π₂.le_of_mem
   pairwiseDisjoint :=
     suffices ∀ J₁ ∈ π₁, ∀ J₂ ∈ π₂, J₁ ≠ J₂ → Disjoint (J₁ : Set (ι → ℝ)) J₂ by
-      simpa [pairwise_union_of_symmetric (symmetric_disjoint.comap _), pairwiseDisjoint]
+      simpa [pairwise_union_of_symm, pairwiseDisjoint]
     fun _ h₁ _ h₂ _ => h.mono (π₁.subset_iUnion h₁) (π₂.subset_iUnion h₂)
 
 @[simp]

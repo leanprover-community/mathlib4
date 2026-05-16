@@ -40,20 +40,23 @@ section Pairwise
 
 variable {f g : ι → α} {s t : Set α} {a b : α}
 
-theorem pairwise_on_bool (hr : Symmetric r) {a b : α} :
-    Pairwise (r on fun c => cond c a b) ↔ r a b := by simpa [Pairwise, Function.onFun] using @hr a b
+theorem pairwise_on_bool [Std.Symm r] {a b : α} : Pairwise (r on fun c ↦ cond c a b) ↔ r a b := by
+  simpa [Pairwise, Function.onFun] using symm
 
 theorem pairwise_disjoint_on_bool [PartialOrder α] [OrderBot α] {a b : α} :
     Pairwise (Disjoint on fun c => cond c a b) ↔ Disjoint a b :=
-  pairwise_on_bool Disjoint.symm
+  pairwise_on_bool
 
-theorem Symmetric.pairwise_on [LinearOrder ι] (hr : Symmetric r) (f : ι → α) :
-    Pairwise (r on f) ↔ ∀ ⦃m n⦄, m < n → r (f m) (f n) :=
-  ⟨fun h _m _n hmn => h hmn.ne, fun h _m _n hmn => hmn.lt_or_gt.elim (@h _ _) fun h' => hr (h h')⟩
+theorem Std.Symm.pairwise_on [LinearOrder ι] [Std.Symm r] (f : ι → α) :
+    Pairwise (r on f) ↔ ∀ ⦃m n⦄, m < n → r (f m) (f n) where
+  mp h _m _n hmn := h hmn.ne
+  mpr h _m _n hmn := hmn.lt_or_gt.elim (@h _ _) fun h' ↦ symm_of r <| h h'
+
+@[deprecated (since := "2026-04-15")] alias Symmetric.pairwise_on := Std.Symm.pairwise_on
 
 theorem pairwise_disjoint_on [PartialOrder α] [OrderBot α] [LinearOrder ι] (f : ι → α) :
     Pairwise (Disjoint on f) ↔ ∀ ⦃m n⦄, m < n → Disjoint (f m) (f n) :=
-  Symmetric.pairwise_on Disjoint.symm f
+  Std.Symm.pairwise_on f
 
 theorem pairwise_disjoint_mono [PartialOrder α] [OrderBot α] (hs : Pairwise (Disjoint on f))
     (h : g ≤ f) : Pairwise (Disjoint on g) :=
@@ -134,9 +137,11 @@ theorem pairwise_union :
     s.Pairwise r ∧ t.Pairwise r ∧ ∀ a ∈ s, ∀ b ∈ t, a ≠ b → r a b ∧ r b a := by
   grind [Set.Pairwise]
 
-theorem pairwise_union_of_symmetric (hr : Symmetric r) :
+theorem pairwise_union_of_symm [Std.Symm r] :
     (s ∪ t).Pairwise r ↔ s.Pairwise r ∧ t.Pairwise r ∧ ∀ a ∈ s, ∀ b ∈ t, a ≠ b → r a b :=
-  pairwise_union.trans <| by simp only [hr.iff, and_self_iff]
+  pairwise_union.trans <| by simp only [Std.Symm.iff, and_self_iff]
+
+@[deprecated (since := "2026-04-15")] alias pairwise_union_of_symmetric := pairwise_union_of_symm
 
 theorem pairwise_insert :
     (insert a s).Pairwise r ↔ s.Pairwise r ∧ ∀ b ∈ s, a ≠ b → r a b ∧ r b a := by
@@ -155,22 +160,31 @@ theorem Pairwise.insert_of_notMem (ha : a ∉ s) (hs : s.Pairwise r) (h : ∀ b 
     (insert a s).Pairwise r :=
   (pairwise_insert_of_notMem ha).2 ⟨hs, h⟩
 
-theorem pairwise_insert_of_symmetric (hr : Symmetric r) :
+theorem pairwise_insert_of_symm [Std.Symm r] :
     (insert a s).Pairwise r ↔ s.Pairwise r ∧ ∀ b ∈ s, a ≠ b → r a b := by
-  simp only [pairwise_insert, hr.iff a, and_self_iff]
+  simp only [pairwise_insert, Std.Symm.iff a, and_self_iff]
 
-theorem pairwise_insert_of_symmetric_of_notMem (hr : Symmetric r) (ha : a ∉ s) :
+@[deprecated (since := "2026-04-15")] alias pairwise_insert_of_symmetric := pairwise_insert_of_symm
+
+theorem pairwise_insert_of_symm_of_notMem [Std.Symm r] (ha : a ∉ s) :
     (insert a s).Pairwise r ↔ s.Pairwise r ∧ ∀ b ∈ s, r a b := by
-  simp only [pairwise_insert_of_notMem ha, hr.iff a, and_self_iff]
+  simp only [pairwise_insert_of_notMem ha, Std.Symm.iff a, and_self_iff]
 
-theorem Pairwise.insert_of_symmetric (hs : s.Pairwise r) (hr : Symmetric r)
+@[deprecated (since := "2026-04-15")]
+alias pairwise_insert_of_symmetric_of_notMem := pairwise_insert_of_symm_of_notMem
+
+theorem Pairwise.insert_of_symm [Std.Symm r] (hs : s.Pairwise r)
     (h : ∀ b ∈ s, a ≠ b → r a b) : (insert a s).Pairwise r :=
-  (pairwise_insert_of_symmetric hr).2 ⟨hs, h⟩
+  pairwise_insert_of_symm.mpr ⟨hs, h⟩
+
+@[deprecated (since := "2026-04-15")] alias Pairwise.insert_of_symmetric := Pairwise.insert_of_symm
 
 theorem pairwise_pair : Set.Pairwise {a, b} r ↔ a ≠ b → r a b ∧ r b a := by simp [pairwise_insert]
 
-theorem pairwise_pair_of_symmetric (hr : Symmetric r) : Set.Pairwise {a, b} r ↔ a ≠ b → r a b := by
-  simp [pairwise_insert_of_symmetric hr]
+theorem pairwise_pair_of_symm [Std.Symm r] : Set.Pairwise {a, b} r ↔ a ≠ b → r a b := by
+  simp [pairwise_insert_of_symm]
+
+@[deprecated (since := "2026-04-15")] alias pairwise_pair_of_symmetric := pairwise_pair_of_symm
 
 theorem pairwise_univ : (univ : Set α).Pairwise r ↔ Pairwise r := by
   simp only [Set.Pairwise, Pairwise, mem_univ, forall_const]
@@ -247,11 +261,11 @@ lemma pairwiseDisjoint_singleton' (s : Set ι) :
 theorem pairwiseDisjoint_insert {i : ι} :
     (insert i s).PairwiseDisjoint f ↔
       s.PairwiseDisjoint f ∧ ∀ j ∈ s, i ≠ j → Disjoint (f i) (f j) :=
-  pairwise_insert_of_symmetric <| symmetric_disjoint.comap f
+  pairwise_insert_of_symm
 
 theorem pairwiseDisjoint_insert_of_notMem {i : ι} (hi : i ∉ s) :
     (insert i s).PairwiseDisjoint f ↔ s.PairwiseDisjoint f ∧ ∀ j ∈ s, Disjoint (f i) (f j) :=
-  pairwise_insert_of_symmetric_of_notMem (symmetric_disjoint.comap f) hi
+  pairwise_insert_of_symm_of_notMem hi
 
 protected theorem PairwiseDisjoint.insert (hs : s.PairwiseDisjoint f) {i : ι}
     (h : ∀ j ∈ s, i ≠ j → Disjoint (f i) (f j)) : (insert i s).PairwiseDisjoint f :=
@@ -279,7 +293,7 @@ theorem pairwiseDisjoint_union :
     (s ∪ t).PairwiseDisjoint f ↔
       s.PairwiseDisjoint f ∧
         t.PairwiseDisjoint f ∧ ∀ ⦃i⦄, i ∈ s → ∀ ⦃j⦄, j ∈ t → i ≠ j → Disjoint (f i) (f j) :=
-  pairwise_union_of_symmetric <| symmetric_disjoint.comap f
+  pairwise_union_of_symm
 
 theorem PairwiseDisjoint.union (hs : s.PairwiseDisjoint f) (ht : t.PairwiseDisjoint f)
     (h : ∀ ⦃i⦄, i ∈ s → ∀ ⦃j⦄, j ∈ t → i ≠ j → Disjoint (f i) (f j)) : (s ∪ t).PairwiseDisjoint f :=

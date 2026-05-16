@@ -80,10 +80,9 @@ theorem IsMatching.toEdge.surjective (h : M.IsMatching) : Surjective h.toEdge :=
   rintro ⟨⟨x, y⟩, he⟩
   exact ⟨⟨x, M.edge_vert he⟩, h.toEdge_eq_of_adj _ he⟩
 
-theorem IsMatching.toEdge_eq_toEdge_of_adj (h : M.IsMatching)
-    (hv : v ∈ M.verts) (hw : w ∈ M.verts) (ha : M.Adj v w) :
-    h.toEdge ⟨v, hv⟩ = h.toEdge ⟨w, hw⟩ := by
-  rw [h.toEdge_eq_of_adj hv ha, h.toEdge_eq_of_adj hw (M.symm ha), Subtype.mk_eq_mk, Sym2.eq_swap]
+theorem IsMatching.toEdge_eq_toEdge_of_adj (h : M.IsMatching) (hv : v ∈ M.verts) (hw : w ∈ M.verts)
+    (ha : M.Adj v w) : h.toEdge ⟨v, hv⟩ = h.toEdge ⟨w, hw⟩ := by
+  simp [h.toEdge_eq_of_adj hv ha, h.toEdge_eq_of_adj hw ha.symm]
 
 lemma IsMatching.map_ofLE (h : M.IsMatching) (hGG' : G ≤ G') :
     (M.map (Hom.ofLE hGG')).IsMatching := by
