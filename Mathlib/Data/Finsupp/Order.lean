@@ -209,14 +209,20 @@ end SMulWithZero
 
 section PartialOrder
 
-variable [AddCommMonoid α] [PartialOrder α] [CanonicallyOrderedAdd α] {f g : ι →₀ α}
+variable [AddCommMonoid α] [PartialOrder α] {f g : ι →₀ α}
 
-instance orderBot : OrderBot (ι →₀ α) where
+instance orderBot [IsBotZeroClass α] : OrderBot (ι →₀ α) where
   bot := 0
-  bot_le := by simp only [le_def, coe_zero, Pi.zero_apply, imp_true_iff, zero_le]
+  bot_le := by simp [le_def]
 
-protected theorem bot_eq_zero : (⊥ : ι →₀ α) = 0 :=
+instance [IsBotZeroClass α] : IsBotZeroClass (ι →₀ α) where
+  isBot_zero := isBot_bot
+
+@[deprecated _root_.bot_eq_zero (since := "2026-05-07")]
+protected theorem bot_eq_zero [IsBotZeroClass α] : (⊥ : ι →₀ α) = 0 :=
   rfl
+
+variable [CanonicallyOrderedAdd α]
 
 @[simp]
 theorem add_eq_zero_iff (f g : ι →₀ α) : f + g = 0 ↔ f = 0 ∧ g = 0 := by
@@ -298,31 +304,25 @@ end PartialOrder
 
 section LinearOrder
 
-variable [AddCommMonoid α] [LinearOrder α] [CanonicallyOrderedAdd α]
+variable [AddCommMonoid α] [LinearOrder α] [IsBotZeroClass α]
 
 @[simp]
 theorem support_inf [DecidableEq ι] (f g : ι →₀ α) : (f ⊓ g).support = f.support ∩ g.support := by
   ext
-  simp only [inf_apply, mem_support_iff, Ne,
-    Finset.mem_inter]
-  simp only [← nonpos_iff_eq_zero, min_le_iff, not_or]
+  simp
 
 @[simp]
 theorem support_sup [DecidableEq ι] (f g : ι →₀ α) : (f ⊔ g).support = f.support ∪ g.support := by
   ext
-  simp only [mem_support_iff, Ne, sup_apply, ← nonpos_iff_eq_zero, sup_le_iff, mem_union,
-    not_and_or]
+  simp [imp_iff_not_or]
 
 nonrec theorem disjoint_iff {f g : ι →₀ α} : Disjoint f g ↔ Disjoint f.support g.support := by
   classical
-    rw [disjoint_iff, disjoint_iff, Finsupp.bot_eq_zero, ← Finsupp.support_eq_empty,
-      Finsupp.support_inf]
-    rfl
+  simp [disjoint_iff, bot_eq_zero, ← Finsupp.support_eq_empty]
 
 end LinearOrder
 
 /-! ### Some lemmas about `ℕ` -/
-
 
 section Nat
 

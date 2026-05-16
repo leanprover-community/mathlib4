@@ -7,6 +7,12 @@ import Mathlib.Analysis.Complex.Trigonometric
 import Mathlib.Analysis.Meromorphic.Basic
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.DerivHyp
 
+/-! # Main test file for fun_prop
+
+Use this file for `fun_prop` tests that depend on mathlib
+`fun_prop_dev` is for unit and synthetic tests avoiding mathlib.
+-/
+
 noncomputable
 def foo (x : ℝ) := x * (Real.log x) ^ 2 - Real.exp x / x
 
@@ -86,7 +92,7 @@ private theorem t1 : (5: ℕ) + (1 : ℕ∞) ≤ (12 : WithTop ℕ∞) := by nor
 
 example {f : ℝ → ℝ} (hf : ContDiff ℝ 12 f) :
     Differentiable ℝ (iteratedDeriv 5 (fun x ↦ f (2 * (f (x + x))) + x)) := by
-  fun_prop (disch := (exact t1))
+  fun_prop (disch := exact t1)
 
 -- This example used to panic due to loose bvars before #31001.
 -- TODO: this still fails because `fun_prop` cannot use `hl`.
@@ -101,4 +107,16 @@ example {α : Type*} {m₀ : MeasurableSpace α} {μ : MeasureTheory.Measure α}
     [CommMonoid M] [TopologicalSpace M] [ContinuousMul M] (l : Multiset (α → M))
     (hl : ∀ f ∈ l, MeasureTheory.AEStronglyMeasurable f μ) :
     MeasureTheory.AEStronglyMeasurable l.prod μ := by
-  fun_prop (disch := assumption)
+  fun_prop
+
+/-! Test that `fun_prop` should work on `→` and `∀` -/
+
+attribute [fun_prop] Measurable.imp Measurable.forall
+
+example {α : Type*} [MeasurableSpace α] {p q : α → Prop} (hp : Measurable p) (hq : Measurable q) :
+    Measurable fun x => p x → q x := by
+  fun_prop
+
+example {α ι : Type*} [MeasurableSpace α] [Countable ι] {p : ι → α → Prop}
+    (hp : ∀ i, Measurable (p i)) : Measurable fun x => ∀ i, p i x := by
+  fun_prop
