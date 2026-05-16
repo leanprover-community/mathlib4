@@ -241,6 +241,7 @@ Q225973:
 
 Q226014:
   title: Poincaré recurrence theorem
+  decl: MeasureTheory.Conservative.ae_mem_imp_frequently_image_mem
 
 Q230848:
   title: Lamé’s theorem
@@ -365,6 +366,7 @@ Q332465:
 
 Q338886:
   title: Divergence theorem
+  decl: MeasureTheory.integral_divergence_of_hasFDerivAt_off_countable
 
 Q339495:
   title: Symphonic theorem
@@ -681,7 +683,7 @@ Q656176:
 
 Q656198:
   title: Maschke's theorem
-  # `RepresentationTheory/Maschke` comes very close, but doesn't prove the standard form yet...
+  decl: MonoidAlgebra.Submodule.exists_isCompl
 
 Q656645:
   title: Hilbert's basis theorem
@@ -1395,6 +1397,7 @@ Q1139524:
 
 Q1140119:
   title: Morera's theorem
+  decl: Complex.isConservativeOn_and_continuousOn_iff_isDifferentiableOn
 
 Q1140200:
   title: PCP theorem
@@ -2240,6 +2243,9 @@ Q2621667:
 
 Q2631152:
   title: Carathéodory's extension theorem
+  decls:
+    - MeasureTheory.AddContent.measure
+    - MeasureTheory.AddContent.measure_eq
 
 Q2635326:
   title: Structured program theorem
@@ -2476,7 +2482,7 @@ Q3527162:
 
 Q3527166:
   title: Steinhaus theorem
-  # not difficult, but seemingly missing
+  decl: MeasureTheory.Measure.div_mem_nhds_one_of_haar_pos
 
 Q3527171:
   title: Synge's theorem
@@ -4151,6 +4157,7 @@ Q20278711:
 
 Q20971632:
   title: Lie's theorem
+  decl: LieModule.exists_nontrivial_weightSpace_of_isSolvable
 
 Q22952648:
   title: Uncountability of the continuum
