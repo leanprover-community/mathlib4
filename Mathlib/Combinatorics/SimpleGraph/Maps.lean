@@ -390,11 +390,6 @@ theorem mapEdgeSet.injective (hinj : Function.Injective f) : Function.Injective 
   repeat rw [Subtype.mk_eq_mk]
   apply Sym2.map.injective hinj
 
-@[gcongr]
-theorem _root_.SimpleGraph.neighborSet_mono (hle : G₁ ≤ G₂) (v : V) :
-    G₁.neighborSet v ⊆ G₂.neighborSet v :=
-  subset_preimage_neighborSet v <| .ofLE hle
-
 /-- Every graph homomorphism from a complete graph is injective. -/
 theorem injective_of_top_hom (f : (⊤ : SimpleGraph V) →g G') : Function.Injective f := by
   intro v w h
