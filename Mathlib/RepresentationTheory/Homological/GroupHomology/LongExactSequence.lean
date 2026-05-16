@@ -173,4 +173,9 @@ theorem δ₁_apply
     conv_rhs => rw [← LinearMap.comp_apply, ← ModuleCat.hom_comp, eq_d₂₁_comp_inv]
     simp [← hx, chainsIso₁])
 
+/-- `S.map (chainsFunctor k G)` is short exact in each degree. -/
+lemma map_chainsFunctor_eval_shortExact (n : ℕ) :
+    ShortExact (X.map <| chainsFunctor k G ⋙ HomologicalComplex.eval (ModuleCat k) (.down ℕ) n) :=
+  (map_chainsFunctor_shortExact hX).map_of_exact (HomologicalComplex.eval ..)
+
 end groupHomology
