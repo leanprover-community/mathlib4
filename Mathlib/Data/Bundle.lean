@@ -132,6 +132,7 @@ instance {f : B' → B} {x : B'} [Nonempty (E (f x))] : Nonempty ((f *ᵖ E) x) 
 def pullbackTotalSpaceEmbedding (f : B' → B) : TotalSpace F (f *ᵖ E) → B' × TotalSpace F E :=
   fun z => (z.proj, TotalSpace.mk (f z.proj) z.2)
 
+set_option simps.defeqWarn false in
 /-- The base map `f : B' → B` lifts to a canonical map on the total spaces. -/
 @[simps (attr := mfld_simps)]
 def Pullback.lift (f : B' → B) : TotalSpace F (f *ᵖ E) → TotalSpace F E := fun z => ⟨f z.proj, z.2⟩

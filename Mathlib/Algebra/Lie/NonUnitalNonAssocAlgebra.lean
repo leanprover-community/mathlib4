@@ -78,6 +78,7 @@ namespace LieHom
 variable {R L}
 variable {L₂ : Type w} [LieRing L₂] [LieAlgebra R L₂]
 
+set_option simps.defeqWarn false in
 /-- Regarding the `LieRing` of a `LieAlgebra` as a `NonUnitalNonAssocRing`, we can
 regard a `LieHom` as a `NonUnitalAlgHom`. -/
 @[simps]

@@ -91,6 +91,7 @@ theorem listDecode_encode_list (l : List (L.Term α)) :
       getElem_finRange, cast_mk, Fin.eta]
     · simp only [length_map, length_finRange, drop_left']
 
+set_option simps.defeqWarn false in
 /-- An encoding of terms as lists. -/
 @[simps]
 protected def encoding : Encoding (L.Term α) where
@@ -274,6 +275,7 @@ theorem listDecode_encode_list (l : List (Σ n, L.BoundedFormula α n)) :
     simp only [ih, length_cons, le_add_iff_nonneg_left, _root_.zero_le, ↓reduceDIte,
       getElem_cons_zero, sigmaAll_apply, drop_succ_cons, drop_zero]
 
+set_option simps.defeqWarn false in
 /-- An encoding of bounded formulas as lists. -/
 @[simps]
 protected def encoding : Encoding (Σ n, L.BoundedFormula α n) where

@@ -104,6 +104,7 @@ variable {Γ Γ' : Type*} [PartialOrder Γ] [PartialOrder Γ'] {R : Type*}
 
 open HahnModule
 
+set_option simps.defeqWarn false in
 set_option backward.isDefEq.respectTransparency false in
 /-- The composite of two heterogeneous vertex operators acting on a vector, as an iterated Hahn
 series. -/

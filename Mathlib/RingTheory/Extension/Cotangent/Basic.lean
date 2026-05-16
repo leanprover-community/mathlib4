@@ -418,6 +418,7 @@ lemma H1Cotangent.map_comp_apply (f : Hom P P') (g : Hom P' P'') (x : P.H1Cotang
     map (g.comp f) x = map g (map f x) :=
   congr($(H1Cotangent.map_comp f g) x)
 
+set_option simps.defeqWarn false in
 /-- Maps `P₁ → P₂` and `P₂ → P₁` between extensions
 induce an isomorphism between `H¹(L_P₁)` and `H¹(L_P₂)`. -/
 @[simps! apply]
@@ -545,6 +546,7 @@ instance [Algebra.FinitePresentation R S] : Module.FinitePresentation S Ω[S⁄R
 
 variable {ι : Type w} {ι' : Type*} {P : Generators R S ι}
 
+set_option simps.defeqWarn false in
 open Extension.H1Cotangent in
 /-- `H¹(L_{S/R})` is independent of the presentation chosen. -/
 @[simps! apply]

@@ -582,6 +582,7 @@ namespace CompleteLatticeHom
 
 variable [CompleteLattice α] [CompleteLattice β] [CompleteLattice γ]
 
+set_option simps.defeqWarn false in
 /-- Reinterpret a complete lattice homomorphism as a complete lattice homomorphism between the dual
 lattices. -/
 @[simps!]

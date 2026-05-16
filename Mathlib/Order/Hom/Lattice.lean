@@ -521,6 +521,7 @@ namespace SupHom
 
 variable [Max α] [Max β] [Max γ]
 
+set_option simps.defeqWarn false in
 /-- Reinterpret a supremum homomorphism as an infimum homomorphism between the dual lattices. -/
 @[to_dual (attr := simps) /--
 Reinterpret an infimum homomorphism as a supremum homomorphism between the dual lattices. -/]
@@ -553,6 +554,7 @@ namespace LatticeHom
 
 variable [Lattice α] [Lattice β] [Lattice γ]
 
+set_option simps.defeqWarn false in
 /-- Reinterpret a lattice homomorphism as a lattice homomorphism between the dual lattices. -/
 @[simps!]
 protected def dual : LatticeHom α β ≃ LatticeHom αᵒᵈ βᵒᵈ where

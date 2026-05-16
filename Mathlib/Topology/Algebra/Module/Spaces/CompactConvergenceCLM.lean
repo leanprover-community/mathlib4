@@ -103,6 +103,7 @@ variable [TopologicalSpace E] [TopologicalSpace F] [TopologicalSpace G]
 
 open scoped CompactConvergenceCLM
 
+set_option simps.defeqWarn false in
 variable (G) in
 /-- Specialization of `ContinuousLinearMap.precomp_uniformConvergenceCLM` to compact
 convergence. -/
@@ -117,6 +118,7 @@ alias precomp_compactConvergenceCLM := precompCompactConvergenceCLM
 @[deprecated (since := "2026-01-27")]
 alias precomp_compactConvergenceCLM_apply := precompCompactConvergenceCLM_apply
 
+set_option simps.defeqWarn false in
 variable (E) in
 /-- Specialization of `ContinuousLinearMap.postcomp_uniformConvergenceCLM` to compact
 convergence. -/

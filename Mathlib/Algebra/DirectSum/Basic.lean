@@ -317,6 +317,7 @@ section Option
 
 variable {α : Option ι → Type w} [∀ i, AddCommMonoid (α i)]
 
+set_option simps.defeqWarn false in
 /-- Isomorphism obtained by separating the term of index `none` of a direct sum over `Option ι`. -/
 @[simps!]
 noncomputable def addEquivProdDirectSum : (⨁ i, α i) ≃+ α none × ⨁ i, α (some i) :=

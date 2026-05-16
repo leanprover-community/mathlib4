@@ -141,6 +141,7 @@ theorem ofPowerSeries_X_pow {R} [Semiring R] (n : ℕ) :
     ofPowerSeries Γ R (PowerSeries.X ^ n) = single (n : Γ) 1 := by
   simp
 
+set_option simps.defeqWarn false in
 set_option backward.isDefEq.respectTransparency false in
 -- Lemmas about converting hahn_series over fintype to and from mv_power_series
 /-- The ring `R⟦σ →₀ ℕ⟧` is isomorphic to `MvPowerSeries σ R` for a `Finite` `σ`.

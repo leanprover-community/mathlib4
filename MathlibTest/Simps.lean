@@ -504,7 +504,9 @@ structure FooStr where
 
 instance : CoeSort FooStr Type := ⟨FooStr.c⟩
 
+set_option simps.defeqWarn false in
 @[simps] def foo : FooStr := ⟨ℕ, 3⟩
+set_option simps.defeqWarn false in
 @[simps] def foo2 : FooStr := ⟨ℕ, 34⟩
 
 example {x : Type} (h : ℕ = x) : foo = x := by simp only [foo_c]; rw [h]
@@ -516,7 +518,9 @@ structure VooStr (n : ℕ) where
 
 instance (n : ℕ) : CoeSort (VooStr n) Type := ⟨VooStr.c⟩
 
+set_option simps.defeqWarn false in
 @[simps] def voo : VooStr 7 := ⟨ℕ, 3⟩
+set_option simps.defeqWarn false in
 @[simps] def voo2 : VooStr 4 := ⟨ℕ, 34⟩
 
 example {x : Type} (h : ℕ = x) : voo = x := by simp only [voo_c]; rw [h]

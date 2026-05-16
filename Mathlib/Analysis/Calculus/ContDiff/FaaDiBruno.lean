@@ -117,6 +117,7 @@ namespace OrderedFinpartition
 
 /-! ### Basic API for ordered finpartitions -/
 
+set_option simps.defeqWarn false in
 /-- The ordered finpartition of `Fin n` into singletons. -/
 @[simps -fullyApplied]
 def atomic (n : ℕ) : OrderedFinpartition n where
@@ -287,6 +288,7 @@ These operations are inverse to each other, giving rise to an equivalence betwee
 called `OrderedFinPartition.extendEquiv`.
 -/
 
+set_option simps.defeqWarn false in
 set_option backward.isDefEq.respectTransparency false in
 -- TODO: should infer_instance be considered normalising?
 set_option linter.flexible false in
@@ -345,6 +347,7 @@ set_option linter.flexible false in
   simp only [extendLeft, cases_zero]
   apply @range_const _ _ (by simp; infer_instance)
 
+set_option simps.defeqWarn false in
 /-- Extend an ordered partition of `n` entries, by adding to the `i`-th part a new point to the
 left. -/
 @[simps -fullyApplied length partSize]

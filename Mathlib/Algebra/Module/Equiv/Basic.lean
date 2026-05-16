@@ -390,6 +390,7 @@ def addMonoidHomLequivInt {A B : Type*} (R : Type*) [Semiring R] [AddCommGroup A
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
 
+set_option simps.defeqWarn false in
 /-- Ring equivalence between additive group endomorphisms of an `AddCommGroup` `A` and
 `ℤ`-module endomorphisms of `A.` -/
 @[simps] def addMonoidEndRingEquivInt (A : Type*) [AddCommGroup A] :

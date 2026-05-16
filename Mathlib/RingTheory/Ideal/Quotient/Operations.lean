@@ -524,6 +524,7 @@ theorem kerLiftAlg_toRingHom (f : A →ₐ[R₁] B) :
 theorem kerLiftAlg_injective (f : A →ₐ[R₁] B) : Function.Injective (kerLiftAlg f) :=
   RingHom.kerLift_injective (R := A) (S := B) f
 
+set_option simps.defeqWarn false in
 /-- The **first isomorphism** theorem for algebras, computable version. -/
 @[simps!]
 def quotientKerAlgEquivOfRightInverse {f : A →ₐ[R₁] B} {g : B → A}

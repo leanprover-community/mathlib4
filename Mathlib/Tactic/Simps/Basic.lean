@@ -266,6 +266,26 @@ syntax (name := simps) "simps" "!"? "?"? simpsArgsRest : attr
 
 end Attr
 
+/-- Warning when `@[simps]` generates a lemma where the LHS and RHS have types that are not
+definitionally equal at `withReducibleAndInstances` transparency. -/
+register_option simps.defeqWarn : Bool := {
+  defValue := true
+  descr := "Warning when `@[simps]` generates a lemma with mismatched LHS/RHS types" }
+
+/-- Environment extension to persistently disable `simps.defeqWarn`.
+Unlike `set_option simps.defeqWarn false`, this propagates to all downstream files. -/
+initialize simpsDefeqWarnDisabledExt : SimplePersistentEnvExtension Unit Bool ←
+  registerSimplePersistentEnvExtension {
+    addImportedFn := fun a => a.any (·.size > 0)
+    addEntryFn := fun _ _ => true
+  }
+
+/-- Persistently disable `simps.defeqWarn` in this file and all downstream files.
+This is useful in areas of the library where definitional equality abuse in `@[simps]` lemmas
+is widespread and the warnings are not actionable. -/
+elab "disable_simps_defeq_warn" : command =>
+  modifyEnv (simpsDefeqWarnDisabledExt.addEntry · ())
+
 /-- Linter to check that `simps!` is used when needed -/
 register_option linter.simpsNoConstructor : Bool := {
   defValue := true
@@ -964,9 +984,13 @@ def getProjectionExprs (stx : Syntax) (tgt : Expr) (rhs : Expr) (cfg : Config) :
 variable (ref : Syntax) (univs : List Name)
 
 /-- Add a lemma with `nm` stating that `lhs = rhs`. `type` is the type of both `lhs` and `rhs`,
-`args` is the list of local constants occurring, and `univs` is the list of universe variables. -/
-def addProjection (declName : Name) (type lhs rhs : Expr) (args : Array Expr)
-    (cfg : Config) : MetaM Unit := do
+`args` is the list of local constants occurring, and `univs` is the list of universe variables.
+
+`mismatchRef` is set to `true` if this projection's LHS and RHS types fail to match at
+`withReducibleAndInstances` transparency; `simpsTac` uses this to decide whether to suggest
+removing a `set_option simps.defeqWarn false`. -/
+def addProjection (defName : Name) (mismatchRef : IO.Ref Bool) (declName : Name)
+    (type lhs rhs : Expr) (args : Array Expr) (cfg : Config) : MetaM Unit := do
   trace[simps.debug] "Planning to add the equality{indentD m!"{lhs} = ({rhs} : {type})"}"
   let env ← getEnv
   -- simplify `rhs` if `cfg.simpRhs` is true
@@ -991,6 +1015,37 @@ def addProjection (declName : Name) (type lhs rhs : Expr) (args : Array Expr)
   if cfg.dsimpLhs then
     let ctx ← mkSimpContext
     (lhs, _) ← dsimp lhs ctx
+  -- Check that the inferred types of lhs and rhs agree at
+  -- `withReducibleAndInstances` transparency.
+  let lhsType ← inferType lhs
+  let rhsType ← inferType rhs
+  let typesMatch ← withReducibleAndInstances <| isDefEq lhsType rhsType
+  let disabled := simpsDefeqWarnDisabledExt.getState (← getEnv)
+  let enabled := simps.defeqWarn.get (← getOptions) && !disabled
+  if enabled then
+    unless typesMatch do
+      let eqStmt := mkApp3 (mkConst `Eq [lvl]) type lhs rhs
+      let typesMatchUnfolded ← do
+        let s ← saveState
+        try
+          setReducibleAttribute defName
+          withReducibleAndInstances <| isDefEq lhsType rhsType
+        finally
+          restoreState s
+      if typesMatchUnfolded then
+        logWarning m!"`@[simps]` generated lemma `{declName} : {eqStmt}` where the type \
+          of the LHS{indentExpr lhsType}\nis not definitionally equal at \
+          `withReducibleAndInstances` transparency to the type of the \
+          RHS{indentExpr rhsType}\nbut they are definitionally equal after unfolding \
+          `{defName}`.\nUse `set_option simps.defeqWarn false in` to suppress this warning."
+      else
+        logWarning m!"`@[simps]` generated lemma `{declName} : {eqStmt}` where the type \
+          of the LHS{indentExpr lhsType}\nis not definitionally equal to the type of the \
+          RHS{indentExpr rhsType}\nUse `set_option simps.defeqWarn false in` to suppress \
+          this warning."
+  else
+    unless typesMatch do
+      mismatchRef.set true
   let eqAp := mkApp3 (mkConst `Eq [lvl]) type lhs rhs
   let declType ← mkForallFVars args eqAp
   let declValue ← mkLambdaFVars args prf
@@ -1051,7 +1106,8 @@ If `todo` is non-empty, it will generate exactly the names in `todo`.
 was just used. In that case we need to apply these projections before we continue changing `lhs`.
 `simpLemmas`: names of the simp lemmas added so far.(simpLemmas : Array Name)
 -/
-private partial def addProjections (nm : NameStruct) (type lhs rhs : Expr)
+private partial def addProjections (defName : Name) (mismatchRef : IO.Ref Bool)
+    (nm : NameStruct) (type lhs rhs : Expr)
     (args : Array Expr) (mustBeStr : Bool) (cfg : Config)
     (todo : List (String × Syntax)) (toApply : List Nat) : MetaM (Array Name) := do
   -- we don't want to unfold non-reducible definitions (like `Set`) to apply more arguments
@@ -1088,9 +1144,9 @@ private partial def addProjections (nm : NameStruct) (type lhs rhs : Expr)
         {(splitOnNotNumber firstTodo "_")[1]!} doesn't exist, \
         because target {str} is not a structure."
     if cfg.fullyApplied then
-      addProjection stxProj univs nm.toName tgt lhsAp rhsAp newArgs cfg
+      addProjection stxProj univs defName mismatchRef nm.toName tgt lhsAp rhsAp newArgs cfg
     else
-      addProjection stxProj univs nm.toName type lhs rhs args cfg
+      addProjection stxProj univs defName mismatchRef nm.toName type lhs rhs args cfg
     return #[nm.toName]
   -- if the type is a structure
   let some (.inductInfo { isRec := false, ctors := [ctor], .. }) := env.find? str | unreachable!
@@ -1101,9 +1157,9 @@ private partial def addProjections (nm : NameStruct) (type lhs rhs : Expr)
   if addThisProjection then
     -- we pass the precise argument of simps as syntax argument to `addProjection`
     if cfg.fullyApplied then
-      addProjection stxProj univs nm.toName tgt lhsAp rhsEta newArgs cfg
+      addProjection stxProj univs defName mismatchRef nm.toName tgt lhsAp rhsEta newArgs cfg
     else
-      addProjection stxProj univs nm.toName type lhs rhs args cfg
+      addProjection stxProj univs defName mismatchRef nm.toName type lhs rhs args cfg
   let rhsWhnf ← withTransparency cfg.rhsMd <| whnf rhsEta
   trace[simps.debug] "The right-hand-side {indentExpr rhsAp}\n reduces to {indentExpr rhsWhnf}"
   if !rhsWhnf.getAppFn.isConstOf ctor then
@@ -1131,7 +1187,7 @@ private partial def addProjections (nm : NameStruct) (type lhs rhs : Expr)
         `MulEquiv` by giving the corresponding `Equiv` and the proof that it respects \
         multiplication, then you need to mark it as `@[simps!]`, since the attribute needs to \
         unfold the corresponding `Equiv` to get to the `toFun` field."
-      let nms ← addProjections nm type lhs rhs args mustBeStr
+      let nms ← addProjections defName mismatchRef nm type lhs rhs args mustBeStr
         { cfg with rhsMd := .default, simpRhs := true } todo toApply
       return if addThisProjection then nms.push nm.toName else nms
     if !toApply.isEmpty then
@@ -1145,9 +1201,9 @@ private partial def addProjections (nm : NameStruct) (type lhs rhs : Expr)
         The given definition is not a constructor application:{indentExpr rhsWhnf}"
     if !addThisProjection then
       if cfg.fullyApplied then
-        addProjection stxProj univs nm.toName tgt lhsAp rhsEta newArgs cfg
+        addProjection stxProj univs defName mismatchRef nm.toName tgt lhsAp rhsEta newArgs cfg
       else
-        addProjection stxProj univs nm.toName type lhs rhs args cfg
+        addProjection stxProj univs defName mismatchRef nm.toName type lhs rhs args cfg
     return #[nm.toName]
   -- if the value is a constructor application
   trace[simps.debug] "Generating raw projection information..."
@@ -1160,7 +1216,7 @@ private partial def addProjections (nm : NameStruct) (type lhs rhs : Expr)
     let newType ← inferType newRhs
     trace[simps.debug] "Applying a custom composite projection. Todo: {toApply}. Current lhs:\
       {indentExpr lhsAp}"
-    return ← addProjections nm newType lhsAp newRhs newArgs false cfg todo rest
+    return ← addProjections defName mismatchRef nm newType lhsAp newRhs newArgs false cfg todo rest
   trace[simps.debug] "Not in the middle of applying a custom composite projection"
   /- We stop if no further projection is specified or if we just reduced an eta-expansion and we
   automatically choose projections -/
@@ -1191,7 +1247,8 @@ private partial def addProjections (nm : NameStruct) (type lhs rhs : Expr)
     let newLhs := projExpr.instantiateLambdasOrApps #[lhsAp]
     let newName := nm.update proj.lastComponentAsString isPrefix
     trace[simps.debug] "Recursively add projections for:{indentExpr newLhs}"
-    addProjections newName newType newLhs newRhs newArgs false cfg newTodo projNrs
+    addProjections defName mismatchRef newName newType newLhs newRhs newArgs false cfg
+      newTodo projNrs
   return if addThisProjection then nms.push nm.toName else nms
 
 end Simps
@@ -1202,7 +1259,9 @@ If `todo` is non-empty, it will generate exactly the names in `todo`.
 If `shortNm` is true, the generated names will only use the last projection name.
 If `trc` is true, trace as if `trace.simps.verbose` is true. -/
 def simpsTac (ref : Syntax) (nm : Name) (cfg : Config := {})
-    (todo : List (String × Syntax) := []) (trc := false) : AttrM (Array Name) :=
+    (todo : List (String × Syntax) := []) (trc := false) : AttrM (Array Name) := do
+  -- Read `simps.defeqWarn` from the command-level scope, since `set_option ... in` options
+  -- are not visible inside `afterCompilation` attribute handlers via `getOptions`.
   withOptions (fun o => if trc then o.set `trace.simps.verbose true else o) do
   -- We need access to theorem bodies
   let env ← withoutExporting getEnv
@@ -1218,8 +1277,14 @@ def simpsTac (ref : Syntax) (nm : Name) (cfg : Config := {})
         else
           let s := nm.lastComponentAsString
           if (← isInstance nm) ∧ s.startsWith "inst" then [] else [s]}
-  MetaM.run' <| addProjections ref d.levelParams
+  let mismatchRef ← IO.mkRef false
+  let lemmas ← MetaM.run' <| addProjections ref d.levelParams d.name mismatchRef
     nm d.type lhs (d.value! (allowOpaque := true)) #[] (mustBeStr := true) cfg todo []
+  let disabled := simpsDefeqWarnDisabledExt.getState (← getEnv)
+  if !simps.defeqWarn.get (← getOptions) && !disabled && !(← mismatchRef.get) &&
+      lemmas.size > 0 then
+    logInfo m!"`set_option simps.defeqWarn false` is not needed here"
+  return lemmas
 
 /-- elaborate the syntax and run `simpsTac`. -/
 def simpsTacFromSyntax (nm : Name) (stx : Syntax) : AttrM (Array Name) :=

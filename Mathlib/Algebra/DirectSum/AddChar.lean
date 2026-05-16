@@ -24,6 +24,7 @@ variable {ι R : Type*} {G : ι → Type*} [DecidableEq ι] [∀ i, AddCommGroup
 namespace AddChar
 section DirectSum
 
+set_option simps.defeqWarn false in
 /-- Direct sum of additive characters. -/
 @[simps!]
 def directSum (ψ : ∀ i, AddChar (G i) R) : AddChar (⨁ i, G i) R :=

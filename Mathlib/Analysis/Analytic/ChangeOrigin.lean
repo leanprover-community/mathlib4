@@ -118,6 +118,7 @@ theorem nnnorm_changeOriginSeries_apply_le_tsum (k l : ℕ) (x : E) :
 def changeOrigin (x : E) : FormalMultilinearSeries 𝕜 E F :=
   fun k => (p.changeOriginSeries k).sum x
 
+set_option simps.defeqWarn false in
 /-- An auxiliary equivalence useful in the proofs about
 `FormalMultilinearSeries.changeOriginSeries`: the set of triples `(k, l, s)`, where `s` is a
 `Finset (Fin (k + l))` of cardinality `l` is equivalent to the set of pairs `(n, s)`, where `s` is a

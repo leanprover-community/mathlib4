@@ -78,11 +78,13 @@ protected def id (L : Language) : L →ᴸ L :=
 instance : Inhabited (L →ᴸ L) :=
   ⟨LHom.id L⟩
 
+set_option simps.defeqWarn false in
 /-- The inclusion of the left factor into the sum of two languages. -/
 @[simps]
 protected def sumInl : L →ᴸ L.sum L' :=
   ⟨fun _n => Sum.inl, fun _n => Sum.inl⟩
 
+set_option simps.defeqWarn false in
 /-- The inclusion of the right factor into the sum of two languages. -/
 @[simps]
 protected def sumInr : L' →ᴸ L.sum L' :=
@@ -159,6 +161,7 @@ section SumMap
 
 variable {L₁ L₂ : Language} (ψ : L₁ →ᴸ L₂)
 
+set_option simps.defeqWarn false in
 /-- The map between two sum-languages induced by maps on the two factors. -/
 @[simps]
 def sumMap : L.sum L₁ →ᴸ L'.sum L₂ where
@@ -389,6 +392,7 @@ theorem card_withConstants :
     L[[α]].card = Cardinal.lift.{w'} L.card + Cardinal.lift.{max u v} #α := by
   rw [withConstants, card_sum, card_constantsOn]
 
+set_option simps.defeqWarn false in
 /-- The language map adding constants. -/
 @[simps!]
 def lhomWithConstants : L →ᴸ L[[α]] :=
@@ -414,6 +418,7 @@ instance paramsStructure (A : Set α) : (constantsOn A).Structure α :=
 
 variable (L)
 
+set_option simps.defeqWarn false in
 set_option backward.isDefEq.respectTransparency false in
 /-- The language map removing an empty constant set. -/
 @[simps]

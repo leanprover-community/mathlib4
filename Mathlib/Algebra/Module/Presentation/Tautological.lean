@@ -31,6 +31,7 @@ inductive tautological.R
   | add (m₁ m₂ : M)
   | smul (a : A) (m : M)
 
+set_option simps.defeqWarn false in
 /-- The system of equations corresponding to the tautological presentation of an `A`-module. -/
 @[simps]
 noncomputable def tautologicalRelations : Relations A where
@@ -77,6 +78,7 @@ lemma tautologicalSolution_isPresentation :
     (tautologicalSolution A M).IsPresentation :=
   (tautologicalSolutionIsPresentationCore A M).isPresentation
 
+set_option simps.defeqWarn false in
 /-- The tautological presentation of any `A`-module `M` by generators and relations.
 There is a generator `[m]` for any element `m : M`, and there are two types of relations:
 * `[m₁] + [m₂] - [m₁ + m₂] = 0`

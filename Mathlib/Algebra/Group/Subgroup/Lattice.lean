@@ -61,6 +61,7 @@ section mul_add
 
 variable {A : Type*} [AddGroup A]
 
+set_option simps.defeqWarn false in
 /-- Subgroups of a group `G` are isomorphic to additive subgroups of `Additive G`. -/
 @[simps!]
 def Subgroup.toAddSubgroup : Subgroup G ≃o AddSubgroup (Additive G) where
@@ -82,6 +83,7 @@ abbrev AddSubgroup.toSubgroup' : AddSubgroup (Additive G) ≃o Subgroup G :=
     g ∈ toSubgroup' S ↔ Additive.ofMul g ∈ S :=
   .rfl
 
+set_option simps.defeqWarn false in
 /-- Additive subgroups of an additive group `A` are isomorphic to subgroups of `Multiplicative A`.
 -/
 @[simps!]

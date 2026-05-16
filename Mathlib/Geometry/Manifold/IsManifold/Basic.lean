@@ -492,6 +492,7 @@ end
 
 section ModelWithCornersProd
 
+set_option simps.defeqWarn false in
 /-- Given two model_with_corners `I` on `(E, H)` and `I'` on `(E', H')`, we define the model with
 corners `I.prod I'` on `(E × E', ModelProd H H')`. This appears in particular for the manifold
 structure on the tangent bundle to a manifold modelled on `(E, H)`: it will be modelled on

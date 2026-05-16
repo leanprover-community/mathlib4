@@ -421,6 +421,7 @@ def subtypePiEquivPi {β : α → Sort v} {p : ∀ a, β a → Prop} :
     funext a
     exact Subtype.ext rfl
 
+set_option simps.defeqWarn false in
 /-- A sigma of a sigma whose second base does not depend on the first is equivalent
 to a sigma whose base is a product. -/
 @[simps!]
@@ -428,6 +429,7 @@ def sigmaAssocProd {α β : Type*} {γ : α → β → Type*} :
     (ab : α × β) × γ ab.1 ab.2 ≃ (a : α) × (b : β) × γ a b :=
   sigmaCongrLeft' (sigmaEquivProd _ _).symm |>.trans <| sigmaAssoc γ
 
+set_option simps.defeqWarn false in
 /-- A subtype of a sigma which pins down the base of the sigma is equivalent to
 the respective fiber. -/
 @[simps]

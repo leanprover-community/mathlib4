@@ -298,6 +298,7 @@ instance subsingleton_to_ring : Subsingleton (A →ₗc[R] R) :=
 theorem ext_to_ring (f g : A →ₗc[R] R) : f = g := Subsingleton.elim _ _
 
 variable {A B}
+set_option simps.defeqWarn false in
 /--
 If `φ : A → B` is a coalgebra map and `a = ∑ xᵢ ⊗ yᵢ`, then `φ a = ∑ φ xᵢ ⊗ φ yᵢ`
 -/

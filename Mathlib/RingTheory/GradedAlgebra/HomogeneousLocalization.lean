@@ -655,6 +655,7 @@ variable {P : Submonoid A} {Q : Submonoid B}
 
 open Graded
 
+set_option simps.defeqWarn false in
 /-- Map `NumDenSameDeg` along a graded ring hom. -/
 @[simps] def NumDenSameDeg.map (f : 𝒜 →+*ᵍ ℬ) {W₁ : Submonoid A} {W₂ : Submonoid B}
     (hw : W₁ ≤ W₂.comap f) (c : NumDenSameDeg 𝒜 W₁) : NumDenSameDeg ℬ W₂ where
