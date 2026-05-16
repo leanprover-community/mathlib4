@@ -247,7 +247,7 @@ protected lemma of_rat (h_int : ∀ t : ℝ, Integrable (fun ω ↦ exp (t * X �
 lemma fun_zero [IsFiniteMeasure ν] [IsZeroOrMarkovKernel κ] :
     HasSubgaussianMGF (fun _ ↦ 0) 0 κ ν where
   integrable_exp_mul := by simp
-  mgf_le := by simpa using ae_of_all _ fun _ ↦ measureReal_le_one
+  mgf_le := by simp
 
 @[simp]
 lemma zero [IsFiniteMeasure ν] [IsZeroOrMarkovKernel κ] : HasSubgaussianMGF 0 0 κ ν := fun_zero
