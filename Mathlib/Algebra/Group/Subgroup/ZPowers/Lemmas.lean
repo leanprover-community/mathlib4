@@ -73,8 +73,7 @@ lemma range_nsmulAddMonoidHom (n : ℕ) : (nsmulAddMonoidHom n).range = zmultipl
 theorem closure_eq_zmultiples (a b : ℤ) : closure {a, b} = zmultiples (a.gcd b : ℤ) := by
   apply le_antisymm
   · rw [closure_le]
-    intro x hx
-    rcases hx with rfl | rfl
+    rintro x (rfl | rfl)
     · exact mem_zmultiples_iff.mpr <| gcd_dvd_left x b
     · exact mem_zmultiples_iff.mpr <| gcd_dvd_right a x
   · simp [zmultiples_le, mem_closure_pair, gcd_eq_gcd_ab, mul_comm]
