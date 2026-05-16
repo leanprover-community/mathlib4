@@ -5,8 +5,8 @@ Authors: Jiecheng Zhao
 -/
 module
 
-public import Mathlib.Init
 public import Batteries.Data.Array.Lemmas
+import Mathlib.Init
 /-!
 # Lemmas about `Array.extract`
 
