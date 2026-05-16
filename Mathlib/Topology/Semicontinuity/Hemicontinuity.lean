@@ -10,7 +10,6 @@ public import Mathlib.Topology.NhdsWithin
 public import Mathlib.Topology.Separation.Regular
 public import Mathlib.Topology.Defs.Sequences
 import Mathlib.Topology.Sequences
-import Mathlib.Topology.ContinuousOn
 
 /-! # Hemicontinuity
 
@@ -116,6 +115,11 @@ lemma isClosedMap_iff_upperHemicontinuous {f : α → β} :
   rw [isClosedMap_iff_kernImage, upperHemicontinuous_iff_isOpen_preimage_Iic]
   aesop
 
+lemma lowerHemicontinuous_iff_isOpen_inter_nonempty :
+    LowerHemicontinuous f ↔ ∀ u, IsOpen u → IsOpen {x | (f x ∩ u).Nonempty} := by
+  simp_rw [lowerHemicontinuous_iff, lowerHemicontinuousAt_iff, isOpen_iff_mem_nhds,
+    forall_comm (α := α), mem_setOf, Filter.Eventually]
+
 /-- A correspondence `f : α → Set β` is lower hemicontinuous if and only if its *lower inverse*
 (i.e., `u : Set β ↦ (f ⁻¹' (Iic uᶜ))ᶜ`, note that `f ⁻¹' (Iic u) = {x | (f x ∩ u).Nonempty}`)
 sends open sets to open sets. -/
@@ -123,8 +127,7 @@ lemma lowerHemicontinuous_iff_isOpen_compl_preimage_Iic_compl :
     LowerHemicontinuous f ↔ ∀ u, IsOpen u → IsOpen (f ⁻¹' (Iic uᶜ))ᶜ := by
   have (u : Set β) : (f ⁻¹' (Iic uᶜ))ᶜ = {x | (f x ∩ u).Nonempty} := by
     simp [Set.ext_iff, Iic, Set.mem_compl_iff, Set.not_subset, Set.Nonempty]
-  simp_rw [lowerHemicontinuous_iff, lowerHemicontinuousAt_iff, this, isOpen_iff_mem_nhds,
-    forall_comm (α := α), mem_setOf, Filter.Eventually]
+  simpa [this] using lowerHemicontinuous_iff_isOpen_inter_nonempty
 
 /-- A correspondence `f : α → Set β` is lower hemicontinuous if and only if its *upper inverse*
 (i.e., `u : Set β ↦ f ⁻¹' (Iic u)`, note that `f ⁻¹' (Iic u) = {x | f x ⊆ u}`) sends closed sets
@@ -280,8 +283,7 @@ end Inducing
 
 The more general fact is that if `f` is upper hemicontinuous at `x₀` within `s`, and if
 `x₀` is a cluster point of `s ∩ {x | (f x).Nonempty}`, then `(f x₀).Nonempty`. -/
-lemma UpperHemicontinuous.isClosed_domain {α β : Type*} [TopologicalSpace α]
-    [TopologicalSpace β] {f : α → Set β} (hf : UpperHemicontinuous f) :
+lemma UpperHemicontinuous.isClosed_domain (hf : UpperHemicontinuous f) :
     IsClosed {x | (f x).Nonempty} := by
   simp only [← isOpen_compl_iff, compl_setOf, not_nonempty_iff_eq_empty, isOpen_iff_mem_nhds]
   intro x (hx : f x = ∅)
@@ -297,8 +299,7 @@ of sequences `x : ℕ → α` and `y : ℕ → β` such that `x` tends to `x₀`
 set containing all `f x'` for `x'` sufficiently close to `x`.
 
 This is a partial converse of `UpperHemicontinuousAt.mem_of_tendsto`. -/
-lemma UpperHemicontinuousAt.of_sequences {α β : Type*} [TopologicalSpace α]
-    [TopologicalSpace β] {f : α → Set β} {x₀ : α} [(𝓝 x₀).IsCountablyGenerated]
+lemma UpperHemicontinuousAt.of_sequences {x₀ : α} [(𝓝 x₀).IsCountablyGenerated]
     {K : Set β} (hK : IsSeqCompact K) (hf : ∀ᶠ x in 𝓝 x₀, f x ⊆ K)
     (h : ∀ x : ℕ → α, Tendsto x atTop (𝓝 x₀) →
       ∀ y : ℕ → β, (∀ n, y n ∈ f (x n)) → ∀ y₀, Tendsto y atTop (𝓝 y₀) → y₀ ∈ f x₀) :
@@ -319,9 +320,8 @@ closed, then for any sequences `x` and `y` (in `α` and `β`, respectively) tend
 respectively, if `y n ∈ f (x n)` frequently, then `y₀ ∈ f x₀`.
 
 This is a partial converse of `UpperHemicontinuousAt.of_sequences`. -/
-lemma UpperHemicontinuousAt.mem_of_tendsto {α β ι : Type*} [TopologicalSpace α]
-    [TopologicalSpace β] [RegularSpace β] {f : α → Set β} {x₀ : α} {l : Filter ι}
-    (hf : UpperHemicontinuousAt f x₀) (hf_closed : IsClosed (f x₀))
+lemma UpperHemicontinuousAt.mem_of_tendsto {ι : Type*} [RegularSpace β] {x₀ : α}
+    {l : Filter ι} (hf : UpperHemicontinuousAt f x₀) (hf_closed : IsClosed (f x₀))
     {x : ι → α} (hx : Tendsto x l (𝓝 x₀))
     {y : ι → β} (hy : ∃ᶠ n in l, y n ∈ f (x n)) {y₀ : β} (hy₀ : Tendsto y l (𝓝 y₀)) :
     y₀ ∈ f x₀ := by
@@ -335,3 +335,57 @@ lemma UpperHemicontinuousAt.mem_of_tendsto {α β ι : Type*} [TopologicalSpace 
   filter_upwards [hx (hf s hs)] with n hn hyn
   simp only [← subset_interior_iff_mem_nhdsSet, preimage_setOf_eq, mem_setOf_eq] at hn
   exact interior_subset <| hn hyn
+
+/-! ### Open lower sections -/
+
+omit [TopologicalSpace β] in
+/-- A correspondence `f : α → Set β` has open lower sections if and only if its *lower inverse*
+(i.e., `b : β ↦ (f ⁻¹' (Iic {b}ᶜ))ᶜ = {x | b ∈ f x}`) sends every point to an open set. -/
+lemma hasOpenLowerSections_iff_isOpen_compl_preimage_Iic_compl :
+    HasOpenLowerSections f ↔ ∀ b, IsOpen (f ⁻¹' (Iic {b}ᶜ))ᶜ := by
+  have h (b : β) : (f ⁻¹' (Iic {b}ᶜ))ᶜ = {x | b ∈ f x} := by
+    simp [Set.ext_iff, Iic, Set.mem_compl_iff]
+  simp_rw [h, hasOpenLowerSections_iff_isOpen]
+
+omit [TopologicalSpace β] in
+/-- A correspondence `f : α → Set β` has open lower sections if and only if its *upper inverse*
+(i.e., `b : β ↦ f ⁻¹' (Iic {b}ᶜ) = {x | b ∉ f x}`) sends every point to a closed set. -/
+lemma hasOpenLowerSections_iff_isClosed_preimage_Iic :
+    HasOpenLowerSections f ↔ ∀ b, IsClosed (f ⁻¹' (Iic {b}ᶜ)) := by
+  simp_rw [← isOpen_compl_iff]
+  exact hasOpenLowerSections_iff_isOpen_compl_preimage_Iic_compl
+
+/-! ### Continuity
+
+The correspondence associated with a continuous map is both lower and upper hemicontinuous.
+-/
+
+lemma Continuous.lowerHemicontinuous {f : α → β} (hf : Continuous f) :
+    LowerHemicontinuous (fun x ↦ {f x}) := by
+  rw [lowerHemicontinuous_iff_isOpen_inter_nonempty]
+  intro u hu
+  have : {x | f x ∈ u} = f ⁻¹' u := by ext; simp
+  simpa [this] using hf.isOpen_preimage _ hu
+
+lemma Continuous.upperHemicontinuous {f : α → β} (hf : Continuous f) :
+    UpperHemicontinuous (fun x ↦ {f x}) := by
+  rw [upperHemicontinuous_iff_forall_isOpen]
+  intro x u hu hxu
+  simp [hf.continuousAt.eventually_mem <| hu.mem_nhds (singleton_subset_iff.mp hxu)]
+
+/-! ### Open Graphs -/
+
+/-- A lower hemicontinuous function intersected with a function with an open graph is lower
+hemicontinuous. -/
+lemma LowerHemicontinuous.inter_hasOpenGraph {f g : α → Set β}
+    (hf : LowerHemicontinuous f) (hg : HasOpenCGraph g) :
+    LowerHemicontinuous (fun x ↦ f x ∩ g x) := by
+  simp_rw [lowerHemicontinuous_iff_isOpen_inter_nonempty] at ⊢ hf
+  intro t ht
+  rw [isOpen_iff_forall_mem_open]
+  intro x ⟨y, ⟨hyf, hyg⟩, hyt⟩
+  obtain ⟨U, V, hU, hV, hxU, hyV, hUV⟩ := (isOpen_prod_iff.mp hg.isOpen) x y hyg
+  refine ⟨U ∩ {x' | (f x' ∩ (t ∩ V)).Nonempty}, ?_, hU.inter (hf _ (ht.inter hV)),
+      ⟨hxU, y, hyf, hyt, hyV⟩⟩
+  intro x' ⟨hx'U, z, hzf, hzt, hzV⟩
+  exact ⟨z, ⟨hzf, hUV (Set.mk_mem_prod hx'U hzV)⟩, hzt⟩
