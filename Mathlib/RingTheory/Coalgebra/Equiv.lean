@@ -173,7 +173,10 @@ def symm (e : A ≃ₗc[R] B) : B ≃ₗc[R] A :=
       change (TensorProduct.congr (e : A ≃ₗ[R] B) (e : A ≃ₗ[R] B)).symm.toLinearMap ∘ₗ comul
         = comul ∘ₗ (e : A ≃ₗ[R] B).symm
       rw [LinearEquiv.toLinearMap_symm_comp_eq]
-      simp [TensorProduct.congr, ← LinearMap.comp_assoc, LinearEquiv.eq_comp_toLinearMap_symm] }
+      simp only [TensorProduct.congr, toCoalgHom_eq_coe, CoalgHom.toLinearMap_eq_coe,
+        LinearEquiv.ofLinear_toLinearMap, ← LinearMap.comp_assoc, CoalgHomClass.map_comp_comul]
+      rw [← toLinearEquiv_toLinearMap, LinearEquiv.comp_symm_cancel_right]
+       }
 
 /-- See Note [custom simps projection] -/
 def Simps.apply {R : Type*} [CommSemiring R] {α β : Type*}
