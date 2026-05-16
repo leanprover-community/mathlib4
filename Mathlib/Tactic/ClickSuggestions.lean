@@ -1,3 +1,8 @@
+/-
+Copyright (c) 2026 Jovan Gerbscheid. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Jovan Gerbscheid
+-/
 module
 
 public import Mathlib.Tactic.ClickSuggestions.TryPremises
@@ -42,12 +47,15 @@ When a rewrite lemma introduces new goals, these are shown after a `⊢`.
 - Detect whether we are in `conv` mode, by detecting the relevant mdata.
   Though the suggestions seem to work mostly fine in conv mode already.
 -/
+
 meta section
 
 namespace Mathlib.Tactic.ClickSuggestions
 
 open Lean Meta Server Widget ProofWidgets Jsx
 
+/-- Run `k` with the `RwKind` of the selected position, and the subexpression at that position.
+If the subexpression contains bound variables, then they are introduced as free variables. -/
 def viewKAbstractSubExpr' {m α}
     [Monad m] [MonadLiftT MetaM m] [MonadControlT MetaM m] [MonadError m]
     (e : Expr) (pos : SubExpr.Pos) (k : Expr → RwKind → m α) : m α := do
@@ -96,7 +104,7 @@ public def generateSuggestions (loc : SubExpr.GoalsLocation)
   htmls := htmls.push searchHtml
   token.update (.element "div" #[("style", json% {"marginLeft" : "4px"})] htmls)
 
-  librarySearchSuggestions rootExpr subExpr rwKind parentDecl? token'
+  librarySearchSuggestions rootExpr subExpr lctx rwKind parentDecl? token'
 
 /-- If the set of computations is non-empty, display a `⏳️` symbol with hover information that
 shows all of the ongoing computations. -/
@@ -136,7 +144,7 @@ public def rpc (props : PanelWidgetProps) : RequestM (RequestTask Html) :=
     let html ← mkRefreshComponentM
       (.text "click_suggestions has started searching.") fun masterToken ↦ do
       (generateSuggestions loc parentDecl? masterToken).run {
-        onGoal, stx, masterToken, statusToken
+        onGoal, stx := ⟨stx⟩, masterToken, statusToken
         «meta» := doc.meta
         cursorPos := props.pos
         progress? := ← IO.mkRef false

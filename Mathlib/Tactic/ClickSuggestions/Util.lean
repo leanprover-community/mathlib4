@@ -147,7 +147,7 @@ structure Context where
   /-- Whether to use the `on_goal n =>` combinator. -/
   onGoal : Option Nat
   /-- The preceding piece of syntax. This is used for merging consecutive `rw` tactics. -/
-  stx : Syntax
+  stx : TSyntax `tactic
   /-- Whether any progress has been made at all. If all computations have been finished
   and no progress has been made, then inform the user. -/
   progress? : IO.Ref Bool
@@ -233,13 +233,17 @@ end Meta
 section Syntax
 open Syntax Parser.Tactic
 
+/-- Information about the rewrite position. This is used to determine whether to suggest
+`rw`, `rw!`, `nth_rw`, or `simp_rw`. -/
 inductive RwKind where
+  /-- `rw` cannot rewrite here, because the subexpression contains bound variables.
+  So, we suggest `simp_rw`. -/
   | hasBVars
+  /-- If `motiveTypeCorrect := true`, we suggest `rw!` instead of `rw`.
+  If `occ := some n`, we suggest `nth_rw n` instead of `rw`. -/
   | valid (motiveTypeCorrect : Bool) (occ : Option Nat)
 
-/-- Return syntax for the rewrite tactic `rw [e]`.
-When `occ` is `none`, this means that `kabstract` cannot find the expression
-due to bound variables, so in that case we fall back to `simp_rw`. -/
+/-- Construct the syntax for a rewrite tactic. -/
 def mkRewrite (kind : RwKind) (symm : Bool) (e : Term) (loc : Option Ident)
     (grw := false) : CoreM (TSyntax `tactic) := do
   let rule ← if symm then `(Parser.Tactic.rwRule| ← $e) else `(Parser.Tactic.rwRule| $e:term)
@@ -247,7 +251,6 @@ def mkRewrite (kind : RwKind) (symm : Bool) (e : Term) (loc : Option Ident)
     match kind with
     | .valid _ none => `(tactic| grw [$rule] $[at $loc:term]?)
     | .valid _ (some n) => `(tactic| nth_grw $(mkNatLit n):num [$rule] $[at $loc:term]?)
-    -- We still lack a variant of `grw` that rewrites bound variables, so we just use `grw`.
     | .hasBVars => `(tactic| grw [$rule] $[at $loc:term]?)
   else
     match kind with
@@ -259,7 +262,9 @@ def mkRewrite (kind : RwKind) (symm : Bool) (e : Term) (loc : Option Ident)
       `(tactic| rw! $occs [$rule] $[at $loc:term]?)
     | .hasBVars => `(tactic| simp_rw [$rule] $[at $loc:term]?)
 
-def mergeTactics? {m} [Monad m] [MonadRef m] [MonadQuotation m] (stx₁ stx₂ : Syntax) :
+/-- Try to combine the suggested tactic with the preceding tactic in the tactic sequence.
+In particular, we merge sequences of `rw`, `simp_rw` and `grw`. -/
+def mergeTactics? {m} [Monad m] [MonadRef m] [MonadQuotation m] (stx₁ stx₂ : TSyntax `tactic) :
     m (Option (TSyntax `tactic)) := do
   match stx₁, stx₂ with
   | `(tactic| rw [$[$rules₁],*] $[at $h₁:ident]?),
@@ -292,7 +297,7 @@ def tacticPasteString (tac : TSyntax `tactic) : clickSuggestionsM String := do
 We return the range that should be replaced, and the new text that will replace it. -/
 def mkInsertion (tac : TSyntax `tactic) : clickSuggestionsM (Lsp.Range × String) := do
   if let some tac ← mergeTactics? (← read).stx tac then
-    if let some range := (← read).stx.getRange? then
+    if let some range := (← read).stx.raw.getRange? then
       let text := (← read).meta.text
       let endPos := max (text.lspPosToUtf8Pos (← read).cursorPos) range.stop
       let extraWhitespace := range.stop.extract text.source endPos

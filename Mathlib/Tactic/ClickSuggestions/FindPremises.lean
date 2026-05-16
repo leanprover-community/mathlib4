@@ -80,36 +80,46 @@ where
   else
     guard (t == s); some swaps
 
-
+/-- A collection of entries that will be inserted into the discrimination trees. -/
 structure Entries where
+  /-- Entries for the `rw` discrimination tree. -/
   rw : Array (Key × LazyEntry × RwLemma) := #[]
+  /-- Entries for the `grw` discrimination tree. -/
   grw : Array (Key × LazyEntry × GrwLemma) := #[]
+  /-- Entries for the `apply` discrimination tree. -/
   app : Array (Key × LazyEntry × ApplyLemma) := #[]
+  /-- Entries for the `apply at` discrimination tree. -/
   appAt : Array (Key × LazyEntry × ApplyAtLemma) := #[]
 
-def insertEntry {α} (arr : Array (Key × LazyEntry × α)) (key : Expr) (a : α) :
+/-- Push the discrimination tree entry `key => a` onto the array. -/
+@[inline]
+def pushEntry {α} (arr : Array (Key × LazyEntry × α)) (key : Expr) (a : α) :
     MetaM (Array (Key × LazyEntry × α)) := do
   let entries ← initializeLazyEntryWithEta key
   return entries.foldl (init := arr) fun arr (key, lazy) ↦ arr.push (key, lazy, a)
 
--- TODO: make `isBadMatch` more flexible, allowing the general equalities,
--- so that these lemmas are also in the discrimination tree.
--- We can then decide when/whether to actually show these lemmas.
 /-- Determine whether the match `e` is too generic to be useful for insertion in
 a discrimination tree of all imported theorems. -/
 def isBadMatch (e : Expr) : Bool :=
   e.getAppFn.isMVar ||
   -- This extra check excludes lemmas that match a general equality
   -- these are almost never useful, and there are very many of them.
+  -- We could consider removing this check.
   e.eq?.any fun (α, l, r) =>
     α.getAppFn.isMVar && l.getAppFn.isMVar && r.getAppFn.isMVar && l != r
 
+/-- A choice of which discrimination trees to build. -/
 public structure Choice where
+  /-- Build the `rw` discrimination tree? -/
   rw : Bool
+  /-- Build the `grw` discrimination tree? -/
   grw : Bool
+  /-- Build the `apply` discrimination tree? -/
   app : Bool
+  /-- Build the `apply at` discrimination tree? -/
   appAt : Bool
 
+/-- Is the choice non-empty? -/
 def Choice.any (c : Choice) : Bool := c.rw || c.grw || c.app || c.appAt
 
 /-- Return true if `declName` is automatically generated,
@@ -131,13 +141,13 @@ def Entries.addConst (choice : Choice) (env : Environment) (entries : Entries)
   -- apply
   if choice.app then
     if !isBadMatch e then
-      app ← insertEntry app e ⟨.const name⟩
+      app ← pushEntry app e ⟨.const name⟩
   -- apply at
   if choice.appAt then
     if let some x := xs.back? then
       let e ← inferType x
       if !isBadMatch e then
-        appAt ← insertEntry appAt e ⟨.const name⟩
+        appAt ← pushEntry appAt e ⟨.const name⟩
   if choice.rw || choice.grw then
     let mkApp2 rel lhs rhs := e | pure ()
     let .const relName _ := rel.getAppFn | pure ()
@@ -145,16 +155,16 @@ def Entries.addConst (choice : Choice) (env : Environment) (entries : Entries)
     if relName matches ``Iff | ``Eq then
       if choice.rw then
         if !isBadMatch lhs then
-          rw ← insertEntry rw lhs ⟨.const name, false⟩
+          rw ← pushEntry rw lhs ⟨.const name, false⟩
         if !isBadMatch rhs && (isBadMatch lhs || !isMVarSwap lhs rhs) then
-          rw ← insertEntry rw rhs ⟨.const name, true⟩
+          rw ← pushEntry rw rhs ⟨.const name, true⟩
     -- grw
     else
       if choice.grw then
         if !isBadMatch lhs then
-          grw ← insertEntry grw lhs ⟨.const name, false, relName⟩
+          grw ← pushEntry grw lhs ⟨.const name, false, relName⟩
         if !isBadMatch rhs then
-          grw ← insertEntry grw rhs ⟨.const name, true, relName⟩
+          grw ← pushEntry grw rhs ⟨.const name, true, relName⟩
   return { rw, grw, app, appAt }
 
 /-- Given a free variable, compute what needs to be added to the various discrimination trees. -/
@@ -163,25 +173,25 @@ def Entries.addFVar (choice : Choice) (entries : Entries) (decl : LocalDecl) : M
   let mut { rw, grw, app, appAt } := entries
   -- apply
   if choice.app then
-    app ← insertEntry app e ⟨.fvar decl.fvarId⟩
+    app ← pushEntry app e ⟨.fvar decl.fvarId⟩
   -- apply at
   if choice.appAt then
     if let some x := xs.back? then
       let e ← inferType x
-      appAt ← insertEntry appAt e ⟨.fvar decl.fvarId⟩
+      appAt ← pushEntry appAt e ⟨.fvar decl.fvarId⟩
   -- rw
   if choice.rw then
     if let mkApp2 rel lhs rhs ← whnf e then
       if rel.getAppFn matches .const ``Iff _ | .const ``Eq _ then
-        rw ← insertEntry rw lhs ⟨.fvar decl.fvarId, false⟩
+        rw ← pushEntry rw lhs ⟨.fvar decl.fvarId, false⟩
         if !isMVarSwap lhs rhs then
-          rw ← insertEntry rw rhs ⟨.fvar decl.fvarId, true⟩
+          rw ← pushEntry rw rhs ⟨.fvar decl.fvarId, true⟩
   -- grw
   if choice.grw then
     if let mkApp2 rel lhs rhs := e.cleanupAnnotations then
       if let .const relName _ := rel.getAppFn then
-        grw ← insertEntry grw lhs ⟨.fvar decl.fvarId, false, relName⟩
-        grw ← insertEntry grw rhs ⟨.fvar decl.fvarId, true, relName⟩
+        grw ← pushEntry grw lhs ⟨.fvar decl.fvarId, false, relName⟩
+        grw ← pushEntry grw rhs ⟨.fvar decl.fvarId, true, relName⟩
   return { rw, grw, app, appAt }
 
 public structure PreDiscrTrees where
@@ -196,11 +206,6 @@ def PreDiscrTrees.append (pres : PreDiscrTrees) (maps : Entries) : PreDiscrTrees
   app := maps.app.foldl (init := pres.app) fun pre (key, e) ↦ pre.push key e
   appAt := maps.appAt.foldl (init := pres.appAt) fun pre (key, e) ↦ pre.push key e
 
-public initialize rwRef : IO.Ref (Option (RefinedDiscrTree RwLemma)) ← IO.mkRef none
-public initialize grwRef : IO.Ref (Option (RefinedDiscrTree GrwLemma)) ← IO.mkRef none
-public initialize appRef : IO.Ref (Option (RefinedDiscrTree ApplyLemma)) ← IO.mkRef none
-public initialize appAtRef : IO.Ref (Option (RefinedDiscrTree ApplyAtLemma)) ← IO.mkRef none
-
 /-- The configuration used when indexing into the discrimination tree, and when looking up in it.
 
 We do not reduce projections so that e.g. `Fin.val_mk : ⟨m, h⟩.val = m` can be indexed properly.
@@ -212,6 +217,12 @@ def librarySearchIndexConfig : Config where
   transparency := .reducible
   proj := .no
 
+public initialize rwRef : IO.Ref (Option (RefinedDiscrTree RwLemma)) ← IO.mkRef none
+public initialize grwRef : IO.Ref (Option (RefinedDiscrTree GrwLemma)) ← IO.mkRef none
+public initialize appRef : IO.Ref (Option (RefinedDiscrTree ApplyLemma)) ← IO.mkRef none
+public initialize appAtRef : IO.Ref (Option (RefinedDiscrTree ApplyAtLemma)) ← IO.mkRef none
+
+/-- Compute the discrimination trees for import theorems. -/
 public def computeImportDiscrTrees (choice : Choice) : CoreM Unit := do
   let choice := {
     rw := choice.rw && (← rwRef.get).isNone
@@ -234,6 +245,7 @@ where
     if (← ref.get).isNone then
       ref.set a
 
+/-- Compute the discrimination trees for the theorems in the current file. -/
 public def computeModuleDiscrTrees (choice : Choice) (parentDecl? : Option Name) :
     CoreM PreDiscrTrees := do
   let env ← getEnv
@@ -243,10 +255,12 @@ public def computeModuleDiscrTrees (choice : Choice) (parentDecl? : Option Name)
   (← errors.get).forM logError
   return .append {} pre
 
-public def computeLCtxDiscrTrees (choice : Choice) (fvarId? : Option FVarId) :
+/-- Compute the discrimination trees for the local variables in `lctx`.
+We restrict to the varaibles in `lctx` to avoid using introduced bound variables. -/
+public def computeLCtxDiscrTrees (choice : Choice) (lctx : LocalContext) (fvarId? : Option FVarId) :
     MetaM PreDiscrTrees := withReducible do
   let mut entries : Entries := {}
-  for decl in ← getLCtx do
+  for decl in lctx do
     if !decl.isImplementationDetail && fvarId?.all (· != decl.fvarId) then
       entries ← entries.addFVar choice decl
   return .append {} entries

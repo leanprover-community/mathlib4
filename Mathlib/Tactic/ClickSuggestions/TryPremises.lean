@@ -134,7 +134,8 @@ where
         (panic! s!"Error when processing {tactic}: {← ex.toMessageData.toString}")
     return html
 
-public def librarySearchSuggestions (rootExpr subExpr : Expr)
+/-- Compute the library rearch suggestions. This uses `token` to incrementally udpate the output. -/
+public def librarySearchSuggestions (rootExpr subExpr : Expr) (lctx : LocalContext)
     (rwKind : RwKind) (parentDecl? : Option Name)
     (token : RefreshToken) : clickSuggestionsM Unit := do
   Core.checkInterrupted
@@ -152,7 +153,7 @@ public def librarySearchSuggestions (rootExpr subExpr : Expr)
 
   Core.checkInterrupted
   token.update <div> loading local hypotheses ⏳️ </div>
-  let pres ← computeLCtxDiscrTrees choice fvarId?
+  let pres ← computeLCtxDiscrTrees choice lctx fvarId?
   Core.checkInterrupted
   for cand in ← getCandidates rootExpr subExpr gpos rwKind pres do
     sections := sections.push (← runSuggestions .hyp cand)
