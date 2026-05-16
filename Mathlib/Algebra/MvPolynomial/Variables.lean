@@ -75,8 +75,7 @@ theorem vars_def [DecidableEq σ] (p : MvPolynomial σ R) : p.vars = p.degrees.t
   convert rfl
 
 @[simp]
-theorem vars_0 : (0 : MvPolynomial σ R).vars = ∅ := by
-  classical rw [vars_def, degrees_zero, Multiset.toFinset_zero]
+theorem vars_0 : (0 : MvPolynomial σ R).vars = ∅ := rfl
 
 @[simp]
 theorem vars_monomial (h : r ≠ 0) : (monomial s r).vars = s.support := by
