@@ -5,7 +5,9 @@ Authors: Vasilii Nesterov
 -/
 module
 public import Mathlib.Analysis.Complex.Exponential
+public import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
 public import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
+public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Majorized
 
 /-!
 # Well-formed bases
@@ -155,6 +157,36 @@ theorem push_log_last {basis_hd : ℝ → ℝ} {basis_tl : Basis}
   · intro g hg
     simpa [List.getLast_of_getLast?_eq_some hg] using Real.isLittleO_log_id_atTop.comp_tendsto <|
       Real.tendsto_log_atTop.comp <| h_basis.tendsto_atTop <| List.mem_of_getLast? hg
+
+/-- Auxillary lemma. If function `f` is eventually positive, `g` tends to `atTop`, and
+`log f =o[atTop] log g` then for any `a` and `b > 0`, then `f^a =o[atTop] g^b`. -/
+theorem pow_isLittleO_pow_of_log {f g : ℝ → ℝ} (a b : ℝ) (hf : ∀ᶠ x in atTop, 0 < f x)
+    (hg : Tendsto g atTop atTop) (h : (Real.log ∘ f) =o[atTop] (Real.log ∘ g)) (hb : 0 < b) :
+    (f ^ a) =o[atTop] (g ^ b) := by
+  apply IsLittleO.of_tendsto_div_atTop
+  apply Tendsto.congr' (f₁ := Real.exp ∘ (b • Real.log ∘ g - a • Real.log ∘ f))
+  · refine (hf.and (hg.eventually_gt_atTop 0)).mono (fun x ⟨hf, hg⟩ ↦ ?_)
+    simp [Real.exp_sub, mul_comm a, mul_comm b, Real.exp_mul, Real.exp_log hg, Real.exp_log hf]
+  apply Real.tendsto_exp_atTop.comp
+  have h' : (b • Real.log ∘ g - a • Real.log ∘ f) ~[atTop] b • Real.log ∘ g := by
+    replace h : (a • Real.log ∘ f) =o[atTop] (b • Real.log ∘ g) :=
+      (h.const_mul_left a).const_mul_right (hb.ne')
+    grind only [IsEquivalent.sub_isLittleO, IsEquivalent.refl]
+  rw [h'.tendsto_atTop_iff]
+  apply Filter.Tendsto.const_mul_atTop hb
+  apply Real.tendsto_log_atTop.comp hg
+
+/-- Any power of function from a well-formed basis' tail is Majorized by
+basis' head with zero exponent. -/
+theorem tail_pow_majorized_head {hd f : ℝ → ℝ} {tl : Basis}
+    (h_basis : WellFormedBasis (hd :: tl)) (hf : f ∈ tl) (r : ℝ) :
+    Majorized (f ^ r) hd 0 := by
+  intro exp h_exp
+  apply pow_isLittleO_pow_of_log
+  · exact h_basis.tail.eventually_pos.mono fun x h ↦ h _ hf
+  · exact h_basis.tendsto_atTop (by simp)
+  · grind [WellFormedBasis, List.pairwise_cons]
+  · exact h_exp
 
 end WellFormedBasis
 
