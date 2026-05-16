@@ -327,11 +327,6 @@ lemma index_smul (t : k) (ht : t ≠ 0) :
     (-f).index = f.index := by
   rw [index, index, ker_neg, range_neg]
 
--- TODO Move to `Mathlib/LinearAlgebra/FiniteDimensional/Lemmas.lean` I guess
-instance (p : Submodule k E) [FiniteDimensional k (E ⧸ p)] [FiniteDimensional k (F ⧸ f.range)] :
-    FiniteDimensional k (F ⧸ map f p) := by
-  sorry
-
 open Function in
 lemma index_comp {G : Type*} [AddCommGroup G] [Module k G] (g : F →ₗ[k] G)
     [FiniteDimensional k f.ker] [FiniteDimensional k g.ker]

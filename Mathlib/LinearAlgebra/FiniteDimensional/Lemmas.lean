@@ -445,12 +445,23 @@ end End
 
 end Module
 
-instance {W : Type v'} [Field K] [AddCommGroup W] [AddCommGroup V] [Module K V] [Module K W]
-    {f : V →ₗ[K] W} (p : Submodule K W) [FiniteDimensional K p] [FiniteDimensional K f.ker] :
+section FindHome
+
+variable {W : Type v'} [Field K] [AddCommGroup W] [AddCommGroup V] [Module K V] [Module K W]
+  {f : V →ₗ[K] W}
+
+instance (p : Submodule K W) [FiniteDimensional K p] [FiniteDimensional K f.ker] :
     FiniteDimensional K (comap f p) := by
   rw [FiniteDimensional, ← rank_lt_aleph0_iff, ← lift_lt.{v, v'}]
   grw [f.lift_rank_comap_le p]
   rw [lift_aleph0]
-  apply add_lt_aleph0
-  · rwa [lift_lt_aleph0, rank_lt_aleph0_iff]
-  · rwa [lift_lt_aleph0, rank_lt_aleph0_iff]
+  apply add_lt_aleph0 <;> rwa [lift_lt_aleph0, rank_lt_aleph0_iff]
+
+instance (p : Submodule K V) [FiniteDimensional K (V ⧸ p)] [FiniteDimensional K (W ⧸ f.range)] :
+    FiniteDimensional K (W ⧸ map f p) := by
+  rw [FiniteDimensional, ← rank_lt_aleph0_iff, ← lift_lt.{v', v}]
+  grw [f.lift_rank_quot_map_le p]
+  rw [lift_aleph0]
+  apply add_lt_aleph0 <;> rwa [lift_lt_aleph0, rank_lt_aleph0_iff]
+
+end FindHome
