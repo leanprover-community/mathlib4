@@ -131,24 +131,17 @@ end funpropsetup
 
 variable {x : M}
 
-variable (X Y Z) in
-/-- Auxiliary quantity used in the uniqueness proof of the Levi-Civita connection:
-If `∇` is a Levi-Civita connection on `TM`, then
-`⟨∇ X Y, Z⟩ = leviCivitaRhs I X Y Z` for all smooth vector fields `X`, `Y` and `Z`. -/
--- TODO make this non-`public` and inline it in public lemma(s) using it
-public noncomputable def leviCivitaRhs (x : M) : ℝ :=
-  (mvfderiv% ⟪Y, Z⟫ x (X x) + mvfderiv% ⟪Z, X⟫ x (Y x) - mvfderiv% ⟪X, Y⟫ x (Z x)
-  - ⟪Y ,(VectorField.mlieBracket I X Z)⟫ x
-  - ⟪Z, (VectorField.mlieBracket I Y X)⟫ x
-  + ⟪X, (VectorField.mlieBracket I Z Y)⟫ x) / 2
-
 variable {cov} in
 /-- Auxiliary lemma towards the uniquness of the Levi-Civita connection: expressing the term
 `⟨∇ X Y, Z⟩` for all differentiable vector fields `X`, `Y` and `Z`, without reference to `∇`. -/
-public lemma IsLeviCivitaConnection.eq_leviCivitaRhs [FiniteDimensional ℝ E]
+public lemma IsLeviCivitaConnection.apply_eq [FiniteDimensional ℝ E]
     (h : cov.IsLeviCivitaConnection)
     (hX : MDiffAt (T% X) x) (hY : MDiffAt (T% Y) x) (hZ : MDiffAt (T% Z) x) :
-    ⟪∇ Y, X, Z⟫ x = leviCivitaRhs I X Y Z x := by
+    ⟪∇ Y, X, Z⟫ x =
+      (mvfderiv% ⟪Y, Z⟫ x (X x) + mvfderiv% ⟪Z, X⟫ x (Y x) - mvfderiv% ⟪X, Y⟫ x (Z x)
+      - ⟪Y ,(VectorField.mlieBracket I X Z)⟫ x
+      - ⟪Z, (VectorField.mlieBracket I Y X)⟫ x
+      + ⟪X, (VectorField.mlieBracket I Z Y)⟫ x) / 2 := by
   -- use the compatibility in three ways
   have eq1a := h.1.mvfderiv_inner_eq X hY hZ
   have eq2a := h.1.mvfderiv_inner_eq Y hZ hX
@@ -158,10 +151,8 @@ public lemma IsLeviCivitaConnection.eq_leviCivitaRhs [FiniteDimensional ℝ E]
   have eq2b := congr(inner ℝ (Z x) ($(h.2) x (Y x) (X x)))
   have eq3b := congr(inner ℝ (X x) ($(h.2) x (Z x) (Y x)))
   -- combine
-  simp (disch := fun_prop) [leviCivitaRhs, real_inner_comm, inner_sub_right, torsion_apply] at *
+  simp (disch := fun_prop) [real_inner_comm, inner_sub_right, torsion_apply] at *
   linear_combination - (eq1a + eq1b + eq2a + eq2b - eq3a - eq3b) / 2
-
-section
 
 /-- The Levi-Civita connection on `(M, g)` is uniquely determined on differentiable vector fields.
 
@@ -173,9 +164,20 @@ public theorem IsLeviCivitaConnection.uniqueness [FiniteDimensional ℝ E]
     (hX : MDiffAt (T% X) x) (hY : MDiffAt (T% Y) x) :
     cov Y x (X x) = cov' Y x (X x) := by
   apply injective_inner_vectorField; ext Z hZ
-  trans leviCivitaRhs I X Y Z x
-  · rw [← hcov.eq_leviCivitaRhs I hX hY hZ]
-  · rw [← hcov'.eq_leviCivitaRhs I hX hY hZ]
+  refine (hcov.apply_eq I hX hY hZ).trans ?_
+  exact hcov'.apply_eq I hX hY hZ |>.symm
+
+section
+
+variable (X Y Z) in
+/-- Auxiliary quantity used in the uniqueness proof of the Levi-Civita connection:
+If `∇` is a Levi-Civita connection on `TM`, then
+`⟨∇ X Y, Z⟩ = leviCivitaRhs I X Y Z` for all smooth vector fields `X`, `Y` and `Z`. -/
+noncomputable def leviCivitaRhs (x : M) : ℝ :=
+  (mvfderiv% ⟪Y, Z⟫ x (X x) + mvfderiv% ⟪Z, X⟫ x (Y x) - mvfderiv% ⟪X, Y⟫ x (Z x)
+  - ⟪Y ,(VectorField.mlieBracket I X Z)⟫ x
+  - ⟪Z, (VectorField.mlieBracket I Y X)⟫ x
+  + ⟪X, (VectorField.mlieBracket I Z Y)⟫ x) / 2
 
 theorem leviCivitaRhs_tensorial₁ [FiniteDimensional ℝ E]
     {Y : Π x : M, TangentSpace I x} (x : M) (hY : MDiffAt (T% Y) x) {Z : Π x, TangentSpace I x}
@@ -299,14 +301,22 @@ public theorem leviCivitaConnection_apply [FiniteDimensional ℝ E] {x : M}
     {X : Π x : M, TangentSpace I x} (hX : MDiffAt (T% X) x)
     {Y : Π x : M, TangentSpace I x} (hY : MDiffAt (T% Y) x)
     {Z : Π x : M, TangentSpace I x} (hZ : MDiffAt (T% Z) x) :
-    inner ℝ (leviCivitaConnection I M Y x (X x)) (Z x) = leviCivitaRhs I X Y Z x :=
+    inner ℝ (leviCivitaConnection I M Y x (X x)) (Z x) =
+      (mvfderiv% ⟪Y, Z⟫ x (X x) + mvfderiv% ⟪Z, X⟫ x (Y x) - mvfderiv% ⟪X, Y⟫ x (Z x)
+      - ⟪Y ,(VectorField.mlieBracket I X Z)⟫ x
+      - ⟪Z, (VectorField.mlieBracket I Y X)⟫ x
+      + ⟪X, (VectorField.mlieBracket I Z Y)⟫ x) / 2 :=
   lcAux_apply _ hX hY hZ
 
 public theorem leviCivitaConnection_apply_right [FiniteDimensional ℝ E] {x : M}
     {X : Π x : M, TangentSpace I x} (hX : MDiffAt (T% X) x)
     {Y : Π x : M, TangentSpace I x} (hY : MDiffAt (T% Y) x)
     {Z : Π x : M, TangentSpace I x} (hZ : MDiffAt (T% Z) x) :
-    inner ℝ (X x) (leviCivitaConnection I M Y x (Z x)) = leviCivitaRhs I Z Y X x := by
+    inner ℝ (X x) (leviCivitaConnection I M Y x (Z x)) =
+      (mvfderiv% ⟪Y, X⟫ x (Z x) + mvfderiv% ⟪X, Z⟫ x (Y x) - mvfderiv% ⟪Z, Y⟫ x (X x)
+      - ⟪Y ,(VectorField.mlieBracket I Z X)⟫ x
+      - ⟪X, (VectorField.mlieBracket I Y Z)⟫ x
+      + ⟪Z, (VectorField.mlieBracket I X Y)⟫ x) / 2 := by
   rw [real_inner_comm]
   exact lcAux_apply _ hZ hY hX
 
@@ -316,7 +326,7 @@ public lemma leviCivitaConnection_isCompatible [FiniteDimensional ℝ E] :
   intro x X Y Z hX hY hZ
   -- Normalise the expressions by swapping arguments for rhs_aux and mlieBracket,
   -- until the swappable arguments are in order X < Y < Z.
-  simp (disch := fun_prop) [leviCivitaRhs, leviCivitaConnection_apply_right,
+  simp (disch := fun_prop) [leviCivitaConnection_apply_right,
     fun x ↦ real_inner_comm (Z x),
     fun x ↦ real_inner_comm (Y x) (X x),
     mlieBracket_swap (V := Z),
@@ -328,7 +338,7 @@ public lemma leviCivitaConnection_torsion_eq_zero [FiniteDimensional ℝ E] :
   rw [CovariantDerivative.torsion_eq_zero_iff]
   intro X Y x hX hY
   apply injective_inner_vectorField; ext Z hZ
-  simp (disch := assumption) [leviCivitaConnection_apply I, leviCivitaRhs,
+  simp (disch := assumption) [leviCivitaConnection_apply I,
     mlieBracket_swap (V := Y) (W := X), mlieBracket_swap (V := Z) (W := X),
     mlieBracket_swap (V := Z) (W := Y),
     real_inner_comm, inner_sub_left]
