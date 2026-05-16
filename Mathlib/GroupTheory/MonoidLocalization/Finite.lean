@@ -37,6 +37,6 @@ namespace Algebra.GrothendieckGroup
 
 /-- The Grothendieck group of a finitely generated monoid is finitely generated. -/
 @[to_additive /-- The Grothendieck group of a finitely generated monoid is finitely generated. -/]
-instance instFG [Monoid.FG M] : Monoid.FG <| GrothendieckGroup M := fg Monoid.FG.fg_top
+instance instFG [Monoid.FG M] : Monoid.FG <| GrothendieckGroup M := fg Monoid.fg_top
 
 end Algebra.GrothendieckGroup

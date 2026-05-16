@@ -175,7 +175,7 @@ semilinear. -/
 public theorem isSemilinearSet_setOf_eq [AddMonoid.FG M] {F G : Type*} [FunLike F M N]
     [AddMonoidHomClass F M N] [FunLike G M N] [AddMonoidHomClass G M N] (a b : N) (f : F) (g : G) :
     IsSemilinearSet { x | a + f x = b + g x } := by
-  rcases fg_iff_exists_fin_addMonoidHom.1 (AddMonoid.FG.fg_top (M := M)) with ⟨n, h, hh⟩
+  rcases fg_iff_exists_fin_addMonoidHom.1 (AddMonoid.fg_top (M := M)) with ⟨n, h, hh⟩
   rw [AddMonoidHom.mrange_eq_top] at hh
   rw [← image_preimage_eq { x | a + f x = b + g x } hh, preimage_setOf_eq]
   apply IsSemilinearSet.image
@@ -225,7 +225,7 @@ semilinear. -/
 public theorem IsSemilinearSet.preimage [AddMonoid.FG M] {F : Type*} [FunLike F M N]
     [AddMonoidHomClass F M N] {s : Set N} (hs : IsSemilinearSet s) (f : F) :
     IsSemilinearSet (f ⁻¹' s) := by
-  rcases fg_iff_exists_fin_addMonoidHom.1 (AddMonoid.FG.fg_top (M := M)) with ⟨n, g, hg⟩
+  rcases fg_iff_exists_fin_addMonoidHom.1 (AddMonoid.fg_top (M := M)) with ⟨n, g, hg⟩
   rw [AddMonoidHom.mrange_eq_top] at hg
   rw [← image_preimage_eq (f ⁻¹' s) hg]
   apply image

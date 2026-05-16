@@ -151,9 +151,10 @@ theorem exists_finset_card_le_mul [FiniteIndex H] {S : Finset G} (hS : closure (
 /-- **Schreier's Lemma**: A finite index subgroup of a finitely generated
   group is finitely generated. -/
 instance fg_of_index_ne_zero [hG : Group.FG G] [FiniteIndex H] : Group.FG H := by
-  obtain ⟨S, hS⟩ := hG.1
+  rw [Group.fg_def, Subgroup.fg_def] at hG ⊢
+  obtain ⟨S, hS⟩ := hG
   obtain ⟨T, -, hT⟩ := exists_finset_card_le_mul H hS
-  exact ⟨⟨T, hT⟩⟩
+  exact ⟨T, hT⟩
 
 theorem rank_le_index_mul_rank [hG : Group.FG G] [FiniteIndex H] :
     Group.rank H ≤ H.index * Group.rank G := by
