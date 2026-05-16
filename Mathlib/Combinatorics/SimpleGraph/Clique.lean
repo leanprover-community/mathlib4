@@ -700,21 +700,36 @@ theorem isMaximumClique_iff [Finite α] {s : Finset α} :
   ⟨fun h ↦ ⟨h.1, h.2⟩, fun h ↦ ⟨h.1, h.2⟩⟩
 
 /-- A maximal clique in a graph `G` is a clique that cannot be extended by adding more vertices. -/
-theorem isMaximalClique_iff {s : Set α} :
-    Maximal G.IsClique s ↔ G.IsClique s ∧ ∀ t : Set α, G.IsClique t → s ⊆ t → t ⊆ s :=
-  Iff.rfl
+@[mk_iff]
+structure IsMaximalClique (G : SimpleGraph α) (s : Set α) : Prop where
+  isClique : G.IsClique s
+  maximal : ∀ t : Set α, G.IsClique t → s ⊆ t → t ⊆ s
+
+/-- A maximal clique in a graph `G` is a clique that cannot be extended by adding more vertices. -/
+theorem maximal_isClique_iff_isMaximalClique {s : Set α} :
+    Maximal G.IsClique s ↔ G.IsMaximalClique s := by
+  constructor
+  · rintro ⟨hs, hmax⟩
+    exact ⟨hs, fun t ht hst => hmax ht hst⟩
+  · intro h
+    exact ⟨h.isClique, fun t ht hst => h.maximal t ht hst⟩
+
+lemma IsMaximumClique.toIsMaximalClique [Finite α] (s : Finset α) (M : G.IsMaximumClique s) :
+    G.IsMaximalClique s :=
+  maximal_isClique_iff_isMaximalClique.mp <|
+    ⟨ M.isClique,
+      fun t ht hsub => by
+        by_contra hc
+        have fint := ofFinite t
+        have ne : s ≠ t.toFinset := fun a ↦ by subst a; simp_all[Set.coe_toFinset, not_true_eq_false]
+        have hle : #t.toFinset ≤ #s := M.maximum t.toFinset (by simp [Set.coe_toFinset, ht])
+        have hlt : #s < #t.toFinset :=
+          card_lt_card (ssubset_of_ne_of_subset ne (Set.subset_toFinset.mpr hsub))
+        exact lt_irrefl _ (lt_of_lt_of_le hlt hle) ⟩
 
 lemma IsMaximumClique.isMaximalClique [Finite α] (s : Finset α) (M : G.IsMaximumClique s) :
     Maximal G.IsClique s :=
-  ⟨ M.isClique,
-    fun t ht hsub => by
-      by_contra hc
-      have fint := ofFinite t
-      have ne : s ≠ t.toFinset := fun a ↦ by subst a; simp_all[Set.coe_toFinset, not_true_eq_false]
-      have hle : #t.toFinset ≤ #s := M.maximum t.toFinset (by simp [Set.coe_toFinset, ht])
-      have hlt : #s < #t.toFinset :=
-        card_lt_card (ssubset_of_ne_of_subset ne (Set.subset_toFinset.mpr hsub))
-      exact lt_irrefl _ (lt_of_lt_of_le hlt hle) ⟩
+  maximal_isClique_iff_isMaximalClique.mpr <| M.toIsMaximalClique s
 
 lemma maximumClique_card_eq_cliqueNum [Finite α] (s : Finset α) (sm : G.IsMaximumClique s) :
     #s = G.cliqueNum := by
@@ -961,23 +976,46 @@ structure IsMaximumIndepSet [Finite α] (G : SimpleGraph α) (s : Finset α) : P
   simp [isMaximumIndepSet_iff, isMaximumClique_iff]
 
 /-- An independent set in a graph `G` that cannot be extended by adding more vertices. -/
-theorem isMaximalIndepSet_iff {s : Set α} :
-    Maximal G.IsIndepSet s ↔ G.IsIndepSet s ∧ ∀ t : Set α, G.IsIndepSet t → s ⊆ t → t ⊆ s :=
-  Iff.rfl
+@[mk_iff]
+structure IsMaximalIndepSet (G : SimpleGraph α) (s : Set α) : Prop where
+  isIndepSet : G.IsIndepSet s
+  maximal : ∀ t : Set α, G.IsIndepSet t → s ⊆ t → t ⊆ s
 
-@[simp] lemma isMaximalClique_compl (s : Finset α) :
+/-- An independent set in a graph `G` that cannot be extended by adding more vertices. -/
+theorem maximal_isIndepSet_iff_isMaximalIndepSet {s : Set α} :
+    Maximal G.IsIndepSet s ↔ G.IsMaximalIndepSet s := by
+  constructor
+  · rintro ⟨hs, hmax⟩
+    exact ⟨hs, fun t ht hst => hmax ht hst⟩
+  · intro h
+    exact ⟨h.isIndepSet, fun t ht hst => h.maximal t ht hst⟩
+
+@[simp] lemma isMaximalClique_compl (s : Set α) :
+    Gᶜ.IsMaximalClique s ↔ G.IsMaximalIndepSet s := by
+  simp [isMaximalClique_iff, isMaximalIndepSet_iff]
+
+@[simp] lemma isMaximalIndepSet_compl (s : Set α) :
+    Gᶜ.IsMaximalIndepSet s ↔ G.IsMaximalClique s := by
+  simp [isMaximalClique_iff, isMaximalIndepSet_iff]
+
+@[simp] lemma isMaximalClique_compl' (s : Finset α) :
     Maximal Gᶜ.IsClique s ↔ Maximal G.IsIndepSet s := by
-  simp [isMaximalIndepSet_iff, isMaximalClique_iff]
+  simp [maximal_isIndepSet_iff_isMaximalIndepSet, maximal_isClique_iff_isMaximalClique]
 
-@[simp] lemma isMaximalIndepSet_compl (s : Finset α) :
+@[simp] lemma isMaximalIndepSet_compl' (s : Finset α) :
     Maximal Gᶜ.IsIndepSet s ↔ Maximal G.IsClique s := by
-  simp [isMaximalIndepSet_iff, isMaximalClique_iff]
+  simp [maximal_isIndepSet_iff_isMaximalIndepSet, maximal_isClique_iff_isMaximalClique]
 
-lemma IsMaximumIndepSet.isMaximalIndepSet
-    [Finite α] (s : Finset α) (M : G.IsMaximumIndepSet s) : Maximal G.IsIndepSet s := by
+lemma IsMaximumIndepSet.toIsMaximalIndepSet
+    [Finite α] (s : Finset α) (M : G.IsMaximumIndepSet s) : G.IsMaximalIndepSet s :=
+  by
   rw [← isMaximalClique_compl]
   rw [← isMaximumClique_compl] at M
-  exact IsMaximumClique.isMaximalClique s M
+  exact (M.toIsMaximalClique s)
+
+lemma IsMaximumIndepSet.isMaximalIndepSet
+    [Finite α] (s : Finset α) (M : G.IsMaximumIndepSet s) : Maximal G.IsIndepSet s :=
+  maximal_isIndepSet_iff_isMaximalIndepSet.mpr <| M.toIsMaximalIndepSet s
 
 theorem maximumIndepSet_card_eq_indepNum
     [Finite α] (t : Finset α) (tmc : G.IsMaximumIndepSet t) : #t = G.indepNum := by
