@@ -6,10 +6,12 @@ Authors: Vincent Beffara, Stefan Kebekus
 module
 
 public import Mathlib.Analysis.Analytic.IsolatedZeros
-public import Mathlib.Analysis.Calculus.Deriv.Mul
 public import Mathlib.Analysis.Calculus.Deriv.Pow
 public import Mathlib.Analysis.Calculus.InverseFunctionTheorem.Analytic
 public import Mathlib.Analysis.Calculus.IteratedDeriv.Lemmas
+public import Mathlib.Analysis.Calculus.MeanValue
+public import Mathlib.Analysis.InnerProductSpace.Basic
+public import Mathlib.Analysis.Normed.Module.Connected
 
 /-!
 # Vanishing Order of Analytic Functions
@@ -417,6 +419,87 @@ lemma AnalyticAt.exists_eq_sum_add_pow_mul [CharZero 𝕜] [CompleteSpace E]
       · module
       · contrapose hz
         exact (pow_eq_zero_iff'.mp hz).1 ▸ mem_of_mem_nhds hU0
+
+variable {𝕜 E : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E] [CompleteSpace E]
+
+/-- The derivative of an analytic function `f` has infinite analytic order at a zero `z₀` if and
+only if `f` has infinite analytic order at `z₀`. -/
+lemma analyticOrderAt_deriv_eq_top_iff_of_eq_zero {z₀ : 𝕜} {f : 𝕜 → E} (hf : AnalyticAt 𝕜 f z₀)
+    (hzero : f z₀ = 0) : analyticOrderAt (deriv f) z₀ = ⊤ ↔ analyticOrderAt f z₀ = ⊤ := by
+  repeat rw [analyticOrderAt_eq_top, Metric.eventually_nhds_iff_ball]
+  have ⟨r₁, hr₁, hB⟩ := AnalyticAt.exists_ball_analyticOnNhd hf
+  refine ⟨fun ⟨r₂, hr₂, hball⟩ ↦ ?_, fun ⟨r₂, hr₂, hball⟩ ↦ ?_⟩
+  · refine ⟨_, lt_min hr₁ hr₂, Metric.isOpen_ball.eqOn_of_deriv_eq
+        (g := fun _ ↦ 0) ?_ ?_ ?_ ?_ ?_ hzero⟩
+    · exact (Metric.isConnected_ball <| by grind).isPreconnected
+    · intro x hx
+      exact (hB x <| Metric.ball_subset_ball (min_le_left ..) hx).differentiableWithinAt
+    · exact differentiableOn_const 0
+    · intro x hx
+      simpa using hball x <| Metric.ball_subset_ball (min_le_right r₁ r₂) hx
+    · simpa using lt_min hr₁ hr₂
+  · refine ⟨_, lt_min hr₁ hr₂, fun x hx ↦ ?_⟩
+    rw [← derivWithin_of_mem_nhds <| Metric.isOpen_ball.mem_nhds hx]
+    trans derivWithin 0 (Metric.ball z₀ (min r₁ r₂)) x
+    · refine Filter.EventuallyEq.derivWithin_eq_of_nhds <| Filter.eventually_iff_exists_mem.mpr ?_
+      refine ⟨_, Metric.isOpen_ball.mem_nhds hx, fun z hz ↦ hball z ?_⟩
+      exact Metric.ball_subset_ball (min_le_right r₁ r₂) hz
+    simp
+
+/-- If an analytic function `f` vanishes at `z₀` and its derivative has finite analytic order `n` at
+`z₀`, then `f` has analytic order `n + 1` at `z₀`. -/
+lemma analyticOrderAt_deriv_order_eq_succ {z₀ : 𝕜} {f : 𝕜 → E}
+    (hf : AnalyticAt 𝕜 f z₀) {n : ℕ} (hzero : f z₀ = 0)
+    (horder : analyticOrderAt (deriv f) z₀ = n) : analyticOrderAt f z₀ = n + 1 := by
+  match Hn' : analyticOrderAt f z₀ with
+  | none =>
+    have Hn_top : analyticOrderAt f z₀ = ⊤ := Hn'
+    have h_deriv_top := (analyticOrderAt_deriv_eq_top_iff_of_eq_zero hf hzero).mpr Hn_top
+    grind [ENat.coe_ne_top]
+  | some 0 =>
+    have Hn_zero : analyticOrderAt f z₀ = 0 := Hn'
+    exact hf.analyticOrderAt_eq_zero.mp Hn_zero hzero |>.elim
+  | some (n + 1) =>
+    have Hn_coe : analyticOrderAt f z₀ = ↑(n + 1) := Hn'
+    have := horder ▸ analyticOrderAt_deriv_of_pos hf Hn_coe
+    norm_cast at this ⊢
+    have hchar : ringChar 𝕜 = 0 := ringChar.eq 𝕜 0
+    aesop
+
+/-- An analytic function `f` has finite analytic order `n` at `z₀` if and only if its first
+`n` iterated derivatives (including `f` itself) vanish at `z₀` and the `n`-th iterated derivative is
+ non-zero. -/
+lemma analyticOrderAt_eq_nat_iff_iteratedDeriv_eq_zero
+    {f : 𝕜 → E} {z₀ : 𝕜} {n : ℕ} (hf : AnalyticAt 𝕜 f z₀) :
+    analyticOrderAt f z₀ = n ↔ (∀ k < n, iteratedDeriv k f z₀ = 0) ∧ iteratedDeriv n f z₀ ≠ 0 := by
+  induction n generalizing f with
+  | zero => simp [iteratedDeriv_zero, AnalyticAt.analyticOrderAt_eq_zero hf]
+  | succ n IH =>
+    have IH_deriv := IH hf.deriv
+    refine ⟨fun ho ↦ ?_, fun ⟨hz, hnz⟩ ↦ ?_⟩
+    · have ⟨h_zero, h_nz⟩ := IH_deriv.mp (analyticOrderAt_deriv_of_pos hf ho)
+      refine ⟨fun k hk ↦ ?_, by simpa [iteratedDeriv_succ'] using h_nz⟩
+      match k with
+      | 0 => simpa [iteratedDeriv_zero] using apply_eq_zero_of_analyticOrderAt_ne_zero
+              (by intro c; rw [ho] at c; norm_cast at c)
+      | k + 1 => simpa [iteratedDeriv_succ'] using h_zero k (by omega)
+    · exact analyticOrderAt_deriv_order_eq_succ hf
+        (by simpa [iteratedDeriv_zero] using hz 0 (by omega)) <|
+        IH_deriv.mpr ⟨fun j _ ↦ by simpa [iteratedDeriv_succ'] using hz (j + 1) (by omega),
+          by simpa [iteratedDeriv_succ'] using hnz⟩
+
+/-- If the first `n` iterated derivatives of an analytic function `f` (including `f` itself) vanish
+at `z₀`, then its analytic order at `z₀` is at least `n`. -/
+lemma le_analyticOrderAt_of_iteratedDeriv_eq_zero {f : 𝕜 → E} {z₀ : 𝕜} (hf : AnalyticAt 𝕜 f z₀)
+    (n : ℕ) (hkn : ∀ k < n, iteratedDeriv k f z₀ = 0) :
+    n ≤ analyticOrderAt f z₀ := by
+  by_cases ho : analyticOrderAt f z₀ = ⊤
+  · rw [ho]
+    exact le_top
+  · obtain ⟨m, Hm⟩ := ENat.ne_top_iff_exists.mp ho
+    rw [← Hm, ENat.coe_le_coe]
+    by_contra! h
+    exact ((analyticOrderAt_eq_nat_iff_iteratedDeriv_eq_zero hf).mp (Hm.symm)).2 (hkn m h)
 
 end NormedSpace
 
