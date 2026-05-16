@@ -179,7 +179,7 @@ theorem inhomogeneousChains.d_def (n : ℕ) :
 
 theorem inhomogeneousChains.d_comp_d :
     d A (n + 1) ≫ d A n = 0 := by
-  simpa [ChainComplex.of] using ((inhomogeneousChains A).d_comp_d (n + 2) (n + 1) n)
+  simpa [ChainComplex.of.d] using ((inhomogeneousChains A).d_comp_d (n + 2) (n + 1) n)
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Given a `k`-linear `G`-representation `A`, the complex of inhomogeneous chains is isomorphic

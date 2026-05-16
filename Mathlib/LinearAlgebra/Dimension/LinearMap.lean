@@ -16,7 +16,7 @@ public import Mathlib.LinearAlgebra.Dimension.FreeAndStrongRankCondition
 -  `LinearMap.rank`: The rank of a linear map.
 -/
 
-@[expose] public section
+public section
 
 
 noncomputable section
@@ -93,10 +93,12 @@ theorem rank_add_le (f g : V →ₗ[K] V') : rank (f + g) ≤ rank f + rank g :=
         mem_sup.2 ⟨_, ⟨x, rfl⟩, _, ⟨x, rfl⟩, rfl⟩
     _ ≤ rank f + rank g := Submodule.rank_add_le_rank_add_rank _ _
 
-theorem rank_finset_sum_le {η} (s : Finset η) (f : η → V →ₗ[K] V') :
+theorem rank_finsetSum_le {η} (s : Finset η) (f : η → V →ₗ[K] V') :
     rank (∑ d ∈ s, f d) ≤ ∑ d ∈ s, rank (f d) :=
   @Finset.sum_hom_rel _ _ _ _ _ (fun a b => rank a ≤ b) f (fun d => rank (f d)) s
     (le_of_eq rank_zero) fun _ _ _ h => le_trans (rank_add_le _ _) (by gcongr)
+
+@[deprecated (since := "2026-04-08")] alias rank_finset_sum_le := rank_finsetSum_le
 
 theorem le_rank_iff_exists_linearIndependent {c : Cardinal} {f : V →ₗ[K] V'} :
     c ≤ rank f ↔ ∃ s : Set V,

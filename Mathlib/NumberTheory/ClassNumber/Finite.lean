@@ -107,8 +107,8 @@ theorem norm_lt {T : Type*} [Ring T] [LinearOrder T] [IsStrictOrderedRing T] (a 
   apply (Int.cast_le.mpr (norm_le abv bS a hy')).trans_lt
   simp only [Int.cast_mul, Int.cast_pow]
   apply mul_lt_mul' le_rfl
-  · exact pow_lt_pow_left₀ this (Int.cast_nonneg y'_nonneg) (@Fintype.card_ne_zero _ _ ⟨i⟩)
-  · exact pow_nonneg (Int.cast_nonneg y'_nonneg) _
+  · exact pow_lt_pow_left₀ this (by positivity) (@Fintype.card_ne_zero _ _ ⟨i⟩)
+  · positivity
   · exact Int.cast_pos.mpr (normBound_pos abv bS)
 
 

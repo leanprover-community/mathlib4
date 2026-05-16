@@ -36,11 +36,11 @@ In case `f` is a polynomial, `v` is a non-negative function with `v 0 = 0` and `
   is zero.
 
 * `PowerSeries.gaussNorm_add_le_max`: if `v` is a non-negative non-archimedean function and the
-  set of values `v (coeff t f) * c ^ t` is bounded above (similarily for `g`), then
+  set of values `v (coeff t f) * c ^ t` is bounded above (similarly for `g`), then
   the Gauss norm has the non-archimedean property.
 -/
 
-@[expose] public section
+public section
 
 namespace PowerSeries
 

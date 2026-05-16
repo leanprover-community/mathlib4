@@ -15,7 +15,7 @@ This file defines a `Module.Finite` instance for a finite direct sum of finite m
 
 -/
 
-@[expose] public section
+public section
 
 open DirectSum
 

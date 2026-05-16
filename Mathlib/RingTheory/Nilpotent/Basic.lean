@@ -31,7 +31,7 @@ For the definition of `nilradical`, see `Mathlib/RingTheory/Nilpotent/Lemmas.lea
 
 -/
 
-@[expose] public section
+public section
 
 universe u v
 

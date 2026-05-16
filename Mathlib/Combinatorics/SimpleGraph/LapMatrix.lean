@@ -187,7 +187,7 @@ lemma linearIndependent_lapMatrix_ker_basis_aux :
   rw [Subtype.ext_iff] at h0
   have h : ∑ c, g c • lapMatrix_ker_basis_aux G c = fun i ↦ g (connectedComponentMk G i) := by
     simp only [lapMatrix_ker_basis_aux, SetLike.mk_smul_mk]
-    repeat rw [AddSubmonoid.coe_finset_sum]
+    repeat rw [AddSubmonoid.coe_finsetSum]
     ext i
     simp only [Finset.sum_apply, Pi.smul_apply, smul_eq_mul, mul_ite, mul_one, mul_zero, sum_ite_eq,
       mem_univ, ↓reduceIte]
@@ -204,7 +204,7 @@ lemma top_le_span_range_lapMatrix_ker_basis_aux :
     ← toLin'_apply, LinearMap.map_coe_ker])
   ext j
   simp only [lapMatrix_ker_basis_aux]
-  rw [AddSubmonoid.coe_finset_sum]
+  rw [AddSubmonoid.coe_finsetSum]
   simp only [SetLike.mk_smul_mk, Finset.sum_apply, Pi.smul_apply, smul_eq_mul, mul_ite, mul_one,
     mul_zero, sum_ite_eq, mem_univ, ↓reduceIte]
   rfl

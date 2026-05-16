@@ -212,10 +212,9 @@ lemma MDifferentiableWithinAt.change_section_trivialization
     (he : f x₀ ∈ e.source) (he' : f x₀ ∈ e'.source) :
     MDiffAt[s] (fun x ↦ (e' (f x)).2) x₀ := by
   rw [Trivialization.mem_source] at he he'
-  refine (hf.coordChange he'f he he').congr_of_eventuallyEq ?_ ?_
-  · filter_upwards [hf.continuousWithinAt (e.open_baseSet.mem_nhds he)] with y hy
-    rw [Function.comp_apply, e.coordChange_apply_snd e' hy]
-  · rw [Function.comp_apply, e.coordChange_apply_snd _ he]
+  refine (hf.coordChange he'f he he').congr_of_eventuallyEq ?_ (by simp [he])
+  filter_upwards [hf.continuousWithinAt (e.open_baseSet.mem_nhds he)] with y hy
+  simp_all
 
 namespace Bundle.Trivialization
 

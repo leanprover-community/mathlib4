@@ -24,7 +24,7 @@ which is the category `Fin (n + 1) ⥤ C`.
 
 @[expose] public section
 
-open CategoryTheory.Category Simplicial Opposite
+open CategoryTheory Category Simplicial Opposite
 
 universe v u
 
@@ -34,7 +34,7 @@ namespace CategoryTheory
 @[simps -isSimp]
 def nerve (C : Type u) [Category.{v} C] : SSet.{max u v} where
   obj Δ := ComposableArrows C (Δ.unop.len)
-  map f := TypeCat.ofHom fun x ↦ x.whiskerLeft (SimplexCategory.toCat.map f.unop).toFunctor
+  map f := ↾fun x ↦ x.whiskerLeft (SimplexCategory.toCat.map f.unop).toFunctor
   -- `aesop` can prove these but is slow, help it out:
   map_id _ := rfl
   map_comp _ _ := rfl
@@ -51,7 +51,7 @@ variable {C D : Type u} [Category.{v} C] [Category.{v} D] (F : C ⥤ D)
 /-- Given a functor `C ⥤ D`, we obtain a morphism `nerve C ⟶ nerve D` of simplicial sets. -/
 @[simps -isSimp]
 def nerveMap {C D : Type u} [Category.{v} C] [Category.{v} D] (F : C ⥤ D) : nerve C ⟶ nerve D :=
-  { app _ := TypeCat.ofHom (fun X ↦ (F.mapComposableArrows _).obj X) }
+  { app _ := ↾fun X ↦ (F.mapComposableArrows _).obj X }
 
 lemma nerveMap_app_mk₀ (x : C) :
     (nerveMap F).app (op ⦋0⦌) (ComposableArrows.mk₀ x) =
@@ -253,3 +253,9 @@ end
 end nerve
 
 end CategoryTheory
+
+/-- The functor `PartOrd ⥤ SSet` which sends a partially ordered type to its nerve. -/
+@[simps]
+def PartOrd.nerveFunctor : PartOrd.{u} ⥤ SSet.{u} where
+  obj X := nerve X
+  map f := nerveMap f.hom.monotone.functor

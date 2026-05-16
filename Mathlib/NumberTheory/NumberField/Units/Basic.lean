@@ -168,9 +168,9 @@ instance : Fintype (torsion K) := by
 instance : IsCyclic (torsion K) := isCyclic_subgroup_units _
 
 /-- The order of the torsion subgroup. -/
-def torsionOrder [NumberField K] : ℕ := Fintype.card (torsion K)
+def torsionOrder : ℕ := Fintype.card (torsion K)
 
-instance [NumberField K] : NeZero (torsionOrder K) :=
+instance : NeZero (torsionOrder K) :=
   inferInstanceAs (NeZero (Fintype.card (torsion K)))
 
 theorem torsionOrder_ne_zero :

@@ -8,7 +8,7 @@ module
 public import Mathlib.Data.Real.Basic
 public import Mathlib.GroupTheory.Finiteness
 public import Mathlib.GroupTheory.Index
-public import Mathlib.NumberTheory.Height.Northcott
+public import Mathlib.Order.Northcott
 
 import Mathlib.Data.Set.Finite.Lemmas
 import Mathlib.Tactic.FieldSimp
@@ -41,7 +41,7 @@ See `CommGroup.fg_of_descent` / `AddCommGroup.fg_of_descent` and
 
 This last version is one of the main ingredients of the standard proof of the
 **Mordell-Weil Theorem**. It allows to reduce the statement to showing that `G / 2 • G` is finite
-(where `G` is the Mordell-Weil group`).
+(where `G` is the Mordell-Weil group).
 
 ### Implementation note
 

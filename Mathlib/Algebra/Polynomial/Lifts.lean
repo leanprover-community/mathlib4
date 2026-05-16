@@ -150,7 +150,7 @@ theorem exists_support_eq_of_mem_lifts {p : S[X]} (hlifts : p ∈ lifts f) :
   let q : R[X] := ∑ k ∈ p.support, monomial k (g k)
   have hq : map f q = p := by simp_rw [q, Polynomial.map_sum, map_monomial, hg, ← as_sum_support]
   have hq' : q.support = p.support := by
-    simp_rw [Finset.ext_iff, mem_support_iff, q, finset_sum_coeff, coeff_monomial,
+    simp_rw [Finset.ext_iff, mem_support_iff, q, finsetSum_coeff, coeff_monomial,
       Finset.sum_ite_eq', ite_ne_right_iff, mem_support_iff, and_iff_left_iff_imp, not_imp_not]
     exact fun k h ↦ by rw [← hg, h, map_zero]
   exact ⟨q, hq, hq'⟩

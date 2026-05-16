@@ -274,9 +274,7 @@ theorem IsVonNBounded.closure [T1Space E] [RegularSpace E] [ContinuousConstSMul 
   rcases exists_mem_nhds_isClosed_subset hV with ⟨W, hW₁, hW₂, hW₃⟩
   specialize ha hW₁
   filter_upwards [ha] with b ha'
-  grw [closure_mono ha', closure_smul₀ b]
-  apply smul_set_mono
-  grw [closure_subset_iff_isClosed.mpr hW₂, hW₃]
+  grw [ha', closure_smul₀ b, closure_subset_iff_isClosed.mpr hW₂, hW₃]
 
 variable [ContinuousSMul 𝕜 E]
 
@@ -409,13 +407,20 @@ theorem TotallyBounded.isVonNBounded {s : Set E} (hs : TotallyBounded s) :
     have hx_fstsnd : x.fst + x.snd ⊆ U := add_subset_iff.mpr fun z1 hz1 z2 hz2 ↦
       h'' <| mk_mem_prod hz1 hz2
     refine fun y _ => Absorbs.mono_left ?_ hx_fstsnd
-    -- TODO: with dot notation, Lean timeouts on the next line. Why?
-    exact Absorbent.vadd_absorbs (absorbent_nhds_zero hx.1.1) hx.2.2.absorbs_self
+    exact (absorbent_nhds_zero hx.1.1).vadd_absorbs hx.2.2.absorbs_self
   else
     haveI : BoundedSpace 𝕜 := ⟨Metric.isBounded_iff.2 ⟨1, by simp_all [dist_eq_norm]⟩⟩
     exact Bornology.IsVonNBounded.of_boundedSpace
 
 end IsUniformAddGroup
+
+variable (𝕜) in
+theorem IsCompact.isVonNBounded [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
+    [TopologicalSpace E] [IsTopologicalAddGroup E] [ContinuousSMul 𝕜 E] {s : Set E}
+    (hs : IsCompact s) : Bornology.IsVonNBounded 𝕜 s :=
+  letI := IsTopologicalAddGroup.rightUniformSpace E
+  haveI := isUniformAddGroup_of_addCommGroup (G := E)
+  hs.totallyBounded.isVonNBounded 𝕜
 
 variable (𝕜) in
 theorem Filter.Tendsto.isVonNBounded_range [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]

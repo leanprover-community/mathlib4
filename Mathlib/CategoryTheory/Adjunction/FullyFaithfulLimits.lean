@@ -20,7 +20,7 @@ iff it does so after precomposition with the sheafification functor.
 
 -/
 
-@[expose] public section
+public section
 
 universe v u v₁ v₂ v₃ u₁ u₂ u₃
 

@@ -34,8 +34,7 @@ Prove that the Sorgenfrey line is a paracompact space.
 
 
 open Set Filter TopologicalSpace
-
-open scoped Topology Filter Cardinal
+open scoped Topology Cardinal
 
 namespace Counterexample
 

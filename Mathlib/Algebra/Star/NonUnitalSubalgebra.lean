@@ -635,7 +635,7 @@ theorem starClosure_le_iff {S₁ : NonUnitalSubalgebra R A} {S₂ : NonUnitalSta
     S₁.starClosure ≤ S₂ ↔ S₁ ≤ S₂.toNonUnitalSubalgebra :=
   ⟨fun h => le_sup_left.trans h, starClosure_le⟩
 
-@[mono]
+@[gcongr, mono]
 theorem starClosure_mono : Monotone (starClosure (R := R) (A := A)) :=
   fun _ _ h => starClosure_le <| h.trans le_sup_left
 
@@ -1037,6 +1037,17 @@ theorem coe_iSup_of_directed [Nonempty ι] {S : ι → NonUnitalStarSubalgebra R
     (Set.iUnion_subset fun _ ↦ le_iSup S _)
   this.symm ▸ rfl
 
+theorem isMulCommutative_iSup [Nonempty ι] {S : ι → NonUnitalStarSubalgebra R A}
+    [hS : ∀ i, IsMulCommutative (S i)] (dir : Directed (· ≤ ·) S) :
+    IsMulCommutative (⨆ i, S i : NonUnitalStarSubalgebra R A) := by
+  simpa [isMulCommutative_iff, ← SetLike.mem_coe, NonUnitalSubsemiring.coe_iSup_of_directed dir,
+    coe_iSup_of_directed dir] using NonUnitalSubsemiring.isMulCommutative_iSup dir
+
+instance instIsMulCommutative_iSup [Nonempty ι] [Preorder ι] [IsDirectedOrder ι]
+    {S : ι →o NonUnitalStarSubalgebra R A} [hS : ∀ i, IsMulCommutative (S i)] :
+    IsMulCommutative (⨆ i, S i : NonUnitalStarSubalgebra R A) :=
+  isMulCommutative_iSup S.monotone.directed_le
+
 /-- Define a non-unital star algebra homomorphism on a directed supremum of non-unital star
 subalgebras by defining it on each non-unital star subalgebra, and proving that it agrees on the
 intersection of non-unital star subalgebras. -/
@@ -1149,11 +1160,11 @@ theorem center_eq_top (A : Type*) [StarRing R] [NonUnitalCommSemiring A] [StarRi
 variable {R A}
 
 instance instNonUnitalCommSemiring : NonUnitalCommSemiring (center R A) :=
-  NonUnitalSubalgebra.center.instNonUnitalCommSemiring
+  fast_instance% NonUnitalSubalgebra.center.instNonUnitalCommSemiring
 
 instance instNonUnitalCommRing {A : Type*} [NonUnitalRing A] [StarRing A] [Module R A]
     [IsScalarTower R A A] [SMulCommClass R A A] : NonUnitalCommRing (center R A) :=
-  NonUnitalSubalgebra.center.instNonUnitalCommRing
+  fast_instance% NonUnitalSubalgebra.center.instNonUnitalCommRing
 
 theorem mem_center_iff {a : A} : a ∈ center R A ↔ ∀ b : A, b * a = a * b :=
   Subsemigroup.mem_center_iff

@@ -17,7 +17,7 @@ then `G` preserves injective objects. We show that the converse is true if the c
 enough injectives.
 -/
 
-@[expose] public section
+public section
 
 universe v₁ v₂ v₃ u₁ u₂ u₃
 

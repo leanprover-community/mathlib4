@@ -19,7 +19,7 @@ It is formalized as a `Prop`-valued typeclass `ReflectsIsomorphisms F`.
 Any fully faithful functor reflects isomorphisms.
 -/
 
-@[expose] public section
+public section
 
 namespace CategoryTheory
 

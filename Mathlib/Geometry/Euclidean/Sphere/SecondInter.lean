@@ -232,13 +232,13 @@ lemma Sphere.sOppSide_faceOpposite_secondInter_of_mem_interior {s : Sphere P}
       (s.secondInter (sx.points i) (p' -ᵥ (sx.points i))) by
     rwa [hp', s.secondInter_smul _ _ hrpos.ne'] at this
   refine s.sOppSide_faceOpposite_secondInter_of_mem_interior_faceOpposite hi hsx ?_
-  simp_rw [p', ← Finset.univ.affineCombination_affineCombinationSingleWeights ℝ (sx.points)
+  simp_rw [p', ← Finset.univ.affineCombination_piSingle ℝ (sx.points)
     (Finset.mem_univ i), AffineMap.lineMap_apply, Finset.affineCombination_vsub,
     ← LinearMap.map_smul, Finset.weightedVSub_vadd_affineCombination,
     Affine.Simplex.faceOpposite]
   rw [Affine.Simplex.affineCombination_mem_interior_face_iff_pos]
   · simp only [Finset.mem_compl, Finset.mem_singleton, Pi.add_apply, Pi.smul_apply, Pi.sub_apply,
-      smul_eq_mul, Decidable.not_not, forall_eq, Finset.affineCombinationSingleWeights_apply_self]
+      smul_eq_mul, Decidable.not_not, forall_eq, Pi.single_eq_same]
     refine ⟨fun j hj ↦ ?_, by grind⟩
     simp [hj, hrpos, (hw01 j).1]
   · simp [Finset.sum_add_distrib, ← Finset.mul_sum, hw]

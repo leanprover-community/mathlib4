@@ -88,7 +88,7 @@ def classifyingSpaceUniversalCover [Monoid G] :
     SimplicialObject (Action (Type u) G) where
   obj n := Action.ofMulAction G (Fin (n.unop.len + 1) → G)
   map f :=
-    { hom := TypeCat.ofHom (fun x => x ∘ f.unop.toOrderHom)
+    { hom := ↾fun x => x ∘ f.unop.toOrderHom
       comm := fun _ => rfl }
   map_id _ := rfl
   map_comp _ _ := rfl
@@ -133,7 +133,7 @@ extra degeneracy. -/
 def extraDegeneracyAugmentedCechNerve :
     ExtraDegeneracy (Arrow.mk <| terminal.from G).augmentedCechNerve :=
   AugmentedCechNerve.extraDegeneracy (Arrow.mk <| terminal.from G)
-    ⟨TypeCat.ofHom (fun _ => (1 : G)), by cat_disch⟩
+    ⟨↾fun _ => (1 : G), by cat_disch⟩
 
 /-- The universal cover of the classifying space of `G` as a simplicial set, augmented by the map
 from `Fin 1 → G` to the terminal object in `Type u`, has an extra degeneracy. -/
@@ -407,8 +407,7 @@ noncomputable abbrev barComplex : ChainComplex (Rep k G) ℕ :=
 
 namespace barComplex
 
-@[simp]
-theorem d_def : (barComplex k G).d (n + 1) n = d k G n := ChainComplex.of_d _ _ _ _
+theorem d_def : (barComplex k G).d (n + 1) n = d k G n := by simp
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Isomorphism between the bar resolution and standard resolution, with `n`th map
@@ -416,7 +415,7 @@ set_option backward.isDefEq.respectTransparency false in
 def isoStandardComplex : barComplex k G ≅ standardComplex k G :=
   HomologicalComplex.Hom.isoOfComponents (fun i => (diagonalSuccIsoFree k G i).symm) fun i j => by
     rintro (rfl : j + 1 = i)
-    simp only [ChainComplex.of_x, Iso.symm_hom, d_def, d_comp_diagonalSuccIsoFree_inv_eq]
+    rw [d_def, Iso.symm_hom, Iso.symm_hom, d_comp_diagonalSuccIsoFree_inv_eq]
 
 end barComplex
 

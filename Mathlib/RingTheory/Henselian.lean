@@ -54,7 +54,7 @@ https://gist.github.com/jcommelin/47d94e4af092641017a97f7f02bf9598
 
 -/
 
-@[expose] public section
+public section
 
 
 noncomputable section

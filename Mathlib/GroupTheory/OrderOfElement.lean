@@ -1163,7 +1163,7 @@ nonrec lemma Subgroup.orderOf_dvd_natCard {G : Type*} [Group G] (s : Subgroup G)
 @[to_additive]
 lemma Subgroup.orderOf_le_card {G : Type*} [Group G] (s : Subgroup G) (hs : (s : Set G).Finite)
     {x} (hx : x ∈ s) : orderOf x ≤ Nat.card s :=
-  le_of_dvd (Nat.card_pos_iff.2 <| ⟨s.coe_nonempty.to_subtype, hs.to_subtype⟩) <|
+  le_of_dvd (Nat.card_pos_iff.2 <| ⟨(OneMemClass.coe_nonempty s).to_subtype, hs.to_subtype⟩) <|
     s.orderOf_dvd_natCard hx
 
 @[to_additive]
@@ -1374,6 +1374,10 @@ theorem IsOfFinOrder.snd (hx : IsOfFinOrder x) : IsOfFinOrder x.2 :=
 @[to_additive IsOfFinAddOrder.prod_mk]
 theorem IsOfFinOrder.prod_mk : IsOfFinOrder a → IsOfFinOrder b → IsOfFinOrder (a, b) := by
   simpa only [← orderOf_pos_iff, Prod.orderOf] using Nat.lcm_pos
+
+@[to_additive IsOfFinAddOrder.prod_iff]
+theorem IsOfFinOrder.prod_iff : IsOfFinOrder x ↔ IsOfFinOrder x.1 ∧ IsOfFinOrder x.2 :=
+  ⟨fun h ↦ ⟨h.fst, h.snd⟩, fun h ↦ .prod_mk h.1 h.2⟩
 
 @[to_additive]
 lemma Prod.orderOf_mk : orderOf (a, b) = Nat.lcm (orderOf a) (orderOf b) :=

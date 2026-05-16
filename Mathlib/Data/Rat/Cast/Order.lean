@@ -152,7 +152,7 @@ theorem cast_strictMono : StrictMono ((↑) : ℚ≥0 → K) := fun p q h => by
   · simp
   · simp
 
-@[mono]
+@[gcongr, mono]
 theorem cast_mono : Monotone ((↑) : ℚ≥0 → K) :=
   cast_strictMono.monotone
 

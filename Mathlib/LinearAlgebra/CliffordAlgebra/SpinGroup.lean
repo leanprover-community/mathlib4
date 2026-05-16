@@ -28,7 +28,7 @@ In this file we define `lipschitzGroup`, `pinGroup` and `spinGroup` and show the
 The definition of the Lipschitz group
 $\{ x \in \mathop{\mathcal{C}\ell} | x \text{ is invertible and } x v x^{-1} ∈ V \}$ is given by:
 
-* [fulton2004][], Chapter 20
+* [fulton2004], Chapter 20
 * https://en.wikipedia.org/wiki/Clifford_algebra#Lipschitz_group
 
 But they presumably form a group only in finite dimensions. So we define `lipschitzGroup` with
@@ -136,7 +136,7 @@ theorem conjAct_smul_range_ι {x : (CliffordAlgebra Q)ˣ} (hx : x ∈ lipschitzG
       refine Eq.trans_le ?_ this
       simp only [map_inv, smul_inv_smul]
   intro x hx
-  erw [Submodule.map_le_iff_le_comap]
+  rw [Submodule.pointwise_smul_def, Submodule.map_le_iff_le_comap]
   rintro _ ⟨m, rfl⟩
   exact conjAct_smul_ι_mem_range_ι hx _
 

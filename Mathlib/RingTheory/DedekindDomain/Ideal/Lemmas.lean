@@ -401,31 +401,19 @@ theorem count_le_of_ideal_ge
 
 theorem sup_eq_prod_inf_factors (hI : I ≠ ⊥) (hJ : J ≠ ⊥) :
     I ⊔ J = (normalizedFactors I ∩ normalizedFactors J).prod := by
-  have H : normalizedFactors (normalizedFactors I ∩ normalizedFactors J).prod =
-      normalizedFactors I ∩ normalizedFactors J := by
-    apply normalizedFactors_prod_of_prime
-    intro p hp
-    rw [mem_inter] at hp
-    exact prime_of_normalized_factor p hp.left
-  have := Multiset.prod_ne_zero_of_prime (normalizedFactors I ∩ normalizedFactors J) fun _ h =>
-      prime_of_normalized_factor _ (Multiset.mem_inter.1 h).1
+  have := prod_inter_normalizedFactors_ne_zero I J
   apply le_antisymm
   · rw [sup_le_iff, ← dvd_iff_le, ← dvd_iff_le]
-    constructor
-    · rw [dvd_iff_normalizedFactors_le_normalizedFactors this hI, H]
-      exact inf_le_left
-    · rw [dvd_iff_normalizedFactors_le_normalizedFactors this hJ, H]
-      exact inf_le_right
-  · rw [← dvd_iff_le, dvd_iff_normalizedFactors_le_normalizedFactors,
-      normalizedFactors_prod_of_prime, le_iff_count]
-    · intro a
-      rw [Multiset.count_inter]
-      exact le_min (count_le_of_ideal_ge le_sup_left hI a) (count_le_of_ideal_ge le_sup_right hJ a)
-    · intro p hp
-      rw [mem_inter] at hp
-      exact prime_of_normalized_factor p hp.left
-    · exact ne_bot_of_le_ne_bot hI le_sup_left
-    · exact this
+    constructor <;>
+      rw [dvd_iff_normalizedFactors_le_normalizedFactors this (by assumption),
+        normalizedFactors_prod_inter_eq_inter]
+    exacts [inf_le_left, inf_le_right]
+  · rw [← dvd_iff_le, dvd_iff_normalizedFactors_le_normalizedFactors ?H this,
+      normalizedFactors_prod_inter_eq_inter, le_iff_count]
+    case H => exact ne_bot_of_le_ne_bot hI le_sup_left
+    intro a
+    rw [Multiset.count_inter]
+    exact le_min (count_le_of_ideal_ge le_sup_left hI a) (count_le_of_ideal_ge le_sup_right hJ a)
 
 @[deprecated (since := "2026-04-16")]
 alias _root_.sup_eq_prod_inf_factors := sup_eq_prod_inf_factors
@@ -530,6 +518,9 @@ See `IsDedekindDomain.HeightOneSpectrum.prime` for the inverse direction. -/
 @[simps]
 def ofPrime {p : Ideal R} (hp : Prime p) : HeightOneSpectrum R :=
   ⟨p, Ideal.isPrime_of_prime hp, hp.ne_zero⟩
+
+@[simp]
+theorem ofPrime_prime : ofPrime v.prime = v := rfl
 
 theorem irreducible : Irreducible v.asIdeal :=
   UniqueFactorizationMonoid.irreducible_iff_prime.mpr v.prime
@@ -1216,10 +1207,11 @@ theorem equivPrimesOver_apply (hp : p ≠ 0)
     (v : {v : HeightOneSpectrum B // v.asIdeal ∣ map (algebraMap A B) p}) :
     equivPrimesOver B hp v = v.1.asIdeal := rfl
 
-variable (A) {B} in
+variable (A) in
 /-- The pullback of a height one prime in `B` to `A`. -/
 @[simps]
-def under [Algebra.IsIntegral A B] (w : HeightOneSpectrum B) : HeightOneSpectrum A where
+def under {B : Type*} [CommRing B] [IsDomain B] [Algebra A B] [Algebra.IsIntegral A B]
+    (w : HeightOneSpectrum B) : HeightOneSpectrum A where
   asIdeal := w.asIdeal.under A
   isPrime := .under A w.asIdeal
   ne_bot := mt Ideal.eq_bot_of_comap_eq_bot w.ne_bot
@@ -1259,3 +1251,14 @@ alias _root_.one_le_primesOver_ncard := one_le_primesOver_ncard
 end IsDedekindDomain
 
 end primesOverFinset
+
+open IsDedekindDomain in
+lemma Algebra.IsIntegral.nontrivial_heightOneSpectrum [IsDomain A] [Algebra R A]
+    [FaithfulSMul R A] [Algebra.IsIntegral R A] [Nontrivial (HeightOneSpectrum R)] :
+    Nontrivial (HeightOneSpectrum A) := by
+  have := (FaithfulSMul.algebraMap_injective R A).isDomain
+  let f (p : HeightOneSpectrum A) : HeightOneSpectrum R := p.under R
+  have : Function.Surjective f := fun ⟨p, _, hp⟩ ↦ by
+    obtain ⟨P, hP, rfl⟩ := p.exists_ideal_over_prime_of_isIntegral_of_isDomain (S := A) (by simp)
+    exact ⟨⟨P, hP, by aesop⟩, rfl⟩
+  exact this.nontrivial

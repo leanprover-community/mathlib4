@@ -80,7 +80,6 @@ section
 
 variable {A B : C} {X Y : D} {i : A ⟶ B} {p : X ⟶ Y} {u : A ⟶ F.obj X} {v : B ⟶ F.obj Y}
 
-set_option backward.isDefEq.respectTransparency false in
 /-- When we have an adjunction `G ⊣ F`, any commutative square where the left
 map is of the form `i` and the right map is `F.map p` has an "adjoint" commutative
 square whose left map is `G.map i` and whose right map is `p`. -/

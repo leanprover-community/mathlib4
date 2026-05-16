@@ -27,7 +27,7 @@ The `Prod` instance only requires `Mathlib/Topology/UniformSpace/Basic.lean`.
 
 -/
 
-@[expose] public section
+public section
 
 variable {X Y : Type*}
 
