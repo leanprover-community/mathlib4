@@ -5,6 +5,7 @@ Authors: Weiyi Wang
 -/
 module
 
+public import Mathlib.Algebra.Ring.NegOnePow
 public import Mathlib.Data.Int.SuccPred
 
 /-!
@@ -20,11 +21,9 @@ convention, but implicitly shows the monotonicity in `pentagonal_lt_pentagonal_n
 ## Main definitions
 
 * `pentagonal`: pentagonal numbers as a function `ℤ → ℕ`.
-
-## TODO
-
-Show the relation between pentagonal numbers and partitions, including the pentagonal number
-theorem.
+* `pentagonalCoeff`: coefficients of the power series $\sum_{k=-\infty}^{\infty}(-1)^k x^{f(k)}$,
+  where $f(k)$ are pentagonal numbers. See also `PowerSeries.WithPiTopology.hasProd_one_sub_X_pow`
+  for the pentagonal number theorem that relates this power series and an infinite product.
 
 ## References
 
@@ -74,3 +73,24 @@ theorem pentagonal_strictMonoOn : StrictMonoOn pentagonal (Set.Ici 0) := by
 theorem pentagonal_strictAntiOn : StrictAntiOn pentagonal (Set.Iic 0) := by
   apply strictAntiOn_of_add_one_lt Set.ordConnected_Iic
   grind [natCast_pentagonal]
+
+variable (R : Type*) [Ring R]
+
+open Classical in
+/-- Coefficients of the power series $\sum_{k=-\infty}^{\infty}(-1)^k x^{f(k)}$, where $f(k)$ are
+pentagonal numbers. -/
+noncomputable def pentagonalCoeff (n : ℕ) : R :=
+  if h : ∃ k, pentagonal k = n then
+    Int.negOnePow h.choose
+  else
+    0
+
+theorem pentagonalCoeff_eq_zero {n : ℕ} (h : n ∉ Set.range pentagonal) :
+    pentagonalCoeff R n = 0 := by
+  have h : ¬ ∃ k, pentagonal k = n := by simpa using h
+  simp [pentagonalCoeff, h]
+
+@[simp]
+theorem pentagonalCoeff_pentagonal (k : ℤ) :
+    pentagonalCoeff R (pentagonal k) = Int.negOnePow k := by
+  simp [pentagonalCoeff]
