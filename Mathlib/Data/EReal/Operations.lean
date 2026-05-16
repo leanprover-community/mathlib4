@@ -6,7 +6,6 @@ Authors: Kevin Buzzard
 module
 
 public import Mathlib.Data.EReal.Basic
-public import Batteries.Util.ProofWanted
 
 /-!
 # Addition, negation, subtraction and multiplication on extended real numbers
@@ -323,9 +322,25 @@ theorem recENNReal_coe_ennreal {motive : EReal → Sort*} (coe : ∀ x : ℝ≥0
   obtain rfl : y.toENNReal = x := by simp [← hy]
   simp [recENNReal, H₁]
 
-proof_wanted recENNReal_neg_coe_ennreal {motive : EReal → Sort*} (coe : ∀ x : ℝ≥0∞, motive x)
+@[simp]
+theorem recENNReal_neg_coe_ennreal {motive : EReal → Sort*} (coe : ∀ x : ℝ≥0∞, motive x)
     (neg_coe : ∀ x : ℝ≥0∞, 0 < x → motive (-x)) {x : ℝ≥0∞} (hx : 0 < x) :
-    recENNReal coe neg_coe (-x) = neg_coe x hx
+    recENNReal coe neg_coe (-x) = neg_coe x hx := by
+  have hneg : ¬ 0 ≤ (-x : EReal) := by
+    simpa [EReal.neg_nonneg] using not_le_of_gt (coe_ennreal_pos.2 hx)
+  rw [recENNReal, dif_neg hneg]
+  have eqRec_apply_heq {a b : EReal} {P : Prop} (f : P → motive a) (e : a = b) (p : P) :
+      (Eq.rec (motive := fun x _ => P → motive x) f e p) ≍ f p := by
+    cases e
+    rfl
+  apply eq_of_heq
+  refine (eqRec_apply_heq _ _ _).trans ?_
+  have ha : (-(-x : EReal)).toENNReal = x := by simp
+  have hs : (⟨(-(-x : EReal)).toENNReal, by rw [ha]; exact hx⟩ : {a : ℝ≥0∞ // 0 < a}) =
+      ⟨x, hx⟩ := by
+    ext
+    exact ha
+  exact congr_arg_heq (fun a : {a : ℝ≥0∞ // 0 < a} ↦ neg_coe a.1 a.2) hs
 
 /-!
 ### Subtraction
