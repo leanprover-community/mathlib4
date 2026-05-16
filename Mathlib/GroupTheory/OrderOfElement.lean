@@ -384,7 +384,7 @@ lemma IsUnit.orderOf_eq_one [Subsingleton Gˣ] {x : G} (h : IsUnit x) :
 
 @[to_additive (attr := norm_cast)]
 theorem Units.isOfFinOrder_val {u : Gˣ} : IsOfFinOrder (u : G) ↔ IsOfFinOrder u :=
-  Units.coeHom_injective.isOfFinOrder_iff
+  Units.coeHom_injective.isOfFinOrder_iff (x := u)
 
 /-- If the order of `x` is finite, then `x` is a unit with inverse `x ^ (orderOf x - 1)`. -/
 @[to_additive (attr := simps) /-- If the additive order of `x` is finite, then `x` is an additive
