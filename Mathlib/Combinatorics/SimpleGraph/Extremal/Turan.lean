@@ -437,29 +437,6 @@ lemma strictMonoOn_turanNumber : StrictMonoOn (turanNumber n) (Set.Icc 1 n) := b
   contrapose key
   exact key.mono hab
 
-lemma sum_mul_le_twice_turanNumber {f : Fin n → ℕ} :
-    ∑ i, ∑ j with i ≠ j, f i * f j ≤ 2 * turanNumber (∑ i, f i) n := by
-  let H : SimpleGraph (Σ i, Fin (f i)) := ⟨fun x y ↦ x.1 ≠ y.1, by tauto, by tauto⟩
-  have cfH : H.CliqueFree (n + 1) := fun s ⟨hs₁, hs₂⟩ ↦ by
-    obtain ⟨v, w, hn, fe⟩ := exists_ne_map_eq_of_card_lt (fun v : s ↦ v.1.1) (by simp [hs₂])
-    have := hs₁ v.2 w.2 (Subtype.coe_ne_coe.mpr hn)
-    simp_all [H]
-  replace cfH := cfH.card_edgeFinset_le
-  simp_rw [Fintype.card_sigma, Fintype.card_fin] at cfH
-  have rsum (c₁ c₂ : Fin n) :
-      (∑ x : Fin (f c₁), ∑ y : Fin (f c₂), if c₁ ≠ c₂ then 1 else 0) =
-      if c₁ ≠ c₂ then f c₁ * f c₂ else 0 := by simp
-  have eH : ∑ i, ∑ j with i ≠ j, f i * f j = 2 * #H.edgeFinset := by
-    simp_rw [← sum_degrees_eq_twice_card_edges, degree, neighborFinset_eq_filter, card_filter,
-      Fintype.sum_sigma, H]
-    conv_rhs =>
-      enter [2, c₁]
-      rw [sum_comm]
-      enter [2, c₂]
-      rw [rsum]
-    simp_rw [sum_filter]
-  rwa [eH, mul_le_mul_iff_right₀ zero_lt_two]
-
 @[deprecated (since := "2026-04-18")] alias card_edgeFinset_turanGraph_add := turanNumber_add
 @[deprecated (since := "2026-04-18")] alias card_edgeFinset_turanGraph := turanNumber_eq
 @[deprecated (since := "2026-04-18")] alias mul_card_edgeFinset_turanGraph_le := mul_turanNumber_le
