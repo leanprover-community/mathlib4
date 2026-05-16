@@ -377,7 +377,7 @@ theorem limsup_const_bot {f : Filter β} : limsup (fun _ : β => (⊥ : α)) f =
   rw [limsup_eq, eq_bot_iff]
   exact sInf_le (Eventually.of_forall fun _ => le_rfl)
 
-/-- Same as `limsup_const` applied to `⊤` but without the `NeBot f` assumption -/
+/-- Same as `liminf_const` applied to `⊤` but without the `NeBot f` assumption -/
 @[simp]
 theorem liminf_const_top {f : Filter β} : liminf (fun _ : β => (⊤ : α)) f = (⊤ : α) :=
   limsup_const_bot (α := αᵒᵈ)
