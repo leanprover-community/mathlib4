@@ -35,7 +35,7 @@ class ResiduallyFinite (G : Type*) [Group G] : Prop where
 
 attribute [to_additive existing] ResiduallyFinite
 
-variable {G : Type*} [Group G]
+variable {G G' : Type*} [Group G] [Group G']
 
 @[to_additive]
 theorem residuallyFinite_def :
@@ -74,5 +74,20 @@ theorem residuallyFinite_iff_exists_finiteIndex :
 @[to_additive]
 instance [Finite G] : ResiduallyFinite G :=
   residuallyFinite_iff_forall_finiteIndex.mpr fun _ hg ↦ hg ⊥
+
+@[to_additive]
+instance [ResiduallyFinite G] {H : Subgroup G} : ResiduallyFinite H := by
+  rw [residuallyFinite_iff_forall_finiteIndexNormalSubgroup]
+  intro g hg
+  ext
+  exact eq_one_iff_forall_finiteIndexNormalSubroup g.1 fun K ↦ hg (K.comap H.subtype)
+
+@[to_additive]
+instance [ResiduallyFinite G] [ResiduallyFinite G'] : ResiduallyFinite (G × G') := by
+  rw [residuallyFinite_iff_forall_finiteIndexNormalSubgroup]
+  intro g hg
+  ext
+  · exact eq_one_iff_forall_finiteIndexNormalSubroup g.1 fun K ↦ hg (K.comap (MonoidHom.fst G G'))
+  · exact eq_one_iff_forall_finiteIndexNormalSubroup g.2 fun K ↦ hg (K.comap (MonoidHom.snd G G'))
 
 end Group
