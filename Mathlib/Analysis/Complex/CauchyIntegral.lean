@@ -701,6 +701,68 @@ theorem analyticAt_iff_eventually_differentiableAt {f : ℂ → E} {c : ℂ} :
       exact (d z m).differentiableWithinAt
     exact h _ m
 
+open scoped Nat
+/-- If a function `R : ℂ → ℂ` factors as `R z = (z - z₀) ^ r * R₁ z`, where `R₁` is
+analytic everywhere, then for any `k ≤ r`, there exists an everywhere analytic function
+`R₂ : ℂ → ℂ` such that the `k`-th iterated derivative of `R` is given by
+`deriv^[k] R z = (z - z₀) ^ (r - k) * (r! / (r - k)! * R₁ z + (z - z₀) * R₂ z)`. -/
+lemma iterated_deriv_mul_pow_sub_of_analytic {𝕜 : Type*} [NontriviallyNormedField 𝕜] [CharZero 𝕜]
+    [CompleteSpace 𝕜] {k t : ℕ} {z₀ : 𝕜} {R R₁ : 𝕜 → 𝕜}
+    (hf1 : ∀ z, AnalyticAt 𝕜 R₁ z) (hR₁ : ∀ z, R z = (z - z₀) ^ (k + t) * R₁ z) :
+    ∃ R₂, (∀ z, AnalyticAt 𝕜 R₂ z) ∧ ∀ z, deriv^[k] R z =
+      (z - z₀) ^ t * ((k + t).factorial / t.factorial * R₁ z + (z - z₀) * R₂ z) := by
+  induction k generalizing t with
+  | zero =>
+    refine ⟨0, fun _ ↦ analyticAt_const, fun z ↦ ?_⟩
+    have : (t.factorial : ℂ) ≠ 0 := mod_cast t.factorial_ne_zero
+    simp [hR₁]
+    left
+    rw [div_self]
+    simp
+    exact mod_cast t.factorial_ne_zero
+  | succ k IH =>
+    rw [add_assoc] at hR₁
+    obtain ⟨R₂, hR₂, hR1⟩ := IH (t := 1 + t) hR₁
+    refine ⟨fun z ↦ (↑(r - k) * R₂ z +
+         (↑r.factorial / ↑(r - k).factorial * deriv R₁ z + (R₂ z + (z - z₀) * deriv R₂ z))),
+          fun _ ↦ by fun_prop, fun z ↦ ?_⟩
+
+      · calc _ = deriv (deriv^[k] R) z := by rw [Function.iterate_succ_apply' deriv k R]
+             _ = ↑(r - k) * (z - z₀) ^ (r - k - 1) * (↑r.factorial / ↑(r - k).factorial *
+                 R₁ z + (z - z₀) * R₂ z) + (z - z₀) ^ (r - k) * (↑r.factorial / ↑(r - k).factorial *
+                 deriv R₁ z + (R₂ z + (z - z₀) * deriv R₂ z)) := ?_
+             _ = 1 * ((z - z₀) ^ (r - (k + 1)) *(↑r.factorial / ↑(r - k).factorial * R₁ z)) +
+                 ↑(r - k - 1) * ((z - z₀) ^ (r - (k + 1)) *
+                 (↑r.factorial / ↑(r - k).factorial * R₁ z)) +
+                 ↑(r - k) * (z - z₀) ^ (r - (k + 1)) * ((z - z₀) * R₂ z) +
+                 (z - z₀) ^ (r - k) * (↑r.factorial / ↑(r - k).factorial *
+                 deriv R₁ z + (R₂ z + (z - z₀) * deriv R₂ z)) := ?_
+             _ = (z - z₀) ^ (r - (k + 1)) * (↑r.factorial / ↑(r - (k + 1)).factorial *
+                 R₁ z + (z - z₀) *(fun z ↦ ↑(r - k) * R₂ z + (↑r.factorial / ↑(r - k).factorial *
+                 deriv R₁ z + (R₂ z + (z - z₀) * deriv R₂ z))) z) := ?_
+        · conv => enter [1, 1, z]; rw [hR1 z]
+          simp (disch := fun_prop)
+        · rw [mul_add, Nat.sub_sub r k 1, ← add_mul, mul_assoc]
+          congr
+          norm_cast
+          lia
+        · dsimp only
+          have H₁ : (↑r.factorial / ↑(r - (k + 1)).factorial : ℂ) =
+            ↑r.factorial / ↑(r - k).factorial * (r - k : ℂ) := by
+            have : ((r - (k + 1)).factorial : ℂ) = (r - k).factorial / (r - k) := by
+              rw [show r - k = r - (k + 1) + 1 by lia, Nat.factorial_succ, mul_comm,
+                show r - (k + 1) + 1 = r - k by lia, Nat.cast_mul, Nat.cast_sub (by lia),
+                 mul_div_cancel_of_imp fun h ↦ ?H]
+              case H => rw [sub_eq_zero] at h; norm_cast at h; lia
+            rw [this, ← div_mul]
+          have H₂ : (z - z₀) ^ (r - k) = (z - z₀) * (z - z₀) ^ (r - (k + 1)) := by
+            rw [show r - k = r - (k + 1) + 1 by lia, pow_succ']
+          have H₃ : ((r - k : ℕ) : ℂ) = r - k := Nat.cast_sub (by lia)
+          have H₄ : ((r - k - 1 : ℕ) : ℂ) = r - k - 1 := by
+            rw [Nat.cast_sub (by lia), Nat.cast_sub (by lia), Nat.cast_one]
+          rw [H₁, H₂, H₃, H₄]
+          ring
+
 end analyticity
 
 section derivatives
