@@ -6,6 +6,7 @@ Authors: Anatole Dedecker
 module
 
 public import Mathlib.Analysis.Distribution.TestFunction
+public import Mathlib.Topology.Algebra.Module.Spaces.FiniteDimensionCLM
 public import Mathlib.Topology.Algebra.Module.Spaces.CompactConvergenceCLM
 
 /-!
@@ -142,13 +143,15 @@ longer true for general filters.
 
 @[expose] public section
 
-open Set TopologicalSpace
+open Set TopologicalSpace Topology
 open scoped Distributions CompactConvergenceCLM
 
 variable
   {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {Ω : Opens E}
   {F : Type*} [AddCommGroup F] [Module ℝ F] [TopologicalSpace F]
+  {Fᵤ : Type*} [AddCommGroup Fᵤ] [Module ℝ Fᵤ] [UniformSpace Fᵤ]
   {F' : Type*} [AddCommGroup F'] [Module ℝ F'] [TopologicalSpace F']
+  {Fᵤ' : Type*} [AddCommGroup Fᵤ'] [Module ℝ Fᵤ'] [UniformSpace Fᵤ']
   {n k : ℕ∞}
 
 -- TODO: def or abbrev?
@@ -169,7 +172,9 @@ is a bit abusive since this is no longer a dual space unless `F = 𝕜`. -/
 scoped[Distributions] notation "𝓓'(" Ω ", " F ")" => Distribution Ω F ⊤
 
 variable [IsTopologicalAddGroup F] [ContinuousSMul ℝ F]
+variable [IsUniformAddGroup Fᵤ] [ContinuousSMul ℝ Fᵤ]
 variable [IsTopologicalAddGroup F'] [ContinuousSMul ℝ F']
+variable [IsUniformAddGroup Fᵤ'] [ContinuousSMul ℝ Fᵤ']
 
 namespace Distribution
 
@@ -186,6 +191,19 @@ noncomputable def mapCLM (A : F →L[ℝ] F') : 𝓓'^{n}(Ω, F) →L[ℝ] 𝓓'
 @[simp]
 lemma mapCLM_apply {A : F →L[ℝ] F'} {T : 𝓓'^{n}(Ω, F)} {f : 𝓓^{n}(Ω, ℝ)} :
     mapCLM A T f = A (T f) := rfl
+
+lemma isUniformEmbedding_mapCLM {A : Fᵤ →L[ℝ] Fᵤ'} (hA : IsUniformEmbedding A) :
+    IsUniformEmbedding (mapCLM A : 𝓓'^{n}(Ω, Fᵤ) →L[ℝ] 𝓓'^{n}(Ω, Fᵤ')) :=
+  UniformConvergenceCLM.isUniformEmbedding_postcomp _ A hA _
+
+-- TODO: add `UniformConvergenceCLM.isEmbedding_postcomp`
+lemma isEmbedding_mapCLM {A : F →L[ℝ] F'} (hA : IsEmbedding A) :
+    IsEmbedding (mapCLM A : 𝓓'^{n}(Ω, F) →L[ℝ] 𝓓'^{n}(Ω, F')) :=
+  letI := IsTopologicalAddGroup.rightUniformSpace F
+  haveI : IsUniformAddGroup F := isUniformAddGroup_of_addCommGroup
+  letI := IsTopologicalAddGroup.rightUniformSpace F'
+  haveI : IsUniformAddGroup F' := isUniformAddGroup_of_addCommGroup
+  isUniformEmbedding_mapCLM (AddMonoidHom.isUniformEmbedding_of_isEmbedding hA) |>.isEmbedding
 
 end mapCLM
 
@@ -276,5 +294,37 @@ lemma lineDerivOpCLM_eq_lineDerivCLM {v : E} :
   rfl
 
 end LineDerivCLM
+
+section FDerivCLM
+-- TODO: generalize this section to `𝕜` linearity
+-- by generalizing `ContinuousLinearMap.precompCompactConvergenceCLM`
+
+variable [FiniteDimensional ℝ E]
+
+open ContinuousLinearMap Topology Bornology
+
+noncomputable def fderivCLM :
+    𝓓'^{k}(Ω, F) →L[ℝ] 𝓓'^{n}(Ω, E →L[ℝ] F) :=
+  let step1 : E →L[ℝ] 𝓓'^{k}(Ω, F) →L[ℝ] 𝓓'^{n}(Ω, F) :=
+    LinearMap.toContinuousLinearMap
+    { toFun e := lineDerivCLM e
+      map_add' _ _ := lineDerivCLM_add
+      map_smul' _ _ := lineDerivCLM_smul }
+  let step2 : 𝓓'^{k}(Ω, F) →L[ℝ] E →L[ℝ] 𝓓'^{n}(Ω, F) :=
+    ContinuousLinearMap.flipOfFiniteDimensional step1
+  let aux : (E →L[ℝ] 𝓓'^{n}(Ω, F)) ≃L[ℝ] (𝓓'^{n}(Ω, E →L[ℝ] F)) :=
+    UniformConvergenceCLM.flipOfFiniteDimensional (fun _ ↦ id) sUnion_isVonNBounded_eq_univ
+      (fun _ ht ↦ ht.totallyBounded.isVonNBounded ℝ)
+  aux ∘L step2
+
+lemma fderivCLM_apply {v : E} {T : 𝓓'^{k}(Ω, F)} {f : 𝓓^{n}(Ω, ℝ)} :
+    fderivCLM T f v = - T (TestFunction.lineDerivCLM ℝ v f) :=
+  rfl
+
+lemma fderivCLM_eq_lineDerivCLM {T : 𝓓'^{k}(Ω, F)} {f : 𝓓^{n}(Ω, ℝ)} {v : E} :
+    fderivCLM T f v = lineDerivCLM v T f :=
+  rfl
+
+end FDerivCLM
 
 end Distribution
