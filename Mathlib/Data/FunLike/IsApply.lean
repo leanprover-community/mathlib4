@@ -162,7 +162,7 @@ class IsPowApply (M F : Type*) (α β : outParam Type*) [FunLike F α β] [Pow �
 
 -- Note that `smul_apply` is defined already, so we create an alias using `to_additive`,
 -- but we do not declare it a `simp` lemma
-@[to_additive] alias pow_apply := IsPowApply.pow_apply
+@[to_additive existing smul_apply] alias pow_apply := IsPowApply.pow_apply
 
 attribute [simp, grind =] pow_apply
 

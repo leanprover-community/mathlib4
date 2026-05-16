@@ -30,24 +30,53 @@ variable {F α β : Type*} [FunLike F α β]
 
 section CoercionHom
 
-variable [MulOne F] [MulOneClass β] [IsOneApply F α β] [IsMulApply F α β]
+section MulHom
+
+variable [Mul F] [Mul β] [IsMulApply F α β]
 
 variable (F α β) in
 /-- Coercion as a multiplicative homomorphism. -/
 @[to_additive
 /-- Coercion as an additive homomorphism. -/]
-def coeMulHom : F →* α → β where
+def coeMulHom : F →ₙ* α → β where
   toFun f := f
-  map_one' := coe_one
   map_mul' := coe_mul
 
-@[to_additive]
+@[to_additive (attr := norm_cast)]
 theorem coe_coeMulHom : (coeMulHom F α β : F → α → β) = DFunLike.coe := rfl
 
 @[to_additive]
 theorem coeMulHom_injective : Function.Injective (coeMulHom F α β) := by
   rw [coe_coeMulHom]
   exact DFunLike.coe_injective
+
+end MulHom
+
+section MonoidHom
+
+variable [MulOne F] [MulOneClass β] [IsOneApply F α β] [IsMulApply F α β]
+
+variable (F α β) in
+/-- Coercion as a monoid homomorphism. -/
+@[to_additive
+/-- Coercion as an additive monoid homomorphism. -/]
+def coeMonoidHom : F →* α → β where
+  toFun f := f
+  map_one' := coe_one
+  map_mul' := coe_mul
+
+@[to_additive (attr := norm_cast)]
+theorem coe_coeMonoidHom : (coeMonoidHom F α β : F → α → β) = DFunLike.coe := rfl
+
+@[to_additive (attr := norm_cast)]
+theorem coe_coeMonoidHom' : (coeMonoidHom F α β : F →ₙ* α → β) = coeMulHom F α β := rfl
+
+@[to_additive]
+theorem coeMonoidHom_injective : Function.Injective (coeMonoidHom F α β) := by
+  rw [coe_coeMonoidHom]
+  exact DFunLike.coe_injective
+
+end MonoidHom
 
 end CoercionHom
 
