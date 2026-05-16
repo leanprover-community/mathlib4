@@ -871,7 +871,7 @@ theorem integrableOn_Ioi_deriv_of_nonneg' (hderiv : ∀ x ∈ Ici a, HasDerivAt 
 
 /-- When a function has a limit at infinity `l`, and its derivative is nonnegative, then the
 integral of the derivative on `(a, +∞)` is `l - g a` (and the derivative is integrable, see
-`integrable_on_Ioi_deriv_of_nonneg`). Version assuming differentiability on `(a, +∞)` and
+`integrableOn_Ioi_deriv_of_nonneg`). Version assuming differentiability on `(a, +∞)` and
 continuity at `a⁺`. -/
 theorem integral_Ioi_of_hasDerivAt_of_nonneg (hcont : ContinuousWithinAt g (Ici a) a)
     (hderiv : ∀ x ∈ Ioi a, HasDerivAt g (g' x) x) (g'pos : ∀ x ∈ Ioi a, 0 ≤ g' x)
@@ -881,7 +881,7 @@ theorem integral_Ioi_of_hasDerivAt_of_nonneg (hcont : ContinuousWithinAt g (Ici 
 
 /-- When a function has a limit at infinity `l`, and its derivative is nonnegative, then the
 integral of the derivative on `(a, +∞)` is `l - g a` (and the derivative is integrable, see
-`integrable_on_Ioi_deriv_of_nonneg'`). Version assuming differentiability on `[a, +∞)`. -/
+`integrableOn_Ioi_deriv_of_nonneg'`). Version assuming differentiability on `[a, +∞)`. -/
 theorem integral_Ioi_of_hasDerivAt_of_nonneg' (hderiv : ∀ x ∈ Ici a, HasDerivAt g (g' x) x)
     (g'pos : ∀ x ∈ Ioi a, 0 ≤ g' x) (hg : Tendsto g atTop (𝓝 l)) : ∫ x in Ioi a, g' x = l - g a :=
   integral_Ioi_of_hasDerivAt_of_tendsto' hderiv (integrableOn_Ioi_deriv_of_nonneg' hderiv g'pos hg)
@@ -907,7 +907,7 @@ theorem integrableOn_Ioi_deriv_of_nonpos' (hderiv : ∀ x ∈ Ici a, HasDerivAt 
 
 /-- When a function has a limit at infinity `l`, and its derivative is nonpositive, then the
 integral of the derivative on `(a, +∞)` is `l - g a` (and the derivative is integrable, see
-`integrable_on_Ioi_deriv_of_nonneg`). Version assuming differentiability on `(a, +∞)` and
+`integrableOn_Ioi_deriv_of_nonneg`). Version assuming differentiability on `(a, +∞)` and
 continuity at `a⁺`. -/
 theorem integral_Ioi_of_hasDerivAt_of_nonpos (hcont : ContinuousWithinAt g (Ici a) a)
     (hderiv : ∀ x ∈ Ioi a, HasDerivAt g (g' x) x) (g'neg : ∀ x ∈ Ioi a, g' x ≤ 0)
@@ -917,7 +917,7 @@ theorem integral_Ioi_of_hasDerivAt_of_nonpos (hcont : ContinuousWithinAt g (Ici 
 
 /-- When a function has a limit at infinity `l`, and its derivative is nonpositive, then the
 integral of the derivative on `(a, +∞)` is `l - g a` (and the derivative is integrable, see
-`integrable_on_Ioi_deriv_of_nonneg'`). Version assuming differentiability on `[a, +∞)`. -/
+`integrableOn_Ioi_deriv_of_nonneg'`). Version assuming differentiability on `[a, +∞)`. -/
 theorem integral_Ioi_of_hasDerivAt_of_nonpos' (hderiv : ∀ x ∈ Ici a, HasDerivAt g (g' x) x)
     (g'neg : ∀ x ∈ Ioi a, g' x ≤ 0) (hg : Tendsto g atTop (𝓝 l)) : ∫ x in Ioi a, g' x = l - g a :=
   integral_Ioi_of_hasDerivAt_of_tendsto' hderiv (integrableOn_Ioi_deriv_of_nonpos' hderiv g'neg hg)
@@ -927,7 +927,7 @@ end IoiFTC
 
 section IicFTC
 
-variable {E : Type*} {f f' : ℝ → E} {a : ℝ} {m : E} [NormedAddCommGroup E]
+variable {E : Type*} {f f' : ℝ → E} {g g' : ℝ → ℝ} {a l : ℝ} {m : E} [NormedAddCommGroup E]
   [NormedSpace ℝ E]
 
 /-- If the derivative of a function defined on the real line is integrable close to `-∞`, then
@@ -976,9 +976,9 @@ theorem tendsto_zero_of_hasDerivAt_of_integrableOn_Iic
 
 variable [CompleteSpace E]
 
-/-- **Fundamental theorem of calculus-2**, on semi-infinite intervals `(-∞, a)`.
+/-- **Fundamental theorem of calculus-2**, on semi-infinite intervals `(-∞, a]`.
 When a function has a limit `m` at `-∞`, and its derivative is integrable, then the
-integral of the derivative on `(-∞, a)` is `f a - m`. Version assuming differentiability
+integral of the derivative on `(-∞, a]` is `f a - m`. Version assuming differentiability
 on `(-∞, a)` and continuity at `a⁻`.
 
 Note that such a function always has a limit at minus infinity,
@@ -1000,9 +1000,9 @@ theorem integral_Iic_of_hasDerivAt_of_tendsto (hcont : ContinuousWithinAt f (Iic
   rw [intervalIntegrable_iff_integrableOn_Ioc_of_le hx]
   exact f'int.mono (fun y hy => hy.2) le_rfl
 
-/-- **Fundamental theorem of calculus-2**, on semi-infinite intervals `(-∞, a)`.
+/-- **Fundamental theorem of calculus-2**, on semi-infinite intervals `(-∞, a]`.
 When a function has a limit `m` at `-∞`, and its derivative is integrable, then the
-integral of the derivative on `(-∞, a)` is `f a - m`. Version assuming differentiability
+integral of the derivative on `(-∞, a]` is `f a - m`. Version assuming differentiability
 on `(-∞, a]`.
 
 Note that such a function always has a limit at minus infinity,
@@ -1041,6 +1041,104 @@ lemma _root_.HasCompactSupport.enorm_le_lintegral_Ici_deriv
   · rw [fderiv_comp_deriv _ I.differentiableAt (hf.differentiable one_ne_zero _)]
     simp only [ContinuousLinearMap.fderiv]
     simp [I]
+
+/-- When a function has a limit at minus infinity, and its derivative is nonnegative, then the
+derivative is automatically integrable on `(-∞, a]`. Version assuming differentiability
+on `(-∞, a)` and continuity at `a⁻`. -/
+theorem integrableOn_Iic_deriv_of_nonneg (hcont : ContinuousWithinAt g (Iic a) a)
+    (hderiv : ∀ x ∈ Iio a, HasDerivAt g (g' x) x) (g'pos : ∀ x ∈ Iio a, 0 ≤ g' x)
+    (hg : Tendsto g atBot (𝓝 l)) : IntegrableOn g' (Iic a) := by
+  have hcont : ContinuousOn g (Iic a) := by
+    intro x hx
+    rcases hx.out.eq_or_lt with rfl | hx
+    · exact hcont
+    · exact (hderiv x hx).continuousAt.continuousWithinAt
+  refine integrableOn_Iic_of_intervalIntegral_norm_tendsto (g a - l) a (fun x => ?_) tendsto_id ?_
+  · exact intervalIntegral.integrableOn_deriv_of_nonneg (hcont.mono Icc_subset_Iic_self)
+      (fun y hy => hderiv y hy.2) fun y hy => g'pos y hy.2
+  apply Tendsto.congr' _ (tendsto_const_nhds.sub hg)
+  filter_upwards [Iic_mem_atBot a] with x hx
+  have h'x : id x ≤ a := hx
+  calc
+    g a - g x = ∫ y in id x..a, g' y := by
+      symm
+      apply intervalIntegral.integral_eq_sub_of_hasDerivAt_of_le h'x
+        (hcont.mono Icc_subset_Iic_self) fun y hy => hderiv y hy.2
+      rw [intervalIntegrable_iff_integrableOn_Ioc_of_le h'x]
+      exact intervalIntegral.integrableOn_deriv_of_nonneg (hcont.mono Icc_subset_Iic_self)
+        (fun y hy => hderiv y hy.2) fun y hy => g'pos y hy.2
+    _ = ∫ y in id x..a, ‖g' y‖ := by
+      simp_rw [intervalIntegral.integral_of_le h'x]
+      -- Unlike the `Ioi` case, `Ioc x a` gives `y ≤ a`, but `g'pos` needs `y < a`
+      rw [← Measure.restrict_congr_set Ioo_ae_eq_Ioc]
+      refine setIntegral_congr_fun measurableSet_Ioo fun y hy => ?_
+      dsimp only [Real.norm_eq_abs]
+      rw [abs_of_nonneg]
+      exact g'pos _ hy.2
+
+/-- When a function has a limit at minus infinity, and its derivative is nonnegative, then the
+derivative is automatically integrable on `(-∞, a]` (and the derivative is integrable, see
+`integrableOn_Ioi_deriv_of_nonneg`). Version assuming differentiability on `(-∞, a]`. -/
+theorem integrableOn_Iic_deriv_of_nonneg' (hderiv : ∀ x ∈ Iic a, HasDerivAt g (g' x) x)
+    (g'pos : ∀ x ∈ Iio a, 0 ≤ g' x) (hg : Tendsto g atBot (𝓝 l)) : IntegrableOn g' (Iic a) := by
+  refine integrableOn_Iic_deriv_of_nonneg ?_ (fun x hx => hderiv x hx.out.le) g'pos hg
+  exact (hderiv a self_mem_Iic).continuousAt.continuousWithinAt
+
+/-- When a function has a limit at minus infinity `l`, and its derivative is nonnegative, then the
+integral of the derivative on `(-∞, a]` is `g a - l` (and the derivative is integrable, see
+`integrableOn_Iic_deriv_of_nonneg`). Version assuming differentiability on `(-∞, a)` and
+continuity at `a⁻`. -/
+theorem integral_Iic_of_hasDerivAt_of_nonneg (hcont : ContinuousWithinAt g (Iic a) a)
+    (hderiv : ∀ x ∈ Iio a, HasDerivAt g (g' x) x) (g'pos : ∀ x ∈ Iio a, 0 ≤ g' x)
+    (hg : Tendsto g atBot (𝓝 l)) : ∫ x in Iic a, g' x = g a - l :=
+  integral_Iic_of_hasDerivAt_of_tendsto hcont hderiv
+    (integrableOn_Iic_deriv_of_nonneg hcont hderiv g'pos hg) hg
+
+/-- When a function has a limit at minus infinity and its derivative is nonnegative, then the
+integral of the derivative on `(-∞, a]` is `g a - l` (and the derivative is integrable, see
+`integrableOn_Iic_deriv_of_nonneg'`). Version assuming differentiability on `(-∞, a]`. -/
+theorem integral_Iic_of_hasDerivAt_of_nonneg' (hderiv : ∀ x ∈ Iic a, HasDerivAt g (g' x) x)
+    (g'pos : ∀ x ∈ Iio a, 0 ≤ g' x) (hg : Tendsto g atBot (𝓝 l)) :
+    ∫ x in Iic a, g' x = g a - l :=
+  integral_Iic_of_hasDerivAt_of_tendsto' hderiv (integrableOn_Iic_deriv_of_nonneg' hderiv g'pos hg)
+    hg
+
+/-- When a function has a limit at minus infinity and its derivative is nonpositive, then the
+derivative is automatically integrable on `(-∞, a]`. Version assuming differentiability
+on `(-∞, a)` and continuity at `a⁻`. -/
+theorem integrableOn_Iic_deriv_of_nonpos (hcont : ContinuousWithinAt g (Iic a) a)
+    (hderiv : ∀ x ∈ Iio a, HasDerivAt g (g' x) x) (g'neg : ∀ x ∈ Iio a, g' x ≤ 0)
+    (hg : Tendsto g atBot (𝓝 l)) : IntegrableOn g' (Iic a) := by
+  apply integrable_neg_iff.1
+  exact integrableOn_Iic_deriv_of_nonneg hcont.neg (fun x hx => (hderiv x hx).neg)
+    (fun x hx => neg_nonneg_of_nonpos (g'neg x hx)) hg.neg
+
+/-- When a function has a limit at minus infinity and its derivative is nonpositive, then the
+derivative is automatically integrable on `(-∞, a]`. Version assuming differentiability
+on `(-∞, a]`. -/
+theorem integrableOn_Iic_deriv_of_nonpos' (hderiv : ∀ x ∈ Iic a, HasDerivAt g (g' x) x)
+    (g'neg : ∀ x ∈ Iio a, g' x ≤ 0) (hg : Tendsto g atBot (𝓝 l)) : IntegrableOn g' (Iic a) := by
+  refine integrableOn_Iic_deriv_of_nonpos ?_ (fun x hx ↦ hderiv x hx.out.le) g'neg hg
+  exact (hderiv a self_mem_Ici).continuousAt.continuousWithinAt
+
+/-- When a function has a limit at minus infinity and its derivative is nonpositive, then the
+integral of the derivative on `(-∞, a]` is `g a - l` (and the derivative is integrable, see
+`integrableOn_Iic_deriv_of_nonpos`). Version assuming differentiability on `(-∞, a)` and
+continuity at `a⁻`. -/
+theorem integral_Iic_of_hasDerivAt_of_nonpos (hcont : ContinuousWithinAt g (Iic a) a)
+    (hderiv : ∀ x ∈ Iio a, HasDerivAt g (g' x) x) (g'neg : ∀ x ∈ Iio a, g' x ≤ 0)
+    (hg : Tendsto g atBot (𝓝 l)) : ∫ x in Iic a, g' x = g a - l :=
+  integral_Iic_of_hasDerivAt_of_tendsto hcont hderiv
+    (integrableOn_Iic_deriv_of_nonpos hcont hderiv g'neg hg) hg
+
+
+/-- When a function has a limit at minus infinity and its derivative is nonpositive, then the
+integral of the derivative on `(-∞, a]` is `g a - l` (and the derivative is integrable, see
+`integrableOn_Iic_deriv_of_nonpos'`). Version assuming differentiability on `(-∞, a]`. -/
+theorem integral_Iic_of_hasDerivAt_of_nonpos' (hderiv : ∀ x ∈ Iic a, HasDerivAt g (g' x) x)
+    (g'neg : ∀ x ∈ Iio a, g' x ≤ 0) (hg : Tendsto g atBot (𝓝 l)) : ∫ x in Iic a, g' x = g a - l :=
+  integral_Iic_of_hasDerivAt_of_tendsto' hderiv (integrableOn_Iic_deriv_of_nonpos' hderiv g'neg hg)
+    hg
 
 end IicFTC
 
