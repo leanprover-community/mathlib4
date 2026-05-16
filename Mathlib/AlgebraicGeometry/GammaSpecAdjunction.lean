@@ -202,7 +202,7 @@ set_option backward.isDefEq.respectTransparency false in
 stalks (in `Spec Γ(X)` and in `X`). -/
 theorem toStalk_stalkMap_toΓSpec (x : X) :
     toStalk _ _ ≫ X.toΓSpecSheafedSpace.hom.stalkMap x = X.presheaf.Γgerm x := by
-  simp only [PresheafedSpace.Hom.stalkMap,
+  rw [PresheafedSpace.Hom.stalkMap,
     ← algebraMap_germ (basicOpen (1 : Γ.obj (op X))) _ (by rw [basicOpen_one]; trivial),
     ← Category.assoc, Category.assoc (CommRingCat.ofHom _), stalkFunctor_map_germ, ← Category.assoc,
     X.toΓSpecSheafedSpace_app_eq, X.toΓSpecCApp_spec, Γgerm,
