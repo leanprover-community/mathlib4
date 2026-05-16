@@ -13,13 +13,13 @@ public import Mathlib.Topology.Instances.AddCircle.Real
 # Quotients by `IsZLattice`s are tori
 
 The quotient of a finite-dimensional real normed space `E` by an `IsZLattice ℝ L` is
-isomorphic, as an additive group, to the unit additive torus `UnitAddTorus ι = ι → ℝ ⧸ ℤ`,
-where `ι` indexes a `ℤ`-basis of `L`.
+isomorphic, as an additive group, to a unit additive torus, with index type given by
+`Module.Free.ChooseBasisIndex ℤ L`.
 
 ## Main definitions
 
 * `IsZLattice.quotientAddEquivUnitAddTorus`: the additive equivalence
-  `E ⧸ L ≃+ UnitAddTorus ι`, given a `ℤ`-basis of `L`.
+  `E ⧸ L ≃+ UnitAddTorus (Module.Free.ChooseBasisIndex ℤ L)`.
 
 ## Future work
 
@@ -47,13 +47,14 @@ theorem map_basis_equivFun_eq :
   simp [Submodule.map_span, Submodule.span_range_eq_iSup, ← Submodule.iSup_map_single,
     Finsupp.single_eq_pi_single]
 
-/-- The additive equivalence between `E ⧸ L` and the unit additive torus `UnitAddTorus ι`,
-given a `ℤ`-basis of `L`. -/
-noncomputable def quotientAddEquivUnitAddTorus [Fintype ι] [DecidableEq ι] :
-    (E ⧸ L) ≃+ UnitAddTorus ι :=
-  (Submodule.Quotient.equiv L _ ((b.ofZLatticeBasis ℝ).equivFun.restrictScalars ℤ)
-      (map_basis_equivFun_eq b)).trans (Submodule.quotientPi _) |>.toAddEquiv.trans <|
-    .piCongrRight fun _ ↦ QuotientAddGroup.quotientAddEquivOfEq <|
-      Submodule.span_singleton_toAddSubgroup_eq_zmultiples (1 : ℝ)
+/-- The additive equivalence between `E ⧸ L` and the unit additive torus, using the canonical
+choice of `ℤ`-basis of `L` from `Module.Free.chooseBasis`. -/
+noncomputable def quotientAddEquivUnitAddTorus :
+    (E ⧸ L) ≃+ UnitAddTorus (Module.Free.ChooseBasisIndex ℤ L) := by
+  let b := Module.Free.chooseBasis ℤ L
+  exact (Submodule.Quotient.equiv L _ ((b.ofZLatticeBasis ℝ).equivFun.restrictScalars ℤ)
+        (map_basis_equivFun_eq b)).trans (Submodule.quotientPi _) |>.toAddEquiv.trans <|
+      .piCongrRight fun _ ↦ QuotientAddGroup.quotientAddEquivOfEq <|
+        Submodule.span_singleton_toAddSubgroup_eq_zmultiples (1 : ℝ)
 
 end IsZLattice
