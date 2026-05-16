@@ -6,7 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Functor.KanExtension.Basic
-public import Mathlib.CategoryTheory.Localization.Predicate
+public import Mathlib.CategoryTheory.Localization.LocalizerMorphism
 
 /-!
 # Right derived functors
@@ -146,6 +146,13 @@ lemma isRightDerivedFunctor_iff_isIso_rightDerivedDesc (G : D ⥤ H) (β : F ⟶
   have := IsRightDerivedFunctor.isLeftKanExtension _ α W
   exact isLeftKanExtension_iff_isIso _ α _ (by simp)
 
+instance (G : H ⥤ H') [G.IsEquivalence] :
+    (RF ⋙ G).IsRightDerivedFunctor (whiskerRight α G ≫ (associator _ _ _).hom) W := by
+  have : RF.IsLeftKanExtension α := by
+    rwa [← isRightDerivedFunctor_iff_isLeftKanExtension _ _ W]
+  rw [isRightDerivedFunctor_iff_isLeftKanExtension]
+  infer_instance
+
 end
 
 variable (F)
@@ -212,5 +219,30 @@ instance : (F.totalRightDerived L W).IsRightDerivedFunctor
 end
 
 end Functor
+
+namespace LocalizerMorphism
+
+variable {C₁ C₂ H₁ H₂ D : Type*} [Category* C₁] [Category* C₂] [Category* D]
+  [Category* H₁] [Category* H₂] {W₁ : MorphismProperty C₁} {W₂ : MorphismProperty C₂}
+  (Φ : LocalizerMorphism W₁ W₂) [Φ.IsLocalizedEquivalence] [Φ.functor.IsEquivalence]
+
+open Functor in
+lemma isRightDerivedFunctor_iff_precomp
+    (L₁ : C₁ ⥤ H₁) (L₂ : C₂ ⥤ H₂) [L₁.IsLocalization W₁] [L₂.IsLocalization W₂]
+    (G : H₁ ⥤ H₂) (iso : Φ.functor ⋙ L₂ ≅ L₁ ⋙ G)
+    {F₁ : C₁ ⥤ D} {RF₁ : H₁ ⥤ D} (α₁ : F₁ ⟶ L₁ ⋙ RF₁)
+    {F₂ : C₂ ⥤ D} {RF₂ : H₂ ⥤ D} (α₂ : F₂ ⟶ L₂ ⋙ RF₂)
+    (e₁ : Φ.functor ⋙ F₂ ≅ F₁)
+    (e₂ : G ⋙ RF₂ ≅ RF₁)
+    (h : α₁ = e₁.inv ≫ whiskerLeft Φ.functor α₂ ≫ (Functor.associator _ _ _).inv ≫
+      whiskerRight iso.hom RF₂ ≫ (Functor.associator L₁ G RF₂).hom ≫
+      whiskerLeft L₁ e₂.hom := by cat_disch) :
+    RF₂.IsRightDerivedFunctor α₂ W₂ ↔ RF₁.IsRightDerivedFunctor α₁ W₁ := by
+  have : CatCommSq Φ.functor L₁ L₂ G := ⟨iso⟩
+  have := Φ.isEquivalence L₁ L₂ G
+  simpa [Functor.isRightDerivedFunctor_iff_isLeftKanExtension] using
+    isLeftKanExtension_iff_precomp_equivalence α₁ α₂ iso e₁.symm e₂
+
+end LocalizerMorphism
 
 end CategoryTheory
