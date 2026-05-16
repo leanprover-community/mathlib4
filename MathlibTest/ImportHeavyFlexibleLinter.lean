@@ -46,7 +46,7 @@ Note: This linter can be disabled with `set_option linter.flexible false`
 info: Try this:
   [apply] simp only [zero_add]
 ---
-info: `rw [add_comm]` uses `⊢`!
+info: `rw [add_comm]` modifies the current goal, which was modified by a flexible tactic!
 -/
 #guard_msgs in
 -- `norm_num` is allowed after `simp`, but "passes along the stain".
@@ -81,7 +81,7 @@ Note: This linter can be disabled with `set_option linter.flexible false`
 info: Try this:
   [apply] simp only [mul_zero, add_zero]
 ---
-info: `positivity` uses `⊢`!
+info: `positivity` modifies the current goal, which was modified by a flexible tactic!
 -/
 #guard_msgs in
 example {k l : ℤ} : 0 ≤ k ^ 2 + 4 * l * 0 := by
@@ -124,7 +124,7 @@ Note: This linter can be disabled with `set_option linter.flexible false`
 info: Try this:
   [apply] simp only [Function.comp_apply, add_zero]
 ---
-info: `fun_prop` uses `⊢`!
+info: `fun_prop` modifies the current goal, which was modified by a flexible tactic!
 -/
 #guard_msgs in
 example {X : Type*} [TopologicalSpace X] {f : X → ℕ} {g : ℕ → X}
