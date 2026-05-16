@@ -7,7 +7,13 @@ module
 
 public import Mathlib.Algebra.EuclideanDomain.Defs
 public import Mathlib.Algebra.Field.Defs
-public import Mathlib.Algebra.GroupWithZero.Units.Basic
+public import Aesop.BuiltinRules
+import Mathlib.Algebra.GroupWithZero.Units.Basic
+import Mathlib.Tactic.Attr.Core
+import Mathlib.Tactic.Push
+import Mathlib.Tactic.SplitIfs
+
+public import Mathlib.Algebra.GroupWithZero.Basic
 
 /-!
 # Instances for Euclidean domains
