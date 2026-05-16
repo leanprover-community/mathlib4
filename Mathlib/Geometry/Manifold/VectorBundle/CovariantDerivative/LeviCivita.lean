@@ -82,11 +82,15 @@ lemma injective_inner_vectorField [CompleteSpace E] (x : M) :
 
 namespace CovariantDerivative
 
--- Let `cov` be a covariant derivative on `TM`.
-variable (cov : CovariantDerivative I E (TangentSpace I : M → Type _))
+-- Let `cov` and `cov'` be a covariant derivative on `TM`.
+variable (cov cov': CovariantDerivative I E (TangentSpace I : M → Type _))
 
-/-- Local notation for a connection. Caution: `∇ Y, X` corresponds to `∇ₓ Y` in textbooks -/
-local notation "∇" Y "," X => fun (x:M) ↦ cov Y x (X x)
+/-- Local notation for a covariant derivative on a vector bundle acting on a vector field and a
+section. -/
+local syntax:max "∇" term:arg term:arg : term
+local macro_rules | `(∇ $X $σ) => `(fun (x : M) ↦ cov $σ x ($X x))
+local syntax:max "∇'" term:arg term:arg : term
+local macro_rules | `(∇' $X $σ) => `(fun (x : M) ↦ cov' $σ x ($X x))
 
 variable [IsContMDiffRiemannianBundle I 1 E (fun (x : M) ↦ TangentSpace I x)]
 
@@ -141,7 +145,7 @@ variable {cov} in
 public lemma IsLeviCivitaConnection.apply_eq [FiniteDimensional ℝ E]
     (h : cov.IsLeviCivitaConnection)
     (hX : MDiffAt (T% X) x) (hY : MDiffAt (T% Y) x) (hZ : MDiffAt (T% Z) x) :
-    ⟪∇ Y, X, Z⟫ x =
+    ⟪∇ X Y, Z⟫ x =
       (mvfderiv% ⟪Y, Z⟫ x (X x) + mvfderiv% ⟪Z, X⟫ x (Y x) - mvfderiv% ⟪X, Y⟫ x (Z x)
       - ⟪Y ,(VectorField.mlieBracket I X Z)⟫ x
       - ⟪Z, (VectorField.mlieBracket I Y X)⟫ x
@@ -158,16 +162,17 @@ public lemma IsLeviCivitaConnection.apply_eq [FiniteDimensional ℝ E]
   simp (disch := fun_prop) [real_inner_comm, inner_sub_right, torsion_apply] at *
   linear_combination - (eq1a + eq1b + eq2a + eq2b - eq3a - eq3b) / 2
 
+variable {cov cov'} in
 /-- The Levi-Civita connection on `(M, g)` is uniquely determined on differentiable vector fields.
 
 Note that the differentiability hypotheses are required, since `CovariantDerivative` objects are
 unconstrained in their behaviour on non-differentiable vector fields. -/
 public theorem IsLeviCivitaConnection.uniqueness [FiniteDimensional ℝ E]
-    {cov cov' : CovariantDerivative I E (TangentSpace I : M → Type _)}
     (hcov : cov.IsLeviCivitaConnection) (hcov' : cov'.IsLeviCivitaConnection)
     (hX : MDiffAt (T% X) x) (hY : MDiffAt (T% Y) x) :
-    cov Y x (X x) = cov' Y x (X x) := by
+    ∇ X Y x = ∇' X Y x := by
   apply injective_inner_vectorField; ext Z hZ
+  beta_reduce
   refine (hcov.apply_eq I hX hY hZ).trans ?_
   exact hcov'.apply_eq I hX hY hZ |>.symm
 
