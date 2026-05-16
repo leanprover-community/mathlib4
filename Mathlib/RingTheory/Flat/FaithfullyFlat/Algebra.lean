@@ -6,10 +6,8 @@ Authors: Christian Merten, Yi Song, Sihan Su
 module
 
 public import Mathlib.RingTheory.Flat.FaithfullyFlat.Basic
-public import Mathlib.RingTheory.Ideal.Over
-public import Mathlib.RingTheory.LocalRing.RingHom.Basic
+public import Mathlib.RingTheory.Ideal.GoingUp
 public import Mathlib.RingTheory.Spectrum.Prime.RingHom
-public import Mathlib.RingTheory.TensorProduct.Quotient
 
 /-!
 # Properties of faithfully flat algebras
@@ -73,6 +71,14 @@ lemma Module.FaithfullyFlat.of_flat_of_isLocalHom [IsLocalRing A] [IsLocalRing B
   rw [eqt, top_le_iff, Submodule.restrictScalars_eq_top_iff] at this
   exact Ideal.IsPrime.ne_top' this
 
+instance Module.FaithfullyFlat.of_isIntegral_of_isDomain [CommRing B] [IsDomain B] [Algebra A B]
+    [Module.Flat A B] [Algebra.IsIntegral A B] [FaithfulSMul A B] :
+    Module.FaithfullyFlat A B := by
+  refine Module.FaithfullyFlat.of_comap_surjective fun P ↦ ?_
+  obtain ⟨P, hP₁, hP₂⟩ := Ideal.exists_ideal_over_prime_of_isIntegral_of_isDomain P.1 (S := B)
+    (by simp [(RingHom.injective_iff_ker_eq_bot _).mp (FaithfulSMul.algebraMap_injective A B)])
+  exact ⟨⟨P, hP₁⟩, PrimeSpectrum.ext_iff.mpr hP₂⟩
+
 variable [Module.FaithfullyFlat A B]
 
 /-- If `B` is a faithfully flat `A`-module and `M` is any `A`-module, the canonical
@@ -124,6 +130,12 @@ in `B`. -/
 lemma Ideal.comap_surjective_of_faithfullyFlat :
     Function.Surjective (Ideal.comap (algebraMap A B)) :=
   fun I ↦ ⟨I.map (algebraMap A B), comap_map_eq_self_of_faithfullyFlat I⟩
+
+/-- If `B` is a faithfully-flat `A`-algebra, the lifting an ideal in `A` to `B` is injective. -/
+lemma Ideal.map_injective_of_faithfullyFlat :
+    Function.Injective (map (algebraMap A B)) :=
+  fun _ _ h ↦ by simpa [comap_map_eq_self_of_faithfullyFlat]
+    using congr_arg (Ideal.comap (algebraMap A B) ·) h
 
 /-- If `B` is faithfully flat over `A`, every prime of `A` comes from a prime of `B`. -/
 lemma Ideal.exists_isPrime_liesOver_of_faithfullyFlat (p : Ideal A) [p.IsPrime] :
