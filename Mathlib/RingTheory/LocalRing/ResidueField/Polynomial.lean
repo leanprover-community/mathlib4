@@ -99,7 +99,7 @@ def fiberEquivQuotient (f : R[X] →ₐ[R] S) (hf : Function.Surjective f) (p : 
     p.Fiber S ≃ₐ[p.ResidueField] p.ResidueField[X] ⧸
       ((RingHom.ker (f : R[X] →+* S)).map (mapRingHom (algebraMap R p.ResidueField))) := by
   refine .ofAlgHom (Algebra.TensorProduct.lift (Algebra.ofId _ _) (AlgHom.liftOfSurjective _ hf
-    ((Ideal.Quotient.mkₐ _ _).comp (mapAlgHom (Algebra.ofId _ _))) ?_) fun _ _ ↦ .all _ _)
+    ⟨(Ideal.Quotient.mkₐ _ _).comp (mapAlgHom (Algebra.ofId _ _)), ?_⟩) fun _ _ ↦ .all _ _)
     (Ideal.Quotient.liftₐ _ (aeval (1 ⊗ₜ f .X)) ?_) ?_ ?_
   · simp [AlgHom.comp_toRingHom, ← RingHom.comap_ker, ← Ideal.map_le_iff_le_comap]
   · change Ideal.map _ _ ≤ RingHom.ker (aeval _).toRingHom
