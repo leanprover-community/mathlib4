@@ -479,6 +479,11 @@ instance (priority := 1100) Monoid.toMulAction : MulAction M M where
 instance IsScalarTower.left : IsScalarTower M M α where
   smul_assoc x y z := mul_smul x y z
 
+@[to_additive]
+instance {R M : Type*} [CommMonoid M] [SMul R M] [IsScalarTower R M M] : SMulCommClass R M M where
+  smul_comm r s x := by
+    rw [← one_smul M (s • x), ← smul_assoc, smul_comm, smul_assoc, one_smul]
+
 variable {M}
 
 section Monoid
