@@ -8,6 +8,8 @@ module
 public import Mathlib.NumberTheory.RamificationInertia.Ramification
 public import Mathlib.RingTheory.Flat.Localization
 public import Mathlib.RingTheory.LocalRing.Length
+public import Mathlib.RingTheory.LocalRing.ResidueField.Instances
+public import Mathlib.RingTheory.Unramified.LocalRing
 
 /-!
 # Ramification index
@@ -59,6 +61,34 @@ theorem ramificationIdx'_def [q.IsPrime] :
 
 theorem ramificationIdx'_of_not_isPrime (hq : ¬ q.IsPrime) : q.ramificationIdx' R = 0 :=
   dif_neg hq
+
+theorem ramificationIdx'_eq_one [q.IsPrime] [Algebra.EssFiniteType R S]
+    [Algebra.IsUnramifiedAt R q] : q.ramificationIdx' R = 1 := by
+  let p := q.under R
+  let Rp := Localization.AtPrime p
+  let Sq := Localization.AtPrime q
+  let : Algebra Rp Sq := Localization.AtPrime.algebraOfLiesOver p q
+  have : Algebra.EssFiniteType Rp Sq := Algebra.EssFiniteType.of_comp R Rp Sq
+  rw [ramificationIdx'_def, ENat.toNat_eq_iff_eq_coe, Nat.cast_one, Module.length_eq_one_iff,
+    isSimpleModule_iff_isCoatom, ← Ideal.isMaximal_def, IsLocalRing.isMaximal_iff,
+    IsScalarTower.algebraMap_eq R Rp Sq, ← map_map, Localization.AtPrime.map_eq_maximalIdeal]
+  exact Algebra.FormallyUnramified.map_maximalIdeal
+
+theorem ramificationIdx'_eq_one_iff [q.IsPrime] [Algebra.EssFiniteType R S]
+    [Algebra.IsIntegral R S] [PerfectField (q.under R).ResidueField] :
+    q.ramificationIdx' R = 1 ↔ Algebra.IsUnramifiedAt R q := by
+  refine ⟨fun h ↦ ?_, fun _ ↦ ramificationIdx'_eq_one q R⟩
+  rw [ramificationIdx'_def, ENat.toNat_eq_iff_eq_coe, Nat.cast_one, Module.length_eq_one_iff,
+    isSimpleModule_iff_isCoatom, ← Ideal.isMaximal_def, IsLocalRing.isMaximal_iff] at h
+  let p := q.under R
+  let Rp := Localization.AtPrime p
+  let Sq := Localization.AtPrime q
+  let := Localization.AtPrime.algebraOfLiesOver p q
+  have := Algebra.EssFiniteType.of_comp R Rp Sq
+  suffices Algebra.FormallyUnramified Rp Sq from Algebra.FormallyUnramified.comp R Rp Sq
+  rw [Algebra.FormallyUnramified.iff_map_maximalIdeal_eq,
+    ← Localization.AtPrime.map_eq_maximalIdeal, map_map, ← IsScalarTower.algebraMap_eq]
+  exact ⟨Algebra.IsAlgebraic.isSeparable_of_perfectField, h⟩
 
 end
 
