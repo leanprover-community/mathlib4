@@ -3,7 +3,7 @@ Copyright (c) 2025 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-module
+module -- shake: keep-all
 
 public meta import Mathlib.Lean.Expr.Basic
 public import Batteries.Tactic.Alias
