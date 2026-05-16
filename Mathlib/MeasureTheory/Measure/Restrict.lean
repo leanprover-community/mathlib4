@@ -144,6 +144,19 @@ theorem restrict_le_self : μ.restrict s ≤ μ :=
 theorem absolutelyContinuous_restrict : μ.restrict s ≪ μ :=
   Measure.absolutelyContinuous_of_le Measure.restrict_le_self
 
+theorem restrict_absolutelyContinuous_restrict' {s s' : Set α} {μ ν : Measure α}
+    (hs : (· ∈ s) ≤ᵐ[μ] (· ∈ s')) (hμν : μ ≪ ν) :
+    μ.restrict s ≪ ν.restrict s' := by
+  refine .mk fun t ht h ↦ ?_
+  rw [restrict_apply ht] at ⊢ h
+  have hv : μ (t ∩ s) ≤ μ (t ∩ s') :=
+    measure_mono_ae <| hs.mono fun _x hx ⟨hxt, hxs⟩ => ⟨hxt, hx hxs⟩
+  simpa [nonpos_iff_eq_zero, hμν.null_mono, h] using hv
+
+theorem restrict_absolutelyContinuous_restrict {s s' : Set α} {μ ν : Measure α}
+    (hs : s ⊆ s') (hμν : μ ≪ ν) : μ.restrict s ≪ ν.restrict s' :=
+  restrict_absolutelyContinuous_restrict' (ae_of_all _ hs) hμν
+
 variable (μ)
 
 theorem restrict_eq_self (h : s ⊆ t) : μ.restrict t s = μ s :=
@@ -200,6 +213,7 @@ theorem restrict_restrict₀ (hs : NullMeasurableSet s (μ.restrict t)) :
 theorem restrict_restrict (hs : MeasurableSet s) : (μ.restrict t).restrict s = μ.restrict (s ∩ t) :=
   restrict_restrict₀ hs.nullMeasurableSet
 
+@[simp]
 theorem restrict_restrict_of_subset (h : s ⊆ t) : (μ.restrict t).restrict s = μ.restrict s := by
   ext1 u hu
   rw [restrict_apply hu, restrict_apply hu, restrict_eq_self]
@@ -512,6 +526,11 @@ lemma AbsolutelyContinuous.restrict (h : μ ≪ ν) (s : Set α) : μ.restrict s
   refine Measure.AbsolutelyContinuous.mk (fun t ht htν ↦ ?_)
   rw [restrict_apply ht] at htν ⊢
   exact h htν
+
+lemma AbsolutelyContinuous.restrict_of_subset {s s' : Set α} {μ ν : Measure α}
+    (hμν : μ.restrict s' ≪ ν.restrict s') (hs : s ⊆ s') :
+    μ.restrict s ≪ ν.restrict s := by
+  simpa [hs] using hμν.restrict s
 
 theorem restrict_iUnion_ae [Countable ι] {s : ι → Set α} (hd : Pairwise (AEDisjoint μ on s))
     (hm : ∀ i, NullMeasurableSet (s i) μ) : μ.restrict (⋃ i, s i) = sum fun i => μ.restrict (s i) :=
