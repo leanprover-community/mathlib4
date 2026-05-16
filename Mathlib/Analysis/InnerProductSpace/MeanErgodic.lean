@@ -89,16 +89,16 @@ converge to the orthogonal projection of `x` to the subspace of fixed points of 
 theorem ContinuousLinearMap.tendsto_birkhoffAverage_orthogonalProjection (f : E →L[𝕜] E)
     (hf : ‖f‖ ≤ 1) (x : E) :
     Tendsto (birkhoffAverage 𝕜 f _root_.id · x) atTop
-      (𝓝 <| (LinearMap.eqLocus f 1).orthogonalProjection x) := by
+      (𝓝 <| (LinearMap.eqLocus f 1).orthogonalProjectionOnto x) := by
   /- Due to the previous theorem, it suffices to verify
   that the range of `f - 1` is dense in the orthogonal complement
   to the submodule of fixed points of `f`. -/
   apply (f : E →ₗ[𝕜] E).tendsto_birkhoffAverage_of_ker_subset_closure (f.lipschitz.weaken hf)
-  · exact (LinearMap.eqLocus f 1).orthogonalProjection_mem_subspace_eq_self
+  · exact (LinearMap.eqLocus f 1).orthogonalProjectionOnto_mem_subspace_eq_self
   · clear x
     /- In other words, we need to verify that any vector that is orthogonal to the range of `f - 1`
     is a fixed point of `f`. -/
-    rw [Submodule.ker_orthogonalProjection, ← Submodule.topologicalClosure_coe,
+    rw [Submodule.ker_orthogonalProjectionOnto, ← Submodule.topologicalClosure_coe,
       SetLike.coe_subset_coe, ← Submodule.orthogonal_orthogonal_eq_closure]
     /- To verify this, we verify `‖f x‖ ≤ ‖x‖` (because `‖f‖ ≤ 1`) and `⟪f x, x⟫ = ‖x‖²`. -/
     refine Submodule.orthogonal_le fun x hx ↦ eq_of_norm_le_re_inner_eq_norm_sq (𝕜 := 𝕜) ?_ ?_

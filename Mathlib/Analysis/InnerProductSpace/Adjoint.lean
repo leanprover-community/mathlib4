@@ -175,13 +175,16 @@ lemma adjoint_id : (.id 𝕜 E)† = .id 𝕜 E := by simp
 lemma adjoint_one : (1 : E →L[𝕜] E)† = 1 := by simp
 
 theorem _root_.Submodule.adjoint_subtypeL (U : Submodule 𝕜 E) [CompleteSpace U] :
-    U.subtypeL† = U.orthogonalProjection := by
+    U.subtypeL† = U.orthogonalProjectionOnto := by
   symm
   simp [eq_adjoint_iff]
 
-theorem _root_.Submodule.adjoint_orthogonalProjection (U : Submodule 𝕜 E) [CompleteSpace U] :
-    (U.orthogonalProjection : E →L[𝕜] U)† = U.subtypeL := by
+theorem _root_.Submodule.adjoint_orthogonalProjectionOnto (U : Submodule 𝕜 E) [CompleteSpace U] :
+    (U.orthogonalProjectionOnto : E →L[𝕜] U)† = U.subtypeL := by
   rw [← U.adjoint_subtypeL, adjoint_adjoint]
+
+@[deprecated (since := "2026-05-05")] alias _root_.Submodule.adjoint_orthogonalProjection :=
+  Submodule.adjoint_orthogonalProjectionOnto
 
 theorem orthogonal_ker (T : E →L[𝕜] F) :
     T.kerᗮ = T†.range.topologicalClosure := by

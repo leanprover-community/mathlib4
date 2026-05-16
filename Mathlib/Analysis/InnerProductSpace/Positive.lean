@@ -411,13 +411,17 @@ theorem IsPositive.conj_starProjection (U : Submodule 𝕜 E) {T : E →L[𝕜] 
     U.starProjection_isSymmetric _, ← U.starProjection_isSymmetric _, coe_coe,
     hT.inner_nonneg_right, implies_true, and_self]
 
-theorem IsPositive.orthogonalProjection_comp {T : E →L[𝕜] E} (hT : T.IsPositive) (U : Submodule 𝕜 E)
-    [U.HasOrthogonalProjection] : (U.orthogonalProjection ∘L T ∘L U.subtypeL).IsPositive := by
+theorem IsPositive.orthogonalProjectionOnto_comp {T : E →L[𝕜] E} (hT : T.IsPositive)
+    (U : Submodule 𝕜 E) [U.HasOrthogonalProjection] :
+    (U.orthogonalProjectionOnto ∘L T ∘L U.subtypeL).IsPositive := by
   simp only [isPositive_iff, IsSymmetric, coe_comp, LinearMap.coe_comp, coe_coe,
     Function.comp_apply, coe_comp']
-  simp_rw [U.inner_orthogonalProjection_eq_of_mem_right, Submodule.subtypeL_apply,
-    U.inner_orthogonalProjection_eq_of_mem_left, ← coe_coe, hT.isSymmetric _, coe_coe,
+  simp_rw [U.inner_orthogonalProjectionOnto_eq_of_mem_right, Submodule.subtypeL_apply,
+    U.inner_orthogonalProjectionOnto_eq_of_mem_left, ← coe_coe, hT.isSymmetric _, coe_coe,
     hT.inner_nonneg_right, implies_true, and_self]
+
+@[deprecated (since := "2026-05-05")] alias IsPositive.orthogonalProjection_comp :=
+  IsPositive.orthogonalProjectionOnto_comp
 
 open scoped NNReal
 
