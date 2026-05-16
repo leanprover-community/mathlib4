@@ -2037,6 +2037,7 @@ public import Mathlib.Analysis.LocallyConvex.AbsConvexOpen
 public import Mathlib.Analysis.LocallyConvex.BalancedCoreHull
 public import Mathlib.Analysis.LocallyConvex.Barrelled
 public import Mathlib.Analysis.LocallyConvex.Basic
+public import Mathlib.Analysis.LocallyConvex.Bipolar
 public import Mathlib.Analysis.LocallyConvex.Bounded
 public import Mathlib.Analysis.LocallyConvex.ContinuousOfBounded
 public import Mathlib.Analysis.LocallyConvex.Montel

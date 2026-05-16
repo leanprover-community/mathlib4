@@ -66,11 +66,13 @@ theorem polar_mem (s : Set E) (y : F) (hy : y ∈ B.polar s) : ∀ x ∈ s, ‖B
 theorem polar_eq_biInter_preimage (s : Set E) :
     B.polar s = ⋂ x ∈ s, ((B x) ⁻¹' Metric.closedBall (0 : 𝕜) 1) := by aesop
 
--- TODO: this theorem is abusing defeq between F and WeakBilin B.flip
-theorem polar_isClosed (s : Set E) : IsClosed (X := WeakBilin B.flip) (B.polar s) := by
+open WeakBilin in
+lemma isClosed_polar (s : Set E) : IsClosed ((pairing B.flip).flip.polar s) := by
   rw [polar_eq_biInter_preimage]
   exact isClosed_biInter
-    fun _ _ ↦ Metric.isClosed_closedBall.preimage (WeakBilin.eval_continuous B.flip _)
+    fun _ _ ↦ Metric.isClosed_closedBall.preimage (eval_continuous (pairing B.flip) _)
+
+@[deprecated (since := "2026-04-15")] alias polar_isClosed := isClosed_polar
 
 @[simp]
 theorem zero_mem_polar (s : Set E) : (0 : F) ∈ B.polar s := fun _ _ => by
