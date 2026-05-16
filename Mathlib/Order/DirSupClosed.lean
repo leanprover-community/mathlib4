@@ -171,32 +171,14 @@ theorem DirSupClosedOn.union (hDL : IsLowerSet D)
     (hs : DirSupClosedOn D s) (ht : DirSupClosedOn D t) : DirSupClosedOn D (s ∪ t) := by
   intro d hD hdu hd₀ hd₁ a ha
   have hdst : d ∩ s ∪ d ∩ t = d := by grind
-  rw [← hdst] at hd₀ hd₁
-  wlog h : DirectedOn (· ≤ ·) (d ∩ s) ∧ (d ∩ s).Nonempty
-  · rw [union_comm] at hdu hd₀ hd₁ hdst ⊢
+  wlog h : DirectedOn (· ≤ ·) (d ∩ s) ∧ IsCofinalFor (d ∩ t) (d ∩ s)
+  · rw [union_comm] at hdu hdst ⊢
     exact this hDL ht hs hD hdu hd₀ hd₁ ha hdst <|
-      (directedOn_or_directedOn_of_union' hd₀ hd₁).resolve_right h
-  obtain ⟨hds, hn⟩ := h
-  by_cases had : a ∈ lowerBounds (upperBounds (d ∩ s))
-  · exact .inl <| hs (hDL inter_subset_left hD) inter_subset_right hn hds
-      ⟨fun b hb ↦ ha.1 hb.1, had⟩
-  · simp only [lowerBounds, mem_setOf_eq, not_forall] at had
-    obtain ⟨b, hb, hb'⟩ := had
-    have key : {x ∈ d | ¬ x ≤ b} ⊆ d ∩ t := fun a ⟨had, hab⟩ ↦
-      ⟨had, (hdu had).resolve_left fun has ↦ hab <| hb ⟨had, has⟩⟩
-    obtain ⟨w, hw⟩ : {x ∈ d | ¬ x ≤ b}.Nonempty := by
-      contrapose! hb'
-      apply ha.2
-      aesop
-    refine Or.inr <| ht (hDL inter_subset_left hD) (key.trans inter_subset_right)
-      ⟨w, hw⟩ (fun x hx y hy ↦ ?_) ?_
-    · obtain ⟨z, hz, hz'⟩ := hd₁ _ (.inr (key hx)) _ (.inr (key hy))
-      exact ⟨z, ⟨⟨hdst ▸ hz, mt hz'.1.trans hx.2⟩, hz'⟩⟩
-    · refine ⟨fun x hx ↦ ha.1 hx.1, fun x hx ↦ ha.2 fun y hy ↦ ?_⟩
-      by_cases hyb : y ≤ b
-      · obtain ⟨z, hz, hxz, hyz⟩ := hd₁ _ (hdst ▸ hy) _ (.inr (key hw))
-        exact hxz.trans (hx ⟨hdst ▸ hz, fun hzb ↦ hw.2 (hyz.trans hzb)⟩)
-      exact hx ⟨hy, hyb⟩
+      (directedOn_union_iff.mp (by rwa [hdst])).resolve_right h
+  obtain ⟨hds, hcof⟩ := h
+  have hcof' : IsCofinalFor d (d ∩ s) := hcof.union_right.mono_left hdst.ge
+  exact .inl <| hs (hDL inter_subset_left hD) inter_subset_right
+    (hcof'.nonempty hd₀) hds (ha.of_isCofinalFor inter_subset_left hcof')
 
 theorem DirSupInaccOn.inter (hDL : IsLowerSet D)
     (hs : DirSupInaccOn D s) (ht : DirSupInaccOn D t) : DirSupInaccOn D (s ∩ t) := by
@@ -228,18 +210,11 @@ theorem dirSupInaccOn_iff_inter_subset (hDL : IsLowerSet D) :
   mpr := .of_inter_subset
   mp h t hD ht₀ ht₁ a ha has := by
     by_contra! H
-    have H : ∀ b : t, ∃ c, b.1 ≤ c ∧ c ∈ t ∧ c ∉ s := by simpa [not_subset, and_assoc] using H
-    choose f hf using H
-    have := ht₀.to_subtype
-    have hft : range f ⊆ t := by grind
-    apply (h (hDL hft hD) (range_nonempty f) _ _ has).ne_empty
-    · aesop
-    · intro a ha b hb
-      obtain ⟨c, hc, _, _⟩ := ht₁ _ (hft ha) _ (hft hb)
-      have := hf ⟨c, hc⟩
-      grind
-    · exact ⟨upperBounds_mono_set hft ha.1,
-        fun b hb ↦ ha.2 fun c hc ↦ (hf ⟨c, hc⟩).1.trans (hb <| by simp)⟩
+    have hcof : IsCofinalFor t (t \ s) := by grind [IsCofinalFor, not_subset]
+    obtain ⟨x, hx, hxs⟩ := h (hDL diff_subset hD) (hcof.nonempty ht₀)
+      (ht₁.of_isCofinalFor diff_subset hcof)
+      (ha.of_isCofinalFor diff_subset hcof) has
+    exact hx.2 hxs
 
 /-- The condition `(d ∩ s).Nonempty` in `DirSupInacc` can be replaced with the stronger
 `∃ b ∈ d, Ici b ∩ d ⊆ s`. -/
