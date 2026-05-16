@@ -166,6 +166,12 @@ lemma pairing_p_symm_equivI (x : h.ι) :
     DFunLike.coe (F := h.I ≃ h.II) h.pairing.p.symm (h.equivI x) = h.equivII x := by
   simp [pairing]
 
+lemma type₁_pairing (x : h.ι) :
+    h.type₁ x = h.pairing.p (h.equivII x) := by
+  dsimp +instances
+  rw [h.pairing_p_equivII x]
+  rfl
+
 /-- The condition that `h : A.PairingCore` is proper, i.e. for each `s : h.ι`,
 the type (II) simplex `h.type₂ s` is uniquely a `1`-codimensional
 face of the type (I) simplex `h.type₁ s`. -/
@@ -182,6 +188,11 @@ instance [h.IsProper] : h.pairing.IsProper where
   isUniquelyCodimOneFace x := by
     obtain ⟨s, rfl⟩ := h.equivII.surjective x
     simpa using h.isUniquelyCodimOneFace s
+
+lemma isProper_pairing_iff :
+    h.pairing.IsProper ↔ h.IsProper := by
+  refine ⟨fun _ ↦ ⟨fun s ↦ ?_⟩, fun _ ↦ inferInstance⟩
+  simpa [type₁_pairing] using h.pairing.isUniquelyCodimOneFace (h.equivII s)
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
@@ -233,6 +244,18 @@ instance [h.IsRegular] : h.pairing.IsRegular where
     rw [wellFounded_iff_isEmpty_descending_chain] at this ⊢
     exact ⟨fun ⟨f, hf⟩ ↦ this.false
       ⟨fun n ↦ h.equivII.symm (f n), fun n ↦ by simpa [ancestralRel_iff] using hf n⟩⟩
+
+lemma isRegular_pairing_iff (h : A.PairingCore) :
+    h.pairing.IsRegular ↔ h.IsRegular := by
+  refine ⟨fun _ ↦ ?_, fun _ ↦ inferInstance⟩
+  have : h.IsProper := by
+    rw [← isProper_pairing_iff]
+    infer_instance
+  constructor
+  have := h.pairing.wf
+  rw [wellFounded_iff_isEmpty_descending_chain] at this ⊢
+  exact ⟨fun ⟨f, hf⟩ ↦ this.false
+    ⟨fun n ↦ h.equivII (f n), fun n ↦ by simpa [ancestralRel_iff] using hf n⟩⟩
 
 end PairingCore
 
