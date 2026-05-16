@@ -170,9 +170,8 @@ public theorem IsLeviCivitaConnection.uniqueness [FiniteDimensional ℝ E]
 section
 
 variable (X Y Z) in
-/-- Auxiliary quantity used in the uniqueness proof of the Levi-Civita connection:
-If `∇` is a Levi-Civita connection on `TM`, then
-`⟨∇ X Y, Z⟩ = leviCivitaAux I X Y Z` for all smooth vector fields `X`, `Y` and `Z`. -/
+/-- Auxiliary quantity for the construction of the Levi-Civita connection:
+If `∇` is the Levi-Civita connection on `TM`, this formula will express `⟨∇ X Y, Z⟩`. -/
 noncomputable def leviCivitaAux (x : M) : ℝ :=
   (mvfderiv% ⟪Y, Z⟫ x (X x) + mvfderiv% ⟪Z, X⟫ x (Y x) - mvfderiv% ⟪X, Y⟫ x (Z x)
   - ⟪Y ,(VectorField.mlieBracket I X Z)⟫ x
