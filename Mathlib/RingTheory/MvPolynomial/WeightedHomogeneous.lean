@@ -11,7 +11,7 @@ public import Mathlib.Algebra.GradedMonoid
 public import Mathlib.Algebra.MvPolynomial.Basic
 public import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 public import Mathlib.Data.Finsupp.Weight
-public import Mathlib.RingTheory.GradedAlgebra.Basic
+public import Mathlib.RingTheory.GradedAlgebra.Homogeneous.Ideal
 public import Mathlib.Tactic.Order
 
 /-!
@@ -671,6 +671,19 @@ theorem weightedDecomposition.decompose'_apply [DecidableEq M]
     ((weightedDecomposition R w).decompose' φ m : MvPolynomial σ R) =
       weightedHomogeneousComponent w m φ :=
   MvPolynomial.decompose'_apply R w φ m
+
+attribute [local instance] MvPolynomial.weightedGradedAlgebra
+
+lemma mem_iff_weightedHomogeneousComponent_mem [DecidableEq M] {I : Ideal (MvPolynomial σ R)}
+    (h : I.IsHomogeneous (weightedHomogeneousSubmodule R w)) (p : MvPolynomial σ R) :
+    p ∈ I ↔ ∀ m : M, (weightedHomogeneousComponent w m p) ∈ I := by
+  simp_rw [← weightedDecomposition.decompose'_apply]
+  exact h.mem_iff
+
+lemma weightedHomogeneousComponent_mem_of_mem [DecidableEq M] {I : Ideal (MvPolynomial σ R)}
+    (h : I.IsHomogeneous (weightedHomogeneousSubmodule R w)) {p : MvPolynomial σ R} (hp : p ∈ I)
+    (m : M) : (weightedHomogeneousComponent w m p) ∈ I :=
+  (mem_iff_weightedHomogeneousComponent_mem R w h p).mp hp m
 
 end GradedAlgebra
 
