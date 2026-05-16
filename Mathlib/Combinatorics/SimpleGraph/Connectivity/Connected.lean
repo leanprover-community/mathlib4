@@ -700,6 +700,19 @@ theorem maximal_connected_induce_iff (s : Set V) :
 
 end ConnectedComponent
 
+variable (G) in
+/-- The vertices of a graph are partitioned among its connected components -/
+@[simps!]
+def verticesEquivSigmaConnectedComponent : V ≃ Σ (c : G.ConnectedComponent), c :=
+  .symm <| .sigmaFiberEquiv <| Quot.mk G.Reachable
+
+variable (G) in
+/-- The edges of a graph are partitioned among its connected components -/
+@[simps!]
+def edgeSetEquivSigmaConnectedComponent :
+    G.edgeSet ≃ Σ (c : G.ConnectedComponent), c.toSimpleGraph.edgeSet :=
+  .sigmaQuotFromRel G.symm <| .ofLE fun _ _ ↦ Adj.reachable
+
 /-- Given graph homomorphisms from each connected component of `G` to `H`, this is the graph
 homomorphism from `G` to `H`. -/
 @[simps]
