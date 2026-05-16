@@ -810,6 +810,7 @@ public import Mathlib.Algebra.Module.Prod
 public import Mathlib.Algebra.Module.Projective
 public import Mathlib.Algebra.Module.Rat
 public import Mathlib.Algebra.Module.RingHom
+public import Mathlib.Algebra.Module.SemilinearModuleProd
 public import Mathlib.Algebra.Module.Shrink
 public import Mathlib.Algebra.Module.SnakeLemma
 public import Mathlib.Algebra.Module.SpanRank
