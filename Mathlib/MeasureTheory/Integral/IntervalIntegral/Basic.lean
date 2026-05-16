@@ -94,10 +94,20 @@ theorem intervalIntegrable_congr_ae {g : ℝ → ε} (h : f =ᵐ[μ.restrict (Ι
     IntervalIntegrable f μ a b ↔ IntervalIntegrable g μ a b := by
   rw [intervalIntegrable_iff, integrableOn_congr_fun_ae h, intervalIntegrable_iff]
 
+theorem intervalIntegrable_congr_uIoo [NoAtoms μ] {g : ℝ → ε} (h : EqOn f g (uIoo a b)) :
+    IntervalIntegrable f μ a b ↔ IntervalIntegrable g μ a b := by
+  apply intervalIntegrable_congr_ae
+  rw [uIoc, ← restrict_Ioo_eq_restrict_Ioc]
+  apply ae_restrict_of_forall_mem measurableSet_Ioo h
+
 theorem IntervalIntegrable.congr_ae {g : ℝ → ε} (hf : IntervalIntegrable f μ a b)
     (h : f =ᵐ[μ.restrict (Ι a b)] g) :
     IntervalIntegrable g μ a b := by
   rwa [← intervalIntegrable_congr_ae h]
+
+theorem IntervalIntegrable.congr_uIoo [NoAtoms μ] {g : ℝ → ε} (hf : IntervalIntegrable f μ a b)
+    (h : EqOn f g (uIoo a b)) : IntervalIntegrable g μ a b :=
+  intervalIntegrable_congr_uIoo h |>.mp hf
 
 theorem intervalIntegrable_congr {g : ℝ → ε} (h : EqOn f g (Ι a b)) :
     IntervalIntegrable f μ a b ↔ IntervalIntegrable g μ a b :=
@@ -1215,6 +1225,16 @@ theorem integral_congr_ae' (h : ∀ᵐ x ∂μ, x ∈ Ioc a b → f x = g x)
 theorem integral_congr_ae (h : ∀ᵐ x ∂μ, x ∈ Ι a b → f x = g x) :
     ∫ x in a..b, f x ∂μ = ∫ x in a..b, g x ∂μ :=
   integral_congr_ae' (ae_uIoc_iff.mp h).1 (ae_uIoc_iff.mp h).2
+
+theorem integral_congr_uIoo [NoAtoms μ] (h : (uIoo a b).EqOn f g) :
+    ∫ x in a..b, f x ∂μ = ∫ x in a..b, g x ∂μ := by
+  apply integral_congr_ae
+  filter_upwards [μ.ae_ne <| a ⊔ b] with x _ hx
+  exact h ⟨hx.left, lt_of_le_of_ne hx.right ‹_›⟩
+
+theorem integral_congr_Ioo_of_le [NoAtoms μ] (hab : a ≤ b) (h : (Ioo a b).EqOn f g) :
+    ∫ x in a..b, f x ∂μ = ∫ x in a..b, g x ∂μ :=
+  integral_congr_uIoo <| uIoo_of_le hab ▸ h
 
 /-- Integrals are equal for functions that agree almost everywhere for the restricted measure. -/
 theorem integral_congr_ae_restrict {a b : ℝ} {f g : ℝ → E} {μ : Measure ℝ}

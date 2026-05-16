@@ -397,9 +397,7 @@ theorem fourierCoeff_liftIco_eq {a : ℝ} (f : ℝ → ℂ) (n : ℤ) :
     fourierCoeffOn (lt_add_of_pos_right a hT.out) f n := by
   rw [fourierCoeffOn_eq_integral, fourierCoeff_eq_intervalIntegral _ _ a, add_sub_cancel_left a T]
   congr 1
-  simp_rw [intervalIntegral.integral_of_le (lt_add_of_pos_right a hT.out).le]
-  iterate 2 rw [integral_Ioc_eq_integral_Ioo]
-  refine setIntegral_congr_fun measurableSet_Ioo fun x hx => ?_
+  refine intervalIntegral.integral_congr_Ioo_of_le (le_add_of_nonneg_right hT.out.le) fun x hx => ?_
   rw [liftIco_coe_apply (Ioo_subset_Ico_self hx)]
 
 end fourierCoeff
