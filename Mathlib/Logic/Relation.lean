@@ -674,10 +674,6 @@ theorem TransGen.swap : swap (TransGen r) ≤ TransGen (swap r) := by
 theorem transGen_swap : TransGen (swap r) a b ↔ swap (TransGen r) a b :=
   ⟨TransGen.swap b a, TransGen.swap a b⟩
 
-theorem transGen_swap_eq_swap_transGen : TransGen (swap r) = swap (TransGen r) := by
-  ext a b
-  exact transGen_swap
-
 end TransGen
 
 section ReflTransGen
@@ -752,11 +748,6 @@ theorem ReflTransGen.swap : swap (ReflTransGen r) ≤ ReflTransGen (swap r) := b
 
 theorem reflTransGen_swap : ReflTransGen (swap r) a b ↔ ReflTransGen r b a :=
   ⟨ReflTransGen.swap _ _, ReflTransGen.swap _ _⟩
-
-theorem reflTransGen_swap_eq_swap_reflTransGen :
-    ReflTransGen (swap r) = Function.swap (ReflTransGen r) := by
-  ext a b
-  exact reflTransGen_swap
 
 @[simp, grind =] lemma reflGen_transGen : ReflGen (TransGen r) = ReflTransGen r := by
   ext x y
