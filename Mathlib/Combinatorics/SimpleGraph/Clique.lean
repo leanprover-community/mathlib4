@@ -135,6 +135,10 @@ theorem isClique_map_iff {f : α ↪ β} {t : Set β} :
   · simp [hs, IsClique.of_subsingleton]
   simp [or_iff_right hs.not_subsingleton, Set.image_eq_image f.injective]
 
+theorem isClique_induce_iff (s : Set α) (t : Set s) :
+    (G.induce s).IsClique t ↔ G.IsClique t := by
+  simp [Set.Pairwise]
+
 variable {f : α ↪ β} {t : Finset β}
 
 theorem isClique_map_finset_iff_of_nontrivial (ht : t.Nontrivial) :
@@ -196,6 +200,22 @@ theorem isClique_range_copy_top (f : Copy (⊤ : SimpleGraph β) G) :
   rw [← h, ← Copy.topEmbedding_apply, ← h', ← Copy.topEmbedding_apply] at nh ⊢
   rwa [← f.topEmbedding.coe_toEmbedding, (f.topEmbedding.apply_eq_iff_eq _ _).ne,
     ← top_adj, ← f.topEmbedding.map_adj_iff] at nh
+
+theorem Iso.isClique_iff {G : SimpleGraph α} {G' : SimpleGraph β} (f : G ≃g G') (s : Set α) :
+    G.IsClique s ↔ G'.IsClique (f '' s) := by
+  constructor
+  · intro h u' hu' v' hv' huv'
+    rw [Set.mem_image] at hu' hv'
+    obtain ⟨u, hu, hfu⟩ := hu'
+    obtain ⟨v, hv, hfv⟩ := hv'
+    rw [← hfu, ← hfv] at ⊢ huv'
+    rw [f.map_adj_iff]
+    exact h hu hv (f.apply_eq_iff_eq.not.mp huv')
+  · intro h u hu v hv huv
+    have hu' : f u ∈ f '' s := s.mem_image_of_mem f hu
+    have hv' : f v ∈ f '' s := s.mem_image_of_mem f hv
+    rw [← f.map_adj_iff]
+    exact h hu' hv' (f.apply_eq_iff_eq.not.mpr huv)
 
 end Clique
 
@@ -326,7 +346,26 @@ theorem isNClique_map_copy_top [Fintype β] (f : Copy (⊤ : SimpleGraph β) G) 
   rw [isNClique_iff, card_map, card_univ, coe_map, coe_univ, Set.image_univ]
   exact ⟨isClique_range_copy_top f, rfl⟩
 
+theorem isNClique_induce_iff (s : Set α) (t : Finset s) (n : ℕ) :
+    (G.induce s).IsNClique n t ↔ G.IsNClique n (t.map (Embedding.subtype _)) := by
+  simp [isNClique_iff, isClique_induce_iff]
+
+theorem Iso.isNClique_iff {G : SimpleGraph α} {G' : SimpleGraph β} (f : G ≃g G') (n : ℕ)
+    (s : Finset α) : G.IsNClique n s ↔ G'.IsNClique n (s.map f) := by
+  have hcast : SetLike.coe (s.map f) = (f '' s) := s.coe_map f.toEquiv.toEmbedding
+  constructor
+  · rintro ⟨h, hc⟩
+    have hc' : #((s.map f) : Finset β) = n := (s.card_map _).trans hc
+    have h' : G'.IsClique (f '' s) := (f.isClique_iff s).mp h
+    exact ⟨hcast ▸ h', hc'⟩
+  · rintro ⟨h', hc'⟩
+    have hc : #s = n := (hc'.symm.trans (s.card_map _)).symm
+    have h : G.IsClique s := (f.isClique_iff s).mpr (hcast ▸ h')
+    exact ⟨h, hc⟩
+
 end NClique
+
+
 
 /-! ### Graphs without cliques -/
 
@@ -532,6 +571,31 @@ lemma exists_of_maximal_cliqueFree_not_adj [DecidableEq α]
       insert_erase <| mem_erase_of_ne_of_mem hne h1]
   exact ⟨(edge_comm .. ▸ hc).erase_of_sup_edge_of_mem h2, hc.erase_of_sup_edge_of_mem h1⟩
 
+theorem cliqueFree_induce_iff (s : Set α) (n : ℕ) :
+    (G.induce s).CliqueFree n ↔ ∀ t, ↑t ⊆ s → ¬G.IsNClique n t := by
+  classical
+  simp +contextual only [CliqueFree, isNClique_induce_iff]
+  constructor
+  · intro h t ht
+    let t' : Finset s := Finset.subtype _ t
+    have htt' : map (Embedding.subtype _) t' = t := by
+      simp only [subtype_map, filter_eq_self, t']
+      exact fun _ ↦ Set.mem_of_subset_of_mem ht
+    have := h t'
+    simp only [htt', t'] at this
+    exact this
+  · intro h t'
+    let t : Finset α := t'.map (Embedding.subtype _)
+    have htt' : t'.map (Embedding.subtype _) = t := rfl
+    simp only [htt']
+    exact h t (map_subtype_subset t')
+
+theorem Iso.cliqueFree_iff {G : SimpleGraph α} {G' : SimpleGraph β} (f : G ≃g G') (n : ℕ) :
+    G.CliqueFree n ↔ G'.CliqueFree n := by
+  contrapose
+  repeat rw [SimpleGraph.not_cliqueFree_iff_top_isContained]
+  exact isContained_congr_right f
+
 end CliqueFree
 
 section CliqueFreeOn
@@ -589,6 +653,15 @@ theorem CliqueFreeOn.of_succ (hs : G.CliqueFreeOn s (n + 1)) (ha : a ∈ s) :
   refine fun t hts ht => hs ?_ (ht.insert fun b hb => (hts hb).2)
   push_cast
   exact Set.insert_subset_iff.2 ⟨ha, hts.trans Set.inter_subset_left⟩
+
+theorem cliqueFreeOn_iff_cliqueFree_subgraph (s : Set α) (n : ℕ) :
+    G.CliqueFreeOn s n ↔ (G.induce s).CliqueFree n := by
+  rw [CliqueFreeOn, cliqueFree_induce_iff]
+
+theorem Iso.cliqueFreeOn_iff {G : SimpleGraph α} {G' : SimpleGraph β} (f : G ≃g G') (s : Set α)
+    (n : ℕ) : G.CliqueFreeOn s n ↔ G'.CliqueFreeOn (f '' s) n := by
+  repeat rw [cliqueFreeOn_iff_cliqueFree_subgraph]
+  exact (f.induceIso f.toEquiv.bijOn_image).cliqueFree_iff n
 
 end CliqueFreeOn
 
@@ -660,6 +733,26 @@ theorem cliqueSet_map_of_equiv (G : SimpleGraph α) (e : α ≃ β) (n : ℕ) :
     simp [e.exists_congr_left]
   · simpa using cliqueSet_map hn G e.toEmbedding
 
+theorem Iso.cliqueSet_eq {G : SimpleGraph α} {G' : SimpleGraph β} (f : G ≃g G') (n : ℕ) :
+    G.cliqueSet n = (.map f.symm) '' G'.cliqueSet n := by
+  classical
+  ext s
+  simp only [cliqueSet, Set.mem_setOf_eq, Set.mem_image]
+  constructor
+  · intro hs
+    exact ⟨s.map f, (f.isNClique_iff n s).mp hs, by simp [Finset.map_map]⟩
+  · rintro ⟨s', hs', hss'⟩
+    rw [show (f.symm : β ≃ α) = (f : α ≃ β).symm by rfl] at hss'
+    let f' : β → α := (f : α ≃ β).symm.toEmbedding
+    have hf' : Bijective f' := EquivLike.bijective f.symm
+    rw [Finset.map_eq_image, image_eq_iff_eq_preimage hf'] at hss'
+    rw [hss'] at hs'
+    dsimp [f']  at hs'
+    rw [← (f : α ≃ β).image_eq_preimage_symm_of_finset s,
+      show ((f : α ≃ β) : α → β) = (f : α ≃ β).toEmbedding by rfl,
+      ← s.map_eq_image, ← f.isNClique_iff] at hs'
+    exact hs'
+
 end CliqueSet
 
 /-! ### Clique number -/
@@ -688,6 +781,14 @@ lemma exists_isNClique_cliqueNum : ∃ s, G.IsNClique G.cliqueNum s := by
   by_cases h : BddAbove {n | ∃ s, G.IsNClique n s}
   · exact Nat.sSup_mem ⟨0, by simp⟩ h
   · simp [cliqueNum, h]
+
+theorem cliqueNum_induce_le_cliqueNum [Finite α] (s : Set α) :
+    (G.induce s).cliqueNum ≤ G.cliqueNum := by
+  obtain ⟨t', tc⟩ := (G.induce s).exists_isNClique_cliqueNum
+  let t : Finset α := t'.map (Embedding.subtype _)
+  have htt' : t'.map (Embedding.subtype _) = t := rfl
+  simp only [isNClique_induce_iff, htt'] at tc
+  exact tc.card_eq ▸ tc.isClique.card_le_cliqueNum
 
 /-- A maximum clique in a graph `G` is a clique with the largest possible size. -/
 -- TODO: replace with `MaximalFor (G.IsClique ∘ (↑)) card s`
@@ -725,6 +826,19 @@ lemma maximumClique_card_eq_cliqueNum [Finite α] (s : Finset α) (sm : G.IsMaxi
 lemma maximumClique_exists [Finite α] : ∃ (s : Finset α), G.IsMaximumClique s := by
   obtain ⟨s, snc⟩ := G.exists_isNClique_cliqueNum
   exact ⟨s, ⟨snc.isClique, fun t ht => snc.card_eq.symm ▸ ht.card_le_cliqueNum⟩⟩
+
+theorem Iso.cliqueNum_eq {G : SimpleGraph α} {G' : SimpleGraph β} (f : G ≃g G') :
+    G.cliqueNum = G'.cliqueNum := by
+  unfold cliqueNum
+  congr
+  ext n
+  constructor
+  · rintro ⟨s, hs⟩
+    have hs' := (f.isNClique_iff n s).mp hs
+    exact ⟨_, (f.isNClique_iff n s).mp hs⟩
+  · rintro ⟨s', hs'⟩
+    have hs := (f.symm.isNClique_iff n s').mp hs'
+    exact ⟨_, hs⟩
 
 end CliqueNumber
 
@@ -778,6 +892,13 @@ theorem cliqueFinset_map (f : α ↪ β) (hn : n ≠ 1) :
 theorem cliqueFinset_map_of_equiv (e : α ≃ β) (n : ℕ) : (G.map e).cliqueFinset n =
       (G.cliqueFinset n).map ⟨map e.toEmbedding, Finset.map_injective _⟩ :=
   coe_injective <| by push_cast; exact cliqueSet_map_of_equiv _ _ _
+
+theorem Iso.cliqueFinset_eq {G : SimpleGraph α} [DecidableRel G.Adj]
+    {G' : SimpleGraph β} [DecidableRel G'.Adj] (f : G ≃g G') (n : ℕ) :
+    (G.cliqueFinset n).map (f : α ≃ β).finsetCongr.toEmbedding = G'.cliqueFinset n := by
+  unfold cliqueFinset
+  ext s'
+  simp [f.isNClique_iff, Finset.map_map]
 
 end CliqueFinset
 
