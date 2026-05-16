@@ -902,6 +902,37 @@ theorem realize_iExsUnique [Finite γ] {φ : L.Formula (α ⊕ γ)} {v : α → 
 
 end BoundedFormula
 
+namespace Formula
+
+@[simp]
+theorem realize_exClosure [DecidableEq α] (φ : L.Formula α) :
+    φ.exClosure.Realize M ↔
+      ∃ v : φ.freeVarFinset → M, Formula.Realize (φ.restrictFreeVar id) v := by
+  simp [Sentence.Realize, Formula.exClosure, Formula.realize_iExs]
+
+theorem realize_exClosure_of_realize_equivSentence [DecidableEq α] [L[[α]].Structure M]
+    [(L.lhomWithConstants α).IsExpansionOn M] {φ : L.Formula α}
+    (h : (Formula.equivSentence φ).Realize M) : φ.exClosure.Realize M := by
+  rw [Formula.realize_exClosure]
+  exists fun a => (L.con (a : α) : M)
+  simpa [Formula.Realize, BoundedFormula.realize_restrictFreeVar] using h
+
+theorem exists_realize_equivSentence_of_realize_exClosure [DecidableEq α] [Nonempty M]
+    {φ : L.Formula α} (h : φ.exClosure.Realize M) :
+    ∃ v : α → M,
+      @Sentence.Realize _ M (@Language.withConstantsStructure L M _ α (constantsOn.structure v))
+        (Formula.equivSentence φ) := by
+  classical
+  obtain ⟨v, hv⟩ := (Formula.realize_exClosure φ).1 h
+  let v' := fun a =>if hmem : a ∈ φ.freeVarFinset
+    then v ⟨a, hmem⟩ else Classical.choice inferInstance
+  exists v'
+  simpa [Formula.realize_equivSentence, Formula.Realize] using
+    (BoundedFormula.realize_restrictFreeVar v'
+      (by aesop)).1 hv
+
+end Formula
+
 namespace StrongHomClass
 
 variable {F : Type*} [EquivLike F M N] [StrongHomClass L F M N] (g : F)
