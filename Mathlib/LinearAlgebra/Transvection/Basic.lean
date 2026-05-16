@@ -205,6 +205,12 @@ theorem inv_eq' {f : Dual R V} {v : V}
     (transvection hf)⁻¹ = transvection hf' :=
   symm_eq' hf
 
+@[simp]
+theorem symm_apply {f : Dual R V} {v : V}
+    (hv : f v = 0) (x : V) :
+    (transvection hv).symm x = x - f x • v := by
+  rw [symm_eq, LinearEquiv.transvection.apply, smul_neg, ← sub_eq_add_neg]
+
 end transvection
 
 theorem mem_fixedSubmodule_transvection_iff {f : Dual R V} {v : V} {hfv : f v = 0} {x : V} :
@@ -352,6 +358,10 @@ theorem dilatransvection_mem_dilatransvections {f : Dual R V} {v : V} {h : IsUni
   simp only [dilatransvections, Set.mem_setOf_eq]
   refine ⟨f, v, by simp⟩
 
+open Pointwise in
+theorem coe_dilatransvection {f : Dual R V} {v : V} (h : IsUnit (1 + f v)) :
+    dilatransvection h = LinearMap.transvection f v := rfl
+
 open scoped Pointwise in
 theorem dilatransvections_pow_mono :
     Monotone (fun n : ℕ ↦ (dilatransvections R V) ^ n) :=
@@ -423,6 +433,12 @@ theorem mem_dilatransvections_iff_rank_quotient {e : V ≃ₗ[K] V} :
   rw [mem_dilatransvections_iff_rank, ← (quotKerEquivRange _).rank_eq, ← fixedSubmodule_eq_ker]
 
 variable (e f : V ≃ₗ[K] V)
+
+/-
+theorem mem_stabilizer_submodule {W : Submodule K V} {u : V ≃ₗ[K] V} :
+    u ∈ stabilizer (V ≃ₗ[K] V) W ↔ map u.toLinearMap W = W := by
+  rfl
+-/
 
 /-- Characterization of transvections within dilatransvections. -/
 theorem mem_transvections_iff_mem_dilatransvections_and_fixedReduce_eq_one
