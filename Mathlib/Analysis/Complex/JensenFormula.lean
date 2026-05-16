@@ -183,7 +183,7 @@ theorem circleAverage_re_herglotzRieszKernel_mul_log₀ {w ρ : ℂ} {R : ℝ} (
     apply InnerProductSpace.HarmonicContOnCl.circleAverage_re_herglotzRieszKernel_smul
     · refine ⟨fun z hz ↦ ?_, fun x hx ↦ ?_⟩
       · exact AnalyticAt.harmonicAt_log_norm (by fun_prop) (by grind [mem_ball, dist_zero_right])
-      · suffices ‖x - ρ‖ ≠ 0 by fun_prop (disch := assumption)
+      · suffices ‖x - ρ‖ ≠ 0 by fun_prop
         suffices x ≠ ρ by simpa [sub_eq_zero]
         have key := by simpa using closure_ball_subset_closedBall hx
         grind

@@ -95,6 +95,21 @@ theorem LinearMap.rank_eq_of_surjective {f : M →ₗ[R] M₁} (h : Surjective f
     Module.rank R M = Module.rank R M₁ + Module.rank R (LinearMap.ker f) := by
   rw [← rank_range_add_rank_ker f, ← rank_range_of_surjective f h]
 
+theorem LinearMap.lift_rank_comap_le {f : M →ₗ[R] M'} (p : Submodule R M') :
+    lift.{v} (Module.rank R (comap f p)) ≤
+      lift.{u} (Module.rank R p) + lift.{v} (Module.rank R f.ker) := by
+  set f' : comap f p →ₗ[R] p := f.restrict <| by aesop with hf'
+  have hk : Module.rank R f'.ker ≤ Module.rank R f.ker := by
+    rw [← rank_map_eq (injective_subtype (comap f p))]
+    apply rank_mono
+    rw [map_le_iff_le_comap]
+    exact fun x hx ↦ by aesop (add simp Subtype.ext_iff)
+  have hr : Module.rank R f'.range ≤ Module.rank R p := by grw [Submodule.rank_le f'.range]
+  rw [← f'.lift_rank_range_add_rank_ker]
+  gcongr
+  · rwa [lift_le]
+  · rwa [lift_le]
+
 theorem exists_linearIndepOn_of_lt_rank [StrongRankCondition R]
     {s : Set M} (hs : LinearIndepOn R id s) :
     ∃ t, s ⊆ t ∧ #t = Module.rank R M ∧ LinearIndepOn R id t := by

@@ -444,3 +444,13 @@ theorem ker_pow_le_ker_pow_finrank [FiniteDimensional K V] (f : End K V) (m : �
 end End
 
 end Module
+
+instance {W : Type v'} [Field K] [AddCommGroup W] [AddCommGroup V] [Module K V] [Module K W]
+    {f : V →ₗ[K] W} (p : Submodule K W) [FiniteDimensional K p] [FiniteDimensional K f.ker] :
+    FiniteDimensional K (comap f p) := by
+  rw [FiniteDimensional, ← rank_lt_aleph0_iff, ← lift_lt.{v, v'}]
+  grw [f.lift_rank_comap_le p]
+  rw [lift_aleph0]
+  apply add_lt_aleph0
+  · rwa [lift_lt_aleph0, rank_lt_aleph0_iff]
+  · rwa [lift_lt_aleph0, rank_lt_aleph0_iff]

@@ -395,6 +395,11 @@ theorem lift_rank_map_le (f : M →ₗ[R] M') (p : Submodule R M) :
 theorem rank_map_le (f : M →ₗ[R] M₁) (p : Submodule R M) :
     Module.rank R (p.map f) ≤ Module.rank R p := by simpa using lift_rank_map_le f p
 
+theorem rank_map_eq {f : M →ₗ[R] M₁} (hf : Injective f) (p : Submodule R M) :
+    Module.rank R (p.map f) = Module.rank R p :=
+  le_antisymm (rank_map_le f p)
+    ((f.submoduleMap p).rank_le_of_injective <| LinearMap.submoduleMap_injective hf p)
+
 lemma Submodule.rank_mono {s t : Submodule R M} (h : s ≤ t) : Module.rank R s ≤ Module.rank R t :=
   (Submodule.inclusion h).rank_le_of_injective fun ⟨x, _⟩ ⟨y, _⟩ eq =>
     Subtype.ext <| show x = y from Subtype.ext_iff.1 eq
