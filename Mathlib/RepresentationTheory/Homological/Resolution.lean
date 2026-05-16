@@ -381,7 +381,7 @@ lemma d_comp_diagonalSuccIsoFree_inv_eq :
     have eq3 : single (i 0 • Fin.partialProd fun i_1 ↦ i i_1.succ) (1 : k) =
       single (Fin.partialProd i ∘ Fin.succ) 1 := by
       congr; exact funext fun j ↦ Fin.partialProd_succ' i j |>.symm
-    simp [μ_hom, d_single (k := k), Rep.mkIso_inv_hom_apply _,
+    simp [μ_hom, d_single (k := k),
       Representation.linearizeOfMulActionIso_symm_apply,
       Representation.linearizeTrivialIso_symm_apply _, d_apply (k := k),
       Representation.μ_apply_single_single_leftRegular _,

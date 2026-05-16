@@ -75,8 +75,8 @@ lemma IndV.hom_ext {f g : IndV φ ρ →ₗ[k] B}
 to `⟦h₁h⁻¹ ⊗ₜ a⟧`. -/
 @[simps]
 noncomputable def ind : Representation k H (IndV φ ρ) where
-  toFun h := Coinvariants.map _ _ ((lmapDomain k k fun x => x * h⁻¹).rTensor _)
-    fun _ => by ext; simp [mul_assoc]
+  toFun h := Coinvariants.map _ _ ⟨(lmapDomain k k fun x => x * h⁻¹).rTensor _,
+    fun _ => by ext; simp [mul_assoc]⟩
   map_one' := by ext; simp
   map_mul' _ _ := by ext; simp [IndV, mul_assoc]
 
@@ -103,8 +103,8 @@ noncomputable abbrev ind : Rep k H := Rep.of (A.ρ.ind φ)
 /-- Given a group homomorphism `φ : G →* H`, a morphism of `G`-representations `f : A ⟶ B` induces
 a morphism of `H`-representations `(k[H] ⊗[k] A)_G ⟶ (k[H] ⊗[k] B)_G`. -/
 noncomputable def indMap {A B : Rep k G} (f : A ⟶ B) : ind φ A ⟶ ind φ B := Rep.ofHom
-  ⟨Representation.Coinvariants.map _ _ (f.hom.toLinearMap.lTensor _) (by
-    simp [LinearMap.lTensor_comp_map, f.hom.2, LinearMap.map_comp_lTensor]),
+  ⟨Representation.Coinvariants.map _ _ ⟨f.hom.toLinearMap.lTensor _, by
+    simp [LinearMap.lTensor_comp_map, f.hom.2, LinearMap.map_comp_lTensor]⟩,
     fun g ↦ by ext; simp⟩
 
 variable (k) in
