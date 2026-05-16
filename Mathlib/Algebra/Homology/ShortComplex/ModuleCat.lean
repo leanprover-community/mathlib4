@@ -238,4 +238,44 @@ lemma ModuleCat.shortComplex_shortExact (S : ShortComplex (ModuleCat.{v} R))
   mono_f := (ModuleCat.mono_iff_injective _).mpr inj
   epi_g := (ModuleCat.epi_iff_surjective _).mpr surj
 
+variable {M' N' L' : Type*} [AddCommGroup M'] [AddCommGroup N'] [AddCommGroup L']
+  [Module R M'] [Module R N'] [Module R L']
+
+variable (eM : M ≃ₗ[R] M') (eN : N ≃ₗ[R] N') (eL : L ≃ₗ[R] L') (f : M' →ₗ[R] N') (g : N' →ₗ[R] L')
+
+/--
+Suppose that `f` and `g` are linear maps that compose to zero, and that `eM`, `eN`, and `eL`
+indicated in the diagram below are linear equivalences to modules that all belong to the same
+universe. Then this is the short complex in `ModuleCat` given by the bottom row in the diagram.
+M --f--> N --g--> L
+|        |        |
+eM       eN       eL
+|        |        |
+v        v        v
+M'-----> N'-----> L'
+This complex is exact when we have `Function.Exact f g`, see
+`ModuleCat.shortComplexOfConj_exact`.
+-/
+abbrev ModuleCat.shortComplexOfConj (eq0 : g ∘ₗ f = 0) :
+    ShortComplex (ModuleCat.{v} R) :=
+  ModuleCat.shortComplexOfCompEqZero ((eN.symm.comp f).comp eM.toLinearMap)
+    (eL.symm.comp (g.comp eN.toLinearMap)) (by
+      ext x
+      simpa using LinearMap.congr_fun eq0 (eM x))
+
+private lemma exact_conj_of_exact (exact : Function.Exact f g) : Function.Exact
+    ((eN.symm.comp f).comp eM.toLinearMap) (eL.symm.comp (g.comp eN.toLinearMap)) := by
+  rwa [LinearEquiv.precomp_exact_iff_exact, LinearEquiv.postcomp_exact_iff_exact,
+    LinearEquiv.conj_symm_exact_iff_exact]
+
+lemma ModuleCat.shortComplexOfConj_exact (exact : Function.Exact f g) :
+    (ModuleCat.shortComplexOfConj eM eN eL f g exact.linearMap_comp_eq_zero).Exact :=
+  ModuleCat.shortComplex_exact _ (exact_conj_of_exact eM eN eL f g exact)
+
+lemma ModuleCat.shortComplexOfConj_shortExact (exact : Function.Exact f g)
+    (inj : Function.Injective f) (surj : Function.Surjective g) :
+    (ModuleCat.shortComplexOfConj eM eN eL f g exact.linearMap_comp_eq_zero).ShortExact := by
+  refine ModuleCat.shortComplex_shortExact _ (exact_conj_of_exact eM eN eL f g exact) ?_ ?_
+  all_goals simpa
+
 end
