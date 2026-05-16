@@ -611,14 +611,9 @@ codiscrete sets.
 theorem preimage_zero_mem_codiscreteWithin {x : 𝕜} (h₁f : AnalyticOnNhd 𝕜 f U) (h₂f : f x ≠ 0)
     (hx : x ∈ U) (hU : IsConnected U) :
     f ⁻¹' {0}ᶜ ∈ codiscreteWithin U := by
-  filter_upwards [h₁f.codiscreteWithin_setOf_analyticOrderAt_eq_zero_or_top,
-    self_mem_codiscreteWithin U] with a ha h₂a
-  rw [← (h₁f x hx).analyticOrderAt_eq_zero] at h₂f
-  have {u : U} : analyticOrderAt f u ≠ ⊤ := by
-    apply (h₁f.exists_analyticOrderAt_ne_top_iff_forall hU).1
-    use ⟨x, hx⟩
-    simp_all
-  simp_all [(h₁f a h₂a).analyticOrderAt_eq_zero]
+  rcases h₁f.eqOn_zero_or_eventually_ne_zero_of_preconnected hU.isPreconnected with hzero | hne
+  · exact (h₂f (hzero hx)).elim
+  · simpa [Filter.Eventually, Set.mem_setOf_eq] using hne
 
 /--
 If an analytic function `f` is not constantly zero on `𝕜`, then its set of zeros is codiscrete.

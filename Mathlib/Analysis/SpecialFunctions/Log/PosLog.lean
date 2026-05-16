@@ -47,10 +47,7 @@ theorem posLog_def : log⁺ x = max 0 (log x) := rfl
 
 /-- Presentation of `log` in terms of its positive part. -/
 theorem posLog_sub_posLog_inv : log⁺ x - log⁺ x⁻¹ = log x := by
-  rw [posLog_def, posLog_def, log_inv]
-  by_cases! h : 0 ≤ log x
-  · simp [h]
-  · simp [neg_nonneg.1 (Left.nonneg_neg_iff.2 h.le)]
+  simpa [posLog_def, log_inv, max_comm] using max_zero_sub_eq_self (log x)
 
 /-- Presentation of `log⁺` in terms of `log`. -/
 theorem half_mul_log_add_log_abs : 2⁻¹ * (log x + |log x|) = log⁺ x := by
@@ -79,9 +76,7 @@ theorem posLog_eq_zero_iff (x : ℝ) : log⁺ x = 0 ↔ |x| ≤ 1 := by
 
 /-- The function `log⁺` equals `log` outside of the interval (-1,1). -/
 theorem posLog_eq_log (hx : 1 ≤ |x|) : log⁺ x = log x := by
-  simp only [posLog, sup_eq_right]
-  rw [← log_abs]
-  apply log_nonneg hx
+  simpa [posLog_def, ← log_abs] using max_eq_right (log_nonneg hx)
 
 /-- The function `log⁺` equals `log` for all natural numbers. -/
 theorem log_of_nat_eq_posLog {n : ℕ} : log⁺ n = log n := by
@@ -96,13 +91,8 @@ theorem posLog_eq_log_max_one (hx : 0 ≤ x) : log⁺ x = log (max 1 x) := by
 /-- The function `log⁺` is monotone on the positive axis. -/
 theorem monotoneOn_posLog : MonotoneOn log⁺ (Set.Ici 0) := by
   intro x hx y hy hxy
-  simp only [posLog, le_sup_iff, sup_le_iff, le_refl, true_and]
-  by_cases! h : log x ≤ 0
-  · tauto
-  · right
-    have := log_le_log (lt_trans Real.zero_lt_one ((log_pos_iff hx).1 h)) hxy
-    simp only [this, and_true, ge_iff_le]
-    linarith
+  rw [posLog_eq_log_max_one hx, posLog_eq_log_max_one hy]
+  exact log_le_log (by positivity) (max_le_max le_rfl hxy)
 
 @[gcongr]
 lemma posLog_le_posLog (hx : 0 ≤ x) (hxy : x ≤ y) : log⁺ x ≤ log⁺ y :=

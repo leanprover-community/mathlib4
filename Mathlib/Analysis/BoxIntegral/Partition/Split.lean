@@ -187,12 +187,8 @@ theorem sum_split_boxes {M : Type*} [AddCommMonoid M] (I : Box ι) (i : ι) (x :
 /-- If `x ∉ (I.lower i, I.upper i)`, then the hyperplane `{y | y i = x}` does not split `I`. -/
 theorem split_of_notMem_Ioo (h : x ∉ Ioo (I.lower i) (I.upper i)) : split I i x = ⊤ := by
   refine ((isPartitionTop I).eq_of_boxes_subset fun J hJ => ?_).symm
-  rcases mem_top.1 hJ with rfl; clear hJ
-  rw [mem_boxes, mem_split_iff]
-  rw [mem_Ioo, not_and_or, not_lt, not_lt] at h
-  cases h <;> [right; left]
-  · rwa [eq_comm, Box.splitUpper_eq_self]
-  · rwa [eq_comm, Box.splitLower_eq_self]
+  rcases mem_top.1 hJ with rfl
+  grind [Box.splitUpper_eq_self, Box.splitLower_eq_self, mem_boxes, mem_split_iff, not_lt]
 
 theorem coe_eq_of_mem_split_of_mem_le {y : ι → ℝ} (h₁ : J ∈ split I i x) (h₂ : y ∈ J)
     (h₃ : y i ≤ x) : (J : Set (ι → ℝ)) = ↑I ∩ { y | y i ≤ x } := by

@@ -271,21 +271,13 @@ theorem tendsto_logGammaSeq (hf_conv : ConvexOn ℝ (Ioi 0) f)
       rw [sub_add_cancel, Nat.sub_add_cancel hn] at this
       rw [this]
       ring
-    replace hm :=
-      ((Tendsto.congr' this hm).add (tendsto_const_nhds : Tendsto (fun _ => log (x - 1)) _ _)).comp
-        (tendsto_add_atTop_nat 1)
-    have :
-      ((fun x_1 : ℕ =>
-            (fun n : ℕ =>
-                  logGammaSeq x (n - 1) + x * (log (↑(n - 1) + 1) - log ↑(n - 1)) - log (x - 1))
-                x_1 +
-              (fun b : ℕ => log (x - 1)) x_1) ∘
-          fun a : ℕ => a + 1) =
-        fun n => logGammaSeq x n + x * (log (↑n + 1) - log ↑n) := by
-      ext1 n
-      dsimp only [Function.comp_apply]
-      rw [sub_add_cancel, Nat.add_sub_cancel]
-    rw [this] at hm
+    replace hm :
+        Tendsto (fun n => logGammaSeq x n + x * (log (↑n + 1) - log ↑n)) atTop
+          (𝓝 (f (x - 1) - f 1 + log (x - 1))) := by
+      simpa [Function.comp_def, Nat.add_sub_cancel] using
+        (((Tendsto.congr' this hm).add
+          (tendsto_const_nhds : Tendsto (fun _ => log (x - 1)) _ _)).comp
+          (tendsto_add_atTop_nat 1))
     convert hm.sub (tendsto_log_nat_add_one_sub_log.const_mul x) using 2
     · ring
     · have := hf_feq ((Nat.cast_nonneg m).trans_lt hy)

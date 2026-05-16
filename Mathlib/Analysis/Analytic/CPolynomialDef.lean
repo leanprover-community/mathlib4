@@ -233,20 +233,16 @@ the ball. -/
 theorem HasFiniteFPowerSeriesOnBall.eq_zero_of_bound_zero
     (hf : HasFiniteFPowerSeriesOnBall f pf x 0 r) : ∀ y ∈ Metric.eball x r, f y = 0 := by
   intro y hy
-  rw [hf.eq_partialSum' y hy 0 le_rfl, FormalMultilinearSeries.partialSum]
-  simp only [Finset.range_zero, Finset.sum_empty]
+  simpa [FormalMultilinearSeries.partialSum] using hf.eq_partialSum' y hy 0 le_rfl
 
 theorem HasFiniteFPowerSeriesOnBall.bound_zero_of_eq_zero (hf : ∀ y ∈ Metric.eball x r, f y = 0)
     (r_pos : 0 < r) (hp : ∀ n, p n = 0) : HasFiniteFPowerSeriesOnBall f p x 0 r := by
-  refine ⟨⟨?_, r_pos, ?_⟩, fun n _ ↦ hp n⟩
-  · rw [p.radius_eq_top_of_forall_image_add_eq_zero 0 (fun n ↦ by rw [add_zero]; exact hp n)]
-    exact le_top
-  · intro y hy
-    rw [hf (x + y)]
-    · convert hasSum_zero
-      rw [hp, ContinuousMultilinearMap.zero_apply]
-    · rwa [Metric.mem_eball, edist_eq_enorm_sub, add_comm, add_sub_cancel_right,
-        ← edist_zero_right, ← Metric.mem_eball]
+  refine HasFiniteFPowerSeriesOnBall.mk' (fun n _ ↦ hp n) r_pos ?_
+  intro y hy
+  rw [hf (x + y)]
+  · simp
+  · rwa [Metric.mem_eball, edist_eq_enorm_sub, add_comm, add_sub_cancel_right,
+      ← edist_zero_right, ← Metric.mem_eball]
 
 /-- If `f` has a formal power series at `x` bounded by `0`, then `f` is equal to `0` in a
 neighborhood of `x`. -/

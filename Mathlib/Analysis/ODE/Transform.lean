@@ -154,13 +154,9 @@ lemma IsIntegralCurve.comp_mul (hγ : IsIntegralCurve γ v) (a : ℝ) :
 
 lemma isIntegralCurve_comp_mul_ne_zero {a : ℝ} (ha : a ≠ 0) :
     IsIntegralCurve (γ ∘ (· * a)) (a • v ∘ (· * a)) ↔ IsIntegralCurve γ v := by
-  refine ⟨fun hγ ↦ ?_, fun hγ ↦ hγ.comp_mul _⟩
-  convert hγ.comp_mul a⁻¹
-  · ext t
-    simp only [comp_apply, mul_assoc, inv_mul_eq_div, div_self ha, mul_one]
-  · ext t
-    simp only [comp_apply, Pi.smul_apply, mul_assoc, inv_mul_eq_div, div_self ha, mul_one,
-      smul_smul, one_smul]
+  have huniv : a⁻¹ • (univ : Set ℝ) = univ := by ext t; simp [Set.mem_inv_smul_set_iff₀, ha]
+  simpa [← isIntegralCurveOn_univ, huniv] using
+    (isIntegralCurveOn_comp_mul_ne_zero (γ := γ) (v := v) (s := (univ : Set ℝ)) ha)
 
 /-- If the vector field `v` vanishes at `x₀` for all times, then the constant curve at `x₀`
 is a global integral curve of `v`. -/

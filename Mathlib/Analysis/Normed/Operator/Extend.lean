@@ -118,15 +118,10 @@ theorem opNorm_extend_le (h_dense : DenseRange e) (h_e : ∀ x, ‖x‖ ≤ N * 
     ‖f.extend e‖ ≤ N * ‖f‖ := by
   -- Add `opNorm_le_of_dense`?
   refine opNorm_le_bound _ ?_ (isClosed_property h_dense (isClosed_le ?_ (by fun_prop)) fun x ↦ ?_)
-  · cases le_total 0 N with
-    | inl hN => exact mul_nonneg hN (norm_nonneg _)
-    | inr hN =>
-      have : Unique E := ⟨⟨0⟩, fun x ↦ norm_le_zero_iff.mp <|
-        (h_e x).trans (mul_nonpos_of_nonpos_of_nonneg hN (norm_nonneg _))⟩
-      obtain rfl : f = 0 := Subsingleton.elim ..
-      simp
+  · exact mul_nonneg N.2 (norm_nonneg _)
   · exact (cont _).norm
-  · rw [extend_eq _ h_dense (isUniformEmbedding_of_bound _ h_e).isUniformInducing]
+  · rw [extend_eq _ h_dense
+      (ContinuousLinearMap.isUniformEmbedding_of_bound _ h_e).isUniformInducing]
     calc
       ‖f x‖ ≤ ‖f‖ * ‖x‖ := le_opNorm _ _
       _ ≤ ‖f‖ * (N * ‖e x‖) := by gcongr; exact h_e x

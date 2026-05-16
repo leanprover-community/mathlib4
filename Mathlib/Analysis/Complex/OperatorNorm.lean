@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Analysis.Complex.Basic
 public import Mathlib.Analysis.Normed.Operator.NormedSpace
+public import Mathlib.Analysis.RCLike.Lemmas
 public import Mathlib.LinearAlgebra.Complex.Determinant
 
 /-! # The basic continuous linear maps associated to `ℂ`
@@ -34,11 +35,7 @@ theorem linearEquiv_det_conjLIE : LinearEquiv.det conjLIE.toLinearEquiv = -1 :=
   linearEquiv_det_conjAe
 
 @[simp]
-theorem reCLM_norm : ‖reCLM‖ = 1 :=
-  le_antisymm (LinearMap.mkContinuous_norm_le _ zero_le_one _) <|
-    calc
-      1 = ‖reCLM 1‖ := by simp
-      _ ≤ ‖reCLM‖ := unit_le_opNorm _ _ (by simp)
+theorem reCLM_norm : ‖reCLM‖ = 1 := RCLike.reCLM_norm
 
 @[simp]
 theorem reCLM_enorm : ‖reCLM‖ₑ = 1 := by simp [← ofReal_norm]
@@ -62,8 +59,7 @@ theorem imCLM_nnnorm : ‖imCLM‖₊ = 1 :=
   Subtype.ext imCLM_norm
 
 @[simp]
-theorem conjCLE_norm : ‖(conjCLE : ℂ →L[ℝ] ℂ)‖ = 1 :=
-  conjLIE.toLinearIsometry.norm_toContinuousLinearMap
+theorem conjCLE_norm : ‖(conjCLE : ℂ →L[ℝ] ℂ)‖ = 1 := RCLike.conjCLE_norm
 
 @[simp]
 theorem conjCLE_enorm : ‖(conjCLE : ℂ →L[ℝ] ℂ)‖ₑ = 1 := by simp [← ofReal_norm]
@@ -73,8 +69,7 @@ theorem conjCLE_nnorm : ‖(conjCLE : ℂ →L[ℝ] ℂ)‖₊ = 1 :=
   Subtype.ext conjCLE_norm
 
 @[simp]
-theorem ofRealCLM_norm : ‖ofRealCLM‖ = 1 :=
-  ofRealLI.norm_toContinuousLinearMap
+theorem ofRealCLM_norm : ‖ofRealCLM‖ = 1 := RCLike.ofRealCLM_norm
 
 @[simp]
 theorem ofRealCLM_enorm : ‖ofRealCLM‖ₑ = 1 := by simp [← ofReal_norm]

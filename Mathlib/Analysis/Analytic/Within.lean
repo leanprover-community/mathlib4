@@ -118,16 +118,10 @@ lemma hasFPowerSeriesWithinOnBall_iff_exists_hasFPowerSeriesOnBall [CompleteSpac
   constructor
   · intro h
     refine ⟨fun y ↦ p.sum (y - x), ?_, ?_⟩
-    · intro y ⟨ys,yb⟩
-      simp only [mem_eball, edist_eq_enorm_sub] at yb
-      have e0 := p.hasSum (x := y - x) ?_
-      · have e1 := (h.hasSum (y := y - x) ?_ ?_)
-        · simp only [add_sub_cancel] at e1
-          exact e1.unique e0
-        · simpa only [add_sub_cancel]
-        · simpa only [mem_eball, edist_zero_right]
-      · simp only [mem_eball, edist_zero_right]
-        exact lt_of_lt_of_le yb h.r_le
+    · rintro y ⟨ys, yb⟩
+      have : f (x + (y - x)) = p.sum (y - x) :=
+        h.sum (y := y - x) (by simpa using ys) (by simpa [edist_eq_enorm_sub] using yb)
+      simpa using this
     · refine ⟨h.r_le, h.r_pos, ?_⟩
       intro y lt
       simp only [add_sub_cancel_left]
@@ -181,19 +175,15 @@ lemma analyticWithinAt_iff_exists_analyticAt' [CompleteSpace F] {f : E → F} {s
   refine ⟨?_, ?_⟩
   · rintro ⟨g, hf, hg⟩
     rcases mem_nhdsWithin.1 hf with ⟨u, u_open, xu, hu⟩
-    let g' := Set.piecewise u g f
-    refine ⟨g', ?_, ?_, ?_⟩
-    · have : x ∈ u ∩ insert x s := ⟨xu, by simp⟩
-      simpa [g', xu, this] using hu this
+    refine ⟨u.piecewise g f, ?_, ?_, ?_⟩
+    · simpa [xu] using hu ⟨xu, by simp⟩
     · intro y hy
       by_cases h'y : y ∈ u
-      · have : y ∈ u ∩ insert x s := ⟨h'y, hy⟩
-        simpa [g', h'y, this] using hu this
-      · simp [g', h'y]
-    · apply hg.congr
-      filter_upwards [u_open.mem_nhds xu] with y hy using by simp [g', hy]
+      · simpa [h'y] using hu ⟨h'y, hy⟩
+      · simp [h'y]
+    · exact hg.congr <| (Set.piecewise_eqOn u g f).symm.eventuallyEq_of_mem (u_open.mem_nhds xu)
   · rintro ⟨g, -, hf, hg⟩
-    exact ⟨g, by filter_upwards [self_mem_nhdsWithin] using hf, hg⟩
+    exact ⟨g, hf.eventuallyEq_of_mem self_mem_nhdsWithin, hg⟩
 
 alias ⟨AnalyticWithinAt.exists_analyticAt, _⟩ := analyticWithinAt_iff_exists_analyticAt'
 

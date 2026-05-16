@@ -56,11 +56,9 @@ theorem cpow_eq_nhds' {p : ℂ × ℂ} (hp_fst : p.fst ≠ 0) :
 
 -- Continuity of `fun x => a ^ x`: union of these two lemmas is optimal.
 theorem continuousAt_const_cpow {a b : ℂ} (ha : a ≠ 0) : ContinuousAt (fun x : ℂ => a ^ x) b := by
-  have cpow_eq : (fun x : ℂ => a ^ x) = fun x => exp (log a * x) := by
-    ext1 b
-    rw [cpow_def_of_ne_zero ha]
-  rw [cpow_eq]
-  exact continuous_exp.continuousAt.comp (ContinuousAt.mul continuousAt_const continuousAt_id)
+  simpa [cpow_def_of_ne_zero ha] using
+    (Complex.continuous_exp.continuousAt.comp
+      (ContinuousAt.mul continuousAt_const continuousAt_id))
 
 theorem continuousAt_const_cpow' {a b : ℂ} (h : b ≠ 0) : ContinuousAt (fun x : ℂ => a ^ x) b := by
   by_cases ha : a = 0
@@ -346,12 +344,9 @@ theorem continuousAt_ofReal_cpow (x : ℝ) (y : ℂ) (h : 0 < y.re ∨ x ≠ 0) 
     refine (continuousAt_cpow (Or.inl ?_)).comp this
     rwa [ofReal_re]
   · -- x = 0 : reduce to continuousAt_cpow_zero_of_re_pos
-    have A : ContinuousAt (fun p => p.1 ^ p.2 : ℂ × ℂ → ℂ) ⟨↑(0 : ℝ), y⟩ := by
-      rw [ofReal_zero]
-      apply continuousAt_cpow_zero_of_re_pos
-      tauto
-    have B : ContinuousAt (fun p => ⟨↑p.1, p.2⟩ : ℝ × ℂ → ℂ × ℂ) ⟨0, y⟩ := by fun_prop
-    exact A.comp_of_eq B rfl
+    have hcoe : ContinuousAt (fun p : ℝ × ℂ => (↑p.1, p.2) : ℝ × ℂ → ℂ × ℂ) (0, y) := by
+      fun_prop
+    exact (continuousAt_cpow_zero_of_re_pos (z := y) (by tauto)).comp_of_eq hcoe rfl
   · -- x < 0 : difficult case
     suffices ContinuousAt (fun p => (-(p.1 : ℂ)) ^ p.2 * exp (π * I * p.2) : ℝ × ℂ → ℂ) (x, y) by
       refine this.congr (eventually_of_mem (prod_mem_nhds (Iio_mem_nhds hx) univ_mem) ?_)

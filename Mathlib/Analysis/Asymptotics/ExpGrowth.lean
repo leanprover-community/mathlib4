@@ -250,25 +250,17 @@ lemma expGrowthSup_inv : expGrowthSup u⁻¹ = - expGrowthInf u := by
 -- `IsBigO` property is spelt out.
 lemma expGrowthInf_le_of_eventually_le (hb : b ≠ ∞) (h : ∀ᶠ n in atTop, u n ≤ b * v n) :
     expGrowthInf u ≤ expGrowthInf v := by
-  apply (expGrowthInf_eventually_monotone h).trans
-  rcases eq_zero_or_pos b with rfl | b_pos
-  · simp only [zero_mul, ← Pi.zero_def, expGrowthInf_zero, bot_le]
-  · apply (expGrowthInf_mul_le _ _).trans_eq <;> rw [expGrowthSup_const b_pos.ne' hb]
-    · exact zero_add (expGrowthInf v)
-    · exact .inl zero_ne_bot
-    · exact .inl zero_ne_top
+  rw [expGrowthInf_def, expGrowthInf_def]
+  exact linearGrowthInf_le_of_eventually_le (u := log ∘ u) (v := log ∘ v) (b := log b) (by simpa) <|
+    h.mono fun n hn ↦ by simpa [Pi.mul_apply, log_mul_add, add_comm] using log_monotone hn
 
 -- Bound on `expGrowthSup` under a `IsBigO` hypothesis. However, `ℝ≥0∞` is not normed, so the
 -- `IsBigO` property is spelt out.
 lemma expGrowthSup_le_of_eventually_le (hb : b ≠ ∞) (h : ∀ᶠ n in atTop, u n ≤ b * v n) :
     expGrowthSup u ≤ expGrowthSup v := by
-  apply (expGrowthSup_eventually_monotone h).trans
-  rcases eq_zero_or_pos b with rfl | b_pos
-  · simp only [zero_mul, ← Pi.zero_def, expGrowthSup_zero, bot_le]
-  · apply (expGrowthSup_mul_le _ _).trans_eq <;> rw [expGrowthSup_const b_pos.ne' hb]
-    · exact zero_add (expGrowthSup v)
-    · exact .inl zero_ne_bot
-    · exact .inl zero_ne_top
+  rw [expGrowthSup_def, expGrowthSup_def]
+  exact linearGrowthSup_le_of_eventually_le (u := log ∘ u) (v := log ∘ v) (b := log b) (by simpa) <|
+    h.mono fun n hn ↦ by simpa [Pi.mul_apply, log_mul_add, add_comm] using log_monotone hn
 
 lemma expGrowthInf_of_eventually_ge (hb : b ≠ 0) (h : ∀ᶠ n in atTop, b * u n ≤ v n) :
     expGrowthInf u ≤ expGrowthInf v := by

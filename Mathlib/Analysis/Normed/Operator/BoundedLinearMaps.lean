@@ -86,12 +86,8 @@ lemma isBoundedLinearMap_iff {f : E → F} :
 
 theorem IsLinearMap.with_bound {f : E → F} (hf : IsLinearMap 𝕜 f) (M : ℝ)
     (h : ∀ x : E, ‖f x‖ ≤ M * ‖x‖) : IsBoundedLinearMap 𝕜 f :=
-  ⟨hf,
-    by_cases
-      (fun (this : M ≤ 0) =>
-        ⟨1, zero_lt_one, fun x =>
-          (h x).trans <| mul_le_mul_of_nonneg_right (this.trans zero_le_one) (norm_nonneg x)⟩)
-      fun (this : ¬M ≤ 0) => ⟨M, lt_of_not_ge this, h⟩⟩
+  ⟨hf, ⟨max M 1, lt_of_lt_of_le zero_lt_one (le_max_right _ _), fun x =>
+    (h x).trans <| mul_le_mul_of_nonneg_right (le_max_left _ _) (norm_nonneg x)⟩⟩
 
 namespace IsBoundedLinearMap
 

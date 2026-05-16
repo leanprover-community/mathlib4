@@ -89,22 +89,18 @@ lemma ConvexOn.isBoundedUnder_abs (hf : ConvexOn ℝ C f) {x₀ : E} (hC : C ∈
     (𝓝 x₀).IsBoundedUnder (· ≤ ·) |f| ↔ (𝓝 x₀).IsBoundedUnder (· ≤ ·) f := by
   refine ⟨fun h ↦ h.mono_le <| .of_forall fun x ↦ le_abs_self _, ?_⟩
   rintro ⟨r, hr⟩
-  refine ⟨|r| + 2 * |f x₀|, ?_⟩
-  have : (𝓝 x₀).Tendsto (fun y => 2 • x₀ - y) (𝓝 x₀) :=
+  have hflip : (𝓝 x₀).Tendsto (fun y => 2 • x₀ - y) (𝓝 x₀) :=
     tendsto_nhds_nhds.2 (⟨·, ·, by simp [two_nsmul, dist_comm]⟩)
-  simp only [Filter.eventually_map, Pi.abs_apply, abs_le'] at hr ⊢
-  filter_upwards [this.eventually_mem hC, hC, hr, this.eventually hr] with y hx hx' hfr hfr'
-  refine ⟨hfr.trans <| (le_abs_self _).trans <| by simp, ?_⟩
-  rw [← sub_le_iff_le_add, neg_sub_comm, sub_le_iff_le_add', ← abs_two, ← abs_mul]
-  calc
-    -|2 * f x₀| ≤ 2 * f x₀ := neg_abs_le _
-    _ ≤ f y + f (2 • x₀ - y) := by
-      have := hf.2 hx' hx (by positivity) (by positivity) (add_halves _)
-      simp only [one_div, ← Nat.cast_smul_eq_nsmul ℝ, Nat.cast_ofNat, smul_sub, ne_eq,
-        OfNat.ofNat_ne_zero, not_false_eq_true, inv_smul_smul₀, add_sub_cancel, smul_eq_mul] at this
-      cancel_denoms at this
-      rwa [← Nat.cast_two, Nat.cast_smul_eq_nsmul] at this
-    _ ≤ f y + |r| := by gcongr; exact hfr'.trans (le_abs_self _)
+  have hge : (𝓝 x₀).IsBoundedUnder (· ≥ ·) f := by
+    refine Filter.isBoundedUnder_of_eventually_ge (a := 2 * f x₀ - |r|) ?_
+    filter_upwards [hflip.eventually_mem hC, hC, hr, hflip.eventually hr] with y hy hy' hfy hfy'
+    have hmid := hf.2 hy' hy (show 0 ≤ (1 / 2 : ℝ) by positivity)
+      (show 0 ≤ (1 / 2 : ℝ) by positivity) (add_halves (1 : ℝ))
+    rw [show (1 / 2 : ℝ) • y + (1 / 2 : ℝ) • (2 • x₀ - y) = x₀ by module] at hmid
+    simp [smul_eq_mul, one_div] at hmid
+    nlinarith [hmid, hfy'.trans (le_abs_self r)]
+  simpa [Pi.abs_def] using
+    (Filter.isBoundedUnder_le_abs (f := 𝓝 x₀) (u := f)).2 ⟨⟨r, hr⟩, hge⟩
 
 lemma ConcaveOn.isBoundedUnder_abs (hf : ConcaveOn ℝ C f) {x₀ : E} (hC : C ∈ 𝓝 x₀) :
     (𝓝 x₀).IsBoundedUnder (· ≤ ·) |f| ↔ (𝓝 x₀).IsBoundedUnder (· ≥ ·) f := by

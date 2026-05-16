@@ -151,10 +151,8 @@ def seminormFromConst : RingSeminorm R where
   mul_le' x y := by
     have hlim : Tendsto (fun n ↦ seminormFromConst_seq c f (x * y) (2 * n)) atTop
         (𝓝 (seminormFromConst' c f (x * y))) := by
-      apply (tendsto_seminormFromConst_seq_atTop hf1 hc hpm (x * y)).comp
-        (tendsto_atTop_atTop_of_monotone (fun _ _ hnm ↦ by
-          simp only [mul_le_mul_iff_right₀, Nat.succ_pos', hnm]) _)
-      · rintro n; use n; lia
+      exact (tendsto_seminormFromConst_seq_atTop hf1 hc hpm (x * y)).comp
+        (tendsto_id.const_mul_atTop' zero_lt_two)
     refine le_of_tendsto_of_tendsto' hlim ((tendsto_seminormFromConst_seq_atTop hf1 hc hpm x).mul
       (tendsto_seminormFromConst_seq_atTop hf1 hc hpm y)) (fun n ↦ ?_)
     simp only [seminormFromConst_seq]
@@ -186,9 +184,8 @@ theorem seminormFromConst_isPowMul : IsPowMul (seminormFromConst' c f) := fun x 
   simp only [seminormFromConst']
   have hlim : Tendsto (fun n ↦ seminormFromConst_seq c f (x ^ m) (m * n)) atTop
       (𝓝 (seminormFromConst' c f (x ^ m))) := by
-    apply (tendsto_seminormFromConst_seq_atTop hf1 hc hpm (x ^ m)).comp
-      (tendsto_atTop_atTop_of_monotone (fun _ _ hnk ↦ mul_le_mul_right hnk m) _)
-    rintro n; use n; exact le_mul_of_one_le_left' hm
+    exact (tendsto_seminormFromConst_seq_atTop hf1 hc hpm (x ^ m)).comp
+      (tendsto_id.const_mul_atTop' (lt_of_lt_of_le zero_lt_one hm))
   apply tendsto_nhds_unique hlim
   convert (tendsto_seminormFromConst_seq_atTop hf1 hc hpm x).pow m using 1
   ext n
@@ -248,9 +245,7 @@ theorem seminormFromConst_const_mul (x : R) :
       seminormFromConst' c f c * seminormFromConst' c f x := by
   have hlim : Tendsto (fun n ↦ seminormFromConst_seq c f x (n + 1)) atTop
       (𝓝 (seminormFromConst' c f x)) := by
-    apply (tendsto_seminormFromConst_seq_atTop hf1 hc hpm x).comp
-      (tendsto_atTop_atTop_of_monotone add_left_mono _)
-    rintro n; use n; lia
+    exact (tendsto_seminormFromConst_seq_atTop hf1 hc hpm x).comp (tendsto_add_atTop_nat 1)
   rw [seminormFromConst_apply_c hf1 hc hpm]
   apply tendsto_nhds_unique (tendsto_seminormFromConst_seq_atTop hf1 hc hpm (c * x))
   have hterm : seminormFromConst_seq c f (c * x) =

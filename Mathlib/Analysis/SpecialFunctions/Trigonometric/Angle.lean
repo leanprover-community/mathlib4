@@ -545,12 +545,7 @@ theorem abs_toReal_coe_eq_self_iff {θ : ℝ} : |(θ : Angle).toReal| = θ ↔ 0
       abs_eq_self.2 h.1⟩
 
 theorem abs_toReal_neg_coe_eq_self_iff {θ : ℝ} : |(-θ : Angle).toReal| = θ ↔ 0 ≤ θ ∧ θ ≤ π := by
-  refine ⟨fun h => h ▸ ⟨abs_nonneg _, abs_toReal_le_pi _⟩, fun h => ?_⟩
-  by_cases hnegpi : θ = π; · simp [hnegpi, Real.pi_pos.le]
-  rw [← coe_neg,
-    toReal_coe_eq_self_iff.2
-      ⟨neg_lt_neg (lt_of_le_of_ne h.2 hnegpi), (neg_nonpos.2 h.1).trans Real.pi_pos.le⟩,
-    abs_neg, abs_eq_self.2 h.1]
+  simpa [coe_neg] using (abs_toReal_coe_eq_self_iff (θ := θ))
 
 theorem abs_toReal_eq_pi_div_two_iff {θ : Angle} :
     |θ.toReal| = π / 2 ↔ θ = (π / 2 : ℝ) ∨ θ = (-π / 2 : ℝ) := by
@@ -862,15 +857,12 @@ theorem two_zsmul_eq_iff_eq {a b : Real.Angle} (ha : a.sign ≠ 0) (h : a.sign =
     (2 : ℤ) • a = (2 : ℤ) • b ↔ a = b := by
   rw [Real.Angle.two_zsmul_eq_iff]
   constructor
-  · intro h
-    rcases h with h1 | h2
-    · exact h1
-    · have : a.sign = (b + π).sign := by aesop
-      rw [Real.Angle.sign_add_pi] at this
-      have := congr_arg (· = b.sign) this
-      aesop
-  · intro h
-    aesop
+  · intro h'
+    have hb : b.sign ≠ 0 := by simpa [h] using ha
+    exact h'.resolve_right <| by
+      simpa [sub_eq_iff_eq_add, add_comm] using sub_ne_pi_of_sign_eq_of_sign_ne_zero a b h hb
+  · rintro rfl
+    exact Or.inl rfl
 
 lemma abs_toReal_add_abs_toReal_eq_pi_of_two_nsmul_add_eq_zero_of_sign_eq {θ ψ : Angle}
     (h : (2 : ℕ) • (θ + ψ) = 0) (hs : θ.sign = ψ.sign) (h0 : θ.sign ≠ 0) :

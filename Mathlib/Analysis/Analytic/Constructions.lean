@@ -927,11 +927,8 @@ lemma AnalyticWithinAt.zpow {f : E → 𝕝} {z : E} {s : Set E} {n : ℤ}
 @[to_fun]
 lemma AnalyticAt.zpow {f : E → 𝕝} {z : E} {n : ℤ} (h₁f : AnalyticAt 𝕜 f z) (h₂f : f z ≠ 0) :
     AnalyticAt 𝕜 (f ^ n) z := by
-  by_cases hn : 0 ≤ n
-  · exact zpow_nonneg h₁f hn
-  · rw [(Int.eq_neg_comm.mp rfl : n = -(-n))]
-    conv => arg 2; intro x; rw [zpow_neg]
-    exact (h₁f.zpow_nonneg (by linarith)).inv (zpow_ne_zero (-n) h₂f)
+  rw [← analyticWithinAt_univ] at h₁f ⊢
+  exact h₁f.zpow h₂f
 
 /-- ZPowers of analytic functions (into a normed field over `𝕜`) are analytic away from the zeros.
 -/

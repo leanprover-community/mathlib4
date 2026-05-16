@@ -5,9 +5,11 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
 public import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
 public import Mathlib.Analysis.SumOverResidueClass
+
+import Mathlib.Analysis.Asymptotics.SpecificAsymptotics
+import Mathlib.Analysis.Normed.Module.FiniteDimension
 
 /-!
 # Convergence of `p`-series
@@ -444,32 +446,17 @@ section shifted
 
 open Filter Asymptotics Topology
 
--- see https://github.com/leanprover-community/mathlib4/issues/29041
-set_option linter.unusedSimpArgs false in
 lemma Real.summable_one_div_nat_add_rpow (a : ℝ) (s : ℝ) :
     Summable (fun n : ℕ ↦ 1 / |n + a| ^ s) ↔ 1 < s := by
-  suffices ∀ (b c : ℝ), Summable (fun n : ℕ ↦ 1 / |n + b| ^ s) →
-      Summable (fun n : ℕ ↦ 1 / |n + c| ^ s) by
-    simp_rw [← summable_one_div_nat_rpow, Iff.intro (this a 0) (this 0 a), add_zero, Nat.abs_cast]
-  refine fun b c h ↦ summable_of_isBigO_nat h (isBigO_of_div_tendsto_nhds ?_ 1 ?_)
-  · filter_upwards [eventually_gt_atTop (Nat.ceil |b|)] with n hn hx
-    have hna : 0 < n + b := by linarith [lt_of_abs_lt ((abs_neg b).symm ▸ Nat.lt_of_ceil_lt hn)]
-    exfalso
-    revert hx
-    positivity
-  · simp_rw [Pi.div_def, div_div, mul_one_div, one_div_div]
-    refine (?_ : Tendsto (fun x : ℝ ↦ |x + b| ^ s / |x + c| ^ s) atTop (𝓝 1)).comp
-      tendsto_natCast_atTop_atTop
-    have : Tendsto (fun x : ℝ ↦ 1 + (b - c) / x) atTop (𝓝 1) := by
-      simpa using tendsto_const_nhds.add ((tendsto_const_nhds (X := ℝ)).div_atTop tendsto_id)
-    have : Tendsto (fun x ↦ (x + b) / (x + c)) atTop (𝓝 1) := by
-      refine (this.comp (tendsto_id.atTop_add (tendsto_const_nhds (x := c)))).congr' ?_
-      filter_upwards [eventually_gt_atTop (-c)] with x hx
-      simp [field, (by linarith : 0 < x + c).ne']
-    apply (one_rpow s ▸ (continuousAt_rpow_const _ s (by simp)).tendsto.comp this).congr'
-    filter_upwards [eventually_gt_atTop (-b), eventually_gt_atTop (-c)] with x hb hc
-    rw [neg_lt_iff_pos_add] at hb hc
-    rw [Function.comp_apply, div_rpow hb.le hc.le, abs_of_pos hb, abs_of_pos hc]
+  have hnorm : Tendsto (fun n : ℕ ↦ ‖(n : ℝ)‖) atTop atTop :=
+    Tendsto.congr' (by simp) tendsto_natCast_atTop_atTop
+  have h_abs : (fun n : ℕ ↦ |n + a|) ~[atTop] (·) := by
+    apply (IsEquivalent.add_const_of_norm_tendsto_atTop IsEquivalent.refl hnorm).congr_left
+    · filter_upwards [eventually_gt_atTop (Nat.ceil |a|)] with _ hn
+      rw [abs_of_pos]
+      linarith [lt_of_abs_lt ((abs_neg a).symm ▸ Nat.lt_of_ceil_lt hn)]
+  rw [← summable_one_div_nat_rpow, Asymptotics.IsEquivalent.summable_iff_nat]
+  simpa [one_div] using (IsEquivalent.rpow (fun n ↦ by positivity) h_abs).inv
 
 lemma Real.summable_one_div_int_add_rpow (a : ℝ) (s : ℝ) :
     Summable (fun n : ℤ ↦ 1 / |n + a| ^ s) ↔ 1 < s := by
