@@ -155,14 +155,18 @@ lemma toRingEquiv_toRingHom : ((e : A₁ ≃+* A₂) : A₁ →+* A₂) = e :=
   rfl
 
 @[simp]
-theorem coe_ringEquiv : ((e : A₁ ≃+* A₂) : A₁ → A₂) = e :=
+theorem coe_toRingEquiv : ((e : A₁ ≃+* A₂) : A₁ → A₂) = e :=
   rfl
 
-theorem coe_ringEquiv' : (e.toRingEquiv : A₁ → A₂) = e :=
-  rfl
 
-theorem coe_ringEquiv_injective : Function.Injective ((↑) : (A₁ ≃ₐ[R] A₂) → A₁ ≃+* A₂) :=
+@[deprecated (since := "2026-05-05")] alias coe_ringEquiv := coe_toRingEquiv
+@[deprecated (since := "2026-05-05")] alias coe_ringEquiv' := coe_toRingEquiv
+
+theorem coe_toRingEquiv_injective : Function.Injective ((↑) : (A₁ ≃ₐ[R] A₂) → A₁ ≃+* A₂) :=
   fun _ _ h => ext <| RingEquiv.congr_fun h
+
+@[deprecated coe_toRingEquiv_injective (since := "2026-05-05")]
+  alias coe_ringEquiv_injective := coe_toRingEquiv_injective
 
 /-- Interpret an algebra equivalence as an algebra homomorphism.
 
@@ -184,9 +188,16 @@ theorem toAlgHom_apply (x : A₁) : e.toAlgHom x = e x :=
   rfl
 
 @[simp, norm_cast]
+theorem coe_toAlgHom :  DFunLike.coe e.toAlgHom = e := rfl
+
+@[deprecated AlgEquiv.coe_toAlgHom (since := "2026-05-05")]
 theorem coe_algHom : DFunLike.coe e.toAlgHom = DFunLike.coe e :=
   rfl
 
+theorem coe_toAlgHom_injective : Function.Injective ((↑) : (A₁ ≃ₐ[R] A₂) → A₁ →ₐ[R] A₂) :=
+  fun _ _ h => ext <| AlgHom.congr_fun h
+
+@[deprecated AlgEquiv.coe_toAlgHom_injective (since := "2026-05-05")]
 theorem coe_algHom_injective : Function.Injective ((↑) : (A₁ ≃ₐ[R] A₂) → A₁ →ₐ[R] A₂) :=
   fun _ _ h => ext <| AlgHom.congr_fun h
 
@@ -195,8 +206,10 @@ lemma toAlgHom_toRingHom : ((e : A₁ →ₐ[R] A₂) : A₁ →+* A₂) = e :=
   rfl
 
 /-- The two paths coercion can take to a `RingHom` are equivalent -/
-theorem coe_ringHom_commutes : ((e : A₁ →ₐ[R] A₂) : A₁ →+* A₂) = ((e : A₁ ≃+* A₂) : A₁ →+* A₂) :=
+theorem coe_toRingHom_commutes : ((e : A₁ →ₐ[R] A₂) : A₁ →+* A₂) = ((e : A₁ ≃+* A₂) : A₁ →+* A₂) :=
   rfl
+
+@[deprecated (since := "2026-05-05")] alias coe_ringHom_commutes := coe_toRingHom_commutes
 
 @[simp]
 theorem commutes : ∀ r : R, e (algebraMap R A₁ r) = algebraMap R A₂ r :=
@@ -470,11 +483,21 @@ def ofAlgHom (f : A₁ →ₐ[R] A₂) (g : A₂ →ₐ[R] A₁) (h₁ : f.comp 
     left_inv := AlgHom.ext_iff.1 h₂
     right_inv := AlgHom.ext_iff.1 h₁ }
 
+theorem coe_toAlgHom_ofAlgHom (f : A₁ →ₐ[R] A₂) (g : A₂ →ₐ[R] A₁) (h₁ h₂) :
+    ↑(ofAlgHom f g h₁ h₂) = f :=
+  rfl
+
+@[deprecated AlgEquiv.coe_toAlgHom_ofAlgHom (since := "2026-05-05")]
 theorem coe_algHom_ofAlgHom (f : A₁ →ₐ[R] A₂) (g : A₂ →ₐ[R] A₁) (h₁ h₂) :
     ↑(ofAlgHom f g h₁ h₂) = f :=
   rfl
 
 @[simp]
+theorem ofAlgHom_coe_toAlgHom (f : A₁ ≃ₐ[R] A₂) (g : A₂ →ₐ[R] A₁) (h₁ h₂) :
+    ofAlgHom (↑f) g h₁ h₂ = f :=
+  ext fun _ => rfl
+
+@[deprecated AlgEquiv.ofAlgHom_coe_toAlgHom (since := "2026-05-05")]
 theorem ofAlgHom_coe_algHom (f : A₁ ≃ₐ[R] A₂) (g : A₂ →ₐ[R] A₁) (h₁ h₂) :
     ofAlgHom (↑f) g h₁ h₂ = f :=
   ext fun _ => rfl
@@ -765,7 +788,7 @@ def algHomUnitsEquiv (R S : Type*) [CommSemiring R] [Semiring S] [Algebra R S] :
 
 /-- See also `Finite.algHom` -/
 instance _root_.Finite.algEquiv [Finite (A₁ →ₐ[R] A₂)] : Finite (A₁ ≃ₐ[R] A₂) :=
-  Finite.of_injective _ AlgEquiv.coe_algHom_injective
+  Finite.of_injective _ AlgEquiv.coe_toAlgHom_injective
 
 end Semiring
 

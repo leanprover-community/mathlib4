@@ -1096,7 +1096,7 @@ instance subsingleton_ringHom [Semiring R] : Subsingleton (ZMod n →+* R) :=
 
 instance subsingleton_ringEquiv [Semiring R] : Subsingleton (ZMod n ≃+* R) :=
   ⟨fun f g => by
-    rw [RingEquiv.coe_ringHom_inj_iff]
+    rw [RingEquiv.coe_toRingHom_inj_iff]
     apply RingHom.ext_zmod _ _⟩
 
 @[simp]

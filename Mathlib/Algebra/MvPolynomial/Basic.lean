@@ -428,7 +428,7 @@ theorem algHom_ext' {A B : Type*} [CommSemiring A] [CommSemiring B] [Algebra R A
       f.comp (IsScalarTower.toAlgHom R A (MvPolynomial σ A)) =
         g.comp (IsScalarTower.toAlgHom R A (MvPolynomial σ A)))
     (h₂ : ∀ i, f (X i) = g (X i)) : f = g :=
-  AlgHom.coe_ringHom_injective (MvPolynomial.ringHom_ext' (congr_arg AlgHom.toRingHom h₁) h₂)
+  AlgHom.coe_toRingHom_injective (MvPolynomial.ringHom_ext' (congr_arg AlgHom.toRingHom h₁) h₂)
 
 /-- See note [partially-applied ext lemmas].
 

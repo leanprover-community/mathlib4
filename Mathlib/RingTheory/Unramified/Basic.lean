@@ -304,7 +304,7 @@ include M
 theorem of_isLocalization [IsLocalization M Rₘ] : FormallyUnramified R Rₘ := by
   rw [iff_comp_injective]
   intro Q _ _ I _ f₁ f₂ _
-  apply AlgHom.coe_ringHom_injective
+  apply AlgHom.coe_toRingHom_injective
   refine IsLocalization.ringHom_ext M ?_
   ext
   simp

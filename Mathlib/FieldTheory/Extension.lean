@@ -59,7 +59,7 @@ noncomputable instance : OrderBot (Lifts F E K) where
   bot := ⟨⊥, (Algebra.ofId F K).comp (botEquiv F E)⟩
   bot_le L := ⟨bot_le, fun x ↦ by
     obtain ⟨x, rfl⟩ := (botEquiv F E).symm.surjective x
-    simp_rw [AlgHom.comp_apply, AlgEquiv.coe_algHom, AlgEquiv.apply_symm_apply]
+    simp_rw [AlgHom.comp_apply, AlgEquiv.coe_toAlgHom, AlgEquiv.apply_symm_apply]
     exact L.emb.commutes x⟩
 
 noncomputable instance : Inhabited (Lifts F E K) :=
@@ -191,7 +191,7 @@ theorem nonempty_algHom_of_exist_lifts_finset [alg : Algebra.IsAlgebraic F E]
   let L (σ : Λ) : Lifts F E K := ⟨ϕ.carrier⟮α⟯.restrictScalars F, σ.restrictScalars F⟩
   have hL (σ : Λ) : ϕ < L σ := lt_iff.mpr
     ⟨by simpa only [L, restrictScalars_adjoin_eq_sup, left_lt_sup, adjoin_simple_le_iff],
-      AlgHom.coe_ringHom_injective σ.comp_algebraMap⟩
+      AlgHom.coe_toRingHom_injective σ.comp_algebraMap⟩
   have ⟨(ϕ_ext : ϕ.IsExtendible), ϕ_max⟩ := maximal_iff_forall_gt.mp hϕ
   simp_rw [Set.mem_setOf, IsExtendible] at ϕ_max; push Not at ϕ_max
   choose S hS using fun σ : Λ ↦ ϕ_max (hL σ)

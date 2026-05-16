@@ -490,11 +490,11 @@ theorem LinearEquiv.coe_lift_symm (g : M ≃ₗ[R] N) :
     (mapEquiv g).symm = map R g.symm.toLinearMap := rfl
 
 theorem mapEquiv_refl : mapEquiv (LinearEquiv.refl R M) = AlgEquiv.refl :=
-  AlgEquiv.coe_algHom_injective map_id
+  AlgEquiv.coe_toAlgHom_injective map_id
 
 theorem mapEquiv_trans (g : M ≃ₗ[R] N) (h : N ≃ₗ[R] P) :
     (mapEquiv g).trans (mapEquiv h) = mapEquiv (g.trans h) :=
-  AlgEquiv.coe_algHom_injective (map_comp _ _).symm
+  AlgEquiv.coe_toAlgHom_injective (map_comp _ _).symm
 
 end IsScalarTower
 

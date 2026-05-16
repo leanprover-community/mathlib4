@@ -65,14 +65,14 @@ def residueFieldMapCAlgEquiv (hJ : J = I.map C) :
     refine ((IsUnit.mk0 (algebraMap R I.ResidueField s) (by simpa)).map C).mul_right_injective ?_
     simp only [← algebraMap_eq, ← Algebra.smul_def, algebraMap_smul, ← hr]
     simpa [Polynomial.ext_iff, Ideal.mem_map_C_iff] using hJ.le hx
-  · apply AlgHom.coe_ringHom_injective
+  · apply AlgHom.coe_toRingHom_injective
     apply IsFractionRing.injective_comp_algebraMap (A := I.ResidueField[X])
     dsimp [RatFunc.liftAlgHom]
-    simp only [AlgHom.comp_toRingHom, AlgHom.coe_ringHom_mk, RingHom.comp_assoc,
+    simp only [AlgHom.comp_toRingHom, AlgHom.coe_toRingHom_mk, RingHom.comp_assoc,
       RatFunc.liftRingHom_comp_algebraMap, RingHomCompTriple.comp_eq, f]
     ext <;> simp [← IsScalarTower.algebraMap_apply,
       IsScalarTower.algebraMap_apply R R[X] J.ResidueField]
-  · apply AlgHom.coe_ringHom_injective
+  · apply AlgHom.coe_toRingHom_injective
     ext
     · simp [f, RatFunc.liftAlgHom, ← IsScalarTower.algebraMap_apply]; rfl
     · simp [f, RatFunc.liftAlgHom]
