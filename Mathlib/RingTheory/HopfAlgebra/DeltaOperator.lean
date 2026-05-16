@@ -162,11 +162,9 @@ theorem forwardDiff_apply (a : R) (p : R[X]) :
     forwardDiff a p = taylor a p - p := by
   simp [forwardDiff]
 
-@[simp]
 theorem forwardDiff_X (a : R) : forwardDiff a (X : R[X]) = C a := by
   simp [forwardDiff, taylor_X]
 
-@[simp]
 theorem forwardDiff_C (a : R) (r : R) : forwardDiff a (C r) = 0 := by
   simp [forwardDiff, taylor_C]
 
