@@ -269,23 +269,33 @@ partial def derive (expensive := false) (e : Expr) : MetaM Simp.Result := do
 open Parser.Tactic
 
 /--
-The tactic `reduce_mod_char` looks for numeric expressions in characteristic `p`
-and reduces these to lie between `0` and `p`.
+`reduce_mod_char` rewrites the main goal by looking for numeric subexpressions in characteristic `p`
+and reducing these to lie between `0` and `p`.
 
-For example:
+The expressions are found by pattern matching on their inferred type, unless expensive mode is
+enabled by writing `reduce_mod_char!`. The following types are inferred to have characteristic `p`:
+* `ZMod p`,
+* `R[X]` where `R` is recursively inferred to have characteristic `p`,
+* `R` if expensive mode is enabled and there is a `CharP R n` hypothesis in the local context.
+
+`reduce_mod_char` supports the numeric expressions that `norm_num` does, and in addition negation
+of arbitrary expressions (turning it into multiplication by `p - 1`) and similarly subtraction.
+It is also more efficient in computing exponents since it reduces the intermediate results.
+
+After the reduction step succeeds, `simp only [reduce_mod_char]` is used for cleaning up the
+resulting expression. Tag a lemma `@[reduce_mod_char]` to add it to the cleaning up step.
+
+* `reduce_mod_char at l₁ ... lₙ` rewrites at location(s) `l₁`, ..., `lₙ`.
+* `reduce_mod_char!` also reduces subexpressions if they have type `R` and there is a `CharP R n`
+hypothesis in the context. (Limitations of the typeclass system mean the tactic can't search for a
+`CharP R n` instance if `n` is not yet known; use
+`have : CharP R n := inferInstance; reduce_mod_char!` as a workaround.)
+
+Examples:
 ```
 example : (5 : ZMod 4) = 1 := by reduce_mod_char
 example : (X ^ 2 - 3 * X + 4 : (ZMod 4)[X]) = X ^ 2 + X := by reduce_mod_char
 ```
-
-It also handles negation, turning it into multiplication by `p - 1`,
-and similarly subtraction.
-
-This tactic uses the type of the subexpression to figure out if it is indeed of positive
-characteristic, for improved performance compared to trying to synthesise a `CharP` instance.
-The variant `reduce_mod_char!` also tries to use `CharP R n` hypotheses in the context.
-(Limitations of the typeclass system mean the tactic can't search for a `CharP R n` instance if
-`n` is not yet known; use `have : CharP R n := inferInstance; reduce_mod_char!` as a workaround.)
 -/
 syntax (name := reduce_mod_char) "reduce_mod_char" (location)? : tactic
 @[tactic_alt reduce_mod_char]
