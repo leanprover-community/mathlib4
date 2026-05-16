@@ -812,6 +812,19 @@ lemma ext_getVert {u v} {p q : G.Walk u v} (h : ∀ k, p.getVert k = q.getVert k
   by_contra!
   exact (q.adj_getVert_succ this).ne (by simp [← h, getVert_of_length_le])
 
+open scoped List in
+theorem support_tail_perm_support_dropLast (p : G.Walk u u) :
+    p.tail.support ~ p.dropLast.support := by
+  cases p with | nil => rfl | cons h p
+  grw [← List.perm_cons u, List.perm_comm, ← List.perm_append_singleton,
+    cons_support_tail not_nil_cons, support_dropLast_concat not_nil_cons]
+
+open scoped List in
+theorem tail_support_perm_dropLast_support (p : G.Walk u u) :
+    p.support.tail ~ p.support.dropLast := by
+  cases p with | nil => rfl | cons h p
+  simpa using support_tail_perm_support_dropLast <| p.cons h
+
 end Walk
 
 end SimpleGraph

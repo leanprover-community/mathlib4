@@ -315,6 +315,10 @@ theorem cons_isCycle_iff {u v : V} (p : G.Walk v u) (h : G.Adj u v) :
   have : p.support.Nodup → p.edges.Nodup := edges_nodup_of_support_nodup
   tauto
 
+theorem IsCycle.nodup_dropLast_support {p : G.Walk u u} (h : p.IsCycle) :
+    p.support.dropLast.Nodup :=
+  p.tail_support_perm_dropLast_support.nodup_iff.mp h.support_nodup
+
 protected lemma IsCycle.reverse {p : G.Walk u u} (h : p.IsCycle) : p.reverse.IsCycle := by
   simp only [Walk.isCycle_def, nodup_tail_support_reverse] at h ⊢
   exact ⟨h.1.reverse, fun h' ↦ h.2.1 (by simp_all [← Walk.length_eq_zero_iff]), h.2.2⟩
