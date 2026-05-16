@@ -5504,6 +5504,7 @@ public import Mathlib.MeasureTheory.Measure.QuasiMeasurePreserving
 public import Mathlib.MeasureTheory.Measure.Real
 public import Mathlib.MeasureTheory.Measure.Regular
 public import Mathlib.MeasureTheory.Measure.RegularityCompacts
+public import Mathlib.MeasureTheory.Measure.ResolventTransform
 public import Mathlib.MeasureTheory.Measure.Restrict
 public import Mathlib.MeasureTheory.Measure.SeparableMeasure
 public import Mathlib.MeasureTheory.Measure.Stieltjes
