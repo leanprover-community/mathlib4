@@ -638,4 +638,20 @@ end CommRing
 
 end rescale
 
+section
+
+variable {x : ℕ → MvPowerSeries σ R}
+  [UniformSpace R] [DiscreteUniformity R] [UniformSpace S] [DiscreteUniformity S]
+
+lemma tsum_subst (hx : Summable x) (ha : HasSubst a) :
+    (∑' i, x i).subst a = ∑' i, ((x i).subst a) := by
+  rw [← coe_substAlgHom ha, substAlgHom_eq_aeval ha, hx.map_tsum _ <| continuous_aeval _]
+
+lemma summable_of_subst (hx : Summable x) (ha : HasSubst a) :
+    Summable fun i => (x i).subst a := by
+  rw [← coe_substAlgHom ha, substAlgHom_eq_aeval ha]
+  exact hx.map _ <| continuous_aeval ha.hasEval
+
+end
+
 end MvPowerSeries
