@@ -316,6 +316,15 @@ lemma isMulTorsionFree_iff_torsion_eq_bot : IsMulTorsionFree G ↔ CommGroup.tor
   simp [not_imp_not, CommGroup.mem_torsion]
 
 @[to_additive]
+lemma _root_.MulEquiv.comap_torsion (e : G ≃* H) : (torsion H).comap e = torsion G := by
+  ext x
+  exact e.injective.isOfFinOrder_iff
+
+@[to_additive]
+lemma _root_.MulEquiv.map_torsion (e : G ≃* H) : (torsion G).map e = torsion H := by
+  rw [Subgroup.map_equiv_eq_comap_symm, e.symm.comap_torsion]
+
+@[to_additive]
 lemma torsion_prod : torsion (G × H) = (torsion G).prod (torsion H) := by
   simp [Subgroup.ext_iff, Subgroup.mem_prod, mem_torsion, IsOfFinOrder.prod_iff]
 
