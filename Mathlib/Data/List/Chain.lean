@@ -444,6 +444,13 @@ lemma IsChain.iterate_eq_of_apply_eq {α : Type*} {f : α → α} {l : List α}
 theorem isChain_replicate_of_rel (n : ℕ) {a : α} (h : r a a) : IsChain r (replicate n a) := by
   induction n using Nat.twoStepInduction <;> grind
 
+/-- If `r a (f a)` holds for every `a`, then `List.iterate f a n` is a chain under `r`. -/
+protected theorem IsChain.iterate {f : α → α} (a : α) (h : ∀ a, r a (f a)) :
+    ∀ n, IsChain r (iterate f a n)
+  | 0 => .nil
+  | 1 => .singleton _
+  | n + 2 => .cons_cons (h a) (IsChain.iterate (f a) h (n + 1))
+
 theorem isChain_eq_iff_eq_replicate {l : List α} :
     IsChain (· = ·) l ↔ ∀ a ∈ l.head?, l = replicate l.length a := by
   induction l using twoStepInduction with

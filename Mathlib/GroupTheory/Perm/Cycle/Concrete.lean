@@ -185,6 +185,30 @@ end Cycle
 
 namespace Equiv.Perm
 
+/-- For a cycle `f` on a finset `s` of cardinality not equal to `2` and `a ∈ s`, the map
+`k ↦ s((f ^ k) a, (f ^ (k + 1)) a)` is injective on `[0, s.card)`. -/
+theorem IsCycleOn.injOn_sym2_pow_apply {f : Perm α} {a : α} {s : Finset α}
+    (hf : f.IsCycleOn s) (ha : a ∈ s) (hs : s.card ≠ 2) :
+    Set.InjOn (fun k ↦ s((f ^ k) a, (f ^ (k + 1)) a)) (Set.Iio s.card) := by
+  intro j hj k hk heq
+  rw [Sym2.eq_iff] at heq
+  obtain ⟨h1, _⟩ | ⟨h1, h2⟩ := heq
+  · exact hf.injOn_pow_apply ha hj hk h1
+  -- Swapped case: `j ≡ k + 1` and `j + 1 ≡ k` give `s.card ∣ 2`, forcing `s.card = 1`.
+  rw [hf.pow_apply_eq_pow_apply ha] at h1 h2
+  have : s.card ≤ 2 := Nat.le_of_dvd (by lia) <| by
+    simpa using (Nat.modEq_iff_dvd' (Nat.le_add_right k 2)).mp
+      ((h1.symm.add_right 1).trans h2).symm
+  grind
+
+/-- For a cycle `f` on a finset `s` of cardinality not equal to `2` and `a ∈ s`, the unordered
+pair `s((f ^ k) a, (f ^ (k + 1)) a)` differs from `s(a, f a)` when `k ≠ 0` and `k < s.card`. -/
+theorem IsCycleOn.sym2_pow_apply_ne {f : Perm α} {a : α} {s : Finset α}
+    (hf : f.IsCycleOn s) (ha : a ∈ s)
+    {k : ℕ} (hk1 : k ≠ 0) (hk2 : k < s.card) (hs : s.card ≠ 2) :
+    s((f ^ k) a, (f ^ (k + 1)) a) ≠ s(a, f a) := fun heq ↦ hk1 <|
+  hf.injOn_sym2_pow_apply ha hs hk2 (Finset.card_pos.mpr ⟨a, ha⟩) (by simpa using heq)
+
 section Fintype
 
 variable [Fintype α] [DecidableEq α] (p : Equiv.Perm α) (x : α)
@@ -203,6 +227,11 @@ theorem toList_eq_nil_iff {p : Perm α} {x} : toList p x = [] ↔ x ∉ p.suppor
 
 @[simp]
 theorem length_toList : length (toList p x) = (cycleOf p x).support.card := by simp [toList]
+
+/-- `toList` expressed as a map of powers: `toList p x = [x, p x, p² x, …]`. -/
+theorem toList_eq_range_map_pow :
+    toList p x = (List.range (cycleOf p x).support.card).map fun i => (p ^ i) x := by
+  simp [toList, ← List.range_map_iterate, iterate_eq_pow]
 
 theorem toList_ne_singleton (y : α) : toList p x ≠ [y] := by
   intro H

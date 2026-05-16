@@ -207,6 +207,17 @@ lemma isHamiltonianCycle_iff_isCycle_and_length_eq [Fintype α] :
   refine isHamiltonian_iff_isPath_and_length_eq.mpr ⟨h₁.isPath_tail, ?_⟩
   grind [length_tail_add_one, IsCycle.not_nil]
 
+theorem isHamiltonian_copy {u v u' v' : α} (p : G.Walk u v) (hu : u = u') (hv : v = v') :
+    (p.copy hu hv).IsHamiltonian ↔ p.IsHamiltonian := by
+  simp [IsHamiltonian, support_copy]
+
+/-- A Hamiltonian path closed into a cycle by an edge outside its support is a Hamiltonian cycle,
+and conversely. -/
+theorem isHamiltonianCycle_cons_iff {x y : α} (h : G.Adj x y) (p : G.Walk y x) :
+    (p.cons h).IsHamiltonianCycle ↔ p.IsHamiltonian ∧ s(x, y) ∉ p.edges := by
+  rw [isHamiltonianCycle_isCycle_and_isHamiltonian_tail, cons_isCycle_iff, tail_cons]
+  grind [IsHamiltonian.isPath, isHamiltonian_copy, getVert_cons_succ]
+
 @[simp]
 lemma isHamiltonianCycle_rotate (hv : v ∈ p.support) :
     (p.rotate v hv).IsHamiltonianCycle ↔ p.IsHamiltonianCycle := by
