@@ -144,7 +144,7 @@ private theorem herglotzLogIntegrand_circleAverage_tendsto {ρ w : ℂ} {R : ℝ
     simpa [sub_eq_zero] using
       (countable_singleton ρ).preimage_circleMap 0 (hR.ne') |>.measure_zero _
   · -- IntervalIntegrable bound volume 0 (2 * π)
-    apply (IntervalIntegrable.add (by simp) (by continuity)).add ?_ |>.const_mul
+    apply (IntervalIntegrable.add (by simp) (by simp)).add ?_ |>.const_mul
     exact .abs <| MeromorphicOn.circleIntegrable_log_norm (f := fun z ↦ z - ρ) (by intro; fun_prop)
   · -- Pointwise convergence outside a null set
     have h_measure_zero : volume {θ : ℝ | circleMap 0 R θ = w ∨ circleMap 0 R θ = ρ} = 0 :=
@@ -183,7 +183,7 @@ theorem circleAverage_re_herglotzRieszKernel_mul_log₀ {w ρ : ℂ} {R : ℝ} (
     apply InnerProductSpace.HarmonicContOnCl.circleAverage_re_herglotzRieszKernel_smul
     · refine ⟨fun z hz ↦ ?_, fun x hx ↦ ?_⟩
       · exact AnalyticAt.harmonicAt_log_norm (by fun_prop) (by grind [mem_ball, dist_zero_right])
-      · suffices ‖x - ρ‖ ≠ 0 by fun_prop (disch := assumption)
+      · suffices ‖x - ρ‖ ≠ 0 by fun_prop
         suffices x ≠ ρ by simpa [sub_eq_zero]
         have key := by simpa using closure_ball_subset_closedBall hx
         grind
