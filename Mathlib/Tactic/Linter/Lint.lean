@@ -12,6 +12,7 @@ public import Batteries.Tactic.Lint -- shake: keep
 public import Lean.Linter.Deprecated
 public import Mathlib.Tactic.DeclarationNames
 public import Batteries.Tactic.Lint.Basic
+import all Lean.Meta.Check
 
 /-!
 # Linters for Mathlib
@@ -26,6 +27,40 @@ meta section
 
 namespace Batteries.Tactic.Lint
 open Lean Meta
+
+/--
+Throw an exception if `e` is not type correct.
+-/
+def checkAt (e : Expr) (mode : TransparencyMode) : MetaM Unit :=
+  withTraceNode `Meta.check (fun res =>
+      return m!"{if res.isOk then checkEmoji else crossEmoji} {e}") do
+    try
+      withTransparency mode $ checkAux e
+    catch ex =>
+      trace[Meta.check] ex.toMessageData
+      throw ex
+
+local instance : ToString TransparencyMode where
+  toString
+    | .none => "none"
+    | .reducible => "reducible"
+    | .default => "default"
+    | .instances => "instances"
+    | .all => "all"
+
+/-- A linter for checking whether statements of declarations are well-typed. -/
+@[env_linter] public def checkTypeEvenMore : Linter where
+  noErrorsFound :=
+    "The statements of all declarations type-check with default reducibility settings."
+  errorsFound := "THE STATEMENTS OF THE FOLLOWING DECLARATIONS DO NOT TYPE-CHECK."
+  isFast := true
+  test declName := do
+    if ← isAutoDecl declName then return none
+    let errorMsg (ex : Exception) (mode : TransparencyMode) :=
+      m!"The statement failed typechecking at {toString mode}:\n{ex.toMessageData}"
+    try checkAt (← getConstInfo declName).type .default catch ex =>
+      return some <| errorMsg ex .default
+    return none
 
 /--
 Linter that checks whether a structure should be in Prop.
