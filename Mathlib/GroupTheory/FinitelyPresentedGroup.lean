@@ -7,6 +7,7 @@ Authors: Riccardo Brasca, Fabrizio Barroero, Stefano Francaviglia,
 module
 
 public import Mathlib.Algebra.Group.Subgroup.Basic
+public import Mathlib.GroupTheory.Schreier
 public import Mathlib.Data.Set.Finite.Basic
 public import Mathlib.GroupTheory.FreeGroup.Basic
 
@@ -51,10 +52,14 @@ protected theorem map {N : Subgroup G} (hN : N.IsNormalClosureFG)
   refine ⟨f '' S, hSfinite.image _, ?_⟩
   rw [← hSclosure, Subgroup.map_normalClosure _ _ hf]
 
+@[to_additive]
+theorem of_FG (N : Subgroup G) [N.Normal] [h : Group.FG N] : N.IsNormalClosureFG := by
+  obtain ⟨S, rfl, hS⟩ := N.fg_iff.mp ((Group.fg_iff_subgroup_fg N).mp h)
+  exact ⟨S, hS, le_antisymm (normalClosure_le_normal subset_closure) closure_le_normalClosure⟩
+
 /-- The trivial group is the normal closure of a finite set of relations. -/
 @[to_additive /-- The trivial additive group is the normal closure of a finite set of relations. -/]
-protected theorem bot : (⊥ : Subgroup G).IsNormalClosureFG :=
-  ⟨∅, Finite.of_subsingleton, normalClosure_empty⟩
+protected theorem bot : (⊥ : Subgroup G).IsNormalClosureFG := of_FG _
 
 end Subgroup.IsNormalClosureFG
 
@@ -98,5 +103,20 @@ instance : IsFinitelyPresented (Multiplicative ℤ) :=
 instance : AddGroup.IsFinitelyPresented ℤ :=
   AddGroup.IsFinitelyPresented.equiv
     (FreeAddGroup.addEquivIntOfUnique : FreeAddGroup Unit ≃+ ℤ) inferInstance
+
+variable (G)
+
+theorem mk' (S : Type*) [Finite S] (φ : FreeGroup S →* G)
+    (h1 : Function.Surjective φ) (h2 : φ.ker.IsNormalClosureFG) : IsFinitelyPresented G := by
+  obtain ⟨n, ⟨e⟩⟩ := Finite.exists_equiv_fin S
+  let e' := FreeGroup.freeGroupCongr e
+  let φ' := φ.comp e'.symm.toMonoidHom
+  have h : φ'.ker = φ.ker.map e' := φ.ker_comp_mulEquiv e'.symm
+  refine ⟨n, φ', h1.comp e'.symm.surjective, ?_⟩
+  simpa [h] using h2.map e'.surjective
+
+/-- Any finite group is finitely presented. -/
+instance [Finite G] : IsFinitelyPresented G :=
+  mk' G G FreeGroup.prod FreeGroup.prod_surjective (.of_FG FreeGroup.prod.ker)
 
 end Group.IsFinitelyPresented
