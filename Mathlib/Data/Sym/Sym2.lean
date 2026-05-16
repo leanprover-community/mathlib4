@@ -593,6 +593,11 @@ theorem fromRel_mono_iff (sym₁ : Symmetric r₁) (sym₂ : Symmetric r₂) :
 @[gcongr]
 alias ⟨_, fromRel_mono⟩ := fromRel_mono_iff
 
+theorem mem_fromRel_comap {r : β → β → Prop} (sym : Symmetric r) (f : α → β) (z : Sym2 α) :
+    z ∈ fromRel (sym.comap f) ↔ z.map f ∈ fromRel sym := by
+  cases z
+  simp
+
 theorem fromRel_bot : fromRel (α := α) (r := ⊥) (fun _ _ ↦ id) = ∅ :=
   Set.eq_empty_of_forall_notMem <| Sym2.ind <| by simp
 
@@ -658,6 +663,53 @@ lemma fromRel_relationMap {r : α → α → Prop} (hr : Symmetric r) (f : α �
     rel_iff', Prod.mk.injEq, Prod.swap_prod_mk, and_or_left, exists_or, iff_self_or,
     forall_exists_index, and_imp]
   exact fun c d hcd hc hd ↦ ⟨d, c, hr hcd, hd, hc⟩
+
+/-- Non-dependent recursor on members of a `fromRel` set -/
+def fromRelNdrec {motive : Sort*} {sym : Symmetric r} (z : Sym2 α) (hz : z ∈ fromRel sym)
+    (f : (a b : α) → r a b → motive) (h : ∀ (a b : α) (h : r a b), f a b h = f b a (sym h)) :
+    motive :=
+  z.hrec f (fun _ _ ↦ Function.hfunext (sym.iff .. |>.eq) fun _ _ _ ↦ heq_of_eq <| h ..) hz
+
+@[simp]
+theorem fromRelNdrec_mk {motive : Sort*} {sym : Symmetric r} {a b : α} (hz : r a b)
+    (f : (a b : α) → r a b → motive) (h : ∀ (a b : α) (h : r a b), f a b h = f b a (sym h)) :
+    fromRelNdrec s(a, b) hz f h = f a b hz :=
+  rfl
+
+/-- The `fromRel` set of a symmetric relation `r` is equivalent to summing that set restricted to
+fibers of a function `f`, given that `f` agrees on elements related by `r`. -/
+@[simps]
+def _root_.Equiv.sigmaFiberFromRel (sym : Symmetric r) {f : α → β} (hf : r ≤ Setoid.ker f) :
+    fromRel sym ≃ Σ b : β, fromRel (α := { a // f a = b }) <| sym.comap (↑) where
+  toFun z := z.val.fromRelNdrec z.prop
+    (fun a₁ a₂ h ↦ ⟨f a₁, s(⟨a₁, rfl⟩, ⟨a₂, hf a₁ a₂ h |>.symm⟩), h⟩)
+    fun a₁ a₂ h ↦ by
+      dsimp only
+      rw! [hf a₁ a₂ h, eq_swap]
+      rfl
+  invFun z := ⟨z.snd.val.map Subtype.val, mem_fromRel_comap sym .. |>.mp z.snd.prop⟩
+  left_inv z := by
+    rcases z with ⟨⟨a₁, a₂⟩, h⟩
+    rfl
+  right_inv z := by
+    rcases z with ⟨b, ⟨⟨a₁, rfl⟩, ⟨a₂, ha₂⟩⟩, h⟩
+    rfl
+
+/-- For a relation homomorphism `r →r r'` where `r` is symmetric, the `fromRel` set of `r` is
+equivalent to summing that set restricted to equivalence classes of `r'` using a `Subtype`,
+`Quot` version -/
+@[simps!]
+def _root_.Equiv.sigmaQuotFromRel (sym : Symmetric r) {r' : β → β → Prop} (f : r →r r') :
+    fromRel sym ≃ Σ q : Quot r', fromRel (α := { x // .mk r' (f x) = q }) <| sym.comap (↑) :=
+  .sigmaFiberFromRel sym fun _ _ h ↦ Quot.sound <| f.map_rel h
+
+/-- For a relation homomorphism `r →r r'` where `r` is symmetric, the `fromRel` set of `r` is
+equivalent to summing that set restricted to equivalence classes of `r'` using a `Subtype`,
+`Quotient` version -/
+@[simps!]
+def _root_.Equiv.sigmaQuotientFromRel (sym : Symmetric r) {r' : Setoid β} (f : r →r r') :
+    fromRel sym ≃ Σ q : Quotient r', fromRel (α := { x // ⟦f x⟧ = q }) <| sym.comap (↑) :=
+  .sigmaFiberFromRel sym fun _ _ h ↦ Quotient.sound <| f.map_rel h
 
 /-- The inverse to `Sym2.fromRel`. Given a set on `Sym2 α`, give a symmetric relation on `α`
 (see `Sym2.toRel_symmetric`). -/
