@@ -73,9 +73,6 @@ instance : Zero (LieSubmodule R L M) :=
 instance : Inhabited (LieSubmodule R L M) :=
   ⟨0⟩
 
-instance (priority := high) coeSort : CoeSort (LieSubmodule R L M) (Type w) where
-  coe N := { x : M // x ∈ N }
-
 instance (priority := mid) coeSubmodule : CoeOut (LieSubmodule R L M) (Submodule R M) :=
   ⟨toSubmodule⟩
 
