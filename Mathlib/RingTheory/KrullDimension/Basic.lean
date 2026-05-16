@@ -105,6 +105,13 @@ lemma Ring.krullDimLE_zero_iff : Ring.KrullDimLE 0 R ↔ ∀ I : Ideal R, I.IsPr
     (PrimeSpectrum.equivSubtype R).forall_congr_left, Subtype.forall, PrimeSpectrum.isMax_iff]
   rfl
 
+/-- A ring has krull dimension at most zero if and only if all minimal primes are maximal. -/
+theorem Ring.krullDimLE_zero_iff_forall_minimalPrimes_isMaximal :
+    Ring.KrullDimLE 0 R ↔ ∀ I ∈ minimalPrimes R, I.IsMaximal := by
+  refine Ring.krullDimLE_zero_iff.trans ⟨fun h I hI ↦ h I hI.1.1, fun h I hI ↦ ?_⟩
+  obtain ⟨J, hJ, hle⟩ := Ideal.exists_minimalPrimes_le bot_le (J := I)
+  exact (h J hJ).eq_of_le hI.ne_top hle ▸ h J hJ
+
 lemma Ring.KrullDimLE.mk₀ (H : ∀ I : Ideal R, I.IsPrime → I.IsMaximal) : Ring.KrullDimLE 0 R := by
   rwa [Ring.krullDimLE_zero_iff]
 
