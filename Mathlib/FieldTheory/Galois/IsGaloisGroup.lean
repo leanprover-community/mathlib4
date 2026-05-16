@@ -270,11 +270,16 @@ theorem map_mulEquivAlgEquiv_fixingSubgroup
 
 variable (H H' : Subgroup G) (F F' : IntermediateField K L)
 
-instance subgroup [hGKL : IsGaloisGroup G K L] :
-    IsGaloisGroup H (FixedPoints.intermediateField H : IntermediateField K L) L where
+instance (R S : Type*) [CommRing R] [CommRing S] [Algebra R S]
+    [MulSemiringAction G S] [hGKL : IsGaloisGroup G R S] :
+    IsGaloisGroup H (FixedPoints.subalgebra R S H) S where
   faithful := have := hGKL.faithful; inferInstance
-  commutes := inferInstanceAs <| SMulCommClass H (FixedPoints.subfield H L) L
+  commutes := inferInstance
   isInvariant := ⟨fun x h ↦ ⟨⟨x, h⟩, rfl⟩⟩
+
+instance subgroup [hGKL : IsGaloisGroup G K L] :
+    IsGaloisGroup H (FixedPoints.intermediateField H : IntermediateField K L) L :=
+  inferInstanceAs (IsGaloisGroup H (FixedPoints.subalgebra K L H) L)
 
 open IntermediateField in
 theorem fixedPoints_of_isGaloisGroup [hGKL : IsGaloisGroup G K L] [hHFL : IsGaloisGroup H F L] :
