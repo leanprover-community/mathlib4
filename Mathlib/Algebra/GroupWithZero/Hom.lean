@@ -6,7 +6,12 @@ Authors: Eric Wieser
 module
 
 public import Mathlib.Algebra.Group.Hom.Basic
+public import Mathlib.Algebra.GroupWithZero.Defs
 public import Mathlib.Algebra.GroupWithZero.Basic
+import Mathlib.Algebra.GroupWithZero.NeZero
+import Mathlib.Algebra.NeZero
+import Mathlib.Logic.Basic
+import Mathlib.Tactic.SplitIfs
 
 /-!
 # Monoid with zero and group with zero homomorphisms
