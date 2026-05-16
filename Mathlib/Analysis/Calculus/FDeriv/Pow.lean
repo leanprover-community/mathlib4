@@ -166,7 +166,7 @@ theorem fderiv_pow' (n : ℕ) (hf : DifferentiableAt 𝕜 f x) :
 theorem fderiv_pow_ring' {x : 𝔸} (n : ℕ) :
     fderiv 𝕜 (fun x : 𝔸 ↦ x ^ n) x
       = (∑ i ∈ Finset.range n, x ^ (n.pred - i) •> .id _ _ <• x ^ i) := by
-  rw [fderiv_fun_pow' n differentiableAt_fun_id, fderiv_id']
+  rw [fderiv_fun_pow' n differentiableAt_fun_id, fderiv_fun_id]
 
 theorem fderivWithin_fun_pow' (hxs : UniqueDiffWithinAt 𝕜 s x)
     (n : ℕ) (hf : DifferentiableWithinAt 𝕜 f s x) :
@@ -238,7 +238,7 @@ theorem fderiv_pow (n : ℕ) (hf : DifferentiableAt 𝕜 f x) :
 
 theorem fderiv_pow_ring {x : 𝔸} (n : ℕ) :
     fderiv 𝕜 (fun x : 𝔸 ↦ x ^ n) x = (n • x ^ (n - 1)) • .id _ _ := by
-  rw [fderiv_fun_pow n differentiableAt_fun_id, fderiv_id']
+  rw [fderiv_fun_pow n differentiableAt_fun_id, fderiv_fun_id]
 
 theorem fderivWithin_fun_pow (hxs : UniqueDiffWithinAt 𝕜 s x)
     (n : ℕ) (hf : DifferentiableWithinAt 𝕜 f s x) :

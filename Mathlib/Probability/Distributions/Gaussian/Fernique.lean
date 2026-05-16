@@ -205,11 +205,9 @@ lemma memLp_id (μ : Measure E) [IsGaussian μ] (p : ℝ≥0∞) (hp : p ≠ ∞
 @[to_fun integrable_fun_id]
 lemma integrable_id : Integrable id μ :=
   memLp_one_iff_integrable.1 <| memLp_id μ 1 (by norm_num)
-#check ProbabilityTheory.IsGaussian.integrable_fun_id
 
 @[to_fun memLp_two_fun_id]
 lemma memLp_two_id : MemLp id 2 μ := memLp_id μ 2 (by norm_num)
-#check ProbabilityTheory.IsGaussian.memLp_two_fun_id
 
 lemma integral_dual (L : StrongDual ℝ E) : μ[L] = L (∫ x, x ∂μ) :=
   L.integral_comp_comm ((memLp_id μ 1 (by simp)).integrable le_rfl)
