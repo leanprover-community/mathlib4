@@ -324,7 +324,7 @@ public lemma leviCivitaConnection_isCompatible [FiniteDimensional ℝ E] :
     (leviCivitaConnection I M).IsCompatible := by
   rw [isCompatible_iff]
   intro x X Y Z hX hY hZ
-  -- Normalise the expressions by swapping arguments for rhs_aux and mlieBracket,
+  -- Normalise the expressions by swapping arguments for inner product and mlieBracket,
   -- until the swappable arguments are in order X < Y < Z.
   simp (disch := fun_prop) [leviCivitaConnection_apply_right,
     fun x ↦ real_inner_comm (Z x),
@@ -338,7 +338,7 @@ public lemma leviCivitaConnection_torsion_eq_zero [FiniteDimensional ℝ E] :
   rw [CovariantDerivative.torsion_eq_zero_iff]
   intro X Y x hX hY
   apply injective_inner_vectorField; ext Z hZ
-  simp (disch := assumption) [leviCivitaConnection_apply I,
+  simp (disch := fun_prop) [leviCivitaConnection_apply I,
     mlieBracket_swap (V := Y) (W := X), mlieBracket_swap (V := Z) (W := X),
     mlieBracket_swap (V := Z) (W := Y),
     real_inner_comm, inner_sub_left]
