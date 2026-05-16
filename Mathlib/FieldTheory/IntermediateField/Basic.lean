@@ -322,8 +322,7 @@ theorem Subfield.coe_toIntermediateField (S : Subfield L)
 namespace IntermediateField
 
 /-- An intermediate field inherits a field structure. -/
-instance toField : Field S :=
-  S.toSubfield.toField
+instance toField : Field S := SubfieldClass.toField S
 
 @[norm_cast]
 theorem coe_sum {ι : Type*} [Fintype ι] (f : ι → S) : (↑(∑ i, f i) : L) = ∑ i, (f i : L) :=
