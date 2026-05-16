@@ -41,13 +41,14 @@ equalities.
 
 @[expose] public section
 
-universe v₁ v₂ u₁ u₂
+universe v₁ v₂ v₃ u₁ u₂ u₃
 
 namespace CategoryTheory
 
 open Functor Category IsHomLift
 
-variable {𝒮 : Type u₁} {𝒳 : Type u₂} [Category.{v₁} 𝒮] [Category.{v₂} 𝒳]
+variable {𝒮 : Type u₁} {𝒳 : Type u₂} {𝒴 : Type u₃} [Category.{v₁} 𝒮] [Category.{v₂} 𝒳]
+  [Category.{v₃} 𝒴]
 
 /-- Definition of a prefibered category.
 
@@ -118,6 +119,14 @@ instance isStronglyCartesian_of_isCartesian (p : 𝒳 ⥤ 𝒮) [p.IsFibered] {R
     apply map_uniq
     rwa [← assoc, IsCartesian.fac]
 
+instance (p : 𝒴 ⥤ 𝒳) [p.IsFibered] (q : 𝒳 ⥤ 𝒮) [q.IsPreFibered] : (p ⋙ q).IsPreFibered where
+  exists_isCartesian' {X Z} f := by
+    dsimp at f
+    obtain ⟨Y,g,hg⟩ := IsPreFibered.exists_isCartesian q rfl f
+    obtain ⟨X', Z₂, h₂⟩ := IsPreFibered.exists_isCartesian p rfl g
+    use X', Z₂
+    exact Functor.IsCartesian.paste_vert p q Z₂ g f
+
 /-- In a category which admits strongly Cartesian pullbacks, any Cartesian morphism is
 strongly Cartesian. This is a helper-lemma for the fact that admitting strongly Cartesian pullbacks
 implies being fibered. -/
@@ -167,6 +176,15 @@ lemma of_exists_isStronglyCartesian {p : 𝒳 ⥤ 𝒮}
     have : p.IsStronglyCartesian g ψ := isStronglyCartesian_of_exists_isCartesian p h _ _
     inferInstance
 
+instance (p : 𝒴 ⥤ 𝒳) (q : 𝒳 ⥤ 𝒮)
+    [p.IsFibered] [q.IsFibered] : (p ⋙ q).IsFibered := .of_exists_isStronglyCartesian
+  fun X₂ Z h => by
+    dsimp at h
+    obtain ⟨Y₁,g,hg⟩ := ‹q.IsFibered›.exists_isCartesian' h
+    obtain ⟨X₁,f,hf⟩ := ‹p.IsFibered›.exists_isCartesian' g
+    use X₁,f
+    exact .paste_vert q p f g h
+
 /-- Given a diagram
 ```
                   a
@@ -183,5 +201,20 @@ noncomputable def pullbackPullbackIso {p : 𝒳 ⥤ 𝒮} [IsFibered p]
     (pullbackMap ha (g ≫ f))
 
 end Functor.IsFibered
+
+lemma Equivalence.functor_isFibered_of_counit_app_eq_eqToHom {C D : Type*}
+    [Category* C] [Category* D] (e : C ≌ D) (he : ∀ Y : D, dsimp% ∃ h, e.counit.app Y = eqToHom h) :
+    e.functor.IsFibered := .of_exists_isStronglyCartesian fun X₂ Y₁ g => by
+  obtain ⟨hY₁, h'⟩ := he Y₁
+  use e.inverse.obj Y₁, e.inverse.map g ≫ e.unitInv.app X₂
+  exact functor_isStronglyCartesian_of_counit_app_eq_eqToHom e hY₁ h' g
+
+lemma Equivalence.inverse_isFibered_of_unit_app_eq_eqToHom {C D : Type*}
+    [Category* C] [Category* D] (e : C ≌ D) (he : ∀ X : C, dsimp% ∃ h, e.unit.app X = eqToHom h) :
+    e.inverse.IsFibered := .of_exists_isStronglyCartesian fun X₂ Y₁ g => by
+  obtain ⟨hX₁,h'⟩ := he Y₁
+  use e.functor.obj Y₁, e.functor.map g ≫ e.counit.app X₂
+  exact inverse_isStronglyCartesian_of_unit_app_eq_eqToHom e hX₁ h' g
+
 
 end CategoryTheory
