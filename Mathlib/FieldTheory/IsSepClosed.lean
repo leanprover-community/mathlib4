@@ -210,6 +210,10 @@ theorem algebraMap_surjective
     add_eq_zero_iff_eq_neg] at this
   exact (map_neg (algebraMap k K) ((minpoly k x).coeff 0)).symm ▸ this.symm
 
+lemma algebraMap_bijective [IsSepClosed k] [Algebra k K] [Algebra.IsSeparable k K] :
+    Function.Bijective (algebraMap k K) :=
+  ⟨RingHom.injective _, IsSepClosed.algebraMap_surjective _ _⟩
+
 end IsSepClosed
 
 /-- If `k` is separably closed, `K / k` is a field extension, `L / k` is an intermediate field
