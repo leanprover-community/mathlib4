@@ -316,4 +316,7 @@ open ZeroObject
 theorem Functor.isZero_iff [HasZeroObject D] (F : C ⥤ D) : IsZero F ↔ ∀ X, IsZero (F.obj X) :=
   ⟨fun hF X => hF.obj X, Functor.isZero _⟩
 
+instance {C : Type*} [Category* C] (A : C) [HasZeroObject C] : Epi (terminalIsTerminal.from A) :=
+  (((isZero_zero C).of_iso HasZeroObject.zeroIsoTerminal.symm).epi _)
+
 end CategoryTheory
