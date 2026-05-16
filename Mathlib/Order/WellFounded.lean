@@ -236,7 +236,7 @@ alias StrictAnti.range_inj := StrictAnti.range_inj_of_wellFoundedGT
 
 /-- A strictly monotone function `f` on a well-order satisfies `x ≤ f x` for all `x`. -/
 @[to_dual le_id
-/-- A strictly monotone function `f` on a cowell-order satisfies `f x ≤ x` for all `x`. -/]
+/-- A strictly monotone function `f` on a co-well-order satisfies `f x ≤ x` for all `x`. -/]
 theorem StrictMono.id_le [WellFoundedLT β] {f : β → β} (hf : StrictMono f) : id ≤ f := by
   rw [Pi.le_def]
   by_contra! H
