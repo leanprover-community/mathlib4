@@ -901,6 +901,14 @@ instance ring [IsTopologicalAddGroup M] : Ring (M →L[R] M) where
 theorem intCast_apply [IsTopologicalAddGroup M] (z : ℤ) (m : M) : (↑z : M →L[R] M) m = z • m :=
   rfl
 
+theorem toSpanSingleton_neg [TopologicalSpace R] [ContinuousSMul R M] [IsTopologicalAddGroup M]
+    (a : M) : toSpanSingleton R (-a) = -toSpanSingleton R a := by
+  ext; simp
+
+theorem toSpanSingleton_sub [TopologicalSpace R] [ContinuousSMul R M] [IsTopologicalAddGroup M]
+    (a b : M) : toSpanSingleton R (a - b) = toSpanSingleton R a - toSpanSingleton R b := by
+  simp [sub_eq_add_neg, toSpanSingleton_add, toSpanSingleton_neg]
+
 theorem toSpanSingleton_pow [TopologicalSpace R] [IsTopologicalRing R] (c : R) (n : ℕ) :
     toSpanSingleton R c ^ n = toSpanSingleton R (c ^ n) := by
   induction n with
