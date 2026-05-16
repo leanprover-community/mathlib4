@@ -218,7 +218,7 @@ end Submodule
 
 @[simp]
 theorem orthogonalBilin_innerₗ {E} [NormedAddCommGroup E] [InnerProductSpace ℝ E]
-    (K : Submodule ℝ E) : K.orthogonalBilin (innerₗ E) = Kᗮ :=
+    (K : Submodule ℝ E) : Submodule.orthogonalBilin (innerₗ E) K = Kᗮ :=
   rfl
 
 @[deprecated (since := "2025-12-26")]
