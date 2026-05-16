@@ -19,7 +19,7 @@ namespace Nat
 
 namespace Prime
 
-variable {p a b k : ℕ}
+variable {p a b k n : ℕ}
 
 theorem dvd_choose_add (hp : Prime p) (hap : a < p) (hbp : b < p) (h : p ≤ a + b) :
     p ∣ choose (a + b) a := by
@@ -34,6 +34,12 @@ lemma dvd_choose (hp : Prime p) (ha : a < p) (hab : b - a < p) (h : p ≤ b) : p
 
 lemma dvd_choose_self (hp : Prime p) (hk : k ≠ 0) (hkp : k < p) : p ∣ choose p k :=
   hp.dvd_choose hkp (sub_lt ((zero_le _).trans_lt hkp) <| zero_lt_of_ne_zero hk) le_rfl
+
+lemma dvd_choose_add_sub_one_iff (hp : Prime p) (hpn : n < p) :
+    p ∣ choose (k + n - 1) n ↔ ∃ i < n, p ∣ k + i := by
+  rw [← hp.dvd_ascFactorial_iff, Nat.ascFactorial_eq_factorial_mul_choose']
+  exact ⟨fun h => dvd_mul_of_dvd_right h (n !),
+    fun h => (hp.coprime_factorial_of_lt hpn).dvd_of_dvd_mul_left h⟩
 
 lemma coprime_choose_of_lt (hp : p.Prime) (hb : b < p) (ha : a ≤ b) :
     p.Coprime (b.choose a) := by
