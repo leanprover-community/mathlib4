@@ -115,6 +115,9 @@ lemma IsAtom.ne_bot_iff_eq (ha : IsAtom a) (hba : b ≤ a) : b ≠ ⊥ ↔ b = a
 theorem IsAtom.Iic_eq (h : IsAtom a) : Set.Iic a = {⊥, a} :=
   Set.ext fun _ => h.le_iff
 
+lemma Set.Iio_eq_singleton_bot_iff : Iio a = {⊥} ↔ IsAtom a := by
+  simp [IsAtom, superset_antisymm_iff, bot_lt_iff_ne_bot]
+
 @[simp]
 theorem bot_covBy_iff : ⊥ ⋖ a ↔ IsAtom a := by
   simp only [CovBy, bot_lt_iff_ne_bot, IsAtom, not_imp_not]
@@ -208,6 +211,9 @@ lemma IsCoatom.ne_top_iff_eq (ha : IsCoatom a) (hab : a ≤ b) : b ≠ ⊤ ↔ b
 
 theorem IsCoatom.Ici_eq (h : IsCoatom a) : Set.Ici a = {⊤, a} :=
   h.dual.Iic_eq
+
+lemma Set.Ioi_eq_singleton_top_iff : Ioi a = {⊤} ↔ IsCoatom a := by
+  simp [IsCoatom, superset_antisymm_iff, lt_top_iff_ne_top]
 
 @[simp]
 theorem covBy_top_iff : a ⋖ ⊤ ↔ IsCoatom a :=
