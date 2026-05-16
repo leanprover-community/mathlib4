@@ -100,10 +100,9 @@ section Constructions
 variable {X : Type u} {Y : Type v} [MetricSpace X] [MetricSpace Y]
   {f : ProdSpaceFun X Y} {x y z t : X ⊕ Y}
 
-attribute [local instance 10] Classical.inhabited_of_nonempty'
-
 private theorem maxVar_bound [CompactSpace X] [Nonempty X] [CompactSpace Y] [Nonempty Y] :
     dist x y ≤ maxVar X Y :=
+  open scoped Classical in
   calc
     dist x y ≤ diam (univ : Set (X ⊕ Y)) :=
       dist_le_diam_of_mem isBounded_of_compactSpace (mem_univ _) (mem_univ _)
@@ -268,6 +267,7 @@ theorem HD_below_aux1 {f : Cb X Y} (C : ℝ) {x : X} :
 
 private theorem HD_bound_aux1 [Nonempty Y] (f : Cb X Y) (C : ℝ) :
     BddAbove (range fun x : X => ⨅ y, f (inl x, inr y) + C) := by
+  inhabit Y
   obtain ⟨Cf, hCf⟩ := f.isBounded_range.bddAbove
   refine ⟨Cf + C, forall_mem_range.2 fun x => ?_⟩
   calc
@@ -284,6 +284,7 @@ theorem HD_below_aux2 {f : Cb X Y} (C : ℝ) {y : Y} :
 private theorem HD_bound_aux2 [Nonempty X] (f : Cb X Y) (C : ℝ) :
     BddAbove (range fun y : Y => ⨅ x, f (inl x, inr y) + C) := by
   obtain ⟨Cf, hCf⟩ := f.isBounded_range.bddAbove
+  inhabit X
   refine ⟨Cf + C, forall_mem_range.2 fun y => ?_⟩
   calc
     ⨅ x, f (inl x, inr y) + C ≤ f (inl default, inr y) + C := ciInf_le (HD_below_aux2 C) default
@@ -419,6 +420,7 @@ private theorem candidatesB_nonempty : (candidatesB X Y).Nonempty :=
 be sufficient to look for functions with `HD(f)` bounded by this bound. -/
 theorem HD_candidatesBDist_le :
     HD (candidatesBDist X Y) ≤ diam (univ : Set X) + 1 + diam (univ : Set Y) := by
+  classical
   refine max_le (ciSup_le fun x => ?_) (ciSup_le fun y => ?_)
   · have A : ⨅ y, candidatesBDist X Y (inl x, inr y) ≤ candidatesBDist X Y (inl x, inr default) :=
       ciInf_le (by simpa using HD_below_aux1 0) default
