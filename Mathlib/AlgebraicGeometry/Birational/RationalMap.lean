@@ -116,13 +116,31 @@ def compHom (f : X.PartialMap Y) (g : Y ⟶ Z) : X.PartialMap Z where
   dense_domain := f.dense_domain
   hom := f.hom ≫ g
 
+@[simp]
+lemma compHom_id (f : X.PartialMap Y) : f.compHom (𝟙 Y) = f := by
+  ext <;> simp
+
 instance [X.Over S] [Y.Over S] [Z.Over S] (f : X.PartialMap Y) (g : Y ⟶ Z)
     [f.IsOver S] [g.IsOver S] : (f.compHom g).IsOver S where
 
 /-- A scheme morphism as a partial map. -/
 @[simps]
-def _root_.AlgebraicGeometry.Scheme.Hom.toPartialMap (f : X.Hom Y) :
+def _root_.AlgebraicGeometry.Scheme.Hom.toPartialMap (f : X ⟶ Y) :
     X.PartialMap Y := ⟨⊤, dense_univ, X.topIso.hom ≫ f⟩
+
+instance (f : X ⟶ Y) [IsDominant f] : IsDominant f.toPartialMap.hom := by
+  dsimp
+  have := Opens.isDominant_ι (X := X) (U := ⊤) dense_univ
+  infer_instance
+
+lemma _root_.AlgebraicGeometry.Scheme.Hom.toPartialMap_compHom (f : X ⟶ Y) (g : Y ⟶ Z) :
+    f.toPartialMap.compHom g = (f ≫ g).toPartialMap := rfl
+
+variable (X) in
+protected abbrev id : X.PartialMap X := (𝟙 X : X ⟶ X).toPartialMap
+
+@[simp]
+lemma id_compHom (f : X ⟶ Y) : (PartialMap.id X).compHom f = f.toPartialMap := rfl
 
 instance [X.Over S] [Y.Over S] (f : X ⟶ Y) [f.IsOver S] : f.toPartialMap.IsOver S where
 
@@ -216,19 +234,36 @@ def equiv (f g : X.PartialMap Y) : Prop :=
   ∃ (W : X.Opens) (hW : Dense (W : Set X)) (hWl : W ≤ f.domain) (hWr : W ≤ g.domain),
     (f.restrict W hW hWl).hom = (g.restrict W hW hWr).hom
 
+lemma equiv_of_restrict_eq (f g : X.PartialMap Y) {W₁ W₂ : X.Opens} {hW₁ : Dense (W₁ : Set X)}
+    {hW₂ : Dense (W₂ : Set X)} {hW₁' : W₁ ≤ f.domain} {hW₂' : W₂ ≤ g.domain}
+    (H : f.restrict W₁ hW₁ hW₁' = g.restrict W₂ hW₂ hW₂') : f.equiv g := by
+  have e : W₁ = W₂ := congr($(H).domain)
+  subst e
+  exact ⟨W₁, hW₁, hW₁', hW₂', congr($(H).hom)⟩
+
+@[refl]
+lemma equiv.refl (f : X.PartialMap Y) : f.equiv f :=
+  ⟨f.domain, f.dense_domain, by simp⟩
+
+@[symm]
+lemma equiv.symm {f g : X.PartialMap Y} : f.equiv g → g.equiv f := by
+  intro ⟨W, hW, hWl, hWr, e⟩
+  exact ⟨W, hW, hWr, hWl, e.symm⟩
+
+@[trans]
+lemma equiv.trans {f g h : X.PartialMap Y} : f.equiv g → g.equiv h → f.equiv h := by
+  intro ⟨W₁, hW₁, hW₁l, hW₁r, e₁⟩ ⟨W₂, hW₂, hW₂l, hW₂r, e₂⟩
+  refine ⟨W₁ ⊓ W₂, hW₁.inter_of_isOpen_left hW₂ W₁.2, inf_le_left.trans hW₁l,
+    inf_le_right.trans hW₂r, ?_⟩
+  dsimp at e₁ e₂
+  simp only [restrict_domain, restrict_hom, ← X.homOfLE_homOfLE (U := W₁ ⊓ W₂) inf_le_left hW₁l,
+    Category.assoc, e₁, ← X.homOfLE_homOfLE (U := W₁ ⊓ W₂) inf_le_right hW₂r, ← e₂]
+  simp only [homOfLE_homOfLE_assoc]
+
 lemma equivalence_rel : Equivalence (@Scheme.PartialMap.equiv X Y) where
-  refl f := ⟨f.domain, f.dense_domain, by simp⟩
-  symm {f g} := by
-    intro ⟨W, hW, hWl, hWr, e⟩
-    exact ⟨W, hW, hWr, hWl, e.symm⟩
-  trans {f g h} := by
-    intro ⟨W₁, hW₁, hW₁l, hW₁r, e₁⟩ ⟨W₂, hW₂, hW₂l, hW₂r, e₂⟩
-    refine ⟨W₁ ⊓ W₂, hW₁.inter_of_isOpen_left hW₂ W₁.2, inf_le_left.trans hW₁l,
-      inf_le_right.trans hW₂r, ?_⟩
-    dsimp at e₁ e₂
-    simp only [restrict_domain, restrict_hom, ← X.homOfLE_homOfLE (U := W₁ ⊓ W₂) inf_le_left hW₁l,
-      Category.assoc, e₁, ← X.homOfLE_homOfLE (U := W₁ ⊓ W₂) inf_le_right hW₂r, ← e₂]
-    simp only [homOfLE_homOfLE_assoc]
+  refl := equiv.refl
+  symm := equiv.symm
+  trans := equiv.trans
 
 instance : Setoid (X.PartialMap Y) := ⟨@PartialMap.equiv X Y, equivalence_rel⟩
 
@@ -319,6 +354,9 @@ def PartialMap.toRationalMap (f : X.PartialMap Y) : X ⤏ Y := Quotient.mk _ f
 /-- A scheme morphism as a rational map. -/
 abbrev Hom.toRationalMap (f : X.Hom Y) : X ⤏ Y := f.toPartialMap.toRationalMap
 
+variable (X) in
+abbrev RationalMap.id : X ⤏ X := (𝟙 X : X ⟶ X).toRationalMap
+
 variable (S) in
 /-- A rational map is an `S`-map if some partial map in the equivalence class is an `S`-map. -/
 class RationalMap.IsOver [X.Over S] [Y.Over S] (f : X ⤏ Y) : Prop where
@@ -356,6 +394,9 @@ def RationalMap.compHom (f : X ⤏ Y) (g : Y ⟶ Z) : X ⤏ Z := by
   simp only [PartialMap.restrict_domain, PartialMap.restrict_hom, PartialMap.compHom_domain,
     PartialMap.compHom_hom] at e ⊢
   rw [reassoc_of% e]
+
+lemma RationalMap.id_compHom (f : X ⟶ Y) :
+    (RationalMap.id X).compHom f = f.toRationalMap := rfl
 
 @[simp]
 lemma RationalMap.compHom_toRationalMap (f : X.PartialMap Y) (g : Y ⟶ Z) :
