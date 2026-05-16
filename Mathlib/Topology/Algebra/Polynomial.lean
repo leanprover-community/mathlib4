@@ -151,7 +151,7 @@ theorem isClosedMap_eval [ProperSpace R] (p : R[X]) : IsClosedMap p.eval := by
 
 variable (R) in
 theorem _root_.isClosedMap_pow [ProperSpace R] (n : ℕ) : IsClosedMap fun x : R ↦ x ^ n := by
-  simpa [eval_X_pow] using (X ^ n).isClosedMap_eval
+  simpa [eval_X_pow] using ((X : R[X]) ^ n).isClosedMap_eval
 
 section Roots
 

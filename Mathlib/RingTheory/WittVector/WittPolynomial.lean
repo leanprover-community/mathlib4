@@ -150,7 +150,8 @@ theorem wittPolynomial_zmod_self (n : ℕ) :
   rw [sum_range_succ, ← Nat.cast_pow, CharP.cast_eq_zero (ZMod (p ^ (n + 1))) (p ^ (n + 1)), C_0,
     zero_mul, add_zero, map_sum, sum_congr rfl]
   intro k hk
-  rw [map_mul (expand p), map_pow (expand p), expand_X, algHom_C, ← pow_mul, ← pow_succ']
+  rw [map_mul (expand p), map_pow (expand p) (G := MvPolynomial ℕ (ZMod (p ^ (n + 1)))),
+    expand_X, algHom_C, ← pow_mul, ← pow_succ']
   congr
   rw [mem_range] at hk
   rw [add_comm, add_tsub_assoc_of_le (Nat.lt_succ_iff.mp hk), ← add_comm]
@@ -280,4 +281,4 @@ theorem bind₁_wittPolynomial_xInTermsOfW [Invertible (p : R)] (n : ℕ) :
   apply sum_congr rfl
   intro i h
   rw [mem_range] at h
-  rw [map_mul, map_pow (bind₁ _), algHom_C, H i h, algebraMap_eq]
+  rw [map_mul, map_pow (bind₁ _) (G := MvPolynomial ℕ R), algHom_C, H i h, algebraMap_eq]
