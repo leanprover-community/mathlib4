@@ -12,8 +12,6 @@ import Mathlib.Analysis.Normed.Operator.NNNorm
 # Inverse function theorem, the "easy half"
 -/
 
-public section
-
 open Filter
 open scoped Topology
 
@@ -21,27 +19,56 @@ variable {𝕜 E F G : Type*} [NontriviallyNormedField 𝕜]
   [NormedAddCommGroup E] [NormedSpace 𝕜 E]
   [NormedAddCommGroup F] [NormedSpace 𝕜 F]
   [NormedAddCommGroup G] [NormedSpace 𝕜 G]
-  {f : E → F} {f' : E →L[𝕜] F} {s : Set E}
-  {g : G → E} {h : G → F} {h' : G →L[𝕜] F} {a : G} {t : Set G}
+  {f : E → F} {g : F → G} {h : E → G}
+  {f' : E →L[𝕜] F} {g' : F →L[𝕜] G} {h' : E →L[𝕜] G}
+  {lE : Filter (E × E)} {lF : Filter (F × F)}
+  {a : E} {s : Set E} {t : Set F}
 
-theorem HasFDerivWithinAt.of_comp_of_leftInverse {f'symm : F →L[𝕜] E}
-    (hst : Tendsto g (𝓝[t] a) (𝓝[s] (g a))) (hf : HasFDerivWithinAt f f' s (g a))
-    (hh : HasFDerivWithinAt h h' t a) (hcomp : f ∘ g =ᶠ[𝓝[t] a] h)
-    (hf'symm : Function.LeftInverse f'symm f') (ha : a ∈ t) :
-    HasFDerivWithinAt g (f'symm ∘L h') t a := by
-  refine .of_isLittleOTVS ?_
-  calc (fun x' ↦ g x' - g a - (f'symm ∘L h') (x' - a))
-    _ =O[𝕜; 𝓝[t] a] fun x' ↦ f' (g x' - g a) - h' (x' - a) :=
-      f'symm.isBigOTVS_comp.congr_left <| by simp [hf'symm _]
-    _ =o[𝕜; 𝓝[t] a] (· - a) := ?_
-  refine hf.isLittleOTVS.comp_tendsto hst |>.symm |>.trans_isBigOTVS ?_ |>.triangle ?_
-  · refine hf.isThetaTVS_sub
-      (Topology.IsEmbedding.of_leftInverse hf'symm (map_continuous _) (map_continuous _)).isInducing
-      |>.symm.isBigOTVS.comp_tendsto hst |>.trans ?_
-    refine hh.isBigOTVS_sub.congr' (hcomp.mono fun x hx ↦ ?_) .rfl
-    simp [← hx, ← hcomp.self_of_nhdsWithin ha]
-  · refine hh.isLittleOTVS.congr' (hcomp.mono fun x hx ↦ ?_) .rfl
-    simp [← hx, ← hcomp.self_of_nhdsWithin ha]
+theorem HasFDerivAtFilter.of_comp_aux (hg_emb : Topology.IsEmbedding g')
+    (htendsto : Tendsto (Prod.map f f) lE lF)
+    (hh : HasFDerivAtFilter h h' lE)
+    (hg : HasFDerivAtFilter g g' lF)
+    (hcomp : Prod.map (g ∘ f) (g ∘ f) =ᶠ[lE] Prod.map h h)
+    (ho : (fun (x, y) ↦ f x - f y - f' (x - y)) =O[𝕜; lE]
+      (fun (x, y) ↦ g' (f x - f y) - h' (x - y))) :
+    HasFDerivAtFilter f f' lE := by
+  refine .of_isLittleOTVS <| ho.trans_isLittleOTVS <| .triangle (.symm ?_) hh.isLittleOTVS
+  refine (hg.isLittleOTVS.comp_tendsto htendsto).congr' ?_ .rfl |>.trans_isBigOTVS ?_
+  · refine hcomp.mono ?_
+    simp +contextual
+  · refine hg.isThetaTVS_sub hg_emb.isInducing |>.symm.isBigOTVS.comp_tendsto htendsto |>.trans ?_
+    refine hh.isBigOTVS_sub.congr' (hcomp.mono ?_) .rfl
+    simp +contextual
+
+public section
+
+theorem HasFDerivAtFilter.of_comp_of_leftInverse {g'symm : G →L[𝕜] F}
+    (hf : Tendsto (Prod.map f f) lE lF) (hg : HasFDerivAtFilter g g' lF)
+    (hh : HasFDerivAtFilter h h' lE) (hcomp : (Prod.map (g ∘ f) (g ∘ f)) =ᶠ[lE] Prod.map h h)
+    (hg'symm : Function.LeftInverse g'symm g') :
+    HasFDerivAtFilter f (g'symm ∘L h') lE := by
+  apply of_comp_aux (g := g) (g' := g') <;> try assumption
+  · exact Topology.IsEmbedding.of_leftInverse hg'symm (map_continuous _) (map_continuous _)
+  · refine g'symm.isBigOTVS_comp.congr_left ?_
+    simp [hg'symm _]
+
+theorem HasFDerivAtFilter.of_comp_of_isEmbedding
+    (hf : Tendsto (Prod.map f f) lE lF) (hg : HasFDerivAtFilter g g' lF)
+    (hg' : Topology.IsEmbedding g') (hh : HasFDerivAtFilter h (g' ∘L f') lE)
+    (hcomp : (Prod.map (g ∘ f) (g ∘ f)) =ᶠ[lE] Prod.map h h) :
+    HasFDerivAtFilter f f' lE := by
+  apply of_comp_aux (g := g) (g' := g') <;> try assumption
+  refine g'.isThetaTVS_comp hg'.isInducing |>.symm.isBigOTVS.congr_right ?_
+  simp
+
+theorem HasFDerivWithinAt.of_comp_of_leftInverse {g'symm : G →L[𝕜] F}
+    (hst : Tendsto f (𝓝[s] a) (𝓝[t] (f a))) (hg : HasFDerivWithinAt g g' t (f a))
+    (hh : HasFDerivWithinAt h h' s a) (hcomp : g ∘ f =ᶠ[𝓝[s] a] h)
+    (hg'symm : Function.LeftInverse g'symm g') (ha : a ∈ s) :
+    HasFDerivWithinAt f (g'symm ∘L h') s a := by
+  refine HasFDerivAtFilter.of_comp_of_leftInverse ?_ hg hh ?_ hg'symm
+  · exact hst.prodMap (by simp)
+  · exact hcomp.prodMap (hcomp.self_of_nhdsWithin ha)
 
 theorem HasFDerivWithinAt.of_comp (hst : Tendsto g (𝓝[t] a) (𝓝[s] (g a)))
     (hf : HasFDerivWithinAt f f' s (g a)) (hh : HasFDerivWithinAt h h' t a)
