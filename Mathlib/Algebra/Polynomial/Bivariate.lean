@@ -244,6 +244,15 @@ lemma aevalAeval_X (x y : A) : (C X : R[X][Y]).aevalAeval x y = x := by rw [aeva
 
 lemma aevalAeval_Y (x y : A) : (Y : R[X][Y]).aevalAeval x y = y := by simp
 
+lemma evalEvalRingHom_comp_algebraMap (x y : A) :
+    (evalEvalRingHom x y).comp (mapRingHom <| mapRingHom <| algebraMap R A) =
+      (aevalAeval x y).toRingHom := by
+  ext <;> simp [aevalAeval]
+
+lemma evalEval_algebraMap (x y : A) (p : R[X][Y]) :
+    evalEval x y (p.map <| mapRingHom <| algebraMap R A) = aevalAeval x y p :=
+  congr($(evalEvalRingHom_comp_algebraMap ..) p)
+
 /-- The R-algebra automorphism given by `X ↦ Y` and `Y ↦ X`. -/
 def Bivariate.swap : R[X][Y] ≃ₐ[R] R[X][Y] := by
   apply AlgEquiv.ofAlgHom (aevalAeval (Y : R[X][Y]) (C X)) (aevalAeval (Y : R[X][Y]) (C X))
@@ -390,5 +399,12 @@ from `AdjoinRoot p` to `R`. -/
 
 lemma evalEval_mk (g : R[X][Y]) : evalEval h (mk p g) = g.evalEval x y := by
   rw [evalEval, lift_mk, eval₂_evalRingHom]
+
+/-- The bijection between elements `(x, y) : A × A` with `p(x, y) = 0` for some polynomial
+`p : R[X, Y]` and algebra homomorphisms `R[X, Y]/p →ₐ[R] A`. -/
+noncomputable def equivAevalAeval {A : Type*} [CommRing A] [Algebra R A] (p : R[X][Y]) :
+    (AdjoinRoot p →ₐ[R] A) ≃ {xy : A × A // p.aevalAeval xy.fst xy.snd = 0} :=
+  equivAlgHom p |>.trans <| Equiv.subtypeEquiv (aevalAevalEquiv ..).symm fun f ↦ by
+    rw [← aevalAevalEquiv_apply, Equiv.apply_symm_apply]
 
 end AdjoinRoot

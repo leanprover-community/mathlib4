@@ -810,6 +810,22 @@ def equiv (f : F[X]) (hf : f ≠ 0) :
 
 end Field
 
+/-- The bijection between algebra homomorphisms `φ : S[X] →ₐ[R] T` with `φ(p) = 0` for some
+polynomial `p : S[X]` and algebra homomorphisms `S[X]/p →ₐ[R] T`. -/
+@[simps!]
+noncomputable def equivAlgHom [CommSemiring R] [CommRing S] [Algebra R S] [CommRing T] [Algebra R T]
+    (p : S[X]) : (AdjoinRoot p →ₐ[R] T) ≃ {φ : S[X] →ₐ[R] T // φ p = 0} :=
+  Ideal.Quotient.liftₐEquiv _ |>.trans <|
+    Equiv.subtypeEquivRight fun _ ↦ Ideal.span_singleton_le_iff_mem _
+
+/-- The bijection between elements `x : S` with `p(x) = 0` for some polynomial `p : R[X]` and
+algebra homomorphisms `R[X]/p →ₐ[R] S`. -/
+@[simps!]
+noncomputable def equivAeval [CommRing R] [CommRing S] [Algebra R S] (p : R[X]) :
+    (AdjoinRoot p →ₐ[R] S) ≃ {x : S // p.aeval x = 0} :=
+  equivAlgHom p |>.trans <| Equiv.subtypeEquiv (aevalEquiv ..).symm fun _ ↦ by
+    simp [aeval, aevalEquiv]
+
 end Equiv
 
 -- TODO: consider splitting the file here.  In the current mathlib3, the only result

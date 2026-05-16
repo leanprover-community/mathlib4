@@ -149,6 +149,17 @@ instance hasForgetToAlgCat : HasForget₂ (CommAlgCat.{v} R) (AlgCat.{v} R) wher
 @[simp] lemma forget₂_algCat_map (f : A ⟶ B) :
     (forget₂ (CommAlgCat.{v} R) (AlgCat.{v} R)).map f = AlgCat.ofHom f.hom := rfl
 
+variable (A B) in
+/-- The bijection between the set of morphisms `A ⟶ B` in `CommAlgCat` and the set of morphisms
+`A ⟶ B` in `CommRingCat` commuting with the corresponding algebra maps `R → A` and `R → B`. -/
+@[simps]
+def homEquivCommRingCat :
+    (A ⟶ B) ≃ {f : CommRingCat.of A ⟶ .of B // f.hom.comp (algebraMap R A) = algebraMap R B} where
+  toFun f := ⟨CommRingCat.ofHom f.hom, congr($f.hom.comp_algebraMap)⟩
+  invFun f := CommAlgCat.ofHom ⟨f.val.hom, fun r ↦ congr($f.prop r)⟩
+  left_inv _ := rfl
+  right_inv _ := rfl
+
 /-- Build an isomorphism in the category `CommAlgCat R` from an `AlgEquiv` between commutative
 `Algebra`s. -/
 @[simps]

@@ -433,7 +433,7 @@ instance of_fixedField_normal_subgroup [IsGalois K L]
 noncomputable def normalAutEquivQuotient [FiniteDimensional K L] [IsGalois K L]
     (H : Subgroup Gal(L/K)) [Subgroup.Normal H] :
     Gal(L/K) ⧸ H ≃* Gal(fixedField H/K) :=
-  QuotientGroup.liftEquiv _ (restrictNormalHom_surjective L) <|
+  QuotientGroup.quotientEquivOfSurjective _ (restrictNormalHom_surjective L) <|
     (fixingSubgroup_fixedField H).symm.trans (fixedField H).restrictNormalHom_ker.symm
 
 lemma normalAutEquivQuotient_apply [FiniteDimensional K L] [IsGalois K L]
