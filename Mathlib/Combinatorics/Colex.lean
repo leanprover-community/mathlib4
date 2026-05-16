@@ -12,7 +12,7 @@ public import Mathlib.Order.SupClosed
 public import Mathlib.Order.UpperLower.Closure
 
 /-!
-# Colexigraphic order
+# Colexicographic order
 
 We define the colex order for finite sets, and give a couple of important lemmas and properties
 relating to it.
@@ -209,14 +209,14 @@ instance instDecidableLE [DecidableLE α] : DecidableLE (Colex (Finset α)) :=
 instance instDecidableLT [DecidableLE α] : DecidableLT (Colex (Finset α)) :=
   decidableLTOfDecidableLE
 
-/-- The colexigraphic order is insensitive to removing the same elements from both sets. -/
+/-- The colexicographic order is insensitive to removing the same elements from both sets. -/
 lemma toColex_sdiff_le_toColex_sdiff (hus : u ⊆ s) (hut : u ⊆ t) :
     toColex (s \ u) ≤ toColex (t \ u) ↔ toColex s ≤ toColex t := by
   simp_rw [toColex_le_toColex, ← and_imp, ← and_assoc, ← mem_sdiff,
     sdiff_sdiff_sdiff_cancel_right (show u ≤ s from hus),
     sdiff_sdiff_sdiff_cancel_right (show u ≤ t from hut)]
 
-/-- The colexigraphic order is insensitive to removing the same elements from both sets. -/
+/-- The colexicographic order is insensitive to removing the same elements from both sets. -/
 lemma toColex_sdiff_lt_toColex_sdiff (hus : u ⊆ s) (hut : u ⊆ t) :
     toColex (s \ u) < toColex (t \ u) ↔ toColex s < toColex t :=
   lt_iff_lt_of_le_iff_le' (toColex_sdiff_le_toColex_sdiff hut hus) <|
@@ -420,7 +420,7 @@ end Fintype
 
 /-! ### Initial segments -/
 
-/-- `𝒜` is an initial segment of the colexigraphic order on sets of `r`, and that if `t` is below
+/-- `𝒜` is an initial segment of the colexicographic order on sets of `r`, and that if `t` is below
 `s` in colex where `t` has size `r` and `s` is in `𝒜`, then `t` is also in `𝒜`. In effect, `𝒜` is
 downwards closed with respect to colex among sets of size `r`. -/
 def IsInitSeg (𝒜 : Finset (Finset α)) (r : ℕ) : Prop :=
@@ -523,20 +523,26 @@ theorem geomSum_injective {n : ℕ} (hn : 2 ≤ n) :
 theorem lt_geomSum_of_mem {a : ℕ} (hn : 2 ≤ n) (hi : a ∈ s) : a < ∑ i ∈ s, n ^ i :=
   (a.lt_pow_self hn).trans_le <| single_le_sum (by simp) hi
 
-@[simp] theorem toFinset_bitIndices_twoPowSum (s : Finset ℕ) :
+@[simp] theorem toFinset_bitIndices_sum_two_pow (s : Finset ℕ) :
     (∑ i ∈ s, 2 ^ i).bitIndices.toFinset = s := by
   simp [← (geomSum_injective rfl.le).eq_iff, List.sum_toFinset _ Nat.bitIndices_sorted.nodup]
 
-@[simp] theorem twoPowSum_toFinset_bitIndices (n : ℕ) :
+@[simp] theorem sum_toFinset_bitIndices_two_pow (n : ℕ) :
     ∑ i ∈ n.bitIndices.toFinset, 2 ^ i = n := by
   simp [List.sum_toFinset _ Nat.bitIndices_sorted.nodup]
+
+@[deprecated (since := "2026-05-15")] alias toFinset_bitIndices_twoPowSum :=
+  toFinset_bitIndices_sum_two_pow
+
+@[deprecated (since := "2026-05-15")] alias twoPowSum_toFinset_bitIndices :=
+  sum_toFinset_bitIndices_two_pow
 
 /-- The equivalence between `ℕ` and `Finset ℕ` that maps `∑ i ∈ s, 2^i` to `s`. -/
 @[simps] def equivBitIndices : ℕ ≃ Finset ℕ where
   toFun n := n.bitIndices.toFinset
   invFun s := ∑ i ∈ s, 2 ^ i
-  left_inv := twoPowSum_toFinset_bitIndices
-  right_inv := toFinset_bitIndices_twoPowSum
+  left_inv := sum_toFinset_bitIndices_two_pow
+  right_inv := toFinset_bitIndices_sum_two_pow
 
 /-- The equivalence `Nat.equivBitIndices` enumerates `Finset ℕ` in colexicographic order. -/
 @[simps] def orderIsoColex : ℕ ≃o Colex (Finset ℕ) where

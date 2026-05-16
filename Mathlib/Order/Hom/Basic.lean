@@ -287,7 +287,7 @@ instance : Inhabited (α →o α) :=
 
 /-- The preorder structure of `α →o β` is pointwise inequality: `f ≤ g ↔ ∀ a, f a ≤ g a`. -/
 instance : Preorder (α →o β) :=
-  @Preorder.lift (α →o β) (α → β) _ toFun
+  @Preorder.lift (α →o β) (α → β) _ DFunLike.coe
 
 instance {β : Type*} [PartialOrder β] : PartialOrder (α →o β) :=
   @PartialOrder.lift (α →o β) (α → β) _ toFun ext
@@ -348,6 +348,9 @@ theorem comp_id (f : α →o β) : comp f id = f := by
 @[simp]
 theorem id_comp (f : α →o β) : comp id f = f := by
   ext
+  rfl
+
+theorem comp_assoc (f : γ →o δ) (g : β →o γ) (h : α →o β) : (f.comp g).comp h = f.comp (g.comp h) :=
   rfl
 
 /-- Constant function bundled as an `OrderHom`. -/
@@ -558,6 +561,49 @@ theorem RelEmbedding.orderEmbeddingOfLTEmbedding_apply [PartialOrder α] [Partia
 
 namespace OrderEmbedding
 
+section LE
+
+variable [LE α] [LE β] [LE γ] [LE δ]
+
+variable (α) in
+/-- Identity order embedding -/
+abbrev id : α ↪o α :=
+  RelEmbedding.refl (· ≤ ·)
+
+@[simp]
+theorem coe_id : ⇑(id α) = _root_.id :=
+  rfl
+
+@[simp]
+theorem id_toEmbedding : (id α).toEmbedding = Function.Embedding.refl α :=
+  rfl
+
+/-- Composition of two order embeddings is an order embedding -/
+abbrev comp (f : α ↪o β) (g : β ↪o γ) : α ↪o γ :=
+  RelEmbedding.trans f g
+
+@[simp]
+theorem coe_comp (f : α ↪o β) (g : β ↪o γ) : f.comp g = g ∘ f :=
+  rfl
+
+@[simp]
+theorem id_comp (f : α ↪o β) : (id α).comp f = f := by
+  ext
+  rfl
+
+@[simp]
+theorem comp_id (f : α ↪o β) : f.comp (id β) = f := by
+  ext
+  rfl
+
+theorem comp_assoc (f : α ↪o β) (g : β ↪o γ) (h : γ ↪o δ) :
+    (f.comp g).comp h = f.comp (g.comp h) :=
+  rfl
+
+end LE
+
+section Preorder
+
 variable [Preorder α] [Preorder β] (f : α ↪o β)
 
 /-- `<` is preserved by order embeddings of preorders. -/
@@ -658,6 +704,8 @@ def toOrderHom {X Y : Type*} [Preorder X] [Preorder Y] (f : X ↪o Y) : X →o Y
 @[simp, norm_cast]
 lemma coe_ofIsEmpty [IsEmpty α] : (ofIsEmpty : α ↪o β) = (isEmptyElim : α → β) := rfl
 
+end Preorder
+
 end OrderEmbedding
 
 section Disjoint
@@ -716,17 +764,10 @@ namespace OrderIso
 
 section LE
 
-variable [LE α] [LE β] [LE γ]
+variable [LE α] [LE β] [LE γ] [LE δ]
 
-instance : EquivLike (α ≃o β) α β where
-  coe f := f.toFun
-  inv f := f.invFun
-  left_inv f := f.left_inv
-  right_inv f := f.right_inv
-  coe_injective' f g h₁ h₂ := by
-    obtain ⟨⟨_, _⟩, _⟩ := f
-    obtain ⟨⟨_, _⟩, _⟩ := g
-    congr
+instance : EquivLike (α ≃o β) α β :=
+  inferInstance
 
 instance : OrderIsoClass (α ≃o β) α β where
   map_le_map_iff f _ _ := f.map_rel_iff'
@@ -858,6 +899,10 @@ theorem self_trans_symm (e : α ≃o β) : e.trans e.symm = OrderIso.refl α :=
 theorem symm_trans_self (e : α ≃o β) : e.symm.trans e = OrderIso.refl β :=
   RelIso.symm_trans_self e
 
+theorem trans_assoc (f : α ≃o β) (g : β ≃o γ) (h : γ ≃o δ) :
+    (f.trans g).trans h = f.trans (g.trans h) :=
+  rfl
+
 /-- An order isomorphism between the domains and codomains of two prosets of
 order homomorphisms gives an order isomorphism between the two function prosets. -/
 @[simps apply symm_apply]
@@ -963,25 +1008,22 @@ theorem lt_symm_apply (e : α ≃o β) {x : α} {y : β} : x < e.symm y ↔ e x 
   rw [← e.lt_iff_lt, e.apply_symm_apply]
 
 /-- Converts an `OrderIso` into a `RelIso (<) (<)`. -/
-@[to_dual toRelIsoGT /-- Converts an `OrderIso` into a `RelIso (>) (>)`. -/]
+@[to_dual /-- Converts an `OrderIso` into a `RelIso (>) (>)`. -/]
 def toRelIsoLT (e : α ≃o β) : ((· < ·) : α → α → Prop) ≃r ((· < ·) : β → β → Prop) :=
   ⟨e.toEquiv, lt_iff_lt e⟩
 
-@[to_dual (attr := simp) toRelIsoGT_apply]
+@[to_dual (attr := simp)]
 theorem toRelIsoLT_apply (e : α ≃o β) (x : α) : e.toRelIsoLT x = e x :=
   rfl
 
+@[to_dual]
 theorem toRelIsoLT_symm (e : α ≃o β) : e.symm.toRelIsoLT = e.toRelIsoLT.symm :=
   rfl
 
-@[to_dual existing toRelIsoLT_symm] -- TODO: `to_dual` should be able to generate this by itself.
-theorem toRelIsoGT_symm (e : α ≃o β) : e.symm.toRelIsoGT = e.toRelIsoGT.symm :=
-  rfl
-
-@[to_dual (attr := simp) coe_toRelIsoGT]
+@[to_dual (attr := simp)]
 theorem coe_toRelIsoLT (e : α ≃o β) : ⇑e.toRelIsoLT = e := rfl
 
-@[to_dual (attr := simp) coe_symm_toRelIsoGT]
+@[to_dual (attr := simp)]
 theorem coe_symm_toRelIsoLT (e : α ≃o β) : ⇑e.toRelIsoLT.symm = e.symm := rfl
 
 /-- Converts a `RelIso (<) (<)` into an `OrderIso`. -/
