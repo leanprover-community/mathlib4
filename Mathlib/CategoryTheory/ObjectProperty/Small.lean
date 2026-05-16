@@ -258,6 +258,13 @@ lemma exists_equivalence_iff_of_locallySmall [LocallySmall.{w'} C] :
   exact ⟨fun ⟨J, _, ⟨e⟩⟩ ↦ ⟨J, _, ⟨(ObjectProperty.topEquivalence C).trans e⟩⟩,
     fun ⟨J, _, ⟨e⟩⟩ ↦ ⟨J, _, ⟨(ObjectProperty.topEquivalence C).symm.trans e⟩⟩⟩
 
+lemma essentiallySmall_iff_objectPropertyEssentiallySmall_top
+    (C : Type u) [Category.{v} C] [LocallySmall.{w} C] :
+    EssentiallySmall.{w} C ↔ ObjectProperty.EssentiallySmall.{w} (C := C) ⊤ := by
+  rw [← exists_equivalence_iff_of_locallySmall]
+  exact ⟨fun _ ↦ ⟨_, _, ⟨equivSmallModel.{w} C⟩⟩,
+    fun ⟨C₀, _, ⟨e⟩⟩ ↦ ⟨C₀, inferInstance, ⟨e⟩⟩⟩
+
 lemma essentiallySmall_iff_objectPropertyEssentiallySmall :
     EssentiallySmall.{w} C ↔ LocallySmall.{w} C ∧
       ObjectProperty.EssentiallySmall.{w} (C := C) ⊤ := by
