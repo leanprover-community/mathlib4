@@ -353,14 +353,6 @@ def coind₁_ι (π : ContRepresentation R G V) : π →ⁱL coind₁ π where
   isIntertwining' := by aesop
   cont := continuous_const'
 
-/-- This should be somewhere else, awaiting zulip
-https://leanprover.zulipchat.com/#narrow/channel/217875-Is-there-code-for-X.3F/topic/topEquiv.20for.20topological.20modules/with/595367186. -/
-abbrev _root_.Submodule.topContEquiv {R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
-    [TopologicalSpace M] : (⊤ : Submodule R M) ≃L[R] M where
-  __ := Submodule.topEquiv
-  continuous_toFun := continuous_subtype_val
-  continuous_invFun := continuous_id.subtype_mk _
-
 /-- The equivalence between `coind₁` and `coind` of the trivial representation of trivial
   subgroup of `G`. -/
 def coind₁Equivcoind : (coind₁ (.trivial R (⊥ : Subgroup G) V)).Equiv
