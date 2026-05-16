@@ -66,6 +66,20 @@ lemma three_le_egirth : 3 ≤ G.egirth := by
 
 @[simp] lemma egirth_bot : egirth (⊥ : SimpleGraph α) = ⊤ := by simp
 
+theorem egirth_top (h : 3 ≤ ENat.card α) : egirth (⊤ : SimpleGraph α) = 3 := by
+  classical
+  refine le_antisymm ?_ three_le_egirth
+  have ⟨s, hcard⟩ := Cardinal.exists_finset_eq_card <| Cardinal.ofNat_le_toENat.mp h
+  have ⟨x, y, z, hxy, hxz, hyz, hs⟩ := s.card_eq_three.mp hcard.symm
+  let w : Walk ⊤ x x := .cons hxy <| .cons hyz <| .cons hxz.symm .nil
+  have : w.IsCycle := {
+    edges_nodup := by simp [w]; grind
+    ne_nil := by simp
+    support_nodup := by grind [Walk.support_nil]
+  }
+  grw [egirth_le_length this]
+  simp [w]
+
 end egirth
 
 section girth
@@ -101,6 +115,9 @@ lemma exists_girth_eq_length :
 
 @[simp] lemma girth_bot : girth (⊥ : SimpleGraph α) = 0 := by
   simp [girth]
+
+theorem girth_top (h : 3 ≤ ENat.card α) : girth (⊤ : SimpleGraph α) = 3 := by
+  simp [girth, egirth_top h]
 
 end girth
 
