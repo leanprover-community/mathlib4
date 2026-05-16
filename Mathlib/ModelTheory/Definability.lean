@@ -93,35 +93,88 @@ theorem Definable.mono (hAs : A.Definable L s) (hAB : A ⊆ B) : B.Definable L s
   rw [definable_iff_empty_definable_with_params] at *
   exact hAs.map_expansion (L.lhomWithConstantsMap (Set.inclusion hAB))
 
-@[simp]
-theorem definable_empty : A.Definable L (∅ : Set (α → M)) :=
-  ⟨⊥, by
-    ext
-    simp⟩
+end Set
+
+namespace FirstOrder.Language
+
+open Set
+
+variable {L : Language.{u, v}} {M : Type w} [L.Structure M]
+
+variable {A : Set M} {α : Type u₁}
+
+namespace Formula
+
+/-- A formula with parameters from `A` defines the set of its realizations. -/
+theorem definable_withConstants (φ : L[[A]].Formula α) :
+    A.Definable L {v | φ.Realize v} :=
+  ⟨φ, rfl⟩
+
+theorem definable (φ : L.Formula α) :
+    A.Definable L {v | φ.Realize v} :=
+  (empty_definable_iff.mpr ⟨φ, rfl⟩).mono (empty_subset A)
+
+end Formula
+
+namespace BoundedFormula
+
+variable {n : ℕ}
+
+theorem definable_withConstants (φ : L[[A]].BoundedFormula α n) :
+    A.Definable L {v | φ.Realize (v ∘ Sum.inl) (v ∘ Sum.inr)} := by
+  simpa using φ.toFormula.definable_withConstants
+
+theorem definable (φ : L.BoundedFormula α n) :
+    A.Definable L {v | φ.Realize (v ∘ Sum.inl) (v ∘ Sum.inr)} := by
+  simpa using φ.toFormula.definable
+
+theorem definable_boundedSection_withConstants (φ : L[[A]].BoundedFormula Empty n) :
+    A.Definable L {xs | φ.Realize default xs} := by
+  convert (φ.toFormula.relabel (Sum.elim Empty.elim id)).definable_withConstants using 1
+  ext xs
+  simp only [Formula.realize_relabel, realize_toFormula]
+  congr!
+
+theorem definable_boundedSection (φ : L.BoundedFormula Empty n) :
+    A.Definable L {xs | φ.Realize default xs} := by
+  convert (φ.toFormula.relabel (Sum.elim Empty.elim id)).definable
+  ext xs
+  simp only [Formula.realize_relabel, realize_toFormula]
+  congr!
+
+end BoundedFormula
+
+end FirstOrder.Language
+
+namespace Set
+
+open FirstOrder FirstOrder.Language
+
+variable {M : Type w} {A : Set M} {L : FirstOrder.Language.{u, v}} [L.Structure M]
+
+variable {α : Type u₁} {β : Type*} {s : Set (α → M)}
 
 @[simp]
-theorem definable_univ : A.Definable L (univ : Set (α → M)) :=
-  ⟨⊤, by
-    ext
-    simp⟩
+theorem definable_empty : A.Definable L (∅ : Set (α → M)) :=
+  (⊥ : L[[A]].Formula α).definable_withConstants
+
+@[simp]
+theorem definable_univ : A.Definable L (univ : Set (α → M)) := by
+  simpa using (⊤ : L[[A]].Formula α).definable_withConstants
 
 @[simp]
 theorem Definable.inter {f g : Set (α → M)} (hf : A.Definable L f) (hg : A.Definable L g) :
     A.Definable L (f ∩ g) := by
   rcases hf with ⟨φ, rfl⟩
   rcases hg with ⟨θ, rfl⟩
-  refine ⟨φ ⊓ θ, ?_⟩
-  ext
-  simp
+  simpa using (φ ⊓ θ).definable_withConstants
 
 @[simp]
 theorem Definable.union {f g : Set (α → M)} (hf : A.Definable L f) (hg : A.Definable L g) :
     A.Definable L (f ∪ g) := by
-  rcases hf with ⟨φ, hφ⟩
-  rcases hg with ⟨θ, hθ⟩
-  refine ⟨φ ⊔ θ, ?_⟩
-  ext
-  rw [hφ, hθ, mem_setOf_eq, Formula.realize_sup, mem_union, mem_setOf_eq, mem_setOf_eq]
+  rcases hf with ⟨φ, rfl⟩
+  rcases hg with ⟨θ, rfl⟩
+  simpa using (φ ⊔ θ).definable_withConstants
 
 theorem definable_finset_inf {ι : Type*} {f : ι → Set (α → M)} (hf : ∀ i, A.Definable L (f i))
     (s : Finset ι) : A.Definable L (s.inf f) := by
@@ -161,10 +214,8 @@ theorem definable_iUnion_of_finite {ι : Type*} [Finite ι] {f : ι → Set (α 
 
 @[simp]
 theorem Definable.compl {s : Set (α → M)} (hf : A.Definable L s) : A.Definable L sᶜ := by
-  rcases hf with ⟨φ, hφ⟩
-  refine ⟨φ.not, ?_⟩
-  ext v
-  rw [hφ, compl_setOf, mem_setOf, mem_setOf, Formula.realize_not]
+  rcases hf with ⟨φ, rfl⟩
+  simpa using (φ.not).definable_withConstants
 
 @[simp]
 theorem Definable.sdiff {s t : Set (α → M)} (hs : A.Definable L s) (ht : A.Definable L t) :
@@ -177,9 +228,7 @@ theorem Definable.sdiff {s t : Set (α → M)} (hs : A.Definable L s) (ht : A.De
 theorem Definable.preimage_comp (f : α → β) {s : Set (α → M)} (h : A.Definable L s) :
     A.Definable L ((fun g : β → M => g ∘ f) ⁻¹' s) := by
   obtain ⟨φ, rfl⟩ := h
-  refine ⟨φ.relabel f, ?_⟩
-  ext
-  simp only [Set.preimage_setOf_eq, mem_setOf_eq, Formula.realize_relabel]
+  simpa using (φ.relabel f).definable_withConstants
 
 theorem Definable.image_comp_equiv {s : Set (β → M)} (h : A.Definable L s) (f : α ≃ β) :
     A.Definable L ((fun g : β → M => g ∘ f) '' s) := by
@@ -278,19 +327,15 @@ theorem Definable.image_comp {s : Set (β → M)} (h : A.Definable L s) (f : α 
 lemma Definable.exists_of_finite [Finite β] {S : Set ((α ⊕ β) → M)}
     (hS : A.Definable L S) :
     A.Definable L { v : α → M | ∃ u : β → M, Sum.elim v u ∈ S } := by
-  obtain ⟨φ, hφ⟩ := hS
-  exists φ.iExs β
-  ext v
-  simp [hφ]
+  obtain ⟨φ, rfl⟩ := hS
+  simpa using (φ.iExs β).definable_withConstants
 
 /-- Finite universal quantifiers preserve definablity. -/
 lemma Definable.forall_of_finite [Finite β] {S : Set ((α ⊕ β) → M)}
     (hS : A.Definable L S) :
     A.Definable L { v : α → M | ∀ u : β → M, Sum.elim v u ∈ S } := by
-  obtain ⟨φ, hφ⟩ := hS
-  exists φ.iAlls β
-  ext v
-  simp [hφ]
+  obtain ⟨φ, rfl⟩ := hS
+  simpa using (φ.iAlls β).definable_withConstants
 
 variable (L A)
 
@@ -478,10 +523,7 @@ theorem definableFun_iff_empty_definableFun_with_params :
 @[fun_prop]
 theorem _root_.FirstOrder.Language.Term.definableFun_realize (t : L.Term α) :
     (∅ : Set M).DefinableFun L (t.realize) := by
-  rw [empty_definableFun_iff]
-  refine ⟨(t.relabel some).equal (Term.var none), ?_⟩
-  ext v
-  simp [tupleGraph]
+  simpa using ((t.relabel some).equal (Term.var none)).definable
 
 /-- A function symbol is a definable function. -/
 @[fun_prop]
@@ -591,9 +633,7 @@ def TermDefinable (f : (α → M) → M) : Prop :=
 theorem TermDefinable.definable_tupleGraph {f : (α → M) → M} (h : A.TermDefinable L f) :
     A.Definable L f.tupleGraph := by
   obtain ⟨φ, rfl⟩ := h
-  use (φ.relabel some).equal (Term.var none)
-  ext
-  simp [Function.tupleGraph]
+  simpa using ((φ.relabel some).equal (Term.var none)).definable_withConstants
 
 variable {L} {A B} {f : (α → M) → M}
 

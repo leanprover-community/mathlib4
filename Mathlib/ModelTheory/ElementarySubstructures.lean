@@ -159,12 +159,9 @@ theorem closure_eq_self (hA : L.MeetsDefinable A) :
     closure L A = A := by
   refine Subset.antisymm ?_ subset_closure
   rw [coe_closure_eq_range_term_realize]
-  intro x hx
-  have : A.Definable₁ L {x} := by
-    obtain ⟨t, rfl⟩ := hx
-    use (Term.var 0).equal (t.relabel Sum.inl).varsToConstants
-    simp [Set.ext_iff]
-  exact singleton_inter_nonempty.mp <| hA _ (singleton_nonempty x) this
+  rintro x ⟨t, rfl⟩
+  exact singleton_inter_nonempty.mp <| hA _ (singleton_nonempty _) <|
+    by simpa using ((Term.var 0).equal (t.relabel Sum.inl).varsToConstants).definable_withConstants
 
 /-- The closure of a set meeting definable sets is an elementary substructure. -/
 theorem isElementary_closure (hA : L.MeetsDefinable A) :
@@ -174,20 +171,15 @@ theorem isElementary_closure (hA : L.MeetsDefinable A) :
   let D : Set M := {y : M | φ.Realize default (Fin.snoc (Subtype.val ∘ x) y)}
   have hD_ne : D.Nonempty := ⟨a,hφ⟩
   have hD : A.Definable₁ L D := by
-    simp only [Definable₁, Definable, Fin.isValue]
-    refine ⟨((L.lhomWithConstants A).onBoundedFormula φ).toFormula.relabel
-      (Sum.elim Empty.elim id) |>.subst fun i => Fin.lastCases (Term.var 0)
-        (fun j => (L.con ⟨x j, by
+    apply (φ.definable_boundedSection).preimage_map
+    simp only [DefinableMap]
+    refine Fin.lastCases ?_ ?_
+    · simp only [Fin.snoc_last]; fun_prop
+    · intro i; simp only [Fin.snoc_castSucc];
+      have : ↑(x i) ∈ A := by
         nth_rw 1 [← hA.closure_eq_self]
-        simp only [Subtype.coe_prop]
-        ⟩).term) i, ?_⟩
-    ext v
-    simp only [Fin.isValue, mem_setOf_eq, Formula.relabel, Formula.Realize,
-      BoundedFormula.realize_subst, BoundedFormula.realize_relabel, Nat.add_zero, Fin.castAdd_zero,
-      Fin.cast_refl, Function.comp_id, Fin.natAdd_zero, D]
-    rw [← Formula.Realize, BoundedFormula.realize_toFormula, LHom.realize_onBoundedFormula]
-    congr! 1
-    ext i; cases i using Fin.lastCases <;> simp
+        simp
+      fun_prop (disch := assumption)
   obtain ⟨b, hbD, hbA⟩ := hA D hD_ne hD
   exact ⟨⟨b, by rwa [← hA.closure_eq_self] at hbA⟩, hbD⟩
 
