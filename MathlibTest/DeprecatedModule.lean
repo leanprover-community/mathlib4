@@ -23,10 +23,6 @@ info: Deprecated modules
 'MathlibTest.DeprecatedModule' deprecates to
 #[Mathlib.Tactic.Linter.DocPrime, Mathlib.Tactic.Linter.DocString]
 with message 'We can also give more details about the deprecation'
-
-'MathlibTest.DeprecatedModule' deprecates to
-#[Mathlib.Tactic.Linter.DocPrime, Mathlib.Tactic.Linter.DocString]
-with no message
 -/
 #guard_msgs in
 #show_deprecated_modules
@@ -45,10 +41,6 @@ info: Deprecated modules
 'MathlibTest.DeprecatedModule' deprecates to
 #[Mathlib.Tactic.Linter.DocPrime, Mathlib.Tactic.Linter.DocString]
 with message 'We can also give more details about the deprecation'
-
-'MathlibTest.DeprecatedModule' deprecates to
-#[Mathlib.Tactic.Linter.DocPrime, Mathlib.Tactic.Linter.DocString]
-with no message
 -/
 #guard_msgs in
 #show_deprecated_modules
