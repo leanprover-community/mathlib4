@@ -184,33 +184,53 @@ theorem dropUntil_copy {u v w v' w'} (p : G.Walk v w) (hv : v = v') (hw : w = w'
   subst_vars
   rfl
 
+theorem support_takeUntil_prefix {u v w : V} (p : G.Walk v w) (h : u ∈ p.support) :
+    (p.takeUntil u h).support <+: p.support := by
+  grw [takeUntil_eq_take, support_copy, take_support_eq_support_take_succ, List.take_prefix]
+
 theorem support_takeUntil_subset {u v w : V} (p : G.Walk v w) (h : u ∈ p.support) :
-    (p.takeUntil u h).support ⊆ p.support := fun x hx => by
-  rw [← take_spec p h, mem_support_append_iff]
-  exact Or.inl hx
+    (p.takeUntil u h).support ⊆ p.support :=
+  p.support_takeUntil_prefix h |>.subset
+
+theorem support_dropUntil_suffix {u v w : V} (p : G.Walk v w) (h : u ∈ p.support) :
+    (p.dropUntil u h).support <:+ p.support := by
+  grw [dropUntil_eq_drop, support_copy, drop_support_eq_support_drop_min, List.drop_suffix]
 
 theorem support_dropUntil_subset {u v w : V} (p : G.Walk v w) (h : u ∈ p.support) :
-    (p.dropUntil u h).support ⊆ p.support := fun x hx => by
-  rw [← take_spec p h, mem_support_append_iff]
-  exact Or.inr hx
+    (p.dropUntil u h).support ⊆ p.support :=
+  p.support_dropUntil_suffix h |>.subset
+
+theorem darts_takeUntil_prefix {u v w : V} (p : G.Walk v w) (h : u ∈ p.support) :
+    (p.takeUntil u h).darts <+: p.darts := by
+  grw [takeUntil_eq_take, darts_copy, darts_take, List.take_prefix]
 
 theorem darts_takeUntil_subset {u v w : V} (p : G.Walk v w) (h : u ∈ p.support) :
-    (p.takeUntil u h).darts ⊆ p.darts := fun x hx => by
-  rw [← take_spec p h, darts_append, List.mem_append]
-  exact Or.inl hx
+    (p.takeUntil u h).darts ⊆ p.darts :=
+  p.darts_takeUntil_prefix h |>.subset
+
+theorem darts_dropUntil_suffix {u v w : V} (p : G.Walk v w) (h : u ∈ p.support) :
+    (p.dropUntil u h).darts <:+ p.darts := by
+  grw [dropUntil_eq_drop, darts_copy, darts_drop, List.drop_suffix]
 
 theorem darts_dropUntil_subset {u v w : V} (p : G.Walk v w) (h : u ∈ p.support) :
-    (p.dropUntil u h).darts ⊆ p.darts := fun x hx => by
-  rw [← take_spec p h, darts_append, List.mem_append]
-  exact Or.inr hx
+    (p.dropUntil u h).darts ⊆ p.darts :=
+  p.darts_dropUntil_suffix h |>.subset
+
+theorem edges_takeUntil_prefix {u v w : V} (p : G.Walk v w) (h : u ∈ p.support) :
+    (p.takeUntil u h).edges <+: p.edges :=
+  p.darts_takeUntil_prefix h |>.map _
 
 theorem edges_takeUntil_subset {u v w : V} (p : G.Walk v w) (h : u ∈ p.support) :
     (p.takeUntil u h).edges ⊆ p.edges :=
-  List.map_subset _ (p.darts_takeUntil_subset h)
+  p.edges_takeUntil_prefix h |>.subset
+
+theorem edges_dropUntil_suffix {u v w : V} (p : G.Walk v w) (h : u ∈ p.support) :
+    (p.dropUntil u h).edges <:+ p.edges :=
+  p.darts_dropUntil_suffix h |>.map _
 
 theorem edges_dropUntil_subset {u v w : V} (p : G.Walk v w) (h : u ∈ p.support) :
     (p.dropUntil u h).edges ⊆ p.edges :=
-  List.map_subset _ (p.darts_dropUntil_subset h)
+  p.edges_dropUntil_suffix h |>.subset
 
 theorem length_takeUntil_le {u v w : V} (p : G.Walk v w) (h : u ∈ p.support) :
     (p.takeUntil u h).length ≤ p.length := by
