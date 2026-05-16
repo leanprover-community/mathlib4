@@ -81,7 +81,7 @@ variable (k G) in
 @[simps toLinearMap]
 def ε : (trivial k G k).IntertwiningMap (linearize k G (MonoidalCategoryStruct.tensorUnit
     (Action (Type w) G))) where
-  __ := Finsupp.LinearEquiv.finsuppUnique k k PUnit |>.symm.toLinearMap
+  __ := Finsupp.uniqueLinearEquiv k k PUnit.unit |>.symm.toLinearMap
   isIntertwining' g := by ext1; simp [linearize_single _]
 
 lemma ε_one : ε k G 1 = Finsupp.single PUnit.unit 1 := by
@@ -93,7 +93,7 @@ variable (k G) in
 /-- The unit of the linearize functor. -/
 @[simps toLinearMap]
 def η : (linearize k G (𝟙_ (Action (Type u) G))).IntertwiningMap (trivial k G k) where
-  __ := (Finsupp.LinearEquiv.finsuppUnique k k PUnit).toLinearMap
+  __ := (Finsupp.uniqueLinearEquiv k k PUnit.unit).toLinearMap
   isIntertwining' g := by ext; simp [linearize_single _]
 
 lemma η_single (x : PUnit) : η k G (Finsupp.single x 1) = 1 := by
