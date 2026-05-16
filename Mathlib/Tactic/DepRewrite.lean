@@ -146,6 +146,7 @@ The `Nat` state tracks which occurrence of the pattern we are about to see, 1-in
 The cache stores results of `visit` together with
 - the `Nat` state before the cached call; and
 - the difference in the state resulting from the call.
+
 We store these because even if the cache hits,
 we must update the state as if the call had been made.
 Storing the difference suffices because the state increases monotonically.
