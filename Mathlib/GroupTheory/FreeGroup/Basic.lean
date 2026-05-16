@@ -185,7 +185,7 @@ theorem Step.diamond :
 
 @[to_additive]
 theorem Step.to_red : Step L₁ L₂ → Red L₁ L₂ :=
-  ReflTransGen.single
+  ReflTransGen.single L₁ L₂
 
 /-- **Church-Rosser theorem** for word reduction: If `w1 w2 w3` are words such that `w1` reduces
 to `w2` and `w3` respectively, then there is a word `w4` such that `w2` and `w3` reduce to `w4`
@@ -202,7 +202,7 @@ theorem church_rosser : Red L₁ L₂ → Red L₁ L₃ → Join Red L₂ L₃ :
 
 @[to_additive]
 theorem cons_cons {p} : Red L₁ L₂ → Red (p :: L₁) (p :: L₂) :=
-  ReflTransGen.lift (List.cons p) fun _ _ => Step.cons
+  ReflTransGen.lift (List.cons p) (fun _ _ => Step.cons) L₁ L₂
 
 @[to_additive]
 theorem cons_cons_iff (p) : Red (p :: L₁) (p :: L₂) ↔ Red L₁ L₂ :=
@@ -274,7 +274,7 @@ theorem cons_nil_iff_singleton {x b} : Red ((x, b) :: L) [] ↔ Red L [(x, not b
   Iff.intro
     (fun h => by
       have h₁ : Red ((x, not b) :: (x, b) :: L) [(x, not b)] := cons_cons h
-      have h₂ : Red ((x, not b) :: (x, b) :: L) L := ReflTransGen.single Step.cons_not_rev
+      have h₂ : Red ((x, not b) :: (x, b) :: L) L := ReflTransGen.single _ L Step.cons_not_rev
       let ⟨L', h₁, h₂⟩ := church_rosser h₁ h₂
       rw [singleton_iff] at h₁
       subst L'
@@ -321,11 +321,8 @@ theorem Step.sublist (H : Red.Step L₁ L₂) : L₂ <+ L₁ := by
 @[to_additive
 /-- If `w₁ w₂` are words such that `w₁` reduces to `w₂`, then `w₂` is a sublist of `w₁`. -/]
 protected theorem sublist : Red L₁ L₂ → L₂ <+ L₁ :=
-  @reflTransGen_of_isTrans_reflexive
-    _ (fun a b => b <+ a) _ _ _
-    ⟨List.Sublist.refl⟩
-    ⟨fun _a _b _c hab hbc => List.Sublist.trans hbc hab⟩
-    (fun _ _ => Red.Step.sublist)
+  @reflTransGen_of_isTrans_reflexive _ (fun a b => b <+ a) _ ⟨List.Sublist.refl⟩
+    ⟨fun _a _b _c hab hbc => List.Sublist.trans hbc hab⟩ (fun _ _ => Red.Step.sublist) L₁ L₂
 
 @[to_additive]
 theorem length_le (h : Red L₁ L₂) : L₂.length ≤ L₁.length :=
@@ -364,12 +361,12 @@ theorem equivalence_join_red : Equivalence (Join (@Red α)) :=
   equivalence_join_reflTransGen fun _ b c hab hac =>
     match b, c, Red.Step.diamond hab hac rfl with
     | b, _, Or.inl rfl => ⟨b, by rfl, by rfl⟩
-    | _, _, Or.inr ⟨d, hbd, hcd⟩ => ⟨d, ReflGen.single hbd, ReflTransGen.single hcd⟩
+    | _, c, Or.inr ⟨d, hbd, hcd⟩ => ⟨d, ReflGen.single hbd, ReflTransGen.single c d hcd⟩
 
 @[to_additive]
 theorem join_red_of_step (h : Red.Step L₁ L₂) : Join Red L₁ L₂ := by
   unfold Red
-  exact join_of_single h.to_red
+  exact join_of_single L₁ L₂ h.to_red
 
 @[to_additive]
 theorem eqvGen_step_iff_join_red : EqvGen Red.Step L₁ L₂ ↔ Join Red L₁ L₂ :=
@@ -377,8 +374,8 @@ theorem eqvGen_step_iff_join_red : EqvGen Red.Step L₁ L₂ ↔ Join Red L₁ L
     (fun h =>
       have : EqvGen (Join Red) L₁ L₂ := h.mono fun _ _ => join_red_of_step
       equivalence_join_red.eqvGen_iff.1 this)
-    (join_of_equivalence (Relation.EqvGen.is_equivalence _) fun _ _ =>
-      reflTransGen_of_equivalence (Relation.EqvGen.is_equivalence _) EqvGen.rel)
+    (join_of_equivalence (Relation.EqvGen.is_equivalence _)
+      (reflTransGen_of_equivalence (Relation.EqvGen.is_equivalence _) EqvGen.rel) L₁ L₂)
 
 /-! ### Reduced words -/
 
@@ -589,7 +586,7 @@ theorem Red.Step.invRev {L₁ L₂ : List (α × Bool)} (h : Red.Step L₁ L₂)
 
 @[to_additive]
 theorem Red.invRev {L₁ L₂ : List (α × Bool)} (h : Red L₁ L₂) : Red (invRev L₁) (invRev L₂) :=
-  Relation.ReflTransGen.lift _ (fun _a _b => Red.Step.invRev) h
+  Relation.ReflTransGen.lift FreeGroup.invRev (fun _a _b => Red.Step.invRev) L₁ L₂ h
 
 @[to_additive (attr := simp)]
 theorem Red.step_invRev_iff :

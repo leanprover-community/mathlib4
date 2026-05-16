@@ -160,7 +160,7 @@ instance : (decomposedTo J).Full where
     dsimp at f
     have : j' = k' := by
       rw [← hX, ← hY, Quotient.eq'']
-      exact Relation.ReflTransGen.single (Or.inl ⟨f⟩)
+      exact Relation.ReflTransGen.single X Y (Or.inl ⟨f⟩)
     subst this
     exact ⟨Sigma.SigmaHom.mk (ObjectProperty.homMk f), rfl⟩
 
