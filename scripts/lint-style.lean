@@ -169,7 +169,7 @@ def undocumentedScripts (opts : LinterOptions) : IO Nat := do
   -- These are data files for linter exceptions: don't complain about these *for now*.
   let dataFiles := #["noshake.json", "nolints-style.txt"]
   let undocumented := allScripts.filter fun script ↦
-    !readme.containsSubstr s!"`{script}`" && !dataFiles.contains script
+    !readme.contains s!"`{script}`" && !dataFiles.contains script
   if undocumented.size > 0 then
     IO.println s!"error: found {undocumented.size} undocumented script(s): \
       please describe the script(s) in 'scripts/README.md'\n  \

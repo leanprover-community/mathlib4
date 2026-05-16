@@ -22,7 +22,7 @@ the `SMul` instances are already defined in `Mathlib/Algebra/Order/Group/Synonym
 * `Mathlib/Algebra/Order/Module/Synonym.lean`
 -/
 
-@[expose] public section
+public section
 
 variable {G₀ M₀ : Type*}
 

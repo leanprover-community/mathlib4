@@ -17,7 +17,7 @@ is closed under extensions.
 
 -/
 
-@[expose] public section
+public section
 
 universe v v' u u'
 

@@ -367,7 +367,7 @@ lemma prod_primeFactors_of_squarefree (hn : Squarefree n) : ∏ p ∈ n.primeFac
 lemma primeFactors_prod (hs : ∀ p ∈ s, p.Prime) : primeFactors (∏ p ∈ s, p) = s := by
   have hn : ∏ p ∈ s, p ≠ 0 := prod_ne_zero_iff.2 fun p hp ↦ (hs _ hp).ne_zero
   ext p
-  rw [mem_primeFactors_of_ne_zero hn, and_congr_right (fun hp ↦ hp.prime.dvd_finset_prod_iff _)]
+  rw [mem_primeFactors_of_ne_zero hn, and_congr_right (fun hp ↦ hp.prime.dvd_finsetProd_iff _)]
   refine ⟨?_, fun hp ↦ ⟨hs _ hp, _, hp, dvd_rfl⟩⟩
   rintro ⟨hp, q, hq, hpq⟩
   rwa [← ((hs _ hq).dvd_iff_eq hp.ne_one).1 hpq]

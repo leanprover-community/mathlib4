@@ -222,7 +222,7 @@ lemma pos_or_neg_of_sum_smul_root_mem (f : ι → ℤ)
     by_cases hi : i ∈ b.support
     · change 0 ≤ f' ⟨i, hi⟩
       simp [← hc]
-    · replace hi : i ∉ f.support := by contrapose! hi; exact hf₀ hi
+    · replace hi : i ∉ f.support := by contrapose hi; exact hf₀ hi
       simp_all
   refine Pi.lt_def.mpr ⟨aux, ?_⟩
   by_contra! contra

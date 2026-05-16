@@ -40,7 +40,7 @@ namespace Function
 variable (f : M → N) (g : N → P) (g' : P → P')
 
 /-- The maps `f` and `g` form an exact pair: `g y = 1` iff `y` belongs to the image of `f`. -/
-@[to_additive Exact /-- The maps `f` and `g` form an exact pair:
+@[to_additive /-- The maps `f` and `g` form an exact pair:
   `g y = 0` iff `y` belongs to the image of `f`. -/]
 def MulExact [One P] : Prop := ∀ y, g y = 1 ↔ y ∈ Set.range f
 
@@ -92,7 +92,7 @@ lemma iff_rangeFactorization [One P] (hg : 1 ∈ Set.range g) :
     MulExact f g ↔ MulExact ((↑) : Set.range f → N) (Set.rangeFactorization g) := by
   letI : One (Set.range g) := ⟨⟨1, hg⟩⟩
   have : ((1 : Set.range g) : P) = 1 := rfl
-  simp [MulExact, Set.rangeFactorization, Subtype.ext_iff, this]
+  simp [MulExact, Subtype.ext_iff, this]
 
 /-- If two maps `f : M → N` and `g : N → P` are exact, then the induced maps
 `Set.range f → N → Set.range g` are exact.
@@ -289,7 +289,7 @@ lemma exact_zero_iff_surjective {M N : Type*} (P : Type*)
     [AddCommGroup M] [AddCommGroup N] [AddCommMonoid P] [Module R N] [Module R M]
     [Module R P] (f : M →ₗ[R] N) :
     Function.Exact f (0 : N →ₗ[R] P) ↔ Function.Surjective f := by
-  simp [← range_eq_top, exact_iff, eq_comm]
+  simp [range_eq_top, exact_iff, eqComm]
 
 end LinearMap
 
@@ -428,10 +428,9 @@ def Exact.splitInjectiveEquiv
     have h₂ : ∀ x, g (f x) = 0 := congr_fun h.comp_eq_zero
     constructor
     · intro x y e
-      simp only [prod_apply, Pi.prod, Prod.mk.injEq] at e
+      simp only [LinearMap.prod_apply, Function.prod_apply, Prod.mk.injEq] at e
       obtain ⟨z, hz⟩ := (h (x - y)).mp (by simpa [sub_eq_zero] using e.2)
-      suffices z = 0 by rw [← sub_eq_zero, ← hz, this, map_zero]
-      rw [← h₁ z, hz, map_sub, e.1, sub_self]
+      rw [← sub_eq_zero, ← hz, ← h₁ z, hz, map_sub, e.1, sub_self, map_zero]
     · rintro ⟨x, y⟩
       obtain ⟨y, rfl⟩ := hg y
       refine ⟨f x + y - f (l.1 y), by ext <;> simp [h₁, h₂]⟩

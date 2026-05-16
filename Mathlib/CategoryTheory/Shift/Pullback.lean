@@ -39,15 +39,16 @@ namespace CategoryTheory
 open Limits Category
 
 variable (C : Type*) [Category* C] {A B : Type*} [AddMonoid A] [AddMonoid B]
-  (φ : A →+ B) [HasShift C B]
 
 /-- The category `PullbackShift C φ` is equipped with a shift such that for all `a`,
 the shift functor by `a` is `shiftFunctor C (φ a)`. -/
 @[nolint unusedArguments]
-def PullbackShift (_ : A →+ B) [HasShift C B] := C
+def PullbackShift [HasShift C B] (_ : A →+ B) := C
 deriving Category
 
 attribute [local instance] endofunctorMonoidalCategory
+
+variable [HasShift C B] (φ : A →+ B)
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The shift on `PullbackShift C φ` is obtained by precomposing the shift on `C` with
