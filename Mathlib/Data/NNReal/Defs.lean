@@ -66,7 +66,10 @@ namespace NNReal
 
 instance : Coe ℝ≥0 ℝ := ⟨toReal⟩
 
-/-- Constructor of ℝ≥0 from a nonnegative real number -/
+/-- Constructor of ℝ≥0 from a nonnegative real number.
+
+Important: You should use `NNReal.mk` instead of the anonymous constructor `⟨_, _⟩` to avoid abuse
+of the definitional equality between `ℝ≥0` and `{ r : ℝ // 0 ≤ r }`. -/
 protected def mk (x : ℝ) (hx : 0 ≤ x) : ℝ≥0 := ⟨x, hx⟩
 
 instance : Zero ℝ≥0 := ⟨.mk 0 le_rfl⟩
