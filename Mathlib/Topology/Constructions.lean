@@ -528,6 +528,13 @@ theorem Continuous.codRestrict {f : X → Y} {s : Set Y} (hf : Continuous f) (hs
     Continuous (s.codRestrict f hs) :=
   hf.subtype_mk hs
 
+theorem continuous_codRestrict_iff {f : X → Y} {s : Set Y} (hs : ∀ a, f a ∈ s) :
+    Continuous (codRestrict f s hs) ↔ Continuous f := by
+  refine ⟨?_, fun hf ↦ Continuous.codRestrict hf hs⟩
+  simp_rw [continuous_def]
+  intro hf t ht
+  exact hf (Subtype.val ⁻¹' t) (isOpen_induced ht)
+
 theorem IsOpenMap.codRestrict {f : X → Y} (hf : IsOpenMap f) {s : Set Y} (hs : ∀ a, f a ∈ s) :
     IsOpenMap (s.codRestrict f hs) :=
   hf.subtype_mk hs

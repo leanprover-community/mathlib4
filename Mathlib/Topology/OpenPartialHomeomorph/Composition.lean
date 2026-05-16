@@ -6,6 +6,7 @@ Authors: Sébastien Gouëzel
 module
 
 public import Mathlib.Topology.OpenPartialHomeomorph.IsImage
+public import Mathlib.Topology.PartialHomeomorph.Composition
 /-!
 # Partial homeomorphisms: composition
 
@@ -37,13 +38,11 @@ variable (e' : OpenPartialHomeomorph Y Z)
 
 /-- Composition of two open partial homeomorphisms when the target of the first and the source of
 the second coincide. -/
-@[simps! apply symm_apply toPartialEquiv, simps! -isSimp source target]
+@[simps! apply symm_apply toPartialHomeomorph_toPartialEquiv, simps! -isSimp source target]
 protected def trans' (h : e.target = e'.source) : OpenPartialHomeomorph X Z where
-  toPartialEquiv := PartialEquiv.trans' e.toPartialEquiv e'.toPartialEquiv h
+  toPartialHomeomorph := e.toPartialHomeomorph.trans' e'.toPartialHomeomorph h
   open_source := e.open_source
   open_target := e'.open_target
-  continuousOn_toFun := e'.continuousOn.comp e.continuousOn <| h ▸ e.mapsTo
-  continuousOn_invFun := e.continuousOn_symm.comp e'.continuousOn_symm <| h.symm ▸ e'.symm_mapsTo
 
 /-- Composing two open partial homeomorphisms, by restricting to the maximal domain where their
 composition is well defined.
@@ -99,15 +98,15 @@ theorem inv_image_trans_target : e'.symm '' (e.trans e').target = e'.source ∩ 
 
 theorem trans_assoc (e'' : OpenPartialHomeomorph Z Z') :
     (e.trans e').trans e'' = e.trans (e'.trans e'') :=
-  toPartialEquiv_injective <| e.1.trans_assoc _ _
+  toPartialHomeomorph_injective <| e.1.trans_assoc _ _
 
 @[simp, mfld_simps]
 theorem trans_refl : e.trans (OpenPartialHomeomorph.refl Y) = e :=
-  toPartialEquiv_injective e.1.trans_refl
+  toPartialHomeomorph_injective e.1.trans_refl
 
 @[simp, mfld_simps]
 theorem refl_trans : (OpenPartialHomeomorph.refl X).trans e = e :=
-  toPartialEquiv_injective e.1.refl_trans
+  toPartialHomeomorph_injective e.1.refl_trans
 
 theorem trans_ofSet {s : Set Y} (hs : IsOpen s) : e.trans (ofSet s hs) = e.restr (e ⁻¹' s) :=
   OpenPartialHomeomorph.ext _ _ (fun _ => rfl) (fun _ => rfl) <| by
@@ -131,8 +130,8 @@ theorem ofSet_trans_ofSet {s : Set X} (hs : IsOpen s) {s' : Set X} (hs' : IsOpen
   ext <;> simp [hs'.interior_eq]
 
 theorem restr_trans (s : Set X) : (e.restr s).trans e' = (e.trans e').restr s :=
-  toPartialEquiv_injective <|
-    PartialEquiv.restr_trans e.toPartialEquiv e'.toPartialEquiv (interior s)
+  toPartialHomeomorph_injective <|
+    PartialHomeomorph.restr_trans e.toPartialHomeomorph e'.toPartialHomeomorph (interior s)
 
 end trans
 
@@ -197,22 +196,21 @@ variable (e : X ≃ₜ Y) (e' : Y ≃ₜ Z)
 @[simp, mfld_simps]
 theorem trans_toOpenPartialHomeomorph : (e.trans e').toOpenPartialHomeomorph =
     e.toOpenPartialHomeomorph.trans e'.toOpenPartialHomeomorph :=
-  OpenPartialHomeomorph.toPartialEquiv_injective <| Equiv.trans_toPartialEquiv _ _
+  OpenPartialHomeomorph.toPartialHomeomorph_injective <| Homeomorph.trans_toPartialHomeomorph _ _
 
 /-- Precompose an open partial homeomorphism with a homeomorphism.
 We modify the source and target to have better definitional behavior. -/
 @[simps! -fullyApplied]
 def transOpenPartialHomeomorph (e : X ≃ₜ Y) (f' : OpenPartialHomeomorph Y Z) :
     OpenPartialHomeomorph X Z where
-  toPartialEquiv := e.toEquiv.transPartialEquiv f'.toPartialEquiv
+  toPartialHomeomorph := e.transPartialHomeomorph f'.toPartialHomeomorph
   open_source := f'.open_source.preimage e.continuous
   open_target := f'.open_target
-  continuousOn_toFun := f'.continuousOn.comp e.continuous.continuousOn fun _ => id
-  continuousOn_invFun := e.symm.continuous.comp_continuousOn f'.symm.continuousOn
 
 theorem transOpenPartialHomeomorph_eq_trans (e : X ≃ₜ Y) (f' : OpenPartialHomeomorph Y Z) :
     e.transOpenPartialHomeomorph f' = e.toOpenPartialHomeomorph.trans f' :=
-  OpenPartialHomeomorph.toPartialEquiv_injective <| Equiv.transPartialEquiv_eq_trans _ _
+  OpenPartialHomeomorph.toPartialHomeomorph_injective <|
+    Homeomorph.transPartialHomeomorph_eq_trans _ _
 
 @[simp, mfld_simps]
 theorem transOpenPartialHomeomorph_trans (e : X ≃ₜ Y) (f : OpenPartialHomeomorph Y Z)
