@@ -125,7 +125,7 @@ theorem homogeneousSubmodule_eq_finsupp_supported (n : ℕ) :
 
 lemma homogeneousSubmodule_fg [Finite σ] (n : ℕ) :
     (homogeneousSubmodule σ R n).FG :=
-  weightedHomogeneousSubmodule_fg (1 : σ → ℕ) (by simp) n
+  weightedHomogeneousSubmodule_fg R (1 : σ → ℕ) (by simp) n
 
 variable {σ R}
 
