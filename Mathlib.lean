@@ -2632,6 +2632,7 @@ public import Mathlib.CategoryTheory.Enriched.Limits.HasConicalPullbacks
 public import Mathlib.CategoryTheory.Enriched.Limits.HasConicalTerminal
 public import Mathlib.CategoryTheory.Enriched.Opposite
 public import Mathlib.CategoryTheory.Enriched.Ordinary.Basic
+public import Mathlib.CategoryTheory.Enriched.TensorProductCategory
 public import Mathlib.CategoryTheory.EpiMono
 public import Mathlib.CategoryTheory.EqToHom
 public import Mathlib.CategoryTheory.Equivalence
