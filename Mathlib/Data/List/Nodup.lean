@@ -22,6 +22,7 @@ import Aesop.Main
 public import Mathlib.Logic.Function.Basic
 public import Mathlib.Data.SProd
 public import Mathlib.Data.List.Defs
+import Aesop.Frontend.Tactic
 
 /-!
 # Lists with no duplicates
