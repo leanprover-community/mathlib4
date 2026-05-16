@@ -137,8 +137,8 @@ lemma smul_finset_univ₀ [Fintype β] (ha : a ≠ 0) : a • (univ : Finset β)
   coe_injective <| by push_cast; exact Set.smul_set_univ₀ ha
 
 @[simp]
-lemma smul_finset_eq_univ₀ [Fintype β] (ha : a ≠ 0) : a • s = univ ↔ s = univ := by
-  exact_mod_cast smul_finset_eq_univ (α := Units α) (a := Units.mk0 a ha)
+lemma smul_finset_eq_univ₀ [Fintype β] (ha : a ≠ 0) : a • s = univ ↔ s = univ :=
+  mod_cast smul_finset_eq_univ (a := Units.mk0 a ha)
 
 lemma smul_univ₀ [Fintype β] {s : Finset α} (hs : ¬s ⊆ 0) : s • (univ : Finset β) = univ :=
   coe_injective <| by
