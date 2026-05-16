@@ -313,6 +313,13 @@ lemma isTopologicalBasis_singleton_empty : IsTopologicalBasis {(∅ : Set α)} �
   mp h := by simpa using h.diff_empty
   mpr h := ⟨by simp, by simp [Set.univ_eq_empty_iff.2], Subsingleton.elim ..⟩
 
+/-- For a topological basis `B`, the finite unions of sets in `B` also form a topological basis. -/
+lemma IsTopologicalBasis.finite_sUnion (hB : IsTopologicalBasis B) :
+    IsTopologicalBasis (sUnion '' {f : Set (Set α) | f.Finite ∧ f ⊆ B}) := by
+  refine hB.of_isOpen_of_subset ?_ (fun u hu ↦ ⟨{u}, by simpa⟩)
+  rintro - ⟨f, ⟨hf1, hf2⟩, rfl⟩
+  exact isOpen_sUnion fun u hu ↦ hB.isOpen (hf2 hu)
+
 variable (α)
 
 /-- A separable space is one with a countable dense subset, available through
@@ -333,6 +340,12 @@ latter should be used as a typeclass argument in theorems because Lean can autom
 
 theorem exists_countable_dense [SeparableSpace α] : ∃ s : Set α, s.Countable ∧ Dense s :=
   SeparableSpace.exists_countable_dense
+
+variable {α} in
+theorem exists_countable_dense_subset (s : Set α) [SeparableSpace s] :
+    ∃ t : Set α, t.Countable ∧ t ⊆ s ∧ s ⊆ closure t := by
+  obtain ⟨t, ct, dt⟩ := exists_countable_dense s
+  exact ⟨Subtype.val '' t, ct.image _, by simp, fun x hx ↦ closure_subtype.1 (dt ⟨x, hx⟩)⟩
 
 /-- A nonempty separable space admits a sequence with dense range. Instead of running `cases` on the
 conclusion of this lemma, you might want to use `TopologicalSpace.denseSeq` and

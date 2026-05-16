@@ -177,6 +177,13 @@ theorem IsCompact.elim_directed_cover {ι : Type v} [hι : Nonempty ι] (hs : Is
       let ⟨i, hi⟩ := mem_iUnion.1 (hsU hx)
       ⟨U i, mem_nhdsWithin_of_mem_nhds (IsOpen.mem_nhds (hUo i) hi), i, Subset.refl _⟩
 
+theorem IsCompact.elim_directedOn_cover (hs : IsCompact s) (U : Set (Set X))
+    (hUo : ∀ u ∈ U, IsOpen u) (hsU : s ⊆ ⋃₀ U) (hdU : DirectedOn (· ⊆ ·) U) (hU : U.Nonempty) :
+    ∃ u ∈ U, s ⊆ u := by
+  have : Nonempty U := hU.coe_sort
+  convert hs.elim_directed_cover _ (by simpa) (by rwa [← sUnion_eq_iUnion]) hdU.directed_val
+  simp
+
 /-- For every open cover of a compact set, there exists a finite subcover. -/
 theorem IsCompact.elim_finite_subcover {ι : Type v} (hs : IsCompact s) (U : ι → Set X)
     (hUo : ∀ i, IsOpen (U i)) (hsU : s ⊆ ⋃ i, U i) : ∃ t : Finset ι, s ⊆ ⋃ i ∈ t, U i :=
