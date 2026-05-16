@@ -110,6 +110,32 @@ theorem LinearMap.lift_rank_comap_le {f : M →ₗ[R] M'} (p : Submodule R M') :
   · rwa [lift_le]
   · rwa [lift_le]
 
+omit [HasRankNullity.{u} R] in
+theorem LinearMap.lift_rank_quot_map_le [HasRankNullity.{v} R] -- TODO lift from `u`
+    {f : M →ₗ[R] M'} (p : Submodule R M) :
+    lift.{u} (Module.rank R (M' ⧸ map f p)) ≤
+      lift.{u} (Module.rank R (M' ⧸ f.range)) + lift.{v} (Module.rank R (M ⧸ p)) := by
+  have h₁ : lift.{u} (Module.rank R (f.range ⧸ map f.rangeRestrict p)) ≤
+      lift.{v} (Module.rank R (M ⧸ p)) := by
+    let f' : M ⧸ p →ₗ[R] f.range ⧸ map f.rangeRestrict p :=
+      mapQ p (map f.rangeRestrict p) f.rangeRestrict <| by rw [comap_map_eq]; exact le_sup_left
+    exact lift_rank_le_of_surjective f' <| by rw [← range_eq_top, range_mapQ]; simp
+  have h₂ : (Module.rank R (M' ⧸ map f p)) =
+      Module.rank R (M' ⧸ f.range) + Module.rank R (f.range ⧸ map f.rangeRestrict p) := by
+    set f' : M' ⧸ map f p →ₗ[R] M' ⧸ f.range := factor map_le_range with hf'
+    set e : (f.range ⧸ map f.rangeRestrict p) ≃ₗ[R] f'.ker := by
+      set g : f.range →ₗ[R] f'.ker :=
+        (LinearEquiv.ofEq (map (map f p).mkQ f.range) f'.ker) (by rw [ker_mapQ]; rfl) ∘ₗ
+          (map f p).mkQ.submoduleMap f.range
+      have g_surj : Surjective g := by simpa [g] using submoduleMap_surjective (map f p).mkQ f.range
+      have g_ker : g.ker = map f.rangeRestrict p := by
+        simp [g, submoduleMap, ker_restrict, map_codRestrict]
+      let e := g.quotKerEquivOfSurjective g_surj
+      rwa [g_ker] at e
+    have := f'.rank_eq_of_surjective <| factor_surjective map_le_range
+    rwa [← e.rank_eq] at this
+  grw [h₂, lift_add, h₁]
+
 theorem exists_linearIndepOn_of_lt_rank [StrongRankCondition R]
     {s : Set M} (hs : LinearIndepOn R id s) :
     ∃ t, s ⊆ t ∧ #t = Module.rank R M ∧ LinearIndepOn R id t := by

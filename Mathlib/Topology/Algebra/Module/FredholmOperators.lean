@@ -208,12 +208,12 @@ lemma LinearMap.QuasiInverse_comp {u : V₂ →ₗ[K] V₃} {v : V₃ →ₗ[K] 
   rcases h' with ⟨h'₁, h'₂⟩
   constructor
   · calc
-      (u' ∘ₗ u) ∘ₗ (v ∘ₗ v') = u' ∘ₗ (u ∘ₗ v) ∘ₗ v' := comp_assoc ..
+      (u' ∘ₗ u) ∘ₗ (v ∘ₗ v') = u' ∘ₗ (u ∘ₗ v) ∘ₗ v' := rfl
       _ ≈  u' ∘ₗ .id ∘ₗ v' := by gcongr ; exact h₁
       _ =  u' ∘ₗ v' := by simp
       _ ≈  .id := h'₁
   · calc
-      (v ∘ₗ v') ∘ₗ (u' ∘ₗ u) = v ∘ₗ (v' ∘ₗ u') ∘ₗ u := comp_assoc ..
+      (v ∘ₗ v') ∘ₗ (u' ∘ₗ u) = v ∘ₗ (v' ∘ₗ u') ∘ₗ u := rfl
       _ ≈  v ∘ₗ .id ∘ₗ u := by gcongr ; exact h'₂
       _ =  v ∘ₗ u := by simp
       _ ≈  .id := h₂
@@ -329,11 +329,6 @@ lemma index_smul (t : k) (ht : t ≠ 0) :
 @[simp] lemma index_neg :
     (-f).index = f.index := by
   rw [index, index, ker_neg, range_neg]
-
--- TODO Move to `Mathlib/LinearAlgebra/FiniteDimensional/Lemmas.lean` I guess
-instance (p : Submodule k E) [FiniteDimensional k (E ⧸ p)] [FiniteDimensional k (F ⧸ f.range)] :
-    FiniteDimensional k (F ⧸ map f p) := by
-  sorry
 
 open Function in
 lemma index_comp {G : Type*} [AddCommGroup G] [Module k G] (g : F →ₗ[k] G)
@@ -785,10 +780,11 @@ theorem isFredholmTFAE (u : E →L[𝕜] F) : List.TFAE
   tfae_have 4 → 1 := by
     rintro ⟨E₁, E₂, F₁, F₂, E₂_FG, F₂_FG, E_compl, F_compl, u', h⟩
     refine ⟨(E₁.subtypeL ∘L u'.symm.toContinuousLinearMap).ofIsTopCompl F_compl 0, ?_, ?_⟩
-    <;> simp only [QuotFiniteSubmodules.eqv_iff, ContinuousLinearMap.coe_comp,
+    <;> simp only [ContinuousLinearMap.FiniteRankSetoid.equiv_iff, ContinuousLinearMap.coe_comp,
       ContinuousLinearMap.toLinearMap_ofIsTopCompl, toLinearMap_subtypeL,
-      ContinuousLinearMap.coe_zero, ContinuousLinearMap.coe_id, QuotFiniteRank.eqv_iff,
-      LinearMap.HasFiniteRank, ← Submodule.fg_iff_finiteDimensional]
+      ContinuousLinearMap.coe_zero, ContinuousLinearMap.coe_id,
+      LinearMap.FiniteRankSetoid.equiv_iff, LinearMap.HasFiniteRank,
+      ← Submodule.fg_iff_finiteDimensional]
     · have : (u ∘ₗ LinearMap.ofIsCompl F_compl.isCompl
         (E₁.subtype ∘ₗ u'.symm) 0 - LinearMap.id).range = F₂ := by
         have : u ∘ₗ LinearMap.ofIsCompl F_compl.isCompl
@@ -803,6 +799,8 @@ theorem isFredholmTFAE (u : E →L[𝕜] F) : List.TFAE
         simp [this, E₂.projection_eq_id_sub_projection E_compl.isCompl.symm]
       rwa [this]
   tfae_finish
+
+#print axioms isFredholmTFAE
 
 /- ## Simpler criterion for `IsFredholmStruct` between RCLike Banach spaces
 
