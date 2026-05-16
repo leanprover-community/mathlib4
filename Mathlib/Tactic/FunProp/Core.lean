@@ -71,7 +71,16 @@ def synthesizeArgs (thmId : Origin) (xs : Array Expr)
       else
         -- try user provided discharger
         let ctx : Context ← read
-        if (← isProp type) then
+        -- To use `fun_prop` in the manifold library
+        -- (with the predicates `MDifferentiable`, `ContMDiff` and friends),
+        -- we need provide specialize a specialized discharger for `ModelWithCorners`:
+        -- lemmas like `ContMDiff.comp` require inferring the model with corners on the
+        -- intermediate space.
+        -- In the future, we might want to allow the discharger to execute on other Type-valued
+        -- hypotheses. In this case, we could create an environment extension to register such
+        -- types. However, right now we could not think of any other use cases --- therefore,
+        -- we hard-code `ModelWithCorners`.
+        if ((← isProp type) || type.isAppOfArity' `ModelWithCorners 7) then
           if let some proof ← ctx.disch type then
             if (← isDefEq x proof) then
               continue
@@ -367,7 +376,8 @@ For example
   - `funPropDecl` is `FunPropDecl` for `Continuous`
   - `e = q(Continuous fun x ↦ foo (bar x) y)`
   - `fData` contains info on `fun x ↦ foo (bar x) y`
-  This tries to prove `Continuous fun x ↦ foo (bar x) y` from `Continuous fun x ↦ foo (bar x)`
+
+This tries to prove `Continuous fun x ↦ foo (bar x) y` from `Continuous fun x ↦ foo (bar x)`
 -/
 def removeArgRule (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
     (funProp : Expr → FunPropM (Option Result)) :
@@ -685,21 +695,24 @@ mutual
       let e := e.setArg funPropDecl.funArgId (← fData.toExpr) -- update e with reduced f
 
       if fData.isIdentityFun then
-        applyIdRule funPropDecl e funProp
-      else if fData.isConstantFun then
-        applyConstRule funPropDecl e funProp
-      else
-        match fData.fn with
-        | .fvar id =>
-          if id == fData.mainVar.fvarId! then
-            bvarAppCase funPropDecl e fData funProp
-          else
-            fvarAppCase funPropDecl e fData funProp
-        | .const .. | .proj .. => do
-          constAppCase funPropDecl e fData funProp
-        | _ =>
-          trace[Debug.Meta.Tactic.fun_prop] "unknown case, ctor: {f.ctorName}\n{e}"
-          return none
+        if let some r ← applyIdRule funPropDecl e funProp then
+          return r
+
+      if fData.isConstantFun then
+        if let some r ← applyConstRule funPropDecl e funProp then
+          return r
+
+      match fData.fn with
+      | .fvar id =>
+        if id == fData.mainVar.fvarId! then
+          bvarAppCase funPropDecl e fData funProp
+        else
+          fvarAppCase funPropDecl e fData funProp
+      | .const .. | .proj .. => do
+        constAppCase funPropDecl e fData funProp
+      | _ =>
+        trace[Debug.Meta.Tactic.fun_prop] "unknown case, ctor: {f.ctorName}\n{e}"
+        return none
 
 end
 
