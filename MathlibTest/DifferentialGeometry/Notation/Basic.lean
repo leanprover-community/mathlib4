@@ -136,21 +136,11 @@ example : (fun m ↦ (X m : TangentBundle I M)) = (fun m ↦ TotalSpace.mk' E m 
 #check T% (fun x ↦ X x) x
 
 -- Applying the same elaborator twice errors.
-/--
-error: could not find a `FiberBundle` instance on `TotalSpace E`:
-`fun m ↦ ⟨m, X m⟩` is a function into `TotalSpace E`
-
-hint: you may be missing suitable typeclass assumptions
--/
+/-- info: fun m ↦ ⟨m, X m⟩ : M → TotalSpace E (TangentSpace I) -/
 #guard_msgs in
 #check (T% (T% X))
 
-/--
-error: could not find a `FiberBundle` instance on `TotalSpace E`:
-`fun m ↦ ⟨m, X m⟩` is a function into `TotalSpace E`
-
-hint: you may be missing suitable typeclass assumptions
--/
+/-- info: (fun m ↦ ⟨m, X m⟩) x : TotalSpace E (TangentSpace I) -/
 #guard_msgs in
 #check (T% (T% X)) x
 
@@ -159,7 +149,7 @@ section
 
 variable {B F Z : Type*} [TopologicalSpace B] [TopologicalSpace F]
   {E : B → Type*} [TopologicalSpace (TotalSpace F E)] (σ : (b : B) → E b)
-/-- info: fun b ↦ ⟨b, σ b⟩ : B → TotalSpace F E -/
+/-- info: σ : (b : B) → E b -/
 #guard_msgs in
 #check T% σ
 
@@ -170,12 +160,7 @@ section
 
 variable {B F Z : Type*} [TopologicalSpace B] [TopologicalSpace F]
   {E : B → Type*} (σ : (b : B) → E b)
-/--
-error: could not find a `FiberBundle` instance on `E`:
-`σ` is a function into `E`
-
-hint: you may be missing suitable typeclass assumptions
--/
+/-- info: σ : (b : B) → E b -/
 #guard_msgs in
 #check T% σ
 
@@ -1353,11 +1338,7 @@ trace: [Elab.DiffGeo.MDiff] Finding a model with corners for: `Unit`
 #check mfderiv% f
 
 set_option pp.notation true in
-/--
-info: fun a ↦ ⟨a, f a⟩ : Unit → TotalSpace Unit (Trivial Unit Unit)
----
-trace: [Elab.DiffGeo.TotalSpaceMk] Section of a trivial bundle as a non-dependent function
--/
+/-- info: fun a ↦ ⟨a, f a⟩ : Unit → TotalSpace Unit (Trivial Unit Unit) -/
 #guard_msgs in
 #check T% f
 

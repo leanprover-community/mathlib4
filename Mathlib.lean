@@ -7716,6 +7716,7 @@ public import Mathlib.Topology.ExtremallyDisconnected
 public import Mathlib.Topology.FiberBundle.Basic
 public import Mathlib.Topology.FiberBundle.Constructions
 public import Mathlib.Topology.FiberBundle.IsHomeomorphicTrivialBundle
+public import Mathlib.Topology.FiberBundle.Notation
 public import Mathlib.Topology.FiberBundle.Trivialization
 public import Mathlib.Topology.FiberPartition
 public import Mathlib.Topology.Filter

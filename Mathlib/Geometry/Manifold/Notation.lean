@@ -7,6 +7,8 @@ module
 
 public import Mathlib.Geometry.Manifold.ContMDiff.Defs
 public import Mathlib.Geometry.Manifold.MFDeriv.Defs
+public import Mathlib.Topology.FiberBundle.Notation
+import all Mathlib.Topology.FiberBundle.Notation
 
 /-!
 # Elaborators for differential geometry
@@ -96,30 +98,9 @@ open Lean Meta Elab Tactic
 open Mathlib.Tactic
 open Qq
 
+open Bundle.Elab
+
 namespace Manifold.Elab
-
-/- Note: these functions are convenient in this file, and may be convenient elsewhere, but their
-precise behavior should be considered before adding them to the meta API. -/
-
-/-- Finds the first local instance of class `c` for which `p inst type` produces `some a`.
-Instantiates mvars in and runs `whnfR` on `type` before passing it to `p`. (Does not validate that
-`c` resolves to a class.) -/
-private def findSomeLocalInstanceOf? (c : Name) {α} (p : Expr → Expr → MetaM (Option α)) :
-    MetaM (Option α) := do
-  (← getLocalInstances).findSomeM? fun inst ↦ do
-    if inst.className == c then
-      let type ← whnfR <| ← instantiateMVars <| ← inferType inst.fvar
-      p inst.fvar type
-    else return none
-
-/-- Finds the most recent local declaration for which `p fvar type` produces `some a`.
-Skips implementation details; instantiates mvars in and runs `whnfR` on `type` before providing it
-to `p`. -/
-private def findSomeLocalHyp? {α} (p : Expr → Expr → MetaM (Option α)) : MetaM (Option α) := do
-  (← getLCtx).findDeclRevM? fun decl ↦ do
-    if decl.isImplementationDetail then return none
-    let type ← whnfR <| ← instantiateMVars decl.type
-    p decl.toExpr type
 
 /-- Given `V : Expr` representing `E : B → Type*`, try to find a model fiber for `E`
 by searching in local context for either a `FiberBundle F E` or
@@ -155,88 +136,8 @@ private def findModelFiber? (V : Expr) : MetaM (Option Expr) := do
           return some F
         else return none
       | _ => return none
-/--
-Utility for sections in a fibre bundle: if an expression `e` is a section
-`s : Π x : M, V x` as a dependent function, convert it to a non-dependent function into the total
-space. This handles the cases of
-- sections of a trivial bundle
-- vector fields on a manifold (i.e., sections of the tangent bundle)
-- sections of an explicit fibre bundle
-- turning a bare function `E → E'` into a section of the trivial bundle `Bundle.Trivial E E'`
-
-This searches the local context for suitable hypotheses for the above cases by matching
-on the expression structure, avoiding `isDefEq`. Therefore, it should be fast enough to always run.
-This process can be traced with `set_option Elab.DiffGeo.TotalSpaceMk true`.
-
-All applications of `e` in the resulting expression are beta-reduced.
-If none of the handled cases apply, we simply return `e` (after beta-reducing).
-
-This function is used for implementing the `T%` elaborator.
--/
--- TODO: document how this elaborator works, any gotchas, etc.
-def totalSpaceMk (e : Expr) : MetaM Expr := do
-  let etype ← whnf <| ← instantiateMVars <| ← inferType e
-  match etype with
-  | .forallE x base tgt _ => withLocalDeclD x base fun x ↦ do
-    let tgtHasLooseBVars := tgt.hasLooseBVars
-    let tgt := tgt.instantiate1 x
-    -- Note: we do not run `whnfR` on `tgt` because `Bundle.Trivial` is reducible.
-    match_expr tgt with
-    | Bundle.Trivial E E' _ =>
-      trace[Elab.DiffGeo.TotalSpaceMk] "`{e}` is a section of `Bundle.Trivial {E} {E'}`"
-      -- Note: we allow `isDefEq` here because any mvar assignments should persist.
-      if ← withReducible (isDefEq E base) then
-        let body ← mkAppM ``Bundle.TotalSpace.mk' #[E', x, (e.app x).headBeta]
-        mkLambdaFVars #[x] body
-      else return e
-    | TangentSpace _k _ E _ _ _H _ _I M _ _ _x =>
-      trace[Elab.DiffGeo.TotalSpaceMk] "`{e}` is a vector field on `{M}`"
-      let body ← mkAppM ``Bundle.TotalSpace.mk' #[E, x, (e.app x).headBeta]
-      mkLambdaFVars #[x] body
-    | _ => match (← instantiateMVars tgt).cleanupAnnotations with
-      | .app V _ =>
-        trace[Elab.DiffGeo.TotalSpaceMk] "Section of a bundle as a dependent function"
-        match ← findModelFiber? V with
-        | some F =>
-              let body ← mkAppM ``Bundle.TotalSpace.mk' #[F, x, (e.app x).headBeta]
-              return (← mkLambdaFVars #[x] body).headBeta
-        | none =>
-          -- future: special-case `Bundle.TotalSpace` for V;
-          -- if so, say "there is no need to apply T% twice"
-          throwError "could not find a `FiberBundle` instance on `{V}`:\n\
-          `{e}` is a function into `{V}`\n\n\
-          hint: you may be missing suitable typeclass assumptions"
-      | tgt =>
-        trace[Elab.DiffGeo.TotalSpaceMk] "Section of a trivial bundle as a non-dependent function"
-        -- TODO: can `tgt` depend on `x` in a way that is not a function application?
-        -- Check that `x` is not a bound variable in `tgt`!
-        if tgtHasLooseBVars then
-          throwError "Attempted to fall back to creating a section of the trivial bundle out of \
-            (`{e}` : `{etype}`) as a non-dependent function, but return type `{tgt}` depends on the
-            bound variable (`{x}` : `{base}`).\n\
-            Hint: applying the `T%` elaborator twice makes no sense."
-        let trivBundle ← mkAppOptM ``Bundle.Trivial #[base, tgt]
-        let body ← mkAppOptM ``Bundle.TotalSpace.mk' #[base, trivBundle, tgt, x, (e.app x).headBeta]
-        mkLambdaFVars #[x] body
-  | _ => return e.headBeta
 
 end Elab
-
-open Elab in
-/--
-Elaborator for sections in a fibre bundle: converts a section `s : Π x : M, V x` as a dependent
-function to a non-dependent function into the total space. This handles the cases of
-- sections of a trivial bundle
-- vector fields on a manifold (i.e., sections of the tangent bundle)
-- sections of an explicit fibre bundle
-- turning a bare function `E → E'` into a section of the trivial bundle `Bundle.Trivial E E'`
-
-This elaborator searches the local context for suitable hypotheses for the above cases by matching
-on the expression structure, avoiding `isDefEq`. Therefore, it should be fast enough to always run.
-The search can be traced with `set_option Elab.DiffGeo.TotalSpaceMk true`.
--/
-scoped elab:max "T% " t:term:arg : term => do
-  totalSpaceMk (← Term.elabTerm t none)
 
 namespace Elab
 
