@@ -652,6 +652,7 @@ public import Mathlib.Algebra.Homology.LeftResolution.Transport
 public import Mathlib.Algebra.Homology.Linear
 public import Mathlib.Algebra.Homology.LocalCohomology
 public import Mathlib.Algebra.Homology.Localization
+public import Mathlib.Algebra.Homology.ModelCategory.Injective
 public import Mathlib.Algebra.Homology.ModelCategory.Lifting
 public import Mathlib.Algebra.Homology.Monoidal
 public import Mathlib.Algebra.Homology.Opposite
@@ -8034,6 +8035,7 @@ public import Mathlib.Util.AtomM
 public import Mathlib.Util.AtomM.Recurse
 public import Mathlib.Util.CompileInductive
 public import Mathlib.Util.CountHeartbeats
+public import Mathlib.Util.DelabNonCanonical
 public import Mathlib.Util.Delaborators
 public import Mathlib.Util.DischargerAsTactic
 public import Mathlib.Util.ElabWithoutMVars
