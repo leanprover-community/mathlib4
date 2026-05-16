@@ -6,7 +6,7 @@ Authors: Sophie Morel
 module
 
 public import Mathlib.Analysis.Normed.Module.Multilinear.Basic
-public import Mathlib.LinearAlgebra.PiTensorProduct
+public import Mathlib.LinearAlgebra.PiTensorProduct.Basic
 
 /-!
 # Projective seminorm on the tensor of a finite family of normed spaces.
