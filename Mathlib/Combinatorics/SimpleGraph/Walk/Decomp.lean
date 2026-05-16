@@ -285,35 +285,42 @@ lemma notMem_support_takeUntil_support_takeUntil_subset {p : G.Walk u v} {w x : 
   simp only [takeUntil_takeUntil] at h1 h2
   lia
 
-/-- Rotate a loop walk such that it is centered at the given vertex. -/
-def rotate (c : G.Walk v v) (u : V) (h : u ∈ c.support) : G.Walk u u :=
-  (c.dropUntil u h).append (c.takeUntil u h)
+variable {c : G.Walk v v} {u : V}
+
+/-- Rotate a loop walk such that it is centered at the given vertex.
+
+If the walk doesn't go through the new vertex, this returns `nil`.
+See `rotate_of_not_mem_support`. -/
+def rotate (c : G.Walk v v) (u : V) : G.Walk u u :=
+  if hu : u ∈ c.support then (c.dropUntil u hu).append (c.takeUntil u hu) else nil
+
+lemma rotate_of_mem_support (hu : u ∈ c.support) :
+    c.rotate u = (c.dropUntil u hu).append (c.takeUntil u hu) := dif_pos hu
+
+@[simp] lemma rotate_of_not_mem_support (hu : u ∉ c.support) : c.rotate u = nil := dif_neg hu
 
 @[simp]
-theorem support_rotate (c : G.Walk v v) (u : V) (h) :
-    (c.rotate u h).support.tail ~r c.support.tail := by
-  simp only [rotate, tail_support_append]
+theorem support_rotate (hu : u ∈ c.support) : (c.rotate u).support.tail ~r c.support.tail := by
+  simp only [rotate, hu, ↓reduceDIte, tail_support_append]
   apply List.IsRotated.trans List.isRotated_append
   rw [← tail_support_append, take_spec]
 
 @[simp]
-theorem mem_support_rotate_iff (c : G.Walk v v) (u : V) (h) :
-    w ∈ (c.rotate u h).support ↔ w ∈ c.support := by
+theorem mem_support_rotate_iff (hu : u ∈ c.support) : w ∈ (c.rotate u).support ↔ w ∈ c.support := by
   grind [rotate, take_spec, mem_support_append_iff]
 
-theorem rotate_darts (c : G.Walk v v) (u : V) (h) : (c.rotate u h).darts ~r c.darts := by
-  simp only [rotate, darts_append]
+theorem rotate_darts (hu : u ∈ c.support) : (c.rotate u).darts ~r c.darts := by
+  simp only [rotate, hu, ↓reduceDIte, darts_append]
   apply List.IsRotated.trans List.isRotated_append
   rw [← darts_append, take_spec]
 
-theorem rotate_edges (c : G.Walk v v) (u : V) (h) : (c.rotate u h).edges ~r c.edges :=
-  (rotate_darts c u h).map _
+theorem rotate_edges (hu : u ∈ c.support) : (c.rotate u).edges ~r c.edges := (rotate_darts hu).map _
 
-@[simp] lemma length_rotate (c : G.Walk v v) (u : V) (h) : (c.rotate u h).length = c.length := by
-  simpa using (rotate_edges c u h).perm.length_eq
+@[simp] lemma length_rotate (hu : u ∈ c.support) : (c.rotate u).length = c.length := by
+  simpa using (rotate_edges hu).perm.length_eq
 
-@[simp] lemma rotate_eq_nil {c : G.Walk v v} {u : V} (h) : c.rotate u h = nil ↔ c = nil := by
-  simp [← length_eq_zero_iff]
+@[simp] lemma rotate_eq_nil (hu : u ∈ c.support) : c.rotate u = nil ↔ c = nil := by
+  simp [← length_eq_zero_iff, hu]
 
 end WalkDecomp
 

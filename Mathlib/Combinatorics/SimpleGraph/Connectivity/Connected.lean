@@ -831,9 +831,9 @@ theorem adj_and_reachable_delete_edges_iff_exists_cycle {v w : V} :
       intro p
       simpa [Sym2.eq_swap] using hb p.reverse
     have hvc : v ∈ c.support := Walk.fst_mem_support_of_mem_edges c he
-    refine reachable_deleteEdges_iff_exists_cycle.aux hb' (c.rotate v hvc) (hc.isTrail.rotate hvc)
-      ?_ (Walk.start_mem_support _)
-    rwa [(c.rotate_edges v hvc).mem_iff, Sym2.eq_swap]
+    refine reachable_deleteEdges_iff_exists_cycle.aux hb' (c.rotate v) (hc.isTrail.rotate hvc) ?_
+      (Walk.start_mem_support _)
+    rwa [(c.rotate_edges hvc).mem_iff, Sym2.eq_swap]
 
 theorem isBridge_iff_adj_and_forall_cycle_notMem {v w : V} : G.IsBridge s(v, w) ↔
     G.Adj v w ∧ ∀ ⦃u : V⦄ (p : G.Walk u u), p.IsCycle → s(v, w) ∉ p.edges := by
