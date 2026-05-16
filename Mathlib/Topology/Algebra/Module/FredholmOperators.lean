@@ -15,6 +15,7 @@ public import Mathlib.Topology.Algebra.Module.Equiv
 public import Mathlib.Topology.Algebra.Module.FiniteDimension
 public import Mathlib.Topology.Algebra.Module.LinearMap
 public import Mathlib.Topology.Maps.Strict.Basic
+public import Mathlib.Topology.Homeomorph.Defs
 
 section FindHome
 
@@ -484,7 +485,6 @@ theorem Topology.IsQuotientMap.isFredholmStruct {f : E →L[𝕜] F} (hq : IsQuo
   · exact hcompl
 
 --ToDO :move
-@[simp]
 theorem Submodule.ker_mkQL {p : Submodule 𝕜 E} : p.mkQL.ker = p := by ext; simp
 
 variable [ContinuousSMul 𝕜 E]
@@ -576,7 +576,7 @@ variable (huF : IsFredholmStruct u)
 theorem FredholmDecomposition_dom₂ : (FredholmDecomposition huF).1.X₂ = u.ker := by rfl
 
 -- FAE : Perhaps we want the version with `restrict` rather than `domRestrict`
-theorem FredholmDecomposition_InjectiveOn₁ :
+theorem FredholmDecomposition_InjectiveOn₁' :
     Injective (u.domRestrict (FredholmDecomposition huF).1.X₁).toLinearMap := by
   rw [← LinearMap.ker_eq_bot, ContinuousLinearMap.toLinearMap_domRestrict,
     LinearMap.ker_domRestrict, ← Submodule.disjoint_iff_comap_eq_bot]
@@ -589,7 +589,7 @@ theorem FredholmDecomposition_codom₁ : (FredholmDecomposition huF).2.X₁ = u.
 theorem FredholmDecomposition_mapsTo₁ (x : _) (_ : x ∈ (FredholmDecomposition huF).1.X₁) :
     u x ∈ (FredholmDecomposition huF).2.X₁ := by simp
 
-theorem FredholmDecomposition_InjectiveOn₁' :
+theorem FredholmDecomposition_InjectiveOn₁ :
     Injective (u.restrict (FredholmDecomposition_mapsTo₁ huF)).toLinearMap := by
   rw [ContinuousLinearMap.restrict_eq_domRestrict_codRestrict (by simp)]
   simp only [ContinuousLinearMap.toLinearMap_domRestrict, LinearMap.injective_domRestrict_iff,
@@ -617,15 +617,62 @@ theorem FredholmDecomposition_SurjectiveOn₁ :
   simp_rw [FredholmDecomposition_dom₂ huF] at y_dec
   sorry
 
+namespace ContinuousLinearEquiv
+variable {R S M M₂ : Type*} [Semiring R] [Semiring S] {σ : R →+* S} {σ' : S →+* R}
+  [RingHomInvPair σ σ'] [RingHomInvPair σ' σ] [TopologicalSpace M] [AddCommMonoid M]
+  [TopologicalSpace M₂] [AddCommMonoid M₂] [Module R M] [Module S M₂]
+
+-- **FAE** MOVE ME
+lemma Equiv.ofBijective_symm {X Y : Type*} {f : X ≃ Y} :
+    (Equiv.ofBijective _ f.bijective).symm = f.symm := by
+  ext
+  apply_fun f
+  simpa only [Equiv.apply_symm_apply] using Equiv.ofBijective_apply_symm_apply ..
+
+lemma IsHomeomorph.inv_coe {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] {f : X ≃ Y}
+    (hf : IsHomeomorph f) : hf.homeomorph.invFun = f.invFun := by
+  simp [Equiv.ofBijective_symm]
+
+-- **FAE** MOVE ME
+open ContinuousLinearEquiv in
+def ofIsHomeomorph (f : M ≃ₛₗ[σ] M₂) (hf : IsHomeomorph f.toEquiv) : M ≃SL[σ] M₂ where
+  __ := f
+  continuous_toFun := hf.continuous
+  continuous_invFun := by
+    have := hf.homeomorph.continuous_invFun
+    have also := IsHomeomorph.inv_coe hf
+    simp_all only [LinearEquiv.coe_toEquiv, IsHomeomorph.toEquiv_homeomorph, Equiv.invFun_as_coe,
+      LinearEquiv.coe_symm_toEquiv, LinearEquiv.invFun_eq_symm]
+
+@[simp]
+lemma ofIsHomeomorph_coe {f : M ≃ₛₗ[σ] M₂} (hf : IsHomeomorph f) :
+    (ContinuousLinearEquiv.ofIsHomeomorph f hf).toLinearEquiv = f := by dsimp only [ofIsHomeomorph]
+
+@[simp]
+lemma ofIsHomeomorph_apply {f : M ≃ₛₗ[σ] M₂} (hf : IsHomeomorph f) (x : M) :
+    (ContinuousLinearEquiv.ofIsHomeomorph f hf) x = f x := by dsimp [ofIsHomeomorph]
+
+end ContinuousLinearEquiv
+
+private def FredholmDecomposition_LinearEquiv₁ :
+    (FredholmDecomposition huF).1.X₁ ≃ₗ[𝕜] (FredholmDecomposition huF).2.X₁ :=
+  .ofBijective _ ⟨FredholmDecomposition_InjectiveOn₁ huF, FredholmDecomposition_SurjectiveOn₁ huF⟩
+
+private lemma FredholmDecomposition_LinearEquiv₁_coe :
+    ((FredholmDecomposition_LinearEquiv₁ huF) : _ → _)  =
+      u.restrict (FredholmDecomposition_mapsTo₁ huF) := rfl
+
 def FredholmDecomposition_ContinuousLinearEquiv₁ :
   (FredholmDecomposition huF).1.X₁ ≃L[𝕜] (FredholmDecomposition huF).2.X₁ := by
-  let f := (FredholmDecomposition_InjectiveOn₁' huF).hasLeftInverse.choose_spec
-  -- apply ContinuousLinearEquiv.equivOfInverse
+  apply ContinuousLinearEquiv.ofIsHomeomorph (FredholmDecomposition_LinearEquiv₁ huF)
+  simp [FredholmDecomposition_LinearEquiv₁_coe huF]
   sorry
 
+
 theorem FredholmDecomposition_isInvertibleOn₁ :
-    (u.restrict (FredholmDecomposition_mapsTo₁ huF)).IsInvertible := by
-  sorry
+    (u.restrict (FredholmDecomposition_mapsTo₁ huF)).IsInvertible :=
+  ⟨FredholmDecomposition_ContinuousLinearEquiv₁ huF, by rfl⟩
+
 
 /- ## FredholmQuot ==> complemented kernel (Jon)
 
@@ -767,10 +814,11 @@ theorem isFredholmTFAE (u : E →L[𝕜] F) : List.TFAE
         IsClosed F₁.carrier ∧ F₁.CoFG ∧ ∃ h : MapsTo u E₁ F₁,
           (u.restrict h).IsInvertible,
       -- TODO: Filippo, quel est l'énoncé ci-dessous ?
-      ∃ (E₁ E₂ : Submodule 𝕜 E) (F₁ F₂ : Submodule 𝕜 F), E₂.FG ∧ F₂.FG ∧
-        ∃ E_compl : IsTopCompl E₁ E₂, ∃ F_compl : IsTopCompl F₁ F₂,
-        ∃ u' : E₁ ≃L[𝕜] F₁, u = F₁.subtypeL ∘L u' ∘L E₁.projectionOntoL E₂ E_compl
-    ] := by
+      Nonempty (preFredholmDecomposition 𝕜 E × preFredholmDecomposition 𝕜 F)] := by
+      -- ∃ (E₁ E₂ : Submodule 𝕜 E) (F₁ F₂ : Submodule 𝕜 F), E₂.FG ∧ F₂.FG ∧
+      --   ∃ E_compl : IsTopCompl E₁ E₂, ∃ F_compl : IsTopCompl F₁ F₂,
+      --   ∃ u' : E₁ ≃L[𝕜] F₁, u = F₁.subtypeL ∘L u' ∘L E₁.projectionOntoL E₂ E_compl
+    -- ] := by
   tfae_have 1 → 3 := aaron
   tfae_have 3 → 2 := by
     rintro ⟨E₁, F₁, E₁_closed, E₁_coFG, F₁_closed, F₁_coFG, u_mapsto, u_invertible⟩
@@ -778,26 +826,29 @@ theorem isFredholmTFAE (u : E →L[𝕜] F) : List.TFAE
   tfae_have 2 → 4 := by
     sorry -- Filippo
   tfae_have 4 → 1 := by
-    rintro ⟨E₁, E₂, F₁, F₂, E₂_FG, F₂_FG, E_compl, F_compl, u', h⟩
-    refine ⟨(E₁.subtypeL ∘L u'.symm.toContinuousLinearMap).ofIsTopCompl F_compl 0, ?_, ?_⟩
-    <;> simp only [ContinuousLinearMap.FiniteRankSetoid.equiv_iff, ContinuousLinearMap.coe_comp,
-      ContinuousLinearMap.toLinearMap_ofIsTopCompl, toLinearMap_subtypeL,
-      ContinuousLinearMap.coe_zero, ContinuousLinearMap.coe_id,
-      LinearMap.FiniteRankSetoid.equiv_iff, LinearMap.HasFiniteRank,
-      ← Submodule.fg_iff_finiteDimensional]
-    · have : (u ∘ₗ LinearMap.ofIsCompl F_compl.isCompl
-        (E₁.subtype ∘ₗ u'.symm) 0 - LinearMap.id).range = F₂ := by
-        have : u ∘ₗ LinearMap.ofIsCompl F_compl.isCompl
-          (E₁.subtype ∘ₗ u'.symm) 0 = F₁.projection F₂ F_compl.isCompl := by
-          ext; simp [LinearMap.ofIsCompl, h]
-        simp [this, F₂.projection_eq_id_sub_projection F_compl.isCompl.symm]
-      rwa [this]
-    · have : (LinearMap.ofIsCompl F_compl.isCompl (E₁.subtype ∘ₗ u'.symm) 0 ∘ₗ u -
-        LinearMap.id).range = E₂ := by
-        have : LinearMap.ofIsCompl F_compl.isCompl
-          (E₁.subtype ∘ₗ u'.symm) 0 ∘ₗ u = E₁.projection E₂ E_compl.isCompl := by ext; simp [h]
-        simp [this, E₂.projection_eq_id_sub_projection E_compl.isCompl.symm]
-      rwa [this]
+    sorry
+    -- intro H
+    -- obtain ⟨⟨E₁, E₂, E_compl, E₂_FG⟩, ⟨F₁, F₂, F_compl, F₂_FG⟩⟩ := H.some--u', h⟩
+    -- -- rintro ⟨E₁, E₂, F₁, F₂, E₂_FG, F₂_FG, E_compl, F_compl, u', h⟩
+    -- refine ⟨(E₁.subtypeL ∘L u'.symm.toContinuousLinearMap).ofIsTopCompl F_compl 0, ?_, ?_⟩
+    -- <;> simp only [ContinuousLinearMap.FiniteRankSetoid.equiv_iff, ContinuousLinearMap.coe_comp,
+    --   ContinuousLinearMap.toLinearMap_ofIsTopCompl, toLinearMap_subtypeL,
+    --   ContinuousLinearMap.coe_zero, ContinuousLinearMap.coe_id,
+    --   LinearMap.FiniteRankSetoid.equiv_iff, LinearMap.HasFiniteRank,
+    --   ← Submodule.fg_iff_finiteDimensional]
+    -- · have : (u ∘ₗ LinearMap.ofIsCompl F_compl.isCompl
+    --     (E₁.subtype ∘ₗ u'.symm) 0 - LinearMap.id).range = F₂ := by
+    --     have : u ∘ₗ LinearMap.ofIsCompl F_compl.isCompl
+    --       (E₁.subtype ∘ₗ u'.symm) 0 = F₁.projection F₂ F_compl.isCompl := by
+    --       ext; simp [LinearMap.ofIsCompl, h]
+    --     simp [this, F₂.projection_eq_id_sub_projection F_compl.isCompl.symm]
+    --   rwa [this]
+    -- · have : (LinearMap.ofIsCompl F_compl.isCompl (E₁.subtype ∘ₗ u'.symm) 0 ∘ₗ u -
+    --     LinearMap.id).range = E₂ := by
+    --     have : LinearMap.ofIsCompl F_compl.isCompl
+    --       (E₁.subtype ∘ₗ u'.symm) 0 ∘ₗ u = E₁.projection E₂ E_compl.isCompl := by ext; simp [h]
+    --     simp [this, E₂.projection_eq_id_sub_projection E_compl.isCompl.symm]
+    --   rwa [this]
   tfae_finish
 
 #print axioms isFredholmTFAE
