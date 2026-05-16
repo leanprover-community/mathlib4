@@ -5,7 +5,7 @@ Authors: Peter Nelson, Jun Kwon
 -/
 module
 
-public import Mathlib.Data.Set.Basic
+public import Mathlib.Data.Set.Card
 public import Mathlib.Data.Sym.Sym2
 
 /-!
@@ -259,6 +259,7 @@ def IsLoopAt (G : Graph α β) (e : β) (x : α) : Prop := G.IsLink e x x
 
 @[simp]
 lemma isLink_self_iff : G.IsLink e x x ↔ G.IsLoopAt e x := Iff.rfl
+alias ⟨_, IsLoopAt.isLink⟩ := isLink_self_iff
 
 lemma IsLoopAt.inc (h : G.IsLoopAt e x) : G.Inc e x :=
   IsLink.inc_left h
@@ -304,13 +305,17 @@ lemma isNonloopAt_iff_inc_not_isLoopAt : G.IsNonloopAt e x ↔ G.Inc e x ∧ ¬ 
 lemma isLoopAt_iff_inc_not_isNonloopAt : G.IsLoopAt e x ↔ G.Inc e x ∧ ¬ G.IsNonloopAt e x := by
   simp +contextual [isNonloopAt_iff_inc_not_isLoopAt, iff_def, IsLoopAt.inc]
 
-lemma Inc.isLoopAt_or_isNonloopAt (h : G.Inc e x) : G.IsLoopAt e x ∨ G.IsNonloopAt e x := by
-  simp [isNonloopAt_iff_inc_not_isLoopAt, h, em]
+lemma inc_iff_isLoopAt_or_isNonloopAt : G.Inc e x ↔ G.IsLoopAt e x ∨ G.IsNonloopAt e x :=
+  ⟨by grind [isNonloopAt_iff_inc_not_isLoopAt], (·.elim IsLoopAt.inc IsNonloopAt.inc)⟩
+alias ⟨Inc.isLoopAt_or_isNonloopAt, _⟩ := inc_iff_isLoopAt_or_isNonloopAt
 
 /-! ### Adjacency -/
 
 /-- `G.Adj x y` means that `G` has an edge whose ends are the vertices `x` and `y`. -/
 def Adj (G : Graph α β) (x y : α) : Prop := ∃ e, G.IsLink e x y
+
+lemma adj_iff : G.Adj x y ↔ ∃ e, G.IsLink e x y := Iff.rfl
+alias ⟨Adj.exists, _⟩ := adj_iff
 
 @[symm]
 protected lemma Adj.symm (h : G.Adj x y) : G.Adj y x :=
@@ -414,6 +419,81 @@ theorem mem_loopSet (x : α) (e : β) : e ∈ G.loopSet x ↔ G.IsLoopAt e x :=
 
 /-- The loopSet is included in the incidenceSet. -/
 theorem loopSet_subset_incidenceSet (x : α) : G.loopSet x ⊆ G.incidenceSet x := fun _ he ↦ ⟨x, he⟩
+
+/-! ### Set of vertices incident to an edge -/
+
+/-- `G.endPoint e` is the set of vertices incident to the edge `e`. -/
+def endpoints (G : Graph α β) (e : β) : Set α := {x | G.Inc e x}
+
+@[simp, grind =]
+lemma mem_endpoints_iff (G : Graph α β) (e : β) (x : α) : x ∈ G.endpoints e ↔ G.Inc e x := Iff.rfl
+
+lemma IsLink.endpoints_eq (h : G.IsLink e x y) : G.endpoints e = {x, y} := by
+  ext a
+  grind [IsLink.inc_left, IsLink.inc_right, Inc.eq_or_eq_of_isLink]
+
+@[grind →]
+lemma IsLoopAt.endpoints_eq (h : G.IsLoopAt e x) : G.endpoints e = {x} := by
+  rw [IsLink.endpoints_eq h, pair_eq_singleton]
+
+@[simp, grind →]
+lemma endpoints_eq_of_notMem (he : e ∉ E(G)) : G.endpoints e = ∅ := by
+  simp only [endpoints, eq_empty_iff_forall_notMem, mem_setOf_eq]
+  exact fun _ hx ↦ he hx.edge_mem
+
+@[simp, grind! .]
+lemma endpoints_encard_le_two (G : Graph α β) (e : β) : (G.endpoints e).encard ≤ 2 := by
+  by_cases heE : e ∈ E(G)
+  · obtain ⟨x, y, h⟩ := exists_isLink_of_mem_edgeSet heE
+    rw [h.endpoints_eq]
+    by_cases hxy : x = y <;> simp [hxy, encard_pair]
+  simp [endpoints_eq_of_notMem heE]
+
+@[simp]
+lemma subsingleton_setOf_isLink (G : Graph α β) (e : β) (x : α) :
+    {y | G.IsLink e x y}.Subsingleton := by
+  simp only [Set.Subsingleton, mem_setOf_eq]
+  exact fun y hy z hz ↦ hy.right_unique hz
+
+@[simp]
+lemma endpoints_finite (G : Graph α β) (e : β) : (G.endpoints e).Finite :=
+  finite_of_encard_le_coe <| G.endpoints_encard_le_two e
+
+lemma endpoints_subset (G : Graph α β) (e : β) : G.endpoints e ⊆ V(G) := fun _ hx ↦ hx.vertex_mem
+
+/-- An alternative constructor for `Graph` given an `endpoints` function. -/
+@[simps]
+def mkEndpoints (vertexSet : Set α) (endPoint : β → Set α) (hmem : ∀ e, endPoint e ⊆ vertexSet) :
+    Graph α β where
+  vertexSet := vertexSet
+  IsLink e x y := endPoint e = {x, y}
+  isLink_symm e he x y := by simp [pair_comm]
+  eq_or_eq_of_isLink_of_isLink e u v x y huv hxy := by
+    grind [show u ∈ ({u, v} : Set α) from by simp]
+
+@[simp]
+lemma endpoints_mkEndpoints {vertexSet : Set α} {endPoint : β → Set α}
+    (hcard : ∀ e, (endPoint e).encard ≤ 2) (hmem : ∀ e, endPoint e ⊆ vertexSet) (e : β) :
+    (mkEndpoints vertexSet endPoint hmem).endpoints e = endPoint e := by
+  ext x
+  simp only [mem_endpoints_iff, Inc, mkEndpoints_isLink]
+  refine ⟨by grind, fun h ↦ ?_⟩
+  have h : (endPoint e \ {x}).encard ≤ 1 := by simpa [encard_diff_singleton_of_mem h] using hcard e
+  obtain h | ⟨y, h⟩ := encard_le_one_iff_eq.mp h
+  · use x, by grind [diff_eq_empty]
+  use y, by grind
+
+@[simp]
+lemma mkEndpoints_endpoints : mkEndpoints V(G) G.endpoints G.endpoints_subset = G := by
+  refine Graph.ext rfl fun e x y ↦ ?_
+  wlog he : e ∈ E(G)
+  · simp [he, Set.ext_iff]; tauto
+  obtain ⟨u, v, huv⟩ := exists_isLink_of_mem_edgeSet he
+  simp [mkEndpoints_isLink, huv.endpoints_eq, pair_eq_pair_iff, huv.isLink_iff]
+
+lemma ext_endpoints (hV : V(G) = V(H)) (h : G.endpoints = H.endpoints) : G = H := by
+  refine mkEndpoints_endpoints.symm.trans ?_ |>.trans mkEndpoints_endpoints
+  congr 1
 
 /-!
 ### Compatibility of Graphs
