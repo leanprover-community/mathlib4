@@ -6,6 +6,7 @@ Authors: Simon Hudon, Ira Fesefeldt
 module
 
 public import Mathlib.Control.Monad.Basic
+public import Mathlib.Data.Sigma.Order
 public import Mathlib.Dynamics.FixedPoints.Basic
 public import Mathlib.Order.CompleteLattice.Basic
 public import Mathlib.Order.Iterate
@@ -115,6 +116,11 @@ def map : Chain β where toOrderHom := f.comp c.toOrderHom
 
 @[deprecated (since := "2026-03-27")] alias map_coe := coe_map
 
+/-- The constant chain consists of the same element repeated infinitely. -/
+def const (a : α) : Chain α := OrderHom.const ℕ a
+
+@[simp] theorem const_coe (a : α) : ⇑(const a) = fun _ ↦ a := rfl
+
 variable {f}
 
 theorem mem_map (x : α) : x ∈ c → f x ∈ Chain.map c f :=
@@ -164,6 +170,53 @@ def pair (a b : α) (hab : a ≤ b) : Chain α where
 @[simp] lemma pair_zip_pair (a₁ a₂ : α) (b₁ b₂ : β) (ha hb) :
     (pair a₁ a₂ ha).zip (pair b₁ b₂ hb) = pair (a₁, b₁) (a₂, b₂) (Prod.le_def.2 ⟨ha, hb⟩) := by
   ext n : 2; cases n <;> rfl
+
+variable {ι : Type*} {ρ : ι → Type*} [∀ i, Preorder (ρ i)]
+
+/-- Constructs a chain of `Sigma`s from a chain of elements of the same index. -/
+def inj {i} (c : Chain (ρ i)) : Chain ((i : ι) × ρ i) where
+  toFun n := ⟨i, c n⟩
+  monotone' _ _ _ := by dsimp; gcongr
+
+@[simp]
+lemma inj_coe {i} (c : Chain (ρ i)) (n : ℕ) : (inj c) n = ⟨i, c n⟩ := rfl
+
+/-- Converts a chain of coproducts into a coproduct of chains. -/
+def toSigma (c : Chain ((i : ι) × ρ i)) : (i : ι) × Chain (ρ i) where
+  fst := (c 0).fst
+  snd.toFun n :=
+    have : (c n).fst = (c 0).fst := by grind [Sigma.le_def, c.monotone (Nat.zero_le n)]
+    this ▸ (c n).snd
+  snd.monotone' i₁ i₂ hi := by
+    dsimp only
+    generalize_proofs h
+    replace hi := c.monotone hi
+    generalize c i₁ = c₁, c i₂ = c₂ at *
+    rcases hi with ⟨_, _, _, hi⟩
+    dsimp at h
+    subst h
+    apply hi
+
+@[simp]
+lemma toSigma_inj {i} (c : Chain (ρ i)) : toSigma (inj c) = ⟨i, c⟩ := rfl
+
+@[simp]
+lemma inj_toSigma (c : Chain (Sigma ρ)) : inj (toSigma c).snd = c := by
+  ext n : 2
+  simp_rw [inj_coe, toSigma, Chain, OrderHom.coe_mk]
+  have := c.monotone (Nat.zero_le n)
+  generalize_proofs
+  generalize c 0 = c₀, c n = cₙ at *
+  rcases this with ⟨_, _, _, h⟩
+  rfl
+
+@[elab_as_elim]
+lemma sigma_cases
+    {p : Chain ((i : ι) × ρ i) → Prop}
+    (mk : ∀ i (c : Chain (ρ i)), p (inj c))
+    (c : Chain ((i : ι) × ρ i)) : p c := by
+  rw [← inj_toSigma c]
+  apply mk
 
 end Chain
 
@@ -241,6 +294,17 @@ lemma ωSup_eq_of_isLUB {c : Chain α} {a : α} (h : IsLUB (Set.range c) a) : a 
     exact fun a ↦ le_ωSup c a
   · rw [ωSup_le_iff]
     apply h.1
+
+@[simp]
+lemma ωSup_const (a : α) : ωSup (Chain.const a) = a := by
+  apply le_antisymm
+  · simp
+  · exact le_ωSup_of_le 0 (by simp)
+
+lemma ωSup_congr {c₁ c₂ : Chain α} (hc : ∀ n, c₁ n = c₂ n) : ωSup c₁ = ωSup c₂ := by
+  congr 1
+  ext n
+  apply hc
 
 /-- A subset `p : α → Prop` of the type closed under `ωSup` induces an
 `OmegaCompletePartialOrder` on the subtype `{a : α // p a}`. -/
@@ -460,6 +524,142 @@ lemma ωScottContinuous_snd : ωScottContinuous (Prod.snd : α × β → β) :=
   ScottContinuousOn.snd
 
 end Prod
+
+namespace OmegaCompletePartialOrder
+
+variable [OmegaCompletePartialOrder α] [OmegaCompletePartialOrder β] [OmegaCompletePartialOrder γ]
+
+lemma ωScottContinuous.map_ωSup₂ {f : α → β → γ}
+    (hf : ωScottContinuous (Function.uncurry f)) (c₁ : Chain α) (c₂ : Chain β) :
+    f (ωSup c₁) (ωSup c₂) = ωSup ((c₁.zip c₂).map ⟨Function.uncurry f, hf.monotone⟩) :=
+  ωSup_eq_of_isLUB hf.isLUB
+
+end OmegaCompletePartialOrder
+
+namespace Sigma
+
+variable {ι : Type*} {ρ : ι → Type*} [∀ ι, OmegaCompletePartialOrder (ρ ι)]
+
+instance : OmegaCompletePartialOrder ((i : ι) × ρ i) where
+  ωSup c := ⟨(toSigma c).fst, ωSup (toSigma c).snd⟩
+  le_ωSup c i := by
+    cases c using sigma_cases
+    simp [le_ωSup]
+  ωSup_le := by
+    rintro c ⟨x, y⟩ h
+    cases c using sigma_cases with | mk i c =>
+    simp only [toSigma_inj, ge_iff_le]
+    rcases h 0
+    simpa using h
+
+@[simp]
+lemma ωSup_inj {i} (c : Chain (ρ i)) : ωSup (Chain.inj c) = ⟨i, ωSup c⟩ := rfl
+
+@[fun_prop]
+lemma ωScottContinuous_mk (i : ι) : ωScottContinuous (Sigma.mk i : ρ i → Sigma ρ) :=
+  ωScottContinuous.of_monotone_map_ωSup ⟨Sigma.mk_mono i, fun _ ↦ rfl⟩
+
+@[fun_prop]
+lemma ωScottContinuous_fst [OmegaCompletePartialOrder ι] :
+    ωScottContinuous (Sigma.fst : Sigma ρ → ι) := by
+  apply ωScottContinuous.of_monotone_map_ωSup ⟨?_, fun c ↦ ?_⟩
+  · apply Sigma.fst_mono
+  · cases c using sigma_cases
+    change _ = ωSup (Chain.const _)
+    simp
+
+@[fun_prop]
+lemma ωScottContinuous_snd [OmegaCompletePartialOrder α] :
+    ωScottContinuous (Sigma.snd : (_ : ι) × α → α) := by
+  apply ωScottContinuous.of_monotone_map_ωSup ⟨Sigma.snd_mono, fun c ↦ ?_⟩
+  cases c using sigma_cases
+  rfl
+
+lemma ωScottContinuous_rec [OmegaCompletePartialOrder α] [OmegaCompletePartialOrder β]
+    {f : α → (i : ι) × ρ i} (hf : ωScottContinuous f)
+    {g : α → (i : ι) → ρ i → β} (hg : ∀ i, ωScottContinuous (Function.uncurry (g · i ·))) :
+    ωScottContinuous (fun x ↦ Sigma.rec (motive := fun _ ↦ β) (g x) (f x)) := by
+  change ωScottContinuous fun x ↦ g x (f x).1 (f x).2
+  apply ωScottContinuous.of_monotone_map_ωSup ⟨?_, fun c ↦ ?_⟩
+  · apply Sigma.rec_mono hf.monotone fun i ↦ (hg i).monotone
+  · rw [hf.map_ωSup]
+    generalize hc' : c.map ⟨f, hf.monotone⟩ = c'
+    simp only [Chain.ext_iff, map_coe, OrderHom.coe_mk, funext_iff, Function.comp_apply] at hc'
+    cases c' using Chain.sigma_cases with | mk i c' =>
+    simp only [ωSup_inj, (hg _).map_ωSup₂]
+    apply ωSup_congr fun n ↦ ?_
+    simp only [map_coe, OrderHom.coe_mk, Function.comp_apply, zip_coe, Function.uncurry_apply_pair]
+    rw [hc', inj_coe]
+
+@[fun_prop]
+lemma ωScottContinuous_map {ι' : Type*} {ρ' : ι' → Type*}
+    [OmegaCompletePartialOrder α] [∀ i, OmegaCompletePartialOrder (ρ' i)]
+    (f : ι → ι') {g : α → (i : ι) → ρ i → ρ' (f i)}
+    (hg : ∀ i, ωScottContinuous (Function.uncurry (g · i ·)))
+    {h : α → Sigma ρ} (hf : ωScottContinuous h) :
+    ωScottContinuous (fun x ↦ Sigma.map f (g x) (h x)) := by
+  apply ωScottContinuous_rec (β := Sigma ρ') (g := fun x i y ↦ ⟨_, g x i y⟩) <;> fun_prop
+
+end Sigma
+
+namespace CompleteLattice
+
+-- see Note [lower instance priority]
+/-- Any complete lattice has an `ω`-CPO structure where the countable supremum is a special case
+of arbitrary suprema. -/
+instance (priority := 100) [CompleteLattice α] : OmegaCompletePartialOrder α where
+  ωSup c := ⨆ i, c i
+  ωSup_le := fun ⟨c, _⟩ s hs => by simpa only [iSup_le_iff]
+  le_ωSup := fun ⟨c, _⟩ i => le_iSup_of_le i le_rfl
+
+variable [OmegaCompletePartialOrder α] [CompleteLattice β] {f g : α → β}
+
+lemma ωScottContinuous.iSup {f : ι → α → β} (hf : ∀ i, ωScottContinuous (f i)) :
+    ωScottContinuous (⨆ i, f i) := by
+  refine ωScottContinuous.of_monotone_map_ωSup
+    ⟨Monotone.iSup fun i ↦ (hf i).monotone, fun c ↦ eq_of_forall_ge_iff fun a ↦ ?_⟩
+  simp +contextual [ωSup_le_iff, (hf _).map_ωSup, @forall_swap ι]
+
+lemma ωScottContinuous.sSup {s : Set (α → β)} (hs : ∀ f ∈ s, ωScottContinuous f) :
+    ωScottContinuous (sSup s) := by
+  rw [sSup_eq_iSup]; exact ωScottContinuous.iSup fun f ↦ ωScottContinuous.iSup <| hs f
+
+lemma ωScottContinuous.sup (hf : ωScottContinuous f) (hg : ωScottContinuous g) :
+    ωScottContinuous (f ⊔ g) := by
+  rw [← sSup_pair]
+  apply ωScottContinuous.sSup
+  rintro f (rfl | rfl | _) <;> assumption
+
+lemma ωScottContinuous.top : ωScottContinuous (⊤ : α → β) :=
+  ωScottContinuous.of_monotone_map_ωSup
+    ⟨monotone_const, fun c ↦ eq_of_forall_ge_iff fun a ↦ by simp⟩
+
+lemma ωScottContinuous.bot : ωScottContinuous (⊥ : α → β) := by
+  rw [← sSup_empty]; exact ωScottContinuous.sSup (by simp)
+
+end CompleteLattice
+
+namespace CompleteLattice
+
+variable [OmegaCompletePartialOrder α] [CompleteLinearOrder β] {f g : α → β}
+
+-- TODO Prove this result for `ScottContinuousOn` and deduce this as a special case
+-- Also consider if it holds in greater generality (e.g. finite sets)
+-- N.B. The Scott Topology coincides with the Upper Topology on a Complete Linear Order
+-- `Topology.IsScott.scott_eq_upper_of_completeLinearOrder`
+-- We have that the product topology coincides with the upper topology
+-- https://github.com/leanprover-community/mathlib4/pull/12133
+lemma ωScottContinuous.inf (hf : ωScottContinuous f) (hg : ωScottContinuous g) :
+    ωScottContinuous (f ⊓ g) := by
+  refine ωScottContinuous.of_monotone_map_ωSup
+    ⟨hf.monotone.inf hg.monotone, fun c ↦ eq_of_forall_ge_iff fun a ↦ ?_⟩
+  simp only [Pi.inf_apply, hf.map_ωSup c, hg.map_ωSup c, inf_le_iff, ωSup_le_iff, Chain.map_coe,
+    Function.comp, OrderHom.coe_mk, ← forall_or_left, ← forall_or_right]
+  exact ⟨fun h _ ↦ h _ _, fun h i j ↦
+    (h (max j i)).imp (le_trans <| hf.monotone <| c.mono <| le_max_left _ _)
+      (le_trans <| hg.monotone <| c.mono <| le_max_right _ _)⟩
+
+end CompleteLattice
 
 namespace OmegaCompletePartialOrder
 variable [OmegaCompletePartialOrder α] [OmegaCompletePartialOrder β]
