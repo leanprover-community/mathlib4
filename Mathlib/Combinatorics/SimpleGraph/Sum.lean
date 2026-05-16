@@ -71,6 +71,24 @@ def Embedding.sumInr : H ↪g G ⊕g H where
   inj' u v := by simp
   map_rel_iff' := by simp
 
+lemma not_adj_sum_inl_inr (v w) : ¬(G ⊕g H).Adj (.inl v) (.inr w) := by simp
+
+lemma not_reachable_sum_inl_inr (v w) : ¬(G ⊕g H).Reachable (.inl v) (.inr w) := by
+  rintro ⟨p⟩
+  have hs : ∀x : V ⊕ W, ¬x ∈ (.inl '' ⊤) ↔ x ∈ (.inr '' ⊤) := by simp
+  obtain ⟨⟨d, hadj⟩, _, hd1, hd2⟩ := p.exists_boundary_dart (.inl '' ⊤) (by simp) (by simp)
+  simp only [hs] at hadj hd1 hd2
+  obtain ⟨v', _, hv'⟩ := hd1
+  obtain ⟨w', _, hw'⟩ := hd2
+  rw [← hv', ← hw'] at hadj
+  exact not_adj_sum_inl_inr _ _ hadj
+
+lemma not_preconnected_sum [Nonempty V] [Nonempty W] : ¬(G ⊕g H).Preconnected :=
+  fun h ↦ not_reachable_sum_inl_inr (Classical.arbitrary _) (Classical.arbitrary _) (h ..)
+
+lemma not_connected_sum [Nonempty V] [Nonempty W] : ¬(G ⊕g H).Connected := by
+  simp [connected_iff, not_preconnected_sum]
+
 lemma Reachable.sum_sup_edge (hv : G.Reachable v v') (hw : H.Reachable w w') :
     (G.sum H ⊔ edge (.inl v) (.inr w)).Reachable (.inl v') (.inr w') :=
   ((hv.symm.map Embedding.sumInl.toHom).mono le_sup_left).trans <| .trans
