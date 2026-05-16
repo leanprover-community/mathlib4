@@ -6,7 +6,6 @@ Authors: Mario Carneiro, Chris Hughes
 module
 
 public import Mathlib.Algebra.GCDMonoid.Basic
-public import Mathlib.Algebra.EuclideanDomain.Basic
 public import Mathlib.RingTheory.Ideal.Basic
 public import Mathlib.RingTheory.PrincipalIdealDomain
 
@@ -31,7 +30,7 @@ open EuclideanDomain Set Ideal
 
 section GCDMonoid
 
-variable {R : Type*} [EuclideanDomain R] [GCDMonoid R] {p q : R}
+variable {R : Type*} [CommRing R] [Nontrivial R] [EuclideanDomain R] [GCDMonoid R] {p q : R}
 
 theorem left_div_gcd_ne_zero {p q : R} (hp : p ≠ 0) : p / GCDMonoid.gcd p q ≠ 0 := by
   obtain ⟨r, hr⟩ := GCDMonoid.gcd_dvd_left p q
@@ -70,7 +69,8 @@ namespace EuclideanDomain
 
 /-- Create a `GCDMonoid` whose `GCDMonoid.gcd` matches `EuclideanDomain.gcd`. -/
 @[implicit_reducible]
-def gcdMonoid (R) [EuclideanDomain R] [DecidableEq R] : GCDMonoid R where
+def gcdMonoid (R) [CommRing R] [Nontrivial R] [EuclideanDomain R] [DecidableEq R] :
+    GCDMonoid R where
   gcd := gcd
   lcm := lcm
   gcd_dvd_left := gcd_dvd_left
@@ -80,7 +80,7 @@ def gcdMonoid (R) [EuclideanDomain R] [DecidableEq R] : GCDMonoid R where
   lcm_zero_left := lcm_zero_left
   lcm_zero_right := lcm_zero_right
 
-variable {α : Type*} [EuclideanDomain α]
+variable {α : Type*} [CommRing α] [Nontrivial α] [EuclideanDomain α]
 
 theorem span_gcd [DecidableEq α] (x y : α) :
     span ({gcd x y} : Set α) = span ({x, y} : Set α) :=

@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.CharP.Algebra
 public import Mathlib.Algebra.CharP.Invertible
 public import Mathlib.Algebra.CharP.Lemmas
-public import Mathlib.Algebra.EuclideanDomain.Field
 public import Mathlib.Algebra.Field.ZMod
 public import Mathlib.Algebra.Polynomial.Roots
 public import Mathlib.RingTheory.Polynomial.Chebyshev

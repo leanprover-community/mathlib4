@@ -31,7 +31,8 @@ open scoped nonZeroDivisors
 namespace ClassGroup
 section EuclideanDomain
 
-variable {R S : Type*} (K L : Type*) [EuclideanDomain R] [CommRing S] [IsDomain S]
+variable {R S : Type*} (K L : Type*) [CommRing R] [Nontrivial R] [EuclideanDomain R]
+  [CommRing S] [IsDomain S]
 variable [Field K] [Field L]
 variable [Algebra R K] [IsFractionRing R K]
 variable [Algebra K L] [FiniteDimensional K L] [Algebra.IsSeparable K L]
@@ -54,6 +55,7 @@ noncomputable def normBound : ℤ :=
       ⟨_, Finset.mem_image.mpr ⟨⟨i, i, i⟩, Finset.mem_univ _, rfl⟩⟩
   Nat.factorial n • (n • m) ^ n
 
+omit [EuclideanDomain R] in
 theorem normBound_pos : 0 < normBound abv bS := by
   obtain ⟨i, j, k, hijk⟩ : ∃ i j k, Algebra.leftMulMatrix bS (bS i) j k ≠ 0 := by
     by_contra! h
@@ -69,6 +71,7 @@ theorem normBound_pos : 0 < normBound abv bS := by
   refine lt_of_lt_of_le (abv.pos hijk) (Finset.le_max' _ _ ?_)
   exact Finset.mem_image.mpr ⟨⟨i, j, k⟩, Finset.mem_univ _, rfl⟩
 
+omit [EuclideanDomain R] in
 /-- If the `R`-integral element `a : S` has coordinates `≤ y` with respect to some basis `b`,
 its norm is less than `normBound abv b * y ^ dim S`. -/
 theorem norm_le (a : S) {y : ℤ} (hy : ∀ k, abv (bS.repr a k) ≤ y) :
@@ -83,6 +86,7 @@ theorem norm_le (a : S) {y : ℤ} (hy : ∀ k, abv (bS.repr a k) ≤ y) :
     apply Finset.le_max'
     exact Finset.mem_image.mpr ⟨⟨i, j, k⟩, Finset.mem_univ _, rfl⟩
 
+omit [EuclideanDomain R] in
 /-- If the `R`-integral element `a : S` has coordinates `< y` with respect to some basis `b`,
 its norm is strictly less than `normBound abv b * y ^ dim S`. -/
 theorem norm_lt {T : Type*} [Ring T] [LinearOrder T] [IsStrictOrderedRing T] (a : S) {y : T}
@@ -111,7 +115,7 @@ theorem norm_lt {T : Type*} [Ring T] [LinearOrder T] [IsStrictOrderedRing T] (a 
   · positivity
   · exact Int.cast_pos.mpr (normBound_pos abv bS)
 
-
+omit [Nontrivial R] [EuclideanDomain R] in
 /-- A nonzero ideal has an element of minimal norm. -/
 theorem exists_min (I : (Ideal S)⁰) :
     ∃ b ∈ (I : Ideal S),

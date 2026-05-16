@@ -5,7 +5,6 @@ Authors: Junyan Xu
 -/
 module
 
-public import Mathlib.Algebra.EuclideanDomain.Int
 public import Mathlib.Algebra.Order.Ring.Int
 public import Mathlib.Data.Nat.Prime.Int
 public import Mathlib.RingTheory.Int.Basic

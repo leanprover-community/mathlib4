@@ -3,7 +3,6 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.EuclideanDomain.Field
 import Mathlib.Algebra.Field.ZMod
 import Mathlib.Algebra.GroupWithZero.Action.Prod
 import Mathlib.Algebra.GroupWithZero.Action.Units
@@ -228,9 +227,7 @@ section ZMod
 
 variable {p : ℕ} [Fact p.Prime]
 
-example :
-    @EuclideanDomain.toCommRing _ (@Field.toEuclideanDomain _ (ZMod.instField p)) =
-      ZMod.commRing p := by
+example : @Field.toCommRing _ (ZMod.instField p) = ZMod.commRing p := by
   with_reducible_and_instances rfl
 
 set_option backward.isDefEq.respectTransparency false in
