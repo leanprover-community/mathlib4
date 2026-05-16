@@ -494,6 +494,17 @@ theorem MemLp.ae_eq [TopologicalSpace ε] {f g : α → ε} (hfg : f =ᵐ[μ] g)
     MemLp g p μ :=
   (memLp_congr_ae hfg).1 hf_Lp
 
+lemma MemLp.toReal {g : α → ℝ≥0∞} (hg : MemLp g p μ) : MemLp (fun ω ↦ (g ω).toReal) p μ := by
+  constructor
+  · have : AEMeasurable g μ := hg.1.aemeasurable
+    exact AEMeasurable.aestronglyMeasurable (by fun_prop)
+  · calc eLpNorm (fun ω ↦ (g ω).toReal) p μ
+    _ ≤ eLpNorm g p μ := by
+      refine eLpNorm_mono_enorm fun x ↦ ?_
+      simp only [← ofReal_norm, Real.norm_eq_abs, ENNReal.abs_toReal, enorm_eq_self]
+      exact ENNReal.ofReal_toReal_le
+    _ < ∞ := hg.2
+
 section ContinuousENorm
 
 variable {ε ε' : Type*}
