@@ -5,8 +5,9 @@ Authors: David Loeffler, Antoine Chambert-Loir
 -/
 module
 
+public import Mathlib.Data.Matrix.Action
 public import Mathlib.GroupTheory.GroupAction.MultipleTransitivity
-public import Mathlib.GroupTheory.GroupAction.Ring
+public import Mathlib.LinearAlgebra.Eigenspace.Basic
 public import Mathlib.LinearAlgebra.Projectivization.Basic
 public import Mathlib.LinearAlgebra.SpecialLinearGroup
 public import Mathlib.LinearAlgebra.Transvection.Basic
@@ -104,6 +105,29 @@ section Field
 open MulAction LinearEquiv SpecialLinearGroup
 
 variable {K V : Type*} [AddCommGroup V] [Field K] [Module K V]
+
+/-- The fixed points of an invertible linear map acting on the projectivization of a vector
+space are precisely the eigenspaces. -/
+theorem smul_eq_self_iff' {M : Type*} [AddCommGroup M] [Module K M]
+    {g : LinearMap.GeneralLinearGroup K M} {y : Projectivization K M} :
+    g • y = y ↔ ∃ a, y.submodule ≤ Module.End.eigenspace g a := by
+  induction y with | h y hy =>
+  simp only [Projectivization.smul_mk, Projectivization.mk_eq_mk_iff,
+    SetLike.le_def, Module.End.mem_eigenspace_iff, Projectivization.submodule_mk,
+    Submodule.mem_span_singleton, forall_exists_index]
+  constructor
+  · refine fun ⟨a, hay⟩ ↦ ⟨a, fun x b hxb ↦ ?_⟩
+    simp [← hxb, smul_comm _ b, ← a.smul_def, g.smul_def, hay]
+  · rintro ⟨a, ha⟩
+    refine ⟨.mk0 a (fun ha' ↦ hy ?_), (ha 1 (one_smul ..)).symm⟩
+    specialize ha 1 rfl
+    exact (smul_eq_zero_iff_eq g).mp (by aesop)
+
+theorem smul_eq_self_iff {ι : Type*} [Fintype ι] [DecidableEq ι]
+    {g : GL ι K} {y : Projectivization K (ι → K)} :
+    g • y = y ↔ ∃ a, y.submodule ≤ Module.End.eigenspace g.toLin a :=
+  smul_eq_self_iff' (g := g.toLin)
+open MulAction LinearEquiv SpecialLinearGroup
 
 theorem specialLinearGroup_smul_def (g : SpecialLinearGroup K V) (D : ℙ K V) :
     g • D = g.toLinearEquiv • D := rfl
