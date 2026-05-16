@@ -152,6 +152,7 @@ public import Mathlib.Algebra.Category.ModuleCat.Algebra
 public import Mathlib.Algebra.Category.ModuleCat.Basic
 public import Mathlib.Algebra.Category.ModuleCat.Biproducts
 public import Mathlib.Algebra.Category.ModuleCat.ChangeOfRings
+public import Mathlib.Algebra.Category.ModuleCat.ChangeOfRingsExact
 public import Mathlib.Algebra.Category.ModuleCat.Colimits
 public import Mathlib.Algebra.Category.ModuleCat.Descent
 public import Mathlib.Algebra.Category.ModuleCat.Differentials.Basic
