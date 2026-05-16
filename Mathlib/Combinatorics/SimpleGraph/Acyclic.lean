@@ -658,6 +658,6 @@ lemma isAcyclic_iff_pairwise_not_isEdgeReachable_two :
     exact h w hw
   · rw [isAcyclic_iff_forall_isBridge]
     rintro ⟨u, v⟩ huv
-    exact (isBridge_iff_not_isEdgeConnected_two huv).mpr (h huv.ne)
+    exact (isBridge_iff_not_isEdgeReachable_two huv).mpr (h huv.ne)
 
 end SimpleGraph
