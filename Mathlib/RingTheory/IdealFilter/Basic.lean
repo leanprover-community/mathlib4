@@ -5,7 +5,7 @@ Authors: Blake Farman
 -/
 module
 
-public import Mathlib.Order.PFilter
+public import Mathlib.Order.Ideal
 public import Mathlib.RingTheory.Ideal.Colon
 
 /-!
@@ -146,15 +146,15 @@ lemma IsTorsionQuot.inf {F : IdealFilter A}
 
 lemma isPFilter_gabrielComposition (F G : IdealFilter A) :
     Order.IsPFilter {L : Ideal A | ∃ K ∈ G, F.IsTorsionQuot L K} := by
-  refine Order.IsPFilter.of_def ?nonempty ?directed ?mem_of_le
+  refine ⟨?mem_of_le, ?nonempty, ?directed⟩
+  · intro I J hIJ ⟨K, hK, hIK⟩
+    exact ⟨K, hK, hIK.mono_left hIJ⟩
   · obtain ⟨J, hJ⟩ := G.nonempty
     exact ⟨J, J, hJ, isTorsionQuot_self F J⟩
   · rintro I ⟨K, hK, hIK⟩ J ⟨L, hL, hJL⟩
     refine ⟨I ⊓ J, ?_, inf_le_left, inf_le_right⟩
     exact ⟨K ⊓ L, G.inf_mem hK hL,
       (hIK.anti_right inf_le_left).inf (hJL.anti_right inf_le_right)⟩
-  · intro I J hIJ ⟨K, hK, hIK⟩
-    exact ⟨K, hK, hIK.mono_left hIJ⟩
 
 /-- The Gabriel composition of ideal filters `F` and `G`.
 See [nLab: Gabriel composition](https://ncatlab.org/nlab/show/Gabriel+composition+of+filters). -/
@@ -181,11 +181,11 @@ theorem isGabriel_iff (F : IdealFilter A) : F.IsGabriel ↔ F.IsUniform ∧ F �
     · rcases hI with ⟨J, hJ, htors⟩
       refine hF.gabriel_closed I ⟨J, hJ, fun x hx ↦ ?_⟩
       rcases htors x hx with ⟨K, hK, hincl⟩
-      exact Order.PFilter.mem_of_le hincl hK
+      exact Order.PFilter.upper _ hincl hK
     · exact ⟨I, hI, isTorsionQuot_self F I⟩
   · rintro ⟨h₁, h₂⟩
     refine { toIsUniform := h₁, gabriel_closed := ?_ }
     rintro I ⟨J, hJ, hcolon⟩
-    exact h₂.le ⟨J, hJ, fun x hx ↦ ⟨I.colon {x}, hcolon x hx, by simp⟩⟩
+    exact h₂.ge ⟨J, hJ, fun x hx ↦ ⟨I.colon {x}, hcolon x hx, by simp⟩⟩
 
 end IdealFilter

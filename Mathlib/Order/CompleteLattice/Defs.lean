@@ -137,7 +137,8 @@ instance {α : Type*} [CompleteSemilatticeInf α] : CompleteSemilatticeSup αᵒ
 class CompleteLattice (α : Type*) extends Lattice α, CompleteSemilatticeSup α,
     CompleteSemilatticeInf α, BoundedOrder α
 
-attribute [to_dual existing] CompleteLattice.toCompleteSemilatticeInf
+attribute [to_dual existing] CompleteLattice.toInfSet CompleteLattice.isGLB_sInf
+  CompleteLattice.toCompleteSemilatticeInf
 attribute [to_dual self (reorder := toSupSet toInfSet, isLUB_sSup isGLB_sInf)] CompleteLattice.mk
 
 -- Shortcut instance to ensure that the path
@@ -209,7 +210,7 @@ instance : CompleteLattice my_T where
   __ := completeLatticeOfSup my_T _
 ```
 -/
-@[implicit_reducible]
+@[to_dual existing, implicit_reducible]
 def completeLatticeOfSup (α : Type*) [H1 : PartialOrder α] [H2 : SupSet α]
     (isLUB_sSup : ∀ s : Set α, IsLUB s (sSup s)) : CompleteLattice α where
   __ := H1; __ := H2

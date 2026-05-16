@@ -417,7 +417,7 @@ variable [BooleanAlgebra α]
 theorem inf_compl_eq_bot' : x ⊓ xᶜ = ⊥ :=
   bot_unique <| BooleanAlgebra.inf_compl_le_bot x
 
-@[simp]
+@[to_dual existing inf_compl_eq_bot', simp]
 theorem sup_compl_eq_top : x ⊔ xᶜ = ⊤ :=
   top_unique <| BooleanAlgebra.top_le_sup_compl x
 

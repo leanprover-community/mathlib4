@@ -6,7 +6,6 @@ Authors: Noam Atar
 module
 
 public import Mathlib.Order.Ideal
-public import Mathlib.Order.PFilter
 
 /-!
 # Prime ideals
@@ -115,11 +114,11 @@ theorem IsPrime.of_mem_or_mem [IsProper I] (hI : ∀ {x y : P}, x ⊓ y ∈ I �
     IsPrime I := by
   rw [isPrime_iff]
   use ‹_›
-  refine .of_def ?_ ?_ ?_
+  refine ⟨?_, ?_, ?_⟩
+  · exact @mem_compl_of_ge _ _ _
   · exact Set.nonempty_compl.2 (I.isProper_iff.1 ‹_›)
   · intro x hx y hy
     exact ⟨x ⊓ y, fun h => (hI h).elim hx hy, inf_le_left, inf_le_right⟩
-  · exact @mem_compl_of_ge _ _ _
 
 theorem isPrime_iff_mem_or_mem [IsProper I] : IsPrime I ↔ ∀ {x y : P}, x ⊓ y ∈ I → x ∈ I ∨ y ∈ I :=
   ⟨IsPrime.mem_or_mem, IsPrime.of_mem_or_mem⟩
