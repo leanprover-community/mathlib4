@@ -473,13 +473,15 @@ theorem frobenius_pow {p : ℕ} [Fact p.Prime] [CharP K p] {n : ℕ} (hcard : q 
 
 open Polynomial
 
-theorem expand_card (f : K[X]) : expand K q f = f ^ q := by
+theorem Polynomial.expand_card (f : K[X]) : expand K q f = f ^ q := by
   obtain ⟨p, hp⟩ := CharP.exists K
   rcases FiniteField.card K p with ⟨⟨n, npos⟩, ⟨hp, hn⟩⟩
   haveI : Fact p.Prime := ⟨hp⟩
-  dsimp at hn
   rw [hn, ← map_iterateFrobenius_expand, iterateFrobenius_eq_pow,
     frobenius_pow hn, RingHom.one_def, map_id]
+
+@[deprecated (since := "2026-05-11")]
+alias expand_card := Polynomial.expand_card
 
 end FiniteField
 
@@ -624,7 +626,9 @@ theorem orderOf_dvd_card_sub_one {a : ZMod p} (ha : a ≠ 0) :
 open Polynomial
 
 theorem expand_card (f : Polynomial (ZMod p)) :
-    expand (ZMod p) p f = f ^ p := by have h := FiniteField.expand_card f; rwa [ZMod.card p] at h
+    expand (ZMod p) p f = f ^ p := by
+  have h := FiniteField.Polynomial.expand_card f
+  rwa [ZMod.card p] at h
 
 end ZMod
 
