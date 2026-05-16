@@ -9,6 +9,7 @@ public import Mathlib.Algebra.Algebra.Operations
 public import Mathlib.Algebra.Star.TensorProduct
 public import Mathlib.LinearAlgebra.TensorProduct.Tower
 public import Mathlib.RingTheory.Adjoin.Basic
+public import Mathlib.RingTheory.Ideal.Maps
 
 /-!
 # The tensor product of R-algebras
@@ -794,3 +795,76 @@ lemma _root_.Algebra.TensorProduct.ext_ring {f g : S ⊗[R] A →ₐ[S] B}
   liftEquiv .. |>.symm.injective h
 
 end AlgHom
+
+namespace Algebra
+
+variable {A : Type*} [CommSemiring A]
+    (R : Type*) [CommSemiring R] [Algebra A R]
+    {S : Type*} [Semiring S] [Algebra A S] (I : Ideal S)
+
+open AlgHom RingHom Submodule TensorProduct LinearMap
+
+variable {R} in
+theorem baseChange_one :
+    (1 : Submodule R (R ⊗[A] S)) =
+      LinearMap.range (LinearMap.baseChange R (1 : Submodule A S).subtype) := by
+  ext x
+  simp only [mem_one, TensorProduct.algebraMap_apply, algebraMap_self, RingHom.id_apply,
+    LinearMap.mem_range]
+  constructor
+  · rintro ⟨y, rfl⟩
+    exact ⟨y ⊗ₜ[A] ⟨1, one_le.mp fun ⦃x⦄ a ↦ a⟩, rfl⟩
+  · rintro ⟨y, rfl⟩
+    induction y using TensorProduct.induction_on with
+    | zero => exact ⟨0, by simp⟩
+    | tmul r s =>
+      rcases s with ⟨s, ⟨a, rfl⟩⟩
+      exact ⟨a • r, by simp [smul_tmul]⟩
+    | add x y hx hy =>
+      obtain ⟨x', hx⟩ := hx
+      obtain ⟨y', hy⟩ := hy
+      exact ⟨x' + y', by simp [← hx, ← hy, map_add, add_tmul]⟩
+
+theorem TensorProduct.map_includeRight_eq_range_baseChange :
+    (I.map includeRight).restrictScalars R =
+      ((Submodule.restrictScalars A I).subtype.baseChange R).range := by
+  ext x
+  simp only [restrictScalars_mem, LinearMap.mem_range]
+  constructor
+  · intro hx
+    induction hx using Submodule.closure_induction with
+    | zero => use 0; simp
+    | add _ _ _ _ hx hy =>
+      obtain ⟨x, rfl⟩ := hx
+      obtain ⟨y, rfl⟩ := hy
+      exact ⟨x + y, by simp⟩
+    | smul_mem a x hx =>
+      revert hx
+      induction a using TensorProduct.induction_on with
+      | add u' v' hu hv =>
+        intro hx
+        obtain ⟨u, hu⟩ := hu hx
+        obtain ⟨v, hv⟩ := hv hx
+        exact ⟨u + v, by simp [hu, hv, right_distrib]⟩
+      | zero =>
+        intro hx
+        exact ⟨0, by simp⟩
+      | tmul r s =>
+        rintro ⟨i, hi, rfl⟩
+        exact ⟨r ⊗ₜ[A] (⟨s • i, smul_mem I s hi⟩), by simp⟩
+  · rintro ⟨y, rfl⟩
+    induction y using TensorProduct.induction_on with
+    | zero => simp only [_root_.map_zero, zero_mem]
+    | tmul r s =>
+      rcases s with ⟨s, hs⟩
+      simp only [restrictScalars_mem] at hs
+      simp only [baseChange_tmul, coe_subtype]
+      rw [← mul_one r, ← smul_eq_mul, ← TensorProduct.smul_tmul']
+      rw [← IsScalarTower.algebraMap_smul (R ⊗[A] S) r, smul_eq_mul]
+      apply Ideal.mul_mem_left
+      exact Ideal.mem_map_of_mem Algebra.TensorProduct.includeRight hs
+    | add x y hx hy =>
+      simp only [map_add]
+      exact Ideal.add_mem _ hx hy
+
+end Algebra
