@@ -622,16 +622,15 @@ variable {R S M M₂ : Type*} [Semiring R] [Semiring S] {σ : R →+* S} {σ' : 
   [RingHomInvPair σ σ'] [RingHomInvPair σ' σ] [TopologicalSpace M] [AddCommMonoid M]
   [TopologicalSpace M₂] [AddCommMonoid M₂] [Module R M] [Module S M₂]
 
--- **FAE** MOVE ME
-lemma Equiv.ofBijective_symm {X Y : Type*} {f : X ≃ Y} :
-    (Equiv.ofBijective _ f.bijective).symm = f.symm := by
-  ext
-  apply_fun f
-  simpa only [Equiv.apply_symm_apply] using Equiv.ofBijective_apply_symm_apply ..
+-- **FAE** Open PR [#39470](https://github.com/leanprover-community/mathlib4/pull/39470)
+@[simp]
+lemma Equiv.ofBijective_coe {X Y : Type*} {f : X ≃ Y} :
+    (Equiv.ofBijective _ f.bijective) = f := Equiv.ext (congrFun rfl)
 
+open ContinuousLinearEquiv in
 lemma IsHomeomorph.inv_coe {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] {f : X ≃ Y}
     (hf : IsHomeomorph f) : hf.homeomorph.invFun = f.invFun := by
-  simp [Equiv.ofBijective_symm]
+  simp
 
 -- **FAE** MOVE ME
 open ContinuousLinearEquiv in
@@ -639,10 +638,8 @@ def ofIsHomeomorph (f : M ≃ₛₗ[σ] M₂) (hf : IsHomeomorph f.toEquiv) : M 
   __ := f
   continuous_toFun := hf.continuous
   continuous_invFun := by
-    have := hf.homeomorph.continuous_invFun
-    have also := IsHomeomorph.inv_coe hf
-    simp_all only [LinearEquiv.coe_toEquiv, IsHomeomorph.toEquiv_homeomorph, Equiv.invFun_as_coe,
-      LinearEquiv.coe_symm_toEquiv, LinearEquiv.invFun_eq_symm]
+    rw [Equiv.isHomeomorph_iff] at hf
+    exact hf.2 -- nice?
 
 @[simp]
 lemma ofIsHomeomorph_coe {f : M ≃ₛₗ[σ] M₂} (hf : IsHomeomorph f) :
@@ -673,18 +670,6 @@ theorem FredholmDecomposition_isInvertibleOn₁ :
     (u.restrict (FredholmDecomposition_mapsTo₁ huF)).IsInvertible :=
   ⟨FredholmDecomposition_ContinuousLinearEquiv₁ huF, by rfl⟩
 
-
-/- ## FredholmQuot ==> complemented kernel (Jon)
-
-Lemma : if `A` is finite dimensional is complemented and if `B ≤ A` then `B` is complemented.
-
-Proof: project onto `A`, then the projection from `A` to `B` is continuous because findim.
-
-Assume we have a finite codim subspace `E₁` on which `u` is injective.
-Pick `S` a complement of `E₁` containing `u.ker`. Then `S` is complemented and finite dimensional,
-so `u.ker` is complemented.
-
--/
 
 end Filippo
 
