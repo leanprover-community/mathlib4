@@ -885,4 +885,35 @@ theorem exists_finite_card_le_of_finite_of_linearIndependent_of_span {s t : Set 
   have : s.Finite := u.finite_toSet.subset hsu
   ⟨this, by rw [← Eq]; exact Finset.card_le_card <| Finset.coe_subset.mp <| by simp [hsu]⟩
 
+/-- If `v₀ + ... + vₙ = 0` and `v₀, ..., vₙ₋₁` are linearly independent, then every
+linear relation among `v₀, ..., vₙ` is a scalar multiple of the all-ones relation. -/
+theorem exists_eq_const_of_sum_smul_eq_zero_of_sum_eq_zero_of_linearIndependent
+    {p : ℕ} (hp : 1 < p) (v : Fin p → V) (hrel : ∑ i : Fin p, v i = 0)
+    (hlin : LinearIndependent K (fun i : Fin (p - 1) =>
+      v ((finCongr (Nat.sub_add_cancel hp.le)) (Fin.castSucc i)))) :
+    ∀ b : Fin p → K, (∑ i : Fin p, b i • v i) = 0 → ∃ c : K, ∀ i : Fin p, b i = c := by
+  classical
+  intro b hsum
+  let eCast : Fin (p - 1 + 1) ≃ Fin p := finCongr (Nat.sub_add_cancel hp.le)
+  let last : Fin p := eCast (Fin.last (p - 1))
+  have hsumDiff : (∑ i : Fin p, (b i - b last) • v i) = 0 := by
+    simp_rw [sub_smul]
+    rw [Finset.sum_sub_distrib, hsum, ← Finset.smul_sum, hrel, smul_zero, sub_zero]
+  have hrel0 : (∑ i : Fin (p - 1), (b (eCast (Fin.castSucc i)) - b last) •
+      v (eCast (Fin.castSucc i))) = 0 := by
+    have hsumDiff' :=
+      (Equiv.sum_comp eCast (fun i : Fin p => (b i - b last) • v i)).trans hsumDiff
+    rw [Fin.sum_univ_castSucc] at hsumDiff'
+    simpa [last] using hsumDiff'
+  let coeff : Fin (p - 1) → K := fun j => b (eCast (Fin.castSucc j)) - b last
+  have hcoeff : coeff = 0 := by
+    apply hlin.fintypeLinearCombination_injective
+    simp only [map_zero]
+    simpa [coeff, eCast] using hrel0
+  refine ⟨b last, fun i => ?_⟩
+  rcases Fin.eq_castSucc_or_eq_last (eCast.symm i) with ⟨j, hj⟩ | hj
+  · rw [← eCast.apply_symm_apply i, hj]
+    exact sub_eq_zero.mp (by simpa [coeff] using congrFun hcoeff j)
+  · rw [← eCast.apply_symm_apply i, hj]
+
 end Module

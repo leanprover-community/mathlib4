@@ -431,6 +431,19 @@ theorem geom_sum_eq_zero [IsDomain R] {ζ : R} (hζ : IsPrimitiveRoot ζ k) (hk 
   refine eq_zero_of_ne_zero_of_mul_left_eq_zero (sub_ne_zero_of_ne (hζ.ne_one hk).symm) ?_
   rw [mul_neg_geom_sum, hζ.pow_eq_one, sub_self]
 
+/-- If `ζ` is a primitive `k`-th root and `d ∣ k`, then the `d` roots obtained by stepping
+through powers of size `k / d` sum to zero, provided `1 < d`. -/
+theorem sum_range_pow_mul_div_eq_zero_of_dvd [IsDomain R] {ζ : R} (hζ : IsPrimitiveRoot ζ k)
+    (hk : 0 < k) {d : ℕ} (hd : 1 < d) (hdk : d ∣ k) :
+    (∑ t ∈ range d, ζ ^ (t * (k / d))) = 0 := by
+  have hprod : k = (k / d) * d := by simpa [Nat.mul_comm] using (Nat.div_mul_cancel hdk).symm
+  calc
+    (∑ t ∈ range d, ζ ^ (t * (k / d))) =
+        ∑ t ∈ range d, (ζ ^ (k / d)) ^ t := by
+      refine sum_congr rfl fun t _ => ?_
+      rw [← pow_mul, Nat.mul_comm]
+    _ = 0 := (hζ.pow (ζ := ζ) (a := k / d) (b := d) hk hprod).geom_sum_eq_zero hd
+
 theorem isRoot_geom_sum [IsDomain R] {ζ : R} (hζ : IsPrimitiveRoot ζ k) (hk : 1 < k) :
     (∑ i ∈ range k, X ^ i).IsRoot ζ := by
   simp [geom_sum_eq_zero hζ hk]
