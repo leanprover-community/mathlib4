@@ -54,11 +54,12 @@ def mapCoeffs : Derivation R A[X] (PolynomialModule A M) where
         -- TODO: copy more `Finsupp` API to `PolynomialModule`.
         -- We have to do a bit of work to go through the identification
         -- `PolynomialModule A M = ℕ →₀ M`...
-        dsimp only [PolynomialModule, Finsupp.mapRange.linearMap_apply, coeFn_coe]
+        dsimp only [PolynomialModule, Finsupp.mapRange.linearMap_apply, coeFn_coe,
+          AddMonoidAlgebra.single, AddMonoidAlgebra.ofCoeff]
         rw [Finsupp.mapRange_single, Finsupp.mapRange_single]
         -- ... and here we go back through the identification.
         change _ = (_ • PolynomialModule.single A _ _) _ + (_ • PolynomialModule.single A _ _) i
-        simp only [PolynomialModule.monomial_smul_single, AddMonoidAlgebra.single_apply,
+        simp only [PolynomialModule.monomial_smul_single, Finsupp.single_apply,
           apply_ite d, leibniz, map_zero, PolynomialModule.single_apply, ite_add_zero,
           add_comm m n]
 

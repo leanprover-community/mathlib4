@@ -343,7 +343,7 @@ theorem iterate_derivative_eq_factorial_smul_sum (p : R[X]) (k : ℕ) :
     derivative^[k] p = k ! •
       ∑ x ∈ (derivative^[k] p).support, C ((x + k).choose k • p.coeff (x + k)) * X ^ x := by
   conv_lhs => rw [iterate_derivative_eq_sum]
-  rw [smul_sum]
+  erw [smul_sum]
   refine sum_congr rfl fun i _ ↦ ?_
   rw [← smul_mul_assoc, smul_C, smul_smul, Nat.descFactorial_eq_factorial_mul_choose]
 
@@ -363,8 +363,9 @@ theorem iterate_derivative_mul {n} (p q : R[X]) :
             n.choose k • (derivative^[n - k + 1] p * derivative^[k] q)) +
           ∑ k ∈ range n.succ,
             n.choose k • (derivative^[n - k] p * derivative^[k + 1] q) := by
-        simp_rw [derivative_sum, derivative_smul, derivative_mul, Function.iterate_succ_apply',
-          smul_add, sum_add_distrib]
+        simp only [Nat.succ_eq_add_one, nsmul_eq_mul, derivative_mul, derivative_natCast, zero_mul,
+          derivative_sum, zero_add, Function.iterate_succ', Function.comp_apply]
+        simp_rw [mul_add, sum_add_distrib]
       _ = (∑ k ∈ range n.succ,
                 n.choose k.succ • (derivative^[n - k] p * derivative^[k + 1] q)) +
               1 • (derivative^[n + 1] p * derivative^[0] q) +
@@ -514,9 +515,7 @@ theorem iterate_derivative_X_add_pow (n k : ℕ) (c : R) :
   induction k with
   | zero => simp
   | succ k IH =>
-      rw [Nat.sub_succ', Function.iterate_succ_apply', IH, derivative_smul,
-        derivative_X_add_C_pow, map_natCast, Nat.descFactorial_succ, nsmul_eq_mul, nsmul_eq_mul,
-        Nat.cast_mul]
+      simp [Nat.sub_succ', Function.iterate_succ_apply', IH, derivative_X_add_C_pow]
       ring
 
 theorem iterate_derivative_mul_X_pow (n m : ℕ) (p : R[X]) :
@@ -703,7 +702,7 @@ theorem iterate_derivative_prod_X_sub_C {k : ℕ} {S : Finset R} (hk : k ≤ #S)
   case succ k ind =>
     specialize ind (Nat.le_of_succ_le hk)
     nth_rewrite 1 [add_comm]
-    rw [Function.iterate_add_apply, Function.iterate_one, ind, ← nsmul_eq_mul, derivative_smul,
+    erw [Function.iterate_add_apply, Function.iterate_one, ind, ← nsmul_eq_mul, derivative_smul,
       nsmul_eq_mul, derivative_sum, Nat.factorial_succ, mul_comm (k + 1), Nat.cast_mul, mul_assoc]
     congr 1
     calc

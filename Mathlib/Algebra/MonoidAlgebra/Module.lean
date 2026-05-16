@@ -59,6 +59,10 @@ variable [Semiring R] [Semiring S] [Module R S] {s t : Set M} {x : S[M]}
 @[to_additive (dont_translate := R)]
 instance module : Module R S[M] := inferInstanceAs <| Module R (M →₀ S)
 
+@[to_additive]
+instance instIsTorsionFree [IsTorsionFree R S] : IsTorsionFree R S[M] :=
+  coeffEquiv.moduleIsTorsionFree _
+
 variable (R) in
 /-- `MonoidAlgebra.coeff` as a linear equiv. -/
 @[to_additive (attr := simps! apply symm_apply)
@@ -88,7 +92,7 @@ variable (R S s) in
 @[to_additive (dont_translate := R)]
 lemma supported_eq_span_single : supported R R s = .span R ((fun m ↦ single m 1) '' s) := by
   simp [supported_eq_map, Finsupp.supported_eq_span_single R s, Submodule.map_span,
-    ← Set.image_comp, ofCoeff]
+    ← Set.image_comp]
 
 @[to_additive (attr := gcongr)]
 lemma supported_mono (hst : s ⊆ t) : supported R S s ≤ supported R S t := fun _ h ↦ h.trans hst
@@ -109,11 +113,6 @@ def supportedEquivFinsupp (s : Set M) : supported R S s ≃ₗ[R] s →₀ S :=
 
 end Module
 
-@[to_additive (dont_translate := R)]
-instance instIsTorsionFree [Semiring R] [Semiring k] [Module R k] [Module.IsTorsionFree R k] :
-    Module.IsTorsionFree R (MonoidAlgebra k G) :=
-  inferInstanceAs <| IsTorsionFree R (G →₀ k)
-
 @[to_additive (dont_translate := R) faithfulSMul]
 instance faithfulSMul [Semiring k] [SMulZeroClass R k] [FaithfulSMul R k] [Nonempty G] :
     FaithfulSMul R k[G] :=
@@ -122,7 +121,7 @@ instance faithfulSMul [Semiring k] [SMulZeroClass R k] [FaithfulSMul R k] [Nonem
 /-- The standard basis for a monoid algebra. -/
 @[to_additive /-- The standard basis for an additive monoid algebra. -/]
 def basis (R k) [Semiring k] : Module.Basis R k (MonoidAlgebra k R) where
-  repr := LinearEquiv.refl k (R →₀ k)
+  repr := coeffLinearEquiv _
 
 @[to_additive (dont_translate := k) (attr := simp)]
 lemma basis_apply (k) [Semiring k] (r : R) :
@@ -209,8 +208,9 @@ theorem liftNC_smul (f : S →+* R) (g : M →* R) (c : S) (φ : S[M]) :
       (AddMonoidHom.mulLeft (f c)).comp (liftNC (↑f) g) from
     DFunLike.congr_fun this φ
   ext
-  simp_rw [AddMonoidHom.comp_apply, singleAddHom_apply, smulAddHom_apply,
-    AddMonoidHom.coe_mulLeft, smul_single', liftNC_single, AddMonoidHom.coe_coe, map_mul, mul_assoc]
+  simp only [AddMonoidHom.comp_apply, smulAddHom_apply]
+  erw [smul_single']
+  simp [mul_assoc]
 
 end MiscTheorems
 
@@ -219,28 +219,18 @@ section NonUnitalNonAssocAlgebra
 
 variable (k) [Semiring k] [DistribSMul R k] [Mul G]
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive (dont_translate := R k) isScalarTower_self]
 instance isScalarTower_self [IsScalarTower R k k] : IsScalarTower R k[G] k[G] where
   smul_assoc t a b := by
-    classical ext; simp [mul_apply, sum_smul_index' (b := t), smul_sum, smul_mul_assoc]
+    classical ext; simp [coeff_mul, sum_smul_index' (b := t), smul_sum, smul_mul_assoc]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Note that if `k` is a `CommSemiring` then we have `SMulCommClass k k k` and so we can take
 `R = k` in the below. In other words, if the coefficients are commutative amongst themselves, they
 also commute with the algebra multiplication. -/
 @[to_additive (dont_translate := R k) smulCommClass_self]
 instance smulCommClass_self [SMulCommClass R k k] : SMulCommClass R k[G] k[G] where
   smul_comm t a b := by
-    ext
-    -- Porting note: `refine` & `rw` are required because `simp` behaves differently.
-    classical
-    simp only [smul_eq_mul, mul_apply]
-    rw [coe_smul]
-    refine Eq.symm (Eq.trans (congr_arg (sum a)
-      (funext₂ fun a₁ b₁ => sum_smul_index' (g := b) (b := t) ?_)) ?_) <;>
-    simp only [mul_apply, Finsupp.sum, Finset.smul_sum, smul_ite, mul_smul_comm,
-      imp_true_iff, ite_eq_right_iff, Pi.smul_apply, mul_zero, smul_zero]
+    classical ext; simp [coeff_mul, sum_smul_index', Finsupp.smul_sum, mul_smul_comm]
 
 @[to_additive (dont_translate := R k) smulCommClass_symm_self]
 instance smulCommClass_symm_self [SMulCommClass k R k] : SMulCommClass k[G] R k[G] :=
@@ -254,7 +244,6 @@ variable [CommSemiring k] [Monoid G]
 variable {V : Type*} [AddCommMonoid V]
 variable [Module k V] [Module k[G] V] [IsScalarTower k k[G] V]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A submodule over `k` which is stable under scalar multiplication by elements of `G` is a
 submodule over `k[G]` -/
 def submoduleOfSMulMem (W : Submodule k V) (h : ∀ (g : G) (v : V), v ∈ W → of k G g • v ∈ W) :
@@ -262,9 +251,8 @@ def submoduleOfSMulMem (W : Submodule k V) (h : ∀ (g : G) (v : V), v ∈ W →
   carrier := W
   zero_mem' := W.zero_mem'
   add_mem' := W.add_mem'
-  smul_mem' := by
-    intro f v hv
-    rw [← Finsupp.sum_single f, Finsupp.sum, Finset.sum_smul]
+  smul_mem' f v hv := by
+    rw [← f.sum_coeff_single, Finsupp.sum, Finset.sum_smul]
     simp_rw [← smul_of, smul_assoc]
     exact Submodule.sum_smul_mem W _ fun g _ => h g v hv
 
@@ -305,8 +293,9 @@ lemma liftNC_smul [AddZeroClass M] (f : S →+* R) (g : Multiplicative M →* R)
   suffices (liftNC (↑f) g).comp (smulAddHom S S[M] c) =
       (AddMonoidHom.mulLeft (f c)).comp (liftNC f g) from DFunLike.congr_fun this φ
   ext
-  simp_rw [AddMonoidHom.comp_apply, singleAddHom_apply, smulAddHom_apply,
-    AddMonoidHom.coe_mulLeft, smul_single', liftNC_single, AddMonoidHom.coe_coe, map_mul, mul_assoc]
+  simp only [AddMonoidHom.comp_apply, smulAddHom_apply]
+  erw [smul_single']
+  simp [mul_assoc]
 
 end Semiring
 end AddMonoidAlgebra

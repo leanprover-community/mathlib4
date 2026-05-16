@@ -85,22 +85,19 @@ In practice, `reflect` is only used when `N` is at least as large as the degree 
 
 Eventually, it will be used with `N` exactly equal to the degree of `f`. -/
 noncomputable def reflect (N : ℕ) : R[X] → R[X]
-  | ⟨f⟩ => ⟨Finsupp.embDomain (revAt N) f⟩
+  | ⟨f⟩ => ⟨.ofCoeff <| f.coeff.embDomain (revAt N)⟩
 
 theorem reflect_support (N : ℕ) (f : R[X]) :
-    (reflect N f).support = Finset.image (revAt N) f.support := by
-  rcases f with ⟨⟩
-  ext1
-  simp only [reflect, support_ofFinsupp, support_embDomain, Finset.mem_map, Finset.mem_image]
+    (reflect N f).support = Finset.image (revAt N) f.support := by cases f; ext1; simp [reflect]
 
 @[simp, grind =]
 theorem coeff_reflect (N : ℕ) (f : R[X]) (i : ℕ) : coeff (reflect N f) i = f.coeff (revAt N i) := by
   rcases f with ⟨f⟩
   simp only [reflect, coeff]
   calc
-    Finsupp.embDomain (revAt N) f i = Finsupp.embDomain (revAt N) f (revAt N (revAt N i)) := by
-      rw [revAt_invol]
-    _ = f (revAt N i) := Finsupp.embDomain_apply_self _ _ _
+    f.coeff.embDomain (revAt N) i
+      = f.coeff.embDomain (revAt N) (revAt N (revAt N i)) := by rw [revAt_invol]
+    _ = f.coeff (revAt N i) := Finsupp.embDomain_apply_self _ _ _
 
 @[simp] lemma reflect_reflect {N : ℕ} {p : R[X]} : (p.reflect N).reflect N = p := by ext; simp
 
@@ -108,10 +105,8 @@ theorem coeff_reflect (N : ℕ) (f : R[X]) (i : ℕ) : coeff (reflect N f) i = f
 theorem reflect_zero {N : ℕ} : reflect N (0 : R[X]) = 0 :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
-theorem reflect_eq_zero_iff {N : ℕ} {f : R[X]} : reflect N (f : R[X]) = 0 ↔ f = 0 := by
-  rw [ofFinsupp_eq_zero, reflect, embDomain_eq_zero, ofFinsupp_eq_zero]
+lemma reflect_eq_zero_iff {N : ℕ} {f : R[X]} : reflect N (f : R[X]) = 0 ↔ f = 0 := by simp [reflect]
 
 @[simp]
 theorem reflect_add (f g : R[X]) (N : ℕ) : reflect N (f + g) = reflect N f + reflect N g := by
