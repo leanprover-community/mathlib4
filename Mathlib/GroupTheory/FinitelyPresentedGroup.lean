@@ -100,3 +100,10 @@ instance : AddGroup.IsFinitelyPresented ℤ :=
     (FreeAddGroup.addEquivIntOfUnique : FreeAddGroup Unit ≃+ ℤ) inferInstance
 
 end Group.IsFinitelyPresented
+
+open Group
+
+/-- Direct products of finitely presented groups are finitely presented. -/
+instance [hG : IsFinitelyPresented G] [hH : IsFinitelyPresented H] :
+    IsFinitelyPresented (G × H) := by
+  sorry
