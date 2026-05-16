@@ -533,3 +533,28 @@ lemma integral_id_map (h : Integrable id μ) (L : E →L[𝕜] F) :
   simp [L.integral_comp_id_comm h]
 
 end ContinuousLinearMap
+
+namespace ContinuousLinearEquiv
+
+variable {𝕜 E F : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [NormedAddCommGroup F]
+    [NormedSpace 𝕜 E] [NormedSpace ℝ E] [NormedSpace 𝕜 F] [NormedSpace ℝ F] [CompleteSpace E]
+    [CompleteSpace F] [MeasurableSpace E] {μ : Measure E}
+
+lemma integral_comp_id_comm' (L : E ≃L[𝕜] F) :
+    μ[L] = L μ[id] := by
+  by_cases h : Integrable (fun x ↦ x) μ
+  · exact ContinuousLinearMap.integral_comp_id_comm' h L.toContinuousLinearMap
+  have : ¬ Integrable L μ := mt L.integrable_comp_iff.1 h
+  simp_all [integral_undef]
+
+lemma integral_comp_id_comm (L : E ≃L[𝕜] F) :
+    μ[L] = L (∫ x, x ∂μ) := L.integral_comp_id_comm'
+
+variable [OpensMeasurableSpace E] [MeasurableSpace F] [BorelSpace F] [SecondCountableTopology F]
+
+lemma integral_id_map (L : E ≃L[𝕜] F) :
+    ∫ x, x ∂(μ.map L) = L (∫ x, x ∂μ) := by
+  rw [integral_map (by fun_prop) (by fun_prop)]
+  simp [L.integral_comp_id_comm]
+
+end ContinuousLinearEquiv
