@@ -445,8 +445,7 @@ theorem mk_smul_top_ofAlgEquiv_symm (n : ℕ) (x : AdicCompletion I S) :
 theorem mk_ofAlgEquiv_symm (n : ℕ) (x : AdicCompletion I S) :
     Ideal.Quotient.mk (I ^ n) ((ofAlgEquiv I).symm x) = evalₐ I n x := by
   simp only [evalₐ, AlgHom.coe_comp, Function.comp_apply, AlgHom.ofLinearMap_apply]
-  rw [← mk_smul_top_ofAlgEquiv_symm I n x]
-  simp
+  simp [← mk_smul_top_ofAlgEquiv_symm I n x]
 
 @[simp]
 lemma mk_ofAlgEquiv_symm_eq_evalOneₐ (x : AdicCompletion I S) :

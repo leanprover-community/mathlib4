@@ -324,7 +324,7 @@ def includeRight : B →ₐ[R] A ⊗[R] B where
   map_add' := by simp [tmul_add]
   map_one' := rfl
   map_mul' := by simp
-  commutes' r := by simp only [algebraMap_apply']
+  commutes' r := by simp only [algebraMap_apply', RingHom.id_apply]
 
 @[simp]
 theorem includeRight_apply (b : B) : (includeRight : B →ₐ[R] A ⊗[R] B) b = 1 ⊗ₜ b :=

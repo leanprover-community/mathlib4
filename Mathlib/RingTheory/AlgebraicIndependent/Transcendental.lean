@@ -42,7 +42,7 @@ theorem algebraicIndependent_unique_type_iff [Unique ι] :
     AlgebraicIndependent R x ↔ Transcendental R (x default) := by
   rw [transcendental_iff_injective, algebraicIndependent_iff_injective_aeval]
   let i := uniqueAlgEquiv R ι
-  have key : aeval (R := R) x = (Polynomial.aeval (R := R) (x default)).comp i := by
+  have key : aeval (R := R) x = (Polynomial.aeval (R := R) (x default)).comp i.toAlgHom := by
     ext y
     simp [i, Subsingleton.elim y default]
   simp [key]

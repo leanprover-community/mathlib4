@@ -96,7 +96,7 @@ noncomputable def autEquivPow (h : Irreducible (cyclotomic n K)) : Gal(L/K) ≃*
       simp only [IsPrimitiveRoot.powerBasis_gen, IsPrimitiveRoot.autToPow_spec]
     right_inv := fun x => by
       simp only [MonoidHom.toFun_eq_coe]
-      generalize_proofs _ h
+      generalize_proofs _ _ h
       have key := hζ.autToPow_spec K ((hζ.powerBasis K).equivOfMinpoly ((hμ x).powerBasis K) h)
       have := (hζ.powerBasis K).equivOfMinpoly_gen ((hμ x).powerBasis K) h
       rw [hζ.powerBasis_gen K] at this
@@ -120,7 +120,7 @@ noncomputable def fromZetaAut : Gal(L/K) :=
 
 theorem fromZetaAut_spec : fromZetaAut hμ h (zeta n K L) = μ := by
   simp_rw [fromZetaAut, autEquivPow_symm_apply]
-  generalize_proofs hζ h _ hμ _
+  generalize_proofs _ _ hζ h _ hμ _
   nth_rewrite 4 [← hζ.powerBasis_gen K]
   rw [PowerBasis.equivOfMinpoly_gen, hμ.powerBasis_gen K]
   convert h.choose_spec.2

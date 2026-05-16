@@ -785,7 +785,7 @@ noncomputable def autToPow [NeZero n] : (S ≃ₐ[R] S) →* (ZMod n)ˣ :=
   MonoidHom.toHomUnits
     { toFun := fun σ ↦ (map_rootsOfUnity_eq_pow_self σ.toAlgHom μ').choose
       map_one' := by
-        generalize_proofs h1
+        generalize_proofs _ h1
         have h := h1.choose_spec
         replace h : μ' = μ' ^ h1.choose :=
           rootsOfUnity.coe_injective (by simpa only [rootsOfUnity.coe_pow] using h)
@@ -794,7 +794,7 @@ noncomputable def autToPow [NeZero n] : (S ≃ₐ[R] S) →* (ZMod n)ˣ :=
         exact Nat.cast_one.symm
       map_mul' := by
         intro x y
-        generalize_proofs hxy' hx' hy'
+        generalize_proofs _ hxy' hx' hy'
         have hxy := hxy'.choose_spec
         replace hxy : x (((μ' : Sˣ) : S) ^ hy'.choose) = ((μ' : Sˣ) : S) ^ hxy'.choose :=
           hy'.choose_spec ▸ hxy
@@ -816,7 +816,7 @@ theorem coe_autToPow_apply [NeZero n] (f : S ≃ₐ[R] S) :
 @[simp]
 theorem autToPow_spec [NeZero n] (f : S ≃ₐ[R] S) : μ ^ (hμ.autToPow R f : ZMod n).val = f μ := by
   rw [IsPrimitiveRoot.coe_autToPow_apply]
-  generalize_proofs h
+  generalize_proofs _ h
   refine (?_ : ((hμ.toRootsOfUnity : Sˣ) : S) ^ _ = _).trans h.choose_spec.symm
   rw [← rootsOfUnity.coe_pow, ← rootsOfUnity.coe_pow]
   congr 2

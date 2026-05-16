@@ -288,7 +288,8 @@ def equivLim : (E⟮<i⟯ →ₐ[F] Ē) ≃ limit (embFunctor F E) i where
     Subalgebra.iSupLift _ directed_filtration f.1
       (fun _ _ h ↦ (f.2 <| filtration.map_rel_iff.mp h).symm) _ <| by
         rw [← iSup_filtration hi, toSubalgebra_iSup_of_directed directed_filtration]
-    else (Algebra.ofId F Ē).comp ((equivOfEq (eq_bot_of_not_nonempty hi h)).trans <| botEquiv F E)
+    else (Algebra.ofId F Ē).comp
+      ((equivOfEq (eq_bot_of_not_nonempty hi h)).trans <| botEquiv F E).toAlgHom
   left_inv f := by
     split_ifs with h
     · ext ⟨x, hx⟩

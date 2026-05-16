@@ -843,7 +843,7 @@ variable (G f) in
 def of (i) : G i →ₐ[R] DirectLimit G f where
   toFun x := ⟦⟨i, x⟩⟧
   __ := (DirectLimit.Ring.of G f i)
-  commutes' r := by rw [algebraMap_def i]
+  commutes' r := by rw [algebraMap_def i, RingHom.id_apply]
 
 lemma of_f {i j} (hij) (x) : of G f j (f i j hij x) = of G f i x := .symm <| eq_of_le ..
 
@@ -861,7 +861,7 @@ def lift (g : ∀ i, G i →ₐ[R] P) (Hg : ∀ i j hij x, g j (f i j hij x) = g
   __ := DirectLimit.Ring.lift G f P (g:= fun i => (g i).toRingHom) (Hg:=Hg)
   commutes' r := by
     let i := Classical.arbitrary ι
-    rw [algebraMap_def i r, lift_def, AlgHom.commutes]
+    rw [algebraMap_def i r, lift_def, AlgHom.commutes, RingHom.id_apply]
 
 variable (g : ∀ i, G i →ₐ[R] P) (Hg : ∀ i j hij x, g j (f i j hij x) = g i x)
 

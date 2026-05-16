@@ -284,7 +284,7 @@ section Unital
 /-- A *⋆-algebra homomorphism* is an algebra homomorphism between `R`-algebras `A` and `B`
 equipped with a `star` operation, and this homomorphism is also `star`-preserving. -/
 structure StarAlgHom (R A B : Type*) [CommSemiring R] [Semiring A] [Algebra R A] [Star A]
-  [Semiring B] [Algebra R B] [Star B] extends AlgHom R A B where
+  [Semiring B] [Algebra R B] [Star B] extends A →ₐ[R] B where
   /-- By definition, a ⋆-algebra homomorphism preserves the `star` operation. -/
   map_star' : ∀ x : A, toFun (star x) = star (toFun x)
 
@@ -660,7 +660,7 @@ instance (priority := 100) {F R A B : Type*} [Monoid R] [NonUnitalNonAssocSemiri
 instance (priority := 100) (F R A B : Type*) [CommSemiring R] [Semiring A]
     [Algebra R A] [Semiring B] [Algebra R B] [EquivLike F A B] [NonUnitalAlgEquivClass F R A B] :
     AlgEquivClass F R A B :=
-  { commutes := fun f r => by simp only [Algebra.algebraMap_eq_smul_one, map_smul, map_one] }
+  { commutes := fun f r => by simp [Algebra.algebraMap_eq_smul_one, map_smul, map_one] }
 
 namespace StarAlgEquivClass
 

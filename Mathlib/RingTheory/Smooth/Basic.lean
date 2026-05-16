@@ -328,7 +328,7 @@ then `A` is formally smooth over `R` iff the surjection `P ⧸ J ^ 2 →ₐ[R] A
 Geometric intuition: we require that a first-order thickening of `Spec A` inside `Spec P` admits
 a retraction. -/
 theorem iff_split_surjection (f : P →ₐ[R] A) (hf : Function.Surjective f) :
-    FormallySmooth R A ↔ ∃ g, f.kerSquareLift.comp g = AlgHom.id R A := by
+    FormallySmooth R A ↔ ∃ g : A →ₐ[R] _, f.kerSquareLift.comp g = AlgHom.id R A := by
   letI := f.toAlgebra
   rw [iff_split_injection hf, ← nonempty_subtype, ← nonempty_subtype,
     (retractionKerCotangentToTensorEquivSection hf).nonempty_congr]
@@ -381,7 +381,7 @@ variable {A B : Type*} [CommRing A] [Algebra R A] [CommRing B] [Algebra R B]
 
 theorem of_equiv [FormallySmooth R A] (e : A ≃ₐ[R] B) : FormallySmooth R B :=
   (iff_split_surjection e.toAlgHom e.surjective).mpr
-    ⟨(Ideal.Quotient.mkₐ _ _).comp e.symm, AlgHom.ext e.apply_symm_apply⟩
+    ⟨(Ideal.Quotient.mkₐ _ _).comp e.symm.toAlgHom, AlgHom.ext e.apply_symm_apply⟩
 
 theorem iff_of_equiv (e : A ≃ₐ[R] B) : FormallySmooth R A ↔ FormallySmooth R B :=
   ⟨fun _ ↦ of_equiv e, fun _ ↦ of_equiv e.symm⟩

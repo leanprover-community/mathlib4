@@ -79,12 +79,12 @@ def algEquivQuotAlgEquiv
     RingQuot rel ≃ₐ[R] RingQuot (rel on f.symm) :=
   AlgEquiv.ofAlgHom
     (RingQuot.liftAlgHom R (s := rel)
-      ⟨AlgHom.comp (RingQuot.mkAlgHom R (rel on f.symm)) f,
+      ⟨AlgHom.comp (RingQuot.mkAlgHom R (rel on f.symm)) f.toAlgHom,
       fun x y h_rel ↦ by
         apply RingQuot.mkAlgHom_rel
         simpa [Function.onFun]⟩)
     ((RingQuot.liftAlgHom R (s := rel on f.symm)
-      ⟨AlgHom.comp (RingQuot.mkAlgHom R rel) f.symm,
+      ⟨AlgHom.comp (RingQuot.mkAlgHom R rel) f.symm.toAlgHom,
       fun x y h ↦ by apply RingQuot.mkAlgHom_rel; simpa⟩))
     (by ext b; simp) (by ext a; simp)
 

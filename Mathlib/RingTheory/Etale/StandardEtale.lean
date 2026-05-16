@@ -364,8 +364,8 @@ def StandardEtalePresentation.baseChange :
     have H : P.HasMap (P.map (algebraMap R T)).X := by
       simpa [StandardEtalePair.HasMap] using (P.map (algebraMap R T)).hasMap_X
     let f : T ⊗[R] S →ₐ[T] (P.map (algebraMap R T)).Ring :=
-      Algebra.TensorProduct.lift (Algebra.ofId _ _) ((P.lift (P.map _).X H).comp P.equivRing)
-        fun _ _ ↦ .all _ _
+      Algebra.TensorProduct.lift (Algebra.ofId _ _) ((P.lift (P.map _).X H).comp
+        P.equivRing.toAlgHom) fun _ _ ↦ .all _ _
     let α : T ⊗[R] S ≃ₐ[T] (P.map (algebraMap R T)).Ring :=
       .ofAlgHom f ((P.map (algebraMap R T)).lift (1 ⊗ₜ[R] P.x)
         (P.hasMap.map (Algebra.TensorProduct.includeRight (R := R) (A := T))).map_algebraMap) (by

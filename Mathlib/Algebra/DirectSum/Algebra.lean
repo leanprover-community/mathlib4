@@ -121,7 +121,7 @@ def toAlgebra (f : ∀ i, A i →ₗ[R] B) (hone : f _ GradedMonoid.GOne.one = 1
     commutes' := fun r => by
       change toModule R _ _ f (algebraMap R _ r) = _
       rw [Algebra.algebraMap_eq_smul_one, Algebra.algebraMap_eq_smul_one, map_smul, one_def,
-        ← lof_eq_of R, toModule_lof, hone] }
+        ← lof_eq_of R, toModule_lof, hone, RingHom.id_apply] }
 
 /-- Two `AlgHom`s out of a direct sum are equal if they agree on the generators.
 

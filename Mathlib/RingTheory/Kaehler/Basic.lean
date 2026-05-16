@@ -382,10 +382,11 @@ noncomputable def KaehlerDifferential.endEquivDerivation' :
 /-- (Implementation) An `Equiv` version of `KaehlerDifferential.End_equiv_aux`.
 Used in `KaehlerDifferential.endEquiv`. -/
 def KaehlerDifferential.endEquivAuxEquiv :
-    { f //
+    { f : S →ₐ[R] S ⊗[R] S ⧸ ideal R S ^ 2 //
         (Ideal.Quotient.mkₐ R (KaehlerDifferential.ideal R S).cotangentIdeal).comp f =
           IsScalarTower.toAlgHom R S _ } ≃
-      { f // (TensorProduct.lmul' R : S ⊗[R] S →ₐ[R] S).kerSquareLift.comp f = AlgHom.id R S } :=
+      { f: S →ₐ[R] S ⊗[R] S ⧸ ideal R S ^ 2 //
+        (TensorProduct.lmul' R : S ⊗[R] S →ₐ[R] S).kerSquareLift.comp f = AlgHom.id R S } :=
   (Equiv.refl _).subtypeEquiv (KaehlerDifferential.End_equiv_aux R S)
 
 /--
@@ -394,7 +395,8 @@ with `J` being the kernel of the multiplication map `S ⊗[R] S →ₐ[R] S`.
 -/
 noncomputable def KaehlerDifferential.endEquiv :
     Module.End S Ω[S⁄R] ≃
-      { f // (TensorProduct.lmul' R : S ⊗[R] S →ₐ[R] S).kerSquareLift.comp f = AlgHom.id R S } :=
+      { f : S →ₐ[R] S ⊗[R] S ⧸ ideal R S ^ 2 //
+        (TensorProduct.lmul' R : S ⊗[R] S →ₐ[R] S).kerSquareLift.comp f = AlgHom.id R S } :=
   (KaehlerDifferential.linearMapEquivDerivation R S).toEquiv.trans <|
     (KaehlerDifferential.endEquivDerivation' R S).toEquiv.trans <|
       (derivationToSquareZeroEquivLift (KaehlerDifferential.ideal R S).cotangentIdeal

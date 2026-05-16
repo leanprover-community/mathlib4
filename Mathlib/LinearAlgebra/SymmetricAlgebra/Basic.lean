@@ -207,7 +207,7 @@ variable {A' : Type*} [CommSemiring A'] [Algebra R A'] (g : M →ₗ[R] A')
 
 /-- Given a morphism `g : M →ₗ[R] A'`, lift this to a morphism of type `A →ₐ[R] A'` (where `A`
 satisfies the universal property of the symmetric algebra of `M`) -/
-noncomputable def lift : A →ₐ[R] A' := (SymmetricAlgebra.lift g).comp h.equiv.symm
+noncomputable def lift : A →ₐ[R] A' := (SymmetricAlgebra.lift g).comp h.equiv.symm.toAlgHom
 
 @[simp]
 lemma lift_eq (a : M) : h.lift g (f a) = g a := by simp [lift]

@@ -757,8 +757,7 @@ def _root_.NonUnitalAlgHom.toAlgHom (φ : A →ₙₐ[R] C) : Unitization R A �
           zero_add, φ.map_add]
         rw [add_add_add_comm]
   commutes' := fun r => by
-    simp only [algebraMap_eq_inl, fst_inl, snd_inl, φ.map_zero, add_zero]
-
+    simp only [algebraMap_eq_inl, fst_inl, snd_inl, φ.map_zero, add_zero, RingHom.id_apply]
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Non-unital algebra homomorphisms from `A` into a unital `R`-algebra `C` lift uniquely to

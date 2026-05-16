@@ -431,7 +431,7 @@ noncomputable def lift : S →ₐ[R] A where
   map_zero' := by simp only [map_zero, mk'_zero]
   map_add' x y := by simp_rw [← mk'_add, map_add]
   map_mul' x y := by simp_rw [← mk'_mul, map_mul]
-  commutes' x := by simp_rw [← IsScalarTower.algebraMap_apply, mk'_algebraMap]
+  commutes' x := by simp_rw [← IsScalarTower.algebraMap_apply, mk'_algebraMap, RingHom.id_apply]
 
 @[simp]
 theorem algebraMap_lift (x : S) : algebraMap A B (lift R A B x) = algebraMap S B x :=

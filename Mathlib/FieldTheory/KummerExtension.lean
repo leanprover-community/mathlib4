@@ -332,7 +332,7 @@ def adjoinRootXPowSubCEquiv (hζ : (primitiveRoots n K).Nonempty) (H : Irreducib
 
 lemma adjoinRootXPowSubCEquiv_root :
     adjoinRootXPowSubCEquiv hζ H hα (root _) = α := by
-  rw [adjoinRootXPowSubCEquiv, AlgEquiv.coe_ofBijective, liftAlgHom_root]
+  rw [adjoinRootXPowSubCEquiv, AlgEquiv.ofBijective_apply, liftAlgHom_root]
 
 lemma adjoinRootXPowSubCEquiv_symm_eq_root :
     (adjoinRootXPowSubCEquiv hζ H hα).symm α = root _ := by

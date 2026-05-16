@@ -40,7 +40,7 @@ variable (k G A)
 
 /-- Any monoid homomorphism `G →* A` can be lifted to an algebra homomorphism
   `SkewMonoidAlgebra k G →ₐ[k] A`. -/
-def lift : (G →* A) ≃ (AlgHom k (SkewMonoidAlgebra k G) A) where
+def lift : (G →* A) ≃ (SkewMonoidAlgebra k G →ₐ[k] A) where
   invFun f := (f : SkewMonoidAlgebra k G →* A).comp (of k G)
   toFun F := by
     apply liftNCAlgHom (Algebra.ofId k A) F
@@ -66,7 +66,7 @@ theorem lift_def (F : G →* A) : (lift k G A F : SkewMonoidAlgebra k G → A) =
     liftNC ((algebraMap k A : k →+* A) : k →+ A) F := rfl
 
 @[simp]
-theorem lift_symm_apply (F : AlgHom k (SkewMonoidAlgebra k G) A) (x : G) :
+theorem lift_symm_apply (F : SkewMonoidAlgebra k G →ₐ[k] A) (x : G) :
     (lift k G A).symm F x = F (single x 1) := rfl
 
 theorem lift_of (F : G →* A) (x) : lift k G A F (of k G x) = F x := by
@@ -76,13 +76,13 @@ theorem lift_of (F : G →* A) (x) : lift k G A F (of k G x) = F x := by
 theorem lift_single (F : G →* A) (a b) : lift k G A F (single a b) = b • F a := by
   rw [lift_def, liftNC_single, Algebra.smul_def, AddMonoidHom.coe_coe]
 
-theorem lift_unique' (F : AlgHom k (SkewMonoidAlgebra k G) A) :
+theorem lift_unique' (F : SkewMonoidAlgebra k G →ₐ[k] A) :
     F = lift k G A ((F : SkewMonoidAlgebra k G →* A).comp (of k G)) :=
   ((lift k G A).apply_symm_apply F).symm
 
 /-- Decomposition of a `k`-algebra homomorphism from `SkewMonoidAlgebra k G` by
   its values on `F (single a 1)`. -/
-theorem lift_unique (F : AlgHom k (SkewMonoidAlgebra k G) A)
+theorem lift_unique (F : SkewMonoidAlgebra k G →ₐ[k] A)
     (f : SkewMonoidAlgebra k G) : F f = f.sum fun a b ↦ b • F (single a 1) := by
   conv_lhs =>
     rw [lift_unique' F]
