@@ -8,6 +8,8 @@ module
 
 public import Mathlib.Algebra.Divisibility.Basic
 public import Mathlib.Algebra.Group.Hom.Defs
+import Mathlib.Algebra.Group.Basic
+import Mathlib.Tactic.GCongr.Core
 
 /-!
 # Mapping divisibility across multiplication-preserving homomorphisms
