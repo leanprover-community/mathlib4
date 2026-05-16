@@ -41,6 +41,10 @@ theorem isCofinal_empty_iff : IsCofinal (∅ : Set α) ↔ IsEmpty α := by
   refine ⟨fun h ↦ ⟨fun a ↦ ?_⟩, fun h ↦ .of_isEmpty _⟩
   simpa using h a
 
+theorem IsCofinal.nonempty [Nonempty α] {s : Set α} (hs : IsCofinal s) : s.Nonempty := by
+  inhabit α
+  exact (hs default).imp fun _ ↦ And.left
+
 @[simp]
 theorem isCofinal_singleton_iff {x : α} : IsCofinal {x} ↔ IsTop x := by
   simp [IsCofinal, IsTop]
@@ -169,5 +173,9 @@ theorem isCofinal_setOf_imp_lt (r : α → α → Prop) [h : IsWellFounded α r]
   refine ⟨b, fun c hc ↦ ?_, hb⟩
   by_contra! hc'
   exact hb' c (hb.trans hc') hc
+
+theorem isCofinal_range_of_strictMono [WellFoundedLT α] {f : α → α} (hf : StrictMono f) :
+    IsCofinal (range f) :=
+  fun x ↦ ⟨_, ⟨x, rfl⟩, hf.le_apply⟩
 
 end LinearOrder
