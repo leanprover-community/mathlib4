@@ -48,7 +48,7 @@ protected theorem isCentralScalar [SMul M F] [SMul Mᵐᵒᵖ F] [SMul M β] [SM
 protected abbrev distribSMul [AddZeroClass β] [AddZeroClass F] [DistribSMul M β]
     [SMul M F] [IsZeroApply F α β] [IsAddApply F α β] [IsSMulApply M F α β] :
     DistribSMul M F :=
-  DFunLike.coe_injective.distribSMul (coeAddHom F α β) FunLike.coe_smul
+  DFunLike.coe_injective.distribSMul (coeAddMonoidHom F α β) FunLike.coe_smul
 
 /-- A `FunLike` type with scalar multiplication that satisfies `(m • f) x = m • f x`
 is a `MulAction` if `β` is a `MulAction`. -/
@@ -63,14 +63,14 @@ protected abbrev mulAction [SMul M F] [Monoid M] [MulAction M β] [IsSMulApply M
 protected abbrev distribMulAction [Monoid M] [AddMonoid β] [AddMonoid F] [DistribMulAction M β]
     [SMul M F] [IsZeroApply F α β] [IsAddApply F α β] [IsSMulApply M F α β] :
     DistribMulAction M F :=
-  DFunLike.coe_injective.distribMulAction (coeAddHom F α β) FunLike.coe_smul
+  DFunLike.coe_injective.distribMulAction (coeAddMonoidHom F α β) FunLike.coe_smul
 
 variable [Semiring M] [AddCommMonoid β] [Module M β] [AddCommMonoid F] [SMul M F]
   [IsZeroApply F α β] [IsAddApply F α β] [IsSMulApply ℕ F α β] [IsSMulApply M F α β]
 
 /-- A `FunLike` type is a `Module` if `β` is a `Module`. -/
 protected abbrev module : Module M F :=
-  coeAddHom_injective.module M (coeAddHom F α β) coe_smul
+  coeAddHom_injective.module M (coeAddMonoidHom F α β) coe_smul
 
 end ModuleInstance
 
