@@ -50,7 +50,7 @@ and this is reflected in the documentation.
 
 suppress_compilation
 
-universe u
+universe u v
 
 open CategoryTheory
 
@@ -61,14 +61,14 @@ open CategoryTheory.Limits
 
 Note that `R` can be any ring,
 but the main case of interest is when `R = k` is a field and `G` is a group. -/
-abbrev FDRep (R G : Type u) [Ring R] [Monoid G] :=
+abbrev FDRep (R : Type u) (G : Type v) [Ring R] [Monoid G] :=
   Action (FGModuleCat.{u} R) G
 
 namespace FDRep
 
-variable {R k G : Type u} [CommRing R] [Field k] [Monoid G]
+variable {R k : Type u} {G : Type v} [CommRing R] [Field k] [Monoid G]
 
-example : LargeCategory (FDRep R G) := by infer_instance
+example {G : Type u} [Monoid G] : LargeCategory (FDRep R G) := by infer_instance
 example : ConcreteCategory (FDRep R G) (Action.HomSubtype _ _) := by infer_instance
 example : Preadditive (FDRep R G) := by infer_instance
 example : HasFiniteLimits (FDRep k G) := by infer_instance
@@ -174,7 +174,7 @@ def forget₂HomLinearEquiv (X Y : FDRep R G) :
   map_smul' _ _ := rfl
   invFun f := Rep.ofHom ⟨((forget₂ (FGModuleCat R) (ModuleCat R)).map f.hom).hom, fun g ↦ by
     ext x
-    exact congr_fun ((forget (FGModuleCat R)).congr_map (f.comm g)) x⟩
+    exact ConcreteCategory.congr_hom ((forget (FGModuleCat R)).congr_map (f.comm g)) x⟩
 
 instance : (forget₂ (FDRep R G) (Rep R G)).Full := by
   dsimp [forget₂, HasForget₂.forget₂]
@@ -195,7 +195,7 @@ namespace FDRep
 -- below should then just be obtained from general results about rigid categories.
 open Representation
 
-variable {k G V : Type u} [Field k] [Group G]
+variable {k : Type u} {G : Type v} {V : Type u} [Field k] [Group G]
 variable [AddCommGroup V] [Module k V]
 variable [FiniteDimensional k V]
 variable (ρV : Representation k G V) (W : FDRep k G)

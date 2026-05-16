@@ -322,7 +322,7 @@ theorem sub {f g : ℝ → E} (hf : IntervalIntegrable f μ a b) (hg : IntervalI
 theorem sum {ε} [TopologicalSpace ε] [ENormedAddCommMonoid ε] [ContinuousAdd ε]
     (s : Finset ι) {f : ι → ℝ → ε} (h : ∀ i ∈ s, IntervalIntegrable (f i) μ a b) :
     IntervalIntegrable (∑ i ∈ s, f i) μ a b :=
-  ⟨integrable_finset_sum' s fun i hi => (h i hi).1, integrable_finset_sum' s fun i hi => (h i hi).2⟩
+  ⟨integrable_finsetSum' s fun i hi => (h i hi).1, integrable_finsetSum' s fun i hi => (h i hi).2⟩
 
 /-- Finite sums of interval integrable functions are interval integrable. -/
 @[simp]
@@ -765,11 +765,13 @@ nonrec theorem integral_add (hf : IntervalIntegrable f μ a b) (hg : IntervalInt
     ∫ x in a..b, f x + g x ∂μ = (∫ x in a..b, f x ∂μ) + ∫ x in a..b, g x ∂μ := by
   simp only [intervalIntegral_eq_integral_uIoc, integral_add hf.def' hg.def', smul_add]
 
-nonrec theorem integral_finset_sum {ι} {s : Finset ι} {f : ι → ℝ → E}
+nonrec theorem integral_finsetSum {ι} {s : Finset ι} {f : ι → ℝ → E}
     (h : ∀ i ∈ s, IntervalIntegrable (f i) μ a b) :
     ∫ x in a..b, ∑ i ∈ s, f i x ∂μ = ∑ i ∈ s, ∫ x in a..b, f i x ∂μ := by
-  simp only [intervalIntegral_eq_integral_uIoc, integral_finset_sum s fun i hi => (h i hi).def',
+  simp only [intervalIntegral_eq_integral_uIoc, integral_finsetSum s fun i hi => (h i hi).def',
     Finset.smul_sum]
+
+@[deprecated (since := "2026-04-08")] alias integral_finset_sum := integral_finsetSum
 
 @[simp]
 nonrec theorem integral_neg : ∫ x in a..b, -f x ∂μ = -∫ x in a..b, f x ∂μ := by
@@ -1087,7 +1089,7 @@ theorem sum_integral_adjacent_intervals {a : ℕ → ℝ} {n : ℕ}
     (hint : ∀ k < n, IntervalIntegrable f μ (a k) (a <| k + 1)) :
     ∑ k ∈ Finset.range n, ∫ x in a k..a <| k + 1, f x ∂μ = ∫ x in (a 0)..(a n), f x ∂μ := by
   rw [← Nat.Ico_zero_eq_range]
-  exact sum_integral_adjacent_intervals_Ico (zero_le n) fun k hk => hint k hk.2
+  exact sum_integral_adjacent_intervals_Ico zero_le fun k hk => hint k hk.2
 
 theorem integral_interval_sub_left (hab : IntervalIntegrable f μ a b)
     (hac : IntervalIntegrable f μ a c) :
@@ -1165,6 +1167,20 @@ theorem integral_Iio_sub_Iio' [NoAtoms μ] (hf : IntegrableOn f (Iio b) μ)
   wlog! hab : a ≤ b generalizing a b
   · rw [integral_symm, ← this hg hf hab.le, neg_sub]
   rw [integral_Iio_sub_Iio hf hab, integral_of_le hab, integral_Ico_eq_integral_Ioc]
+
+theorem integral_Ici_sub_Ici (hf : IntegrableOn f (Ici a) μ) (hab : a ≤ b) :
+    ∫ x in Ici a, f x ∂μ - ∫ x in Ici b, f x ∂μ = ∫ x in Ico a b, f x ∂μ := by
+  have ha : IntegrableOn f (Ici b) μ := hf.mono_set (Ici_subset_Ici.2 hab)
+  have h : IntegrableOn f (Ico a b) μ := hf.mono_set Ico_subset_Ici_self
+  rw [sub_eq_iff_eq_add', ← setIntegral_union (by grind) measurableSet_Ico ha h, union_comm,
+    Ico_union_Ici_eq_Ici hab]
+
+theorem integral_Ici_sub_Ici' [NoAtoms μ] (hf : IntegrableOn f (Ici a) μ)
+    (hg : IntegrableOn f (Ici b) μ) :
+    ∫ x in Ici a, f x ∂μ - ∫ x in Ici b, f x ∂μ = ∫ x in a..b, f x ∂μ := by
+  wlog! hab : a ≤ b generalizing a b
+  · rw [integral_symm, ← this hg hf hab.le, neg_sub]
+  rw [integral_Ici_sub_Ici hf hab, integral_of_le hab, integral_Ico_eq_integral_Ioc]
 
 theorem integral_Iic_add_Ioi (h_left : IntegrableOn f (Iic b) μ)
     (h_right : IntegrableOn f (Ioi b) μ) :

@@ -58,7 +58,7 @@ private def tendsto_norm_le_and_mk_eq_div_atTop_aux₂ :
       (ZLattice.comap ℝ (idealLattice K ((FractionalIdeal.mk0 K) J)) (toMixed K).toLinearMap))
         ≃ {a : idealSet K J // mixedEmbedding.norm (a : mixedSpace K) ≤ s} := by
   rw [ZLattice.coe_comap]
-  refine (((toMixed K).toEquiv.image _).trans (Equiv.setCongr ?_)).trans
+  refine (((toMixed K).toEquiv.image _).trans (Equiv.subtypeEquivProp ?_)).trans
     (Equiv.subtypeSubtypeEquivSubtypeInter _ (mixedEmbedding.norm · ≤ s)).symm
   ext
   simp_rw [mem_idealSet, Set.mem_image, Set.mem_inter_iff, Set.mem_preimage, SetLike.mem_coe,
@@ -129,7 +129,7 @@ theorem tendsto_norm_le_div_atTop₀ :
             (torsionOrder K * Real.sqrt |discr K|))) := by
   classical
   convert Filter.Tendsto.congr' ?_
-    (tendsto_finset_sum Finset.univ (fun C _ ↦ tendsto_norm_le_and_mk_eq_div_atTop K C))
+    (tendsto_finsetSum Finset.univ (fun C _ ↦ tendsto_norm_le_and_mk_eq_div_atTop K C))
   · rw [Finset.sum_const, Finset.card_univ, nsmul_eq_mul, classNumber]
     ring
   · filter_upwards [eventually_ge_atTop 0] with s hs

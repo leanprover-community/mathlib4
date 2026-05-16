@@ -92,7 +92,7 @@ section Pullback
 open ContinuousLinearMap
 
 variable {V W V₁ W₁ : Π (x : M'), TangentSpace I' x}
-variable {c : 𝕜} {m n : WithTop ℕ∞} {t : Set M'} {y₀ : M'}
+variable {c : 𝕜} {m n : ℕ∞ω} {t : Set M'} {y₀ : M'}
 
 variable (I I') in
 /-- The pullback of a vector field under a map between manifolds, within a set `s`. If the

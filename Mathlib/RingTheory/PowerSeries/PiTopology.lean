@@ -24,7 +24,7 @@ When `R` has `UniformSpace R`, we define the corresponding uniform structure.
 This topology can be included by writing `open scoped PowerSeries.WithPiTopology`.
 
 When the type of coefficients has the discrete topology, it corresponds to the topology defined by
-[N. Bourbaki, *Algebra {II}*, Chapter 4, §4, n°2][bourbaki1981].
+[N. Bourbaki, *Algebra II*, Chapter 4, §4, n°2][bourbaki1981].
 
 It corresponds with the adic topology but this is not proved here.
 
@@ -207,7 +207,7 @@ theorem summable_prod_of_tendsto_order_atTop_nhds_top
   apply (Finset.Iio i).powerset.finite_toSet.subset
   suffices ∀ s : Finset ι, coeff n (∏ i ∈ s, f i) ≠ 0 → ↑s ⊆ Set.Iio i by simpa
   intro s hs
-  contrapose! hs
+  contrapose hs
   obtain ⟨x, hxs, hxi⟩ := Set.not_subset.mp hs
   rw [Set.mem_Iio, not_lt] at hxi
   refine coeff_of_lt_order _ <| (hi x hxi).trans_le <| le_trans ?_ (le_order_prod _ _)
@@ -303,7 +303,7 @@ theorem isTopologicallyNilpotent_of_constantCoeff_zero [CommSemiring R]
 
 /-- Assuming the base ring has a discrete topology, the powers of a `PowerSeries` converge to 0
 iff its constant coefficient is nilpotent.
-[N. Bourbaki, *Algebra {II}*, Chapter 4, §4, n°2, corollary of prop. 3][bourbaki1981] -/
+[N. Bourbaki, *Algebra II*, Chapter 4, §4, n°2, corollary of prop. 3][bourbaki1981] -/
 theorem isTopologicallyNilpotent_iff_constantCoeff_isNilpotent
     [CommRing R] [DiscreteTopology R] (f : PowerSeries R) :
     Tendsto (fun n : ℕ => f ^ n) atTop (nhds 0) ↔

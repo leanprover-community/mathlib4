@@ -26,7 +26,7 @@ and its additive version `ClosedAddSubgroup`.
 Actually provide the `Order.Frame (ClosedSubgroup G)` instance.
 -/
 
-@[expose] public section
+public section
 
 section
 

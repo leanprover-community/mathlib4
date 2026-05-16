@@ -109,7 +109,6 @@ open Filter ContinuousLinearMap
 
 attribute [local simp] ContinuousLinearMap.coe_smul
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The function `(c,d) → |cz+d|^2` is proper, that is, preimages of bounded-above sets are finite.
 -/
 theorem tendsto_normSq_coprime_pair :
@@ -728,7 +727,7 @@ lemma stabilizer_of_ne (hz : z ∈ 𝒟) (hg : g • z = z)
   have : T⁻¹ • z ≠ z := by rwa [ne_eq, inv_smul_eq_iff, eq_comm]
   have : (z : ℂ) ≠ -I := by grind [neg_im, coe_I, Complex.I_im, z.coe_im_pos]
   have : S • z ≠ z := by
-    contrapose! hzI
+    contrapose hzI
     rw [UpperHalfPlane.ext_iff, modular_S_smul, coe_mk, ← mul_one (_ : ℂ)⁻¹,
       inv_mul_eq_iff_eq_mul₀ (neg_ne_zero.mpr z.ne_zero), neg_mul, ← neg_eq_iff_eq_neg, ← I_sq,
       ← sq, sq_eq_sq_iff_eq_or_eq_neg, ← coe_I, ← UpperHalfPlane.ext_iff] at hzI
