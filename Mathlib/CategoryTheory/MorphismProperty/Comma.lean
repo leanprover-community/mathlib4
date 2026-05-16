@@ -124,6 +124,47 @@ def overObj (W : MorphismProperty T) {X : T} : ObjectProperty (Over X) := fun f 
 instance [W.RespectsIso] : (W.overObj (X := X)).IsClosedUnderIsomorphisms :=
   inferInstanceAs <| (W.commaObj _ _).IsClosedUnderIsomorphisms
 
+/-- The object property on `Arrow T` induced by a morphism property on `T`. -/
+def arrowObj (W : MorphismProperty T) : ObjectProperty (Arrow T) := fun f ↦ W f.hom
+
+@[simp] lemma arrowObj_iff (Y : Arrow T) : W.arrowObj Y ↔ W Y.hom := .rfl
+
+instance [W.RespectsIso] : (W.arrowObj (T := T)).IsClosedUnderIsomorphisms :=
+  inferInstanceAs <| (W.commaObj _ _).IsClosedUnderIsomorphisms
+
+/-- The morphism property on `T` induced by an object property on `Arrow T`. -/
+def _root_.CategoryTheory.ObjectProperty.arrowMorphism (W : ObjectProperty (Arrow T)) :
+    MorphismProperty T := fun _ _ f ↦ W f
+
+@[simp]
+lemma arrowMorphism_iff {W : ObjectProperty (Arrow T)} {X Y : T} (f : X ⟶ Y) :
+    W.arrowMorphism f ↔ W f := .rfl
+
+/-- There is an equivalence between morphism properties on `T` and object properties
+on `Arrow T`. -/
+@[simps]
+def arrowObjEquiv : MorphismProperty T ≃ ObjectProperty (Arrow T) where
+  toFun := arrowObj
+  invFun := ObjectProperty.arrowMorphism
+
+@[simp]
+lemma arrowMorphismObj_eq (W : MorphismProperty T) : W.arrowObj.arrowMorphism = W := rfl
+
+@[simp]
+lemma arrowObjMorphism_eq (W : ObjectProperty (Arrow T)) : W.arrowMorphism.arrowObj = W := rfl
+
+/-- The image (up to isomorphisms) of a `MorphismProperty A` by a functor `Arrow A ⥤ Arrow B` -/
+abbrev mapArrow (W : MorphismProperty A) (F : Arrow A ⥤ Arrow B) : MorphismProperty B :=
+  (W.arrowObj.map F).arrowMorphism
+
+/-- The image (up to isomorphisms) of a `MorphismProperty A` by a functor `Arrow A ⥤ Arrow B` -/
+abbrev strictMapArrow (W : MorphismProperty A) (F : Arrow A ⥤ Arrow B) : MorphismProperty B :=
+  (W.arrowObj.strictMap F).arrowMorphism
+
+/-- The inverse image of a `MorphismProperty B` by a functor `Arrow A ⥤ Arrow B` -/
+abbrev inverseImageArrow (W : MorphismProperty B) (F : Arrow A ⥤ Arrow B) : MorphismProperty A :=
+  (W.arrowObj.inverseImage F).arrowMorphism
+
 /-- The object property on `Under X` induced by a morphism property. -/
 def underObj (W : MorphismProperty T) {X : T} : ObjectProperty (Under X) := fun f ↦ W f.hom
 
