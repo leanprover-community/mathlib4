@@ -6,6 +6,7 @@ Authors: Apurva Nakade
 module
 
 public import Mathlib.Algebra.Group.Submonoid.Support
+public import Mathlib.Algebra.Order.Monoid.Submonoid
 public import Mathlib.Algebra.Order.Nonneg.Module
 public import Mathlib.Geometry.Convex.Cone.Basic
 
@@ -269,8 +270,10 @@ variable [AddCommMonoid E] [PartialOrder E] [IsOrderedAddMonoid E] [Module R E] 
 
 /-- The positive cone is the pointed cone formed by the set of nonnegative elements in an ordered
 module. -/
-def positive : PointedCone R E :=
-  (ConvexCone.positive R E).toPointedCone ConvexCone.pointed_positive
+@[simps!]
+def positive : PointedCone R E where
+  __ := AddSubmonoid.nonneg E
+  smul_mem' c _ hx := by simpa using smul_nonneg c.property hx
 
 @[simp]
 theorem mem_positive {x : E} : x ∈ positive R E ↔ 0 ≤ x :=
