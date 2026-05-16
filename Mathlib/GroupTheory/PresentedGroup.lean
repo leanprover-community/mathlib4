@@ -201,6 +201,10 @@ lemma coprodOf_kills_rels : ∀ r ∈ FreeGroup.map Sum.inl '' rels₁ ∪ FreeG
   · simp [lift_coprodOf_inr_eq_inr_mk, one_of_mem hr]
 
 open Subgroup in
+/--
+`FreeGroup α →* FreeGroup β` induces a homomorphism
+`PresentedGroup s →* PresentedGroup t` if the image of `s` is contained in `t`.
+-/
 protected def map {α β : Type*} (f : FreeGroup α →* FreeGroup β)
     {s : Set (FreeGroup α)} {t : Set (FreeGroup β)} (hst : s.MapsTo f t) :
     PresentedGroup s →* PresentedGroup t :=
