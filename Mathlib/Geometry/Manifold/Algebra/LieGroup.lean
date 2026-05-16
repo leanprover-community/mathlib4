@@ -320,3 +320,120 @@ theorem ContMDiff.div₀ (hf : CMDiff n f) (hg : CMDiff n g) (h₀ : ∀ x, g x 
     CMDiff n (f / g) := by simpa only [div_eq_mul_inv] using hf.mul (hg.inv₀ h₀)
 
 end Div
+
+
+
+
+section ContMDiffMap
+
+open Function
+
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+  {H H' E E' : Type*} [TopologicalSpace H] [TopologicalSpace H']
+  [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
+  {I : ModelWithCorners 𝕜 E H} {I' : ModelWithCorners 𝕜 E' H'} {n : WithTop ℕ∞}
+  {G : Type*} [TopologicalSpace G] [ChartedSpace H G]-- [Group G]
+  {M : Type*} [TopologicalSpace M] [ChartedSpace H' M]
+
+theorem coe_injective' : Injective ((↑) : C^n⟮I', M; I, G⟯ → M → G) :=
+  ContMDiffMap.coe_injective
+
+@[to_additive]
+instance instOne [One G] : One C^n⟮I', M; I, G⟯ := ⟨1, contMDiff_const⟩
+
+@[to_additive (attr := simp)]
+theorem coe_one [One G] : ⇑(1 : C^n⟮I', M; I, G⟯) = 1 := rfl
+
+section
+
+variable [AddGroup G] /-[ContMDiffAdd I n G]-/ [LieAddGroup I n G]
+
+instance instAdd : Add C^n⟮I', M; I, G⟯ :=
+  ⟨fun s t ↦ ⟨s + t, s.contMDiff.add t.contMDiff⟩⟩
+
+@[simp]
+theorem coe_add (s t : C^n⟮I', M; I, G⟯) : ⇑(s + t) = ⇑s + t :=
+  rfl
+
+instance instSub : Sub C^n⟮I', M; I, G⟯ :=
+  ⟨fun s t ↦ ⟨s - t, s.contMDiff.sub t.contMDiff⟩⟩
+
+@[simp]
+theorem coe_sub (s t : C^n⟮I', M; I, G⟯) : ⇑(s - t) = s - t :=
+  rfl
+
+instance instNeg : Neg C^n⟮I', M; I, G⟯ :=
+  ⟨fun s ↦ ⟨-s, s.contMDiff.neg⟩⟩
+
+@[simp]
+theorem coe_neg (s : C^n⟮I', M; I, G⟯) : ⇑(-s : C^n⟮I', M; I, G⟯) = -s :=
+  rfl
+
+instance instNSMul : SMul ℕ C^n⟮I', M; I, G⟯ := ⟨nsmulRec⟩
+
+@[simp]
+theorem coe_nsmul (s : C^n⟮I', M; I, G⟯) (k : ℕ) : ⇑(k • s : C^n⟮I', M; I, G⟯) = k • ⇑s := by
+  induction k with
+  | zero => simp_rw [zero_smul]; rfl
+  | succ k ih => simp_rw [succ_nsmul, ← ih]; rfl
+
+instance instZSMul : SMul ℤ C^n⟮I', M; I, G⟯ :=
+  ⟨zsmulRec⟩
+
+@[simp]
+theorem coe_zsmul (s : C^n⟮I', M; I, G⟯) (z : ℤ) : ⇑(z • s : C^n⟮I', M; I, G⟯) = z • ⇑s := by
+  rcases z with n | n
+  · refine (coe_nsmul s n).trans ?_
+    simp only [Int.ofNat_eq_natCast, natCast_zsmul]
+  · refine (congr_arg Neg.neg (coe_nsmul s (n + 1))).trans ?_
+    simp only [negSucc_zsmul]
+
+instance instAddGroup : AddGroup C^n⟮I', M; I, G⟯ :=
+  coe_injective'.addGroup  _ coe_zero coe_add coe_neg coe_sub coe_nsmul coe_zsmul
+
+end
+
+section
+
+variable [AddCommGroup G] [LieAddGroup I n G]
+
+instance instAddCommGroup : AddCommGroup C^n⟮I', M; I, G⟯ :=
+  coe_injective'.addCommGroup  _ coe_zero coe_add coe_neg coe_sub coe_nsmul coe_zsmul
+
+end
+
+section -- TODO: the following results can surely be generalised!
+
+variable {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V]
+
+instance : SMul 𝕜 C^n⟮I', M; 𝓘(𝕜, V), V⟯ :=
+  ⟨fun c s ↦ ⟨c • ⇑s, contMDiff_const.smul s.contMDiff⟩⟩
+  -- TODO: is there a more general version of this lemma, then for co-domain a normed space?
+
+@[simp]
+theorem coe_smul (r : 𝕜) (s : C^n⟮I', M; 𝓘(𝕜, V), V⟯) :
+    ⇑(r • s : C^n⟮I', M; 𝓘(𝕜, V), V⟯) = r • ⇑s :=
+ rfl
+
+@[simp]
+lemma ContMDiffMap.one_smul {s : C^n⟮I', M; 𝓘(𝕜, V), V⟯} : (1 : 𝕜) • s = s := by
+  ext; simp
+
+@[simp]
+lemma ContMDiffMap.zero_smul {s : C^n⟮I', M; 𝓘(𝕜, V), V⟯} : (0 : 𝕜) • s = 0 := by
+  ext; simp
+
+@[simp]
+lemma ContMDiffMap.smul_zero {c : 𝕜} : c • (0 : C^n⟮I', M; 𝓘(𝕜, V), V⟯) = 0 := by ext; simp
+
+instance /-[Module 𝕜 V]-/ : Module 𝕜 C^n⟮I', M; 𝕜⟯ where
+  one_smul f := f.one_smul
+  zero_smul f := f.zero_smul
+  smul_zero c := by simp
+  mul_smul a b f := by ext; simp; ring
+  add_smul c f g := by ext; simp; ring
+  smul_add c f g := by ext; simp; ring
+
+end
+
+end ContMDiffMap
