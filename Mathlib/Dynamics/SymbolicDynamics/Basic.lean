@@ -343,43 +343,40 @@ end Forbidden
 section OccursInAt
 
 variable {A : Type*} [Inhabited A]
-variable {G : Type*} [Monoid G] [IsLeftCancelMul G]
+variable {G : Type*} [Monoid G]
 
-/-- Translate a finite pattern `p` so that it occurs at the translate `v`, before completing into
-a configuration.
+/-- The **shift of a finite pattern** `p` by `v`, as a bundled `Pattern`.
 
-On input `h : G`, we proceed as follows:
-* if `h` lies in the left-translate of the support, i.e. `h ∈ p.support.image (v * ·)`,
-  choose (noncomputably) `w ∈ p.support` with `v * w = h` and return `p.config w`;
-* otherwise return `default`.
+The resulting pattern has:
+* support `v • p.support = p.support.image (v * ·)`,
+* configuration sending `v * w` to `p.config w` for `w ∈ p.support` (chosen
+  noncomputably), and `default` outside the shifted support.
 
 This definition does not assume left-cancellation; it only *chooses* a preimage.
-Uniqueness (and the usual equations such as `Pattern.mulShift p v (v * w) = p.config w`)
-require a left-cancellation hypothesis and are proved in separate lemmas.
--/
+Uniqueness (and the equation `(p.mulShift v).config (v * w) = p.config w`)
+requires `[IsLeftCancelMul G]` and is proved in
+`Pattern.mulShift_config_apply_mul_left_of_mem`. -/
 @[to_additive
-/-- Translate a finite pattern `p` so that it occurs at the translate `v`, before completing into
-a configuration.
+/-- The **shift of a finite pattern** `p` by `v` (additive form), as a bundled `Pattern`.
 
-On input `h : G`, we proceed as follows:
-* if `h` lies in the left-translate of the support, i.e. `h ∈ p.support.image (v + ·)`,
-  choose (noncomputably) `w ∈ p.support` with `v + w = h` and return `p.config w`;
-* otherwise return `default`.
+The resulting pattern has:
+* support `v +ᵥ p.support = p.support.image (v + ·)`,
+* configuration sending `v + w` to `p.config w` for `w ∈ p.support`, `default`
+  outside.
 
-This definition does not assume left-cancellation; it only *chooses* a preimage.
-Uniqueness (and the usual equations such as `Pattern.shift p v (v + w) = p.config w`)
-require a left-cancellation hypothesis and are proved in separate lemmas.
--/]
-protected noncomputable def Pattern.mulShift (p : Pattern A G) (v : G) : G → A := by
+This definition does not assume left-cancellation; uniqueness of the chosen
+preimage requires `[IsLeftCancelAdd G]`. -/]
+protected noncomputable def Pattern.mulShift (p : Pattern A G) (v : G) : Pattern A G := by
   classical
-  intro h
-  if hmem : h ∈ p.support.image (v * ·) then
-    -- package existence of a preimage under (v * ·)
-    let ex : ∃ w, w ∈ p.support ∧ v * w = h := by
-      simpa [Finset.mem_image] using hmem
-    exact p.config (Classical.choose ex)
-  else
-    exact default
+  refine
+    ⟨fun h =>
+        if hmem : h ∈ p.support.image (v * ·) then
+          let ex : ∃ w, w ∈ p.support ∧ v * w = h := by
+            simpa [Finset.mem_image] using hmem
+          p.config (Classical.choose ex)
+        else default,
+      p.support.image (v * ·),
+      fun _ hg => dif_neg hg⟩
 
 namespace Pattern
 /-- Extract the finite pattern given by restricting a configuration `x : G → A`
@@ -394,24 +391,25 @@ noncomputable def fromConfig (x : G → A) (U : Finset G) : Pattern A G := by
           support := U,
           condition := fun g hg => if_neg hg }
 
-/-- On the translated support, `p.mulShift v` agrees with `p.config` at the preimage.
+open scoped Classical in
+@[to_additive (attr := simp)]
+lemma mulShift_support (p : Pattern A G) (v : G) :
+    (p.mulShift v).support = p.support.image (v * ·) := rfl
+
+/-- On the translated support, `(p.mulShift v).config` agrees with `p.config`
+at the preimage.
 
 More precisely, if `w ∈ p.support`, then at the translated site `v * w`,
-the configuration `p.mulShift v` takes the value `p.config w`.
+the bundled shifted pattern `p.mulShift v` takes the value `p.config w`.
 
 This uses `[IsLeftCancelMul G]` to identify the unique preimage of `v * w`
 under left-multiplication by `v`. -/
 @[to_additive
-  /-- On the translated support, `p.shift v` agrees with `p.config` at the preimage.
-
-  More precisely, if `w ∈ p.support`, then at the translated site `v + w`,
-  the configuration `p.shift v` takes the value `p.config w`.
-
-  This uses `[IsLeftCancelAdd G]` to identify the unique preimage of `v + w`
-  under left-translation by `v`. -/]
-lemma mulShift_apply_mul_left_of_mem
+  /-- On the translated support, `(p.shift v).config` agrees with `p.config`
+  at the preimage. -/]
+lemma mulShift_config_apply_mul_left_of_mem [IsLeftCancelMul G]
     (p : Pattern A G) (v w : G) (hw : w ∈ p.support) :
-    p.mulShift v (v * w) = p.config w := by
+    (p.mulShift v).config (v * w) = p.config w := by
   classical
   -- (v * w) is in the translated support
   have hmem : (v * w) ∈ p.support.image (v * ·) :=
@@ -420,8 +418,8 @@ lemma mulShift_apply_mul_left_of_mem
   have ex : ∃ w', w' ∈ p.support ∧ v * w' = v * w := by
     simpa [Finset.mem_image] using hmem
   -- open the `if` branch as returned by the definition
-  have h1 : p.mulShift v (v * w) = p.config (Classical.choose ex) := by
-    simp [Pattern.mulShift, hmem]
+  have h1 : (p.mulShift v).config (v * w) = p.config (Classical.choose ex) := by
+    simp only [Pattern.mulShift, dif_pos hmem]
   -- the chosen witness equals w by left-cancellation
   have hwv' : v * Classical.choose ex = v * w := (Classical.choose_spec ex).2
   have h_eq : Classical.choose ex = w := mul_left_cancel hwv'
@@ -486,23 +484,24 @@ Equivalently, `p.occursInAt x g` iff on every translated site `g + w` (with `w �
 the configuration `x` agrees with the translated pattern `Pattern.shift p g`.
 
 (This uses `[IsLeftCancelMul G]` to identify the preimage along left-multiplication by `g`.) -/]
-lemma mulOccursInAt_eq_cylinder
+lemma mulOccursInAt_eq_cylinder [IsLeftCancelMul G]
     (p : Pattern A G) (g : G) :
-    { x | p.mulOccursInAt x g } = cylinder (p.support.image (g * ·)) (p.mulShift g) := by
+    { x | p.mulOccursInAt x g } = cylinder (p.mulShift g).support (p.mulShift g).config := by
   ext x; constructor
   · -- ⇒: from an occurrence, get membership in the cylinder
     intro H u hu
+    change u ∈ p.support.image (g * ·) at hu
     rcases Finset.mem_image.mp hu with ⟨w, hw, rfl⟩
-    -- want: x ( w * g) = Pattern.mulShift p g ( w * g)
+    -- want: x (g * w) = (p.mulShift g).config (g * w)
     have hx : x (g * w) = p.config w := H w hw
-    simpa [Pattern.mulShift_apply_mul_left_of_mem (p := p) (v := g) (w := w) hw] using hx
+    simpa [Pattern.mulShift_config_apply_mul_left_of_mem (p := p) (v := g) (w := w) hw] using hx
   · -- ⇐: from the cylinder, recover an occurrence
     intro H u hu
     -- H gives equality with the translated pattern on the image
-    have hx : x (g * u) = p.mulShift g (g * u) :=
+    have hx : x (g * u) = (p.mulShift g).config (g * u) :=
       H (g * u) (Finset.mem_image_of_mem (g * ·) hu)
     -- rewrite the RHS by the “apply_of_mem” lemma
-    simpa [Pattern.mulShift_apply_mul_left_of_mem (p := p) (v := g) (w := u) hu] using hx
+    simpa [Pattern.mulShift_config_apply_mul_left_of_mem (p := p) (v := g) (w := u) hu] using hx
 end OccursInAt
 
 /-! ## Forbidden sets and subshifts -/
@@ -622,6 +621,101 @@ def MulSubshift.languageOn {A G} [TopologicalSpace A] [Inhabited A] [Monoid G]
   SymbolicDynamics.FullShift.LanguageOn (A := A) (G := G) Y.carrier U
 
 end Language
+
+/-! ## Shift-invariance of the language of a subshift -/
+
+section PatternMulShifted
+
+variable {A : Type*} [Inhabited A]
+variable {G : Type*}
+
+namespace Pattern
+
+/-- Pattern extensionality: two patterns are equal iff their supports agree and
+their configurations agree on the support. (Values outside the support are
+forced to `default` by `Pattern.condition`.) -/
+@[ext]
+theorem ext {p q : Pattern A G}
+    (hsup : p.support = q.support)
+    (hcfg : ∀ g ∈ p.support, p.config g = q.config g) : p = q := by
+  obtain ⟨pc, ps, pcond⟩ := p
+  obtain ⟨qc, qs, qcond⟩ := q
+  cases hsup
+  have hc : pc = qc := by
+    funext g
+    by_cases hg : g ∈ ps
+    · exact hcfg g hg
+    · rw [pcond g hg, qcond g hg]
+  cases hc
+  rfl
+
+@[simp] lemma fromConfig_support (x : G → A) (U : Finset G) :
+    (Pattern.fromConfig x U).support = U := rfl
+
+/-- The value of `Pattern.fromConfig x U` on a point g of the support is `x g`. -/
+@[simp] lemma fromConfig_config_of_mem
+    (x : G → A) {U : Finset G} {g : G} (hg : g ∈ U) : (Pattern.fromConfig x U).config g = x g := by
+  classical
+  change (if g ∈ U then x g else default) = x g
+  rw [if_pos hg]
+
+end Pattern
+
+end PatternMulShifted
+
+section LanguageMulShift
+
+variable {A : Type*} [Inhabited A]
+variable {G : Type*} [Monoid G] [IsLeftCancelMul G]
+
+namespace Pattern
+
+open scoped Classical in
+/-- Naturality of `Pattern.fromConfig` with respect to the shift action.
+
+Restricting `x` to a finite shape `U` and then shifting the resulting pattern by `g` agrees
+with restricting the shifted configuration `mulShift g' x` to the translated shape
+`U.image (g * ·)`, where `g'` is a left inverse of `g`. -/
+lemma fromConfig_mulShift
+    (x : G → A) (U : Finset G) (g g' : G) (hg'g : g' * g = 1) :
+    (Pattern.fromConfig x U).mulShift g = Pattern.fromConfig (mulShift g' x) (U.image (g * ·)) := by
+  refine Pattern.ext rfl ?_
+  intro h hh
+  change h ∈ U.image (g * ·) at hh
+  obtain ⟨u, hu, rfl⟩ := Finset.mem_image.mp hh
+  rw [Pattern.mulShift_config_apply_mul_left_of_mem _ g u hu,
+      Pattern.fromConfig_config_of_mem _ hu,
+      Pattern.fromConfig_config_of_mem _ (Finset.mem_image_of_mem (g * ·) hu),
+      mulShift_apply, ← mul_assoc, hg'g, one_mul]
+
+end Pattern
+
+open scoped Classical in
+/-- **Shift-invariance of the language of a subshift on a shape.**
+
+For a subshift `Y` over a monoid `G`, and elements `g, g' : G` with `g * g' = 1`
+and `g' * g = 1`, the language on a translated shape `U.image (g * ·)` is exactly
+the image of `Y.languageOn U` under the pattern-shift map `p ↦ p.mulShift g`. In
+particular `Y.languageOn U` and `Y.languageOn (U.image (g * ·))` are in natural
+bijection (with inverse given by `p ↦ p.mulShift g'`). -/
+theorem MulSubshift.languageOn_image_mulShift [TopologicalSpace A]
+    (Y : MulSubshift A G) (U : Finset G) (g g' : G)
+    (hgg' : g * g' = 1) (hg'g : g' * g = 1) :
+    (fun p : Pattern A G => p.mulShift g) '' Y.languageOn U = Y.languageOn (U.image (g * ·)) := by
+  ext q
+  refine ⟨?_, ?_⟩
+  · rintro ⟨_, ⟨x, hx, rfl⟩, rfl⟩
+    exact ⟨mulShift g' x, Y.mapsTo g' hx,
+           (Pattern.fromConfig_mulShift x U g g' hg'g).symm⟩
+  · rintro ⟨y, hy, rfl⟩
+    refine ⟨Pattern.fromConfig (mulShift g y) U,
+            ⟨mulShift g y, Y.mapsTo g hy, rfl⟩, ?_⟩
+    change (Pattern.fromConfig (mulShift g y) U).mulShift g
+         = Pattern.fromConfig y (U.image (g * ·))
+    rw [Pattern.fromConfig_mulShift (g' := g') (hg'g := hg'g), ← mulShift_mul,
+        hgg', mulShift_one]
+
+end LanguageMulShift
 
 end FullShift
 
