@@ -86,6 +86,7 @@ public import Mathlib.Algebra.BigOperators.ModEq
 public import Mathlib.Algebra.BigOperators.Module
 public import Mathlib.Algebra.BigOperators.NatAntidiagonal
 public import Mathlib.Algebra.BigOperators.Option
+public import Mathlib.Algebra.BigOperators.Periodic
 public import Mathlib.Algebra.BigOperators.Pi
 public import Mathlib.Algebra.BigOperators.Ring.Finset
 public import Mathlib.Algebra.BigOperators.Ring.List
