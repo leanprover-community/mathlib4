@@ -161,6 +161,17 @@ theorem continuousAt_const : ContinuousAt (fun _ : X => y) x :=
 theorem continuous_const : Continuous fun _ : X => y :=
   continuous_iff_continuousAt.mpr fun _ => continuousAt_const
 
+@[nontriviality]
+theorem continuousAt_of_subsingleton [Subsingleton Y] : ContinuousAt f x := by
+  intro U hU
+  have hU' : U = univ := Subsingleton.eq_univ_of_nonempty <| Filter.nonempty_of_mem hU
+  rw [hU']
+  exact univ_mem
+
+@[nontriviality]
+theorem continuous_of_subsingleton [Subsingleton Y] : Continuous f :=
+  continuous_iff_continuousAt.mpr fun _ => continuousAt_of_subsingleton
+
 theorem Filter.EventuallyEq.continuousAt (h : f =ᶠ[𝓝 x] fun _ => y) :
     ContinuousAt f x :=
   (continuousAt_congr h).2 tendsto_const_nhds
