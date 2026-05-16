@@ -35,6 +35,7 @@ Containment:
   same underlying vertex type.
 * `SimpleGraph.Free` is the predicate that `H` is `G`-free, that is, `H` does not contain a copy of
   `G`. This is the negation of `SimpleGraph.IsContained` implemented for convenience.
+* `SimpleGraph.Sub H G`: Type of `SimpleGraph.Subgraph`s of `G` isomorphic to `H`.
 * `SimpleGraph.killCopies G H`: Subgraph of `G` that does not contain `H`. Obtained by arbitrarily
   removing an edge from each copy of `H` in `G`.
 * `SimpleGraph.copyCount G H`: Number of copies of `H` in `G`, i.e. number of subgraphs of `G`
@@ -496,45 +497,48 @@ end LabelledCopyCount
 section CopyCount
 variable [Fintype V]
 
+/-- `Sub A B` is the type of `SimpleGraph.Subgraph`s of `B` isomorphic to `A`. The corresponding
+count is `SimpleGraph.copyCount`. -/
+abbrev Sub (A : SimpleGraph α) (B : SimpleGraph β) : Type _ :=
+  {B' : B.Subgraph // Nonempty (A ≃g B'.coe)}
+
 /-- `G.copyCount H` is the number of unlabelled copies of `H` in `G`, i.e. the number of subgraphs
 of `G` isomorphic to `H`. See `SimpleGraph.labelledCopyCount` for the number of labelled copies. -/
 noncomputable def copyCount (G : SimpleGraph V) (H : SimpleGraph W) : ℕ := by
-  classical exact #{G' : G.Subgraph | Nonempty (H ≃g G'.coe)}
-
-lemma copyCount_eq_card_image_copyToSubgraph [Fintype {f : H →g G // Injective f}]
-    [DecidableEq G.Subgraph] :
-    copyCount G H = #((Finset.univ : Finset (H.Copy G)).image Copy.toSubgraph) := by
-  rw [copyCount]
-  congr
-  refine Finset.coe_injective ?_
-  simpa [-Copy.range_toSubgraph] using Copy.range_toSubgraph.symm
+  classical exact Fintype.card (H.Sub G)
 
 @[simp] lemma copyCount_eq_zero : G.copyCount H = 0 ↔ H.Free G := by
-  simp [copyCount, Free, -nonempty_subtype, isContained_iff_exists_iso_subgraph,
-    filter_eq_empty_iff]
+  classical
+  rw [copyCount, Fintype.card_eq_zero_iff, isEmpty_subtype]
+  simp [Free, isContained_iff_exists_iso_subgraph]
 
 @[simp] lemma copyCount_pos : 0 < G.copyCount H ↔ H ⊑ G := by
-  simp [copyCount, -nonempty_subtype, isContained_iff_exists_iso_subgraph, card_pos,
-    filter_nonempty_iff]
+  simp [Nat.pos_iff_ne_zero, copyCount_eq_zero]
 
 /-- There's at least as many labelled copies of `H` in `G` than unlabelled ones. -/
 lemma copyCount_le_labelledCopyCount [Fintype W] : G.copyCount H ≤ G.labelledCopyCount H := by
-  classical rw [copyCount_eq_card_image_copyToSubgraph]; exact card_image_le
+  classical
+  rw [copyCount, labelledCopyCount]
+  apply Fintype.card_le_of_surjective
+    (fun c : Copy H G ↦ (⟨c.toSubgraph, ⟨c.isoToSubgraph⟩⟩ : H.Sub G))
+  rintro ⟨G', hG'⟩
+  obtain ⟨c, hc⟩ : ∃ c : Copy H G, c.toSubgraph = G' := by
+    rwa [← Set.mem_range, Copy.range_toSubgraph]
+  exact ⟨c, Subtype.ext hc⟩
+
+instance uniqueSubBot (G : SimpleGraph V) : Unique ((⊥ : SimpleGraph V).Sub G) where
+  default := ⟨{ verts := .univ, Adj := ⊥, adj_sub := False.elim, edge_vert := False.elim },
+              ⟨(Equiv.Set.univ _).symm, by simp⟩⟩
+  uniq := fun ⟨G', ⟨e⟩⟩ ↦ Subtype.ext <| Subgraph.ext
+    (by classical exact (set_fintype_card_eq_univ_iff _).1 <| Fintype.card_congr e.toEquiv.symm)
+    (by ext a b
+        simp only [Prop.bot_eq_false, Pi.bot_apply, iff_false]
+        exact fun hab ↦ e.symm.map_rel_iff.2 hab.coe)
 
 @[simp] lemma copyCount_bot (G : SimpleGraph V) : copyCount G (⊥ : SimpleGraph V) = 1 := by
   classical
   rw [copyCount]
-  convert card_singleton (α := G.Subgraph)
-    { verts := .univ
-      Adj := ⊥
-      adj_sub := False.elim
-      edge_vert := False.elim }
-  simp only [eq_singleton_iff_unique_mem, mem_filter_univ, Nonempty.forall]
-  refine ⟨⟨⟨(Equiv.Set.univ _).symm, by simp⟩⟩, fun H' e ↦
-    Subgraph.ext ((set_fintype_card_eq_univ_iff _).1 <| Fintype.card_congr e.toEquiv.symm) ?_⟩
-  ext a b
-  simp only [Prop.bot_eq_false, Pi.bot_apply, iff_false]
-  exact fun hab ↦ e.symm.map_rel_iff.2 hab.coe
+  exact Fintype.card_unique
 
 @[simp] lemma copyCount_of_isEmpty [IsEmpty W] (G : SimpleGraph V) (H : SimpleGraph W) :
     G.copyCount H = 1 := by
@@ -643,15 +647,13 @@ lemma le_card_edgeFinset_killCopies [Fintype V] :
   classical
   obtain rfl | hH := eq_or_ne H ⊥
   · simp [← card_edgeSet]
-  let f (G' : {G' : G.Subgraph // Nonempty (H ≃g G'.coe)}) := (aux hH G'.2).some
+  let f (G' : H.Sub G) := (aux hH G'.2).some
   calc
-    _ = #G.edgeFinset - card {G' : G.Subgraph // Nonempty (H ≃g G'.coe)} := ?_
+    _ = #G.edgeFinset - card (H.Sub G) := by rw [copyCount]
     _ ≤ #G.edgeFinset - #(univ.image f) := Nat.sub_le_sub_left card_image_le _
     _ = #G.edgeFinset - #(Set.range f).toFinset := by rw [Set.toFinset_range]
     _ ≤ #(G.edgeFinset \ (Set.range f).toFinset) := le_card_sdiff ..
     _ = #(G.killCopies H).edgeFinset := ?_
-  · simp only [edgeFinset, Set.toFinset_card]
-    rw [← Set.toFinset_card, ← edgeFinset, copyCount, ← card_subtype, subtype_univ, card_univ]
   congr 1
   ext e
   induction e using Sym2.inductionOn with | hf v w
