@@ -242,15 +242,6 @@ theorem deriv_const_div (c : 𝕜') (hd : DifferentiableAt 𝕜 d x) (hx : d x �
 @[simp]
 theorem deriv_const_div_id (c : 𝕜) :
     deriv (fun x => c / x) x = - c / x ^ 2 := by
-  rcases eq_or_ne x 0 with rfl | hx₀
-  · simp only [zero_pow <| Ne.symm <| Nat.zero_ne_add_one 1, div_zero]
-    rcases eq_or_ne c 0 with rfl | hc₀
-    · simp only [zero_div, deriv_const']
-    · refine deriv_zero_of_not_differentiableAt fun nh =>
-        mt (differentiableAt_inv_iff (𝕜 := 𝕜)).mp (not_not.mpr rfl) ?_
-      replace nh := nh.hasDerivAt.const_mul c⁻¹ |>.differentiableAt
-      revert nh
-      simp [← mul_div_assoc, hc₀]
-  · simp [deriv_const_div c differentiableAt_fun_id hx₀]
+  simp [div_eq_mul_inv]
 
 end Division
