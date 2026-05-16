@@ -1038,6 +1038,7 @@ theorem Integrable.const_mul {f : α → 𝕜} (h : Integrable f μ) (c : 𝕜) 
     Integrable (fun x => c * f x) μ :=
   h.smul c
 
+@[fun_prop]
 theorem Integrable.const_mul' {f : α → 𝕜} (h : Integrable f μ) (c : 𝕜) :
     Integrable ((fun _ : α => c) * f) μ :=
   Integrable.const_mul h c
@@ -1047,6 +1048,7 @@ theorem Integrable.mul_const {f : α → 𝕜} (h : Integrable f μ) (c : 𝕜) 
     Integrable (fun x => f x * c) μ :=
   h.smul (MulOpposite.op c)
 
+@[fun_prop]
 theorem Integrable.mul_const' {f : α → 𝕜} (h : Integrable f μ) (c : 𝕜) :
     Integrable (f * fun _ : α => c) μ :=
   Integrable.mul_const h c
