@@ -465,7 +465,7 @@ theorem mul_le_addHaar_image_of_lt_det (A : E →L[ℝ] E) {m : ℝ≥0}
 then at almost every `x` in `s` one has `‖f' x - A‖ ≤ δ`. -/
 theorem _root_.ApproximatesLinearOn.norm_fderiv_sub_le {E F : Type*} [NormedAddCommGroup E]
     [NormedSpace ℝ E]
-    [FiniteDimensional ℝ E]  [NormedAddCommGroup F] [NormedSpace ℝ F]
+    [FiniteDimensional ℝ E] [NormedAddCommGroup F] [NormedSpace ℝ F]
     {s : Set E} {f : E → F} [MeasurableSpace E] [BorelSpace E]
     {A : E →L[ℝ] F} {δ : ℝ≥0} (μ : Measure E) [IsAddHaarMeasure μ]
     (hf : ApproximatesLinearOn f A s δ) (hs : MeasurableSet s) (f' : E → E →L[ℝ] F)
@@ -691,7 +691,7 @@ Lusin-Souslin theorem.
 with respect to Lebesgue measure. Note that, in general, it is not genuinely measurable there,
 as `f'` is not unique (but only on a set of measure `0`, as the argument shows). -/
 theorem aemeasurable_fderivWithin {E F : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
-    [FiniteDimensional ℝ E]  [NormedAddCommGroup F] [NormedSpace ℝ F] [SecondCountableTopology F]
+    [FiniteDimensional ℝ E] [NormedAddCommGroup F] [NormedSpace ℝ F] [SecondCountableTopology F]
     {s : Set E} {f : E → F} {f' : E → E →L[ℝ] F} [MeasurableSpace E] [BorelSpace E]
     (μ : Measure E) [μ.IsAddHaarMeasure]
     (hs : MeasurableSet s)

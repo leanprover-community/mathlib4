@@ -14,6 +14,7 @@ import Mathlib.MeasureTheory.Measure.Lebesgue.VolumeOfBalls
 import Mathlib.Topology.Instances.ENat
 import Mathlib.MeasureTheory.MeasurableSpace.Instances
 public import Mathlib.MeasureTheory.Function.Jacobian
+public import Mathlib.Analysis.Normed.Lp.ProdLp
 
 /-!
 # Area formula
@@ -784,6 +785,7 @@ theorem area_left [Nontrivial U] [MeasurableSpace U] [BorelSpace U] [MeasurableS
     rw [MeasureTheory.Measure.addHaar_image_linearMap, mul_assoc]
   _ ≤ _ := by
     rw [← MeasureTheory.setLIntegral_const]
+    -- try using MeasureTheory.setLIntegral_mono_ae ?
     apply MeasureTheory.setLIntegral_mono_ae'
       ((pieceSeq ht hf hf' hB hker j).measurablSet ⟨hBm, hfm⟩)
     apply Filter.Eventually.of_forall
@@ -795,7 +797,6 @@ theorem area_right [Nontrivial U] [MeasurableSpace U] [BorelSpace U] [Measurable
     [BorelSpace V]
     [CompleteSpace V] {t : NNReal} (ht : 1 < t) {f : U → V} {f' : U → U →L[ℝ] V}
     {B : Set U} (hf : Set.InjOn f B) (hf' : ∀ x ∈ B, HasFDerivWithinAt f (f' x) B x)
-    (hBm : MeasurableSet B) (hfm : Measurable f')
     (hB : B.Nonempty)
     (hker : ∀ x ∈ B, (f' x).ker = ⊥) (j : ℕ) :
     ∫⁻ x in (pieceSeq ht hf hf' hB hker j).E, ENNReal.ofReal (f' x).normDet ≤
@@ -805,8 +806,7 @@ theorem area_right [Nontrivial U] [MeasurableSpace U] [BorelSpace U] [Measurable
   _ ≤ (↑t) ^ finrank ℝ U * ENNReal.ofReal |(pieceSeq ht hf hf' hB hker j).T.toLinearMap.det| *
       volume (pieceSeq ht hf hf' hB hker j).E := by
     rw [← MeasureTheory.setLIntegral_const]
-    apply MeasureTheory.setLIntegral_mono_ae'
-      ((pieceSeq ht hf hf' hB hker j).measurablSet ⟨hBm, hfm⟩)
+    apply MeasureTheory.setLIntegral_mono_ae (by fun_prop)
     apply Filter.Eventually.of_forall
     intro x hx
     rw [← ENNReal.toReal_le_toReal (by finiteness) (by finiteness)]
@@ -1058,7 +1058,7 @@ theorem left [Nontrivial U] [MeasurableSpace U] [BorelSpace U] [MeasurableSpace 
   rw [← ENNReal.tsum_mul_left]
   apply ENNReal.tsum_le_tsum
   intro k
-  apply area_right ht hf hf' hBm hfm hB hker
+  apply area_right ht hf hf' hB hker
 
 theorem right [Nontrivial U] [MeasurableSpace U] [BorelSpace U] [MeasurableSpace V]
     [BorelSpace V]
@@ -1075,9 +1075,7 @@ theorem right [Nontrivial U] [MeasurableSpace U] [BorelSpace U] [MeasurableSpace
   intro k
   apply area_left ht hf hf' hBm hfm hB hker
 
-
-
-public theorem area_formula_injOn_ker_measurable {U V : Type*}
+theorem area_formula_injOn_ker_measurable {U V : Type*}
     [NormedAddCommGroup U] [InnerProductSpace ℝ U] [FiniteDimensional ℝ U]
     [Nontrivial U] [MeasurableSpace U] [BorelSpace U]
     [NormedAddCommGroup V] [InnerProductSpace ℝ V]
@@ -1203,6 +1201,224 @@ public theorem area_formula_injOn_ker {U V : Type*}
       Set.inter_subset_left
 
 
+theorem circumference_circle :
+    μHE[1].real (Metric.sphere 0 1 : Set (EuclideanSpace ℝ (Fin 2))) = 2 * Real.pi := by
+  let f (x : ℝ) := !₂[Real.cos x, Real.sin x]
+  let f' (x : ℝ) := (ContinuousLinearMap.id ℝ ℝ).smulRight !₂[-Real.sin x, Real.cos x]
+  let s : Set ℝ := Set.Ioc (-Real.pi) Real.pi
+  have hs : MeasurableSet s := by
+    unfold s
+    measurability
+  have hf : Set.InjOn f s := by
+    intro x hx y hy h
+    simp only [WithLp.toLp.injEq, Matrix.vecCons_inj, and_true, f] at h
+    obtain ⟨hcos, hsin⟩ := h
+    obtain hangle := congr(Real.Angle.toReal $(Real.Angle.cos_sin_inj hcos hsin))
+    rw [Real.Angle.toReal_coe_eq_self_iff.mpr (by simpa [s] using hx)] at hangle
+    rw [Real.Angle.toReal_coe_eq_self_iff.mpr (by simpa [s] using hy)] at hangle
+    exact hangle
+  have hf' : ∀ x ∈ s, HasFDerivWithinAt f (f' x) s x := by
+    intro x _
+    apply HasFDerivAt.hasFDerivWithinAt
+    rw [show f = WithLp.toLp 2 ∘ (fun t ↦ ![Real.cos t, Real.sin t]) by rfl]
+    rw [show f' x =
+      ((PiLp.continuousLinearEquiv 2 ℝ (fun (_ : Fin 2) ↦ ℝ)).symm.toContinuousLinearMap) ∘L
+      (ContinuousLinearMap.id ℝ ℝ).smulRight ![-Real.sin x, Real.cos x] by rfl]
+    apply (PiLp.hasFDerivAt_toLp 2 _).comp
+    simp only [Nat.succ_eq_add_one, Nat.reduceAdd, hasFDerivAt_pi', Fin.forall_fin_two, Fin.isValue,
+      Matrix.cons_val_zero, Matrix.cons_val_one, Matrix.cons_val_fin_one]
+    constructor
+    · change HasFDerivAt (fun x ↦ Real.cos x)
+        ((ContinuousLinearMap.id ℝ ℝ).smulRight (-Real.sin x)) x
+      convert  (hasFDerivAt_id x).cos
+      ext
+      simp
+    · change HasFDerivAt (fun x ↦ Real.sin x)
+        ((ContinuousLinearMap.id ℝ ℝ).smulRight (Real.cos x)) x
+      convert  (hasFDerivAt_id x).sin
+      ext
+      simp
+  have hdet : ∀ x ∈ s, (f' x).normDet = 1 := by
+    intro x _
+    let f'iso := ((LinearMap.id : ℝ →ₗ[ℝ] ℝ).smulRight !₂[-Real.sin x, Real.cos x]).toLinearIsometry
+      (by
+        apply AddMonoidHomClass.isometry_of_norm
+        intro y
+        simp [norm_smul, PiLp.norm_eq_of_L2]
+      )
+    change f'iso.toLinearMap.normDet = 1
+    simp
+  have hker : ∀ x ∈ s, (f' x).ker = ⊥ := by
+    intro x hx
+    rw [← normDet_eq_zero_iff_ker_ne_bot.not_left]
+    simp [hdet x hx]
+  have himage : (Metric.sphere 0 1 : Set (EuclideanSpace ℝ (Fin 2))) = f '' s := by
+    ext x
+    simp only [mem_sphere_iff_norm, sub_zero, Set.mem_image, f]
+    constructor
+    · intro h
+      use Complex.arg (x 0 + x 1 * Complex.I)
+      constructor
+      · exact Complex.arg_mem_Ioc _
+      · have hnorm : x.ofLp 0 ^ 2 + x.ofLp 1 ^ 2 = 1 := by simpa [PiLp.norm_eq_of_L2] using h
+        have h0 : x 0 + x 1 * Complex.I ≠ 0 := by
+          rw [← Complex.norm_eq_zero_iff.ne]
+          simp [Complex.norm_add_mul_I, hnorm]
+        rw [Complex.cos_arg h0, Complex.sin_arg (x 0 + x 1 * Complex.I)]
+        ext i
+        fin_cases i <;> simp [Complex.norm_add_mul_I, hnorm]
+    · rintro ⟨y, hys, rfl⟩
+      simp [PiLp.norm_eq_of_L2]
+  rw [Measure.real, show μHE[1] = μHE[finrank ℝ ℝ] by simp, himage,
+    ← area_formula_injOn_ker hs hf hf' hker]
+  trans (∫⁻ (x : ℝ) in s, 1).toReal
+  · congrm ENNReal.toReal ?_
+    apply MeasureTheory.setLIntegral_congr_fun (by simp [s])
+    intro x hx
+    simp [hdet x hx]
+  simp only [lintegral_const, MeasurableSet.univ, Measure.restrict_apply, Set.univ_inter,
+    Real.volume_Ioc, sub_neg_eq_add, one_mul, s]
+  rw [ENNReal.toReal_ofReal (by positivity)]
+  ring
+
+-----------------------------------------------
+
+abbrev ContinuousLinearMap.prodWithLp {R M₁ M₂ M₃ : Type*} [Semiring R]
+    [AddCommGroup M₁] [AddCommGroup M₂] [AddCommGroup M₃]
+    [TopologicalSpace M₁] [TopologicalSpace M₂] [TopologicalSpace M₃]
+    [Module R M₁] [Module R M₂] [Module R M₃]
+    (f : M₁ →L[R] M₂) (g : M₁ →L[R] M₃) (p : ENNReal) : M₁ →L[R] WithLp p (M₂ × M₃) :=
+    (WithLp.prodContinuousLinearEquiv _ _ _ _).symm.toContinuousLinearMap ∘L (f.prod g)
+
+abbrev ContinuousLinearMap.withLpCoprod {R M₁ M₂ M₃ : Type*} [Semiring R]
+    [AddCommGroup M₁] [AddCommGroup M₂] [AddCommGroup M₃]
+    [TopologicalSpace M₁] [TopologicalSpace M₂] [TopologicalSpace M₃] [ContinuousAdd M₃]
+    [Module R M₁] [Module R M₂] [Module R M₃]
+    (f : M₁ →L[R] M₃) (g : M₂ →L[R] M₃) (p : ENNReal) : WithLp p (M₁ × M₂) →L[R] M₃ :=
+    (f.coprod g) ∘L (WithLp.prodContinuousLinearEquiv _ _ _ _).toContinuousLinearMap
+
+@[simp]
+theorem ContinuousLinearMap.withLpCoprod_comp_prodWithLp {R M₁ M₂ M₃ M₄ : Type*} [Semiring R]
+    [AddCommGroup M₁] [AddCommGroup M₂] [AddCommGroup M₃] [AddCommGroup M₄]
+    [TopologicalSpace M₁] [TopologicalSpace M₂] [TopologicalSpace M₃] [TopologicalSpace M₄]
+    [ContinuousAdd M₁] [ContinuousAdd M₂] [ContinuousAdd M₃] [ContinuousAdd M₄]
+    [Module R M₁] [Module R M₂] [Module R M₃] [Module R M₄]
+    (f : M₂ →L[R] M₄) (g : M₃ →L[R] M₄) (f' : M₁ →L[R] M₂) (g' : M₁ →L[R] M₃) (p : ENNReal) :
+    f.withLpCoprod g p ∘L f'.prodWithLp g' p = f ∘L f' + g ∘L g' := rfl
+
+theorem ContinousLinearMap.adjoint_prodWithLp {R M₁ M₂ M₃ : Type*} [RCLike R]
+    [NormedAddCommGroup M₁] [NormedAddCommGroup M₂] [NormedAddCommGroup M₃]
+    [CompleteSpace M₁] [CompleteSpace M₂] [CompleteSpace M₃]
+    [InnerProductSpace R M₁] [InnerProductSpace R M₂] [InnerProductSpace R M₃]
+    (f : M₁ →L[R] M₂) (g : M₁ →L[R] M₃) :
+    (f.prodWithLp g 2).adjoint = f.adjoint.withLpCoprod g.adjoint 2 := by
+  ext x
+  apply ext_inner_left R
+  intro v
+  simp [inner_add_right, ContinuousLinearMap.adjoint_inner_right]
+
+theorem ContinousLinearMap.adjoint_prodWithLp_comp_self {R M₁ M₂ M₃ : Type*} [RCLike R]
+    [NormedAddCommGroup M₁] [NormedAddCommGroup M₂] [NormedAddCommGroup M₃]
+    [CompleteSpace M₁] [CompleteSpace M₂] [CompleteSpace M₃]
+    [InnerProductSpace R M₁] [InnerProductSpace R M₂] [InnerProductSpace R M₃]
+    (f : M₁ →L[R] M₂) (g : M₁ →L[R] M₃) :
+    (f.prodWithLp g 2).adjoint ∘L (f.prodWithLp g 2) = f.adjoint ∘L f + g.adjoint ∘L g := by
+  simp [ContinousLinearMap.adjoint_prodWithLp]
+/-
+
+theorem smasher_sublinear {U V : Type*}
+    [NormedAddCommGroup U] [InnerProductSpace ℝ U] [FiniteDimensional ℝ U]
+    [NormedAddCommGroup V] [InnerProductSpace ℝ V]
+    {f' : U →L[ℝ] V} (hker : f'.ker ≠ ⊥) {a b : ℝ} (ha : 0 ≤ a) (ha1 : a ≤ 1) (hb : 0 < b) :
+    (f'.prodWithLp ((a * b) • 1 : U →L[ℝ] U) 2).normDet ≤
+    a * (f'.prodWithLp (b • 1 : U →L[ℝ] U) 2).normDet := sorry
+
+theorem exists_smasher {U V : Type*}
+    [NormedAddCommGroup U] [InnerProductSpace ℝ U] [FiniteDimensional ℝ U]
+    [NormedAddCommGroup V] [InnerProductSpace ℝ V]
+    {f' : U →L[ℝ] V} (hker : f'.ker ≠ ⊥) {e : ℝ} (he : 0 < e) :
+    ∃ l : ℝ, 0 < l ∧ (f'.prodWithLp (l • 1 : U →L[ℝ] U) 2).normDet < e := sorry
+
+theorem area_formula_injOn_singular_le {U V : Type*}
+    [NormedAddCommGroup U] [InnerProductSpace ℝ U] [FiniteDimensional ℝ U]
+    [Nontrivial U] [MeasurableSpace U] [BorelSpace U]
+    [NormedAddCommGroup V] [InnerProductSpace ℝ V] [SecondCountableTopology V]
+    [MeasurableSpace V] [BorelSpace V] [CompleteSpace V]
+    {f : U → V} {f' : U → U →L[ℝ] V} {B : Set U} (hBm : MeasurableSet B)
+    (hf : Set.InjOn f B) (hf' : ∀ x ∈ B, HasFDerivWithinAt f (f' x) B x)
+    (hker : ∀ x ∈ B, (f' x).ker ≠ ⊥) {e : ℝ} (he : 0 < e) :
+    μHE[finrank ℝ U] (f '' B) ≤ sorry := by
+  have h (x : U) (hx : x ∈ B) :
+      ∃ l : ℝ, 0 < l ∧ ((f' x).prodWithLp (l • 1 : U →L[ℝ] U) 2).normDet < e := by
+    apply exists_smasher (hker x hx) he
+  choose! l hl0 hle using h
+  let Bi (i : ℕ) : Set U := {u : U | u ∈ B ∧ (i + 1 : ℝ)⁻¹ < l u ∧ ‖u‖ < i}
+  let gi (i : ℕ) (x : U) : WithLp 2 (V × U) := WithLp.toLp 2 (f x, (i + 1 : ℝ)⁻¹ ^ 2 • x)
+  let gi' (i : ℕ)  (x : U) : U →L[ℝ] WithLp 2 (V × U) :=
+    (f' x).prodWithLp ((i + 1 : ℝ)⁻¹ ^ 2 • 1 : U →L[ℝ] U) 2
+  have hBi : B = ⋃ i, Bi i := sorry
+  calc
+  _ = μHE[finrank ℝ U] (⋃ i, f '' Bi i) := by
+    rw [hBi, Set.image_iUnion]
+  _ ≤ ∑' i, μHE[finrank ℝ U] (f '' Bi i) := by
+    apply MeasureTheory.measure_iUnion_le
+  _ ≤ ∑' i, μHE[finrank ℝ U] (gi i '' Bi i) :=
+    sorry
+  _ = ∑' i, ∫⁻ x in Bi i, ENNReal.ofReal (gi' i x).normDet := by
+    congr with i
+    symm
+    apply area_formula_injOn_ker
+    · sorry
+    · sorry
+    · sorry
+    · sorry
+  _ = _ := sorry
+theorem area_formula_injOn_singular {U V : Type*}
+    [NormedAddCommGroup U] [InnerProductSpace ℝ U] [FiniteDimensional ℝ U]
+    [Nontrivial U] [MeasurableSpace U] [BorelSpace U]
+    [NormedAddCommGroup V] [InnerProductSpace ℝ V]
+    [MeasurableSpace V] [BorelSpace V] [CompleteSpace V]
+    {f : U → V} {f' : U → U →L[ℝ] V} {B : Set U} (hBm : MeasurableSet B)
+    (hf : Set.InjOn f B) (hf' : ∀ x ∈ B, HasFDerivWithinAt f (f' x) B x)
+    (hker : ∀ x ∈ B, (f' x).ker ≠ ⊥) :
+    ∫⁻ x in B, ENNReal.ofReal (f' x).normDet = μHE[finrank ℝ U] (f '' B) := by
+
+  sorry
+-/
+
+
+/-public theorem area_formula_injOn_ker {U V : Type*}
+    [NormedAddCommGroup U] [InnerProductSpace ℝ U] [FiniteDimensional ℝ U]
+    [Nontrivial U] [MeasurableSpace U] [BorelSpace U]
+    [NormedAddCommGroup V] [InnerProductSpace ℝ V]
+    [MeasurableSpace V] [BorelSpace V] [CompleteSpace V]
+    {f : U → V} {f' : U → U →L[ℝ] V} {s : Set U} (hs : MeasurableSet s)
+    (hf : Set.InjOn f s) (hf' : ∀ x ∈ s, HasFDerivWithinAt f (f' x) s x)
+    (hker : ∀ x ∈ s, (f' x).ker = ⊥) :
+    ∫⁻ x in s, ENNReal.ofReal (f' x).normDet = μHE[finrank ℝ U] (f '' s) := by
+  classical
+  have : TopologicalSpace.IsSeparable ((⨆ x ∈ s, (f' x).range) : Set V) := sorry
+  let V' := (Submodule.span ℝ (f '' s) ⊔ (⨆ x ∈ s, (f' x).range)).topologicalClosure
+  have : SecondCountableTopology V' := by
+    apply TopologicalSpace.IsSeparable.secondCountableTopology
+    apply TopologicalSpace.IsSeparable.closure
+    rw [Submodule.coe_toAddSubmonoid, Submodule.span_sup]
+    apply TopologicalSpace.IsSeparable.span
+    apply TopologicalSpace.IsSeparable.union
+    · apply ContinuousOn.isSeparable_image (fun x hx ↦ (hf' x hx).continuousWithinAt)
+      exact TopologicalSpace.IsSeparable.of_subtype s
+
+    sorry
+  let g (x : U) : V' :=
+    if x ∈ s then ⟨f x, sorry⟩ else 0
+  let g' (x : U) : U →L[ℝ] V' :=
+    if x ∈ s then (f' x).codRestrict V' sorry else 0
+  have hg' : ∀ x ∈ s, HasFDerivWithinAt g (g' x) s x := sorry
+  have hc : IsClosed (V' : Set V) := sorry
+  obtain h := area_formula_injOn_ker_secondCountable hs sorry hg' sorry
+  convert h
+  · sorry
+  · sorry-/
 
 /-
 theorem area_sphere : μHE[2] (Metric.sphere 0 1 : Set (EuclideanSpace ℝ (Fin 3))) = sorry := by
