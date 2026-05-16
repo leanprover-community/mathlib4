@@ -83,21 +83,17 @@ instance [IsGaloisGroup G A B] : IsGaloisGroup (⊤ : Subgroup G) A B :=
 attribute [instance low] IsGaloisGroup.commutes IsGaloisGroup.isInvariant
 
 theorem IsGaloisGroup.smul_eq_self (H : Subgroup G) (C : Type*) [CommSemiring C] [Algebra C B]
-    [IsGaloisGroup H C B] (g : G) (hg : g ∈ H) (x : C) :
+    [SMulCommClass H C B] (g : G) (hg : g ∈ H) (x : C) :
     g • algebraMap C B x = algebraMap C B x :=
   smul_algebraMap (⟨g, hg⟩ : H) x
 
 theorem IsGaloisGroup.smul_mem_of_normal (C : Type*) [CommSemiring C] [Algebra C B] (N : Subgroup G)
     [hN : N.Normal] [hC : IsGaloisGroup N C B] (g : G) (x : C) :
     g • algebraMap C B x ∈ Set.range (algebraMap C B) := by
-  have : ∀ (n : N), n • g • (algebraMap C B x) = g • algebraMap C B x := by
-    intro n
-    rw [← smul_assoc, MulAction.subgroup_smul_def, smul_eq_mul,
-      show n * g = g * (g⁻¹ * n * g) by group, ← smul_eq_mul, smul_assoc,
-      IsGaloisGroup.smul_eq_self G B N C (g⁻¹ * (n : G) * g)]
-    exact hN.conj_mem' n n.prop g
-  obtain ⟨y, hy⟩ := hC.isInvariant.isInvariant (g • algebraMap C B x) this
-  simp [← hy]
+  apply hC.isInvariant.isInvariant (g • algebraMap C B x)
+  intro n
+  rw [← inv_smul_eq_iff, Subgroup.smul_def, ← mul_smul, ← mul_smul]
+  exact smul_eq_self G B N C _ (hN.conj_mem' n n.prop g) x
 
 variable [hA : IsGaloisGroup G A B] [FaithfulSMul A B]
 
