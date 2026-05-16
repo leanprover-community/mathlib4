@@ -103,6 +103,12 @@ If you're working with a nonempty linear order, consider defining a
 noncomputable def min {r : α → α → Prop} (H : WellFounded r) (s : Set α) (h : s.Nonempty) : α :=
   Classical.choose (H.has_min s h)
 
+/-- A minimal element of a nonempty set of a type with a well-founded `<`. -/
+@[to_dual /-- A maximal element of a nonempty set of a type with a well-founded `>`. -/]
+noncomputable abbrev _root_.WellFoundedLT.min [LT α] [WellFoundedLT α] (s : Set α)
+    (h : s.Nonempty) : α :=
+  wellFounded_lt.min s h
+
 theorem min_mem {r : α → α → Prop} (H : WellFounded r) (s : Set α) (h : s.Nonempty) :
     H.min s h ∈ s :=
   let ⟨h, _⟩ := Classical.choose_spec (H.has_min s h)
@@ -183,13 +189,20 @@ section LinearOrder
 
 variable [LinearOrder β] [Preorder γ]
 
--- TODO: the name `WellFounded.min` is incorrect when the assumption is that `>` is well-founded.
+-- TODO: the name `WellFounded.min` is incorrect when the assumption is that `>` is well-founded,
+--       so deprecate in favor of `WellFoundedLT.min_le`
 @[to_dual none]
 theorem WellFounded.min_le (h : WellFounded ((· < ·) : β → β → Prop))
     {x : β} {s : Set β} (hx : x ∈ s) : h.min s ⟨x, hx⟩ ≤ x :=
   not_lt.1 <| h.not_lt_min _ hx
 
-theorem Set.range_injOn_strictMono [WellFoundedLT β] :
+@[to_dual le_max]
+theorem WellFoundedLT.min_le [WellFoundedLT β] {x : β} {s : Set β} (hx : x ∈ s) :
+    WellFoundedLT.min s ⟨x, hx⟩ ≤ x :=
+  wellFounded_lt.min_le hx
+
+@[to_dual]
+theorem Set.range_injOn_strictMono_of_wellFoundedLT [WellFoundedLT β] :
     Set.InjOn Set.range { f : β → γ | StrictMono f } := by
   intro f hf g hg hfg
   ext a
@@ -206,44 +219,52 @@ theorem Set.range_injOn_strictMono [WellFoundedLT β] :
     rw [IH c this] at hc
     cases (hg.injective hc).not_lt this
 
-theorem Set.range_injOn_strictAnti [WellFoundedGT β] :
+@[deprecated (since := "2026-05-15")]
+alias Set.range_injOn_strictMono := Set.range_injOn_strictMono_of_wellFoundedLT
+
+@[to_dual]
+theorem Set.range_injOn_strictAnti_of_wellFoundedGT [WellFoundedGT β] :
     Set.InjOn Set.range { f : β → γ | StrictAnti f } :=
-  fun _ hf _ hg ↦ Set.range_injOn_strictMono (β := βᵒᵈ) hf.dual hg.dual
+  fun _ hf _ hg ↦ Set.range_injOn_strictMono_of_wellFoundedLT (β := βᵒᵈ) hf.dual hg.dual
 
-theorem StrictMono.range_inj [WellFoundedLT β] {f g : β → γ}
+@[deprecated (since := "2026-05-15")]
+alias Set.range_injOn_strictAnti := Set.range_injOn_strictAnti_of_wellFoundedGT
+
+@[to_dual]
+theorem StrictMono.range_inj_of_wellFoundedLT [WellFoundedLT β] {f g : β → γ}
     (hf : StrictMono f) (hg : StrictMono g) : Set.range f = Set.range g ↔ f = g :=
-  Set.range_injOn_strictMono.eq_iff hf hg
+  Set.range_injOn_strictMono_of_wellFoundedLT.eq_iff hf hg
 
-theorem StrictAnti.range_inj [WellFoundedGT β] {f g : β → γ}
+@[deprecated (since := "2026-05-15")]
+alias StrictMono.range_inj := StrictMono.range_inj_of_wellFoundedLT
+
+@[to_dual]
+theorem StrictAnti.range_inj_of_wellFoundedGT [WellFoundedGT β] {f g : β → γ}
     (hf : StrictAnti f) (hg : StrictAnti g) : Set.range f = Set.range g ↔ f = g :=
-  Set.range_injOn_strictAnti.eq_iff hf hg
+  Set.range_injOn_strictAnti_of_wellFoundedGT.eq_iff hf hg
+
+@[deprecated (since := "2026-05-15")]
+alias StrictAnti.range_inj := StrictAnti.range_inj_of_wellFoundedGT
 
 /-- A strictly monotone function `f` on a well-order satisfies `x ≤ f x` for all `x`. -/
+@[to_dual le_id
+/-- A strictly monotone function `f` on a co-well-order satisfies `f x ≤ x` for all `x`. -/]
 theorem StrictMono.id_le [WellFoundedLT β] {f : β → β} (hf : StrictMono f) : id ≤ f := by
   rw [Pi.le_def]
   by_contra! H
   obtain ⟨m, hm, hm'⟩ := wellFounded_lt.has_min {i | f i < i} H
   exact hm' _ (hf hm) hm
 
+@[to_dual apply_le]
 theorem StrictMono.le_apply [WellFoundedLT β] {f : β → β} (hf : StrictMono f) {x} : x ≤ f x :=
   hf.id_le x
 
-/-- A strictly monotone function `f` on a cowell-order satisfies `f x ≤ x` for all `x`. -/
-theorem StrictMono.le_id [WellFoundedGT β] {f : β → β} (hf : StrictMono f) : f ≤ id :=
-  StrictMono.id_le (β := βᵒᵈ) hf.dual
-
-theorem StrictMono.apply_le [WellFoundedGT β] {f : β → β} (hf : StrictMono f) {x} : f x ≤ x :=
-  StrictMono.le_apply (β := βᵒᵈ) hf.dual
-
+@[to_dual]
 theorem StrictMono.not_bddAbove_range_of_wellFoundedLT {f : β → β} [WellFoundedLT β] [NoMaxOrder β]
     (hf : StrictMono f) : ¬ BddAbove (Set.range f) := by
   rintro ⟨a, ha⟩
   obtain ⟨b, hb⟩ := exists_gt a
   exact ((hf.le_apply.trans_lt (hf hb)).trans_le <| ha (Set.mem_range_self _)).false
-
-theorem StrictMono.not_bddBelow_range_of_wellFoundedGT {f : β → β} [WellFoundedGT β] [NoMinOrder β]
-    (hf : StrictMono f) : ¬ BddBelow (Set.range f) :=
-  hf.dual.not_bddAbove_range_of_wellFoundedLT
 
 end LinearOrder
 
@@ -259,9 +280,15 @@ variable [LT β] [WellFoundedLT β]
 whose image under `f` is minimal in the sense of `Function.not_lt_argmin`.
 
 See also `Set.Finite.exists_minimalFor` and related lemmas for the case when `α` is finite. -/
+@[to_dual argmax
+/-- Given a function `f : α → β` where `β` carries a well-founded `>`, this is an element of `α`
+whose image under `f` is maximal in the sense of `Function.not_argmax_lt`.
+
+See also `Set.Finite.exists_maximalFor` and related lemmas for the case when `α` is finite. -/]
 noncomputable def argmin [Nonempty α] : α :=
   WellFounded.min (InvImage.wf f wellFounded_lt) Set.univ Set.univ_nonempty
 
+@[to_dual not_argmax_lt]
 theorem not_lt_argmin [Nonempty α] (a : α) : ¬f a < f (argmin f) :=
   WellFounded.not_lt_min (InvImage.wf f wellFounded_lt) _ (Set.mem_univ a)
 
@@ -272,13 +299,21 @@ of `α`, this is an element of `s` whose image under `f` is minimal in the sense
 See also `Set.Finite.exists_minimalFor` and related lemmas for the case when `α` or `s` is finite.
 
 TODO Consider removing this definition in favour of `exists_minimalFor_of_wellFoundedLT`. -/
+@[to_dual argmaxOn
+/-- Given a function `f : α → β` where `β` carries a well-founded `>`, and a non-empty subset `s`
+of `α`, this is an element of `s` whose image under `f` is maximal in the sense of
+`Function.not_argmaxOn_lt`.
+
+See also `Set.Finite.exists_minimalFor` and related lemmas for the case when `α` or `s` is finite.
+-/]
 noncomputable def argminOn (s : Set α) (hs : s.Nonempty) : α :=
   WellFounded.min (InvImage.wf f wellFounded_lt) s hs
 
-@[simp]
+@[to_dual (attr := simp) argmaxOn_mem]
 theorem argminOn_mem (s : Set α) (hs : s.Nonempty) : argminOn f s hs ∈ s :=
   WellFounded.min_mem _ _ _
 
+@[to_dual (attr := simp) not_argmaxOn_lt]
 theorem not_lt_argminOn (s : Set α) {a : α} (ha : a ∈ s) : ¬f a < f (argminOn f s ⟨a, ha⟩) :=
   WellFounded.not_lt_min (InvImage.wf f wellFounded_lt) s ha
 
@@ -288,20 +323,26 @@ section LinearOrder
 
 variable [LinearOrder β] [WellFoundedLT β]
 
+@[to_dual le_argmax]
 theorem argmin_le (a : α) [Nonempty α] : f (argmin f) ≤ f a :=
   not_lt.mp <| not_lt_argmin f a
 
-theorem isMinimalFor_argmin [Nonempty α] :
-    MinimalFor (fun _ ↦ True) f (argmin f) :=
+@[to_dual maximalFor_argmax]
+theorem minimalFor_argmin [Nonempty α] : MinimalFor (fun _ ↦ True) f (argmin f) :=
   ⟨trivial, fun a _ _ ↦ argmin_le f a⟩
 
-theorem argminOn_le (s : Set α) {a : α} (ha : a ∈ s) :
-    f (argminOn f s ⟨a, ha⟩) ≤ f a :=
+@[deprecated (since := "2026-05-15")] alias isMinimalFor_argmin := minimalFor_argmin
+
+@[to_dual le_argmaxOn]
+theorem argminOn_le (s : Set α) {a : α} (ha : a ∈ s) : f (argminOn f s ⟨a, ha⟩) ≤ f a :=
   not_lt.mp <| not_lt_argminOn f s ha
 
-theorem isMinimalFor_argminOn (s : Set α) (hs : s.Nonempty) :
+@[to_dual maximalFor_argmaxOn]
+theorem minimalFor_argminOn (s : Set α) (hs : s.Nonempty) :
     MinimalFor (· ∈ s) f (argminOn f s hs) :=
   ⟨argminOn_mem f s hs, fun _ h _ ↦ argminOn_le f s h⟩
+
+@[deprecated (since := "2026-05-15")] alias isMinimalFor_argminOn := minimalFor_argminOn
 
 end LinearOrder
 
@@ -358,8 +399,8 @@ end Induction
 /-- A nonempty linear order with well-founded `>` has a top element. -/]
 noncomputable def WellFoundedLT.toOrderBot (α) [LinearOrder α] [Nonempty α] [h : WellFoundedLT α] :
     OrderBot α where
-  bot := h.wf.min _ Set.univ_nonempty
-  bot_le a := h.wf.min_le (Set.mem_univ a)
+  bot := h.min _ Set.univ_nonempty
+  bot_le a := h.min_le (Set.mem_univ a)
 
 @[to_dual]
 instance [LT α] [h : WellFoundedLT α] : WellFoundedLT (ULift α) where
