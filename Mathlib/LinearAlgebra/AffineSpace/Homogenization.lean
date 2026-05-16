@@ -248,6 +248,11 @@ variable {R : Type*} [Semiring R] [Module R W] [SMulCommClass k R W]
 theorem lift_smul {f : P →ᵃ[k] W} {c : R} : lift (c • f) = c • lift f :=
   hom_ext <| by simp
 
+@[simp]
+theorem lift_symm_smul {f : Homogenization k P →ₗ[k] W} {c : R} :
+    lift.symm (c • f) = c • lift.symm f :=
+  rfl
+
 variable (R) in
 /-- Linear version of `Homogenization.lift`. -/
 @[expose]
@@ -261,11 +266,6 @@ theorem coe_liftₗ : ⇑(liftₗ (k := k) (P := P) (W := W) R) = lift :=
 @[simp]
 theorem coe_liftₗ_symm : ⇑(liftₗ (k := k) (P := P) (W := W) R).symm = lift.symm :=
   rfl
-
-@[simp]
-theorem lift_symm_smul {f : Homogenization k P →ₗ[k] W} {c : R} :
-    lift.symm (c • f) = c • lift.symm f :=
-  map_smul (liftₗ R).symm c f
 
 end SMul
 
