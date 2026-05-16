@@ -5149,6 +5149,7 @@ public import Mathlib.LinearAlgebra.SModEq.Pointwise
 public import Mathlib.LinearAlgebra.SModEq.Pow
 public import Mathlib.LinearAlgebra.Semisimple
 public import Mathlib.LinearAlgebra.SesquilinearForm.Basic
+public import Mathlib.LinearAlgebra.SesquilinearForm.Orthogonal
 public import Mathlib.LinearAlgebra.SesquilinearForm.Star
 public import Mathlib.LinearAlgebra.Span.Basic
 public import Mathlib.LinearAlgebra.Span.Defs

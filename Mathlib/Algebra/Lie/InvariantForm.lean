@@ -74,7 +74,7 @@ def orthogonal (hΦ_inv : Φ.lieInvariant L) (N : LieSubmodule R L M) : LieSubmo
   __ := Φ.orthogonal N
   lie_mem {x y} := by
     suffices (∀ n ∈ N, Φ n y = 0) → ∀ n ∈ N, Φ n ⁅x, y⁆ = 0 by
-      simpa only [LinearMap.BilinForm.isOrtho_def, -- and some default simp lemmas
+      simpa only [
         AddSubsemigroup.mem_carrier, AddSubmonoid.mem_toSubsemigroup, Submodule.mem_toAddSubmonoid,
         LinearMap.BilinForm.mem_orthogonal_iff, LieSubmodule.mem_toSubmodule]
     intro H a ha
@@ -89,7 +89,7 @@ lemma orthogonal_toSubmodule (N : LieSubmodule R L M) :
 
 lemma mem_orthogonal (N : LieSubmodule R L M) (y : M) :
     y ∈ orthogonal Φ hΦ_inv N ↔ ∀ x ∈ N, Φ x y = 0 := by
-  simp [orthogonal, LinearMap.BilinForm.isOrtho_def, LinearMap.BilinForm.mem_orthogonal_iff]
+  simp [orthogonal, LinearMap.BilinForm.mem_orthogonal_iff]
 
 variable [LieAlgebra R L]
 
@@ -202,7 +202,7 @@ theorem isSemisimple_of_nondegenerate : IsSemisimple K L := by
   intro J hJ hJI
   rw [← lie_eq_self_of_isAtom_of_nonabelian J hJ (hL J hJ), lieIdeal_oper_eq_span, lieSpan_le]
   rintro _ ⟨x, y, rfl⟩
-  simp only [orthogonal_carrier, Φ.isOrtho_def, Set.mem_setOf_eq]
+  simp only [orthogonal_carrier, Set.mem_setOf_eq]
   intro z hz
   rw [← neg_eq_zero, ← hΦ_inv]
   suffices ⁅(x : L), z⁆ = 0 by simp only [this, map_zero, LinearMap.zero_apply]
