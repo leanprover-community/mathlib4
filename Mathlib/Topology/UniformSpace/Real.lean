@@ -8,6 +8,8 @@ module
 public import Mathlib.Topology.ContinuousMap.Basic
 public import Mathlib.Topology.MetricSpace.Cauchy
 
+import Mathlib.Data.Real.Cauchy
+
 /-!
 # The reals are complete
 

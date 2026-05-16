@@ -203,8 +203,8 @@ theorem imo2013_q5 (f : ℚ → ℝ) (H1 : ∀ x y, 0 < x → 0 < y → f (x * y
     have hxnm1 : ∀ n : ℕ, 0 < n → (x : ℝ) ^ n - 1 < f x ^ n := by
       intro n hn
       calc
-        (x : ℝ) ^ n - 1 < f (x ^ n) :=
-            mod_cast fx_gt_xm1 (one_le_pow₀ hx.le) H1 H2 H4
+        (x : ℝ) ^ n - 1 < f (x ^ n) := by
+            simpa only [Rat.cast_pow] using fx_gt_xm1 (one_le_pow₀ hx.le (n := n)) H1 H2 H4
         _ ≤ f x ^ n := pow_f_le_f_pow hn hx H1 H4
     have hx' : 1 < (x : ℝ) := mod_cast hx
     have hxp : 0 < x := by positivity

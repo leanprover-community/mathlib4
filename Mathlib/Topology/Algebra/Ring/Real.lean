@@ -14,6 +14,8 @@ public import Mathlib.Topology.Order.MonotoneContinuity
 public import Mathlib.Topology.Order.Real
 public import Mathlib.Topology.UniformSpace.Real
 
+import Mathlib.Algebra.Order.CauSeq.Basic
+
 /-!
 # Topological algebra properties of ℝ
 

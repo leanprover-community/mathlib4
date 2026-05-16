@@ -4252,6 +4252,7 @@ public import Mathlib.Data.Rat.Sqrt
 public import Mathlib.Data.Rat.Star
 public import Mathlib.Data.Real.Archimedean
 public import Mathlib.Data.Real.Basic
+public import Mathlib.Data.Real.Cauchy
 public import Mathlib.Data.Real.CompleteField
 public import Mathlib.Data.Real.ConjExponents
 public import Mathlib.Data.Real.ENatENNReal
