@@ -303,7 +303,7 @@ theorem mem_carrier_iff_of_mem (hm : 0 < m) (q : Spec.T A⁰_ f) (a : A) {n} (hn
   · refine ⟨fun h ↦ h n, fun h i ↦ if hi : i = n then hi ▸ h else ?_⟩
     convert zero_mem q.asIdeal
     apply HomogeneousLocalization.val_injective
-    simp only [proj_apply, decompose_of_mem_ne _ hn (Ne.symm hi), zero_pow hm.ne',
+    simp only [proj_apply, coe_decompose_of_mem_ne _ hn (Ne.symm hi), zero_pow hm.ne',
       HomogeneousLocalization.val_mk, Localization.mk_zero, HomogeneousLocalization.val_zero]
   · simp only [proj_apply, decompose_of_mem_same _ hn]
 
@@ -430,7 +430,7 @@ theorem carrier.asIdeal.homogeneous : (carrier.asIdeal f_deg hm q).IsHomogeneous
   fun i a ha j =>
   (em (i = j)).elim (fun h => h ▸ by simpa only [proj_apply, decompose_coe, of_eq_same] using ha _)
     fun h => by
-    simpa only [proj_apply, decompose_of_mem_ne 𝒜 (SetLike.coe_mem (decompose 𝒜 a i)) h,
+    simpa only [proj_apply, coe_decompose_of_mem_ne 𝒜 (SetLike.coe_mem (decompose 𝒜 a i)) h,
       zero_pow hm.ne', map_zero] using carrier.zero_mem f_deg hm q j
 
 /-- For a prime ideal `q` in `A⁰_f`, the set `{a | aᵢᵐ/fⁱ ∈ q}` as a homogeneous ideal.
@@ -450,7 +450,8 @@ theorem carrier.denom_notMem : f ∉ carrier.asIdeal f_deg hm q := fun rid =>
         simp)
 
 theorem carrier.relevant : ¬HomogeneousIdeal.irrelevant 𝒜 ≤ carrier.asHomogeneousIdeal f_deg hm q :=
-  fun rid => carrier.denom_notMem f_deg hm q <| rid <| DirectSum.decompose_of_mem_ne 𝒜 f_deg hm.ne'
+  fun rid => carrier.denom_notMem f_deg hm q <| rid <|
+    DirectSum.coe_decompose_of_mem_ne 𝒜 f_deg hm.ne'
 
 theorem carrier.asIdeal.ne_top : carrier.asIdeal f_deg hm q ≠ ⊤ := fun rid =>
   carrier.denom_notMem f_deg hm q (rid.symm ▸ Submodule.mem_top)
@@ -473,7 +474,7 @@ theorem carrier.asIdeal.prime : (carrier.asIdeal f_deg hm q).IsPrime :=
         rw [HomogeneousLocalization.ext_iff_val, HomogeneousLocalization.val_mk,
           HomogeneousLocalization.val_zero]; simp_rw [proj_apply]
         convert mk_zero (S := Submonoid.powers f) _
-        rw [decompose_of_mem_ne 𝒜 _ hn.symm, zero_pow hm.ne']
+        rw [coe_decompose_of_mem_ne 𝒜 _ hn.symm, zero_pow hm.ne']
         · first | exact hnx | exact hny
 
 /-- The function `Spec A⁰_f → Proj|D(f)` sending `q` to `{a | aᵢᵐ/fⁱ ∈ q}`. -/
