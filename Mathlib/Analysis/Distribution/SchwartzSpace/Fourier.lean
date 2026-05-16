@@ -48,14 +48,15 @@ Schwartz space.
 
 This definition is only to define the Fourier transform, use `FourierTransform.fourierCLM` instead.
 -/
-def fourierTransformCLM : 𝓢(V, E) →L[𝕜] 𝓢(V, E) := by
-  refine mkCLM ((𝓕 : (V → E) → (V → E)) ·) ?_ ?_ ?_ ?_
+def fourierTransformCLM : 𝓢(V, E) →L[𝕜] 𝓢(V, E) :=
+  mkCLM ((𝓕 : (V → E) → (V → E)) ·) ?_ ?_ ?_ ?_ where finally
   · intro f g
-    simp [fourier_eq, integral_add ((fourierIntegral_convergent_iff _).mpr f.integrable)
+    simp [fourier_eq, integral_add
+      ((fourierIntegral_convergent_iff _).mpr f.integrable)
       ((fourierIntegral_convergent_iff _).mpr g.integrable)]
   · simp [fourier_eq, smul_comm, integral_smul]
   · exact fun f ↦ contDiff_fourier (fun n _ ↦ integrable_pow_mul volume f n)
-  · rintro ⟨k, n⟩
+  · intro ⟨k, n⟩
     refine ⟨Finset.range (n + integrablePower (volume : Measure V) + 1) ×ˢ Finset.range (k + 1),
       (2 * π) ^ n * (2 * n + 2) ^ k * (Finset.range (n + 1) ×ˢ Finset.range (k + 1)).card *
         2 ^ integrablePower (volume : Measure V) *
