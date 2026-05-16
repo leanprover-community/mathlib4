@@ -736,4 +736,49 @@ lemma Scheme.isAffine_of_isLimit {I : Type*} [Category* I] {D : I ⥤ Scheme.{u}
 
 end IsAffine
 
+set_option backward.isDefEq.respectTransparency false
+instance {X Y Z : Scheme} (f : Z ⟶ X) (g : Z ⟶ Y) [IsOpenImmersion f] [IsOpenImmersion g] :
+    PreservesColimit (span f g) (Scheme.forgetToTop) := by
+    set_option backward.isDefEq.respectTransparency false in
+  change PreservesColimit _ (Scheme.forgetToLocallyRingedSpace ⋙
+    LocallyRingedSpace.forgetToSheafedSpace ⋙ _)
+  infer_instance
+
+
+/-- Pushout of open immersions are open immersions. -/
+lemma inl_isOpenImmersion {U X Y T : Scheme} (f : U ⟶ X) (g : U ⟶ Y)
+    (inl : X ⟶ T) (inr : Y ⟶ T) (h : IsPushout f g inl inr)
+    [IsOpenImmersion f] [IsOpenImmersion g] : IsOpenImmersion inl := by
+    let iso := h.isoPushout
+    have inlpush : inl = pushout.inl _ _ ≫ iso.inv := h.inl_isoPushout_inv.symm
+    rw [inlpush]
+    infer_instance
+
+
+lemma isPullback_of_isPushout_condition {U X Y T : Scheme} (f : U ⟶ X) (g : U ⟶ Y)
+    (inl : X ⟶ T) (inr : Y ⟶ T) (h : IsPushout f g inl inr)
+    [IsOpenImmersion f] [IsOpenImmersion g] [IsOpenImmersion inl] : inr⁻¹ᵁ inl.opensRange  =
+    g.opensRange := by
+    have h_inter := TopCat.range_inter_top _ _ _ _ f.isOpenEmbedding (h.map Scheme.forgetToTop)
+    haveI : Mono inr := (inl_isOpenImmersion g f inr inl h.flip).mono
+    have hinr : IsOpenImmersion inr := inl_isOpenImmersion g f inr inl h.flip
+    ext y
+    constructor
+    · intro hy
+      obtain ⟨u, hu⟩ : inr.base y ∈ Set.range (f ≫ inl).base := h_inter ▸ ⟨hy, Set.mem_range_self _⟩
+      rw [h.w] at hu
+      exact ⟨u, hinr.base_open.injective hu⟩
+    · rintro ⟨u, rfl⟩
+      exact ⟨f.base u, show (f ≫ inl).base u = _ by rw [h.w]; exact Scheme.Hom.comp_apply g inr u⟩
+
+/--
+The pushout square of open immersions is also a pullback square. -/
+lemma isPullback_of_isPushout_of_isOpenImmersion {U X Y T : Scheme} (f : U ⟶ X) (g : U ⟶ Y)
+    (inl : X ⟶ T) (inr : Y ⟶ T) (h : IsPushout f g inl inr)
+    [IsOpenImmersion f] [IsOpenImmersion g] :
+    IsPullback f g inl inr := by
+    have : IsOpenImmersion inl := (inl_isOpenImmersion f g inl inr h)
+    apply IsOpenImmersion.isPullback f g inl inr h.w.symm (isPullback_of_isPushout_condition
+    f g inl inr h)
+
 end AlgebraicGeometry

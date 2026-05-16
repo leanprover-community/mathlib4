@@ -6,6 +6,8 @@ Authors: Patrick Massot, Kim Morrison, Mario Carneiro, Andrew Yang
 module
 
 public import Mathlib.Topology.Category.TopCat.Limits.Products
+public import Mathlib.CategoryTheory.Limits.Types.Pushouts
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Defs
 
 /-!
 # Pullbacks and pushouts in the category of topological spaces
@@ -381,6 +383,26 @@ theorem pullback_fst_image_snd_preimage (f : X ⟶ Z) (g : Y ⟶ Z) (U : Set Y) 
       convert hy
       rw [pullbackIsoProdSubtype_inv_snd_apply]
     · rw [pullbackIsoProdSubtype_inv_fst_apply]
+
+/--
+In `TopCat`, the intersection of the ranges of the pushout of an open embedding equals the range of
+the composition with the base map.
+-/
+lemma range_inter_top {Z X Y P : TopCat} (f : Z ⟶ X) (g : Z ⟶ Y) (inl : X ⟶ P) (inr : Y ⟶ P)
+    (hf : IsOpenEmbedding f) (h : IsPushout f g inl inr) :
+    Set.range inl ∩ Set.range inr = Set.range (f ≫ inl) := by
+  haveI : Mono f := (TopCat.mono_iff_injective _).mpr hf.injective
+  let F := forget TopCat
+  ext p
+  refine ⟨fun ⟨⟨x, hx⟩, ⟨y, hy⟩⟩ ↦ ?_, fun ⟨z, hz⟩ ↦ ⟨⟨f z, hz⟩, ⟨g z, show (g ≫ inr) z = p by
+    rw [← h.w];exact hz⟩⟩⟩
+  let iso := IsColimit.coconePointUniqueUpToIso (Limits.Types.Pushout.isColimitCocone (F.map f)
+  (F.map g)) (h.map F).isColimit
+  have almost : Limits.Types.Pushout.inl (F.map f) (F.map g) x = Limits.Types.Pushout.inr (F.map f)
+   (F.map g) y := (Iso.toEquiv iso).injective (hx.trans hy.symm)
+  obtain ⟨s, rfl, _⟩ := (Limits.Types.Pushout.inl_eq_inr_iff (F.map f) (F.map g) x y).mp almost
+  exact ⟨s, hx⟩
+
 
 end Pullback
 
