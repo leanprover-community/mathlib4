@@ -36,7 +36,7 @@ open Module.Free Module canonicalEmbedding Matrix Finset
 attribute [local instance] Matrix.seminormedAddCommGroup
 
 /-- The house of an algebraic number as the norm of its image by the canonical embedding. -/
-def house (α : K) : ℝ := ‖canonicalEmbedding K α‖
+abbrev house (α : K) : ℝ := ‖canonicalEmbedding K α‖
 
 /-- The house is the largest of the modulus of the conjugates of an algebraic number. -/
 theorem house_eq_sup' (α : K) :
@@ -125,12 +125,12 @@ section DecidableEq
 variable [DecidableEq (K →+* ℂ)]
 
 set_option backward.privateInPublic true in
-/-- `c` is defined as the product of the maximum absolute
+/-- `basisMatrixInvSupNorm` is defined as the product of the maximum absolute
   value of the entries of the inverse of the matrix `basisMatrix` and  `finrank ℚ K`. -/
-private def c := (finrank ℚ K) * ‖((basisMatrix K).transpose)⁻¹‖
+def basisMatrixInvSupNorm := (finrank ℚ K) * ‖((basisMatrix K).transpose)⁻¹‖
 
-private theorem c_nonneg : 0 ≤ c K := by
-  rw [c]
+private theorem c_nonneg : 0 ≤ basisMatrixInvSupNorm K := by
+  rw [basisMatrixInvSupNorm]
   positivity
 
 set_option backward.isDefEq.respectTransparency false in
@@ -138,7 +138,7 @@ set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 theorem basis_repr_norm_le_const_mul_house (α : 𝓞 K) (i : K →+* ℂ) :
     ‖(((integralBasis K).reindex (equivReindex K).symm).repr α i : ℂ)‖ ≤
-      (c K) * house (algebraMap (𝓞 K) K α) := by
+      (basisMatrixInvSupNorm K) * house (algebraMap (𝓞 K) K α) := by
   let σ := canonicalEmbedding K
   calc
     _ ≤ ∑ j, ‖(basisMatrix K)ᵀ⁻¹ i j‖ * ‖σ (algebraMap (𝓞 K) K α) j‖ := by
@@ -156,16 +156,16 @@ theorem basis_repr_norm_le_const_mul_house (α : 𝓞 K) (i : K →+* ℂ) :
 
 /-- `newBasis K` defines a reindexed basis of the ring of integers of `K`,
   adjusted by the inverse of the equivalence `equivReindex`. -/
-private def newBasis := (RingOfIntegers.basis K).reindex (equivReindex K).symm
+def newBasis := (RingOfIntegers.basis K).reindex (equivReindex K).symm
 
 /-- `supOfBasis K` calculates the supremum of the absolute values of
   the elements in `newBasis K`. -/
-private def supOfBasis : ℝ := univ.sup' univ_nonempty
+def supOfBasis : ℝ := univ.sup' univ_nonempty
   fun r ↦ house (algebraMap (𝓞 K) K (newBasis K r))
 
 end DecidableEq
 
-private theorem supOfBasis_nonneg : 0 ≤ supOfBasis K := by
+theorem supOfBasis_nonneg : 0 ≤ supOfBasis K := by
   simp only [supOfBasis, le_sup'_iff, mem_univ, and_self,
     exists_const, house_nonneg]
 
@@ -210,6 +210,7 @@ variable {p q : ℕ} (h0p : 0 < p) (hpq : p < q) (x : β × (K →+* ℂ) → �
 /-- `ξ` is the product of `x (l, r)` and the `r`-th basis element of the newBasis of `K`. -/
 private def ξ : β → 𝓞 K := fun l => ∑ r : K →+* ℂ, x (l, r) * (newBasis K r)
 
+set_option backward.isDefEq.respectTransparency false in
 include hxl in
 private theorem ξ_ne_0 : ξ K x ≠ 0 := by
   intro H
@@ -220,6 +221,7 @@ private theorem ξ_ne_0 : ξ K x ≠ 0 := by
   simp only [zsmul_eq_mul, Fintype.linearIndependent_iff] at hblin
   exact hblin (fun r ↦ x (l, r)) (H _) r
 
+set_option backward.isDefEq.respectTransparency false in
 private theorem lin_1 (l k r) : a k l * (newBasis K) r =
     ∑ u, (a' K a k l r u) * (newBasis K) u := by
   simp only [Basis.sum_repr (newBasis K) (a k l * (newBasis K) r), a', ← zsmul_eq_mul]
@@ -259,79 +261,88 @@ variable {A : ℝ} (habs : ∀ k l, (house ((algebraMap (𝓞 K) K) (a k l))) �
 variable [DecidableEq (K →+* ℂ)]
 
 /-- `c₂` is the product of the maximum of `1` and `c`, and `supOfBasis`. -/
-private abbrev c₂ := max 1 (c K) * (supOfBasis K)
+abbrev c₂ := max 1 (basisMatrixInvSupNorm K) * (max 1 (supOfBasis K))
 
-private theorem c₂_nonneg : 0 ≤ c₂ K :=
-  mul_nonneg (le_trans zero_le_one (le_max_left ..)) (supOfBasis_nonneg _)
+private theorem c₂_nonneg : 0 ≤ c₂ K := by
+  apply mul_nonneg (le_trans zero_le_one (le_max_left ..))
+  apply (le_trans zero_le_one (le_max_left ..))
 
 variable [Fintype α] (cardα : Fintype.card α = p) (Apos : 0 ≤ A)
   (hxbound : ‖x‖ ≤ (q * finrank ℚ K * ‖asiegel K a‖) ^ ((p : ℝ) / (q - p)))
 
 include habs Apos in
 private theorem asiegel_remark : ‖asiegel K a‖ ≤ c₂ K * A := by
-  have := c_nonneg K
   rw [Matrix.norm_le_iff]
   · intro kr lu
     calc
       ‖asiegel K a kr lu‖ = |asiegel K a kr lu| := ?_
-      _ ≤ c K * house ((algebraMap (𝓞 K) K) (a kr.1 lu.1 * ((newBasis K) lu.2))) := ?_
-      _ ≤ c K * house ((algebraMap (𝓞 K) K) (a kr.1 lu.1)) *
+      _ ≤ (basisMatrixInvSupNorm K) *
+        house ((algebraMap (𝓞 K) K) (a kr.1 lu.1 * ((newBasis K) lu.2))) := ?_
+      _ ≤ (basisMatrixInvSupNorm K) * house ((algebraMap (𝓞 K) K) (a kr.1 lu.1)) *
         house ((algebraMap (𝓞 K) K) ((newBasis K) lu.2)) := ?_
-      _ ≤ c K * A * house ((algebraMap (𝓞 K) K) ((newBasis K) lu.2)) := ?_
-      _ ≤ c K * A * supOfBasis K := ?_
-      _ ≤ c₂ K * A := ?_
+      _ ≤ (basisMatrixInvSupNorm K) * A * house ((algebraMap (𝓞 K) K) ((newBasis K) lu.2)) := ?_
+      _ ≤ (basisMatrixInvSupNorm K) * A * (supOfBasis K) := ?_
+      _ ≤ (c₂ K) * A := ?_
     · simp only [Int.cast_abs, ← Real.norm_eq_abs (asiegel K a kr lu)]; rfl
     · have remark := basis_repr_norm_le_const_mul_house K
-      simp only [Basis.repr_reindex, Finsupp.mapDomain_equiv_apply,
-        integralBasis_repr_apply, eq_intCast, Rat.cast_intCast,
-          Complex.norm_intCast] at remark
+      simp only [Basis.repr_reindex, Finsupp.mapDomain_equiv_apply, integralBasis_repr_apply,
+        eq_intCast, Rat.cast_intCast, Complex.norm_intCast] at remark
       exact mod_cast remark ((a kr.1 lu.1 * ((newBasis K) lu.2))) kr.2
     · simp only [house, map_mul, mul_assoc]
-      gcongr
-      apply norm_mul_le
+      exact mul_le_mul_of_nonneg_left (norm_mul_le _ _) (c_nonneg K)
     · rw [mul_assoc, mul_assoc]
-      gcongr _ * (?_ * _)
-      · apply house_nonneg
-      · exact habs kr.1 lu.1
-    · gcongr
-      simp only [supOfBasis, le_sup'_iff, mem_univ]; use lu.2
-    · rw [mul_right_comm, c₂]
-      gcongr
-      exacts [supOfBasis_nonneg _, le_max_right ..]
-  · exact mul_nonneg (c₂_nonneg _) Apos
+      apply mul_le_mul_of_nonneg_left (mul_le_mul_of_nonneg_right (habs kr.1 lu.1)
+        (norm_nonneg ((canonicalEmbedding K) ((algebraMap (𝓞 K) K) ((newBasis K) lu.2)))))
+        (c_nonneg K)
+    ·  apply mul_le_mul_of_nonneg_left ?_ (mul_nonneg (c_nonneg K) Apos)
+       · simp only [supOfBasis, le_sup'_iff, mem_univ]; use lu.2
+    · rw [mul_right_comm]
+      apply mul_le_mul_of_nonneg_right (mul_le_mul (le_max_right ..) (le_max_right ..)
+        (supOfBasis_nonneg K) (le_trans zero_le_one (le_max_left ..))) Apos
+  · rw [mul_nonneg_iff]; left; exact ⟨c₂_nonneg K, Apos⟩
 
 /-- `c₁ K` is the product of `finrank ℚ K` and  `c₂ K` and depends on `K`. -/
-private def c₁ := finrank ℚ K * c₂ K
+def c₁ := finrank ℚ K * c₂ K
 
 include habs Apos hxbound hpq in
 private theorem house_le_bound : ∀ l, house (ξ K x l).1 ≤ (c₁ K) *
-    ((c₁ K * q * A) ^ ((p : ℝ) / (q - p))) := by
+    ((c₁ K * q * A)^((p : ℝ) / (q - p))) := by
   let h := finrank ℚ K
-  intro l
-  have H₀ : 0 ≤ NumberField.house.supOfBasis K := supOfBasis_nonneg _
-  have H₁ : 0 < (q - p : ℝ) := sub_pos.mpr <| mod_cast hpq
+  intros l
   calc _ = house (algebraMap (𝓞 K) K (∑ r, (x (l, r)) * ((newBasis K) r))) := rfl
        _ ≤ ∑ r, house (((algebraMap (𝓞 K) K) (x (l, r))) *
         ((algebraMap (𝓞 K) K) ((newBasis K) r))) := ?_
-       _ ≤ ∑ r, ‖x (l, r)‖ * house ((algebraMap (𝓞 K) K) ((newBasis K) r)) := ?_
+       _ ≤ ∑ r, ‖x (l,r)‖ * house ((algebraMap (𝓞 K) K) ((newBasis K) r)) := ?_
        _ ≤ ∑ r, ‖x (l, r)‖ * (supOfBasis K) := ?_
        _ ≤ ∑ _r : K →+* ℂ, ((↑q * h * ‖asiegel K a‖) ^ ((p : ℝ) / (q - p))) * supOfBasis K := ?_
        _ ≤ h * (c₂ K) * ((q * c₁ K * A) ^ ((p : ℝ) / (q - p))) := ?_
        _ ≤ c₁ K * ((c₁ K * ↑q * A) ^ ((p : ℝ) / (q - p))) := ?_
   · simp_rw [← map_mul, map_sum]; apply house_sum_le_sum_house
-  · gcongr with r _; convert house_mul_le ..
+  · apply sum_le_sum; intros r _; convert house_mul_le ..
     simp only [map_intCast, house_intCast, Int.cast_abs, Int.norm_eq_abs]
-  · unfold supOfBasis
-    gcongr with r _
-    simp only [le_sup'_iff, mem_univ, true_and]; use r
-  · gcongr with r _
-    exact le_trans (norm_le_pi_norm x ⟨l, r⟩) hxbound
+  · apply sum_le_sum; intros r _; unfold supOfBasis
+    apply mul_le_mul_of_nonneg_left ?_ (norm_nonneg (x (l,r)))
+    · simp only [le_sup'_iff, mem_univ, true_and]; use r
+  · apply sum_le_sum; intros r _
+    apply mul_le_mul_of_nonneg_right (le_trans (norm_le_pi_norm x ⟨l, r⟩) hxbound)
+      (supOfBasis_nonneg K)
   · simp only [sum_const, card_univ, nsmul_eq_mul]
-    rw [Embeddings.card, mul_comm _ (supOfBasis K), c₂, c₁, ← mul_assoc,
-      ← mul_assoc (q : ℝ), mul_assoc (q * _ : ℝ)]
-    gcongr
-    · exact le_mul_of_one_le_left (supOfBasis_nonneg K) (le_max_left ..)
-    · exact asiegel_remark K a habs Apos
+    rw [Embeddings.card, mul_comm _ (supOfBasis K), c₂, c₁, ← mul_assoc]
+    apply mul_le_mul
+    · apply mul_le_mul_of_nonneg_left ?_ (Nat.cast_nonneg' _)
+      · nth_rw 1 [← mul_one (a:=supOfBasis K)]; rw [mul_comm]
+        apply mul_le_mul (le_max_left ..) (le_max_right ..) (supOfBasis_nonneg _)
+          (le_trans zero_le_one (le_max_left ..))
+    · apply Real.rpow_le_rpow (mul_nonneg (mul_nonneg (Nat.cast_nonneg' _) (Nat.cast_nonneg' _))
+        (norm_nonneg _))
+      · rw [← mul_assoc, mul_assoc (_*_)]
+        apply mul_le_mul_of_nonneg_left (asiegel_remark K a habs Apos)
+          (mul_nonneg (Nat.cast_nonneg' _) (Nat.cast_nonneg _))
+      · exact div_nonneg (Nat.cast_nonneg' _) (sub_nonneg.2 (mod_cast hpq.le))
+    · apply Real.rpow_nonneg (mul_nonneg (mul_nonneg (Nat.cast_nonneg' _) (Nat.cast_nonneg' _))
+        (norm_nonneg _))
+    · apply mul_nonneg (Nat.cast_nonneg' _) (mul_nonneg (le_trans zero_le_one (le_max_left ..))
+        (le_trans zero_le_one (le_max_left ..)))
   · rw [mul_comm (q : ℝ) (c₁ K)]; rfl
 
 set_option backward.privateInPublic true in
