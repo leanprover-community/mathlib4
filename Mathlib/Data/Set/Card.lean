@@ -998,6 +998,11 @@ theorem ncard_diff (hst : s ⊆ t) (hs : s.Finite := by toFinite_tac) :
   · rw [← ncard_diff_add_ncard_of_subset hst ht, add_tsub_cancel_right]
   · rw [ht.ncard, Nat.zero_sub, (ht.diff hs).ncard]
 
+/-- This is the same as `ncard_diff` but we require `t` to be finite instead. -/
+theorem ncard_diff' (hst : s ⊆ t) (ht : t.Finite := by toFinite_tac) :
+    (t \ s).ncard = t.ncard - s.ncard :=
+  ncard_diff hst (ht.subset hst)
+
 lemma cast_ncard_sdiff {R : Type*} [AddGroupWithOne R] (hst : s ⊆ t) (ht : t.Finite) :
     ((t \ s).ncard : R) = t.ncard - s.ncard := by
   rw [ncard_diff hst (ht.subset hst), Nat.cast_sub (ncard_le_ncard hst ht)]
