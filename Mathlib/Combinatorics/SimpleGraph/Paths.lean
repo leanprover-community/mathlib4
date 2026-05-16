@@ -288,19 +288,27 @@ lemma IsPath.ne_of_mem_support_of_append {p : G.Walk u v} {q : G.Walk v w}
   exact IsPath.disjoint_support_of_append hpq hq hx hx'
 
 @[simp]
-theorem IsCycle.not_of_nil {u : V} : ¬(nil : G.Walk u u).IsCycle := fun h => h.ne_nil rfl
+theorem IsCircuit.not_of_nil {u : V} : ¬(nil : G.Walk u u).IsCircuit :=
+  (·.ne_nil rfl)
 
-lemma IsCycle.ne_bot : ∀ {p : G.Walk u u}, p.IsCycle → G ≠ ⊥
-  | nil, hp => by cases hp.ne_nil rfl
+@[simp]
+theorem IsCycle.not_of_nil {u : V} : ¬(nil : G.Walk u u).IsCycle :=
+  (·.ne_nil rfl)
+
+lemma IsCircuit.ne_bot : ∀ {p : G.Walk u u}, p.IsCircuit → G ≠ ⊥
   | cons h _, hp => by rintro rfl; exact h
 
-lemma IsCycle.three_le_length {v : V} {p : G.Walk v v} (hp : p.IsCycle) : 3 ≤ p.length := by
-  have ⟨⟨hp, hp'⟩, _⟩ := hp
+lemma IsCycle.ne_bot {p : G.Walk u u} (hp : p.IsCycle) : G ≠ ⊥ :=
+  hp.isCircuit.ne_bot
+
+lemma IsCircuit.three_le_length {p : G.Walk v v} (hp : p.IsCircuit) : 3 ≤ p.length := by
   match p with
-  | .nil => simp at hp'
-  | .cons h .nil => simp at h
-  | .cons _ (.cons _ .nil) => simp at hp
-  | .cons _ (.cons _ (.cons _ _)) => simp_rw [SimpleGraph.Walk.length_cons]; lia
+  | .cons hadj .nil => simp at hadj
+  | .cons _ <| .cons _ .nil => simpa using hp.isTrail
+  | .cons _ <| .cons _ <| .cons _ _ => grind [length_cons]
+
+lemma IsCycle.three_le_length {p : G.Walk v v} (hp : p.IsCycle) : 3 ≤ p.length :=
+  hp.isCircuit.three_le_length
 
 lemma not_nil_of_isCycle_cons {p : G.Walk u v} {h : G.Adj v u} (hc : (Walk.cons h p).IsCycle) :
     ¬ p.Nil := by
