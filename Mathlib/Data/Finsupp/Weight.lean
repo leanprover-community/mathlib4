@@ -200,6 +200,14 @@ theorem finite_of_nat_weight_le [Finite σ] (w : σ → ℕ) (hw : ∀ x, w x �
   grw [← le_weight _ (hw x)] at hd
   simp [*]
 
+theorem finite_of_nat_weight_lt [Finite σ] (w : σ → ℕ) (hw : ∀ x, w x ≠ 0) (n : ℕ) :
+    {d : σ →₀ ℕ | weight w d < n}.Finite :=
+  Set.Finite.subset (finite_of_nat_weight_le w hw n) (by grind)
+
+theorem finite_of_nat_weight_eq [Finite σ] (w : σ → ℕ) (hw : ∀ x, w x ≠ 0) (n : ℕ) :
+    {d : σ →₀ ℕ | weight w d = n}.Finite :=
+  Set.Finite.subset (finite_of_nat_weight_le w hw n) (by grind)
+
 end CanonicallyOrderedAddCommMonoid
 
 variable {R : Type*} [AddCommMonoid R]

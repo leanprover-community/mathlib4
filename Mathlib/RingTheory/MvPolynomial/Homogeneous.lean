@@ -123,6 +123,10 @@ theorem homogeneousSubmodule_eq_finsupp_supported (n : ℕ) :
   simp_rw [degree_eq_weight_one]
   exact weightedHomogeneousSubmodule_eq_finsupp_supported R 1 n
 
+lemma homogeneousSubmodule_fg [Finite σ] (n : ℕ) :
+    (homogeneousSubmodule σ R n).FG :=
+  weightedHomogeneousSubmodule_fg (1 : σ → ℕ) (by simp) n
+
 variable {σ R}
 
 theorem homogeneousSubmodule_mul (m n : ℕ) :
@@ -639,12 +643,12 @@ attribute [local instance] MvPolynomial.gradedAlgebra
 lemma mem_iff_homogeneousComponent_mem {I : Ideal (MvPolynomial σ R)}
     (h : I.IsHomogeneous (homogeneousSubmodule σ R)) (p : MvPolynomial σ R) :
     p ∈ I ↔ ∀ n, (homogeneousComponent n p) ∈ I :=
-  mem_iff_weightedHomogeneousComponent_mem (1 : σ → ℕ) h
+  mem_iff_weightedHomogeneousComponent_mem R (1 : σ → ℕ) h p
 
 lemma homogeneousComponent_mem_of_mem {I : Ideal (MvPolynomial σ R)}
     (h : I.IsHomogeneous (homogeneousSubmodule σ R)) {p : MvPolynomial σ R} (hp : p ∈ I) (n : ℕ) :
     (homogeneousComponent n p) ∈ I :=
-  weightedHomogeneousComponent_mem_of_mem (1 : σ → ℕ) h hp n
+  weightedHomogeneousComponent_mem_of_mem R (1 : σ → ℕ) h hp n
 
 end GradedAlgebra
 
