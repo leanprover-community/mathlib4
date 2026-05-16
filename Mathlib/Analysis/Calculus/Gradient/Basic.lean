@@ -262,21 +262,21 @@ lemma HasGradientWithinAt.fderivWithin_apply
 lemma HasGradientAt.fderiv_apply (h : HasGradientAt f f' x) : fderiv 𝕜 f x y = ⟪f', y⟫ := by
   rw [h.hasFDerivAt.fderiv, toDual_apply_apply]
 
-lemma inner_gradientWithin_left
-    (h : DifferentiableWithinAt 𝕜 f s x) (hs : UniqueDiffWithinAt 𝕜 s x) :
+lemma inner_gradientWithin_left :
     ⟪gradientWithin f s x, y⟫ = fderivWithin 𝕜 f s x y := by
-  rw [h.hasGradientWithinAt.fderivWithin_apply hs]
+  rw [gradientWithin, ← toDual_apply_apply (𝕜 := 𝕜) (E := F),
+      LinearIsometryEquiv.apply_symm_apply]
 
-lemma inner_gradient_left (h : DifferentiableAt 𝕜 f x) : ⟪∇ f x, y⟫ = fderiv 𝕜 f x y := by
-  rw [h.hasGradientAt.fderiv_apply]
+lemma inner_gradient_left : ⟪∇ f x, y⟫ = fderiv 𝕜 f x y := by
+  rw [gradient, ← toDual_apply_apply (𝕜 := 𝕜) (E := F),
+      LinearIsometryEquiv.apply_symm_apply]
 
-lemma inner_gradientWithin_right
-    (h : DifferentiableWithinAt 𝕜 f s y) (hs : UniqueDiffWithinAt 𝕜 s y) :
+lemma inner_gradientWithin_right :
     ⟪x, gradientWithin f s y⟫ = conj (fderivWithin 𝕜 f s y x) := by
-  rw [← inner_conj_symm, inner_gradientWithin_left h hs]
+  rw [← inner_conj_symm, inner_gradientWithin_left]
 
-lemma inner_gradient_right (h : DifferentiableAt 𝕜 f y) : ⟪x, ∇ f y⟫ = conj (fderiv 𝕜 f y x) := by
-  rw [← inner_conj_symm, h.hasGradientAt.fderiv_apply]
+lemma inner_gradient_right : ⟪x, ∇ f y⟫ = conj (fderiv 𝕜 f y x) := by
+  rw [← inner_conj_symm, inner_gradient_left]
 
 end Inner
 
