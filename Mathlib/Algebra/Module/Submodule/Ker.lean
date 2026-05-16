@@ -216,6 +216,17 @@ alias _root_.LinearMapClass.ker_eq_bot := ker_eq_bot
 
 end Ring
 
+section CommSemiring
+
+variable [Semiring R] [CommSemiring R₂]
+variable [AddCommMonoid M] [AddCommMonoid M₂] [Module R M] [Module R₂ M₂]
+variable {τ₁₂ : R →+* R₂}
+
+theorem ker_le_ker_smul (f : M →ₛₗ[τ₁₂] M₂) (c : R₂) : ker f ≤ ker (c • f) := by
+  simpa only [ker] using Submodule.comap_le_comap_smul _ _ _
+
+end CommSemiring
+
 section Semifield
 
 variable [Semifield K]

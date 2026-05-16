@@ -599,13 +599,13 @@ end Submodule
 
 namespace Submodule
 
-variable {N N₂ : Type*}
-variable [CommSemiring R] [CommSemiring R₂]
+variable {S N N₂ : Type*}
+variable [CommSemiring S] [Semiring R] [CommSemiring R₂]
 variable [AddCommMonoid M] [AddCommMonoid M₂] [Module R M] [Module R₂ M₂]
-variable [AddCommMonoid N] [AddCommMonoid N₂] [Module R N] [Module R N₂]
-variable {τ₁₂ : R →+* R₂} {τ₂₁ : R₂ →+* R}
+variable [AddCommMonoid N] [AddCommMonoid N₂] [Module S N] [Module S N₂]
+variable {τ₁₂ : R →+* R₂}
 variable (p : Submodule R M) (q : Submodule R₂ M₂)
-variable (pₗ : Submodule R N) (qₗ : Submodule R N₂)
+variable (pₗ : Submodule S N) (qₗ : Submodule S N₂)
 
 theorem comap_le_comap_smul (f : M →ₛₗ[τ₁₂] M₂) (c : R₂) : comap f q ≤ comap (c • f) q := by
   simp only [SetLike.le_def, mem_comap, LinearMap.smul_apply]
@@ -617,7 +617,7 @@ theorem map_smul_le_map [RingHomSurjective τ₁₂] (f : M →ₛₗ[τ₁₂] 
 
 /-- Given modules `M`, `M₂` over a commutative ring, together with submodules `p ⊆ M`, `q ⊆ M₂`,
 the set of maps $\{f ∈ Hom(M, M₂) | f(p) ⊆ q \}$ is a submodule of `Hom(M, M₂)`. -/
-def compatibleMaps : Submodule R (N →ₗ[R] N₂) where
+def compatibleMaps : Submodule S (N →ₗ[S] N₂) where
   carrier := { fₗ | pₗ ≤ comap fₗ qₗ }
   zero_mem' := by simp
   add_mem' {f₁ f₂} h₁ h₂ := by
