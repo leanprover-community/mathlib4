@@ -87,6 +87,25 @@ theorem mem_opensRange {f : X ⟶ Y} [IsOpenImmersion f] {y : Y} :
 def opensFunctor : X.Opens ⥤ Y.Opens :=
   LocallyRingedSpace.IsOpenImmersion.opensFunctor f.toLRSHom
 
+def opensFunctorAdjunction : f.opensFunctor ⊣ TopologicalSpace.Opens.map f.base :=
+  IsOpenMap.adjunction ‹IsOpenImmersion f›.base_open.isOpenMap
+
+instance : f.opensFunctor.IsLeftAdjoint :=
+  f.opensFunctorAdjunction.isLeftAdjoint
+
+instance : f.opensFunctor.IsCocontinuous (Opens.grothendieckTopology _)
+    (Opens.grothendieckTopology _) := by
+  rw [f.opensFunctorAdjunction.isCocontinuous_iff_coverPreserving]
+  exact coverPreserving_opens_map f.base
+
+instance : f.opensFunctor.Full :=
+  have : Mono f.base := (TopCat.mono_iff_injective f.base).mpr f.isOpenEmbedding.injective
+  inferInstanceAs f.isOpenEmbedding.functor.Full
+
+lemma coverPreserving_opensFunctor :
+    CoverPreserving (Opens.grothendieckTopology _) (Opens.grothendieckTopology _) f.opensFunctor :=
+  f.isOpenEmbedding.isOpenMap.coverPreserving
+
 /-- `f ''ᵁ U` is notation for the image (as an open set) of `U` under an open immersion `f`.
 The preferred name in lemmas is `image` and it should be treated as an infix. -/
 scoped[AlgebraicGeometry] notation3:90 f:91 " ''ᵁ " U:90 => (Scheme.Hom.opensFunctor f).obj U
@@ -205,6 +224,12 @@ theorem appIso_hom (U) :
 theorem appIso_hom' (U) :
     (f.appIso U).hom = f.appLE (f ''ᵁ U) U (preimage_image_eq f U).ge :=
   f.appIso_hom U
+
+@[reassoc (attr := simp)]
+lemma appIso_hom_naturality {U V : X.Opens} (i : op U ⟶ op V) :
+    Y.presheaf.map (f.opensFunctor.op.map i) ≫ (f.appIso V).hom =
+      (f.appIso U).hom ≫ X.presheaf.map i := by
+  simp [← cancel_mono (f.appIso V).inv]
 
 @[reassoc (attr := simp)]
 theorem app_appIso_inv (U) :
