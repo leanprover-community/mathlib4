@@ -223,6 +223,7 @@ public import Mathlib.Tactic.NormNum.NatFactorial
 public import Mathlib.Tactic.NormNum.NatFib
 public import Mathlib.Tactic.NormNum.NatLog
 public import Mathlib.Tactic.NormNum.NatSqrt
+public import Mathlib.Tactic.NormNum.NormNumI
 public import Mathlib.Tactic.NormNum.OfScientific
 public import Mathlib.Tactic.NormNum.Ordinal
 public import Mathlib.Tactic.NormNum.Parity

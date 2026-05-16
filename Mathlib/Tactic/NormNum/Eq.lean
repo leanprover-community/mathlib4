@@ -50,16 +50,9 @@ theorem isRat_eq_false [Ring α] [CharZero α] : {a b : α} → {na nb : ℤ} �
     rw [Rat.invOf_denom_swap]; exact mod_cast of_decide_eq_false h
 
 attribute [local instance] monadLiftOptionMetaM in
-/-- The `norm_num` extension which identifies expressions of the form `a = b`,
-such that `norm_num` successfully recognises both `a` and `b`. -/
-@[norm_num _ = _] def evalEq : NormNumExt where eval {v β} e := do
-  haveI' : v =QL 0 := ⟨⟩; haveI' : $β =Q Prop := ⟨⟩
-  let .app (.app f a) b ← whnfR e | failure
-  let ⟨u, α, a⟩ ← inferTypeQ' a
-  have b : Q($α) := b
-  haveI' : $e =Q ($a = $b) := ⟨⟩
-  guard <|← withNewMCtxDepth <| isDefEq f q(Eq (α := $α))
-  let ra ← derive a; let rb ← derive b
+/-- Result of running `norm_num` on an equation from results of running `norm_num` on both sides. -/
+def Result.eq {u : Level} {α : Q(Type u)} {a b : Q($α)} (ra : Result q($a)) (rb : Result q($b)) :
+    MetaM (Result q($a = $b)) := do
   let rec intArm (rα : Q(Ring $α)) := do
     let ⟨za, na, pa⟩ ← ra.toInt rα; let ⟨zb, nb, pb⟩ ← rb.toInt rα
     if za = zb then
@@ -96,7 +89,7 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
       failure --TODO: nonzero characteristic ≠
   match ra, rb with
   | .isBool b₁ p₁, .isBool b₂ p₂ =>
-    have a : Q(Prop) := a; have b : Q(Prop) := b
+    haveI' : u =QL 0 := ⟨⟩; haveI' : $α =Q Prop := ⟨⟩
     match b₁, p₁, b₂, p₂ with
     | true, (p₁ : Q($a)), true, (p₂ : Q($b)) =>
       return .isTrue q(eq_of_true $p₁ $p₂)
@@ -109,7 +102,7 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
   | .isBool .., _ | _, .isBool .. => failure
   | .isNegNNRat dα .., _ | _, .isNegNNRat dα .. => ratArm dα
   -- mixing positive rationals and negative naturals means we need to use the full rat handler
-  | .isNNRat dsα .., .isNegNat rα .. | .isNegNat rα .., .isNNRat dsα .. =>
+  | .isNNRat _ .., .isNegNat _ .. | .isNegNat _ .., .isNNRat _ .. =>
     -- could alternatively try to combine `rα` and `dsα` here, but we'd have to do a defeq check
     -- so would still need to be in `MetaM`.
     ratArm (←synthInstanceQ q(DivisionRing $α))
@@ -125,5 +118,17 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
       return .isFalse q(isNat_eq_false $pa $pb $r)
     else
       failure --TODO: nonzero characteristic ≠
+
+/-- The `norm_num` extension which identifies expressions of the form `a = b`,
+such that `norm_num` successfully recognises both `a` and `b`. -/
+@[norm_num _ = _] def evalEq : NormNumExt where eval {v β} e := do
+  haveI' : v =QL 0 := ⟨⟩; haveI' : $β =Q Prop := ⟨⟩
+  let .app (.app f a) b ← whnfR e | failure
+  let ⟨u, α, a⟩ ← inferTypeQ' a
+  have b : Q($α) := b
+  haveI' : $e =Q ($a = $b) := ⟨⟩
+  guard <|← withNewMCtxDepth <| isDefEq f q(Eq (α := $α))
+  let ra ← derive a; let rb ← derive b
+  return ← Result.eq ra rb
 
 end Mathlib.Meta.NormNum
