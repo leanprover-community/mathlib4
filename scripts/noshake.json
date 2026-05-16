@@ -67,6 +67,7 @@
   "Mathlib.Tactic.ApplyWith",
   "Mathlib.Tactic.Attr.Core",
   "Mathlib.Tactic.Attr.Register",
+  "Mathlib.Tactic.AssumptionQuestion",
   "Mathlib.Tactic.Basic",
   "Mathlib.Tactic.Bound.Attribute",
   "Mathlib.Tactic.ByCases",
