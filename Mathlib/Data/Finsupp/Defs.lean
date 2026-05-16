@@ -166,14 +166,8 @@ theorem notMem_support_iff {f : α →₀ M} {a} : a ∉ f.support ↔ f a = 0 :
 @[simp, norm_cast]
 theorem coe_eq_zero {f : α →₀ M} : (f : α → M) = 0 ↔ f = 0 := by rw [← coe_zero, DFunLike.coe_fn_eq]
 
-theorem ext_iff' {f g : α →₀ M} : f = g ↔ f.support = g.support ∧ ∀ x ∈ f.support, f x = g x :=
-  ⟨fun h => h ▸ ⟨rfl, fun _ _ => rfl⟩, fun ⟨h₁, h₂⟩ =>
-    ext fun a => by
-      classical
-      exact if h : a ∈ f.support then h₂ a h else by
-        have hf : f a = 0 := notMem_support_iff.1 h
-        have hg : g a = 0 := by rwa [h₁, notMem_support_iff] at h
-        rw [hf, hg]⟩
+theorem ext_iff' {f g : α →₀ M} : f = g ↔ f.support = g.support ∧ ∀ x ∈ f.support, f x = g x := by
+  grind
 
 @[simp]
 theorem support_eq_empty {f : α →₀ M} : f.support = ∅ ↔ f = 0 :=
