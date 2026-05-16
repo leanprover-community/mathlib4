@@ -129,7 +129,7 @@ section
 
 variable {F' : C₁ ⥤ C₂ ⥤ C₃} (e : F ≅ F')
 
-/-- Transport a `Functor.PushoutObjObj` structure via a natural isomorphim of functors. -/
+/-- Transport a `Functor.PushoutObjObj` structure via a natural isomorphism of functors. -/
 @[simps]
 def ofNatIso : F'.PushoutObjObj f₁ f₂ where
   pt := sq.pt
