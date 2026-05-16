@@ -8,7 +8,8 @@ module
 public import Mathlib.Data.Option.Defs
 public import Mathlib.Data.Sigma.Basic
 public import Mathlib.Logic.Equiv.Prod
-public import Mathlib.Tactic.Coe
+import Mathlib.Tactic.Coe
+import Mathlib.Tactic.SplitIfs
 
 /-!
 # Equivalence between sum types
