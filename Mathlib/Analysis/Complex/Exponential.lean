@@ -89,7 +89,7 @@ namespace Complex
 
 variable (x y : ℂ)
 
-@[simp]
+@[simp, push]
 theorem exp_zero : exp 0 = 1 := by
   rw [exp]
   refine lim_eq_of_equiv_const fun ε ε0 => ⟨1, fun j hj => ?_⟩
@@ -150,6 +150,7 @@ lemma exp_nsmul' (x a p : ℂ) (n : ℕ) : exp (a * n * x / p) = exp (a * x / p)
   rw [← Complex.exp_nsmul]
   ring_nf
 
+@[push, push ←]
 theorem exp_nat_mul (x : ℂ) : ∀ n : ℕ, exp (n * x) = exp x ^ n
   | 0 => by rw [Nat.cast_zero, zero_mul, exp_zero, pow_zero]
   | Nat.succ n => by rw [pow_succ, Nat.cast_add_one, add_mul, exp_add, ← exp_nat_mul _ n, one_mul]
@@ -164,6 +165,7 @@ theorem exp_neg : exp (-x) = (exp x)⁻¹ := by
 theorem exp_sub : exp (x - y) = exp x / exp y := by
   simp [sub_eq_add_neg, exp_add, exp_neg, div_eq_mul_inv]
 
+@[push, push ←]
 theorem exp_int_mul (z : ℂ) (n : ℤ) : Complex.exp (n * z) = Complex.exp z ^ n := by
   cases n
   · simp [exp_nat_mul]
@@ -201,7 +203,7 @@ open Complex
 
 variable (x y : ℝ)
 
-@[simp]
+@[simp, push]
 theorem exp_zero : exp 0 = 1 := by simp [Real.exp]
 
 nonrec theorem exp_add : exp (x + y) = exp x * exp y := by simp [exp_add, exp]
@@ -226,6 +228,7 @@ theorem exp_sum {α : Type*} (s : Finset α) (f : α → ℝ) :
 lemma exp_nsmul (x : ℝ) (n : ℕ) : exp (n • x) = exp x ^ n :=
   @MonoidHom.map_pow (Multiplicative ℝ) ℝ _ _ expMonoidHom _ _
 
+@[push, push ←]
 nonrec theorem exp_nat_mul (x : ℝ) (n : ℕ) : exp (n * x) = exp x ^ n :=
   ofReal_injective (by simp [exp_nat_mul])
 
