@@ -6,7 +6,9 @@ Authors: Joseph Myers
 module
 
 public import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Basic
+public import Mathlib.LinearAlgebra.AffineSpace.Restrict
 public import Mathlib.Topology.Algebra.ContinuousAffineMap
+public import Mathlib.Topology.Algebra.ContinuousAffineEquiv
 public import Mathlib.Topology.Algebra.Group.AddTorsor
 
 /-!
@@ -40,6 +42,54 @@ def subtypeA (s : AffineSubspace R P) [Nonempty s] : s →ᴬ[R] P where
 @[simp] lemma subtypeA_toAffineMap (s : AffineSubspace R P) [Nonempty s] :
     s.subtypeA.toAffineMap = s.subtype :=
   rfl
+
+/-- `AffineEquiv.ofEq` as a continuous affine equivalence. -/
+noncomputable def ofEq {s t : AffineSubspace R P} [Nonempty s] [Nonempty t]
+    (h : s = t) : s ≃ᴬ[R] t where
+  toAffineEquiv := .ofEq s t h
+  continuous_toFun := by subst h; exact continuous_id
+  continuous_invFun := by subst h; exact continuous_id
+
+@[simp]
+theorem coe_ofEq_apply {s t : AffineSubspace R P} [Nonempty s] [Nonempty t]
+    (h : s = t) (x : s) : (ofEq h x : P) = x := AffineEquiv.coe_ofEq_apply s t h x
+
+end AffineSubspace
+
+namespace ContinuousAffineEquiv
+
+variable {R V P W Q : Type*} [Ring R] [AddCommGroup V] [Module R V] [TopologicalSpace P]
+  [AddTorsor V P] [AddCommGroup W] [Module R W] [TopologicalSpace Q] [AddTorsor W Q]
+
+/-- A continuous affine equivalence restricts to a continuous affine equivalence between an affine
+subspace and its image.
+
+This is the continuous affine version of `AffineEquiv.affineSubspaceMap`. -/
+noncomputable def affineSubspaceMap (e : P ≃ᴬ[R] Q) (s : AffineSubspace R P) [Nonempty s] :
+    s ≃ᴬ[R] s.map e.toAffineMap :=
+  { e.toAffineEquiv.affineSubspaceMap s with
+    continuous_toFun := by simpa [Topology.IsEmbedding.subtypeVal.continuous_iff] using
+      (e.continuous.comp continuous_subtype_val).congr fun _ => rfl
+    continuous_invFun := by simpa [Topology.IsEmbedding.subtypeVal.continuous_iff] using
+      (e.continuous_invFun.comp continuous_subtype_val).congr fun x ↦
+        (e.apply_eq_iff_eq_symm_apply.mp
+          (AffineEquiv.affineSubspaceMap_apply_symm_apply e.toAffineEquiv s x)).symm }
+
+@[simp]
+theorem affineSubspaceMap_apply (e : P ≃ᴬ[R] Q) (s : AffineSubspace R P) [Nonempty s]
+    (x : s) : e.affineSubspaceMap s x = e x := rfl
+
+@[simp]
+theorem affineSubspaceMap_apply_symm_apply (e : P ≃ᴬ[R] Q) (s : AffineSubspace R P)
+    [Nonempty s] (x : s.map e.toAffineMap) : e ((e.affineSubspaceMap s).symm x) = x :=
+  AffineEquiv.affineSubspaceMap_apply_symm_apply e.toAffineEquiv s x
+
+end ContinuousAffineEquiv
+
+namespace AffineSubspace
+
+variable {R V P : Type*} [Ring R] [AddCommGroup V] [Module R V] [TopologicalSpace P]
+  [AddTorsor V P]
 
 variable [TopologicalSpace V] [IsTopologicalAddTorsor P]
 
