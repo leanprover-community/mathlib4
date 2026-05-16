@@ -96,7 +96,7 @@ structure IsCovariantDerivativeOn
     cov (σ + σ') x = cov σ x + cov σ' x
   leibniz {σ : Π x : M, V x} {g : M → 𝕜} {x}
     (hσ : MDiffAt (T% σ) x) (hg : MDiffAt g x) (hx : x ∈ s := by trivial) :
-    cov (g • σ) x = g x • cov σ x + (extDerivFun g x).smulRight (σ x)
+    cov (g • σ) x = g x • cov σ x + (mvfderiv% g x).smulRight (σ x)
 
 /--
 A covariant derivative ∇ is called of class `C^k` iff, whenever `X` is a `C^k` section and `σ` a
@@ -142,13 +142,10 @@ lemma iUnion {ι : Type*} {cov : (Π x : M, V x) → (Π x : M, TangentSpace I x
 
 end changing_set
 
--- TODO: prove that `cov σ x` depends on `σ` only via the 1-jet of `σ` at `x`.
--- This will be easy using the projection formula about Ehresmann connections,
--- which will be added in the planned file `CovariantDerivative/Ehresmann.lean`.
--- In the mean-time we use the following weaker results (which are convenient to apply anyway).
-
 /-- Given a covariant derivative `cov` on a neighborhood `s` of a point `x`, if sections `σ` and
-`σ'` agree on `s` and are differentiable at `x`, then `cov σ x = cov σ x'`. -/
+`σ'` agree on `s` and are differentiable at `x`, then `cov σ x = cov σ x'`.
+
+This is a convenient special case of `congr_of_eq_one_jet`. -/
 lemma congr_of_eqOn
     {cov : (Π x : M, V x) → (Π x : M, TangentSpace I x →L[𝕜] V x)}
     {s : Set M} (hcov : IsCovariantDerivativeOn F cov s)
@@ -176,14 +173,16 @@ lemma congr_of_eqOn
   -- Then, it's a chain of (dependent) equalities.
   calc cov σ x
     _ = cov ((ψ : M → 𝕜) • σ) x := by
-      simp [hcov.leibniz hσ hψ'.mdifferentiableAt, hψx, extDerivFun, hψ'.mfderiv]
+      simp [hcov.leibniz hσ hψ'.mdifferentiableAt, hψx, mvfderiv, hψ'.mfderiv]
     _ = cov ((ψ : M → 𝕜) • σ') x := by rw [funext H]
     _ = cov σ' x := by
-      simp [hcov.leibniz hσ' hψ'.mdifferentiableAt, hψx, extDerivFun, hψ'.mfderiv]
+      simp [hcov.leibniz hσ' hψ'.mdifferentiableAt, hψx, mvfderiv, hψ'.mfderiv]
 
 open Filter Set in
 /-- Given a covariant derivative `cov` on a neighborhood `s` of a point `x`, if sections `σ` and
-`σ'` agree near `x` and are differentiable at `x`, then `cov σ x = cov σ x'`. -/
+`σ'` agree near `x` and are differentiable at `x`, then `cov σ x = cov σ x'`.
+
+This is a convenient special case of `congr_of_eq_one_jet`. -/
 lemma congr_of_eventuallyEq
     {cov : (Π x : M, V x) → (Π x : M, TangentSpace I x →L[𝕜] V x)}
     {s : Set M} (hcov : IsCovariantDerivativeOn F cov s)
@@ -194,6 +193,18 @@ lemma congr_of_eventuallyEq
   rw [eventually_iff_exists_mem] at hσσ'
   choose s' hs' b using hσσ'
   exact (hcov.mono inter_subset_left).congr_of_eqOn hσ hσ' (inter_mem hxs hs') fun x hx ↦ b x hx.2
+
+/-- Given a covariant derivative `cov` on a neighborhood `s` of a point `x`, if sections `σ` and
+`σ'` are differentiable at `x` with the same one-jet (i.e., agree at `x` and have the same
+`mfderiv`), then `cov σ x = cov σ x'`. -/
+lemma congr_of_eq_one_jet
+    {cov : (Π x : M, V x) → (Π x : M, TangentSpace I x →L[𝕜] V x)}
+    {s : Set M} (hcov : IsCovariantDerivativeOn F cov s) {x : M} (hxs : s ∈ 𝓝 x)
+    {σ σ' : Π x : M, V x} (hσ : MDiffAt (T% σ) x) (hσ' : MDiffAt (T% σ') x)
+    (hσσ' : σ x = σ' x) (hσσ' : mfderiv% (T% σ) x = mfderiv% (T% σ') x) :
+    cov σ x = cov σ' x := by
+  -- This should be easy using the projection formula in `CovariantDerivative.Ehresmann`.
+  sorry
 
 /-! ### Computational properties -/
 
@@ -207,11 +218,25 @@ lemma zero [VectorBundle 𝕜 F V] (hcov : IsCovariantDerivativeOn F cov s)
   simpa using (hcov.add (mdifferentiableAt_zeroSection ..)
     (mdifferentiableAt_zeroSection ..) : cov (0 + 0) x = _)
 
+lemma neg [VectorBundle 𝕜 F V] (hcov : IsCovariantDerivativeOn F cov s)
+    {σ : Π x : M, V x} {x}
+    (hσ : MDiffAt (T% σ) x) (hx : x ∈ s := by trivial) :
+    cov (-σ) x = - cov σ x := by
+  rw [eq_neg_iff_add_eq_zero, ← hcov.add (mdifferentiableAt_neg_section hσ) hσ]
+  simp (disch := assumption) [hcov.zero]
+
+lemma sub [VectorBundle 𝕜 F V] (hcov : IsCovariantDerivativeOn F cov s)
+    {σ σ' : Π x : M, V x} {x}
+    (hσ : MDiffAt (T% σ) x) (hσ' : MDiffAt (T% σ') x) (hx : x ∈ s := by trivial) :
+    cov (σ - σ') x = cov σ x - cov σ' x := by
+  rw [sub_eq_neg_add, hcov.add (mdifferentiableAt_neg_section hσ') hσ, hcov.neg hσ']
+  abel
+
 theorem smul_const (hcov : IsCovariantDerivativeOn F cov s)
     {σ : Π x : M, V x} {x} (a : 𝕜)
     (hσ : MDiffAt (T% σ) x) (hx : x ∈ s := by trivial) :
     cov (a • σ) x = a • cov σ x := by
-  simpa [extDerivFun] using hcov.leibniz (g := fun _ ↦ a) hσ mdifferentiableAt_const
+  simpa [mvfderiv] using hcov.leibniz (g := fun _ ↦ a) hσ mdifferentiableAt_const
 
 end computational_properties
 
@@ -270,15 +295,15 @@ lemma finite_affine_combination {ι : Type*} {s : Finset ι}
     rw [← smul_add, (h i).add hσ hσ' hx]
   leibniz {σ g x} hσ hg hx := by
     calc ∑ i ∈ s, f i x • cov i (g • σ) x
-      _ = ∑ i ∈ s, (g x • f i x • cov i σ x + f i x • (extDerivFun g x).smulRight (σ x)) := by
+      _ = ∑ i ∈ s, (g x • f i x • cov i σ x + f i x • (mvfderiv% g x).smulRight (σ x)) := by
           congr! 1 with i hi
           rw [(h i).leibniz hσ hg]
-          simp [extDerivFun]
+          simp [mvfderiv]
           module
       _ = g x • ∑ i ∈ s, f i x • cov i σ x +
-        (∑ i ∈ s, f i) x • (extDerivFun g x).smulRight (σ x) := by
+        (∑ i ∈ s, f i) x • (mvfderiv% g x).smulRight (σ x) := by
           rw [Finset.sum_add_distrib, Finset.smul_sum, Finset.sum_apply, Finset.sum_smul]
-      _ = g x • ∑ i ∈ s, f i x • cov i σ x + (extDerivFun g x).smulRight (σ x) := by rw [hf]; simp
+      _ = g x • ∑ i ∈ s, f i x • cov i σ x + (mvfderiv% g x).smulRight (σ x) := by rw [hf]; simp
 
 /-- An affine combination of finitely many `C^k` connections on `u` is a `C^k` connection on `u`. -/
 lemma _root_.ContMDiffCovariantDerivativeOn.finite_affine_combination [IsManifold I 1 M]
@@ -385,6 +410,22 @@ lemma isCovariantDerivativeOn (cov : CovariantDerivative I F V) {s : Set M} :
 lemma zero [VectorBundle 𝕜 F V] (cov : CovariantDerivative I F V) : cov 0 = 0 := by
   ext1 x
   simp [cov.isCovariantDerivativeOnUniv.zero]
+
+-- XXX: do we prefer this statement, or point-wise versions instead?
+-- if both, which one should be simp?
+@[simp]
+lemma neg [VectorBundle 𝕜 F V] (cov : CovariantDerivative I F V)
+    {σ : Π x : M, V x} (hσ : MDiff (T% σ)) :
+    cov (-σ) = - cov σ := by
+  ext1 x
+  exact cov.isCovariantDerivativeOnUniv.neg (hσ x)
+
+@[simp]
+lemma sub [VectorBundle 𝕜 F V] (cov : CovariantDerivative I F V)
+    {σ σ' : Π x : M, V x} (hσ : MDiff (T% σ)) (hσ' : MDiff (T% σ')) :
+    cov (σ - σ') = cov σ - cov σ' := by
+  ext1 x
+  exact cov.isCovariantDerivativeOnUniv.sub (hσ x) (hσ' x)
 
 /-- If `cov` is a covariant derivative on each set in an open cover, it is a covariant derivative.
 -/

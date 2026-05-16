@@ -17,9 +17,8 @@ import Mathlib.Geometry.Manifold.Notation
 
 public section
 
-open Bundle Set OpenPartialHomeomorph ContinuousLinearMap Pretrivialization Filter
-
-open scoped Manifold Bundle Topology
+open Bundle Set ContinuousLinearMap Pretrivialization Filter
+open scoped Manifold Topology
 
 section
 
@@ -358,11 +357,14 @@ lemma mdifferentiableWithinAt_add_section
     · exact fun x hx ↦ (e.linear 𝕜 hx).1 ..
   · exact (e.linear 𝕜 (FiberBundle.mem_baseSet_trivializationAt' x₀)).1 ..
 
+@[to_fun]
 lemma mdifferentiableAt_add_section
     (hs : MDiffAt (T% s) x₀) (ht : MDiffAt (T% t) x₀) :
     MDiffAt (T% (s + t)) x₀ := by
   rw [← mdifferentiableWithinAt_univ] at hs ht ⊢
   apply mdifferentiableWithinAt_add_section hs ht
+-- TODO: remove this once to_fun outputs can be named!
+alias mdifferentiableAt_fun_add_section := fun_mdifferentiableAt_add_section
 
 lemma mdifferentiableOn_add_section
     (hs : MDiff[u] (T% s)) (ht : MDiff[u] (T% t)) : MDiff[u] (T% (s + t)) :=
@@ -426,6 +428,7 @@ lemma MDifferentiableWithinAt.smul_section
     · exact fun x hx ↦ (e.linear 𝕜 hx).2 ..
   · apply (e.linear 𝕜 (FiberBundle.mem_baseSet_trivializationAt' x₀)).2
 
+@[to_fun]
 lemma MDifferentiableAt.smul_section
     (hf : MDiffAt f x₀) (hs : MDiffAt (T% s) x₀) : MDiffAt (T% (f • s)) x₀ := by
   rw [← mdifferentiableWithinAt_univ] at hs ⊢
@@ -714,6 +717,16 @@ lemma exists_mdifferentiableOn_extend [∀ x, Module 𝕜 (V x)] [VectorBundle �
 lemma mdifferentiableAt_extend {x : M} (σ₀ : V x) :
     MDiffAt (T% (extend F σ₀)) x :=
   (contMDiffAt_extend' (k := 1) I F σ₀).mdifferentiableAt one_ne_zero
+
+variable (V) in
+lemma _root_.VectorBundle.injective_eval_sec [∀ x, Module 𝕜 (V x)]
+    (W : Type*) [AddCommGroup W] [Module 𝕜 W] [TopologicalSpace W] (x : M) :
+    Function.Injective
+      (fun A : V x →L[𝕜] W ↦
+        fun (Z : Π x, V x) (_ : MDiffAt (T% Z) x) ↦ A (Z x)) := by
+  intro X X' h
+  ext σ₀
+  simpa using congr($h (extend F σ₀) (mdifferentiableAt_extend ..))
 
 end FiberBundle
 end extend
