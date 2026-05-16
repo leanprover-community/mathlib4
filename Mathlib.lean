@@ -1595,6 +1595,7 @@ public import Mathlib.AlgebraicTopology.SingularHomology.Basic
 public import Mathlib.AlgebraicTopology.SingularHomology.HomologyZero
 public import Mathlib.AlgebraicTopology.SingularHomology.HomotopyInvariance
 public import Mathlib.AlgebraicTopology.SingularHomology.HomotopyInvarianceTopCat
+public import Mathlib.AlgebraicTopology.SingularHomology.Relative
 public import Mathlib.AlgebraicTopology.SingularSet
 public import Mathlib.AlgebraicTopology.TopologicalSimplex
 public import Mathlib.Analysis.AbsoluteValue.Equivalence

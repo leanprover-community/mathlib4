@@ -285,6 +285,9 @@ section
 
 variable (P : MorphismProperty C)
 
+/-- An morphism property induces an object property on `Arrow`. -/
+def _root_.CategoryTheory.ObjectProperty.arrow : ObjectProperty (Arrow C) := (P ·.hom)
+
 /-- The set in `Set (Arrow C)` which corresponds to `P : MorphismProperty C`. -/
 def toSet : Set (Arrow C) := setOf (fun f ↦ P f.hom)
 
