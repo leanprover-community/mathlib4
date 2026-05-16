@@ -220,6 +220,10 @@ theorem Filter.Eventually.prodMk_nhds {px : X → Prop} {x} (hx : ∀ᶠ x in �
 theorem continuous_swap : Continuous (Prod.swap : X × Y → Y × X) :=
   continuous_snd.prodMk continuous_fst
 
+@[fun_prop]
+theorem continuous_swap' : Continuous (fun x : X × Y ↦ (x.2, x.1)) :=
+  continuous_snd.prodMk continuous_fst
+
 lemma isClosedMap_swap : IsClosedMap (Prod.swap : X × Y → Y × X) := fun s hs ↦ by
   rw [image_swap_eq_preimage_swap]
   exact hs.preimage continuous_swap
