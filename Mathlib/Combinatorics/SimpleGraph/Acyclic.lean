@@ -526,6 +526,24 @@ lemma IsTree.exists_vert_degree_one_of_nontrivial [Fintype V] [Nontrivial V] [De
   rw [← hv]
   exact h.minDegree_eq_one_of_nontrivial
 
+/-- A nontrivial tree has at least two leaves. -/
+theorem IsTree.exists_ne_degree_eq_one [Fintype V] [Nontrivial V] [DecidableRel G.Adj]
+    (h : G.IsTree) : ∃ v1 v2, v1 ≠ v2 ∧ G.degree v1 = 1 ∧ G.degree v2 = 1 := by
+  have ⟨u, v, p, hp, hmax⟩ := exists_isPath_forall_isPath_length_le_length G
+  have ⟨u', v', hne⟩ := exists_pair_ne V
+  have ⟨p', hp'⟩ := h.connected.exists_isPath u' v'
+  have hnil : ¬p.Nil := by grind [nil_iff_length_eq, p'.not_nil_of_ne hne]
+  refine ⟨u, v, hp.nil_iff_eq.not.mp hnil, ?_, ?_⟩ <;>
+    rw [degree_eq_one_iff_existsUnique_adj]
+  · refine ⟨_, p.adj_snd hnil, fun w hadj ↦ ?_⟩
+    apply h.isAcyclic.eq_snd_of_adj_start hp hadj
+    have : ¬(p.cons hadj.symm).IsPath := by grind [length_cons]
+    grind [hp.cons]
+  · refine ⟨_, p.adj_penultimate hnil |>.symm, fun w hadj ↦ ?_⟩
+    apply h.isAcyclic.eq_penultimate_of_adj_end hp hadj
+    have : ¬(p.concat hadj).IsPath := by grind [length_concat]
+    grind [hp.concat]
+
 /-- The graph resulting from removing a vertex of degree one from a connected graph is connected. -/
 lemma Connected.induce_compl_singleton_of_degree_eq_one (hconn : G.Connected) {v : V}
     [Fintype ↑(G.neighborSet v)] (hdeg : G.degree v = 1) : (G.induce {v}ᶜ).Connected := by
