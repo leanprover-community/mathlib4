@@ -669,6 +669,15 @@ theorem map_sup (f : G →g G') (H₁ H₂ : G.Subgraph) : (H₁ ⊔ H₂).map f
 @[simp] lemma edgeSet_map (f : G →g G') (H : G.Subgraph) :
     (H.map f).edgeSet = Sym2.map f '' H.edgeSet := Sym2.fromRel_relationMap ..
 
+protected lemma IsInduced.map {H : G.Subgraph} (hH : H.IsInduced) (e : G ↪g G') :
+    (H.map e.toHom).IsInduced := by
+  rintro _ ⟨a, ha, rfl⟩ _ ⟨b, hb, rfl⟩ hAdj
+  exact ⟨a, b, hH ha hb (e.map_adj_iff.mp hAdj), rfl, rfl⟩
+
+@[simp] protected lemma IsInduced.map_iff (e : G ≃g G') {H : G.Subgraph} :
+    (H.map e.toHom).IsInduced ↔ H.IsInduced :=
+  ⟨fun h ↦ by simpa [← map_comp] using h.map e.symm.toEmbedding, fun h ↦ h.map e.toEmbedding⟩
+
 end map
 
 /-- Graph homomorphisms induce a contravariant function on subgraphs. -/
@@ -867,6 +876,23 @@ lemma adj_iff_of_neighborSet_equiv {v : V} {H : Subgraph G}
   Set.ext_iff.mp (neighborSet_eq_of_equiv h hfin) _
 
 end Subgraph
+
+/-- The canonical embedding of an induced subgraph into the ambient graph.
+Unlike `Subgraph.hom`, this is an embedding rather than a homomorphism, since induced subgraphs
+reflect adjacency. -/
+def Embedding.ofIsInduced {G : SimpleGraph V} (G' : G.Subgraph) (hG' : G'.IsInduced) :
+    G'.coe ↪g G where
+  toEmbedding := .subtype _
+  map_rel_iff' := hG'.adj.symm
+
+@[simp] lemma Embedding.toHom_ofIsInduced {G : SimpleGraph V} (G' : G.Subgraph)
+    (hG' : G'.IsInduced) : (Embedding.ofIsInduced G' hG').toHom = G'.hom := rfl
+
+@[simp] lemma Embedding.coe_ofIsInduced {G : SimpleGraph V} (G' : G.Subgraph)
+    (hG' : G'.IsInduced) : ⇑(Embedding.ofIsInduced G' hG') = (↑) := rfl
+
+@[simp] lemma Embedding.toEmbedding_ofIsInduced {G : SimpleGraph V} (G' : G.Subgraph)
+    (hG' : G'.IsInduced) : (Embedding.ofIsInduced G' hG').toEmbedding = .subtype _ := rfl
 
 @[simp]
 theorem card_neighborSet_toSubgraph (G H : SimpleGraph V) (h : H ≤ G)

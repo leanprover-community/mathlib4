@@ -3609,6 +3609,7 @@ public import Mathlib.Combinatorics.SimpleGraph.Hall
 public import Mathlib.Combinatorics.SimpleGraph.Hamiltonian
 public import Mathlib.Combinatorics.SimpleGraph.Hasse
 public import Mathlib.Combinatorics.SimpleGraph.IncMatrix
+public import Mathlib.Combinatorics.SimpleGraph.InducedCopy
 public import Mathlib.Combinatorics.SimpleGraph.Init
 public import Mathlib.Combinatorics.SimpleGraph.LapMatrix
 public import Mathlib.Combinatorics.SimpleGraph.LineGraph
