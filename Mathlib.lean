@@ -4576,6 +4576,8 @@ public import Mathlib.Geometry.Manifold.Immersion
 public import Mathlib.Geometry.Manifold.Instances.Icc
 public import Mathlib.Geometry.Manifold.Instances.Quotient
 public import Mathlib.Geometry.Manifold.Instances.Real
+public import Mathlib.Geometry.Manifold.Instances.Real
+public import Mathlib.Geometry.Manifold.Instances.Real
 public import Mathlib.Geometry.Manifold.Instances.Sphere
 public import Mathlib.Geometry.Manifold.Instances.UnitsOfNormedAlgebra
 public import Mathlib.Geometry.Manifold.IntegralCurve.Basic
@@ -4598,6 +4600,7 @@ public import Mathlib.Geometry.Manifold.MFDeriv.Tangent
 public import Mathlib.Geometry.Manifold.MFDeriv.UniqueDifferential
 public import Mathlib.Geometry.Manifold.Metrizable
 public import Mathlib.Geometry.Manifold.Notation
+public import Mathlib.Geometry.Manifold.Orientable
 public import Mathlib.Geometry.Manifold.PartitionOfUnity
 public import Mathlib.Geometry.Manifold.PoincareConjecture
 public import Mathlib.Geometry.Manifold.Riemannian.Basic
