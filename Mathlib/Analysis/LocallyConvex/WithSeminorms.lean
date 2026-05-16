@@ -674,14 +674,9 @@ theorem continuous_of_isBounded {p : SeminormFamily 𝕝 E ι} {q : SeminormFami
   have : IsTopologicalAddGroup E := hp.topologicalAddGroup
   refine continuous_of_continuous_comp hq _ fun i => ?_
   rcases hf i with ⟨s, C, hC⟩
-  rw [← Seminorm.finset_sup_smul] at hC
-  -- Note: we deduce continuity of `s.sup (C • p)` from that of `∑ i ∈ s, C • p i`.
-  -- The reason is that there is no `continuous_finset_sup`, and even if it were we couldn't
-  -- really use it since `ℝ` is not an `OrderBot`.
-  refine Seminorm.continuous_of_le ?_ (hC.trans <| Seminorm.finset_sup_le_sum _ _)
-  change Continuous (fun x ↦ Seminorm.coeFnAddMonoidHom _ _ (∑ i ∈ s, C • p i) x)
-  simp_rw [map_sum, Finset.sum_apply]
-  exact (continuous_finsetSum _ fun i _ ↦ (hp.continuous_seminorm i).const_smul (C : ℝ))
+  rw [← finset_sup_smul] at hC
+  exact continuous_of_le
+    (continuous_finsetSup fun i _ ↦ (hp.continuous_seminorm i).const_smul C) hC
 
 @[deprecated (since := "2026-03-09")]
 alias _root_.Seminorm.continuous_from_bounded := continuous_of_isBounded
@@ -692,6 +687,18 @@ theorem continuous_normedSpace_rng (F) [SeminormedAddCommGroup F] [NormedSpace �
     Continuous f := by
   rw [← Seminorm.isBounded_const (Fin 1)] at hf
   exact continuous_of_isBounded hp (norm_withSeminorms 𝕝₂ F) f hf
+
+lemma _root_.Seminorm.abs_le_seminorm_of_le_seminorm [Module ℝ E] [TopologicalSpace E]
+    {p : Seminorm ℝ E} {f : E →ₗ[ℝ] ℝ} (hfp : ∀ x, f x ≤ p x) (x : E) :
+    |f x| ≤ p x :=
+  abs_le.2 ⟨neg_le.1 (by simpa using hfp (-x)), hfp x⟩
+
+theorem continuous_real_rng [Module ℝ E] [TopologicalSpace E] {p : ι → Seminorm ℝ E}
+    (hp : WithSeminorms p) (f : E →ₗ[ℝ] ℝ)
+    (hf : ∃ (s : Finset ι) (C : ℝ≥0), ∀ x, f x ≤ (C • s.sup p) x) :
+    Continuous f := by
+  obtain ⟨s, C, hC⟩ := hf
+  exact continuous_normedSpace_rng ℝ hp f ⟨s, C, abs_le_seminorm_of_le_seminorm hC⟩
 
 @[deprecated (since := "2026-03-09")]
 alias _root_.Seminorm.cont_withSeminorms_normedSpace := continuous_normedSpace_rng
@@ -845,17 +852,17 @@ section bounded_of_continuous
 
 namespace Seminorm
 
-variable [NontriviallyNormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
-  [SeminormedAddCommGroup F] [NormedSpace 𝕜 F]
-  {p : SeminormFamily 𝕜 E ι}
-
 /-- In a semi-`NormedSpace`, a continuous seminorm is zero on elements of norm `0`. -/
-lemma map_eq_zero_of_norm_eq_zero (q : Seminorm 𝕜 F)
-    (hq : Continuous q) {x : F} (hx : ‖x‖ = 0) : q x = 0 :=
+lemma map_eq_zero_of_norm_eq_zero [NormedField 𝕜] [SeminormedAddCommGroup F] [SMul 𝕜 F]
+    (q : Seminorm 𝕜 F) (hq : Continuous q) {x : F} (hx : ‖x‖ = 0) : q x = 0 :=
   (map_zero q) ▸
     ((specializes_iff_mem_closure.mpr <| mem_closure_zero_iff_norm.mpr hx).map hq).eq.symm
 
 @[deprecated (since := "2025-11-15")] alias map_eq_zero_of_norm_zero := map_eq_zero_of_norm_eq_zero
+
+variable [NontriviallyNormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
+  [SeminormedAddCommGroup F] [NormedSpace 𝕜 F]
+  {p : SeminormFamily 𝕜 E ι}
 
 /-- Let `F` be a semi-`NormedSpace` over a `NontriviallyNormedField`, and let `q` be a
 seminorm on `F`. If `q` is continuous, then it is uniformly controlled by the norm, that is there
@@ -968,6 +975,12 @@ theorem SeminormFamily.comp_apply (q : SeminormFamily 𝕜₂ F ι) (i : ι) (f 
     q.comp f i = (q i).comp f :=
   rfl
 
+theorem SeminormFamily.comp_smul_nnreal (q : SeminormFamily 𝕜₂ F ι) (c : NNReal)
+    (f : E →ₛₗ[σ₁₂] F) :
+    c • q.comp f = (c • q).comp f := by
+  ext
+  simp [SeminormFamily.comp_apply, Seminorm.comp_apply]
+
 theorem SeminormFamily.finset_sup_comp (q : SeminormFamily 𝕜₂ F ι) (s : Finset ι)
     (f : E →ₛₗ[σ₁₂] F) : (s.sup q).comp f = s.sup (q.comp f) := by
   ext x
@@ -1006,6 +1019,26 @@ theorem Topology.IsInducing.polynormableSpace [PolynormableSpace 𝕜₂ F]
 instance [PolynormableSpace 𝕜₂ F] {S : Submodule 𝕜₂ F} :
     PolynormableSpace 𝕜₂ S :=
   IsInducing.polynormableSpace (f := S.subtype) .subtypeVal
+
+section NontriviallyNormedField
+
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [Module 𝕜 E] [TopologicalSpace E]
+variable {σ₁₂ : 𝕜 →+* 𝕜₂} [RingHomIsometric σ₁₂]
+
+theorem Topology.IsInducing.exists_continuous_seminorm_le {p : Seminorm 𝕜 E} (hp : Continuous p)
+    {q : SeminormFamily 𝕜₂ F ι} (hq : WithSeminorms q) {f : E →ₛₗ[σ₁₂] F} (hf : IsInducing f) :
+    ∃ p₂ : Seminorm 𝕜₂ F, Continuous p₂ ∧ p ≤ p₂.comp f := by
+  obtain ⟨s, C, -, hqC⟩ := Seminorm.bound_of_continuous (hf.withSeminorms hq) p hp
+  have := hq.topologicalAddGroup
+  rw [← finset_sup_smul, SeminormFamily.comp_smul_nnreal, ← SeminormFamily.finset_sup_comp] at hqC
+  exact ⟨_, continuous_finsetSup fun i x => (hq.continuous_seminorm i).const_smul C, hqC⟩
+
+theorem PolynormableSpace.exists_continuous_seminorm_le {p : Seminorm 𝕜 E} (hp : Continuous p)
+    [PolynormableSpace 𝕜₂ F] {f : E →ₛₗ[σ₁₂] F} (hf : IsInducing f) :
+    ∃ p₂ : Seminorm 𝕜₂ F, Continuous p₂ ∧ p ≤ p₂.comp f :=
+  hf.exists_continuous_seminorm_le hp (PolynormableSpace.withSeminorms 𝕜₂ F)
+
+end NontriviallyNormedField
 
 /-- (Disjoint) union of seminorm families. -/
 protected def SeminormFamily.sigma {κ : ι → Type*} (p : (i : ι) → SeminormFamily 𝕜 E (κ i)) :
