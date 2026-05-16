@@ -86,7 +86,7 @@ noncomputable def isoAdd {a b : A}
   CommShift.isoAdd' rfl e₁ e₂
 
 set_option backward.isDefEq.respectTransparency false in
-@[simp]
+@[simp, reassoc]
 lemma isoAdd_hom_app {a b : A}
     (e₁ : shiftFunctor C a ⋙ F ≅ F ⋙ shiftFunctor D a)
     (e₂ : shiftFunctor C b ⋙ F ≅ F ⋙ shiftFunctor D b) (X : C) :
@@ -96,7 +96,7 @@ lemma isoAdd_hom_app {a b : A}
   simp only [isoAdd, isoAdd'_hom_app, shiftFunctorAdd'_eq_shiftFunctorAdd]
 
 set_option backward.isDefEq.respectTransparency false in
-@[simp]
+@[simp, reassoc]
 lemma isoAdd_inv_app {a b : A}
     (e₁ : shiftFunctor C a ⋙ F ≅ F ⋙ shiftFunctor D a)
     (e₂ : shiftFunctor C b ⋙ F ≅ F ⋙ shiftFunctor D b) (X : C) :
