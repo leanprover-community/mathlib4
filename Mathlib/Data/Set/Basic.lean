@@ -65,27 +65,28 @@ open Function
 
 universe u v
 
-/-- A set of `α`s is equivalent to a predicate on elements of type `α`. -/
-@[simps]
-def setEquivPredicate (α : Type*) : Set α ≃ (α → Prop) where
-  toFun := Membership.mem
-  invFun := setOf
-
 namespace Set
 
 variable {α : Type u} {s t : Set α}
 
+variable (α) in
+/-- A set of `α`s is equivalent to a predicate on elements of type `α`. -/
+@[simps]
+def toProp : Set α ≃ (α → Prop) where
+  toFun := Membership.mem
+  invFun := setOf
+
 protected theorem mem_injective : Injective (Membership.mem : Set α → α → Prop) :=
-  setEquivPredicate α |>.injective
+  toProp α |>.injective
 
 protected theorem mem_surjective : Surjective (Membership.mem : Set α → α → Prop) :=
-  setEquivPredicate α |>.surjective
+  toProp α |>.surjective
 
 protected theorem mem_bijective : Bijective (Membership.mem : Set α → α → Prop) :=
-  setEquivPredicate α |>.bijective
+  toProp α |>.bijective
 
 instance instDistribLattice : DistribLattice (Set α) where
-  __ := setEquivPredicate α |>.distribLattice
+  __ := toProp α |>.distribLattice
   le := (· ≤ ·)
   lt s t := s ⊆ t ∧ ¬t ⊆ s
   sup := (· ∪ ·)
@@ -201,7 +202,7 @@ theorem mem_of_mem_of_subset {x : α} {s t : Set α} (hx : x ∈ s) (h : s ⊆ t
   h hx
 
 theorem setOf_injective : Function.Injective (@setOf α) :=
-  setEquivPredicate α |>.symm.injective
+  toProp α |>.symm.injective
 
 theorem setOf_inj {p q : α → Prop} : { x | p x } = { x | q x } ↔ p = q :=
   setOf_injective.eq_iff
@@ -209,7 +210,7 @@ theorem setOf_inj {p q : α → Prop} : { x | p x } = { x | q x } ↔ p = q :=
 /-! ### Lemmas about `mem` and `setOf` -/
 
 theorem setOf_bijective : Bijective (setOf : (α → Prop) → Set α) :=
-  setEquivPredicate α |>.symm.bijective
+  toProp α |>.symm.bijective
 
 theorem subset_setOf {p : α → Prop} {s : Set α} : s ⊆ setOf p ↔ ∀ x, x ∈ s → p x :=
   Iff.rfl
