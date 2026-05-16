@@ -1,4 +1,5 @@
-import Mathlib
+module
+public import Mathlib
 
 abbrev S1 : Fin 3 → Finset (Fin 4)
   | 0 => {0}

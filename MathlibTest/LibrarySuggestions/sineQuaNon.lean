@@ -1,4 +1,5 @@
-import Mathlib
+module
+public import Mathlib
 
 set_library_suggestions Lean.LibrarySuggestions.sineQuaNonSelector
 

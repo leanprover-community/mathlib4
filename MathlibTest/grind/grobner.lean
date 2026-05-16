@@ -3,7 +3,8 @@ Copyright (c) 2022 Dhruv Bhatia. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dhruv Bhatia, Robert Y. Lewis, Mario Carneiro, Kim Morrison
 -/
-import Mathlib
+module
+public import Mathlib
 
 /-!
 Mathlib used to have a tactic (`polyrith`) that communicated with a remote Sage server

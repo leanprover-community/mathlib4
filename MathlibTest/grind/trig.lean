@@ -1,4 +1,5 @@
-import Mathlib
+module
+public import Mathlib
 
 open Real
 
