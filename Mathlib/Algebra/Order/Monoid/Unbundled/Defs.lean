@@ -29,9 +29,9 @@ Since `Co(ntra)variantClass` takes as input the operation (typically `(+)` or `(
 relation (typically `(≤)` or `(<)`), these are the only two typeclasses that I have used.
 
 The general approach is to formulate the lemma that you are interested in and prove it, with the
-`Ordered[...]` typeclass of your liking.  After that, you convert the single typeclass,
-say `[OrderedCancelMonoid M]`, into three typeclasses, e.g.
-`[CancelMonoid M] [PartialOrder M] [CovariantClass M M (Function.swap (*)) (≤)]`
+`IsOrdered[...]` typeclass of your liking.  After that, you convert the typeclass,
+say `[IsOrderedCancelMonoid M]`, into whichever typeclasses, e.g.
+`[CovariantClass M M (Function.swap (*)) (≤)]`
 and have a go at seeing if the proof still works!
 
 Note that it is possible to combine several `Co(ntra)variantClass` assumptions together.
@@ -54,6 +54,9 @@ typeclass assumptions, since `Function.swap` is slightly better behaved than `fl
 However, sometimes as a **non-typeclass** assumption, we prefer `flip (*)` (or `flip (+)`),
 as it is easier to use.
 
+## TODO
+
+This is unergonomic. Inline in `MulLeftMono` and friends.
 -/
 
 @[expose] public section
@@ -125,7 +128,7 @@ class ContravariantClass : Prop where
 namely `b₁ ≤ b₂ → a * b₁ ≤ a * b₂`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
-`OrderedCommMonoid`. -/
+`IsOrderedMonoid`. -/
 abbrev MulLeftMono [Mul M] [LE M] : Prop :=
   CovariantClass M M (· * ·) (· ≤ ·)
 
@@ -133,7 +136,7 @@ abbrev MulLeftMono [Mul M] [LE M] : Prop :=
 namely `a₁ ≤ a₂ → a₁ * b ≤ a₂ * b`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
-`OrderedCommMonoid`. -/
+`IsOrderedMonoid`. -/
 abbrev MulRightMono [Mul M] [LE M] : Prop :=
   CovariantClass M M (swap (· * ·)) (· ≤ ·)
 
@@ -141,7 +144,7 @@ abbrev MulRightMono [Mul M] [LE M] : Prop :=
 namely `b₁ ≤ b₂ → a + b₁ ≤ a + b₂`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
-`OrderedAddCommMonoid`. -/
+`IsOrderedAddMonoid`. -/
 abbrev AddLeftMono [Add M] [LE M] : Prop :=
   CovariantClass M M (· + ·) (· ≤ ·)
 
@@ -149,7 +152,7 @@ abbrev AddLeftMono [Add M] [LE M] : Prop :=
 namely `a₁ ≤ a₂ → a₁ + b ≤ a₂ + b`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
-`OrderedAddCommMonoid`. -/
+`IsOrderedAddMonoid`. -/
 abbrev AddRightMono [Add M] [LE M] : Prop :=
   CovariantClass M M (swap (· + ·)) (· ≤ ·)
 
@@ -159,7 +162,7 @@ attribute [to_additive existing] MulLeftMono MulRightMono
 namely `b₁ < b₂ → a * b₁ < a * b₂`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
-`OrderedCommGroup`. -/
+`IsOrderedMonoid`. -/
 abbrev MulLeftStrictMono [Mul M] [LT M] : Prop :=
   CovariantClass M M (· * ·) (· < ·)
 
@@ -167,7 +170,7 @@ abbrev MulLeftStrictMono [Mul M] [LT M] : Prop :=
 namely `a₁ < a₂ → a₁ * b < a₂ * b`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
-`OrderedCommGroup`. -/
+`IsOrderedMonoid`. -/
 abbrev MulRightStrictMono [Mul M] [LT M] : Prop :=
   CovariantClass M M (swap (· * ·)) (· < ·)
 
@@ -175,7 +178,7 @@ abbrev MulRightStrictMono [Mul M] [LT M] : Prop :=
 namely `b₁ < b₂ → a + b₁ < a + b₂`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
-`OrderedAddCommGroup`. -/
+`IsOrderedAddMonoid`. -/
 abbrev AddLeftStrictMono [Add M] [LT M] : Prop :=
   CovariantClass M M (· + ·) (· < ·)
 
@@ -183,7 +186,7 @@ abbrev AddLeftStrictMono [Add M] [LT M] : Prop :=
 namely `a₁ < a₂ → a₁ + b < a₂ + b`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
-`OrderedAddCommGroup`. -/
+`IsOrderedAddMonoid`. -/
 abbrev AddRightStrictMono [Add M] [LT M] : Prop :=
   CovariantClass M M (swap (· + ·)) (· < ·)
 
@@ -193,7 +196,7 @@ attribute [to_additive existing] MulLeftStrictMono MulRightStrictMono
 namely `a * b₁ < a * b₂ → b₁ < b₂`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
-`OrderedCommGroup`. -/
+`IsOrderedMonoid`. -/
 abbrev MulLeftReflectLT [Mul M] [LT M] : Prop :=
   ContravariantClass M M (· * ·) (· < ·)
 
@@ -201,7 +204,7 @@ abbrev MulLeftReflectLT [Mul M] [LT M] : Prop :=
 namely `a₁ * b < a₂ * b → a₁ < a₂`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
-`OrderedCommGroup`. -/
+`IsOrderedMonoid`. -/
 abbrev MulRightReflectLT [Mul M] [LT M] : Prop :=
   ContravariantClass M M (swap (· * ·)) (· < ·)
 
@@ -209,7 +212,7 @@ abbrev MulRightReflectLT [Mul M] [LT M] : Prop :=
 namely `a + b₁ < a + b₂ → b₁ < b₂`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
-`OrderedAddCommGroup`. -/
+`IsOrderedAddMonoid`. -/
 abbrev AddLeftReflectLT [Add M] [LT M] : Prop :=
   ContravariantClass M M (· + ·) (· < ·)
 
@@ -217,7 +220,7 @@ abbrev AddLeftReflectLT [Add M] [LT M] : Prop :=
 namely `a₁ * b < a₂ * b → a₁ < a₂`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
-`OrderedAddCommGroup`. -/
+`IsOrderedAddMonoid`. -/
 abbrev AddRightReflectLT [Add M] [LT M] : Prop :=
   ContravariantClass M M (swap (· + ·)) (· < ·)
 
@@ -227,7 +230,7 @@ attribute [to_additive existing] MulLeftReflectLT MulRightReflectLT
 namely `a * b₁ ≤ a * b₂ → b₁ ≤ b₂`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
-`OrderedCancelCommMonoid`. -/
+`IsOrderedCancelMonoid`. -/
 class MulLeftReflectLE [Mul M] [LE M] : Prop where
   /-- Do not use this. Use `le_of_mul_le_mul_left'` instead. -/
   protected le_of_mul_le_mul_left' {a b₁ b₂ : M} : a * b₁ ≤ a * b₂ → b₁ ≤ b₂
@@ -236,7 +239,7 @@ class MulLeftReflectLE [Mul M] [LE M] : Prop where
 namely `a₁ * b ≤ a₂ * b → a₁ ≤ a₂`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
-`OrderedCancelCommMonoid`. -/
+`IsOrderedCancelMonoid`. -/
 class MulRightReflectLE [Mul M] [LE M] : Prop where
   /-- Do not use this. Use `le_of_mul_le_mul_right'` instead. -/
   protected le_of_mul_le_mul_right' {b a₁ a₂ : M} : a₁ * b ≤ a₂ * b → a₁ ≤ a₂
@@ -245,7 +248,7 @@ class MulRightReflectLE [Mul M] [LE M] : Prop where
 namely `a + b₁ ≤ a + b₂ → b₁ ≤ b₂`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
-`OrderedCancelAddCommMonoid`. -/
+`IsOrderedCancelAddMonoid`. -/
 class AddLeftReflectLE [Add M] [LE M] : Prop where
   /-- Do not use this. Use `le_of_add_le_add_left` instead. -/
   protected le_of_add_le_add_left {a b₁ b₂ : M} : a + b₁ ≤ a + b₂ → b₁ ≤ b₂
@@ -254,7 +257,7 @@ class AddLeftReflectLE [Add M] [LE M] : Prop where
 namely `a₁ + b ≤ a₂ + b → a₁ ≤ a₂`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
-`OrderedCancelAddCommMonoid`. -/
+`IsOrderedCancelAddMonoid`. -/
 class AddRightReflectLE [Add M] [LE M] : Prop where
   /-- Do not use this. Use `le_of_add_le_add_right` instead. -/
   protected le_of_add_le_add_right {b a₁ a₂ : M} : a₁ + b ≤ a₂ + b → a₁ ≤ a₂

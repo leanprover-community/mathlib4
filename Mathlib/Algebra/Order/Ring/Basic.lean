@@ -96,11 +96,10 @@ def IsNonarchimedean {α : Type*} [Add α] (f : α → R) : Prop := ∀ a b : α
 /-!
 ### Lemmas for canonically linear ordered semirings or linear ordered rings
 
-The slightly unusual typeclass assumptions `[LinearOrderedSemiring R] [ExistsAddOfLE R]` cover two
+The slightly unusual typeclass assumptions `[IsStrictOrderedRing R] [ExistsAddOfLE R]` cover two
 more familiar settings:
-* `[LinearOrderedRing R]`, e.g. `ℤ`, `ℚ` or `ℝ`
-* `[CanonicallyLinearOrderedSemiring R]` (although we don't actually have this typeclass), e.g. `ℕ`,
-  `ℚ≥0` or `ℝ≥0`
+* linearly ordered rings, e.g. `ℤ`, `ℚ` or `ℝ`
+* canonically ordered semirings, e.g. `ℕ`, `ℚ≥0` or `ℝ≥0`
 -/
 
 variable [ExistsAddOfLE R]

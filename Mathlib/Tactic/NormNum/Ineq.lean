@@ -22,7 +22,7 @@ namespace Mathlib.Meta.NormNum
 
 variable {u : Level}
 
-/-- Helper function to synthesize typed `Semiring α` `PartialOrder α` `IsOrderedSemiring α`
+/-- Helper function to synthesize typed `Semiring α` `PartialOrder α` `IsOrderedRing α`
 expressions. -/
 def inferOrderedSemiring (α : Q(Type u)) : MetaM <|
     (_ : Q(Semiring $α)) × (_ : Q(PartialOrder $α)) × Q(IsOrderedRing $α) :=
@@ -33,7 +33,7 @@ def inferOrderedSemiring (α : Q(Type u)) : MetaM <|
     return ⟨semiring, partialOrder, isOrderedRing⟩
   go <|> throwError "not an ordered semiring"
 
-/-- Helper function to synthesize typed `Ring α` `PartialOrder α` `IsOrderedSemiring α`
+/-- Helper function to synthesize typed `Ring α` `PartialOrder α` `IsOrderedRing α`
 expressions. -/
 def inferOrderedRing (α : Q(Type u)) : MetaM <|
     (_ : Q(Ring $α)) × (_ : Q(PartialOrder $α)) × Q(IsOrderedRing $α) :=

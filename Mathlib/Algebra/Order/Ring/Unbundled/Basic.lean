@@ -21,97 +21,14 @@ public import Mathlib.Tactic.Tauto
 This file develops the basics of ordered (semi)rings in an unbundled fashion for later use with
 the bundled classes from `Mathlib/Algebra/Order/Ring/Defs.lean`.
 
-The set of typeclass variables here comprises
-* an algebraic class (`Semiring`, `CommSemiring`, `Ring`, `CommRing`)
-* an order class (`PartialOrder`, `LinearOrder`)
-* assumptions on how both interact ((strict) monotonicity, canonicity)
-
-For short,
-* "`+` respects `≤`" means "monotonicity of addition"
-* "`+` respects `<`" means "strict monotonicity of addition"
-* "`*` respects `≤`" means "monotonicity of multiplication by a nonnegative number".
-* "`*` respects `<`" means "strict monotonicity of multiplication by a positive number".
-
-## Typeclasses found in `Algebra.Order.Ring.Defs`
-
-* `OrderedSemiring`: Semiring with a partial order such that `+` and `*` respect `≤`.
-* `StrictOrderedSemiring`: Nontrivial semiring with a partial order such that `+` and `*` respects
-  `<`.
-* `OrderedCommSemiring`: Commutative semiring with a partial order such that `+` and `*` respect
-  `≤`.
-* `StrictOrderedCommSemiring`: Nontrivial commutative semiring with a partial order such that `+`
-  and `*` respect `<`.
-* `OrderedRing`: Ring with a partial order such that `+` respects `≤` and `*` respects `<`.
-* `OrderedCommRing`: Commutative ring with a partial order such that `+` respects `≤` and
-  `*` respects `<`.
-* `LinearOrderedSemiring`: Nontrivial semiring with a linear order such that `+` respects `≤` and
-  `*` respects `<`.
-* `LinearOrderedCommSemiring`: Nontrivial commutative semiring with a linear order such that `+`
-  respects `≤` and `*` respects `<`.
-* `LinearOrderedRing`: Nontrivial ring with a linear order such that `+` respects `≤` and `*`
-  respects `<`.
-* `LinearOrderedCommRing`: Nontrivial commutative ring with a linear order such that `+` respects
-  `≤` and `*` respects `<`.
-* `CanonicallyOrderedCommSemiring`: Commutative semiring with a partial order such that `+`
-  respects `≤`, `*` respects `<`, and `a ≤ b ↔ ∃ c, b = a + c`.
-
-## Hierarchy
-
-The hardest part of proving order lemmas might be to figure out the correct generality and its
-corresponding typeclass. Here's an attempt at demystifying it. For each typeclass, we list its
-immediate predecessors and what conditions are added to each of them.
-
-* `OrderedSemiring`
-  - `OrderedAddCommMonoid` & multiplication & `*` respects `≤`
-  - `Semiring` & partial order structure & `+` respects `≤` & `*` respects `≤`
-* `StrictOrderedSemiring`
-  - `OrderedCancelAddCommMonoid` & multiplication & `*` respects `<` & nontriviality
-  - `OrderedSemiring` & `+` respects `<` & `*` respects `<` & nontriviality
-* `OrderedCommSemiring`
-  - `OrderedSemiring` & commutativity of multiplication
-  - `CommSemiring` & partial order structure & `+` respects `≤` & `*` respects `<`
-* `StrictOrderedCommSemiring`
-  - `StrictOrderedSemiring` & commutativity of multiplication
-  - `OrderedCommSemiring` & `+` respects `<` & `*` respects `<` & nontriviality
-* `OrderedRing`
-  - `OrderedSemiring` & additive inverses
-  - `OrderedAddCommGroup` & multiplication & `*` respects `<`
-  - `Ring` & partial order structure & `+` respects `≤` & `*` respects `<`
-* `StrictOrderedRing`
-  - `StrictOrderedSemiring` & additive inverses
-  - `OrderedSemiring` & `+` respects `<` & `*` respects `<` & nontriviality
-* `OrderedCommRing`
-  - `OrderedRing` & commutativity of multiplication
-  - `OrderedCommSemiring` & additive inverses
-  - `CommRing` & partial order structure & `+` respects `≤` & `*` respects `<`
-* `StrictOrderedCommRing`
-  - `StrictOrderedCommSemiring` & additive inverses
-  - `StrictOrderedRing` & commutativity of multiplication
-  - `OrderedCommRing` & `+` respects `<` & `*` respects `<` & nontriviality
-* `LinearOrderedSemiring`
-  - `StrictOrderedSemiring` & totality of the order
-  - `LinearOrderedAddCommMonoid` & multiplication & nontriviality & `*` respects `<`
-* `LinearOrderedCommSemiring`
-  - `StrictOrderedCommSemiring` & totality of the order
-  - `LinearOrderedSemiring` & commutativity of multiplication
-* `LinearOrderedRing`
-  - `StrictOrderedRing` & totality of the order
-  - `LinearOrderedSemiring` & additive inverses
-  - `LinearOrderedAddCommGroup` & multiplication & `*` respects `<`
-  - `Ring` & `IsDomain` & linear order structure
-* `LinearOrderedCommRing`
-  - `StrictOrderedCommRing` & totality of the order
-  - `LinearOrderedRing` & commutativity of multiplication
-  - `LinearOrderedCommSemiring` & additive inverses
-  - `CommRing` & `IsDomain` & linear order structure
-
 ## Generality
 
 Each section is labelled with a corresponding bundled ordered ring typeclass in mind. Mixins for
 relating the order structures and ring structures are added as needed.
 
-TODO: the mixin assumptions can be relaxed in most cases
+## TODO
 
+The mixin assumptions can be relaxed in most cases.
 -/
 
 public section
