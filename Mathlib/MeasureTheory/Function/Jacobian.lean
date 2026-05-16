@@ -463,8 +463,12 @@ theorem mul_le_addHaar_image_of_lt_det (A : E →L[ℝ] E) {m : ℝ≥0}
 
 /-- If a differentiable function `f` is approximated by a linear map `A` on a set `s`, up to `δ`,
 then at almost every `x` in `s` one has `‖f' x - A‖ ≤ δ`. -/
-theorem _root_.ApproximatesLinearOn.norm_fderiv_sub_le {A : E →L[ℝ] E} {δ : ℝ≥0}
-    (hf : ApproximatesLinearOn f A s δ) (hs : MeasurableSet s) (f' : E → E →L[ℝ] E)
+theorem _root_.ApproximatesLinearOn.norm_fderiv_sub_le {E F : Type*} [NormedAddCommGroup E]
+    [NormedSpace ℝ E]
+    [FiniteDimensional ℝ E]  [NormedAddCommGroup F] [NormedSpace ℝ F]
+    {s : Set E} {f : E → F} [MeasurableSpace E] [BorelSpace E]
+    {A : E →L[ℝ] F} {δ : ℝ≥0} (μ : Measure E) [IsAddHaarMeasure μ]
+    (hf : ApproximatesLinearOn f A s δ) (hs : MeasurableSet s) (f' : E → E →L[ℝ] F)
     (hf' : ∀ x ∈ s, HasFDerivWithinAt f (f' x) s x) : ∀ᵐ x ∂μ.restrict s, ‖f' x - A‖₊ ≤ δ := by
   /- The conclusion will hold at the Lebesgue density points of `s` (which have full measure).
     At such a point `x`, for any `z` and any `ε > 0` one has for small `r`
@@ -686,7 +690,11 @@ Lusin-Souslin theorem.
 /-- The derivative of a function on a measurable set is almost everywhere measurable on this set
 with respect to Lebesgue measure. Note that, in general, it is not genuinely measurable there,
 as `f'` is not unique (but only on a set of measure `0`, as the argument shows). -/
-theorem aemeasurable_fderivWithin (hs : MeasurableSet s)
+theorem aemeasurable_fderivWithin {E F : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+    [FiniteDimensional ℝ E]  [NormedAddCommGroup F] [NormedSpace ℝ F] [SecondCountableTopology F]
+    {s : Set E} {f : E → F} {f' : E → E →L[ℝ] F} [MeasurableSpace E] [BorelSpace E]
+    (μ : Measure E) [μ.IsAddHaarMeasure]
+    (hs : MeasurableSet s)
     (hf' : ∀ x ∈ s, HasFDerivWithinAt f (f' x) s x) : AEMeasurable f' (μ.restrict s) := by
   /- It suffices to show that `f'` can be uniformly approximated by a measurable function.
     Fix `ε > 0`. Thanks to `exists_partition_approximatesLinearOn_of_hasFDerivWithinAt`, one
@@ -700,7 +708,7 @@ theorem aemeasurable_fderivWithin (hs : MeasurableSet s)
   have δpos : 0 < δ := εpos
   -- partition `s` into sets `s ∩ t n` on which `f` is approximated by linear maps `A n`.
   obtain ⟨t, A, t_disj, t_meas, t_cover, ht, _⟩ :
-    ∃ (t : ℕ → Set E) (A : ℕ → E →L[ℝ] E),
+    ∃ (t : ℕ → Set E) (A : ℕ → E →L[ℝ] F),
       Pairwise (Disjoint on t) ∧
         (∀ n : ℕ, MeasurableSet (t n)) ∧
           (s ⊆ ⋃ n : ℕ, t n) ∧
@@ -710,7 +718,7 @@ theorem aemeasurable_fderivWithin (hs : MeasurableSet s)
       δpos.ne'
   -- define a measurable function `g` which coincides with `A n` on `t n`.
   obtain ⟨g, g_meas, hg⟩ :
-      ∃ g : E → E →L[ℝ] E, Measurable g ∧ ∀ (n : ℕ) (x : E), x ∈ t n → g x = A n :=
+      ∃ g : E → E →L[ℝ] F, Measurable g ∧ ∀ (n : ℕ) (x : E), x ∈ t n → g x = A n :=
     exists_measurable_piecewise t t_meas (fun n _ => A n) (fun n => measurable_const) <|
       t_disj.mono fun i j h => by simp only [h.inter_eq, eqOn_empty]
   refine ⟨g, g_meas.aemeasurable, ?_⟩
