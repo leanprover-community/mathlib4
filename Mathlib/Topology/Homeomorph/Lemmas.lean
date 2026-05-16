@@ -479,7 +479,6 @@ variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
 
 namespace IsHomeomorph
 variable (hf : IsHomeomorph f)
-include hf
 
 variable (f) in
 /-- Bundled homeomorphism constructed from a map that is a homeomorphism. -/
@@ -491,6 +490,12 @@ noncomputable def homeomorph : X ≃ₜ Y where
     exact hf.isOpenMap.continuousOn_range_of_leftInverse
       (Equiv.ofBijective f hf.bijective).left_inv
   toEquiv := Equiv.ofBijective f hf.bijective
+
+lemma coe_equiv {g : X ≃ Y} (hg : IsHomeomorph g) : hg.homeomorph = g := by simp [homeomorph]; rfl
+
+lemma coe_inv {g : X ≃ Y} (hg : IsHomeomorph g) : hg.homeomorph.invFun = g.invFun := by simp
+
+include hf
 
 protected lemma isClosedMap : IsClosedMap f := (hf.homeomorph f).isClosedMap
 lemma isInducing : IsInducing f := (hf.homeomorph f).isInducing
