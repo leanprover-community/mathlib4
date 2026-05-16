@@ -5,11 +5,17 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Mathlib.Data.List.TakeDrop
-public import Mathlib.Data.List.Induction
-public import Mathlib.Data.Nat.Basic
-public import Mathlib.Order.Basic
 public import Mathlib.Data.List.Basic
+public import Mathlib.Tactic.GCongr.CoreAttrs
+import Mathlib.Data.List.Induction
+import Mathlib.Data.List.TakeDrop
+import Mathlib.Data.Nat.Basic
+import Mathlib.Order.Basic
+import Mathlib.Tactic.Convert
+import Mathlib.Tactic.NthRewrite
+import Mathlib.Tactic.Push
+import Mathlib.Tactic.Tauto
+import Mathlib.Tactic.Use
 
 /-!
 # Prefixes, suffixes, infixes
