@@ -195,6 +195,14 @@ lemma yonedaEquiv_symm_app_objEquiv_symm {X : SSet.{u}} {n : SimplexCategory}
       X.map f.op x :=
   rfl
 
+lemma opObjEquiv_yonedaEquiv_const {X : SSet.{u}} {n : SimplexCategory} (x : X.op _⦋0⦌) :
+    opObjEquiv (n := op n) (yonedaEquiv (const x)) =
+      yonedaEquiv (const (opObjEquiv x)) := rfl
+
+lemma opObjEquiv_symm_yonedaEquiv_const {X : SSet.{u}} {n : SimplexCategory} (x : X _⦋0⦌) :
+    (opObjEquiv (n := op n)).symm (yonedaEquiv (const x)) =
+      yonedaEquiv (const (opObjEquiv.symm x)) := rfl
+
 namespace stdSimplex
 
 @[simp]
@@ -296,6 +304,37 @@ lemma yonedaEquiv_symm_app_id {X : SSet.{u}} {n : ℕ} (x : X _⦋n⦌) :
     (yonedaEquiv.symm x).app _ (yonedaEquiv (𝟙 _)) = x := by
   simp
 
+lemma yonedaEquiv_naturality {X : SSet} {m n : SimplexCategory}
+    (f : m ⟶ n) (g : stdSimplex.obj n ⟶ X) :
+    X.map f.op (yonedaEquiv g) = yonedaEquiv (stdSimplex.map f ≫ g) :=
+  uliftYonedaEquiv_naturality _ _
+
+@[reassoc]
+lemma yonedaEquiv_symm_naturality_left {X : SSet} {m n : SimplexCategory}
+    (f : m ⟶ n) (g : X.obj (Opposite.op n)) :
+    stdSimplex.map f ≫ yonedaEquiv.symm g = yonedaEquiv.symm (X.map f.op g) := by
+  rw [← yonedaEquiv.apply_eq_iff_eq_symm_apply, ← yonedaEquiv_naturality,
+    yonedaEquiv.apply_symm_apply]
+
+lemma stdSimplex.δ_comp_yonedaEquiv_symm
+    {X : SSet.{u}} {n : ℕ} (x : X _⦋n + 1⦌) (i : Fin (n + 2)) :
+    stdSimplex.δ i ≫ yonedaEquiv.symm x = yonedaEquiv.symm (X.δ i x) :=
+  yonedaEquiv_symm_naturality_left ..
+
+lemma stdSimplex.σ_comp_yonedaEquiv_symm
+    {X : SSet.{u}} {n : ℕ} (x : X _⦋n⦌) (i : Fin (n + 1)) :
+    stdSimplex.σ i ≫ yonedaEquiv.symm x = yonedaEquiv.symm (X.σ i x) :=
+  yonedaEquiv_symm_naturality_left ..
+
+lemma stdSimplex.yonedaEquiv_δ_comp
+    {X : SSet.{u}} {n : ℕ} (g : Δ[n + 1] ⟶ X) (i : Fin (n + 2)) :
+    yonedaEquiv (stdSimplex.δ i ≫ g) = X.δ i (yonedaEquiv g) :=
+  (yonedaEquiv_naturality ..).symm
+
+lemma stdSimplex.yonedaEquiv_σ_comp
+    {X : SSet.{u}} {n : ℕ} (g : Δ[n] ⟶ X) (i : Fin (n + 1)) :
+    yonedaEquiv (stdSimplex.σ i ≫ g) = X.σ i (yonedaEquiv g) :=
+  (yonedaEquiv_naturality ..).symm
 
 namespace Subcomplex
 
