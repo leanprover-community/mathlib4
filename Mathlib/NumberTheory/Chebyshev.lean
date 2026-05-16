@@ -171,6 +171,40 @@ theorem theta_le_log4_mul_x {x : ℝ} (hx : 0 ≤ x) : θ x ≤ log 4 * x := by
   gcongr
   exact floor_le hx
 
+/-- `√2 ^ n ≤ n#` for `n ≥ 2`. Real-valued form of the Chebyshev lower bound. -/
+theorem sqrt_two_pow_le_primorial {n : ℕ} (hn : 2 ≤ n) :
+    Real.sqrt 2 ^ n ≤ (primorial n : ℝ) := by
+  have hexp : (n : ℝ) / 2 ≤ ↑((n + 1) / 2) :=
+    (div_le_iff₀' zero_lt_two).mpr <| by norm_cast; lia
+  rw [← rpow_natCast, ← rpow_div_two_eq_sqrt _ zero_le_two]
+  grw [hexp]
+  · exact_mod_cast two_pow_half_succ_le_primorial hn
+  · exact one_le_two -- side goal
+
+/-- Chebyshev's lower bound: `log 2 / 2 * x ≤ θ x` for `3 ≤ x`. -/
+theorem log2_div_two_mul_le_theta {x : ℝ} (hx : 3 ≤ x) : log 2 / 2 * x ≤ θ x := by
+  rw [theta_eq_log_primorial, div_mul_comm]
+  pull (disch := positivity) log
+  refine log_le_log (by positivity) ?_
+  by_cases hfloor5 : 5 ≤ ⌊x⌋₊
+  · -- Case ⌊x⌋₊ ≥ 5: use two_pow_half_add_one_le_primorial
+    grw [← two_pow_half_add_one_le_primorial hfloor5]
+    push_cast
+    rw [← rpow_natCast]
+    refine rpow_le_rpow_of_exponent_le one_le_two <| (div_le_iff₀ zero_lt_two).mpr ?_
+    exact (lt_floor_add_one x).le.trans <| by norm_cast; lia
+  · -- Case ⌊x⌋₊ ∈ {3, 4}: primorial = 6, x < 5
+    have hfloor3 : 3 ≤ ⌊x⌋₊ := floor_ofNat (R := ℝ) 3 ▸ floor_le_floor hx
+    have hfloor4 : ⌊x⌋₊ ≤ 4 := by lia
+    have hx5 : x < 5 := by
+      linarith [lt_floor_add_one x, show (⌊x⌋₊ : ℝ) ≤ 4 from mod_cast hfloor4]
+    have h6 : 6 ≤ primorial ⌊x⌋₊ := by interval_cases ⌊x⌋₊ <;> decide
+    grw [← h6, hx5]
+    case h₁.hx => exact one_le_two -- side goal
+    refine (rpow_le_rpow_iff (by positivity) (by positivity) zero_lt_two).mp ?_
+    rw [← rpow_mul zero_le_two]
+    norm_num
+
 end Chebyshev
 
 namespace Nat
