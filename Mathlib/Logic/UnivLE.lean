@@ -6,6 +6,8 @@ Authors: Kim Morrison
 module
 
 public import Mathlib.Logic.Small.Defs
+import Mathlib.Tactic.MkIffOfInductiveProp
+import Mathlib.Logic.Basic
 
 /-!
 # UnivLE
