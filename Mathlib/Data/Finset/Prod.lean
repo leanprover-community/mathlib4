@@ -282,6 +282,10 @@ theorem image_diag [DecidableEq β] (f : α × α → β) (s : Finset α) :
   grind
 
 @[simp, norm_cast]
+theorem coe_diag : (s.diag : Set (α × α)) = (s : Set α).diag :=
+  Set.ext fun _ => by simp [mem_diag]
+
+@[simp, norm_cast]
 theorem coe_offDiag : (s.offDiag : Set (α × α)) = (s : Set α).offDiag :=
   Set.ext fun _ => mem_offDiag
 

@@ -1028,5 +1028,5 @@ instance [MeasurableSpace α] [MeasurableEq α] : MeasurableSingletonClass α :=
 
 instance [MeasurableSpace α] [MeasurableSingletonClass α] [Countable α] : MeasurableEq α := by
   constructor
-  simp_rw [← Set.range_diag, Set.range_eq_iUnion]
+  simp_rw [← Set.range_diagMap, Set.range_eq_iUnion]
   measurability
