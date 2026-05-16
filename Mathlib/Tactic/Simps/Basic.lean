@@ -10,6 +10,7 @@ public meta import Lean.Elab.App
 public meta import Mathlib.Lean.Expr.Basic
 public import Mathlib.Util.AddRelatedDecl
 public import Mathlib.Tactic.Simps.NotationClass
+public import Mathlib.Tactic.Simps.UnifHintAttr
 public import Mathlib.Tactic.Translate.Attributes
 
 /-!
@@ -901,6 +902,8 @@ structure Config where
   current declaration name, or the empty string if the declaration is an instance and the instance
   is named according to the `inst` convention. -/
   nameStem : Option String := none
+  /-- Also add a `@[unification_hint]` declaration for each generated projection lemma. -/
+  addUnifHints := false
   deriving Inhabited
 
 /-- Function elaborating `Config` -/
@@ -1012,6 +1015,8 @@ def addProjection (declName : Name) (type lhs rhs : Expr) (args : Array Expr)
     addSimpTheorem simpExtension declName true false .global <| eval_prio default
   TermElabM.run' do
     Elab.Term.applyAttributes declName cfg.attrs
+  if cfg.addUnifHints then
+    addUnifHintFromLemma declName .global
 
 /--
 Perform head-structure-eta-reduction on expression `e`. That is, if `e` is of the form

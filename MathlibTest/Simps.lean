@@ -1359,3 +1359,43 @@ set_option pp.explicit true in
 /-- info: zero_n : @Eq MyNat zero.n MyNat.zero -/
 #guard_msgs in
 #check zero_n
+
+namespace UnifHints
+
+-- Test `@[unifHint]` directly on a hand-written lemma
+def myConst : Nat := 42
+def myConst2 : Nat := 43
+
+-- Without @[unifHint], with_reducible rfl fails since the def is not reducible
+example : myConst2 = 43 := by
+  fail_if_success (with_reducible rfl)
+  rfl
+
+@[unifHint] theorem myConst_eq : myConst = 42 := rfl
+-- The hint makes with_reducible rfl work even though `myConst` is not reducible
+example : myConst = 42 := by with_reducible rfl
+
+/-- Test the `addUnifHints` option: check that unification hint declarations are generated. -/
+@[simps +addUnifHints]
+def myPair : Nat × Bool := (1, true)
+
+-- Verify the simp lemmas are generated as normal
+example : myPair.1 = 1 := myPair_fst
+example : myPair.2 = true := myPair_snd
+
+-- Verify the unification hint declarations exist
+#check @myPair_fst.unifHint
+#check @myPair_snd.unifHint
+
+-- The hints make the projection equalities provable by with_reducible rfl,
+-- even though `myPair` is not a reducible definition
+example : myPair.1 = 1 := by with_reducible rfl
+example : myPair.2 = true := by with_reducible rfl
+
+-- Without addUnifHints, with_reducible rfl fails on the same shape of goal
+@[simps] def myPair2 : Nat × Bool := (2, false)
+example : myPair2.1 = 2 := by
+  fail_if_success (with_reducible rfl)
+  rfl
+
+end UnifHints
