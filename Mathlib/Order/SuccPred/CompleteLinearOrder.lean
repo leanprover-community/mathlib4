@@ -154,4 +154,36 @@ lemma exists_eq_iInf_of_not_isPredPrelimit (hf : ¬ IsPredPrelimit (⨅ i, f i))
     ∃ i, f i = ⨅ i, f i :=
   sInf_mem_of_not_isPredPrelimit hf
 
+-- #38612
+theorem Order.IsSuccPrelimit.le_sSup_iff {l : α} (h : IsSuccPrelimit l) :
+    l ≤ sSup s ↔ IsCofinalFor (Iio l) s := by
+  simp_rw [le_sSup_iff_forall_lt, IsCofinalFor, mem_Iio]
+  grind [lt_iff_exists_lt]
+
 end CompleteLinearOrder
+
+namespace WithTop
+
+variable [ConditionallyCompleteLinearOrderBot α]
+
+-- TODO: extract after #38612
+theorem sSup_eq_top_iff_lt {s : Set (WithTop α)} : sSup s = ⊤ ↔ ∀ a : α, ∃ b ∈ s, a < b := by
+  rw [sSup_eq_top]
+  exact forall_lt_top
+
+-- TODO: extract after #38612
+theorem iSup_eq_top_iff_lt {f : ι → WithTop α} : iSup f = ⊤ ↔ ∀ a : α, ∃ i, a < f i :=
+  sSup_eq_top_iff_lt.trans <| forall_congr' fun _ ↦ exists_range_iff
+
+-- TODO: extract after #38612
+theorem sSup_eq_top_iff_le [NoMaxOrder α] {s : Set (WithTop α)} :
+    sSup s = ⊤ ↔ ∀ a : α, ∃ b ∈ s, a ≤ b := by
+  rw [eq_top_iff, isSuccPrelimit_top.le_sSup_iff]
+  exact forall_lt_top
+
+-- TODO: extract after #38612
+theorem iSup_eq_top_iff_le [NoMaxOrder α] {f : ι → WithTop α} :
+    iSup f = ⊤ ↔ ∀ a : α, ∃ i, a ≤ f i :=
+  sSup_eq_top_iff_le.trans <| forall_congr' fun _ ↦ exists_range_iff
+
+end WithTop

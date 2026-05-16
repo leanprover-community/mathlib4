@@ -143,6 +143,13 @@ theorem Set.Finite.lt_ciInf_iff {s : Set ι} {f : ι → α} (hs : s.Finite)
     rw [← hx]
     exact H _ hmem
 
+-- #38356
+theorem iSup_ne_top {ι α : Type*} {f : ι → α} [Finite ι] [Nontrivial α] [CompleteLinearOrder α]
+    (h : ∀ x, f x ≠ ⊤) : iSup f ≠ ⊤ := by
+  rcases Set.range f |>.eq_empty_or_nonempty with hempty | hnonempty
+  · simp [iSup, hempty]
+  grind [iSup, hnonempty.csSup_mem <| Set.finite_range f]
+
 section ListMultiset
 
 lemma List.iSup_mem_map_of_exists_sSup_empty_le {l : List ι} (f : ι → α)

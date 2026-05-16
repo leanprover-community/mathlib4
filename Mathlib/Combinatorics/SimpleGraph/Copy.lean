@@ -335,7 +335,8 @@ lemma maxDegree_mono {H : SimpleGraph V} [Fintype V] [DecidableRel G.Adj] [Decid
 theorem Copy.minDegree_le [Fintype V] [Fintype W] [DecidableRel G.Adj] [DecidableRel H.Adj]
     {f : Copy G H} (hf : Function.Surjective f) : G.minDegree ≤ H.minDegree := by
   cases isEmpty_or_nonempty W
-  · simp [Function.isEmpty f]
+  · have := Function.isEmpty f
+    simp
   refine H.le_minDegree_of_forall_le_degree _ fun w ↦ ?_
   obtain ⟨v, rfl⟩ := hf w
   grw [← f.degree_le, ← minDegree_le_degree]
@@ -343,6 +344,15 @@ theorem Copy.minDegree_le [Fintype V] [Fintype W] [DecidableRel G.Adj] [Decidabl
 theorem Hom.minDegree_le [Fintype V] [Fintype W] [DecidableRel G.Adj] [DecidableRel H.Adj]
     {f : G →g H} (hf : Function.Bijective f) : G.minDegree ≤ H.minDegree :=
   Copy.minDegree_le (f := ⟨f, hf.injective⟩) hf.surjective
+
+theorem maxDegree_induce_of_support_subset [Fintype V] [DecidableRel G.Adj] {s : Set V}
+    [DecidablePred (· ∈ s)] (h : G.support ⊆ s) : (G.induce s).maxDegree = G.maxDegree := by
+  apply le_antisymm <| Copy.max_degree_le <| Embedding.induce s |>.toCopy
+  refine G.maxDegree_le_of_forall_degree_le _ fun v ↦ ?_
+  by_cases hv : G.IsIsolated v
+  · simp [hv]
+  grw [← degree_le_maxDegree _ ⟨v, h <| G.mem_support_iff_not_isIsolated.mpr hv⟩,
+    degree_induce_of_neighborSet_subset <| G.neighborSet_subset_support v |>.trans h]
 
 end IsContained
 

@@ -782,6 +782,25 @@ theorem neighborSet_compl (G : SimpleGraph V) (v : V) :
   ext w
   simp [and_comm, eq_comm]
 
+-- #38747
+variable (v) in
+theorem neighborSet_ne_univ : G.neighborSet v ≠ .univ :=
+  Set.ne_univ_iff_exists_notMem _ |>.mpr ⟨v, G.notMem_neighborSet_self⟩
+
+-- #38747
+@[simp]
+theorem neighborSet_top : neighborSet ⊤ v = {v}ᶜ := by
+  grind [mem_neighborSet, top_adj]
+
+-- #38747
+theorem neighborSet_bot : neighborSet ⊥ v = ∅ := by
+  grind [mem_neighborSet, bot_adj]
+
+-- #38747
+variable {G} in
+theorem Adj.nontrivial (hadj : G.Adj u v) : Nontrivial V :=
+  ⟨u, v, hadj.ne⟩
+
 /-- The set of common neighbors between two vertices `v` and `w` in a graph `G` is the
 intersection of the neighbor sets of `v` and `w`. -/
 def commonNeighbors (v w : V) : Set V :=
@@ -905,5 +924,45 @@ attribute [simp] IsIsolated.neighborSet_eq_empty
 
 lemma mem_support_iff_not_isIsolated : v ∈ G.support ↔ ¬ G.IsIsolated v := by
   simp [mem_support, IsIsolated]
+
+-- #38747
+@[simp]
+theorem notMem_support_iff_isIsolated : v ∉ G.support ↔ G.IsIsolated v := by
+  simp [mem_support_iff_not_isIsolated]
+
+-- #38747
+variable {G} in
+theorem exists_adj_iff_not_isIsolated : (∃ u, G.Adj v u) ↔ ¬G.IsIsolated v := by
+  simp [IsIsolated]
+
+-- #38747
+@[simp]
+theorem IsIsolated.of_subsingleton [Subsingleton V] (G : SimpleGraph V) (v : V) :
+    G.IsIsolated v :=
+  fun _ hadj ↦ not_nontrivial V hadj.nontrivial
+
+-- #38747
+variable {G} in
+theorem nontrivial_of_not_isIsolated (h : ¬G.IsIsolated v) : Nontrivial V :=
+  exists_adj_iff_not_isIsolated.mpr h |>.elim fun _ ↦ Adj.nontrivial
+
+-- #38747
+variable {G} in
+theorem Adj.not_isIsolated_left (h : G.Adj u v) : ¬G.IsIsolated u :=
+  exists_adj_iff_not_isIsolated.mp ⟨_, h⟩
+
+-- #38747
+variable {G} in
+theorem Adj.not_isIsolated_right (h : G.Adj u v) : ¬G.IsIsolated v :=
+  h.symm.not_isIsolated_left
+
+-- #38747
+@[simp]
+theorem isIsolated_bot : IsIsolated ⊥ v :=
+  neighborSet_eq_empty _ |>.mp neighborSet_bot
+
+-- #38747
+theorem eq_bot_iff_isIsolated : G = ⊥ ↔ ∀ v, G.IsIsolated v := by
+  simp [eq_bot_iff_forall_not_adj, ← neighborSet_eq_empty, Set.eq_empty_iff_forall_notMem]
 
 end SimpleGraph
