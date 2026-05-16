@@ -600,7 +600,7 @@ section arrowCongr
 
 -- Difference from above: `R₁` and `R₂` are commutative
 /-!
-The modules for `arrowCongr` and its lemmas below are related via the semilinearities
+The modules for `arrowCongr` and its lemmas below are related by the following semilinear maps
 ```
 M₁  ←⎯⎯⎯σ₁₂⎯⎯⎯→ M₂  ←⎯⎯⎯σ₂₃⎯⎯⎯→ M₃
 ⏐               ⏐               ⏐

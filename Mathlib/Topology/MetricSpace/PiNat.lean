@@ -30,9 +30,9 @@ One can define a combinatorial distance on `Π (n : ℕ), E n`, as follows:
   on `Π (n : ℕ), E n`, compatible with the topology when the `E n` have the discrete topology.
 * `PiNat.metricSpace`: the metric space structure, given by this distance. Not registered as an
   instance. This space is a complete metric space.
-* `PiNat.metricSpaceOfDiscreteUniformity`: the same metric space structure, but adjusting the
-  uniformity defeqness when the `E n` already have the discrete uniformity. Not registered as an
-  instance
+* `PiNat.metricSpaceOfDiscreteUniformity`: the same metric space structure, but arranged so that
+  the uniformity is definitionally equal when the `E n` already have the discrete uniformity. Not
+  registered as an instance
 * `PiNat.metricSpaceNatNat`: the particular case of `ℕ → ℕ`, not registered as an instance.
 
 These results are used to construct continuous functions on `Π n, E n`:

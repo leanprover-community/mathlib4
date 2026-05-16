@@ -26,7 +26,7 @@ On a `Fintype`, we can construct
 * an `OrderTop` from `SemilatticeSup`.
 * a `BoundedOrder` from `Lattice`.
 
-Those are marked as `def` to avoid defeqness issues.
+Those are marked as `def` to avoid definitional equality issues.
 
 ## Completion instances
 

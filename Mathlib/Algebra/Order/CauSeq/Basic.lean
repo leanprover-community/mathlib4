@@ -19,7 +19,7 @@ public import Mathlib.Tactic.GCongr
 
 A basic theory of Cauchy sequences, used in the construction of the reals and p-adic numbers. Where
 applicable, lemmas that will be reused in other contexts have been stated in extra generality.
-There are other "versions" of Cauchyness in the library, in particular Cauchy filters in topology.
+There are other Cauchy notions in the library, in particular Cauchy filters in topology.
 This is a concrete implementation that is useful for simplicity and computability reasons.
 
 ## Important definitions

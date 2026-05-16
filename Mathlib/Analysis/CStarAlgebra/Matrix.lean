@@ -248,8 +248,8 @@ lemma l2_opNorm_diagonal (v : n → 𝕜) : ‖(diagonal v : Matrix n n 𝕜)‖
 lemma l2_opNNNorm_diagonal (v : n → 𝕜) : ‖(diagonal v : Matrix n n 𝕜)‖₊ = ‖v‖₊ :=
   Subtype.ext <| l2_opNorm_diagonal (n := n) (𝕜 := 𝕜) v
 
-/-- The normed algebra structure on `Matrix n n 𝕜` arising from the operator norm given by the
-identification with (continuous) linear endomorphisms of `EuclideanSpace 𝕜 n`. -/
+/-- The normed space structure on `Matrix m n 𝕜` arising from the operator norm given by the
+identification with (continuous) linear maps `EuclideanSpace 𝕜 n →L[𝕜] EuclideanSpace 𝕜 m`. -/
 @[instance_reducible]
 def instL2OpNormedSpace : NormedSpace 𝕜 (Matrix m n 𝕜) where
   norm_smul_le r x := by
