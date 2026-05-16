@@ -54,6 +54,16 @@ public import Mathlib.Tactic.Clean
 public import Mathlib.Tactic.ClearExcept
 public import Mathlib.Tactic.ClearExclamation
 public import Mathlib.Tactic.Clear_
+public import Mathlib.Tactic.ClickSuggestions
+public import Mathlib.Tactic.ClickSuggestions.Apply
+public import Mathlib.Tactic.ClickSuggestions.ApplyAt
+public import Mathlib.Tactic.ClickSuggestions.FindPremises
+public import Mathlib.Tactic.ClickSuggestions.GRewrite
+public import Mathlib.Tactic.ClickSuggestions.Rewrite
+public import Mathlib.Tactic.ClickSuggestions.SectionState
+public import Mathlib.Tactic.ClickSuggestions.TryPremises
+public import Mathlib.Tactic.ClickSuggestions.Unfold
+public import Mathlib.Tactic.ClickSuggestions.Util
 public import Mathlib.Tactic.Coe
 public import Mathlib.Tactic.Common
 public import Mathlib.Tactic.ComputeAsymptotics.Lemmas
@@ -329,7 +339,6 @@ public import Mathlib.Tactic.Widget.CommDiag
 public import Mathlib.Tactic.Widget.CongrM
 public import Mathlib.Tactic.Widget.Conv
 public import Mathlib.Tactic.Widget.GCongr
-public import Mathlib.Tactic.Widget.InteractiveUnfold
 public import Mathlib.Tactic.Widget.LibraryRewrite
 public import Mathlib.Tactic.Widget.SelectInsertParamsClass
 public import Mathlib.Tactic.Widget.SelectPanelUtils
