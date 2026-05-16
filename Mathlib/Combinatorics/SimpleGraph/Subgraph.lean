@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Combinatorics.SimpleGraph.DeleteEdges
 public import Mathlib.Data.Fintype.Powerset
+public import Mathlib.Data.Set.Lattice.Image
 
 /-!
 # Subgraphs of a simple graph
@@ -564,8 +565,7 @@ theorem edgeSet_iSup (f : ι → G.Subgraph) :
 
 @[simp]
 theorem edgeSet_iInf (f : ι → G.Subgraph) :
-    (⨅ i, f i).edgeSet = (⋂ i, (f i).edgeSet) ∩ G.edgeSet := by
-  simp [iInf]
+    (⨅ i, f i).edgeSet = (⋂ i, (f i).edgeSet) ∩ G.edgeSet := by simp [iInf]
 
 @[simp]
 theorem spanningCoe_top : (⊤ : Subgraph G).spanningCoe = G := rfl

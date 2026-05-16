@@ -43,9 +43,7 @@ properties to computational properties of the matrix.
 @[expose] public section
 
 
-open Matrix
-
-open Finset SimpleGraph
+open Matrix Finset SimpleGraph GraphLike
 
 variable {α V : Type*}
 
@@ -321,7 +319,7 @@ variable (R) in
 /-- The number of all darts in a simple finite graph is equal to the dot product of
 `G.adjMatrix α *ᵥ 1` and `1`. -/
 theorem natCast_card_dart_eq_dotProduct [NonAssocSemiring α] :
-    (Fintype.card G.Dart : α) = adjMatrix α G *ᵥ 1 ⬝ᵥ 1 := by
+    (Fintype.card (darts G) : α) = adjMatrix α G *ᵥ 1 ⬝ᵥ 1 := by
   simp [G.dart_card_eq_sum_degrees, dotProduct_one]
 
 variable {G}
@@ -334,7 +332,7 @@ theorem adjMatrix_mulVec_const_apply_of_regular [NonAssocSemiring α] {d : ℕ} 
   simp [hd v]
 
 theorem adjMatrix_pow_apply_eq_card_walk [DecidableEq V] [Semiring α] (n : ℕ) (u v : V) :
-    (G.adjMatrix α ^ n) u v = Fintype.card { p : G.Walk u v | p.length = n } := by
+    (G.adjMatrix α ^ n) u v = Fintype.card { p : Walk G u v | p.length = n } := by
   rw [card_set_walk_length_eq]
   induction n generalizing u v with
   | zero => obtain rfl | h := eq_or_ne u v <;> simp [finsetWalkLength, *]

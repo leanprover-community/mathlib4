@@ -24,6 +24,8 @@ are adjacent if and only if `u - v ∈ s` or `v - u ∈ s`. The elements of `s` 
 
 @[expose] public section
 
+open GraphLike
+
 namespace SimpleGraph
 
 open Walk
@@ -146,20 +148,20 @@ theorem cycleGraph_connected {n : ℕ} : (cycleGraph (n + 1)).Connected :=
 section cycle
 
 set_option backward.privateInPublic true in
-private def cycleGraph.cycleCons (n : ℕ) : ∀ m : Fin (n + 3), (cycleGraph (n + 3)).Walk m 0
+private def cycleGraph.cycleCons (n : ℕ) : ∀ m : Fin (n + 3), Walk (cycleGraph (n + 3)) m 0
   | ⟨0, h⟩ => Walk.nil
   | ⟨m + 1, h⟩ =>
     have hadj : (cycleGraph (n + 3)).Adj ⟨m + 1, h⟩ ⟨m, Nat.lt_of_succ_lt h⟩ := by
       simp [cycleGraph_adj, Fin.ext_iff, Fin.sub_val_of_le]
-    Walk.cons hadj (cycleGraph.cycleCons n ⟨m, Nat.lt_of_succ_lt h⟩)
+    Walk.cons (Adj.toStep hadj) (cycleGraph.cycleCons n ⟨m, Nat.lt_of_succ_lt h⟩)
 
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 /-- The Eulerian cycle of `cycleGraph (n + 3)` -/
-def cycleGraph.cycle (n : ℕ) : (cycleGraph (n + 3)).Walk 0 0 :=
+def cycleGraph.cycle (n : ℕ) : Walk (cycleGraph (n + 3)) 0 0 :=
   have hadj : (cycleGraph (n + 3)).Adj 0 (Fin.last (n + 2)) := by
     simp [cycleGraph_adj]
-  Walk.cons hadj (cycleGraph.cycleCons n (Fin.last (n + 2)))
+  Walk.cons (Adj.toStep hadj) (cycleGraph.cycleCons n (Fin.last (n + 2)))
 
 @[deprecated (since := "2026-02-15")]
 alias cycleGraph_EulerianCircuit := cycleGraph.cycle

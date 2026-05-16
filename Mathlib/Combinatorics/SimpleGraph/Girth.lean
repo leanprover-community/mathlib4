@@ -23,6 +23,8 @@ cycle, they give `0` or `∞` respectively if the graph is acyclic.
 
 @[expose] public section
 
+open GraphLike
+
 namespace SimpleGraph
 variable {α : Type*} {G : SimpleGraph α}
 
@@ -34,13 +36,13 @@ The extended girth of a simple graph is the length of its smallest cycle, or `�
 acyclic.
 -/
 noncomputable def egirth (G : SimpleGraph α) : ℕ∞ :=
-  ⨅ a, ⨅ w : G.Walk a a, ⨅ _ : w.IsCycle, w.length
+  ⨅ a, ⨅ w : Walk G a a, ⨅ _ : w.IsCycle, w.length
 
 @[simp]
-lemma le_egirth {n : ℕ∞} : n ≤ G.egirth ↔ ∀ a (w : G.Walk a a), w.IsCycle → n ≤ w.length := by
+lemma le_egirth {n : ℕ∞} : n ≤ G.egirth ↔ ∀ a (w : Walk G a a), w.IsCycle → n ≤ w.length := by
   simp [egirth]
 
-lemma egirth_le_length {a} {w : G.Walk a a} (h : w.IsCycle) : G.egirth ≤ w.length :=
+lemma egirth_le_length {a} {w : Walk G a a} (h : w.IsCycle) : G.egirth ≤ w.length :=
   le_egirth.mp le_rfl a w h
 
 @[simp]
@@ -53,7 +55,7 @@ lemma egirth_anti : Antitone (egirth : SimpleGraph α → ℕ∞) :=
   fun G H h ↦ iInf_mono fun a ↦ iInf₂_mono' fun w hw ↦ ⟨w.mapLe h, hw.mapLe _, by simp⟩
 
 lemma exists_egirth_eq_length :
-    (∃ (a : α) (w : G.Walk a a), w.IsCycle ∧ G.egirth = w.length) ↔ ¬ G.IsAcyclic := by
+    (∃ (a : α) (w : Walk G a a), w.IsCycle ∧ G.egirth = w.length) ↔ ¬ G.IsAcyclic := by
   refine ⟨?_, fun h ↦ ?_⟩
   · rintro ⟨a, w, hw, _⟩ hG
     exact hG _ hw
@@ -78,7 +80,7 @@ acyclic.
 noncomputable def girth (G : SimpleGraph α) : ℕ :=
   G.egirth.toNat
 
-lemma girth_le_length {a} {w : G.Walk a a} (h : w.IsCycle) : G.girth ≤ w.length :=
+lemma girth_le_length {a} {w : Walk G a a} (h : w.IsCycle) : G.girth ≤ w.length :=
   ENat.coe_le_coe.mp <| G.egirth.coe_toNat_le_self.trans <| egirth_le_length h
 
 lemma three_le_girth (hG : ¬ G.IsAcyclic) : 3 ≤ G.girth :=
@@ -93,7 +95,7 @@ lemma girth_anti {G' : SimpleGraph α} (hab : G ≤ G') (h : ¬ G.IsAcyclic) : G
   ENat.toNat_le_toNat (egirth_anti hab) <| egirth_eq_top.not.mpr h
 
 lemma exists_girth_eq_length :
-    (∃ (a : α) (w : G.Walk a a), w.IsCycle ∧ G.girth = w.length) ↔ ¬ G.IsAcyclic := by
+    (∃ (a : α) (w : Walk G a a), w.IsCycle ∧ G.girth = w.length) ↔ ¬ G.IsAcyclic := by
   refine ⟨by tauto, fun h ↦ ?_⟩
   obtain ⟨_, _, _⟩ := exists_egirth_eq_length.mpr h
   simp_all only [girth, ENat.toNat_coe]

@@ -23,9 +23,11 @@ This file defines k-edge-connectivity for simple graphs.
 
 @[expose] public section
 
-namespace SimpleGraph
+open GraphLike SimpleGraph
 
 variable {V : Type*} {G H : SimpleGraph V} {k l : ℕ} {u v w x y : V}
+
+namespace SimpleGraph
 
 variable (G k u v) in
 /-- Two vertices are `k`-edge-reachable if they remain reachable after removing strictly fewer than
@@ -67,14 +69,14 @@ protected lemma IsEdgeReachable.zero : G.IsEdgeReachable 0 u v := by simp [IsEdg
 @[simp] protected lemma IsEdgeConnected.zero : G.IsEdgeConnected 0 := fun _ _ ↦ .zero
 
 @[simp]
-lemma isEdgeReachable_one : G.IsEdgeReachable 1 u v ↔ G.Reachable u v := by
+lemma isEdgeReachable_one : G.IsEdgeReachable 1 u v ↔ Reachable G u v := by
   simp [IsEdgeReachable, ENat.lt_one_iff_eq_zero]
 
 @[simp]
 lemma isEdgeConnected_one : G.IsEdgeConnected 1 ↔ G.Preconnected := by
   simp [IsEdgeConnected, Preconnected]
 
-lemma IsEdgeReachable.reachable (hk : k ≠ 0) (huv : G.IsEdgeReachable k u v) : G.Reachable u v :=
+lemma IsEdgeReachable.reachable (hk : k ≠ 0) (huv : G.IsEdgeReachable k u v) : Reachable G u v :=
   isEdgeReachable_one.mp (huv.anti (Nat.one_le_iff_ne_zero.mpr hk))
 
 @[nontriviality]
@@ -156,10 +158,12 @@ lemma exists_adj_isEdgeReachable_two (hne : u ≠ v) (h : G.IsEdgeReachable 2 u 
     have := hw.tail.eq_snd_of_mem_edges (Sym2.eq_swap ▸ hh)
     simp only [Walk.getVert_tail, Nat.reduceAdd] at this
     simpa using hw.getVert_eq_start_iff_of_not_nil (Walk.not_nil_of_ne hne) |>.mp this.symm
-  · refine Walk.reachable <| Walk.cons (deleteEdges_adj.mpr ⟨this, ?_⟩) Walk.nil
+  · refine Walk.reachable <| Walk.cons (Adj.toStep <| deleteEdges_adj.mpr ⟨this, ?_⟩) Walk.nil
     contrapose h'
     refine (Set.subsingleton_iff_singleton h').mp ?_
     exact Set.encard_le_one_iff_subsingleton.mp (Order.le_of_lt_succ hs)
+
+end SimpleGraph
 
 /-!
 ### 2-reachability
@@ -167,8 +171,8 @@ lemma exists_adj_isEdgeReachable_two (hne : u ≠ v) (h : G.IsEdgeReachable 2 u 
 In this section, we prove results about 2-connected components of a graph, but without naming them.
 -/
 
-namespace Walk
-variable {w : G.Walk u v}
+namespace GraphLike.Walk
+variable {w : Walk G u v}
 
 private lemma IsTrail.isEdgeReachable_two_of_isEdgeReachable_two_aux (hw : w.IsTrail)
     (huv : G.IsEdgeReachable 2 u v) (huy : x ∈ w.support) : G.IsEdgeReachable 2 u x := by
@@ -196,8 +200,8 @@ lemma IsTrail.not_mem_edges_of_not_isEdgeReachable_two (hw : w.IsTrail)
   mt (hw.isEdgeReachable_two_of_isEdgeReachable_two_aux huv) huy
 
 /-- Vertices of a closed trail are 2-edge reachable. -/
-lemma IsTrail.isEdgeReachable_two {w : G.Walk u u} (hw : w.IsTrail) (hx : x ∈ w.support)
+lemma IsTrail.isEdgeReachable_two {w : Walk G u u} (hw : w.IsTrail) (hx : x ∈ w.support)
     (hy : y ∈ w.support) : G.IsEdgeReachable 2 x y :=
   hw.isEdgeReachable_two_of_isEdgeReachable_two .rfl hx hy
 
-end SimpleGraph.Walk
+end GraphLike.Walk

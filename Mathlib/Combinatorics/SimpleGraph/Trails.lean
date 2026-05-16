@@ -39,35 +39,36 @@ Eulerian trails
 @[expose] public section
 
 
-namespace SimpleGraph
+namespace GraphLike.Walk
 
 variable {V : Type*} {G : SimpleGraph V}
 
-namespace Walk
+open SimpleGraph GraphLike SymmGraphLike
 
 /-- The edges of a trail as a finset, since each edge in a trail appears exactly once. -/
-abbrev IsTrail.edgesFinset {u v : V} {p : G.Walk u v} (h : p.IsTrail) : Finset (Sym2 V) :=
+abbrev IsTrail.edgesFinset {u v : V} {p : Walk G u v} (h : p.IsTrail) : Finset (Sym2 V) :=
   ⟨p.edges, h.edges_nodup⟩
 
 variable [DecidableEq V]
 
-theorem IsTrail.even_countP_edges_iff {u v : V} {p : G.Walk u v} (ht : p.IsTrail) (x : V) :
+theorem IsTrail.even_countP_edges_iff {u v : V} {p : Walk G u v} (ht : p.IsTrail) (x : V) :
     Even (p.edges.countP fun e => x ∈ e) ↔ u ≠ v → x ≠ u ∧ x ≠ v := by
   induction p with
   | nil => simp
   | cons huv p ih =>
     rw [isTrail_cons] at ht
     specialize ih ht.1
-    simp only [List.countP_cons, Ne, edges_cons, Sym2.mem_iff]
+    simp only [edges_cons, SimpleGraph.src_def, SimpleGraph.tgt_def, SimpleGraph.val_step_eq,
+      SimpleGraph.edge_def, List.countP_cons, Sym2.mem_iff, Bool.decide_or, Bool.or_eq_true,
+      decide_eq_true_eq, Ne]
     split_ifs with h
-    · rw [decide_eq_true_eq] at h
-      obtain (rfl | rfl) := h
+    · obtain (rfl | rfl) := h
       · rw [Nat.even_add_one, ih]
         simp only [huv.ne, imp_false, Ne, not_false_iff, true_and, not_forall,
           Classical.not_not, exists_prop, not_true, false_and,
           and_iff_right_iff_imp]
         rintro rfl rfl
-        exact G.loopless.irrefl _ huv
+        exact G.loopless.irrefl _ huv.adj
       · have := huv.ne; grind
     · grind
 
@@ -76,33 +77,33 @@ theorem IsTrail.even_countP_edges_iff {u v : V} {p : G.Walk u v} (ht : p.IsTrail
 that these are trails.
 
 Combine with `p.IsCircuit` to get an Eulerian circuit (also known as an "Eulerian cycle"). -/
-def IsEulerian {u v : V} (p : G.Walk u v) : Prop :=
+def IsEulerian {u v : V} (p : Walk G u v) : Prop :=
   ∀ e, e ∈ G.edgeSet → p.edges.count e = 1
 
-theorem IsEulerian.isTrail {u v : V} {p : G.Walk u v} (h : p.IsEulerian) : p.IsTrail := by
+theorem IsEulerian.isTrail {u v : V} {p : Walk G u v} (h : p.IsEulerian) : p.IsTrail := by
   rw [isTrail_def, List.nodup_iff_count_le_one]
   intro e
   by_cases he : e ∈ p.edges
   · exact (h e (edges_subset_edgeSet _ he)).le
   · simp [List.count_eq_zero_of_not_mem he]
 
-theorem IsEulerian.mem_edges_iff {u v : V} {p : G.Walk u v} (h : p.IsEulerian) {e : Sym2 V} :
+theorem IsEulerian.mem_edges_iff {u v : V} {p : Walk G u v} (h : p.IsEulerian) {e : Sym2 V} :
     e ∈ p.edges ↔ e ∈ G.edgeSet :=
   ⟨fun h => p.edges_subset_edgeSet h,
    fun he => by simpa [Nat.succ_le_iff] using (h e he).ge⟩
 
 /-- The edge set of an Eulerian graph is finite. -/
 @[implicit_reducible]
-def IsEulerian.fintypeEdgeSet {u v : V} {p : G.Walk u v} (h : p.IsEulerian) :
+def IsEulerian.fintypeEdgeSet {u v : V} {p : Walk G u v} (h : p.IsEulerian) :
     Fintype G.edgeSet :=
   Fintype.ofFinset h.isTrail.edgesFinset fun e => by
     simp only [Finset.mem_mk, Multiset.mem_coe, h.mem_edges_iff]
 
-theorem IsTrail.isEulerian_of_forall_mem {u v : V} {p : G.Walk u v} (h : p.IsTrail)
+theorem IsTrail.isEulerian_of_forall_mem {u v : V} {p : Walk G u v} (h : p.IsTrail)
     (hc : ∀ e, e ∈ G.edgeSet → e ∈ p.edges) : p.IsEulerian := fun e he =>
   List.count_eq_one_of_mem h.edges_nodup (hc e he)
 
-theorem isEulerian_iff {u v : V} (p : G.Walk u v) :
+theorem isEulerian_iff {u v : V} (p : Walk G u v) :
     p.IsEulerian ↔ p.IsTrail ∧ ∀ e, e ∈ G.edgeSet → e ∈ p.edges := by
   constructor
   · intro h
@@ -110,31 +111,32 @@ theorem isEulerian_iff {u v : V} (p : G.Walk u v) :
   · rintro ⟨h, hl⟩
     exact h.isEulerian_of_forall_mem hl
 
-theorem IsTrail.isEulerian_iff {u v : V} {p : G.Walk u v} (hp : p.IsTrail) :
+theorem IsTrail.isEulerian_iff {u v : V} {p : Walk G u v} (hp : p.IsTrail) :
     p.IsEulerian ↔ p.edgeSet = G.edgeSet :=
   ⟨fun h ↦ Set.Subset.antisymm p.edges_subset_edgeSet (p.isEulerian_iff.mp h).2,
    fun h ↦ p.isEulerian_iff.mpr ⟨hp, by simp [← h]⟩⟩
 
-theorem IsEulerian.edgeSet_eq {u v : V} {p : G.Walk u v} (h : p.IsEulerian) :
+theorem IsEulerian.edgeSet_eq {u v : V} {p : Walk G u v} (h : p.IsEulerian) :
     p.edgeSet = G.edgeSet := by
   rwa [← h.isTrail.isEulerian_iff]
 
-theorem IsEulerian.edgesFinset_eq [Fintype G.edgeSet] {u v : V} {p : G.Walk u v}
+theorem IsEulerian.edgesFinset_eq [Fintype G.edgeSet] {u v : V} {p : Walk G u v}
     (h : p.IsEulerian) : h.isTrail.edgesFinset = G.edgeFinset := by
   ext e
   simp [h.mem_edges_iff]
 
-theorem IsEulerian.even_degree_iff {x u v : V} {p : G.Walk u v} (ht : p.IsEulerian) [Fintype V]
+theorem IsEulerian.even_degree_iff {x u v : V} {p : Walk G u v} (ht : p.IsEulerian) [Fintype V]
     [DecidableRel G.Adj] : Even (G.degree x) ↔ u ≠ v → x ≠ u ∧ x ≠ v := by
   convert ht.isTrail.even_countP_edges_iff x
-  rw [← Multiset.coe_countP, Multiset.countP_eq_card_filter, ← card_incidenceFinset_eq_degree]
+  rw [← Multiset.coe_countP, Multiset.countP_eq_card_filter,
+    ← SimpleGraph.card_incidenceFinset_eq_degree]
   change Multiset.card _ = _
   congr 1
   convert_to _ = (ht.isTrail.edgesFinset.filter (x ∈ ·)).val
   rw [ht.edgesFinset_eq, G.incidenceFinset_eq_filter x]
 
 theorem IsEulerian.card_filter_odd_degree [Fintype V] [DecidableRel G.Adj] {u v : V}
-    {p : G.Walk u v} (ht : p.IsEulerian) {s}
+    {p : Walk G u v} (ht : p.IsEulerian) {s}
     (h : s = (Finset.univ : Finset V).filter fun v => Odd (G.degree v)) :
     s.card = 0 ∨ s.card = 2 := by
   subst s
@@ -149,13 +151,11 @@ theorem IsEulerian.card_filter_odd_degree [Fintype V] [DecidableRel G.Adj] {u v 
       ext x
       simp [hn, imp_iff_not_or]
 
-theorem IsEulerian.card_odd_degree [Fintype V] [DecidableRel G.Adj] {u v : V} {p : G.Walk u v}
+theorem IsEulerian.card_odd_degree [Fintype V] [DecidableRel G.Adj] {u v : V} {p : Walk G u v}
     (ht : p.IsEulerian) : Fintype.card { v : V | Odd (G.degree v) } = 0 ∨
       Fintype.card { v : V | Odd (G.degree v) } = 2 := by
   rw [← Set.toFinset_card]
   apply IsEulerian.card_filter_odd_degree ht
   simp
 
-end Walk
-
-end SimpleGraph
+end GraphLike.Walk

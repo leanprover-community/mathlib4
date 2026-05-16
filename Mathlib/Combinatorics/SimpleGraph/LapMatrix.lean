@@ -138,16 +138,16 @@ theorem lapMatrix_mulVec_eq_zero_iff_forall_adj {x : V → ℝ} :
 
 theorem lapMatrix_toLinearMap₂'_apply'_eq_zero_iff_forall_reachable (x : V → ℝ) :
     Matrix.toLinearMap₂' ℝ (G.lapMatrix ℝ) x x = 0 ↔
-      ∀ i j : V, G.Reachable i j → x i = x j := by
+      ∀ i j : V, Reachable G i j → x i = x j := by
   rw [lapMatrix_toLinearMap₂'_apply'_eq_zero_iff_forall_adj]
   refine ⟨?_, fun h i j hA ↦ h i j hA.reachable⟩
   intro h i j ⟨w⟩
   induction w with
   | nil => rfl
-  | cons hA _ h' => exact (h _ _ hA).trans h'
+  | cons hA _ h' => exact (h _ _ hA.adj).trans h'
 
 theorem lapMatrix_mulVec_eq_zero_iff_forall_reachable {x : V → ℝ} :
-    G.lapMatrix ℝ *ᵥ x = 0 ↔ ∀ i j : V, G.Reachable i j → x i = x j := by
+    G.lapMatrix ℝ *ᵥ x = 0 ↔ ∀ i j : V, Reachable G i j → x i = x j := by
   rw [← (posSemidef_lapMatrix ℝ G).toLinearMap₂'_zero_iff, star_trivial,
       lapMatrix_toLinearMap₂'_apply'_eq_zero_iff_forall_reachable]
 

@@ -3521,6 +3521,9 @@ public import Mathlib.Combinatorics.Graph.Delete
 public import Mathlib.Combinatorics.Graph.Lattice
 public import Mathlib.Combinatorics.Graph.Maps
 public import Mathlib.Combinatorics.Graph.Subgraph
+public import Mathlib.Combinatorics.GraphLike.Basic
+public import Mathlib.Combinatorics.GraphLike.Walks.Basic
+public import Mathlib.Combinatorics.GraphLike.Walks.Simple
 public import Mathlib.Combinatorics.HalesJewett
 public import Mathlib.Combinatorics.Hall.Basic
 public import Mathlib.Combinatorics.Hall.Finite
@@ -3605,6 +3608,7 @@ public import Mathlib.Combinatorics.SimpleGraph.Finite
 public import Mathlib.Combinatorics.SimpleGraph.Finsubgraph
 public import Mathlib.Combinatorics.SimpleGraph.FiveWheelLike
 public import Mathlib.Combinatorics.SimpleGraph.Girth
+public import Mathlib.Combinatorics.SimpleGraph.GraphLike
 public import Mathlib.Combinatorics.SimpleGraph.Hall
 public import Mathlib.Combinatorics.SimpleGraph.Hamiltonian
 public import Mathlib.Combinatorics.SimpleGraph.Hasse
@@ -7314,6 +7318,7 @@ public import Mathlib.Tactic.SetLike
 public import Mathlib.Tactic.SetNotationForOrder
 public import Mathlib.Tactic.SimpIntro
 public import Mathlib.Tactic.SimpRw
+public import Mathlib.Tactic.Simproc.CastData
 public import Mathlib.Tactic.Simproc.Divisors
 public import Mathlib.Tactic.Simproc.ExistsAndEq
 public import Mathlib.Tactic.Simproc.Factors
