@@ -522,7 +522,6 @@ theorem toLinearMap_ofAlgHom (f : A₁ →ₐ[R] A₂) (g : A₂ →ₐ[R] A₁)
     (ofAlgHom f g h₁ h₂).toLinearMap = f.toLinearMap :=
   LinearMap.ext fun _ => rfl
 
-
 theorem toLinearEquiv_toLinearMap : e.toLinearEquiv.toLinearMap = e.toLinearMap :=
   rfl
 

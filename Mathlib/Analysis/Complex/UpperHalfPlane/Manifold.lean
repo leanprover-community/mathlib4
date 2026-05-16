@@ -223,8 +223,7 @@ lemma det_smulFDeriv (g : GL (Fin 2) ℝ) (z : ℂ) :
   simp only [smulFDeriv, σ]
   rcases g.det_ne_zero.lt_or_gt with h | h
   · simp [h.not_gt, ContinuousLinearMap.det, LinearMap.det_restrictScalars,
-      Algebra.norm_complex_eq, Complex.normSq_eq_norm_sq, ← pow_mul, sign_neg h, neg_div,
-      ]
+      Algebra.norm_complex_eq, Complex.normSq_eq_norm_sq, ← pow_mul, sign_neg h, neg_div]
   · simp [ContinuousLinearMap.det, h, LinearMap.det_restrictScalars,
       Algebra.norm_complex_eq, Complex.normSq_eq_norm_sq, ← pow_mul]
 
