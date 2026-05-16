@@ -408,11 +408,15 @@ noncomputable abbrev mvfderiv (g : M → F) :
     Π x : M, TangentSpace I x →L[𝕜] F :=
   fun x ↦ (NormedSpace.fromTangentSpace <| g x).toContinuousLinearMap ∘L (mfderiv% g x)
 
+@[deprecated (since := "2026-05-17")] alias extDerivFun := mvfderiv
+
 @[simp]
 lemma mvfderiv_add {g g' : M → F} {x : M} (hg : MDiffAt g x) (hg' : MDiffAt g' x) :
     mvfderiv I (g + g') x = mvfderiv I g x + mvfderiv I g' x := by
   simp [mvfderiv, mfderiv_add hg hg']
   congr
+
+@[deprecated (since := "2026-05-17")] alias extDerivFun_add := mvfderiv_add
 
 @[simp]
 lemma mvfderiv_zero {x : M} : mvfderiv (I := I) (0 : M → F) x = 0 := by
@@ -421,3 +425,5 @@ lemma mvfderiv_zero {x : M} : mvfderiv (I := I) (0 : M → F) x = 0 := by
     rw [← mvfderiv_add (by exact mdifferentiable_const ..) (by exact mdifferentiable_const ..)]
     simp
   simpa using this
+
+@[deprecated (since := "2026-05-17")] alias extDerivFun_zero := mvfderiv_zero
