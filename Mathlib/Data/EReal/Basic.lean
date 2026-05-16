@@ -6,6 +6,7 @@ Authors: Kevin Buzzard
 module
 
 public import Mathlib.Data.ENNReal.Operations
+public import Mathlib.Order.Hom.WithTopBot
 
 /-!
 # The extended real numbers
@@ -39,6 +40,12 @@ deriving Nontrivial,
 
 /-- The canonical inclusion from reals to ereals. Registered as a coercion. -/
 @[coe] def Real.toEReal : ℝ → EReal := WithBot.some ∘ WithTop.some
+
+/-- The coercion `ℝ → EReal` bundled as a monotone map. -/
+def Real.coeOrderEmbedding : ℝ ↪o EReal := WithTop.coeOrderHom.trans WithBot.coeOrderHom
+
+@[simp]
+theorem Real.coeOrderEmbedding_apply (x : ℝ) : Real.coeOrderEmbedding x = x.toEReal := rfl
 
 namespace EReal
 
@@ -830,6 +837,16 @@ theorem lt_iff_exists_real_btwn {a b : EReal} : a < b ↔ ∃ x : ℝ, a < x ∧
     let ⟨x, ax, xb⟩ := exists_rat_btwn_of_lt hab
     ⟨(x : ℝ), ax, xb⟩,
     fun ⟨_x, ax, xb⟩ => ax.trans xb⟩
+
+theorem le_of_forall_lt_rat_imp_le {a b : EReal} (h : ∀ q : ℚ, b < (q : ℝ) → a ≤ (q : ℝ)) : a ≤ b :=
+  le_of_not_gt fun hba =>
+    let ⟨_, hb, ha⟩ := exists_rat_btwn_of_lt hba
+    ha.not_ge <| h _ hb
+
+theorem le_of_forall_rat_lt_imp_le {a b : EReal} (h : ∀ q : ℚ, (q : ℝ) < a → (q : ℝ) ≤ b) : a ≤ b :=
+  le_of_not_gt fun hba =>
+    let ⟨_, hb, ha⟩ := exists_rat_btwn_of_lt hba
+    hb.not_ge <| h _ ha
 
 /-- The set of numbers in `EReal` that are not equal to `±∞` is equivalent to `ℝ`. -/
 def neTopBotEquivReal : ({⊥, ⊤}ᶜ : Set EReal) ≃ ℝ where
