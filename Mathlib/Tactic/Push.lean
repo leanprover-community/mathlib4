@@ -40,7 +40,7 @@ attribute [push ←] ne_eq
 -- TODO: lemmas involving `∃` should be tagged using `binderNameHint`,
 -- and lemmas involving `∀` would need manual rewriting to keep the binder name.
 attribute [push]
-  forall_const forall_and forall_or_left forall_or_right forall_eq forall_eq' forall_self_imp
+  forall_const forall_and forall_or_left forall_or_right forall_eq forall_eq' Classical.skolem
   exists_const exists_or exists_and_left exists_and_right exists_eq exists_eq'
   and_or_left and_or_right and_true true_and and_false false_and
   or_and_left or_and_right or_true true_or or_false false_or
@@ -126,8 +126,10 @@ def pushCore (head : Head) (cfg : Config) (disch? : Option Simp.Discharge) (tgt 
       (simpTheorems := #[])
       (congrTheorems := ← getSimpCongrTheorems)
   let methods := match disch? with
-    | none => { pre := pushStep head cfg }
-    | some disch => { pre := pushStep head cfg, discharge? := disch, wellBehavedDischarge := false }
+    | none => { pre := pushStep head cfg, post _ := return .continue }
+    | some disch => {
+      pre := pushStep head cfg, post _ := return .continue
+      discharge? := disch, wellBehavedDischarge := false }
   (·.1) <$> Simp.main tgt ctx (methods := methods)
 
 /-- Try to rewrite using a `pull` lemma. -/
