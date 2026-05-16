@@ -920,14 +920,9 @@ theorem exists_closedBall_covering_tsum_measure_le (μ : Measure α) [SFinite μ
   let r x := if x ∈ s' then r1 x else r0 x
   have r_t0 : ∀ x ∈ t0, r x = r0 x := by
     intro x hx
-    have : x ∉ s' := by
-      simp only [s', not_exists, exists_prop, mem_iUnion, mem_closedBall, not_and, not_lt, not_le,
-        mem_diff, not_forall]
-      intro _
-      refine ⟨x, hx, ?_⟩
-      rw [dist_self]
-      exact (hr0 x hx).2.1.le
-    simp only [r, if_neg this]
+    have : x ∉ s' := fun hxs' ↦ hxs'.2 <| mem_iUnion₂.2
+      ⟨x, hx, mem_closedBall_self (hr0 x hx).2.1.le⟩
+    simp [r, this]
   -- the desired covering set is given by the union of the families constructed in the first and
   -- second steps.
   refine ⟨t0 ∪ ⋃ i : Fin N, ((↑) : s' → α) '' S i, r, ?_, ?_, ?_, ?_, ?_⟩
