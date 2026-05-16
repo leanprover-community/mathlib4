@@ -327,4 +327,22 @@ lemma pushforwardPushforwardEquivalence_counit_app_val_app (M U x) :
 
 end Equivalence
 
+set_option backward.isDefEq.respectTransparency false in
+/-- Pushforward commutes with `SheafOfModules.forgetToSheafModuleCat` -/
+noncomputable def pushforwardCompForgetToSheafModuleCat
+    (X : Cᵒᵖ) (hX : Limits.IsInitial X) (hX' : Limits.IsInitial (F.op.obj X)) :
+    SheafOfModules.pushforward φ ⋙ SheafOfModules.forgetToSheafModuleCat _ X hX ≅
+    SheafOfModules.forgetToSheafModuleCat _ _ hX' ⋙
+      sheafCompose K (ModuleCat.restrictScalars <| (φ.hom.app _).hom) ⋙
+        F.sheafPushforwardContinuous _ J K := by
+  refine NatIso.ofComponents (fun M ↦ ObjectProperty.isoMk _ ?_) ?_
+  · refine NatIso.ofComponents (fun U ↦ ?_) ?_
+    · refine (ModuleCat.restrictScalarsComp'App _ _ _ ?_ _).symm ≪≫
+        (ModuleCat.restrictScalarsComp _ _).app _
+      rw [← RingCat.hom_comp, ← RingCat.hom_comp, φ.hom.naturality]
+      dsimp
+      rw [hX'.hom_ext (hX'.to (Opposite.op (F.obj (Opposite.unop U)))) _]
+    · cat_disch
+  · cat_disch
+
 end SheafOfModules

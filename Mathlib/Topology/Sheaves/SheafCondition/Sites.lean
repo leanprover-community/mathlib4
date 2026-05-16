@@ -246,6 +246,16 @@ theorem hom_ext (h : Opens.IsBasis (Set.range B))
   ext i
   exact he i.unop
 
+theorem isIso_iff_isIso_basis {F G : Sheaf C X} (h : Opens.IsBasis (Set.range B))
+    {φ : F ⟶ G} (hi : ∀ i, IsIso (φ.hom.app (op (B i)))) :
+    IsIso φ := by
+  have : (inducedFunctor B).IsCoverDense (Opens.grothendieckTopology X) :=
+    Opens.coverDense_inducedFunctor h
+  refine Functor.IsCoverDense.iso_of_restrict_iso (G := inducedFunctor B) _ ?_
+  rw [NatTrans.isIso_iff_isIso_app]
+  exact fun _ ↦ hi _
+
+
 end TopCat.Sheaf
 
 namespace TopologicalSpace.Opens

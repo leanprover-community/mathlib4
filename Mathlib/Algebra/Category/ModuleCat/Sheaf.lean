@@ -103,6 +103,19 @@ noncomputable def forgetToSheafModuleCat
       (forget₂ (ModuleCat.{w} (R.1.obj X)) AddCommGrpCat.{w}) M.isSheaf⟩
   map f := { hom := (PresheafOfModules.forgetToPresheafModuleCat X hX).map f.1 }
 
+/-- Isomorphism on `forgetToSheafModuleCat` when given isomorphic initial objects. -/
+noncomputable def forgetToSheafModuleCatOfIso (X Y : Cᵒᵖ) (hX : Limits.IsInitial X)
+    (hY : Limits.IsInitial Y) (φ : X ≅ Y) :
+    forgetToSheafModuleCat R X hX ≅ forgetToSheafModuleCat R Y hY ⋙
+      sheafCompose J (ModuleCat.restrictScalars (R.obj.map φ.hom).hom) := by
+  refine NatIso.ofComponents (fun M ↦ ObjectProperty.isoMk _ ?_) ?_
+  · refine NatIso.ofComponents (fun U ↦ ?_) ?_
+    · dsimp [PresheafOfModules.forgetToPresheafModuleCatObjObj]
+      refine ModuleCat.restrictScalarsComp'App _ _ _ ?_ _
+      simpa using congr((R.obj.map $(hX.hom_ext (hX.to U) (φ.hom ≫ hY.to U))).hom)
+    cat_disch
+  cat_disch
+
 /-- The canonical isomorphism between
 `SheafOfModules.toSheaf R ⋙ sheafToPresheaf J AddCommGrpCat.{v}`
 and `SheafOfModules.forget R ⋙ PresheafOfModules.toPresheaf R.val`. -/
