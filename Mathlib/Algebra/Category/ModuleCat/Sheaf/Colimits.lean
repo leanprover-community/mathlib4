@@ -40,4 +40,7 @@ instance [HasColimitsOfShape K (PresheafOfModules.{v} R.obj)] :
 instance [HasColimitsOfSize.{w', w} (PresheafOfModules.{v} R.obj)] :
     HasColimitsOfSize.{w', w} (SheafOfModules.{v} R) where
 
+instance : HasFiniteColimits (SheafOfModules.{v} R) :=
+  hasFiniteColimits_of_hasColimitsOfSize.{v, v} _
+
 end SheafOfModules

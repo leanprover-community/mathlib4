@@ -643,7 +643,15 @@ theorem isSheafFor_iff_generate (R : Presieve X) :
     intro t ht
     simpa [hx] using isAmalgamation_restrict (le_generate R) _ _ ht
 
-/-- Every presheaf is a sheaf for the family `{𝟙 X}`.
+lemma IsSeparatedFor.of_subsingleton [Subsingleton (P.obj (op X))] :
+    IsSeparatedFor P R :=
+  fun _ _ _ _ ↦ by subsingleton
+
+lemma IsSheafFor.ofUnique [∀ X, Unique (P.obj X)] :
+    IsSheafFor P R :=
+  IsSeparatedFor.of_subsingleton.isSheafFor (fun x hx ↦ ⟨default, fun _ _ _ ↦ by subsingleton⟩)
+
+/-- Every presheaf is a sheaf for the family {𝟙 X}.
 
 [Elephant] C2.1.5(i)
 -/

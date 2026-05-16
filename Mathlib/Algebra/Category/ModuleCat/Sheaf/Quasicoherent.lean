@@ -250,6 +250,10 @@ morphism between coproducts of copies of the sheaf of rings. -/
 class IsQuasicoherent (M : SheafOfModules.{u} R) : Prop where
   nonempty_quasicoherentData : Nonempty (QuasicoherentData.{u₁} M) := by infer_instance
 
+noncomputable def quasicoherentData (M : SheafOfModules.{u} R) [M.IsQuasicoherent] :
+    QuasicoherentData.{u₁} M :=
+  IsQuasicoherent.nonempty_quasicoherentData.some
+
 lemma QuasicoherentData.isQuasicoherent {M : SheafOfModules.{u} R} (q : M.QuasicoherentData) :
     M.IsQuasicoherent := ⟨⟨q.shrink⟩⟩
 

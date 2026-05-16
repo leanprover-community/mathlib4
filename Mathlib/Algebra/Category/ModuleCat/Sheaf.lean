@@ -5,8 +5,9 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.Algebra.Category.ModuleCat.Presheaf
+public import Mathlib.Algebra.Category.ModuleCat.Presheaf.Abelian
 public import Mathlib.Algebra.Category.ModuleCat.Limits
+public import Mathlib.Algebra.Category.Grp.Abelian
 public import Mathlib.CategoryTheory.Sites.LocallyBijective
 public import Mathlib.CategoryTheory.Sites.Whiskering
 
@@ -127,6 +128,18 @@ instance : Preadditive (SheafOfModules.{v} R) where
 instance : (forget R).Additive where
 
 instance : (toSheaf R).Additive where
+
+open ZeroObject Limits in
+instance : HasZeroObject (SheafOfModules.{v} R) where
+  zero := ⟨⟨0, fun M _ _ _ ↦ by
+    letI (X : Cᵒᵖ) : Unique ((PresheafOfModules.presheaf (R := R.obj) 0 ⋙
+      coyoneda.obj (Opposite.op M)).obj X) :=
+      isTerminalEquivUnique _ _ (Limits.IsZero.isTerminal
+        ((Functor.map_isZero (PresheafOfModules.toPresheaf R.obj)
+          (isZero_zero _)).obj _)) _
+    exact Presieve.IsSheafFor.ofUnique⟩, by
+    rw [IsZero.iff_id_eq_zero]
+    cat_disch⟩
 
 variable {R}
 
