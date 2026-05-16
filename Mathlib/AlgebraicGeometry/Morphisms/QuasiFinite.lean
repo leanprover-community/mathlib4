@@ -19,7 +19,8 @@ We say that a morphism `f : X ⟶ Y` is locally quasi finite if `Γ(Y, U) ⟶ Γ
 quasi-finite (in the mathlib sense) for every pair of affine opens that `f` maps one into the other.
 
 This is equivalent to all the fibers `f⁻¹(x)` having an open cover of `κ(x)`-finite schemes.
-Note that this does not require `f` to be quasi-compact nor locally of finite type.
+Note that this does not require `f` to be quasi-compact nor locally of finite type. We say `f`
+is quasi-finite if it is locally quasi-finite and quasi-compact.
 
 We prove that this is stable under composition and base change, and is right cancellative.
 
@@ -56,16 +57,16 @@ quasi-finite (in the mathlib sense) for every pair of affine opens that `f` maps
 
 Note that this does not require `f` to be quasi-compact nor locally of finite type.
 
-Being locally quasi-finite implies that `f` has discrete and finite fibers
-(via `f.isDiscrete_preimage_singleton` and `f.finite_preimage_singleton`).
+Being locally quasi-finite implies that `f` has discrete fibers
+(via `f.isDiscrete_preimage_singleton`).
 The converse holds under various scenarios:
 
 - `locallyQuasiFinite_iff_isDiscrete_preimage_singleton`:
   If `f` is quasi-compact, this is equivalent to `f ⁻¹ {x}` being `κ(x)`-finite for all `x`.
 - `locallyQuasiFinite_iff_isDiscrete_preimage_singleton`:
   If `f` is locally of finite type, this is equivalent to `f` having discrete fibers.
-- `locallyQuasiFinite_iff_isDiscrete_preimage_singleton`:
-  If `f` is locally of finite type, this is equivalent to `f` having finite fibers.
+- `locallyQuasiFinite_iff_finite_preimage_singleton`:
+  If `f` is of finite type, this is equivalent to `f` having finite fibers.
 -/
 @[mk_iff]
 class LocallyQuasiFinite : Prop where
