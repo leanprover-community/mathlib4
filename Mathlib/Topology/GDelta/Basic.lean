@@ -338,4 +338,12 @@ lemma Topology.IsInducing.isMeagre_image [TopologicalSpace Y] {f : X → Y}
 lemma IsMeagre.image_val {s : Set X} {m : Set s} (h : IsMeagre (m : Set s)) :
     IsMeagre (m : Set X) := Topology.IsInducing.subtypeVal.isMeagre_image h
 
+lemma residualEq_empty {s : Set X} : s =ᶠ[residual X] (∅ : Set X) ↔ IsMeagre s := by
+  rw [← Filter.compl_eventuallyEq_iff, Set.compl_empty, Filter.eventuallyEq_univ]
+  rfl
+
+/-- A set is called nowhere meagre if its intersection with each nonempty open set is not meagre. -/
+def NowhereMeagre [TopologicalSpace X] (s : Set X) :=
+  ∀ {o : Set X}, IsOpen o → o.Nonempty → ¬IsMeagre (s ∩ o)
+
 end IsMeagre
