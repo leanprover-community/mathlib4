@@ -8,6 +8,7 @@ module
 public import Mathlib.Data.Matrix.Basic
 public import Mathlib.Data.Matrix.Mul
 public import Mathlib.Analysis.Convex.Basic
+public import Mathlib.Analysis.Convex.StdSimplex
 public import Mathlib.LinearAlgebra.Matrix.Permutation
 
 /-!
@@ -257,5 +258,14 @@ lemma reindex_mem_colStochastic_iff {m : Type*} [Fintype m] [DecidableEq m] {M :
 /-- Reindexing a matrix preserves column-stochasticity. -/
 @[aesop safe apply]
 alias ⟨_, reindex_mem_colStochastic⟩ := reindex_mem_colStochastic_iff
+
+/-- Multiplying a probability vector on the right by a row-stochastic matrix
+preserves membership in the standard simplex. -/
+lemma vecMul_mem_stdSimplex (hM : M ∈ rowStochastic R n)
+    {v : n → R} (hv : v ∈ stdSimplex R n) : v ᵥ* M ∈ stdSimplex R n := by
+  refine ⟨fun j => Finset.sum_nonneg fun i _ => mul_nonneg (hv.1 i) (hM.1 i j), ?_⟩
+  simp only [vecMul, dotProduct]
+  rw [Finset.sum_comm, ← hv.2]
+  exact Finset.sum_congr rfl fun i _ => by simp [← mul_sum, sum_row_of_mem_rowStochastic hM]
 
 end Matrix
