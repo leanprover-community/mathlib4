@@ -96,6 +96,7 @@ public import Mathlib.Algebra.BigOperators.Sym
 public import Mathlib.Algebra.BigOperators.WithTop
 public import Mathlib.Algebra.BrauerGroup.Defs
 public import Mathlib.Algebra.Category.AlgCat.Basic
+public import Mathlib.Algebra.Category.AlgCat.FilteredColimits
 public import Mathlib.Algebra.Category.AlgCat.Limits
 public import Mathlib.Algebra.Category.AlgCat.Monoidal
 public import Mathlib.Algebra.Category.AlgCat.Symmetric

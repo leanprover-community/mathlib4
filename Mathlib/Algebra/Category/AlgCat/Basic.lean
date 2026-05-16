@@ -166,6 +166,19 @@ instance hasForgetToRing : HasForget₂ (AlgCat.{v} R) RingCat.{v} where
     { obj := fun A => RingCat.of A
       map := fun f => RingCat.ofHom f.hom.toRingHom }
 
+@[simp]
+lemma forget₂_ringCat_obj (X : AlgCat.{v} R) :
+    (forget₂ (AlgCat.{v} R) RingCat.{v}).obj X = RingCat.of X :=
+  rfl
+
+@[simp]
+lemma forget₂_ringCat_map {X Y : AlgCat.{v} R} (f : X ⟶ Y) :
+    (forget₂ (AlgCat.{v} R) RingCat.{v}).map f = RingCat.ofHom f.hom :=
+  rfl
+
+instance (A : AlgCat.{v} R) : Algebra R ((forget₂ (AlgCat.{v} R) RingCat).obj A) :=
+  inferInstanceAs <| Algebra R A
+
 instance hasForgetToModule : HasForget₂ (AlgCat.{v} R) (ModuleCat.{v} R) where
   forget₂ :=
     { obj := fun M => ModuleCat.of R M
@@ -202,7 +215,7 @@ instance : (forget (AlgCat.{u} R)).IsRightAdjoint := (adj R).isRightAdjoint
 end AlgCat
 
 variable {R}
-variable {X₁ X₂ : Type u}
+variable {X₁ X₂ : Type v}
 
 /-- Build an isomorphism in the category `AlgCat R` from an `AlgEquiv` between `Algebra`s. -/
 @[simps]
@@ -215,7 +228,7 @@ namespace CategoryTheory.Iso
 
 /-- Build an `AlgEquiv` from an isomorphism in the category `AlgCat R`. -/
 @[simps]
-def toAlgEquiv {X Y : AlgCat R} (i : X ≅ Y) : X ≃ₐ[R] Y :=
+def toAlgEquiv {X Y : AlgCat.{v} R} (i : X ≅ Y) : X ≃ₐ[R] Y :=
   { i.hom.hom with
     toFun := i.hom
     invFun := i.inv
@@ -227,13 +240,23 @@ end CategoryTheory.Iso
 /-- Algebra equivalences between `Algebra`s are the same as (isomorphic to) isomorphisms in
 `AlgCat`. -/
 @[simps]
-def algEquivIsoAlgebraIso {X Y : Type u} [Ring X] [Ring Y] [Algebra R X] [Algebra R Y] :
+def algEquivIsoAlgebraIso {X Y : Type v} [Ring X] [Ring Y] [Algebra R X] [Algebra R Y] :
     (X ≃ₐ[R] Y) ≅ (AlgCat.of R X ≅ AlgCat.of R Y) where
   hom := ↾fun e ↦ e.toAlgebraIso
   inv := ↾fun i ↦ i.toAlgEquiv
 
-instance AlgCat.forget_reflects_isos : (forget (AlgCat.{u} R)).ReflectsIsomorphisms where
+instance AlgCat.forget_reflects_isos : (forget (AlgCat.{v} R)).ReflectsIsomorphisms where
   reflects {X Y} f _ := by
-    let i := asIso ((forget (AlgCat.{u} R)).map f)
+    let i := asIso ((forget (AlgCat.{v} R)).map f)
     let e : X ≃ₐ[R] Y := { f.hom, i.toEquiv with }
     exact e.toAlgebraIso.isIso_hom
+
+instance : (forget₂ (AlgCat.{v} R) RingCat.{v}).ReflectsIsomorphisms := by
+  suffices (forget₂ (AlgCat R) RingCat ⋙ forget RingCat).ReflectsIsomorphisms from
+    reflectsIsomorphisms_of_comp _ (forget _)
+  exact inferInstanceAs <| Functor.ReflectsIsomorphisms (forget <| AlgCat R)
+
+instance : (forget₂ (AlgCat.{v} R) (ModuleCat.{v} R)).ReflectsIsomorphisms := by
+  suffices (forget₂ (AlgCat R) _ ⋙ forget (ModuleCat.{v} R)).ReflectsIsomorphisms from
+    reflectsIsomorphisms_of_comp _ (forget _)
+  exact inferInstanceAs <| Functor.ReflectsIsomorphisms (forget <| AlgCat R)
