@@ -6,7 +6,7 @@ Authors: Kim Morrison
 module
 
 public import Mathlib.Logic.Equiv.Defs
-public import Mathlib.Tactic.Convert
+import Mathlib.Tactic.Convert
 
 /-!
 # Functions functorial with respect to equivalences
