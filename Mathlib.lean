@@ -710,8 +710,11 @@ public import Mathlib.Algebra.Lie.CartanExists
 public import Mathlib.Algebra.Lie.CartanMatrix
 public import Mathlib.Algebra.Lie.CartanSubalgebra
 public import Mathlib.Algebra.Lie.Character
+public import Mathlib.Algebra.Lie.ChevalleyEilenberg
 public import Mathlib.Algebra.Lie.Classical
 public import Mathlib.Algebra.Lie.Cochain
+public import Mathlib.Algebra.Lie.Cocycle
+public import Mathlib.Algebra.Lie.Derivation.AdjointAction
 public import Mathlib.Algebra.Lie.Derivation.BaseChange
 public import Mathlib.Algebra.Lie.Derivation.Basic
 public import Mathlib.Algebra.Lie.Derivation.Killing
@@ -719,6 +722,7 @@ public import Mathlib.Algebra.Lie.DirectSum
 public import Mathlib.Algebra.Lie.Engel
 public import Mathlib.Algebra.Lie.EngelSubalgebra
 public import Mathlib.Algebra.Lie.Extension
+public import Mathlib.Algebra.Lie.Extension.CentralExtension
 public import Mathlib.Algebra.Lie.Free
 public import Mathlib.Algebra.Lie.Graded
 public import Mathlib.Algebra.Lie.Ideal
@@ -1164,6 +1168,7 @@ public import Mathlib.Algebra.Polynomial.Module.FiniteDimensional
 public import Mathlib.Algebra.Polynomial.Module.TensorProduct
 public import Mathlib.Algebra.Polynomial.Monic
 public import Mathlib.Algebra.Polynomial.Monomial
+public import Mathlib.Algebra.Polynomial.Nusmeval
 public import Mathlib.Algebra.Polynomial.OfFn
 public import Mathlib.Algebra.Polynomial.PartialFractions
 public import Mathlib.Algebra.Polynomial.Reverse
@@ -1316,7 +1321,11 @@ public import Mathlib.Algebra.TrivSqZeroExt.Ideal
 public import Mathlib.Algebra.Tropical.Basic
 public import Mathlib.Algebra.Tropical.BigOperators
 public import Mathlib.Algebra.Tropical.Lattice
+public import Mathlib.Algebra.Vertex.Affine
+public import Mathlib.Algebra.Vertex.Basic
+public import Mathlib.Algebra.Vertex.Defs
 public import Mathlib.Algebra.Vertex.HVertexOperator
+public import Mathlib.Algebra.Vertex.Lattice
 public import Mathlib.Algebra.Vertex.VertexOperator
 public import Mathlib.Algebra.WithConv
 public import Mathlib.AlgebraicGeometry.AffineScheme
@@ -4222,6 +4231,7 @@ public import Mathlib.Data.Pi.Interval
 public import Mathlib.Data.Prod.Basic
 public import Mathlib.Data.Prod.Lex
 public import Mathlib.Data.Prod.PProd
+public import Mathlib.Data.Prod.RevLex
 public import Mathlib.Data.Prod.TProd
 public import Mathlib.Data.QPF.Multivariate.Basic
 public import Mathlib.Data.QPF.Multivariate.Constructions.Cofix
@@ -4692,6 +4702,7 @@ public import Mathlib.GroupTheory.GroupAction.Defs
 public import Mathlib.GroupTheory.GroupAction.DomAct.ActionHom
 public import Mathlib.GroupTheory.GroupAction.DomAct.Basic
 public import Mathlib.GroupTheory.GroupAction.Embedding
+public import Mathlib.GroupTheory.GroupAction.Equiv
 public import Mathlib.GroupTheory.GroupAction.FixedPoints
 public import Mathlib.GroupTheory.GroupAction.FixingSubgroup
 public import Mathlib.GroupTheory.GroupAction.Hom
@@ -6394,6 +6405,7 @@ public import Mathlib.RingTheory.DiscreteValuationRing.TFAE
 public import Mathlib.RingTheory.Discriminant
 public import Mathlib.RingTheory.DividedPowerAlgebra.Init
 public import Mathlib.RingTheory.DividedPowers.Basic
+public import Mathlib.RingTheory.DividedPowers.Cauchy
 public import Mathlib.RingTheory.DividedPowers.DPMorphism
 public import Mathlib.RingTheory.DividedPowers.Padic
 public import Mathlib.RingTheory.DividedPowers.RatAlgebra
@@ -6462,6 +6474,7 @@ public import Mathlib.RingTheory.Flat.Stability
 public import Mathlib.RingTheory.Flat.Tensor
 public import Mathlib.RingTheory.Flat.TorsionFree
 public import Mathlib.RingTheory.FormalGroup.Basic
+public import Mathlib.RingTheory.FormalSeries
 public import Mathlib.RingTheory.FractionalIdeal.Basic
 public import Mathlib.RingTheory.FractionalIdeal.Extended
 public import Mathlib.RingTheory.FractionalIdeal.Inverse

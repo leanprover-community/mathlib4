@@ -102,6 +102,11 @@ theorem eq_one_iff_eq_one_of_mul_eq_one {a b : M} (h : a * b = 1) : a = 1 ↔ b 
   constructor <;> (rintro rfl; simpa using h)
 
 @[to_additive]
+lemma ne_one_or_ne_one_of_mul {B : Type*} [MulOneClass B] {a b : B} (h : a * b ≠ 1) :
+    a ≠ 1 ∨ b ≠ 1 := by
+  by_contra; simp_all
+
+@[to_additive]
 theorem one_mul_eq_id : ((1 : M) * ·) = id :=
   funext one_mul
 

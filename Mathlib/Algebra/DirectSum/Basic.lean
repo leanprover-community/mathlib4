@@ -88,6 +88,10 @@ variable {β}
 theorem sub_apply (g₁ g₂ : ⨁ i, β i) (i : ι) : (g₁ - g₂) i = g₁ i - g₂ i :=
   rfl
 
+@[simp]
+theorem neg_apply (g : ⨁ i, β i) (i : ι) : (- g) i = - (g i) :=
+  rfl
+
 end AddCommGroup
 
 variable [∀ i, AddCommMonoid (β i)]
