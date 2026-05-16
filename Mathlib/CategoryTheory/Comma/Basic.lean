@@ -281,11 +281,11 @@ instance full_map [F.Faithful] [F₁.Full] [F₂.Full] [IsIso α] [IsIso β] : (
     ⟨{left := F₁.preimage φ.left
       right := F₂.preimage φ.right
       w := F.map_injective (by
-        rw [← cancel_mono (β.app _), ← cancel_epi (α.app _), F.map_comp, F.map_comp, assoc, assoc]
-        erw [← α.naturality_assoc, β.naturality]
-        dsimp
-        rw [F₁.map_preimage, F₂.map_preimage]
-        simpa using φ.w) }, by cat_disch⟩
+        rw [← cancel_mono (β.app _), ← cancel_epi (α.app _), F.map_comp, F.map_comp, assoc, assoc,
+          ← Functor.comp_map, ← Functor.comp_map, ← α.naturality_assoc, β.naturality]
+        simp only [Functor.comp_map, F₁.map_preimage, F₂.map_preimage, ← map_obj_hom α β Y, φ.w,
+          map_obj_hom α β X, assoc]) },
+      by cat_disch⟩
 
 instance essSurj_map [F₁.EssSurj] [F₂.EssSurj] [F.Full] [IsIso α] [IsIso β] :
     (map α β).EssSurj where
