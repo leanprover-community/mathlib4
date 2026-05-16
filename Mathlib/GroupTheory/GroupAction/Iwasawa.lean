@@ -35,7 +35,7 @@ Additivize. The issue is that it requires to additivize `commutator`
 (which, moreover, lives in the root namespace)
 -/
 
-@[expose] public section
+public section
 
 namespace MulAction
 

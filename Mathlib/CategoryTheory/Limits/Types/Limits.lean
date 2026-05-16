@@ -31,7 +31,7 @@ variable {J : Type v} [Category.{w} J] {F : J ⥤ Type u}
   construct a cone over F with `PUnit` as the cone point. -/
 def coneOfSection {s} (hs : s ∈ F.sections) : Cone F where
   pt := PUnit
-  π := { app j := TypeCat.ofHom (fun _ ↦ s j), naturality _ _ f := by ext; exact (hs f).symm }
+  π := { app j := ↾fun _ ↦ s j, naturality _ _ f := by ext; exact (hs f).symm }
 
 /-- Given a cone over a functor F into `Type*` and an element in the cone point,
   construct a section of F. -/
@@ -44,10 +44,10 @@ theorem isLimit_iff (c : Cone F) :
   · let cs := coneOfSection hs
     exact ⟨t.lift cs ⟨⟩, fun j ↦ congr_hom (t.fac cs j) ⟨⟩,
       fun x hx ↦ congr_hom (CC := fun X ↦ X)
-        (t.uniq cs (TypeCat.ofHom (fun _ ↦ x)) fun j ↦ by ext; exact hx j) ⟨⟩⟩
+        (t.uniq cs (↾fun _ ↦ x) fun j ↦ by ext; exact hx j) ⟨⟩⟩
   · have := fun c y ↦ h _ (sectionOfCone c y).2
     choose x hx using fun c y ↦ h _ (sectionOfCone c y).2
-    exact ⟨fun d ↦ TypeCat.ofHom (x d), fun c j ↦ by ext y; exact (hx c y).1 j,
+    exact ⟨fun d ↦ ↾(x d), fun c j ↦ by ext y; exact (hx c y).1 j,
       fun c f hf ↦ by ext y; exact (hx c y).2 (f y) (fun j ↦ congr_hom (hf j) y)⟩
 
 theorem isLimit_iff_bijective_sectionOfCone (c : Cone F) :
@@ -62,7 +62,7 @@ noncomputable def isLimitEquivSections {c : Cone F} (t : IsLimit c) :
   toFun := sectionOfCone c
   invFun s := t.lift (coneOfSection s.2) ⟨⟩
   left_inv x := (congr_hom (t.uniq (coneOfSection _)
-    (TypeCat.ofHom (fun _ ↦ x)) fun _ ↦ rfl) ⟨⟩).symm
+    (↾fun _ ↦ x) fun _ ↦ rfl) ⟨⟩).symm
   right_inv s := Subtype.ext (funext fun j ↦ congr_hom (t.fac (coneOfSection s.2) j) ⟨⟩)
 
 @[simp]
@@ -109,7 +109,7 @@ implemented as flat sections of a pi type
 noncomputable def limitCone : Cone F where
   pt := Shrink F.sections
   π :=
-    { app j := TypeCat.ofHom (fun u => ((equivShrink F.sections).symm u).val j) }
+    { app j := ↾fun u => ((equivShrink F.sections).symm u).val j }
 
 @[ext]
 lemma limitCone_pt_ext {x y : (limitCone F).pt}
@@ -119,7 +119,7 @@ lemma limitCone_pt_ext {x y : (limitCone F).pt}
 /-- (internal implementation) the fact that the proposed limit cone is the limit -/
 @[simps]
 noncomputable def limitConeIsLimit : IsLimit (limitCone.{v, u} F) where
-  lift s := TypeCat.ofHom fun v ↦ equivShrink F.sections
+  lift s := ↾fun v ↦ equivShrink F.sections
     { val := fun j => s.π.app j v
       property := fun f => congr_hom (Cone.w s f) _ }
   uniq := fun _ _ w => by
@@ -145,12 +145,12 @@ implemented as flat sections of a pi type
 @[simps]
 noncomputable def limitCone (F : J ⥤ Type (max v u)) : Cone F where
   pt := F.sections
-  π := { app j := TypeCat.ofHom (fun u => u.val j) }
+  π := { app j := ↾fun u => u.val j }
 
 /-- (internal implementation) the fact that the proposed limit cone is the limit -/
 @[simps]
 noncomputable def limitConeIsLimit (F : J ⥤ Type (max v u)) : IsLimit (limitCone F) where
-  lift s := TypeCat.ofHom fun v ↦
+  lift s := ↾fun v ↦
     { val := fun j => s.π.app j v
       property := fun f => congr_hom (Cone.w s f) _ }
   uniq := fun _ _ w => by

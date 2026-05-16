@@ -85,7 +85,6 @@ lemma mem_lattice {L : PeriodPair} {x : ℂ} :
 lemma ω₁_mem_lattice : L.ω₁ ∈ L.lattice := Submodule.subset_span (by simp)
 lemma ω₂_mem_lattice : L.ω₂ ∈ L.lattice := Submodule.subset_span (by simp)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma mul_ω₁_add_mul_ω₂_mem_lattice {L : PeriodPair} {α β : ℚ} :
     α * L.ω₁ + β * L.ω₂ ∈ L.lattice ↔ α.den = 1 ∧ β.den = 1 := by
   refine ⟨fun H ↦ ?_, fun ⟨h₁, h₂⟩ ↦ ?_⟩
@@ -1052,7 +1051,7 @@ private lemma analyticAt_relation (x : ℂ) : AnalyticAt ℂ L.relation x := by
   · have : AnalyticAt ℂ (fun z ↦ ℘'[L] z ^ 2 - 4 * ℘[L] z ^ 3 + L.g₂ * ℘[L] z + L.g₃) x := by
       have := L.analyticOnNhd_derivWeierstrassP _ hx
       have := L.analyticOnNhd_weierstrassP _ hx
-      fun_prop (disch := assumption)
+      fun_prop
     apply this.congr
     filter_upwards [L.isClosed_lattice.isOpen_compl.mem_nhds hx] with x hx
     simp_all [relation]

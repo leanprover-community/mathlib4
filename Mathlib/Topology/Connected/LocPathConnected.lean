@@ -50,7 +50,7 @@ variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] {x y z : X} {ι
 
 section LocPathConnectedSpace
 
-/-- A topological space is locally path connected, at every point, path connected
+/-- A topological space is locally path connected if, at every point, path connected
 neighborhoods form a neighborhood basis. -/
 class LocPathConnectedSpace (X : Type*) [TopologicalSpace X] : Prop where
   /-- Each neighborhood filter has a basis of path-connected neighborhoods. -/
@@ -224,14 +224,14 @@ instance Quotient.locPathConnectedSpace {s : Setoid X} : LocPathConnectedSpace (
 instance Sum.locPathConnectedSpace [LocPathConnectedSpace Y] : LocPathConnectedSpace (X ⊕ Y) := by
   rw [locPathConnectedSpace_iff_pathComponentIn_mem_nhds]; intro x u hu hxu; rw [mem_nhds_iff]
   obtain x | y := x
-  · refine ⟨Sum.inl '' (pathComponentIn (Sum.inl ⁻¹' u) x), ?_, ?_, ?_⟩
+  · refine ⟨Sum.inl '' pathComponentIn (Sum.inl ⁻¹' u) x, ?_, ?_, ?_⟩
     · apply IsPathConnected.subset_pathComponentIn
       · exact (isPathConnected_pathComponentIn (by exact hxu)).image continuous_inl
       · exact ⟨x, mem_pathComponentIn_self hxu, rfl⟩
       · exact (image_mono pathComponentIn_subset).trans (u.image_preimage_subset _)
     · exact isOpenMap_inl _ <| (hu.preimage continuous_inl).pathComponentIn _
     · exact ⟨x, mem_pathComponentIn_self hxu, rfl⟩
-  · refine ⟨Sum.inr '' (pathComponentIn (Sum.inr ⁻¹' u) y), ?_, ?_, ?_⟩
+  · refine ⟨Sum.inr '' pathComponentIn (Sum.inr ⁻¹' u) y, ?_, ?_, ?_⟩
     · apply IsPathConnected.subset_pathComponentIn
       · exact (isPathConnected_pathComponentIn (by exact hxu)).image continuous_inr
       · exact ⟨y, mem_pathComponentIn_self hxu, rfl⟩
@@ -244,7 +244,7 @@ instance Sigma.locPathConnectedSpace {X : ι → Type*}
     [(i : ι) → TopologicalSpace (X i)] [(i : ι) → LocPathConnectedSpace (X i)] :
     LocPathConnectedSpace ((i : ι) × X i) := by
   rw [locPathConnectedSpace_iff_pathComponentIn_mem_nhds]; intro x u hu hxu; rw [mem_nhds_iff]
-  refine ⟨(Sigma.mk x.1) '' (pathComponentIn ((Sigma.mk x.1) ⁻¹' u) x.2), ?_, ?_, ?_⟩
+  refine ⟨(Sigma.mk x.1) '' pathComponentIn ((Sigma.mk x.1) ⁻¹' u) x.2, ?_, ?_, ?_⟩
   · apply IsPathConnected.subset_pathComponentIn
     · exact (isPathConnected_pathComponentIn (by exact hxu)).image continuous_sigmaMk
     · exact ⟨x.2, mem_pathComponentIn_self hxu, rfl⟩

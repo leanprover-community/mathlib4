@@ -589,6 +589,10 @@ theorem ncard_def (s : Set α) : s.ncard = ENat.toNat s.encard := rfl
 theorem Finite.cast_ncard_eq (hs : s.Finite) : s.ncard = s.encard := by
   rwa [ncard, ENat.coe_toNat_eq_self, ne_eq, encard_eq_top_iff, Set.Infinite, not_not]
 
+variable (s) in
+theorem coe_ncard_eq_encard [Finite s] : s.ncard = s.encard :=
+  s.toFinite.cast_ncard_eq
+
 lemma ncard_le_encard (s : Set α) : s.ncard ≤ s.encard := ENat.coe_toNat_le_self _
 
 @[simp] theorem _root_.Nat.card_coe_set_eq (s : Set α) : Nat.card s = s.ncard := rfl
@@ -601,6 +605,10 @@ theorem ncard_eq_toFinset_card (s : Set α) (hs : s.Finite := by toFinite_tac) :
 theorem ncard_eq_toFinset_card' (s : Set α) [Fintype s] :
     s.ncard = s.toFinset.card := by
   simp [← _root_.Nat.card_coe_set_eq, Nat.card_eq_fintype_card]
+
+variable (s) in
+theorem fintypeCard_eq_ncard [Fintype s] : Fintype.card s = s.ncard := by
+  rw [ncard_eq_toFinset_card', toFinset_card]
 
 lemma cast_ncard {s : Set α} (hs : s.Finite) :
     (s.ncard : Cardinal) = Cardinal.mk s := @Nat.cast_card _ hs
@@ -725,8 +733,8 @@ theorem ncard_diff_singleton_lt_of_mem {a : α} (h : a ∈ s) (hs : s.Finite := 
 theorem ncard_diff_singleton_le (s : Set α) (a : α) : (s \ {a}).ncard ≤ s.ncard := by
   obtain hs | hs := s.finite_or_infinite
   · apply ncard_le_ncard diff_subset hs
-  convert zero_le (α := ℕ) _
-  exact (hs.diff (by simp : Set.Finite {a})).ncard
+  convert Nat.zero_le _
+  exact (hs.diff (by simp)).ncard
 
 theorem pred_ncard_le_ncard_diff_singleton (s : Set α) (a : α) : s.ncard - 1 ≤ (s \ {a}).ncard := by
   by_cases h : a ∈ s

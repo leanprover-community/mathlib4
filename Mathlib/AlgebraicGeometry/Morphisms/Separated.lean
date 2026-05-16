@@ -24,7 +24,7 @@ A morphism of schemes is separated if its diagonal morphism is a closed immersio
   A morphism is separated iff the preimage of affine opens are separated schemes.
 -/
 
-@[expose] public section
+public section
 
 
 noncomputable section
