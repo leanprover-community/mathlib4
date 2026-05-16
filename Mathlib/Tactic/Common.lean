@@ -63,6 +63,7 @@ public import Mathlib.Tactic.Find
 public import Mathlib.Tactic.FunProp
 public import Mathlib.Tactic.GCongr
 public import Mathlib.Tactic.GRewrite
+public import Mathlib.Tactic.GrindAttrs
 public import Mathlib.Tactic.GuardGoalNums
 public import Mathlib.Tactic.GuardHypNums
 public import Mathlib.Tactic.HigherOrder
