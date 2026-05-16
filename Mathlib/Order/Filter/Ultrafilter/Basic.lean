@@ -63,6 +63,30 @@ theorem le_cofinite_or_eq_pure (f : Ultrafilter α) : (f : Filter α) ≤ cofini
     let ⟨a, _, hf⟩ := eq_pure_of_finite_mem hfin hs
     ⟨a, hf⟩
 
+theorem isFree_iff_not_exists_eq_pure (f : Ultrafilter α) :
+    (f : Filter α).IsFree ↔ ¬∃ a, f = pure a := by
+  rw [Filter.isFree_iff_le_cofinite]
+  exact ⟨fun h ⟨a, ha⟩ => by
+    have : ({a}ᶜ : Set α) ∈ f := h (finite_singleton a).compl_mem_cofinite
+    simp [ha] at this,
+    fun h => (le_cofinite_or_eq_pure f).resolve_right h⟩
+
+/-- An ultrafilter is free (non-principal) iff it is not `pure a` for any `a`. -/
+theorem isFree_iff_forall_ne_pure (f : Ultrafilter α) :
+    (f : Filter α).IsFree ↔ ∀ a, f ≠ pure a := by
+  rw [isFree_iff_not_exists_eq_pure]; push_neg; rfl
+
+/-- For ultrafilters, non-principal and free coincide: an ultrafilter is either `pure a`
+(a principal filter) or free (extends the cofinite filter). -/
+theorem isNonprincipal_iff_isFree (f : Ultrafilter α) :
+    (f : Filter α).IsNonprincipal ↔ (f : Filter α).IsFree := by
+  constructor
+  · intro h
+    rw [isFree_iff_forall_ne_pure]
+    exact fun a ha => h.ne_pure a (congrArg Ultrafilter.toFilter ha)
+  · intro h
+    exact h.isNonprincipal f.neBot
+
 theorem exists_ultrafilter_of_finite_inter_nonempty (S : Set (Set α))
     (cond : ∀ T : Finset (Set α), (↑T : Set (Set α)) ⊆ S → (⋂₀ (↑T : Set (Set α))).Nonempty) :
     ∃ F : Ultrafilter α, S ⊆ F.sets :=
@@ -119,6 +143,9 @@ alias _root_.Set.Finite.compl_mem_hyperfilter := compl_mem_hyperfilter_of_finite
 
 theorem mem_hyperfilter_of_finite_compl {s : Set α} (hf : Set.Finite sᶜ) : s ∈ hyperfilter α :=
   compl_compl s ▸ hf.compl_mem_hyperfilter
+
+theorem hyperfilter_isFree : (hyperfilter α : Filter α).IsFree :=
+  Filter.isFree_iff_le_cofinite.mpr hyperfilter_le_cofinite
 
 end Hyperfilter
 
