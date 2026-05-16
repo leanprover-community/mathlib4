@@ -940,6 +940,41 @@ theorem differentiableOn_integral_of_continuous {s : Set ℝ} (hcont : Continuou
     DifferentiableOn ℝ (fun u => ∫ x in a..u, f x) s :=
   (differentiable_integral_of_continuous hcont).differentiableOn
 
+/-- This is a version of the first part of FTC for a function which is continuous on an interval.
+    Credit to Aaron Liu. -/
+theorem hasDerivWithinAt_of_continuousOn_interval {I : Set ℝ} [I.OrdConnected] {f : ℝ → ℝ}
+    (h : ContinuousOn f I) {x₀ x : ℝ} (hx₀ : x₀ ∈ I) (hx : x ∈ I) :
+    HasDerivWithinAt (fun t ↦  ∫ τ in x₀..t, f τ) (f x) I x :=
+  have : intervalIntegral.FTCFilter x (nhdsWithin x I) (nhdsWithin x I) := by
+    refine @intervalIntegral.FTCFilter.mk x (nhdsWithin x I) (nhdsWithin x I) ⟨?_⟩ ?_ ?_ ?_
+    · rw [Filter.tendsto_smallSets_iff]
+      intro t ht
+      rw [mem_nhdsWithin_iff_exists_mem_nhds_inter] at ht
+      obtain ⟨u, hu, hut⟩ := ht
+      obtain ⟨a, b, haxb, habx, habu⟩ := exists_Icc_mem_subset_of_mem_nhds hu
+      have hab : Set.Icc a b ∩ I ∈ nhdsWithin x I :=
+    Set.inter_comm _ _ ▸ inter_mem_nhdsWithin I habx
+      filter_upwards [Filter.prod_mem_prod hab hab] with (i, j) ⟨hi, hj⟩
+      refine subset_trans (Set.subset_inter ?_ ?_) hut
+      · refine subset_trans ?_ habu
+        intro k hk
+        exact ⟨hi.1.1.trans hk.1.le, hk.2.trans hj.1.2⟩
+      · intro k hk
+        exact Set.Icc_subset I hi.2 hj.2 (Set.Ioc_subset_Icc_self hk)
+    · exact pure_le_nhdsWithin hx
+    · exact nhdsWithin_le_nhds
+    · exact @Filter.inf_isMeasurablyGenerated _ _ _ _ _
+        (Set.OrdConnected.measurableSet ‹_›).principal_isMeasurablyGenerated
+  intervalIntegral.integral_hasDerivWithinAt_right
+    ((h.mono (Set.OrdConnected.uIcc_subset ‹_› hx₀ hx)).intervalIntegrable)
+    (h.stronglyMeasurableAtFilter_nhdsWithin (Set.OrdConnected.measurableSet ‹_›) x)
+    (h.continuousWithinAt hx)
+
+theorem hasDerivAt_integral_of_continuousOn_open_interval {I : Set ℝ} [I.OrdConnected] {t₀ t : ℝ}
+    (hI : IsOpen I) {f : ℝ → ℝ} (hf : ContinuousOn f I) (ht₀ : t₀ ∈ I) (ht : t ∈ I) :
+    HasDerivAt (fun x ↦  ∫ u in t₀..x, f u) (f t) t :=
+  (hasDerivWithinAt_of_continuousOn_interval hf ht₀ ht).hasDerivAt (hI.mem_nhds ht)
+
 end FTC1
 
 /-!
