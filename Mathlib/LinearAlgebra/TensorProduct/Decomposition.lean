@@ -52,6 +52,92 @@ theorem toBaseChange_injective (i : ι) : Function.Injective ((ℳ i).toBaseChan
 theorem toBaseChange_bijective (i : ι) : Function.Bijective ((ℳ i).toBaseChange S) :=
   ⟨toBaseChange_injective ℳ i, (ℳ i).toBaseChange_surjective S⟩
 
+/-- The submodule of a tensor product corresponding to a decomposition on the left. -/
+def decomposeTensor (N : Type*) [AddCommMonoid N] [Module R N] :
+    ι → Submodule R (M ⊗[R] N) :=
+  fun i ↦ LinearMap.range ((ℳ i).subtype.rTensor N)
+
+lemma subtype_rTensor_injective (N : Type*) [AddCommMonoid N] [Module R N] (i : ι) :
+    Function.Injective ((ℳ i).subtype.rTensor N) :=
+  injective_of_comp_eq_id ((ℳ i).subtype.rTensor N) (((component R ι (fun i ↦ ↥(ℳ i)) i) ∘ₗ
+    (DirectSum.decomposeLinearEquiv ℳ).toLinearMap).rTensor N) (by ext; simp)
+
+/-- The linear isomorphism to the submodule from the tensor product with a summand. -/
+noncomputable def toDecomposeTensor (N : Type*) [AddCommMonoid N] [Module R N]
+    (i : ι) : (ℳ i) ⊗[R] N ≃ₗ[R] decomposeTensor ℳ N i :=
+  LinearEquiv.ofInjective ((ℳ i).subtype.rTensor N) (subtype_rTensor_injective ℳ N i)
+
+@[simp]
+lemma toDecomposeTensor_apply (N : Type*) [AddCommMonoid N] [Module R N] {i : ι}
+    (x : (ℳ i) ⊗[R] N) :
+    toDecomposeTensor ℳ N i x = ((ℳ i).subtype.rTensor N) x := by rfl
+
+lemma toDecomposeTensor_of_apply (N : Type*) [AddCommMonoid N] [Module R N] {i : ι}
+    (x : (ℳ i) ⊗[R] N) :
+    (congrLinearEquiv fun a ↦ toDecomposeTensor ℳ N a) ((of (fun i ↦ ↥(ℳ i) ⊗[R] N) i) x) =
+    (of (fun i ↦ ↥(decomposeTensor ℳ N i)) i) (toDecomposeTensor ℳ N i x) := by
+  ext; simp [coe_congrLinearEquiv]
+
+/-lemma toDecomposeTensor_symm_apply (N : Type*) [AddCommMonoid N] [Module R N] {i : ι}
+    (x : decomposeTensor ℳ N i) :
+    (toDecomposeTensor ℳ N i).symm x = (((component R ι (fun i ↦ (ℳ i)) i) ∘ₗ
+      ((DirectSum.decomposeLinearEquiv ℳ))).rTensor N) x := by sorry
+
+lemma congrLinearEquiv_coeAddMonoidHom (N : Type*) [AddCommGroup N] [Module R N]
+    (x : ⨁ (i : ι), ↥(ℳ i) ⊗[R] N) :
+    (DirectSum.coeAddMonoidHom (decomposeTensor ℳ N))
+      ((DirectSum.congrLinearEquiv fun a ↦ toDecomposeTensor ℳ N a) x) =
+    ((DirectSum.decomposeLinearEquiv ℳ).symm.rTensor N)
+      ((TensorProduct.directSumLeft R R (fun a ↦ ℳ a) N).symm x) := by
+  induction x using DirectSum.induction_on with
+  | zero => simp
+  | of i x =>
+
+    sorry
+  | add x y hx hy => simp [hx, hy]
+
+lemma coe_decomposeTensor (N : Type*) [AddCommGroup N] [Module R N]
+    (x : (⨁ (i : ι), decomposeTensor ℳ N i)) :
+    (DirectSum.coeAddMonoidHom (decomposeTensor ℳ N)) x =
+    ((DirectSum.decomposeLinearEquiv ℳ).symm.rTensor N)
+    ((TensorProduct.directSumLeft R R (fun a ↦ ℳ a) N).symm
+      ((DirectSum.congrLinearEquiv fun a ↦ toDecomposeTensor ℳ N a).symm x)) := by
+  have : (LinearEquiv.rTensor N (decomposeLinearEquiv ℳ).symm) =
+      (LinearEquiv.rTensor N (decomposeLinearEquiv ℳ)).symm := rfl
+  rw [this, LinearEquiv.eq_symm_apply]
+  induction x using DirectSum.induction_on with
+  | zero => simp
+  | of i x =>
+    simp only [coeAddMonoidHom_of, toDecomposeTensor]
+    rw [LinearEquiv.eq_symm_apply, LinearEquiv.eq_symm_apply]
+    ext j
+    by_cases h : i = j
+    · rw [← h]
+      simp only [of_eq_same, SetLike.coe_eq_coe]
+
+      sorry
+    · simp [of_apply, h]
+
+      sorry
+  | add x y hx hy => simp [hx, hy]
+
+noncomputable instance (N : Type*) [AddCommGroup N] [Module R N] :
+    DirectSum.Decomposition (decomposeTensor ℳ N) where
+  decompose' x := (DirectSum.congrLinearEquiv fun a ↦ toDecomposeTensor ℳ N a)
+    (TensorProduct.directSumLeft R R (fun a ↦ ℳ a) N
+      ((DirectSum.decomposeLinearEquiv ℳ).rTensor N x))
+  left_inv x := by
+    rw [coe_decomposeTensor ℳ N _]
+    simp only [LinearEquiv.symm_apply_apply]
+    have : (LinearEquiv.rTensor N (decomposeLinearEquiv ℳ).symm) =
+        (LinearEquiv.rTensor N (decomposeLinearEquiv ℳ)).symm := rfl
+    simp [this]
+  right_inv x := by
+    rw [coe_decomposeTensor ℳ N _]
+    have : (LinearEquiv.rTensor N (decomposeLinearEquiv ℳ).symm) =
+        (LinearEquiv.rTensor N (decomposeLinearEquiv ℳ)).symm := rfl
+    simp [this]
+-/
 end Decomposition
 
 namespace IsInternal
