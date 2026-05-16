@@ -271,7 +271,6 @@ theorem comp_ring_hom_ext {X : LocallyRingedSpace.{u}} {R : CommRingCat.{u}} {f 
 
 /-- `toSpecΓ _` is an isomorphism so these are mutually two-sided inverses. -/
 theorem Γ_Spec_left_triangle : toSpecΓ (Γ.obj (op X)) ≫ X.toΓSpec.c.app (op ⊤) = 𝟙 _ := by
-  unfold toSpecΓ
   have := X.toΓSpecSheafedSpace_app_spec 1
   unfold toToΓSpecMapBasicOpen toΓSpecMapBasicOpen at this
   rw! [basicOpen_one] at this

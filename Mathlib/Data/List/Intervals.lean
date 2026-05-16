@@ -121,7 +121,6 @@ theorem pred_singleton {m : ℕ} (h : 0 < m) : Ico (m - 1) m = [m - 1] := by
 theorem isChain_succ (n m : ℕ) : IsChain (fun a b => b = succ a) (Ico n m) := by
   by_cases! h : n < m
   · rw [eq_cons h]
-    unfold List.Ico
     exact isChain_range' _ (_ + 1) 1
   · rw [eq_nil_of_le h]
     exact .nil

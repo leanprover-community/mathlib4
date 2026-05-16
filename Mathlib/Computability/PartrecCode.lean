@@ -841,7 +841,6 @@ private theorem hG : Primrec G := by
         dsimp only []
         erw [Option.bind_eq_bind, ← Option.map_eq_bind]
     refine Primrec.option_map ((hlup.comp <| L.pair <| (k.pair cg).pair n).comp Primrec.fst) ?_
-    unfold Primrec₂
     exact Primrec₂.natPair.comp (Primrec.snd.comp Primrec.fst) Primrec.snd
   · have L := (Primrec.fst.comp Primrec.fst).comp
       (Primrec.fst (α := (List (List (Option ℕ)) × ℕ) × ℕ)
@@ -854,7 +853,6 @@ private theorem hG : Primrec G := by
       (Primrec.snd (α := (List (List (Option ℕ)) × ℕ) × ℕ)
         (β := Code × Code × Option ℕ × Option ℕ))
     refine Primrec.option_bind (hlup.comp <| L.pair <| (k.pair cg).pair n) ?_
-    unfold Primrec₂
     have h :=
       hlup.comp ((L.comp Primrec.fst).pair <| ((k.pair cf).comp Primrec.fst).pair Primrec.snd)
     exact h
@@ -902,7 +900,6 @@ private theorem hG : Primrec G := by
     refine Primrec.option_bind h₁ (?_ : Primrec _)
     have m := m.comp (Primrec.fst (β := ℕ))
     refine Primrec.nat_casesOn Primrec.snd (Primrec.option_some.comp m) ?_
-    unfold Primrec₂
     exact (hlup.comp ((L.comp Primrec.fst).pair <|
       ((k'.pair c).comp <| Primrec.fst.comp Primrec.fst).pair
         (Primrec₂.natPair.comp (z.comp Primrec.fst) (_root_.Primrec.succ.comp m)))).comp

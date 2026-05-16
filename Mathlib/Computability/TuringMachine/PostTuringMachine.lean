@@ -380,8 +380,7 @@ theorem stmts₁_trans {q₁ q₂ : Stmt Γ Λ σ} : q₁ ∈ stmts₁ q₂ → 
     simp only [Finset.mem_insert, Finset.mem_union, Finset.mem_singleton] at h₁₂)
   | branch p q₁ q₂ IH₁ IH₂ =>
     rcases h₁₂ with (rfl | h₁₂ | h₁₂)
-    · unfold stmts₁ at h₀₁
-      exact h₀₁
+    · exact h₀₁
     · grind
     · grind
   | goto l => subst h₁₂; exact h₀₁
@@ -577,23 +576,18 @@ theorem tr_supports {S : Finset Λ} (ss : TM1.Supports M S) :
     revert this; induction q generalizing v with intro hs
     | move d q =>
       cases h₁; refine TM1.stmts_trans ?_ h₂
-      unfold TM1.stmts₁
       exact Finset.mem_insert_of_mem TM1.stmts₁_self
     | write b q =>
       cases h₁; refine TM1.stmts_trans ?_ h₂
-      unfold TM1.stmts₁
       exact Finset.mem_insert_of_mem TM1.stmts₁_self
     | load b q IH =>
       refine IH _ (TM1.stmts_trans ?_ h₂) h₁ hs
-      unfold TM1.stmts₁
       exact Finset.mem_insert_of_mem TM1.stmts₁_self
     | branch p q₁ q₂ IH₁ IH₂ =>
       cases h : p a v <;> rw [trAux, h] at h₁
       · refine IH₂ _ (TM1.stmts_trans ?_ h₂) h₁ hs.2
-        unfold TM1.stmts₁
         exact Finset.mem_insert_of_mem (Finset.mem_union_right _ TM1.stmts₁_self)
       · refine IH₁ _ (TM1.stmts_trans ?_ h₂) h₁ hs.1
-        unfold TM1.stmts₁
         exact Finset.mem_insert_of_mem (Finset.mem_union_left _ TM1.stmts₁_self)
     | goto l =>
       cases h₁
@@ -914,7 +908,6 @@ theorem tr_supports [Inhabited Λ] {S : Finset Λ} (ss : Supports M S) :
     intro q hs hw
     induction q with
     | move d q IH =>
-      unfold writes at hw ⊢
       replace IH := IH hs hw; refine ⟨?_, IH.2⟩
       cases d <;> simp only [trNormal, supportsStmt_move, IH]
     | write f q IH =>
@@ -927,7 +920,6 @@ theorem tr_supports [Inhabited Λ] {S : Finset Λ} (ss : Supports M S) :
       · simp only [tr, supportsStmt_write, supportsStmt_move, IH.1]
       · exact IH.2 _ hq
     | load a q IH =>
-      unfold writes at hw ⊢
       replace IH := IH hs hw
       exact ⟨supportsStmt_read _ fun _ ↦ IH.1, IH.2⟩
     | branch p q₁ q₂ IH₁ IH₂ =>

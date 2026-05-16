@@ -184,7 +184,7 @@ theorem Valid'.node4L {l} {x : α} {m} {y : α} {r o₁ o₂} (hl : Valid' o₁ 
   rcases H with (⟨l0, m1, r0⟩ | ⟨l0, mr₁, lr₁, lr₂, mr₂⟩)
   · rw [hm.2.size_eq, Nat.succ_inj, add_eq_zero] at m1
     rw [l0, m1.1, m1.2]; revert r0; rcases size r with (_ | _ | _) <;>
-      [decide; decide; (intro r0; unfold BalancedSz delta; lia)]
+      [decide; decide; (intro r0; lia)]
   · rcases Nat.eq_zero_or_pos (size r) with r0 | r0
     · rw [r0] at mr₂; cases not_le_of_gt Hm mr₂
     rw [hm.2.size_eq] at lr₁ lr₂ mr₁ mr₂
@@ -457,7 +457,7 @@ theorem Valid'.merge_aux₁ {o₁ o₂ ls ll lx lr rs rl rx rr t}
           size_balance' v.2 hr.2.2.2, e, hl.2.1, hr.2.1]
         abel
     · rw [e, add_right_comm]; rintro ⟨⟩
-  intro _ _; rw [e]; unfold delta at hr₂ ⊢; lia
+  intro _ _; rw [e]; lia
 
 theorem Valid'.merge_aux {l r o₁ o₂} (hl : Valid' o₁ l o₂) (hr : Valid' o₁ r o₂)
     (sep : l.All fun x => r.All fun y => x < y) :

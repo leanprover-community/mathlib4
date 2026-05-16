@@ -176,7 +176,6 @@ noncomputable def sequentialAdjunctionHomeo (X : TopCat.{0}) [SequentialSpace X]
   toEquiv := topCatAdjunctionCounitEquiv X
   continuous_invFun := by
     apply SeqContinuous.continuous
-    unfold SeqContinuous
     intro f p h
     let g := (topCatAdjunctionCounitEquiv X).invFun ∘ (OnePoint.continuousMapMkNat f p h)
     change Filter.Tendsto (fun n : ℕ ↦ g n) _ _

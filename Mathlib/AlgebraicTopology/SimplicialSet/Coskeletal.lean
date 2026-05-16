@@ -115,7 +115,6 @@ lemma fac_aux₂ {n : ℕ}
       rw [op_comp, Functor.map_comp]
       simp only [types_comp_apply]
       refine congrArg (X.map (⦋1⦌.const ⦋0⦌ 0).op) ?_
-      unfold strArrowMk₂
       rw [lift, StrictSegal.spineToSimplex_vertex]
       congr
   | succ k hk =>

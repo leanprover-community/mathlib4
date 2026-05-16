@@ -159,7 +159,7 @@ def Coprime (m n : ℕ+) : Prop :=
 
 @[simp, norm_cast]
 theorem coprime_coe {m n : ℕ+} : Nat.Coprime ↑m ↑n ↔ m.Coprime n := by
-  unfold Nat.Coprime Coprime
+  unfold Coprime
   rw [← coe_inj]
   simp
 

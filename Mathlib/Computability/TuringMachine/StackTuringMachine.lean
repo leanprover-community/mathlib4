@@ -215,16 +215,14 @@ theorem stmts₁_trans {q₁ q₂ : Stmt Γ Λ σ} : q₁ ∈ stmts₁ q₂ → 
     simp only [Finset.mem_insert, Finset.mem_singleton, Finset.mem_union] at h₁₂)
   | branch f q₁ q₂ IH₁ IH₂ =>
     rcases h₁₂ with (rfl | h₁₂ | h₁₂)
-    · unfold stmts₁ at h₀₁
-      exact h₀₁
+    · exact h₀₁
     · exact Finset.mem_insert_of_mem (Finset.mem_union_left _ (IH₁ h₁₂))
     · exact Finset.mem_insert_of_mem (Finset.mem_union_right _ (IH₂ h₁₂))
   | goto l => subst h₁₂; exact h₀₁
   | halt => subst h₁₂; exact h₀₁
   | load _ q IH | _ _ _ q IH =>
     rcases h₁₂ with (rfl | h₁₂)
-    · unfold stmts₁ at h₀₁
-      exact h₀₁
+    · exact h₀₁
     · exact Finset.mem_insert_of_mem (IH h₁₂)
 
 theorem stmts₁_supportsStmt_mono {S : Finset Λ} {q₁ q₂ : Stmt Γ Λ σ} (h : q₁ ∈ stmts₁ q₂)
@@ -780,14 +778,11 @@ theorem tr_supports {S} (ss : TM2.Supports M S) : TM1.Supports (tr M) (trSupp M 
         · exact ⟨fun _ _ ↦ hret, fun _ _ ↦ hgo⟩
         · exact ⟨fun _ _ ↦ hret, fun _ _ ↦ hgo⟩
         · exact ⟨⟨fun _ _ ↦ hret, fun _ _ ↦ hret⟩, fun _ _ ↦ hgo⟩
-      · unfold TM1.SupportsStmt TM2to1.tr
-        exact ⟨IH₁, fun _ _ ↦ hret⟩
+      · exact ⟨IH₁, fun _ _ ↦ hret⟩
       · exact IH₂ _ h
     · intro _ _ IH ss' sub -- load
-      unfold TM2to1.trStmts₁ at sub ⊢
       exact IH ss' sub
     · intro _ _ _ IH₁ IH₂ ss' sub -- branch
-      unfold TM2to1.trStmts₁ at sub
       obtain ⟨IH₁₁, IH₁₂⟩ := IH₁ ss'.1 fun x hx ↦ sub x <| Finset.mem_union_left _ hx
       obtain ⟨IH₂₁, IH₂₂⟩ := IH₂ ss'.2 fun x hx ↦ sub x <| Finset.mem_union_right _ hx
       refine ⟨⟨IH₁₁, IH₂₁⟩, fun l h ↦ ?_⟩

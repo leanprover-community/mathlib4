@@ -189,7 +189,7 @@ lemma const_subinterval_eq {n} (j l : ℕ) (hjl : j + l ≤ n) (i : Fin (l + 1))
 lemma mkOfSucc_subinterval_eq {n} (j l : ℕ) (hjl : j + l ≤ n) (i : Fin l) :
     mkOfSucc i ≫ subinterval j l hjl =
     mkOfSucc ⟨j + i.1, Nat.lt_of_lt_of_le (Nat.add_lt_add_left i.2 j) hjl⟩ := by
-  unfold subinterval mkOfSucc
+  unfold subinterval
   ext (i : Fin 2)
   match i with | 0 | 1 => simp; lia
 

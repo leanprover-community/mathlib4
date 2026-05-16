@@ -173,9 +173,7 @@ lemma induce_vertexSet (G : Graph α β) : G.induce V(G) = G := by
 def deleteVerts (G : Graph α β) (X : Set α) : Graph α β := G.induce (V(G) \ X)
 
 @[simp, grind =]
-lemma vertexSet_deleteVerts (G : Graph α β) (X : Set α) : V(G.deleteVerts X) = V(G) \ X := by
-  unfold deleteVerts
-  rfl
+lemma vertexSet_deleteVerts (G : Graph α β) (X : Set α) : V(G.deleteVerts X) = V(G) \ X := by rfl
 
 @[simp, grind =]
 lemma deleteVerts_isLink (G : Graph α β) (X : Set α) :

@@ -95,7 +95,7 @@ theorem xgcdAux_val (x y) : xgcdAux x 1 0 y 0 1 = (gcd x y, xgcd x y) := by
   rw [xgcd, ← xgcdAux_fst x y 1 0 0 1]
 
 theorem xgcd_val (x y) : xgcd x y = (gcdA x y, gcdB x y) := by
-  unfold gcdA gcdB; constructor
+  constructor
 
 section
 

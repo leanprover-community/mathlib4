@@ -442,7 +442,7 @@ theorem fract_eq_iff {a b : R} : fract a = b ↔ 0 ≤ b ∧ b < 1 ∧ ∃ z : �
     constructor <;> simpa [sub_eq_add_neg, add_assoc] ⟩
 
 theorem fract_eq_fract {a b : R} : fract a = fract b ↔ ∃ z : ℤ, a - b = z :=
-  ⟨fun h => ⟨⌊a⌋ - ⌊b⌋, by unfold fract at h; rw [Int.cast_sub, sub_eq_sub_iff_sub_eq_sub.1 h]⟩,
+  ⟨fun h => ⟨⌊a⌋ - ⌊b⌋, by rw [Int.cast_sub, sub_eq_sub_iff_sub_eq_sub.1 h]⟩,
    by
     rintro ⟨z, hz⟩
     refine fract_eq_iff.2 ⟨fract_nonneg _, fract_lt_one _, z + ⌊b⌋, ?_⟩
