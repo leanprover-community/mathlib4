@@ -169,7 +169,7 @@ variable [Field K]
 
 instance (priority := 100) Field.toGrindField : Lean.Grind.Field K :=
   { CommRing.toGrindCommRing K, ‹Field K› with
-    zpow := ⟨fun a n => a^n⟩
+    zpow := ⟨fun a n => a ^ n⟩
     zpow_zero a := by simp
     zpow_succ a n := by
       by_cases h : a = 0
@@ -213,6 +213,7 @@ noncomputable abbrev DivisionRing.ofIsUnitOrEqZero [Ring R] (h : ∀ a : R, IsUn
   nnqsmul_def := fun _ _ => rfl
   qsmul := _
   qsmul_def := fun _ _ => rfl
+  zpow n x := x ^ n
 
 /-- Constructs a `Field` structure on a `CommRing` consisting only of units and 0. -/
 -- See note [reducible non-instances]
@@ -220,6 +221,7 @@ noncomputable abbrev Field.ofIsUnitOrEqZero [CommRing R] (h : ∀ a : R, IsUnit 
     Field R where
   toCommRing := ‹CommRing R›
   __ := DivisionRing.ofIsUnitOrEqZero h
+  zpow n x := x ^ n
 
 end NoncomputableDefs
 
@@ -238,6 +240,7 @@ protected abbrev divisionSemiring [DivisionSemiring L] (zero : f 0 = 0) (one : f
     (natCast : ∀ n : ℕ, f n = n) (nnratCast : ∀ q : ℚ≥0, f q = q) : DivisionSemiring K where
   toSemiring := hf.semiring f zero one add mul nsmul npow natCast
   __ := hf.groupWithZero f zero one mul inv div npow zpow
+  zpow n x := x ^ n
   nnratCast_def q := hf <| by rw [nnratCast, NNRat.cast_def, div, natCast, natCast]
   nnqsmul := (· • ·)
   nnqsmul_def q a := hf <| by rw [nnqsmul, NNRat.smul_def, mul, nnratCast]
@@ -259,6 +262,7 @@ protected abbrev divisionRing [DivisionRing L] (zero : f 0 = 0) (one : f 1 = 1)
   ratCast_def q := hf <| by rw [ratCast, div, intCast, natCast, Rat.cast_def]
   qsmul := (· • ·)
   qsmul_def q a := hf <| by rw [qsmul, mul, Rat.smul_def, ratCast]
+  zpow n x := x ^ n
 
 /-- Pullback a `Field` along an injective function. -/
 -- See note [reducible non-instances]
@@ -271,6 +275,7 @@ protected abbrev semifield [Semifield L] (zero : f 0 = 0) (one : f 1 = 1)
   toCommSemiring := hf.commSemiring f zero one add mul nsmul npow natCast
   __ := hf.commGroupWithZero f zero one mul inv div npow zpow
   __ := hf.divisionSemiring f zero one add mul inv div nsmul nnqsmul npow zpow natCast nnratCast
+  zpow n x := x ^ n
 
 /-- Pullback a `Field` along an injective function. -/
 -- See note [reducible non-instances]
@@ -287,6 +292,7 @@ protected abbrev field [Field L] (zero : f 0 = 0) (one : f 1 = 1)
   toCommRing := hf.commRing f zero one add mul neg sub nsmul zsmul npow natCast intCast
   __ := hf.divisionRing f zero one add mul neg sub inv div nsmul zsmul nnqsmul qsmul npow zpow
     natCast intCast nnratCast ratCast
+  zpow n x := x ^ n
 
 end Function.Injective
 
