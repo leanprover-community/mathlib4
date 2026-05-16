@@ -168,6 +168,14 @@ theorem ciSup_mono {f g : ι → α} (B : BddAbove (range g)) (H : ∀ x, f x �
   · rw [iSup_of_empty', iSup_of_empty']
   · exact ciSup_le fun x => le_ciSup_of_le B x (H x)
 
+theorem ciSup_sup_eq {f g : ι → α} (Hf : BddAbove <| range f) (Hg : BddAbove <| range g) :
+    ⨆ x, f x ⊔ g x = (⨆ x, f x) ⊔ (⨆ x, g x) := by
+  cases isEmpty_or_nonempty ι
+  · simp [iSup_of_empty']
+  apply le_antisymm <| ciSup_le fun x ↦ sup_le_sup (le_ciSup Hf x) (le_ciSup Hg x)
+  have := bbdAbove_range_sup Hf Hg
+  exact sup_le (ciSup_mono this fun _ ↦ le_sup_left) (ciSup_mono this fun _ ↦ le_sup_right)
+
 theorem le_ciSup_set {f : β → α} {s : Set β} (H : BddAbove (f '' s)) {c : β} (hc : c ∈ s) :
     f c ≤ ⨆ i : s, f i :=
   (le_csSup H <| mem_image_of_mem f hc).trans_eq sSup_image'
@@ -176,6 +184,10 @@ theorem le_ciSup_set {f : β → α} {s : Set β} (H : BddAbove (f '' s)) {c : �
 @[gcongr low]
 theorem ciInf_mono {f g : ι → α} (B : BddBelow (range f)) (H : ∀ x, f x ≤ g x) : iInf f ≤ iInf g :=
   ciSup_mono (α := αᵒᵈ) B H
+
+theorem ciInf_inf_eq {f g : ι → α} (Hf : BddBelow <| range f) (Hg : BddBelow <| range g) :
+    ⨅ x, f x ⊓ g x = (⨅ x, f x) ⊓ (⨅ x, g x) :=
+  ciSup_sup_eq (α := αᵒᵈ) Hf Hg
 
 /-- The indexed minimum of a function is bounded below by a uniform lower bound -/
 theorem le_ciInf [Nonempty ι] {f : ι → α} {c : α} (H : ∀ x, c ≤ f x) : c ≤ iInf f :=
@@ -393,6 +405,18 @@ end ConditionallyCompleteLattice
 section ConditionallyCompleteLinearOrder
 
 variable [ConditionallyCompleteLinearOrder α] {a b : α}
+
+theorem ciSup_sup_le {f g : ι → α} : ⨆ x, f x ⊔ g x ≤ (⨆ x, f x) ⊔ (⨆ x, g x) := by
+  by_cases! hf : ¬BddAbove (range f)
+  · rw [ciSup_of_not_bddAbove hf, ciSup_of_not_bddAbove <| mt bbdAbove_range_left_of_sup hf]
+    exact le_sup_left
+  by_cases! hg : ¬BddAbove (range g)
+  · rw [ciSup_of_not_bddAbove hg, ciSup_of_not_bddAbove <| mt bbdAbove_range_right_of_sup hg]
+    exact le_sup_right
+  exact ciSup_sup_eq hf hg |>.le
+
+theorem ciInf_inf_le {f g : ι → α} : (⨅ x, f x) ⊓ (⨅ x, g x) ≤ ⨅ x, f x ⊓ g x :=
+  ciSup_sup_le (α := αᵒᵈ)
 
 /-- Indexed version of `exists_lt_of_lt_csSup`.
 When `b < iSup f`, there is an element `i` such that `b < f i`.

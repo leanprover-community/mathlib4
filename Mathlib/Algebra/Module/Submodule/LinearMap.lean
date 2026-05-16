@@ -211,6 +211,11 @@ def restrict (f : M →ₛₗ[σ₁₂] M₂) {p : Submodule R M} {q : Submodule
   (f.domRestrict p).codRestrict q <| SetLike.forall.2 hf
 
 @[simp]
+theorem coe_restrict_apply {f : M →ₛₗ[σ₁₂] M₂} {p : Submodule R M} {q : Submodule R₂ M₂}
+    (hf : ∀ x ∈ p, f x ∈ q) (x : p) : ↑(f.restrict hf x) = f x :=
+  rfl
+
+@[deprecated coe_restrict_apply (since := "2026-05-13")]
 theorem restrict_coe_apply (f : M →ₛₗ[σ₁₂] M₂) {p : Submodule R M} {q : Submodule R₂ M₂}
     (hf : ∀ x ∈ p, f x ∈ q) (x : p) : ↑(f.restrict hf x) = f x :=
   rfl
@@ -299,7 +304,7 @@ theorem _root_.Module.End.pow_restrict {p : Submodule R M} (n : ℕ) (h : ∀ x 
     (h' := Module.End.pow_apply_mem_of_forall_mem n h) :
     (f'.restrict h) ^ n = (f' ^ n).restrict h' := by
   ext x
-  have : Semiconj (↑) (f'.restrict h) f' := fun _ ↦ restrict_coe_apply _ _ _
+  have : Semiconj (↑) (f'.restrict h) f' := fun _ ↦ coe_restrict_apply _ _
   simp [Module.End.coe_pow, this.iterate_right _ _]
 
 end
