@@ -49,7 +49,7 @@ lemma ker_eq_bot : ker f = ⊥ ↔ Function.Injective f := by
   fconstructor
   · intro h x y hxy
     simpa [h, rel_iff, mem_bot, sub_eq_zero] using show (ker f).ringCon x y from hxy
-  · exact fun h ↦ eq_bot_iff.2 fun x hx => h hx
+  · exact fun h ↦ _root_.eq_bot_iff.2 fun x hx => h hx
 
 section NonAssocRing
 
