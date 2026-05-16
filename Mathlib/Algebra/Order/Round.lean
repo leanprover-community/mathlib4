@@ -68,19 +68,24 @@ theorem round_eq_div (x : α) : round x = (⌊2 * x⌋ + 1) / 2 := by
     grw [h]
     simp
 
+omit [IsStrictOrderedRing α] in
 @[simp]
 theorem round_zero : round (0 : α) = 0 := by simp [round]
 
+omit [IsStrictOrderedRing α] in
 @[simp]
 theorem round_one : round (1 : α) = 1 := by simp [round]
 
+omit [IsStrictOrderedRing α] in
 @[simp]
 theorem round_natCast (n : ℕ) : round (n : α) = n := by simp [round]
 
+omit [IsStrictOrderedRing α] in
 @[simp]
 theorem round_ofNat (n : ℕ) [n.AtLeastTwo] : round (ofNat(n) : α) = ofNat(n) :=
   round_natCast n
 
+omit [IsStrictOrderedRing α] in
 @[simp]
 theorem round_intCast (n : ℤ) : round (n : α) = n := by simp [round]
 
