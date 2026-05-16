@@ -258,6 +258,33 @@ theorem ContinuousLinearMap.isOpen_injective [FiniteDimensional 𝕜 E] :
   exact ⟨(K⁻¹ - ‖φ - φ₀‖₊)⁻¹, inv_pos_of_pos (tsub_pos_of_lt hφ),
     H.add_sub_lipschitzWith (φ - φ₀).lipschitz hφ⟩
 
+open ContinuousLinearMap
+
+/-- Continuous linear equivalence between continuous linear functions `𝕜ⁿ → E` and `Eⁿ`.
+The spaces `𝕜ⁿ` and `Eⁿ` are represented as `ι → 𝕜` and `ι → E`, respectively,
+where `ι` is a finite type. -/
+def ContinuousLinearEquiv.piRing (ι : Type*) [Fintype ι] [DecidableEq ι] :
+    ((ι → 𝕜) →L[𝕜] E) ≃L[𝕜] ι → E :=
+  { LinearMap.toContinuousLinearMap.symm.trans (LinearEquiv.piRing 𝕜 E ι 𝕜) with
+    continuous_toFun := by
+      refine continuous_pi fun i ↦ ?_
+      exact (apply 𝕜 E (Pi.single i 1)).continuous
+    continuous_invFun := by
+      simp_rw [LinearEquiv.invFun_eq_symm, LinearEquiv.trans_symm, LinearEquiv.symm_symm]
+      refine AddMonoidHomClass.continuous_of_bound
+        (LinearMap.toContinuousLinearMap.toLinearMap.comp
+            (LinearEquiv.piRing 𝕜 E ι 𝕜).symm.toLinearMap)
+        (Fintype.card ι : ℝ) fun g ↦ ?_
+      rw [← nsmul_eq_mul]
+      refine opNorm_le_bound _ (nsmul_nonneg (norm_nonneg g) (Fintype.card ι)) fun t ↦ ?_
+      simp_rw [LinearMap.coe_comp, LinearEquiv.coe_toLinearMap, Function.comp_apply,
+        LinearMap.coe_toContinuousLinearMap', LinearEquiv.piRing_symm_apply]
+      apply le_trans (norm_sum_le _ _)
+      rw [smul_mul_assoc]
+      refine Finset.sum_le_card_nsmul _ _ _ fun i _ ↦ ?_
+      rw [norm_smul, mul_comm]
+      gcongr <;> apply norm_le_pi_norm }
+
 protected theorem LinearIndependent.eventually {ι} [Finite ι] {f : ι → E}
     (hf : LinearIndependent 𝕜 f) : ∀ᶠ g in 𝓝 f, LinearIndependent 𝕜 g := by
   cases nonempty_fintype ι
@@ -354,48 +381,12 @@ end Module.Basis
 
 instance [FiniteDimensional 𝕜 E] [SecondCountableTopology F] :
     SecondCountableTopology (E →L[𝕜] F) := by
-  set d := Module.finrank 𝕜 E
-  suffices
-    ∀ ε > (0 : ℝ), ∃ n : (E →L[𝕜] F) → Fin d → ℕ, ∀ f g : E →L[𝕜] F, n f = n g → dist f g ≤ ε from
-    Metric.secondCountable_of_countable_discretization fun ε ε_pos =>
-      ⟨Fin d → ℕ, by infer_instance, this ε ε_pos⟩
-  intro ε ε_pos
-  obtain ⟨u : ℕ → F, hu : DenseRange u⟩ := exists_dense_seq F
-  let v := Module.finBasis 𝕜 E
-  obtain
-    ⟨C : ℝ, C_pos : 0 < C, hC :
-      ∀ {φ : E →L[𝕜] F} {M : ℝ}, 0 ≤ M → (∀ i, ‖φ (v i)‖ ≤ M) → ‖φ‖ ≤ C * M⟩ :=
-    v.exists_opNorm_le (E := E) (F := F)
-  have h_2C : 0 < 2 * C := mul_pos zero_lt_two C_pos
-  have hε2C : 0 < ε / (2 * C) := div_pos ε_pos h_2C
-  have : ∀ φ : E →L[𝕜] F, ∃ n : Fin d → ℕ, ‖φ - (v.constrL <| u ∘ n)‖ ≤ ε / 2 := by
-    intro φ
-    have : ∀ i, ∃ n, ‖φ (v i) - u n‖ ≤ ε / (2 * C) := by
-      simp only [norm_sub_rev]
-      intro i
-      have : φ (v i) ∈ closure (range u) := hu _
-      obtain ⟨n, hn⟩ : ∃ n, ‖u n - φ (v i)‖ < ε / (2 * C) := by
-        rw [mem_closure_iff_nhds_basis Metric.nhds_basis_ball] at this
-        specialize this (ε / (2 * C)) hε2C
-        simpa [dist_eq_norm]
-      exact ⟨n, le_of_lt hn⟩
-    choose n hn using this
-    use n
-    replace hn : ∀ i : Fin d, ‖(φ - (v.constrL <| u ∘ n)) (v i)‖ ≤ ε / (2 * C) := by simp [hn]
-    have : C * (ε / (2 * C)) = ε / 2 := by
-      rw [eq_div_iff (two_ne_zero : (2 : ℝ) ≠ 0), mul_comm, ← mul_assoc,
-        mul_div_cancel₀ _ (ne_of_gt h_2C)]
-    specialize hC (le_of_lt hε2C) hn
-    rwa [this] at hC
-  choose n hn using this
-  set Φ := fun φ : E →L[𝕜] F => v.constrL <| u ∘ n φ
-  simp_rw [← dist_eq_norm] at hn
-  use n
-  intro x y hxy
-  calc
-    dist x y ≤ dist x (Φ x) + dist (Φ x) y := dist_triangle _ _ _
-    _ = dist x (Φ x) + dist y (Φ y) := by simp [Φ, hxy, dist_comm]
-    _ ≤ ε := by linarith [hn x, hn y]
+  let d := Module.finrank 𝕜 E
+  let e₁ : E ≃L[𝕜] Fin d → 𝕜 :=
+    ContinuousLinearEquiv.ofFinrankEq (finrank_fin_fun 𝕜).symm
+  let e₂ : (E →L[𝕜] F) ≃L[𝕜] Fin d → F :=
+    (e₁.arrowCongr (1 : F ≃L[𝕜] F)).trans (ContinuousLinearEquiv.piRing (Fin d))
+  exact e₂.toHomeomorph.secondCountableTopology
 
 theorem AffineSubspace.closed_of_finiteDimensional {P : Type*} [MetricSpace P]
     [NormedAddTorsor E P] (s : AffineSubspace 𝕜 P) [FiniteDimensional 𝕜 s.direction] :
@@ -491,32 +482,6 @@ lemma ProperSpace.of_locallyCompact_module (V : Type*) [AddCommGroup V] [Topolog
 end Riesz
 
 open ContinuousLinearMap
-
-/-- Continuous linear equivalence between continuous linear functions `𝕜ⁿ → E` and `Eⁿ`.
-The spaces `𝕜ⁿ` and `Eⁿ` are represented as `ι → 𝕜` and `ι → E`, respectively,
-where `ι` is a finite type. -/
-def ContinuousLinearEquiv.piRing (ι : Type*) [Fintype ι] [DecidableEq ι] :
-    ((ι → 𝕜) →L[𝕜] E) ≃L[𝕜] ι → E :=
-  { LinearMap.toContinuousLinearMap.symm.trans (LinearEquiv.piRing 𝕜 E ι 𝕜) with
-    continuous_toFun := by
-      refine continuous_pi fun i => ?_
-      exact (ContinuousLinearMap.apply 𝕜 E (Pi.single i 1)).continuous
-    continuous_invFun := by
-      simp_rw [LinearEquiv.invFun_eq_symm, LinearEquiv.trans_symm, LinearEquiv.symm_symm]
-      -- Note: added explicit type and removed `change` that tried to achieve the same
-      refine AddMonoidHomClass.continuous_of_bound
-        (LinearMap.toContinuousLinearMap.toLinearMap.comp
-            (LinearEquiv.piRing 𝕜 E ι 𝕜).symm.toLinearMap)
-        (Fintype.card ι : ℝ) fun g => ?_
-      rw [← nsmul_eq_mul]
-      refine opNorm_le_bound _ (nsmul_nonneg (norm_nonneg g) (Fintype.card ι)) fun t => ?_
-      simp_rw [LinearMap.coe_comp, LinearEquiv.coe_toLinearMap, Function.comp_apply,
-        LinearMap.coe_toContinuousLinearMap', LinearEquiv.piRing_symm_apply]
-      apply le_trans (norm_sum_le _ _)
-      rw [smul_mul_assoc]
-      refine Finset.sum_le_card_nsmul _ _ _ fun i _ => ?_
-      rw [norm_smul, mul_comm]
-      gcongr <;> apply norm_le_pi_norm }
 
 /-- A family of continuous linear maps is continuous within `s` at `x` iff all its applications
 are. -/
