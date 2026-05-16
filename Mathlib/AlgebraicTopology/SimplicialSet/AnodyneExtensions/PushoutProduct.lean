@@ -5,11 +5,10 @@ Authors: Joël Riou, Jack McKoen
 -/
 module
 
+public import Mathlib.AlgebraicTopology.ModelCategory.IsCofibrant
 public import Mathlib.AlgebraicTopology.SimplicialSet.AnodyneExtensions.Basic
 public import Mathlib.AlgebraicTopology.SimplicialSet.PushoutProduct
-public import Mathlib.AlgebraicTopology.ModelCategory.IsCofibrant
 public import Mathlib.CategoryTheory.LiftingProperties.ParametrizedAdjunction
-public import Mathlib.CategoryTheory.Adjunction.ParametrizedLimits
 public import Mathlib.CategoryTheory.Monoidal.Closed.Braided
 
 /-!
