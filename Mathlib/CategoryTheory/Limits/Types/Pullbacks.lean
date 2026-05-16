@@ -233,6 +233,15 @@ lemma isPullback_iff :
     exact ⟨⟨w⟩, ⟨IsLimit.ofIsoLimit ((Types.pullbackLimitCone r b).isLimit)
       (PullbackCone.ext (asIso φ)).symm⟩⟩
 
+/-- If `A = f ⁻¹' B`, then the canonical square through the subtype inclusions
+is a pullback in `Type u`. -/
+lemma isPullback_of_eq_setPreimage {X Y : Type u} (f : X ⟶ Y) (B : Set Y) {A : Set X}
+    (hA : A = f ⁻¹' B) :
+    IsPullback (↾fun (⟨a, ha⟩ : A) ↦ (⟨f a, by simpa [hA] using ha⟩ : B))
+      (↾Subtype.val) (↾Subtype.val) f := by
+  rw [isPullback_iff]
+  cat_disch
+
 end
 
 end CategoryTheory.Limits.Types
