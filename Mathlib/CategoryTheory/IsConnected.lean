@@ -329,7 +329,7 @@ instance : Trans (α := J) (Zigzag · ·) (Zigzag · ·) (Zigzag · ·) where
   trans := Zigzag.trans
 
 theorem Zigzag.of_zag {j₁ j₂ : J} (h : Zag j₁ j₂) : Zigzag j₁ j₂ :=
-  Relation.ReflTransGen.single _ _ h
+  Relation.ReflTransGen.single j₁ j₂ h
 
 theorem Zigzag.of_hom {j₁ j₂ : J} (f : j₁ ⟶ j₂) : Zigzag j₁ j₂ :=
   of_zag (Zag.of_hom f)

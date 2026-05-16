@@ -465,7 +465,7 @@ theorem head_induction_on {motive : ∀ a : α, ReflTransGen r a b → Prop} {a 
 @[elab_as_elim]
 theorem trans_induction_on {motive : ∀ {a b : α}, ReflTransGen r a b → Prop} {a b : α}
     (h : ReflTransGen r a b) (refl : ∀ a, @motive a a refl)
-    (single : ∀ {a b} (h : r a b), motive (single _ _ h))
+    (single : ∀ {a b} (h : r a b), motive (single a b h))
     (trans : ∀ {a b c} (h₁ : ReflTransGen r a b) (h₂ : ReflTransGen r b c), motive h₁ → motive h₂ →
       motive (h₁.trans h₂)) : motive h := by
   induction h with
@@ -500,7 +500,7 @@ namespace TransGen
 theorem to_reflTransGen : TransGen r ≤ ReflTransGen r := by
   intro a _ h
   induction h with
-  | single h => exact ReflTransGen.single _ _ h
+  | single h => exact ReflTransGen.single a _ h
   | tail _ bc ab => exact ReflTransGen.tail ab bc
 
 theorem trans_left (hab : TransGen r a b) (hbc : ReflTransGen r b c) : TransGen r a c := by
@@ -747,7 +747,7 @@ theorem ReflTransGen.swap : swap (ReflTransGen r) ≤ ReflTransGen (swap r) := b
   | tail _ hbc ih => exact ih.head hbc
 
 theorem reflTransGen_swap : ReflTransGen (swap r) a b ↔ ReflTransGen r b a :=
-  ⟨ReflTransGen.swap _ _, ReflTransGen.swap _ _⟩
+  ⟨ReflTransGen.swap b a, ReflTransGen.swap a b⟩
 
 @[simp, grind =] lemma reflGen_transGen : ReflGen (TransGen r) = ReflTransGen r := by
   ext x y
@@ -756,7 +756,7 @@ theorem reflTransGen_swap : ReflTransGen (swap r) a b ↔ ReflTransGen r b a :=
 @[simp, grind =] lemma transGen_reflGen : TransGen (ReflGen r) = ReflTransGen r := by
   ext x y
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · simpa [reflTransGen_eq_self] using h.mono ReflGen.to_reflTransGen x y |>.to_reflTransGen x y
+  · simpa [reflTransGen_eq_self] using h.mono ReflGen.to_reflTransGen x y |>.to_reflTransGen
   · obtain (rfl | h) := reflTransGen_iff_eq_or_transGen.mp h
     · exact .single .refl
     · exact h.mono (fun _ _ ↦ .single) x y
@@ -839,7 +839,7 @@ theorem church_rosser (h : ∀ a b c, r a b → r a c → ∃ d, ReflGen r b d �
     | single hba => exact ⟨a, hea, hcb.tail hba⟩
 
 theorem join_of_single [Std.Refl r] : r ≤ Join r :=
-  fun _a b hab ↦ ⟨b, hab, refl b⟩
+  fun _ b hab ↦ ⟨b, hab, refl b⟩
 
 theorem symmetric_join : Symmetric (Join r) := fun _ _ ⟨c, hac, hcb⟩ ↦ ⟨c, hcb, hac⟩
 
@@ -867,7 +867,7 @@ theorem equivalence_join_reflTransGen
   equivalence_join fun _ _ _ ↦ church_rosser h
 
 theorem join_of_equivalence {r' : α → α → Prop} (hr : Equivalence r) (h : r' ≤ r) : Join r' ≤ r :=
-  fun _ _ ⟨_, hac, hbc⟩ ↦ hr.trans (h _ _ hac) (hr.symm <| h _ _ hbc)
+  fun a b ⟨c, hac, hbc⟩ ↦ hr.trans (h a c hac) (hr.symm <| h b c hbc)
 
 theorem reflTransGen_of_isTrans_reflexive {r' : α → α → Prop} [Std.Refl r] [IsTrans α r]
     (h : r' ≤ r) : ReflTransGen r' ≤ r := by

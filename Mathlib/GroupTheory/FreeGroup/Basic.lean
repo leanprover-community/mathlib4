@@ -274,7 +274,7 @@ theorem cons_nil_iff_singleton {x b} : Red ((x, b) :: L) [] ↔ Red L [(x, not b
   Iff.intro
     (fun h => by
       have h₁ : Red ((x, not b) :: (x, b) :: L) [(x, not b)] := cons_cons h
-      have h₂ : Red ((x, not b) :: (x, b) :: L) L := ReflTransGen.single _ _ Step.cons_not_rev
+      have h₂ : Red ((x, not b) :: (x, b) :: L) L := ReflTransGen.single _ L Step.cons_not_rev
       let ⟨L', h₁, h₂⟩ := church_rosser h₁ h₂
       rw [singleton_iff] at h₁
       subst L'
@@ -361,7 +361,7 @@ theorem equivalence_join_red : Equivalence (Join (@Red α)) :=
   equivalence_join_reflTransGen fun _ b c hab hac =>
     match b, c, Red.Step.diamond hab hac rfl with
     | b, _, Or.inl rfl => ⟨b, by rfl, by rfl⟩
-    | _, _, Or.inr ⟨d, hbd, hcd⟩ => ⟨d, ReflGen.single hbd, ReflTransGen.single _ _ hcd⟩
+    | _, c, Or.inr ⟨d, hbd, hcd⟩ => ⟨d, ReflGen.single hbd, ReflTransGen.single c d hcd⟩
 
 @[to_additive]
 theorem join_red_of_step (h : Red.Step L₁ L₂) : Join Red L₁ L₂ := by
@@ -375,7 +375,7 @@ theorem eqvGen_step_iff_join_red : EqvGen Red.Step L₁ L₂ ↔ Join Red L₁ L
       have : EqvGen (Join Red) L₁ L₂ := h.mono fun _ _ => join_red_of_step
       equivalence_join_red.eqvGen_iff.1 this)
     (join_of_equivalence (Relation.EqvGen.is_equivalence _)
-      (reflTransGen_of_equivalence (Relation.EqvGen.is_equivalence _) EqvGen.rel) _ _)
+      (reflTransGen_of_equivalence (Relation.EqvGen.is_equivalence _) EqvGen.rel) L₁ L₂)
 
 /-! ### Reduced words -/
 
@@ -586,7 +586,7 @@ theorem Red.Step.invRev {L₁ L₂ : List (α × Bool)} (h : Red.Step L₁ L₂)
 
 @[to_additive]
 theorem Red.invRev {L₁ L₂ : List (α × Bool)} (h : Red L₁ L₂) : Red (invRev L₁) (invRev L₂) :=
-  Relation.ReflTransGen.lift FreeGroup.invRev (fun _a _b => Red.Step.invRev) _ _ h
+  Relation.ReflTransGen.lift FreeGroup.invRev (fun _a _b => Red.Step.invRev) L₁ L₂ h
 
 @[to_additive (attr := simp)]
 theorem Red.step_invRev_iff :
