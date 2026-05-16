@@ -5,7 +5,15 @@ Authors: Yakov Pechersky, Anthony DeRossi
 -/
 module
 
-public import Mathlib.Data.List.Basic
+public import Aesop.BuiltinRules
+public import Mathlib.Data.Nat.Notation
+public import Mathlib.Tactic.Attr.Core
+public import Mathlib.Tactic.ToDual
+import Mathlib.Data.List.Basic
+import Mathlib.Tactic.ApplyAt
+import Mathlib.Tactic.Push
+import Mathlib.Tactic.SimpRw
+import Mathlib.Tactic.Use
 
 /-!
 # Properties of `List.reduceOption`
