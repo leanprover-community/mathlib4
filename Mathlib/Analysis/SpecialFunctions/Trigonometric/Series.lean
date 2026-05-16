@@ -38,14 +38,11 @@ theorem Complex.hasSum_cos' (z : ℂ) :
   have := ((expSeries_div_hasSum_exp (z * Complex.I)).add
     (expSeries_div_hasSum_exp (-z * Complex.I))).div_const 2
   replace := (Nat.divModEquiv 2).symm.hasSum_iff.mpr this
-  dsimp [Function.comp_def] at this
-  simp_rw [← mul_comm 2 _] at this
   refine this.prod_fiberwise fun k => ?_
-  dsimp only
   convert hasSum_fintype (_ : Fin 2 → ℂ) using 1
-  rw [Fin.sum_univ_two]
-  simp_rw [Fin.val_zero, Fin.val_one, add_zero, pow_succ, pow_mul, mul_pow, neg_sq, ← two_mul,
-    neg_mul, mul_neg, neg_div, add_neg_cancel, zero_div, add_zero,
+  simp_rw [Fin.sum_univ_two, Function.comp_def, Nat.divModEquiv_symm_apply, Fin.val_zero,
+    Fin.val_one, Nat.mkDivMod_def, add_zero, pow_succ, pow_mul, mul_pow,
+    neg_sq, ← two_mul, neg_mul, mul_neg, neg_div, add_neg_cancel, zero_div, add_zero,
     mul_div_cancel_left₀ _ (two_ne_zero : (2 : ℂ) ≠ 0)]
 
 theorem Complex.hasSum_sin' (z : ℂ) :
@@ -55,13 +52,10 @@ theorem Complex.hasSum_sin' (z : ℂ) :
   have := (((expSeries_div_hasSum_exp (-z * Complex.I)).sub
     (expSeries_div_hasSum_exp (z * Complex.I))).mul_right Complex.I).div_const 2
   replace := (Nat.divModEquiv 2).symm.hasSum_iff.mpr this
-  dsimp [Function.comp_def] at this
-  simp_rw [← mul_comm 2 _] at this
   refine this.prod_fiberwise fun k => ?_
-  dsimp only
   convert hasSum_fintype (_ : Fin 2 → ℂ) using 1
-  rw [Fin.sum_univ_two]
-  simp_rw [Fin.val_zero, Fin.val_one, add_zero, pow_succ, pow_mul, mul_pow, neg_sq, sub_self,
+  simp_rw [Fin.sum_univ_two, Function.comp_def, Nat.divModEquiv_symm_apply, Fin.val_zero,
+    Fin.val_one, Nat.mkDivMod_def, add_zero, pow_succ, pow_mul, mul_pow, neg_sq, sub_self,
     zero_mul, zero_div, zero_add, neg_mul, mul_neg, neg_div, ← neg_add', ← two_mul,
     neg_mul, neg_div, mul_assoc, mul_div_cancel_left₀ _ (two_ne_zero : (2 : ℂ) ≠ 0), Complex.div_I]
 
