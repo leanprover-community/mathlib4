@@ -23,6 +23,12 @@ def LIBDIR : FilePath :=
 def IRDIR : FilePath :=
   ".lake" / "build" / "ir"
 
+def isInLeanCore (mod : Name) := #[
+  `Init,
+  `Lean,
+  `Std,
+  `Lake ].contains mod.getRoot
+
 /-- Determine if the package `mod` is part of the mathlib cache.
 
 TODO: write a better predicate. -/
