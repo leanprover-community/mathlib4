@@ -42,7 +42,7 @@ Example:
 @[positivity ite _ _ _] def evalIte : PositivityExt where eval {u α} zα pα e := do
   let .app (.app (.app (.app f (p : Q(Prop))) (_ : Q(Decidable $p))) (a : Q($α))) (b : Q($α))
     ← withReducible (whnf e) | throwError "not ite"
-  haveI' : $e =Q ite $p $a $b := ⟨⟩
+  have : $e =Q ite $p $a $b := ⟨⟩
   guard <| ← withDefault <| withNewMCtxDepth <| isDefEq f q(ite (α := $α))
   let ra ← core zα pα a; let rb ← core zα pα b
   ...
@@ -245,7 +245,7 @@ def normNumPositivity (e : Q($α)) : MetaM (Strictness zα pα e) := catchNone d
         let _a ← synthInstanceQ q(Nontrivial $α)
         assumeInstancesCommute
         have p : Q(NormNum.IsNat $e $lit) := p
-        haveI' p' : Nat.ble 1 $lit =Q true := ⟨⟩
+        have p' : Nat.ble 1 $lit =Q true := ⟨⟩
         pure (.positive q(pos_of_isNat (A := $α) $p $p'))
       catch e : Exception =>
         trace[Tactic.positivity.failure] "{e.toMessageData}"
@@ -256,7 +256,7 @@ def normNumPositivity (e : Q($α)) : MetaM (Strictness zα pα e) := catchNone d
         let _a ← synthInstanceQ q(NeZero (1 : $α))
         assumeInstancesCommute
         have p : Q(NormNum.IsNat $e $lit) := p
-        haveI' p' : Nat.ble 1 $lit =Q true := ⟨⟩
+        have p' : Nat.ble 1 $lit =Q true := ⟨⟩
         pure (.positive q(pos_of_isNat' (A := $α) $p $p'))
     else
       -- NB. The `try` branch is actually a special case of the `catch` branch,
@@ -284,7 +284,7 @@ def normNumPositivity (e : Q($α)) : MetaM (Strictness zα pα e) := catchNone d
     let _a ← synthInstanceQ q(IsStrictOrderedRing $α)
     assumeInstancesCommute
     have p : Q(NormNum.IsInt $e (Int.negOfNat $lit)) := p
-    haveI' p' : Nat.ble 1 $lit =Q true := ⟨⟩
+    have p' : Nat.ble 1 $lit =Q true := ⟨⟩
     pure (.nonzero q(nz_of_isNegNat $p $p'))
   | .isNNRat _i q n d p =>
     let _a ← synthInstanceQ q(Semiring $α)
@@ -293,10 +293,10 @@ def normNumPositivity (e : Q($α)) : MetaM (Strictness zα pα e) := catchNone d
     assumeInstancesCommute
     have p : Q(NormNum.IsNNRat $e $n $d) := p
     if 0 < q then
-      haveI' w : decide (0 < $n) =Q true := ⟨⟩
+      have w : decide (0 < $n) =Q true := ⟨⟩
       pure (.positive q(pos_of_isNNRat $p $w))
     else -- should not be reachable, but just in case
-      haveI' w : decide ($n = 0) =Q true := ⟨⟩
+      have w : decide ($n = 0) =Q true := ⟨⟩
       pure (.nonnegative q(nonneg_of_isNNRat $p $w))
   | .isNegNNRat _i q n d p =>
     let _a ← synthInstanceQ q(Ring $α)
@@ -305,10 +305,10 @@ def normNumPositivity (e : Q($α)) : MetaM (Strictness zα pα e) := catchNone d
     assumeInstancesCommute
     have p : Q(NormNum.IsRat $e (.negOfNat $n) $d) := p
     if q < 0 then
-      haveI' w : decide (Int.negOfNat $n < 0) =Q true := ⟨⟩
+      have w : decide (Int.negOfNat $n < 0) =Q true := ⟨⟩
       pure (.nonzero q(nz_of_isRat $p $w))
     else -- should not be reachable, but just in case
-      haveI' w : decide (Int.negOfNat $n = 0) =Q true := ⟨⟩
+      have w : decide (Int.negOfNat $n = 0) =Q true := ⟨⟩
       pure (.nonnegative q(nonneg_of_isRat $p $w))
 
 /-- Attempts to prove that `e ≥ 0` using `zero_le` in a `CanonicallyOrderedAdd` monoid. -/

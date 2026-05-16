@@ -134,8 +134,8 @@ meta def evalZPow : PositivityExt where eval {u α} zα pα e := do
     | .app (.app (.app (.const `OfNat.ofNat _) _) (.lit (Literal.natVal n))) _ =>
       guard (n % 2 = 0)
       have m : Q(ℕ) := mkRawNatLit (n / 2)
-      haveI' : $b =Q $m + $m := ⟨⟩
-      haveI' : $e =Q $a ^ $b := ⟨⟩
+      have : $b =Q $m + $m := ⟨⟩
+      have : $e =Q $a ^ $b := ⟨⟩
       pure (.nonnegative q(Even.zpow_nonneg (Even.add_self _) $a))
     | .app (.app (.app (.const `Neg.neg _) _) _) b' =>
       let b' ← whnfR b'
@@ -143,8 +143,8 @@ meta def evalZPow : PositivityExt where eval {u α} zα pα e := do
       let some n := (b'.getRevArg! 1).rawNatLit? | throwError "not a ^ -n where n is a literal"
       guard (n % 2 = 0)
       have m : Q(ℕ) := mkRawNatLit (n / 2)
-      haveI' : $b =Q (-$m) + (-$m) := ⟨⟩
-      haveI' : $e =Q $a ^ $b := ⟨⟩
+      have : $b =Q (-$m) + (-$m) := ⟨⟩
+      have : $e =Q $a ^ $b := ⟨⟩
       pure (.nonnegative q(Even.zpow_nonneg (Even.add_self _) $a))
     | _ => throwError "not a ^ n where n is a literal or a negated literal"
   orElse result do
@@ -152,11 +152,11 @@ meta def evalZPow : PositivityExt where eval {u α} zα pα e := do
     let ofNonneg (pa : Q(0 ≤ $a))
         (_oα : Q(Semifield $α)) (_oα : Q(LinearOrder $α)) (_oα : Q(IsStrictOrderedRing $α)) :
         MetaM (Strictness zα pα e) := do
-      haveI' : $e =Q $a ^ $b := ⟨⟩
+      have : $e =Q $a ^ $b := ⟨⟩
       assumeInstancesCommute
       pure (.nonnegative q(zpow_nonneg $pa $b))
     let ofNonzero (pa : Q($a ≠ 0)) (_oα : Q(GroupWithZero $α)) : MetaM (Strictness zα pα e) := do
-      haveI' : $e =Q $a ^ $b := ⟨⟩
+      have : $e =Q $a ^ $b := ⟨⟩
       let _a ← synthInstanceQ q(GroupWithZero $α)
       assumeInstancesCommute
       pure (.nonzero q(zpow_ne_zero $b $pa))
@@ -167,7 +167,7 @@ meta def evalZPow : PositivityExt where eval {u α} zα pα e := do
         let _a ← synthInstanceQ q(LinearOrder $α)
         let _a ← synthInstanceQ q(IsStrictOrderedRing $α)
         assumeInstancesCommute
-        haveI' : $e =Q $a ^ $b := ⟨⟩
+        have : $e =Q $a ^ $b := ⟨⟩
         pure (.positive q(zpow_pos $pa $b))
       catch e : Exception =>
         trace[Tactic.positivity.failure] "{e.toMessageData}"

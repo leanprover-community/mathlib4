@@ -186,8 +186,8 @@ theorem isNat_not_prime {n n' : ℕ} (h : IsNat n n') : ¬n'.Prime → ¬n.Prime
   -- to compute it, which is a lot quicker
   let rec core : MetaM (Result q(Nat.Prime $n)) := do
     match n' with
-    | 0 => haveI' : $nn =Q 0 := ⟨⟩; return .isFalse q(isNat_prime_0 $pn)
-    | 1 => haveI' : $nn =Q 1 := ⟨⟩; return .isFalse q(isNat_prime_1 $pn)
+    | 0 => have : $nn =Q 0 := ⟨⟩; return .isFalse q(isNat_prime_0 $pn)
+    | 1 => have : $nn =Q 1 := ⟨⟩; return .isFalse q(isNat_prime_1 $pn)
     | _ =>
       let d := n'.minFac
       if d < n' then

@@ -72,7 +72,7 @@ such that `norm_num` successfully recognises both `a` and `b`, and returns `a / 
 @[norm_num mkRat _ _]
 def evalMkRat : NormNumExt where eval {u α} (e : Q(ℚ)) : MetaM (Result e) := do
   let .app (.app (.const ``mkRat _) (a : Q(ℤ))) (b : Q(ℕ)) ← whnfR e | failure
-  haveI' : $e =Q mkRat $a $b := ⟨⟩
+  have : $e =Q mkRat $a $b := ⟨⟩
   let ra ← derive a
   let some ⟨_, na, pa⟩ := ra.toInt (q(Int.instRing) : Q(Ring Int)) | failure
   let ⟨nb, pb⟩ ← deriveNat q($b) q(AddCommMonoidWithOne.toAddMonoidWithOne)
@@ -103,7 +103,7 @@ recognizes `q`, returning the cast of `q`. -/
   let .app r (a : Q(ℚ)) ← whnfR e | failure
   guard <|← withNewMCtxDepth <| isDefEq r q(Rat.cast (K := $α))
   let r ← derive q($a)
-  haveI' : $e =Q Rat.cast $a := ⟨⟩
+  have : $e =Q Rat.cast $a := ⟨⟩
   match r with
   | .isNat _ na pa =>
     assumeInstancesCommute
@@ -171,12 +171,12 @@ def Result.inv {u : Level} {α : Q(Type u)} {a : Q($α)} (ra : Result a)
       else
         guard (qa = 1)
         let .isNat inst n pa := ra | failure
-        haveI' : $n =Q nat_lit 1 := ⟨⟩
+        have : $n =Q nat_lit 1 := ⟨⟩
         assumeInstancesCommute
         return .isNat inst n q(isNat_inv_one $pa)
     else
       let .isNat inst n pa := ra | failure
-      haveI' : $n =Q nat_lit 0 := ⟨⟩
+      have : $n =Q nat_lit 0 := ⟨⟩
       assumeInstancesCommute
       return .isNat inst n q(isNat_inv_zero $pa)
   else
@@ -194,7 +194,7 @@ def Result.inv {u : Level} {α : Q(Type u)} {a : Q($α)} (ra : Result a)
     else
       guard (qa = -1)
       let .isNegNat inst n pa := ra | failure
-      haveI' : $n =Q nat_lit 1 := ⟨⟩
+      have : $n =Q nat_lit 1 := ⟨⟩
       assumeInstancesCommute
       return .isNegNat inst n q(isInt_inv_neg_one $pa)
 
@@ -205,7 +205,7 @@ such that `norm_num` successfully recognises `a`. -/
   let ra ← derive a
   let dsα ← inferDivisionSemiring α
   guard <| ← withNewMCtxDepth <| isDefEq f q(Inv.inv (α := $α))
-  haveI' : $e =Q $a⁻¹ := ⟨⟩
+  have : $e =Q $a⁻¹ := ⟨⟩
   assumeInstancesCommute
   ra.inv q($dsα) (← inferCharZeroOfDivisionSemiring? dsα)
 
