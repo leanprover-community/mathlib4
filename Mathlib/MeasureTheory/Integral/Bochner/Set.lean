@@ -717,19 +717,17 @@ end NormedAddCommGroup
 section Mono
 
 variable [NormedAddCommGroup E] [NormedSpace ℝ E] [PartialOrder E]
-    [IsOrderedAddMonoid E] [IsOrderedModule ℝ E]
+    [IsOrderedAddMonoid E] [IsOrderedModule ℝ E] [OrderClosedTopology E]
     {μ : Measure X} {f g : X → E} {s t : Set X}
 
-theorem setIntegral_mono_set [OrderClosedTopology E] (hfi : IntegrableOn f t μ)
+theorem setIntegral_mono_set (hfi : IntegrableOn f t μ)
     (hf : 0 ≤ᵐ[μ.restrict t] f) (hst : s ≤ᵐ[μ] t) :
     ∫ x in s, f x ∂μ ≤ ∫ x in t, f x ∂μ :=
   integral_mono_measure (Measure.restrict_mono_ae hst) hf hfi
 
-theorem setIntegral_le_integral [OrderClosedTopology E] (hfi : Integrable f μ) (hf : 0 ≤ᵐ[μ] f) :
+theorem setIntegral_le_integral (hfi : Integrable f μ) (hf : 0 ≤ᵐ[μ] f) :
     ∫ x in s, f x ∂μ ≤ ∫ x, f x ∂μ :=
   integral_mono_measure (Measure.restrict_le_self) hf hfi
-
-variable [ClosedIciTopology E]
 
 section
 variable (hf : IntegrableOn f s μ) (hg : IntegrableOn g s μ)
