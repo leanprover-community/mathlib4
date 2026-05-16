@@ -466,7 +466,7 @@ def widePullbackShapeEquiv {J : Type*} : WidePullbackShape J ≌ WithTerminal (D
   inverse.obj := widePullbackShapeEquivObj.symm
   inverse.map f := (widePullbackShapeEquivMap _ _).symm (eqToHom (by simp) ≫ f ≫ eqToHom (by simp))
   unitIso := NatIso.ofComponents fun x ↦ eqToIso (by aesop)
-  counitIso := NatIso.ofComponents fun x ↦ eqToIso (by aesop)
+  counitIso := NatIso.ofComponents fun x ↦ eqToIso (by grind)
 
 end WithTerminal
 

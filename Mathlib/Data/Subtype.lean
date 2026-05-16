@@ -8,6 +8,7 @@ module
 public import Mathlib.Logic.Function.Basic
 public import Mathlib.Tactic.AdaptationNote
 public import Mathlib.Tactic.Simps.Basic
+public import Mathlib.Tactic.Simproc.CastData
 
 /-!
 # Subtypes
@@ -53,6 +54,7 @@ protected theorem forall' {q : ∀ x, p x → Prop} : (∀ x h, q x h) ↔ ∀ x
 protected theorem exists' {q : ∀ x, p x → Prop} : (∃ x h, q x h) ↔ ∃ x : { a // p a }, q x x.2 :=
   (@Subtype.exists _ _ fun x ↦ q x.1 x.2).symm
 
+@[simp]
 theorem heq_iff_coe_eq (h : ∀ x, p x ↔ q x) {a1 : { x // p x }} {a2 : { x // q x }} :
     a1 ≍ a2 ↔ (a1 : α) = (a2 : α) :=
   Eq.rec
