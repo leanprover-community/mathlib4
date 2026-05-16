@@ -176,9 +176,10 @@ open Lean.Meta Qq
 
 /-- Extension for the `positivity` tactic: `π` is always positive. -/
 @[positivity Real.pi]
-meta def evalRealPi : PositivityExt where eval {u α} _zα _pα e := do
+meta def evalRealPi : PositivityExt where eval {u α} _zα pα? e := do
   match u, α, e with
   | 0, ~q(ℝ), ~q(Real.pi) =>
+    let some _ := pα? | throwError "no PartialOrder instance"
     assertInstancesCommute
     pure (.positive q(Real.pi_pos))
   | _, _, _ => throwError "not Real.pi"

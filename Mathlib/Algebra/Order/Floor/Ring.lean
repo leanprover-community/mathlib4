@@ -50,10 +50,11 @@ theorem int_floor_nonneg_of_pos [Ring α] [LinearOrder α] [FloorRing α] {a : �
 
 /-- Extension for the `positivity` tactic: `Int.floor` is nonnegative if its input is. -/
 @[positivity ⌊_⌋]
-meta def evalIntFloor : PositivityExt where eval {u α} _zα _pα e := do
+meta def evalIntFloor : PositivityExt where eval {u α} _zα pα? e := do
   match u, α, e with
   | 0, ~q(ℤ), ~q(@Int.floor $α' $ir $io $j $a) =>
-    match ← core q(inferInstance) q(inferInstance) a with
+    let some _ := pα? | throwError "no PartialOrder instance"
+    match ← core q(inferInstance) (some q(inferInstance)) a with
     | .positive pa =>
         assertInstancesCommute
         pure (.nonnegative q(int_floor_nonneg_of_pos (α := $α') $pa))
@@ -69,13 +70,14 @@ theorem nat_ceil_pos [Semiring α] [LinearOrder α] [FloorSemiring α] {a : α} 
 
 /-- Extension for the `positivity` tactic: `Nat.ceil` is positive if its input is. -/
 @[positivity ⌈_⌉₊]
-meta def evalNatCeil : PositivityExt where eval {u α} _zα _pα e := do
+meta def evalNatCeil : PositivityExt where eval {u α} _zα pα? e := do
   match u, α, e with
   | 0, ~q(ℕ), ~q(@Nat.ceil $α' $ir $io $j $a) =>
+    let some _ := pα? | throwError "no PartialOrder instance"
     let _i ← synthInstanceQ q(LinearOrder $α')
     let _i ← synthInstanceQ q(IsStrictOrderedRing $α')
     assertInstancesCommute
-    match ← core q(inferInstance) q(inferInstance) a with
+    match ← core q(inferInstance) (some q(inferInstance)) a with
     | .positive pa =>
       assertInstancesCommute
       pure (.positive q(nat_ceil_pos (α := $α') $pa))
@@ -87,10 +89,11 @@ theorem int_ceil_pos [Ring α] [LinearOrder α] [FloorRing α] {a : α} : 0 < a 
 
 /-- Extension for the `positivity` tactic: `Int.ceil` is positive/nonnegative if its input is. -/
 @[positivity ⌈_⌉]
-meta def evalIntCeil : PositivityExt where eval {u α} _zα _pα e := do
+meta def evalIntCeil : PositivityExt where eval {u α} _zα pα? e := do
   match u, α, e with
   | 0, ~q(ℤ), ~q(@Int.ceil $α' $ir $io $j $a) =>
-    match ← core q(inferInstance) q(inferInstance) a with
+    let some _ := pα? | throwError "no PartialOrder instance"
+    match ← core q(inferInstance) (some q(inferInstance)) a with
     | .positive pa =>
         assertInstancesCommute
         pure (.positive q(int_ceil_pos (α := $α') $pa))

@@ -27,9 +27,10 @@ open Qq Lean Meta Finset
 
 It calls `Mathlib.Meta.proveFinsetNonempty` to attempt proving that the finset is nonempty. -/
 @[positivity Finset.card _]
-meta def evalFinsetCard : PositivityExt where eval {u α} _ _ e := do
+meta def evalFinsetCard : PositivityExt where eval {u α} _ pα? e := do
   match u, α, e with
   | 0, ~q(ℕ), ~q(Finset.card $s) =>
+    let some _ := pα? | throwError "no PartialOrder instance"
     let some ps ← proveFinsetNonempty s | return .none
     assertInstancesCommute
     return .positive q(Finset.Nonempty.card_pos $ps)
@@ -37,9 +38,10 @@ meta def evalFinsetCard : PositivityExt where eval {u α} _ _ e := do
 
 /-- Extension for `Fintype.card`. `Fintype.card α` is positive if `α` is nonempty. -/
 @[positivity Fintype.card _]
-meta def evalFintypeCard : PositivityExt where eval {u α} _ _ e := do
+meta def evalFintypeCard : PositivityExt where eval {u α} _ pα? e := do
   match u, α, e with
   | 0, ~q(ℕ), ~q(@Fintype.card $β $instβ) =>
+    let some _ := pα? | throwError "no PartialOrder instance"
     let instβno ← synthInstanceQ q(Nonempty $β)
     assumeInstancesCommute
     return .positive q(@Fintype.card_pos $β $instβ $instβno)
@@ -49,9 +51,10 @@ meta def evalFintypeCard : PositivityExt where eval {u α} _ _ e := do
 
 It calls `Mathlib.Meta.proveFinsetNonempty` to attempt proving that the finset is nonempty. -/
 @[positivity Finset.dens _]
-meta def evalFinsetDens : PositivityExt where eval {u 𝕜} _ _ e := do
+meta def evalFinsetDens : PositivityExt where eval {u 𝕜} _ pα? e := do
   match u, 𝕜, e with
   | 0, ~q(ℚ≥0), ~q(@Finset.dens $α $instα $s) =>
+    let some _ := pα? | throwError "no PartialOrder instance"
     let some ps ← proveFinsetNonempty s | return .none
     assumeInstancesCommute
     return .positive q(@Nonempty.dens_pos $α $instα $s $ps)
@@ -68,12 +71,13 @@ example (s : Finset ℕ) (f : ℕ → ℤ) (hf : ∀ n, 0 ≤ f n) : 0 ≤ s.sum
 because `compareHyp` can't look for assumptions behind binders.
 -/
 @[positivity Finset.sum _ _]
-meta def evalFinsetSum : PositivityExt where eval {u α} zα pα e := do
+meta def evalFinsetSum : PositivityExt where eval {u α} zα pα? e := do
   match e with
   | ~q(@Finset.sum $ι _ $instα $s $f) =>
     let i : Q($ι) ← mkFreshExprMVarQ q($ι) .syntheticOpaque
     have body : Q($α) := .betaRev f #[i]
-    let rbody ← core zα pα body
+    let rbody ← core zα pα? body
+    let some pα := pα? | pure .none -- TODO: the case without PartialOrder
     let p_pos : Option Q(0 < $e) := ← (do
       let .positive pbody := rbody | pure none -- Fail if the body is not provably positive
       let some ps ← proveFinsetNonempty s | pure none

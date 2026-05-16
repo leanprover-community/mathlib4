@@ -416,7 +416,8 @@ open Lean Meta Mathlib Meta Positivity Qq in
 For performance reasons, we only attempt to apply this when `abv` is a variable.
 If it is an explicit function, e.g. `|_|` or `‖_‖`, another extension should apply. -/
 @[positivity _]
-meta def Mathlib.Meta.Positivity.evalAbv : PositivityExt where eval {_ _α} _zα _pα e := do
+meta def Mathlib.Meta.Positivity.evalAbv : PositivityExt where eval {_ _α} _zα pα? e := do
+  let some _ := pα? | pure .none
   let (.app f a) ← whnfR e | throwError "not abv ·"
   if !f.getAppFn.isFVar then
     throwError "abv: function is not a variable"

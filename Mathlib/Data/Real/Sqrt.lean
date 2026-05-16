@@ -312,11 +312,12 @@ open Lean Meta Qq Function
 /-- Extension for the `positivity` tactic: a square root of a strictly positive nonnegative real is
 positive. -/
 @[positivity NNReal.sqrt _]
-meta def evalNNRealSqrt : PositivityExt where eval {u α} _zα _pα e := do
+meta def evalNNRealSqrt : PositivityExt where eval {u α} _zα pα? e := do
+  let some _ := pα? | throwError "no PartialOrder instance"
   match u, α, e with
   | 0, ~q(NNReal), ~q(NNReal.sqrt $a) =>
-    let ra ← core q(inferInstance) q(inferInstance) a
     assertInstancesCommute
+    let ra ← core q(inferInstance) (some q(inferInstance)) a
     match ra with
     | .positive pa => pure (.positive q(NNReal.sqrt_pos_of_pos $pa))
     | _ => failure -- this case is dealt with by generic nonnegativity of nnreals
@@ -325,11 +326,12 @@ meta def evalNNRealSqrt : PositivityExt where eval {u α} _zα _pα e := do
 /-- Extension for the `positivity` tactic: a square root is nonnegative, and is strictly positive if
 its input is. -/
 @[positivity √_]
-meta def evalSqrt : PositivityExt where eval {u α} _zα _pα e := do
+meta def evalSqrt : PositivityExt where eval {u α} _zα pα? e := do
+  let some _ := pα? | throwError "no PartialOrder instance"
   match u, α, e with
   | 0, ~q(ℝ), ~q(√$a) =>
-    let ra ← catchNone <| core q(inferInstance) q(inferInstance) a
     assertInstancesCommute
+    let ra ← catchNone <| core q(inferInstance) (some q(inferInstance)) a
     match ra with
     | .positive pa => pure (.positive q(Real.sqrt_pos_of_pos $pa))
     | _ => pure (.nonnegative q(Real.sqrt_nonneg $a))
