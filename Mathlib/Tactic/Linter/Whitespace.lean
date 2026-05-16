@@ -346,7 +346,7 @@ def whitespaceLinter : Linter where run := withSetOptionIn fun stx ↦ do
     let origSubstring := stx.getSubstring?.getD default
     let orig := origSubstring.toString
 
-    let scan := parallelScan orig st
+      let scan := parallelScan orig st
 
     let docStringEnd := stx.find? (·.isOfKind ``Parser.Command.docComment) |>.getD default
     let docStringEnd := docStringEnd.getTailPos? |>.getD default

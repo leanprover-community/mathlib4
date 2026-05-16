@@ -89,8 +89,7 @@ namespace DupNamespaceLinter
 open Lean Parser Elab Command Meta Linter
 
 @[inherit_doc linter.dupNamespace]
-def dupNamespace : Linter where run := withSetOptionIn fun stx ↦ do
-  if getLinterValue linter.dupNamespace (← getLinterOptions) then
+def dupNamespace : Linter where run := whenLinterActivated linter.dupNamespace fun stx ↦ do
     let mut aliases := #[]
     if let some exp := stx.find? (·.isOfKind `Lean.Parser.Command.export) then
       aliases ← getAliasSyntax exp
