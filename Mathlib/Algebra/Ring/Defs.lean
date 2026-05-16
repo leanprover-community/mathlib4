@@ -145,6 +145,8 @@ class Semiring (α : Type u) extends NonUnitalSemiring α, NonAssocSemiring α, 
 /-- A `Ring` is a `Semiring` with negation making it an additive group. -/
 class Ring (R : Type u) extends Semiring R, AddCommGroup R, AddGroupWithOne R
 
+attribute [instance 1100] Ring.toSemiring
+
 /-!
 ### Semirings
 -/
@@ -220,6 +222,8 @@ class NonAssocCommSemiring (α : Type u)
 
 /-- A commutative semiring is a semiring with commutative multiplication. -/
 class CommSemiring (R : Type u) extends Semiring R, CommMonoid R
+
+attribute [instance 1100] CommSemiring.toSemiring
 
 attribute [instance 100] NonAssocCommSemiring.toNonAssocSemiring
 attribute [instance 100] NonAssocCommSemiring.toNonUnitalNonAssocCommSemiring
@@ -404,6 +408,8 @@ instance (priority := 100) NonUnitalCommRing.toNonUnitalCommSemiring [s : NonUni
 
 /-- A commutative ring is a ring with commutative multiplication. -/
 class CommRing (α : Type u) extends Ring α, CommMonoid α
+
+attribute [instance 1100] CommRing.toRing
 
 instance (priority := 100) CommRing.toNonAssocCommRing [CommRing α] : NonAssocCommRing α where
 
