@@ -119,7 +119,7 @@ instance : HasDimensionLE (𝟙_ SSet.{u}) 0 :=
 instance : opFunctor.{u}.Monoidal :=
   Functor.CoreMonoidal.toMonoidal
     { εIso := Iso.refl _
-      μIso X Y := Iso.refl _ }
+      μIso _ _ := Iso.refl _ }
 
 namespace Subcomplex
 
@@ -302,12 +302,11 @@ lemma isPushout : IsPushout (S.ι ▷ (T : SSet)) ((S : SSet) ◁ T.ι)
     (prodIso _ _ ≪≫ whiskerLeftIso _ (topIso Y))
     (Iso.refl _) rfl rfl rfl rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma preimage_β_hom : (unionProd S T).preimage (β_ _ _).hom = unionProd T S := by
   ext n ⟨x, y⟩
   dsimp
-  simp only [Set.mem_preimage, mem_unionProd_iff]
+  simp only [mem_unionProd_iff, dsimp% Set.mem_preimage (f := (β_ Y X).hom.app n)]
   tauto
 
 @[simp]
