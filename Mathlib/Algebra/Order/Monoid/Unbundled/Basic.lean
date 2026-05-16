@@ -53,7 +53,7 @@ instance Int.instAddLeftMono : AddLeftMono ℤ where
 
 end Int
 
-variable {α β : Type*} {a b c d e f : α}
+variable {α β : Type*}
 
 section Mul
 
@@ -737,9 +737,12 @@ theorem Left.one_lt_mul_of_right [IsBotOneClass α] [MulLeftStrictMono α] {b : 
 /-- Assumes left covariance.
 The lemma assuming right covariance is `Right.one_lt_mul_of_lt_of_le`. -/
 @[to_additive Left.add_pos_of_pos_of_nonneg
-/-- Assumes left covariance.
-The lemma assuming right covariance is `Right.add_pos_of_pos_of_nonneg`. -/]
-alias Left.one_lt_mul_of_lt_of_le := lt_mul_of_lt_of_one_le
+      /-- Assumes left covariance.
+      The lemma assuming right covariance is `Right.add_pos_of_pos_of_nonneg`. -/]
+theorem Left.one_lt_mul_of_lt_of_le [MulLeftMono α] {a b : α} (ha : 1 < a)
+    (hb : 1 ≤ b) :
+    1 < a * b :=
+  lt_mul_of_lt_of_one_le ha hb
 
 @[to_additive]
 theorem Left.one_lt_mul_of_left [IsBotOneClass α] [MulLeftMono α] {a : α}
@@ -752,13 +755,17 @@ theorem Left.one_lt_mul_of_left [IsBotOneClass α] [MulLeftMono α] {a : α}
 The lemma assuming right covariance is `Right.one_lt_mul`. -/
 @[to_additive Left.add_pos /-- Assumes left covariance.
 The lemma assuming right covariance is `Right.add_pos`. -/]
-alias Left.one_lt_mul := lt_mul_of_lt_of_one_lt
+theorem Left.one_lt_mul [MulLeftStrictMono α] {a b : α} (ha : 1 < a) (hb : 1 < b) :
+    1 < a * b :=
+  lt_mul_of_lt_of_one_lt ha hb
 
 /-- Assumes left covariance.
 The lemma assuming right covariance is `Right.one_lt_mul'`. -/
 @[to_additive Left.add_pos' /-- Assumes left covariance.
 The lemma assuming right covariance is `Right.add_pos'`. -/]
-alias Left.one_lt_mul' := lt_mul_of_lt_of_one_lt'
+theorem Left.one_lt_mul' [MulLeftMono α] {a b : α} (ha : 1 < a) (hb : 1 < b) :
+    1 < a * b :=
+  lt_mul_of_lt_of_one_lt' ha hb
 
 /-! Lemmas of the form `a ≤ 1 → b ≤ c → a * b ≤ c`,
 which assume right covariance. -/
