@@ -996,6 +996,15 @@ abbrev extensionAsRingHom :=
 /-- An abbreviation for the `X`-adic completion of `K⟮X⟯` -/
 abbrev RatFuncAdicCompl := adicCompletion K⟮X⟯ (idealX K)
 
+-- help typeclass inference along
+instance : Field (ratfuncAdicComplPkg (K := K).space) :=
+  inferInstanceAs <| Field (RatFuncAdicCompl K)
+
+-- help typeclass inference along
+instance : Valued (ratfuncAdicComplPkg (K := K).space) (WithZero (Multiplicative ℤ)) :=
+  inferInstanceAs <| Valued (RatFuncAdicCompl K) (WithZero (Multiplicative ℤ))
+
+
 /- The two instances below make `comparePkg` and `comparePkg_eq_extension` slightly faster. -/
 instance : UniformSpace (RatFuncAdicCompl K) := inferInstance
 instance : UniformSpace K⸨X⸩ := inferInstance
