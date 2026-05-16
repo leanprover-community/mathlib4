@@ -61,7 +61,7 @@ theorem aeval_toPolynomialAdjoinImageCompl_eq_zero
     {a : ι → K} {F : MvPolynomial ι k} (hFa : F.aeval a = 0) (i : ι) :
     (toPolynomialAdjoinImageCompl F a i).aeval (a i) = 0 := by
   rw [← hFa, ← AlgHom.restrictScalars_apply k]
-  simp_rw [toPolynomialAdjoinImageCompl, ← AlgEquiv.coe_algHom, ← AlgHom.comp_apply]
+  simp_rw [toPolynomialAdjoinImageCompl, ← AlgEquiv.coe_toAlgHom, ← AlgHom.comp_apply]
   congr; ext; aesop (add simp optionEquivLeft_X_some) (add simp optionEquivLeft_X_none)
 
 set_option backward.isDefEq.respectTransparency false in
@@ -73,7 +73,7 @@ theorem irreducible_toPolynomialAdjoinImageCompl {F : MvPolynomial ι k} (hF : I
   convert hF.map (renameEquiv k (Equiv.optionSubtypeNe i).symm) |>.map (optionEquivLeft k _) |>.map
     (Polynomial.mapAlgEquiv (H.aevalEquiv.trans
       (Subalgebra.equivOfEq _ _ congr(Algebra.adjoin k $this.symm))))
-  rw [← AlgEquiv.coe_algHom]
+  rw [← AlgEquiv.coe_toAlgHom]
   congr
   aesop
 
