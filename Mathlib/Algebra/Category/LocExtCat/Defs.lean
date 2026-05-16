@@ -19,7 +19,7 @@ an ambient environment for formal deformation theory.
 
 ## Main Definitions
 
-* `LocExtCat Λ k` : The type of objects in the category of local extensions with base algebra `Λ`
+* `LocExtCat Λ k` : The type of objects in the category of local extensions with base ring `Λ`
   over a fixed residue field `k`.
 
 * `LocExtCat.Hom` : The type of morphisms between objects in `LocAlgCat Λ k`.

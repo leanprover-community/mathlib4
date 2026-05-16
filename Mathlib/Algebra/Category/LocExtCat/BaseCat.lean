@@ -297,6 +297,18 @@ instance pullbackFst_isSmallExtension (f : A ⟶ C) (g : B ⟶ C) [IsSmallExtens
     apply hx; intro hb; revert h
     simpa [hb] using f.hom.isLocalHom_toAlgHom.map_nonunit a (hab ▸ IsUnit.map g.hom.toAlgHom hb)
 
+/-- When `Λ` is a local ring and `k / ResidueField Λ` is a finite separable field extension,
+`ofPullbackOfIsSeparable` is the object in `BaseCat` obtained from the pullback of
+the underlying algebra homomorphisms of two morphisms`. -/
+def ofPullbackOfIsSeparable [Algebra.IsSeparable (ResidueField Λ) k] (f : A ⟶ C) (g : B ⟶ C) :
+    BaseCat Λ k :=
+  letI P : Extension Λ k := .ofSurjective
+    (A.obj.residue.comp (f.hom.toAlgHom.pullbackFst g.hom.toAlgHom))
+    (LocExtCat.residue_comp_pullbackFst_surjective_of_isSeparable f.hom g.hom)
+  haveI : IsLocalRing P.Ring := RingHom.isLocalRing_pullback
+    f.hom.toAlgHom.toRingHom g.hom.toAlgHom.toRingHom ⟨g.hom.isLocalHom_toAlgHom.map_nonunit⟩
+  ⟨.of Λ k P, inferInstanceAs <| IsArtinianRing (f.hom.toAlgHom.pullback g.hom.toAlgHom)⟩
+
 open ObjectProperty.FullSubcategory in
 @[stacks 06S5]
 theorem isMinimallySurjective_iff_isMinimallySurjective_mapOfQuot (f : A ⟶ B) {I : Ideal A}
@@ -327,7 +339,7 @@ theorem isMinimallySurjective_iff_isMinimallySurjective_mapOfQuot (f : A ⟶ B) 
         (LocExtCat.mapcotangent_surjective_of_surjective (A.obj.toalghom_toOfQuot_surjective I))
     · exact ((LocExtCat.mapcotangent_toOfQuot_bijective_iff J).mpr hJ).injective
   · apply isMinimallySurjective_toOfQuot_of_le at hI
-    apply IsMinimallySurjective.surjective_of_comp_left (A.toOfQuot I ≫ (mapOfQuot f hf))
+    apply IsMinimallySurjective.surjective_of_comp_left (A.toOfQuot I ≫ mapOfQuot f hf)
     rw [toOfQuot_comp_mapOfQuot, Category.assoc', comp_hom, LocExtCat.toAlgHom_comp,
       AlgHom.coe_comp]
     exact (B.obj.toalghom_toOfQuot_surjective J).comp hg
