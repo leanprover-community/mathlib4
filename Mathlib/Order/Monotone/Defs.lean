@@ -54,9 +54,9 @@ universe u v w
 
 variable {ι : Type*} {α : Type u} {β : Type v} {γ : Type w} {δ : Type*} {π : ι → Type*}
 
-section MonotoneDef
+section LE
 
-variable [Preorder α] [Preorder β]
+variable [LE α] [LE β]
 
 /-- A function `f` is monotone if `a ≤ b` implies `f a ≤ f b`. -/
 def Monotone (f : α → β) : Prop :=
@@ -81,6 +81,12 @@ def AntitoneOn (f : α → β) (s : Set α) : Prop :=
   ∀ ⦃a⦄ (_ : a ∈ s) ⦃b⦄ (_ : b ∈ s), a ≤ b → f b ≤ f a
 
 to_dual_insert_cast AntitoneOn := by grind only
+
+end LE
+
+section LT
+
+variable [LT α] [LT β]
 
 /-- A function `f` is strictly monotone if `a < b` implies `f a < f b`. -/
 def StrictMono (f : α → β) : Prop :=
@@ -108,7 +114,7 @@ def StrictAntiOn (f : α → β) (s : Set α) : Prop :=
 
 to_dual_insert_cast StrictAntiOn := by grind only
 
-end MonotoneDef
+end LT
 
 section Decidable
 

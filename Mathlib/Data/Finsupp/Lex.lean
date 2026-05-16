@@ -147,16 +147,16 @@ theorem Colex.single_strictMono : StrictMono fun (a : α) ↦ toColex (single a 
   fun _ _ h ↦ Lex.single_strictAnti (α := αᵒᵈ) h
 
 theorem Lex.single_lt_iff {a b : α} : toLex (single b 1) < toLex (single a 1) ↔ a < b :=
-  Lex.single_strictAnti.lt_iff_gt
+  Lex.single_strictAnti (α := α).lt_iff_gt
 
 theorem Colex.single_lt_iff {a b : α} : toColex (single a 1) < toColex (single b 1) ↔ a < b :=
-  Colex.single_strictMono.lt_iff_lt
+  Colex.single_strictMono (α := α).lt_iff_lt
 
 theorem Lex.single_le_iff {a b : α} : toLex (single b 1) ≤ toLex (single a 1) ↔ a ≤ b :=
-  Lex.single_strictAnti.le_iff_ge
+  Lex.single_strictAnti (α := α).le_iff_ge
 
 theorem Colex.single_le_iff {a b : α} : toColex (single a 1) ≤ toColex (single b 1) ↔ a ≤ b :=
-  Colex.single_strictMono.le_iff_le
+  Colex.single_strictMono (α := α).le_iff_le
 
 @[deprecated Lex.single_strictAnti (since := "2025-10-28")]
 theorem Lex.single_antitone : Antitone fun (a : α) ↦ toLex (single a 1) :=
