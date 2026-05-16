@@ -23,30 +23,86 @@ public section
 
 assert_not_exists Field
 
-variable {α : Type*}
-
 local infixl:50 " ~ᵤ " => Associated
 
-theorem WfDvdMonoid.max_power_factor' [CommMonoidWithZero α] [WfDvdMonoid α] {a₀ x : α}
-    (h : a₀ ≠ 0) (hx : ¬IsUnit x) : ∃ (n : ℕ) (a : α), ¬x ∣ a ∧ a₀ = x ^ n * a := by
+section
+
+variable {α : Type*} [CommMonoidWithZero α] [WfDvdMonoid α]
+
+theorem WfDvdMonoid.max_power_factor' {a₀ x : α} (h : a₀ ≠ 0) (hx : ¬IsUnit x) :
+    ∃ (n : ℕ) (a : α), ¬x ∣ a ∧ a₀ = x ^ n * a := by
   obtain ⟨a, ⟨n, rfl⟩, hm⟩ := wellFounded_dvdNotUnit.has_min
     {a | ∃ n, x ^ n * a = a₀} ⟨a₀, 0, by rw [pow_zero, one_mul]⟩
   refine ⟨n, a, ?_, rfl⟩; rintro ⟨d, rfl⟩
   exact hm d ⟨n + 1, by rw [pow_succ, mul_assoc]⟩
     ⟨(right_ne_zero_of_mul <| right_ne_zero_of_mul h), x, hx, mul_comm _ _⟩
 
-theorem WfDvdMonoid.max_power_factor [CommMonoidWithZero α] [WfDvdMonoid α] {a₀ x : α}
-    (h : a₀ ≠ 0) (hx : Irreducible x) : ∃ (n : ℕ) (a : α), ¬x ∣ a ∧ a₀ = x ^ n * a :=
+theorem WfDvdMonoid.max_power_factor {a₀ x : α} (h : a₀ ≠ 0) (hx : Irreducible x) :
+    ∃ (n : ℕ) (a : α), ¬x ∣ a ∧ a₀ = x ^ n * a :=
   max_power_factor' h hx.not_isUnit
 
-theorem FiniteMultiplicity.of_not_isUnit [CommMonoidWithZero α] [IsCancelMulZero α] [WfDvdMonoid α]
-    {a b : α} (ha : ¬IsUnit a) (hb : b ≠ 0) : FiniteMultiplicity a b := by
+variable [IsCancelMulZero α]
+
+theorem FiniteMultiplicity.of_not_isUnit {a b : α} (ha : ¬IsUnit a) (hb : b ≠ 0) :
+    FiniteMultiplicity a b := by
   obtain ⟨n, c, ndvd, rfl⟩ := WfDvdMonoid.max_power_factor' hb ha
   exact ⟨n, by rwa [pow_succ, mul_dvd_mul_iff_left (left_ne_zero_of_mul hb)]⟩
 
-theorem FiniteMultiplicity.of_prime_left [CommMonoidWithZero α] [IsCancelMulZero α] [WfDvdMonoid α]
-    {a b : α} (ha : Prime a) (hb : b ≠ 0) : FiniteMultiplicity a b :=
+theorem FiniteMultiplicity.of_prime_left {a b : α} (ha : Prime a) (hb : b ≠ 0) :
+    FiniteMultiplicity a b :=
   .of_not_isUnit ha.not_unit hb
+
+theorem WfDvdMonoid.max_power_factor_of_finset (b : α) (hbI : Irreducible b)
+    {ι : Type*} (s : Finset ι) (hsNe : s.Nonempty) (f : ι → α) (hNe0 : ∀ x ∈ s, f x ≠ 0) :
+    ∃ (n : ℕ), (∀ i ∈ s, b ^ n ∣ f i) ∧ ∃ j ∈ s, ¬ (b ^ (n + 1) ∣ f j) := by
+  let σ : Finset ℕ := s.image (fun x ↦ multiplicity b (f x))
+  have hσ : σ.Nonempty := by simp [σ, Finset.image_nonempty, hsNe]
+  use (σ.min' hσ)
+  constructor
+  · intro i hi
+    apply (pow_dvd_pow _ _).trans (_ : b ^ (multiplicity b (f i)) ∣ f i) <;>
+      aesop (add safe Finset.min'_le) -- can unfold this aesop to make it fast
+  obtain ⟨j, hmem, hj⟩ := by simpa [σ] using Finset.min'_mem σ hσ
+  use j, hmem; simp only [← hj, σ]; clear hj
+  aesop (add safe [FiniteMultiplicity.not_pow_dvd_of_multiplicity_lt,
+    FiniteMultiplicity.of_not_isUnit, Irreducible.not_isUnit]) (erase Aesop.BuiltinRules.not_intro)
+
+/--
+Given a finitely supported function `f : ι →₀ α` we can factor the biggest
+power of some irreducible `b : α` out of `f`. -/
+theorem WfDvdMonoid.max_power_factor_of_finsupp (b : α) (hbI : Irreducible b)
+    {ι : Type*} (f : ι →₀ α) (h0 : f ≠ 0) :
+    ∃ (n : ℕ), (∀ i , b ^ n ∣ f i) ∧ ∃ j ∈ f.support, ¬ (b ^ (n + 1) ∣ f j) := by
+  have ⟨n, h1, h2⟩ := max_power_factor_of_finset b hbI f.support (by simp [*]) f (by simp)
+  refine ⟨n, fun i ↦ ?_, h2⟩
+  by_cases hi : i ∈ f.support <;> aesop
+
+/--
+Given a finitely supported function `f : ι →₀ α` we can factor the biggest
+power of some irreducible `b : α` out of `f`.
+
+This is a variant of `WfDvdMonoid.max_power_factor_of_finsupp` where the function obtained by
+dividing by `b ^ n` is explicit. -/
+theorem WfDvdMonoid.max_power_factor_of_finsupp'
+    {ι : Type*} (b : α) (hbI : Irreducible b) (f : ι →₀ α) (h0 : f ≠ 0) :
+    ∃ (n : ℕ) (f' : ι →₀ α), f' ≠ 0 ∧ f'.support = f.support
+      ∧ (∀ i, f i = b ^ n * f' i) ∧ ∃ j ∈ f'.support, ¬ (b ∣ f' j) := by
+  obtain ⟨n, h1, ⟨j, hmem, hj⟩⟩ := max_power_factor_of_finsupp b hbI f h0
+  choose! f' hf using h1
+  let F : ι →₀ α := ⟨f.support, f', by aesop⟩
+  use n, F
+  refine ⟨?_, ?_, ?_⟩
+  · aesop (add norm Finsupp.ext_iff)
+  · aesop
+  · simp only [Finsupp.coe_mk, Finsupp.mem_support_iff, ne_eq, F]
+    use hf, j
+    refine ⟨by aesop, ?_⟩
+    replace hf := hf j
+    contrapose! hj
+    obtain ⟨w, h⟩ := hj
+    simp_all [← mul_assoc, pow_succ]
+
+end
 
 namespace UniqueFactorizationMonoid
 
