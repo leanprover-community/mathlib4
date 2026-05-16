@@ -13,11 +13,12 @@ public import Mathlib.Algebra.Module.Submodule.EqLocus
 
 In this file, we define:
 
-* `LinearMap.HasFiniteRank`: a predicate expressing that a linear map has finitely generated range
-  or, equivalently, co-finitely-generated kernel.
+* `LinearMap.HasFiniteRank`: a predicate expressing that a linear map has finitely generated range.
 * `LinearMap.FiniteRank`: the submodule of `E →ₗ[K] F` consisting of finite rank linear maps
 * `LinearMap.FiniteRankSetoid.setoid`: the setoid on `E →ₗ[K] F` identifying linear maps which
-  differ by a finite rank linear map. This is an instance in the scope `LinearMap.FiniteRankSetoid`,
+  differ by a finite rank linear map. Equivalently, two linear maps are equivalent for this
+  relation if and only if they agree on a co-finitely generated subspace of the domain.
+  This is an instance in the scope `LinearMap.FiniteRankSetoid`,
   so opening this scope allows this relation to be denoted by `≈`.
 -/
 
@@ -36,6 +37,7 @@ variable [Semiring K]
   [AddCommMonoid V₂] [Module K V₂]
   [AddCommMonoid V₃] [Module K V₃]
 
+/-- A linear map **has finite rank** if its range is finitely generated. -/
 def HasFiniteRank (f : V →ₗ[K] V₂) := f.range.FG
 
 lemma hasFiniteRank_iff_range {f : V →ₗ[K] V₂} :
@@ -98,6 +100,8 @@ variable [CommRing K]
   .of_le hf <| range_smul_le_range _ _
 
 variable (K V V₂) in
+/-- `LinearMap.FiniteRank` is the submodule of `V →ₗ[K] W` consiting
+of finite rank linear maps. -/
 def FiniteRank [IsNoetherianRing K] : Submodule K (V →ₗ[K] V₂) where
   carrier := {u | u.HasFiniteRank}
   add_mem' hu hv := by simp_all
@@ -115,6 +119,12 @@ variable [CommRing K] [IsNoetherianRing K]
 
 namespace FiniteRankSetoid
 
+/-- This is the equivalence relation on linear maps such that `u ≈ v` precisely
+when `u - v` is a finite rank linear map. Equivalently, `u ≈ v` if and only if `u` and `v`
+agree on a co-finitely generated subspace of the domain
+(see `LinearMap.FiniteRankSetoid.equiv_iff_eqLocus`).
+
+This setoid is declared as an instance in scope `LinearMap.FiniteRankSetoid`. -/
 scoped instance setoid : Setoid (V →ₗ[K] V₂) := (LinearMap.FiniteRank K V V₂).quotientRel
 
 lemma equiv_iff {u v : V →ₗ[K] V₂} : u ≈ v ↔ (u - v).HasFiniteRank := by
