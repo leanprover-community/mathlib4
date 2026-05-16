@@ -73,7 +73,7 @@ open Function Set Filter Topology TopologicalSpace
 
 universe u v
 
-variable {X : Type*} {Y : Type*} [TopologicalSpace X]
+variable {X : Type*} {Y : Type*} {Z : Type*} [TopologicalSpace X]
 
 section Separation
 
@@ -295,6 +295,19 @@ theorem Filter.Tendsto.limUnder_eq {x : X} {f : Filter Y} [NeBot f] {g : Y → X
 theorem Filter.limUnder_eq_iff {f : Filter Y} [NeBot f] {g : Y → X} (h : ∃ x, Tendsto g f (𝓝 x))
     {x} : @limUnder _ _ _ ⟨x⟩ f g = x ↔ Tendsto g f (𝓝 x) :=
   ⟨fun c => c ▸ tendsto_nhds_limUnder h, Filter.Tendsto.limUnder_eq⟩
+
+theorem Filter.limUnder_congr
+    [Nonempty X] {l₁ : Filter Y} {l₂ : Filter Z} [NeBot l₁] [NeBot l₂]
+    {f : Y -> X} {g : Z -> X} (h : ∀ x, Tendsto f l₁ (𝓝 x) ↔ Tendsto g l₂ (𝓝 x)) :
+    l₁.limUnder f = l₂.limUnder g := by
+  rcases em <| ∃ x, Tendsto f l₁ (𝓝 x) with ⟨x, hx⟩ | h'
+  · rw [hx.limUnder_eq, h x |>.mp hx |>.limUnder_eq]
+  · rw [limUnder_of_not_tendsto h', limUnder_of_not_tendsto <|
+      mt (fun ⟨x, hx⟩ => ⟨x, h x |>.mpr hx⟩) h']
+
+theorem limUnder_add_eq_limUnder_nat {α : Type*} [TopologicalSpace α] [Nonempty α] [T2Space α]
+    {f : ℕ -> α} (k : ℕ) : atTop.limUnder (fun n => f (n + k)) = atTop.limUnder f :=
+  Filter.limUnder_congr fun _ => tendsto_add_atTop_iff_nat k
 
 theorem Continuous.limUnder_eq [TopologicalSpace Y] {f : Y → X} (h : Continuous f) (y : Y) :
     @limUnder _ _ _ ⟨f y⟩ (𝓝 y) f = f y :=

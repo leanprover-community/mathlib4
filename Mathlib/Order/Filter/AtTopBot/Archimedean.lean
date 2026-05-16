@@ -9,6 +9,7 @@ public import Mathlib.Algebra.Order.Archimedean.Basic
 public import Mathlib.Order.Filter.AtTopBot.Group
 public import Mathlib.Order.Filter.CountablyGenerated
 public import Mathlib.Tactic.GCongr
+public import Mathlib.Topology.Separation.Hausdorff
 import Mathlib.Algebra.Order.Group.Basic
 
 /-!
@@ -40,6 +41,15 @@ theorem tendsto_natCast_atTop_iff [Semiring R] [PartialOrder R] [IsStrictOrdered
 theorem PNat.tendsto_comp_val_iff {β : Type*} {f : ℕ → β} {l : Filter β} :
     Tendsto (fun x : ℕ+ => f x) atTop l ↔ Tendsto f atTop l := by
   exact tendsto_comp_val_Ioi_atTop
+
+theorem PNat.limUnder_eq {β : Type*} [TopologicalSpace β] [Nonempty β] [T2Space β] {f : ℕ → β} :
+    atTop.limUnder (fun x : ℕ+ => f x) = atTop.limUnder f :=
+  limUnder_congr fun _ => tendsto_comp_val_iff
+
+theorem PNat.limUnder_eq_limUnder_succ {β : Type*} [TopologicalSpace β] [Nonempty β] [T2Space β]
+    {f : ℕ → β} :
+    atTop.limUnder (fun x : ℕ+ => f x) = atTop.limUnder (fun x => f (x + 1)) := by
+  rw [limUnder_eq, limUnder_add_eq_limUnder_nat]
 
 theorem tendsto_natCast_atTop_atTop [Semiring R] [PartialOrder R] [IsOrderedRing R]
     [Archimedean R] :
