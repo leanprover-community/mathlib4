@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser, Kim Morrison
 -/
 
-module
+module -- shake: keep-all
 
 import Mathlib.Init
 public import Lean.Message
