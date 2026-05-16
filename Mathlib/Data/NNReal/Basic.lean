@@ -205,10 +205,9 @@ theorem le_iInf_mul_iInf {a : ℝ≥0} {g h : ι → ℝ≥0} (H : ∀ i j, a �
     simp [ciSup_le_iff', ← Nat.le_floor_iff, *]
   · simp [*]
 
-@[simp, norm_cast] lemma natCast_iInf {ι : Sort*} (f : ι → ℕ) :
-    ⨅ i, f i = (⨅ i, f i : NNReal) := by
-  obtain hι | hι := isEmpty_or_nonempty ι
-  · simp [iInf_empty]
+@[simp, norm_cast] lemma natCast_iInf {ι : Sort*} (f : ι → ℕ) : ⨅ i, f i = (⨅ i, f i : NNReal) := by
+  cases isEmpty_or_nonempty ι
+  · simp
   apply eq_of_forall_le_iff
   simp [le_ciInf_iff, ← Nat.ceil_le]
 

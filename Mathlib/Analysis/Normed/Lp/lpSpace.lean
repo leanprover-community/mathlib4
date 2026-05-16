@@ -469,8 +469,7 @@ theorem norm_nonneg' (f : lp E p) : 0 ≤ ‖f‖ := by
   rcases p.trichotomy with (rfl | rfl | hp)
   · simp [lp.norm_eq_card_dsupport f]
   · rcases isEmpty_or_nonempty α with _i | _i
-    · rw [lp.norm_eq_ciSup]
-      simp [Real.iSup_of_isEmpty]
+    · simp [lp.norm_eq_ciSup]
     inhabit α
     exact (norm_nonneg (f default)).trans ((lp.isLUB_norm f).1 ⟨default, rfl⟩)
   · rw [lp.norm_eq_tsum_rpow hp f]

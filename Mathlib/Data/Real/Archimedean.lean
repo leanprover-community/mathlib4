@@ -174,11 +174,8 @@ theorem sSup_empty : sSup (∅ : Set ℝ) = 0 :=
 theorem sInf_univ : sInf (@Set.univ ℝ) = 0 := by
   simp [sInf_def]
 
-@[simp] lemma iSup_of_isEmpty [IsEmpty ι] (f : ι → ℝ) : ⨆ i, f i = 0 := by
-  dsimp [iSup]
-  convert Real.sSup_empty
-  rw [Set.range_eq_empty_iff]
-  infer_instance
+lemma iSup_of_isEmpty [IsEmpty ι] (f : ι → ℝ) : ⨆ i, f i = 0 := by
+  simp
 
 @[simp]
 theorem iSup_const_zero : ⨆ _ : ι, (0 : ℝ) = 0 := by
@@ -194,8 +191,8 @@ theorem sSup_univ : sSup (@Set.univ ℝ) = 0 := Real.sSup_of_not_bddAbove not_bd
 @[simp]
 theorem sInf_empty : sInf (∅ : Set ℝ) = 0 := by simp [sInf_def, sSup_empty]
 
-@[simp] nonrec lemma iInf_of_isEmpty [IsEmpty ι] (f : ι → ℝ) : ⨅ i, f i = 0 := by
-  rw [iInf_of_isEmpty, sInf_empty]
+lemma iInf_of_isEmpty [IsEmpty ι] (f : ι → ℝ) : ⨅ i, f i = 0 := by
+  simp
 
 @[simp]
 theorem iInf_const_zero : ⨅ _ : ι, (0 : ℝ) = 0 := by
