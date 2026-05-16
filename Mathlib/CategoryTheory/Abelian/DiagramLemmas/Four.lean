@@ -136,8 +136,8 @@ include hR₁ hR₂
 
 /-- The five lemma. -/
 theorem isIso_of_epi_of_isIso_of_isIso_of_mono (h₀ : Epi (app' φ 0)) (h₁ : IsIso (app' φ 1))
-    (h₂ : IsIso (app' φ 3)) (h₃ : Mono (app' φ 4)) : IsIso (app' φ 2) := by
-  dsimp at h₀ h₁ h₂ h₃
+    (h₃ : IsIso (app' φ 3)) (h₄ : Mono (app' φ 4)) : IsIso (app' φ 2) := by
+  dsimp at h₀ h₁ h₃ h₄
   have : Mono (app' φ 2) := by
     apply mono_of_epi_of_mono_of_mono (δlastFunctor.map φ) (R₁.exact_iff_δlast.1 hR₁).1
       (R₂.exact_iff_δlast.1 hR₂).1 <;> dsimp <;> infer_instance
@@ -145,6 +145,61 @@ theorem isIso_of_epi_of_isIso_of_isIso_of_mono (h₀ : Epi (app' φ 0)) (h₁ : 
     apply epi_of_epi_of_epi_of_mono (δ₀Functor.map φ) (R₁.exact_iff_δ₀.1 hR₁).2
       (R₂.exact_iff_δ₀.1 hR₂).2 <;> dsimp <;> infer_instance
   apply isIso_of_mono_of_epi
+
+end Five
+
+section Four
+
+variable {n k : ℕ} (h : k + 3 ≤ n) {R₁ R₂ : ComposableArrows C n}
+    (hR₁ : R₁.Exact) (hR₂ : R₂.Exact) (φ : R₁ ⟶ R₂)
+
+include hR₁ hR₂ in
+/-- Variant of the first 4-lemma for complexes of any size -/
+theorem mono_of_epi_of_mono_of_mono'' (k₀ k₁ k₂ k₃ : ℕ)
+    (hk₀ : k₀ = k) (hk₁ : k₁ = k + 1)
+    (hk₂ : k₂ = k + 2) (hk₃ : k₃ = k + 3)
+    (h₀ : Epi (app' φ k₀)) (h₁ : Mono (app' φ k₁))
+    (h₃ : Mono (app' φ k₃)) : Mono (app' φ k₂) := by
+  subst_vars
+  change Epi (app' φ (k₀ + 0)) at h₀
+  rw [← natAddLEFunctor_app' h] at h₀ h₁ h₃ ⊢
+  exact mono_of_epi_of_mono_of_mono _ (natAddLEFunctor_obj_exact h hR₁)
+    (natAddLEFunctor_obj_exact h hR₂) h₀ h₁ h₃
+
+include hR₁ hR₂ in
+/-- Variant of the second 4-lemma for complexes of any size -/
+theorem epi_of_epi_of_epi_of_mono'' (k₀ k₁ k₂ k₃ : ℕ)
+    (hk₀ : k₀ = k) (hk₁ : k₁ = k + 1)
+    (hk₂ : k₂ = k + 2) (hk₃ : k₃ = k + 3)
+    (h₀ : Epi (app' φ k₀)) (h₂ : Epi (app' φ k₂))
+    (h₃ : Mono (app' φ k₃)) : Epi (app' φ k₁) := by
+  subst_vars
+  change Epi (app' φ (k₀ + 0)) at h₀
+  rw [← natAddLEFunctor_app' h] at h₀ h₂ h₃ ⊢
+  exact epi_of_epi_of_epi_of_mono _ (natAddLEFunctor_obj_exact h hR₁)
+    (natAddLEFunctor_obj_exact h hR₂) h₀ h₂ h₃
+
+end Four
+
+section Five
+
+variable {n k : ℕ} (h : k + 4 ≤ n) {R₁ R₂ : ComposableArrows C n}
+    (hR₁ : R₁.Exact) (hR₂ : R₂.Exact) (φ : R₁ ⟶ R₂)
+
+include hR₁ hR₂ in
+/-- Variant of the 5-lemma for complexes of any size -/
+theorem isIso_of_epi_of_isIso_of_isIso_of_mono' (k₀ k₁ k₂ k₃ k₄ : ℕ)
+    (hk₀ : k₀ = k) (hk₁ : k₁ = k + 1)
+    (hk₂ : k₂ = k + 2) (hk₃ : k₃ = k + 3)
+    (hk₄ : k₄ = k + 4) (h₀ : Epi (app' φ k₀))
+    (h₁ : IsIso (app' φ k₁)) (h₃ : IsIso (app' φ k₃))
+    (h₄ : Mono (app' φ k₄)) :
+    IsIso (app' φ k₂) := by
+  subst_vars
+  change Epi (app' φ (k₀ + 0)) at h₀
+  rw [← natAddLEFunctor_app' h] at h₀ h₁ h₃ h₄ ⊢
+  exact isIso_of_epi_of_isIso_of_isIso_of_mono (natAddLEFunctor_obj_exact h hR₁)
+    (natAddLEFunctor_obj_exact h hR₂) _ h₀ h₁ h₃ h₄
 
 end Five
 
