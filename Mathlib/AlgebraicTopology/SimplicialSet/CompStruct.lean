@@ -1,16 +1,16 @@
 /-
 Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Joël Riou
+Authors: Joël Riou, Arnoud van der Leer
 -/
 module
 
 public import Mathlib.AlgebraicTopology.SimplicialSet.CompStructTruncated
 
 /-!
-# Edges and "triangles" in simplicial sets
+# Edges, "triangles" and isos in simplicial sets
 
-Given a simplicial set `X`, we introduce two types:
+Given a simplicial set `X`, we introduce three types:
 * Given `0`-simplices `x₀` and `x₁`, we define `Edge x₀ x₁`
   which is the type of `1`-simplices with faces `x₁` and `x₀` respectively;
 * Given `0`-simplices `x₀`, `x₁`, `x₂`, edges `e₀₁ : Edge x₀ x₁`, `e₁₂ : Edge x₁ x₂`,
@@ -21,6 +21,10 @@ Given a simplicial set `X`, we introduce two types:
 (This API parallels similar definitions for `2`-truncated simplicial sets.
 The definitions in this file are definitionally equal to their `2`-truncated
 counterparts.)
+
+Given `0`-simplices `x₀` and `x₁`, and an edge `hom : Edge x₀ x₁`, `InvStruct hom` records the data
+of an edge `inv : Edge x₁ x₀` and simplices `homInvId : CompStruct hom inv (id x₀)` and
+`invHomId : CompStruct inv hom (id x₁)`, witnessing that `inv` is an inverse to `hom`.
 
 -/
 
@@ -127,6 +131,15 @@ lemma exists_of_simplex (s : X _⦋1⦌) :
     ∃ (x₀ x₁ : X _⦋0⦌) (e : Edge x₀ x₁), e.edge = s :=
   ⟨_, _, mk' s, rfl⟩
 
+/-- Transports an edge between `x₀` and `x₁` to an edge between `y₀` and `y₁`, given `x₀ = y₀`
+and `x₁ = y₁`. -/
+@[simps]
+def ofEq {y₀ y₁ : X _⦋0⦌} (e : Edge x₀ x₁) (h₀ : x₀ = y₀) (h₁ : x₁ = y₁) :
+    Edge y₀ y₁ where
+  edge    := e.edge
+  src_eq  := e.src_eq.trans h₀
+  tgt_eq  := e.tgt_eq.trans h₁
+
 /-- Let `x₀`, `x₁`, `x₂` be `0`-simplices of a simplicial set `X`,
 `e₀₁` an edge from `x₀` to `x₁`, `e₁₂` an edge from `x₁` to `x₂`,
 `e₀₂` an edge from `x₀` to `x₂`. This is the data of a `2`-simplex whose
@@ -212,6 +225,14 @@ def compId (e : Edge x₀ x₁) : CompStruct e (.id x₁) e :=
 @[simp]
 lemma compId_simplex (e : Edge x₀ x₁) : (compId e).simplex = X.σ 1 e.edge := rfl
 
+/-- The identity edge on a point, composed with itself, gives the identity. -/
+def idCompId (x : X _⦋0⦌) : CompStruct (id x) (id x) (id x) :=
+  ofTruncated (.idCompId _)
+
+@[simp]
+lemma idCompId_simplex (x : X _⦋0⦌) : (idCompId x).simplex = X.σ 0 (X.σ 0 x) :=
+  Truncated.Edge.CompStruct.idCompId_simplex _
+
 /-- The image of a `Edge.CompStruct` by a morphism of simplicial sets. -/
 def map (h : CompStruct e₀₁ e₁₂ e₀₂) (f : X ⟶ Y) :
     CompStruct (e₀₁.map f) (e₁₂.map f) (e₀₂.map f) :=
@@ -221,7 +242,74 @@ def map (h : CompStruct e₀₁ e₁₂ e₀₂) (f : X ⟶ Y) :
 lemma map_simplex (h : CompStruct e₀₁ e₁₂ e₀₂) (f : X ⟶ Y) :
     (h.map f).simplex = f.app _ h.simplex := rfl
 
+/-- Transports a `CompStruct` between edges `e₀₁`, `e₁₂` and `e₀₂` to a `CompStruct` between edges
+`f₀₁`, `f₁₂` and `f₀₂` along equalities of 1-simplices `eᵢⱼ.edge = fᵢⱼ.edge`. -/
+@[simps]
+def ofEq {y₀ y₁ y₂ : X _⦋0⦌}
+    {e₀₁ : Edge x₀ x₁} {f₀₁ : Edge y₀ y₁}
+    {e₁₂ : Edge x₁ x₂} {f₁₂ : Edge y₁ y₂}
+    {e₀₂ : Edge x₀ x₂} {f₀₂ : Edge y₀ y₂}
+    (c : CompStruct e₀₁ e₁₂ e₀₂)
+    (h₀₁ : e₀₁.edge = f₀₁.edge)
+    (h₁₂ : e₁₂.edge = f₁₂.edge)
+    (h₀₂ : e₀₂.edge = f₀₂.edge) :
+    CompStruct f₀₁ f₁₂ f₀₂ where
+  simplex := c.simplex
+  d₂ := c.d₂.trans h₀₁
+  d₀ := c.d₀.trans h₁₂
+  d₁ := c.d₁.trans h₀₂
+
 end CompStruct
+
+/-- For an edge `hom`, `InvStruct hom` encodes the data of a backward edge `inv`, and
+2-simplices witnessing that `hom` and `inv` compose to the identity on their endpoints.
+This implies that `hom` becomes an isomorphism in the homotopy category. -/
+@[ext]
+structure InvStruct (hom : Edge x₀ x₁) where
+  /-- The backwards edge -/
+  inv : Edge x₁ x₀
+  /-- The simplex witnessing that `hom` and `inv` compose to the identity -/
+  homInvId  : CompStruct hom inv (id x₀)
+  /-- The simplex witnessing that `inv` and `hom` compose to the identity -/
+  invHomId  : CompStruct inv hom (id x₁)
+
+namespace InvStruct
+
+/-- The identity edge has an inverse. -/
+@[simps]
+def invStructId (x : X _⦋0⦌) : InvStruct (id x) where
+  inv := id x
+  homInvId := CompStruct.idCompId x
+  invHomId := CompStruct.idCompId x
+
+/-- The inverse has an inverse. -/
+@[simps]
+def invStructInv {hom : Edge x₀ x₁} (I : InvStruct hom) : InvStruct I.inv where
+  inv := hom
+  homInvId := I.invHomId
+  invHomId := I.homInvId
+
+/-- Maps an inverse along an morphism of simplicial sets. -/
+@[simps]
+def map {hom : Edge x₀ x₁} (I : InvStruct hom) (f : X ⟶ Y) : InvStruct (hom.map f) where
+  inv := I.inv.map f
+  homInvId := (I.homInvId.map f).ofEq rfl rfl (Edge.ext_iff.mp (map_id _ _))
+  invHomId := (I.invHomId.map f).ofEq rfl rfl (Edge.ext_iff.mp (map_id _ _))
+
+/-- Transports an inverse for `hom` along an equality of 1-simplices `hom = hom'`.
+  I.e. constructs an inverse for `hom'` from an inverse for `hom`. -/
+@[simps]
+def ofEq {y₀ y₁ : X _⦋0⦌} {hom : Edge x₀ x₁} {hom' : Edge y₀ y₁}
+    (I : InvStruct hom)
+    (hhom : hom.edge = hom'.edge) :
+    InvStruct hom' where
+  inv := I.inv.ofEq
+    (by rw [← hom.tgt_eq, hhom, hom'.tgt_eq])
+    (by rw [← hom.src_eq, hhom, hom'.src_eq])
+  homInvId := I.homInvId.ofEq hhom rfl (by rw [← hom.src_eq, hhom, hom'.src_eq])
+  invHomId := I.invHomId.ofEq rfl hhom (by rw [← hom.tgt_eq, hhom, hom'.tgt_eq])
+
+end InvStruct
 
 end Edge
 
