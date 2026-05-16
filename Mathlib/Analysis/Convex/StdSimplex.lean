@@ -133,22 +133,22 @@ section Field
 
 variable (R : Type*) (ι : Type*) [Field R] [LinearOrder R] [IsStrictOrderedRing R] [Fintype ι]
 
-/-- `stdSimplex 𝕜 ι` is the convex hull of the canonical basis in `ι → 𝕜`. -/
-theorem convexHull_basis_eq_stdSimplex [DecidableEq ι] :
-    convexHull R (range fun i j : ι => if i = j then (1 : R) else 0) = stdSimplex R ι := by
+/-- `stdSimplex 𝕜 ι` is the convex hull of the points `Pi.single i 1` for `i : ι`. -/
+theorem convexHull_range_single_eq_stdSimplex [DecidableEq ι] :
+    convexHull R (range fun i : ι ↦ Pi.single i 1) = stdSimplex R ι := by
   refine Subset.antisymm (convexHull_min ?_ (convex_stdSimplex R ι)) ?_
   · rintro _ ⟨i, rfl⟩
-    exact ite_eq_mem_stdSimplex R i
+    exact single_mem_stdSimplex R i
   · rintro w ⟨hw₀, hw₁⟩
     rw [pi_eq_sum_univ w]
     rw [← Finset.univ.centerMass_eq_of_sum_1 _ hw₁]
     exact Finset.univ.centerMass_mem_convexHull (fun i _ => hw₀ i) (hw₁.symm ▸ zero_lt_one)
       fun i _ => mem_range_self i
 
-/-- `stdSimplex 𝕜 ι` is the convex hull of the points `Pi.single i 1` for `i : ι`. -/
-theorem convexHull_rangle_single_eq_stdSimplex [DecidableEq ι] :
-    convexHull R (range fun i : ι ↦ Pi.single i 1) = stdSimplex R ι := by
-  convert convexHull_basis_eq_stdSimplex R ι
+/-- `stdSimplex 𝕜 ι` is the convex hull of the canonical basis in `ι → 𝕜`. -/
+theorem convexHull_basis_eq_stdSimplex [DecidableEq ι] :
+    convexHull R (range fun i j : ι => if i = j then (1 : R) else 0) = stdSimplex R ι := by
+  convert convexHull_range_single_eq_stdSimplex R ι
   aesop
 
 variable {ι R}
