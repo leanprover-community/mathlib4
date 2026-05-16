@@ -81,7 +81,11 @@ namespace NonUnitalSemiring
 
 theorem toNonUnitalNonAssocSemiring_injective :
     Function.Injective (@toNonUnitalNonAssocSemiring R) := by
-  rintro ⟨⟩ ⟨⟩ _; congr
+  rintro ⟨⟩ ⟨⟩ h;
+  rw [NonUnitalNonAssocSemiring.ext_iff] at h
+  congr;
+  · exact AddCommMonoid.ext h.1
+  · exact Semigroup.ext h.2
 
 @[ext] theorem ext ⦃inst₁ inst₂ : NonUnitalSemiring R⦄
     (h_add : local_hAdd[R, inst₁] = local_hAdd[R, inst₂])
@@ -150,6 +154,7 @@ defined in `Mathlib/Algebra/GroupWithZero/Defs.lean` as well. -/
     ext : 1 <;> assumption
   have : inst₁.toNatCast = inst₂.toNatCast :=
     congrArg (·.toNatCast) this
+  have := AddCommMonoid.ext h_add; have := MulOneClass.ext h_mul
   -- Split into `NonUnitalNonAssocSemiring`, `One` and `natCast` instances.
   cases inst₁; cases inst₂
   congr
@@ -191,6 +196,7 @@ namespace NonUnitalRing
     inst₁ = inst₂ := by
   have : inst₁.toNonUnitalNonAssocRing = inst₂.toNonUnitalNonAssocRing := by
     ext : 1 <;> assumption
+  have := AddCommGroup.ext h_add; have := Semigroup.ext h_mul
   -- Split into fields and prove they are equal using the above.
   cases inst₁; cases inst₂
   congr
