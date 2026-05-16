@@ -363,6 +363,8 @@ lemma mdifferentiableAt_add_section
     MDiffAt (T% (s + t)) x₀ := by
   rw [← mdifferentiableWithinAt_univ] at hs ht ⊢
   apply mdifferentiableWithinAt_add_section hs ht
+-- TODO: remove this once to_fun outputs can be named!
+alias mdifferentiableAt_fun_add_section := fun_mdifferentiableAt_add_section
 
 lemma mdifferentiableOn_add_section
     (hs : MDiff[u] (T% s)) (ht : MDiff[u] (T% t)) : MDiff[u] (T% (s + t)) :=

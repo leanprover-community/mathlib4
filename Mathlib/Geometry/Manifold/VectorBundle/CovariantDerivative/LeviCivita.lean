@@ -121,11 +121,15 @@ lemma _root_.MDifferentiableAt.inner_bundle' {x : M} {X Y : Π x : M, TangentSpa
   MDifferentiableAt.inner_bundle hX hY
 
 section funpropsetup
+-- In the medium term, `fun_prop` should support MDifferentiable, ContMDiff and friends fully.
+-- This will require adding a custom discharger for models with corners.
+-- In the mean-time, add the following attributes locally in this file, as they are too useful
+-- to not use.
 
 attribute [fun_prop] MDifferentiable MDifferentiableAt
   MDifferentiable.add MDifferentiableAt.add
   MDifferentiable.inner_bundle' MDifferentiableAt.inner_bundle'
-  fun_mdifferentiableAt_add_section MDifferentiableAt.fun_smul_section
+  mdifferentiableAt_fun_add_section MDifferentiableAt.fun_smul_section
 
 end funpropsetup
 
