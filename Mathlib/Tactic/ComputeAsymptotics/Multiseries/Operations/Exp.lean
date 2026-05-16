@@ -1,0 +1,213 @@
+/-
+Copyright (c) 2025 Vasilii Nesterov. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Vasilii Nesterov
+-/
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Exponential
+public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Operations.Powser
+
+/-!
+# Exponent of Multiseries
+
+-/
+
+@[expose] public section
+
+open Filter Asymptotics Topology
+
+namespace Tactic.ComputeAsymptotics
+
+namespace MultiseriesExpansion
+
+open LazySeries Stream' Seq
+open scoped Nat
+
+/-- Series defining the exponential function:
+```
+exp x = 1 + x/1! + x^2/2! + x^3/3! + ...
+```
+-/
+noncomputable def expSeries : LazySeries :=
+  ofFn fun n ↦ (n ! : ℝ)⁻¹
+
+theorem expSeries_eq_cons :
+    expSeries = Seq.cons 1 (ofFnFrom (fun n ↦ (n ! : ℝ)⁻¹) 1) := by
+  simp only [expSeries, ofFn]
+  rw [ofFnFrom_eq_cons]
+  congr
+  norm_num
+
+theorem expSeries_get {n : ℕ} : expSeries.get? n = some ((n ! : ℝ)⁻¹) := by
+  simp [expSeries]
+
+theorem expSeries_toFormalMultilinearSeries_eq :
+    expSeries.toFormalMultilinearSeries = NormedSpace.expSeries ℝ ℝ := by
+  simp only [toFormalMultilinearSeries]
+  unfold NormedSpace.expSeries FormalMultilinearSeries.ofScalars
+  simp [coeff, expSeries_get]
+
+theorem expSeries_convergent : expSeries.Convergent := by
+  apply convergent_of_HasFPowerSeriesAt (f := Real.exp)
+  rw [expSeries_toFormalMultilinearSeries_eq]
+  convert NormedSpace.exp_hasFPowerSeriesAt_zero
+  · exact Real.exp_eq_exp_ℝ
+  all_goals infer_instance
+
+theorem expSeries_toFun : expSeries.toFun = Real.exp := by
+  have := NormedSpace.exp_hasFPowerSeriesOnBall (𝕂 := ℝ) (𝔸 := ℝ)
+  rw [← expSeries_toFormalMultilinearSeries_eq, ← Real.exp_eq_exp_ℝ] at this
+  ext x
+  simp only [LazySeries.toFun]
+  conv_rhs => rw [show x = 0 + x by simp]
+  symm
+  exact HasFPowerSeriesOnBall.sum this (by simp)
+
+mutual
+
+/-- If `ms` approximates an eventually bounded function `f` and,
+then `ms.exp` approximates `Real.exp ∘ f`. -/
+noncomputable def Multiseries.exp {basis_hd : ℝ → ℝ} {basis_tl : Basis}
+    (ms : Multiseries basis_hd basis_tl) : Multiseries basis_hd basis_tl :=
+  match ms.destruct with
+  | .none => Multiseries.one
+  | .some (exp, coef, tl) =>
+    if exp < 0 then
+      ms.powser expSeries
+    else -- assume that exp = 0
+      (tl.powser expSeries).mulMonomial coef.exp 0
+
+/-- If `ms` approximates an eventually bounded function `f` and,
+then `ms.exp` approximates `Real.exp ∘ f`. -/
+noncomputable def exp {basis : Basis} (ms : MultiseriesExpansion basis) :
+    MultiseriesExpansion basis :=
+  match basis with
+  | [] => ofReal <| Real.exp ms.toReal
+  | List.cons _ _ =>
+    mk (Multiseries.exp ms.seq) (Real.exp ∘ ms.toFun)
+
+end
+
+@[simp]
+theorem exp_seq {basis_hd : ℝ → ℝ} {basis_tl : Basis}
+    {ms : MultiseriesExpansion (basis_hd :: basis_tl)} :
+    ms.exp.seq = Multiseries.exp ms.seq := by
+  simp [exp]
+
+@[simp]
+theorem exp_toFun {basis : Basis} {ms : MultiseriesExpansion basis} :
+    ms.exp.toFun = Real.exp ∘ ms.toFun := by
+  ext t
+  cases basis with
+  | nil => simp [exp, toReal, ofReal]
+  | cons => simp [exp]
+
+mutual
+
+theorem Multiseries.exp_Sorted {basis_hd : ℝ → ℝ} {basis_tl : Basis}
+    {ms : Multiseries basis_hd basis_tl}
+    (h : ms.Sorted)
+    (h_nonpos : ¬ ms.exps.FirstNonzeroIsPos) :
+    ms.exp.Sorted := by
+  cases ms with
+  | nil => simpa [Multiseries.exp] using Multiseries.one_Sorted
+  | cons exp coef tl =>
+  simp only [Multiseries.exp, Multiseries.destruct_cons]
+  split_ifs with h_if
+  · apply Multiseries.powser_Sorted h
+    simpa
+  have h_exp : exp = 0 := by
+    contrapose! h_nonpos
+    simp
+    constructor
+    grind
+  subst h_exp
+  clear h_if
+  obtain ⟨h_coef_sorted, h_comp, h_tl_sorted⟩ := h.elim_cons
+  apply Multiseries.mulMonomial_Sorted
+  · exact Multiseries.powser_Sorted h_tl_sorted h_comp
+  · apply exp_Sorted h_coef_sorted
+    contrapose! h_nonpos
+    simp only [Multiseries.cons_exps]
+    exact UnitMonomial.FirstNonzeroIsPos.of_tail rfl h_nonpos
+
+theorem exp_Sorted {basis : Basis} {ms : MultiseriesExpansion basis}
+    (h : ms.Sorted)
+    (h_nonpos : ¬ ms.exps.FirstNonzeroIsPos) :
+    ms.exp.Sorted := by
+  cases basis with
+  | nil => apply Sorted.const
+  | cons basis_hd basis_tl =>
+    simp only [sorted_iff_seq_sorted, exps_eq_Seq_exps, exp_seq] at *
+    apply Multiseries.exp_Sorted h h_nonpos
+
+end
+
+theorem exp_Approximates {basis : Basis} {ms : MultiseriesExpansion basis}
+    (h_basis : WellFormedBasis basis)
+    (h_sorted : ms.Sorted)
+    (h_approx : ms.Approximates)
+    (h_nonpos : ¬ ms.exps.FirstNonzeroIsPos) :
+    ms.exp.Approximates := by
+  obtain _ | ⟨basis_hd, basis_tl⟩ := basis
+  · simp
+  cases ms with
+  | nil f =>
+    simp only [exp, mk_seq, Multiseries.exp, Multiseries.destruct_nil, mk_toFun]
+    apply Approximates.elim_nil at h_approx
+    convert (one_Approximates h_basis).replaceFun _
+    · ext g
+      simp [ext_iff]
+    · apply h_approx.mono
+      simp +contextual
+  | cons exp coef tl f =>
+  simp only [MultiseriesExpansion.exp, mk_seq, Multiseries.exp, Multiseries.destruct_cons, mk_toFun]
+  split_ifs with h_if
+  · rw [← expSeries_toFun]
+    exact powser_Approximates expSeries_convergent h_basis (by simpa) h_sorted h_approx
+  have h_exp : exp = 0 := by
+    contrapose! h_nonpos
+    simp
+    constructor
+    grind
+  subst h_exp
+  clear h_if
+  obtain ⟨h_coef_sorted, h_comp, h_tl_sorted⟩ := h_sorted.elim_cons
+  obtain ⟨h_coef, h_majorized, h_tl⟩ := h_approx.elim_cons
+  let ms := ((mk tl (f - basis_hd ^ 0 * coef.toFun)).powser expSeries).mulMonomial coef.exp 0
+  have h : ms.Approximates := by
+    simp only [pow_zero, one_mul, ms]
+    apply mulMonomial_Approximates h_basis
+    · apply powser_Approximates expSeries_convergent h_basis (by simpa) (by simpa)
+      convert h_tl
+      simp
+    · apply exp_Approximates h_basis.tail h_coef_sorted h_coef
+      contrapose! h_nonpos
+      simp only [exps_eq_Seq_exps, mk_seq, Multiseries.cons_exps]
+      exact UnitMonomial.FirstNonzeroIsPos.of_tail rfl h_nonpos
+  apply h.replaceFun _
+  simp only [pow_zero, one_mul, mulMonomial_toFun, powser_toFun, expSeries_toFun, mk_toFun,
+    Real.pi_rpow_zero, mul_one, exp_toFun, ms]
+  apply EventuallyEq.of_eq
+  ext t
+  simp [← Real.exp_add]
+
+theorem pow_eq_exp_toFun
+    {basis1 basis2 : Basis} {ms1 : MultiseriesExpansion basis1} {ms2 : MultiseriesExpansion basis2}
+    {f g : ℝ → ℝ}
+    (h_basis1 : WellFormedBasis basis1)
+    (h_sorted1 : ms1.Sorted) (h_approx1 : ms1.Approximates) (h_trimmed1 : ms1.Trimmed)
+    (h_pos1 : 0 < ms1.leadingMonomial.coef)
+    (h1 : ms1.toFun = f)
+    (h2 : ms2.toFun = (Real.exp ∘ ((Real.log ∘ f) * g))) :
+    ms2.toFun =ᶠ[atTop] (fun x ↦ (f x) ^ (g x)) := by
+  have := eventually_pos_of_coef_pos h_pos1 h_sorted1 h_approx1 h_trimmed1 h_basis1
+  rw [h1] at this
+  apply this.mono
+  intro t h_pos
+  simp [h2, Real.rpow_def_of_pos h_pos]
+
+end MultiseriesExpansion
+
+end Tactic.ComputeAsymptotics

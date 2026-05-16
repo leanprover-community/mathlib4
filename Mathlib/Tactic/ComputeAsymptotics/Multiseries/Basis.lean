@@ -4,6 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vasilii Nesterov
 -/
 module
+public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Defs
+public import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
 public import Mathlib.Analysis.Complex.Exponential
 public import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
 
@@ -23,9 +25,6 @@ public import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
 namespace Tactic.ComputeAsymptotics
 
 open Asymptotics Filter
-
-/-- List of functions used to construct monomials in multiseries. -/
-abbrev Basis := List (ℝ → ℝ)
 
 /-- `WellFormedBasis basis` means that all functions from `basis` tend to `atTop`, and
 `basis` is sorted such that if
@@ -158,6 +157,68 @@ theorem push_log_last {basis_hd : ℝ → ℝ} {basis_tl : Basis}
 
 end WellFormedBasis
 
+/-- Auxillary lemma. If function `f` is eventually positive, `g` tends to `atTop`, and
+`log f =o[atTop] log g` then for any `a` and `b > 0`, then `f^a =o[atTop] g^b`. -/
+theorem pow_isLittleO_pow_of_log {f g : ℝ → ℝ} (a b : ℝ) (hf : ∀ᶠ x in atTop, 0 < f x)
+    (hg : Tendsto g atTop atTop) (h : (Real.log ∘ f) =o[atTop] (Real.log ∘ g)) (hb : 0 < b) :
+    (f ^ a) =o[atTop] (g ^ b) := by
+  apply IsLittleO.of_tendsto_div_atTop
+  apply Tendsto.congr' (f₁ := Real.exp ∘ (b • Real.log ∘ g - a • Real.log ∘ f))
+  · refine (hf.and (hg.eventually_gt_atTop 0)).mono (fun x ⟨hf, hg⟩ ↦ ?_)
+    simp [Real.exp_sub, mul_comm a, mul_comm b, Real.exp_mul, Real.exp_log hg, Real.exp_log hf]
+  apply Real.tendsto_exp_atTop.comp
+  have h' : (b • Real.log ∘ g - a • Real.log ∘ f) ~[atTop] b • Real.log ∘ g := by
+    replace h : (a • Real.log ∘ f) =o[atTop] (b • Real.log ∘ g) :=
+      (h.const_mul_left a).const_mul_right (hb.ne')
+    grind only [IsEquivalent.sub_isLittleO, IsEquivalent.refl]
+  rw [h'.tendsto_atTop_iff]
+  apply Filter.Tendsto.const_mul_atTop hb
+  apply Real.tendsto_log_atTop.comp hg
+
+/-- Any power of function from a well-formed basis' tail is Majorized by
+basis' head with zero exponent. -/
+theorem WellFormedBasis.tail_pow_Majorized_head {hd f : ℝ → ℝ} {tl : Basis}
+    (h_basis : WellFormedBasis (hd :: tl)) (hf : f ∈ tl) (r : ℝ) :
+    Majorized (f ^ r) hd 0 := by
+  intro exp h_exp
+  apply pow_isLittleO_pow_of_log
+  · exact h_basis.tail.eventually_pos.mono fun x h ↦ h _ hf
+  · exact h_basis.tendsto_atTop (by simp)
+  · grind [WellFormedBasis, List.pairwise_cons]
+  · exact h_exp
+
+/-- If `basis_hd :: basis_tl` is well-formed and function `fC` can be approximated by
+`ms : MultiseriesExpansion basis_tl`, then `fC` can be Majorized by `basis_hd` with zero
+exponent. -/
+theorem MultiseriesExpansion.Approximates_coef_Majorized_head {basis_hd : ℝ → ℝ} {basis_tl : Basis}
+    {ms : MultiseriesExpansion basis_tl} (h_approx : ms.Approximates)
+    (h_basis : WellFormedBasis (basis_hd :: basis_tl)) :
+    Majorized ms.toFun basis_hd 0 := by
+  cases basis_tl with
+  | nil =>
+    simp only [const_toFun]
+    apply Majorized.const
+    apply h_basis.tendsto_atTop
+    simp
+  | cons basis_tl_hd basis_tl_tl =>
+    cases ms with
+    | nil f =>
+      simp only [Approximates.nil_iff, mk_toFun] at h_approx ⊢
+      apply Majorized.of_eventuallyEq h_approx
+      apply Majorized.zero
+    | cons exp coef tl f =>
+      obtain ⟨_, h_maj, _⟩ := h_approx.elim_cons
+      simp only [mk_toFun]
+      intro exp' h_exp
+      apply Asymptotics.IsLittleO.trans <| h_maj (exp + 1) (by linarith)
+      apply pow_isLittleO_pow_of_log
+      · apply h_basis.tail.head_eventually_pos
+      · apply h_basis.tendsto_atTop
+        simp only [List.mem_cons, true_or]
+      · simp only [WellFormedBasis, List.pairwise_cons, List.mem_cons, forall_eq_or_imp] at h_basis
+        exact h_basis.left.left.left
+      · exact h_exp
+
 /-! ### Basis extensions -/
 
 /-- The type of extensions of a given basis, defined as an inductive type.
@@ -192,6 +253,59 @@ theorem insert_tail_wellFormedBasis {basis : Basis} {f : ℝ → ℝ}
     (h_basis : WellFormedBasis <| BasisExtension.getBasis (.insert f ex_tl)) :
     WellFormedBasis ex_tl.getBasis :=
   h_basis.of_sublist (by simp [getBasis])
+
+-- TODO: refactor this using `WellFormedBasis.push`, and use the current proof to prove it
+theorem insertLastLog_WellFormedBasis {basis_hd : ℝ → ℝ} {basis_tl : Basis}
+    (h_basis : WellFormedBasis (basis_hd :: basis_tl)) :
+    WellFormedBasis ((basis_hd :: basis_tl) ++
+      [Real.log ∘ (basis_hd :: basis_tl).getLast (by simp)]) := by
+  simp only [WellFormedBasis]
+  constructor
+  · rw [List.pairwise_append]
+    constructor
+    · exact h_basis.left
+    constructor
+    · simp
+    intro f hf g hg
+    simp only [List.mem_singleton] at hg
+    subst hg
+    suffices (Real.log ∘ (basis_hd :: basis_tl).getLast (List.cons_ne_nil _ _))
+        =O[atTop] (Real.log ∘ f) by
+      apply Asymptotics.IsLittleO.trans_isBigO _ this
+      apply And.right at h_basis
+      specialize h_basis ((basis_hd :: basis_tl).getLast (List.cons_ne_nil _ _)) (by simp)
+      set g := (basis_hd :: basis_tl).getLast (List.cons_ne_nil _ _)
+      change (Real.log ∘ Real.log ∘ g) =o[atTop] (id ∘ Real.log ∘ g)
+      apply Asymptotics.IsLittleO.comp_tendsto Real.isLittleO_log_id_atTop
+      exact Filter.Tendsto.comp Real.tendsto_log_atTop h_basis
+    induction basis_tl generalizing basis_hd f with
+    | nil =>
+      simp only [List.mem_singleton] at hf
+      simp only [List.getLast_singleton, hf]
+      apply isBigO_refl
+    | cons basis_tl_hd basis_tl_tl ih =>
+      specialize ih h_basis.tail
+      rw [List.mem_cons] at hf
+      rcases hf with hf | hf
+      · subst hf
+        specialize ih basis_tl_hd (by simp)
+        calc
+          _ =O[atTop] (Real.log ∘ basis_tl_hd) := ih
+          _ =O[atTop] (Real.log ∘ f) := by
+            apply IsLittleO.isBigO
+            simp only [WellFormedBasis, List.pairwise_cons, List.mem_cons,
+              forall_eq_or_imp] at h_basis
+            tauto
+      · exact ih f hf
+  · intro f hf
+    rw [List.mem_append] at hf
+    rcases hf with hf | hf
+    · exact h_basis.right _ hf
+    simp only [List.mem_singleton] at hf
+    subst hf
+    apply Filter.Tendsto.comp Real.tendsto_log_atTop
+    apply h_basis.right
+    simp
 
 end BasisExtension
 
