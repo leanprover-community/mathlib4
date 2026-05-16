@@ -129,8 +129,6 @@ lemma comp_X_add_C (hp : p.Monic) (r : R) : (p.comp (X + C r)).Monic := by
   rw [natDegree_X_add_C] at ha
   exact one_ne_zero ha
 
-@[deprecated (since := "2025-10-26")] alias natDegree_eq_zero_iff_eq_one := natDegree_eq_zero
-
 @[simp]
 theorem degree_le_zero_iff_eq_one (hp : p.Monic) : p.degree ≤ 0 ↔ p = 1 := by
   rw [← hp.natDegree_eq_zero, natDegree_eq_zero_iff_degree_le_zero]
@@ -406,11 +404,6 @@ section Injective
 open Function
 
 variable [Semiring S] {f : R →+* S}
-
-@[deprecated (since := "2025-10-26")]
-alias leadingCoeff_map' := leadingCoeff_map_of_injective
-@[deprecated (since := "2025-10-26")]
-alias leadingCoeff_of_injective := leadingCoeff_map_of_injective
 
 theorem monic_of_injective (hf : Injective f) {p : R[X]} (hp : (p.map f).Monic) : p.Monic := by
   apply hf

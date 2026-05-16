@@ -559,9 +559,6 @@ theorem subgroupOf_sup {A A' B : Subgroup G} (hA : A ≤ B) (hA' : A' ≤ B) :
   simp only [subgroupOf, map_comap_eq, map_sup, range_subtype]
   rw [inf_of_le_right (sup_le hA hA'), inf_of_le_right hA', inf_of_le_right hA]
 
-@[deprecated "Use in reverse direction." (since := "2025-11-03")] alias sup_subgroupOf_eq :=
-  subgroupOf_sup
-
 @[to_additive]
 theorem codisjoint_subgroupOf_sup (H K : Subgroup G) :
     Codisjoint (H.subgroupOf (H ⊔ K)) (K.subgroupOf (H ⊔ K)) := by

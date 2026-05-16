@@ -35,9 +35,6 @@ instance SetRel.isTrans_entourageProd {s : SetRel X X} {t : SetRel Y Y} [s.IsTra
     (entourageProd s t).IsTrans where
   trans _ _ _ h h' := ⟨s.trans h.left h'.left, t.trans h.right h'.right⟩
 
-@[deprecated (since := "2025-10-17")]
-alias IsTransitiveRel.entourageProd := SetRel.isTrans_entourageProd
-
 lemma IsUltraUniformity.comap {u : UniformSpace Y} (h : IsUltraUniformity Y) (f : X → Y) :
     @IsUltraUniformity _ (u.comap f) := by
   letI := u.comap f

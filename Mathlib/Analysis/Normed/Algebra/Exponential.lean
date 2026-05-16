@@ -689,8 +689,6 @@ theorem expSeries_eq_expSeries (n : ℕ) (x : 𝔸) :
 theorem ofReal_exp_ℝ_ℝ (r : ℝ) : ↑(exp r) = exp (r : ℂ) :=
   map_exp (algebraMap ℝ ℂ) (continuous_algebraMap _ _) r
 
-@[deprecated (since := "2025-11-13")] alias of_real_exp_ℝ_ℝ := ofReal_exp_ℝ_ℝ
-
 end ScalarTower
 
 end NormedSpace

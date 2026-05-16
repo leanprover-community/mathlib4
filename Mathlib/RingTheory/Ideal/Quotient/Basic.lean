@@ -54,9 +54,6 @@ protected lemma subsingleton_iff : Subsingleton (R ⧸ I) ↔ I = ⊤ :=
 protected lemma nontrivial_iff : Nontrivial (R ⧸ I) ↔ I ≠ ⊤ :=
   Submodule.Quotient.nontrivial_iff
 
-@[deprecated Quotient.nontrivial_iff (since := "2025-11-02")]
-protected theorem nontrivial (hI : I ≠ ⊤) : Nontrivial (R ⧸ I) := Quotient.nontrivial_iff.2 hI
-
 instance : Unique (R ⧸ (⊤ : Ideal R)) :=
   ⟨⟨0⟩, by rintro ⟨x⟩; exact Quotient.eq_zero_iff_mem.mpr Submodule.mem_top⟩
 
@@ -229,5 +226,3 @@ lemma finite_iff_ideal_quotient (I : Ideal R) : Finite R ↔ Finite I ∧ Finite
 lemma Finite.of_ideal_quotient (I : Ideal R) [Finite I] [Finite (R ⧸ I)] : Finite R := by
   rw [finite_iff_ideal_quotient]; constructor <;> assumption
 
-@[deprecated (since := "2025-11-11")]
-alias Finite.of_finite_quot_finite_ideal := Finite.of_ideal_quotient

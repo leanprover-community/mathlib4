@@ -130,8 +130,6 @@ theorem logMap_apply_of_norm_eq_one (hx : mixedEmbedding.norm x = 1)
     logMap x w = mult w.val * Real.log (normAtPlace w x) := by
   rw [logMap_apply, hx, Real.log_one, zero_mul, sub_zero]
 
-@[deprecated (since := "2025-11-15")] alias logMap_apply_of_norm_one := logMap_apply_of_norm_eq_one
-
 @[simp]
 theorem logMap_eq_logEmbedding (u : (𝓞 K)ˣ) :
     logMap (mixedEmbedding K u) = logEmbedding K (Additive.ofMul u) := by

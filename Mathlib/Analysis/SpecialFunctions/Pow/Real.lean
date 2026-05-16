@@ -614,15 +614,9 @@ theorem rpow_le_rpow_of_exponent_le (hx : 1 ≤ x) (hyz : y ≤ z) : x ^ y ≤ x
   repeat' rw [rpow_def_of_pos (lt_of_lt_of_le zero_lt_one hx)]
   rw [exp_le_exp]; gcongr; exact log_nonneg hx
 
-@[deprecated (since := "2025-10-28")] alias rpow_lt_rpow_of_exponent_neg :=
-  rpow_lt_rpow_of_neg
-
 theorem strictAntiOn_rpow_Ioi_of_exponent_neg {r : ℝ} (hr : r < 0) :
     StrictAntiOn (fun (x : ℝ) => x ^ r) (Set.Ioi 0) :=
   fun _ ha _ _ hab => rpow_lt_rpow_of_neg ha hab hr
-
-@[deprecated (since := "2025-10-28")] alias rpow_le_rpow_of_exponent_nonpos :=
-  rpow_le_rpow_of_nonpos
 
 theorem antitoneOn_rpow_Ioi_of_exponent_nonpos {r : ℝ} (hr : r ≤ 0) :
     AntitoneOn (fun (x : ℝ) => x ^ r) (Set.Ioi 0) :=
@@ -1054,58 +1048,6 @@ theorem IsNat.rpow_eq_pow {b : ℝ} {n : ℕ} (h : IsNat b n) (a : ℝ) : a ^ b 
 theorem IsInt.rpow_eq_inv_pow {b : ℝ} {n : ℕ} (h : IsInt b (.negOfNat n)) (a : ℝ) :
     a ^ b = (a ^ n)⁻¹ := by
   rw [h.1, Real.rpow_intCast, Int.negOfNat_eq, zpow_neg, Int.ofNat_eq_natCast, zpow_natCast]
-
-@[deprecated IsNat.rpow_eq_pow (since := "2025-10-21")]
-theorem isNat_rpow_pos {a b : ℝ} {nb ne : ℕ}
-    (pb : IsNat b nb) (pe' : IsNat (a ^ nb) ne) :
-    IsNat (a ^ b) ne := by
-  rwa [pb.out, rpow_natCast]
-
-@[deprecated IsInt.rpow_eq_inv_pow (since := "2025-10-21")]
-theorem isNat_rpow_neg {a b : ℝ} {nb ne : ℕ}
-    (pb : IsInt b (Int.negOfNat nb)) (pe' : IsNat (a ^ (Int.negOfNat nb)) ne) :
-    IsNat (a ^ b) ne := by
-  rwa [pb.out, Real.rpow_intCast]
-
-@[deprecated IsNat.rpow_eq_pow (since := "2025-10-21")]
-theorem isInt_rpow_pos {a b : ℝ} {nb ne : ℕ}
-    (pb : IsNat b nb) (pe' : IsInt (a ^ nb) (Int.negOfNat ne)) :
-    IsInt (a ^ b) (Int.negOfNat ne) := by
-  rwa [pb.out, rpow_natCast]
-
-@[deprecated IsInt.rpow_eq_inv_pow (since := "2025-10-21")]
-theorem isInt_rpow_neg {a b : ℝ} {nb ne : ℕ}
-    (pb : IsInt b (Int.negOfNat nb)) (pe' : IsInt (a ^ (Int.negOfNat nb)) (Int.negOfNat ne)) :
-    IsInt (a ^ b) (Int.negOfNat ne) := by
-  rwa [pb.out, Real.rpow_intCast]
-
-@[deprecated IsNat.rpow_eq_pow (since := "2025-10-21")]
-theorem isNNRat_rpow_pos {a b : ℝ} {nb : ℕ}
-    {num den : ℕ}
-    (pb : IsNat b nb) (pe' : IsNNRat (a ^ nb) num den) :
-    IsNNRat (a ^ b) num den := by
-  rwa [pb.out, rpow_natCast]
-
-@[deprecated IsNat.rpow_eq_pow (since := "2025-10-21")]
-theorem isRat_rpow_pos {a b : ℝ} {nb : ℕ}
-    {num : ℤ} {den : ℕ}
-    (pb : IsNat b nb) (pe' : IsRat (a ^ nb) num den) :
-    IsRat (a ^ b) num den := by
-  rwa [pb.out, rpow_natCast]
-
-@[deprecated IsInt.rpow_eq_inv_pow (since := "2025-10-21")]
-theorem isNNRat_rpow_neg {a b : ℝ} {nb : ℕ}
-    {num den : ℕ}
-    (pb : IsInt b (Int.negOfNat nb)) (pe' : IsNNRat (a ^ (Int.negOfNat nb)) num den) :
-    IsNNRat (a ^ b) num den := by
-  rwa [pb.out, Real.rpow_intCast]
-
-@[deprecated IsInt.rpow_eq_inv_pow (since := "2025-10-21")]
-theorem isRat_rpow_neg {a b : ℝ} {nb : ℕ}
-    {num : ℤ} {den : ℕ}
-    (pb : IsInt b (Int.negOfNat nb)) (pe' : IsRat (a ^ (Int.negOfNat nb)) num den) :
-    IsRat (a ^ b) num den := by
-  rwa [pb.out, Real.rpow_intCast]
 
 /-- Given proofs
 - that `a` is a natural number `m`

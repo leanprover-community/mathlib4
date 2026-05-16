@@ -34,7 +34,3 @@ instance Finsupp.wellQuasiOrderedLE {α σ : Type*} [Zero α] [Preorder α] [Wel
     [Finite σ] : WellQuasiOrderedLE (σ →₀ α) :=
   orderIsoFunOnFinite.wellQuasiOrderedLE_iff.2 inferInstance
 
-@[deprecated Set.isPWO_of_wellQuasiOrderedLE (since := "2025-11-12")]
-theorem Finsupp.isPWO {α σ : Type*} [Zero α] [Preorder α] [WellQuasiOrderedLE α] [Finite σ]
-    (S : Set (σ →₀ α)) : S.IsPWO :=
-  Set.isPWO_of_wellQuasiOrderedLE S

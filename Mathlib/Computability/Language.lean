@@ -217,10 +217,6 @@ instance : MulLeftMono (Language α) where
 instance : MulRightMono (Language α) where
   elim _ _ _ := image2_subset_right
 
-@[deprecated mul_le_mul' (since := "2025-10-26")]
-theorem le_mul_congr {l₁ l₂ m₁ m₂ : Language α} : l₁ ≤ m₁ → l₂ ≤ m₂ → l₁ * l₂ ≤ m₁ * m₂ :=
-  mul_le_mul'
-
 theorem mem_iSup {ι : Sort v} {l : ι → Language α} {x : List α} : (x ∈ ⨆ i, l i) ↔ ∃ i, x ∈ l i :=
   mem_iUnion
 
@@ -301,10 +297,6 @@ instance : KleeneAlgebra (Language α) where
     induction n with
     | zero => simp
     | succ n ih => grw [pow_succ, ← mul_assoc m (l ^ n) l, ih, h]
-
-@[deprecated add_le_add (since := "2025-10-26")]
-theorem le_add_congr {l₁ l₂ m₁ m₂ : Language α} : l₁ ≤ m₁ → l₂ ≤ m₂ → l₁ + l₂ ≤ m₁ + m₂ :=
-  add_le_add
 
 /-- **Arden's lemma** -/
 theorem self_eq_mul_add_iff {l m n : Language α} (hm : [] ∉ m) : l = m * l + n ↔ l = m∗ * n where

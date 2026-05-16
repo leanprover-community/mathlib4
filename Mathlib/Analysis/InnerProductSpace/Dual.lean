@@ -75,8 +75,6 @@ theorem toContinuousLinearMap_toDualMap :
 @[simp]
 theorem toDualMap_apply_apply {x y : E} : toDualMap 𝕜 E x y = ⟪x, y⟫ := rfl
 
-@[deprecated (since := "2025-11-15")] alias toDualMap_apply := toDualMap_apply_apply
-
 variable {𝕜} in
 @[simp]
 theorem _root_.innerSL_inj {E : Type*} [NormedAddCommGroup E] [InnerProductSpace 𝕜 E] {x y : E} :
@@ -176,8 +174,6 @@ variable {𝕜} {E}
 
 @[simp]
 theorem toDual_apply_apply {x y : E} : toDual 𝕜 E x y = ⟪x, y⟫ := rfl
-
-@[deprecated (since := "2025-11-15")] alias toDual_apply := toDual_apply_apply
 
 @[simp]
 theorem toDual_symm_apply {x : E} {y : StrongDual 𝕜 E} : ⟪(toDual 𝕜 E).symm y, x⟫ = y x := by

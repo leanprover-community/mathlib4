@@ -238,8 +238,6 @@ theorem of_restrictScalars [FormallyUnramified R B] : FormallyUnramified A B := 
   intro x
   exact AlgHom.congr_fun e' x
 
-@[deprecated (since := "2025-10-24")] alias of_comp := of_restrictScalars
-
 end Comp
 
 section of_surjective

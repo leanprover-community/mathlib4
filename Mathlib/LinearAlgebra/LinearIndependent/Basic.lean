@@ -569,9 +569,6 @@ lemma linearIndependent_unique_iff [Unique ι] : LinearIndependent R v ↔ v def
   simpa [linearIndependent_iff, Finsupp.linearCombination_unique, Finsupp.ext_iff,
     Unique.forall_iff, or_imp] using fun h hv ↦ by simpa using h (.single default 1) hv
 
-@[deprecated LinearIndependent.of_subsingleton (since := "2025-11-11")]
-alias ⟨_, linearIndependent_unique⟩ := linearIndependent_unique_iff
-
 variable (R) in
 @[simp]
 theorem linearIndepOn_singleton_iff : LinearIndepOn R v {i} ↔ v i ≠ 0 :=

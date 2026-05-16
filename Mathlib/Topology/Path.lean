@@ -215,9 +215,6 @@ theorem extend_apply {a b : X} (γ : Path a b) {t : ℝ}
     (ht : t ∈ (Icc 0 1 : Set ℝ)) : γ.extend t = γ ⟨t, ht⟩ :=
   IccExtend_of_mem _ γ ht
 
-@[deprecated (since := "2025-11-05")]
-alias extend_extends := extend_apply
-
 theorem extend_zero : γ.extend 0 = x := by simp
 
 theorem extend_one : γ.extend 1 = y := by simp
@@ -389,21 +386,10 @@ theorem cast_symm {a₁ a₂ b₁ b₂ : X} (γ : Path a₂ b₂) (ha : a₁ = a
     (γ.symm).cast hb ha = (γ.cast ha hb).symm :=
   rfl
 
-@[deprecated cast_symm (since := "2025-11-13")]
-theorem symm_cast {a₁ a₂ b₁ b₂ : X} (γ : Path a₂ b₂) (ha : a₁ = a₂) (hb : b₁ = b₂) :
-    (γ.cast ha hb).symm = γ.symm.cast hb ha :=
-  rfl
-
 @[simp]
 theorem cast_trans {a₁ a₂ b₁ b₂ c₁ c₂ : X} (γ : Path a₂ b₂)
     (γ' : Path b₂ c₂) (ha : a₁ = a₂) (hb : b₁ = b₂) (hc : c₁ = c₂) :
     (γ.trans γ').cast ha hc = (γ.cast ha hb).trans (γ'.cast hb hc) :=
-  rfl
-
-@[deprecated cast_trans (since := "2025-11-13")]
-theorem trans_cast {a₁ a₂ b₁ b₂ c₁ c₂ : X} (γ : Path a₂ b₂)
-    (γ' : Path b₂ c₂) (ha : a₁ = a₂) (hb : b₁ = b₂) (hc : c₁ = c₂) :
-    (γ.cast ha hb).trans (γ'.cast hb hc) = (γ.trans γ').cast ha hc :=
   rfl
 
 @[simp]

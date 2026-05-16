@@ -760,22 +760,3 @@ lemma Nat.tendsto_div_const_atTop {n : ℕ} (hn : n ≠ 0) : Tendsto (· / n) at
 
 end
 
-@[deprecated (since := "2025-10-27")]
-alias tendsto_inverse_atTop_nhds_zero_nat := tendsto_inv_atTop_nhds_zero_nat
-
-@[deprecated (since := "2025-10-27")]
-alias NNReal.tendsto_inverse_atTop_nhds_zero_nat := tendsto_inv_atTop_nhds_zero_nat
-
-@[deprecated (since := "2025-10-27")]
-alias NNReal.tendsto_const_div_atTop_nhds_zero_nat := tendsto_const_div_atTop_nhds_zero_nat
-
-@[deprecated (since := "2025-10-27")]
-alias NNReal.tendsto_algebraMap_inverse_atTop_nhds_zero_nat :=
-  tendsto_algebraMap_inv_atTop_nhds_zero_nat
-
-@[deprecated (since := "2025-10-27")]
-alias tendsto_algebraMap_inverse_atTop_nhds_zero_nat :=
-  tendsto_algebraMap_inv_atTop_nhds_zero_nat
-
-@[deprecated (since := "2025-10-27")]
-protected alias Nat.tendsto_pow_atTop_atTop_of_one_lt := tendsto_pow_atTop_atTop_of_one_lt

@@ -65,6 +65,4 @@ theorem MonoidalLinear.ofFaithful {D : Type*} [Category* D] [Preadditive D] [Lin
       rw [Functor.Monoidal.map_whiskerRight]
       simp }
 
-@[deprecated (since := "2025-10-17")] alias monoidalLinearOfFaithful := MonoidalLinear.ofFaithful
-
 end CategoryTheory

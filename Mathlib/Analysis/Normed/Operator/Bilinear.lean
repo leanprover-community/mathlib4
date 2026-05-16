@@ -429,11 +429,6 @@ def smulRightL : StrongDual 𝕜 E →L[𝕜] Fₗ →L[𝕜] E →L[𝕜] Fₗ 
       simp only [coe_smulRightₗ, one_mul, norm_smulRight_apply, LinearMap.coe_mk, AddHom.coe_mk,
         le_refl]
 
-@[deprecated norm_smulRight_apply (since := "2025-11-12")]
-theorem norm_smulRightL_apply (c : StrongDual 𝕜 E) (f : Fₗ) :
-    ‖smulRightL 𝕜 E Fₗ c f‖ = ‖c‖ * ‖f‖ := by
-  simp
-
 end ContinuousLinearMap
 
 end SemiNormed

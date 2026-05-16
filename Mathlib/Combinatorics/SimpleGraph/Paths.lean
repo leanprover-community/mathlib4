@@ -137,8 +137,6 @@ theorem IsTrail.of_cons {u v w : V} {h : G.Adj u v} {p : G.Walk v w} :
 theorem isTrail_cons {u v w : V} (h : G.Adj u v) (p : G.Walk v w) :
     (cons h p).IsTrail ↔ p.IsTrail ∧ s(u, v) ∉ p.edges := by simp [isTrail_def, and_comm]
 
-@[deprecated (since := "2025-11-03")] alias cons_isTrail_iff := isTrail_cons
-
 protected lemma IsTrail.cons {w : G.Walk u' v} (hw : w.IsTrail) (hu : G.Adj u u')
     (hu' : s(u, u') ∉ w.edges) : (w.cons hu).IsTrail := by simp [*]
 

@@ -224,8 +224,3 @@ theorem isNilpotent_finsum {ι : Type*} {f : ι → R}
 
 end CommSemiring
 
-@[deprecated "The assumptions `NoZeroSMulDivisors R M` and `Nontrivial M` imply `NoZeroDivisors R`,
-and TC inference already knows that this implies `IsReduced R`." (since := "2025-10-20")]
-lemma NoZeroSMulDivisors.isReduced (R : Type*) [MonoidWithZero R] [NoZeroDivisors R] :
-    IsReduced R := by
-  infer_instance

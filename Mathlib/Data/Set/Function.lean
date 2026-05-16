@@ -292,9 +292,6 @@ theorem injOn_insert {f : α → β} {s : Set α} {a : α} (has : a ∉ s) :
 
 @[simp] lemma injOn_univ : InjOn f univ ↔ Injective f := by simp [InjOn, Injective]
 
-@[deprecated injOn_univ (since := "2025-10-27")]
-theorem injective_iff_injOn_univ : Injective f ↔ InjOn f univ := injOn_univ.symm
-
 theorem injOn_of_injective (h : Injective f) {s : Set α} : InjOn f s := fun _ _ _ _ hxy => h hxy
 
 alias _root_.Function.Injective.injOn := injOn_of_injective
@@ -551,9 +548,6 @@ protected lemma _root_.Function.Surjective.surjOn (hf : Surjective f) : SurjOn f
 lemma SurjOn.surjective (hf : SurjOn f s .univ) : f.Surjective :=
   surjOn_univ.1 <| hf.mono s.subset_univ .rfl
 
-@[deprecated surjOn_univ (since := "2025-10-31")]
-theorem surjective_iff_surjOn_univ : Surjective f ↔ SurjOn f univ univ := surjOn_univ.symm
-
 theorem SurjOn.image_eq_of_mapsTo (h₁ : SurjOn f s t) (h₂ : MapsTo f s t) : f '' s = t :=
   eq_of_subset_of_subset h₂.image_subset h₁
 
@@ -729,9 +723,6 @@ theorem BijOn.bijective (h : BijOn f s t) : Bijective (h.mapsTo.restrict f s t) 
 @[simp] lemma bijOn_univ : BijOn f univ univ ↔ Bijective f := by simp [Bijective, BijOn]
 
 protected alias ⟨_, _root_.Function.Bijective.bijOn_univ⟩ := bijOn_univ
-
-@[deprecated bijOn_univ (since := "2025-10-31")]
-theorem bijective_iff_bijOn_univ : Bijective f ↔ BijOn f univ univ := bijOn_univ.symm
 
 theorem BijOn.compl (hst : BijOn f s t) (hf : Bijective f) : BijOn f sᶜ tᶜ :=
   ⟨hst.surjOn.mapsTo_compl hf.1, hf.1.injOn, hst.mapsTo.surjOn_compl hf.2⟩

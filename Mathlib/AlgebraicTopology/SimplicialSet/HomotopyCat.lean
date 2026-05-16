@@ -50,8 +50,6 @@ universe v u
 type. -/
 def OneTruncation₂ (S : SSet.Truncated 2) := S _⦋0⦌₂
 
-@[deprecated (since := "2025-11-01")] alias OneTruncation₂.Hom := Truncated.Edge
-
 namespace OneTruncation₂
 
 /-- A 2-truncated simplicial set `S` has an underlying refl quiver `SSet.OneTruncation₂ S`. -/
@@ -65,11 +63,6 @@ lemma hom_ext
     {S : SSet.Truncated 2} {x y : OneTruncation₂ S} {f g : x ⟶ y}
     (h : f.edge = g.edge) : f = g :=
   Truncated.Edge.ext h
-
-@[deprecated "Use reflQuiver_id" (since := "2025-11-01")]
-lemma id_edge {S : SSet.Truncated 2} (x : OneTruncation₂ S) :
-    Truncated.Edge.edge (𝟙rq x) = S.map (σ₂ 0).op x := by
-  rfl
 
 /-- The prefunctor on refl quivers `OneTruncation₂` induced by a morphism
 of `2`-truncated simplicial sets. -/
@@ -135,8 +128,6 @@ lemma nerve_hom_ext {X : (SSet.Truncated 2)} {C : Type u} [Category.{u} C]
   SSet.Truncated.IsStrictSegal.hom_ext (fun f ↦ by
     obtain ⟨x₀, x₁, f, rfl⟩ := Truncated.Edge.exists_of_simplex f
     simpa using congr_arg Truncated.Edge.edge (ReflPrefunctor.congr_hom h f))
-
-@[deprecated (since := "2025-11-06")] alias _root_.CategoryTheory.toNerve₂.ext := nerve_hom_ext
 
 end
 end OneTruncation₂
@@ -236,16 +227,6 @@ inductive HoRel₂ : HomRel (Cat.FreeRefl (OneTruncation₂ V)) where
       ((Cat.FreeRefl.quotientFunctor (OneTruncation₂ V)).map
         (Quiver.Hom.toPath e₀₁ ≫ Quiver.Hom.toPath e₁₂))
       ((Cat.FreeRefl.quotientFunctor (OneTruncation₂ V)).map (Quiver.Hom.toPath e₀₂))
-
-@[deprecated "HoRel₂.of_compStruct" (since := "2025-11-06")]
-lemma HoRel₂.mk {x₀ x₁ x₂ : V _⦋0⦌₂} {e₀₁ : Truncated.Edge x₀ x₁}
-    {e₁₂ : Truncated.Edge x₁ x₂} {e₀₂ : Truncated.Edge x₀ x₂}
-    (h : Truncated.Edge.CompStruct e₀₁ e₁₂ e₀₂) :
-    HoRel₂ V
-      ((Cat.FreeRefl.quotientFunctor (OneTruncation₂ V)).map
-        (Quiver.Hom.toPath e₀₁ ≫ Quiver.Hom.toPath e₁₂))
-      ((Cat.FreeRefl.quotientFunctor (OneTruncation₂ V)).map (Quiver.Hom.toPath e₀₂)) :=
-  HoRel₂.of_compStruct h
 
 end OneTruncation₂
 

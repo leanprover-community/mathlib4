@@ -49,9 +49,6 @@ theorem IsInducing.topologicalKrullDim_le {f : Y → X} (hf : IsInducing f) :
     topologicalKrullDim Y ≤ topologicalKrullDim X :=
   krullDim_le_of_strictMono _ (map_strictMono_of_isInducing hf)
 
-@[deprecated (since := "2025-10-19")]
-alias IsClosedEmbedding.topologicalKrullDim_le := IsInducing.topologicalKrullDim_le
-
 /-- The topological Krull dimension is invariant under homeomorphisms -/
 theorem IsHomeomorph.topologicalKrullDim_eq (f : X → Y) (h : IsHomeomorph f) :
     topologicalKrullDim X = topologicalKrullDim Y :=

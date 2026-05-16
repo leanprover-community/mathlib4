@@ -257,8 +257,6 @@ theorem Coprime.gcd_mul (k : ℕ+) {m n : ℕ+} (h : m.Coprime n) :
   rw [← coprime_coe] at h; apply eq
   simp only [gcd_coe, mul_coe]; apply Nat.Coprime.gcd_mul k h
 
-@[deprecated (since := "2025-11-14")] alias ⟨_, gcd_eq_left⟩ := gcd_eq_left_iff_dvd
-
 theorem Coprime.pow {m n : ℕ+} (k l : ℕ) (h : m.Coprime n) : (m ^ k : ℕ).Coprime (n ^ l) := by
   rw [← coprime_coe] at *; apply Nat.Coprime.pow; apply h
 
