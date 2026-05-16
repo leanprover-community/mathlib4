@@ -6773,6 +6773,7 @@ public import Mathlib.RingTheory.PowerSeries.Basic
 public import Mathlib.RingTheory.PowerSeries.Binomial
 public import Mathlib.RingTheory.PowerSeries.Catalan
 public import Mathlib.RingTheory.PowerSeries.CoeffMulMem
+public import Mathlib.RingTheory.PowerSeries.CompInverse
 public import Mathlib.RingTheory.PowerSeries.Derivative
 public import Mathlib.RingTheory.PowerSeries.Evaluation
 public import Mathlib.RingTheory.PowerSeries.Exp
