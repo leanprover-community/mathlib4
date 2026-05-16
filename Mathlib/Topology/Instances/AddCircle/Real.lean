@@ -48,6 +48,9 @@ section UnitAddCircle
 abbrev UnitAddCircle :=
   AddCircle (1 : ℝ)
 
+/-- The product of finitely many copies of the unit circle, indexed by `d`. -/
+abbrev UnitAddTorus (d : Type*) := d → UnitAddCircle
+
 end UnitAddCircle
 
 namespace ZMod
