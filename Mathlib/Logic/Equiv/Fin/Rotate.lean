@@ -80,6 +80,10 @@ theorem finRotate_apply (i : Fin n) : haveI := i.neZero; finRotate n i = i + 1 :
 theorem finRotate_succ_apply (i : Fin (n + 1)) : finRotate (n + 1) i = i + 1 := by
   simp
 
+@[simp] theorem finRotate_apply [NeZero n] (i : Fin n) : finRotate n i = i + 1 := by
+  obtain ⟨m, rfl⟩ := Nat.exists_eq_succ_of_ne_zero (NeZero.ne n)
+  exact finRotate_succ_apply i
+
 theorem finRotate_apply_zero : finRotate n.succ 0 = 1 := by
   simp
 
