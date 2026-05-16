@@ -6,8 +6,7 @@ Authors: Junyan Xu
 module
 
 public import Mathlib.Algebra.Module.LinearMap.Defs
-public import Mathlib.Algebra.Star.StarRingHom
-public import Mathlib.Algebra.Algebra.NonUnitalHom
+public import Mathlib.Algebra.Star.StarAlgHom
 public import Mathlib.Algebra.Algebra.Pi
 public import Mathlib.Data.Rat.Cast.Defs
 public import Mathlib.Order.DirectedInverseSystem
@@ -882,7 +881,7 @@ end Algebra
 
 namespace NonUnitalAlgebra
 
-variable [CommSemiring R]
+variable [Monoid R]
 variable [∀ i, NonUnitalNonAssocSemiring (G i)] [∀ i, DistribMulAction R (G i)]
 variable [∀ i j h, NonUnitalAlgHomClass (T h) R (G i) (G j)]
 variable [Nonempty ι]
@@ -927,5 +926,103 @@ theorem hom_ext {g₁ g₂ : DirectLimit G f →ₙₐ[R] P}
   exact congr($(h i) x)
 
 end NonUnitalAlgebra
+
+namespace NonUnitalStarAlgebra
+
+variable [Monoid R]
+variable [∀ i, NonUnitalNonAssocSemiring (G i)]
+variable [∀ i, Star (G i)]
+variable [∀ i, DistribMulAction R (G i)]
+variable [∀ i j h, StarHomClass (T h) (G i) (G j)]
+variable [∀ i j h, NonUnitalAlgHomClass (T h) R (G i) (G j)]
+variable [Nonempty ι]
+
+variable (G f) in
+/-- The canonical map from a component to the direct limit. -/
+def of (i) : G i →⋆ₙₐ[R] DirectLimit G f where
+  toFun x := ⟦⟨i, x⟩⟧
+  __ := (NonUnitalAlgebra.of G f i)
+  map_star' _ := (star_def ..).symm
+
+lemma of_f {i j} (hij) (x) : of G f j (f i j hij x) = of G f i x := .symm <| eq_of_le ..
+
+variable (P : Type*) [Star P] [NonUnitalNonAssocSemiring P] [DistribMulAction R P]
+
+variable (G f) in
+/-- The universal property of the direct limit: maps from the components to another
+(non-unital) star R-algebra that respect the directed system structure
+(i.e. make some diagram commute) give rise to a unique map out of the direct limit.
+-/
+def lift (g : ∀ i, (G i) →⋆ₙₐ[R] P) (Hg : ∀ i j hij x, g j (f i j hij x) = g i x) :
+    DirectLimit G f →⋆ₙₐ[R] P where
+  toFun := _root_.DirectLimit.lift _ (g · ·) fun i j h x ↦ (Hg i j h x).symm
+  __ := DirectLimit.NonUnitalAlgebra.lift G f P (g := fun i => (g i).toNonUnitalAlgHom) Hg
+  map_star' := lift_star _ _
+
+variable (g : ∀ i, G i →⋆ₙₐ[R] P) (Hg : ∀ i j hij x, g j (f i j hij x) = g i x)
+
+@[simp]
+theorem lift_comp_of {i} : (lift G f P g Hg).comp (of G f i) = g i := rfl
+
+theorem lift_of (i x) : lift G f P g Hg (of G f i x) = g i x := rfl
+
+@[ext]
+theorem hom_ext {g₁ g₂ : DirectLimit G f →⋆ₙₐ[R] P}
+    (h : ∀ i, g₁.comp (of G f i) = g₂.comp (of G f i)) :
+    g₁ = g₂ := by
+  ext x
+  induction x using DirectLimit.induction with | _ i x
+  exact congr($(h i) x)
+
+end NonUnitalStarAlgebra
+
+namespace StarAlgebra
+
+variable [CommSemiring R]
+variable [∀ i, Semiring (G i)]
+variable [∀ i, Star (G i)]
+variable [∀ i, Algebra R (G i)]
+variable [∀ i j h, StarHomClass (T h) (G i) (G j)]
+variable [∀ i j h, AlgHomClass (T h) R (G i) (G j)]
+variable [Nonempty ι]
+
+variable (G f) in
+/-- The canonical map from a component to the direct limit. -/
+def of (i) : G i →⋆ₐ[R] DirectLimit G f where
+  toFun x := ⟦⟨i, x⟩⟧
+  __ := (Algebra.of G f i)
+  map_star' _ := (star_def ..).symm
+
+lemma of_f {i j} (hij) (x) : of G f j (f i j hij x) = of G f i x := .symm <| eq_of_le ..
+
+variable (P : Type*) [Semiring P] [Star P] [Algebra R P]
+
+variable (G f) in
+/-- The universal property of the direct limit: maps from the components to another star R-algebra
+that respect the directed system structure (i.e. make some diagram commute) give rise
+to a unique map out of the direct limit.
+-/
+def lift (g : ∀ i, (G i) →⋆ₐ[R] P) (Hg : ∀ i j hij x, g j (f i j hij x) = g i x) :
+    DirectLimit G f →⋆ₐ[R] P where
+  toFun := _root_.DirectLimit.lift _ (g · ·) fun i j h x ↦ (Hg i j h x).symm
+  __ := DirectLimit.Algebra.lift G f P (g := fun i => (g i).toAlgHom) Hg
+  map_star' := lift_star _ _
+
+variable (g : ∀ i, G i →⋆ₐ[R] P) (Hg : ∀ i j hij x, g j (f i j hij x) = g i x)
+
+@[simp]
+theorem lift_comp_of {i} : (lift G f P g Hg).comp (of G f i) = g i := rfl
+
+theorem lift_of (i x) : lift G f P g Hg (of G f i x) = g i x := rfl
+
+@[ext]
+theorem hom_ext {g₁ g₂ : DirectLimit G f →⋆ₐ[R] P}
+    (h : ∀ i, g₁.comp (of G f i) = g₂.comp (of G f i)) :
+    g₁ = g₂ := by
+  ext x
+  induction x using DirectLimit.induction with | _ i x
+  exact congr($(h i) x)
+
+end StarAlgebra
 
 end DirectLimit
