@@ -1141,7 +1141,7 @@ theorem ord_zero : ord 0 = 0 :=
 theorem ord_nat (n : ℕ) : ord n = n := by
   apply (ord_le.2 (card_nat n).ge).antisymm
   induction n with
-  | zero => exact _root_.zero_le _
+  | zero => exact zero_le
   | succ n IH => exact (IH.trans_lt <| by simp).succ_le
 
 @[simp]

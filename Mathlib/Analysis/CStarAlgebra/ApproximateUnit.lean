@@ -291,7 +291,7 @@ private lemma tendsto_mul_right_approximateUnit (m : A) :
       y * (1 + ε⁻¹ ^ 2 • y)⁻¹ * y = y * ε ^ 2 * (y / (ε ^ 2 + y)) := by simp [field]
       _ ≤ ε ^ 2 * 1 := by
         gcongr
-        · refine mul_le_of_le_one_left (zero_le _) ?_
+        · apply mul_le_of_le_one_left'
           have hm' := hm₂.le
           rw [norm_le_one_iff_of_nonneg m hm₁, ← cfc_id' ℝ≥0 m, ← cfc_one (R := ℝ≥0) m,
             cfc_nnreal_le_iff _ _ _ (QuasispectrumRestricts.nnreal_of_nonneg hm₁)] at hm'

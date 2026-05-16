@@ -550,9 +550,9 @@ theorem summable_and_Lr_rpow_le_Lp_mul_Lq_tsum {f g : ι → ℝ≥0} {p q r : �
     obtain ⟨hp, hq, hr⟩ := hpqr.all_pos
     refine le_trans (Lr_rpow_le_Lp_mul_Lq s f g hpqr) (mul_le_mul ?_ ?_ bot_le bot_le)
     · gcongr
-      exact hf.sum_le_tsum _ (fun _ _ => zero_le _)
+      exact hf.sum_le_tsum _ (fun _ _ => zero_le)
     · gcongr
-      exact hg.sum_le_tsum _ (fun _ _ => zero_le _)
+      exact hg.sum_le_tsum _ (fun _ _ => zero_le)
   have bdd : BddAbove (Set.range fun s => ∑ i ∈ s, (f i * g i) ^ r) := by
     refine ⟨(∑' i, f i ^ p) ^ (r / p) * (∑' i, g i ^ q) ^ (r / q), ?_⟩
     rintro a ⟨s, rfl⟩
@@ -688,7 +688,7 @@ theorem Lp_add_le_tsum {f g : ι → ℝ≥0} {p : ℝ} (hp : 1 ≤ p) (hf : Sum
     rw [one_div, ← NNReal.rpow_inv_le_iff pos, ← one_div]
     refine le_trans (Lp_add_le s f g hp) ?_
     gcongr <;>
-      refine Summable.sum_le_tsum _ (fun _ _ ↦ zero_le _) ?_
+      refine Summable.sum_le_tsum _ (fun _ _ ↦ zero_le) ?_
     exacts [hf, hg]
   have bdd : BddAbove (Set.range fun s => ∑ i ∈ s, (f i + g i) ^ p) := by
     refine ⟨((∑' i, f i ^ p) ^ (1 / p) + (∑' i, g i ^ p) ^ (1 / p)) ^ p, ?_⟩
@@ -958,7 +958,7 @@ theorem Lp_add_le_hasSum_of_nonneg (hp : 1 ≤ p) (hf : ∀ i, 0 ≤ f i) (hg : 
   -- After https://github.com/leanprover/lean4/pull/2734, `norm_cast` needs help with beta reduction.
   beta_reduce
   norm_cast
-  exact ⟨zero_le _, hC₁, hC₂⟩
+  exact ⟨zero_le, hC₁, hC₂⟩
 
 end Real
 

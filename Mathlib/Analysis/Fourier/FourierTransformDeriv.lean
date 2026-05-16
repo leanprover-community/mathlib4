@@ -849,7 +849,7 @@ theorem iteratedDeriv_fourier {f : ℝ → E} {N : ℕ∞} {n : ℕ}
   have A (n : ℕ) (hn : n ≤ N) : Integrable (fun v ↦ ‖v‖ ^ n * ‖f v‖) := by
     convert (hf n hn).norm with x
     simp [norm_smul]
-  have B : AEStronglyMeasurable f := by simpa using (hf 0 (zero_le _)).1
+  have B : AEStronglyMeasurable f := by simpa using (hf 0 zero_le).1
   rw [iteratedDeriv, iteratedFDeriv_fourier A B hn,
     fourier_continuousMultilinearMap_apply (integrable_fourierPowSMulRight _ (A n hn) B),
     fourier_eq, fourier_eq]
