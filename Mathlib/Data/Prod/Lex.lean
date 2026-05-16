@@ -215,6 +215,35 @@ instance [Preorder α] [Preorder β] [DenselyOrdered α] [DenselyOrdered β] :
     · obtain ⟨c, h₁, h₂⟩ := exists_between h
       exact ⟨(a, c), right _ h₁, right _ h₂⟩
 
+instance [Preorder α] [Preorder β] [NoMinOrder β] [DenselyOrdered β] :
+    DenselyOrdered (α ×ₗ β) where
+  dense x y h := by
+    cases x with | h x =>
+    cases y with | h y =>
+    simp only [Prod.Lex.toLex_lt_toLex] at h
+    rcases h with (h | h)
+    · obtain ⟨v, hv⟩ := exists_lt y.2
+      use toLex (y.1, v)
+      simp [Prod.Lex.toLex_lt_toLex, h, hv]
+    · obtain ⟨v, htv, hvu⟩ := DenselyOrdered.dense x.2 y.2 h.2
+      use toLex (x.1, v)
+      simp [Prod.Lex.toLex_lt_toLex, h.1, htv, hvu]
+
+@[to_dual existing]
+instance [Preorder α] [Preorder β] [NoMaxOrder β] [DenselyOrdered β] :
+    DenselyOrdered (α ×ₗ β) where
+  dense x y h := by
+    cases x with | h x =>
+    cases y with | h y =>
+    simp only [Prod.Lex.toLex_lt_toLex] at h
+    rcases h with (h | h)
+    · obtain ⟨v, hv⟩ := exists_gt x.2
+      use toLex (x.1, v)
+      simp [Prod.Lex.toLex_lt_toLex, h, hv]
+    · obtain ⟨v, htv, hvu⟩ := DenselyOrdered.dense x.2 y.2 h.2
+      use toLex (x.1, v)
+      simp [Prod.Lex.toLex_lt_toLex, h.1, htv, hvu]
+
 @[to_dual]
 instance noMaxOrder_of_left [Preorder α] [Preorder β] [NoMaxOrder α] : NoMaxOrder (α ×ₗ β) where
   exists_gt := by
