@@ -526,6 +526,28 @@ theorem diag_isDiag (a : α) : IsDiag (diag a) :=
 @[simp, nontriviality]
 lemma isDiag_of_subsingleton [Subsingleton α] (z : Sym2 α) : z.IsDiag := z.ind Subsingleton.elim
 
+variable (z) in
+/-- Computably extract the element when known to be diagonal. -/
+def IsDiag.elem : z.IsDiag → α :=
+  z.rec (fun a b _ => a) fun a b a' b' h => funext fun hx : a' = b' => by
+    cases hx
+    cases h <;> rfl
+
+@[simp]
+theorem IsDiag.elem_mk {a b : α} (h : IsDiag s(a, b)) : h.elem = a := rfl
+
+@[simp]
+theorem IsDiag.diag_elem (h : z.IsDiag) : diag h.elem = z := by
+  cases z; cases h; rfl
+
+/-- `Sym2.IsDiag.elem` and `Sym2.diag` as an equivalence. -/
+@[simps]
+def isDiagElemEquiv : { a : Sym2 α // a.IsDiag } ≃ α where
+  toFun x := x.2.elem
+  invFun a := ⟨diag a, rfl⟩
+  left_inv x := by ext; simp
+  right_inv a := by simp [diag]
+
 /-- The set of all `Sym2 α` elements on the diagonal. -/
 def diagSet : Set (Sym2 α) := {z | z.IsDiag}
 
