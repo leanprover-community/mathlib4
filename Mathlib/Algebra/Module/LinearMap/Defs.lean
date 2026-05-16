@@ -1009,6 +1009,14 @@ def restrictScalarsₗ : (M →ₗ[S] N) →ₗ[R₁] M →ₗ[R] N where
 
 end RestrictScalarsAsLinearMap
 
+section lcomp
+
+theorem coe_addMonoidHom_comp {R A B C : Type*} [Semiring R] [AddCommMonoid A] [AddCommMonoid B]
+    [AddCommMonoid C] [Module R A] [Module R B] [Module R C] (f : B →ₗ[R] C) (g : A →ₗ[R] B) :
+    (f ∘ₗ g).toAddMonoidHom = f.toAddMonoidHom.comp g.toAddMonoidHom := by
+  rfl
+
+end lcomp
 section mulLeftRight
 variable {R A : Type*} [Semiring R] [NonUnitalNonAssocSemiring A] [Module R A]
 
