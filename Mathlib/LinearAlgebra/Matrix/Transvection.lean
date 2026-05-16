@@ -113,20 +113,22 @@ theorem transvection_mul_transvection_same (h : i ≠ j) (c d : R) :
     single_add]
 
 @[simp]
-theorem transvection_mul_apply_same (b : n) (c : R) (M : Matrix n n R) :
+theorem transvection_mul_apply_same {m : Type*} (b : m) (c : R) (M : Matrix n m R) :
     (transvection i j c * M) i b = M i b + c * M j b := by simp [transvection, Matrix.add_mul]
 
 @[simp]
-theorem mul_transvection_apply_same (a : n) (c : R) (M : Matrix n n R) :
+theorem mul_transvection_apply_same {m : Type*} (a : m) (c : R) (M : Matrix m n R) :
     (M * transvection i j c) a j = M a j + c * M a i := by
   simp [transvection, Matrix.mul_add, mul_comm]
 
 @[simp]
-theorem transvection_mul_apply_of_ne (a b : n) (ha : a ≠ i) (c : R) (M : Matrix n n R) :
+theorem transvection_mul_apply_of_ne {m : Type*} (a : n) (b : m) (ha : a ≠ i) (c : R)
+    (M : Matrix n m R) :
     (transvection i j c * M) a b = M a b := by simp [transvection, Matrix.add_mul, ha]
 
 @[simp]
-theorem mul_transvection_apply_of_ne (a b : n) (hb : b ≠ j) (c : R) (M : Matrix n n R) :
+theorem mul_transvection_apply_of_ne {m : Type*} (a : m) (b : n) (hb : b ≠ j) (c : R)
+    (M : Matrix m n R) :
     (M * transvection i j c) a b = M a b := by simp [transvection, Matrix.mul_add, hb]
 
 @[simp]
@@ -374,7 +376,7 @@ theorem listTransvecCol_mul_last_row_drop (i : Fin r ⊕ Unit) {k : ℕ} (hk : k
 /-- Multiplying by all the matrices in `listTransvecCol M` does not change the last row. -/
 theorem listTransvecCol_mul_last_row (i : Fin r ⊕ Unit) :
     ((listTransvecCol M).prod * M) (inr unit) i = M (inr unit) i := by
-  simpa using listTransvecCol_mul_last_row_drop M i zero_le
+  simpa using listTransvecCol_mul_last_row_drop M i (Nat.zero_le r)
 
 /-- Multiplying by all the matrices in `listTransvecCol M` kills all the coefficients in the
 last column but the last one. -/
@@ -385,7 +387,7 @@ theorem listTransvecCol_mul_last_col (hM : M (inr unit) (inr unit) ≠ 0) (i : F
       k ≤ r →
         (((listTransvecCol M).drop k).prod * M) (inl i) (inr unit) =
           if k ≤ i then 0 else M (inl i) (inr unit) by
-    simpa [List.drop] using H 0
+    simpa only [List.drop, _root_.zero_le, ite_true] using H 0 (Nat.zero_le r)
   intro k hk
   induction hk using Nat.decreasingInduction with
   | of_succ n hn IH =>
