@@ -6,6 +6,11 @@ Authors: Kyle Miller
 module -- shake: keep-all
 
 public import Mathlib.Lean.Meta.CongrTheorems
+public import Batteries.Tactic.Lint.Misc
+public meta import Lean.Elab.SyntheticMVars
+public meta import Mathlib.Lean.Expr.Basic
+import Batteries.Tactic.Lint.Basic
+import Lean.Meta.CongrTheorems
 
 /-! # `congr(...)` congruence quotations
 
