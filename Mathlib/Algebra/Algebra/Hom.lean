@@ -7,6 +7,8 @@ module
 
 public import Mathlib.Algebra.Algebra.Basic
 
+public import Mathlib.Tactic.Algebra.Basic
+
 /-!
 # Homomorphisms of `R`-algebras
 

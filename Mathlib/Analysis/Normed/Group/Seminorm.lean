@@ -47,8 +47,6 @@ norm, seminorm
 
 @[expose] public section
 
-assert_not_exists Finset
-
 open Set
 
 open NNReal

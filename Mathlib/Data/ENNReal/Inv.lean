@@ -34,8 +34,6 @@ A few order isomorphisms are worthy of mention:
 
 @[expose] public section
 
-assert_not_exists Finset
-
 open Set NNReal
 
 namespace ENNReal

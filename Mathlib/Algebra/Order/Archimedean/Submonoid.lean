@@ -25,8 +25,6 @@ submonoid of the ambient group.
 
 public section
 
-assert_not_exists Finset
-
 @[to_additive]
 instance SubmonoidClass.instMulArchimedean {M S : Type*} [SetLike S M]
     [CommMonoid M] [PartialOrder M]

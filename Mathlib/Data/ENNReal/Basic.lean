@@ -90,8 +90,6 @@ context, or if we have `(f : α → ℝ≥0∞) (hf : ∀ x, f x ≠ ∞)`.
 
 @[expose] public section
 
-assert_not_exists Finset
-
 open Function Set NNReal
 
 variable {α : Type*}

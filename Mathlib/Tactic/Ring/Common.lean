@@ -1276,6 +1276,7 @@ changes to `eval` should be kept in sync:
 partial def eval  {u : Lean.Level}
     {α : Q(Type u)} {bt : Q($α) → Type} {sα : Q(CommSemiring $α)} (rc : RingCompute bt sα)
     (c : Cache sα) (e : Q($α)) : AtomM (Result (ExSum bt sα) e) := Lean.withIncRecDepth do
+  trace[algebra.debug] m!"Running eval on {e}"
   let els := do
     try rc.derive e
     catch _ => evalAtom rc rcℕ e
