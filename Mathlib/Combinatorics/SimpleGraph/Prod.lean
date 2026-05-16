@@ -43,7 +43,6 @@ and `(a, b₁)` and `(a, b₂)` if `H` relates `b₁` and `b₂`. -/
 def boxProd (G : SimpleGraph α) (H : SimpleGraph β) : SimpleGraph (α × β) where
   Adj x y := G.Adj x.1 y.1 ∧ x.2 = y.2 ∨ H.Adj x.2 y.2 ∧ x.1 = y.1
   symm x y := by simp [and_comm, eq_comm, adj_comm]
-  loopless := ⟨fun x ↦ by simp⟩
 
 /-- Box product of simple graphs. It relates `(a₁, b)` and `(a₂, b)` if `G` relates `a₁` and `a₂`,
 and `(a, b₁)` and `(a, b₂)` if `H` relates `b₁` and `b₂`. -/
