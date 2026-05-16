@@ -29,8 +29,8 @@ structure GrwPos where
   `symm` is `true` when you can only rewrite from right to left. -/
   symm? : Option Bool
 
-/-- Given the relation that we can use to rewrite at the give position, figure out all of the
-subrelations that could be used instead. -/
+/-- Given the relation for grewriting at the give position, figure out all of the
+subrelations that could also be used. -/
 private def gcongrBackward (relName : Name) (relation : Expr) (symm : Bool) :
     MetaM (Array GrwPos) := do
   let type ← inferType relation
@@ -58,27 +58,13 @@ private def gcongrBackward (relName : Name) (relation : Expr) (symm : Bool) :
       pure symm
     catch _ => pure symm
   result := result.push { relName, relation, symm? }
-  -- For `≤` and `⊆` we add `<` and `⊂` respectively as possible relations.
-  match relName with
-  | ``LE.le =>
-    if let some pos ← tryApply ``le_of_lt ``LT.lt then
-      result := result.push pos
-  | ``HasSubset.Subset =>
-    if let some pos ← tryApply ``subset_of_ssubset ``HasSSubset.SSubset then
-      result := result.push pos
-  | _ => pure ()
+  -- For `≤`, we add the relation `<`.
+  if relName == ``LE.le then
+    let (mvars, _, le) ← forallMetaTelescope (← inferType (← mkConstWithFreshMVarLevels ``le_of_lt))
+      if ← isDefEq le.appFn!.appFn! relation then
+        let lt ← instantiateMVars (← inferType mvars.back!).appFn!.appFn!
+        result := result.push { relName := ``LT.lt, relation := lt, symm? := symm }
   return result
-where
-  tryApply (appName relName : Name) : MetaM (Option GrwPos) := do
-    let (mvars, bi, rel) ← forallMetaTelescope (← inferType (← mkConstWithFreshMVarLevels appName))
-    try
-      if ← isDefEq rel.appFn!.appFn! relation then
-        synthAppInstances default default mvars bi false false
-        let rel ← instantiateMVars (← inferType mvars.back!).appFn!.appFn!
-        return some { relName, relation := rel, symm? := symm }
-      return none
-    catch _ =>
-      return none
 
 /-- This function is passed to `MVarId.gcongr` as the main discharger.
 It doesn't try to prove the goal, but instead observes what the goal is,

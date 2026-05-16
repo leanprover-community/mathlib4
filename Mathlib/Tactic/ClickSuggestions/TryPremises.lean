@@ -15,12 +15,17 @@ meta section
 
 namespace Mathlib.Tactic.ClickSuggestions
 
-open Lean Server Widget ProofWidgets Jsx
+open Lean ProofWidgets Jsx
 
+/-- An array of candidate lemmas, corresponding to a single section. -/
 inductive Candidates where
+  /-- A `rw` suggestion section. -/
   | rw (i : RwInfo) (arr : Array RwLemma)
+  /-- A `grw` suggestion section. -/
   | grw (i : GrwInfo) (arr : Array GrwLemma)
+  /-- An `apply` suggestion section. -/
   | app (arr : Array ApplyLemma)
+  /-- An `apply at` suggestion section. -/
   | appAt (arr : Array ApplyAtLemma)
 
 local instance {α β cmp} [Append β] : Append (Std.TreeMap α β cmp) :=

@@ -194,12 +194,18 @@ def Entries.addFVar (choice : Choice) (entries : Entries) (decl : LocalDecl) : M
         grw ← pushEntry grw rhs ⟨.fvar decl.fvarId, true, relName⟩
   return { rw, grw, app, appAt }
 
+/-- Structure used for constructing the root nodes of the 4 discrimination trees. -/
 public structure PreDiscrTrees where
+  /-- The `rw` discrimination tree root. -/
   rw : PreDiscrTree RwLemma := {}
+  /-- The `grw` discrimination tree root. -/
   grw : PreDiscrTree GrwLemma := {}
+  /-- The `apply` discrimination tree root. -/
   app : PreDiscrTree ApplyLemma := {}
+  /-- The `apply at` discrimination tree root. -/
   appAt : PreDiscrTree ApplyAtLemma := {}
 
+/-- Insert the entries `maps` into the pre-discrimination trees `pres`. -/
 def PreDiscrTrees.append (pres : PreDiscrTrees) (maps : Entries) : PreDiscrTrees where
   rw := maps.rw.foldl (init := pres.rw) fun pre (key, e) ↦ pre.push key e
   grw := maps.grw.foldl (init := pres.grw) fun pre (key, e) ↦ pre.push key e
@@ -217,9 +223,16 @@ def librarySearchIndexConfig : Config where
   transparency := .reducible
   proj := .no
 
+/-- The global ref for looking up `rw` lemmas. -/
 public initialize rwRef : IO.Ref (Option (RefinedDiscrTree RwLemma)) ← IO.mkRef none
+
+/-- The global ref for looking up `grw` lemmas. -/
 public initialize grwRef : IO.Ref (Option (RefinedDiscrTree GrwLemma)) ← IO.mkRef none
+
+/-- The global ref for looking up `apply` lemmas. -/
 public initialize appRef : IO.Ref (Option (RefinedDiscrTree ApplyLemma)) ← IO.mkRef none
+
+/-- The global ref for looking up `apply at` lemmas. -/
 public initialize appAtRef : IO.Ref (Option (RefinedDiscrTree ApplyAtLemma)) ← IO.mkRef none
 
 /-- Compute the discrimination trees for import theorems. -/
