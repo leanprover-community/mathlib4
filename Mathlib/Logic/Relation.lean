@@ -671,7 +671,7 @@ theorem TransGen.swap : swap (TransGen r) ≤ TransGen (swap r) := by
   | single h => exact TransGen.single h
   | tail _ hbc ih => exact ih.head hbc
 
-theorem transGen_swap : TransGen (swap r) a b ↔ swap (TransGen r) a b :=
+theorem transGen_swap : TransGen (swap r) a b ↔ TransGen r b a :=
   ⟨TransGen.swap b a, TransGen.swap a b⟩
 
 end TransGen
