@@ -2,6 +2,7 @@ name: Post PR summary comment
 
 on:
   pull_request_target:
+    types: [opened, synchronize, reopened, labeled, unlabeled]
 
 # Limit permissions for GITHUB_TOKEN for the entire workflow
 permissions:
@@ -13,7 +14,10 @@ jobs:
   build:
     name: "post-or-update-summary-comment"
     runs-on: ubuntu-latest
-    if: github.repository == 'leanprover-community/mathlib4'
+    if: >-
+      github.repository == 'leanprover-community/mathlib4' &&
+      github.event.action != 'labeled' &&
+      github.event.action != 'unlabeled'
 
     steps:
     - name: Checkout code
@@ -222,6 +226,16 @@ jobs:
         echo "Compute technical debt changes"
         techDebtVar="$("${CI_SCRIPTS_DIR}/reporting/technical-debt-metrics.sh" pr_summary)"
 
+        # If technical debt did NOT increase, remove the label; otherwise add it.
+        # We test for the *safe* patterns rather than the *unsafe* one so that if
+        # mathlib-ci changes the script's output wording we fail closed (label added)
+        # rather than open (label silently not added).
+        if printf '%s' "${techDebtVar}" | grep -qE 'Decrease in tech debt:|No changes to technical debt\.'; then
+          gh pr edit "${PR}" --remove-label increases-technical-debt
+        else
+          gh pr edit "${PR}" --add-label increases-technical-debt
+        fi
+
         echo "Compute documentation reminder"
         workflowFilesChanged="$(grep '^\.github/workflows/' changed_files.txt || true)"
         if [ -n "${workflowFilesChanged}" ]
@@ -293,3 +307,63 @@ jobs:
             --url https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/labels/file-removed \
             --header 'authorization: Bearer ${{ secrets.GITHUB_TOKEN }}'
         fi
+
+  # This job gates merging via the `blocked-by-increases-technical-debt` label
+  # in bors.toml.
+  #
+  # Why a separate label?  Bors's block_labels has no conditional logic, so we
+  # need a derived label to express "increases-technical-debt AND NOT
+  # allow-increases-technical-debt".  See the analogous comment on
+  # check-large-import (in a companion PR) for the full rationale.
+  #
+  # Three labels, each managed by exactly one actor:
+  #   - `increases-technical-debt`            — managed by the `build` job
+  #   - `blocked-by-increases-technical-debt`  — managed by this job
+  #   - `allow-increases-technical-debt`       — managed by the reviewer
+  check-technical-debt:
+    name: "Check technical debt"
+    needs: build
+    runs-on: ubuntu-latest
+    if: always() && github.repository == 'leanprover-community/mathlib4'
+
+    steps:
+    - name: Check for increases-technical-debt label
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        PR_NUMBER: ${{ github.event.pull_request.number }}
+        REPO: ${{ github.repository }}
+      run: |
+        labels=$(gh pr view "$PR_NUMBER" --repo "$REPO" --json labels --jq '.labels[].name')
+
+        has_increases=false
+        has_allow=false
+
+        if printf '%s\n' "$labels" | grep -qx "increases-technical-debt"; then
+          has_increases=true
+        fi
+
+        if printf '%s\n' "$labels" | grep -qx "allow-increases-technical-debt"; then
+          has_allow=true
+        fi
+
+        if [ "$has_increases" = true ] && [ "$has_allow" = false ]; then
+          gh pr edit "$PR_NUMBER" --repo "$REPO" --add-label blocked-by-increases-technical-debt
+          echo "::error::This PR increases technical debt. Add the 'allow-increases-technical-debt' label after review to unblock."
+          echo ""
+          echo "This PR has the 'increases-technical-debt' label, indicating that it"
+          echo "increases one or more technical debt metrics."
+          echo ""
+          echo "To unblock this PR, a reviewer should:"
+          echo "  1. Check the PR summary comment for the technical debt changes."
+          echo "  2. Consider whether the increase can be avoided."
+          echo "  3. If the increase is acceptable, add the 'allow-increases-technical-debt' label."
+          echo ""
+          echo "Note: not all technical debt increases are avoidable. If you believe this"
+          echo "check is too aggressive, please report it on the mathlib4 Zulip channel:"
+          echo "https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/increases-technical-debt.20label"
+          exit 1
+        else
+          gh pr edit "$PR_NUMBER" --repo "$REPO" --remove-label blocked-by-increases-technical-debt
+        fi
+
+        echo "Technical debt check passed."
