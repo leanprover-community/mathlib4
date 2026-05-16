@@ -53,6 +53,12 @@ theorem mul_apply' (a b : A) : mul R A a b = a * b :=
 theorem mul'_apply {a b : A} : mul' R A (a ⊗ₜ b) = a * b :=
   rfl
 
+lemma restrictScalars_mul {S : Type*} [CommSemiring S] [Module S A] [SMulCommClass S A A]
+    [IsScalarTower S A A] [CompatibleSMul A A R S] (a : A) :
+    LinearMap.restrictScalars R (LinearMap.mul S A a) = LinearMap.mul R A a := by
+  ext x
+  simp
+
 variable {M : Type*} [AddCommMonoid M] [Module R M]
 
 theorem lift_lsmul_mul_eq_lsmul_lift_lsmul {r : R} :
@@ -60,12 +66,6 @@ theorem lift_lsmul_mul_eq_lsmul_lift_lsmul {r : R} :
   apply TensorProduct.ext'
   intro x a
   simp [← mul_smul, mul_comm]
-
-lemma restrictScalars_mul {S : Type*} [CommSemiring S] [Module S A] [SMulCommClass S A A]
-    [IsScalarTower S A A] [CompatibleSMul A A R S] (a : A) :
-    LinearMap.restrictScalars R (LinearMap.mul S A a) = LinearMap.mul R A a := by
-  ext x
-  simp
 
 end NonUnitalNonAssoc
 
