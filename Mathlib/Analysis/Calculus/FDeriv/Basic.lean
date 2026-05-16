@@ -695,7 +695,7 @@ theorem differentiableAt_id : DifferentiableAt 𝕜 id x :=
 theorem differentiableWithinAt_id : DifferentiableWithinAt 𝕜 id s x :=
   differentiableAt_id.differentiableWithinAt
 
-@[deprecated (since := "2026-01-22")]
+@[deprecated (since := "2026-05-17")]
 alias differentiableWithinAt_id' := differentiableWithinAt_fun_id
 
 @[to_fun (attr := simp, fun_prop) differentiable_fun_id]
@@ -708,14 +708,16 @@ theorem differentiableOn_id : DifferentiableOn 𝕜 id s :=
 @[to_fun (attr := simp) fderiv_fun_id]
 theorem fderiv_id [ContinuousAdd E] [ContinuousSMul 𝕜 E] [T2Space E] : fderiv 𝕜 id x = .id 𝕜 E :=
   HasFDerivAt.fderiv (hasFDerivAt_id x)
-@[deprecated (since := "2026-05-16")] alias fderiv_id' := fderiv_fun_id
+
+@[deprecated (since := "2026-05-17")] alias fderiv_id' := fderiv_fun_id
 
 @[to_fun fderivWithin_fun_id]
 theorem fderivWithin_id [ContinuousAdd E] [ContinuousSMul 𝕜 E] [T2Space E]
     (hxs : UniqueDiffWithinAt 𝕜 s x) : fderivWithin 𝕜 id s x = .id 𝕜 E := by
   rw [DifferentiableAt.fderivWithin differentiableAt_id hxs]
   exact fderiv_id
-@[deprecated (since := "2026-05-16")] alias fderivWithin_id' := fderivWithin_fun_id
+
+@[deprecated (since := "2026-05-17")] alias fderivWithin_id' := fderivWithin_fun_id
 
 end id
 
