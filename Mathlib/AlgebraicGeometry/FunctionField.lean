@@ -91,6 +91,21 @@ instance functionField_isScalarTower [IrreducibleSpace X] (U : X.Opens) (x : U)
   change _ = (X.presheaf.germ U x x.2 ≫ _).hom
   rw [X.presheaf.germ_stalkSpecializes]
 
+@[simp]
+lemma Scheme.germToFunctionField_map {X : Scheme} [IrreducibleSpace X] {U V : X.Opens}
+    (i : U ⟶ V) [Nonempty U] [Nonempty V] (f : Γ(X, V)) :
+    X.germToFunctionField U (X.presheaf.map i.op f) = X.germToFunctionField V f :=
+  X.presheaf.germ_res_apply i _ _ f
+
+lemma Scheme.germToFunctionField_eq_algebraMap_germ {X : Scheme} [IrreducibleSpace X]
+    {U : X.Opens} [Nonempty U] {x : X} (hx : x ∈ U) (f : Γ(X, U)) :
+    X.germToFunctionField U f =
+      algebraMap (X.presheaf.stalk x) X.functionField (X.presheaf.germ U x hx f) := by
+  let : Algebra Γ(X, U) (X.presheaf.stalk x) := X.presheaf.algebra_section_stalk ⟨x, hx⟩
+  have : IsScalarTower Γ(X, U) (X.presheaf.stalk x) X.functionField :=
+    functionField_isScalarTower X U ⟨x, hx⟩
+  exact IsScalarTower.algebraMap_apply Γ(X, U) (X.presheaf.stalk x) X.functionField f
+
 noncomputable instance (R : CommRingCat.{u}) [IsDomain R] :
     Algebra R (Spec R).functionField :=
   -- TODO: can we write this normally after the refactor finishes?
