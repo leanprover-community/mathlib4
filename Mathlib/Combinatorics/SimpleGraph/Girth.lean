@@ -6,6 +6,7 @@ Authors: Yaël Dillies
 module
 
 public import Mathlib.Combinatorics.SimpleGraph.Acyclic
+public import Mathlib.Combinatorics.SimpleGraph.Diam
 public import Mathlib.Data.ENat.Lattice
 
 /-!
@@ -66,6 +67,25 @@ lemma three_le_egirth : 3 ≤ G.egirth := by
 
 @[simp] lemma egirth_bot : egirth (⊥ : SimpleGraph α) = ⊤ := by simp
 
+lemma Walk.not_nil_of_length_eq_egirth {a} {w : G.Walk a a} (hwg : w.length = G.egirth) :
+    ¬ w.Nil := by
+  intro hnil
+  simp only [nil_iff_length_eq.mp hnil, ENat.coe_zero] at hwg
+  have := hwg ▸ G.three_le_egirth
+  simp at this
+
+lemma Walk.IsTrail.isCycle_of_length_eq_egirth {a} {w : G.Walk a a} (hw : w.IsTrail)
+    (hwg : w.length = G.egirth) : w.IsCycle := by
+  classical
+  by_contra h
+  have hn : ¬w.Nil := w.not_nil_of_length_eq_egirth hwg
+  let w' := w.cycleBypass
+  have hw'c : w'.IsCycle := hw.isCycle_cycleBypass (nil_iff_eq_nil.not.mp hn)
+  have hw' : w'.length < w.length :=
+    hw.length_cycleBypass_lt_iff_not_isCycle_and_not_nil.mpr ⟨h, hn⟩
+  have hwg' : w'.length < G.egirth := hwg ▸ ENat.coe_lt_coe.mpr hw'
+  exact not_le_of_gt hwg' (egirth_le_length hw'c)
+
 end egirth
 
 section girth
@@ -101,6 +121,14 @@ lemma exists_girth_eq_length :
 
 @[simp] lemma girth_bot : girth (⊥ : SimpleGraph α) = 0 := by
   simp [girth]
+
+lemma Walk.IsCircuit.isCycle_of_length_eq_girth {a} {w : G.Walk a a} (hw : w.IsCircuit)
+    (hwg : w.length = G.girth) : w.IsCycle :=
+  have hwg' : w.length = G.egirth := by
+    refine ((ENat.toNat_eq_iff ?_).mp hwg.symm).symm
+    simp only [ne_eq, length_eq_zero_iff]
+    exact nil_iff_eq_nil.not.mp hw.not_nil
+  hw.isTrail.isCycle_of_length_eq_egirth hwg'
 
 end girth
 
