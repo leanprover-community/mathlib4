@@ -168,6 +168,15 @@ protected theorem HasSubst.X_pow {n : ℕ} (hn : n ≠ 0) :
     HasSubst (fun (s : σ) ↦ (X s : MvPowerSeries σ S) ^ n) :=
   HasSubst.X.pow (by lia)
 
+lemma HasSubst.truncTotal_toMvPowerSeries {a : σ → MvPowerSeries τ S} {x : σ → ℕ} [Finite τ]
+    (ha : HasSubst a) : HasSubst (fun i ↦ ((a i).truncTotal (x i)).toMvPowerSeries) where
+  const_coeff i := by
+    rw [← coeff_zero_eq_constantCoeff_apply, MvPolynomial.coeff_coe,
+      ← MvPolynomial.constantCoeff_eq, constantCoeff_truncTotal_eq_ite]
+    split_ifs <;> simp [ha.const_coeff i]
+  coeff_zero d :=
+    (ha.coeff_zero d).subset fun i => by contrapose; simp +contextual [coeff_truncTotal_eq_ite]
+
 /-- Substitution of power series into a power series
 
 It coincides with evaluation when `f` is a polynomial, or under `HasSubst a`.
@@ -488,6 +497,114 @@ theorem le_order_subst (ha : HasSubst a) (f : MvPowerSeries σ R) :
       simp [mul_comm, mul_le_mul_right (iInf_le_iff.mpr fun _ a ↦ a j)]
 
 end
+
+section truncTotal
+
+open Finset
+
+variable {f : MvPowerSeries σ R} [Finite τ] {x : σ → ℕ} {k : ℕ}
+
+theorem truncTotal_subst_eq_truncTotal_right_of_le (ha : HasSubst a) (hx : ∀ i, k ≤ x i) :
+    (f.subst a).truncTotal k = (f.subst
+      fun i ↦ ((a i).truncTotal (x i)).toMvPowerSeries).truncTotal k := by
+  classical
+  ext d
+  by_cases hd : d.degree < k
+  · rw [coeff_truncTotal _ hd, coeff_truncTotal _ hd, coeff_subst ha, coeff_subst, finsum_congr]
+    · intro n
+      congr! 1
+      rw [Finsupp.prod, Finsupp.prod, coeff_prod, coeff_prod]
+      congr! 2 with l hl i hi
+      obtain ⟨hl₁, hl₂⟩ := mem_finsuppAntidiag.mp hl
+      have : (l i).degree ≤ d.degree := by
+        rw [← hl₁, (n.support.sum l).degree_apply, Finsupp.degree_apply]
+        refine .trans (sum_le_sum_of_subset ?_) (sum_le_sum ?_)
+        · intro t ht
+          have := DFunLike.congr_fun hl₁ t
+          by_contra hc
+          simp only [Finsupp.coe_finsetSum, sum_apply] at this
+          simp_all
+        · intro t ht
+          rw [sum_apply']
+          convert single_le_sum_of_canonicallyOrdered hi (M := ℕ)
+          rfl
+      exact_mod_cast (coeff_truncTotal_pow _ (by nlinarith [hx i])).symm
+    · exact ha.truncTotal_toMvPowerSeries
+  simp_rw [coeff_truncTotal_eq_zero _ (not_lt.mp hd)]
+
+theorem truncTotal_subst_eq_subst_sum (ha : HasSubst a) (ha₁ : ∀ i, (a i).constantCoeff = 0) :
+    truncTotal k (f.subst a) =
+      ((∑ i ∈ range k, (f.homogeneousComponent i)).subst a).truncTotal k := by
+  ext d
+  by_cases hd : d.degree < k
+  · simp_rw [coeff_truncTotal _ hd, coeff_subst ha]
+    obtain h1 := coeff_subst_finite ha f d
+    obtain h2 := coeff_subst_finite ha (∑ i ∈ range k, (homogeneousComponent i) f) d
+    rw [finsum_eq_sum _ h1, finsum_eq_sum _ h2]
+    have : h2.toFinset ⊆ h1.toFinset := by simp +contextual [coeff_homogeneousComponent]
+    have aux₀ {n : σ →₀ ℕ} : coeff d (n.prod fun s e ↦ a s ^ e) ≠ 0 → n.degree ≤ d.degree := by
+      contrapose!
+      intro hc
+      rw [Finsupp.prod]
+      refine coeff_of_lt_order (lt_of_lt_of_le (Nat.cast_lt.mpr hc)
+        (.trans ?_ (le_order_prod _ n.support)))
+      exact_mod_cast sum_le_sum fun i hi => le_order_pow_of_constantCoeff_eq_zero _ (ha₁ i)
+    rw [← Finset.sum_subset this]
+    · congr! 2 with n hn
+      simp only [map_sum, coeff_homogeneousComponent, sum_ite_eq, mem_range, left_eq_ite_iff,
+        not_lt]
+      have : n.degree ≤ d.degree := by
+        simp only [map_sum, Set.Finite.mem_toFinset, Function.mem_support, ne_eq] at hn
+        exact aux₀ (right_ne_zero_of_smul hn)
+      intro h
+      nlinarith
+    · simp +contextual only [Set.Finite.mem_toFinset, Function.mem_support, ne_eq, map_sum,
+        coeff_homogeneousComponent, sum_ite_eq, mem_range, ite_smul, zero_smul, ite_eq_right_iff,
+        imp_false, not_lt, not_le]
+      intro x hx
+      nlinarith [aux₀ (right_ne_zero_of_smul hx)]
+  simp_rw [coeff_truncTotal_eq_zero _ (not_lt.mp hd)]
+
+theorem truncTotal_subst_eq_sum_subst (ha : HasSubst a) (ha₁ : ∀ i, (a i).constantCoeff = 0) :
+    truncTotal k (f.subst a) =
+      (∑ i ∈ range k, (f.homogeneousComponent i).subst a).truncTotal k := by
+  rw [truncTotal_subst_eq_subst_sum ha ha₁, ← substAlgHom_apply ha, map_sum]
+  simp
+
+theorem truncTotal_subst_eq_truncTotal_left [Finite σ] (ha : HasSubst a)
+    (ha₁ : ∀ i, (a i).constantCoeff = 0) :
+    truncTotal k (f.subst a) = ((f.truncTotal k).toMvPowerSeries.subst a).truncTotal k := by
+  rw [truncTotal_subst_eq_subst_sum ha ha₁, truncTotal_eq_sum]
+
+theorem truncTotal_subst_eq_sum_subst_of_le (ha : HasSubst a) (h : ∀ i, (a i).constantCoeff = 0)
+    (hx : ∀ i, k ≤ x i) :
+    truncTotal k (f.subst a) = (∑ i ∈ range k, (f.homogeneousComponent i).subst
+      (fun i ↦ ((a i).truncTotal (x i)).toMvPowerSeries)).truncTotal k := by
+  rw [truncTotal_subst_eq_truncTotal_right_of_le ha hx]
+  refine truncTotal_subst_eq_sum_subst ha.truncTotal_toMvPowerSeries ?_
+  intro i
+  rw [← coeff_zero_eq_constantCoeff_apply, MvPolynomial.coeff_coe,
+    ← MvPolynomial.constantCoeff_eq, constantCoeff_truncTotal_eq_ite, h i, ite_self]
+
+theorem truncTotal_subst_of_le [Finite σ] (ha : HasSubst a) (h : ∀ i, (a i).constantCoeff = 0)
+    (hx : ∀ i, k ≤ x i) :
+    truncTotal k (f.subst a) = ((f.truncTotal k).toMvPowerSeries.subst
+      (fun i ↦ ((a i).truncTotal (x i)).toMvPowerSeries)).truncTotal k := by
+  rw [truncTotal_subst_eq_sum_subst_of_le ha h hx,
+    truncTotal_eq_sum, ← substAlgHom_apply ha.truncTotal_toMvPowerSeries, map_sum]
+  simp
+
+theorem truncTotal_subst [Finite σ] (ha : HasSubst a) (h : ∀ i, (a i).constantCoeff = 0) :
+    truncTotal k (f.subst a) = ((f.truncTotal k).toMvPowerSeries.subst
+      (fun i ↦ ((a i).truncTotal k).toMvPowerSeries)).truncTotal k :=
+  truncTotal_subst_of_le ha h fun _ ↦ le_refl k
+
+theorem truncTotal_subst_eq_sum (ha : HasSubst a) (h : ∀ i, (a i).constantCoeff = 0) :
+    truncTotal k (f.subst a) = (∑ i ∈ range k, (f.homogeneousComponent i).subst
+      (fun i ↦ ((a i).truncTotal k).toMvPowerSeries)).truncTotal k :=
+  truncTotal_subst_eq_sum_subst_of_le ha h fun _ ↦ le_refl k
+
+end truncTotal
 
 section rescale
 
