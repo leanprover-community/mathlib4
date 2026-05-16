@@ -25,6 +25,7 @@ isomorphic to its double dual.
 @[expose] public section
 
 open scoped Pointwise
+open Real
 
 variable (A B C G H : Type*) [Monoid A] [Monoid B] [Monoid C] [CommGroup G] [Group H]
   [TopologicalSpace A] [TopologicalSpace B] [TopologicalSpace C]
@@ -38,13 +39,10 @@ def PontryaginDual :=
 deriving TopologicalSpace
 
 instance [LocallyCompactSpace H] : LocallyCompactSpace (PontryaginDual H) := by
-  let Vn : ℕ → Set Circle :=
-    fun n ↦ Circle.exp '' { x | |x| < Real.pi / 2 ^ (n + 1)}
-  have hVn : ∀ n x, x ∈ Vn n ↔ |Complex.arg x| < Real.pi / 2 ^ (n + 1) := by
-    refine fun n x ↦ ⟨?_, fun hx ↦ ⟨Complex.arg x, hx, Circle.exp_arg x⟩⟩
-    rintro ⟨t, ht : |t| < _, rfl⟩
-    have ht' := ht.trans_le (div_le_self Real.pi_nonneg (one_le_pow₀ one_le_two))
-    rwa [Circle.arg_exp (neg_lt_of_abs_lt ht') (lt_of_abs_lt ht').le]
+  let Vn : ℕ → Set Circle := fun n ↦ Circle.centeredArc (π / 2 ^ (n + 1))
+  have hVn : ∀ n x, x ∈ Vn n ↔ |Complex.arg x| < π / 2 ^ (n + 1) :=
+    fun n x ↦ Circle.mem_centeredArc (z := x)
+      (div_le_self pi_nonneg (one_le_pow₀ one_le_two))
   refine ContinuousMonoidHom.locallyCompactSpace_of_hasBasis Vn ?_ ?_
   · intro n x h1 h2
     rw [hVn] at h1 h2 ⊢
@@ -55,15 +53,7 @@ instance [LocallyCompactSpace H] : LocallyCompactSpace (PontryaginDual H) := by
     refine h1.trans_le ?_
     gcongr
     exact le_self_pow₀ one_le_two n.succ_ne_zero
-  · rw [← Circle.exp_zero, ← isLocalHomeomorph_circleExp.map_nhds_eq 0]
-    refine ((nhds_basis_zero_abs_lt ℝ).to_hasBasis
-        (fun x hx ↦ ⟨Nat.ceil (Real.pi / x), trivial, fun t ht ↦ ?_⟩)
-          fun k _ ↦ ⟨Real.pi / 2 ^ (k + 1), by positivity, le_rfl⟩).map Circle.exp
-    rw [Set.mem_setOf_eq] at ht ⊢
-    refine lt_of_lt_of_le ht ?_
-    rw [div_le_iff₀' (pow_pos two_pos _), ← div_le_iff₀ hx]
-    refine (Nat.le_ceil (Real.pi / x)).trans ?_
-    exact_mod_cast (Nat.le_succ _).trans Nat.lt_two_pow_self.le
+  · simpa [Vn] using Circle.hasBasis_centeredArc_div_two_pow
 
 variable {A B C G}
 
@@ -85,6 +75,35 @@ for PontryaginDual A
 
 /-- A discrete monoid has compact Pontryagin dual. -/
 add_decl_doc instLocallyCompactSpacePontryaginDual
+
+/-- A compact monoid has discrete Pontryagin dual. -/
+instance [CompactSpace A] : DiscreteTopology (PontryaginDual A) := by
+  let V : Set (PontryaginDual A) := {ψ | Set.MapsTo ψ Set.univ (Circle.centeredArc (π / 2))}
+  have hVopen : IsOpen V := by
+    dsimp only [V]
+    exact isOpen_induced (ContinuousMap.isOpen_setOf_mapsTo isCompact_univ
+      (Circle.isOpen_centeredArc (π / 2)))
+  have hVeq : V = ({1} : Set (PontryaginDual A)) := by
+    ext ψ
+    refine ⟨fun hψ ↦ ?_, fun hψ ↦ ?_⟩
+    · rw [Set.mem_singleton_iff]
+      apply ContinuousMonoidHom.ext
+      intro a
+      refine Circle.eq_one_of_forall_pow_mem_centeredArc_pi_div_two fun n hn ↦ ?_
+      simpa [map_pow] using hψ (Set.mem_univ (a ^ n))
+    · rw [Set.mem_singleton_iff] at hψ
+      subst ψ
+      intro _ _
+      change (1 : Circle) ∈ Circle.centeredArc (π / 2)
+      rw [Circle.mem_centeredArc (by linarith [pi_pos])]
+      simp [pi_pos]
+  exact discreteTopology_of_isOpen_singleton_one (by simpa [hVeq] using hVopen)
+
+instance [DiscreteTopology A] [CompactSpace A] : Finite (PontryaginDual A) :=
+  finite_of_compact_of_discrete
+
+noncomputable instance [DiscreteTopology A] [CompactSpace A] : Fintype (PontryaginDual A) :=
+  .ofFinite _
 
 /-- `PontryaginDual` is a contravariant functor. -/
 def map (f : A →ₜ* B) :
