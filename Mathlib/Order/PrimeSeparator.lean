@@ -11,7 +11,7 @@ public import Mathlib.Order.Zorn
 /-!
 # Separating prime filters and ideals
 
-In a bounded distributive lattice, if $F$ is a filter, $I$ is an ideal, and $F$ and $I$ are
+In a distributive lattice, if $F$ is a filter, $I$ is an ideal, and $F$ and $I$ are
 disjoint, then there exists a prime ideal $J$ containing $I$ with $J$ still disjoint from $F$.
 This theorem is a crucial ingredient to [Stone's][Sto1938] duality for bounded distributive
 lattices. The construction of the separator relies on Zorn's lemma.
@@ -28,31 +28,23 @@ ideal, filter, prime, distributive lattice
 
 public section
 
-
 universe u
 variable {α : Type*}
 
 open Order Ideal Set
 
-variable [DistribLattice α] [BoundedOrder α]
-
-variable {F : PFilter α} {I : Ideal α}
-
-namespace DistribLattice
-
-
-lemma mem_ideal_sup_principal (a b : α) (J : Ideal α) : b ∈ J ⊔ principal a ↔ ∃ j ∈ J, b ≤ j ⊔ a :=
+lemma Lattice.mem_ideal_sup_principal [Lattice α] (a b : α) (J : Ideal α) :
+    b ∈ J ⊔ principal a ↔ ∃ j ∈ J, b ≤ j ⊔ a :=
   ⟨fun ⟨j, ⟨jJ, _, ha', bja'⟩⟩ => ⟨j, jJ, le_trans bja' (sup_le_sup_left ha' j)⟩,
     fun ⟨j, hj, hbja⟩ => ⟨j, hj, a, le_refl a, hbja⟩⟩
 
-set_option linter.style.whitespace false in -- manual alignment is not recognised
-theorem prime_ideal_of_disjoint_filter_ideal (hFI : Disjoint (F : Set α) (I : Set α)) :
+theorem DistribLattice.prime_ideal_of_disjoint_filter_ideal [DistribLattice α]
+    {F : PFilter α} {I : Ideal α} (hFI : Disjoint (F : Set α) (I : Set α)) :
     ∃ J : Ideal α, (IsPrime J) ∧ I ≤ J ∧ Disjoint (F : Set α) J := by
   -- Let S be the set of ideals containing I and disjoint from F.
   set S : Set (Set α) := { J : Set α | IsIdeal J ∧ I ≤ J ∧ Disjoint (F : Set α) J }
   -- Then I is in S...
-  have IinS : ↑I ∈ S := by
-    refine ⟨Order.Ideal.isIdeal I, by trivial⟩
+  have IinS : ↑I ∈ S := ⟨Order.Ideal.isIdeal I, by trivial⟩
   -- ...and S contains upper bounds for any non-empty chains.
   have chainub : ∀ c ⊆ S, IsChain (· ⊆ ·) c → c.Nonempty → ∃ ub ∈ S, ∀ s ∈ c, s ⊆ ub := by
     intro c hcS hcC hcNe
@@ -72,7 +64,7 @@ theorem prime_ideal_of_disjoint_filter_ideal (hFI : Disjoint (F : Set α) (I : S
   -- By construction, J contains I and is disjoint from F. It remains to prove that J is prime.
   refine ⟨?_, ⟨IJ, JF⟩⟩
   -- First note that J is proper: ⊤ ∈ F so ⊤ ∉ J because F and J are disjoint.
-  have Jpr : IsProper J := isProper_of_notMem (Set.disjoint_left.1 JF F.top_mem)
+  have Jpr : IsProper J := isProper_of_notMem (Set.disjoint_left.1 JF F.nonempty.some_mem)
   -- Suppose that a₁ ∉ J, a₂ ∉ J. We need to prove that a₁ ⊔ a₂ ∉ J.
   rw [isPrime_iff_mem_or_mem]
   intro a₁ a₂
@@ -104,8 +96,8 @@ theorem prime_ideal_of_disjoint_filter_ideal (hFI : Disjoint (F : Set α) (I : S
   let ⟨c₁, ⟨c₁F, c₁J₁⟩⟩ := Set.not_disjoint_iff.1 J₁F
   let ⟨c₂, ⟨c₂F, c₂J₂⟩⟩ := Set.not_disjoint_iff.1 J₂F
   -- Using the definition of Jᵢ, we can pick bᵢ ∈ J such that cᵢ ≤ bᵢ ⊔ aᵢ.
-  let ⟨b₁, ⟨b₁J, cba₁⟩⟩ := (mem_ideal_sup_principal a₁ c₁ J).1 c₁J₁
-  let ⟨b₂, ⟨b₂J, cba₂⟩⟩ := (mem_ideal_sup_principal a₂ c₂ J).1 c₂J₂
+  let ⟨b₁, ⟨b₁J, cba₁⟩⟩ := (Lattice.mem_ideal_sup_principal a₁ c₁ J).1 c₁J₁
+  let ⟨b₂, ⟨b₂J, cba₂⟩⟩ := (Lattice.mem_ideal_sup_principal a₂ c₂ J).1 c₂J₂
   -- Since J is an ideal, we have b := b₁ ⊔ b₂ ∈ J.
   let b := b₁ ⊔ b₂
   have bJ : b ∈ J := sup_mem b₁J b₂J
@@ -128,5 +120,3 @@ theorem prime_ideal_of_disjoint_filter_ideal (hFI : Disjoint (F : Set α) (I : S
 -- TODO: Define prime filters in Mathlib so that the following corollary can be stated and proved.
 -- theorem prime_filter_of_disjoint_filter_ideal (hFI : Disjoint (F : Set α) (I : Set α)) :
 --     ∃ G : PFilter α, (IsPrime G) ∧ F ≤ G ∧ Disjoint (G : Set α) I := by sorry
-
-end DistribLattice
