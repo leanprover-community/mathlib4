@@ -159,7 +159,7 @@ def embEquivOfEquiv (i : E ≃ₐ[F] K) :
     intro x
     have h := isAlgebraic_algebraMap (R := E) (A := K) (i.symm.toAlgHom x)
     rw [show ∀ y : E, (algebraMap E K) y = i.toAlgHom y from fun y ↦ rfl] at h
-    simpa only [AlgEquiv.coe_algHom, AlgEquiv.apply_symm_apply] using h
+    simpa only [AlgEquiv.coe_toAlgHom, AlgEquiv.apply_symm_apply] using h
   apply AlgEquiv.restrictScalars (R := F) (S := E)
   exact IsAlgClosure.equivOfAlgebraic E K (AlgebraicClosure K) (AlgebraicClosure E)
 
@@ -240,11 +240,11 @@ then there is a non-canonical bijection
 def embProdEmbOfIsAlgebraic [Algebra E K] [IsScalarTower F E K] [Algebra.IsAlgebraic E K] :
     Emb F E × Emb E K ≃ Emb F K :=
   let e : ∀ f : E →ₐ[F] AlgebraicClosure K,
-      @AlgHom E K _ _ _ _ _ f.toRingHom.toAlgebra ≃ Emb E K := fun f ↦
+      @AlgHom E _ K _ _ _ _ f.toRingHom.toAlgebra ≃ Emb E K := fun f ↦
     (@embEquivOfIsAlgClosed E K _ _ _ _ _ f.toRingHom.toAlgebra).symm
   (algHomEquivSigma (A := F) (B := E) (C := K) (D := AlgebraicClosure K) |>.trans
     (Equiv.sigmaEquivProdOfEquiv e) |>.trans <| Equiv.prodCongrLeft <|
-      fun _ : Emb E K ↦ AlgEquiv.arrowCongr (@AlgEquiv.refl F E _ _ _) <|
+      fun _ : Emb E K ↦ AlgEquiv.arrowCongr (@AlgEquiv.refl F _ E _ _) <|
         (IsAlgClosure.equivOfAlgebraic E K (AlgebraicClosure K)
           (AlgebraicClosure E)).restrictScalars F).symm
 

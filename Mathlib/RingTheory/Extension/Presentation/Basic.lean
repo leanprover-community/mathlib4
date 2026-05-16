@@ -211,7 +211,7 @@ lemma _root_.Algebra.Generators.ker_localizationAway :
         (Ideal.Quotient.mkₐ R (Ideal.span {C r * X () - 1})) := by
     ext x
     simp only [aeval_X, Generators.localizationAway_val, AlgHom.coe_comp,
-      AlgEquiv.coe_algHom, Ideal.Quotient.mkₐ_eq_mk, Function.comp_apply]
+      AlgEquiv.coe_toAlgHom, Ideal.Quotient.mkₐ_eq_mk, Function.comp_apply]
     rw [IsLocalization.Away.mvPolynomialQuotientEquiv_apply, aeval_X]
   rw [Generators.ker_eq_ker_aeval_val, this, ← RingHom.ker_coe_toRingHom, AlgHom.comp_toRingHom,
     ← RingHom.comap_ker]

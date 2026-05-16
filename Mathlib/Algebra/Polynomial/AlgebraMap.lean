@@ -211,7 +211,7 @@ theorem coe_mapAlgEquiv (f : A ≃ₐ[R] B) : ⇑(mapAlgEquiv f) = map f :=
   rfl
 
 @[simp]
-theorem mapAlgEquiv_id : mapAlgEquiv (@AlgEquiv.refl R A _ _ _) = AlgEquiv.refl :=
+theorem mapAlgEquiv_id : mapAlgEquiv (@AlgEquiv.refl R _ A _ _) = AlgEquiv.refl :=
   AlgEquiv.ext fun _x => map_id
 
 @[simp]

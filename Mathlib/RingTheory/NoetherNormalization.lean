@@ -278,7 +278,7 @@ theorem exists_integral_inj_algHom_of_fg : ∃ s, ∃ g : (MvPolynomial (Fin s) 
   set ϕ := quotientKerAlgEquivOfSurjective fsurj
   obtain ⟨s, _, g, injg, intg⟩ := exists_integral_inj_algHom_of_quotient (ker f) (ker_ne_top _)
   use s, ϕ.toAlgHom.comp g
-  simp only [AlgHom.coe_comp, AlgEquiv.coe_algHom, EmbeddingLike.comp_injective,
+  simp only [AlgHom.coe_comp, AlgEquiv.coe_toAlgHom, EmbeddingLike.comp_injective,
     AlgHom.toRingHom_eq_coe]
   exact ⟨injg, intg.trans _ _ (isIntegral_of_surjective _ ϕ.surjective)⟩
 
