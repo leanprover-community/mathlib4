@@ -35,7 +35,7 @@ variable (α β : Type*)
 
 section Preorder
 
-variable [Preorder α]
+variable [Preorder α] [Preorder β]
 
 /-- The Hasse diagram of an order as a simple graph. The graph of the covering relation. -/
 def hasse : SimpleGraph α where
@@ -60,6 +60,13 @@ theorem hasseDualIso_apply (a : αᵒᵈ) : hasseDualIso a = ofDual a :=
 @[simp]
 theorem hasseDualIso_symm_apply (a : α) : hasseDualIso.symm a = toDual a :=
   rfl
+
+/-- Lift an order embedding with an `OrdConnected` range to a graph embedding
+between Hasse diagrams -/
+def Embedding.hasse (f : α ↪o β) (h : (Set.range f).OrdConnected) : hasse α ↪g hasse β where
+  toFun := f
+  inj' := f.inj'
+  map_rel_iff' := by simp [h.apply_covBy_apply_iff]
 
 end Preorder
 
@@ -114,6 +121,32 @@ theorem pathGraph_two_eq_top : pathGraph 2 = ⊤ := by
 
 namespace Walk
 
+variable (n : ℕ)
+
+/-- The walk in a path graph going through all vertices in order -/
+def ofPathGraph (n : ℕ) : (pathGraph (n + 1)).Walk 0 (Fin.last n) :=
+  match n with
+  | .zero => .nil
+  | .succ n =>
+    .cons (by simp [pathGraph_adj, Embedding.hasse]) <| ofPathGraph n |>.map <| Embedding.toHom <|
+      .hasse (Fin.succOrderEmb _) <| by simp [← Set.Iio_union_Ioi, Set.Iio, Set.ordConnected_Ioi]
+
+set_option backward.isDefEq.respectTransparency false in
+@[simp]
+theorem support_ofPathGraph : (ofPathGraph n).support = List.finRange (n + 1) := by
+  induction n with
+  | zero => rfl
+  | succ n ih =>
+    rw [ofPathGraph, support_cons, support_map, ih]
+    exact List.finRange_succ.symm
+
+@[simp]
+theorem length_ofPathGraph : (ofPathGraph n).length = n := by
+  grind [support_ofPathGraph, length_support]
+
+protected theorem IsPath.ofPathGraph : ofPathGraph n |>.IsPath :=
+  .mk' <| support_ofPathGraph n ▸ List.nodup_finRange (n + 1)
+
 variable {V : Type*} [DecidableEq V] {G : SimpleGraph V} {u v : V} (w : G.Walk u v)
 
 /-- The subgraph of a walk contains the path graph with the same number of vertices -/
@@ -150,6 +183,14 @@ omit [DecidableEq V] in
 theorem IsPath.isContained_pathGraph (hw : w.IsPath) : pathGraph (w.length + 1) ⊑ G := by
   classical
   exact ⟨hw.pathGraphCopy⟩
+
+omit [DecidableEq V] in
+theorem exists_path_iff_isContained_pathGraph :
+    (∃ (u v : V) (p : G.Path u v), p.val.length = n) ↔ pathGraph (n + 1) ⊑ G := by
+  classical
+  refine ⟨fun ⟨u, v, p, hp⟩ ↦ hp ▸ ⟨p.isPath.pathGraphCopy⟩, fun ⟨f⟩ ↦ ?_⟩
+  refine ⟨_, _, ⟨_, map_isPath_of_injective f.injective <| .ofPathGraph n⟩, ?_⟩
+  simp
 
 end Walk
 
