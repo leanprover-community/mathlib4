@@ -110,6 +110,16 @@ alias continuous_mul_left := continuous_const_mul
 alias continuous_mul_right := continuous_mul_const
 
 @[to_additive]
+theorem ContinuousOn.comp_mul_left {f : M → X} {s t : Set M} {c : M} (hf : ContinuousOn f t)
+    (hct : Set.MapsTo (fun x : M => c * x) s t) : ContinuousOn (fun x => f (c * x)) s :=
+  hf.comp (continuous_const_mul c).continuousOn hct
+
+@[to_additive]
+theorem ContinuousOn.comp_mul_right {f : M → X} {s t : Set M} {c : M} (hf : ContinuousOn f t)
+    (hct : Set.MapsTo (fun x : M => x * c) s t) : ContinuousOn (fun x => f (x * c)) s :=
+  hf.comp (continuous_mul_const c).continuousOn hct
+
+@[to_additive]
 theorem tendsto_mul {a b : M} : Tendsto (fun p : M × M => p.fst * p.snd) (𝓝 (a, b)) (𝓝 (a * b)) :=
   continuous_iff_continuousAt.mp ContinuousMul.continuous_mul (a, b)
 

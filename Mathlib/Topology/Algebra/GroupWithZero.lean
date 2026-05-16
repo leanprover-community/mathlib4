@@ -208,6 +208,16 @@ nonrec theorem ContinuousWithinAt.div (hf : ContinuousWithinAt f s a)
 theorem ContinuousOn.div (hf : ContinuousOn f s) (hg : ContinuousOn g s) (h₀ : ∀ x ∈ s, g x ≠ 0) :
     ContinuousOn (f / g) s := fun x hx => (hf x hx).div (hg x hx) (h₀ x hx)
 
+theorem ContinuousOn.comp_mul_left_div {f g : G₀ → G₀} {s t : Set G₀} {c : G₀}
+    (hf : ContinuousOn f t) (hg : ContinuousOn g s) (hct : Set.MapsTo (fun x ↦ c * x) s t)
+    (hne : ∀ x ∈ s, g x ≠ 0) : ContinuousOn (fun x ↦ f (c * x) / g x) s :=
+  (hf.comp_mul_left hct).div hg hne
+
+theorem ContinuousOn.comp_mul_right_div {f g : G₀ → G₀} {s t : Set G₀} {c : G₀}
+    (hf : ContinuousOn f t) (hg : ContinuousOn g s) (hct : Set.MapsTo (fun x ↦ x * c) s t)
+    (hne : ∀ x ∈ s, g x ≠ 0) : ContinuousOn (fun x ↦ f (x * c) / g x) s :=
+  (hf.comp_mul_right hct).div hg hne
+
 /-- Continuity at a point of the result of dividing two functions continuous at that point, where
 the denominator is nonzero. -/
 nonrec theorem ContinuousAt.div (hf : ContinuousAt f a) (hg : ContinuousAt g a) (h₀ : g a ≠ 0) :

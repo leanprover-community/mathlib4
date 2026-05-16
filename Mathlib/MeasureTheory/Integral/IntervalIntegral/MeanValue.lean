@@ -7,6 +7,7 @@ module
 
 public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
 public import Mathlib.MeasureTheory.Integral.MeanValue
+public import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
 
 /-!
 # First mean value theorem for interval integrals
@@ -33,7 +34,7 @@ mean value theorem, interval integral
 
 public section
 
-open MeasureTheory Set intervalIntegral
+open MeasureTheory Set intervalIntegral Real
 
 open scoped Interval
 
@@ -81,3 +82,24 @@ theorem exists_eq_const_mul_intervalIntegral_of_nonneg
     rw [ae_restrict_iff' measurableSet_uIoc]
     exact ae_of_all μ hg0
   exact exists_eq_const_mul_intervalIntegral_of_ae_nonneg hf hg hg0_ae
+
+theorem exists_integral_div_eq_mul_log {p q : ℝ} {f : ℝ → ℝ} (hp : 0 < p) (hq : 0 < q)
+    (hf : ContinuousOn f (uIcc p q)) :
+    ∃ c ∈ uIcc p q, ∫ x in p..q, f x / x = f c * log (q / p) := by
+  let g : ℝ → ℝ := fun x ↦ 1 / x
+  have hfg (x : ℝ) : f x / x = f x * g x := by unfold g; field_simp
+  have h_integrand_eq : (∫ x in p..q, f x * g x) = (∫ x in p..q, f x / x) := by simp [hfg]
+  rw [← h_integrand_eq]
+  have hg' : IntervalIntegrable g volume p q := by
+    unfold g
+    simp only [one_div, intervalIntegrable_inv_iff]
+    right
+    exact notMem_uIcc_of_lt (by linarith) (by linarith)
+  have hg_nonneg : ∀ x ∈ uIoc p q, 0 ≤ g x := by
+    intro x hx
+    rw [one_div_nonneg]
+    rw [mem_uIoc] at hx
+    rcases hx with h | h
+    all_goals linarith
+  rw [← integral_one_div_of_pos hp hq]
+  exact exists_eq_const_mul_intervalIntegral_of_nonneg hf hg' hg_nonneg
