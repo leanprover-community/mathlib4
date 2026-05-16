@@ -512,10 +512,10 @@ theorem Continuous.ext_on [T2Space X] {s : Set Y} (hs : Dense s) {f g : Y → X}
 theorem eqOn_closure₂' [T2Space Z] {s : Set X} {t : Set Y} {f g : X → Y → Z}
     (h : ∀ x ∈ s, ∀ y ∈ t, f x y = g x y) (hf₁ : ∀ x, Continuous (f x))
     (hf₂ : ∀ y, Continuous fun x => f x y) (hg₁ : ∀ x, Continuous (g x))
-    (hg₂ : ∀ y, Continuous fun x => g x y) : ∀ x ∈ closure s, ∀ y ∈ closure t, f x y = g x y :=
-  suffices closure s ⊆ ⋂ y ∈ closure t, { x | f x y = g x y } by simpa only [subset_def, mem_iInter]
-  (closure_minimal fun x hx => mem_iInter₂.2 <| Set.EqOn.closure (h x hx) (hf₁ _) (hg₁ _)) <|
-    isClosed_biInter fun _ _ => isClosed_eq (hf₂ _) (hg₂ _)
+    (hg₂ : ∀ y, Continuous fun x => g x y) : ∀ x ∈ closure s, ∀ y ∈ closure t, f x y = g x y := by
+  suffices closure s ⊆ ⋂ y ∈ closure t, {x | f x y = g x y} by simpa only [subset_def, mem_iInter]
+  refine closure_minimal ?_ (isClosed_biInter fun _ _ => isClosed_eq (hf₂ _) (hg₂ _))
+  exact fun x hx ↦ mem_iInter₂.2 <| Set.EqOn.closure (h x hx) (hf₁ _) (hg₁ _)
 
 theorem eqOn_closure₂ [T2Space Z] {s : Set X} {t : Set Y} {f g : X → Y → Z}
     (h : ∀ x ∈ s, ∀ y ∈ t, f x y = g x y) (hf : Continuous (uncurry f))

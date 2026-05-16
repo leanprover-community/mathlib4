@@ -261,7 +261,8 @@ private lemma instIsIrreducible_aux₁ (U : LieSubmodule K H (b.support ⊕ ι �
   contrapose! hU
   refine le_trans ?_ (map_genWeightSpace_le (f := U.incl))
   suffices genWeightSpace U (0 : H → K) = ⊤ by simp [this]
-  have : ⨆ (χ : H → K), ⨆ (_ : χ ≠ 0), (⊥ : LieSubmodule K H U) = ⊥ := biSup_const ⟨1, one_ne_zero⟩
+  have : ⨆ (χ : H → K), ⨆ (_ : χ ≠ 0), (⊥ : LieSubmodule K H U) = ⊥ :=
+    biSup_const (s := setOf _) ⟨1, one_ne_zero⟩
   rw [← iSup_genWeightSpace_eq_top K H U, iSup_split_single _ 0, biSup_congr hU, this, sup_bot_eq]
 
 omit [P.IsRootSystem] in

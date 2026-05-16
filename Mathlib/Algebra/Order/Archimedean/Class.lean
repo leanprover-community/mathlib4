@@ -582,7 +582,7 @@ This is not yet a subgroup because it doesn't contain the identity if `s = ⊤`.
 @[to_additive /-- Given a `UpperSet` of `ArchimedeanClass`,
 all group elements belonging to these classes form a subsemigroup.
 This is not yet a subgroup because it doesn't contain the identity if `s = ⊤`. -/]
-def subsemigroup (s : UpperSet (MulArchimedeanClass M)) : Subsemigroup M where
+noncomputable def subsemigroup (s : UpperSet (MulArchimedeanClass M)) : Subsemigroup M where
   carrier := mk ⁻¹' s
   mul_mem' {a b} ha hb := by
     rw [Set.mem_preimage] at ha hb ⊢

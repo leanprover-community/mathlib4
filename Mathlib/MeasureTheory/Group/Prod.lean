@@ -167,7 +167,7 @@ theorem inv_ae : (ae μ)⁻¹ = ae μ := by
 
 @[to_additive (attr := simp)]
 theorem eventuallyConst_inv_set_ae :
-    EventuallyConst (s⁻¹ : Set G) (ae μ) ↔ EventuallyConst s (ae μ) := by
+    EventuallyConst (· ∈ s⁻¹) (ae μ) ↔ EventuallyConst (· ∈ s) (ae μ) := by
   rw [← inv_preimage, eventuallyConst_preimage, Filter.map_inv, inv_ae]
 
 @[to_additive]

@@ -140,7 +140,7 @@ set_option backward.privateInPublic.warn false in
 noncomputable def dividedPowers : DividedPowers (Ideal.span {(p : ℤ_[p])}) := by
   classical
   refine ofInjective (Ideal.span {(p : ℤ_[p])}) (⊤)
-    PadicInt.Coe.ringHom ((Set.injective_codRestrict Subtype.property).mp fun ⦃a₁ a₂⦄ a ↦ a)
+    PadicInt.Coe.ringHom Subtype.val_injective
     (RatAlgebra.dividedPowers (⊤ : Ideal ℚ_[p])) ?_ ?_
   · rw [Ideal.map_span, Set.image_singleton, map_natCast]
     simp only [Ideal.span_singleton_eq_top, isUnit_iff_ne_zero, ne_eq, cast_eq_zero]
@@ -157,8 +157,7 @@ private lemma dividedPowers_eq (n : ℕ) (x : ℤ_[p]) :
       if hx : x ∈ Ideal.span {(p : ℤ_[p])} then ⟨dpow' p n x, dpow'_int p n hx⟩ else 0 := by
   simp only [dividedPowers, ofInjective]
   split_ifs with hx
-  · have hinj : Injective (PadicInt.Coe.ringHom (p := p)) :=
-      (Set.injective_codRestrict Subtype.property).mp fun ⦃a₁ a₂⦄ a ↦ a
+  · have hinj : Injective (PadicInt.Coe.ringHom (p := p)) := Subtype.val_injective
     have heq : Coe.ringHom ⟨dpow' p n x, dpow'_int p n hx⟩ =
         inverse (n ! : ℚ_[p]) * Coe.ringHom x ^ n := by
       simp [dpow', inverse_eq_inv', Coe.ringHom_apply]

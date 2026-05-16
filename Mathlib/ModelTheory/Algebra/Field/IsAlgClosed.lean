@@ -79,7 +79,7 @@ theorem realize_genericMonicPolyHasRoot [Field K] [CompatibleRing K] (n : ℕ) :
 
 /-- The theory of algebraically closed fields of characteristic `p` as a theory over
 the language of rings -/
-def _root_.FirstOrder.Language.Theory.ACF (p : ℕ) : Theory .ring :=
+noncomputable def _root_.FirstOrder.Language.Theory.ACF (p : ℕ) : Theory .ring :=
   Theory.fieldOfChar p ∪ genericMonicPolyHasRoot '' {n | 0 < n}
 
 instance [Language.ring.Structure K] (p : ℕ) [h : (Theory.ACF p).Model K] :
@@ -210,6 +210,7 @@ theorem finite_ACF_prime_not_realize_of_ACF_zero_realize
     simp only [s, Finset.mem_biUnion, Finset.mem_attach, true_and,
       Subtype.exists, not_exists] at hpψ
     exact (f ψ (hT0 hψ)).2 p (hpψ _ hψ)
+  rw [← Set.compl_setOf]
   refine Set.Finite.subset (Finset.finite_toSet s) (Set.compl_subset_comm.2 ?_)
   intro p hp
   exact Theory.models_of_models_theory (fun ψ hψ => hs p ψ hψ hp) h

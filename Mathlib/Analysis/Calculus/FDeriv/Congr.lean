@@ -39,7 +39,7 @@ section congr
 
 /-! ### congr properties of the derivative -/
 
-theorem hasFDerivWithinAt_congr_set_nhdsNE (h : s =ᶠ[𝓝[≠] x] t) :
+theorem hasFDerivWithinAt_congr_set_nhdsNE (h : s =ᶠˢ[𝓝[≠] x] t) :
     HasFDerivWithinAt f f' s x ↔ HasFDerivWithinAt f f' t x :=
   calc
     HasFDerivWithinAt f f' s x ↔ HasFDerivWithinAt f f' (s \ {x}) x :=
@@ -50,35 +50,35 @@ theorem hasFDerivWithinAt_congr_set_nhdsNE (h : s =ᶠ[𝓝[≠] x] t) :
         using h
     _ ↔ HasFDerivWithinAt f f' t x := hasFDerivWithinAt_diff_singleton_self
 
-theorem hasFDerivWithinAt_congr_set (h : s =ᶠ[𝓝 x] t) :
+theorem hasFDerivWithinAt_congr_set (h : s =ᶠˢ[𝓝 x] t) :
     HasFDerivWithinAt f f' s x ↔ HasFDerivWithinAt f f' t x :=
   hasFDerivWithinAt_congr_set_nhdsNE <| h.filter_mono inf_le_left
 
 /-- In the case `y = x`, see also `hasFDerivWithinAt_congr_set_nhdsNE`,
 which does not require the domain to be a T₁ space. -/
 theorem hasFDerivWithinAt_congr_set' [T1Space E] (y : E)
-    (h : s =ᶠ[𝓝[{y}ᶜ] x] t) :
+    (h : s =ᶠˢ[𝓝[{y}ᶜ] x] t) :
     HasFDerivWithinAt f f' s x ↔ HasFDerivWithinAt f f' t x := by
   rcases eq_or_ne x y with rfl | hne
   · exact hasFDerivWithinAt_congr_set_nhdsNE h
   · rw [hne.nhdsWithin_compl_singleton] at h
     exact hasFDerivWithinAt_congr_set h
 
-theorem differentiableWithinAt_congr_set_nhdsNE (h : s =ᶠ[𝓝[≠] x] t) :
+theorem differentiableWithinAt_congr_set_nhdsNE (h : s =ᶠˢ[𝓝[≠] x] t) :
     DifferentiableWithinAt 𝕜 f s x ↔ DifferentiableWithinAt 𝕜 f t x :=
   exists_congr fun _ => hasFDerivWithinAt_congr_set_nhdsNE h
 
 /-- In the case `y = x`, see also `differentiableWithinAt_congr_set_nhdsNE`,
 which does not require the domain to be a T₁ space. -/
-theorem differentiableWithinAt_congr_set' [T1Space E] (y : E) (h : s =ᶠ[𝓝[{y}ᶜ] x] t) :
+theorem differentiableWithinAt_congr_set' [T1Space E] (y : E) (h : s =ᶠˢ[𝓝[{y}ᶜ] x] t) :
     DifferentiableWithinAt 𝕜 f s x ↔ DifferentiableWithinAt 𝕜 f t x :=
   exists_congr fun _ => hasFDerivWithinAt_congr_set' _ h
 
-theorem differentiableWithinAt_congr_set (h : s =ᶠ[𝓝 x] t) :
+theorem differentiableWithinAt_congr_set (h : s =ᶠˢ[𝓝 x] t) :
     DifferentiableWithinAt 𝕜 f s x ↔ DifferentiableWithinAt 𝕜 f t x :=
   exists_congr fun _ => hasFDerivWithinAt_congr_set h
 
-theorem fderivWithin_congr_set_nhdsNE (h : s =ᶠ[𝓝[≠] x] t) :
+theorem fderivWithin_congr_set_nhdsNE (h : s =ᶠˢ[𝓝[≠] x] t) :
     fderivWithin 𝕜 f s x = fderivWithin 𝕜 f t x := by
   classical
   simp only [fderivWithin, differentiableWithinAt_congr_set_nhdsNE h,
@@ -86,19 +86,19 @@ theorem fderivWithin_congr_set_nhdsNE (h : s =ᶠ[𝓝[≠] x] t) :
 
 /-- In the case `y = x`, see also `fderivWithin_congr_set_nhdsNE`,
 which does not require the domain to be a T₁ space. -/
-theorem fderivWithin_congr_set' [T1Space E] (y : E) (h : s =ᶠ[𝓝[{y}ᶜ] x] t) :
+theorem fderivWithin_congr_set' [T1Space E] (y : E) (h : s =ᶠˢ[𝓝[{y}ᶜ] x] t) :
     fderivWithin 𝕜 f s x = fderivWithin 𝕜 f t x := by
   classical
   simp only [fderivWithin, differentiableWithinAt_congr_set' _ h, hasFDerivWithinAt_congr_set' _ h]
 
-theorem fderivWithin_congr_set (h : s =ᶠ[𝓝 x] t) : fderivWithin 𝕜 f s x = fderivWithin 𝕜 f t x :=
+theorem fderivWithin_congr_set (h : s =ᶠˢ[𝓝 x] t) : fderivWithin 𝕜 f s x = fderivWithin 𝕜 f t x :=
   fderivWithin_congr_set_nhdsNE <| h.filter_mono inf_le_left
 
-theorem fderivWithin_eventually_congr_set' [T1Space E] (y : E) (h : s =ᶠ[𝓝[{y}ᶜ] x] t) :
+theorem fderivWithin_eventually_congr_set' [T1Space E] (y : E) (h : s =ᶠˢ[𝓝[{y}ᶜ] x] t) :
     fderivWithin 𝕜 f s =ᶠ[𝓝 x] fderivWithin 𝕜 f t :=
   (eventually_nhds_nhdsWithin.2 h).mono fun _ => fderivWithin_congr_set' y
 
-theorem fderivWithin_eventually_congr_set (h : s =ᶠ[𝓝 x] t) :
+theorem fderivWithin_eventually_congr_set (h : s =ᶠˢ[𝓝 x] t) :
     fderivWithin 𝕜 f s =ᶠ[𝓝 x] fderivWithin 𝕜 f t :=
   (eventually_eventually_nhds.2 h).mono fun _ => fderivWithin_congr_set
 

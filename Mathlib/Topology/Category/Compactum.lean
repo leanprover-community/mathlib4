@@ -261,7 +261,7 @@ private theorem cl_cl {X : Compactum} (A : Set X) : cl (cl A) ⊆ cl A := by
   -- Finish
   apply claim4.finiteInter_mem T
   intro t ht
-  exact finiteInterClosure.basic (@hT t ht)
+  exact subset_finiteInterClosure _ (hT ht)
 
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
@@ -338,7 +338,7 @@ theorem str_eq_of_le_nhds {X : Compactum} (F : Ultrafilter X) (x : X) : ↑F ≤
   intro T hT
   refine claim6 _ (finiteInter_mem (.finiteInterClosure_finiteInter _) _ ?_)
   intro t ht
-  exact finiteInterClosure.basic (@hT t ht)
+  exact .basic (@hT t ht)
 
 theorem le_nhds_of_str_eq {X : Compactum} (F : Ultrafilter X) (x : X) : X.str F = x → ↑F ≤ 𝓝 x :=
   fun h => le_nhds_iff.mpr fun s hx hs => hs _ <| by rwa [h]

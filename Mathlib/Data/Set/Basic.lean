@@ -69,21 +69,27 @@ namespace Set
 
 variable {α : Type u} {s t : Set α}
 
-protected theorem mem_injective : Injective (Membership.mem : Set α → α → Prop) := injective_id
-protected theorem mem_surjective : Surjective (Membership.mem : Set α → α → Prop) := surjective_id
-protected theorem mem_bijective : Bijective (Membership.mem : Set α → α → Prop) := bijective_id
+instance : Max (Set α) := ⟨Union.union⟩
+instance : Min (Set α) := ⟨Inter.inter⟩
+instance : LT (Set α) := ⟨fun s t ↦ s ≤ t ∧ ¬t ≤ s⟩
+instance : Bot (Set α) := ⟨∅⟩
+instance : Top (Set α) := ⟨univ⟩
 
-instance instDistribLattice : DistribLattice (Set α) where
-  __ : DistribLattice (α → Prop) := inferInstance
-  le := (· ≤ ·)
-  lt := fun s t => s ⊆ t ∧ ¬t ⊆ s
-  sup := (· ∪ ·)
-  inf := (· ∩ ·)
+protected theorem mem_injective : Injective (Membership.mem : Set α → α → Prop) := fun _s _t h ↦
+  Set.ext fun _ ↦ h ▸ .rfl
+
+protected theorem mem_surjective : Surjective (Membership.mem : Set α → α → Prop) := fun p ↦
+  ⟨{x | p x}, rfl⟩
+
+protected theorem mem_bijective : Bijective (Membership.mem : Set α → α → Prop) :=
+  ⟨Set.mem_injective, Set.mem_surjective⟩
+
+instance instDistribLattice : DistribLattice (Set α) :=
+  Set.mem_injective.distribLattice Membership.mem .rfl .rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
 
 instance instBoundedOrder : BoundedOrder (Set α) where
-  __ : BoundedOrder (α → Prop) := inferInstance
-  bot := ∅
-  top := univ
+  le_top _ _ _ := trivial
+  bot_le _ _ := False.elim
 
 instance : HasSSubset (Set α) :=
   ⟨(· < ·)⟩
@@ -188,14 +194,14 @@ instance : Inhabited (Set α) :=
 theorem mem_of_mem_of_subset {x : α} {s t : Set α} (hx : x ∈ s) (h : s ⊆ t) : x ∈ t :=
   h hx
 
-theorem setOf_injective : Function.Injective (@setOf α) := injective_id
+theorem setOf_injective : Function.Injective (@setOf α) := fun _ _ ↦ Set.mk.inj
 
-theorem setOf_inj {p q : α → Prop} : { x | p x } = { x | q x } ↔ p = q := Iff.rfl
+theorem setOf_inj {p q : α → Prop} : { x | p x } = { x | q x } ↔ p = q := setOf_injective.eq_iff
 
 /-! ### Lemmas about `mem` and `setOf` -/
 
 theorem setOf_bijective : Bijective (setOf : (α → Prop) → Set α) :=
-  bijective_id
+  ⟨setOf_injective, fun ⟨p⟩ ↦ ⟨p, rfl⟩⟩
 
 theorem subset_setOf {p : α → Prop} {s : Set α} : s ⊆ setOf p ↔ ∀ x, x ∈ s → p x :=
   Iff.rfl

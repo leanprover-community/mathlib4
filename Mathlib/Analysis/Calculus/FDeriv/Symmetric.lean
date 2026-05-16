@@ -117,7 +117,7 @@ lemma fderivWithin_fderivWithin_eq_of_mem_nhdsWithin (h : t ∈ 𝓝[s] x)
   exact (hf.fderivWithin_right (m := 1) ht le_rfl
     (mem_of_mem_nhdsWithin hx h)).differentiableWithinAt one_ne_zero
 
-lemma fderivWithin_fderivWithin_eq_of_eventuallyEq (h : s =ᶠ[𝓝 x] t) :
+lemma fderivWithin_fderivWithin_eq_of_eventuallyEq (h : s =ᶠˢ[𝓝 x] t) :
     fderivWithin 𝕜 (fderivWithin 𝕜 f s) s x = fderivWithin 𝕜 (fderivWithin 𝕜 f t) t x := calc
   fderivWithin 𝕜 (fderivWithin 𝕜 f s) s x
     = fderivWithin 𝕜 (fderivWithin 𝕜 f t) s x :=
@@ -144,12 +144,12 @@ theorem IsSymmSndFDerivWithinAt.mono_of_mem_nhdsWithin (h : IsSymmSndFDerivWithi
   exact h v w
 
 theorem IsSymmSndFDerivWithinAt.congr_set (h : IsSymmSndFDerivWithinAt 𝕜 f s x)
-    (hst : s =ᶠ[𝓝 x] t) : IsSymmSndFDerivWithinAt 𝕜 f t x := by
+    (hst : s =ᶠˢ[𝓝 x] t) : IsSymmSndFDerivWithinAt 𝕜 f t x := by
   intro v w
   rw [fderivWithin_fderivWithin_eq_of_eventuallyEq hst.symm]
   exact h v w
 
-theorem isSymmSndFDerivWithinAt_congr_set (hst : s =ᶠ[𝓝 x] t) :
+theorem isSymmSndFDerivWithinAt_congr_set (hst : s =ᶠˢ[𝓝 x] t) :
     IsSymmSndFDerivWithinAt 𝕜 f s x ↔ IsSymmSndFDerivWithinAt 𝕜 f t x :=
   ⟨fun h ↦ h.congr_set hst, fun h ↦ h.congr_set hst.symm⟩
 
@@ -591,7 +591,6 @@ theorem ContDiffWithinAt.isSymmSndFDerivWithinAt {n : ℕ∞ω}
     intro y hy
     apply fderivWithin_fderivWithin_eq_of_eventuallyEq
     filter_upwards [u_open.mem_nhds hy.2] with z hz
-    change (z ∈ s) = (z ∈ s ∩ u)
     simp_all
   have B : Tendsto (fun k ↦ fderivWithin 𝕜 (fderivWithin 𝕜 f s) s (y k)) atTop
       (𝓝 (fderivWithin 𝕜 (fderivWithin 𝕜 f s) s x)) := by

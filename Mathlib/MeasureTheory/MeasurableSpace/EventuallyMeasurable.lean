@@ -42,7 +42,7 @@ variable {α : Type*} (m : MeasurableSpace α) {s t : Set α}
 on `α`, modulo a given σ-filter `l` on `α`. -/
 @[implicit_reducible]
 def eventuallyMeasurableSpace (l : Filter α) [CountableInterFilter l] : MeasurableSpace α where
-  MeasurableSet' s := ∃ t, MeasurableSet t ∧ s =ᶠ[l] t
+  MeasurableSet' s := ∃ t, MeasurableSet t ∧ s =ᶠˢ[l] t
   measurableSet_empty := ⟨∅, MeasurableSet.empty, EventuallyEq.refl _ _ ⟩
   measurableSet_compl := fun _ ⟨t, ht, hts⟩ => ⟨tᶜ, ht.compl, hts.compl⟩
   measurableSet_iUnion s hs := by
@@ -66,12 +66,12 @@ theorem le_eventuallyMeasurableSpace : m ≤ eventuallyMeasurableSpace m l :=
   fun _ hs => hs.eventuallyMeasurableSet
 
 theorem eventuallyMeasurableSet_of_mem_filter (hs : s ∈ l) : EventuallyMeasurableSet m l s :=
-  ⟨univ, MeasurableSet.univ, eventuallyEq_univ.mpr hs⟩
+  ⟨univ, MeasurableSet.univ, eventuallyEqSet_univ.mpr hs⟩
 
 /-- A set which is `EventuallyEq` to an `EventuallyMeasurableSet`
 is an `EventuallyMeasurableSet`. -/
 theorem EventuallyMeasurableSet.congr
-    (ht : EventuallyMeasurableSet m l t) (hst : s =ᶠ[l] t) : EventuallyMeasurableSet m l s := by
+    (ht : EventuallyMeasurableSet m l t) (hst : s =ᶠˢ[l] t) : EventuallyMeasurableSet m l s := by
   rcases ht with ⟨t', ht', htt'⟩
   exact ⟨t', ht', hst.trans htt'⟩
 

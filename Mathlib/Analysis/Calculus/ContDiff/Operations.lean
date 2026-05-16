@@ -176,7 +176,7 @@ at this point. -/
 @[fun_prop]
 theorem ContDiffWithinAt.add {s : Set E} {f g : E → F} (hf : ContDiffWithinAt 𝕜 n f s x)
     (hg : ContDiffWithinAt 𝕜 n g s x) : ContDiffWithinAt 𝕜 n (fun x => f x + g x) s x :=
-  contDiff_add.contDiffWithinAt.comp x (hf.prodMk hg) subset_preimage_univ
+  contDiff_add.contDiffWithinAt.comp x (hf.prodMk hg) (mapsTo_univ _ _)
 
 /-- The sum of two `C^n` functions at a point is `C^n` at this point. -/
 @[fun_prop]
@@ -210,8 +210,8 @@ The iterated derivative of the sum of two functions is the sum of the iterated d
   have hft : ContDiffOn 𝕜 i f (s ∩ t) := fun a ha ↦ (h (by simp_all)).1.mono inter_subset_left
   have hgt : ContDiffOn 𝕜 i g (s ∩ t) := fun a ha ↦ (h (by simp_all)).2.mono inter_subset_left
   have hut : UniqueDiffOn 𝕜 (s ∩ t) := hu.inter ht
-  have H : ↑(s ∩ t) =ᶠ[𝓝 x] s :=
-    inter_eventuallyEq_left.mpr (eventually_of_mem (ht.mem_nhds hxt) (fun _ h _ ↦ h))
+  have H : s ∩ t =ᶠˢ[𝓝 x] s :=
+    inter_eventuallyEqSet_left.mpr (eventually_of_mem (ht.mem_nhds hxt) (fun _ h _ ↦ h))
   rw [← iteratedFDerivWithin_congr_set H, ← iteratedFDerivWithin_congr_set H,
     ← iteratedFDerivWithin_congr_set H]
   exact .symm (((hft.ftaylorSeriesWithin hut).add
@@ -250,7 +250,7 @@ this point. -/
 @[fun_prop]
 theorem ContDiffWithinAt.neg {s : Set E} {f : E → F} (hf : ContDiffWithinAt 𝕜 n f s x) :
     ContDiffWithinAt 𝕜 n (fun x => -f x) s x :=
-  contDiff_neg.contDiffWithinAt.comp x hf subset_preimage_univ
+  contDiff_neg.contDiffWithinAt.comp x hf (mapsTo_univ _ _)
 
 /-- The negative of a `C^n` function at a point is `C^n` at this point. -/
 @[fun_prop]
@@ -560,7 +560,7 @@ set at this point. -/
 @[to_fun (attr := fun_prop)]
 theorem ContDiffWithinAt.smul {s : Set E} {f : E → 𝕜'} {g : E → F} (hf : ContDiffWithinAt 𝕜 n f s x)
     (hg : ContDiffWithinAt 𝕜 n g s x) : ContDiffWithinAt 𝕜 n (f • g) s x :=
-  contDiff_smul.contDiffWithinAt.comp x (hf.prodMk hg) subset_preimage_univ
+  contDiff_smul.contDiffWithinAt.comp x (hf.prodMk hg) (mapsTo_univ _ _)
 
 /-- The scalar multiplication of two `C^n` functions at a point is `C^n` at this point. -/
 @[to_fun (attr := fun_prop)]

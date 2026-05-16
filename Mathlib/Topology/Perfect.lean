@@ -248,7 +248,8 @@ theorem exists_countable_union_perfect_of_isClosed [SecondCountableTopology α]
       apply xD.2
       exact mem_biUnion this xU
     by_contra! h
-    exact absurd (Countable.mono h (Set.countable_singleton _)) this
+    rw [← subset_singleton_iff] at h
+    exact this (Countable.mono h (Set.countable_singleton x))
   · rw [inter_comm, inter_union_diff]
 
 /-- Any uncountable closed set in a second countable space contains a nonempty perfect subset. -/

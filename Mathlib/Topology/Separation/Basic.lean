@@ -512,6 +512,7 @@ theorem continuousOn_update_iff [T1Space X] [DecidableEq X] [TopologicalSpace Y]
     rw [continuousWithinAt_update_of_ne hz.2] at H
     exact H.mono diff_subset
   · rw [continuousWithinAt_update_of_ne hzx]
+    rw [diff_eq] at H
     refine (H z ⟨hzs, hzx⟩).mono_of_mem_nhdsWithin (inter_mem_nhdsWithin _ ?_)
     exact isOpen_ne.mem_nhds hzx
   · exact continuousWithinAt_update_same
@@ -602,9 +603,9 @@ theorem insert_mem_nhdsWithin_of_subset_insert [T1Space X] {x y : X} {s t : Set 
   rw [nhdsWithin_insert_of_ne h]
   exact mem_of_superset self_mem_nhdsWithin (subset_insert x s)
 
-lemma eventuallyEq_insert [T1Space X] {s t : Set X} {x y : X} (h : s =ᶠ[𝓝[{y}ᶜ] x] t) :
-    (insert x s : Set X) =ᶠ[𝓝 x] (insert x t : Set X) := by
-  simp_rw [eventuallyEq_set] at h ⊢
+lemma eventuallyEqSet_insert [T1Space X] {s t : Set X} {x y : X} (h : s =ᶠˢ[𝓝[{y}ᶜ] x] t) :
+    insert x s =ᶠˢ[𝓝 x] insert x t := by
+  simp_rw [eventuallyEqSet_iff] at h ⊢
   simp_rw [← union_singleton, ← nhdsWithin_univ, ← compl_union_self {x},
     nhdsWithin_union, eventually_sup, nhdsWithin_singleton,
     eventually_pure, union_singleton, mem_insert_iff, true_or, and_true]
@@ -727,10 +728,10 @@ theorem continuousWithinAt_diff_singleton [TopologicalSpace Y] [T1Space X]
 /-- If two sets coincide locally around `x`, except maybe at `y`, then it is equivalent to be
 continuous at `x` within one set or the other. -/
 theorem continuousWithinAt_congr_set' [TopologicalSpace Y] [T1Space X]
-    {x : X} {s t : Set X} {f : X → Y} (y : X) (h : s =ᶠ[𝓝[{y}ᶜ] x] t) :
+    {x : X} {s t : Set X} {f : X → Y} (y : X) (h : s =ᶠˢ[𝓝[{y}ᶜ] x] t) :
     ContinuousWithinAt f s x ↔ ContinuousWithinAt f t x := by
   rw [← continuousWithinAt_insert_self (s := s), ← continuousWithinAt_insert_self (s := t)]
-  exact continuousWithinAt_congr_set (eventuallyEq_insert h)
+  exact continuousWithinAt_congr_set (eventuallyEqSet_insert h)
 
 theorem ContinuousWithinAt.eq_const_of_mem_closure [TopologicalSpace Y] [T1Space Y]
     {f : X → Y} {s : Set X} {x : X} {c : Y} (h : ContinuousWithinAt f s x) (hx : x ∈ closure s)

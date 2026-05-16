@@ -689,7 +689,9 @@ lemma ContinuousMapZero.nonUnitalStarAlgHom_apply_mul_eq_zero {𝕜 A : Type*}
   | add _ _ h₁ h₂ => simp only [map_add, add_mul, h₁, h₂, zero_add]
   | mul _ _ _ h => simp only [map_mul, mul_assoc, h, mul_zero]
   | smul _ _ h => rw [map_smul, smul_mul_assoc, h, smul_zero]
-  | frequently f h => exact h.mem_of_closed <| isClosed_eq (by fun_prop) continuous_zero
+  | frequently f h =>
+    refine h.prop_of_isClosed ?_
+    exact isClosed_eq (by fun_prop) continuous_zero
 
 lemma ContinuousMapZero.mul_nonUnitalStarAlgHom_apply_eq_zero {𝕜 A : Type*}
     [RCLike 𝕜] [NonUnitalSemiring A] [Star A] [TopologicalSpace A] [SeparatelyContinuousMul A]
@@ -704,6 +706,6 @@ lemma ContinuousMapZero.mul_nonUnitalStarAlgHom_apply_eq_zero {𝕜 A : Type*}
   | add _ _ h₁ h₂ => simp only [map_add, mul_add, h₁, h₂, zero_add]
   | mul _ _ h _ => simp only [map_mul, ← mul_assoc, h, zero_mul]
   | smul _ _ h => rw [map_smul, mul_smul_comm, h, smul_zero]
-  | frequently f h => exact h.mem_of_closed <| isClosed_eq (by fun_prop) continuous_zero
+  | frequently f h => exact h.prop_of_isClosed <| isClosed_eq (by fun_prop) continuous_zero
 
 end ContinuousMapZero

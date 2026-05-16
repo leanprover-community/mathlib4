@@ -40,6 +40,13 @@ instance : Insert ZFSet Class :=
 
 namespace Class
 
+@[coe]
+def toFun (c : Class) (s : ZFSet) : Prop := c.Mem s
+
+instance : CoeFun Class (fun _ ↦ ZFSet → Prop) := ⟨toFun⟩
+
+theorem coe_setOf (p : ZFSet → Prop) (s : ZFSet) : toFun {t | p t} s ↔ p s := .rfl
+
 -- Porting note: this used to be a `deriving HasSep Set` instance,
 -- it should probably be turned into notation.
 /-- `{x ∈ A | p x}` is the class of elements in `A` satisfying `p` -/
@@ -248,7 +255,7 @@ theorem sInter_apply {x : Class.{u}} {y : ZFSet.{u}} : (⋂₀ x) y ↔ ∀ z : 
 open scoped ZFSet in
 @[simp, norm_cast]
 theorem coe_sInter {x : ZFSet.{u}} (h : x.Nonempty) : ↑(⋂₀ x : ZFSet) = ⋂₀ (x : Class.{u}) :=
-  Set.ext fun _ => (ZFSet.mem_sInter h).trans sInter_apply.symm
+  Set.ext fun _ => (ZFSet.mem_sInter h).trans <| .symm sInter_apply
 
 theorem mem_of_mem_sInter {x y z : Class} (hy : y ∈ ⋂₀ x) (hz : z ∈ x) : y ∈ z := by
   obtain ⟨w, rfl, hw⟩ := hy
@@ -278,7 +285,7 @@ theorem eq_univ_of_powerset_subset {A : Class} (hA : powerset A ⊆ A) : A = uni
     (by
       by_contra! hnA
       exact
-        WellFounded.min_mem ZFSet.mem_wf _ hnA
+        WellFounded.min_mem ZFSet.mem_wf _ (Set.nonempty_setOf.mpr hnA)
           (hA fun x hx =>
             Classical.not_not.1 fun hB =>
               WellFounded.not_lt_min ZFSet.mem_wf _ hB <| coe_apply.1 hx))
@@ -303,7 +310,7 @@ theorem iota_ex (A) : iota.{u} A ∈ univ.{u} :=
 
 /-- Function value -/
 def fval (F A : Class.{u}) : Class.{u} :=
-  iota fun y => ToSet (fun x => F (ZFSet.pair x y)) A
+  iota {y | ToSet {x | F (ZFSet.pair x y)} A}
 
 @[inherit_doc]
 infixl:100 " ′ " => fval
@@ -319,7 +326,7 @@ namespace ZFSet
 theorem map_fval {f : ZFSet.{u} → ZFSet.{u}} [Definable₁ f] {x y : ZFSet.{u}}
     (h : y ∈ x) : (ZFSet.map f x ′ y : Class.{u}) = f y :=
   Class.iota_val _ _ fun z => by
-    rw [Class.toSet_of_ZFSet, Class.coe_apply, mem_map]
+    rw [Class.coe_setOf, Class.toSet_of_ZFSet, Class.coe_setOf, Class.coe_apply, mem_map]
     exact
       ⟨fun ⟨w, _, pr⟩ => by
         let ⟨wy, fw⟩ := ZFSet.pair_injective pr
@@ -370,7 +377,7 @@ noncomputable def coeEquiv : ZFSet.{u} ≃ {s : Set ZFSet.{u} // Small.{u, u+1} 
 @[deprecated (since := "2025-11-05")] alias toSet_equiv := coeEquiv
 
 /-- The **Burali-Forti paradox**: ordinals form a proper class. -/
-theorem isOrdinal_notMem_univ : IsOrdinal ∉ Class.univ.{u} := by
+theorem isOrdinal_notMem_univ : (show Class.{u} from {s | IsOrdinal s}) ∉ Class.univ.{u} := by
   rintro ⟨x, hx, -⟩
   suffices IsOrdinal x by
     apply Class.mem_irrefl x

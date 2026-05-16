@@ -42,7 +42,7 @@ def QuotientDiff :=
       ⟨fun α => diff_self (MonoidHom.id H) α, fun h => by rw [← diff_inv, h, inv_one],
         fun h h' => by rw [← diff_mul_diff, h, h', one_mul]⟩)
 
-instance : Inhabited H.QuotientDiff :=
+noncomputable instance : Inhabited H.QuotientDiff :=
   inferInstanceAs (Inhabited <| Quotient _)
 
 theorem smul_diff_smul' [hH : Normal H] (g : Gᵐᵒᵖ) :

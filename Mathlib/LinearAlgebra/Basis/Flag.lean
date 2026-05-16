@@ -31,7 +31,7 @@ variable {R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M] {n : ℕ} {b 
   {i j : Fin (n + 1)}
 
 /-- The subspace spanned by the first `k` vectors of the basis `b`. -/
-def flag (b : Basis (Fin n) R M) (k : Fin (n + 1)) : Submodule R M :=
+noncomputable def flag (b : Basis (Fin n) R M) (k : Fin (n + 1)) : Submodule R M :=
   .span R <| b '' {i | i.castSucc < k}
 
 @[simp]
@@ -115,7 +115,7 @@ theorem flag_wcovBy (b : Basis (Fin n) K V) (i : Fin n) :
 
 /-- Range of `Basis.flag` as a `Flag`. -/
 @[simps!]
-def toFlag (b : Basis (Fin n) K V) : Flag (Submodule K V) :=
+noncomputable def toFlag (b : Basis (Fin n) K V) : Flag (Submodule K V) :=
   .rangeFin b.flag b.flag_zero b.flag_last b.flag_wcovBy
 
 @[simp]

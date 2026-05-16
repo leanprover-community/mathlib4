@@ -511,7 +511,7 @@ theorem count_maximal (w : HeightOneSpectrum R) [Decidable (w = v)] :
 theorem count_finprod_coprime (exps : HeightOneSpectrum R → ℤ) :
     count K v (∏ᶠ (w : HeightOneSpectrum R) (_ : w ≠ v),
       (w.asIdeal : (FractionalIdeal R⁰ K)) ^ exps w) = 0 := by
-  apply finprod_mem_induction fun I => count K v I = 0
+  apply finprod_mem_induction (s := {v}ᶜ) fun I => count K v I = 0
   · exact count_one K v
   · intro I I' hI hI'
     classical

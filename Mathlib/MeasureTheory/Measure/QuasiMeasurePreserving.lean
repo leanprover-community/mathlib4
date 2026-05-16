@@ -118,13 +118,13 @@ theorem preimage_null (h : QuasiMeasurePreserving f μa μb) {s : Set β} (hs : 
     μa (f ⁻¹' s) = 0 :=
   preimage_null_of_map_null h.aemeasurable (h.2 hs)
 
-theorem preimage_mono_ae {s t : Set β} (hf : QuasiMeasurePreserving f μa μb) (h : s ≤ᵐ[μb] t) :
-    f ⁻¹' s ≤ᵐ[μa] f ⁻¹' t :=
+theorem preimage_mono_ae {s t : Set β} (hf : QuasiMeasurePreserving f μa μb) (h : s ⊆ᵐ[μb] t) :
+    f ⁻¹' s ⊆ᵐ[μa] f ⁻¹' t :=
   eventually_map.mp <|
     Eventually.filter_mono (tendsto_ae_map hf.aemeasurable) (Eventually.filter_mono hf.ae_map_le h)
 
-theorem preimage_ae_eq {s t : Set β} (hf : QuasiMeasurePreserving f μa μb) (h : s =ᵐ[μb] t) :
-    f ⁻¹' s =ᵐ[μa] f ⁻¹' t :=
+theorem preimage_ae_eq {s t : Set β} (hf : QuasiMeasurePreserving f μa μb) (h : s =ᵐˢ[μb] t) :
+    f ⁻¹' s =ᵐˢ[μa] f ⁻¹' t :=
   EventuallyLE.antisymm (hf.preimage_mono_ae h.le) (hf.preimage_mono_ae h.symm.le)
 
 /-- The preimage of a null measurable set under a (quasi-)measure-preserving map is a null
@@ -135,7 +135,7 @@ theorem _root_.MeasureTheory.NullMeasurableSet.preimage {s : Set β} (hs : NullM
   ⟨f ⁻¹' t, hf.measurable htm, hf.preimage_ae_eq hst⟩
 
 theorem preimage_iterate_ae_eq {s : Set α} {f : α → α} (hf : QuasiMeasurePreserving f μ μ) (k : ℕ)
-    (hs : f ⁻¹' s =ᵐ[μ] s) : f^[k] ⁻¹' s =ᵐ[μ] s := by
+    (hs : f ⁻¹' s =ᵐˢ[μ] s) : f^[k] ⁻¹' s =ᵐˢ[μ] s := by
   induction k with
   | zero => rfl
   | succ k ih =>
@@ -143,29 +143,29 @@ theorem preimage_iterate_ae_eq {s : Set α} {f : α → α} (hf : QuasiMeasurePr
     exact EventuallyEq.trans (hf.preimage_ae_eq ih) hs
 
 theorem image_zpow_ae_eq {s : Set α} {e : α ≃ α} (he : QuasiMeasurePreserving e μ μ)
-    (he' : QuasiMeasurePreserving e.symm μ μ) (k : ℤ) (hs : e '' s =ᵐ[μ] s) :
-    (⇑(e ^ k)) '' s =ᵐ[μ] s := by
+    (he' : QuasiMeasurePreserving e.symm μ μ) (k : ℤ) (hs : e '' s =ᵐˢ[μ] s) :
+    (⇑(e ^ k)) '' s =ᵐˢ[μ] s := by
   rw [Equiv.image_eq_preimage_symm]
   obtain ⟨k, rfl | rfl⟩ := k.eq_nat_or_neg
-  · replace hs : (⇑e⁻¹) ⁻¹' s =ᵐ[μ] s := by rwa [Equiv.image_eq_preimage_symm] at hs
-    replace he' : (⇑e⁻¹)^[k] ⁻¹' s =ᵐ[μ] s := he'.preimage_iterate_ae_eq k hs
+  · replace hs : (⇑e⁻¹) ⁻¹' s =ᵐˢ[μ] s := by rwa [Equiv.image_eq_preimage_symm] at hs
+    replace he' : (⇑e⁻¹)^[k] ⁻¹' s =ᵐˢ[μ] s := he'.preimage_iterate_ae_eq k hs
     rwa [Equiv.Perm.iterate_eq_pow e⁻¹ k, inv_pow e k] at he'
   · rw [zpow_neg, zpow_natCast]
-    replace hs : e ⁻¹' s =ᵐ[μ] s := by
+    replace hs : e ⁻¹' s =ᵐˢ[μ] s := by
       convert he.preimage_ae_eq hs.symm
       rw [Equiv.preimage_image]
-    replace he : (⇑e)^[k] ⁻¹' s =ᵐ[μ] s := he.preimage_iterate_ae_eq k hs
+    replace he : (⇑e)^[k] ⁻¹' s =ᵐˢ[μ] s := he.preimage_iterate_ae_eq k hs
     rwa [Equiv.Perm.iterate_eq_pow e k] at he
 
 -- Need to specify `α := Set α` below because of diamond; see https://github.com/leanprover-community/mathlib4/issues/10941
 theorem limsup_preimage_iterate_ae_eq {f : α → α} (hf : QuasiMeasurePreserving f μ μ)
-    (hs : f ⁻¹' s =ᵐ[μ] s) : limsup (α := Set α) (fun n => (preimage f)^[n] s) atTop =ᵐ[μ] s :=
+    (hs : f ⁻¹' s =ᵐˢ[μ] s) : limsup (fun n => (preimage f)^[n] s) atTop =ᵐˢ[μ] s :=
   limsup_ae_eq_of_forall_ae_eq (fun n => (preimage f)^[n] s) fun n ↦ by
     simpa only [Set.preimage_iterate_eq] using hf.preimage_iterate_ae_eq n hs
 
 -- Need to specify `α := Set α` below because of diamond; see https://github.com/leanprover-community/mathlib4/issues/10941
 theorem liminf_preimage_iterate_ae_eq {f : α → α} (hf : QuasiMeasurePreserving f μ μ)
-    (hs : f ⁻¹' s =ᵐ[μ] s) : liminf (α := Set α) (fun n => (preimage f)^[n] s) atTop =ᵐ[μ] s :=
+    (hs : f ⁻¹' s =ᵐˢ[μ] s) : liminf (fun n => (preimage f)^[n] s) atTop =ᵐˢ[μ] s :=
   liminf_ae_eq_of_forall_ae_eq (fun n => (preimage f)^[n] s) fun n ↦ by
     simpa only [Set.preimage_iterate_eq] using hf.preimage_iterate_ae_eq n hs
 
@@ -173,12 +173,12 @@ theorem liminf_preimage_iterate_ae_eq {f : α → α} (hf : QuasiMeasurePreservi
 then it is a.e. equal to a measurable invariant set.
 -/
 theorem exists_preimage_eq_of_preimage_ae {f : α → α} (h : QuasiMeasurePreserving f μ μ)
-    (hs : NullMeasurableSet s μ) (hs' : f ⁻¹' s =ᵐ[μ] s) :
-    ∃ t : Set α, MeasurableSet t ∧ t =ᵐ[μ] s ∧ f ⁻¹' t = t := by
+    (hs : NullMeasurableSet s μ) (hs' : f ⁻¹' s =ᵐˢ[μ] s) :
+    ∃ t : Set α, MeasurableSet t ∧ t =ᵐˢ[μ] s ∧ f ⁻¹' t = t := by
   obtain ⟨t, htm, ht⟩ := hs
   refine ⟨limsup (f^[·] ⁻¹' t) atTop, ?_, ?_, ?_⟩
   · exact .measurableSet_limsup fun n ↦ h.measurable.iterate n htm
-  · have : f ⁻¹' t =ᵐ[μ] t := (h.preimage_ae_eq ht.symm).trans (hs'.trans ht)
+  · have : f ⁻¹' t =ᵐˢ[μ] t := (h.preimage_ae_eq ht.symm).trans (hs'.trans ht)
     exact limsup_ae_eq_of_forall_ae_eq _ fun n ↦ .trans (h.preimage_iterate_ae_eq _ this) ht.symm
   · simp only [Set.preimage_iterate_eq]
     exact CompleteLatticeHom.apply_limsup_iterate (CompleteLatticeHom.setPreimage f) t
@@ -189,7 +189,7 @@ open scoped Pointwise
 theorem smul_ae_eq_of_ae_eq {G α : Type*} [Group G] [MulAction G α] {_ : MeasurableSpace α}
     {s t : Set α} {μ : Measure α} (g : G)
     (h_qmp : QuasiMeasurePreserving (g⁻¹ • · : α → α) μ μ)
-    (h_ae_eq : s =ᵐ[μ] t) : (g • s : Set α) =ᵐ[μ] (g • t : Set α) := by
+    (h_ae_eq : s =ᵐˢ[μ] t) : (g • s : Set α) =ᵐˢ[μ] (g • t : Set α) := by
   simpa only [← preimage_smul_inv] using h_qmp.ae_eq h_ae_eq
 
 end QuasiMeasurePreserving

@@ -97,7 +97,7 @@ theorem hasEigenvalue_iff_isRoot : f.HasEigenvalue μ ↔ (minpoly R f).IsRoot �
 
 variable (f)
 
-lemma finite_hasEigenvalue : Set.Finite f.HasEigenvalue := by
+lemma finite_hasEigenvalue : Set.Finite {μ | f.HasEigenvalue μ} := by
   have h : minpoly R f ≠ 0 := minpoly.ne_zero (Algebra.IsIntegral.isIntegral (R := R) f)
   convert (minpoly R f).rootSet_finite R
   ext μ
@@ -140,9 +140,7 @@ section FiniteSpectrum
 theorem Module.End.finite_spectrum {K : Type v} {V : Type w} [Field K] [AddCommGroup V]
     [Module K V] [FiniteDimensional K V] (f : Module.End K V) :
     Set.Finite (spectrum K f) := by
-  convert f.finite_hasEigenvalue
-  ext f x
-  exact Module.End.hasEigenvalue_iff_mem_spectrum.symm
+  simpa [Module.End.hasEigenvalue_iff_mem_spectrum] using f.finite_hasEigenvalue
 
 variable {n R : Type*} [Field R] [Fintype n] [DecidableEq n]
 

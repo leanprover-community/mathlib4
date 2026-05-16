@@ -39,14 +39,19 @@ structure FiniteInter : Prop where
 namespace FiniteInter
 
 /-- The smallest set of sets containing `S` which is closed under finite intersections. -/
-inductive finiteInterClosure : Set (Set α)
-  | basic {s} : s ∈ S → finiteInterClosure s
-  | univ : finiteInterClosure Set.univ
-  | inter {s t} : finiteInterClosure s → finiteInterClosure t → finiteInterClosure (s ∩ t)
+inductive MemFiniteInterClosure : Set α → Prop
+  | basic {s} : s ∈ S → MemFiniteInterClosure s
+  | univ : MemFiniteInterClosure Set.univ
+  | inter {s t} : MemFiniteInterClosure s → MemFiniteInterClosure t → MemFiniteInterClosure (s ∩ t)
+
+def finiteInterClosure (S : Set (Set α)) : Set (Set α) :=
+  {s | MemFiniteInterClosure S s}
+
+theorem subset_finiteInterClosure : S ⊆ finiteInterClosure S := fun _s hs ↦ .basic hs
 
 theorem finiteInterClosure_finiteInter : FiniteInter (finiteInterClosure S) :=
-  { univ_mem := finiteInterClosure.univ
-    inter_mem := fun _ h _ => finiteInterClosure.inter h }
+  { univ_mem := .univ
+    inter_mem := fun _ h _ => .inter h }
 
 variable {S}
 
@@ -63,6 +68,7 @@ theorem finiteInter_mem (cond : FiniteInter S) (F : Finset (Set α)) :
 
 theorem finiteInterClosure_insert {A : Set α} (cond : FiniteInter S) (P)
     (H : P ∈ finiteInterClosure (insert A S)) : P ∈ S ∨ ∃ Q ∈ S, P = A ∩ Q := by
+  rw [finiteInterClosure, Set.mem_setOf_eq] at H
   induction H with
   | basic h =>
     cases h

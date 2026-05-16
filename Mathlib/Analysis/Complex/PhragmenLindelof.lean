@@ -762,7 +762,7 @@ theorem eq_zero_on_right_half_plane_of_superexponential_decay (hd : DiffContOnCl
     EqOn f 0 {z : ℂ | 0 ≤ z.re} := by
   rcases him with ⟨C, hC⟩
   -- Due to continuity, it suffices to prove the equality on the open right half-plane.
-  suffices ∀ z : ℂ, 0 < z.re → f z = 0 by
+  suffices EqOn f 0 {z : ℂ | 0 < z.re} by
     simpa only [closure_setOf_lt_re] using
       EqOn.of_subset_closure this hd.continuousOn continuousOn_const subset_closure Subset.rfl
   -- Consider $g_n(z)=e^{nz}f(z)$.

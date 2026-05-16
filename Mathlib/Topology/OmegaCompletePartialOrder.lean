@@ -57,8 +57,8 @@ theorem IsOpen.inter (s t : Set α) : IsOpen α s → IsOpen α t → IsOpen α 
   CompleteLattice.ωScottContinuous.inf
 
 theorem isOpen_sUnion (s : Set (Set α)) (hs : ∀ t ∈ s, IsOpen α t) : IsOpen α (⋃₀ s) := by
-  simp only [IsOpen] at hs ⊢
-  convert CompleteLattice.ωScottContinuous.sSup hs
+  simp only [IsOpen, Set.setOf_bijective.surjective.forall] at hs ⊢
+  convert CompleteLattice.ωScottContinuous.sSup (s := setOf ⁻¹' s) hs
   aesop
 
 theorem IsOpen.isUpperSet {s : Set α} (hs : IsOpen α s) : IsUpperSet s := hs.monotone

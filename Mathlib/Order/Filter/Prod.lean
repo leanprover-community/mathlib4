@@ -114,7 +114,7 @@ theorem eventually_prod_iff {p : α × β → Prop} :
     (∀ᶠ x in f ×ˢ g, p x) ↔
       ∃ pa : α → Prop, (∀ᶠ x in f, pa x) ∧ ∃ pb : β → Prop, (∀ᶠ y in g, pb y) ∧
         ∀ {x}, pa x → ∀ {y}, pb y → p (x, y) := by
-  simpa only [Set.prod_subset_iff] using @mem_prod_iff α β p f g
+  simpa only [Set.prod_subset_iff, Set.mem_surjective.exists] using @mem_prod_iff α β {x | p x} f g
 
 theorem tendsto_fst : Tendsto Prod.fst (f ×ˢ g) f :=
   tendsto_inf_left tendsto_comap

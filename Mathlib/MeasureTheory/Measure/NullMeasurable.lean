@@ -123,7 +123,7 @@ theorem of_subsingleton [Subsingleton α] : NullMeasurableSet s μ :=
   Subsingleton.measurableSet
 
 set_option backward.isDefEq.respectTransparency false in
-protected theorem congr (hs : NullMeasurableSet s μ) (h : s =ᵐ[μ] t) : NullMeasurableSet t μ :=
+protected theorem congr (hs : NullMeasurableSet s μ) (h : s =ᵐˢ[μ] t) : NullMeasurableSet t μ :=
   EventuallyMeasurableSet.congr hs h.symm
 
 @[measurability]
@@ -194,22 +194,23 @@ protected theorem insert [MeasurableSingletonClass (NullMeasurableSpace α μ)]
   MeasurableSet.insert hs a
 
 theorem exists_measurable_superset_ae_eq (h : NullMeasurableSet s μ) :
-    ∃ t ⊇ s, MeasurableSet t ∧ t =ᵐ[μ] s := by
+    ∃ t ⊇ s, MeasurableSet t ∧ t =ᵐˢ[μ] s := by
   rcases h with ⟨t, htm, hst⟩
   refine ⟨t ∪ toMeasurable μ (s \ t), ?_, htm.union (measurableSet_toMeasurable _ _), ?_⟩
   · exact diff_subset_iff.1 (subset_toMeasurable _ _)
-  · have : toMeasurable μ (s \ t) =ᵐ[μ] (∅ : Set α) := by simp [ae_le_set.1 hst.le]
+  · have : toMeasurable μ (s \ t) =ᵐˢ[μ] (∅ : Set α) := by simp [ae_le_set.1 hst.le]
     simpa only [union_empty] using hst.symm.union this
 
-theorem toMeasurable_ae_eq (h : NullMeasurableSet s μ) : toMeasurable μ s =ᵐ[μ] s := by
+theorem toMeasurable_ae_eq (h : NullMeasurableSet s μ) : toMeasurable μ s =ᵐˢ[μ] s := by
   rw [toMeasurable_def, dif_pos]
   exact (exists_measurable_superset_ae_eq h).choose_spec.2.2
 
-theorem compl_toMeasurable_compl_ae_eq (h : NullMeasurableSet s μ) : (toMeasurable μ sᶜ)ᶜ =ᵐ[μ] s :=
+theorem compl_toMeasurable_compl_ae_eq (h : NullMeasurableSet s μ) :
+    (toMeasurable μ sᶜ)ᶜ =ᵐˢ[μ] s :=
   Iff.mpr ae_eq_set_compl <| toMeasurable_ae_eq h.compl
 
 theorem exists_measurable_subset_ae_eq (h : NullMeasurableSet s μ) :
-    ∃ t ⊆ s, MeasurableSet t ∧ t =ᵐ[μ] s :=
+    ∃ t ⊆ s, MeasurableSet t ∧ t =ᵐˢ[μ] s :=
   ⟨(toMeasurable μ sᶜ)ᶜ, compl_subset_comm.2 <| subset_toMeasurable _ _,
     (measurableSet_toMeasurable _ _).compl, compl_toMeasurable_compl_ae_eq h⟩
 
@@ -221,12 +222,12 @@ open scoped Function -- required for scoped `on` notation
 
 /-- If `sᵢ` is a countable family of (null) measurable pairwise `μ`-a.e. disjoint sets, then there
 exists a subordinate family `tᵢ ⊆ sᵢ` of measurable pairwise disjoint sets such that
-`tᵢ =ᵐ[μ] sᵢ`. -/
+`tᵢ =ᵐˢ[μ] sᵢ`. -/
 theorem exists_subordinate_pairwise_disjoint [Countable ι] {s : ι → Set α}
     (h : ∀ i, NullMeasurableSet (s i) μ) (hd : Pairwise (AEDisjoint μ on s)) :
     ∃ t : ι → Set α,
       (∀ i, t i ⊆ s i) ∧
-        (∀ i, s i =ᵐ[μ] t i) ∧ (∀ i, MeasurableSet (t i)) ∧ Pairwise (Disjoint on t) := by
+        (∀ i, s i =ᵐˢ[μ] t i) ∧ (∀ i, MeasurableSet (t i)) ∧ Pairwise (Disjoint on t) := by
   choose t ht_sub htm ht_eq using fun i => exists_measurable_subset_ae_eq (h i)
   rcases exists_null_pairwise_disjoint_diff hd with ⟨u, hum, hu₀, hud⟩
   exact

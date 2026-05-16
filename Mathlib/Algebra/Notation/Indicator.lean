@@ -217,11 +217,16 @@ lemma mulIndicator_image {s : Set α} {f : β → M} {g : α → β} (hg : Injec
   rw [← mulIndicator_comp_right, preimage_image_eq _ hg]
 
 @[to_additive]
+lemma mulIndicator_comp_apply_of_one {g : M → N} (hg : g 1 = 1) (x) :
+    mulIndicator s (g ∘ f) x = g (mulIndicator s f x) := by
+  simp only [mulIndicator]
+  split_ifs <;> simp [*]
+
+@[to_additive]
 lemma mulIndicator_comp_of_one {g : M → N} (hg : g 1 = 1) :
     mulIndicator s (g ∘ f) = g ∘ mulIndicator s f := by
   funext
-  simp only [mulIndicator]
-  split_ifs <;> simp [*]
+  apply mulIndicator_comp_apply_of_one hg
 
 @[to_additive]
 lemma comp_mulIndicator_const (c : M) (f : M → N) (hf : f 1 = 1) :

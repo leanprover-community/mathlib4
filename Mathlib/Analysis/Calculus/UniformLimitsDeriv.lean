@@ -147,7 +147,7 @@ theorem uniformCauchySeqOnFilter_of_fderiv (hf' : UniformCauchySeqOnFilter f' l 
     -- With a small ball in hand, apply the mean value theorem
     refine
       eventually_prod_iff.mpr
-        ⟨_, b, fun e : E => Metric.ball x r e,
+        ⟨_, b, (· ∈ Metric.ball x r),
           eventually_mem_set.mpr (Metric.nhds_basis_ball.mem_of_mem hr), fun {n} hn {y} hy => ?_⟩
     simp only [Pi.zero_apply, dist_zero_left, norm_neg_add] at e ⊢
     refine lt_of_le_of_lt ?_ (hxyε y hy)
@@ -283,7 +283,7 @@ theorem difference_quotients_converge_uniformly
   obtain ⟨r, hr, hr'⟩ := Metric.nhds_basis_ball.eventually_iff.mp d
   rw [eventually_prod_iff]
   refine
-    ⟨_, b, fun e : E => Metric.ball x r e,
+    ⟨_, b, (· ∈ Metric.ball x r),
       eventually_mem_set.mpr (Metric.nhds_basis_ball.mem_of_mem hr), fun {n} hn {y} hy => ?_⟩
   simp only [Pi.zero_apply, dist_zero_left]
   rw [norm_neg_add, ← smul_sub, norm_smul, norm_inv, RCLike.norm_coe_norm]

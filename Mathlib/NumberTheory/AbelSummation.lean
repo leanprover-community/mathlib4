@@ -357,7 +357,7 @@ private theorem summable_mul_of_bigO_atTop_aux (m : ℕ)
         simp
       · unfold C₂
         grw [setIntegral_mono_set ?_ (.of_forall fun _ ↦ norm_nonneg _)
-          Set.Ioc_subset_Ioi_self.eventuallyLE]
+          Set.Ioc_subset_Ioi_self.eventually]
         rw [← integrableOn_Ici_iff_integrableOn_Ioi, IntegrableOn,
           integrable_norm_iff (by fun_prop)]
         exact (locallyIntegrableOn_mul_sum_Icc _ m.cast_nonneg hf_int).integrableOn_of_isBigO_atTop

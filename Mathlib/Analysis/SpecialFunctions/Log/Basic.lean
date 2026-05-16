@@ -363,7 +363,7 @@ theorem continuous_log : Continuous fun x : { x : ℝ // x ≠ 0 } => log x :=
 /-- The real logarithm is continuous as a function from positive reals. -/
 @[fun_prop]
 theorem continuous_log' : Continuous fun x : { x : ℝ // 0 < x } => log x :=
-  continuousOn_iff_continuous_restrict.1 <| continuousOn_log.mono fun _ hx => ne_of_gt hx
+  (continuousOn_log.mono fun _ hx => ne_of_gt hx).restrict (s := Ioi 0)
 
 theorem continuousAt_log (hx : x ≠ 0) : ContinuousAt log x :=
   (continuousOn_log x hx).continuousAt <| isOpen_compl_singleton.mem_nhds hx

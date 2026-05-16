@@ -608,11 +608,11 @@ theorem smul_apply_eq_smul_apply_inv_smul (f : F) (S : H.LeftTransversal) (q : G
 end Action
 
 @[to_additive]
-instance : Inhabited H.LeftTransversal :=
+noncomputable instance : Inhabited H.LeftTransversal :=
   ⟨⟨Set.range Quotient.out, isComplement_range_left Quotient.out_eq'⟩⟩
 
 @[to_additive]
-instance : Inhabited H.RightTransversal :=
+noncomputable instance : Inhabited H.RightTransversal :=
   ⟨⟨Set.range Quotient.out, isComplement_range_right Quotient.out_eq'⟩⟩
 
 theorem IsComplement'.isCompl (h : IsComplement' H K) : IsCompl H K := by

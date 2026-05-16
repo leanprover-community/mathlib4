@@ -172,8 +172,8 @@ lemma hasCardinalLT_iUnion
     {ι : Type*} {X : Type*} (S : ι → Set X) {κ : Cardinal} [Fact κ.IsRegular]
     (hι : HasCardinalLT ι κ) (hS : ∀ i, HasCardinalLT (S i) κ) :
     HasCardinalLT (⋃ i, S i) κ := by
-  convert show HasCardinalLT (setOf ((⨆ i, S i))) κ from hasCardinalLT_subtype_iSup S hι hS
-  aesop
+  convert hasCardinalLT_subtype_iSup (fun i x ↦ x ∈ S i) hι hS using 3
+  simp
 
 /-- The particular case of `hasCardinalLT_prod` when all the inputs are in the
 same universe `w`. It is used to prove the general case. -/

@@ -275,7 +275,7 @@ def center_equiv_rootsOfUnity' (i : n) :
   invFun a := ⟨⟨a • (1 : Matrix n n R), by aesop⟩,
     Subgroup.mem_center_iff.mpr fun B ↦ Subtype.val_injective <| by simp [coe_mul]⟩
   left_inv A := by
-    refine SetCoe.ext <| SetCoe.ext ?_
+    refine Subtype.val_injective <| Subtype.val_injective ?_
     obtain ⟨r, _, hr⟩ := mem_center_iff.mp A.property
     simpa [← hr, Submonoid.smul_def, Units.smul_def] using smul_one_eq_diagonal r
   right_inv a := by

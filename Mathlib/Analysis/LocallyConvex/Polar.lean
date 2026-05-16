@@ -217,7 +217,7 @@ lemma polarSubmodule_eq_setOf {S : Type*} [SetLike S E] [SMulMemClass S 𝕜 E] 
 
 lemma mem_polarSubmodule {S : Type*} [SetLike S E] [SMulMemClass S 𝕜 E] (m : S)
     (y : StrongDual 𝕜 E) : y ∈ polarSubmodule 𝕜 m ↔ ∀ x ∈ m, y x = 0 :=
-  propext_iff.mp congr($(polarSubmodule_eq_setOf 𝕜 m) y)
+  iff_of_eq congr(y ∈ $(polarSubmodule_eq_setOf 𝕜 m))
 
 @[simp]
 theorem zero_mem_polar (s : Set E) : (0 : StrongDual 𝕜 E) ∈ polar 𝕜 s :=

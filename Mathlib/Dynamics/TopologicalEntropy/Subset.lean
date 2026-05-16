@@ -49,7 +49,7 @@ section Subset
 
 lemma IsDynCoverOf.monotone_subset (F_G : F ⊆ G) (h : IsDynCoverOf T G U n s) :
     IsDynCoverOf T F U n s :=
-  F_G.trans h
+  fun _x hx ↦ h (F_G hx)
 
 lemma IsDynNetIn.monotone_subset (F_G : F ⊆ G) (h : IsDynNetIn T F U n s) : IsDynNetIn T G U n s :=
   ⟨h.1.trans F_G, h.2⟩

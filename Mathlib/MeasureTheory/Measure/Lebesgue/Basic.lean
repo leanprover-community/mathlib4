@@ -541,10 +541,10 @@ theorem volume_regionBetween_eq_lintegral [SFinite μ] (hf : AEMeasurable f (μ.
       (μ.restrict s).prod volume
         (regionBetween (AEMeasurable.mk f hf) (AEMeasurable.mk g hg) s) := by
     apply measure_congr
-    apply EventuallyEq.rfl.inter
-    exact
-      ((quasiMeasurePreserving_fst.ae_eq_comp hf.ae_eq_mk).comp₂ _ EventuallyEq.rfl).inter
-        (EventuallyEq.rfl.comp₂ _ <| quasiMeasurePreserving_fst.ae_eq_comp hg.ae_eq_mk)
+    simp only [regionBetween, setOf_and, mem_Ioo]
+    filter_upwards [quasiMeasurePreserving_fst.ae_eq_comp hf.ae_eq_mk,
+      quasiMeasurePreserving_fst.ae_eq_comp hg.ae_eq_mk]
+    simp +contextual
   rw [lintegral_congr_ae h₁, ←
     volume_regionBetween_eq_lintegral' hf.measurable_mk hg.measurable_mk hs]
   convert h₂ using 1
@@ -560,6 +560,7 @@ lemma nullMeasurableSet_regionBetween (μ : Measure α)
     {f g : α → ℝ} (f_mble : AEMeasurable f μ) (g_mble : AEMeasurable g μ)
     {s : Set α} (s_mble : NullMeasurableSet s μ) :
     NullMeasurableSet {p : α × ℝ | p.1 ∈ s ∧ p.snd ∈ Ioo (f p.fst) (g p.fst)} (μ.prod volume) := by
+  simp only [mem_Ioo, setOf_and]
   refine NullMeasurableSet.inter
           (s_mble.preimage quasiMeasurePreserving_fst) (NullMeasurableSet.inter ?_ ?_)
   · exact nullMeasurableSet_lt (by fun_prop) measurable_snd.aemeasurable
@@ -571,6 +572,7 @@ lemma nullMeasurableSet_region_between_oc (μ : Measure α)
     {f g : α → ℝ} (f_mble : AEMeasurable f μ) (g_mble : AEMeasurable g μ)
     {s : Set α} (s_mble : NullMeasurableSet s μ) :
     NullMeasurableSet {p : α × ℝ | p.1 ∈ s ∧ p.snd ∈ Ioc (f p.fst) (g p.fst)} (μ.prod volume) := by
+  simp only [mem_Ioc, setOf_and]
   refine NullMeasurableSet.inter
           (s_mble.preimage quasiMeasurePreserving_fst) (NullMeasurableSet.inter ?_ ?_)
   · exact nullMeasurableSet_lt (by fun_prop) measurable_snd.aemeasurable
@@ -586,6 +588,7 @@ lemma nullMeasurableSet_region_between_co (μ : Measure α)
     {f g : α → ℝ} (f_mble : AEMeasurable f μ) (g_mble : AEMeasurable g μ)
     {s : Set α} (s_mble : NullMeasurableSet s μ) :
     NullMeasurableSet {p : α × ℝ | p.1 ∈ s ∧ p.snd ∈ Ico (f p.fst) (g p.fst)} (μ.prod volume) := by
+  simp only [mem_Ico, setOf_and]
   refine NullMeasurableSet.inter
           (s_mble.preimage quasiMeasurePreserving_fst) (NullMeasurableSet.inter ?_ ?_)
   · change NullMeasurableSet {p : α × ℝ | f p.fst ≤ p.snd} (μ.prod volume)
@@ -601,6 +604,7 @@ lemma nullMeasurableSet_region_between_cc (μ : Measure α)
     {f g : α → ℝ} (f_mble : AEMeasurable f μ) (g_mble : AEMeasurable g μ)
     {s : Set α} (s_mble : NullMeasurableSet s μ) :
     NullMeasurableSet {p : α × ℝ | p.1 ∈ s ∧ p.snd ∈ Icc (f p.fst) (g p.fst)} (μ.prod volume) := by
+  simp only [mem_Icc, setOf_and]
   refine NullMeasurableSet.inter
           (s_mble.preimage quasiMeasurePreserving_fst) (NullMeasurableSet.inter ?_ ?_)
   · change NullMeasurableSet {p : α × ℝ | f p.fst ≤ p.snd} (μ.prod volume)

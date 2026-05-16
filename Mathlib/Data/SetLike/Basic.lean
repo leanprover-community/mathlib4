@@ -176,7 +176,7 @@ theorem ext (h : ∀ x, x ∈ p ↔ x ∈ q) : p = q :=
 theorem ext_iff : p = q ↔ ∀ x, x ∈ p ↔ x ∈ q :=
   coe_injective.eq_iff.symm.trans Set.ext_iff
 
-@[simp, push]
+@[simp, push, grind =]
 theorem mem_coe {x : B} : x ∈ (p : Set B) ↔ x ∈ p :=
   Iff.rfl
 

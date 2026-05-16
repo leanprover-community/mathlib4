@@ -200,8 +200,8 @@ theorem orthogonal_eq_top_iff : Kᗮ = ⊤ ↔ K = ⊥ := by
 /-- The closure of a submodule has the same orthogonal complement and the submodule itself. -/
 @[simp]
 lemma orthogonal_closure (K : Submodule 𝕜 E) : K.topologicalClosureᗮ = Kᗮ :=
-  le_antisymm (orthogonal_le <| le_topologicalClosure _)
-    fun x hx y hy ↦ closure_minimal hx (isClosed_eq (by fun_prop) (by fun_prop)) hy
+  le_antisymm (orthogonal_le <| le_topologicalClosure _) fun x hx y hy ↦
+    closure_minimal (t := setOf _) hx (isClosed_eq (by fun_prop) (by fun_prop)) hy
 
 lemma orthogonal_closure' (K : Submodule 𝕜 E) (x : E) :
     (∀ y ∈ K, ⟪y, x⟫ = 0) ↔ ∀ y ∈ K.topologicalClosure, ⟪y, x⟫ = 0 := by

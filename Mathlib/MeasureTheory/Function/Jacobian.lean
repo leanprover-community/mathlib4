@@ -659,8 +659,8 @@ theorem addHaar_image_eq_zero_of_det_fderivWithin_eq_zero
   have A : ∀ (ε : ℝ≥0), 0 < ε → μ (f '' (s ∩ closedBall 0 R)) ≤ ε * μ (closedBall 0 R) :=
     fun ε εpos =>
     addHaar_image_eq_zero_of_det_fderivWithin_eq_zero_aux μ
-      (fun x hx => (hf' x hx.1).mono inter_subset_left) R inter_subset_right ε εpos
-      fun x hx => h'f' x hx.1
+      (fun x hx => (hf' x <| inter_subset_left hx).mono inter_subset_left)
+      R inter_subset_right ε εpos fun x hx => h'f' x hx.1
   have B : Tendsto (fun ε : ℝ≥0 => (ε : ℝ≥0∞) * μ (closedBall 0 R)) (𝓝[>] 0) (𝓝 0) := by
     have :
       Tendsto (fun ε : ℝ≥0 => (ε : ℝ≥0∞) * μ (closedBall 0 R)) (𝓝 0)
@@ -771,7 +771,7 @@ theorem nullMeasurable_image_of_fderivWithin (hs : NullMeasurableSet s μ)
     (hf' : ∀ x ∈ s, HasFDerivWithinAt f (f' x) s x) (hf : InjOn f s) :
     NullMeasurableSet (f '' s) μ := by
   rcases hs.exists_measurable_subset_ae_eq with ⟨t, ts, ht, t_eq_s⟩
-  have A : f '' s =ᵐ[μ] f '' t := by
+  have A : f '' s =ᵐˢ[μ] f '' t := by
     have : s = t ∪ (s \ t) := by simp [union_eq_self_of_subset_left ts]
     rw [this, image_union]
     refine union_ae_eq_left_of_ae_eq_empty (ae_eq_empty.mpr ?_)

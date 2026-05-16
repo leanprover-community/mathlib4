@@ -41,7 +41,7 @@ protected theorem singularPart [SigmaFinite ν] {f : X → X}
   rcases (μ.mutuallySingular_singularPart ν).symm with ⟨s, hsm, hνs, hμs⟩
   convert hfμ.restrict_preimage hsm using 1
   · refine singularPart_eq_restrict ?_ (hfν.preimage_null hνs)
-    rw [← mem_ae_iff, ← Filter.eventuallyEq_univ,
+    rw [← mem_ae_iff, ← Filter.eventuallyEqSet_univ,
       ae_eq_univ_iff_measure_eq (hfμ.measurable hsm).nullMeasurableSet]
     calc
       μ.singularPart ν (f ⁻¹' s) = (ν.withDensity (μ.rnDeriv ν) + μ.singularPart ν) (f ⁻¹' s) := by
@@ -86,7 +86,7 @@ theorem rnDeriv_comp_aeEq [IsFiniteMeasure ν] {f : X → X}
   have hν_diff : ν (f ⁻¹' s \ s) = ν (s \ f ⁻¹' s) :=
     measure_diff_symm (hfν.measurable hsm).nullMeasurableSet hsm.nullMeasurableSet
       (hfν.measure_preimage hsm.nullMeasurableSet) (by finiteness)
-  suffices f ⁻¹' s =ᵐ[ν] s from this.mem_iff
+  suffices f ⁻¹' s =ᵐˢ[ν] s from this.mem_iff
   suffices ν (f ⁻¹' s \ s) = 0 from (ae_le_set.mpr this).antisymm (ae_le_set.mpr <| hν_diff ▸ this)
   contrapose! hμ_diff with h₀
   apply ne_of_gt

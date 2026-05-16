@@ -226,7 +226,8 @@ theorem exists_ae_eq_range_subset (H : AEMeasurable f μ) {t : Set β} (ht : ∀
 
 theorem exists_measurable_nonneg {β} [Preorder β] [Zero β] {mβ : MeasurableSpace β} {f : α → β}
     (hf : AEMeasurable f μ) (f_nn : ∀ᵐ t ∂μ, 0 ≤ f t) : ∃ g, Measurable g ∧ 0 ≤ g ∧ f =ᵐ[μ] g := by
-  obtain ⟨G, hG_meas, hG_mem, hG_ae_eq⟩ := hf.exists_ae_eq_range_subset f_nn ⟨0, le_rfl⟩
+  obtain ⟨G, hG_meas, hG_mem, hG_ae_eq⟩ :=
+    hf.exists_ae_eq_range_subset (t := Ici 0) f_nn ⟨0, le_rfl⟩
   exact ⟨G, hG_meas, fun x => hG_mem (mem_range_self x), hG_ae_eq⟩
 
 theorem subtype_mk (h : AEMeasurable f μ) {s : Set β} {hfs : ∀ x, f x ∈ s} :
@@ -377,7 +378,7 @@ theorem MeasureTheory.Measure.restrict_map_of_aemeasurable {f : α → δ} (hf :
       ext1 t ht
       simp only [ht, Measure.restrict_apply]
       apply measure_congr
-      apply (EventuallyEq.refl _ _).inter (hf.ae_eq_mk.symm.preimage s)
+      exact .inter .rfl (hf.ae_eq_mk.symm.preimage s)
 
 theorem MeasureTheory.Measure.map_mono_of_aemeasurable {f : α → δ} (h : μ ≤ ν)
     (hf : AEMeasurable f ν) : μ.map f ≤ ν.map f :=

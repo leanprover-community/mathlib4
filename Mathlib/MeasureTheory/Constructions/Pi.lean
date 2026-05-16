@@ -441,13 +441,13 @@ theorem ae_le_pi {β : ι → Type*} [∀ i, Preorder (β i)] {f f' : ∀ i, α 
     (fun (x : ∀ i, α i) i => f i (x i)) ≤ᵐ[Measure.pi μ] fun x i => f' i (x i) :=
   (eventually_all.2 fun i => tendsto_eval_ae_ae.eventually (h i)).mono fun _ hx => hx
 
-theorem ae_le_set_pi {I : Set ι} {s t : ∀ i, Set (α i)} (h : ∀ i ∈ I, s i ≤ᵐ[μ i] t i) :
-    Set.pi I s ≤ᵐ[Measure.pi μ] Set.pi I t :=
+theorem ae_le_set_pi {I : Set ι} {s t : ∀ i, Set (α i)} (h : ∀ i ∈ I, s i ⊆ᵐ[μ i] t i) :
+    Set.pi I s ⊆ᵐ[Measure.pi μ] Set.pi I t :=
   ((eventually_all_finite I.toFinite).2 fun i hi => tendsto_eval_ae_ae.eventually (h i hi)).mono
     fun _ hst hx i hi => hst i hi <| hx i hi
 
-theorem ae_eq_set_pi {I : Set ι} {s t : ∀ i, Set (α i)} (h : ∀ i ∈ I, s i =ᵐ[μ i] t i) :
-    Set.pi I s =ᵐ[Measure.pi μ] Set.pi I t :=
+theorem ae_eq_set_pi {I : Set ι} {s t : ∀ i, Set (α i)} (h : ∀ i ∈ I, s i =ᵐˢ[μ i] t i) :
+    Set.pi I s =ᵐˢ[Measure.pi μ] Set.pi I t :=
   (ae_le_set_pi fun i hi => (h i hi).le).antisymm (ae_le_set_pi fun i hi => (h i hi).symm.le)
 
 lemma pi_map_piOptionEquivProd {β : Option ι → Type*} [∀ i, MeasurableSpace (β i)]
@@ -471,47 +471,47 @@ section Intervals
 variable [∀ i, PartialOrder (α i)] [∀ i, NoAtoms (μ i)]
 
 theorem pi_Iio_ae_eq_pi_Iic {s : Set ι} {f : ∀ i, α i} :
-    (pi s fun i => Iio (f i)) =ᵐ[Measure.pi μ] pi s fun i => Iic (f i) :=
+    (pi s fun i => Iio (f i)) =ᵐˢ[Measure.pi μ] pi s fun i => Iic (f i) :=
   ae_eq_set_pi fun _ _ => Iio_ae_eq_Iic
 
 theorem pi_Ioi_ae_eq_pi_Ici {s : Set ι} {f : ∀ i, α i} :
-    (pi s fun i => Ioi (f i)) =ᵐ[Measure.pi μ] pi s fun i => Ici (f i) :=
+    (pi s fun i => Ioi (f i)) =ᵐˢ[Measure.pi μ] pi s fun i => Ici (f i) :=
   ae_eq_set_pi fun _ _ => Ioi_ae_eq_Ici
 
 theorem univ_pi_Iio_ae_eq_Iic {f : ∀ i, α i} :
-    (pi univ fun i => Iio (f i)) =ᵐ[Measure.pi μ] Iic f := by
+    (pi univ fun i => Iio (f i)) =ᵐˢ[Measure.pi μ] Iic f := by
   rw [← pi_univ_Iic]; exact pi_Iio_ae_eq_pi_Iic
 
 theorem univ_pi_Ioi_ae_eq_Ici {f : ∀ i, α i} :
-    (pi univ fun i => Ioi (f i)) =ᵐ[Measure.pi μ] Ici f := by
+    (pi univ fun i => Ioi (f i)) =ᵐˢ[Measure.pi μ] Ici f := by
   rw [← pi_univ_Ici]; exact pi_Ioi_ae_eq_pi_Ici
 
 theorem pi_Ioo_ae_eq_pi_Icc {s : Set ι} {f g : ∀ i, α i} :
-    (pi s fun i => Ioo (f i) (g i)) =ᵐ[Measure.pi μ] pi s fun i => Icc (f i) (g i) :=
+    (pi s fun i => Ioo (f i) (g i)) =ᵐˢ[Measure.pi μ] pi s fun i => Icc (f i) (g i) :=
   ae_eq_set_pi fun _ _ => Ioo_ae_eq_Icc
 
 theorem pi_Ioo_ae_eq_pi_Ioc {s : Set ι} {f g : ∀ i, α i} :
-    (pi s fun i => Ioo (f i) (g i)) =ᵐ[Measure.pi μ] pi s fun i => Ioc (f i) (g i) :=
+    (pi s fun i => Ioo (f i) (g i)) =ᵐˢ[Measure.pi μ] pi s fun i => Ioc (f i) (g i) :=
   ae_eq_set_pi fun _ _ => Ioo_ae_eq_Ioc
 
 theorem univ_pi_Ioo_ae_eq_Icc {f g : ∀ i, α i} :
-    (pi univ fun i => Ioo (f i) (g i)) =ᵐ[Measure.pi μ] Icc f g := by
+    (pi univ fun i => Ioo (f i) (g i)) =ᵐˢ[Measure.pi μ] Icc f g := by
   rw [← pi_univ_Icc]; exact pi_Ioo_ae_eq_pi_Icc
 
 theorem pi_Ioc_ae_eq_pi_Icc {s : Set ι} {f g : ∀ i, α i} :
-    (pi s fun i => Ioc (f i) (g i)) =ᵐ[Measure.pi μ] pi s fun i => Icc (f i) (g i) :=
+    (pi s fun i => Ioc (f i) (g i)) =ᵐˢ[Measure.pi μ] pi s fun i => Icc (f i) (g i) :=
   ae_eq_set_pi fun _ _ => Ioc_ae_eq_Icc
 
 theorem univ_pi_Ioc_ae_eq_Icc {f g : ∀ i, α i} :
-    (pi univ fun i => Ioc (f i) (g i)) =ᵐ[Measure.pi μ] Icc f g := by
+    (pi univ fun i => Ioc (f i) (g i)) =ᵐˢ[Measure.pi μ] Icc f g := by
   rw [← pi_univ_Icc]; exact pi_Ioc_ae_eq_pi_Icc
 
 theorem pi_Ico_ae_eq_pi_Icc {s : Set ι} {f g : ∀ i, α i} :
-    (pi s fun i => Ico (f i) (g i)) =ᵐ[Measure.pi μ] pi s fun i => Icc (f i) (g i) :=
+    (pi s fun i => Ico (f i) (g i)) =ᵐˢ[Measure.pi μ] pi s fun i => Icc (f i) (g i) :=
   ae_eq_set_pi fun _ _ => Ico_ae_eq_Icc
 
 theorem univ_pi_Ico_ae_eq_Icc {f g : ∀ i, α i} :
-    (pi univ fun i => Ico (f i) (g i)) =ᵐ[Measure.pi μ] Icc f g := by
+    (pi univ fun i => Ico (f i) (g i)) =ᵐˢ[Measure.pi μ] Icc f g := by
   rw [← pi_univ_Icc]; exact pi_Ico_ae_eq_pi_Icc
 
 end Intervals

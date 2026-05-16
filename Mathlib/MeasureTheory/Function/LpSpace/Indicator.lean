@@ -200,7 +200,7 @@ theorem indicatorConstLp_empty :
 
 theorem indicatorConstLp_inj {s t : Set α} (hs : MeasurableSet s) (hsμ : μ s ≠ ∞)
     (ht : MeasurableSet t) (htμ : μ t ≠ ∞) {c : E} (hc : c ≠ 0) :
-    indicatorConstLp p hs hsμ c = indicatorConstLp p ht htμ c ↔ s =ᵐ[μ] t := by
+    indicatorConstLp p hs hsμ c = indicatorConstLp p ht htμ c ↔ s =ᵐˢ[μ] t := by
   simp_rw [← indicator_const_eventuallyEq hc, indicatorConstLp, MemLp.toLp_eq_toLp_iff]
 
 theorem memLp_add_of_disjoint {f g : α → E} (h : Disjoint (support f) (support g))

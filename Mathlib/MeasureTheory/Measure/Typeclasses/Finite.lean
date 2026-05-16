@@ -169,12 +169,12 @@ theorem summable_measure_toReal [hμ : IsFiniteMeasure μ] {f : ℕ → Set α}
   exact ne_of_lt (measure_lt_top _ _)
 
 theorem ae_eq_univ_iff_measure_eq [IsFiniteMeasure μ] (hs : NullMeasurableSet s μ) :
-    s =ᵐ[μ] univ ↔ μ s = μ univ :=
+    s =ᵐˢ[μ] univ ↔ μ s = μ univ :=
   ⟨measure_congr, fun h ↦ ae_eq_of_subset_of_measure_ge (subset_univ _) h.ge hs (by finiteness)⟩
 
 theorem ae_iff_measure_eq [IsFiniteMeasure μ] {p : α → Prop}
     (hp : NullMeasurableSet { a | p a } μ) : (∀ᵐ a ∂μ, p a) ↔ μ { a | p a } = μ univ := by
-  rw [← ae_eq_univ_iff_measure_eq hp, eventuallyEq_univ, eventually_iff]
+  rw [← ae_eq_univ_iff_measure_eq hp, eventuallyEqSet_univ, eventually_iff]
 
 theorem ae_mem_iff_measure_eq [IsFiniteMeasure μ] {s : Set α} (hs : NullMeasurableSet s μ) :
     (∀ᵐ a ∂μ, a ∈ s) ↔ μ s = μ univ :=
@@ -186,7 +186,7 @@ lemma tendsto_measure_biUnion_Ici_zero_of_pairwise_disjoint
     (Es_disj : Pairwise fun n m ↦ Disjoint (Es n) (Es m)) :
     Tendsto (μ ∘ fun n ↦ ⋃ i ≥ n, Es i) atTop (𝓝 0) := by
   have decr : Antitone fun n ↦ ⋃ i ≥ n, Es i :=
-    fun n m hnm ↦ biUnion_mono (fun _ hi ↦ le_trans hnm hi) (fun _ _ ↦ subset_rfl)
+    fun n m hnm ↦ iUnion₂_mono' fun i hi ↦ ⟨i, hnm.trans hi, .rfl⟩
   have nothing : ⋂ n, ⋃ i ≥ n, Es i = ∅ := by
     apply subset_antisymm _ (empty_subset _)
     intro x hx
@@ -563,8 +563,8 @@ theorem isFiniteMeasure_iff_isFiniteMeasureOnCompacts_of_compactSpace [Topologic
 
 /-- Compact covering of a `σ`-compact topological space as
 `MeasureTheory.Measure.FiniteSpanningSetsIn`. -/
-def MeasureTheory.Measure.finiteSpanningSetsInCompact [TopologicalSpace α] [SigmaCompactSpace α]
-    {_ : MeasurableSpace α} (μ : Measure α) [IsLocallyFiniteMeasure μ] :
+noncomputable def MeasureTheory.Measure.finiteSpanningSetsInCompact [TopologicalSpace α]
+    [SigmaCompactSpace α] {_ : MeasurableSpace α} (μ : Measure α) [IsLocallyFiniteMeasure μ] :
     μ.FiniteSpanningSetsIn { K | IsCompact K } where
   set := compactCovering α
   set_mem := isCompact_compactCovering α
@@ -573,8 +573,8 @@ def MeasureTheory.Measure.finiteSpanningSetsInCompact [TopologicalSpace α] [Sig
 
 /-- A locally finite measure on a `σ`-compact topological space admits a finite spanning sequence
 of open sets. -/
-def MeasureTheory.Measure.finiteSpanningSetsInOpen [TopologicalSpace α] [SigmaCompactSpace α]
-    {_ : MeasurableSpace α} (μ : Measure α) [IsLocallyFiniteMeasure μ] :
+noncomputable def MeasureTheory.Measure.finiteSpanningSetsInOpen [TopologicalSpace α]
+    [SigmaCompactSpace α] {_ : MeasurableSpace α} (μ : Measure α) [IsLocallyFiniteMeasure μ] :
     μ.FiniteSpanningSetsIn { K | IsOpen K } where
   set n := ((isCompact_compactCovering α n).exists_open_superset_measure_lt_top μ).choose
   set_mem n :=

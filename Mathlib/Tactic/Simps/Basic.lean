@@ -894,7 +894,7 @@ structure Config where
   /-- List of types in which we are not recursing to generate simplification lemmas.
   E.g. if we write `@[simps] def e : α × β ≃ β × α := ...` we will generate `e_apply` and not
   `e_apply_fst`. -/
-  notRecursive := [`Prod, `PProd, `Opposite, `PreOpposite]
+  notRecursive := [`Prod, `PProd, `Opposite, `PreOpposite, `Set]
   /-- Output debug messages. Not used much, use `set_option simps.debug true` instead. -/
   debug := false
   /-- The stem to use for the projection names. If `none`, the default, use the suffix of the

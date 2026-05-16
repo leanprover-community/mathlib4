@@ -1196,7 +1196,8 @@ of the maximal ideal `p` in `B` and the primes over `p` in `B`.
 -/
 noncomputable def equivPrimesOver (hp : p ≠ 0) :
     {v : HeightOneSpectrum B // v.asIdeal ∣ map (algebraMap A B) p} ≃ p.primesOver B :=
-  Set.BijOn.equiv HeightOneSpectrum.asIdeal
+  Set.BijOn.equiv (s := {v : HeightOneSpectrum B | v.asIdeal ∣ map (algebraMap A B) p})
+    HeightOneSpectrum.asIdeal
     ⟨fun v hv ↦ ⟨v.isPrime, by rwa [liesOver_iff_dvd_map v.isPrime.ne_top]⟩,
     fun _ _ _ _ h ↦ HeightOneSpectrum.ext_iff.mpr h,
     fun Q hQ ↦ ⟨⟨Q, hQ.1, ne_bot_of_mem_primesOver hp hQ⟩,

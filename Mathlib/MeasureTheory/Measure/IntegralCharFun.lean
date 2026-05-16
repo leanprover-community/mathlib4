@@ -112,7 +112,7 @@ lemma measureReal_abs_gt_le_integral_charFun [IsProbabilityMeasure μ] (hr : 0 <
     refine setIntegral_mono_on ?_
       ((integrable_const _).sub (integrable_sinc_const_mul _)).integrableOn ?_ fun x hx ↦ ?_
     · exact Integrable.integrableOn <| by fun_prop
-    · exact MeasurableSet.preimage measurableSet_Ioi (by fun_prop)
+    · exact measurableSet_lt (by fun_prop) (by fun_prop)
     · have hx_ne : 2 * r⁻¹ * x ≠ 0 := by
         intro hx0
         simp only [hx0, Set.mem_setOf_eq, abs_zero] at hx
@@ -156,7 +156,7 @@ lemma measureReal_abs_dual_gt_le_integral_charFunDual {E : Type*} [NormedAddComm
   convert measureReal_abs_gt_le_integral_charFun (μ := μ.map L) hr with x
   · rw [map_measureReal_apply (by fun_prop)]
     · simp
-    · exact MeasurableSet.preimage measurableSet_Ioi (by fun_prop)
+    · exact measurableSet_lt (by fun_prop) (by fun_prop)
   · rw [charFun_map_eq_charFunDual_smul]
 
 /-- A bound on the measure of the set `{x | r < |⟪a, x⟫|}` in terms of the integral of
@@ -170,7 +170,7 @@ lemma measureReal_abs_inner_gt_le_integral_charFun {E : Type*} [SeminormedAddCom
   convert measureReal_abs_gt_le_integral_charFun (μ := μ.map (fun x ↦ ⟪a, x⟫)) hr with x
   · rw [map_measureReal_apply (by fun_prop)]
     · simp
-    · exact MeasurableSet.preimage measurableSet_Ioi (by fun_prop)
+    · exact measurableSet_lt (by fun_prop) (by fun_prop)
   · simp only [charFun_apply, inner_smul_right, conj_trivial, ofReal_mul, RCLike.inner_apply]
     rw [integral_map (by fun_prop) (by fun_prop)]
     simp_rw [real_inner_comm a]

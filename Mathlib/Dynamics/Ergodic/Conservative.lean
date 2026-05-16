@@ -146,7 +146,7 @@ theorem measure_mem_forall_ge_image_notMem_eq_zero (hf : Conservative f μ)
   by_contra H
   have : NullMeasurableSet (s ∩ { x | ∀ m ≥ n, f^[m] x ∉ s }) μ := by
     simp only [setOf_forall, ← compl_setOf]
-    exact hs.inter <| .biInter (to_countable _) fun m _ ↦
+    exact hs.inter <| .iInter fun m ↦ .iInter fun _ ↦
       (hs.preimage <| hf.toQuasiMeasurePreserving.iterate m).compl
   rcases (hf.exists_gt_measure_inter_ne_zero this H) n with ⟨m, hmn, hm⟩
   rcases nonempty_of_measure_ne_zero hm with ⟨x, ⟨_, hxn⟩, hxm, -⟩
@@ -163,8 +163,8 @@ theorem ae_mem_imp_frequently_image_mem (hf : Conservative f μ) (hs : NullMeasu
   simp
 
 theorem inter_frequently_image_mem_ae_eq (hf : Conservative f μ) (hs : NullMeasurableSet s μ) :
-    (s ∩ { x | ∃ᶠ n in atTop, f^[n] x ∈ s } : Set α) =ᵐ[μ] s :=
-  inter_eventuallyEq_left.2 <| hf.ae_mem_imp_frequently_image_mem hs
+    (s ∩ { x | ∃ᶠ n in atTop, f^[n] x ∈ s } : Set α) =ᵐˢ[μ] s :=
+  inter_eventuallyEqSet_left.2 <| hf.ae_mem_imp_frequently_image_mem hs
 
 theorem measure_inter_frequently_image_mem_eq (hf : Conservative f μ) (hs : NullMeasurableSet s μ) :
     μ (s ∩ { x | ∃ᶠ n in atTop, f^[n] x ∈ s }) = μ s :=

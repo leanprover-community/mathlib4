@@ -285,7 +285,7 @@ instance instDiscreteTopStrictPeriods [hG : DiscreteTopology 𝒢] :
   let H : Set (GL (Fin 2) R) := 𝒢 ∩ Set.range upperRightHom
   have hH : DiscreteTopology H := hG.of_subset Set.inter_subset_left
   have : Set.MapsTo upperRightHom 𝒢.strictPeriods H := fun x hx ↦ by
-    grind [SetLike.mem_coe, Subgroup.mem_strictPeriods_iff]
+    grind [Subgroup.mem_strictPeriods_iff]
   exact .of_continuous_injective (continuous_upperRightHom.restrict this)
     (this.restrict_inj.mpr injective_upperRightHom.injOn)
 

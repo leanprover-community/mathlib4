@@ -40,8 +40,10 @@ theorem compactOpen_eq_generateFrom {S : Set (Set X)} {T : Set (Set Y)}
     simp only [TopologicalSpace.nhds_generateFrom]
     obtain ⟨t, htT, htf, hTU, hKT⟩ : ∃ t ⊆ T, t.Finite ∧ (∀ V ∈ t, V ⊆ U) ∧ f '' K ⊆ ⋃₀ t := by
       rw [hT.open_eq_sUnion' hU, mapsTo_iff_image_subset, sUnion_eq_biUnion] at hfKU
+      #adaptation_note /-- `(b := _)` wasn't needed -/
       obtain ⟨t, ht, hfin, htK⟩ :=
-        (hK.image (map_continuous f)).elim_finite_subcover_image (fun V hV ↦ hT.isOpen hV.1) hfKU
+        (hK.image (map_continuous f)).elim_finite_subcover_image (b := {s ∈ T | s ⊆ U})
+          (fun V hV ↦ hT.isOpen hV.1) hfKU
       refine ⟨t, fun _ h ↦ (ht h).1, hfin, fun _ h ↦ (ht h).2, ?_⟩
       rwa [sUnion_eq_biUnion]
     rw [image_subset_iff] at hKT

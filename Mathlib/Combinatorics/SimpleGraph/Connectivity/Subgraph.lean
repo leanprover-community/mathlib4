@@ -369,7 +369,7 @@ theorem map_mapToSubgraph_eq_induce (s : Set V) {u v : V} :
 to its support. -/
 theorem map_mapToSubgraph_eq_induce_id {u v : V} (w : G.Walk u v) :
     w.mapToSubgraph.map (⟨fun v ↦ ⟨v, w.mem_verts_toSubgraph.mp v.prop⟩, w.toSubgraph.adj_sub⟩ :
-      w.toSubgraph.coe →g G.induce _) = w.induce _ (fun _ ↦ id) :=
+      w.toSubgraph.coe →g G.induce _) = w.induce {x | x ∈ w.support} (fun _ ↦ id) :=
   w.map_mapToSubgraph_eq_induce ..
 
 namespace IsPath

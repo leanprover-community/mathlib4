@@ -132,7 +132,7 @@ lemma exists_mem_irreducibleComponents_subset_of_isIrreducible (s : Set X) (hs :
 
 /-- A maximal irreducible set that contains a given point. -/
 @[stacks 004W "(4)"]
-def irreducibleComponent (x : X) : Set X :=
+noncomputable def irreducibleComponent (x : X) : Set X :=
   Classical.choose (exists_preirreducible {x} isPreirreducible_singleton)
 
 theorem irreducibleComponent_property (x : X) :

@@ -68,15 +68,15 @@ theorem eventuallyConst_pred {p : α → Prop} :
   simp [eventuallyConst_pred', or_comm, EventuallyEq]
 
 theorem eventuallyConst_set' {s : Set α} :
-    EventuallyConst s l ↔ (s =ᶠ[l] (∅ : Set α)) ∨ s =ᶠ[l] univ :=
+    EventuallyConst (· ∈ s) l ↔ (s =ᶠˢ[l] (∅ : Set α)) ∨ s =ᶠˢ[l] univ :=
   eventuallyConst_pred'
 
 theorem eventuallyConst_set {s : Set α} :
-    EventuallyConst s l ↔ (∀ᶠ x in l, x ∈ s) ∨ (∀ᶠ x in l, x ∉ s) :=
+    EventuallyConst (· ∈ s) l ↔ (∀ᶠ x in l, x ∈ s) ∨ (∀ᶠ x in l, x ∉ s) :=
   eventuallyConst_pred
 
 theorem eventuallyConst_preimage {s : Set β} {f : α → β} :
-    EventuallyConst (f ⁻¹' s) l ↔ EventuallyConst s (map f l) :=
+    EventuallyConst (· ∈ f ⁻¹' s) l ↔ EventuallyConst (· ∈ s) (map f l) :=
   .rfl
 
 theorem EventuallyEq.eventuallyConst_iff {g : α → β} (h : f =ᶠ[l] g) :
@@ -137,22 +137,22 @@ variable [One β] {s : Set α} {c : β}
 
 @[to_additive]
 lemma of_mulIndicator_const (h : EventuallyConst (s.mulIndicator fun _ ↦ c) l) (hc : c ≠ 1) :
-    EventuallyConst s l := by
+    EventuallyConst (· ∈ s) l := by
   simpa [Function.comp_def, hc, imp_false] using h.comp (· = c)
 
 @[to_additive]
-theorem mulIndicator_const (h : EventuallyConst s l) (c : β) :
+theorem mulIndicator_const (h : EventuallyConst (· ∈ s) l) (c : β) :
     EventuallyConst (s.mulIndicator fun _ ↦ c) l := by
   classical exact h.comp (if · then c else 1)
 
 @[to_additive]
 theorem mulIndicator_const_iff_of_ne (hc : c ≠ 1) :
-    EventuallyConst (s.mulIndicator fun _ ↦ c) l ↔ EventuallyConst s l :=
+    EventuallyConst (s.mulIndicator fun _ ↦ c) l ↔ EventuallyConst (· ∈ s) l :=
   ⟨(of_mulIndicator_const · hc), (mulIndicator_const · c)⟩
 
 @[to_additive (attr := simp)]
 theorem mulIndicator_const_iff :
-    EventuallyConst (s.mulIndicator fun _ ↦ c) l ↔ c = 1 ∨ EventuallyConst s l := by
+    EventuallyConst (s.mulIndicator fun _ ↦ c) l ↔ c = 1 ∨ EventuallyConst (· ∈ s) l := by
   rcases eq_or_ne c 1 with rfl | hc <;> simp [mulIndicator_const_iff_of_ne, *]
 
 end EventuallyConst

@@ -300,7 +300,8 @@ theorem encard_singleton_inter (s : Set α) (x : α) : ({x} ∩ s).encard ≤ 1 
 
 theorem encard_diff_singleton_add_one (h : a ∈ s) :
     (s \ {a}).encard + 1 = s.encard := by
-  rw [← encard_insert_of_notMem (fun h ↦ h.2 rfl), insert_diff_singleton, insert_eq_of_mem h]
+  rw [← encard_insert_of_notMem, insert_diff_singleton, insert_eq_of_mem h]
+  simp
 
 set_option backward.isDefEq.respectTransparency false in
 theorem encard_diff_singleton_of_mem (h : a ∈ s) :
@@ -342,6 +343,111 @@ theorem eq_empty_or_encard_eq_top_or_encard_diff_singleton_lt (s : Set α) :
 
 end InsertErase
 
+section Function
+
+variable {s : Set α} {t : Set β} {f : α → β}
+
+theorem InjOn.encard_image (h : InjOn f s) : (f '' s).encard = s.encard := by
+  rw [encard, ENat.card_image_of_injOn h, encard]
+
+theorem encard_congr (e : s ≃ t) : s.encard = t.encard := ENat.card_congr e
+
+theorem _root_.Function.Injective.encard_image (hf : f.Injective) (s : Set α) :
+    (f '' s).encard = s.encard :=
+  hf.injOn.encard_image
+
+theorem _root_.Function.Injective.encard_range (hf : f.Injective) :
+    (range f).encard = ENat.card α := by
+  rw [← image_univ, hf.encard_image, encard_univ]
+
+theorem _root_.Function.Embedding.encard_le (e : s ↪ t) : s.encard ≤ t.encard :=
+  ENat.card_le_card_of_injective e.injective
+
+theorem encard_image_le (f : α → β) (s : Set α) : (f '' s).encard ≤ s.encard := by
+  obtain (h | h) := isEmpty_or_nonempty α
+  · rw [s.eq_empty_of_isEmpty]; simp
+  grw [← (f.invFunOn_injOn_image s).encard_image, f.invFunOn_image_image_subset s]
+
+theorem Finite.injOn_of_encard_image_eq (hs : s.Finite) (h : (f '' s).encard = s.encard) :
+    InjOn f s := by
+  obtain (h' | hne) := isEmpty_or_nonempty α
+  · simp
+  rw [← (f.invFunOn_injOn_image s).encard_image] at h
+  rw [injOn_iff_invFunOn_image_image_eq_self]
+  exact hs.eq_of_subset_of_encard_le' (f.invFunOn_image_image_subset s) h.symm.le
+
+theorem encard_preimage_of_injective_subset_range (hf : f.Injective) (ht : t ⊆ range f) :
+    (f ⁻¹' t).encard = t.encard := by
+  rw [← hf.encard_image, image_preimage_eq_inter_range, inter_eq_self_of_subset_left ht]
+
+lemma encard_preimage_of_bijective (hf : f.Bijective) (t : Set β) : (f ⁻¹' t).encard = t.encard :=
+  encard_preimage_of_injective_subset_range hf.injective (by simp [hf.surjective.range_eq])
+
+theorem encard_le_encard_of_injOn (hf : MapsTo f s t) (f_inj : InjOn f s) :
+    s.encard ≤ t.encard := by
+  grw [← f_inj.encard_image, hf.image_subset]
+
+open Notation in
+lemma encard_preimage_val_le_encard_left (P Q : Set α) : (P ↓∩ Q).encard ≤ P.encard :=
+  (Function.Embedding.subtype _).encard_le
+
+open Notation in
+lemma encard_preimage_val_le_encard_right (P Q : Set α) : (P ↓∩ Q).encard ≤ Q.encard :=
+  Function.Embedding.encard_le ⟨fun ⟨⟨x, _⟩, hx⟩ ↦ ⟨x, hx⟩, fun _ _ h ↦ by
+    simpa [Subtype.coe_inj] using h⟩
+
+theorem exists_injective_range_subset_of_le_encard [Countable α] {s : Set β}
+    (h : ENat.card α ≤ s.encard) : ∃ f : α → β, f.Injective ∧ Set.range f ⊆ s := by
+  simp only [encard, ENat.card_le_card_iff] at h
+  rcases h with ⟨f⟩
+  use Subtype.val ∘ f
+  simp [f.injective, range_subset_iff]
+
+theorem Countable.exists_injOn_of_encard_le [Nonempty β] {s : Set α} {t : Set β} (hs : s.Countable)
+    (hle : s.encard ≤ t.encard) : ∃ (f : α → β), MapsTo f s t ∧ InjOn f s := by
+  have := hs.to_subtype
+  rcases exists_injective_range_subset_of_le_encard hle with ⟨f, hf, hft⟩
+  lift f to α → β using trivial
+  use f
+  simp_all [range_subset_iff, MapsTo, injOn_iff_injective, Set.restrict_def]
+
+theorem Finite.exists_injOn_of_encard_le [Nonempty β] {s : Set α} {t : Set β} (hs : s.Finite)
+    (hle : s.encard ≤ t.encard) : ∃ (f : α → β), MapsTo f s t ∧ InjOn f s :=
+  hs.countable.exists_injOn_of_encard_le hle
+
+set_option backward.isDefEq.respectTransparency false in
+theorem encard_eq_natCast_iff_fin {n : ℕ} :
+    s.encard = n ↔ ∃ f : Fin n → α, f.Injective ∧ Set.range f = s := by
+  constructor
+  · intro hn
+    use (↑) ∘ ((Set.finite_of_encard_eq_coe hn).toFinset.equivFinOfCardEq ?_).symm
+    · simp [Equiv.injective]
+    · rw [← Nat.cast_inj (R := ℕ∞), ← hn, ← Finite.encard_eq_coe_toFinset_card]
+  · rintro ⟨f, hfi, hf⟩
+    simp [← hf, hfi.encard_range]
+
+theorem Finite.exists_bijOn_of_encard_eq [Nonempty β] (hs : s.Finite) (h : s.encard = t.encard) :
+    ∃ (f : α → β), BijOn f s t := by
+  obtain ⟨f, hf, hinj⟩ := hs.exists_injOn_of_encard_le h.le; use f
+  convert hinj.bijOn_image
+  rw [(hs.image f).eq_of_subset_of_encard_le (image_subset_iff.mpr hf)
+    (h.symm.trans hinj.encard_image.symm).le]
+
+/-- A version of the pigeonhole principle for `Set`s rather than `Finset`s.
+
+See also `Finset.exists_ne_map_eq_of_card_lt_of_maps_to` and
+`Set.exists_ne_map_eq_of_ncard_lt_of_maps_to`. -/
+lemma exists_ne_map_eq_of_encard_lt_of_maps_to (hc : t.encard < s.encard) (hf : MapsTo f s t) :
+    ∃ᵉ (a₁ ∈ s) (a₂ ∈ s), a₁ ≠ a₂ ∧ f a₁ = f a₂ := by
+  contrapose! hc
+  suffices Function.Injective (hf.restrict f) by
+    let f' : s ↪ t := ⟨hf.restrict, this⟩
+    exact f'.encard_le
+  simpa only [hf.restrict_inj, not_imp_not] using hc
+
+end Function
+
+
 section SmallSets
 
 set_option backward.isDefEq.respectTransparency false in
@@ -349,10 +455,11 @@ theorem encard_pair {x y : α} (hne : x ≠ y) : ({x, y} : Set α).encard = 2 :=
   rw [encard_insert_of_notMem (by simpa), ← one_add_one_eq_two,
     WithTop.add_right_inj WithTop.one_ne_top, encard_singleton]
 
+set_option pp.funBinderTypes true in
 theorem encard_eq_one : s.encard = 1 ↔ ∃ x, s = {x} := by
-  refine ⟨fun h ↦ ?_, fun ⟨x, hx⟩ ↦ by rw [hx, encard_singleton]⟩
-  obtain ⟨x, hx⟩ := nonempty_of_encard_ne_zero (s := s) (by rw [h]; simp)
-  exact ⟨x, ((finite_singleton x).eq_of_subset_of_encard_le (by simpa) (by simp [h])).symm⟩
+  rw [← Nat.cast_one, encard_eq_natCast_iff_fin]
+  simp [(Equiv.piUnique fun _ : Fin 1 ↦ α).symm.surjective.exists,
+    Function.injective_of_subsingleton, Set.range_unique, eq_comm]
 
 theorem encard_le_one_iff_eq : s.encard ≤ 1 ↔ s = ∅ ∨ ∃ x, s = {x} := by
   rw [le_iff_lt_or_eq, lt_iff_not_ge, ENat.one_le_iff_ne_zero, not_not, encard_eq_zero,
@@ -381,47 +488,30 @@ theorem exists_ne_of_one_lt_encard (h : 1 < s.encard) (a : α) : ∃ b ∈ s, b 
   apply hne
   rw [h' b hb, h' b' hb']
 
-set_option backward.isDefEq.respectTransparency false in
 theorem encard_eq_two : s.encard = 2 ↔ ∃ x y, x ≠ y ∧ s = {x, y} := by
   refine ⟨fun h ↦ ?_, fun ⟨x, y, hne, hs⟩ ↦ by rw [hs, encard_pair hne]⟩
-  obtain ⟨x, hx⟩ := nonempty_of_encard_ne_zero (s := s) (by rw [h]; simp)
-  rw [← insert_eq_of_mem hx, ← insert_diff_singleton, encard_insert_of_notMem (fun h ↦ h.2 rfl),
-    ← one_add_one_eq_two, WithTop.add_right_inj (WithTop.one_ne_top), encard_eq_one] at h
-  obtain ⟨y, h⟩ := h
-  refine ⟨x, y, by rintro rfl; exact (h.symm.subset rfl).2 rfl, ?_⟩
-  rw [← h, insert_diff_singleton, insert_eq_of_mem hx]
+  rw [← Nat.cast_ofNat, encard_eq_natCast_iff_fin] at h
+  rcases h with ⟨f, hfi, rfl⟩
+  use f 0, f 1, hfi.ne (by decide)
+  simp [Fin.range_fin_succ, Set.range_unique, Fin.tail]
 
-set_option backward.isDefEq.respectTransparency false in
-theorem encard_eq_three {α : Type u_1} {s : Set α} :
-    encard s = 3 ↔ ∃ x y z, x ≠ y ∧ x ≠ z ∧ y ≠ z ∧ s = {x, y, z} := by
+theorem encard_eq_three : encard s = 3 ↔ ∃ x y z, x ≠ y ∧ x ≠ z ∧ y ≠ z ∧ s = {x, y, z} := by
   refine ⟨fun h ↦ ?_, fun ⟨x, y, z, hxy, hyz, hxz, hs⟩ ↦ ?_⟩
-  · obtain ⟨x, hx⟩ := nonempty_of_encard_ne_zero (s := s) (by rw [h]; simp)
-    rw [← insert_eq_of_mem hx, ← insert_diff_singleton,
-      encard_insert_of_notMem (fun h ↦ h.2 rfl), (by exact rfl : (3 : ℕ∞) = 2 + 1),
-      WithTop.add_right_inj WithTop.one_ne_top, encard_eq_two] at h
-    obtain ⟨y, z, hne, hs⟩ := h
-    refine ⟨x, y, z, ?_, ?_, hne, ?_⟩
-    · rintro rfl; exact (hs.symm.subset (Or.inl rfl)).2 rfl
-    · rintro rfl; exact (hs.symm.subset (Or.inr rfl)).2 rfl
-    rw [← hs, insert_diff_singleton, insert_eq_of_mem hx]
-  rw [hs, encard_insert_of_notMem, encard_insert_of_notMem, encard_singleton] <;> aesop
+  · rw [← Nat.cast_ofNat, encard_eq_natCast_iff_fin] at h
+    rcases h with ⟨f, hfi, rfl⟩
+    use f 0, f 1, f 2
+    simp [Fin.range_fin_succ, Set.range_unique, Fin.tail, hfi.eq_iff]
+  · rw [hs, encard_insert_of_notMem, encard_insert_of_notMem, encard_singleton] <;> grind
 
-set_option backward.isDefEq.respectTransparency false in
-theorem encard_eq_four {α : Type u_1} {s : Set α} :
+theorem encard_eq_four :
     encard s = 4 ↔ ∃ x y z w, x ≠ y ∧ x ≠ z ∧ x ≠ w ∧ y ≠ z ∧ y ≠ w ∧ z ≠ w ∧ s = {x, y, z, w} := by
   refine ⟨fun h ↦ ?_, fun ⟨x, y, z, w, hxy, hxz, hxw, hyz, hyw, hzw, hs⟩ ↦ ?_⟩
-  · obtain ⟨x, hx⟩ := nonempty_of_encard_ne_zero (s := s) (by rw [h]; simp)
-    rw [← insert_eq_of_mem hx, ← insert_diff_singleton,
-      encard_insert_of_notMem (fun h ↦ h.2 rfl), (by exact rfl : (4 : ℕ∞) = 3 + 1),
-      WithTop.add_right_inj WithTop.one_ne_top, encard_eq_three] at h
-    obtain ⟨y, z, w, hyz, hyw, hzw, hs⟩ := h
-    refine ⟨x, y, z, w, ?_, ?_, ?_, hyz, hyw, hzw, ?_⟩
-    · rintro rfl; exact (hs.symm.subset (Or.inl rfl)).2 rfl
-    · rintro rfl; exact (hs.symm.subset (Or.inr (Or.inl rfl))).2 rfl
-    · rintro rfl; exact (hs.symm.subset (Or.inr (Or.inr rfl))).2 rfl
-    rw [← hs, insert_diff_singleton, insert_eq_of_mem hx]
-  rw [hs, encard_insert_of_notMem, encard_insert_of_notMem, encard_insert_of_notMem,
-    encard_singleton] <;> grind
+  · rw [← Nat.cast_ofNat, encard_eq_natCast_iff_fin] at h
+    rcases h with ⟨f, hfi, rfl⟩
+    use f 0, f 1, f 2, f 3
+    simp [Fin.range_fin_succ, Set.range_unique, Fin.tail, hfi.eq_iff]
+  · rw [hs, encard_insert_of_notMem, encard_insert_of_notMem, encard_insert_of_notMem,
+      encard_singleton] <;> grind
 
 theorem Nat.encard_range (k : ℕ) : {i | i < k}.encard = k := by
   convert encard_coe_eq_coe_finsetCard (Finset.range k) using 1
@@ -462,105 +552,6 @@ theorem exists_superset_subset_encard_eq {k : ℕ∞}
   obtain ⟨r', hr', rfl⟩ := exists_subset_encard_eq hk
   refine ⟨s ∪ r', subset_union_left, union_subset hst (hr'.trans diff_subset), ?_⟩
   rw [encard_union_eq (disjoint_of_subset_right hr' disjoint_sdiff_right)]
-
-section Function
-
-variable {s : Set α} {t : Set β} {f : α → β}
-
-theorem InjOn.encard_image (h : InjOn f s) : (f '' s).encard = s.encard := by
-  rw [encard, ENat.card_image_of_injOn h, encard]
-
-theorem encard_congr (e : s ≃ t) : s.encard = t.encard := ENat.card_congr e
-
-theorem _root_.Function.Injective.encard_image (hf : f.Injective) (s : Set α) :
-    (f '' s).encard = s.encard :=
-  hf.injOn.encard_image
-
-theorem _root_.Function.Injective.encard_range (hf : f.Injective) :
-    ENat.card α ≤ (range f).encard := by
-  rw [← image_univ, hf.encard_image, encard_univ]
-
-theorem _root_.Function.Embedding.encard_le (e : s ↪ t) : s.encard ≤ t.encard :=
-  ENat.card_le_card_of_injective e.injective
-
-theorem encard_image_le (f : α → β) (s : Set α) : (f '' s).encard ≤ s.encard := by
-  obtain (h | h) := isEmpty_or_nonempty α
-  · rw [s.eq_empty_of_isEmpty]; simp
-  grw [← (f.invFunOn_injOn_image s).encard_image, f.invFunOn_image_image_subset s]
-
-theorem Finite.injOn_of_encard_image_eq (hs : s.Finite) (h : (f '' s).encard = s.encard) :
-    InjOn f s := by
-  obtain (h' | hne) := isEmpty_or_nonempty α
-  · simp
-  rw [← (f.invFunOn_injOn_image s).encard_image] at h
-  rw [injOn_iff_invFunOn_image_image_eq_self]
-  exact hs.eq_of_subset_of_encard_le' (f.invFunOn_image_image_subset s) h.symm.le
-
-theorem encard_preimage_of_injective_subset_range (hf : f.Injective) (ht : t ⊆ range f) :
-    (f ⁻¹' t).encard = t.encard := by
-  rw [← hf.encard_image, image_preimage_eq_inter_range, inter_eq_self_of_subset_left ht]
-
-lemma encard_preimage_of_bijective (hf : f.Bijective) (t : Set β) : (f ⁻¹' t).encard = t.encard :=
-  encard_preimage_of_injective_subset_range hf.injective (by simp [hf.surjective.range_eq])
-
-theorem encard_le_encard_of_injOn (hf : MapsTo f s t) (f_inj : InjOn f s) :
-    s.encard ≤ t.encard := by
-  grw [← f_inj.encard_image, hf.image_subset]
-
-open Notation in
-lemma encard_preimage_val_le_encard_left (P Q : Set α) : (P ↓∩ Q).encard ≤ P.encard :=
-  (Function.Embedding.subtype _).encard_le
-
-open Notation in
-lemma encard_preimage_val_le_encard_right (P Q : Set α) : (P ↓∩ Q).encard ≤ Q.encard :=
-  Function.Embedding.encard_le ⟨fun ⟨⟨x, _⟩, hx⟩ ↦ ⟨x, hx⟩, fun _ _ h ↦ by
-    simpa [Subtype.coe_inj] using h⟩
-
-set_option backward.isDefEq.respectTransparency false in
-theorem Finite.exists_injOn_of_encard_le [Nonempty β] {s : Set α} {t : Set β} (hs : s.Finite)
-    (hle : s.encard ≤ t.encard) : ∃ (f : α → β), s ⊆ f ⁻¹' t ∧ InjOn f s := by
-  classical
-  obtain (rfl | h | ⟨a, has, -⟩) := s.eq_empty_or_encard_eq_top_or_encard_diff_singleton_lt
-  · simp
-  · exact (encard_ne_top_iff.mpr hs h).elim
-  obtain ⟨b, hbt⟩ := encard_pos.1 ((encard_pos.2 ⟨_, has⟩).trans_le hle)
-  have hle' : (s \ {a}).encard ≤ (t \ {b}).encard := by
-    rwa [← WithTop.add_le_add_iff_right WithTop.one_ne_top,
-    encard_diff_singleton_add_one has, encard_diff_singleton_add_one hbt]
-  obtain ⟨f₀, hf₀s, hinj⟩ := exists_injOn_of_encard_le hs.diff hle'
-  simp only [preimage_diff, subset_def, mem_diff, mem_singleton_iff, mem_preimage, and_imp] at hf₀s
-  use Function.update f₀ a b
-  rw [← insert_eq_of_mem has, ← insert_diff_singleton, injOn_insert (fun h ↦ h.2 rfl)]
-  simp only [mem_diff, mem_singleton_iff, insert_diff_singleton, subset_def,
-    mem_insert_iff, mem_preimage, Function.update_apply, forall_eq_or_imp, ite_true, and_imp,
-    mem_image, ite_eq_left_iff, not_exists, not_and, not_forall, exists_prop, and_iff_right hbt]
-  refine ⟨?_, ?_, fun x hxs hxa ↦ ⟨hxa, (hf₀s x hxs hxa).2⟩⟩
-  · rintro x hx; split_ifs with h
-    · assumption
-    · exact (hf₀s x hx h).1
-  exact InjOn.congr hinj (fun x ⟨_, hxa⟩ ↦ by rwa [Function.update_of_ne])
-termination_by encard s
-
-theorem Finite.exists_bijOn_of_encard_eq [Nonempty β] (hs : s.Finite) (h : s.encard = t.encard) :
-    ∃ (f : α → β), BijOn f s t := by
-  obtain ⟨f, hf, hinj⟩ := hs.exists_injOn_of_encard_le h.le; use f
-  convert hinj.bijOn_image
-  rw [(hs.image f).eq_of_subset_of_encard_le (image_subset_iff.mpr hf)
-    (h.symm.trans hinj.encard_image.symm).le]
-
-/-- A version of the pigeonhole principle for `Set`s rather than `Finset`s.
-
-See also `Finset.exists_ne_map_eq_of_card_lt_of_maps_to` and
-`Set.exists_ne_map_eq_of_ncard_lt_of_maps_to`. -/
-lemma exists_ne_map_eq_of_encard_lt_of_maps_to (hc : t.encard < s.encard) (hf : MapsTo f s t) :
-    ∃ᵉ (a₁ ∈ s) (a₂ ∈ s), a₁ ≠ a₂ ∧ f a₁ = f a₂ := by
-  contrapose! hc
-  suffices Function.Injective (hf.restrict f) by
-    let f' : s ↪ t := ⟨hf.restrict, this⟩
-    exact f'.encard_le
-  simpa only [hf.restrict_inj, not_imp_not] using hc
-
-end Function
 
 section ncard
 

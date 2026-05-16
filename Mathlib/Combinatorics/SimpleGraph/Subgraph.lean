@@ -1347,13 +1347,18 @@ instance instDecidableRel_deleteVerts_adj (u : Set V) [r : DecidableRel G.Adj] :
     else
       .isFalse <| fun hadj ↦ h <| Subgraph.coe_adj_sub _ _ _ hadj
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Equivalence between a subgraph with deleted vertices and its corresponding simple graph. -/
 def coeDeleteVertsIso (s : Set V) :
     (G'.deleteVerts s).coe ≃g G'.coe.induce {v : G'.verts | ↑v ∉ s} where
-  toFun := fun ⟨v, hv⟩ ↦ ⟨⟨v, Set.mem_of_mem_inter_left hv⟩, by aesop⟩
-  invFun := fun ⟨v, hv⟩ ↦ ⟨v, by simp_all⟩
-  map_rel_iff' := by simp
+  toEquiv := .symm <| Equiv.subtypeSubtypeEquivSubtypeInter (· ∈ G'.verts) (· ∉ s)
+  map_rel_iff' := by
+    intro a b
+    simp only [SimpleGraph.induce_adj, coe_adj, deleteVerts_adj, deleteVerts_verts,
+      a.2.1, a.2.2, b.2.1, b.2.2, not_false_iff, true_and]
+    #adaptation_note /-- Lean fails to rewrite using
+    `Equiv.subtypeSubtypeEquivSubtypeInter_symm_apply_coe_coe`, probably because of a mismatch
+    in type at some reducibility level. -/
+    rfl
 
 end DeleteVerts
 

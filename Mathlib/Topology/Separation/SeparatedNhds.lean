@@ -86,7 +86,7 @@ theorem hasSeparatingCovers_iff_separatedNhds {s t : Set X} :
     intro m xinvm
     have n_le_m : n ≤ m := by
       by_contra m_gt_n
-      exact xinun.2 (subset_closure (mem_biUnion (le_of_lt (not_le.mp m_gt_n)) xinvm))
+      exact xinun.2 (subset_closure (mem_iUnion₂_of_mem (le_of_not_ge m_gt_n) xinvm))
     exact subset_closure (mem_biUnion n_le_m xinun.1)
   · rintro ⟨U, V, U_open, V_open, h_sub_U, k_sub_V, UV_dis⟩
     exact

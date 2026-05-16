@@ -56,7 +56,7 @@ protected theorem IsGδ.singleton [FirstCountableTopology X] [T1Space X] (x : X)
     IsGδ ({x} : Set X) := by
   rcases (nhds_basis_opens x).exists_antitone_subbasis with ⟨U, hU, h_basis⟩
   rw [← biInter_basis_nhds h_basis.toHasBasis]
-  exact .biInter (to_countable _) fun n _ => (hU n).2.isGδ
+  exact .iInter fun n ↦ .iInter fun _ => (hU n).2.isGδ
 
 
 theorem Set.Finite.isGδ [FirstCountableTopology X] {s : Set X} [T1Space X] (hs : s.Finite) :

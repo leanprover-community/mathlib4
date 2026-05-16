@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Group.Nat.Range
 public import Mathlib.Data.Set.Finite.Basic
+public import Mathlib.Tactic.DefEqAbuse
 
 /-!
 # Counting on ℕ

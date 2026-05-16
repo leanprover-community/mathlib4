@@ -215,7 +215,7 @@ protected def induce {u v : V} :
   | .cons (v := u') huu' w, hw => by simp [map_induce]
 
 lemma map_induce_induceHomOfLE (hs : s ⊆ s') {u v : V} : ∀ (w : G.Walk u v) (hw),
-    (w.induce s hw).map (G.induceHomOfLE hs).toHom = w.induce s' (subset_trans hw hs)
+    (w.induce s hw).map (G.induceHomOfLE hs).toHom = w.induce s' (fun x hx ↦ hs (hw x hx))
   | .nil, hw => rfl
   | .cons (v := u') huu' w, hw => by simp [map_induce_induceHomOfLE]
 

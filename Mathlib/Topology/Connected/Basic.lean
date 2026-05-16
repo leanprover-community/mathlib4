@@ -480,7 +480,7 @@ open Classical in
 component of `x` in `F` is the connected component of `x` in the subtype `F` seen as
 a set in `α`. This definition does not make sense if `x` is not in `F` so we return the
 empty set in this case. -/
-def connectedComponentIn (F : Set α) (x : α) : Set α :=
+noncomputable def connectedComponentIn (F : Set α) (x : α) : Set α :=
   if h : x ∈ F then (↑) '' connectedComponent (⟨x, h⟩ : F) else ∅
 
 theorem connectedComponentIn_eq_image {F : Set α} {x : α} (h : x ∈ F) :

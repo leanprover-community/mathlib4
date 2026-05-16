@@ -809,12 +809,12 @@ section Topology
 -/
 
 lemma isClosed_fd : IsClosed 𝒟 := by
-  refine .inter (.preimage (by fun_prop) isClosed_Ici) ?_
-  exact isClosed_le (f := fun z : ℍ ↦ |z.re|) (by fun_prop) continuous_const
+  rw [fd, Set.setOf_and]
+  apply_rules [IsClosed.inter, isClosed_le] <;> fun_prop
 
 lemma isOpen_fdo : IsOpen 𝒟ᵒ := by
-  refine .inter (.preimage (by fun_prop) isOpen_Ioi) ?_
-  exact isOpen_lt (f := fun z : ℍ ↦ |z.re|) (by fun_prop) continuous_const
+  rw [fdo, Set.setOf_and]
+  apply_rules [IsOpen.inter, isOpen_lt] <;> fun_prop
 
 /-- Explicit formula for the image of `ModularGroup.fdo` in `ℂ`. -/
 lemma coe_fdo : (↑) '' 𝒟ᵒ = {z : ℂ | 0 < z.im ∧ 1 < ‖z‖ ∧ |z.re| < 1/2} := by
@@ -838,10 +838,8 @@ since the inclusion of `ℍ` in `ℂ` is an open but not a closed map.
 lemma isClosed_coe_fd : IsClosed ((↑) '' 𝒟 : Set ℂ) := by
   rw [coe_fd]
   have : IsClosed {z : ℂ | 0 ≤ z.im ∧ 1 ≤ ‖z‖ ∧ |z.re| ≤ 1/2} := by
-    refine .inter ?_ (.inter ?_ ?_)
-    · exact isClosed_le continuous_const Complex.continuous_im
-    · exact isClosed_le continuous_const continuous_norm
-    · exact isClosed_le (continuous_abs.comp Complex.continuous_re) continuous_const
+    rw [Set.setOf_and, Set.setOf_and]
+    apply_rules [IsClosed.inter, isClosed_le] <;> fun_prop
   convert this using 1
   ext x
   refine ⟨fun ⟨him, hre, hnorm⟩ ↦ ⟨him.le, hre, hnorm⟩, fun ⟨him, hre, hnorm⟩ ↦ ⟨?_, hre, hnorm⟩⟩
@@ -962,6 +960,7 @@ lemma isCompact_truncatedFundamentalDomain (y : ℝ) :
     Metric.isCompact_iff_isClosed_bounded]
   constructor
   · -- show closed
+    simp only [Set.setOf_and]
     apply (isClosed_le continuous_const Complex.continuous_im).inter
     apply (isClosed_le Complex.continuous_im continuous_const).inter
     apply (isClosed_le (continuous_abs.comp Complex.continuous_re) continuous_const).inter

@@ -408,7 +408,8 @@ theorem circleIntegral_sub_center_inv_smul_of_differentiable_on_off_countable_of
       have hc' : ContinuousOn (fun z => (z - c)⁻¹) (sphere c r) :=
         (continuousOn_id.sub continuousOn_const).inv₀ fun z hz => sub_ne_zero.2 <| hzne _ hz
       rw [circleIntegral.integral_sub] <;> refine (hc'.smul ?_).circleIntegrable hr0.le
-      · exact hc.mono <| subset_inter
+      · rw [diff_eq] at hc
+        exact hc.mono <| subset_inter
           (sphere_subset_closedBall.trans <| closedBall_subset_closedBall hrR) hzne
       · exact continuousOn_const
     _ ≤ 2 * π * r * (r⁻¹ * (ε / (2 * π))) := by

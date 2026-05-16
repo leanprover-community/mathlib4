@@ -118,7 +118,7 @@ theorem det_fderivPolarCoordSymm (p : ℝ × ℝ) :
 instance : Measure.IsAddHaarMeasure volume (G := ℝ × ℝ) :=
   Measure.prod.instIsAddHaarMeasure _ _
 
-theorem polarCoord_source_ae_eq_univ : polarCoord.source =ᵐ[volume] univ := by
+theorem polarCoord_source_ae_eq_univ : polarCoord.source =ᵐˢ[volume] univ := by
   have A : polarCoord.sourceᶜ ⊆ LinearMap.ker (LinearMap.snd ℝ ℝ ℝ) := by
     intro x hx
     simp only [polarCoord_source, compl_union, mem_inter_iff, mem_compl_iff, mem_setOf_eq, not_lt,
@@ -257,7 +257,7 @@ theorem det_fderivPiPolarCoordSymm (p : ι → ℝ × ℝ) :
 
 theorem pi_polarCoord_symm_target_ae_eq_univ :
     (Pi.map (fun _ : ι ↦ polarCoord.symm) '' Set.univ.pi fun _ ↦ polarCoord.target)
-        =ᵐ[volume] Set.univ := by
+        =ᵐˢ[volume] Set.univ := by
   rw [Set.piMap_image_univ_pi, polarCoord.symm_image_target_eq_source, volume_pi, ← Set.pi_univ]
   exact ae_eq_set_pi fun _ _ ↦ polarCoord_source_ae_eq_univ
 

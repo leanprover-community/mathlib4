@@ -274,8 +274,7 @@ theorem measure_diff_le_iff_le_add (hs : NullMeasurableSet s μ) (hst : s ⊆ t)
   rw [measure_diff hst hs hs', tsub_le_iff_left]
 
 theorem measure_eq_measure_of_null_diff {s t : Set α} (hst : s ⊆ t) (h_nulldiff : μ (t \ s) = 0) :
-    μ s = μ t := measure_congr <|
-      EventuallyLE.antisymm (HasSubset.Subset.eventuallyLE hst) (ae_le_set.mpr h_nulldiff)
+    μ s = μ t := measure_congr <| hst.eventually.antisymm (ae_le_set.mpr h_nulldiff)
 
 theorem measure_eq_measure_of_between_null_diff {s₁ s₂ s₃ : Set α} (h12 : s₁ ⊆ s₂) (h23 : s₂ ⊆ s₃)
     (h_nulldiff : μ (s₃ \ s₁) = 0) : μ s₁ = μ s₂ ∧ μ s₂ = μ s₃ := by
@@ -310,29 +309,27 @@ lemma measure_inter_conull (ht : μ tᶜ = 0) : μ (s ∩ t) = μ s := by
   rw [← diff_compl, measure_diff_null ht]
 
 @[simp]
-theorem union_ae_eq_left_iff_ae_subset : (s ∪ t : Set α) =ᵐ[μ] s ↔ t ≤ᵐ[μ] s := by
+theorem union_ae_eq_left_iff_ae_subset : (s ∪ t : Set α) =ᵐˢ[μ] s ↔ t ⊆ᵐ[μ] s := by
   rw [ae_le_set]
   refine
     ⟨fun h => by simpa only [union_diff_left] using (ae_eq_set.mp h).1, fun h =>
-      eventuallyLE_antisymm_iff.mpr
-        ⟨by rwa [ae_le_set, union_diff_left],
-          HasSubset.Subset.eventuallyLE subset_union_left⟩⟩
+      EventuallySubset.antisymm (by rwa [ae_le_set, union_diff_left]) subset_union_left.eventually⟩
 
 @[simp]
-theorem union_ae_eq_right_iff_ae_subset : (s ∪ t : Set α) =ᵐ[μ] t ↔ s ≤ᵐ[μ] t := by
+theorem union_ae_eq_right_iff_ae_subset : (s ∪ t : Set α) =ᵐˢ[μ] t ↔ s ⊆ᵐ[μ] t := by
   rw [union_comm, union_ae_eq_left_iff_ae_subset]
 
-theorem ae_eq_of_ae_subset_of_measure_ge (h₁ : s ≤ᵐ[μ] t) (h₂ : μ t ≤ μ s)
-    (hsm : NullMeasurableSet s μ) (ht : μ t ≠ ∞) : s =ᵐ[μ] t := by
+theorem ae_eq_of_ae_subset_of_measure_ge (h₁ : s ⊆ᵐ[μ] t) (h₂ : μ t ≤ μ s)
+    (hsm : NullMeasurableSet s μ) (ht : μ t ≠ ∞) : s =ᵐˢ[μ] t := by
   refine eventuallyLE_antisymm_iff.mpr ⟨h₁, ae_le_set.mpr ?_⟩
   replace h₂ : μ t = μ s := h₂.antisymm (measure_mono_ae h₁)
   replace ht : μ s ≠ ∞ := h₂ ▸ ht
   rw [measure_diff' t hsm ht, measure_congr (union_ae_eq_left_iff_ae_subset.mpr h₁), h₂, tsub_self]
 
-/-- If `s ⊆ t`, `μ t ≤ μ s`, `μ t ≠ ∞`, and `s` is measurable, then `s =ᵐ[μ] t`. -/
+/-- If `s ⊆ t`, `μ t ≤ μ s`, `μ t ≠ ∞`, and `s` is measurable, then `s =ᵐˢ[μ] t`. -/
 theorem ae_eq_of_subset_of_measure_ge (h₁ : s ⊆ t) (h₂ : μ t ≤ μ s) (hsm : NullMeasurableSet s μ)
-    (ht : μ t ≠ ∞) : s =ᵐ[μ] t :=
-  ae_eq_of_ae_subset_of_measure_ge (HasSubset.Subset.eventuallyLE h₁) h₂ hsm ht
+    (ht : μ t ≠ ∞) : s =ᵐˢ[μ] t :=
+  ae_eq_of_ae_subset_of_measure_ge h₁.eventually h₂ hsm ht
 
 theorem measure_iUnion_congr_of_subset {ι : Sort*} [Countable ι] {s : ι → Set α} {t : ι → Set α}
     (hsub : ∀ i, s i ⊆ t i) (h_le : ∀ i, μ (t i) ≤ μ (s i)) : μ (⋃ i, s i) = μ (⋃ i, t i) := by
@@ -344,7 +341,7 @@ theorem measure_iUnion_congr_of_subset {ι : Sort*} [Countable ι] {s : ι → S
       _ ≤ μ (s i) := hi ▸ h_le i
       _ ≤ μ (⋃ i, s i) := measure_mono <| subset_iUnion _ _
   set M := toMeasurable μ
-  have H : ∀ b, (M (t b) ∩ M (⋃ b, s b) : Set α) =ᵐ[μ] M (t b) := by
+  have H : ∀ b, (M (t b) ∩ M (⋃ b, s b) : Set α) =ᵐˢ[μ] M (t b) := by
     refine fun b => ae_eq_of_subset_of_measure_ge inter_subset_left ?_ ?_ ?_
     · calc
         μ (M (t b)) = μ (t b) := measure_toMeasurable _
@@ -358,8 +355,7 @@ theorem measure_iUnion_congr_of_subset {ι : Sort*} [Countable ι] {s : ι → S
       exact htop b
   calc
     μ (⋃ b, t b) ≤ μ (⋃ b, M (t b)) := measure_mono (iUnion_mono fun b => subset_toMeasurable _ _)
-    _ = μ (⋃ b, M (t b) ∩ M (⋃ b, s b)) :=
-      measure_congr (Filter.EventuallyEq.countable_iUnion H).symm
+    _ = μ (⋃ b, M (t b) ∩ M (⋃ b, s b)) := measure_congr (.symm <| .countable_iUnion H)
     _ ≤ μ (M (⋃ b, s b)) := measure_mono (iUnion_subset fun b => inter_subset_right)
     _ = μ (⋃ b, s b) := measure_toMeasurable _
 
@@ -563,7 +559,7 @@ theorem measure_iInter_of_ae_monotone [Preorder ι] [IsCodirectedOrder ι]
   obtain ⟨i, hi⟩ := hfin
   have : Nonempty ι := ⟨i⟩
   let t : ι → Set α := fun i ↦ s i ∩ {ω | Monotone (ω ∈ s ·)}
-  have hst (i : ι) : s i =ᵐ[μ] t i := by
+  have hst (i : ι) : s i =ᵐˢ[μ] t i := by
     filter_upwards [hs] with ω hω
     suffices ω ∈ s i ↔ ω ∈ t i from propext this
     simpa [t] using fun _ ↦ hω
@@ -604,7 +600,7 @@ theorem measure_iInter_eq_iInf_measure_iInter_le {α ι : Type*} {_ : Measurable
   · rw [iInter_comm]
     exact congrArg μ <| iInter_congr fun i ↦ (biInf_const nonempty_Ici).symm
   · exact fun i j h ↦ biInter_mono (Iic_subset_Iic.2 h) fun _ _ ↦ Set.Subset.rfl
-  · exact fun i ↦ .biInter (to_countable _) fun _ _ ↦ h _
+  · exact fun i ↦ .iInter fun _ ↦ .iInter fun _ ↦ h _
   · refine hfin.imp fun k hk ↦ ne_top_of_le_ne_top hk <| measure_mono <| iInter₂_subset k ?_
     rfl
 
@@ -659,6 +655,7 @@ theorem tendsto_measure_iInter_le {α ι : Type*} {_ : MeasurableSpace α} {μ :
   refine .of_neBot_imp fun hne ↦ ?_
   cases atTop_neBot_iff.mp hne
   rw [measure_iInter_eq_iInf_measure_iInter_le hm hf]
+  simp only [← mem_Iic]
   exact tendsto_atTop_iInf
     fun i j hij ↦ measure_mono <| biInter_subset_biInter_left fun k hki ↦ le_trans hki hij
 
@@ -668,9 +665,9 @@ theorem exists_measure_iInter_lt {α ι : Type*} {_ : MeasurableSpace α} {μ : 
     [SemilatticeSup ι] [Countable ι] {f : ι → Set α}
     (hm : ∀ i, NullMeasurableSet (f i) μ) {ε : ℝ≥0∞} (hε : 0 < ε) (hfin : ∃ i, μ (f i) ≠ ∞)
     (hfem : ⋂ n, f n = ∅) : ∃ m, μ (⋂ n ≤ m, f n) < ε := by
-  let F m := μ (⋂ n ≤ m, f n)
-  have hFAnti : Antitone F :=
-      fun i j hij => measure_mono (biInter_subset_biInter_left fun k hki => le_trans hki hij)
+  let F m := μ (⋂ n ∈ Iic m, f n)
+  have hFAnti : Antitone F := fun i j hij =>
+    measure_mono (biInter_subset_biInter_left fun k hki => le_trans hki hij)
   suffices Filter.Tendsto F Filter.atTop (𝓝 0) by
     let _ := hfin.nonempty
     rw [ENNReal.tendsto_atTop_zero_iff_lt_of_antitone hFAnti] at this
@@ -806,7 +803,7 @@ theorem measure_inter_eq_of_measure_eq {s t u : Set α} (hs : MeasurableSet s) (
 lemma measure_inter_eq_of_ae {s t : Set α} (h : ∀ᵐ a ∂μ, a ∈ t) :
     μ (t ∩ s) = μ s := by
   refine le_antisymm (measure_mono inter_subset_right) ?_
-  apply EventuallyLE.measure_le
+  apply EventuallySubset.measure_le
   filter_upwards [h] with x hx h'x using ⟨hx, h'x⟩
 
 /-- The measurable superset `toMeasurable μ t` of `t` (which has the same measure as `t`)
@@ -1463,28 +1460,32 @@ theorem tendsto_measure_Ici_atBot [Preorder α] [(atBot : Filter α).IsCountably
 
 variable [PartialOrder α] {a b : α}
 
-theorem Iio_ae_eq_Iic' (ha : μ {a} = 0) : Iio a =ᵐ[μ] Iic a := by
+theorem Iio_ae_eq_Iic' (ha : μ {a} = 0) : Iio a =ᵐˢ[μ] Iic a := by
   rw [← Iic_diff_right, diff_ae_eq_self, measure_mono_null Set.inter_subset_right ha]
 
-theorem Ioi_ae_eq_Ici' (ha : μ {a} = 0) : Ioi a =ᵐ[μ] Ici a :=
+theorem Ioi_ae_eq_Ici' (ha : μ {a} = 0) : Ioi a =ᵐˢ[μ] Ici a :=
   Iio_ae_eq_Iic' (α := αᵒᵈ) ha
 
-theorem Ioo_ae_eq_Ioc' (hb : μ {b} = 0) : Ioo a b =ᵐ[μ] Ioc a b :=
-  (ae_eq_refl _).inter (Iio_ae_eq_Iic' hb)
+theorem Ioo_ae_eq_Ioc' (hb : μ {b} = 0) : Ioo a b =ᵐˢ[μ] Ioc a b := by
+  rw [← Ioi_inter_Iio, ← Ioi_inter_Iic]
+  exact .inter .rfl (Iio_ae_eq_Iic' hb)
 
-theorem Ioc_ae_eq_Icc' (ha : μ {a} = 0) : Ioc a b =ᵐ[μ] Icc a b :=
-  (Ioi_ae_eq_Ici' ha).inter (ae_eq_refl _)
+theorem Ioc_ae_eq_Icc' (ha : μ {a} = 0) : Ioc a b =ᵐˢ[μ] Icc a b := by
+  rw [← Ioi_inter_Iic, ← Ici_inter_Iic]
+  exact (Ioi_ae_eq_Ici' ha).inter .rfl
 
-theorem Ioo_ae_eq_Ico' (ha : μ {a} = 0) : Ioo a b =ᵐ[μ] Ico a b :=
-  (Ioi_ae_eq_Ici' ha).inter (ae_eq_refl _)
+theorem Ioo_ae_eq_Ico' (ha : μ {a} = 0) : Ioo a b =ᵐˢ[μ] Ico a b := by
+  rw [← Ioi_inter_Iio, ← Ici_inter_Iio]
+  exact (Ioi_ae_eq_Ici' ha).inter .rfl
 
-theorem Ioo_ae_eq_Icc' (ha : μ {a} = 0) (hb : μ {b} = 0) : Ioo a b =ᵐ[μ] Icc a b :=
+theorem Ioo_ae_eq_Icc' (ha : μ {a} = 0) (hb : μ {b} = 0) : Ioo a b =ᵐˢ[μ] Icc a b :=
   (Ioi_ae_eq_Ici' ha).inter (Iio_ae_eq_Iic' hb)
 
-theorem Ico_ae_eq_Icc' (hb : μ {b} = 0) : Ico a b =ᵐ[μ] Icc a b :=
-  (ae_eq_refl _).inter (Iio_ae_eq_Iic' hb)
+theorem Ico_ae_eq_Icc' (hb : μ {b} = 0) : Ico a b =ᵐˢ[μ] Icc a b := by
+  rw [← Ici_inter_Iio, ← Ici_inter_Iic]
+  exact .inter .rfl (Iio_ae_eq_Iic' hb)
 
-theorem Ico_ae_eq_Ioc' (ha : μ {a} = 0) (hb : μ {b} = 0) : Ico a b =ᵐ[μ] Ioc a b :=
+theorem Ico_ae_eq_Ioc' (ha : μ {a} = 0) (hb : μ {b} = 0) : Ico a b =ᵐˢ[μ] Ioc a b :=
   (Ioo_ae_eq_Ico' ha).symm.trans (Ioo_ae_eq_Ioc' hb)
 
 end Intervals

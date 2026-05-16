@@ -909,17 +909,29 @@ variable [MeasurableSpace β] {g : β → Set α}
 /-- This instance is useful when talking about Bernoulli sequences of random variables or binomial
 random graphs. -/
 instance Set.instMeasurableSpace : MeasurableSpace (Set α) :=
-  inferInstanceAs <| MeasurableSpace (α → Prop)
+  .map setOf inferInstance
 
-instance Set.instMeasurableSingletonClass [Countable α] : MeasurableSingletonClass (Set α) :=
-  inferInstanceAs <| MeasurableSingletonClass (α → Prop)
+theorem Set.measurableSpace_eq_comap :
+    @instMeasurableSpace α = .comap Membership.mem inferInstance := by
+  ext s
+  rw [MeasurableSpace.map_def, MeasurableSpace.measurableSet_comap,
+    Set.setOf_injective.preimage_surjective.exists]
+  simp [Set.preimage_preimage]
+
+instance Set.instMeasurableSingletonClass [Countable α] : MeasurableSingletonClass (Set α) where
+  measurableSet_singleton s := by
+    rw [MeasurableSpace.map_def]
+    exact (finite_singleton _).preimage setOf_injective.injOn |>.measurableSet
 
 @[simp, fun_prop] lemma measurable_setOf : Measurable fun p : α → Prop ↦ {a | p a} := measurable_id
 
-lemma measurable_set_iff : Measurable g ↔ ∀ a, Measurable fun x ↦ a ∈ g x := measurable_pi_iff
+lemma measurable_set_iff : Measurable g ↔ ∀ a, Measurable fun x ↦ a ∈ g x := by
+  rw [Set.measurableSpace_eq_comap, measurable_comap_iff, measurable_pi_iff]
+  simp
 
 @[fun_prop]
-lemma measurable_set_mem (a : α) : Measurable fun s : Set α ↦ a ∈ s := measurable_pi_apply _
+lemma measurable_set_mem (a : α) : Measurable fun s : Set α ↦ a ∈ s :=
+  measurable_set_iff.mp measurable_id _
 
 lemma measurable_set_notMem (a : α) : Measurable fun s : Set α ↦ a ∉ s :=
   (Measurable.of_discrete (f := Not)).comp <| measurable_set_mem a

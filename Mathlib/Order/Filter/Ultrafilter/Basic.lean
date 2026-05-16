@@ -42,8 +42,7 @@ theorem finite_biUnion_mem_iff {is : Set β} {s : β → Set α} (his : is.Finit
 lemma eventually_exists_mem_iff {is : Set β} {P : β → α → Prop} (his : is.Finite) :
     (∀ᶠ i in f, ∃ a ∈ is, P a i) ↔ ∃ a ∈ is, ∀ᶠ i in f, P a i := by
   simp only [Filter.Eventually, Ultrafilter.mem_coe]
-  convert f.finite_biUnion_mem_iff his (s := P) with i
-  aesop
+  simpa [← setOf_exists] using f.finite_biUnion_mem_iff his (s := fun b ↦ {a | P b a})
 
 lemma eventually_exists_iff [Finite β] {P : β → α → Prop} :
     (∀ᶠ i in f, ∃ a, P a i) ↔ ∃ a, ∀ᶠ i in f, P a i := by

@@ -89,8 +89,8 @@ theorem finite_of_card_ne_zero (h : Nat.card α ≠ 0) : Finite α := (card_ne_z
 theorem card_congr (f : α ≃ β) : Nat.card α = Nat.card β :=
   Cardinal.toNat_congr f
 
-lemma card_le_card_of_injective {α : Type u} {β : Type v} [Finite β] (f : α → β)
-    (hf : Injective f) : Nat.card α ≤ Nat.card β := by
+lemma card_le_card_of_injective [Finite β] (f : α → β) (hf : Injective f) :
+    Nat.card α ≤ Nat.card β := by
   simpa using toNat_le_toNat (lift_mk_le_lift_mk_of_injective hf) (by simp)
 
 lemma card_le_card_of_surjective {α : Type u} {β : Type v} [Finite α] (f : α → β)
@@ -304,16 +304,19 @@ theorem card_congr {α β : Type*} (f : α ≃ β) : card α = card β :=
 
 @[simp] lemma card_plift (α : Type*) : card (PLift α) = card α := card_congr Equiv.plift
 
-theorem card_image_of_injOn {α β : Type*} {f : α → β} {s : Set α} (h : Set.InjOn f s) :
+theorem card_image_of_injOn {f : α → β} {s : Set α} (h : Set.InjOn f s) :
     card (f '' s) = card s :=
   card_congr (Equiv.Set.imageOfInjOn f s h).symm
 
-theorem card_image_of_injective {α β : Type*} (f : α → β) (s : Set α)
+theorem card_image_of_injective (f : α → β) (s : Set α)
     (h : Function.Injective f) : card (f '' s) = card s := card_image_of_injOn h.injOn
 
-lemma card_le_card_of_injective {α β : Type*} {f : α → β} (hf : Injective f) : card α ≤ card β := by
+lemma card_le_card_of_injective {f : α → β} (hf : Injective f) : card α ≤ card β := by
   rw [← card_ulift α, ← card_ulift β]
   exact Cardinal.gciENat.gc.monotone_u <| Cardinal.lift_mk_le_lift_mk_of_injective hf
+
+theorem card_le_card_iff [Countable α] : card α ≤ card β ↔ Nonempty (α ↪ β) := by
+  rw [← lift_mk_le', ← toENat_le_iff_of_le_aleph0] <;> simp [card]
 
 @[deprecated natCast_le_toENat (since := "2026-02-17")]
 theorem _root_.Cardinal.natCast_le_toENat_iff {n : ℕ} {c : Cardinal} :

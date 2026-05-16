@@ -311,7 +311,7 @@ theorem mdifferentiableWithinAt_iff_image {x : M} (he : e ∈ maximalAtlas I 1 M
           (e.extend I x) := by
   rw [mdifferentiableWithinAt_iff_of_mem_maximalAtlas he he' hx hy, and_congr_right_iff]
   refine fun _ => differentiableWithinAt_congr_nhds ?_
-  simp_rw [nhdsWithin_eq_iff_eventuallyEq, e.extend_symm_preimage_inter_range_eventuallyEq hs hx]
+  simp_rw [nhdsWithin_eq_iff_eventuallyEqSet, e.extend_symm_preimage_inter_range_eventuallyEq hs hx]
 
 /-- One can reformulate smoothness within a set at a point as continuity within this set at this
 point, and smoothness in any chart containing that point. -/
@@ -866,8 +866,8 @@ lemma tangentMap_snd {X : TangentSpace I x} : (tangentMap I I' f X).2 = (mfderiv
 
 /-- If two sets coincide locally around `x`, except maybe at a point `y`, then their
 preimage under `extChartAt x` coincide locally, except maybe at `extChartAt I x x`. -/
-theorem preimage_extChartAt_eventuallyEq_compl_singleton (y : M) (h : s =ᶠ[𝓝[{y}ᶜ] x] t) :
-    ((extChartAt I x).symm ⁻¹' s ∩ range I : Set E) =ᶠ[𝓝[{extChartAt I x x}ᶜ] (extChartAt I x x)]
+theorem preimage_extChartAt_eventuallyEq_compl_singleton (y : M) (h : s =ᶠˢ[𝓝[{y}ᶜ] x] t) :
+    ((extChartAt I x).symm ⁻¹' s ∩ range I : Set E) =ᶠˢ[𝓝[{extChartAt I x x}ᶜ] (extChartAt I x x)]
     ((extChartAt I x).symm ⁻¹' t ∩ range I : Set E) := by
   have : T1Space M := I.t1Space M
   obtain ⟨u, u_mem, hu⟩ : ∃ u ∈ 𝓝 x, u ∩ {x}ᶜ ⊆ {y | (y ∈ s) = (y ∈ t)} :=
@@ -880,7 +880,6 @@ theorem preimage_extChartAt_eventuallyEq_compl_singleton (y : M) (h : s =ᶠ[�
     ⟨_, Filter.inter_mem ((continuousAt_extChartAt_symm x).preimage_mem_nhds u_mem) B, ?_⟩
   rintro z ⟨hz, h'z⟩
   simp only [eq_iff_iff, mem_setOf_eq]
-  change z ∈ (extChartAt I x).symm ⁻¹' s ∩ range I ↔ z ∈ (extChartAt I x).symm ⁻¹' t ∩ range I
   by_cases hIz : z ∈ range I
   · simp only [mem_inter_iff, mem_preimage, mem_union, mem_compl_iff, hIz, not_true_eq_false,
       or_false, and_true] at hz ⊢
@@ -895,7 +894,7 @@ theorem preimage_extChartAt_eventuallyEq_compl_singleton (y : M) (h : s =ᶠ[�
 
 /-- If two sets coincide locally, except maybe at a point, then it is equivalent to have a manifold
 derivative within one or the other. -/
-theorem hasMFDerivWithinAt_congr_set' (y : M) (h : s =ᶠ[𝓝[{y}ᶜ] x] t) :
+theorem hasMFDerivWithinAt_congr_set' (y : M) (h : s =ᶠˢ[𝓝[{y}ᶜ] x] t) :
     HasMFDerivWithinAt I I' f s x f' ↔ HasMFDerivWithinAt I I' f t x f' := by
   have : T1Space M := I.t1Space M
   simp only [HasMFDerivWithinAt]
@@ -904,25 +903,25 @@ theorem hasMFDerivWithinAt_congr_set' (y : M) (h : s =ᶠ[𝓝[{y}ᶜ] x] t) :
   · apply hasFDerivWithinAt_congr_set' (extChartAt I x x)
     exact preimage_extChartAt_eventuallyEq_compl_singleton y h
 
-theorem hasMFDerivWithinAt_congr_set (h : s =ᶠ[𝓝 x] t) :
+theorem hasMFDerivWithinAt_congr_set (h : s =ᶠˢ[𝓝 x] t) :
     HasMFDerivWithinAt I I' f s x f' ↔ HasMFDerivWithinAt I I' f t x f' :=
   hasMFDerivWithinAt_congr_set' x <| h.filter_mono inf_le_left
 
 /-- If two sets coincide around a point (except possibly at a single point `y`), then it is
 equivalent to be differentiable within one or the other set. -/
-theorem mdifferentiableWithinAt_congr_set' (y : M) (h : s =ᶠ[𝓝[{y}ᶜ] x] t) :
+theorem mdifferentiableWithinAt_congr_set' (y : M) (h : s =ᶠˢ[𝓝[{y}ᶜ] x] t) :
     MDifferentiableWithinAt I I' f s x ↔ MDifferentiableWithinAt I I' f t x := by
   simp only [mdifferentiableWithinAt_iff_exists_hasMFDerivWithinAt]
   exact exists_congr fun _ => hasMFDerivWithinAt_congr_set' _ h
 
-theorem mdifferentiableWithinAt_congr_set (h : s =ᶠ[𝓝 x] t) :
+theorem mdifferentiableWithinAt_congr_set (h : s =ᶠˢ[𝓝 x] t) :
     MDifferentiableWithinAt I I' f s x ↔ MDifferentiableWithinAt I I' f t x := by
   simp only [mdifferentiableWithinAt_iff_exists_hasMFDerivWithinAt]
   exact exists_congr fun _ => hasMFDerivWithinAt_congr_set h
 
 /-- If two sets coincide locally, except maybe at a point, then derivatives within these sets
 are the same. -/
-theorem mfderivWithin_congr_set' (y : M) (h : s =ᶠ[𝓝[{y}ᶜ] x] t) :
+theorem mfderivWithin_congr_set' (y : M) (h : s =ᶠˢ[𝓝[{y}ᶜ] x] t) :
     mfderivWithin I I' f s x = mfderivWithin I I' f t x := by
   by_cases hx : MDifferentiableWithinAt I I' f s x
   · simp only [mfderivWithin, hx, (mdifferentiableWithinAt_congr_set' y h).1 hx, ↓reduceIte]
@@ -932,18 +931,18 @@ theorem mfderivWithin_congr_set' (y : M) (h : s =ᶠ[𝓝[{y}ᶜ] x] t) :
 
 /-- If two sets coincide locally, then derivatives within these sets
 are the same. -/
-theorem mfderivWithin_congr_set (h : s =ᶠ[𝓝 x] t) :
+theorem mfderivWithin_congr_set (h : s =ᶠˢ[𝓝 x] t) :
     mfderivWithin I I' f s x = mfderivWithin I I' f t x :=
   mfderivWithin_congr_set' x <| h.filter_mono inf_le_left
 
 /-- If two sets coincide locally, except maybe at a point, then derivatives within these sets
 coincide locally. -/
-theorem mfderivWithin_eventually_congr_set' (y : M) (h : s =ᶠ[𝓝[{y}ᶜ] x] t) :
+theorem mfderivWithin_eventually_congr_set' (y : M) (h : s =ᶠˢ[𝓝[{y}ᶜ] x] t) :
     ∀ᶠ y in 𝓝 x, mfderivWithin I I' f s y = mfderivWithin I I' f t y :=
   (eventually_nhds_nhdsWithin.2 h).mono fun _ => mfderivWithin_congr_set' y
 
 /-- If two sets coincide locally, then derivatives within these sets coincide locally. -/
-theorem mfderivWithin_eventually_congr_set (h : s =ᶠ[𝓝 x] t) :
+theorem mfderivWithin_eventually_congr_set (h : s =ᶠˢ[𝓝 x] t) :
     ∀ᶠ y in 𝓝 x, mfderivWithin I I' f s y = mfderivWithin I I' f t y :=
   mfderivWithin_eventually_congr_set' x <| h.filter_mono inf_le_left
 

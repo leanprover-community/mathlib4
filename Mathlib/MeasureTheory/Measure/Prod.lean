@@ -459,8 +459,8 @@ theorem quasiMeasurePreserving_snd : QuasiMeasurePreserving Prod.snd (μ.prod ν
   rw [h2s, mul_zero]
 
 omit [SFinite ν] in
-lemma set_prod_ae_eq {s s' : Set α} {t t' : Set β} (hs : s =ᵐ[μ] s') (ht : t =ᵐ[ν] t') :
-    (s ×ˢ t : Set (α × β)) =ᵐ[μ.prod ν] (s' ×ˢ t' : Set (α × β)) :=
+lemma set_prod_ae_eq {s s' : Set α} {t t' : Set β} (hs : s =ᵐˢ[μ] s') (ht : t =ᵐˢ[ν] t') :
+    (s ×ˢ t : Set (α × β)) =ᵐˢ[μ.prod ν] (s' ×ˢ t' : Set (α × β)) :=
   (quasiMeasurePreserving_fst.preimage_ae_eq hs).inter
     (quasiMeasurePreserving_snd.preimage_ae_eq ht)
 
@@ -482,7 +482,7 @@ lemma _root_.MeasureTheory.NullMeasurableSet.prod {s : Set α} {t : Set β}
 lemma _root_.MeasureTheory.NullMeasurableSet.right_of_prod {s : Set α} {t : Set β}
     (h : NullMeasurableSet (s ×ˢ t) (μ.prod ν)) (hs : μ s ≠ 0) : NullMeasurableSet t ν := by
   rcases h with ⟨u, hum, hu⟩
-  obtain ⟨x, hxs, hx⟩ : ∃ x ∈ s, (Prod.mk x ⁻¹' (s ×ˢ t)) =ᵐ[ν] (Prod.mk x ⁻¹' u) :=
+  obtain ⟨x, hxs, hx⟩ : ∃ x ∈ s, (Prod.mk x ⁻¹' (s ×ˢ t)) =ᵐˢ[ν] (Prod.mk x ⁻¹' u) :=
     ((frequently_ae_iff.2 hs).and_eventually (ae_ae_eq_curry_of_prod hu)).exists
   refine ⟨Prod.mk x ⁻¹' u, measurable_prodMk_left hum, ?_⟩
   rwa [mk_preimage_prod_right hxs] at hx

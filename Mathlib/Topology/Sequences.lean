@@ -352,7 +352,7 @@ protected theorem IsSeqCompact.isComplete (hs : IsSeqCompact s) : IsComplete s :
         prod_self_subset_prod_self, and_assoc] using this
     choose t htl htW hts using this
     have : ∀ n : ℕ, ⋂ k ≤ n, t k ⊆ t n := fun n => by apply iInter₂_subset; rfl
-    exact ⟨fun n => ⋂ k ≤ n, t k, fun m n h =>
+    exact ⟨fun n => ⋂ k ∈ Iic n, t k, fun m n h =>
       biInter_subset_biInter_left fun k (hk : k ≤ m) => hk.trans h, fun n =>
       (biInter_mem (finite_le_nat n)).2 fun k _ => htl k, fun n =>
       (prod_mono (this n) (this n)).trans (htW n), fun n => (this n).trans (hts n)⟩

@@ -130,7 +130,7 @@ lemma addContent_iUnion {ι : Type*} [Fintype ι] {f : ι → Set α} (hf : ∀ 
 lemma addContent_union' (hs : s ∈ C) (ht : t ∈ C) (hst : s ∪ t ∈ C) (h_dis : Disjoint s t) :
     m (s ∪ t) = m s + m t := by
   have A : s ∪ t = ⋃ i, ![s, t] i := by ext; simp
-  convert addContent_iUnion (f := ![s, t]) (m := m) (fun i ↦ ?_) (fun i j hij ↦ ?_) ?_ using 2
+  convert addContent_iUnion (f := ![s, t]) (m := m) (fun i ↦ ?_) ?_ ?_ using 2
   · simp [Fin.univ_castSuccEmb, add_comm]
   · fin_cases i <;> simpa
   · #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/13166
@@ -138,11 +138,7 @@ lemma addContent_union' (hs : s ∈ C) (ht : t ∈ C) (hst : s ∪ t ∈ C) (h_d
     cases. It is not yet clear whether this is due to defeq abuse in Mathlib or a problem in
     the new canonicalizer; a minimization would help. The original proof was:
     `fin_cases i <;> fin_cases j <;> grind` -/
-    fin_cases i <;> fin_cases j
-    · grind
-    · assumption
-    · exact h_dis.symm
-    · grind
+    simp [pairwise_fin_succ_iff, onFun, h_dis, h_dis.symm]
   · rwa [← A]
 
 /-- An additive content with values in `ℝ≥0∞` is said to be sigma-sub-additive if for any sequence
