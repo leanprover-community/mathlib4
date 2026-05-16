@@ -17,6 +17,7 @@ Given a presentation `0 → I → R[x₁,...,xₙ] → S → 0` (or equivalently
 defined by `I`), we may define the (naive) cotangent complex `I/I² → ⨁ᵢ S dxᵢ → Ω[S/R] → 0`.
 
 ## Main results
+
 - `Algebra.Extension.Cotangent`: The conormal space `I/I²`. (Defined in `Generators/Basic`)
 - `Algebra.Extension.CotangentSpace`: The cotangent space `⨁ᵢ S dxᵢ`.
 - `Algebra.Generators.cotangentSpaceBasis`: The canonical basis on `⨁ᵢ S dxᵢ`.
@@ -32,6 +33,7 @@ defined by `I`), we may define the (naive) cotangent complex `I/I² → ⨁ᵢ S
   the first homology of the (naive) cotangent complex of `S` over `R`.
 
 ## Implementation detail
+
 We actually develop these material for general extensions (i.e. surjection `P → S`) so that we can
 apply them to infinitesimal smooth (or versal) extensions later.
 

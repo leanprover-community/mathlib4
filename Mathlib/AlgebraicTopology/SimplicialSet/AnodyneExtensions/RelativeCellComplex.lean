@@ -21,6 +21,7 @@ be a rank function. We show that the inclusion `A.ι` is a relative
 cell complex with basic cells given by horn inclusions.
 
 ## References
+
 * [Sean Moss, *Another approach to the Kan-Quillen model structure*][moss-2020]
 
 -/

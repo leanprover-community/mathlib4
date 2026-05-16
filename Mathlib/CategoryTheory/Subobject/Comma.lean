@@ -19,10 +19,12 @@ and `S : D` as a subtype of the subobjects of `A.right`. We deduce that `Structu
 well-powered if `C` is.
 
 ## Main declarations
+
 * `StructuredArrow.subobjectEquiv`: the order-equivalence between `Subobject A` and a subtype of
   `Subobject A.right`.
 
 ## Implementation notes
+
 Our computation requires that `C` has all limits and `T` preserves all limits. Furthermore, we
 require that the morphisms of `C` and `D` are in the same universe. It is possible that both of
 these requirements can be relaxed by refining the results about limits in comma categories.

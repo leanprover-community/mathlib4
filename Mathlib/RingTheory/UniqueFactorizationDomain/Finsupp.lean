@@ -12,6 +12,7 @@ public import Mathlib.RingTheory.UniqueFactorizationDomain.NormalizedFactors
 # Factors as finsupp
 
 ## Main definitions
+
 * `UniqueFactorizationMonoid.factorization`: the multiset of irreducible factors as a `Finsupp`.
 -/
 

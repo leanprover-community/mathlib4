@@ -27,6 +27,7 @@ We also show that if any object in `C` is a colimit of objects in `S`,
 then `S` is a strong generator.
 
 ## References
+
 * [Adámek, J. and Rosický, J., *Locally presentable and accessible categories*][Adamek_Rosicky_1994]
 
 -/

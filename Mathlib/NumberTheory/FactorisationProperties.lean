@@ -37,10 +37,12 @@ relations with prime and perfect numbers.
 * `Nat.Prime.deficient_pow`: Any natural number power of a prime is deficient.
 
 ## Implementation Notes
+
 * Zero is not included in any of the definitions and these definitions only apply to natural
   numbers greater than zero.
 
 ## References
+
 * [R. W. Prielipp, *PERFECT NUMBERS, ABUNDANT NUMBERS, AND DEFICIENT NUMBERS*][Prielipp1970]
 
 ## Tags

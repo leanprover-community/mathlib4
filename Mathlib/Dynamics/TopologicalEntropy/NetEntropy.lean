@@ -9,6 +9,7 @@ public import Mathlib.Dynamics.TopologicalEntropy.CoverEntropy
 
 /-!
 # Topological entropy via nets
+
 We implement Bowen-Dinaburg's definitions of the topological entropy, via nets.
 
 The major design decisions are the same as in
@@ -30,24 +31,29 @@ Instead of defining a new notion of topological entropy, we prove that
 `coverEntropy` coincides with `⨆ U ∈ 𝓤 X, netEntropyEntourage T F U`.
 
 ## Main definitions
+
 - `IsDynNetIn`: property that dynamical balls centered on a subset `s` of `F` are disjoint.
 - `netMaxcard`: maximal cardinality of a dynamical net. Takes values in `ℕ∞`.
 - `netEntropyInfEntourage`/`netEntropyEntourage`: exponential growth of `netMaxcard`. The former is
   defined with a `liminf`, the latter with a `limsup`. Take values in `EReal`.
 
 ## Implementation notes
+
 As when using covers, there are two competing definitions `netEntropyInfEntourage` and
 `netEntropyEntourage` in this file: one uses a `liminf`, the other a `limsup`. When using covers,
 we chose the `limsup` definition as the default.
 
 ## Main results
+
 - `coverEntropy_eq_iSup_netEntropyEntourage`: equality between the notions of topological entropy
   defined with covers and with nets. Has a variant for `coverEntropyInf`.
 
 ## Tags
+
 net, entropy
 
 ## TODO
+
 Get versions of the topological entropy on (pseudo-e)metric spaces.
 -/
 

@@ -17,6 +17,7 @@ public import Mathlib.Topology.Algebra.Ring.Basic
 `v`-dependent instances (such as `NormedRing`) where `v` is an absolute value on `R`.
 
 ## Main definitions
+
 - `WithAbs` : type synonym for a semiring which depends on an absolute value. This is
   a function that takes an absolute value on a semiring and returns the semiring. This can be used
   to assign and infer instances on a semiring that depend on absolute values.

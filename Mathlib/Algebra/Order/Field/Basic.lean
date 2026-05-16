@@ -106,6 +106,7 @@ theorem one_le_one_div (h1 : 0 < a) (h2 : a ≤ 1) : 1 ≤ 1 / a := by
 
 /-!
 ### Results about halving.
+
 The equalities also hold in semifields of characteristic `0`.
 -/
 

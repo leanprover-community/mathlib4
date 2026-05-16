@@ -11,11 +11,13 @@ public import Mathlib.Data.Rat.Cast.Lemmas
 
 /-!
 # Summable families of Hahn Series
+
 We introduce a notion of formal summability for families of Hahn series, and define a formal sum
 function. This theory is applied to characterize invertible Hahn series whose coefficients are in a
 commutative domain.
 
 ## Main Definitions
+
 * `HahnSeries.SummableFamily` is a family of Hahn series such that the union of the supports
   is partially well-ordered and only finitely many are nonzero at any given coefficient. Note that
   this is different from `Summable` in the valuation topology, because there are topologically
@@ -31,6 +33,7 @@ commutative domain.
   the summable family takes the junk value of zero.
 
 ## Main results
+
 * `HahnSeries.isUnit_iff`: If `R` is a commutative domain, and `Γ` is a linearly ordered additive
   commutative group, then a Hahn series is a unit if and only if its leading term is a unit in `R`.
 * `HahnSeries.SummableFamily.hsum_smul`:   `smul` is compatible with `hsum`.
@@ -38,9 +41,11 @@ commutative domain.
   sums is equal to the sum of pointwise products.
 
 ## TODO
+
 * Summable Pi families
 
 ## References
+
 - [J. van der Hoeven, *Operators on Generalized Power Series*][van_der_hoeven]
 -/
 

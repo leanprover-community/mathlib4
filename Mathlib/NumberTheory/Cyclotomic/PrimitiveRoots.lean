@@ -17,12 +17,14 @@ public import Mathlib.RingTheory.SimpleModule.Basic
 
 /-!
 # Primitive roots in cyclotomic fields
+
 If `IsCyclotomicExtension {n} A B`, we define an element `zeta n A B : B` that is a primitive
 `n`th-root of unity in `B` and we study its properties. We also prove related theorems under the
 more general assumption of just being a primitive root, for reasons described in the implementation
 details section.
 
 ## Main definitions
+
 * `IsCyclotomicExtension.zeta n A B`: if `IsCyclotomicExtension {n} A B`, then `zeta n A B`
   is a primitive `n`-th root of unity in `B`.
 * `IsPrimitiveRoot.powerBasis`: if `K` and `L` are fields such that
@@ -32,6 +34,7 @@ details section.
   and `primitiveRoots n A` given by the choice of `ζ`.
 
 ## Main results
+
 * `IsCyclotomicExtension.zeta_spec`: `zeta n A B` is a primitive `n`-th root of unity.
 * `IsCyclotomicExtension.finrank`: if `Irreducible (cyclotomic n K)` (in particular for
   `K = ℚ`), then the `finrank` of a cyclotomic extension is `n.totient`.
@@ -51,6 +54,7 @@ details section.
   and `primitiveRoots n A` given by the choice of `ζ`.
 
 ## Implementation details
+
 `zeta n A B` is defined as any primitive root of unity in `B`, - this must exist, by definition of
 `IsCyclotomicExtension`. It is not true in general that it is a root of `cyclotomic n B`,
 but this holds if `isDomain B` and `NeZero (n : B)`.

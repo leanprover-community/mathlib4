@@ -18,12 +18,14 @@ These definitions work independently of a specific class of distributions (class
 compactly supported) and all basic properties are proved in an abstract setting using `FunLike`.
 
 ## Main definitions
+
 * `IsVanishingOn`: A distribution vanishes on a set if it acts trivially on all test functions
   supported in that subset.
 * `dsupport`: The support of a distribution is the intersection of all closed sets for which that
   distribution vanishes on the complement of the set.
 
 ## Main statements
+
 * `TemperedDistribution.dsupport_delta`: The support of the delta distribution is a single point.
 
 -/

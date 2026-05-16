@@ -19,6 +19,7 @@ denoted `DiscreteQuotient X`. To avoid quantifying over types, we model such
 quotients as setoids whose equivalence classes are clopen.
 
 ## Definitions
+
 1. `DiscreteQuotient X` is the type of discrete quotients of `X`.
   It is endowed with a coercion to `Type`, which is defined as the
   quotient associated to the setoid in question, and each such quotient
@@ -59,6 +60,7 @@ The two main results proved in this file are:
   respect to `DiscreteQuotient.ofLE`, must arise from some element of `X`.
 
 ## Remarks
+
 The constructions in this file will be used to show that any profinite space is a limit
 of finite discrete spaces.
 -/

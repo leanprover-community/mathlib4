@@ -27,6 +27,7 @@ that `C` is locally `w`-small and that there exists an (essentially) small `P`
 such that `P.IsCardinalFilteredGenerator κ` holds.
 
 ## References
+
 * [Adámek, J. and Rosický, J., *Locally presentable and accessible categories*][Adamek_Rosicky_1994]
 
 -/

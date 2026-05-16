@@ -31,6 +31,7 @@ and uniform continuity.
   characterizations of equality via distance.
 
 ## Implementation notes
+
 A lot of elementary properties don't require `eq_of_dist_eq_zero`, hence are stated and proven
 for `PseudoMetricSpace`s in `Mathlib/Topology/MetricSpace/Pseudo/Defs.lean`.
 

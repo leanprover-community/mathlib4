@@ -18,6 +18,7 @@ import all Init.Data.Int.Bitwise.Basic  -- for unfolding `Int.bitwise`
 Possibly only of archaeological significance.
 
 ## Recursors
+
 * `Int.bitCasesOn`: Parity disjunction. Something is true/defined on `ℤ` if it's true/defined for
   even and for odd values.
 -/

@@ -10,6 +10,7 @@ public import Mathlib.Algebra.Order.Monoid.Defs
 
 /-!
 # Ordered scalar multiplication and vector addition
+
 This file defines ordered scalar multiplication and vector addition, and proves some properties.
 In the additive case, a motivating example is given by the additive action of `ℤ` on subsets of
 reals that are closed under integer translation.  The order compatibility allows for a treatment of
@@ -18,12 +19,14 @@ series.  In the multiplicative case, a standard example is the action of non-neg
 an ordered field.
 
 ## Implementation notes
+
 * Because these classes mix the algebra and order hierarchies, we write them as `Prop`-valued
   mixins.
 * Despite the file name, Ordered AddTorsors are not defined as a separate class.  To implement them,
   combine `[AddTorsor G P]` with `[IsOrderedCancelVAdd G P]`
 
 ## Definitions
+
 * IsOrderedSMul : inequalities are preserved by scalar multiplication.
 * IsOrderedVAdd : inequalities are preserved by translation.
 * IsCancelSMul : the scalar multiplication version of cancellative multiplication
@@ -32,6 +35,7 @@ an ordered field.
 * IsOrderedCancelVAdd : inequalities are preserved and reflected by translation.
 
 ## Instances
+
 * OrderedCommMonoid.toIsOrderedSMul
 * OrderedAddCommMonoid.toIsOrderedVAdd
 * IsOrderedSMul.toCovariantClassLeft
@@ -44,6 +48,7 @@ an ordered field.
 * IsOrderedCancelVAdd.toContravariantClassLeft
 
 ## TODO
+
 * (lex) prod instances
 * Pi instances
 * WithTop (in a different file?)

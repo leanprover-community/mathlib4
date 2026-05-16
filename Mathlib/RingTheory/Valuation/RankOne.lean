@@ -21,6 +21,7 @@ public import Mathlib.Tactic.Positivity
 We define rank one valuations.
 
 ## Main Definitions
+
 * `RankOne` : A valuation has rank one if it is nontrivial and its image (defined as
   `MonoidWithZeroHom.valueGroup₀ v`) is contained in `ℝ≥0`. Note that this class includes the data
   of an inclusion morphism `MonoidWithZeroHom.valueGroup₀ v → ℝ≥0`.

@@ -28,6 +28,7 @@ values of `K`. The `|⬝|ᵥ` are normalized as follows:
   `∏ |x|ᵥ=1`, where the product runs over the equivalence classes of absolute values of `K`.
 
 ## Tags
+
 number field, embeddings, places, infinite places, finite places, product formula
 -/
 

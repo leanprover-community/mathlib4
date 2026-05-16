@@ -42,6 +42,7 @@ All definitions are in the `CategoryTheory` namespace.
   it is a sheaf for `J`.
 
 ## References
+
 We don't follow any particular reference, but the arguments can probably be distilled from
 the following sources:
 - [Elephant]: *Sketches of an Elephant*, P. T. Johnstone: C2.1.

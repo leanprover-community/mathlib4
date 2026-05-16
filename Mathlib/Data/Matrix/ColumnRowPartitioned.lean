@@ -19,6 +19,7 @@ We then provide a few lemmas that deal with the products of these with each othe
 with block matrices
 
 ## Tags
+
 column matrices, row matrices, column row block matrices
 -/
 

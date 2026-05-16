@@ -19,6 +19,7 @@ See https://ncatlab.org/nlab/show/Delta-generated+topological+space.
 Adapted from `Mathlib/Topology/Category/CompactlyGenerated.lean`.
 
 ## TODO
+
 * `DeltaGenerated` is Cartesian closed.
 -/
 

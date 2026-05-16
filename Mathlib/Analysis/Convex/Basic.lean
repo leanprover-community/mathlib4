@@ -581,6 +581,7 @@ end LinearOrderedField
 
 /-!
 #### Convex sets in an ordered space
+
 Relates `Convex` and `OrdConnected`.
 -/
 

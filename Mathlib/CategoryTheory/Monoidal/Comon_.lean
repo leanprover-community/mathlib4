@@ -23,6 +23,7 @@ An oplax monoidal functor takes comonoid objects to comonoid objects.
 That is, an oplax monoidal functor `F : C ⥤ D` induces a functor `Comon C ⥤ Comon D`.
 
 ## TODO
+
 * Comonoid objects in `C` are "just"
   oplax monoidal functors from the trivial monoidal category to `C`.
 -/

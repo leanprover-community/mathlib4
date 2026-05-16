@@ -45,6 +45,7 @@ and fixing `D` would forces `k`. Whereas the later takes `D` and `L` as
 separate variables constrained by certain relations.
 
 ## Reference
+
 * <https://ysharifi.wordpress.com/2011/09/30/the-jacobson-noether-theorem/>
 -/
 

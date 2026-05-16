@@ -68,6 +68,7 @@ Future modifications of the linter may increase the scope of the `flexible?` pre
 forbid a wider range of combinations.
 
 ## TODO
+
 The example
 ```lean
 example (h : 0 = 0) : True := by

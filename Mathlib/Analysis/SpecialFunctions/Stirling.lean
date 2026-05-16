@@ -46,6 +46,7 @@ namespace Stirling
 
 /-!
 ### Part 1
+
 https://proofwiki.org/wiki/Stirling%27s_Formula#Part_1
 -/
 
@@ -184,6 +185,7 @@ theorem stirlingSeq_has_pos_limit_a : ∃ a : ℝ, 0 < a ∧ Tendsto stirlingSeq
 
 /-!
 ### Part 2
+
 https://proofwiki.org/wiki/Stirling%27s_Formula#Part_2
 -/
 

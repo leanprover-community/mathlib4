@@ -19,6 +19,7 @@ public import Mathlib.Algebra.Order.BigOperators.Group.Finset
 This file defines vector and matrix multiplication
 
 ## Main definitions
+
 * `dotProduct`: the dot product between two vectors
 * `Matrix.mul`: multiplication of two matrices
 * `Matrix.mulVec`: multiplication of a matrix with a vector

@@ -44,6 +44,7 @@ quotients of `V*`, the dual of `V`. In symbols, this means that the first defini
 to `G(n - k, V; F)` and also to `G(k, V →ₗ[F] F; F)`, where `n` is the dimension of `V`.
 
 ## TODO
+
 - Define and recover the subspace-definition (i.e. the first definition above).
 - Define `chart x` indexed by `x : Fin k → M` as a subtype consisting of those
   `N ∈ G(k, A ⊗[R] M; A)` such that the composition `R^k → M → M⧸N` is an isomorphism.

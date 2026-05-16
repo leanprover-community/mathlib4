@@ -27,6 +27,7 @@ with basic cells given by boundary inclusions `∂Δ[d] ⟶ Δ[d]` for all
 nondegenerate `d`-simplices of `Y` which do not belong to the range of `i`.
 
 ## TODO
+
 * show that `(SSet.sk n).obj X` is isomorphic to `X.skeleton (n + 1)`
 
 -/

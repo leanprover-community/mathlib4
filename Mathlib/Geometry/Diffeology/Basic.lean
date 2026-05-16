@@ -140,6 +140,7 @@ that haven't been formalised at all yet and only depend on the material here are
 * <https://ncatlab.org/nlab/show/diffeological+space>
 
 ## Tags
+
 diffeology, diffeological space, smoothness, smooth function
 -/
 

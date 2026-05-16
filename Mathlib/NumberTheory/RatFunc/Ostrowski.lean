@@ -18,6 +18,7 @@ equivalent to either the `I`-adic valuation for some `I : HeightOneSpectrum K[X]
 valuation at infinity `FunctionField.inftyValuation K`.
 
 ## Main results
+
 - `RatFunc.valuation_isEquiv_infty_or_adic`: Ostrowski's theorem for `K(X)`.
 -/
 

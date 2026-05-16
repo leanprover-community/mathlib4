@@ -14,6 +14,7 @@ public import Mathlib.RingTheory.Algebraic.Integral
 # The field structure of rational functions
 
 ## Main definitions
+
 Working with rational functions as polynomials:
 - `RatFunc.instField` provides a field structure
 

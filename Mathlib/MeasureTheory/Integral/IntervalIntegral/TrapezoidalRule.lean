@@ -15,9 +15,11 @@ This file contains a definition of integration on `[[a, b]]` via the trapezoidal
 an error bound in terms of a bound on the second derivative of the integrand.
 
 ## Main results
+
 - `trapezoidal_error_le`: the convergence theorem for the trapezoidal rule.
 
 ## References
+
 We follow the proof on (Wikipedia)[https://en.wikipedia.org/wiki/Trapezoidal_rule] for the error
 bound.
 -/

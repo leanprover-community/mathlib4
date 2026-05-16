@@ -34,6 +34,7 @@ of the descent. However, contrary to Laumon and Moret-Bailly in *Champs algébri
 we do not require that target categories are groupoids.
 
 ## References
+
 * [Jean Giraud, *Cohomologie non abélienne*][giraud1971]
 * [Gérard Laumon and Laurent Moret-Bailly, *Champs algébriques*][laumon-morel-bailly-2000]
 

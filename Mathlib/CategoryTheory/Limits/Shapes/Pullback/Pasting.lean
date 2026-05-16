@@ -22,6 +22,7 @@ if the right square is a pullback, then the left square is a pullback iff the bi
 pullback.
 
 ## Main results
+
 * `pasteHorizIsPullback` shows that the big square is a pullback if both the small squares are.
 * `leftSquareIsPullback` shows that the left square is a pullback if the other two are.
 * `pullbackRightPullbackFstIso` shows, using the `pullback` API, that

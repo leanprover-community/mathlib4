@@ -9,6 +9,7 @@ public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.PullbackCone
 
 /-!
 # HasPullback
+
 `HasPullback f g` and `pullback f g` provides API for `HasLimit` and `limit` in the case of
 pullbacks.
 
@@ -48,6 +49,7 @@ pullbacks.
   ```
 
 ## Main results & API
+
 * The following API is available for using the universal property of `pullback f g`:
   `lift`, `lift_fst`, `lift_snd`, `lift'`, `hom_ext` (for uniqueness).
 
@@ -62,6 +64,7 @@ pullbacks.
 (The dual results for pushouts are also available)
 
 ## References
+
 * [Stacks: Fibre products](https://stacks.math.columbia.edu/tag/001U)
 * [Stacks: Pushouts](https://stacks.math.columbia.edu/tag/0025)
 -/

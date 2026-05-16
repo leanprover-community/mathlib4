@@ -17,6 +17,7 @@ This file contains results that stem from the limit API. For the definition and 
 instance of `Cone`, please refer to `Mathlib/CategoryTheory/Limits/Cones.lean`.
 
 ## Main results
+
 * The category of cones on `F : J ⥤ C` is equivalent to the category
   `CostructuredArrow (const J) F`.
 * A cone is limiting iff it is terminal in the category of cones. As a corollary, an equivalence of

@@ -82,6 +82,7 @@ environment. For `fun_prop` this is not a serious problem since it doesn't have 
 different lemmas anyways.
 
 #### Future work:
+
 Make a version of `RefinedDiscrTree` that is optimal for tactics like `simp` and
 `fun_prop`. This would mean using a persistent data structure, and possibly a non-lazy structure.
 
@@ -95,6 +96,7 @@ type class search. Since the intended applications of the `RefinedDiscrTree` cur
 matching, the lookup algorithm is most optimized for matching.
 
 #### Future work:
+
 Improve the unification lookup.
 
 -/

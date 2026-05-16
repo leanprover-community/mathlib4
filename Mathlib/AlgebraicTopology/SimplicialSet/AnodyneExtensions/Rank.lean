@@ -25,6 +25,7 @@ then `P.RankFunction ℕ` is non empty (TODO @joelriou).
 
 
 ## References
+
 * [Sean Moss, *Another approach to the Kan-Quillen model structure*][moss-2020]
 
 -/

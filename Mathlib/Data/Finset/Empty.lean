@@ -15,6 +15,7 @@ public import Aesop
 This file defines the empty finite set ∅ and a predicate for nonempty `Finset`s.
 
 ## Main declarations
+
 * `Finset.Nonempty`: A finset is nonempty if it has elements. This is equivalent to saying `s ≠ ∅`.
 * `Finset.empty`: Denoted by `∅`. The finset associated to any type consisting of no elements.
 

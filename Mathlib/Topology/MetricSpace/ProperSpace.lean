@@ -13,6 +13,7 @@ public import Mathlib.Topology.Order.IsLUB
 /-! ## Proper spaces
 
 ## Main definitions and results
+
 * `ProperSpace α`: a `PseudoMetricSpace` where all closed balls are compact
 
 * `isCompact_sphere`: any sphere in a proper space is compact.

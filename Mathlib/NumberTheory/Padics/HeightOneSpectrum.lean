@@ -34,6 +34,7 @@ v.adicCompletion ℚ  <--------------->   ℚ_[p]
 ```
 
 ## Main definitions
+
 - `Rat.HeightOneSpectrum.primesEquiv` : the equivalence between height-one prime ideals of
   `R` and prime numbers in `ℕ`.
 - `Rat.HeightOneSpectrum.padicEquiv v` : the continuous `ℚ`-algebra isomorphism

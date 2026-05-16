@@ -42,6 +42,7 @@ This file provides API for interacting with cones (resp. cocones) in the case of
   `Cocone (span f g)`, so general results about cocones are also available for `PushoutCone f g`.
 
 ## API
+
 We summarize the most important parts of the API for pullback cones here. The dual notions for
 pushout cones are also available in this file.
 
@@ -65,6 +66,7 @@ Interaction with `CommSq`:
   cocone associated with a commuting square
 
 ## References
+
 * [Stacks: Fibre products](https://stacks.math.columbia.edu/tag/001U)
 * [Stacks: Pushouts](https://stacks.math.columbia.edu/tag/0025)
 -/

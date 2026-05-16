@@ -29,6 +29,7 @@ category of simplicial sets in such a way that morphisms in
   by morphisms `Δ[1] ⊗ X ⟶ Y`.
 
 ## References
+
 * [Daniel G. Quillen, *Homotopical algebra*, II §1][quillen-1967]
 
 -/

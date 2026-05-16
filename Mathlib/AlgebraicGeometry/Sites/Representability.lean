@@ -20,6 +20,7 @@ In this file we prove that a sheaf of types `F` on `Sch` is representable if it 
 locally representable.
 
 ## Main result
+
 - `AlgebraicGeometry.Scheme.LocalRepresentability.isRepresentable`:
   Suppose
   * F is a `Type u`-valued sheaf on `Sch` with respect to the Zariski topology
@@ -30,6 +31,7 @@ locally representable.
   Then `F` is representable.
 
 ## References
+
 * https://stacks.math.columbia.edu/tag/01JJ
 
 -/

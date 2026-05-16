@@ -25,6 +25,7 @@ A preordered type `J` is a `κ`-filtered category (i.e. `κ`-directed set)
 if any subset of `J` of cardinality `< κ` has an upper bound.
 
 ## References
+
 * [Adámek, J. and Rosický, J., *Locally presentable and accessible categories*][Adamek_Rosicky_1994]
 
 -/

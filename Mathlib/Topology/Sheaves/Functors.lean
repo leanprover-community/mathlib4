@@ -17,6 +17,7 @@ on X to that of sheaves on Y, given a continuous map between
 topological spaces X and Y.
 
 ## Main definitions
+
 - `TopCat.Sheaf.pushforward`:
     The pushforward functor between sheaf categories over topological spaces.
 - `TopCat.Sheaf.pullback`: The pullback functor between sheaf categories over topological spaces.

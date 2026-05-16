@@ -26,6 +26,7 @@ public import Mathlib.RingTheory.TensorProduct.Maps
   asserting that is a pushout diagram (i.e. `S' = S ⊗[R] R'`)
 
 ## Main results
+
 - `TensorProduct.isBaseChange`: `S ⊗[R] M` is the base change of `M` along `R → S`.
 
 -/

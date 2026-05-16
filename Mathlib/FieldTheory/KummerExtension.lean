@@ -15,6 +15,7 @@ public import Mathlib.RingTheory.Norm.Basic
 # Kummer Extensions
 
 ## Main result
+
 - `isCyclic_tfae`:
   Suppose `L/K` is a finite extension of dimension `n`, and `K` contains all `n`-th roots of unity.
   Then `L/K` is cyclic iff
@@ -33,6 +34,7 @@ public import Mathlib.RingTheory.Norm.Basic
   `i ↦ (α ↦ ζⁱ • α)`.
 
 ## Other results
+
 Criteria for `X ^ n - C a` to be irreducible is given:
 - `X_pow_sub_C_irreducible_iff_of_prime_pow`:
   For `n = p ^ k` an odd prime power, `X ^ n - C a` is irreducible iff `a` is not a `p`-power.
@@ -150,6 +152,7 @@ end Irreducible
 
 /-!
 ### Galois Group of `K[n√a]`
+
 We first develop the theory for a specific `K[n√a] := AdjoinRoot (X ^ n - C a)`.
 The main result is the description of the Galois group: `autAdjoinRootXPowSubCEquiv`.
 -/

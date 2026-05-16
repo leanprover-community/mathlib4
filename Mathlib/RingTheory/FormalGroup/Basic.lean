@@ -31,6 +31,7 @@ of the formal group law `F(X,Y)`.
   `PowerSeries.hasEvalIdeal`.
 
 ## References
+
 * [Hazewinkel, Michiel. Formal Groups and Applications][hazewinkel1978]
 
 -/

@@ -38,6 +38,7 @@ produces the third one.
   swaps the 3-cycles (like `(1 2 3)`) with elements of shape `3²` (like `(1 2 3)(4 5 6)`).
 
 ## Tags
+
 non-cyclic abelian group
 -/
 

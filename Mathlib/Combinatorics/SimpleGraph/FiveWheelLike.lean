@@ -58,6 +58,7 @@ while `W₂,₁` is a 5-cycle with an extra central hub vertex adjacent to all o
 * `SimpleGraph.FiveWheelLikeFree`: predicate for `G` to have no `IsFiveWheelLike r k` subgraph.
 
 ## Implementation notes
+
 The definitions of `IsFiveWheelLike` and `IsFiveWheelLikeFree` in this file have `r` shifted by two
 compared to the definitions in Brandt **On the structure of graphs with bounded clique number**
 

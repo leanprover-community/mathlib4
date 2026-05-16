@@ -16,6 +16,7 @@ public import Mathlib.Data.Real.Archimedean
 This file provides embedding of any archimedean groups into reals.
 
 ## Main declarations
+
 * `Archimedean.embedReal` defines an injective `M →+o ℝ` for archimedean group `M` with a positive
   `1` element. `1` is preserved by the map.
 * `Archimedean.exists_orderAddMonoidHom_real_injective` states there exists an injective `M →+o ℝ`

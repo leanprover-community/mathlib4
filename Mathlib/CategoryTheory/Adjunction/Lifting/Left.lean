@@ -51,6 +51,7 @@ Please try to keep them in sync.
   especially in the case when the isomorphism `comm` is `Iso.refl _`
 
 ## References
+
 * https://ncatlab.org/nlab/show/adjoint+triangle+theorem
 * https://ncatlab.org/nlab/show/adjoint+lifting+theorem
 * Adjoint Lifting Theorems for Categories of Algebras (PT Johnstone, 1975)

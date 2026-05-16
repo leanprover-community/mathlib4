@@ -64,8 +64,10 @@ section preparation
 
 /- In order to apply Pigeonhole we need:
 # Step 1: ∀ v ∈  T, A *ᵥ v ∈  S
+
 and
 # Step 2: #S < #T
+
 Pigeonhole will give different x and y in T with A.mulVec x = A.mulVec y in S
 Their difference is the solution we are looking for
 -/

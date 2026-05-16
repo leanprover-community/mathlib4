@@ -15,6 +15,7 @@ public import Mathlib.Tactic.DepRewrite
 We define ideal sheaves of schemes and provide various constructors for it.
 
 ## Main definition
+
 * `AlgebraicGeometry.Scheme.IdealSheafData`: A structure that contains the data to uniquely define
   an ideal sheaf, consisting of
   1. an ideal `I(U) ≤ Γ(X, U)` for every affine open `U`
@@ -28,6 +29,7 @@ We define ideal sheaves of schemes and provide various constructors for it.
 * `AlgebraicGeometry.Scheme.Hom.ker`: The kernel of a morphism.
 
 ## Main results
+
 * `AlgebraicGeometry.Scheme.IdealSheafData.gc`:
   `support` and `vanishingIdeal` forms a Galois connection.
 * `AlgebraicGeometry.Scheme.Hom.support_ker`: The support of a kernel of a quasi-compact morphism

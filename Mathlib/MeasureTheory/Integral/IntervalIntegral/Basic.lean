@@ -173,6 +173,7 @@ end
 
 /-!
 ## Basic properties of interval integrability
+
 - interval integrability is symmetric, reflexive, transitive
 - monotonicity and strong measurability of the interval integral
 - if `f` is interval integrable, so are its absolute value and norm
@@ -879,6 +880,7 @@ end RCLike
 
 /-!
 ## Basic arithmetic
+
 Includes addition, scalar multiplication and affine transformations.
 -/
 section Comp

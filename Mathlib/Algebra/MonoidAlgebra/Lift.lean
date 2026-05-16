@@ -14,6 +14,7 @@ This file defines `liftNC`. For the definition of `MonoidAlgebra.lift`, see
 `Mathlib/Algebra/MonoidAlgebra/Basic.lean`.
 
 ## Main results
+
 * `MonoidAlgebra.liftNC`, `AddMonoidAlgebra.liftNC`: lift a homomorphism `f : k →+ R` and a
   function `g : G → R` to a homomorphism `k[G] →+ R`.
 -/

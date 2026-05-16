@@ -25,6 +25,7 @@ Yoneda lemma is also expressed as a natural isomorphism
 `yonedaLemma : yonedaPairing C ≅ yonedaEvaluation C`.
 
 ## References
+
 * [Stacks: Opposite Categories and the Yoneda Lemma](https://stacks.math.columbia.edu/tag/001L)
 -/
 

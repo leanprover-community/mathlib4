@@ -34,6 +34,7 @@ is an element of `F(S)`. The fiber category `Fiber p S` is then equivalent to th
 categories `F(S)` and the functor `ι` sends `a : F(S)` to `(S, a)` in the fibered category.
 
 ## Main API
+
 The following API is developed so that the fibers from a `HasFibers` instance can be used
 analogously to the standard fibers.
 

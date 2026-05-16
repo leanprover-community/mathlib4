@@ -494,6 +494,7 @@ end IsTopologicalSemiring
 
 /-!
 ### Lattice of ring topologies
+
 We define a type class `RingTopology R` which endows a ring `R` with a topology such that all ring
 operations are continuous.
 

@@ -16,16 +16,19 @@ For a field `k`, we say that a `k`-algebra `A` is geometrically reduced (`IsGeom
 if the tensor product `AlgebraicClosure k ⊗[k] A` is reduced.
 
 ## Main results
+
 - `IsGeometricallyReduced.of_forall_fg`: for a field `k` and a commutative `k`-algebra `A`, if all
   finitely generated subalgebras `B` of `A` are geometrically reduced, then `A` is geometrically
   reduced.
 
 ## References
+
 - See [https://stacks.math.columbia.edu/tag/05DS] for some theory of geometrically reduced algebras.
   Note that their definition differs from the one here, we still need a proof that these are
   equivalent (see TODO).
 
 ## TODO
+
 - Prove that if `A` is a geometrically reduced `k`-algebra, then for every field extension `K` of
   `k` the `K`-algebra `K ⊗[k] A` is reduced.
 

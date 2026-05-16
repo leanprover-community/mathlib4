@@ -11,6 +11,7 @@ public import Mathlib.Probability.ProbabilityMassFunction.Constructions
 
 /-!
 # Uniform distributions and probability mass functions
+
 This file defines two related notions of uniform distributions, which will be unified in the future.
 
 ## Uniform distributions
@@ -18,6 +19,7 @@ This file defines two related notions of uniform distributions, which will be un
 Defines the uniform distribution for any set with finite measure.
 
 ### Main definitions
+
 * `IsUniform X s ℙ μ` : A random variable `X` has uniform distribution on `s` under `ℙ` if the
   push-forward measure agrees with the rescaled restricted measure `μ`.
 
@@ -27,6 +29,7 @@ This file defines a number of uniform `PMF` distributions from various inputs,
   uniformly drawing from the corresponding object.
 
 ### Main definitions
+
 `PMF.uniformOfFinset` gives each element in the set equal probability,
   with `0` probability for elements not in the set.
 
@@ -37,6 +40,7 @@ This file defines a number of uniform `PMF` distributions from various inputs,
   Each probability is given by the count of the element divided by the size of the `Multiset`
 
 ## TODO
+
 * Refactor the `PMF` definitions to come from a `uniformMeasure` on a `Finset`/`Fintype`/`Multiset`.
 -/
 

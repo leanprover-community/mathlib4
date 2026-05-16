@@ -478,6 +478,7 @@ end IsDedekindDomain
 
 /-!
 ### Height one spectrum of a Dedekind domain
+
 If `R` is a Dedekind domain of Krull dimension 1, the maximal ideals of `R` are exactly its nonzero
 prime ideals.
 We define `HeightOneSpectrum` and provide lemmas to recover the facts that prime ideals of height

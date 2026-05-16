@@ -9,6 +9,7 @@ public import Mathlib.CategoryTheory.Opposites
 
 /-!
 # Dinatural transformations
+
 Dinatural transformations are special kinds of transformations between
 functors `F G : Cᵒᵖ ⥤ C ⥤ D` which depend both covariantly and contravariantly
 on the same category (also known as difunctors).
@@ -20,6 +21,7 @@ hexagon does not commute in general), but can still be "pre/post-composed" with
 ordinary natural transformations.
 
 ## References
+
 * <https://ncatlab.org/nlab/show/dinatural+transformation>
 -/
 

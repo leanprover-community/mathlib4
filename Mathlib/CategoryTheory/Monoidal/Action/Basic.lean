@@ -24,9 +24,11 @@ on `d` is `d ⊙ᵣ c`, and the structure isomorphisms are of the form
 
 
 ## References
+
 * [Janelidze, G, and Kelly, G.M., *A note on actions of a monoidal category*][JanelidzeKelly2001]
 
 ## TODOs/Projects
+
 * Equivalence between actions of `C` on `D` and pseudofunctors from the
   classifying bicategory of `C` to `Cat`.
 * Left/Right Modules in `D` over a monoid object in `C`.

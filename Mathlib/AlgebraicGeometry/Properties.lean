@@ -17,6 +17,7 @@ public import Mathlib.RingTheory.Ideal.Height
 We provide some basic properties of schemes
 
 ## Main definition
+
 * `AlgebraicGeometry.IsIntegral`: A scheme is integral if it is nontrivial and all nontrivial
   components of the structure sheaf are integral domains.
 * `AlgebraicGeometry.IsReduced`: A scheme is reduced if all the components of the structure sheaf

@@ -18,6 +18,7 @@ it runs every tactic registered via the `register_hint <prio> tac` command
 on the current goal, and reports which ones succeed.
 
 ## Future work
+
 It would be nice to run the tactics in parallel.
 -/
 

@@ -20,6 +20,7 @@ we provide an API in order to construct elements in `Ext X Y n` in terms
 of the complex `R.complex` and to make computations in the `Ext`-group.
 
 ## TODO
+
 * Functoriality in `X`: this would involve a morphism `X ⟶ X'`, projective
   resolutions `R` and `R'` of `X` and `X'`, a lift of `X ⟶ X'` as a morphism
   of cochain complexes `R.complex ⟶ R'.complex`; in this context,

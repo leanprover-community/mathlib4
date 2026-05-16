@@ -21,6 +21,7 @@ public import Mathlib.Data.Matrix.Basis
   it gives a functor from the category of `R`-modules to the category of `Matrix ι ι R`-modules.
 
 ## Tags
+
 matrix, module
 -/
 

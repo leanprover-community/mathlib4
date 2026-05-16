@@ -43,6 +43,7 @@ type with a zero. They are denoted `R⸨X⸩`.
 
 * Basic properties of Hasse derivatives
 ### About the `X`-Adic valuation:
+
 * The (integral) valuation of a power series is the order of the first non-zero coefficient, see
   `LaurentSeries.intValuation_le_iff_coeff_lt_eq_zero`.
 * The valuation of a Laurent series is the order of the first non-zero coefficient, see

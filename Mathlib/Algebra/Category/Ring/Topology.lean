@@ -20,6 +20,7 @@ Alternatively, given a presentation `A = ℤ[xᵢ]/I`,
 this is the subspace topology `Hom(A, R) ↪ Hom(ℤ[xᵢ], R) = Rᶥ`.
 
 ## Main results
+
 - `CommRingCat.HomTopology.isClosedEmbedding_precomp_of_surjective`:
   `Hom(A/I, R)` is a closed subspace of `Hom(A, R)` if `R` is Hausdorff.
 - `CommRingCat.HomTopology.mvPolynomialHomeomorph`:

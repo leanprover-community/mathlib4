@@ -28,6 +28,7 @@ A coproduct is the dual concept.
 Each of these has a dual.
 
 ## Implementation notes
+
 As with the other special shapes in the limits library, all the definitions here are given as
 `abbrev`s of the general statements for limits, so all the `simp` lemmas and theorems about
 general limits can be used.

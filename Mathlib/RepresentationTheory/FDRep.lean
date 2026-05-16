@@ -39,6 +39,7 @@ The main case of interest is when `R = k` is a field and `G` is a group,
 and this is reflected in the documentation.
 
 ## TODO
+
 * `FdRep k G ≌ FullSubcategory (FiniteDimensional k)`
 * `FdRep k G` has all finite colimits.
 * `FdRep k G` is abelian.

@@ -35,6 +35,7 @@ the tangent bundle. As instances related to Riemannian bundles are both costly a
 they are scoped to the `Bundle` namespace.
 
 ## Keywords
+
 Vector bundle, Riemannian metric
 -/
 

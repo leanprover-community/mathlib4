@@ -475,6 +475,7 @@ noncomputable def coeHom [StarRing 𝕜] [StarRing A] [StarModule 𝕜 A] [Norme
 
 /-!
 ### Norm structures
+
 We define the norm structure on `𝓜(𝕜, A)` as the pullback under
 `DoubleCentralizer.toProdMulOppositeHom : 𝓜(𝕜, A) →+* (A →L[𝕜] A) × (A →L[𝕜] A)ᵐᵒᵖ`, which
 provides a definitional isometric embedding. Consequently, completeness of `𝓜(𝕜, A)` is obtained

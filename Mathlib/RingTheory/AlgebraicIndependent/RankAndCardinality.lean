@@ -22,6 +22,7 @@ This file concerns the cardinality of a transcendence basis.
 * [Stacks: Transcendence](https://stacks.math.columbia.edu/tag/030D)
 
 ## Tags
+
 transcendence basis, transcendence degree, transcendence
 
 -/

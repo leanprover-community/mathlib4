@@ -8,23 +8,27 @@ import Mathlib.Algebra.Category.ModuleCat.Biproducts
 
 /-!
 # Pseudoelements and pullbacks
+
 Borceux claims in Proposition 1.9.5 that the pseudoelement constructed in
 `CategoryTheory.Abelian.Pseudoelement.pseudo_pullback` is unique. We show here that this claim is
 false. This means in particular that we cannot have an extensionality principle for pullbacks in
 terms of pseudoelements.
 
 ## Implementation details
+
 The construction, suggested in https://mathoverflow.net/a/419951/7845, is the following.
 We work in the category of `ModuleCat ℤ` and we consider the special case of `ℚ ⊞ ℚ` (that is the
 pullback over the terminal object). We consider the pseudoelements associated to `x : ℚ ⟶ ℚ ⊞ ℚ`
 given by `t ↦ (t, 2 * t)` and `y : ℚ ⟶ ℚ ⊞ ℚ` given by `t ↦ (t, t)`.
 
 ## Main results
+
 * `Counterexample.exist_ne_and_fst_eq_fst_and_snd_eq_snd` : there are two
   pseudoelements `x y : ℚ ⊞ ℚ` such that `x ≠ y`, `biprod.fst x = biprod.fst y` and
   `biprod.snd x = biprod.snd y`.
 
 ## References
+
 * [F. Borceux, *Handbook of Categorical Algebra 2*][borceux-vol2]
 -/
 
