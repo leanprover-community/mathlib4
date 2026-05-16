@@ -396,6 +396,7 @@ theorem exists_lt_of_lt_csSup (hs : s.Nonempty) (hb : b < sSup s) : ∃ a ∈ s,
 
 /-- When `sInf s < b`, there is an element `a` in `s` with `a < b`, if `s` is nonempty and the order
 is a linear order. -/
+@[to_dual existing exists_lt_of_lt_csSup]
 theorem exists_lt_of_csInf_lt (hs : s.Nonempty) (hb : sInf s < b) : ∃ a ∈ s, a < b :=
   exists_lt_of_lt_csSup (α := αᵒᵈ) hs hb
 
