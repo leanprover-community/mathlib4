@@ -4850,6 +4850,7 @@ public import Mathlib.LinearAlgebra.AffineSpace.Ceva
 public import Mathlib.LinearAlgebra.AffineSpace.Combination
 public import Mathlib.LinearAlgebra.AffineSpace.Defs
 public import Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional
+public import Mathlib.LinearAlgebra.AffineSpace.Homogenization
 public import Mathlib.LinearAlgebra.AffineSpace.Independent
 public import Mathlib.LinearAlgebra.AffineSpace.Matrix
 public import Mathlib.LinearAlgebra.AffineSpace.Midpoint
