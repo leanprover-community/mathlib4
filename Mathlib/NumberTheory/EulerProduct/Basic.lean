@@ -366,15 +366,11 @@ This version is stated in the form of convergence of finite partial products. -/
 theorem eulerProduct_completely_multiplicative {f : ℕ →*₀ F} (hsum : Summable (‖f ·‖)) :
     Tendsto (fun n : ℕ ↦ ∏ p ∈ primesBelow n, (1 - f p)⁻¹) atTop (𝓝 (∑' n, f n)) := by
   have hmul {m n} (_ : Nat.Coprime m n) := f.map_mul m n
-  have := (eulerProduct_hasProd_mulIndicator f.map_one hmul hsum f.map_zero).tendsto_prod_nat
-  have H (n : ℕ) : ∏ p ∈ range n, {p | Nat.Prime p}.mulIndicator (fun p ↦ (1 - f p)⁻¹) p =
-                     ∏ p ∈ primesBelow n, (1 - f p)⁻¹ :=
-    prod_mulIndicator_eq_prod_filter
-      (range n) (fun _ ↦ fun p ↦ (1 - f p)⁻¹) (fun _ ↦ {p | Nat.Prime p}) id
-  have H' : {p | Nat.Prime p}.mulIndicator (fun p ↦ (1 - f p)⁻¹) =
-              {p | Nat.Prime p}.mulIndicator (fun p ↦ ∑' e : ℕ, f (p ^ e)) :=
-    Set.mulIndicator_congr fun p hp ↦ one_sub_inv_eq_geometric_of_summable_norm hp hsum
-  simpa only [← H, H'] using this
+  have H (n : ℕ) :
+      ∏ p ∈ primesBelow n, (1 - f p)⁻¹ = ∏ p ∈ primesBelow n, ∑' e, f (p ^ e) := by
+    refine prod_congr rfl fun p hp ↦ ?_
+    exact one_sub_inv_eq_geometric_of_summable_norm (Nat.prime_of_mem_primesBelow hp) hsum
+  simpa [H] using (eulerProduct f.map_one hmul hsum f.map_zero)
 
 end EulerProduct
 

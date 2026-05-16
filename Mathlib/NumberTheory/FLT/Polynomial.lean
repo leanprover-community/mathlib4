@@ -10,6 +10,7 @@ public import Mathlib.Algebra.GroupWithZero.Defs
 public import Mathlib.NumberTheory.FLT.Basic
 public import Mathlib.NumberTheory.FLT.MasonStothers
 public import Mathlib.RingTheory.Polynomial.Content
+public import Mathlib.RingTheory.Polynomial.IsIntegral
 public import Mathlib.Tactic.GCongr
 
 /-!
@@ -245,12 +246,8 @@ theorem fermatLastTheoremWith'_polynomial {n : ℕ} (hn : 3 ≤ n) (chn : (n : k
   set d := gcd a b
   have hd : d ≠ 0 := gcd_ne_zero_of_left ha
   rw [eq_a, eq_b, mul_pow, mul_pow, ← mul_add] at heq
-  have hdc : d ∣ c := by
-    -- TODO: This is basically reproving `IsIntegrallyClosed.pow_dvd_pow_iff`
-    have hn : 0 < n := by lia
-    have hdncn : d ^ n ∣ c ^ n := ⟨_, heq.symm⟩
-    simpa [dvd_iff_normalizedFactors_le_normalizedFactors, Multiset.le_iff_count, *] using hdncn
-  obtain ⟨c', eq_c⟩ := hdc
+  obtain ⟨c', eq_c⟩ := (IsIntegrallyClosed.pow_dvd_pow_iff (R := k[X]) (show n ≠ 0 by omega)).mp
+    ⟨_, heq.symm⟩
   rw [eq_a, mul_ne_zero_iff] at ha
   rw [eq_b, mul_ne_zero_iff] at hb
   rw [eq_c, mul_ne_zero_iff] at hc
@@ -266,8 +263,6 @@ theorem fermatLastTheoremWith'_polynomial {n : ℕ} (hn : 3 ≤ n) (chn : (n : k
     rw [← hc', C_ne_zero] at hc
     exact ⟨ha.right.isUnit_C, hb.right.isUnit_C, hc.right.isUnit_C⟩
   apply flt hn chn ha.right hb.right hc.right _ heq
-  convert isCoprime_div_gcd_div_gcd _
-  · exact EuclideanDomain.eq_div_of_mul_eq_left ha.left eq_a.symm
-  · exact EuclideanDomain.eq_div_of_mul_eq_left ha.left eq_b.symm
-  · rw [eq_b]
-    exact mul_ne_zero hb.right hb.left
+  simpa [EuclideanDomain.eq_div_of_mul_eq_left ha.left eq_a.symm,
+    EuclideanDomain.eq_div_of_mul_eq_left ha.left eq_b.symm] using
+    (isCoprime_div_gcd_div_gcd_of_gcd_ne_zero hd)

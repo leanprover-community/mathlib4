@@ -112,16 +112,11 @@ theorem neg_of_minimal {a b c : ℤ} : Minimal a b c → Minimal a b (-c) := by
 theorem exists_odd_minimal {a b c : ℤ} (h : Fermat42 a b c) :
     ∃ a0 b0 c0, Minimal a0 b0 c0 ∧ a0 % 2 = 1 := by
   obtain ⟨a0, b0, c0, hf⟩ := exists_minimal h
-  rcases Int.emod_two_eq_zero_or_one a0 with hap | hap
-  · rcases Int.emod_two_eq_zero_or_one b0 with hbp | hbp
-    · exfalso
-      have h1 : 2 ∣ (Int.gcd a0 b0 : ℤ) :=
-        Int.dvd_coe_gcd (Int.dvd_of_emod_eq_zero hap) (Int.dvd_of_emod_eq_zero hbp)
-      rw [Int.isCoprime_iff_gcd_eq_one.mp (coprime_of_minimal hf)] at h1
-      revert h1
-      decide
-    · exact ⟨b0, ⟨a0, ⟨c0, minimal_comm hf, hbp⟩⟩⟩
-  exact ⟨a0, ⟨b0, ⟨c0, hf, hap⟩⟩⟩
+  rcases Int.emod_two_eq_zero_or_one a0 with ha0 | ha0
+  · refine ⟨b0, a0, c0, minimal_comm hf, ?_⟩
+    exact Int.odd_iff.mp <| Int.isCoprime_two_left.mp <|
+      IsCoprime.of_isCoprime_of_dvd_left (coprime_of_minimal hf) (Int.dvd_of_emod_eq_zero ha0)
+  · exact ⟨a0, b0, c0, hf, ha0⟩
 
 /-- We can assume that a minimal solution to `a ^ 4 + b ^ 4 = c ^ 2` has
 `a` odd and `c` positive. -/

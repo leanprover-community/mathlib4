@@ -52,11 +52,7 @@ lemma eisSummand_extension_differentiableOn (k : ℤ) (a : Fin 2 → ℤ) :
 /-- Eisenstein series are MDifferentiable (i.e. holomorphic functions from `ℍ → ℂ`). -/
 theorem eisensteinSeriesSIF_mdifferentiable {k : ℤ} {N : ℕ} (hk : 3 ≤ k) (a : Fin 2 → ZMod N) :
     MDiff (eisensteinSeriesSIF a k) := by
-  intro τ
-  suffices DifferentiableAt ℂ (↑ₕeisensteinSeriesSIF a k) τ.1 by
-    convert MDifferentiableAt.comp τ (DifferentiableAt.mdifferentiableAt this) τ.mdifferentiable_coe
-    exact funext fun z ↦ (comp_ofComplex (eisensteinSeriesSIF a k) z).symm
-  refine DifferentiableOn.differentiableAt ?_ (isOpen_upperHalfPlaneSet.mem_nhds τ.2)
+  rw [UpperHalfPlane.mdifferentiable_iff]
   exact (eisensteinSeries_tendstoLocallyUniformlyOn hk a).differentiableOn
     (Eventually.of_forall fun s ↦ DifferentiableOn.fun_sum
     fun _ _ ↦ eisSummand_extension_differentiableOn _ _) isOpen_upperHalfPlaneSet
