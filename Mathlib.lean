@@ -1591,6 +1591,7 @@ public import Mathlib.AlgebraicTopology.SimplicialSet.SubcomplexEvaluation
 public import Mathlib.AlgebraicTopology.SimplicialSet.SubcomplexOp
 public import Mathlib.AlgebraicTopology.SimplicialSet.Subdivision
 public import Mathlib.AlgebraicTopology.SimplicialSet.TopAdj
+public import Mathlib.AlgebraicTopology.SimplicialSet.WeaklyPolyhedralLike
 public import Mathlib.AlgebraicTopology.SingularHomology.Basic
 public import Mathlib.AlgebraicTopology.SingularHomology.HomologyZero
 public import Mathlib.AlgebraicTopology.SingularHomology.HomotopyInvariance
