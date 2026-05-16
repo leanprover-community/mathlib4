@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.Algebra.Rat
 public import Mathlib.Algebra.Module.Rat
-public import Mathlib.Data.NNRat.Order
+public import Mathlib.Algebra.Order.Ring.Rat
 public import Mathlib.Topology.Algebra.Order.Archimedean
 public import Mathlib.Topology.Algebra.Ring.Real
 public import Mathlib.Topology.Instances.Nat
