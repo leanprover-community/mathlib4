@@ -28,6 +28,7 @@ abbrev mathlibOnlyLinters : Array LeanOption := #[
   ⟨`linter.mathlibStandardSet, true⟩,
   -- Explicitly enable the header linter, since the standard set is defined in `Mathlib.Init`
   -- but we want to run this linter in files imported by `Mathlib.Init`.
+  ⟨`linter.deprecated.module.exclude_root, true⟩,
   ⟨`linter.style.header, true⟩,
   ⟨`linter.checkInitImports, true⟩,
   ⟨`linter.allScriptsDocumented, true⟩,
