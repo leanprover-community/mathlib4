@@ -238,9 +238,9 @@ lemma getVert_takeUntil {u v : V} {n : ℕ} {p : G.Walk u v} (hw : w ∈ p.suppo
 lemma snd_takeUntil (hsu : w ≠ u) (p : G.Walk u v) (h : w ∈ p.support) :
     (p.takeUntil w h).snd = p.snd := by
   apply p.getVert_takeUntil h
-  by_contra! hc
-  simp only [Nat.lt_one_iff, ← nil_iff_length_eq, nil_takeUntil] at hc
-  exact hsu hc.symm
+  contrapose hsu
+  symm
+  simpa [length_eq_zero_iff] using hsu
 
 lemma getVert_length_takeUntil {p : G.Walk v w} (h : u ∈ p.support) :
     p.getVert (p.takeUntil _ h).length = u := by
@@ -312,8 +312,12 @@ theorem rotate_edges (c : G.Walk v v) (u : V) (h) : (c.rotate u h).edges ~r c.ed
 @[simp] lemma length_rotate (c : G.Walk v v) (u : V) (h) : (c.rotate u h).length = c.length := by
   simpa using (rotate_edges c u h).perm.length_eq
 
-@[simp] lemma rotate_eq_nil {c : G.Walk v v} {u : V} (h) : c.rotate u h = nil ↔ c = nil := by
+@[simp]
+theorem nil_rotate {c : G.Walk v v} (h) : (c.rotate u h).Nil ↔ c.Nil := by
   simp [← length_eq_zero_iff]
+
+@[deprecated nil_rotate (since := "2026-05-11")]
+lemma rotate_eq_nil {c : G.Walk v v} (h) : c.rotate u h = nil ↔ c = nil := by simp
 
 end WalkDecomp
 

@@ -160,8 +160,8 @@ theorem IsTree.coe_singletonSubgraph (G : SimpleGraph V) (v : V) :
 
 theorem IsTree.coe_subgraphOfAdj {u v : V} (h : G.Adj u v) : G.subgraphOfAdj h |>.coe.IsTree := by
   refine ⟨Subgraph.subgraphOfAdj_connected h, fun w p hp ↦ ?_⟩
-  have : _ = _ := p.adj_snd <| nil_iff_eq_nil.not.mpr hp.ne_nil
-  have : _ = _ := p.adj_penultimate <| nil_iff_eq_nil.not.mpr hp.ne_nil
+  have : _ = _ := p.adj_snd hp.not_nil
+  have : _ = _ := p.adj_penultimate hp.not_nil
   #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/13166
   (replacing grind's canonicalizer with a type-directed normalizer), `grind` closed this goal.
   It is not yet clear whether this is due to defeq abuse in Mathlib or a problem in the new
@@ -286,7 +286,7 @@ theorem IsAcyclic.isPath_iff_isChain (hG : G.IsAcyclic) {v w : V} (p : G.Walk v 
     have hcc := List.isChain_cons.mp (edges_cons _ _ ▸ h)
     refine cons_isPath_iff head tail |>.mpr ⟨ih hcc.2, ?_⟩
     rcases tail.length.eq_zero_or_pos with h' | h'
-    · simp [nil_iff_support_eq.mp (nil_iff_length_eq.mpr h'), head.ne]
+    · simp [nil_iff_support_eq.mp (length_eq_zero_iff.mp h'), head.ne]
     · by_contra hh
       apply hG <| cons head (tail.takeUntil u' hh)
       simp only [isCycle_def, isTrail_def, edges_cons, List.nodup_cons, ne_eq, reduceCtorEq,
