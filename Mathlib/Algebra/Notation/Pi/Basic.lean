@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Notation.Pi.Defs
 public import Mathlib.Logic.Function.Basic
+import Mathlib.Logic.Basic
 
 /-!
 # Very basic algebraic operations on pi types
