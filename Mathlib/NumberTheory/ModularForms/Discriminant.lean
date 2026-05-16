@@ -215,7 +215,7 @@ lemma discriminant_qExpansion_coeff_one : (qExpansion 1 Δ).coeff 1 = 1 := by
     _ = derivWithin (fun q ↦ q * ∏' i, (1 - q ^ (i + 1)) ^ 24) (Metric.ball 0 1) 0 :=
         derivWithin_congr discriminant_cuspFunction_eqOn (discriminant_cuspFunction_eqOn hmem)
     _ = 1 := by
-        simp [derivWithin_fun_mul differentiableWithinAt_id'
+        simp [derivWithin_fun_mul differentiableWithinAt_fun_id
           (differentiableOn_tprod_one_sub_pow_pow 24 _ hmem),
           derivWithin_id' _ _ (Metric.isOpen_ball.uniqueDiffWithinAt hmem)]
 

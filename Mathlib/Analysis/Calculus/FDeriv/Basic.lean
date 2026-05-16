@@ -687,53 +687,35 @@ theorem hasFDerivWithinAt_id (x : E) (s : Set E) : HasFDerivWithinAt id (.id �
 theorem hasFDerivAt_id (x : E) : HasFDerivAt id (.id 𝕜 E) x :=
   hasFDerivAtFilter_id _
 
-@[simp, fun_prop]
+@[to_fun (attr := simp, fun_prop) differentiableAt_fun_id]
 theorem differentiableAt_id : DifferentiableAt 𝕜 id x :=
   (hasFDerivAt_id x).differentiableAt
 
-/-- Variant with `fun x => x` rather than `id` -/
-@[simp, fun_prop]
-theorem differentiableAt_fun_id : DifferentiableAt 𝕜 (fun x => x) x :=
-  (hasFDerivAt_id x).differentiableAt
-
-@[fun_prop]
+@[to_fun (attr := fun_prop) differentiableWithinAt_fun_id]
 theorem differentiableWithinAt_id : DifferentiableWithinAt 𝕜 id s x :=
   differentiableAt_id.differentiableWithinAt
 
-/-- Variant with `fun x => x` rather than `id` -/
-@[fun_prop]
-theorem differentiableWithinAt_id' : DifferentiableWithinAt 𝕜 (fun x => x) s x :=
-  differentiableWithinAt_id
+@[deprecated (since := "2026-01-22")]
+alias differentiableWithinAt_id' := differentiableWithinAt_fun_id
 
-@[simp, fun_prop]
+@[to_fun (attr := simp, fun_prop) differentiable_fun_id]
 theorem differentiable_id : Differentiable 𝕜 (id : E → E) := fun _ => differentiableAt_id
-
-/-- Variant with `fun x => x` rather than `id` -/
-@[simp, fun_prop]
-theorem differentiable_fun_id : Differentiable 𝕜 fun x : E => x := fun _ => differentiableAt_id
 
 @[fun_prop]
 theorem differentiableOn_id : DifferentiableOn 𝕜 id s :=
   differentiable_id.differentiableOn
 
-@[simp]
+@[to_fun (attr := simp) fderiv_fun_id]
 theorem fderiv_id [ContinuousAdd E] [ContinuousSMul 𝕜 E] [T2Space E] : fderiv 𝕜 id x = .id 𝕜 E :=
   HasFDerivAt.fderiv (hasFDerivAt_id x)
+@[deprecated (since := "2026-05-16")] alias fderiv_id' := fderiv_fun_id
 
-@[simp]
-theorem fderiv_id' [ContinuousAdd E] [ContinuousSMul 𝕜 E] [T2Space E] :
-    fderiv 𝕜 (fun x : E => x) x = ContinuousLinearMap.id 𝕜 E :=
-  fderiv_id
-
+@[to_fun fderivWithin_fun_id]
 theorem fderivWithin_id [ContinuousAdd E] [ContinuousSMul 𝕜 E] [T2Space E]
     (hxs : UniqueDiffWithinAt 𝕜 s x) : fderivWithin 𝕜 id s x = .id 𝕜 E := by
   rw [DifferentiableAt.fderivWithin differentiableAt_id hxs]
   exact fderiv_id
-
-theorem fderivWithin_id' [ContinuousAdd E] [ContinuousSMul 𝕜 E] [T2Space E]
-    (hxs : UniqueDiffWithinAt 𝕜 s x) :
-    fderivWithin 𝕜 (fun x : E => x) s x = ContinuousLinearMap.id 𝕜 E :=
-  fderivWithin_id hxs
+@[deprecated (since := "2026-05-16")] alias fderivWithin_id' := fderivWithin_fun_id
 
 end id
 
