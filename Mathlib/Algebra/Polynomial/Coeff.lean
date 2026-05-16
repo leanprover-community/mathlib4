@@ -299,10 +299,11 @@ theorem coeff_X_add_C_pow (r : R) (n k : ℕ) :
     rw [Nat.choose_eq_zero_of_lt h, Nat.cast_zero, mul_zero]
 
 theorem coeff_X_add_one_pow (R : Type*) [Semiring R] (n k : ℕ) :
-    ((X + 1) ^ n).coeff k = (n.choose k : R) := by rw [← C_1, coeff_X_add_C_pow, one_pow, one_mul]
+    ((X + 1) ^ n : R[X]).coeff k = (n.choose k : R) := by
+  rw [← C_1, coeff_X_add_C_pow, one_pow, one_mul]
 
 theorem coeff_one_add_X_pow (R : Type*) [Semiring R] (n k : ℕ) :
-    ((1 + X) ^ n).coeff k = (n.choose k : R) := by rw [add_comm _ X, coeff_X_add_one_pow]
+    ((1 + X) ^ n : R[X]).coeff k = (n.choose k : R) := by rw [add_comm _ X, coeff_X_add_one_pow]
 
 theorem one_add_X_pow_sub_X_pow {S : Type*} [CommRing S] (d : ℕ) :
     (1 + X : S[X]) ^ d - X ^ d = ∑ i ∈ range d, d.choose i • X ^ i := by

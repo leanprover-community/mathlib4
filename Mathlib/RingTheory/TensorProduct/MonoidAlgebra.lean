@@ -110,7 +110,7 @@ instance instIsPushout [IsPushout R S A B] : IsPushout R S A[M] B[M] where
       mapAlgEquiv S M <| IsPushout.equiv R S A B).toLinearEquiv fun x ↦ by
     induction x using induction_linear <;> simp_all [IsPushout.equiv_tmul]
 
-@[to_additive (dont_translate := R)]
+@[to_additive (dont_translate := R S)]
 instance instIsPushout' [IsPushout R A S B] : IsPushout R A[M] S B[M] :=
   have : IsPushout R S A B := .symm ‹_›; .symm inferInstance
 
