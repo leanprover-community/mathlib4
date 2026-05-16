@@ -27,12 +27,12 @@ criteria for establishing it.
 - `FirstOrder.Language.Theory.isQFEquivalent_iff_realize_iff_of_embeddings` characterizes
   quantifier-free definability by invariance under embeddings from a common substructure. This
   corresponds to [Theorem 3.1.4][marker2002].
-- `FirstOrder.Language.Theory.hasQuantifierElimination_of_finite_isQFEquivalent` shows that it
-  suffices to establish quantifier-free equivalence for every formula over a finite index type of
-  variables, since any formula has only finitely many free variables.
-- `FirstOrder.Language.Theory.hasQuantifierElimination_of_ex_isQFEquivalent_of_isQF` shows that it
-  suffices to eliminate one existential quantifier from quantifier-free formulas. This corresponds
-  to [Theorem 3.1.5][marker2002].
+- `FirstOrder.Language.Theory.hasQuantifierElimination_iff_finite_isQFEquivalent` characterizes
+  quantifier elimination by quantifier-free equivalence for every formula over a finite index type
+  of variables.
+- `FirstOrder.Language.Theory.hasQuantifierElimination_iff_ex_isQFEquivalent_of_isQF` characterizes
+  quantifier elimination by elimination of one existential quantifier from quantifier-free
+  formulas. This corresponds to [Theorem 3.1.5][marker2002].
 - `FirstOrder.Language.Theory.hasQuantifierElimination_of_exists_realize_of_embeddings` is a
   witness-transfer criterion for quantifier elimination. This corresponds to
   [Theorem 3.1.6][marker2002].
@@ -359,14 +359,14 @@ private theorem exists_qf_equiv_ex_of_isQF
     · simp [toOne, v', Fin.snoc]
     · simp [toOne, v']
 
-/-- To prove quantifier elimination, it suffices to establish quantifier-free equivalence for
-every formula over a finite index type of variables: any formula has only finitely many free
+/-- A theory has quantifier elimination iff every formula over a finite index type of variables is
+equivalent over the theory to a quantifier-free formula: any formula has only finitely many free
 variables, so the general case reduces to the finite-index case by restricting to the
 free-variable subtype. -/
-theorem hasQuantifierElimination_of_finite_isQFEquivalent {T : L.Theory}
-    (h : ∀ {α : Type} [Finite α] (φ : L.Formula α), T.IsQFEquivalent φ) :
-    HasQuantifierElimination T := by
-  intro α φ
+theorem hasQuantifierElimination_iff_finite_isQFEquivalent {T : L.Theory} :
+    T.HasQuantifierElimination ↔
+      ∀ {α : Type} [Finite α] (φ : L.Formula α), T.IsQFEquivalent φ := by
+  refine ⟨fun h _ _ φ => h φ, fun h α φ => ?_⟩
   classical
   let S : Set α := ↑φ.freeVarFinset
   haveI : Finite S := φ.freeVarFinset.finite_toSet.to_subtype
@@ -379,16 +379,15 @@ theorem hasQuantifierElimination_of_finite_isQFEquivalent {T : L.Theory}
   exact (BoundedFormula.realize_iff.mp (hψ'eq M (v ∘ (↑)) default)).trans
     Formula.realize_relabel.symm
 
-/-- To prove quantifier elimination, it suffices to eliminate one existential quantifier from
-every quantifier-free formula with one bound variable.
+/-- A theory has quantifier elimination iff for every quantifier-free formula `θ` with one bound
+variable, the formula `θ.ex` is equivalent over the theory to a quantifier-free formula.
 
 This corresponds to [Theorem 3.1.5][marker2002]. -/
-theorem hasQuantifierElimination_of_ex_isQFEquivalent_of_isQF
-    {T : L.Theory} :
-    (∀ {α : Type} [Finite α] (θ : L.BoundedFormula α 1), θ.IsQF → T.IsQFEquivalent θ.ex) →
-    HasQuantifierElimination T := by
-  intro h
-  refine hasQuantifierElimination_of_finite_isQFEquivalent (fun {α} _ φ => ?_)
+theorem hasQuantifierElimination_iff_ex_isQFEquivalent_of_isQF {T : L.Theory} :
+    T.HasQuantifierElimination ↔
+      ∀ {α : Type} [Finite α] (θ : L.BoundedFormula α 1), θ.IsQF → T.IsQFEquivalent θ.ex := by
+  refine ⟨fun h _ _ θ _ => h θ.ex, fun h => ?_⟩
+  refine hasQuantifierElimination_iff_finite_isQFEquivalent.mpr (fun {α} _ φ => ?_)
   refine φ.induction_on_exists_not
     (P := fun {_} φ => ∃ ψ, ψ.IsQF ∧ φ ⇔[T] ψ)
     (fun hψ => ⟨_, hψ, Theory.Iff.refl _⟩) ?_ ?_ ?_
@@ -417,7 +416,7 @@ theorem hasQuantifierElimination_of_exists_realize_of_embeddings {T : L.Theory} 
       (∃ (c : N), φ.Realize (Sum.elim (g ∘ a) (Fin.snoc default c)))) →
     T.HasQuantifierElimination := by
   intro h
-  apply hasQuantifierElimination_of_ex_isQFEquivalent_of_isQF
+  apply hasQuantifierElimination_iff_ex_isQFEquivalent_of_isQF.mpr
   intro α _ θ hθ
   refine (isQFEquivalent_iff_realize_iff_of_embeddings (T := T) (φ := θ.ex)).mpr ?_
   intro M N A _ _ _ _ _ _ _ f g a
