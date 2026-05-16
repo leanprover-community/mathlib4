@@ -61,20 +61,19 @@ namespace RestrictScalars
 variable {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] (f : R →+* S)
 variable (M : ModuleCat.{v} S)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Any `S`-module M is also an `R`-module via a ring homomorphism `f : R ⟶ S` by defining
 `r • m := f r • m` (`Module.compHom`). This is called restriction of scalars. -/
-def obj' : ModuleCat R :=
-  let _ := Module.compHom M f
-  of R M
+def obj' : ModuleCat R := by
+  exact of R (RestrictScalarsMap f M)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given an `S`-linear map `g : M → M'` between `S`-modules, `g` is also `R`-linear between `M` and
-`M'` by means of restriction of scalars.
--/
+`M'` by means of restriction of scalars. -/
 def map' {M M' : ModuleCat.{v} S} (g : M ⟶ M') : obj' f M ⟶ obj' f M' :=
   -- TODO: after https://github.com/leanprover-community/mathlib4/pull/19511 we need to hint `(X := ...)` and `(Y := ...)`.
   -- This suggests `RestrictScalars.obj'` needs to be redesigned.
-  ofHom (X := obj' f M) (Y := obj' f M')
-    { g.hom with map_smul' := fun r => g.hom.map_smul (f r) }
+  ofHom { g.hom with map_smul' := fun r => g.hom.map_smul (f r) }
 
 end RestrictScalars
 
@@ -109,7 +108,7 @@ instance {R S : Type*} [Ring R] [Ring S] (f : R →+* S) :
 -- `(restrictScalars f).obj M`.
 instance {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] {f : R →+* S}
     {M : ModuleCat.{v} S} : Module S <| (restrictScalars f).obj M :=
-  inferInstanceAs <| Module S M
+  inferInstanceAs <| Module S (RestrictScalarsRingHom f M)
 
 @[simp]
 theorem restrictScalars.map_apply {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] (f : R →+* S)
@@ -143,10 +142,14 @@ def semilinearMapAddEquiv {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] (f :
     (M →ₛₗ[f] N) ≃+ (M ⟶ (ModuleCat.restrictScalars f).obj N) where
   -- TODO: after https://github.com/leanprover-community/mathlib4/pull/19511 we need to hint `(Y := ...)`.
   -- This suggests `restrictScalars` needs to be redesigned.
-  toFun g := ofHom (Y := (ModuleCat.restrictScalars f).obj N) <|
+  toFun g := ofHom <|
     { toFun := g
       map_add' := by simp
-      map_smul' := by simp }
+      map_smul' := by
+        simp only [LinearMap.map_smulₛₗ, RingHom.id_apply]
+        intros
+        rw [restrictScalars.smul_def']
+    }
   invFun g :=
     { toFun := g
       map_add' := by simp
@@ -690,13 +693,12 @@ def HomEquiv.toRestrictScalars {X : ModuleCat R} {Y : ModuleCat S}
     X ⟶ (restrictScalars f).obj Y :=
   -- TODO: after https://github.com/leanprover-community/mathlib4/pull/19511 we need to hint `(Y := ...)`.
   -- This suggests `restrictScalars` needs to be redesigned.
-  ofHom (Y := (restrictScalars f).obj Y)
+  ofHom
   { toFun := fun x => g <| (1 : S) ⊗ₜ[R,f] x
     map_add' := fun _ _ => by dsimp; rw [tmul_add, map_add]
     map_smul' := fun r s => by
       dsimp
-      rw [RestrictScalars.smul_def, ← LinearMap.map_smul]
-      erw [tmul_smul]
+      erw [← LinearMap.map_smul, tmul_smul]
       congr }
 
 set_option backward.isDefEq.respectTransparency false in
