@@ -320,103 +320,15 @@ theorem comp_fderiv' {f : G → E} :
 
 end LinearIsometryEquiv
 
-/-- If `f (g y) = y` for `y` in a neighborhood of `a` within `t`,
-`g` maps a neighborhood of `a` within `t` to a neighborhood of `g a` within `s`,
-and `f` has an invertible derivative `f'` at `g a` within `s`,
-then `g` has the derivative `f'⁻¹` at `a` within `t`.
-
-This is one of the easy parts of the inverse function theorem: it assumes that we already have an
-inverse function. -/
-theorem HasFDerivWithinAt.of_local_left_inverse {g : F → E} {f' : E ≃L[𝕜] F} {a : F} {t : Set F}
-    (hg : Tendsto g (𝓝[t] a) (𝓝[s] (g a))) (hf : HasFDerivWithinAt f (f' : E →L[𝕜] F) s (g a))
-    (ha : a ∈ t) (hfg : ∀ᶠ y in 𝓝[t] a, f (g y) = y) :
-    HasFDerivWithinAt g (f'.symm : F →L[𝕜] E) t a := by
-  have : (fun x : F => g x - g a - f'.symm (x - a)) =O[𝓝[t] a]
-      fun x : F => f' (g x - g a) - (x - a) :=
-    ((f'.symm : F →L[𝕜] E).isBigO_comp _ _).congr (fun x ↦ by simp) fun _ ↦ rfl
-  refine .of_isLittleO <| this.trans_isLittleO ?_
-  clear this
-  refine ((hf.isLittleO.comp_tendsto hg).symm.congr' (hfg.mono ?_) .rfl).trans_isBigO ?_
-  · intro p hp
-    simp [hp, hfg.self_of_nhdsWithin ha]
-  · refine ((hf.isTheta_sub f'.toHomeomorph.isInducing).isBigO_symm.comp_tendsto hg).congr'
-      .rfl (hfg.mono ?_)
-    rintro p hp
-    simp only [(· ∘ ·), hp, hfg.self_of_nhdsWithin ha]
-
-/-- If `f (g y) = y` for `y` in some neighborhood of `a`, `g` is continuous at `a`, and `f` has an
-invertible derivative `f'` at `g a` in the strict sense, then `g` has the derivative `f'⁻¹` at `a`
-in the strict sense.
-
-This is one of the easy parts of the inverse function theorem: it assumes that we already have an
-inverse function. -/
-theorem HasStrictFDerivAt.of_local_left_inverse {f : E → F} {f' : E ≃L[𝕜] F} {g : F → E} {a : F}
-    (hg : ContinuousAt g a) (hf : HasStrictFDerivAt f (f' : E →L[𝕜] F) (g a))
-    (hfg : ∀ᶠ y in 𝓝 a, f (g y) = y) : HasStrictFDerivAt g (f'.symm : F →L[𝕜] E) a := by
-  replace hg := hg.prodMap' hg
-  replace hfg := hfg.prodMk_nhds hfg
-  have :
-    (fun p : F × F => g p.1 - g p.2 - f'.symm (p.1 - p.2)) =O[𝓝 (a, a)] fun p : F × F =>
-      f' (g p.1 - g p.2) - (p.1 - p.2) := by
-    refine ((f'.symm : F →L[𝕜] E).isBigO_comp _ _).congr (fun x => ?_) fun _ => rfl
-    simp
-  refine .of_isLittleO <| this.trans_isLittleO ?_
-  clear this
-  refine ((hf.isLittleO.comp_tendsto hg).symm.congr'
-    (hfg.mono ?_) (Eventually.of_forall fun _ => rfl)).trans_isBigO ?_
-  · rintro p ⟨hp1, hp2⟩
-    simp [hp1, hp2]
-  · refine hf.isTheta_sub f'.toHomeomorph.isInducing |>.isBigO_symm.comp_tendsto hg |>.congr' .rfl
-      (hfg.mono ?_)
-    rintro p ⟨hp1, hp2⟩
-    simp only [(· ∘ ·), hp1, hp2, Prod.map]
-
-/-- If `f (g y) = y` for `y` in some neighborhood of `a`, `g` is continuous at `a`, and `f` has an
-invertible derivative `f'` at `g a`, then `g` has the derivative `f'⁻¹` at `a`.
-
-This is one of the easy parts of the inverse function theorem: it assumes that we already have
-an inverse function. -/
-theorem HasFDerivAt.of_local_left_inverse {f : E → F} {f' : E ≃L[𝕜] F} {g : F → E} {a : F}
-    (hg : ContinuousAt g a) (hf : HasFDerivAt f (f' : E →L[𝕜] F) (g a))
-    (hfg : ∀ᶠ y in 𝓝 a, f (g y) = y) : HasFDerivAt g (f'.symm : F →L[𝕜] E) a := by
-  simp only [← hasFDerivWithinAt_univ, ← nhdsWithin_univ] at hf hfg ⊢
-  exact hf.of_local_left_inverse (.inf hg (by simp)) (mem_univ _) hfg
-
-/-- If `f` is an open partial homeomorphism defined on a neighbourhood of `f.symm a`, and `f` has an
-invertible derivative `f'` in the sense of strict differentiability at `f.symm a`, then `f.symm` has
-the derivative `f'⁻¹` at `a`.
-
-This is one of the easy parts of the inverse function theorem: it assumes that we already have
-an inverse function. -/
-theorem OpenPartialHomeomorph.hasStrictFDerivAt_symm (f : OpenPartialHomeomorph E F)
-    {f' : E ≃L[𝕜] F} {a : F} (ha : a ∈ f.target)
-    (htff' : HasStrictFDerivAt f (f' : E →L[𝕜] F) (f.symm a)) :
-    HasStrictFDerivAt f.symm (f'.symm : F →L[𝕜] E) a :=
-  htff'.of_local_left_inverse (f.symm.continuousAt ha) (f.eventually_right_inverse ha)
-
-/-- If `f` is an open partial homeomorphism defined on a neighbourhood of `f.symm a`, and `f` has an
-invertible derivative `f'` at `f.symm a`, then `f.symm` has the derivative `f'⁻¹` at `a`.
-
-This is one of the easy parts of the inverse function theorem: it assumes that we already have
-an inverse function. -/
-theorem OpenPartialHomeomorph.hasFDerivAt_symm (f : OpenPartialHomeomorph E F) {f' : E ≃L[𝕜] F}
-    {a : F} (ha : a ∈ f.target) (htff' : HasFDerivAt f (f' : E →L[𝕜] F) (f.symm a)) :
-    HasFDerivAt f.symm (f'.symm : F →L[𝕜] E) a :=
-  htff'.of_local_left_inverse (f.symm.continuousAt ha) (f.eventually_right_inverse ha)
-
-theorem HasFDerivWithinAt.tendsto_nhdsWithin_nhdsNE (h : HasFDerivWithinAt f f' s x)
-    (hf' : ∃ C, AntilipschitzWith C f') : Tendsto f (𝓝[s \ {x}] x) (𝓝[≠] f x) := by
-  replace hf' : ∃ C, ∀ z, ‖z‖ ≤ C * ‖f' z‖ := by
-    obtain ⟨C, hC⟩ := hf'
-    exact ⟨C, fun x ↦ by simpa using hC.le_mul_dist 0 x⟩
-  have A : (fun z ↦ z - x) =O[𝓝[s] x] fun z ↦ f' (z - x) :=
-    isBigO_iff.mpr <| hf'.imp fun C hC ↦ Eventually.of_forall fun z ↦ hC (z - x)
-  have : (fun z ↦ f z - f x) ~[𝓝[s] x] fun z ↦ f' (z - x) := h.isLittleO.trans_isBigO A
-  have : ∀ᶠ (x_1 : E) in 𝓝[s] x, x_1 ∈ ({x}ᶜ : Set E) → f x_1 ∈ ({f x}ᶜ : Set F) := by
-    simpa [sub_eq_zero, not_imp_not] using (A.trans this.isBigO_symm).eq_zero_imp
-  apply le_inf ((map_mono (nhdsWithin_mono x diff_subset)).trans h.continuousWithinAt)
-  rwa [le_principal_iff, ← eventually_mem_set, eventually_map, diff_eq, nhdsWithin_inter',
-    eventually_inf_principal]
+theorem HasFDerivWithinAt.eventually_ne (h : HasFDerivWithinAt f f' s x)
+    (hf' : ∃ C, ∀ z, ‖z‖ ≤ C * ‖f' z‖) : ∀ᶠ z in 𝓝[s \ {x}] x, f z ≠ c := by
+  rcases eq_or_ne (f x) c with rfl | hc
+  · rw [nhdsWithin, diff_eq, ← inf_principal, ← inf_assoc, eventually_inf_principal]
+    have A : (fun z => z - x) =O[𝓝[s] x] fun z => f' (z - x) :=
+      isBigO_iff.2 <| hf'.imp fun C hC => Eventually.of_forall fun z => hC _
+    have : (fun z => f z - f x) ~[𝓝[s] x] fun z => f' (z - x) := h.isLittleO.trans_isBigO A
+    simpa [not_imp_not, sub_eq_zero] using (A.trans this.isBigO_symm).eq_zero_imp
+  · exact (h.continuousWithinAt.eventually_ne hc).filter_mono <| by gcongr; apply diff_subset
 
 theorem HasFDerivWithinAt.eventually_ne (h : HasFDerivWithinAt f f' s x)
     (hf' : ∃ C, AntilipschitzWith C f') : ∀ᶠ z in 𝓝[s \ {x}] x, f z ≠ c := by
