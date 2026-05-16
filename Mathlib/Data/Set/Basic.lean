@@ -69,21 +69,34 @@ namespace Set
 
 variable {α : Type u} {s t : Set α}
 
-protected theorem mem_injective : Injective (Membership.mem : Set α → α → Prop) := injective_id
-protected theorem mem_surjective : Surjective (Membership.mem : Set α → α → Prop) := surjective_id
-protected theorem mem_bijective : Bijective (Membership.mem : Set α → α → Prop) := bijective_id
+variable (α) in
+/-- A set of `α`s is equivalent to a predicate on elements of type `α`. -/
+@[simps]
+def toProp : Set α ≃ (α → Prop) where
+  toFun := Membership.mem
+  invFun := setOf
+
+protected theorem mem_injective : Injective (Membership.mem : Set α → α → Prop) :=
+  toProp α |>.injective
+
+protected theorem mem_surjective : Surjective (Membership.mem : Set α → α → Prop) :=
+  toProp α |>.surjective
+
+protected theorem mem_bijective : Bijective (Membership.mem : Set α → α → Prop) :=
+  toProp α |>.bijective
 
 instance instDistribLattice : DistribLattice (Set α) where
-  __ : DistribLattice (α → Prop) := inferInstance
+  __ := toProp α |>.distribLattice
   le := (· ≤ ·)
-  lt := fun s t => s ⊆ t ∧ ¬t ⊆ s
+  lt s t := s ⊆ t ∧ ¬t ⊆ s
   sup := (· ∪ ·)
   inf := (· ∩ ·)
 
 instance instBoundedOrder : BoundedOrder (Set α) where
-  __ : BoundedOrder (α → Prop) := inferInstance
-  bot := ∅
   top := univ
+  le_top _ x _ := mem_univ x
+  bot := ∅
+  bot_le := nofun
 
 instance : HasSSubset (Set α) :=
   ⟨(· < ·)⟩
@@ -188,14 +201,16 @@ instance : Inhabited (Set α) :=
 theorem mem_of_mem_of_subset {x : α} {s t : Set α} (hx : x ∈ s) (h : s ⊆ t) : x ∈ t :=
   h hx
 
-theorem setOf_injective : Function.Injective (@setOf α) := injective_id
+theorem setOf_injective : Function.Injective (@setOf α) :=
+  toProp α |>.symm.injective
 
-theorem setOf_inj {p q : α → Prop} : { x | p x } = { x | q x } ↔ p = q := Iff.rfl
+theorem setOf_inj {p q : α → Prop} : { x | p x } = { x | q x } ↔ p = q :=
+  setOf_injective.eq_iff
 
 /-! ### Lemmas about `mem` and `setOf` -/
 
 theorem setOf_bijective : Bijective (setOf : (α → Prop) → Set α) :=
-  bijective_id
+  toProp α |>.symm.bijective
 
 theorem subset_setOf {p : α → Prop} {s : Set α} : s ⊆ setOf p ↔ ∀ x, x ∈ s → p x :=
   Iff.rfl

@@ -91,8 +91,8 @@ instance : LE (Set α) :=
 instance : HasSubset (Set α) :=
   ⟨(· ≤ ·)⟩
 
-instance : EmptyCollection (Set α) :=
-  ⟨fun _ ↦ False⟩
+instance : EmptyCollection (Set α) where
+  emptyCollection := setOf fun _ ↦ False
 
 end Set
 
@@ -265,8 +265,8 @@ def image {β : Type v} (f : α → β) (s : Set α) : Set β := {f a | a ∈ s}
 instance : Functor Set where map := @Set.image
 
 instance : LawfulFunctor Set where
-  id_map _ := funext fun _ ↦ propext ⟨fun ⟨_, sb, rfl⟩ ↦ sb, fun sb ↦ ⟨_, sb, rfl⟩⟩
-  comp_map g h _ := funext <| fun c ↦ propext
+  id_map _ := ext fun _ ↦ ⟨fun ⟨_, sb, rfl⟩ ↦ sb, fun sb ↦ ⟨_, sb, rfl⟩⟩
+  comp_map g h _ := ext fun c ↦
     ⟨fun ⟨a, ⟨h₁, h₂⟩⟩ ↦ ⟨g a, ⟨⟨a, ⟨h₁, rfl⟩⟩, h₂⟩⟩,
      fun ⟨_, ⟨⟨a, ⟨h₁, h₂⟩⟩, h₃⟩⟩ ↦ ⟨a, ⟨h₁, show h (g a) = c from h₂ ▸ h₃⟩⟩⟩
   map_const := rfl
