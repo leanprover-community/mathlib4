@@ -6,8 +6,10 @@ Authors: Johannes Hölzl, Kenny Lau
 module
 
 public import Mathlib.Algebra.BigOperators.GroupWithZero.Action
-public import Mathlib.Data.DFinsupp.Ext
 public import Mathlib.Algebra.BigOperators.Group.Finset.Sigma
+public import Mathlib.Data.DFinsupp.Ext
+public import Mathlib.GroupTheory.Congruence.BigOperators
+public import Mathlib.RingTheory.Congruence.Defs
 
 /-!
 # Dependent functions with finite support
@@ -82,6 +84,19 @@ variable [DecidableEq ι]
 def prod [∀ i, Zero (β i)] [∀ (i) (x : β i), Decidable (x ≠ 0)] [CommMonoid γ] (f : Π₀ i, β i)
     (g : ∀ i, β i → γ) : γ :=
   ∏ i ∈ f.support, g i (f i)
+
+@[to_additive]
+theorem prod_of_support_subset [∀ i, Zero (β i)]
+    [∀ (i) (x : β i), Decidable (x ≠ 0)] [CommMonoid γ]
+    {f : Π₀ i, β i} {g : (i : ι) → β i → γ} {s : Finset ι}
+    (map_zero : ∀ i ∈ s, g i 0 = 1) (hs : f.support ⊆ s) :
+    f.prod g = ∏ i ∈ s, g i (f i) := by
+  simp only [DFinsupp.prod]
+  apply Finset.prod_subset hs
+  intro i hi hi'
+  simp only [DFinsupp.mem_support_toFun, ne_eq, not_not] at hi'
+  rw [hi', map_zero]
+  exact hi
 
 @[to_additive (attr := simp)]
 theorem _root_.map_dfinsuppProd
@@ -209,6 +224,35 @@ theorem prod_eq_prod_fintype [Fintype ι] [∀ i, Zero (β i)] [∀ (i : ι) (x 
   intro i _ hi
   rw [mem_support_iff, not_not] at hi
   rw [hi, hf]
+
+@[to_additive]
+lemma _root_.Con.dfinsuppProd {A : Type*} [CommMonoid A] {r : Con A}
+    [∀ i, Zero (β i)] [∀ i (y : β i), Decidable (y ≠ 0)]
+    (h : (i : ι) → β i → A) (h' : (i : ι) → β i → A)
+    {f g : Π₀ i, β i} (hf : ∀ i, h i 0 = 1) (hf' : ∀ i, h' i 0 = 1)
+    (H : ∀ i, r (h i (f i)) (h' i (g i))) :
+    r (f.prod h) (g.prod h') := by
+  rw [prod_of_support_subset (fun i _ ↦ hf i)
+      (Finset.subset_union_left (s₁ := f.support) (s₂ := g.support)),
+    prod_of_support_subset (fun i _ ↦ hf' i)
+      (Finset.subset_union_right (s₁ := f.support) (s₂ := g.support))]
+  exact Con.finset_prod r (f.support ∪ g.support) fun i _ ↦ H i
+
+lemma _root_.RingCon.dfinsuppProd {A : Type*} [CommSemiring A] {r : RingCon A}
+    [∀ i, Zero (β i)] [∀ i (y : β i), Decidable (y ≠ 0)]
+    (h : (i : ι) → β i → A) (h' : (i : ι) → β i → A)
+    {f g : Π₀ i, β i} (hf : ∀ i, h i 0 = 1) (hf' : ∀ i, h' i 0 = 1)
+    (H : ∀ i, r (h i (f i)) (h' i (g i))) :
+    r (f.prod h) (g.prod h') :=
+  Con.dfinsuppProd h h' hf hf' H
+
+lemma _root_.RingCon.dfinsuppSum {A : Type*} [Semiring A] {r : RingCon A}
+    [∀ i, Zero (β i)] [∀ i (y : β i), Decidable (y ≠ 0)]
+    (h : (i : ι) → β i → A) (h' : (i : ι) → β i → A)
+    {f g : Π₀ i, β i} (hf : ∀ i, h i 0 = 0) (hf' : ∀ i, h' i 0 = 0)
+    (H : ∀ i, r (h i (f i)) (h' i (g i))) :
+    r (f.sum h) (g.sum h') :=
+  AddCon.dfinsuppSum (r := r.toAddCon) h h' hf hf' H
 
 section CommMonoidWithZero
 variable [Π i, Zero (β i)] [CommMonoidWithZero γ] [Nontrivial γ] [NoZeroDivisors γ]
