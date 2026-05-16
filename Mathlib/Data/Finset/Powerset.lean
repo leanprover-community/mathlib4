@@ -5,10 +5,11 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Mathlib.Data.Finset.Card
 public import Mathlib.Data.Finset.Lattice.Union
+public import Mathlib.Data.Fintype.Vector
 public import Mathlib.Data.Multiset.Powerset
 public import Mathlib.Data.Set.Pairwise.Lattice
+public import Mathlib.Logic.Equiv.Fintype
 
 /-!
 # The powerset of a finset
@@ -334,6 +335,28 @@ theorem powersetCard_map {β : Type*} (f : α ↪ β) (n : ℕ) (s : Finset α) 
       rw [← card_map f, this, h.2]; simp
     · rintro ⟨a, ⟨has, rfl⟩, rfl⟩
       simp only [map_subset_map, has, card_map, and_self]
+
+lemma arrowBoolEquivFinset_mem_powersetCard_iff {ι : Type*} [DecidableEq ι] [Fintype ι] (k : ℕ)
+    (f : ι → Bool) : (Equiv.arrowBoolEquivFinset) f ∈ powersetCard k univ ↔
+    #{i | f i = true} = k := by
+  simp [Equiv.arrowBoolEquivFinset]
+
+/-- For some `Fintype ι`, the number of maps `f : ι → Bool` with `#{i | f i} = k` equals
+`n.choose k`. -/
+lemma card_fnBool {ι : Type*} [DecidableEq ι] [Fintype ι] {k : ℕ} :
+    #{ f : ι → Bool | #{i | f i} = k } = (univ : Finset ι).card.choose k := by
+  rw [← card_powersetCard k (univ : Finset ι)]
+  apply card_equiv (Equiv.arrowBoolEquivFinset) (fun i ↦ ?_)
+  simp only [mem_filter, mem_univ, true_and]
+  exact (arrowBoolEquivFinset_mem_powersetCard_iff k i).symm
+
+lemma card_listVector_card {k n : ℕ} :
+    #{v : List.Vector Bool n | v.toList.count true = k} = n.choose k := by
+  rw [← card_fin n, ← card_fnBool, card_fin n]
+  apply card_equiv (Equiv.vectorEquivFin _ n) (fun v ↦ ?_)
+  simp only [mem_filter, mem_univ, true_and, Equiv.vectorEquivFin, Equiv.coe_fn_mk]
+  refine ⟨fun h ↦ ?_,fun h ↦ ?_⟩ <;> rw [← h, ← List.count_ofFn_eq_card _ _ true] <;> congr <;>
+  rw [← List.ofFn_get (l :=  v.toList)] <;> aesop
 
 end powersetCard
 
