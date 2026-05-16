@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.Group.Subgroup.Basic
 public import Mathlib.GroupTheory.FreeGroup.Basic
-public import Mathlib.GroupTheory.QuotientGroup.Defs
+public import Mathlib.GroupTheory.QuotientGroup.Basic
 
 /-!
 # Defining a group given by generators and relations
@@ -22,6 +22,10 @@ given by generators `x : α` and relations `r ∈ rels`.
 * `of`: The canonical map from `α` to a presented group with generators `α`.
 * `toGroup f`: the canonical group homomorphism `PresentedGroup rels → G`, given a function
   `f : α → G` from a type `α` to a group `G` which satisfies the relations `rels`.
+* `freeGroupProdKerEquiv G`: the canonical isomorphism
+  `PresentedGroup ((FreeGroup.prod : FreeGroup G →* G).ker : Set (FreeGroup G)) ≃* G`.
+* `exists_presentation G`: every group `G` is isomorphic to some
+  `PresentedGroup rels`.
 
 ## Tags
 
@@ -30,6 +34,7 @@ generators, relations, group presentations
 
 @[expose] public section
 
+universe u
 
 variable {α : Type*}
 
@@ -157,6 +162,29 @@ theorem equivPresentedGroup_symm_apply_of (x : β) (rels : Set (FreeGroup α)) (
       PresentedGroup.of (rels := rels) (e.symm x) := rfl
 
 end ToGroup
+
+/-- The canonical isomorphism from a presented group to the underlying group,
+with the group elements as free group generators and relations given by
+`(FreeGroup.prod : FreeGroup G →* G).ker`. -/
+def freeGroupProdKerEquiv (G : Type*) [Group G] :
+  PresentedGroup ((FreeGroup.prod : FreeGroup G →* G).ker : Set (FreeGroup G)) ≃* G :=
+  let f : FreeGroup G →* G := FreeGroup.prod
+  let e₁ : FreeGroup G ⧸ MonoidHom.ker f ≃* G :=
+    QuotientGroup.quotientKerEquivOfRightInverse (φ := f) FreeGroup.of
+      (fun g => FreeGroup.prod.of (x := g))
+  let e₂ : FreeGroup G ⧸ MonoidHom.ker f ≃*
+      PresentedGroup (MonoidHom.ker f : Set (FreeGroup G)) :=
+    QuotientGroup.quotientMulEquivOfEq (G := FreeGroup G)
+      (M := MonoidHom.ker f)
+      (N := Subgroup.normalClosure (MonoidHom.ker f : Set (FreeGroup G)))
+      (Subgroup.normalClosure_eq_self (MonoidHom.ker f)).symm
+  e₂.symm.trans e₁
+
+/-- There exists an isomorphism for every group to a presented group. -/
+theorem exists_presentation (G : Type u) [Group G] :
+    ∃ (α : Type u) (rels : Set (FreeGroup α)), Nonempty (G ≃* PresentedGroup rels) := by
+  let rels : Set (FreeGroup G) := ((FreeGroup.prod : FreeGroup G →* G).ker : Set (FreeGroup G))
+  exact ⟨G, rels, ⟨(freeGroupProdKerEquiv G).symm⟩⟩
 
 instance (rels : Set (FreeGroup α)) : Inhabited (PresentedGroup rels) :=
   ⟨1⟩
