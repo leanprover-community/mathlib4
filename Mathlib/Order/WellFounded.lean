@@ -103,7 +103,8 @@ If you're working with a nonempty linear order, consider defining a
 noncomputable def min {r : α → α → Prop} (H : WellFounded r) (s : Set α) (h : s.Nonempty) : α :=
   Classical.choose (H.has_min s h)
 
-@[to_dual]
+/-- A minimal element of a nonempty set of a type with a well-founded `<`. -/
+@[to_dual /-- A maximal element of a nonempty set of a type with a well-founded `>`. -/]
 noncomputable abbrev _root_.WellFoundedLT.min [LT α] [WellFoundedLT α] (s : Set α)
     (h : s.Nonempty) : α :=
   wellFounded_lt.min s h
