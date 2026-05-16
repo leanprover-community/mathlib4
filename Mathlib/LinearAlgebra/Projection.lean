@@ -829,5 +829,7 @@ namespace LinearMap
   surjective_comp_projectionOnto
 @[deprecated (since := "2026-05-04")] alias isIdempotentElem_iff_eq_isCompl_projection_range_ker :=
   isIdempotentElem_iff_eq_projection_range_ker
+@[deprecated (since := "2026-05-16")] alias IsCompl.ofIsCompl_left_apply := ofIsCompl_apply_left
+@[deprecated (since := "2026-05-16")] alias IsCompl.ofIsCompl_right_apply := ofIsCompl_apply_right
 
 end LinearMap
