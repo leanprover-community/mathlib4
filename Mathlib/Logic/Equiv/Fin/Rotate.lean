@@ -120,7 +120,7 @@ theorem finRotate_symm_lt_iff_ne_zero [NeZero n] (i : Fin n) :
     (finRotate _).symm i < i ↔ i ≠ 0 := by
   obtain ⟨n, rfl⟩ := exists_eq_succ_of_ne_zero (NeZero.ne n)
   refine ⟨fun hi hc ↦ ?_, fun hi ↦ ?_⟩
-  · simp only [hc, Fin.not_lt_zero] at hi
+  · simp [hc] at hi
   · rw [Fin.lt_def, coe_finRotate_symm_of_ne_zero hi]
     apply sub_lt (zero_lt_of_ne_zero <| Fin.val_ne_zero_iff.mpr hi) Nat.zero_lt_one
 

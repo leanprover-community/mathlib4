@@ -413,7 +413,7 @@ assuming there is no wrap-around. -/
 lemma isAddFreimanIso_Iio (hm : m ≠ 0) (hkmn : m * k ≤ n) :
     IsAddFreimanIso m (Iio (k : Fin (n + 1))) (Iio k) val := by
   obtain _ | k := k
-  · simp [← bot_eq_zero]
+  · simp
   have hkmn' : m * k ≤ n := (Nat.mul_le_mul_left _ k.le_succ).trans hkmn
   convert isAddFreimanIso_Iic hm hkmn' using 1 <;> ext x
   · simp only [Nat.cast_add, Nat.cast_one, mem_Iio, lt_def, mem_Iic, le_iff_val_le_val,
