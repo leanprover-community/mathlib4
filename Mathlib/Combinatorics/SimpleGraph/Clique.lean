@@ -135,6 +135,10 @@ theorem isClique_map_iff {f : α ↪ β} {t : Set β} :
   · simp [hs, IsClique.of_subsingleton]
   simp [or_iff_right hs.not_subsingleton, Set.image_eq_image f.injective]
 
+theorem isClique_induce_iff {s : Set α} {t : Set s} :
+    (G.induce s).IsClique t ↔ G.IsClique t := by
+  simp [Set.Pairwise]
+
 variable {f : α ↪ β} {t : Finset β}
 
 theorem isClique_map_finset_iff_of_nontrivial (ht : t.Nontrivial) :
@@ -325,6 +329,10 @@ theorem isNClique_map_copy_top [Fintype β] (f : Copy (⊤ : SimpleGraph β) G) 
     G.IsNClique (card β) (univ.map f.toEmbedding) := by
   rw [isNClique_iff, card_map, card_univ, coe_map, coe_univ, Set.image_univ]
   exact ⟨isClique_range_copy_top f, rfl⟩
+
+theorem isNClique_induce_iff (s : Set α) (t : Finset s) (n : ℕ) :
+    (G.induce s).IsNClique n t ↔ G.IsNClique n (t.map (.subtype _)) := by
+  simp [isNClique_iff, isClique_induce_iff]
 
 end NClique
 
@@ -590,6 +598,14 @@ theorem CliqueFreeOn.of_succ (hs : G.CliqueFreeOn s (n + 1)) (ha : a ∈ s) :
   push_cast
   exact Set.insert_subset_iff.2 ⟨ha, hts.trans Set.inter_subset_left⟩
 
+theorem cliqueFree_induce_iff (s : Set α) (n : ℕ) :
+    (G.induce s).CliqueFree n ↔ G.CliqueFreeOn s n := by
+  classical
+  simp only [CliqueFree, isNClique_induce_iff]
+  refine ⟨fun h t ht ↦ ?_, (· <| map_subtype_subset ·)⟩
+  have := h <| t.subtype _
+  rwa [← filter_eq_self.mpr ht, ← subtype_map]
+
 end CliqueFreeOn
 
 /-! ### Set of cliques -/
@@ -688,6 +704,12 @@ lemma exists_isNClique_cliqueNum : ∃ s, G.IsNClique G.cliqueNum s := by
   by_cases h : BddAbove {n | ∃ s, G.IsNClique n s}
   · exact Nat.sSup_mem ⟨0, by simp⟩ h
   · simp [cliqueNum, h]
+
+theorem cliqueNum_induce_le [Finite α] (s : Set α) :
+    (G.induce s).cliqueNum ≤ G.cliqueNum := by
+  have ⟨t', tc⟩ := (G.induce s).exists_isNClique_cliqueNum
+  rw [isNClique_induce_iff] at tc
+  exact tc.card_eq ▸ tc.isClique.card_le_cliqueNum
 
 /-- A maximum clique in a graph `G` is a clique with the largest possible size. -/
 -- TODO: replace with `MaximalFor (G.IsClique ∘ (↑)) card s`
