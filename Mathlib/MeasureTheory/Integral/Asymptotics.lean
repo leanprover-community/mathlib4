@@ -83,22 +83,16 @@ variable [NormedSpace ℝ E] [NormedAddCommGroup F]
 
 /-- Let `f : X x Y → Z`. If as `y` tends to `l`, `f(x, y) = O(g(y))` uniformly on `s : Set X`
 of finite measure, then the integral of `f` along `s` is `O(g(y))`. -/
-theorem IsBigO.set_integral_isBigO
-    (hf : f =O[𝓟 s ×ˢ l] (g ∘ Prod.snd)) (hs : MeasurableSet s) (hμ : μ s < ⊤) :
+theorem IsBigO.set_integral_isBigO (hf : f =O[𝓟 s ×ˢ l] (g ∘ Prod.snd)) (hμ : μ s < ⊤) :
     (fun x ↦ ∫ i in s, f (i, x) ∂μ) =O[l] g := by
   obtain ⟨C, hC⟩ := hf.bound
   obtain ⟨t, htl, ht⟩ := hC.exists_mem
-  obtain ⟨u, hu, v, hv, huv⟩ := Filter.mem_prod_iff.mp htl
+  obtain ⟨u, hu, v, hv, huv⟩ := mem_prod_iff.mp htl
   refine isBigO_iff.mpr ⟨C * μ.real s, eventually_iff_exists_mem.mpr ⟨v, hv, fun x hx ↦ ?_⟩⟩
-  rw [mul_assoc, ← smul_eq_mul _ ‖g x‖, ← MeasureTheory.measureReal_restrict_apply_univ,
-    ← integral_const, mul_comm, ← smul_eq_mul, ← integral_smul_const]
-  haveI : IsFiniteMeasure (μ.restrict s) := ⟨by rw [Measure.restrict_apply_univ s]; exact hμ⟩
-  refine (norm_integral_le_integral_norm _).trans <|
-    integral_mono_of_nonneg (univ_mem' fun _ ↦ norm_nonneg _) (integrable_const _) ?_
-  filter_upwards [MeasureTheory.self_mem_ae_restrict hs]
-  intro y hy
-  rw [smul_eq_mul, mul_comm]
-  exact ht (y, x) <| huv ⟨hu hy, hx⟩
+  calc
+    _ ≤ C * ‖g x‖ * μ.real s :=
+      norm_setIntegral_le_of_norm_le_const hμ fun y hy ↦ ht (y, x) <| huv ⟨hu hy, hx⟩
+    _ = _ := by ring
 
 end Asymptotics
 
