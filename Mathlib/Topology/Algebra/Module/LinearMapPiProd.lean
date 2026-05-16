@@ -249,6 +249,11 @@ def _root_.Pi.compRightL {α : Type*} (f : α → ι) : ((i : ι) → φ i) →L
 @[simp] lemma _root_.Pi.compRightL_apply {α : Type*} (f : α → ι) (v : (i : ι) → φ i) (i : α) :
     Pi.compRightL R φ f v i = v (f i) := rfl
 
+@[simp]
+theorem proj_comp_piCompRightL {α : Type*} (f : α → ι) (a : α) :
+    proj a ∘L Pi.compRightL R φ f = proj (f a) :=
+  rfl
+
 /-- `Pi.single` as a bundled continuous linear map. -/
 @[simps! -fullyApplied]
 def single [DecidableEq ι] (i : ι) : φ i →L[R] (∀ i, φ i) where
