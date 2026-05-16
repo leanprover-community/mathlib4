@@ -955,7 +955,7 @@ end OrderedRing
 
 section LinearOrderedField
 
-variable [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [AddCommMonoid E]
+variable [Semifield 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [AddCommMonoid E]
 
 section OrderedAddCommMonoid
 
@@ -999,6 +999,19 @@ theorem strictConcaveOn_iff_div {f : E → β} :
       Convex 𝕜 s ∧ ∀ ⦃x⦄, x ∈ s → ∀ ⦃y⦄, y ∈ s → x ≠ y → ∀ ⦃a b : 𝕜⦄, 0 < a → 0 < b →
         (a / (a + b)) • f x + (b / (a + b)) • f y < f ((a / (a + b)) • x + (b / (a + b)) • y) :=
   strictConvexOn_iff_div (β := βᵒᵈ)
+
+/-- A convex function `φ : u → u` on a additive submonoid u with `φ 0 = 0` is superadditive. -/
+theorem superadd_of_convexOn_zero {u : AddSubmonoid 𝕜} {f : 𝕜 → 𝕜} (hz : f 0 = 0)
+    (hc : ConvexOn 𝕜 u f) : ∀ ⦃x⦄, x ∈ u → ∀ ⦃y⦄, y ∈ u → 0 ≤ x → 0 ≤ y →
+      f x + f y ≤ f (x + y) := by
+  intro _ hxu _ hyu hx hy
+  rcases hx.eq_or_lt, hy.eq_or_lt with ⟨rfl | hx, rfl | hy⟩ <;> try simp [hz]
+  have hxle := (convexOn_iff_div.mp hc).2 (u.add_mem' hxu hyu) u.zero_mem hx.le hy.le
+    (add_pos hx hy)
+  have hyle := (convexOn_iff_div.mp hc).2 (u.add_mem' hxu hyu) u.zero_mem hy.le hx.le
+    (by simpa [add_comm] using add_pos hx hy)
+  simp [add_comm, div_mul_cancel₀ _ (add_pos hx hy).ne', hz] at hxle hyle
+  simpa [← add_mul, ← add_div, div_self (add_pos hx hy).ne', hz] using add_le_add hxle hyle
 
 end SMul
 
