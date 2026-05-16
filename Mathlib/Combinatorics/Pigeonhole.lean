@@ -10,6 +10,7 @@ public import Mathlib.Algebra.Order.Ring.Nat
 public import Mathlib.Data.Nat.ModEq
 public import Mathlib.Order.Preorder.Finite
 public import Mathlib.Algebra.Order.BigOperators.Group.Finset
+public import Mathlib.Combinatorics.Enumerative.DoubleCounting
 
 /-!
 # Pigeonhole principles
@@ -45,6 +46,8 @@ The versions vary by:
   (`∀ x ∈ s, f x ∈ t`), or assume that for `y ∉ t`, the total weight of the pigeons in this
   pigeonhole `∑ x ∈ s with f x = y, w x` is nonpositive or nonnegative depending on
   the inequality we are proving.
+* in the case where the "holes" are not necessarily disjoint, that is, a pigeon could be in multiple
+  holes at the same time, a set-valued version is provided.
 
 Lemma names follow `mathlib` convention (e.g.,
 `Finset.exists_lt_sum_fiber_of_maps_to_of_nsmul_lt_sum`); "pigeonhole principle" is mentioned in the
@@ -287,6 +290,34 @@ elements. See also `Finset.exists_card_fiber_lt_of_card_lt_mul` for a stronger s
 theorem exists_card_fiber_le_of_card_le_mul (ht : t.Nonempty) (hn : #s ≤ #t * n) :
     ∃ y ∈ t, #{x ∈ s | f x = y} ≤ n :=
   exists_card_fiber_le_of_card_le_nsmul ht hn
+
+/-- A version of the pigeonhole principle for set-valued functions.
+
+Given a family of sets `f : α → Finset β` and a choice of indices `s : Finset α`.
+Let `k` denote the minimum cardinality of the `f j`'s.
+If the cardinality of the union `s.biUnion f` is less than `s.card`, then
+there exists an element `x ∈ s.biUnion f` which is covered by more than `k` of the sets
+`f j` (i.e., `k < #{j ∈ s | x ∈ f j}`).
+
+This is a double-counting variant of the pigeonhole principle.
+Unlike the classical pigeonhole principle (see
+`Finset.exists_lt_card_fiber_of_nsmul_lt_card_of_maps_to`),
+this formulation handles a *set-valued* assignment where elements may belong to
+multiple sets simultaneously. -/
+lemma exists_mem_biUnion_inf'_card_lt
+    [DecidableEq α] [Fintype α] {f : α → Finset β}
+    (h₁ : s.Nonempty) (h₂ : ∀ j ∈ s, 0 < #(f j))
+    (h₃ : #(s.biUnion f) < #s) : ∃ x ∈ s.biUnion f,
+    s.inf' h₁ (fun j ↦ #(f j)) < #{j | j ∈ s ∧ x ∈ f j} := by
+  set k := s.inf' h₁ (fun j ↦ #(f j)) with hk
+  have nek : NeZero k := ⟨by rwa [hk, Nat.ne_zero_iff_zero_lt, Finset.lt_inf'_iff h₁]⟩
+  contrapose! h₃
+  suffices #s • k ≤ #(s.biUnion f) • k by simp_all
+  simp only [← Finset.sum_const]
+  calc ∑ j ∈ s, k
+    _ ≤ ∑ j ∈ s, #(f j) := by gcongr with i hi; exact inf'_le _ hi
+    _ = ∑ x ∈ s.biUnion f, #{j | j ∈ s ∧ x ∈ f j} := by rw [sum_card_eq_sum_biUnion_card]
+    _ ≤ ∑ x ∈ s.biUnion f, k := by gcongr; grind
 
 end Finset
 

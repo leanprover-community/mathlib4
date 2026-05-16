@@ -254,6 +254,17 @@ theorem card_lt_of_injective_of_notMem (f : α → β) (h : Function.Injective f
       Finset.card_lt_univ_of_notMem (x := b) <| by
         rwa [← mem_coe, coe_map, coe_univ, Set.image_univ]
 
+/-- Given an injective map `f : α → β` such that `β` has cardinality one more
+than `α`, there exists a unique element of `β` not in the image of `f`. -/
+theorem existsUnique_notMem_image_of_injective_of_card_eq_add_one [DecidableEq β]
+    (f : α → β) (hf : f.Injective) (h : card β = card α + 1) : ∃! x, x ∉ univ.image f := by
+  obtain ⟨x, hx⟩ : ∃ a, univ \ univ.image f = {a} := by
+    rw [← card_eq_one]
+    grind [card_image_of_injective]
+  have := mem_singleton_self x
+  refine ⟨x, ?_, fun _ _ ↦ ?_⟩
+  all_goals simp_all [← mem_singleton, ← hx]
+
 theorem card_lt_of_injective_not_surjective (f : α → β) (h : Function.Injective f)
     (h' : ¬Function.Surjective f) : card α < card β :=
   let ⟨_y, hy⟩ := not_forall.1 h'
