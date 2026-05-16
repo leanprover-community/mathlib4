@@ -441,6 +441,7 @@ public import Mathlib.Algebra.Group.Prod
 public import Mathlib.Algebra.Group.Semiconj.Basic
 public import Mathlib.Algebra.Group.Semiconj.Defs
 public import Mathlib.Algebra.Group.Semiconj.Units
+public import Mathlib.Algebra.Group.SemigroupPow
 public import Mathlib.Algebra.Group.Shrink
 public import Mathlib.Algebra.Group.Subgroup.Actions
 public import Mathlib.Algebra.Group.Subgroup.Basic
