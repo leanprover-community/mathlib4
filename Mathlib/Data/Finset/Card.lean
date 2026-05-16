@@ -395,6 +395,11 @@ lemma card_nbij' (i : α → β) (j : β → α) (hi : Set.MapsTo i s t) (hj : S
     (left_inv : Set.LeftInvOn j i s) (right_inv : Set.RightInvOn j i t) : #s = #t :=
   card_bij' (fun a _ ↦ i a) (fun b _ ↦ j b) hi hj left_inv right_inv
 
+/-- `Finset.card_nbij` can lead to `Finset.card_bijOn` -/
+theorem card_bijOn {s : Finset α} {t : Finset β}
+    (i : α → β) (h : Set.BijOn i s t) : s.card = t.card :=
+  Finset.card_nbij i h.mapsTo h.injOn h.surjOn
+
 /-- Specialization of `Finset.card_nbij'` that automatically fills in most arguments.
 
 See `Fintype.card_equiv` for the version where `s` and `t` are `univ`. -/
