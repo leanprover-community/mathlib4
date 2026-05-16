@@ -5,8 +5,18 @@ Authors: Mario Carneiro, Kenny Lau
 -/
 module
 
-public import Mathlib.Data.List.Forall2
-public import Mathlib.Data.Nat.Basic
+public import Aesop.BuiltinRules
+public import Batteries.Data.List.Basic
+import Mathlib.Data.List.Forall2
+import Mathlib.Data.Nat.Basic
+import Mathlib.Tactic.Attr.Core
+import Mathlib.Tactic.Push
+import Mathlib.Tactic.Use
+
+public import Mathlib.Data.List.Defs
+public import Mathlib.Logic.OpClass
+import Mathlib.Tactic.SimpRw
+import Mathlib.Data.List.Basic
 
 /-!
 # zip & unzip
