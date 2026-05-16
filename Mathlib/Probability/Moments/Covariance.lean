@@ -37,7 +37,7 @@ open MeasureTheory
 
 namespace ProbabilityTheory
 
-variable {Ω : Type*} {mΩ : MeasurableSpace Ω} {X Y Z : Ω → ℝ} {μ : Measure Ω}
+variable {Ω : Type*} {mΩ : MeasurableSpace Ω} {X Y Z T : Ω → ℝ} {μ : Measure Ω}
 
 /-- The covariance of two real-valued random variables defined as
 the integral of `(X - 𝔼[X])(Y - 𝔼[Y])`. -/
@@ -193,6 +193,19 @@ lemma covariance_sub_right [IsFiniteMeasure μ]
 lemma covariance_fun_sub_right [IsFiniteMeasure μ]
     (hX : MemLp X 2 μ) (hY : MemLp Y 2 μ) (hZ : MemLp Z 2 μ) :
     cov[X, fun ω ↦ Y ω - Z ω; μ] = cov[X, Y; μ] - cov[X, Z; μ] := covariance_sub_right hX hY hZ
+
+lemma covariance_sub_sub [IsFiniteMeasure μ] (hX : MemLp X 2 μ) (hY : MemLp Y 2 μ)
+    (hZ : MemLp Z 2 μ) (hT : MemLp T 2 μ) :
+    cov[X - Y, Z - T; μ] = cov[X, Z; μ] - cov[X, T; μ] - cov[Y, Z; μ] + cov[Y, T; μ] := by
+  rw [covariance_sub_left hX hY (hZ.sub hT), covariance_sub_right hX hZ hT,
+    covariance_sub_right hY hZ hT]
+  abel
+
+lemma covariance_fun_sub_fun_sub [IsFiniteMeasure μ] (hX : MemLp X 2 μ) (hY : MemLp Y 2 μ)
+    (hZ : MemLp Z 2 μ) (hT : MemLp T 2 μ) :
+    cov[fun ω ↦ X ω - Y ω, fun ω ↦ Z ω - T ω; μ] =
+    cov[X, Z; μ] - cov[X, T; μ] - cov[Y, Z; μ] + cov[Y, T; μ] :=
+  covariance_sub_sub hX hY hZ hT
 
 @[simp]
 lemma covariance_sub_const_left [IsProbabilityMeasure μ] (hX : Integrable X μ) (c : ℝ) :
