@@ -565,7 +565,7 @@ variable [PathConnectedSpace X]
 def somePath (x y : X) : Path x y :=
   Nonempty.some (joined x y)
 
-instance [PathConnectedSpace X] : Subsingleton (ZerothHomotopy X) :=
+instance : Subsingleton (ZerothHomotopy X) :=
   (pathConnectedSpace_iff_zerothHomotopy.1 inferInstance).2
 
 end PathConnectedSpace

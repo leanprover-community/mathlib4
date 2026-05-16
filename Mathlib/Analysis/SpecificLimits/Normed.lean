@@ -950,6 +950,7 @@ lemma tendsto_smul_congr_of_tendsto_left_cobounded_of_isBoundedUnder
   · rw [← tendsto_zero_iff_norm_tendsto_zero]
     exact tendsto_zero_of_isBoundedUnder_smul_of_tendsto_cobounded hmul.norm.isBoundedUnder_le hf₁
 
+set_option linter.overlappingInstances false in
 -- The use case in mind for this is when `K = ℝ`, and `R = ℝ` or `ℂ`
 lemma tendsto_smul_comp_nat_floor_of_tendsto_nsmul [NormSMulClass ℤ K] [LinearOrder K]
     [IsStrictOrderedRing K] [FloorSemiring K] [HasSolidNorm K] {g : ℕ → R} {t : R}

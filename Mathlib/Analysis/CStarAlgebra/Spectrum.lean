@@ -172,8 +172,6 @@ theorem sqrt_toReal_spectralRadius_self_mul_star_eq_norm (a : A) :
 
 end CStarAlgebra
 
-variable [StarModule ℂ A]
-
 /-- Any element of the spectrum of a selfadjoint is real. -/
 theorem IsSelfAdjoint.mem_spectrum_eq_re {a : A} (ha : IsSelfAdjoint a) {z : ℂ}
     (hz : z ∈ spectrum ℂ a) : z = z.re := by

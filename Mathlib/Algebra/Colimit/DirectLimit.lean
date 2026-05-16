@@ -833,8 +833,8 @@ end NonUnitalStarRing
 namespace Algebra
 
 variable [CommSemiring R]
-variable [∀ i, Semiring (G i)] [∀ i j h, RingHomClass (T h) (G i) (G j)]
-variable [∀ i, Algebra R (G i)] [∀ i j h, AlgHomClass (T h) R (G i) (G j)]
+variable [∀ i, Semiring (G i)] [∀ i, Algebra R (G i)]
+variable [∀ i j h, AlgHomClass (T h) R (G i) (G j)]
 variable [Nonempty ι]
 
 variable (G f) in

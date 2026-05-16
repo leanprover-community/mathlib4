@@ -110,6 +110,7 @@ section chainBotCoeff_mul_chainTopCoeff
 
 variable {b : P.Base} {i j k l m : ι}
 
+set_option linter.overlappingInstances false in
 private lemma chainBotCoeff_mul_chainTopCoeff.aux_0 [P.IsNotG2]
     (hik_mem : P.root k + P.root i ∈ range P.root) :
     P.pairingIn ℤ k i = 0 ∨ (P.pairingIn ℤ k i < 0 ∧ P.chainBotCoeff i k = 0) := by
