@@ -49,7 +49,6 @@ The inverse morphism is bundled.
 
 See also `CategoryTheory.Core` for the category with the same objects and isomorphisms playing
 the role of morphisms. -/
-@[stacks 0017]
 structure Iso {C : Type u} [Category.{v} C] (X Y : C) where
   /-- The forward direction of an isomorphism. -/
   hom : X ⟶ Y
@@ -60,6 +59,8 @@ structure Iso {C : Type u} [Category.{v} C] (X Y : C) where
   /-- Composition of the two directions of an isomorphism in reverse order
   is the identity on the target. -/
   inv_hom_id : inv ≫ hom = 𝟙 Y := by cat_disch
+-- TODO: @[stacks] doesn't work on structures and classes
+attribute [stacks 0017] Iso
 
 attribute [to_dual existing inv] Iso.hom
 attribute [to_dual self] Iso.mk Iso.casesOn

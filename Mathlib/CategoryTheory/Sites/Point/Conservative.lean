@@ -43,15 +43,15 @@ variable {C : Type u} [Category.{v} C] {J : GrothendieckTopology C}
 
 namespace ObjectProperty
 
-/-- Let `P : ObjectProperty J.Point` a family of points of a
-site `(C, J)`). We say that it is a conservative family of points
-if the corresponding fiber functors `Sheaf J (Type w) ⥤ Type w`
-jointly reflect isomorphisms. -/
-@[stacks 00YK "(1)"]
+/-- Let `P : ObjectProperty J.Point` a family of points of a site `(C, J)`).
+We say that it is a conservative family of points
+if the corresponding fiber functors `Sheaf J (Type w) ⥤ Type w` jointly reflect isomorphisms. -/
 structure IsConservativeFamilyOfPoints : Prop where
   jointlyReflectIsomorphisms_type :
     JointlyReflectIsomorphisms
       (fun (Φ : P.FullSubcategory) ↦ Φ.obj.sheafFiber (A := Type w))
+-- TODO: @[stacks] doesn't work on structures and classes
+attribute [stacks 00YK "(1)"] IsConservativeFamilyOfPoints
 
 namespace IsConservativeFamilyOfPoints
 

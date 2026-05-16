@@ -67,7 +67,6 @@ a distinguished triangle and the completed diagram commutes:
               w₁₂
 ```
 -/
-@[stacks 05QK]
 structure Octahedron
   {X₁ X₂ X₃ Z₁₂ Z₂₃ Z₁₃ : C}
   {u₁₂ : X₁ ⟶ X₂} {u₂₃ : X₂ ⟶ X₃} {u₁₃ : X₁ ⟶ X₃} (comm : u₁₂ ≫ u₂₃ = u₁₃)
@@ -83,6 +82,8 @@ structure Octahedron
   comm₃ : v₁₃ ≫ m₃ = v₂₃
   comm₄ : w₁₃ ≫ u₁₂⟦1⟧' = m₃ ≫ w₂₃
   mem : Triangle.mk m₁ m₃ (w₂₃ ≫ v₁₂⟦1⟧') ∈ distTriang C
+-- TODO: @[stacks] doesn't work on structures and classes
+attribute [stacks 05QK]
 
 instance (X : C) :
     Nonempty (Octahedron (comp_id (𝟙 X)) (contractible_distinguished X)
