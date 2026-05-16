@@ -121,27 +121,32 @@ TODO: clean this once https://github.com/leanprover/lean4/issues/2115 is fixed
 class NonUnitalNonAssocSemiring (α : Type u) extends AddCommMonoid α, Distrib α, MulZeroClass α
 
 /-- An associative but not-necessarily unital semiring. -/
-class NonUnitalSemiring (α : Type u) extends NonUnitalNonAssocSemiring α, SemigroupWithZero α
+class NonUnitalSemiring (α : Type u) extends AddCommMonoid α, Semigroup α,
+    NonUnitalNonAssocSemiring α, SemigroupWithZero α
 
 /-- A unital but not-necessarily-associative semiring. -/
-class NonAssocSemiring (α : Type u) extends NonUnitalNonAssocSemiring α, MulZeroOneClass α,
-    AddCommMonoidWithOne α
+class NonAssocSemiring (α : Type u) extends AddCommMonoid α, MulOneClass α,
+    NonUnitalNonAssocSemiring α, MulZeroOneClass α, AddCommMonoidWithOne α
 
 /-- A not-necessarily-unital, not-necessarily-associative ring. -/
 class NonUnitalNonAssocRing (α : Type u) extends AddCommGroup α, NonUnitalNonAssocSemiring α
 
 /-- An associative but not-necessarily unital ring. -/
-class NonUnitalRing (α : Type*) extends NonUnitalNonAssocRing α, NonUnitalSemiring α
+class NonUnitalRing (α : Type*) extends AddCommGroup α, Semigroup α,
+    NonUnitalNonAssocRing α, NonUnitalSemiring α
 
 /-- A unital but not-necessarily-associative ring. -/
-class NonAssocRing (α : Type*) extends NonUnitalNonAssocRing α, NonAssocSemiring α,
-    AddCommGroupWithOne α
+class NonAssocRing (α : Type*) extends AddCommGroup α, MulOneClass α, NonUnitalNonAssocRing α,
+    NonAssocSemiring α, AddCommGroupWithOne α
 
 /-- A `Semiring` is a type with addition, multiplication, a `0` and a `1` where addition is
 commutative and associative, multiplication is associative and left and right distributive over
 addition, and `0` and `1` are additive and multiplicative identities. -/
 class Semiring (α : Type u) extends AddCommMonoid α, MonoidWithZero α, NonUnitalSemiring α,
   NonAssocSemiring α
+
+-- attribute [instance 1010] Semiring.toAddCommMonoid
+-- attribute [instance 1005] AddCommGroup.toAddCommMonoid
 
 /-- A `Ring` is a `Semiring` with negation making it an additive group. -/
 class Ring (R : Type u) extends Semiring R, AddCommGroup R, AddGroupWithOne R
