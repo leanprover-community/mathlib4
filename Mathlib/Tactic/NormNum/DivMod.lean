@@ -31,9 +31,10 @@ lemma isInt_ediv {a b q m a' : ℤ} {b' r : ℕ}
     (hm : q * b' = m) (h : r + m = a') (h₂ : Nat.blt r b' = true) :
     IsInt (a / b) q := ⟨by
   obtain ⟨⟨rfl⟩, ⟨rfl⟩⟩ := ha, hb
-  simp only [Nat.blt_eq] at h₂; simp only [← h, ← hm, Int.cast_id]
-  rw [Int.add_mul_ediv_right _ _ (Int.ofNat_ne_zero.2 ((Nat.zero_le ..).trans_lt h₂).ne')]
-  rw [Int.ediv_eq_zero_of_lt, zero_add] <;> [simp; simpa using h₂]⟩
+  simp only [Nat.blt_eq] at h₂
+  simp only [Int.cast_id]
+  have := @Int.ediv_eq_iff_of_pos b' a q
+  lia⟩
 
 lemma isInt_ediv_neg {a b q q' : ℤ} (h : IsInt (a / -b) q) (hq : -q = q') : IsInt (a / b) q' :=
   ⟨by rw [Int.cast_id, ← hq, ← @Int.cast_id q, ← h.out, ← Int.ediv_neg, Int.neg_neg]⟩
