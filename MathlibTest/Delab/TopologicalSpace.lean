@@ -161,7 +161,7 @@ section unapplied
 /-- info:
 Continuous[induced g inferInstance, inst✝] : (β → α) → Prop -/
 #guard_msgs(info) in
-#check Continuous[induced g inferInstance, inferInstanceAs% (TopologicalSpace α)]
+#check Continuous[induced g inferInstance, (inferInstance : TopologicalSpace α)]
 
 /-- info: [Continuous[_, σ₁], Continuous[_, σ₂]]
 : List ((ℕ → Prop) → Prop) -/
@@ -174,7 +174,7 @@ Continuous[induced g inferInstance, inst✝] : (β → α) → Prop -/
 /-- info:
 Continuous[inst✝, coinduced h inferInstance] : (α → β) → Prop -/
 #guard_msgs(info) in
-#check Continuous[inferInstanceAs% (TopologicalSpace α), coinduced h inferInstance]
+#check Continuous[(inferInstance : TopologicalSpace α), coinduced h inferInstance]
 
 /-- info: [Continuous[induced p inferInstance, coinduced p inferInstance], Continuous]
 : List ((ℕ → Prop) → Prop) -/
