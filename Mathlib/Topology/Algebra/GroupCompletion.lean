@@ -247,7 +247,7 @@ theorem AddMonoidHom.continuous_extension [CompleteSpace β] [T0Space β] (f : �
 def AddMonoidHom.completion (f : α →+ β) (hf : Continuous f) : Completion α →+ Completion β :=
   (toCompl.comp f).extension (continuous_toCompl.comp hf)
 
-@[continuity]
+@[continuity, fun_prop]
 theorem AddMonoidHom.continuous_completion (f : α →+ β) (hf : Continuous f) :
     Continuous (AddMonoidHom.completion f hf : Completion α → Completion β) :=
   continuous_map

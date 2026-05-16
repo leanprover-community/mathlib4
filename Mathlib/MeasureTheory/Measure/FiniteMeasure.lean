@@ -981,7 +981,6 @@ noncomputable def mapCLM {f : Ω → Ω'} (f_cont : Continuous f) :
   toFun := fun ν ↦ ν.map f
   map_add' := map_add f_cont.measurable
   map_smul' := map_smul
-  cont := continuous_map f_cont
 
 lemma Topology.IsClosedEmbedding.isEmbedding_map_finiteMeasure {Ω : Type*}
     [MeasurableSpace Ω] [TopologicalSpace Ω] [BorelSpace Ω] [NormalSpace Ω']

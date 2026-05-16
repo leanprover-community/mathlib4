@@ -691,8 +691,7 @@ variable (α E 𝕜)
 /-- The embedding of Lp simple functions into Lp functions, as a continuous linear map. -/
 def coeToLp : Lp.simpleFunc E p μ →L[𝕜] Lp E p μ :=
   { AddSubgroup.subtype (Lp.simpleFunc E p μ) with
-    map_smul' := fun _ _ => rfl
-    cont := Lp.simpleFunc.uniformContinuous.continuous }
+    map_smul' _ _ := rfl }
 
 end CoeToLp
 

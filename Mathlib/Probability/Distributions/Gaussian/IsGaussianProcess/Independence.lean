@@ -75,8 +75,7 @@ lemma iIndepFun_of_covariance_strongDual [NormedSpace ℝ E]
   · let L : (I.sigma (fun i ↦ if hi : i ∈ I then J ⟨i, hi⟩ else ∅) → E) →L[ℝ] (i : I) → J i → E :=
       { toFun x i j := x ⟨⟨i, j⟩, by simp⟩
         map_add' x y := by ext; simp
-        map_smul' c x := by ext; simp
-        cont := by fun_prop }
+        map_smul' c x := by ext; simp }
     exact (hX.hasGaussianLaw _).map L
   have h1 : L₁ ∘ (fun ω k ↦ X i k ω) = ∑ k : J i, (L₁ ∘L .single ℝ _ k) ∘ X i k := by
     ext; simp [-ContinuousLinearMap.coe_comp', ← L₁.sum_comp_single]
