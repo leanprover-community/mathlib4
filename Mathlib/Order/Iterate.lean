@@ -5,9 +5,13 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Aesop
-public import Mathlib.Logic.Function.Iterate
-public import Mathlib.Order.Monotone.Basic
+public import Aesop.BuiltinRules
+public import Mathlib.Data.Nat.Basic
+public import Mathlib.Order.Monotone.Defs
+import Aesop.Frontend.Tactic
+import Aesop.Main
+import Batteries.Tactic.Init
+import Mathlib.Order.Monotone.Basic
 
 /-!
 # Inequalities on iterates
