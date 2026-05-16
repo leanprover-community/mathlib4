@@ -318,6 +318,14 @@ theorem hasFDerivWithinAt_euclidean :
       ∀ i, HasFDerivWithinAt (fun x => f x i) (PiLp.proj _ _ i ∘L f') t y :=
   hasFDerivWithinAt_piLp _
 
+theorem hasDerivWithinAt_pi_euclidean {f : 𝕜 → EuclideanSpace 𝕜 ι}
+    {f' : EuclideanSpace 𝕜 ι} {s : Set 𝕜} {x : 𝕜} :
+    letI : Fintype ι := Fintype.ofFinite ι
+    HasDerivWithinAt f f' s x ↔ ∀ i, HasDerivWithinAt (fun x ↦  f x i) (f' i) s x := by
+  letI : Fintype ι := Fintype.ofFinite ι
+  rw [hasDerivWithinAt_iff_hasFDerivWithinAt]
+  exact hasFDerivWithinAt_euclidean
+
 end finite
 
 section fintype
@@ -395,3 +403,13 @@ theorem contDiffOn_univBall_symm :
 end OpenPartialHomeomorph
 
 end DiffeomorphUnitBall
+
+universe u
+
+lemma inners_sum_eq_zero_of_const_inner_on_open {ι : Type u} [Fintype ι] {I : Set ℝ} {t s : ℝ}
+    {α β : ℝ → EuclideanSpace ℝ ι} (hI : IsOpen I) (ht : t ∈ I) {α' β' : EuclideanSpace ℝ ι}
+    (hdα : HasDerivAt α α' t) (hdβ : HasDerivAt β β' t)
+    (hci : Set.EqOn (fun t ↦ inner ℝ (α t) (β t)) (fun _ ↦ s) I) :
+    inner ℝ (α t) β' + inner ℝ α' (β t) = 0 := by
+  simp [← (HasDerivAt.inner ℝ hdα hdβ).deriv, ← derivWithin_of_isOpen hI ht,
+    derivWithin_congr hci (hci ht)]
