@@ -75,7 +75,8 @@ abbrev sigmaι {ι : Type v} (α : ι → TopCat.{max v u}) (i : ι) : α i ⟶ 
   refine ofHom (ContinuousMap.mk ?_ ?_)
   · dsimp
     apply Sigma.mk i
-  · dsimp; continuity
+  · dsimp -- TODO: make fun_prop after the compositional form bug is fixed!
+    exact continuous_sigmaMk
 
 /-- The explicit cofan of a family of topological spaces given by the sigma type. -/
 @[simps! pt ι_app]
@@ -86,7 +87,10 @@ def sigmaCofan {ι : Type v} (α : ι → TopCat.{max v u}) : Cofan α :=
 def sigmaCofanIsColimit {ι : Type v} (β : ι → TopCat.{max v u}) : IsColimit (sigmaCofan β) where
   desc S := ofHom
     { toFun := fun (s : of (Σ i, β i)) => S.ι.app ⟨s.1⟩ s.2
-      continuous_toFun := by continuity }
+      continuous_toFun := by
+        simp only [Discrete.functor_obj_eq_as, Functor.const_obj_obj, continuous_sigma_iff]
+        intro i
+        exact map_continuous (ConcreteCategory.hom (S.ι.app { as := i })) }
   uniq := by
     intro S m h
     ext ⟨i, x⟩

@@ -1252,8 +1252,10 @@ theorem continuous_sigma_iff {f : Sigma σ → X} :
   rw [continuous_iSup_dom]
   exact forall_congr' fun _ => continuous_coinduced_dom
 
+-- NB. This is a bad `fun_prop` theorem: because of its hypotheses, this would be classified as a
+-- transition theorem, and most likely never fire.
 /-- A map out of a sum type is continuous if its restriction to each summand is. -/
-@[continuity, fun_prop]
+@[continuity]
 theorem continuous_sigma {f : Sigma σ → X} (hf : ∀ i, Continuous fun a => f ⟨i, a⟩) :
     Continuous f :=
   continuous_sigma_iff.2 hf

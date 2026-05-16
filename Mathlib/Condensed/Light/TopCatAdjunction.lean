@@ -87,7 +87,14 @@ noncomputable def topCatAdjunctionCounit (X : TopCat.{u}) : X.toLightCondSet.toT
   { toFun x := x.1 PUnit.unit
     continuous_toFun := by
       rw [continuous_coinduced_dom]
-      continuity }
+      apply continuous_sigma
+      intro i
+      --apply Sigma.casesOn
+      --fun_prop
+      --grind [Sigma.casesOn]
+      show_term continuity
+      -- XXX: check here! was continuity
+       }
 
 /-- The counit of the adjunction `lightCondSetToTopCat ⊣ topCatToLightCondSet` is always bijective,
 but not an isomorphism in general (the inverse isn't continuous unless `X` is sequential).

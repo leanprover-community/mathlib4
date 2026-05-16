@@ -25,5 +25,9 @@ public section
 variable {X σ : Type*} [TopologicalSpace X] [CommSemiring X] [IsTopologicalSemiring X]
   (p : MvPolynomial σ X)
 
+attribute [fun_prop] continuous_finsetSum continuous_finsetProd
 theorem MvPolynomial.continuous_eval : Continuous fun x ↦ eval x p := by
-  continuity
+  apply continuous_finsetSum -- was all just `continuity`, TODO!
+  intro i a
+  apply Continuous.comp' (by fun_prop)
+  apply continuous_finsetProd; fun_prop
