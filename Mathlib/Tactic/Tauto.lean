@@ -11,6 +11,7 @@ public meta import Qq
 public meta import Mathlib.Lean.Meta
 public import Mathlib.Tactic.CasesM
 public import Mathlib.Tactic.Core
+import Qq.Match
 
 /-!
 The `tauto` tactic.

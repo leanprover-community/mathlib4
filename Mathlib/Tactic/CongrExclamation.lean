@@ -12,6 +12,7 @@ public meta import Lean.Meta.Tactic.Rfl
 public meta import Mathlib.Lean.Meta.CongrTheorems
 public meta import Mathlib.Logic.Basic
 public import Mathlib.Lean.Meta.CongrTheorems
+import Mathlib.Logic.Basic
 
 /-!
 # The `congr!` tactic

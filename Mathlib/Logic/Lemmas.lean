@@ -5,10 +5,10 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Mathlib.Logic.Basic
-public import Mathlib.Tactic.Convert
-public import Mathlib.Tactic.SplitIfs
-public import Mathlib.Tactic.Tauto
+import Mathlib.Tactic.Convert
+import Mathlib.Tactic.SplitIfs
+import Mathlib.Tactic.Tauto
+public import Batteries.Logic
 
 /-!
 # More basic logic properties

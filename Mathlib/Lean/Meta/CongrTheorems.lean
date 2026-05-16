@@ -8,6 +8,14 @@ module -- shake: keep-all
 public import Lean.Meta.Tactic.Cleanup
 public meta import Lean.Meta.Tactic.Refl
 public import Mathlib.Logic.IsEmpty.Defs
+public import Lean.Meta.AppBuilder
+public meta import Lean.Meta.AppBuilder
+public meta import Lean.Meta.CongrTheorems
+public meta import Mathlib.Logic.IsEmpty.Defs
+import Lean.Meta.CongrTheorems
+public meta import Lean.Meta.Tactic.Cases
+meta import Lean.Meta.Tactic.Cleanup
+import Lean.Meta.Tactic.Clear
 
 /-!
 # Additions to `Lean.Meta.CongrTheorems`
