@@ -6,7 +6,9 @@ Authors: Bhavik Mehta
 module
 
 public import Mathlib.Algebra.Field.Defs
-public import Mathlib.Algebra.Ring.Int.Defs
+public import Mathlib.Algebra.Group.Basic
+import Mathlib.Algebra.Ring.Int.Defs
+import Mathlib.Data.Int.Cast.Basic
 
 /-!
 # Cast of integers into fields
