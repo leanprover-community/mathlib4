@@ -472,6 +472,30 @@ def homeoOfEquivCompactToT2 [CompactSpace X] [T2Space Y] {f : X ≃ Y} (hf : Con
     continuous_toFun := hf
     continuous_invFun := hf.continuous_symm_of_equiv_compact_to_t2 }
 
+variable {X : Type*} {s t : TopologicalSpace X} {B : Set X}
+
+/-- Suppose we have two topologies `s, t` on `X`. If `t` is finer than `s`, `s` is Hausdorff, and
+`X` is compact under `t`, then `s = t`. -/
+theorem _root_.CompactSpace.eq_of_le_compact_t2 (hst : t ≤ s) (hs : @T2Space X s)
+    (ht : @CompactSpace X t) : s = t := by
+  simpa [homeoOfEquivCompactToT2, induced_id] using
+    @(@homeoOfEquivCompactToT2 X X t s ht hs (Equiv.refl X)
+    (continuous_iff_le_induced.2 (Equiv.coe_refl ▸ (@induced_id X s).symm ▸ hst))).induced_eq
+
+/-- Suppose we have two topologies `s, t` on `X`. If `t` is strictly finer than `s`, `s` is
+Hausdorff, and `X` is compact under `s`, then `X` is not compact under `t`. -/
+theorem _root_.CompactSpace.nonCompact_of_lt (hst : t < s) (hs : @T2Space X s) :
+    @NoncompactSpace X t := by
+  refine not_compactSpace_iff.1 (fun hct => ?_)
+  grind [hct.eq_of_le_compact_t2 hst.le hs]
+
+/-- Suppose we have two topologies `s, t` on `X`. If `t` is finer than `s`, `s` is Hausdorff, and
+`B` is a compact subset of `X` under `t`, then the subspace topology on `B` induced by `s` is equal
+to the one induced by `t`. -/
+theorem _root_.IsCompact.eq_of_le (hst : t ≤ s) (hs : @T2Space X s) (hB : @IsCompact X t B) :
+    @instTopologicalSpaceSubtype X B s = @instTopologicalSpaceSubtype X B t :=
+  (isCompact_iff_compactSpace.1 hB).eq_of_le_compact_t2 (induced_mono hst) inferInstance
+
 end Continuous
 
 variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
