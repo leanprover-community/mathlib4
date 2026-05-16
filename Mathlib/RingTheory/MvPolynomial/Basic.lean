@@ -74,7 +74,7 @@ section ExpChar
 variable [ExpChar R p]
 
 instance : ExpChar (MvPolynomial σ R) p := by
-  cases ‹ExpChar R p›; exacts [ExpChar.zero, ExpChar.prime ‹_›]
+  cases ‹ExpChar R p›; exacts [ExpChar.subsingleton p, ExpChar.zero, ExpChar.prime ‹_›]
 
 end ExpChar
 

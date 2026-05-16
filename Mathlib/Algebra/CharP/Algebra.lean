@@ -95,34 +95,36 @@ protected theorem RingHom.charP_iff [NonAssocSemiring R] [NonAssocSemiring A]
 as `R`. -/
 lemma expChar_of_injective_ringHom
     [NonAssocSemiring R] [NonAssocSemiring A] {f : R →+* A} (h : Function.Injective f)
-    (q : ℕ) [hR : ExpChar R q] : ExpChar A q := by
-  rcases hR with _ | hprime
+    (q : ℕ) [hR : ExpChar R q] [Nontrivial R] : ExpChar A q := by
+  rcases hR with _ | _ | hprime
+  · exfalso; exact false_of_nontrivial_of_subsingleton R
   · haveI := charZero_of_injective_ringHom h; exact .zero
-  haveI := charP_of_injective_ringHom h q; exact .prime hprime
+  · haveI := charP_of_injective_ringHom h q; exact .prime hprime
 
 /-- If `R →+* A` is injective, and `A` is of exponential characteristic `p`, then `R` is also of
 exponential characteristic `p`. Similar to `RingHom.charZero`. -/
 lemma RingHom.expChar [NonAssocSemiring R] [NonAssocSemiring A] (f : R →+* A)
     (H : Function.Injective f) (p : ℕ) [ExpChar A p] : ExpChar R p := by
   cases ‹ExpChar A p› with
+  | subsingleton => have := Function.Injective.subsingleton H; exact .subsingleton p
   | zero => haveI := f.charZero; exact .zero
   | prime hp => haveI := f.charP H p; exact .prime hp
 
 /-- If `R →+* A` is injective, then `R` is of exponential characteristic `p` if and only if `A` is
 also of exponential characteristic `p`. Similar to `RingHom.charZero_iff`. -/
 lemma RingHom.expChar_iff [NonAssocSemiring R] [NonAssocSemiring A] (f : R →+* A)
-    (H : Function.Injective f) (p : ℕ) : ExpChar R p ↔ ExpChar A p :=
+    (H : Function.Injective f) (p : ℕ) [Nontrivial R] : ExpChar R p ↔ ExpChar A p :=
   ⟨fun _ ↦ expChar_of_injective_ringHom H p, fun _ ↦ f.expChar H p⟩
 
 /-- If the algebra map `R →+* A` is injective then `A` has the same exponential characteristic
 as `R`. -/
 lemma expChar_of_injective_algebraMap [CommSemiring R] [Semiring A] [Algebra R A]
-    (h : Function.Injective (algebraMap R A)) (q : ℕ) [ExpChar R q] : ExpChar A q :=
+    (h : Function.Injective (algebraMap R A)) (q : ℕ) [ExpChar R q] [Nontrivial R] : ExpChar A q :=
   expChar_of_injective_ringHom h q
 
 variable (R) in
 theorem ExpChar.of_injective_algebraMap' [CommRing R] [CommRing A]
-    [Algebra R A] [FaithfulSMul R A] (q : ℕ) [ExpChar R q] : ExpChar A q :=
+    [Algebra R A] [FaithfulSMul R A] (q : ℕ) [ExpChar R q] [Nontrivial R] : ExpChar A q :=
   expChar_of_injective_ringHom (FaithfulSMul.algebraMap_injective R A) q
 
 namespace Subfield

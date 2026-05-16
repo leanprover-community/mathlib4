@@ -476,7 +476,8 @@ theorem natSepDegree_le_of_dvd (g : F[X]) (h1 : f ∣ g) (h2 : g ≠ 0) :
 and `f` have the same separable degree. -/
 theorem natSepDegree_expand (q : ℕ) [hF : ExpChar F q] {n : ℕ} :
     (expand F (q ^ n) f).natSepDegree = f.natSepDegree := by
-  obtain - | hprime := hF
+  obtain  _ | - | hprime := hF
+  · exact (false_of_nontrivial_of_subsingleton F).elim
   · simp only [one_pow, expand_one]
   haveI := Fact.mk hprime
   classical
@@ -573,6 +574,8 @@ theorem eq_X_pow_char_pow_sub_C_of_natSepDegree_eq_one_of_irreducible (q : ℕ) 
       (n = 0 ∨ y ∉ (frobenius F q).range) ∧ f = X ^ q ^ n - C y := by
   obtain ⟨n, y, hf⟩ := (hm.natSepDegree_eq_one_iff_of_irreducible q hi).1 h
   cases id ‹ExpChar F q› with
+  | subsingleton =>
+    exact (false_of_nontrivial_of_subsingleton F).elim
   | zero =>
     simp_rw [one_pow, pow_one] at hf ⊢
     exact ⟨0, y, .inl rfl, hf⟩

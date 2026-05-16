@@ -200,12 +200,38 @@ end Fin
 section AddMonoidWithOne
 variable [AddMonoidWithOne R]
 
-instance (S : Type*) [Semiring S] (p) [ExpChar R p] [ExpChar S p] : ExpChar (R × S) p := by
-  obtain hp | ⟨hp⟩ := ‹ExpChar R p›
+-- TODO: fix this
+instance (S : Type*) [AddMonoidWithOne S] (p) [ExpChar R p] [ExpChar S p] : ExpChar (R × S) p := by
+  obtain _ | hp | ⟨hp⟩ := ‹ExpChar R p›
+  · obtain _ | _ | ⟨hp⟩ := ‹ExpChar S p›
+    · exact .subsingleton p
+    · constructor
+    · apply @ExpChar.prime _ _ p hp ?_
+      constructor
+      intro x
+      rw [← CharP.cast_eq_zero_iff S]
+      constructor
+      · intro h
+        simpa using congrArg Prod.snd h
+      · intro h
+        ext
+        · subsingleton
+        · exact h
   · constructor
-  obtain _ | _ := ‹ExpChar S p›
-  · exact (Nat.not_prime_one hp).elim
-  · have := Prod.charP R S p; exact .prime hp
+  · obtain _ | _ | _ := ‹ExpChar S p›
+    · apply @ExpChar.prime _ _ p hp ?_
+      constructor
+      intro x
+      rw [← CharP.cast_eq_zero_iff R]
+      constructor
+      · intro h
+        simpa using congrArg Prod.fst h
+      · intro h
+        ext
+        · exact h
+        · subsingleton
+    · exact (Nat.not_prime_one hp).elim
+    · have := Prod.charP R S p; exact .prime hp
 
 end AddMonoidWithOne
 
