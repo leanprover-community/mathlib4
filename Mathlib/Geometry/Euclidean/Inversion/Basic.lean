@@ -229,3 +229,31 @@ protected theorem Continuous.inversion (hc : Continuous c) (hR : Continuous R) (
     (hne : ∀ a, x a ≠ c a) : Continuous (fun a ↦ inversion (c a) (R a) (x a)) :=
   continuous_iff_continuousAt.2 fun _ ↦
     hc.continuousAt.inversion hR.continuousAt hx.continuousAt (hne _)
+
+namespace EuclideanGeometry
+
+theorem tendsto_inversion_nhdsNE_center_cobounded {c : P} {R : ℝ} (hR : R ≠ 0) :
+    Filter.Tendsto (inversion c R) (𝓝[≠] c) (Bornology.cobounded P) := by
+  refine (tendsto_dist_left_atTop_iff c).1 ?_
+  have hdist : Filter.Tendsto (dist c) (𝓝[≠] c) (𝓝[>] (0 : ℝ)) :=
+    tendsto_nhdsWithin_iff.2
+      ⟨by
+        have hdist_nhds :
+            Filter.Tendsto (fun x : P ↦ dist c x) (𝓝[≠] c) (𝓝 (dist c c)) :=
+          (continuousAt_const.dist (continuousAt_id : ContinuousAt (fun x : P ↦ x) c)).mono_left
+            inf_le_left
+        simpa using hdist_nhds,
+        by
+          filter_upwards [self_mem_nhdsWithin] with x hx
+          exact dist_pos.2 (by simpa [eq_comm] using hx)⟩
+  have hratio :
+      Filter.Tendsto (fun x : P ↦ (R ^ 2) * (dist c x)⁻¹) (𝓝[≠] c) Filter.atTop :=
+    Filter.Tendsto.const_mul_atTop (sq_pos_iff.2 hR)
+      (Filter.Tendsto.inv_tendsto_nhdsGT_zero hdist)
+  have hdist_inv :
+      (fun x : P ↦ dist c (inversion c R x)) = fun x ↦ (R ^ 2) * (dist c x)⁻¹ := by
+    funext x
+    simpa [div_eq_mul_inv] using (dist_center_inversion c x R)
+  simpa [hdist_inv] using hratio
+
+end EuclideanGeometry
