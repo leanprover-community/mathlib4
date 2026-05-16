@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Probability.Decision.Risk.Defs
 public import Mathlib.Probability.Kernel.Composition.MeasureComp
+public import Mathlib.Probability.Kernel.WithDensity
 
 /-!
 # Basic properties of the risk of an estimator
@@ -40,7 +41,7 @@ open scoped ENNReal NNReal
 
 namespace ProbabilityTheory
 
-variable {Θ 𝓧 𝓧' 𝓨 : Type*} {mΘ : MeasurableSpace Θ}
+variable {Θ Θ' 𝓧 𝓧' 𝓨 : Type*} {mΘ : MeasurableSpace Θ} {mΘ' : MeasurableSpace Θ'}
   {m𝓧 : MeasurableSpace 𝓧} {m𝓧' : MeasurableSpace 𝓧'} {m𝓨 : MeasurableSpace 𝓨}
   {ℓ : Θ → 𝓨 → ℝ≥0∞} {P : Kernel Θ 𝓧} {κ : Kernel 𝓧 𝓨} {π : Measure Θ}
 
@@ -227,7 +228,31 @@ lemma bayesRisk_of_subsingleton [IsMarkovKernel P] [SFinite π] (hl : Measurable
     bayesRisk ℓ P π = ⨅ y, ∫⁻ θ, ℓ θ y ∂π := by
   simp [bayesRisk_of_subsingleton' hl]
 
+lemma bayesRisk_eq_bayesRisk_discard_of_subsingleton
+    [IsMarkovKernel P] [SFinite π] (hl : Measurable (uncurry ℓ)) :
+    bayesRisk ℓ P π = bayesRisk ℓ (Kernel.discard Θ) π := by
+  simp [bayesRisk_of_subsingleton hl]
+
 end Subsingleton
+
+lemma avgRisk_withDensity (hl : Measurable (uncurry ℓ))
+    (P : Kernel Θ 𝓧) [IsSFiniteKernel P] (κ : Kernel 𝓧 𝓨) [IsSFiniteKernel κ]
+    (π : Measure Θ) {f : Θ → ℝ≥0∞} (hf : Measurable f) :
+    avgRisk ℓ (P.withDensity (fun θ _ ↦ f θ)) κ π = avgRisk ℓ P κ (π.withDensity f) := by
+  simp only [avgRisk]
+  rw [lintegral_withDensity_eq_lintegral_mul _ hf (by fun_prop)]
+  congr with θ
+  rw [Kernel.comp_apply, Kernel.withDensity_apply _ (by fun_prop), Pi.mul_apply, Kernel.comp_apply]
+  simp
+
+lemma bayesRisk_withDensity (hl : Measurable (uncurry ℓ))
+    (P : Kernel Θ 𝓧) [IsSFiniteKernel P] (π : Measure Θ)
+    {f : Θ → ℝ≥0∞} (hf : Measurable f) :
+    bayesRisk ℓ (P.withDensity (fun θ _ ↦ f θ)) π = bayesRisk ℓ P (π.withDensity f) := by
+  simp_rw [bayesRisk]
+  congr! 3 with κ hκ
+  rw [avgRisk_withDensity hl P κ π hf]
+
 
 section Compositions
 
@@ -256,6 +281,24 @@ lemma bayesRisk_compProd_le_bayesRisk (ℓ : Θ → 𝓨 → ℝ≥0∞) (P : Ke
     rw [Kernel.deterministic_comp_eq_map, ← Kernel.fst_eq, Kernel.fst_compProd]
   nth_rw 2 [this]
   exact bayesRisk_le_bayesRisk_comp _ _ _ _
+
+lemma avgRisk_comap_measurableEquiv (hl : Measurable (uncurry ℓ)) (P : Kernel Θ 𝓧)
+    [IsSFiniteKernel P] (κ : Kernel 𝓧 𝓨) [IsSFiniteKernel κ] (π : Measure Θ) (e : Θ' ≃ᵐ Θ) :
+    avgRisk (fun θ ↦ ℓ (e θ)) (P.comap e e.measurable) κ (π.comap e)
+      = avgRisk ℓ P κ π := by
+  simp only [avgRisk]
+  rw [← MeasurableEquiv.map_symm, lintegral_map (by fun_prop) e.symm.measurable]
+  congr with θ
+  congr
+  · ext s hs
+    simp [κ.comp_apply' _ _ hs, Kernel.comap_apply]
+  · simp
+
+lemma bayesRisk_comap_measurableEquiv (hl : Measurable (uncurry ℓ)) (P : Kernel Θ 𝓧)
+    [IsSFiniteKernel P] (π : Measure Θ) (e : Θ' ≃ᵐ Θ) :
+    bayesRisk (fun θ ↦ ℓ (e θ)) (P.comap e e.measurable) (π.comap e)
+      = bayesRisk ℓ P π := by
+  simp only [bayesRisk, avgRisk_comap_measurableEquiv hl P _ π e]
 
 end Compositions
 
