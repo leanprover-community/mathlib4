@@ -443,8 +443,7 @@ theorem orthogonalComplement_iSup_eigenspaces_eq_bot
     (hT : IsCompactOperator T) (hT' : T.IsSymmetric) :
     (⨆ μ, eigenspace (T : Module.End 𝕜 E) μ)ᗮ = ⊥ := by
   let S : (⨆ μ, eigenspace T μ : Submodule 𝕜 E)ᗮ →L[𝕜] (⨆ μ, eigenspace T μ : Submodule 𝕜 E)ᗮ :=
-    { __ := T.restrict hT'.orthogonalComplement_iSup_eigenspaces_invariant
-      cont := by fun_prop }
+    T.restrict hT'.orthogonalComplement_iSup_eigenspaces_invariant
   have hS_compact : IsCompactOperator S :=
     hT.restrict' hT'.orthogonalComplement_iSup_eigenspaces_invariant
   have hS_symm : S.IsSymmetric :=

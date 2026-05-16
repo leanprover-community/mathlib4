@@ -449,7 +449,7 @@ end Add
 
 variable [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃]
 
-/-- Composition of bounded linear maps. -/
+/-- Composition of continuous linear maps. -/
 def comp (g : M₂ →SL[σ₂₃] M₃) (f : M₁ →SL[σ₁₂] M₂) : M₁ →SL[σ₁₃] M₃ :=
   ⟨(g : M₂ →ₛₗ[σ₂₃] M₃).comp (f : M₁ →ₛₗ[σ₁₂] M₂), g.2.comp f.2⟩
 
@@ -458,28 +458,32 @@ infixr:80 " ∘L " =>
   @ContinuousLinearMap.comp _ _ _ _ _ _ (RingHom.id _) (RingHom.id _) (RingHom.id _) _ _ _ _ _ _ _ _
     _ _ _ _ RingHomCompTriple.ids
 
+@[inherit_doc comp]
+infixr:90 " ∘SL " =>
+  ContinuousLinearMap.comp
+
 @[simp, norm_cast]
 theorem coe_comp (h : M₂ →SL[σ₂₃] M₃) (f : M₁ →SL[σ₁₂] M₂) :
-    (h.comp f : M₁ →ₛₗ[σ₁₃] M₃) = (h : M₂ →ₛₗ[σ₂₃] M₃).comp (f : M₁ →ₛₗ[σ₁₂] M₂) :=
+    (h ∘SL f : M₁ →ₛₗ[σ₁₃] M₃) = (h : M₂ →ₛₗ[σ₂₃] M₃) ∘ₛₗ (f : M₁ →ₛₗ[σ₁₂] M₂) :=
   rfl
 
 @[simp, norm_cast]
-theorem coe_comp' (h : M₂ →SL[σ₂₃] M₃) (f : M₁ →SL[σ₁₂] M₂) : ⇑(h.comp f) = h ∘ f :=
+theorem coe_comp' (h : M₂ →SL[σ₂₃] M₃) (f : M₁ →SL[σ₁₂] M₂) : ⇑(h ∘SL f) = h ∘ f :=
   rfl
 
 @[simp, norm_cast]
 theorem toContinuousAddMonoidHom_comp (h : M₂ →SL[σ₂₃] M₃) (f : M₁ →SL[σ₁₂] M₂) :
-    (↑(h.comp f) : ContinuousAddMonoidHom M₁ M₃) = (h : ContinuousAddMonoidHom M₂ M₃).comp f := rfl
+    (↑(h ∘SL f) : ContinuousAddMonoidHom M₁ M₃) = (h : ContinuousAddMonoidHom M₂ M₃).comp f := rfl
 
-theorem comp_apply (g : M₂ →SL[σ₂₃] M₃) (f : M₁ →SL[σ₁₂] M₂) (x : M₁) : (g.comp f) x = g (f x) :=
+theorem comp_apply (g : M₂ →SL[σ₂₃] M₃) (f : M₁ →SL[σ₁₂] M₂) (x : M₁) : (g ∘SL f) x = g (f x) :=
   rfl
 
 @[simp]
-theorem comp_id (f : M₁ →SL[σ₁₂] M₂) : f.comp (.id R₁ M₁) = f :=
+theorem comp_id (f : M₁ →SL[σ₁₂] M₂) : f ∘SL .id R₁ M₁ = f :=
   ext fun _x => rfl
 
 @[simp]
-theorem id_comp (f : M₁ →SL[σ₁₂] M₂) : (ContinuousLinearMap.id R₂ M₂).comp f = f :=
+theorem id_comp (f : M₁ →SL[σ₁₂] M₂) : .id R₂ M₂ ∘SL f = f :=
   ext fun _x => rfl
 
 section
@@ -490,41 +494,41 @@ variable {R E F : Type*} [Semiring R]
 
 /-- `g ∘ f = id` as `ContinuousLinearMap`s implies `g ∘ f = id` as functions. -/
 lemma leftInverse_of_comp {f : E →L[R] F} {g : F →L[R] E}
-    (hinv : g.comp f = ContinuousLinearMap.id R E) : Function.LeftInverse g f := by
+    (hinv : g ∘L f = .id R E) : Function.LeftInverse g f := by
   simpa [← Function.rightInverse_iff_comp] using congr(⇑$hinv)
 
 /-- `f ∘ g = id` as `ContinuousLinearMap`s implies `f ∘ g = id` as functions. -/
 lemma rightInverse_of_comp {f : E →L[R] F} {g : F →L[R] E}
-    (hinv : f.comp g = ContinuousLinearMap.id R F) : Function.RightInverse g f :=
+    (hinv : f ∘L g = .id R F) : Function.RightInverse g f :=
   leftInverse_of_comp hinv
 
 end
 
 @[simp]
-theorem comp_zero (g : M₂ →SL[σ₂₃] M₃) : g.comp (0 : M₁ →SL[σ₁₂] M₂) = 0 := by
+theorem comp_zero (g : M₂ →SL[σ₂₃] M₃) : g ∘SL (0 : M₁ →SL[σ₁₂] M₂) = 0 := by
   ext
   simp
 
 @[simp]
-theorem zero_comp (f : M₁ →SL[σ₁₂] M₂) : (0 : M₂ →SL[σ₂₃] M₃).comp f = 0 := by
+theorem zero_comp (f : M₁ →SL[σ₁₂] M₂) : (0 : M₂ →SL[σ₂₃] M₃) ∘SL f = 0 := by
   ext
   simp
 
 @[simp]
 theorem comp_add [ContinuousAdd M₂] [ContinuousAdd M₃] (g : M₂ →SL[σ₂₃] M₃)
-    (f₁ f₂ : M₁ →SL[σ₁₂] M₂) : g.comp (f₁ + f₂) = g.comp f₁ + g.comp f₂ := by
+    (f₁ f₂ : M₁ →SL[σ₁₂] M₂) : g ∘SL (f₁ + f₂) = g ∘SL f₁ + g ∘SL f₂ := by
   ext
   simp
 
 @[simp]
 theorem add_comp [ContinuousAdd M₃] (g₁ g₂ : M₂ →SL[σ₂₃] M₃) (f : M₁ →SL[σ₁₂] M₂) :
-    (g₁ + g₂).comp f = g₁.comp f + g₂.comp f := by
+    (g₁ + g₂) ∘SL f = g₁ ∘SL f + g₂ ∘SL f := by
   ext
   simp
 
 theorem comp_finsetSum {ι : Type*} {s : Finset ι}
     [ContinuousAdd M₂] [ContinuousAdd M₃] (g : M₂ →SL[σ₂₃] M₃)
-    (f : ι → M₁ →SL[σ₁₂] M₂) : g.comp (∑ i ∈ s, f i) = ∑ i ∈ s, g.comp (f i) := by
+    (f : ι → M₁ →SL[σ₁₂] M₂) : g ∘SL (∑ i ∈ s, f i) = ∑ i ∈ s, g ∘SL (f i) := by
   ext
   simp
 
@@ -532,7 +536,7 @@ theorem comp_finsetSum {ι : Type*} {s : Finset ι}
 
 theorem finsetSum_comp {ι : Type*} {s : Finset ι}
     [ContinuousAdd M₃] (g : ι → M₂ →SL[σ₂₃] M₃)
-    (f : M₁ →SL[σ₁₂] M₂) : (∑ i ∈ s, g i).comp f = ∑ i ∈ s, (g i).comp f := by
+    (f : M₁ →SL[σ₁₂] M₂) : (∑ i ∈ s, g i) ∘SL f = ∑ i ∈ s, (g i) ∘SL f := by
   ext
   simp only [coe_comp', coe_sum', Function.comp_apply, Finset.sum_apply]
 
@@ -541,18 +545,18 @@ theorem finsetSum_comp {ι : Type*} {s : Finset ι}
 theorem comp_assoc {R₄ : Type*} [Semiring R₄] [Module R₄ M₄] {σ₁₄ : R₁ →+* R₄} {σ₂₄ : R₂ →+* R₄}
     {σ₃₄ : R₃ →+* R₄} [RingHomCompTriple σ₁₃ σ₃₄ σ₁₄] [RingHomCompTriple σ₂₃ σ₃₄ σ₂₄]
     [RingHomCompTriple σ₁₂ σ₂₄ σ₁₄] (h : M₃ →SL[σ₃₄] M₄) (g : M₂ →SL[σ₂₃] M₃) (f : M₁ →SL[σ₁₂] M₂) :
-    (h.comp g).comp f = h.comp (g.comp f) :=
+    (h ∘SL g) ∘SL f = h ∘SL (g ∘SL f) :=
   rfl
 
 theorem cancel_left {g : M₂ →SL[σ₂₃] M₃} {f₁ f₂ : M₁ →SL[σ₁₂] M₂} (hg : Function.Injective g)
-    (h : g.comp f₁ = g.comp f₂) : f₁ = f₂ := by
+    (h : g ∘SL f₁ = g ∘SL f₂) : f₁ = f₂ := by
   ext x
   exact hg congr($h x)
 
 instance instMul : Mul (M₁ →L[R₁] M₁) :=
   ⟨comp⟩
 
-theorem mul_def (f g : M₁ →L[R₁] M₁) : f * g = f.comp g :=
+theorem mul_def (f g : M₁ →L[R₁] M₁) : f * g = f ∘L g :=
   rfl
 
 @[simp, norm_cast]
@@ -671,37 +675,6 @@ instance completeSpace_eqLocus {M' : Type*} [UniformSpace M'] [CompleteSpace M']
     (f g : M' →SL[σ₁₂] M₂) : CompleteSpace (LinearMap.eqLocus f g) :=
   IsClosed.completeSpace_coe (hs := isClosed_eq (map_continuous f) (map_continuous g))
 
-/-- Restrict codomain of a continuous linear map. -/
-def codRestrict (f : M₁ →SL[σ₁₂] M₂) (p : Submodule R₂ M₂) (h : ∀ x, f x ∈ p) :
-    M₁ →SL[σ₁₂] p where
-  cont := f.continuous.subtype_mk _
-  toLinearMap := (f : M₁ →ₛₗ[σ₁₂] M₂).codRestrict p h
-
-@[norm_cast]
-theorem coe_codRestrict (f : M₁ →SL[σ₁₂] M₂) (p : Submodule R₂ M₂) (h : ∀ x, f x ∈ p) :
-    (f.codRestrict p h : M₁ →ₛₗ[σ₁₂] p) = (f : M₁ →ₛₗ[σ₁₂] M₂).codRestrict p h :=
-  rfl
-
-@[simp]
-theorem coe_codRestrict_apply (f : M₁ →SL[σ₁₂] M₂) (p : Submodule R₂ M₂) (h : ∀ x, f x ∈ p) (x) :
-    (f.codRestrict p h x : M₂) = f x :=
-  rfl
-
-@[simp]
-theorem ker_codRestrict (f : M₁ →SL[σ₁₂] M₂) (p : Submodule R₂ M₂) (h : ∀ x, f x ∈ p) :
-    ker (f.codRestrict p h : M₁ →ₛₗ[σ₁₂] p) = ker (f : M₁ →ₛₗ[σ₁₂] M₂) :=
-  (f : M₁ →ₛₗ[σ₁₂] M₂).ker_codRestrict p h
-
-/-- Restrict the codomain of a continuous linear map `f` to `f.range`. -/
-abbrev rangeRestrict [RingHomSurjective σ₁₂] (f : M₁ →SL[σ₁₂] M₂) :=
-  f.codRestrict (LinearMap.range (f : M₁ →ₛₗ[σ₁₂] M₂)) (LinearMap.mem_range_self _)
-
-@[simp]
-theorem coe_rangeRestrict [RingHomSurjective σ₁₂] (f : M₁ →SL[σ₁₂] M₂) :
-    (f.rangeRestrict : M₁ →ₛₗ[σ₁₂] LinearMap.range (f : M₁ →ₛₗ[σ₁₂] M₂)) =
-      (f : M₁ →ₛₗ[σ₁₂] M₂).rangeRestrict :=
-  rfl
-
 section
 
 variable {R S : Type*} [Semiring R] [Semiring S] [Module R M₁] [Module R M₂] [Module R S]
@@ -731,7 +704,7 @@ variable [Module R₁ M₂] [TopologicalSpace R₁] [ContinuousSMul R₁ M₂]
 
 theorem smulRight_comp_smulRight {M₃ : Type*} [AddCommMonoid M₃] [Module R₁ M₃]
     [TopologicalSpace M₃] [ContinuousSMul R₁ M₃] (f : M₃ →L[R₁] R₁) (g : M₁ →L[R₁] R₁) {x : M₂}
-    {y : M₃} : (smulRight f x).comp (smulRight g y) = smulRight g (f y • x) := by
+    {y : M₃} : (smulRight f x) ∘L (smulRight g y) = smulRight g (f y • x) := by
   ext
   simp
 
@@ -811,7 +784,7 @@ theorem toSpanSingleton_comp (f : M₁ →L[R₁] R₁) (g : M₂) :
 @[deprecated (since := "2025-12-18")] alias smulRight_one_eq_iff := toSpanSingleton_inj
 
 theorem toSpanSingleton_comp_toSpanSingleton [ContinuousMul R₁] {x : M₂} {c : R₁} :
-    (toSpanSingleton R₁ x).comp (toSpanSingleton R₁ c) =
+    (toSpanSingleton R₁ x) ∘L (toSpanSingleton R₁ c) =
       toSpanSingleton R₁ (c • x) := smulRight_comp_smulRight 1 1
 
 end ToSpanSingleton
@@ -894,26 +867,26 @@ end
 @[simp]
 theorem comp_neg [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃] [IsTopologicalAddGroup M₂]
     [IsTopologicalAddGroup M₃] (g : M₂ →SL[σ₂₃] M₃) (f : M →SL[σ₁₂] M₂) :
-    g.comp (-f) = -g.comp f := by
+    g ∘SL (-f) = -g ∘SL f := by
   ext x
   simp
 
 @[simp]
 theorem neg_comp [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃] [IsTopologicalAddGroup M₃] (g : M₂ →SL[σ₂₃] M₃)
-    (f : M →SL[σ₁₂] M₂) : (-g).comp f = -g.comp f := by
+    (f : M →SL[σ₁₂] M₂) : (-g) ∘SL f = -g ∘SL f := by
   ext
   simp
 
 @[simp]
 theorem comp_sub [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃] [IsTopologicalAddGroup M₂]
     [IsTopologicalAddGroup M₃] (g : M₂ →SL[σ₂₃] M₃) (f₁ f₂ : M →SL[σ₁₂] M₂) :
-    g.comp (f₁ - f₂) = g.comp f₁ - g.comp f₂ := by
+    g ∘SL (f₁ - f₂) = g ∘SL f₁ - g ∘SL f₂ := by
   ext
   simp
 
 @[simp]
 theorem sub_comp [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃] [IsTopologicalAddGroup M₃] (g₁ g₂ : M₂ →SL[σ₂₃] M₃)
-    (f : M →SL[σ₁₂] M₂) : (g₁ - g₂).comp f = g₁.comp f - g₂.comp f := by
+    (f : M →SL[σ₁₂] M₂) : (g₁ - g₂) ∘SL f = g₁ ∘SL f - g₂ ∘SL f := by
   ext
   simp
 
@@ -936,38 +909,6 @@ theorem toSpanSingleton_pow [TopologicalSpace R] [IsTopologicalRing R] (c : R) (
     rw [pow_succ, ihn, mul_def, toSpanSingleton_comp_toSpanSingleton, smul_eq_mul, pow_succ']
 
 @[deprecated (since := "2025-12-18")] alias smulRight_one_pow := toSpanSingleton_pow
-
-section
-
-variable {σ₂₁ : R₂ →+* R} [RingHomInvPair σ₁₂ σ₂₁]
-
-/-- Given a right inverse `f₂ : M₂ →L[R] M` to `f₁ : M →L[R] M₂`,
-`projKerOfRightInverse f₁ f₂ h` is the projection `M →L[R] LinearMap.ker f₁` along
-`LinearMap.range f₂`. -/
-def projKerOfRightInverse [IsTopologicalAddGroup M] (f₁ : M →SL[σ₁₂] M₂) (f₂ : M₂ →SL[σ₂₁] M)
-    (h : Function.RightInverse f₂ f₁) : M →L[R] LinearMap.ker (f₁ : M →ₛₗ[σ₁₂] M₂) :=
-  (.id R M - f₂.comp f₁).codRestrict (LinearMap.ker f₁.toLinearMap) fun x => by simp [h (f₁ x)]
-
-@[simp]
-theorem coe_projKerOfRightInverse_apply [IsTopologicalAddGroup M] (f₁ : M →SL[σ₁₂] M₂)
-    (f₂ : M₂ →SL[σ₂₁] M) (h : Function.RightInverse f₂ f₁) (x : M) :
-    (f₁.projKerOfRightInverse f₂ h x : M) = x - f₂ (f₁ x) :=
-  rfl
-
-@[simp]
-theorem projKerOfRightInverse_apply_idem [IsTopologicalAddGroup M] (f₁ : M →SL[σ₁₂] M₂)
-    (f₂ : M₂ →SL[σ₂₁] M) (h : Function.RightInverse f₂ f₁) (x : f₁.ker) :
-    f₁.projKerOfRightInverse f₂ h x = x := by
-  ext1
-  simp
-
-@[simp]
-theorem projKerOfRightInverse_comp_inv [IsTopologicalAddGroup M] (f₁ : M →SL[σ₁₂] M₂)
-    (f₂ : M₂ →SL[σ₂₁] M) (h : Function.RightInverse f₂ f₁) (y : M₂) :
-    f₁.projKerOfRightInverse f₂ h (f₂ y) = 0 :=
-  Subtype.ext_iff.2 <| by simp [h y]
-
-end
 
 end Ring
 
@@ -1000,7 +941,7 @@ variable {R R₂ R₃ S S₃ : Type*} [Semiring R] [Semiring R₂] [Semiring R�
 
 @[simp]
 theorem smul_comp (c : S₃) (h : M₂ →SL[σ₂₃] M₃) (f : M →SL[σ₁₂] M₂) :
-    (c • h).comp f = c • h.comp f :=
+    (c • h) ∘SL f = c • h ∘SL f :=
   rfl
 
 variable [DistribMulAction S₃ M₂] [ContinuousConstSMul S₃ M₂] [SMulCommClass R₂ S₃ M₂]
@@ -1008,14 +949,14 @@ variable [DistribMulAction S N₂] [ContinuousConstSMul S N₂] [SMulCommClass R
 
 @[simp]
 theorem comp_smul [LinearMap.CompatibleSMul N₂ N₃ S R] (hₗ : N₂ →L[R] N₃) (c : S)
-    (fₗ : M →L[R] N₂) : hₗ.comp (c • fₗ) = c • hₗ.comp fₗ := by
+    (fₗ : M →L[R] N₂) : hₗ ∘L (c • fₗ) = c • hₗ ∘L fₗ := by
   ext x
   exact hₗ.map_smul_of_tower c (fₗ x)
 
 @[simp]
 theorem comp_smulₛₗ [SMulCommClass R₂ R₂ M₂] [SMulCommClass R₃ R₃ M₃] [ContinuousConstSMul R₂ M₂]
     [ContinuousConstSMul R₃ M₃] (h : M₂ →SL[σ₂₃] M₃) (c : R₂) (f : M →SL[σ₁₂] M₂) :
-    h.comp (c • f) = σ₂₃ c • h.comp f := by
+    h ∘SL (c • f) = σ₂₃ c • h ∘SL f := by
   ext x
   simp only [coe_smul', coe_comp', Function.comp_apply, Pi.smul_apply, map_smulₛₗ]
 
@@ -1079,7 +1020,7 @@ variable {R U V : Type*} (W : Type*) [CommSemiring R]
 /-- Composition of continuous linear maps, as a linear map. Compare `LinearMap.lcomp`. -/
 @[simps]
 def lcomp (f : U →L[R] V) : (V →L[R] W) →ₗ[R] (U →L[R] W) where
-  toFun l := l.comp f
+  toFun l := l ∘L f
   map_add' _ _ := by simp
   map_smul' _ _ := by simp
 
@@ -1312,6 +1253,150 @@ end Ring
 end Submodule
 
 namespace ContinuousLinearMap
+
+section Restrict
+
+variable {R₁ R₂ R₃ : Type*} [Semiring R₁] [Semiring R₂] [Semiring R₃]
+  {σ₁₂ : R₁ →+* R₂} {σ₂₃ : R₂ →+* R₃} {σ₁₃ : R₁ →+* R₃} [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃]
+  {M₁ M₂ M₃ : Type*}
+  [TopologicalSpace M₁] [AddCommMonoid M₁] [Module R₁ M₁]
+  [TopologicalSpace M₂] [AddCommMonoid M₂] [Module R₂ M₂]
+  [TopologicalSpace M₃] [AddCommMonoid M₃] [Module R₃ M₃]
+
+/-- The restriction of a linear map `f : M → M₂` to a submodule `p ⊆ M` gives a linear map
+`p → M₂`. -/
+@[simps!]
+def domRestrict (f : M₁ →SL[σ₁₂] M₂) (p : Submodule R₁ M₁) : p →SL[σ₁₂] M₂ :=
+  f ∘SL p.subtypeL
+
+@[simp]
+theorem toLinearMap_domRestrict (f : M₁ →SL[σ₁₂] M₂) (p : Submodule R₁ M₁) :
+    (f.domRestrict p).toLinearMap = f.toLinearMap.domRestrict p :=
+  rfl
+
+lemma coe_domRestrict (f : M₁ →SL[σ₁₂] M₂) (p : Submodule R₁ M₁) :
+    ⇑(f.domRestrict p) = Set.restrict p f :=
+  rfl
+
+/-- Restrict codomain of a continuous linear map. -/
+def codRestrict (f : M₁ →SL[σ₁₂] M₂) (p : Submodule R₂ M₂) (h : ∀ x, f x ∈ p) :
+    M₁ →SL[σ₁₂] p where
+  cont := f.continuous.subtype_mk _
+  toLinearMap := (f : M₁ →ₛₗ[σ₁₂] M₂).codRestrict p h
+
+@[simp, norm_cast]
+theorem toLinearMap_codRestrict (f : M₁ →SL[σ₁₂] M₂) (p : Submodule R₂ M₂) (h : ∀ x, f x ∈ p) :
+    (f.codRestrict p h).toLinearMap = f.toLinearMap.codRestrict p h :=
+  rfl
+
+theorem coe_codRestrict (f : M₁ →SL[σ₁₂] M₂) (p : Submodule R₂ M₂) (h : ∀ x, f x ∈ p) :
+    (f.codRestrict p h : M₁ → p) = Set.codRestrict (f : M₁ → M₂) p h :=
+  rfl
+
+@[simp]
+theorem coe_codRestrict_apply (f : M₁ →SL[σ₁₂] M₂) (p : Submodule R₂ M₂) (h : ∀ x, f x ∈ p) (x) :
+    (f.codRestrict p h x : M₂) = f x :=
+  rfl
+
+theorem ker_codRestrict (f : M₁ →SL[σ₁₂] M₂) (p : Submodule R₂ M₂) (h : ∀ x, f x ∈ p) :
+    ker (f.codRestrict p h : M₁ →ₛₗ[σ₁₂] p) = ker (f : M₁ →ₛₗ[σ₁₂] M₂) :=
+  f.toLinearMap.ker_codRestrict p h
+
+@[simp]
+theorem domRestrict_comp_codRestrict (g : M₂ →SL[σ₂₃] M₃) (f : M₁ →SL[σ₁₂] M₂)
+    (p : Submodule R₂ M₂) (h : ∀ x, f x ∈ p) :
+    g.domRestrict p ∘SL f.codRestrict p h = g ∘SL f :=
+  rfl
+
+/-- Restrict the codomain of a continuous linear map `f` to `f.range`. -/
+abbrev rangeRestrict [RingHomSurjective σ₁₂] (f : M₁ →SL[σ₁₂] M₂) :=
+  f.codRestrict (LinearMap.range (f : M₁ →ₛₗ[σ₁₂] M₂)) (LinearMap.mem_range_self _)
+
+theorem toLinearMap_rangeRestrict [RingHomSurjective σ₁₂] (f : M₁ →SL[σ₁₂] M₂) :
+    f.rangeRestrict.toLinearMap = f.toLinearMap.rangeRestrict := by simp
+
+@[simp]
+theorem coe_rangeRestrict [RingHomSurjective σ₁₂] (f : M₁ →SL[σ₁₂] M₂) :
+    (f.rangeRestrict : M₁ → f.range) = Set.rangeFactorization f := rfl
+
+/-- Restrict codomain of a continuous linear map. -/
+def restrict (f : M₁ →SL[σ₁₂] M₂) {p : Submodule R₁ M₁} {q : Submodule R₂ M₂}
+    (h : ∀ x ∈ p, f x ∈ q) : p →SL[σ₁₂] q :=
+  (f.domRestrict p).codRestrict q <| SetLike.forall.2 h
+
+@[simp, norm_cast]
+theorem toLinearMap_restrict {f : M₁ →SL[σ₁₂] M₂} {p : Submodule R₁ M₁} {q : Submodule R₂ M₂}
+    (h : ∀ x ∈ p, f x ∈ q) :
+    (f.restrict h).toLinearMap = f.toLinearMap.restrict h :=
+  rfl
+
+@[simp]
+theorem coe_restrict_apply {f : M₁ →SL[σ₁₂] M₂} {p : Submodule R₁ M₁} {q : Submodule R₂ M₂}
+    (hf : ∀ x ∈ p, f x ∈ q) (x : p) : ↑(f.restrict hf x) = f x :=
+  rfl
+
+theorem restrict_apply {f : M₁ →SL[σ₁₂] M₂} {p : Submodule R₁ M₁} {q : Submodule R₂ M₂}
+    (hf : ∀ x ∈ p, f x ∈ q) (x : p) : f.restrict hf x = ⟨f x, hf x.1 x.2⟩ :=
+  rfl
+
+open Set in
+lemma restrict_comp {p : Submodule R₁ M₁} {p₂ : Submodule R₂ M₂} {p₃ : Submodule R₃ M₃}
+    {f : M₁ →SL[σ₁₂] M₂} {g : M₂ →SL[σ₂₃] M₃}
+    (hf : MapsTo f p p₂) (hg : MapsTo g p₂ p₃) (hfg : MapsTo (g ∘SL f) p p₃ := hg.comp hf) :
+    (g ∘SL f).restrict hfg = (g.restrict hg) ∘SL (f.restrict hf) :=
+  rfl
+
+theorem subtypeL_comp_restrict {f : M₁ →SL[σ₁₂] M₂} {p : Submodule R₁ M₁} {q : Submodule R₂ M₂}
+    (hf : ∀ x ∈ p, f x ∈ q) : q.subtypeL ∘SL (f.restrict hf) = f.domRestrict p :=
+  rfl
+
+theorem restrict_eq_codRestrict_domRestrict {f : M₁ →SL[σ₁₂] M₂} {p : Submodule R₁ M₁}
+    {q : Submodule R₂ M₂} (hf : ∀ x ∈ p, f x ∈ q) :
+    f.restrict hf = (f.domRestrict p).codRestrict q fun x => hf x.1 x.2 :=
+  rfl
+
+theorem restrict_eq_domRestrict_codRestrict {f : M₁ →SL[σ₁₂] M₂} {p : Submodule R₁ M₁}
+    {q : Submodule R₂ M₂} (hf : ∀ x, f x ∈ q) :
+    (f.restrict fun x _ => hf x) = (f.codRestrict q hf).domRestrict p :=
+  rfl
+
+end Restrict
+
+section
+
+variable {R₁ R₂ R₃ : Type*} [Ring R₁] [Ring R₂]
+  {σ₁₂ : R₁ →+* R₂} {σ₂₁ : R₂ →+* R₁} [RingHomInvPair σ₁₂ σ₂₁]
+  {M₁ M₂ : Type*}
+  [TopologicalSpace M₁] [AddCommGroup M₁] [Module R₁ M₁]
+  [TopologicalSpace M₂] [AddCommGroup M₂] [Module R₂ M₂]
+
+/-- Given a right inverse `f₂ : M₂ →L[R] M₁` to `f₁ : M₁ →L[R] M₂`,
+`projKerOfRightInverse f₁ f₂ h` is the projection `M₁ →L[R] LinearMap.ker f₁` along
+`LinearMap.range f₂`. -/
+def projKerOfRightInverse [IsTopologicalAddGroup M₁] (f₁ : M₁ →SL[σ₁₂] M₂) (f₂ : M₂ →SL[σ₂₁] M₁)
+    (h : Function.RightInverse f₂ f₁) : M₁ →L[R₁] LinearMap.ker (f₁ : M₁ →ₛₗ[σ₁₂] M₂) :=
+  (.id R₁ M₁ - f₂ ∘SL f₁).codRestrict (LinearMap.ker f₁.toLinearMap) fun x => by simp [h (f₁ x)]
+
+@[simp]
+theorem coe_projKerOfRightInverse_apply [IsTopologicalAddGroup M₁] (f₁ : M₁ →SL[σ₁₂] M₂)
+    (f₂ : M₂ →SL[σ₂₁] M₁) (h : Function.RightInverse f₂ f₁) (x : M₁) :
+    (f₁.projKerOfRightInverse f₂ h x : M₁) = x - f₂ (f₁ x) :=
+  rfl
+
+@[simp]
+theorem projKerOfRightInverse_apply_idem [IsTopologicalAddGroup M₁] (f₁ : M₁ →SL[σ₁₂] M₂)
+    (f₂ : M₂ →SL[σ₂₁] M₁) (h : Function.RightInverse f₂ f₁) (x : f₁.ker) :
+    f₁.projKerOfRightInverse f₂ h x = x := by
+  ext1
+  simp
+
+@[simp]
+theorem projKerOfRightInverse_comp_inv [IsTopologicalAddGroup M₁] (f₁ : M₁ →SL[σ₁₂] M₂)
+    (f₂ : M₂ →SL[σ₂₁] M₁) (h : Function.RightInverse f₂ f₁) (y : M₂) :
+    f₁.projKerOfRightInverse f₂ h (f₂ y) = 0 :=
+  Subtype.ext_iff.2 <| by simp [h y]
+
+end
 
 @[grind =]
 theorem isIdempotentElem_toLinearMap_iff {R M : Type*} [Semiring R] [TopologicalSpace M]
