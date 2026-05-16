@@ -6457,6 +6457,7 @@ public import Mathlib.RingTheory.Flat.FaithfullyFlat.Basic
 public import Mathlib.RingTheory.Flat.FaithfullyFlat.Descent
 public import Mathlib.RingTheory.Flat.IsBaseChange
 public import Mathlib.RingTheory.Flat.Localization
+public import Mathlib.RingTheory.Flat.LocallyFree
 public import Mathlib.RingTheory.Flat.Rank
 public import Mathlib.RingTheory.Flat.Stability
 public import Mathlib.RingTheory.Flat.Tensor
