@@ -262,7 +262,7 @@ def firstReturn : ℕ :=
 include h in
 lemma firstReturn_pos : 0 < p.firstReturn := by
   rw [← not_le, Nat.le_zero, firstReturn, findIdx_eq, getElem_range]
-  · simp only [not_lt_zero', IsEmpty.forall_iff]
+  · simp only [not_lt_zero, IsEmpty.forall_iff]
     rw [← p.cons_tail_dropLast_concat h]
     simp
   · rw [length_range, length_pos_iff]

@@ -192,7 +192,7 @@ theorem resultant_zero_zero : resultant (0 : R[X]) 0 m n = 0 ^ (m + n) := by sim
 private lemma resultant_add_mul_monomial_right (hk : k + m ≤ n) (hf : f.natDegree ≤ m) :
     resultant f (g + f * monomial k r) m n = resultant f g m n := by
   obtain rfl | hm := eq_or_ne m 0
-  · obtain ⟨q, rfl⟩ := natDegree_eq_zero.mp (le_zero_iff.mp hf); simp
+  · obtain ⟨q, rfl⟩ := natDegree_eq_zero.mp hf.eq_zero; simp
   let M₁ := f.sylvester (g + f * monomial k r) m n
   let M₂ := f.sylvester g m n
   let M (i : ℕ) : Matrix (Fin (m + n)) (Fin (m + n)) R :=

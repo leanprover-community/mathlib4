@@ -266,7 +266,7 @@ def prod (J : Ideal A) : SubDPIdeal hI where
     induction hx using Submodule.smul_induction_on' generalizing m with
     | smul a ha b hb =>
       rw [smul_eq_mul, smul_eq_mul, mul_comm a b, hI.dpow_mul ha, mul_comm]
-      exact Submodule.mul_mem_mul (J.pow_mem_of_mem hb m (zero_lt_iff.mpr hm))
+      exact Submodule.mul_mem_mul (J.pow_mem_of_mem hb m hm.pos)
         (hI.dpow_mem hm ha)
     | add x hx y hy hx' hy' =>
       rw [hI.dpow_add' (mul_le_right hx) (mul_le_right hy)]

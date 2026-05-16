@@ -197,8 +197,8 @@ protected theorem subsingleton {α β} [EMetricSpace α] [PseudoEMetricSpace β]
 /-- If `f : α → β` is `K`-antilipschitz and `α` is nontrivial, `K` is positive. -/
 protected theorem pos {α} [EMetricSpace α] [Nontrivial α] {f : α → β}
     (hf : AntilipschitzWith K f) : 0 < K := by
-  by_contra! h₀
-  obtain rfl : K = 0 := by rwa [le_zero_iff] at h₀
+  rw [pos_iff_ne_zero]
+  rintro rfl
   exact not_subsingleton α hf.subsingleton
 
 end AntilipschitzWith

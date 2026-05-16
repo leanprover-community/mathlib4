@@ -101,13 +101,13 @@ lemma ruzsaSzemerediNumberNat_le : ruzsaSzemerediNumberNat n ≤ n.choose 3 :=
   ruzsaSzemerediNumber_le.trans_eq <| by rw [Fintype.card_fin]
 
 @[simp] lemma ruzsaSzemerediNumberNat_zero : ruzsaSzemerediNumberNat 0 = 0 :=
-  le_zero_iff.1 ruzsaSzemerediNumberNat_le
+  ruzsaSzemerediNumberNat_le.eq_zero
 
 @[simp] lemma ruzsaSzemerediNumberNat_one : ruzsaSzemerediNumberNat 1 = 0 :=
-  le_zero_iff.1 ruzsaSzemerediNumberNat_le
+  ruzsaSzemerediNumberNat_le.eq_zero
 
 @[simp] lemma ruzsaSzemerediNumberNat_two : ruzsaSzemerediNumberNat 2 = 0 :=
-  le_zero_iff.1 ruzsaSzemerediNumberNat_le
+  ruzsaSzemerediNumberNat_le.eq_zero
 
 end ruzsaSzemerediNumber
 

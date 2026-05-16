@@ -31,11 +31,11 @@ variable (v : Valuation R Γ₀)
 /-- The ring of integers under a given valuation is the subring of elements with valuation ≤ 1. -/
 def integer : Subring R where
   carrier := { x | v x ≤ 1 }
-  one_mem' := le_of_eq v.map_one
-  mul_mem' {x y} hx hy := by simp only [Set.mem_setOf_eq, map_mul, mul_le_one' hx hy]
-  zero_mem' := by simp only [Set.mem_setOf_eq, map_zero, zero_le']
-  add_mem' {x y} hx hy := le_trans (v.map_add x y) (max_le hx hy)
-  neg_mem' {x} hx := by simp only [Set.mem_setOf_eq] at hx; simpa only [Set.mem_setOf_eq, map_neg]
+  one_mem' := v.map_one.le
+  mul_mem' {x y} := by simpa using mul_le_one'
+  zero_mem' := by simp
+  add_mem' {x y} hx hy := (v.map_add x y).trans (max_le hx hy)
+  neg_mem' := by simp_all
 
 lemma mem_integer_iff (r : R) : r ∈ v.integer ↔ v r ≤ 1 := by rfl
 
@@ -127,18 +127,14 @@ variable {v : Valuation F Γ₀} {O : Type w} [CommRing O] [Algebra O F]
 namespace Integers
 
 theorem dvd_of_le (hv : Integers v O) {x y : O}
-    (h : v (algebraMap O F x) ≤ v (algebraMap O F y)) : y ∣ x :=
-  by_cases
-    (fun hy : algebraMap O F y = 0 =>
-      have hx : x = 0 :=
-        hv.1 <|
-          (algebraMap O F).map_zero.symm ▸ (v.zero_iff.1 <| le_zero_iff.1 (v.map_zero ▸ hy ▸ h))
-      hx.symm ▸ dvd_zero y)
-    fun hy : algebraMap O F y ≠ 0 =>
-    have : v ((algebraMap O F y)⁻¹ * algebraMap O F x) ≤ 1 := by
+    (h : v (algebraMap O F x) ≤ v (algebraMap O F y)) : y ∣ x := by
+  by_cases hy : algebraMap O F y = 0
+  · simp_all [map_eq_zero_iff _ hv.1]
+  · have : v ((algebraMap O F y)⁻¹ * algebraMap O F x) ≤ 1 := by
       grw [← v.map_one, ← inv_mul_cancel₀ hy, v.map_mul, v.map_mul, h]
     let ⟨z, hz⟩ := hv.3 this
-    ⟨z, hv.1 <| ((algebraMap O F).map_mul y z).symm ▸ hz.symm ▸ (mul_inv_cancel_left₀ hy _).symm⟩
+    use z
+    rw [← hv.1.eq_iff, map_mul, hz, mul_inv_cancel_left₀ hy]
 
 theorem dvd_iff_le (hv : Integers v O) {x y : O} :
     x ∣ y ↔ v (algebraMap O F y) ≤ v (algebraMap O F x) :=
@@ -432,7 +428,7 @@ lemma leIdeal_v_le_of_mem {K : Type*} [Field K] (v : Valuation K Γ₀)
   rcases eq_or_ne x 0 with rfl | hx0
   · simp
   intro y hy
-  have : v ((y : K) / x) ≤ 1 := by simpa using div_le_one_of_le₀ hy zero_le'
+  have : v ((y : K) / x) ≤ 1 := by simpa using div_le_one_of_le₀ hy zero_le
   convert I.smul_mem ⟨_, this⟩ hx using 1
   simp [Subtype.ext_iff, div_mul_cancel₀ _ (ZeroMemClass.coe_eq_zero.not.mpr hx0)]
 

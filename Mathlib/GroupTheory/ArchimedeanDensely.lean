@@ -429,29 +429,15 @@ lemma LinearOrderedCommGroupWithZero.wellFoundedOn_setOf_ge_gt_iff_nonempty_disc
   have hg' : g⁻¹ ≠ 0 := by simp [hg]
   rw [← wellFoundedOn_setOf_le_lt_iff_nonempty_discrete_of_ne_zero hg',
     ← Set.wellFoundedOn_sdiff_singleton (a := 0)]
-  refine ⟨fun h ↦ (h.mapsTo (·⁻¹) ?_).mono' ?_, fun h ↦ (h.mapsTo (·⁻¹) ?_).mono' ?_⟩
-  · intro x
-    rcases eq_or_ne x 0 with rfl | hx
-    · simp [hg]
-    simp only [mem_setOf_eq, mem_diff, mem_singleton_iff, inv_eq_zero, hx, not_false_eq_true,
-      and_true]
-    refine (inv_le_comm₀ ?_ ?_).mp <;>
-    simp [zero_lt_iff, hg, hx]
-  · simp only [mem_setOf_eq, Function.onFun, gt_iff_lt]
-    intro a ha b _
-    refine inv_strictAnti₀ ?_
-    contrapose! ha
-    simp only [le_zero_iff] at ha
-    simp [zero_lt_iff, ha, hg]
-  · intro x
-    simp only [mem_diff, mem_setOf_eq, mem_singleton_iff, and_imp]
-    intro hxg hx
-    refine inv_anti₀ ?_ hxg
-    simp [zero_lt_iff, hx]
-  · simp only [mem_diff, mem_setOf_eq, mem_singleton_iff, gt_iff_lt, Function.onFun, and_imp]
-    intro a _ _ b _ hb0
-    refine inv_strictAnti₀ ?_
-    simp [zero_lt_iff, hb0]
+  refine ⟨fun h ↦ (h.mapsTo (·⁻¹) fun x ↦ ?_).mono' ?_, fun h ↦ (h.mapsTo (·⁻¹) ?_).mono' ?_⟩
+  · rcases eq_or_ne x 0 with rfl | hx
+    · simpa
+    · simpa [hx] using (inv_le_comm₀ hg.pos hx.pos).mp
+  · exact fun a ha b _ ↦ inv_strictAnti₀ <| hg'.pos.trans_le ha
+  · simp_rw [MapsTo, mem_diff, and_imp, notMem_singleton_iff]
+    exact fun x hxg hx ↦ inv_anti₀ hx.pos hxg
+  · simp_rw [mem_diff, and_imp, notMem_singleton_iff]
+    exact fun a _ _ b _ hb0 ↦ inv_strictAnti₀ hb0.pos
 
 instance instWellFoundedGTWithZeroMultiplicativeIntLeOne :
     WellFoundedGT { v : ℤᵐ⁰ // v ≤ 1 } :=

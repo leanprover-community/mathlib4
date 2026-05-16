@@ -166,7 +166,7 @@ theorem eq_one_of_roots_le {p : F[X]} {f : F →+* K} {B : ℝ} (hB : B < 0) (h1
   h1.natDegree_eq_zero.mp (by
     contrapose! hB
     rw [← h1.natDegree_map f, Splits.natDegree_eq_card_roots h2] at hB
-    obtain ⟨z, hz⟩ := card_pos_iff_exists_mem.mp (zero_lt_iff.mpr hB)
+    obtain ⟨z, hz⟩ := card_pos_iff_exists_mem.mp hB.pos
     exact le_trans (norm_nonneg _) (h3 z hz))
 
 theorem coeff_le_of_roots_le {p : F[X]} {f : F →+* K} {B : ℝ} (i : ℕ) (h1 : p.Monic)

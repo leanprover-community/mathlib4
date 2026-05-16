@@ -76,7 +76,7 @@ theorem Valuation.inversion_estimate {x y : K} {γ : Γ₀ˣ} (y_ne : y ≠ 0)
 
 theorem Valuation.inversion_estimate' {x y r s : K} (y_ne : y ≠ 0) (hr : r ≠ 0) (hs : s ≠ 0)
     (h : v (x - y) < min ((v s / v r) * (v y * v y)) (v y)) : v (x⁻¹ - y⁻¹) * v r < v s := by
-  have hr' : 0 < v r := by simp [zero_lt_iff, hr]
+  have hr' : 0 < v r := by simpa [pos_iff_ne_zero]
   let γ : Γ₀ˣ := .mk0 (v s / v r) (by simp [hs, hr])
   calc
     v (x⁻¹ - y⁻¹) * v r < γ * v r := by gcongr; exact Valuation.inversion_estimate v y_ne h
@@ -417,7 +417,7 @@ theorem closure_coe_completion_v_mul_v_lt {r s : K} (hr : r ≠ 0) (hs : s ≠ 0
     { x : hat K | extensionValuation x * v r < v s } := by
   have hrs : v s / v r ≠ 0 := by simp [hr, hs]
   convert closure_coe_completion_v_lt (γ := .mk0 _ hrs) using 3
-  all_goals simp [← lt_div_iff₀, zero_lt_iff, hr]
+  all_goals simp [← lt_div_iff₀, pos_iff_ne_zero, hr]
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The zero-preserving monoid homomorphism from the `ValueGroup₀` of the valuation on `K` to

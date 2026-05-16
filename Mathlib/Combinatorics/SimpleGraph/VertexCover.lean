@@ -116,7 +116,7 @@ theorem exists_of_le_vertexCoverNum (n : ℕ) (h₁ : vertexCoverNum G ≤ n)
 
 @[simp]
 theorem vertexCoverNum_bot : vertexCoverNum (emptyGraph V) = 0 :=
-  nonpos_iff_eq_zero.mp <| Set.encard_empty ▸ @IsVertexCover.vertexCoverNum_le V ⊥ ∅ (by simp)
+  (Set.encard_empty ▸ @IsVertexCover.vertexCoverNum_le V ⊥ ∅ (by simp)).eq_zero
 
 @[simp]
 theorem vertexCoverNum_of_subsingleton [Subsingleton V] : vertexCoverNum G = 0 := by

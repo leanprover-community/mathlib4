@@ -72,10 +72,7 @@ alias ⟨Shortlex.of_cons, Shortlex.cons⟩ := shortlex_cons_iff
 
 @[simp]
 theorem not_shortlex_nil_right {s : List α} : ¬ Shortlex r s [] := by
-  rw [shortlex_def]
-  rintro (h1 | h2)
-  · simp only [List.length_nil, not_lt_zero'] at h1
-  · exact List.not_lex_nil h2.2
+  simp [shortlex_def]
 
 theorem shortlex_nil_or_eq_nil : ∀ s : List α, Shortlex r [] s ∨ s = []
   | [] => .inr rfl
@@ -83,8 +80,7 @@ theorem shortlex_nil_or_eq_nil : ∀ s : List α, Shortlex r [] s ∨ s = []
 
 @[simp]
 theorem shortlex_singleton_iff (a b : α) : Shortlex r [a] [b] ↔ r a b := by
-  simp only [shortlex_def, length_singleton, lt_self_iff_false, lex_singleton_iff, true_and,
-    false_or]
+  simp [shortlex_def]
 
 namespace Shortlex
 

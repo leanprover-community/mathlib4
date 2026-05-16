@@ -182,7 +182,7 @@ instance : IsOrderedMonoid ℝ≥0∞ where
 
 instance : Unique (AddUnits ℝ≥0∞) where
   default := 0
-  uniq a := AddUnits.ext <| nonpos_iff_eq_zero.1 <| by rw [← a.add_neg]; exact le_self_add
+  uniq a := AddUnits.ext <| eq_zero_of_nonpos <| by rw [← a.add_neg]; exact le_self_add
 
 instance : Inhabited ℝ≥0∞ := ⟨0⟩
 

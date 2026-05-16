@@ -335,7 +335,7 @@ lemma bddAbove_setOf_k_lt_card : BddAbove {m | ∀ hf : {i | a i = m}.Finite, k 
 
 lemma k_pos : 0 < k a := by
   by_contra! hn
-  apply nonpos_iff_eq_zero.mp hn ▸ hc.infinite_setOf_apply_eq_k
+  apply hn.eq_zero ▸ hc.infinite_setOf_apply_eq_k
   convert Set.finite_empty
   ext i
   simp [(hc.pos i).ne']
@@ -625,8 +625,9 @@ lemma apply_add_one_eq_card_small_le_card_eq {i : ℕ} (hi : N' a N < i) (hib : 
     · subst ht
       rw [Nat.lt_add_one_iff, ← Small] at hts
       have ht0 : 0 < t := by
-        by_contra! h0
-        simp [nonpos_iff_eq_zero.mp h0, hc.apply_ne_zero] at htr
+        rw [pos_iff_ne_zero]
+        rintro rfl
+        simp [hc.apply_ne_zero] at htr
       rw [← hc.infinite_setOf_apply_eq_iff_small ht0] at hts
       rw [← Nat.count_eq_card_filter_range] at htr
       constructor

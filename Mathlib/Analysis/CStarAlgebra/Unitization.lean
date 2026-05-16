@@ -67,7 +67,7 @@ instance CStarRing.instRegularNormedAlgebra : RegularNormedAlgebra 𝕜 E where
       exact
         ((mul 𝕜 E a).unit_le_opNorm x <| mem_closedBall_zero_iff.mp hx).trans
           (opNorm_mul_apply_le 𝕜 E a)
-    · have ha : 0 < ‖a‖₊ := zero_le'.trans_lt hr
+    · have ha := hr.pos
       rw [← inv_inv ‖a‖₊, NNReal.lt_inv_iff_mul_lt (inv_ne_zero ha.ne')] at hr
       obtain ⟨k, hk₁, hk₂⟩ :=
         NormedField.exists_lt_nnnorm_lt 𝕜 (mul_lt_mul_of_pos_right hr <| inv_pos.2 ha)

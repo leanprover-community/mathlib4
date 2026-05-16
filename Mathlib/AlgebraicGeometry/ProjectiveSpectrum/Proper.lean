@@ -212,8 +212,8 @@ theorem valuativeCriterion_existence_aux
   have ⟨i₀, hi1⟩ : ∃ a, ψ a = Kmax := by simpa using Finset.max'_mem (Finset.univ.image ψ)
   have hi₀ (j) : ψ j ≤ ψ i₀ := hi1 ▸ (Finset.univ.image ψ).le_max' (ψ j) (by simp)
   have hKmax : 0 < Kmax := by
-    refine zero_lt_iff.mpr fun hKmax ↦ ?_
-    have (i : _) : ψ i = 0 := le_zero_iff.mp (hKmax ▸ Finset.le_max' _ _ (by simp))
+    refine pos_of_ne_zero fun hKmax ↦ ?_
+    have (i : _) : ψ i = 0 := eq_zero_of_nonpos (hKmax ▸ Finset.le_max' _ _ (by simp))
     simp only [ψ, map_pow, pow_eq_zero_iff', map_eq_zero, ne_eq] at this
     have : φ 1 = 0 := by convert (this j).1; ext; simp
     simp only [map_one, one_ne_zero] at this
@@ -265,7 +265,7 @@ theorem valuativeCriterion_existence_aux
       · cases (hdi j).ne' h
       · rw [Nat.add_sub_cancel]; ring
     rw [map_div₀, div_le_iff₀ ((pow_pos ((Valuation.pos_iff _).mpr hunit.ne_zero) _).trans_eq
-      (Valuation.map_pow _ _ _).symm), one_mul, ← pow_le_pow_iff_left₀ zero_le' zero_le'
+      (Valuation.map_pow _ _ _).symm), one_mul, ← pow_le_pow_iff_left₀ zero_le zero_le
         (mul_pos (hdi j) (Finset.prod_pos fun i _ => hdi i)).ne.symm]
     calc
       _ = (∏ i, ψ i ^ (d i * ai i)) * ψ i₀ ^ (d i₀ * a * (d j - 1)) := by
@@ -293,7 +293,7 @@ theorem valuativeCriterion_existence_aux
           · ext i; congr 1; ring
           · ring
       _ ≤ (∏ i : ι, ψ i₀ ^ (d i * ai i)) * ψ i₀ ^ (d i₀ * a * (d j - 1)) := by
-          gcongr with i; exacts [fun i _ ↦ zero_le', zero_le', hi₀ i]
+          gcongr with i; exacts [fun i _ ↦ zero_le, zero_le, hi₀ i]
       _ = ψ i₀ ^ (d i₀ * a * d j) := by
           rw [Finset.prod_pow_eq_pow_sum, ← pow_add]
           simp_rw [mul_comm (d _) (ai _), hai]

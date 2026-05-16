@@ -223,7 +223,7 @@ theorem le_map_apply_image {f : α → β} (hf : AEMeasurable f μ) (s : Set α)
 /-- Even if `s` is not measurable, `map f μ s = 0` implies that `μ (f ⁻¹' s) = 0`. -/
 theorem preimage_null_of_map_null {f : α → β} (hf : AEMeasurable f μ) {s : Set β}
     (hs : μ.map f s = 0) : μ (f ⁻¹' s) = 0 :=
-  nonpos_iff_eq_zero.mp <| (le_map_apply hf s).trans_eq hs
+  ((le_map_apply hf s).trans_eq hs).eq_zero
 
 theorem tendsto_ae_map {f : α → β} (hf : AEMeasurable f μ) : Tendsto f (ae μ) (ae (μ.map f)) :=
   fun _ hs => preimage_null_of_map_null hf hs

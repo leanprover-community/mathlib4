@@ -120,7 +120,7 @@ lemma NNReal.nndist_eq (a b : ℝ≥0) : nndist a b = max (a - b) (b - a) :=
 
 @[simp]
 lemma NNReal.nndist_zero_eq_val (z : ℝ≥0) : nndist 0 z = z := by
-  simp only [NNReal.nndist_eq, max_eq_right, tsub_zero, zero_tsub, zero_le']
+  simp [NNReal.nndist_eq]
 
 @[simp]
 lemma NNReal.nndist_zero_eq_val' (z : ℝ≥0) : nndist z 0 = z := by

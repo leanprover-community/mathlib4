@@ -278,10 +278,10 @@ def toNontriviallyNormedField : NontriviallyNormedField L := {
     obtain ⟨x, hx⟩ := Valuation.RankOne.nontrivial val.v
     rcases Valuation.val_le_one_or_val_inv_le_one val.v x with h | h
     · use x⁻¹
-      simp only [toNormedField.one_lt_norm_iff, map_inv₀, one_lt_inv₀ (zero_lt_iff.mpr hx.1),
-          lt_of_le_of_ne h hx.2]
+      simp only [toNormedField.one_lt_norm_iff, map_inv₀, one_lt_inv₀ hx.1.pos,
+        lt_of_le_of_ne h hx.2]
     · use x
-      simp only [map_inv₀, inv_le_one₀ <| zero_lt_iff.mpr hx.1] at h
+      simp only [map_inv₀, inv_le_one₀ hx.1.pos] at h
       simp only [toNormedField.one_lt_norm_iff, lt_of_le_of_ne h hx.2.symm]
 }
 

@@ -50,7 +50,7 @@ scoped instance (priority := 100) topologicalSpace : TopologicalSpace Γ₀ :=
 
 theorem nhds_eq_update : (𝓝 : Γ₀ → Filter Γ₀) = update pure 0 (⨅ γ ≠ 0, 𝓟 (Iio γ)) := by
   rw [nhds_nhdsAdjoint, sup_of_le_right]
-  exact le_iInf₂ fun γ hγ ↦ le_principal_iff.2 <| zero_lt_iff.2 hγ
+  exact le_iInf₂ fun γ hγ ↦ le_principal_iff.2 hγ.pos
 
 /-!
 ### Neighbourhoods of zero
@@ -145,7 +145,7 @@ scoped instance (priority := 100) orderClosedTopology : OrderClosedTopology Γ�
   isClosed_le' := by
     simp only [← isOpen_compl_iff, compl_setOf, not_le, isOpen_iff_mem_nhds]
     rintro ⟨a, b⟩ (hab : b < a)
-    rw [nhds_prod_eq, nhds_of_ne_zero (zero_le'.trans_lt hab).ne', pure_prod]
+    rw [nhds_prod_eq, nhds_of_ne_zero hab.ne_zero, pure_prod]
     exact Iio_mem_nhds hab
 
 /-- The topology on a linearly ordered group with zero element adjoined is T₅. -/
@@ -172,14 +172,14 @@ scoped instance (priority := 100) : ContinuousMul Γ₀ where
       refine ((hasBasis_nhds_zero.prod_nhds hasBasis_nhds_zero).tendsto_iff hasBasis_nhds_zero).2
         fun γ hγ => ⟨(γ, 1), ⟨hγ, one_ne_zero⟩, ?_⟩
       rintro ⟨x, y⟩ ⟨hx : x < γ, hy : y < 1⟩
-      exact (mul_lt_mul'' hx hy zero_le' zero_le').trans_eq (mul_one γ)
+      exact (mul_lt_mul'' hx hy zero_le zero_le).trans_eq (mul_one γ)
     · rw [zero_mul, nhds_prod_eq, nhds_of_ne_zero hy, prod_pure, tendsto_map'_iff]
       refine (hasBasis_nhds_zero.tendsto_iff hasBasis_nhds_zero).2 fun γ hγ => ?_
       refine ⟨γ / y, div_ne_zero hγ hy, fun x hx => ?_⟩
-      calc x * y < γ / y * y := mul_lt_mul_of_pos_right hx (zero_lt_iff.2 hy)
+      calc x * y < γ / y * y := mul_lt_mul_of_pos_right hx hy.pos
       _ = γ := div_mul_cancel₀ _ hy
-    · have hy : y ≠ 0 := ((zero_lt_iff.mpr hx).trans_le hle).ne'
-      rw [nhds_prod_eq, nhds_of_ne_zero hx, nhds_of_ne_zero hy, prod_pure_pure]
+    · rw [nhds_prod_eq, nhds_of_ne_zero hx, nhds_of_ne_zero (hx.pos.trans_le hle).ne',
+        prod_pure_pure]
       exact pure_le_nhds (x * y)
 
 @[nolint defLemma]
