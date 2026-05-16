@@ -58,7 +58,7 @@ theorem prime_ideal_of_disjoint_filter_ideal (hFI : Disjoint (F : Set α) (I : S
     intro c hcS hcC hcNe
     use sUnion c
     refine ⟨?_, fun s hs ↦ le_sSup hs⟩
-    simp only [le_eq_subset, mem_setOf_eq, disjoint_sUnion_right, S]
+    simp only [mem_setOf_eq, disjoint_sUnion_right, S]
     let ⟨J, hJ⟩ := hcNe
     refine ⟨Order.isIdeal_sUnion_of_isChain (fun _ hJ ↦ (hcS hJ).1) hcC hcNe,
             ⟨le_trans (hcS hJ).2.1 (le_sSup hJ), fun J hJ ↦ (hcS hJ).2.2⟩⟩
@@ -93,12 +93,12 @@ theorem prime_ideal_of_disjoint_filter_ideal (hFI : Disjoint (F : Set α) (I : S
   have J₁F : ¬ (Disjoint (F : Set α) J₁) := by
     intro hdis
     apply J₁S
-    simp only [le_eq_subset, mem_setOf_eq, SetLike.coe_subset_coe, S]
+    simp only [mem_setOf_eq, SetLike.coe_subset_coe, S]
     exact ⟨J₁.isIdeal, le_trans IJ' le_sup_left, hdis⟩
   have J₂F : ¬ (Disjoint (F : Set α) J₂) := by
     intro hdis
     apply J₂S
-    simp only [le_eq_subset, mem_setOf_eq, SetLike.coe_subset_coe, S]
+    simp only [mem_setOf_eq, SetLike.coe_subset_coe, S]
     exact ⟨J₂.isIdeal, le_trans IJ' le_sup_left, hdis⟩
   -- Thus, pick cᵢ ∈ F ∩ Jᵢ.
   let ⟨c₁, ⟨c₁F, c₁J₁⟩⟩ := Set.not_disjoint_iff.1 J₁F

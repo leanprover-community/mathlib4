@@ -12,7 +12,7 @@ public import Mathlib.Data.Set.CoeSort
 
 -/
 
-@[expose] public section
+public meta section
 
 namespace Lean.Expr
 

@@ -79,7 +79,7 @@ lemma ball_eq_of_mem {x y : X} {r : ℝ} (h : y ∈ ball x r) : ball x r = ball 
 lemma ball_subset_trichotomy :
     ball x r ⊆ ball y s ∨ ball y s ⊆ ball x r ∨ Disjoint (ball x r) (ball y s) := by
   wlog! hrs : r ≤ s generalizing x y r s
-  · rw [disjoint_comm, ← or_assoc, or_comm (b := _ ⊆ _), or_assoc]
+  · rw [disjoint_comm, ← or_assoc, or_comm (b := _ ≤ _), or_assoc]
     exact this y x s r hrs.le
   · refine Set.disjoint_or_nonempty_inter (ball x r) (ball y s) |>.symm.imp (fun h ↦ ?_) (Or.inr ·)
     obtain ⟨hxz, hyz⟩ := (Set.mem_inter_iff _ _ _).mp h.some_mem
@@ -104,7 +104,7 @@ lemma closedBall_subset_trichotomy :
     closedBall x r ⊆ closedBall y s ∨ closedBall y s ⊆ closedBall x r ∨
     Disjoint (closedBall x r) (closedBall y s) := by
   wlog! hrs : r ≤ s generalizing x y r s
-  · rw [disjoint_comm, ← or_assoc, or_comm (b := _ ⊆ _), or_assoc]
+  · rw [disjoint_comm, ← or_assoc, or_comm (b := _ ≤ _), or_assoc]
     exact this y x s r hrs.le
   · refine Set.disjoint_or_nonempty_inter (closedBall x r) (closedBall y s) |>.symm.imp
       (fun h ↦ ?_) (Or.inr ·)
@@ -126,7 +126,7 @@ lemma isClosed_ball (x : X) (r : ℝ) : IsClosed (ball x r) := by
       simp [h.not_ge] at hy
     | inr hd =>
       use r
-      simp [h, ← Set.le_iff_subset, le_compl_iff_disjoint_left, hd]
+      simp [h, le_compl_iff_disjoint_left, hd]
 
 lemma isClopen_ball : IsClopen (ball x r) := ⟨isClosed_ball x r, isOpen_ball⟩
 

@@ -340,7 +340,8 @@ lemma IsBasis.exists_finite_of_isCompact {B : Set (Opens α)} (hB : IsBasis B) {
   obtain ⟨Us', hsub, hsup⟩ := isBasis_iff_cover.mp hB U
   obtain ⟨t, ht⟩ := hU.elim_finite_subcover (fun s : Us' ↦ s.1) (fun s ↦ s.1.2) (by simp [hsup])
   refine ⟨Finset.image Subtype.val t, subset_trans (by simp) hsub, Finset.finite_toSet _, ?_⟩
-  exact le_antisymm (subset_trans ht (by simp)) (le_trans (sSup_le_sSup (by simp)) hsup.ge)
+  exact le_antisymm (subset_trans (a := U.carrier) ht (by simp))
+    (le_trans (sSup_le_sSup (by simp)) hsup.ge)
 
 lemma IsBasis.le_iff {α} {t₁ t₂ : TopologicalSpace α}
     {Us : Set (Opens α)} (hUs : @IsBasis α t₂ Us) :

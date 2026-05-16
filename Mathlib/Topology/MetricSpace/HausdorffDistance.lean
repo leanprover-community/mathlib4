@@ -363,7 +363,7 @@ theorem hausdorffEDist_triangle : hausdorffEDist s u ≤ hausdorffEDist s t + ha
 theorem hausdorffEDist_zero_iff_closure_eq_closure :
     hausdorffEDist s t = 0 ↔ closure s = closure t := by
   simp [hausdorffEDist_def, ← subset_def, ← mem_closure_iff_infEDist_zero,
-    subset_antisymm_iff, isClosed_closure.closure_subset_iff]
+    subset_antisymm_iff (a := closure s), isClosed_closure.closure_subset_iff]
 
 /-- The Hausdorff edistance between a set and its closure vanishes. -/
 @[simp]

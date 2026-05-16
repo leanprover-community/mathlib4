@@ -321,7 +321,7 @@ theorem matroid_isBasis_iff_of_subsingleton [Subsingleton A] {s t : Set A} :
     (matroid R A).IsBasis s t ↔ s = t := by
   have := (FaithfulSMul.algebraMap_injective R A).subsingleton
   simp_rw [Matroid.IsBasis, matroid_indep_iff, of_subsingleton, true_and,
-    matroid_e, subset_univ, and_true, ← le_iff_subset, maximal_le_iff]
+    matroid_e, subset_univ, and_true, maximal_le_iff]
 
 theorem isAlgebraic_adjoin_iff_of_matroid_isBasis [NoZeroDivisors A] {s t : Set A} {a : A}
     (h : (matroid R A).IsBasis s t) : IsAlgebraic (adjoin R s) a ↔ IsAlgebraic (adjoin R t) a := by
@@ -405,7 +405,7 @@ theorem exists_isTranscendenceBasis_subset [NoZeroDivisors A] [FaithfulSMul R A]
 theorem isAlgebraic_iff_exists_isTranscendenceBasis_subset
     [IsDomain A] [FaithfulSMul R A] {s : Set A} :
     Algebra.IsAlgebraic (adjoin R s) A ↔ ∃ t, t ⊆ s ∧ IsTranscendenceBasis R ((↑) : t → A) := by
-  simp_rw [← matroid_spanning_iff, ← matroid_isBase_iff, and_comm (a := _ ⊆ _)]
+  simp_rw [← matroid_spanning_iff, ← matroid_isBase_iff, and_comm (a := _ ⊆ s)]
   exact Matroid.spanning_iff_exists_isBase_subset (subset_univ _)
 
 open Cardinal AlgebraicIndependent

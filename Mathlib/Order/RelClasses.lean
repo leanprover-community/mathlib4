@@ -466,31 +466,18 @@ instance {s : α → α → Prop} [IsNonstrictStrictOrder α r s] : Std.Irrefl s
 /-! #### `⊆` and `⊂` -/
 
 section Subset
-variable [HasSubset α] {a b c : α}
 
-lemma subset_of_eq_of_subset (hab : a = b) (hbc : b ⊆ c) : a ⊆ c := by rwa [hab]
-
-lemma subset_of_subset_of_eq (hab : a ⊆ b) (hbc : b = c) : a ⊆ c := by rwa [← hbc]
-
-@[refl, simp]
-lemma subset_refl [@Std.Refl α (· ⊆ ·)] (a : α) : a ⊆ a := refl _
-
-lemma subset_rfl [@Std.Refl α (· ⊆ ·)] : a ⊆ a := refl _
-
-lemma subset_of_eq [@Std.Refl α (· ⊆ ·)] : a = b → a ⊆ b := fun h => h ▸ subset_rfl
-
-lemma superset_of_eq [@Std.Refl α (· ⊆ ·)] : a = b → b ⊆ a := fun h => h ▸ subset_rfl
-
-lemma ne_of_not_subset [@Std.Refl α (· ⊆ ·)] : ¬a ⊆ b → a ≠ b := mt subset_of_eq
-
-lemma ne_of_not_superset [@Std.Refl α (· ⊆ ·)] : ¬a ⊆ b → b ≠ a := mt superset_of_eq
-
-@[trans]
-lemma subset_trans [IsTrans α (· ⊆ ·)] {a b c : α} : a ⊆ b → b ⊆ c → a ⊆ c := _root_.trans
-
-lemma subset_antisymm [@Std.Antisymm α (· ⊆ ·)] : a ⊆ b → b ⊆ a → a = b := antisymm
-
-lemma superset_antisymm [@Std.Antisymm α (· ⊆ ·)] : a ⊆ b → b ⊆ a → b = a := antisymm'
+alias subset_of_eq_of_subset := le_of_eq_of_le
+alias subset_of_subset_of_eq := le_of_le_of_eq
+alias subset_refl := le_refl
+alias subset_rfl := le_rfl
+alias subset_of_eq := le_of_eq
+alias superset_of_eq := ge_of_eq
+alias ne_of_not_subset := ne_of_not_le
+alias ne_of_not_superset := ne_of_not_ge
+alias subset_trans := le_trans
+alias subset_antisymm := le_antisymm
+alias superset_antisymm := ge_antisymm
 
 alias Eq.trans_subset := subset_of_eq_of_subset
 
@@ -508,143 +495,104 @@ alias HasSubset.Subset.antisymm := subset_antisymm
 
 alias HasSubset.Subset.antisymm' := superset_antisymm
 
-theorem subset_antisymm_iff [@Std.Refl α (· ⊆ ·)] [@Std.Antisymm α (· ⊆ ·)] :
-    a = b ↔ a ⊆ b ∧ b ⊆ a :=
-  ⟨fun h => ⟨h.subset, h.superset⟩, fun h => h.1.antisymm h.2⟩
-
-theorem superset_antisymm_iff [@Std.Refl α (· ⊆ ·)] [@Std.Antisymm α (· ⊆ ·)] :
-    a = b ↔ b ⊆ a ∧ a ⊆ b :=
-  ⟨fun h => ⟨h.superset, h.subset⟩, fun h => h.1.antisymm' h.2⟩
+alias subset_antisymm_iff := le_antisymm_iff
+alias superset_antisymm_iff := ge_antisymm_iff
 
 end Subset
 
-section Ssubset
-variable [HasSSubset α] {a b c : α}
+section SSubset
 
-lemma ssubset_of_eq_of_ssubset (hab : a = b) (hbc : b ⊂ c) : a ⊂ c := by rwa [hab]
-
-lemma ssubset_of_ssubset_of_eq (hab : a ⊂ b) (hbc : b = c) : a ⊂ c := by rwa [← hbc]
-
-lemma ssubset_irrefl [@Std.Irrefl α (· ⊂ ·)] (a : α) : ¬a ⊂ a := irrefl _
-
-lemma ssubset_irrfl [@Std.Irrefl α (· ⊂ ·)] {a : α} : ¬a ⊂ a := irrefl _
-
-lemma ne_of_ssubset [@Std.Irrefl α (· ⊂ ·)] {a b : α} : a ⊂ b → a ≠ b := ne_of_irrefl
-
-lemma ne_of_ssuperset [@Std.Irrefl α (· ⊂ ·)] {a b : α} : a ⊂ b → b ≠ a := ne_of_irrefl'
-
-@[trans]
-lemma ssubset_trans [IsTrans α (· ⊂ ·)] {a b c : α} : a ⊂ b → b ⊂ c → a ⊂ c := _root_.trans
-
-lemma ssubset_asymm [Std.Asymm (α := α) (· ⊂ ·)] {a b : α} : a ⊂ b → ¬b ⊂ a := asymm
+alias ssubset_of_eq_of_ssubset := lt_of_eq_of_lt
+alias ssubset_of_ssubset_of_eq := lt_of_lt_of_eq
+alias ssubset_irrefl := lt_irrefl
+alias ne_of_ssubset := ne_of_lt
+alias ne_of_ssuperset := ne_of_gt
+alias ssubset_trans := lt_trans
+alias ssubset_asymm := lt_asymm
 
 alias Eq.trans_ssubset := ssubset_of_eq_of_ssubset
 
-alias HasSSubset.SSubset.trans_eq := ssubset_of_ssubset_of_eq
+end SSubset
 
-alias HasSSubset.SSubset.false := ssubset_irrfl
+section SubsetSSubset
 
-alias HasSSubset.SSubset.ne := ne_of_ssubset
+alias ssubset_iff_subset_not_subset := lt_iff_le_not_ge
+alias subset_of_ssubset := le_of_lt
+alias not_subset_of_ssubset := not_le_of_gt
+alias not_ssubset_of_subset := not_lt_of_ge
+alias ssubset_of_subset_not_subset := lt_of_le_not_ge
 
-alias HasSSubset.SSubset.ne' := ne_of_ssuperset
+alias LT.lt.subset := subset_of_ssubset
 
-alias HasSSubset.SSubset.trans := ssubset_trans
+alias LT.lt.not_subset := not_subset_of_ssubset
 
-alias HasSSubset.SSubset.asymm := ssubset_asymm
+alias LE.le.not_ssubset := not_ssubset_of_subset
 
-end Ssubset
+alias LE.le.ssubset_of_not_subset := ssubset_of_subset_not_subset
 
-section SubsetSsubset
+@[deprecated (since := "2026-03-17")]
+alias HasSSubset.SSubset.subset := LT.lt.subset
+@[deprecated (since := "2026-03-17")]
+alias HasSSubset.SSubset.not_subset := LT.lt.not_subset
+@[deprecated (since := "2026-03-17")]
+alias HasSubset.Subset.not_ssubset := LE.le.not_ssubset
+@[deprecated (since := "2026-03-17")]
+alias HasSubset.Subset.ssubset_of_not_subset := LE.le.ssubset_of_not_subset
 
-variable [HasSubset α] [HasSSubset α] [IsNonstrictStrictOrder α (· ⊆ ·) (· ⊂ ·)] {a b c : α}
 
-theorem ssubset_iff_subset_not_subset : a ⊂ b ↔ a ⊆ b ∧ ¬b ⊆ a :=
-  right_iff_left_not_left
 
-theorem subset_of_ssubset (h : a ⊂ b) : a ⊆ b :=
-  (ssubset_iff_subset_not_subset.1 h).1
+alias ssubset_of_subset_of_ssubset := lt_of_le_of_lt
 
-theorem not_subset_of_ssubset (h : a ⊂ b) : ¬b ⊆ a :=
-  (ssubset_iff_subset_not_subset.1 h).2
+alias ssubset_of_ssubset_of_subset := lt_of_lt_of_le
 
-theorem not_ssubset_of_subset (h : a ⊆ b) : ¬b ⊂ a := fun h' => not_subset_of_ssubset h' h
+alias ssubset_of_subset_of_ne := lt_of_le_of_ne
 
-theorem ssubset_of_subset_not_subset (h₁ : a ⊆ b) (h₂ : ¬b ⊆ a) : a ⊂ b :=
-  ssubset_iff_subset_not_subset.2 ⟨h₁, h₂⟩
+theorem ssubset_of_ne_of_subset [PartialOrder α] {a b : α} : a ≠ b → a ≤ b → a < b :=
+  flip ssubset_of_subset_of_ne
 
-alias HasSSubset.SSubset.subset := subset_of_ssubset
+alias eq_or_ssubset_of_subset := eq_or_lt_of_le
 
-alias HasSSubset.SSubset.not_subset := not_subset_of_ssubset
+alias ssubset_or_eq_of_subset := lt_or_eq_of_le
 
-alias HasSubset.Subset.not_ssubset := not_ssubset_of_subset
+alias eq_of_subset_of_not_ssubset := eq_of_le_of_not_lt
 
-alias HasSubset.Subset.ssubset_of_not_subset := ssubset_of_subset_not_subset
+alias eq_of_superset_of_not_ssuperset := eq_of_le_of_not_lt'
 
-theorem ssubset_of_subset_of_ssubset [IsTrans α (· ⊆ ·)] (h₁ : a ⊆ b) (h₂ : b ⊂ c) : a ⊂ c :=
-  (h₁.trans h₂.subset).ssubset_of_not_subset fun h => h₂.not_subset <| h.trans h₁
+alias LE.le.trans_ssubset := ssubset_of_subset_of_ssubset
 
-theorem ssubset_of_ssubset_of_subset [IsTrans α (· ⊆ ·)] (h₁ : a ⊂ b) (h₂ : b ⊆ c) : a ⊂ c :=
-  (h₁.subset.trans h₂).ssubset_of_not_subset fun h => h₁.not_subset <| h₂.trans h
+alias LT.lt.trans_subset := ssubset_of_ssubset_of_subset
 
-theorem ssubset_of_subset_of_ne [@Std.Antisymm α (· ⊆ ·)] (h₁ : a ⊆ b) (h₂ : a ≠ b) : a ⊂ b :=
-  h₁.ssubset_of_not_subset <| mt h₁.antisymm h₂
-
-theorem ssubset_of_ne_of_subset [@Std.Antisymm α (· ⊆ ·)] (h₁ : a ≠ b) (h₂ : a ⊆ b) : a ⊂ b :=
-  ssubset_of_subset_of_ne h₂ h₁
-
-theorem eq_or_ssubset_of_subset [@Std.Antisymm α (· ⊆ ·)] (h : a ⊆ b) : a = b ∨ a ⊂ b :=
-  (em (b ⊆ a)).imp h.antisymm h.ssubset_of_not_subset
-
-theorem ssubset_or_eq_of_subset [@Std.Antisymm α (· ⊆ ·)] (h : a ⊆ b) : a ⊂ b ∨ a = b :=
-  (eq_or_ssubset_of_subset h).symm
-
-lemma eq_of_subset_of_not_ssubset [@Std.Antisymm α (· ⊆ ·)] (hab : a ⊆ b) (hba : ¬ a ⊂ b) : a = b :=
-  (eq_or_ssubset_of_subset hab).resolve_right hba
-
-lemma eq_of_superset_of_not_ssuperset [@Std.Antisymm α (· ⊆ ·)] (hab : a ⊆ b) (hba : ¬ a ⊂ b) :
-    b = a := ((eq_or_ssubset_of_subset hab).resolve_right hba).symm
-
-alias HasSubset.Subset.trans_ssubset := ssubset_of_subset_of_ssubset
-
-alias HasSSubset.SSubset.trans_subset := ssubset_of_ssubset_of_subset
-
-alias HasSubset.Subset.ssubset_of_ne := ssubset_of_subset_of_ne
+alias LE.le.ssubset_of_ne := ssubset_of_subset_of_ne
 
 alias Ne.ssubset_of_subset := ssubset_of_ne_of_subset
 
-alias HasSubset.Subset.eq_or_ssubset := eq_or_ssubset_of_subset
+alias LE.le.eq_or_ssubset := eq_or_ssubset_of_subset
 
-alias HasSubset.Subset.ssubset_or_eq := ssubset_or_eq_of_subset
+alias LE.le.ssubset_or_eq := ssubset_or_eq_of_subset
 
-alias HasSubset.Subset.eq_of_not_ssubset := eq_of_subset_of_not_ssubset
-alias HasSubset.Subset.eq_of_not_ssuperset := eq_of_superset_of_not_ssuperset
+alias LE.le.eq_of_not_ssubset := eq_of_subset_of_not_ssubset
+alias LE.le.eq_of_not_ssuperset := eq_of_superset_of_not_ssuperset
 
-theorem ssubset_iff_subset_ne [@Std.Antisymm α (· ⊆ ·)] : a ⊂ b ↔ a ⊆ b ∧ a ≠ b :=
-  ⟨fun h => ⟨h.subset, h.ne⟩, fun h => h.1.ssubset_of_ne h.2⟩
+@[deprecated (since := "2026-03-17")]
+alias HasSubset.Subset.trans_ssubset := LE.le.trans_ssubset
+@[deprecated (since := "2026-03-17")]
+alias HasSSubset.SSubset.trans_subset := LT.lt.trans_subset
+@[deprecated (since := "2026-03-17")]
+alias HasSubset.Subset.ssubset_of_ne := LE.le.ssubset_of_ne
+@[deprecated (since := "2026-03-17")]
+alias HasSubset.Subset.eq_or_ssubset := LE.le.eq_or_ssubset
+@[deprecated (since := "2026-03-17")]
+alias HasSubset.Subset.ssubset_or_eq := LE.le.ssubset_or_eq
+@[deprecated (since := "2026-03-17")]
+alias HasSubset.Subset.eq_of_not_ssubset := LE.le.eq_of_not_ssubset
+@[deprecated (since := "2026-03-17")]
+alias HasSubset.Subset.eq_of_not_ssuperset := LE.le.eq_of_not_ssuperset
 
-theorem subset_iff_ssubset_or_eq [@Std.Refl α (· ⊆ ·)] [@Std.Antisymm α (· ⊆ ·)] :
-    a ⊆ b ↔ a ⊂ b ∨ a = b :=
-  ⟨fun h => h.ssubset_or_eq, fun h => h.elim subset_of_ssubset subset_of_eq⟩
+alias ssubset_iff_subset_ne := lt_iff_le_and_ne
 
-namespace GCongr
+alias subset_iff_ssubset_or_eq := le_iff_lt_or_eq
 
-variable [IsTrans α (· ⊆ ·)] {a b c d : α}
-
-@[gcongr]
-theorem ssubset_imp_ssubset (h₁ : c ⊆ a) (h₂ : b ⊆ d) : a ⊂ b → c ⊂ d :=
-  fun h => (h₁.trans_ssubset h).trans_subset h₂
-
-@[gcongr]
-theorem ssuperset_imp_ssuperset (h₁ : a ⊆ c) (h₂ : d ⊆ b) : a ⊃ b → c ⊃ d :=
-  ssubset_imp_ssubset h₂ h₁
-
-/-- See if the term is `a ⊂ b` and the goal is `a ⊆ b`. -/
-@[gcongr_forward] meta def exactSubsetOfSSubset : Mathlib.Tactic.GCongr.ForwardExt where
-  eval h goal := do goal.assignIfDefEq (← Lean.Meta.mkAppM ``subset_of_ssubset #[h])
-
-end GCongr
-
-end SubsetSsubset
+end SubsetSSubset
 
 /-! ### Conversion of bundled order typeclasses to unbundled relation typeclasses -/
 

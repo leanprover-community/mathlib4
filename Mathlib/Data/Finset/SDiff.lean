@@ -107,8 +107,8 @@ theorem sdiff_empty : s \ ∅ = s :=
 theorem sdiff_subset_sdiff (hst : s ⊆ t) (hvu : v ⊆ u) : s \ u ⊆ t \ v := by grind
 
 theorem sdiff_subset_sdiff_iff_subset {r : Finset α} (hs : s ⊆ r) (ht : t ⊆ r) :
-    r \ s ⊆ r \ t ↔ t ⊆ s := by
-  simpa only [← le_eq_subset] using sdiff_le_sdiff_iff_le hs ht
+    r \ s ⊆ r \ t ↔ t ⊆ s :=
+  sdiff_le_sdiff_iff_le hs ht
 
 @[simp, grind =, norm_cast]
 theorem coe_sdiff (s₁ s₂ : Finset α) : ↑(s₁ \ s₂) = (s₁ \ s₂ : Set α) :=
@@ -143,7 +143,7 @@ theorem sdiff_idem (s t : Finset α) : (s \ t) \ t = s \ t :=
   _root_.sdiff_idem
 
 theorem subset_sdiff : s ⊆ t \ u ↔ s ⊆ t ∧ Disjoint s u :=
-  le_iff_subset.symm.trans le_sdiff
+  le_sdiff
 
 @[simp]
 theorem sdiff_eq_empty_iff_subset : s \ t = ∅ ↔ s ⊆ t :=
@@ -178,7 +178,7 @@ lemma cons_sdiff_cons (hab : a ≠ b) (ha hb) : s.cons a ha \ s.cons b hb = {a} 
 theorem sdiff_insert_of_notMem {x : α} (h : x ∉ s) (t : Finset α) : s \ insert x t = s \ t := by
   grind
 
-@[simp] theorem sdiff_subset {s t : Finset α} : s \ t ⊆ s := le_iff_subset.mp sdiff_le
+theorem sdiff_subset {s t : Finset α} : s \ t ⊆ s := by simp
 
 theorem sdiff_ssubset (h : t ⊆ s) (ht : t.Nonempty) : s \ t ⊂ s := by grind
 

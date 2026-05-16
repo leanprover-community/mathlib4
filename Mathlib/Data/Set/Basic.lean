@@ -85,9 +85,6 @@ instance instBoundedOrder : BoundedOrder (Set α) where
   bot := ∅
   top := univ
 
-instance : HasSSubset (Set α) :=
-  ⟨(· < ·)⟩
-
 @[simp]
 theorem top_eq_univ : (⊤ : Set α) = univ :=
   rfl
@@ -104,22 +101,26 @@ theorem sup_eq_union : ((· ⊔ ·) : Set α → Set α → Set α) = (· ∪ ·
 theorem inf_eq_inter : ((· ⊓ ·) : Set α → Set α → Set α) = (· ∩ ·) :=
   rfl
 
-@[simp]
+@[deprecated "This is now a syntactic equality" (since := "2026-03-16"), nolint synTaut]
 theorem le_eq_subset : ((· ≤ ·) : Set α → Set α → Prop) = (· ⊆ ·) :=
   rfl
 
-@[simp]
+@[deprecated "This is now a syntactic equality" (since := "2026-03-16"), nolint synTaut]
 theorem lt_eq_ssubset : ((· < ·) : Set α → Set α → Prop) = (· ⊂ ·) :=
   rfl
 
+@[deprecated "This is now a syntactic equality" (since := "2026-03-16"), nolint synTaut]
 theorem le_iff_subset : s ≤ t ↔ s ⊆ t :=
   Iff.rfl
 
+@[deprecated "This is now a syntactic equality" (since := "2026-03-16"), nolint synTaut]
 theorem lt_iff_ssubset : s < t ↔ s ⊂ t :=
   Iff.rfl
 
+@[deprecated "this is now a syntactic identitiy" (since := "2026-03-16")]
 alias ⟨_root_.LE.le.subset, _root_.HasSubset.Subset.le⟩ := le_iff_subset
 
+@[deprecated "this is now a syntactic identitiy" (since := "2026-03-16")]
 alias ⟨_root_.LT.lt.ssubset, _root_.HasSSubset.SSubset.lt⟩ := lt_iff_ssubset
 
 instance PiSetCoe.canLift (ι : Type u) (α : ι → Type v) [∀ i, Nonempty (α i)] (s : Set ι) :
@@ -217,40 +218,6 @@ theorem setOf_or {p q : α → Prop} : { a | p a ∨ q a } = { a | p a } ∪ { a
   rfl
 
 /-! ### Subset and strict subset relations -/
-
-
-instance : @Std.Refl (Set α) (· ⊆ ·) :=
-  show Std.Refl (· ≤ ·) by infer_instance
-
-instance : IsTrans (Set α) (· ⊆ ·) :=
-  show IsTrans (Set α) (· ≤ ·) by infer_instance
-
-instance : Trans ((· ⊆ ·) : Set α → Set α → Prop) (· ⊆ ·) (· ⊆ ·) :=
-  show Trans (· ≤ ·) (· ≤ ·) (· ≤ ·) by infer_instance
-
-instance : @Std.Antisymm (Set α) (· ⊆ ·) :=
-  show Std.Antisymm (· ≤ ·) by infer_instance
-
-instance : @Std.Irrefl (Set α) (· ⊂ ·) :=
-  show Std.Irrefl (· < ·) by infer_instance
-
-instance : IsTrans (Set α) (· ⊂ ·) :=
-  show IsTrans (Set α) (· < ·) by infer_instance
-
-instance : Trans ((· ⊂ ·) : Set α → Set α → Prop) (· ⊂ ·) (· ⊂ ·) :=
-  show Trans (· < ·) (· < ·) (· < ·) by infer_instance
-
-instance : Trans ((· ⊂ ·) : Set α → Set α → Prop) (· ⊆ ·) (· ⊂ ·) :=
-  show Trans (· < ·) (· ≤ ·) (· < ·) by infer_instance
-
-instance : Trans ((· ⊆ ·) : Set α → Set α → Prop) (· ⊂ ·) (· ⊂ ·) :=
-  show Trans (· ≤ ·) (· < ·) (· < ·) by infer_instance
-
-instance : @Std.Asymm (Set α) (· ⊂ ·) :=
-  show Std.Asymm (· < ·) by infer_instance
-
-instance : IsNonstrictStrictOrder (Set α) (· ⊆ ·) (· ⊂ ·) :=
-  ⟨fun _ _ => Iff.rfl⟩
 
 -- TODO(Jeremy): write a tactic to unfold specific instances of generic notation?
 @[grind =]
@@ -669,7 +636,8 @@ theorem union_subset_iff {s t u : Set α} : s ∪ t ⊆ u ↔ s ⊆ u ∧ t ⊆ 
 
 @[gcongr]
 theorem union_subset_union {s₁ s₂ t₁ t₂ : Set α} (h₁ : s₁ ⊆ s₂) (h₂ : t₁ ⊆ t₂) :
-    s₁ ∪ t₁ ⊆ s₂ ∪ t₂ := fun _ => Or.imp (@h₁ _) (@h₂ _)
+    s₁ ∪ t₁ ⊆ s₂ ∪ t₂ :=
+  sup_le_sup h₁ h₂
 
 theorem union_subset_union_left {s₁ s₂ : Set α} (t) (h : s₁ ⊆ s₂) : s₁ ∪ t ⊆ s₂ ∪ t :=
   union_subset_union h Subset.rfl
@@ -809,7 +777,8 @@ theorem univ_inter (a : Set α) : univ ∩ a = a := top_inf_eq _
 
 @[gcongr]
 theorem inter_subset_inter {s₁ s₂ t₁ t₂ : Set α} (h₁ : s₁ ⊆ t₁) (h₂ : s₂ ⊆ t₂) :
-    s₁ ∩ s₂ ⊆ t₁ ∩ t₂ := fun _ => And.imp (@h₁ _) (@h₂ _)
+    s₁ ∩ s₂ ⊆ t₁ ∩ t₂ :=
+  inf_le_inf h₁ h₂
 
 theorem inter_subset_inter_left {s t : Set α} (u : Set α) (H : s ⊆ t) : s ∩ u ⊆ t ∩ u :=
   inter_subset_inter H Subset.rfl

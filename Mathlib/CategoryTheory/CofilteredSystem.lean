@@ -238,7 +238,7 @@ theorem isMittagLeffler_of_exists_finite_range
   rintro _ ⟨⟨k', g'⟩, rfl⟩ hl
   refine (eq_of_le_of_not_lt hl ?_).ge
   have := hmin _ ⟨k', g', (m.finite_toSet.subset <| hm.substr hl).coe_toFinset⟩
-  rwa [Finset.lt_iff_ssubset, ← Finset.coe_ssubset, Set.Finite.coe_toFinset, hm] at this
+  rwa [← Finset.coe_ssubset, Set.Finite.coe_toFinset, hm] at this
 
 /-- The subfunctor of `F` obtained by restricting to the eventual range at each index. -/
 @[simps obj map]

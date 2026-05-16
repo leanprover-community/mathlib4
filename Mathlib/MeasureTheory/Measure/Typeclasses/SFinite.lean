@@ -361,7 +361,7 @@ lemma exists_ae_subset_biUnion_countable [SFinite μ]
   refine ⟨⋃ n, D n, by simp [DC], by simp [D_count], fun s hs ↦ ?_⟩
   rw [← sum_sfiniteSeq μ]
   apply ae_sum_iff.2 (fun n ↦ (hD n s hs).trans ?_)
-  exact HasSubset.Subset.eventuallyLE (fun x hx ↦ by simp at hx ⊢; grind)
+  exact LE.le.eventuallyLE (fun x hx ↦ by simp at hx ⊢; grind)
 
 /-- If a measure `μ` is the sum of a countable family `mₙ`, and a set `t` has finite measure for
 each `mₙ`, then its measurable superset `toMeasurable μ t` (which has the same measure as `t`)

@@ -69,7 +69,6 @@ lemma upperHemicontinuousWithinAt_iff_preimage_Iic :
   case h₂ =>
     intro s t hst
     gcongr
-    exact hst
   case h₁ =>
     intro s t hst
     gcongr
@@ -97,8 +96,7 @@ lemma upperHemicontinuous_iff_isOpen_preimage_Iic :
   simp_rw [upperHemicontinuous_iff_preimage_Iic, isOpen_iff_mem_nhds (s := f ⁻¹' (Iic _))]
   conv =>
     enter [1, x]
-    rw [hasBasis_nhdsSet (f x) |>.forall_iff <|
-      fun s t hst ↦ by gcongr; exact hst]
+    rw [hasBasis_nhdsSet (f x) |>.forall_iff fun s t hst ↦ by gcongr]
   simp [forall_comm (α := α)]
 
 /-- A correspondence `f : α → Set β` is upper hemicontinuous if and only if its *lower inverse*

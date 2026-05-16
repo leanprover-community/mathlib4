@@ -833,7 +833,8 @@ variable [CommRing R] [IsDomain R] [AddCommGroup M] [Module R M]
 
 /-- A module over a domain is torsion-free iff its torsion submodule is trivial. -/
 lemma isTorsionFree_iff_torsion_eq_bot : IsTorsionFree R M ↔ torsion R M = ⊥ := by
-  simp [torsion, torsion', subset_antisymm_iff, exists_ne, isTorsionFree_iff_smul_eq_zero]
+  simp [torsion, torsion', subset_antisymm_iff (α := Set M), exists_ne,
+    isTorsionFree_iff_smul_eq_zero]
   grind
 
 end CommRing

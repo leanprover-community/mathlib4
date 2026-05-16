@@ -234,6 +234,7 @@ of `IsConcreteLE`.
 -/
 @[reducible] def PartialOrder.ofSetLike : PartialOrder A where
   __ := LE.ofSetLike A B
+  lt s t := letI := LE.ofSetLike A B; s ≤ t ∧ ¬t ≤ s
   __ := PartialOrder.lift (SetLike.coe : A → Set B) SetLike.coe_injective
 
 instance : letI := PartialOrder.ofSetLike A B; IsConcreteLE A B :=

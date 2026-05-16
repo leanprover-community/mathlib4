@@ -271,9 +271,9 @@ protected def «end» :=
 
 theorem end_hom_mk_of_mk {s} (sec : s ∈ G.end) {K L : (Finset V)ᵒᵖ} (h : L ⟶ K) {v : V}
     (vnL : v ∉ L.unop) (hs : s L = G.componentComplMk vnL) :
-    s K = G.componentComplMk (Set.notMem_subset (le_of_op_hom h : _ ⊆ _) vnL) := by
+    s K = G.componentComplMk (Set.notMem_subset (le_of_op_hom h) vnL) := by
   rw [← sec h, hs]
-  apply ComponentCompl.hom_mk _ (le_of_op_hom h : _ ⊆ _)
+  apply ComponentCompl.hom_mk _ (le_of_op_hom h)
 
 theorem infinite_iff_in_eventualRange {K : (Finset V)ᵒᵖ} (C : G.componentComplFunctor.obj K) :
     C.supp.Infinite ↔ C ∈ G.componentComplFunctor.eventualRange K := by

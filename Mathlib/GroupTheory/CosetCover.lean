@@ -299,7 +299,7 @@ theorem leftCoset_cover_filter_FiniteIndex_aux
       simpa [Set.mem_smul_set_iff_inv_smul_mem, smul_eq_mul, mul_assoc] using hi' hx
     have ⟨k₁, hik₁, hk₁, hxk₁⟩ := hk' i hi hi'
     have ⟨k₂, hjk₂, hk₂, hxk₂⟩ := hk' j hj hj'
-    rw [← Set.singleton_subset_iff, ← Set.le_iff_subset] at hxk₁ hxk₂ ⊢
+    rw [← Set.singleton_subset_iff] at hxk₁ hxk₂ ⊢
     exact hdisjoint
       (Finset.mem_filter.mpr ⟨Finset.mem_univ k₁, hk₁⟩)
       (Finset.mem_filter.mpr ⟨Finset.mem_univ k₂, hk₂⟩)

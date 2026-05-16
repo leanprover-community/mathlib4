@@ -64,8 +64,9 @@ lemma isTopologicalBasis (hu : IsOpenCover u)
 end IsOpenCover
 
 lemma Opens.IsBasis.isOpenCover {S : Set (Opens X)} (hS : Opens.IsBasis S) :
-    IsOpenCover (fun U : S ↦ (U : Opens X)) :=
-  top_le_iff.mp (subset_trans hS.2.superset (by simp))
+    IsOpenCover (fun U : S ↦ (U : Opens X)) := by
+  ext1
+  simp [← hS.2]
 
 /-- Given an open cover and a basis,
 the set of basis elements contained in any of the covers is still a cover. -/

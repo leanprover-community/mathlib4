@@ -31,9 +31,9 @@ universe u
 We define `Class` as `Set ZFSet`, as this allows us to get many instances automatically. However, in
 practice, we treat it as (the definitionally equal) `ZFSet → Prop`. This means, the preferred way to
 state that `x : ZFSet` belongs to `A : Class` is to write `A x`. -/
-@[pp_with_univ]
+@[pp_with_univ, use_set_notation]
 def Class :=
-  Set ZFSet deriving HasSubset, EmptyCollection, Nonempty, Union, Inter, Compl, SDiff
+  Set ZFSet deriving LE, EmptyCollection, Nonempty, Union, Inter, Compl, SDiff
 
 instance : Insert ZFSet Class :=
   ⟨Set.insert⟩
