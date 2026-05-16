@@ -6,10 +6,8 @@ Authors: Christian Merten, Yi Song, Sihan Su
 module
 
 public import Mathlib.RingTheory.Flat.FaithfullyFlat.Basic
-public import Mathlib.RingTheory.Ideal.Over
-public import Mathlib.RingTheory.LocalRing.RingHom.Basic
+public import Mathlib.RingTheory.Ideal.GoingUp
 public import Mathlib.RingTheory.Spectrum.Prime.RingHom
-public import Mathlib.RingTheory.TensorProduct.Quotient
 
 /-!
 # Properties of faithfully flat algebras
@@ -72,6 +70,14 @@ lemma Module.FaithfullyFlat.of_flat_of_isLocalHom [IsLocalRing A] [IsLocalRing B
     ((IsLocalRing.local_hom_TFAE (algebraMap A B)).out 0 2).mp ‹_›
   rw [eqt, top_le_iff, Submodule.restrictScalars_eq_top_iff] at this
   exact Ideal.IsPrime.ne_top' this
+
+instance Module.FaithfullyFlat.of_isIntegral_of_isDomain [CommRing B] [IsDomain B] [Algebra A B]
+    [Module.Flat A B] [Algebra.IsIntegral A B] [FaithfulSMul A B] :
+    Module.FaithfullyFlat A B := by
+  refine Module.FaithfullyFlat.of_comap_surjective fun P ↦ ?_
+  obtain ⟨P, hP₁, hP₂⟩ := Ideal.exists_ideal_over_prime_of_isIntegral_of_isDomain P.1 (S := B)
+    (by simp [(RingHom.injective_iff_ker_eq_bot _).mp (FaithfulSMul.algebraMap_injective A B)])
+  exact ⟨⟨P, hP₁⟩, PrimeSpectrum.ext_iff.mpr hP₂⟩
 
 variable [Module.FaithfullyFlat A B]
 
