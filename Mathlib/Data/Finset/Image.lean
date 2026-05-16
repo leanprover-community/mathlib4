@@ -361,6 +361,7 @@ theorem _root_.Function.Commute.finset_image [DecidableEq α] {f g : α → α}
     (h : Function.Commute f g) : Function.Commute (image f) (image g) :=
   Function.Semiconj.finset_image h
 
+@[gcongr]
 theorem image_subset_image {s₁ s₂ : Finset α} (h : s₁ ⊆ s₂) : s₁.image f ⊆ s₂.image f := by
   simp only [subset_def, image_val, subset_dedup', dedup_subset', Multiset.map_subset_map h]
 
