@@ -115,6 +115,9 @@ protected theorem IsTopCompl.symm [ContinuousSub M] (h : IsTopCompl p q) : IsTop
     rw [projection_eq_id_sub_projection h.isCompl]
     exact continuous_id.sub h.continuous_projection
 
+theorem isTopCompl_comm [ContinuousSub M] : IsTopCompl p q ↔ IsTopCompl q p :=
+  ⟨IsTopCompl.symm, IsTopCompl.symm⟩
+
 open LinearMap in
 theorem _root_.ContinuousLinearMap.IsIdempotentElem.isTopCompl {f : M →L[R] M}
     (hf : IsIdempotentElem f) : IsTopCompl f.range f.ker where
@@ -448,8 +451,8 @@ theorem IsCompl.isTopCompl_iff_continuous_quotientEquivOfIsCompl (h : IsCompl p 
     IsTopCompl p q ↔ Continuous (p.quotientEquivOfIsCompl q h) := by
   have hproj : ⇑(p.quotientEquivOfIsCompl q h) ∘ ⇑p.mkQ = ⇑(q.projectionOnto p h.symm) := by
     funext; simp
-  rw [p.isQuotientMap_mkQL.continuous_iff, coe_mkQL, hproj, ← h.symm.isTopCompl_iff_projectionOnto]
-  exact ⟨IsTopCompl.symm, IsTopCompl.symm⟩
+  rw [p.isQuotientMap_mkQL.continuous_iff, coe_mkQL, hproj, ← h.symm.isTopCompl_iff_projectionOnto,
+    isTopCompl_comm]
 
 variable (p q) in
 /-- If two submodules are topological complements, then the linear equivalence
