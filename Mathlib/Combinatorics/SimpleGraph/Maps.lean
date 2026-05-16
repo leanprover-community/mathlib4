@@ -427,8 +427,10 @@ theorem coe_comp (f' : G' →g G'') (f : G →g G') : ⇑(f'.comp f) = f' ∘ f 
 theorem comp_assoc (f'' : G'' →g G''') (f' : G' →g G'') (f : G →g G') :
     f''.comp (f'.comp f) = (f''.comp f').comp f := rfl
 
+@[simp]
 theorem comp_id (f : G →g G') : f.comp .id = f := rfl
 
+@[simp]
 theorem id_comp (f : G →g G') : .comp Hom.id f = f := rfl
 
 @[simp]
@@ -544,8 +546,10 @@ theorem coe_comp (f' : G' ↪g G'') (f : G ↪g G') : ⇑(f'.comp f) = f' ∘ f 
 theorem comp_assoc (f'' : G'' ↪g G''') (f' : G' ↪g G'') (f : G ↪g G') :
     f''.comp (f'.comp f) = (f''.comp f').comp f := rfl
 
+@[simp]
 theorem comp_refl (f : G ↪g G') : f.comp .refl = f := rfl
 
+@[simp]
 theorem refl_comp (f : G ↪g G') : .comp .refl f = f := rfl
 
 /-- Graph embeddings from `G` to `H` are the same thing as graph embeddings from `Gᶜ` to `Hᶜ`. -/
@@ -730,8 +734,10 @@ theorem coe_comp (f' : G' ≃g G'') (f : G ≃g G') : ⇑(f'.comp f) = f' ∘ f 
 theorem comp_assoc (f'' : G'' ≃g G''') (f' : G' ≃g G'') (f : G ≃g G') :
     f''.comp (f'.comp f) = (f''.comp f').comp f := rfl
 
+@[simp]
 theorem comp_refl (f : G ≃g G') : f.comp .refl = f := rfl
 
+@[simp]
 theorem refl_comp (f : G ≃g G') : .comp .refl f = f := rfl
 
 end Iso
