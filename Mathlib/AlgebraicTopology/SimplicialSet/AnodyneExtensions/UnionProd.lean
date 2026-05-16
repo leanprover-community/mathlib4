@@ -405,12 +405,34 @@ lemma isType₂_δ : IsType₂ hl.δ := by
   dsimp [stdSimplex.δ_apply] at hl ht ⊢
   aesop
 
+set_option backward.isDefEq.respectTransparency false in
 variable {x} in
 lemma eq_of_isType₂_δ {u : (Subcomplex.unionProd.{u} Λ[m + 1, k.castSucc] ∂Δ[n]).N}
     (hu : IsType₂ u) (i : Fin (d + 2))
     (hu' : S.mk u.simplex = S.mk (((Δ[m + 1] ⊗ Δ[n])).δ i (x.cast hd).simplex)) :
     i = l.castSucc ∨ i = l.succ := by
-  sorry
+  obtain rfl : u.dim = d := congr_arg S.dim hu'
+  rw [S.ext_iff] at hu'
+  obtain hi | rfl | hi := lt_trichotomy i l.castSucc
+  · obtain ⟨l, rfl⟩ := Fin.eq_succ_of_ne_zero (i := l) (by grind)
+    refine (hu _ rfl l.succ ?_).elim
+    rw [isIndex_succ]
+    refine ⟨?_, ?_, ?_⟩ <;> dsimp <;>
+      simp only [hu', Monoidal.tensorObj_obj, prod_δ_fst, prod_δ_snd,
+        stdSimplex.δ_apply, Fin.succAbove_of_lt_succ i l.castSucc hi,
+        Fin.succAbove_of_lt_succ i l.succ (by grind),
+        hl.simplex_fst_succ]
+    · exact hl.simplex_fst_castSucc
+    · exact hl.simplex_snd_succ
+  · exact Or.inl rfl
+  · obtain rfl | hi := (Fin.castSucc_lt_iff_succ_le.1 hi).eq_or_lt
+    · exact Or.inr rfl
+    · obtain ⟨l, rfl⟩ := Fin.eq_castSucc_of_ne_last (x := l) (by grind)
+      refine (hu _ rfl l.succ ?_).elim
+      simp [isIndex_succ, hu', stdSimplex.δ_apply,
+        Fin.succAbove_of_castSucc_lt i l.castSucc (by grind),
+        Fin.succAbove_of_castSucc_lt i l.succ (by grind),
+        hl.simplex_fst_castSucc, hl.simplex_snd_succ, hl.simplex_fst_succ]
 
 end IsIndex
 
