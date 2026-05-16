@@ -182,23 +182,14 @@ variable [NormedRing R]
 theorem spectralValue_eq_zero_iff [Nontrivial R] {p : R[X]} (hp : p.Monic) :
     spectralValue p = 0 ↔ p = X ^ p.natDegree := by
   refine ⟨fun h ↦ ?_, fun h ↦ h ▸ spectralValue_X_pow p.natDegree⟩
-  rw [spectralValue] at h
-  ext n
-  rw [coeff_X_pow]
-  split_ifs with hn
-  · rw [hn, coeff_natDegree]; exact hp
-  · by_cases hn' : n < p.natDegree
-    · have h_le : iSup (spectralValueTerms p) ≤ 0 := h.le
-      have h_exp : 0 < 1 / ((p.natDegree : ℝ) - n) := by
-        rw [one_div_pos, ← cast_sub (le_of_lt hn'), cast_pos]
-        exact Nat.sub_pos_of_lt hn'
-      have h0 : (0 : ℝ) = 0 ^ (1 / ((p.natDegree : ℝ) - n)) := by rw [zero_rpow (ne_of_gt h_exp)]
-      rw [iSup, csSup_le_iff (spectralValueTerms_bddAbove p) (Set.range_nonempty _)] at h_le
-      specialize h_le (spectralValueTerms p n) ⟨n, rfl⟩
-      simp only [spectralValueTerms, if_pos hn'] at h_le
-      rw [h0, rpow_le_rpow_iff (norm_nonneg _) (le_refl _) h_exp] at h_le
-      exact norm_eq_zero.mp (le_antisymm h_le (norm_nonneg _))
-    · exact coeff_eq_zero_of_natDegree_lt (lt_of_le_of_ne (le_of_not_gt hn') (ne_comm.mpr hn))
+  refine hp.eq_X_pow_iff_natDegree_le_natTrailingDegree.mpr <|
+    le_natTrailingDegree hp.ne_zero fun n hn ↦ ?_
+  have h0 : spectralValueTerms p n = 0 := by
+    apply le_antisymm ((le_ciSup (spectralValueTerms_bddAbove p) n).trans h.le)
+    exact spectralValueTerms_nonneg _ _
+  rw [spectralValueTerms_of_lt_natDegree _ hn,
+    Real.rpow_eq_zero_iff_of_nonneg (norm_nonneg _)] at h0
+  exact norm_eq_zero.mp h0.1
 
 end Normed
 
@@ -340,7 +331,7 @@ theorem max_norm_root_eq_spectralValue [DecidableEq L] {f : AlgebraNorm K L} (hf
       apply le_trans h_pr
       have hs_ne : s ≠ 0 :=
         have hpos : 0 < s.toFinset.card := by
-          have hs0 : 0 < s.card := hps ▸ lt_of_le_of_lt (zero_le _) hm
+          have hs0 : 0 < s.card := hps ▸ hm.pos
           obtain ⟨x, hx⟩ := card_pos_iff_exists_mem.mp hs0
           exact Finset.card_pos.mpr ⟨x, mem_toFinset.mpr hx⟩
         toFinset_nonempty.mp (Finset.card_pos.mp hpos)
@@ -406,12 +397,7 @@ theorem spectralNorm.eq_of_normalClosure' (x : E) :
     spectralNorm K (normalClosure K E (AlgebraicClosure E))
       (algebraMap E (normalClosure K E (AlgebraicClosure E)) x) =
     spectralNorm K L (algebraMap E L x) := by
-  simp only [spectralNorm, spectralValue]
-  have h_min : minpoly K (algebraMap (↥E) (↥(normalClosure K (↥E) (AlgebraicClosure ↥E))) x) =
-      minpoly K (algebraMap (↥E) L x) := by
-    rw [minpoly.algebraMap_eq (algebraMap (↥E) ↥(normalClosure K E (AlgebraicClosure E))).injective
-      x, ← minpoly.algebraMap_eq (algebraMap (↥E) L).injective x]
-  simp_rw [h_min]
+  simp_rw [← spectralNorm.eq_of_tower]
 
 /-- If `L/E/K` is a tower of fields and `x = algebraMap E L g`, then the spectral norm
   of `g : E` when regarded as an element of the normal closure of `E` equals the spectral norm

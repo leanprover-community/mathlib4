@@ -30,7 +30,7 @@ public import Mathlib.AlgebraicGeometry.Morphisms.SchemeTheoreticallyDominant
 Get rid of the noetherian assumption.
 -/
 
-@[expose] public section
+public section
 
 open CategoryTheory MorphismProperty Limits
 
