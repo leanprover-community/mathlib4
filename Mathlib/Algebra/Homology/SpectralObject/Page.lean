@@ -694,7 +694,7 @@ lemma EIsoH_hom_naturality
     (α : mk₁ f ⟶ mk₁ f') (β : mk₃ (𝟙 _) f (𝟙 _) ⟶ mk₃ (𝟙 _) f' (𝟙 _))
     (n₀ n₁ n₂ : ℤ)
     (hβ : β = homMk₃ (α.app 0) (α.app 0) (α.app 1) (α.app 1)
-      (by simp) (naturality' α 0 1) (by simp [Precomp.obj, Precomp.map]) := by cat_disch)
+      (by simp) (naturality' α 0 1) (by simp) := by cat_disch)
     (hn₁ : n₀ + 1 = n₁ := by lia) (hn₂ : n₁ + 1 = n₂ := by lia) :
     X.map (𝟙 _) f (𝟙 _) (𝟙 _) f' (𝟙 _) β n₀ n₁ n₂ hn₁ hn₂ ≫
       (X.EIsoH f' n₀ n₁ n₂ hn₁ hn₂).hom =

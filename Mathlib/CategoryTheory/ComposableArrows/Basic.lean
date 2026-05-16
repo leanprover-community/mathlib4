@@ -400,6 +400,58 @@ lemma map_comp {i j k : Fin (n + 1 + 1)} (hij : i ≤ j) (hjk : j ≤ k) :
       · dsimp
         rw [← F.map_comp, homOfLE_comp]
 
+/- The following simp lemmas are needed because of the change to `simprocs`. They make it
+so that `dsimp` can work with the explicit constructors `mkₙ`. -/
+@[simp] lemma obj₁₂ (F : ComposableArrows C 1) (X : C) : Precomp.obj F X 2 = F.obj 1 := rfl
+
+@[simp] lemma obj₂₂ (F : ComposableArrows C 2) (X : C) : Precomp.obj F X 2 = F.obj 1 := rfl
+
+@[simp] lemma obj₂₃ (F : ComposableArrows C 2) (X : C) : Precomp.obj F X 3 = F.obj 2 := rfl
+
+@[simp] lemma obj₃₂ (F : ComposableArrows C 3) (X : C) : Precomp.obj F X 2 = F.obj 1 := rfl
+
+@[simp] lemma obj₃₃ (F : ComposableArrows C 3) (X : C) : Precomp.obj F X 3 = F.obj 2 := rfl
+
+@[simp] lemma obj₃₄ (F : ComposableArrows C 3) (X : C) : Precomp.obj F X 4 = F.obj 3 := rfl
+
+@[simp] lemma obj₄₂ (F : ComposableArrows C 4) (X : C) : Precomp.obj F X 2 = F.obj 1 := rfl
+
+@[simp] lemma obj₄₃ (F : ComposableArrows C 4) (X : C) : Precomp.obj F X 3 = F.obj 2 := rfl
+
+@[simp] lemma obj₄₄ (F : ComposableArrows C 4) (X : C) : Precomp.obj F X 4 = F.obj 3 := rfl
+
+@[simp] lemma obj₄₅ (F : ComposableArrows C 4) (X : C) : Precomp.obj F X 5 = F.obj 4 := rfl
+
+@[simp] lemma map₁₁₂ (F : ComposableArrows C 1) {X : C} (f : X ⟶ F.left) :
+    Precomp.map F f 1 2 (Nat.le_add_right 1 1) = F.map' 0 1 := rfl
+
+@[simp] lemma map₂₁₂ (F : ComposableArrows C 2) {X : C} (f : X ⟶ F.left) :
+    Precomp.map F f 1 2 (Nat.le_add_right 1 1) = F.map' 0 1 := rfl
+
+@[simp] lemma map₂₂₃ (F : ComposableArrows C 2) {X : C} (f : X ⟶ F.left) :
+    Precomp.map F f 2 3 (Nat.le_add_right 2 1) = F.map' 1 2 := rfl
+
+@[simp] lemma map₃₁₂ (F : ComposableArrows C 3) {X : C} (f : X ⟶ F.left) :
+    Precomp.map F f 1 2 (Nat.le_add_right 1 1) = F.map' 0 1 := rfl
+
+@[simp] lemma map₃₂₃ (F : ComposableArrows C 3) {X : C} (f : X ⟶ F.left) :
+    Precomp.map F f 2 3 (Nat.le_add_right 2 1) = F.map' 1 2 := rfl
+
+@[simp] lemma map₃₃₄ (F : ComposableArrows C 3) {X : C} (f : X ⟶ F.left) :
+    Precomp.map F f 3 4 (Nat.le_add_right 3 1) = F.map' 2 3 := rfl
+
+@[simp] lemma map₄₁₂ (F : ComposableArrows C 4) {X : C} (f : X ⟶ F.left) :
+    Precomp.map F f 1 2 (Nat.le_add_right 1 1) = F.map' 0 1 := rfl
+
+@[simp] lemma map₄₂₃ (F : ComposableArrows C 4) {X : C} (f : X ⟶ F.left) :
+    Precomp.map F f 2 3 (Nat.le_add_right 2 1) = F.map' 1 2 := rfl
+
+@[simp] lemma map₄₃₄ (F : ComposableArrows C 4) {X : C} (f : X ⟶ F.left) :
+    Precomp.map F f 3 4 (Nat.le_add_right 3 1) = F.map' 2 3 := rfl
+
+@[simp] lemma map₄₄₅ (F : ComposableArrows C 4) {X : C} (f : X ⟶ F.left) :
+    Precomp.map F f 4 5 (Nat.le_add_right 4 1) = F.map' 3 4 := rfl
+
 end Precomp
 
 /-- "Precomposition" of `F : ComposableArrows C n` by a morphism `f : X ⟶ F.left`. -/
@@ -834,6 +886,22 @@ lemma homMk₅_app_four :
 @[simp]
 lemma homMk₅_app_five :
     (homMk₅ app₀ app₁ app₂ app₃ app₄ app₅ w₀ w₁ w₂ w₃ w₄).app ⟨5, by valid⟩ = app₅ := rfl
+
+@[simp]
+lemma homMk₅_app_two' :
+    (homMk₅ app₀ app₁ app₂ app₃ app₄ app₅ w₀ w₁ w₂ w₃ w₄).app 2 = app₂ := rfl
+
+@[simp]
+lemma homMk₅_app_three' :
+    (homMk₅ app₀ app₁ app₂ app₃ app₄ app₅ w₀ w₁ w₂ w₃ w₄).app 3 = app₃ := rfl
+
+@[simp]
+lemma homMk₅_app_four' :
+    (homMk₅ app₀ app₁ app₂ app₃ app₄ app₅ w₀ w₁ w₂ w₃ w₄).app 4 = app₄ := rfl
+
+@[simp]
+lemma homMk₅_app_five' :
+    (homMk₅ app₀ app₁ app₂ app₃ app₄ app₅ w₀ w₁ w₂ w₃ w₄).app 5 = app₅ := rfl
 
 end
 
