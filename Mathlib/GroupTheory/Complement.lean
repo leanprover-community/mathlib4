@@ -78,13 +78,13 @@ theorem IsComplement.existsUnique (h : IsComplement S T) (g : G) :
 @[to_additive]
 theorem IsComplement'.symm (h : IsComplement' H K) : IsComplement' K H := by
   let ϕ : H × K ≃ K × H :=
-    Equiv.mk (fun x => ⟨x.2⁻¹, x.1⁻¹⟩) (fun x => ⟨x.2⁻¹, x.1⁻¹⟩)
-      (fun x => Prod.ext (inv_inv _) (inv_inv _)) fun x => Prod.ext (inv_inv _) (inv_inv _)
-  let ψ : G ≃ G := Equiv.mk (fun g : G => g⁻¹) (fun g : G => g⁻¹) inv_inv inv_inv
-  suffices hf : (ψ ∘ fun x : H × K => x.1.1 * x.2.1) = (fun x : K × H => x.1.1 * x.2.1) ∘ ϕ by
-    rwa [isComplement'_def, isComplement_iff_bijective, ← Equiv.bijective_comp ϕ, ← hf,
-      ψ.comp_bijective]
-  exact funext fun x => mul_inv_rev _ _
+    ⟨fun x => ⟨x.2⁻¹, x.1⁻¹⟩, fun x => ⟨x.2⁻¹, x.1⁻¹⟩,
+      fun _ => Prod.ext (inv_inv _) (inv_inv _), fun _ => Prod.ext (inv_inv _) (inv_inv _)⟩
+  let ψ : G ≃ G := ⟨fun g : G => g⁻¹, fun g : G => g⁻¹, inv_inv, inv_inv⟩
+  have hf : (ψ ∘ fun x : H × K => x.1.1 * x.2.1) = (fun x : K × H => x.1.1 * x.2.1) ∘ ϕ :=
+    funext fun _ => mul_inv_rev _ _
+  rwa [isComplement'_def, isComplement_iff_bijective, ← Equiv.bijective_comp ϕ, ← hf,
+    ψ.comp_bijective]
 
 @[to_additive]
 theorem isComplement'_comm : IsComplement' H K ↔ IsComplement' K H :=
@@ -102,19 +102,17 @@ theorem isComplement_singleton_univ {g : G} : IsComplement ({g} : Set G) univ :=
 
 @[to_additive]
 theorem isComplement_singleton_left {g : G} : IsComplement {g} S ↔ S = univ := by
-  refine
-    ⟨fun h => top_le_iff.mp fun x _ => ?_, fun h => (congr_arg _ h).mpr isComplement_singleton_univ⟩
-  obtain ⟨⟨⟨z, rfl : z = g⟩, y, _⟩, hy⟩ := h.2 (g * x)
-  rwa [← mul_left_cancel hy]
+  refine ⟨fun ⟨_, h_top⟩ => top_le_iff.mp ?_, fun h => h.symm ▸ isComplement_singleton_univ⟩
+  intro x _
+  obtain ⟨⟨⟨_, rfl⟩, ⟨s, hs⟩⟩, hmul⟩ := h_top (g * x)
+  exact mul_left_cancel hmul ▸ hs
 
 @[to_additive]
 theorem isComplement_singleton_right {g : G} : IsComplement S {g} ↔ S = univ := by
-  refine
-    ⟨fun h => top_le_iff.mp fun x _ => ?_, fun h => h ▸ isComplement_univ_singleton⟩
-  obtain ⟨y, hy⟩ := h.2 (x * g)
-  conv_rhs at hy => rw [← show y.2.1 = g from y.2.2]
-  rw [← mul_right_cancel hy]
-  exact y.1.2
+  refine ⟨fun ⟨_, h_top⟩ => top_le_iff.mp ?_, fun h => h.symm ▸ isComplement_univ_singleton⟩
+  intro x _
+  obtain ⟨⟨⟨s, hs⟩, ⟨_, rfl⟩⟩, hmul⟩ := h_top (x * g)
+  exact mul_right_cancel hmul ▸ hs
 
 @[to_additive]
 theorem isComplement_univ_left : IsComplement univ S ↔ ∃ g : G, S = {g} := by
