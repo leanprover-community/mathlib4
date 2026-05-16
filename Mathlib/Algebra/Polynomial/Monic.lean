@@ -202,6 +202,12 @@ theorem natDegree_pow (hp : p.Monic) (n : ℕ) : (p ^ n).natDegree = n * p.natDe
   | zero => simp
   | succ n hn => rw [pow_succ, (hp.pow n).natDegree_mul hp, hn, Nat.succ_mul, add_comm]
 
+theorem natDegree_le_of_dvd (hp : p.Monic) (hq : q ≠ 0) (hdvd : p ∣ q) :
+    p.natDegree ≤ q.natDegree := by
+  rcases hdvd with ⟨r, rfl⟩
+  by_cases r = 0 <;>
+    simp_all [natDegree_mul']
+
 end Monic
 
 @[simp]
