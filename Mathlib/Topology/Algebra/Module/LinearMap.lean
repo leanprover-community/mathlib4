@@ -1193,6 +1193,14 @@ alias coe_subtypeL' := coe_subtypeL
 
 theorem subtypeL_apply (p : Submodule R M) (x : p) : p.subtypeL x = x := by simp
 
+theorem isEmbedding_subtype (p : Submodule R M) : IsEmbedding p.subtype := .subtypeVal
+theorem isEmbedding_subtypeL (p : Submodule R M) : IsEmbedding p.subtypeL := .subtypeVal
+
+theorem isClosedEmbedding_subtype (p : Submodule R M) (hp : IsClosed (p : Set M)) :
+    IsClosedEmbedding p.subtype := .subtypeVal hp
+theorem isClosedEmbedding_subtypeL (p : Submodule R M) (hp : IsClosed (p : Set M)) :
+    IsClosedEmbedding p.subtypeL := .subtypeVal hp
+
 @[deprecated range_subtype (since := "2026-05-06")]
 theorem range_subtypeL (p : Submodule R M) : (p.subtypeL : p →ₗ[R] M).range = p :=
   Submodule.range_subtype _
