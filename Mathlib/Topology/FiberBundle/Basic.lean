@@ -276,7 +276,7 @@ theorem totalSpaceMk_isClosedEmbedding [T1Space B] (x : B) :
 This is useful to transfer topological properties of the model fiber. -/
 noncomputable def homeomorphAt (b : B) : E b ≃ₜ F :=
   ((totalSpaceMk_isEmbedding F E b).toHomeomorph.trans <|
-    Homeomorph.ofEqSubtypes <| TotalSpace.range_mk b).trans <|
+    Homeomorph.setCongr <| TotalSpace.range_mk b).trans <|
     (trivializationAt F E b).preimageSingletonHomeomorph <| mem_baseSet_trivializationAt' b
 
 lemma t0Space [T0Space F] (b : B) : T0Space (E b) :=
