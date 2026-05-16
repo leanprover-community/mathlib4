@@ -494,6 +494,85 @@ instance (priority := 100) : Limits.HasFiniteProducts C :=
   letI : Limits.HasTerminal C := Limits.hasTerminal_of_unique (𝟙_ C)
   hasFiniteProducts_of_has_binary_and_terminal
 
+section
+
+/-- In a cartesian monoidal category, the monoidal structure is given by the product. -/
+@[simps -isSimp]
+noncomputable def tensorObjProdIso (X Y : C) : X ⊗ Y ≅ (X ⨯ Y) where
+  hom := Limits.prod.lift (fst _ _) (snd _ _)
+  inv := lift prod.fst prod.snd
+  hom_inv_id := by apply hom_ext <;> simp [prod.lift_fst, prod.lift_snd]
+
+@[reassoc (attr := simp)]
+lemma tensorObjProdIso_hom_fst {X Y : C} :
+  (tensorObjProdIso X Y).hom ≫ prod.fst = fst X Y := by simp [tensorObjProdIso_hom, prod.lift_fst]
+
+@[reassoc (attr := simp)]
+lemma tensorObjProdIso_hom_snd {X Y : C} :
+  (tensorObjProdIso X Y).hom ≫ prod.snd = snd X Y := by simp [tensorObjProdIso_hom, prod.lift_snd]
+
+@[reassoc (attr := simp)]
+lemma tensorObjProdIso_inv_fst {X Y : C} :
+  (tensorObjProdIso X Y).inv ≫ fst _ _ = prod.fst := by simp [tensorObjProdIso_inv]
+
+@[reassoc (attr := simp)]
+lemma tensorObjProdIso_inv_snd {X Y : C} :
+  (tensorObjProdIso X Y).inv ≫ snd _ _ = prod.snd := by simp [tensorObjProdIso_inv]
+
+@[reassoc (attr := simp)]
+lemma lift_tensorObjProdIso_hom {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z) :
+    lift f g ≫ (tensorObjProdIso Y Z).hom = prod.lift f g := by
+  ext <;> simp [prod.lift_fst, prod.lift_snd]
+
+@[reassoc (attr := simp)]
+lemma lift_tensorObjProdIso_inv {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z) :
+    prod.lift f g ≫ (tensorObjProdIso Y Z).inv = lift f g := by
+  ext <;> simp [prod.lift_fst, prod.lift_snd]
+
+@[reassoc]
+lemma tensorObjProdIso_hom_map {X₁ Y₁ X₂ Y₂ : C} (f : X₁ ⟶ X₂) (g : Y₁ ⟶ Y₂) :
+    (tensorObjProdIso X₁ Y₁).hom ≫ prod.map f g = (f ⊗ₘ g) ≫ (tensorObjProdIso _ _).hom := by
+  ext <;> simp
+
+@[reassoc]
+lemma tensorObjProdIso_inv_tensorHom {X₁ Y₁ X₂ Y₂ : C} (f : X₁ ⟶ X₂) (g : Y₁ ⟶ Y₂) :
+    (tensorObjProdIso _ _).inv ≫ (f ⊗ₘ g) = prod.map f g ≫ (tensorObjProdIso X₂ Y₂).inv := by
+  ext <;> simp
+
+@[reassoc]
+lemma tensorObjProdIso_hom_whiskerRight {X Y Z : C} (f : X ⟶ Z) :
+    (f ▷ Y) ≫ (tensorObjProdIso _ _).hom = (tensorObjProdIso _ _).hom ≫ prod.map f (𝟙 Y) := by
+  ext <;> simp
+
+@[reassoc]
+lemma tensorObjProdIso_hom_whiskerLeft {X Y Z : C} (f : X ⟶ Z) :
+    (Y ◁ f) ≫ (tensorObjProdIso _ _).hom = (tensorObjProdIso _ _).hom ≫ prod.map (𝟙 Y) f := by
+  ext <;> simp
+
+@[reassoc]
+lemma tensorObjProdIso_inv_whiskerRight {X Y Z : C} (f : X ⟶ Z) :
+    (tensorObjProdIso _ _).inv ≫ (f ▷ Y) = prod.map f (𝟙 Y) ≫ (tensorObjProdIso _ _).inv := by
+  ext <;> simp
+
+@[reassoc]
+lemma tensorObjProdIso_inv_whiskerLeft {X Y Z : C} (f : X ⟶ Z) :
+    (tensorObjProdIso _ _).inv ≫ (Y ◁ f) = prod.map (𝟙 Y) f ≫ (tensorObjProdIso _ _).inv := by
+  ext <;> simp
+
+@[reassoc]
+lemma tensorObjProdIso_hom_braiding_hom [BraidedCategory C] {X Y : C} :
+    (tensorObjProdIso X Y).hom ≫ (prod.braiding _ _).hom =
+      (β_ X Y).hom ≫ (tensorObjProdIso Y X).hom := by
+  ext <;> simp [prod.lift_fst, prod.lift_snd]
+
+@[reassoc]
+lemma tensorObjProdIso_inv_braiding_hom [BraidedCategory C] {X Y : C} :
+    (tensorObjProdIso X Y).inv ≫ (β_ X Y).hom =
+      (prod.braiding _ _).hom ≫ (tensorObjProdIso Y X).inv := by
+  ext <;> simp
+
+end
+
 section CartesianMonoidalCategoryComparison
 
 variable {D : Type u₁} [Category.{v₁} D] [CartesianMonoidalCategory D] (F : C ⥤ D)
