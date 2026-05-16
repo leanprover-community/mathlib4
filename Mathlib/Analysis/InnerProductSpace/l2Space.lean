@@ -356,7 +356,7 @@ theorem Submodule.isHilbertSumOrthogonal (K : Submodule 𝕜 E) [hK : CompleteSp
   refine le_trans ?_ (Submodule.le_topologicalClosure _)
   rw [iSup_bool_eq, cond, cond]
   refine Codisjoint.top_le ?_
-  exact Submodule.isCompl_orthogonal_of_hasOrthogonalProjection.codisjoint
+  exact K.isCompl_orthogonal.codisjoint
 
 end IsHilbertSum
 
@@ -485,11 +485,14 @@ theorem coe_toOrthonormalBasis [Fintype ι] (b : HilbertBasis ι 𝕜 E) :
     (b.toOrthonormalBasis : ι → E) = b :=
   OrthonormalBasis.coe_mk _ _
 
-protected theorem hasSum_orthogonalProjection {U : Submodule 𝕜 E} [CompleteSpace U]
+protected theorem hasSum_orthogonalProjectionOnto {U : Submodule 𝕜 E} [CompleteSpace U]
     (b : HilbertBasis ι 𝕜 U) (x : E) :
-    HasSum (fun i => ⟪(b i : E), x⟫ • b i) (U.orthogonalProjection x) := by
-  simpa only [b.repr_apply_apply, inner_orthogonalProjection_eq_of_mem_left] using
-    b.hasSum_repr (U.orthogonalProjection x)
+    HasSum (fun i => ⟪(b i : E), x⟫ • b i) (U.orthogonalProjectionOnto x) := by
+  simpa only [b.repr_apply_apply, inner_orthogonalProjectionOnto_eq_of_mem_left] using
+    b.hasSum_repr (U.orthogonalProjectionOnto x)
+
+@[deprecated (since := "2026-05-05")] alias hasSum_orthogonalProjection :=
+  HilbertBasis.hasSum_orthogonalProjectionOnto
 
 theorem finite_spans_dense [DecidableEq E] (b : HilbertBasis ι 𝕜 E) :
     (⨆ J : Finset ι, span 𝕜 (J.image b : Set E)).topologicalClosure = ⊤ :=

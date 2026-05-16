@@ -266,7 +266,7 @@ noncomputable def Submodule.measurableEquivProd (s : Submodule ℝ V) (p : P) : 
 @[simp]
 theorem Submodule.measurableEquivProd_apply (s : Submodule ℝ V) (p q : P) :
     s.measurableEquivProd p q =
-    (s.orthogonalProjection (q -ᵥ p), sᗮ.orthogonalProjection (q -ᵥ p)) := by
+    (s.orthogonalProjectionOnto (q -ᵥ p), sᗮ.orthogonalProjectionOnto (q -ᵥ p)) := by
   simp [measurableEquivProd]
 
 @[simp]

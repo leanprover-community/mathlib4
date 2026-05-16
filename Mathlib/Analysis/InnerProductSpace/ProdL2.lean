@@ -87,7 +87,7 @@ variable (K : Submodule 𝕜 E) [K.HasOrthogonalProjection] (x : E)
 isometrically isomorphic to the `L²` product of `K` and `Kᗮ`. -/
 @[simps! symm_apply]
 def orthogonalDecomposition : E ≃ₗᵢ[𝕜] WithLp 2 (K × Kᗮ) where
-  __ := (K.prodEquivOfIsCompl Kᗮ isCompl_orthogonal_of_hasOrthogonalProjection).symm
+  __ := (K.prodEquivOfIsCompl Kᗮ K.isCompl_orthogonal).symm
     ≪≫ₗ (WithLp.linearEquiv 2 𝕜 (K × Kᗮ)).symm
   norm_map' _ := by
     rw [← sq_eq_sq₀ (by positivity) (by positivity), WithLp.prod_norm_sq_eq_of_L2,
@@ -97,25 +97,25 @@ def orthogonalDecomposition : E ≃ₗᵢ[𝕜] WithLp 2 (K × Kᗮ) where
 @[simp]
 theorem orthogonalDecomposition_apply :
     K.orthogonalDecomposition x =
-      .toLp 2 (K.orthogonalProjection x, Kᗮ.orthogonalProjection x) := by
-  simp [orthogonalDecomposition, orthogonalProjection_apply_eq_linearProjOfIsCompl]
+      .toLp 2 (K.orthogonalProjectionOnto x, Kᗮ.orthogonalProjectionOnto x) := by
+  simp [orthogonalDecomposition, orthogonalProjectionOnto_apply_eq_projectionOnto]
 
 theorem toLinearEquiv_orthogonalDecomposition :
     K.orthogonalDecomposition.toLinearEquiv =
-      (K.prodEquivOfIsCompl Kᗮ isCompl_orthogonal_of_hasOrthogonalProjection).symm ≪≫ₗ
+      (K.prodEquivOfIsCompl Kᗮ K.isCompl_orthogonal).symm ≪≫ₗ
         (WithLp.linearEquiv 2 𝕜 (K × Kᗮ)).symm :=
   rfl
 
 theorem toLinearEquiv_orthogonalDecomposition_symm :
     K.orthogonalDecomposition.symm.toLinearEquiv =
       WithLp.linearEquiv 2 𝕜 (K × Kᗮ) ≪≫ₗ
-        K.prodEquivOfIsCompl Kᗮ isCompl_orthogonal_of_hasOrthogonalProjection :=
+        K.prodEquivOfIsCompl Kᗮ K.isCompl_orthogonal :=
   rfl
 
 theorem coe_orthogonalDecomposition :
     (K.orthogonalDecomposition : E →L[𝕜] WithLp 2 (K × Kᗮ)) =
       (WithLp.prodContinuousLinearEquiv 2 𝕜 K Kᗮ).symm ∘L
-        K.orthogonalProjection.prod Kᗮ.orthogonalProjection := by
+        K.orthogonalProjectionOnto.prod Kᗮ.orthogonalProjectionOnto := by
   ext; simp
 
 theorem coe_orthogonalDecomposition_symm :
@@ -124,19 +124,19 @@ theorem coe_orthogonalDecomposition_symm :
   rfl
 
 theorem fst_orthogonalDecomposition_apply :
-    (K.orthogonalDecomposition x).fst = K.orthogonalProjection x := by
+    (K.orthogonalDecomposition x).fst = K.orthogonalProjectionOnto x := by
   simp
 
 theorem snd_orthogonalDecomposition_apply :
-    (K.orthogonalDecomposition x).snd = Kᗮ.orthogonalProjection x := by
+    (K.orthogonalDecomposition x).snd = Kᗮ.orthogonalProjectionOnto x := by
   simp
 
 theorem fstL_comp_coe_orthogonalDecomposition :
-    WithLp.fstL 2 𝕜 K Kᗮ ∘L K.orthogonalDecomposition = K.orthogonalProjection := by
+    WithLp.fstL 2 𝕜 K Kᗮ ∘L K.orthogonalDecomposition = K.orthogonalProjectionOnto := by
   ext; simp
 
 theorem sndL_comp_coe_orthogonalDecomposition :
-    WithLp.sndL 2 𝕜 K Kᗮ ∘L K.orthogonalDecomposition = Kᗮ.orthogonalProjection := by
+    WithLp.sndL 2 𝕜 K Kᗮ ∘L K.orthogonalDecomposition = Kᗮ.orthogonalProjectionOnto := by
   ext; simp
 
 end Submodule
