@@ -812,6 +812,15 @@ lemma ext_getVert {u v} {p q : G.Walk u v} (h : ∀ k, p.getVert k = q.getVert k
   by_contra!
   exact (q.adj_getVert_succ this).ne (by simp [← h, getVert_of_length_le])
 
+lemma dropLast_eq_reverse_tail_reverse {u v} (p : G.Walk u v) :
+    p.dropLast = (p.reverse.tail.copy p.snd_reverse rfl).reverse := by
+  cases p
+  · simp
+  refine ext_getVert fun k ↦ ?_
+  rw [reverse_copy, getVert_copy, dropLast, take_getVert, getVert_reverse,
+    getVert_tail, Nat.eq_sub_of_add_eq (length_tail_add_one (by simp))]
+  grind [length_reverse, getVert_reverse]
+
 end Walk
 
 end SimpleGraph

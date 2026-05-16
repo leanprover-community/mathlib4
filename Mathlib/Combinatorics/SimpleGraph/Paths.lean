@@ -344,6 +344,11 @@ lemma IsPath.tail {p : G.Walk u v} (hp : p.IsPath) : p.tail.IsPath := by
   | cons hadj p =>
     simp_all [Walk.isPath_def]
 
+theorem IsCycle.isPath_dropLast {u} {p : G.Walk u u} (h : p.IsCycle) :
+    p.dropLast.IsPath := by
+  rw [dropLast_eq_reverse_tail_reverse, reverse_copy, isPath_copy, isPath_reverse_iff]
+  exact h.reverse.isPath_tail
+
 /-- There exists a trail of maximal length in a non-empty graph on finite edges. -/
 lemma exists_isTrail_forall_isTrail_length_le_length (G : SimpleGraph V) [N : Nonempty V]
     [Finite G.edgeSet] :
