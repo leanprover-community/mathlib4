@@ -5,8 +5,18 @@ Authors: Mario Carneiro, Johannes Hölzl
 -/
 module
 
-public import Mathlib.Data.List.Basic
 public import Mathlib.Logic.Relator
+public import Aesop.BuiltinRules
+public import Batteries.Data.List.Basic
+public import Mathlib.Data.Nat.Notation
+public import Mathlib.Logic.Function.Defs
+public import Mathlib.Order.Defs.Unbundled
+import Mathlib.Logic.IsEmpty.Defs
+import Mathlib.Tactic.Attr.Core
+import Mathlib.Tactic.Basic
+import Mathlib.Tactic.MkIffOfInductiveProp
+import Mathlib.Tactic.Push
+import Mathlib.Tactic.Use
 
 /-!
 # Double universal quantification on a list
