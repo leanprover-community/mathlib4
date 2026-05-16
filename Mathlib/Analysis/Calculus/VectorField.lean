@@ -636,8 +636,8 @@ lemma pullbackWithin_lieBracketWithin_of_isSymmSndFDerivWithinAt
   have Af : DifferentiableWithinAt 𝕜 f s x := h'f.differentiableWithinAt two_ne_zero
   simp only [lieBracketWithin_eq, pullbackWithin_eq_of_fderivWithin_eq hMx, map_sub, AV, AW]
   rw [fderivWithin_clm_apply, fderivWithin_clm_apply]
-  · simp [fderivWithin_comp' x hW Af hst (hu x hx), ← hMx,
-      fderivWithin_comp' x hV Af hst (hu x hx), M_diff, hf.eq]
+  · simp [fderivWithin_fun_comp x hW Af hst (hu x hx), ← hMx,
+      fderivWithin_fun_comp x hV Af hst (hu x hx), M_diff, hf.eq]
   · exact hu x hx
   · exact M_symm_smooth.differentiableWithinAt one_ne_zero
   · exact hV.comp x Af hst
