@@ -371,6 +371,143 @@ def reportDefEqAbuse {m : Type → Type} [Monad m] [MonadLog m] [AddMessageConte
         `backward.isDefEq.respectTransparency true` but succeeds with `false`.\n\
         The following isDefEq checks are the root causes of the failure:\n{failureList}"
 
+/-- Collect candidate semireducible definition names by transitively following declaration values
+reachable from `roots`, up to a bounded depth. -/
+def collectCandidates (env : Environment) (roots : Array Name) : Array Name := Id.run do
+  let mut visited : NameSet := {}
+  let mut queue := roots
+  let mut candidates : Array Name := #[]
+  for _ in (0 : Nat)...6 do -- depth limit
+    if queue.isEmpty then break
+    let current := queue
+    queue := #[]
+    for name in current do
+      if visited.contains name then continue
+      visited := visited.insert name
+      if let some info := env.find? name then
+        if wasOriginallyDefn env name && getReducibilityStatusCore env name == .semireducible then
+          candidates := candidates.push name
+        -- Only `defs`, `theorem`s and `opaque`s can have values, and we only care about the first.
+        if let .defnInfo { value .. } := info then
+          for c in value.getUsedConstants do
+            if !visited.contains c then
+              queue := queue.push c
+  return candidates
+
+/-- Temporarily mark constants as `@[implicit_reducible]`, run an action, then restore all state.
+
+The full tactic state (which includes the environment carrying recuibility marks) are saved before
+the marks are applied and restored via `finally`, so this helper is self-contained: callers do not
+need additional save/restore wrappers. -/
+def withTempImplicitReducible {α : Type} (names : Array Name) (k : TacticM α) : TacticM α := do
+  let s ← saveState
+  try
+    for name in names do setReducibilityStatus name .implicitReducible
+    k
+  finally
+    s.restore (restoreInfo := true)
+
+/-- Temporarily mark constants as `@[implicit_reducible]`, run an action, then restore all state.
+
+Command-level variant: the full `CommandElabM` state (which includes the environment) is saved
+before the marks are applied and restored via `finally`, so this helper is self-contained. -/
+def withTempImplicitReducibleCmd {α : Type} (names : Array Name)
+    (k : CommandElabM α) : CommandElabM α := do
+  let saved ← get
+  try
+    for name in names do setReducibilityStatus name .implicitReducible
+    k
+  finally
+    set saved
+
+/-- Given a function `succeeds : Array Name → m Bool` and an initial array of `candidates` such
+that `succeeds candidates` is `true` (returning `none` if this is not the case), tries removing
+elements from `candidates` in order such that the resulting array still `succeeds`. Sorts the
+result.
+
+This minimization may not be unique. It also is only minimal under the assumption that removing a
+later element from the array cannot cause an earlier element to become removable. -/
+def minimizeCandidates {m} [Monad m] (succeeds : Array Name → m Bool) (candidates : Array Name) :
+    m (Option (Array Name)) := do
+  unless ← succeeds candidates do return none
+  let mut minimal := candidates
+  for name in minimal do
+    let without := minimal.filter (· != name)
+    if ← succeeds without then minimal := without
+  return minimal.qsort Name.lt
+
+/-- Try to find a (possibly non-unique) minimal set of semireducible constants that, when marked
+`@[implicit_reducible]`, make the tactic succeed with `backward.isDefEq.respectTransparency true`.
+
+Collects candidates by transitively following definition values reachable from the goal type,
+filtering to semireducible definitions. Then verifies and minimizes the set by greedy removal.
+Greedy removal is order-dependent, so the result may not be the unique smallest such set. -/
+def suggestAnnotationsTac (tac : Syntax) : TacticM (Option (Array Name)) := do
+  let goalType ← getMainTarget
+  let candidates := collectCandidates (← getEnv) goalType.getUsedConstants
+  if candidates.isEmpty then return none
+  let succeedsWith (names : Array Name) : TacticM Bool :=
+    withTempImplicitReducible names do withCurrHeartbeats do
+      withOptions (·.setBool `backward.isDefEq.respectTransparency true) do
+        try
+          Core.resetMessageLog
+          Term.withoutErrToSorry <| evalTactic tac
+          notM MonadLog.hasErrors
+        catch _ => pure false
+  minimizeCandidates succeedsWith candidates
+
+/-- Try to find a (possibly non-unique) minimal set of semireducible constants that, when marked
+`@[implicit_reducible]`, make the command succeed with `backward.isDefEq.respectTransparency true`.
+Greedy removal is order-dependent, so the result may not be the unique smallest such set. -/
+def suggestAnnotationsCmd (cmd : Syntax) : CommandElabM (Option (Array Name)) := do
+  -- Collect roots from the command's syntax resolution
+  let env ← getEnv
+  -- Extract constant names mentioned in the command syntax by elaborating once permissively
+  -- and checking what constants appear in the resulting environment additions.
+  -- As a heuristic, use all constants from the new declarations.
+  let saved ← get
+  let roots ← try
+    withScope (fun scope =>
+      { scope with opts := scope.opts.setBool `Elab.async false
+          |>.setBool `backward.isDefEq.respectTransparency false }) do
+      elabCommand cmd
+      let newEnv ← getEnv
+      let mut names : NameSet := {}
+      -- Collect constants from any new declarations added by this command
+      for (name, info) in newEnv.constants.map₂ do
+        if !env.constants.map₂.contains name then
+          names := names ∪ info.getUsedConstantsAsSet
+      return names
+  catch _ => pure {}
+  set saved
+  let candidates := collectCandidates (← getEnv) roots.toArray
+  if candidates.isEmpty then return none
+  let succeedsWith (names : Array Name) : CommandElabM Bool :=
+    withTempImplicitReducibleCmd names do
+      withScope (fun scope =>
+        { scope with opts := scope.opts.setBool `Elab.async false
+            |>.setBool `backward.isDefEq.respectTransparency true }) do
+        try
+          elabCommand cmd
+          notM MonadLog.hasErrors
+        catch _ => return false
+  minimizeCandidates succeedsWith candidates
+
+/-- Format the annotation workaround as a Lean code snippet. -/
+def formatAnnotations (names : Array Name) : MessageData :=
+  let namesList := joinSep (names.toList.map (m!"  {.ofConstName · (fullNames := true)}")) "\n"
+  m!"set_option allowUnsafeReducibility true\nattribute [implicit_reducible]\n{namesList}"
+
+/-- Log annotation suggestions as info. -/
+def logAnnotationSuggestions {m : Type → Type} [Monad m] [MonadLog m] [AddMessageContext m]
+    [MonadOptions m] (names : Option (Array Name)) : m Unit := do
+  let some names := names | return
+  if names.isEmpty then return
+  logInfo m!"Workaround: the following `@[implicit_reducible]` annotations (a possibly \
+    non-unique minimal set) would paper over this problem, but the real issue is likely a leaky \
+    instance somewhere.\n\n\
+    {formatAnnotations names}"
+
 /--
 > **WARNING:** `#defeq_abuse` is an experimental tool intended to assist with breaking
 changes to transparency handling. Its syntax may change at any time, and it may not behave as
@@ -390,20 +527,18 @@ elab (name := defeqAbuse) "#defeq_abuse " "in " tac:tactic : tactic => withMainC
     let runAndCapture (strict : Bool) :
         TacticM (Except MessageData Unit × PersistentArray TraceElem) := do
       modifyTraces (fun _ => {})
-      let result ← try
-        withOptions (fun o =>
-            (o.setBool `backward.isDefEq.respectTransparency strict)
-              |>.setBool `trace.Meta.isDefEq true) do
-          evalTactic tac
-          pure (Except.ok ())
-      catch
-        | .internal id ref =>
-          modifyTraces (fun _ => oldTraces)
-          throw (.internal id ref)
-        | e => pure (Except.error e.toMessageData)
-      let traces ← getTraces
-      modifyTraces (fun _ => oldTraces)
-      return (result, traces)
+      try
+        let result ← try
+          withOptions (fun o =>
+              (o.setBool `backward.isDefEq.respectTransparency strict)
+                |>.setBool `trace.Meta.isDefEq true) do
+            evalTactic tac
+            pure (Except.ok ())
+        catch e => pure (Except.error e.toMessageData)
+        let traces ← getTraces
+        return (result, traces)
+      finally
+        modifyTraces (fun _ => oldTraces)
     -- Pass 1: strict + tracing.
     -- If it succeeds, no abuse; if it fails, we already have the traces.
     let (strictResult, strictTraces) ← runAndCapture true
@@ -435,6 +570,8 @@ elab (name := defeqAbuse) "#defeq_abuse " "in " tac:tactic : tactic => withMainC
         let (uniqueFailures, _) ← analyzeTraces strictMsgs permMsgs
         let disambiguated ← disambiguateFailures uniqueFailures
         reportDefEqAbuse "tactic" disambiguated #[]
+        -- Attempt to find minimal @[implicit_reducible] workaround
+        try logAnnotationSuggestions (← suggestAnnotationsTac tac) catch _ => pure ()
         -- Pass 3: run the tactic with permissive setting so it actually succeeds
         withOptions (fun o => o.setBool `backward.isDefEq.respectTransparency false) do
           evalTactic tac
@@ -471,9 +608,7 @@ elab_rules : command
             pure (Except.error m!"command produced errors")
           else
             pure (Except.ok ())
-      catch
-        | .internal id ref => throw (.internal id ref)
-        | e => pure (Except.error e.toMessageData)
+      catch e => pure (Except.error e.toMessageData)
       let newMsgs := ((← get).messages.toList).drop savedMsgCount
       return (result, newMsgs)
     -- We set `Elab.async false` to force synchronous proof checking,
@@ -513,6 +648,8 @@ elab_rules : command
         let disambiguatedSynth ← synthResults.mapM fun (app, failures) => do
           return (app, ← disambiguateFailures failures)
         reportDefEqAbuse "command" disambiguatedFailures disambiguatedSynth
+        -- Attempt to find minimal @[implicit_reducible] workaround
+        try logAnnotationSuggestions (← suggestAnnotationsCmd cmd) catch _ => pure ()
         -- Pass 3: run the command with permissive setting so it actually takes effect
         withScope (fun scope =>
           { scope with opts := scope.opts.setBool `backward.isDefEq.respectTransparency false }) do

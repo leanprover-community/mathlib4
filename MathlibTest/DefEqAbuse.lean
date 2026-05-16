@@ -68,10 +68,34 @@ noncomputable instance myPredCompleteLattice : CompleteLattice (MyPred ℕ) wher
 warning: #defeq_abuse: tactic fails with `backward.isDefEq.respectTransparency true` but succeeds with `false`.
 The following isDefEq checks are the root causes of the failure:
   ❌️ (i : ℕ) → (fun a => Prop) i =?= MyPred ℕ
+---
+info: Workaround: the following `@[implicit_reducible]` annotations (a possibly non-unique minimal set) would paper over this problem, but the real issue is likely a leaky instance somewhere.
+
+set_option allowUnsafeReducibility true
+attribute [implicit_reducible]
+  MyPred
 -/
 #guard_msgs in
 noncomputable example (s : MyPred ℕ) (a : ℕ) (ha : a ∉ s) : Disjoint s {a} := by
   #defeq_abuse in rw [myPred_disjoint_singleton_right]
+  exact ha
+
+/--
+warning: #defeq_abuse: command fails with `backward.isDefEq.respectTransparency true` but succeeds with `false`.
+The following isDefEq checks are the root causes of the failure:
+  ❌️ MyPred ℕ =?= (i : ℕ) → (fun a => Prop) i
+  ❌️ (i : ℕ) → (fun a => Prop) i =?= MyPred ℕ
+---
+info: Workaround: the following `@[implicit_reducible]` annotations (a possibly non-unique minimal set) would paper over this problem, but the real issue is likely a leaky instance somewhere.
+
+set_option allowUnsafeReducibility true
+attribute [implicit_reducible]
+  MyPred
+-/
+#guard_msgs in
+#defeq_abuse in
+noncomputable def fooDependingOnMyPred (s : MyPred ℕ) (a : ℕ) (ha : a ∉ s) : Disjoint s {a} := by
+  rw [myPred_disjoint_singleton_right]
   exact ha
 
 end SetAliasAbuse
@@ -124,7 +148,9 @@ instance mySub₂MyAction {G : Type} [AddCommGroup G] (s : MySub₂ G) :
 def myOp {α : Type} [AddCommGroup α] [MyAction ℕ α] (x : α) : α :=
   -(MyAction.mySmul (R := ℕ) 1 x)
 
+/-- info: #defeq_abuse: command succeeds with `backward.isDefEq.respectTransparency true`. No abuse detected. -/
 #guard_msgs in
+#defeq_abuse in
 def testVirtualParent {G : Type} [AddCommGroup G] (s : MySub₂ G) (x : s) : s :=
   myOp x
 
@@ -188,6 +214,13 @@ theorem zoC_eq_iff {α} [GrC α] (a : α) : NumC.fromNat 0 = a ↔ a = GrC.add a
 warning: #defeq_abuse: tactic fails with `backward.isDefEq.respectTransparency true` but succeeds with `false`.
 The following isDefEq checks are the root causes of the failure:
   ❌️ @ZoC.zo Int instZoCInt =?= @ZoC.zo Int (@GrC.toZoC Int ?m.11)
+---
+info: Workaround: the following `@[implicit_reducible]` annotations (a possibly non-unique minimal set) would paper over this problem, but the real issue is likely a leaky instance somewhere.
+
+set_option allowUnsafeReducibility true
+attribute [implicit_reducible]
+  zoDirectC
+  zoFromGrC
 -/
 #guard_msgs in
 example (a : Int) : NumC.fromNat 0 = a ↔ a = GrC.add a a := by
