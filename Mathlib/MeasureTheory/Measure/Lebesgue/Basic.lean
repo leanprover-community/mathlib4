@@ -151,7 +151,7 @@ theorem volume_real_closedBall {a r : ℝ} (hr : 0 ≤ r) :
 @[simp]
 theorem volume_eball (a : ℝ) (r : ℝ≥0∞) : volume (Metric.eball a r) = 2 * r := by
   rcases eq_or_ne r ∞ with (rfl | hr)
-  · rw [Metric.eball_top, volume_univ, two_mul, _root_.top_add]
+  · simp
   · lift r to ℝ≥0 using hr
     rw [Metric.eball_coe, volume_ball, two_mul, ← NNReal.coe_add,
       ENNReal.ofReal_coe_nnreal, ENNReal.coe_add, two_mul]
@@ -162,7 +162,7 @@ alias volume_emetric_ball := volume_eball
 @[simp]
 theorem volume_closedEBall (a : ℝ) (r : ℝ≥0∞) : volume (Metric.closedEBall a r) = 2 * r := by
   rcases eq_or_ne r ∞ with (rfl | hr)
-  · rw [Metric.closedEBall_top, volume_univ, two_mul, _root_.top_add]
+  · simp
   · lift r to ℝ≥0 using hr
     rw [Metric.closedEBall_coe, volume_closedBall, two_mul, ← NNReal.coe_add,
       ENNReal.ofReal_coe_nnreal, ENNReal.coe_add, two_mul]

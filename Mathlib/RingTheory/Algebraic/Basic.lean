@@ -654,7 +654,7 @@ theorem inv_eq_of_aeval_divX_ne_zero {x : L} {p : K[X]} (aeval_ne : aeval x (div
     x⁻¹ = aeval x (divX p) / (aeval x p - algebraMap _ _ (p.coeff 0)) := by
   rw [inv_eq_iff_eq_inv, inv_div, eq_comm, div_eq_iff, sub_eq_iff_eq_add, mul_comm]
   conv_lhs => rw [← divX_mul_X_add p]
-  · rw [map_add, map_mul, aeval_X, aeval_C]
+  · simp
   · exact aeval_ne
 
 theorem inv_eq_of_root_of_coeff_zero_ne_zero {x : L} {p : K[X]} (aeval_eq : aeval x p = 0)

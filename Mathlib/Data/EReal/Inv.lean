@@ -224,7 +224,7 @@ noncomputable instance : DivInvOneMonoid EReal where
 
 lemma inv_neg (a : EReal) : (-a)⁻¹ = -a⁻¹ := by
   induction a
-  · rw [neg_bot, inv_top, inv_bot, neg_zero]
+  · simp
   · rw [← coe_inv _, ← coe_neg _⁻¹, ← coe_neg _, ← coe_inv (-_)]
     exact EReal.coe_eq_coe_iff.2 _root_.inv_neg
   · rw [neg_top, inv_bot, inv_top, neg_zero]

@@ -270,7 +270,7 @@ theorem ascFactorial_eq_factorial_mul_choose' (n k : ℕ) :
     n.ascFactorial k = k ! * (n + k - 1).choose k := by
   cases n
   · cases k
-    · rw [ascFactorial_zero, choose_zero_right, factorial_zero, Nat.mul_one]
+    · simp
     · simp only [zero_ascFactorial, Nat.zero_add, succ_sub_succ_eq_sub,
         Nat.sub_zero, choose_succ_self, Nat.mul_zero]
   rw [ascFactorial_eq_factorial_mul_choose]

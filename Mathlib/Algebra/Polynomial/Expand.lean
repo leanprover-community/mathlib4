@@ -80,7 +80,7 @@ theorem expand_one (f : R[X]) : expand R 1 f = f :=
     rw [map_mul, expand_C, map_pow, expand_X, pow_one]
 
 theorem expand_pow (f : R[X]) : expand R (p ^ q) f = (expand R p)^[q] f :=
-  Nat.recOn q (by rw [pow_zero, expand_one, Function.iterate_zero, id]) fun n ih => by
+  Nat.recOn q (by simp) fun n ih => by
     rw [Function.iterate_succ_apply', pow_succ', expand_mul, ih]
 
 theorem derivative_expand (f : R[X]) : Polynomial.derivative (expand R p f) =

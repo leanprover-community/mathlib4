@@ -330,8 +330,7 @@ lemma eRk_union_le_eRk_add_encard (M : Matroid α) (X Y : Set α) :
 
 lemma eRank_le_encard_add_eRk_compl (M : Matroid α) (X : Set α) :
     M.eRank ≤ X.encard + M.eRk (M.E \ X) :=
-  le_trans (by rw [← eRk_inter_ground, eRank_def, union_diff_self,
-    union_inter_cancel_right]) (M.eRk_union_le_encard_add_eRk X (M.E \ X))
+  le_trans (by simp) (M.eRk_union_le_encard_add_eRk X (M.E \ X))
 
 end Basic
 

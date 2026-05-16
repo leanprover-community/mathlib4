@@ -485,8 +485,7 @@ theorem AlgebraicIndependent.aeval_comp_mvPolynomialOptionEquivPolynomialAdjoin
     rw [hx.mvPolynomialOptionEquivPolynomialAdjoin_C, aeval_C, Polynomial.aeval_C,
       IsScalarTower.algebraMap_apply R (adjoin R (range x)) A]
   · rintro (⟨⟩ | ⟨i⟩)
-    · rw [hx.mvPolynomialOptionEquivPolynomialAdjoin_X_none, aeval_X, Polynomial.aeval_X,
-        Option.elim]
+    · simp
     · rw [hx.mvPolynomialOptionEquivPolynomialAdjoin_X_some, Polynomial.aeval_C,
         hx.algebraMap_aevalEquiv, aeval_X, aeval_X, Option.elim]
 

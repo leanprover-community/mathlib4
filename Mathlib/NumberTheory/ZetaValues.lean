@@ -362,7 +362,7 @@ theorem hasSum_one_div_nat_pow_mul_cos {k : ℕ} (hk : k ≠ 0) {x : ℝ} (hx : 
     convert
       hasSum_one_div_nat_pow_mul_fourier (by lia : 2 ≤ 2 * k)
         hx using 3
-    · rw [pow_mul (-1 : ℂ), neg_one_sq, one_pow, one_mul]
+    · simp
     · rw [pow_add, pow_one]
       conv_rhs =>
         rw [mul_pow]
