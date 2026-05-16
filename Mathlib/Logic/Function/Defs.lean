@@ -23,27 +23,6 @@ variable {α : Sort u₁} {β : Sort u₂} {φ : Sort u₃} {δ : Sort u₄} {ζ
 
 lemma flip_def {f : α → β → φ} : flip f = fun b a => f a b := rfl
 
-/-- Composition of dependent functions: `(f ∘' g) x = f (g x)`, where type of `g x` depends on `x`
-and type of `f (g x)` depends on `x` and `g x`. -/
-@[inline, reducible]
-def dcomp {β : α → Sort u₂} {φ : ∀ {x : α}, β x → Sort u₃} (f : ∀ {x : α} (y : β x), φ y)
-    (g : ∀ x, β x) : ∀ x, φ (g x) := fun x => f (g x)
-
-@[inherit_doc] infixr:80 " ∘' " => Function.dcomp
-
-/-- Product of functions: `Function.prod f g i = (f i, g i)`, where the types of `f i` and
-`g i` may depend on `i`. -/
-protected def prod {ι} {α β : ι → Type*} (f : ∀ i, α i) (g : ∀ i, β i) (i : ι) :
-    α i × β i := (f i, g i)
-
-@[simp] lemma prod_apply {ι} {α β : ι → Type*} (f : ∀ i, α i) (g : ∀ i, β i) (i : ι) :
-    Function.prod f g i = (f i , g i) := rfl
-
-lemma prod_fst_snd {α β} : Function.prod (Prod.fst : α × β → α) (Prod.snd : α × β → β) = id :=
-  rfl
-lemma prod_snd_fst {α β} : Function.prod (Prod.snd : α × β → β) (Prod.fst : α × β → α) = .swap :=
-  rfl
-
 /-- Given functions `f : β → β → φ` and `g : α → β`, produce a function `α → α → φ` that evaluates
 `g` on each argument, then applies `f` to the results. Can be used, e.g., to transfer a relation
 from `β` to `α`. -/

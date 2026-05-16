@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.Notation.Defs
 public import Mathlib.Tactic.Push.Attr
-public import Mathlib.Logic.Function.Defs
+public import Mathlib.Logic.Function.Init
 public import Batteries.Tactic.Alias
 
 /-!
@@ -32,10 +32,10 @@ namespace Pi
 alias prod := Function.prod
 
 @[deprecated (since := "2026-04-21")]
-alias prod_fst_snd := Function.prod_fst_snd
+alias prod_fst_snd := Function.fst_prod_snd
 
 @[deprecated (since := "2026-04-21")]
-alias prod_snd_fst := Function.prod_snd_fst
+alias prod_snd_fst := Function.snd_prod_fst
 
 /-! `1`, `0`, `+`, `*`, `+ᵥ`, `•`, `^`, `-`, `⁻¹`, and `/` are defined pointwise. -/
 
