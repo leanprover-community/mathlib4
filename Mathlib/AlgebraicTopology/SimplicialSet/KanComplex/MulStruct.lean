@@ -6,7 +6,10 @@ Authors: Joël Riou
 module
 
 public import Mathlib.AlgebraicTopology.SimplicialSet.Boundary
+public import Mathlib.AlgebraicTopology.SimplicialSet.HornColimits
 public import Mathlib.AlgebraicTopology.SimplicialSet.RelativeMorphism
+public import Mathlib.AlgebraicTopology.SimplicialSet.KanComplex
+public import Mathlib.AlgebraicTopology.SimplicialSet.Op
 
 /-!
 # Pointed simplices
@@ -22,8 +25,29 @@ which will be used in the definition of homotopy groups of Kan complexes.
 
 universe u
 
-open CategoryTheory Simplicial
+open HomotopicalAlgebra CategoryTheory Simplicial Limits
+
 namespace SSet
+
+-- to be moved
+instance {X : SSet.{u}} [KanComplex X] : KanComplex X.op := by
+  rw [KanComplex.iff]
+  intro n i f hf
+  replace hf : horn.IsCompatible (i := i.rev)
+      (fun j hj ↦ yonedaEquiv.symm (opObjEquiv (yonedaEquiv (f j.rev (by grind))))) := by
+    obtain _ | n := n
+    · simp
+    · rw [horn.isCompatible_iff]
+      intro j k jh hk hjk
+      simp only [stdSimplex.δ_comp_yonedaEquiv_symm, δ_opObjEquiv,
+        ← stdSimplex.yonedaEquiv_δ_comp]
+      congr 3
+      convert (hf.δ_pred_comp k.rev j.rev (by grind) (by grind) (by grind)).symm <;>
+        grind [Fin.castPred]
+  refine ⟨yonedaEquiv.symm (opObjEquiv.symm (yonedaEquiv hf.liftOfKanComplex)), fun j hj ↦ ?_⟩
+  rw [stdSimplex.δ_comp_yonedaEquiv_symm, op_δ, Equiv.apply_symm_apply,
+    ← stdSimplex.yonedaEquiv_δ_comp, hf.δ_liftOfKanComplex ..]
+  simp
 
 variable (X : SSet.{u})
 
@@ -52,6 +76,41 @@ lemma comp_map_eq_const
 lemma δ_map (f : X.PtSimplex (n + 1) x) (i : Fin (n + 2)) :
     stdSimplex.δ i ≫ f.map = const x :=
   comp_map_eq_const _ _
+
+/-- The bijection between `n`-simplices of `X.op` and of `X`
+that are constant on the boundary. -/
+@[simps]
+def opEquiv : X.op.PtSimplex n (opObjEquiv.symm x) ≃ X.PtSimplex n x where
+  toFun f :=
+    { map := yonedaEquiv.symm (opObjEquiv (yonedaEquiv f.map))
+      comm := by
+        obtain _ | n := n
+        · ext
+        · refine boundary.hom_ext (fun i ↦ ?_)
+          simp [stdSimplex.δ_comp_yonedaEquiv_symm,
+            δ_opObjEquiv, ← stdSimplex.yonedaEquiv_δ_comp,
+            opObjEquiv_yonedaEquiv_const] }
+  invFun g :=
+    { map := yonedaEquiv.symm (opObjEquiv.symm (yonedaEquiv g.map))
+      comm := by
+        obtain _ | n := n
+        · ext
+        · refine boundary.hom_ext (fun i ↦ ?_)
+          simp [stdSimplex.δ_comp_yonedaEquiv_symm, op_δ,
+            ← stdSimplex.yonedaEquiv_δ_comp,
+            opObjEquiv_symm_yonedaEquiv_const] }
+  left_inv _ := by simp
+  right_inv _ := by simp
+
+/-- Given a `n`-simplex of `X` that is constant on the boundary, this
+is the corresponding `n`-simplex of `X.op`. -/
+abbrev op (f : X.PtSimplex n x) : X.op.PtSimplex n (opObjEquiv.symm x) :=
+  opEquiv.symm f
+
+/-- Given a `n`-simplex of `X.op` that is constant on the boundary, this
+is the corresponding `n`-simplex of `X`. -/
+abbrev unop (f : X.op.PtSimplex n (opObjEquiv.symm x)) : X.PtSimplex n x :=
+  opEquiv f
 
 /-- For each `i : Fin (n + 1)`, this is a variant of the homotopy relation on
 `n`-simplices that are constant on the boundary. Simplices `f` and `g` are related
@@ -134,6 +193,54 @@ namespace MulStruct
 attribute [reassoc (attr := simp)] δ_castSucc_castSucc_map δ_succ_castSucc_map δ_succ_succ_map
   δ_map_of_lt δ_map_of_gt
 
+/-- The `Mulstruct` for `X.op` that is deduced from a `Mulstruct` for the simplicial
+set `X`. -/
+def op {f g fg : X.PtSimplex n x} {i : Fin n} (h : MulStruct f g fg i) {j : Fin n}
+    (hij : i.rev = j := by grind) :
+    MulStruct g.op f.op fg.op j where
+  map := yonedaEquiv.symm (opObjEquiv.symm (yonedaEquiv h.map))
+  δ_castSucc_castSucc_map := by
+    rw [stdSimplex.δ_comp_yonedaEquiv_symm, op_δ, Equiv.apply_symm_apply,
+      ← stdSimplex.yonedaEquiv_δ_comp, opEquiv_symm_apply_map, ← h.δ_succ_succ_map,
+      Fin.rev_castSucc, Fin.rev_castSucc, ← hij, Fin.rev_rev]
+  δ_succ_castSucc_map := by
+    rw [stdSimplex.δ_comp_yonedaEquiv_symm, op_δ, Equiv.apply_symm_apply,
+      ← stdSimplex.yonedaEquiv_δ_comp, opEquiv_symm_apply_map, ← h.δ_succ_castSucc_map,
+      Fin.rev_succ, Fin.rev_castSucc, Fin.castSucc_succ, ← hij, Fin.rev_rev]
+  δ_succ_succ_map := by
+    rw [stdSimplex.δ_comp_yonedaEquiv_symm, op_δ, Equiv.apply_symm_apply,
+      ← stdSimplex.yonedaEquiv_δ_comp, opEquiv_symm_apply_map, ← h.δ_castSucc_castSucc_map,
+      Fin.rev_succ, Fin.rev_succ, ← hij, Fin.rev_rev]
+  δ_map_of_lt k hk := by
+    simp [stdSimplex.δ_comp_yonedaEquiv_symm, ← stdSimplex.yonedaEquiv_δ_comp,
+      opObjEquiv_symm_yonedaEquiv_const, h.δ_map_of_gt k.rev (by grind)]
+  δ_map_of_gt k hk := by
+    simp [stdSimplex.δ_comp_yonedaEquiv_symm, ← stdSimplex.yonedaEquiv_δ_comp,
+      opObjEquiv_symm_yonedaEquiv_const, h.δ_map_of_lt k.rev (by grind)]
+
+/-- The `Mulstruct` for a simplicial set `X` that is deduced from a `Mulstruct` for `X.op`. -/
+def unop {f g fg : X.PtSimplex n x} {i : Fin n} (h : MulStruct g.op f.op fg.op i) {j : Fin n}
+    (hij : i.rev = j := by grind) :
+    MulStruct f g fg j where
+  map := yonedaEquiv.symm (opObjEquiv (yonedaEquiv h.map))
+  δ_castSucc_castSucc_map := by
+    simp [stdSimplex.δ_comp_yonedaEquiv_symm, δ_opObjEquiv,
+      ← stdSimplex.yonedaEquiv_δ_comp, ← hij, Fin.rev_castSucc]
+  δ_succ_castSucc_map := by
+    simp [stdSimplex.δ_comp_yonedaEquiv_symm, δ_opObjEquiv,
+      ← stdSimplex.yonedaEquiv_δ_comp, ← hij, Fin.rev_castSucc, Fin.rev_succ]
+  δ_succ_succ_map := by
+    simp [stdSimplex.δ_comp_yonedaEquiv_symm, δ_opObjEquiv,
+      ← stdSimplex.yonedaEquiv_δ_comp, ← hij, Fin.rev_succ]
+  δ_map_of_lt k hk := by
+    rw [stdSimplex.δ_comp_yonedaEquiv_symm, δ_opObjEquiv,
+      ← stdSimplex.yonedaEquiv_δ_comp, h.δ_map_of_gt _ (by grind)]
+    simp [opObjEquiv_yonedaEquiv_const]
+  δ_map_of_gt k hk := by
+    rw [stdSimplex.δ_comp_yonedaEquiv_symm, δ_opObjEquiv,
+      ← stdSimplex.yonedaEquiv_δ_comp, h.δ_map_of_lt _ (by grind)]
+    simp [opObjEquiv_yonedaEquiv_const]
+
 end MulStruct
 
 /-- If `f` and `g` are in `X.PtSimplex n x`, then `RelStruct f g i.castSucc`
@@ -184,6 +291,140 @@ this is the term in `MulStruct f .const f i` corresponding to
 def mulOne (f : X.PtSimplex n x) (i : Fin n) :
     MulStruct f .const f i :=
   relStructSuccEquivMulStruct (.refl f i.succ)
+
+section
+
+variable {f₀₁ f₁₂ f₂₃ f₀₂ f₁₃ f₀₃ : X.PtSimplex n x} {i : Fin n}
+  (h₀₂ : MulStruct f₀₁ f₁₂ f₀₂ i) (h₁₃ : MulStruct f₁₂ f₂₃ f₁₃ i)
+  (h : MulStruct f₀₁ f₁₃ f₀₃ i)
+
+namespace assocAux
+
+def α (j : Fin (n + 3)) (_ : j ≠ i.castSucc.castSucc.succ := by grind) :
+    Δ[n + 1] ⟶ X :=
+  if j = i.castSucc.castSucc.castSucc then h₁₃.map else
+    if j = i.castSucc.succ.succ then h.map else
+      if j = i.succ.succ.succ then h₀₂.map else
+        const x
+
+lemma α_of_lt (j : Fin (n + 3)) (hj : j < i.castSucc.castSucc.castSucc := by grind) :
+    α h₀₂ h₁₃ h j = const x := by
+  dsimp [α]
+  rw [if_neg (by grind), if_neg (by grind), if_neg (by grind)]
+
+lemma α_of_gt (j : Fin (n + 3)) (hj : i.succ.succ.succ < j := by grind) :
+    α h₀₂ h₁₃ h j = const x := by
+  dsimp [α]
+  rw [if_neg (by grind), if_neg (by grind), if_neg (by grind)]
+
+@[simp]
+lemma α_castSucc_castSucc_castSucc :
+    α h₀₂ h₁₃ h i.castSucc.castSucc.castSucc = h₁₃.map := by
+  simp [α]
+
+@[simp]
+lemma α_castSucc_succ_succ :
+    α h₀₂ h₁₃ h (i.castSucc.succ.succ) = h.map := by
+  dsimp [α]
+  rw [if_neg (by grind), if_pos (by simp)]
+
+@[simp]
+lemma α_succ_succ_succ :
+    α h₀₂ h₁₃ h i.succ.succ.succ = h₀₂.map := by
+  dsimp [α]
+  rw [if_neg (by grind), if_neg (by grind), if_pos (by simp)]
+
+lemma isCompatible_α : horn.IsCompatible (fun j hj ↦ α h₀₂ h₁₃ h j hj) := by
+  rw [horn.isCompatible_iff]
+  intro j k hj hk hjk
+  obtain ⟨j, rfl⟩ := Fin.eq_castSucc_of_ne_last (Fin.ne_last_of_lt hjk)
+  obtain ⟨k, rfl⟩ := Fin.eq_succ_of_ne_zero (Fin.ne_zero_of_lt hjk)
+  simp only [Fin.pred_succ, Fin.castPred_castSucc]
+  simp only [Fin.castSucc_lt_succ_iff] at hjk
+  by_cases! hj' : j < i.castSucc.castSucc
+  · rw [α_of_lt _ _ _ _ (by simpa), comp_const]
+    obtain ⟨j, rfl⟩ := Fin.eq_castSucc_of_ne_last (Fin.ne_last_of_lt hj')
+    by_cases! hk : k.succ < i.castSucc.castSucc.castSucc
+    · simp [α_of_lt _ _ _ _ hk]
+    · obtain hk | hk := hk.eq_or_lt
+      · simp only [← hk, α_castSucc_castSucc_castSucc]
+        rwa [h₁₃.δ_map_of_lt]
+      · simp only [Fin.castSucc_lt_succ_iff] at hk
+        obtain rfl | hk := hk.eq_or_lt
+        · rw [α_of_lt, comp_const]
+        · rw [Fin.castSucc_lt_iff_succ_le] at hk
+          · obtain rfl | hk := hk.eq_or_lt
+            · rw [α_castSucc_succ_succ, h.δ_map_of_lt _ (by grind)]
+            · rw [Fin.succ_castSucc, Fin.castSucc_lt_iff_succ_le] at hk
+              obtain rfl | hk := hk.eq_or_lt
+              · rw [α_succ_succ_succ, h₀₂.δ_map_of_lt _ (by grind)]
+              · rw [α_of_gt .., comp_const]
+  · obtain rfl | hj' := hj'.eq_or_lt
+    · rw [α_castSucc_castSucc_castSucc]
+      replace hjk := hjk.lt_of_ne' (by simpa using hk)
+      rw [Fin.castSucc_lt_iff_succ_le] at hjk
+      obtain rfl | hjk := hjk.eq_or_lt
+      · simp
+      · rw [Fin.succ_castSucc, Fin.castSucc_lt_iff_succ_le] at hjk
+        obtain rfl | hjk := hjk.eq_or_lt
+        · simp
+        · rw [h₁₃.δ_map_of_gt _ hjk, α_of_gt .., comp_const]
+    · rw [Fin.castSucc_lt_iff_succ_le] at hj'
+      replace hj' := hj'.lt_of_ne (by grind)
+      rw [Fin.succ_castSucc, Fin.castSucc_lt_iff_succ_le] at hj'
+      obtain rfl | hj' := hj'.eq_or_lt
+      · simp only [Fin.castSucc_succ, α_castSucc_succ_succ]
+        obtain rfl | hjk := hjk.eq_or_lt
+        · simp
+        · rw [h.δ_map_of_gt _ hjk, α_of_gt .., comp_const]
+      · rw [← Fin.succ_le_castSucc_iff] at hj'
+        obtain hj' | hj' := hj'.eq_or_lt
+        · simp only [← hj', α_succ_succ_succ]
+          rw [h₀₂.δ_map_of_gt _ (by grind), α_of_gt .., comp_const]
+        · rw [α_of_gt .., α_of_gt .., comp_const, comp_const]
+
+end assocAux
+
+@[simps]
+def assocAux (φ : (Δ[n + 2] : SSet) ⟶ X)
+    (hφ : ∀ (j : Fin (n + 3)) (hj : j ≠ i.castSucc.castSucc.succ),
+      stdSimplex.δ j ≫ φ = assocAux.α h₀₂ h₁₃ h j hj) :
+    MulStruct f₀₂ f₂₃ f₀₃ i where
+  map := stdSimplex.δ i.castSucc.castSucc.succ ≫ φ
+  δ_castSucc_castSucc_map := by
+    rw [stdSimplex.δ_comp_δ_assoc (by simp), hφ _ (by grind)]
+    simp
+  δ_succ_castSucc_map := by
+    rw [dsimp% stdSimplex.δ_comp_δ_self_assoc (i := i.castSucc.succ),
+      hφ _ (by grind)]
+    simp
+  δ_succ_succ_map := by
+    rw [← dsimp% stdSimplex.δ_comp_δ_assoc (i := i.castSucc.succ) (by grind),
+      hφ _ (by grind)]
+    simp
+  δ_map_of_lt j hj := by
+    rw [stdSimplex.δ_comp_δ_assoc (by grind), hφ _ (by grind),
+      assocAux.α_of_lt _ _ _ _ (by grind)]
+    simp
+  δ_map_of_gt j hj := by
+    rw [← dsimp% stdSimplex.δ_comp_δ_assoc (i := i.castSucc.succ) (by grind),
+      hφ _ (by grind), assocAux.α_of_gt _ _ _ _ (by grind)]
+    simp
+
+@[no_expose]
+noncomputable def assoc [KanComplex X] : MulStruct f₀₂ f₂₃ f₀₃ i :=
+  assocAux h₀₂ h₁₃ h (assocAux.isCompatible_α h₀₂ h₁₃ h).liftOfKanComplex
+    (fun j hj ↦ (assocAux.isCompatible_α h₀₂ h₁₃ h).δ_liftOfKanComplex j hj)
+
+end
+
+@[no_expose]
+noncomputable def assoc' [KanComplex X]
+    {f₀₁ f₁₂ f₂₃ f₀₂ f₁₃ f₀₃ : X.PtSimplex n x} {i : Fin n}
+    (h₀₂ : MulStruct f₀₁ f₁₂ f₀₂ i) (h₁₃ : MulStruct f₁₂ f₂₃ f₁₃ i)
+    (h : MulStruct f₀₂ f₂₃ f₀₃ i) :
+    MulStruct f₀₁ f₁₃ f₀₃ i :=
+  (assoc (h₁₃.op rfl) (h₀₂.op rfl) (h.op rfl)).unop
 
 end MulStruct
 
