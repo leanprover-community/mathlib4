@@ -526,6 +526,15 @@ theorem regularSpace_iff : RegularSpace (Compacts α) ↔ RegularSpace α :=
 theorem t3Space_iff : T3Space (Compacts α) ↔ T3Space α :=
   ⟨fun _ => isEmbedding_singleton.t3Space, fun _ => inferInstance⟩
 
+instance [SecondCountableTopology α] : SecondCountableTopology (Compacts α) := by
+  obtain ⟨b, hb₁, -, hb₂⟩ := exists_countable_basis α
+  exact hb₂.compacts.secondCountableTopology <| (countable_setOf_finite_subset hb₁).image _
+
+@[simp]
+theorem secondCountableTopology_iff :
+    SecondCountableTopology (Compacts α) ↔ SecondCountableTopology α :=
+  ⟨fun _ => isEmbedding_singleton.secondCountableTopology, fun _ => inferInstance⟩
+
 theorem isCompact_subsets_of_isCompact {K : Set α} (hK : IsCompact K) :
     IsCompact {L : Compacts α | ↑L ⊆ K} := by
   rw [isEmbedding_coe.isCompact_iff]
@@ -769,6 +778,14 @@ theorem regularSpace_iff : RegularSpace (NonemptyCompacts α) ↔ RegularSpace �
 @[simp]
 theorem t3Space_iff : T3Space (NonemptyCompacts α) ↔ T3Space α :=
   ⟨fun _ => isEmbedding_singleton.t3Space, fun _ => inferInstance⟩
+
+instance [SecondCountableTopology α] : SecondCountableTopology (NonemptyCompacts α) :=
+  isEmbedding_toCompacts.secondCountableTopology
+
+@[simp]
+theorem secondCountableTopology_iff :
+    SecondCountableTopology (NonemptyCompacts α) ↔ SecondCountableTopology α :=
+  ⟨fun _ => isEmbedding_singleton.secondCountableTopology, fun _ => inferInstance⟩
 
 instance [CompactSpace α] : CompactSpace (NonemptyCompacts α) :=
   isClosedEmbedding_toCompacts.compactSpace
