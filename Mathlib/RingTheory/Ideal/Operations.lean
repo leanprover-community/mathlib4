@@ -1076,7 +1076,7 @@ theorem subset_union_prime' {R : Type u} [CommRing R] {s : Finset ι} {f : ι �
   | succ n ih =>
     classical
     replace hn : ∃ (i : ι) (t : Finset ι), i ∉ t ∧ insert i t = s ∧ t.card = n :=
-      Finset.card_eq_succ.1 hn
+      Finset.card_eq_add_one.1 hn
     rcases hn with ⟨i, t, hit, rfl, hn⟩
     replace hp : IsPrime (f i) ∧ ∀ x ∈ t, IsPrime (f x) := (t.forall_mem_insert _ _).1 hp
     by_cases Ht : ∃ j ∈ t, f j ≤ f i

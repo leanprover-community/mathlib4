@@ -1254,7 +1254,7 @@ theorem eq_insert_of_ncard_eq_succ {n : ℕ} (h : s.ncard = n + 1) :
     ∃ a t, a ∉ t ∧ insert a t = s ∧ t.ncard = n := by
   classical
   have hsf := finite_of_ncard_pos (n.zero_lt_succ.trans_eq h.symm)
-  rw [ncard_eq_toFinset_card _ hsf, Finset.card_eq_succ] at h
+  rw [ncard_eq_toFinset_card _ hsf, Finset.card_eq_add_one] at h
   obtain ⟨a, t, hat, hts, rfl⟩ := h
   simp only [Finset.ext_iff, Finset.mem_insert, Finite.mem_toFinset] at hts
   refine ⟨a, t, hat, ?_, ?_⟩
