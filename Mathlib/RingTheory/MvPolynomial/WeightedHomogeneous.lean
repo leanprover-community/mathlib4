@@ -216,6 +216,11 @@ theorem isWeightedHomogeneous_zero (w : σ → M) (m : M) :
 theorem isWeightedHomogeneous_one (w : σ → M) : IsWeightedHomogeneous w (1 : MvPolynomial σ R) 0 :=
   isWeightedHomogeneous_C _ _
 
+lemma isHomogeneous_of_isEmpty [IsEmpty σ] (w : σ → M) (f : MvPolynomial σ R) :
+    IsWeightedHomogeneous w f 0 := by
+  rw [eq_C_of_isEmpty f]
+  exact isWeightedHomogeneous_C _ _
+
 /-- An indeterminate `i : σ` is weighted homogeneous of degree `w i`. -/
 theorem isWeightedHomogeneous_X (w : σ → M) (i : σ) :
     IsWeightedHomogeneous w (X i : MvPolynomial σ R) (w i) := by
@@ -471,6 +476,10 @@ theorem weightedHomogeneousComponent_of_mem [DecidableEq M] {m n : M}
     split_ifs with h1
     · rfl
     · simp only [coeff_zero]
+
+lemma homogeneousComponent_eq_self {n : M} {p : MvPolynomial σ R}
+    (hp : p.IsWeightedHomogeneous w n) : weightedHomogeneousComponent w n p = p := by
+  classical simp [weightedHomogeneousComponent_of_mem hp]
 
 lemma support_weightedHomogeneousComponent [DecidableEq M] (n : M) (p : MvPolynomial σ R) :
     (weightedHomogeneousComponent w n p).support = {c ∈ p.support | (weight w) c = n} := by
