@@ -219,9 +219,10 @@ lemma isField_stalk_of_closure_mem_irreducibleComponents
       ⟨X.affineCover.f i x, subset_closure rfl, _, rfl⟩
   obtain ⟨R, rfl⟩ := hX
   replace hx : x.asIdeal ∈ minimalPrimes R := by
-    rwa [← PrimeSpectrum.vanishingIdeal_singleton, PrimeSpectrum.vanishingIdeal_mem_minimalPrimes]
+    rw [← PrimeSpectrum.vanishingIdeal_singleton]
+    exact PrimeSpectrum.vanishingIdeal_isMinimalPrime_iff.mpr hx
   rw [← PrimeSpectrum.subsingleton_iff_isField_of_isReduced]
-  exact IsLocalization.subsingleton_primeSpectrum_of_mem_minimalPrimes _ hx
+  exact IsLocalization.subsingleton_primeSpectrum_of_isMinimalPrime _ hx
     ((Spec.structureSheaf R).presheaf.stalk x)
 
 /-- A scheme `X` is integral if its is nonempty,

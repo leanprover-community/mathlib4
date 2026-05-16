@@ -68,8 +68,8 @@ theorem Ideal.iUnion_minimalPrimes :
     refine ⟨p, hp, (hp.isPrime.mem_or_mem ?_).resolve_right hyp⟩
     exact hp.isPrime.radical_le_iff.mpr hp.le hx
 
-theorem Ideal.exists_mul_mem_of_mem_minimalPrimes
-    {p : Ideal R} (hp : p ∈ I.minimalPrimes) {x : R} (hx : x ∈ p) :
+theorem Ideal.exists_mul_mem_of_isMinimalPrime
+    {p : Ideal R} (hp : I.IsMinimalPrime p) {x : R} (hx : x ∈ p) :
     ∃ y ∉ I, x * y ∈ I := by
   classical
   obtain ⟨y, hy, n, hx⟩ := Ideal.iUnion_minimalPrimes.subset (Set.mem_biUnion hp hx)
@@ -80,43 +80,64 @@ theorem Ideal.exists_mul_mem_of_mem_minimalPrimes
   rw [← mul_assoc, ← pow_succ', tsub_add_cancel_of_le (Nat.one_le_iff_ne_zero.mpr this)]
   exact Nat.find_spec H
 
-theorem IsSMulRegular.notMem_of_mem_minimalPrimes
+@[deprecated "Use `Ideal.exists_mul_mem_of_isMinimalPrime` instead." (since := "2026-05-13")]
+alias Ideal.exists_mul_mem_of_mem_minimalPrimes := Ideal.exists_mul_mem_of_isMinimalPrime
+
+theorem IsSMulRegular.notMem_of_isMinimalPrime
     {M : Type*} [AddCommMonoid M] [Module R M] {x : R} (reg : IsSMulRegular M x)
-    {p : Ideal R} (hp : p ∈ (Module.annihilator R M).minimalPrimes) : x ∉ p := by
+    {p : Ideal R} (hp : (Module.annihilator R M).IsMinimalPrime p) : x ∉ p := by
   intro hx
-  rcases Ideal.exists_mul_mem_of_mem_minimalPrimes hp hx with ⟨y, hy, hxy⟩
+  rcases Ideal.exists_mul_mem_of_isMinimalPrime hp hx with ⟨y, hy, hxy⟩
   rcases not_forall.mp (Module.mem_annihilator.not.mp hy) with ⟨m, hm⟩
   exact hm (reg.right_eq_zero_of_smul ((smul_smul x y m).trans (Module.mem_annihilator.mp hxy m)))
 
+@[deprecated "Use `IsSMulRegular.notMem_of_isMinimalPrime` instead." (since := "2026-05-13")]
+alias IsSMulRegular.notMem_of_mem_minimalPrimes := IsSMulRegular.notMem_of_isMinimalPrime
+
 /-- Minimal primes are contained in zero divisors. -/
-lemma Ideal.disjoint_nonZeroDivisors_of_mem_minimalPrimes {p : Ideal R} (hp : p ∈ minimalPrimes R) :
+lemma Ideal.disjoint_nonZeroDivisors_of_isMinimalPrime {p : Ideal R} (hp : IsMinimalPrime p) :
     Disjoint (p : Set R) (nonZeroDivisors R) := by
   simp_rw [Set.disjoint_left, SetLike.mem_coe, mem_nonZeroDivisors_iff_right, not_forall,
     exists_prop, @and_comm (_ * _ = _), ← mul_comm]
-  exact fun _ ↦ Ideal.exists_mul_mem_of_mem_minimalPrimes hp
+  exact fun _ ↦ Ideal.exists_mul_mem_of_isMinimalPrime hp
+
+@[deprecated "Use `Ideal.disjoint_nonZeroDivisors_of_isMinimalPrime` instead."
+  (since := "2026-05-13")]
+alias Ideal.disjoint_nonZeroDivisors_of_mem_minimalPrimes :=
+  Ideal.disjoint_nonZeroDivisors_of_isMinimalPrime
 
 /-- An element of a minimal prime is a zero divisor. -/
-lemma notMem_nonZeroDivisors_of_mem_mem_minimalPrimes
-    {x : R} {q : Ideal R} (hx : x ∈ q) (hq : q ∈ minimalPrimes R) :
-    x ∉ nonZeroDivisors R :=
-  Set.disjoint_left.mp (Ideal.disjoint_nonZeroDivisors_of_mem_minimalPrimes hq) hx
+lemma notMem_nonZeroDivisors_of_isMinimalPrime
+    {x : R} {q : Ideal R} (hx : x ∈ q) (hq : IsMinimalPrime q) : x ∉ nonZeroDivisors R :=
+  Set.disjoint_left.mp (Ideal.disjoint_nonZeroDivisors_of_isMinimalPrime hq) hx
 
-theorem Ideal.exists_comap_eq_of_mem_minimalPrimes {I : Ideal S} (f : R →+* S) (p)
-    (H : p ∈ (I.comap f).minimalPrimes) : ∃ p' : Ideal S, p'.IsPrime ∧ I ≤ p' ∧ p'.comap f = p :=
+@[deprecated "Use `notMem_nonZeroDivisors_of_isMinimalPrime` instead." (since := "2026-05-13")]
+alias notMem_nonZeroDivisors_of_mem_mem_minimalPrimes := notMem_nonZeroDivisors_of_isMinimalPrime
+
+theorem Ideal.exists_comap_eq_of_isMinimalPrime {I : Ideal S} (f : R →+* S) (p)
+    (H : (I.comap f).IsMinimalPrime p) : ∃ p' : Ideal S, p'.IsPrime ∧ I ≤ p' ∧ p'.comap f = p :=
   have := H.isPrime
   have ⟨p', hIp', hp', le⟩ := exists_ideal_comap_le_prime p I H.le
   ⟨p', hp', hIp', le.antisymm (H.2 ⟨inferInstance, comap_mono hIp'⟩ le)⟩
 
-@[stacks 00FK] theorem Ideal.exists_comap_eq_of_mem_minimalPrimes_of_injective {f : R →+* S}
-    (hf : Function.Injective f) (p) (H : p ∈ minimalPrimes R) :
+@[deprecated "Use `Ideal.exists_comap_eq_of_isMinimalPrime` instead." (since := "2026-05-13")]
+alias Ideal.exists_comap_eq_of_mem_minimalPrimes := Ideal.exists_comap_eq_of_isMinimalPrime
+
+@[stacks 00FK] theorem Ideal.exists_comap_eq_of_isMinimalPrime_of_injective {f : R →+* S}
+    (hf : Function.Injective f) (p) (H : IsMinimalPrime p) :
     ∃ p' : Ideal S, p'.IsPrime ∧ p'.comap f = p :=
-  have ⟨p', hp', _, eq⟩ := exists_comap_eq_of_mem_minimalPrimes f (I := ⊥) p <| by
+  have ⟨p', hp', _, eq⟩ := exists_comap_eq_of_isMinimalPrime f (I := ⊥) p <| by
     rwa [comap_bot_of_injective f hf]
   ⟨p', hp', eq⟩
 
+@[deprecated "Use `Ideal.exists_comap_eq_of_isMinimalPrime_of_injective` instead."
+  (since := "2026-05-13")]
+alias Ideal.exists_comap_eq_of_mem_minimalPrimes_of_injective :=
+  Ideal.exists_comap_eq_of_isMinimalPrime_of_injective
+
 theorem Ideal.exists_minimalPrimes_comap_eq {I : Ideal S} (f : R →+* S) (p)
     (H : p ∈ (I.comap f).minimalPrimes) : ∃ p' ∈ I.minimalPrimes, Ideal.comap f p' = p := by
-  obtain ⟨p', h₁, h₂, h₃⟩ := Ideal.exists_comap_eq_of_mem_minimalPrimes f p H
+  obtain ⟨p', h₁, h₂, h₃⟩ := Ideal.exists_comap_eq_of_isMinimalPrime f p H
   obtain ⟨q, hq, hq'⟩ := Ideal.exists_minimalPrimes_le h₂
   refine ⟨q, hq, Eq.symm ?_⟩
   have := hq.isPrime
@@ -209,9 +230,9 @@ theorem IsLocalization.minimalPrimes_comap [IsLocalization S A] (J : Ideal A) :
   refine (Set.image_preimage_eq_iff.mpr ?_).symm
   exact subset_trans (Ideal.minimalPrimes_comap_subset (algebraMap R A) J) (by simp)
 
-theorem IsLocalization.AtPrime.radical_map_of_mem_minimalPrimes
+theorem IsLocalization.AtPrime.radical_map_of_isMinimalPrime
     (q : Ideal R) [hqp : q.IsPrime] [IsLocalization.AtPrime A q]
-    (I : Ideal R) (hIq : q ∈ I.minimalPrimes) :
+    (I : Ideal R) (hIq : I.IsMinimalPrime q) :
     (I.map (algebraMap R A)).radical = q.map (algebraMap R A) := by
   have : IsLocalRing A := AtPrime.isLocalRing A q
   rw [← Ideal.sInf_minimalPrimes, IsLocalization.minimalPrimes_map q.primeCompl A I]
@@ -223,5 +244,10 @@ theorem IsLocalization.AtPrime.radical_map_of_mem_minimalPrimes
     have := hJ.isPrime.ne_top
     rw [ne_eq, Ideal.comap_eq_top_iff, ← ne_eq, ← disjoint_under_iff q.primeCompl A J] at this
     exact Set.disjoint_compl_left_iff_subset.mp this
+
+@[deprecated "Use `IsLocalization.AtPrime.radical_map_of_isMinimalPrime` instead."
+  (since := "2026-05-13")]
+alias IsLocalization.AtPrime.radical_map_of_mem_minimalPrimes :=
+  IsLocalization.AtPrime.radical_map_of_isMinimalPrime
 
 end

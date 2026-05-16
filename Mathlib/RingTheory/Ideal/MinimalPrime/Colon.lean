@@ -28,10 +28,12 @@ variable {R M : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M] {N : Subm
 
 /-- A minimal prime over an ideal of the form `N.colon {x}` in a Noetherian ring is
 itself an ideal of the form `N.colon {x'}`. -/
-theorem exists_eq_colon_of_mem_minimalPrimes [IsNoetherianRing R]
-    (hI : I ∈ (N.colon {x}).minimalPrimes) : ∃ x' : M, I = N.colon {x'} := by
+theorem exists_eq_colon_of_isMinimalPrime [IsNoetherianRing R]
+    (hI : (N.colon {x}).IsMinimalPrime I) : ∃ x' : M, I = N.colon {x'} := by
   by_cases hx : x ∈ N
-  · simp [show (colon N {x}) = ⊤ by simpa, Ideal.minimalPrimes_top] at hI
+  · have : colon N {x} = ⊤ := by simpa
+    absurd (Set.ext_iff.mp Ideal.minimalPrimes_top _).mp (this ▸ hI)
+    exact Set.notMem_empty I
   classical
   -- `I` is a minimal prime over `ann = colon N {x}`
   set ann := colon N {x}
@@ -96,5 +98,8 @@ theorem exists_eq_colon_of_mem_minimalPrimes [IsNoetherianRing R]
   · simp [K, show n = 1 by grind] at hz'
     exact (hK.2 (hz'.trans hI.le)).elim
   · grind [Nat.find_min' key ⟨hn', J * Ideal.span {z}, hK⟩]
+
+@[deprecated "Use `Submodule.exists_eq_colon_of_isMinimalPrime` instead." (since := "2026-05-13")]
+alias exists_eq_colon_of_mem_minimalPrimes := exists_eq_colon_of_isMinimalPrime
 
 end Submodule

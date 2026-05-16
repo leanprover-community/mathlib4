@@ -552,8 +552,11 @@ instance isMaximal_of_isPrime {R : Type*} [CommRing R] (p : Ideal R) [p.IsPrime]
 lemma isPrime_iff_isMaximal (p : Ideal R) : p.IsPrime ↔ p.IsMaximal :=
   ⟨fun _ ↦ isMaximal_of_isPrime p, fun h ↦ h.isPrime⟩
 
-theorem mem_minimalPrimes {I p : Ideal R} [hp : p.IsPrime] (hIp : I ≤ p) : p ∈ I.minimalPrimes :=
+theorem isMinimalPrime {I p : Ideal R} [hp : p.IsPrime] (hIp : I ≤ p) : I.IsMinimalPrime p :=
   ⟨⟨hp, hIp⟩, fun q ⟨_, _⟩ hqp ↦ ((isMaximal_of_isPrime q).eq_of_le hp.ne_top hqp).ge⟩
+
+@[deprecated "Use `IsArtinianRing.isMinimalPrime` instead." (since := "2026-05-13")]
+alias mem_minimalPrimes := isMinimalPrime
 
 /-- The prime spectrum is in bijection with the maximal spectrum. -/
 @[simps]

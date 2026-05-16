@@ -120,8 +120,8 @@ lemma IsStronglyTranscendental.of_transcendental {K : Type*} [Field K] [Algebra 
   exact .of_map (f := IsScalarTower.toAlgHom R S K) (FaithfulSMul.algebraMap_injective _ _) H
 
 @[stacks 00Q0]
-lemma isStronglyTranscendental_mk_of_mem_minimalPrimes [IsReduced S]
-    {x : S} (hx : IsStronglyTranscendental R x) (q : Ideal S) (hq : q ∈ minimalPrimes S) :
+lemma isStronglyTranscendental_mk_of_isMinimalPrime [IsReduced S]
+    {x : S} (hx : IsStronglyTranscendental R x) (q : Ideal S) (hq : IsMinimalPrime q) :
     IsStronglyTranscendental R (Ideal.Quotient.mk q x) := by
   refine Ideal.Quotient.mk_surjective.forall.mpr fun u p e ↦ ?_
   rw [← Ideal.Quotient.algebraMap_eq, aeval_algebraMap_apply, Ideal.Quotient.algebraMap_eq,
@@ -138,3 +138,7 @@ lemma isStronglyTranscendental_mk_of_mem_minimalPrimes [IsReduced S]
   have : algebraMap R S (p.coeff i) * u * m = 0 := by
     simpa [← mul_assoc] using congr(($(hx (u * m) p (by linear_combination hm))).coeff i)
   exact (Ideal.IsPrime.mem_or_mem_of_mul_eq_zero ‹_› (by linear_combination this)).resolve_left hmq
+
+@[deprecated "Use `isStronglyTranscendental_mk_of_isMinimalPrime` instead." (since := "2026-05-13")]
+alias isStronglyTranscendental_mk_of_mem_minimalPrimes :=
+  isStronglyTranscendental_mk_of_isMinimalPrime
