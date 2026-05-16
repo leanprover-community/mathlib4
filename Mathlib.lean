@@ -2469,6 +2469,7 @@ public import Mathlib.CategoryTheory.Adjunction.Limits
 public import Mathlib.CategoryTheory.Adjunction.Mates
 public import Mathlib.CategoryTheory.Adjunction.Opposites
 public import Mathlib.CategoryTheory.Adjunction.Parametrized
+public import Mathlib.CategoryTheory.Adjunction.ParametrizedLimits
 public import Mathlib.CategoryTheory.Adjunction.PartialAdjoint
 public import Mathlib.CategoryTheory.Adjunction.Quadruple
 public import Mathlib.CategoryTheory.Adjunction.Reflective
