@@ -12,6 +12,7 @@ public import Mathlib.Data.Finset.Pairwise
 public import Mathlib.Data.Fintype.Pigeonhole
 public import Mathlib.Data.Fintype.Powerset
 public import Mathlib.Data.Nat.Lattice
+public import Mathlib.Order.Zorn
 public import Mathlib.SetTheory.Cardinal.Finite
 
 /-!
@@ -732,6 +733,15 @@ lemma maximumClique_exists [Finite α] : ∃ (s : Finset α), G.IsMaximumClique 
   exact ⟨s, isMaximumClique_iff.mpr
     ⟨snc.isClique, fun t ht => snc.card_eq.symm ▸ ht.card_le_cliqueNum⟩⟩
 
+lemma exists_isMaximalClique : ∃ s : Set α, G.IsMaximalClique s :=
+  zorn_subset {s : Set α | G.IsClique s} fun c hcS hchain ↦
+    ⟨⋃₀ c,
+      fun _ ⟨_, hsv, hvsv⟩ _ ⟨_, hsw, hwsw⟩ hvw ↦
+        (hchain.total hsv hsw).elim
+          (fun h ↦ hcS hsw (h hvsv) hwsw hvw)
+          (fun h ↦ hcS hsv hvsv (h hwsw) hvw),
+      fun _ ↦ Set.subset_sUnion_of_mem⟩
+
 end CliqueNumber
 
 /-! ### Finset of cliques -/
@@ -998,6 +1008,15 @@ theorem maximumIndepSet_card_eq_indepNum
 
 lemma maximumIndepSet_exists [Finite α] : ∃ (s : Finset α), G.IsMaximumIndepSet s := by
   simp [← isMaximumClique_compl, maximumClique_exists]
+
+lemma exists_isMaximalIndepSet : ∃ s : Set α, G.IsMaximalIndepSet s :=
+  zorn_subset {s : Set α | G.IsIndepSet s} fun c hcS hchain ↦
+    ⟨⋃₀ c,
+      fun _ ⟨_, hsv, hvsv⟩ _ ⟨_, hsw, hwsw⟩ hvw ↦
+        (hchain.total hsv hsw).elim
+          (fun h ↦ hcS hsw (h hvsv) hwsw hvw)
+          (fun h ↦ hcS hsv hvsv (h hwsw) hvw),
+      fun _ ↦ Set.subset_sUnion_of_mem⟩
 
 end IndepNumber
 
