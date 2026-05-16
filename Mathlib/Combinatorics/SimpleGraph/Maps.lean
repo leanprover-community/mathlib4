@@ -713,6 +713,35 @@ abbrev comp (f' : G' ≃g G'') (f : G ≃g G') : G ≃g G'' :=
 theorem coe_comp (f' : G' ≃g G'') (f : G ≃g G') : ⇑(f'.comp f) = f' ∘ f :=
   rfl
 
+section induceIso
+
+variable {s : Set V} {t : Set W} {r : Set X}
+         (φ : G ≃g G') (φst : Set.BijOn φ s t) (ψ : G' ≃g G'') (ψtr : Set.BijOn ψ t r)
+
+/-- The restriction of an isomorphism of graphs to induced subgraphs. -/
+def induceIso : G.induce s ≃g G'.induce t where
+  toFun v := ⟨φ v.val, φst.image_eq ▸ Set.mem_image_of_mem φ v.property⟩
+  invFun w := ⟨φ.symm w.val,
+    (φ.bijOn_symm.mpr φst).image_eq ▸ Set.mem_image_of_mem φ.symm w.property⟩
+  left_inv v := by simp
+  right_inv w := by simp
+  map_rel_iff' := by simp [map_adj_iff φ]
+
+@[simp, norm_cast] lemma coe_induceIso :
+    ⇑(induceIso φ φst) = Set.MapsTo.restrict φ s t (φst.mapsTo) := rfl
+
+@[simp] lemma induceIso_id (G : SimpleGraph V) (s : Set V) :
+    induceIso (Iso.refl : G ≃g G) (Set.bijOn_id s) = Iso.refl := by
+  ext x
+  rfl
+
+@[simp] lemma induceIso_comp :
+    (induceIso ψ ψtr).comp (induceIso φ φst) = induceIso (ψ.comp φ) (ψtr.comp φst) := by
+  ext x
+  rfl
+
+end induceIso
+
 end Iso
 
 theorem neighborSet_comap (f : V → W) (v : V) :
