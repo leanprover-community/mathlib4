@@ -130,10 +130,10 @@ instance specialLinearGroup_is_two_pretransitive :
     have hD'_mem : D'.rep ∈ s := LinearIndepOn.subset_extend _ _ (by simp)
     refine ⟨dilatransvection (f := b.coord ⟨D.rep, hD_mem⟩)
       (v := (a.val - 1) • b ⟨D.rep, hD_mem⟩) (by simp), ?_, ?_, ?_⟩
-    · simp [← Units.val_inj, coe_det, LinearMap.transvection.det]
+    · simp [← Units.val_inj]
     · rw [smul_mk, mk_eq_mk_iff, LinearEquiv.smul_def]
       use a
-      rw [← coe_coe, dilatransvection.coe_toLinearMap,
+      rw [← coe_coe, coe_dilatransvection,
         LinearMap.transvection.apply, Module.Basis.coord_apply]
       suffices (b.repr D.rep) ⟨D.rep, hD_mem⟩ = 1 by
         rw [this, Module.Basis.extend_apply_self, Units.smul_def]
@@ -143,7 +143,7 @@ instance specialLinearGroup_is_two_pretransitive :
       simp
     · rw [smul_mk, mk_eq_mk_iff, LinearEquiv.smul_def]
       use 1
-      rw [one_smul, ← coe_coe, dilatransvection.coe_toLinearMap,
+      rw [one_smul, ← coe_coe, coe_dilatransvection,
         LinearMap.transvection.apply, Module.Basis.coord_apply]
       suffices (b.repr D'.rep) ⟨D.rep, hD_mem⟩ = 0 by
         rw [Module.Basis.extend_apply_self]
