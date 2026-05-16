@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Lie.Basic
 public import Mathlib.Geometry.Manifold.Algebra.LieGroup
 public import Mathlib.Geometry.Manifold.VectorField.LieBracket
+public import Mathlib.Geometry.Manifold.IntegralCurve.Basic
 
 /-!
 # The Lie algebra of a Lie group
@@ -131,6 +132,28 @@ lemma mpullback_mulInvariantVectorField (g : G) (v : GroupLieAlgebra I G) :
     simp
   · exact contMDiff_mul_left.contMDiffAt.mdifferentiableAt M
   · exact contMDiff_mul_left.contMDiffAt.mdifferentiableAt M
+
+/-- The derivative of left-multiplication by `g * h` at `x` factors as the composition of
+the derivative of left-multiplication by `g` at `h * x` with the derivative of
+left-multiplication by `h` at `x`. -/
+lemma mfderiv_mul_left_mul (g h x : G) :
+    mfderiv% ((g * h) * ·) x =
+      (mfderiv% (g * ·) (h * x)).comp (mfderiv% (h * ·) x) := by
+  have h1 : minSmoothness 𝕜 3 ≠ 0 := lt_of_lt_of_le (by simp) le_minSmoothness |>.ne'
+  have h2 (a b : G) : MDiffAt (a * ·) b :=
+    (contMDiff_mul_left (a := a) (n := minSmoothness 𝕜 3)).mdifferentiable h1 |>.mdifferentiableAt
+  rw [show ((g * h) * ·) = (g * ·) ∘ (h * ·) from by ext; simp [mul_assoc]]
+  exact mfderiv_comp x (h2 g (h * x)) (h2 h x)
+
+/-- The vector field `mulInvariantVectorField v`, defined at each `g` by `d(L_g)_e(v)`, satisfies
+the left-invariance property: its value at `g * h` equals the pushforward of its value at `h`
+under `d(L_g)_h`. -/
+lemma mulInvariantVectorField_mul (v : GroupLieAlgebra I G) (g h : G) :
+    mulInvariantVectorField v (g * h) =
+      mfderiv% (g * ·) h (mulInvariantVectorField v h) := by
+  simp only [mulInvariantVectorField, mfderiv_mul_left_mul]
+  rw [mul_one, mul_one]
+  exact ContinuousLinearMap.comp_apply ((mfderiv% fun x ↦ g * x) h) ((mfderiv% fun x ↦ h * x) 1) v
 
 set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
@@ -262,5 +285,55 @@ noncomputable instance instLieAlgebraGroupLieAlgebra : LieAlgebra 𝕜 (GroupLie
     simp only [GroupLieAlgebra.bracket_def, mulInvariantVectorField_smul]
     rw [mlieBracket_const_smul_right]
     exact mdifferentiableAt_mulInvariantVectorField _
+
+section Real
+
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+  {H : Type*} [TopologicalSpace H]
+  {I : ModelWithCorners ℝ E H}
+  {G : Type*} [TopologicalSpace G] [ChartedSpace H G] [Group G]
+  [LieGroup I (minSmoothness ℝ 3) G]
+
+lemma IsMIntegralCurve.left_translate
+    (γ : ℝ → G) (v : GroupLieAlgebra I G)
+    (hγ : IsMIntegralCurve γ (mulInvariantVectorField v))
+    (g : G) :
+    IsMIntegralCurve (fun t ↦ g * γ t) (mulInvariantVectorField v) := by
+  have h1 : (minSmoothness ℝ 3 : WithTop ℕ∞) ≠ 0 := by
+    simp [minSmoothness_of_isRCLikeNormedField]
+  have hMDiff : ∀ a b : G, MDifferentiableAt I I (a * ·) b :=
+    fun a b => (contMDiff_mul_left (a := a)
+      (n := minSmoothness ℝ 3)).mdifferentiable h1 |>.mdifferentiableAt
+  intro t
+  rw [ mulInvariantVectorField_mul]
+  convert ((hMDiff g (γ t)).hasMFDerivAt.comp t (hγ t)) using 1
+  ext
+  simp only [ContinuousLinearMap.smulRight_apply, ContinuousLinearMap.one_apply, one_smul]
+  have h2 : (((mfderiv% fun x ↦ g * x) (γ t)).comp
+    (ContinuousLinearMap.smulRight (1 : ℝ →L[ℝ] ℝ) (mulInvariantVectorField v (γ t)))) 1 =
+    ((mfderiv% fun x ↦ g * x) (γ t)) (mulInvariantVectorField v (γ t)) := by
+      simp [ContinuousLinearMap.comp_apply, ContinuousLinearMap.smulRight_apply]
+  exact h2.symm
+
+lemma IsMIntegralCurveOn.left_translate
+    (γ : ℝ → G) (v : GroupLieAlgebra I G) (s : Set ℝ)
+    (hγ : IsMIntegralCurveOn γ (mulInvariantVectorField v) s)
+    (g : G) :
+    IsMIntegralCurveOn (fun t ↦ g * γ t) (mulInvariantVectorField v) s := by
+  have hMDiff : ∀ a b : G, MDifferentiableAt I I (a * ·) b :=
+    fun a b => (contMDiff_mul_left (a := a) (n := minSmoothness ℝ 3)).mdifferentiable
+      (by simp [minSmoothness_of_isRCLikeNormedField]) |>.mdifferentiableAt
+  intro t ht
+  rw [ mulInvariantVectorField_mul]
+  convert ((hMDiff g (γ t)).hasMFDerivAt.comp_hasMFDerivWithinAt t (hγ t ht)) using 1
+  ext
+  simp only [ContinuousLinearMap.smulRight_apply, ContinuousLinearMap.one_apply, one_smul]
+  have h2 : (((mfderiv% fun x ↦ g * x) (γ t)).comp
+      (ContinuousLinearMap.smulRight (1 : ℝ →L[ℝ] ℝ) (mulInvariantVectorField v (γ t)))) 1 =
+      ((mfderiv% fun x ↦ g * x) (γ t)) (mulInvariantVectorField v (γ t)) := by
+    simp [ContinuousLinearMap.comp_apply, ContinuousLinearMap.smulRight_apply]
+  exact h2.symm
+
+end Real
 
 end LieGroup
