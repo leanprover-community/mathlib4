@@ -1,0 +1,97 @@
+/-
+Copyright (c) 2025 Oliver Butterley. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Oliver Butterley, Yoh Tanimoto
+-/
+module
+
+public import Mathlib.MeasureTheory.VectorMeasure.Decomposition.Jordan
+public import Mathlib.MeasureTheory.VectorMeasure.Variation.Basic
+/-!
+# Equivalence of variation definitions for signed measures
+
+For a `SignedMeasure`, two notions of variation are available:
+* the supremum-based `VectorMeasure.variation`,
+* the Hahn–Jordan-based `SignedMeasure.totalVariation`.
+
+This file shows that they coincide.
+
+## Main results
+
+* `SignedMeasure.totalVariation_eq_variation`: `μ.totalVariation = μ.variation`.
+
+-/
+
+public section
+
+open scoped ENNReal NNReal
+
+-- TODO(mathlib4#26165): the following `Finpartition` lemmas are scheduled to be added in
+-- PR https://github.com/leanprover-community/mathlib4/pull/26165 .
+namespace Finpartition
+
+variable {α : Type*} [Lattice α] [OrderBot α] {a : α} (P : Finpartition a)
+
+theorem sup_parts_apply {β : Type*} [SemilatticeSup β] [OrderBot β] {f : α → β}
+    (hsup : ∀ x y, f (x ⊔ y) = f x ⊔ f y) (hbot : f ⊥ = ⊥) : P.parts.sup f = f a :=
+  (Finset.comp_sup_eq_sup_comp f hsup hbot).symm.trans (congrArg f P.sup_parts)
+
+theorem pairwiseDisjoint_apply {β : Type*} [SemilatticeInf β] [OrderBot β] {f : α → β}
+    (hinf : ∀ x y, f (x ⊓ y) = f x ⊓ f y) (hbot : f ⊥ = ⊥) :
+    (P.parts : Set α).PairwiseDisjoint f := fun _ hx _ hy hxy => by
+  have h := (P.disjoint hx hy hxy).eq_bot
+  simp only [id_eq] at h
+  rw [Function.onFun, disjoint_iff, ← hinf, h, hbot]
+
+end Finpartition
+
+namespace MeasureTheory.SignedMeasure
+
+variable {X : Type*} {mX : MeasurableSpace X} (μ : SignedMeasure X)
+
+lemma toMeasureOfZeroLE_apply_eq_enorm {i j : Set X} (him : MeasurableSet i) (hi : 0 ≤[i] μ)
+    (hjm : MeasurableSet j) : μ.toMeasureOfZeroLE i him hi j = ‖μ (i ∩ j)‖ₑ := by
+  have : 0 ≤ μ (i ∩ j) :=
+    μ.nonneg_of_zero_le_restrict (μ.zero_le_restrict_subset ‹_› Set.inter_subset_left ‹_›)
+  grind [μ.toMeasureOfZeroLE_apply, Real.enorm_of_nonneg, ENNReal.ofReal_eq_coe_nnreal]
+
+lemma toMeasureOfLEZero_apply_eq_enorm {i j : Set X} (him : MeasurableSet i)
+    (hi : μ ≤[i] 0) (hjm : MeasurableSet j) :
+    μ.toMeasureOfLEZero i him hi j = ‖μ (i ∩ j)‖ₑ := by
+  have : μ (i ∩ j) ≤ 0 :=
+    μ.nonpos_of_restrict_le_zero (μ.restrict_le_zero_subset ‹_› Set.inter_subset_left ‹_›)
+  have := Real.enorm_of_nonneg (neg_nonneg.mpr this)
+  grind [μ.toMeasureOfLEZero_apply, ← enorm_neg, neg_nonneg, ENNReal.ofReal_eq_coe_nnreal]
+
+open VectorMeasure in
+/-- The Hahn–Jordan-based `totalVariation` agrees with the supremum-based `variation`. -/
+theorem totalVariation_eq_variation (μ : SignedMeasure X) : μ.totalVariation = μ.variation := by
+  ext r hr
+  apply le_antisymm
+  · obtain ⟨s, hsm, _, _, _, _⟩ := μ.toJordanDecomposition_spec
+    calc μ.totalVariation r
+      _ = ‖μ (s ∩ r)‖ₑ + ‖μ (sᶜ ∩ r)‖ₑ := by
+        grind [totalVariation, Measure.add_apply, μ.toMeasureOfZeroLE_apply_eq_enorm,
+          μ.toMeasureOfLEZero_apply_eq_enorm]
+      _ ≤ μ.variation (s ∩ r) + μ.variation (sᶜ ∩ r) :=
+        add_le_add (μ.enorm_measure_le_variation _) (μ.enorm_measure_le_variation _)
+      _ = μ.variation ((s ∩ r) ∪ (sᶜ ∩ r)) :=
+        (measure_union (by grind) (hsm.compl.inter hr)).symm
+      _ = μ.variation r := by
+        rw [← Set.union_inter_distrib_right, Set.union_compl_self, Set.univ_inter]
+  · suffices ∀ (P : Finpartition (⟨r, hr⟩ : Subtype MeasurableSet)),
+        ∑ x ∈ P.parts, ‖μ x‖ₑ ≤ μ.totalVariation r by
+      simp only [variation_apply, preVariation_apply, ennrealToMeasure_apply hr,
+        ennrealPreVariation_apply, preVariationFun]
+      grind [iSup_le]
+    intro P
+    calc ∑ p ∈ P.parts, ‖μ p.val‖ₑ
+      _ ≤ ∑ p ∈ P.parts, μ.totalVariation p.val :=
+        Finset.sum_le_sum fun p _ => SignedMeasure.enorm_le_totalVariation μ p.val
+      _ = μ.totalVariation (⋃ p ∈ P.parts, p.val) := by
+        refine (measure_biUnion_finset ?_ fun p _ => p.prop).symm
+        exact P.pairwiseDisjoint_apply (fun _ _ => rfl) rfl
+      _ = μ.totalVariation r := by
+        simp [← Finset.sup_set_eq_biUnion, P.sup_parts_apply]
+
+end MeasureTheory.SignedMeasure
