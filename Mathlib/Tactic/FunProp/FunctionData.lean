@@ -239,7 +239,7 @@ def FunctionData.decomposition (fData : FunctionData) : MetaM DecompositionResul
 
     -- constant function can't be decomposed
     if fData.mainArgs.size == 0 then
-      return none
+      return .failed
 
     let mut yVals : Array Expr := #[]
     let mut yVars : Array Expr := #[]
