@@ -846,6 +846,18 @@ theorem Parallel.trans {s₁ s₂ s₃ : AffineSubspace k P} (h₁₂ : s₁ ∥
   refine ⟨v₂₃ + v₁₂, ?_⟩
   rw [map_map, ← coe_trans_to_affineMap, ← constVAdd_add]
 
+instance : Std.Refl (α := AffineSubspace k P) Parallel where
+  refl := .refl
+
+instance : Std.Symm (α := AffineSubspace k P) Parallel where
+  symm _ _ := .symm
+
+instance : IsTrans (AffineSubspace k P) Parallel where
+  trans _ _ _ := .trans
+
+theorem Parallel.equivalence : Equivalence (α := AffineSubspace k P) Parallel :=
+  ⟨.refl, .symm, .trans⟩
+
 theorem Parallel.direction_eq {s₁ s₂ : AffineSubspace k P} (h : s₁ ∥ s₂) :
     s₁.direction = s₂.direction := by
   rcases h with ⟨v, rfl⟩
