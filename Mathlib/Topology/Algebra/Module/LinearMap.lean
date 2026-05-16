@@ -658,12 +658,21 @@ end ApplyAction
 
 theorem isClosed_ker [T1Space M₂] (f : M₁ →SL[σ₁₂] M₂) :
     IsClosed (f.ker : Set M₁) :=
-  continuous_iff_isClosed.1 (map_continuous f) _ isClosed_singleton
+  isClosed_singleton.preimage (map_continuous f)
+
+instance isClosed_eqLocus [T2Space M₂] (f g : M₁ →SL[σ₁₂] M₂) :
+    IsClosed (LinearMap.eqLocus f g : Set M₁) :=
+  isClosed_eq (map_continuous f) (map_continuous g)
 
 theorem isComplete_ker {M' : Type*} [UniformSpace M'] [CompleteSpace M'] [AddCommMonoid M']
     [Module R₁ M'] [T1Space M₂] (f : M' →SL[σ₁₂] M₂) :
     IsComplete (f.ker : Set M') :=
   (isClosed_ker f).isComplete
+
+theorem isComplete_eqLocus {M' : Type*} [UniformSpace M'] [CompleteSpace M'] [AddCommMonoid M']
+    [Module R₁ M'] [T2Space M₂] (f g : M' →SL[σ₁₂] M₂) :
+    IsComplete (LinearMap.eqLocus f g : Set M') :=
+  (isClosed_eqLocus f g).isComplete
 
 instance completeSpace_ker {M' : Type*} [UniformSpace M'] [CompleteSpace M']
     [AddCommMonoid M'] [Module R₁ M'] [T1Space M₂]
@@ -1192,6 +1201,14 @@ theorem coe_subtypeL (p : Submodule R M) : ⇑p.subtypeL = p.subtype := rfl
 alias coe_subtypeL' := coe_subtypeL
 
 theorem subtypeL_apply (p : Submodule R M) (x : p) : p.subtypeL x = x := by simp
+
+theorem isEmbedding_subtype (p : Submodule R M) : IsEmbedding p.subtype := .subtypeVal
+theorem isEmbedding_subtypeL (p : Submodule R M) : IsEmbedding p.subtypeL := .subtypeVal
+
+theorem isClosedEmbedding_subtype (p : Submodule R M) (hp : IsClosed (p : Set M)) :
+    IsClosedEmbedding p.subtype := .subtypeVal hp
+theorem isClosedEmbedding_subtypeL (p : Submodule R M) (hp : IsClosed (p : Set M)) :
+    IsClosedEmbedding p.subtypeL := .subtypeVal hp
 
 @[deprecated range_subtype (since := "2026-05-06")]
 theorem range_subtypeL (p : Submodule R M) : (p.subtypeL : p →ₗ[R] M).range = p :=
