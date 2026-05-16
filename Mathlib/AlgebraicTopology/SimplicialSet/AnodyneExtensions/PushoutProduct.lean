@@ -35,6 +35,7 @@ section
 variable {F G : C₁ ⥤ C₂ ⥤ C₃} {X₁ Y₁ : C₁} {X₂ Y₂ : C₂} {f₁ : X₁ ⟶ Y₁} {f₂ : X₂ ⟶ Y₂}
   (sq : F.PushoutObjObj f₁ f₂) (e : F ≅ G)
 
+/-- Transport a `Functor.PushoutObjObj` structure via a natural isomorphim of functors. -/
 @[simps]
 def ofNatIso : G.PushoutObjObj f₁ f₂ where
   pt := sq.pt
@@ -44,7 +45,7 @@ def ofNatIso : G.PushoutObjObj f₁ f₂ where
     sq.isPushout.of_iso ((e.app _).app _) ((e.app _).app _) ((e.app _).app _) (Iso.refl _)
       (by simp) (by simp) (by simp) (by simp)
 
-@[simp]
+@[simp, reassoc]
 lemma ofNatIso_ι :
     (sq.ofNatIso e).ι = sq.ι ≫ (e.hom.app _).app _ := by
   apply sq.hom_ext
@@ -56,36 +57,13 @@ end
 section
 
 variable (F : C₁ ⥤ C₂ ⥤ C₃) {X₁ Y₁ : C₁} {X₂ Y₂ : C₂} (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂)
-  [PreservesColimitsOfShape (Discrete PEmpty.{1}) (F.obj X₁)]
-  [PreservesColimitsOfShape (Discrete PEmpty.{1}) (F.obj Y₁)]
-  (h : IsInitial X₂)
-
-@[simps]
-noncomputable def ofIsInitialRight : F.PushoutObjObj f₁ f₂ where
-  pt := (F.obj X₁).obj Y₂
-  inl := (IsInitial.isInitialObj (F.obj _) _ h).to _
-  inr := 𝟙 _
-  isPushout := by
-    let hX₁ := IsInitial.isInitialObj (F.obj X₁) _ h
-    let hY₁ := IsInitial.isInitialObj (F.obj Y₁) _ h
-    apply +allowSynthFailures IsPushout.of_horiz_isIso
-    · exact isIso_of_isInitial hX₁ hY₁ _
-    · exact ⟨hX₁.hom_ext _ _⟩
-
-
-@[simp]
-lemma ofIsInitialRight_ι : (ofIsInitialRight F f₁ f₂ h).ι = (F.map f₁).app Y₂ := by
-  simpa using (ofIsInitialRight F f₁ f₂ h).inr_ι
-
-end
-
-section
-
-variable (F : C₁ ⥤ C₂ ⥤ C₃) {X₁ Y₁ : C₁} {X₂ Y₂ : C₂} (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂)
   [PreservesColimitsOfShape (Discrete PEmpty.{1}) (F.flip.obj X₂)]
   [PreservesColimitsOfShape (Discrete PEmpty.{1}) (F.flip.obj Y₂)]
   (h : IsInitial X₁)
 
+/-- A `Functor.PushoutObjObj` structure for a functor `F : C₁ ⥤ C₂ ⥤ C₃` and
+morphisms `f₁ : X₁ ⟶ Y₁` and `f₂ : X₂ ⟶ Y₂` when `X₁` is initial and both
+`F.flip.obj X₂` and `F.flip.obj Y₂` preserve the initial object. -/
 @[simps]
 noncomputable def ofIsInitialLeft : F.PushoutObjObj f₁ f₂ where
   pt := (F.obj Y₁).obj X₂
@@ -106,6 +84,34 @@ end
 
 section
 
+variable (F : C₁ ⥤ C₂ ⥤ C₃) {X₁ Y₁ : C₁} {X₂ Y₂ : C₂} (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂)
+  [PreservesColimitsOfShape (Discrete PEmpty.{1}) (F.obj X₁)]
+  [PreservesColimitsOfShape (Discrete PEmpty.{1}) (F.obj Y₁)]
+  (h : IsInitial X₂)
+
+/-- A `Functor.PushoutObjObj` structure for a functor `F : C₁ ⥤ C₂ ⥤ C₃` and
+morphisms `f₁ : X₁ ⟶ Y₁` and `f₂ : X₂ ⟶ Y₂` when `X₂` is initial and both
+`F.obj X₁` and `F.obj Y₁` preserve the initial object. -/
+@[simps]
+noncomputable def ofIsInitialRight : F.PushoutObjObj f₁ f₂ where
+  pt := (F.obj X₁).obj Y₂
+  inl := (IsInitial.isInitialObj (F.obj _) _ h).to _
+  inr := 𝟙 _
+  isPushout := by
+    let hX₁ := IsInitial.isInitialObj (F.obj X₁) _ h
+    let hY₁ := IsInitial.isInitialObj (F.obj Y₁) _ h
+    apply +allowSynthFailures IsPushout.of_horiz_isIso
+    · exact isIso_of_isInitial hX₁ hY₁ _
+    · exact ⟨hX₁.hom_ext _ _⟩
+
+@[simp]
+lemma ofIsInitialRight_ι : (ofIsInitialRight F f₁ f₂ h).ι = (F.map f₁).app Y₂ := by
+  simpa using (ofIsInitialRight F f₁ f₂ h).inr_ι
+
+end
+
+section
+
 variable [MonoidalCategory C₁]
   {X₁ Y₁ X₂ Y₂ : C₁} (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂)
 
@@ -114,6 +120,9 @@ section
 variable {f₁ f₂} [BraidedCategory C₁] {X₁ Y₁ X₂ Y₂ : C₁} {f₁ : X₁ ⟶ Y₁} {f₂ : X₂ ⟶ Y₂}
   (sq : (curriedTensor C₁).PushoutObjObj f₁ f₂)
 
+/-- In a braided monoidal category, from a `Functor.PushoutObjObj` structure for
+the bifunctor `curriedTensor` and two morphism `f₁` and `f₂`, one may
+obtain a similar structure for `f₂` and `f₁`. -/
 @[simps!]
 def flipTensor : (curriedTensor C₁).PushoutObjObj f₂ f₁ :=
   sq.flip.ofNatIso (BraidedCategory.curriedBraidingNatIso _).symm
@@ -134,10 +143,13 @@ variable (G : C₁ᵒᵖ ⥤ C₃ ⥤ C₂) {X₁ Y₁ : C₁} (f₁ : X₁ ⟶ 
 
 section
 
-variable (h : IsInitial X₁)
-  [PreservesLimitsOfShape (Discrete PEmpty.{1}) (G.flip.obj X₃)]
+variable [PreservesLimitsOfShape (Discrete PEmpty.{1}) (G.flip.obj X₃)]
   [PreservesLimitsOfShape (Discrete PEmpty.{1}) (G.flip.obj Y₃)]
+  (h : IsInitial X₁)
 
+/-- A `Functor.PullbackObjObj` structure for a functor `G : C₁ᵒᵖ ⥤ C₃ ⥤ C₂` and
+morphisms `f₁ : X₁ ⟶ Y₁` and `f₃ : X₃ ⟶ Y₃` when `X₁` is initial and both
+`G.flip.obj X₃` and `G.flip.obj Y₃` preserve the terminal object. -/
 @[simps]
 noncomputable def ofIsInitial : G.PullbackObjObj f₁ f₃ where
   pt := (G.obj (op Y₁)).obj Y₃
@@ -158,10 +170,13 @@ end
 
 section
 
-variable (h : IsTerminal Y₃)
-  [PreservesLimitsOfShape (Discrete PEmpty.{1}) (G.obj (op X₁))]
+variable [PreservesLimitsOfShape (Discrete PEmpty.{1}) (G.obj (op X₁))]
   [PreservesLimitsOfShape (Discrete PEmpty.{1}) (G.obj (op Y₁))]
+  (h : IsTerminal Y₃)
 
+/-- A `Functor.PullbackObjObj` structure for a functor `G : C₁ᵒᵖ ⥤ C₃ ⥤ C₂` and
+morphisms `f₁ : X₁ ⟶ Y₁` and `f₃ : X₃ ⟶ Y₃` when `Y₃` is terminal and both
+`G.obj X₁` and `G.obj Y₁` preserve the terminal object. -/
 @[simps]
 noncomputable def ofIsTerminal : G.PullbackObjObj f₁ f₃ where
   pt := (G.obj (op X₁)).obj X₃
