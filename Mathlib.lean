@@ -3324,6 +3324,7 @@ public import Mathlib.CategoryTheory.Sites.Equivalence
 public import Mathlib.CategoryTheory.Sites.Finite
 public import Mathlib.CategoryTheory.Sites.GlobalSections
 public import Mathlib.CategoryTheory.Sites.Grothendieck
+public import Mathlib.CategoryTheory.Sites.HomotopyOneHypercover
 public import Mathlib.CategoryTheory.Sites.Hypercover.Homotopy
 public import Mathlib.CategoryTheory.Sites.Hypercover.IsSheaf
 public import Mathlib.CategoryTheory.Sites.Hypercover.One

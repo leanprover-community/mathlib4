@@ -117,6 +117,17 @@ lemma presieve₀_pullback₁ (f : S ⟶ T) (E : PreZeroHypercover.{w} T) [∀ i
   · rintro W g ⟨-, -, ⟨i⟩⟩
     use i
 
+lemma sieve₀_pullback₁ (f : S ⟶ T) (E : PreZeroHypercover.{w} T) [∀ i, HasPullback f (E.f i)] :
+    (E.pullback₁ f).sieve₀ = E.sieve₀.pullback f := by
+  rw [sieve₀, sieve₀]
+  refine le_antisymm ?_ ?_
+  · rw [Sieve.ofArrows, Sieve.generate_le_iff]
+    intro Y g ⟨i⟩
+    use E.X i, pullback.snd f (E.f i), E.f i, ⟨i⟩, pullback.condition.symm
+  · rintro Z g ⟨W, p, q, ⟨i⟩, hp⟩
+    use pullback f (E.f i), pullback.lift g p hp.symm, pullback.fst _ _, ⟨i⟩
+    simp
+
 /-- If `{Uᵢ}` covers `X`, this is the pre-`0`-hypercover of `X ×[Z] Y` given by `{Uᵢ ×[Z] Y}`. -/
 @[simps]
 noncomputable def pullbackCoverOfLeft {X : C} (E : PreZeroHypercover X) {Y Z : C}
@@ -186,6 +197,17 @@ def inter (E : PreZeroHypercover.{w} T) (F : PreZeroHypercover.{w'} T)
 
 lemma inter_def [∀ i j, HasPullback (E.f i) (F.f j)] :
     E.inter F = (E.bind (fun i ↦ F.pullback₁ (E.f i))).reindex (Equiv.sigmaEquivProd _ _).symm :=
+  rfl
+
+@[simps]
+def pushforwardIso (E : PreZeroHypercover.{w} T) (e : T ≅ S) : PreZeroHypercover.{w} S where
+  I₀ := E.I₀
+  X := E.X
+  f i := E.f i ≫ e.hom
+
+-- TODO: is there a better lemma?
+lemma presieve₀_pushforwardIso (E : PreZeroHypercover.{w} T) (e : T ≅ S) :
+    (E.pushforwardIso e).presieve₀ = .ofArrows E.X (fun i ↦ E.f i ≫ e.hom) :=
   rfl
 
 /-- Disjoint union of two pre-`0`-hypercovers. -/
@@ -298,6 +320,38 @@ lemma Hom.ext' {E : PreZeroHypercover.{w} S} {F : PreZeroHypercover.{w'} S}
   simp only at hs
   cat_disch
 
+end Category
+
+@[simps]
+noncomputable
+def pullback₁Id (E : PreZeroHypercover S) [∀ (i : E.I₀), HasPullback (𝟙 S) (E.f i)] :
+    E.pullback₁ (𝟙 S) ≅ E where
+  hom.s₀ := id
+  hom.h₀ i := pullback.snd _ _
+  hom.w₀ i := by simp [← pullback.condition]
+  inv.s₀ := id
+  inv.h₀ i := pullback.lift (E.f i) (𝟙 _)
+  hom_inv_id := by
+    refine PreZeroHypercover.Hom.ext' rfl fun i ↦ ?_
+    apply pullback.hom_ext <;> simp [← pullback.condition]
+  inv_hom_id := PreZeroHypercover.Hom.ext' rfl (by simp)
+
+@[simps]
+noncomputable
+def pullback₁Comp {S T W : C} (E : PreZeroHypercover.{w} S) (f : W ⟶ T) (g : T ⟶ S)
+    [∀ (i : E.I₀), HasPullback (f ≫ g) (E.f i)] [∀ (i : E.I₀), HasPullback g (E.f i)]
+    [∀ i, HasPullback f (pullback.fst g (E.f i))]
+    [∀ (i : (pullback₁ g E).I₀), HasPullback f ((pullback₁ g E).f i)] :
+    E.pullback₁ (f ≫ g) ≅ (E.pullback₁ g).pullback₁ f where
+  hom.s₀ := id
+  hom.h₀ i := (pullbackRightPullbackFstIso _ _ _).inv
+  inv.s₀ := id
+  inv.h₀ i := (pullbackRightPullbackFstIso _ _ _).hom
+  hom_inv_id := PreZeroHypercover.Hom.ext' rfl (by simp)
+  inv_hom_id := PreZeroHypercover.Hom.ext' rfl (by simp)
+
+variable {F : PreZeroHypercover.{w'} S} {G : PreZeroHypercover.{w''} S}
+
 lemma Hom.ext'_iff {E : PreZeroHypercover.{w} S} {F : PreZeroHypercover.{w'} S}
     {f g : E.Hom F} :
     f = g ↔ ∃ (hs : f.s₀ = g.s₀), ∀ i, f.h₀ i = g.h₀ i ≫ eqToHom (by rw [hs]) :=
@@ -372,8 +426,6 @@ lemma Hom.sieve₀_le_sieve₀ {E F : PreZeroHypercover S} (f : E.Hom F) : E.sie
 
 lemma sieve₀_eq_of_iso {E F : PreZeroHypercover S} (e : E ≅ F) : E.sieve₀ = F.sieve₀ :=
   le_antisymm e.hom.sieve₀_le_sieve₀ e.inv.sieve₀_le_sieve₀
-
-end Category
 
 section Functoriality
 
@@ -710,6 +762,14 @@ def add (E : ZeroHypercover.{w} J S) {T : C} (f : T ⟶ S)
     ZeroHypercover.{w} J S where
   __ := E.toPreZeroHypercover.add f
   mem₀ := by rwa [PreZeroHypercover.presieve₀_add]
+
+@[simps toPreZeroHypercover]
+def pushforwardIso [HasIsos J] [IsStableUnderComposition J] (E : ZeroHypercover.{w} J T)
+    (e : T ≅ S) : ZeroHypercover.{w} J S where
+  __ := E.toPreZeroHypercover.pushforwardIso e
+  mem₀ := by
+    rw [PreZeroHypercover.presieve₀_pushforwardIso]
+    sorry
 
 /-- If `L` is a finer precoverage than `K`, any `0`-hypercover wrt. `K` is in particular
 a `0`-hypercover wrt. to `L`. -/
