@@ -176,7 +176,7 @@ lemma minFac_sq_ndvd_gcd_choose_of_isPrimePow (h : IsPrimePow n) :
   refine mt Finset.dvd_gcd_iff.mp ?_
   simp only [mem_Icc, not_forall]
   have : n.minFac ^ (k - 1) ≤ n.minFac ^ k := Nat.pow_le_pow_right (minFac_pos n) (sub_le k 1)
-  refine ⟨n.minFac ^ (k-1), ⟨one_le_pow _ _ (minFac_pos n), ?_⟩, ?_⟩
+  refine ⟨n.minFac ^ (k - 1), ⟨one_le_pow _ _ (minFac_pos n), ?_⟩, ?_⟩
   · refine le_sub_one_of_lt ?_
     nth_rw 2 [hn₁]
     exact Nat.pow_lt_pow_of_lt (Prime.one_lt isPrime) (sub_one_lt_of_lt k_pos)
