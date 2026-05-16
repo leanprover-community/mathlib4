@@ -1081,12 +1081,28 @@ end IndicatorFunction
 
 section Sum
 
+variable [MeasurableSpace α] {μ : Measure α}
+
+lemma tsum_restrict_preimage_singleton_eq [MeasurableSpace β] [Countable β]
+    [MeasurableSingletonClass β] {s : Set α} {f : α → β}
+    (hf : ∀ k ∈ (⊤ : Set β), MeasurableSet (f ⁻¹' {k})) :
+    ∑' k : β, μ.restrict s (f ⁻¹' ({k} : Set β)) = μ s := by calc
+  _ = ∑' b : (Set.univ : Set β), μ.restrict s (f ⁻¹' ({(b : β)} : Set β)) := Eq.symm <|
+    Equiv.tsum_eq (Equiv.Set.univ β) (fun k : β => μ.restrict s (f ⁻¹' ({k} : Set β)))
+  _ = _ := by
+    simpa using tsum_measure_preimage_singleton (μ := μ.restrict s) (s := (⊤ : Set β))
+      (Set.to_countable _) hf
+
+lemma tsum_restrict_preimage_singleton_eq' [MeasurableSpace β] [Countable β]
+    [MeasurableSingletonClass β] {s : Set α} {f : α → β} (hf : Measurable f) :
+    ∑' k : β, μ.restrict s (f ⁻¹' ({k} : Set β)) = μ s :=
+  tsum_restrict_preimage_singleton_eq fun k _ => hf (measurableSet_singleton k)
+
 open Finset in
 /-- An upper bound on a sum of restrictions of a measure `μ`. This can be used to compare
 `∫ x ∈ X, f x ∂μ` with `∑ i, ∫ x ∈ (s i), f x ∂μ`, where `s` is a cover of `X`. -/
-lemma MeasureTheory.Measure.sum_restrict_le {_ : MeasurableSpace α}
-    {μ : Measure α} {s : ι → Set α} {M : ℕ} (hs_meas : ∀ i, MeasurableSet (s i))
-    (hs : ∀ y, {i | y ∈ s i}.encard ≤ M) :
+lemma MeasureTheory.Measure.sum_restrict_le {s : ι → Set α} {M : ℕ}
+    (hs_meas : ∀ i, MeasurableSet (s i)) (hs : ∀ y, {i | y ∈ s i}.encard ≤ M) :
     Measure.sum (fun i ↦ μ.restrict (s i)) ≤ M • μ.restrict (⋃ i, s i) := by
   classical
   refine le_iff.mpr (fun t ht ↦ le_of_eq_of_le (sum_apply _ ht) ?_)
