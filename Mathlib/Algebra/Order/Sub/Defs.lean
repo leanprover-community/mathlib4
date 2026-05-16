@@ -111,8 +111,8 @@ section Cov
 
 variable [AddLeftMono α]
 
-theorem tsub_le_tsub_left (h : a ≤ b) (c : α) : c - b ≤ c - a :=
-  tsub_le_iff_left.mpr <| le_add_tsub.trans <| by gcongr
+theorem tsub_le_tsub_left (h : a ≤ b) (c : α) : c - b ≤ c - a := by
+  grw [tsub_le_iff_left, ← h, ← le_add_tsub]
 
 @[gcongr] theorem tsub_le_tsub (hab : a ≤ b) (hcd : c ≤ d) : a - d ≤ b - c :=
   (tsub_le_tsub_right hab _).trans <| tsub_le_tsub_left hcd _

@@ -3,13 +3,15 @@ Copyright (c) 2023 Sebastian Zimmer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sebastian Zimmer, Mario Carneiro, Heather Macbeth, Jovan Gerbscheid
 -/
+import Mathlib.Algebra.Order.BigOperators.Group.Finset
+import Mathlib.Algebra.Order.Pi
+import Mathlib.Algebra.Order.Ring.Abs
 import Mathlib.Data.Int.ModEq
+import Mathlib.Data.Set.Finite.Basic
 import Mathlib.Order.Antisymmetrization
 import Mathlib.Tactic.GRewrite
 import Mathlib.Tactic.GCongr
 import Mathlib.Tactic.NormNum
-import Mathlib.Algebra.Order.Ring.Abs
-import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 
 /- In many examples in this module, we rewrite expressions which do not make it into the final term.
 
@@ -89,7 +91,8 @@ However, the current behavior is easier to implement, and preserves the form of 
 which is a useful invariant. -/
 example {x y z : ℤ} (hx : x < y) : 2 * x < z := by
   grw [hx]
-  guard_target =ₛ 2 * y < z
+  fail_if_success guard_target =ₛ 2 * y < z
+  guard_target = 2 * y < z
   exact test_sorry
 
 end inequalities
@@ -135,7 +138,7 @@ example {x y z : ℚ} (f g : ℚ → ℚ) (h : ∀ t, f t = g t) : 2 * f x * f y
 
 example {x y a b : ℚ} (h : x ≤ y) (h1 : a ≤ 3 * x) : 2 * x ≤ b := by
   grw [h] at h1
-  guard_hyp h1 :ₛ a ≤ 3 * y
+  guard_hyp h1 : a ≤ 3 * y
   exact test_sorry
 
 end rationals
@@ -185,8 +188,8 @@ example {a b : ℤ} (h1 : a ≡ 3 [ZMOD 5]) (h2 : b ≡ a ^ 2 + 1 [ZMOD 5]) :
 example {x y a b : ℚ} (h : x < y) (h1 : a ≤ 3 * x) : 2 * x ≤ b := by
   grw [h] at *
   guard_hyp h :ₛ x < y -- `grw [h] at *` does not rewrite at `h`
-  guard_hyp h1 :ₛ a ≤ 3 * y
-  guard_target =ₛ 2 * y ≤ b
+  guard_hyp h1 : a ≤ 3 * y
+  guard_target = 2 * y ≤ b
   exact test_sorry
 
 end wildcard
@@ -213,12 +216,16 @@ relation does not have its main goals proved by `gcongr` (in the two examples he
 the inequality goes in the wrong direction). -/
 
 /--
-error: Tactic `grewrite` failed: could not discharge x ≤ y using x ≥ y
+error: Tactic `grewrite` failed: Did not find a rewrite with
+  x ≥ _
+in the target expression
+  2 * x ≤ b
 
-case h₁.hbc
+Use the command `set_option trace.Meta.grewrite true` to inspect this.
+
 x y b : ℚ
 h : x ≥ y
-⊢ x ≤ y
+⊢ 2 * x ≤ b
 -/
 #guard_msgs in
 example {x y b : ℚ} (h : x ≥ y) : 2 * x ≤ b := by
@@ -254,18 +261,9 @@ example {Prime : ℕ → Prop} {a a' : ℕ} (h₁ : Prime (a + 1)) (h₂ : a = a
   guard_hyp h₁ :ₛ Prime (a' + 1)
   exact test_sorry
 
-/--
-error: Tactic `grewrite` failed: could not discharge b ≤ a using a ≤ b
-
-case h₂.hbc
-a b c : ℚ
-h₁ : a ≤ b
-h₂ : 0 ≤ c
-⊢ b ≤ a
--/
-#guard_msgs in
 example {a b c : ℚ} (h₁ : a ≤ b) (h₂ : 0 ≤ c) : a * c ≥ 100 + a := by
   grw [h₁]
+  exact test_sorry
 
 example {a b c : ℚ} (h₁ : a ≤ b) (h₂ : 0 ≤ c) : a * c ≥ 100 + a + a := by
   nth_grw 2 3 [h₁]
@@ -294,6 +292,35 @@ example (n : Nat) (h : p → n=1) (h' : r → s) : p ∧ r → n = 1 ∧ s := by
 example (h : p → q) (h' : q → r) : p → r := by
   apply_rw [← h] at h'
   exact h'
+
+example (h : p → q) (h' : p ∧ p) : q ∧ q := by
+  apply_rw [← h]
+  exact h'
+
+example (h : p → q) (h' : (False ∧ p) ∧ p) : (False ∧ q) ∧ q := by
+  apply_rw [← h]
+  exact h'
+
+-- When rewriting in `_ ∧ _`, side goals created in the RHS get access to the LHS as a hypothesis
+/--
+trace: p q r s : Prop
+h : True → p → q
+h' : (False ∧ p) ∧ p
+a✝ : False ∧ p
+⊢ True
+
+p q r s : Prop
+h : True → p → q
+h' : (False ∧ p) ∧ p
+a✝ : False
+⊢ True
+-/
+#guard_msgs in
+example (h : True → p → q) (h' : (False ∧ p) ∧ p) : (False ∧ q) ∧ q := by
+  apply_rw [← h, ← h]
+  exact h'
+  trace_state
+  all_goals trivial
 
 end apply
 
@@ -360,8 +387,12 @@ example (h : double (double 2) ≤ 10) : double 4 ≤ 20 := by
 
 -- `rw`/`grw` index based on the head constant, so the following fails.
 /--
-error: Tactic `grewrite` failed: did not find instance of the pattern in the target expression
-  double 2
+error: Tactic `grewrite` failed: Did not find a rewrite with
+  double 2 ≤ _
+in the target expression
+  4 ≤ 20
+
+Use the command `set_option trace.Meta.grewrite true` to inspect this.
 
 h : double 2 ≤ 10
 ⊢ 4 ≤ 20
@@ -371,3 +402,40 @@ example (h : double 2 ≤ 10) : 4 ≤ 20 := by
   grw (transparency := default) [h]
 
 end erw
+
+section binders
+
+lemma biSup_inf_le {α β : Type*} [CompleteLattice β] (f : α → β) (s : Set α) (b : β) :
+    ⨆ a ∈ s, (f a ⊓ b) ≤ (⨆ a ∈ s, f a) ⊓ b := by
+  grw [iSup_inf_le_iSup_inf, iSup_inf_le_iSup_inf]
+
+example : ∅ ∪ { a : Int | a - 1 > 5 } ⊆ { b : Int | b - 1 < 5 } := by
+  grw [sub_one_lt, sub_one_lt]
+  exact test_sorry
+
+-- Unforturnately, the "Expected type" view gets messed up with stuff like `_fvar.78119`
+example : ∅ ∪ { a : Int | a - 1 ≥ 5 } ⊆ Set.univ := by
+  grw [sub_le_self _ (by positivity)]
+  simp
+
+example : ∅ ∪ { a : Int → Int | a - 1 ≥ 5 } ⊆ Set.univ := by
+  grw [sub_le_self _ fun x ↦ by simp]
+  simp
+
+example : ∅ ∪ { a : Int → Int | 0 ≤ a → 1 - a ≥ 5 } ⊆ Set.univ := by
+  grw [sub_le_self _ (by assumption)]
+  simp
+
+end binders
+
+section cache
+-- Test that `grw` can explore large expressions without a noticeable slowdown.
+example {a b c d e f g h i j k : Rat} : a + b + c + d + e + f + g + h + i + j + k ≤ 1 := by
+  grw [← show (0 : Rat) ≤ 1 by norm_num]
+  exact test_sorry
+
+example {a b c d e f g h i j k : Rat} : a * b * c * d * e * f * g * h * i * j * k ≤ 1 := by
+  grw [← show (0 : Rat) ≤ 1 by norm_num]
+  exact test_sorry
+
+end cache
