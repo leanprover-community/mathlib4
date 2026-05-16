@@ -109,6 +109,11 @@ theorem one_mul_eq_id : ((1 : M) * ·) = id :=
 theorem mul_one_eq_id : (· * (1 : M)) = id :=
   funext mul_one
 
+@[to_additive]
+theorem ite_or_one {P Q : Prop} [Decidable P] [Decidable Q] (h : ¬(P ∧ Q)) {a : M} :
+    ite (P ∨ Q) a 1 = ite P a 1 * ite Q a 1 := by
+  rcases not_and_or.1 h with h | h <;> simp [h]
+
 end MulOneClass
 
 section CommSemigroup
