@@ -7,9 +7,9 @@ module
 
 public import Mathlib.Algebra.Algebra.Basic
 public import Mathlib.Algebra.Algebra.Defs
+public import Mathlib.Tactic.Algebra.Lemmas
 public import Mathlib.Tactic.Ring.RingNF
 
-import Mathlib.Tactic.Algebra.Lemmas
 
 /-!
 # The `algebra` tactic
@@ -401,8 +401,8 @@ variable {u v : Lean.Level} {R : Q(Type u)} {A : Q(Type v)} {sR : Q(CommSemiring
   {sA : Q(CommSemiring $A)} (sAlg : Q(Algebra $R $A)) (a : Q($A)) (b : Q($A))
 
 /-- Infer from the expression what base ring the normalization should use.
- Finds all scalar rings in the expression and picks the 'larger' one in the sense that
- it is an algebra over the smaller rings. -/
+Finds all scalar rings in the expression and picks the 'larger' one in the sense that
+it is an algebra over the smaller rings. -/
 def inferBase (ca : Cache q($sA)) (e : Expr) : MetaM <| Σ u : Lean.Level, Q(Type u) := do
   let rings ← (← collectScalarRings e).mapM getLevelQ'
   let res ← match rings with

@@ -191,12 +191,14 @@ def mathlibLabelData : (l : Label) → LabelData l
       dependencies := #[.«t-ring-theory»] }
   | .«t-algebraic-topology» => {}
   | .«t-analysis» => {}
-  | .«t-category-theory» => {}
+  | .«t-category-theory» => {
+    dependencies := #[.«t-data»] }
   | .«t-combinatorics» => {}
   | .«t-computability» => {}
   | .«t-condensed» => {}
   | .«t-convex-geometry» => {
-    dirs := #["Mathlib" / "Geometry" / "Convex"] }
+    dirs := #["Mathlib" / "Geometry" / "Convex"],
+    dependencies := #[.«t-algebra»] }
   | .«t-data» => {
     dirs := #[
       "Mathlib" / "Control",
@@ -229,7 +231,8 @@ def mathlibLabelData : (l : Label) → LabelData l
     dirs := #[
       "Mathlib" / "MeasureTheory",
       "Mathlib" / "Probability",
-      "Mathlib" / "InformationTheory"] }
+      "Mathlib" / "InformationTheory"]
+    dependencies := #[.«t-analysis», .«t-algebra»] }
   | .«t-meta» => {
     dirs := #[
       "Mathlib" / "Lean",
@@ -238,11 +241,13 @@ def mathlibLabelData : (l : Label) → LabelData l
       "Mathlib" / "Util"],
     exclusions := #["Mathlib" / "Tactic" / "Linter"] }
   | .«t-number-theory» => {}
-  | .«t-order» => {}
+  | .«t-order» => {
+    dependencies := #[.«t-data»] }
   | .«t-ring-theory» => {
     dependencies := #[.«t-algebra», .«t-group-theory»] }
   | .«t-set-theory» => {}
-  | .«t-topology» => {}
+  | .«t-topology» => {
+    dependencies := #[.«t-order», .«t-analysis»] }
   | .«CI» => {
     dirs := #[
       ".github",
