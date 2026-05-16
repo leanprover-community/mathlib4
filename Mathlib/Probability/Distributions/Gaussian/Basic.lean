@@ -119,18 +119,18 @@ lemma IsGaussian.of_subsingleton [Subsingleton E] [IsProbabilityMeasure μ] :
   all_goals simp
 
 lemma IsGaussian.memLp_dual (μ : Measure E) [IsGaussian μ] (L : StrongDual ℝ E)
-    (p : ℝ≥0∞) (hp : p ≠ ∞) :
+    (p : ℝ≥0∞) (hp : p ≠ 0) (hp' : p ≠ ∞) :
     MemLp L p μ := by
   suffices MemLp (id ∘ L) p μ from this
   rw [← memLp_map_measure_iff (by fun_prop) (by fun_prop), IsGaussian.map_eq_gaussianReal L]
-  convert memLp_id_gaussianReal p.toNNReal
-  simp [hp]
+  convert memLp_id_gaussianReal (p := p.toNNReal) <| ENNReal.toNNReal_ne_zero.mpr ⟨hp, hp'⟩
+  simp [hp']
 
 @[fun_prop]
 lemma IsGaussian.integrable_dual (μ : Measure E) [IsGaussian μ] (L : StrongDual ℝ E) :
     Integrable L μ := by
   rw [← memLp_one_iff_integrable]
-  exact IsGaussian.memLp_dual μ L 1 (by simp)
+  exact IsGaussian.memLp_dual μ L 1 one_ne_zero (by simp)
 
 /-- The map of a Gaussian measure by a continuous linear map is Gaussian. -/
 instance isGaussian_map (L : E →L[ℝ] F) : IsGaussian (μ.map L) :=
@@ -260,8 +260,8 @@ instance [SecondCountableTopologyEither E F] {ν : Measure F} [IsGaussian ν] :
       (IsGaussian.integrable_dual ν (L.comp (.inr ℝ E F)))]
     norm_cast
   · field_simp
-    rw [variance_dual_prod' (IsGaussian.memLp_dual μ (L.comp (.inl ℝ E F)) 2 (by simp))
-      (IsGaussian.memLp_dual ν (L.comp (.inr ℝ E F)) 2 (by simp))]
+    rw [variance_dual_prod' (IsGaussian.memLp_dual μ (L.comp (.inl ℝ E F)) 2 two_ne_zero (by simp))
+      (IsGaussian.memLp_dual ν (L.comp (.inr ℝ E F)) 2 two_ne_zero (by simp))]
     norm_cast
 
 end ProbabilityTheory

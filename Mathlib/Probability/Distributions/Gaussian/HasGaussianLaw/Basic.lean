@@ -127,18 +127,18 @@ lemma charFunDual_map_eq_fun (L : StrongDual ℝ E) (hX : HasGaussianLaw X P) :
 
 /-- A Gaussian random variable has moments of all orders. -/
 lemma memLp [CompleteSpace E] [SecondCountableTopology E] (hX : HasGaussianLaw X P)
-    {p : ℝ≥0∞} (hp : p ≠ ∞) :
+    {p : ℝ≥0∞} (hp : p ≠ 0) (hp' : p ≠ ∞) :
     MemLp X p P := by
   rw [← Function.id_comp X, ← memLp_map_measure_iff]
-  · exact hX.isGaussian_map.memLp_id _ p hp
+  · exact hX.isGaussian_map.memLp_id _ p hp hp'
   all_goals fun_prop
 
 lemma memLp_two [CompleteSpace E] [SecondCountableTopology E] (hX : HasGaussianLaw X P) :
-    MemLp X 2 P := hX.memLp (by norm_num)
+    MemLp X 2 P := hX.memLp two_ne_zero (by norm_num)
 
 lemma integrable [CompleteSpace E] [SecondCountableTopology E] (hX : HasGaussianLaw X P) :
     Integrable X P :=
-  memLp_one_iff_integrable.1 <| hX.memLp (by norm_num)
+  memLp_one_iff_integrable.1 <| hX.memLp one_ne_zero (by norm_num)
 
 variable [NormedAddCommGroup F] [NormedSpace ℝ F] [MeasurableSpace F] [BorelSpace F]
 

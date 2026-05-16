@@ -916,7 +916,7 @@ theorem continuous_L1_toL1 {μ' : Measure α} (c' : ℝ≥0∞) (hc' : c' ≠ �
     (eLpNorm (⇑g - ⇑f) 1 μ').toReal ≤ (c' * eLpNorm (⇑g - ⇑f) 1 μ).toReal := by
       refine toReal_mono (ENNReal.mul_ne_top hc' h_eLpNorm_ne_top) ?_
       refine (eLpNorm_mono_measure (⇑g - ⇑f) hμ'_le).trans_eq ?_
-      rw [eLpNorm_smul_measure_of_ne_zero hc'0, smul_eq_mul]
+      rw [eLpNorm_smul_measure_of_ne_zero hc'0 _ one_ne_zero, smul_eq_mul]
       simp
     _ = c'.toReal * (eLpNorm (⇑g - ⇑f) 1 μ).toReal := toReal_mul
     _ ≤ c'.toReal * (ε / 2 / c'.toReal) := by gcongr

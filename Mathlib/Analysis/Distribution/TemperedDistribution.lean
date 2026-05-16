@@ -159,8 +159,10 @@ def toTemperedDistribution {p : ℝ≥0∞}
     [hp : Fact (1 ≤ p)] (f : Lp F p μ) : 𝓢'(E, F) :=
   haveI := ENNReal.HolderConjugate.inv_one_sub_inv' hp.out
   haveI : Fact (1 ≤ (1 - p⁻¹)⁻¹) := by simp [fact_iff]
+  haveI := hp.out
   toPointwiseConvergenceCLM _ _ _ _ <|
-    (lsmul ℂ ℂ).flip.lpPairing μ p (1 - p⁻¹)⁻¹ f ∘L toLpCLM ℂ ℂ (1 - p⁻¹)⁻¹ μ
+    (lsmul ℂ ℂ).flip.lpPairing μ p (1 - p⁻¹)⁻¹
+      (ENNReal.HolderConjugate.ne_zero p (1 - p⁻¹)⁻¹) (by simp) f ∘L toLpCLM ℂ ℂ (1 - p⁻¹)⁻¹ μ
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
@@ -170,7 +172,7 @@ theorem toTemperedDistribution_apply {p : ℝ≥0∞} [hp : Fact (1 ≤ p)] (f :
   simp only [toTemperedDistribution, toPointwiseConvergenceCLM_apply, comp_apply _, toLpCLM_apply,
     lpPairing_eq_integral, lsmul_flip_apply, toSpanSingleton_apply]
   apply integral_congr_ae
-  filter_upwards [g.coeFn_toLp (1 - p⁻¹)⁻¹ μ] with x hg
+  filter_upwards [g.coeFn_toLp (p := (1 - p⁻¹)⁻¹) (by simp) μ] with x hg
   rw [hg]
 
 instance instCoeDep {p : ℝ≥0∞} [hp : Fact (1 ≤ p)] (f : Lp F p μ) :
@@ -179,11 +181,12 @@ instance instCoeDep {p : ℝ≥0∞} [hp : Fact (1 ≤ p)] (f : Lp F p μ) :
 
 @[simp]
 theorem toTemperedDistribution_toLp_eq [SecondCountableTopology E] {p : ℝ≥0∞} [hp : Fact (1 ≤ p)]
-    (f : 𝓢(E, F)) : ((f.toLp p μ) : 𝓢'(E, F)) = f.toTemperedDistributionCLM E F μ := by
+    (f : 𝓢(E, F)) : ((f.toLp (ENNReal.ne_zero_of_ge_one hp.out) μ) : 𝓢'(E, F))
+      = f.toTemperedDistributionCLM E F μ := by
   ext g
   simp only [Lp.toTemperedDistribution_apply, toTemperedDistributionCLM_apply_apply]
   apply integral_congr_ae
-  filter_upwards [f.coeFn_toLp p μ] with x hf
+  filter_upwards [f.coeFn_toLp (ENNReal.ne_zero_of_ge_one hp.out) μ] with x hf
   rw [hf]
 
 set_option backward.isDefEq.respectTransparency false in
@@ -201,7 +204,9 @@ def toTemperedDistributionCLM (μ : Measure E := by volume_tac) [μ.HasTemperate
     haveI : Fact (1 ≤ (1 - p⁻¹)⁻¹) := by simp [fact_iff]
     have hpq : ENNReal.HolderConjugate p (1 - p⁻¹)⁻¹ :=
       ENNReal.HolderConjugate.inv_one_sub_inv' hp.out
-    exact (((lsmul ℂ ℂ (E := F)).flip.lpPairing μ p (1 - p⁻¹)⁻¹).flip (g.toLp (1 - p⁻¹)⁻¹ μ)).cont
+    exact (((lsmul ℂ ℂ (E := F)).flip.lpPairing μ p (1 - p⁻¹)⁻¹
+      (ENNReal.HolderConjugate.ne_zero p (1 - p⁻¹)⁻¹) (by simp)).flip (g.toLp (p := (1 - p⁻¹)⁻¹)
+        (by simp) μ)).cont
 
 @[simp]
 theorem toTemperedDistributionCLM_apply {p : ℝ≥0∞} [hp : Fact (1 ≤ p)] (f : Lp F p μ) :

@@ -1262,13 +1262,13 @@ variable (𝕜 F) in
 
 The maximum index `k` and the constant `C` depend on `p` and `μ`.
 -/
-theorem eLpNorm_le_seminorm (p : ℝ≥0∞) (μ : Measure E := by volume_tac)
+theorem eLpNorm_le_seminorm {p : ℝ≥0∞} (hp : p ≠ 0) (μ : Measure E := by volume_tac)
     [hμ : μ.HasTemperateGrowth] :
     ∃ (k : ℕ) (C : ℝ≥0), ∀ (f : 𝓢(E, F)), eLpNorm f p μ ≤
       C * ENNReal.ofReal ((Finset.Iic (k, 0)).sup (schwartzSeminormFamily 𝕜 E F) f) := by
   -- Apply Hölder's inequality `‖f‖_p ≤ ‖f₁‖_p * ‖f₂‖_∞` to obtain the `L^p` norm of `f = f₁ • f₂`
   -- using `f₁ = (1 + ‖x‖) ^ (-k)` and `f₂ = (1 + ‖x‖) ^ k • f x`.
-  rcases hμ.exists_eLpNorm_lt_top p with ⟨k, hk⟩
+  rcases hμ.exists_eLpNorm_lt_top p hp with ⟨k, hk⟩
   refine ⟨k, (eLpNorm (fun x ↦ (1 + ‖x‖) ^ (-k : ℝ)) p μ).toNNReal * 2 ^ k, fun f ↦ ?_⟩
   have h_one_add (x : E) : 0 < 1 + ‖x‖ := lt_add_of_pos_of_le zero_lt_one (norm_nonneg x)
   calc eLpNorm (⇑f) p μ
@@ -1276,7 +1276,7 @@ theorem eLpNorm_le_seminorm (p : ℝ≥0∞) (μ : Measure E := by volume_tac)
     refine congrArg (eLpNorm · p μ) (funext fun x ↦ ?_)
     simp [(h_one_add x).ne']
   _ ≤ eLpNorm (fun x ↦ (1 + ‖x‖) ^ (-k : ℝ)) p μ * eLpNorm (fun x ↦ (1 + ‖x‖) ^ k • f x) ⊤ μ := by
-    refine eLpNorm_smul_le_eLpNorm_mul_eLpNorm_top p _ ?_
+    apply eLpNorm_smul_le_eLpNorm_mul_eLpNorm_top hp
     refine Continuous.aestronglyMeasurable ?_
     exact .rpow_const (by fun_prop) fun x ↦ .inl (h_one_add x).ne'
   _ ≤ eLpNorm (fun x ↦ (1 + ‖x‖) ^ (-k : ℝ)) p μ *
@@ -1292,9 +1292,9 @@ theorem eLpNorm_le_seminorm (p : ℝ≥0∞) (μ : Measure E := by volume_tac)
     ring
 
 /-- The `L^p` norm of a Schwartz function is finite. -/
-theorem eLpNorm_lt_top (f : 𝓢(E, F)) (p : ℝ≥0∞) (μ : Measure E := by volume_tac)
+theorem eLpNorm_lt_top (f : 𝓢(E, F)) {p : ℝ≥0∞} (hp : p ≠ 0) (μ : Measure E := by volume_tac)
     [hμ : μ.HasTemperateGrowth] : eLpNorm f p μ < ⊤ := by
-  rcases eLpNorm_le_seminorm ℝ F p μ with ⟨k, C, hC⟩
+  rcases eLpNorm_le_seminorm ℝ F hp μ with ⟨k, C, hC⟩
   exact lt_of_le_of_lt (hC f) (ENNReal.mul_lt_top ENNReal.coe_lt_top ENNReal.ofReal_lt_top)
 
 variable [SecondCountableTopologyEither E F]
@@ -1306,47 +1306,48 @@ theorem memLp_top (f : 𝓢(E, F)) (μ : Measure E := by volume_tac) : MemLp f �
   simpa using hC x
 
 /-- Schwartz functions are in `L^p` for any `p`. -/
-theorem memLp (f : 𝓢(E, F)) (p : ℝ≥0∞) (μ : Measure E := by volume_tac)
+theorem memLp (f : 𝓢(E, F)) {p : ℝ≥0∞} (hp : p ≠ 0) (μ : Measure E := by volume_tac)
     [hμ : μ.HasTemperateGrowth] : MemLp f p μ :=
-  ⟨f.continuous.aestronglyMeasurable, f.eLpNorm_lt_top p μ⟩
+  ⟨f.continuous.aestronglyMeasurable, f.eLpNorm_lt_top hp μ⟩
 
 /-- Map a Schwartz function to an `Lp` function for any `p`. -/
-def toLp (f : 𝓢(E, F)) (p : ℝ≥0∞) (μ : Measure E := by volume_tac) [hμ : μ.HasTemperateGrowth] :
-    Lp F p μ := (f.memLp p μ).toLp
+def toLp (f : 𝓢(E, F)) {p : ℝ≥0∞} (hp : p ≠ 0) (μ : Measure E := by volume_tac)
+    [hμ : μ.HasTemperateGrowth] : Lp F p μ := (f.memLp hp μ).toLp
 
-theorem coeFn_toLp (f : 𝓢(E, F)) (p : ℝ≥0∞) (μ : Measure E := by volume_tac)
-    [hμ : μ.HasTemperateGrowth] : f.toLp p μ =ᵐ[μ] f := (f.memLp p μ).coeFn_toLp
+theorem coeFn_toLp (f : 𝓢(E, F)) {p : ℝ≥0∞} (hp : p ≠ 0) (μ : Measure E := by volume_tac)
+    [hμ : μ.HasTemperateGrowth] : f.toLp hp μ =ᵐ[μ] f := (f.memLp hp μ).coeFn_toLp
 
-theorem norm_toLp {f : 𝓢(E, F)} {p : ℝ≥0∞} {μ : Measure E} [hμ : μ.HasTemperateGrowth] :
-    ‖f.toLp p μ‖ = ENNReal.toReal (eLpNorm f p μ) := by
-  rw [Lp.norm_def, eLpNorm_congr_ae (coeFn_toLp f p μ)]
+theorem norm_toLp {f : 𝓢(E, F)} {p : ℝ≥0∞} (hp : p ≠ 0) {μ : Measure E}
+    [hμ : μ.HasTemperateGrowth] : ‖f.toLp hp μ‖ = ENNReal.toReal (eLpNorm f p μ) := by
+  rw [Lp.norm_def, eLpNorm_congr_ae (coeFn_toLp f hp μ)]
 
 theorem norm_toLp' {f : 𝓢(E, F)} {p : ℝ≥0∞} {μ : Measure E} (hp₁ : p ≠ 0) (hp₂ : p ≠ ⊤)
     [hμ : μ.HasTemperateGrowth] :
-    ‖f.toLp p μ‖ = (∫ x, ‖f x‖ ^ p.toReal ∂μ) ^ p.toReal⁻¹ := by
-  rw [norm_toLp, MeasureTheory.MemLp.eLpNorm_eq_integral_rpow_norm hp₁ hp₂ (f.memLp p μ),
+    ‖f.toLp hp₁ μ‖ = (∫ x, ‖f x‖ ^ p.toReal ∂μ) ^ p.toReal⁻¹ := by
+  rw [norm_toLp, MeasureTheory.MemLp.eLpNorm_eq_integral_rpow_norm hp₁ hp₂ (f.memLp hp₁ μ),
     ENNReal.toReal_ofReal (by positivity)]
 
 theorem norm_toLp_one {f : 𝓢(E, F)} {μ : Measure E} [hμ : μ.HasTemperateGrowth] :
-    ‖f.toLp 1 μ‖ = ∫ x, ‖f x‖ ∂μ := by
+    ‖f.toLp one_ne_zero μ‖ = ∫ x, ‖f x‖ ∂μ := by
   simpa using norm_toLp' (p := 1) (by simp) (by simp)
 
 theorem norm_toLp_top_le {f : 𝓢(E, F)} {μ : Measure E} [hμ : μ.HasTemperateGrowth] :
-    ‖f.toLp ⊤ μ‖ ≤ SchwartzMap.seminorm ℝ 0 0 f := by
+    ‖f.toLp ENNReal.top_ne_zero μ‖ ≤ SchwartzMap.seminorm ℝ 0 0 f := by
   rw [norm_toLp, ← ENNReal.ofReal_le_ofReal_iff (by positivity),
     ENNReal.ofReal_toReal (memLp_top f μ).eLpNorm_ne_top]
   exact eLpNormEssSup_le_of_ae_bound <| .of_forall <| norm_le_seminorm ℝ f
 
-theorem injective_toLp (p : ℝ≥0∞) (μ : Measure E := by volume_tac) [hμ : μ.HasTemperateGrowth]
-    [μ.IsOpenPosMeasure] : Function.Injective (fun f : 𝓢(E, F) ↦ f.toLp p μ) :=
+theorem injective_toLp {p : ℝ≥0∞} (hp : p ≠ 0) (μ : Measure E := by volume_tac)
+    [hμ : μ.HasTemperateGrowth] [μ.IsOpenPosMeasure] :
+    Function.Injective (fun f : 𝓢(E, F) ↦ f.toLp hp μ) :=
   fun f g ↦ by simpa [toLp] using (Continuous.ae_eq_iff_eq μ f.continuous g.continuous).mp
 
 variable (𝕜 F) in
-theorem norm_toLp_le_seminorm (p : ℝ≥0∞) (μ : Measure E := by volume_tac)
+theorem norm_toLp_le_seminorm {p : ℝ≥0∞} (hp : p ≠ 0) (μ : Measure E := by volume_tac)
     [hμ : μ.HasTemperateGrowth] :
-    ∃ k C, 0 ≤ C ∧ ∀ (f : 𝓢(E, F)), ‖f.toLp p μ‖ ≤
+    ∃ k C, 0 ≤ C ∧ ∀ (f : 𝓢(E, F)), ‖f.toLp hp μ‖ ≤
       C * (Finset.Iic (k, 0)).sup (schwartzSeminormFamily 𝕜 E F) f := by
-  rcases eLpNorm_le_seminorm 𝕜 F p μ with ⟨k, C, hC⟩
+  rcases eLpNorm_le_seminorm 𝕜 F hp μ with ⟨k, C, hC⟩
   refine ⟨k, C, C.coe_nonneg, fun f ↦ ?_⟩
   rw [norm_toLp]
   refine ENNReal.toReal_le_of_le_ofReal (by simp [mul_nonneg]) ?_
@@ -1355,18 +1356,21 @@ theorem norm_toLp_le_seminorm (p : ℝ≥0∞) (μ : Measure E := by volume_tac)
 
 variable (𝕜 F) in
 /-- Continuous linear map from Schwartz functions to `L^p`. -/
-def toLpCLM (p : ℝ≥0∞) [Fact (1 ≤ p)] (μ : Measure E := by volume_tac)
+def toLpCLM (p : ℝ≥0∞) [hp : Fact (1 ≤ p)] (μ : Measure E := by volume_tac)
     [hμ : μ.HasTemperateGrowth] : 𝓢(E, F) →L[𝕜] Lp F p μ :=
-  mkCLMtoNormedSpace (fun f ↦ f.toLp p μ) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) <| by
-    rcases norm_toLp_le_seminorm 𝕜 F p μ with ⟨k, C, hC_pos, hC⟩
+  mkCLMtoNormedSpace (fun f ↦ f.toLp (ENNReal.ne_zero_of_ge_one hp.out) μ)
+      (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) <| by
+    rcases norm_toLp_le_seminorm 𝕜 F (ENNReal.ne_zero_of_ge_one hp.out) μ with ⟨k, C, hC_pos, hC⟩
     exact ⟨Finset.Iic (k, 0), C, hC_pos, hC⟩
 
-@[simp] theorem toLpCLM_apply {p : ℝ≥0∞} [Fact (1 ≤ p)] {μ : Measure E} [hμ : μ.HasTemperateGrowth]
-    {f : 𝓢(E, F)} : toLpCLM 𝕜 F p μ f = f.toLp p μ := rfl
+@[simp] theorem toLpCLM_apply {p : ℝ≥0∞} [hp : Fact (1 ≤ p)] {μ : Measure E}
+    [hμ : μ.HasTemperateGrowth] {f : 𝓢(E, F)} :
+  toLpCLM 𝕜 F p μ f = f.toLp (ENNReal.ne_zero_of_ge_one hp.out) μ := rfl
 
 @[fun_prop]
-theorem continuous_toLp {p : ℝ≥0∞} [Fact (1 ≤ p)] {μ : Measure E} [hμ : μ.HasTemperateGrowth] :
-    Continuous (fun f : 𝓢(E, F) ↦ f.toLp p μ) := (toLpCLM ℝ F p μ).continuous
+theorem continuous_toLp {p : ℝ≥0∞} [hp : Fact (1 ≤ p)] {μ : Measure E} [hμ : μ.HasTemperateGrowth] :
+    Continuous (fun f : 𝓢(E, F) ↦ f.toLp (ENNReal.ne_zero_of_ge_one hp.out) μ) :=
+  (toLpCLM ℝ F p μ).continuous
 
 /-- Schwartz functions are dense in `Lp`. -/
 theorem denseRange_toLpCLM [FiniteDimensional ℝ E] [BorelSpace E] {p : ℝ≥0∞} (hp : p ≠ ⊤)
@@ -1375,9 +1379,10 @@ theorem denseRange_toLpCLM [FiniteDimensional ℝ E] [BorelSpace E] {p : ℝ≥0
   intro f
   refine (mem_closure_iff_nhds_basis Metric.nhds_basis_closedBall).2 fun ε hε ↦ ?_
   obtain ⟨g, hg₁, hg₂, hg₃⟩ := MemLp.exist_eLpNorm_sub_le hp hp'.out (Lp.memLp f) hε
-  use (hg₁.toSchwartzMap hg₂).toLp p μ
-  have : (f : E → F) - ((hg₁.toSchwartzMap hg₂).toLp p μ : E → F) =ᶠ[ae μ] (f : E → F) - g := by
-    filter_upwards [(hg₁.toSchwartzMap hg₂).coeFn_toLp p μ]
+  use (hg₁.toSchwartzMap hg₂).toLp (ENNReal.ne_zero_of_ge_one hp'.out) μ
+  have : (f : E → F) - ((hg₁.toSchwartzMap hg₂).toLp (ENNReal.ne_zero_of_ge_one hp'.out) μ : E → F)
+      =ᶠ[ae μ] (f : E → F) - g := by
+    filter_upwards [(hg₁.toSchwartzMap hg₂).coeFn_toLp (ENNReal.ne_zero_of_ge_one hp'.out) μ]
     simp
   simp only [Set.mem_range, toLpCLM_apply, exists_apply_eq_apply, Metric.mem_closedBall', true_and,
     Lp.dist_def, eLpNorm_congr_ae this]
@@ -1396,10 +1401,10 @@ variable [NormedAddCommGroup H] [NormedSpace ℝ H] [FiniteDimensional ℝ H]
 
 @[simp]
 theorem inner_toL2_toL2_eq (f g : 𝓢(H, V)) (μ : Measure H := by volume_tac) [μ.HasTemperateGrowth] :
-    inner ℂ (f.toLp 2 μ) (g.toLp 2 μ) = ∫ x, inner ℂ (f x) (g x) ∂μ := by
+    inner ℂ (f.toLp two_ne_zero μ) (g.toLp two_ne_zero μ) = ∫ x, inner ℂ (f x) (g x) ∂μ := by
   apply integral_congr_ae
-  have hf_ae := f.coeFn_toLp 2 μ
-  have hg_ae := g.coeFn_toLp 2 μ
+  have hf_ae := f.coeFn_toLp two_ne_zero μ
+  have hg_ae := g.coeFn_toLp two_ne_zero μ
   filter_upwards [hf_ae, hg_ae] with _ hf hg
   rw [hf, hg]
 

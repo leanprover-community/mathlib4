@@ -108,7 +108,7 @@ local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 theorem eLpNorm_rpow_two_norm_lt_top (f : Lp F 2 μ) :
     eLpNorm (fun x => ‖f x‖ ^ (2 : ℝ)) 1 μ < ∞ := by
   have h_two : ENNReal.ofReal (2 : ℝ) = 2 := by simp
-  rw [eLpNorm_norm_rpow f zero_lt_two, one_mul, h_two]
+  rw [eLpNorm_norm_rpow f zero_lt_two one_ne_zero, one_mul, h_two]
   exact ENNReal.rpow_lt_top_of_nonneg zero_le_two (Lp.eLpNorm_ne_top f)
 
 theorem eLpNorm_inner_lt_top (f g : α →₂[μ] E) : eLpNorm (fun x : α => ⟪f x, g x⟫) 1 μ < ∞ := by

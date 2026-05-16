@@ -53,7 +53,9 @@ theorem eLpNormEssSup_trim (hm : m ≤ m0) {f : α → ε} (hf : StronglyMeasura
 theorem eLpNorm_trim (hm : m ≤ m0) {f : α → ε} (hf : StronglyMeasurable[m] f) :
     eLpNorm f p (μ.trim hm) = eLpNorm f p μ := by
   by_cases h0 : p = 0
-  · simp [h0]
+  · simp only [h0, eLpNorm_exponent_zero]
+    apply trim_measurableSet_eq hm
+    measurability
   by_cases h_top : p = ∞
   · simpa only [h_top, eLpNorm_exponent_top] using eLpNormEssSup_trim hm hf
   simpa only [eLpNorm_eq_eLpNorm' h0 h_top] using eLpNorm'_trim hm hf

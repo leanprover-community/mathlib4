@@ -903,7 +903,7 @@ protected theorem integrable_bilin (B : F₁ →L[𝕜] F₂ →L[𝕜] F₃) {�
     refine subset_trans ?_ f.support_subset
     exact fun x hx hfx ↦ hx (by simp [hfx])
   rw [IntegrableOn, ← memLp_one_iff_integrable] at hφ ⊢
-  exact B.memLp_of_bilin 1 f.memLp_top hφ
+  exact B.memLp_of_bilin 1 ENNReal.top_ne_zero one_ne_zero f.memLp_top hφ
 
 variable [SMulCommClass ℝ 𝕜 F₁] [NormedSpace ℝ F₃] [SMulCommClass ℝ 𝕜 F₃]
 

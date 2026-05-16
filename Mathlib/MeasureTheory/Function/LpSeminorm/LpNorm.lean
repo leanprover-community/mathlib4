@@ -60,7 +60,6 @@ lemma lpNorm_one_eq_integral_norm (hf : AEStronglyMeasurable f μ) :
     lpNorm f 1 μ = ∫ x, ‖f x‖ ∂μ := by
   simp [lpNorm_eq_integral_norm_rpow_toReal one_ne_zero ENNReal.coe_ne_top hf]
 
-@[simp] lemma lpNorm_exponent_zero (f : α → E) : lpNorm f 0 μ = 0 := by simp [lpNorm]
 @[simp] lemma lpNorm_measure_zero (f : α → E) : lpNorm f p (0 : Measure α) = 0 := by simp [lpNorm]
 
 lemma ae_le_lpNorm_exponent_top (hf : MemLp f ∞ μ) : ∀ᵐ x ∂μ, ‖f x‖ ≤ lpNorm f ∞ μ := by
@@ -131,42 +130,42 @@ variable {𝕜 : Type*} [NormedField 𝕜]
     lpNorm (1 : α → 𝕜) p μ = μ.real .univ ^ (p.toReal⁻¹ : ℝ) := by
   simp [Pi.one_def, lpNorm_const' hp₀ hp, Measure.real, ENNReal.toReal_rpow]
 
-lemma lpNorm_const_smul [Module 𝕜 E] [NormSMulClass 𝕜 E] (c : 𝕜) (f : α → E) (μ : Measure α) :
-    lpNorm (c • f) p μ = ‖c‖₊ * lpNorm f p μ := by
+lemma lpNorm_const_smul [Module 𝕜 E] [NormSMulClass 𝕜 E] (hp : p ≠ 0) (c : 𝕜) (f : α → E)
+    (μ : Measure α) : lpNorm (c • f) p μ = ‖c‖₊ * lpNorm f p μ := by
   by_cases hf : AEStronglyMeasurable f μ
-  · simp [lpNorm, eLpNorm_const_smul, hf, hf.const_smul]
+  · simp [lpNorm, eLpNorm_const_smul (hp := hp), hf, hf.const_smul]
   obtain rfl | hc := eq_or_ne c 0
   · simp
   rw [lpNorm_of_not_aestronglyMeasurable hf, lpNorm_of_not_aestronglyMeasurable fun h ↦ hf <| by
     simpa [hc] using h.const_smul c⁻¹]
   simp
 
-lemma lpNorm_nsmul [NormedSpace ℝ E] (n : ℕ) (f : α → E) (μ : Measure α) :
+lemma lpNorm_nsmul [NormedSpace ℝ E] (hp : p ≠ 0) (n : ℕ) (f : α → E) (μ : Measure α) :
     lpNorm (n • f) p μ = n • lpNorm f p μ := by
-  simpa [Nat.cast_smul_eq_nsmul] using lpNorm_const_smul (n : ℝ) f μ (p := p)
+  simpa [Nat.cast_smul_eq_nsmul] using lpNorm_const_smul hp (n : ℝ) f μ
 
 variable [NormedSpace ℝ 𝕜]
 
-lemma lpNorm_natCast_mul (n : ℕ) (f : α → 𝕜) (p : ℝ≥0∞) (μ : Measure α) :
+lemma lpNorm_natCast_mul (n : ℕ) (f : α → 𝕜) {p : ℝ≥0∞} (hp : p ≠ 0) (μ : Measure α) :
     lpNorm ((n : α → 𝕜) * f) p μ = n * lpNorm f p μ := by
-  simpa only [nsmul_eq_mul] using lpNorm_nsmul n f μ
+  simpa only [nsmul_eq_mul] using lpNorm_nsmul hp n f μ
 
-lemma lpNorm_fun_natCast_mul (n : ℕ) (f : α → 𝕜) (p : ℝ≥0∞) (μ : Measure α) :
-    lpNorm (n * f ·) p μ = n * lpNorm f p μ := lpNorm_natCast_mul ..
+lemma lpNorm_fun_natCast_mul (n : ℕ) (f : α → 𝕜) {p : ℝ≥0∞} (hp : p ≠ 0) (μ : Measure α) :
+    lpNorm (n * f ·) p μ = n * lpNorm f p μ := lpNorm_natCast_mul _ _ hp _
 
-lemma lpNorm_mul_natCast (f : α → 𝕜) (n : ℕ) (p : ℝ≥0∞) (μ : Measure α) :
+lemma lpNorm_mul_natCast (f : α → 𝕜) (n : ℕ) {p : ℝ≥0∞} (hp : p ≠ 0) (μ : Measure α) :
     lpNorm (f * (n : α → 𝕜)) p μ = lpNorm f p μ * n := by
-  simpa only [mul_comm] using lpNorm_natCast_mul n f p μ
+  simpa only [mul_comm] using lpNorm_natCast_mul n f hp μ
 
-lemma lpNorm_fun_mul_natCast (f : α → 𝕜) (n : ℕ) (p : ℝ≥0∞) (μ : Measure α) :
-    lpNorm (f · * n) p μ = lpNorm f p μ * n := lpNorm_mul_natCast ..
+lemma lpNorm_fun_mul_natCast (f : α → 𝕜) (n : ℕ) {p : ℝ≥0∞} (hp : p ≠ 0) (μ : Measure α) :
+    lpNorm (f · * n) p μ = lpNorm f p μ * n := lpNorm_mul_natCast _ _ hp _
 
-lemma lpNorm_div_natCast [CharZero 𝕜] {n : ℕ} (hn : n ≠ 0) (f : α → 𝕜) (p : ℝ≥0∞)
-    (μ : Measure α) : lpNorm (f / (n : α → 𝕜)) p μ = lpNorm f p μ / n := by
-  rw [eq_div_iff (by positivity), ← lpNorm_mul_natCast]; simp [Pi.mul_def, hn]
+lemma lpNorm_div_natCast [CharZero 𝕜] {n : ℕ} (hn : n ≠ 0) (f : α → 𝕜) {p : ℝ≥0∞}
+    (hp : p ≠ 0) (μ : Measure α) : lpNorm (f / (n : α → 𝕜)) p μ = lpNorm f p μ / n := by
+  rw [eq_div_iff (by positivity), ← lpNorm_mul_natCast (hp := hp)]; simp [Pi.mul_def, hn]
 
-lemma lpNorm_fun_div_natCast [CharZero 𝕜] {n : ℕ} (hn : n ≠ 0) (f : α → 𝕜) (p : ℝ≥0∞)
-    (μ : Measure α) : lpNorm (f · / n) p μ = lpNorm f p μ / n := lpNorm_div_natCast hn ..
+lemma lpNorm_fun_div_natCast [CharZero 𝕜] {n : ℕ} (hn : n ≠ 0) (f : α → 𝕜) {p : ℝ≥0∞} (hp : p ≠ 0)
+    (μ : Measure α) : lpNorm (f · / n) p μ = lpNorm f p μ / n := lpNorm_div_natCast hn _ hp _
 
 end NormedField
 
@@ -221,7 +220,8 @@ lemma lpNorm_expect_le [Module ℚ≥0 E] [NormedSpace ℝ E] {ι : Type*} {s : 
   obtain rfl | hs := s.eq_empty_or_nonempty
   · simp
   refine (le_inv_smul_iff_of_pos <| by positivity).2 ?_
-  rw [Nat.cast_smul_eq_nsmul, ← lpNorm_nsmul, Finset.card_smul_expect]
+  rw [Nat.cast_smul_eq_nsmul, ← lpNorm_nsmul (hp := ENNReal.ne_zero_of_ge_one hp),
+    Finset.card_smul_expect]
   exact lpNorm_sum_le hf hp
 
 lemma lpNorm_mono_real {g : α → ℝ} (hg : MemLp g p μ) (h : ∀ x, ‖f x‖ ≤ g x) :
@@ -231,22 +231,20 @@ lemma lpNorm_mono_real {g : α → ℝ} (hg : MemLp g p μ) (h : ∀ x, ‖f x�
     exact ENNReal.toNNReal_mono (hg.eLpNorm_ne_top) (eLpNorm_mono_real h)
   · simp [hf]
 
-lemma lpNorm_smul_measure_of_ne_zero {f : α → E} {c : ℝ≥0} (hc : c ≠ 0) :
+lemma lpNorm_smul_measure_of_ne_zero {f : α → E} {c : ℝ≥0} (hc : c ≠ 0) (hp : p ≠ 0) :
     lpNorm f p (c • μ) = c ^ p.toReal⁻¹ • lpNorm f p μ := by
   by_cases hf : AEStronglyMeasurable f μ
-  · simp [← toReal_eLpNorm, hf, hf.smul_measure, eLpNorm_smul_measure_of_ne_zero' hc f p μ]
+  · simp [← toReal_eLpNorm, hf, hf.smul_measure, eLpNorm_smul_measure_of_ne_zero' hc f μ (hp := hp)]
     simp [ENNReal.smul_def, NNReal.smul_def]
   · rw [lpNorm_of_not_aestronglyMeasurable hf, lpNorm_of_not_aestronglyMeasurable fun h ↦ hf <| by
       simpa [hc] using h.smul_measure c⁻¹]
     simp
 
-lemma lpNorm_smul_measure_of_ne_top (hp : p ≠ ∞) {f : α → E} (c : ℝ≥0) :
+lemma lpNorm_smul_measure_of_ne_top (hp' : p ≠ 0) (hp : p ≠ ∞) {f : α → E} (c : ℝ≥0) :
     lpNorm f p (c • μ) = c ^ p.toReal⁻¹ • lpNorm f p μ := by
   by_cases hf : AEStronglyMeasurable f μ
-  · simp [← toReal_eLpNorm, hf, hf.smul_measure, eLpNorm_smul_measure_of_ne_top' hp]
+  · simp [← toReal_eLpNorm, hf, hf.smul_measure, eLpNorm_smul_measure_of_ne_top' hp hp']
     simp [ENNReal.smul_def, NNReal.smul_def]
-  obtain rfl | hp₀ := eq_or_ne p 0
-  · simp
   obtain rfl | hc := eq_or_ne c 0
   · rw [NNReal.zero_rpow (by simp [ENNReal.toReal_eq_zero_iff, *])]
     simp

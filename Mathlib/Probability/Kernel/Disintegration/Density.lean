@@ -187,7 +187,7 @@ lemma densityProcess_le_one (hκν : fst κ ≤ ν) (n : ℕ) (a : α) (x : γ) 
 
 lemma eLpNorm_densityProcess_le (hκν : fst κ ≤ ν) (n : ℕ) (a : α) (s : Set β) :
     eLpNorm (fun x ↦ densityProcess κ ν n a x s) 1 (ν a) ≤ ν a univ := by
-  refine (eLpNorm_le_of_ae_bound (C := 1) (ae_of_all _ (fun x ↦ ?_))).trans ?_
+  refine (eLpNorm_le_of_ae_bound (C := 1) (ae_of_all _ (fun x ↦ ?_)) one_ne_zero).trans ?_
   · simp only [Real.norm_eq_abs, abs_of_nonneg (densityProcess_nonneg κ ν n a x s),
       densityProcess_le_one hκν n a x s]
   · simp
@@ -384,7 +384,7 @@ lemma memL1_limitProcess_densityProcess (hκν : fst κ ≤ ν) [IsFiniteKernel 
     MemLp ((countableFiltration γ).limitProcess
       (fun n x ↦ densityProcess κ ν n a x s) (ν a)) 1 (ν a) := by
   refine Submartingale.memLp_limitProcess (martingale_densityProcess hκν a hs).submartingale
-    (R := (ν a univ).toNNReal) (fun n ↦ ?_)
+    (R := (ν a univ).toNNReal) (fun n ↦ ?_) one_ne_zero
   refine (eLpNorm_densityProcess_le hκν n a s).trans_eq ?_
   rw [ENNReal.coe_toNNReal]
   exact measure_ne_top _ _
@@ -481,7 +481,7 @@ section Integral
 
 lemma eLpNorm_density_le (hκν : fst κ ≤ ν) (a : α) (s : Set β) :
     eLpNorm (fun x ↦ density κ ν a x s) 1 (ν a) ≤ ν a univ := by
-  refine (eLpNorm_le_of_ae_bound (C := 1) (ae_of_all _ (fun t ↦ ?_))).trans ?_
+  refine (eLpNorm_le_of_ae_bound (C := 1) (ae_of_all _ (fun t ↦ ?_)) one_ne_zero).trans ?_
   · simp only [Real.norm_eq_abs, abs_of_nonneg (density_nonneg hκν a t s),
       density_le_one hκν a t s]
   · simp

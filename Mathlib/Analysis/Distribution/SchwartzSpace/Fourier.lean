@@ -301,18 +301,18 @@ section L1
 variable {F : Type*} [NormedAddCommGroup F] [NormedSpace ℂ F]
 
 theorem norm_fourier_apply_le_toLp_one (f : 𝓢(V, F)) (x : V) :
-    ‖𝓕 f x‖ ≤ ‖f.toLp 1‖ := calc
+    ‖𝓕 f x‖ ≤ ‖f.toLp one_ne_zero‖ := calc
   _ = ‖∫ (v : V), 𝐞 (-inner ℝ v x) • f v‖ := by rw [fourier_coe, Real.fourier_eq]
   _ ≤ ∫ (v : V), ‖𝐞 (-inner ℝ v x) • f v‖ := norm_integral_le_integral_norm _
   _ = _ := by simp [norm_toLp_one]
 
 theorem norm_fourier_toBoundedContinuousFunction_le_toLp_one (f : 𝓢(V, F)) :
-    ‖(𝓕 f).toBoundedContinuousFunction‖ ≤ ‖f.toLp 1‖ := by
+    ‖(𝓕 f).toBoundedContinuousFunction‖ ≤ ‖f.toLp one_ne_zero‖ := by
   rw [BoundedContinuousFunction.norm_le (by positivity)]
   simpa using norm_fourier_apply_le_toLp_one f
 
 theorem norm_fourier_Lp_top_leq_toLp_one (f : 𝓢(V, F)) :
-    ‖(𝓕 f).toLp ⊤‖ ≤ ‖f.toLp 1‖ :=
+    ‖(𝓕 f).toLp ENNReal.top_ne_zero‖ ≤ ‖f.toLp one_ne_zero‖ :=
   norm_toLp_top_le.trans (seminorm_le_bound ℝ 0 0 _ (by positivity)
     (by simpa using norm_fourier_apply_le_toLp_one f))
 
@@ -334,13 +334,14 @@ theorem integral_norm_sq_fourier (f : 𝓢(V, H)) :
     integral_inner_fourier_fourier f f
 
 theorem inner_fourier_toL2_eq (f g : 𝓢(V, H)) :
-    ⟪(𝓕 f).toLp 2, (𝓕 g).toLp 2⟫ = ⟪f.toLp 2, g.toLp 2⟫ := by simp
+    ⟪(𝓕 f).toLp two_ne_zero, (𝓕 g).toLp two_ne_zero⟫
+      = ⟪f.toLp two_ne_zero, g.toLp two_ne_zero⟫ := by simp
 
 @[deprecated (since := "2025-11-13")]
 alias inner_fourierTransformCLM_toL2_eq := inner_fourier_toL2_eq
 
 @[simp] theorem norm_fourier_toL2_eq (f : 𝓢(V, H)) :
-    ‖(𝓕 f).toLp 2‖ = ‖f.toLp 2‖ := by
+    ‖(𝓕 f).toLp two_ne_zero‖ = ‖f.toLp two_ne_zero‖ := by
   simp_rw [norm_eq_sqrt_re_inner (𝕜 := ℂ), inner_fourier_toL2_eq]
 
 @[deprecated (since := "2025-11-13")]

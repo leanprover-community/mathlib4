@@ -88,7 +88,7 @@ lemma map_rotation_eq_self_of_forall_strongDual_eq_zero
     covariance_smul_right, variance_smul, covariance_smul_left, covariance_smul_right]
   · have h := Real.cos_sq_add_sin_sq θ
     grind
-  all_goals exact (memLp_dual _ _ _ (by simp)).const_smul _
+  all_goals exact (memLp_dual _ _ _ two_ne_zero (by simp)).const_smul _
 
 end Rotation
 
@@ -183,12 +183,14 @@ variable [CompleteSpace E] [SecondCountableTopology E]
 
 /-- A Gaussian measure has moments of all orders.
 That is, the identity is in L^p for all finite `p`. -/
-lemma memLp_id (μ : Measure E) [IsGaussian μ] (p : ℝ≥0∞) (hp : p ≠ ∞) : MemLp id p μ := by
+lemma memLp_id (μ : Measure E) [IsGaussian μ] (p : ℝ≥0∞) (hp0 : p ≠ 0) (hp : p ≠ ∞) :
+    MemLp id p μ := by
   suffices MemLp (fun x ↦ ‖x‖ ^ 2) (p / 2) μ by
     rw [← memLp_norm_rpow_iff (q := 2) (by fun_prop) (by simp) (by simp)]
     simpa using this
   lift p to ℝ≥0 using hp
-  convert memLp_of_mem_interior_integrableExpSet ?_ (p / 2)
+  have : p / 2 ≠ 0 := by simp [ENNReal.coe_ne_zero.mp hp0]
+  convert memLp_of_mem_interior_integrableExpSet ?_ this
   · simp
   obtain ⟨C, hC_pos, hC⟩ := exists_integrable_exp_sq μ
   have hC_neg : Integrable (fun x ↦ rexp (-C * ‖x‖ ^ 2)) μ := by -- `-C` could be any negative
@@ -203,16 +205,16 @@ lemma memLp_id (μ : Measure E) [IsGaussian μ] (p : ℝ≥0∞) (hp : p ≠ ∞
   exact h_subset ⟨by simp [hC_pos], hC_pos⟩
 
 lemma integrable_id : Integrable id μ :=
-  memLp_one_iff_integrable.1 <| memLp_id μ 1 (by norm_num)
+  memLp_one_iff_integrable.1 <| memLp_id μ 1 one_ne_zero (by norm_num)
 
 lemma integrable_fun_id : Integrable (fun x ↦ x) μ := integrable_id
 
-lemma memLp_two_id : MemLp id 2 μ := memLp_id μ 2 (by norm_num)
+lemma memLp_two_id : MemLp id 2 μ := memLp_id μ 2 two_ne_zero (by norm_num)
 
 lemma memLp_two_fun_id : MemLp (fun x ↦ x) 2 μ := memLp_two_id
 
 lemma integral_dual (L : StrongDual ℝ E) : μ[L] = L (∫ x, x ∂μ) :=
-  L.integral_comp_comm ((memLp_id μ 1 (by simp)).integrable le_rfl)
+  L.integral_comp_comm ((memLp_id μ 1 one_ne_zero (by simp)).integrable le_rfl)
 
 /-- A Gaussian measure with variance zero is a Dirac. -/
 lemma eq_dirac_of_variance_eq_zero (h : ∀ L : StrongDual ℝ E, Var[L; μ] = 0) :

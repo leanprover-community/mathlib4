@@ -44,16 +44,16 @@ variable {α 𝕜 E F G : Type*} {m : MeasurableSpace α} {μ : Measure α}
 namespace ContinuousLinearMap
 
 variable (r) in
-theorem memLp_of_bilin {f : α → E} {g : α → F} (hf : MemLp f p μ) (hg : MemLp g q μ) :
-    MemLp (fun x ↦ B (f x) (g x)) r μ :=
-  MeasureTheory.MemLp.of_bilin (r := r) (B · ·) ‖B‖₊ hf hg
+theorem memLp_of_bilin {f : α → E} {g : α → F} (hp : p ≠ 0) (hq : q ≠ 0) (hf : MemLp f p μ)
+    (hg : MemLp g q μ) : MemLp (fun x ↦ B (f x) (g x)) r μ :=
+  MeasureTheory.MemLp.of_bilin hp hq (B · ·) ‖B‖₊ hf hg
     (B.aestronglyMeasurable_comp₂ hf.1 hg.1) (.of_forall fun _ ↦ B.le_opNorm₂ _ _)
 
 theorem integrable_of_bilin_of_bdd_left {f : α → E} {g : α → F} (C : ℝ)
     (hf1 : AEStronglyMeasurable f μ) (hf2 : ∀ᵐ a ∂μ, ‖f a‖ ≤ C) (hg : Integrable g μ) :
     Integrable (fun x ↦ B (f x) (g x)) μ :=
-  memLp_one_iff_integrable.1 <| B.memLp_of_bilin 1 (memLp_top_of_bound hf1 C hf2)
-    (memLp_one_iff_integrable.2 hg)
+  memLp_one_iff_integrable.1 <| B.memLp_of_bilin 1 top_ne_zero one_ne_zero
+    (memLp_top_of_bound hf1 C hf2) (memLp_one_iff_integrable.2 hg)
 
 theorem integrable_of_bilin_of_bdd_right {f : α → E} {g : α → F} (C : ℝ)
     (hf : Integrable f μ) (hg1 : AEStronglyMeasurable g μ) (hg2 : ∀ᵐ a ∂μ, ‖g a‖ ≤ C) :
@@ -63,48 +63,48 @@ theorem integrable_of_bilin_of_bdd_right {f : α → E} {g : α → F} (C : ℝ)
 variable (r) in
 /-- The map between `MeasureTheory.Lp` spaces satisfying `ENNReal.HolderTriple`
 induced by a continuous bilinear map on the underlying spaces. -/
-def holder (f : Lp E p μ) (g : Lp F q μ) : Lp G r μ :=
-  (B.memLp_of_bilin r (Lp.memLp f) (Lp.memLp g)).toLp
+def holder (f : Lp E p μ) (g : Lp F q μ) (hp : p ≠ 0) (hq : q ≠ 0) : Lp G r μ :=
+  (B.memLp_of_bilin r hp hq (Lp.memLp f) (Lp.memLp g)).toLp
 
-lemma coeFn_holder (f : Lp E p μ) (g : Lp F q μ) :
-    B.holder r f g =ᵐ[μ] fun x ↦ B (f x) (g x) := by
+lemma coeFn_holder (f : Lp E p μ) (g : Lp F q μ) (hp : p ≠ 0) (hq : q ≠ 0) :
+    B.holder r f g hp hq =ᵐ[μ] fun x ↦ B (f x) (g x) := by
   rw [holder]
   exact MemLp.coeFn_toLp _
 
-lemma nnnorm_holder_apply_apply_le (f : Lp E p μ) (g : Lp F q μ) :
-    ‖B.holder r f g‖₊ ≤ ‖B‖₊ * ‖f‖₊ * ‖g‖₊ := by
+lemma nnnorm_holder_apply_apply_le (f : Lp E p μ) (g : Lp F q μ) (hp : p ≠ 0) (hq : q ≠ 0) :
+    ‖B.holder r f g hp hq‖₊ ≤ ‖B‖₊ * ‖f‖₊ * ‖g‖₊ := by
   simp_rw [← ENNReal.coe_le_coe, ENNReal.coe_mul, ← enorm_eq_nnnorm, Lp.enorm_def]
-  apply eLpNorm_congr_ae (coeFn_holder B f g) |>.trans_le
-  exact eLpNorm_le_eLpNorm_mul_eLpNorm_of_nnnorm (Lp.memLp f).1 (Lp.memLp g).1 (B · ·) ‖B‖₊
+  apply eLpNorm_congr_ae (coeFn_holder B f g hp hq) |>.trans_le
+  exact eLpNorm_le_eLpNorm_mul_eLpNorm_of_nnnorm hp hq (Lp.memLp f).1 (Lp.memLp g).1 (B · ·) ‖B‖₊
     (.of_forall fun _ ↦ B.le_opNorm₂ _ _)
 
-lemma norm_holder_apply_apply_le (f : Lp E p μ) (g : Lp F q μ) :
-    ‖B.holder r f g‖ ≤ ‖B‖ * ‖f‖ * ‖g‖ :=
-  NNReal.coe_le_coe.mpr <| nnnorm_holder_apply_apply_le B f g
+lemma norm_holder_apply_apply_le (f : Lp E p μ) (g : Lp F q μ) (hp : p ≠ 0) (hq : q ≠ 0) :
+    ‖B.holder r f g hp hq‖ ≤ ‖B‖ * ‖f‖ * ‖g‖ :=
+  NNReal.coe_le_coe.mpr <| nnnorm_holder_apply_apply_le B f g hp hq
 
-lemma holder_add_left (f₁ f₂ : Lp E p μ) (g : Lp F q μ) :
-    B.holder r (f₁ + f₂) g = B.holder r f₁ g + B.holder r f₂ g := by
+lemma holder_add_left (f₁ f₂ : Lp E p μ) (g : Lp F q μ) (hp : p ≠ 0) (hq : q ≠ 0) :
+    B.holder r (f₁ + f₂) g hp hq = B.holder r f₁ g hp hq + B.holder r f₂ g hp hq := by
   simp only [holder, ← MemLp.toLp_add]
   apply MemLp.toLp_congr
   filter_upwards [AEEqFun.coeFn_add f₁.val f₂.val] with x hx
   simp [hx]
 
-lemma holder_add_right (f : Lp E p μ) (g₁ g₂ : Lp F q μ) :
-    B.holder r f (g₁ + g₂) = B.holder r f g₁ + B.holder r f g₂ := by
+lemma holder_add_right (f : Lp E p μ) (g₁ g₂ : Lp F q μ) (hp : p ≠ 0) (hq : q ≠ 0) :
+    B.holder r f (g₁ + g₂) hp hq = B.holder r f g₁ hp hq + B.holder r f g₂ hp hq := by
   simp only [holder, ← MemLp.toLp_add]
   apply MemLp.toLp_congr
   filter_upwards [AEEqFun.coeFn_add g₁.val g₂.val] with x hx
   simp [hx]
 
-lemma holder_smul_left (c : 𝕜) (f : Lp E p μ) (g : Lp F q μ) :
-    B.holder r (c • f) g = c • B.holder r f g := by
+lemma holder_smul_left (c : 𝕜) (f : Lp E p μ) (g : Lp F q μ) (hp : p ≠ 0) (hq : q ≠ 0) :
+    B.holder r (c • f) g hp hq = c • B.holder r f g hp hq := by
   simp only [holder, ← MemLp.toLp_const_smul]
   apply MemLp.toLp_congr
   filter_upwards [Lp.coeFn_smul c f] with x hx
   simp [hx]
 
-lemma holder_smul_right (c : 𝕜) (f : Lp E p μ) (g : Lp F q μ) :
-    B.holder r f (c • g) = c • B.holder r f g := by
+lemma holder_smul_right (c : 𝕜) (f : Lp E p μ) (g : Lp F q μ) (hp : p ≠ 0) (hq : q ≠ 0) :
+    B.holder r f (c • g) hp hq = c • B.holder r f g hp hq := by
   simp only [holder, ← MemLp.toLp_const_smul]
   apply MemLp.toLp_congr
   filter_upwards [Lp.coeFn_smul c g] with x hx
@@ -113,19 +113,21 @@ lemma holder_smul_right (c : 𝕜) (f : Lp E p μ) (g : Lp F q μ) :
 variable (μ p q r) in
 /-- `MeasureTheory.Lp.holder` as a bilinear map. -/
 @[simps! apply_apply]
-def holderₗ : Lp E p μ →ₗ[𝕜] Lp F q μ →ₗ[𝕜] Lp G r μ :=
-  .mk₂ 𝕜 (B.holder r) B.holder_add_left B.holder_smul_left
-    B.holder_add_right B.holder_smul_right
+def holderₗ (hp : p ≠ 0) (hq : q ≠ 0) : Lp E p μ →ₗ[𝕜] Lp F q μ →ₗ[𝕜] Lp G r μ :=
+  .mk₂ 𝕜 (B.holder r (hp := hp) (hq := hq)) (B.holder_add_left (hp := hp) (hq := hq))
+    (B.holder_smul_left (hp := hp) (hq := hq))
+      (B.holder_add_right (hp := hp) (hq := hq)) (B.holder_smul_right (hp := hp) (hq := hq))
 
 variable [Fact (1 ≤ p)] [Fact (1 ≤ q)] [Fact (1 ≤ r)]
 
 variable (μ p q r) in
 /-- `MeasureTheory.Lp.holder` as a continuous bilinear map. -/
 @[simps! apply_apply]
-def holderL : Lp E p μ →L[𝕜] Lp F q μ →L[𝕜] Lp G r μ :=
-  LinearMap.mkContinuous₂ (B.holderₗ μ p q r) ‖B‖ (norm_holder_apply_apply_le B)
+def holderL (hp : p ≠ 0) (hq : q ≠ 0) : Lp E p μ →L[𝕜] Lp F q μ →L[𝕜] Lp G r μ :=
+  LinearMap.mkContinuous₂ (B.holderₗ μ p q r hp hq) ‖B‖ (norm_holder_apply_apply_le B (hp := hp)
+    (hq := hq))
 
-lemma norm_holderL_le : ‖(B.holderL μ p q r)‖ ≤ ‖B‖ :=
+lemma norm_holderL_le (hp : p ≠ 0) (hq : q ≠ 0) : ‖B.holderL μ p q r hp hq‖ ≤ ‖B‖ :=
   LinearMap.mkContinuous₂_norm_le _ (norm_nonneg B) _
 
 variable [HolderConjugate p q] [NormedSpace ℝ G] [SMulCommClass ℝ 𝕜 G] [CompleteSpace G]
@@ -139,13 +141,13 @@ This is given by `∫ x, B (f x) (g x) ∂μ`.
 In the special case when `B := (NormedSpace.inclusionInDoubleDual 𝕜 E).flip`, which is
 definitionally the same as `B := ContinuousLinearMap.id 𝕜 (E →L[𝕜] 𝕜)`, this is the
 natural map `Lp (StrongDual 𝕜 E) p μ →L[𝕜] StrongDual 𝕜 (Lp E q μ)`. -/
-def lpPairing (B : E →L[𝕜] F →L[𝕜] G) : Lp E p μ →L[𝕜] Lp F q μ →L[𝕜] G :=
-  (L1.integralCLM' 𝕜 |>.postcomp <| Lp F q μ) ∘L (B.holderL μ p q 1)
+def lpPairing (B : E →L[𝕜] F →L[𝕜] G) (hp : p ≠ 0) (hq : q ≠ 0) : Lp E p μ →L[𝕜] Lp F q μ →L[𝕜] G :=
+  (L1.integralCLM' 𝕜 |>.postcomp <| Lp F q μ) ∘L (B.holderL μ p q 1 hp hq)
 
-lemma lpPairing_eq_integral (f : Lp E p μ) (g : Lp F q μ) :
-    B.lpPairing μ p q f g = ∫ x, B (f x) (g x) ∂μ := by
+lemma lpPairing_eq_integral (f : Lp E p μ) (g : Lp F q μ) (hp : p ≠ 0) (hq : q ≠ 0) :
+    B.lpPairing μ p q hp hq f g = ∫ x, B (f x) (g x) ∂μ := by
   simpa [lpPairing, ← L1.integral_eq', L1.integral_eq_integral] using
-    integral_congr_ae <| B.coeFn_holder _ _
+    integral_congr_ae <| B.coeFn_holder _ _ hp hq
 
 end ContinuousLinearMap
 
@@ -185,12 +187,12 @@ lemma coeFn_lpSMul (f : Lp 𝕜 p μ) (g : Lp E q μ) :
   rw [smul_def]
   exact MemLp.coeFn_toLp _
 
-protected lemma norm_smul_le (f : Lp 𝕜 p μ) (g : Lp E q μ) :
+protected lemma norm_smul_le (f : Lp 𝕜 p μ) (g : Lp E q μ) (hp : p ≠ 0) (hq : q ≠ 0) :
     ‖f • g‖ ≤ ‖f‖ * ‖g‖ := by
   simp only [Lp.norm_def, ← ENNReal.toReal_mul]
   refine ENNReal.toReal_mono (by finiteness) ?_
   rw [eLpNorm_congr_ae (coeFn_lpSMul f g)]
-  exact eLpNorm_smul_le_mul_eLpNorm (Lp.aestronglyMeasurable g) (Lp.aestronglyMeasurable f)
+  exact eLpNorm_smul_le_mul_eLpNorm hp hq (Lp.aestronglyMeasurable g) (Lp.aestronglyMeasurable f)
 
 end MulActionWithZero
 
