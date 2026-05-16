@@ -659,6 +659,12 @@ lemma fromRel_relationMap {r : α → α → Prop} (hr : Symmetric r) (f : α �
     forall_exists_index, and_imp]
   exact fun c d hcd hc hd ↦ ⟨d, c, hr hcd, hd, hc⟩
 
+/-- Non-dependent recursor on members of a `fromRel` set -/
+def fromRelNdrec {motive : Sort*} {sym : Symmetric r} (hz : z ∈ fromRel sym)
+    (f : (a b : α) → r a b → motive) (h : ∀ (a b : α) (h : r a b), f a b h = f b a (sym h)) :
+    motive :=
+  z.hrec f (fun _ _ ↦ Function.hfunext (sym.iff .. |>.eq) fun _ _ _ ↦ heq_of_eq <| h ..) hz
+
 /-- The inverse to `Sym2.fromRel`. Given a set on `Sym2 α`, give a symmetric relation on `α`
 (see `Sym2.toRel_symmetric`). -/
 def ToRel (s : Set (Sym2 α)) (x y : α) : Prop :=
