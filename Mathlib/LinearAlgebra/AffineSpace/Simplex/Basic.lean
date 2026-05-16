@@ -497,6 +497,10 @@ lemma point_mem_closedInterior [ZeroLEOneClass k] {n : ℕ} (s : Simplex k P n) 
   intro j
   obtain rfl | hj := eq_or_ne j i <;> simp_all
 
+lemma nonempty_closedInterior [ZeroLEOneClass k] {n : ℕ} (s : Simplex k P n) :
+    s.closedInterior.Nonempty :=
+  ⟨s.points 0, s.point_mem_closedInterior 0⟩
+
 lemma interior_ssubset_closedInterior [ZeroLEOneClass k] {n : ℕ} (s : Simplex k P n) :
     s.interior ⊂ s.closedInterior := by
   rw [Set.ssubset_iff_exists]
