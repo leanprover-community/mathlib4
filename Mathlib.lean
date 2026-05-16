@@ -7554,6 +7554,7 @@ public import Mathlib.Topology.CWComplex.Classical.Basic
 public import Mathlib.Topology.CWComplex.Classical.Finite
 public import Mathlib.Topology.CWComplex.Classical.Graph
 public import Mathlib.Topology.CWComplex.Classical.Subcomplex
+public import Mathlib.Topology.CantorBendixson
 public import Mathlib.Topology.Category.Born
 public import Mathlib.Topology.Category.CompHaus.Basic
 public import Mathlib.Topology.Category.CompHaus.EffectiveEpi

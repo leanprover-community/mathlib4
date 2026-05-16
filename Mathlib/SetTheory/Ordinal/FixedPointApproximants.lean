@@ -88,6 +88,10 @@ theorem lfpApprox_zero : lfpApprox f x 0 = x := by
   rw [lfpApprox]
   simp
 
+theorem lfpApprox_zero : lfpApprox f x 0 = x := by
+  rw [lfpApprox]
+  aesop
+
 theorem le_lfpApprox {a : Ordinal} : x ≤ lfpApprox f x a := by
   rw [lfpApprox]
   exact le_sup_left
@@ -233,6 +237,14 @@ theorem gfpApprox_le_apply_gfpApprox_of_lt {a b : Ordinal} (h : a < b) :
 theorem gfpApprox_of_isSuccLimit {a : Ordinal} (ha : Order.IsSuccLimit a) :
     gfpApprox f x a = ⨅ b : Set.Iio a, gfpApprox f x b :=
   lfpApprox_of_isSuccLimit f.dual ha
+
+theorem gfpApprox_le_f_gfpApprox_of_lt {a b : Ordinal} (h : a < b) :
+    gfpApprox f x b ≤ f (gfpApprox f x a) :=
+  f_lfpApprox_le_lfpApprox_of_lt f.dual x h
+
+theorem gfpApprox_limit {a : Ordinal} (ha : Order.IsSuccLimit a) :
+    gfpApprox f x a = ⨅ b : Set.Iio a, gfpApprox f x b :=
+  lfpApprox_of_isSuccLimit f.dual x ha
 
 theorem gfpApprox_mono_left : Monotone (gfpApprox : (α →o α) → _) := by
   intro f g h
