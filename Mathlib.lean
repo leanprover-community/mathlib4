@@ -4957,6 +4957,7 @@ public import Mathlib.LinearAlgebra.ExteriorPower.Pairing
 public import Mathlib.LinearAlgebra.FiniteDimensional.Basic
 public import Mathlib.LinearAlgebra.FiniteDimensional.Defs
 public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
+public import Mathlib.LinearAlgebra.FiniteRankLinearMap
 public import Mathlib.LinearAlgebra.FiniteSpan
 public import Mathlib.LinearAlgebra.Finsupp.Defs
 public import Mathlib.LinearAlgebra.Finsupp.LSum
