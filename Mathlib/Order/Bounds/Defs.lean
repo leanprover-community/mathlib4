@@ -6,7 +6,6 @@ Authors: Johannes Hölzl, Yury Kudryashov
 module
 
 public import Mathlib.Data.Set.Defs
-public import Mathlib.Tactic.ToDual
 
 /-!
 # Definitions about upper/lower bounds
