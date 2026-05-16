@@ -6,7 +6,9 @@ Authors: Leonardo de Moura
 module
 
 public import Mathlib.Data.List.Defs
-public import Mathlib.Tactic.Common
+public import Aesop.BuiltinRules
+public import Mathlib.Tactic.Simps.Basic
+import Mathlib.Tactic.Common
 
 /-!
 The type `List.Vector` represents lists with fixed length.
