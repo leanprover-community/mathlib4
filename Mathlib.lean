@@ -7617,6 +7617,7 @@ public import Mathlib.Topology.Category.TopPair
 public import Mathlib.Topology.Category.UniformSpace
 public import Mathlib.Topology.Clopen
 public import Mathlib.Topology.ClopenBox
+public import Mathlib.Topology.ClosedBases
 public import Mathlib.Topology.Closure
 public import Mathlib.Topology.ClusterPt
 public import Mathlib.Topology.Coherent

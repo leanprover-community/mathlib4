@@ -93,6 +93,16 @@ theorem isTopologicalBasis_of_subbasis {s : Set (Set α)} (hs : t = generateFrom
   · rw [← sInter_singleton t]
     exact ⟨{t}, ⟨finite_singleton t, singleton_subset_iff.2 ht⟩, rfl⟩
 
+theorem subbasis_iff_isTopologicalBasis_sInter (s : Set (Set α)) :
+    t = generateFrom s ↔
+      IsTopologicalBasis ((fun f => ⋂₀ f) '' { f : Set (Set α) | f.Finite ∧ f ⊆ s }) := by
+  refine ⟨isTopologicalBasis_of_subbasis, fun h => h.eq_generateFrom ▸ eq_of_le_of_ge ?_ ?_⟩
+  · refine le_generateFrom fun t hts => ?_
+    apply isOpen_generateFrom_of_mem
+    use {t}, ⟨finite_singleton t, singleton_subset_iff.mpr hts⟩, sInter_singleton t
+  · exact le_generateFrom fun t ⟨f, ⟨hf, hfs⟩, hft⟩ =>
+      hft ▸ @hf.isOpen_sInter _ (generateFrom s) _ fun t htf => isOpen_generateFrom_of_mem (hfs htf)
+
 theorem isTopologicalBasis_of_subbasis_of_finiteInter {s : Set (Set α)} (hsg : t = generateFrom s)
     (hsi : FiniteInter s) : IsTopologicalBasis s := by
   convert isTopologicalBasis_of_subbasis hsg
