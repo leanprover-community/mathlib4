@@ -761,7 +761,7 @@ theorem Filter.Tendsto.apply_nhds {l : Filter Y} {f : Y → ∀ i, A i} {x : ∀
 
 @[fun_prop]
 protected theorem Continuous.piMap
-    {f : ∀ i, A i → B i} (hf : ∀ i, Continuous (f i)) : Continuous (Pi.map f) :=
+    {f : ∀ i, A i → B i} (hf : ∀ i, Continuous (f i)) : Continuous (Function.map f) :=
   continuous_pi fun i ↦ (hf i).comp (continuous_apply i)
 
 theorem nhds_pi {a : ∀ i, A i} : 𝓝 a = pi fun i => 𝓝 (a i) := by
@@ -769,13 +769,13 @@ theorem nhds_pi {a : ∀ i, A i} : 𝓝 a = pi fun i => 𝓝 (a i) := by
 
 protected theorem IsOpenMap.piMap {f : ∀ i, A i → B i}
     (hfo : ∀ i, IsOpenMap (f i)) (hsurj : ∀ᶠ i in cofinite, Surjective (f i)) :
-    IsOpenMap (Pi.map f) := by
+    IsOpenMap (Function.map f) := by
   refine IsOpenMap.of_nhds_le fun x ↦ ?_
   rw [nhds_pi, nhds_pi, map_piMap_pi hsurj]
   exact Filter.pi_mono fun i ↦ (hfo i).nhds_le _
 
 protected theorem IsOpenQuotientMap.piMap
-    {f : ∀ i, A i → B i} (hf : ∀ i, IsOpenQuotientMap (f i)) : IsOpenQuotientMap (Pi.map f) :=
+    {f : ∀ i, A i → B i} (hf : ∀ i, IsOpenQuotientMap (f i)) : IsOpenQuotientMap (Function.map f) :=
   ⟨.piMap fun i ↦ (hf i).1, .piMap fun i ↦ (hf i).2, .piMap (fun i ↦ (hf i).3) <|
     .of_forall fun i ↦ (hf i).1⟩
 
@@ -795,15 +795,15 @@ theorem continuousAt_pi' {f : X → ∀ i, A i} {x : X} (hf : ∀ i, ContinuousA
 @[fun_prop]
 protected theorem ContinuousAt.piMap {f : ∀ i, A i → B i} {x : ∀ i, A i}
     (hf : ∀ i, ContinuousAt (f i) (x i)) :
-    ContinuousAt (Pi.map f) x :=
+    ContinuousAt (Function.map f) x :=
   continuousAt_pi.2 fun i ↦ (hf i).comp (continuousAt_apply i x)
 
 protected lemma Topology.IsInducing.piMap {f : ∀ i, A i → B i}
-    (hf : ∀ i, IsInducing (f i)) : IsInducing (Pi.map f) := by
+    (hf : ∀ i, IsInducing (f i)) : IsInducing (Function.map f) := by
   simp [isInducing_iff_nhds, nhds_pi, (hf _).nhds_eq_comap, Filter.pi_comap]
 
 protected lemma Topology.IsEmbedding.piMap {f : ∀ i, A i → B i}
-    (hf : ∀ i, IsEmbedding (f i)) : IsEmbedding (Pi.map f) :=
+    (hf : ∀ i, IsEmbedding (f i)) : IsEmbedding (Function.map f) :=
   ⟨.piMap fun i ↦ (hf i).1, .piMap fun i ↦ (hf i).2⟩
 
 theorem Pi.continuous_precomp' {ι' : Type*} (φ : ι' → ι) :
@@ -1078,11 +1078,11 @@ theorem isClosed_set_pi {i : Set ι} {s : ∀ a, Set (A a)} (hs : ∀ a ∈ i, I
   rw [pi_def]; exact isClosed_biInter fun a ha => (hs _ ha).preimage (continuous_apply _)
 
 protected lemma Topology.IsClosedEmbedding.piMap {f : ∀ i, A i → B i}
-    (hf : ∀ i, IsClosedEmbedding (f i)) : IsClosedEmbedding (Pi.map f) :=
+    (hf : ∀ i, IsClosedEmbedding (f i)) : IsClosedEmbedding (Function.map f) :=
   ⟨.piMap fun i ↦ (hf i).1, by simpa using isClosed_set_pi fun i _ ↦ (hf i).2⟩
 
 protected lemma Topology.IsOpenEmbedding.piMap [Finite ι] {f : ∀ i, A i → B i}
-    (hf : ∀ i, IsOpenEmbedding (f i)) : IsOpenEmbedding (Pi.map f) :=
+    (hf : ∀ i, IsOpenEmbedding (f i)) : IsOpenEmbedding (Function.map f) :=
   ⟨.piMap fun i ↦ (hf i).1, by simpa using isOpen_set_pi Set.finite_univ fun i _ ↦ (hf i).2⟩
 
 theorem mem_nhds_of_pi_mem_nhds {I : Set ι} {s : ∀ i, Set (A i)} (a : ∀ i, A i) (hs : I.pi s ∈ 𝓝 a)

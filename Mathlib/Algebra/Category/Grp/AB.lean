@@ -72,7 +72,7 @@ instance : HasExactLimitsOfShape (Discrete J) (AddCommGrpCat.{u}) := by
         (limit.isLimit _).conePointUniqueUpToIso (AddCommGrpCat.HasLimit.productLimitCone _).isLimit
       let iY : limit Y ≅ AddCommGrpCat.of ((i : J) → Y.obj ⟨i⟩) := (Pi.isoLimit Y).symm ≪≫
         (limit.isLimit _).conePointUniqueUpToIso (AddCommGrpCat.HasLimit.productLimitCone _).isLimit
-      have : Pi.map (fun i ↦ f.app ⟨i⟩) = iX.inv ≫ lim.map f ≫ iY.hom := by
+      have : Function.map (fun i ↦ f.app ⟨i⟩) = iX.inv ≫ lim.map f ≫ iY.hom := by
         simp only [Discrete.functor_obj_eq_as, Discrete.mk_as, Pi.isoLimit,
           IsLimit.conePointUniqueUpToIso, limit.cone, AddCommGrpCat.HasLimit.productLimitCone,
           Iso.trans_inv, Functor.mapIso_inv, IsLimit.uniqueUpToIso_inv, Cone.forget_map,
@@ -83,7 +83,7 @@ instance : HasExactLimitsOfShape (Discrete J) (AddCommGrpCat.{u}) := by
         ext g j
         change _ = (_ ≫ limit.π (Discrete.functor fun j ↦ Y.obj { as := j }) ⟨j⟩) _
         simp only [Discrete.functor_obj_eq_as, productIsProduct', limit.lift_π, Fan.mk_pt,
-          Fan.mk_π_app, Pi.map_apply]
+          Fan.mk_π_app, Function.map_apply]
         change _ = (_ ≫ _ ≫ limit.π Y ⟨j⟩) _
         simp
       suffices Epi (iX.hom ≫ (iX.inv ≫ lim.map f ≫ iY.hom) ≫ iY.inv) by simpa using this

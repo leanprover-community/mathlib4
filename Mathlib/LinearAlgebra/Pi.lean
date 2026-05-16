@@ -126,7 +126,7 @@ instance CompatibleSMul.pi (R S M N ι : Type*) [Semiring S]
 
 /-- Construct a linear map between two (dependent) function spaces
 by applying index-dependent linear maps to the coordinates.
-A bundled version of `Pi.map`.
+A bundled version of `Function.map`.
 
 If the index type is finite, then this map can be seen as a “block diagonal” map
 between indexed products of modules. -/
@@ -136,7 +136,7 @@ def piMap {ψ : ι → Type*} [∀ i, AddCommMonoid (ψ i)] [∀ i, Module R (ψ
 
 @[simp]
 theorem coe_piMap {ψ : ι → Type*} [∀ i, AddCommMonoid (ψ i)] [∀ i, Module R (ψ i)]
-    (f : ∀ i, φ i →ₗ[R] ψ i) : ⇑(piMap f) = Pi.map fun i ↦ f i :=
+    (f : ∀ i, φ i →ₗ[R] ψ i) : ⇑(piMap f) = Function.map fun i ↦ f i :=
   rfl
 
 /-- Linear map between the function spaces `I → M₂` and `I → M₃`, induced by a linear map `f`

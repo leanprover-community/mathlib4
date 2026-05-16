@@ -443,22 +443,22 @@ section coalgebraStruct
 variable [Π i, CoalgebraStruct R (A i)]
 
 instance instCoalgebraStruct : CoalgebraStruct R (Π i, A i) where
-  comul := .lsum R _ R fun i ↦ map (.single R _ i) (.single R _ i) ∘ₗ comul
+  comul := .lsum R _ R fun i ↦ TensorProduct.map (.single R _ i) (.single R _ i) ∘ₗ comul
   counit := .lsum R _ R fun _ ↦ counit
 
 @[simp] theorem comul_single (i : n) (a : A i) :
-    comul (single i a) = map (.single R _ i) (.single R _ i) (comul a) :=
+    comul (single i a) = TensorProduct.map (.single R _ i) (.single R _ i) (comul a) :=
   lsum_piSingle _ _ _ _ _ _
 
 @[simp] theorem counit_single (i : n) (a : A i) : counit (single i a) = counit (R := R) a :=
   lsum_piSingle _ _ _ _ _ _
 
 theorem comul_comp_single (i : n) :
-    comul ∘ₗ .single R _ i = map (.single R A i) (.single R A i) ∘ₗ comul := by
+    comul ∘ₗ .single R _ i = TensorProduct.map (.single R A i) (.single R A i) ∘ₗ comul := by
   ext; simp
 
 theorem comul_comp_proj (i : n) :
-    comul ∘ₗ (proj i : (Π i, A i) →ₗ[R] A i) = map (proj i) (proj i) ∘ₗ comul := by
+    comul ∘ₗ (proj i : (Π i, A i) →ₗ[R] A i) = TensorProduct.map (proj i) (proj i) ∘ₗ comul := by
   ext j; have := eq_or_ne i j
   aesop (add simp [map_map, proj_comp_single, diag])
 
@@ -477,7 +477,7 @@ theorem counit_comp_dFinsuppCoeFnLinearMap :
 open DFinsupp in
 theorem comul_comp_dFinsuppCoeFnLinearMap :
     comul (R := R) (A := Π i, A i) ∘ₗ coeFnLinearMap _ =
-      map (coeFnLinearMap _) (coeFnLinearMap _) ∘ₗ comul := by
+      TensorProduct.map (coeFnLinearMap _) (coeFnLinearMap _) ∘ₗ comul := by
   apply LinearMap.ext fun x ↦ ?_
   have (i : n) (x : A i) : Decidable (x ≠ 0) := Classical.propDecidable _
   rw [← DFinsupp.sum_single (f := x)]
@@ -485,7 +485,7 @@ theorem comul_comp_dFinsuppCoeFnLinearMap :
 
 open DFinsupp in
 @[simp] theorem comul_coe_dFinsupp (x : Π₀ i, A i) :
-    comul (R := R) ⇑x = map (coeFnLinearMap _) (coeFnLinearMap _) (comul x) :=
+    comul (R := R) ⇑x = TensorProduct.map (coeFnLinearMap _) (coeFnLinearMap _) (comul x) :=
   congr($comul_comp_dFinsuppCoeFnLinearMap x)
 
 variable {M : Type*} [AddCommMonoid M] [Module R M] [CoalgebraStruct R M]
@@ -501,14 +501,14 @@ theorem counit_comp_finsuppLcoeFun :
 
 open Finsupp in
 theorem comul_comp_finsuppLcoeFun :
-    comul (R := R) (A := n → M) ∘ₗ lcoeFun = map lcoeFun lcoeFun ∘ₗ comul := by
+    comul (R := R) (A := n → M) ∘ₗ lcoeFun = TensorProduct.map lcoeFun lcoeFun ∘ₗ comul := by
   apply LinearMap.ext fun x ↦ ?_
   rw [← Finsupp.univ_sum_single x]
   simp [-univ_sum_single, single_eq_pi_single, map_map]
 
 open Finsupp in
 @[simp] theorem comul_coe_finsupp (x : n →₀ M) :
-    comul (R := R) ⇑x = map lcoeFun lcoeFun (comul x) :=
+    comul (R := R) ⇑x = TensorProduct.map lcoeFun lcoeFun (comul x) :=
   congr($comul_comp_finsuppLcoeFun x)
 
 end coalgebraStruct

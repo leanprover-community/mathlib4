@@ -141,7 +141,7 @@ section
 `∀ a, β₂ a`. -/
 @[simps (attr := grind =)]
 def piCongrRight {β₁ β₂ : α → Sort*} (F : ∀ a, β₁ a ≃ β₂ a) : (∀ a, β₁ a) ≃ (∀ a, β₂ a) :=
-  ⟨Pi.map fun a ↦ F a, Pi.map fun a ↦ (F a).symm, fun H => funext <| by simp,
+  ⟨Function.map fun a ↦ F a, Function.map fun a ↦ (F a).symm, fun H => funext <| by simp,
     fun H => funext <| by simp⟩
 
 @[simp]
@@ -908,7 +908,7 @@ theorem piCongr_symm_apply (f : ∀ b, Z b) :
 
 @[simp, grind =]
 theorem piCongr_apply_apply (f : ∀ a, W a) (a : α) : h₁.piCongr h₂ f (h₁ a) = h₂ a (f a) := by
-  rw [piCongr, trans_apply, piCongrLeft_apply_apply, piCongrRight_apply, Pi.map_apply]
+  rw [piCongr, trans_apply, piCongrLeft_apply_apply, piCongrRight_apply, Function.map_apply]
 
 end
 

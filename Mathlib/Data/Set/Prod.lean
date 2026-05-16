@@ -789,15 +789,15 @@ theorem eval_image_univ_pi (ht : (pi univ t).Nonempty) :
 
 theorem piMap_mapsTo_pi {I : Set ι} {f : ∀ i, α i → β i} {s : ∀ i, Set (α i)} {t : ∀ i, Set (β i)}
     (h : ∀ i ∈ I, MapsTo (f i) (s i) (t i)) :
-    MapsTo (Pi.map f) (I.pi s) (I.pi t) :=
+    MapsTo (Function.map f) (I.pi s) (I.pi t) :=
   fun _x hx i hi => h i hi (hx i hi)
 
 theorem piMap_image_pi_subset {f : ∀ i, α i → β i} (t : ∀ i, Set (α i)) :
-    Pi.map f '' s.pi t ⊆ s.pi fun i ↦ f i '' t i :=
+    Function.map f '' s.pi t ⊆ s.pi fun i ↦ f i '' t i :=
   image_subset_iff.2 <| piMap_mapsTo_pi fun _ _ => mapsTo_image _ _
 
 theorem piMap_image_pi {f : ∀ i, α i → β i} (hf : ∀ i ∉ s, Surjective (f i)) (t : ∀ i, Set (α i)) :
-    Pi.map f '' s.pi t = s.pi fun i ↦ f i '' t i := by
+    Function.map f '' s.pi t = s.pi fun i ↦ f i '' t i := by
   refine Subset.antisymm (piMap_image_pi_subset _) fun b hb => ?_
   have (i : ι) : ∃ a, f i a = b i ∧ (i ∈ s → a ∈ t i) := by
     if hi : i ∈ s then
@@ -808,11 +808,12 @@ theorem piMap_image_pi {f : ∀ i, α i → β i} (hf : ∀ i ∉ s, Surjective 
   exact ⟨a, hat, funext hab⟩
 
 theorem piMap_image_univ_pi (f : ∀ i, α i → β i) (t : ∀ i, Set (α i)) :
-    Pi.map f '' univ.pi t = univ.pi fun i ↦ f i '' t i :=
+    Function.map f '' univ.pi t = univ.pi fun i ↦ f i '' t i :=
   piMap_image_pi (by simp) t
 
 @[simp]
-theorem range_piMap (f : ∀ i, α i → β i) : range (Pi.map f) = pi univ fun i ↦ range (f i) := by
+theorem range_piMap (f : ∀ i, α i → β i) : range (Function.map f) =
+    pi univ fun i ↦ range (f i) := by
   simp only [← image_univ, ← piMap_image_univ_pi, pi_univ]
 
 theorem subset_pi_iff {s'} : s' ⊆ pi s t ↔ ∀ i ∈ s, s' ⊆ (· i) ⁻¹' t i := by
