@@ -32,8 +32,9 @@ open Category
 universe v₁ u₁
 
 -- morphism levels before object levels. See note [category theory universes].
-variable (C : Type u₁) [Category.{v₁} C]
+variable {C : Type u₁} [Category.{v₁} C]
 
+variable (C) in
 /-- The data of a monad on C consists of an endofunctor T together with natural transformations
 `η : 𝟭 C ⟶ T` and `μ : T ⋙ T ⟶ T` satisfying three equations:
 - `T μ_X ≫ μ_X = μ_(TX) ≫ μ_X` (associativity)
@@ -45,13 +46,13 @@ structure Monad extends C ⥤ C where
   η : 𝟭 _ ⟶ toFunctor
   /-- The multiplication for the monad. -/
   μ : toFunctor ⋙ toFunctor ⟶ toFunctor
-  assoc : ∀ X, toFunctor.map (NatTrans.app μ X) ≫ μ.app _ = μ.app _ ≫ μ.app _ := by cat_disch
-  left_unit : ∀ X : C, η.app (toFunctor.obj X) ≫ μ.app _ = 𝟙 _ := by cat_disch
-  right_unit : ∀ X : C, toFunctor.map (η.app X) ≫ μ.app _ = 𝟙 _ := by cat_disch
+  assoc : ∀ X, dsimp% toFunctor.map (NatTrans.app μ X) ≫ μ.app _ = μ.app _ ≫ μ.app _ := by cat_disch
+  left_unit : ∀ X : C, dsimp% η.app (toFunctor.obj X) ≫ μ.app _ = 𝟙 _ := by cat_disch
+  right_unit : ∀ X : C, dsimp% toFunctor.map (η.app X) ≫ μ.app _ = 𝟙 _ := by cat_disch
 
 @[reassoc]
 lemma Monad.unit_naturality (T : Monad C) ⦃X Y : C⦄ (f : X ⟶ Y) :
-    f ≫ T.η.app Y = T.η.app X ≫ T.map f :=
+    dsimp% f ≫ T.η.app Y = T.η.app X ≫ T.map f :=
   T.η.naturality _
 
 @[reassoc]
@@ -59,6 +60,7 @@ lemma Monad.mu_naturality (T : Monad C) ⦃X Y : C⦄ (f : X ⟶ Y) :
     T.map (T.map f) ≫ T.μ.app Y = T.μ.app X ≫ T.map f :=
   T.μ.naturality _
 
+variable (C) in
 /-- The data of a comonad on C consists of an endofunctor G together with natural transformations
 `ε : G ⟶ 𝟭 C` and `δ : G ⟶ G ⋙ G` satisfying three equations:
 - `δ_X ≫ G δ_X = δ_X ≫ δ_(GX)` (coassociativity)
@@ -70,14 +72,14 @@ structure Comonad extends C ⥤ C where
   ε : toFunctor ⟶ 𝟭 _
   /-- The comultiplication for the comonad. -/
   δ : toFunctor ⟶ toFunctor ⋙ toFunctor
-  coassoc : ∀ X, NatTrans.app δ _ ≫ toFunctor.map (δ.app X) = δ.app _ ≫ δ.app _ := by
+  coassoc : ∀ X, dsimp% NatTrans.app δ _ ≫ toFunctor.map (δ.app X) = δ.app _ ≫ δ.app _ := by
     cat_disch
-  left_counit : ∀ X : C, δ.app X ≫ ε.app (toFunctor.obj X) = 𝟙 _ := by cat_disch
-  right_counit : ∀ X : C, δ.app X ≫ toFunctor.map (ε.app X) = 𝟙 _ := by cat_disch
+  left_counit : ∀ X : C, dsimp% δ.app X ≫ ε.app (toFunctor.obj X) = 𝟙 _ := by cat_disch
+  right_counit : ∀ X : C, dsimp% δ.app X ≫ toFunctor.map (ε.app X) = 𝟙 _ := by cat_disch
 
 @[reassoc]
 lemma Comonad.counit_naturality (T : Comonad C) ⦃X Y : C⦄ (f : X ⟶ Y) :
-    T.map f ≫ T.ε.app Y = T.ε.app X ≫ f :=
+    dsimp% T.map f ≫ T.ε.app Y = T.ε.app X ≫ f :=
   T.ε.naturality _
 
 @[reassoc]
@@ -85,7 +87,6 @@ lemma Comonad.delta_naturality (T : Comonad C) ⦃X Y : C⦄ (f : X ⟶ Y) :
     T.map f ≫ T.δ.app Y = T.δ.app X ≫ T.map (T.map f) :=
   T.δ.naturality _
 
-variable {C}
 variable (T : Monad C) (G : Comonad C)
 
 instance coeMonad : Coe (Monad C) (C ⥤ C) :=
