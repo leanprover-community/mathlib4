@@ -518,6 +518,26 @@ theorem integral_prod_symm (f : α × β → E) (hf : Integrable f (μ.prod ν))
     ∫ z, f z ∂μ.prod ν = ∫ y, ∫ x, f (x, y) ∂μ ∂ν := by
   rw [← integral_prod_swap f]; exact integral_prod _ hf.swap
 
+lemma integral_continuousBilin_prod {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
+    [CompleteSpace E] [CompleteSpace E'] [CompleteSpace F]
+    {f : α → E} {g : β → E'} (hf : Integrable f μ) (hg : Integrable g ν) (B : E →L[ℝ] E' →L[ℝ] F) :
+    ∫ p, B (f p.1) (g p.2) ∂μ.prod ν = B (∫ a, f a ∂μ) (∫ b, g b ∂ν) := by
+  let C (x : E') : E →L[ℝ] F :=
+    { toFun y := B y x
+      map_add' y z := by simp
+      map_smul' m y := by simp
+      cont := by fun_prop }
+  rw [integral_prod_symm, ← (B _).integral_comp_comm hg]
+  · congr with b
+    exact (C (g b)).integral_comp_comm hf
+  refine .mono' (g := fun p ↦ ‖B‖ * (‖f p.1‖ * ‖g p.2‖)) ?_ ?_ ?_
+  · refine .const_mul ?_ _
+    exact hf.norm.mul_prod hg.norm
+  · exact Continuous.comp_aestronglyMeasurable₂ (g := fun x y ↦ B x y) (by fun_prop)
+      hf.aestronglyMeasurable.comp_fst hg.aestronglyMeasurable.comp_snd
+  · refine .of_forall fun p ↦ ?_
+    grw [(B _).le_opNorm, B.le_opNorm, mul_assoc]
+
 /-- Reversed version of **Fubini's Theorem**. -/
 theorem integral_integral {f : α → β → E} (hf : Integrable (uncurry f) (μ.prod ν)) :
     ∫ x, ∫ y, f x y ∂ν ∂μ = ∫ z, f z.1 z.2 ∂μ.prod ν :=
@@ -551,6 +571,20 @@ theorem setIntegral_prod (f : α × β → E) {s : Set α} {t : Set β}
     ∫ z in s ×ˢ t, f z ∂μ.prod ν = ∫ x in s, ∫ y in t, f (x, y) ∂ν ∂μ := by
   simp only [← Measure.prod_restrict s t, IntegrableOn] at hf ⊢
   exact integral_prod f hf
+
+theorem integral_prod_bilin {E F G 𝕜 : Type*} [RCLike 𝕜]
+    [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedSpace 𝕜 E] [CompleteSpace E]
+    [NormedAddCommGroup F] [NormedSpace ℝ F] [NormedSpace 𝕜 F] [CompleteSpace F]
+    [NormedAddCommGroup G] [NormedSpace ℝ G] [NormedSpace 𝕜 G] [CompleteSpace G]
+    (B : E →L[𝕜] F →L[𝕜] G) {f : α → E} {g : β → F}
+    (hf : Integrable f μ) (hg : Integrable g ν) :
+    ∫ z, B (f z.1) (g z.2) ∂μ.prod ν = B (∫ x, f x ∂μ) (∫ y, g y ∂ν) := by
+  have : Integrable (fun z ↦ B (f z.1) (g z.2)) (μ.prod ν) :=
+    hf.op_fst_snd (by fun_prop) ⟨‖B‖, B.le_opNorm₂⟩ hg
+  simp_rw [integral_prod _ this, ContinuousLinearMap.integral_comp_comm _ hg]
+  change ∫ x, B.flip (∫ y, g y ∂ν) (f x) ∂μ = _
+  rw [ContinuousLinearMap.integral_comp_comm _ hf]
+  simp
 
 theorem integral_prod_smul {𝕜 : Type*} [RCLike 𝕜] [NormedSpace 𝕜 E] (f : α → 𝕜) (g : β → E) :
     ∫ z, f z.1 • g z.2 ∂μ.prod ν = (∫ x, f x ∂μ) • ∫ y, g y ∂ν := by
@@ -615,6 +649,10 @@ lemma integral_continuousLinearMap_prod (hμ : Integrable id μ) (hν : Integrab
     ∫ p, L p ∂(μ.prod ν) = ∫ x, L.comp (.inl ℝ E F) x ∂μ + ∫ y, L.comp (.inr ℝ E F) y ∂ν :=
   integral_continuousLinearMap_prod' (ContinuousLinearMap.integrable_comp _ hμ)
     (ContinuousLinearMap.integrable_comp _ hν)
+
+variable {μ : Measure α} {ν : Measure β}
+  [SFinite ν] [SFinite μ]
+  [CompleteSpace F] [CompleteSpace E]
 
 end ContinuousLinearMap
 

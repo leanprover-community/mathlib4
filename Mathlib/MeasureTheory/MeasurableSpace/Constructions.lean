@@ -586,6 +586,12 @@ theorem measurable_pi_lambda (f : α → ∀ a, X a) (hf : ∀ a, Measurable fun
     Measurable f :=
   measurable_pi_iff.mpr hf
 
+lemma MeasurableSpace.comap_process_pi (X : (a : δ) → β → X a) :
+    MeasurableSpace.comap (fun b a ↦ X a b) inferInstance =
+      ⨆ a, MeasurableSpace.comap (X a) inferInstance := by
+  simp_rw [MeasurableSpace.pi, MeasurableSpace.comap_iSup, MeasurableSpace.comap_comp]
+  rfl
+
 /-- The function `(f, x) ↦ update f a x : (Π a, X a) × X a → Π a, X a` is measurable. -/
 @[fun_prop]
 theorem measurable_update' {a : δ} [DecidableEq δ] :

@@ -400,6 +400,14 @@ theorem indepSets_singleton_iff {s t : Set Ω} {_mΩ : MeasurableSpace Ω}
   ⟨fun h ↦ h s t rfl rfl,
    fun h s1 t1 hs1 ht1 ↦ by rwa [Set.mem_singleton_iff.mp hs1, Set.mem_singleton_iff.mp ht1]⟩
 
+lemma indepSets_iff_singleton_indepSets {𝒜 ℬ : Set (Set Ω)} {_mΩ : MeasurableSpace Ω}
+    {κ : Kernel α Ω} {μ : Measure α} :
+    IndepSets 𝒜 ℬ κ μ ↔ ∀ A ∈ 𝒜, IndepSets {A} ℬ κ μ where
+  mp h A hA := indepSets_of_indepSets_of_le_left h (Set.singleton_subset_iff.2 hA)
+  mpr h := by
+    rw [← 𝒜.biUnion_of_singleton]
+    exact IndepSets.biUnion h
+
 end Indep
 
 /-! ### Deducing `Indep` from `iIndep` -/
