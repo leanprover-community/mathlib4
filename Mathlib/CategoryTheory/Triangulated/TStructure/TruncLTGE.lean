@@ -210,7 +210,15 @@ lemma triangleFunctorNatTransOfLE_refl (a : ℤ) :
   exact triangle_map_ext t (triangleFunctor_obj_distinguished _ _ _)
     (triangleFunctor_obj_distinguished _ _ _) (a - 1) a inferInstance inferInstance (by simp)
 
+#adaptation_note /-- https://github.com/leanprover-community/mathlib4/pull/32989
+After this PR, `@[simps]` no longer generates `@[defeq]` lemmas for non-exposed definitions,
+so `cat_disch` can no longer close this goal automatically.
+Making `triangleFunctor` public would require making more of `TruncAux` public. -/
 instance : (triangleFunctor t n).Additive where
+  map_add {_ _ f g} := by
+    dsimp [triangleFunctor]
+    ext
+    simp [triangleMap_hom₂]
 
 end TruncAux
 
