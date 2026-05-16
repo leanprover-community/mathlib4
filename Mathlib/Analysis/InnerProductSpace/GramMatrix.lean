@@ -134,6 +134,27 @@ theorem gram_eq_conjTranspose_mul {ι : Type*} [Fintype ι] (b : OrthonormalBasi
   ext i j
   simp [mul_apply, b.repr_apply_apply, b.sum_inner_mul_inner]
 
+omit [Finite n] in
+/-- Inequality `‖f x‖ ≤ ‖f‖ * ‖x‖` lifted to Gram matrices. -/
+theorem posSemidef_opNorm_smul_gram_sub_gram {F} [NormedAddCommGroup F] [InnerProductSpace 𝕜 F]
+    (v : n → E) (f : E →L[𝕜] F) : (‖f‖ ^ 2 • gram 𝕜 v - gram 𝕜 (f ∘ v)).PosSemidef := by
+  refine ⟨(isHermitian_gram 𝕜 v).smul (((Pi.isSelfAdjoint.mpr (congrFun rfl)).apply f).pow 2)
+    |>.sub (isHermitian_gram 𝕜 (f ∘ v)), fun c ↦ ?_⟩
+  simp_rw [Finsupp.sum, Matrix.sub_apply, Matrix.smul_apply, mul_sub, sub_mul,
+    Finset.sum_sub_distrib, sub_nonneg]
+  calc
+    ∑ x ∈ c.support, ∑ y ∈ c.support, star (c x) * gram 𝕜 (f ∘ v) x y * c y
+    _ = (‖f (∑ x ∈ c.support, c x • v x)‖ : 𝕜) ^ 2 := ?h1
+    _ ≤ ‖f‖ ^ 2 • (‖∑ i ∈ c.support, c i • v i‖ : 𝕜) ^ 2 := by
+      norm_cast
+      grw [f.le_opNorm _, smul_eq_mul, ← mul_pow]
+    _ = ∑ x ∈ c.support, ∑ y ∈ c.support, star (c x) * ‖f‖ ^ 2 • gram 𝕜 v x y * c y := ?h2
+  all_goals
+    rw [Finset.sum_comm]
+    simp [← inner_self_eq_norm_sq_to_K, inner_sum, sum_inner, inner_smul_left, inner_smul_right,
+      Finset.mul_sum, Finset.smul_sum, RCLike.real_smul_eq_coe_mul]
+    grind
+
 end NormedInnerProductSpace
 
 end Matrix
