@@ -604,13 +604,16 @@ variable [CommSemiring R] [CommSemiring R₂]
 variable [AddCommMonoid M] [AddCommMonoid M₂] [Module R M] [Module R₂ M₂]
 variable [AddCommMonoid N] [AddCommMonoid N₂] [Module R N] [Module R N₂]
 variable {τ₁₂ : R →+* R₂} {τ₂₁ : R₂ →+* R}
-variable [RingHomInvPair τ₁₂ τ₂₁] [RingHomInvPair τ₂₁ τ₁₂]
 variable (p : Submodule R M) (q : Submodule R₂ M₂)
 variable (pₗ : Submodule R N) (qₗ : Submodule R N₂)
 
-theorem comap_le_comap_smul (fₗ : N →ₗ[R] N₂) (c : R) : comap fₗ qₗ ≤ comap (c • fₗ) qₗ := by
+theorem comap_le_comap_smul (f : M →ₛₗ[τ₁₂] M₂) (c : R₂) : comap f q ≤ comap (c • f) q := by
   simp only [SetLike.le_def, mem_comap, LinearMap.smul_apply]
   exact fun _ h ↦ smul_mem _ _ h
+
+theorem map_smul_le_map [RingHomSurjective τ₁₂] (f : M →ₛₗ[τ₁₂] M₂) (c : R₂) :
+    map (c • f) p ≤ map f p := by
+  grw [map_le_iff_le_comap, ← comap_le_comap_smul (map f p) f c, ← map_le_iff_le_comap]
 
 /-- Given modules `M`, `M₂` over a commutative ring, together with submodules `p ⊆ M`, `q ⊆ M₂`,
 the set of maps $\{f ∈ Hom(M, M₂) | f(p) ⊆ q \}$ is a submodule of `Hom(M, M₂)`. -/
