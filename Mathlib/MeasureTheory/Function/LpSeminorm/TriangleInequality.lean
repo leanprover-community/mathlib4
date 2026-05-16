@@ -141,26 +141,18 @@ theorem MemLp.sub {f g : α → E} (hf : MemLp f p μ) (hg : MemLp g p μ) : Mem
   rw [sub_eq_add_neg]
   exact hf.add hg.neg
 
+theorem memLp_finsetSum' [ContinuousAdd ε']
+    {ι} (s : Finset ι) {f : ι → α → ε'} (hf : ∀ i ∈ s, MemLp (f i) p μ) :
+    MemLp (∑ i ∈ s, f i) p μ :=
+  Finset.sum_induction f (fun g ↦ MemLp g p μ) (fun _ _ ↦ MemLp.add) MemLp.zero' hf
+
 theorem memLp_finsetSum [ContinuousAdd ε']
     {ι} (s : Finset ι) {f : ι → α → ε'} (hf : ∀ i ∈ s, MemLp (f i) p μ) :
     MemLp (fun a => ∑ i ∈ s, f i a) p μ := by
-  haveI : DecidableEq ι := Classical.decEq _
-  revert hf
-  refine Finset.induction_on s ?_ ?_
-  · simp
-  · intro i s his ih hf
-    simp only [his, Finset.sum_insert, not_false_iff]
-    exact (hf i (s.mem_insert_self i)).add (ih fun j hj => hf j (Finset.mem_insert_of_mem hj))
-
-@[deprecated (since := "2026-04-08")] alias memLp_finset_sum := memLp_finsetSum
-
-theorem memLp_finsetSum' [ContinuousAdd ε']
-    {ι} (s : Finset ι) {f : ι → α → ε'} (hf : ∀ i ∈ s, MemLp (f i) p μ) :
-    MemLp (∑ i ∈ s, f i) p μ := by
-  convert memLp_finsetSum s hf using 1
-  ext x
-  simp
+  simp [← Finset.sum_apply, memLp_finsetSum' s hf]
 
 @[deprecated (since := "2026-04-08")] alias memLp_finset_sum' := memLp_finsetSum'
+
+@[deprecated (since := "2026-04-08")] alias memLp_finset_sum := memLp_finsetSum
 
 end MeasureTheory

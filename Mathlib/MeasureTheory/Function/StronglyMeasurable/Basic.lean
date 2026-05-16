@@ -978,19 +978,13 @@ theorem stronglyMeasurable_in_set {m : MeasurableSpace α} [TopologicalSpace β]
     (hf_zero : ∀ x, x ∉ s → f x = 0) :
     ∃ fs : ℕ → α →ₛ β,
       (∀ x, Tendsto (fun n => fs n x) atTop (𝓝 (f x))) ∧ ∀ x ∉ s, ∀ n, fs n x = 0 := by
-  let g_seq_s : ℕ → @SimpleFunc α m β := fun n => (hf.approx n).restrict s
-  have hg_eq : ∀ x ∈ s, ∀ n, g_seq_s n x = hf.approx n x := by
-    intro x hx n
-    rw [SimpleFunc.coe_restrict _ hs, Set.indicator_of_mem hx]
-  have hg_zero : ∀ x ∉ s, ∀ n, g_seq_s n x = 0 := by
-    intro x hx n
-    rw [SimpleFunc.coe_restrict _ hs, Set.indicator_of_notMem hx]
-  refine ⟨g_seq_s, fun x => ?_, hg_zero⟩
-  by_cases hx : x ∈ s
-  · simp_rw [hg_eq x hx]
-    exact hf.tendsto_approx x
-  · simp_rw [hg_zero x hx, hf_zero x hx]
-    exact tendsto_const_nhds
+  refine ⟨fun n => (hf.approx n).restrict s, ?_, ?_⟩
+  · intro x
+    by_cases hx : x ∈ s
+    · simpa [SimpleFunc.coe_restrict, hs, hx] using hf.tendsto_approx x
+    · simpa [SimpleFunc.coe_restrict, hs, hx, hf_zero x hx] using tendsto_const_nhds
+  · intro x hx n
+    simp [SimpleFunc.coe_restrict, hs, hx]
 
 /-- If the restriction to a set `s` of a σ-algebra `m` is included in the restriction to `s` of
 another σ-algebra `m₂` (hypothesis `hs`), the set `s` is `m` measurable and a function `f` supported
@@ -1001,35 +995,15 @@ theorem stronglyMeasurable_of_measurableSpace_le_on {α E} {m m₂ : MeasurableS
     (hf : StronglyMeasurable[m] f) (hf_zero : ∀ x ∉ s, f x = 0) :
     StronglyMeasurable[m₂] f := by
   have hs_m₂ : MeasurableSet[m₂] s := by
-    rw [← Set.inter_univ s]
-    refine hs Set.univ ?_
-    rwa [Set.inter_univ]
-  obtain ⟨g_seq_s, hg_seq_tendsto, hg_seq_zero⟩ := stronglyMeasurable_in_set hs_m hf hf_zero
-  let g_seq_s₂ : ℕ → @SimpleFunc α m₂ E := fun n =>
-    { toFun := g_seq_s n
-      measurableSet_fiber' := fun x => by
-        rw [← Set.inter_univ (g_seq_s n ⁻¹' {x}), ← Set.union_compl_self s,
-          Set.inter_union_distrib_left, Set.inter_comm (g_seq_s n ⁻¹' {x})]
-        refine MeasurableSet.union (hs _ (hs_m.inter ?_)) ?_
-        · exact @SimpleFunc.measurableSet_fiber _ _ m _ _
-        by_cases hx : x = 0
-        · suffices g_seq_s n ⁻¹' {x} ∩ sᶜ = sᶜ by
-            rw [this]
-            exact hs_m₂.compl
-          ext1 y
-          rw [hx, Set.mem_inter_iff, Set.mem_preimage, Set.mem_singleton_iff]
-          exact ⟨fun h => h.2, fun h => ⟨hg_seq_zero y h n, h⟩⟩
-        · suffices g_seq_s n ⁻¹' {x} ∩ sᶜ = ∅ by
-            rw [this]
-            exact MeasurableSet.empty
-          ext1 y
-          simp only [mem_inter_iff, mem_preimage, mem_singleton_iff, mem_compl_iff,
-            mem_empty_iff_false, iff_false, not_and, not_notMem]
-          refine Function.mtr fun hys => ?_
-          rw [hg_seq_zero y hys n]
-          exact Ne.symm hx
-      finite_range' := @SimpleFunc.finite_range _ _ m (g_seq_s n) }
-  exact ⟨g_seq_s₂, hg_seq_tendsto⟩
+    have : MeasurableSet (s ∩ univ) := hs univ (by simpa)
+    simpa
+  have h_sub : m.comap ((↑) : s → α) ≤ m₂.comap ((↑) : s → α) := by
+    intro _ ht
+    rcases ht with ⟨u, hu, rfl⟩
+    exact ⟨s ∩ u, hs u (hs_m.inter hu), by simp⟩
+  refine stronglyMeasurable_of_restrict_of_restrict_compl hs_m₂ ?_ ?_
+  · exact (hf.comp_measurable (comap_measurable _)).mono h_sub
+  · exact stronglyMeasurable_const' fun x y ↦ by simp [hf_zero _ x.2, hf_zero _ y.2]
 
 /-- If a function `f` is strongly measurable w.r.t. a sub-σ-algebra `m` and the measure is σ-finite
 on `m`, then there exists spanning measurable sets with finite measure on which `f` has bounded

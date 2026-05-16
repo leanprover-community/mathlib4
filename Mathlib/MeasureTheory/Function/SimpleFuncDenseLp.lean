@@ -270,27 +270,15 @@ protected theorem eLpNorm'_eq {p : ℝ} (f : α →ₛ F) (μ : Measure α) :
 
 theorem measure_preimage_lt_top_of_memLp (hp_pos : p ≠ 0) (hp_ne_top : p ≠ ∞) (f : α →ₛ E)
     (hf : MemLp f p μ) (y : E) (hy_ne : y ≠ 0) : μ (f ⁻¹' {y}) < ∞ := by
-  have hp_pos_real : 0 < p.toReal := ENNReal.toReal_pos hp_pos hp_ne_top
-  have hf_eLpNorm := MemLp.eLpNorm_lt_top hf
-  rw [eLpNorm_eq_eLpNorm' hp_pos hp_ne_top, f.eLpNorm'_eq, one_div,
-    ← @ENNReal.lt_rpow_inv_iff _ _ p.toReal⁻¹ (by simp [hp_pos_real]),
-    @ENNReal.top_rpow_of_pos p.toReal⁻¹⁻¹ (by simp [hp_pos_real]),
-    ENNReal.sum_lt_top] at hf_eLpNorm
-  by_cases hyf : y ∈ f.range
-  swap
-  · suffices h_empty : f ⁻¹' {y} = ∅ by
-      rw [h_empty, measure_empty]; exact ENNReal.coe_lt_top
-    exact (preimage_eq_empty_iff _ _).mpr hyf
-  specialize hf_eLpNorm y hyf
-  rw [ENNReal.mul_lt_top_iff] at hf_eLpNorm
-  cases hf_eLpNorm with
-  | inl hf_eLpNorm => exact hf_eLpNorm.2
-  | inr hf_eLpNorm =>
-    cases hf_eLpNorm with
-    | inl hf_eLpNorm =>
-      refine absurd ?_ hy_ne
-      simpa [hp_pos_real] using hf_eLpNorm
-    | inr hf_eLpNorm => simp [hf_eLpNorm]
+  have h_fin : (f.map fun x ↦ ‖x‖ₑ ^ p.toReal).FinMeasSupp μ := by
+    refine FinMeasSupp.of_lintegral_ne_top ?_
+    rw [← (f.map fun x ↦ ‖x‖ₑ ^ p.toReal).lintegral_eq_lintegral μ]
+    exact (lintegral_rpow_enorm_lt_top_of_eLpNorm_lt_top hp_pos hp_ne_top hf.eLpNorm_lt_top).ne
+  have hf_fin : f.FinMeasSupp μ := by
+    have {b : E} : (fun x ↦ ‖x‖ₑ ^ p.toReal) b = 0 ↔ b = 0 := by
+      simp [rpow_eq_zero_iff_of_pos (toReal_pos hp_pos hp_ne_top)]
+    rwa [FinMeasSupp.map_iff this] at h_fin
+  exact hf_fin.meas_preimage_singleton_ne_zero hy_ne
 
 theorem memLp_of_finite_measure_preimage (p : ℝ≥0∞) {f : α →ₛ E}
     (hf : ∀ y, y ≠ 0 → μ (f ⁻¹' {y}) < ∞) : MemLp f p μ := by
