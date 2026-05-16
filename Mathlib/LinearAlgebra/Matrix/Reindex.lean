@@ -57,7 +57,7 @@ theorem toEquiv_reindexAddEquiv (eₘ : m ≃ m') (eₙ : n ≃ n') :
   rfl
 
 @[simp]
-theorem reindexAddEquiv_symm (eₘ : m ≃ m') (eₙ : n ≃ n') :
+theorem symm_reindexAddEquiv (eₘ : m ≃ m') (eₙ : n ≃ n') :
     (reindexAddEquiv R eₘ eₙ).symm = reindexAddEquiv R eₘ.symm eₙ.symm :=
   rfl
 
@@ -96,7 +96,7 @@ theorem toAddEquiv_reindexRingEquiv (e : m ≃ n) : reindexRingEquiv R e = reind
   rfl
 
 @[simp]
-theorem reindexRingEquiv_symm (e : m ≃ n) :
+theorem symm_reindexRingEquiv (e : m ≃ n) :
     (reindexRingEquiv R e).symm = reindexRingEquiv R e.symm :=
   rfl
 
@@ -142,9 +142,11 @@ theorem reindexLinearEquiv_apply (eₘ : m ≃ m') (eₙ : n ≃ n') (M : Matrix
   simp
 
 @[simp]
-theorem reindexLinearEquiv_symm (eₘ : m ≃ m') (eₙ : n ≃ n') :
+theorem symm_reindexLinearEquiv (eₘ : m ≃ m') (eₙ : n ≃ n') :
     (reindexLinearEquiv R A eₘ eₙ).symm = reindexLinearEquiv R A eₘ.symm eₙ.symm :=
   rfl
+
+@[deprecated (since := "2026-05-15")] alias reindexLinearEquiv_symm := symm_reindexLinearEquiv
 
 @[simp]
 theorem reindexLinearEquiv_refl_refl :
@@ -229,9 +231,11 @@ theorem reindexAlgEquiv_apply (e : m ≃ n) (M : Matrix m m A) :
   simp
 
 @[simp]
-theorem reindexAlgEquiv_symm (e : m ≃ n) : (reindexAlgEquiv R A e).symm =
+theorem symm_reindexAlgEquiv (e : m ≃ n) : (reindexAlgEquiv R A e).symm =
     reindexAlgEquiv R A e.symm :=
   rfl
+
+@[deprecated (since := "2026-05-15")] alias reindexAlgEquiv_symm := symm_reindexAlgEquiv
 
 @[simp]
 theorem reindexAlgEquiv_refl : reindexAlgEquiv R A (Equiv.refl m) = AlgEquiv.refl :=
