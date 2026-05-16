@@ -669,25 +669,46 @@ theorem Left.mul_lt_one' [MulLeftMono α] {a b : α} (ha : a < 1) (hb : b < 1) :
 which assume left covariance. -/
 
 
+@[to_additive]
+theorem le_mul_of_le_of_one_le [MulLeftMono α] {a b c : α} (hbc : b ≤ c)
+    (ha : 1 ≤ a) :
+    b ≤ c * a :=
+  calc
+    b ≤ c := hbc
+    _ = c * 1 := (mul_one c).symm
+    _ ≤ c * a := mul_le_mul_right ha c
 
 @[to_additive]
-theorem le_mul_of_le_of_one_le [MulLeftMono α] (hbc : b ≤ c) (ha : 1 ≤ a) : b ≤ c * a :=
-  hbc.trans (le_mul_of_one_le_right' ha)
+theorem lt_mul_of_le_of_one_lt [MulLeftStrictMono α] {a b c : α} (hbc : b ≤ c)
+    (ha : 1 < a) :
+    b < c * a :=
+  calc
+    b ≤ c := hbc
+    _ = c * 1 := (mul_one c).symm
+    _ < c * a := mul_lt_mul_right ha c
 
 @[to_additive]
-theorem lt_mul_of_le_of_one_lt [MulLeftStrictMono α] (hbc : b ≤ c) (ha : 1 < a) : b < c * a :=
-  hbc.trans_lt (lt_mul_of_one_lt_right' c ha)
+theorem lt_mul_of_lt_of_one_le [MulLeftMono α] {a b c : α} (hbc : b < c)
+    (ha : 1 ≤ a) :
+    b < c * a :=
+  calc
+    b < c := hbc
+    _ = c * 1 := (mul_one c).symm
+    _ ≤ c * a := mul_le_mul_right ha c
 
 @[to_additive]
-theorem lt_mul_of_lt_of_one_le [MulLeftMono α] (hbc : b < c) (ha : 1 ≤ a) : b < c * a :=
-  hbc.trans_le (le_mul_of_one_le_right' ha)
+theorem lt_mul_of_lt_of_one_lt [MulLeftStrictMono α] {a b c : α} (hbc : b < c)
+    (ha : 1 < a) :
+    b < c * a :=
+  calc
+    b < c := hbc
+    _ = c * 1 := (mul_one c).symm
+    _ < c * a := mul_lt_mul_right ha c
 
 @[to_additive]
-theorem lt_mul_of_lt_of_one_lt [MulLeftStrictMono α] (hbc : b < c) (ha : 1 < a) : b < c * a :=
-  lt_mul_of_le_of_one_lt hbc.le ha
-
-@[to_additive]
-theorem lt_mul_of_lt_of_one_lt' [MulLeftMono α] (hbc : b < c) (ha : 1 < a) : b < c * a :=
+theorem lt_mul_of_lt_of_one_lt' [MulLeftMono α] {a b c : α} (hbc : b < c)
+    (ha : 1 < a) :
+    b < c * a :=
   lt_mul_of_lt_of_one_le hbc ha.le
 
 /-- Assumes left covariance.
