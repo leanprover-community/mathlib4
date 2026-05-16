@@ -381,8 +381,6 @@ variable [FiniteDimensional 𝕜 E] [FiniteDimensional 𝕜 F]
 @[aesop safe apply]
 theorem _root_.LinearMap.IsPositive.conj_adjoint {T : E →ₗ[𝕜] E}
     (hT : T.IsPositive) (S : E →ₗ[𝕜] F) : (S ∘ₗ T ∘ₗ S.adjoint).IsPositive := by
-  have := FiniteDimensional.complete 𝕜 E
-  have := FiniteDimensional.complete 𝕜 F
   simpa [← isPositive_toContinuousLinearMap_iff] using
     ((T.isPositive_toContinuousLinearMap_iff.mpr hT).conj_adjoint S.toContinuousLinearMap)
 
