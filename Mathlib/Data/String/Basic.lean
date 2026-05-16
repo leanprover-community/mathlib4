@@ -31,12 +31,15 @@ def ltb (s₁ s₂ : Legacy.Iterator) : Bool :=
     else true
   else false
 
-/-- This overrides an instance in core Lean. -/
-instance LT' : LT String :=
+/-- This used to override an instance in core Lean. -/
+@[implicit_reducible]
+def LT' : LT String :=
   ⟨fun s₁ s₂ ↦ ltb (String.Legacy.iter s₁) (String.Legacy.iter s₂)⟩
 
+attribute [local instance] LT' in
 /-- This instance has a prime to avoid the name of the corresponding instance in core Lean. -/
-instance decidableLT' : DecidableLT String := by
+@[implicit_reducible]
+def decidableLT' : DecidableLT String := by
   simp +instances only [DecidableLT, LT']
   infer_instance -- short-circuit type class inference
 
@@ -88,8 +91,9 @@ theorem ltb_cons_addChar (c : Char) (cs₁ cs₂ : List Char) (i₁ i₂ : Pos.R
   rw [eq_comm, ← ltb_cons_addChar' c]
   simp
 
+attribute [local instance] LT' in
 @[simp]
-theorem lt_iff_toList_lt : ∀ {s₁ s₂ : String}, s₁ < s₂ ↔ s₁.toList < s₂.toList
+theorem lt_iff_toList_lt' : ∀ {s₁ s₂ : String}, s₁ < s₂ ↔ s₁.toList < s₂.toList
   | s₁, s₂ => show ltb ⟨s₁, 0⟩ ⟨s₂, 0⟩ ↔ s₁.toList < s₂.toList by
     obtain ⟨s₁, rfl⟩ := s₁.exists_eq_ofList
     obtain ⟨s₂, rfl⟩ := s₂.exists_eq_ofList
@@ -121,16 +125,23 @@ theorem lt_iff_toList_lt : ∀ {s₁ s₂ : String}, s₁ < s₂ ↔ s₁.toList
         · assumption
         · contradiction
 
-instance LE : LE String :=
+attribute [local instance] LT' in
+/-- This used to override an instance in core Lean. -/
+@[implicit_reducible]
+def LE : LE String :=
   ⟨fun s₁ s₂ ↦ ¬s₂ < s₁⟩
 
-instance decidableLE : DecidableLE String := by
+attribute [local instance] LE LT decidableLT' in
+/-- This instance has a prime to avoid the name of the corresponding instance in core Lean. -/
+@[implicit_reducible]
+def decidableLE : DecidableLE String := by
   simp +instances only [DecidableLE, LE]
   infer_instance -- short-circuit type class inference
 
+attribute [local instance] LE in
 @[simp]
-theorem le_iff_toList_le {s₁ s₂ : String} : s₁ ≤ s₂ ↔ s₁.toList ≤ s₂.toList :=
-  (not_congr lt_iff_toList_lt).trans not_lt
+theorem le_iff_toList_le' {s₁ s₂ : String} : s₁ ≤ s₂ ↔ s₁.toList ≤ s₂.toList :=
+  (not_congr lt_iff_toList_lt').trans not_lt
 
 @[deprecated ofList_nil (since := "2025-10-31")]
 theorem asString_nil : ofList [] = "" :=
@@ -154,6 +165,15 @@ theorem toList_nonempty :
 theorem head_empty : "".toList.head! = default :=
   rfl
 
+theorem lt_iff_toList_lt {s₁ s₂ : String} : s₁ < s₂ ↔ s₁.toList < s₂.toList :=
+  Iff.rfl
+
+protected theorem le_iff_not_lt {s₁ s₂ : String} : s₁ ≤ s₂ ↔ ¬ s₂ < s₁ :=
+  Iff.rfl
+
+theorem le_iff_toList_le {s₁ s₂ : String} : s₁ ≤ s₂ ↔ s₁.toList ≤ s₂.toList := by
+  rw [String.le_iff_not_lt, lt_iff_toList_lt, not_lt]
+
 instance : LinearOrder String where
   le_refl _ := le_iff_toList_le.mpr le_rfl
   le_trans a b c := by
@@ -167,13 +187,10 @@ instance : LinearOrder String where
   le_total a b := by
     simp only [le_iff_toList_le]
     apply le_total
-  toDecidableLE := String.decidableLE
+  toDecidableLE := inferInstance
   toDecidableEq := inferInstance
-  toDecidableLT := String.decidableLT'
-  compare_eq_compareOfLessAndEq a b := by
-    simp +instances only [compare, compareOfLessAndEq, instLT, List.instLT, lt_iff_toList_lt]
-    split_ifs <;>
-    simp only [List.lt_iff_lex_lt] at *
+  toDecidableLT := inferInstance
+  compare_eq_compareOfLessAndEq a b := by simp [compare]
 
 theorem ofList_eq {l : List Char} {s : String} : ofList l = s ↔ l = s.toList := by
   simp [← toList_inj]
