@@ -347,6 +347,7 @@ abbrev compHom : Algebra S A where
   commutes' _ _ := Algebra.commutes _ _
   smul_def' _ _ := Algebra.smul_def _ _
 
+@[deprecated SMul.comp_smul_def (since := "2026-05-05")]
 theorem compHom_smul_def (s : S) (x : A) :
     letI := compHom A f
     s • x = f s • x := rfl
