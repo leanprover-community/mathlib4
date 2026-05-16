@@ -50,8 +50,19 @@ set_option linter.unusedVariables false in
 def RayVector (R M : Type*) [Zero M] :=
   { v : M // v ≠ 0 }
 
+/-- Create a `RayVector` from a nonzero vector -/
+def RayVector.mk (R : Type*) {M : Type*} [Zero M] (v : M) (h : v ≠ 0) : RayVector R M := ⟨v, h⟩
+
 instance RayVector.coe {R M : Type*} [Zero M] : CoeOut (RayVector R M) M where
   coe := Subtype.val
+
+@[simp]
+theorem RayVector.coe_mk {R M : Type*} [Zero M] {v : M} (h : v ≠ 0) :
+    RayVector.mk R v h = v := rfl
+
+@[ext]
+theorem RayVector.ext {R M : Type*} [Zero M] {x y : RayVector R M} (h : x.val = y.val) :
+    x = y := Subtype.ext h
 
 instance {R M : Type*} [Zero M] [Nontrivial M] : Nonempty (RayVector R M) :=
   ⟨Classical.indefiniteDescription _ <| exists_ne (0 : M)⟩
@@ -225,7 +236,7 @@ variable (R)
 
 /-- The ray given by a nonzero vector. -/
 def rayOfNeZero (v : M) (h : v ≠ 0) : Module.Ray R M :=
-  ⟦⟨v, h⟩⟧
+  ⟦.mk R v h⟧
 
 /-- An induction principle for `Module.Ray`, used as `induction x using Module.Ray.ind`. -/
 theorem Module.Ray.ind {C : Module.Ray R M → Prop} (h : ∀ (v) (hv : v ≠ 0), C (rayOfNeZero R v hv))
@@ -371,17 +382,16 @@ namespace RayVector
 
 /-- Negating a nonzero vector. -/
 instance {R : Type*} : Neg (RayVector R M) :=
-  ⟨fun v => ⟨-v, neg_ne_zero.2 v.prop⟩⟩
+  ⟨fun v => .mk R (-v) (neg_ne_zero.2 v.prop)⟩
 
 /-- Negating a nonzero vector commutes with coercion to the underlying module. -/
 @[simp, norm_cast]
 theorem coe_neg {R : Type*} (v : RayVector R M) : ↑(-v) = -(v : M) :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Negating a nonzero vector twice produces the original vector. -/
 instance {R : Type*} : InvolutiveNeg (RayVector R M) where
-  neg_neg v := by rw [Subtype.ext_iff, coe_neg, coe_neg, neg_neg]
+  neg_neg v := by rw [RayVector.ext_iff, coe_neg, coe_neg, neg_neg]
 
 /-- If two nonzero vectors are equivalent, so are their negations. -/
 @[simp]
