@@ -65,9 +65,35 @@ lemma discreteTopology_subtype_iff' {S : Set Y} :
   simp [discreteTopology_iff_isOpen_singleton, isOpen_induced_iff, Set.ext_iff]
   grind
 
-theorem isDiscrete_iff_forall_exists_isOpen {S : Set Y} :
-    IsDiscrete S ↔ ∀ y ∈ S, ∃ U, IsOpen U ∧ U ∩ S = {y} := by
+/-- A set `s` is discrete iff for every `y ∈ s` there is an open `u` with `u ∩ s = {y}`.
+See `isDiscrete_iff_forall_exists_isOpen'` for a related version of this with subsets. -/
+theorem isDiscrete_iff_forall_exists_isOpen {s : Set Y} :
+    IsDiscrete s ↔ ∀ y ∈ s, ∃ u, IsOpen u ∧ u ∩ s = {y} := by
   rw [isDiscrete_iff_discreteTopology, discreteTopology_subtype_iff']
+
+/-- A set `s` is discrete iff for every `t ⊆ s` there is an open `u` with `u ∩ s = t`.
+See `isDiscrete_iff_forall_exists_isOpen` for a similar version of this with singletons. -/
+theorem isDiscrete_iff_forall_exists_isOpen' {s : Set X} :
+    IsDiscrete s ↔ ∀ t ⊆ s, ∃ u, IsOpen u ∧ u ∩ s = t := by
+  simp_rw [isDiscrete_iff_discreteTopology, discreteTopology_iff_forall_isOpen,
+    isOpen_induced_iff, ← image_eq_image (Subtype.val_injective), Subtype.image_preimage_coe,
+    Subtype.forall_set_subtype (p := fun t ↦ ∃ u, IsOpen u ∧ s ∩ u = t), inter_comm]
+
+/-- A set `s` is discrete iff for every `t ⊆ s` there is a closed `u` with `u ∩ s = t`. -/
+theorem isDiscrete_iff_forall_exists_isClosed {S : Set X} :
+    IsDiscrete S ↔ ∀ s ⊆ S, ∃ U, IsClosed U ∧ U ∩ S = s := by
+  rw [isDiscrete_iff_forall_exists_isOpen']
+  constructor <;> intro h s sS
+  · obtain ⟨U, Uo, Us⟩ := h (sᶜ ∩ S) inter_subset_right
+    exact ⟨Uᶜ, isClosed_compl_iff.mpr Uo, by rw [left_eq_inter.mpr sS]; simp_all [Set.ext_iff]⟩
+  obtain ⟨U, Uo, Us⟩ := h (sᶜ ∩ S) inter_subset_right
+  exact ⟨Uᶜ, isOpen_compl_iff.mpr Uo, by rw [left_eq_inter.mpr sS]; simp_all [Set.ext_iff]⟩
+
+theorem isClosed_of_subset_discrete_closed {s t : Set X} (sd : s ⊆ t)
+    (ht : IsDiscrete t) (tc : IsClosed t) : IsClosed s := by
+  obtain ⟨_, rp, rt⟩ := isDiscrete_iff_forall_exists_isClosed.mp ht s sd
+  rw [← rt]
+  exact rp.inter tc
 
 lemma Set.Subsingleton.isDiscrete (hs : s.Subsingleton) : IsDiscrete s :=
   have : Subsingleton s := (Set.subsingleton_coe s).mpr hs
