@@ -934,7 +934,7 @@ lemma aeval_natDegree_le {R : Type*} [CommSemiring R] {m n : ℕ}
   apply (Polynomial.natDegree_sum_le _ _).trans
   apply Finset.sup_le
   intro d hd
-  simp_rw [Function.comp_apply, ← C_eq_algebraMap]
+  simp_rw [Function.comp_apply, ← Polynomial.C_eq_algebraMap]
   apply (Polynomial.natDegree_C_mul_le _ _).trans
   apply (Polynomial.natDegree_prod_le _ _).trans
   have : ∑ i ∈ d.support, (d i) * n ≤ m * n := by
