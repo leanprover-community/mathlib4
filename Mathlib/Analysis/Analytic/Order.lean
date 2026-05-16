@@ -451,6 +451,18 @@ theorem analyticOrderNatAt_mul (hf : AnalyticAt 𝕜 f z₀) (hg : AnalyticAt �
     analyticOrderNatAt (f * g) z₀ = analyticOrderNatAt f z₀ + analyticOrderNatAt g z₀ := by
   simp [analyticOrderNatAt, analyticOrderAt_mul, ENat.toNat_add, *]
 
+/-- The order is additive when taking a finite product of analytic functions. -/
+theorem analyticOrderAt_prod {ι : Type*} {s : Finset ι} {F : ι → 𝕜 → 𝕜}
+    (hF : ∀ i ∈ s, AnalyticAt 𝕜 (F i) z₀) :
+    analyticOrderAt (∏ i ∈ s, F i) z₀ = ∑ i ∈ s, analyticOrderAt (F i) z₀ := by
+  induction s using Finset.cons_induction with
+  | empty => simp [analyticOrderAt_eq_zero]
+  | cons a s ha ih =>
+    rw [Finset.prod_cons, Finset.sum_cons,
+      analyticOrderAt_mul (hF a (Finset.mem_cons.mpr (.inl rfl)))
+        (Finset.analyticAt_prod _ fun i hi => hF i (Finset.mem_cons.mpr (.inr hi))),
+      ih fun i hi => hF i (Finset.mem_cons.mpr (.inr hi))]
+
 /-- The order multiplies by `n` when taking an analytic function to its `n`th power. -/
 theorem analyticOrderAt_pow (hf : AnalyticAt 𝕜 f z₀) :
     ∀ n, analyticOrderAt (f ^ n) z₀ = n • analyticOrderAt f z₀
@@ -512,6 +524,21 @@ lemma analyticOrderAt_comp_of_deriv_ne_zero (hg : AnalyticAt 𝕜 g z₀) (hg' :
   · simp [hf.analyticOrderAt_comp hg, hg.analyticOrderAt_sub_eq_one_of_deriv_ne_zero hg']
   · rw [analyticOrderAt_of_not_analyticAt hf, analyticOrderAt_of_not_analyticAt]
     rwa [analyticAt_comp_iff_of_deriv_ne_zero hg hg']
+
+/-- The analytic order of `q ↦ f (q ^ N)` at `0` is `N` times the analytic order of `f` at `0`. -/
+lemma analyticOrderAt_comp_pow_zero (hf : AnalyticAt 𝕜 f 0) {N : ℕ} (hN : 0 < N) :
+    analyticOrderAt (fun q : 𝕜 => f (q ^ N)) 0 = analyticOrderAt f 0 * N := by
+  set g : 𝕜 → 𝕜 := fun q => q ^ N with hg_def
+  have h_pow_an : AnalyticAt 𝕜 g 0 := analyticAt_id.pow N
+  have hzero : g 0 = 0 := by simp [hg_def, zero_pow hN.ne']
+  have hf' : AnalyticAt 𝕜 f (g 0) := by
+    rw [hzero]
+    exact hf
+  have h_sub_eq : (fun x : 𝕜 => g x - (0 : 𝕜)) = (id : 𝕜 → 𝕜) ^ N :=
+    funext fun x => by simp [hg_def]
+  rw [show (fun q : 𝕜 => f (q ^ N)) = f ∘ g from rfl, hf'.analyticOrderAt_comp h_pow_an,
+    hzero, h_sub_eq, analyticOrderAt_pow analyticAt_id, analyticOrderAt_id]
+  simp
 
 end comp
 
