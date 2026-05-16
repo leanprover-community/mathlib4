@@ -6607,6 +6607,7 @@ public import Mathlib.RingTheory.LocalProperties.Semilocal
 public import Mathlib.RingTheory.LocalProperties.Submodule
 public import Mathlib.RingTheory.LocalRing.Basic
 public import Mathlib.RingTheory.LocalRing.Defs
+public import Mathlib.RingTheory.LocalRing.Etale
 public import Mathlib.RingTheory.LocalRing.Length
 public import Mathlib.RingTheory.LocalRing.LocalSubring
 public import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
