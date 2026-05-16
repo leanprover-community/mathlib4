@@ -200,6 +200,14 @@ def restrictPreimageFinset (e : α ≃ β) (s : Finset β) : (s.preimage e e.inj
   left_inv _ := by simp
   right_inv _ := by simp
 
+lemma image_symm_eq_preimage_of_finset [DecidableEq α] (e : α ≃ β) (s : Finset β) :
+    s.image e.symm = s.preimage e e.injective.injOn := by
+  grind [Finset.mem_preimage]
+
+lemma image_eq_preimage_symm_of_finset [DecidableEq β] (e : α ≃ β) (s : Finset α) :
+    s.image e = s.preimage e.symm e.symm.injective.injOn :=
+  e.symm.image_symm_eq_preimage_of_finset s
+
 end Equiv
 
 set_option backward.isDefEq.respectTransparency false in
