@@ -118,7 +118,7 @@ public def rpc (props : PanelWidgetProps) : RequestM (RequestTask Html) :=
   let some onGoal := props.goals.findFinIdx? (·.mvarId == loc.mvarId) |
     return .text "click_suggestions: please reload the tactic state"
   let goal := props.goals[onGoal]
-  let onGoal := guard (onGoal.val != 0) *> some onGoal.val
+  let onGoal := if onGoal.val != 0 then some onGoal.val else none
   let some goalsAt := (FileWorker.findGoalsAt? doc (doc.meta.text.lspPosToUtf8Pos props.pos)).get |
     return .text "Internal click_suggestions error: could not find any goal at the cursor position"
   let some { ctxInfo := { parentDecl?, .. }, tacticInfo := { stx, .. }, .. } :=
@@ -146,7 +146,7 @@ public def rpc (props : PanelWidgetProps) : RequestM (RequestTask Html) :=
       } |>.run' {}
     return <details «open»={true}>
       <summary className="mv2 pointer">
-        click_suggestions suggestions for {targetHtml}: {statusHtml}
+        suggestions for {targetHtml}: {statusHtml}
       </summary>
       {html}
     </details>

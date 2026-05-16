@@ -35,7 +35,7 @@ structure RwInfo where
 structure RwKey where
   numGoals : Nat
   symm : Bool
-  nameLenght : Nat
+  nameLength : Nat
   replacementSize : Nat
   name : String
   -- TODO: in this implementation, we conclude that two rewrites are the same if they
@@ -83,17 +83,17 @@ def RwLemma.try (i : RwInfo) (lem : RwLemma) : clickSuggestionsM (Result RwKey) 
   let mut extraGoals := #[]
   let mut justLemmaName := true
   let mut rwKind := i.rwKind
-  for mvar in mvars, bi in binderInfos do
+  for mvar in mvars do
     unless ← mvar.mvarId!.isAssigned do
       if ← pure (rwKind matches .valid ..) <&&> isProof mvar <&&> mvar.mvarId!.assumptionCore then
         justLemmaName := false
       else
-        extraGoals := extraGoals.push (← instantiateMVars (← inferType mvar), bi)
+        extraGoals := extraGoals.push (← instantiateMVars (← inferType mvar))
 
   let replacement ← instantiateMVars rhs
   let makesNewMVars :=
     (replacement.findMVar? (mvars.contains <| .mvar ·)).isSome ||
-    extraGoals.any fun goal ↦ (goal.1.findMVar? (mvars.contains <| .mvar ·)).isSome
+    extraGoals.any fun goal ↦ (goal.findMVar? (mvars.contains <| .mvar ·)).isSome
   let proof ← instantiateMVars proof
   let isRefl ← isExplicitEq e replacement
   if let .valid tpCorrect _ := rwKind then
@@ -105,20 +105,15 @@ def RwLemma.try (i : RwInfo) (lem : RwLemma) : clickSuggestionsM (Result RwKey) 
   let key := {
     numGoals := extraGoals.size
     symm := lem.symm
-    nameLenght := lem.name.length
+    nameLength := lem.name.length
     replacementSize := (← ppExpr replacement).pretty.length
     name := lem.name.toString
     replacement := ← abstractMVars replacement
   }
   let tactic ← tacticSyntax lem rwKind (← getHypIdent?) proof justLemmaName
   let mut htmls := #[← exprToHtml replacement]
-  for (mvarId, bi) in extraGoals do
-    -- TODO: think more carefully about which goals should be displayed
-    -- Are there lemmas where a hypothesis is marked as implicit,
-    -- which we would still want to show as a new goal?
-    if bi.isExplicit then
-      htmls := htmls.push
-        <div> <strong className="goal-vdash">⊢ </strong> {← exprToHtml mvarId} </div>
+  for goal in extraGoals do
+    htmls := htmls.push <div> <strong className="goal-vdash">⊢ </strong> {← exprToHtml goal} </div>
   let filtered ←
     if !isRefl && !makesNewMVars then
       some <$> mkSuggestion tactic (.element "div" #[] htmls)

@@ -23,7 +23,7 @@ structure ApplyAtLemma where
 
 structure ApplyAtKey where
   numGoals : Nat
-  nameLenght : Nat
+  nameLength : Nat
   replacementSize : Nat
   name : String
   newGoals : Array AbstractMVarsResult
@@ -48,8 +48,7 @@ private def tacticSyntax (lem : ApplyAtLemma) : clickSuggestionsM (TSyntax `tact
   `(tactic| apply $(mkIdent (← lem.name.unresolveName)) at $(← getHypIdent!))
 
 /-- Generate a suggestion for applying `lem`. -/
-def ApplyAtLemma.try (lem : ApplyAtLemma) :
-    clickSuggestionsM (Result ApplyAtKey) :=
+def ApplyAtLemma.try (lem : ApplyAtLemma) : clickSuggestionsM (Result ApplyAtKey) :=
   withReducible do withNewMCtxDepth do
   let (_proof, mvars, binderInfos, replacement) ← lem.name.forallMetaTelescopeReducing
   let mvar := mvars.back!
@@ -59,31 +58,26 @@ def ApplyAtLemma.try (lem : ApplyAtLemma) :
     throwError "{← inferType mvar} does not unify with {← fvarId.getType}"
   synthAppInstances `click_suggestions default mvars binderInfos false false
   let mut newGoals := #[]
-  for mvar in mvars, bi in binderInfos do
+  for mvar in mvars do
     unless ← mvar.mvarId!.isAssigned do
-      newGoals := newGoals.push (← instantiateMVars (← inferType mvar), bi)
+      newGoals := newGoals.push (← instantiateMVars (← inferType mvar))
 
   let replacement ← instantiateMVars replacement
   let makesNewMVars :=
     (replacement.findMVar? (mvars.contains <| .mvar ·)).isSome ||
-    newGoals.any fun goal ↦ (goal.1.findMVar? (mvars.contains <| .mvar ·)).isSome
+    newGoals.any fun goal ↦ (goal.findMVar? (mvars.contains <| .mvar ·)).isSome
   let key := {
     numGoals := newGoals.size
-    nameLenght := lem.name.length
+    nameLength := lem.name.length
     replacementSize := ← newGoals.foldlM (init := 0) fun s g =>
-      return (← ppExpr g.1).pretty.length + s
+      return (← ppExpr g).pretty.length + s
     name := lem.name.toString
-    newGoals := (← newGoals.mapM (abstractMVars ·.1)).push (← abstractMVars replacement)
+    newGoals := (← newGoals.mapM (abstractMVars ·)).push (← abstractMVars replacement)
   }
   let tactic ← tacticSyntax lem
   let mut htmls := #[← exprToHtml replacement]
-  for (goal, bi) in newGoals do
-    -- TODO: think more carefully about which goals should be displayed
-    -- Are there lemmas where a hypothesis is marked as implicit,
-    -- which we would still want to show as a new goal?
-    if bi.isExplicit then
-      htmls := htmls.push
-        <div> <strong className="goal-vdash">⊢ </strong> {← exprToHtml goal} </div>
+  for goal in newGoals do
+    htmls := htmls.push <div> <strong className="goal-vdash">⊢ </strong> {← exprToHtml goal} </div>
   let filtered ←
     if makesNewMVars then
       pure none

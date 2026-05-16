@@ -67,6 +67,7 @@ def getCandidatesAux (rootExpr subExpr : Expr) (gpos : Array GrwPos) (rwKind : R
       cands := cands ++ (← app rootExpr).elts.map fun _ ↦ (·.map .app)
   return cands.foldr (init := #[]) fun _ val acc ↦ acc ++ val
 
+/-- Get the candidate theorems from imported files. -/
 @[specialize]
 def getImportCandidates (rootExpr subExpr : Expr) (gpos : Array GrwPos) (rwKind : RwKind)
     (reportProgress : String → BaseIO Unit) : clickSuggestionsM (Array Candidates) :=
@@ -74,6 +75,8 @@ def getImportCandidates (rootExpr subExpr : Expr) (gpos : Array GrwPos) (rwKind 
     (getImportMatches rwRef) (getImportMatches grwRef)
     (getImportMatches appRef) (getImportMatches appAtRef)
 
+/-- Get the candidate theorems from `pres`.
+Used for current file declarations and local hypotheses -/
 def getCandidates (rootExpr subExpr : Expr) (gpos : Array GrwPos)
     (rwKind : RwKind) (pres : PreDiscrTrees) : clickSuggestionsM (Array Candidates) :=
   getCandidatesAux rootExpr subExpr gpos rwKind (fun _ ↦ pure ())

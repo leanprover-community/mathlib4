@@ -196,7 +196,8 @@ def trackingComputation {α} (name : String) (k : clickSuggestionsM α) : clickS
 section Meta
 
 /-- Determine whether the explicit parts of two expressions are equal,
-and the implicit parts are definitionally equal. -/
+and the implicit parts are definitionally equal, up to `reducible_and_instances` transparency.
+This says whether two expressions are 'morally equal', and is used for deduplicating suggestions. -/
 partial def isExplicitEq (t s : Expr) : MetaM Bool := do
   let t := t.cleanupAnnotations; let s := s.cleanupAnnotations
   if t == s then
@@ -211,7 +212,7 @@ partial def isExplicitEq (t s : Expr) : MetaM Bool := do
     if bis[i]!.isExplicit then
       isExplicitEq tArgs[i]! sArgs[i]!
     else
-      withNewMCtxDepth <| isDefEq tArgs[i]! sArgs[i]!
+      withNewMCtxDepth <| withReducibleAndInstances <| isDefEq tArgs[i]! sArgs[i]!
 where
   /-- Get the `BinderInfo`s for the arguments of `mkAppN fn args`. -/
   getBinderInfos (fn : Expr) (args : Array Expr) : MetaM (Array BinderInfo) := do

@@ -138,7 +138,7 @@ structure GrwInfo where
 
 structure GrwKey where
   numGoals : Nat
-  nameLenght : Nat
+  nameLength : Nat
   replacementSize : Nat
   name : String
   -- TODO: in this implementation, we conclude that two rewrites are the same if they
@@ -168,8 +168,7 @@ private def tacticSyntax (lem : GrwLemma) (i : GrwInfo) (proof : Expr) (justLemm
   mkRewrite i.rwKind lem.symm proof (← getHypIdent?) (grw := true)
 
 /-- Generate the suggestion for rewriting with `lem`. -/
-def GrwLemma.try (i : GrwInfo) (lem : GrwLemma) :
-    clickSuggestionsM (Result GrwKey) := do
+def GrwLemma.try (i : GrwInfo) (lem : GrwLemma) : clickSuggestionsM (Result GrwKey) := do
   withReducible do withNewMCtxDepth do
   let mctx ← getMCtx
   (·.getDM do throwError "no suitable `grw` relation was found") =<< i.gpos.findSomeM? fun pos ↦ do
@@ -189,14 +188,14 @@ def GrwLemma.try (i : GrwInfo) (lem : GrwLemma) :
     throwError "{lhs} and {e} do not match according to the head-constant indexing"
   synthAppInstances `click_suggestions default mvars binderInfos false false
   let mut extraGoals := #[]
-  for mvar in mvars, bi in binderInfos do
+  for mvar in mvars do
     unless ← mvar.mvarId!.isAssigned do
-      extraGoals := extraGoals.push (← instantiateMVars (← inferType mvar), bi)
+      extraGoals := extraGoals.push (← instantiateMVars (← inferType mvar))
 
   let replacement ← instantiateMVars rhs
   let makesNewMVars :=
     (replacement.findMVar? (mvars.contains <| .mvar ·)).isSome ||
-    extraGoals.any fun goal ↦ (goal.1.findMVar? (mvars.contains <| .mvar ·)).isSome
+    extraGoals.any fun goal ↦ (goal.findMVar? (mvars.contains <| .mvar ·)).isSome
   let proof ← instantiateMVars proof
   let isRefl ← isExplicitEq e replacement
   let justLemmaName ←
@@ -204,20 +203,19 @@ def GrwLemma.try (i : GrwInfo) (lem : GrwLemma) :
     else withMCtx mctxOrig do kabstractFindsPositions i.rootExpr lhsOrig (← read).pos
   let key := {
     numGoals := extraGoals.size
-    nameLenght := lem.name.length
+    nameLength := lem.name.length
     replacementSize := (← ppExpr replacement).pretty.length
     name := lem.name.toString
     replacement := ← abstractMVars replacement
   }
   let tactic ← tacticSyntax lem i proof justLemmaName
-  let mut htmls := #[<div> {← exprToHtml replacement} </div>]
-  for (mvar, bi) in extraGoals do
+  let mut htmls := #[← exprToHtml replacement]
+  for goal in extraGoals do
     -- TODO: think more carefully about which goals should be displayed
     -- Are there lemmas where a hypothesis is marked as implicit,
     -- which we would still want to show as a new goal?
-    if bi.isExplicit then
-      htmls := htmls.push
-        <div> <strong className="goal-vdash">⊢ </strong> {← exprToHtml mvar} </div>
+    htmls := htmls.push
+      <div> <strong className="goal-vdash">⊢ </strong> {← exprToHtml goal} </div>
   let filtered ←
     if !isRefl && !makesNewMVars then
       some <$> mkSuggestion tactic (.element "div" #[] htmls)

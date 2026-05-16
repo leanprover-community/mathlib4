@@ -158,7 +158,7 @@ def Entries.addConst (choice : Choice) (env : Environment) (entries : Entries)
   return { rw, grw, app, appAt }
 
 /-- Given a free variable, compute what needs to be added to the various discrimination trees. -/
-def Entries.addVar (choice : Choice) (entries : Entries) (decl : LocalDecl) : MetaM Entries := do
+def Entries.addFVar (choice : Choice) (entries : Entries) (decl : LocalDecl) : MetaM Entries := do
   let (xs, _, e) ← forallMetaTelescopeReducing (← instantiateMVars decl.type)
   let mut { rw, grw, app, appAt } := entries
   -- apply
@@ -248,10 +248,10 @@ public def computeLCtxDiscrTrees (choice : Choice) (fvarId? : Option FVarId) :
   let mut entries : Entries := {}
   for decl in ← getLCtx do
     if !decl.isImplementationDetail && fvarId?.all (· != decl.fvarId) then
-      entries ← entries.addVar choice decl
+      entries ← entries.addFVar choice decl
   return .append {} entries
 
-
+/-- Get the discrimination tree matches with theorems from imported files. -/
 public def getImportMatches {α} (ref : IO.Ref (Option (RefinedDiscrTree α)))
     (e : Expr) : MetaM (MatchResult α) := do
   let some tree ← ref.get |
@@ -262,6 +262,7 @@ public def getImportMatches {α} (ref : IO.Ref (Option (RefinedDiscrTree α)))
   ref.set newTree
   return result
 
+/-- Get the discrimination tree matches from `tree`. -/
 public def getMatches {α} (tree : RefinedDiscrTree α) (e : Expr) : MetaM (MatchResult α) := do
   withConfig (fun _ ↦ librarySearchIndexConfig) do
     return (← getMatch tree e false false).1
