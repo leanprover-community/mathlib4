@@ -470,7 +470,7 @@ theorem continuous_integral_integral :
     Continuous fun f : α × β →₁[μ.prod ν] E => ∫ x, ∫ y, f (x, y) ∂ν ∂μ := by
   rw [continuous_iff_continuousAt]; intro g
   refine
-    tendsto_integral_of_L1 _ (L1.integrable_coeFn g).integral_prod_left
+    tendsto_integral_of_L1 _ (L1.integrable_coeFn g).integral_prod_left.aestronglyMeasurable
       (Eventually.of_forall fun h => (L1.integrable_coeFn h).integral_prod_left) ?_
   simp_rw [← lintegral_fn_integral_sub _ (L1.integrable_coeFn _) (L1.integrable_coeFn g)]
   apply tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds _ (fun i => zero_le) _

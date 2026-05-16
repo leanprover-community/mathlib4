@@ -216,7 +216,7 @@ theorem Kernel.continuous_integral_integral :
     Continuous fun f : β × γ →₁[(κ ⊗ₖ η) a] E => ∫ x, ∫ y, f (x, y) ∂η (a, x) ∂κ a := by
   rw [continuous_iff_continuousAt]; intro g
   refine
-    tendsto_integral_of_L1 _ (L1.integrable_coeFn g).integral_compProd
+    tendsto_integral_of_L1 _ (L1.integrable_coeFn g).integral_compProd.aestronglyMeasurable
       (Eventually.of_forall fun h => (L1.integrable_coeFn h).integral_compProd) ?_
   simp_rw [← lintegral_fn_integral_sub (‖·‖ₑ) (L1.integrable_coeFn _) (L1.integrable_coeFn g)]
   apply tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds _ (fun i => zero_le) _
@@ -401,7 +401,7 @@ theorem integral_integral_sub'_comp ⦃f g : γ → E⦄ (hf : Integrable f ((η
 theorem continuous_integral_integral_comp :
     Continuous fun f : γ →₁[(η ∘ₖ κ) a] E ↦ ∫ x, ∫ y, f y ∂η x ∂κ a := by
   refine continuous_iff_continuousAt.2 fun g ↦ ?_
-  refine tendsto_integral_of_L1 _ (L1.integrable_coeFn g).integral_comp
+  refine tendsto_integral_of_L1 _ (L1.integrable_coeFn g).integral_comp.aestronglyMeasurable
       (Eventually.of_forall fun h ↦ (L1.integrable_coeFn h).integral_comp) ?_
   simp_rw [← lintegral_fn_integral_sub_comp (‖·‖ₑ) (L1.integrable_coeFn _) (L1.integrable_coeFn g)]
   refine tendsto_of_tendsto_of_tendsto_of_le_of_le

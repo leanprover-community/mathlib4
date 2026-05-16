@@ -6,6 +6,7 @@ Authors: Oliver Butterley, Yoh Tanimoto
 module
 
 public import Mathlib.MeasureTheory.VectorMeasure.Variation.Defs
+public import Mathlib.Analysis.Normed.Module.Basic
 
 /-!
 # Properties of variation
@@ -41,7 +42,6 @@ section Basic
 
 variable [TopologicalSpace V] [ENormedAddCommMonoid V] [T2Space V] {μ ν : VectorMeasure X V}
 
-@[simp]
 lemma variation_apply (μ : VectorMeasure X V) (s : Set X) :
     μ.variation s = preVariation (‖μ ·‖ₑ) (isSigmaSubadditiveSetFun_enorm μ) (by simp) s := rfl
 
@@ -96,14 +96,15 @@ lemma absolutelyContinuous (μ : VectorMeasure X V) : μ ≪ᵥ μ.ennrealVariat
     grw [enorm_measure_le_variation, ← ennrealVariation_apply _ hsm, hs]
   · exact μ.not_measurable' hsm
 
-lemma variation_le_of_forall_enorm_le {m : Measure X} (h : ∀ E, MeasurableSet E → ‖μ E‖ₑ ≤ m E) :
-    μ.variation ≤ m := by
-  refine Measure.le_intro fun s hs _ => ?_
+lemma variation_apply_le_of_forall_enorm_le {m : Measure X} {s : Set X} (hs : MeasurableSet s)
+    (h : ∀ E, MeasurableSet E → E ⊆ s → ‖μ E‖ₑ ≤ m E) :
+    μ.variation s ≤ m s := by
   simp only [variation_apply, preVariation, ennrealToMeasure_apply hs, ennrealPreVariation_apply,
     preVariationFun, hs, dite_true, iSup_le_iff]
   intro i
   calc
-    ∑ x ∈ i.parts, ‖μ x‖ₑ ≤ ∑ x ∈ i.parts, m x := Finset.sum_le_sum (fun s hs => h s s.property)
+    ∑ x ∈ i.parts, ‖μ x‖ₑ ≤ ∑ x ∈ i.parts, m x := Finset.sum_le_sum
+        (fun s hs => h s s.property (i.le hs))
     _ = m (i.parts.sup Subtype.val) := by
       rw [sup_set_eq_biUnion]
       refine (MeasureTheory.measure_biUnion_finset ?_ fun b _ => b.property).symm
@@ -112,6 +113,10 @@ lemma variation_le_of_forall_enorm_le {m : Measure X} (h : ∀ E, MeasurableSet 
     _ ≤ m s := by
       rw [sup_set_eq_biUnion]
       exact measure_mono <| Set.iUnion₂_subset fun _ hp => Subtype.coe_le_coe.mpr (i.le hp)
+
+lemma variation_le_of_forall_enorm_le {m : Measure X} (h : ∀ E, MeasurableSet E → ‖μ E‖ₑ ≤ m E) :
+    μ.variation ≤ m :=
+  Measure.le_intro fun _ hs _ => variation_apply_le_of_forall_enorm_le hs (fun E hE _ ↦ h E hE)
 
 lemma variation_add_le [ContinuousAdd V] : variation (μ + ν) ≤ variation μ + variation ν := by
   refine variation_le_of_forall_enorm_le fun E _ => ?_
@@ -128,6 +133,42 @@ lemma variation_finsetSum_le [ContinuousAdd V] {ι} (s : Finset ι) (μ : ι →
   | insert i s his ih =>
     simpa [Finset.sum_insert his] using
       variation_add_le.trans (add_le_add_right ih ((μ i).variation))
+
+lemma variation_restrict (μ : VectorMeasure X V) {s : Set X} (hs : MeasurableSet s) :
+    (μ.restrict s).variation = μ.variation.restrict s := by
+  apply le_antisymm
+  · apply variation_le_of_forall_enorm_le (fun t ht ↦ ?_)
+    simp only [ht, Measure.restrict_apply, VectorMeasure.restrict_apply, hs]
+    apply enorm_measure_le_variation
+  · apply Measure.le_iff.2 (fun t ht ↦ ?_)
+    simp only [ht, Measure.restrict_apply]
+    calc μ.variation (t ∩ s)
+    _ ≤ (μ.restrict s).variation (t ∩ s) := by
+      apply variation_apply_le_of_forall_enorm_le (ht.inter hs) (fun u u_meas hu ↦ ?_)
+      have : μ u = μ.restrict s u := by
+        rw [VectorMeasure.restrict_apply _ hs u_meas]
+        congr
+        grind
+      rw [this]
+      apply enorm_measure_le_variation
+    _ ≤ (μ.restrict s).variation t := by
+      gcongr
+      exact Set.inter_subset_left
+
+lemma variation_restrict_le (μ : VectorMeasure X V) (s : Set X) :
+    (μ.restrict s).variation ≤ μ.variation.restrict s := by
+  by_cases hs : MeasurableSet s
+  · simp [variation_restrict μ hs]
+  · simp only [restrict_not_measurable _ hs, variation_zero, Measure.zero_le]
+
+@[simp] lemma variation_eq_zero {μ : VectorMeasure X V} :
+    μ.variation = 0 ↔ μ = 0 := by
+  refine ⟨fun h ↦ ?_, fun h ↦ by simp [h]⟩
+  ext s hs
+  apply enorm_eq_zero.1
+  apply le_antisymm ?_ (by simp)
+  grw [enorm_measure_le_variation]
+  simp [h]
 
 end Basic
 
@@ -146,6 +187,26 @@ lemma variation_neg : (-μ).variation = μ.variation := by simp [variation]
 
 lemma variation_sub_le : (μ - ν).variation ≤ μ.variation + ν.variation := by
   grw [sub_eq_add_neg, variation_add_le, variation_neg]
+
+private lemma variation_smul_le {𝕜 : Type*} [NormedField 𝕜] [NormedSpace 𝕜 V] {c : 𝕜} :
+    (c • μ).variation ≤ ‖c‖₊ • μ.variation := by
+  apply variation_le_of_forall_enorm_le (fun s hs ↦ ?_)
+  simp only [coe_smul, Pi.smul_apply, enorm_smul, Measure.smul_apply, Measure.nnreal_smul_coe_apply]
+  grw [enorm_measure_le_variation]
+  exact le_rfl
+
+lemma variation_smul {𝕜 : Type*} [NormedField 𝕜] [NormedSpace 𝕜 V] {c : 𝕜} :
+    (c • μ).variation = ‖c‖₊ • μ.variation := by
+  apply le_antisymm variation_smul_le ?_
+  rcases eq_or_ne c 0 with rfl | hc
+  · simp
+  calc ‖c‖₊ • μ.variation
+  _ = ‖c‖₊ • (c⁻¹ • (c • μ)).variation := by simp [smul_smul, inv_mul_cancel₀ hc]
+  _ ≤ ‖c‖₊ • ‖c⁻¹‖₊ • (c • μ).variation := by
+    gcongr
+    exact variation_smul_le
+  _ = (c • μ).variation := by
+    simp [smul_smul, mul_inv_cancel₀ (nnnorm_ne_zero_iff.mpr hc)]
 
 end NormedAddCommGroup
 

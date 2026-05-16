@@ -39,7 +39,7 @@ suppress_compilation
 
 open Bornology Metric
 open Filter hiding map_smul
-open scoped NNReal Topology Uniformity
+open scoped NNReal Topology Uniformity ENNReal
 
 -- the `ₗ` subscript variables are for special cases about linear (as opposed to semilinear) maps
 variable {𝕜 𝕜₂ 𝕜₃ E F Fₗ G 𝓕 : Type*}
@@ -421,6 +421,18 @@ lemma le_opNorm_enorm (x : E) : ‖f x‖ₑ ≤ ‖f‖ₑ * ‖x‖ₑ := by
   rw [← ENNReal.ofReal_mul (by positivity)]
   gcongr
   exact f.le_opNorm x
+
+/-- If one controls the enorm of every `f x`, then one controls the enorm of `f`. -/
+theorem opENorm_le_bound (f : E →SL[σ₁₂] F) {M : ℝ≥0∞} (hM : ∀ x, ‖f x‖ₑ ≤ M * ‖x‖ₑ) :
+    ‖f‖ₑ ≤ M := by
+  rcases eq_top_or_lt_top M with rfl | h'M
+  · simp
+  lift M to NNReal using h'M.ne
+  simp only [← ofReal_norm, ENNReal.ofReal_le_coe]
+  apply opNorm_le_bound _ (by positivity) (fun x ↦ ?_)
+  specialize hM x
+  simp only [← ofReal_norm, ← ENNReal.ofReal_coe_nnreal] at hM
+  rwa [← ENNReal.ofReal_mul (by positivity), ENNReal.ofReal_le_ofReal_iff (by positivity)] at hM
 
 variable {f} in
 theorem homothety_norm [NontrivialTopology E] (f : E →SL[σ₁₂] F) {a : ℝ}

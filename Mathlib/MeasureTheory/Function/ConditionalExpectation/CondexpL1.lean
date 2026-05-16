@@ -5,6 +5,7 @@ Authors: Rémy Degenne
 -/
 module
 
+public import Mathlib.MeasureTheory.Function.LpSpace.CompleteOfCompleteLp
 public import Mathlib.MeasureTheory.Function.ConditionalExpectation.CondexpL2
 public import Mathlib.MeasureTheory.Measure.Real
 
@@ -47,7 +48,7 @@ variable {α F F' G G' 𝕜 : Type*} [RCLike 𝕜]
   [NormedSpace 𝕜 F]
   -- F' for integrals on a Lp submodule
   [NormedAddCommGroup F']
-  [NormedSpace 𝕜 F'] [NormedSpace ℝ F'] [CompleteSpace F']
+  [NormedSpace 𝕜 F'] [NormedSpace ℝ F']
   -- G for a Lp add_subgroup
   [NormedAddCommGroup G]
   -- G' for integrals on a Lp add_subgroup
@@ -313,14 +314,18 @@ section CondexpL1
 variable {m m0 : MeasurableSpace α} {μ : Measure α} {hm : m ≤ m0} [SigmaFinite (μ.trim hm)]
   {f g : α → F'} {s : Set α}
 
+section CondExpL1CLM
+
 variable (F')
 
 /-- Conditional expectation of a function as a linear map from `α →₁[μ] F'` to itself. -/
-def condExpL1CLM (hm : m ≤ m0) (μ : Measure α) [SigmaFinite (μ.trim hm)] :
+def condExpL1CLM (hm : m ≤ m0) (μ : Measure α) [CompleteSpace ↑(Lp F' 1 μ)]
+    [SigmaFinite (μ.trim hm)] :
     (α →₁[μ] F') →L[ℝ] α →₁[μ] F' :=
   L1.setToL1 (dominatedFinMeasAdditive_condExpInd F' hm μ)
 
 variable {F'}
+variable [CompleteSpace F']
 
 theorem condExpL1CLM_smul (c : 𝕜) (f : α →₁[μ] F') :
     condExpL1CLM F' hm μ (c • f) = c • condExpL1CLM F' hm μ f := by
@@ -438,6 +443,8 @@ theorem condExpL1CLM_of_aestronglyMeasurable' (f : α →₁[μ] F') (hfm : AESt
     condExpL1CLM F' hm μ f = f :=
   condExpL1CLM_lpMeas (⟨f, hfm⟩ : lpMeas F' ℝ m 1 μ)
 
+end CondExpL1CLM
+
 /-- Conditional expectation of a function, in L1. Its value is 0 if the function is not
 integrable. The function-valued `condExp` should be used instead in most cases. -/
 def condExpL1 (hm : m ≤ m0) (μ : Measure α) [SigmaFinite (μ.trim hm)] (f : α → F') : α →₁[μ] F' :=
@@ -446,7 +453,8 @@ def condExpL1 (hm : m ≤ m0) (μ : Measure α) [SigmaFinite (μ.trim hm)] (f : 
 theorem condExpL1_undef (hf : ¬Integrable f μ) : condExpL1 hm μ f = 0 :=
   setToFun_undef (dominatedFinMeasAdditive_condExpInd F' hm μ) hf
 
-theorem condExpL1_eq (hf : Integrable f μ) : condExpL1 hm μ f = condExpL1CLM F' hm μ (hf.toL1 f) :=
+theorem condExpL1_eq [CompleteSpace F']
+    (hf : Integrable f μ) : condExpL1 hm μ f = condExpL1CLM F' hm μ (hf.toL1 f) :=
   setToFun_eq (dominatedFinMeasAdditive_condExpInd F' hm μ) hf
 
 @[simp]
@@ -457,17 +465,31 @@ theorem condExpL1_zero : condExpL1 hm μ (0 : α → F') = 0 :=
 theorem condExpL1_measure_zero (hm : m ≤ m0) : condExpL1 hm (0 : Measure α) f = 0 :=
   setToFun_measure_zero _ rfl
 
-theorem aestronglyMeasurable_condExpL1 {f : α → F'} :
-    AEStronglyMeasurable[m] (condExpL1 hm μ f) μ := by
-  by_cases hf : Integrable f μ
-  · rw [condExpL1_eq hf]
-    exact aestronglyMeasurable_condExpL1CLM _
-  · rw [condExpL1_undef hf]
-    exact stronglyMeasurable_zero.aestronglyMeasurable.congr (coeFn_zero ..).symm
-
-theorem condExpL1_congr_ae (hm : m ≤ m0) [SigmaFinite (μ.trim hm)] (h : f =ᵐ[μ] g) :
+theorem condExpL1_congr_ae (hm : m ≤ m0) (h : f =ᵐ[μ] g) :
     condExpL1 hm μ f = condExpL1 hm μ g :=
   setToFun_congr_ae _ h
+
+theorem aestronglyMeasurable_condExpL1 {f : α → F'} :
+    AEStronglyMeasurable[m] (condExpL1 hm μ f) μ := by
+  by_cases hF' : CompleteSpace (Lp F' 1 μ); swap
+  · simp only [condExpL1, setToFun, hF', ↓reduceDIte, ZeroMemClass.coe_zero]
+    apply stronglyMeasurable_zero.aestronglyMeasurable.congr
+    exact (coeFn_zero _ 1 _).symm
+  by_cases hf : Integrable f μ; swap
+  · rw [condExpL1_undef hf]
+    exact stronglyMeasurable_zero.aestronglyMeasurable.congr (coeFn_zero ..).symm
+  by_cases hf' : f =ᵐ[μ] 0
+  · apply stronglyMeasurable_zero.aestronglyMeasurable.congr
+    simp only [condExpL1_congr_ae hm hf', condExpL1_zero, ZeroMemClass.coe_zero]
+    exact (coeFn_zero _ 1 _).symm
+  have : CompleteSpace F' := by
+    have : Nontrivial (Lp F' 1 μ) := by
+      apply nontrivial_of_ne (hf.toL1 f) 0
+      grw [ne_eq, Lp.ext_iff, Integrable.coeFn_toL1, coeFn_zero]
+      exact hf'
+    exact completeSpace_of_completeSpace_Lp F' 1 μ
+  rw [condExpL1_eq hf]
+  exact aestronglyMeasurable_condExpL1CLM _
 
 theorem integrable_condExpL1 (f : α → F') : Integrable (condExpL1 hm μ f) μ :=
   L1.integrable_coeFn _
@@ -475,7 +497,7 @@ theorem integrable_condExpL1 (f : α → F') : Integrable (condExpL1 hm μ f) μ
 /-- The integral of the conditional expectation `condExpL1` over an `m`-measurable set is equal to
 the integral of `f` on that set. See also `setIntegral_condExp`, the similar statement for
 `condExp`. -/
-theorem setIntegral_condExpL1 (hf : Integrable f μ) (hs : MeasurableSet[m] s) :
+theorem setIntegral_condExpL1 [CompleteSpace F'] (hf : Integrable f μ) (hs : MeasurableSet[m] s) :
     ∫ x in s, condExpL1 hm μ f x ∂μ = ∫ x in s, f x ∂μ := by
   simp_rw [condExpL1_eq hf]
   rw [setIntegral_condExpL1CLM (hf.toL1 f) hs]
@@ -496,7 +518,7 @@ theorem condExpL1_sub (hf : Integrable f μ) (hg : Integrable g μ) :
     condExpL1 hm μ (f - g) = condExpL1 hm μ f - condExpL1 hm μ g :=
   setToFun_sub _ hf hg
 
-theorem condExpL1_of_aestronglyMeasurable' (hfm : AEStronglyMeasurable[m] f μ)
+theorem condExpL1_of_aestronglyMeasurable' [CompleteSpace F'] (hfm : AEStronglyMeasurable[m] f μ)
     (hfi : Integrable f μ) : condExpL1 hm μ f =ᵐ[μ] f := by
   rw [condExpL1_eq hfi]
   refine EventuallyEq.trans ?_ (Integrable.coeFn_toL1 hfi)
@@ -505,7 +527,7 @@ theorem condExpL1_of_aestronglyMeasurable' (hfm : AEStronglyMeasurable[m] f μ)
 
 theorem condExpL1_mono {E}
     [NormedAddCommGroup E] [PartialOrder E] [ClosedIciTopology E] [IsOrderedAddMonoid E]
-    [CompleteSpace E] [NormedSpace ℝ E] [IsOrderedModule ℝ E] {f g : α → E} (hf : Integrable f μ)
+    [NormedSpace ℝ E] [IsOrderedModule ℝ E] {f g : α → E} (hf : Integrable f μ)
     (hg : Integrable g μ) (hfg : f ≤ᵐ[μ] g) :
     condExpL1 hm μ f ≤ᵐ[μ] condExpL1 hm μ g := by
   rw [coeFn_le]

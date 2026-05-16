@@ -5,6 +5,7 @@ Authors: Rémy Degenne, Sébastien Gouëzel
 -/
 module
 
+public import Mathlib.Analysis.Normed.Operator.Bilinear
 public import Mathlib.Analysis.Normed.Operator.NNNorm
 public import Mathlib.MeasureTheory.Function.LpSeminorm.ChebyshevMarkov
 public import Mathlib.MeasureTheory.Function.LpSeminorm.CompareExp
@@ -774,7 +775,7 @@ theorem norm_compLp_le (L : E →SL[σ] F) (f : Lp E p μ) : ‖L.compLp f‖ �
 variable (μ p)
 
 /-- Composing `f : Lp E p μ` with `L : E →L[𝕜] F`, seen as a `𝕜`-linear map on `Lp E p μ`. -/
-def compLpₗ (L : E →SL[σ] F) : Lp E p μ →ₛₗ[σ] Lp F p μ where
+@[simps] def compLpₗ (L : E →SL[σ] F) : Lp E p μ →ₛₗ[σ] Lp F p μ where
   toFun f := L.compLp f
   map_add' f g := by
     ext1
@@ -814,6 +815,46 @@ theorem smul_compLpL [Fact (1 ≤ p)] {𝕜''} [NormedRing 𝕜''] [Module 𝕜'
 
 theorem norm_compLpL_le [Fact (1 ≤ p)] (L : E →SL[σ] F) : ‖L.compLpL p μ‖ ≤ ‖L‖ :=
   LinearMap.mkContinuous_norm_le _ (norm_nonneg _) _
+
+section Bilinear
+
+variable {F G : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+  [NormedAddCommGroup G] [NormedSpace 𝕜 G]
+
+variable (μ p) in
+/-- Given a continuous bilinear map `G → E → F`, construct the associated bilinear map
+`G → Lp E p μ → Lp F p μ`. -/
+@[simps] def compLpₗ₂ (B : G →L[𝕜] E →L[𝕜] F) : G →ₗ[𝕜] Lp E p μ →ₗ[𝕜] Lp F p μ where
+  toFun g := (B g).compLpₗ p μ
+  map_add' g h := by
+    ext f
+    filter_upwards [(B (g + h)).coeFn_compLp f, (B g).coeFn_compLp f, (B h).coeFn_compLp f,
+      Lp.coeFn_add ((B g).compLp f) ((B h).compLp f)] with x hx hg hh hadd
+    simp only [compLpₗ_apply, LinearMap.add_apply, hx, hadd]
+    simp only [map_add, add_apply, Pi.add_apply, hg, hh]
+  map_smul' c g := by
+    ext f
+    filter_upwards [(c • B g).coeFn_compLp f, (B g).coeFn_compLp f,
+      Lp.coeFn_smul c ((B g).compLp f)] with x hx hg hsmul
+    simp [hx, hsmul, hg]
+
+variable (μ p) in
+/-- Given a continuous bilinear map `G → E → F`, construct the associated continuous bilinear map
+`G → Lp E p μ → Lp F p μ`. -/
+def compLpL₂ [Fact (1 ≤ p)] (B : G →L[𝕜] E →L[𝕜] F) :
+    G →L[𝕜] Lp E p μ →L[𝕜] Lp F p μ :=
+  (B.compLpₗ₂ p μ).mkContinuous₂ ‖B‖ (fun c f ↦ by
+    simp only [compLpₗ₂_apply, compLpₗ_apply]
+    grw [norm_compLp_le, le_opNorm])
+
+@[simp] theorem compLpL₂_apply_apply [Fact (1 ≤ p)] (B : G →L[𝕜] E →L[𝕜] F) (g : G) (f : Lp E p μ) :
+    compLpL₂ p μ B g f = (B g).compLp f := rfl
+
+theorem norm_compLpL₂ [Fact (1 ≤ p)] (B : G →L[𝕜] E →L[𝕜] F) :
+    ‖B.compLpL₂ p μ‖ ≤ ‖B‖ :=
+  LinearMap.mkContinuous₂_norm_le _ (norm_nonneg _) _
+
+end Bilinear
 
 end ContinuousLinearMap
 
