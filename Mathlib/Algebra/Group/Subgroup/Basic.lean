@@ -316,6 +316,29 @@ instance botCharacteristic : Characteristic (⊥ : Subgroup G) :=
 instance topCharacteristic : Characteristic (⊤ : Subgroup G) :=
   characteristic_iff_map_le.mpr fun _ϕ => le_top
 
+attribute [local to_additive_dont_translate] MulAut
+
+/-- If `H` is a characteristic subgroup of `G`, then every automorphism of `G` induces an
+automorphism of `H`. -/
+@[to_additive (attr := simps!)
+  /-- If `H` is a characteristic additive subgroup of `G`, then every automorphism of `G` induces an
+  automorphism of `H`. -/]
+def _root_.MulAut.characteristic (H : Subgroup G) [H.Characteristic] : MulAut G →* MulAut H where
+  toFun φ :=
+    { toFun := fun h => ⟨φ h, characteristic_iff_le_comap.mp inferInstance φ h.2⟩
+      invFun := fun h => ⟨φ.symm h, characteristic_iff_le_comap.mp inferInstance φ.symm h.2⟩
+      left_inv h := Subtype.ext (φ.symm_apply_apply h)
+      right_inv h := Subtype.ext (φ.apply_symm_apply h)
+      map_mul' h k := Subtype.ext (map_mul φ (h : G) (k : G)) }
+  map_one' := rfl
+  map_mul' _ _ := rfl
+
+@[to_additive]
+instance characteristic_of_characteristic_of_characteristic [H.Characteristic]
+    {K : Subgroup H} [hK : K.Characteristic] : (K.map H.subtype).Characteristic := by
+  refine characteristic_iff_map_eq.2 fun φ => ?_
+  have := congr_arg (map H.subtype) <| characteristic_iff_map_eq.1 hK (MulAut.characteristic H φ)
+  simpa [Subgroup.map_map, MulAut.characteristic] using this
 
 variable (H)
 

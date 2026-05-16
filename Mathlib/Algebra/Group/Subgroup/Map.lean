@@ -127,6 +127,9 @@ theorem map_toSubmonoid (f : G →* G') (K : Subgroup G) :
 @[to_additive (attr := simp)]
 theorem mem_map {f : G →* N} {K : Subgroup G} {y : N} : y ∈ K.map f ↔ ∃ x ∈ K, f x = y := Iff.rfl
 
+@[to_additive (attr := simp)]
+theorem map_subtype_top : map H.subtype ⊤ = H := by ext; simp
+
 @[to_additive]
 theorem mem_map_of_mem (f : G →* N) {K : Subgroup G} {x : G} (hx : x ∈ K) : f x ∈ K.map f :=
   mem_image_of_mem f hx
