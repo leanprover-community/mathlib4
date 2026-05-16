@@ -5,6 +5,7 @@ Authors: Yury Kudryashov
 -/
 module
 
+public import Mathlib.Analysis.Analytic.Order
 public import Mathlib.Analysis.Analytic.Uniqueness
 public import Mathlib.Analysis.Calculus.DiffContOnCl
 public import Mathlib.Analysis.Calculus.DSlope
@@ -14,6 +15,7 @@ public import Mathlib.Analysis.Real.Cardinality
 public import Mathlib.MeasureTheory.Integral.CircleIntegral
 public import Mathlib.MeasureTheory.Integral.DivergenceTheorem
 public import Mathlib.MeasureTheory.Measure.Lebesgue.Complex
+import Mathlib.Algebra.Divisibility.Basic
 
 /-!
 # Cauchy integral formula
@@ -700,6 +702,55 @@ theorem analyticAt_iff_eventually_differentiableAt {f : ℂ → E} {c : ℂ} :
       intro z m
       exact (d z m).differentiableWithinAt
     exact h _ m
+
+open AnalyticAt
+
+lemma analyticOrderAt_deriv_of_pos {𝕜 : Type*} {E : Type*} [NontriviallyNormedField 𝕜] [CharZero 𝕜]
+  [NormedAddCommGroup E] [NormedSpace 𝕜 E] [CompleteSpace E] {f : 𝕜 → E} {z₀ : 𝕜}
+  (hf : AnalyticAt 𝕜 f z₀) {n : ℕ} (horder : analyticOrderAt f z₀ = n + 1) :
+    analyticOrderAt (deriv f) z₀ = (n : ℕ) := by
+  have ⟨g, hg, hg₀, hfg⟩ := (analyticOrderAt_eq_natCast hf).1 horder
+  refine (analyticOrderAt_eq_natCast hf.deriv).2 ?_
+  refine ⟨fun z ↦ (n + 1 : 𝕜) • g z + (z - z₀) • deriv g z, ?_, ?_, ?_⟩
+  · simpa using (fun_const_smul (c := (n + 1 : 𝕜)) (f := g) (x := z₀) hg).add
+      ((analyticAt_id.sub analyticAt_const).smul hg.deriv)
+  · have hn1 : (n + 1 : 𝕜) ≠ 0 := mod_cast (Nat.succ_ne_zero n)
+    simpa [sub_self] using (smul_ne_zero hn1 hg₀)
+  · obtain ⟨Ug, hUg, hUf⟩ := eventually_iff_exists_mem.mp hfg
+    obtain ⟨Ur, hUr, hgUr⟩ := exists_mem_nhds_analyticOnNhd hg
+    refine eventually_iff_exists_mem.2 ?_
+    have hU : interior (Ug ∩ Ur) ∈ 𝓝 z₀ :=
+      isOpen_interior.mem_nhds ((mem_interior_iff_mem_nhds).2 (inter_mem hUg hUr))
+    refine ⟨interior (Ug ∩ Ur), hU, fun z hz => ?_⟩
+    trans deriv (fun z : 𝕜 ↦ (z - z₀) ^ (n + 1) • g z) z
+    · rw [EventuallyEq.deriv_eq <| eventually_iff_exists_mem.2 ?_]
+      refine ⟨interior (Ug ∩ Ur), isOpen_interior.mem_nhds hz, fun y hy =>
+        hUf y (interior_subset hy).1⟩
+    · rw [deriv_fun_smul (by simp) ((hgUr z (interior_subset hz).2).differentiableAt)]
+      simp only [differentiableAt_fun_id, differentiableAt_const, DifferentiableAt.fun_sub,
+        deriv_fun_pow, Nat.cast_add, Nat.cast_one, add_tsub_cancel_right, deriv_fun_sub, deriv_id'',
+        deriv_const', sub_zero, mul_one, smul_add]
+      have hmul : (n + 1 : 𝕜) * (z - z₀) ^ n = (z - z₀) ^ n * (n + 1 : 𝕜) := by simp [mul_comm]
+      rw [hmul, mul_smul, pow_succ, mul_smul, ← smul_add]
+      simp only [smul_add]
+      grind only
+
+lemma analyticOrderAt_iterated_deriv {𝕜 : Type*} {E : Type*} [NontriviallyNormedField 𝕜]
+  [NormedAddCommGroup E] [NormedSpace 𝕜 E] [CompleteSpace E] {f : 𝕜 → E} {z₀ : 𝕜}
+  (hf : AnalyticAt 𝕜 f z₀) (k n : ℕ) [CharZero 𝕜] :
+  n = analyticOrderAt f z₀ → n ≠ 0 → k ≤ n → analyticOrderAt (deriv^[k] f) z₀ = (n - k : ℕ) := by
+  induction k generalizing n with
+  | zero => exact fun Hn Hpos Hk ↦ Hn.symm
+  | succ n' hk =>
+    intro Hn Hpos Hk
+    rw [Function.iterate_succ']
+    have horder : analyticOrderAt (deriv^[n'] f) z₀ = (n - n'.succ) + 1 := by
+      refine (hk n Hn Hpos (by lia)).trans ?_
+      have : (n - n'.succ) + 1 = n - n' := by grind
+      rw [← this]
+      simp
+    simpa using
+      (analyticOrderAt_deriv_of_pos (hf := iterated_deriv hf n') (n := n - n'.succ) horder)
 
 end analyticity
 
