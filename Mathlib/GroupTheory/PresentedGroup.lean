@@ -200,25 +200,27 @@ lemma coprodOf_kills_rels : ∀ r ∈ FreeGroup.map Sum.inl '' rels₁ ∪ FreeG
   · simp [lift_coprodOf_inl_eq_inl_mk, one_of_mem hr]
   · simp [lift_coprodOf_inr_eq_inr_mk, one_of_mem hr]
 
+open Subgroup in
+protected def map {α β : Type*} (f : FreeGroup α →* FreeGroup β)
+    {s : Set (FreeGroup α)} {t : Set (FreeGroup β)} (hst : s.MapsTo f t) :
+    PresentedGroup s →* PresentedGroup t :=
+  QuotientGroup.map _ _ f
+    ((comap_normalClosure_image_ge s f).trans
+    (comap_mono (normalClosure_mono hst.image_subset)))
+
 /--
 The free product (Coproduct) of presentations is isomorphic to the presentation of the union over
 the `FreeGroup (α ⊕ β)`
 -/
 def coprodPresentations :
-PresentedGroup (FreeGroup.map (Sum.inl) '' rels₁ ∪ FreeGroup.map (Sum.inr) '' rels₂) ≃*
-    Monoid.Coprod (PresentedGroup rels₁) (PresentedGroup rels₂) := by
-  let rels := FreeGroup.map (Sum.inl) '' rels₁ ∪ FreeGroup.map (Sum.inr) '' rels₂
-  refine MonoidHom.toMulEquiv
+    PresentedGroup (FreeGroup.map (Sum.inl) '' rels₁ ∪ FreeGroup.map (Sum.inr) '' rels₂) ≃*
+    Monoid.Coprod (PresentedGroup rels₁) (PresentedGroup rels₂) :=
+  MonoidHom.toMulEquiv
     (toGroup (coprodOf_kills_rels rels₁ rels₂))
     (Monoid.Coprod.lift
-      (toGroup
-        (map_in_rels_eq_one Sum.inl rels rels₁ (by intro r hr; exact Or.inl ⟨r, hr, rfl⟩)))
-      (toGroup
-        (map_in_rels_eq_one Sum.inr rels rels₂ (by intro r hr; exact Or.inr ⟨r, hr, rfl⟩))))
-    ?_ ?_
-  · apply ext
-    rintro (a | b) <;> simp [toGroup.of, coprodOf]
-  · apply Monoid.Coprod.hom_ext <;> ext x <;>
-    simp [toGroup.of, coprodOf]
+      (PresentedGroup.map (FreeGroup.map Sum.inl) (by intro r hr; exact Or.inl ⟨r, hr, rfl⟩))
+      (PresentedGroup.map (FreeGroup.map Sum.inr) (by intro r hr; exact Or.inr ⟨r, hr, rfl⟩)))
+    (by apply ext; rintro (a | b) <;> simp [coprodOf] <;> rfl)
+    (by apply Monoid.Coprod.hom_ext <;> ext x <;> simp [coprodOf] <;> rfl)
 end Coprod
 end PresentedGroup
