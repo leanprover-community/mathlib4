@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johannes Hölzl, Patrick Massot, Casper Putz, Anne Baanen
+Authors: Johannes Hölzl, Patrick Massot, Casper Putz, Anne Baanen, Snir Broshi
 -/
 module
 
@@ -15,9 +15,11 @@ to an `m'` by `n'` matrix, as long as `m ≃ m'` and `n ≃ n'`.
 
 ## Main definitions
 
+* `Matrix.reindexAddEquiv R`: `Matrix.reindex` as an `AddEquiv` between `R`-matrices.
+* `Matrix.reindexRingEquiv R`: `Matrix.reindex` as a `RingEquiv` between `R`-matrices.
 * `Matrix.reindexLinearEquiv R A`: `Matrix.reindex` is an `R`-linear equivalence between
   `A`-matrices.
-* `Matrix.reindexAlgEquiv R`: `Matrix.reindex` is an `R`-algebra equivalence between `R`-matrices.
+* `Matrix.reindexAlgEquiv R A`: `Matrix.reindex` is an `R`-algebra equivalence between `A`-matrices.
 
 ## Tags
 
@@ -35,6 +37,81 @@ open Equiv Matrix
 variable {l m n o : Type*} {l' m' n' o' : Type*} {m'' n'' : Type*}
 variable (R A : Type*)
 
+section Add
+
+variable [Add R]
+
+/-- `Matrix.reindex` as an `AddEquiv` between `R`-matrices. -/
+def reindexAddEquiv (eₘ : m ≃ m') (eₙ : n ≃ n') : Matrix m n R ≃+ Matrix m' n' R where
+  __ := reindex eₘ eₙ
+  map_add' _ _ := rfl
+
+@[simp]
+theorem coe_reindexAddEquiv (eₘ : m ≃ m') (eₙ : n ≃ n') :
+    ⇑(reindexAddEquiv R eₘ eₙ) = reindex eₘ eₙ :=
+  rfl
+
+@[simp]
+theorem toEquiv_reindexAddEquiv (eₘ : m ≃ m') (eₙ : n ≃ n') :
+    (reindexAddEquiv R eₘ eₙ : Matrix m n R ≃ Matrix m' n' R) = reindex eₘ eₙ :=
+  rfl
+
+@[simp]
+theorem symm_reindexAddEquiv (eₘ : m ≃ m') (eₙ : n ≃ n') :
+    (reindexAddEquiv R eₘ eₙ).symm = reindexAddEquiv R eₘ.symm eₙ.symm :=
+  rfl
+
+@[simp]
+theorem reindexAddEquiv_refl_refl : reindexAddEquiv R (.refl m) (.refl n) = .refl _ :=
+  rfl
+
+@[simp]
+theorem reindexAddEquiv_trans_reindexAddEquiv (e₁ : m ≃ m') (e₂ : n ≃ n') (e₁' : m' ≃ m'')
+    (e₂' : n' ≃ n'') :
+    .trans (reindexAddEquiv R e₁ e₂) (reindexAddEquiv R e₁' e₂') =
+      reindexAddEquiv R (.trans e₁ e₁') (.trans e₂ e₂') :=
+  rfl
+
+end Add
+
+section Mul
+
+variable [Fintype m] [Fintype n] [Fintype o] [Mul R] [AddCommMonoid R]
+
+/-- `Matrix.reindex` as a `RingEquiv` between `R`-matrices. -/
+def reindexRingEquiv (e : m ≃ n) : Matrix m m R ≃+* Matrix n n R where
+  __ := reindexAddEquiv R e e
+  map_mul' A B := submatrix_mul_equiv A B .. |>.symm
+
+@[simp]
+theorem coe_reindexRingEquiv (e : m ≃ n) : ⇑(reindexRingEquiv R e) = reindex e e :=
+  rfl
+
+@[simp]
+theorem toEquiv_reindexRingEquiv (e : m ≃ n) :
+    (reindexRingEquiv R e : Matrix m m R ≃ Matrix n n R) = reindex e e :=
+  rfl
+
+@[simp]
+theorem toAddEquiv_reindexRingEquiv (e : m ≃ n) : reindexRingEquiv R e = reindexAddEquiv R e e :=
+  rfl
+
+@[simp]
+theorem symm_reindexRingEquiv (e : m ≃ n) :
+    (reindexRingEquiv R e).symm = reindexRingEquiv R e.symm :=
+  rfl
+
+@[simp]
+theorem reindexRingEquiv_refl_refl : reindexRingEquiv R (.refl n) = .refl _ :=
+  rfl
+
+@[simp]
+theorem reindexRingEquiv_trans_reindexRingEquiv (e : m ≃ n) (e' : n ≃ o) :
+    .trans (reindexRingEquiv R e) (reindexRingEquiv R e') = reindexRingEquiv R (.trans e e') :=
+  rfl
+
+end Mul
+
 section AddCommMonoid
 
 variable [Semiring R] [AddCommMonoid A] [Module R A]
@@ -42,46 +119,65 @@ variable [Semiring R] [AddCommMonoid A] [Module R A]
 /-- The natural map that reindexes a matrix's rows and columns with equivalent types,
 `Matrix.reindex`, is a linear equivalence. -/
 def reindexLinearEquiv (eₘ : m ≃ m') (eₙ : n ≃ n') : Matrix m n A ≃ₗ[R] Matrix m' n' A where
-  __ := reindex eₘ eₙ
-  map_add' _ _ := rfl
+  __ := reindexAddEquiv A eₘ eₙ
   map_smul' _ _ := rfl
 
 @[simp]
-theorem reindexLinearEquiv_apply (eₘ : m ≃ m') (eₙ : n ≃ n') (M : Matrix m n A) :
-    reindexLinearEquiv R A eₘ eₙ M = reindex eₘ eₙ M :=
+theorem coe_reindexLinearEquiv (eₘ : m ≃ m') (eₙ : n ≃ n') :
+    ⇑(reindexLinearEquiv R A eₘ eₙ) = reindex eₘ eₙ :=
   rfl
 
 @[simp]
-theorem reindexLinearEquiv_symm (eₘ : m ≃ m') (eₙ : n ≃ n') :
+theorem toEquiv_reindexLinearEquiv (eₘ : m ≃ m') (eₙ : n ≃ n') :
+    (reindexLinearEquiv R A eₘ eₙ : Matrix m n A ≃ Matrix m' n' A) = reindex eₘ eₙ :=
+  rfl
+
+@[simp]
+theorem toAddEquiv_reindexLinearEquiv (eₘ : m ≃ m') (eₙ : n ≃ n') :
+    reindexLinearEquiv R A eₘ eₙ = reindexAddEquiv A eₘ eₙ :=
+  rfl
+
+@[deprecated "Use `by simp` instead." (since := "2026-05-13")]
+theorem reindexLinearEquiv_apply (eₘ : m ≃ m') (eₙ : n ≃ n') (M : Matrix m n A) :
+    reindexLinearEquiv R A eₘ eₙ M = reindex eₘ eₙ M := by
+  simp
+
+@[simp]
+theorem symm_reindexLinearEquiv (eₘ : m ≃ m') (eₙ : n ≃ n') :
     (reindexLinearEquiv R A eₘ eₙ).symm = reindexLinearEquiv R A eₘ.symm eₙ.symm :=
   rfl
+
+@[deprecated (since := "2026-05-15")] alias reindexLinearEquiv_symm := symm_reindexLinearEquiv
 
 @[simp]
 theorem reindexLinearEquiv_refl_refl :
     reindexLinearEquiv R A (Equiv.refl m) (Equiv.refl n) = LinearEquiv.refl R _ :=
-  LinearEquiv.ext fun _ => rfl
-
-theorem reindexLinearEquiv_trans (e₁ : m ≃ m') (e₂ : n ≃ n') (e₁' : m' ≃ m'') (e₂' : n' ≃ n'') :
-    (reindexLinearEquiv R A e₁ e₂).trans (reindexLinearEquiv R A e₁' e₂') =
-      (reindexLinearEquiv R A (e₁.trans e₁') (e₂.trans e₂') : _ ≃ₗ[R] _) := by
-  ext
   rfl
+
+@[simp]
+theorem reindexLinearEquiv_trans_reindexLinearEquiv (e₁ : m ≃ m') (e₂ : n ≃ n') (e₁' : m' ≃ m'')
+    (e₂' : n' ≃ n'') :
+    (reindexLinearEquiv R A e₁ e₂).trans (reindexLinearEquiv R A e₁' e₂') =
+      (reindexLinearEquiv R A (e₁.trans e₁') (e₂.trans e₂') : _ ≃ₗ[R] _) :=
+  rfl
+
+@[deprecated (since := "2026-05-15")]
+alias reindexLinearEquiv_trans := reindexLinearEquiv_trans_reindexLinearEquiv
 
 theorem reindexLinearEquiv_comp (e₁ : m ≃ m') (e₂ : n ≃ n') (e₁' : m' ≃ m'') (e₂' : n' ≃ n'') :
     reindexLinearEquiv R A e₁' e₂' ∘ reindexLinearEquiv R A e₁ e₂ =
-      reindexLinearEquiv R A (e₁.trans e₁') (e₂.trans e₂') := by
-  rw [← reindexLinearEquiv_trans]
+      reindexLinearEquiv R A (e₁.trans e₁') (e₂.trans e₂') :=
   rfl
 
 theorem reindexLinearEquiv_comp_apply (e₁ : m ≃ m') (e₂ : n ≃ n') (e₁' : m' ≃ m'') (e₂' : n' ≃ n'')
     (M : Matrix m n A) :
     (reindexLinearEquiv R A e₁' e₂') (reindexLinearEquiv R A e₁ e₂ M) =
       reindexLinearEquiv R A (e₁.trans e₁') (e₂.trans e₂') M :=
-  submatrix_submatrix _ _ _ _ _
+  rfl
 
 theorem reindexLinearEquiv_one [DecidableEq m] [DecidableEq m'] [One A] (e : m ≃ m') :
-    reindexLinearEquiv R A e e (1 : Matrix m m A) = 1 :=
-  submatrix_one_equiv e.symm
+    reindexLinearEquiv R A e e (1 : Matrix m m A) = 1 := by
+  simp
 
 end AddCommMonoid
 
@@ -92,8 +188,8 @@ variable [Semiring R] [Semiring A] [Module R A]
 theorem reindexLinearEquiv_mul [Fintype n] [Fintype n'] (eₘ : m ≃ m') (eₙ : n ≃ n') (eₒ : o ≃ o')
     (M : Matrix m n A) (N : Matrix n o A) :
     reindexLinearEquiv R A eₘ eₙ M * reindexLinearEquiv R A eₙ eₒ N =
-      reindexLinearEquiv R A eₘ eₒ (M * N) :=
-  submatrix_mul_equiv M N _ _ _
+      reindexLinearEquiv R A eₘ eₒ (M * N) := by
+  simp
 
 theorem mul_reindexLinearEquiv_one [Fintype n] [DecidableEq o] (e₁ : o ≃ n) (e₂ : o ≃ n')
     (M : Matrix m n A) :
@@ -106,31 +202,59 @@ end Semiring
 
 section Algebra
 
-variable [CommSemiring R] [Fintype n] [Fintype m] [DecidableEq m] [DecidableEq n]
-  [Semiring A] [Algebra R A]
+variable [CommSemiring R] [Fintype n] [Fintype m] [Fintype o] [DecidableEq m] [DecidableEq n]
+  [DecidableEq o] [Semiring A] [Algebra R A]
 
 /-- For square matrices with coefficients in an algebra over a commutative semiring, the natural
 map that reindexes a matrix's rows and columns with equivalent types,
 `Matrix.reindex`, is an equivalence of algebras. -/
 def reindexAlgEquiv (e : m ≃ n) : Matrix m m A ≃ₐ[R] Matrix n n A where
-  __ := reindexLinearEquiv A A e e
-  map_mul' a b := reindexLinearEquiv_mul A A e e e a b |>.symm
-  commutes' _ := by simp [algebraMap, Algebra.algebraMap]
+  __ := reindexRingEquiv A e
+  commutes' _ := by simp [algebraMap]
 
 @[simp]
-theorem reindexAlgEquiv_apply (e : m ≃ n) (M : Matrix m m A) :
-    reindexAlgEquiv R A e M = reindex e e M :=
+theorem coe_reindexAlgEquiv (e : m ≃ n) : ⇑(reindexAlgEquiv R A e) = reindex e e :=
   rfl
 
 @[simp]
-theorem reindexAlgEquiv_symm (e : m ≃ n) : (reindexAlgEquiv R A e).symm =
+theorem toEquiv_reindexAlgEquiv (e : m ≃ n) :
+    (reindexAlgEquiv R A e : Matrix m m A ≃ Matrix n n A) = reindex e e :=
+  rfl
+
+@[simp]
+theorem toAddEquiv_reindexAlgEquiv (e : m ≃ n) : reindexAlgEquiv R A e = reindexAddEquiv A e e :=
+  rfl
+
+@[simp]
+theorem toLinearEquiv_reindexAlgEquiv (e : m ≃ n) :
+    reindexAlgEquiv R A e = reindexLinearEquiv R A e e :=
+  rfl
+
+@[deprecated "Use `by simp` instead." (since := "2026-05-13")]
+theorem reindexAlgEquiv_apply (e : m ≃ n) (M : Matrix m m A) :
+    reindexAlgEquiv R A e M = reindex e e M := by
+  simp
+
+@[simp]
+theorem symm_reindexAlgEquiv (e : m ≃ n) : (reindexAlgEquiv R A e).symm =
     reindexAlgEquiv R A e.symm :=
   rfl
 
+@[deprecated (since := "2026-05-15")] alias reindexAlgEquiv_symm := symm_reindexAlgEquiv
+
 @[simp]
 theorem reindexAlgEquiv_refl : reindexAlgEquiv R A (Equiv.refl m) = AlgEquiv.refl :=
-  AlgEquiv.ext fun _ => rfl
+  rfl
 
+@[simp]
+theorem reindexAlgEquiv_trans_reindexAlgEquiv (e : m ≃ n) (e' : n ≃ o) :
+    .trans (reindexAlgEquiv R A e) (reindexAlgEquiv R A e') = reindexAlgEquiv R A (.trans e e') :=
+  rfl
+
+@[deprecated (since := "2026-05-15")]
+alias reindexAlgEquiv_trans := reindexAlgEquiv_trans_reindexAlgEquiv
+
+@[deprecated map_mul (since := "2026-05-13")]
 theorem reindexAlgEquiv_mul (e : m ≃ n) (M : Matrix m m A) (N : Matrix m m A) :
     reindexAlgEquiv R A e (M * N) = reindexAlgEquiv R A e M * reindexAlgEquiv R A e N :=
   map_mul ..
