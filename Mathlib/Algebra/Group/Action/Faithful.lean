@@ -6,6 +6,7 @@ Authors: Chris Hughes, Yury Kudryashov
 module
 
 public import Mathlib.Algebra.Group.Action.Defs
+import Mathlib.Tactic.SimpRw
 
 /-!
 # Faithful group actions
