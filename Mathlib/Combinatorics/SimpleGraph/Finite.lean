@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Combinatorics.SimpleGraph.Maps
 public import Mathlib.Data.Finset.Max
+public import Mathlib.Data.Set.Card
 public import Mathlib.Data.Sym.Card
 
 /-!
@@ -480,7 +481,7 @@ lemma minDegree_le_maxDegree [DecidableRel G.Adj] : G.minDegree ≤ G.maxDegree 
 
 theorem IsRegularOfDegree.minDegree_eq [Nonempty V] [DecidableRel G.Adj] {d : ℕ}
     (h : G.IsRegularOfDegree d) : G.minDegree = d := by
-  simp [minDegree, h.degree_eq, Finset.image_const]
+  simp [minDegree, h.degree_eq, Finset.image_const, -ENat.some_eq_coe]
 
 @[simp]
 lemma minDegree_bot_eq_zero : (⊥ : SimpleGraph V).minDegree = 0 :=
@@ -640,6 +641,12 @@ theorem card_edgeFinset_map (f : V ↪ W) (G : SimpleGraph V) [DecidableRel G.Ad
     #(G.map f).edgeFinset = #G.edgeFinset := by
   rw [edgeFinset_map]
   exact G.edgeFinset.card_map f.sym2Map
+
+theorem degree_map_apply {V W : Type*} (G : SimpleGraph V) (f : V ↪ W) (v : V)
+    [Fintype <| G.neighborSet v] [Fintype <| G.map f |>.neighborSet <| f v] :
+    (G.map f).degree (f v) = G.degree v := by
+  simp_rw [← card_neighborSet_eq_degree, ← Set.toFinset_card, ← Set.ncard_eq_toFinset_card',
+    ← Set.ncard_image_of_injective _ f.injective, neighborSet_map]
 
 end Map
 

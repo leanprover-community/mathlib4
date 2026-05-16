@@ -284,6 +284,28 @@ theorem Colorable.of_hom {V' : Type*} {G' : SimpleGraph V'} (f : G →g G') {n :
     (h : G'.Colorable n) : G.Colorable n :=
   ⟨(h.toColoring (by simp)).comp f⟩
 
+/-- Given an `ℕ`-coloring where only colors below `n` are used, convert it to an `n`-coloring -/
+@[simps!]
+def Coloring.natToFin {n : ℕ} (C : G.Coloring ℕ) (h : ∀ v, C v < n) : G.Coloring <| Fin n :=
+  .mk (fun v ↦ ⟨C v, h v⟩) <| by grind [C.valid]
+
+/-- Given a `k`-coloring where only colors below `n` are used, convert it to an `n`-coloring -/
+@[simps!]
+def Coloring.castLT {k n : ℕ} (C : G.Coloring <| Fin k) (h : ∀ v, C v < n) : G.Coloring <| Fin n :=
+  .mk (fun v ↦ C v |>.castLT <| h v) <| by grind [Fin.castLT, C.valid]
+
+/-- Given an `α`-coloring `C`, convert it to a coloring where the only available colors are from the
+range of `C`, possibly producing a coloring with fewer colors -/
+@[simps!]
+def Coloring.attach (C : G.Coloring α) : G.Coloring <| Set.range C :=
+  .mk (Set.rangeFactorization C) <| by grind [Set.rangeFactorization, C.valid]
+
+variable (G) in
+/-- Color a graph using an embedding of its vertices to colors -/
+@[simps!]
+def coloringOfEmbedding {α : Type*} (f : V ↪ α) : G.Coloring α :=
+  G.recolorOfEmbedding f G.selfColoring
+
 theorem colorable_iff_exists_bdd_nat_coloring (n : ℕ) :
     G.Colorable n ↔ ∃ C : G.Coloring ℕ, ∀ v, C v < n := by
   constructor
