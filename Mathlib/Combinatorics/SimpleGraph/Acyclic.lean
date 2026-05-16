@@ -195,8 +195,7 @@ theorem IsAcyclic.path_unique {G : SimpleGraph V} (h : G.IsAcyclic) {v w : V} (p
   rw [Subtype.mk.injEq]
   induction p with
   | nil =>
-    cases (Walk.isPath_iff_eq_nil _).mp hq
-    rfl
+    exact isPath_iff_eq_nil.mp hq |>.symm
   | cons ph p ih =>
     rw [isAcyclic_iff_forall_adj_isBridge] at h
     specialize h ph
