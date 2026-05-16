@@ -6,7 +6,6 @@ Authors: Kenny Lau, Emily Riehl, Wrenna Robson
 module
 
 public import Mathlib.Logic.Equiv.Basic
-public import Mathlib.Logic.Function.Basic
 
 /-!
 # Equivalences involving `Bool`
