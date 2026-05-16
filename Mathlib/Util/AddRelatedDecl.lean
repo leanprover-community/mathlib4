@@ -54,6 +54,8 @@ Arguments:
   to apply `simp` twice to the current declaration, but that causes no issues.
 * `docstringPrefix?` is prepended to the doc-string of `src` to form the doc-string of `tgt`.
   If it is `none`, only the doc-string of `src` is used.
+* `postAddDecl?` is run after adding the declaration and inferring the `defeq` attribute, but before
+  applying the requested attributes.
 * When `hoverInfo := true`, the generated constant will be shown as the hover information on `ref`.
   Warning: As a result, the original doc-string of `ref` will not be visible,
   and go-to-def on `ref` will not go to the definition of `ref`.
@@ -62,6 +64,7 @@ def addRelatedDecl (src tgt : Name) (ref : Syntax)
     (attrs : TSyntax ``optAttrArg)
     (construct : Expr → List Name → MetaM (Expr × List Name))
     (docstringPrefix? : Option String := none)
+    (postAddDecl? : Option (Name → MetaM Unit) := none)
     (hoverInfo : Bool := false) :
     MetaM Unit := do
   addDeclarationRangesFromSyntax tgt (← getRef) ref
@@ -80,6 +83,8 @@ def addRelatedDecl (src tgt : Name) (ref : Syntax)
   | some doc, none | none, some doc => addDocStringCore tgt doc
   | some docPre, some docPost => addDocStringCore tgt s!"{docPre}\n\n---\n\n{docPost}"
   inferDefEqAttr tgt
+  if let some postAddDecl := postAddDecl? then
+    postAddDecl tgt
   Term.TermElabM.run' do
     let attrs ← elabOptAttrArg attrs
     Term.applyAttributes src attrs
