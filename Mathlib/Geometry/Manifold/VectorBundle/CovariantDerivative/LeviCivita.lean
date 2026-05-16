@@ -172,42 +172,42 @@ section
 variable (X Y Z) in
 /-- Auxiliary quantity used in the uniqueness proof of the Levi-Civita connection:
 If `∇` is a Levi-Civita connection on `TM`, then
-`⟨∇ X Y, Z⟩ = leviCivitaRhs I X Y Z` for all smooth vector fields `X`, `Y` and `Z`. -/
-noncomputable def leviCivitaRhs (x : M) : ℝ :=
+`⟨∇ X Y, Z⟩ = leviCivitaAux I X Y Z` for all smooth vector fields `X`, `Y` and `Z`. -/
+noncomputable def leviCivitaAux (x : M) : ℝ :=
   (mvfderiv% ⟪Y, Z⟫ x (X x) + mvfderiv% ⟪Z, X⟫ x (Y x) - mvfderiv% ⟪X, Y⟫ x (Z x)
   - ⟪Y ,(VectorField.mlieBracket I X Z)⟫ x
   - ⟪Z, (VectorField.mlieBracket I Y X)⟫ x
   + ⟪X, (VectorField.mlieBracket I Z Y)⟫ x) / 2
 
-theorem leviCivitaRhs_tensorial₁ [FiniteDimensional ℝ E]
+theorem leviCivitaAux_tensorial₁ [FiniteDimensional ℝ E]
     {Y : Π x : M, TangentSpace I x} (x : M) (hY : MDiffAt (T% Y) x) {Z : Π x, TangentSpace I x}
     (hZ : MDiffAt (T% Z) x) :
-    TensorialAt I E (leviCivitaRhs I · Y Z x) x where
+    TensorialAt I E (leviCivitaAux I · Y Z x) x where
   smul hf hX := by
-    simp (disch := fun_prop) [leviCivitaRhs,
+    simp (disch := fun_prop) [leviCivitaAux,
       mvfderiv_fun_mul,
       mlieBracket_smul_left, mlieBracket_smul_right,
       inner_add_right, inner_smul_left, inner_smul_right, real_inner_comm]
     ring
   add hX₁ hX₂ := by
-    simp (disch := fun_prop) [leviCivitaRhs,
+    simp (disch := fun_prop) [leviCivitaAux,
       mlieBracket_add_right, mlieBracket_add_left,
       mvfderiv_fun_add,
       inner_add_left, inner_add_right]
     ring
 
-theorem leviCivitaRhs_tensorial₂ [FiniteDimensional ℝ E]
+theorem leviCivitaAux_tensorial₂ [FiniteDimensional ℝ E]
     {Y : Π x : M, TangentSpace I x} (x : M) (hY : MDiffAt (T% Y) x) {X : Π x, TangentSpace I x}
     (hX : MDiffAt (T% X) x) :
-    TensorialAt I E (leviCivitaRhs I X Y · x) x where
+    TensorialAt I E (leviCivitaAux I X Y · x) x where
   smul hf hZ := by
-    simp (disch := fun_prop) [leviCivitaRhs,
+    simp (disch := fun_prop) [leviCivitaAux,
       mlieBracket_smul_right, mlieBracket_smul_left,
       mvfderiv_fun_mul,
       inner_smul_left, inner_smul_right, inner_add_right, real_inner_comm]
     ring
   add hZ₁ hZ₂ := by
-    simp (disch := fun_prop) [leviCivitaRhs,
+    simp (disch := fun_prop) [leviCivitaAux,
       mlieBracket_add_right, mlieBracket_add_left,
       mvfderiv_fun_add,
       inner_add_left, inner_add_right]
@@ -215,19 +215,19 @@ theorem leviCivitaRhs_tensorial₂ [FiniteDimensional ℝ E]
 
 open scoped Classical in
 /-- Auxiliary definition for the definition of the Levi-Civita connection:
-this the right hand side `leviCivitaRhs`, as a `(2,0)`-tensor ?! -/
+this the right hand side `leviCivitaAux`, as a `(2,0)`-tensor ?! -/
 noncomputable def lcAux₀ [FiniteDimensional ℝ E]
     {Y : Π x : M, TangentSpace I x} (x : M) (hY : MDiffAt (T% Y) x) :
     TangentSpace I x →L[ℝ] TangentSpace I x →L[ℝ] ℝ :=
   TensorialAt.mkHom₂ _ (x := x)
-    (fun _Z hZ ↦ leviCivitaRhs_tensorial₁ _ _ hY hZ)
-    (fun _X hX ↦ leviCivitaRhs_tensorial₂ _ _ hY hX)
+    (fun _Z hZ ↦ leviCivitaAux_tensorial₁ _ _ hY hZ)
+    (fun _X hX ↦ leviCivitaAux_tensorial₂ _ _ hY hX)
 
 theorem lcAux₀_apply [FiniteDimensional ℝ E] {x : M}
     {X : Π x : M, TangentSpace I x} (hX : MDiffAt (T% X) x)
     {Y : Π x : M, TangentSpace I x} (hY : MDiffAt (T% Y) x)
     {Z : Π x : M, TangentSpace I x} (hZ : MDiffAt (T% Z) x) :
-    lcAux₀ I x hY (X x) (Z x) = leviCivitaRhs I X Y Z x := by
+    lcAux₀ I x hY (X x) (Z x) = leviCivitaAux I X Y Z x := by
   unfold lcAux₀
   rw [TensorialAt.mkHom₂_apply _ _ hX hZ]
 
@@ -249,7 +249,7 @@ theorem lcAux₁_apply [FiniteDimensional ℝ E] {x : M}
     {X : Π x : M, TangentSpace I x} (hX : MDiffAt (T% X) x)
     {Y : Π x : M, TangentSpace I x} (hY : MDiffAt (T% Y) x)
     {Z : Π x : M, TangentSpace I x} (hZ : MDiffAt (T% Z) x) :
-    inner ℝ (lcAux₁ I x hY (X x)) (Z x) = leviCivitaRhs I X Y Z x := by
+    inner ℝ (lcAux₁ I x hY (X x)) (Z x) = leviCivitaAux I X Y Z x := by
   simpa [lcAux₁] using lcAux₀_apply I hX hY hZ
 
 open scoped Classical in
@@ -263,7 +263,7 @@ theorem lcAux_apply [FiniteDimensional ℝ E] {x : M}
     {X : Π x : M, TangentSpace I x} (hX : MDiffAt (T% X) x)
     {Y : Π x : M, TangentSpace I x} (hY : MDiffAt (T% Y) x)
     {Z : Π x : M, TangentSpace I x} (hZ : MDiffAt (T% Z) x) :
-    inner ℝ (lcAux I Y x (X x)) (Z x) = leviCivitaRhs I X Y Z x := by
+    inner ℝ (lcAux I Y x (X x)) (Z x) = leviCivitaAux I X Y Z x := by
   simpa [lcAux, dif_pos hY] using lcAux₁_apply I hX hY hZ
 
 set_option backward.isDefEq.respectTransparency false in
@@ -273,7 +273,7 @@ lemma isCovariantDerivativeOn_lcAux [FiniteDimensional ℝ E] :
     apply injective_eval_vectorField; ext X hX
     apply injective_inner_vectorField; ext Z hZ
     simp (disch := fun_prop) [lcAux, dif_pos, TensorialAt.mkHom₂_apply, lcAux₁, lcAux₀,
-      leviCivitaRhs, mvfderiv_fun_add,
+      leviCivitaAux, mvfderiv_fun_add,
       mlieBracket_add_left, mlieBracket_add_right,
       inner_add_left, inner_add_right]
     ring
@@ -281,7 +281,7 @@ lemma isCovariantDerivativeOn_lcAux [FiniteDimensional ℝ E] :
     apply injective_eval_vectorField; ext X hX
     apply injective_inner_vectorField; ext Z hZ
     simp (disch := fun_prop) [lcAux, dif_pos, lcAux₁, lcAux₀, TensorialAt.mkHom₂_apply,
-      leviCivitaRhs, mvfderiv_fun_mul,
+      leviCivitaAux, mvfderiv_fun_mul,
       mlieBracket_smul_left, mlieBracket_smul_right,
       inner_add_left, inner_add_right, inner_smul_left, inner_smul_right, real_inner_comm]
     ring
