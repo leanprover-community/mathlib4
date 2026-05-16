@@ -207,43 +207,55 @@ theorem torsion.isTorsion : IsTorsion <| torsion G := fun ⟨x, n, npos, hn⟩ =
       rw [_root_.mul_one, SubmonoidClass.coe_pow, Subtype.coe_mk,
         (isPeriodicPt_mul_iff_pow_eq_one _).mp hn]⟩
 
-variable (G) (p : ℕ) [hp : Fact p.Prime]
+variable (G) (p : ℕ)
 
-/-- The `p`-primary component is the submonoid of elements with order prime-power of `p`. -/
-@[to_additive (attr := simps)
-      /-- The `p`-primary component is the submonoid of elements with additive
-      order prime-power of `p`. -/]
+/-- The `p`-primary component is the submonoid of elements `g` such that `g ^ p ^ k = 1`
+for some `k`. For prime `p`, these are exactly the elements of `p`-power order. -/
+@[to_additive
+      /-- The additive `p`-primary component is the submonoid of elements `g` such that
+      `p ^ k • g = 0` for some `k`. For prime `p`, these are exactly the elements of additive
+      `p`-power order. -/]
 def primaryComponent : Submonoid G where
-  carrier := { g | ∃ n : ℕ, orderOf g = p ^ n }
-  one_mem' := ⟨0, by rw [pow_zero, orderOf_one]⟩
-  mul_mem' hg₁ hg₂ :=
-    exists_orderOf_eq_prime_pow_iff.mpr <| by
-      obtain ⟨m, hm⟩ := exists_orderOf_eq_prime_pow_iff.mp hg₁
-      obtain ⟨n, hn⟩ := exists_orderOf_eq_prime_pow_iff.mp hg₂
-      exact
-        ⟨m + n, by
-          rw [mul_pow, pow_add, pow_mul, hm, one_pow, Monoid.one_mul, mul_comm, pow_mul, hn,
-            one_pow]⟩
+  carrier := { g | ∃ k : ℕ, g ^ p ^ k = 1 }
+  one_mem' := ⟨0, by simp⟩
+  mul_mem' := fun {a b} ⟨m, hm⟩ ⟨n, hn⟩ => ⟨m + n, by
+    rw [mul_pow, pow_add, pow_mul, hm, one_pow, one_mul, mul_comm, pow_mul, hn, one_pow]⟩
 
 variable {G} {p}
 
+/-- `g` lies in the `p`-primary component iff `g ^ p ^ k = 1` for some `k`. -/
+@[to_additive (attr := simp)
+      /-- `g` lies in the additive `p`-primary component iff `p ^ k • g = 0` for some `k`. -/]
+theorem mem_primaryComponent {g : G} :
+    g ∈ primaryComponent G p ↔ ∃ k : ℕ, g ^ p ^ k = 1 := Iff.rfl
+
+/-- For prime `p`, `g` lies in the `p`-primary component iff its order is a power of `p`. -/
+@[to_additive
+      /-- For prime `p`, `g` lies in the additive `p`-primary component iff its additive
+      order is a power of `p`. -/]
+theorem mem_primaryComponent_iff_orderOf [Fact p.Prime] {g : G} :
+    g ∈ primaryComponent G p ↔ ∃ n : ℕ, orderOf g = p ^ n :=
+  exists_orderOf_eq_prime_pow_iff.symm
+
+variable [hp : Fact p.Prime]
+
 /-- Elements of the `p`-primary component have order `p^n` for some `n`. -/
 @[to_additive primaryComponent.exists_orderOf_eq_prime_nsmul
-  /-- Elements of the `p`-primary component have additive order `p^n` for some `n` -/]
+      /-- Elements of the `p`-primary component have additive order `p^n` for some `n`. -/]
 theorem primaryComponent.exists_orderOf_eq_prime_pow (g : CommMonoid.primaryComponent G p) :
     ∃ n : ℕ, orderOf g = p ^ n := by
-      obtain ⟨_, hn⟩ := g.property
-      rw [orderOf_submonoid g] at hn
-      exact ⟨_, hn⟩
+  rw [← orderOf_submonoid]
+  exact mem_primaryComponent_iff_orderOf.mp g.property
 
 /-- The `p`- and `q`-primary components are disjoint for `p ≠ q`. -/
 @[to_additive /-- The `p`- and `q`-primary components are disjoint for `p ≠ q`. -/]
 theorem primaryComponent.disjoint {p' : ℕ} [hp' : Fact p'.Prime] (hne : p ≠ p') :
     Disjoint (CommMonoid.primaryComponent G p) (CommMonoid.primaryComponent G p') :=
-  Submonoid.disjoint_def.mpr <| by
-    rintro g ⟨_ | n, hn⟩ ⟨n', hn'⟩
+  Submonoid.disjoint_def.mpr fun {g} hg hg' => by
+    obtain ⟨_ | n, hn⟩ := mem_primaryComponent_iff_orderOf.mp hg
     · rwa [pow_zero, orderOf_eq_one_iff] at hn
-    · exact
+    · obtain ⟨_, hn'⟩ := mem_primaryComponent_iff_orderOf.mp hg'
+      exact
         absurd (eq_of_prime_pow_eq hp.out.prime hp'.out.prime n.succ_pos (hn.symm.trans hn')) hne
 
 end CommMonoid
@@ -327,22 +339,37 @@ lemma isTorsion_quotient_range_powMonoidHom {n : ℕ} (hn : n ≠ 0) :
   rw [← QuotientGroup.mk_pow, QuotientGroup.eq_one_iff]
   simp
 
-variable (p : ℕ) [hp : Fact p.Prime]
+variable (p : ℕ)
 
-/-- The `p`-primary component is the subgroup of elements with order prime-power of `p`. -/
-@[to_additive (attr := simps!)
-      /-- The `p`-primary component is the subgroup of elements with additive order
-      prime-power of `p`. -/]
+/-- The `p`-primary component is the subgroup of elements `g` such that `g ^ p ^ k = 1`
+for some `k`. For prime `p`, these are exactly the elements of `p`-power order. -/
+@[to_additive
+      /-- The additive `p`-primary component is the subgroup of elements `g` such that
+      `p ^ k • g = 0` for some `k`. For prime `p`, these are exactly the elements of additive
+      `p`-power order. -/]
 def primaryComponent : Subgroup G :=
   { CommMonoid.primaryComponent G p with
-    inv_mem' := fun {g} ⟨n, hn⟩ => ⟨n, (orderOf_inv g).trans hn⟩ }
+    inv_mem' := fun {g} ⟨k, hk⟩ => ⟨k, by rw [inv_pow, hk, inv_one]⟩ }
 
 variable {G} {p}
 
-/-- The `p`-primary component is a `p` group. -/
-theorem primaryComponent.isPGroup : IsPGroup p <| primaryComponent G p := fun g =>
-  (propext exists_orderOf_eq_prime_pow_iff.symm).mpr
-    (CommMonoid.primaryComponent.exists_orderOf_eq_prime_pow g)
+/-- `g` lies in the `p`-primary component iff `g ^ p ^ k = 1` for some `k`. -/
+@[to_additive (attr := simp)
+      /-- `g` lies in the additive `p`-primary component iff `p ^ k • g = 0` for some `k`. -/]
+theorem mem_primaryComponent {g : G} :
+    g ∈ primaryComponent G p ↔ ∃ k : ℕ, g ^ p ^ k = 1 := Iff.rfl
+
+/-- For prime `p`, `g` lies in the `p`-primary component iff its order is a power of `p`. -/
+@[to_additive
+      /-- For prime `p`, `g` lies in the additive `p`-primary component iff its additive
+      order is a power of `p`. -/]
+theorem mem_primaryComponent_iff_orderOf [Fact p.Prime] {g : G} :
+    g ∈ primaryComponent G p ↔ ∃ n : ℕ, orderOf g = p ^ n :=
+  exists_orderOf_eq_prime_pow_iff.symm
+
+/-- The `p`-primary component is a `p`-group. -/
+theorem primaryComponent.isPGroup : IsPGroup p (primaryComponent G p) := fun g =>
+  g.property.imp fun _ hk => Subtype.ext <| by simpa using hk
 
 end CommGroup
 
