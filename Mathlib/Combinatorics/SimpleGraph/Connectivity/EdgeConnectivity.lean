@@ -122,21 +122,24 @@ lemma isEdgeConnected_add_one (hk : k ≠ 0) :
     G.IsEdgeConnected (k + 1) ↔ ∀ e, (G.deleteEdges {e}).IsEdgeConnected k := by
   simp [IsEdgeConnected, isEdgeReachable_add_one hk, forall_comm (α := Sym2 _)]
 
+lemma IsBridge.not_isEdgeReachable_two {u v : V} (huv : G.IsBridge s(u, v)) :
+    ¬ G.IsEdgeReachable 2 u v :=
+  fun hc ↦ huv <| hc <| Set.encard_singleton _ |>.trans_lt Nat.one_lt_ofNat
+
 /-- An edge is a bridge iff its endpoints are not 2-edge-reachable. -/
-lemma isBridge_iff_not_isEdgeConnected_two {u v : V} (huv : G.Adj u v) :
+lemma isBridge_iff_not_isEdgeReachable_two {u v : V} (huv : G.Adj u v) :
     G.IsBridge s(u, v) ↔ ¬G.IsEdgeReachable 2 u v := by
-  refine ⟨fun h hc ↦ h <| hc <| Set.encard_singleton _ |>.trans_lt Nat.one_lt_ofNat,
-    fun hc hr ↦ hc fun s hs₂ ↦ ?_⟩
+  refine ⟨fun h ↦ h.not_isEdgeReachable_two, fun hc hr ↦ hc fun s hs₂ ↦ ?_⟩
   by_cases! hs₁ : s.encard ≠ (1 : ℕ)
   · apply G.isEdgeReachable_one.mpr huv.reachable
     exact lt_of_le_of_ne (ENat.lt_coe_add_one_iff.mp hs₂) hs₁
   obtain ⟨x, rfl⟩ := s.encard_eq_one.mp hs₁
   by_cases hx : s(u, v) = x
   · exact hx ▸ hr
-  exact deleteEdges_adj.mpr ⟨huv, hx⟩ |>.reachable
+  · exact deleteEdges_adj.mpr ⟨huv, hx⟩ |>.reachable
 
-@[deprecated (since := "2026-04-02")]
-alias isBridge_iff_adj_and_not_isEdgeConnected_two := isBridge_iff_not_isEdgeConnected_two
+@[deprecated (since := "2026-05-16")]
+alias isBridge_iff_adj_and_not_isEdgeConnected_two := isBridge_iff_not_isEdgeReachable_two
 
 lemma isEdgeReachable_two : G.IsEdgeReachable 2 u v ↔ ∀ e, (G.deleteEdges {e}).Reachable u v := by
   simp [isEdgeReachable_add_one]

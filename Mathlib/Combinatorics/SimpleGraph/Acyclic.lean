@@ -171,15 +171,15 @@ theorem IsTree.coe_subgraphOfAdj {u v : V} (h : G.Adj u v) : G.subgraphOfAdj h |
   grind [IsCycle.snd_ne_penultimate]
 
 theorem isAcyclic_iff_forall_isBridge : G.IsAcyclic ↔ ∀ ⦃e⦄, e ∈ G.edgeSet → G.IsBridge e where
-  mp hG e he := by
-    rw [isBridge_iff_forall_cycle_notMem he]
-    intro hu hp hc
-    cases hG hp hc
+  mp hG e he := isBridge_iff_forall_cycle_notMem he |>.mpr fun v p hc ↦ hG p hc |>.elim
   mpr hG v c hc := by
-    obtain ⟨e, he⟩ := c.edges.exists_mem_of_ne_nil (by simp [hc.ne_nil, nil_iff_eq_nil])
+    obtain ⟨e, he⟩ := c.edges.exists_mem_of_ne_nil <| by simp [hc.not_nil]
     exact (hG <| c.edges_subset_edgeSet he).notMem_edges_of_isCycle hc he
 
-@[deprecated (since := "2026-04-02")]
+@[deprecated (since := "2026-05-16")]
+alias isAcyclic_iff_forall_adj_edge_isBridge := isAcyclic_iff_forall_isBridge
+
+@[deprecated (since := "2026-05-16")]
 alias isAcyclic_iff_forall_edge_isBridge := isAcyclic_iff_forall_isBridge
 
 theorem IsAcyclic.path_unique {G : SimpleGraph V} (h : G.IsAcyclic) {v w : V} (p q : G.Path v w) :

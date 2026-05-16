@@ -26,8 +26,8 @@ public import Mathlib.Combinatorics.SimpleGraph.Operations
 
 ## Main statements
 
-* `SimpleGraph.isBridge_iff_mem_and_forall_cycle_notMem` characterizes bridge edges in terms of
-  there being no cycle containing them.
+* `SimpleGraph. isBridge_iff_forall_cycle_notMem` characterizes bridges as the edges not
+  contained in any cycle.
 
 ## Tags
 trails, paths, cycles, bridge edges
@@ -845,7 +845,7 @@ lemma IsBridge.notMem_edges_of_isCycle {e : Sym2 V} {u : V} {p : G.Walk u u}
   fun hep ↦ (isBridge_iff_forall_cycle_notMem <| p.edges_subset_edgeSet hep).mp he _ hp hep
 
 @[deprecated (since := "2026-04-02")]
-alias isBridge_iff_mem_and_forall_cycle_notMem := IsBridge.notMem_edges_of_isCycle
+alias isBridge_iff_mem_and_forall_cycle_notMem := isBridge_iff_forall_cycle_notMem
 
 /-- Deleting a non-bridge edge from a connected graph preserves connectedness. -/
 lemma Connected.connected_delete_edge_of_not_isBridge (hG : G.Connected) {x y : V}
@@ -864,12 +864,10 @@ lemma Connected.connected_delete_edge_of_not_isBridge (hG : G.Connected) {x y : 
   have heP₁ : s(x, y) ∉ P₁.edges := fun h ↦ hxP₁ <| P₁.fst_mem_support_of_mem_edges h
   exact h.trans (.symm ⟨P₁.toDeleteEdges {s(x, y)} (by grind)⟩)
 
-/-- If `e` is an edge in `G` and is a bridge in a larger graph `G'`, then it's a bridge in `G`. -/
-theorem IsBridge.anti_of_mem_edgeSet {G' : SimpleGraph V} {e : Sym2 V} (hle : G ≤ G')
-    (h : e ∈ G.edgeSet) (h' : G'.IsBridge e) : G.IsBridge e :=
-  (isBridge_iff_forall_cycle_notMem h).mpr fun _ p hp hpe ↦
-    (isBridge_iff_forall_cycle_notMem (edgeSet_subset_edgeSet.mpr hle h)).mp h'
-      (p.mapLe hle) (hp.mapLe hle) (p.edges_mapLe_eq_edges hle ▸ hpe)
+theorem IsBridge.anti {G' : SimpleGraph V} {e : Sym2 V} (hG : G ≤ G') (h : G'.IsBridge e) :
+    G.IsBridge e := by obtain ⟨a, b⟩ := e; rw [isBridge_iff] at ⊢ h; grw [hG]; assumption
+
+@[deprecated (since := "2026-05-16")] alias IsBridge.anti_of_mem_edgeSet := IsBridge.anti
 
 @[simp]
 lemma isBridge_sup_edge {u v : V} : (G ⊔ edge u v).IsBridge s(u, v) ↔ G.IsBridge s(u, v) := by
