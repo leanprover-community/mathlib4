@@ -6993,6 +6993,7 @@ public import Mathlib.SetTheory.Cardinal.Defs
 public import Mathlib.SetTheory.Cardinal.Divisibility
 public import Mathlib.SetTheory.Cardinal.ENat
 public import Mathlib.SetTheory.Cardinal.Embedding
+public import Mathlib.SetTheory.Cardinal.EventuallyConst
 public import Mathlib.SetTheory.Cardinal.Finite
 public import Mathlib.SetTheory.Cardinal.Finsupp
 public import Mathlib.SetTheory.Cardinal.Free
