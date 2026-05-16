@@ -23,7 +23,7 @@ into the corresponding summand of `(Σ k, ι k) →₀ M`.
 This is a special case of `Finsupp.embDomain` using `Function.Embedding.sigmaMk`.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 

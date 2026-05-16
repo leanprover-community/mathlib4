@@ -45,7 +45,7 @@ and is closed under pairing, composition, primitive recursion, and μ-recursion.
 Computability, Oracle, Turing Degrees, Reducibility, Equivalence Relation
 -/
 
-@[expose] public section
+public section
 
 open Encodable Primrec Nat.Partrec Part
 

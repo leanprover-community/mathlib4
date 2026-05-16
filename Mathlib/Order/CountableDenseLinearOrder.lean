@@ -30,7 +30,7 @@ https://en.wikipedia.org/wiki/Back-and-forth_method
 back and forth, dense, countable, order
 -/
 
-@[expose] public section
+public section
 
 
 noncomputable section
@@ -103,6 +103,7 @@ variable (α β)
 /-- The type of partial order isomorphisms between `α` and `β` defined on finite subsets.
 A partial order isomorphism is encoded as a finite subset of `α × β`, consisting
 of pairs which should be identified. -/
+@[expose]
 def PartialIso : Type _ :=
   { f : Finset (α × β) //
     ∀ p ∈ f, ∀ q ∈ f,

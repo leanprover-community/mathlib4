@@ -17,7 +17,7 @@ It establishes the equivalence between this vector-based definition and the
 standard `Partrec` definition.
 -/
 
-@[expose] public section
+public section
 
 open List (Vector)
 open Encodable Denumerable

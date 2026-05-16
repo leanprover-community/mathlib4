@@ -26,7 +26,7 @@ In this file we prove Schreier's lemma.
   subgroup is bounded in terms of the number of commutators.
 -/
 
-@[expose] public section
+public section
 
 
 open scoped Finset Pointwise

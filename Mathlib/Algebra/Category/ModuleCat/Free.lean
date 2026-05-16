@@ -28,7 +28,7 @@ linear algebra, module, free
 
 -/
 
-@[expose] public section
+public section
 
 open CategoryTheory Module
 

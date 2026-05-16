@@ -16,7 +16,7 @@ public import Mathlib.CategoryTheory.Limits.ConcreteCategory.Basic
 # The category of abelian groups is abelian
 -/
 
-@[expose] public section
+public section
 
 open CategoryTheory Limits
 

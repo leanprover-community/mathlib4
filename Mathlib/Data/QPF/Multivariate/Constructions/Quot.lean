@@ -15,7 +15,7 @@ its right inverse. They are very similar to the `abs` and `repr`
 functions found in the definition of `MvQPF`
 -/
 
-@[expose] public section
+public section
 
 
 universe u
@@ -54,6 +54,7 @@ section Rel
 variable (R : ∀ ⦃α⦄, F α → F α → Prop)
 
 /-- Functorial quotient type -/
+@[expose]
 def Quot1 (α : TypeVec n) :=
   Quot (@R α)
 

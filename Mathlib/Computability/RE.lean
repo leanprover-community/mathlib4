@@ -15,7 +15,7 @@ predicates. It also provides basic closure properties and Post's theorem on the
 equivalence of recursive, r.e., and co-r.e. sets.
 -/
 
-@[expose] public section
+public section
 
 open List (Vector)
 open Encodable Denumerable
@@ -126,6 +126,7 @@ nonrec theorem sumCasesOn {f : α → β ⊕ γ} {g : α → β →. σ} {h : α
 end Partrec
 
 /-- A computable predicate is one whose indicator function is computable. -/
+@[expose]
 def ComputablePred {α} [Primcodable α] (p : α → Prop) :=
   ∃ (_ : DecidablePred p), Computable fun a => decide (p a)
 

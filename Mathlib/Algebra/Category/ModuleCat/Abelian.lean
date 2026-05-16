@@ -16,7 +16,7 @@ public import Mathlib.CategoryTheory.Abelian.Basic
 Additionally, two linear maps are exact in the categorical sense iff `range f = ker g`.
 -/
 
-@[expose] public section
+public section
 
 open CategoryTheory Limits
 

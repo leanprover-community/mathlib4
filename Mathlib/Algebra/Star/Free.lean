@@ -18,7 +18,7 @@ We have this in a separate file, rather than in `Algebra.FreeMonoid` and `Algebr
 to avoid importing `Algebra.Star.Basic` into the entire hierarchy.
 -/
 
-@[expose] public section
+public section
 
 
 namespace FreeMonoid

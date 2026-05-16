@@ -33,7 +33,7 @@ to define only local instances of `ModelCategory`, or to set these instances on 
 
 -/
 
-@[expose] public section
+public section
 
 universe w v u
 

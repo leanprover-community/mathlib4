@@ -11,7 +11,7 @@ public import Mathlib.Logic.Equiv.List
 # Equivalences involving `Array`
 -/
 
-@[expose] public section
+public section
 
 
 namespace Equiv

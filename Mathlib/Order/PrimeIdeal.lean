@@ -32,7 +32,7 @@ ideal, prime
 
 -/
 
-@[expose] public section
+public section
 
 
 open Order.PFilter

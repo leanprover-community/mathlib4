@@ -28,7 +28,7 @@ can be shown that this construction gives a quasi-inverse to the whiskering oper
 `(C ⥤ₗ AddCommGrpCat.{v}) ⥤ (C ⥤ₗ Type v)`.
 -/
 
-@[expose] public section
+public section
 
 open CategoryTheory MonoidalCategory Limits
 

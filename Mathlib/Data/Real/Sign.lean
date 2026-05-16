@@ -24,7 +24,7 @@ real numbers to -1, positive real numbers to 1, and 0 to 0.
 sign function
 -/
 
-@[expose] public section
+public section
 
 
 namespace Real

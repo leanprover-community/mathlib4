@@ -14,7 +14,7 @@ public import Mathlib.LinearAlgebra.Basis.Defs
 
 -/
 
-@[expose] public section
+public section
 
 open Module
 

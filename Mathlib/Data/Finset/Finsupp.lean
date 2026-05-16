@@ -28,7 +28,7 @@ We make heavy use of the fact that `0 : Finset α` is `{0}`. This scalar actions
 to be precisely what we want here too.
 -/
 
-@[expose] public section
+public section
 
 
 noncomputable section

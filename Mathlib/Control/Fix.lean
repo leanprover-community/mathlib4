@@ -23,7 +23,7 @@ An instance is defined for `Part`.
 * `Part.fix`
 -/
 
-@[expose] public section
+public section
 
 
 universe u v
@@ -46,6 +46,7 @@ variable (f : (∀ a, Part (β a)) → (∀ a, Part (β a)))
 
 /-- A series of successive, finite approximation of the fixed point of `f`, defined by
 `approx f n = f^[n] ⊥`. The limit of this chain is the fixed point of `f`. -/
+@[expose]
 def Fix.approx : Stream' (∀ a, Part (β a))
   | 0 => ⊥
   | Nat.succ i => f (Fix.approx i)

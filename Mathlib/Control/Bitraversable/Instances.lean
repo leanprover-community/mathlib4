@@ -28,7 +28,7 @@ This file provides `Bitraversable` instances for concrete bifunctors:
 traversable bitraversable functor bifunctor applicative
 -/
 
-@[expose] public section
+public section
 
 
 universe u v w

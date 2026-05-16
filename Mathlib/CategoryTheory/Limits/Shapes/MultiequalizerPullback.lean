@@ -17,7 +17,7 @@ a pushout when `ι` has exactly two elements.
 
 -/
 
-@[expose] public section
+public section
 
 namespace CategoryTheory.Limits.Multicofork.IsColimit
 
@@ -33,6 +33,7 @@ open Classical in
 /-- Given a multispan shape `J` which is essentially `.ofLinearOrder ι`
 (where `ι` has exactly two elements), this is the multicofork
 deduced from a pushout cocone. -/
+@[expose]
 noncomputable def multicofork : Multicofork I :=
   Multicofork.ofπ _ s.pt
     (fun k ↦

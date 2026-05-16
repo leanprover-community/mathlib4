@@ -45,7 +45,7 @@ public import Mathlib.CategoryTheory.Limits.Shapes.DisjointCoproduct
 
 -/
 
-@[expose] public section
+public section
 
 open CategoryTheory.Limits Topology
 

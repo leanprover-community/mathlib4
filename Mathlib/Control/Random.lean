@@ -30,7 +30,7 @@ defining objects that can be created randomly.
 
 -/
 
-@[expose] public section
+public section
 
 set_option autoImplicit true -- Note: this file uses `autoImplicit` pervasively
 

@@ -15,7 +15,7 @@ Note that we don't need to register any of the constructions here as instances, 
 from the fact that `AddCommGrpCat` is an abelian category.
 -/
 
-@[expose] public section
+public section
 
 open CategoryTheory Limits
 

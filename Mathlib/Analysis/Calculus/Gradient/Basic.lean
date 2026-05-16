@@ -40,9 +40,8 @@ This file develops the following aspects of the theory of gradients:
 * the continuity of a function admitting a gradient.
 -/
 
-@[expose] public section
+public section
 
-@[expose] public section
 
 open ComplexConjugate Topology InnerProductSpace Function Set
 

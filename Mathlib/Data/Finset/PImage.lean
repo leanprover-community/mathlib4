@@ -20,7 +20,7 @@ these definitions.
 finite set, image, partial function
 -/
 
-@[expose] public section
+public section
 
 
 variable {α β : Type*}

@@ -32,7 +32,7 @@ Generalize linear independence to:
   * arbitrary sets of polynomials which are pairwise different degree.
 -/
 
-@[expose] public section
+public section
 
 open Module Submodule
 open scoped Function

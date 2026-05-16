@@ -28,7 +28,7 @@ This file defines the Hyperoperation sequence.
 hyperoperation
 -/
 
-@[expose] public section
+public section
 
 
 /-- Implementation of the hyperoperation sequence

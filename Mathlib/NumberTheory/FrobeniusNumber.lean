@@ -37,7 +37,7 @@ is a multiple of n, and we're done.
 frobenius number, chicken mcnugget, chinese remainder theorem, AddSubmonoid.closure
 -/
 
-@[expose] public section
+public section
 
 
 open Nat

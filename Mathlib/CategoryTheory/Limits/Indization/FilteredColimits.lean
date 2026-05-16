@@ -24,7 +24,7 @@ Our proof is a slight variant of the proof given in Kashiwara-Schapira.
 * [M. Kashiwara, P. Schapira, *Categories and Sheaves*][Kashiwara2006], Theorem 6.1.8
 -/
 
-@[expose] public section
+public section
 
 universe v u
 

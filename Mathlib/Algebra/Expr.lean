@@ -14,7 +14,7 @@ public import Qq.Typ
 This file provides instances on `x y : Q($α)` such that `x + y = q($x + $y)`.
 -/
 
-@[expose] public section
+public section
 open Qq
 
 /-- Produce a `One` instance for `Q($α)` such that `1 : Q($α)` is `q(1 : $α)`. -/

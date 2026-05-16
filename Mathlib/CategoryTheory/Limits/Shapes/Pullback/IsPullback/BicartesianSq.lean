@@ -27,7 +27,7 @@ is a pullback square *and* a pushout square.
 We show that the pullback and pushout squares for a biproduct are bi-Cartesian.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 

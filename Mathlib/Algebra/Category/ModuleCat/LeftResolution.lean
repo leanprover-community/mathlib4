@@ -20,7 +20,7 @@ sends `M : ModuleCat R` to a projective resolution.
 
 -/
 
-@[expose] public section
+public section
 
 universe u
 

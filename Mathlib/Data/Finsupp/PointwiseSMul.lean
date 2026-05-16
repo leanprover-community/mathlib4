@@ -12,7 +12,7 @@ public import Mathlib.Algebra.MonoidAlgebra.PointwiseSMul
 
 -/
 
-@[expose] public section
+public section
 
 open Finset Function
 
