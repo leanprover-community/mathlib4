@@ -34,6 +34,8 @@ that has little to do with this definition.
 - Equip `StdSimplex` with a topology and show the analogous continuity result for n-ary
   convex combinations.
 - Tidy up the imports with `Mathlib.Geometric.Convex.ConvexSpace.AffineSpace`.
+- Define convex functions with domain a convex space, and redefine `IsConvexDist` as saying that
+  `dist : X × X → ℝ` is convex.
 -/
 
 public section

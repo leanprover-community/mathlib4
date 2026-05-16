@@ -276,10 +276,14 @@ def mapDomain (f : α → β) (v : α →₀ M) : β →₀ M :=
   · intro _
     rw [single_zero, coe_zero, Pi.zero_apply]
 
+lemma mapDomain_of_not_mem_image_support {f : α → β} {x : α →₀ M} {b : β}
+    (hb : b ∉ f '' x.support) : mapDomain f x b = 0 := by
+  rw [mapDomain, sum_apply, sum, Finset.sum_eq_zero]
+  exact fun a ha ↦ single_eq_of_ne fun eq => hb <| eq ▸ Set.mem_image_of_mem _ ha
+
 theorem mapDomain_notin_range {f : α → β} (x : α →₀ M) (a : β) (h : a ∉ Set.range f) :
-    mapDomain f x a = 0 := by
-  rw [mapDomain, sum_apply, sum]
-  exact Finset.sum_eq_zero fun a' _ => single_eq_of_ne fun eq => h <| eq ▸ Set.mem_range_self _
+    mapDomain f x a = 0 :=
+  mapDomain_of_not_mem_image_support <| by grw [Set.image_subset_range]; exact h
 
 @[simp]
 theorem mapDomain_id : mapDomain id v = v :=
