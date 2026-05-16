@@ -521,6 +521,13 @@ theorem LinearIndependent.of_pairwise_dual_eq_zero_one (v : ι → M) (f : ι �
   have aux (j : ι) (hjs : j ∈ s) (hji : j ≠ i) : g j * (f i) (v j) = 0 := by simp [h1 hji.symm]
   simpa [s.sum_eq_single i aux (by lia), h2 i] using congr_arg (f i) hrel
 
+/-- See `LinearIndependent.finSnoc` for a family of elements in a vector space. -/
+theorem LinearIndependent.finSnoc' {m : ℕ} (v : Fin m → M) (x : M) (hli : LinearIndependent R v)
+    (x_ortho : ∀ (c : R) (y : M), y ∈ Submodule.span R (Set.range v) → c • x + y = 0 → c = 0) :
+    LinearIndependent R (Fin.snoc v x : Fin m.succ → M) := by
+  rw [Fin.snoc_eq_cons_rotate v x, ← Function.comp_def]
+  exact (linearIndependent_equiv _).mpr (.finCons' x v hli x_ortho)
+
 end Module
 
 /-!
@@ -644,11 +651,7 @@ theorem LinearIndependent.pair_iff' {x y : V} (hx : x ≠ 0) :
 theorem linearIndependent_finCons {n} {v : Fin n → V} :
     LinearIndependent K (Fin.cons x v : Fin (n + 1) → V) ↔
       LinearIndependent K v ∧ x ∉ Submodule.span K (range v) := by
-  rw [← linearIndependent_equiv (finSuccEquiv n).symm, linearIndependent_option]
-  rfl
-
-@[deprecated (since := "2026-04-07")]
-alias linearIndependent_fin_cons := linearIndependent_finCons
+  rw [← linearIndependent_equiv (finSuccEquiv n).symm, linearIndependent_option]; rfl
 
 theorem linearIndependent_finSnoc {n} {v : Fin n → V} :
     LinearIndependent K (Fin.snoc v x : Fin (n + 1) → V) ↔

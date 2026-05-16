@@ -570,6 +570,18 @@ protected theorem Convex.add_smul (h_conv : Convex 𝕜 s) {p q : 𝕜} (hp : 0 
   rintro _ ⟨_, ⟨v₁, h₁, rfl⟩, _, ⟨v₂, h₂, rfl⟩, rfl⟩
   exact h_conv.exists_mem_add_smul_eq h₁ h₂ hp hq
 
+theorem Convex.smul_mono_of_zero_mem (h_conv : Convex 𝕜 s) (zero_mem : (0 : E) ∈ s) {p q : 𝕜}
+    (hp : 0 ≤ p) (hpq : p ≤ q) : p • s ⊆ q • s := by
+  intro x hx
+  obtain rfl | hp' := eq_or_lt_of_le hp
+  · rw [Set.zero_smul_set ⟨0, zero_mem⟩, Set.mem_zero] at hx
+    rw [hx, mem_smul_set]
+    exact ⟨0, zero_mem, smul_zero _⟩
+  · obtain ⟨y, hy, rfl⟩ := Set.mem_smul_set.mp hx
+    rw [← Set.mem_inv_smul_set_iff₀ hp'.ne', smul_smul]
+    refine Convex.mem_smul_of_zero_mem h_conv zero_mem hy (?_ : 1 ≤ p⁻¹ * q)
+    rwa [le_inv_mul_iff₀ hp', mul_one]
+
 theorem Convex.add_half_self_eq_self (h_conv : Convex 𝕜 s) : (2 : 𝕜)⁻¹ • s + (2 : 𝕜)⁻¹ • s = s := by
   rw [← h_conv.add_smul (by norm_num) (by norm_num)]
   ring_nf

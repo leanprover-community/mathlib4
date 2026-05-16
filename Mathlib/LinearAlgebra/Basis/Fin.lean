@@ -6,6 +6,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Alexander Bentkamp, Kevin H. Wilson
 module
 
 public import Mathlib.LinearAlgebra.Basis.Basic
+public import Mathlib.LinearAlgebra.LinearIndependent.Lemmas
 public import Mathlib.LinearAlgebra.Pi
 
 /-!

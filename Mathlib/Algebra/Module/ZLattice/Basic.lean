@@ -5,6 +5,7 @@ Authors: Xavier Roblot
 -/
 module
 
+public import Mathlib.Data.Set.Image
 public import Mathlib.LinearAlgebra.Countable
 public import Mathlib.LinearAlgebra.Dimension.OrzechProperty
 public import Mathlib.LinearAlgebra.FreeModule.PID
@@ -673,6 +674,15 @@ theorem Real.finrank_eq_int_finrank_of_discrete {E : Type*} [NormedAddCommGroup 
     span_span_coe_preimage.symm.le.trans (span_mono (Set.preimage_mono subset_span))⟩
   rw [Set.finrank, Set.finrank, ← f.finrank_eq]
   exact (ZLattice.rank ℝ L).symm
+
+omit [DiscreteTopology L] [ProperSpace E] in
+theorem Real.finrank_real_span_range_eq_finrank_int [hL : DiscreteTopology L] [NormedSpace ℝ E]
+    [FiniteDimensional ℝ E] {ι : Type*} {v : ι → L} :
+    finrank ℝ (span ℝ <| .range (Subtype.val ∘ v)) =
+      finrank ℤ (span ℤ <| .range (Subtype.val ∘ v)) := by
+  have hd : DiscreteTopology (span ℤ (.range (Subtype.val ∘ v))) :=
+    hL.of_subset (span_le.mpr <| Set.range_subset_iff.mpr fun j => (v j).prop)
+  simpa only [Set.finrank] using Real.finrank_eq_int_finrank_of_discrete hd
 
 end NormedLinearOrderedField
 
