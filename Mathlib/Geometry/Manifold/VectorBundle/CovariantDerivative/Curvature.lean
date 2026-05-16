@@ -264,8 +264,8 @@ lemma curvatureEndomorphismTensor_swap (hcov : IsCovariantDerivativeOn F cov)
 -- for all vector fields V, X, Y and Z.
 
 -- this is the thing whose cohomology class gives a definition of characteristic classes
--- do something similar (but raise and lower indices?) for the Levi-Civita connection
--- to get Ricci curvature
+-- do something similar (but swap the argument order of the full curvature tensor) for the
+-- Levi-Civita connection to get Ricci curvature
 def traceCurvature [CompleteSpace 𝕜] [FiniteDimensional 𝕜 F] [FiniteDimensional 𝕜 E]
     (hcov : IsCovariantDerivativeOn F cov) (x : M) :
     TangentSpace I x →L[𝕜] TangentSpace I x →L[𝕜] 𝕜 :=
