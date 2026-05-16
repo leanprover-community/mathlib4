@@ -69,7 +69,7 @@ lemma isIntegral_coeff_of_dvd (p : R[X]) (q : S[X]) (hp : p.Monic) (hq : q.Monic
   rw [IsScalarTower.coe_toAlgHom', ← coeff_map]
   refine Polynomial.isIntegral_coeff_of_factors _ (by simp [hq.map, isIntegral_one]) hqT ?_ i
   intro x hx
-  exact ⟨p, hp, by simpa using aeval_eq_zero_of_dvd_aeval_eq_zero (a := x) H (by simp_all)⟩
+  exact ⟨p, hp, by simpa using aeval_eq_zero_of_dvd_aeval_eq_zero (x := x) H (by simp_all)⟩
 
 end Polynomial
 
