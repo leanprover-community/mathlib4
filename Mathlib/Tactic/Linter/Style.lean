@@ -12,7 +12,6 @@ public meta import Lean.Server.InfoUtils
 public meta import Mathlib.Tactic.Linter.Header  -- shake: keep
 public import Lean.Parser.Command
 public import Mathlib.Tactic.DeclarationNames
-import Lean.Parser.Module.Syntax
 
 /-!
 ## Style linters
