@@ -3,7 +3,7 @@ Copyright (c) 2018 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, David Renshaw
 -/
-module
+module -- shake: keep-all
 
 public meta import Lean.Elab.Tactic.Classical
 public import Mathlib.Logic.Basic  -- shake: keep (dependency of tactic output)

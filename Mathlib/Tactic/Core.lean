@@ -3,7 +3,7 @@ Copyright (c) 2021 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Arthur Paulino, Aurélien Saue, Mario Carneiro
 -/
-module
+module -- shake: keep-all
 
 public meta import Lean.Elab.PreDefinition.Basic
 public meta import Lean.Elab.Tactic.ElabTerm

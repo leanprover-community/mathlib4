@@ -3,7 +3,7 @@ Copyright (c) 2023 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-module
+module -- shake: keep-all
 
 public meta import Mathlib.Tactic.Basic
 public import Mathlib.Order.Filter.Basic

@@ -3,7 +3,7 @@ Copyright (c) 2022 Alex J. Best. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex J. Best
 -/
-module
+module -- shake: keep-all
 
 public import Mathlib.Init
 public meta import Lean.Parser.Term
