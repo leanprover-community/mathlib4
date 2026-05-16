@@ -20,7 +20,11 @@ open scoped TensorProduct
 
 universe u v
 
-variable (R : Type u) [CommRing R]
+-- Warning: https://github.com/leanprover/lean4/issues/12102 applies here.
+-- If the universe of `R` is alphabetically before the universe of `σ` then
+-- `KaehlerDifferential.mvPolynomialEquiv` typechecks 20x times more slowly.
+
+variable (R : Type v) [CommRing R]
 
 suppress_compilation
 
