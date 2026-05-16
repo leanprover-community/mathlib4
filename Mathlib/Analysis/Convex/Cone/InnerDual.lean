@@ -52,9 +52,10 @@ namespace ProperCone
 /-- The dual cone of a set `s` is the cone consisting of all points `y` such that for all points
 `x ∈ s` we have `0 ≤ ⟪x, y⟫`. -/
 @[simps! toSubmodule]
-noncomputable def innerDual (s : Set E) : ProperCone ℝ E := .dual (innerₗ E) s
+noncomputable def innerDual (s : Set E) : ProperCone ℝ E := dual (innerₗ E) (PointedCone.hull ℝ s)
 
-@[simp] lemma mem_innerDual : y ∈ innerDual s ↔ ∀ ⦃x⦄, x ∈ s → 0 ≤ ⟪x, y⟫ := .rfl
+@[simp] lemma mem_innerDual : y ∈ innerDual s ↔ ∀ ⦃x⦄, x ∈ s → 0 ≤ ⟪x, y⟫ := by
+  simp [innerDual, dual]
 
 @[simp] lemma innerDual_empty : innerDual (∅ : Set E) = ⊤ := by ext; simp
 
@@ -63,20 +64,20 @@ noncomputable def innerDual (s : Set E) : ProperCone ℝ E := .dual (innerₗ E)
 
 /-- Dual cone of the total space is the convex cone `{0}`. -/
 @[simp]
-lemma innerDual_univ : innerDual (univ : Set E) = ⊥ :=
-  le_antisymm (fun x hx ↦ by simpa using hx (mem_univ (-x))) (by simp)
+lemma innerDual_univ : innerDual (univ : Set E) = ⊥ := by simp [innerDual]
 
-@[gcongr] lemma innerDual_le_innerDual (h : t ⊆ s) : innerDual s ≤ innerDual t :=
-  fun _y hy _x hx ↦ hy (h hx)
+@[gcongr] lemma innerDual_le_innerDual (h : t ⊆ s) : innerDual s ≤ innerDual t := by
+  intro y hy
+  rw [mem_innerDual] at ⊢ hy
+  exact fun _ hx ↦ hy (h hx)
 
 /-- The inner dual cone of a singleton is given by the preimage of the positive cone under the
 linear map `fun y ↦ ⟪x, y⟫`. -/
 lemma innerDual_singleton (x : E) :
     innerDual ({x} : Set E) = (positive ℝ ℝ).comap (innerSL ℝ x) := by ext; simp
 
-lemma innerDual_union (s t : Set E) : innerDual (s ∪ t) = innerDual s ⊓ innerDual t :=
-  le_antisymm (le_inf (fun _ hx _ hy ↦ hx <| .inl hy) fun _ hx _ hy ↦ hx <| .inr hy)
-    fun _ hx _ => Or.rec (fun h ↦ hx.1 h) (fun h ↦ hx.2 h)
+lemma innerDual_union (s t : Set E) : innerDual (s ∪ t) = innerDual s ⊓ innerDual t := by
+  simpa [innerDual, dual] using dual_union ..
 
 lemma innerDual_insert (x : E) (s : Set E) :
     innerDual (insert x s) = innerDual {x} ⊓ innerDual s := by
@@ -106,7 +107,7 @@ theorem hyperplane_separation' (C : ProperCone ℝ E) (hx₀ : x₀ ∉ C) :
 /-- The inner dual of inner dual of a proper cone is itself. -/
 @[simp] theorem innerDual_innerDual (C : ProperCone ℝ E) :
     innerDual (innerDual (C : Set E)) = C := by
-  simpa using C.dual_flip_dual (innerₗ E)
+  simpa [innerDual, dual] using C.dual_flip_dual (innerₗ E)
 
 open scoped InnerProductSpace
 
@@ -135,6 +136,7 @@ theorem relative_hyperplane_separation {C : ProperCone ℝ E} {f : E →L[ℝ] F
     obtain ⟨y, hxy, hyb⟩ := (C.map f).hyperplane_separation' h
     -- the rest of the proof is a straightforward algebraic manipulation
     refine ⟨y, fun x hx ↦ ?_, hyb⟩
+    simp [← ClosedSubmodule.coe_toSubmodule] at hx
     simpa [ContinuousLinearMap.adjoint_inner_right]
       using hxy (f x) (subset_closure <| mem_image_of_mem _ hx)
 

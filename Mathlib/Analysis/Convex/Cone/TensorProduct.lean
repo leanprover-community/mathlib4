@@ -65,7 +65,7 @@ open Module
 functionals of `b` lie in the dual cone of `C`. -/
 lemma basis_coord_mem_dual {ι : Type*} (b : Basis ι R M) (C : PointedCone R M)
     (hC : (C : Set M) ⊆ (hull R (Set.range b) : Set M)) (i : ι) :
-    b.coord i ∈ dual (Dual.eval R M) (C : Set M) := by
+    b.coord i ∈ dual (Dual.eval R M) C := by
   classical
   refine dual_le_dual hC ?_
   simp [Finsupp.single_apply, ite_nonneg zero_le_one le_rfl]
@@ -114,9 +114,10 @@ theorem minTensorProduct_eq_max_of_simplicial_generating_left (C₁ : PointedCon
   · simpa only [b, Basis.coe_mk] using (hs_span ▸ subset_hull) i.prop
   · simp only [equivFinsuppOfBasisLeft_apply]
     rw [← ProperCone.dual_dual_flip (topDualPairing ℝ F) C₂]
-    intro f (hf : (f : F →ₗ[ℝ] ℝ) ∈ dual (Dual.eval ℝ F) (C₂ : Set F))
+    intro f hf
+    simp only [← ClosedSubmodule.coe_toSubmodule, hull_eq, ProperCone.dual] at hf
     simp only [mem_maxTensorProduct] at hz
-    have h_nonneg := hz (b.coord i) (h_coord_dual i) (f : F →ₗ[ℝ] ℝ) hf
+    have h_nonneg := hz (b.coord i) (h_coord_dual i) f hf
     have h_eq : dualDistrib ℝ E F ((b.coord i) ⊗ₜ[ℝ] (f : F →ₗ[ℝ] ℝ)) =
         (f : F →ₗ[ℝ] ℝ) ∘ₗ (TensorProduct.lid ℝ F) ∘ₗ (b.coord i).rTensor F := by
       ext; simp [mul_comm]
