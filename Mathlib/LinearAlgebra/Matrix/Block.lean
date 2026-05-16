@@ -186,6 +186,45 @@ theorem BlockTriangular.mul [Fintype m] [NonUnitalNonAssocSemiring R]
   · simp_rw [hM hki, zero_mul]
   · simp_rw [hN (lt_of_lt_of_le hij hki), mul_zero]
 
+variable (b) in
+/-- `BlockTriangular` matrices form a semiring. -/
+@[simps]
+def blockTriangularSubsemiring [DecidableEq m] [Fintype m] [Semiring R] :
+    Subsemiring (Matrix m m R) where
+  carrier := {M | BlockTriangular M b}
+  zero_mem' := blockTriangular_zero
+  one_mem' := blockTriangular_one
+  mul_mem' := .mul
+  add_mem' := .add
+
+theorem blockTriangular_algebraMap {A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
+    [DecidableEq m] [Fintype m] (r : R) : (algebraMap R (Matrix m m A) r).BlockTriangular b :=
+  blockTriangular_diagonal _
+
+
+variable (b) in
+/-- `BlockTriangular` matrices form a subalgebra. -/
+def blockTriangularSubalgebra {A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
+    [DecidableEq m] [Fintype m] : Subalgebra R (Matrix m m A) where
+  __ := blockTriangularSubsemiring b
+  algebraMap_mem' r := blockTriangular_algebraMap r
+
+@[simp]
+theorem mem_blockTriangularSubsemiring [DecidableEq m] [Fintype m] [Semiring R]
+    {M : Matrix m m R} :
+    M ∈ blockTriangularSubsemiring b ↔ BlockTriangular M b :=
+  Iff.rfl
+
+@[simp]
+theorem mem_blockTriangularSubalgebra {A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
+    [DecidableEq m] [Fintype m] {M : Matrix m m A} :
+    M ∈ blockTriangularSubalgebra (R := R) b ↔ BlockTriangular M b :=
+  Iff.rfl
+
+theorem BlockTriangular.pow [DecidableEq m] [Fintype m] [Semiring R] (hM : BlockTriangular M b)
+    (n : ℕ) : BlockTriangular (M ^ n) b :=
+  pow_mem (S := blockTriangularSubsemiring b) hM n
+
 end LinearOrder
 
 theorem upper_two_blockTriangular [Zero R] [Preorder α] (A : Matrix m m R) (B : Matrix m n R)

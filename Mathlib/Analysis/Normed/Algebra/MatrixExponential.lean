@@ -10,8 +10,9 @@ public import Mathlib.Analysis.Matrix.Normed
 public import Mathlib.LinearAlgebra.Matrix.ZPow
 public import Mathlib.LinearAlgebra.Matrix.Hermitian
 public import Mathlib.LinearAlgebra.Matrix.Symmetric
+public import Mathlib.LinearAlgebra.Matrix.Block
 public import Mathlib.Topology.UniformSpace.Matrix
-
+public import Mathlib.Topology.Instances.Matrix
 /-!
 # Lemmas about the matrix exponential
 
@@ -72,6 +73,12 @@ variable {m n : Type*} {n' : m → Type*} {𝔸 : Type*}
 namespace Matrix
 
 section Topological
+
+set_option backward.isDefEq.respectTransparency false in
+theorem BlockTriangular.exp {α : Type*} {M : Matrix m m 𝔸} {b : m → α} [LinearOrder α] [Ring 𝔸]
+    [TopologicalSpace 𝔸] [Algebra ℚ 𝔸] [Fintype m] [DecidableEq m] [IsTopologicalRing 𝔸] [T2Space 𝔸]
+    (hM : BlockTriangular M b) : (NormedSpace.exp M).BlockTriangular b := NormedSpace.exp_mem
+    (s := blockTriangularSubalgebra (R := ℚ) b) isClosed_setOf_blockTriangular hM
 
 section Ring
 
