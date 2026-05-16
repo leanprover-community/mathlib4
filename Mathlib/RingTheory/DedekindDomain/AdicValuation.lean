@@ -204,8 +204,8 @@ theorem intValuation_zero_lt (x : nonZeroDivisors R) : 0 < v.intValuation x := b
 
 /-- The `v`-adic valuation on `R` is bounded above by 1. -/
 theorem intValuation_le_one (x : R) : v.intValuation x ≤ 1 := by
-  by_cases hx : x = 0
-  · rw [hx, Valuation.map_zero]; exact WithZero.zero_le 1
+  obtain rfl | hx := eq_or_ne x 0
+  · simp
   · rw [v.intValuation_if_neg hx, ← exp_zero, exp_le_exp, Right.neg_nonpos_iff]
     exact Int.natCast_nonneg _
 
@@ -711,7 +711,7 @@ lemma adicCompletion.mul_nonZeroDivisor_mem_adicCompletionIntegers (v : HeightOn
     -- now manually translate the goal (an inequality in ℤᵐ⁰) to an inequality of "log" of ℤ
     simp only [map_pow, mem_adicCompletionIntegers, map_mul, this, inv_pow, ← exp_nsmul, nsmul_one,
       Int.natCast_natAbs]
-    exact mul_inv_le_one_of_le₀ (le_exp_log.trans (by simp [le_abs_self])) (zero_le _)
+    exact mul_inv_le_one_of_le₀ (le_exp_log.trans (by simp [le_abs_self])) zero_le
 
 instance : FaithfulSMul (v.adicCompletionIntegers K) (v.adicCompletion K) :=
   Subsemiring.faithfulSMul _
