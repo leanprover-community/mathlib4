@@ -331,11 +331,9 @@ theorem zero_add {f : MvPowerSeries σ R} (hf : PowerSeries.HasSubst f) :
     _ = _ := by
       simp [zeroX_eq_X, PowerSeries.subst_X hf]
 
-instance : AddZeroClass (F.Point σ) where
+instance : AddMonoid (F.Point σ) where
   zero_add x := Subtype.ext (zero_add F x.prop)
   add_zero x := Subtype.ext (add_zero F x.prop)
-
-instance : AddMonoid (F.Point σ) where
   nsmul := nsmulRec
   add_assoc x y z := Subtype.ext <| F.assoc' x.prop y.prop z.prop
 
