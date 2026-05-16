@@ -95,7 +95,7 @@ def Embedding.sum (f : G ↪g G') (g : H ↪g H') : G ⊕g H ↪g G' ⊕g H' whe
   map_rel_iff' {u v} := by cases u <;> cases v <;> simp
 
 lemma Embedding.toHom_sum (f : G ↪g G') (g : H ↪g H') :
-  (Embedding.sum f g).toHom = Hom.sum f.toHom g.toHom := rfl
+    (Embedding.sum f g).toHom = Hom.sum f.toHom g.toHom := rfl
 
 lemma Embedding.sum_comp_sumComm (f : G ↪g G') (g : H ↪g H') :
     comp (sum g f) Iso.sumComm.toEmbedding = comp Iso.sumComm.toEmbedding (sum f g) := by
@@ -114,16 +114,16 @@ def Iso.sumCongr (f : G ≃g G') (g : H ≃g H') : G ⊕g H ≃g G' ⊕g H' wher
   map_rel_iff' {u v} := by cases u <;> cases v <;> simp [f.map_rel_iff, g.map_rel_iff]
 
 lemma Iso.toHom_sumCongr (f : G ≃g G') (g : H ≃g H') :
-  (Iso.sumCongr f g).toHom = Hom.sum f.toHom g.toHom := rfl
+    (Iso.sumCongr f g).toHom = Hom.sum f.toHom g.toHom := rfl
 
 lemma Iso.toEmbedding_sumCongr (f : G ≃g G') (g : H ≃g H') :
-  (Iso.sumCongr f g).toEmbedding = Embedding.sum f.toEmbedding g.toEmbedding := rfl
+    (Iso.sumCongr f g).toEmbedding = Embedding.sum f.toEmbedding g.toEmbedding := rfl
 
-lemma Iso.sumCongr_comp_sumComm (f : G ≃g G') (g : H ≃g H') :
+lemma Iso.sumComm_comp_sumCongr (f : G ≃g G') (g : H ≃g H') :
     comp sumComm (sumCongr f g) = comp (sumCongr g f) sumComm := by
   ext (v | w) <;> simp
 
-lemma Iso.sumCongr_comp_sumAssoc (f : G ≃g G') (g : H ≃g H') (h : I ≃g I') :
+lemma Iso.sumAssoc_comp_sumCongr (f : G ≃g G') (g : H ≃g H') (h : I ≃g I') :
     comp sumAssoc (sumCongr (sumCongr f g) h) = comp (sumCongr f (sumCongr g h)) sumAssoc := by
   ext ((v | w) | u) <;> simp
 
