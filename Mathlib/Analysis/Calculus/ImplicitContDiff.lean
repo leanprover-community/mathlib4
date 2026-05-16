@@ -123,9 +123,6 @@ alias apply_implicitFunction := ContDiffAt.eventually_apply_implicitFunction
 @[deprecated (since := "2026-01-27")]
 alias eventually_implicitFunction_apply_eq := ContDiffAt.eventually_apply_eq_iff_implicitFunction
 
-@[deprecated (since := "2026-01-27")]
-alias contDiffAt_implicitFunction := ContDiffAt.contDiffAt_implicitFunction
-
 end IsContDiffImplicitAt
 
 end

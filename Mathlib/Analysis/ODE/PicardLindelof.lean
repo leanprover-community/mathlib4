@@ -120,7 +120,12 @@ lemma contDiffOn_comp {n : WithTop ℕ∞}
     (hf : ContDiffOn ℝ n (uncurry f) (s ×ˢ u))
     (hα : ContDiffOn ℝ n α s) (hmem : ∀ t ∈ s, α t ∈ u) :
     ContDiffOn ℝ n (fun t ↦ f t (α t)) s := by
-  simpa only [← uncurry_apply_pair f] using hf.comp (by fun_prop) (by tauto)
+  have : (fun t ↦ f t (α t)) = (uncurry f) ∘ fun t ↦ (t, α t) := rfl
+  rw [this]
+  apply hf.comp (by fun_prop)
+  intro _ ht
+  rw [mem_prod]
+  exact ⟨ht, hmem _ ht⟩
 
 /-- Given a continuous time-dependent vector field `f` and a continuous curve `α`, the composition
 `f t (α t)` is continuous in `t`. -/
@@ -330,6 +335,7 @@ lemma dist_comp_iterate_next_le (hf : IsPicardLindelof f t₀ x₀ a r L K)
       gcongr
       rwa [← mul_pow]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A time-dependent bound on the distance between the `n`-th iterates of `next` on two curves -/
 lemma dist_iterate_next_apply_le (hf : IsPicardLindelof f t₀ x₀ a r L K)
     (hx : x ∈ closedBall x₀ r) (α β : FunSpace t₀ x₀ r L) (n : ℕ) (t : Icc tmin tmax) :
@@ -363,6 +369,7 @@ lemma dist_iterate_next_apply_le (hf : IsPicardLindelof f t₀ x₀ a r L K)
           abs_pow, abs_pow, abs_dist, NNReal.abs_eq, abs_abs, mul_div, div_div, ← abs_mul,
           ← Nat.cast_succ, ← Nat.cast_mul, ← Nat.factorial_succ, Nat.abs_cast, ← mul_pow]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The `n`-th iterate of `next` is Lipschitz continuous with respect to `FunSpace`, with constant
 $(K \max(t_{\mathrm{max}}, t_{\mathrm{min}})^n / n!$. -/
 lemma dist_iterate_next_iterate_next_le (hf : IsPicardLindelof f t₀ x₀ a r L K)
@@ -407,6 +414,7 @@ there is some `m : ℕ` such that `next^[m]` is a contracting map, it further su
 distance between `α` and `next^[m]^[n] α`.
 -/
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A key step in the base case of `exists_forall_closedBall_funSpace_dist_le_mul` -/
 lemma dist_next_next (hf : IsPicardLindelof f t₀ x₀ a r L K) (hx : x ∈ closedBall x₀ r)
     (hy : y ∈ closedBall x₀ r) (α : FunSpace t₀ x₀ r L) :
@@ -499,7 +507,11 @@ lemma hasDerivWithinAt_picard_Icc
     (continuousOn_comp hf hα hmem _ ht)
   apply ContinuousOn.intervalIntegrable
   apply continuousOn_comp hf hα hmem |>.mono
-  exact uIcc_subset_Icc ht₀ ht
+  by_cases! h : t < t₀
+  · rw [uIcc_of_gt h]
+    exact Icc_subset_Icc ht.1 ht₀.2
+  · rw [uIcc_of_le h]
+    exact Icc_subset_Icc ht₀.1 ht.2
 
 /-- Converse of `hasDerivWithinAt_picard_Icc`: if `f` is the derivative along `α`, then `α`
 satisfies the integral equation. -/
