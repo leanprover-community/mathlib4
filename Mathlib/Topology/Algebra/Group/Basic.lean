@@ -14,6 +14,7 @@ public import Mathlib.Order.Filter.Bases.Finite
 public import Mathlib.Topology.Algebra.Group.Defs
 public import Mathlib.Topology.Algebra.Monoid
 public import Mathlib.Topology.Homeomorph.Lemmas
+public import Mathlib.Topology.Maps.Strict.Basic
 
 /-!
 # Topological groups
@@ -912,6 +913,49 @@ lemma MonoidHom.isOpenQuotientMap_of_isQuotientMap {A : Type*} [Group A]
       · rintro ⟨_, ⟨k, rfl⟩, _, ⟨(hk : φ k = 1), rfl⟩, hx⟩
         use x * k, hx
         rw [map_mul, hk, mul_one]
+
+-- Section for properties of strict maps between topological groups
+section StrictMaps
+
+variable {G H : Type*} [Group G] [TopologicalSpace G] [ContinuousMul G] [Group H] [TopologicalSpace H]
+  (f : G →* H)
+
+@[to_additive]
+theorem MonoidHom.isOpenQuotientMap_of_strictMap (hf : Topology.IsStrictMap f) :
+    IsOpenQuotientMap f.rangeRestrict := by
+  refine MonoidHom.isOpenQuotientMap_of_isQuotientMap ?_
+  convert hf using 1
+
+end StrictMaps
+
+namespace Topology.IsStrictMap
+
+variable {G H K L : Type*}
+  [Group G] [TopologicalSpace G] [ContinuousMul G]
+  [Group H] [TopologicalSpace H] [ContinuousMul H]
+  [Group K] [TopologicalSpace K] [ContinuousMul K]
+  [Group L] [TopologicalSpace L] [ContinuousMul L]
+  {f : G →* H} {g : K →* L}
+
+omit [ContinuousMul H] [ContinuousMul L] in
+@[to_additive]
+theorem prodMap (hf : IsStrictMap f) (hg : IsStrictMap g) :
+    IsStrictMap (MonoidHom.prodMap f g) := by
+  have h4 : Set.range (MonoidHom.prodMap f g) = Set.range f ×ˢ Set.range g := Set.range_prodMap
+  have h5' : IsOpenQuotientMap (Set.rangeFactorization f) := by
+    convert MonoidHom.isOpenQuotientMap_of_strictMap f hf using 1
+  have h6' : IsOpenQuotientMap (Set.rangeFactorization g) := by
+    convert MonoidHom.isOpenQuotientMap_of_strictMap g hg using 1
+  have h7' : IsOpenQuotientMap (Prod.map (Set.rangeFactorization f) (Set.rangeFactorization g)) :=
+    IsOpenQuotientMap.prodMap h5' h6'
+  let e0 : (Set.range (MonoidHom.prodMap f g)) ≃ₜ (Set.range f ×ˢ Set.range g) := Homeomorph.setCongr h4
+  let e : (Set.range (MonoidHom.prodMap f g)) ≃ₜ (Set.range f × Set.range g) := e0.trans (Homeomorph.Set.prod (Set.range f) (Set.range g))
+  have h8 : IsOpenQuotientMap (e.symm ∘ Prod.map (Set.rangeFactorization f) (Set.rangeFactorization g)) :=
+    IsOpenQuotientMap.comp e.symm.isOpenQuotientMap h7'
+  rw [Topology.IsStrictMap]
+  convert h8.isQuotientMap using 1
+
+end Topology.IsStrictMap
 
 @[to_additive]
 theorem IsTopologicalGroup.ext {G : Type*} [Group G] {t t' : TopologicalSpace G}
