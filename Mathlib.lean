@@ -5209,6 +5209,7 @@ public import Mathlib.Logic.Equiv.Finset
 public import Mathlib.Logic.Equiv.Fintype
 public import Mathlib.Logic.Equiv.Functor
 public import Mathlib.Logic.Equiv.List
+public import Mathlib.Logic.Equiv.ListNatBijective
 public import Mathlib.Logic.Equiv.Multiset
 public import Mathlib.Logic.Equiv.Nat
 public import Mathlib.Logic.Equiv.Option
