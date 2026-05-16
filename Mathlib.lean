@@ -7034,6 +7034,7 @@ public import Mathlib.SetTheory.ZFC.VonNeumann
 public import Mathlib.Tactic
 public import Mathlib.Tactic.Abel
 public import Mathlib.Tactic.AdaptationNote
+public import Mathlib.Tactic.AddGroup
 public import Mathlib.Tactic.Algebra.Basic
 public import Mathlib.Tactic.Algebra.Lemmas
 public import Mathlib.Tactic.Algebraize
