@@ -26,13 +26,8 @@ public import Mathlib.Combinatorics.SimpleGraph.Operations
 
 ## Main statements
 
-* `SimpleGraph.isBridge_iff_mem_and_forall_cycle_notMem` characterizes bridge edges in terms of
-  there being no cycle containing them.
-
-## TODO
-
-`IsBridge` is unpractical: we shouldn't require the edge to be present.
-See https://github.com/leanprover-community/mathlib4/issues/31690.
+* `SimpleGraph.isBridge_iff_forall_cycle_notMem` characterizes bridges as the edges not
+  contained in any cycle.
 
 ## Tags
 trails, paths, cycles, bridge edges
@@ -748,17 +743,16 @@ lemma Preconnected.exists_adj_of_nontrivial [Nontrivial V] {G : SimpleGraph V} (
 section BridgeEdges
 variable {u v : V}
 
-/-- An edge of a graph is a *bridge* if, after removing it, its incident vertices
-are no longer reachable from one another. -/
+/-- An edge of a graph is a *bridge* if without it, its incident vertices
+are not reachable from one another. -/
 def IsBridge (G : SimpleGraph V) (e : Sym2 V) : Prop :=
-  e ∈ G.edgeSet ∧
-    Sym2.lift ⟨fun v w => ¬(G.deleteEdges {e}).Reachable v w, by simp [reachable_comm]⟩ e
+  Sym2.lift ⟨fun v w ↦ ¬ (G.deleteEdges {e}).Reachable v w, by simp [reachable_comm]⟩ e
 
 theorem isBridge_iff {u v : V} :
-    G.IsBridge s(u, v) ↔ G.Adj u v ∧ ¬(G.deleteEdges {s(u, v)}).Reachable u v := Iff.rfl
+    G.IsBridge s(u, v) ↔ ¬ (G.deleteEdges {s(u, v)}).Reachable u v := .rfl
 
-@[simp] lemma IsBridge.of_not_reachable (huv : ¬ G.Reachable u v) (h : G.Adj u v) :
-    G.IsBridge s(u, v) := ⟨h, fun h ↦ huv <| h.mono <| deleteEdges_le _⟩
+@[simp] lemma IsBridge.of_not_reachable (huv : ¬ G.Reachable u v) :
+    G.IsBridge s(u, v) := fun h ↦ huv <| h.mono <| deleteEdges_le _
 
 lemma IsBridge.nontrivial {e : Sym2 V} (he : G.IsBridge e) : Nontrivial V := by
   cases e with | h u v; exact ⟨u, v, by rintro rfl; simp [IsBridge] at he⟩
@@ -780,10 +774,12 @@ theorem reachable_deleteEdges_iff_exists_walk {v w v' w' : V} :
 @[deprecated (since := "2026-03-18")]
 alias reachable_delete_edges_iff_exists_walk := reachable_deleteEdges_iff_exists_walk
 
-theorem isBridge_iff_adj_and_forall_walk_mem_edges {v w : V} :
-    G.IsBridge s(v, w) ↔ G.Adj v w ∧ ∀ p : G.Walk v w, s(v, w) ∈ p.edges := by
-  rw [isBridge_iff, and_congr_right']
-  rw [reachable_deleteEdges_iff_exists_walk, not_exists_not]
+theorem isBridge_iff_forall_walk_mem_edges {v w : V} :
+    G.IsBridge s(v, w) ↔ ∀ p : G.Walk v w, s(v, w) ∈ p.edges := by
+  rw [isBridge_iff, reachable_deleteEdges_iff_exists_walk, not_exists_not]
+
+@[deprecated (since := "2026-04-02")]
+alias isBridge_iff_adj_and_forall_walk_mem_edges := isBridge_iff_forall_walk_mem_edges
 
 theorem reachable_deleteEdges_iff_exists_cycle.aux [DecidableEq V] {u v w : V}
     (hb : ∀ p : G.Walk v w, s(v, w) ∈ p.edges) (c : G.Walk u u) (hc : c.IsTrail)
@@ -835,23 +831,27 @@ theorem adj_and_reachable_delete_edges_iff_exists_cycle {v w : V} :
       ?_ (Walk.start_mem_support _)
     rwa [(c.rotate_edges v hvc).mem_iff, Sym2.eq_swap]
 
-theorem isBridge_iff_adj_and_forall_cycle_notMem {v w : V} : G.IsBridge s(v, w) ↔
-    G.Adj v w ∧ ∀ ⦃u : V⦄ (p : G.Walk u u), p.IsCycle → s(v, w) ∉ p.edges := by
-  rw [isBridge_iff, and_congr_right_iff]
-  intro h
-  contrapose!
-  rw [← adj_and_reachable_delete_edges_iff_exists_cycle]
-  simp only [h, true_and]
+theorem isBridge_iff_forall_cycle_notMem {e : Sym2 V} (he : e ∈ G.edgeSet) :
+    G.IsBridge e ↔ ∀ ⦃u : V⦄ (p : G.Walk u u), p.IsCycle → e ∉ p.edges := by
+  obtain ⟨v, w⟩ := e
+  contrapose
+  simp_all [isBridge_iff, ← adj_and_reachable_delete_edges_iff_exists_cycle]
 
-theorem isBridge_iff_mem_and_forall_cycle_notMem {e : Sym2 V} :
-    G.IsBridge e ↔ e ∈ G.edgeSet ∧ ∀ ⦃u : V⦄ (p : G.Walk u u), p.IsCycle → e ∉ p.edges :=
-  Sym2.ind (fun _ _ => isBridge_iff_adj_and_forall_cycle_notMem) e
+@[deprecated (since := "2026-04-02")]
+alias isBridge_iff_adj_and_forall_cycle_notMem := isBridge_iff_forall_cycle_notMem
+
+lemma IsBridge.notMem_edges_of_isCycle {e : Sym2 V} {u : V} {p : G.Walk u u}
+    (he : G.IsBridge e) (hp : p.IsCycle) : e ∉ p.edges :=
+  fun hep ↦ (isBridge_iff_forall_cycle_notMem <| p.edges_subset_edgeSet hep).mp he _ hp hep
+
+@[deprecated (since := "2026-04-02")]
+alias isBridge_iff_mem_and_forall_cycle_notMem := isBridge_iff_forall_cycle_notMem
 
 /-- Deleting a non-bridge edge from a connected graph preserves connectedness. -/
 lemma Connected.connected_delete_edge_of_not_isBridge (hG : G.Connected) {x y : V}
     (h : ¬ G.IsBridge s(x, y)) : (G.deleteEdges {s(x, y)}).Connected := by
   classical
-  simp only [isBridge_iff, not_and, not_not] at h
+  simp only [isBridge_iff, not_not] at h
   obtain hxy | hxy := em' <| G.Adj x y
   · rwa [deleteEdges, Disjoint.sdiff_eq_left (by simpa)]
   refine (connected_iff_exists_forall_reachable _).2 ⟨x, fun w ↦ ?_⟩
@@ -862,29 +862,33 @@ lemma Connected.connected_delete_edge_of_not_isBridge (hG : G.Connected) {x y : 
   let P₁ := P.takeUntil y hyP
   have hxP₁ := Walk.endpoint_notMem_support_takeUntil hP hyP hxy.ne
   have heP₁ : s(x, y) ∉ P₁.edges := fun h ↦ hxP₁ <| P₁.fst_mem_support_of_mem_edges h
-  exact (h hxy).trans (Reachable.symm ⟨P₁.toDeleteEdges {s(x, y)} (by grind)⟩)
+  exact h.trans (.symm ⟨P₁.toDeleteEdges {s(x, y)} (by grind)⟩)
 
-/-- If `e` is an edge in `G` and is a bridge in a larger graph `G'`, then it's a bridge in `G`. -/
-theorem IsBridge.anti_of_mem_edgeSet {G' : SimpleGraph V} {e : Sym2 V} (hle : G ≤ G')
-    (h : e ∈ G.edgeSet) (h' : G'.IsBridge e) : G.IsBridge e :=
-  isBridge_iff_mem_and_forall_cycle_notMem.mpr ⟨h, fun _ p hp hpe ↦
-    isBridge_iff_mem_and_forall_cycle_notMem.mp h' |>.right
-      (p.mapLe hle) (Walk.IsCycle.mapLe hle hp) (p.edges_mapLe_eq_edges hle ▸ hpe)⟩
+theorem IsBridge.anti {G' : SimpleGraph V} {e : Sym2 V} (hG : G ≤ G') (h : G'.IsBridge e) :
+    G.IsBridge e := by obtain ⟨a, b⟩ := e; rw [isBridge_iff] at ⊢ h; grw [hG]; assumption
 
-/-- Connecting two unreachable vertices by an edge creates a bridge. -/
+@[deprecated (since := "2026-05-16")] alias IsBridge.anti_of_mem_edgeSet := IsBridge.anti
+
+@[simp] lemma isBridge_sup_edge : (G ⊔ edge u v).IsBridge s(u, v) ↔ G.IsBridge s(u, v) := by
+  simp [isBridge_iff, deleteEdges_sup]
+
+@[simp] lemma isBridge_deleteEdges_singleton {e : Sym2 V} :
+    (G.deleteEdges {e}).IsBridge e ↔ G.IsBridge e := by
+  induction e with | h u v; simp [isBridge_iff]
+
+@[deprecated "Inline the proof" (since := "2026-04-02")]
 theorem IsBridge.sup_edge_of_not_reachable {u v : V} (h : ¬G.Reachable u v) :
-    (G ⊔ edge u v).IsBridge s(u, v) := by
-  refine isBridge_iff.mpr ⟨.inr ⟨Set.mem_singleton _, mt (· ▸ .rfl) h⟩, ?_⟩
-  exact fun h' ↦ h <| .mono (sdiff_le_iff'.mpr <| refl _) h'
+    (G ⊔ edge u v).IsBridge s(u, v) := isBridge_sup_edge.mpr (of_not_reachable h)
 
 @[deprecated (since := "2026-03-18")]
 alias IsBridge.sup_fromEdgeSet_of_not_reachable := IsBridge.sup_edge_of_not_reachable
 
 /-- Connecting two unreachable vertices by an edge preserves existing bridges. -/
 theorem IsBridge.sup_edge_of_not_reachable_of_isBridge {u v : V} {e : Sym2 V}
-    (h : ¬G.Reachable u v) (h' : G.IsBridge e) : (G ⊔ edge u v).IsBridge e := by
-  refine isBridge_iff_mem_and_forall_cycle_notMem.mpr ⟨edgeSet_mono le_sup_left h'.left, ?_⟩
-  refine fun _ p hp hpe ↦ isBridge_iff_mem_and_forall_cycle_notMem.mp h' |>.right
+    (h : ¬G.Reachable u v) (hb : G.IsBridge e) (he : e ∈ G.edgeSet) :
+    (G ⊔ edge u v).IsBridge e := by
+  refine (isBridge_iff_forall_cycle_notMem (edgeSet_mono le_sup_left he)).mpr ?_
+  refine fun w p hp hpe ↦ (isBridge_iff_forall_cycle_notMem he).mp hb
     (p.transfer G fun e' he' ↦ ?_) (hp.transfer _) (Walk.edges_transfer p _ ▸ hpe)
   refine edgeSet_sup .. ▸ Walk.edges_subset_edgeSet _ he' |>.elim id fun h' ↦ h ?_ |>.elim
   exact .mono (sdiff_le_iff'.mpr le_rfl) <|
