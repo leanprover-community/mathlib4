@@ -259,6 +259,16 @@ theorem properDivisors_zero : properDivisors 0 = ∅ := by
 lemma nonempty_divisors : (divisors n).Nonempty ↔ n ≠ 0 :=
   ⟨fun ⟨m, hm⟩ hn ↦ by simp [hn] at hm, fun hn ↦ ⟨1, one_mem_divisors.2 hn⟩⟩
 
+/-- A natural number has infinitely many divisors if and only if it is zero. -/
+@[simp]
+lemma infinite_setOf_divisors_iff (n : ℕ) : { m | m ∣ n }.Infinite ↔ n = 0 := by
+  cases n
+  case zero => simp [Set.infinite_univ]
+  case succ n =>
+    have h : {m : ℕ | m ∣ n + 1}.Finite :=
+      Set.finite_iff_bddAbove.2 ⟨ _, fun m hm => Nat.le_of_dvd ( Nat.succ_pos _ ) hm ⟩
+    simp [h]
+
 @[simp]
 lemma divisors_eq_empty : divisors n = ∅ ↔ n = 0 := by
   contrapose!
