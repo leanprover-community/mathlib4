@@ -133,7 +133,6 @@ elab (name := clearAuxDecl) "clear_aux_decl" : tactic => withMainContext do
   replaceMainGoal [g]
 
 attribute [pp_with_univ] ULift PUnit PEmpty
-
 /-- Result of `withResetServerInfo`. -/
 structure withResetServerInfo.Result (α : Type) where
   /-- Return value of the executed tactic. -/
@@ -160,5 +159,13 @@ def withResetServerInfo {α : Type} (t : TacticM α) :
     modifyThe Core.State fun st =>
       { st with messages := savedMsgs, infoState.trees := savedTrees }
     return { result?, msgs, trees }
+
+/-- "Touch" the main goal, replacing it with a fresh metavariable,
+so that the unused tactics linter does not complain. -/
+def touchMainGoal : TacticM Unit := do
+  let g ← getMainGoal
+  let g' ← mkFreshExprMVar none
+  _ ← withAssignableSyntheticOpaque <| isDefEq (.mvar g) g'
+  replaceMainGoal [g'.mvarId!]
 
 end Mathlib.Tactic
