@@ -352,6 +352,7 @@ theorem maximalIdeal_mk (v : HeightOneSpectrum (𝓞 K)) : maximalIdeal (mk v) =
   rw [← mk_eq_iff, mk_maximalIdeal]
 
 /-- The equivalence between finite places and maximal ideals. -/
+@[simps apply]
 noncomputable def equivHeightOneSpectrum :
     FinitePlace K ≃ HeightOneSpectrum (𝓞 K) where
   toFun := maximalIdeal
@@ -393,6 +394,14 @@ theorem hasFiniteMulSupport {x : K} (h_x_nezero : x ≠ 0) :
 
 @[deprecated (since := "2026-03-03")] alias mulSupport_finite := hasFiniteMulSupport
 
+lemma hasFiniteMulSupport_fun_pow_multiplicity {M : Type*} [CommMonoid M] {I : Ideal (𝓞 K)}
+    (hI : I ≠ ⊥) (f : Ideal (𝓞 K) → M) :
+    (fun v : FinitePlace K ↦
+      (f v.maximalIdeal.asIdeal) ^ multiplicity v.maximalIdeal.asIdeal I).HasFiniteMulSupport := by
+  simp only [← count_normalizedFactors_eq_multiplicity hI]
+  exact Multiset.hasFiniteMulSupport_fun_pow_count (UniqueFactorizationMonoid.normalizedFactors I) f
+    |>.fun_comp_of_injective <| asIdeal_injective.comp maximalIdeal_injective
+
 protected
 lemma add_le (v : FinitePlace K) (x y : K) :
     v (x + y) ≤ max (v x) (v y) := by
@@ -413,6 +422,17 @@ alias IsDedekindDomain.HeightOneSpectrum.equivHeightOneSpectrum_symm_apply :=
   equivHeightOneSpectrum_symm_apply
 @[deprecated (since := "2026-03-11")]
 alias IsDedekindDomain.HeightOneSpectrum.embedding_mul_absNorm := embedding_mul_absNorm
+
+lemma finprod_finitePlace_pow_multiplicity {I : Ideal (𝓞 K)} (hI : I ≠ 0) :
+    ∏ᶠ v : FinitePlace K, v.maximalIdeal.asIdeal ^ multiplicity v.maximalIdeal.asIdeal I = I := by
+  conv_rhs => rw [← finprod_heightOneSpectrum_pow_multiplicity hI]
+  simp only [← finprod_comp_equiv (equivHeightOneSpectrum (K := K)), equivHeightOneSpectrum_apply]
+
+lemma apply_mul_absNorm_pow_eq_one (v : FinitePlace K) {x : 𝓞 K} (hx : x ≠ 0) :
+    v x * v.maximalIdeal.asIdeal.absNorm ^ multiplicity v.maximalIdeal.asIdeal (span {x}) = 1 := by
+  have hnz : span {x} ≠ ⊥ := mt Submodule.span_singleton_eq_bot.mp hx
+  rw [← norm_embedding_eq v x, ← Nat.cast_pow, ← map_pow, ← maxPowDividing_eq_pow_multiplicity hnz]
+  exact HeightOneSpectrum.embedding_mul_absNorm K v.maximalIdeal hx
 
 end FinitePlace
 
