@@ -304,6 +304,15 @@ instance pi {ι : Type*} (M : ι → Type*)
   · introv hN hN'
     infer_instance
 
+variable (R M) in
+theorem exists_exact_and_surjective [FinitePresentation R M] :
+    ∃ (m n : ℕ) (f : (Fin m → R) →ₗ[R] Fin n → R) (g : (Fin n → R) →ₗ[R] M),
+      Function.Exact f g ∧ Function.Surjective g := by
+  obtain ⟨n', K, e, S, hS⟩ := exists_fin R M
+  refine ⟨S.card, n', Fintype.linearCombination R (Subtype.val ∘ S.equivFin.symm),
+    e.symm.toLinearMap.comp K.mkQ, LinearMap.exact_iff.mpr (by simp [← hS]), ?_⟩
+  simp [Submodule.mkQ_surjective, LinearEquiv.surjective]
+
 end Module.FinitePresentation
 
 end Ring
