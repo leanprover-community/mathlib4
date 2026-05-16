@@ -107,6 +107,7 @@ lemma convOne_def : 1 = toConv ((unitBialgHom R A).comp (counitBialgHom R C)) :=
 lemma convOne_apply (c : C) : (1 : WithConv <| C →ₐc[R] A) c = algebraMap R A (counit c) := rfl
 
 lemma toLinearMap_convOne : toConv (1 : WithConv <| C →ₐc[R] A).ofConv.toLinearMap = 1 := rfl
+lemma toAlgHom_convOne : toConv (1 : WithConv <| C →ₐc[R] A).ofConv.toAlgHom = 1 := rfl
 
 variable [IsCocomm R C]
 
@@ -126,10 +127,19 @@ lemma toLinearMap_convMul (f g : WithConv <| C →ₐc[R] A) :
     toConv (f * g).ofConv.toLinearMap = toConv f.ofConv.toLinearMap * toConv g.ofConv.toLinearMap :=
   rfl
 
+lemma toAlgHom_convMul (f g : WithConv <| C →ₐc[R] A) :
+    toConv (f * g).ofConv.toAlgHom = toConv f.ofConv.toAlgHom * toConv g.ofConv.toAlgHom :=
+  rfl
+
 lemma toLinearMap_convPow (f : WithConv <| C →ₐc[R] A) :
     ∀ n, toConv (f ^ n).ofConv.toLinearMap = toConv f.ofConv.toLinearMap ^ n
   | 0 => rfl
   | n + 1 => by simp only [convPow_succ, pow_succ, toLinearMap_convMul, toLinearMap_convPow]
+
+lemma toAlgHom_convPow (f : WithConv <| C →ₐc[R] A) :
+    ∀ n, toConv (f ^ n).ofConv.toAlgHom = toConv f.ofConv.toAlgHom ^ n
+  | 0 => rfl
+  | n + 1 => by simp only [convPow_succ, pow_succ, toAlgHom_convMul, toAlgHom_convPow]
 
 instance : CommMonoid (WithConv <| C →ₐc[R] A) :=
   (toConv_injective.comp <| coe_linearMap_injective.comp ofConv_injective).commMonoid _

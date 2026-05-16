@@ -224,7 +224,7 @@ def mulCoalgHom : A ⊗[R] A →ₗc[R] A where
 
 -- TODO: Generate this using `simps` once the coercion from `LinearMapClass` is gone.
 @[simp]
-lemma mulCoalgHom_toLinearHom : mulCoalgHom R A = LinearMap.mul' R A := rfl
+lemma toLinearMap_mulCoalgHom : mulCoalgHom R A = LinearMap.mul' R A := rfl
 
 @[simp] lemma coe_mulCoalgHom : ⇑(mulCoalgHom R A) = LinearMap.mul' R A := rfl
 
