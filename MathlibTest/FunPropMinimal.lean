@@ -387,8 +387,8 @@ opaque B : Prop
 @[local fun_prop] theorem Con_comp' (f : β → γ) (g : α → β) (h : A) : Con (fun x => f (g x)) := silentSorry
 @[local fun_prop] theorem Con_comp'' (f : β → γ) (g : α → β) (b : B) : Con (fun x => f (g x)) := silentSorry
 
-example (f : β → γ) (g : α → β) (h : A) : Con (fun x => f (g x)) := by fun_prop (disch := assumption)
-example (f : β → γ) (g : α → β) (h : B) : Con (fun x => f (g x)) := by fun_prop (disch := assumption)
+example (f : β → γ) (g : α → β) (h : A) : Con (fun x => f (g x)) := by fun_prop
+example (f : β → γ) (g : α → β) (h : B) : Con (fun x => f (g x)) := by fun_prop
 
 end MultipleLambdaTheorems
 
@@ -732,3 +732,11 @@ example {f : α → FooHom α} (hf : Con f) : Con fun x ↦ f x (f x x x) x := b
   fun_prop
 
 end BundledMorphismWithFunctionValues
+
+
+-- this use to fail when we did not apply other rules when constant lambda rule did not work
+example {β} [Zero β] (f : β → γ) (hf : Lin f) :
+  Lin (fun x : α => f 0) := by fun_prop
+
+example {β} [Zero β] [Add β] :
+  Lin (fun x : α => 0 + 0) := by fun_prop
