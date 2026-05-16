@@ -67,8 +67,8 @@ theorem coe_pimage : (s.pimage f : Set β) = f.image s :=
   Set.ext fun _ => mem_pimage
 
 @[simp]
-theorem pimage_some (s : Finset α) (f : α → β) [∀ x, Decidable (Part.some <| f x).Dom] :
-    (s.pimage fun x => Part.some (f x)) = s.image f := by
+theorem pimage_some (s : Finset α) (f : α → β) [∀ x, Decidable (PFun.lift f x).Dom] :
+    s.pimage (PFun.lift f) = s.image f := by
   ext
   simp [eq_comm]
 

@@ -382,8 +382,8 @@ lemma eval_pappAck (m n) : (pappAck m).eval n = Part.some (ack m n) := by
 /-- The Ackermann function is computable. -/
 theorem _root_.computable₂_ack : Computable₂ ack := by
   apply _root_.Partrec.of_eq_tot
-    (f := fun p : ℕ × ℕ => (pappAck p.1).eval p.2) (g := fun p : ℕ × ℕ => ack p.1 p.2)
-  · change Partrec₂ (fun m n => (pappAck m).eval n)
+    (f := PFun.mk fun p : ℕ × ℕ => (pappAck p.1).eval p.2) (g := fun p : ℕ × ℕ => ack p.1 p.2)
+  · change Partrec₂ (fun m => (pappAck m).eval)
     apply_rules only
       [Code.eval_part.comp₂, Computable.fst, Computable.snd, primrec_pappAck.to_comp.comp]
   · simp

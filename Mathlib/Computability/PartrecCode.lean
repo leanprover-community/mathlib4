@@ -48,27 +48,39 @@ open Encodable Denumerable
 
 namespace Nat.Partrec
 
-theorem rfind' {f} (hf : Nat.Partrec f) :
+theorem rfind' {f : ℕ →. ℕ} (hf : Nat.Partrec f) :
     Nat.Partrec
-      (Nat.unpaired fun a m =>
-        (Nat.rfind fun n => (fun m => m = 0) <$> f (Nat.pair a (n + m))).map (· + m)) :=
-  Partrec₂.unpaired'.2 <| by
-    refine
-      Partrec.map
-        ((@Partrec₂.unpaired' fun a b : ℕ =>
-              Nat.rfind fun n => (fun m => m = 0) <$> f (Nat.pair a (n + b))).1
-          ?_)
-        (Primrec.nat_add.comp Primrec.snd <| Primrec.snd.comp Primrec.fst).to_comp.to₂
-    have : Nat.Partrec (fun a => Nat.rfind (fun n => (fun m => decide (m = 0)) <$>
-      Nat.unpaired (fun a b => f (Nat.pair (Nat.unpair a).1 (b + (Nat.unpair a).2)))
-        (Nat.pair a n))) :=
-      rfind
-        (Partrec₂.unpaired'.2
-          ((Partrec.nat_iff.2 hf).comp
-              (Primrec₂.pair.comp (Primrec.fst.comp <| Primrec.unpair.comp Primrec.fst)
-                  (Primrec.nat_add.comp Primrec.snd
-                    (Primrec.snd.comp <| Primrec.unpair.comp Primrec.fst))).to_comp))
-    simpa
+      (PFun.mk <| Nat.unpaired fun a m =>
+        (Nat.rfind (PFun.mk fun n =>
+          (fun x => decide (x = 0)) <$> f (Nat.pair a (n + m)))).map (· + m)) := by
+  let F : ℕ → ℕ →. ℕ := fun a => PFun.mk fun m =>
+    (Nat.rfind (PFun.mk fun n =>
+      (fun x => decide (x = 0)) <$> f (Nat.pair a (n + m)))).map (· + m)
+  exact (@Partrec₂.unpaired' F).mpr <| by
+    let G : ℕ → ℕ →. ℕ := fun x => PFun.mk fun y =>
+      f (Nat.pair (Nat.unpair x).1 (y + (Nat.unpair x).2))
+    have h_inner :
+        Nat.Partrec (PFun.mk fun a => Nat.rfind (PFun.mk fun n =>
+          (fun x => decide (x = 0)) <$>
+          Nat.unpaired (fun x y => (G x) y) (Nat.pair a n))) :=
+      Nat.Partrec.rfind <| (@Partrec₂.unpaired' G).mpr <|
+        (Partrec.nat_iff.mpr hf).comp <| _root_.Primrec.to_comp <|
+          Primrec₂.pair.comp
+            (_root_.Primrec.comp _root_.Primrec.fst
+              (_root_.Primrec.comp _root_.Primrec.unpair _root_.Primrec.fst))
+            (Primrec.nat_add.comp _root_.Primrec.snd
+              (_root_.Primrec.comp _root_.Primrec.snd
+                (_root_.Primrec.comp _root_.Primrec.unpair _root_.Primrec.fst)))
+    let H : ℕ → ℕ →. ℕ := fun a => PFun.mk fun b =>
+      Nat.rfind (PFun.mk fun n =>
+        (fun x => decide (x = 0)) <$> f (Nat.pair a (n + b)))
+    have h1 : Partrec₂ H :=
+      (@Partrec₂.unpaired' H).mp <| by
+        simpa [PFun.coe_mk, Nat.unpaired] using h_inner
+    have hMap := Partrec.map h1
+      (_root_.Primrec.to_comp (Primrec.nat_add.comp _root_.Primrec.snd
+        (_root_.Primrec.comp _root_.Primrec.snd _root_.Primrec.fst))).to₂
+    exact Partrec.of_eq hMap (fun n => Part.ext fun x => Iff.rfl)
 
 /-- Code for partial recursive functions from ℕ to ℕ.
 See `Nat.Partrec.Code.eval` for the interpretation of these constructors.
@@ -462,34 +474,32 @@ end
   exists and if `eval cf (pair a k)` terminates for all `m ≤ k ≤ n`.
 -/
 def eval : Code → ℕ →. ℕ
-  | zero => pure 0
-  | succ => Nat.succ
-  | left => ↑fun n : ℕ => n.unpair.1
-  | right => ↑fun n : ℕ => n.unpair.2
-  | pair cf cg => fun n => Nat.pair <$> eval cf n <*> eval cg n
-  | comp cf cg => fun n => eval cg n >>= eval cf
+  | zero => PFun.lift fun _ => 0
+  | succ => PFun.lift Nat.succ
+  | left => PFun.lift fun n => n.unpair.1
+  | right => PFun.lift fun n => n.unpair.2
+  | pair cf cg => PFun.mk fun n => Nat.pair <$> eval cf n <*> eval cg n
+  | comp cf cg => PFun.mk fun n => eval cg n >>= eval cf
   | prec cf cg =>
-    Nat.unpaired fun a n =>
+    PFun.mk <| Nat.unpaired fun a n =>
       n.rec (eval cf a) fun y IH => do
         let i ← IH
         eval cg (Nat.pair a (Nat.pair y i))
   | rfind' cf =>
-    Nat.unpaired fun a m =>
-      (Nat.rfind fun n => (fun m => m = 0) <$> eval cf (Nat.pair a (n + m))).map (· + m)
+    PFun.mk <| Nat.unpaired fun a m =>
+      (Nat.rfind (PFun.mk fun n =>
+        (fun x => decide (x = 0)) <$> eval cf (Nat.pair a (n + m)))).map (· + m)
 
 /-- Helper lemma for the evaluation of `prec` in the base case. -/
 @[simp]
 theorem eval_prec_zero (cf cg : Code) (a : ℕ) : eval (prec cf cg) (Nat.pair a 0) = eval cf a := by
-  rw [eval, Nat.unpaired, Nat.unpair_pair]
-  simp (config := { Lean.Meta.Simp.neutralConfig with proj := true }) only []
-  rw [Nat.rec_zero]
+  ext; simp [eval, Nat.unpaired]
 
 /-- Helper lemma for the evaluation of `prec` in the recursive case. -/
 theorem eval_prec_succ (cf cg : Code) (a k : ℕ) :
     eval (prec cf cg) (Nat.pair a (Nat.succ k)) =
       do {let ih ← eval (prec cf cg) (Nat.pair a k); eval cg (Nat.pair a (Nat.pair k ih))} := by
-  rw [eval, Nat.unpaired, Part.bind_eq_bind, Nat.unpair_pair]
-  simp
+  ext; simp [eval, Nat.unpaired, Part.bind_eq_bind]
 
 instance : Membership (ℕ →. ℕ) Code :=
   ⟨fun c f => eval c = f⟩
@@ -513,7 +523,7 @@ theorem primrec_const : Primrec Code.const :=
 
 theorem primrec₂_curry : Primrec₂ curry :=
   primrec₂_comp.comp Primrec.fst <| primrec₂_pair.comp (primrec_const.comp Primrec.snd)
-    (_root_.Primrec.const Code.id)
+  (_root_.Primrec.const Code.id)
 
 theorem curry_inj {c₁ c₂ n₁ n₂} (h : curry c₁ n₁ = curry c₂ n₂) : c₁ = c₂ ∧ n₁ = n₂ :=
   ⟨by injection h, by
@@ -532,8 +542,9 @@ theorem smn :
 /-- A function is partial recursive if and only if there is a code implementing it. Therefore,
 `eval` is a **universal partial recursive function**. -/
 theorem exists_code {f : ℕ →. ℕ} : Nat.Partrec f ↔ ∃ c : Code, eval c = f := by
-  refine ⟨fun h => ?_, ?_⟩
-  · induction h with
+  constructor
+  · intro h
+    induction h with
     | zero => exact ⟨zero, rfl⟩
     | succ => exact ⟨succ, rfl⟩
     | left => exact ⟨left, rfl⟩
@@ -550,7 +561,8 @@ theorem exists_code {f : ℕ →. ℕ} : Nat.Partrec f ↔ ∃ c : Code, eval c 
     | rfind pf hf =>
       rcases hf with ⟨cf, rfl⟩
       refine ⟨comp (rfind' cf) (pair Code.id zero), ?_⟩
-      simp [eval, Seq.seq, pure, PFun.pure, Part.map_id']
+      ext n b
+      simp [eval, Seq.seq, add_zero, Part.map_id']
   · rintro ⟨c, rfl⟩
     induction c with
     | zero => exact Nat.Partrec.zero
@@ -693,7 +705,7 @@ theorem evaln_complete {c n x} : x ∈ eval c n ↔ ∃ k, x ∈ evaln k c n := 
   rsuffices ⟨k, h⟩ : ∃ k, x ∈ evaln (k + 1) c n
   · exact ⟨k + 1, h⟩
   induction c generalizing n x with
-      simp [eval, evaln, pure, PFun.pure, Seq.seq, Option.bind_eq_some_iff] at h ⊢
+    simp [eval, evaln, Seq.seq, Option.bind_eq_some_iff] at h ⊢
   | pair cf cg hf hg =>
     rcases h with ⟨x, hx, y, hy, rfl⟩
     rcases hf hx with ⟨k₁, hk₁⟩; rcases hg hy with ⟨k₂, hk₂⟩
@@ -1003,7 +1015,8 @@ That is, under the interpretation given by `Nat.Partrec.Code.eval`, there is a c
 such that `c` and `f c` have the same evaluation.
 -/
 theorem fixed_point {f : Code → Code} (hf : Computable f) : ∃ c : Code, eval (f c) = eval c :=
-  let g (x y : ℕ) : Part ℕ := eval (ofNat Code x) x >>= fun b => eval (ofNat Code b) y
+  let g : ℕ → ℕ →. ℕ := fun x => PFun.mk fun y =>
+  eval (ofNat Code x) x >>= fun b => eval (ofNat Code b) y
   have : Partrec₂ g :=
     (eval_part.comp ((Computable.ofNat _).comp fst) fst).bind
       (eval_part.comp ((Computable.ofNat _).comp snd) (snd.comp fst)).to₂
@@ -1014,17 +1027,18 @@ theorem fixed_point {f : Code → Code} (hf : Computable f) : ∃ c : Code, eval
     hf.comp (primrec₂_curry.comp (_root_.Primrec.const cg) _root_.Primrec.id).to_comp
   let ⟨cF, eF⟩ := exists_code.1 this
   have eF' : eval cF (encode cF) = Part.some (encode (F (encode cF))) := by simp [eF]
-  ⟨curry cg (encode cF),
-    funext fun n =>
-      show eval (f (curry cg (encode cF))) n = eval (curry cg (encode cF)) n by
-        simp [F, g, eg', eF', Part.map_id']⟩
+  ⟨curry cg (encode cF), by
+    ext n b
+    simp [F, g, eg', eF', Part.map_id']⟩
 
 /-- **Kleene's second recursion theorem** -/
 theorem fixed_point₂ {f : Code → ℕ →. ℕ} (hf : Partrec₂ f) : ∃ c : Code, eval c = f c :=
   let ⟨cf, ef⟩ := exists_code.1 hf
   (fixed_point (primrec₂_curry.comp (_root_.Primrec.const cf) Primrec.encode).to_comp).imp
-    fun c e => funext fun n => by simp [e.symm, ef, Part.map_id']
-
+    fun c e => by
+      ext n b
+      rw [e.symm, eval_curry]
+      simp [ef, Part.map_id']
 end
 
 /-- There are only countably many partial recursive partial functions `ℕ →. ℕ`. -/
