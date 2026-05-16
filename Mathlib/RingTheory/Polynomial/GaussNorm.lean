@@ -10,6 +10,7 @@ public import Mathlib.RingTheory.PowerSeries.GaussNorm
 
 /-!
 # Gauss norm for polynomials
+
 This file defines the Gauss norm for polynomials. Given a polynomial `p` in `R[X]`, a function
 `v : R → ℝ` and a real number `c`, the Gauss norm is defined as the supremum of the set of all
 values of `v (p.coeff i) * c ^ i` for all `i` in the support of `p`.

@@ -11,6 +11,7 @@ public import Mathlib.RingTheory.Norm.Transitivity
 
 /-!
 # Norm in number fields
+
 Given a finite extension of number fields, we define the norm morphism as a function between the
 rings of integers.
 

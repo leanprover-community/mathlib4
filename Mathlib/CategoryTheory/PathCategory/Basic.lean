@@ -9,6 +9,7 @@ public import Mathlib.CategoryTheory.Quotient
 
 /-!
 # The category paths on a quiver.
+
 When `C` is a quiver, `paths C` is the category of paths.
 
 ## When the quiver is itself a category

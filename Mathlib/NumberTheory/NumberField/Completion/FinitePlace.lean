@@ -17,6 +17,7 @@ import Mathlib.Algebra.FiniteSupport.Basic
 
 /-!
 # Finite places of number fields
+
 This file defines finite places of a number field `K` as absolute values coming from an embedding
 into a completion of `K` associated to a non-zero prime ideal of `𝓞 K`.
 

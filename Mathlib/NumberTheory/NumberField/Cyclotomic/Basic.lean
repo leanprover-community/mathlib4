@@ -13,6 +13,7 @@ public import Mathlib.RingTheory.Prime
 
 /-!
 # Ring of integers of cyclotomic fields
+
 We gather results about cyclotomic extensions of `ℚ`. In particular, we compute the ring of
 integers of a cyclotomic extension of `ℚ`.
 
