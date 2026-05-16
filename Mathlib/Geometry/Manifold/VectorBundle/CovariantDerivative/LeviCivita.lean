@@ -228,24 +228,6 @@ theorem leviCivitaAux_tensorial₂ [FiniteDimensional ℝ E]
       inner_add_left, inner_add_right]
     ring
 
-open scoped Classical in
-/-- Auxiliary definition for the definition of the Levi-Civita connection:
-this is  `⟨∇ X Y, Z⟩` seen as a tensor in `X` and `Y` when `Z` is fixed. -/
-noncomputable def lcAux₀ [FiniteDimensional ℝ E]
-    {Y : Π x : M, TangentSpace I x} (x : M) (hY : MDiffAt (T% Y) x) :
-    TangentSpace I x →L[ℝ] TangentSpace I x →L[ℝ] ℝ :=
-  TensorialAt.mkHom₂ _ (x := x)
-    (fun _Z hZ ↦ leviCivitaAux_tensorial₁ _ _ hY hZ)
-    (fun _X hX ↦ leviCivitaAux_tensorial₂ _ _ hY hX)
-
-theorem lcAux₀_apply [FiniteDimensional ℝ E] {x : M}
-    {X : Π x : M, TangentSpace I x} (hX : MDiffAt (T% X) x)
-    {Y : Π x : M, TangentSpace I x} (hY : MDiffAt (T% Y) x)
-    {Z : Π x : M, TangentSpace I x} (hZ : MDiffAt (T% Z) x) :
-    lcAux₀ I x hY (X x) (Z x) = leviCivitaAux I X Y Z x := by
-  unfold lcAux₀
-  rw [TensorialAt.mkHom₂_apply _ _ hX hZ]
-
 /-- Almost the underlying function underlying our construction of the Levi-Civita connection:
 this is the desired `(1,1)`-tensor, but without considerations to the junk value when
 applied to non-differentiable vector fields. -/
@@ -257,7 +239,9 @@ noncomputable def lcAux₁ [FiniteDimensional ℝ E]
   have : FiniteDimensional ℝ (TangentSpace I x) := inferInstanceAs (FiniteDimensional ℝ E)
   have : CompleteSpace (TangentSpace I x) := FiniteDimensional.complete ℝ _
   (InnerProductSpace.toDual ℝ _).symm.toContinuousLinearEquiv.toContinuousLinearMap ∘L
-    (lcAux₀ I x hY)
+    (TensorialAt.mkHom₂ _ (x := x)
+      (fun _Z hZ ↦ leviCivitaAux_tensorial₁ _ _ hY hZ)
+      (fun _X hX ↦ leviCivitaAux_tensorial₂ _ _ hY hX))
 
 set_option backward.isDefEq.respectTransparency false in
 theorem lcAux₁_apply [FiniteDimensional ℝ E] {x : M}
@@ -265,7 +249,8 @@ theorem lcAux₁_apply [FiniteDimensional ℝ E] {x : M}
     {Y : Π x : M, TangentSpace I x} (hY : MDiffAt (T% Y) x)
     {Z : Π x : M, TangentSpace I x} (hZ : MDiffAt (T% Z) x) :
     ⟪lcAux₁ I x hY (X x), Z x⟫ = leviCivitaAux I X Y Z x := by
-  simpa [lcAux₁] using lcAux₀_apply I hX hY hZ
+  unfold lcAux₁
+  simp [TensorialAt.mkHom₂_apply _ _ hX hZ]
 
 open scoped Classical in
 /-- The function underlying our construction of the Levi-Civita connection on `(M,g)` -/
@@ -287,7 +272,7 @@ lemma isCovariantDerivativeOn_lcAux [FiniteDimensional ℝ E] :
   add {Y Y'} x hY hY' _ := by
     apply injective_eval_vectorField; ext X hX
     apply injective_inner_vectorField; ext Z hZ
-    simp (disch := fun_prop) [lcAux, dif_pos, TensorialAt.mkHom₂_apply, lcAux₁, lcAux₀,
+    simp (disch := fun_prop) [lcAux, dif_pos, TensorialAt.mkHom₂_apply, lcAux₁,
       leviCivitaAux, mvfderiv_fun_add,
       mlieBracket_add_left, mlieBracket_add_right,
       inner_add_left, inner_add_right]
@@ -295,7 +280,7 @@ lemma isCovariantDerivativeOn_lcAux [FiniteDimensional ℝ E] :
   leibniz {Y f x} hY hf _ := by
     apply injective_eval_vectorField; ext X hX
     apply injective_inner_vectorField; ext Z hZ
-    simp (disch := fun_prop) [lcAux, dif_pos, lcAux₁, lcAux₀, TensorialAt.mkHom₂_apply,
+    simp (disch := fun_prop) [lcAux, dif_pos, lcAux₁, TensorialAt.mkHom₂_apply,
       leviCivitaAux, mvfderiv_fun_mul,
       mlieBracket_smul_left, mlieBracket_smul_right,
       inner_add_left, inner_add_right, inner_smul_left, inner_smul_right, real_inner_comm]
