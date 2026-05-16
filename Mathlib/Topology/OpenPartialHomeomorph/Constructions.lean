@@ -76,7 +76,7 @@ section Prod
 
 /-- The product of two open partial homeomorphisms, as an open partial homeomorphism on the product
 space. -/
-@[simps! (attr := mfld_simps) -fullyApplied toPartialEquiv apply,
+@[simps! (attr := mfld_simps) -fullyApplied toPartialHomeomorph_toPartialEquiv apply,
   simps! -isSimp source target symm_apply]
 def prod (eX : OpenPartialHomeomorph X X') (eY : OpenPartialHomeomorph Y Y') :
     OpenPartialHomeomorph (X × Y) (X' × Y') where
@@ -100,7 +100,7 @@ theorem refl_prod_refl : (OpenPartialHomeomorph.refl X).prod (OpenPartialHomeomo
 theorem prod_trans (e : OpenPartialHomeomorph X Y) (f : OpenPartialHomeomorph Y Z)
     (e' : OpenPartialHomeomorph X' Y') (f' : OpenPartialHomeomorph Y' Z') :
     (e.prod e').trans (f.prod f') = (e.trans f).prod (e'.trans f') :=
-  toPartialEquiv_injective <| e.1.prod_trans ..
+  toPartialHomeomorph_injective <| PartialHomeomorph.toPartialEquiv_injective <| e.1.prod_trans ..
 
 theorem prod_eq_prod_of_nonempty {eX eX' : OpenPartialHomeomorph X X'}
     {eY eY' : OpenPartialHomeomorph Y Y'} (h : (eX.prod eY).source.Nonempty) :
@@ -137,7 +137,7 @@ variable {ι : Type*} [Finite ι] {X Y : ι → Type*} [∀ i, TopologicalSpace 
   [∀ i, TopologicalSpace (Y i)] (ei : ∀ i, OpenPartialHomeomorph (X i) (Y i))
 
 /-- The product of a finite family of `OpenPartialHomeomorph`s. -/
-@[simps! toPartialEquiv apply symm_apply source target]
+@[simps! toPartialHomeomorph_toPartialEquiv apply symm_apply source target]
 def pi : OpenPartialHomeomorph (∀ i, X i) (∀ i, Y i) where
   toPartialEquiv := PartialEquiv.pi fun i => (ei i).toPartialEquiv
   open_source := isOpen_set_pi finite_univ fun i _ => (ei i).open_source
@@ -164,7 +164,7 @@ To ensure the maps `toFun` and `invFun` are inverse of each other on the new `so
 the definition assumes that the sets `s` and `t` are related both by `e.is_image` and `e'.is_image`.
 To ensure that the new maps are continuous on `source`/`target`, it also assumes that `e.source` and
 `e'.source` meet `frontier s` on the same set and `e x = e' x` on this intersection. -/
-@[simps! -fullyApplied toPartialEquiv apply]
+@[simps! -fullyApplied toPartialHomeomorph_toPartialEquiv apply]
 def piecewise (e e' : OpenPartialHomeomorph X Y) (s : Set X) (t : Set Y) [∀ x, Decidable (x ∈ s)]
     [∀ y, Decidable (y ∈ t)] (H : e.IsImage s t) (H' : e'.IsImage s t)
     (Hs : e.source ∩ frontier s = e'.source ∩ frontier s)
@@ -226,7 +226,8 @@ def transHomeomorph (e : OpenPartialHomeomorph X Y) (f' : Y ≃ₜ Z) : OpenPart
 
 theorem transHomeomorph_eq_trans (e : OpenPartialHomeomorph X Y) (f' : Y ≃ₜ Z) :
     e.transHomeomorph f' = e.trans f'.toOpenPartialHomeomorph :=
-  toPartialEquiv_injective <| PartialEquiv.transEquiv_eq_trans _ _
+  toPartialHomeomorph_injective <| PartialHomeomorph.toPartialEquiv_injective
+    <| PartialEquiv.transEquiv_eq_trans _ _
 
 @[simp, mfld_simps]
 theorem transHomeomorph_transHomeomorph (e : OpenPartialHomeomorph X Y) (f' : Y ≃ₜ Z)
