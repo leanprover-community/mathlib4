@@ -706,7 +706,7 @@ theorem toEmbedding_completeGraph {α β : Type*} (f : α ≃ β) :
 variable {G'' : SimpleGraph X} {G''' : SimpleGraph Y}
 
 /-- Equivalence of homomorphisms induced by isomorphisms of graphs. -/
-def homCongr (f' : G'' ≃g G''') : G →g G'' ≃ G' →g G''' := RelIso.relHomCongr f f'
+abbrev homCongr (f' : G'' ≃g G''') : G →g G'' ≃ G' →g G''' := RelIso.relHomCongr f f'
 
 /-- Composition of graph isomorphisms. -/
 abbrev comp (f' : G' ≃g G'') (f : G ≃g G') : G ≃g G'' :=

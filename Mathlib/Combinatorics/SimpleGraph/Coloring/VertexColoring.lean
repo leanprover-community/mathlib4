@@ -128,7 +128,7 @@ theorem Coloring.color_classes_independent (c : α) : IsAntichain G.Adj (C.color
   C.isIndepSet_colorClass c
 
 /-- Coloring induced from a homomorphism to a colored graph. -/
-def Coloring.ofHom {V' : Type*} {G' : SimpleGraph V'} {α : Type*} (C : G'.Coloring α)
+abbrev Coloring.ofHom {V' : Type*} {G' : SimpleGraph V'} {α : Type*} (C : G'.Coloring α)
     (f : G →g G') : G.Coloring α :=
   C.comp f
 
@@ -285,8 +285,8 @@ noncomputable def Colorable.toColoring [Fintype α] {n : ℕ} (hc : G.Colorable 
   rw [← Fintype.card_fin n] at hn
   exact G.recolorOfCardLE hn hc.some
 
-theorem Colorable.of_hom {V' : Type*} {G' : SimpleGraph V'} {n : ℕ}
-    (h : G'.Colorable n) (f : G →g G') : G.Colorable n :=
+theorem Colorable.of_hom {V' : Type*} {G' : SimpleGraph V'} {n : ℕ} (f : G →g G')
+    (h : G'.Colorable n) : G.Colorable n :=
   ⟨h.some.ofHom f⟩
 
 theorem colorable_iff_exists_bdd_nat_coloring (n : ℕ) :
@@ -616,8 +616,9 @@ theorem free_of_colorable (nhc : ¬H.Colorable n) (hc : G.Colorable n) : H.Free 
 
 /-! ### Isomorphisms -/
 
-/-- Equivalence of colorings induced by isomorphisms of graphs. -/
-def Iso.coloringEquiv (f : G ≃g H) : G.Coloring α ≃ H.Coloring α := homCongr f refl
+/-- Equivalence of colorings induced by isomorphisms of graphs and equivalence of colors. -/
+def Iso.coloringEquiv (f : G ≃g H) (g : α ≃ β) : G.Coloring α ≃ H.Coloring β :=
+  homCongr f (Iso.completeGraph g)
 
 lemma Iso.colorable_iff (f : G ≃g H) : G.Colorable n ↔ H.Colorable n :=
   ⟨fun hc ↦ hc.of_hom f.symm.toHom, fun hc ↦ hc.of_hom f.toHom⟩
