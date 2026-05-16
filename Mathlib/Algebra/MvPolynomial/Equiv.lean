@@ -183,12 +183,7 @@ theorem eval₂_uniqueAlgEquiv [Unique σ] {f : MvPolynomial σ R} {φ : R →+*
       f.eval₂ φ a := by
   simp only [MvPolynomial.uniqueAlgEquiv_apply]
   induction f using MvPolynomial.induction_on' with
-  | monomial d r =>
-    rw [← MvPolynomial.uniqueAlgEquiv_apply (R := R) (σ := σ), uniqueAlgEquiv_monomial]
-    simp only [Polynomial.eval₂_monomial, eval₂_monomial]
-    rw [Finsupp.unique_single d, Finsupp.prod_single_index]
-    · simp
-    · simp only [pow_zero]
+  | monomial d r => simp
   | add f g hf hg => simp only [eval₂_add, Polynomial.eval₂_add, hf, hg]
 
 theorem eval₂_uniqueAlgEquiv_symm [Unique σ] {f : Polynomial R} {φ : R →+* S}

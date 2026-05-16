@@ -90,8 +90,7 @@ lemma restrict_isLoopAt : (G.restrict F).IsLoopAt e x ↔ G.IsLoopAt e x ∧ e �
 lemma restrict_restrict (G : Graph α β) (F₁ F₂ : Set β) :
     (G.restrict F₁).restrict F₂ = G.restrict (F₁ ∩ F₂) := by
   refine (Compatible.of_le_le (G := G) (restrict_le.trans (by simp)) (by simp)).ext (by simp) ?_
-  simp only [edgeSet_restrict]
-  rw [← inter_assoc, inter_comm _ F₂]
+  grind
 
 /-- Delete a set `F` of edges from `G`. This is a special case of `restrict`,
 but we define it with `copy` so that the edge set is definitionally equal to `E(G) \ F`. -/
