@@ -210,7 +210,7 @@ theorem hahnCoeff_apply {x : seed.baseDomain} {f : Π₀ c, seed.stratum c}
     f.mapRange (fun c x ↦ (⟨⟨x.val, hxm x⟩, by simp⟩ : seed.stratum' c)) (by simp)
   have hf : f c = (seed.baseDomain.subtype.submoduleComap (seed.stratum c)) (f' c) := by
     apply Subtype.ext
-    simp [f']
+    simp [f', ← DirectSum.funLike_eq]
   have hx : x = (decompose seed.stratum').symm f' := by
     change x = f'.coeAddMonoidHom _
     apply Submodule.subtype_injective
