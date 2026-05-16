@@ -1179,13 +1179,13 @@ theorem toBoundedContinuousFunction_apply (f : 𝓢(E, F)) (x : E) :
     f.toBoundedContinuousFunction x = f x :=
   rfl
 
-/-- Schwartz functions as continuous functions -/
-def toContinuousMap (f : 𝓢(E, F)) : C(E, F) :=
-  f.toBoundedContinuousFunction.toContinuousMap
-
 theorem norm_toBoundedContinuousFunction_le (f : 𝓢(E, F)) :
     ‖f.toBoundedContinuousFunction‖ ≤ SchwartzMap.seminorm ℝ 0 0 f :=
   BoundedContinuousFunction.norm_ofNormedAddCommGroup_le f.continuous (by positivity) _
+
+/-- Schwartz functions as continuous functions -/
+def toContinuousMap (f : 𝓢(E, F)) : C(E, F) :=
+  f.toBoundedContinuousFunction.toContinuousMap
 
 variable (𝕜 E F)
 variable [RCLike 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
