@@ -490,8 +490,8 @@ instance : CommMonoidWithZero (ValueGroupWithZero R) where
       simp only [pow_succ, ← ValueGroupWithZero.mk_mul_mk, ih]
       apply congrArg (_ * ·)
       exact ValueGroupWithZero.sound h₁ h₂
-  npow_zero := ValueGroupWithZero.ind (by simp)
-  npow_succ n := ValueGroupWithZero.ind (by simp [pow_succ])
+  npow_zero := ValueGroupWithZero.ind (by simp_rw [HPow.hPow, Pow.pow]; simp)
+  npow_succ n := ValueGroupWithZero.ind (by simp_rw [HPow.hPow, Pow.pow]; simp [pow_succ])
 
 instance : LE (ValueGroupWithZero R) where
   le := ValueGroupWithZero.lift₂ (fun a s b t => a * t ≤ᵥ b * s) <| by

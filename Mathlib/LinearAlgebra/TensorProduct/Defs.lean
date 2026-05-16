@@ -224,7 +224,7 @@ Note that in the special case that `R = R'`, since `R` is commutative, we just g
 action on a tensor product of two modules. This special case is important enough that, for
 performance reasons, we define it explicitly below. -/
 instance leftHasSMul : SMul R' (M ⊗[R] N) :=
-  ⟨fun r =>
+  id ⟨fun r =>
     (addConGen (TensorProduct.Eqv R M N)).lift (SMul.aux r : _ →+ M ⊗[R] N) <|
       AddCon.addConGen_le fun x y hxy =>
         match x, y, hxy with
@@ -270,10 +270,8 @@ protected theorem add_smul (r s : R'') (x : M ⊗[R] N) : (r + s) • x = r • 
     rw [ihx, ihy, add_add_add_comm]
 
 instance addMonoid : AddMonoid (M ⊗[R] N) where
-  nsmul := fun n v => n • v
   nsmul_zero := by simp [TensorProduct.zero_smul]
-  nsmul_succ := by simp only [TensorProduct.one_smul, TensorProduct.add_smul, add_comm,
-    forall_const]
+  nsmul_succ := by simp only [TensorProduct.one_smul, TensorProduct.add_smul, forall_const]
 
 instance addCommMonoid : AddCommMonoid (M ⊗[R] N) where
 

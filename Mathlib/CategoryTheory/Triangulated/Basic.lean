@@ -292,10 +292,8 @@ instance : AddCommGroup (T₁ ⟶ T₂) where
   add_comm f g := by ext <;> apply add_comm
   neg_add_cancel f := by ext <;> apply neg_add_cancel
   sub_eq_add_neg f g := by ext <;> apply sub_eq_add_neg
-  nsmul n f := n • f
   nsmul_zero f := by cat_disch
   nsmul_succ n f := by ext <;> apply AddMonoid.nsmul_succ
-  zsmul n f := n • f
   zsmul_zero' := by cat_disch
   zsmul_succ' n f := by ext <;> apply SubNegMonoid.zsmul_succ'
   zsmul_neg' n f := by ext <;> apply SubNegMonoid.zsmul_neg'

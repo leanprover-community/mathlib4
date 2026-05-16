@@ -312,7 +312,6 @@ instance [CommSemiring R] : CommSemiring (ArithmeticFunction R) where
 instance [CommRing R] : CommRing (ArithmeticFunction R) where
   neg_add_cancel := neg_add_cancel
   mul_comm := mul_comm
-  zsmul n f := n • f
 
 instance {S : Type*} [Semiring R] [AddCommMonoid S] [Module R S] :
     Module R (ArithmeticFunction S) where

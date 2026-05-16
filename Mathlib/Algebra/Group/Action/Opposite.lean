@@ -15,7 +15,7 @@ This file defines the actions on the opposite type `SMul R Mᵐᵒᵖ`, and acti
 type, `SMul Rᵐᵒᵖ M`.
 
 Note that `MulOpposite.smul` is provided in an earlier file as it is needed to
-provide the `AddMonoid.nsmul` and `AddCommGroup.zsmul` fields.
+provide the `NSMul.nsmul` and `AddCommGroup.zsmul` fields.
 
 ## Notation
 

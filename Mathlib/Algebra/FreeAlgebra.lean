@@ -201,7 +201,6 @@ instance instMonoidWithZero : MonoidWithZero (FreeAlgebra R X) where
   mul_assoc := by
     rintro ⟨⟩ ⟨⟩ ⟨⟩
     exact Quot.sound Rel.mul_assoc
-  one := Quot.mk _ 1
   one_mul := by
     rintro ⟨⟩
     exact Quot.sound Rel.one_mul
@@ -237,7 +236,6 @@ instance instAddCommMonoid : AddCommMonoid (FreeAlgebra R X) where
   add_comm := by
     rintro ⟨⟩ ⟨⟩
     exact Quot.sound Rel.add_comm
-  nsmul := (· • ·)
   nsmul_zero := by
     rintro ⟨⟩
     change Quot.mk _ (_ * _) = _
@@ -245,7 +243,7 @@ instance instAddCommMonoid : AddCommMonoid (FreeAlgebra R X) where
     exact Quot.sound Rel.zero_mul
   nsmul_succ n := by
     rintro ⟨a⟩
-    dsimp +instances only [HSMul.hSMul, instSMul, Quot.map]
+    dsimp only [HSMul.hSMul, SMul.smul, NSMul.nsmul, Quot.map]
     rw [map_add, map_one, mk_mul, mk_mul, ← add_one_mul (_ : FreeAlgebra R X)]
     congr 1
     exact Quot.sound Rel.add_scalar

@@ -165,8 +165,10 @@ instance : AddCommMonoid (M →ₚₗ[R] N) where
   zero_add f := by ext; simp only [add_def, zero_add, zero_def]
   add_zero f := by ext; simp only [add_def, add_zero, zero_def]
   nsmul n f := (n : R) • f
-  nsmul_zero f := by simp only [Nat.cast_zero, zero_smul f]
-  nsmul_succ n f := by simp only [Nat.cast_add, Nat.cast_one, add_smul, one_smul]
+  nsmul_zero f := by simp_rw [HSMul.hSMul, SMul.smul]; simp only [Nat.cast_zero, zero_smul f]
+  nsmul_succ n f := by
+    simp_rw [HSMul.hSMul, SMul.smul]
+    simp only [Nat.cast_add, Nat.cast_one, add_smul, one_smul]
   add_comm f g := by ext; simp only [add_def, add_comm]
 
 instance : Module R (M →ₚₗ[R] N) where
@@ -195,15 +197,17 @@ theorem neg_def (S : Type u) [CommSemiring S] [Algebra R S] :
 
 instance : AddCommGroup (M →ₚₗ[R] N) where
   zsmul n f := (n : R) • f
-  zsmul_zero' f := by simp only [Int.cast_zero, zero_smul]
-  zsmul_succ' n f := by simp only [Nat.cast_succ, Int.cast_add, Int.cast_natCast,
-    Int.cast_one, add_smul, _root_.one_smul]
+  zsmul_zero' f := by simp_rw [HSMul.hSMul, SMul.smul]; simp only [Int.cast_zero, zero_smul]
+  zsmul_succ' n f := by
+    simp_rw [HSMul.hSMul, SMul.smul]
+    simp only [Nat.cast_succ, Int.cast_add, Int.cast_natCast, Int.cast_one, add_smul, one_smul]
   zsmul_neg' n f := by
+    simp_rw [HSMul.hSMul, SMul.smul]
     ext S _ _ m
     rw [neg_def]
-    simp only [Int.cast_negSucc, Nat.cast_add, Nat.cast_one, neg_add_rev, _root_.add_smul,
+    simp only [Int.cast_negSucc, Nat.cast_add, Nat.cast_one, neg_add_rev, add_smul,
       add_def_apply, smul_def_apply, Nat.succ_eq_add_one, Int.cast_add, Int.cast_natCast,
-      Int.cast_one, _root_.one_smul, add_def, smul_def, Pi.smul_apply, Pi.add_apply, smul_add,
+      Int.cast_one, one_smul, add_def, smul_def, Pi.smul_apply, Pi.add_apply, smul_add,
       smul_smul, neg_mul, one_mul]
     rw [add_comm]
   neg_add_cancel f := by

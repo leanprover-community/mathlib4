@@ -65,17 +65,22 @@ open scoped Fin.IntCast Fin.NatCast
       lia
 
 /-- Multiplicative commutative semigroup structure on `Fin n`. -/
-instance instCommSemigroup (n : ℕ) : CommSemigroup (Fin n) :=
-  { (inferInstance : Mul (Fin n)) with
-    mul_assoc := fun ⟨a, _⟩ ⟨b, _⟩ ⟨c, _⟩ =>
-      Fin.eq_of_val_eq <|
-        calc
-          a * b % n * c ≡ a * b * c [MOD n] := (Nat.mod_modEq _ _).mul_right _
-          _ ≡ a * (b * c) [MOD n] := by rw [mul_assoc]
-          _ ≡ a * (b * c % n) [MOD n] := (Nat.mod_modEq _ _).symm.mul_left _
-    mul_comm := Fin.mul_comm }
+instance instCommSemigroup (n : ℕ) : CommSemigroup (Fin n) where
+  mul_assoc := fun ⟨a, _⟩ ⟨b, _⟩ ⟨c, _⟩ =>
+    Fin.eq_of_val_eq <|
+      calc
+        a * b % n * c ≡ a * b * c [MOD n] := (Nat.mod_modEq _ _).mul_right _
+        _ ≡ a * (b * c) [MOD n] := by rw [mul_assoc]
+        _ ≡ a * (b * c % n) [MOD n] := (Nat.mod_modEq _ _).symm.mul_left _
+  mul_comm := Fin.mul_comm
 
-set_option backward.privateInPublic true in
+-- Shortcut instances to replace the power operation on `Fin` with a more efficient one
+instance (n : ℕ) [NeZero n] : HPow (Fin n) ℕ (Fin n) where
+  hPow a m := npowRecAuto m a
+
+instance (n : ℕ) [NeZero n] : Pow (Fin n) ℕ where
+  pow a m := npowRecAuto m a
+
 private theorem left_distrib_aux (n : ℕ) : ∀ a b c : Fin n, a * (b + c) = a * b + a * c :=
   fun ⟨a, _⟩ ⟨b, _⟩ ⟨c, _⟩ =>
   Fin.eq_of_val_eq <|
@@ -84,19 +89,13 @@ private theorem left_distrib_aux (n : ℕ) : ∀ a b c : Fin n, a * (b + c) = a 
       _ ≡ a * b + a * c [MOD n] := by rw [mul_add]
       _ ≡ a * b % n + a * c % n [MOD n] := (Nat.mod_modEq _ _).symm.add (Nat.mod_modEq _ _).symm
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- Distributive structure on `Fin n`. -/
-instance instDistrib (n : ℕ) : Distrib (Fin n) :=
-  { Fin.addCommSemigroup n, Fin.instCommSemigroup n with
-    left_distrib := left_distrib_aux n
-    right_distrib := fun a b c => by
-      rw [mul_comm, left_distrib_aux, mul_comm _ b, mul_comm] }
+instance instDistrib (n : ℕ) : Distrib (Fin n) where
+  left_distrib := private left_distrib_aux n
+  right_distrib := fun a b c => by
+    rw [mul_comm, left_distrib_aux, mul_comm _ b, mul_comm]
 
 instance instNonUnitalCommRing (n : ℕ) [NeZero n] : NonUnitalCommRing (Fin n) where
-  __ := Fin.addCommGroup n
-  __ := Fin.instCommSemigroup n
-  __ := Fin.instDistrib n
   zero_mul := Fin.zero_mul
   mul_zero := Fin.mul_zero
 
@@ -106,7 +105,6 @@ instance instCommMonoid (n : ℕ) [NeZero n] : CommMonoid (Fin n) where
 
 /-- Note this is more general than `Fin.instCommRing` as it applies (vacuously) to `Fin 0` too. -/
 instance instHasDistribNeg (n : ℕ) : HasDistribNeg (Fin n) where
-  toInvolutiveNeg := Fin.instInvolutiveNeg n
   mul_neg := Nat.casesOn n finZeroElim fun _i => mul_neg
   neg_mul := Nat.casesOn n finZeroElim fun _i => neg_mul
 
@@ -126,11 +124,6 @@ silently introducing wraparound arithmetic.
 -/
 @[instance_reducible]
 def instCommRing (n : ℕ) [NeZero n] : CommRing (Fin n) where
-  __ := Fin.instAddMonoidWithOne n
-  __ := Fin.addCommGroup n
-  __ := Fin.instCommSemigroup n
-  __ := Fin.instNonUnitalCommRing n
-  __ := Fin.instCommMonoid n
   intCast n := Fin.intCast n
 
 namespace CommRing
