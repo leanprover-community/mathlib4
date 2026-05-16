@@ -378,10 +378,16 @@ theorem coe_mul (f g : A →A[R] A) : ⇑(f * g) = f ∘ g := rfl
 
 theorem mul_apply (f g : A →A[R] A) (x : A) : (f * g) x = f (g x) := rfl
 
+instance : Pow (A →A[R] A) ℕ where
+  pow f n :=
+    { toAlgHom := f.toAlgHom ^ n
+      cont := f.continuous.iterate n }
+
 instance : Monoid (A →A[R] A) where
-  mul_one _ := ext fun _ => rfl
-  one_mul _ := ext fun _ => rfl
-  mul_assoc _ _ _ := ext fun _ => rfl
+  mul_one _ := rfl
+  one_mul _ := rfl
+  mul_assoc _ _ _ := rfl
+  npow n f := f ^ n
 
 theorem coe_pow (f : A →A[R] A) (n : ℕ) : ⇑(f ^ n) = f^[n] :=
   hom_coe_pow _ rfl (fun _ _ ↦ rfl) _ _

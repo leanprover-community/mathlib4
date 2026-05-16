@@ -959,13 +959,10 @@ instance instMul : Mul (Monoid.End M) where mul := .comp
 
 @[to_additive instMonoid]
 instance instMonoid : Monoid (Monoid.End M) where
-  mul := MonoidHom.comp
-  one := MonoidHom.id M
   mul_assoc _ _ _ := MonoidHom.comp_assoc _ _ _
   mul_one := MonoidHom.comp_id
   one_mul := MonoidHom.id_comp
   npow n f := (npowRec n f).copy f^[n] <| by induction n <;> simp [npowRec, *] <;> rfl
-  npow_succ _ _ := DFunLike.coe_injective <| Function.iterate_succ _ _
 
 @[to_additive]
 instance : Inhabited (Monoid.End M) := ⟨1⟩

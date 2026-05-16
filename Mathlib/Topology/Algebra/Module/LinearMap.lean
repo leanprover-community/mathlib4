@@ -572,10 +572,13 @@ theorem mul_apply (f g : M₁ →L[R₁] M₁) (x : M₁) : (f * g) x = f (g x) 
 
 instance monoidWithZero : MonoidWithZero (M₁ →L[R₁] M₁) where
   mul_zero f := ext fun _ => map_zero f
-  zero_mul _ := ext fun _ => rfl
-  mul_one _ := ext fun _ => rfl
-  one_mul _ := ext fun _ => rfl
-  mul_assoc _ _ _ := ext fun _ => rfl
+  zero_mul _ := rfl
+  mul_one _ := rfl
+  one_mul _ := rfl
+  mul_assoc _ _ _ := rfl
+  npow n f :=
+    { toLinearMap := f.toLinearMap ^ n
+      cont := f.continuous.iterate n }
 
 @[simp, norm_cast]
 theorem coe_pow' (f : M₁ →L[R₁] M₁) (n : ℕ) : ⇑(f ^ n) = f^[n] :=

@@ -632,15 +632,26 @@ def ofRingEquiv {f : A₁ ≃+* A₂} (hf : ∀ x, f (algebraMap R A₁ x) = alg
 
 end OfRingEquiv
 
-@[simps -isSimp one mul, stacks 09HR]
+instance : One (A₁ ≃ₐ[R] A₁) where one := refl
+instance : Mul (A₁ ≃ₐ[R] A₁) where mul ϕ ψ := ψ.trans ϕ
+instance : Inv (A₁ ≃ₐ[R] A₁) where inv := symm
+instance : Pow (A₁ ≃ₐ[R] A₁) Nat where
+  pow f n :=
+    { toEquiv := f.toEquiv ^ n
+      map_mul' := Nat.rec (fun _ _ => rfl) (fun n ih x y =>
+        (congrArg f^[n] (map_mul f x y)).trans (ih (f x) (f y))) n
+      map_add' := Nat.rec (fun _ _ => rfl) (fun n ih x y =>
+        (congrArg f^[n] (map_add f x y)).trans (ih (f x) (f y))) n
+      commutes' r := Nat.rec rfl (fun n ih => (congrArg f^[n] (f.commutes r)).trans ih) n }
+
+@[simps! -isSimp one mul, stacks 09HR]
 instance aut : Group (A₁ ≃ₐ[R] A₁) where
-  mul ϕ ψ := ψ.trans ϕ
   mul_assoc _ _ _ := rfl
-  one := refl
-  one_mul _ := ext fun _ => rfl
-  mul_one _ := ext fun _ => rfl
-  inv := symm
+  one_mul _ := rfl
+  mul_one _ := rfl
   inv_mul_cancel ϕ := ext <| symm_apply_apply ϕ
+  npow n f := f ^ n
+  zpow := zpowRec fun n f => f ^ n
 
 @[simp]
 theorem one_apply (x : A₁) : (1 : A₁ ≃ₐ[R] A₁) x = x :=

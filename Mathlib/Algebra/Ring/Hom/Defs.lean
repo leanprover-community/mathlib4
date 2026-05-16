@@ -261,6 +261,11 @@ instance : MonoidWithZero (α →ₙ+* α) where
   mul_assoc _ _ _ := comp_assoc _ _ _
   mul_zero := comp_zero
   zero_mul := zero_comp
+  npow n f :=
+    { toFun := f^[n]
+      map_mul' := by simp
+      map_zero' := by simp
+      map_add' := by simp }
 
 theorem one_def : (1 : α →ₙ+* α) = NonUnitalRingHom.id α :=
   rfl
@@ -578,7 +583,6 @@ instance instMonoid : Monoid (α →+* α) where
   one_mul := id_comp
   mul_assoc _ _ _ := comp_assoc _ _ _
   npow n f := (npowRec n f).copy f^[n] <| by induction n <;> simp [npowRec, *]
-  npow_succ _ _ := DFunLike.coe_injective <| Function.iterate_succ _ _
 
 @[simp, norm_cast] lemma coe_pow (f : α →+* α) (n : ℕ) : ⇑(f ^ n) = f^[n] := rfl
 

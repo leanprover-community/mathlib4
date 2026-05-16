@@ -62,6 +62,13 @@ theorem coe_one : ⇑(1 : Module.End R M) = _root_.id := rfl
 
 theorem coe_mul (f g : Module.End R M) : ⇑(f * g) = f ∘ g := rfl
 
+instance : Pow (Module.End R M) Nat where
+  pow f n :=
+    { toFun := f^[n]
+      map_add' := by simp
+      map_smul' m := Nat.rec (fun x => rfl)
+        (fun n ih x => (congrArg f^[n] (map_smul f m x)).trans (ih (f x))) n }
+
 instance instNontrivial [Nontrivial M] : Nontrivial (Module.End R M) := by
   obtain ⟨m, ne⟩ := exists_ne (0 : M)
   exact nontrivial_of_ne 1 0 fun p => ne (LinearMap.congr_fun p m)
@@ -70,6 +77,7 @@ instance instMonoid : Monoid (Module.End R M) where
   mul_assoc _ _ _ := LinearMap.ext fun _ ↦ rfl
   mul_one := comp_id
   one_mul := id_comp
+  npow n f := f ^ n
 
 instance instSemiring : Semiring (Module.End R M) where
   __ := AddMonoidWithOne.unary
