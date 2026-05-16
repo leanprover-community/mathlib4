@@ -177,7 +177,7 @@ theorem isAcyclic_iff_forall_isBridge : G.IsAcyclic ↔ ∀ ⦃e⦄, e ∈ G.edg
     exact (hG <| c.edges_subset_edgeSet he).notMem_edges_of_isCycle hc he
 
 @[deprecated (since := "2026-05-16")]
-alias isAcyclic_iff_forall_adj_edge_isBridge := isAcyclic_iff_forall_isBridge
+alias isAcyclic_iff_forall_adj_isBridge := isAcyclic_iff_forall_isBridge
 
 @[deprecated (since := "2026-05-16")]
 alias isAcyclic_iff_forall_edge_isBridge := isAcyclic_iff_forall_isBridge

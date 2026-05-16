@@ -26,7 +26,7 @@ public import Mathlib.Combinatorics.SimpleGraph.Operations
 
 ## Main statements
 
-* `SimpleGraph. isBridge_iff_forall_cycle_notMem` characterizes bridges as the edges not
+* `SimpleGraph.isBridge_iff_forall_cycle_notMem` characterizes bridges as the edges not
   contained in any cycle.
 
 ## Tags
@@ -869,9 +869,12 @@ theorem IsBridge.anti {G' : SimpleGraph V} {e : Sym2 V} (hG : G ≤ G') (h : G'.
 
 @[deprecated (since := "2026-05-16")] alias IsBridge.anti_of_mem_edgeSet := IsBridge.anti
 
-@[simp]
-lemma isBridge_sup_edge {u v : V} : (G ⊔ edge u v).IsBridge s(u, v) ↔ G.IsBridge s(u, v) := by
+@[simp] lemma isBridge_sup_edge : (G ⊔ edge u v).IsBridge s(u, v) ↔ G.IsBridge s(u, v) := by
   simp [isBridge_iff, deleteEdges_sup]
+
+@[simp] lemma isBridge_deleteEdges_singleton {e : Sym2 V} :
+    (G.deleteEdges {e}).IsBridge e ↔ G.IsBridge e := by
+  induction e with | h u v; simp [isBridge_iff]
 
 @[deprecated "Inline the proof" (since := "2026-04-02")]
 theorem IsBridge.sup_edge_of_not_reachable {u v : V} (h : ¬G.Reachable u v) :
