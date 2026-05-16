@@ -61,6 +61,12 @@ theorem lift_lsmul_mul_eq_lsmul_lift_lsmul {r : R} :
   intro x a
   simp [← mul_smul, mul_comm]
 
+lemma restrictScalars_mul {S : Type*} [CommSemiring S] [Module S A] [SMulCommClass S A A]
+    [IsScalarTower S A A] [CompatibleSMul A A R S] (a : A) :
+    LinearMap.restrictScalars R (LinearMap.mul S A a) = LinearMap.mul R A a := by
+  ext x
+  simp
+
 end NonUnitalNonAssoc
 
 section NonUnital
@@ -181,11 +187,6 @@ lemma mul'_comp_comm : mul' R A ∘ₗ TensorProduct.comm R A A = mul' R A := by
 
 lemma mul'_comm (x : A ⊗[R] A) : mul' R A (TensorProduct.comm R A A x) = mul' R A x :=
   congr($mul'_comp_comm _)
-
-lemma restrictScalars_mul {A : Type*} [CommSemiring A] [Module R A] [IsScalarTower R A A] (a : A) :
-    LinearMap.restrictScalars R (LinearMap.mul A A a) = LinearMap.mul R A a := by
-  ext x
-  simp
 
 end CommSemiring
 end LinearMap
