@@ -58,29 +58,7 @@ theorem tendsto_pow_div_factorial_atTop (c : K) :
 
 end FloorSemiring
 
-variable {α β γ : Type*} [Ring α] [LinearOrder α] [FloorRing α]
-
-section
-variable [IsStrictOrderedRing α]
--- TODO: move to `Mathlib/Order/Filter/AtTopBot/Floor.lean`
-
-theorem tendsto_floor_atTop : Tendsto (floor : α → ℤ) atTop atTop :=
-  floor_mono.tendsto_atTop_atTop fun b =>
-    ⟨(b + 1 : ℤ), by rw [floor_intCast]; exact (lt_add_one _).le⟩
-
-theorem tendsto_floor_atBot : Tendsto (floor : α → ℤ) atBot atBot :=
-  floor_mono.tendsto_atBot_atBot fun b => ⟨b, (floor_intCast _).le⟩
-
-theorem tendsto_ceil_atTop : Tendsto (ceil : α → ℤ) atTop atTop :=
-  ceil_mono.tendsto_atTop_atTop fun b => ⟨b, (ceil_intCast _).ge⟩
-
-theorem tendsto_ceil_atBot : Tendsto (ceil : α → ℤ) atBot atBot :=
-  ceil_mono.tendsto_atBot_atBot fun b =>
-    ⟨(b - 1 : ℤ), by rw [ceil_intCast]; exact (sub_one_lt _).le⟩
-
-end
-
-variable [TopologicalSpace α]
+variable {α β γ : Type*} [Ring α] [LinearOrder α] [FloorRing α] [TopologicalSpace α]
 
 theorem continuousOn_floor (n : ℤ) :
     ContinuousOn (fun x => floor x : α → α) (Ico n (n + 1) : Set α) :=
