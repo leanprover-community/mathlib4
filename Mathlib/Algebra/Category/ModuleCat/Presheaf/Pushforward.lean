@@ -160,4 +160,10 @@ lemma pushforward_id_comp :
 
 end
 
+/-- Given `X : C`, this is the presheaf of modules on `Over X` that
+is obtained from a presheaf of modules on `C`. -/
+noncomputable abbrev over (M : PresheafOfModules.{v} S) (X : C) :
+    PresheafOfModules.{v} ((Over.forget X).op ⋙ S) :=
+  (pushforward.{v} (F := Over.forget X) (𝟙 _)).obj M
+
 end PresheafOfModules
