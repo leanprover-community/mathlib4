@@ -139,8 +139,6 @@ lemma temp' -- I suspect this one will also work!
 - `mdifferentiableAt` lemmas for C^k covariant derivatives would be nice API addition
 -/
 
-variable [VectorBundle 𝕜 F V]
-
 lemma aux
     (hcov : IsCovariantDerivativeOn F cov) [hcov' : ContMDiffCovariantDerivativeOn F 1 cov univ]
     {x : M} {Y Z : (x : M) → TangentSpace I x} {τ : Π x, V x}
@@ -150,6 +148,8 @@ lemma aux
   apply temp' F hcov ?_ (hcov'.contMDiff' hcov hτ)
   apply hτ.of_le
   norm_num
+
+variable [VectorBundle 𝕜 F V]
 
 theorem curvatureTensorAux_tensorial₁ (hcov : IsCovariantDerivativeOn F cov) (x : M)
     [hcov' : ContMDiffCovariantDerivativeOn F 1 cov univ]
