@@ -1943,6 +1943,7 @@ public import Mathlib.Analysis.Convex.StrictCombination
 public import Mathlib.Analysis.Convex.StrictConvexBetween
 public import Mathlib.Analysis.Convex.StrictConvexSpace
 public import Mathlib.Analysis.Convex.Strong
+public import Mathlib.Analysis.Convex.Subgradient.Abs
 public import Mathlib.Analysis.Convex.Topology
 public import Mathlib.Analysis.Convex.TotallyBounded
 public import Mathlib.Analysis.Convex.Uniform
