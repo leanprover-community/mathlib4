@@ -184,20 +184,13 @@ theorem lt_six {r : ℕ+} (H : 1 < sumInv {2, 3, r}) : r < 6 := by
 theorem admissible_of_one_lt_sumInv_aux' {p q r : ℕ+} (hpq : p ≤ q) (hqr : q ≤ r)
     (H : 1 < sumInv {p, q, r}) : Admissible {p, q, r} := by
   have hp3 : p < 3 := lt_three hpq hqr H
-  -- Porting note: `interval_cases` doesn't support `ℕ+` yet.
-  replace hp3 := Finset.mem_Iio.mpr hp3
-  conv at hp3 => change p ∈ ({1, 2} : Multiset ℕ+)
-  fin_cases hp3
+  interval_cases p
   · exact admissible_A' q r
   have hq4 : q < 4 := lt_four hqr H
-  replace hq4 := Finset.mem_Ico.mpr ⟨hpq, hq4⟩; clear hpq
-  conv at hq4 => change q ∈ ({2, 3} : Multiset ℕ+)
-  fin_cases hq4
+  interval_cases q
   · exact admissible_D' r
   have hr6 : r < 6 := lt_six H
-  replace hr6 := Finset.mem_Ico.mpr ⟨hqr, hr6⟩; clear hqr
-  conv at hr6 => change r ∈ ({3, 4, 5} : Multiset ℕ+)
-  fin_cases hr6
+  interval_cases r
   · exact admissible_E6
   · exact admissible_E7
   · exact admissible_E8
