@@ -6243,6 +6243,7 @@ public import Mathlib.Probability.Moments.SubGaussian
 public import Mathlib.Probability.Moments.Tilted
 public import Mathlib.Probability.Moments.Variance
 public import Mathlib.Probability.Notation
+public import Mathlib.Probability.ProbabilityMassFunction.Advantage
 public import Mathlib.Probability.ProbabilityMassFunction.Basic
 public import Mathlib.Probability.ProbabilityMassFunction.Binomial
 public import Mathlib.Probability.ProbabilityMassFunction.Constructions
