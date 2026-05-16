@@ -69,7 +69,7 @@ We special-case `CNF 0 o = CNF 1 o = [(0, o)]` for `o ≠ 0`.
 `CNF b (b ^ u₁ * v₁ + b ^ u₂ * v₂) = [(u₁, v₁), (u₂, v₂)]` -/
 @[pp_nodot]
 def _root_.Ordinal.CNF (b o : Ordinal) : List (Ordinal × Ordinal) :=
-  CNF.rec b [] (fun o _ IH ↦ (log b o, o / b ^ log b o)::IH) o
+  CNF.rec b [] (fun o _ IH ↦ (log b o, o / b ^ log b o) :: IH) o
 
 @[simp]
 theorem zero_right (b : Ordinal) : CNF b 0 = [] :=
@@ -77,7 +77,7 @@ theorem zero_right (b : Ordinal) : CNF b 0 = [] :=
 
 /-- Recursive definition for the Cantor normal form. -/
 protected theorem ne_zero {b o : Ordinal} (ho : o ≠ 0) :
-    CNF b o = (log b o, o / b ^ log b o)::CNF b (o % b ^ log b o) :=
+    CNF b o = (log b o, o / b ^ log b o) :: CNF b (o % b ^ log b o) :=
   rec_pos b ho _ _
 
 protected theorem opow_mul_add {b e x y : Ordinal}
@@ -89,6 +89,13 @@ protected theorem opow_mul_add {b e x y : Ordinal}
       mul_add_div _ (opow_ne_zero _ hb'), Ordinal.div_eq_zero_of_lt hy, add_zero,
       mul_add_mod_self, mod_eq_of_lt hy]
   · simp_all
+
+protected theorem opow_mul {b e x : Ordinal} (hb : 1 < b) (hx : x ≠ 0) (hxb : x < b) :
+    CNF b (b ^ e * x) = [(e, x)] := by
+  simpa using CNF.opow_mul_add hb hx hxb <| opow_pos e hb.pos
+
+protected theorem opow {b e : Ordinal} (hb : 1 < b) : CNF b (b ^ e) = [(e, 1)] := by
+  simpa using CNF.opow_mul hb one_ne_zero hb
 
 protected theorem zero_left {o : Ordinal} (ho : o ≠ 0) : CNF 0 o = [(0, o)] := by
   simp [CNF.ne_zero ho]
@@ -102,6 +109,12 @@ protected theorem of_le_one {b o : Ordinal} (hb : b ≤ 1) (ho : o ≠ 0) : CNF 
 
 protected theorem of_lt {b o : Ordinal} (ho : o ≠ 0) (hb : o < b) : CNF b o = [(0, o)] := by
   rw [CNF.ne_zero ho, log_eq_zero hb, opow_zero, div_one, mod_one, zero_right]
+
+@[simp]
+protected theorem one_right (b : Ordinal) : CNF b 1 = [(0, 1)] := by
+  obtain hb | hb := le_or_gt b 1
+  · exact CNF.of_le_one hb one_ne_zero
+  · exact CNF.of_lt one_ne_zero hb
 
 /-- Evaluating the Cantor normal form of an ordinal returns the ordinal. -/
 protected theorem foldr (b o : Ordinal) : (CNF b o).foldr (fun p r ↦ b ^ p.1 * p.2 + r) 0 = o := by
@@ -196,6 +209,15 @@ theorem coeff_of_notMem_CNF {b o e : Ordinal} (h : e ∉ (CNF b o).map Prod.fst)
 @[deprecated (since := "2026-01-11")]
 alias coeff_of_not_mem_CNF := coeff_of_notMem_CNF
 
+theorem coeff_lt {b : Ordinal} (hb : 1 < b) (o e : Ordinal) : coeff b o e < b := by
+  by_cases he : e ∈ (CNF b o).map Prod.fst
+  · rw [List.mem_map, Prod.exists] at he
+    obtain ⟨e, c, h, rfl⟩ := he
+    rw [coeff_of_mem_CNF h]
+    exact snd_lt hb h
+  · rw [coeff_of_notMem_CNF he]
+    exact hb.pos
+
 theorem coeff_eq_zero_of_lt {b o e : Ordinal} (h : o < b ^ e) : coeff b o e = 0 := by
   apply coeff_of_notMem_CNF
   intro he
@@ -214,18 +236,16 @@ theorem coeff_zero_right (b : Ordinal) : coeff b 0 = 0 := by
   ext e
   exact coeff_zero_apply b e
 
+@[simp]
+theorem coeff_one_right (b : Ordinal) : coeff b 1 = single 0 1 := by
+  simp_rw [coeff, CNF.one_right]
+  exact singleton_lookupFinsupp ..
+
 theorem coeff_of_le_one {b : Ordinal} (hb : b ≤ 1) (o : Ordinal) : coeff b o = single 0 o := by
-  ext a
   obtain rfl | ho := eq_or_ne o 0
   · simp
-  · obtain rfl | ha := eq_or_ne a 0
-    · apply coeff_of_mem_CNF
-      rw [CNF.of_le_one hb ho]
-      simp
-    · rw [single_eq_of_ne ha]
-      apply coeff_of_notMem_CNF
-      rw [CNF.of_le_one hb ho]
-      simpa using ha
+  · simp_rw [coeff, CNF.of_le_one hb ho]
+    exact singleton_lookupFinsupp ..
 
 @[simp]
 theorem coeff_zero_left (o : Ordinal) : coeff 0 o = single 0 o :=
@@ -235,9 +255,29 @@ theorem coeff_zero_left (o : Ordinal) : coeff 0 o = single 0 o :=
 theorem coeff_one_left (o : Ordinal) : coeff 1 o = single 0 o :=
   coeff_of_le_one le_rfl o
 
-theorem coeff_opow_mul_add {b e x y : Ordinal}
-    (hb : 1 < b) (hx : x ≠ 0) (hxb : x < b) (hy : y < b ^ e) :
+theorem coeff_of_lt {b o : Ordinal} (hb : o < b) : coeff b o = single 0 o := by
+  obtain rfl | ho := eq_or_ne o 0
+  · simp
+  · simp_rw [coeff, CNF.of_lt ho hb]
+    exact singleton_lookupFinsupp ..
+
+theorem support_coeff_subset {b o e : Ordinal} (h : o < b ^ e) :
+    ↑(coeff b o).support ⊆ Set.Iio e := by
+  obtain rfl | hb := eq_zero_or_pos b
+  · grw [zero_opow_le, lt_one_iff_zero] at h
+    simp [h]
+  · intro x
+    rw [SetLike.mem_coe, mem_support_iff, Set.mem_Iio]
+    contrapose!
+    exact fun hx ↦ coeff_eq_zero_of_lt (h.trans_le (opow_le_opow_right hb hx))
+
+theorem coeff_opow_mul_add {b e x y : Ordinal} (hxb : x < b) (hy : y < b ^ e) :
     coeff b (b ^ e * x + y) = single e x + coeff b y := by
+  obtain hb | hb := le_or_gt b 1
+  · grw [hb, lt_one_iff_zero] at hxb
+    simp [hxb]
+  obtain rfl | hx := eq_or_ne x 0
+  · simp
   ext e'
   rw [add_apply]
   obtain rfl | he := eq_or_ne e e'
@@ -257,6 +297,17 @@ theorem coeff_opow_mul_add {b e x y : Ordinal}
       rw [mem_map] at h ⊢
       rw [CNF.opow_mul_add hb hx hxb hy]
       simp_all
+
+theorem coeff_opow_mul {b e x : Ordinal} (hxb : x < b) :
+    coeff b (b ^ e * x) = single e x := by
+  obtain hb | hb := le_or_gt b 1
+  · grw [hb, lt_one_iff_zero] at hxb
+    simp [hxb]
+  · simpa using coeff_opow_mul_add hxb (opow_pos e hb.pos)
+
+@[simp]
+theorem coeff_opow {b e : Ordinal} (hb : 1 < b) : coeff b (b ^ e) = single e 1 := by
+  simpa using coeff_opow_mul_add hb (opow_pos e hb.pos)
 
 /-! ### Evaluate a Cantor normal form -/
 
@@ -350,7 +401,7 @@ theorem eval_coeff (b o : Ordinal) : eval b (coeff b o) = o := by
   · exact (CNF.sortedGT b o).sortedGE.pairwise
   · exact (CNF.sortedGT b o).nodup
 
-theorem coeff_eval {b : Ordinal} (hb : 1 < b) {f : Ordinal →₀ Ordinal} (hf : ∀ e, f e < b) :
+theorem coeff_eval {b : Ordinal} {f : Ordinal →₀ Ordinal} (hf : ∀ e, f e < b) :
     coeff b (eval b f) = f := by
   induction f using Finsupp.induction_on_max with
   | zero => simp
@@ -361,15 +412,15 @@ theorem coeff_eval {b : Ordinal} (hb : 1 < b) {f : Ordinal →₀ Ordinal} (hf :
         rw [add_apply, single_eq_of_ne, zero_add]
         exact (hf' _ he').ne
       · rw [notMem_support_iff.1 he']
-        exact hb.pos
-    rw [eval_single_add' _ hf', coeff_opow_mul_add hb hx, IH IH']
+        exact (hf 0).pos
+    rw [eval_single_add' _ hf', coeff_opow_mul_add, IH IH']
     · apply (hf e).trans_eq'
       rw [add_apply, single_eq_same, notMem_support_iff.1, add_zero]
       exact fun h ↦ (hf' _ h).false
     · exact eval_lt IH' hf'
 
 theorem coeff_injective (b : Ordinal) : Function.Injective (coeff b) :=
-  Function.LeftInverse.injective fun _ ↦ eval_coeff ..
+  Function.LeftInverse.injective (eval_coeff b)
 
 @[simp]
 theorem coeff_inj {b x y : Ordinal} : coeff b x = coeff b y ↔ x = y :=
