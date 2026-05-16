@@ -82,6 +82,9 @@ lemma abs_sq (x : α) : |x ^ 2| = x ^ 2 := by simpa only [sq] using abs_mul_self
 lemma exists_abs_lt [Nontrivial α] (a : α) : ∃ b > 0, |a| < b :=
   ⟨|a| + 1, lt_of_lt_of_le zero_lt_one <| by simp, lt_add_one |a|⟩
 
+lemma pow_two_mul_abs (a : α) : |a| ^ (2 * n) = a ^ (2 * n) :=
+  Even.pow_abs ⟨n, two_mul n⟩ a
+
 end LinearOrderedRing
 
 section LinearStrictOrderedRing
