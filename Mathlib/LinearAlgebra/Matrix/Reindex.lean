@@ -66,7 +66,8 @@ theorem reindexAddEquiv_refl_refl : reindexAddEquiv R (.refl m) (.refl n) = .ref
   rfl
 
 @[simp]
-theorem reindexAddEquiv_trans (e₁ : m ≃ m') (e₂ : n ≃ n') (e₁' : m' ≃ m'') (e₂' : n' ≃ n'') :
+theorem reindexAddEquiv_trans_reindexAddEquiv (e₁ : m ≃ m') (e₂ : n ≃ n') (e₁' : m' ≃ m'')
+    (e₂' : n' ≃ n'') :
     .trans (reindexAddEquiv R e₁ e₂) (reindexAddEquiv R e₁' e₂') =
       reindexAddEquiv R (.trans e₁ e₁') (.trans e₂ e₂') :=
   rfl
@@ -105,7 +106,7 @@ theorem reindexRingEquiv_refl_refl : reindexRingEquiv R (.refl n) = .refl _ :=
   rfl
 
 @[simp]
-theorem reindexRingEquiv_trans (e : m ≃ n) (e' : n ≃ o) :
+theorem reindexRingEquiv_trans_reindexRingEquiv (e : m ≃ n) (e' : n ≃ o) :
     .trans (reindexRingEquiv R e) (reindexRingEquiv R e') = reindexRingEquiv R (.trans e e') :=
   rfl
 
@@ -154,10 +155,14 @@ theorem reindexLinearEquiv_refl_refl :
   rfl
 
 @[simp]
-theorem reindexLinearEquiv_trans (e₁ : m ≃ m') (e₂ : n ≃ n') (e₁' : m' ≃ m'') (e₂' : n' ≃ n'') :
+theorem reindexLinearEquiv_trans_reindexLinearEquiv (e₁ : m ≃ m') (e₂ : n ≃ n') (e₁' : m' ≃ m'')
+    (e₂' : n' ≃ n'') :
     (reindexLinearEquiv R A e₁ e₂).trans (reindexLinearEquiv R A e₁' e₂') =
       (reindexLinearEquiv R A (e₁.trans e₁') (e₂.trans e₂') : _ ≃ₗ[R] _) :=
   rfl
+
+@[deprecated (since := "2026-05-15")]
+alias reindexLinearEquiv_trans := reindexLinearEquiv_trans_reindexLinearEquiv
 
 theorem reindexLinearEquiv_comp (e₁ : m ≃ m') (e₂ : n ≃ n') (e₁' : m' ≃ m'') (e₂' : n' ≃ n'') :
     reindexLinearEquiv R A e₁' e₂' ∘ reindexLinearEquiv R A e₁ e₂ =
@@ -242,9 +247,12 @@ theorem reindexAlgEquiv_refl : reindexAlgEquiv R A (Equiv.refl m) = AlgEquiv.ref
   rfl
 
 @[simp]
-theorem reindexAlgEquiv_trans (e : m ≃ n) (e' : n ≃ o) :
+theorem reindexAlgEquiv_trans_reindexAlgEquiv (e : m ≃ n) (e' : n ≃ o) :
     .trans (reindexAlgEquiv R A e) (reindexAlgEquiv R A e') = reindexAlgEquiv R A (.trans e e') :=
   rfl
+
+@[deprecated (since := "2026-05-15")]
+alias reindexAlgEquiv_trans := reindexAlgEquiv_trans_reindexAlgEquiv
 
 @[deprecated map_mul (since := "2026-05-13")]
 theorem reindexAlgEquiv_mul (e : m ≃ n) (M : Matrix m m A) (N : Matrix m m A) :
