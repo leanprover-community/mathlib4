@@ -54,7 +54,7 @@ This is constructed by transfinite induction on `j`:
 
 @[expose] public section
 
-universe w v u
+universe t w v u
 
 namespace CategoryTheory
 
@@ -273,11 +273,11 @@ lemma transfiniteCompositionsOfShape_le_llp_rlp :
   exact le_trans (transfiniteCompositionsOfShape_monotone J W.le_llp_rlp) this
 
 lemma transfiniteCompositionsOfShape_pushouts_coproducts_le_llp_rlp :
-    (coproducts.{w} W).pushouts.transfiniteCompositionsOfShape J ≤ W.rlp.llp := by
-  simpa using transfiniteCompositionsOfShape_le_llp_rlp (coproducts.{w} W).pushouts J
+    (coproducts.{t} W).pushouts.transfiniteCompositionsOfShape J ≤ W.rlp.llp := by
+  simpa using transfiniteCompositionsOfShape_le_llp_rlp (coproducts.{t} W).pushouts J
 
 lemma retracts_transfiniteCompositionsOfShape_pushouts_coproducts_le_llp_rlp :
-    ((coproducts.{w} W).pushouts.transfiniteCompositionsOfShape J).retracts ≤ W.rlp.llp := by
+    ((coproducts.{t} W).pushouts.transfiniteCompositionsOfShape J).retracts ≤ W.rlp.llp := by
   rw [le_llp_iff_le_rlp, rlp_retracts, ← le_llp_iff_le_rlp]
   apply transfiniteCompositionsOfShape_pushouts_coproducts_le_llp_rlp
 
