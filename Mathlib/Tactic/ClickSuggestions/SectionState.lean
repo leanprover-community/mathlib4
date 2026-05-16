@@ -83,10 +83,6 @@ def SectionState.insertResult (s : SectionState α) (res : Result α)
     panic! s!"an error occurred when checking for duplicate entries:\n{← ex.toMessageData.toString}"
   return { results, errors }
 
-def SectionState.pushError (s : SectionState α) (error : Html) : SectionState α :=
-  let { results , errors } := s
-  { results, errors := errors.push error }
-
 def renderErrors (errors : Array Html) : Html :=
   <details «open»={true}>
     <summary className="mv2 pointer">
@@ -136,7 +132,7 @@ def spawnTask {α} (premise : Premise) (k : clickSuggestionsM α) :
         return .ok (some (← k))
       catch ex =>
         /- By default, we catch the errors from failed lemma applications
-        (appart from runtime exceptions, i.e. max heartbeats or max recursion depth,
+        (apart from runtime exceptions, i.e. max heartbeats or max recursion depth,
         which aren't caught by the `try`-`catch` block).
         The `click_suggestions.debug` option allows the user to still see all errors. -/
         if click_suggestions.debug.get (← getOptions) then

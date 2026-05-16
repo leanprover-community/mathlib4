@@ -211,9 +211,6 @@ def GrwLemma.try (i : GrwInfo) (lem : GrwLemma) : clickSuggestionsM (Result GrwK
   let tactic ← tacticSyntax lem i proof justLemmaName
   let mut htmls := #[← exprToHtml replacement]
   for goal in extraGoals do
-    -- TODO: think more carefully about which goals should be displayed
-    -- Are there lemmas where a hypothesis is marked as implicit,
-    -- which we would still want to show as a new goal?
     htmls := htmls.push
       <div> <strong className="goal-vdash">⊢ </strong> {← exprToHtml goal} </div>
   let filtered ←

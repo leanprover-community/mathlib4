@@ -124,7 +124,7 @@ where
           return s
         | .ok none => pure s
         | .error e => do
-          let s := s.pushError e
+          let s := { s with errors := s.errors.push e }
           token.updateLazy (renderSection tactic kind s)
           return s
       ).catchExceptions fun ex ↦ do
