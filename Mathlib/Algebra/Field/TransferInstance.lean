@@ -28,11 +28,20 @@ protected abbrev nnratCast [NNRatCast β] : NNRatCast α where nnratCast q := e.
 protected abbrev ratCast [RatCast β] : RatCast α where ratCast n := e.symm n
 
 /-- Transfer `DivisionRing` across an `Equiv` -/
-protected abbrev divisionRing [DivisionRing β] : DivisionRing α := by
-  let add_group_with_one := e.addGroupWithOne
+protected abbrev divisionRing [DivisionRing β] :
+    DivisionRing α := reduceProj% zeta% unfoldReducible% by
+  let zero := e.zero
+  let add := e.add
+  let one := e.one
+  let mul := e.mul
+  let neg := e.Neg
+  let sub := e.sub
   let inv := e.Inv
   let div := e.div
-  let mul := e.mul
+  let nsmul := e.smul ℕ
+  let zsmul := e.smul ℤ
+  let natCast := e.natCast
+  let intCast := e.intCast
   let npow := e.pow ℕ
   let zpow := e.pow ℤ
   let nnratCast := e.nnratCast
@@ -42,12 +51,19 @@ protected abbrev divisionRing [DivisionRing β] : DivisionRing α := by
   apply e.injective.divisionRing _ <;> intros <;> exact e.apply_symm_apply _
 
 /-- Transfer `Field` across an `Equiv` -/
-protected abbrev field [Field β] : Field α := by
-  let add_group_with_one := e.addGroupWithOne
+protected abbrev field [Field β] : Field α := reduceProj% zeta% unfoldReducible% by
+  let zero := e.zero
+  let add := e.add
+  let one := e.one
+  let mul := e.mul
   let neg := e.Neg
+  let sub := e.sub
   let inv := e.Inv
   let div := e.div
-  let mul := e.mul
+  let nsmul := e.smul ℕ
+  let zsmul := e.smul ℤ
+  let natCast := e.natCast
+  let intCast := e.intCast
   let npow := e.pow ℕ
   let zpow := e.pow ℤ
   let nnratCast := e.nnratCast

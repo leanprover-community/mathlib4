@@ -26,7 +26,7 @@ variable (M) in
 /-- Transfer `SMulZeroClass` across an `Equiv` -/
 protected abbrev smulZeroClass (e : A ≃ B) [Zero B] [SMulZeroClass M B] :
     letI := e.zero
-    SMulZeroClass M A := by
+    SMulZeroClass M A := reduceProj% zeta% unfoldReducible% by
   letI := e.zero
   exact {
     e.smul M with
@@ -37,7 +37,7 @@ variable (M₀) in
 /-- Transfer `SMulWithZero` across an `Equiv` -/
 protected abbrev smulWithZero (e : A ≃ B) [Zero M₀] [Zero B] [SMulWithZero M₀ B] :
     letI := e.zero
-    SMulWithZero M₀ A := by
+    SMulWithZero M₀ A := reduceProj% zeta% unfoldReducible% by
   letI := e.zero
   exact {
     e.smulZeroClass M₀ with
@@ -49,7 +49,7 @@ variable (M₀) in
 protected abbrev mulActionWithZero (e : A ≃ B) [MonoidWithZero M₀] [Zero B]
     [MulActionWithZero M₀ B] :
     letI := e.zero
-    MulActionWithZero M₀ A := by
+    MulActionWithZero M₀ A := reduceProj% zeta% unfoldReducible% by
   letI := e.zero
   exact { e.smulWithZero M₀, e.mulAction M₀ with }
 
@@ -57,7 +57,7 @@ variable (M) in
 /-- Transfer `DistribSMul` across an `Equiv` -/
 protected abbrev distribSMul (e : A ≃ B) [AddZeroClass B] [DistribSMul M B] :
     letI := e.addZeroClass
-    DistribSMul M A := by
+    DistribSMul M A := reduceProj% zeta% unfoldReducible% by
   letI := e.addZeroClass
   exact {
     e.smulZeroClass M with
@@ -68,7 +68,7 @@ variable (M) in
 /-- Transfer `DistribMulAction` across an `Equiv` -/
 protected abbrev distribMulAction (e : A ≃ B) [Monoid M] [AddMonoid B] [DistribMulAction M B] :
     letI := e.addMonoid
-    DistribMulAction M A := by
+    DistribMulAction M A := reduceProj% zeta% unfoldReducible% by
   letI := e.addMonoid
   exact { e.distribSMul M, e.mulAction M with }
 

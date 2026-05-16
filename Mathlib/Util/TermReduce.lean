@@ -91,4 +91,22 @@ def elabReduceProj : TermElab := fun stx expectedType? =>
     pure t
   | _ => throwUnsupportedSyntax
 
+/-- `unfoldReducible% t` unfolds definitions in `t` under `reducible` transparency. -/
+syntax (name := unfoldReducibleStx) "unfoldReducible% " term : term
+
+@[term_elab unfoldReducibleStx, inherit_doc unfoldReducibleStx]
+def elabUnfoldReducible : TermElab := fun stx expectedType? =>
+  match stx with
+  | `(unfoldReducible% $t) => do
+    let t ← withSynthesize (postpone := .partial) do
+      elabTerm t expectedType?
+    synthesizeSyntheticMVars
+    let t ← instantiateMVars t
+    let t ← withTransparency .reducible <| Core.transform t fun e => do
+      match ← unfoldDefinition? e with
+      | some e => return .visit e
+      | none   => return .continue
+    pure t
+  | _ => throwUnsupportedSyntax
+
 end Mathlib.Util.TermReduce
