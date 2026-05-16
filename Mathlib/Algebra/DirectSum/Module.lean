@@ -613,3 +613,49 @@ alias congr_linearEquiv_toLinearMap := congrLinearEquiv_toLinearMap
 end Congr
 
 end DirectSum
+
+namespace DirectSumPi
+
+open DirectSum Function
+
+variable {ι' : Type*} [Fintype ι'] [DecidableEq ι'] {R ι : Type*} [Semiring R]
+  {M N : ι → ι' → Type*} [∀ i i', AddCommMonoid (M i i')] [∀ i i', AddCommMonoid (N i i')]
+  [∀ i i', Module R (M i i')] [∀ i i', Module R (N i i')]
+
+/-- `⨁ⱼ(∏ᵢ Nᵢⱼ) ≅ ∏ᵢ(⨁ⱼNᵢⱼ)` if `j` ranges over a finite index set and `i` over an arbitrary
+index set. This variant is for `R`-modules and gives an `R`-module isomorphism. -/
+def directSumPi_equiv_piSum : (⨁ (i' : ι'), (Π i, N i i')) ≃ₗ[R] (Π i, (⨁ i', N i i')) where
+  toFun nm i := ∑ i', DirectSum.of (fun i' ↦ N i i') i' (nm i' i)
+  map_add' x y := by
+    simp only [add_apply, Pi.add_apply, map_add]
+    ext i
+    simp [Finset.sum_add_distrib]
+  map_smul' r nm := by
+    ext i
+    simp only [RingHom.id_apply, Pi.smul_apply]
+    rw [Finset.smul_sum, Finset.sum_congr rfl]
+    intro i' _
+    rw [← DirectSum.of_smul]
+    rfl
+  invFun nm :=  ∑ i', DirectSum.of (fun j ↦ ∀ i, N i j) i' (fun i ↦ nm i i')
+  left_inv nm := by
+    simp only
+    convert sum_univ_of (x := nm) with j _ i
+    conv_rhs => rw [← DirectSum.sum_univ_of nm]
+    simp only [sum_apply, Finset.sum_apply]
+    congr with k
+    obtain rfl | h := eq_or_ne j k
+    · simp
+    · simp [of_eq_of_ne _ _ _ h]
+  right_inv nm := by
+    simp only
+    refine funext (fun i ↦ ?_)
+    convert sum_univ_of (x := nm i) with j _ i
+    conv_rhs => rw [← DirectSum.sum_univ_of (nm i)]
+    simp only [sum_apply, Finset.sum_apply]
+    congr with k
+    obtain rfl | h := eq_or_ne j k
+    · simp
+    · simp [of_eq_of_ne _ _ _ h]
+
+end DirectSumPi
