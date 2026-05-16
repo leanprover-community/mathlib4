@@ -408,10 +408,11 @@ private theorem coeff_taylor_sub_eq (g : R[X])
   simp only [zero_add, Nat.choose_self, Nat.cast_one, one_mul,
     show 1 + (g.natDegree - 1) = g.natDegree from by omega,
     add_sub_cancel_left, leadingCoeff]
-  congr 1; push_cast; congr 1
+  congr 1; congr 1
   rw [show g.natDegree = g.natDegree - 1 + 1 from by omega]
   simp [Nat.choose_succ_self_right]
 
+set_option linter.unusedSectionVars false in
 /-- `Q` applied to a polynomial of degree `< N` gives degree `≤ N - 2`. -/
 private theorem natDegree_Q_of_bounded
     {Q : R[X] →ₗ[R] R[X]} {p : R[X]} {N : ℕ}
@@ -457,7 +458,7 @@ private theorem natDegree_delta_op_pow
   | n + 2, _ =>
     set m := n + 2
     set g := Q (X ^ m)
-    by_contra hbig; push_neg at hbig
+    by_contra hbig; push Not at hbig
     have hg_ne : g ≠ 0 :=
       ne_zero_of_natDegree_gt (by omega)
     have htf : IsAddTorsionFree R := instTorsionFree
@@ -528,11 +529,12 @@ private theorem natDegree_delta_op_pow
       omega
     rw [diff_eq] at hnd_lb; omega
 
+set_option linter.unusedSectionVars false in
 /-- Over a ℚ-algebra, `natDegree (taylor a p - p) ≤ natDegree p - 1`. -/
 private theorem natDegree_taylor_sub_le (a : R) (p : R[X])
     (hp : 1 ≤ p.natDegree) :
     (taylor a p - p).natDegree ≤ p.natDegree - 1 := by
-  by_contra h; push_neg at h
+  by_contra h; push Not at h
   have hbound : (taylor a p - p).natDegree ≤ p.natDegree :=
     (natDegree_sub_le _ _).trans
       (by rw [natDegree_taylor, max_self])
@@ -584,14 +586,13 @@ private theorem eval_determines (p : R[X])
 private theorem sum_hasseDeriv_eq_zero
     {Q : R[X] →ₗ[R] R[X]}
     (hse : ∀ a : R, Q.comp (taylor a) = (taylor a).comp Q)
-    (hkc : ∀ r : R, Q (C r) = 0)
+    (_hkc : ∀ r : R, Q (C r) = 0)
     {f : R[X]} (hQf : Q f = 0) :
     (range (f.natDegree + 1)).sum
       (fun k => (Q (X ^ k)).eval 0 • hasseDeriv k f) =
         0 := by
   apply eval_determines; intro a
-  simp only [eval_finset_sum, eval_smul, smul_eq_mul,
-             eval_zero]
+  simp only [eval_finsetSum, eval_smul, smul_eq_mul]
   have hQta : Q (taylor a f) = 0 := by
     have := congr_arg (· f) (hse a)
     simp only [LinearMap.comp_apply] at this
@@ -611,7 +612,7 @@ private theorem sum_hasseDeriv_eq_zero
     exact Q.map_smul _ _
   have h0 :=
     congr_arg (Polynomial.eval 0) (hdecomp ▸ hQta)
-  simp only [eval_finset_sum, eval_smul, smul_eq_mul,
+  simp only [eval_finsetSum, eval_smul, smul_eq_mul,
              eval_zero] at h0
   convert h0 using 1; apply Finset.sum_congr rfl
   intro k _
@@ -744,13 +745,14 @@ private theorem taylor_basic_eq
       rw [hQ_lhs, hQ_rhs, ih]
     · -- D.eval 0 = 0
       rw [eval_sub, taylor_eval, zero_add,
-          sub_eq_zero, eval_finset_sum]
+          sub_eq_zero, eval_finsetSum]
       rw [Finset.sum_eq_single_of_mem 0
         (Finset.mem_range.mpr (by omega))]
       · simp [hp.zero_one, Nat.choose_zero_right]
       · intro k _ hk
         simp [hp.normalized k (by omega : 0 < k)]
 
+set_option linter.unusedSectionVars false in
 /-- The composition `lmul' ∘ (id ⊗ aeval(C a)) ∘ Δ` equals `taylor a`
 as algebra homs. -/
 private theorem comul_taylor_bridge (a : R) :
@@ -766,6 +768,7 @@ private theorem comul_taylor_bridge (a : R) :
         Algebra.TensorProduct.lmul'_apply_tmul,
         taylor_X]
 
+set_option linter.unusedSectionVars false in
 /-- `aeval (C a) g = C (g.eval a)`. -/
 private theorem aeval_C_eq_C_eval (a : R)
     (g : R[X]) :
