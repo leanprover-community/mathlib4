@@ -822,6 +822,9 @@ noncomputable def ofBijective (f : α → β) (hf : Bijective f) : α ≃ β whe
 
 @[simp] lemma coe_ofBijective (f : α → β) (hf : Bijective f) : ⇑(ofBijective f hf) = f := rfl
 
+@[simp] lemma ofBijective_coe {X Y : Type*} {f : X ≃ Y} :
+    (Equiv.ofBijective _ f.bijective) = f := Equiv.ext (congrFun rfl)
+
 lemma ofBijective_apply_symm_apply (f : α → β) (hf : Bijective f) (x : β) :
     f ((ofBijective f hf).symm x) = x :=
   (ofBijective f hf).apply_symm_apply x
