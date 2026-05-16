@@ -357,9 +357,9 @@ theorem exists_fixed_point_of_surjective {α β : Type*} (f : α → α → β)
 
 /-- **Cantor's diagonal argument** implies that there are no surjective functions from `α`
 to `Set α`. -/
-theorem cantor_surjective {α} (f : α → Set α) : ¬Surjective f := fun h =>
-  let ⟨_, hx⟩ := exists_fixed_point_of_surjective f h (¬·)
-  not_iff_self (iff_of_eq hx)
+theorem cantor_surjective {α} (f : α → Set α) : ¬Surjective f := fun hf ↦
+  let ⟨a, ha⟩ := hf {a | a ∉ f a}
+  iff_not_self <| .of_eq <| congrArg (a ∈ ·) ha
 
 /-- **Cantor's diagonal argument** implies that there are no injective functions from `Set α`
 to `α`. -/
@@ -675,7 +675,7 @@ theorem eq_update_iff {a : α} {b : β a} {f g : ∀ a, β a} :
 
 @[simp] lemma update_eq_self_iff : update f a b = f ↔ b = f a := by simp [update_eq_iff]
 
-@[simp] lemma eq_update_self_iff : f = update f a b ↔ f a = b := by simp [eq_update_iff]
+@[simp] lemma eq_update_self_iff : f = update f a b ↔ f a = b := by simp [eqComm]
 
 lemma ne_update_self_iff : f ≠ update f a b ↔ f a ≠ b := eq_update_self_iff.not
 

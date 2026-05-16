@@ -35,6 +35,7 @@ structure HopfAlgCat where
   [instRing : Ring carrier]
   [instHopfAlgebra : HopfAlgebra R carrier]
 
+initialize_simps_projections HopfAlgCat (-instRing, -instHopfAlgebra)
 attribute [instance] HopfAlgCat.instHopfAlgebra HopfAlgCat.instRing
 
 variable {R}

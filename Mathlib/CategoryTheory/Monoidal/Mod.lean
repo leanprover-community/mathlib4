@@ -24,17 +24,38 @@ variable {C : Type u₁} [Category.{v₁} C] [MonoidalCategory.{v₁} C]
 
 section ModObj
 
-open MonObj
+open MonObj AddMonObj
+
+open scoped MonoidalLeftAction
+
+section
+
+variable (M : C) [AddMonObj M]
+
+/-- Given an action of a monoidal category `C` on a category `D`,
+an action of an additive monoid object `M` in `C` on an object `X` in `D` is the data of a
+map `vadd : M ⊙ₗ X ⟶ X` that satisfies zero-additivity and associativity with addition.
+
+See `AddAction` for the non-categorical version. -/
+class AddModObj (X : D) where
+  /-- The action map -/
+  vadd : M ⊙ₗ X ⟶ X
+  /-- The zero acts trivially. -/
+  zero_vadd (X) : ζ ⊵ₗ X ≫ vadd = (λₗ X).hom := by cat_disch
+  /-- The action map is compatible with addition. -/
+  add_vadd (X) : σ ⊵ₗ X ≫ vadd = (αₗ M M X).hom ≫ M ⊴ₗ vadd ≫ vadd := by cat_disch
+
+end
 
 variable (M : C) [MonObj M]
 
-open scoped MonoidalLeftAction
 /-- Given an action of a monoidal category `C` on a category `D`,
 an action of a monoid object `M` in `C` on an object `X` in `D` is the data of a
 map `smul : M ⊙ₗ X ⟶ X` that satisfies unitality and associativity with
 multiplication.
 
 See `MulAction` for the non-categorical version. -/
+@[to_additive]
 class ModObj (X : D) where
   /-- The action map -/
   smul : M ⊙ₗ X ⟶ X
@@ -43,17 +64,31 @@ class ModObj (X : D) where
   /-- The action map is compatible with multiplication. -/
   mul_smul (X) : μ ⊵ₗ X ≫ smul = (αₗ M M X).hom ≫ M ⊴ₗ smul ≫ smul := by cat_disch
 
-attribute [reassoc (attr := simp)] ModObj.mul_smul ModObj.one_smul
+attribute [to_additive existing (attr := reassoc (attr := simp))] ModObj.mul_smul ModObj.one_smul
+
+namespace AddModObj
+
+@[inherit_doc] scoped[CategoryTheory.AddMonObj] notation "δ" => AddModObj.vadd
+@[inherit_doc] scoped[CategoryTheory.AddMonObj] notation "δ[" Y "]" => AddModObj.vadd (X := Y)
+@[inherit_doc] scoped[CategoryTheory.AddMonObj] notation "δ[" N "," Y "]" =>
+  AddModObj.vadd (M := N) (X := Y)
+
+end AddModObj
+
+namespace ModObj
 
 @[inherit_doc] scoped[CategoryTheory.MonObj] notation "γ" => ModObj.smul
 @[inherit_doc] scoped[CategoryTheory.MonObj] notation "γ[" Y "]" => ModObj.smul (X := Y)
 @[inherit_doc] scoped[CategoryTheory.MonObj] notation "γ[" N "," Y "]" =>
   ModObj.smul (M := N) (X := Y)
 
+end ModObj
+
 variable {M}
 
 namespace ModObj
 
+@[to_additive]
 theorem assoc_flip (X : D) [ModObj M X] : M ⊴ₗ γ ≫ γ =
     (αₗ M M X).inv ≫ μ[M] ⊵ₗ X ≫ γ := by
   simp
@@ -61,19 +96,21 @@ theorem assoc_flip (X : D) [ModObj M X] : M ⊴ₗ γ ≫ γ =
 variable (M) in
 /-- The action of a monoid object on itself. -/
 -- See note [reducible non-instances]
+@[to_additive /-- The action of an additive monoid object on itself. -/]
 abbrev regular : ModObj M M where
   smul := μ
 
 attribute [local instance] regular in
-@[simp] lemma smul_eq_mul (M : C) [MonObj M] : γ[M,M] = μ[M] := rfl
+@[to_additive (attr := simp)]
+lemma smul_eq_mul (M : C) [MonObj M] : γ[M,M] = μ[M] := rfl
 
 /-- If `C` acts monoidally on `D`, then every object of `D` is canonically a
 module over the trivial monoid. -/
-@[simps]
+@[to_additive (attr := simps)]
 instance (X : D) : ModObj (𝟙_ C) X where
   smul := (λₗ _).hom
 
-@[ext]
+@[to_additive (attr := ext)]
 theorem ext {X : C} (h₁ h₂ : ModObj M X) (H : h₁.smul = h₂.smul) :
     h₁ = h₂ := by
   cases h₁
@@ -87,9 +124,18 @@ end ModObj
 
 open scoped ModObj MonoidalLeftAction
 
+variable {M' N' O' : D}
+
+open AddMonObj in
+/-- A morphism in `D` is a morphism of `A`-additive module objects if it commutes with
+the action maps -/
+class IsAddModHom (A : C) [AddMonObj A] [AddModObj A M'] [AddModObj A N'] (f : M' ⟶ N') where
+  vadd_hom : δ[M'] ≫ f = A ⊴ₗ f ≫ δ[N'] := by cat_disch
+
 variable (A : C) [MonObj A]
 /-- A morphism in `D` is a morphism of `A`-module objects if it commutes with
 the action maps -/
+@[to_additive]
 class IsModHom {M N : D} [ModObj A M] [ModObj A N] (f : M ⟶ N) where
   smul_hom : γ[M] ≫ f = A ⊴ₗ f ≫ γ[N] := by cat_disch
 
@@ -99,22 +145,36 @@ alias IsMod_Hom := IsModHom
 @[deprecated (since := "2026-04-21")]
 alias IsMod_Hom.smul_hom := IsModHom.smul_hom
 
-attribute [reassoc (attr := simp)] IsModHom.smul_hom
+attribute [to_additive existing (attr := reassoc (attr := simp))] IsModHom.smul_hom
 
 variable {M N O : D} [ModObj A M] [ModObj A N] [ModObj A O]
 
+@[to_additive]
 instance : IsModHom A (𝟙 M) where
 
+@[to_additive]
 instance (f : M ⟶ N) (g : N ⟶ O) [IsModHom A f] [IsModHom A g] :
     IsModHom A (f ≫ g) where
 
+@[to_additive]
 instance (f : M ≅ N) [IsModHom A f.hom] :
     IsModHom A f.inv where
   smul_hom := by simp [Iso.comp_inv_eq]
 
 variable (D) in
+/-- An additive module object for an additive monoid object in a monoidal category acting on the
+ambient category. -/
+structure AddMod (A : C) [AddMonObj A] where
+  /-- The underlying object in the ambient category -/
+  X : D
+  [addMod : AddModObj A X]
+
+attribute [instance] AddMod.addMod
+
+variable (D) in
 /-- A module object for a monoid object in a monoidal category acting on the
 ambient category. -/
+@[to_additive AddMod]
 structure Mod (A : C) [MonObj A] where
   /-- The underlying object in the ambient category -/
   X : D
@@ -128,25 +188,45 @@ alias Mod_.mod := Mod.mod
 
 attribute [instance] Mod.mod
 
+namespace AddMod
+
+variable {A : C} [AddMonObj A] (M : AddMod D A)
+
+/-- A morphism of additive module objects. -/
+@[ext]
+structure Hom (M N : AddMod D A) where
+  /-- The underlying morphism -/
+  hom : M.X ⟶ N.X
+  [isAddModHom : IsAddModHom A hom]
+
+attribute [instance] Hom.isAddModHom
+
+end AddMod
+
 namespace Mod
 
 variable {A : C} [MonObj A] (M : Mod D A)
 
+@[to_additive]
 theorem assoc_flip : A ⊴ₗ γ ≫ γ = (αₗ A A M.X).inv ≫ μ ⊵ₗ M.X ≫ γ := by simp
 
 /-- A morphism of module objects. -/
-@[ext]
+@[ext, to_additive existing]
 structure Hom (M N : Mod D A) where
   /-- The underlying morphism -/
   hom : M.X ⟶ N.X
   [isModHom : IsModHom A hom]
 
 attribute [instance] Hom.isModHom
+attribute [to_additive existing (attr := instance)] Hom.isModHom
 
 /-- An alternative constructor for `Hom`,
 taking a morphism without a `[IsModHom]` instance, as well as the relevant
 equality to put such an instance. -/
-@[simps!]
+@[to_additive (attr := simps!)
+  /-- An alternative constructor for `Hom`,
+  taking a morphism without a `[IsAddModHom]` instance, as well as the relevant
+  equality to put such an instance. -/]
 def Hom.mk' {M N : Mod D A} (f : M.X ⟶ N.X)
     (smul_hom : γ[M.X] ≫ f = A ⊴ₗ f ≫ γ[N.X] := by cat_disch) : Hom M N :=
   letI : IsModHom A f := ⟨smul_hom⟩
@@ -156,7 +236,11 @@ def Hom.mk' {M N : Mod D A} (f : M.X ⟶ N.X)
 taking a morphism without a `[IsModHom]` instance, between objects with
 a `ModObj` instance (rather than bundled as `Mod`),
 as well as the relevant equality to put such an instance. -/
-@[simps!]
+@[to_additive (attr := simps!)
+  /-- An alternative constructor for `Hom`,
+  taking a morphism without a `[IsAddModHom]` instance, between objects with
+  an `AddModObj` instance (rather than bundled as `AddMod`),
+  as well as the relevant equality to put such an instance. -/]
 def Hom.mk'' {M N : D} [ModObj A M] [ModObj A N] (f : M ⟶ N)
     (smul_hom : γ[M] ≫ f = A ⊴ₗ f ≫ γ[N] := by cat_disch) :
     Hom (.mk (A := A) M) (.mk (A := A) N) :=
@@ -164,33 +248,35 @@ def Hom.mk'' {M N : D} [ModObj A M] [ModObj A N] (f : M ⟶ N)
   ⟨f⟩
 
 /-- The identity morphism on a module object. -/
-@[simps]
+@[to_additive (attr := simps) /-- The identity morphism on an additive module object. -/]
 def id (M : Mod D A) : Hom M M where hom := 𝟙 M.X
 
+@[to_additive]
 instance homInhabited (M : Mod D A) : Inhabited (Hom M M) :=
   ⟨id M⟩
 
 /-- Composition of module object morphisms. -/
-@[simps]
+@[to_additive (attr := simps) /-- Composition of additive module object morphisms. -/]
 def comp {M N O : Mod D A} (f : Hom M N) (g : Hom N O) :
     Hom M O where
   hom := f.hom ≫ g.hom
 
+@[to_additive]
 instance : Category (Mod D A) where
   Hom M N := Hom M N
   id := id
   comp f g := comp f g
 
-@[ext]
+@[to_additive (attr := ext)]
 lemma hom_ext {M N : Mod D A} (f₁ f₂ : M ⟶ N) (h : f₁.hom = f₂.hom) :
     f₁ = f₂ :=
   Hom.ext h
 
-@[simp]
+@[to_additive (attr := simp)]
 theorem id_hom' (M : Mod D A) : (𝟙 M : M ⟶ M).hom = 𝟙 M.X := by
   rfl
 
-@[simp]
+@[to_additive (attr := simp)]
 theorem comp_hom' {M N K : Mod D A} (f : M ⟶ N) (g : N ⟶ K) :
     (f ≫ g).hom = f.hom ≫ g.hom :=
   rfl
@@ -198,16 +284,18 @@ theorem comp_hom' {M N K : Mod D A} (f : M ⟶ N) (g : N ⟶ K) :
 variable (A)
 
 /-- A monoid object as a module over itself. -/
-@[simps]
+@[to_additive (attr := simps) /-- An additive monoid object as an additive module over itself. -/]
 def regular : Mod C A :=
   letI : ModObj A A := .regular A
   ⟨A⟩
 
+@[to_additive]
 instance : Inhabited (Mod C A) :=
   ⟨regular A⟩
 
 /-- The forgetful functor from module objects to the ambient category. -/
-@[simps]
+@[to_additive (attr := simps)
+  /-- The forgetful functor from additive module objects to the ambient category. -/]
 def forget : Mod D A ⥤ D where
   obj A := A.X
   map f := f.hom
@@ -219,8 +307,11 @@ variable {A B : C} [MonObj A] [MonObj B] (f : A ⟶ B) [IsMonHom f]
 open MonoidalLeftAction in
 /-- When `M` is a `B`-module in `D` and `f : A ⟶ B` is a morphism of internal
 monoid objects, `M` inherits an `A`-module structure via
-"restriction of scalars", i.e `γ[A, M] = f.hom ⊵ₗ M ≫ γ[B, M]`. -/
-@[simps!, implicit_reducible]
+"restriction of scalars", i.e `γ[A, M] = f ⊵ₗ M ≫ γ[B, M]`. -/
+@[to_additive (attr := simps!, implicit_reducible)
+  /-- When `M` is a `B`-additive module in `D` and `f : A ⟶ B` is a morphism of internal
+  additive monoid objects, `M` inherits an `A`-additive module structure via
+  "restriction of scalars", i.e `δ[A, M] = f ⊵ₗ M ≫ δ[B, M]`. -/]
 def scalarRestriction (M : D) [ModObj B M] : ModObj A M where
   smul := f ⊵ₗ M ≫ γ[B,M]
   one_smul := by
@@ -238,9 +329,13 @@ def scalarRestriction (M : D) [ModObj B M] : ModObj A M where
       IsMonHom.mul_hom, tensorHom_def, Category.assoc]
 
 open MonoidalLeftAction in
-/-- If `g : M ⟶ N` is a `B`-linear morphisms of `B`-modules, then it induces an
+/-- If `g : M ⟶ N` is a `B`-linear morphism of `B`-modules, then it induces an
 `A`-linear morphism when `M` and `N` have an `A`-module structure obtained
 by restricting scalars along a monoid morphism `A ⟶ B`. -/
+@[to_additive
+  /-- If `g : M ⟶ N` is a `B`-linear morphism of `B`-modules, then it induces an
+  `A`-linear morphism when `M` and `N` have an `A`-module structure obtained
+  by restricting scalars along an additive monoid morphism `A ⟶ B`. -/]
 lemma scalarRestriction_hom
     (M N : D) [ModObj B M] [ModObj B N] (g : M ⟶ N) [IsModHom B g] :
     letI := scalarRestriction f M
@@ -254,7 +349,9 @@ lemma scalarRestriction_hom
 /-- A morphism of monoid objects induces a "restriction" or "comap" functor
 between the categories of module objects.
 -/
-@[simps]
+@[to_additive (attr := simps)
+  /-- A morphism of additive monoid objects induces a "restriction" or "comap" functor
+  between the categories of additive module objects. -/]
 def comap {A B : C} [MonObj A] [MonObj B] (f : A ⟶ B) [IsMonHom f] :
     Mod D B ⥤ Mod D A where
   obj M :=

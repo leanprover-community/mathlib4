@@ -387,8 +387,8 @@ opaque B : Prop
 @[local fun_prop] theorem Con_comp' (f : β → γ) (g : α → β) (h : A) : Con (fun x => f (g x)) := silentSorry
 @[local fun_prop] theorem Con_comp'' (f : β → γ) (g : α → β) (b : B) : Con (fun x => f (g x)) := silentSorry
 
-example (f : β → γ) (g : α → β) (h : A) : Con (fun x => f (g x)) := by fun_prop (disch := assumption)
-example (f : β → γ) (g : α → β) (h : B) : Con (fun x => f (g x)) := by fun_prop (disch := assumption)
+example (f : β → γ) (g : α → β) (h : A) : Con (fun x => f (g x)) := by fun_prop
+example (f : β → γ) (g : α → β) (h : B) : Con (fun x => f (g x)) := by fun_prop
 
 end MultipleLambdaTheorems
 
@@ -699,3 +699,44 @@ example (hX : ∀ i, Lin' (X i)) : Lin (fun ω i ↦ X i ω) := by
   -- failed in https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/Weird.20behavior.20of.20fun_prop
 
 end MVarBug
+
+section BundledMorphismWithFunctionValues
+
+structure FooHom (α : Type*) where
+  toFun : α → α → α
+  cont' : Con (Function.uncurry toFun)
+
+instance : FunLike (FooHom α) α (α → α) where
+  coe f := f.toFun
+  coe_injective' f g h := by cases f; cases g; congr
+
+@[fun_prop]
+theorem con_foohom' {β : Type*} {f : β → FooHom α} (hf : Con f) {g₁ : β → α} (hg₁ : Con g₁)
+    {g₂ : β → α} (hg₂ : Con g₂) : Con fun x ↦ (f x) (g₁ x) (g₂ x) := silentSorry
+
+example {f : FooHom α} : Con fun x => f x x := by fun_prop
+
+example {f : FooHom α} (y : α) : Con fun x => f x y := by fun_prop
+
+example {f : FooHom α} : Con fun x => f (f x x) x := by fun_prop
+
+example {f : FooHom (Fin 2 → α)} : Con fun x i => f (f (fun _ => x 0) x) x i := by fun_prop
+
+example {f : FooHom (Fin 2 → α)} (i) : Con fun x => f (f (fun _ => x 0) x) x i := by fun_prop
+
+example {f : α → FooHom α} (hf : Con (fun x : α × α × α => f x.1 x.2.1 x.2.2)) :
+    Con fun x ↦ f x x x := by
+  fun_prop
+
+example {f : α → FooHom α} (hf : Con f) : Con fun x ↦ f x (f x x x) x := by
+  fun_prop
+
+end BundledMorphismWithFunctionValues
+
+
+-- this use to fail when we did not apply other rules when constant lambda rule did not work
+example {β} [Zero β] (f : β → γ) (hf : Lin f) :
+  Lin (fun x : α => f 0) := by fun_prop
+
+example {β} [Zero β] [Add β] :
+  Lin (fun x : α => 0 + 0) := by fun_prop
