@@ -187,13 +187,10 @@ theorem of_le_of_exists_dvd (N : Submonoid R) (h₁ : M ≤ N) (h₂ : ∀ n ∈
     isUnit_of_dvd_unit (map_dvd _ dvd) (map_units S ⟨m, hm⟩)
 
 theorem algebraMap_isUnit_iff {x : R} : IsUnit (algebraMap R S x) ↔ ∃ m ∈ M, x ∣ m := by
-  refine ⟨fun h ↦ ?_, fun ⟨m, hm, dvd⟩ ↦ isUnit_of_dvd_unit (map_dvd _ dvd) (map_units S ⟨m, hm⟩)⟩
-  have ⟨s, hxs⟩ := isUnit_iff_dvd_one.mp h
-  have ⟨⟨r, m⟩, hrm⟩ := surj M s
-  apply_fun (algebraMap R S x * ·) at hrm
-  rw [← mul_assoc, ← hxs, one_mul, ← map_mul] at hrm
-  have ⟨m', eq⟩ := (eq_iff_exists M S).mp hrm
-  exact ⟨m' * m, mul_mem m'.2 m.2, _, mul_left_comm _ x _ ▸ eq⟩
+  have ⟨h_mp, h_mpr⟩ := (IsLocalization.toLocalizationMap M S).map_isUnit_iff x
+  refine ⟨fun hx ↦ ?_, fun ⟨m, hmM, hm⟩ ↦ h_mpr ⟨⟨m, hmM⟩, hm⟩⟩
+  obtain ⟨m, hm⟩ := h_mp hx
+  exact ⟨m, m.2, hm⟩
 
 end
 
