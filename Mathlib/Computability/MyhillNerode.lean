@@ -32,17 +32,16 @@ namespace Language
 
 variable (L) in
 /-- The *left quotient* of `x` is the set of suffixes `y` such that `x ++ y` is in `L`. -/
-def leftQuotient (x : List α) : Language α := { y | x ++ y ∈ L }
+def leftQuotient (x : List α) : Language α := ⟨{y | x ++ y ∈ L}⟩
 
 variable (L) in
 @[simp]
 theorem leftQuotient_nil : L.leftQuotient [] = L := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 variable (L) in
 theorem leftQuotient_append (x y : List α) :
     L.leftQuotient (x ++ y) = (L.leftQuotient x).leftQuotient y := by
-  simp [leftQuotient, Language]
+  simp [leftQuotient, Language.mem_def]
 
 @[simp]
 theorem mem_leftQuotient (x y : List α) : y ∈ L.leftQuotient x ↔ x ++ y ∈ L := Iff.rfl
@@ -50,7 +49,7 @@ theorem mem_leftQuotient (x y : List α) : y ∈ L.leftQuotient x ↔ x ++ y ∈
 theorem leftQuotient_accepts_apply (M : DFA α σ) (x : List α) :
     leftQuotient M.accepts x = M.acceptsFrom (M.eval x) := by
   ext y
-  simp [DFA.mem_accepts, DFA.mem_acceptsFrom, DFA.eval, DFA.evalFrom_of_append]
+  simp [← Language.mem_def, DFA.mem_accepts, DFA.eval, DFA.evalFrom_of_append]
 
 theorem leftQuotient_accepts (M : DFA α σ) : leftQuotient M.accepts = M.acceptsFrom ∘ M.eval :=
   funext <| leftQuotient_accepts_apply M
@@ -88,7 +87,7 @@ variable (L) in
 @[simp]
 theorem accepts_toDFA : L.toDFA.accepts = L := by
   ext x
-  rw [DFA.mem_accepts]
+  simp_rw [← Language.mem_def, DFA.mem_accepts]
   suffices L.toDFA.eval x = L.leftQuotient x by simp [this]
   induction x using List.reverseRecOn with
   | nil => simp
