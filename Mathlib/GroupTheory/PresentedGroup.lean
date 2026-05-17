@@ -210,9 +210,9 @@ def coprodPresentations :
   MonoidHom.toMulEquiv
     (toGroup (coprodOf_kills_rels rels₁ rels₂))
     (Monoid.Coprod.lift
-      (PresentedGroup.map (FreeGroup.map Sum.inl) (fun r hr => .inl ⟨r, hr, rfl⟩))
-      (PresentedGroup.map (FreeGroup.map Sum.inr) (fun r hr => .inr ⟨r, hr, rfl⟩)))
-    (ext <| Sum.rec (fun _ => rfl) (fun _ => rfl))
-    (Monoid.Coprod.hom_ext (ext (fun _ => rfl)) (ext (fun _ => rfl)))
+      (PresentedGroup.map (FreeGroup.map Sum.inl) (fun r hr ↦ .inl ⟨r, hr, rfl⟩))
+      (PresentedGroup.map (FreeGroup.map Sum.inr) (fun r hr ↦ .inr ⟨r, hr, rfl⟩)))
+    (ext <| Sum.rec (fun _ ↦ rfl) (fun _ ↦ rfl))
+    (Monoid.Coprod.hom_ext (ext (fun _ ↦ rfl)) (ext (fun _ ↦ rfl)))
 end Coprod
 end PresentedGroup
