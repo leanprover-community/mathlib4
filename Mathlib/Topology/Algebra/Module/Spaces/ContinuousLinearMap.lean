@@ -501,13 +501,11 @@ spaces of continuous (semi)linear maps. -/
 @[simps apply symm_apply toLinearEquiv_apply toLinearEquiv_symm_apply]
 def arrowCongrSL (e₁₂ : E ≃SL[σ₁₂] F) (e₄₃ : H ≃SL[σ₄₃] G) :
     (E →SL[σ₁₄] H) ≃SL[σ₄₃] F →SL[σ₂₃] G :=
-{ e₁₂.arrowCongrEquiv e₄₃ with
+{ e₁₂.arrowCongrEquivₛₗ e₄₃ with
     -- given explicitly to help `simps`
     toFun := fun L => (e₄₃ : H →SL[σ₄₃] G).comp (L.comp (e₁₂.symm : F →SL[σ₂₁] E))
     -- given explicitly to help `simps`
     invFun := fun L => (e₄₃.symm : G →SL[σ₃₄] H).comp (L.comp (e₁₂ : E →SL[σ₁₂] F))
-    map_add' := fun f g => by simp only [add_comp, comp_add]
-    map_smul' := fun t f => by simp only [smul_comp, comp_smulₛₗ]
     continuous_toFun := ((postcomp F e₄₃.toContinuousLinearMap).comp
       (precomp H e₁₂.symm.toContinuousLinearMap)).continuous
     continuous_invFun := ((precomp H e₁₂.toContinuousLinearMap).comp

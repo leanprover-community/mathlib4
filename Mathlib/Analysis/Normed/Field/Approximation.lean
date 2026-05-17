@@ -90,9 +90,9 @@ theorem exists_roots_norm_sub_lt_of_norm_coeff_sub_lt (hε : 0 < ε) {a : K} (ha
   _ ≤ ∑ i ∈ Finset.range (g.natDegree + 1), ‖(g.coeff i - f.coeff i) * a ^ i‖ := by
     have := norm_sum_le (Finset.range (g.natDegree + 1))
         (fun i ↦ (C (g.coeff i - f.coeff i) * X ^ i).eval a)
-    simpa [eval_mul, eval_finset_sum] using this
+    simpa [eval_mul, eval_finsetSum] using this
     -- The following tactic does not work here:
-    -- simpa [eval_mul, eval_finset_sum] using norm_sum_le (Finset.range (g.natDegree + 1))
+    -- simpa [eval_mul, eval_finsetSum] using norm_sum_le (Finset.range (g.natDegree + 1))
     --     (fun i ↦ (C (g.coeff i - f.coeff i) * X ^ i).eval a)
   _ < _ := by
     rw [hdeg]

@@ -24,9 +24,11 @@ and show that bounded above complexes of projective objects are K-projective.
 
 @[expose] public section
 
+open CategoryTheory Limits Preadditive Opposite
+
 namespace CochainComplex
 
-open CategoryTheory Limits HomComplex Preadditive Opposite
+open HomComplex
 
 variable {C : Type*} [Category* C] [Abelian C]
 
@@ -96,7 +98,6 @@ lemma isKProjective_shift_iff (K : CochainComplex C ℤ) (n : ℤ) :
   ⟨fun _ ↦ isKProjective_of_iso (show K⟦n⟧⟦-n⟧ ≅ K from (shiftEquiv _ n).unitIso.symm.app K),
     fun _ ↦ inferInstance⟩
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isKProjective_of_op {K : CochainComplex C ℤ}
     (hK : IsKInjective ((opEquivalence C).functor.obj (op K))) :
     K.IsKProjective where
@@ -105,7 +106,6 @@ lemma isKProjective_of_op {K : CochainComplex C ℤ}
       ((opEquivalence C).functor.map f.op) (acyclic_op hL)).trans
         (.ofEq (by simp)))⟩
 
-set_option backward.isDefEq.respectTransparency false in
 attribute [local simp] opEquivalence ChainComplex.cochainComplexEquivalence in
 open Cochain.InductionUp in
 lemma isKProjective_of_projective (K : CochainComplex C ℤ) (d : ℤ)
@@ -120,5 +120,9 @@ lemma isKProjective_of_projective (K : CochainComplex C ℤ) (d : ℤ)
     intro i hi
     exact (K.isZero_of_isStrictlyLE d _ (by dsimp; lia)).op
   exact isKProjective_of_op (isKInjective_of_injective L (-d))
+
+instance (K : ChainComplex C ℕ) [∀ n, Projective (K.X n)] :
+    CochainComplex.IsKProjective (K.extend ComplexShape.embeddingDownNat) :=
+  CochainComplex.isKProjective_of_projective _ 0
 
 end CochainComplex

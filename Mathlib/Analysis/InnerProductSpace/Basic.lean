@@ -878,6 +878,32 @@ theorem norm_add_eq_iff_real {x y : F} : ‖x + y‖ = ‖x‖ + ‖y‖ ↔ ‖
 
 end Norm
 
+section Induced
+
+variable {G : Type*} [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E] [AddCommGroup G]
+    [Module 𝕜 G]
+
+/-- A linear map from a `Module` to an `InnerProductSpace` induces an `InnerProductSpace`
+structure on the domain using the `SeminormedAddCommGroup.induced` norm.
+
+See note [reducible non-instances]. -/
+abbrev InnerProductSpace.induced {F : Type*} [FunLike F G E] [LinearMapClass F 𝕜 G E] (f : F) :
+    letI := SeminormedAddCommGroup.induced G E f
+    InnerProductSpace 𝕜 G :=
+  letI := SeminormedAddCommGroup.induced G E f
+  letI := NormedSpace.induced 𝕜 G E f
+  { inner x y := inner 𝕜 (f x) (f y)
+    add_left x y z := by rw [map_add, inner_add_left]
+    smul_left x y r := by rw [map_smul, inner_smul_left]
+    norm_sq_eq_re_inner x := norm_sq_eq_re_inner (f x)
+    conj_inner_symm x y := inner_conj_symm (f x) (f y) }
+
+theorem inner_induced_eq (g₁ g₂ : G) (f : G →ₗ[𝕜] E) :
+    letI := InnerProductSpace.induced f
+    inner 𝕜 g₁ g₂ = inner 𝕜 (f g₁) (f g₂) := rfl
+
+end Induced
+
 section RCLike
 
 local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
@@ -996,3 +1022,7 @@ lemma isPosSemidef_inner : LinearMap.IsPosSemidef (innerₗ E) where
   isNonneg := isNonneg_inner
 
 end IsPosSemidef
+
+example : (instInnerProductSpaceRealComplex.toSMul : SMul ℝ ℂ) =
+    Complex.instRCLike.toSMul := by
+  with_reducible_and_instances rfl

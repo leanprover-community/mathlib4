@@ -246,7 +246,7 @@ theorem centralizer_le_alternating_iff :
 
 namespace IsThreeCycle
 
-variable (h5 : 5 ≤ Fintype.card α) {g : alternatingGroup α} (hg : IsThreeCycle (g : Perm α))
+variable (h5 : 5 ≤ Nat.card α) {g : alternatingGroup α} (hg : IsThreeCycle (g : Perm α))
 
 include h5 hg
 
@@ -276,7 +276,7 @@ theorem alternatingGroup.commutator_perm_le :
   simp [map_commutatorElement, commutatorElement_eq_one_iff_commute, Commute.all]
 
 /-- If `n ≥ 5`, then the alternating group on `n` letters is perfect -/
-theorem commutator_alternatingGroup_eq_top (h5 : 5 ≤ Fintype.card α) :
+theorem commutator_alternatingGroup_eq_top (h5 : 5 ≤ Nat.card α) :
     commutator (alternatingGroup α) = ⊤ := by
   suffices closure {b : alternatingGroup α | (b : Perm α).IsThreeCycle} = ⊤ by
     rw [eq_top_iff, ← this, Subgroup.closure_le]
@@ -286,13 +286,13 @@ theorem commutator_alternatingGroup_eq_top (h5 : 5 ≤ Fintype.card α) :
   exact Subgroup.closure_closure_coe_preimage
 
 /-- If `n ≥ 5`, then the alternating group on `n` letters is perfect (subgroup version) -/
-theorem commutator_alternatingGroup_eq_self (h5 : 5 ≤ Fintype.card α) :
+theorem commutator_alternatingGroup_eq_self (h5 : 5 ≤ Nat.card α) :
     ⁅alternatingGroup α, alternatingGroup α⁆ = alternatingGroup α := by
   rw [← Subgroup.map_subtype_commutator, commutator_alternatingGroup_eq_top h5,
     ← MonoidHom.range_eq_map, Subgroup.range_subtype]
 
 /-- The commutator subgroup of the permutation group is the alternating group -/
-theorem alternatingGroup.commutator_perm_eq (h5 : 5 ≤ Fintype.card α) :
+theorem alternatingGroup.commutator_perm_eq (h5 : 5 ≤ Nat.card α) :
     commutator (Perm α) = alternatingGroup α := by
   apply le_antisymm alternatingGroup.commutator_perm_le
   rw [← commutator_alternatingGroup_eq_self h5]

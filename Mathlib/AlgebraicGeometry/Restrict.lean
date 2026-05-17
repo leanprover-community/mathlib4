@@ -256,18 +256,28 @@ theorem Scheme.homOfLE_base {U V : X.Opens} (e : U ≤ V) :
   ext a; refine Subtype.ext ?_ -- Porting note: `ext` did not pick up `Subtype.ext`
   exact congr($(X.homOfLE_ι e) a)
 
-@[simp]
-theorem Scheme.homOfLE_apply {U V : X.Opens} (e : U ≤ V) (x : U) :
-    (X.homOfLE e x).1 = x := by
+theorem Scheme.homOfLE_apply' {U V : X.Opens} (e : U ≤ V) (x : X) (hx : x ∈ U) :
+    X.homOfLE e ⟨x, hx⟩ = ⟨x, e hx⟩ := by
   rw [homOfLE_base]
   rfl
 
+@[simp]
+theorem Scheme.homOfLE_apply {U V : X.Opens} (e : U ≤ V) (x : U) :
+    (X.homOfLE e x).1 = x := by
+  rw [Scheme.homOfLE_apply']
+
+theorem Scheme.ι_image_homOfLE_eq_ι_image_inf {U V : X.Opens} (e : U ≤ V) (W : Opens V) :
+    U.ι ''ᵁ X.homOfLE e ⁻¹ᵁ W = V.ι ''ᵁ W ⊓ U := by
+  ext x
+  constructor
+  · rintro ⟨⟨y, hyU⟩, hyW, rfl⟩
+    exact ⟨⟨⟨y, e hyU⟩, by simpa [homOfLE_apply'] using hyW, rfl⟩, hyU⟩
+  · rintro ⟨⟨y, hyW, rfl⟩, hyU⟩
+    exact ⟨⟨y.1, hyU⟩, by simpa [homOfLE_apply'] using hyW, rfl⟩
+
 theorem Scheme.ι_image_homOfLE_le_ι_image {U V : X.Opens} (e : U ≤ V) (W : Opens V) :
     U.ι ''ᵁ X.homOfLE e ⁻¹ᵁ W ≤ V.ι ''ᵁ W := by
-  simp only [homOfLE_base, homOfLE_leOfHom, ← SetLike.coe_subset_coe, Hom.coe_image, Opens.ι_apply,
-    Opens.map_coe, Set.image_subset_iff]
-  rintro _ h
-  exact ⟨_, h, rfl⟩
+  simp [Scheme.ι_image_homOfLE_eq_ι_image_inf]
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
@@ -529,13 +539,8 @@ theorem morphismRestrict_ι {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Y.Opens) :
 
 theorem isPullback_morphismRestrict {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Y.Opens) :
     IsPullback (f ∣_ U) (f ⁻¹ᵁ U).ι U.ι f := by
-  delta morphismRestrict
-  rw [← Category.id_comp f]
-  refine
-    (IsPullback.of_horiz_isIso ⟨?_⟩).paste_horiz
-      (IsPullback.of_hasPullback f (Y.ofRestrict U.isOpenEmbedding)).flip
-  erw [pullbackRestrictIsoRestrict_inv_fst]
-  rw [Category.comp_id]
+  apply IsOpenImmersion.isPullback <;>
+  simp
 
 lemma isPullback_opens_inf_le {X : Scheme} {U V W : X.Opens} (hU : U ≤ W) (hV : V ≤ W) :
     IsPullback (X.homOfLE inf_le_left) (X.homOfLE inf_le_right) (X.homOfLE hU) (X.homOfLE hV) := by
@@ -661,16 +666,7 @@ def morphismRestrictRestrictBasicOpen {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Y.Op
           U.toScheme.basicOpen (Y.presheaf.map (eqToHom U.isOpenEmbedding_obj_top).op r)) ≅
       Arrow.mk (f ∣_ Y.basicOpen r) := by
   refine morphismRestrictRestrict _ _ _ ≪≫ morphismRestrictEq _ ?_
-  have e := Scheme.preimage_basicOpen U.ι r
-  rw [Scheme.Opens.ι_app] at e
-  rw [← U.toScheme.basicOpen_res_eq _ (eqToHom U.inclusion'_map_eq_top).op]
-  erw [← elementwise_of% Y.presheaf.map_comp]
-  rw [eqToHom_op, eqToHom_op, eqToHom_map, eqToHom_trans]
-  erw [← e]
-  ext1
-  dsimp [Opens.map_coe]
-  rw [Set.image_preimage_eq_inter_range, Set.inter_eq_left, Scheme.Opens.range_ι]
-  exact Y.basicOpen_le r
+  simp [Scheme.Opens.ι_image_basicOpen]
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The stalk map of a restriction of a morphism is isomorphic to the stalk map of the original map.

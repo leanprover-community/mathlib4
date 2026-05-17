@@ -274,6 +274,11 @@ theorem exists_isAffineOpen_mem_and_subset {X : Scheme.{u}} {x : X}
   exact ⟨Scheme.Hom.opensRange f (H := hf.1),
     ⟨AlgebraicGeometry.isAffineOpen_opensRange f (H := hf.1), hf.2.1, hf.2.2⟩⟩
 
+lemma Scheme.exists_Spec_apply_eq {X : Scheme.{u}} (x : X) :
+    ∃ (R : CommRingCat.{u}) (f : Spec R ⟶ X) (_ : IsOpenImmersion f) (y : Spec R),
+    f.base y = x :=
+  ⟨X.affineOpenCover.X _, X.affineOpenCover.f _, inferInstance, X.affineOpenCover.covers x⟩
+
 instance Scheme.isAffine_affineCover (X : Scheme) (i : X.affineCover.I₀) :
     IsAffine (X.affineCover.X i) :=
   isAffine_Spec _
@@ -576,7 +581,7 @@ theorem fromSpec_image_basicOpen :
     hU.fromSpec ''ᵁ PrimeSpectrum.basicOpen f = X.basicOpen f := by
   rw [← hU.fromSpec_preimage_basicOpen]
   ext1
-  change hU.fromSpec '' (hU.fromSpec ⁻¹' (X.basicOpen f : Set X)) = _
+  change hU.fromSpec '' hU.fromSpec ⁻¹' (X.basicOpen f : Set X) = _
   rw [Set.image_preimage_eq_inter_range, Set.inter_eq_left, hU.range_fromSpec]
   exact Scheme.basicOpen_le _ _
 

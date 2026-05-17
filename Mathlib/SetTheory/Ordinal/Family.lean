@@ -231,7 +231,7 @@ theorem iSup_eq_zero_iff {ι} {f : ι → Ordinal.{u}} [Small.{u} ι] :
     iSup f = 0 ↔ ∀ i, f i = 0 := by
   refine
     ⟨fun h i => ?_, fun h =>
-      le_antisymm (Ordinal.iSup_le fun i => nonpos_iff_eq_zero.2 (h i)) (zero_le _)⟩
+      le_antisymm (Ordinal.iSup_le fun i => nonpos_iff_eq_zero.2 (h i)) zero_le⟩
   rw [← nonpos_iff_eq_zero, ← h]
   exact Ordinal.le_iSup f i
 
@@ -483,7 +483,7 @@ set_option linter.deprecated false in
 theorem bsup_eq_zero_iff {o} {f : ∀ a < o, Ordinal} : bsup o f = 0 ↔ ∀ i hi, f i hi = 0 := by
   refine
     ⟨fun h i hi => ?_, fun h =>
-      le_antisymm (bsup_le fun i hi => nonpos_iff_eq_zero.2 (h i hi)) (zero_le _)⟩
+      le_antisymm (bsup_le fun i hi => nonpos_iff_eq_zero.2 (h i hi)) zero_le⟩
   rw [← nonpos_iff_eq_zero, ← h]
   exact le_bsup f i hi
 
@@ -640,7 +640,7 @@ theorem lsub_empty {ι} [h : IsEmpty ι] (f : ι → Ordinal) : lsub f = 0 := by
 set_option linter.deprecated false in
 @[deprecated "lsub is deprecated" (since := "2026-03-27")]
 theorem lsub_pos {ι} [h : Nonempty ι] (f : ι → Ordinal) : 0 < lsub f :=
-  h.elim fun i => (zero_le _).trans_lt (lt_lsub f i)
+  h.elim fun i => (lt_lsub f i).pos
 
 set_option linter.deprecated false in
 @[deprecated "lsub is deprecated" (since := "2026-03-27")]
@@ -881,7 +881,7 @@ theorem blsub_zero (f : ∀ a < (0 : Ordinal), Ordinal) : blsub 0 f = 0 := by rw
 set_option linter.deprecated false in
 @[deprecated "blsub is deprecated" (since := "2026-03-23")]
 theorem blsub_pos {o : Ordinal} (ho : 0 < o) (f : ∀ a < o, Ordinal) : 0 < blsub o f :=
-  (zero_le _).trans_lt (lt_blsub f 0 ho)
+  (lt_blsub f 0 ho).pos
 
 set_option linter.deprecated false in
 @[deprecated "blsub is deprecated" (since := "2026-03-23")]

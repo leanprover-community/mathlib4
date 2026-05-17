@@ -155,7 +155,7 @@ theorem Continuous.matrix_mul [Fintype n] [Mul R] [AddCommMonoid R] [ContinuousA
     [ContinuousMul R] {A : X → Matrix m n R} {B : X → Matrix n p R} (hA : Continuous A)
     (hB : Continuous B) : Continuous fun x => A x * B x :=
   continuous_matrix fun _ _ =>
-    continuous_finset_sum _ fun _ _ => (hA.matrix_elem _ _).mul (hB.matrix_elem _ _)
+    continuous_finsetSum _ fun _ _ => (hA.matrix_elem _ _).mul (hB.matrix_elem _ _)
 
 instance [Fintype n] [Mul R] [AddCommMonoid R] [ContinuousAdd R] [ContinuousMul R] :
     ContinuousMul (Matrix n n R) :=
@@ -206,14 +206,14 @@ theorem continuous_matrix_diag : Continuous (Matrix.diag : Matrix n n R → n �
 @[continuity, fun_prop]
 theorem Continuous.matrix_trace [Fintype n] [AddCommMonoid R] [ContinuousAdd R]
     {A : X → Matrix n n R} (hA : Continuous A) : Continuous fun x => trace (A x) :=
-  continuous_finset_sum _ fun _ _ => hA.matrix_elem _ _
+  continuous_finsetSum _ fun _ _ => hA.matrix_elem _ _
 
 @[continuity, fun_prop]
 theorem Continuous.matrix_det [Fintype n] [DecidableEq n] [CommRing R] [IsTopologicalRing R]
     {A : X → Matrix n n R} (hA : Continuous A) : Continuous fun x => (A x).det := by
   simp_rw [Matrix.det_apply]
-  refine continuous_finset_sum _ fun l _ => Continuous.const_smul ?_ _
-  exact continuous_finset_prod _ fun l _ => hA.matrix_elem _ _
+  refine continuous_finsetSum _ fun l _ => Continuous.const_smul ?_ _
+  exact continuous_finsetProd _ fun l _ => hA.matrix_elem _ _
 
 @[continuity, fun_prop]
 theorem Continuous.matrix_updateCol [DecidableEq n] (i : n) {A : X → Matrix m n R}

@@ -254,11 +254,11 @@ nonrec theorem range_comp {α} (h : M ≃ₘ^n⟮I, J⟯ N) (f : α → M) :
   rw [range_comp, image_eq_preimage_symm]
 
 @[simp]
-theorem image_symm_image (h : M ≃ₘ^n⟮I, J⟯ N) (s : Set N) : h '' (h.symm '' s) = s :=
+theorem image_symm_image (h : M ≃ₘ^n⟮I, J⟯ N) (s : Set N) : h '' h.symm '' s = s :=
   h.toEquiv.image_symm_image s
 
 @[simp]
-theorem symm_image_image (h : M ≃ₘ^n⟮I, J⟯ N) (s : Set M) : h.symm '' (h '' s) = s :=
+theorem symm_image_image (h : M ≃ₘ^n⟮I, J⟯ N) (s : Set M) : h.symm '' h '' s = s :=
   h.toEquiv.symm_image_image s
 
 /-- A diffeomorphism is a homeomorphism. -/

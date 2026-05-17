@@ -111,6 +111,10 @@ theorem isMax_top : IsMax (⊤ : α) :=
 theorem not_top_lt : ¬⊤ < a :=
   isMax_top.not_lt
 
+@[to_dual (attr := simp) not_covBy_bot]
+theorem not_top_covBy : ¬⊤ ⋖ a :=
+  fun h ↦ not_top_lt h.1
+
 @[to_dual ne_bot_of_gt]
 theorem ne_top_of_lt (h : a < b) : a ≠ ⊤ :=
   (h.trans_le le_top).ne

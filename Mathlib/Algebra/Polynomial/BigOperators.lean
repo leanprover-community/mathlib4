@@ -295,7 +295,7 @@ lemma degree_sum_eq_of_linearIndepOn {A : Type*} [CommRing A] [Algebra R A] {f :
     · simp [hf]
     rw [degree_eq_natDegree hf]
     apply le_degree_of_ne_zero
-    rw [finset_sum_coeff]
+    rw [finsetSum_coeff]
     conv in (fun _ ↦ _) =>
       ext
       rw [coeff_smul, smul_eq_mul, coeff_map, mul_comm, ← Algebra.smul_def]
@@ -315,7 +315,7 @@ lemma natDegree_sum_eq_of_linearIndepOn {A : Type*} [CommRing A] [Algebra R A] {
     by_cases hf : f i = 0
     · simp [hf]
     apply le_natDegree_of_ne_zero
-    rw [finset_sum_coeff]
+    rw [finsetSum_coeff]
     conv in (fun _ ↦ _) =>
       ext
       rw [coeff_smul, smul_eq_mul, coeff_map, mul_comm, ← Algebra.smul_def]
@@ -331,10 +331,13 @@ lemma natDegree_multiset_prod_X_sub_C_eq_card (s : Multiset R) :
   · simp
   · exact Multiset.forall_mem_map_iff.2 fun a _ => monic_X_sub_C a
 
-@[simp] lemma natDegree_finset_prod_X_sub_C_eq_card {α} (s : Finset α) (f : α → R) :
+@[simp] lemma natDegree_finsetProd_X_sub_C_eq_card {α} (s : Finset α) (f : α → R) :
     (∏ a ∈ s, (X - C (f a))).natDegree = s.card := by
   rw [Finset.prod, ← (X - C ·).comp_def f, ← Multiset.map_map,
     natDegree_multiset_prod_X_sub_C_eq_card, Multiset.card_map, Finset.card]
+
+@[deprecated (since := "2026-04-08")]
+alias natDegree_finset_prod_X_sub_C_eq_card := natDegree_finsetProd_X_sub_C_eq_card
 
 end CommRing
 

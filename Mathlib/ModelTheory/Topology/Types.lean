@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2025 Jonas van der Schaaf. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Jonas van der Schaaf
+Authors: Jonas van der Schaaf, Anish Rajeev
 -/
 
 module
@@ -10,6 +10,8 @@ public import Mathlib.ModelTheory.Types
 public import Mathlib.Topology.Bases
 public import Mathlib.Topology.Connected.TotallyDisconnected
 public import Mathlib.Topology.Compactness.Compact
+public import Mathlib.Topology.Connected.Separation
+public import Mathlib.Topology.Baire.LocallyCompactRegular
 
 /-!
 # Topology on the space of complete types
@@ -68,5 +70,32 @@ public instance : TotallySeparatedSpace (CompleteType T α) := by
     refine ⟨T.typesWith ∼φ, isClopen_typesWith _, h, ?_⟩
     rwa [mem_compl_iff, mem_typesWith_iff, not_mem_iff, ← hφ, not_not, ← not_mem_iff]
 
+instance : CompactSpace (T.CompleteType α) := by
+  constructor
+  rw [isCompact_iff_ultrafilter_le_nhds]
+  intros F _
+  refine ⟨⟨{φ | T.typesWith φ ∈ F}, ?_, ?_⟩, ?_⟩
+  · intro φ x
+    exact F.mem_of_superset Filter.univ_mem (fun p _ ↦ p.subset x)
+  · rw [Theory.IsMaximal, Theory.isSatisfiable_iff_isFinitelySatisfiable]
+    refine ⟨?_, ?_⟩
+    · rw[Theory.IsFinitelySatisfiable]
+      intro x hx
+      have : ∀ φ ∈ x, T.typesWith φ ∈ F.toFilter := by intro φ hφ; exact hx hφ
+      rw [← Filter.biInter_finset_mem x] at this
+      obtain ⟨T, T_inter⟩ := F.neBot.nonempty_of_mem this
+      have subset : (x : Set _) ⊆ T.toTheory := by rwa [Set.mem_iInter₂] at T_inter
+      exact T.isMaximal.1.mono subset
+    · intro φ
+      simp only [mem_setOf_eq, typesWith_not]
+      exact Ultrafilter.mem_or_compl_mem F (T.typesWith φ)
+  · refine ⟨mem_univ _, ?_⟩
+    · rw [nhds_generateFrom]
+      apply le_iInf₂
+      rintro _ ⟨hφ, φ, rfl⟩
+      rw [Filter.le_principal_iff]
+      exact hφ
+
+instance : BaireSpace (T.CompleteType α) := BaireSpace.of_t2Space_locallyCompactSpace
 
 end CompleteType

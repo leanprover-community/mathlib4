@@ -65,10 +65,10 @@ theorem exist_integer_multiples {ι : Type*} (s : Finset ι) (g : ι → M') :
   choose sec hsec using (fun i ↦ IsLocalizedModule.surj S f (g i))
   refine ⟨∏ i ∈ s, (sec i).2, fun i hi => ⟨?_, ?_⟩⟩
   · exact (∏ j ∈ s.erase i, (sec j).2) • (sec i).1
-  · simp only [LinearMap.map_smul_of_tower, Submonoid.coe_finset_prod]
+  · simp only [LinearMap.map_smul_of_tower, Submonoid.coe_finsetProd]
     rw [← hsec, ← mul_smul, Submonoid.smul_def]
     congr
-    simp only [Submonoid.coe_mul, Submonoid.coe_finset_prod, mul_comm]
+    simp only [Submonoid.coe_mul, Submonoid.coe_finsetProd, mul_comm]
     rw [← Finset.prod_insert (f := fun i ↦ ((sec i).snd).val) (s.notMem_erase i),
       Finset.insert_erase hi]
 

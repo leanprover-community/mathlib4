@@ -366,7 +366,7 @@ theorem lintegral_image_eq_lintegral_deriv_mul_of_antitoneOn (hs : MeasurableSet
   have hg' (x) (hx : x ∈ s) : HasDerivWithinAt e (-f' x) s x := (hf' x hx).neg
   have A : ∫⁻ x in e '' s, u (n x) = ∫⁻ x in s, ENNReal.ofReal (-f' x) * (u ∘ n) (e x) := by
     rw [← lintegral_image_eq_lintegral_deriv_mul_of_monotoneOn hs hg' hf.neg (u ∘ n)]; rfl
-  have B : ∫⁻ x in n '' (e '' s), u x = ∫⁻ x in e '' s, ENNReal.ofReal (|-1|) * u (n x) :=
+  have B : ∫⁻ x in n '' e '' s, u x = ∫⁻ x in e '' s, ENNReal.ofReal (|-1|) * u (n x) :=
     lintegral_image_eq_lintegral_abs_deriv_mul (hs.image_of_monotoneOn hf.neg)
       (fun x hx ↦ hasDerivWithinAt_neg _ _) neg_injective.injOn _
   simp only [abs_neg, abs_one, ENNReal.ofReal_one, one_mul] at B
@@ -394,7 +394,7 @@ theorem integrableOn_image_iff_integrableOn_deriv_smul_of_antitoneOn (hs : Measu
   have A : IntegrableOn (fun x ↦ g (n x)) (e '' s)
       ↔ IntegrableOn (fun x ↦ (-f' x) • (g ∘ n) (e x)) s := by
     rw [← integrableOn_image_iff_integrableOn_deriv_smul_of_monotoneOn hs hg' hf.neg (g ∘ n)]; rfl
-  have B : IntegrableOn g (n '' (e '' s)) ↔ IntegrableOn (fun x ↦ (|-1| : ℝ) • g (n x)) (e '' s) :=
+  have B : IntegrableOn g (n '' e '' s) ↔ IntegrableOn (fun x ↦ (|-1| : ℝ) • g (n x)) (e '' s) :=
     integrableOn_image_iff_integrableOn_abs_deriv_smul (hs.image_of_monotoneOn hf.neg)
       (fun x hx ↦ hasDerivWithinAt_neg _ _) neg_injective.injOn _
   simp only [abs_neg, abs_one, one_smul] at B
@@ -412,7 +412,7 @@ theorem integral_image_eq_integral_deriv_smul_of_antitoneOn (hs : MeasurableSet 
   have hg' (x) (hx : x ∈ s) : HasDerivWithinAt e (-f' x) s x := (hf' x hx).neg
   have A : ∫ x in e '' s, g (n x) = ∫ x in s, (-f' x) • (g ∘ n) (e x) := by
     rw [← integral_image_eq_integral_deriv_smul_of_monotoneOn hs hg' hf.neg (g ∘ n)]; rfl
-  have B : ∫ x in n '' (e '' s), g x = ∫ x in e '' s, (|-1| : ℝ) • g (n x) :=
+  have B : ∫ x in n '' e '' s, g x = ∫ x in e '' s, (|-1| : ℝ) • g (n x) :=
     integral_image_eq_integral_abs_deriv_smul (hs.image_of_monotoneOn hf.neg)
       (fun x hx ↦ hasDerivWithinAt_neg _ _) neg_injective.injOn _
   simp only [abs_neg, abs_one, one_smul] at B

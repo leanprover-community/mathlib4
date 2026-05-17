@@ -97,13 +97,7 @@ theorem verticalIntegral_norm_le (hb : 0 < b.re) (c : ℝ) {T : ℝ} (hT : 0 ≤
       rw [mul_assoc]
   · intro y hy
     have absy : |y| ≤ |c| := by
-      rcases le_or_gt 0 c with (h | h)
-      · rw [uIoc_of_le h] at hy
-        rw [abs_of_nonneg h, abs_of_pos hy.1]
-        exact hy.2
-      · rw [uIoc_of_ge h.le] at hy
-        rw [abs_of_neg h, abs_of_nonpos hy.2, neg_le_neg_iff]
-        exact hy.1.le
+      simpa using abs_sub_left_of_mem_uIcc (uIoc_subset_uIcc hy)
     rw [norm_mul, norm_I, one_mul, two_mul]
     refine (norm_sub_le _ _).trans (add_le_add (vert_norm_bound hT absy) ?_)
     rw [← abs_neg y] at absy
@@ -136,7 +130,6 @@ theorem integrable_cexp_neg_mul_sq_add_real_mul_I (hb : 0 < b.re) (c : ℝ) :
   simp_rw [← neg_mul]
   apply integrable_exp_neg_mul_sq hb
 
-set_option backward.isDefEq.respectTransparency false in
 theorem integral_cexp_neg_mul_sq_add_real_mul_I (hb : 0 < b.re) (c : ℝ) :
     ∫ x : ℝ, cexp (-b * (x + c * I) ^ 2) = (π / b) ^ (1 / 2 : ℂ) := by
   refine
@@ -177,7 +170,6 @@ theorem integral_cexp_neg_mul_sq_add_real_mul_I (hb : 0 < b.re) (c : ℝ) :
     intervalIntegral_tendsto_integral (integrable_cexp_neg_mul_sq hb) tendsto_neg_atTop_atBot
       tendsto_id
 
-set_option backward.isDefEq.respectTransparency false in
 theorem _root_.integral_cexp_quadratic (hb : b.re < 0) (c d : ℂ) :
     ∫ x : ℝ,
       cexp (b * x ^ 2 + c * x + d) = (π / -b) ^ (1 / 2 : ℂ) * cexp (d - c ^ 2 / (4 * b)) := by
@@ -261,7 +253,6 @@ theorem integrable_cexp_neg_mul_sum_add {ι : Type*} [Fintype ι] (hb : 0 < b.re
   simp_rw [neg_mul, Finset.mul_sum]
   exact integrable_cexp_neg_sum_mul_add (fun _ ↦ hb) c
 
-set_option backward.isDefEq.respectTransparency false in
 theorem integrable_cexp_neg_mul_sq_norm_add_of_euclideanSpace
     {ι : Type*} [Fintype ι] (hb : 0 < b.re) (c : ℂ) (w : EuclideanSpace ℝ ι) :
     Integrable (fun (v : EuclideanSpace ℝ ι) ↦ cexp (- b * ‖v‖ ^ 2 + c * ⟪w, v⟫)) := by
@@ -289,7 +280,6 @@ theorem integrable_cexp_neg_mul_sq_norm_add (hb : 0 < b.re) (c : ℂ) (w : V) :
     LinearIsometryEquiv.symm_symm,
     LinearIsometryEquiv.inner_map_eq_flip]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem integral_cexp_neg_sum_mul_add {ι : Type*} [Fintype ι] {b : ι → ℂ}
     (hb : ∀ i, 0 < (b i).re) (c : ι → ℂ) :
     ∫ v : ι → ℝ, cexp (-∑ i, b i * (v i : ℂ) ^ 2 + ∑ i, c i * v i)
@@ -307,7 +297,6 @@ theorem integral_cexp_neg_mul_sum_add {ι : Type*} [Fintype ι] (hb : 0 < b.re) 
     Finset.prod_mul_distrib, Finset.prod_const, ← cpow_nat_mul, ← Complex.exp_sum, Fintype.card,
     Finset.sum_div, div_eq_mul_inv]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem integral_cexp_neg_mul_sq_norm_add_of_euclideanSpace
     {ι : Type*} [Fintype ι] (hb : 0 < b.re) (c : ℂ) (w : EuclideanSpace ℝ ι) :
     ∫ v : EuclideanSpace ℝ ι, cexp (- b * ‖v‖ ^ 2 + c * ⟪w, v⟫) =

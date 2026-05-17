@@ -9,7 +9,7 @@ public import Mathlib.Algebra.Homology.HomotopyCategory.MappingCone
 public import Mathlib.Algebra.Homology.HomotopyCategory.HomComplexShift
 public import Mathlib.CategoryTheory.Triangulated.Functor
 
-/-! The pretriangulated structure on the homotopy category of complexes
+/-! # The pretriangulated structure on the homotopy category of complexes
 
 In this file, we define the pretriangulated structure on the homotopy
 category `HomotopyCategory C (ComplexShape.up ℤ)` of an additive category `C`.
