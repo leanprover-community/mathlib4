@@ -108,6 +108,15 @@ lemma iIndepFun_infinitePi {Ω : ι → Type*} {mΩ : ∀ i, MeasurableSpace (Ω
   congrm infinitePi fun i ↦ ?_
   rw [← infinitePi_map_eval P i, map_map (mX i) (by fun_prop), Function.comp_def]
 
+lemma map_infinitePi_infinitePi_of_inj {Ω : ι → Type*} {mΩ : ∀ i, MeasurableSpace (Ω i)}
+    {P : (i : ι) → Measure (Ω i)} [∀ i, IsProbabilityMeasure (P i)] {f : ι → ι}
+    (hf : Function.Injective f) :
+    (infinitePi P).map (fun ω i ↦ ω (f i)) = infinitePi (fun i ↦ P (f i)) := by
+  have := iIndepFun.precomp hf <|
+    iIndepFun_infinitePi (P := P) (X := fun x ω ↦ ω) (by measurability)
+  rw [iIndepFun_iff_map_fun_eq_infinitePi_map (by measurability)] at this
+  simpa [infinitePi_map_eval] using this
+
 section curry
 
 omit [IsProbabilityMeasure P]
