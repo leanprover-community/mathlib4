@@ -36,6 +36,9 @@ noncomputable instance {M : Type*} [MulAction ℝ≥0∞ M] : MulAction ℝ≥0 
 theorem smul_def {M : Type*} [MulAction ℝ≥0∞ M] (c : ℝ≥0) (x : M) : c • x = (c : ℝ≥0∞) • x :=
   rfl
 
+@[simp]
+theorem smul_one (c : ℝ≥0) : c • (1 : ℝ≥0∞) = (c : ℝ≥0∞) := by simp [smul_def]
+
 instance {M N : Type*} [MulAction ℝ≥0∞ M] [MulAction ℝ≥0∞ N] [SMul M N] [IsScalarTower ℝ≥0∞ M N] :
     IsScalarTower ℝ≥0 M N where smul_assoc r := smul_assoc (r : ℝ≥0∞)
 
