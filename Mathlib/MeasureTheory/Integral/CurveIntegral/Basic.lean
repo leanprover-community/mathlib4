@@ -532,7 +532,7 @@ theorem HasFDerivWithinAt.curveIntegral_segment_source' (hs : Convex ℝ s)
   · rw [curveIntegrable_segment]
     refine ContinuousOn.intervalIntegrable_of_Icc zero_le_one fun t ht ↦ ?_
     refine ((hδ ?_).1.eval_const _).comp AffineMap.lineMap_continuous.continuousWithinAt ?_
-    · refine hsub <| segment_eq_image_lineMap ℝ a b ▸ mem_image_of_mem _ ht
+    · exact hsub <| lineMap_mem_segment ℝ a b ht
     · rw [mapsTo_iff_image_subset, ← segment_eq_image_lineMap]
       exact hs.segment_subset ha hbs
   · rw [curveIntegrable_segment]
