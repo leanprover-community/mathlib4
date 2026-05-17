@@ -53,82 +53,6 @@ open scoped SetRel Uniformity
 
 variable {X : Type*}
 
-/-- The relation is transitive. -/
-@[deprecated SetRel.IsTrans (since := "2025-10-17")]
-def IsTransitiveRel (V : SetRel X X) : Prop :=
-  ∀ ⦃x y z⦄, (x, y) ∈ V → (y, z) ∈ V → (x, z) ∈ V
-
-set_option linter.deprecated false in
-@[deprecated SetRel.comp_subset_self (since := "2025-10-17")]
-lemma IsTransitiveRel.comp_subset_self {s : SetRel X X}
-    (h : IsTransitiveRel s) :
-    s ○ s ⊆ s :=
-  fun ⟨_, _⟩ ⟨_, hxz, hzy⟩ ↦ h hxz hzy
-
-set_option linter.deprecated false in
-@[deprecated SetRel.isTrans_iff_comp_subset_self (since := "2025-10-17")]
-lemma isTransitiveRel_iff_comp_subset_self {s : SetRel X X} :
-    IsTransitiveRel s ↔ s ○ s ⊆ s :=
-  ⟨IsTransitiveRel.comp_subset_self, fun h _ _ _ hx hy ↦ h ⟨_, hx, hy⟩⟩
-
-set_option linter.deprecated false in
-@[deprecated SetRel.isTrans_empty (since := "2025-10-17")]
-lemma isTransitiveRel_empty : IsTransitiveRel (X := X) ∅ := by
-  simp [IsTransitiveRel]
-
-set_option linter.deprecated false in
-@[deprecated SetRel.isTrans_univ (since := "2025-10-17")]
-lemma isTransitiveRel_univ : IsTransitiveRel (X := X) Set.univ := by
-  simp [IsTransitiveRel]
-
-set_option linter.deprecated false in
-@[deprecated SetRel.isTrans_singleton (since := "2025-10-17")]
-lemma isTransitiveRel_singleton (x y : X) : IsTransitiveRel {(x, y)} := by
-  simp +contextual [IsTransitiveRel]
-
-set_option linter.deprecated false in
-@[deprecated SetRel.isTrans_inter (since := "2025-10-17")]
-lemma IsTransitiveRel.inter {s t : SetRel X X} (hs : IsTransitiveRel s) (ht : IsTransitiveRel t) :
-    IsTransitiveRel (s ∩ t) :=
-  fun _ _ _ h h' ↦ ⟨hs h.left h'.left, ht h.right h'.right⟩
-
-set_option linter.deprecated false in
-@[deprecated SetRel.isTrans_iInter (since := "2025-10-17")]
-lemma IsTransitiveRel.iInter {ι : Type*} {U : (i : ι) → SetRel X X}
-    (hU : ∀ i, IsTransitiveRel (U i)) :
-    IsTransitiveRel (⋂ i, U i) := by
-  intro _ _ _ h h'
-  simp only [mem_iInter] at h h' ⊢
-  intro i
-  exact hU i (h i) (h' i)
-
-set_option linter.deprecated false in
-@[deprecated SetRel.IsTrans.sInter (since := "2025-10-17")]
-lemma IsTransitiveRel.sInter {s : Set (SetRel X X)} (h : ∀ i ∈ s, IsTransitiveRel i) :
-    IsTransitiveRel (⋂₀ s) := by
-  rw [sInter_eq_iInter]
-  exact IsTransitiveRel.iInter (by simpa)
-
-set_option linter.deprecated false in
-@[deprecated SetRel.isTrans_preimage (since := "2025-10-17")]
-lemma IsTransitiveRel.preimage_prodMap {Y : Type*} {t : Set (Y × Y)}
-    (ht : IsTransitiveRel t) (f : X → Y) :
-    IsTransitiveRel (Prod.map f f ⁻¹' t) :=
-  fun _ _ _ h h' ↦ ht h h'
-
-set_option linter.deprecated false in
-@[deprecated SetRel.isTrans_symmetrize (since := "2025-10-17")]
-lemma IsTransitiveRel.symmetrizeRel {s : SetRel X X} (h : IsTransitiveRel s) :
-    IsTransitiveRel (SetRel.symmetrize s) :=
-  fun _ _ _ hxy hyz ↦ ⟨h hxy.1 hyz.1, h hyz.2 hxy.2⟩
-
-set_option linter.deprecated false in
-@[deprecated SetRel.comp_eq_self (since := "2025-10-17")]
-lemma IsTransitiveRel.comp_eq_of_idRel_subset {s : SetRel X X}
-    (h : IsTransitiveRel s) (h' : idRel ⊆ s) :
-    s ○ s = s :=
-  le_antisymm h.comp_subset_self (subset_comp_self h')
-
 lemma IsTransitiveRel.prod_subset_trans {s : SetRel X X} {t u v : Set X} [s.IsTrans]
     (htu : t ×ˢ u ⊆ s) (huv : u ×ˢ v ⊆ s) (hu : u.Nonempty) :
     t ×ˢ v ⊆ s := by
@@ -194,10 +118,6 @@ lemma isClosed_ball_of_isSymm_of_isTrans_of_mem_uniformity (x : X) {V : SetRel X
     IsClosed (ball x V) := by
   rw [← isOpen_compl_iff, isOpen_iff_ball_subset]
   exact fun y hy ↦ ⟨V, h', fun z hyz hxz ↦ hy <| V.trans hxz <| V.symm hyz⟩
-
-@[deprecated (since := "2025-10-17")]
-alias isClosed_ball_of_isSymmetricRel_of_isTransitiveRel_of_mem_uniformity :=
-  isClosed_ball_of_isSymm_of_isTrans_of_mem_uniformity
 
 lemma isClopen_ball_of_isSymm_of_isTrans_of_mem_uniformity (x : X) {V : SetRel X X} [V.IsSymm]
     [V.IsTrans] (h' : V ∈ 𝓤 X) :

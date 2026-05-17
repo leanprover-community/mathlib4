@@ -478,9 +478,6 @@ theorem infinite_setOf_prime_and_eq_mod (ha : IsUnit a) :
   exact not_summable_residueClass_prime_div ha <|
     summable_of_hasFiniteSupport <| show Set.Finite _ from support_residueClass_prime_div a ▸ H
 
-@[deprecated (since := "2025-11-01")]
-alias setOf_prime_and_eq_mod_infinite := infinite_setOf_prime_and_eq_mod
-
 /-- **Dirichlet's Theorem** on primes in arithmetic progression: if `q` is a positive
 integer and `a : ZMod q` is a unit, then there are infinitely many prime numbers `p`
 such that `(p : ZMod q) = a`. -/
