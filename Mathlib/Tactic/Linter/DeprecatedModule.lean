@@ -143,7 +143,7 @@ There are possible concurrency issues, but they should not be particularly worry
 initialize IsLaterCommand : IO.Ref Bool ← IO.mkRef false
 
 @[inherit_doc Mathlib.Linter.linter.deprecated.module]
-def deprecatedModuleLinter : Linter where run := withSetOptionIn fun stx ↦ do
+def deprecated.moduleLinter : Linter where run := withSetOptionIn fun stx ↦ do
   unless getLinterValue linter.deprecated.module (← getLinterOptions) do
     return
   if (← get).messages.hasErrors then
@@ -174,7 +174,7 @@ def deprecatedModuleLinter : Linter where run := withSetOptionIn fun stx ↦ do
           '{nmStx}' has been deprecated: please replace this import by\n\n\
           {String.join (preferred.foldl (·.push s!"import {·}\n") #[]).toList}"
 
-initialize addLinter deprecatedModuleLinter
+initialize addLinter deprecated.moduleLinter
 
 end DeprecatedModule
 
