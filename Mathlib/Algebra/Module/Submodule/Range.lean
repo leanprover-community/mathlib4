@@ -443,12 +443,25 @@ variable [RingHomSurjective τ₁₂] (f : M →ₛₗ[τ₁₂] M₂)
 theorem surjective_rangeRestrict : Surjective f.rangeRestrict := by
   rw [← range_eq_top, range_rangeRestrict]
 
-@[simp] theorem ker_rangeRestrict : ker f.rangeRestrict = ker f := LinearMap.ker_codRestrict _ _ _
+theorem ker_rangeRestrict : ker f.rangeRestrict = ker f := LinearMap.ker_codRestrict _ _ _
 
 @[simp] theorem injective_rangeRestrict_iff : Injective f.rangeRestrict ↔ Injective f :=
   Set.injective_codRestrict _
 
 end rangeRestrict
+
+section restrict
+
+open Submodule
+
+variable [RingHomSurjective τ₁₂] (f : M →ₛₗ[τ₁₂] M₂) {p : Submodule R M} {q : Submodule R₂ M₂}
+
+@[simp]
+theorem range_restrict (h : ∀ x ∈ p, f x ∈ q) :
+    range (f.restrict h) = comap q.subtype (map f p) := by
+  rw [← Submodule.map_top, map_restrict, Submodule.map_top, p.range_subtype]
+
+end restrict
 
 end Semiring
 
