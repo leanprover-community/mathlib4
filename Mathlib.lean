@@ -773,6 +773,9 @@ public import Mathlib.Algebra.Module.Equiv.Basic
 public import Mathlib.Algebra.Module.Equiv.Defs
 public import Mathlib.Algebra.Module.Equiv.Opposite
 public import Mathlib.Algebra.Module.FiniteFreeResolution.Basic
+public import Mathlib.Algebra.Module.FiniteFreeResolution.Exact
+public import Mathlib.Algebra.Module.FiniteFreeResolution.HasProjectiveDimensionLE
+public import Mathlib.Algebra.Module.FiniteFreeResolution.Localization
 public import Mathlib.Algebra.Module.FinitePresentation
 public import Mathlib.Algebra.Module.GradedModule
 public import Mathlib.Algebra.Module.Hom
@@ -819,6 +822,7 @@ public import Mathlib.Algebra.Module.SpanRank
 public import Mathlib.Algebra.Module.SpanRankOperations
 public import Mathlib.Algebra.Module.StablyFree.Basic
 public import Mathlib.Algebra.Module.StablyFree.FreeOfInvertible
+public import Mathlib.Algebra.Module.StablyFree.HasFiniteFreeResolution
 public import Mathlib.Algebra.Module.Submodule.Basic
 public import Mathlib.Algebra.Module.Submodule.Bilinear
 public import Mathlib.Algebra.Module.Submodule.Defs
@@ -6831,6 +6835,7 @@ public import Mathlib.RingTheory.RegularLocalRing.Basic
 public import Mathlib.RingTheory.RegularLocalRing.Defs
 public import Mathlib.RingTheory.RegularLocalRing.GlobalDimension
 public import Mathlib.RingTheory.RegularLocalRing.Localization
+public import Mathlib.RingTheory.RegularLocalRing.UFD
 public import Mathlib.RingTheory.RingHom.Bijective
 public import Mathlib.RingTheory.RingHom.EssFiniteType
 public import Mathlib.RingTheory.RingHom.Etale
