@@ -149,8 +149,8 @@ theorem commute_pow_left_of_commute
     (h : g₂.comp f = f.comp g) (k : ℕ) : (g₂ ^ k).comp f = f.comp (g ^ k) := by
   induction k with
   | zero => simp [pull_end]
-  | succ k ih => rw [pow_succ', pow_succ', mul_def, LinearMap.comp_assoc, ih,
-    ← LinearMap.comp_assoc, h, LinearMap.comp_assoc, mul_def]
+  | succ k ih =>
+    simp_rw [pow_succ', pull_end, LinearMap.comp_assoc, ih, ← LinearMap.comp_assoc, h]
 
 @[simp]
 theorem id_pow (n : ℕ) : (id : End R M) ^ n = .id :=
