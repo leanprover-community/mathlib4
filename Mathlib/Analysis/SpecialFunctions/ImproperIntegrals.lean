@@ -197,6 +197,11 @@ theorem integrableOn_Ioi_norm_cpow_iff {s : ℂ} {t : ℝ} (ht : 0 < t) :
     IntegrableOn (fun x : ℝ ↦ ‖(x : ℂ) ^ s‖) (Ioi t) ↔ s.re < -1 := by
   refine ⟨fun h ↦ ?_, fun h ↦ integrableOn_Ioi_norm_cpow_of_lt h ht⟩
   refine (integrableOn_Ioi_rpow_iff ht).mp <| h.congr_fun (fun a ha ↦ ?_) measurableSet_Ioi
+  #adaptation_note /-- 2026-05-17(kmill) added `dsimp only` because a slightly different
+  instantiation order leads to a term with a beta redex.
+  https://github.com/leanprover/lean4/pull/13762
+  This will be removed once app elaboration itself does beta reduction. -/
+  dsimp only
   rw [Complex.norm_cpow_eq_rpow_re_of_pos (ht.trans ha)]
 
 theorem integrableOn_Ioi_cpow_iff {s : ℂ} {t : ℝ} (ht : 0 < t) :
