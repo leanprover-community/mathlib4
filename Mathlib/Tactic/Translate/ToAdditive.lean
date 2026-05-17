@@ -377,6 +377,8 @@ def abbreviationDict : Std.HashMap String String := .ofList [
   ("divisionAddMonoid", "SubtractionMonoid"),
   ("subNegZeroAddMonoid", "SubNegZeroMonoid"),
   ("modularCharacter", "AddModularCharacter"),
+  ("addShift", "Shift"),
+  ("addSubshift", "Subshift"),
   ("isQuotientCoveringMap", "IsAddQuotientCoveringMap"),
   ("addExact", "Exact"),
   ("isMonHom", "IsAddMonHom"),

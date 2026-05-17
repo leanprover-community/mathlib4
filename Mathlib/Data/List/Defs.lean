@@ -240,9 +240,11 @@ instance instSProd : SProd (List α) (List β) (List (α × β)) where
   sprod := List.product
 
 /-- `dedup l` removes duplicates from `l` (taking only the last occurrence).
-  Defined as `pwFilter (≠)`.
+Defined as `pwFilter (≠)`.
 
-     dedup [1, 0, 2, 2, 1] = [0, 2, 1] -/
+```
+dedup [1, 0, 2, 2, 1] = [0, 2, 1]
+``` -/
 def dedup [DecidableEq α] : List α → List α :=
   pwFilter (· ≠ ·)
 
