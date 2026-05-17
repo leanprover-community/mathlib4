@@ -38,7 +38,7 @@ def edgeColorable (n : ℕ) : Prop := G.lineGraph.Colorable n
 
 /-- The chromatic index of `G` is the chromatic number of its line graph,
 converted to a natural number (or 0 if infinite). -/
-noncomputable def chromaticIndex [Fintype G.edgeSet] : ℕ :=
+noncomputable def chromaticIndex : ℕ :=
   G.lineGraph.chromaticNumber.toNat
 
 end vizing
