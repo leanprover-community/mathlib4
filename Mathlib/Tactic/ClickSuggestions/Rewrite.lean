@@ -32,6 +32,7 @@ structure RwInfo where
   pos : SubExpr.Pos
   rwKind : RwKind
 
+/-- The key that is used for sorting and deduplicating `rw` lemmas. -/
 structure RwKey where
   numGoals : Nat
   symm : Bool
@@ -52,6 +53,7 @@ instance : Ord RwKey where
     (compare a.4 b.4).then <|
     (compare a.5 b.5)
 
+/-- Whether the two suggestions are duplicates of eachother. -/
 def RwKey.isDuplicate (a b : RwKey) : MetaM Bool :=
   pure (a.replacement.mvars.size == b.replacement.mvars.size)
     <&&> isExplicitEq a.replacement.expr b.replacement.expr
@@ -65,6 +67,7 @@ private def tacticSyntax (lem : RwLemma) (rwKind : RwKind) (hyp? : Option Ident)
       withOptions (pp.mvars.set · false) (PrettyPrinter.delab proof)
   mkRewrite rwKind lem.symm proof hyp?
 
+/-- Generate the suggestion for rewriting with `lem`. -/
 def RwLemma.try (i : RwInfo) (lem : RwLemma) : clickSuggestionsM (Result RwKey) :=
   withReducible do withNewMCtxDepth do
   let e := i.subExpr

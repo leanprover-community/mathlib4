@@ -122,6 +122,7 @@ structure GrwInfo where
   rwKind : RwKind
   gpos : Array GrwPos
 
+/-- The key that is used for sorting and deduplicating `grw` lemmas. -/
 structure GrwKey where
   numGoals : Nat
   nameLength : Nat
@@ -140,6 +141,7 @@ instance : Ord GrwKey where
     (compare a.3 b.3).then <|
     (compare a.4 b.4)
 
+/-- Whether the two suggestions are duplicates of eachother. -/
 def GrwKey.isDuplicate (a b : GrwKey) : MetaM Bool :=
   pure (a.replacement.mvars.size == b.replacement.mvars.size)
     <&&> isExplicitEq a.replacement.expr b.replacement.expr

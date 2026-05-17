@@ -18,9 +18,12 @@ namespace Mathlib.Tactic.ClickSuggestions
 
 open Lean Meta ProofWidgets Jsx
 
+/-- The structure for `apply at` lemmas stored in the `RefinedDiscrTree`. -/
 structure ApplyAtLemma where
+  /-- The lemma -/
   name : Premise
 
+/-- The key that is used for sorting and deduplicating `apply at` lemmas. -/
 structure ApplyAtKey where
   numGoals : Nat
   nameLength : Nat
@@ -36,6 +39,7 @@ instance : Ord ApplyAtKey where
     (compare a.3 b.3).then <|
     (compare a.4 b.4)
 
+/-- Whether the two suggestions are duplicates of eachother. -/
 def ApplyAtKey.isDuplicate (a b : ApplyAtKey) : MetaM Bool :=
   pure (a.newGoals.size == b.newGoals.size) <&&>
   a.newGoals.size.allM fun i _ =>
@@ -47,7 +51,7 @@ private def tacticSyntax (lem : ApplyAtLemma) : clickSuggestionsM (TSyntax `tact
   -- let proof ← withOptions (pp.mvars.set · false) (PrettyPrinter.delab app.proof)
   `(tactic| apply $(mkIdent (← lem.name.unresolveName)) at $(← getHypIdent!))
 
-/-- Generate a suggestion for applying `lem`. -/
+/-- Generate the suggestion for applying `lem`. -/
 def ApplyAtLemma.try (lem : ApplyAtLemma) : clickSuggestionsM (Result ApplyAtKey) :=
   withReducible do withNewMCtxDepth do
   let (_proof, mvars, binderInfos, replacement) ← lem.name.forallMetaTelescopeReducing

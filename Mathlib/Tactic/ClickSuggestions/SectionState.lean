@@ -91,10 +91,13 @@ def renderErrors (errors : Array Html) : Html :=
     {Html.element "ul" #[("style", json% { "padding-left" : "30px"})] errors}
   </details>
 
+/-- Whether the section corresponds to local hypotheses, declarations from the current file,
+or imported declarations. -/
 inductive SectionKind where
   | hyp | currFile | imported
 
 -- TODO?: add a `⏳️` with hover info that shows which lemmas are still being computed?
+/-- Create the HTML corresponding to `s`. -/
 def renderSection {α} (tactic : String) (kind : SectionKind) (s : SectionState α) : Html :=
   Id.run do
   let { results, errors } := s
