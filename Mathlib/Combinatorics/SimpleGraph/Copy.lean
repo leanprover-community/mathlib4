@@ -35,7 +35,7 @@ Containment:
   same underlying vertex type.
 * `SimpleGraph.Free` is the predicate that `H` is `G`-free, that is, `H` does not contain a copy of
   `G`. This is the negation of `SimpleGraph.IsContained` implemented for convenience.
-* `SimpleGraph.Sub H G`: Type of `SimpleGraph.Subgraph`s of `G` isomorphic to `H`.
+* `SimpleGraph.UnlabeledCopy H G`: Type of `SimpleGraph.Subgraph`s of `G` isomorphic to `H`.
 * `SimpleGraph.killCopies G H`: Subgraph of `G` that does not contain `H`. Obtained by arbitrarily
   removing an edge from each copy of `H` in `G`.
 * `SimpleGraph.copyCount G H`: Number of copies of `H` in `G`, i.e. number of subgraphs of `G`
@@ -509,13 +509,13 @@ variable [Fintype V]
 
 /-- `Sub A B` is the type of `SimpleGraph.Subgraph`s of `B` isomorphic to `A`. The corresponding
 count is `SimpleGraph.copyCount`. -/
-abbrev Sub (A : SimpleGraph α) (B : SimpleGraph β) : Type _ :=
+abbrev UnlabeledCopy (A : SimpleGraph α) (B : SimpleGraph β) : Type _ :=
   {B' : B.Subgraph // Nonempty (A ≃g B'.coe)}
 
 /-- `G.copyCount H` is the number of unlabelled copies of `H` in `G`, i.e. the number of subgraphs
 of `G` isomorphic to `H`. See `SimpleGraph.labelledCopyCount` for the number of labelled copies. -/
 noncomputable def copyCount (G : SimpleGraph V) (H : SimpleGraph W) : ℕ := by
-  classical exact Fintype.card (H.Sub G)
+  classical exact Fintype.card (H.UnlabeledCopy G)
 
 @[simp] lemma copyCount_eq_zero : G.copyCount H = 0 ↔ H.Free G := by
   classical
@@ -530,13 +530,14 @@ lemma copyCount_le_labelledCopyCount [Fintype W] : G.copyCount H ≤ G.labelledC
   classical
   rw [copyCount, labelledCopyCount]
   apply Fintype.card_le_of_surjective
-    (fun c : Copy H G ↦ (⟨c.toSubgraph, ⟨c.isoToSubgraph⟩⟩ : H.Sub G))
+    (fun c : Copy H G ↦ (⟨c.toSubgraph, ⟨c.isoToSubgraph⟩⟩ : H.UnlabeledCopy G))
   rintro ⟨G', hG'⟩
   obtain ⟨c, hc⟩ : ∃ c : Copy H G, c.toSubgraph = G' := by
     rwa [← Set.mem_range, Copy.range_toSubgraph]
   exact ⟨c, Subtype.ext hc⟩
 
-instance uniqueSubBot (G : SimpleGraph V) : Unique ((⊥ : SimpleGraph V).Sub G) where
+instance uniqueUnlabeledCopyBot (G : SimpleGraph V) :
+    Unique ((⊥ : SimpleGraph V).UnlabeledCopy G) where
   default := ⟨{ verts := .univ, Adj := ⊥, adj_sub := False.elim, edge_vert := False.elim },
               ⟨(Equiv.Set.univ _).symm, by simp⟩⟩
   uniq := fun ⟨G', ⟨e⟩⟩ ↦ Subtype.ext <| Subgraph.ext
@@ -657,9 +658,9 @@ lemma le_card_edgeFinset_killCopies [Fintype V] :
   classical
   obtain rfl | hH := eq_or_ne H ⊥
   · simp [← card_edgeSet]
-  let f (G' : H.Sub G) := (aux hH G'.2).some
+  let f (G' : H.UnlabeledCopy G) := (aux hH G'.2).some
   calc
-    _ = #G.edgeFinset - card (H.Sub G) := by rw [copyCount]
+    _ = #G.edgeFinset - card (H.UnlabeledCopy G) := by rw [copyCount]
     _ ≤ #G.edgeFinset - #(univ.image f) := Nat.sub_le_sub_left card_image_le _
     _ = #G.edgeFinset - #(Set.range f).toFinset := by rw [Set.toFinset_range]
     _ ≤ #(G.edgeFinset \ (Set.range f).toFinset) := le_card_sdiff ..
