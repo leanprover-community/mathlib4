@@ -6,9 +6,9 @@ Authors: Chris Birkbeck
 module
 
 public import Mathlib.NumberTheory.ModularForms.Discriminant
+public import Mathlib.NumberTheory.ModularForms.CuspFormSubmodule
 
 import Mathlib.Algebra.Order.Floor.Semifield
-import Mathlib.NumberTheory.ModularForms.CuspFormSubmodule
 
 /-!
 # Dimension formula for level 1 modular forms

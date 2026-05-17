@@ -7,8 +7,6 @@ module
 
 public import Mathlib.NumberTheory.ModularForms.LevelOne.DimensionFormula
 
-import Mathlib.NumberTheory.ModularForms.CuspFormSubmodule
-
 /-!
 # The graded ring of level-1 modular forms
 
