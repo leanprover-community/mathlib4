@@ -82,11 +82,13 @@ instance restrictScalars.isScalarTower (p : Submodule R M) :
   smul_assoc r s x := Subtype.ext <| smul_assoc r s (x : M)
 
 variable {R M} in
+@[gcongr]
 lemma restrictScalars_le {s t : Submodule R M} :
     s.restrictScalars S ≤ t.restrictScalars S ↔ s ≤ t :=
   Iff.rfl
 
 variable {R M} in
+@[gcongr]
 lemma restrictScalars_lt {s t : Submodule R M} :
     s.restrictScalars S < t.restrictScalars S ↔ s < t :=
   Iff.rfl
@@ -99,7 +101,7 @@ def restrictScalarsEmbedding : Submodule R M ↪o Submodule S M where
   inj' := restrictScalars_injective S R M
   map_rel_iff' := restrictScalars_le S
 
-@[gcongr, mono]
+@[mono]
 lemma restrictScalars_monotone : Monotone (restrictScalars S : Submodule R M → Submodule S M) :=
   (restrictScalarsEmbedding S R M).monotone
 

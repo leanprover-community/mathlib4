@@ -94,7 +94,7 @@ theorem indicator_mem_restrictDegree (c : σ → K) :
   trans
   · refine Finset.sum_eq_single n ?_ ?_
     · intro b _ ne
-      simp [Multiset.count_singleton, ne, if_neg (Ne.symm _)]
+      simp [ne, eqComm]
     · intro h; exact (h <| Finset.mem_univ _).elim
   · rw [Multiset.count_singleton_self, mul_one]
 
