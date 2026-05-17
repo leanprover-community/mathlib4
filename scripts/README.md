@@ -210,6 +210,12 @@ to module `Foo.Bar` (no `srcDir` indirection).
   you can convert `pick abc # x scripts/auto_commit.sh cmd` to `x scripts/auto_commit.sh cmd`
   (by deleting the "pick abc # " prefix), and git will re-run the command via exec.
   Example: `scripts/auto_commit.sh lake exe mk_all`
+- `parse_shake_output.py` parses the captured output of `lake shake` and reports the number of
+  files changed and imports added/removed. Used by the `shake` workflow to populate the PR body
+  and Zulip notification. Counts are printed to stdout and, if a second argument is given
+  (typically `$GITHUB_OUTPUT`), appended there as `changed_files=`, `added=`, `removed=`.
+  Usage: `scripts/parse_shake_output.py <shake-output.txt> [$GITHUB_OUTPUT]`
+
 **Nightly testing**
 - `nightly-testing-checklist.lean` reports and fixes the state of `nightly-testing` branches
   at Batteries and Mathlib. Run via `lake exe nightly-testing-checklist`.
