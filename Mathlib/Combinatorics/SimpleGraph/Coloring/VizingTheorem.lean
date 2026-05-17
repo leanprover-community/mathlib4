@@ -1,7 +1,29 @@
-import Mathlib.Combinatorics.SimpleGraph.Coloring.VizingFan
-import Mathlib.Combinatorics.SimpleGraph.LineGraph
-import Mathlib.Combinatorics.SimpleGraph.Basic
-import Mathlib.Data.Fin.Basic
+import VizingFan
+import Mathlib
+
+/-!
+# Vizing's Theorem
+
+This file contains the statement and proof of **Vizing's theorem**:
+the chromatic index of every simple graph `G` satisfies
+
+  `Δ(G) ≤ χ'(G) ≤ Δ(G) + 1`
+
+where `Δ(G)` is the maximum degree and `χ'(G)` is the chromatic index.
+
+## Main results
+
+* `maxDegree_le_chromaticIndex` — the lower bound `Δ ≤ χ'`.
+* `chromaticIndex_bot` — the empty graph has chromatic index 0.
+* `vizingUpperBound_aux` — the upper bound `χ' ≤ Δ + 1` by induction on
+  the number of edges.
+* `vizingTheorem` — the combined statement: `χ'(G) = Δ` or `χ'(G) = Δ + 1`.
+
+## References
+
+* V. G. Vizing, *On an estimate of the chromatic class of a p-graph*,
+  Diskret. Analiz. 3 (1964), 25–30.
+-/
 
 variable (n : ℕ) [Fact (0 < n)]
 variable (G : SimpleGraph (Fin n)) [DecidableRel G.Adj] [DecidableEq (Fin n)]
@@ -9,9 +31,9 @@ variable (G : SimpleGraph (Fin n)) [DecidableRel G.Adj] [DecidableEq (Fin n)]
 
 set_option linter.unusedDecidableInType false in
 set_option linter.unusedFintypeInType false in
-/-- In a proper edge coloring, two edges sharing vertex `v` that receive the same
+/-- In a proper edge coloring, two edges sharing a vertex that receive the same
     color must be the same edge. -/
-lemma eq_color_imply_eq_edge {V : Type*} {G : SimpleGraph V} {α : Type*}
+lemma edge_eq_of_color_eq {V : Type*} {G : SimpleGraph V} {α : Type*}
     {c : G.lineGraph.Coloring α} {e1 e2 : G.edgeSet} (v : V)
     (h1 : v ∈ e1.val) (h2 : v ∈ e2.val) (h_col : c.toFun e1 = c.toFun e2) :
     e1 = e2 := by
@@ -21,13 +43,14 @@ lemma eq_color_imply_eq_edge {V : Type*} {G : SimpleGraph V} {α : Type*}
 set_option linter.unusedDecidableInType false in
 omit [Fact (0 < n)] in
 /-- **Lower bound**: the chromatic index is at least the maximum degree.
-    The edges incident to a max-degree vertex form a clique in the line graph,
-    forcing that many colors. -/
-lemma chromatic_index_geq_max_degree : vizing.chromaticIndex G ≥ G.maxDegree := by
+
+    *Proof sketch.* The edges incident to any vertex of maximum degree form
+    a clique in the line graph, so the chromatic number of the line graph
+    (= chromatic index) is at least the clique number, which is at least Δ. -/
+lemma maxDegree_le_chromaticIndex : vizing.chromaticIndex G ≥ G.maxDegree := by
   by_contra h_contra
   push Not at h_contra
   rw [vizing.chromaticIndex] at h_contra
-  -- Edges incident to a max-degree vertex form a clique in the line graph.
   obtain ⟨v, hv_max⟩ := G.exists_maximal_degree_vertex
   let incident_edges : Set G.edgeSet := {e : G.edgeSet | v ∈ (e : Sym2 (Fin n))}
   have h_incident_clique : G.lineGraph.IsClique incident_edges :=
@@ -41,17 +64,14 @@ lemma chromatic_index_geq_max_degree : vizing.chromaticIndex G ≥ G.maxDegree :
       rw [← h_image, Set.ncard_image_of_injective _ Subtype.val_injective]
     rw [h_ncard, Set.ncard_eq_toFinset_card']
     convert G.card_incidenceFinset_eq_degree v using 1
-  -- Clique number ≥ maxDegree from the incident clique.
   have h_cliqueNum : G.lineGraph.cliqueNum ≥ G.maxDegree := by
     have h_nclique : G.lineGraph.IsNClique G.maxDegree incident_edges.toFinset :=
       ⟨by rw [Set.coe_toFinset]; exact h_incident_clique,
        by rw [← Set.ncard_eq_toFinset_card']; exact h_clique_size⟩
     have h_le := h_nclique.isClique.card_le_cliqueNum
     rw [h_nclique.card_eq] at h_le; exact h_le
-  -- Chromatic number ≥ clique number ≥ maxDegree.
   have h_chi_ge : (G.lineGraph.chromaticNumber : ℕ∞) ≥ (G.maxDegree : ℕ∞) :=
     le_trans (by exact_mod_cast h_cliqueNum) G.lineGraph.cliqueNum_le_chromaticNumber
-  -- Convert to ℕ, handling the ⊤ case.
   have h_chi_ge_nat : G.lineGraph.chromaticNumber.toNat ≥ G.maxDegree := by
     cases h : G.lineGraph.chromaticNumber with
     | top =>
@@ -64,7 +84,7 @@ lemma chromatic_index_geq_max_degree : vizing.chromaticIndex G ≥ G.maxDegree :
 
 omit [Fact (0 < n)] [DecidableEq (Fin n)] [Nonempty (Fin n)] in
 /-- The empty graph has chromatic index 0. -/
-lemma empty_graph_colorable :
+lemma chromaticIndex_bot :
     let G_empty : SimpleGraph (Fin n) := ⊥
     vizing.chromaticIndex G_empty = 0 := by
   change vizing.chromaticIndex (⊥ : SimpleGraph (Fin n)) = 0
@@ -74,9 +94,9 @@ lemma empty_graph_colorable :
   rw [SimpleGraph.chromaticNumber_eq_zero_of_isEmpty]; rfl
 
 omit [Fact (0 < n)] [Nonempty (Fin n)] [DecidableEq (Fin n)] in
-/-- Extend an edge-coloring of `G \ {e}` to all of `G` by assigning `color` to `e`,
-    given that `color` is unused at both endpoints of `e`. -/
-lemma extend_coloring_one_edge (e : G.edgeSet)
+/-- Extend an edge coloring of `G \ {e}` to all of `G` by assigning `color`
+    to `e`, given that `color` is unused at both endpoints. -/
+lemma extendColoringOneEdge (e : G.edgeSet)
     {u v : Fin n} (huv : e.val = s(u, v))
     (c' : vizing.edgeColoring (G.deleteEdges {e.val}) (Fin (G.maxDegree + 1)))
     (color : Fin (G.maxDegree + 1))
@@ -119,9 +139,10 @@ lemma extend_coloring_one_edge (e : G.edgeSet)
         exact congrArg Subtype.val h_lift_eq
   · change toFun e = color; simp [toFun]
 
-/-- Upper bound by induction on the number of edges.
-    Stated over arbitrary `m` and `H` so the IH applies to `H.deleteEdges`. -/
-private lemma vizing_upper_aux : ∀ (k : ℕ) {m : ℕ} (H : SimpleGraph (Fin m))
+/-- **Upper bound by induction on the number of edges.**
+    For every simple graph `H`, the chromatic index satisfies
+    `χ'(H) ≤ Δ(H) + 1`. -/
+private lemma vizingUpperBound_aux : ∀ (k : ℕ) {m : ℕ} (H : SimpleGraph (Fin m))
     [DecidableRel H.Adj], H.edgeFinset.card ≤ k →
     vizing.chromaticIndex H ≤ H.maxDegree + 1 := by
   intro k
@@ -136,13 +157,12 @@ private lemma vizing_upper_aux : ∀ (k : ℕ) {m : ℕ} (H : SimpleGraph (Fin m
   | succ k ih =>
     intro m H _ h
     by_cases h_empty : H.edgeFinset.card = 0
-    · -- No edges.
-      have h_card : Fintype.card H.edgeSet = 0 := by
+    · have h_card : Fintype.card H.edgeSet = 0 := by
         rw [← H.edgeFinset_card]; exact h_empty
       haveI : IsEmpty H.edgeSet := Fintype.card_eq_zero_iff.mp h_card
       unfold vizing.chromaticIndex
       rw [SimpleGraph.chromaticNumber_eq_zero_of_isEmpty]; simp
-    · -- At least one edge.
+    · -- At least one edge: remove it and apply the induction hypothesis.
       push Not at h_empty
       obtain ⟨e_sym, he_mem⟩ := Finset.card_pos.mp (Nat.pos_of_ne_zero h_empty)
       have he_mem' : e_sym ∈ H.edgeSet := (H.mem_edgeFinset).mp he_mem
@@ -205,15 +225,15 @@ private lemma vizing_upper_aux : ∀ (k : ℕ) {m : ℕ} (H : SimpleGraph (Fin m
           · right; push Not at h h_u; exact h color h_u
       cases h_case with
       | inl h_color_free =>
-        -- Case A: free color at both endpoints.
+        -- Case A: free color at both endpoints — extend directly.
         obtain ⟨color, h_free_u, h_free_v⟩ := h_color_free
         obtain ⟨c, _⟩ :=
-          extend_coloring_one_edge m H e huv c' color h_free_u h_free_v
+          extendColoringOneEdge m H e huv c' color h_free_u h_free_v
         have h_col : H.lineGraph.Colorable (H.maxDegree + 1) := ⟨c⟩
         change H.lineGraph.chromaticNumber.toNat ≤ H.maxDegree + 1
         exact ENat.toNat_le_of_le_coe h_col.chromaticNumber_le
       | inr _h_no_free_color =>
-        -- Case B: use vizingAdjacencyLemma.
+        -- Case B: use the Vizing adjacency lemma.
         have h_deg_u_lt : (H.deleteEdges {e.val}).degree u < H.maxDegree + 1 := by
           have h1 : (H.deleteEdges {e.val}).degree u ≤ H.degree u :=
             SimpleGraph.degree_le_of_le (SimpleGraph.deleteEdges_le _)
@@ -272,7 +292,7 @@ omit [Fact (0 < n)] [DecidableEq (Fin n)] in
 theorem vizingTheorem :
     (vizing.chromaticIndex G = G.maxDegree) ∨ (vizing.chromaticIndex G = G.maxDegree + 1) := by
   have h_lower : vizing.chromaticIndex G ≥ G.maxDegree :=
-    chromatic_index_geq_max_degree n G
+    maxDegree_le_chromaticIndex n G
   have h_upper : vizing.chromaticIndex G ≤ G.maxDegree + 1 :=
-    vizing_upper_aux G.edgeFinset.card G (le_refl _)
+    vizingUpperBound_aux G.edgeFinset.card G (le_refl _)
   omega

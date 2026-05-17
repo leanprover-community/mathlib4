@@ -1,9 +1,6 @@
-import Mathlib.Combinatorics.SimpleGraph.LineGraph
-import Mathlib.Combinatorics.SimpleGraph.Coloring.EdgeColoring  
-import Mathlib.Combinatorics.SimpleGraph.Basic
-import Mathlib.Combinatorics.SimpleGraph.Finite
-import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
-import Mathlib.Data.Set.Card
+import Mathlib
+import EdgeColoring
+
 namespace vizing
 
 variable {V : Type*} {G : SimpleGraph V} {α : Type*}
@@ -11,27 +8,32 @@ variable {V : Type*} {G : SimpleGraph V} {α : Type*}
 /-!
 # Kempe Chain Infrastructure for Vizing's Theorem
 
-## Main definitions and results
+This file develops the Kempe chain (also called αβ-interchange) machinery
+needed for the proof of Vizing's theorem.
 
-### Coloring observables
+## Main definitions
 
-* `incidentEdges`, `incidentColors`, `missingColors` — edges and colors at a vertex.
-* Cardinality lemmas relating these sets to `G.degree v`.
+* `incidentEdges G v` — edges of `G` incident to vertex `v`, viewed as vertices
+  of `G.lineGraph`.
+* `incidentColors c v` — set of colors used by edges incident to `v`.
+* `missingColors c v` — set of colors *not* appearing on any edge incident to `v`.
+* `kempeSubgraph c a b` — the subgraph of `G` induced by edges colored `a` or `b`.
+* `kempeComponent c a b v` — the connected component of `v` in `kempeSubgraph c a b`.
+* `swapKempe c a b v` — the coloring obtained by swapping `a ↔ b` on the
+  Kempe component of `v`.
 
-### The αβ-Kempe subgraph
+## Main results
 
-* `kempeSubgraph c a b` — the subgraph of edges colored `a` or `b` under `c`.
-* Every vertex has degree ≤ 2 in the Kempe subgraph.
-
-### Kempe chain swap
-
-* `swapKempe c a b v` — swap colors `a ↔ b` on the αβ-component of `v`.
-* The swap yields a valid coloring; colors outside `{a, b}` are unchanged.
-* Single-edge recoloring and coloring-extension helpers.
-
+* `incidentEdges_ncard_eq_degree` — `|incidentEdges G v| = G.degree v`.
+* `missingColors_nonempty_of_degree_lt` — with more colors than the degree,
+  some color is missing.
+* `kempeSubgraph_neighborSet_ncard_le_two` — every vertex has degree ≤ 2 in the
+  Kempe subgraph.
+* `swapKempe` is a valid coloring; colors outside `{a, b}` are unchanged.
+* `recolorEdge_of_missingColors` — recolor a single edge when its new color is
+  missing at both endpoints.
+* `extendColoring_of_missingColors_both` — extend a partial coloring across one edge.
 -/
-
-
 
 /-! ### Coloring Observables -/
 
@@ -48,7 +50,7 @@ def missingColors (c : G.lineGraph.Coloring α) (v : V) : Set α :=
   (incidentColors c v)ᶜ
 
 /-- `Subtype.val` maps `incidentEdges G v` onto `G.incidenceSet v`. -/
-lemma image_val_incidentEdges (v : V) :
+lemma incidentEdges_image_val (v : V) :
     Subtype.val '' incidentEdges G v = G.incidenceSet v := by
   ext e
   constructor
@@ -65,7 +67,7 @@ lemma incidentEdges_ncard_eq_degree
     (incidentEdges G v).ncard = G.degree v := by
   have h_ncard :
       (incidentEdges G v).ncard = (G.incidenceSet v).ncard := by
-    rw [← image_val_incidentEdges, Set.ncard_image_of_injective _ Subtype.val_injective]
+    rw [← incidentEdges_image_val, Set.ncard_image_of_injective _ Subtype.val_injective]
   rw [h_ncard, ← Nat.card_coe_set_eq,
       @Nat.card_eq_fintype_card _ (SimpleGraph.incidenceSetFintype G v)]
   exact G.card_incidenceSet_eq_degree v
@@ -98,9 +100,11 @@ lemma missingColors_nonempty_of_degree_lt
   have := incidentColors_ncard_le_degree c v
   omega
 
-/-! ### The αβ-Kempe subgraph -/
+/-! ### The αβ-Kempe Subgraph -/
 
-/-- The subgraph of `G` consisting of edges colored `a` or `b`. -/
+/-- The subgraph of `G` consisting of edges colored `a` or `b` under `c`.
+    Every vertex has degree at most 2 in this subgraph, since a proper coloring
+    uses each color at most once per vertex. -/
 def kempeSubgraph (c : G.lineGraph.Coloring α) (a b : α) : SimpleGraph V where
   Adj v w := ∃ e : G.edgeSet, e.val = s(v, w) ∧ (c.toFun e = a ∨ c.toFun e = b)
   symm := by
@@ -117,8 +121,9 @@ lemma kempeSubgraph_le (c : G.lineGraph.Coloring α) (a b : α) :
   rintro v w ⟨e, he_val, _⟩
   exact G.mem_edgeSet.mp (he_val ▸ e.property)
 
-/-- In a proper edge-coloring, at most one edge incident to `v` has any given color. -/
-lemma neighbors_via_color_subsingleton
+/-- In a proper edge coloring, at most one edge incident to `v` receives any
+    given color `col`. -/
+lemma neighborSet_color_subsingleton
     (c : G.lineGraph.Coloring α) (v : V) (col : α) :
     {w : V | ∃ e : G.edgeSet, e.val = s(v, w) ∧ c.toFun e = col}.Subsingleton := by
   intro w₁ hw₁ w₂ hw₂
@@ -150,7 +155,8 @@ private lemma subsingleton_ncard_le_one {β : Type*} {s : Set β}
     rw [hsing]; simp
   · rw [Set.not_nonempty_iff_eq_empty.mp h]; simp
 
-/-- Every vertex has at most two neighbors in the αβ-Kempe subgraph. -/
+/-- Every vertex has at most two neighbors in the αβ-Kempe subgraph, since
+    at most one `a`-edge and one `b`-edge can be incident to it. -/
 lemma kempeSubgraph_neighborSet_ncard_le_two
     (c : G.lineGraph.Coloring α) (a b : α) (v : V) :
     ((kempeSubgraph c a b).neighborSet v).ncard ≤ 2 := by
@@ -162,8 +168,8 @@ lemma kempeSubgraph_neighborSet_ncard_le_two
     rcases he_col with h | h
     · exact Or.inl ⟨e, he_val, h⟩
     · exact Or.inr ⟨e, he_val, h⟩
-  have hNa_sub : N_a.Subsingleton := neighbors_via_color_subsingleton c v a
-  have hNb_sub : N_b.Subsingleton := neighbors_via_color_subsingleton c v b
+  have hNa_sub : N_a.Subsingleton := neighborSet_color_subsingleton c v a
+  have hNb_sub : N_b.Subsingleton := neighborSet_color_subsingleton c v b
   calc ((kempeSubgraph c a b).neighborSet v).ncard
       ≤ (N_a ∪ N_b).ncard := Set.ncard_le_ncard h_sub (hNa_sub.finite.union hNb_sub.finite)
     _ ≤ N_a.ncard + N_b.ncard := Set.ncard_union_le _ _
@@ -171,7 +177,7 @@ lemma kempeSubgraph_neighborSet_ncard_le_two
     _ = 2 := rfl
 
 /-- If color `a` is missing at `v`, then `v` has at most one neighbor
-    in the αβ-Kempe subgraph (only `b`-edges contribute). -/
+    in the αβ-Kempe subgraph (only the `b`-edge can contribute). -/
 lemma kempeSubgraph_neighborSet_ncard_le_one_of_missing_left
     (c : G.lineGraph.Coloring α) (a b : α) (v : V)
     (ha : a ∈ missingColors c v) :
@@ -187,11 +193,11 @@ lemma kempeSubgraph_neighborSet_ncard_le_one_of_missing_left
       change v ∈ e.val
       rw [he_val]; exact Sym2.mem_mk_left v w
     · exact ⟨e, he_val, h⟩
-  have hNb_sub : N_b.Subsingleton := neighbors_via_color_subsingleton c v b
+  have hNb_sub : N_b.Subsingleton := neighborSet_color_subsingleton c v b
   exact (Set.ncard_le_ncard h_sub hNb_sub.finite).trans (subsingleton_ncard_le_one hNb_sub)
 
 /-- If color `b` is missing at `v`, then `v` has at most one neighbor
-    in the αβ-Kempe subgraph (only `a`-edges contribute). -/
+    in the αβ-Kempe subgraph (only the `a`-edge can contribute). -/
 lemma kempeSubgraph_neighborSet_ncard_le_one_of_missing_right
     (c : G.lineGraph.Coloring α) (a b : α) (v : V)
     (hb : b ∈ missingColors c v) :
@@ -207,12 +213,12 @@ lemma kempeSubgraph_neighborSet_ncard_le_one_of_missing_right
       refine ⟨e, ?_, h⟩
       change v ∈ e.val
       rw [he_val]; exact Sym2.mem_mk_left v w
-  have hNa_sub : N_a.Subsingleton := neighbors_via_color_subsingleton c v a
+  have hNa_sub : N_a.Subsingleton := neighborSet_color_subsingleton c v a
   exact (Set.ncard_le_ncard h_sub hNa_sub.finite).trans (subsingleton_ncard_le_one hNa_sub)
 
-/-! ### Kempe chain swap -/
+/-! ### Kempe Chain Swap -/
 
-/-- The involution on colors swapping `a` and `b`. -/
+/-- The involution on colors that swaps `a` and `b`, fixing all other colors. -/
 def swapColors [DecidableEq α] (a b : α) (x : α) : α :=
   if x = a then b else if x = b then a else x
 
@@ -243,12 +249,13 @@ lemma swapColors_injective [DecidableEq α] (a b : α) :
   have := congrArg (swapColors a b) hxy
   simpa using this
 
-/-- The αβ-component of `v`: vertices reachable from `v` in `kempeSubgraph c a b`. -/
+/-- The αβ-component of `v`: the set of vertices reachable from `v` in the
+    Kempe subgraph `kempeSubgraph c a b`. -/
 def kempeComponent (c : G.lineGraph.Coloring α) (a b : α) (v : V) : Set V :=
   {w | (kempeSubgraph c a b).Reachable v w}
 
-/-- An edge is in the swap zone if it is αβ-colored and has an endpoint
-    reachable from `v` in the Kempe subgraph. -/
+/-- An edge `e` is in the *swap zone* (relative to vertex `v`) if it is colored
+    `a` or `b` and has an endpoint reachable from `v` in the Kempe subgraph. -/
 def inSwapZone (c : G.lineGraph.Coloring α) (a b : α) (v : V) (e : G.edgeSet) : Prop :=
   (c.toFun e = a ∨ c.toFun e = b) ∧
   ∃ x ∈ e.val, (kempeSubgraph c a b).Reachable v x
@@ -275,8 +282,8 @@ lemma inSwapZone.both_endpoints_reachable
     have h_adj : (kempeSubgraph c a b).Adj x y := ⟨e, h_e_val, h_col⟩
     exact hx_reach.trans h_adj.reachable
 
-/-- Kempe-chain recoloring: swap `a ↔ b` on edges in the swap zone.
-    The result is a valid edge-coloring of `G`. -/
+/-- Kempe chain recoloring: swap colors `a ↔ b` on every edge in the
+    αβ-component of `v`. The result is a valid proper edge coloring of `G`. -/
 noncomputable def swapKempe [DecidableEq α]
     (c : G.lineGraph.Coloring α) (a b : α) (v : V) :
     G.lineGraph.Coloring α := by
@@ -412,13 +419,13 @@ lemma missingColors_swapKempe_of_not_reachable [DecidableEq α]
   unfold missingColors
   rw [h_inc_eq]
 
-/-! ### Single-edge recoloring -/
+/-! ### Single-Edge Recoloring -/
 
 set_option linter.unusedDecidableInType false in
 /-- Recolor a single edge `e_uv` to color `γ`, when `γ` is missing at both
     endpoints. Returns a coloring with `c'(e_uv) = γ` and all other edges
     unchanged. -/
-lemma recolor_one_edge_with_missing
+lemma recolorEdge_of_missingColors
     (c : G.lineGraph.Coloring α)
     (e_uv : G.edgeSet) {u v : V} (he_uv : e_uv.val = s(u, v))
     (γ : α)
@@ -455,13 +462,13 @@ lemma recolor_one_edge_with_missing
     change (if e' = e_uv then γ else c.toFun e') = c.toFun e'
     rw [if_neg h_ne]
 
-/-! ### Edge extension via a missing color -/
+/-! ### Edge Extension via a Missing Color -/
 
 set_option linter.unusedDecidableInType false in
 
 /-- If `γ` is missing at both endpoints of `e_uv` in a coloring of `G − {e_uv}`,
     then the coloring extends to all of `G`. -/
-lemma extend_coloring_with_missing_both
+lemma extendColoring_of_missingColors_both
     (e_uv : G.edgeSet) {u v : V} (he_uv : e_uv.val = s(u, v))
     (c : (G.deleteEdges {e_uv.val}).lineGraph.Coloring α)
     (γ : α)
