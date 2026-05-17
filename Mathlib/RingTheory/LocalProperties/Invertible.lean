@@ -82,7 +82,7 @@ theorem Invertible.of_isLocalized_maximal
       (moduleTensorEquiv m.primeCompl (Rₚ m) (Module.Dual (Rₚ m) (Mₚ m)) (Mₚ m)).restrictScalars R
     have hψ : (map m.primeCompl (ϕ m) (Algebra.linearMap R (Rₚ m))) (contractLeft R M) =
         (contractLeft (Rₚ m) (Mₚ m)).restrictScalars R ∘ₗ ψ.symm.toLinearMap := by
-      apply IsLocalizedModule.ext m.primeCompl (ϕ m) (map_units (Algebra.linearMap R (Rₚ m)))
+      apply IsLocalizedModule.linearMap_ext m.primeCompl (ϕ m) (Algebra.linearMap R (Rₚ m))
       ext α x
       simp only [TensorProduct.AlgebraTensorModule.curry_apply, LinearMap.restrictScalars_self,
         TensorProduct.curry_apply, LinearMap.coe_comp, Function.comp_apply, map_apply]
