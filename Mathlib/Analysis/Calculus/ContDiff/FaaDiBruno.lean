@@ -1048,7 +1048,6 @@ private lemma faaDiBruno_aux2 {m : ℕ} (q : FormalMultilinearSeries 𝕜 F G)
     apply FormalMultilinearSeries.congr _ (by simp [hij])
     simp
 
-set_option backward.isDefEq.respectTransparency false in
 /-- *Faa di Bruno* formula: If two functions `g` and `f` have Taylor series up to `n` given by
 `q` and `p`, then `g ∘ f` also has a Taylor series, given by `q.taylorComp p`. -/
 theorem HasFTaylorSeriesUpToOn.comp {n : WithTop ℕ∞} {g : F → G} {f : E → F}
@@ -1064,7 +1063,11 @@ theorem HasFTaylorSeriesUpToOn.comp {n : WithTop ℕ∞} {g : F → G} {f : E �
   classical
   constructor
   · intro x hx
-    simp [FormalMultilinearSeries.taylorComp, default, HasFTaylorSeriesUpToOn.zero_eq' hg (h hx)]
+    simp_rw [FormalMultilinearSeries.taylorComp, Finset.univ_unique, default,
+      Finset.sum_singleton, ContinuousMultilinearMap.curry0_apply,
+      FormalMultilinearSeries.compAlongOrderedFinpartition_apply, atomic_length,
+      HasFTaylorSeriesUpToOn.zero_eq' hg (h hx)]
+    apply ContinuousMultilinearMap.uncurry0_apply 𝕜
   · intro m hm x hx
     have A (c : OrderedFinpartition m) :
       HasFDerivWithinAt (fun x ↦ (q (f x)).compAlongOrderedFinpartition (p x) c)
