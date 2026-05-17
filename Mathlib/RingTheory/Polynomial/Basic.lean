@@ -124,9 +124,7 @@ def degreeLTEquiv (n : ℕ) : degreeLT R n ≃ₗ[R] Fin n → R where
     ext1
     by_cases hp0 : p = 0
     · simp [hp0]
-    dsimp only
-    rw [mem_degreeLT, degree_eq_natDegree hp0, Nat.cast_lt] at hp
-    conv_rhs => rw [p.as_sum_range' n hp, ← Fin.sum_univ_eq_sum_range]
+    simpa using p.sum_fin (monomial ·) (by simp) (mem_degreeLT.mp hp)
   right_inv f := by
     ext i
     grind [finsetSum_coeff, Finset.sum_eq_single i, coeff_monomial]
