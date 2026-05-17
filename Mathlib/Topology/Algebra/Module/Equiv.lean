@@ -1387,6 +1387,12 @@ theorem ofSubmodule'_symm_apply (f : M ≃SL[σ₁₂] M₂) (U : Submodule R₂
 
 end ContinuousLinearEquiv
 
+/-- The top submodule is continuous linearly equivalent to the module.
+This is the continuous version of `Submodule.topEquiv`. -/
+abbrev _root_.Submodule.topContEquiv {R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
+    [TopologicalSpace M] : (⊤ : Submodule R M) ≃L[R] M where
+  __ := Submodule.topEquiv
+
 end map
 
 namespace MulOpposite
