@@ -339,9 +339,9 @@ theorem tprod_one_add_ordered [ContinuousAdd α]
   congr
   grind
 
+omit [CommSemiring α] in
 /-- The infinite version of `Finset.prod_one_sub_ordered`. -/
-theorem tprod_one_sub_ordered {α : Type*} [CommRing α] [TopologicalSpace α]
-    [IsTopologicalAddGroup α] [T2Space α] {f : ι → α}
+theorem tprod_one_sub_ordered [CommRing α] [IsTopologicalAddGroup α]
     (hsum : Summable fun i ↦ f i * ∏ j ∈ Iio i, (1 - f j))
     (hprod : Multipliable (1 - f ·)) :
     ∏' i, (1 - f i) = 1 - ∑' i, f i * ∏ j ∈ Iio i, (1 - f j) := by
