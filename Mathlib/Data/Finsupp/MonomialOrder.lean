@@ -62,19 +62,28 @@ structure MonomialOrder (σ : Type*) where
   /-- The synonym type -/
   syn : Type*
   /-- `syn` is an additive commutative monoid -/
-  acm : AddCommMonoid syn := by infer_instance
+  addCommMonoid : AddCommMonoid syn := by infer_instance
   /-- `syn` is linearly ordered -/
-  lo : LinearOrder syn := by infer_instance
+  linearOrder : LinearOrder syn := by infer_instance
   /-- `syn` is a linearly ordered cancellative additive commutative monoid -/
-  iocam : IsOrderedCancelAddMonoid syn := by infer_instance
+  isOrderedCancelAddMonoid : IsOrderedCancelAddMonoid syn := by infer_instance
   /-- the additive equivalence from `σ →₀ ℕ` to `syn` -/
   toSyn : (σ →₀ ℕ) ≃+ syn
   /-- `toSyn` is monotone -/
   toSyn_monotone : Monotone toSyn
   /-- `syn` is a well ordering -/
-  wf : WellFoundedLT syn := by infer_instance
+  wellFoundedLT : WellFoundedLT syn := by infer_instance
 
-attribute [instance] MonomialOrder.acm MonomialOrder.lo MonomialOrder.iocam MonomialOrder.wf
+attribute [instance] MonomialOrder.addCommMonoid MonomialOrder.linearOrder
+  MonomialOrder.isOrderedCancelAddMonoid MonomialOrder.wellFoundedLT
+
+@[deprecated (since := "2026-05-17")] alias acm := MonomialOrder.addCommMonoid
+
+@[deprecated (since := "2026-05-17")] alias lo := MonomialOrder.linearOrder
+
+@[deprecated (since := "2026-05-17")] alias iocam := MonomialOrder.isOrderedCancelAddMonoid
+
+@[deprecated (since := "2026-05-17")] alias wf := MonomialOrder.wellFoundedLT
 
 namespace MonomialOrder
 
