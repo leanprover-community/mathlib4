@@ -6,7 +6,7 @@ Authors: Iván Renison
 module
 
 public import Mathlib.Combinatorics.SimpleGraph.Basic
-public import Mathlib.Combinatorics.SimpleGraph.Coloring
+public import Mathlib.Combinatorics.SimpleGraph.Coloring.VertexColoring
 public import Mathlib.Combinatorics.SimpleGraph.Maps
 
 /-!
@@ -154,5 +154,16 @@ theorem chromaticNumber_sum :
     let cG : G.Coloring (Fin n) := (chromaticNumber_le_iff_colorable.mp hG).some
     let cH : H.Coloring (Fin n) := (chromaticNumber_le_iff_colorable.mp hH).some
     exact chromaticNumber_le_iff_colorable.mpr (Nonempty.intro (cG.sum cH))
+
+lemma neighborSet_sum_inl (v : V) : (G ⊕g H).neighborSet (.inl v) = Sum.inl '' G.neighborSet v := by
+  ext (v' | w') <;> simp
+
+lemma neighborSet_sum_inr (w : W) : (G ⊕g H).neighborSet (.inr w) = Sum.inr '' H.neighborSet w := by
+  ext (v' | w') <;> simp
+
+instance [DecidableEq V] [DecidableEq W] [LocallyFinite G] [LocallyFinite H] :
+    LocallyFinite (G ⊕g H) := by
+  rintro (v | w) <;> simp only [neighborSet_sum_inl, neighborSet_sum_inr] <;>
+    infer_instance
 
 end SimpleGraph

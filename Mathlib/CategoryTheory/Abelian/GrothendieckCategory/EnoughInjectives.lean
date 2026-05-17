@@ -204,9 +204,8 @@ lemma top_mem_range (A₀ : Subobject X) {J : Type w} [LinearOrder J] [OrderBot 
 lemma exists_ordinal (A₀ : Subobject X) :
     ∃ (o : Ordinal.{w}) (j : o.ToType), transfiniteIterate (largerSubobject hG) j A₀ = ⊤ := by
   let κ := Order.succ (Cardinal.mk (Shrink.{w} (Subobject X)))
-  have : OrderBot κ.ord.ToType := Ordinal.toTypeOrderBot (by
-    simp only [ne_eq, Cardinal.ord_eq_zero]
-    apply Cardinal.succ_ne_zero)
+  have : Nonempty κ.ord.ToType := by simp [κ]
+  have := WellFoundedLT.toOrderBot κ.ord.ToType
   exact ⟨κ.ord, top_mem_range hG A₀ (lt_of_lt_of_le (Order.lt_succ _) (by simp [κ]))⟩
 
 section
@@ -293,8 +292,8 @@ lemma exists_transfiniteCompositionOfShape :
         (_ : WellFoundedLT J),
     Nonempty ((generatingMonomorphisms G).pushouts.TransfiniteCompositionOfShape J f) := by
   obtain ⟨o, j, hj⟩ := exists_ordinal hG (Subobject.mk f)
-  letI : OrderBot o.ToType := Ordinal.toTypeOrderBot (by
-    simpa only [← Ordinal.nonempty_toType_iff] using Nonempty.intro j)
+  have : Nonempty o.ToType := ⟨j⟩
+  have : OrderBot o.ToType := WellFoundedLT.toOrderBot _
   exact ⟨_, _, _, _, _, ⟨transfiniteCompositionOfShapeOfEqTop hG hj⟩⟩
 
 end generatingMonomorphisms
@@ -319,7 +318,8 @@ variable [IsGrothendieckAbelian.{w} C]
 instance : HasSmallObjectArgument.{w} (generatingMonomorphisms G) := by
   obtain ⟨κ, hκ', hκ⟩ := HasCardinalLT.exists_regular_cardinal.{w} (Subobject G)
   have : Fact κ.IsRegular := ⟨hκ'⟩
-  letI := Cardinal.toTypeOrderBot hκ'.ne_zero
+  have : Nonempty κ.ord.ToType := by simpa using hκ'.ne_zero
+  have := WellFoundedLT.toOrderBot κ.ord.ToType
   exact ⟨κ, inferInstance, inferInstance,
     { preservesColimit {A B X Y} i hi f hf := by
         let hf' : (monomorphisms C).TransfiniteCompositionOfShape κ.ord.ToType f :=

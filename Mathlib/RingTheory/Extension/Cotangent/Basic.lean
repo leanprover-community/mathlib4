@@ -73,7 +73,7 @@ section baseChange
 variable {A : Type*} [CommRing A] [Algebra S A] [Algebra P.Ring A] [IsScalarTower P.Ring S A]
 
 variable (R S) in
-/-- This is (isomorphic to) the base change of the contangent complex to `A`, but
+/-- This is (isomorphic to) the base change of the cotangent complex to `A`, but
 the domain and codomains of this are more manageable. -/
 noncomputable
 def _root_.KaehlerDifferential.cotangentComplexBaseChange
@@ -158,6 +158,13 @@ lemma map_tmul (f : Hom P P') (x y) :
     LinearMap.coe_comp, LinearMap.coe_restrictScalars, Function.comp_apply, map_D, mk_apply]
   rw [smul_tmul', ← Algebra.algebraMap_eq_smul_one]
   rfl
+
+lemma map_tmul_eq_tmul_map (f : P.Hom P') (x : S) (y : Ω[P.Ring⁄R]) :
+    letI : Algebra P.Ring P'.Ring := f.toAlgHom.toAlgebra
+    (CotangentSpace.map f) (x ⊗ₜ[P.Ring] y) =
+      (algebraMap S S') x ⊗ₜ[P'.Ring] KaehlerDifferential.map _ _ _ _ y := by
+  rw [CotangentSpace.map, LinearMap.liftBaseChange_tmul, LinearMap.coe_comp, Function.comp_apply,
+    LinearMap.restrictScalars_apply, mk_apply, smul_tmul', Algebra.smul_def, mul_one]
 
 @[simp]
 lemma map_id :
@@ -371,6 +378,11 @@ lemma h1Cotangentι_injective : Function.Injective P.h1Cotangentι := Subtype.va
 
 @[ext] lemma h1Cotangentι_ext (x y : P.H1Cotangent) (e : x.1 = y.1) : x = y := Subtype.ext e
 
+/-- The sequence `H¹(L_{S/R}) → P.Cotangent → P.CotangentSpace` is exact. -/
+lemma exact_hCotangentι_cotangentComplex : Function.Exact h1Cotangentι P.cotangentComplex := by
+  rw [LinearMap.exact_iff]
+  exact (Submodule.range_subtype _).symm
+
 /--
 The induced map on the first homology of the (naive) cotangent complex.
 -/
@@ -399,6 +411,12 @@ lemma H1Cotangent.map_comp
     (f : Hom P P') (g : Hom P' P'') :
     map (g.comp f) = (map g).restrictScalars S ∘ₗ map f := by
   ext; simp [Cotangent.map_comp]
+
+omit [IsScalarTower R S S'] in
+@[simp]
+lemma H1Cotangent.map_comp_apply (f : Hom P P') (g : Hom P' P'') (x : P.H1Cotangent) :
+    map (g.comp f) x = map g (map f x) :=
+  congr($(H1Cotangent.map_comp f g) x)
 
 /-- Maps `P₁ → P₂` and `P₂ → P₁` between extensions
 induce an isomorphism between `H¹(L_P₁)` and `H¹(L_P₂)`. -/

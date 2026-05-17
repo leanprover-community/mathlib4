@@ -19,7 +19,7 @@ This defines `PartOrd`, the category of partial orders with monotone maps.
 
 open CategoryTheory
 
-universe u
+universe v u
 
 /-- The category of partial orders. -/
 structure PartOrd where
@@ -86,9 +86,7 @@ lemma coe_id {X : PartOrd} : (𝟙 X : X → X) = id := rfl
 @[simp]
 lemma coe_comp {X Y Z : PartOrd} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z) = g ∘ f := rfl
 
-@[simp]
-lemma forget_map {X Y : PartOrd} (f : X ⟶ Y) :
-    (forget PartOrd).map f = (f : _ → _) := rfl
+@[deprecated (since := "2026-02-16")] alias forget_map := ConcreteCategory.forget_map_eq_ofHom
 
 @[ext]
 lemma ext {X Y : PartOrd} {f g : X ⟶ Y} (w : ∀ x : X, f x = g x) : f = g :=
@@ -165,6 +163,13 @@ def dualEquiv : PartOrd ≌ PartOrd where
   unitIso := NatIso.ofComponents fun X => Iso.mk <| OrderIso.dualDual X
   counitIso := NatIso.ofComponents fun X => Iso.mk <| OrderIso.dualDual X
 
+/-- The ulift functor `PartOrd.{u} ⥤ PartOrd.{max u v}`. -/
+@[simps]
+def uliftFunctor : PartOrd.{u} ⥤ PartOrd.{max u v} where
+  obj X := .of (ULift.{v} X)
+  map f := PartOrd.ofHom ⟨fun x ↦ ULift.up (f (ULift.down x)),
+    fun x y hxy ↦ f.hom.monotone hxy⟩
+
 end PartOrd
 
 theorem partOrd_dual_comp_forget_to_preord :
@@ -178,10 +183,12 @@ def preordToPartOrd : Preord.{u} ⥤ PartOrd where
   map f := PartOrd.ofHom f.hom.antisymmetrization
   map_id X := by
     ext x
-    exact Quotient.inductionOn' x fun x => Quotient.map'_mk'' _ (fun a b => id) _
+    induction x using Quotient.inductionOn'
+    exact Quotient.map'_mk'' _ (fun a b ↦ id) _
   map_comp f g := by
     ext x
-    exact Quotient.inductionOn' x fun x => OrderHom.antisymmetrization_apply_mk _ _
+    induction x using Quotient.inductionOn'
+    exact OrderHom.antisymmetrization_apply_mk ..
 
 /-- `preordToPartOrd` is left adjoint to the forgetful functor, meaning it is the free
 functor from `Preord` to `PartOrd`. -/

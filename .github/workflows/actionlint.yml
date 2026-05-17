@@ -3,7 +3,6 @@ on:
   pull_request:
     paths:
       - '.github/**'
-  merge_group:
 
 jobs:
   actionlint:
@@ -13,7 +12,7 @@ jobs:
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
       - name: suggester / actionlint
-        uses: reviewdog/action-actionlint@e58ee9d111489c31395fbe4857b0be6e7635dbda # v1.70.0
+        uses: reviewdog/action-actionlint@6fb7acc99f4a1008869fa8a0f09cfca740837d9d # v1.72.0
         with:
           tool_name: actionlint
           fail_level: any

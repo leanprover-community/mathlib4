@@ -45,13 +45,11 @@ theorem discr_ne_zero : discr K ≠ 0 := by
   rw [← (Int.cast_injective (α := ℚ)).ne_iff, coe_discr]
   exact Algebra.discr_not_zero_of_basis ℚ (integralBasis K)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem discr_eq_discr {ι : Type*} [Fintype ι] [DecidableEq ι] (b : Basis ι ℤ (𝓞 K)) :
     Algebra.discr ℤ b = discr K := by
   let b₀ := Basis.reindex (RingOfIntegers.basis K) (Basis.indexEquiv (RingOfIntegers.basis K) b)
   rw [Algebra.discr_eq_discr (𝓞 K) b b₀, Basis.coe_reindex, Algebra.discr_reindex]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem discr_eq_discr_of_algEquiv {L : Type*} [Field L] [NumberField L] (f : K ≃ₐ[ℚ] L) :
     discr K = discr L := by
   let f₀ : 𝓞 K ≃ₗ[ℤ] 𝓞 L := (f.restrictScalars ℤ).mapIntegralClosure.toLinearEquiv

@@ -11,7 +11,7 @@ public import Mathlib.CategoryTheory.Subobject.Lattice
 
 /-!
 
-# Subojects in adhesive categories
+# Subobjects in adhesive categories
 
 ## Main Results
 - Subobjects in adhesive categories have binary coproducts
@@ -41,7 +41,7 @@ noncomputable def isColimitBinaryCofan (a b : Subobject X) :
       (by ext; simp [pullback.condition])) (by cat_disch)).hom)
     (by intros; rfl) (by intros; rfl) (by intros; rfl)
 
-instance [Adhesive C] {X : C} : HasBinaryCoproducts (Subobject X) where
+instance : HasBinaryCoproducts (Subobject X) where
   has_colimit F := by
     have : HasColimit (pair (F.obj ⟨WalkingPair.left⟩) (F.obj ⟨WalkingPair.right⟩)) :=
       ⟨⟨⟨_, isColimitBinaryCofan (F.obj ⟨WalkingPair.left⟩) (F.obj ⟨WalkingPair.right⟩)⟩⟩⟩

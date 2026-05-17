@@ -126,6 +126,7 @@ noncomputable def functorCoreMonoidalOfComp : F.CoreMonoidal := by
 Monoidal structure on `F`, given that `F` lifts along `L` to a monoidal functor `G`,
 where `L` is a monoidal localization functor.
 -/
+@[implicit_reducible]
 noncomputable def functorMonoidalOfComp : F.Monoidal :=
   (functorCoreMonoidalOfComp L W F G).toMonoidal
 
@@ -135,7 +136,6 @@ lemma functorMonoidalOfComp_ε : letI := functorMonoidalOfComp L W F G
     ε F = ε G ≫ e.inv.app _ ≫ F.map (η L) :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma functorMonoidalOfComp_μ (X Y : C) : letI := functorMonoidalOfComp L W F G
     letI e := Lifting.iso L W G F

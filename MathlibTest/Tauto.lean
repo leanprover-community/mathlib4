@@ -3,6 +3,7 @@ Copyright (c) 2018 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, David Renshaw
 -/
+module
 import Mathlib.Tactic.Tauto
 import Mathlib.Tactic.SplitIfs
 import Mathlib.Data.Part

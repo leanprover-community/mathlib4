@@ -135,7 +135,6 @@ class MonoidalClosedFunctor : Prop where
 
 attribute [instance] MonoidalClosedFunctor.comparison_iso
 
-set_option backward.isDefEq.respectTransparency false in
 theorem frobeniusMorphism_mate (h : L ⊣ F) (A : C) :
     conjugateEquiv (h.comp (ihom.adjunction A)) ((ihom.adjunction (F.obj A)).comp h)
         (frobeniusMorphism F h A).natTrans = (expComparison F A).natTrans := by

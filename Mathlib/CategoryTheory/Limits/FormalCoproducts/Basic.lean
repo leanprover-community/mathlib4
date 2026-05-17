@@ -366,7 +366,7 @@ def isColimitEvalMapCoconeCofan : IsColimit (((eval.{w} C A).obj F).mapCocone (c
 
 instance : PreservesColimit (Discrete.functor f) ((eval.{w} C A).obj F) :=
   ⟨fun hc ↦ ⟨IsColimit.ofIsoColimit (isColimitEvalMapCoconeCofan J f F)
-    ((Cocones.functoriality _ _).mapIso ((isColimitCofan J f).uniqueUpToIso hc))⟩⟩
+    ((Cocone.functoriality _ _).mapIso ((isColimitCofan J f).uniqueUpToIso hc))⟩⟩
 
 instance : PreservesColimitsOfShape (Discrete J) ((eval.{w} C A).obj F) :=
   preservesColimitsOfShape_of_discrete _
@@ -403,7 +403,7 @@ def isLimitEvalMapConeCofanOp : IsLimit (((evalOp.{w} C A).obj F).mapCone (cofan
   uniq s m h := Pi.hom_ext _ _ fun ⟨i₁, i₂⟩ ↦ by simp [← h, cofan]
 
 instance : PreservesLimit (Discrete.functor (op ∘ f)) ((evalOp.{w} C A).obj F) :=
-  ⟨fun hc ↦ ⟨IsLimit.ofIsoLimit (isLimitEvalMapConeCofanOp J f F) ((Cones.functoriality _ _).mapIso
+  ⟨fun hc ↦ ⟨IsLimit.ofIsoLimit (isLimitEvalMapConeCofanOp J f F) ((Cone.functoriality _ _).mapIso
     ((Cofan.IsColimit.op (isColimitCofan J f)).uniqueUpToIso hc))⟩⟩
 
 end HasProducts

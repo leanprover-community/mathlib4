@@ -33,7 +33,7 @@ variable (C ι : Type*) [Category C] [Category ι] [Abelian C]
 open ComposableArrows
 
 /-- A spectral object in an abelian category category `C` indexed by a category `ι`
-consists of a functor `H : ComposableArrows ι 1 ⥤ C`, and a
+consists of a family of functors `H n : ComposableArrows ι 1 ⥤ C` for all `n : ℤ`, and a
 functorial long exact sequence
 `⋯ ⟶ (H n₀).obj (mk₁ f) ⟶ (H n₀).obj (mk₁ (f ≫ g)) ⟶ (H n₀).obj (mk₁ g) ⟶ (H n₁).obj (mk₁ f) ⟶ ⋯`
 when `n₀ + 1 = n₁` and `f` and `g` are composable morphisms in `ι`. (This will be
@@ -120,7 +120,7 @@ def sc₃ (n₀ n₁ : ℤ) (hn₁ : n₀ + 1 = n₁ := by lia) : ShortComplex C
   ShortComplex.mk _ _ (X.zero₃ f g fg h n₀ n₁ hn₁)
 
 lemma exact₁ (n₀ n₁ : ℤ) (hn₁ : n₀ + 1 = n₁ := by lia) :
-    (X.sc₁ f g fg h n₀ n₁ hn₁ ).Exact := by
+    (X.sc₁ f g fg h n₀ n₁ hn₁).Exact := by
   subst h
   exact (X.exact₁' n₀ n₁ hn₁ (mk₂ f g)).exact 0
 

@@ -116,7 +116,7 @@ noncomputable instance : PreservesColimitsOfShape (Discrete.{v} ι) forgetToShea
   ⟨fun {G} =>
     preservesColimit_of_preserves_colimit_cocone (coproductCofanIsColimit G)
       ((colimit.isColimit (C := SheafedSpace.{u+1, u, u} CommRingCat.{u}) _).ofIsoColimit
-        (Cocones.ext (Iso.refl _) fun _ => Category.comp_id _))⟩
+        (Cocone.ext (Iso.refl _) fun _ => Category.comp_id _))⟩
 
 end HasCoproducts
 
@@ -159,7 +159,7 @@ restriction of `s` onto `U'` is invertible. This `U'` is given by `π '' V`, whe
 basic open set of `π⋆x`.
 
 Since `f ⁻¹' V = Y.basic_open (f ≫ π)꙳ x = Y.basic_open (g ≫ π)꙳ x = g ⁻¹' V`, we have
-`π ⁻¹' (π '' V) = V` (as the underlying set map is merely the set-theoretic coequalizer).
+`π ⁻¹' π '' V = V` (as the underlying set map is merely the set-theoretic coequalizer).
 This shows that `π '' V` is indeed open, and `s` is invertible on `π '' V` as the components of `π꙳`
 are local ring homs.
 -/
@@ -179,11 +179,11 @@ theorem imageBasicOpen_image_preimage :
     (coequalizer.π f.toShHom g.toShHom).hom.base ⁻¹'
       ((coequalizer.π f.toShHom g.toShHom).hom.base ''
         (imageBasicOpen f g U s).1) = (imageBasicOpen f g U s).1 := by
-  fapply Types.coequalizer_preimage_image_eq_of_preimage_eq f.base
-    -- Porting note: Type of `g.base` needs to be explicit
-    (g.base : X.carrier.1 ⟶ Y.carrier.1)
+  fapply Types.coequalizer_preimage_image_eq_of_preimage_eq (↾f.base)
+    (↾g.base) (↾(coequalizer.π f.toShHom g.toShHom).hom.base)
   · ext
-    simp_rw [types_comp_apply, ← TopCat.comp_app, ← PresheafedSpace.comp_base]
+    simp only [TypeCat.Fun.toFun_apply, comp_apply, ConcreteCategory.hom_ofHom,
+      TypeCat.Fun.coe_mk, ← TopCat.comp_app, ← PresheafedSpace.comp_base]
     congr 3
     exact SheafedSpace.forgetToPresheafedSpace.congr_map
       (coequalizer.condition f.toShHom g.toShHom)

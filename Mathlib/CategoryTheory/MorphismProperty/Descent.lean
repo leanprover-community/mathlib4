@@ -16,7 +16,7 @@ if whenever `Q` holds for `X ⟶ Z`, `P` holds for `X ×[Z] Y ⟶ X` implies `P`
 Dually, we define `P.CodescendsAlong Q`.
 -/
 
-@[expose] public section
+public section
 
 namespace CategoryTheory.MorphismProperty
 

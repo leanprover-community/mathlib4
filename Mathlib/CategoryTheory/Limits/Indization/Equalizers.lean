@@ -18,7 +18,7 @@ We show that if a category `C` has equalizers, then ind-objects are closed under
 * [M. Kashiwara, P. Schapira, *Categories and Sheaves*][Kashiwara2006], Section 6.1
 -/
 
-@[expose] public section
+public section
 
 universe v v' u u'
 
@@ -79,9 +79,5 @@ instance isClosedUnderLimitsOfShape_isIndObject_walkingParallelPair [HasEqualize
         (diagramIsoParallelPair _).symm)).hom
       (isIndObject_limit_comp_yoneda_comp_colim (parallelPair P.φ P.ψ)
         (fun i => isIndObject_limit_comp_yoneda _)))
-
-@[deprecated (since := "2025-09-22")]
-alias closedUnderLimitsOfShape_walkingParallelPair_isIndObject :=
-  isClosedUnderLimitsOfShape_isIndObject_walkingParallelPair
 
 end CategoryTheory.Limits

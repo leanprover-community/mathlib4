@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.Category.ModuleCat.Sheaf.Free
 public import Mathlib.Algebra.Category.ModuleCat.Sheaf.PushforwardContinuous
-public import Mathlib.CategoryTheory.Sites.CoversTop
+public import Mathlib.CategoryTheory.Sites.CoversTop.Basic
 
 /-!
 # Generating sections of sheaves of modules
@@ -97,6 +97,10 @@ class IsFiniteType (σ : M.GeneratingSections) : Prop where
   finite : Finite σ.I := by infer_instance
 
 attribute [instance] IsFiniteType.finite
+
+instance (σ : M.GeneratingSections) (p : M ⟶ N) [Epi p] [σ.IsFiniteType] :
+    (σ.ofEpi p).IsFiniteType where
+  finite := inferInstanceAs (Finite σ.I)
 
 end GeneratingSections
 

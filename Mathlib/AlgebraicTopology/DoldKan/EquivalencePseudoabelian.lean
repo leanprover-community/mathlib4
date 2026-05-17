@@ -60,7 +60,7 @@ of the equivalence `ChainComplex C ℕ ≌ Karoubi (ChainComplex C ℕ)`. -/
 def N [IsIdempotentComplete C] [HasFiniteCoproducts C] : SimplicialObject C ⥤ ChainComplex C ℕ :=
   N₁ ⋙ (toKaroubiEquivalence _).inverse
 
-/-- The functor `Γ` for the equivalence is `Γ'`. -/
+/-- The functor `Γ` for the equivalence is `Γ₀`. -/
 @[simps!, nolint unusedArguments]
 def Γ [IsIdempotentComplete C] [HasFiniteCoproducts C] : ChainComplex C ℕ ⥤ SimplicialObject C :=
   Γ₀

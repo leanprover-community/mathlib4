@@ -44,7 +44,7 @@ variable [Semiring S] (f : R →+* S) (x : S)
 theorem eval₂_eq_sum_range :
     p.eval₂ f x = ∑ i ∈ Finset.range (p.natDegree + 1), f (p.coeff i) * x ^ i :=
   _root_.trans (congr_arg _ p.as_sum_range)
-    (_root_.trans (eval₂_finset_sum f _ _ x) (congr_arg _ (by simp)))
+    (_root_.trans (eval₂_finsetSum f _ _ x) (congr_arg _ (by simp)))
 
 theorem eval₂_eq_sum_range' (f : R →+* S) {p : R[X]} {n : ℕ} (hn : p.natDegree < n) (x : S) :
     eval₂ f x p = ∑ i ∈ Finset.range n, f (p.coeff i) * x ^ i := by
@@ -107,7 +107,7 @@ theorem coeff_comp_degree_mul_degree (hqd0 : natDegree q ≠ 0) :
 @[simp] lemma comp_C_mul_X_coeff {r : R} {n : ℕ} :
     (p.comp <| C r * X).coeff n = p.coeff n * r ^ n := by
   simp_rw [comp, eval₂_eq_sum_range, (commute_X _).symm.mul_pow,
-    ← C_pow, finset_sum_coeff, coeff_C_mul, coeff_X_pow]
+    ← C_pow, finsetSum_coeff, coeff_C_mul, coeff_X_pow]
   rw [Finset.sum_eq_single n _ fun h ↦ ?_, if_pos rfl, mul_one]
   · intro b _ h; simp_rw [if_neg h.symm, mul_zero]
   · rw [coeff_eq_zero_of_natDegree_lt, zero_mul]
@@ -203,7 +203,7 @@ section
 variable [Semiring R] {p q : R[X]} {x : R} [CommSemiring S] (f : R →+* S)
 
 theorem eval₂_comp {x : S} : eval₂ f x (p.comp q) = eval₂ f (eval₂ f x q) p := by
-  rw [comp, p.as_sum_range]; simp [eval₂_finset_sum, eval₂_pow]
+  rw [comp, p.as_sum_range]; simp [eval₂_finsetSum, eval₂_pow]
 
 @[simp]
 theorem iterate_comp_eval₂ (k : ℕ) (t : S) :

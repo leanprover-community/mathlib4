@@ -16,7 +16,7 @@ colimits in `P.Over ⊤ X` for `X : Scheme` of locally directed diagrams of open
 exist and agree with the colimit in `Scheme`.
 -/
 
-@[expose] public section
+public section
 
 universe u
 
@@ -54,7 +54,6 @@ instance {S : Scheme.{u}} {U X Y : P.Over ⊤ S} (f : U ⟶ X) (g : U ⟶ Y)
   · simpa using f.left.isOpenEmbedding.injective
   · simpa using g.left.isOpenEmbedding.injective
 
-set_option backward.isDefEq.respectTransparency false in
 instance {S : Scheme.{u}} {U X Y : P.Over ⊤ S} (f : U ⟶ X) (g : U ⟶ Y)
     [IsOpenImmersion f.left] [IsOpenImmersion g.left]
     {i j : WalkingSpan} (t : i ⟶ j) :

@@ -38,7 +38,6 @@ lemma fderivWithin_restrictScalars_comp
   ext a b
   simp [h.restrictScalars_fderivWithin 𝕜 hs]
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 If `f` is `n` times continuously differentiable at `x` within `s`, then the `n`th iterated Fréchet
 derivative within `s` with respect to `𝕜` equals scalar restriction of the `n`th iterated Fréchet

@@ -33,9 +33,6 @@ section AddMonoidWithOne
 
 variable [AddMonoidWithOne R]
 
-theorem two_eq_zero [CharP R 2] : (2 : R) = 0 := by
-  rw [← Nat.cast_two, CharP.cast_eq_zero]
-
 /-- The only hypotheses required to build a `CharP R 2` instance are `1 ≠ 0` and `2 = 0`. -/
 theorem of_one_ne_zero_of_two_eq_zero (h₁ : (1 : R) ≠ 0) (h₂ : (2 : R) = 0) : CharP R 2 where
   cast_eq_zero_iff n := by
@@ -44,6 +41,34 @@ theorem of_one_ne_zero_of_two_eq_zero (h₁ : (1 : R) ≠ 0) (h₂ : (2 : R) = 0
       exact natCast_eq_zero_of_even_of_two_eq_zero hn h₂
     · simp_rw [hn.not_two_dvd_nat, iff_false]
       rwa [natCast_eq_one_of_odd_of_two_eq_zero hn h₂]
+
+variable [CharP R 2]
+
+@[scoped simp]
+theorem two_eq_zero : (2 : R) = 0 := by
+  rw [← Nat.cast_two, CharP.cast_eq_zero]
+
+theorem natCast_eq_ite (n : ℕ) : (n : R) = if Even n then 0 else 1 := by
+  induction n <;> aesop (add simp [one_add_one_eq_two])
+
+@[simp]
+theorem range_natCast : Set.range ((↑) : ℕ → R) = {0, 1} := by
+  rw [funext natCast_eq_ite, Set.range_ite_const]
+  · use 0; simp
+  · use 1; simp
+
+variable (R) in
+theorem natCast_cases (n : ℕ) : (n : R) = 0 ∨ (n : R) = 1 :=
+  range_natCast.le (Set.mem_range_self _)
+
+theorem natCast_eq_mod (n : ℕ) : (n : R) = (n % 2 : ℕ) := by
+  simp [natCast_eq_ite, Nat.even_iff]
+
+@[scoped simp]
+theorem ofNat_eq_mod (n : ℕ) [n.AtLeastTwo] : (ofNat(n) : R) = (ofNat(n) % 2 : ℕ) :=
+  natCast_eq_mod n
+
+example : (37 : R) = 1 := by simp
 
 end AddMonoidWithOne
 
@@ -94,6 +119,22 @@ protected theorem two_zsmul (x : R) : (2 : ℤ) • x = 0 := by
 protected theorem add_eq_zero {a b : R} : a + b = 0 ↔ a = b := by
   rw [← CharTwo.sub_eq_add, sub_eq_iff_eq_add, zero_add]
 
+theorem intCast_eq_ite (n : ℤ) : (n : R) = if Even n then 0 else 1 := by
+  obtain ⟨n, rfl | rfl⟩ := n.eq_nat_or_neg <;> simpa using natCast_eq_ite n
+
+@[simp]
+theorem range_intCast : Set.range ((↑) : ℤ → R) = {0, 1} := by
+  rw [funext intCast_eq_ite, Set.range_ite_const]
+  · use 0; simp
+  · use 1; simp
+
+variable (R) in
+theorem intCast_cases (n : ℤ) : (n : R) = 0 ∨ (n : R) = 1 :=
+  (Set.ext_iff.1 range_intCast _).1 (Set.mem_range_self _)
+
+theorem intCast_eq_mod (n : ℤ) : (n : R) = (n % 2 : ℤ) := by
+  simp [intCast_eq_ite, Int.even_iff]
+
 end Ring
 
 section CommSemiring
@@ -101,7 +142,7 @@ section CommSemiring
 variable [CommSemiring R] [CharP R 2]
 
 theorem add_sq (x y : R) : (x + y) ^ 2 = x ^ 2 + y ^ 2 := by
-  simp [add_pow_two, two_eq_zero (R := R)]
+  simp [add_pow_two]
 
 theorem add_mul_self (x y : R) : (x + y) * (x + y) = x * x + y * y := by
   rw [← pow_two, ← pow_two, ← pow_two, add_sq]

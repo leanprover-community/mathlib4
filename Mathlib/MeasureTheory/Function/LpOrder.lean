@@ -23,7 +23,7 @@ public import Mathlib.MeasureTheory.Function.LpSpace.Basic
 
 -/
 
-@[expose] public section
+public section
 
 
 

@@ -1,3 +1,4 @@
+module
 import Mathlib.Tactic.TFAE
 import Mathlib.Tactic.SuccessIfFailWithMsg
 

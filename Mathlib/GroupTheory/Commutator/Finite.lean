@@ -14,7 +14,7 @@ public import Mathlib.GroupTheory.Index
 The commutator of a finite direct product is contained in the direct product of the commutators.
 -/
 
-@[expose] public section
+public section
 
 variable {G : Type*} [Group G]
 

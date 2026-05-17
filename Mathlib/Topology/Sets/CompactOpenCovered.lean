@@ -111,7 +111,7 @@ lemma of_isCompact_of_forall_exists_isCompactOpenCovered [TopologicalSpace S] {U
   refine of_biUnion_eq_of_isCompact hU { Us x h | (x : S) (h : x ∈ U) } ?_ ?_
   · refine subset_antisymm (fun x ↦ ?_) fun x hx ↦ ?_
     · simp [Opens.forall]
-      aesop
+      grind
     · simpa using ⟨⟨Us x hx, hUo _ _⟩, ⟨x, by simpa⟩, hUx _ _⟩
   · grind
 

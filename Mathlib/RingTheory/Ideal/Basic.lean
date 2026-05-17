@@ -36,7 +36,7 @@ variable {ι α β F : Type*}
 
 open Set Function
 
-open Pointwise
+open scoped Pointwise
 
 section Semiring
 
@@ -251,7 +251,7 @@ theorem exists_not_isUnit_of_not_isField [Nontrivial R] (hf : ¬IsField R) :
     ∃ (x : R) (_hx : x ≠ (0 : R)), ¬IsUnit x := by
   have : ¬_ := fun h => hf ⟨exists_pair_ne R, mul_comm, h⟩
   simp_rw [isUnit_iff_exists_inv]
-  push_neg at this ⊢
+  push Not at this ⊢
   obtain ⟨x, hx, not_unit⟩ := this
   exact ⟨x, hx, not_unit⟩
 
@@ -270,7 +270,7 @@ theorem exists_maximal_of_not_isField [Nontrivial R] (h : ¬ IsField R) :
 
 theorem not_isField_of_ne_of_ne [Nontrivial R] {I : Ideal R} (h_bot : I ≠ ⊥) (h_top : I ≠ ⊤) :
     ¬ IsField R := by
-  contrapose! h_bot
+  contrapose h_bot
   exact ((isField_iff_maximal_bot.mp h_bot).eq_of_le h_top bot_le).symm
 
 theorem not_isField_iff_exists_ideal_bot_lt_and_lt_top [Nontrivial R] :

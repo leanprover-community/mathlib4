@@ -10,7 +10,6 @@ public import Mathlib.RingTheory.LocalProperties.Submodule
 public import Mathlib.RingTheory.Localization.Algebra
 public import Mathlib.RingTheory.Localization.Away.Basic
 public import Mathlib.Algebra.Module.LocalizedModule.AtPrime
-public import Mathlib.Algebra.Module.LocalizedModule.Away
 
 /-!
 # Local properties about linear maps
@@ -296,7 +295,6 @@ variable (f : R →+* S) [∀ r, IsLocalization.Away r.val (Rᵣ r)]
     [∀ r, IsLocalization.Away (f r.val) (Sᵣ r)]
 include hs
 
-set_option backward.isDefEq.respectTransparency false in
 lemma injective_of_isLocalization_of_span_eq_top
     (h : ∀ r : s, Function.Injective (IsLocalization.Away.map (Rᵣ r) (Sᵣ r) f r.1)) :
     Function.Injective f := by
@@ -311,7 +309,6 @@ lemma injective_of_isLocalization_of_span_eq_top
     (fun r : s ↦ ((IsScalarTower.toAlgHom R S (Sᵣ r)).toLinearMap)) (Algebra.linearMap R S)
   simpa [IsLocalization.map_linearMap_eq_toLinearMap_mapₐ] using h
 
-set_option backward.isDefEq.respectTransparency false in
 lemma surjective_of_isLocalization_of_span_eq_top
     (h : ∀ r : s, Function.Surjective (IsLocalization.Away.map (Rᵣ r) (Sᵣ r) f r.1)) :
     Function.Surjective f := by

@@ -52,7 +52,6 @@ theorem chainHeight_ne_top_of_finite (h : s.Finite) : s.chainHeight r ≠ ⊤ :=
   LT.lt.ne_top <| lt_of_le_of_lt (chainHeight_le_encard s r) <| lt_top_iff_ne_top.mpr <|
     encard_ne_top_iff.mpr h
 
-set_option backward.isDefEq.respectTransparency false in
 theorem exists_isChain_of_le_chainHeight {r} {s : Set α} (n : ℕ) (h : n ≤ s.chainHeight r) :
     ∃ t ⊆ s, t.encard = n ∧ IsChain r t := by
   by_cases h' : n = 0
@@ -127,7 +126,7 @@ theorem one_le_chainHeight_iff : 1 ≤ s.chainHeight r ↔ s.Nonempty := by
 theorem chainHeight_of_isEmpty [IsEmpty α] : s.chainHeight r = 0 :=
   chainHeight_eq_zero_iff s r |>.mpr (Subsingleton.elim _ _)
 
-@[mono]
+@[gcongr, mono]
 theorem chainHeight_mono (s t : Set α) (h : s ⊆ t) : s.chainHeight r ≤ t.chainHeight r := by
   refine forall_natCast_le_iff_le.mp fun n hn ↦ ?_
   obtain ⟨a, ha₁, ha₂, ha₃⟩ := exists_isChain_of_le_chainHeight n hn
@@ -154,7 +153,7 @@ theorem chainHeight_eq_of_relEmbedding (e : r ↪r r') :
       ha₃.preimage_relEmbedding e
   · obtain ⟨a, ha₁, ha₂, ha₃⟩ := exists_isChain_of_le_chainHeight n hn
     rw [← ha₂, ← e.injective.encard_image]
-    exact encard_le_chainHeight_of_isChain _ _ (by grind) <| ha₃.image_relEmbedding e
+    exact encard_le_chainHeight_of_isChain _ _ (by grind) <| ha₃.image e
 
 theorem chainHeight_eq_of_relIso (e : r ≃r r') : (e '' s).chainHeight r' = s.chainHeight r :=
   chainHeight_eq_of_relEmbedding s e.toRelEmbedding

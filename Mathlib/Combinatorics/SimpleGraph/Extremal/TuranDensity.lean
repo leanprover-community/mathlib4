@@ -31,7 +31,7 @@ This file defines the **Turán density** of a simple graph.
   asymptotically equivalent to `turanDensity H * n.choose 2` as `n` approaches `∞`.
 
 * `SimpleGraph.isContained_of_card_edgeFinset`: simple graphs on `n` vertices with at least
-  `(turanDensity H + o(1)) * n ^ 2` edges contain `H`, for all sufficently large `n`.
+  `(turanDensity H + o(1)) * n ^ 2` edges contain `H`, for all sufficiently large `n`.
 -/
 
 @[expose] public section
@@ -114,7 +114,7 @@ theorem isEquivalent_extremalNumber {H : SimpleGraph W} (h : turanDensity H ≠ 
   have hz : ∀ᶠ (x : ℕ) in atTop, turanDensity H * x.choose 2 ≠ 0 := by
     rw [eventually_atTop]
     refine ⟨2, fun n hn ↦ ?_⟩
-    simp [h, Nat.choose_eq_zero_iff, hn]
+    simpa [h, Nat.choose_eq_zero_iff]
   simpa [isEquivalent_iff_tendsto_one hz] using hπ
 
 /-- Simple graphs on `n` vertices having at least `(turanDensity H + o(1)) * n ^ 2` edges contain

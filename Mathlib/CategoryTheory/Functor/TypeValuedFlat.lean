@@ -44,16 +44,18 @@ lemma Functor.isCofiltered_elements
     let h := mapIsLimitOfPreservesOfIsLimit F _ _ (prodIsProd X Y)
     let h' := Types.binaryProductLimit (F.obj X) (F.obj Y)
     exact ⟨⟨X ⨯ Y, (h'.conePointUniqueUpToIso h).hom ⟨x, y⟩⟩,
-      ⟨prod.fst, congr_fun (h'.conePointUniqueUpToIso_hom_comp h (.mk .left)) _⟩,
-      ⟨prod.snd, congr_fun (h'.conePointUniqueUpToIso_hom_comp h (.mk .right)) _⟩, by tauto⟩
+      ⟨prod.fst, ConcreteCategory.congr_hom (h'.conePointUniqueUpToIso_hom_comp h (.mk .left)) _⟩,
+      ⟨prod.snd, ConcreteCategory.congr_hom (h'.conePointUniqueUpToIso_hom_comp h (.mk .right)) _⟩,
+      by tauto⟩
   cone_maps := by
     rintro ⟨X, x⟩ ⟨Y, y⟩ ⟨f, hf⟩ ⟨g, hg⟩
     dsimp at f g hf hg
-    subst hg
+    rw [← hg] at hf
     let h := isLimitForkMapOfIsLimit F _ (equalizerIsEqualizer f g)
     let h' := (Types.equalizerLimit (g := F.map f) (h := F.map g)).isLimit
     exact ⟨⟨equalizer f g, (h'.conePointUniqueUpToIso h).hom ⟨x, hf⟩⟩,
-      ⟨equalizer.ι f g, congr_fun (h'.conePointUniqueUpToIso_hom_comp h .zero) ⟨x, hf⟩⟩,
+      ⟨equalizer.ι f g, ConcreteCategory.congr_hom
+        (h'.conePointUniqueUpToIso_hom_comp h .zero) ⟨x, hf⟩⟩,
       by ext; exact equalizer.condition f g⟩
 
 namespace FunctorToTypes
@@ -68,7 +70,7 @@ to the subset of `F.obj Y` consisting of those elements `y : F.obj Y`
 such that `F.map f y = x`. -/
 def fromOverSubfunctor : Subfunctor (Over.forget X ⋙ F) where
   obj U := F.map U.hom ⁻¹' {x}
-  map _ _ _ := by simpa [← map_comp_apply]
+  map _ _ _ := by simpa [← comp_apply, ← Functor.map_comp]
 
 @[simp]
 lemma mem_fromOverSubfunctor_iff {U : Over X} (u : F.obj U.left) :
@@ -97,6 +99,8 @@ def fromOverFunctorElementsEquivalence :
     (by cat_disch)
   unitIso := Iso.refl _
   counitIso := Iso.refl _
+  -- `cat_disch` can fill in this proof, but is unfortunately quite slow.
+  functor_unitIso_comp X := by simp_all; rfl
 
 instance [IsCofiltered F.Elements] : IsCofiltered (fromOverFunctor F x).Elements :=
   .of_equivalence (fromOverFunctorElementsEquivalence F x).symm

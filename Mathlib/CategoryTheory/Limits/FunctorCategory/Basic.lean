@@ -87,7 +87,7 @@ def combineCones (F : J ⥤ K ⥤ C) (c : ∀ k : K, LimitCone (F.flip.obj k)) :
 /-- The stitched together cones each project down to the original given cones (up to iso). -/
 def evaluateCombinedCones (F : J ⥤ K ⥤ C) (c : ∀ k : K, LimitCone (F.flip.obj k)) (k : K) :
     ((evaluation K C).obj k).mapCone (combineCones F c) ≅ (c k).cone :=
-  Cones.ext (Iso.refl _)
+  Cone.ext (Iso.refl _)
 
 /-- Stitching together limiting cones gives a limiting cone. -/
 def combinedIsLimit (F : J ⥤ K ⥤ C) (c : ∀ k : K, LimitCone (F.flip.obj k)) :
@@ -139,7 +139,7 @@ def combineCocones (F : J ⥤ K ⥤ C) (c : ∀ k : K, ColimitCocone (F.flip.obj
 /-- The stitched together cocones each project down to the original given cocones (up to iso). -/
 def evaluateCombinedCocones (F : J ⥤ K ⥤ C) (c : ∀ k : K, ColimitCocone (F.flip.obj k)) (k : K) :
     ((evaluation K C).obj k).mapCocone (combineCocones F c) ≅ (c k).cocone :=
-  Cocones.ext (Iso.refl _)
+  Cocone.ext (Iso.refl _)
 
 /-- Stitching together colimiting cocones gives a colimiting cocone. -/
 def combinedIsColimit (F : J ⥤ K ⥤ C) (c : ∀ k : K, ColimitCocone (F.flip.obj k)) :
@@ -169,7 +169,7 @@ noncomputable def pointwiseIsColimit [HasColimitsOfShape J C] (F : J ⥤ K ⥤ C
     IsColimit (pointwiseCocone F) := by
   apply IsColimit.ofIsoColimit (combinedIsColimit _
     (fun k ↦ ⟨colimit.cocone _, colimit.isColimit _⟩))
-  exact Cocones.ext (Iso.refl _)
+  exact Cocone.ext (Iso.refl _)
 
 noncomputable section
 
@@ -199,8 +199,8 @@ instance functorCategoryHasColimitsOfSize [HasColimitsOfSize.{v₁, u₁} C] :
     HasColimitsOfSize.{v₁, u₁} (K ⥤ C) where
   has_colimits_of_shape := inferInstance
 
-instance hasLimitCompEvaluation (F : J ⥤ K ⥤ C) (k : K) [HasLimit (F.flip.obj k)] :
-    HasLimit (F ⋙ (evaluation _ _).obj k) :=
+instance (priority := low) hasLimitCompEvaluation (F : J ⥤ K ⥤ C) (k : K)
+    [HasLimit (F.flip.obj k)] : HasLimit (F ⋙ (evaluation _ _).obj k) :=
   hasLimit_of_iso (F := F.flip.obj k) (Iso.refl _)
 
 instance evaluation_preservesLimit (F : J ⥤ K ⥤ C) [∀ k, HasLimit (F.flip.obj k)] (k : K) :

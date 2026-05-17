@@ -857,7 +857,7 @@ variable {M N : Type*} [CommMonoid M] {S : Submonoid M} [CommMonoid N]
     Injective f ↔ ∀ ⦃x⦄, x ∈ S → IsRegular x := by
   simp_rw [Commute.isRegular_iff (Commute.all _), IsLeftRegular,
     Injective, LocalizationMap.eq_iff_exists, exists_imp, Subtype.forall]
-  exact forall₂_swap
+  exact forall₂_comm
 
 @[to_additive] theorem top_injective_iff (f : (⊤ : Submonoid M).LocalizationMap N) :
     Injective f ↔ IsCancelMul M := by

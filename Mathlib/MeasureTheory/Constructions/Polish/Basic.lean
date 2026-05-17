@@ -5,8 +5,7 @@ Authors: Sébastien Gouëzel, Felix Weilacher
 -/
 module
 
-public import Mathlib.MeasureTheory.Constructions.BorelSpace.Metric
-public import Mathlib.MeasureTheory.Constructions.BorelSpace.Order
+public import Mathlib.MeasureTheory.Constructions.BorelSpace.Metrizable
 public import Mathlib.Topology.MetricSpace.Perfect
 public import Mathlib.Topology.Separation.CountableSeparatingOn
 
@@ -92,6 +91,7 @@ a compatible Polish topology.
 Warning: following this with `borelize α` will cause an error. Instead, one can
 rewrite with `eq_borel_upgradeStandardBorel α`.
 TODO: fix the corresponding bug in `borelize`. -/
+@[implicit_reducible]
 noncomputable
 def upgradeStandardBorel [MeasurableSpace α] [h : StandardBorelSpace α] :
     UpgradedStandardBorel α := by
@@ -122,14 +122,12 @@ instance (priority := 100) standardBorelSpace_of_discreteMeasurableSpace [Discre
   have : DiscreteTopology α := ⟨rfl⟩
   inferInstance
 
-set_option backward.isDefEq.respectTransparency false in
 -- See note [lower instance priority]
 instance (priority := 100) countablyGenerated_of_standardBorel [StandardBorelSpace α] :
     MeasurableSpace.CountablyGenerated α :=
   letI := upgradeStandardBorel α
   inferInstance
 
-set_option backward.isDefEq.respectTransparency false in
 -- See note [lower instance priority]
 instance (priority := 100) measurableSingleton_of_standardBorel [StandardBorelSpace α] :
     MeasurableSingletonClass α :=
@@ -142,19 +140,21 @@ variable {β : Type*} [MeasurableSpace β]
 
 section instances
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A product of two standard Borel spaces is standard Borel. -/
 instance prod [StandardBorelSpace α] [StandardBorelSpace β] : StandardBorelSpace (α × β) :=
   letI := upgradeStandardBorel α
   letI := upgradeStandardBorel β
   inferInstance
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A product of countably many standard Borel spaces is standard Borel. -/
 instance pi_countable {ι : Type*} [Countable ι] {α : ι → Type*} [∀ n, MeasurableSpace (α n)]
     [∀ n, StandardBorelSpace (α n)] : StandardBorelSpace (∀ n, α n) :=
   letI := fun n => upgradeStandardBorel (α n)
   inferInstance
+
+instance [StandardBorelSpace α] : MeasurableEq α := by
+  letI := upgradeStandardBorel α
+  infer_instance
 
 end instances
 
@@ -344,7 +344,6 @@ theorem _root_.Measurable.exists_continuous {α β : Type*} [t : TopologicalSpac
     hb.continuous_iff.2 fun s hs => t'T ⟨s, hs⟩ _ (Topen ⟨s, hs⟩)
   exact continuous_subtype_val.comp this
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The image of a measurable set in a standard Borel space under a measurable map
 is an analytic set. -/
 theorem _root_.MeasurableSet.analyticSet_image {X Y : Type*} [MeasurableSpace X]
@@ -822,7 +821,6 @@ theorem MeasurableSet.image_of_continuousOn_injOn [OpensMeasurableSpace β]
     @IsClosed.measurableSet_image_of_continuousOn_injOn γ t' t'_polish β _ _ _ _ s s_closed f
       (f_cont.mono_dom t't) f_inj
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The Lusin-Souslin theorem: if `s` is Borel-measurable in a standard Borel space,
 then its image under a measurable injective map taking values in a
 countably separate measurable space is also Borel-measurable. -/
@@ -839,14 +837,10 @@ theorem MeasurableSet.image_of_measurable_injOn {f : γ → α}
   obtain ⟨t', t't, f_cont, t'_polish⟩ :
       ∃ t' : TopologicalSpace γ, t' ≤ tγ ∧ @Continuous γ _ t' _ f ∧ @PolishSpace γ t' :=
     f_meas.exists_continuous
-  have M : MeasurableSet[@borel γ t'] s :=
-    @Continuous.measurable γ γ t' (@borel γ t')
-      (@BorelSpace.opensMeasurable γ t' (@borel γ t') (@BorelSpace.mk _ _ (borel γ) rfl))
-      tγ _ _ _ (continuous_id_of_le t't) s hs
-  exact
-    @MeasurableSet.image_of_continuousOn_injOn γ
-      _ _ _ _ s f _ t' t'_polish (@borel γ t') (@BorelSpace.mk _ _ (borel γ) rfl)
-      M (@Continuous.continuousOn γ _ t' _ f s f_cont) f_inj
+  have hs' := (borel_anti t't s) <| by rwa [← eq_borel_upgradeStandardBorel γ]
+  letI : MeasurableSpace γ := @borel γ t'
+  letI : BorelSpace γ := ⟨rfl⟩
+  exact hs'.image_of_continuousOn_injOn f_cont.continuousOn f_inj
 
 /-- An injective continuous function on a Polish space is a measurable embedding. -/
 theorem Continuous.measurableEmbedding [BorelSpace β]
@@ -870,7 +864,7 @@ theorem ContinuousOn.measurableEmbedding [BorelSpace β]
       intro u hu
       have A : MeasurableSet (((↑) : s → γ) '' u) :=
         (MeasurableEmbedding.subtype_coe hs).measurableSet_image.2 hu
-      have B : MeasurableSet (f '' (((↑) : s → γ) '' u)) :=
+      have B : MeasurableSet (f '' ((↑) : s → γ) '' u) :=
         A.image_of_continuousOn_injOn (f_cont.mono (Subtype.coe_image_subset s u))
           (f_inj.mono (Subtype.coe_image_subset s u))
       rwa [← image_comp] at B }
@@ -990,17 +984,16 @@ lemma MeasureTheory.measurableSet_tendsto_fun [MeasurableSpace γ] [Countable ι
   simp_rw [tendsto_iff_dist_tendsto_zero (f := fun n ↦ f n _)]
   exact measurableSet_tendsto (𝓝 0) (fun n ↦ (hf n).dist hg)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The set of points for which a measurable sequence of functions converges is measurable. -/
 @[measurability]
-theorem MeasureTheory.measurableSet_exists_tendsto
-    [TopologicalSpace γ] [PolishSpace γ] [MeasurableSpace γ]
+theorem MeasureTheory.measurableSet_exists_tendsto [TopologicalSpace γ]
+    [IsCompletelyPseudoMetrizableSpace γ] [SecondCountableTopology γ] [MeasurableSpace γ]
     [hγ : OpensMeasurableSpace γ] [Countable ι] {l : Filter ι}
     [l.IsCountablyGenerated] {f : ι → β → γ} (hf : ∀ i, Measurable (f i)) :
     MeasurableSet { x | ∃ c, Tendsto (fun n => f n x) l (𝓝 c) } := by
   rcases l.eq_or_neBot with rfl | hl
   · simp
-  letI := TopologicalSpace.upgradeIsCompletelyMetrizable γ
+  letI := TopologicalSpace.upgradeIsCompletelyPseudoMetrizable γ
   rcases l.exists_antitone_basis with ⟨u, hu⟩
   simp_rw [← cauchy_map_iff_exists_tendsto]
   change MeasurableSet { x | _ ∧ _ }
@@ -1018,11 +1011,81 @@ theorem MeasureTheory.measurableSet_exists_tendsto
       MeasurableSet.biInter (to_countable (u N)) fun j _ =>
         measurableSet_lt (Measurable.dist (hf i) (hf j)) measurable_const
 
+section Measurable
+
+variable {X E ι : Type*} [MeasurableSpace X] [CommMonoid E] [TopologicalSpace E]
+
+section
+
+variable [IsCompletelyPseudoMetrizableSpace E] [SecondCountableTopology E]
+  [MeasurableSpace E] [BorelSpace E] [MeasurableMul₂ E]
+  [Countable ι] {L : SummationFilter ι} [L.NeBot] [L.filter.IsCountablyGenerated]
+
+/-- The product of measurable functions is measurable. -/
+@[to_additive (attr := fun_prop)
+/-- The sum of measurable functions is measurable. -/]
+theorem Measurable.tprod {f : ι → X → E} (h : ∀ i : ι, Measurable (f i)) :
+    Measurable (fun x => ∏'[L] i : ι, f i x) := by
+  let E := { x | Multipliable (f · x) L }
+  have hE : MeasurableSet E := measurableSet_exists_tendsto (by fun_prop)
+  have h0 : (Eᶜ.restrict fun x => ∏'[L] i, f i x) = fun _ => 1 :=
+    funext fun ⟨x, hx⟩ => tprod_eq_one_of_not_multipliable hx
+  refine measurable_of_restrict_of_restrict_compl hE ?_ (h0 ▸ measurable_const)
+  refine measurable_of_tendsto_metrizable' L.filter ?_ (tendsto_pi_nhds.mpr fun e => e.2.hasProd)
+  fun_prop
+
+/-- The product of almost everywhere measurable functions is measurable. -/
+@[to_additive (attr := fun_prop)
+/-- The sum of almost everywhere measurable functions is measurable. -/]
+theorem AEMeasurable.tprod {μ : MeasureTheory.Measure X} {f : ι → X → E}
+    (h : ∀ i : ι, AEMeasurable (f i) μ) : AEMeasurable (fun x => ∏'[L] i : ι, f i x) μ := by
+  choose g hg_meas hg_eq_f using h
+  use (fun x => ∏'[L] i, g i x), Measurable.tprod hg_meas
+  filter_upwards [ae_all_iff.mpr hg_eq_f] with x h_eq using tprod_congr h_eq
+
+end
+
+section
+
+variable [PseudoMetrizableSpace E] [MeasurableSpace E] [BorelSpace E] [MeasurableMul₂ E]
+  {L : SummationFilter ι} [L.NeBot] [L.filter.IsCountablyGenerated]
+
+/-- The product of measurable functions is measurable. -/
+@[to_additive (attr := fun_prop)
+/-- The sum of measurable functions is measurable. -/]
+theorem Measurable.tprod' {f : ι → X → E} (h : ∀ i : ι, Measurable (f i)) :
+    Measurable (∏'[L] i : ι, f i) := by
+  rw [tprod_def, finprod_def']
+  split_ifs with hm
+  any_goals exact measurable_one
+  · refine Finset.measurable_prod_apply (fun _ _ ↦ ?_) measurable_id
+    rw [Set.mulIndicator]
+    split_ifs <;> fun_prop
+  · exact measurable_of_tendsto_metrizable' L.filter (by fun_prop) hm.choose_spec
+
+/-- The product of almost everywhere measurable functions is measurable. -/
+@[to_additive (attr := fun_prop)
+/-- The sum of almost everywhere measurable functions is measurable. -/]
+theorem AEMeasurable.tprod' {μ : MeasureTheory.Measure X} {f : ι → X → E}
+    (h : ∀ i : ι, AEMeasurable (f i) μ) : AEMeasurable (∏'[L] i : ι, f i) μ := by
+  rw [tprod_def, finprod_def']
+  split_ifs with hm
+  any_goals exact aemeasurable_one
+  · refine Finset.aemeasurable_prod _ (fun _ _ ↦ ?_)
+    rw [Set.mulIndicator]
+    split_ifs <;> fun_prop
+  · apply aemeasurable_of_tendsto_metrizable_ae L.filter (f := fun s => ∏ i ∈ s, f i)
+    · fun_prop
+    · exact .of_forall fun x ↦ hm.choose_spec.apply_nhds x
+
+end
+
+end Measurable
+
 section StandardBorelSpace
 
 variable [MeasurableSpace α] [StandardBorelSpace α]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `s` is a measurable set in a standard Borel space, there is a compatible Polish topology
 making `s` clopen. -/
 theorem MeasurableSet.isClopenable' {s : Set α} (hs : MeasurableSet s) :
@@ -1058,7 +1121,6 @@ noncomputable def borelSchroederBernstein {f : α → β} {g : β → α} (fmeas
   letI := upgradeStandardBorel β
   (fmeas.measurableEmbedding finj).schroederBernstein (gmeas.measurableEmbedding ginj)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Any uncountable standard Borel space is Borel isomorphic to the Cantor space `ℕ → Bool`. -/
 noncomputable def measurableEquivNatBoolOfNotCountable (h : ¬Countable α) : α ≃ᵐ (ℕ → Bool) := by
   apply Nonempty.some

@@ -296,8 +296,12 @@ theorem subset_iff_notMem : s ⊆ t ↔ ∀ ⦃a⦄, a ∉ t → a ∉ s := by
 theorem not_subset : ¬s ⊆ t ↔ ∃ a ∈ s, a ∉ t := by
   simp only [subset_def, not_forall, exists_prop]
 
-theorem not_top_subset : ¬⊤ ⊆ s ↔ ∃ a, a ∉ s := by
+theorem not_univ_subset : ¬univ ⊆ s ↔ ∃ a, a ∉ s := by
   simp [not_subset]
+
+@[deprecated not_univ_subset (since := "2026-03-12")]
+theorem not_top_subset : ¬⊤ ⊆ s ↔ ∃ a, a ∉ s :=
+  not_univ_subset
 
 lemma eq_of_forall_subset_iff (h : ∀ u, s ⊆ u ↔ t ⊆ u) : s = t := eq_of_forall_ge_iff h
 
@@ -461,7 +465,7 @@ theorem not_nonempty_iff_eq_empty : ¬s.Nonempty ↔ s = ∅ := by
 theorem nonempty_iff_ne_empty : s.Nonempty ↔ s ≠ ∅ :=
   not_nonempty_iff_eq_empty.not_right
 
-/-- Variant of `nonempty_iff_ne_empty` used by `push_neg`. -/
+/-- Variant of `nonempty_iff_ne_empty` used by `push Not`. -/
 @[push ←]
 theorem nonempty_iff_empty_ne : s.Nonempty ↔ ∅ ≠ s :=
   nonempty_iff_ne_empty.trans ne_comm
@@ -568,6 +572,18 @@ theorem univ_unique [Unique α] : @Set.univ α = {default} :=
 
 theorem ssubset_univ_iff : s ⊂ univ ↔ s ≠ univ :=
   lt_top_iff_ne_top
+
+theorem ssubset_univ_iff_nonempty_compl : s ⊂ univ ↔ sᶜ.Nonempty := by
+  rw [ssubset_def, Set.not_univ_subset, Set.nonempty_def]
+  simp
+
+alias ⟨_, Nonempty.ssubset_univ⟩ := ssubset_univ_iff_nonempty_compl
+
+theorem compl_ssubset_univ : sᶜ ⊂ univ ↔ s.Nonempty := by
+  rw [ssubset_def, Set.not_univ_subset, Set.nonempty_def]
+  simp
+
+alias ⟨_, Nonempty.compl_ssubset_univ⟩ := compl_ssubset_univ
 
 instance nontrivial_of_nonempty [Nonempty α] : Nontrivial (Set α) :=
   ⟨⟨∅, univ, empty_ne_univ⟩⟩

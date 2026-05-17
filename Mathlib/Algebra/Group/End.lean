@@ -12,6 +12,8 @@ public import Mathlib.Algebra.Group.Units.Equiv
 public import Mathlib.Data.Set.Basic
 public import Mathlib.Tactic.Common
 
+public import Mathlib.Tactic.Attr.Register
+
 /-!
 # Monoids of endomorphisms, groups of automorphisms
 
@@ -104,20 +106,15 @@ theorem mul_apply (f g : Perm α) (x) : (f * g) x = f (g x) :=
 theorem one_apply (x) : (1 : Perm α) x = x :=
   rfl
 
-@[deprecated symm_apply_apply (since := "2025-08-16")]
-theorem inv_apply_self (f : Perm α) (x) : f⁻¹ (f x) = x :=
-  f.symm_apply_apply x
-
-@[deprecated apply_symm_apply (since := "2025-08-16")]
-theorem apply_inv_self (f : Perm α) (x) : f (f⁻¹ x) = x :=
-  f.apply_symm_apply x
-
+@[pull_end, push_end← ]
 theorem one_def : (1 : Perm α) = Equiv.refl α :=
   rfl
 
+@[pull_end, push_end← ]
 theorem mul_def (f g : Perm α) : f * g = g.trans f :=
   rfl
 
+@[pull_end, push_end← ]
 theorem inv_def (f : Perm α) : f⁻¹ = f.symm :=
   rfl
 
@@ -129,7 +126,8 @@ theorem inv_def (f : Perm α) : f⁻¹ = f.symm :=
 
 @[norm_cast] lemma coe_pow (f : Perm α) (n : ℕ) : ⇑(f ^ n) = f^[n] := rfl
 
-@[simp] lemma iterate_eq_pow (f : Perm α) (n : ℕ) : f^[n] = ⇑(f ^ n) := rfl
+@[pull_end← , push_end]
+lemma iterate_eq_pow (f : Perm α) (n : ℕ) : f^[n] = ⇑(f ^ n) := rfl
 
 theorem eq_inv_iff_eq {f : Perm α} {x y : α} : x = f⁻¹ y ↔ f x = y :=
   f.eq_symm_apply
@@ -146,44 +144,43 @@ theorem zpow_apply_comm {α : Type*} (σ : Perm α) (m n : ℤ) {x : α} :
 The assumption made here is that if you're using the group structure, you want to preserve it after
 simp. -/
 
-
-@[simp]
+@[deprecated "use `pull_end` simpset instead" (since := "2026-05-13")]
 theorem trans_one {α : Sort*} {β : Type*} (e : α ≃ β) : e.trans (1 : Perm β) = e :=
   Equiv.trans_refl e
 
-@[simp]
+@[deprecated "use `pull_end` simpset instead" (since := "2026-05-13")]
 theorem mul_refl (e : Perm α) : e * Equiv.refl α = e :=
   Equiv.trans_refl e
 
-@[simp]
+@[deprecated "use `pull_end` simpset instead" (since := "2026-05-13")]
 theorem one_symm : (1 : Perm α).symm = 1 :=
   rfl
 
-@[simp]
+@[deprecated "use `pull_end` simpset instead" (since := "2026-05-13")]
 theorem refl_inv : (Equiv.refl α : Perm α)⁻¹ = 1 :=
   rfl
 
-@[simp]
+@[deprecated "use `pull_end` simpset instead" (since := "2026-05-13")]
 theorem one_trans {α : Type*} {β : Sort*} (e : α ≃ β) : (1 : Perm α).trans e = e :=
   rfl
 
-@[simp]
+@[deprecated "use `pull_end` simpset instead" (since := "2026-05-13")]
 theorem refl_mul (e : Perm α) : Equiv.refl α * e = e :=
   rfl
 
-@[simp]
+@[deprecated "use `pull_end` simpset instead" (since := "2026-05-13")]
 theorem inv_trans_self (e : Perm α) : e⁻¹.trans e = 1 :=
   Equiv.symm_trans_self e
 
-@[simp]
+@[deprecated "use `pull_end` simpset instead" (since := "2026-05-13")]
 theorem mul_symm (e : Perm α) : e * e.symm = 1 :=
   Equiv.symm_trans_self e
 
-@[simp]
+@[deprecated "use `pull_end` simpset instead" (since := "2026-05-13")]
 theorem self_trans_inv (e : Perm α) : e.trans e⁻¹ = 1 :=
   Equiv.self_trans_symm e
 
-@[simp]
+@[deprecated "use `pull_end` simpset instead" (since := "2026-05-13")]
 theorem symm_mul (e : Perm α) : e.symm * e = 1 :=
   Equiv.self_trans_symm e
 
@@ -285,8 +282,6 @@ completely in terms of the group structure. -/
 theorem _root_.Equiv.permCongr_eq_mul (e p : Perm α) : e.permCongr p = e * p * e⁻¹ :=
   rfl
 
-@[deprecated (since := "2025-08-29")] alias permCongr_eq_mul := Equiv.permCongr_eq_mul
-
 @[simp]
 lemma _root_.Equiv.permCongr_mul (e : α ≃ β) (p q : Perm α) :
     e.permCongr (p * q) = e.permCongr p * e.permCongr q :=
@@ -298,8 +293,6 @@ def _root_.Equiv.permCongrHom (e : α ≃ β) : Perm α ≃* Perm β where
 
 attribute [inherit_doc Equiv.permCongr] Equiv.permCongrHom
 extend_docs Equiv.permCongrHom after "This is `Equiv.permCongr` as a `MulEquiv`."
-
-@[deprecated (since := "2025-08-23")] alias permCongrHom := Equiv.permCongrHom
 
 @[simp]
 theorem _root_.Equiv.permCongrHom_symm (e : α ≃ β) :
@@ -713,16 +706,13 @@ See also the type `ConjAct G` for any group `G`, which has a `MulAction (ConjAct
 where `conj G` acts on `G` by conjugation. -/
 def conj [Group G] : G →* MulAut G where
   toFun g :=
-    { toFun := fun h => g * h * g⁻¹
-      invFun := fun h => g⁻¹ * h * g
-      left_inv := fun _ => by simp only [mul_assoc, inv_mul_cancel_left, inv_mul_cancel, mul_one]
-      right_inv := fun _ => by simp only [mul_assoc, mul_inv_cancel_left, mul_inv_cancel, mul_one]
-      map_mul' := by simp only [mul_assoc, inv_mul_cancel_left, forall_const] }
-  map_mul' g₁ g₂ := by
-    ext h
-    change g₁ * g₂ * h * (g₁ * g₂)⁻¹ = g₁ * (g₂ * h * g₂⁻¹) * g₁⁻¹
-    simp only [mul_assoc, mul_inv_rev]
-  map_one' := by ext; simp only [one_mul, inv_one, mul_one, one_apply]; rfl
+    { toFun h := g * h * g⁻¹
+      invFun h := g⁻¹ * h * g
+      left_inv _ := by simp [mul_assoc]
+      right_inv _ := by simp [mul_assoc]
+      map_mul' := by simp [mul_assoc] }
+  map_mul' _ _ := by ext; simp [mul_assoc]
+  map_one' := by ext; simp
 
 @[simp]
 theorem conj_apply [Group G] (g h : G) : conj g h = g * h * g⁻¹ :=

@@ -5,9 +5,12 @@ Authors: Manuel Candales, Benjamin Davidson, Li Jiale
 -/
 module
 
+
 public import Mathlib.Geometry.Euclidean.Angle.Unoriented.Affine
-public import Mathlib.Geometry.Euclidean.Sphere.Basic
 public import Mathlib.Geometry.Euclidean.Sphere.Tangent
+
+import Mathlib.Geometry.Euclidean.Angle.Sphere
+import Mathlib.Geometry.Euclidean.Similarity
 
 /-!
 # Power of a point (intersecting chords and secants)
@@ -30,9 +33,7 @@ secants) in spheres in real inner product spaces and Euclidean affine spaces.
 @[expose] public section
 
 
-open Real
-
-open EuclideanGeometry RealInnerProductSpace Real
+open Real EuclideanGeometry RealInnerProductSpace Real Module FiniteDimensional
 
 variable {V : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V]
 
@@ -119,6 +120,92 @@ theorem mul_dist_eq_mul_dist_of_cospherical_of_angle_eq_pi {a b c d p : P}
     dist a p * dist b p = dist c p * dist d p := by
   rw [EuclideanGeometry.angle_eq_pi_iff_sbtw] at hapb hcpd
   exact mul_dist_eq_mul_dist_of_cospherical h hapb.wbtw.mem_affineSpan hcpd.wbtw.mem_affineSpan
+
+private lemma cospherical_of_mul_dist_eq_mul_dist_of_angle_eq_pi_aux
+    [Fact (finrank ℝ V = 2)] [Oriented ℝ V (Fin 2)] {p₁ p₂ p₃ p₄ p : P}
+    (h : dist p₁ p * dist p₂ p = dist p₃ p * dist p₄ p)
+    (hp₁p₂ : ∠ p₁ p p₂ = π) (hp₃p₄ : ∠ p₃ p p₄ = π) (hn : ¬ Collinear ℝ ({p₁, p, p₃} : Set P)) :
+    Cospherical ({p₁, p₂, p₃, p₄} : Set P) := by
+  suffices h_equiv : Cospherical ({p₁, p₂, p₄, p₃} : Set P) by grind [Set.pair_comm p₄ p₃]
+  have h_angle_eq : ∠ p₁ p p₄ = ∠ p₃ p p₂ := by
+    grind [angle_comm, angle_eq_angle_of_angle_eq_pi_of_angle_eq_pi hp₃p₄]
+  rw [angle_eq_pi_iff_sbtw] at hp₁p₂ hp₃p₄
+  have hcol_p₁pp₂ := hp₁p₂.wbtw.collinear
+  have hcol_p₃pp₄ := hp₃p₄.wbtw.collinear
+  have h_notcol_p₁p₂p₃ : ¬ Collinear ℝ ({p₁, p₂, p₃} : Set P) := by
+    have : AffineIndependent ℝ ![p₁, p, p₃] := affineIndependent_iff_not_collinear_set.mpr hn
+    rw [← affineIndependent_iff_not_collinear_set]
+    grind [hp₁p₂.left_ne_right, affineIndependent_of_affineIndependent_collinear_ne,
+      AffineIndependent.comm_left, AffineIndependent.comm_right]
+  apply cospherical_of_two_zsmul_oangle_eq_of_not_collinear ?_ h_notcol_p₁p₂p₃
+  suffices ∡ p₁ p₂ p₃ = ∡ p₁ p₄ p₃ by grind
+  suffices ∠ p₁ p₂ p₃ = ∠ p₁ p₄ p₃ by
+    grind [oangle_eq_of_angle_eq_of_sign_eq, Sbtw.oangle_sign_eq_of_sbtw]
+  rw [angle_comm, ← angle_eq_angle_of_angle_eq_pi p₃ hp₁p₂.angle₃₂₁_eq_pi,
+    ← angle_eq_angle_of_angle_eq_pi p₁ hp₃p₄.angle₃₂₁_eq_pi]
+  suffices h_sim : Similar ![p₁, p, p₄] ![p₃, p, p₂] by
+    grind [angle_comm, h_sim.angle_eq_all.right.left]
+  have h_notcol_p₁pp₄ : ¬ Collinear ℝ ({p₁, p, p₄} : Set P) := by
+    intro hcol
+    suffices hcol : Collinear ℝ ({p₁, p, p₃} : Set P) by grind
+    suffices hcol : Collinear ℝ ({p₁, p₃, p, p₄} : Set P) by grind [Collinear.subset _ hcol]
+    have hne_pp₄ := hp₃p₄.ne_right
+    grind [collinear_insert_insert_of_mem_affineSpan_pair, Collinear.mem_affineSpan_of_mem_of_ne]
+  have h_notcol_p₃pp₂ : ¬ Collinear ℝ ({p₃, p, p₂} : Set P) := by
+    intro hcol
+    suffices hcol : Collinear ℝ ({p₁, p, p₃} : Set P) by grind
+    suffices hcol : Collinear ℝ ({p₃, p₁, p, p₂} : Set P) by grind [Collinear.subset _ hcol]
+    have hne_pp₂ := hp₁p₂.ne_right
+    grind [collinear_insert_insert_of_mem_affineSpan_pair, Collinear.mem_affineSpan_of_mem_of_ne]
+  apply similar_of_side_angle_side h_notcol_p₁pp₄ h_notcol_p₃pp₂ h_angle_eq ?_
+  grind [dist_comm]
+
+/-- If `p` lies strictly between `p₁` and `p₂` on one line and strictly between `p₃` and `p₄`
+on another line, and if `dist p₁ p * dist p₂ p = dist p₃ p * dist p₄ p`,
+then the points `p₁`, `p₂`, `p₃`, and `p₄` are cospherical. -/
+theorem cospherical_of_mul_dist_eq_mul_dist_of_angle_eq_pi {p₁ p₂ p₃ p₄ p : P}
+    (h : dist p₁ p * dist p₂ p = dist p₃ p * dist p₄ p)
+    (hp₁p₂ : ∠ p₁ p p₂ = π) (hp₃p₄ : ∠ p₃ p p₄ = π) (hn : ¬ Collinear ℝ ({p₁, p, p₃} : Set P)) :
+    Cospherical ({p₁, p₂, p₃, p₄} : Set P) := by
+  have hp₁p₂_sbtw : Sbtw ℝ p₁ p p₂ := angle_eq_pi_iff_sbtw.mp hp₁p₂
+  have hp₃p₄_sbtw : Sbtw ℝ p₃ p p₄ := angle_eq_pi_iff_sbtw.mp hp₃p₄
+  have hindep : AffineIndependent ℝ ![p₁, p, p₃] := affineIndependent_iff_not_collinear_set.mpr hn
+  set t : Affine.Triangle ℝ P := ⟨_, hindep⟩ with ht
+  set S : AffineSubspace ℝ P := affineSpan ℝ (Set.range t.points) with hS
+  have hp₂ : p₂ ∈ S := by
+    suffices hmem : p₂ ∈ affineSpan ℝ {p₁, p} by exact affineSpan_mono ℝ (by simp [ht]; grind) hmem
+    simp [hp₁p₂_sbtw.wbtw.collinear.mem_affineSpan_of_mem_of_ne _ _ _ hp₁p₂_sbtw.left_ne]
+  have hp₄ : p₄ ∈ S := by
+    suffices hmem : p₄ ∈ affineSpan ℝ {p₃, p} by exact affineSpan_mono ℝ (by simp [ht]; grind) hmem
+    simp [hp₃p₄_sbtw.wbtw.collinear.mem_affineSpan_of_mem_of_ne _ _ _ hp₃p₄_sbtw.left_ne]
+  let s_isom : AffineIsometry ℝ S P := S.subtypeₐᵢ
+  let p₁' : S := ⟨p₁, mem_affineSpan ℝ (s := Set.range t.points) (by aesop)⟩
+  let p' : S := ⟨p, mem_affineSpan ℝ (s := Set.range t.points) (by aesop)⟩
+  let p₃' : S := ⟨p₃, mem_affineSpan ℝ (s := Set.range t.points) (by aesop)⟩
+  let p₂' : S := ⟨p₂, hp₂⟩
+  let p₄' : S := ⟨p₄, hp₄⟩
+  have h_dist' : dist p₁' p' * dist p₂' p' = dist p₃' p' * dist p₄' p' := by
+    simpa [dist_eq_norm_vsub, ← s_isom.dist_map] using h
+  have hp₁'p₂' : ∠ p₁' p' p₂' = π := by simpa [AffineIsometry.angle_map s_isom]
+  have hp₃'p₄' : ∠ p₃' p' p₄' = π := by simpa [AffineIsometry.angle_map s_isom]
+  suffices h_cospherical' : Cospherical {p₁', p₂', p₃', p₄'} by
+    #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/13166
+    (replacing grind's canonicalizer with a type-directed normalizer), `grind` closed this goal.
+    It is not yet clear whether this is due to defeq abuse in Mathlib or a problem in the new
+    canonicalizer; a minimization would help. The original proof was:
+    `grind [Set.image_insert_eq, Set.image_singleton]` -/
+    simpa [Set.image_insert_eq, Set.image_singleton] using Cospherical.subtype_val h_cospherical'
+  have hf2 : Fact (finrank ℝ S.direction = 2) := ⟨by
+    rw [hS, direction_affineSpan, t.independent.finrank_vectorSpan]
+    simp⟩
+  letI : Module.Oriented ℝ S.direction (Fin 2) :=
+    ⟨Basis.orientation (finBasisOfFinrankEq _ _ hf2.out)⟩
+  have hncol : ¬ Collinear ℝ {p₁', p', p₃'} := by
+    rw [← affineIndependent_iff_not_collinear_set,
+      ← s_isom.toAffineMap.affineIndependent_iff s_isom.injective]
+    convert hindep
+    ext i; fin_cases i <;> rfl
+  exact cospherical_of_mul_dist_eq_mul_dist_of_angle_eq_pi_aux h_dist' hp₁'p₂' hp₃'p₄' hncol
 
 /-- **Intersecting Secants Theorem**. -/
 theorem mul_dist_eq_mul_dist_of_cospherical_of_angle_eq_zero {a b c d p : P}

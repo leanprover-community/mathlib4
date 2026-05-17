@@ -75,6 +75,9 @@ lemma le_sqrt_iff_sq_le : x ≤ sqrt y ↔ x ^ 2 ≤ y := (sqrt.symm.to_galoisCo
 @[simp] lemma sqrt_le_one : sqrt x ≤ 1 ↔ x ≤ 1 := by rw [← sqrt_one, sqrt_le_sqrt, sqrt_one]
 @[simp] lemma one_le_sqrt : 1 ≤ sqrt x ↔ 1 ≤ x := by rw [← sqrt_one, sqrt_le_sqrt, sqrt_one]
 
+lemma sqrt_mul_le_max : sqrt (x * y) ≤ max x y := by
+  rw [sqrt_le_iff_le_sq, sq]; gcongr <;> simp
+
 theorem sqrt_mul (x y : ℝ≥0) : sqrt (x * y) = sqrt x * sqrt y := by
   rw [sqrt_eq_iff_eq_sq, mul_pow, sq_sqrt, sq_sqrt]
 

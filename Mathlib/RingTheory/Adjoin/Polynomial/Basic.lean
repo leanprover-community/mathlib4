@@ -19,7 +19,7 @@ public import Mathlib.Algebra.Polynomial.AlgebraMap
   is an arbitrary polynomial
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -57,14 +57,14 @@ theorem adjoin_singleton_eq_range_aeval (x : A) :
 theorem _root_.Polynomial.aeval_mem_adjoin_singleton : aeval x p ∈ adjoin R {x} := by
   simp [adjoin_singleton_eq_range_aeval]
 
-theorem adjoin_mem_exists_aeval {a : A} (h : a ∈ Algebra.adjoin R {x}) :
+theorem adjoin_mem_exists_aeval {a : A} (h : a ∈ R[x]) :
     ∃ p : R[X], aeval x p = a := by
   rw [Algebra.adjoin_singleton_eq_range_aeval] at h
   simp_all
 
-theorem adjoin_eq_exists_aeval (a : Algebra.adjoin R {x}) :
+theorem adjoin_eq_exists_aeval (a : R[x]) :
     ∃ p : R[X], aeval x p = a := by
-  have : (a : A) ∈ Algebra.adjoin R {x} := by simp
+  have : (a : A) ∈ R[x] := by simp
   set y := (a : A) with h
   rw [Algebra.adjoin_singleton_eq_range_aeval] at this
   simp_all
@@ -89,7 +89,7 @@ instance instCommSemiringAdjoinSingleton :
         mul_comm p' q']
 
 instance instCommRingAdjoinSingleton {R A : Type*} [CommRing R] [Ring A] [Algebra R A] (x : A) :
-    CommRing <| Algebra.adjoin R {x} where
+    CommRing <| R[x] where
 
 end aeval
 

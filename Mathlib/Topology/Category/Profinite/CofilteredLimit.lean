@@ -50,7 +50,7 @@ theorem exists_isClopen_of_cofiltered {U : Set C.pt} (hC : IsLimit C) (hU : IsCl
     change TopologicalSpace.IsTopologicalBasis {W : Set (F.obj i) | IsClopen W}
     apply isTopologicalBasis_isClopen
   · rintro i j f V (hV : IsClopen _)
-    refine ⟨hV.1.preimage ?_, hV.2.preimage ?_⟩ <;> continuity
+    refine ⟨hV.1.preimage ?_, hV.2.preimage ?_⟩ <;> fun_prop
   -- Using this, since `U` is open, we can write `U` as a union of clopen sets all of which
   -- are preimages of clopens from the factors in the limit.
   obtain ⟨S, hS, h⟩ := hB.open_eq_sUnion hU.2

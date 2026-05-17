@@ -17,7 +17,7 @@ Basic definitions and lemmas are provided in `Mathlib/RingTheory/KrullDimension/
 
 -/
 
-@[expose] public section
+public section
 
 section CommSemiring
 
@@ -34,7 +34,8 @@ lemma Ring.KrullDimLE.mem_minimalPrimes_iff_le_of_isPrime {I J : Ideal R} [I.IsP
 variable (R) in
 lemma Ring.KrullDimLE.minimalPrimes_eq_setOf_isPrime :
     minimalPrimes R = { I | I.IsPrime } := by
-  ext; simp [minimalPrimes, mem_minimalPrimes_iff]
+  ext
+  exact Ideal.mem_minimalPrimes_iff_isPrime
 
 variable (R) in
 lemma Ring.KrullDimLE.minimalPrimes_eq_setOf_isMaximal :
@@ -157,7 +158,6 @@ instance PrimeSpectrum.unique_of_ringKrullDimLE_zero [IsLocalRing R] : Unique (P
   ⟨⟨IsLocalRing.closedPoint _⟩,
     fun _ ↦ PrimeSpectrum.ext (Ring.KrullDimLE.eq_maximalIdeal_of_isPrime _)⟩
 
-set_option backward.isDefEq.respectTransparency false in
 lemma PrimeSpectrum.subsingleton_iff_isField_of_isReduced
     {R : Type*} [CommRing R] [IsReduced R] [Nontrivial R] :
     Subsingleton (PrimeSpectrum R) ↔ IsField R := by

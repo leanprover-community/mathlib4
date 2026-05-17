@@ -52,7 +52,6 @@ instance [FormallyUnramified R S] :
 
 variable [EssFiniteType R S]
 
-set_option backward.isDefEq.respectTransparency false in
 @[stacks 00UW "(2)"]
 instance [FormallyUnramified R S] :
     Module.Finite (ResidueField R) (ResidueField S) :=
@@ -60,13 +59,12 @@ instance [FormallyUnramified R S] :
   have : EssFiniteType (ResidueField R) (ResidueField S) := .of_comp R _ _
   FormallyUnramified.finite_of_free _ _
 
-set_option backward.isDefEq.respectTransparency false in
 @[stacks 00UW "(2)"]
 instance [FormallyUnramified R S] :
     Algebra.IsSeparable (ResidueField R) (ResidueField S) :=
   FormallyUnramified.isSeparable _ _
 
-set_option backward.isDefEq.respectTransparency false in
+set_option backward.inferInstanceAs.wrap.data false in
 lemma FormallyUnramified.isField_quotient_map_maximalIdeal [FormallyUnramified R S] :
     IsField (S ⧸ (maximalIdeal R).map (algebraMap R S)) := by
   let mR := (maximalIdeal R).map (algebraMap R S)
@@ -93,7 +91,6 @@ lemma FormallyUnramified.map_maximalIdeal [FormallyUnramified R S] :
   rw [Ideal.Quotient.maximal_ideal_iff_isField_quotient]
   exact isField_quotient_map_maximalIdeal
 
-set_option backward.isDefEq.respectTransparency false in
 @[stacks 02FM]
 lemma FormallyUnramified.of_map_maximalIdeal
     [Algebra.IsSeparable (ResidueField R) (ResidueField S)]
@@ -129,6 +126,8 @@ section IsUnramifiedAt
 
 variable (R : Type*) {S : Type*} [CommRing R] [CommRing S] [Algebra R S]
 variable [EssFiniteType R S] (p : Ideal R) [p.IsPrime] (q : Ideal S) [q.IsPrime] [q.LiesOver p]
+  [Algebra (Localization.AtPrime p) (Localization.AtPrime q)]
+  [Localization.AtPrime.IsLiesOverAlgebra p q]
 
 /-- Let `A` be an essentially of finite type `R`-algebra, `q` be a prime over `p`.
 Then `A` is unramified at `p` if and only if `κ(q)/κ(p)` is separable, and `pS_q = qS_q`. -/
@@ -142,8 +141,8 @@ lemma isUnramifiedAt_iff_map_eq :
       fun _ ↦ Algebra.FormallyUnramified.comp _ (Localization.AtPrime p) _⟩
   rw [FormallyUnramified.iff_map_maximalIdeal_eq]
   congr!
-  rw [RingHom.algebraMap_toAlgebra, ← Localization.AtPrime.map_eq_maximalIdeal,
-    Ideal.map_map, Localization.localRingHom,
+  rw [Localization.AtPrime.IsLiesOverAlgebra.algebraMap_eq,
+    ← Localization.AtPrime.map_eq_maximalIdeal, Ideal.map_map, Localization.localRingHom,
     IsLocalization.map_comp, ← IsScalarTower.algebraMap_eq]
 
 instance [Algebra.IsUnramifiedAt R q] : Algebra.IsSeparable p.ResidueField q.ResidueField :=
@@ -178,7 +177,9 @@ lemma localRingHom_injective_of_primesOver_eq_singleton
     ⟨⟨r, hrp⟩, FaithfulSMul.algebraMap_injective R S ?_⟩
   grind
 
-lemma finite_of_primesOver_eq_singleton [Module.Finite R S] [q.LiesOver p] :
+lemma finite_of_primesOver_eq_singleton [Module.Finite R S] [q.LiesOver p]
+    [Algebra (Localization.AtPrime p) (Localization.AtPrime q)]
+  [Localization.AtPrime.IsLiesOverAlgebra p q] :
     Module.Finite (Localization.AtPrime p) (Localization.AtPrime q) := by
   classical
   obtain ⟨s, hs⟩ := Module.Finite.fg_top (R := R) (M := S)
@@ -196,9 +197,12 @@ lemma finite_of_primesOver_eq_singleton [Module.Finite R S] [q.LiesOver p] :
 
 lemma localRingHom_surjective_of_primesOver_eq_singleton
     [Module.Finite R S] [q.LiesOver p] [Algebra.IsUnramifiedAt R q]
+    [Algebra (Localization.AtPrime p) (Localization.AtPrime q)]
+    [Localization.AtPrime.IsLiesOverAlgebra p q]
     (H : Function.Surjective (algebraMap p.ResidueField q.ResidueField)) :
     Function.Surjective (localRingHom p q (algebraMap R S) (q.over_def p)) := by
   have := Localization.finite_of_primesOver_eq_singleton hq
+  rw [← Localization.AtPrime.IsLiesOverAlgebra.algebraMap_eq]
   change Function.Surjective (Algebra.linearMap _ _)
   rw [← LinearMap.range_eq_top, ← top_le_iff]
   apply Submodule.le_of_le_smul_of_le_jacobson_bot Module.Finite.fg_top (maximalIdeal_le_jacobson _)
@@ -288,6 +292,8 @@ lemma exists_awayMap_bijective_of_localRingHom_bijective
 
 lemma exists_awayMap_bijective_of_residueField_surjective
     [Module.Finite R S] [FaithfulSMul R S] [q.LiesOver p] [Algebra.IsUnramifiedAt R q]
+    [Algebra (Localization.AtPrime p) (Localization.AtPrime q)]
+    [Localization.AtPrime.IsLiesOverAlgebra p q]
     (H : Function.Surjective (algebraMap p.ResidueField q.ResidueField)) :
     ∃ r ∉ p, ∀ r', r ∣ r' → Function.Bijective (awayMap (algebraMap R S) r') :=
   exists_awayMap_bijective_of_localRingHom_bijective hq (by simpa using Submodule.fg_bot)

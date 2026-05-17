@@ -20,7 +20,7 @@ that this is a `κ`-filtered colimit.
 
 -/
 
-@[expose] public section
+public section
 
 universe w v' v u' u
 
@@ -61,7 +61,7 @@ instance [IsCardinalAccessibleCategory C κ] :
     obtain ⟨J, _, _, ⟨p⟩⟩ :=
       (isCardinalFilteredGenerator_isCardinalPresentable C κ).exists_colimitsOfShape X
     exact ⟨(Functor.Final.isColimitWhiskerEquiv (F := p.toCostructuredArrow) _).1
-      (IsColimit.ofIsoColimit p.isColimit (Cocones.ext (Iso.refl _)))⟩
+      (IsColimit.ofIsoColimit p.isColimit (Cocone.ext (Iso.refl _)))⟩
 
 instance [IsCardinalAccessibleCategory C κ] (X : C) :
     IsCardinalFiltered (CostructuredArrow (isCardinalPresentable C κ).ι X) κ := by
