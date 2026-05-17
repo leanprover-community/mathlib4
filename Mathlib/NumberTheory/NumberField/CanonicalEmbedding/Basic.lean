@@ -716,7 +716,7 @@ abbrev idealLattice (K : Type*) [Field K] (I : (FractionalIdeal (𝓞 K)⁰ K)ˣ
     Submodule ℤ (mixedSpace K) := LinearMap.range <|
   (mixedEmbedding K).toIntAlgHom.toLinearMap ∘ₗ ((I : Submodule (𝓞 K) K).subtype.restrictScalars ℤ)
 
-theorem mem_idealLattice {K : Type*} [Field K]
+theorem mem_idealLattice (K : Type*) [Field K]
     (I : (FractionalIdeal (𝓞 K)⁰ K)ˣ) {x : mixedSpace K} :
     x ∈ idealLattice K I ↔ ∃ y, y ∈ (I : Set K) ∧ mixedEmbedding K y = x := by
   simp [idealLattice]
