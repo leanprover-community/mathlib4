@@ -191,7 +191,7 @@ theorem kc_fourteenSet : k fourteenSetᶜ = (Ioo 0 1 ∪ Ioo 1 2)ᶜ := by
 
 theorem kck_fourteenSet : k (k fourteenSet)ᶜ = (Ioo 0 2 ∪ Ioo 4 5)ᶜ := by
   rw [closure_compl, k_fourteenSet,
-    interior_union_of_disjoint_closure, interior_union_of_disjoint_closure] <;>
+    interior_union_of_disjoint_closure, interior_union_of_disjoint_closure]
   all_goals
      simp [-union_singleton, disjoint_iff_inter_eq_empty, union_inter_distrib_right, Icc_inter_Icc]
   all_goals norm_num
@@ -233,7 +233,7 @@ theorem not_eq_univ_of_mem_theClosedSix_fourteenSet {s}
   rw [theClosedSix, kckckc_fourteenSet, kckck_fourteenSet,
     kckc_fourteenSet, kck_fourteenSet, kc_fourteenSet, k_fourteenSet] at h
   rw [Ne, eq_univ_iff_forall]
-  push_neg
+  push Not
   repeat obtain _ | ⟨_, h⟩ := h; rotate_left
   · use 1 / 2; norm_num
   · use 1 / 2; norm_num

@@ -32,10 +32,12 @@ by importing or adding new theorems tagged with the `@[fun_prop]` attribute. See
 documentation for `Mathlib/Tactic/FunProp.lean` for a detailed explanation.
 
 * `fun_prop (disch := tac)` uses `tac` to solve potential side goals. Setting this option is
-  required to solve `ContinuousAt/On/Within` goals.
+  required to solve `ContinuousAt/On/Within` goals. Assumptions from the local context are
+  automatically discharged.
 * `fun_prop [c, ...]` will unfold the constant(s) `c`, ... before decomposing `f`.
 * `fun_prop (config := cfg)` sets advanced configuration options using `cfg : FunProp.Config`
   (see `FunProp.Config` for details).
+  These options can be combined: `fun_prop (config := cfg) (disch := tac) [c]`
 
 Examples:
 
@@ -44,9 +46,9 @@ example : Continuous (fun x : ℝ ↦ x * sin x) := by fun_prop
 ```
 
 ```lean
--- Specify a discharger to solve `ContinuousAt`/`Within`/`On` goals:
+-- Solving `ContinuousAt`/`Within`/`On` goals might require using dischargers:
 example (y : ℝ) (hy : y ≠ 0) : ContinuousAt (fun x : ℝ ↦ 1/x) y := by
-  fun_prop (disch := assumption)
+  fun_prop
 
 example (y : ℝ) (hy : y ≠ 0) : ContinuousAt (fun x => x * (Real.log x) ^ 2 - Real.exp x / x) y := by
   fun_prop (disch := aesop)
@@ -56,11 +58,8 @@ example (y : ℝ) (hy : y ≠ 0) : ContinuousAt (fun x => x * (Real.log x) ^ 2 -
 syntax (name := funPropTacStx)
   "fun_prop" optConfig (discharger)? (" [" withoutPosition(ident,*,?) "]")? : tactic
 
-private def emptyDischarge : Expr → MetaM (Option Expr) :=
-  fun e =>
-    withTraceNode `Meta.Tactic.fun_prop
-      (fun r => do pure s!"[{ExceptToEmoji.toEmoji r}] discharging: {← ppExpr e}") do
-      pure none
+private def assumptionDischarge : Expr → MetaM (Option Expr) :=
+  fun e => do tacticToDischarge (← `(tactic| with_reducible assumption)) e
 
 /-- Tactic to prove function properties -/
 @[tactic funPropTacStx]
@@ -78,7 +77,7 @@ def funPropTac : Tactic
         unless (← getFunProp? type).isSome do
           let hint :=
             if let some n := type.getAppFn.constName?
-            then s!" Maybe you forgot marking `{n}` with `@[fun_prop]`."
+            then s!" Consider marking `{n}` with `@[fun_prop]`."
             else ""
           throwError "`{← ppExpr type}` is not a `fun_prop` goal!{hint}"
 
@@ -86,11 +85,12 @@ def funPropTac : Tactic
 
       let disch ← show MetaM (Expr → MetaM (Option Expr)) from do
         match d with
-        | none => pure emptyDischarge
+        | none => pure assumptionDischarge
         | some d =>
           match d with
-          | `(discharger| (discharger:=$tac)) => pure <| tacticToDischarge (← `(tactic| ($tac)))
-          | _ => pure emptyDischarge
+          | `(discharger| (discharger:=$tac)) =>
+            pure <| tacticToDischarge (← `(tactic| first | with_reducible assumption | ($tac)))
+          | _ => pure assumptionDischarge
 
       let namesToUnfold : Array Name :=
         match names with
@@ -122,7 +122,7 @@ def funPropTac : Tactic
 
 
 
-/-- Command that printins all function properties attached to a function.
+/-- Command that prints all function properties attached to a function.
 
 For example
 ```
@@ -132,8 +132,8 @@ might print out
 ```
 Continuous
   continuous_add, args: [4,5], priority: 1000
-  continuous_add_left, args: [5], priority: 1000
-  continuous_add_right, args [4], priority: 1000
+  continuous_const_add, args: [5], priority: 1000
+  continuous_add_const, args [4], priority: 1000
   ...
 Differentiable
   Differentiable.add, args: [4,5], priority: 1000

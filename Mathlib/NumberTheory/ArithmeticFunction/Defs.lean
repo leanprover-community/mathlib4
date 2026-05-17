@@ -5,6 +5,7 @@ Authors: Aaron Anderson
 -/
 module
 
+public import Mathlib.Algebra.Algebra.Defs
 public import Mathlib.Algebra.Module.BigOperators
 public import Mathlib.Data.Nat.Factorization.Induction
 public import Mathlib.Data.Nat.GCD.BigOperators
@@ -77,6 +78,10 @@ theorem map_zero {f : ArithmeticFunction R} : f 0 = 0 :=
 
 theorem coe_inj {f g : ArithmeticFunction R} : (f : ℕ → R) = g ↔ f = g :=
   DFunLike.coe_fn_eq
+
+theorem range_coe : Set.range ((↑) : ArithmeticFunction R → (ℕ → R)) = {f | f 0 = 0} := by
+  ext f
+  exact ⟨by rintro ⟨f, rfl⟩; simp, fun hf ↦ ⟨⟨f, hf⟩, rfl⟩⟩
 
 @[simp]
 theorem zero_apply {x : ℕ} : (0 : ArithmeticFunction R) x = 0 :=
@@ -167,44 +172,42 @@ section AddMonoid
 
 variable [AddMonoid R]
 
-instance add : Add (ArithmeticFunction R) :=
-  ⟨fun f g => ⟨fun n => f n + g n, by simp⟩⟩
+instance add : Add (ArithmeticFunction R) where
+  add f g := ⟨f + g, by simp⟩
 
 @[simp]
 theorem add_apply {f g : ArithmeticFunction R} {n : ℕ} : (f + g) n = f n + g n :=
   rfl
 
-instance instAddMonoid : AddMonoid (ArithmeticFunction R) :=
-  { ArithmeticFunction.zero R,
-    ArithmeticFunction.add with
-    add_assoc := fun _ _ _ => ext fun _ => add_assoc _ _ _
-    zero_add := fun _ => ext fun _ => zero_add _
-    add_zero := fun _ => ext fun _ => add_zero _
-    nsmul := nsmulRec }
+instance instAddMonoid : AddMonoid (ArithmeticFunction R) where
+  add_assoc _ _ _ := ext fun _ ↦ add_assoc _ _ _
+  zero_add _ := ext fun _ ↦ zero_add _
+  add_zero _ := ext fun _ ↦ add_zero _
+  nsmul := nsmulRec
 
 end AddMonoid
 
-instance instAddMonoidWithOne [AddMonoidWithOne R] : AddMonoidWithOne (ArithmeticFunction R) :=
-  { ArithmeticFunction.instAddMonoid,
-    ArithmeticFunction.one with
-    natCast := fun n => ⟨fun x => if x = 1 then (n : R) else 0, by simp⟩
-    natCast_zero := by ext; simp
-    natCast_succ := fun n => by ext x; by_cases h : x = 1 <;> simp [h] }
+instance instAddMonoidWithOne [AddMonoidWithOne R] : AddMonoidWithOne (ArithmeticFunction R) where
+  natCast n := ⟨fun x ↦ if x = 1 then (n : R) else 0, by simp⟩
+  natCast_zero := by ext; simp
+  natCast_succ n := by ext x; by_cases h : x = 1 <;> simp [h]
 
-instance instAddCommMonoid [AddCommMonoid R] : AddCommMonoid (ArithmeticFunction R) :=
-  { ArithmeticFunction.instAddMonoid with add_comm := fun _ _ => ext fun _ => add_comm _ _ }
+instance instAddCommMonoid [AddCommMonoid R] : AddCommMonoid (ArithmeticFunction R) where
+  add_comm _ _ := ext fun _ ↦ add_comm _ _
 
 instance [NegZeroClass R] : Neg (ArithmeticFunction R) where
-  neg f := ⟨fun n => -f n, by simp⟩
+  neg f := ⟨-f, by simp⟩
 
-instance [AddGroup R] : AddGroup (ArithmeticFunction R) :=
-  { ArithmeticFunction.instAddMonoid with
-    neg_add_cancel := fun _ => ext fun _ => neg_add_cancel _
-    zsmul := zsmulRec }
+@[simp]
+theorem neg_apply [NegZeroClass R] {f : ArithmeticFunction R} {n : ℕ} : (-f) n = -f n := by
+  rfl
 
-instance [AddCommGroup R] : AddCommGroup (ArithmeticFunction R) :=
-  { show AddGroup (ArithmeticFunction R) by infer_instance with
-    add_comm := fun _ _ ↦ add_comm _ _ }
+instance [AddGroup R] : AddGroup (ArithmeticFunction R) where
+  neg_add_cancel _ := ext fun _ ↦ neg_add_cancel _
+  zsmul := zsmulRec
+
+instance [AddCommGroup R] : AddCommGroup (ArithmeticFunction R) where
+  add_comm := fun _ _ ↦ add_comm _ _
 
 section SMul
 
@@ -212,8 +215,8 @@ variable {M : Type*} [Zero R] [AddCommMonoid M] [SMul R M]
 
 /-- The Dirichlet convolution of two arithmetic functions `f` and `g` is another arithmetic function
   such that `(f * g) n` is the sum of `f x * g y` over all `(x,y)` such that `x * y = n`. -/
-instance : SMul (ArithmeticFunction R) (ArithmeticFunction M) :=
-  ⟨fun f g => ⟨fun n => ∑ x ∈ divisorsAntidiagonal n, f x.fst • g x.snd, by simp⟩⟩
+instance : SMul (ArithmeticFunction R) (ArithmeticFunction M) where
+  smul f g := ⟨fun n ↦ ∑ x ∈ divisorsAntidiagonal n, f x.fst • g x.snd, by simp⟩
 
 @[simp]
 theorem smul_apply {f : ArithmeticFunction R} {g : ArithmeticFunction M} {n : ℕ} :
@@ -224,8 +227,8 @@ end SMul
 
 /-- The Dirichlet convolution of two arithmetic functions `f` and `g` is another arithmetic function
   such that `(f * g) n` is the sum of `f x * g y` over all `(x,y)` such that `x * y = n`. -/
-instance [Semiring R] : Mul (ArithmeticFunction R) :=
-  ⟨(· • ·)⟩
+instance [Semiring R] : Mul (ArithmeticFunction R) where
+  mul f g := f • g
 
 @[simp]
 theorem mul_apply [Semiring R] {f g : ArithmeticFunction R} {n : ℕ} :
@@ -277,7 +280,7 @@ variable [Semiring R]
 
 instance instMonoid : Monoid (ArithmeticFunction R) where
   one_mul := one_smul'
-  mul_one := fun f => by
+  mul_one f := by
     ext x
     rw [mul_apply]
     by_cases x0 : x = 0
@@ -292,37 +295,53 @@ instance instMonoid : Monoid (ArithmeticFunction R) where
     simp [y2ne]
   mul_assoc := mul_smul'
 
-instance instSemiring : Semiring (ArithmeticFunction R) :=
-  { ArithmeticFunction.instAddMonoidWithOne,
-    ArithmeticFunction.instMonoid,
-    ArithmeticFunction.instAddCommMonoid with
-    zero_mul := fun f => by
-      ext
-      simp
-    mul_zero := fun f => by
-      ext
-      simp
-    left_distrib := fun a b c => by
-      ext
-      simp [← sum_add_distrib, mul_add]
-    right_distrib := fun a b c => by
-      ext
-      simp [← sum_add_distrib, add_mul] }
+instance instSemiring : Semiring (ArithmeticFunction R) where
+  zero_mul f := by ext; simp
+  mul_zero f := by ext; simp
+  left_distrib a b c := by ext; simp [← sum_add_distrib, mul_add]
+  right_distrib a b c := by ext; simp [← sum_add_distrib, add_mul]
 
 end Semiring
 
-instance [CommSemiring R] : CommSemiring (ArithmeticFunction R) :=
-  { ArithmeticFunction.instSemiring with
-    mul_comm := fun f g => by
-      ext
-      rw [mul_apply, ← map_swap_divisorsAntidiagonal, sum_map]
-      simp [mul_comm] }
+instance [CommSemiring R] : CommSemiring (ArithmeticFunction R) where
+  mul_comm f g := by
+    ext
+    rw [mul_apply, ← map_swap_divisorsAntidiagonal, sum_map]
+    simp [mul_comm]
 
-instance [CommRing R] : CommRing (ArithmeticFunction R) :=
-  { ArithmeticFunction.instSemiring with
-    neg_add_cancel := neg_add_cancel
-    mul_comm := mul_comm
-    zsmul := (· • ·) }
+instance [CommRing R] : CommRing (ArithmeticFunction R) where
+  neg_add_cancel := neg_add_cancel
+  mul_comm := mul_comm
+  zsmul n f := n • f
+
+instance {S : Type*} [Semiring R] [AddCommMonoid S] [Module R S] :
+    Module R (ArithmeticFunction S) where
+  smul x f := ⟨x • f, by simp⟩
+  smul_zero x := ext fun n ↦ smul_zero x
+  smul_add x f g := ext fun n ↦ smul_add x (f n) (g n)
+  zero_smul f := ext fun n ↦ zero_smul R (f n)
+  one_smul f := ext fun n ↦ one_smul R (f n)
+  add_smul x y f := ext fun n ↦ add_smul x y (f n)
+  mul_smul x y f := ext fun n ↦ mul_smul x y (f n)
+
+-- note that `smul_apply` would be a more suitable name, but is already in use for the action of
+-- `ArithmeticFunction R` on `ArithmeticFunction S`
+@[simp]
+theorem smul_map {S : Type*} [Semiring R] [AddCommMonoid S] [Module R S]
+    (x : R) (f : ArithmeticFunction S) (n : ℕ) : (x • f) n = x • f n := by
+  rfl
+
+-- We can deduce the `Algebra` structure from the `Module` structure here due to the lack of
+-- a more natural definition of `algebraMap`.
+instance {S : Type*} [CommSemiring R] [Semiring S] [Algebra R S] :
+    Algebra R (ArithmeticFunction S) :=
+  .ofModule (fun x f g ↦ ext fun n ↦ by simp [Finset.smul_sum])
+    fun x f g ↦ ext fun n ↦ by simp [Finset.smul_sum]
+
+@[simp]
+theorem algebraMap_apply_one {S : Type*} [CommSemiring R] [Semiring S] [Algebra R S] (x : R) :
+    algebraMap R (ArithmeticFunction S) x 1 = algebraMap R S x := by
+  simp [Algebra.algebraMap_eq_smul_one]
 
 instance {M : Type*} [Semiring R] [AddCommMonoid M] [Module R M] :
     Module (ArithmeticFunction R) (ArithmeticFunction M) where
@@ -341,6 +360,77 @@ instance {M : Type*} [Semiring R] [AddCommMonoid M] [Module R M] :
     ext
     simp only [smul_apply, sum_const_zero, zero_smul, zero_apply]
 
+section DirichletInverse
+
+section Ring
+
+/- We use `(hf : Invertible (f 1))` instead of `[hf : Invertible (f 1)]` because in practice such
+an instance is unlikely to be automatically synthesized due to the presence of `f`. -/
+variable [Ring R] (f : ℕ → R) (hf : Invertible (f 1))
+
+/-- Given an inverse of `f 1`, construct the Dirichlet inverse of `f`. We use `Invertible` to make
+this definition computable when `f` is computable. -/
+def dirichletInverseFun (n : ℕ) : R :=
+  if n = 0 then 0
+  else if n = 1 then ⅟(f 1)
+  else - ⅟(f 1) * ∑ d : n.properDivisors,
+    have : d < n := (Nat.mem_properDivisors.mp d.2).2
+    f (n / d) * dirichletInverseFun d
+
+@[simp]
+theorem dirichletInverseFun_apply_zero : dirichletInverseFun f hf 0 = 0 := by
+  rw [dirichletInverseFun, if_pos rfl]
+
+@[simp]
+theorem dirichletInverseFun_apply_one : dirichletInverseFun f hf 1 = ⅟(f 1) := by
+  rw [dirichletInverseFun, if_neg one_ne_zero, if_pos rfl]
+
+@[simp]
+theorem dirichletInverseFun_apply_ne {n : ℕ} (hn0 : n ≠ 0) (hn1 : n ≠ 1) :
+    dirichletInverseFun f hf n =
+      - ⅟(f 1) * ∑ d ∈ n.properDivisors, f (n / d) * dirichletInverseFun f hf d := by
+  rw [dirichletInverseFun, if_neg hn0, if_neg hn1]
+  conv_rhs => rw [← Finset.sum_attach, Finset.attach_eq_univ]
+
+/-- Given an inverse of `f 1`, construct the Dirichlet inverse of `f`. -/
+@[simp]
+def dirichletInverse : ArithmeticFunction R :=
+  ⟨dirichletInverseFun f hf, dirichletInverseFun_apply_zero f hf⟩
+
+theorem self_mul_dirichletInverse (f : ArithmeticFunction R) (hf : Invertible (f 1)) :
+    f * dirichletInverse f hf = 1 := by
+  ext n
+  by_cases hn0 : n = 0
+  · simp [hn0]
+  by_cases hn1 : n = 1
+  · simp [hn1]
+  rw [dirichletInverse, mul_apply, coe_mk,
+    Nat.sum_divisorsAntidiagonal' fun x y ↦ f x * dirichletInverseFun f hf y,
+    ← Nat.cons_self_properDivisors hn0]
+  simp [hn0, hn1, pos_of_ne_zero]
+
+end Ring
+
+section CommRing
+
+variable [CommRing R] (f : ArithmeticFunction R)
+
+theorem dirichletInverse_mul_self (hf : Invertible (f 1)) : dirichletInverse f hf * f = 1 := by
+  rw [mul_comm, self_mul_dirichletInverse]
+
+variable {f} in
+theorem isUnit_iff_isUnit_apply_one : IsUnit f ↔ IsUnit (f 1) := by
+  constructor
+  · rintro ⟨f, rfl⟩
+    refine ⟨⟨f.val 1, f⁻¹.val 1, ?_, ?_⟩, rfl⟩
+    · rw [← ArithmeticFunction.mul_apply_one, Units.mul_inv, one_one]
+    · rw [← ArithmeticFunction.mul_apply_one, Units.inv_mul, one_one]
+  · suffices Invertible (f 1) → Invertible f by simpa using Nonempty.map this
+    exact fun hf ↦ ⟨_, dirichletInverse_mul_self f hf, self_mul_dirichletInverse f hf⟩
+
+end CommRing
+
+end DirichletInverse
 
 /-- Multiplicative functions -/
 def IsMultiplicative [MonoidWithZero R] (f : ArithmeticFunction R) : Prop :=
@@ -543,10 +633,20 @@ theorem eq_zero_of_squarefree_of_dvd_eq_zero [MonoidWithZero R] {f : ArithmeticF
 
 end IsMultiplicative
 
-@[arith_mult]
+@[simp, arith_mult]
 theorem isMultiplicative_one [MonoidWithZero R] : IsMultiplicative (1 : ArithmeticFunction R) :=
   IsMultiplicative.iff_ne_zero.2 ⟨by simp, by
     intro m n hm hn hmn
     by_cases h : m = 1 <;> aesop⟩
+
+@[arith_mult]
+theorem isMultiplicative_finsetProd [CommSemiring R] {ι : Type*}
+    (f : ι → ArithmeticFunction R) (s : Finset ι) (hf : ∀ i ∈ s, IsMultiplicative (f i)) :
+    IsMultiplicative (∏ i ∈ s, f i) := by
+  induction s using Finset.cons_induction
+  case empty => simp
+  case cons a s ha ih =>
+    rw [Finset.prod_cons]
+    exact (hf a (by grind)).mul (by grind)
 
 end ArithmeticFunction

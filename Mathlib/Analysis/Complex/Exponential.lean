@@ -671,6 +671,12 @@ lemma le_inv_mul_exp (x : ℝ) {c : ℝ} (hc : 0 < c) : x ≤ c⁻¹ * exp (c * 
   _ ≤ c * x + 1 := le_add_of_nonneg_right zero_le_one
   _ ≤ _ := Real.add_one_le_exp (c * x)
 
+theorem prod_one_add_le_exp_sum {ι : Type*} (s : Finset ι) {f : ι → ℝ}
+    (hf : ∀ i, 0 ≤ f i) : ∏ i ∈ s, (1 + f i) ≤ exp (∑ i ∈ s, f i) :=
+  (Finset.prod_le_prod (fun i _ ↦ add_nonneg zero_le_one (hf i))
+    fun i _ ↦ (add_comm 1 (f i)).le.trans (add_one_le_exp _)).trans
+    (exp_sum s f).symm.le
+
 end Real
 
 namespace Mathlib.Meta.Positivity

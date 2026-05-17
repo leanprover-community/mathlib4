@@ -107,7 +107,7 @@ def synthesizeArgs (thmId : Origin) (xs : Array Expr)
 def tryTheoremCore (xs : Array Expr) (val : Expr) (type : Expr) (e : Expr)
     (thmId : Origin) (funProp : Expr → FunPropM (Option Result)) : FunPropM (Option Result) := do
   withTraceNode `Meta.Tactic.fun_prop
-    (fun r => return s!"[{ExceptToEmoji.toEmoji r}] applying: {← ppOrigin' thmId}") do
+    (fun _ => return s!"applying: {← ppOrigin' thmId}") do
 
   if (← isDefEq type e) then
 
@@ -128,7 +128,8 @@ def tryTheoremWithHint? (e : Expr) (thmOrigin : Origin)
     FunPropM (Option Result) := do
   let go : FunPropM (Option Result) := do
     let thmProof ← thmOrigin.getValue
-    let type ← inferType thmProof
+    -- for `fvar`s we need to instantiate the metavariables of its type.
+    let type ← instantiateMVars <| ← inferType thmProof
     let (xs, _, type) ← forallMetaTelescope type
 
     for (i,x) in hint do
@@ -321,6 +322,17 @@ def applyMorRules (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
     (funProp : Expr → FunPropM (Option Result)) : FunPropM (Option Result) := do
   trace[Debug.Meta.Tactic.fun_prop] "applying morphism theorems to {← ppExpr e}"
 
+  -- get theorems
+  let candidates ← getMorphismTheorems e
+  trace[Meta.Tactic.fun_prop]
+    "candidate morphism theorems: {← candidates.mapM fun c => ppOrigin (.decl c.thmName)}"
+
+  -- try theorems
+  for c in candidates do
+    if let some r ← tryTheorem? e (.decl c.thmName) funProp then
+      return r
+
+  -- if all failed try to add/remove arguments
   match ← fData.isMorApplication with
   | .none => throwError "fun_prop bug: invalid use of mor rules on {← ppExpr e}"
   | .underApplied =>
@@ -329,16 +341,6 @@ def applyMorRules (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
     let some (f, g) ← fData.peeloffArgDecomposition | return none
     applyCompRule funPropDecl e f g funProp
   | .exact =>
-
-    let candidates ← getMorphismTheorems e
-
-    trace[Meta.Tactic.fun_prop]
-      "candidate morphism theorems: {← candidates.mapM fun c => ppOrigin (.decl c.thmName)}"
-
-    for c in candidates do
-      if let some r ← tryTheorem? e (.decl c.thmName) funProp then
-        return r
-
     trace[Debug.Meta.Tactic.fun_prop] "no theorem matched"
     return none
 
@@ -365,7 +367,8 @@ For example
   - `funPropDecl` is `FunPropDecl` for `Continuous`
   - `e = q(Continuous fun x ↦ foo (bar x) y)`
   - `fData` contains info on `fun x ↦ foo (bar x) y`
-  This tries to prove `Continuous fun x ↦ foo (bar x) y` from `Continuous fun x ↦ foo (bar x)`
+
+This tries to prove `Continuous fun x ↦ foo (bar x) y` from `Continuous fun x ↦ foo (bar x)`
 -/
 def removeArgRule (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
     (funProp : Expr → FunPropM (Option Result)) :
@@ -627,7 +630,7 @@ mutual
     let e ← instantiateMVars e
 
     withTraceNode `Meta.Tactic.fun_prop
-      (fun r => do pure s!"[{ExceptToEmoji.toEmoji r}] {← ppExpr e}") do
+      (fun _ => do pure s!"{← ppExpr e}") do
 
     -- check cache for successful goals
     if let some { expr := _, proof? := some proof } := (← get).cache.find? e then

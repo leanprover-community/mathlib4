@@ -8,8 +8,7 @@ module
 public import Batteries.Logic
 public import Mathlib.Data.Int.Notation
 public import Mathlib.Data.Nat.Notation
-public import Mathlib.Tactic.Lemma
-public import Mathlib.Tactic.TypeStar
+public import Mathlib.Tactic.DepRewrite
 
 /-!
 # Basic operations on the integers
@@ -94,7 +93,7 @@ variable {motive : ℤ → Sort*} (z b : ℤ) (zero : motive b)
 /-- Inductively define a function on `ℤ` by defining it at `b`, for the `succ` of a number greater
 than `b`, and the `pred` of a number less than `b`. -/
 @[elab_as_elim] protected def inductionOn' : motive z :=
-  cast (congrArg motive <| show b + (z - b) = z by rw [Int.add_comm, z.sub_add_cancel b]) <|
+  cast (congrArg motive <| show b + (z - b) = z by lia) <|
   match z - b with
   | .ofNat n => pos n
   | .negSucc n => neg n
@@ -102,35 +101,32 @@ where
   /-- The positive case of `Int.inductionOn'`. -/
   pos : ∀ n : ℕ, motive (b + n)
   | 0 => cast (by simp) zero
-  | n + 1 => cast (by rw [Int.add_assoc]; rfl) <|
-    succ _ (Int.le_add_of_nonneg_right (natCast_nonneg _)) (pos n)
+  | n + 1 => cast (by lia) <| succ _ (Int.le_add_of_nonneg_right (natCast_nonneg _)) (pos n)
   /-- The negative case of `Int.inductionOn'`. -/
   neg : ∀ n : ℕ, motive (b + -[n+1])
   | 0 => pred _ Int.le_rfl zero
-  | n + 1 => by
-    refine cast (by lia) (pred _ (Int.le_of_lt ?_) (neg n))
-    lia
+  | n + 1 => cast (by lia) <| pred _ (by lia) (neg n)
 
 variable {z b zero succ pred}
 
 lemma inductionOn'_self : b.inductionOn' b zero succ pred = zero :=
   cast_eq_iff_heq.mpr <| .symm <| by rw [b.sub_self, ← cast_eq_iff_heq]; rfl
 
-lemma inductionOn'_sub_one (hz : z ≤ b) :
+theorem inductionOn'_add_one (hz : b ≤ z) :
+    (z + 1).inductionOn' b zero succ pred = succ z hz (z.inductionOn' b zero succ pred) := by
+  unfold Int.inductionOn'
+  rw! [show z - b = (z - b).toNat by lia, show z + 1 - b = ((z - b).toNat + 1 : ℕ) by lia]
+  grind [inductionOn'.pos, show b + (z - b).toNat = z by lia]
+
+theorem inductionOn'_sub_one (hz : z ≤ b) :
     (z - 1).inductionOn' b zero succ pred = pred z hz (z.inductionOn' b zero succ pred) := by
-  apply cast_eq_iff_heq.mpr
-  obtain ⟨n, hn⟩ := Int.eq_negSucc_of_lt_zero (show z - 1 - b < 0 by lia)
-  rw [hn]
-  obtain _ | n := n
-  · change _ = -1 at hn
-    have : z = b := by lia
-    subst this; rw [inductionOn'_self]; exact heq_of_eq rfl
-  · have : z = b + -[n+1] := by rw [Int.negSucc_eq] at hn ⊢; lia
-    subst this
-    refine (cast_heq _ _).trans ?_
-    congr
-    symm
-    rw [Int.inductionOn', cast_eq_iff_heq, show b + -[n+1] - b = -[n+1] by lia]
+  unfold Int.inductionOn'
+  conv => lhs; unfold inductionOn'.neg
+  by_cases z = b
+  · rw! [show z - 1 - b = -[(b - z).toNat+1] by lia, show z - b = 0 by lia]
+    grind [inductionOn'.pos]
+  rw! [show z - 1 - b = -[(b - z).toNat+1] by lia, show z - b = -[(b - z - 1).toNat+1] by lia]
+  grind
 
 end inductionOn'
 
@@ -142,16 +138,45 @@ end inductionOn'
 
 /-- See `Int.inductionOn'` for an induction in both directions. -/
 @[elab_as_elim]
-protected lemma le_induction {m : ℤ} {motive : ∀ n, m ≤ n → Prop} (base : motive m m.le_refl)
-    (succ : ∀ n hmn, motive n hmn → motive (n + 1) (le_add_one hmn)) : ∀ n hmn, motive n hmn := by
-  refine fun n ↦ Int.inductionOn' n m ?_ ?_ ?_ <;> grind
+protected def leInduction {m : ℤ} {motive : ∀ n, m ≤ n → Sort*} (base : motive m m.le_refl)
+    (succ : ∀ n hmn, motive n hmn → motive (n + 1) (le_add_one hmn)) : ∀ n hmn, motive n hmn :=
+  fun n ↦ n.inductionOn' m
+    (fun _ ↦ base) (fun k hle ih _ ↦ succ k hle <| ih hle) (fun _ _ _ _ ↦ False.elim <| by lia)
+
+@[deprecated (since := "2026-03-25")] protected alias le_induction := Int.leInduction
+
+theorem leInduction_base {m : ℤ} {motive : ∀ n, m ≤ n → Sort*} (base : motive m m.le_refl)
+    (succ : ∀ n hmn, motive n hmn → motive (n + 1) (le_add_one hmn)) :
+    Int.leInduction (motive := motive) base succ m m.le_refl = base := by
+  rw [Int.leInduction, inductionOn'_self]
+
+theorem leInduction_add_one {m : ℤ} {motive : ∀ n, m ≤ n → Sort*} (base : motive m m.le_refl)
+    (succ : ∀ n hmn, motive n hmn → motive (n + 1) (le_add_one hmn)) (n : ℤ) (hmn : m ≤ n) :
+    Int.leInduction (motive := motive) base succ (n + 1) (by lia) =
+      succ n hmn (Int.leInduction (motive := motive) base succ n hmn) := by
+  rw [Int.leInduction, inductionOn'_add_one hmn]
+  rfl
 
 /-- See `Int.inductionOn'` for an induction in both directions. -/
 @[elab_as_elim]
-protected lemma le_induction_down {m : ℤ} {motive : ∀ n, n ≤ m → Prop} (base : motive m m.le_refl)
-    (pred : ∀ n hmn, motive n hmn → motive (n - 1) (by lia)) : ∀ n hmn, motive n hmn := fun n ↦
-  Int.inductionOn' n m (fun _ ↦ base) (fun k hle _ hle' ↦ by lia)
-    fun k hle hi _ ↦ pred k hle (hi hle)
+protected def leInductionDown {m : ℤ} {motive : ∀ n, n ≤ m → Sort*} (base : motive m m.le_refl)
+    (pred : ∀ n hnm, motive n hnm → motive (n - 1) (by lia)) : ∀ n hnm, motive n hnm :=
+  fun n ↦ n.inductionOn' m
+    (fun _ ↦ base) (fun _ _ _ _ ↦ False.elim <| by lia) (fun k hle ih _ ↦ pred k hle <| ih hle)
+
+theorem leInductionDown_base {m : ℤ} {motive : ∀ n, n ≤ m → Sort*} (base : motive m m.le_refl)
+    (pred : ∀ n hnm, motive n hnm → motive (n - 1) (by lia)) :
+    Int.leInductionDown (motive := motive) base pred m m.le_refl = base := by
+  rw [Int.leInductionDown, inductionOn'_self]
+
+theorem leInductionDown_sub_one {m : ℤ} {motive : ∀ n, n ≤ m → Sort*} (base : motive m m.le_refl)
+    (pred : ∀ n hnm, motive n hnm → motive (n - 1) (by lia)) (n : ℤ) (hnm : n ≤ m) :
+    Int.leInductionDown (motive := motive) base pred (n - 1) (by lia) =
+      pred n hnm (Int.leInductionDown (motive := motive) base pred n hnm) := by
+  rw [Int.leInductionDown, inductionOn'_sub_one hnm]
+  rfl
+
+@[deprecated (since := "2026-03-25")] protected alias le_induction_down := Int.leInductionDown
 
 section strongRec
 

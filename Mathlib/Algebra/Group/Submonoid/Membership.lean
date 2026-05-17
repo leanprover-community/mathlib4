@@ -50,39 +50,29 @@ open Function Set
 
 namespace Submonoid
 
-@[to_additive]
-theorem mem_biSup_of_directedOn {ι} {p : ι → Prop} {K : ι → Submonoid M} {i : ι} (hp : p i)
-    (hK : DirectedOn ((· ≤ ·) on K) {i | p i})
-    {x : M} : x ∈ (⨆ i, ⨆ (_h : p i), K i) ↔ ∃ i, p i ∧ x ∈ K i := by
-  refine ⟨?_, fun ⟨i, hi', hi⟩ ↦ ?_⟩
-  · suffices x ∈ closure (⋃ i, ⋃ (_ : p i), (K i : Set M)) → ∃ i, p i ∧ x ∈ K i by
-      simpa only [closure_iUnion, closure_eq (K _)] using this
-    refine fun hx ↦ closure_induction (fun _ ↦ ?_) ?_ ?_ hx
-    · simp
-    · exact ⟨i, hp, (K i).one_mem⟩
-    · rintro x y _ _ ⟨i, hip, hi⟩ ⟨j, hjp, hj⟩
-      rcases hK i hip j hjp with ⟨k, hk, hki, hkj⟩
-      exact ⟨k, hk, mul_mem (hki hi) (hkj hj)⟩
-  · apply le_iSup (fun i ↦ ⨆ (_ : p i), K i) i
-    simp [hi, hi']
-
 -- TODO: this section can be generalized to `[SubmonoidClass B M] [CompleteLattice B]`
 -- such that `CompleteLattice.LE` coincides with `SetLike.LE`
+
 @[to_additive]
-theorem mem_iSup_of_directed {ι} [hι : Nonempty ι] {S : ι → Submonoid M} (hS : Directed (· ≤ ·) S)
-    {x : M} : (x ∈ ⨆ i, S i) ↔ ∃ i, x ∈ S i := by
-  have : iSup S = ⨆ i : PLift ι, ⨆ (_ : True), S i.down := by simp [iSup_plift_down]
-  rw [this, mem_biSup_of_directedOn trivial]
+lemma mem_iSup_of_directed {ι : Sort*} [Nonempty ι] {S : ι → Submonoid M} (hS : Directed (· ≤ ·) S)
+    {x : M} : x ∈ ⨆ i, S i ↔ ∃ i, x ∈ S i := by
+  refine ⟨?_, fun ⟨i, hi⟩ ↦ le_iSup S i hi⟩
+  suffices x ∈ closure (⋃ i, (S i : Set M)) → ∃ i, x ∈ S i by
+    simpa only [closure_iUnion, closure_eq (S _)] using this
+  refine fun hx ↦ closure_induction (by simp) (by simp) ?_ hx
+  rintro x y _ _ ⟨i, hi⟩ ⟨j, hj⟩
+  obtain ⟨k, hik, hjk⟩ := hS i j
+  exact ⟨k, mul_mem (hik hi) (hjk hj)⟩
+
+@[to_additive]
+theorem mem_biSup_of_directedOn {ι : Type*} {p : ι → Prop} (hp : ∃ i, p i) {S : ι → Submonoid M}
+    (hS : DirectedOn ((· ≤ ·) on S) {i | p i}) {x : M} :
+    x ∈ ⨆ i, ⨆ (_h : p i), S i ↔ ∃ i, p i ∧ x ∈ S i := by
+  rw [← nonempty_subtype] at hp
+  rw [iSup_subtype', mem_iSup_of_directed]
   · simp
-  · simp only [setOf_true]
-    rw [directedOn_onFun_iff, Set.image_univ, ← directedOn_range]
-    -- `Directed.mono_comp` and much of the Set API requires `Type u` instead of `Sort u`
-    intro i
-    simp only [PLift.exists]
-    intro j
-    refine (hS i.down j.down).imp ?_
-    simp
-  · exact PLift.up hι.some
+  rw [← Function.comp_def, directed_comp]
+  exact hS.directed_val
 
 @[to_additive (attr := simp)]
 theorem mem_iSup_prop {p : Prop} {S : p → Submonoid M} {x : M} :
@@ -105,6 +95,23 @@ theorem mem_sSup_of_directedOn {S : Set (Submonoid M)} (Sne : S.Nonempty)
 theorem coe_sSup_of_directedOn {S : Set (Submonoid M)} (Sne : S.Nonempty)
     (hS : DirectedOn (· ≤ ·) S) : (↑(sSup S) : Set M) = ⋃ s ∈ S, ↑s :=
   Set.ext fun x => by simp [mem_sSup_of_directedOn Sne hS]
+
+@[to_additive]
+theorem isMulCommutative_iSup {ι : Sort*} [Nonempty ι]
+    {S : ι → Submonoid M} [hS : ∀ i, IsMulCommutative (S i)]
+    (dir : Directed (· ≤ ·) S) : IsMulCommutative (⨆ i, S i : Submonoid M) := by
+  refine .of_setLike_mul_comm ?_
+  simp_rw [← SetLike.mem_coe, coe_iSup_of_directed dir, Set.mem_iUnion,
+    SetLike.mem_coe, forall_exists_index]
+  intro a i ha b j hb
+  obtain ⟨k, hik, hjk⟩ := dir i j
+  exact setLike_mul_comm (hik ha) (hjk hb)
+
+@[to_additive]
+instance instIsMulCommutative_iSup {ι : Type*} [Nonempty ι] [Preorder ι]
+    [IsDirectedOrder ι] {S : ι →o Submonoid M} [hS : ∀ i, IsMulCommutative (S i)] :
+    IsMulCommutative (⨆ i, S i : Submonoid M) :=
+  Submonoid.isMulCommutative_iSup S.monotone.directed_le
 
 @[to_additive]
 theorem mem_sup_left {S T : Submonoid M} : ∀ {x : M}, x ∈ S → x ∈ S ⊔ T := by
@@ -396,6 +403,7 @@ theorem log_pow_eq_self [DecidableEq M] {n : M} (h : Function.Injective fun m : 
     (m : ℕ) : log (pow n m) = m :=
   pow_right_injective_iff_pow_injective.mp h <| pow_log_eq_self _
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The exponentiation map is an isomorphism from the additive monoid on natural numbers to powers
 when it is injective. The inverse is given by the logarithms. -/
 @[simps]
@@ -555,6 +563,3 @@ end mul_add
 @[simp] theorem Nat.addSubmonoidClosure_one : AddSubmonoid.closure ({1} : Set ℕ) = ⊤ := by
   ext
   simp [AddSubmonoid.mem_closure_singleton]
-
-@[deprecated (since := "2025-08-14")]
-alias Nat.addSubmonoid_closure_one := Nat.addSubmonoidClosure_one

@@ -188,6 +188,7 @@ theorem normalizedTrace_algebraMap_of_lifts [CharZero E] [Algebra.IsIntegral E K
   simp [normalizedTrace_minpoly F a, normalizedTrace_minpoly E a, ← minpoly.map_algebraMap ha h,
     (minpoly F a).nextCoeff_map_eq, map_mul, map_neg]
 
+set_option backward.isDefEq.respectTransparency false in
 /- An auxiliary result to prove `normalizedTrace_trans_apply`. It differs from
 `normalizedTrace_trans_apply` only by the extra assumption about finiteness of `E` over `F`. -/
 private theorem normalizedTrace_trans_apply_aux [FiniteDimensional F E] [Algebra.IsIntegral E K]

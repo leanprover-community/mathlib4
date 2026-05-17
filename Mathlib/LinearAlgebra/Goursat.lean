@@ -51,18 +51,19 @@ def goursatSnd : Submodule R N :=
 lemma goursatFst_toAddSubgroup :
     (goursatFst L).toAddSubgroup = L.toAddSubgroup.goursatFst := by
   ext x
-  simp [mem_toAddSubgroup, goursatFst, AddSubgroup.mem_goursatFst]
+  simp [goursatFst, AddSubgroup.mem_goursatFst]
 
 lemma goursatSnd_toAddSubgroup :
     (goursatSnd L).toAddSubgroup = L.toAddSubgroup.goursatSnd := by
   ext x
-  simp [mem_toAddSubgroup, goursatSnd, AddSubgroup.mem_goursatSnd]
+  simp [goursatSnd, AddSubgroup.mem_goursatSnd]
 
 variable (L) in
 lemma goursatFst_prod_goursatSnd_le : L.goursatFst.prod L.goursatSnd ≤ L := by
   simpa only [← toAddSubgroup_le, goursatFst_toAddSubgroup, goursatSnd_toAddSubgroup]
     using L.toAddSubgroup.goursatFst_prod_goursatSnd_le
 
+set_option backward.isDefEq.respectTransparency false in
 include hL₁ hL₂ in
 /-- **Goursat's lemma** for a submodule of a product with surjective projections.
 
@@ -118,24 +119,20 @@ lemma goursat : ∃ (M' : Submodule R M) (N' : Submodule R N) (M'' : Submodule R
   obtain ⟨e, he⟩ := goursat_surjective hL₁' hL₂'
   use M', N', L'.goursatFst, L'.goursatSnd, e
   rw [← he]
-  simp only [LinearMap.range_comp, Submodule.range_subtype, L']
+  simp only [LinearMap.range_comp, Submodule.range_subtype, L', M', N', P, Q]
   rw [comap_map_eq_self]
   · ext ⟨m, n⟩
     constructor
-    · intro hmn
-      simp only [mem_map, LinearMap.mem_range, prod_apply, Subtype.exists, Prod.exists, coe_prodMap,
-        coe_subtype, Prod.map_apply, Prod.mk.injEq, exists_and_right, exists_eq_right_right,
-        exists_eq_right, M', N', fst_apply, snd_apply]
-      exact ⟨⟨n, hmn⟩, ⟨m, hmn⟩, ⟨m, n, hmn, rfl⟩⟩
-    · simp only [mem_map, LinearMap.mem_range, prod_apply, Subtype.exists, Prod.exists,
-        coe_prodMap, coe_subtype, Prod.map_apply, Prod.mk.injEq, exists_and_right,
-        exists_eq_right_right, exists_eq_right, forall_exists_index, Pi.prod]
-      rintro hm hn m₁ n₁ hm₁n₁ ⟨hP, hQ⟩
-      simp only [Subtype.ext_iff] at hP hQ
-      rwa [← hP, ← hQ]
+    · simp only [mem_map, LinearMap.mem_range, LinearMap.prod_apply, Function.prod_apply,
+      Subtype.exists, Prod.exists, LinearMap.prodMap_apply, subtype_apply, Prod.mk.injEq,
+      Subtype.ext_iff, submoduleMap_coe_apply, fst_apply, snd_apply]
+      grind
+    · simp only [mem_map, LinearMap.mem_range, LinearMap.prod_apply, Function.prod_apply,
+      Subtype.exists, Prod.exists, LinearMap.prodMap_apply, subtype_apply, Prod.mk.injEq,
+      snd_apply, fst_apply, Subtype.ext_iff, submoduleMap_coe_apply]
+      grind
   · convert goursatFst_prod_goursatSnd_le (range <| P.prod Q)
-    ext ⟨m, n⟩
-    simp_rw [mem_ker, coe_prodMap, Prod.map_apply, Submodule.mem_prod, Prod.zero_eq_mk,
-      Prod.ext_iff, ← mem_ker, ker_mkQ]
+    simp only [ker_prodMap, ker_mkQ, Submodule.ext_iff]
+    grind
 
 end Submodule

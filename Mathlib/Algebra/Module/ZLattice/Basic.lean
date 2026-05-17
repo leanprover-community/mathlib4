@@ -265,6 +265,7 @@ theorem exist_unique_vadd_mem_fundamentalDomain [Finite ι] (x : E) :
   · exact (vadd_mem_fundamentalDomain b (-floor b x) x).mpr rfl
   · exact (vadd_mem_fundamentalDomain b y x).mp h
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The map `ZSpan.fractRestrict` defines an equiv map between `E ⧸ span ℤ (Set.range b)`
 and `ZSpan.fundamentalDomain b`. -/
 def quotientEquiv [Fintype ι] :
@@ -273,7 +274,8 @@ def quotientEquiv [Fintype ι] :
   · refine fun q => Quotient.liftOn q (fractRestrict b) (fun _ _ h => ?_)
     rw [Subtype.mk.injEq, fractRestrict_apply, fractRestrict_apply, fract_eq_fract]
     exact QuotientAddGroup.leftRel_apply.mp h
-  · refine Quotient.inductionOn₂ x y (fun _ _ hxy => ?_)
+  · induction x, y using Quotient.inductionOn₂
+    intro hxy
     rw [Quotient.liftOn_mk (s := quotientRel (span ℤ (Set.range b))), fractRestrict,
       Quotient.liftOn_mk (s := quotientRel (span ℤ (Set.range b))), fractRestrict,
       Subtype.mk.injEq] at hxy
@@ -483,8 +485,6 @@ theorem ZLattice.FG [hs : IsZLattice K L] : L.FG := by
     rw [ker_mkQ, inf_of_le_right (span_le.mpr h_incl)]
     exact fg_span (LinearIndependent.setFinite h_lind)
 
-@[deprecated (since := "2025-08-11")] alias Zlattice.FG := ZLattice.FG
-
 theorem ZLattice.module_finite [IsZLattice K L] : Module.Finite ℤ L :=
   .of_fg (ZLattice.FG K L)
 
@@ -567,7 +567,7 @@ theorem ZLattice.rank [hs : IsZLattice K L] : finrank ℤ L = finrank K E := by
       rwa [h_card, ← topEquiv.finrank_eq, ← h_spanE, ← ht_span, finrank_span_set_eq_card ht_lin]
     -- Assume that `e ∪ {v}` is not `ℤ`-linear independent then we get the contradiction
     suffices ¬ LinearIndepOn ℤ id (insert v (Set.range e)) by
-      contrapose! this
+      contrapose this
       refine this.mono ?_
       exact Set.insert_subset (Set.mem_of_mem_diff hv) (by simp [e, ht_inc])
     -- We prove finally that `e ∪ {v}` is not ℤ-linear independent or, equivalently,
@@ -591,7 +591,7 @@ theorem ZLattice.rank [hs : IsZLattice K L] : finrank ℤ L = finrank K E := by
       have : DiscreteTopology L.toAddSubgroup := (inferInstance : DiscreteTopology L)
       exact Metric.finite_isBounded_inter_isClosed DiscreteTopology.isDiscrete
         Metric.isBounded_closedBall inferInstance
-    obtain ⟨n, -, m, -, h_neq, h_eq⟩ := Set.Infinite.exists_ne_map_eq_of_mapsTo
+    obtain ⟨n, -, m, -, h_ne, h_eq⟩ := Set.Infinite.exists_ne_map_eq_of_mapsTo
       Set.infinite_univ h_mapsto h_finite
     have h_nz : (-n + m : ℚ) ≠ 0 := by
       rwa [Ne, add_eq_zero_iff_eq_neg.not, neg_inj, Rat.coe_int_inj, ← Ne]

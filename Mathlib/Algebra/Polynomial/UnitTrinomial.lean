@@ -76,6 +76,7 @@ theorem trinomial_natDegree (hkm : k < m) (hmn : m < n) (hw : w ≠ 0) :
   · exact WithBot.coe_le_coe.mpr hmn.le
   · exact le_rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem trinomial_natTrailingDegree (hkm : k < m) (hmn : m < n) (hu : u ≠ 0) :
     (trinomial k m n u v w).natTrailingDegree = k := by
   refine
@@ -201,6 +202,7 @@ theorem isUnitTrinomial_iff'' (h : p * p.mirror = q * q.mirror) :
 
 namespace IsUnitTrinomial
 
+set_option backward.isDefEq.respectTransparency false in
 theorem irreducible_aux1 {k m n : ℕ} (hkm : k < m) (hmn : m < n) (u v w : Units ℤ)
     (hp : p = trinomial k m n (u : ℤ) v w) :
     C (v : ℤ) * (C (u : ℤ) * X ^ (m + n) + C (w : ℤ) * X ^ (n - m + k + n)) =

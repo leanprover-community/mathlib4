@@ -404,21 +404,16 @@ theorem star_snd (a : 𝓜(𝕜, A)) (b : A) : (star a).snd b = star (a.fst (sta
 
 instance instStarAddMonoid : StarAddMonoid 𝓜(𝕜, A) :=
   { DoubleCentralizer.instStar with
-    star_involutive := fun x => by ext <;> simp only [star_fst, star_snd, star_star]
-    star_add := fun x y => by
-      ext <;>
-        simp only [star_fst, star_snd, add_fst, add_snd, ContinuousLinearMap.add_apply, star_add] }
+    star_involutive _ := by ext <;> simp
+    star_add _ _ := by ext <;> simp }
 
 instance instStarRing : StarRing 𝓜(𝕜, A) :=
   { DoubleCentralizer.instStarAddMonoid with
-    star_mul := fun a b => by
-      ext <;>
-        simp only [star_fst, star_snd, mul_fst, mul_snd, star_star, ContinuousLinearMap.coe_mul,
-          Function.comp_apply] }
+    star_mul _ _ := by ext <;> simp }
 
 instance instStarModule : StarModule 𝕜 𝓜(𝕜, A) :=
   { DoubleCentralizer.instStarAddMonoid (𝕜 := 𝕜) (A := A) with
-    star_smul := fun k a => by ext <;> exact star_smul _ _ }
+    star_smul _ _ := by ext <;> exact star_smul _ _ }
 
 end Star
 
@@ -525,11 +520,7 @@ instance [CompleteSpace A] : CompleteSpace 𝓜(𝕜, A) := by
   rw [completeSpace_iff_isComplete_range isUniformEmbedding_toProdMulOpposite.isUniformInducing]
   apply IsClosed.isComplete
   simp only [range_toProdMulOpposite, Set.setOf_forall]
-  refine isClosed_iInter fun x => isClosed_iInter fun y => isClosed_eq ?_ ?_
-  · exact
-      ((ContinuousLinearMap.apply 𝕜 A _).continuous.comp <| continuous_unop.comp continuous_snd).mul
-        continuous_const
-  exact continuous_const.mul ((ContinuousLinearMap.apply 𝕜 A _).continuous.comp continuous_fst)
+  exact isClosed_iInter fun x ↦ isClosed_iInter fun y ↦ isClosed_eq (by fun_prop) (by fun_prop)
 
 variable [StarRing A] [CStarRing A]
 

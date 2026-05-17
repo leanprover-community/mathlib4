@@ -13,7 +13,7 @@ public import Mathlib.Topology.Maps.Proper.Basic
 
 -/
 
-@[expose] public section
+public section
 
 open Set Filter TopologicalSpace Function Topology Pointwise MulOpposite
 
@@ -29,7 +29,6 @@ A few results about interior and closure of the pointwise addition/multiplicatio
 with continuous addition/multiplication. See also `Submonoid.top_closure_mul_self_eq` in
 `Topology.Algebra.Monoid`.
 -/
-
 
 section ContinuousConstSMul
 
@@ -68,7 +67,7 @@ theorem IsClosed.smul_left_of_isCompact (ht : IsClosed t) (hs : IsCompact s) :
     invFun := fun gx ↦ (gx.1, (gx.1 : α)⁻¹ • gx.2)
     left_inv := fun _ ↦ by simp
     right_inv := fun _ ↦ by simp }
-  have : s • t = (snd ∘ Φ) '' (snd ⁻¹' t) :=
+  have : s • t = (snd ∘ Φ) '' snd ⁻¹' t :=
     subset_antisymm
       (smul_subset_iff.mpr fun g hg x hx ↦ mem_image_of_mem (snd ∘ Φ) (x := ⟨⟨g, hg⟩, x⟩) hx)
       (image_subset_iff.mpr fun ⟨⟨g, hg⟩, x⟩ hx ↦ smul_mem_smul hg hx)
@@ -253,6 +252,16 @@ lemma IsOpen.mul_closure_one_eq {U : Set G} (hU : IsOpen U) :
     U * (closure {1} : Set G) = U :=
   compl_mul_closure_one_eq_iff.1 (hU.isClosed_compl.mul_closure_one_eq)
 
+@[to_additive]
+theorem closure_subset_mul_self_of_mem_nhds_one {U : Set G} (hU : U ∈ 𝓝 1) :
+    closure U ⊆ U * U := by
+  intro x hx
+  rw [mem_closure_iff_nhds] at hx
+  have hkey : (fun y => x / y) ⁻¹' U ∈ 𝓝 x :=
+    ContinuousAt.preimage_mem_nhds (by fun_prop) (by simpa)
+  obtain ⟨a, ha_mem, ha_s⟩ := hx _ hkey
+  exact Set.mem_mul.mpr ⟨x / a, ha_mem, a, ha_s, div_mul_cancel x a⟩
+
 end IsTopologicalGroup
 
 section FilterMul
@@ -294,7 +303,7 @@ theorem IsTopologicalGroup.t2Space_of_one_sep (H : ∀ x : G, x ≠ 1 → ∃ U 
   suffices T1Space G from inferInstance
   refine t1Space_iff_specializes_imp_eq.2 fun x y hspec ↦ by_contra fun hne ↦ ?_
   rcases H (x * y⁻¹) (by rwa [Ne, mul_inv_eq_one]) with ⟨U, hU₁, hU⟩
-  exact hU <| mem_of_mem_nhds <| hspec.map (continuous_mul_right y⁻¹) (by rwa [mul_inv_cancel])
+  exact hU <| mem_of_mem_nhds <| hspec.map (continuous_mul_const y⁻¹) (by rwa [mul_inv_cancel])
 
 /-- Given a neighborhood `U` of the identity, one may find a neighborhood `V` of the identity which
 is closed, symmetric, and satisfies `V * V ⊆ U`. -/
@@ -358,7 +367,7 @@ theorem eq_zero_or_locallyCompactSpace_of_support_subset_isCompact_of_group
     f = 0 ∨ LocallyCompactSpace G := by
   refine or_iff_not_imp_left.mpr fun h => ?_
   simp_rw [funext_iff, Pi.zero_apply] at h
-  push_neg at h
+  push Not at h
   obtain ⟨x, hx⟩ : ∃ x, f x ≠ 0 := h
   have : k ∈ 𝓝 x :=
     mem_of_superset (h'f.isOpen_support.mem_nhds hx) hf

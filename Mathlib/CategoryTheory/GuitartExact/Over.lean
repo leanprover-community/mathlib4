@@ -27,7 +27,7 @@ exists and `F` commutes with it.
 
 -/
 
-@[expose] public section
+public section
 
 universe v₁ v₂ u₁ u₂
 
@@ -52,6 +52,7 @@ abbrev TwoSquare.overPost :
     TwoSquare (Over.post F) (Over.forget X) (Over.forget (F.obj X)) F :=
   TwoSquare.mk _ _ _ _ (𝟙 _)
 
+set_option backward.isDefEq.respectTransparency false in
 instance [∀ (Y : C), HasBinaryProduct X Y] [∀ (Y : C), PreservesLimit (pair X Y) F] :
     (TwoSquare.overPost F X).GuitartExact where
   isConnected_rightwards {W Z} g := by

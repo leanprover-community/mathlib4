@@ -9,12 +9,12 @@ module
 public import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
 public import Mathlib.Algebra.Module.Prod
 public import Mathlib.Algebra.Module.Submodule.Equiv
+public import Mathlib.Algebra.Module.Submodule.Pointwise
 public import Mathlib.LinearAlgebra.Span.Defs
 public import Mathlib.Order.CompactlyGenerated.Basic
-public import Mathlib.Order.OmegaCompletePartialOrder
+public import Mathlib.Order.BourbakiWitt
 
 import Mathlib.Algebra.Field.Basic
-import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
 import Mathlib.Algebra.Module.Submodule.EqLocus
 import Mathlib.Algebra.Module.Torsion.Field
 
@@ -38,7 +38,7 @@ namespace Submodule
 
 open Function Set
 
-open Pointwise
+open scoped Pointwise
 
 section AddCommMonoid
 
@@ -160,7 +160,7 @@ Scott continuous for the ω-complete partial order induced by the complete latti
 theorem coe_scott_continuous :
     OmegaCompletePartialOrder.ωScottContinuous ((↑) : Submodule R M → Set M) :=
   OmegaCompletePartialOrder.ωScottContinuous.of_monotone_map_ωSup
-    ⟨SetLike.coe_mono, coe_iSup_of_chain⟩
+    ⟨SetLike.coe_mono, fun _ ↦ coe_iSup_of_chain _⟩
 
 section IsScalarTower
 
@@ -211,6 +211,7 @@ theorem span_span_of_tower :
 theorem span_eq_top_of_span_eq_top (s : Set M) (hs : span R s = ⊤) : span S s = ⊤ :=
   le_top.antisymm (hs.ge.trans (span_le_restrictScalars R S s))
 
+set_option backward.isDefEq.respectTransparency false in
 variable {R S} in
 lemma span_range_inclusion_eq_top (p : Submodule R M) (q : Submodule S M)
     (h₁ : p ≤ q.restrictScalars R) (h₂ : q ≤ span S p) :
@@ -276,6 +277,28 @@ theorem map_subtype_span_singleton {p : Submodule R M} (x : p) :
 theorem notMem_span_of_apply_notMem_span_image [RingHomSurjective σ₁₂] (f : M →ₛₗ[σ₁₂] M₂) {x : M}
     {s : Set M} (h : f x ∉ Submodule.span R₂ (f '' s)) : x ∉ Submodule.span R s :=
   h.imp (apply_mem_span_image_of_mem_span f)
+
+section DistribMulAction
+
+variable {α : Type*} [Monoid α] [DistribMulAction α M] [SMulCommClass α R M]
+
+theorem smul_span (a : α) (s : Set M) : a • span R s = span R (a • s) :=
+  map_span _ _
+
+lemma smul_def (a : α) (S : Submodule R M) : a • S = span R (a • S) := by
+  simp [← smul_span]
+
+theorem span_smul (a : α) (s : Set M) : span R (a • s) = a • span R s :=
+  Eq.symm (span_image _).symm
+
+theorem set_smul_span (s : Set α) (t : Set M) :
+    s • span R t = span R (s • t) := by
+  simp_rw [set_smul_eq_iSup, smul_span, iSup_span, Set.iUnion_smul_set]
+
+theorem span_set_smul (s : Set α) (t : Set M) :
+    span R (s • t) = s • span R t := (set_smul_span s t).symm
+
+end DistribMulAction
 
 theorem iSup_toAddSubmonoid {ι : Sort*} (p : ι → Submodule R M) :
     (⨆ i, p i).toAddSubmonoid = ⨆ i, (p i).toAddSubmonoid := by
@@ -431,11 +454,14 @@ theorem _root_.LinearMap.exists_ne_zero_of_sSup_eq {N : Submodule R M} {f : N �
     by rw [sSup_eq_iSup] at hs; rw [sSup_image, ← hs, biSup_comap_subtype_eq_top]
   ⟨m, hm, fun eq ↦ ne (LinearMap.ext fun x ↦ congr($eq ⟨x, x.2⟩))⟩
 
+lemma span_val_image_eq_iff (p : Submodule R M) (s : Set p) :
+    span R (Subtype.val '' s) = p ↔ span R s = ⊤ := by
+  simp [← (Submodule.map_injective_of_injective p.injective_subtype).eq_iff, Submodule.map_span]
+
 lemma span_range_subtype_eq_top_iff {ι : Type*} (p : Submodule R M) {s : ι → M}
     (hs : ∀ i, s i ∈ p) :
     span R (Set.range fun i ↦ (⟨s i, hs i⟩ : p)) = ⊤ ↔ span R (Set.range s) = p := by
-  rw [← (map_injective_of_injective p.injective_subtype).eq_iff]
-  simp [map_span, ← Set.range_comp, Function.comp_def]
+  simp [← span_val_image_eq_iff, ← Set.range_comp, Function.comp_def]
 
 lemma comap_le_comap_iff_of_le_range {f : M →ₛₗ[σ₁₂] M₂} [RingHomSurjective σ₁₂]
     {p q : Submodule R₂ M₂} (hp : p ≤ LinearMap.range f) :
@@ -453,7 +479,34 @@ end AddCommMonoid
 
 section AddCommGroup
 
-variable [Ring R] [AddCommGroup M] [Module R M]
+variable {R M : Type*} [Semiring R] [AddCommGroup M] [Module R M]
+
+lemma sup_inf_assoc_of_le_of_neg_le {s : Submodule R M} (t : Submodule R M)
+    {p : Submodule R M} (hsp : s ≤ p) (hnsp : -s ≤ p) :
+    (s ⊔ t) ⊓ p = s ⊔ (t ⊓ p) := by
+  ext x; simp only [mem_sup, mem_inf]
+  constructor
+  · rintro ⟨⟨y, hy, z, hz, hyzx⟩, hx⟩
+    refine ⟨y, hy, z, ⟨hz, ?_⟩, hyzx⟩
+    rw [← add_right_inj, neg_add_cancel_left] at hyzx
+    simpa [hyzx] using p.add_mem (neg_le.mp hnsp hy) hx
+  · rintro ⟨y, hy, z, ⟨hz, hz'⟩, hyzx⟩
+    refine ⟨⟨y, hy, z, hz, hyzx⟩, ?_⟩
+    simpa [← hyzx] using p.add_mem (hsp hy) hz'
+
+lemma inf_sup_assoc_of_le_of_neg_le {s : Submodule R M} (t : Submodule R M)
+    {p : Submodule R M} (hps : p ≤ s) (hnps : -p ≤ s) :
+    (s ⊓ t) ⊔ p = s ⊓ (t ⊔ p) := by
+  rw [sup_comm, inf_comm, ← sup_inf_assoc_of_le_of_neg_le t hps hnps, inf_comm, sup_comm]
+
+theorem span_neg_eq_neg (s : Set M) : span R (-s) = -span R s := by
+  apply le_antisymm
+  · rw [span_le, coe_set_neg, ← Set.neg_subset, neg_neg]
+    exact subset_span
+  · rw [neg_le, span_le, coe_set_neg, ← Set.neg_subset]
+    exact subset_span
+
+variable {R M : Type*} [Ring R] [AddCommGroup M] [Module R M]
 
 lemma _root_.AddSubgroup.toIntSubmodule_closure (s : Set M) :
     (AddSubgroup.closure s).toIntSubmodule = .span ℤ s :=
@@ -461,20 +514,10 @@ lemma _root_.AddSubgroup.toIntSubmodule_closure (s : Set M) :
     ((Submodule.span ℤ s).toAddSubgroup.closure_le.mpr Submodule.subset_span)
 
 @[simp]
-theorem span_neg (s : Set M) : span R (-s) = span R s :=
-  calc
-    span R (-s) = span R ((-LinearMap.id : M →ₗ[R] M) '' s) := by simp
-    _ = map (-LinearMap.id) (span R s) := (map_span (-LinearMap.id) _).symm
-    _ = span R s := by simp
+theorem span_neg (s : Set M) : span R (-s) = span R s := by simp [span_neg_eq_neg]
 
-instance : IsModularLattice (Submodule R M) :=
-  ⟨fun y z xz a ha => by
-    rw [mem_inf, mem_sup] at ha
-    rcases ha with ⟨⟨b, hb, c, hc, rfl⟩, haz⟩
-    rw [mem_sup]
-    refine ⟨b, hb, c, mem_inf.2 ⟨hc, ?_⟩, rfl⟩
-    rw [← add_sub_cancel_right c b, add_comm]
-    apply z.sub_mem haz (xz hb)⟩
+instance : IsModularLattice (Submodule R M) := ⟨
+  fun _ _ hxy _ _ => by rwa [← sup_inf_assoc_of_le_of_neg_le _ hxy (by simpa)]⟩
 
 lemma isCompl_comap_subtype_of_isCompl_of_le {p q r : Submodule R M}
     (h₁ : IsCompl q r) (h₂ : q ≤ p) :
@@ -637,7 +680,7 @@ theorem covBy_span_singleton_sup {x : V} {s : Submodule K V} (h : x ∉ s) : Cov
   ⟨by simpa, (wcovBy_span_singleton_sup _ _).2⟩
 
 theorem disjoint_span_singleton : Disjoint s (K ∙ x) ↔ x ∈ s → x = 0 := by
-  simpa +contextual [disjoint_span_singleton'', or_iff_not_imp_left, forall_swap (β := ¬_),
+  simpa +contextual [disjoint_span_singleton'', or_iff_not_imp_left, forall_comm (β := ¬_),
     s.smul_mem_iff] using ⟨fun h ↦ h _ one_ne_zero, fun h _ _ ↦ h⟩
 
 theorem disjoint_span_singleton' (hx : x ≠ 0) : Disjoint s (K ∙ x) ↔ x ∉ s := by

@@ -195,6 +195,7 @@ theorem pretransitive_iff_unique_quotient_of_nonempty [Nonempty α] :
 
 variable {G α}
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 instance (x : orbitRel.Quotient G α) : IsPretransitive G x.orbit where
   exists_smul_eq := by
@@ -244,7 +245,7 @@ lemma _root_.IsCancelSMul.stabilizer_eq_bot [IsCancelSMul G α] (a : α) :
 @[to_additive]
 lemma _root_.isCancelSMul_iff_stabilizer_eq_bot :
     IsCancelSMul G α ↔ (∀ a : α, stabilizer G a = ⊥) := by
-  simp [isCancelSMul_iff_eq_one_of_smul_eq, Subgroup.eq_bot_iff_forall, forall_swap (α := G)]
+  simp [isCancelSMul_iff_eq_one_of_smul_eq, Subgroup.eq_bot_iff_forall, forall_comm (α := G)]
 
 /-- If the stabilizer of `a` is `S`, then the stabilizer of `g • a` is `gSg⁻¹`. -/
 theorem stabilizer_smul_eq_stabilizer_map_conj (g : G) (a : α) :

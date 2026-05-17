@@ -8,6 +8,8 @@ module
 public import Mathlib.CategoryTheory.ObjectProperty.Small
 public import Mathlib.CategoryTheory.Limits.Presentation
 
+import Mathlib.CategoryTheory.Adjunction.Limits
+
 /-!
 # Objects that are limits of objects satisfying a certain property
 
@@ -31,9 +33,9 @@ By requiring `P.limitsOfShape J ≤ P`, we introduce a typeclass
 ## TODO
 
 * formalize the closure of `P` under finite limits (which require
-iterating over `ℕ`), and more generally the closure under limits
-indexed by a category whose type of arrows has a cardinality
-that is bounded by a certain regular cardinal (@joelriou)
+  iterating over `ℕ`), and more generally the closure under limits
+  indexed by a category whose type of arrows has a cardinality
+  that is bounded by a certain regular cardinal (@joelriou)
 
 -/
 
@@ -45,7 +47,7 @@ namespace CategoryTheory.ObjectProperty
 
 open Limits
 
-variable {C : Type*} [Category* C] (P : ObjectProperty C)
+variable {C D : Type*} [Category* C] [Category* D] (P : ObjectProperty C)
   (J : Type u') [Category.{v'} J]
   {J' : Type u''} [Category.{v''} J']
 
@@ -60,6 +62,13 @@ lemma strictLimitsOfShape_monotone {Q : ObjectProperty C} (h : P ≤ Q) :
     P.strictLimitsOfShape J ≤ Q.strictLimitsOfShape J := by
   rintro _ ⟨F, hF⟩
   exact ⟨F, fun j ↦ h _ (hF j)⟩
+
+@[simp]
+lemma strictLimitsOfShape_bot [Nonempty J] :
+    strictLimitsOfShape (⊥ : ObjectProperty C) J = ⊥ := by
+  rw [eq_bot_iff]
+  rintro _ ⟨_, h⟩
+  exact h (Classical.arbitrary J)
 
 /-- A structure expressing that `X : C` is the limit of a functor
 `diag : J ⥤ C` such that `P (diag.obj j)` holds for all `j`. -/
@@ -128,6 +137,12 @@ lemma strictLimitsOfShape_le_limitsOfShape :
   rintro X ⟨F, hF⟩
   exact ⟨.limit F hF⟩
 
+@[simp]
+lemma limitsOfShape_bot [Nonempty J] : limitsOfShape (⊥ : ObjectProperty C) J = ⊥ := by
+  rw [eq_bot_iff]
+  rintro X ⟨⟨_, h⟩⟩
+  exact h (Classical.arbitrary J)
+
 instance : (P.limitsOfShape J).IsClosedUnderIsomorphisms where
   of_iso := by rintro _ _ e ⟨h⟩; exact ⟨h.ofIso e⟩
 
@@ -186,6 +201,12 @@ lemma IsClosedUnderLimitsOfShape.mk' [P.IsClosedUnderIsomorphisms]
     rw [← isoClosure_strictLimitsOfShape]
     exact monotone_isoClosure h
 
+instance [Nonempty J] : IsClosedUnderLimitsOfShape (⊥ : ObjectProperty C) J where
+  limitsOfShape_le := by rw [limitsOfShape_bot]
+
+instance : IsClosedUnderLimitsOfShape (⊤ : ObjectProperty C) J where
+  limitsOfShape_le _ _ := by trivial
+
 export IsClosedUnderLimitsOfShape (limitsOfShape_le)
 
 section
@@ -205,6 +226,11 @@ lemma prop_limit (F : J ⥤ C) [HasLimit F] (hF : ∀ (j : J), P (F.obj j)) :
   P.prop_of_isLimit (limit.isLimit F) hF
 
 end
+
+lemma prop_pi {J : Type*} [P.IsClosedUnderLimitsOfShape (Discrete J)] (X : J → C)
+    [HasProduct X] (hF : ∀ (j : J), P (X j)) :
+    P (∏ᶜ X) :=
+  P.prop_of_isLimit (productIsProduct X) (fun _ ↦ hF _)
 
 variable {J} in
 lemma limitsOfShape_le_of_initial (G : J ⥤ J') [G.Initial] :
@@ -229,15 +255,20 @@ lemma IsClosedUnderLimitsOfShape.of_equivalence (e : J ≌ J')
     P.IsClosedUnderLimitsOfShape J' := by
   rwa [← P.isClosedUnderLimitsOfShape_iff_of_equivalence e]
 
+instance IsClosedUnderLimitsOfShape.inverseImage
+    (P : ObjectProperty D) (F : C ⥤ D) [P.IsClosedUnderLimitsOfShape J]
+    [PreservesLimitsOfShape J F] : (P.inverseImage F).IsClosedUnderLimitsOfShape J :=
+  ⟨fun _ ⟨c, H⟩ ↦ ObjectProperty.LimitOfShape.prop (P := P) ⟨c.map F, H⟩⟩
+
+lemma isClosedUnderLimitsOfShape_inverseImage_iff (P : ObjectProperty D)
+    [P.IsClosedUnderIsomorphisms] (e : C ≌ D) :
+    (P.inverseImage e.functor).IsClosedUnderLimitsOfShape J ↔ P.IsClosedUnderLimitsOfShape J := by
+  refine ⟨fun H ↦ ?_, fun _ ↦ inferInstance⟩
+  convert (inferInstance :
+    ((P.inverseImage e.functor).inverseImage e.inverse).IsClosedUnderLimitsOfShape J)
+  ext X
+  simpa using P.prop_iff_of_iso (e.counitIso.app X).symm
+
 end ObjectProperty
 
-namespace Limits
-
-@[deprecated (since := "2025-09-22")] alias ClosedUnderLimitsOfShape :=
-  ObjectProperty.IsClosedUnderLimitsOfShape
-@[deprecated (since := "2025-09-22")] alias closedUnderLimitsOfShape_of_limit :=
-  ObjectProperty.IsClosedUnderLimitsOfShape.mk'
-@[deprecated (since := "2025-09-22")] alias ClosedUnderLimitsOfShape.limit :=
-  ObjectProperty.prop_limit
-
-end CategoryTheory.Limits
+end CategoryTheory

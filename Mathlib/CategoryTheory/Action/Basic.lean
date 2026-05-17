@@ -72,7 +72,7 @@ section
 @[simps]
 def trivial (X : V) : Action V G := { V := X, ρ := 1 }
 
-instance inhabited' : Inhabited (Action (Type*) G) :=
+instance inhabited' : Inhabited (Action Type* G) :=
   ⟨⟨PUnit, 1⟩⟩
 
 instance : Inhabited (Action AddCommGrpCat G) :=
@@ -200,6 +200,7 @@ def inverse : (SingleObj G ⥤ V) ⥤ Action V G where
 def unitIso : 𝟭 (Action V G) ≅ functor ⋙ inverse :=
   NatIso.ofComponents fun M => mkIso (Iso.refl _)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary definition for `functorCategoryEquivalence`. -/
 @[simps!]
 def counitIso : inverse ⋙ functor ≅ 𝟭 (SingleObj G ⥤ V) :=
@@ -237,7 +238,7 @@ variable (V G)
 
 /-- (implementation) The forgetful functor from bundled actions to the underlying objects.
 
-Use the `CategoryTheory.forget` API provided by the `HasForget` instance below,
+Use the `CategoryTheory.forget` API provided by the `ConcreteCategory` instance below,
 rather than using this directly.
 -/
 @[simps]
@@ -246,9 +247,6 @@ def forget : Action V G ⥤ V where
   map f := f.hom
 
 instance : (forget V G).Faithful where map_injective w := Hom.ext w
-
-instance [HasForget V] : HasForget (Action V G) where
-  forget := forget V G ⋙ HasForget.forget
 
 /-- The type of `V`-morphisms that can be lifted back to morphisms in the category `Action`. -/
 abbrev HomSubtype {FV : V → V → Type*} {CV : V → Type*} [∀ X Y, FunLike (FV X Y) (CV X) (CV Y)]
@@ -274,7 +272,8 @@ instance {FV : V → V → Type*} {CV : V → Type*} [∀ X Y, FunLike (FV X Y) 
   id_apply := ConcreteCategory.id_apply (C := V)
   comp_apply _ _ := ConcreteCategory.comp_apply (C := V) _ _
 
-instance hasForgetToV [HasForget V] : HasForget₂ (Action V G) V where forget₂ := forget V G
+instance hasForgetToV {FV : V → V → Type*} {CV : V → Type*} [∀ X Y, FunLike (FV X Y) (CV X) (CV Y)]
+    [ConcreteCategory V FV] : HasForget₂ (Action V G) V where forget₂ := forget V G
 
 /-- The forgetful functor is intertwined by `functorCategoryEquivalence` with
 evaluation at `PUnit.star`. -/
@@ -293,12 +292,14 @@ noncomputable instance preservesColimits_forget [HasColimits V] :
 -- TODO construct categorical images?
 end Forget
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Iso.conj_ρ {M N : Action V G} (f : M ≅ N) (g : G) :
     N.ρ g = ((forget V G).mapIso f).conj (M.ρ g) := by
       rw [Iso.conj_apply, Iso.eq_inv_comp]; simp [f.hom.comm]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Actions/representations of the trivial monoid are just objects in the ambient category. -/
-def actionPunitEquivalence : Action V PUnit ≌ V where
+def actionPUnitEquivalence : Action V PUnit ≌ V where
   functor := forget V _
   inverse :=
     { obj := fun X => ⟨X, 1⟩
@@ -309,6 +310,8 @@ def actionPunitEquivalence : Action V PUnit ≌ V where
         forget_obj, Iso.refl_hom, Category.comp_id]
       exact ρ_one X
   counitIso := NatIso.ofComponents fun _ => Iso.refl _
+
+@[deprecated (since := "2026-02-08")] alias actionPunitEquivalence := actionPUnitEquivalence
 
 variable (V)
 
@@ -369,6 +372,7 @@ instance : (res V f).Faithful where
     ext
     rw [← res_map_hom _ f g₁, ← res_map_hom _ f g₂, h]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The functor from `Action V H` to `Action V G` induced by a monoid homomorphism
 `f : G →* H` is full if `f` is surjective. -/
 lemma full_res (f_surj : Function.Surjective f) : (res V f).Full where
@@ -432,6 +436,7 @@ def mapActionComp {T : Type*} [Category* T] (F : V ⥤ W) (F' : W ⥤ T) :
     (F ⋙ F').mapAction G ≅ F.mapAction G ⋙ F'.mapAction G :=
   NatIso.ofComponents (fun X ↦ Iso.refl _)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `Functor.mapAction` preserves isomorphisms of functors. -/
 @[simps! hom inv]
 def mapActionCongr {F F' : V ⥤ W} (e : F ≅ F') :

@@ -75,6 +75,7 @@ def GradedTensorProduct
     [GradedAlgebra 𝒜] [GradedAlgebra ℬ] :
     Type _ :=
   A ⊗[R] B
+deriving AddCommGroupWithOne, Module R
 
 namespace GradedTensorProduct
 
@@ -82,10 +83,6 @@ open TensorProduct
 
 @[inherit_doc GradedTensorProduct]
 scoped[TensorProduct] notation:100 𝒜 " ᵍ⊗[" R "] " ℬ:100 => GradedTensorProduct R 𝒜 ℬ
-
-instance instAddCommGroupWithOne : AddCommGroupWithOne (𝒜 ᵍ⊗[R] ℬ) :=
-  Algebra.TensorProduct.instAddCommGroupWithOne
-instance : Module R (𝒜 ᵍ⊗[R] ℬ) := TensorProduct.leftModule
 
 variable (R) in
 /-- The casting equivalence to move between regular and graded tensor products. -/
@@ -176,8 +173,6 @@ instance instMonoid : Monoid (𝒜 ᵍ⊗[R] ℬ) where
     rw [gradedMul_assoc]
 
 instance instRing : Ring (𝒜 ᵍ⊗[R] ℬ) where
-  __ := instAddCommGroupWithOne 𝒜 ℬ
-  __ := instMonoid 𝒜 ℬ
   right_distrib x y z := by simp_rw [mul_def, LinearMap.map_add₂]
   left_distrib x y z := by simp_rw [mul_def, map_add]
   mul_zero x := by simp_rw [mul_def, map_zero]

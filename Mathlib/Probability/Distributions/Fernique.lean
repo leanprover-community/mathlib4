@@ -421,9 +421,7 @@ lemma lintegral_exp_mul_sq_norm_le_mul [IsProbabilityMeasure μ]
       change μ {x | ¬ x ∈ closedBall 0 a} = 0
       rw [← ae_iff]
       filter_upwards [ha] with x hx using by simp [hx]
-    · refine measurable_to_prop ?_
-      rw [show (fun x : E ↦ ‖x‖ ≤ a) ⁻¹' {True} = {x : E | ‖x‖ ≤ a} by ext; simp]
-      exact measurableSet_le (by fun_prop) (by fun_prop)
+    · fun_prop
   -- So we can assume `μ {x | ‖x‖ ≤ a} < 1`, which implies `c' < 1`
   have ha_lt : μ {x | ‖x‖ ≤ a} < 1 := lt_of_le_of_ne prob_le_one ha
   have hc'_lt : c' < 1 := lt_of_le_of_lt hc' ha_lt
@@ -557,7 +555,7 @@ lemma exists_integrable_exp_sq_of_map_rotation_eq_self_of_isProbabilityMeasure
   -- Otherwise, we can find `b > 0` such that the ball of radius `b` has full measure
   obtain ⟨b, hb⟩ : ∃ b, μ {x | ‖x‖ ≤ b} = 1 := by
     by_contra h_ne
-    push_neg at h_meas_Ioo h_ne
+    push Not at h_meas_Ioo h_ne
     suffices μ .univ ≤ 2⁻¹ by simp at this
     have h_le a : μ {x | ‖x‖ ≤ a} ≤ 2⁻¹ := by
       have h_of_pos a' (ha : 0 < a') : μ {x | ‖x‖ ≤ a'} ≤ 2⁻¹ := by

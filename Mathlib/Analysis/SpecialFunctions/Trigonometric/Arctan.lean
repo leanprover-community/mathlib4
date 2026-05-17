@@ -6,6 +6,7 @@ Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne, Benjamin
 module
 
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Complex
+import Mathlib.Topology.Order.AtTopBotIxx
 
 /-!
 # The `arctan` function.
@@ -192,10 +193,10 @@ theorem arctan_eq_zero_iff : arctan x = 0 ↔ x = 0 :=
   .trans (by rw [arctan_zero]) arctan_injective.eq_iff
 
 theorem tendsto_arctan_atTop : Tendsto arctan atTop (𝓝[<] (π / 2)) :=
-  tendsto_Ioo_atTop.mp tanOrderIso.symm.tendsto_atTop
+  tendsto_Ioo_atTop (by simp) |>.mp tanOrderIso.symm.tendsto_atTop
 
 theorem tendsto_arctan_atBot : Tendsto arctan atBot (𝓝[>] (-(π / 2))) :=
-  tendsto_Ioo_atBot.mp tanOrderIso.symm.tendsto_atBot
+  tendsto_Ioo_atBot (by simp) |>.mp tanOrderIso.symm.tendsto_atBot
 
 theorem arctan_eq_of_tan_eq (h : tan x = y) (hx : x ∈ Ioo (-(π / 2)) (π / 2)) :
     arctan y = x :=
@@ -262,8 +263,7 @@ theorem arccos_eq_arctan (h : 0 < x) : arccos x = arctan (√(1 - x ^ 2) / x) :=
 
 theorem arctan_inv_of_pos (h : 0 < x) : arctan x⁻¹ = π / 2 - arctan x := by
   rw [← arctan_tan (x := _ - _), tan_pi_div_two_sub, tan_arctan]
-  · norm_num
-    exact (arctan_lt_pi_div_two x).trans (half_lt_self_iff.mpr pi_pos)
+  · simpa using (arctan_lt_pi_div_two x).trans (half_lt_self_iff.mpr pi_pos)
   · rw [sub_lt_self_iff, ← arctan_zero]
     exact tanOrderIso.symm.strictMono h
 

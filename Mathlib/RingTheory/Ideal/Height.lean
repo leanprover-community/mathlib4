@@ -6,8 +6,9 @@ Authors: Wanyi He, Jiedong Jiang, Jingting Wang, Andrew Yang, Shouxin Zhang
 module
 
 public import Mathlib.Algebra.Module.SpanRank
-public import Mathlib.RingTheory.Spectrum.Prime.Noetherian
 public import Mathlib.RingTheory.Ideal.MinimalPrime.Localization
+public import Mathlib.RingTheory.Ideal.MinimalPrime.Noetherian
+public import Mathlib.RingTheory.Spectrum.Prime.Topology
 
 /-!
 # The Height of an Ideal
@@ -38,7 +39,7 @@ noncomputable def Ideal.primeHeight [hI : I.IsPrime] : ℕ∞ :=
 
 /-- The height of an ideal is defined as the infimum of the heights of its minimal prime ideals. -/
 noncomputable def Ideal.height : ℕ∞ :=
-  ⨅ J ∈ I.minimalPrimes, @Ideal.primeHeight _ _ J (minimalPrimes_isPrime (I := I) ‹_›)
+  ⨅ J ∈ I.minimalPrimes, @Ideal.primeHeight _ _ J ‹J ∈ I.minimalPrimes›.isPrime
 
 /-- For a prime ideal, its height equals its prime height. -/
 lemma Ideal.height_eq_primeHeight [I.IsPrime] : I.height = I.primeHeight := by
@@ -74,6 +75,7 @@ lemma Ideal.primeHeight_lt_top (I : Ideal R) [I.FiniteHeight] [I.IsPrime] :
   rw [← I.height_eq_primeHeight]
   exact Ideal.height_lt_top ‹I.IsPrime›.ne_top
 
+set_option backward.isDefEq.respectTransparency false in
 lemma Ideal.exists_ltSeries_length_eq_height (p : Ideal R) [p.IsPrime] [p.FiniteHeight] :
     ∃ (l : LTSeries (PrimeSpectrum R)),
       RelSeries.last l = ⟨p, inferInstance⟩ ∧ l.length = p.height := by
@@ -114,9 +116,9 @@ lemma Ideal.primeHeight_strict_mono {I J : Ideal R} [I.IsPrime] [J.IsPrime]
 theorem Ideal.height_mono {I J : Ideal R} (h : I ≤ J) : I.height ≤ J.height := by
   simp only [height]
   refine le_iInf₂ (fun p hp ↦ ?_)
-  have := Ideal.minimalPrimes_isPrime hp
-  obtain ⟨q, hq, e⟩ := Ideal.exists_minimalPrimes_le (h.trans hp.1.2)
-  haveI := Ideal.minimalPrimes_isPrime hq
+  have := hp.isPrime
+  obtain ⟨q, hq, e⟩ := Ideal.exists_minimalPrimes_le (h.trans hp.le)
+  haveI := hq.isPrime
   exact (iInf₂_le q hq).trans (Ideal.primeHeight_mono e)
 
 @[gcongr]
@@ -128,9 +130,13 @@ lemma Ideal.height_strict_mono_of_is_prime {I J : Ideal R} [I.IsPrime]
     exact I.primeHeight_lt_top
   · rw [← ENat.add_one_le_iff I.primeHeight_ne_top, Ideal.height]
     refine le_iInf₂ (fun K hK ↦ ?_)
-    haveI := Ideal.minimalPrimes_isPrime hK
-    have : I < K := lt_of_lt_of_le h hK.1.2
-    exact Ideal.primeHeight_add_one_le_of_lt this
+    have := hK.isPrime
+    exact Ideal.primeHeight_add_one_le_of_lt (lt_of_lt_of_le h hK.le)
+
+/-- A prime ideal of finite height is equal to any ideal that contains it with no greater height. -/
+lemma Ideal.eq_of_le_of_height_le [I.IsPrime] [I.FiniteHeight]
+    {J : Ideal R} (h : I ≤ J) (h_height : J.height ≤ I.height) : I = J :=
+  eq_of_le_of_not_lt h fun hlt => not_le.mpr (Ideal.height_strict_mono_of_is_prime hlt) h_height
 
 lemma Ideal.primeHeight_le_ringKrullDim {I : Ideal R} [I.IsPrime] :
     I.primeHeight ≤ ringKrullDim R := Order.height_le_krullDim _
@@ -139,7 +145,7 @@ lemma Ideal.height_le_ringKrullDim_of_ne_top {I : Ideal R} (h : I ≠ ⊤) :
     I.height ≤ ringKrullDim R := by
   rw [Ideal.height]
   obtain ⟨P, hP⟩ : Nonempty (I.minimalPrimes) := Ideal.nonempty_minimalPrimes h
-  have := Ideal.minimalPrimes_isPrime hP
+  have := hP.isPrime
   refine le_trans ?_ (Ideal.primeHeight_le_ringKrullDim (I := P))
   simpa using iInf₂_le _ hP
 
@@ -177,16 +183,14 @@ lemma Ideal.mem_minimalPrimes_of_height_eq {I J : Ideal R} (e : I ≤ J) [J.IsPr
   obtain ⟨p, h₁, h₂⟩ := Ideal.exists_minimalPrimes_le e
   convert h₁
   refine (eq_of_le_of_not_lt h₂ fun h₃ ↦ ?_).symm
-  have := h₁.1.1
+  have := h₁.isPrime
   have := finiteHeight_of_le h₂ IsPrime.ne_top'
-  exact lt_irrefl _
-     ((height_strict_mono_of_is_prime h₃).trans_le (e'.trans <| height_mono h₁.1.2))
+  exact lt_irrefl _ ((height_strict_mono_of_is_prime h₃).trans_le (e'.trans <| height_mono h₁.le))
 
 /-- A prime ideal has height zero if and only if it is minimal -/
 lemma Ideal.primeHeight_eq_zero_iff {I : Ideal R} [I.IsPrime] :
     primeHeight I = 0 ↔ I ∈ minimalPrimes R := by
-  rw [Ideal.primeHeight, Order.height_eq_zero, minimalPrimes, Ideal.minimalPrimes]
-  simp only [bot_le, and_true, Set.mem_setOf_eq, Minimal, IsMin]
+  rw [Ideal.primeHeight, Order.height_eq_zero, minimalPrimes_eq_minimals]
   constructor
   · intro h
     refine ⟨inferInstance, ?_⟩
@@ -195,11 +199,22 @@ lemma Ideal.primeHeight_eq_zero_iff {I : Ideal R} [I.IsPrime] :
   · rintro ⟨hI, hI'⟩ b hb
     exact hI' (y := b.asIdeal) b.isPrime hb
 
+/-- If `x` is a non-zero-divisor, then `span {x}` has height at least 1. -/
+lemma Ideal.one_le_height_span_singleton_of_mem_nonZeroDivisors
+    {x : R} (hx : x ∈ nonZeroDivisors R) : 1 ≤ (span {x}).height := by
+  dsimp [Ideal.height]
+  refine le_iInf₂ fun q hq => ?_
+  have : q.IsPrime := hq.isPrime
+  rw [ENat.one_le_iff_ne_zero, Ne, primeHeight_eq_zero_iff]
+  intro hmin
+  exact absurd hx <| notMem_nonZeroDivisors_of_mem_mem_minimalPrimes
+    (hq.1.2 <| Ideal.mem_span_singleton.mpr <| dvd_refl x) hmin
+
 @[simp]
 lemma Ideal.height_bot [Nontrivial R] : (⊥ : Ideal R).height = 0 := by
   obtain ⟨p, hp⟩ := Ideal.nonempty_minimalPrimes (R := R) (I := ⊥) top_ne_bot.symm
   simp only [Ideal.height, ENat.iInf_eq_zero]
-  exact ⟨p, hp, haveI := hp.1.1; primeHeight_eq_zero_iff.mpr hp⟩
+  exact ⟨p, hp, haveI := hp.isPrime; primeHeight_eq_zero_iff.mpr hp⟩
 
 /-- In a trivial commutative ring, the height of any ideal is `∞`. -/
 @[simp, nontriviality]
@@ -279,7 +294,7 @@ lemma RingEquiv.height_comap {S : Type*} [CommRing S] (e : R ≃+* S) (I : Ideal
     rw [← Ideal.comap_coe,
       Ideal.comap_minimalPrimes_eq_of_surjective (f := (↑e : R →+* S)) e.surjective]
     exact e.idealComapOrderIso.injective.mem_set_image.symm
-  · have : J.IsPrime := h.1.1
+  · have : J.IsPrime := h.isPrime
     simp only [EquivLike.coe_coe, RingEquiv.idealComapOrderIso_apply,
       ← Ideal.height_eq_primeHeight, RingEquiv.height_comap_of_isPrime]
 
@@ -308,9 +323,9 @@ lemma ringKrullDim_le_iff_isMaximal_height_le {R : Type*} [CommRing R] (n : With
   norm_cast
   exact Ideal.height_mono hle
 
-theorem IsLocalization.primeHeight_comap (S : Submonoid R) {A : Type*} [CommRing A] [Algebra R A]
+theorem IsLocalization.primeHeight_under (S : Submonoid R) {A : Type*} [CommRing A] [Algebra R A]
     [IsLocalization S A] (J : Ideal A) [J.IsPrime] :
-    (J.comap (algebraMap R A)).primeHeight = J.primeHeight := by
+    (J.under R).primeHeight = J.primeHeight := by
   rw [eq_comm, Ideal.primeHeight, Ideal.primeHeight, ← WithBot.coe_inj,
     Order.height_eq_krullDim_Iic, Order.height_eq_krullDim_Iic]
   let e := IsLocalization.orderIsoOfPrime S A
@@ -325,19 +340,25 @@ theorem IsLocalization.primeHeight_comap (S : Submonoid R) {A : Type*} [CommRing
         congrArg (fun I ↦ I.1) (e.right_inv ⟨_, I.1.2, H _ I.2⟩)
       map_rel_iff' {I₁ I₂} := @RelIso.map_rel_iff _ _ _ _ e ⟨_, I₁.1.2⟩ ⟨_, I₂.1.2⟩ }
 
-theorem IsLocalization.height_comap (S : Submonoid R) {A : Type*} [CommRing A] [Algebra R A]
-    [IsLocalization S A] (J : Ideal A) : (J.comap (algebraMap R A)).height = J.height := by
+@[deprecated (since := "2026-04-09")] alias IsLocalization.primeHeight_comap :=
+  IsLocalization.primeHeight_under
+
+theorem IsLocalization.height_under (S : Submonoid R) {A : Type*} [CommRing A] [Algebra R A]
+    [IsLocalization S A] (J : Ideal A) : (J.under R).height = J.height := by
   rw [Ideal.height, Ideal.height]
-  simp_rw [← IsLocalization.primeHeight_comap S, IsLocalization.minimalPrimes_comap S A,
+  simp_rw [← IsLocalization.primeHeight_under S, IsLocalization.minimalPrimes_comap S A,
     ← Ideal.height_eq_primeHeight, iInf_image]
+
+@[deprecated (since := "2026-04-09")] alias IsLocalization.height_comap :=
+  IsLocalization.height_under
 
 theorem IsLocalization.AtPrime.ringKrullDim_eq_height (I : Ideal R) [I.IsPrime] (A : Type*)
     [CommRing A] [Algebra R A] [IsLocalization.AtPrime A I] :
     ringKrullDim A = I.height := by
   have := IsLocalization.AtPrime.isLocalRing A I
   rw [← IsLocalRing.maximalIdeal_primeHeight_eq_ringKrullDim,
-      ← IsLocalization.primeHeight_comap I.primeCompl,
-      ← IsLocalization.AtPrime.comap_maximalIdeal A I,
+      ← IsLocalization.primeHeight_under I.primeCompl,
+      ← IsLocalization.AtPrime.under_maximalIdeal A I,
       Ideal.height_eq_primeHeight]
 
 lemma IsLocalization.height_map_of_disjoint {S : Type*} [CommRing S] [Algebra R S] (M : Submonoid R)
@@ -346,7 +367,7 @@ lemma IsLocalization.height_map_of_disjoint {S : Type*} [CommRing S] [Algebra R 
   let P := p.map (algebraMap R S)
   have : P.IsPrime := isPrime_of_isPrime_disjoint M S p ‹_› h
   have := isLocalization_isLocalization_atPrime_isLocalization (M := M) (Localization.AtPrime P) P
-  simp_rw [P, comap_map_of_isPrime_disjoint M S _ h] at this
+  simp_rw [P, under_map_of_isPrime_disjoint M S _ h] at this
   have := ringKrullDim_eq_of_ringEquiv (IsLocalization.algEquiv p.primeCompl
     (Localization.AtPrime P) (Localization.AtPrime p)).toRingEquiv
   rw [AtPrime.ringKrullDim_eq_height P, AtPrime.ringKrullDim_eq_height p] at this
@@ -360,10 +381,7 @@ lemma mem_minimalPrimes_of_primeHeight_eq_height {I J : Ideal R} [J.IsPrime] (e 
 lemma exists_spanRank_le_and_le_height_of_le_height [IsNoetherianRing R] (I : Ideal R) (r : ℕ)
     (hr : r ≤ I.height) : ∃ J ≤ I, J.spanRank ≤ r ∧ r ≤ J.height := by
   induction r with
-  | zero =>
-    refine ⟨⊥, bot_le, ?_, zero_le _⟩
-    rw [Submodule.spanRank_bot]
-    exact le_refl 0
+  | zero => simp
   | succ r ih =>
     obtain ⟨J, h₁, h₂, h₃⟩ := ih ((WithTop.coe_le_coe.mpr r.le_succ).trans hr)
     let S := { K | K ∈ J.minimalPrimes ∧ Ideal.height K = r }
@@ -373,8 +391,8 @@ lemma exists_spanRank_le_and_le_height_of_le_height [IsNoetherianRing R] (I : Id
       refine (Ideal.subset_union_prime ⊥ ⊥ ?_).not.mpr ?_
       · rintro K hK - -
         rw [Set.Finite.mem_toFinset] at hK
-        exact hK.1.1.1
-      · push_neg
+        exact hK.1.isPrime
+      · push Not
         intro K hK e
         have := hr.trans (Ideal.height_mono e)
         rw [Set.Finite.mem_toFinset] at hK
@@ -389,7 +407,7 @@ lemma exists_spanRank_le_and_le_height_of_le_height [IsNoetherianRing R] (I : Id
       push_cast
       exact add_le_add h₂ ((Submodule.spanRank_span_le_card _).trans (by simp))
     · refine le_iInf₂ (fun p hp ↦ ?_)
-      have := hp.1.1
+      have := hp.isPrime
       by_cases h : p.height = ⊤
       · rw [← p.height_eq_primeHeight, h]
         exact le_top
@@ -406,9 +424,9 @@ lemma exists_spanRank_le_and_le_height_of_le_height [IsNoetherianRing R] (I : Id
           apply le_antisymm
           · rwa [← p.height_eq_primeHeight]
           · rwa [← e]
-        refine ⟨mem_minimalPrimes_of_primeHeight_eq_height (le_sup_left.trans hp.1.2) this.symm, ?_⟩
+        refine ⟨mem_minimalPrimes_of_primeHeight_eq_height (le_sup_left.trans hp.le) this.symm, ?_⟩
         rwa [p.height_eq_primeHeight, eq_comm]
-      · exact hp.1.2 <| Ideal.mem_sup_right <| Ideal.subset_span <| Set.mem_singleton x
+      · exact hp.le <| Ideal.mem_sup_right <| mem_span_singleton_self x
 
 /-- In a nontrivial commutative ring `R`, the supremum of heights of all ideals is equal to the
 Krull dimension of `R`. -/

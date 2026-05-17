@@ -953,7 +953,7 @@ end LinearOrderedAddCommGroup
 
 In rings, we simplify `(m : ℤ) • x` to `↑m * x`, so we need to restate some lemmas
 using `↑m * x` instead of `m • x`. In some lemmas, `m` is a variable,
-in other lemmas `m = toIcoDiv _ _ _` or `m = `toIocDiv _ _ _`.
+in other lemmas `m = toIcoDiv _ _ _` or `m = toIocDiv _ _ _`.
 -/
 
 section Ring

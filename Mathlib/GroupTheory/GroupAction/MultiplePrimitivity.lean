@@ -13,9 +13,9 @@ public import Mathlib.GroupTheory.GroupAction.SubMulAction.OfFixingSubgroup
 Let `G` be a group acting on a type `α`.
 
 * `MulAction.IsMultiplyPreprimitive` :
-The action is said to be `n`-primitive if, for every subset `s :
-Set α` with `n` elements, the actions f `stabilizer G s` on the
-complement of `s` is primitive.
+  The action is said to be `n`-primitive if, for every subset `s :
+  Set α` with `n` elements, the actions f `stabilizer G s` on the
+  complement of `s` is primitive.
 
 * `MulAction.is_zero_preprimitive` : any action is 0-primitive
 
@@ -30,15 +30,15 @@ complement of `s` is primitive.
   ofFixingSubgroup.isMultiplyPreprimitive
 
 * `MulAction.ofFixingSubgroup.isMultiplyPreprimitive`:
-If an action is `s.ncard + m`-primitive, then
-the action of `FixingSubgroup G s` on the complement of `s`
-is `m`-primitive.
+  If an action is `s.ncard + m`-primitive, then
+  the action of `FixingSubgroup G s` on the complement of `s`
+  is `m`-primitive.
 
 -/
 
-@[expose] public section
+public section
 
-open scoped BigOperators Pointwise Cardinal
+open scoped Pointwise Cardinal
 
 namespace MulAction
 
@@ -133,15 +133,7 @@ theorem is_one_preprimitive_iff :
     rw [isMultiplyPreprimitive_iff]
     constructor
     · exact is_one_pretransitive_iff.mpr h.toIsPretransitive
-    · intro s hs
-      suffices s = ∅ by
-        rwa [this, isPreprimitive_of_fixingSubgroup_empty_iff]
-      rw [← Set.encard_eq_zero]
-      suffices s.encard ≠ (⊤ : ℕ∞) by
-        obtain ⟨m, hm⟩ := ENat.ne_top_iff_exists.mp this
-        rw [← hm, ← Nat.cast_one, ← ENat.coe_add, Nat.cast_inj, Nat.add_eq_right] at hs
-        simp [← hm, hs]
-      exact fun h ↦ by simp [h] at hs
+    · simpa using isPreprimitive_of_fixingSubgroup_empty_iff.mpr h
 
 /-- The action of `stabilizer M a` is one-less preprimitive. -/
 @[to_additive /-- The action of `stabilizer M a` is one-less preprimitive. -/]
@@ -252,7 +244,7 @@ theorem isMultiplyPreprimitive_of_isMultiplyPretransitive_succ {n : ℕ}
     obtain ⟨m, hm⟩ := Nat.exists_eq_add_of_le hn
     apply isPreprimitive_of_is_two_pretransitive
     have hs' : s.encard = m := by
-      simp only [hm, Nat.succ_eq_add_one, zero_add, add_comm 1, Nat.cast_add, Nat.cast_one] at hs
+      simp only [hm, Nat.succ_eq_add_one, zero_add, add_comm 1] at hs
       exact ENat.add_left_injective_of_ne_top ENat.one_ne_top hs
     have : Finite s := Set.finite_of_encard_eq_coe hs'
     apply ofFixingSubgroup.isMultiplyPretransitive (G := M) s (n := n.succ)

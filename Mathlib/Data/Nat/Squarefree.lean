@@ -5,7 +5,7 @@ Authors: Aaron Anderson
 -/
 module
 
-public import Mathlib.Algebra.Order.BigOperators.Ring.Finset
+public import Mathlib.Algebra.Order.BigOperators.GroupWithZero.Finset
 public import Mathlib.Algebra.Squarefree.Basic
 public import Mathlib.Data.Nat.Factorization.Basic
 public import Mathlib.NumberTheory.Divisors
@@ -168,9 +168,8 @@ theorem minSqFacAux_has_prop {n : ℕ} (k) (n0 : 0 < n) (i) (e : k = 2 * i + 3)
         lt_of_le_of_lt (by gcongr) (Nat.minFac_lemma n k h)
       @minSqFacAux_has_prop n' (k + 2) (pos_of_dvd_of_pos nd' n0) (i + 1)
         (by simp [e, left_distrib]) fun m m2 d => ?_
-    rcases Nat.eq_or_lt_of_le (ih m m2 (dvd_trans d nd')) with me | ml
-    · subst me
-      contradiction
+    rcases Nat.eq_or_lt_of_le (ih m m2 (dvd_trans d nd')) with rfl | ml
+    · contradiction
     apply (Nat.eq_or_lt_of_le ml).resolve_left
     intro me
     rw [← me, e] at d
@@ -191,17 +190,15 @@ termination_by n.sqrt + 2 - k
 theorem minSqFac_has_prop (n : ℕ) : MinSqFacProp n (minSqFac n) := by
   dsimp only [minSqFac]; split_ifs with d2 d4
   · exact ⟨prime_two, (dvd_div_iff_mul_dvd d2).1 d4, fun p pp _ => pp.two_le⟩
-  · rcases Nat.eq_zero_or_pos n with n0 | n0
-    · subst n0
-      cases d4 (by decide)
+  · rcases Nat.eq_zero_or_pos n with rfl | n0
+    · cases d4 (by decide)
     refine minSqFacProp_div _ prime_two d2 (mt (dvd_div_iff_mul_dvd d2).2 d4) ?_
     refine minSqFacAux_has_prop 3 (Nat.div_pos (le_of_dvd n0 d2) (by decide)) 0 rfl ?_
     refine fun p pp dp => succ_le_of_lt (lt_of_le_of_ne pp.two_le ?_)
     rintro rfl
     contradiction
-  · rcases Nat.eq_zero_or_pos n with n0 | n0
-    · subst n0
-      cases d2 (by decide)
+  · rcases Nat.eq_zero_or_pos n with rfl | n0
+    · cases d2 (by decide)
     refine minSqFacAux_has_prop _ n0 0 rfl ?_
     refine fun p pp dp => succ_le_of_lt (lt_of_le_of_ne pp.two_le ?_)
     rintro rfl
@@ -370,7 +367,7 @@ lemma prod_primeFactors_of_squarefree (hn : Squarefree n) : ∏ p ∈ n.primeFac
 lemma primeFactors_prod (hs : ∀ p ∈ s, p.Prime) : primeFactors (∏ p ∈ s, p) = s := by
   have hn : ∏ p ∈ s, p ≠ 0 := prod_ne_zero_iff.2 fun p hp ↦ (hs _ hp).ne_zero
   ext p
-  rw [mem_primeFactors_of_ne_zero hn, and_congr_right (fun hp ↦ hp.prime.dvd_finset_prod_iff _)]
+  rw [mem_primeFactors_of_ne_zero hn, and_congr_right (fun hp ↦ hp.prime.dvd_finsetProd_iff _)]
   refine ⟨?_, fun hp ↦ ⟨hs _ hp, _, hp, dvd_rfl⟩⟩
   rintro ⟨hp, q, hq, hpq⟩
   rwa [← ((hs _ hq).dvd_iff_eq hp.ne_one).1 hpq]

@@ -562,7 +562,7 @@ def toPartitionOfUnity : PartitionOfUnity ι X s where
     simp only [ContinuousMap.coe_mk, sum_toPOUFun_eq, sub_eq_self]
     apply finprod_eq_zero (fun i => 1 - f i x) (f.ind x hx)
     · simp only [f.ind_apply x hx, sub_self]
-    · rw [mulSupport_one_sub]
+    · rw [HasFiniteMulSupport, mulSupport_one_sub]
       exact f.point_finite x
   sum_le_one' x := by
     simp only [ContinuousMap.coe_mk, sum_toPOUFun_eq, sub_le_self_iff]

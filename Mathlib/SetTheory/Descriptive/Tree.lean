@@ -33,6 +33,8 @@ def tree (A : Type*) : CompleteSublattice (Set (List A)) :=
 
 @[simps!] instance (A : Type*) : SetLike (tree A) (List A) := SetLike.instSubtypeSet
 
+example (A : Type*) : PartialOrder (tree A) := inferInstance
+
 namespace Tree
 variable {A : Type*} {S T : tree A}
 

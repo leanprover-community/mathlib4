@@ -42,7 +42,7 @@ TODO: generalize `Nat.le_of_le_of_sub_le_sub_right`, `Nat.sub_le_sub_right_iff`,
   `Nat.mul_self_sub_mul_self_eq`
 -/
 
-@[expose] public section
+public section
 
 
 variable {α : Type*}
@@ -87,7 +87,7 @@ variable [Preorder α]
 section AddCommSemigroup
 
 variable [AddCommSemigroup α] [Sub α] [OrderedSub α] {a b c d : α}
-/- TODO: Most results can be generalized to [Add α] [@Std.Commutative α (· + ·)] -/
+/- TODO: Most results can be generalized to `[Add α] [IsAddCommutative α]` -/
 
 theorem tsub_le_iff_left : a - b ≤ c ↔ a ≤ b + c := by rw [tsub_le_iff_right, add_comm]
 

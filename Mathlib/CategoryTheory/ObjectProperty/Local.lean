@@ -36,7 +36,7 @@ variable {C : Type u} [Category.{v} C]
 
 namespace MorphismProperty
 
-variable (W : MorphismProperty C)
+variable (W W' : MorphismProperty C)
 
 /-- Given `W : MorphismProperty C`, this is the property of `W`-local objects, i.e.
 the objects `Z` such that for any `f : X ⟶ Y` such that `W f` holds, the precomposition
@@ -76,6 +76,7 @@ instance : W.isColocal.IsClosedUnderIsomorphisms where
     convert (Iso.homFromEquiv e).bijective.comp (hX g hg) using 1
     aesop
 
+set_option backward.isDefEq.respectTransparency false in
 instance (J : Type u') [Category.{v'} J] :
     W.isLocal.IsClosedUnderLimitsOfShape J where
   limitsOfShape_le := fun Z ⟨p⟩ X Y f hf ↦ by
@@ -88,6 +89,7 @@ instance (J : Type u') [Category.{v'} J] :
           (by simp [reassoc_of% h, h, p.w a]) }),
       p.isLimit.hom_ext (fun j ↦ by simp [p.isLimit.fac, h])⟩
 
+set_option backward.isDefEq.respectTransparency false in
 instance (J : Type u') [Category.{v'} J] :
     W.isColocal.IsClosedUnderColimitsOfShape J where
   colimitsOfShape_le := fun X ⟨p⟩ Y Z g hg ↦ by
@@ -99,6 +101,42 @@ instance (J : Type u') [Category.{v'} J] :
         naturality _ _ a := (p.prop_diag_obj _ g hg).1
           (by simp [h]) }),
       p.isColimit.hom_ext (fun j ↦ by simp [p.isColimit.fac_assoc, h])⟩
+
+variable {W W'} in
+attribute [local simp] isLocal_iff in
+lemma isLocal_antitone (h : W ≤ W') :
+    W'.isLocal ≤ W.isLocal := by
+  intro f hf
+  aesop
+
+variable {W W'} in
+attribute [local simp] isColocal_iff in
+lemma isColocal_antitone (h : W ≤ W') :
+    W'.isColocal ≤ W.isColocal := by
+  intro f hf
+  aesop
+
+attribute [local simp] isLocal_iff in
+@[simp]
+lemma isLocal_iSup {ι : Sort*} (W : ι → MorphismProperty C) :
+    (⨆ (i : ι), W i).isLocal = ⨅ (i : ι), (W i).isLocal := by
+  aesop
+
+attribute [local simp] isColocal_iff in
+@[simp]
+lemma isColocal_iSup {ι : Sort*} (W : ι → MorphismProperty C) :
+    (⨆ (i : ι), W i).isColocal = ⨅ (i : ι), (W i).isColocal := by
+  aesop
+
+lemma isLocal_single_iff_bijective {X Y : C} (f : X ⟶ Y) (Z : C) :
+    (MorphismProperty.single f).isLocal Z ↔
+      (Function.Bijective (fun (g : _ ⟶ Z) ↦ f ≫ g)) :=
+  ⟨fun h ↦ h _ ⟨⟨⟩⟩, fun h ↦ by rintro _ _ _ ⟨_⟩; exact h⟩
+
+lemma isColocal_single_iff_bijective {X Y : C} (f : X ⟶ Y) (Z : C) :
+    (MorphismProperty.single f).isColocal Z ↔
+      (Function.Bijective (fun (g : Z ⟶ _) ↦ g ≫ f)) :=
+  ⟨fun h ↦ h _ ⟨⟨⟩⟩, fun h ↦ by rintro _ _ _ ⟨_⟩; exact h⟩
 
 end MorphismProperty
 

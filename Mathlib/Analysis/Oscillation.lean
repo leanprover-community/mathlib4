@@ -57,10 +57,11 @@ namespace ContinuousWithinAt
 
 theorem oscillationWithin_eq_zero [TopologicalSpace E] {f : E → F} {D : Set E}
     {x : E} (hf : ContinuousWithinAt f D x) : oscillationWithin f D x = 0 := by
-  refine le_antisymm (_root_.le_of_forall_pos_le_add fun ε hε ↦ ?_) (zero_le _)
+  rw [← nonpos_iff_eq_zero]
+  refine _root_.le_of_forall_pos_le_add fun ε hε ↦ ?_
   rw [zero_add]
-  have : EMetric.ball (f x) (ε / 2) ∈ (𝓝[D] x).map f :=
-    hf <| EMetric.ball_mem_nhds _ (by simp [ne_of_gt hε])
+  have : eball (f x) (ε / 2) ∈ (𝓝[D] x).map f :=
+    hf <| eball_mem_nhds _ (by simp [ne_of_gt hε])
   refine (biInf_le ediam this).trans (le_of_le_of_eq ediam_eball_le ?_)
   exact (ENNReal.mul_div_cancel (by simp) (by simp))
 
@@ -106,9 +107,9 @@ variable {f : E → F} {D : Set E} {ε : ENNReal}
 /-- If `oscillationWithin f D x < ε` at every `x` in a compact set `K`, then there exists `δ > 0`
 such that the oscillation of `f` on `ball x δ ∩ D` is less than `ε` for every `x` in `K`. -/
 theorem uniform_oscillationWithin (comp : IsCompact K) (hK : ∀ x ∈ K, oscillationWithin f D x < ε) :
-    ∃ δ > 0, ∀ x ∈ K, ediam (f '' (EMetric.ball x (ENNReal.ofReal δ) ∩ D)) ≤ ε := by
+    ∃ δ > 0, ∀ x ∈ K, ediam (f '' (eball x (ENNReal.ofReal δ) ∩ D)) ≤ ε := by
   let S := fun r ↦
-    {x : E | ∃ (a : ℝ), (a > r ∧ ediam (f '' (EMetric.ball x (ENNReal.ofReal a) ∩ D)) ≤ ε)}
+    {x : E | ∃ (a : ℝ), (a > r ∧ ediam (f '' (eball x (ENNReal.ofReal a) ∩ D)) ≤ ε)}
   have S_open : ∀ r > 0, IsOpen (S r) := by
     refine fun r _ ↦ EMetric.isOpen_iff.mpr fun x ⟨a, ar, ha⟩ ↦
       ⟨ENNReal.ofReal ((a - r) / 2), by simp [ar], ?_⟩
@@ -125,7 +126,7 @@ theorem uniform_oscillationWithin (comp : IsCompact K) (hK : ∀ x ∈ K, oscill
     obtain ⟨r, r0, hr⟩ := EMetric.mem_nhdsWithin_iff.1 hn₁
     simp only [gt_iff_lt, mem_iUnion, exists_prop]
     have : ∀ r', (ENNReal.ofReal r') ≤ r →
-        ediam (f '' (EMetric.ball x (ENNReal.ofReal r') ∩ D)) ≤ ε := by
+        ediam (f '' (eball x (ENNReal.ofReal r') ∩ D)) ≤ ε := by
       intro r' hr'
       grw [← hn₂, ← image_subset_iff.2 hr, hr']
     by_cases r_top : r = ⊤
@@ -154,7 +155,7 @@ theorem uniform_oscillationWithin (comp : IsCompact K) (hK : ∀ x ∈ K, oscill
 that the oscillation of `f` on `ball x δ` is less than `ε` for every `x` in `K`. -/
 theorem uniform_oscillation {K : Set E} (comp : IsCompact K)
     {f : E → F} {ε : ENNReal} (hK : ∀ x ∈ K, oscillation f x < ε) :
-    ∃ δ > 0, ∀ x ∈ K, ediam (f '' (EMetric.ball x (ENNReal.ofReal δ))) ≤ ε := by
+    ∃ δ > 0, ∀ x ∈ K, ediam (f '' (eball x (ENNReal.ofReal δ))) ≤ ε := by
   simp only [← oscillationWithin_univ_eq_oscillation] at hK
   convert ← comp.uniform_oscillationWithin hK
   exact inter_univ _

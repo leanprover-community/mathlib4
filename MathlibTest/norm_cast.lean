@@ -134,6 +134,9 @@ lemma half_lt_self_bis {a : ℝ≥0∞} (hz : a ≠ 0) (ht : a ≠ ⊤) : a / 2 
   norm_cast at hz
   exact NNReal.half_lt_self hz
 
+example (x : NNReal) : (x : ENNReal) / 3 = ↑(x / 3) := by
+  norm_cast
+
 end ENNReal
 
 lemma b (_h g : true) : true ∧ true := by

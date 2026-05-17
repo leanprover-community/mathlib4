@@ -46,7 +46,7 @@ Prove (some of) [Michael's theorems](https://ncatlab.org/nlab/show/Michael%27s+t
 compact space, paracompact space, locally finite covering
 -/
 
-@[expose] public section
+public section
 
 
 open Set Filter Function

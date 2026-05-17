@@ -41,37 +41,35 @@ open Int
 
 lemma one_le_mahlerMeasure_of_ne_zero {p : ℤ[X]} (hp : p ≠ 0) :
     1 ≤ (p.map (castRingHom ℂ)).mahlerMeasure := by
-  apply le_trans _ (p.map (castRingHom ℂ)).leading_coeff_le_mahlerMeasure
+  apply le_trans _ (p.map (castRingHom ℂ)).leadingCoeff_le_mahlerMeasure
   rw [leadingCoeff_map_of_injective (castRingHom ℂ).injective_int, eq_intCast]
   norm_cast
   exact one_le_abs <| leadingCoeff_ne_zero.mpr hp
 
 section Northcott
 
-variable {n : ℕ} {B₁ B₂ : Fin (n + 1) → ℝ}
+variable (n : ℕ) (B₁ B₂ : Fin (n + 1) → ℝ)
 
-local notation3 "BoxPoly" =>
-  {p : ℤ[X] | p.natDegree ≤ n ∧ ∀ i, B₁ i ≤ p.coeff i ∧ p.coeff i ≤ B₂ i}
+/-- The set of polynomials whose coefficients are bounded between `B₁` and `B₂`. This
+construction is used as part of our proof of Northcott's theorem. -/
+def boxPoly : Set ℤ[X] := {p : ℤ[X] | p.natDegree ≤ n ∧ ∀ i, B₁ i ≤ p.coeff i ∧ p.coeff i ≤ B₂ i}
 
-open Finset in
-theorem card_eq_of_natDegree_le_of_coeff_le :
-    Set.ncard BoxPoly = ∏ i, (⌊B₂ i⌋ - ⌈B₁ i⌉ + 1).toNat := by
-  let e : BoxPoly ≃ Icc (⌈B₁ ·⌉) (⌊B₂ ·⌋) := {
-    toFun p := ⟨toFn (n + 1) p, by
-      have prop := p.property.2
-      simpa using ⟨fun i ↦ ceil_le.mpr (prop i).1, fun i ↦ le_floor.mpr (prop i).2⟩⟩
-    invFun p := ⟨ofFn (n + 1) p, by
-      refine ⟨Nat.le_of_lt_succ <| ofFn_natDegree_lt (Nat.le_add_left 1 n) p.val, fun i ↦ ?_⟩
-      have prop := mem_Icc.mp p.property
+theorem ncard_boxPoly : (boxPoly n B₁ B₂).ncard = ∏ i, (⌊B₂ i⌋ - ⌈B₁ i⌉ + 1).toNat := by
+  trans Set.ncard (α := Fin (n + 1) → ℤ) (Finset.Icc (⌈B₁ ·⌉) (⌊B₂ ·⌋))
+  · refine Set.ncard_congr' ⟨fun p ↦ ⟨toFn (n + 1) p, ?_⟩, fun p ↦ ⟨ofFn (n + 1) p, ?_⟩, ?_, ?_⟩
+    · have prop := p.property.2
+      simpa using ⟨fun i ↦ ceil_le.mpr (prop i).1, fun i ↦ le_floor.mpr (prop i).2⟩
+    · refine ⟨Nat.le_of_lt_succ <| ofFn_natDegree_lt (Nat.le_add_left 1 n) p.val, fun i ↦ ?_⟩
+      have prop := Finset.mem_Icc.mp p.property
       rw [ofFn_coeff_eq_val_of_lt _ i.2]
       exact ⟨ceil_le.mp (prop.1 i), le_floor.mp (prop.2 i)⟩
-    ⟩
-    left_inv p := by grind [ofFn_comp_toFn_eq_id_of_natDegree_lt]
-    right_inv p := by grind [toFn_comp_ofFn_eq_id]
-  }
-  rw [Set.ncard_congr' e]
-  norm_cast
-  grind [Pi.card_Icc, card_Icc]
+    · grind [boxPoly, ofFn_comp_toFn_eq_id_of_natDegree_lt]
+    · grind [toFn_comp_ofFn_eq_id]
+  · norm_cast
+    grind [Pi.card_Icc, card_Icc]
+
+@[deprecated (since := "2026-02-02")]
+alias card_eq_of_natDegree_le_of_coeff_le := ncard_boxPoly
 
 open NNReal
 
@@ -82,8 +80,8 @@ private lemma card_mahlerMeasure (n : ℕ) (B : ℝ≥0) :
   have h_card :
       Set.ncard {p : ℤ[X] | p.natDegree ≤ n ∧ ∀ i : Fin (n + 1), ‖p.coeff i‖ ≤ n.choose i * B} =
       ∏ i : Fin (n + 1), (2 * ⌊n.choose i * B⌋₊ + 1) := by
-    conv => enter [1, 1, 1, p, 2, i]; rw [norm_eq_abs, abs_le]
-    rw [card_eq_of_natDegree_le_of_coeff_le]
+    simp_rw [norm_eq_abs, abs_le]
+    rw [← boxPoly, ncard_boxPoly]
     simp only [ceil_neg, sub_neg_eq_add, ← two_mul]
     apply Finset.prod_congr rfl fun i _ ↦ ?_
     zify
@@ -143,7 +141,7 @@ lemma norm_leadingCoeff_eq_one_of_mahlerMeasure_eq_one :
     ‖(p.map (castRingHom ℂ)).leadingCoeff‖ = 1 := by
   rcases eq_or_ne p 0 with _ | hp
   · simp_all
-  have h_ineq := h ▸ (leading_coeff_le_mahlerMeasure <| p.map (castRingHom ℂ))
+  have h_ineq := h ▸ (leadingCoeff_le_mahlerMeasure <| p.map (castRingHom ℂ))
   rw [leadingCoeff_map_of_injective (castRingHom ℂ).injective_int, eq_intCast] at ⊢ h_ineq
   norm_cast at ⊢ h_ineq
   grind [leadingCoeff_eq_zero]
@@ -226,7 +224,7 @@ theorem cyclotomic_dvd_of_mahlerMeasure_eq_one (hX : ¬ X ∣ p) (hpdeg : p.degr
   obtain ⟨z, _⟩ := Splits.exists_eval_eq_zero (IsAlgClosed.splits <| p.map (castRingHom ℂ))
     hpdegC
   have hz₀ : z ≠ 0 := by
-    contrapose! hX
+    contrapose hX
     simp_all [X_dvd_iff, coeff_zero_eq_aeval_zero]
   have h_z_root : z ∈ p.aroots ℂ := by aesop
   obtain ⟨m, h_m_pos, h_prim⟩ := isPrimitiveRoot_of_mahlerMeasure_eq_one h hz₀ h_z_root

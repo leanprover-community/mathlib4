@@ -107,6 +107,8 @@ attribute [coe] Substructure.carrier
 instance instSetLike : SetLike (L.Substructure M) M :=
   ⟨Substructure.carrier, fun p q h => by cases p; cases q; congr⟩
 
+instance : PartialOrder (L.Substructure M) := .ofSetLike (L.Substructure M) M
+
 /-- See Note [custom simps projection] -/
 def Simps.coe (S : L.Substructure M) : Set M :=
   S
@@ -780,6 +782,12 @@ theorem comp_codRestrict (f : M →[L] N) (g : N →[L] P) (p : L.Substructure P
 theorem subtype_comp_codRestrict (f : M →[L] N) (p : L.Substructure N) (h : ∀ b, f b ∈ p) :
     p.subtype.toHom.comp (codRestrict p f h) = f :=
   ext fun _ => rfl
+
+@[simp]
+theorem domRestrict_comp_codRestrict (g : N →[L] P) (f : M →[L] N) (p : L.Substructure N)
+    (h : ∀ b, f b ∈ p) :
+    (g.domRestrict p).comp (f.codRestrict p h) = g.comp f :=
+  rfl
 
 /-- The range of a first-order hom `f : M → N` is a submodule of `N`.
 See Note [range copy pattern]. -/

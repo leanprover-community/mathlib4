@@ -62,7 +62,11 @@ lemma IsTutteViolator.mono {u : Set V} (h : G ≤ G') (ht : G'.IsTutteViolator u
   simp only [IsTutteViolator, Subgraph.induce_verts, Subgraph.verts_top] at *
   have := ncard_oddComponents_mono _ (Subgraph.deleteVerts_mono' (G := G) (G' := G') u h)
   simp only [oddComponents] at *
-  lia
+  #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/13166
+  (replacing grind's canonicalizer with a type-directed normalizer), `lia` closed this goal.
+  It is not yet clear whether this is due to defeq abuse in Mathlib or a problem in the new
+  canonicalizer; a minimization would help. The original proof was: `lia` -/
+  exact lt_of_lt_of_le ht this
 
 /-- Given a graph in which the universal vertices do not violate Tutte's condition,
 if the graph decomposes into cliques, there exists a matching that covers
@@ -168,7 +172,7 @@ private theorem tutte_exists_isPerfectMatching_of_near_matchings {x a b c : V}
   -- Neither matching contains the edge that would make the other matching of G perfect
   have hM1nac : ¬M1.Adj a c := fun h ↦ by simpa [hnGac, edge_adj, hnac, hxa.ne, hnbc.symm, hab.ne]
     using h.adj_sub
-  have hsupG : G ⊔ edge x b ⊔ (G ⊔ edge a c) = (G ⊔ edge a c) ⊔ edge x b := by aesop
+  have hsupG : G ⊔ edge x b ⊔ (G ⊔ edge a c) = (G ⊔ edge a c) ⊔ edge x b := by grind
   -- We state conditions for our cycle that hold in all cases and show that this suffices
   suffices ∃ (G' : SimpleGraph V), G'.IsAlternating M2.spanningCoe ∧ G'.IsCycles ∧ ¬G'.Adj x b ∧
       G'.Adj a c ∧ G' ≤ G ⊔ edge a c by
@@ -227,7 +231,7 @@ private theorem tutte_exists_isPerfectMatching_of_near_matchings {x a b c : V}
     have : (p'.takeUntil x' hx'p).toSubgraph.Adj a (p'.takeUntil x' hx'p).snd := by
       apply Walk.toSubgraph_adj_snd
       rw [Walk.nil_takeUntil]
-      aesop
+      grind
     rwa [Walk.snd_takeUntil, hp'.2.1] at this
     simp only [Finset.mem_insert, Finset.mem_singleton] at hx'
     obtain rfl | rfl := hx'
@@ -280,7 +284,7 @@ lemma exists_isTutteViolator (h : ∀ (M : G.Subgraph), ¬M.IsPerfectMatching)
   · -- Deleting universal vertices splits the graph into cliques
     rw [Fintype.card_eq_nat_card] at hc
     simp_rw [Fintype.card_eq_nat_card, Nat.card_coe_set_eq] at hc
-    push_neg at hc
+    push Not at hc
     obtain ⟨M, hM⟩ := Subgraph.IsPerfectMatching.exists_of_isClique_supp hvEven
       (by simpa [IsTutteViolator] using hc) h'
     exact hMatchingFree M hM
@@ -304,7 +308,7 @@ lemma exists_isTutteViolator (h : ∀ (M : G.Subgraph), ¬M.IsPerfectMatching)
       rwa [edge_le_iff (v := a.1.1) (w := c), adj_comm, not_or])
     have hcnex : c ≠ x.val.val := by rintro rfl; exact hc.2 hxa
     obtain ⟨Mcon, hMcon⟩ := tutte_exists_isPerfectMatching_of_near_matchings hxa
-      hxb hnadjxb (fun hadj ↦ hc.2 hadj.symm) (by aesop) hcnex.symm hc.1 hbnec hG1 hG2
+      hxb hnadjxb (fun hadj ↦ hc.2 hadj.symm) (by lia) hcnex.symm hc.1 hbnec hG1 hG2
     exact hMatchingFree Mcon hMcon
 
 /-- **Tutte's theorem**

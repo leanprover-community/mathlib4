@@ -9,6 +9,8 @@ public import Mathlib.Algebra.Group.Defs
 public import Mathlib.Control.Functor
 public import Mathlib.Control.Basic
 
+import Mathlib.Tactic.Attr.Register
+
 /-!
 # `applicative` instances
 
@@ -19,7 +21,7 @@ This file provides `Applicative` instances for concrete functors:
 * `Functor.add_const`
 -/
 
-@[expose] public section
+public section
 
 universe u v w
 

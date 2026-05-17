@@ -287,7 +287,7 @@ theorem RingHom.HoldsForLocalizationAway.of_bijective
     (H : RingHom.HoldsForLocalizationAway P) (hf : Function.Bijective f) :
     P f := by
   letI := f.toAlgebra
-  have := IsLocalization.at_units (.powers (1 : R)) (by simp)
+  have := IsLocalization.of_le_isUnit (S := .powers (1 : R)) (by simp)
   have := IsLocalization.isLocalization_of_algEquiv (.powers (1 : R))
     (AlgEquiv.ofBijective (Algebra.ofId R S) hf)
   exact H _ 1
@@ -328,10 +328,11 @@ lemma RingHom.LocalizationAwayPreserves.respectsIso
     have : IsLocalization.Away (f 1) T :=
       IsLocalization.away_of_isUnit_of_bijective _ (by simp) (Equiv.refl _).bijective
     convert hP f 1 R T hf
+    have : RingHomInvPair (e : R →+* S) e.symm := RingHomInvPair.of_ringEquiv _
     have : (IsLocalization.Away.map R T f 1).comp e.symm.toRingHom = f :=
       IsLocalization.map_comp ..
     conv_lhs => rw [← this, RingHom.comp_assoc]
-    simp only [RingEquiv.toRingHom_eq_coe, RingEquiv.symm_comp, RingHomCompTriple.comp_eq]
+    simp only [RingEquiv.toRingHom_eq_coe, RingHomCompTriple.comp_eq]
 
 lemma RingHom.StableUnderCompositionWithLocalizationAway.respectsIso
     (hP : StableUnderCompositionWithLocalizationAway P) :
@@ -432,7 +433,7 @@ lemma RingHom.OfLocalizationSpanTarget.ofIsLocalization
   obtain ⟨T, _, _, _, hT⟩ := hT r
   convert hP'.1 _
     (Localization.algEquiv (R := S) (Submonoid.powers (r : S)) T).symm.toRingEquiv hT
-  rw [← RingHom.comp_assoc, RingEquiv.toRingHom_eq_coe, AlgEquiv.toRingEquiv_eq_coe,
+  rw [← RingHom.comp_assoc, RingEquiv.toRingHom_eq_coe,
     AlgEquiv.toRingEquiv_toRingHom, Localization.coe_algEquiv_symm, IsLocalization.map_comp,
     RingHom.comp_id]
 
@@ -550,6 +551,16 @@ theorem Ideal.le_of_localization_maximal {I J : Ideal R}
         Ideal.map (algebraMap R (Localization.AtPrime P)) J) :
     I ≤ J :=
   fun _ hm ↦ mem_of_localization_maximal fun P hP ↦ h P hP (mem_map_of_mem _ hm)
+
+lemma Ideal.iInf_ker_le (I : Ideal R) :
+    ⨅ (p : Ideal R) (_ : p.IsPrime) (_ : I ≤ p),
+      RingHom.ker (algebraMap R (Localization.AtPrime p)) ≤ I := by
+  intro x hx
+  refine Ideal.mem_of_localization_maximal fun m hm ↦ ?_
+  simp only [Submodule.mem_iInf, RingHom.mem_ker] at hx
+  by_cases hle : I ≤ m
+  · simp [hx _ _ hle]
+  · simp [IsLocalization.AtPrime.map_eq_top_of_not_le _ hle]
 
 /-- Let `I J : Ideal R`. If the localization of `I` at each maximal ideal `P` is equal to
 the localization of `J` at `P`, then `I = J`. -/

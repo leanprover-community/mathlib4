@@ -108,6 +108,10 @@ theorem one_div_nonneg' : 0 ≤ 1 / r := le_of_lt h.one_div_pos'
 /-- For `r`, instead of `p` -/
 theorem one_div_ne_zero' : 1 / r ≠ 0 := ne_of_gt h.one_div_pos'
 
+/-- useful for introducing all three facts simultaneously within a proof. -/
+@[grind →]
+theorem all_pos : 0 < p ∧ 0 < q ∧ 0 < r := ⟨h.pos, h.symm.pos, h.pos'⟩
+
 lemma inv_eq : r⁻¹ = p⁻¹ + q⁻¹ := h.inv_add_inv_eq_inv.symm
 lemma one_div_add_one_div : 1 / p + 1 / q = 1 / r := by simpa using h.inv_add_inv_eq_inv
 lemma one_div_eq : 1 / r = 1 / p + 1 / q := h.one_div_add_one_div.symm
@@ -287,6 +291,10 @@ theorem one_div_pos' : 0 < 1 / r := _root_.one_div_pos.2 h.pos'
 theorem one_div_nonneg' : 0 ≤ 1 / r := le_of_lt h.one_div_pos'
 /-- For `r`, instead of `p` -/
 theorem one_div_ne_zero' : 1 / r ≠ 0 := ne_of_gt h.one_div_pos'
+
+/-- useful for introducing all three facts simultaneously within a proof. -/
+@[grind →]
+theorem all_pos : 0 < p ∧ 0 < q ∧ 0 < r := ⟨h.pos, h.symm.pos, h.pos'⟩
 
 lemma inv_eq : r⁻¹ = p⁻¹ + q⁻¹ := h.inv_add_inv_eq_inv.symm
 lemma one_div_add_one_div : 1 / p + 1 / q = 1 / r := by exact_mod_cast h.coe.one_div_add_one_div

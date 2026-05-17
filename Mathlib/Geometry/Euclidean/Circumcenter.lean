@@ -124,6 +124,8 @@ theorem existsUnique_dist_eq_of_insert {s : AffineSubspace ℝ P}
         (vsub_orthogonalProjection_mem_direction_orthogonal s p),
       Real.norm_eq_abs, abs_mul_abs_self, dist_comm, ← dist_eq_norm_vsub V p,
       Real.mul_self_sqrt (add_nonneg (mul_self_nonneg _) (mul_self_nonneg _))] at hcr₃
+    #adaptation_note /-- This was not needed prior to v4.30.0-rc1. -/
+    have : t₃ * y = ycc₂ := by grind
     grind
 
 /-- Given a finite nonempty affinely independent family of points,

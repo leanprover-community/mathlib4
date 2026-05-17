@@ -5,6 +5,7 @@ Authors: Aaron Anderson
 -/
 module
 
+public import Mathlib.Algebra.Order.Ring.Abs
 public import Mathlib.NumberTheory.ArithmeticFunction.Misc
 /-!
 # The Möbius function and Möbius inversion
@@ -67,7 +68,7 @@ theorem moebius_apply_one : μ 1 = 1 := by simp
 
 theorem moebius_ne_zero_iff_squarefree {n : ℕ} : μ n ≠ 0 ↔ Squarefree n := by
   constructor <;> intro h
-  · contrapose! h
+  · contrapose h
     simp [h]
   · simp [h]
 

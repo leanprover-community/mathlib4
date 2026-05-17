@@ -18,7 +18,7 @@ It is complete.
 
 -/
 
-@[expose] public section
+public section
 
 open Filter UniformSpace
 
@@ -77,6 +77,15 @@ theorem relId_mem_uniformity : SetRel.id ∈ uniformity X :=
 
 @[deprecated (since := "2025-10-17")]
 alias idRel_mem_uniformity := relId_mem_uniformity
+
+instance {Y : Type*} [Finite Y] [UniformSpace Y] [DiscreteTopology Y] :
+    DiscreteUniformity Y := by
+  have h : SetRel.id = ⋂ y : Y, {p | p.2 = y → p.1 ∈ ({y} : Set Y)} := by
+    ext x
+    simp [SetRel.id]
+  simp_rw [discreteUniformity_iff_setRelId_mem_uniformity, h, Filter.iInter_mem,
+    ← mem_nhds_uniformity_iff_left, nhds_discrete, Filter.mem_pure, Set.mem_singleton_iff,
+    implies_true]
 
 variable {X} in
 /-- A product of spaces with discrete uniformity has a discrete uniformity. -/

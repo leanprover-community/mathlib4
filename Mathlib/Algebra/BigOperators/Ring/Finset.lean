@@ -45,6 +45,9 @@ lemma natCast_card_filter (p) [DecidablePred p] (s : Finset ι) :
     (∑ x ∈ s, if p x then 1 else 0 : R) = #{x ∈ s | p x} :=
   (natCast_card_filter _ _).symm
 
+lemma card_eq_sum_ite {s t : Finset ι} [DecidablePred (· ∈ s)] (hst : s ⊆ t) :
+    s.card = ∑ i ∈ t, if i ∈ s then 1 else 0 := by simp [hst]
+
 end AddCommMonoidWithOne
 
 section NonUnitalNonAssocSemiring
@@ -110,7 +113,7 @@ theorem prod_add_prod_eq {s : Finset ι} {i : ι} {f g h : ι → R} (hi : i ∈
     (h1 : g i + h i = f i) (h2 : ∀ j ∈ s, j ≠ i → g j = f j) (h3 : ∀ j ∈ s, j ≠ i → h j = f j) :
     (∏ i ∈ s, g i) + ∏ i ∈ s, h i = ∏ i ∈ s, f i := by
   classical
-    simp_rw [prod_eq_mul_prod_diff_singleton hi, ← h1, right_distrib]
+    simp_rw [prod_eq_mul_prod_diff_singleton_of_mem hi, ← h1, right_distrib]
     congr 2 <;> apply prod_congr rfl <;> simpa
 
 section DecidableEq
@@ -180,7 +183,7 @@ theorem prod_add (f g : ι → R) (s : Finset ι) :
         (by simp)
         (by simp [Classical.em])
         (by simp_rw [mem_filter, funext_iff, eq_iff_iff, mem_pi, mem_insert]; tauto)
-        (by simp_rw [Finset.ext_iff, @mem_filter _ _ (id _), mem_powerset]; tauto)
+        (by simp_rw [Finset.ext_iff, mem_filter, mem_powerset]; tauto)
         (fun a _ ↦ by
           simp only [prod_ite, filter_attach', prod_map, Function.Embedding.coeFn_mk,
             Subtype.map_coe, id_eq, prod_attach]

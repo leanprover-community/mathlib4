@@ -16,10 +16,7 @@ public import Mathlib.Tactic.CategoryTheory.Elementwise
 
 @[expose] public section
 
-
-open CategoryTheory
-
-open CategoryTheory.Limits
+open CategoryTheory Limits
 
 universe u v w
 
@@ -76,6 +73,7 @@ variable [DecidableEq ι]
 def coproductCocone : Cofan Z :=
   Cofan.mk (ModuleCat.of R (⨁ i : ι, Z i)) fun i => ofHom (DirectSum.lof R ι (fun i ↦ Z i) i)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The concrete coproduct cone is colimiting. -/
 def coproductCoconeIsColimit : IsColimit (coproductCocone Z) where
   desc s := ofHom <| DirectSum.toModule R ι _ fun i ↦ (s.ι.app ⟨i⟩).hom

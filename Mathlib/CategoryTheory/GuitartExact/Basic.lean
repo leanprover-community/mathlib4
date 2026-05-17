@@ -38,8 +38,8 @@ derived functors.
 ## TODO
 
 * Define the notion of derivability structure from
-[the paper by Kahn and Maltsiniotis][KahnMaltsiniotis2008] using Guitart exact squares
-and construct (pointwise) derived functors using this notion
+  [the paper by Kahn and Maltsiniotis][KahnMaltsiniotis2008] using Guitart exact squares
+  and construct (pointwise) derived functors using this notion
 
 ## References
 * https://ncatlab.org/nlab/show/exact+square
@@ -241,6 +241,14 @@ instance [hw : w.GuitartExact] {X₂ : C₂} (g : StructuredArrow (R.obj X₂) B
   rw [guitartExact_iff_isConnected_downwards] at hw
   apply hw
 
+lemma costructuredArrowRightwards_final_iff_of_iso {X₃ X₃' : C₃} (e : X₃ ≅ X₃') :
+    (w.costructuredArrowRightwards X₃).Final ↔
+      (w.costructuredArrowRightwards X₃').Final := by
+  rw [Functor.final_iff_comp_equivalence _ (CostructuredArrow.mapIso (B.mapIso e)).functor,
+    Functor.final_iff_equivalence_comp (CostructuredArrow.mapIso e).functor]
+  exact Functor.final_natIso_iff
+    (NatIso.ofComponents (fun _ ↦ CostructuredArrow.isoMk (Iso.refl _)))
+
 lemma guitartExact_iff_final :
     w.GuitartExact ↔ ∀ (X₃ : C₃), (w.costructuredArrowRightwards X₃).Final :=
   ⟨fun _ _ => ⟨fun _ => inferInstance⟩, fun _ => ⟨fun _ => inferInstance⟩⟩
@@ -249,6 +257,14 @@ instance [hw : w.GuitartExact] (X₃ : C₃) :
     (w.costructuredArrowRightwards X₃).Final := by
   rw [guitartExact_iff_final] at hw
   apply hw
+
+lemma structuredArrowDownwards_initial_iff_of_iso {X₂ X₂' : C₂} (e : X₂ ≅ X₂') :
+    (w.structuredArrowDownwards X₂).Initial ↔
+      (w.structuredArrowDownwards X₂').Initial := by
+  rw [Functor.initial_iff_comp_equivalence _ (StructuredArrow.mapIso (R.mapIso e)).functor,
+    Functor.initial_iff_equivalence_comp (StructuredArrow.mapIso e).functor]
+  exact Functor.initial_natIso_iff
+    (NatIso.ofComponents (fun _ ↦ StructuredArrow.isoMk (Iso.refl _)))
 
 lemma guitartExact_iff_initial :
     w.GuitartExact ↔ ∀ (X₂ : C₂), (w.structuredArrowDownwards X₂).Initial :=
@@ -262,10 +278,11 @@ instance [hw : w.GuitartExact] (X₂ : C₂) :
   rw [guitartExact_iff_initial] at hw
   apply hw
 
+set_option backward.isDefEq.respectTransparency false in
 /-- When the left and right functors of a 2-square are equivalences, and the natural
 transformation of the 2-square is an isomorphism, then the 2-square is Guitart exact. -/
 instance (priority := 100) guitartExact_of_isEquivalence_of_isIso
-    [L.IsEquivalence] [R.IsEquivalence] [IsIso w] : GuitartExact w := by
+    [L.IsEquivalence] [R.IsEquivalence] [IsIso w.natTrans] : GuitartExact w := by
   rw [guitartExact_iff_initial]
   intro X₂
   have := StructuredArrow.isEquivalence_post X₂ T R
@@ -275,6 +292,7 @@ instance (priority := 100) guitartExact_of_isEquivalence_of_isIso
   dsimp only [structuredArrowDownwards]
   infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 instance guitartExact_id (F : C₁ ⥤ C₂) :
     GuitartExact (TwoSquare.mk (𝟭 C₁) F F (𝟭 C₂) (𝟙 F)) := by
   rw [guitartExact_iff_isConnected_rightwards]

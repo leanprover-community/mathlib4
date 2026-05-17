@@ -126,6 +126,14 @@ lemma of_restrictScalars [FormallyUnramified R A] [FormallyEtale R B] :
   have := FormallySmooth.of_restrictScalars R A B
   .of_formallyUnramified_and_formallySmooth
 
+lemma iff_restrictScalars [FormallyEtale R A] :
+    Algebra.FormallyEtale R B ↔ Algebra.FormallyEtale A B :=
+  ⟨fun _ ↦ .of_restrictScalars (R := R), fun _ ↦ .comp _ A _⟩
+
+lemma _root_.Algebra.FormallySmooth.iff_restrictScalars [FormallyEtale R A] :
+    Algebra.FormallySmooth R B ↔ Algebra.FormallySmooth A B :=
+  ⟨fun _ ↦ .of_restrictScalars R _ _, fun _ ↦ .comp _ A _⟩
+
 @[deprecated (since := "2025-12-09")]
 alias Algebra.FormallyEtale.of_restrictScalars := of_restrictScalars
 
@@ -204,17 +212,26 @@ section
 
 variable (R A) in
 /-- An `R`-algebra `A` is étale if it is formally étale and of finite presentation. -/
-@[stacks 00U1 "Note that this is a different definition from this Stacks entry, but
+@[mk_iff, stacks 00U1 "Note that this is a different definition from this Stacks entry, but
 <https://stacks.math.columbia.edu/tag/00UR> shows that it is equivalent to the definition here."]
 class Etale : Prop where
   formallyEtale : FormallyEtale R A := by infer_instance
   finitePresentation : FinitePresentation R A := by infer_instance
+
+lemma Etale.iff_formallyUnramified_and_smooth :
+    Etale R A ↔ FormallyUnramified R A ∧ Smooth R A := by
+  rw [etale_iff, FormallyEtale.iff_formallyUnramified_and_formallySmooth, smooth_iff]
+  tauto
 
 end
 
 namespace Etale
 
 attribute [instance] formallyEtale finitePresentation
+
+instance [Etale R A] : Smooth R A where
+
+instance (priority := low) [Etale R A] : Unramified R A where
 
 /-- Being étale is transported via algebra isomorphisms. -/
 theorem of_equiv [Etale R A] (e : A ≃ₐ[R] B) : Etale R B where
@@ -233,6 +250,11 @@ theorem comp [Algebra A B] [IsScalarTower R A B] [Etale R A] [Etale A B] : Etale
 /-- Étale is stable under base change. -/
 instance baseChange [Etale R A] : Etale B (B ⊗[R] A) where
 
+lemma of_restrictScalars [Algebra A B] [IsScalarTower R A B] [Etale R A] [Etale R B] :
+    Etale A B where
+  finitePresentation := .of_restrict_scalars_finitePresentation R A B
+  formallyEtale := .of_restrictScalars (R := R)
+
 end Comp
 
 /-- Localization at an element is étale. -/
@@ -240,7 +262,27 @@ theorem of_isLocalizationAway (r : R) [IsLocalization.Away r A] : Etale R A wher
   formallyEtale := Algebra.FormallyEtale.of_isLocalization (Submonoid.powers r)
   finitePresentation := IsLocalization.Away.finitePresentation r
 
+instance (s : A) [Algebra.Etale R A] : Algebra.Etale R (Localization.Away s) where
+
 @[deprecated (since := "2025-11-03")] alias of_isLocalization_Away := of_isLocalizationAway
+
+instance (R S : Type u) [CommRing R] [CommRing S] :
+    letI : Algebra (R × S) S := (RingHom.snd R S).toAlgebra
+    Algebra.Etale (R × S) S := by
+  algebraize [RingHom.snd R S]
+  exact Algebra.Etale.of_isLocalizationAway (0, 1)
+
+instance (S : Type*) [CommRing S] :
+    letI : Algebra (R × S) R := (RingHom.fst R S).toAlgebra
+    Algebra.Etale (R × S) R := by
+  algebraize [RingHom.fst R S]
+  exact Algebra.Etale.of_isLocalizationAway (1, 0)
+
+instance (S : Type*) [CommRing S] :
+    letI : Algebra (R × S) S := (RingHom.snd R S).toAlgebra
+    Algebra.Etale (R × S) S := by
+  algebraize [RingHom.snd R S]
+  exact Algebra.Etale.of_isLocalizationAway (0, 1)
 
 end Etale
 
@@ -262,5 +304,11 @@ def FormallyEtale (f : R →+* S) : Prop :=
 lemma formallyEtale_algebraMap [Algebra R S] :
     (algebraMap R S).FormallyEtale ↔ Algebra.FormallyEtale R S := by
   rw [FormallyEtale, toAlgebra_algebraMap]
+
+lemma FormallyEtale.comp {T : Type*} [CommRing T] {f : R →+* S} {g : S →+* T} (hf : f.FormallyEtale)
+    (hg : g.FormallyEtale) :
+    (g.comp f).FormallyEtale := by
+  algebraize [f, g, g.comp f]
+  exact Algebra.FormallyEtale.comp R S T
 
 end RingHom

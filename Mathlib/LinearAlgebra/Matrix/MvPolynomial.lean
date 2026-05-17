@@ -12,7 +12,7 @@ public import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
 /-!
 # Matrices of multivariate polynomials
 
-In this file, we prove results about matrices over an mv_polynomial ring.
+In this file, we prove results about matrices over an `MvPolynomial` ring.
 In particular, we provide `Matrix.mvPolynomialX` which associates every entry of a matrix with a
 unique variable.
 
@@ -34,7 +34,7 @@ variable (m n R)
 noncomputable def mvPolynomialX [CommSemiring R] : Matrix m n (MvPolynomial (m × n) R) :=
   of fun i j => MvPolynomial.X (i, j)
 
--- TODO: set as an equation lemma for `mv_polynomial_X`, see https://github.com/leanprover-community/mathlib4/pull/3024
+-- TODO: set as an equation lemma for `mvPolynomialX`, see https://github.com/leanprover-community/mathlib4/pull/3024
 @[simp]
 theorem mvPolynomialX_apply [CommSemiring R] (i j) :
     mvPolynomialX m n R i j = MvPolynomial.X (i, j) :=

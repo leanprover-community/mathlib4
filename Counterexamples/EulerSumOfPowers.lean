@@ -88,7 +88,7 @@ lemma sumOfPowersConjecture_of_injective {R S : Type*} [Semiring R] [Semiring S]
 /--
 The first counterexample was found by Leon J. Lander and Thomas R. Parkin in 1966
 through a computer search, disproving the conjecture.
-https://www.ams.org/journals/bull/1966-72-06/S0002-9904-1966-11654-3/S0002-9904-1966-11654-3.pdf
+<https://www.ams.org/journals/bull/1966-72-06/S0002-9904-1966-11654-3/S0002-9904-1966-11654-3.pdf>
 This is also the smallest counterexample for `n = 5`.
 -/
 theorem sumOfPowersConjectureFor_five_false : ¬SumOfPowersConjectureFor 5 := by
@@ -101,11 +101,11 @@ theorem sumOfPowersConjectureFor_five_false : ¬SumOfPowersConjectureFor 5 := by
 /--
 The first counterexample for `n = 4` was found by Noam D. Elkies in October 1988:
 `a := [2_682_440, 15_365_639, 18_796_760]`, `b := 20_615_673`
-https://www.ams.org/journals/mcom/1988-51-184/S0025-5718-1988-0930224-9/S0025-5718-1988-0930224-9.pdf
+<https://www.ams.org/journals/mcom/1988-51-184/S0025-5718-1988-0930224-9/S0025-5718-1988-0930224-9.pdf>
 In this paper, Elkies constructs infinitely many solutions to `a^4 + b^4 + c^4 = d^4` for coprime
 `a, b, c, d`, which provide infinitely many coprime counterexamples for the case `n = 4`.
 Here we use the smallest counterexample for `n = 4`, which was found a month later by Roger E. Frye
-https://ieeexplore.ieee.org/document/74138
+<https://ieeexplore.ieee.org/document/74138>
 -/
 theorem sumOfPowersConjectureFor_four_false : ¬SumOfPowersConjectureFor 4 := by
   intro conj
@@ -136,8 +136,8 @@ theorem existsEqualSumsOfLikePowersFor_of_sumOfPowersConjectureWith (R : Type*) 
 After the first counterexample was found, Leon J. Lander, Thomas R. Parkin, and John Selfridge
 made a similar conjecture that is not amenable to the counterexamples found so far.
 The status of this conjecture is unknown.
-https://en.wikipedia.org/wiki/Lander,_Parkin,_and_Selfridge_conjecture
-https://www.ams.org/journals/mcom/1967-21-099/S0025-5718-1967-0222008-0/S0025-5718-1967-0222008-0.pdf
+<https://en.wikipedia.org/wiki/Lander,_Parkin,_and_Selfridge_conjecture>
+<https://www.ams.org/journals/mcom/1967-21-099/S0025-5718-1967-0222008-0/S0025-5718-1967-0222008-0.pdf>
 -/
 abbrev LanderParkinSelfridgeConjecture (R : Type*) [Semiring R] (k m n : ℕ) : Prop :=
   ExistsEqualSumsOfLikePowersFor R k m n → k ≤ m + n

@@ -46,8 +46,8 @@ We define (semi)modularity typeclasses as Prop-valued mixins.
 
 ## References
 
-* [Manfred Stern, *Semimodular lattices. {Theory} and applications*][stern2009]
-* [Wikipedia, *Modular Lattice*][https://en.wikipedia.org/wiki/Modular_lattice]
+* [Manfred Stern, *Semimodular lattices. Theory and applications*][stern2009]
+* [Wikipedia, Modular Lattice](https://en.wikipedia.org/wiki/Modular_lattice)
 
 ## TODO
 
@@ -304,6 +304,12 @@ def IicOrderIsoIci {a b : α} (h : IsCompl a b) : Set.Iic a ≃o Set.Ici b :=
 
 end IsCompl
 
+lemma le_iff_eq_of_codisjoint_of_disjoint [Lattice α] [BoundedOrder α] [IsModularLattice α]
+    {a b c : α} (h₀ : Codisjoint a b) (h₁ : Disjoint b c) :
+    a ≤ c ↔ a = c :=
+  ⟨fun h₂ ↦ le_antisymm h₂ <| by simpa [h₀.eq_top, h₁.eq_bot] using sup_inf_le_assoc_of_le b h₂,
+   le_of_eq⟩
+
 theorem isModularLattice_iff_inf_sup_inf_assoc [Lattice α] :
     IsModularLattice α ↔ ∀ x y z : α, x ⊓ z ⊔ y ⊓ z = (x ⊓ z ⊔ y) ⊓ z :=
   ⟨fun h => @IsModularLattice.inf_sup_inf_assoc _ _ h, fun h =>
@@ -336,6 +342,14 @@ theorem disjoint_sup_left_of_disjoint_sup_right [Lattice α] [OrderBot α]
   rw [disjoint_comm, sup_comm]
   apply Disjoint.disjoint_sup_right_of_disjoint_sup_left h.symm
   rwa [sup_comm, disjoint_comm] at hsup
+
+@[to_dual]
+lemma _root_.disjoint_sup_right_of_disjoint_sup_right [Lattice α] [OrderBot α] [IsModularLattice α]
+    (h₁ : Disjoint a (b ⊔ c)) (h₂ : Disjoint b (c ⊔ a)) :
+    Disjoint c (a ⊔ b) := by
+  rw [sup_comm] at h₂ ⊢
+  rw [disjoint_comm]
+  exact (h₁.mono_right le_sup_right).disjoint_sup_left_of_disjoint_sup_right h₂
 
 @[to_dual]
 theorem isCompl_sup_right_of_isCompl_sup_left [Lattice α] [BoundedOrder α] [IsModularLattice α]
@@ -404,6 +418,13 @@ instance complementedLattice_Ici : ComplementedLattice (Set.Ici a) where
     simp_rw [Set.Ici.isCompl_iff]
     obtain ⟨y, rfl, hcodisjoint⟩ := exists_inf_eq_and_codisjoint hx
     exact ⟨⟨y, inf_le_right⟩, rfl, hcodisjoint⟩
+
+/-- A disjoint element can be enlarged to a complementary element. -/
+@[to_dual /-- A codisjoint element can be shrunk to a complementary element. -/]
+theorem _root_.Disjoint.exists_isCompl {a b : α} (hab : Disjoint a b) :
+    ∃ a' : α, a ≤ a' ∧ IsCompl a' b := by
+  obtain ⟨u, hu⟩ := ComplementedLattice.exists_isCompl (a ⊔ b)
+  exact ⟨u ⊔ a, le_sup_right, hab.isCompl_sup_left_of_isCompl_sup_right hu.symm⟩
 
 end ComplementedLattice
 

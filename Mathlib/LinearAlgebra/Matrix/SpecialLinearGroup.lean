@@ -5,6 +5,7 @@ Authors: Anne Baanen, Wen Yang
 -/
 module
 
+public import Mathlib.Data.Fintype.Parity
 public import Mathlib.LinearAlgebra.Matrix.Adjugate
 public import Mathlib.LinearAlgebra.Matrix.ToLin
 public import Mathlib.LinearAlgebra.Matrix.Transvection
@@ -76,6 +77,9 @@ scoped[MatrixGroups] notation "SL(" n ", " R ")" => Matrix.SpecialLinearGroup (F
 namespace SpecialLinearGroup
 
 variable {n : Type u} [DecidableEq n] [Fintype n] {R : Type v} [CommRing R]
+
+/-- If `R` and `n` have decidable equality then so does `SL(n, R)`. -/
+instance [DecidableEq R] : DecidableEq (SpecialLinearGroup n R) := Subtype.instDecidableEq
 
 instance hasCoeToMatrix : Coe (SpecialLinearGroup n R) (Matrix n n R) :=
   ⟨fun A => A.val⟩
@@ -346,7 +350,8 @@ variable [Fact (Even (Fintype.card n))]
 each element. -/
 instance instNeg : Neg (SpecialLinearGroup n R) :=
   ⟨fun g => ⟨-g, by
-    simpa [(@Fact.out <| Even <| Fintype.card n).neg_one_pow, g.det_coe] using det_smul (↑ₘg) (-1)⟩⟩
+    simpa [(@Fact.out <| Even <| Fintype.card n).neg_one_pow, g.det_coe]
+      using det_smul (↑ₘg) (-1)⟩⟩
 
 @[simp]
 theorem coe_neg (g : SpecialLinearGroup n R) : ↑(-g) = -(g : Matrix n n R) :=
@@ -477,6 +482,8 @@ def T : SL(2, ℤ) :=
 
 theorem coe_S : ↑S = !![0, -1; 1, 0] :=
   rfl
+
+lemma S_inv : S⁻¹ = -S := by decide
 
 theorem coe_T : ↑T = (!![1, 1; 0, 1] : Matrix _ _ ℤ) :=
   rfl

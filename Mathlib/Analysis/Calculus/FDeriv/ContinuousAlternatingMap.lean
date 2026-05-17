@@ -26,7 +26,7 @@ variable {𝕜 ι E F G H : Type*}
   [NormedAddCommGroup G] [NormedSpace 𝕜 G] [NormedAddCommGroup H] [NormedSpace 𝕜 H]
 
 open ContinuousAlternatingMap
-open scoped Topology BigOperators
+open scoped Topology
 
 section CompContinuousLinearMap
 

@@ -5,7 +5,7 @@ Authors: Michael Stoll
 -/
 module
 
-public import Mathlib.Analysis.Normed.Group.Basic
+public import Mathlib.Analysis.Normed.Group.Real
 public import Mathlib.Data.ZMod.Basic
 public import Mathlib.Topology.Algebra.InfiniteSum.ENNReal
 
@@ -19,7 +19,7 @@ decreasing, then the sum over `f` restricted to any residue class
 mod `m ≠ 0` converges if and only if the sum over all of `ℕ` converges.
 -/
 
-@[expose] public section
+public section
 
 
 lemma Finset.sum_indicator_mod {R : Type*} [AddCommMonoid R] (m : ℕ) [NeZero m] (f : ℕ → R) :

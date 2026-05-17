@@ -19,7 +19,7 @@ public import Mathlib.RingTheory.IntegralClosure.Algebra.Basic
 eigenvalue, minimal polynomial
 -/
 
-@[expose] public section
+public section
 
 
 universe u v w
@@ -46,9 +46,10 @@ end CommSemiring
 section CommRing
 
 variable {R : Type v} {M : Type w} [CommRing R] [AddCommGroup M] [Module R M] {f : End R M} {μ : R}
+  {x : M} {p : R[X]}
 
-theorem aeval_apply_of_hasEigenvector {f : End R M} {p : R[X]} {μ : R} {x : M}
-    (h : f.HasEigenvector μ x) : aeval f p x = p.eval μ • x := by
+theorem aeval_apply_of_hasEigenvector (h : f.HasEigenvector μ x) :
+    aeval f p x = p.eval μ • x := by
   refine p.induction_on ?_ ?_ ?_
   · intro a; simp [Module.algebraMap_end_apply]
   · intro p q hp hq; simp [hp, hq, add_smul]
@@ -56,6 +57,13 @@ theorem aeval_apply_of_hasEigenvector {f : End R M} {p : R[X]} {μ : R} {x : M}
     rw [mul_comm, pow_succ', mul_assoc, map_mul, Module.End.mul_apply, mul_comm, hna]
     simp only [mem_eigenspace_iff.1 h.1, smul_smul, aeval_X, eval_mul, eval_C, eval_pow, eval_X,
       map_smulₛₗ, RingHom.id_apply, mul_comm]
+
+/-- A variant of `Module.End.aeval_apply_of_hasEigenvector` which does not require `x ≠ 0`. -/
+lemma aeval_apply_of_mem_apply_eq_smul (hx : f x = μ • x) :
+    aeval f p x = p.eval μ • x := by
+  rcases eq_or_ne x 0 with rfl | hne
+  · simp
+  · exact aeval_apply_of_hasEigenvector ⟨mem_eigenspace_iff.mpr hx, hne⟩
 
 theorem isRoot_of_hasEigenvalue [IsDomain R] [IsTorsionFree R M] {f : End R M} {μ : R}
     (h : f.HasEigenvalue μ) : (minpoly R f).IsRoot μ := by

@@ -34,11 +34,13 @@ Mathlib sets up `fun_prop` for many different properties like `Continuous`, `Mea
 `fun_prop` is that it decomposes the function into a composition of elementary functions and then
 checks if every single elementary function is, e.g., `Continuous`.
 
-For `ContinuousAt/On/Within` variants, one has to specify a tactic to solve potential side goals
-with `disch := <tactic>`. For example:
+For `ContinuousAt/On/Within` variants, one may have to specify a tactic to solve potential side
+goals with `disch := <tactic>`. For example:
 ```lean
-example (y : ℝ) (hy : y ≠ 0) : ContinuousAt (fun x : ℝ ↦ 1/x) y := by fun_prop (disch := assumption)
+example (y : ℝ) (hy : y ≠ 0) : ContinuousAt (fun x => x * (Real.log x) ^ 2 - Real.exp x / x) y := by
+  fun_prop (disch := aesop)
 ```
+Note that `fun_prop` discharges hypotheses from the local context automatically.
 
 **Basic debugging:**
 The most common issue is that a function is missing the appropriate theorem. For example:
@@ -328,11 +330,11 @@ There are four types of theorems that are used a bit differently.
     even though `fun_prop` can already prove `continuous_neg` from `differentiable_continuous` and
     `differentiable_neg`. Doing this will have a considerable impact on `fun_prop` speed.
 
-    By default, `fun_prop` will not apply more then one transitions theorems consecutivelly. For
+    By default, `fun_prop` will not apply more than one transition theorem consecutively. For
     example, it won't prove `AEMeasurable f` from `Continuous f` by using transition theorems
     `Measurable.aemeasurable` and `Continuous.measurable`. You can enable this by running
     `fun_prop (maxTransitionDepth :=2)`.
-    Ideally `fun_prop` theorems should be transitivelly closed i.e. if `Measurable.aemeasurable` and
+    Ideally `fun_prop` theorems should be transitively closed i.e. if `Measurable.aemeasurable` and
     `Continuous.measurable` are `fun_prop` theorems then `Continuous.aemeasurable` should be too.
 
     Transition theorems do not have to be between two completely different properties. They can be

@@ -65,6 +65,7 @@ variable {T' : Type u₆} [Category.{v₆} T']
 
 /-- The objects of the comma category are triples of an object `left : A`, an object
 `right : B` and a morphism `hom : L.obj left ⟶ R.obj right`. -/
+@[to_dual self (reorder := A B, 2 4, L R)]
 structure Comma (L : A ⥤ T) (R : B ⥤ T) : Type max u₁ u₂ v₃ where
   /-- The left subobject -/
   left : A
@@ -72,6 +73,11 @@ structure Comma (L : A ⥤ T) (R : B ⥤ T) : Type max u₁ u₂ v₃ where
   right : B
   /-- A morphism from `L.obj left` to `R.obj right` -/
   hom : L.obj left ⟶ R.obj right
+
+set_option linter.translateOverwrite false
+
+attribute [to_dual existing right] Comma.left
+attribute [to_dual self] Comma.mk
 
 -- Satisfying the inhabited linter
 instance Comma.inhabited [Inhabited T] : Inhabited (Comma (𝟭 T) (𝟭 T)) where
@@ -85,13 +91,29 @@ variable {L : A ⥤ T} {R : B ⥤ T}
 /-- A morphism between two objects in the comma category is a commutative square connecting the
 morphisms coming from the two objects using morphisms in the image of the functors `L` and `R`.
 -/
-@[ext]
+@[ext, to_dual self (reorder := A B, 2 4, L R, X Y)]
 structure CommaMorphism (X Y : Comma L R) where
   /-- Morphism on left objects -/
   left : X.left ⟶ Y.left
   /-- Morphism on right objects -/
   right : X.right ⟶ Y.right
   w : L.map left ≫ Y.hom = X.hom ≫ R.map right := by cat_disch
+
+attribute [to_dual existing right] CommaMorphism.left
+
+@[to_dual existing w]
+theorem CommaMorphism.w' {X Y : Comma R L} (self : CommaMorphism Y X) :
+    Y.hom ≫ L.map self.right = R.map self.left ≫ X.hom :=
+  self.w.symm
+
+/-- `CommaMorphism.mk'` is the dual of `CommaMorphism.mk`, which we need for `to_dual`.
+Please avoid using this directly. -/
+@[to_dual existing mk]
+abbrev CommaMorphism.mk' {X Y : Comma R L}
+    (right : Y.right ⟶ X.right) (left : Y.left ⟶ X.left)
+    (w : Y.hom ≫ L.map right = R.map left ≫ X.hom) :
+    CommaMorphism Y X where
+  left; right; w := w.symm
 
 -- Satisfying the inhabited linter
 instance CommaMorphism.inhabited [Inhabited (Comma L R)] :
@@ -100,6 +122,7 @@ instance CommaMorphism.inhabited [Inhabited (Comma L R)] :
 
 attribute [reassoc (attr := simp)] CommaMorphism.w
 
+@[to_dual self]
 instance commaCategory : Category (Comma L R) where
   Hom X Y := CommaMorphism X Y
   id X :=
@@ -115,24 +138,16 @@ section
 
 variable {X Y Z : Comma L R} {f : X ⟶ Y} {g : Y ⟶ Z}
 
-@[ext]
+@[ext, to_dual self (reorder := A B, 2 4, L R, X Y, h₁ h₂)]
 lemma hom_ext (f g : X ⟶ Y) (h₁ : f.left = g.left) (h₂ : f.right = g.right) : f = g :=
   CommaMorphism.ext h₁ h₂
 
-@[simp]
+@[to_dual (attr := simp) id_right]
 theorem id_left : (𝟙 X : CommaMorphism X X).left = 𝟙 X.left :=
   rfl
 
-@[simp]
-theorem id_right : (𝟙 X : CommaMorphism X X).right = 𝟙 X.right :=
-  rfl
-
-@[simp]
+@[to_dual (attr := simp) comp_right]
 theorem comp_left : (f ≫ g).left = f.left ≫ g.left :=
-  rfl
-
-@[simp]
-theorem comp_right : (f ≫ g).right = f.right ≫ g.right :=
   rfl
 
 end
@@ -235,6 +250,7 @@ variable {L' : A' ⥤ T'} {R' : B' ⥤ T'}
   {F₁ : A ⥤ A'} {F₂ : B ⥤ B'} {F : T ⥤ T'}
   (α : F₁ ⋙ L' ⟶ L ⋙ F) (β : R ⋙ F ⟶ F₂ ⋙ R')
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The functor `Comma L R ⥤ Comma L' R'` induced by three functors `F₁`, `F₂`, `F`
 and two natural transformations `F₁ ⋙ L' ⟶ L ⋙ F` and `R ⋙ F ⟶ F₂ ⋙ R'`. -/
 @[simps]
@@ -259,6 +275,7 @@ instance faithful_map [F₁.Faithful] [F₂.Faithful] : (map α β).Faithful whe
     · exact F₁.map_injective (congr_arg CommaMorphism.left h)
     · exact F₂.map_injective (congr_arg CommaMorphism.right h)
 
+set_option backward.isDefEq.respectTransparency false in
 instance full_map [F.Faithful] [F₁.Full] [F₂.Full] [IsIso α] [IsIso β] : (map α β).Full where
   map_surjective {X Y} φ :=
     ⟨{left := F₁.preimage φ.left
@@ -430,6 +447,7 @@ instance (F : C ⥤ A) (L : A ⥤ T) (R : B ⥤ T) [F.EssSurj] : (preLeft F L R)
 instance isEquivalence_preLeft (F : C ⥤ A) (L : A ⥤ T) (R : B ⥤ T) [F.IsEquivalence] :
     (preLeft F L R).IsEquivalence where
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The functor `(L, F ⋙ R) ⥤ (L, R)` -/
 @[simps]
 def preRight (L : A ⥤ T) (F : C ⥤ B) (R : B ⥤ T) : Comma L (F ⋙ R) ⥤ Comma L R where
@@ -460,6 +478,7 @@ instance (L : A ⥤ T) (F : C ⥤ B) (R : B ⥤ T) [F.EssSurj] : (preRight L F R
 instance isEquivalence_preRight (L : A ⥤ T) (F : C ⥤ B) (R : B ⥤ T) [F.IsEquivalence] :
     (preRight L F R).IsEquivalence where
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The functor `(L, R) ⥤ (L ⋙ F, R ⋙ F)` -/
 @[simps]
 def post (L : A ⥤ T) (R : B ⥤ T) (F : T ⥤ C) : Comma L R ⥤ Comma (L ⋙ F) (R ⋙ F) where
@@ -579,6 +598,7 @@ def unopFunctorCompFst : unopFunctor L R ⋙ (fst _ _).op ≅ snd _ _ :=
 def unopFunctorCompSnd : unopFunctor L R ⋙ (snd _ _).op ≅ fst _ _ :=
   Iso.refl _
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The canonical equivalence between `Comma L R` and `(Comma R.op L.op)ᵒᵖ`. -/
 @[simps]
 def opEquiv : Comma L R ≌ (Comma R.op L.op)ᵒᵖ where

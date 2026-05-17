@@ -25,21 +25,35 @@ continuity and uniform continuity.
 * `Dist α`: Endows a space `α` with a function `dist a b`.
 * `PseudoMetricSpace α`: A space endowed with a distance function, which can
   be zero even if the two elements are non-equal.
+* `PseudoMetricSpace.ofDistTopology`: Construct a pseudometric space from a compatible topology
+  and distance.
 * `Metric.ball x ε`: The set of all points `y` with `dist y x < ε`.
-* `Metric.Bounded s`: Whether a subset of a `PseudoMetricSpace` is bounded.
-* `MetricSpace α`: A `PseudoMetricSpace` with the guarantee `dist x y = 0 → x = y`.
-
-Additional useful definitions:
-
-* `nndist a b`: `dist` as a function to the non-negative reals.
 * `Metric.closedBall x ε`: The set of all points `y` with `dist y x ≤ ε`.
 * `Metric.sphere x ε`: The set of all points `y` with `dist y x = ε`.
+* `nndist a b`: `dist` as a function to the non-negative reals.
+* `Metric.Bounded s`: Whether a subset of a `PseudoMetricSpace` is bounded.
+* `PseudoMetricSpace.replaceUniformity`, `PseudoMetricSpace.replaceTopology`,
+  `PseudoMetricSpace.replaceBornology`: Tools to construct a pseudometric space on a type with a
+  pre-existing uniformity, topology, or bornology in such a way that the definitional equalities
+  for these structures are preserved; these are essential to avoid type class synthesis issues.
+* `Real.pseudoMetricSpace`: The pseudometric space structure on `ℝ` with
+  `dist x y = |x - y|`.
+* `MetricSpace α`: A `PseudoMetricSpace` with the guarantee `dist x y = 0 → x = y`.
 
-TODO (anyone): Add "Main results" section.
+## Main results
+
+* `PseudoMetricSpace.ext`: extensionality for pseudometric space structures.
+* `dist_triangle`, `dist_nonneg`, `nndist_triangle`: core distance inequalities.
+* `Metric.mk_uniformity_basis`, `Metric.mk_uniformity_basis_le`: tools for constructing bases for
+  the uniformity, with `Metric.nhds_basis_ball` and `Metric.nhds_basis_closedBall` as basic
+  neighborhood-basis corollaries.
+* `Metric.tendsto_nhds_nhds`, `Metric.continuous_iff`: epsilon-delta characterizations of
+  convergence and continuity.
+* `Metric.mem_closure_iff`, `Metric.dense_iff`: characterizations of closure and dense sets.
 
 ## Tags
 
-pseudo_metric, dist
+pseudometric space, dist
 -/
 
 @[expose] public section
@@ -57,6 +71,7 @@ theorem UniformSpace.ofDist_aux (ε : ℝ) (hε : 0 < ε) : ∃ δ > (0 : ℝ), 
   ⟨ε / 2, half_pos hε, fun _x hx _y hy => add_halves ε ▸ add_lt_add hx hy⟩
 
 /-- Construct a uniform structure from a distance function and metric space axioms -/
+@[implicit_reducible]
 def UniformSpace.ofDist (dist : α → α → ℝ) (dist_self : ∀ x : α, dist x x = 0)
     (dist_comm : ∀ x y : α, dist x y = dist y x)
     (dist_triangle : ∀ x y z : α, dist x z ≤ dist x y + dist y z) : UniformSpace α :=
@@ -127,7 +142,7 @@ class PseudoMetricSpace (α : Type u) : Type u extends Dist α where
   dist_comm : ∀ x y : α, dist x y = dist y x
   dist_triangle : ∀ x y z : α, dist x z ≤ dist x y + dist y z
   /-- Extended distance between two points -/
-  edist : α → α → ℝ≥0∞ := fun x y => ENNReal.ofNNReal ⟨dist x y, dist_nonneg' _ ‹_› ‹_› ‹_›⟩
+  edist : α → α → ℝ≥0∞ := fun x y => ENNReal.ofNNReal (.mk (dist x y) (dist_nonneg' _ ‹_› ‹_› ‹_›))
   edist_dist : ∀ x y : α, edist x y = ENNReal.ofReal (dist x y) := by
     intro x y; exact ENNReal.coe_nnreal_eq _
   toUniformSpace : UniformSpace α := .ofDist dist dist_self dist_comm dist_triangle
@@ -154,7 +169,8 @@ theorem PseudoMetricSpace.ext {α : Type*} {m m' : PseudoMetricSpace α}
 
 variable [PseudoMetricSpace α]
 
-attribute [instance] PseudoMetricSpace.toUniformSpace PseudoMetricSpace.toBornology
+attribute [instance_reducible, instance]
+  PseudoMetricSpace.toUniformSpace PseudoMetricSpace.toBornology
 
 -- see Note [lower instance priority]
 instance (priority := 200) PseudoMetricSpace.toEDist : EDist α :=
@@ -163,6 +179,7 @@ instance (priority := 200) PseudoMetricSpace.toEDist : EDist α :=
 /-- Construct a pseudo-metric space structure whose underlying topological space structure
 (definitionally) agrees which a pre-existing topology which is compatible with a given distance
 function. -/
+@[implicit_reducible]
 def PseudoMetricSpace.ofDistTopology {α : Type u} [TopologicalSpace α] (dist : α → α → ℝ)
     (dist_self : ∀ x : α, dist x x = 0) (dist_comm : ∀ x y : α, dist x y = dist y x)
     (dist_triangle : ∀ x y z : α, dist x z ≤ dist x y + dist y z)
@@ -703,6 +720,17 @@ theorem uniformity_basis_dist_le :
     (𝓤 α).HasBasis ((0 : ℝ) < ·) fun ε => { p : α × α | dist p.1 p.2 ≤ ε } :=
   Metric.mk_uniformity_basis_le (fun _ => id) fun ε ε₀ => ⟨ε, ε₀, le_refl ε⟩
 
+theorem uniformity_basis_dist_le_inv_nat_succ :
+    (𝓤 α).HasBasis (fun _ => True) fun n : ℕ => { p : α × α | dist p.1 p.2 ≤ 1 / (↑n + 1) } :=
+  Metric.mk_uniformity_basis_le (fun n _ => div_pos zero_lt_one <| Nat.cast_add_one_pos n)
+    fun _ε ε0 => (exists_nat_one_div_lt ε0).imp fun _n hn => ⟨trivial, hn.le⟩
+
+theorem uniformity_basis_dist_le_inv_nat_pos :
+    (𝓤 α).HasBasis (fun n : ℕ => 0 < n) fun n : ℕ => { p : α × α | dist p.1 p.2 ≤ 1 / ↑n } :=
+  Metric.mk_uniformity_basis_le (fun n hn => div_pos zero_lt_one <| Nat.cast_pos.2 hn) fun _ε ε0 =>
+    let ⟨n, hn⟩ := exists_nat_one_div_lt ε0
+    ⟨n + 1, n.succ_pos, by simpa using hn.le⟩
+
 theorem uniformity_basis_dist_le_pow {r : ℝ} (h0 : 0 < r) (h1 : r < 1) :
     (𝓤 α).HasBasis (fun _ : ℕ => True) fun n : ℕ => { p : α × α | dist p.1 p.2 ≤ r ^ n } :=
   Metric.mk_uniformity_basis_le (fun _ _ => pow_pos h0 _) fun _ε ε0 =>
@@ -755,8 +783,8 @@ theorem eventually_nhds_prod_iff {f : Filter ι} {x₀ : α} {p : α × ι → P
     (∀ᶠ x in 𝓝 x₀ ×ˢ f, p x) ↔ ∃ ε > (0 : ℝ), ∃ pa : ι → Prop, (∀ᶠ i in f, pa i) ∧
       ∀ ⦃x⦄, dist x x₀ < ε → ∀ ⦃i⦄, pa i → p (x, i) := by
   refine (nhds_basis_ball.prod f.basis_sets).eventually_iff.trans ?_
-  simp only [Prod.exists, forall_prod_set, id, mem_ball, and_assoc, exists_and_left]
-  rfl
+  simp only [Prod.exists, forall_prod_set, id, mem_ball, and_assoc, exists_and_left,
+    Set.mem_surjective.exists, eventually_mem_set]
 
 /-- A version of `Filter.eventually_prod_iff` where the second filter consists of neighborhoods
 in a pseudo-metric space. -/
@@ -778,6 +806,14 @@ theorem nhds_basis_ball_inv_nat_succ :
 theorem nhds_basis_ball_inv_nat_pos :
     (𝓝 x).HasBasis (fun n => 0 < n) fun n : ℕ => ball x (1 / ↑n) :=
   nhds_basis_uniformity uniformity_basis_dist_inv_nat_pos
+
+theorem nhds_basis_closedBall_inv_nat_succ :
+    (𝓝 x).HasBasis (fun _ => True) fun n : ℕ => closedBall x (1 / (↑n + 1)) :=
+  nhds_basis_uniformity uniformity_basis_dist_le_inv_nat_succ
+
+theorem nhds_basis_closedBall_inv_nat_pos :
+    (𝓝 x).HasBasis (fun n => 0 < n) fun n : ℕ => closedBall x (1 / ↑n) :=
+  nhds_basis_uniformity uniformity_basis_dist_le_inv_nat_pos
 
 theorem nhds_basis_ball_pow {r : ℝ} (h0 : 0 < r) (h1 : r < 1) :
     (𝓝 x).HasBasis (fun _ => True) fun n : ℕ => ball x (r ^ n) :=
@@ -939,36 +975,51 @@ instance (priority := 100) PseudoMetricSpace.toPseudoEMetricSpace : PseudoEMetri
     uniformity_edist := Metric.uniformity_edist }
 
 /-- In a pseudometric space, an open ball of infinite radius is the whole space -/
-theorem Metric.eball_top_eq_univ (x : α) : EMetric.ball x ∞ = Set.univ :=
+theorem Metric.eball_top_eq_univ (x : α) : eball x ∞ = Set.univ :=
   Set.eq_univ_iff_forall.mpr fun y => edist_lt_top y x
 
 /-- Balls defined using the distance or the edistance coincide -/
 @[simp]
-theorem Metric.emetric_ball {x : α} {ε : ℝ} : EMetric.ball x (ENNReal.ofReal ε) = ball x ε := by
+theorem Metric.eball_ofReal {x : α} {ε : ℝ} : eball x (.ofReal ε) = ball x ε := by
   ext y
-  simp only [EMetric.mem_ball, mem_ball, edist_dist]
+  simp only [mem_eball, mem_ball, edist_dist]
   exact ENNReal.ofReal_lt_ofReal_iff_of_nonneg dist_nonneg
+
+@[deprecated (since := "2026-01-24")]
+alias Metric.emetric_ball := Metric.eball_ofReal
 
 /-- Balls defined using the distance or the edistance coincide -/
 @[simp]
-theorem Metric.emetric_ball_nnreal {x : α} {ε : ℝ≥0} : EMetric.ball x ε = ball x ε := by
-  rw [← Metric.emetric_ball]
+theorem Metric.eball_coe {x : α} {ε : ℝ≥0} : eball x ε = ball x ε := by
+  rw [← eball_ofReal]
   simp
 
+@[deprecated (since := "2026-01-24")]
+alias Metric.emetric_ball_nnreal := Metric.eball_coe
+
 /-- Closed balls defined using the distance or the edistance coincide -/
-theorem Metric.emetric_closedBall {x : α} {ε : ℝ} (h : 0 ≤ ε) :
-    EMetric.closedBall x (ENNReal.ofReal ε) = closedBall x ε := by
+theorem Metric.closedEBall_ofReal {x : α} {ε : ℝ} (h : 0 ≤ ε) :
+    closedEBall x (.ofReal ε) = closedBall x ε := by
   ext y; simp [edist_le_ofReal h]
 
+@[deprecated (since := "2026-01-24")]
+alias Metric.emetric_closedBall := Metric.closedEBall_ofReal
+
 /-- Closed balls defined using the distance or the edistance coincide -/
 @[simp]
-theorem Metric.emetric_closedBall_nnreal {x : α} {ε : ℝ≥0} :
-    EMetric.closedBall x ε = closedBall x ε := by
-  rw [← Metric.emetric_closedBall ε.coe_nonneg, ENNReal.ofReal_coe_nnreal]
+theorem Metric.closedEBall_coe {x : α} {ε : ℝ≥0} :
+    closedEBall x ε = closedBall x ε := by
+  rw [← closedEBall_ofReal ε.coe_nonneg, ENNReal.ofReal_coe_nnreal]
+
+@[deprecated (since := "2026-01-24")]
+alias Metric.emetric_closedBall_nnreal := Metric.closedEBall_coe
 
 @[simp]
-theorem Metric.emetric_ball_top (x : α) : EMetric.ball x ⊤ = univ :=
+theorem Metric.eball_top (x : α) : eball x ⊤ = univ :=
   eq_univ_of_forall fun _ => edist_lt_top _ _
+
+@[deprecated (since := "2026-01-24")]
+alias Metric.emetric_ball_top := Metric.eball_top
 
 /-- Build a new pseudometric space from an old one where the bundled uniform structure is provably
 (but typically non-definitionaly) equal to some given uniform structure.
@@ -1103,6 +1154,9 @@ theorem Real.Ioo_eq_ball (x y : ℝ) : Ioo x y = ball ((x + y) / 2) ((y - x) / 2
 theorem Real.Icc_eq_closedBall (x y : ℝ) : Icc x y = closedBall ((x + y) / 2) ((y - x) / 2) := by
   rw [Real.closedBall_eq_Icc, ← sub_div, add_comm, ← sub_add, add_sub_cancel_left, add_self_div_two,
     ← add_div, add_assoc, add_sub_cancel, add_self_div_two]
+
+lemma Real.sphere_eq_pair (x : ℝ) {r : ℝ} (hr : 0 ≤ r) : sphere x r = {x - r, x + r} := by
+  ext; simp [dist_eq]; grind
 
 theorem Metric.uniformity_eq_comap_nhds_zero :
     𝓤 α = comap (fun p : α × α => dist p.1 p.2) (𝓝 (0 : ℝ)) := by

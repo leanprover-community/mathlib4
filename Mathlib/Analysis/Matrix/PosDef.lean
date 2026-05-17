@@ -36,9 +36,6 @@ lemma IsHermitian.posSemidef_iff_eigenvalues_nonneg [DecidableEq n] (hA : IsHerm
   conv_lhs => rw [hA.spectral_theorem]
   simp [isUnit_coe.posSemidef_star_right_conjugate_iff, posSemidef_diagonal_iff, Pi.le_def]
 
-@[deprecated (since := "2025-08-17")] alias ⟨_, IsHermitian.posSemidef_of_eigenvalues_nonneg⟩ :=
-  IsHermitian.posSemidef_iff_eigenvalues_nonneg
-
 namespace PosSemidef
 
 /-- The eigenvalues of a positive semi-definite matrix are non-negative -/
@@ -97,6 +94,7 @@ set_option backward.privateInPublic true in
 /-- The pre-inner product space structure implementation. Only an auxiliary for
 `Matrix.toSeminormedAddCommGroup`, `Matrix.toNormedAddCommGroup`,
 and `Matrix.toInnerProductSpace`. -/
+@[implicit_reducible]
 private def PosSemidef.preInnerProductSpace {M : Matrix n n 𝕜} (hM : M.PosSemidef) :
     PreInnerProductSpace.Core 𝕜 (n → 𝕜) where
   inner x y := (M *ᵥ y) ⬝ᵥ star x
@@ -126,6 +124,7 @@ noncomputable abbrev toNormedAddCommGroup (M : Matrix n n 𝕜) (hM : M.PosDef) 
       simpa [hx, lt_irrefl, dotProduct_comm] using hM.re_dotProduct_pos h }
 
 /-- A positive semi-definite matrix `M` induces an inner product `⟪x, y⟫ = xᴴMy`. -/
+@[implicit_reducible]
 def toInnerProductSpace (M : Matrix n n 𝕜) (hM : M.PosSemidef) :
     @InnerProductSpace 𝕜 (n → 𝕜) _ (M.toSeminormedAddCommGroup hM) :=
   InnerProductSpace.ofCore _

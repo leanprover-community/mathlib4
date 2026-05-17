@@ -20,24 +20,7 @@ open CategoryTheory
 
 universe u
 
-/-- The category of linear orders. -/
-structure LinOrd where
-  /-- Construct a bundled `LinOrd` from the underlying type and typeclass. -/
-  of ::
-  /-- The underlying linearly ordered type. -/
-  (carrier : Type*)
-  [str : LinearOrder carrier]
-
-attribute [instance] LinOrd.str
-
-initialize_simps_projections LinOrd (carrier → coe, -str)
-
 namespace LinOrd
-
-instance : CoeSort LinOrd (Type _) :=
-  ⟨LinOrd.carrier⟩
-
-attribute [coe] LinOrd.carrier
 
 set_option backward.privateInPublic true in
 /-- The type of morphisms in `LinOrd R`. -/
@@ -87,7 +70,7 @@ lemma coe_comp {X Y Z : LinOrd} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z
 
 @[simp]
 lemma forget_map {X Y : LinOrd} (f : X ⟶ Y) :
-    (forget LinOrd).map f = f := rfl
+    (forget LinOrd).map f = (f : _ → _) := rfl
 
 @[ext]
 lemma ext {X Y : LinOrd} {f g : X ⟶ Y} (w : ∀ x : X, f x = g x) : f = g :=

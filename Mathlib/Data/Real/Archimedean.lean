@@ -5,12 +5,13 @@ Authors: Mario Carneiro, Floris van Doorn
 -/
 module
 
+public import Mathlib.Algebra.Group.Pointwise.Set.Basic
 public import Mathlib.Algebra.Order.Archimedean.Basic
 public import Mathlib.Data.Real.Basic
 public import Mathlib.Order.Interval.Set.Disjoint
 
 import Mathlib.Algebra.Order.Group.Pointwise.CompleteLattice
-public import Mathlib.Algebra.Group.Pointwise.Set.Basic
+import Mathlib.Data.Int.LeastGreatest
 
 /-!
 # The real numbers are an Archimedean floor ring, and a conditionally complete linear order.
@@ -21,7 +22,8 @@ public import Mathlib.Algebra.Group.Pointwise.Set.Basic
 
 assert_not_exists Finset
 
-open Pointwise CauSeq
+open scoped Pointwise
+open CauSeq
 
 namespace Real
 variable {ι : Sort*} {f : ι → ℝ} {s : Set ℝ} {a : ℝ}
@@ -62,7 +64,8 @@ theorem exists_isLUB (hne : s.Nonempty) (hbdd : BddAbove s) : ∃ x, IsLUB s x :
     rcases h with ⟨y, yS, hy⟩
     refine Int.cast_le.1 (hy.trans ?_)
     push_cast
-    exact mul_le_mul_of_nonneg_right ((hU yS).trans hk.le) d.cast_nonneg
+    gcongr
+    exact (hU yS).trans hk.le
   choose f hf using fun d : ℕ =>
     Int.exists_greatest_of_bdd (this d) ⟨⌊L * d⌋, L, hL, Int.floor_le _⟩
   have hf₁ : ∀ n > 0, ∃ y ∈ s, ((f n / n : ℚ) : ℝ) ≤ y := fun n n0 =>
@@ -73,7 +76,7 @@ theorem exists_isLUB (hne : s.Nonempty) (hbdd : BddAbove s) : ∃ x, IsLUB s x :
     have := (Int.sub_one_lt_floor _).trans_le (Int.cast_le.2 <| (hf n).2 _ ⟨y, yS, Int.floor_le _⟩)
     simp only [Rat.cast_div, Rat.cast_intCast, Rat.cast_natCast, gt_iff_lt]
     rwa [lt_div_iff₀ (Nat.cast_pos.2 n0 : (_ : ℝ) < _), sub_mul, inv_mul_cancel₀]
-    exact ne_of_gt (Nat.cast_pos.2 n0)
+    exact (Nat.cast_pos.2 n0).ne'
   have hg : IsCauSeq abs (fun n => f n / n : ℕ → ℚ) := by
     intro ε ε0
     suffices ∀ j ≥ ⌈ε⁻¹⌉₊, ∀ k ≥ ⌈ε⁻¹⌉₊, (f j / j - f k / k : ℚ) < ε by
@@ -137,10 +140,8 @@ protected theorem isGLB_sInf (h₁ : s.Nonempty) (h₂ : BddBelow s) : IsGLB s (
 noncomputable instance : ConditionallyCompleteLinearOrder ℝ where
   __ := Real.linearOrder
   __ := Real.lattice
-  le_csSup s a hs ha := (Real.isLUB_sSup ⟨a, ha⟩ hs).1 ha
-  csSup_le s a hs ha := (Real.isLUB_sSup hs ⟨a, ha⟩).2 ha
-  csInf_le s a hs ha := (Real.isGLB_sInf ⟨a, ha⟩ hs).1 ha
-  le_csInf s a hs ha := (Real.isGLB_sInf hs ⟨a, ha⟩).2 ha
+  isLUB_csSup _ := Real.isLUB_sSup
+  isGLB_csInf _ := Real.isGLB_sInf
   csSup_of_not_bddAbove s hs := by simp [hs, sSup_def]
   csInf_of_not_bddBelow s hs := by simp [hs, sInf_def, sSup_def]
 
@@ -299,6 +300,11 @@ lemma sSup_nonneg (hs : ∀ x ∈ s, 0 ≤ x) : 0 ≤ sSup s := by
 it suffices to show that all values of `f` are nonnegative to show that `0 ≤ ⨆ i, f i`. -/
 lemma iSup_nonneg (hf : ∀ i, 0 ≤ f i) : 0 ≤ ⨆ i, f i := sSup_nonneg <| Set.forall_mem_range.2 hf
 
+lemma iSup_nonneg_of_nonnegHomClass {ι F α : Type*} [FunLike F α ℝ] [NonnegHomClass F α ℝ] (f : F)
+    (g : ι → α) :
+    0 ≤ ⨆ i, f (g i) :=
+  iSup_nonneg (fun i ↦ apply_nonneg f (g i))
+
 /-- As `sInf s = 0` when `s` is a set of reals that's either empty or unbounded below,
 it suffices to show that all elements of `s` are nonpositive to show that `sInf s ≤ 0`. -/
 lemma sInf_nonpos (hs : ∀ x ∈ s, x ≤ 0) : sInf s ≤ 0 := by
@@ -313,7 +319,7 @@ lemma iInf_nonpos (hf : ∀ i, f i ≤ 0) : ⨅ i, f i ≤ 0 := sInf_nonpos <| S
 theorem sInf_le_sSup (s : Set ℝ) (h₁ : BddBelow s) (h₂ : BddAbove s) : sInf s ≤ sSup s := by
   rcases s.eq_empty_or_nonempty with (rfl | hne)
   · rw [sInf_empty, sSup_empty]
-  · exact csInf_le_csSup h₁ h₂ hne
+  · exact csInf_le_csSup hne h₁ h₂
 
 theorem cauSeq_converges (f : CauSeq ℝ abs) : ∃ x, f ≈ const abs x := by
   let s := {x : ℝ | const abs x < f}

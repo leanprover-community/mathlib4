@@ -110,7 +110,7 @@ lemma root_ne_neg_of_ne [Nontrivial R] {i j : ι}
 lemma linearIndependent_pair_of_ne {i j : b.support} (hij : i ≠ j) :
     LinearIndependent R ![P.root i, P.root j] := by
   have : ({(j : ι), (i : ι)} : Set ι) ⊆ b.support := by simp [pair_subset_iff]
-  rw [← linearIndepOn_id_range_iff (by aesop)]
+  rw [← linearIndepOn_id_range_iff (by simp_all)]
   simpa [image_pair] using LinearIndepOn.id_image <| b.linearIndepOn_root.mono this
 
 lemma root_mem_span_int (i : ι) :
@@ -222,7 +222,7 @@ lemma pos_or_neg_of_sum_smul_root_mem (f : ι → ℤ)
     by_cases hi : i ∈ b.support
     · change 0 ≤ f' ⟨i, hi⟩
       simp [← hc]
-    · replace hi : i ∉ f.support := by contrapose! hi; exact hf₀ hi
+    · replace hi : i ∉ f.support := by contrapose hi; exact hf₀ hi
       simp_all
   refine Pi.lt_def.mpr ⟨aux, ?_⟩
   by_contra! contra
@@ -257,8 +257,8 @@ lemma sub_notMem_range_root
   let f : ι → ℤ := fun k ↦ if k = i then 1 else if k = j then -1 else 0
   have hf : ∑ k ∈ b.support, f k • P.root k = P.root i - P.root j := by
     have : {i, j} ⊆ b.support := by aesop (add simp Finset.insert_subset_iff)
-    rw [← Finset.sum_subset (s₁ := {i, j}) (s₂ := b.support) (by aesop) (by aesop),
-      Finset.sum_insert (by aesop), Finset.sum_singleton]
+    rw [← Finset.sum_subset (s₁ := {i, j}) (s₂ := b.support) (by lia) (by aesop),
+      Finset.sum_insert (by grind), Finset.sum_singleton]
     simp [f, hij, sub_eq_add_neg]
   intro contra
   rcases b.pos_or_neg_of_sum_smul_root_mem f (by rwa [hf]) (by aesop) with pos | neg

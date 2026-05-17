@@ -50,7 +50,7 @@ alias ⟨Tendsto.apply, _⟩ := tendsto_pi
 theorem le_pi {g : Filter (∀ i, α i)} : g ≤ pi f ↔ ∀ i, Tendsto (eval i) g (f i) :=
   tendsto_pi
 
-@[mono]
+@[gcongr, mono]
 theorem pi_mono (h : ∀ i, f₁ i ≤ f₂ i) : pi f₁ ≤ pi f₂ :=
   iInf_mono fun i => comap_mono <| h i
 
@@ -307,7 +307,7 @@ theorem coprodᵢ_neBot [∀ i, Nonempty (α i)] [Nonempty ι] (f : ∀ i, Filte
     [H : ∀ i, NeBot (f i)] : NeBot (Filter.coprodᵢ f) :=
   (H (Classical.arbitrary ι)).coprodᵢ
 
-@[mono]
+@[gcongr, mono]
 theorem coprodᵢ_mono (hf : ∀ i, f₁ i ≤ f₂ i) : Filter.coprodᵢ f₁ ≤ Filter.coprodᵢ f₂ :=
   iSup_mono fun i => comap_mono (hf i)
 

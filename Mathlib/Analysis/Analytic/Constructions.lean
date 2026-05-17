@@ -25,7 +25,7 @@ We show that the following are analytic:
 
 noncomputable section
 
-open scoped Topology
+open scoped Topology Ring
 open Filter Asymptotics ENNReal NNReal
 
 variable {α : Type*}
@@ -299,8 +299,8 @@ lemma HasFPowerSeriesWithinOnBall.prod {e : E} {f : E → F} {g : E → G} {r s 
     intro y h'y hy
     simp_rw [FormalMultilinearSeries.prod, ContinuousMultilinearMap.prod_apply]
     refine (hf.hasSum h'y ?_).prodMk (hg.hasSum h'y ?_)
-    · exact EMetric.mem_ball.mpr (lt_of_lt_of_le hy (min_le_left _ _))
-    · exact EMetric.mem_ball.mpr (lt_of_lt_of_le hy (min_le_right _ _))
+    · exact Metric.mem_eball.mpr (lt_of_lt_of_le hy (min_le_left _ _))
+    · exact Metric.mem_eball.mpr (lt_of_lt_of_le hy (min_le_right _ _))
 
 lemma HasFPowerSeriesOnBall.prod {e : E} {f : E → F} {g : E → G} {r s : ℝ≥0∞}
     {p : FormalMultilinearSeries 𝕜 E F} {q : FormalMultilinearSeries 𝕜 E G}
@@ -804,13 +804,13 @@ lemma formalMultilinearSeries_geometric_radius [NormOneClass A] :
     FormalMultilinearSeries.ofScalars_radius_eq_of_tendsto A _ one_ne_zero (by simp)
 
 lemma hasFPowerSeriesOnBall_inverse_one_sub [HasSummableGeomSeries A] :
-    HasFPowerSeriesOnBall (fun x : A ↦ Ring.inverse (1 - x))
+    HasFPowerSeriesOnBall (fun x : A ↦ (1 - x)⁻¹ʳ)
       (formalMultilinearSeries_geometric 𝕜 A) 0 1 := by
   constructor
   · exact one_le_formalMultilinearSeries_geometric_radius 𝕜 A
   · exact one_pos
   · intro y hy
-    simp only [EMetric.mem_ball, edist_dist, dist_zero_right, ofReal_lt_one] at hy
+    simp only [Metric.mem_eball, edist_dist, dist_zero_right, ofReal_lt_one] at hy
     simp only [zero_add, NormedRing.inverse_one_sub _ hy, Units.oneSub, Units.inv_mk,
       formalMultilinearSeries_geometric, ContinuousMultilinearMap.mkPiAlgebraFin_apply,
       List.ofFn_const, List.prod_replicate]
@@ -818,7 +818,7 @@ lemma hasFPowerSeriesOnBall_inverse_one_sub [HasSummableGeomSeries A] :
 
 @[fun_prop]
 lemma analyticAt_inverse_one_sub [HasSummableGeomSeries A] :
-    AnalyticAt 𝕜 (fun x : A ↦ Ring.inverse (1 - x)) 0 :=
+    AnalyticAt 𝕜 (fun x : A ↦ (1 - x)⁻¹ʳ) 0 :=
   ⟨_, ⟨_, hasFPowerSeriesOnBall_inverse_one_sub 𝕜 A⟩⟩
 
 end Geometric
@@ -831,9 +831,9 @@ lemma analyticAt_inverse [HasSummableGeomSeries A] (z : Aˣ) :
   rcases subsingleton_or_nontrivial A with hA | hA
   · convert analyticAt_const (v := (0 : A))
   · let f1 : A → A := fun a ↦ a * z.inv
-    let f2 : A → A := fun b ↦ Ring.inverse (1 - b)
+    let f2 : A → A := fun b ↦ (1 - b)⁻¹ʳ
     let f3 : A → A := fun c ↦ 1 - z.inv * c
-    have feq : ∀ᶠ y in 𝓝 (z : A), (f1 ∘ f2 ∘ f3) y = Ring.inverse y := by
+    have feq : ∀ᶠ y in 𝓝 (z : A), (f1 ∘ f2 ∘ f3) y = y⁻¹ʳ := by
       have : Metric.ball (z : A) (‖(↑z⁻¹ : A)‖⁻¹) ∈ 𝓝 (z : A) := by
         apply Metric.ball_mem_nhds
         simp
@@ -1215,7 +1215,7 @@ theorem HasFPowerSeriesWithinOnBall.compContinuousLinearMap
     · simp
     · simp only [Set.mem_insert_iff, add_eq_left, Set.mem_preimage, map_add] at hy1 ⊢
       rcases hy1 with (hy1 | hy1) <;> simp [hy1]
-    · simp only [EMetric.ball, edist_zero_right, Set.mem_setOf_eq] at hy2 ⊢
+    · simp only [Metric.eball, edist_zero_right, Set.mem_setOf_eq] at hy2 ⊢
       exact lt_of_le_of_lt (ContinuousLinearMap.le_opNorm_enorm _ _) (mul_lt_of_lt_div' hy2)
 
 theorem HasFPowerSeriesOnBall.compContinuousLinearMap (hf : HasFPowerSeriesOnBall f pf (u x) r) :

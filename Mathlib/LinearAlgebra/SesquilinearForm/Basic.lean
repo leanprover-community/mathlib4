@@ -112,15 +112,7 @@ theorem ortho_smul_left {B : V₁ →ₛₗ[I₁] V₂ →ₛₗ[I₂] V} {x y} 
 -- todo: this also holds for [CommRing R] [IsDomain R] when J₂ is invertible
 theorem ortho_smul_right {B : V₁ →ₛₗ[I₁] V₂ →ₛₗ[I₂] V} {x y} {a : K₂} {ha : a ≠ 0} :
     IsOrtho B x y ↔ IsOrtho B x (a • y) := by
-  dsimp only [IsOrtho]
-  constructor <;> intro H
-  · rw [map_smulₛₗ, H, smul_zero]
-  · rw [map_smulₛₗ, smul_eq_zero] at H
-    rcases H with H | H
-    · simp only [map_eq_zero] at H
-      exfalso
-      exact ha H
-    · exact H
+  simp_all [IsOrtho]
 
 /-- A set of orthogonal vectors `v` with respect to some sesquilinear map `B` is linearly
   independent if for all `i`, `B (v i) (v i) ≠ 0`. -/
@@ -1011,7 +1003,7 @@ lemma apply_mul_apply_lt_iff_linearIndependent (hp : ∀ x, x ≠ 0 → 0 < B x 
   · contrapose!
     intro h
     rw [LinearIndependent.pair_iff] at h
-    push_neg at h
+    push Not at h
     obtain ⟨r, s, hl, h0⟩ := h
     by_cases hr : r = 0; · simp_all
     by_cases hs : s = 0; · simp_all

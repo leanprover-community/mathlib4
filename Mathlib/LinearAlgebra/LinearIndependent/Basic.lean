@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.BigOperators.Fin
 public import Mathlib.LinearAlgebra.LinearIndependent.Defs
+public import Mathlib.Logic.Equiv.Fin.Rotate
 
 /-!
 # Linear independence
@@ -212,7 +213,7 @@ theorem linearIndependent_span (hs : LinearIndependent R v) :
 /-- Every finite subset of a linearly independent set is linearly independent. -/
 theorem linearIndependent_finset_map_embedding_subtype (s : Set M)
     (li : LinearIndependent R ((↑) : s → M)) (t : Finset s) :
-    LinearIndependent R ((↑) : Finset.map (Embedding.subtype s) t → M) :=
+    LinearIndependent R ((↑) : Finset.map (Embedding.subtype (· ∈ s)) t → M) :=
   li.comp (fun _ ↦ ⟨_, by aesop⟩) <| by intro; simp
 
 section Indexed
@@ -378,18 +379,28 @@ protected theorem LinearMap.linearIndependent_iff (f : M →ₗ[R] M') (hf_inj :
     LinearIndependent R (f ∘ v) ↔ LinearIndependent R v :=
   f.linearIndependent_iff_of_disjoint <| by simp_rw [hf_inj, disjoint_bot_right]
 
-/-- See `LinearIndependent.fin_cons` for a family of elements in a vector space. -/
-theorem LinearIndependent.fin_cons' {m : ℕ} (x : M) (v : Fin m → M) (hli : LinearIndependent R v)
-    (x_ortho : ∀ (c : R) (y : Submodule.span R (Set.range v)), c • x + y = (0 : M) → c = 0) :
+/-- See `LinearIndependent.finCons` for a family of elements in a vector space. -/
+theorem LinearIndependent.finCons' {m : ℕ} (x : M) (v : Fin m → M) (hli : LinearIndependent R v)
+    (x_ortho : ∀ (c : R) (y : M), y ∈ Submodule.span R (Set.range v) → c • x + y = 0 → c = 0) :
     LinearIndependent R (Fin.cons x v : Fin m.succ → M) := by
   rw [Fintype.linearIndependent_iff] at hli ⊢
   rintro g total_eq j
   simp_rw [Fin.sum_univ_succ, Fin.cons_zero, Fin.cons_succ] at total_eq
   have : g 0 = 0 := by
-    refine x_ortho (g 0) ⟨∑ i : Fin m, g i.succ • v i, ?_⟩ total_eq
+    refine x_ortho (g 0) (∑ i : Fin m, g i.succ • v i) ?_ total_eq
     exact sum_mem fun i _ => smul_mem _ _ (subset_span ⟨i, rfl⟩)
   rw [this, zero_smul, zero_add] at total_eq
   exact Fin.cases this (hli _ total_eq) j
+
+@[deprecated (since := "2026-04-07")]
+alias LinearIndependent.fin_cons' := LinearIndependent.finCons'
+
+/-- See `LinearIndependent.finSnoc` for a family of elements in a vector space. -/
+theorem LinearIndependent.finSnoc' {m : ℕ} (v : Fin m → M) (x : M) (hli : LinearIndependent R v)
+    (x_ortho : ∀ (c : R) (y : M), y ∈ Submodule.span R (Set.range v) → c • x + y = 0 → c = 0) :
+    LinearIndependent R (Fin.snoc v x : Fin m.succ → M) := by
+  rw [Fin.snoc_eq_cons_rotate v x, ← Function.comp_def]
+  exact (linearIndependent_equiv _).mpr (.finCons' x v hli x_ortho)
 
 end Module
 

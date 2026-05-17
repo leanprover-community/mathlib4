@@ -123,7 +123,7 @@ for the more fine-grained definitions above as they apply more generally.
   of measure greater than `r`;
 * `MeasurableSet.measure_eq_iSup_isClosed_of_ne_top` asserts that the measure of a measurable set
   of finite measure is the supremum of the measure of closed sets it contains.
-*  `MeasurableSet.exists_lt_isClosed_of_ne_top` and `MeasurableSet.exists_isClosed_lt_add`:
+* `MeasurableSet.exists_lt_isClosed_of_ne_top` and `MeasurableSet.exists_isClosed_lt_add`:
   a measurable set of finite measure can be approximated by a closed subset (stated as
   `r < μ F` and `μ s < μ F + ε`, respectively).
 * `MeasureTheory.Measure.WeaklyRegular.of_pseudoMetrizableSpace_of_isFiniteMeasure` is an
@@ -154,7 +154,7 @@ for the more fine-grained definitions above as they apply more generally.
 
 * `MeasurableSet.measure_eq_iSup_isCompact_of_ne_top` asserts that the measure of a measurable set
   of finite measure is the supremum of the measure of compact sets it contains.
-*  `MeasurableSet.exists_lt_isCompact_of_ne_top` and `MeasurableSet.exists_isCompact_lt_add`:
+* `MeasurableSet.exists_lt_isCompact_of_ne_top` and `MeasurableSet.exists_isCompact_lt_add`:
   a measurable set of finite measure can be approximated by a compact subset (stated as
   `r < μ K` and `μ s < μ K + ε`, respectively).
 
@@ -482,6 +482,15 @@ theorem ext_isOpen {ν : Measure α} [OuterRegular μ] [OuterRegular ν]
   congr! 4 with t _ ht2
   exact hμν t ht2
 
+/-- Outer regular measures are determined by values on bounded open sets. -/
+theorem ext_isOpen_isBounded {α : Type*} [PseudoMetricSpace α] {mα : MeasurableSpace α}
+    {μ ν : Measure α} [OuterRegular μ] [OuterRegular ν]
+    (hμν : ∀ U, IsOpen U → Bornology.IsBounded U → μ U = ν U) : μ = ν := by
+  refine ext_isOpen fun U hU ↦ ?_
+  obtain ⟨f, hm, hu, hf⟩ := Metric.eq_countable_union_of_isBounded_of_isOpen hU
+  rw [← hu, hm.measure_iUnion, hm.measure_iUnion]
+  exact iSup_congr fun i ↦ hμν (f i) (hf i).2 (hf i).1
+
 end OuterRegular
 
 /-- If a measure `μ` admits finite spanning open sets such that the restriction of `μ` to each set
@@ -790,11 +799,11 @@ instance {ι : Type*} {μ : ι → Measure α} [∀ i, InnerRegular (μ i)] :
     simp only [hs, Measure.sum_apply]
     exact ENNReal.summable.hasSum
   obtain ⟨a, ha⟩ : ∃ (a : Finset ι), r < (∑ i ∈ a, μ i) s := by
-    simp only [coe_finset_sum, Finset.sum_apply]
+    simp only [coe_finsetSum, Finset.sum_apply]
     exact ((tendsto_order.1 this).1 r hr).exists
   rcases MeasurableSet.exists_lt_isCompact hs ha with ⟨K, Ks, hK, h'K⟩
   refine ⟨K, Ks, hK, h'K.trans_le ?_⟩
-  simp only [coe_finset_sum, Finset.sum_apply]
+  simp only [coe_finsetSum, Finset.sum_apply]
   exact (ENNReal.sum_le_tsum _).trans (le_sum_apply _ _)
 
 end InnerRegular
@@ -913,6 +922,7 @@ protected theorem _root_.IsCompact.exists_isOpen_lt_add [InnerRegularCompactLTTo
     ∃ U, K ⊆ U ∧ IsOpen U ∧ μ U < μ K + ε :=
   hK.exists_isOpen_lt_of_lt _ (ENNReal.lt_add_right hK.measure_lt_top.ne hε)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Let `μ` be a locally finite measure on an R₁ topological space with Borel σ-algebra.
 If `μ` is inner regular for finite measure sets with respect to compact sets,
 then any measurable set of finite measure can be approximated in measure by an open set.

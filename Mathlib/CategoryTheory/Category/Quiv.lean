@@ -173,6 +173,7 @@ lemma homOfEq_map_homOfEq {X Y : V} (f : X ⟶ Y) {X' Y' : V} (hX : X = X') (hY 
   subst hX hY hX' hY'
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Compatible equivalences of types and hom-types induce an isomorphism of quivers. -/
 def isoOfEquiv : Quiv.of V ≅ Quiv.of W where
   hom := Prefunctor.mk e (he _ _)

@@ -32,6 +32,7 @@ attribute [local instance] uliftCategory in
 def chosenTerminalIsTerminal : IsTerminal chosenTerminal.{v, u} :=
   IsTerminal.ofUniqueHom (fun C ↦ ((Functor.const C).obj ⟨⟨⟨⟩⟩⟩).toCatHom) fun _ _ ↦ rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The type of functors out of the chosen terminal category is equivalent to the type of objects
 in the target category. TODO: upgrade to an equivalence of categories. -/
 def fromChosenTerminalEquiv {C : Type u} [Category.{v} C] : Cat.chosenTerminal ⥤ C ≃ C where

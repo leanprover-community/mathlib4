@@ -107,6 +107,7 @@ section
 
 variable {F L}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `L : C ⥤ D` is a localization functor for `W` and `e : F ≅ L ⋙ G` is an isomorphism,
 then `e.hom` makes `G` a pointwise left Kan extension of `F` along `L` at `L.obj Y`
 for any `Y : C`. -/
@@ -151,6 +152,7 @@ noncomputable def isPointwiseLeftKanExtensionOfIsoOfIsLocalization
   (LeftExtension.mk _ e.hom).isPointwiseLeftKanExtensionAtEquivOfIso'
     (L.objObjPreimageIso Y) (isPointwiseLeftKanExtensionAtOfIsoOfIsLocalization W e _)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Let `L : C ⥤ D` be a localization functor for `W`, if an extension `E`
 of `F : C ⥤ H` along `L` is such that the natural transformation
 `E.hom : F ⟶ L ⋙ E.right` is an isomorphism, then `E` is a pointwise

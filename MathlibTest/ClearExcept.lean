@@ -1,3 +1,4 @@
+module
 import Mathlib.Tactic.ClearExcept
 
 set_option linter.unusedTactic false
@@ -33,3 +34,15 @@ example (_delete_this : Nat) (dont_delete_this : Int) (dont_delete_this2 : Int) 
   clear * - dont_delete_this dont_delete_this2
   fail_if_success assumption
   exact dont_delete_this.toNat + dont_delete_this2.toNat
+
+-- Confirms that `clearExcept` does not clear the `auxDecl` introduced in recursive  functions.
+def myLen : List α → Nat
+  | [] => 0
+  | _ :: xs => myLen xs + 1
+
+theorem myLen_eq_length : ∀ (l : List α), myLen l = l.length
+  | [] => by simp [myLen]
+  | _ :: xs => by
+    simp [myLen]
+    clear * - xs
+    exact myLen_eq_length xs

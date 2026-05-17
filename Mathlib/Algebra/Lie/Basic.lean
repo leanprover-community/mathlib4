@@ -298,6 +298,7 @@ instance Module.Dual.instLieModule : LieModule R L (M →ₗ[R] R) where
 
 variable (L) in
 /-- It is sometimes useful to regard a `LieRing` as a `NonUnitalNonAssocRing`. -/
+@[implicit_reducible]
 def LieRing.toNonUnitalNonAssocRing : NonUnitalNonAssocRing L :=
   { mul := Bracket.bracket
     left_distrib := lie_add
@@ -360,16 +361,6 @@ theorem toFun_eq_coe (f : L₁ →ₗ⁅R⁆ L₂) : f.toFun = ⇑f :=
 instance : LinearMapClass (L₁ →ₗ⁅R⁆ L₂) R L₁ L₂ where
   map_add _ _ _ := by rw [← coe_toLinearMap, map_add]
   map_smulₛₗ _ _ _ := by rw [← coe_toLinearMap, map_smulₛₗ]
-
-@[deprecated (since := "2025-10-12")] alias map_smul := _root_.map_smul
-
-@[deprecated (since := "2025-10-12")] alias map_add := _root_.map_add
-
-@[deprecated (since := "2025-10-12")] alias map_sub := _root_.map_sub
-
-@[deprecated (since := "2025-10-12")] alias map_neg := _root_.map_neg
-
-@[deprecated (since := "2025-10-12")] alias map_zero := _root_.map_zero
 
 @[simp]
 theorem map_lie (f : L₁ →ₗ⁅R⁆ L₂) (x y : L₁) : f ⁅x, y⁆ = ⁅f x, f y⁆ :=
@@ -481,6 +472,7 @@ variable (f : L₁ →ₗ⁅R⁆ L₂)
 /-- A Lie ring module may be pulled back along a morphism of Lie algebras.
 
 See note [reducible non-instances]. -/
+@[implicit_reducible]
 def LieRingModule.compLieHom : LieRingModule L₁ M where
   bracket x m := ⁅f x, m⁆
   lie_add x := lie_add (f x)
@@ -705,16 +697,6 @@ theorem coe_toLinearMap (f : M →ₗ⁅R,L⁆ N) : ((f : M →ₗ[R] N) : M →
 instance : LinearMapClass (M →ₗ⁅R,L⁆ N) R M N where
   map_add _ _ _ := by rw [← coe_toLinearMap, map_add]
   map_smulₛₗ _ _ _ := by rw [← coe_toLinearMap, map_smulₛₗ]
-
-@[deprecated (since := "2025-10-12")] alias map_smul := _root_.map_smul
-
-@[deprecated (since := "2025-10-12")] alias map_add := _root_.map_add
-
-@[deprecated (since := "2025-10-12")] alias map_sub := _root_.map_sub
-
-@[deprecated (since := "2025-10-12")] alias map_neg := _root_.map_neg
-
-@[deprecated (since := "2025-10-12")] alias map_zero := _root_.map_zero
 
 @[simp]
 theorem map_lie (f : M →ₗ⁅R,L⁆ N) (x : L) (m : M) : f ⁅x, m⁆ = ⁅x, f m⁆ :=

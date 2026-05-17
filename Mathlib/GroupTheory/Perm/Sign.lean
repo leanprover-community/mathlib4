@@ -44,6 +44,7 @@ namespace Equiv.Perm
 We use this to partition permutations in `Matrix.det_zero_of_row_eq`, such that each partition
 sums up to `0`.
 -/
+@[implicit_reducible]
 def modSwap (i j : α) : Setoid (Perm α) :=
   ⟨fun σ τ => σ = τ ∨ σ = swap i j * τ, fun σ => Or.inl (refl σ), fun {σ τ} h =>
     Or.casesOn h (fun h => Or.inl h.symm) fun h => Or.inr (by rw [h, swap_mul_self_mul]),
@@ -113,7 +114,7 @@ theorem swap_induction_on [Finite α] {motive : Perm α → Prop} (f : Perm α)
 theorem mclosure_isSwap [Finite α] : Submonoid.closure { σ : Perm α | IsSwap σ } = ⊤ := by
   cases nonempty_fintype α
   refine top_unique fun x _ ↦ ?_
-  obtain ⟨h1, h2⟩ := Subtype.mem (truncSwapFactors x).out
+  obtain ⟨h1, h2⟩ := (truncSwapFactors x).out.prop
   rw [← h1]
   exact Submonoid.list_prod_mem _ fun y hy ↦ Submonoid.subset_closure (h2 y hy)
 
@@ -578,8 +579,8 @@ theorem sign_extendDomain (e : Perm α) {p : β → Prop} [DecidablePred p] (f :
   simp only [Equiv.Perm.extendDomain, sign_subtypeCongr, sign_permCongr, sign_refl, mul_one]
 
 @[simp]
-theorem sign_ofSubtype {p : α → Prop} [DecidablePred p] (f : Equiv.Perm (Subtype p)) :
-    sign (ofSubtype f) = sign f :=
+theorem sign_ofSubtype {p : α → Prop} [DecidablePred p] [Fintype (Subtype p)]
+    (f : Equiv.Perm (Subtype p)) : sign (ofSubtype f) = sign f :=
   sign_extendDomain f (Equiv.refl (Subtype p))
 
 end congr

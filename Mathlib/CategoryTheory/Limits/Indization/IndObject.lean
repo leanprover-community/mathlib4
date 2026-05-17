@@ -95,11 +95,12 @@ def cocone : Cocone (P.F ⋙ yoneda) where
 def coconeIsColimit : IsColimit P.cocone :=
   P.isColimit
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `A` and `B` are isomorphic, then an ind-object presentation of `A` can be extended to an
 ind-object presentation of `B`. -/
-@[simps!]
-noncomputable def extend {A B : Cᵒᵖ ⥤ Type v} (P : IndObjectPresentation A) (η : A ⟶ B) [IsIso η] :
-    IndObjectPresentation B :=
+@[simps! +dsimpLhs]
+noncomputable def extend {A B : Cᵒᵖ ⥤ Type v} (P : IndObjectPresentation A) (η : A ⟶ B)
+    [IsIso η] : IndObjectPresentation B :=
   .ofCocone (P.cocone.extend η) (P.coconeIsColimit.extendIso η)
 
 /-- The canonical comparison functor between the indexing category of the presentation and the
@@ -142,7 +143,8 @@ variable {A : Cᵒᵖ ⥤ Type v}
 theorem map {A B : Cᵒᵖ ⥤ Type v} (η : A ⟶ B) [IsIso η] : IsIndObject A → IsIndObject B
   | ⟨⟨P⟩⟩ => ⟨⟨P.extend η⟩⟩
 
-theorem iff_of_iso {A B : Cᵒᵖ ⥤ Type v} (η : A ⟶ B) [IsIso η] : IsIndObject A ↔ IsIndObject B :=
+theorem iff_of_iso {A B : Cᵒᵖ ⥤ Type v} (η : A ⟶ B) [IsIso η] :
+    IsIndObject A ↔ IsIndObject B :=
   ⟨.map η, .map (inv η)⟩
 
 instance : ObjectProperty.IsClosedUnderIsomorphisms (IsIndObject (C := C)) where

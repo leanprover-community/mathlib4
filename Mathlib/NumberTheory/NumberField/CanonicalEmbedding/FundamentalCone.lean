@@ -534,6 +534,7 @@ theorem intNorm_idealSetEquiv_apply (a : idealSet K J) :
 
 variable (K J)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- For an integer `n`, The equivalence between the elements of `idealSet K` of norm `n` and
 the product of the set of nonzero principal ideals of `K` divisible by `J` of norm `n` and the
 torsion of `K`. -/

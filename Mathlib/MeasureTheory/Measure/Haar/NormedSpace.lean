@@ -14,7 +14,7 @@ public import Mathlib.MeasureTheory.Integral.Bochner.Set
 
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -61,14 +61,14 @@ lemma _root_.MonoidHom.exists_nhds_isBounded (f : G →* H) (hf : Measurable f) 
     simp_rw [nonpos_iff_eq_zero, ← measure_iUnion_null_iff, ← inter_iUnion, ← preimage_iUnion,
       iUnion_ball_nat, preimage_univ, inter_univ] at this
     exact this.not_gt <| isOpen_interior.measure_pos _ K.interior_nonempty
-  rw [← one_mul x, ← op_smul_eq_mul]
+  rw [← mul_one x, ← smul_eq_mul]
   refine ⟨_, smul_mem_nhds_smul _ <| div_mem_nhds_one_of_haar_pos_ne_top haar _
     (isOpen_interior.measurableSet.inter <| hf measurableSet_ball) hn <|
       mt (measure_mono_top <| inter_subset_left.trans interior_subset) K.isCompact.measure_ne_top,
     ?_⟩
   have : Bornology.IsBounded (f '' (interior K ∩ f ⁻¹' ball 1 n)) :=
     isBounded_ball.subset <| (image_mono inter_subset_right).trans <| image_preimage_subset _ _
-  rw [image_op_smul_distrib, image_div]
+  rw [image_smul_distrib, image_div]
   exact (this.div this).smul _
 
 end SeminormedGroup
@@ -134,7 +134,7 @@ theorem setIntegral_comp_smul (f : E → F) {R : ℝ} (s : Set E) (hR : R ≠ 0)
   let e : E ≃ᵐ E := (Homeomorph.smul (Units.mk0 R hR)).toMeasurableEquiv
   calc
   ∫ x in s, f (R • x) ∂μ
-    = ∫ x in e ⁻¹' (e.symm ⁻¹' s), f (e x) ∂μ := by simp [← preimage_comp]; rfl
+    = ∫ x in e ⁻¹' e.symm ⁻¹' s, f (e x) ∂μ := by simp [← preimage_comp]; rfl
   _ = ∫ y in e.symm ⁻¹' s, f y ∂map (fun x ↦ R • x) μ := (setIntegral_map_equiv _ _ _).symm
   _ = |(R ^ finrank ℝ E)⁻¹| • ∫ y in e.symm ⁻¹' s, f y ∂μ := by
     simp [map_addHaar_smul μ hR, integral_smul_measure, ENNReal.toReal_ofReal, abs_nonneg]

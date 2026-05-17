@@ -9,7 +9,7 @@ public import Mathlib.Algebra.Homology.ComplexShape
 public import Mathlib.Algebra.Ring.NegOnePow
 public import Mathlib.CategoryTheory.GradedObject.Trifunctor
 
-/-! Signs in constructions on homological complexes
+/-! # Signs in constructions on homological complexes
 
 In this file, we shall introduce various typeclasses which will allow
 the construction of the total complex of a bicomplex and of the
@@ -163,6 +163,7 @@ instance : TotalComplexShape c c c where
     dsimp
     rw [neg_mul, one_mul, mul_one, c.ε_succ h, neg_neg]
 
+set_option backward.isDefEq.respectTransparency false in
 instance : TensorSigns (ComplexShape.down ℕ) where
   ε' := MonoidHom.mk' (fun (i : ℕ) => (-1 : ℤˣ) ^ i) (pow_add (-1 : ℤˣ))
   rel_add p q r (hpq : q + 1 = p) := by dsimp; lia
@@ -272,6 +273,7 @@ end ComplexShape
 
 /-- The total complex shape for `c₂`, `c₁` and `c₁₂` that is deduced
 from a total complex shape for `c₁`, `c₂` and `c₁₂`. -/
+@[implicit_reducible]
 def TotalComplexShape.symm [TotalComplexShape c₁ c₂ c₁₂] :
     TotalComplexShape c₂ c₁ c₁₂ where
   π := fun ⟨i₂, i₁⟩ ↦ ComplexShape.π c₁ c₂ c₁₂ ⟨i₁, i₂⟩
@@ -297,6 +299,7 @@ class TotalComplexShapeSymmetry [TotalComplexShape c₁ c₂ c₁₂] [TotalComp
 
 /-- The symmetry between the total complex shape for `c₁`, `c₂` and `c₁₂`,
 and its symmetric total complex shape. -/
+@[implicit_reducible]
 def TotalComplexShape.symmSymmetry [TotalComplexShape c₁ c₂ c₁₂] :
     letI := TotalComplexShape.symm c₁ c₂ c₁₂
     TotalComplexShapeSymmetry c₁ c₂ c₁₂ :=
@@ -355,6 +358,7 @@ end ComplexShape
 
 /-- The obvious `TotalComplexShapeSymmetry c₂ c₁ c₁₂` deduced from a
 `TotalComplexShapeSymmetry c₁ c₂ c₁₂`. -/
+@[implicit_reducible]
 def TotalComplexShapeSymmetry.symmetry [TotalComplexShape c₁ c₂ c₁₂]
     [TotalComplexShape c₂ c₁ c₁₂] [TotalComplexShapeSymmetry c₁ c₂ c₁₂] :
     TotalComplexShapeSymmetry c₂ c₁ c₁₂ where

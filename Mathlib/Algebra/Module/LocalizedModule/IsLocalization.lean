@@ -12,7 +12,7 @@ public import Mathlib.Algebra.Module.LocalizedModule.Basic
 # Equivalence between `IsLocalizedModule` and `IsLocalization`
 -/
 
-@[expose] public section
+public section
 
 section IsLocalizedModule
 

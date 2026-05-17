@@ -6,6 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Adjunction.Limits
+public import Mathlib.CategoryTheory.Limits.Constructions.EventuallyConstant
 public import Mathlib.CategoryTheory.Limits.Preserves.Ulift
 public import Mathlib.CategoryTheory.Limits.Types.Filtered
 public import Mathlib.CategoryTheory.Presentable.IsCardinalFiltered
@@ -93,6 +94,17 @@ instance {E : Type u₃} [Category.{v₃} E] (F : C ⥤ D) (G : D ⥤ E)
 
 instance [PreservesColimitsOfSize.{w, w} F] : F.IsCardinalAccessible κ where
 
+instance (A : C) : IsCardinalAccessible ((Functor.const C).obj A) κ where
+  preservesColimitOfShape J _ _ :=
+    { preservesColimit {F} :=
+        { preserves {c} hc := ⟨by
+            have h := isFiltered_of_isCardinalFiltered J κ
+            have (j : J) : IsIso ((((const C).obj A).mapCocone c).ι.app j) := by
+              dsimp
+              infer_instance
+            exact Functor.IsEventuallyConstantFrom.isColimitOfIsIso
+              (i₀ := h.nonempty.some) (fun _ _ ↦ by dsimp; infer_instance) _⟩ } }
+
 end
 
 section
@@ -108,6 +120,19 @@ class IsAccessible : Prop where
 lemma isAccessible_of_isCardinalAccessible (κ : Cardinal.{w}) [Fact κ.IsRegular]
     [IsCardinalAccessible F κ] : IsAccessible.{w} F where
   exists_cardinal := ⟨κ, inferInstance, inferInstance⟩
+
+instance {E : Type u₃} [Category.{v₃} E] (F : C ⥤ D) (G : D ⥤ E) [IsAccessible.{w} F]
+    [IsAccessible.{w} G] : IsAccessible.{w} (F ⋙ G) := by
+  obtain ⟨κF, _, _⟩ := IsAccessible.exists_cardinal (F := F)
+  obtain ⟨κG, _, _⟩ := IsAccessible.exists_cardinal (F := G)
+  have : Fact (κF ⊔ κG).IsRegular := ⟨iteInduction (fun _ ↦ Fact.out) (fun _ ↦ Fact.out)⟩
+  have := isCardinalAccessible_of_le F (by simp : κF ≤ κF ⊔ κG)
+  have := isCardinalAccessible_of_le G (by simp : κG ≤ κF ⊔ κG)
+  exact isAccessible_of_isCardinalAccessible (F ⋙ G) (κF ⊔ κG)
+
+instance (A : C) : IsAccessible.{w} ((Functor.const C).obj A) := by
+  have : Fact Cardinal.aleph0.IsRegular := Cardinal.fact_isRegular_aleph0
+  exact ⟨Cardinal.aleph0, inferInstance, inferInstance⟩
 
 end
 

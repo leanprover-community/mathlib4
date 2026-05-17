@@ -131,11 +131,9 @@ theorem arsinh_strictMono : StrictMono arsinh :=
 theorem arsinh_inj : arsinh x = arsinh y ↔ x = y :=
   arsinh_injective.eq_iff
 
-@[simp]
+@[simp, gcongr]
 theorem arsinh_le_arsinh : arsinh x ≤ arsinh y ↔ x ≤ y :=
   sinhOrderIso.symm.le_iff_le
-
-@[gcongr] protected alias ⟨_, GCongr.arsinh_le_arsinh⟩ := arsinh_le_arsinh
 
 @[simp]
 theorem arsinh_lt_arsinh : arsinh x < arsinh y ↔ x < y :=
