@@ -214,24 +214,80 @@ lemma LinearMap.equiv_of_quasiInverse' {u u' : V₃ →ₗ[K] V₂} {v : V₂ �
   symm at h h'
   exact equiv_of_quasiInverse h h'
 
-variable {V₄ : Type*} [AddCommGroup V₄] [Module K V₄]
-lemma LinearMap.QuasiInverse_comp {u : V₂ →ₗ[K] V₃} {v : V₃ →ₗ[K] V₂} {u' : V₃ →ₗ[K] V₄}
-    {v' : V₄ →ₗ[K] V₃}
-    (h : u.QuasiInverse v) (h' : u'.QuasiInverse v') :
-    (u' ∘ₗ u).QuasiInverse (v ∘ₗ v') := by
-  rcases h with ⟨h₁, h₂⟩
-  rcases h' with ⟨h'₁, h'₂⟩
-  constructor
-  · calc
-      (u' ∘ₗ u) ∘ₗ (v ∘ₗ v') = u' ∘ₗ (u ∘ₗ v) ∘ₗ v' := rfl
-      _ ≈  u' ∘ₗ .id ∘ₗ v' := by gcongr ; exact h₁
-      _ =  u' ∘ₗ v' := by simp
-      _ ≈  .id := h'₁
-  · calc
-      (v ∘ₗ v') ∘ₗ (u' ∘ₗ u) = v ∘ₗ (v' ∘ₗ u') ∘ₗ u := rfl
-      _ ≈  v ∘ₗ .id ∘ₗ u := by gcongr ; exact h'₂
-      _ =  v ∘ₗ u := by simp
-      _ ≈  .id := h₂
+/-- Left quasi-inverses compose in the opposite order. -/
+lemma LinearMap.LeftQuasiInverse.comp {V : Type*} [AddCommGroup V] [Module K V]
+     {u : V →ₗ[K] V₂} {v : V₂ →ₗ[K] V₃}
+    {u' : V₂ →ₗ[K] V}
+    {v' : V₃ →ₗ[K] V₂} (hu : u'.LeftQuasiInverse u) (hv : v'.LeftQuasiInverse v) :
+    (u' ∘ₗ v').LeftQuasiInverse (v ∘ₗ u) :=
+  calc
+    _ = u' ∘ₗ (v' ∘ₗ v) ∘ₗ u := rfl
+    _ ≈ u' ∘ₗ .id ∘ₗ u := by gcongr; exact hv
+    _ ≈ .id := hu
+
+/-- Right quasi-inverses compose in the opposite order. -/
+lemma LinearMap.RightQuasiInverse.comp {V : Type*} [AddCommGroup V] [Module K V] {u : V →ₗ[K] V₂}
+    {v : V₂ →ₗ[K] V₃} {u' : V₂ →ₗ[K] V}
+    {v' : V₃ →ₗ[K] V₂} (hu : u'.RightQuasiInverse u) (hv : v'.RightQuasiInverse v) :
+    (u' ∘ₗ v').RightQuasiInverse (v ∘ₗ u) :=
+  calc
+    _ = v ∘ₗ (u ∘ₗ u') ∘ₗ v' := rfl
+    _ ≈ v ∘ₗ .id ∘ₗ v' := by gcongr; exact hu
+    _ ≈ .id := hv
+
+/-- Quasi-inverses compose in the opposite order. -/
+lemma LinearMap.QuasiInverse.comp {V : Type*} [AddCommGroup V] [Module K V] {u : V →ₗ[K] V₂}
+    {v : V₂ →ₗ[K] V₃} {u' : V₂ →ₗ[K] V}
+    {v' : V₃ →ₗ[K] V₂} (hu : u'.QuasiInverse u) (hv : v'.QuasiInverse v) :
+    (u' ∘ₗ v').QuasiInverse (v ∘ₗ u) :=
+  ⟨hu.1.comp hv.1, hu.2.comp hv.2⟩
+
+/-- If `u'` is a right quasi-inverse of `u` and `w` is a left quasi-inverse of `v ∘ₗ u`,
+then `u ∘ₗ w` is a left quasi-inverse of `v`. -/
+lemma LinearMap.LeftQuasiInverse.of_comp_left {V : Type*} [AddCommGroup V] [Module K V]
+    {u : V →ₗ[K] V₂} {v : V₂ →ₗ[K] V₃}
+    {u' : V₂ →ₗ[K] V} {w : V₃ →ₗ[K] V} (hu : u'.RightQuasiInverse u)
+    (hw : w.LeftQuasiInverse (v ∘ₗ u)) :
+    (u ∘ₗ w).LeftQuasiInverse v := by
+  calc
+    _ = ((u ∘ₗ w) ∘ₗ v) ∘ₗ .id := rfl
+    _ ≈ ((u ∘ₗ w) ∘ₗ v) ∘ₗ (u ∘ₗ u') := by gcongr; symm; exact hu
+    _ = u ∘ₗ (w ∘ₗ (v ∘ₗ u)) ∘ₗ u' := rfl
+    _ ≈ u ∘ₗ .id ∘ₗ u' := by gcongr; exact hw
+    _ ≈ .id := hu
+
+/-- If `u'` is a quasi-inverse of `u` and `w` is a quasi-inverse of `v ∘ₗ u`, then
+`u ∘ₗ w` is a quasi-inverse of `v`. -/
+lemma LinearMap.QuasiInverse.of_comp_left {V : Type*} [AddCommGroup V] [Module K V]
+    {u : V →ₗ[K] V₂} {v : V₂ →ₗ[K] V₃}
+    {u' : V₂ →ₗ[K] V} {w : V₃ →ₗ[K] V} (hu : u'.QuasiInverse u)
+    (hw : w.QuasiInverse (v ∘ₗ u)) :
+    (u ∘ₗ w).QuasiInverse v :=
+  ⟨LinearMap.LeftQuasiInverse.of_comp_left hu.2 hw.1, hw.2⟩
+
+/-- If `v'` is a left quasi-inverse of `v` and `w` is a right quasi-inverse of `v ∘ₗ u`,
+then `w ∘ₗ v` is a right quasi-inverse of `u`. -/
+lemma LinearMap.RightQuasiInverse.of_comp_right {V : Type*} [AddCommGroup V] [Module K V]
+    {u : V →ₗ[K] V₂} {v : V₂ →ₗ[K] V₃}
+    {v' : V₃ →ₗ[K] V₂} {w : V₃ →ₗ[K] V} (hv : v'.LeftQuasiInverse v)
+    (hw : w.RightQuasiInverse (v ∘ₗ u)) :
+    (w ∘ₗ v).RightQuasiInverse u := by
+  calc
+    _ = .id ∘ₗ (u ∘ₗ (w ∘ₗ v)) := rfl
+    _ ≈ (v' ∘ₗ v) ∘ₗ (u ∘ₗ (w ∘ₗ v)) := by gcongr; symm; exact hv
+    _ = v' ∘ₗ ((v ∘ₗ u) ∘ₗ w) ∘ₗ v := rfl
+    _ ≈ v' ∘ₗ .id ∘ₗ v := by gcongr; exact hw
+    _ ≈ .id := hv
+
+/-- If `v'` is a quasi-inverse of `v` and `w` is a quasi-inverse of `v ∘ₗ u`, then
+`w ∘ₗ v` is a quasi-inverse of `u`. -/
+lemma LinearMap.QuasiInverse.of_comp_right {V : Type*} [AddCommGroup V] [Module K V]
+    {u : V →ₗ[K] V₂} {v : V₂ →ₗ[K] V₃}
+    {v' : V₃ →ₗ[K] V₂} {w : V₃ →ₗ[K] V} (hv : v'.QuasiInverse v)
+    (hw : w.QuasiInverse (v ∘ₗ u)) :
+    (w ∘ₗ v).QuasiInverse u :=
+  ⟨hw.1, LinearMap.RightQuasiInverse.of_comp_right hv.1 hw.2⟩
+
 end
 end
 
@@ -514,15 +570,13 @@ lemma IsFredholmQuot.comp {f : E →L[𝕜] F} {f' : F →L[𝕜] G} (hf : IsFre
   rw [IsFredholmQuot.iff_toLinearMap] at *
   rcases hf with ⟨g, hg⟩
   rcases hf' with ⟨g', hg'⟩
-  use g ∘L g'
-  push_cast
-  exact LinearMap.QuasiInverse_comp hg hg'
+  exact ⟨g ∘L g', hg'.comp hg⟩
 
 lemma IsFredholmQuot.of_equiv {f f' : E →L[𝕜] F} (h : f ≈ f') (hu : IsFredholmQuot f) :
     IsFredholmQuot f' := by
   rw [IsFredholmQuot.iff_toLinearMap] at *
   obtain ⟨g, hg⟩ := hu
-  exact ⟨g, LinearMap.QuasiInverse.congr hg (symm h) (Setoid.refl g)⟩
+  exact ⟨g, hg.congr (symm h) (Setoid.refl g)⟩
 
 lemma IsFredholmQuot.congr {f f' : E →L[𝕜] F} (h : f ≈ f') :
     IsFredholmQuot f ↔ IsFredholmQuot f' :=
@@ -531,20 +585,19 @@ lemma IsFredholmQuot.congr {f f' : E →L[𝕜] F} (h : f ≈ f') :
 lemma IsFredholmQuot.of_left_of_comp {f : F →L[𝕜] G} {f' : E →L[𝕜] F}
     (hf : IsFredholmQuot f) (hcomp : IsFredholmQuot (f ∘L f')) :
     IsFredholmQuot f' := by
+  rw [IsFredholmQuot.iff_toLinearMap] at *
   obtain ⟨g, hg⟩ := hf
-  refine (hcomp.comp <| (IsFredholmQuot.iff_toLinearMap g).2 ⟨f, hg.symm⟩).of_equiv ?_
-  calc
-    _ ≈ (.id 𝕜 F) ∘L f' := ContinuousLinearMap.FiniteRankSetoid.equiv_comp (Setoid.refl f') hg.2
-    _ = f' := rfl
+  obtain ⟨w, hw⟩ := hcomp
+  exact ⟨w ∘L f, (hg.symm.of_comp_right hw.symm).symm⟩
 
-lemma IsFredholmQuot.of_right_of_comp [ContinuousSMul 𝕜 F] {f : F →L[𝕜] G} {f' : E →L[𝕜] F}
+lemma IsFredholmQuot.of_right_of_comp [ContinuousSMul 𝕜 F] {f : F →L[𝕜] G}
+    {f' : E →L[𝕜] F}
     (hf' : IsFredholmQuot f') (hcomp : IsFredholmQuot (f ∘L f')) :
     IsFredholmQuot f := by
+  rw [IsFredholmQuot.iff_toLinearMap] at *
   obtain ⟨g, hg⟩ := hf'
-  refine (((IsFredholmQuot.iff_toLinearMap g).2 ⟨f', hg.symm⟩).comp hcomp).of_equiv ?_
-  calc
-    _ ≈ f ∘L (.id 𝕜 F) := ContinuousLinearMap.FiniteRankSetoid.equiv_comp hg.1 (Setoid.refl f)
-    _ = f := rfl
+  obtain ⟨w, hw⟩ := hcomp
+  exact ⟨f' ∘L w, (hg.symm.of_comp_left hw.symm).symm⟩
 
 /- ## Fredholm_struct ==> good decomposition (Filippo)
 
