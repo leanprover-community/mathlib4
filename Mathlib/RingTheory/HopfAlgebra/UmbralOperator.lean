@@ -161,8 +161,7 @@ def umbralPoly (Q : R[X] →ₗ[R] R[X]) (hQ : IsDeltaOperator Q) (n : ℕ) : R[
 /-- The zeroth umbral polynomial is `1`. -/
 theorem umbralPoly_zero {Q : R[X] →ₗ[R] R[X]} (hQ : IsDeltaOperator Q) :
     umbralPoly Q hQ 0 = 1 := by
-  simp [umbralPoly, Finset.sum_range_one, Nat.descFactorial, pow_zero,
-    PowerSeries.coeff_zero_eq_constantCoeff_apply, map_one]
+  simp [umbralPoly]
 
 /-- The umbral polynomials vanish at zero for `n ≥ 1`. -/
 theorem umbralPoly_eval_zero {Q : R[X] →ₗ[R] R[X]} (hQ : IsDeltaOperator Q) {n : ℕ}
@@ -204,12 +203,13 @@ private theorem inner_sum_eq {Q : R[X] →ₗ[R] R[X]} (hQ : IsDeltaOperator Q)
   intro d hd
   simp only [Function.mem_support, ne_eq] at hd
   simp only [Finset.mem_coe, Finset.mem_range]
-  by_contra hle; push_neg at hle
+  by_contra hle; push Not at hle
   exact hd (mul_eq_zero_of_right _ (PowerSeries.coeff_of_lt_order _
     (lt_of_lt_of_le (Nat.cast_lt.mpr (by omega : i < d))
       (PowerSeries.le_order_pow_of_constantCoeff_eq_zero d hg0))))
 
 set_option maxHeartbeats 800000 in
+-- Proof manipulates Finset sums with multiple rewrites.
 private theorem key_coeff_identity {Q : R[X] →ₗ[R] R[X]} (hQ : IsDeltaOperator Q) (m n : ℕ) :
     (Finset.range (n + 2)).sum (fun d =>
       PowerSeries.coeff d (deltaSeriesOf Q) *
@@ -282,7 +282,7 @@ private theorem jabotinsky_identity {Q : R[X] →ₗ[R] R[X]} (hQ : IsDeltaOpera
   intro d hd
   simp only [Function.mem_support, ne_eq] at hd
   simp only [Finset.mem_coe, Finset.mem_range]
-  by_contra hle; push_neg at hle
+  by_contra hle; push Not at hle
   exact hd (mul_eq_zero_of_right _ (PowerSeries.coeff_of_lt_order _
     (lt_of_lt_of_le (Nat.cast_lt.mpr (by omega : n < d))
       (PowerSeries.le_order_pow_of_constantCoeff_eq_zero d hg0))))
@@ -316,7 +316,7 @@ private theorem Q_monomial_coeff {Q : R[X] →ₗ[R] R[X]} (hQ : IsDeltaOperator
       have h2 : natDegree (X : R[X]) ≤ 1 := natDegree_X_le
       nlinarith
     conv_lhs => rw [as_sum_range' (taylor a (X ^ l)) (l + 1) hnd]
-    rw [map_sum]; simp only [eval_finset_sum]
+    rw [map_sum]; simp only [eval_finsetSum]
     apply Finset.sum_congr rfl; intro k _
     simp only [← C_mul_X_pow_eq_monomial, ← smul_eq_C_mul]
     rw [Q.map_smul, eval_smul, smul_eq_mul, taylor_coeff]
@@ -329,7 +329,7 @@ private theorem Q_monomial_coeff {Q : R[X] →ₗ[R] R[X]} (hQ : IsDeltaOperator
     have hdiff : Q (X ^ l) - (Finset.range (l + 1)).sum (fun k =>
         C (↑(Nat.choose l k) * (Q (X ^ k)).eval 0) * X ^ (l - k)) = 0 := by
       apply eval_determines; intro a
-      rw [eval_sub, sub_eq_zero, heval a, eval_finset_sum]
+      rw [eval_sub, sub_eq_zero, heval a, eval_finsetSum]
       apply Finset.sum_congr rfl; intro k _
       simp [eval_mul, eval_C, eval_pow, eval_X, mul_assoc]
     exact sub_eq_zero.mp hdiff
@@ -344,7 +344,7 @@ private theorem Q_monomial_coeff {Q : R[X] →ₗ[R] R[X]} (hQ : IsDeltaOperator
     intro k hk_mem hk
     have hk_lt := Finset.mem_range.mp hk_mem
     have hne : l - k ≠ m := fun h => hk (by omega)
-    simp [hne, Ne.symm hne]
+    rw [if_neg (Ne.symm hne), mul_zero]
   · -- l-m ∈ range(l+1)
     intro h; exact absurd (Finset.mem_range.mpr (by omega : l - m < l + 1)) h
 
@@ -370,14 +370,16 @@ private theorem descFactorial_choose_factorial {n l m : ℕ} (hm : m ≤ l) (hl 
     rwa [hm'] at this
   nlinarith [Nat.factorial_pos l, Nat.factorial_pos m, Nat.factorial_pos (l - m)]
 
+set_option linter.unusedSectionVars false in
 /-- Relates `(Q(X^k)).eval 0` to `deltaSeriesOf`: rearranging the defining equation. -/
-private theorem Q_eval_zero_eq {Q : R[X] →ₗ[R] R[X]} (hQ : IsDeltaOperator Q) (k : ℕ) :
+private theorem Q_eval_zero_eq {Q : R[X] →ₗ[R] R[X]} (_hQ : IsDeltaOperator Q) (k : ℕ) :
     (Q (X ^ k)).eval 0 =
       algebraMap ℚ R (↑(Nat.factorial k)) *
         PowerSeries.coeff k (deltaSeriesOf Q) := by
   have h := deltaSeriesOf_coeff Q k
-  rw [h, ← mul_assoc, ← map_mul, show (↑(Nat.factorial k) : ℚ) * (1 / ↑(Nat.factorial k)) = 1
-    from by field_simp, map_one, one_mul]
+  rw [h, ← mul_assoc, ← map_mul,
+    show (↑(Nat.factorial k) : ℚ) * (1 / ↑(Nat.factorial k)) = 1 from by field_simp,
+    map_one, one_mul]
 
 /-! ### Umbral duality
 
@@ -399,6 +401,7 @@ private theorem isUnit_natCast_factorial (k : ℕ) : IsUnit ((↑(Nat.factorial 
   exact (algebraMap ℚ R).isUnit_map
     (isUnit_iff_ne_zero.mpr (Nat.cast_ne_zero.mpr (Nat.factorial_ne_zero k)))
 
+set_option linter.unusedSectionVars false in
 /-- The leading coefficient of `f^m` at position `m`: if `constantCoeff f = 0`, then
 `coeff m (f^m) = (coeff 1 f)^m`. This is because `f = c₁·X + c₂·X² + ...` gives
 `f^m = c₁^m · X^m + higher order terms`. -/
@@ -439,11 +442,12 @@ private theorem umbralPoly_coeff {Q : R[X] →ₗ[R] R[X]} (hQ : IsDeltaOperator
   · intro h; exfalso; apply h; simp [Finset.mem_range]; omega
 
 set_option maxHeartbeats 800000 in
+-- Proof manipulates Finset sums with multiple rewrites.
 /-- **Orthogonality**: the factorial-weighted pairing of `f^k` with `pₙ` equals `n! · δ_{kn}`.
 
 Proof: substitute `umbralPoly_coeff`, use `j! · descFact(n, n-j) = n!` to factor out `n!`,
 then apply `jabotinsky_identity`. -/
-private theorem pairing_umbralPoly {Q : R[X] →ₗ[R] R[X]} (hQ : IsDeltaOperator Q)
+theorem pairing_umbralPoly {Q : R[X] →ₗ[R] R[X]} (hQ : IsDeltaOperator Q)
     (k n : ℕ) :
     (Finset.range (n + 1)).sum (fun j =>
       PowerSeries.coeff j (deltaSeriesOf Q ^ k) *
@@ -475,12 +479,14 @@ private theorem pairing_umbralPoly {Q : R[X] →ₗ[R] R[X]} (hQ : IsDeltaOperat
   · simp
 
 set_option maxHeartbeats 1200000 in
+-- Proof manipulates Finset sums with multiple rewrites.
 /-- **Adjoint on monomials**: the pairing of `f^k` with `Q(X^l)` equals `l! · coeff_l(f^{k+1})`.
 
 This is the statement that Q's adjoint under the derivative pairing is multiplication by f.
-Proof: apply `Q_monomial_coeff` + `Q_eval_zero_eq` to get `j! · C(l,j) · (l-j)! · coeff_{l-j}(f)`,
-simplify `j! · C(l,j) · (l-j)! = l!`, factor out `l!`, recognize convolution as `coeff_l(f^{k+1})`. -/
-private theorem pairing_Q_X_pow {Q : R[X] →ₗ[R] R[X]} (hQ : IsDeltaOperator Q) (k l : ℕ) :
+Proof: apply `Q_monomial_coeff` + `Q_eval_zero_eq` to get
+`j! · C(l,j) · (l-j)! · coeff_{l-j}(f)`, simplify to `l!`, factor out,
+recognize convolution as `coeff_l(f^{k+1})`. -/
+theorem pairing_Q_X_pow {Q : R[X] →ₗ[R] R[X]} (hQ : IsDeltaOperator Q) (k l : ℕ) :
     (Finset.range (l + 1)).sum (fun j =>
       PowerSeries.coeff j (deltaSeriesOf Q ^ k) *
         (↑(Nat.factorial j) : R) * (Q (X ^ l)).coeff j) =
@@ -499,7 +505,8 @@ private theorem pairing_Q_X_pow {Q : R[X] →ₗ[R] R[X]} (hQ : IsDeltaOperator 
   · rw [Finset.mul_sum]
     apply Finset.sum_congr rfl; intro j hj
     have hj' : j ≤ l := Nat.lt_succ_iff.mp (Finset.mem_range.mp hj)
-    have hfact : (j.factorial : R) * ↑(Nat.choose l j) * (algebraMap ℚ R (↑(Nat.factorial (l - j)))) = ↑(l.factorial) := by
+    have hfact : (j.factorial : R) * ↑(Nat.choose l j) *
+        (algebraMap ℚ R (↑(Nat.factorial (l - j)))) = ↑(l.factorial) := by
       rw [map_natCast]
       have h := Nat.choose_mul_factorial_mul_factorial hj'
       push_cast [← h]; ring
@@ -587,9 +594,9 @@ private lemma pairing_extend {Q : R[X] →ₗ[R] R[X]} (hQ : IsDeltaOperator Q)
   rw [← pairing_Q_X_pow hQ k l]
   by_cases hl0 : l = 0
   · subst hl0
-    simp only [pow_zero, Finset.range_one]
-    rw [show (1 : R[X]) = C 1 from by simp, hQ.kills_constants]
-    simp
+    rw [show X ^ 0 = (1 : R[X]) from pow_zero _,
+      show (1 : R[X]) = C 1 from by simp, hQ.kills_constants]
+    simp [Finset.range_one]
   · have hl1 : 0 < l := Nat.pos_of_ne_zero hl0
     have hzero : ∀ j : ℕ, l ≤ j → (Q (X ^ l)).coeff j = 0 := by
       intro j hj
@@ -608,6 +615,7 @@ private lemma pairing_extend {Q : R[X] →ₗ[R] R[X]} (hQ : IsDeltaOperator Q)
       rw [hzero j (by omega)]; ring
 
 set_option maxHeartbeats 4000000 in
+-- Proof manipulates Finset sums with multiple rewrites.
 /-- The lowering property: `Q(pₙ₊₁) = (n+1) • pₙ`.
 
 **Proof by umbral duality.** Under the derivative pairing `⟨h, p⟩ = Σ_k coeff_k(h)·k!·p.coeff k`:
@@ -735,9 +743,7 @@ def umbralOp (Q : R[X] →ₗ[R] R[X]) (hQ : IsDeltaOperator Q) : R[X] →ₗ[R]
 @[simp]
 theorem umbralOp_monomial {Q : R[X] →ₗ[R] R[X]} (hQ : IsDeltaOperator Q) (n : ℕ) (a : R) :
     umbralOp Q hQ (monomial n a) = a • umbralPoly Q hQ n := by
-  simp [umbralOp, Polynomial.lsum_apply, LinearMap.flip_apply, LinearMap.lsmul_apply,
-    Polynomial.toFinsupp_monomial, Finsupp.sum_single_index]
-
+  simp [umbralOp, Polynomial.lsum_apply, LinearMap.flip_apply, LinearMap.lsmul_apply]
 theorem umbralOp_pow {Q : R[X] →ₗ[R] R[X]} (hQ : IsDeltaOperator Q) (n : ℕ) :
     umbralOp Q hQ (X ^ n) = umbralPoly Q hQ n := by
   rw [show (X : R[X]) ^ n = monomial n 1 from by simp [monomial_one_right_eq_X_pow]]
