@@ -386,12 +386,6 @@ theorem single_one_eq_pow {R : Type*} [Semiring R] (n : ℕ) :
     single (n : ℤ) (1 : R) = single (1 : ℤ) 1 ^ n := by
   simp
 
-@[deprecated HahnSeries.inv_single (since := "2025-11-07")]
-theorem single_inv (d : ℤ) {α : F} (hα : α ≠ 0) :
-    single (-d) (α⁻¹ : F) = (single (d : ℤ) (α : F))⁻¹ := by
-  apply eq_inv_of_mul_eq_one_right
-  simp [hα]
-
 theorem single_zpow (n : ℤ) :
     single (n : ℤ) (1 : F) = single (1 : ℤ) 1 ^ n := by
   match n with

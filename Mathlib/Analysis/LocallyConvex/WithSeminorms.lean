@@ -855,8 +855,6 @@ lemma map_eq_zero_of_norm_eq_zero (q : Seminorm 𝕜 F)
   (map_zero q) ▸
     ((specializes_iff_mem_closure.mpr <| mem_closure_zero_iff_norm.mpr hx).map hq).eq.symm
 
-@[deprecated (since := "2025-11-15")] alias map_eq_zero_of_norm_zero := map_eq_zero_of_norm_eq_zero
-
 /-- Let `F` be a semi-`NormedSpace` over a `NontriviallyNormedField`, and let `q` be a
 seminorm on `F`. If `q` is continuous, then it is uniformly controlled by the norm, that is there
 is some `C > 0` such that `∀ x, q x ≤ C * ‖x‖`.
