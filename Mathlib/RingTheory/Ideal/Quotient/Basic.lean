@@ -225,4 +225,3 @@ lemma finite_iff_ideal_quotient (I : Ideal R) : Finite R ↔ Finite I ∧ Finite
 
 lemma Finite.of_ideal_quotient (I : Ideal R) [Finite I] [Finite (R ⧸ I)] : Finite R := by
   rw [finite_iff_ideal_quotient]; constructor <;> assumption
-

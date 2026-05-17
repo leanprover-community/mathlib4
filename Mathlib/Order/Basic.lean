@@ -1099,4 +1099,3 @@ instance Prop.partialOrder : PartialOrder Prop where
   le_antisymm _ _ Hab Hba := propext ⟨Hab, Hba⟩
 
 end «Prop»
-

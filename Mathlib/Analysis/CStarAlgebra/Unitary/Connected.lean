@@ -349,4 +349,3 @@ lemma Unitary.mem_pathComponentOne_iff {u : unitary A} :
     induction l with
     | nil => simp
     | cons x xs ih => simpa using (joined_one_expUnitary x).mul ih
-

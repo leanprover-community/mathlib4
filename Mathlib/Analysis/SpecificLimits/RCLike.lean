@@ -35,4 +35,3 @@ theorem tendsto_ofReal_atBot_cobounded :
   tendsto_norm_atTop_iff_cobounded.mp (mod_cast tendsto_abs_atBot_atTop)
 
 end RCLike
-

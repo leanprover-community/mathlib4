@@ -63,4 +63,3 @@ lemma finite_iff_subgroup_quotient (H : Subgroup G) : Finite G ↔ Finite H ∧ 
 @[to_additive]
 lemma Finite.of_subgroup_quotient (H : Subgroup G) [Finite H] [Finite (G ⧸ H)] : Finite G := by
   rw [finite_iff_subgroup_quotient]; constructor <;> assumption
-
