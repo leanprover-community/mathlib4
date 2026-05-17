@@ -93,7 +93,7 @@ theorem carmichael_lcm (a b : ℕ) :
   apply dvd_antisymm
   · rw [carmichael_eq_exponent h₀.left, carmichael_eq_exponent h₀.right,
       carmichael_eq_exponent <| lcm_ne_zero h₀.left h₀.right, ← lcm_eq_nat_lcm <| exponent _,
-      ← exponent_prod, ← exponent_eq_of_mulEquiv .prodUnits]
+      ← exponent_prod, ← exponent_eq_of_mulEquiv (.prodUnits (M := ZMod a) (N := ZMod b))]
     exact exponent_dvd_of_monoidHom _ <| Units.map_injective <| ZMod.castHom_injective _
   · have ha := carmichael_dvd <| Nat.dvd_lcm_left a b
     have hb := carmichael_dvd <| Nat.dvd_lcm_right a b
