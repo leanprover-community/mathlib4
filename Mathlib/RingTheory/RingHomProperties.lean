@@ -154,6 +154,13 @@ theorem IsStableUnderBaseChange.mk (h₁ : RespectsIso @P)
 
 attribute [local instance] Algebra.TensorProduct.rightAlgebra
 
+lemma IsStableUnderBaseChange.tensorProduct (hP : RingHom.IsStableUnderBaseChange P)
+    {R S : Type u} (T : Type u) [CommRing R] [CommRing S] [CommRing T] [Algebra R S] [Algebra R T]
+    (h : P (algebraMap R S)) :
+    P (algebraMap T (T ⊗[R] S)) :=
+  -- This only works because the `Algebra.TensorProduct.rightAlgebra` instance is present here.
+  hP _ _ _ _ h
+
 set_option backward.isDefEq.respectTransparency false in
 theorem IsStableUnderBaseChange.pushout_inl (hP : RingHom.IsStableUnderBaseChange @P)
     (hP' : RingHom.RespectsIso @P) {R S T : CommRingCat} (f : R ⟶ S) (g : R ⟶ T) (H : P g.hom) :

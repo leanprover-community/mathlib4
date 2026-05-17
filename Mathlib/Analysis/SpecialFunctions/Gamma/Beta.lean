@@ -288,8 +288,7 @@ theorem approx_Gamma_integral_tendsto_Gamma_integral {s : ℂ} (hs : 0 < re s) :
     apply IntervalIntegrable.continuousOn_mul
     · refine intervalIntegral.intervalIntegrable_cpow' ?_
       rwa [sub_re, one_re, ← zero_sub, sub_lt_sub_iff_right]
-    · apply Continuous.continuousOn
-      continuity
+    · fun_prop
   -- pointwise limit of f
   have f_tends : ∀ x : ℝ, x ∈ Ioi (0 : ℝ) →
       Tendsto (fun n : ℕ => f n x) atTop (𝓝 <| ↑(Real.exp (-x)) * (x : ℂ) ^ (s - 1)) := by

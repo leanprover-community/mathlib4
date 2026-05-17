@@ -617,7 +617,7 @@ theorem ValueGroupWithZero.inv_mk (x : R) (y : posSubmonoid R) (hx : ¬x ≤ᵥ 
 
 /-- The value group-with-zero is a linearly ordered commutative group with zero. -/
 instance : LinearOrderedCommGroupWithZero (ValueGroupWithZero R) where
-  zero_le _ := bot_le
+  isBot_zero _ := bot_le
   exists_pair_ne := by
     refine ⟨0, 1, fun h => ?_⟩
     apply ge_of_eq at h
@@ -1109,7 +1109,7 @@ def embed [v.Compatible] : ValueGroupWithZero R →*₀ ValueGroup₀ v where
     simp only [Valuation.Compatible.vle_iff_le (v := v), map_mul, ← and_imp, ← le_antisymm_iff]
     rw [div_eq_div_iff]
     · simp only [ValueGroup₀.restrict₀_apply, Valuation.apply_posSubmonoid_ne_zero, ↓reduceDIte,
-      dite_mul, zero_mul]
+        dite_mul, zero_mul]
       split_ifs
       all_goals try simp_all [← WithZero.coe_mul, ← Units.val_inj]
     · simp [ValueGroup₀.restrict₀]
