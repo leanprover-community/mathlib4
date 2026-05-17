@@ -62,7 +62,8 @@ section Ring
 
 variable [Ring R] (v : Valuation R Γ₀)
 
-instance : Ring (WithVal v) := fast_instance% Equiv.ring { toFun := ofVal, invFun := toVal v }
+instance instRing : Ring (WithVal v) := fast_instance%
+  Equiv.ring { toFun := ofVal, invFun := toVal v }
 instance : Inhabited (WithVal v) := ⟨0⟩
 instance : Preorder (WithVal v) := .lift (v ∘ ofVal)
 
@@ -620,6 +621,8 @@ def withValEquiv (R : Type*) [CommRing R] [Algebra R K] [IsIntegralClosure R ℤ
     𝓞 (WithVal v) ≃+* R := NumberField.RingOfIntegers.equiv R
 
 end NumberField.RingOfIntegers
+
+attribute [irreducible] WithVal.instRing
 
 open scoped NumberField in
 /-- The ring of integers of `WithVal v`, when `v` is a valuation on `ℚ`, is
