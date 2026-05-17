@@ -622,12 +622,13 @@ variable {R S M M₂ : Type*} [Semiring R] [Semiring S] {σ : R →+* S} {σ' : 
   [RingHomInvPair σ σ'] [RingHomInvPair σ' σ] [TopologicalSpace M] [AddCommMonoid M]
   [TopologicalSpace M₂] [AddCommMonoid M₂] [Module R M] [Module S M₂]
 
--- **FAE** Open PR [#39470](https://github.com/leanprover-community/mathlib4/pull/39470)
-@[simp]
-lemma Equiv.ofBijective_coe {X Y : Type*} {f : X ≃ Y} :
-    (Equiv.ofBijective _ f.bijective) = f := Equiv.ext (congrFun rfl)
+-- **FAE** Open PR [#39473](https://github.com/leanprover-community/mathlib4/pull/39473)
+-- open ContinuousLinearEquiv in
+-- lemma IsHomeomorph.coe {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] {f : X ≃ Y}
+--     (hf : IsHomeomorph f) : hf.homeomorph = f := by
+--   simp
 
-open ContinuousLinearEquiv in
+-- **FAE** Open PR [#39473](https://github.com/leanprover-community/mathlib4/pull/39473)
 lemma IsHomeomorph.inv_coe {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] {f : X ≃ Y}
     (hf : IsHomeomorph f) : hf.homeomorph.invFun = f.invFun := by
   simp
