@@ -69,18 +69,18 @@ private theorem eval_zero_eq_coeff_zero (p : R[X]) : p.eval 0 = p.coeff 0 := by
 
 /-- The **delta series** of a delta operator `Q`: the formal power series with
 `k`-th coefficient `(Q(X^k)).eval 0 / k!`. -/
-def deltaSeriesOf (Q : R[X] →ₗ[R] R[X]) : R⟦X⟧ :=
+public def deltaSeriesOf (Q : R[X] →ₗ[R] R[X]) : R⟦X⟧ :=
   PowerSeries.mk fun k =>
     algebraMap ℚ R (1 / ↑(Nat.factorial k)) * (Q (X ^ k)).eval 0
 
 @[simp]
-theorem deltaSeriesOf_coeff (Q : R[X] →ₗ[R] R[X]) (k : ℕ) :
+public theorem deltaSeriesOf_coeff (Q : R[X] →ₗ[R] R[X]) (k : ℕ) :
     PowerSeries.coeff k (deltaSeriesOf Q) =
       algebraMap ℚ R (1 / ↑(Nat.factorial k)) * (Q (X ^ k)).eval 0 := by
   simp [deltaSeriesOf, PowerSeries.coeff_mk]
 
 /-- The constant term of the delta series vanishes because `Q` kills constants. -/
-theorem deltaSeriesOf_constantCoeff {Q : R[X] →ₗ[R] R[X]} (hQ : IsDeltaOperator Q) :
+public theorem deltaSeriesOf_constantCoeff {Q : R[X] →ₗ[R] R[X]} (hQ : IsDeltaOperator Q) :
     PowerSeries.constantCoeff (R := R) (deltaSeriesOf Q) = 0 := by
   simp only [← PowerSeries.coeff_zero_eq_constantCoeff_apply, deltaSeriesOf,
     PowerSeries.coeff_mk, pow_zero, Nat.factorial_zero,
@@ -90,7 +90,7 @@ theorem deltaSeriesOf_constantCoeff {Q : R[X] →ₗ[R] R[X]} (hQ : IsDeltaOpera
 
 /-- The linear coefficient of the delta series is a unit: it equals `(Q X).eval 0 =
 (Q X).coeff 0`, which is a unit by the delta operator axiom. -/
-theorem deltaSeriesOf_isUnit_coeff_one {Q : R[X] →ₗ[R] R[X]} (hQ : IsDeltaOperator Q) :
+public theorem deltaSeriesOf_isUnit_coeff_one {Q : R[X] →ₗ[R] R[X]} (hQ : IsDeltaOperator Q) :
     IsUnit (PowerSeries.coeff 1 (deltaSeriesOf Q)) := by
   simp only [deltaSeriesOf, PowerSeries.coeff_mk, Nat.factorial_one,
     Nat.cast_one, div_one, map_one, one_mul, pow_one]
@@ -98,7 +98,7 @@ theorem deltaSeriesOf_isUnit_coeff_one {Q : R[X] →ₗ[R] R[X]} (hQ : IsDeltaOp
   exact hQ.unit_leading
 
 /-- The delta series has `HasSubst` (can be substituted into other power series). -/
-theorem deltaSeriesOf_hasSubst {Q : R[X] →ₗ[R] R[X]} (hQ : IsDeltaOperator Q) :
+public theorem deltaSeriesOf_hasSubst {Q : R[X] →ₗ[R] R[X]} (hQ : IsDeltaOperator Q) :
     PowerSeries.HasSubst (deltaSeriesOf Q) :=
   PowerSeries.HasSubst.of_constantCoeff_zero' (deltaSeriesOf_constantCoeff hQ)
 
@@ -111,26 +111,26 @@ The key finiteness property is that `g` has order ≥ 1 (zero constant term), so
 has order ≥ k, meaning `coeff n (g^k) = 0` whenever `k > n`. -/
 
 /-- The compositional inverse of the delta series of `Q`. -/
-def deltaSeriesInv (Q : R[X] →ₗ[R] R[X]) (hQ : IsDeltaOperator Q) : R⟦X⟧ :=
+public def deltaSeriesInv (Q : R[X] →ₗ[R] R[X]) (hQ : IsDeltaOperator Q) : R⟦X⟧ :=
   (deltaSeriesOf Q).substInvOfIsUnit (deltaSeriesOf_isUnit_coeff_one hQ)
 
-theorem deltaSeriesInv_constantCoeff {Q : R[X] →ₗ[R] R[X]} (hQ : IsDeltaOperator Q) :
+public theorem deltaSeriesInv_constantCoeff {Q : R[X] →ₗ[R] R[X]} (hQ : IsDeltaOperator Q) :
     PowerSeries.constantCoeff (deltaSeriesInv Q hQ) = 0 :=
   PowerSeries.constantCoeff_substInvOfIsUnit _ _
 
-theorem deltaSeriesInv_hasSubst {Q : R[X] →ₗ[R] R[X]} (hQ : IsDeltaOperator Q) :
+public theorem deltaSeriesInv_hasSubst {Q : R[X] →ₗ[R] R[X]} (hQ : IsDeltaOperator Q) :
     PowerSeries.HasSubst (deltaSeriesInv Q hQ) :=
   PowerSeries.HasSubst.substInvOfIsUnit _ _
 
 /-- The delta series composed with its inverse gives `X`: `f(g) = X`. -/
-theorem deltaSeriesInv_right {Q : R[X] →ₗ[R] R[X]} (hQ : IsDeltaOperator Q) :
+public theorem deltaSeriesInv_right {Q : R[X] →ₗ[R] R[X]} (hQ : IsDeltaOperator Q) :
     PowerSeries.subst (deltaSeriesOf Q) (deltaSeriesInv Q hQ) = PowerSeries.X := by
   simp only [deltaSeriesInv]
   exact PowerSeries.subst_substInvOfIsUnit_left (deltaSeriesOf Q)
     (deltaSeriesOf_constantCoeff hQ) (deltaSeriesOf_isUnit_coeff_one hQ)
 
 /-- The inverse composed with the delta series gives `X`: `g(f) = X`. -/
-theorem deltaSeriesInv_left {Q : R[X] →ₗ[R] R[X]} (hQ : IsDeltaOperator Q) :
+public theorem deltaSeriesInv_left {Q : R[X] →ₗ[R] R[X]} (hQ : IsDeltaOperator Q) :
     PowerSeries.subst (deltaSeriesInv Q hQ) (deltaSeriesOf Q) = PowerSeries.X := by
   simp only [deltaSeriesInv]
   exact PowerSeries.subst_substInvOfIsUnit_right (deltaSeriesOf Q)
@@ -151,7 +151,7 @@ a unit (since `g` is itself a delta series). -/
 /-- The **umbral polynomial** `pₙ` associated to a delta operator `Q`.
 Its `k`-th coefficient is `descFactorial(n, n-k) • coeff n (g^k)` where `g` is the
 compositional inverse of the delta series. -/
-def umbralPoly (Q : R[X] →ₗ[R] R[X]) (hQ : IsDeltaOperator Q) (n : ℕ) : R[X] :=
+public def umbralPoly (Q : R[X] →ₗ[R] R[X]) (hQ : IsDeltaOperator Q) (n : ℕ) : R[X] :=
   (Finset.range (n + 1)).sum fun k =>
     C (↑(Nat.descFactorial n (n - k)) * PowerSeries.coeff n (deltaSeriesInv Q hQ ^ k)) *
       X ^ k
@@ -159,12 +159,12 @@ def umbralPoly (Q : R[X] →ₗ[R] R[X]) (hQ : IsDeltaOperator Q) (n : ℕ) : R[
 /-! ### Basic sequence properties of umbral polynomials -/
 
 /-- The zeroth umbral polynomial is `1`. -/
-theorem umbralPoly_zero {Q : R[X] →ₗ[R] R[X]} (hQ : IsDeltaOperator Q) :
+public theorem umbralPoly_zero {Q : R[X] →ₗ[R] R[X]} (hQ : IsDeltaOperator Q) :
     umbralPoly Q hQ 0 = 1 := by
   simp [umbralPoly]
 
 /-- The umbral polynomials vanish at zero for `n ≥ 1`. -/
-theorem umbralPoly_eval_zero {Q : R[X] →ₗ[R] R[X]} (hQ : IsDeltaOperator Q) {n : ℕ}
+public theorem umbralPoly_eval_zero {Q : R[X] →ₗ[R] R[X]} (hQ : IsDeltaOperator Q) {n : ℕ}
     (hn : 0 < n) : (umbralPoly Q hQ n).eval 0 = 0 := by
   simp only [umbralPoly, Polynomial.eval_finsetSum, eval_mul, eval_C, eval_pow, eval_X]
   apply Finset.sum_eq_zero
@@ -447,7 +447,7 @@ set_option maxHeartbeats 800000 in
 
 Proof: substitute `umbralPoly_coeff`, use `j! · descFact(n, n-j) = n!` to factor out `n!`,
 then apply `jabotinsky_identity`. -/
-theorem pairing_umbralPoly {Q : R[X] →ₗ[R] R[X]} (hQ : IsDeltaOperator Q)
+public theorem pairing_umbralPoly {Q : R[X] →ₗ[R] R[X]} (hQ : IsDeltaOperator Q)
     (k n : ℕ) :
     (Finset.range (n + 1)).sum (fun j =>
       PowerSeries.coeff j (deltaSeriesOf Q ^ k) *
@@ -486,7 +486,7 @@ This is the statement that Q's adjoint under the derivative pairing is multiplic
 Proof: apply `Q_monomial_coeff` + `Q_eval_zero_eq` to get
 `j! · C(l,j) · (l-j)! · coeff_{l-j}(f)`, simplify to `l!`, factor out,
 recognize convolution as `coeff_l(f^{k+1})`. -/
-theorem pairing_Q_X_pow {Q : R[X] →ₗ[R] R[X]} (hQ : IsDeltaOperator Q) (k l : ℕ) :
+public theorem pairing_Q_X_pow {Q : R[X] →ₗ[R] R[X]} (hQ : IsDeltaOperator Q) (k l : ℕ) :
     (Finset.range (l + 1)).sum (fun j =>
       PowerSeries.coeff j (deltaSeriesOf Q ^ k) *
         (↑(Nat.factorial j) : R) * (Q (X ^ l)).coeff j) =
@@ -622,7 +622,7 @@ set_option maxHeartbeats 4000000 in
 1. `⟨f^k, Q(pₙ₊₁)⟩ = ⟨f^{k+1}, pₙ₊₁⟩ = (n+1)! · δ_{kn}` (adjoint + orthogonality)
 2. `⟨f^k, (n+1)·pₙ⟩ = (n+1)·n! · δ_{kn} = (n+1)! · δ_{kn}` (orthogonality)
 3. Their difference pairs to zero, so vanishes by non-degeneracy. -/
-theorem umbralPoly_lowering {Q : R[X] →ₗ[R] R[X]} (hQ : IsDeltaOperator Q) (n : ℕ) :
+public theorem umbralPoly_lowering {Q : R[X] →ₗ[R] R[X]} (hQ : IsDeltaOperator Q) (n : ℕ) :
     Q (umbralPoly Q hQ (n + 1)) = (n + 1) • umbralPoly Q hQ n := by
   set f := deltaSeriesOf Q
   set g := deltaSeriesInv Q hQ
@@ -723,7 +723,7 @@ theorem umbralPoly_lowering {Q : R[X] →ₗ[R] R[X]} (hQ : IsDeltaOperator Q) (
     rw [hpart1, hpart2, sub_self]
 
 /-- The umbral polynomial sequence forms a basic sequence for the delta operator `Q`. -/
-theorem umbralPoly_isBasicSequence {Q : R[X] →ₗ[R] R[X]} (hQ : IsDeltaOperator Q) :
+public theorem umbralPoly_isBasicSequence {Q : R[X] →ₗ[R] R[X]} (hQ : IsDeltaOperator Q) :
     IsBasicSequence Q (umbralPoly Q hQ) where
   lowering := umbralPoly_lowering hQ
   zero_one := umbralPoly_zero hQ
@@ -737,14 +737,14 @@ coalgebra homomorphism via `IsBasicSequence.isBinomialType`. -/
 
 /-- The **umbral operator** associated to `Q`: the linear map sending each monomial
 `X^n` to the corresponding umbral polynomial `pₙ`. -/
-def umbralOp (Q : R[X] →ₗ[R] R[X]) (hQ : IsDeltaOperator Q) : R[X] →ₗ[R] R[X] :=
+public def umbralOp (Q : R[X] →ₗ[R] R[X]) (hQ : IsDeltaOperator Q) : R[X] →ₗ[R] R[X] :=
   Polynomial.lsum (fun n => LinearMap.lsmul R R[X] |>.flip (umbralPoly Q hQ n))
 
 @[simp]
-theorem umbralOp_monomial {Q : R[X] →ₗ[R] R[X]} (hQ : IsDeltaOperator Q) (n : ℕ) (a : R) :
+public theorem umbralOp_monomial {Q : R[X] →ₗ[R] R[X]} (hQ : IsDeltaOperator Q) (n : ℕ) (a : R) :
     umbralOp Q hQ (monomial n a) = a • umbralPoly Q hQ n := by
   simp [umbralOp, Polynomial.lsum_apply, LinearMap.flip_apply, LinearMap.lsmul_apply]
-theorem umbralOp_pow {Q : R[X] →ₗ[R] R[X]} (hQ : IsDeltaOperator Q) (n : ℕ) :
+public theorem umbralOp_pow {Q : R[X] →ₗ[R] R[X]} (hQ : IsDeltaOperator Q) (n : ℕ) :
     umbralOp Q hQ (X ^ n) = umbralPoly Q hQ n := by
   rw [show (X : R[X]) ^ n = monomial n 1 from by simp [monomial_one_right_eq_X_pow]]
   rw [umbralOp_monomial, one_smul]
