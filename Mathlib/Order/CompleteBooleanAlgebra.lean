@@ -679,7 +679,7 @@ theorem sSup_symmDiff_le (hs : s.Nonempty) {a : α} : sSup s ∆ a ≤ sSup ((·
   exact iSup_symmDiff_le
 
 theorem symmDiff_sSup_le (hs : s.Nonempty) {a : α} : a ∆ sSup s ≤ sSup ((a ∆ ·) '' s) := by
-  simpa [symmDiff_comm] using sSup_symmDiff_le (s := s) (a := a) hs
+  simpa [symmDiff_comm] using sSup_symmDiff_le (a := a) hs
 
 theorem sSup_symmDiff_sSup_le {s t : Set α} (hs : s.Nonempty) (ht : t.Nonempty) :
     sSup s ∆ sSup t ≤ sSup (image2 (· ∆ ·) s t) := by
