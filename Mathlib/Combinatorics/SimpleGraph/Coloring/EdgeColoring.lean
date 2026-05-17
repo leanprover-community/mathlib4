@@ -1,4 +1,12 @@
-import Mathlib
+/-
+Copyright (c) 2026 Yiyang He and Daniel Raggi. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Yiyang He and Daniel Raggi 
+
+-/
+import Mathlib.Combinatorics.SimpleGraph.LineGraph
+import Mathlib.Combinatorics.SimpleGraph.Coloring.VertexColoring
+import Mathlib.Data.Fin.Basic
 
 /-!
 # Edge Coloring

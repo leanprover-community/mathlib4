@@ -1,5 +1,16 @@
-import Mathlib
-import KempeChain
+/-
+Copyright (c) 2026 Yiyang He and Daniel Raggi. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Yiyang He and Daniel Raggi 
+-/
+import Mathlib.Combinatorics.SimpleGraph.LineGraph
+import Mathlib.Combinatorics.SimpleGraph.Coloring.KempeChain
+import Mathlib.Combinatorics.SimpleGraph.Finite
+import Mathlib.Combinatorics.SimpleGraph.DegreeSum
+import Mathlib.Combinatorics.SimpleGraph.Acyclic
+import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
+import Mathlib.Data.List.Basic
+import Mathlib.Data.Set.Card
 
 /-!
 # Vizing Fan Rotation
