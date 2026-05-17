@@ -19,15 +19,29 @@ public import Mathlib.Topology.Homeomorph.Defs
 
 section FindHome
 
+-- I do think we need to begin with a three term exact sequence for this, since even
+-- Bourbaki derives the result as a corollary of Rank-Nullity. I've started the ball
+-- rolling on this. I'd be delighted to be proven wrong by splitting of the zero case
+-- and then starting the induction at 1, though. (Also feel free to work on this if I
+-- don't circle back around to it soon enough!)
 open Function Module in
-lemma Module.sum_neg_one_pow_finrank_eq_zero_of_exact {n : ℕ} {k : Type*} (V : Fin (n + 2) → Type*)
-    [Field k] [∀ i, AddCommGroup (V i)] [∀ i, Module k (V i)] [∀ i, FiniteDimensional k (V i)]
-    (f : (i : Fin (n + 1)) → V i.castSucc →ₗ[k] V i.succ)
-    (inj : Injective (f 0))
-    (exact : ∀ i : Fin n, Exact (f i.castSucc) (f i.succ))
-    (surj : Surjective (f (Fin.last _))) :
-    ∑ i, (-1) ^ i.val • (finrank k (V i) : ℤ) = 0 := by
-  sorry
+lemma Module.sum_neg_one_pow_finrank_eq_zero_of_exact {n : ℕ} {k : Type*}
+    (V : Fin (n + 3) → Type*) [Field k] [∀ i, AddCommGroup (V i)] [∀ i, Module k (V i)]
+    [∀ i, FiniteDimensional k (V i)] (f : (i : Fin (n + 2)) → V i.castSucc →ₗ[k] V i.succ)
+    (inj : Injective (f 0)) (h_exact : ∀ i : Fin (n + 1), Exact (f i.castSucc) (f i.succ))
+    (surj : Surjective (f (Fin.last _))) : ∑ i, (-1) ^ i.val • (finrank k (V i) : ℤ) = 0 := by
+  induction n
+  · simp only [Nat.reduceAdd, Int.reduceNeg, Int.zsmul_eq_mul]
+    have := Fin.sum_univ_three fun x ↦ (-1 : ℤ) ^ (x : ℕ) * (finrank k (V x))
+    rw [this]
+    simp only [Int.reduceNeg, Fin.isValue, Fin.coe_ofNat_eq_mod, Nat.zero_mod, pow_zero, one_mul,
+      Nat.one_mod, pow_one, neg_mul, Nat.mod_succ, even_two, Even.neg_pow, one_pow]
+    have := h_exact 1
+    dsimp [Exact] at this
+    refine Int.neg_eq_zero.mp ?_
+    -- have := LinearMap.rank_eq_of_surjective
+    sorry
+  · sorry
 
 -- Can we have a simproc write this using `Module.sum_neg_one_pow_finrank_eq_zero_of_exact`
 -- Note the key point that the universes of the `Vᵢ` are allowed be different here.
