@@ -181,7 +181,7 @@ open Polynomial in
 to monic monomials. -/
 protected theorem map_pow (a : A) (n : ℕ) :
     spectrum ℂ (a ^ n) = (· ^ n) '' spectrum ℂ a := by
-  simpa only [aeval_X_pow, eval_X_pow] using map_polynomial_aeval a (X ^ n)
+  simpa only [aeval_X_pow, eval_X_pow] using map_polynomial_aeval a ((X : ℂ[X]) ^ n)
 
 end Nontrivial
 

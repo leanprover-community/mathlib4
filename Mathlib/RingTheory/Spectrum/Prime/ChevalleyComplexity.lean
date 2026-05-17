@@ -421,8 +421,8 @@ private lemma induction_aux (R : Type*) [CommRing R] [Algebra R₀ R]
           · exact one_le_coeffSubmodule
           · exact Set.subset_union_right
           · lia
-    · exact le_self_pow one_le_coeffSubmodule powBound_ne_zero <| subset_span <| .inr <| by
-        simpa using ⟨_, _, hi.symm⟩
+    · apply mem_of_le_of_mem (le_self_pow one_le_coeffSubmodule powBound_ne_zero)
+      exact subset_span <| .inr <| by simpa using ⟨_, _, hi.symm⟩
     · unfold powBound
       gcongr
       · exact one_le_coeffSubmodule
@@ -529,9 +529,9 @@ private lemma statement : ∀ S : InductionObj R n, Statement R₀ R n S := by
       simp only [Submodule.span_le, Set.union_subset_iff, Set.singleton_subset_iff, SetLike.mem_coe,
         Set.iUnion_subset_iff, Set.range_subset_iff, c']
       constructor
-      · apply one_le_pow_of_one_le' c.one_le_coeffSubmodule
-        rw [Submodule.one_eq_span]
-        exact Submodule.subset_span rfl
+      · suffices 1 ≤ coeffSubmodule R₀ c ^ (c.val j).degree.succ by
+          rwa [Submodule.one_eq_span, Submodule.span_le, Set.singleton_subset_iff] at this
+        apply one_le_pow_of_one_le' c.one_le_coeffSubmodule
       · intro l m
         rw [update_apply]
         split_ifs with hlj
@@ -547,7 +547,7 @@ private lemma statement : ∀ S : InductionObj R n, Statement R₀ R n S := by
             rw [bot_lt_iff_ne_bot, ne_eq, degree_eq_bot]
             intro e
             simp [e] at hi
-          refine le_self_pow c.one_le_coeffSubmodule this ?_
+          apply mem_of_le_of_mem (le_self_pow c.one_le_coeffSubmodule this)
           exact Submodule.subset_span (.inr (Set.mem_iUnion_of_mem l ⟨m, rfl⟩))
   · intro R _ c i e he hc H₁ H₂ R₀ _ _
     exact induction_aux (R₀ := R₀) R c i e he hc H₁ H₂
