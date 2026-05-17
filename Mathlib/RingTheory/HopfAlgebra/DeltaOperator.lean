@@ -80,7 +80,7 @@ variable {R : Type*} [CommSemiring R]
 the Taylor shift: `Q ∘ taylor a = taylor a ∘ Q` for all `a`. This means `Q`
 respects the "addition of alphabets" structure underlying the coalgebra on
 `R[X]`. -/
-def IsShiftEquivariant (Q : R[X] →ₗ[R] R[X]) : Prop :=
+abbrev IsShiftEquivariant (Q : R[X] →ₗ[R] R[X]) : Prop :=
   ∀ (a : R), Q.comp (taylor a) = (taylor a).comp Q
 
 /-- Every Hasse derivative `hasseDeriv k` is shift-equivariant. -/
@@ -437,7 +437,7 @@ private theorem natDegree_Q_of_bounded
 
 /-- The degree of Q(X^n) is at most n-1 for delta operators over
 ℚ-algebras. -/
-private theorem natDegree_delta_op_pow
+theorem natDegree_delta_op_pow
     {Q : R[X] →ₗ[R] R[X]} (hQ : IsDeltaOperator Q) :
     ∀ n, 1 ≤ n → (Q (X ^ n)).natDegree ≤ n - 1 := by
   suffices ∀ n, (∀ k, 1 ≤ k → k < n →
@@ -545,7 +545,7 @@ private theorem natDegree_taylor_sub_le (a : R) (p : R[X])
     simp [coeff_sub, coeff_taylor_natDegree])
 
 /-- Over a ℚ-algebra, evaluation at all points determines the polynomial. -/
-private theorem eval_determines (p : R[X])
+theorem eval_determines (p : R[X])
     (h : ∀ a : R, p.eval a = 0) : p = 0 := by
   suffices ∀ n (q : R[X]), q.natDegree ≤ n →
       (∀ a, q.eval a = 0) → q = 0 from

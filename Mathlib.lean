@@ -6502,6 +6502,7 @@ public import Mathlib.RingTheory.HopfAlgebra.GroupLike
 public import Mathlib.RingTheory.HopfAlgebra.MonoidAlgebra
 public import Mathlib.RingTheory.HopfAlgebra.Polynomial
 public import Mathlib.RingTheory.HopfAlgebra.TensorProduct
+public import Mathlib.RingTheory.HopfAlgebra.UmbralOperator
 public import Mathlib.RingTheory.HopkinsLevitzki
 public import Mathlib.RingTheory.Ideal.AssociatedPrime.Basic
 public import Mathlib.RingTheory.Ideal.AssociatedPrime.Finiteness
