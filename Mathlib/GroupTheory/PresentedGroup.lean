@@ -205,7 +205,7 @@ The free product (Coproduct) of presentations is isomorphic to the presentation 
 the `FreeGroup (α ⊕ β)`
 -/
 def coprodPresentations :
-    PresentedGroup (FreeGroup.map (Sum.inl) '' rels₁ ∪ FreeGroup.map (Sum.inr) '' rels₂) ≃*
+    PresentedGroup (FreeGroup.map Sum.inl '' rels₁ ∪ FreeGroup.map Sum.inr '' rels₂) ≃*
     Monoid.Coprod (PresentedGroup rels₁) (PresentedGroup rels₂) :=
   MonoidHom.toMulEquiv
     (toGroup (coprodOf_kills_rels rels₁ rels₂))
