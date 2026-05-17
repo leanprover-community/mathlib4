@@ -649,29 +649,25 @@ lemma mvfderivWithin_zero {s : Set M} (hs : UniqueMDiffWithinAt I s x) :
 lemma mvfderiv_const (c : F) {x : M} : mvfderiv% (fun _ : M ↦ c) x = 0 := by
   simp [mvfderiv, mfderiv_const]
 
-@[simp, to_fun]
+@[simp, to_fun mvfderiv_fun_add]
 lemma mvfderiv_add {g g' : M → F} {x : M} (hg : MDiffAt g x) (hg' : MDiffAt g' x) :
     mvfderiv% (g + g') x = mvfderiv% g x + mvfderiv% g' x := by
   simp [mvfderiv, mfderiv_add hg hg']
   rfl
--- TODO: specify as name for to_fun instead, after #34279
-alias mvfderiv_fun_add := fun_mvfderiv_add
 
-@[simp, to_fun]
+@[simp, to_fun mvfderiv_fun_sub]
 lemma mvfderiv_sub {g g' : M → F} {x : M} (hg : MDiffAt g x) (hg' : MDiffAt g' x) :
     mvfderiv% (g - g') x = mvfderiv% g x - mvfderiv% g' x := by
   simp [mvfderiv, mfderiv_sub hg hg']
   rfl
--- TODO: specify as name for to_fun instead, after #34279
-alias mvfderiv_fun_sub := fun_mvfderiv_sub
 
-@[simp, to_fun]
+@[simp, to_fun mvfderiv_fun_neg]
 lemma mvfderiv_neg {g : M → F} {x : M} :
     mvfderiv% (-g) x = -mvfderiv% g x := by
   simp [mvfderiv, mfderiv_neg]
   rfl
 
-@[simp, to_fun]
+@[simp, to_fun mvfderiv_fun_smul]
 lemma mvfderiv_smul {x : M} {a : M → 𝕜} (ha : MDiffAt a x) {g : M → F} (hg : MDiffAt g x) :
     mvfderiv% (a • g) x =
       a x • mvfderiv% g x + (mvfderiv% a x).smulRight (g x) := by
@@ -679,17 +675,12 @@ lemma mvfderiv_smul {x : M} {a : M → 𝕜} (ha : MDiffAt a x) {g : M → F} (h
   simp [mvfderiv, -Pi.smul_apply', -Pi.smul_apply, fromTangentSpace_mfderiv_smul_apply ha hg]
   rfl
 
--- TODO: specify as name for to_fun instead, after #34279
-alias mvfderiv_fun_smul := fun_mvfderiv_smul
-
-@[simp, to_fun]
+@[simp, to_fun mvfderiv_fun_mul]
 lemma mvfderiv_mul {f g : M → 𝕜} {x : M} (hf : MDiffAt f x) (hg : MDiffAt g x) :
     mvfderiv% (f * g) x = f x • mvfderiv% g x + (g x) • (mvfderiv% f x) := by
   ext v
   simp [mvfderiv, -Pi.smul_apply', -Pi.smul_apply, ← smul_eq_mul, mfderiv_smul hf hg]
   simp [mul_comm _ (g x)]
-
-alias mvfderiv_fun_mul := fun_mvfderiv_mul
 
 @[simp]
 lemma mvfderiv_zero {x : M} : mvfderiv% (0 : M → F) x = 0 := by
