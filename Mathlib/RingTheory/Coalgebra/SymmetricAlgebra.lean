@@ -60,9 +60,9 @@ protected theorem comulAlgHom_coassoc :
         (SymmetricAlgebra.comulAlgHom R M)).comp (SymmetricAlgebra.comulAlgHom R M) := by
   ext x
   simp only [LinearMap.coe_comp, Function.comp_apply, LinearMap.coe_coe, AlgHom.comp_apply,
-             SymmetricAlgebra.comulAlgHom_ι, map_add, Algebra.TensorProduct.map_tmul,
-             AlgHom.coe_id, id_eq, map_one, TensorProduct.add_tmul, TensorProduct.tmul_add,
-             Algebra.TensorProduct.one_def]
+    SymmetricAlgebra.comulAlgHom_ι, map_add, Algebra.TensorProduct.map_tmul,
+    AlgHom.coe_id, id_eq, map_one, TensorProduct.add_tmul, TensorProduct.tmul_add,
+    Algebra.TensorProduct.one_def]
   abel
 
 protected theorem comulAlgHom_rTensor_counit_comp :
