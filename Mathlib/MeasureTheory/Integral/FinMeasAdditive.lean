@@ -74,6 +74,16 @@ theorem of_eq_top_imp_eq_top {μ' : Measure α} (h : ∀ s, MeasurableSet s → 
     (hT : FinMeasAdditive μ T) : FinMeasAdditive μ' T := fun s t hs ht hμ's hμ't hst =>
   hT s t hs ht (mt (h s hs) hμ's) (mt (h t ht) hμ't) hst
 
+theorem add_right_measure {ν : Measure α} (hT : FinMeasAdditive μ T) :
+    FinMeasAdditive (μ + ν) T :=
+  hT.of_eq_top_imp_eq_top fun s _ hμs =>
+    top_unique <| hμs.symm.trans_le (Measure.le_add_right le_rfl s)
+
+theorem add_left_measure {ν : Measure α} (hT : FinMeasAdditive μ T) :
+    FinMeasAdditive (ν + μ) T :=
+  hT.of_eq_top_imp_eq_top fun s _ hμs =>
+    top_unique <| hμs.symm.trans_le (Measure.le_add_left le_rfl s)
+
 theorem of_smul_measure {c : ℝ≥0∞} (hc_ne_top : c ≠ ∞) (hT : FinMeasAdditive (c • μ) T) :
     FinMeasAdditive μ T := by
   refine of_eq_top_imp_eq_top (fun s _ hμs => ?_) hT
@@ -113,14 +123,8 @@ theorem add (hT : FinMeasAdditive μ T) (hT' : FinMeasAdditive μ T') :
   abel
 
 theorem add_measure {ν : Measure α} (hT : FinMeasAdditive μ T) (hT' : FinMeasAdditive ν T') :
-    FinMeasAdditive (μ + ν) (T + T') := by
-  intro s t hms hmt hs ht hst
-  have hμs : μ s ≠ ∞ := ((Measure.le_add_right le_rfl s).trans_lt hs.lt_top).ne
-  have hμt : μ t ≠ ∞ := ((Measure.le_add_right le_rfl t).trans_lt ht.lt_top).ne
-  have hνs : ν s ≠ ∞ := ((Measure.le_add_left le_rfl s).trans_lt hs.lt_top).ne
-  have hνt : ν t ≠ ∞ := ((Measure.le_add_left le_rfl t).trans_lt ht.lt_top).ne
-  simp [hT s t hms hmt hμs hμt hst, hT' s t hms hmt hνs hνt hst]
-  abel
+    FinMeasAdditive (μ + ν) (T + T') :=
+  hT.add_right_measure.add (hT'.add_left_measure)
 
 theorem map_iUnion_fin_meas_set_eq_sum (T : Set α → β) (T_empty : T ∅ = 0)
     (h_add : FinMeasAdditive μ T) {ι} (S : ι → Set α) (sι : Finset ι)
