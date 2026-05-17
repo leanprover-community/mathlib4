@@ -10,6 +10,25 @@ lemma Foo.bar (f g : ℝ → ℝ) : f * g = g * f := mul_comm f g
 /-- info: Foo.baz (f g : ℝ → ℝ) : (fun i ↦ f i * g i) = fun i ↦ g i * f i -/
 #guard_msgs in #check Foo.baz
 
+@[to_fun baz']
+lemma _root_.Foo.bar' (f g : ℝ → ℝ) : f * g = g * f := mul_comm f g
+/-- info: Foo.baz' (f g : ℝ → ℝ) : (fun i ↦ f i * g i) = fun i ↦ g i * f i -/
+#guard_msgs in #check Foo.baz'
+
+namespace Test
+
+@[to_fun baz]
+lemma Foo.bar (f g : ℝ → ℝ) : f * g = g * f := mul_comm f g
+/-- info: Test.Foo.baz (f g : ℝ → ℝ) : (fun i ↦ f i * g i) = fun i ↦ g i * f i -/
+#guard_msgs in #check Test.Foo.baz
+
+@[to_fun baz'']
+lemma _root_.Foo.bar'' (f g : ℝ → ℝ) : f * g = g * f := mul_comm f g
+/-- info: Foo.baz'' (f g : ℝ → ℝ) : (fun i ↦ f i * g i) = fun i ↦ g i * f i -/
+#guard_msgs in #check Foo.baz''
+
+end Test
+
 @[to_fun Bars.baz]
 lemma Foo.Bar.baz (f g : ℝ → ℝ) : f * g = g * f := mul_comm f g
 /-- info: Foo.Bars.baz (f g : ℝ → ℝ) : (fun i ↦ f i * g i) = fun i ↦ g i * f i -/
