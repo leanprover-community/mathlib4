@@ -88,3 +88,5 @@ lemma ker_mapAlgHom_of_FG (f : S₁ →ₐ[R] S₂) (hf : (RingHom.ker f).FG) :
   ker_map_of_FG f.toRingHom hf
 
 end
+
+end MvPowerSeries
