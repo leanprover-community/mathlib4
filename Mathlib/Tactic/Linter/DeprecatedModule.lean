@@ -47,11 +47,13 @@ public register_option linter.deprecated.module : Bool := {
 
 /--
 The option `deprecated.module.exclude_root` controls whether the `deprecated.module` linter will
-run on root modules. The default value is `false`; this option has no effect if the
-`deprecated.module` linter is disabled.
+run on root modules. The default value is `false`: all files are linted. If `true` then all root
+modules, that is modules whose name has a single component, are not linted.
+This option has no effect if the `deprecated.module` linter is disabled.
 
-Some root modules (e.g. `Mathlib`) are designed to import every module regardless of deprecation
-status. This option allows to exclude deprecated import checking in such cases.
+Some projects, such as Mathlib, are designed so that their root modules import every other module
+in the project, including deprecated modules. This option allows users to automatically disable the
+deprecated module linter in such cases.
 -/
 public register_option linter.deprecated.module.exclude_root : Bool := {
   defValue := false
@@ -148,7 +150,7 @@ def deprecated.moduleLinter : Linter where run := withSetOptionIn fun stx ↦ do
     return
   if (← get).messages.hasErrors then
     return
-  -- Exclude root module?
+  -- If the `exclude_root` option is set then root modules aren't linted.
   if getLinterValue linter.deprecated.module.exclude_root (← getLinterOptions)
       && (← getMainModule).getNumParts == 1 then
     return
