@@ -62,7 +62,7 @@ section Ring
 
 variable [Ring R] (v : Valuation R Γ₀)
 
-instance : Ring (WithVal v) := Equiv.ring { toFun := ofVal, invFun := toVal v }
+instance : Ring (WithVal v) := fast_instance% Equiv.ring { toFun := ofVal, invFun := toVal v }
 instance : Inhabited (WithVal v) := ⟨0⟩
 instance : Preorder (WithVal v) := .lift (v ∘ ofVal)
 
@@ -190,7 +190,7 @@ variable [CommRing R] (v : Valuation R Γ₀)
 
 instance : CommRing (WithVal v) := fast_instance% (equiv v).commRing
 
-instance : ValuativeRel (WithVal v) := .ofValuation (valuation v)
+instance : ValuativeRel (WithVal v) := fast_instance% .ofValuation (valuation v)
 
 instance : (valuation v).Compatible := .ofValuation (valuation v)
 
@@ -266,9 +266,9 @@ section left
 
 variable [CommRing R] (v : Valuation R Γ₀) [Semiring S] [Algebra R S]
 
-instance : Algebra (WithVal v) S where
+instance : Algebra (WithVal v) S := fast_instance% {
   __ := (inferInstance : Module (WithVal v) S)
-  __ := Algebra.compHom S (equiv v).toRingHom
+  __ := Algebra.compHom S (equiv v).toRingHom }
 
 theorem algebraMap_left_apply (s : WithVal v) :
     algebraMap (WithVal v) S s = algebraMap R S s.ofVal := rfl
@@ -285,7 +285,7 @@ section right
 
 variable [CommSemiring R] [Ring S] [Algebra R S] (v : Valuation S Γ₀)
 
-instance : Algebra R (WithVal v) := (equiv v).algebra R
+instance : Algebra R (WithVal v) := fast_instance% (equiv v).algebra R
 
 theorem algebraMap_right_apply (r : R) :
     algebraMap R (WithVal v) r = toVal v (algebraMap R S r) := rfl
