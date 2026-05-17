@@ -119,15 +119,8 @@ def degreeLTEquiv (n : ℕ) : degreeLT R n ≃ₗ[R] Fin n → R where
       degreeLT R n |>.sum_mem fun i _ ↦ monomial_coe_mem_degreeLT i (f i)⟩
   map_add' p q := by ext; simp
   map_smul' x p := by ext; simp
-  left_inv := by
-    rintro ⟨p, hp⟩
-    ext1
-    by_cases hp0 : p = 0
-    · simp [hp0]
-    simpa using p.sum_fin (monomial ·) (by simp) (mem_degreeLT.mp hp)
-  right_inv f := by
-    ext i
-    grind [finsetSum_coeff, Finset.sum_eq_single i, coeff_monomial]
+  left_inv := fun ⟨p, hp⟩ ↦ by simpa using p.sum_fin (monomial ·) (by simp) (mem_degreeLT.mp hp)
+  right_inv f := by ext i; grind [finsetSum_coeff, Finset.sum_eq_single i, coeff_monomial]
 
 theorem degreeLTEquiv_eq_zero_iff_eq_zero {n : ℕ} {p : R[X]} (hp : p ∈ degreeLT R n) :
     degreeLTEquiv _ _ ⟨p, hp⟩ = 0 ↔ p = 0 := by simp
