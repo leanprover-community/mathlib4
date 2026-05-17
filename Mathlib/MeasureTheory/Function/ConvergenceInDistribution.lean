@@ -135,14 +135,13 @@ theorem tendstoInDistribution_of_ae_tendsto [NeBot l] [l.IsCountablyGenerated]
     (hX₁ : ∀ i, Measurable (X i)) (hZ : AEMeasurable Z μ')
     (hX₂ : ∀ᵐ ω ∂μ', Tendsto (fun i ↦ X i ω) l (nhds (Z ω))) :
     TendstoInDistribution X l Z (fun _ ↦ μ') μ' := by
-    -- aemeasurable_of_tendsto_metrizable_ae _ (by measurability) h
-  refine TendstoInDistribution.mk (by measurability) (by measurability) ?_
+  refine .mk (by measurability) (by measurability) ?_
   rw [ProbabilityMeasure.tendsto_iff_forall_lintegral_tendsto]
   intro f
   simp_rw [ProbabilityMeasure.coe_mk]
-  rw [MeasureTheory.lintegral_map' (by measurability) (by measurability)]
+  rw [lintegral_map' (by measurability) (by measurability)]
   conv in ∫⁻ _, _ ∂_ =>
-    rw [MeasureTheory.lintegral_map' (by measurability) (by measurability)]
+    rw [lintegral_map' (by measurability) (by measurability)]
   apply tendsto_lintegral_filter_of_dominated_convergence (bound := fun _ ↦ nndist 0 f)
   · exact .of_forall (fun _ ↦ by measurability)
   · refine .of_forall <| fun n ↦ .of_forall <| fun ω ↦ ?_
