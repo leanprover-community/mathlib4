@@ -266,8 +266,7 @@ theorem finprod_heightOneSpectrum_factorization {I : FractionalIdeal R⁰ K} (hI
   rw [haJ, ← div_spanSingleton, div_eq_mul_inv, ← coeIdeal_span_singleton, ← hJ, ← ha,
     ← finprod_inv_distrib]
   simp_rw [← zpow_neg]
-  rw [← finprod_mul_distrib (by fun_prop (disch := assumption))
-    (by fun_prop (disch := assumption))]
+  rw [← finprod_mul_distrib (by fun_prop) (by fun_prop)]
   apply finprod_congr
   intro v
   rw [← zpow_add₀ ((@coeIdeal_ne_zero R _ K _ _ _ _).mpr v.ne_bot), sub_eq_add_neg]
