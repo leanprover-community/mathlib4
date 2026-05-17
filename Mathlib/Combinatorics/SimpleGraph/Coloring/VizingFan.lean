@@ -3,14 +3,16 @@ Copyright (c) 2026 Yiyang He, Daniel Raggi. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yiyang He, Daniel Raggi
 -/
-import Mathlib.Combinatorics.SimpleGraph.LineGraph
-import Mathlib.Combinatorics.SimpleGraph.Coloring.KempeChain
-import Mathlib.Combinatorics.SimpleGraph.Finite
-import Mathlib.Combinatorics.SimpleGraph.DegreeSum
-import Mathlib.Combinatorics.SimpleGraph.Acyclic
-import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
-import Mathlib.Data.List.Basic
-import Mathlib.Data.Set.Card
+module
+
+public import Mathlib.Combinatorics.SimpleGraph.LineGraph
+public import Mathlib.Combinatorics.SimpleGraph.Coloring.KempeChain
+public import Mathlib.Combinatorics.SimpleGraph.Finite
+public import Mathlib.Combinatorics.SimpleGraph.DegreeSum
+public import Mathlib.Combinatorics.SimpleGraph.Acyclic
+public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
+public import Mathlib.Data.List.Basic
+public import Mathlib.Data.Set.Card
 
 /-!
 # Vizing Fan Rotation
@@ -38,6 +40,8 @@ then shows the coloring can be completed.
   to `G` whenever both endpoints of `e` have missing colors and the
   apex has at least two.
 -/
+
+@[expose] public section
 
 namespace vizing
 

@@ -3,9 +3,11 @@ Copyright (c) 2026 Yiyang He, Daniel Raggi. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yiyang He, Daniel Raggi
 -/
-import Mathlib.Combinatorics.SimpleGraph.LineGraph
-import Mathlib.Combinatorics.SimpleGraph.Coloring.VertexColoring
-import Mathlib.Data.Fin.Basic
+module
+
+public import Mathlib.Combinatorics.SimpleGraph.LineGraph
+public import Mathlib.Combinatorics.SimpleGraph.Coloring.VertexColoring
+public import Mathlib.Data.Fin.Basic
 
 /-!
 # Edge Coloring
@@ -21,6 +23,8 @@ of the line graph, and introduces the chromatic index.
 * `vizing.chromaticIndex G` — the chromatic index (minimum number of colors in a
   proper edge coloring), defined as the chromatic number of `G.lineGraph`.
 -/
+
+@[expose] public section
 
 namespace vizing
 

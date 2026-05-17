@@ -3,12 +3,14 @@ Copyright (c) 2026 Yiyang He, Daniel Raggi. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yiyang He, Daniel Raggi
 -/
-import Mathlib.Combinatorics.SimpleGraph.LineGraph
-import Mathlib.Combinatorics.SimpleGraph.Coloring.EdgeColoring
-import Mathlib.Combinatorics.SimpleGraph.Basic
-import Mathlib.Combinatorics.SimpleGraph.Finite
-import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
-import Mathlib.Data.Set.Card
+module
+
+public import Mathlib.Combinatorics.SimpleGraph.LineGraph
+public import Mathlib.Combinatorics.SimpleGraph.Coloring.EdgeColoring
+public import Mathlib.Combinatorics.SimpleGraph.Basic
+public import Mathlib.Combinatorics.SimpleGraph.Finite
+public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
+public import Mathlib.Data.Set.Card
 
 /-!
 # Kempe Chain Infrastructure for Vizing's Theorem
@@ -39,6 +41,8 @@ needed for the proof of Vizing's theorem.
   missing at both endpoints.
 * `extendColoring_of_missingColors_both` — extend a partial coloring across one edge.
 -/
+
+@[expose] public section
 
 namespace vizing
 

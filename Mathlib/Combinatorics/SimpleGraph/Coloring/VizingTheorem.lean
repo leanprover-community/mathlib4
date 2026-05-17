@@ -3,10 +3,12 @@ Copyright (c) 2026 Yiyang He, Daniel Raggi. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yiyang He, Daniel Raggi
 -/
-import Mathlib.Combinatorics.SimpleGraph.Coloring.VizingFan
-import Mathlib.Combinatorics.SimpleGraph.LineGraph
-import Mathlib.Combinatorics.SimpleGraph.Basic
-import Mathlib.Data.Fin.Basic
+module
+
+public import Mathlib.Combinatorics.SimpleGraph.Coloring.VizingFan
+public import Mathlib.Combinatorics.SimpleGraph.LineGraph
+public import Mathlib.Combinatorics.SimpleGraph.Basic
+public import Mathlib.Data.Fin.Basic
 
 /-!
 # Vizing's Theorem
@@ -31,6 +33,8 @@ where `Δ(G)` is the maximum degree and `χ'(G)` is the chromatic index.
 * V. G. Vizing, *On an estimate of the chromatic class of a p-graph*,
   Diskret. Analiz. 3 (1964), 25–30.
 -/
+
+@[expose] public section
 
 variable (n : ℕ) [Fact (0 < n)]
 variable (G : SimpleGraph (Fin n)) [DecidableRel G.Adj] [DecidableEq (Fin n)]
