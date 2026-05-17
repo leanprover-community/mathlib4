@@ -389,7 +389,7 @@ theorem hasFiniteMulSupport {x : K} (h_x_nezero : x ≠ 0) :
   simp_all only [ne_eq, div_eq_zero_iff, FaithfulSMul.algebraMap_eq_zero_iff, not_or, map_div₀]
   obtain ⟨ha, hb⟩ := h_x_nezero
   simp_rw [← RingOfIntegers.coe_eq_algebraMap]
-  fun_prop (disch := assumption)
+  fun_prop
 
 @[deprecated (since := "2026-03-03")] alias mulSupport_finite := hasFiniteMulSupport
 
