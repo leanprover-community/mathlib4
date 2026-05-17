@@ -272,7 +272,7 @@ def ContinuousMulEquiv.toProfiniteGrpIso {X Y : ProfiniteGrp} (e : X ≃ₜ* Y) 
 instance : HasForget₂ ProfiniteGrp Profinite where
   forget₂ := {
     obj G := G.toProfinite
-    map f := CompHausLike.ofHom _ ⟨f, by continuity⟩}
+    map f := CompHausLike.ofHom _ ⟨f, by fun_prop⟩}
 
 @[to_additive]
 instance : (forget₂ ProfiniteGrp Profinite).Faithful := {

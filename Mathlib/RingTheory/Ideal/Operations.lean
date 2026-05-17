@@ -48,10 +48,10 @@ lemma coe_span_smul {R' M' : Type*} [CommSemiring R'] [AddCommMonoid M'] [Module
           exact mem_set_smul_of_mem_mem (hc hi) <| Submodule.smul_mem _ _ hn) <|
     set_smul_mono_left _ Submodule.subset_span
 
-lemma span_singleton_toAddSubgroup_eq_zmultiples (a : ℤ) :
-    (span ℤ {a}).toAddSubgroup = AddSubgroup.zmultiples a := by
+lemma span_singleton_toAddSubgroup_eq_zmultiples {M : Type*} [AddCommGroup M] (a : M) :
+    (span ℤ ({a} : Set M)).toAddSubgroup = AddSubgroup.zmultiples a := by
   ext i
-  simp [Ideal.mem_span_singleton', AddSubgroup.mem_zmultiples_iff]
+  simp [Submodule.mem_span_singleton, AddSubgroup.mem_zmultiples_iff]
 
 @[simp] lemma _root_.Ideal.span_singleton_toAddSubgroup_eq_zmultiples (a : ℤ) :
     (Ideal.span {a}).toAddSubgroup = AddSubgroup.zmultiples a :=
