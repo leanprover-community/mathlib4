@@ -673,6 +673,21 @@ theorem iSup_symmDiff_le [Nonempty ι] {a : α} : (⨆ i, f i) ∆ a ≤ ⨆ i, 
 theorem symmDiff_iSup_le [Nonempty ι] {a : α} : a ∆ (⨆ i, f i) ≤ ⨆ i, a ∆ f i := by
   simpa [symmDiff_comm] using iSup_symmDiff_le (a := a)
 
+theorem sSup_symmDiff_le (hs : s.Nonempty) {a : α} : sSup s ∆ a ≤ sSup ((· ∆ a) '' s) := by
+  rw [sSup_image', sSup_eq_iSup']
+  have : Nonempty s := Set.nonempty_coe_sort.mpr hs
+  exact iSup_symmDiff_le
+
+theorem symmDiff_sSup_le (hs : s.Nonempty) {a : α} : a ∆ sSup s ≤ sSup ((a ∆ ·) '' s) := by
+  simpa [symmDiff_comm] using sSup_symmDiff_le (s := s) (a := a) hs
+
+theorem sSup_symmDiff_sSup_le {s t : Set α} (hs : s.Nonempty) (ht : t.Nonempty) :
+    sSup s ∆ sSup t ≤ sSup (image2 (· ∆ ·) s t) := by
+  rw [sSup_image2]
+  calc
+  _ ≤ ⨆ a ∈ s, a ∆ sSup t := by simpa [sSup_image] using sSup_symmDiff_le hs
+  _ ≤ _ := iSup_mono fun a ↦ iSup_mono fun _ ↦ by simpa [sSup_image] using symmDiff_sSup_le ht
+
 /-- A `biSup` version of `iSup_symmDiff_iSup_le`. -/
 theorem biSup_symmDiff_biSup_le {p : ι → Prop} {f g : (i : ι) → p i → α} :
     (⨆ i, ⨆ (h : p i), f i h) ∆ (⨆ i, ⨆ (h : p i), g i h) ≤

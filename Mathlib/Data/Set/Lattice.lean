@@ -397,19 +397,17 @@ lemma iUnion_symmDiff_iUnion_subset {f g : ι → Set α} :
   iSup_symmDiff_iSup_le
 
 lemma sUnion_symmDiff_subset {s : Set α} {S : Set (Set α)} (hS : S.Nonempty) :
-    (⋃₀ S) ∆ s ⊆ ⋃ t ∈ S, t ∆ s := by
-  obtain ⟨t₀, ht₀⟩ := hS
-  intro; simp [symmDiff]; aesop
+    (⋃₀ S) ∆ s ⊆ ⋃₀ ((· ∆ s) '' S) :=
+  sSup_symmDiff_le hS
 
 lemma symmDiff_sUnion_subset {s : Set α} {S : Set (Set α)} (hS : S.Nonempty) :
-    s ∆ (⋃₀ S) ⊆ ⋃ t ∈ S, s ∆ t := by
-  simpa only [symmDiff_comm s] using sUnion_symmDiff_subset (s := s) hS
+    s ∆ (⋃₀ S) ⊆ ⋃₀ ((s ∆ ·) '' S) :=
+  symmDiff_sSup_le hS
 
 lemma sUnion_symmDiff_sUnion_subset {S T : Set (Set α)} (hS : S.Nonempty)
-    (hT : T.Nonempty) : (⋃₀ S) ∆ ⋃₀ T ⊆ ⋃ s ∈ S, ⋃ t ∈ T, s ∆ t := by
-  obtain ⟨s₀, hs₀⟩ := hS
-  obtain ⟨t₀, ht₀⟩ := hT
-  intro; simp [symmDiff]; aesop
+    (hT : T.Nonempty) :
+    (⋃₀ S) ∆ ⋃₀ T ⊆  ⋃₀ (image2 (· ∆ ·) S T) :=
+  sSup_symmDiff_sSup_le hS hT
 
 end SymmDiff
 
