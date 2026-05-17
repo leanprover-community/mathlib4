@@ -575,8 +575,9 @@ theorem SeparatedNhds.of_finset_finset [T2Space X] (s t : Finset X) (h : Disjoin
   .of_isCompact_isCompact s.finite_toSet.isCompact t.finite_toSet.isCompact <| mod_cast h
 
 theorem SeparatedNhds.of_finite [T2Space X] {s t : Set X} (hs : s.Finite) (ht : t.Finite)
-    (h : Disjoint s t) : SeparatedNhds s t :=
-  SeparatedNhds.of_finset_finset hs.toFinset ht.toFinset (Finite.disjoint_toFinset.1 h)
+    (h : Disjoint s t) : SeparatedNhds s t := by
+  rw [← hs.coe_toFinset, ← ht.coe_toFinset]
+  exact SeparatedNhds.of_finset_finset _ _ (Finite.disjoint_toFinset.2 h)
 
 theorem SeparatedNhds.of_singleton_finset [T2Space X] {x : X} {s : Finset X} (h : x ∉ s) :
     SeparatedNhds ({x} : Set X) s :=
