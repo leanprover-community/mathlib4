@@ -48,13 +48,6 @@ and it's unclear if projective modules are even a useful notion.
 
 https://en.wikipedia.org/wiki/Projective_module
 
-## TODO
-
-- Direct sum of two projective modules is projective.
-- Arbitrary sum of projective modules is projective.
-
-All of these should be relatively straightforward.
-
 ## Tags
 
 projective module

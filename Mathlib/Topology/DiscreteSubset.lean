@@ -224,10 +224,14 @@ theorem Filter.self_mem_codiscreteWithin (U : Set X) :
     U ∈ Filter.codiscreteWithin U := by simp [mem_codiscreteWithin]
 
 /-- If a set is codiscrete within `U`, then it is codiscrete within any subset of `U`. -/
-lemma Filter.codiscreteWithin.mono {U₁ U : Set X} (hU : U₁ ⊆ U) :
+@[gcongr]
+lemma Filter.codiscreteWithin_mono {U₁ U : Set X} (hU : U₁ ⊆ U) :
     codiscreteWithin U₁ ≤ codiscreteWithin U := by
   refine (biSup_mono hU).trans <| iSup₂_mono fun _ _ ↦ ?_
   gcongr
+
+@[deprecated (since := "2026-05-13")]
+alias Filter.codiscreteWithin.mono := Filter.codiscreteWithin_mono
 
 /-- If `s` is codiscrete within `U`, then `sᶜ ∩ U` has discrete topology. -/
 theorem isDiscrete_of_codiscreteWithin {U s : Set X} (h : sᶜ ∈ Filter.codiscreteWithin U) :
@@ -298,6 +302,30 @@ theorem codiscreteWithin_iff_locallyFiniteComplementWithin [T1Space X] {s U : Se
     use t \ (t ∩ (U \ s)), nhdsNE_of_nhdsNE_sdiff_finite (mem_nhdsWithin_of_mem_nhds h₁t) h₂t
     simp
 
+/--
+In a `T1Space`, complements of singleton sets are codiscrete within any set.
+-/
+@[simp]
+theorem compl_singleton_mem_codiscreteWithin {X : Type*} [TopologicalSpace X] [T1Space X]
+    {s : Set X} (x : X) :
+    {x}ᶜ ∈ codiscreteWithin s := by
+  rw [codiscreteWithin_iff_locallyEmptyComplementWithin]
+  intro z hz
+  use univ \ {x}
+  exact ⟨nhdsNE_of_nhdsNE_sdiff_finite univ_mem Finite.of_subsingleton, by aesop⟩
+
+/--
+In a `T1Space`, complements of finite sets are codiscrete within any set.
+-/
+theorem compl_finite_mem_codiscreteWithin {X : Type*} [TopologicalSpace X] [T1Space X]
+    {s t : Set X} (h : t.Finite) :
+    tᶜ ∈ codiscreteWithin s := by
+  apply h.induction_on (motive := fun t _ ↦ tᶜ ∈ codiscreteWithin s)
+  · simp
+  · intro τ t hτ h₁t h₂t
+    have : (insert τ t)ᶜ = {τ}ᶜ ∩ tᶜ := by aesop
+    simp_all
+
 /-- In any topological space, the open sets with discrete complement form a filter,
 defined as the supremum of all punctured neighborhoods.
 
@@ -317,26 +345,25 @@ lemma mem_codiscrete' {S : Set X} :
   rw [mem_codiscrete, ← isClosed_compl_iff, isClosed_and_discrete_iff]
 
 lemma compl_mem_codiscrete_iff {S : Set X} :
-    Sᶜ ∈ codiscrete X ↔ IsClosed S ∧ DiscreteTopology ↑S := by
-  rw [mem_codiscrete, compl_compl, ← isDiscrete_iff_discreteTopology, isClosed_and_discrete_iff]
+    Sᶜ ∈ codiscrete X ↔ IsClosed S ∧ IsDiscrete S := by
+  rw [mem_codiscrete, compl_compl, isClosed_and_discrete_iff]
+
+lemma codiscreteWithin_le_codiscrete_inf_principal (s : Set X) :
+    codiscreteWithin s ≤ codiscrete X ⊓ 𝓟 s := by
+  simp [codiscrete, codiscreteWithin_mono]
+
+theorem Topology.IsEmbedding.image_mem_codiscreteWithin {f : X → Y} (hf : IsEmbedding f)
+    {s t : Set X} : f '' s ∈ codiscreteWithin (f '' t) ↔ s ∈ codiscreteWithin t := by
+  simp only [mem_codiscreteWithin_accPt, forall_mem_image, accPt_principal_iff_clusterPt,
+    ← hf.mapClusterPt_iff, MapClusterPt, map_principal, image_diff hf.injective, image_singleton]
+
+theorem Topology.IsEmbedding.image_mem_codiscreteWithin_range {f : X → Y} (hf : IsEmbedding f)
+    {s : Set X} : f '' s ∈ codiscreteWithin (range f) ↔ s ∈ codiscrete X := by
+  rw [← image_univ, hf.image_mem_codiscreteWithin, codiscrete]
 
 lemma mem_codiscrete_subtype_iff_mem_codiscreteWithin {S : Set X} {U : Set S} :
     U ∈ codiscrete S ↔ (↑) '' U ∈ codiscreteWithin S := by
-  simp only [mem_codiscrete, disjoint_principal_right, compl_compl, Subtype.forall,
-    mem_codiscreteWithin]
-  congr! with x hx
-  constructor
-  · rw [nhdsWithin_subtype, mem_comap]
-    rintro ⟨t, ht1, ht2⟩
-    rw [mem_nhdsWithin] at ht1 ⊢
-    obtain ⟨u, hu1, hu2, hu3⟩ := ht1
-    refine ⟨u, hu1, hu2, fun v hv ↦ ?_⟩
-    simpa using fun hv2 ↦ ⟨hv2, ht2 <| hu3 <| by simpa [hv2]⟩
-  · suffices Tendsto (↑) (𝓝[≠] (⟨x, hx⟩ : S)) (𝓝[≠] x) by
-      have aux : Subtype.val ⁻¹' (S \ Subtype.val '' U)ᶜ = U := by ext; simp
-      simpa [aux] using tendsto_def.mp this ((S \ Subtype.val '' U)ᶜ)
-    exact tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within _
-      continuous_subtype_val.continuousWithinAt <| eventually_mem_nhdsWithin.mono (by simp)
+  simp [← Topology.IsEmbedding.subtypeVal.image_mem_codiscreteWithin_range]
 
 section T1Space
 
@@ -345,7 +372,7 @@ variable [T1Space X]
 lemma codiscrete_le_cofinite : codiscrete X ≤ cofinite := by
   intro s hs
   rw [← compl_compl s, compl_mem_codiscrete_iff]
-  exact ⟨hs.isClosed, hs.isDiscrete.to_subtype⟩
+  exact ⟨hs.isClosed, hs.isDiscrete⟩
 
 lemma Set.Finite.compl_mem_codiscrete {S : Set X} (hs : S.Finite) : Sᶜ ∈ codiscrete X :=
   codiscrete_le_cofinite (by simpa)
@@ -358,32 +385,89 @@ lemma Set.Infinite.of_accPt {S : Set X} {x : X} (h : AccPt x (𝓟 S)) : S.Infin
 
 end T1Space
 
+namespace IsCompact
+
+variable {K : Set X}
+
+theorem finite_diff_of_mem_codiscreteWithin (hK : IsCompact K) (hs : s ∈ codiscreteWithin K) :
+    (K \ s).Finite := by
+  rw [mem_codiscreteWithin_accPt] at hs
+  contrapose! hs
+  exact Set.Infinite.exists_accPt_of_subset_isCompact hs hK (sep_subset _ _)
+
+theorem cofinite_inf_le_codiscreteWithin (hK : IsCompact K) :
+    cofinite ⊓ 𝓟 K ≤ codiscreteWithin K := by
+  intro s hs
+  simpa [mem_inf_principal, compl_setOf] using hK.finite_diff_of_mem_codiscreteWithin hs
+
+theorem codiscreteWithin_eq [T1Space X] (hK : IsCompact K) :
+    codiscreteWithin K = cofinite ⊓ 𝓟 K := by
+  refine le_antisymm ?_ hK.cofinite_inf_le_codiscreteWithin
+  grw [← codiscrete_le_cofinite]
+  exact codiscreteWithin_le_codiscrete_inf_principal K
+
+end IsCompact
+
+theorem cofinite_le_codiscrete [CompactSpace X] : cofinite ≤ codiscrete X := by
+  simpa using isCompact_univ.cofinite_inf_le_codiscreteWithin
+
+theorem codiscrete_eq_cofinite [T1Space X] [CompactSpace X] : codiscrete X = cofinite := by
+  simpa using isCompact_univ.codiscreteWithin_eq
+
 end codiscrete_filter
+
+/-! ### Finite union of discrete closed sets -/
 
 section discrete_union
 
+/-- The union of finitely many discrete closed subsets is discrete. -/
+theorem IsDiscrete.iUnion {ι : Sort*} [Finite ι] {s : ι → Set X} (hs : ∀ i, IsDiscrete (s i))
+    (hsc : ∀ i, IsClosed (s i)) : IsDiscrete (⋃ i, s i) := by
+  suffices (⋃ i, s i)ᶜ ∈ codiscrete X from (compl_mem_codiscrete_iff.mp this).2
+  simp [compl_mem_codiscrete_iff, *]
+
 /-- The union of two discrete closed subsets is discrete. -/
-theorem discreteTopology_union {S T : Set X} (hs : DiscreteTopology S) (ht : DiscreteTopology T)
-    (hs' : IsClosed S) (ht' : IsClosed T) : DiscreteTopology ↑(S ∪ T) := by
-  suffices (S ∪ T)ᶜ ∈ codiscrete X from compl_mem_codiscrete_iff.mp this |>.2
-  have hS : Sᶜ ∈ codiscrete X := by simpa [compl_mem_codiscrete_iff] using ⟨hs', hs⟩
-  have hT : Tᶜ ∈ codiscrete X := by simpa [compl_mem_codiscrete_iff] using ⟨ht', ht⟩
-  simpa using inter_mem hS hT
+theorem IsDiscrete.union {s t : Set X} (hs : IsDiscrete s) (ht : IsDiscrete t)
+    (hsc : IsClosed s) (ht : IsClosed t) : IsDiscrete (s ∪ t) := by
+  rw [union_eq_iUnion]
+  exact .iUnion (by simp [*]) (by simp [*])
 
 /-- The union of finitely many discrete closed subsets is discrete. -/
+theorem IsDiscrete.biUnion {ι : Type*} {I : Set ι} {s : ι → Set X} (hI : I.Finite)
+    (hs : ∀ i ∈ I, IsDiscrete (s i)) (hsc : ∀ i ∈ I, IsClosed (s i)) :
+    IsDiscrete (⋃ i ∈ I, s i) := by
+  have := hI.to_subtype
+  simp only [biUnion_eq_iUnion, Subtype.forall'] at *
+  exact .iUnion hs hsc
+
+/-- The union of finitely many discrete closed subsets is discrete. -/
+theorem IsDiscrete.biUnion_finset {ι : Type*} {I : Finset ι} {s : ι → Set X}
+    (hs : ∀ i ∈ I, IsDiscrete (s i)) (hsc : ∀ i ∈ I, IsClosed (s i)) :
+    IsDiscrete (⋃ i ∈ I, s i) :=
+  .biUnion I.finite_toSet hs hsc
+
+/-- The union of finitely many discrete closed subsets is discrete. -/
+@[deprecated IsDiscrete.union (since := "2026-05-13")]
+theorem discreteTopology_union {S T : Set X} (hs : DiscreteTopology S) (ht : DiscreteTopology T)
+    (hs' : IsClosed S) (ht' : IsClosed T) : DiscreteTopology ↑(S ∪ T) := by
+  rw [← isDiscrete_iff_discreteTopology] at *
+  exact hs.union ht hs' ht'
+
+/-- The union of finitely many discrete closed subsets is discrete. -/
+@[deprecated IsDiscrete.biUnion_finset (since := "2026-05-13")]
 theorem discreteTopology_biUnion_finset {ι : Type*} {I : Finset ι} {s : ι → Set X}
     (hs : ∀ i ∈ I, DiscreteTopology (s i)) (hs' : ∀ i ∈ I, IsClosed (s i)) :
     DiscreteTopology (⋃ i ∈ I, s i) := by
-  suffices (⋃ i ∈ I, s i)ᶜ ∈ codiscrete X from (compl_mem_codiscrete_iff.mp this).2
-  simpa [biInter_finset_mem I] using fun i hi ↦ compl_mem_codiscrete_iff.mpr ⟨hs' i hi, hs i hi⟩
+  simp only [← isDiscrete_iff_discreteTopology] at *
+  exact .biUnion_finset hs hs'
 
 /-- The union of finitely many discrete closed subsets is discrete. -/
+@[deprecated IsDiscrete.iUnion (since := "2026-05-13")]
 theorem discreteTopology_iUnion_finite {ι : Type*} [Finite ι] {s : ι → Set X}
     (hs : ∀ i, DiscreteTopology (s i)) (hs' : ∀ i, IsClosed (s i)) :
     DiscreteTopology (⋃ i, s i) := by
-  have := Fintype.ofFinite ι
-  convert discreteTopology_biUnion_finset (I := .univ) (fun i _ ↦ hs i) (fun i _ ↦ hs' i) <;>
-    simp
+  simp only [← isDiscrete_iff_discreteTopology] at *
+  exact .iUnion hs hs'
 
 @[deprecated (since := "2025-11-28")]
 alias discreteTopology_iUnion_fintype := discreteTopology_iUnion_finite
