@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2026 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Patrick Massot, Anatole Dedecker
+Authors: Patrick Massot, Anatole Dedecker, Yongxi Lin
 -/
 module
 
@@ -241,6 +241,72 @@ lemma QuasiInverse.equiv_of_right {u u' : V₃ →ₗ[K] V₂} {v v' : V₂ →�
     (h : u.QuasiInverse v) (h' : u'.QuasiInverse v') (hv : v ≈ v') :
     u ≈ u' :=
   h.symm.equiv_of_left h'.symm hv
+
+/-- Left quasi-inverses compose in the opposite order. -/
+lemma LeftQuasiInverse.comp {u : V →ₗ[K] V₂} {v : V₂ →ₗ[K] V₃} {u' : V₂ →ₗ[K] V}
+    {v' : V₃ →ₗ[K] V₂} (hu : u'.LeftQuasiInverse u) (hv : v'.LeftQuasiInverse v) :
+    (u' ∘ₗ v').LeftQuasiInverse (v ∘ₗ u) :=
+  calc
+    _ = u' ∘ₗ (v' ∘ₗ v) ∘ₗ u := rfl
+    _ ≈ u' ∘ₗ .id ∘ₗ u := by grw [hv.equiv]
+    _ ≈ .id := hu.equiv
+
+/-- Right quasi-inverses compose in the opposite order. -/
+lemma RightQuasiInverse.comp {u : V →ₗ[K] V₂} {v : V₂ →ₗ[K] V₃} {u' : V₂ →ₗ[K] V}
+    {v' : V₃ →ₗ[K] V₂} (hu : u'.RightQuasiInverse u) (hv : v'.RightQuasiInverse v) :
+    (u' ∘ₗ v').RightQuasiInverse (v ∘ₗ u) :=
+  calc
+    _ = v ∘ₗ (u ∘ₗ u') ∘ₗ v' := rfl
+    _ ≈ v ∘ₗ .id ∘ₗ v' := by grw [hu.equiv]
+    _ ≈ .id := hv.equiv
+
+/-- Quasi-inverses compose in the opposite order. -/
+lemma QuasiInverse.comp {u : V →ₗ[K] V₂} {v : V₂ →ₗ[K] V₃} {u' : V₂ →ₗ[K] V}
+    {v' : V₃ →ₗ[K] V₂} (hu : u'.QuasiInverse u) (hv : v'.QuasiInverse v) :
+    (u' ∘ₗ v').QuasiInverse (v ∘ₗ u) :=
+  ⟨hu.1.comp hv.1, hu.2.comp hv.2⟩
+
+/-- If `u'` is a right quasi-inverse of `u` and `w` is a left quasi-inverse of `v ∘ₗ u`,
+then `u ∘ₗ w` is a left quasi-inverse of `v`. -/
+lemma LeftQuasiInverse.of_comp_left {u : V →ₗ[K] V₂} {v : V₂ →ₗ[K] V₃}
+    {u' : V₂ →ₗ[K] V} {w : V₃ →ₗ[K] V} (hu : u'.RightQuasiInverse u)
+    (hw : w.LeftQuasiInverse (v ∘ₗ u)) :
+    (u ∘ₗ w).LeftQuasiInverse v := by
+  calc
+    _ = ((u ∘ₗ w) ∘ₗ v) ∘ₗ .id := rfl
+    _ ≈ ((u ∘ₗ w) ∘ₗ v) ∘ₗ (u ∘ₗ u') := by grw [hu.equiv]
+    _ = u ∘ₗ (w ∘ₗ (v ∘ₗ u)) ∘ₗ u' := rfl
+    _ ≈ u ∘ₗ .id ∘ₗ u' := by grw [hw.equiv]
+    _ ≈ .id := hu.equiv
+
+/-- If `u'` is a quasi-inverse of `u` and `w` is a quasi-inverse of `v ∘ₗ u`, then
+`u ∘ₗ w` is a quasi-inverse of `v`. -/
+lemma QuasiInverse.of_comp_left {u : V →ₗ[K] V₂} {v : V₂ →ₗ[K] V₃}
+    {u' : V₂ →ₗ[K] V} {w : V₃ →ₗ[K] V} (hu : u'.QuasiInverse u)
+    (hw : w.QuasiInverse (v ∘ₗ u)) :
+    (u ∘ₗ w).QuasiInverse v :=
+  ⟨LeftQuasiInverse.of_comp_left hu.2 hw.1, hw.2⟩
+
+/-- If `v'` is a left quasi-inverse of `v` and `w` is a right quasi-inverse of `v ∘ₗ u`,
+then `w ∘ₗ v` is a right quasi-inverse of `u`. -/
+lemma RightQuasiInverse.of_comp_right {u : V →ₗ[K] V₂} {v : V₂ →ₗ[K] V₃}
+    {v' : V₃ →ₗ[K] V₂} {w : V₃ →ₗ[K] V} (hv : v'.LeftQuasiInverse v)
+    (hw : w.RightQuasiInverse (v ∘ₗ u)) :
+    (w ∘ₗ v).RightQuasiInverse u := by
+  calc
+    _ = .id ∘ₗ (u ∘ₗ (w ∘ₗ v)) := rfl
+    _ ≈ (v' ∘ₗ v) ∘ₗ (u ∘ₗ (w ∘ₗ v)) := by grw [hv.equiv]
+    _ = v' ∘ₗ ((v ∘ₗ u) ∘ₗ w) ∘ₗ v := rfl
+    _ ≈ v' ∘ₗ .id ∘ₗ v := by grw [hw.equiv]
+    _ ≈ .id := hv.equiv
+
+/-- If `v'` is a quasi-inverse of `v` and `w` is a quasi-inverse of `v ∘ₗ u`, then
+`w ∘ₗ v` is a quasi-inverse of `u`. -/
+lemma QuasiInverse.of_comp_right {u : V →ₗ[K] V₂} {v : V₂ →ₗ[K] V₃}
+    {v' : V₃ →ₗ[K] V₂} {w : V₃ →ₗ[K] V} (hv : v'.QuasiInverse v)
+    (hw : w.QuasiInverse (v ∘ₗ u)) :
+    (w ∘ₗ v).QuasiInverse u :=
+  ⟨hw.1, RightQuasiInverse.of_comp_right hv.1 hw.2⟩
 
 end QuasiInverse
 
