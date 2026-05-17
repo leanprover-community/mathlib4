@@ -28,6 +28,8 @@ public import Mathlib.Data.Fintype.Card
 
 @[expose] public section
 
+open GraphLike
+
 namespace SimpleGraph
 
 variable {V : Type*} {G G' : SimpleGraph V} {u x v' w : V}
@@ -39,7 +41,7 @@ def IsTutteViolator (G : SimpleGraph V) (u : Set V) : Prop :=
 /-- This lemma shows an alternating cycle exists in a specific subcase of the proof
 of Tutte's theorem. -/
 private lemma tutte_exists_isAlternating_isCycles {x b a c : V} {M : Subgraph (G ⊔ edge a c)}
-    (p : G'.Walk a x) (hp : p.IsPath) (hcalt : G'.IsAlternating M.spanningCoe)
+    (p : Walk G' a x) (hp : p.IsPath) (hcalt : G'.IsAlternating M.spanningCoe)
     (hM2nadj : ¬M.Adj x a) (hpac : p.toSubgraph.Adj a c) (hnpxb : ¬p.toSubgraph.Adj x b)
     (hM2ac : M.Adj a c) (hgadj : G.Adj x a) (hnxc : x ≠ c) (hnab : a ≠ b)
     (hle : p.toSubgraph.spanningCoe ≤ G ⊔ edge a c)
@@ -215,7 +217,7 @@ private theorem tutte_exists_isPerfectMatching_of_near_matchings {x a b c : V}
     exact hM2.1.not_adj_left_of_ne h.symm hM2ac
   -- Else we construct a path that contain the edge `a c`, but not the edge `x b`
   obtain ⟨x', hx', p, hp, hpac, hnpxb⟩ :
-      ∃ x' ∈ ({x, b} : Finset V), ∃ (p : cycles.Walk a x'), p.IsPath ∧
+      ∃ x' ∈ ({x, b} : Finset V), ∃ (p : Walk cycles a x'), p.IsPath ∧
         p.toSubgraph.Adj a c ∧ ¬p.toSubgraph.Adj x b := by
     obtain ⟨p, hp⟩ := hcycles.exists_cycle_toSubgraph_verts_eq_connectedComponentSupp hacc
       ⟨_, hcac⟩

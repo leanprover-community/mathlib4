@@ -47,12 +47,12 @@ acyclic graphs, trees
 
 namespace SimpleGraph
 
-open Walk
+open GraphLike GraphLike.Walk
 
 variable {V V' : Type*} (G : SimpleGraph V) (G' : SimpleGraph V')
 
 /-- A graph is *acyclic* (or a *forest*) if it has no cycles. -/
-def IsAcyclic : Prop := ∀ ⦃v : V⦄ (c : G.Walk v v), ¬c.IsCycle
+def IsAcyclic : Prop := ∀ ⦃v : V⦄ (c : Walk G v v), ¬c.IsCycle
 
 /-- A *tree* is a connected acyclic graph. -/
 @[mk_iff]
@@ -103,14 +103,14 @@ lemma IsAcyclic.subgraph (h : G.IsAcyclic) (H : G.Subgraph) : H.coe.IsAcyclic :=
 lemma IsAcyclic.anti {G' : SimpleGraph V} (hsub : G ≤ G') (h : G'.IsAcyclic) : G.IsAcyclic :=
   h.comap ⟨_, fun h ↦ hsub h⟩ Function.injective_id
 
-private lemma Walk.exists_mem_contains_edges_of_directed (Hs : Set <| SimpleGraph V)
-    (hHs : Hs.Nonempty) (h_dir : DirectedOn (· ≤ ·) Hs) {u v : V} (p : (sSup Hs).Walk u v) :
-    ∃ H ∈ Hs, ∀ e ∈ p.edges, e ∈ H.edgeSet := by
+private lemma _root_.GraphLike.Walk.exists_mem_contains_edges_of_directed
+    (Hs : Set <| SimpleGraph V) (hHs : Hs.Nonempty) (h_dir : DirectedOn (· ≤ ·) Hs) {u v : V}
+    (p : Walk (sSup Hs) u v) : ∃ H ∈ Hs, ∀ e ∈ p.edges, e ∈ H.edgeSet := by
   induction p with
   | nil => exact ⟨hHs.some, hHs.some_mem, by simp⟩
   | @cons u v w h_adj p ih =>
     obtain ⟨H₁, hH₁, ih⟩ := ih
-    obtain ⟨H₂, hH₂, h_adj⟩ : ∃ H₂ ∈ Hs, H₂.Adj u v := h_adj
+    obtain ⟨H₂, hH₂, h_adj⟩ : ∃ H₂ ∈ Hs, H₂.Adj u v := h_adj.adj
     obtain ⟨H, hH, h₁, h₂⟩ := h_dir H₁ hH₁ H₂ hH₂
     simpa using ⟨H, hH, (le_iff_adj.mp h₂) _ _ h_adj, fun a ha => edgeSet_mono h₁ (ih a ha)⟩
 
@@ -180,15 +180,15 @@ theorem isAcyclic_iff_forall_adj_isBridge :
     cases ha p hp
   · rintro hb v (_ | ⟨ha, p⟩) hp
     · exact hp.not_of_nil
-    · apply (hb ha).2 _ hp
-      rw [Walk.edges_cons]
+    · apply (hb ha.adj).2 _ hp
+      rw [Walk.edges_cons, val_step_eq, edge_def]
       apply List.mem_cons_self
 
 theorem isAcyclic_iff_forall_edge_isBridge :
     G.IsAcyclic ↔ ∀ ⦃e⦄, e ∈ (G.edgeSet) → G.IsBridge e := by
   simp [isAcyclic_iff_forall_adj_isBridge, Sym2.forall]
 
-theorem IsAcyclic.path_unique {G : SimpleGraph V} (h : G.IsAcyclic) {v w : V} (p q : G.Path v w) :
+theorem IsAcyclic.path_unique {G : SimpleGraph V} (h : G.IsAcyclic) {v w : V} (p q : Path G v w) :
     p = q := by
   obtain ⟨p, hp⟩ := p
   obtain ⟨q, hq⟩ := q
@@ -199,60 +199,63 @@ theorem IsAcyclic.path_unique {G : SimpleGraph V} (h : G.IsAcyclic) {v w : V} (p
     rfl
   | cons ph p ih =>
     rw [isAcyclic_iff_forall_adj_isBridge] at h
-    specialize h ph
+    specialize h ph.adj
     rw [isBridge_iff_adj_and_forall_walk_mem_edges] at h
     replace h := h.2 (q.append p.reverse)
     simp only [Walk.edges_append, Walk.edges_reverse, List.mem_append, List.mem_reverse] at h
     rcases h with h | h
     · cases q with
       | nil => simp at hp
-      | cons _ q =>
+      | cons s q =>
         rw [Walk.cons_isPath_iff] at hp hq
-        simp only [Walk.edges_cons, List.mem_cons, Sym2.eq_iff, true_and] at h
+        simp only [Walk.edges_cons, List.mem_cons, val_step_eq, edge_def, Sym2.eq_iff,
+          true_and] at h
         rcases h with (⟨h, rfl⟩ | ⟨rfl, rfl⟩) | h
         · cases ih hp.1 q hq.1
-          rfl
+          rw [Subsingleton.elim s ph]
         · simp at hq
         · exact absurd (Walk.fst_mem_support_of_mem_edges _ h) hq.2
     · rw [Walk.cons_isPath_iff] at hp
       exact absurd (Walk.fst_mem_support_of_mem_edges _ h) hp.2
 
-theorem isAcyclic_of_path_unique (h : ∀ (v w : V) (p q : G.Path v w), p = q) : G.IsAcyclic := by
+theorem isAcyclic_of_path_unique (h : ∀ (v w : V) (p q : Path G v w), p = q) : G.IsAcyclic := by
   intro v c hc
   simp only [Walk.isCycle_def, Ne] at hc
   cases c with
   | nil => cases hc.2.1 rfl
   | cons ha c' =>
     simp only [Walk.isTrail_cons, Walk.support_cons, List.tail_cons] at hc
-    specialize h _ _ ⟨c', by simp only [Walk.isPath_def, hc.2]⟩ (Path.singleton ha.symm)
+    specialize h _ _ ⟨c', by simp only [Walk.isPath_def, hc.2]⟩ (Path.singleton ha.inv)
     rw [Path.singleton, Subtype.mk.injEq] at h
     simp [h] at hc
 
-theorem isAcyclic_iff_path_unique : G.IsAcyclic ↔ ∀ ⦃v w : V⦄ (p q : G.Path v w), p = q :=
+theorem isAcyclic_iff_path_unique : G.IsAcyclic ↔ ∀ ⦃v w : V⦄ (p q : Path G v w), p = q :=
   ⟨IsAcyclic.path_unique, isAcyclic_of_path_unique⟩
 
 lemma IsAcyclic.mem_support_of_ne_mem_support_of_adj_of_isPath (hG : G.IsAcyclic) {u v w : V}
-    {p : G.Walk u v} {q : G.Walk u w} (hp : p.IsPath) (hq : q.IsPath) (hadj : G.Adj v w)
+    {p : Walk G u v} {q : Walk G u w} (hp : p.IsPath) (hq : q.IsPath) (hadj : G.Adj v w)
     (hv : v ∉ q.support) : w ∈ p.support := by
-  rw [Subtype.mk.inj <| isAcyclic_iff_path_unique.mp hG ⟨p, hp⟩ ⟨_, hq.concat hv hadj.symm⟩]
+  rw [Subtype.mk.inj <| isAcyclic_iff_path_unique.mp hG ⟨p, hp⟩ ⟨_, hq.concat hv
+    (Adj.toStep hadj.symm)⟩]
   exact q.support_subset_support_concat _ q.end_mem_support
 
 lemma IsAcyclic.ne_mem_support_of_support_of_adj_of_isPath (hG : G.IsAcyclic) {u v w : V}
-    {p : G.Walk u v} {q : G.Walk u w} (hp : p.IsPath) (hq : q.IsPath) (hadj : G.Adj v w)
+    {p : Walk G u v} {q : Walk G u w} (hp : p.IsPath) (hq : q.IsPath) (hadj : G.Adj v w)
     (hw : w ∈ p.support) : v ∉ q.support := by
   obtain ⟨p₀, p₁, hp₀, hp₁, happend⟩ := hp.mem_support_iff_exists_append.mp hw
   rw [← Subtype.mk.inj <| hG.path_unique ⟨p₀, hp₀⟩ ⟨q, hq⟩]
   exact fun hxp => (happend ▸ hp).ne_of_mem_support_of_append hadj.symm.ne' hxp
     (p₁.end_mem_support) rfl
 
-lemma IsAcyclic.path_concat (hG : G.IsAcyclic) {u v w : V} {p : G.Walk u v} {q : G.Walk u w}
+lemma IsAcyclic.path_concat (hG : G.IsAcyclic) {u v w : V} {p : Walk G u v} {q : Walk G u w}
     (hp : p.IsPath) (hq : q.IsPath) (hadj : G.Adj v w) (hv : v ∈ q.support) :
-    q = p.concat hadj := by
+    q = p.concat (Adj.toStep hadj) := by
   have hw : w ∉ p.support := hG.ne_mem_support_of_support_of_adj_of_isPath hq hp hadj.symm hv
-  exact Subtype.mk.inj <| isAcyclic_iff_path_unique.mp hG ⟨q, hq⟩ ⟨_, hp.concat hw hadj⟩
+  exact Subtype.mk.inj <| isAcyclic_iff_path_unique.mp hG ⟨q, hq⟩
+    ⟨_, hp.concat hw (Adj.toStep hadj)⟩
 
 theorem isTree_iff_existsUnique_path :
-    G.IsTree ↔ Nonempty V ∧ ∀ v w : V, ∃! p : G.Walk v w, p.IsPath := by
+    G.IsTree ↔ Nonempty V ∧ ∀ v w : V, ∃! p : Walk G v w, p.IsPath := by
   classical
   rw [isTree_iff, isAcyclic_iff_path_unique]
   constructor
@@ -273,20 +276,20 @@ theorem isTree_iff_existsUnique_path :
     · rintro v w ⟨p, hp⟩ ⟨q, hq⟩
       simp only [ExistsUnique.unique (h v w) hp hq]
 
-lemma IsTree.existsUnique_path (hG : G.IsTree) : ∀ v w, ∃! p : G.Walk v w, p.IsPath :=
+lemma IsTree.existsUnique_path (hG : G.IsTree) : ∀ v w, ∃! p : Walk G v w, p.IsPath :=
   (isTree_iff_existsUnique_path.1 hG).2
 
-theorem IsAcyclic.isPath_iff_isChain (hG : G.IsAcyclic) {v w : V} (p : G.Walk v w) :
+theorem IsAcyclic.isPath_iff_isChain (hG : G.IsAcyclic) {v w : V} (p : Walk G v w) :
      p.IsPath ↔ List.IsChain (· ≠ ·) p.edges := by
   classical
   refine ⟨fun h ↦ (edges_nodup_of_support_nodup <| p.isPath_def.mp h).isChain, fun h ↦ ?_⟩
   induction p with
   | nil => simp
   | @cons u' v' _ head tail ih =>
-    have hcc := List.isChain_cons.mp (edges_cons _ _ ▸ h)
+    have hcc := List.isChain_cons.mp (edges_cons _ tail ▸ h)
     refine cons_isPath_iff head tail |>.mpr ⟨ih hcc.2, ?_⟩
     rcases tail.length.eq_zero_or_pos with h' | h'
-    · simp [nil_iff_support_eq.mp (nil_iff_length_eq.mpr h'), head.ne]
+    · simp [nil_iff_support_eq'.mp (nil_iff_length_eq.mpr h'), head.ne]
     · by_contra hh
       apply hG <| cons head (tail.takeUntil u' hh)
       simp only [isCycle_def, isTrail_def, edges_cons, List.nodup_cons, ne_eq, reduceCtorEq,
@@ -296,12 +299,13 @@ theorem IsAcyclic.isPath_iff_isChain (hG : G.IsAcyclic) {v w : V} (p : G.Walk v 
           ⟨[], (tail.dropUntil u' hh).support.tail, by simp [← support_append]⟩
       refine ⟨⟨?_, edges_nodup_of_support_nodup this⟩, this⟩
       by_contra hhh
+      simp only [src_def, tgt_def, val_step_eq, edge_def] at hhh hcc
       refine hcc.1 s(u', v') ?_ rfl
       rw [← tail.cons_tail_eq (by simp [not_nil_iff_lt_length, h'])]
       have := IsPath.mk' this |>.eq_snd_of_mem_edges (Sym2.eq_swap ▸ hhh)
       simp [this, snd_takeUntil head.ne]
 
-theorem IsAcyclic.isPath_iff_isTrail (hG : G.IsAcyclic) {v w : V} (p : G.Walk v w) :
+theorem IsAcyclic.isPath_iff_isTrail (hG : G.IsAcyclic) {v w : V} (p : Walk G v w) :
     p.IsPath ↔ p.IsTrail :=
   ⟨IsPath.isTrail, fun h ↦ hG.isPath_iff_isChain p |>.mpr <| p.isTrail_def.mp h |>.isChain⟩
 
@@ -315,19 +319,21 @@ lemma IsTree.card_edgeFinset [Fintype V] [Fintype G.edgeSet] (hG : G.IsTree) :
   rw [← this, add_left_inj]
   choose f hf hf' using (hG.existsUnique_path · default)
   refine Eq.symm <| Finset.card_bij
-          (fun w hw => ((f w).firstDart <| ?notNil).edge)
+          (fun w hw => dartSym2 ((f w).firstDart <| ?notNil))
           (fun a ha => ?memEdges) ?inj ?surj
   case notNil => exact not_nil_of_ne (by simpa using hw)
-  case memEdges => simp
+  case memEdges =>
+    simp only [Finset.mem_compl, Finset.mem_singleton] at ha
+    simp [(f a).adj_snd (ha ·.eq)]
   case inj =>
     intro a ha b hb h
     wlog h' : (f a).length ≤ (f b).length generalizing a b
     · exact Eq.symm (this _ hb _ ha h.symm (le_of_not_ge h'))
-    rw [dart_edge_eq_iff] at h
+    rw [dartSym2_eq_iff] at h
     obtain (h | h) := h
-    · exact (congrArg (·.fst) h)
-    · have h1 : ((f a).firstDart <| not_nil_of_ne (by simpa using ha)).snd = b :=
-        congrArg (·.snd) h
+    · exact (congrArg (·.val.fst) h)
+    · have h1 : ((f a).firstDart <| not_nil_of_ne (by simpa using ha)).val.snd = b :=
+        congrArg (·.val.snd) h
       have h3 := congrArg length (hf' _ ((f _).tail.copy h1 rfl) ?_)
       · rw [length_copy, ← add_left_inj 1,
           length_tail_add_one (not_nil_of_ne (by simpa using ha))] at h3
@@ -340,16 +346,15 @@ lemma IsTree.card_edgeFinset [Fintype V] [Fintype G.edgeSet] (hG : G.IsTree) :
     wlog h' : (f x).length ≤ (f y).length generalizing x y
     · rw [Sym2.eq_swap]
       exact this y x h.symm (le_of_not_ge h')
-    refine ⟨y, ?_, dart_edge_eq_mk'_iff.2 <| Or.inr ?_⟩
+    refine ⟨y, ?_, dartSym2_eq_mk'_iff.2 <| Or.inr ?_⟩
     · rintro rfl
       rw [← hf' _ nil IsPath.nil, length_nil,
-          ← hf' _ (.cons h .nil) (IsPath.nil.cons <| by simpa using h.ne),
+          ← hf' _ (.cons (Adj.toStep h) .nil) (IsPath.nil.cons <| by simpa using h.ne),
           length_cons, length_nil] at h'
       simp at h'
-    rw [← hf' _ (.cons h.symm (f x)) ((cons_isPath_iff _ _).2 ⟨hf _, fun hy => ?contra⟩)]
+    rw [← hf' _ (.cons (Adj.toStep h.symm) (f x)) ((cons_isPath_iff _ _).2 ⟨hf _, fun hy => ?_⟩)]
     · simp
-    case contra =>
-      suffices (f x).takeUntil y hy = .cons h .nil by
+    · suffices (f x).takeUntil y hy = .cons (Adj.toStep h) .nil by
         rw [← take_spec _ hy] at h'
         simp [this, hf' _ _ ((hf _).dropUntil hy)] at h'
       refine (hG.existsUnique_path _ _).unique ((hf _).takeUntil _) ?_
@@ -367,7 +372,7 @@ lemma isTree_iff_minimal_connected : IsTree G ↔ Minimal Connected G := by
   refine ⟨fun htree ↦ ⟨htree.connected, fun G' h' hle u v hadj ↦ ?_⟩, isTree_of_minimal_connected⟩
   have ⟨p, hp⟩ := h'.exists_isPath u v
   have := congrArg Walk.edges <| congrArg Subtype.val <|
-    htree.isAcyclic.path_unique ⟨p.mapLe hle, hp.mapLe hle⟩ <| Path.singleton hadj
+    htree.isAcyclic.path_unique ⟨p.mapLe hle, hp.mapLe hle⟩ <| Path.singleton (Adj.toStep hadj)
   simp only [edges_map, Hom.coe_ofLE, Sym2.map_id, List.map_id_fun, id_eq] at this
   simp [this, p.adj_of_mem_edges]
 
@@ -404,23 +409,23 @@ theorem isAcyclic_sup_fromEdgeSet_iff {u v : V} :
 The reachability relation of a maximal acyclic subgraph agrees with that of the larger graph.
 -/
 lemma reachable_eq_of_maximal_isAcyclic (F : SimpleGraph V)
-    (h : Maximal (fun H ↦ H ≤ G ∧ H.IsAcyclic) F) : F.Reachable = G.Reachable := by
+    (h : Maximal (fun H ↦ H ≤ G ∧ H.IsAcyclic) F) : F.Reachable = Reachable G := by
   ext u v
   refine ⟨.mono h.prop.left, fun ⟨p⟩ ↦ ?_⟩
   by_contra
   let s : F.ConnectedComponent := .mk _ u
   have : v ∉ s := this ∘ s.reachable_of_mem_supp rfl
-  have : ∃ d ∈ p.darts, d.fst ∈ s ∧ d.snd ∉ s := p.exists_boundary_dart s rfl this
+  have : ∃ d ∈ p.darts, d.val.fst ∈ s ∧ d.val.snd ∉ s := p.exists_boundary_dart s rfl this
   rcases this with ⟨⟨⟨u', v'⟩, huv⟩, _, hu, hv⟩
   have : ¬F.Reachable v' u' := mt ConnectedComponent.sound <| s.mem_supp_iff u' |>.mp hu ▸ hv
   suffices F ⊔ edge v' u' ≤ F by
     grind [Adj.reachable, sup_le_iff, le_iff_adj, edge_adj]
   refine h.le_of_ge ⟨?_, h.prop.right.sup_edge_of_not_reachable this⟩ le_sup_left
-  grind [Maximal, sup_le, le_iff_adj, edge_adj, huv.symm]
+  grind [Maximal, sup_le, le_iff_adj, edge_adj, huv.symm, mem_edgeSet, edge_le]
 
 /-- A subgraph is maximal acyclic iff its reachability relation agrees with the larger graph. -/
 theorem maximal_isAcyclic_iff_reachable_eq {F : SimpleGraph V} (hle : F ≤ G) (hF : F.IsAcyclic) :
-    Maximal (fun F ↦ F ≤ G ∧ F.IsAcyclic) F ↔ F.Reachable = G.Reachable := by
+    Maximal (fun F ↦ F ≤ G ∧ F.IsAcyclic) F ↔ F.Reachable = Reachable G := by
   refine ⟨reachable_eq_of_maximal_isAcyclic F, fun h ↦ ?_⟩
   by_contra
   have ⟨H, hFH, hHG, hH⟩ := exists_gt_of_not_maximal ⟨hle, hF⟩ this
@@ -458,13 +463,13 @@ theorem isTree_iff_maximal_isAcyclic : G.IsTree ↔ Nonempty V ∧ Maximal IsAcy
 /-- Every acyclic subgraph can be extended to a spanning forest. -/
 theorem exists_isAcyclic_reachable_eq_le_of_le_of_isAcyclic {H : SimpleGraph V} (hH_le : H ≤ G)
     (hH_isAcyclic : H.IsAcyclic) :
-    ∃ F : SimpleGraph V, H ≤ F ∧ F ≤ G ∧ F.IsAcyclic ∧ F.Reachable = G.Reachable := by
+    ∃ F : SimpleGraph V, H ≤ F ∧ F ≤ G ∧ F.IsAcyclic ∧ F.Reachable = Reachable G := by
   obtain ⟨F, hF⟩ := G.exists_maximal_isAcyclic_of_le_isAcyclic hH_le hH_isAcyclic
   grind [maximal_isAcyclic_iff_reachable_eq, Maximal]
 
 /-- Every graph has a spanning forest. -/
 theorem exists_isAcyclic_reachable_eq_le :
-    ∃ F ≤ G, F.IsAcyclic ∧ F.Reachable = G.Reachable := by
+    ∃ F ≤ G, F.IsAcyclic ∧ F.Reachable = Reachable G := by
   obtain ⟨F, hF⟩ := G.exists_isAcyclic_reachable_eq_le_of_le_of_isAcyclic bot_le isAcyclic_bot
   grind
 
@@ -575,7 +580,7 @@ lemma Connected.exists_preconnected_induce_compl_singleton_of_finite [Finite V]
   exact ⟨v, hv.preconnected⟩
 
 lemma IsAcyclic.dist_ne_of_adj (hG : G.IsAcyclic) {u v w : V} (hadj : G.Adj v w)
-    (hreach : G.Reachable u v) : G.dist u v ≠ G.dist u w := by
+    (hreach : Reachable G u v) : G.dist u v ≠ G.dist u w := by
   obtain ⟨p, hp, hp'⟩ := hreach.exists_path_of_dist
   obtain ⟨q, hq, hq'⟩ := hreach.trans hadj.reachable |>.exists_path_of_dist
   rw [← hp', ← hq']
@@ -592,7 +597,7 @@ lemma IsTree.dist_ne_of_adj (hG : G.IsTree) (u : V) {v w : V} (hadj : G.Adj v w)
   hG.isAcyclic.dist_ne_of_adj hadj <| hG.connected u v
 
 lemma IsAcyclic.dist_eq_dist_add_one_of_adj_of_reachable
-    (hG : G.IsAcyclic) (u : V) {v w : V} (hadj : G.Adj v w) (hreach : G.Reachable u v) :
+    (hG : G.IsAcyclic) (u : V) {v w : V} (hadj : G.Adj v w) (hreach : Reachable G u v) :
     G.dist u v = G.dist u w + 1 ∨ G.dist u w = G.dist u v + 1 := by
   grind [dist_ne_of_adj, Adj.diff_dist_adj]
 
@@ -648,7 +653,7 @@ lemma IsTree.chromaticNumber_le_two (hG : G.IsTree) : G.chromaticNumber ≤ 2 :=
   hG.colorable_two.chromaticNumber_le
 
 lemma exists_isCycle_of_two_le_isEdgeReachable {u v : V} (huv : u ≠ v) {n : ℕ} (hn : 2 ≤ n)
-    (h : G.IsEdgeReachable n u v) : ∃ w : G.Walk u u, w.IsCycle := by
+    (h : G.IsEdgeReachable n u v) : ∃ w : Walk G u u, w.IsCycle := by
   classical
   obtain ⟨w, hw, h⟩ := exists_adj_isEdgeReachable_two huv (h.anti hn)
   #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/13166

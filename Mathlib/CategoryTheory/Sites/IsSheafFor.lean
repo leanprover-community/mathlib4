@@ -486,7 +486,7 @@ noncomputable def shrinkFunctorHomEquiv [LocallySmall.{w} C] {F : Cᵒᵖ ⥤ Ty
     ext
     dsimp
     rw! [Equiv.apply_symm_apply]
-    simp
+    rfl
 
 @[deprecated "In terms of `Sieve.shrinkFunctor`" (since := "2026-03-13")]
 alias natTransEquivCompatibleFamily := shrinkFunctorHomEquiv

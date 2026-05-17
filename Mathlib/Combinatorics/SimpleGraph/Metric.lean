@@ -40,6 +40,8 @@ graph metric, distance, ball
 
 assert_not_exists Field
 
+open GraphLike
+
 namespace SimpleGraph
 
 variable {V : Type*} (G : SimpleGraph V)
@@ -53,21 +55,21 @@ The extended distance between two vertices is the length of the shortest walk be
 It is `⊤` if no such walk exists.
 -/
 noncomputable def edist (u v : V) : ℕ∞ :=
-  ⨅ w : G.Walk u v, w.length
+  ⨅ w : Walk G u v, w.length
 
 variable {G} {u v w : V}
 
-theorem edist_eq_sInf : G.edist u v = sInf (Set.range fun w : G.Walk u v ↦ (w.length : ℕ∞)) := rfl
+theorem edist_eq_sInf : G.edist u v = sInf (Set.range fun w : Walk G u v ↦ (w.length : ℕ∞)) := rfl
 
-protected theorem Reachable.exists_walk_length_eq_edist (hr : G.Reachable u v) :
-    ∃ p : G.Walk u v, p.length = G.edist u v :=
+protected theorem Reachable.exists_walk_length_eq_edist (hr : Reachable G u v) :
+    ∃ p : Walk G u v, p.length = G.edist u v :=
   csInf_mem <| Set.range_nonempty_iff_nonempty.mpr hr
 
 protected theorem Connected.exists_walk_length_eq_edist (hconn : G.Connected) (u v : V) :
-    ∃ p : G.Walk u v, p.length = G.edist u v :=
+    ∃ p : Walk G u v, p.length = G.edist u v :=
   (hconn u v).exists_walk_length_eq_edist
 
-theorem edist_le (p : G.Walk u v) :
+theorem edist_le (p : Walk G u v) :
     G.edist u v ≤ p.length :=
   sInf_le ⟨p, rfl⟩
 protected alias Walk.edist_le := edist_le
@@ -85,16 +87,16 @@ theorem edist_pos_of_ne (hne : u ≠ v) :
     0 < G.edist u v :=
   pos_iff_ne_zero.mpr <| edist_eq_zero_iff.ne.mpr hne
 
-lemma edist_eq_top_of_not_reachable (h : ¬G.Reachable u v) :
+lemma edist_eq_top_of_not_reachable (h : ¬Reachable G u v) :
     G.edist u v = ⊤ := by
   simp [edist, not_reachable_iff_isEmpty_walk.mp h]
 
 theorem reachable_of_edist_ne_top (h : G.edist u v ≠ ⊤) :
-    G.Reachable u v :=
+    Reachable G u v :=
   not_not.mp <| edist_eq_top_of_not_reachable.mt h
 
 lemma exists_walk_of_edist_ne_top (h : G.edist u v ≠ ⊤) :
-    ∃ p : G.Walk u v, p.length = G.edist u v :=
+    ∃ p : Walk G u v, p.length = G.edist u v :=
   (reachable_of_edist_ne_top h).exists_walk_length_eq_edist
 
 protected theorem edist_triangle : G.edist u w ≤ G.edist u v + G.edist v w := by
@@ -115,12 +117,12 @@ theorem edist_comm : G.edist u v = G.edist v u := by
   simp_rw [Walk.length_reverse, ← edist_eq_sInf]
 
 lemma exists_walk_of_edist_eq_coe {k : ℕ} (h : G.edist u v = k) :
-    ∃ p : G.Walk u v, p.length = k :=
+    ∃ p : Walk G u v, p.length = k :=
   have : G.edist u v ≠ ⊤ := by rw [h]; exact ENat.coe_ne_top _
   have ⟨p, hp⟩ := exists_walk_of_edist_ne_top this
   ⟨p, Nat.cast_injective (hp.trans h)⟩
 
-lemma edist_ne_top_iff_reachable : G.edist u v ≠ ⊤ ↔ G.Reachable u v := by
+lemma edist_ne_top_iff_reachable : G.edist u v ≠ ⊤ ↔ Reachable G u v := by
   refine ⟨reachable_of_edist_ne_top, fun h ↦ ?_⟩
   by_contra hx
   simp only [edist, iInf_eq_top, ENat.coe_ne_top] at hx
@@ -134,7 +136,7 @@ theorem edist_eq_one_iff_adj : G.edist u v = 1 ↔ G.Adj u v := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · obtain ⟨w, hw⟩ := exists_walk_of_edist_ne_top <| by rw [h]; simp
     exact w.adj_of_length_eq_one <| Nat.cast_eq_one.mp <| h ▸ hw
-  · exact le_antisymm (edist_le h.toWalk) (Order.one_le_iff_pos.mpr <| edist_pos_of_ne h.ne)
+  · exact le_antisymm (edist_le <| Adj.toWalk h) (Order.one_le_iff_pos.mpr <| edist_pos_of_ne h.ne)
 
 lemma edist_le_one_iff_adj_or_eq : G.edist u v ≤ 1 ↔ G.Adj u v ∨ u = v := by
   by_cases huv : u = v
@@ -156,7 +158,7 @@ lemma edist_eq_two_iff {u v : V} :
     exact ⟨w.adj_getVert_succ (by simp [hw]), (w.adj_getVert_succ (by simp [hw])).symm⟩
   · obtain ⟨w, hw⟩ := h.2.2
     rw [mem_commonNeighbors] at hw
-    have := (Walk.cons hw.1 <| .cons hw.2.symm .nil).edist_le
+    have := edist_le (Walk.cons (Adj.toStep hw.1) <| .cons (Adj.toStep hw.2.symm) .nil)
     simp_all
   · by_contra! hc
     cases ENat.le_one_iff_eq_zero_or_eq_one.mp (Order.le_of_lt_succ hc) <;> simp_all
@@ -190,7 +192,7 @@ lemma edist_top [DecidableEq V] : (⊤ : SimpleGraph V).edist u v = (if u = v th
 @[gcongr]
 theorem edist_anti {G' : SimpleGraph V} (h : G ≤ G') :
     G'.edist u v ≤ G.edist u v := by
-  by_cases hr : G.Reachable u v
+  by_cases hr : Reachable G u v
   · obtain ⟨_, hw⟩ := hr.exists_walk_length_eq_edist
     rw [← hw, ← Walk.length_map (.ofLE h)]
     apply edist_le
@@ -209,39 +211,39 @@ noncomputable def dist (u v : V) : ℕ :=
 
 variable {G} {u v w : V}
 
-theorem dist_eq_sInf : G.dist u v = sInf (Set.range (Walk.length : G.Walk u v → ℕ)) :=
+theorem dist_eq_sInf : G.dist u v = sInf (Set.range (Walk.length : Walk G u v → ℕ)) :=
   ENat.iInf_toNat
 
 @[grind =]
-lemma Reachable.coe_dist_eq_edist (h : G.Reachable u v) : G.dist u v = G.edist u v :=
+lemma Reachable.coe_dist_eq_edist (h : Reachable G u v) : G.dist u v = G.edist u v :=
   ENat.coe_toNat <| edist_ne_top_iff_reachable.mpr h
 
-protected theorem Reachable.exists_walk_length_eq_dist (hr : G.Reachable u v) :
-    ∃ p : G.Walk u v, p.length = G.dist u v :=
+protected theorem Reachable.exists_walk_length_eq_dist (hr : Reachable G u v) :
+    ∃ p : Walk G u v, p.length = G.dist u v :=
   dist_eq_sInf ▸ Nat.sInf_mem (Set.range_nonempty_iff_nonempty.mpr hr)
 
 protected theorem Connected.exists_walk_length_eq_dist (hconn : G.Connected) (u v : V) :
-    ∃ p : G.Walk u v, p.length = G.dist u v :=
+    ∃ p : Walk G u v, p.length = G.dist u v :=
   dist_eq_sInf ▸ (hconn u v).exists_walk_length_eq_dist
 
-theorem dist_le (p : G.Walk u v) : G.dist u v ≤ p.length :=
+theorem dist_le (p : Walk G u v) : G.dist u v ≤ p.length :=
   dist_eq_sInf ▸ Nat.sInf_le ⟨p, rfl⟩
 
 @[simp]
 theorem dist_eq_zero_iff_eq_or_not_reachable :
-    G.dist u v = 0 ↔ u = v ∨ ¬G.Reachable u v := by simp [dist_eq_sInf, Nat.sInf_eq_zero, Reachable]
+    G.dist u v = 0 ↔ u = v ∨ ¬Reachable G u v := by simp [dist_eq_sInf, Nat.sInf_eq_zero, Reachable]
 
 @[simp, grind =]
 theorem dist_self : dist G v v = 0 := by simp
 
-protected theorem Reachable.dist_eq_zero_iff (hr : G.Reachable u v) :
+protected theorem Reachable.dist_eq_zero_iff (hr : Reachable G u v) :
     G.dist u v = 0 ↔ u = v := by simp [hr]
 
-protected theorem Reachable.pos_dist_of_ne (h : G.Reachable u v) (hne : u ≠ v) :
+protected theorem Reachable.pos_dist_of_ne (h : Reachable G u v) (hne : u ≠ v) :
     0 < G.dist u v :=
   Nat.pos_of_ne_zero (by simp [h, hne])
 
-protected theorem Reachable.one_lt_dist_of_ne_of_not_adj (h : G.Reachable u v) (hne : u ≠ v)
+protected theorem Reachable.one_lt_dist_of_ne_of_not_adj (h : Reachable G u v) (hne : u ≠ v)
     (hnadj : ¬G.Adj u v) : 1 < G.dist u v :=
   Nat.lt_of_le_of_ne (h.pos_dist_of_ne hne) (by
     by_contra hc
@@ -259,11 +261,11 @@ protected theorem Connected.one_lt_dist_of_ne_of_not_adj (h : G.Connected) (hne 
     (hnadj : ¬G.Adj u v) : 1 < G.dist u v :=
   Reachable.one_lt_dist_of_ne_of_not_adj (h u v) hne hnadj
 
-theorem dist_eq_zero_of_not_reachable (h : ¬G.Reachable u v) : G.dist u v = 0 := by
+theorem dist_eq_zero_of_not_reachable (h : ¬Reachable G u v) : G.dist u v = 0 := by
   simp [h]
 
 theorem nonempty_of_pos_dist (h : 0 < G.dist u v) :
-    (Set.univ : Set (G.Walk u v)).Nonempty := by
+    (Set.univ : Set (Walk G u v)).Nonempty := by
   rw [dist_eq_sInf] at h
   simpa [Set.range_nonempty_iff_nonempty, Set.nonempty_iff_univ_nonempty] using
     Nat.nonempty_of_pos_sInf h
@@ -275,16 +277,16 @@ protected theorem Connected.dist_triangle (hconn : G.Connected) :
   rw [← hp, ← hq, ← Walk.length_append]
   apply dist_le
 
-lemma Reachable.dist_triangle_left (h : G.Reachable u v) (w) :
+lemma Reachable.dist_triangle_left (h : Reachable G u v) (w) :
     G.dist u w ≤ G.dist u v + G.dist v w := by
-  by_cases! h' : ¬G.Reachable u w
+  by_cases! h' : ¬Reachable G u w
   · grind [dist_eq_zero_iff_eq_or_not_reachable]
   rw [← ENat.coe_le_coe, ENat.coe_add]
   grind [SimpleGraph.edist_triangle, Reachable.trans, Reachable.symm]
 
-lemma Reachable.dist_triangle_right (h : G.Reachable v w) (u) :
+lemma Reachable.dist_triangle_right (h : Reachable G v w) (u) :
     G.dist u w ≤ G.dist u v + G.dist v w := by
-  by_cases! h' : ¬G.Reachable u w
+  by_cases! h' : ¬Reachable G u w
   · grind [dist_eq_zero_iff_eq_or_not_reachable]
   rw [← ENat.coe_le_coe, ENat.coe_add]
   grind [SimpleGraph.edist_triangle, Reachable.trans, Reachable.symm]
@@ -292,14 +294,14 @@ lemma Reachable.dist_triangle_right (h : G.Reachable v w) (u) :
 theorem dist_comm : G.dist u v = G.dist v u := by
   rw [dist, dist, edist_comm]
 
-lemma dist_ne_zero_iff_ne_and_reachable : G.dist u v ≠ 0 ↔ u ≠ v ∧ G.Reachable u v := by
+lemma dist_ne_zero_iff_ne_and_reachable : G.dist u v ≠ 0 ↔ u ≠ v ∧ Reachable G u v := by
   simp
 
-lemma Reachable.of_dist_ne_zero (h : G.dist u v ≠ 0) : G.Reachable u v :=
+lemma Reachable.of_dist_ne_zero (h : G.dist u v ≠ 0) : Reachable G u v :=
   (dist_ne_zero_iff_ne_and_reachable.mp h).2
 
 lemma exists_walk_of_dist_ne_zero (h : G.dist u v ≠ 0) :
-    ∃ p : G.Walk u v, p.length = G.dist u v :=
+    ∃ p : Walk G u v, p.length = G.dist u v :=
   (Reachable.of_dist_ne_zero h).exists_walk_length_eq_dist
 
 /--
@@ -312,7 +314,7 @@ theorem dist_eq_one_iff_adj : G.dist u v = 1 ↔ G.Adj u v := by
 
 theorem Adj.diff_dist_adj (hadj : G.Adj v w) :
     G.dist u w = G.dist u v ∨ G.dist u w = G.dist u v + 1 ∨ G.dist u w = G.dist u v - 1 := by
-  by_cases! huw : ¬G.Reachable u w
+  by_cases! huw : ¬Reachable G u w
   · grind [dist_eq_zero_iff_eq_or_not_reachable, Reachable.trans, Adj.reachable]
   have : G.dist v w = 1 := dist_eq_one_iff_adj.mpr hadj
   have : G.dist w v = 1 := dist_eq_one_iff_adj.mpr hadj.symm
@@ -325,7 +327,7 @@ theorem Connected.diff_dist_adj (_ : G.Connected) (hadj : G.Adj v w) :
     G.dist u w = G.dist u v ∨ G.dist u w = G.dist u v + 1 ∨ G.dist u w = G.dist u v - 1 := by
   apply Adj.diff_dist_adj hadj
 
-theorem Walk.isPath_of_length_eq_dist (p : G.Walk u v) (hp : p.length = G.dist u v) :
+theorem Walk.isPath_of_length_eq_dist (p : Walk G u v) (hp : p.length = G.dist u v) :
     p.IsPath := by
   classical
   have : p.bypass = p := by
@@ -336,15 +338,15 @@ theorem Walk.isPath_of_length_eq_dist (p : G.Walk u v) (hp : p.length = G.dist u
   rw [← this]
   apply Walk.bypass_isPath
 
-lemma Reachable.exists_path_of_dist (hr : G.Reachable u v) :
-    ∃ (p : G.Walk u v), p.IsPath ∧ p.length = G.dist u v := by
+lemma Reachable.exists_path_of_dist (hr : Reachable G u v) :
+    ∃ (p : Walk G u v), p.IsPath ∧ p.length = G.dist u v := by
   obtain ⟨p, h⟩ := hr.exists_walk_length_eq_dist
-  exact ⟨p, p.isPath_of_length_eq_dist h, h⟩
+  exact ⟨p, Walk.isPath_of_length_eq_dist p h, h⟩
 
 lemma Connected.exists_path_of_dist (hconn : G.Connected) (u v : V) :
-    ∃ (p : G.Walk u v), p.IsPath ∧ p.length = G.dist u v := by
+    ∃ (p : Walk G u v), p.IsPath ∧ p.length = G.dist u v := by
   obtain ⟨p, h⟩ := hconn.exists_walk_length_eq_dist u v
-  exact ⟨p, p.isPath_of_length_eq_dist h, h⟩
+  exact ⟨p, Walk.isPath_of_length_eq_dist p h, h⟩
 
 @[simp]
 lemma dist_bot : (⊥ : SimpleGraph V).dist u v = 0 := by
@@ -356,7 +358,7 @@ lemma dist_top_of_ne (h : u ≠ v) : (⊤ : SimpleGraph V).dist u v = 1 := by
 lemma dist_top [DecidableEq V] : (⊤ : SimpleGraph V).dist u v = (if u = v then 0 else 1) := by
   by_cases h : u = v <;> simp [h]
 
-lemma length_eq_dist_of_subwalk {u' v' : V} {p₁ : G.Walk u v} {p₂ : G.Walk u' v'}
+lemma length_eq_dist_of_subwalk {u' v' : V} {p₁ : Walk G u v} {p₂ : Walk G u' v'}
     (h₁ : p₁.length = G.dist u v) (h₂ : p₂.IsSubwalk p₁) : p₂.length = G.dist u' v' := by
   refine (dist_le _).eq_of_not_lt' fun hh ↦ ?_
   obtain ⟨ru, rv, h⟩ := h₂
@@ -369,7 +371,7 @@ lemma length_eq_dist_of_subwalk {u' v' : V} {p₁ : G.Walk u v} {p₂ : G.Walk u
 
 /-- Supergraphs have smaller or equal distances to their subgraphs. -/
 @[gcongr]
-protected theorem Reachable.dist_anti {G' : SimpleGraph V} (h : G ≤ G') (hr : G.Reachable u v) :
+protected theorem Reachable.dist_anti {G' : SimpleGraph V} (h : G ≤ G') (hr : Reachable G u v) :
     G'.dist u v ≤ G.dist u v := by
   obtain ⟨_, hw⟩ := hr.exists_walk_length_eq_dist
   rw [← hw, ← Walk.length_map (.ofLE h)]
@@ -377,13 +379,13 @@ protected theorem Reachable.dist_anti {G' : SimpleGraph V} (h : G ≤ G') (hr : 
 
 /-- This bundles and abstracts some facts about the first three vertices of a shortest walk
 of length at least two: the first and third nodes are different and not connected. -/
-lemma Walk.exists_adj_adj_not_adj_ne {p : G.Walk v w} (hp : p.length = G.dist v w)
+lemma Walk.exists_adj_adj_not_adj_ne {p : Walk G v w} (hp : p.length = G.dist v w)
     (hl : 1 < G.dist v w) : ∃ (x a b : V), G.Adj x a ∧ G.Adj a b ∧ ¬ G.Adj x b ∧ x ≠ b := by
   use v, p.getVert 1, p.getVert 2
-  have hnp : ¬p.Nil := by simpa [nil_iff_length_eq, hp] using Nat.ne_zero_of_lt hl
+  have hnp : ¬p.Nil := by simpa [Walk.nil_iff_length_eq, hp] using Nat.ne_zero_of_lt hl
   have : p.tail.tail.length < p.tail.length := by
     rw [← p.tail.length_tail_add_one (by
-      simp only [not_nil_iff_lt_length, ← p.length_tail_add_one hnp] at hp ⊢
+      simp only [Walk.not_nil_iff_lt_length, ← p.length_tail_add_one hnp] at hp ⊢
       lia)]
     lia
   have : p.tail.length < p.length := by rw [← p.length_tail_add_one hnp]; lia
@@ -393,7 +395,7 @@ lemma Walk.exists_adj_adj_not_adj_ne {p : G.Walk v w} (hp : p.length = G.dist v 
     lia
   by_cases hadj : G.Adj v (p.getVert 2)
   · have : G.dist v w ≤ p.tail.tail.length + 1 :=
-      dist_le <| p.tail.tail.cons <| p.getVert_tail ▸ hadj
+      dist_le <| p.tail.tail.cons <| Adj.toStep <| p.getVert_tail ▸ hadj
     lia
   exact ⟨p.adj_snd hnp, p.adj_getVert_succ (hp ▸ hl), hadj, hv⟩
 

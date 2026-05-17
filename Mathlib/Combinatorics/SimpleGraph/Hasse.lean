@@ -27,7 +27,7 @@ path graph on `n` vertices.
 @[expose] public section
 
 
-open Order OrderDual Relation
+open Order OrderDual Relation GraphLike SimpleGraph
 
 namespace SimpleGraph
 
@@ -112,9 +112,11 @@ theorem pathGraph_two_eq_top : pathGraph 2 = ⊤ := by
   ext u v
   fin_cases u <;> fin_cases v <;> simp [pathGraph]
 
-namespace Walk
+end SimpleGraph
 
-variable {V : Type*} [DecidableEq V] {G : SimpleGraph V} {u v : V} (w : G.Walk u v)
+namespace GraphLike.Walk
+
+variable {V : Type*} [DecidableEq V] {G : SimpleGraph V} {u v : V} (w : Walk G u v)
 
 /-- The subgraph of a walk contains the path graph with the same number of vertices -/
 def pathGraphHomToSubgraph : pathGraph (w.length + 1) →g w.toSubgraph.coe where
@@ -151,6 +153,4 @@ theorem IsPath.isContained_pathGraph (hw : w.IsPath) : pathGraph (w.length + 1) 
   classical
   exact ⟨hw.pathGraphCopy⟩
 
-end Walk
-
-end SimpleGraph
+end GraphLike.Walk
