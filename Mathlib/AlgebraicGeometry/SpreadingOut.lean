@@ -245,7 +245,7 @@ lemma exists_lift_of_germInjective_aux {U : X.Opens} {x : X} (hxU)
       V ≤ U ∧ RingHom.range φ.hom ≤ RingHom.range (X.presheaf.germ V x hxV).hom := by
   letI := φRA.hom.toAlgebra
   obtain ⟨s, hs⟩ := hφRA
-  choose W hxW f hf using fun t ↦ X.presheaf.germ_exist x (φ t)
+  choose W hxW f hf using fun t ↦ X.presheaf.exists_germ_eq (φ t)
   have H : x ∈ s.inf W ⊓ U := by
     rw [← SetLike.mem_coe, TopologicalSpace.Opens.coe_inf, TopologicalSpace.Opens.coe_finset_inf]
     exact ⟨by simpa using fun x _ ↦ hxW x, hxU⟩
