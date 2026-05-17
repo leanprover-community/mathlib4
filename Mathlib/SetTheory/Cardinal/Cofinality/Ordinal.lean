@@ -540,7 +540,7 @@ theorem cof_preOmega {o : Ordinal} (ho : IsSuccPrelimit o) : (preOmega o).cof = 
 theorem cof_omega {o : Ordinal} (ho : IsSuccLimit o) : (ω_ o).cof = o.cof :=
   cof_map_of_isNormal isNormal_omega ho
 
--- TODO: deprecate in favor of `Order.cof_eq`
+@[deprecated Order.cof_eq (since := "2026-03-20")]
 theorem cof_eq' (r : α → α → Prop) [H : IsWellOrder α r] (h : IsSuccLimit (type r)) :
     ∃ S : Set α, (∀ a, ∃ b ∈ S, r a b) ∧ #S = cof (type r) := by
   classical
@@ -558,6 +558,17 @@ theorem cof_univ : cof univ.{u, v} = Cardinal.univ.{u, v} := by
     ← not_bddAbove_iff_isCofinal]
   exact fun s hs ↦ mk_le_of_injective (enumOrdOrderIso s hs).injective
 
+@[simp]
+theorem _root_.Order.cof_ordinal : Order.cof Ordinal.{u} = Cardinal.univ.{u, u + 1} := by
+  have := (OrderIso.ofRelIsoLT liftPrincipalSeg.subrelIso.{u, u + 1}).lift_cof_congr
+  rw [Cardinal.lift_id'.{_, u + 2}] at this
+  change Order.cof (Iio univ) = _ at this
+  rwa [cof_Iio, ← lift_cof, Cardinal.lift_inj, cof_univ, eq_comm] at this
+
+@[simp]
+theorem _root_.Order.cof_cardinal : Order.cof Cardinal.{u} = Cardinal.univ.{u, u + 1} := by
+  rw [← preAleph.cof_congr, cof_ordinal]
+
 end Ordinal
 
 namespace Cardinal
@@ -566,7 +577,7 @@ open Ordinal
 /-! ### Results on sets -/
 
 -- TODO: re-state this for a bundled well-order
-theorem mk_bounded_subset {α : Type*} (h : ∀ x < #α, 2 ^ x < #α) {r : α → α → Prop}
+theorem mk_bounded_subset {α : Type*} (h : IsStrongPrelimit #α) {r : α → α → Prop}
     [IsWellOrder α r] (hr : (#α).ord = type r) : #{ s : Set α // Bounded r s } = #α := by
   rcases eq_or_ne #α 0 with (ha | ha)
   · rw [ha]
@@ -586,7 +597,7 @@ theorem mk_bounded_subset {α : Type*} (h : ∀ x < #α, 2 ^ x < #α) {r : α �
     apply ciSup_le' _
     intro i
     rw [mk_powerset]
-    exact (h'.two_power_lt (card_typein_lt _ hr)).le
+    exact (h (card_typein_lt _ hr)).le
   · refine @mk_le_of_injective α _ (fun x => Subtype.mk {x} ?_) ?_
     · apply bounded_singleton
       rw [← hr]
@@ -594,7 +605,7 @@ theorem mk_bounded_subset {α : Type*} (h : ∀ x < #α, 2 ^ x < #α) {r : α �
     · intro a b hab
       simpa [singleton_eq_singleton_iff] using hab
 
-theorem mk_subset_mk_lt_cof {α : Type*} (h : ∀ x < #α, 2 ^ x < #α) :
+theorem mk_subset_mk_lt_cof {α : Type*} (h : IsStrongPrelimit #α) :
     #{ s : Set α // #s < cof (#α).ord } = #α := by
   rcases eq_or_ne #α 0 with (ha | ha)
   · simp [ha]
