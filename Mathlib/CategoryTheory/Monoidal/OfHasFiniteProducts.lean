@@ -42,8 +42,6 @@ open CategoryTheory.Limits
 
 section
 
-variable [HasTerminal C] [HasBinaryProducts C]
-
 #adaptation_note /-- prior to nightly-2026-02-05
 the four fields starting from `id_tensorHom_id` were provided by the auto_param -/
 /-- A category with an initial object and binary coproducts has a natural monoidal structure. -/

@@ -175,5 +175,3 @@ end String
 open String
 
 namespace List
-
-end List
