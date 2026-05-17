@@ -1246,13 +1246,6 @@ def ord.orderEmbedding : Cardinal ↪o Ordinal :=
 theorem ord.orderEmbedding_coe : (ord.orderEmbedding : Cardinal → Ordinal) = ord :=
   rfl
 
-set_option linter.deprecated false in
-/-- If a cardinal `c` is nonzero, then `c.ord.ToType` has a least element. -/
-@[implicit_reducible, deprecated WellFoundedLT.toOrderBot (since := "2025-04-12")]
-noncomputable def toTypeOrderBot {c : Cardinal} (hc : c ≠ 0) :
-    OrderBot c.ord.ToType :=
-  Ordinal.toTypeOrderBot (fun h ↦ hc (ord_injective (by simpa using h)))
-
 end Cardinal
 
 namespace Ordinal
