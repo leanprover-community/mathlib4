@@ -82,6 +82,11 @@ theorem IsCountablyCompact.of_isClosed_subset (hA : IsCountablyCompact A) (hB : 
   let ⟨a, _, hac⟩ := hA (hle.trans (principal_mono.mpr hBA))
   ⟨a, isClosed_iff_clusterPt.mp hB a (hac.mono hle), hac⟩
 
+/-- A closed subset of a countably compact space is countably compact. -/
+theorem IsClosed.isCountablyCompact [CountablyCompactSpace E] (hA : IsClosed A) :
+    IsCountablyCompact A :=
+  CountablyCompactSpace.isCountablyCompact_univ.of_isClosed_subset hA (subset_univ _)
+
 /-- A set is countably compact if and only if every sequence eventually in it has a cluster point
 in it. -/
 theorem isCountablyCompact_iff_seq_clusterPt :
@@ -218,29 +223,6 @@ theorem isCountablyCompact_iff_countablyCompactSpace :
     IsCountablyCompact A ↔ CountablyCompactSpace A :=
   isCountablyCompact_iff_isCountablyCompact_univ.trans isCountablyCompact_univ_iff
 
-/-- If `x : ℕ → E` has no convergent subsequence, then `⋃ i, closure {x i}` is closed. -/
-lemma isClosed_iUnion_closure_singleton_of_not_tendsto {x : ℕ → E} [SequentialSpace E]
-    (hx : ∀ (l : E) (φ : ℕ → ℕ), StrictMono φ → ¬Tendsto (x ∘ φ) atTop (𝓝 l)) :
-    IsClosed (⋃ i, closure {x i}) := by
-  refine IsSeqClosed.isClosed fun y l hy hy' => ?_
-  by_cases! hm : ∃ m, ∃ᶠ n in atTop, y n ∈ closure {x m}
-  · obtain ⟨m, pm⟩ := hm
-    exact subset_iUnion _ m (isClosed_closure.mem_of_frequently_of_tendsto pm hy')
-  · have (j : ℕ) : ∃ᶠ k in atTop, ∃ n ≥ j, y n ∈ closure {x k} := by
-      refine frequently_atTop.2 fun a => ?_
-      have := (Filter.eventually_all_finite (by simp : (Iic a).Finite)).2 fun i hi => hm i
-      simp only [mem_Iic, eventually_atTop, ge_iff_le] at this
-      obtain ⟨c, hc⟩ := this
-      obtain ⟨b, hb⟩ := mem_iUnion.1 (hy (c + j))
-      refine ⟨b, ?_, c + j, j.le_add_left c, hb⟩
-      by_contra! hab
-      simp_all [hc (c + j) (c.le_add_right j) b hab.le]
-    obtain ⟨φ, hφ⟩ := extraction_forall_of_frequently this
-    choose ψ hψ1 hψ2 using hφ.2
-    have : Tendsto ψ atTop atTop := tendsto_atTop_mono hψ1 tendsto_id
-    refine (hx l φ hφ.1 (Tendsto.specializes (hy'.comp this) (fun n => ?_))).elim
-    exact specializes_iff_mem_closure.2 (hψ2 n)
-
 /-- If a sequential space is countably compact, then it is sequentially compact. We follow the proof
 in [kremsater1972sequential]. -/
 instance (priority := 50) [SequentialSpace E] [CountablyCompactSpace E] :
@@ -255,8 +237,7 @@ instance (priority := 50) [SequentialSpace E] [CountablyCompactSpace E] :
   -- countably compact.
   let A := ⋃ i, closure {x i}
   have : IsCountablyCompact A :=
-    (isCountablyCompact_univ_iff.2 inferInstance).of_isClosed_subset
-      (isClosed_iUnion_closure_singleton_of_not_tendsto hx) (by simp)
+    (isClosed_iUnion_closure_singleton_of_not_tendsto hx).isCountablyCompact
   -- We use the countably compactness of `A` to find a cluster point `a`. Eventually `a` does not
   -- belong to the closure of `{x n}` as `x` has no convergent subsequence, and this contradicts `a`
   -- being a cluster point.
@@ -272,8 +253,8 @@ instance (priority := 50) [SequentialSpace E] [CountablyCompactSpace E] :
     simpa [← iUnion_ge_eq_iUnion_nat_add (fun n => closure {x n}) (k + 1)] using
       fun i hi => hk i (Nat.lt_of_lt_of_eq hi rfl)
   apply this
-  have := mapClusterPt_atTop_iff_forall_mem_closure.1 ha.2 (k + 1)
-  suffices h : closure (x '' Ici (k + 1)) ⊆ ⋃ i, closure {x (i + (k + 1))} from h this
+  suffices h : closure (x '' Ici (k + 1)) ⊆ ⋃ i, closure {x (i + (k + 1))} from
+    h <| mapClusterPt_atTop_iff_forall_mem_closure.1 ha.2 (k + 1)
   refine (IsClosed.closure_subset_iff
     (isClosed_iUnion_closure_singleton_of_not_tendsto fun l φ hφ => ?_)).2 ?_
   · exact hx l _ ((strictMono_id.add_const _).comp hφ)
