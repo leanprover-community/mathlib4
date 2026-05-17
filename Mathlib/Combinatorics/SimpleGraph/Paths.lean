@@ -545,7 +545,7 @@ theorem isCycle_iff_isPath_tail_and_le_length {p : G.Walk u u} :
   | nil => simp_all
   | cons h' p =>
     simp only [getVert_cons_succ, tail_cons, isPath_copy, length_cons] at h₁ h₂
-    refine p.cons_isCycle_iff h' |>.mpr ⟨h₁, fun hh ↦ ?_⟩
+    refine isCycle_cons_iff.mpr ⟨h₁, fun hh ↦ ?_⟩
     have : p.support[0] = p.support[p.length - 1] := by
       simp [← List.head_eq_getElem_zero, h₁.eq_penultimate_of_mem_edges hh]
     have := p.isPath_iff_injective_get_support.mp h₁ this
@@ -823,8 +823,7 @@ lemma IsCircuit.isCycle_cycleBypass : ∀ {w : G.Walk v v}, w.IsCircuit → w.cy
   | .cons (v := v') hvv' w, hw => by
     dsimp [cycleBypass]
     refine ⟨⟨(isPath_bypass _).isTrail.cons _ fun hvv' ↦ ?_, by simp⟩, ?_⟩
-    · simp only [isTrail_cons] at hw
-      exact hw.2 <| edges_bypass_subset _ hvv'
+    · simp [isCircuit_def, edges_bypass_subset _ hvv'] at hw
     · simpa using (isPath_bypass _).support_nodup
 
 lemma IsTrail.isCycle_cycleBypass {w : G.Walk v v} (hw : w ≠ .nil) (hw' : w.IsTrail) :

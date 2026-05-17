@@ -396,7 +396,7 @@ lemma Walk.IsPath.isCycles_spanningCoe_toSubgraph_sup_edge {u v} {p : G.Walk u v
     simp only [sup_adj, Subgraph.spanningCoe_adj, completeGraph_eq_top, edge_adj, c,
       Walk.toSubgraph, Subgraph.sup_adj, subgraphOfAdj_adj, adj_toSubgraph_mapLe]
     grind
-  exact this ▸ IsCycle.isCycles_spanningCoe_toSubgraph (by simp [Walk.cons_isCycle_iff, c, hp, hs])
+  exact this ▸ IsCycle.isCycles_spanningCoe_toSubgraph (by simp [Walk.isCycle_cons_iff, c, hp, hs])
 
 lemma Walk.IsCycle.adj_toSubgraph_iff_of_isCycles [LocallyFinite G] {u} {p : G.Walk u u}
     (hp : p.IsCycle) (hcyc : G.IsCycles) (hv : v ∈ p.toSubgraph.verts) :
