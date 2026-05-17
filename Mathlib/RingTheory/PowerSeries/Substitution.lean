@@ -399,7 +399,6 @@ theorem coe_rescaleAlgHom (r : R) : rescaleAlgHom r = rescale r := by
   ext f
   rw [rescale_eq, RingHom.coe_coe, MvPowerSeries.rescaleAlgHom_apply]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Substitution by `p` commutes with scalar homothety. -/
 lemma subst_rescale_of_degree_eq_one (a : R) {σ : Type*} (p : MvPowerSeries σ R)
     (hp_lin : ∀ d ∈ Function.support p, d.degree = 1) (f : PowerSeries R) :
@@ -413,7 +412,7 @@ lemma subst_rescale_of_degree_eq_one (a : R) {σ : Type*} (p : MvPowerSeries σ 
     subst_comp_subst_apply (HasSubst.smul_X' a) hp]
   nth_rewrite 3 [subst]
   rw [MvPowerSeries.subst_comp_subst_apply hp.const (MvPowerSeries.HasSubst.smul_X _),
-    funext_iff]
+    MvPowerSeries.ext_iff]
   intro _
   rw [subst_smul hp, ← Polynomial.coe_X, subst_coe hp, Polynomial.aeval_X,
     ← MvPowerSeries.rescale_eq_subst, MvPowerSeries.rescale_homogeneous_eq_smul hp_lin,
