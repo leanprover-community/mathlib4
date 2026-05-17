@@ -48,9 +48,17 @@ instance : One (Module.End R M) := ⟨LinearMap.id⟩
 
 instance : Mul (Module.End R M) := ⟨fun f g => LinearMap.comp f g⟩
 
-theorem one_eq_id : (1 : Module.End R M) = .id := rfl
+@[pull_end, push_end← ]
+theorem one_def : (1 : Module.End R M) = .id :=
+  rfl
 
-theorem mul_eq_comp (f g : Module.End R M) : f * g = f.comp g := rfl
+@[deprecated (since := "2026-05-17")] alias one_eq_id := one_def
+
+@[pull_end, push_end← ]
+theorem mul_def (f g : Module.End R M) : f * g = f.comp g :=
+  rfl
+
+@[deprecated (since := "2026-05-17")] alias mul_eq_comp := mul_def
 
 @[simp]
 theorem one_apply (x : M) : (1 : Module.End R M) x = x := rfl
@@ -58,8 +66,10 @@ theorem one_apply (x : M) : (1 : Module.End R M) x = x := rfl
 @[simp]
 theorem mul_apply (f g : Module.End R M) (x : M) : (f * g) x = f (g x) := rfl
 
+@[simp, norm_cast]
 theorem coe_one : ⇑(1 : Module.End R M) = _root_.id := rfl
 
+@[simp, norm_cast]
 theorem coe_mul (f g : Module.End R M) : ⇑(f * g) = f ∘ g := rfl
 
 instance instNontrivial [Nontrivial M] : Nontrivial (Module.End R M) := by
@@ -138,9 +148,9 @@ theorem commute_pow_left_of_commute
     {f : M →ₛₗ[σ₁₂] M₂} {g : Module.End R M} {g₂ : Module.End R₂ M₂}
     (h : g₂.comp f = f.comp g) (k : ℕ) : (g₂ ^ k).comp f = f.comp (g ^ k) := by
   induction k with
-  | zero => simp [one_eq_id]
-  | succ k ih => rw [pow_succ', pow_succ', mul_eq_comp, LinearMap.comp_assoc, ih,
-    ← LinearMap.comp_assoc, h, LinearMap.comp_assoc, mul_eq_comp]
+  | zero => simp [pull_end]
+  | succ k ih => rw [pow_succ', pow_succ', mul_def, LinearMap.comp_assoc, ih,
+    ← LinearMap.comp_assoc, h, LinearMap.comp_assoc, mul_def]
 
 @[simp]
 theorem id_pow (n : ℕ) : (id : End R M) ^ n = .id :=
@@ -148,8 +158,8 @@ theorem id_pow (n : ℕ) : (id : End R M) ^ n = .id :=
 
 variable {f' : End R M}
 
-theorem iterate_succ (n : ℕ) : f' ^ (n + 1) = .comp (f' ^ n) f' := by rw [pow_succ, mul_eq_comp]
-theorem iterate_succ' (n : ℕ) : f' ^ (n + 1) = .comp f' (f' ^ n) := by rw [pow_succ', mul_eq_comp]
+theorem iterate_succ (n : ℕ) : f' ^ (n + 1) = .comp (f' ^ n) f' := by simp [pow_succ, pull_end]
+theorem iterate_succ' (n : ℕ) : f' ^ (n + 1) = .comp f' (f' ^ n) := by simp [pow_succ', pull_end]
 
 theorem iterate_surjective (h : Surjective f') : ∀ n : ℕ, Surjective (f' ^ n)
   | 0 => surjective_id
