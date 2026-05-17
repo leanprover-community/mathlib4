@@ -842,6 +842,10 @@ def Module.annihilator : Ideal R := RingHom.ker (Module.toAddMonoidEnd R M)
 theorem Module.mem_annihilator {r} : r ∈ Module.annihilator R M ↔ ∀ m : M, r • m = 0 :=
   ⟨fun h ↦ (congr($h ·)), (AddMonoidHom.ext ·)⟩
 
+lemma Module.mem_annihilator_iff_lsmul_eq_zero {R : Type*} [CommSemiring R]
+    [Module R M] {r : R} : r ∈ Module.annihilator R M ↔ LinearMap.lsmul R M r = 0 := by
+  simp [Module.mem_annihilator, LinearMap.ext_iff]
+
 instance (priority := low) : (Module.annihilator R M).IsTwoSided :=
   inferInstanceAs (RingHom.ker _).IsTwoSided
 
