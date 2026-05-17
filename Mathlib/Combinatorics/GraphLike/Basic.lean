@@ -5,6 +5,7 @@ Authors: Jun Kwon, Thomas Waring
 -/
 module
 
+public import Mathlib.Data.PFun
 public import Mathlib.Combinatorics.Graph.Basic
 public import Mathlib.Combinatorics.SimpleGraph.Basic
 public import Mathlib.Combinatorics.Digraph.Basic
@@ -15,106 +16,90 @@ public section
 
 variable {V H I O E Gr : Type*}
 
-class HyperGraphLike (V E : outParam Type*) (Gr : Type*) where
+class HyperGraphLike (V I O E : outParam Type*) (Gr : Type*) where
   verts : Gr → Set V
-  -- flags : Gr → Set H
   edges : Gr → Set E
-  -- IsEndpoint : Gr → H → V → Prop
-  -- IsInFlag : Gr → E → H → Prop
-  -- IsOutFlag : Gr → E → H → Prop
-  -- mem_flags_iff_exists_isEnpoint : ∀ ⦃G h⦄, h ∈ flags G ↔ ∃ x, IsEndpoint G h x
-  -- inFlags : Gr → Set I
-  -- outFlags : Gr → Set O
-  IsSource : Gr → E → V → Prop
-  IsTarget : Gr → E → V → Prop
-  -- source : Gr → I → V
-  -- target : Gr → O → V
-  -- edgeI : Gr → I → E
-  -- edgeO : Gr → O → E
-  -- IsSource : Gr → I → V → Prop
-  -- IsTarget : Gr → O → V → Prop
-  -- IsInPort : Gr → E → I → Prop
-  -- IsOutPort : Gr → E → O → Prop
-  -- mapsTo_source : ∀ ⦃G⦄, Set.MapsTo (source G) (inFlags G) (verts G)
-  -- mapsTo_target : ∀ ⦃G⦄, Set.MapsTo (target G) (outFlags G) (verts G)
-  -- mapsTo_edgeI : ∀ ⦃G⦄, Set.MapsTo (edgeI G) (inFlags G) (edges G)
-  -- mapsTo_edgeO : ∀ ⦃G⦄, Set.MapsTo (edgeO G) (outFlags G) (edges G)
-  -- eq_of_source_eq_of_edgeI_eq : ∀ ⦃G i i'⦄, i ∈ inFlags G → i' ∈ inFlags G →
-  --   source G i = source G i' → edgeI G i = edgeI G i' → i = i'
-  -- eq_of_target_eq_of_edgeO_eq : ∀ ⦃G o o'⦄, o ∈ outFlags G → o' ∈ outFlags G →
-  --   target G o = target G o' → edgeO G o = edgeO G o' → o = o'
-  mem_verts_of_isSource : ∀ ⦃G e x⦄, IsSource G e x → x ∈ verts G
-  mem_verts_of_isTarget : ∀ ⦃G e x⦄, IsTarget G e x → x ∈ verts G
-  mem_edges_of_isSource : ∀ ⦃G e x⦄, IsSource G e x → e ∈ edges G
-  mem_edges_of_isTarget : ∀ ⦃G e x⦄, IsTarget G e x → e ∈ edges G
-  -- mem_inFlags_iff : ∀ ⦃G i⦄, i ∈ inFlags G ↔
-  --     (∃! x ∈ verts G, IsSource G i x) ∧ (∃! e ∈ edges G, IsInPort G e i)
-  -- mem_outFlags_iff : ∀ ⦃G o⦄, o ∈ outFlags G ↔
-  --     (∃! x ∈ verts G, IsTarget G o x) ∧ (∃! e ∈ edges G, IsOutPort G e o)
+  source : Gr → I →. V
+  target : Gr → O →. V
+  edgeI : Gr → I →. E
+  edgeO : Gr → O →. E
+  dom_source_eq_dom_edgeI : ∀ ⦃G⦄, (source G).Dom = (edgeI G).Dom
+  dom_target_eq_dom_edgeO : ∀ ⦃G⦄, (target G).Dom = (edgeO G).Dom
+  ran_source_subset_verts : ∀ ⦃G⦄, (source G).ran ⊆ verts G
+  ran_target_subset_verts : ∀ ⦃G⦄, (target G).ran ⊆ verts G
+  ran_edgeI_subset_edges : ∀ ⦃G⦄, (edgeI G).ran ⊆ edges G
+  ran_edgeO_subset_edges : ∀ ⦃G⦄, (edgeO G).ran ⊆ edges G
 
 namespace HyperGraphLike
 
-variable [HyperGraphLike V E Gr] {G : Gr}
+variable [HyperGraphLike V I O E Gr] {G : Gr}
 
--- def IsEdgeSource (G : Gr) (e : E) (v : V) : Prop := ∃ i ∈ inFlags G, source G i = v ∧ edgeI G i = e
+-- def inFlags (G : Gr) : Set I := (source G).Dom
 
--- def IsEdgeTarget (G : Gr) (e : E) (v : V) : Prop := ∃ o ∈ outFlags G, target G o = v ∧ edgeO G o = e
+-- def outFlags (G : Gr) : Set O := (target G).Dom
 
--- def IsLink (G : Gr) (e : E) (x y : V) : Prop := IsEdgeSource G e x ∧ IsEdgeTarget G e y
+def mem_verts_of_mem_source {v : V} {i : I} (h : v ∈ source G i) : v ∈ verts G :=
+  ran_source_subset_verts ⟨i, h⟩
 
-def IsLink (G : Gr) (e : E) (x y : V) : Prop := IsSource G e x ∧ IsTarget G e y
+def mem_verts_of_mem_target {v : V} {o : O} (h : v ∈ target G o) : v ∈ verts G :=
+  ran_target_subset_verts ⟨o, h⟩
 
--- @[implicit_reducible]
--- def ofIsSourceIsTarget (verts : Gr → Set V) (edges : Gr → Set E)
---     (IsEdgeSource : Gr → E → V → Prop) (IsEdgeTarget : Gr → E → V → Prop)
---     (mem_verts_of_isEdgeSource : ∀ ⦃G e v⦄, IsEdgeSource G e v → v ∈ verts G)
---     (mem_edges_of_isEdgeSource : ∀ ⦃G e v⦄, IsEdgeSource G e v → e ∈ edges G)
---     (mem_verts_of_isEdgeTarget : ∀ ⦃G e v⦄, IsEdgeTarget G e v → v ∈ verts G)
---     (mem_edges_of_isEdgeTarget : ∀ ⦃G e v⦄, IsEdgeTarget G e v → e ∈ edges G)
---     : HyperGraphLike V (E × V) (E × V) E Gr where
---   verts := verts
---   inFlags G := {d | IsEdgeSource G d.1 d.2}
---   outFlags G := {d | IsEdgeTarget G d.1 d.2}
---   edges := edges
---   source _ d := d.2
---   target _ d := d.2
---   edgeI _ d := d.1
---   edgeO _ d := d.1
---   mapsTo_source G i hi := mem_verts_of_isEdgeSource hi
---   mapsTo_target G o ho := mem_verts_of_isEdgeTarget ho
---   mapsTo_edgeI G i hi := mem_edges_of_isEdgeSource hi
---   mapsTo_edgeO G o ho := mem_edges_of_isEdgeTarget ho
---   eq_of_source_eq_of_edgeI_eq G i i' _ _ h h' := by cases i; cases i'; congr
---   eq_of_target_eq_of_edgeO_eq G o o' _ _ h h' := by cases o; cases o'; congr
+def mem_edges_of_mem_edgeI {e : E} {i : I} (h : e ∈ edgeI G i) : e ∈ edges G :=
+  ran_edgeI_subset_edges ⟨i, h⟩
 
--- def Adj (G : Gr) (x y : V) : Prop := ∃ e ∈ edges G, IsEdgeSource G e x ∧ IsEdgeTarget G e y
+def mem_edges_of_mem_edgeO {e : E} {o : O} (h : e ∈ edgeO G o) : e ∈ edges G :=
+  ran_edgeO_subset_edges ⟨o, h⟩
 
-def Adj (G : Gr) (x y : V) : Prop := ∃ e, IsSource G e x ∧ IsTarget G e y
+def IsEdgeSource (G : Gr) (e : E) (v : V) : Prop := ∃ i, v ∈ source G i ∧ e ∈ edgeI G i
 
--- def FlagsInc (G : Gr) (i : I) (o : O) : Prop :=
---     edgeI G i = edgeO G o ∧ i ∈ inFlags G ∧ o ∈ outFlags G
+def IsEdgeTarget (G : Gr) (e : E) (v : V) : Prop := ∃ o, v ∈ target G o ∧ e ∈ edgeO G o
 
--- lemma Adj.iff_exists_inFlag_outFlag {G : Gr} {x y : V} :
---     Adj G x y ↔ ∃ i o, FlagsInc G i o ∧ source G i = x ∧ target G o = y := by
---   simp_rw [Adj, IsEdgeSource, IsEdgeTarget, FlagsInc]
---   constructor
---   · rintro ⟨_, he, ⟨i, hi, rfl, rfl⟩, o, ho, rfl, h⟩
---     use i, o
---     grind
---   · rintro ⟨i, o, ⟨he, hi, ho⟩, rfl, rfl⟩
---     exact ⟨edgeI G i, mapsTo_edgeI hi, ⟨i, hi, rfl, rfl⟩, o, ho, rfl, he.symm⟩
+def IsLink (G : Gr) (e : E) (x y : V) : Prop := IsEdgeSource G e x ∧ IsEdgeTarget G e y
+
+@[implicit_reducible]
+def ofIsSourceIsTarget (verts : Gr → Set V) (edges : Gr → Set E)
+    (IsEdgeSource : Gr → E → V → Prop) (IsEdgeTarget : Gr → E → V → Prop)
+    (mem_verts_of_isEdgeSource : ∀ ⦃G e v⦄, IsEdgeSource G e v → v ∈ verts G)
+    (mem_edges_of_isEdgeSource : ∀ ⦃G e v⦄, IsEdgeSource G e v → e ∈ edges G)
+    (mem_verts_of_isEdgeTarget : ∀ ⦃G e v⦄, IsEdgeTarget G e v → v ∈ verts G)
+    (mem_edges_of_isEdgeTarget : ∀ ⦃G e v⦄, IsEdgeTarget G e v → e ∈ edges G)
+    : HyperGraphLike V (E × V) (E × V) E Gr where
+  verts := verts
+  edges := edges
+  source G d := ⟨IsEdgeSource G d.1 d.2, fun _ => d.2⟩
+  target G d := ⟨IsEdgeTarget G d.1 d.2, fun _ => d.2⟩
+  edgeI G d := ⟨IsEdgeSource G d.1 d.2, fun _ => d.1⟩
+  edgeO G d := ⟨IsEdgeTarget G d.1 d.2, fun _ => d.1⟩
+  dom_source_eq_dom_edgeI _ := rfl
+  dom_target_eq_dom_edgeO _ := rfl
+  ran_source_subset_verts _ _ := fun ⟨_, h, h'⟩ => h' ▸ mem_verts_of_isEdgeSource h
+  ran_target_subset_verts _ _ := fun ⟨_, h, h'⟩ => h' ▸ mem_verts_of_isEdgeTarget h
+  ran_edgeI_subset_edges _ _ := fun ⟨_, h, h'⟩ => h' ▸ mem_edges_of_isEdgeSource h
+  ran_edgeO_subset_edges _ _ := fun ⟨_, h, h'⟩ => h' ▸ mem_edges_of_isEdgeTarget h
+
+def Adj (G : Gr) (x y : V) : Prop := ∃ e ∈ edges G, IsEdgeSource G e x ∧ IsEdgeTarget G e y
+
+def FlagsInc (G : Gr) (i : I) (o : O) : Prop := ∃ e, e ∈ edgeI G i ∧ e ∈ edgeO G o
+
+lemma Adj.iff_exists_inFlag_outFlag {G : Gr} {x y : V} :
+    Adj G x y ↔ ∃ i o, FlagsInc G i o ∧ x ∈ source G i ∧ y ∈ target G o := by
+  simp_rw [Adj, IsEdgeSource, IsEdgeTarget, FlagsInc]
+  constructor
+  · grind
+  · rintro ⟨i, o, ⟨⟨e, he⟩, he'⟩⟩
+    use! e, mem_edges_of_mem_edgeI he.1
+    grind
 
 structure Dart (G : Gr) where
-  source : V
-  target : V
-  edge : E
-  isLink : IsLink G edge source target
+  i : I
+  o : O
+  inc : FlagsInc G i o
 
 namespace Dart
 
--- @[ext]
--- protected lemma ext {d d' : Dart G} (hi : d.i = d'.i) (ho : d.o = d'.o) : d = d' := by
---   cases d; cases d'; congr
+@[ext]
+protected lemma ext {d d' : Dart G} (hi : d.i = d'.i) (ho : d.o = d'.o) : d = d' := by
+  cases d; cases d'; congr
 
 -- lemma inFlag_mem (d : Dart G) : d.i ∈ inFlags G := d.inc.2.1
 
