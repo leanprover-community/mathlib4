@@ -129,7 +129,7 @@ def equivSymmAsContinuousMapGeneratedBy :
     rw [continuousGeneratedBy_def]
     intro i f
     rw [IsGeneratedBy.equiv_symm_comp_continuous_iff]
-    continuity
+    fun_prop
 
 @[simp]
 lemma equivSymmAsContinuousMapGeneratedBy_coe :
