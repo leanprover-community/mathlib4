@@ -110,8 +110,8 @@ protected theorem comulAlgHom_comm :
       SymmetricAlgebra.comulAlgHom R M := by
   ext x
   simp only [LinearMap.coe_comp, Function.comp_apply, LinearMap.coe_coe, AlgHom.comp_apply,
-             AlgEquiv.coe_algHom, SymmetricAlgebra.comulAlgHom_ι, map_add,
-             Algebra.TensorProduct.comm_tmul]
+    AlgEquiv.coe_algHom, SymmetricAlgebra.comulAlgHom_ι, map_add,
+    Algebra.TensorProduct.comm_tmul]
   abel
 
 end
