@@ -24,7 +24,9 @@ We prove
 * `LinearMap.exists_real_extension`: Hahn-Banach theorem for continuous linear functions on locally
   convex spaces over `ℝ`.
 * `StrongDual.exists_extension`: Hahn-Banach theorem for continuous linear functions on
-  polynormable spaces over fields satisfying `IsRCLikeNormedField`.
+  polynormable spaces over fields satisfying `IsRCLikeNormedField`. Note that we cannot use
+  `LocallyConvexSpace` because an `IsRCLikeNormedField` has no order structure. We use
+  `PolynormableSpace` instead.
 
 -/
 
