@@ -278,15 +278,6 @@ lemma IsFredholmQuot.iff_toLinearMap :
     IsFredholmQuot f ↔ ∃ g : F →L[𝕜] E, LinearMap.QuasiInverse f.toLinearMap g.toLinearMap := by
   rfl
 
-lemma IsFredholmQuot.comp {f : E →L[𝕜] F} {f' : F →L[𝕜] G} (hf : IsFredholmQuot f)
-    (hf' : IsFredholmQuot f') : IsFredholmQuot (f' ∘L f) := by
-  rw [IsFredholmQuot.iff_toLinearMap] at *
-  rcases hf with ⟨g, hg⟩
-  rcases hf' with ⟨g', hg'⟩
-  use g ∘L g'
-  push_cast
-  exact LinearMap.QuasiInverse_comp hg hg'
-
 theorem AnatoleDream (hf : IsFredholmStruct f) : IsFredholmQuot f:= sorry
 
 def AnatoleDream_symm (hf : IsFredholmQuot f) : IsFredholmStruct f := sorry
@@ -493,7 +484,7 @@ theorem Submodule.mkQL_isFredholmStruct {p : Submodule 𝕜 E} (hc : FiniteDimen
     IsFredholmStruct p.mkQL :=
   p.isQuotientMap_mkQL.isFredholmStruct (by rwa [p.ker_mkQL]) (by simpa)
 
-/- ## Composition of Fredholm (with the inverse definition) (Patrick)
+/- ## Composition of Fredholm (with the inverse definition) (Aaron)
 
 Consider the three CLMs `u`, `v` and `v ∘L u`. If two of them are Fredholm,
 the third one is.
@@ -503,6 +494,43 @@ I'm not sure what the set of statements should look like, but I imagine the foll
 2. If `u` is Fredholm, then `v` Fredholm ↔ `v ∘ u` Fredholm
 3. If `v` is Fredholm, then `u` Fredholm ↔ `v ∘ u` Fredholm
 -/
+
+lemma IsFredholmQuot.comp {f : E →L[𝕜] F} {f' : F →L[𝕜] G} (hf : IsFredholmQuot f)
+    (hf' : IsFredholmQuot f') : IsFredholmQuot (f' ∘L f) := by
+  rw [IsFredholmQuot.iff_toLinearMap] at *
+  rcases hf with ⟨g, hg⟩
+  rcases hf' with ⟨g', hg'⟩
+  use g ∘L g'
+  push_cast
+  exact LinearMap.QuasiInverse_comp hg hg'
+
+lemma IsFredholmQuot.of_equiv {f f' : E →L[𝕜] F} (h : f ≈ f') (hu : IsFredholmQuot f) :
+    IsFredholmQuot f' := by
+  rw [IsFredholmQuot.iff_toLinearMap] at *
+  obtain ⟨g, hg⟩ := hu
+  exact ⟨g, LinearMap.QuasiInverse.congr hg (symm h) (Setoid.refl g)⟩
+
+lemma IsFredholmQuot.congr {f f' : E →L[𝕜] F} (h : f ≈ f') :
+    IsFredholmQuot f ↔ IsFredholmQuot f' :=
+  ⟨fun hu => hu.of_equiv h, fun hv => hv.of_equiv (symm h)⟩
+
+lemma IsFredholmQuot.of_left_of_comp {f : F →L[𝕜] G} {f' : E →L[𝕜] F}
+    (hf : IsFredholmQuot f) (hcomp : IsFredholmQuot (f ∘L f')) :
+    IsFredholmQuot f' := by
+  obtain ⟨g, hg⟩ := hf
+  refine (hcomp.comp <| (IsFredholmQuot.iff_toLinearMap g).2 ⟨f, hg.symm⟩).of_equiv ?_
+  calc
+    _ ≈ (.id 𝕜 F) ∘L f' := ContinuousLinearMap.FiniteRankSetoid.equiv_comp (Setoid.refl f') hg.2
+    _ = f' := rfl
+
+lemma IsFredholmQuot.of_right_of_comp [ContinuousSMul 𝕜 F] {f : F →L[𝕜] G} {f' : E →L[𝕜] F}
+    (hf' : IsFredholmQuot f') (hcomp : IsFredholmQuot (f ∘L f')) :
+    IsFredholmQuot f := by
+  obtain ⟨g, hg⟩ := hf'
+  refine (((IsFredholmQuot.iff_toLinearMap g).2 ⟨f', hg.symm⟩).comp hcomp).of_equiv ?_
+  calc
+    _ ≈ f ∘L (.id 𝕜 F) := ContinuousLinearMap.FiniteRankSetoid.equiv_comp hg.1 (Setoid.refl f)
+    _ = f := rfl
 
 /- ## Fredholm_struct ==> good decomposition (Filippo)
 
