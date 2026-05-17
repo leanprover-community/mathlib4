@@ -35,6 +35,8 @@ variable {p : ℕ} [Fact p.Prime]
 
 open NNReal WithZero UniformSpace
 
+set_option allowUnsafeReducibility true in
+attribute [local reducible] WithVal.instRing in
 open MonoidWithZeroHom.ValueGroup₀ in
 lemma isUniformInducing_cast_withVal : IsUniformInducing ((Rat.castHom ℚ_[p]).comp
     (WithVal.equiv (Rat.padicValuation p)).toRingHom) := by

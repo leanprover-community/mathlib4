@@ -104,6 +104,8 @@ instance : DFunLike (FiniteAdeleRing R K) (HeightOneSpectrum R) (adicCompletion 
 
 namespace FiniteAdeleRing
 
+set_option allowUnsafeReducibility true in
+attribute [local reducible] WithVal.instRing in
 /--
 The canonical map from `K` to the finite adeles of `K`.
 

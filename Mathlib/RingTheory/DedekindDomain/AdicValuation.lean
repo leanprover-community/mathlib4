@@ -580,6 +580,8 @@ instance (priority := 100) adicValued.has_uniform_continuous_const_smul' :
 section Algebra
 variable [Algebra S K]
 
+set_option allowUnsafeReducibility true in
+attribute [local reducible] WithVal.instRing in
 instance adicValued.uniformContinuousConstSMul :
     UniformContinuousConstSMul S (WithVal <| v.valuation K) := by
   refine ⟨fun l ↦ ?_⟩
