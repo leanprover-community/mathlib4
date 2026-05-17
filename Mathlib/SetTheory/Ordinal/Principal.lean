@@ -10,22 +10,32 @@ public import Mathlib.SetTheory.Ordinal.FixedPoint
 /-!
 # Principal ordinals
 
-We define principal or indecomposable ordinals, and we prove the standard properties about them.
+If `op` is a binary operation on ordinals, we say that an ordinal `o` is `op`-principal (or
+`op`-indecomposable) whenever `a < o` and `b < o` imply `op a b < o`. Most commonly, one talks of
+additive and multiplicative principal ordinals.
+
+Additive principal ordinals were originally called "gamma numbers" by Cantor, but this term now more
+commonly refers to the values given by `Ordinal.gamma`. Likewise, multiplicative principal ordinals
+are sometimes known as "delta numbers". Exponential principal ordinals are (barring edge cases)
+equivalent to the epsilon numbers given by `Ordinal.epsilon`.
 
 ## Main definitions and results
 
-* `IsPrincipal`: A principal or indecomposable ordinal under some binary operation. We include 0 and
-  any other typically excluded edge cases for simplicity.
+* `IsPrincipal`: A principal (or indecomposable) ordinal under some binary operation. We include `0`
+  and other typically excluded edge cases for simplicity.
 * `not_bddAbove_setOf_isPrincipal`: Principal ordinals (under any operation) are unbounded.
-* `isPrincipal_add_iff_zero_or_omega0_opow`: The main characterization theorem for additive
-  principal ordinals.
-* `isPrincipal_mul_iff_le_two_or_omega0_opow_opow`: The main characterization theorem for
-  multiplicative principal ordinals.
+* `isPrincipal_add_iff_zero_or_omega0_opow`: The additive principal ordinals are
+  `0` and the ordinal powers of `ω`.
+* `isPrincipal_mul_iff_le_two_or_omega0_opow_opow`: The multiplicative principal ordinals are
+  `0`, `1`, `2`, and the ordinals `ω ^ ω ^ x`.
 
 ## TODO
 
-* Prove that exponential principal ordinals are 0, 1, 2, ω, or epsilon numbers, i.e. fixed points
-  of `fun x ↦ ω ^ x`.
+* Prove that the exponential principal ordinals are `0`, `1`, `2`, `ω`, or `ε_ x`.
+
+## Tags
+
+additively indecomposable, multiplicatively indecomposable
 -/
 
 @[expose] public section
@@ -42,11 +52,10 @@ section Arbitrary
 
 variable {op : Ordinal → Ordinal → Ordinal}
 
-/-! ### Principal ordinals -/
+/-! ### Principal ordinals under an arbitrary operation -/
 
-/-- An ordinal `o` is said to be principal or indecomposable under an operation when the set of
-ordinals less than it is closed under that operation. In standard mathematical usage, this term is
-almost exclusively used for additive and multiplicative principal ordinals.
+/-- An ordinal `o` is said to be principal (or indecomposable) under an operation when `Iio o` is
+closed under that operation.
 
 For simplicity, we break usual convention and regard `0` as principal. -/
 def IsPrincipal (op : Ordinal → Ordinal → Ordinal) (o : Ordinal) : Prop :=
@@ -146,8 +155,6 @@ protected alias Principal.iSup := IsPrincipal.iSup
 
 end Arbitrary
 
-/-! ### Principal ordinals are unbounded -/
-
 /-- We give an explicit construction for a principal ordinal larger or equal than `o`. -/
 private theorem isPrincipal_nfp_iSup (op : Ordinal → Ordinal → Ordinal) (o : Ordinal) :
     IsPrincipal op (nfp (fun x ↦ ⨆ y : Set.Iio x ×ˢ Set.Iio x, succ (op y.1.1 y.1.2)) o) := by
@@ -178,7 +185,7 @@ theorem not_bddAbove_setOf_isPrincipal (op : Ordinal → Ordinal → Ordinal) :
 @[deprecated (since := "2026-03-17")]
 alias not_bddAbove_principal := not_bddAbove_setOf_isPrincipal
 
-/-! #### Additive principal ordinals -/
+/-! ### Additive principal ordinals -/
 
 theorem isPrincipal_add_iff_add_self_lt : IsPrincipal (· + ·) a ↔ ∀ b < a, b + b < a :=
   isPrincipal_iff_of_monotone
@@ -335,7 +342,7 @@ theorem isPrincipal_add_mul_of_isPrincipal_add (a : Ordinal.{u}) {b : Ordinal.{u
 @[deprecated (since := "2026-03-17")]
 alias principal_add_mul_of_principal_add := isPrincipal_add_mul_of_isPrincipal_add
 
-/-! #### Multiplicative principal ordinals -/
+/-! ### Multiplicative principal ordinals -/
 
 theorem isPrincipal_mul_one : IsPrincipal (· * ·) 1 := by simp
 

@@ -126,3 +126,74 @@ structure X where
   spanning multiple lines.
   -/
   y : Unit
+
+
+/-! # Tests for Verso-compatible docstrings -/
+
+set_option linter.style.docStringVerso true
+
+-- Errors on mismatched brackets, but not on references:
+/--
+warning: expected ']'
+
+Note: This linter can be disabled with `set_option linter.style.docStringVerso false`
+-/
+#guard_msgs in
+/-- See [bourbaki1989) -/
+example : Nat := 0
+
+/-- See [bourbaki1989] -/
+example : Nat := 0
+
+-- Errors on underscores, but not when they appear in a URL:
+/--
+warning: expected '_' without preceding space
+
+Note: This linter can be disabled with `set_option linter.style.docStringVerso false`
+-/
+#guard_msgs in
+/-- See wikipedia page 0_(disambiguation) -/
+example : Nat := 0
+
+/-- See https://en.wikipedia.org/wiki/0_(disambiguation) -/
+example : Nat := 0
+
+-- Error on underscores or backslashes, but not inside a LaTeX block.
+/--
+warning: expected identifier
+
+Note: This linter can be disabled with `set_option linter.style.docStringVerso false`
+---
+warning: unexpected end of input; expected '![', '$$', '$', '*', '[', '[^', '_', '`' or '{'
+
+Note: This linter can be disabled with `set_option linter.style.docStringVerso false`
+-/
+#guard_msgs in
+/-- 0^0 + 0 = 0_0 - \frac{0}{1} -/
+example : Nat := 0
+
+/-- $$0^0 + 0 = 0_0 - \frac{0}{1}$$ -/
+example : Nat := 0
+
+-- TODO (difficult because it requires nontrivial parsing): support inline LaTeX too.
+/--
+warning: expected identifier
+
+Note: This linter can be disabled with `set_option linter.style.docStringVerso false`
+---
+warning: unexpected end of input; expected '![', '$$', '$', '*', '[', '[^', '_', '`' or '{'
+
+Note: This linter can be disabled with `set_option linter.style.docStringVerso false`
+-/
+#guard_msgs in
+/-- Inline $0^0 + 0 = 0_0 - \frac{0}{1}$ LaTeX text -/
+example : Nat := 0
+
+/-- The simple solution of skipping everything between `$`s does not work because it
+will result in this current docstring breaking from mismatched quotes around
+```
+$
+```
+signs.
+-/
+example : Nat := 0

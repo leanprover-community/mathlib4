@@ -45,7 +45,7 @@ open CategoryTheory Category Limits Sieve
 
 variable {C : Type u} [Category.{v} C]
 
-variable {P : Cᵒᵖ ⥤ Type v} {X : C} (J : GrothendieckTopology C)
+variable {P : Cᵒᵖ ⥤ Type w} {X : C} (J : GrothendieckTopology C)
 
 namespace Sheaf
 
@@ -56,7 +56,7 @@ namespace Sheaf
 /-- Construct the finest (largest) Grothendieck topology for which the given presheaf is a sheaf. -/
 @[stacks 00Z9 "This is a special case of the Stacks entry, but following a different
 proof (see the Stacks comments)."]
-def finestTopologySingle (P : Cᵒᵖ ⥤ Type v) : GrothendieckTopology C where
+def finestTopologySingle (P : Cᵒᵖ ⥤ Type w) : GrothendieckTopology C where
   sieves X := {S | ∀ (Y) (f : Y ⟶ X), Presieve.IsSheafFor P (S.pullback f : Presieve Y)}
   top_mem' X Y f := by
     rw [Sieve.pullback_top]
@@ -79,23 +79,28 @@ def finestTopologySingle (P : Cᵒᵖ ⥤ Type v) : GrothendieckTopology C where
 /-- Construct the finest (largest) Grothendieck topology for which all the given presheaves are
 sheaves. -/
 @[stacks 00Z9 "Equal to that Stacks construction"]
-def finestTopology (Ps : Set (Cᵒᵖ ⥤ Type v)) : GrothendieckTopology C :=
+def finestTopology (Ps : Set (Cᵒᵖ ⥤ Type w)) : GrothendieckTopology C :=
   sInf (finestTopologySingle '' Ps)
 
 /-- Check that if `P ∈ Ps`, then `P` is indeed a sheaf for the finest topology on `Ps`. -/
-theorem sheaf_for_finestTopology (Ps : Set (Cᵒᵖ ⥤ Type v)) (h : P ∈ Ps) :
+theorem sheaf_for_finestTopology (Ps : Set (Cᵒᵖ ⥤ Type w)) (h : P ∈ Ps) :
     Presieve.IsSheaf (finestTopology Ps) P := fun X S hS => by
   simpa using hS _ ⟨⟨_, _, ⟨_, h, rfl⟩, rfl⟩, rfl⟩ _ (𝟙 _)
+
+lemma mem_finestTopology_of_forall_isSheafFor {Ps : Set (Cᵒᵖ ⥤ Type w)} {X : C} {S : Sieve X}
+    (H : ∀ P ∈ Ps, ∀ ⦃Y : C⦄ (f : Y ⟶ X), Presieve.IsSheafFor P (S.pullback f).arrows) :
+    S ∈ finestTopology Ps X := by
+  rintro _ ⟨⟨_, _, ⟨P, hP, rfl⟩, rfl⟩, rfl⟩ Y f
+  exact H P hP _
 
 /--
 Check that if each `P ∈ Ps` is a sheaf for `J`, then `J` is a subtopology of `finestTopology Ps`.
 -/
-theorem le_finestTopology (Ps : Set (Cᵒᵖ ⥤ Type v)) (J : GrothendieckTopology C)
+theorem le_finestTopology (Ps : Set (Cᵒᵖ ⥤ Type w)) (J : GrothendieckTopology C)
     (hJ : ∀ P ∈ Ps, Presieve.IsSheaf J P) : J ≤ finestTopology Ps := by
-  rintro X S hS _ ⟨⟨_, _, ⟨P, hP, rfl⟩, rfl⟩, rfl⟩
-  intro Y f
-  -- this can't be combined with the previous because the `subst` is applied at the end
-  exact hJ P hP (S.pullback f) (J.pullback_stable f hS)
+  intro X S hS
+  exact mem_finestTopology_of_forall_isSheafFor
+    fun P hP Y f ↦ hJ P hP _ (J.pullback_stable _ hS)
 
 /-- The `canonicalTopology` on a category is the finest (largest) topology for which every
 representable presheaf is a sheaf. -/
