@@ -27,7 +27,7 @@ For finitely generated module `M` over Noetherian local ring `(R, m)`, if `x ∈
 
 -/
 
-@[expose] public section
+public section
 
 universe u v
 

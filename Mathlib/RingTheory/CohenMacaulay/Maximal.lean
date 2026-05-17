@@ -24,7 +24,7 @@ The definition of maximal Cohen Macaulay module.
 
 -/
 
-@[expose] public section
+public section
 
 universe v' v u' u
 
