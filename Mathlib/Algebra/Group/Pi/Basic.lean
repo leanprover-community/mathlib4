@@ -47,18 +47,30 @@ namespace Pi
 instance semigroup [∀ i, Semigroup (f i)] : Semigroup (∀ i, f i) where
   mul_assoc := by intros; ext; exact mul_assoc _ _ _
 
+attribute [instance 2000] semigroup
+attribute [instance 2000] addSemigroup
+
 @[to_additive]
 instance commSemigroup [∀ i, CommSemigroup (f i)] : CommSemigroup (∀ i, f i) where
   mul_comm := by intros; ext; exact mul_comm _ _
+
+attribute [instance 2000] commSemigroup
+attribute [instance 2000] addCommSemigroup
 
 @[to_additive]
 instance mulOneClass [∀ i, MulOneClass (f i)] : MulOneClass (∀ i, f i) where
   one_mul := by intros; ext; exact one_mul _
   mul_one := by intros; ext; exact mul_one _
 
+attribute [instance 2000] mulOneClass
+attribute [instance 2000] addZeroClass
+
 @[to_additive]
 instance invOneClass [∀ i, InvOneClass (f i)] : InvOneClass (∀ i, f i) where
   inv_one := by ext; exact inv_one
+
+attribute [instance 2000] invOneClass
+attribute [instance 2000] negZeroClass
 
 @[to_additive]
 instance monoid [∀ i, Monoid (f i)] : Monoid (∀ i, f i) where
@@ -68,9 +80,15 @@ instance monoid [∀ i, Monoid (f i)] : Monoid (∀ i, f i) where
   npow_zero := by intros; ext; exact Monoid.npow_zero _
   npow_succ := by intros; ext; exact Monoid.npow_succ _ _
 
+attribute [instance 2000] monoid
+attribute [instance 2000] addMonoid
+
 @[to_additive]
 instance commMonoid [∀ i, CommMonoid (f i)] : CommMonoid (∀ i, f i) :=
   { monoid, commSemigroup with }
+
+attribute [instance 2000] commMonoid
+attribute [instance 2000] addCommMonoid
 
 @[to_additive Pi.subNegMonoid]
 instance divInvMonoid [∀ i, DivInvMonoid (f i)] : DivInvMonoid (∀ i, f i) where
@@ -79,6 +97,9 @@ instance divInvMonoid [∀ i, DivInvMonoid (f i)] : DivInvMonoid (∀ i, f i) wh
   zpow_zero' := by intros; ext; exact DivInvMonoid.zpow_zero' _
   zpow_succ' := by intros; ext; exact DivInvMonoid.zpow_succ' _ _
   zpow_neg' := by intros; ext; exact DivInvMonoid.zpow_neg' _ _
+
+attribute [instance 2000] divInvMonoid
+attribute [instance 2000] subNegMonoid
 
 @[to_additive]
 instance divInvOneMonoid [∀ i, DivInvOneMonoid (f i)] : DivInvOneMonoid (∀ i, f i) where
@@ -95,16 +116,28 @@ instance divisionMonoid [∀ i, DivisionMonoid (f i)] : DivisionMonoid (∀ i, f
   mul_inv_rev := by intros; ext; exact mul_inv_rev _ _
   inv_eq_of_mul := by intro _ _ h; ext; exact DivisionMonoid.inv_eq_of_mul _ _ (congrFun h _)
 
+attribute [instance 2000] divisionMonoid
+attribute [instance 2000] subtractionMonoid
+
 @[to_additive instSubtractionCommMonoid]
 instance divisionCommMonoid [∀ i, DivisionCommMonoid (f i)] : DivisionCommMonoid (∀ i, f i) :=
   { divisionMonoid, commSemigroup with }
+
+attribute [instance 2000] divisionCommMonoid
+attribute [instance 2000] instSubtractionCommMonoid
 
 @[to_additive]
 instance group [∀ i, Group (f i)] : Group (∀ i, f i) where
   inv_mul_cancel := by intros; ext; exact inv_mul_cancel _
 
+attribute [instance 2000] group
+attribute [instance 2000] addGroup
+
 @[to_additive]
 instance commGroup [∀ i, CommGroup (f i)] : CommGroup (∀ i, f i) := { group, commMonoid with }
+
+attribute [instance 2000] commGroup
+attribute [instance 2000] addCommGroup
 
 @[to_additive] instance instIsLeftCancelMul [∀ i, Mul (f i)] [∀ i, IsLeftCancelMul (f i)] :
     IsLeftCancelMul (∀ i, f i) where
