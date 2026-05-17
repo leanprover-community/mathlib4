@@ -3580,10 +3580,10 @@ public import Mathlib.Combinatorics.SimpleGraph.Cayley
 public import Mathlib.Combinatorics.SimpleGraph.Circulant
 public import Mathlib.Combinatorics.SimpleGraph.Clique
 public import Mathlib.Combinatorics.SimpleGraph.Coloring.Constructions
-public import Mathlib.Combinatorics.SimpleGraph.Coloring.EdgeLabeling
-public import Mathlib.Combinatorics.SimpleGraph.Coloring.VertexColoring
 public import Mathlib.Combinatorics.SimpleGraph.Coloring.EdgeColoring
+public import Mathlib.Combinatorics.SimpleGraph.Coloring.EdgeLabeling
 public import Mathlib.Combinatorics.SimpleGraph.Coloring.KempeChain
+public import Mathlib.Combinatorics.SimpleGraph.Coloring.VertexColoring
 public import Mathlib.Combinatorics.SimpleGraph.Coloring.VizingFan
 public import Mathlib.Combinatorics.SimpleGraph.Coloring.VizingTheorem
 public import Mathlib.Combinatorics.SimpleGraph.CompleteMultipartite
