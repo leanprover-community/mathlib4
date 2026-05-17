@@ -17,20 +17,22 @@ public import Mathlib.Topology.Algebra.Module.FiniteDimension
 In this file we prove the analytic Hahn-Banach theorem for locally convex spaces. For any continuous
 linear function on a subspace, we can extend it to a function on the entire space.
 
+For the general `IsRCLikeNormedField` version, we state the topology hypothesis using
+`PolynormableSpace`, the seminorm-family formulation of local convexity.
+
 We prove
-* `Real.exists_extension`: Hahn-Banach theorem for continuous linear functions on locally convex
-  spaces over `ℝ`.
-* `exists_extension`: Hahn-Banach theorem for continuous linear functions on locally convex spaces
-  over `ℝ` or `ℂ`.
+* `LinearMap.exists_real_extension`: Hahn-Banach theorem for continuous linear functions on locally
+  convex spaces over `ℝ`.
+* `StrongDual.exists_extension`: Hahn-Banach theorem for continuous linear functions on
+  polynormable spaces over fields satisfying `IsRCLikeNormedField`.
 
 -/
 
 public section
 
-open scoped ComplexOrder
 open Module Topology RCLike
 
-variable {𝕜 : Type*} [RCLike 𝕜]
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [IsRCLikeNormedField 𝕜]
 variable {E : Type*} [AddCommGroup E] [TopologicalSpace E] [IsTopologicalAddGroup E]
 variable {F : Type*} [AddCommGroup F] [TopologicalSpace F] [IsTopologicalAddGroup F]
 
@@ -58,12 +60,13 @@ theorem StrongDual.exists_real_extension [Module ℝ E] [ContinuousSMul ℝ E] [
     fun x => (le_abs_self (f x)).trans (hq x)
   exact ⟨g, hg⟩
 
-variable [Module 𝕜 E] [ContinuousSMul 𝕜 E] [LocallyConvexSpace 𝕜 E]
+variable [Module 𝕜 E] [ContinuousSMul 𝕜 E] [PolynormableSpace 𝕜 E]
 
-/-- **Hahn-Banach theorem** for continuous linear functions on locally convex spaces over an
-`RCLike` field. -/
+/-- **Hahn-Banach theorem** for continuous linear functions on polynormable spaces over a field
+satisfying `IsRCLikeNormedField`. -/
 theorem StrongDual.exists_extension (S : Submodule 𝕜 E) (f : StrongDual 𝕜 S) :
     ∃ g : StrongDual 𝕜 E, ∀ x : S, g x = f x := by
+  letI : RCLike 𝕜 := IsRCLikeNormedField.rclike 𝕜
   letI : Module ℝ E := .restrictScalars ℝ 𝕜 E
   letI : IsScalarTower ℝ 𝕜 E := .restrictScalars _ _ _
   letI : ContinuousSMul ℝ E := IsScalarTower.continuousSMul 𝕜
@@ -76,12 +79,13 @@ theorem StrongDual.exists_extension (S : Submodule 𝕜 E) (f : StrongDual 𝕜 
 
 variable [Module 𝕜 F] [ContinuousSMul 𝕜 F] [T2Space F]
 
-/-- Corollary of the locally convex **Hahn-Banach theorem**: if `f : S → F` is a continuous
+/-- Corollary of the polynormable **Hahn-Banach theorem**: if `f : S → F` is a continuous
 linear map with finite-dimensional range, then `f` extends to a continuous linear map on the whole
 space. -/
 lemma ContinuousLinearMap.exist_extension_of_finiteDimensional_range {S : Submodule 𝕜 E}
     (f : S →L[𝕜] F) [FiniteDimensional 𝕜 f.range] :
     ∃ g : E →L[𝕜] F, f = g.comp S.subtypeL := by
+  letI : RCLike 𝕜 := IsRCLikeNormedField.rclike 𝕜
   let b := Module.finBasis 𝕜 f.range
   let e := b.equivFunL
   let fi := fun i ↦ (LinearMap.toContinuousLinearMap (b.coord i)).comp
@@ -91,8 +95,9 @@ lemma ContinuousLinearMap.exist_extension_of_finiteDimensional_range {S : Submod
   ext x
   simp [fi, e, hgf]
 
-/-- A finite-dimensional submodule over `ℝ` or `ℂ` is `Submodule.ClosedComplemented`. -/
-lemma Submodule.ClosedComplemented.of_finiteDimensional [LocallyConvexSpace 𝕜 F] (S : Submodule 𝕜 F)
+/-- A finite-dimensional submodule of a polynormable space over `ℝ` or `ℂ` is
+`Submodule.ClosedComplemented`. -/
+lemma Submodule.ClosedComplemented.of_finiteDimensional [PolynormableSpace 𝕜 F] (S : Submodule 𝕜 F)
     [FiniteDimensional 𝕜 S] : S.ClosedComplemented := by
   let ⟨g, hg⟩ := (ContinuousLinearMap.id 𝕜 S).exist_extension_of_finiteDimensional_range
   exact ⟨g, DFunLike.congr_fun hg.symm⟩
