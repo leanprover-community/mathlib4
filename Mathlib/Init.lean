@@ -147,3 +147,5 @@ run_cmd liftTermElabM do
     let some cinfo := env.find? mlRes | throwError "{mlRes}: this code should be unreachable."
     if !cinfo.type.isAppOf ``Lean.Option then
       throwError "{.ofConstName mlRes} is not an option, it is a{indentD cinfo.type}"
+
+example : True := trivial
