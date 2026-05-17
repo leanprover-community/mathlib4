@@ -851,14 +851,12 @@ instance (priority := 100) normal_subgroupOf {H N : Subgroup G} [N.Normal] :
   Subgroup.normal_comap _
 
 @[to_additive]
-theorem comap_normalClosure_image_ge
-    {G N : Type*} [Group G] [Group N] (s : Set G) (f : G →* N) :
+theorem comap_normalClosure_image_ge (s : Set G) (f : G →* N) :
     (normalClosure s) ≤ (normalClosure (f '' s)).comap f := by
   simp [normalClosure_le_normal, ← Set.image_subset_iff, subset_normalClosure]
 
 @[to_additive]
-theorem map_normalClosure_le
-    {G N : Type*} [Group G] [Group N] (s : Set G) (f : G →* N) :
+theorem map_normalClosure_le (s : Set G) (f : G →* N) :
     (normalClosure s).map f ≤ normalClosure (f '' s) := by
   simp [map_le_iff_le_comap, comap_normalClosure_image_ge]
 
