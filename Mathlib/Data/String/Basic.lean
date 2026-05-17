@@ -171,7 +171,3 @@ theorem ofList_eq {l : List Char} {s : String} : ofList l = s ↔ l = s.toList :
   simp [← toList_inj]
 
 end String
-
-open String
-
-namespace List
