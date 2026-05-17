@@ -473,10 +473,14 @@ def compAlternatingMapₗ [Semiring S] [Module S N] [Module S N₂]
   map_add' := g.compAlternatingMap_add
   map_smul' := g.compAlternatingMap_smul
 
-theorem smulRight_eq_comp {R M₁ M₂ ι : Type*} [CommSemiring R] [AddCommMonoid M₁]
+theorem _root_.AlternatingMap.smulRight_eq_comp
+    {R M₁ M₂ ι : Type*} [CommSemiring R] [AddCommMonoid M₁]
     [AddCommMonoid M₂] [Module R M₁] [Module R M₂] (f : M₁ [⋀^ι]→ₗ[R] R) (z : M₂) :
     f.smulRight z = (LinearMap.id.smulRight z).compAlternatingMap f :=
   rfl
+
+@[deprecated (since := "2026-05-14")]
+alias smulRight_eq_comp := AlternatingMap.smulRight_eq_comp
 
 @[simp]
 theorem subtype_compAlternatingMap_codRestrict (f : M [⋀^ι]→ₗ[R] N) (p : Submodule R N)
