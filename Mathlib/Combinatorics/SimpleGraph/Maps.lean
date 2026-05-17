@@ -424,14 +424,14 @@ abbrev comp (f' : G' →g G'') (f : G →g G') : G →g G'' :=
 theorem coe_comp (f' : G' →g G'') (f : G →g G') : ⇑(f'.comp f) = f' ∘ f :=
   rfl
 
-theorem comp_assoc (f'' : G'' →g G''') (f' : G' →g G'') (f : G →g G') :
-    f''.comp (f'.comp f) = (f''.comp f').comp f := rfl
+theorem comp_assoc (f : G'' →g G''') (g : G' →g G'') (h : G →g G') :
+    f.comp (g.comp h) = (f.comp g).comp h := rfl
 
 @[simp]
 theorem comp_id (f : G →g G') : f.comp .id = f := rfl
 
 @[simp]
-theorem id_comp (f : G →g G') : .comp Hom.id f = f := rfl
+theorem id_comp (f : G →g G') : .comp .id f = f := rfl
 
 @[simp]
 theorem comp_comap_ofLE (f : H →g G) : .comp (.comap f G) (.ofLE f.le_comap) = f :=
@@ -543,8 +543,8 @@ abbrev comp (f' : G' ↪g G'') (f : G ↪g G') : G ↪g G'' :=
 theorem coe_comp (f' : G' ↪g G'') (f : G ↪g G') : ⇑(f'.comp f) = f' ∘ f :=
   rfl
 
-theorem comp_assoc (f'' : G'' ↪g G''') (f' : G' ↪g G'') (f : G ↪g G') :
-    f''.comp (f'.comp f) = (f''.comp f').comp f := rfl
+theorem comp_assoc (f : G'' ↪g G''') (g : G' ↪g G'') (h : G ↪g G') :
+    f.comp (g.comp h) = (f.comp g).comp h := rfl
 
 @[simp]
 theorem comp_refl (f : G ↪g G') : f.comp .refl = f := rfl
