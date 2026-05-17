@@ -401,6 +401,19 @@ theorem turanNumber_eq {n r : ℕ} :
         ← add_rotate, add_comm _ (_ * _)]; congr 1
       rw [← mul_rotate, ← add_mul, add_comm, mul_comm _ r, Nat.div_add_mod n' r]
 
+lemma turanNumber_two : turanNumber n 2 = n ^ 2 / 4 := by
+  rw [turanNumber_eq]
+  obtain ⟨k, rfl⟩ | ⟨k, rfl⟩ := n.even_or_odd
+  · simp [← two_mul]
+  · simp; lia
+
+lemma turanNumber_three : turanNumber n 3 = n ^ 2 / 3 := by
+  rw [turanNumber_eq]
+  obtain hn | hn | hn : n % 3 = 0 ∨ n % 3 = 1 ∨ n % 3 = 2 := by lia
+  all_goals
+    nth_rw 1 [← n.mod_add_div 3]
+    grind
+
 /-- A looser, but simpler than `turanNumber_eq`, bound on `turanNumber n r`. -/
 theorem mul_turanNumber_le : 2 * r * turanNumber n r ≤ (r - 1) * n ^ 2 := by
   grw [turanNumber_eq, mul_add, Nat.mul_div_le]
