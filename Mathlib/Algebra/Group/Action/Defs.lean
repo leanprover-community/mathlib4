@@ -59,14 +59,6 @@ variable {M N G H α β γ δ : Type*}
 /- See also `Monoid.toMulAction` and `MulZeroClass.toSMulWithZero`. -/
 attribute [instance 1100, to_additive /-- See also `AddMonoid.toAddAction` -/] instSMulOfMul
 
-/-- See also `Monoid.toMulAction` and `MulZeroClass.toSMulWithZero`. -/
-@[deprecated instSMulOfMul (since := "2025-10-18"), implicit_reducible]
-def Mul.toSMul (α : Type*) [Mul α] : SMul α α := ⟨(· * ·)⟩
-
-/-- See also `AddMonoid.toAddAction` -/
-@[deprecated instVAddOfAdd (since := "2025-10-18"), implicit_reducible]
-def Add.toVAdd (α : Type*) [Add α] : VAdd α α := ⟨(· + ·)⟩
-
 /-- Like `Mul.toSMul`, but multiplies on the right.
 
 See also `Monoid.toOppositeMulAction` and `MonoidWithZero.toOppositeMulActionWithZero`. -/
@@ -135,7 +127,7 @@ More precisely this means that the action satisfies the two axioms `1 • p = p`
 acts on `P`.
 
 For example, if `G` is a group and `X` is a type, if a mathematician says
-say "let `G` act on the set `X`" they will probably mean  `[AddAction G X]`.
+say "let `G` act on the set `X`" they will probably mean `[MulAction G X]`.
 -/
 @[to_additive (attr := ext)]
 class MulAction (α : Type*) (β : Type*) [Monoid α] extends SemigroupAction α β where

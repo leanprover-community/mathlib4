@@ -365,14 +365,6 @@ theorem gcd_a_modEq (a b : ℕ) : (a : ℤ) * Nat.gcdA a b ≡ Nat.gcd a b [ZMOD
   rw [← add_zero ((a : ℤ) * _), Nat.gcd_eq_gcd_ab]
   exact (dvd_mul_right _ _).zero_modEq_int.add_left _
 
-@[deprecated add_modulus_mul_modEq_iff (since := "2025-10-16")]
-theorem modEq_add_fac {a b n : ℤ} (c : ℤ) (ha : a ≡ b [ZMOD n]) : a + n * c ≡ b [ZMOD n] := by
-  simpa
-
-@[deprecated sub_modulus_mul_modEq_iff (since := "2025-10-16")]
-theorem modEq_sub_fac {a b n : ℤ} (c : ℤ) (ha : a ≡ b [ZMOD n]) : a - n * c ≡ b [ZMOD n] := by
-  simpa
-
 theorem modEq_add_fac_self {a t n : ℤ} : a + n * t ≡ a [ZMOD n] := by simp
 
 theorem mod_coprime {a b : ℕ} (hab : Nat.Coprime a b) : ∃ y : ℤ, a * y ≡ 1 [ZMOD b] :=

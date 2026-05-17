@@ -406,8 +406,6 @@ theorem CondIndepSets.biUnion {s : ι → Set (Set Ω)} {s' : Set (Set Ω)}
     CondIndepSets m' hm' (⋃ n ∈ u, s n) s' μ :=
   Kernel.IndepSets.biUnion hyp
 
-@[deprecated (since := "2025-11-02")] alias CondIndepSets.bUnion := CondIndepSets.biUnion
-
 theorem CondIndepSets.inter {s₁ s' : Set (Set Ω)} (s₂ : Set (Set Ω))
     (h₁ : CondIndepSets m' hm' s₁ s' μ) :
     CondIndepSets m' hm' (s₁ ∩ s₂) s' μ :=

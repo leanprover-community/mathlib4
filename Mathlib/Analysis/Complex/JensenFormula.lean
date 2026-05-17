@@ -144,7 +144,7 @@ private theorem herglotzLogIntegrand_circleAverage_tendsto {ρ w : ℂ} {R : ℝ
     simpa [sub_eq_zero] using
       (countable_singleton ρ).preimage_circleMap 0 (hR.ne') |>.measure_zero _
   · -- IntervalIntegrable bound volume 0 (2 * π)
-    apply (IntervalIntegrable.add (by simp) (by continuity)).add ?_ |>.const_mul
+    apply (IntervalIntegrable.add (by simp) (by simp)).add ?_ |>.const_mul
     exact .abs <| MeromorphicOn.circleIntegrable_log_norm (f := fun z ↦ z - ρ) (by intro; fun_prop)
   · -- Pointwise convergence outside a null set
     have h_measure_zero : volume {θ : ℝ | circleMap 0 R θ = w ∨ circleMap 0 R θ = ρ} = 0 :=
@@ -183,7 +183,7 @@ theorem circleAverage_re_herglotzRieszKernel_mul_log₀ {w ρ : ℂ} {R : ℝ} (
     apply InnerProductSpace.HarmonicContOnCl.circleAverage_re_herglotzRieszKernel_smul
     · refine ⟨fun z hz ↦ ?_, fun x hx ↦ ?_⟩
       · exact AnalyticAt.harmonicAt_log_norm (by fun_prop) (by grind [mem_ball, dist_zero_right])
-      · suffices ‖x - ρ‖ ≠ 0 by fun_prop (disch := assumption)
+      · suffices ‖x - ρ‖ ≠ 0 by fun_prop
         suffices x ≠ ρ by simpa [sub_eq_zero]
         have key := by simpa using closure_ball_subset_closedBall hx
         grind
@@ -318,7 +318,7 @@ theorem MeromorphicOn.circleAverage_log_norm {c : ℂ} {R : ℝ} {f : ℂ → �
     calc circleAverage (log ‖f ·‖) c R
     _ = circleAverage ((∑ᶠ u, (divisor f CB u * log ‖· - u‖)) + (log ‖g ·‖)) c R := by
       have h₄g := extract_zeros_poles_log h₂g h₃g
-      rw [circleAverage_congr_codiscreteWithin (codiscreteWithin.mono sphere_subset_closedBall h₄g)
+      rw [circleAverage_congr_codiscreteWithin (codiscreteWithin_mono sphere_subset_closedBall h₄g)
         hR]
     _ = circleAverage (∑ᶠ u, (divisor f CB u * log ‖· - u‖)) c R + circleAverage (log ‖g ·‖) c R :=
       circleAverage_add (circleIntegrable_log_norm_factorizedRational (divisor f CB))
@@ -367,7 +367,7 @@ theorem MeromorphicOn.circleAverage_log_norm {c : ℂ} {R : ℝ} {f : ℂ → �
     rw [circleAverage_congr_codiscreteWithin (f₂ := 0) _ hR]
     · simp only [circleAverage, mul_inv_rev, Pi.zero_apply, intervalIntegral.integral_zero,
         smul_eq_mul, mul_zero]
-    apply Filter.codiscreteWithin.mono (U := CB) sphere_subset_closedBall
+    apply Filter.codiscreteWithin_mono (U := CB) sphere_subset_closedBall
     filter_upwards [this] with z hz
     simp_all
 
