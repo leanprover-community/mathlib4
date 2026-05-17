@@ -321,22 +321,47 @@ automorphism of `H`. -/
 @[to_additive (attr := simps!)
   /-- If `H` is a characteristic additive subgroup of `G`, then every automorphism of `G` induces an
   automorphism of `H`. -/]
+def _root_.MulAut.characteristicAux (H : Subgroup G) [H.Characteristic] (φ : MulAut G) :
+    MulAut H where
+  toFun := fun h => ⟨φ h, characteristic_iff_le_comap.mp inferInstance φ h.2⟩
+  invFun := fun h => ⟨φ.symm h, characteristic_iff_le_comap.mp inferInstance φ.symm h.2⟩
+  left_inv h := Subtype.ext (φ.symm_apply_apply h)
+  right_inv h := Subtype.ext (φ.apply_symm_apply h)
+  map_mul' h k := Subtype.ext (map_mul φ (h : G) (k : G))
+
+-- `to_additive` can translate the induced automorphism above, but composition in `AddAut` is
+-- still multiplicative, so the bundled monoid homs are defined separately.
+/-- If `H` is a characteristic subgroup of `G`, then every automorphism of `G` induces an
+automorphism of `H`. -/
+@[simps!]
 def _root_.MulAut.characteristic (H : Subgroup G) [H.Characteristic] : MulAut G →* MulAut H where
-  toFun φ :=
-    { toFun := fun h => ⟨φ h, characteristic_iff_le_comap.mp inferInstance φ h.2⟩
-      invFun := fun h => ⟨φ.symm h, characteristic_iff_le_comap.mp inferInstance φ.symm h.2⟩
-      left_inv h := Subtype.ext (φ.symm_apply_apply h)
-      right_inv h := Subtype.ext (φ.apply_symm_apply h)
-      map_mul' h k := Subtype.ext (map_mul φ (h : G) (k : G)) }
+  toFun := MulAut.characteristicAux H
   map_one' := rfl
   map_mul' _ _ := rfl
 
-@[to_additive]
+/-- If `H` is a characteristic additive subgroup of `G`, then every automorphism of `G` induces an
+automorphism of `H`. -/
+@[simps!]
+def _root_.AddAut.characteristic (H : AddSubgroup A) [H.Characteristic] : AddAut A →* AddAut H where
+  toFun := AddAut.characteristicAux H
+  map_one' := rfl
+  map_mul' _ _ := rfl
+
 instance characteristic_of_characteristic_of_characteristic [H.Characteristic]
     {K : Subgroup H} [hK : K.Characteristic] : (K.map H.subtype).Characteristic := by
   refine characteristic_iff_map_eq.2 fun φ => ?_
   have := congr_arg (map H.subtype) <| characteristic_iff_map_eq.1 hK (MulAut.characteristic H φ)
   simpa [Subgroup.map_map, MulAut.characteristic] using this
+
+instance _root_.AddSubgroup.characteristic_of_characteristic_of_characteristic
+    {H : AddSubgroup A} [H.Characteristic] {K : AddSubgroup H} [hK : K.Characteristic] :
+    (K.map H.subtype).Characteristic := by
+  refine AddSubgroup.characteristic_iff_map_eq.2 fun φ => ?_
+  have := congr_arg (AddSubgroup.map H.subtype) <|
+    AddSubgroup.characteristic_iff_map_eq.1 hK (AddAut.characteristic H φ)
+  simpa [AddSubgroup.map_map, AddAut.characteristic] using this
+
+attribute [to_additive existing] characteristic_of_characteristic_of_characteristic
 
 variable (H)
 
