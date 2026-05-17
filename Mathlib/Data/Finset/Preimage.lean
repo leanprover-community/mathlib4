@@ -134,8 +134,8 @@ theorem subset_map_iff {f : α ↪ β} {s : Finset β} {t : Finset α} :
   classical
   simp_rw [map_eq_image, subset_image_iff, eq_comm]
 
-theorem image_eq_iff_eq_preimage [DecidableEq β] {f : α → β} (hf : Bijective f)
-      {s : Finset α} {t : Finset β} :
+theorem image_eq_iff_eq_preimage [DecidableEq β] {s : Finset α} {t : Finset β}
+    {f : α → β} (hf : Bijective f) :
     s.image f = t ↔ s = t.preimage f hf.injective.injOn := by
   rw [← image_inj hf.injective, t.image_preimage_of_bijective hf]
 
