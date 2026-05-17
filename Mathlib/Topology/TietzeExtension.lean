@@ -516,5 +516,5 @@ open NNReal in
 /-- **Tietze extension theorem** for nonnegative real-valued continuous maps.
 `ℝ≥0` is a `TietzeExtension` space. -/
 instance NNReal.instTietzeExtension : TietzeExtension ℝ≥0 :=
-  .of_retract ⟨((↑) : ℝ≥0 → ℝ), by continuity⟩ ⟨Real.toNNReal, continuous_real_toNNReal⟩ <| by
+  .of_retract ⟨((↑) : ℝ≥0 → ℝ), by fun_prop⟩ ⟨Real.toNNReal, continuous_real_toNNReal⟩ <| by
     ext; simp
