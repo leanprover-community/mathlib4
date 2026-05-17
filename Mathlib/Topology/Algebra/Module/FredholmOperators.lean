@@ -19,15 +19,29 @@ public import Mathlib.Topology.Homeomorph.Defs
 
 section FindHome
 
+-- I do think we need to begin with a three term exact sequence for this, since even
+-- Bourbaki derives the result as a corollary of Rank-Nullity. I've started the ball
+-- rolling on this. I'd be delighted to be proven wrong by splitting of the zero case
+-- and then starting the induction at 1, though. (Also feel free to work on this if I
+-- don't circle back around to it soon enough!)
 open Function Module in
-lemma Module.sum_neg_one_pow_finrank_eq_zero_of_exact {n : ℕ} {k : Type*} (V : Fin (n + 2) → Type*)
-    [Field k] [∀ i, AddCommGroup (V i)] [∀ i, Module k (V i)] [∀ i, FiniteDimensional k (V i)]
-    (f : (i : Fin (n + 1)) → V i.castSucc →ₗ[k] V i.succ)
-    (inj : Injective (f 0))
-    (exact : ∀ i : Fin n, Exact (f i.castSucc) (f i.succ))
-    (surj : Surjective (f (Fin.last _))) :
-    ∑ i, (-1) ^ i.val • (finrank k (V i) : ℤ) = 0 := by
-  sorry
+lemma Module.sum_neg_one_pow_finrank_eq_zero_of_exact {n : ℕ} {k : Type*}
+    (V : Fin (n + 3) → Type*) [Field k] [∀ i, AddCommGroup (V i)] [∀ i, Module k (V i)]
+    [∀ i, FiniteDimensional k (V i)] (f : (i : Fin (n + 2)) → V i.castSucc →ₗ[k] V i.succ)
+    (inj : Injective (f 0)) (h_exact : ∀ i : Fin (n + 1), Exact (f i.castSucc) (f i.succ))
+    (surj : Surjective (f (Fin.last _))) : ∑ i, (-1) ^ i.val • (finrank k (V i) : ℤ) = 0 := by
+  induction n
+  · simp only [Nat.reduceAdd, Int.reduceNeg, Int.zsmul_eq_mul]
+    have := Fin.sum_univ_three fun x ↦ (-1 : ℤ) ^ (x : ℕ) * (finrank k (V x))
+    rw [this]
+    simp only [Int.reduceNeg, Fin.isValue, Fin.coe_ofNat_eq_mod, Nat.zero_mod, pow_zero, one_mul,
+      Nat.one_mod, pow_one, neg_mul, Nat.mod_succ, even_two, Even.neg_pow, one_pow]
+    have := h_exact 1
+    dsimp [Exact] at this
+    refine Int.neg_eq_zero.mp ?_
+    -- have := LinearMap.rank_eq_of_surjective
+    sorry
+  · sorry
 
 -- Can we have a simproc write this using `Module.sum_neg_one_pow_finrank_eq_zero_of_exact`
 -- Note the key point that the universes of the `Vᵢ` are allowed be different here.
@@ -278,15 +292,6 @@ lemma IsFredholmQuot.iff_toLinearMap :
     IsFredholmQuot f ↔ ∃ g : F →L[𝕜] E, LinearMap.QuasiInverse f.toLinearMap g.toLinearMap := by
   rfl
 
-lemma IsFredholmQuot.comp {f : E →L[𝕜] F} {f' : F →L[𝕜] G} (hf : IsFredholmQuot f)
-    (hf' : IsFredholmQuot f') : IsFredholmQuot (f' ∘L f) := by
-  rw [IsFredholmQuot.iff_toLinearMap] at *
-  rcases hf with ⟨g, hg⟩
-  rcases hf' with ⟨g', hg'⟩
-  use g ∘L g'
-  push_cast
-  exact LinearMap.QuasiInverse_comp hg hg'
-
 theorem AnatoleDream (hf : IsFredholmStruct f) : IsFredholmQuot f:= sorry
 
 def AnatoleDream_symm (hf : IsFredholmQuot f) : IsFredholmStruct f := sorry
@@ -493,7 +498,7 @@ theorem Submodule.mkQL_isFredholmStruct {p : Submodule 𝕜 E} (hc : FiniteDimen
     IsFredholmStruct p.mkQL :=
   p.isQuotientMap_mkQL.isFredholmStruct (by rwa [p.ker_mkQL]) (by simpa)
 
-/- ## Composition of Fredholm (with the inverse definition) (Patrick)
+/- ## Composition of Fredholm (with the inverse definition) (Aaron)
 
 Consider the three CLMs `u`, `v` and `v ∘L u`. If two of them are Fredholm,
 the third one is.
@@ -503,6 +508,43 @@ I'm not sure what the set of statements should look like, but I imagine the foll
 2. If `u` is Fredholm, then `v` Fredholm ↔ `v ∘ u` Fredholm
 3. If `v` is Fredholm, then `u` Fredholm ↔ `v ∘ u` Fredholm
 -/
+
+lemma IsFredholmQuot.comp {f : E →L[𝕜] F} {f' : F →L[𝕜] G} (hf : IsFredholmQuot f)
+    (hf' : IsFredholmQuot f') : IsFredholmQuot (f' ∘L f) := by
+  rw [IsFredholmQuot.iff_toLinearMap] at *
+  rcases hf with ⟨g, hg⟩
+  rcases hf' with ⟨g', hg'⟩
+  use g ∘L g'
+  push_cast
+  exact LinearMap.QuasiInverse_comp hg hg'
+
+lemma IsFredholmQuot.of_equiv {f f' : E →L[𝕜] F} (h : f ≈ f') (hu : IsFredholmQuot f) :
+    IsFredholmQuot f' := by
+  rw [IsFredholmQuot.iff_toLinearMap] at *
+  obtain ⟨g, hg⟩ := hu
+  exact ⟨g, LinearMap.QuasiInverse.congr hg (symm h) (Setoid.refl g)⟩
+
+lemma IsFredholmQuot.congr {f f' : E →L[𝕜] F} (h : f ≈ f') :
+    IsFredholmQuot f ↔ IsFredholmQuot f' :=
+  ⟨fun hu => hu.of_equiv h, fun hv => hv.of_equiv (symm h)⟩
+
+lemma IsFredholmQuot.of_left_of_comp {f : F →L[𝕜] G} {f' : E →L[𝕜] F}
+    (hf : IsFredholmQuot f) (hcomp : IsFredholmQuot (f ∘L f')) :
+    IsFredholmQuot f' := by
+  obtain ⟨g, hg⟩ := hf
+  refine (hcomp.comp <| (IsFredholmQuot.iff_toLinearMap g).2 ⟨f, hg.symm⟩).of_equiv ?_
+  calc
+    _ ≈ (.id 𝕜 F) ∘L f' := ContinuousLinearMap.FiniteRankSetoid.equiv_comp (Setoid.refl f') hg.2
+    _ = f' := rfl
+
+lemma IsFredholmQuot.of_right_of_comp [ContinuousSMul 𝕜 F] {f : F →L[𝕜] G} {f' : E →L[𝕜] F}
+    (hf' : IsFredholmQuot f') (hcomp : IsFredholmQuot (f ∘L f')) :
+    IsFredholmQuot f := by
+  obtain ⟨g, hg⟩ := hf'
+  refine (((IsFredholmQuot.iff_toLinearMap g).2 ⟨f', hg.symm⟩).comp hcomp).of_equiv ?_
+  calc
+    _ ≈ f ∘L (.id 𝕜 F) := ContinuousLinearMap.FiniteRankSetoid.equiv_comp hg.1 (Setoid.refl f)
+    _ = f := rfl
 
 /- ## Fredholm_struct ==> good decomposition (Filippo)
 
