@@ -143,7 +143,7 @@ theorem HasGradientAt.unique {gradf gradg : F}
 
 theorem DifferentiableAt.hasGradientAt (h : DifferentiableAt 𝕜 f x) :
     HasGradientAt f (∇ f x) x := by
-  simpa only [hasGradientAt_iff_hasFDerivAt, toDual_gradient] using h.hasFDerivAt
+  simpa [hasGradientAt_iff_hasFDerivAt] using h.hasFDerivAt
 
 theorem HasGradientAt.differentiableAt (h : HasGradientAt f f' x) :
     DifferentiableAt 𝕜 f x :=
@@ -151,8 +151,7 @@ theorem HasGradientAt.differentiableAt (h : HasGradientAt f f' x) :
 
 theorem DifferentiableWithinAt.hasGradientWithinAt (h : DifferentiableWithinAt 𝕜 f s x) :
     HasGradientWithinAt f (gradientWithin f s x) s x := by
-  simpa only [hasGradientWithinAt_iff_hasFDerivWithinAt, toDual_gradientWithin]
-    using h.hasFDerivWithinAt
+  simpa [hasGradientWithinAt_iff_hasFDerivWithinAt] using h.hasFDerivWithinAt
 
 theorem HasGradientWithinAt.differentiableWithinAt (h : HasGradientWithinAt f f' s x) :
     DifferentiableWithinAt 𝕜 f s x :=
