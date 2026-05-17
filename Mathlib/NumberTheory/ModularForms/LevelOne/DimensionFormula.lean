@@ -5,8 +5,8 @@ Authors: Chris Birkbeck
 -/
 module
 
-public import Mathlib.NumberTheory.ModularForms.Discriminant
 public import Mathlib.NumberTheory.ModularForms.CuspFormSubmodule
+public import Mathlib.NumberTheory.ModularForms.Discriminant
 
 import Mathlib.Algebra.Order.Floor.Semifield
 
