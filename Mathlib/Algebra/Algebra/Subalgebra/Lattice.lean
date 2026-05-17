@@ -369,23 +369,20 @@ section Equalizer
 namespace AlgHom
 
 variable {R A B : Type*} [CommSemiring R] [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
-variable {F : Type*}
-
-variable [FunLike F A B] [AlgHomClass F R A B]
 
 @[simp]
-theorem equalizer_eq_top {φ ψ : F} : equalizer φ ψ = ⊤ ↔ φ = ψ := by
+theorem equalizer_eq_top {φ ψ : A →ₐ[R] B} : equalizer φ ψ = ⊤ ↔ φ = ψ := by
   simp [SetLike.ext_iff, DFunLike.ext_iff]
 
 @[simp]
-theorem equalizer_same (φ : F) : equalizer φ φ = ⊤ := equalizer_eq_top.2 rfl
+theorem equalizer_same (φ : A →ₐ[R] B) : equalizer φ φ = ⊤ := equalizer_eq_top.2 rfl
 
-theorem eqOn_sup {φ ψ : F} {S T : Subalgebra R A} (hS : Set.EqOn φ ψ S) (hT : Set.EqOn φ ψ T) :
-    Set.EqOn φ ψ ↑(S ⊔ T) := by
+theorem eqOn_sup {φ ψ : A →ₐ[R] B} {S T : Subalgebra R A} (hS : Set.EqOn φ ψ S)
+    (hT : Set.EqOn φ ψ T) : Set.EqOn φ ψ ↑(S ⊔ T) := by
   rw [← le_equalizer] at hS hT ⊢
   exact sup_le hS hT
 
-theorem ext_on_codisjoint {φ ψ : F} {S T : Subalgebra R A} (hST : Codisjoint S T)
+theorem ext_on_codisjoint {φ ψ : A →ₐ[R] B} {S T : Subalgebra R A} (hST : Codisjoint S T)
     (hS : Set.EqOn φ ψ S) (hT : Set.EqOn φ ψ T) : φ = ψ :=
   DFunLike.ext _ _ fun _ ↦ eqOn_sup hS hT <| hST.eq_top.symm ▸ trivial
 
