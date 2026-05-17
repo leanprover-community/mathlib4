@@ -146,6 +146,9 @@ class Semiring (α : Type u) extends AddCommMonoid α, MonoidWithZero α, NonUni
 /-- A `Ring` is a `Semiring` with negation making it an additive group. -/
 class Ring (R : Type u) extends Semiring R, AddCommGroup R, AddGroupWithOne R
 
+attribute [instance 1010] Semiring.toAddCommMonoid
+attribute [instance 1005] AddCommGroup.toAddCommMonoid
+
 /-!
 ### Semirings
 -/
