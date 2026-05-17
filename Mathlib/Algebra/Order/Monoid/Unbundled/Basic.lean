@@ -560,11 +560,15 @@ theorem lt_mul_of_lt_of_one_lt [MulLeftStrictMono α] (hbc : b < c) (ha : 1 < a)
 theorem lt_mul_of_lt_of_one_lt' [MulLeftMono α] (hbc : b < c) (ha : 1 < a) : b < c * a :=
   lt_mul_of_lt_of_one_le hbc ha.le
 
+-- TODO: turning `Left.one_le_mul` into an alias breaks the bound tactic.
+-- What's going on?
+
 /-- Assumes left covariance.
 The lemma assuming right covariance is `Right.one_le_mul`. -/
 @[to_additive Left.add_nonneg /-- Assumes left covariance.
 The lemma assuming right covariance is `Right.add_nonneg`. -/]
-alias Left.one_le_mul := le_mul_of_le_of_one_le
+theorem Left.one_le_mul [MulLeftMono α] (ha : 1 ≤ a) (hb : 1 ≤ b) : 1 ≤ a * b :=
+  le_mul_of_le_of_one_le ha hb
 
 /-- Assumes left covariance.
 The lemma assuming right covariance is `Right.one_lt_mul_of_le_of_lt`. -/
