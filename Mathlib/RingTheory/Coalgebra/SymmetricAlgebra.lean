@@ -81,9 +81,9 @@ protected theorem comulAlgHom_lTensor_counit_comp :
       (Algebra.TensorProduct.rid R R (SymmetricAlgebra R M)).symm.toAlgHom := by
   ext x
   simp only [LinearMap.coe_comp, Function.comp_apply, LinearMap.coe_coe, AlgHom.comp_apply,
-             AlgEquiv.coe_algHom, SymmetricAlgebra.comulAlgHom_ι, map_add,
-             Algebra.TensorProduct.map_tmul, AlgHom.coe_id, id_eq, algebraMapInv_ι, map_one,
-             Algebra.TensorProduct.rid_symm_apply, TensorProduct.tmul_zero, add_zero]
+    AlgEquiv.coe_algHom, SymmetricAlgebra.comulAlgHom_ι, map_add,
+    Algebra.TensorProduct.map_tmul, AlgHom.coe_id, id_eq, algebraMapInv_ι, map_one,
+    Algebra.TensorProduct.rid_symm_apply, TensorProduct.tmul_zero, add_zero]
 
 instance instCoalgebra : Coalgebra R (SymmetricAlgebra R M) where
   comul := SymmetricAlgebra.comulAlgHom R M
