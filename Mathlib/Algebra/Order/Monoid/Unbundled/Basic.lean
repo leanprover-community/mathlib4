@@ -561,6 +561,7 @@ theorem lt_mul_of_lt_of_one_lt' [MulLeftMono α] (hbc : b < c) (ha : 1 < a) : b 
   lt_mul_of_lt_of_one_le hbc ha.le
 
 -- TODO: turning `Left.one_le_mul` into an alias breaks the bound tactic.
+-- See https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/.60bound.60.20breaks.20suddenly/with/595553060
 
 /-- Assumes left covariance.
 The lemma assuming right covariance is `Right.one_le_mul`. -/
