@@ -320,15 +320,19 @@ theorem comp_fderiv' {f : G → E} :
 
 end LinearIsometryEquiv
 
-theorem HasFDerivWithinAt.eventually_ne (h : HasFDerivWithinAt f f' s x)
-    (hf' : ∃ C, ∀ z, ‖z‖ ≤ C * ‖f' z‖) : ∀ᶠ z in 𝓝[s \ {x}] x, f z ≠ c := by
-  rcases eq_or_ne (f x) c with rfl | hc
-  · rw [nhdsWithin, diff_eq, ← inf_principal, ← inf_assoc, eventually_inf_principal]
-    have A : (fun z => z - x) =O[𝓝[s] x] fun z => f' (z - x) :=
-      isBigO_iff.2 <| hf'.imp fun C hC => Eventually.of_forall fun z => hC _
-    have : (fun z => f z - f x) ~[𝓝[s] x] fun z => f' (z - x) := h.isLittleO.trans_isBigO A
-    simpa [not_imp_not, sub_eq_zero] using (A.trans this.isBigO_symm).eq_zero_imp
-  · exact (h.continuousWithinAt.eventually_ne hc).filter_mono <| by gcongr; apply diff_subset
+theorem HasFDerivWithinAt.tendsto_nhdsWithin_nhdsNE (h : HasFDerivWithinAt f f' s x)
+    (hf' : ∃ C, AntilipschitzWith C f') : Tendsto f (𝓝[s \ {x}] x) (𝓝[≠] f x) := by
+  replace hf' : ∃ C, ∀ z, ‖z‖ ≤ C * ‖f' z‖ := by
+    obtain ⟨C, hC⟩ := hf'
+    exact ⟨C, fun x ↦ by simpa using hC.le_mul_dist 0 x⟩
+  have A : (fun z ↦ z - x) =O[𝓝[s] x] fun z ↦ f' (z - x) :=
+    isBigO_iff.mpr <| hf'.imp fun C hC ↦ Eventually.of_forall fun z ↦ hC (z - x)
+  have : (fun z ↦ f z - f x) ~[𝓝[s] x] fun z ↦ f' (z - x) := h.isLittleO.trans_isBigO A
+  have : ∀ᶠ (x_1 : E) in 𝓝[s] x, x_1 ∈ ({x}ᶜ : Set E) → f x_1 ∈ ({f x}ᶜ : Set F) := by
+    simpa [sub_eq_zero, not_imp_not] using (A.trans this.isBigO_symm).eq_zero_imp
+  apply le_inf ((map_mono (nhdsWithin_mono x diff_subset)).trans h.continuousWithinAt)
+  rwa [le_principal_iff, ← eventually_mem_set, eventually_map, diff_eq, nhdsWithin_inter',
+    eventually_inf_principal]
 
 theorem HasFDerivWithinAt.eventually_ne (h : HasFDerivWithinAt f f' s x)
     (hf' : ∃ C, AntilipschitzWith C f') : ∀ᶠ z in 𝓝[s \ {x}] x, f z ≠ c := by
