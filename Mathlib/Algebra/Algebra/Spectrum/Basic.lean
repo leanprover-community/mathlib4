@@ -163,8 +163,7 @@ theorem resolvent_eq {a : A} {r : R} (h : r ∈ resolventSet R a) : resolvent a 
 `resolvent a r - resolvent b r = resolvent a r * (a - b) * resolvent b r`. -/
 theorem resolvent_sub_resolvent {a b : A} {r : R}
     (ha : r ∈ resolventSet R a) (hb : r ∈ resolventSet R b) :
-    resolvent a r - resolvent b r
-      = resolvent a r * (a - b) * resolvent b r := by
+    resolvent a r - resolvent b r = resolvent a r * (a - b) * resolvent b r := by
   rw [resolvent_eq ha, resolvent_eq hb]
   have h_units : (↑ha.unit⁻¹ : A) - (↑hb.unit⁻¹ : A)
       = (↑ha.unit⁻¹ : A) * ((hb.unit : A) - (ha.unit : A)) * (↑hb.unit⁻¹ : A) := by
