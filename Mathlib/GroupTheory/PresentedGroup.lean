@@ -71,18 +71,6 @@ lemma mk_eq_mk_of_inv_mul_mem {rels : Set (FreeGroup α)} {x y : FreeGroup α}
     (hx : x⁻¹ * y ∈ rels) : mk rels x = mk rels y :=
   eq_of_inv_mul_eq_one <| one_of_mem hx
 
-lemma lift_of_eq_mk_map {γ : Type*} (i : γ → α) (rels : Set (FreeGroup α)) :
-    FreeGroup.lift (of (rels := rels) ∘ i) = (mk rels).comp (FreeGroup.map i) :=
-  FreeGroup.ext_hom _ _ (by simp [of])
-
-/-- If a map `i : γ → α` sends every relation in `relsᵢ` to a relation in `rels`,
-then each such relation evaluates to `1` under the induced map to the quotient. -/
-lemma map_in_rels_eq_one {γ : Type*} (i : γ → α) (rels : Set (FreeGroup α))
-    (relsᵢ : Set (FreeGroup γ)) (hmem : ∀ r ∈ relsᵢ, FreeGroup.map i r ∈ rels) :
-    ∀ r ∈ relsᵢ, FreeGroup.lift (of (rels := rels) ∘ i) r = 1 := by
-  intro r hr
-  simp [lift_of_eq_mk_map, one_of_mem (hmem r hr)]
-
 set_option backward.isDefEq.respectTransparency false in
 /-- The generators of a presented group generate the presented group. That is, the subgroup closure
 of the set of generators equals `⊤`. -/
