@@ -15,6 +15,28 @@ namespace Test
 -- set_option pp.explicit true
 -- set_option pp.notation false
 
+/- ! Tests for namespaces of the resulting aliases -/
+section
+
+variable {G : Type*} [CommGroup G]
+@[to_additive Bars.baz]
+lemma Foo.Bar.baz (g h : G) : g * h = h * g := mul_comm g h
+/-- info: Test.Foo.Bars.baz.{u_1} {G : Type u_1} [AddCommGroup G] (g h : G) : g + h = h + g -/
+#guard_msgs in #check Foo.Bars.baz
+
+@[to_additive Test.Baz.Bars.baz]
+lemma Foo.Bar.baz' (g h : G) : g * h = h * g := mul_comm g h
+/-- info: Test.Baz.Bars.baz.{u_1} {G : Type u_1} [AddCommGroup G] (g h : G) : g + h = h + g -/
+#guard_msgs in #check Baz.Bars.baz
+
+-- Specifying more components than the original lemma is fine.
+@[to_additive Bar.Bars.Stars.Bazzz.b]
+lemma Foo.Bar.baz'' (g h : G) : g * h = h * g := mul_comm g h
+/-- info: Bar.Bars.Stars.Bazzz.b.{u_1} {G : Type u_1} [AddCommGroup G] (g h : G) : g + h = h + g -/
+#guard_msgs in #check Bar.Bars.Stars.Bazzz.b
+
+end
+
 @[to_additive bar0]
 def foo0 {α} [Mul α] [One α] (x y : α) : α := x * y * 1
 
