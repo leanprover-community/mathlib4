@@ -405,6 +405,24 @@ lemma Module.FinitePresentation.exists_lift_of_isLocalizedModule
     ← LinearMap.comp_smul, LinearMap.comp_assoc, LinearMap.comp_assoc]
   simp
 
+/-- Let `M` be a finitely presented `R`-module, `N` be a `R`-module, `S` be a submonoid of `R`,
+`Mₚ` be the localization of `M` at `S`, `Nₚ` be the localization of `N` at `S`. Then any surjective
+linear map `ϕ : Mₚ →ₗ[R] Nₚ` lifts to a linear map `φ : M →ₗ[R] N` that is surjective after
+localization at `S`. -/
+lemma Module.exists_localizedMap_surjective_of_surjective [Module.FinitePresentation R M]
+    (S : Submonoid R) {Mₚ : Type*} [AddCommGroup Mₚ] [Module R Mₚ]
+    (f : M →ₗ[R] Mₚ) [IsLocalizedModule S f] {Nₚ : Type*} [AddCommGroup Nₚ] [Module R Nₚ]
+    (g : N →ₗ[R] Nₚ) [IsLocalizedModule S g] {ϕ : Mₚ →ₗ[R] Nₚ} (hϕ : Function.Surjective ϕ) :
+    ∃ φ : M →ₗ[R] N, Function.Surjective (IsLocalizedModule.map S f g φ) := by
+  obtain ⟨φ, s, hφ⟩ := FinitePresentation.exists_lift_of_isLocalizedModule S g (ϕ ∘ₗ f)
+  refine ⟨φ, ?_⟩
+  have hmap : IsLocalizedModule.map S f g φ = s • ϕ := by
+    apply IsLocalizedModule.linearMap_ext S f g
+    rw [IsLocalizedModule.map_comp, hφ]
+    rfl
+  rw [hmap]
+  exact ((Module.End.isUnit_iff _).mp (IsLocalizedModule.map_units g s)).2.comp hϕ
+
 lemma Module.Finite.exists_smul_of_comp_eq_of_isLocalizedModule
     [hM : Module.Finite R M] (g₁ g₂ : M →ₗ[R] N) (h : f.comp g₁ = f.comp g₂) :
     ∃ (s : S), s • g₁ = s • g₂ := by

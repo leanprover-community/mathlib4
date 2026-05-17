@@ -373,4 +373,14 @@ lemma localized'_range_eq_range_localizedMap (g : M →ₗ[R] P) :
     (range g).localized' S p f' = range ((map p f f' g).extendScalarsOfIsLocalization p S) :=
   SetLike.ext (by apply SetLike.ext_iff.mp (f.range_localizedMap_eq_localized₀_range p f' g).symm)
 
+lemma localizedMap_surjective_iff_subsingleton_localized_coker {R : Type*} [CommRing R]
+    {M N : Type*} [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N] (S : Submonoid R)
+    (φ : M →ₗ[R] N) : Function.Surjective (LocalizedModule.map S φ) ↔
+      Subsingleton (LocalizedModule S (N ⧸ φ.range)) := by
+  rw [(localizedQuotientEquiv S φ.range).symm.subsingleton_congr]
+  rw [Submodule.Quotient.subsingleton_iff, Submodule.localized]
+  rw [LinearMap.localized'_range_eq_range_localizedMap (Localization S) S
+    (LocalizedModule.mkLinearMap S M) (LocalizedModule.mkLinearMap S N), LinearMap.range_eq_top]
+  rfl
+
 end LinearMap

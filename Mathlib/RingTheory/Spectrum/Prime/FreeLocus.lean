@@ -338,6 +338,28 @@ lemma rankAtStalk_baseChange {S : Type*} [CommRing S] [Algebra R S] (p : PrimeSp
   rw [rankAtStalk, e.finrank_eq]
   apply Module.finrank_baseChange
 
+lemma rankAtStalk_isBaseChange {S Mₛ : Type*} [CommRing S] [Algebra R S] [AddCommGroup Mₛ]
+    [Module R Mₛ] [Module S Mₛ] [IsScalarTower R S Mₛ] {f : M →ₗ[R] Mₛ} (hf : IsBaseChange S f)
+    (p : PrimeSpectrum S) : rankAtStalk Mₛ p = rankAtStalk M (p.comap (algebraMap R S)) := by
+  simp [rankAtStalk_eq_of_equiv hf.equiv.symm, rankAtStalk_baseChange]
+
+variable (M) in
+lemma rankAtStalk_eq_of_le_of_finite_of_flat {p q : PrimeSpectrum R} (hpq : p ≤ q) :
+    rankAtStalk M p = rankAtStalk M q := by
+  let S := Localization.AtPrime q.asIdeal
+  have hpr : p ∈ Set.range (PrimeSpectrum.comap (algebraMap R S)) := by
+    rw [PrimeSpectrum.localization_comap_range S q.asIdeal.primeCompl]
+    exact disjoint_compl_left_iff.mpr hpq
+  have : Module.Free S (LocalizedModule q.asIdeal.primeCompl M) := free_of_flat_of_isLocalRing
+  rw [← hpr.choose_spec, ← rankAtStalk_isBaseChange
+    (LocalizedModule.isBaseChange q.asIdeal.primeCompl M), rankAtStalk_eq_finrank_of_free]
+  simp [rankAtStalk]
+
+variable (M) in
+lemma rankAtStalk_eq_of_le_of_finite_of_flat' {p q : Ideal R} [hp : p.IsPrime] [hq : q.IsPrime]
+    (hpq : p ≤ q) : rankAtStalk M ⟨p, hp⟩ = rankAtStalk M ⟨q, hq⟩ :=
+  rankAtStalk_eq_of_le_of_finite_of_flat M hpq
+
 /-- See `rankAtStalk_tensorProduct_of_isScalarTower` for a hetero-basic version. -/
 lemma rankAtStalk_tensorProduct (N : Type*) [AddCommGroup N] [Module R N] [Module.Finite R N]
     [Module.Flat R N] : rankAtStalk (M ⊗[R] N) = rankAtStalk M * rankAtStalk (R := R) N := by
