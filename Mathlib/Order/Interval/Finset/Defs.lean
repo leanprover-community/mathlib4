@@ -1091,7 +1091,7 @@ instance [LocallyFiniteOrderBot α] : Finite { x : α // x < y } := by
   simpa only [coe_Iio] using (Finset.Iio y).finite_toSet
 
 @[to_dual]
-instance [LocallyFiniteOrderBot α] : WellFoundedLT α := by
+instance (priority := low) [LocallyFiniteOrderBot α] : WellFoundedLT α := by
   rw [WellFounded.wellFoundedLT_iff_exists_minimal]
   intro s ⟨a, ha⟩
   obtain ⟨a', ha'⟩ := Set.Finite.exists_minimal (s := Set.Iic a ∩ s)
