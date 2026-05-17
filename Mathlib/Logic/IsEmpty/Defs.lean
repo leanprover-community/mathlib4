@@ -5,7 +5,7 @@ Authors: Floris van Doorn
 -/
 module
 
-public import Mathlib.Init
+import Mathlib.Init
 
 /-!
 # Types that are empty

@@ -9,6 +9,7 @@ public import Mathlib.Algebra.Group.Equiv.Defs
 public import Mathlib.Algebra.Group.Hom.Basic
 public import Mathlib.Logic.Equiv.Basic
 public import Mathlib.Tactic.Spread
+import Mathlib.Tactic.Coe
 
 /-!
 # Multiplicative and additive equivs

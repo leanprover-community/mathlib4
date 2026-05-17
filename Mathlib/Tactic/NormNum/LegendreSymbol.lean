@@ -3,7 +3,7 @@ Copyright (c) 2022 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
 -/
-module
+module -- shake: keep-all
 
 public meta import Mathlib.NumberTheory.LegendreSymbol.JacobiSymbol
 public import Mathlib.NumberTheory.LegendreSymbol.JacobiSymbol

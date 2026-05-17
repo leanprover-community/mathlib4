@@ -3,7 +3,7 @@ Copyright (c) 2022 Wojciech Nawrocki. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Wojciech Nawrocki
 -/
-module
+module -- shake: keep-all
 
 public import Aesop
 public import Mathlib.CategoryTheory.Category.Basic

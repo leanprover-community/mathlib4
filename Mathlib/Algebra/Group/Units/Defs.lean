@@ -6,6 +6,7 @@ Authors: Kenny Lau, Mario Carneiro, Johannes Hölzl, Chris Hughes, Jens Wagemake
 module
 
 public import Mathlib.Algebra.Group.Commute.Defs
+import Batteries.Logic
 
 /-!
 # Units (i.e., invertible elements) of a monoid

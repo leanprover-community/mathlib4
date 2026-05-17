@@ -5,9 +5,17 @@ Authors: Yakov Pechersky
 -/
 module
 
-public import Mathlib.Data.List.Induction
-public import Mathlib.Data.List.TakeWhile
-public import Mathlib.Data.List.Basic
+public import Aesop.BuiltinRules
+public import Mathlib.Data.Nat.Notation
+public import Mathlib.Tactic.ToDual
+import Mathlib.Data.List.Induction
+import Mathlib.Data.List.TakeWhile
+import Mathlib.Logic.IsEmpty.Defs
+import Mathlib.Tactic.Attr.Core
+import Mathlib.Tactic.Basic
+import Mathlib.Tactic.Push
+import Mathlib.Tactic.SimpRw
+import Mathlib.Tactic.SplitIfs
 
 /-!
 

@@ -6,8 +6,10 @@ Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, M
 module
 
 public import Mathlib.Data.List.Defs
-public import Mathlib.Tactic.Common
 public import Mathlib.Logic.Function.Iterate
+public import Aesop.BuiltinRules
+public import Mathlib.Tactic.Basic
+import Mathlib.Tactic.Common
 
 /-!
 # `Take` and `Drop` lemmas for lists

@@ -3,7 +3,7 @@ Copyright (c) 2021 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kyle Miller
 -/
-module
+module -- shake: keep-all
 
 public meta import Lean.Elab.MacroArgUtil
 public meta import Lean.PrettyPrinter.Delaborator  -- shake: keep (dependency of elaborator output)

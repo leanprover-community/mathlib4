@@ -3,7 +3,7 @@ Copyright (c) 2023 Mario Carneiro, Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Heather Macbeth, Jovan Gerbscheid
 -/
-module
+module -- shake: keep-all
 
 public meta import Batteries.Lean.Except
 public import Batteries.Tactic.Exact
@@ -14,6 +14,7 @@ public import Mathlib.Tactic.Core
 public import Mathlib.Tactic.GCongr.ForwardAttr
 
 import all Lean.Meta.Tactic.Apply
+public meta import Mathlib.Tactic.GCongr.ForwardAttr
 
 /-!
 # The `gcongr` ("generalized congruence") tactic

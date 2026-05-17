@@ -3,7 +3,7 @@ Copyright (c) 2023 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
 -/
-module
+module -- shake: keep-all
 
 public meta import Lean.Meta.ExprLens
 public meta import Mathlib.Tactic.Widget.SelectInsertParamsClass

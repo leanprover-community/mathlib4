@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Group.Action.Opposite
 public import Mathlib.Algebra.GroupWithZero.Hom
 public import Mathlib.Algebra.GroupWithZero.Opposite
 public import Mathlib.Algebra.Notation.Pi.Basic
+import Mathlib.Algebra.NeZero
+public import Mathlib.Logic.Basic
+import Mathlib.Tactic.SplitIfs
 
 /-!
 # Definitions of group actions

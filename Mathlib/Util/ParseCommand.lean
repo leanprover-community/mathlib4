@@ -3,12 +3,13 @@ Copyright (c) 2024 Matthew Robert Ballard. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Matthew Robert Ballard, Damiano Testa
 -/
-module
+module -- shake: keep-all
 
 public meta import Lean.Elab.Command
 -- Import this linter explicitly to ensure that
 -- this file has a valid copyright header and module docstring.
 public meta import Mathlib.Tactic.Linter.Header  --shake: keep
+import Lean.Parser.Term.Basic
 
 /-!
 # `#parse` -- a command to parse text and log outputs

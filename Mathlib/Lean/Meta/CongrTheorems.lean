@@ -3,11 +3,19 @@ Copyright (c) 2023 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
-module
+module -- shake: keep-all
 
 public import Lean.Meta.Tactic.Cleanup
 public meta import Lean.Meta.Tactic.Refl
 public import Mathlib.Logic.IsEmpty.Defs
+public import Lean.Meta.AppBuilder
+public meta import Lean.Meta.AppBuilder
+public meta import Lean.Meta.CongrTheorems
+public meta import Mathlib.Logic.IsEmpty.Defs
+import Lean.Meta.CongrTheorems
+public meta import Lean.Meta.Tactic.Cases
+meta import Lean.Meta.Tactic.Cleanup
+import Lean.Meta.Tactic.Clear
 
 /-!
 # Additions to `Lean.Meta.CongrTheorems`

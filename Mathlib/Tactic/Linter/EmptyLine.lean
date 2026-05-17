@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
 
-module
+module -- shake: keep-all
 public meta import Mathlib.Tactic.Linter.Header  -- shake: keep
 public import Lean.Parser.Command
 

@@ -3,7 +3,7 @@ Copyright (c) 2017 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Kyle Miller, Damiano Testa
 -/
-module
+module -- shake: keep-all
 
 public meta import Lean.Elab.Term
 public meta import Lean.Elab.Tactic.ElabTerm

@@ -8,7 +8,8 @@ module
 public import Mathlib.Data.Set.Operations
 public import Mathlib.Logic.Function.Iterate
 public import Mathlib.Order.Basic
-public import Mathlib.Tactic.Coe
+import Mathlib.Tactic.Coe
+import Mathlib.Tactic.SimpRw
 
 /-!
 # Monotonicity

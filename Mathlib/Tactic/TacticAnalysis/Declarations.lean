@@ -3,7 +3,7 @@ Copyright (c) 2025 Lean FRO, LLC. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Edward van de Meent
 -/
-module
+module -- shake: keep-all
 
 public meta import Mathlib.Tactic.TacticAnalysis
 public meta import Lean.Elab.Command

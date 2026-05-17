@@ -5,7 +5,24 @@ Authors: Mario Carneiro, Kenny Lau
 -/
 module
 
-public import Mathlib.Data.List.Forall2
+public import Aesop.BuiltinRules
+public import Batteries.Data.List.Basic
+public import Mathlib.Data.Nat.Notation
+public import Mathlib.Logic.Function.Defs
+public import Mathlib.Logic.Relator
+public import Mathlib.Tactic.ToDual
+import Mathlib.Data.List.Forall2
+import Mathlib.Logic.IsEmpty.Defs
+import Mathlib.Tactic.Attr.Core
+import Mathlib.Tactic.Push
+import Mathlib.Tactic.FBinop
+import Batteries.Data.List.Lemmas
+import Mathlib.Data.List.Basic
+import Aesop.Main
+public import Mathlib.Logic.Function.Basic
+public import Mathlib.Data.SProd
+public import Mathlib.Data.List.Defs
+import Aesop.Frontend.Tactic
 
 /-!
 # Lists with no duplicates
@@ -121,7 +138,7 @@ theorem not_nodup_of_get_eq_of_ne (xs : List α) (n m : Fin xs.length)
   rw [nodup_iff_injective_get]
   exact fun hinj => hne (hinj h)
 
-@[deprecated Nodup.idxOf_getElem (since := "2025-11-10")]
+-- @[deprecated Nodup.idxOf_getElem (since := "2025-11-10")]
 theorem idxOf_getElem [DecidableEq α] {l : List α} : Nodup l → (i : Nat) → (h : i < l.length) →
     idxOf l[i] l = i := Nodup.idxOf_getElem
 

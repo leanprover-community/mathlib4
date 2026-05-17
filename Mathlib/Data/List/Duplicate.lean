@@ -5,7 +5,12 @@ Authors: Yakov Pechersky, Chris Hughes
 -/
 module
 
-public import Mathlib.Data.List.Nodup
+public import Aesop.BuiltinRules
+public import Mathlib.Tactic.ToDual
+import Mathlib.Data.List.Basic
+import Mathlib.Data.List.Nodup
+import Mathlib.Tactic.Push
+import Mathlib.Tactic.SimpRw
 
 /-!
 # List duplicates

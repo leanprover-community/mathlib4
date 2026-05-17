@@ -8,6 +8,9 @@ module
 public import Mathlib.Data.Set.CoeSort
 public import Mathlib.Logic.Equiv.Defs
 public import Mathlib.Data.Nat.Notation
+import Mathlib.Logic.Basic
+import Mathlib.Tactic.Push.Attr
+import Mathlib.Tactic.SimpRw
 
 /-!
 # Definition of the `Finite` typeclass

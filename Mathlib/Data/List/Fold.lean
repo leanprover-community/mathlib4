@@ -5,8 +5,10 @@ Authors: Jeremy Tan
 -/
 module
 
-public import Batteries.Tactic.Alias
 public import Mathlib.Logic.OpClass
+import Batteries.Tactic.Alias
+import Mathlib.Tactic.Lemma
+import Mathlib.Tactic.TypeStar
 
 /-!
 # Bird–Wadler duality of list folds

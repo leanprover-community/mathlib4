@@ -3,7 +3,7 @@ Copyright (c) 2022 Arthur Paulino. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Arthur Paulino, Gabriel Ebner, Kyle Miller
 -/
-module
+module -- shake: keep-all
 
 public meta import Lean.Meta.Tactic.Util
 public meta import Lean.Elab.Tactic.Basic

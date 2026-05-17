@@ -5,7 +5,12 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Mathlib.Data.List.Forall2
+public import Aesop.BuiltinRules
+public import Batteries.Data.List.Basic
+public import Mathlib.Logic.Relator
+import Mathlib.Data.List.Forall2
+import Mathlib.Tactic.Attr.Core
+import Mathlib.Tactic.Push
 /-!
 # List sections
 

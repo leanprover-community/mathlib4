@@ -3,7 +3,7 @@ Copyright (c) 2022 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Yuma Mizuno, Oleksandr Manzyuk
 -/
-module
+module -- shake: keep-all
 
 public meta import Mathlib.Lean.Meta
 public import Mathlib.CategoryTheory.Monoidal.Free.Basic

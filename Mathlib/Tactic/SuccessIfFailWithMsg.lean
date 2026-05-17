@@ -3,7 +3,7 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Simon Hudon, Sébastien Gouëzel, Kim Morrison, Thomas Murrills
 -/
-module
+module -- shake: keep-all
 
 public meta import Lean.Elab.Eval
 public meta import Lean.Elab.Tactic.BuiltinTactic

@@ -5,11 +5,12 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Mathlib.Algebra.Group.Torsion
 public import Mathlib.Algebra.Notation.Pi.Basic
-public import Mathlib.Data.FunLike.Basic
-public import Mathlib.Logic.Function.Iterate
 public import Mathlib.Logic.Equiv.Defs
+public import Aesop.BuiltinRules
+public import Mathlib.Algebra.Group.Defs
+import Mathlib.Algebra.Group.Torsion
+import Mathlib.Logic.Basic
 
 /-!
 # Type tags that turn additive structures into multiplicative, and vice versa

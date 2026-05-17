@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Group.Hom.Defs
 public import Mathlib.Logic.Equiv.Defs
+import Mathlib.Logic.Basic
 
 /-!
 # Multiplicative and additive equivs

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Yury Kudryashov, Floris van Doorn, Jon Eugster, Bryan Gin-ge Chen,
 Jovan Gerbscheid
 -/
-module
+module -- shake: keep-all
 
 public meta import Lean.Compiler.NoncomputableAttr
 public meta import Lean.Elab.App
@@ -20,6 +20,7 @@ public import Mathlib.Tactic.Translate.Attributes
 public import Mathlib.Tactic.Translate.GuessName
 public import Mathlib.Tactic.Translate.Reorder
 public import Mathlib.Tactic.Translate.UnfoldBoundary
+public meta import Mathlib.Tactic.Translate.Reorder
 
 /-!
 # The translation attribute.

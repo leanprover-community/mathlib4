@@ -3,7 +3,7 @@ Copyright (c) 2023 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller, Mario Carneiro
 -/
-module
+module -- shake: keep-all
 
 public meta import Mathlib.Data.Nat.Fib.Basic
 public import Mathlib.Data.Nat.Fib.Basic

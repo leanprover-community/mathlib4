@@ -1,0 +1,154 @@
+Mathlib.Data.TwoPointing:
+- import Batteries.Logic
+- import Mathlib.Logic.Nonempty
++ public import Batteries.Logic
++ public import Mathlib.Logic.Nonempty
+
+Mathlib.Lean.Meta.CongrTheorems (after shaking Mathlib.Logic.Lemmas):
+- meta import Lean.Meta.Tactic.Cases
++ public meta import Lean.Meta.Tactic.Cases
+
+Mathlib.Logic.Lemmas:
++ public import Batteries.Logic
+
+Mathlib.Algebra.Notation.Defs:
+- import Mathlib.Tactic.Simps.NotationClass
++ public import Mathlib.Tactic.Simps.NotationClass
+
+Mathlib.Order.Notation:
+- import Mathlib.Tactic.Simps.NotationClass
+- meta import Qq.Meta
++ public import Mathlib.Tactic.Simps.NotationClass
++ public meta import Qq.Meta
+
+Mathlib.Algebra.Group.InjSurj:
+- import Mathlib.Logic.Function.Basic
++ public import Mathlib.Logic.Function.Basic
+
+Mathlib.Logic.Unique:
+- import Mathlib.Logic.Function.Basic
++ public import Mathlib.Logic.Function.Basic
+
+Mathlib.Algebra.GroupWithZero.InjSurj:
+- import Mathlib.Algebra.GroupWithZero.NeZero
++ public import Mathlib.Algebra.GroupWithZero.NeZero
+
+Mathlib.Data.FunLike.Basic:
+- import Mathlib.Tactic.Simps.NotationClass
++ public import Mathlib.Tactic.Simps.NotationClass
+
+Mathlib.Data.List.Pairwise:
+- import Batteries.Data.List.Pairwise
++ public import Batteries.Data.List.Pairwise
+
+Mathlib.Data.Set.Operations:
++ import Mathlib.Tactic.FBinop
+
+Mathlib.Algebra.Ring.Regular:
++ import Mathlib.Logic.Basic
+
+Mathlib.Logic.Nontrivial.Basic:
++ import Mathlib.Logic.Basic
+
+Mathlib.Data.FunLike.Equiv:
+- import Mathlib.Logic.Function.Basic
++ public import Mathlib.Logic.Function.Basic
+
+Mathlib.Algebra.Ring.GrindInstances:
+- import Mathlib.Data.Int.Cast.Basic
++ public import Mathlib.Data.Int.Cast.Basic
+
+Mathlib.Algebra.Group.Hom.Instances:
+- import Mathlib.Algebra.Group.InjSurj
+- import Mathlib.Algebra.Group.Pi.Basic
++ public import Mathlib.Algebra.Group.InjSurj
++ public import Mathlib.Algebra.Group.Pi.Basic
+
+Mathlib.Algebra.GroupWithZero.Hom:
+- import Mathlib.Algebra.GroupWithZero.Basic
++ public import Mathlib.Algebra.GroupWithZero.Basic
+
+Mathlib.Topology.ContinuousMap.Defs: -- shake produces a "PANIC at Option.get! Init.Data.Option.BasicAux:22:14: value is none"
+- import Mathlib.Tactic.FunProp.Attr
++ import Mathlib.Tactic.FunProp
+
+Mathlib.Data.List.ProdSigma:
++ import Mathlib.Tactic.FBinop
+
+Mathlib.Algebra.Group.WithOne.Defs:
++ public import Mathlib.Logic.Basic
+
+Mathlib.Algebra.GroupWithZero.Idempotent (after shaking Mathlib.Algebra.Ring.Idempotent):
++ import Mathlib.Logic.Basic
+
+Mathlib.Logic.Small.Defs:
+- import Mathlib.Tactic.PPWithUniv
++ public import Mathlib.Tactic.PPWithUniv
+
+Mathlib.Data.Seq.Computation:
+- import Mathlib.Data.Stream.Init
++ public import Mathlib.Data.Stream.Init
+
+Mathlib.Logic.UnivLE:
++ import Mathlib.Logic.Basic
+
+Mathlib.Algebra.Ring.Basic:
++ import Mathlib.Logic.Basic
+
+Mathlib.Data.List.Perm.Basic:
++ public import Mathlib.Logic.OpClass
+
+Mathlib.Data.List.Nodup:
++ import Mathlib.Tactic.FBinop
++ import Batteries.Data.List.Lemmas
++ import Mathlib.Data.List.Basic
++ import Aesop.Main
++ public import Mathlib.Logic.Function.Basic
++ public import Mathlib.Data.SProd
++ public import Mathlib.Data.List.Defs
+
+Mathlib.Data.List.Zip: (among other things, `simp_rw` is unknown, and a `simp` proof breaks)
++ public import Mathlib.Data.List.Defs
++ public import Mathlib.Logic.OpClass
++ import Mathlib.Tactic.SimpRw
++ import Mathlib.Data.List.Basic
+
+Mathlib.Order.Monotone.Basic:
++ import Mathlib.Tactic.ByCases
+
+Mathlib.Algebra.GroupWithZero.Opposite:
++ public import Mathlib.Algebra.GroupWithZero.NeZero
+
+Mathlib.Algebra.Ring.Hom.Defs:
++ import Mathlib.Logic.Basic
+
+Mathlib.Algebra.FreeMonoid.Basic:
+- import Mathlib.Data.List.Basic
++ public import Mathlib.Data.List.Basic
+
+Mathlib.Algebra.GroupWithZero.WithZero:
+- import Mathlib.Data.Option.Basic
++ public import Mathlib.Data.Option.Basic
+
+Mathlib.Algebra.BigOperators.Group.List.Basic:
++ import Mathlib.Data.List.Basic
+
+Mathlib.Data.Int.GCD:
+- import Mathlib.Order.Basic
++ public import Mathlib.Order.Basic
+
+Mathlib.Algebra.EuclideanDomain.Field:
++ public import Mathlib.Algebra.GroupWithZero.Basic
+
+Mathlib.Algebra.GroupWithZero.Action.Defs:
+- import Mathlib.Logic.Basic
++ public import Mathlib.Logic.Basic
+
+Mathlib.Logic.Embedding.Basic:
+- import Mathlib.Data.Prod.Basic
+- import Mathlib.Data.Prod.PProd
+- import Mathlib.Data.Sum.Basic
++ public import Mathlib.Data.Prod.Basic
++ public import Mathlib.Data.Prod.PProd
++ public import Mathlib.Data.Sum.Basic
++ import Mathlib.Logic.IsEmpty.Basic

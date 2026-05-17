@@ -6,6 +6,7 @@ Authors: Simon Hudon
 module
 
 public import Mathlib.Control.Bitraversable.Basic
+import Mathlib.Tactic.HigherOrder
 
 /-!
 # Bitraversable Lemmas

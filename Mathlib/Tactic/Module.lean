@@ -3,7 +3,7 @@ Copyright (c) 2024 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
 -/
-module
+module -- shake: keep-all
 
 public import Mathlib.Algebra.Algebra.Tower
 public import Mathlib.Algebra.BigOperators.GroupWithZero.Action
