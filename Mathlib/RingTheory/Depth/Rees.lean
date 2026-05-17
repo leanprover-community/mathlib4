@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2025 Nailin Guan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Nailin Guan, Yi Song
+Authors: Nailin Guan
 -/
 module
 
@@ -130,10 +130,10 @@ lemma ModuleCat.subsingleton_ext_of_exists_isRegular [IsNoetherianRing R] (I : I
           (add_zero (i + 1)))
         have mono_gk : Mono gk := by
           simp only [smulShortComplex_f_eq_smul_id, g, gk] at mono_g ⊢
-          exact (Ext.smul_id_postcomp_mono_iff (a ^ k) (i + 1)).mpr <|
-            ((Ext.smul_id_postcomp_mono_iff a (i + 1)).mp mono_g).pow k
+          exact (Ext.postcomp_smul_id_mono_iff (a ^ k) (i + 1)).mpr <|
+            ((Ext.postcomp_smul_id_mono_iff a (i + 1)).mp mono_g).pow k
         -- scalar multiple by `aᵏ` on `Ext N M i` is zero since `aᵏ ∈ Ann(N)`, so `Ext N M i` vanish
-        have zero_gk : gk = 0 := Ext.smul_id_postcomp_eq_zero_of_mem_annihilator hk (i + 1)
+        have zero_gk : gk = 0 := Ext.postcomp_smul_id_eq_zero_of_mem_annihilator hk (i + 1)
         exact AddCommGrpCat.subsingleton_of_isZero (IsZero.of_mono_eq_zero _ zero_gk)
 
 /--

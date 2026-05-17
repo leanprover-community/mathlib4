@@ -356,10 +356,6 @@ lemma Scheme.Hom.genericPoint_mem_smoothLocus_of_perfectField
       (L := (Spec.structureSheaf K).presheaf.stalk (f (genericPoint X)))
   exact Algebra.FormallySmooth.of_perfectField
 
-instance {X : Scheme} [IsReduced X] (U : X.Opens) : IsReduced U :=
-  isReduced_of_isOpenImmersion U.ι
-
-
 lemma Scheme.Hom.dense_smoothLocus_of_perfectField
     {K : Type u} [Field K] [PerfectField K] [IsReduced X]
     (f : X ⟶ Spec (.of K)) [LocallyOfFinitePresentation f] : Dense (f.smoothLocus : Set X) := by
