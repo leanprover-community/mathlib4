@@ -972,10 +972,6 @@ theorem conjStarAlgAut_symm_unitaryLinearIsometryEquiv (u : H ≃ₗᵢ[𝕜] H)
 
 end Unitary
 
-namespace unitary
-
-end unitary
-
 end Unitary
 
 section Matrix
