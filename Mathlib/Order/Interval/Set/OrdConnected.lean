@@ -139,8 +139,6 @@ theorem dual_ordConnected {s : Set α} [OrdConnected s] : OrdConnected (ofDual �
 theorem ordConnected_dual {s : Set α} : OrdConnected (OrderDual.ofDual ⁻¹' s) ↔ OrdConnected s :=
   ⟨fun h => by simpa only [ordConnected_def] using h.dual, fun h => h.dual⟩
 
-@[deprecated (since := "2025-10-28")] alias dual_ordConnected_iff := ordConnected_dual
-
 theorem ordConnected_sInter {S : Set (Set α)} (hS : ∀ s ∈ S, OrdConnected s) :
     OrdConnected (⋂₀ S) :=
   ⟨fun _x hx _y hy _z hz s hs => (hS s hs).out (hx s hs) (hy s hs) hz⟩

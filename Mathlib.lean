@@ -5644,6 +5644,7 @@ public import Mathlib.NumberTheory.Harmonic.Int
 public import Mathlib.NumberTheory.Harmonic.ZetaAsymp
 public import Mathlib.NumberTheory.Height.Basic
 public import Mathlib.NumberTheory.Height.MvPolynomial
+public import Mathlib.NumberTheory.Height.Northcott
 public import Mathlib.NumberTheory.Height.NumberField
 public import Mathlib.NumberTheory.Height.Projectivization
 public import Mathlib.NumberTheory.JacobiSum.Basic
@@ -6266,6 +6267,7 @@ public import Mathlib.RepresentationTheory.Basic
 public import Mathlib.RepresentationTheory.Character
 public import Mathlib.RepresentationTheory.Coinduced
 public import Mathlib.RepresentationTheory.Coinvariants
+public import Mathlib.RepresentationTheory.Continuous.Basic
 public import Mathlib.RepresentationTheory.Equiv
 public import Mathlib.RepresentationTheory.FDRep
 public import Mathlib.RepresentationTheory.FinGroupCharZero
@@ -7934,6 +7936,7 @@ public import Mathlib.Topology.Separation.Hausdorff
 public import Mathlib.Topology.Separation.Lemmas
 public import Mathlib.Topology.Separation.LinearUpperLowerSetTopology
 public import Mathlib.Topology.Separation.NotNormal
+public import Mathlib.Topology.Separation.PerfectlyNormal
 public import Mathlib.Topology.Separation.Profinite
 public import Mathlib.Topology.Separation.Regular
 public import Mathlib.Topology.Separation.SeparatedNhds
@@ -8035,6 +8038,7 @@ public import Mathlib.Util.AtomM
 public import Mathlib.Util.AtomM.Recurse
 public import Mathlib.Util.CompileInductive
 public import Mathlib.Util.CountHeartbeats
+public import Mathlib.Util.DelabNonCanonical
 public import Mathlib.Util.Delaborators
 public import Mathlib.Util.DischargerAsTactic
 public import Mathlib.Util.ElabWithoutMVars
