@@ -37,18 +37,14 @@ variable {S₁ S₂ : Type*} [CommRing S₁] [CommRing S₂] [Algebra R S₁] [A
 
 theorem mem_map_C_imp (h : f ∈ I.map C) : ∀ m : σ →₀ ℕ, f.coeff m ∈ I := by
   classical
-  refine Submodule.span_induction ?_ ?_ ?_ ?_ h
-  · intro f hf n
-    obtain ⟨x, hx⟩ := (Set.mem_image _ _ _).mp hf
+  refine Submodule.span_induction (fun f hf n => ?_) ?_ ?_ (fun f g _ hg n => ?_) h
+  · obtain ⟨x, hx⟩ := (Set.mem_image _ _ _).mp hf
     rw [← hx.right, coeff_C]
     by_cases h : n = 0
-    · simpa [h] using hx.left
-    · simp [if_neg h]
+    <;> simp_all
   · simp
   · exact fun f g _ _ hf hg n => by simp [I.add_mem (hf n) (hg n)]
-  · refine fun f g _ hg n => ?_
-    rw [smul_eq_mul, coeff_mul]
-    exact I.sum_mem fun c _ => I.mul_mem_left (f.coeff c.fst) (hg c.snd)
+  · exact I.sum_mem fun c _ => I.mul_mem_left (f.coeff c.fst) (hg c.snd)
 
 /-- If every coefficient of `f` lies in `I`, and `I` is finitely generated,
 then `f ∈ I.map C`. -/
@@ -79,9 +75,7 @@ theorem mem_map_C_iff_of_FG (hI : I.FG) :
 
 theorem ker_map_of_FG (f : R →+* S) (hf : (RingHom.ker f).FG) :
     RingHom.ker (map f (σ := σ)) = Ideal.map C (RingHom.ker f) := by
-  ext
-  rw [mem_map_C_iff_of_FG hf, RingHom.mem_ker, MvPowerSeries.ext_iff]
-  simp_rw [coeff_map, coeff_zero, RingHom.mem_ker]
+  ext; simp [mem_map_C_iff_of_FG hf, MvPowerSeries.ext_iff]
 
 lemma ker_mapAlgHom_of_FG (f : S₁ →ₐ[R] S₂) (hf : (RingHom.ker f).FG) :
     RingHom.ker (mapAlgHom (σ := σ) f) = Ideal.map C (RingHom.ker f) :=
