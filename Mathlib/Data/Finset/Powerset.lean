@@ -329,13 +329,14 @@ lemma powersetCard_biUnion [DecidableEq α] {r : ℕ} (hr : r ≠ 0) (hrs : r �
 
 /-- If two finsets of equal cardinality have the same `r`-element subsets for some `1 ≤ r ≤ #a`,
 they are equal. -/
-lemma eq_of_powersetCard_eq [DecidableEq α] {a b : Finset α} {r : ℕ}
+lemma eq_of_powersetCard_eq {a b : Finset α} {r : ℕ}
     (hab : #a = #b) (hr₀ : r ≠ 0) (hra : r ≤ #a)
     (h : a.powersetCard r = b.powersetCard r) : a = b := by
+  classical
   simpa [powersetCard_biUnion hr₀, ← hab, hra] using congr(($h).biUnion id)
 
 /-- For `1 ≤ r ≤ q`, the map `powersetCard r` is injective on the finsets of cardinality `q`. -/
-lemma powersetCard_injOn [DecidableEq α] {q r : ℕ} (hr₀ : r ≠ 0) (hrq : r ≤ q) :
+lemma powersetCard_injOn {q r : ℕ} (hr₀ : r ≠ 0) (hrq : r ≤ q) :
     Set.InjOn (·.powersetCard r) {a : Finset α | #a = q}
   | _, rfl, _, hbq, h => eq_of_powersetCard_eq hbq.symm hr₀ hrq h
 
