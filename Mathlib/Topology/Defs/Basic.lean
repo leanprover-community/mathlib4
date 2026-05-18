@@ -234,7 +234,7 @@ structure WithTopology (X : Type*) (t : TopologicalSpace X) where
   /-- Converts an element of `X` to an element of `WithTopology X t`. -/
   toTopology (t) ::
   /-- Converts an element of `WithTopology X t` to an element of `X`. -/
-  ofTopology (t) : X
+  ofTopology : X
 
 section Notation
 

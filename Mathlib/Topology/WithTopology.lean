@@ -21,11 +21,6 @@ and transfer instances (basic, order) from `X` to `WithTopology X t`.
 
 The pattern here is the same one as is used by `Lex` for order structures
 and `WithLp` for metric structures.
-
-## AI usage disclosure
-
-The first draft of this file was written by Gemini CLI.
-It was thoroughly reviewed by me (Yury Kudryashov) before submitting a PR.
 -/
 
 public section
@@ -34,25 +29,25 @@ variable {X : Type*} (t : TopologicalSpace X)
 
 namespace WithTopology
 
-lemma ofTopology_toTopology (x : X) : ofTopology t (toTopology t x) = x := rfl
+lemma ofTopology_toTopology (x : X) : ofTopology (toTopology t x) = x := rfl
 
 @[simp]
 lemma toTopology_ofTopology (x : WithTopology X t) :
-  toTopology t (ofTopology t x) = x := rfl
+  toTopology t (ofTopology x) = x := rfl
 
-lemma ofTopology_surjective : Function.Surjective (ofTopology t) :=
+lemma ofTopology_surjective : Function.Surjective (ofTopology (t := t)) :=
   Function.RightInverse.surjective <| ofTopology_toTopology _
 
 lemma toTopology_surjective : Function.Surjective (toTopology t) :=
   Function.RightInverse.surjective <| toTopology_ofTopology _
 
-lemma ofTopology_injective : Function.Injective (ofTopology t) :=
+lemma ofTopology_injective : Function.Injective (ofTopology (t := t)) :=
   Function.LeftInverse.injective <| toTopology_ofTopology _
 
 lemma toTopology_injective : Function.Injective (toTopology t) :=
   Function.LeftInverse.injective <| ofTopology_toTopology _
 
-lemma ofTopology_bijective : Function.Bijective (ofTopology t) :=
+lemma ofTopology_bijective : Function.Bijective (ofTopology (t := t)) :=
   ⟨ofTopology_injective t, ofTopology_surjective t⟩
 
 lemma toTopology_bijective : Function.Bijective (toTopology t) :=
@@ -65,23 +60,23 @@ is already in the default `simp` set. -/
 lemma toTopology_inj {x y : X} : toTopology t x = toTopology t y ↔ x = y :=
   (toTopology_injective t).eq_iff
 
-@[simp] lemma ofTopology_inj {x y : WithTopology X t} : ofTopology t x = ofTopology t y ↔ x = y :=
+@[simp] lemma ofTopology_inj {x y : WithTopology X t} : ofTopology x = ofTopology y ↔ x = y :=
   (ofTopology_injective t).eq_iff
 
 /-! ### Set-theoretic lemmas -/
 
 open Set
 
-lemma image_ofTopology (s : Set (WithTopology X t)) : ofTopology t '' s = toTopology t ⁻¹' s :=
+lemma image_ofTopology (s : Set (WithTopology X t)) : ofTopology '' s = toTopology t ⁻¹' s :=
   WithTopology.equiv X t |>.symm.image_symm_eq_preimage _
 
-lemma preimage_toTopology (s : Set (WithTopology X t)) : toTopology t ⁻¹' s = ofTopology t '' s :=
+lemma preimage_toTopology (s : Set (WithTopology X t)) : toTopology t ⁻¹' s = ofTopology '' s :=
   (image_ofTopology t s).symm
 
-lemma image_toTopology (s : Set X) : toTopology t '' s = ofTopology t ⁻¹' s :=
+lemma image_toTopology (s : Set X) : toTopology t '' s = ofTopology ⁻¹' s :=
   WithTopology.equiv X t |>.symm.image_eq_preimage_symm _
 
-lemma preimage_ofTopology (s : Set X) : ofTopology t ⁻¹' s = toTopology t '' s :=
+lemma preimage_ofTopology (s : Set X) : ofTopology ⁻¹' s = toTopology t '' s :=
   (image_toTopology t s).symm
 
 /-!
@@ -117,10 +112,10 @@ instance [BEq X] [LawfulBEq X] : LawfulBEq (WithTopology X t) where
   eq_of_beq h := ofTopology_injective _ <| eq_of_beq h
 
 instance [LE X] : LE (WithTopology X t) where
-  le x y := ofTopology t x ≤ ofTopology t y
+  le x y := ofTopology x ≤ ofTopology y
 
 instance [LT X] : LT (WithTopology X t) where
-  lt x y := ofTopology t x < ofTopology t y
+  lt x y := ofTopology x < ofTopology y
 
 -- TODO: `inferInstance` works here, but it shouldn't
 instance [LE X] [DecidableLE X] : DecidableLE (WithTopology X t) := fun x y ↦
@@ -131,7 +126,7 @@ instance [LT X] [DecidableLT X] : DecidableLT (WithTopology X t) := fun x y ↦
   inferInstanceAs (Decidable (x.ofTopology < y.ofTopology))
 
 instance [Preorder X] : Preorder (WithTopology X t) :=
-  .lift <| ofTopology t
+  .lift ofTopology
 
 instance [PartialOrder X] : PartialOrder (WithTopology X t) :=
   ofTopology_injective t |>.partialOrder _ .rfl .rfl
