@@ -168,9 +168,7 @@ lemma pairing_p_symm_equivI (x : h.ι) :
 
 lemma type₁_pairing (x : h.ι) :
     h.type₁ x = h.pairing.p (h.equivII x) := by
-  dsimp +instances
-  rw [h.pairing_p_equivII x]
-  rfl
+  simp +instances
 
 /-- The condition that `h : A.PairingCore` is proper, i.e. for each `s : h.ι`,
 the type (II) simplex `h.type₂ s` is uniquely a `1`-codimensional
