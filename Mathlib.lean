@@ -7980,7 +7980,6 @@ public import Mathlib.Topology.Sheaves.SheafOfFunctions
 public import Mathlib.Topology.Sheaves.Sheafify
 public import Mathlib.Topology.Sheaves.Skyscraper
 public import Mathlib.Topology.Sheaves.Stalks
-public import Mathlib.Topology.Sheaves.ZeroOutside
 public import Mathlib.Topology.ShrinkingLemma
 public import Mathlib.Topology.Sion
 public import Mathlib.Topology.SmallInductiveDimension
