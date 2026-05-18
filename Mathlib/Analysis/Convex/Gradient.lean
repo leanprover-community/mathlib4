@@ -11,21 +11,24 @@ public import Mathlib.Analysis.Calculus.Gradient.Basic
 /-!
 # First-order convexity inequality via the gradient
 
-For `f : F → ℝ` convex on `s ⊆ F` on a Hilbert space and differentiable at `x ∈ s`,
+On a Hilbert space `F`, for `f : F → ℝ` convex on `s ⊆ F` and differentiable at `x ∈ s`,
 the first-order convexity inequality
 
 `f x + ⟪∇ f x, y - x⟫ ≤ f y`
 
 holds for `y ∈ s`. This is the gradient/inner-product restatement of the Fréchet form
-in `Mathlib.Analysis.Convex.FDeriv`, lifted via `inner_gradient_left`.
+in `Mathlib.Analysis.Convex.FDeriv`, lifted via Riesz representation
+(`inner_gradient_left`).
 
 ## Main results
 
 * `ConvexOn.add_inner_gradient_le` — the first-order convexity inequality (gradient form).
 * `ConcaveOn.le_add_inner_gradient` — the concave dual.
-* `ConvexOn.inner_gradient_sub_nonneg` — monotonicity: `0 ≤ ⟪∇ f y - ∇ f x, y - x⟫`.
-* `ConvexOn.isMinOn_of_gradient_eq_zero` — convex + zero gradient at `x` ⟹ `x` minimizes `f`.
+* `ConvexOn.inner_gradient_sub_nonneg` — monotonicity along the chord:
+  `0 ≤ ⟪∇ f y - ∇ f x, y - x⟫`.
+* `ConvexOn.isMinOn_of_gradient_eq_zero` — convex + zero gradient at `x` ⟹ `x` minimises `f`.
 * `StrictConvexOn.add_inner_gradient_lt` — strict variant.
+* `StrictConcaveOn.lt_add_inner_gradient` — strict concave dual.
 * `convexOn_iff_add_inner_gradient_le` — iff converse.
 -/
 
@@ -54,7 +57,7 @@ theorem inner_gradient_sub_nonneg (hc : ConvexOn ℝ s f) (hx : x ∈ s) (hy : y
     0 ≤ ⟪∇ f y - ∇ f x, y - x⟫ := by
   rw [inner_sub_left, inner_gradient_left, inner_gradient_left,
     ← ContinuousLinearMap.sub_apply]
-  exact hc.fderiv_sub_apply_nonneg hx hy hfx hfy
+  exact hc.fderiv_sub_nonneg hx hy hfx hfy
 
 /-- A convex function attains its minimum on `s` at any critical point: if `f` is convex on
 `s`, Fréchet-differentiable at `x ∈ s`, and `∇ f x = 0`, then `x` minimizes `f` on `s`.
@@ -88,6 +91,17 @@ theorem add_inner_gradient_lt (hc : StrictConvexOn ℝ s f) (hx : x ∈ s) (hy :
   exact hc.add_fderiv_lt hx hy hxy hf
 
 end StrictConvexOn
+
+namespace StrictConcaveOn
+
+/-- Strict variant of the reverse first-order gradient inequality for strictly concave `f`. -/
+theorem lt_add_inner_gradient (hc : StrictConcaveOn ℝ s f) (hx : x ∈ s) (hy : y ∈ s)
+    (hxy : x ≠ y) (hf : DifferentiableAt ℝ f x) :
+    f y < f x + ⟪∇ f x, y - x⟫ := by
+  rw [inner_gradient_left]
+  exact hc.lt_add_fderiv hx hy hxy hf
+
+end StrictConcaveOn
 
 /-- A differentiable function on a Hilbert space is convex iff it satisfies the first-order
 gradient inequality at every pair of points in `s`. -/
