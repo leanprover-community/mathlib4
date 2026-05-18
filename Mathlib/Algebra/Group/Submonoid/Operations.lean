@@ -871,6 +871,7 @@ theorem submonoidMap_surjective (f : M →* N) (M' : Submonoid M) :
 theorem submonoidMap_injective {f : M →* N} (hf : Injective f) (M' : Submonoid M) :
     Injective (f.submonoidMap M') := by
   grind [Injective, submonoidMap_apply_coe]
+
 end MonoidHom
 
 namespace Submonoid
