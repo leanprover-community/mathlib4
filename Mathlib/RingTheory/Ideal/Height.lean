@@ -390,7 +390,7 @@ private theorem IsLocalization.primeHeight_comap (S : Submonoid R) {A : Type*} [
   simpa [Ideal.height_eq_primeHeight] using IsLocalization.height_under_eq_of_isPrime S J
 
 theorem IsLocalization.height_under (S : Submonoid R) {A : Type*} [CommRing A] [Algebra R A]
-    [IsLocalization S A] (J : Ideal A) : (J.comap (algebraMap R A)).height = J.height := by
+    [IsLocalization S A] (J : Ideal A) : (J.under R).height = J.height := by
   rw [(J.comap _).height_eq_inf_minimalPrimes, J.height_eq_inf_minimalPrimes]
   simp only [IsLocalization.minimalPrimes_comap S A, iInf_image]
   apply iInf_congr (fun p ↦ iInf_congr fun hp ↦ ?_)
