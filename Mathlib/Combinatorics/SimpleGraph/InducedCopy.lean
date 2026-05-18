@@ -14,19 +14,19 @@ This file develops the induced analogues of the containment notions from
 `Mathlib/Combinatorics/SimpleGraph/Copy.lean`.
 
 For two simple graphs `G` and `H`, an *induced copy* of `G` in `H` is an induced subgraph of `H`
-isomorphic to `G`. Equivalently, it is a graph embedding `G ↪g H`.
+isomorphic to `G`. Equivalently, it is a graph embedding `Embedding G H`.
 
 ## Main declarations
 
 * `SimpleGraph.IsIndContained G H`, `G ⊴ H` is the relation that `H` contains an induced copy of
-  `G`, that is, the type `G ↪g H` is nonempty. This is equivalent to the existence of an
+  `G`, that is, the type `Embedding G H` is nonempty. This is equivalent to the existence of an
   isomorphism from `G` to an induced subgraph of `H`.
 * `SimpleGraph.IndFree` is the predicate that `H` does not contain an induced copy of `G`. This
   is the negation of `SimpleGraph.IsIndContained` implemented for convenience.
 * `SimpleGraph.UnlabeledEmbedding G H`: Type of induced `SimpleGraph.Subgraph`s of `H`
   isomorphic to `G`.
 * `SimpleGraph.embeddingCount H G`: Number of induced labeled copies of `G` in `H`, i.e. the
-  number of graph embeddings `G ↪g H`.
+  number of graph embeddings `Embedding G H`.
 * `SimpleGraph.unlabeledEmbeddingCount H G`: Number of induced `SimpleGraph.Subgraph`s of `H`
   isomorphic to `G`.
 
@@ -60,21 +60,21 @@ variable {V V' W W' X : Type*}
 /-!
 ### Embedding to subgraph
 
-For a graph embedding `f : G ↪g H`, the image is an induced subgraph of `H` isomorphic to `G`.
-This packages the image as a `H.Subgraph`, together with the inducedness and isomorphism
+For a graph embedding `f : Embedding G H`, the image is an induced subgraph of `H` isomorphic
+to `G`. This packages the image as a `H.Subgraph`, together with the inducedness and isomorphism
 characterisations needed downstream.
 -/
 
 namespace Embedding
 
 /-- The induced subgraph corresponding to an embedding. -/
-abbrev toSubgraph (f : G ↪g H) : H.Subgraph := f.toCopy.toSubgraph
+abbrev toSubgraph (f : Embedding G H) : H.Subgraph := f.toCopy.toSubgraph
 
-@[simp] lemma toSubgraph_isInduced (f : G ↪g H) : (toSubgraph f).IsInduced := by
+@[simp] lemma toSubgraph_isInduced (f : Embedding G H) : (toSubgraph f).IsInduced := by
   simp [toSubgraph, Copy.toSubgraph, Subgraph.IsInduced, Relation.map_apply_apply, f.injective]
 
 @[simp] lemma range_toSubgraph :
-    Set.range (toSubgraph : (G ↪g H) → H.Subgraph) =
+    Set.range (toSubgraph : (Embedding G H) → H.Subgraph) =
       {H' : H.Subgraph | H'.IsInduced ∧ Nonempty (G ≃g H'.coe)} := by
   ext H'
   simp only [Set.mem_range, Set.mem_setOf_eq]
@@ -92,7 +92,7 @@ end Embedding
 /-!
 ### Induced containment
 
-A graph `H` *inducingly contains* a graph `G` if there is some graph embedding `G ↪g H`. This
+A graph `H` *inducingly contains* a graph `G` if there is some graph embedding `Embedding G H`. This
 amounts to `H` having an induced subgraph isomorphic to `G`.
 
 We denote "`G` is inducingly contained in `H`" by `G ⊴ H` (`\trianglelefteq`).
@@ -101,14 +101,14 @@ We denote "`G` is inducingly contained in `H`" by `G ⊴ H` (`\trianglelefteq`).
 section IsIndContained
 
 /-- The relation `IsIndContained G H`, `G ⊴ H` says that `H` contains an induced copy of `G`,
-i.e. there exists a graph embedding `G ↪g H`.
+i.e. there exists a graph embedding `Embedding G H`.
 
 This is equivalent to the existence of an isomorphism from `G` to an induced subgraph of `H`. -/
-abbrev IsIndContained (G : SimpleGraph V) (H : SimpleGraph W) : Prop := Nonempty (G ↪g H)
+abbrev IsIndContained (G : SimpleGraph V) (H : SimpleGraph W) : Prop := Nonempty (Embedding G H)
 
 @[inherit_doc] scoped infixl:50 " ⊴ " => SimpleGraph.IsIndContained
 
-protected lemma Embedding.isIndContained (f : G ↪g H) : G ⊴ H := ⟨f⟩
+protected lemma Embedding.isIndContained (f : Embedding G H) : G ⊴ H := ⟨f⟩
 
 protected lemma IsIndContained.isContained : G ⊴ H → G ⊑ H := fun ⟨f⟩ ↦ f.isContained
 
@@ -231,24 +231,23 @@ copies of `G` in `H`.
 
 section EmbeddingCount
 
-/-- `H.embeddingCount G` is the number of induced labeled copies of `G` in `H`, i.e. the number of
-graph embeddings `G ↪g H`. See `SimpleGraph.unlabeledEmbeddingCount` for the number of induced
-unlabeled
-copies. -/
+/-- `H.embeddingCount G` is the number of induced labeled copies of `G` in `H`, i.e. the number
+of graph embeddings `Embedding G H`. See `SimpleGraph.unlabeledEmbeddingCount` for the number of
+induced unlabeled copies. -/
 noncomputable def embeddingCount (H : SimpleGraph W) (G : SimpleGraph V) : ℕ :=
-  Nat.card (G ↪g H)
+  Nat.card (Embedding G H)
 
 lemma embeddingCount_eq_nat_card (H : SimpleGraph W) (G : SimpleGraph V) :
-    H.embeddingCount G = Nat.card (G ↪g H) := by rw [embeddingCount]
+    H.embeddingCount G = Nat.card (Embedding G H) := by rw [embeddingCount]
 
-private instance [IsEmpty V] : Unique (G ↪g H) :=
+private instance [IsEmpty V] : Unique (Embedding G H) :=
   ⟨⟨RelEmbedding.ofIsEmpty G.Adj H.Adj⟩,
    fun _ => RelEmbedding.ext fun a => isEmptyElim a⟩
 
 @[simp] lemma embeddingCount_of_isEmpty [IsEmpty V] (H : SimpleGraph W) (G : SimpleGraph V) :
     H.embeddingCount G = 1 := Nat.card_unique
 
-instance [Finite V] [Finite W] : Finite (G ↪g H) :=
+instance [Finite V] [Finite W] : Finite (Embedding G H) :=
   Finite.of_injective _ DFunLike.coe_injective
 
 @[simp] lemma embeddingCount_eq_zero [Finite V] [Finite W] :
@@ -306,10 +305,10 @@ lemma unlabeledEmbeddingCount_le_embeddingCount [Finite V] [Finite W] :
     H.unlabeledEmbeddingCount G ≤ H.embeddingCount G := by
   rw [unlabeledEmbeddingCount, embeddingCount]
   apply Nat.card_le_card_of_surjective
-    (fun f : G ↪g H ↦ (⟨Embedding.toSubgraph f, f.toSubgraph_isInduced,
+    (fun f : Embedding G H ↦ (⟨Embedding.toSubgraph f, f.toSubgraph_isInduced,
       ⟨f.toCopy.isoToSubgraph⟩⟩ : G.UnlabeledEmbedding H))
   rintro ⟨H', hInd, ⟨e⟩⟩
-  obtain ⟨f, hf⟩ : ∃ f : G ↪g H, Embedding.toSubgraph f = H' := by
+  obtain ⟨f, hf⟩ : ∃ f : Embedding G H, Embedding.toSubgraph f = H' := by
     rw [← Set.mem_range, Embedding.range_toSubgraph]; exact ⟨hInd, ⟨e⟩⟩
   exact ⟨f, Subtype.ext hf⟩
 
