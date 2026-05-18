@@ -37,17 +37,78 @@ def withIncreasedSearchDepth {α} (x : ApplyRuleSetsM α) : ApplyRuleSetsM α :=
     modify fun s => { s with depth := depth }
     throw e
 
-/-- Roll back metavariable assignments if `x` returns `none` or throws. -/
-def observingWithRollback? {α} (x : ApplyRuleSetsM (Option α)) : ApplyRuleSetsM (Option α) := do
-  let mctx ← getMCtx
+def withIncreasedCacheDepth {α} (x : ApplyRuleSetsM α) : ApplyRuleSetsM α := do
+  let oldSize := (← get).goalCaches.size
+  let minLctxIndex := (← getLCtx).numIndices
+  modify fun s =>
+    { s with goalCaches := s.goalCaches.push { minLctxIndex } }
   try
-    match ← x with
-    | some a => return some a
-    | none => setMCtx mctx; return none
+    let a ← x
+    modify fun s => { s with goalCaches := s.goalCaches.extract 0 oldSize }
+    return a
   catch e =>
-    trace[Meta.Tactic.apply_rulesets] "candidate failed: {e.toMessageData}"
-    setMCtx mctx
-    return none
+    modify fun s => { s with goalCaches := s.goalCaches.extract 0 oldSize }
+    throw e
+
+def currentGoalCache? : ApplyRuleSetsM (Option GoalCache) := do
+  let caches := (← get).goalCaches
+  return caches.back?
+
+def cacheCurrentFailure (goal : Goal) : ApplyRuleSetsM Unit := do
+  modify fun s =>
+    let i := s.goalCaches.size - 1
+    if h : i < s.goalCaches.size then
+      let cache := { s.goalCaches[i] with failures := s.goalCaches[i].failures.insert goal }
+      { s with goalCaches := s.goalCaches.set i cache }
+    else
+      s
+
+def containsCurrentFailure (goal : Goal) : ApplyRuleSetsM Bool := do
+  return (← currentGoalCache?).any (·.failures.contains goal)
+
+def findCachedSuccess? (goal : Goal) : ApplyRuleSetsM (Option Expr) := do
+  for cache in (← get).goalCaches.reverse do
+    if let some proof := cache.successes.get? goal then
+      return some proof
+  return none
+
+def maxLocalIndex? (es : Array Expr) : MetaM (Option Nat) := do
+  let lctx ← getLCtx
+  let mut max? := none
+  for e in es do
+    for fvarId in (Lean.collectFVars {} e).fvarIds do
+      if let some decl := lctx.find? fvarId then
+        max? := some <| max (max?.getD 0) decl.index
+  return max?
+
+def successCacheIndex (goal : Goal) (proof : Expr) : ApplyRuleSetsM Nat := do
+  let maxIdx? ← maxLocalIndex? #[goal.expr, proof]
+  let caches := (← get).goalCaches
+  let some maxIdx := maxIdx? | return 0
+  for h : i in [:caches.size] do
+    if maxIdx < caches[i].minLctxIndex then
+      return i
+  return caches.size - 1
+
+def cacheSuccess (goal : Goal) (proof : Expr) : ApplyRuleSetsM Unit := do
+  let proof ← instantiateMVars proof
+  unless proof.hasExprMVar do
+    let i ← successCacheIndex goal proof
+    modify fun s =>
+      if h : i < s.goalCaches.size then
+        let cache := { s.goalCaches[i] with successes := s.goalCaches[i].successes.insert goal proof }
+        { s with goalCaches := s.goalCaches.set i cache }
+      else
+        s
+
+def mkGoal (e : Expr) : MetaM Goal := do
+  let r ← abstractMVars (← instantiateMVars e)
+  let expr ← lambdaTelescope r.expr fun xs body => mkForallFVars xs body
+  return { expr, numOutputs := r.numMVars }
+
+def Goal.open {α} (goal : Goal) (k : Array Expr → Expr → MetaM α) : MetaM α := do
+  let (outputs, _, body) ← forallMetaTelescopeReducing goal.expr (some goal.numOutputs)
+  k outputs body
 
 /-- Run the tactic embedded in an `autoParam` goal. -/
 def runAutoParam? (goalType : Expr) : MetaM (Option Expr) := do
@@ -132,15 +193,41 @@ partial def assumption? (origin : ArgOrigin) (goalType : Expr) : ApplyRuleSetsM 
             pattern := localDecl.type
             type := .expr (.fvar localDecl.fvarId)
           }
-          if let some r ← tryRule? origin goalType rule then
+          if let some r ← tryRule? origin (← mkGoal goalType) rule then
             return r
   return none
 
 partial def applyRuleSets (origin : ArgOrigin) (goalType : Expr) :
     ApplyRuleSetsM (Option Expr) := do
-  let goalType ← instantiateMVars goalType
+  if let some r ← applyRuleSetsGoal origin (← mkGoal goalType) then
+    if ← isDefEq goalType (← inferType r) then
+      return r
+    else
+      return none
+  else
+    return none
+
+partial def applyRuleSetsGoal (origin : ArgOrigin) (goal : Goal) :
+    ApplyRuleSetsM (Option Expr) := do
+  let goalType ← goal.open fun _ goalType => pure goalType
   withTraceNode `Meta.Tactic.apply_rulesets
     (fun _ => return s!"{← ppExpr goalType}") do
+  if ← containsCurrentFailure goal then
+    trace[Meta.Tactic.apply_rulesets] "failed goal cache hit"
+    return none
+  if let some proof ← findCachedSuccess? goal then
+    trace[Meta.Tactic.apply_rulesets] "successful goal cache hit"
+    return some proof
+  match ← applyRuleSetsGoalCore origin goal goalType with
+  | some proof =>
+    cacheSuccess goal proof
+    return some proof
+  | none =>
+    cacheCurrentFailure goal
+    return none
+
+partial def applyRuleSetsGoalCore (origin : ArgOrigin) (goal : Goal) (goalType : Expr) :
+    ApplyRuleSetsM (Option Expr) := do
   checkStep
   let depth := (← get).depth
   let maxDepth := (← read).config.maxDepth
@@ -149,19 +236,20 @@ partial def applyRuleSets (origin : ArgOrigin) (goalType : Expr) :
     return none
   let cfg := (← read).config
   if cfg.autoParam then
-    if let some proof ← observingWithRollback? <| runAutoParam? goalType then
+    if let some proof ← runAutoParam? goalType then
       trace[Meta.Tactic.apply_rulesets] "solved by autoParam tactic"
       return some proof
   if cfg.assumption then
-    if let some proof ← observingWithRollback? <| assumption? origin goalType then
+    if let some proof ← assumption? origin goalType then
       trace[Meta.Tactic.apply_rulesets] "solved by local assumption"
       return some proof
   if cfg.intro then
-    let some proof ← observingWithRollback? <| forallTelescopeReducing goalType fun xs body => do
+    let some proof ← forallTelescopeReducing goalType fun xs body => do
       if xs.isEmpty then
         return none
       trace[Meta.Tactic.apply_rulesets] "introducing {xs.size} binder(s)"
-      let some proof ← withIncreasedSearchDepth <| applyRuleSets origin body | return none
+      let some proof ← withIncreasedSearchDepth <| withIncreasedCacheDepth <|
+        applyRuleSets origin body | return none
       return some (← mkLambdaFVars xs proof)
       | pure ()
     return some proof
@@ -169,11 +257,11 @@ partial def applyRuleSets (origin : ArgOrigin) (goalType : Expr) :
   trace[Meta.Tactic.apply_rulesets]
     "candidate rules: {rules.map fun rule => rule.name}"
   for rule in (← read).explicitRules do
-    if let some proof ← observingWithRollback? <| tryRule? origin goalType rule then
+    if let some proof ← tryRule? origin goal rule then
       return some proof
   for rule in rules do
     unless (← read).erased.contains rule.name do
-      if let some proof ← observingWithRollback? <| tryRule? origin goalType rule then
+      if let some proof ← tryRule? origin goal rule then
         return some proof
   trace[Meta.Tactic.apply_rulesets] "no rule matched"
   return none
@@ -231,7 +319,7 @@ partial def synthesizeArgs (ruleName : Name) (args : Array Expr)
       continue
   return success
 
-partial def tryRule? (origin : ArgOrigin) (goalType : Expr) (rule : Rule) :
+partial def tryRule? (origin : ArgOrigin) (goal : Goal) (rule : Rule) :
     ApplyRuleSetsM (Option Expr) := do
   let action := match rule.origin with
     | .decl .. =>
@@ -246,6 +334,10 @@ partial def tryRule? (origin : ArgOrigin) (goalType : Expr) (rule : Rule) :
   if (← read).erased.contains rule.name then
     trace[Meta.Tactic.apply_rulesets] "rule is erased"
     return none
+  if rule.hasExprMVar then
+    trace[Meta.Tactic.apply_rulesets] "rule contains expression metavariables"
+    return none
+  let goalType ← goal.open fun _ goalType => pure goalType
   let (ruleType, pattern) ← rule.instantiate
   let (args, _, conclusion) ← forallMetaTelescope pattern
   let ok ← matchRuleConclusion rule conclusion goalType
@@ -277,9 +369,6 @@ partial def tryRule? (origin : ArgOrigin) (goalType : Expr) (rule : Rule) :
     return some proof
 
 end
-
-/-- Backward-search using the active rule sets. Alias for `applyRuleSets`. -/
-abbrev appluRuleSets := applyRuleSets
 
 end Tactic.ApplyRuleSets
 end Mathlib

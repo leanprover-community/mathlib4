@@ -62,7 +62,7 @@ example : True := by
 
 -- Explicit theorem/term rules are tried directly.
 example (p q : Prop) (hp : p) (hq : q) : p ∧ q := by
-  apply_rulesets [fun hp hq => And.intro hp hq, hp, hq]
+  apply_rulesets [fun (hp : p) (hq : q) => And.intro hp hq, hp, hq]
 
 -- Local hypotheses are used for proposition goals by default.
 example (p : Prop) (hp : p) : p := by
@@ -123,3 +123,55 @@ example (p q : Prop) : p → q → p ∧ q := by
   fail_if_success apply_rulesets (config := { maxDepth := 0 }) [test_rules]
   intro hp hq
   exact ⟨hp, hq⟩
+
+structure HasDeriv (f : α → β) (f' : α × α → β × β) : Prop where
+
+
+namespace HasDeriv
+
+theorem congr_deriv {f : α → β} {f' f''} (hf : HasDeriv f f') (hf : f' = f'')  :
+    HasDeriv f f'' := ⟨⟩
+
+@[has_deriv]
+theorem id : HasDeriv (fun x : α => x) (fun xdx => xdx) := ⟨⟩
+
+local instance [Add α] [Add β] : Add (α × β) := ⟨fun (x,y) (x',y') => (x+x', y+y')⟩
+
+@[has_deriv]
+theorem add [Add β] (f g : α → β) (hf : HasDeriv f f') (hg : HasDeriv g g') :
+    HasDeriv (fun x : α => f x + g x) (fun xdx => f' xdx + g' xdx) := ⟨⟩
+
+@[has_deriv high]
+theorem div_bad [Div β] (f g : α → β) (hf : HasDeriv f f') (hg : HasDeriv g g')
+    (bad : False) :
+    HasDeriv (fun x : α => f x / g x) (fun xdx => f' xdx) := ⟨⟩
+
+@[has_deriv]
+theorem div_good [Add β] [Sub β] [Mul β] [Div β] [One β] (f g : α → β)
+    (hf : HasDeriv f f') (hg : HasDeriv g g') :
+    HasDeriv (fun x : α => f x / g x) (fun xdx =>
+      let (y,dy) := f' xdx; let (z,dz) := g' xdx;
+      let y := y; let z := z;
+      let iz := 1/z
+      (y*iz, (iz*iz)*(dy * z - y * dz))) := ⟨⟩
+
+example : HasDeriv (fun x : Nat => x) (fun xdx => xdx) := by
+  apply congr_deriv
+  · apply_rulesets [has_deriv]
+  · rfl
+
+example : HasDeriv (fun x : Nat => x + x + x) (fun xdx => xdx + xdx + xdx) := by
+  apply congr_deriv
+  · apply_rulesets [has_deriv]
+  · rfl
+
+example : HasDeriv (fun x : Nat => x / x) (fun xdx =>
+      have y := xdx.fst;
+      have z := xdx.fst;
+      have iz := 1 / z;
+      (y * iz, iz * iz * (xdx.snd * z - y * xdx.snd))) := by
+  apply congr_deriv
+  · apply_rulesets [has_deriv]
+  · simp -zeta []; rfl
+
+end HasDeriv

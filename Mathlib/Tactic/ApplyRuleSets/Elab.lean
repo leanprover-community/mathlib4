@@ -151,6 +151,8 @@ private def evalApplyRuleSetsCore (cfgStx : TSyntax ``Parser.Tactic.optConfig)
             pattern := type
             order := i
           }
+          if rule.hasExprMVar then
+            throwErrorAt explicitTerms[i] "explicit rule contains expression metavariables"
           explicitRules := explicitRules.push rule
         else
           let e ← abstractMVars e
@@ -162,6 +164,8 @@ private def evalApplyRuleSetsCore (cfgStx : TSyntax ``Parser.Tactic.optConfig)
             levelParams := e.paramNames
             order := i
           }
+          if rule.hasExprMVar then
+            throwErrorAt explicitTerms[i] "explicit rule contains expression metavariables"
           explicitRules := explicitRules.push rule
     Term.synthesizeSyntheticMVarsNoPostponing
     let ctx : Context :=
@@ -171,7 +175,7 @@ private def evalApplyRuleSetsCore (cfgStx : TSyntax ``Parser.Tactic.optConfig)
         erased := erased,
         disch := disch
         lctxInitIndices := (← getLCtx).numIndices }
-    let s : State := {}
+    let s : State := { goalCaches := #[{ minLctxIndex := (← getLCtx).numIndices }] }
     let (proof?, s) ← (applyRuleSets { ruleName := Name.anonymous } goalType).run ctx |>.run s
     match proof? with
     | some proof => goal.assign proof; replaceMainGoal []

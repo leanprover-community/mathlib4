@@ -89,8 +89,32 @@ structure Rule where
   order : Nat := 0
 deriving Inhabited
 
+/-- A canonicalized goal used by `apply_rulesets` internally.
+
+The expression `expr` contains no expression metavariables from the original goal. If the original
+goal was `P a b ?c ?d`, then `expr` is `∀ c d, P a b c d`, and `numOutputs = 2` records how many
+leading binders should be reopened as fresh output metavariables for each attempt. -/
+structure Goal where
+  expr : Expr
+  numOutputs : Nat
+deriving Inhabited, BEq, Hashable
+
+/-- Per-local-context-depth cache for `apply_rulesets` goals. -/
+structure GoalCache where
+  /-- All local declarations with index strictly below this are in scope for this cache level. -/
+  minLctxIndex : Nat
+  successes : Std.HashMap Goal Expr := {}
+  failures : Std.HashSet Goal := {}
+deriving Inhabited
+
 def Rule.name (rule : Rule) : Name :=
   rule.origin.name
+
+def Rule.hasExprMVar (rule : Rule) : Bool :=
+  rule.pattern.hasExprMVar ||
+    match rule.type with
+    | .expr proof => proof.hasExprMVar
+    | .proc proc => proc.hasExprMVar
 
 def exprLevelParams (e : Expr) : Array Name :=
   (Lean.collectLevelParams {} e).params
@@ -110,6 +134,8 @@ structure State where
   /-- Per-run ruleset trees. `RefinedDiscrTree` resolves lazy entries during lookup, so each
   `getMatch` result must be stored back here for subsequent queries in the same tactic run. -/
   ruleSetTrees : Std.HashMap Name (RefinedDiscrTree Rule) := {}
+  /-- Stack of goal caches, one for each local-context depth used by introduced binders. -/
+  goalCaches : Array GoalCache := #[]
 
 /-- Search context. -/
 structure Context where

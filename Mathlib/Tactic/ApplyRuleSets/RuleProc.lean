@@ -47,6 +47,8 @@ initialize ruleProcDeclExt : SimpleScopedEnvExtension RuleProcDecl (Std.HashMap 
 /-- Register the pattern for a ruleproc declaration. -/
 def registerRuleProcPattern (declName : Name) (pattern : Expr) (levelParams : Array Name := #[])
     (defaultProc? : Option Expr := none) : MetaM Unit := do
+  if pattern.hasExprMVar then
+    throwError "invalid ruleproc pattern for `{.ofConstName declName}` contains expression metavariables"
   let levelParams := levelParams ++ (exprLevelParams pattern).filter (!levelParams.contains ·)
   let (_, _, conclusion) ← forallMetaTelescope pattern
   let keys ← keysForPattern conclusion
@@ -96,7 +98,10 @@ def explicitRuleProcRule? (origin : Origin) (proc : Expr) : MetaM (Option Rule) 
   let some decl ← getRuleProcDecl? declName
     | throwError "explicit ruleproc `{.ofConstName declName}` has no registered pattern"
   let (pattern, levelParams) ← instantiateRuleProcPattern decl proc
-  return some { origin, type := .proc proc, pattern, levelParams }
+  let rule : Rule := { origin, type := .proc proc, pattern, levelParams }
+  if rule.hasExprMVar then
+    throwError "explicit ruleproc `{.ofConstName declName}` contains expression metavariables"
+  return some rule
 
 /-- Declaration command used internally to register a ruleproc pattern. -/
 elab "ruleproc_pattern% " pat:term " => " proc:ident : command => do

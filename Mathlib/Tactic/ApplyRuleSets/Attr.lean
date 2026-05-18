@@ -51,6 +51,8 @@ def addTheoremRule (ruleSetName declName : Name) (kind : AttributeKind)
     levelParams := info.levelParams.toArray
     priority := prio
   }
+  if rule.hasExprMVar then
+    throwError "invalid theorem rule `{.ofConstName declName}` contains expression metavariables"
   ruleSetsExt.add { ruleSetName, rule, keys } kind
   trace[Meta.Tactic.apply_rulesets.attr] "added theorem rule {declName} to {ruleSetName}"
 
@@ -69,6 +71,8 @@ def addProcRule (ruleSetName declName : Name) (kind : AttributeKind)
     levelParams := decl.levelParams
     priority := prio
   }
+  if rule.hasExprMVar then
+    throwError "invalid ruleproc rule `{.ofConstName declName}` contains expression metavariables"
   ruleSetsExt.add { ruleSetName, rule, keys := decl.keys } kind
   trace[Meta.Tactic.apply_rulesets.attr] "added ruleproc {declName} to {ruleSetName}"
 
