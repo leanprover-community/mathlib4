@@ -206,12 +206,15 @@ theorem birkhoffAverageSupSet_eq_birkhoffSupSet {f : α → α} {g a} (ha : 0 < 
     birkhoffAverageSupSet f g a = birkhoffSupSet f (g - fun _ ↦ a) := by
   unfold birkhoffAverageSupSet birkhoffSupSet
   have {n x} : a < birkhoffAverage ℝ f g n x ↔ 0 < birkhoffSum f (g - fun _ ↦ a) n x := by
-    cases n with
-    | zero =>
-      refine ⟨fun h => ?_, fun h => ?_⟩
-      · exfalso; rw [birkhoffAverage_zero] at h; exact lt_asymm ha h
-      · exfalso; rw [birkhoffSum_zero] at h; exact lt_irrefl 0 h
-    | succ n => exact birkhoffAverage_iff_birkhoffSum (by positivity)
+    rcases n
+    · refine ⟨fun h => ?_, fun h => ?_⟩
+      · exfalso
+        rw [birkhoffAverage_zero] at h;
+        exact lt_asymm ha h
+      · exfalso
+        rw [birkhoffSum_zero] at h
+        exact lt_irrefl 0 h
+    · exact birkhoffAverage_iff_birkhoffSum (by positivity)
   conv =>
     enter [1, 1, x, 1, n]
     rw [this]
@@ -248,21 +251,22 @@ theorem setIntegral_nonneg_on_birkhoffSupSet :
 
 variable [IsFiniteMeasure μ]
 
-/-- **Maximal ergodic theorem**: The measure of the set where the supremum of the Birkhoff
-averages of `g` is greater than `a`, multiplied by `a`, is bounded above by the integral of
-`g` on this set. -/
+/-- The measure of the set where the supremum of the Birkhoff averages of `g` is greater than `a`,
+multiplied by `a`, is bounded above by the integral of `g` on this set. -/
 public theorem meas_birkhoffAverageSupSet_smul_const_le_integral (a : ℝ) (ha : 0 < a) :
-    μ.real (birkhoffAverageSupSet f g a) • a ≤ ∫ x in birkhoffAverageSupSet f g a, g x ∂μ := by
+    a * μ.real (birkhoffAverageSupSet f g a) ≤ ∫ x in birkhoffAverageSupSet f g a, g x ∂μ := by
   have p₁ := Integrable.sub hg (integrable_const a)
   calc
     _ = ∫ x in birkhoffSupSet f (g - fun _ ↦ a), a ∂μ := by
-      rw [setIntegral_const, birkhoffAverageSupSet_eq_birkhoffSupSet ha]
+      simp [birkhoffAverageSupSet_eq_birkhoffSupSet ha]
+      ring
     _ ≤ ∫ x in birkhoffSupSet f (g - fun _ ↦ a), a ∂μ +
         ∫ x in birkhoffSupSet f (g - fun _ ↦ a), g x - a ∂μ := by
       exact le_add_of_nonneg_right (setIntegral_nonneg_on_birkhoffSupSet μ hf p₁)
     _ = ∫ x in birkhoffAverageSupSet f g a, g x ∂μ := by
       rw [← integral_add, birkhoffAverageSupSet_eq_birkhoffSupSet ha]
-      · rcongr; grind
+      · rcongr
+        ring
       · exact (integrable_const a).restrict
       · exact p₁.restrict
 
@@ -274,11 +278,13 @@ variable {E : Type*} [NormedAddCommGroup E] {g : α → E} (hg : Integrable g μ
 
 include hg
 
-/-- **Maximal ergodic theorem** for group-valued functions: The measure of the set where
-the supremum of the Birkhoff averages of `‖g‖` is greater than `a`, multiplied by `a`, is
-bounded above by the norm of `g`. -/
-public theorem meas_birkhoffAverageSupSet_smul_const_le_norm (a : ℝ) (ha : 0 < a) :
-    μ.real (birkhoffAverageSupSet f (fun x ↦ ‖g x‖) a) • a ≤ ∫ x, ‖g x‖ ∂μ :=
+/-- Maximal ergodic theorem: maximal ergodic operator satisfies a weak-type inequality. -/
+public theorem meas_birkhoffAverageSupSet_smul_const_le_norm :
+    ⨆ a, a * μ.real (birkhoffAverageSupSet f (fun x ↦ ‖g x‖) a) ≤ ∫ x, ‖g x‖ ∂μ := by
+  refine ciSup_le fun a ↦ ?_
+  by_cases! ha : 0 < a; swap
+  · apply mul_nonpos_of_nonpos_of_nonneg ha measureReal_nonneg |>.trans
+    exact integral_nonneg (fun _ ↦ norm_nonneg _)
   calc
     _ ≤ ∫ x in birkhoffAverageSupSet f (fun x ↦ ‖g x‖) a, ‖g x‖ ∂μ := by
       exact meas_birkhoffAverageSupSet_smul_const_le_integral μ hf hg.norm a ha
