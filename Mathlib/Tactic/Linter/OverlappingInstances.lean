@@ -159,13 +159,17 @@ def runLinter (ctx : ContextInfo) (lctx : LocalContext) (expectedType? : Option 
     overlaps.foldl (init := {}) fun s (overlap, fvars) ↦ s.alter fvars (·.getD #[] |>.push overlap)
   let sortedOverlaps := sortedOverlaps.toArray.qsort (Array.lex ·.2 ·.2 Expr.lt)
   let mut msgs := #[]
+  let mut needsDiamondMsg := false
   for (fvars, overlaps) in sortedOverlaps do
     let fvarTypes ← fvars.mapM (do instantiateMVars <| ← ·.getType)
     -- If the overlapping instances are the same, use a simple message.
     if fvarTypes.all (· == fvarTypes[0]!) then
-      msgs := msgs.push <| m!"There are {fvarTypes.size} `{.sbracket fvarTypes[0]!}` instances."
+      msgs := msgs.push <|
+        m!"There are {fvarTypes.size} `{.sbracket fvarTypes[0]!}` instances; one is sufficient."
     else
       let propOverlap ← overlaps.allM isProp
+      -- Ignore `Prop` overlaps when data conflicts are present.
+      let overlaps ← if !propOverlap then overlaps.filterM (notM <| isProp ·) else pure overlaps
       let localInsts := (← getLCtx).decls.toList.reduceOption
       -- Otherwise, figure out which instances can be synthesized from the other instances
       let mut redundant := #[]
@@ -180,9 +184,11 @@ def runLinter (ctx : ContextInfo) (lctx : LocalContext) (expectedType? : Option 
       let overlaps := .andList <| overlaps.toList.map (m!"`{.sbracket ·}`")
       let mut msg :=
         m!"{fvarTypes} {ite propOverlap "each imply" "give conflicting instances of"} {overlaps}."
-      unless redundant.isEmpty do
+      if redundant.isEmpty then
+        needsDiamondMsg := true
+      else
         let redundant' := .andList <| redundant.toList.map (m!"`{.sbracket ·}`")
-        msg := m!"{msg}\nOf these, {redundant'} {ite (redundant.size = 1) "is" "are"} redundant."
+        msg := m!"{msg}\nOf these, {redundant'} may be removed."
       msgs := msgs.push msg
   if msgs.isEmpty then
     return none
@@ -197,7 +203,11 @@ def runLinter (ctx : ContextInfo) (lctx : LocalContext) (expectedType? : Option 
   -- Create a bulleted list if there are multiple messages, otherwise just a single line
   msg := if h : msgs.size = 1 then m!"{msg}\n\n{msgs[0]}" else
     msgs.foldl (init := msg ++ "\n") (m!"{·}\n• {.nestD ·}")
-  msg := msg ++ m!"\n\nConsider choosing different instance hypotheses."
+  if needsDiamondMsg then
+    msg := msg ++ m!"\n\n\
+      When two instances of a type class are not definitionally equal to eachother, \
+      they form an \"instance diamond\", which can lead to unexpected unification failures.\n\
+      Consider assuming different instances."
   addMessageContextFull msg
 
 initialize registerTraceClass `overlappingInstances

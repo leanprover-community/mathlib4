@@ -30,9 +30,7 @@ inst✝¹ inst✝ : Add Nat
 ---
 warning: Declaration `foo` has overlapping instances:
 
-There are 4 `[Add Nat]` instances.
-
-Consider choosing different instance hypotheses.
+There are 4 `[Add Nat]` instances; one is sufficient.
 
 Note: This linter can be disabled with `set_option linter.overlappingInstances false`
 -/
@@ -47,7 +45,8 @@ warning: Declaration `foo₁` has overlapping instances:
 
 `[FooBarBaz Nat]` and `[FooBarBaq Nat]` give conflicting instances of `[SubBar Nat]`.
 
-Consider choosing different instance hypotheses.
+When two instances of a type class are not definitionally equal to eachother, they form an "instance diamond", which can lead to unexpected unification failures.
+Consider assuming different instances.
 
 Note: This linter can be disabled with `set_option linter.overlappingInstances false`
 -/
@@ -60,11 +59,9 @@ set_option linter.overlappingInstances true in
 /--
 warning: Declaration `foo₂` has overlapping instances:
 
-• There are 2 `[FooBarBaz Nat]` instances.
+• There are 2 `[FooBarBaz Nat]` instances; one is sufficient.
 • `[FooBarBaz Nat]`, `[FooBarBaz Nat]`, and `[FooBarBaq Nat]` give conflicting instances of `[SubBar Nat]`.
-  Of these, `[FooBarBaz Nat]` and `[FooBarBaz Nat]` are redundant.
-
-Consider choosing different instance hypotheses.
+  Of these, `[FooBarBaz Nat]` and `[FooBarBaz Nat]` may be removed.
 
 Note: This linter can be disabled with `set_option linter.overlappingInstances false`
 -/
@@ -74,9 +71,7 @@ def foo₂ [FooBarBaz Nat] [FooBarBaz Nat] [FooBarBaq Nat] : Bool := true
 /--
 warning: Declaration `foo₃` has overlapping instances:
 
-There are 2 `[FooBarBaz Nat]` instances.
-
-Consider choosing different instance hypotheses.
+There are 2 `[FooBarBaz Nat]` instances; one is sufficient.
 
 Note: This linter can be disabled with `set_option linter.overlappingInstances false`
 -/
@@ -86,11 +81,9 @@ def foo₃ [FooBarBaz Nat] [FooBarBaz Nat] : Bool := true
 /--
 warning: Declaration `foo₄` has overlapping instances:
 
-• There are 2 `[FooBarBaz Nat]` instances.
+• There are 2 `[FooBarBaz Nat]` instances; one is sufficient.
 • `[FooBarBaz Nat]`, `[FooBarBaz Nat]`, and `[Bar Nat]` give conflicting instances of `[SubBar Nat]`.
-  Of these, `[FooBarBaz Nat]`, `[FooBarBaz Nat]`, and `[Bar Nat]` are redundant.
-
-Consider choosing different instance hypotheses.
+  Of these, `[FooBarBaz Nat]`, `[FooBarBaz Nat]`, and `[Bar Nat]` may be removed.
 
 Note: This linter can be disabled with `set_option linter.overlappingInstances false`
 -/
@@ -102,7 +95,8 @@ warning: Declaration `foo₅` has overlapping instances:
 
 `[FooBarBaz Nat]` and `[FooBarBaz' Nat]` give conflicting instances of `[Baz Nat]` and `[SubBar Nat]`.
 
-Consider choosing different instance hypotheses.
+When two instances of a type class are not definitionally equal to eachother, they form an "instance diamond", which can lead to unexpected unification failures.
+Consider assuming different instances.
 
 Note: This linter can be disabled with `set_option linter.overlappingInstances false`
 -/
@@ -115,7 +109,8 @@ warning: Declaration `foo₆` has overlapping instances:
 • `[FooBarBaz Nat]` and `[FooBarBaz' Nat]` give conflicting instances of `[Baz Nat]`.
 • `[FooBarBaz Nat]`, `[FooBarBaz' Nat]`, and `[FooBarBaq Nat]` give conflicting instances of `[SubBar Nat]`.
 
-Consider choosing different instance hypotheses.
+When two instances of a type class are not definitionally equal to eachother, they form an "instance diamond", which can lead to unexpected unification failures.
+Consider assuming different instances.
 
 Note: This linter can be disabled with `set_option linter.overlappingInstances false`
 -/
@@ -129,9 +124,7 @@ namespace Foo
 /--
 warning: Declaration `foo` has overlapping instances:
 
-There are 2 `[Add Nat]` instances.
-
-Consider choosing different instance hypotheses.
+There are 2 `[Add Nat]` instances; one is sufficient.
 
 Note: This linter can be disabled with `set_option linter.overlappingInstances false`
 -/
@@ -152,9 +145,7 @@ class IsBaz : Prop extends IsBar
 warning: Declaration `_example` has overlapping instances:
 
 `[IsBar]` and `[IsBaz]` each imply `[IsFoo]`.
-Of these, `[IsBar]` is redundant.
-
-Consider choosing different instance hypotheses.
+Of these, `[IsBar]` may be removed.
 
 Note: This linter can be disabled with `set_option linter.overlappingInstances false`
 -/
@@ -170,9 +161,7 @@ class Baz2 : Type extends Baz
 warning: Declaration `_example` has overlapping instances:
 
 `[IsFoo]` and `[Bar]` each imply `[IsFoo]`.
-Of these, `[IsFoo]` is redundant.
-
-Consider choosing different instance hypotheses.
+Of these, `[IsFoo]` may be removed.
 
 Note: This linter can be disabled with `set_option linter.overlappingInstances false`
 -/
@@ -186,9 +175,7 @@ example [Bar] [Baz] : True := trivial
 /--
 warning: Declaration `_example` has overlapping instances:
 
-There are 2 `[Baz]` instances.
-
-Consider choosing different instance hypotheses.
+There are 2 `[Baz]` instances; one is sufficient.
 
 Note: This linter can be disabled with `set_option linter.overlappingInstances false`
 -/
@@ -198,10 +185,8 @@ example [Baz] [Baz] : True := trivial
 /--
 warning: Declaration `_example` has overlapping instances:
 
-`[Baz]` and `[Baz1]` give conflicting instances of `[Baz]` and `[IsFoo]`.
-Of these, `[Baz]` is redundant.
-
-Consider choosing different instance hypotheses.
+`[Baz]` and `[Baz1]` give conflicting instances of `[Baz]`.
+Of these, `[Baz]` may be removed.
 
 Note: This linter can be disabled with `set_option linter.overlappingInstances false`
 -/
@@ -211,9 +196,10 @@ example [Baz] [Baz1] : True := trivial
 /--
 warning: Declaration `_example` has overlapping instances:
 
-`[Baz1]` and `[Baz2]` give conflicting instances of `[Baz]` and `[IsFoo]`.
+`[Baz1]` and `[Baz2]` give conflicting instances of `[Baz]`.
 
-Consider choosing different instance hypotheses.
+When two instances of a type class are not definitionally equal to eachother, they form an "instance diamond", which can lead to unexpected unification failures.
+Consider assuming different instances.
 
 Note: This linter can be disabled with `set_option linter.overlappingInstances false`
 -/
@@ -232,9 +218,7 @@ class inductive IndFoo where
 /--
 warning: Declaration `indFoo` has overlapping instances:
 
-There are 2 `[IndFoo]` instances.
-
-Consider choosing different instance hypotheses.
+There are 2 `[IndFoo]` instances; one is sufficient.
 
 Note: This linter can be disabled with `set_option linter.overlappingInstances false`
 -/
@@ -247,9 +231,7 @@ class inductive IndFooProp : Prop where
 /--
 warning: Declaration `indFooProp` has overlapping instances:
 
-There are 2 `[IndFooProp]` instances.
-
-Consider choosing different instance hypotheses.
+There are 2 `[IndFooProp]` instances; one is sufficient.
 
 Note: This linter can be disabled with `set_option linter.overlappingInstances false`
 -/
@@ -265,9 +247,7 @@ variable {α : Type*} [Repr α]
 /--
 warning: Declaration `needsInstantiateMVars` has overlapping instances:
 
-There are 2 `[Repr α]` instances.
-
-Consider choosing different instance hypotheses.
+There are 2 `[Repr α]` instances; one is sufficient.
 
 Note: This linter can be disabled with `set_option linter.overlappingInstances false`
 -/
@@ -286,9 +266,7 @@ set_option linter.overlappingInstances false
 /--
 warning: Declaration `fooSomething` has overlapping instances:
 
-There are 4 `[Add Nat]` instances.
-
-Consider choosing different instance hypotheses.
+There are 4 `[Add Nat]` instances; one is sufficient.
 
 Note: This linter can be disabled with `set_option linter.overlappingInstances false`
 -/
@@ -310,9 +288,7 @@ class B (α : Type u) extends A α
 warning: Declaration `_example` has overlapping instances:
 
 `[B α]` and `[A α]` give conflicting instances of `[A α]`.
-Of these, `[A α]` is redundant.
-
-Consider choosing different instance hypotheses.
+Of these, `[A α]` may be removed.
 
 Note: This linter can be disabled with `set_option linter.overlappingInstances false`
 -/
@@ -337,9 +313,7 @@ instance {α} : A α where
 warning: Declaration `_example` has overlapping instances:
 
 `[B α β]` and `[B' α β]` give conflicting instances of `[B α β]`.
-Of these, `[B α β]` is redundant.
-
-Consider choosing different instance hypotheses.
+Of these, `[B α β]` may be removed.
 
 Note: This linter can be disabled with `set_option linter.overlappingInstances false`
 -/
@@ -353,9 +327,7 @@ end parameters
 /--
 warning: Declaration `List.lt'.go` has overlapping instances:
 
-There are 2 `[DecidableEq α]` instances.
-
-Consider choosing different instance hypotheses.
+There are 2 `[DecidableEq α]` instances; one is sufficient.
 
 Note: This linter can be disabled with `set_option linter.overlappingInstances false`
 -/
@@ -382,9 +354,7 @@ example [IsAClass1] [IsAClass1'] : True := trivial
 warning: Declaration `_example` has overlapping instances:
 
 `[IsAClass1]` and `[IsAClass2]` give conflicting instances of `[IsAClass1]`.
-Of these, `[IsAClass1]` is redundant.
-
-Consider choosing different instance hypotheses.
+Of these, `[IsAClass1]` may be removed.
 
 Note: This linter can be disabled with `set_option linter.overlappingInstances false`
 -/
