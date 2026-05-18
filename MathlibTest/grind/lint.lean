@@ -4,7 +4,7 @@ import Mathlib
 -- We'll make an exception for this one,
 -- but if we accumulate too many we can raise the threshold below.
 #grind_lint skip Path.symm_apply
-#grind_lint skip Set.Icc.convexCombo_symm
+#grind_lint skip Set.Icc.convexComb_symm
 
 -- This check verifies that `grind` annotations in Mathlib do not trigger run-away instantiations.
 -- If this test fails, please follow the "Try this:" suggestions
