@@ -939,11 +939,12 @@ theorem CPolynomialAt.fun_comp {g : F → G} {f : E → F} {x : E}
   hg.comp hf
 
 /-- Version of `CPolynomialAt.comp` where point equality is a separate hypothesis. -/
--- TODO: do we need this version? @[to_fun]
 theorem CPolynomialAt.comp_of_eq {g : F → G} {f : E → F} {y : F} {x : E} (hg : CPolynomialAt 𝕜 g y)
     (hf : CPolynomialAt 𝕜 f x) (hy : f x = y) : CPolynomialAt 𝕜 (g ∘ f) x := by
   rw [← hy] at hg
   exact hg.comp hf
+-- If we actually need this version, use `@[to_fun comp_of_eq]` to generate it.
+@[deprecated (since := "2026-05-18")] alias CPolynomialAt.fun_comp_of_eq := CPolynomialAt.comp_of_eq
 
 /-- If two functions `g` and `f` are continuously polynomial respectively on `s.image f` and `s`,
 then `g ∘ f` is continuously polynomial on `s`. -/
