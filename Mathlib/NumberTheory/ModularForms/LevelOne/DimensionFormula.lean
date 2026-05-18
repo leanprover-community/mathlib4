@@ -301,11 +301,9 @@ theorem sturm_bound_levelOne_nat {k : ℕ} (f : ModularForm 𝒮ℒ (k : ℤ))
     · have hcast : ((k : ℤ) - 12) = ((k - 12 : ℕ) : ℤ) := by lia
       rw [← mcast_eq_zero_iff hcast rfl]
       refine ih (k - 12) (by lia) _ ?_
-      simp only [ModularForm.qExpansion_mcast]
-      rw [qExpansion_eq_qExpansion_discriminant_mul f h0, PowerSeries.order_mul,
-        discriminant_qExpansion_order, add_comm, ← hg_def] at h
       have hsucc : k / 12 = (k - 12) / 12 + 1 := by lia
-      rw [hsucc, Nat.cast_add, Nat.cast_one] at h
+      rw [qExpansion_eq_qExpansion_discriminant_mul f h0, PowerSeries.order_mul,
+        discriminant_qExpansion_order, add_comm, ← hg_def, hsucc, Nat.cast_add, Nat.cast_one] at h
       exact (ENat.add_lt_add_iff_right (ENat.coe_ne_top 1)).mp h
   have := discriminant_mul_discriminantEquiv <| f.toCuspForm h0
   ext z
