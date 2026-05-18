@@ -509,42 +509,6 @@ instance {X Y : Spans C Wₗ Wᵣ} (S : X ⟶ Y) : IsIso (πₗ S (𝟙 _)) :=
     (IsPullback.of_isLimit <| Spans.isLimitCompPullbackCone S (𝟙 _))
   exact this
 
-section projections
-
-/-- Forget the right leg of a span. -/
-@[simps!]
-def toOverLeft (X Y : Spans C Wₗ Wᵣ) : (X ⟶ Y) ⥤ Over X.of where
-  obj S := Over.mk S.l
-  map f := Over.homMk f.hom
-
-/-- Forget the left leg of a span. -/
-@[simps!]
-def toOverRight (X Y : Spans C Wₗ Wᵣ) : (X ⟶ Y) ⥤ Over Y.of where
-  obj S := Over.mk S.r
-  map f := Over.homMk f.hom
-
-/-- Forget both legs of a span. -/
-@[simps!]
-def forgetLegs (X Y : Spans C Wₗ Wᵣ) : (X ⟶ Y) ⥤ C where
-  obj S := S.apex
-  map f := f.hom
-
-/-- Forgetting both legs is the same as forgetting the left leg,
-then forgetting the rest. -/
-@[simps!]
-def toOverLeftForgetIso (X Y : Spans C Wₗ Wᵣ) :
-    toOverLeft X Y ⋙ Over.forget _ ≅ forgetLegs _ _ :=
-  .refl _
-
-/-- Forgetting both legs is the same as forgetting the right leg,
-then forgetting the rest. -/
-@[simps!]
-def toOverRightForgetIso (X Y : Spans C Wₗ Wᵣ) :
-    toOverRight X Y ⋙ Over.forget _ ≅ forgetLegs _ _ :=
-  .refl _
-
-end projections
-
 end Spans
 
 end CategoryTheory
