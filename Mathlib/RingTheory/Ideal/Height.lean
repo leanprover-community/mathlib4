@@ -259,8 +259,8 @@ lemma Ideal.height_bot [Nontrivial R] : (⊥ : Ideal R).height = 0 := by
 lemma Ideal.height_eq_zero_iff_eq_bot [IsDomain R] {I : Ideal R} : I.height = 0 ↔ I = ⊥ := by
   refine ⟨fun hI ↦ ?_, fun hI0 ↦ by simp [hI0]⟩
   rcases exists_isPrime_height_eq hI with ⟨p, _, hIp, hp0⟩
-  rw [height_eq_primeHeight, CharP.cast_eq_zero, primeHeight_eq_zero_iff,
-    IsDomain.minimalPrimes_eq_singleton_bot, Set.mem_singleton_iff] at hp0
+  rw [CharP.cast_eq_zero, height_eq_zero_iff, IsDomain.minimalPrimes_eq_singleton_bot,
+    Set.mem_singleton_iff] at hp0
   exact bot_unique (hIp.trans_eq hp0)
 
 /-- In a trivial commutative ring, the height of any ideal is `∞`. -/
@@ -560,11 +560,10 @@ end isLocalization
 
 lemma Ideal.eq_span_singleton_of_height_eq_one [IsDomain R] {p : Ideal R} [p.IsPrime]
     (h1 : p.height = 1) {x : R} (hx : x ∈ p) (hxp : Prime x) : p = span {x} := by
-  have : (span {x}).IsPrime := (span_singleton_prime hxp.ne_zero).2 hxp
-  have : p.FiniteHeight := p.finiteHeight_iff.mpr <| Or.inr <| by simp [h1]
+  have : (span {x}).IsPrime := by simp [span_singleton_prime hxp.ne_zero, hxp]
+  have : p.FiniteHeight := by simp [p.finiteHeight_iff, h1]
   by_contra! hne
-  refine hxp.ne_zero <| span_singleton_eq_bot.1 <| (span {x}).height_eq_zero_iff_eq_bot.mp <|
-    ENat.lt_one_iff_eq_zero.mp ?_
-  rw [height_eq_primeHeight] at h1 ⊢
-  exact primeHeight_strict_mono
-    (lt_of_le_of_ne (p.span_singleton_le_iff_mem.2 hx) hne.symm) |>.trans_eq h1
+  apply hxp.ne_zero
+  rw [← span_singleton_eq_bot, ← height_eq_zero_iff_eq_bot, ← ENat.lt_one_iff_eq_zero, ← h1]
+  refine height_strict_mono_of_isPrime_of_isPrime (lt_of_le_of_ne ?_ hne.symm)
+  simp only [p.span_singleton_le_iff_mem, hx]
