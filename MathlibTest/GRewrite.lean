@@ -413,7 +413,7 @@ example : ∅ ∪ { a : Int | a - 1 > 5 } ⊆ { b : Int | b - 1 < 5 } := by
   grw [sub_one_lt, sub_one_lt]
   exact test_sorry
 
--- Unforturnately, the "Expected type" view gets messed up with stuff like `_fvar.78119`
+-- The "Expected type" view includes `a` as a free variable in the local context.
 example : ∅ ∪ { a : Int | a - 1 ≥ 5 } ⊆ Set.univ := by
   grw [sub_le_self _ (by positivity)]
   simp

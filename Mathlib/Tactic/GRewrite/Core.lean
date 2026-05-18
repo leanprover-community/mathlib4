@@ -37,6 +37,8 @@ public structure GRewriteResult where
   impProof : Expr
   /-- The new side goals -/
   mvarIds : List MVarId -- new goals
+  /-- The local context of the rewrite took place, if this cannot be the outer local context. -/
+  lctx? : Option LocalContext
 
 /-- Configures the behavior of the `rewrite` and `rw` tactics. -/
 public structure Config extends Rewrite.Config where
@@ -110,8 +112,9 @@ inductive Progress where
   | noMatch
   /-- The rewrite lemma has unified with something. -/
   | matched
-  /-- The rewrite lemma has unified with something in a local context that is out of scope now. -/
-  | matchedOutOfScope
+  /-- The rewrite lemma has unified with something, and depends on a free variable that is now
+  out of scope. We store a local context in which the rewrite makes sense. -/
+  | matchedOutOfScope (lctx : LocalContext)
 
 /-- The state used in `GRewriteM`. -/
 structure State where
@@ -236,7 +239,7 @@ partial def processGCongrHypothesis (goal : MVarId) (forward : Bool)
         let some val ← getExprMVarAssignment? mvarId | return false
         return (Lean.collectFVars {} val).fvarIds.all outerLCtx.contains
       unless validInOuterLCtx do
-        modify ({ · with progress := .matchedOutOfScope })
+        modify ({ · with progress := .matchedOutOfScope (← getLCtx) })
     return result
   else
     processGCongrHypothesisAux goal forward config
@@ -256,7 +259,7 @@ partial def processGCongrLemma (goal : MVarId) (lem : GCongrLemma) (forward : Bo
   for (goal, isContra) in mainGoals do
     -- Any of the rewrites in this loop could make a match that is out of scope here.
     -- In that case we should stop rewriting, and the remaining goals should be closed `by rfl`.
-    unless (← get).progress matches .matchedOutOfScope do
+    unless (← get).progress matches .matchedOutOfScope _ do
       if ← processGCongrHypothesis goal (forward != isContra) config then
         anyProgress := true
         continue
@@ -360,7 +363,7 @@ public def _root_.Lean.MVarId.grewrite (goal : MVarId) (e : Expr) (hrel : Expr)
       let { eNew, eqProof, mvarIds } ← goal.rewrite e hrel symm config.toConfig
       let mp := if forwardImp then ``Eq.mp else ``Eq.mpr
       let impProof ← mkAppOptM mp #[e, eNew, eqProof]
-      return { eNew, impProof, mvarIds }
+      return { eNew, impProof, mvarIds, lctx? := none }
 
     let hrelIn := hrel
     -- check that `hrel` proves a relation
@@ -373,9 +376,9 @@ public def _root_.Lean.MVarId.grewrite (goal : MVarId) (e : Expr) (hrel : Expr)
         m!"pattern is a metavariable{indentExpr pattern}\nfrom relation{indentExpr hrelType}"
     -- abstract the occurrences of `lhs` from `e` to get `eAbst`
     let e ← instantiateMVars e
-    let (eNew, impProof, sideGoals) ←
+    let (lctx?, eNew, impProof, sideGoals) ←
       if config.useKAbstract then
-        grewriteUsingKAbstract goal e hrel pattern replacement forwardImp config
+        (none, ·) <$> grewriteUsingKAbstract goal e hrel pattern replacement forwardImp config
       else
       withReducible do
       let some (_, lhs', rhs') := GCongr.getRel (← whnf hrelType) |
@@ -387,11 +390,14 @@ public def _root_.Lean.MVarId.grewrite (goal : MVarId) (e : Expr) (hrel : Expr)
         else throwTacticEx `grewrite goal m!"{hrelType} is not a valid relation"
       let index := (pattern.toHeadIndex, pattern.headNumArgs)
       let mvarIds := mvarIds ++ newMVars.map (·.mvarId!, #[])
-      if let (some (eNew, impProof), newGoals) ←
+      if let ((some (eNew, impProof), { progress, ..}), newGoals) ←
         grewriteCore `_Implies none e (forward := forwardImp) config |>.run
           { symm := symm', proof := hrel, type := hrelType, index, mvarIds }
-          |>.run' {} |>.run then
-        pure (eNew, impProof, newGoals)
+          |>.run {} |>.run then
+        let lctx? := match progress with
+          | .matchedOutOfScope lctx => some lctx
+          | _ => none
+        pure (lctx?, eNew, impProof, newGoals)
       else
         withLocalDeclD `_ (← inferType replacement) fun replacement' ↦ do
           let hrelType := updateRel hrelType replacement' symm
@@ -406,6 +412,6 @@ public def _root_.Lean.MVarId.grewrite (goal : MVarId) (e : Expr) (hrel : Expr)
     let otherMVarIds ← getMVarsNoDelayed hrelIn
     let otherMVarIds := otherMVarIds.filter (!newMVarIds.contains ·)
     let newMVarIds := newMVarIds ++ otherMVarIds
-    pure { eNew, impProof, mvarIds := newMVarIds.toList }
+    pure { eNew, impProof, mvarIds := newMVarIds.toList, lctx? }
 
 end Mathlib.Tactic.GRewrite
