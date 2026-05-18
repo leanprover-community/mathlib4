@@ -595,6 +595,10 @@ end tests
 
 end Manifold
 
+@[simp, mfld_simps] lemma mvfderivWithin_univ {f : M → F} : d[(univ : Set M)] f = d% f := by
+  ext X
+  simp [mvfderiv, mvfderivWithin]
+
 lemma mvfderivWithin_const (c : F) {x : M} : d[s] (fun _ : M ↦ c) x = 0 := by
   simp [mvfderivWithin, mfderivWithin_const]
 
