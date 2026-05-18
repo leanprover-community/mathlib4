@@ -399,8 +399,6 @@ theorem IndepSets.biUnion {s : ι → Set (Set Ω)} {s' : Set (Set Ω)}
     IndepSets (⋃ n ∈ u, s n) s' μ :=
   Kernel.IndepSets.biUnion hyp
 
-@[deprecated (since := "2025-10-28")] alias IndepSets.bUnion := IndepSets.biUnion
-
 theorem IndepSets.inter {s₁ s' : Set (Set Ω)} (s₂ : Set (Set Ω)) (h₁ : IndepSets s₁ s' μ) :
     IndepSets (s₁ ∩ s₂) s' μ :=
   Kernel.IndepSets.inter s₂ h₁
