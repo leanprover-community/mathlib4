@@ -47,7 +47,7 @@ end LocalGeneratorsData
 
 /-- A sheaf of modules is locally free if there exists locally free data for it. -/
 class IsLocallyFree (M : SheafOfModules.{u} R) : Prop where
-  nonempty_locallyFreeData : ∃ q : M.LocalGeneratorsData, q.IsLocallyFreeData
+  exists_locallyFreeData : ∃ q : M.LocalGeneratorsData, q.IsLocallyFreeData
 
 end
 
@@ -117,14 +117,11 @@ def quasiCoherentData {M : SheafOfModules.{u} R} (q : M.LocalGeneratorsData) [q.
   I := q.I
   X := q.X
   coversTop := q.coversTop
-  presentation (i) := {
+  presentation i := {
     generators := q.generators i
-    relations := {
-      I := ULift Empty
-      s (j) := Empty.rec _ j.down
-      epi := IsZero.epi (IsZero.of_iso (isZero_zero _) (Limits.kernel.ofMono _)) _
-    }
-  }
+    relations.I := ULift Empty
+    relations.s j := Empty.rec _ j.down
+    relations.epi := IsZero.epi (IsZero.of_iso (isZero_zero _) (Limits.kernel.ofMono _)) _ }
 
 @[simp]
 lemma quasiCoherentData_localGeneratorsData {M : SheafOfModules.{u} R}
@@ -133,7 +130,7 @@ lemma quasiCoherentData_localGeneratorsData {M : SheafOfModules.{u} R}
 
 end LocalGeneratorsData
 
-instance (M : SheafOfModules.{u} R) [h : M.IsLocallyFree] : M.IsQuasicoherent :=
+instance (priority := 100) (M : SheafOfModules.{u} R) [h : M.IsLocallyFree] : M.IsQuasicoherent :=
   have := h.nonempty_locallyFreeData.choose_spec
   h.nonempty_locallyFreeData.choose.quasiCoherentData.isQuasicoherent
 
