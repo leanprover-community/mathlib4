@@ -95,7 +95,7 @@ instance WithTopology.instTopologicalSpace (X : Type*) (t : TopologicalSpace X) 
 end TopologicalSpace
 
 /-- `WithTopology.ofTopology` and `WithTopology.toTopology` as an equivalence. -/
-@[simps apply symm_apply]
+@[simps]
 protected def WithTopology.equiv (X : Type*) (t : TopologicalSpace X) : WithTopology X t ≃ X where
   toFun := WithTopology.ofTopology t
   invFun := WithTopology.toTopology t
