@@ -21,20 +21,6 @@ and define some algebraic structures on it.
 * `QuadraticAlgebra R a b`:
   [Bourbaki, *Algebra I*][bourbaki1989] with coefficients `a`, `b` in `R`.
 
-## Warning
-If `R` is a ring, then `QuadraticAlgebra a b` is an `R`-algebra, and if `R` is of characteristic
-zero then the same holds for `QuadraticAlgebra a b`. In particular, in the very common case where
-`R` is `ℚ` and `a` and `b` are such that `QuadraticAlgebra a b` is a field, then
-`QuadraticAlgebra a b` is a `ℚ`-algebra in two ways, that are not definitionally equal. This is a
-known diamond for characteristic zero fields. If you are working in this setting you should start
-your file with
-```
-attribute [-instance] DivisionRing.toRatAlgebra
-```
-to keep the `CharZero` instance but to avoid having two `Algebra` instances. (Note that all the
-basic theorems about `QuadraticAlgebra` are stated using the general instance
-`Algebra R (QuadraticAlgebra a b)`, so you don't want to deactivate that one.)
-
 ## Tags
 
 Quadratic algebra, quadratic extension
@@ -507,7 +493,7 @@ theorem algebraMap_dvd_iff {r : R} {z : QuadraticAlgebra R a b} :
     (algebraMap R (QuadraticAlgebra R a b) r) ∣ z ↔ r ∣ z.re ∧ r ∣ z.im := by
   constructor
   · rintro ⟨x, rfl⟩
-    simp [dvd_mul_right, ← C_eq_algebraMap]
+    simp
   · rintro ⟨⟨r, hr⟩, ⟨i, hi⟩⟩
     use ⟨r, i⟩
     simp [QuadraticAlgebra.ext_iff, hr, hi, ← C_eq_algebraMap]

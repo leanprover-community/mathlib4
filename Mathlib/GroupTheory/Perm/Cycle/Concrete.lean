@@ -178,11 +178,8 @@ nonrec theorem formPerm_eq_formPerm_iff {α : Type*} [DecidableEq α] {s s' : Cy
     {hs' : s'.Nodup} :
     s.formPerm hs = s'.formPerm hs' ↔ s = s' ∨ s.Subsingleton ∧ s'.Subsingleton := by
   rw [Cycle.length_subsingleton_iff, Cycle.length_subsingleton_iff]
-  revert s s'
-  intro s s'
-  apply @Quotient.inductionOn₂' _ _ _ _ _ s s'
-  intro l l' hl hl'
-  simpa using formPerm_eq_formPerm_iff hl hl'
+  induction s, s' using Quotient.inductionOn₂'
+  simpa using formPerm_eq_formPerm_iff hs hs'
 
 end Cycle
 
@@ -218,7 +215,7 @@ theorem length_toList_pos_of_mem_support (h : x ∈ p.support) : 0 < length (toL
   zero_lt_two.trans_le (two_le_length_toList_iff_mem_support.mpr h)
 
 theorem getElem_toList (n : ℕ) (hn : n < length (toList p x)) :
-    (toList p x)[n] = (p ^ n) x := by simp [toList]
+    (toList p x)[n] = (p ^ n) x := by simp [toList, pull_end]
 
 theorem toList_getElem_zero (h : x ∈ p.support) :
     (toList p x)[0]'(length_toList_pos_of_mem_support _ _ h) = x := by simp [toList]

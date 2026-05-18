@@ -8,6 +8,7 @@ module
 public import Mathlib.CategoryTheory.Limits.Creates
 public import Mathlib.CategoryTheory.Sites.Sheafification
 public import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
+public import Mathlib.CategoryTheory.Limits.FullSubcategory
 
 /-!
 
@@ -81,7 +82,7 @@ def multiforkEvaluationCone (F : K ⥤ Sheaf J D) (E : Cone (F ⋙ sheafToPreshe
         rw [Category.id_comp]
         apply Presheaf.IsSheaf.hom_ext (F.obj j).2 W
         intro ii
-        rw [Presheaf.IsSheaf.amalgamate_map, Category.assoc, ← (F.map f).val.naturality, ←
+        rw [Presheaf.IsSheaf.amalgamate_map, Category.assoc, ← (F.map f).hom.naturality, ←
           Category.assoc, Presheaf.IsSheaf.amalgamate_map]
         erw [Category.assoc, ← E.w f]
         cat_disch }
@@ -121,7 +122,7 @@ def isLimitMultiforkOfIsLimit (F : K ⥤ Sheaf J D) (E : Cone (F ⋙ sheafToPres
       apply Presheaf.IsSheaf.hom_ext (F.obj k).2 W
       intro i
       dsimp only [multiforkEvaluationCone, Presheaf.isLimitOfIsSheaf]
-      rw [(F.obj k).cond.amalgamate_map]
+      rw [(F.obj k).property.amalgamate_map]
       dsimp [Multifork.ofι]
       change _ = S.ι i ≫ _
       erw [← hm, Category.assoc, ← (E.π.app k).naturality, Category.assoc]
@@ -138,20 +139,11 @@ theorem isSheaf_of_isLimit (F : K ⥤ Sheaf J D) (E : Cone (F ⋙ sheafToPreshea
   intro X S
   exact ⟨isLimitMultiforkOfIsLimit _ _ hE _ _⟩
 
-instance (F : K ⥤ Sheaf J D) : CreatesLimit F (sheafToPresheaf J D) :=
-  createsLimitOfReflectsIso fun E hE =>
-    { liftedCone := ⟨⟨E.pt, isSheaf_of_isLimit _ _ hE⟩,
-        ⟨fun _ => ⟨E.π.app _⟩, fun _ _ _ => Sheaf.Hom.ext <| E.π.naturality _⟩⟩
-      validLift := Cones.ext (eqToIso rfl) fun j => by simp
-      makesLimit :=
-        { lift := fun S => ⟨hE.lift ((sheafToPresheaf J D).mapCone S)⟩
-          fac := fun S j => by
-            ext1
-            apply hE.fac ((sheafToPresheaf J D).mapCone S) j
-          uniq := fun S m hm => by
-            ext1
-            exact hE.uniq ((sheafToPresheaf J D).mapCone S) m.val fun j =>
-              congr_arg Hom.val (hm j) } }
+instance : ObjectProperty.IsClosedUnderLimitsOfShape (Presheaf.IsSheaf J (A := D)) K where
+  limitsOfShape_le := by
+    rintro P ⟨h⟩
+    let F : K ⥤ Sheaf J D := ObjectProperty.lift _ h.diag h.prop_diag_obj
+    exact isSheaf_of_isLimit F _ h.isLimit
 
 instance createsLimitsOfShape : CreatesLimitsOfShape K (sheafToPresheaf J D) where
 
@@ -193,7 +185,7 @@ over a functor which factors through sheaves.
 In `isColimitSheafifyCocone`, we show that this is a colimit cocone when `E` is a colimit. -/
 noncomputable def sheafifyCocone {F : K ⥤ Sheaf J D}
     (E : Cocone (F ⋙ sheafToPresheaf J D)) : Cocone F :=
-  (Cocones.precompose
+  (Cocone.precompose
     (Functor.isoWhiskerLeft F (asIso (sheafificationAdjunction J D).counit).symm).hom).obj
     ((presheafToSheaf J D).mapCocone E)
 
@@ -201,12 +193,13 @@ set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma sheafifyCocone_ι_app_val
     {F : K ⥤ Sheaf J D} (E : Cocone (F ⋙ sheafToPresheaf J D)) (k : K) :
-    ((Sheaf.sheafifyCocone E).ι.app k).val =
+    ((Sheaf.sheafifyCocone E).ι.app k).hom =
       E.ι.app k ≫ CategoryTheory.toSheafify J E.pt := by
   rw [← cancel_epi ((sheafToPresheaf _ _).map
     ((sheafificationAdjunction J D).counit.app (F.obj k)))]
   dsimp [sheafifyCocone]
-  rw [← comp_val_assoc, ← NatTrans.comp_app, IsIso.hom_inv_id, NatTrans.id_app]
+  rw [← ObjectProperty.FullSubcategory.comp_hom_assoc,
+    ← NatTrans.comp_app, IsIso.hom_inv_id, NatTrans.id_app]
   dsimp
   rw [Category.id_comp, toSheafify_naturality, sheafificationAdjunction_counit_app_val,
     sheafifyLift_id_toSheafify_assoc]
@@ -239,20 +232,21 @@ creates colimits of the diagram.
 Note: this almost never holds in sheaf categories in general, but it does for the extensive
 topology (see `Mathlib/CategoryTheory/Sites/Coherent/ExtensiveColimits.lean`).
 -/
+@[implicit_reducible]
 def createsColimitOfIsSheaf (F : K ⥤ Sheaf J D)
     (h : ∀ (c : Cocone (F ⋙ sheafToPresheaf J D)) (_ : IsColimit c), Presheaf.IsSheaf J c.pt) :
     CreatesColimit F (sheafToPresheaf J D) :=
   createsColimitOfReflectsIso fun E hE =>
     { liftedCocone := ⟨⟨E.pt, h _ hE⟩,
-        ⟨fun _ => ⟨E.ι.app _⟩, fun _ _ _ => Sheaf.Hom.ext <| E.ι.naturality _⟩⟩
-      validLift := Cocones.ext (eqToIso rfl) fun j => by simp
+        ⟨fun _ => ⟨E.ι.app _⟩, fun _ _ _ => Sheaf.hom_ext <| E.ι.naturality _⟩⟩
+      validLift := Cocone.ext (eqToIso rfl) fun j => by simp
       makesColimit :=
         { desc := fun S => ⟨hE.desc ((sheafToPresheaf J D).mapCocone S)⟩
           fac := fun S j => by ext1; dsimp; rw [hE.fac]; rfl
           uniq := fun S m hm => by
             ext1
-            exact hE.uniq ((sheafToPresheaf J D).mapCocone S) m.val fun j =>
-              congr_arg Hom.val (hm j) } }
+            exact hE.uniq ((sheafToPresheaf J D).mapCocone S) m.hom fun j =>
+              (ObjectProperty.ι _).congr_map (hm j) } }
 
 variable {D : Type w} [Category.{max v u} D]
 

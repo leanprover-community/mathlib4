@@ -62,17 +62,13 @@ instance : CommRing (D.subalgebra R) := inferInstanceAs <| CommRing (Algebra.adj
 
 instance algebra₀ : Algebra R (D.subalgebra R) := inferInstanceAs <| Algebra R (Algebra.adjoin _ _)
 
-set_option backward.isDefEq.respectTransparency false in
 instance algebra₁ : Algebra (D.subalgebra R) A := inferInstanceAs <| Algebra (Algebra.adjoin _ _) A
 
-set_option backward.isDefEq.respectTransparency false in
 instance algebra₂ : Algebra (D.subalgebra R) B := inferInstanceAs <| Algebra (Algebra.adjoin _ _) B
 
-set_option backward.isDefEq.respectTransparency false in
 instance : IsScalarTower (D.subalgebra R) A B :=
   inferInstanceAs <| IsScalarTower (Algebra.adjoin _ _) _ _
 
-set_option backward.isDefEq.respectTransparency false in
 instance : FaithfulSMul (D.subalgebra R) A := inferInstanceAs <| FaithfulSMul (Algebra.adjoin _ _) _
 
 lemma fg_subalgebra [Finite D.vars] [Finite D.rels] : (D.subalgebra R).FG := by
@@ -88,35 +84,62 @@ lemma fg_subalgebra [Finite D.vars] [Finite D.rels] : (D.subalgebra R).FG := by
 set_option backward.isDefEq.respectTransparency false in
 instance hasCoeffs : D.P.HasCoeffs (D.subalgebra R) where
   coeffs_subset_range := by
-    grind [subalgebra, Subalgebra.setRange_algebraMap, Algebra.subset_adjoin]
+    #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/13166
+    (replacing grind's canonicalizer with a type-directed normalizer), `grind` closed this goal
+    without the `rw`. It is not yet clear whether this is due to defeq abuse in Mathlib or a
+    problem in the new canonicalizer; a minimization would help. The original proof was:
+    `grind [subalgebra, Subalgebra.setRange_algebraMap, Algebra.subset_adjoin]` -/
+    rw [Subalgebra.setRange_algebraMap]
+    grind [subalgebra, Algebra.subset_adjoin]
 
 set_option quotPrecheck false in
 local notation "f₀" =>
   Ideal.Quotient.mkₐ (D.subalgebra R)
     (Ideal.span <| .range <| D.P.relationOfHasCoeffs (D.subalgebra R))
 
+set_option backward.isDefEq.respectTransparency false in
 lemma coeffs_h_subset (i) : ↑(D.h i).coeffs ⊆ Set.range ⇑(algebraMap (D.subalgebra R) A) := by
   have : ((D.h i).coeffs : Set _) ⊆ ⋃ i, ((D.h i).coeffs : Set A) :=
     Set.subset_iUnion_of_subset i subset_rfl
-  grind [subalgebra, Subalgebra.setRange_algebraMap, Algebra.subset_adjoin]
+  #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/13166
+  (replacing grind's canonicalizer with a type-directed normalizer), `grind` closed this goal
+  without the `rw`. It is not yet clear whether this is due to defeq abuse in Mathlib or a
+  problem in the new canonicalizer; a minimization would help. The original proof was:
+  `grind [subalgebra, Subalgebra.setRange_algebraMap, Algebra.subset_adjoin]` -/
+  rw [Subalgebra.setRange_algebraMap]
+  grind [subalgebra, Algebra.subset_adjoin]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma coeffs_p_subset (i) :
     ↑(D.p i).coeffs ⊆
       Set.range (MvPolynomial.map (σ := D.vars) (algebraMap (D.subalgebra R) A)) := by
   intro p hp
   have : (p.coeffs : Set A) ⊆ ⋃ i, ⋃ x ∈ (D.p i).coeffs, ↑x.coeffs :=
     Set.subset_iUnion_of_subset i (Set.subset_iUnion₂_of_subset p hp subset_rfl)
-  grind [MvPolynomial.mem_range_map_iff_coeffs_subset, subalgebra, Subalgebra.setRange_algebraMap,
-    Algebra.subset_adjoin]
+  #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/13166
+  (replacing grind's canonicalizer with a type-directed normalizer), `grind` closed this goal
+  without the `rw`. It is not yet clear whether this is due to defeq abuse in Mathlib or a
+  problem in the new canonicalizer; a minimization would help. The original proof was:
+  `grind [MvPolynomial.mem_range_map_iff_coeffs_subset, subalgebra,
+    Subalgebra.setRange_algebraMap, Algebra.subset_adjoin]` -/
+  rw [MvPolynomial.mem_range_map_iff_coeffs_subset, Subalgebra.setRange_algebraMap]
+  grind [subalgebra, Algebra.subset_adjoin]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma coeffs_q_subset (i) :
     ↑(D.q i).coeffs ⊆
       Set.range (MvPolynomial.map (σ := D.vars) (algebraMap (D.subalgebra R) A)) := by
   intro q hq
   have : (q.coeffs : Set A) ⊆ ⋃ i, ⋃ x ∈ (D.q i).coeffs, ↑(coeffs x) :=
     Set.subset_iUnion_of_subset i (Set.subset_iUnion₂_of_subset q hq subset_rfl)
-  grind [MvPolynomial.mem_range_map_iff_coeffs_subset, subalgebra, Subalgebra.setRange_algebraMap,
-    Algebra.subset_adjoin]
+  #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/13166
+  (replacing grind's canonicalizer with a type-directed normalizer), `grind` closed this goal
+  without the `rw`. It is not yet clear whether this is due to defeq abuse in Mathlib or a
+  problem in the new canonicalizer; a minimization would help. The original proof was:
+  `grind [MvPolynomial.mem_range_map_iff_coeffs_subset, subalgebra,
+    Subalgebra.setRange_algebraMap, Algebra.subset_adjoin]` -/
+  rw [MvPolynomial.mem_range_map_iff_coeffs_subset, Subalgebra.setRange_algebraMap]
+  grind [subalgebra, Algebra.subset_adjoin]
 
 set_option backward.isDefEq.respectTransparency false in
 lemma exists_kerSquareLift_comp_eq_id :
@@ -213,7 +236,6 @@ public theorem exists_subalgebra_fg [Smooth A B] :
     D.fg_subalgebra R, ⟨.of_split _ σ₀ hσ₀, inferInstance⟩,
     ⟨(P.tensorModelOfHasCoeffsEquiv (D.subalgebra R)).symm⟩⟩
 
-set_option backward.isDefEq.respectTransparency false in
 @[deprecated exists_subalgebra_fg (since := "2026-01-07")]
 public theorem exists_subalgebra_finiteType [Smooth A B] :
     ∃ (A₀ : Subalgebra R A) (B₀ : Type u) (_ : CommRing B₀) (_ : Algebra A₀ B₀),
@@ -221,7 +243,6 @@ public theorem exists_subalgebra_finiteType [Smooth A B] :
   obtain ⟨A₀, B₀, _, _, h0, h1, h2⟩ := exists_subalgebra_fg R A B
   exact ⟨A₀, B₀, inferInstance, inferInstance, (Subalgebra.fg_iff_finiteType A₀).mp h0, h1, h2⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 Let `A` be an `R`-algebra. If `B` is a smooth `A`-algebra, there exists an
 `R`-algebra of finite type `A₀` and a smooth `A₀`-algebra `B₀` such that `B ≃ₐ A ⊗[A₀] B₀`
@@ -238,7 +259,6 @@ public theorem exists_finiteType [Smooth A B] :
   use A₀, B₀, inferInstance, inferInstance, inferInstance, inferInstance, inferInstance,
     Subtype.val_injective, ⟨A₀.fg_top.mpr hA₀⟩, inferInstance
 
-set_option backward.isDefEq.respectTransparency false in
 public theorem _root_.Algebra.IsStandardSmoothOfRelativeDimension.exists_subalgebra_fg
     (n : ℕ) [IsStandardSmoothOfRelativeDimension n A B] :
     ∃ (A₀ : Subalgebra R A) (B₀ : Type u) (_ : CommRing B₀) (_ : Algebra A₀ B₀),
@@ -250,7 +270,6 @@ public theorem _root_.Algebra.IsStandardSmoothOfRelativeDimension.exists_subalge
     ⟨P.finite_coeffs.toFinset, by simp [A₀]⟩, ⟨_, _, _, inferInstance,
       P.ofHasCoeffs A₀, hP⟩, ⟨(P.tensorModelOfHasCoeffsEquiv A₀).symm⟩⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 Let `A` be an `R`-algebra. If `B` is an etale `A`-algebra, there exists an
 `R`-subalgebra of finite type `A₀` of `A` and an etale `A₀`-algebra `B₀` such that

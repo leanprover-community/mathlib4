@@ -1,3 +1,4 @@
+module
 import Mathlib.Tactic.PNatToNat
 
 example (a b : PNat) (h : a < b) : 1 < b := by

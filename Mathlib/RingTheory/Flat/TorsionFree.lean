@@ -23,12 +23,12 @@ domains and valuation rings.
 * `Module.Flat.isSMulRegular_of_nonZeroDivisors`: Scalar multiplication by a nonzerodivisor of `R`
   is injective on a flat `R`-module.
 * `Module.Flat.torsion_eq_bot`: `Torsion R M = ⊥` if `M` is a flat `R`-module.
-* `Module.Flat.flat_iff_torsion_eq_bot_of_valuationRing_localized_maximal`: if localizing `R` at
-  the complement of any maximal ideal is a valuation ring then `Torsion R M = ⊥` iff `M` is a
+* `Module.Flat.flat_iff_torsion_eq_bot_of_valuationRing_localization_isMaximal`: if localizing `R`
+  at the complement of any maximal ideal is a valuation ring then `Torsion R M = ⊥` iff `M` is a
   flat `R`-module.
 -/
 
-@[expose] public section
+public section
 -- TODO: Add definition and properties of Prüfer domains.
 -- TODO: Use `IsTorsionFree`.
 
@@ -63,6 +63,9 @@ lemma isSMulRegular_of_isRegular {r : R} (hr : IsRegular r) [Flat R M] :
   rw [IsSMulRegular, h2]
   simp [h, LinearEquiv.injective]
 
+instance isTorsionFree [Flat R M] : IsTorsionFree R M :=
+  ⟨fun _ hr ↦ isSMulRegular_of_isRegular hr⟩
+
 end Semiring
 
 section Ring
@@ -80,7 +83,7 @@ lemma isSMulRegular_of_nonZeroDivisors {r : R} (hr : r ∈ R⁰) [Flat R M] : Is
 /-- Flat modules have no torsion. -/
 theorem torsion_eq_bot [Flat R M] : torsion R M = ⊥ := by
   rw [eq_bot_iff]
-  -- indeed the definition of torsion means "annihiliated by a nonzerodivisor"
+  -- indeed the definition of torsion means "annihilated by a nonzerodivisor"
   rintro m ⟨⟨r, hr⟩, h⟩
   -- and we just showed that 0 is the only element with this property
   exact isSMulRegular_of_nonZeroDivisors hr (by simpa using h)

@@ -107,7 +107,7 @@ theorem Polynomial.isPeriodicPt_eval_two {P : Polynomial ℤ} {t : ℤ}
       simp [IsPeriodicPt, IsFixedPt, H]
   · -- We take two nonequal consecutive entries.
     rw [Cycle.chain_map, periodicOrbit_chain' _ ht] at HC'
-    push_neg at HC'
+    push Not at HC'
     obtain ⟨n, hn⟩ := HC'
     -- They must have opposite sign, so that P^{k + 1}(t) - P^k(t) = P^{k + 2}(t) - P^{k + 1}(t).
     rcases Int.natAbs_eq_natAbs_iff.1 (Habs n n.succ) with hn' | hn'

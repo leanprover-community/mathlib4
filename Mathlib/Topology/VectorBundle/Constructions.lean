@@ -28,7 +28,7 @@ This file contains several standard constructions on vector bundles:
 Vector bundle, direct sum, pullback
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 

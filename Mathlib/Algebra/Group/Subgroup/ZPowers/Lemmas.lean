@@ -18,7 +18,7 @@ subgroup, subgroups
 
 -/
 
-@[expose] public section
+public section
 
 variable {G : Type*} [Group G]
 variable {A : Type*} [AddGroup A]
@@ -55,7 +55,18 @@ end Ring
 
 end AddSubgroup
 
-@[simp] lemma Int.range_castAddHom {A : Type*} [AddGroupWithOne A] :
-    (Int.castAddHom A).range = AddSubgroup.zmultiples 1 := by
+namespace Int
+
+open AddSubgroup
+
+@[simp] lemma range_castAddHom {A : Type*} [AddGroupWithOne A] :
+    (castAddHom A).range = zmultiples 1 := by
   ext a
   simp_rw [AddMonoidHom.mem_range, Int.coe_castAddHom, AddSubgroup.mem_zmultiples_iff, zsmul_one]
+
+lemma range_nsmulAddMonoidHom (n : ℕ) : (nsmulAddMonoidHom n).range = zmultiples (n : ℤ) := by
+  ext m : 1
+  simp [mem_zmultiples_iff, dvd_def]
+  grind
+
+end Int

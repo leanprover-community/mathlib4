@@ -168,7 +168,7 @@ def finsuppCocone : Cofan fun _ : ι ↦ ModuleCat.of R M :=
     ModuleCat.ofHom (Finsupp.lsingle i (R := R) (M := ModuleCat.of R M))
 
 set_option backward.isDefEq.respectTransparency false in
-/-- The concrete cocoproduct cone is colimiting. -/
+/-- The concrete coproduct cone is colimiting. -/
 noncomputable
 def finsuppCoconeIsColimit : IsColimit (finsuppCocone R M ι) where
   desc s := ModuleCat.ofHom <| Finsupp.lsum R (N := s.pt) (fun i ↦ (s.ι.app ⟨i⟩).hom)

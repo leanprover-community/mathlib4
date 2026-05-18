@@ -21,15 +21,13 @@ that `Data.PNat.Defs` can have very few imports.
 
 @[expose] public section
 
-deriving instance AddLeftCancelSemigroup, AddRightCancelSemigroup, AddCommSemigroup,
-  Add, Mul, Distrib for PNat
+deriving instance Add, Mul, Distrib, AddLeftCancelSemigroup, AddRightCancelSemigroup,
+  AddCommSemigroup, CommMonoid, IsOrderedCancelMonoid, WellFoundedLT, AddLeftMono,
+  AddLeftStrictMono, AddLeftReflectLE, AddLeftReflectLT for PNat
 
 namespace PNat
 
-instance instCommMonoid : CommMonoid ℕ+ := Positive.commMonoid
-instance instIsOrderedCancelMonoid : IsOrderedCancelMonoid ℕ+ := Positive.isOrderedCancelMonoid
 instance instCancelCommMonoid : CancelCommMonoid ℕ+ where
-instance instWellFoundedLT : WellFoundedLT ℕ+ := WellFoundedRelation.isWellFounded
 
 @[simp]
 theorem one_add_natPred (n : ℕ+) : 1 + n.natPred = n := by
@@ -39,10 +37,10 @@ theorem one_add_natPred (n : ℕ+) : 1 + n.natPred = n := by
 theorem natPred_add_one (n : ℕ+) : n.natPred + 1 = n :=
   (add_comm _ _).trans n.one_add_natPred
 
-@[mono]
+@[gcongr, mono]
 theorem natPred_strictMono : StrictMono natPred := fun m _ h => Nat.pred_lt_pred m.2.ne' h
 
-@[mono]
+@[gcongr, mono]
 theorem natPred_monotone : Monotone natPred :=
   natPred_strictMono.monotone
 
@@ -75,10 +73,10 @@ end PNat
 
 namespace Nat
 
-@[mono]
+@[gcongr, mono]
 theorem succPNat_strictMono : StrictMono succPNat := fun _ _ => Nat.succ_lt_succ
 
-@[mono]
+@[gcongr, mono]
 theorem succPNat_mono : Monotone succPNat :=
   succPNat_strictMono.monotone
 
@@ -122,17 +120,6 @@ def coeAddHom : AddHom ℕ+ ℕ where
   toFun := (↑)
   map_add' := add_coe
 
-instance addLeftMono : AddLeftMono ℕ+ :=
-  Positive.addLeftMono
-
-instance addLeftStrictMono : AddLeftStrictMono ℕ+ :=
-  Positive.addLeftStrictMono
-
-instance addLeftReflectLE : AddLeftReflectLE ℕ+ :=
-  Positive.addLeftReflectLE
-
-instance addLeftReflectLT : AddLeftReflectLT ℕ+ :=
-  Positive.addLeftReflectLT
 
 /-- The order isomorphism between ℕ and ℕ+ given by `succ`. -/
 @[simps! -fullyApplied apply]

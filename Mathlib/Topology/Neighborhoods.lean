@@ -18,7 +18,7 @@ Each point `x` of `X` gets a neighborhood filter `𝓝 x`.
 neighborhood
 -/
 
-@[expose] public section
+public section
 
 open Set Filter Topology
 

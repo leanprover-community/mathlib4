@@ -24,9 +24,9 @@ other categories like `ModuleCat`.
 
 ## Main definitions
 - `ShortComplex.abHomologyIso` identifies the homology of a short complex of abelian
-groups to an explicit quotient.
+  groups to an explicit quotient.
 - `ShortComplex.ab_exact_iff` expresses that a short complex of abelian groups `S`
-is exact iff any element in the kernel of `S.g` belongs to the image of `S.f`.
+  is exact iff any element in the kernel of `S.g` belongs to the image of `S.f`.
 
 -/
 
@@ -169,9 +169,6 @@ lemma ShortExact.ab_finite_iff {S : ShortComplex Ab.{u}} (hS : S.ShortExact) :
     Finite S.X₂ ↔ Finite S.X₁ ∧ Finite S.X₃ where
   mp _ := ⟨.of_injective _ hS.ab_injective_f, .of_surjective _ hS.ab_surjective_g⟩
   mpr | ⟨_, _⟩ => hS.exact.ab_finite
-
-@[deprecated (since := "2025-11-03")]
-protected alias ShortExact.ab_exact_iff_function_exact := ab_exact_iff_function_exact
 
 end ShortComplex
 

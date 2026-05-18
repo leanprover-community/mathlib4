@@ -21,10 +21,6 @@ This file concerns the cardinality of a transcendence basis.
 
 * [Stacks: Transcendence](https://stacks.math.columbia.edu/tag/030D)
 
-## TODO
-Define the transcendence degree and show it is independent of the choice of a
-transcendence basis.
-
 ## Tags
 transcendence basis, transcendence degree, transcendence
 
@@ -42,7 +38,6 @@ open AlgebraicIndependent
 
 open Cardinal
 
-set_option backward.isDefEq.respectTransparency false in
 theorem IsTranscendenceBasis.lift_cardinalMk_eq_max_lift
     {F : Type u} {E : Type v} [CommRing F] [Nontrivial F] [CommRing E] [IsDomain E] [Algebra F E]
     {ι : Type w} {x : ι → E} [Nonempty ι] (hx : IsTranscendenceBasis F x) :
@@ -54,7 +49,6 @@ theorem IsTranscendenceBasis.lift_cardinalMk_eq_max_lift
   haveI : Infinite K := hx.1.aevalEquiv.infinite_iff.1 inferInstance
   simpa only [sup_eq_left.2 (aleph0_le_mk K)] using Algebra.IsAlgebraic.cardinalMk_le_max K E
 
-set_option backward.isDefEq.respectTransparency false in
 theorem IsTranscendenceBasis.lift_rank_eq_max_lift
     {F : Type u} {E : Type v} [Field F] [Field E] [Algebra F E]
     {ι : Type w} {x : ι → E} [Nonempty ι] (hx : IsTranscendenceBasis F x) :
@@ -74,7 +68,6 @@ theorem Algebra.Transcendental.rank_eq_cardinalMk
   haveI := hx.nonempty_iff_transcendental.2 ‹_›
   simpa [← hx.lift_cardinalMk_eq_max_lift] using hx.lift_rank_eq_max_lift
 
-set_option backward.isDefEq.respectTransparency false in
 theorem IntermediateField.rank_sup_le
     {F : Type u} {E : Type v} [Field F] [Field E] [Algebra F E] (A B : IntermediateField F E) :
     Module.rank F ↥(A ⊔ B) ≤ Module.rank F A * Module.rank F B := by

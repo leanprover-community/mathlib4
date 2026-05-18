@@ -53,7 +53,6 @@ variable (z : ℍ)
 
 local notation "𝕢" z:100 => cexp (2 * π * I * z)
 
-set_option backward.isDefEq.respectTransparency false in
 private lemma G2_partial_sum_eq (N : ℕ) : ∑ m ∈ Icc (-N : ℤ) N, e2Summand m z =
     2 * riemannZeta 2 + ∑ m ∈ range N, -8 * π ^ 2 *
       ∑' n : ℕ+, n * 𝕢 z ^ ((m + 1) * n) := by
@@ -97,6 +96,12 @@ lemma summable_e2Summand_symmetricIcc : Summable (e2Summand · z) (symmetricIcc 
 
 lemma G2_eq_tsum_cexp : G2 z = 2 * riemannZeta 2 - 8 * π ^ 2 * ∑' n : ℕ+, σ 1 n * 𝕢 z ^ (n : ℕ) :=
   (hasSum_e2Summand_symmetricIcc z).tsum_eq
+
+/-- The q-expansion of the normalised weight-2 Eisenstein series:
+`E₂(z) = 1 - 24 ∑_{n≥1} σ₁(n) qⁿ`. -/
+lemma E2_eq_tsum_cexp : E2 z = 1 - 24 * ∑' n : ℕ+, σ 1 n * 𝕢 z ^ (n : ℕ) := by
+  simp [E2, G2_eq_tsum_cexp, riemannZeta_two]
+  field
 
 lemma tendsto_e2Summand_atTop_nhds_zero : Tendsto (e2Summand · z) atTop (𝓝 0) :=
   (summable_e2Summand_symmetricIcc z).tendsto_zero_of_even_summable_symmetricIcc (e2Summand_even _)
@@ -244,8 +249,8 @@ lemma tendsto_tsum_one_div_linear_sub_succ_eq :
     Tendsto (fun N : ℕ+ ↦ ∑ n ∈ Ico (-N : ℤ) N,
     ∑' m : ℤ, (1 / ((m : ℂ) * z + n) - 1 / (m * z + n + 1))) atTop (𝓝 (-2 * π * I / z)) := by
   have (N : ℕ+) :
-      ∑ n ∈ Ico (-N : ℤ) N, ∑' m : ℤ , (1 / ((m : ℂ) * z + n) - 1 / (m * z + n + 1))
-      = ∑' m : ℤ , ∑ n ∈ Ico (-N : ℤ) N, (1 / ((m : ℂ) * z + n) - 1 / (m * z + n + 1)) := by
+      ∑ n ∈ Ico (-N : ℤ) N, ∑' m : ℤ, (1 / ((m : ℂ) * z + n) - 1 / (m * z + n + 1))
+      = ∑' m : ℤ, ∑ n ∈ Ico (-N : ℤ) N, (1 / ((m : ℂ) * z + n) - 1 / (m * z + n + 1)) := by
     rw [Summable.tsum_finsetSum (fun i hi ↦ ?_)]
     apply (summable_left_one_div_linear_sub_one_div_linear z i (i + 1)).congr
     grind

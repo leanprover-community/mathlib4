@@ -45,7 +45,7 @@ giving definitions, equivalent conditions, and basic properties.
 
 -/
 
-@[expose] public section
+public section
 
 universe u v
 
@@ -85,8 +85,8 @@ theorem isNoetherianRing_of_away : IsNoetherianRing R := by
   use N
   have hN : ∀ s : S, minN s ≤ N := fun s => Finset.le_sup s.prop
   intro n hn
-  rw [IsLocalization.ideal_eq_iInf_comap_map_away hS (I N),
-      IsLocalization.ideal_eq_iInf_comap_map_away hS (I n),
+  rw [IsLocalization.ideal_eq_iInf_under_map_away hS (I N),
+      IsLocalization.ideal_eq_iInf_under_map_away hS (I n),
       iInf_subtype', iInf_subtype']
   apply iInf_congr
   intro s
@@ -344,7 +344,7 @@ instance {R} [CommRing R] [IsNoetherianRing R] :
   assumption
 
 instance [IsLocallyNoetherian X] {x : X} : IsNoetherianRing (X.presheaf.stalk x) := by
-  obtain ⟨U, hU, hU2, hU3⟩ := exists_isAffineOpen_mem_and_subset (U := ⊤) (x := x) (by aesop)
+  obtain ⟨U, hU, hU2, hU3⟩ := exists_isAffineOpen_mem_and_subset (U := ⊤) (x := x) (by simp)
   have := AlgebraicGeometry.IsAffineOpen.isLocalization_stalk hU ⟨x, hU2⟩
   exact @IsLocalization.isNoetherianRing _ _ (hU.primeIdealOf ⟨x, hU2⟩).asIdeal.primeCompl
         (X.presheaf.stalk x) _ (X.presheaf.algebra_section_stalk ⟨x, hU2⟩)
@@ -354,7 +354,7 @@ instance [IsLocallyNoetherian X] {x : X} : IsNoetherianRing (X.presheaf.stalk x)
 @[simp]
 theorem isNoetherian_Spec {R : CommRingCat} :
     IsNoetherian (Spec R) ↔ IsNoetherianRing R := by
-  simp [AlgebraicGeometry.isNoetherian_iff, inferInstanceAs (CompactSpace (Spec R))]
+  simp [AlgebraicGeometry.isNoetherian_iff, (inferInstance : CompactSpace (Spec R))]
 
 /-- A Noetherian scheme has a finite number of irreducible components. -/
 @[stacks 0BA8]

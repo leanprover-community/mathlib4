@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.Category.ModuleCat.Monoidal.Basic
 public import Mathlib.Algebra.Category.AlgCat.Basic
-public import Mathlib.CategoryTheory.Monoidal.Mon_
+public import Mathlib.CategoryTheory.Monoidal.Mon
 public import Mathlib.Tactic.SuppressCompilation
 
 /-!
@@ -40,8 +40,11 @@ variable {R : Type u} [CommRing R]
 
 namespace MonModuleEquivalenceAlgebra
 
-set_option backward.isDefEq.respectTransparency false in
-instance MonObj.toRing (A : ModuleCat.{u} R) [MonObj A] : Ring A :=
+/-- The ring structure on a monoid object.
+This instance is dangerous as it doesn't round trip from a ring to a monoid object and then back
+to a ring, since the `npow` field is lost in the middle. Therefore, it is scoped. -/
+@[implicit_reducible]
+def MonObj.toRing (A : ModuleCat.{u} R) [MonObj A] : Ring A :=
   { (inferInstance : AddCommGroup A) with
     one := η[A] (1 : R)
     mul := fun x y => μ[A] (x ⊗ₜ y)
@@ -66,8 +69,12 @@ instance MonObj.toRing (A : ModuleCat.{u} R) [MonObj A] : Ring A :=
     mul_zero := fun x => show μ[A] _ = 0 by
       rw [TensorProduct.tmul_zero, map_zero] }
 
-set_option backward.isDefEq.respectTransparency false in
-instance Algebra_of_Mon_ (A : ModuleCat.{u} R) [MonObj A] : Algebra R A where
+scoped[ModuleCat.MonModuleEquivalenceAlgebra] attribute [instance] MonObj.toRing
+
+/-- The algebra structure on a monoid object.
+This instance is dangerous as it doesn't round trip from a ring to a monoid object and then back
+to a ring, since the `npow` field is lost in the middle. Therefore, it is scoped. -/
+scoped instance Algebra_of_Mon_ (A : ModuleCat.{u} R) [MonObj A] : Algebra R A where
   algebraMap :=
   { η[A].hom with
     map_zero' := η[A].hom.map_zero
@@ -101,7 +108,6 @@ def functor : Mon (ModuleCat.{u} R) ⥤ AlgCat R where
       commutes' := fun r =>
         LinearMap.congr_fun (ModuleCat.hom_ext_iff.mp (IsMonHom.one_hom f.hom)) r }
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Converting a bundled algebra to a monoid object in `ModuleCat R`.
 -/
 @[instance_reducible, simps]

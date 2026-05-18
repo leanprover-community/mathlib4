@@ -49,17 +49,14 @@ variable [HasExplicitFiniteCoproducts.{0} P] [HasExplicitPullbacks.{u} P]
   (hs : ∀ ⦃X Y : CompHausLike P⦄ (f : X ⟶ Y), EffectiveEpi f → Function.Surjective f)
 
 /-- `CompHausLike.LocallyConstantModule.functorToPresheaves` lands in sheaves. -/
-@[simps]
+@[simps!]
 def functor : haveI := CompHausLike.preregular hs
-    ModuleCat R ⥤ Sheaf (coherentTopology (CompHausLike.{u} P)) (ModuleCat R) where
-  obj X := {
-    val := (functorToPresheaves.{w, u} R).obj X
-    cond := by
-      have := CompHausLike.preregular hs
-      apply Presheaf.isSheaf_coherent_of_hasPullbacks_of_comp
-        (s := CategoryTheory.forget (ModuleCat R))
-      exact ((CompHausLike.LocallyConstant.functor P hs).obj _).cond }
-  map f := ⟨(functorToPresheaves.{w, u} R).map f⟩
+    ModuleCat R ⥤ Sheaf (coherentTopology (CompHausLike.{u} P)) (ModuleCat R) :=
+  ObjectProperty.lift _ (functorToPresheaves.{w, u} R) (fun X ↦ by
+    have := CompHausLike.preregular hs
+    apply Presheaf.isSheaf_coherent_of_hasPullbacks_of_comp
+      (s := CategoryTheory.forget (ModuleCat R))
+    exact ((CompHausLike.LocallyConstant.functor P hs).obj _).property)
 
 end CompHausLike.LocallyConstantModule
 

@@ -176,13 +176,13 @@ lemma preservesBinaryBiproduct_of_preservesBiproduct (F : C ⥤ D)
         IsLimit.ofIsoLimit
             ((IsLimit.postcomposeHomEquiv (diagramIsoPair _) _).symm
               (isBilimitOfPreserves F (b.toBiconeIsBilimit.symm hb)).isLimit) <|
-          Cones.ext (Iso.refl _) fun j => by
+          Cone.ext (Iso.refl _) fun j => by
             rcases j with ⟨⟨⟩⟩ <;> simp
       isColimit :=
         IsColimit.ofIsoColimit
             ((IsColimit.precomposeInvEquiv (diagramIsoPair _) _).symm
               (isBilimitOfPreserves F (b.toBiconeIsBilimit.symm hb)).isColimit) <|
-          Cocones.ext (Iso.refl _) fun j => by
+          Cocone.ext (Iso.refl _) fun j => by
             rcases j with ⟨⟨⟩⟩ <;> simp }⟩
 
 /-- A functor that preserves biproducts of a pair preserves binary biproducts. -/

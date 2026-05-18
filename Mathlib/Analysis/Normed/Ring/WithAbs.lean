@@ -56,7 +56,8 @@ section Semiring
 
 variable [Semiring R] (v : AbsoluteValue R S)
 
-instance : Semiring (WithAbs v) := Equiv.semiring { toFun := ofAbs, invFun := toAbs v }
+instance : Semiring (WithAbs v) :=
+  fast_instance% Equiv.semiring { toFun := ofAbs, invFun := toAbs v }
 
 lemma ofAbs_toAbs (x : R) : ofAbs (toAbs v x) = x := rfl
 @[simp] lemma toAbs_ofAbs (x : WithAbs v) : toAbs v (ofAbs x) = x := rfl
@@ -165,7 +166,6 @@ section CommSemiring
 
 variable [CommSemiring R] (v : AbsoluteValue R S)
 
-set_option backward.isDefEq.respectTransparency false in
 instance : CommSemiring (WithAbs v) := fast_instance% (equiv v).commSemiring
 
 end CommSemiring
@@ -174,10 +174,8 @@ section Ring
 
 variable [Ring R]
 
-set_option backward.isDefEq.respectTransparency false in
 instance (v : AbsoluteValue R S) : Ring (WithAbs v) := fast_instance% (equiv v).ring
 
-set_option backward.isDefEq.respectTransparency false in
 noncomputable instance normedRing (v : AbsoluteValue R ℝ) : NormedRing (WithAbs v) :=
   letI := v.toNormedRing
   fast_instance% (equiv v).normedRing
@@ -202,7 +200,6 @@ section CommRing
 
 variable [CommRing R] (v : AbsoluteValue R S)
 
-set_option backward.isDefEq.respectTransparency false in
 instance : CommRing (WithAbs v) := fast_instance% (equiv v).commRing
 
 end CommRing
@@ -241,10 +238,8 @@ instance {P : Type*} [SMul P R] [SMul P T] [SMul R T]
     [IsScalarTower P R T] : IsScalarTower P (WithAbs v) T where
   smul_assoc := by simp [smul_right_def, smul_left_def]
 
-/-- Not an instance because it causes non-reducible diamonds when `T = WithAbs v`. -/
-@[implicit_reducible]
-def moduleLeft [AddCommMonoid T] [Module R T] : Module (WithAbs v) T :=
-  .compHom T (equiv v).toRingHom
+instance moduleLeft [AddCommMonoid T] [Module R T] : Module (WithAbs v) T :=
+  fast_instance% .compHom T (equiv v).toRingHom
 
 @[deprecated (since := "2026-03-02")] alias instModule_left := moduleLeft
 
@@ -258,8 +253,7 @@ variable [Semiring T] [Module R T] (v : AbsoluteValue T S)
 variable (R) in
 /-- The canonical `R`-linear isomorphism between `WithAbs v` and `T`, when
 `v : AbsoluteValue T S`. -/
-def linearEquiv [Semiring T] [Module R T] (v : AbsoluteValue T S) :
-    WithAbs v ≃ₗ[R] T := (equiv v).linearEquiv R
+def linearEquiv : WithAbs v ≃ₗ[R] T := (equiv v).linearEquiv R
 
 variable {v}
 
@@ -273,16 +267,12 @@ section algebra
 variable {R T : Type*} [CommSemiring R] [Semiring T] [Algebra R T]
 
 variable (T) in
-/-- Not an instance because it causes non-reducible diamonds when `T = WithAbs v`. -/
-@[implicit_reducible]
-def algebraLeft (v : AbsoluteValue R S) : Algebra (WithAbs v) T :=
-  .compHom T (equiv v).toRingHom
+instance algebraLeft (v : AbsoluteValue R S) : Algebra (WithAbs v) T :=
+  fast_instance% .compHom T (equiv v).toRingHom
 
-attribute [local instance] algebraLeft in
 theorem algebraMap_left_apply {v : AbsoluteValue R S} (x : WithAbs v) :
     algebraMap (WithAbs v) T x = algebraMap R T x.ofAbs := rfl
 
-attribute [local instance] algebraLeft in
 theorem algebraMap_left_injective (v : AbsoluteValue R S)
     (h : Function.Injective (algebraMap R T)) :
     Function.Injective (algebraMap (WithAbs v) T) :=
@@ -292,13 +282,12 @@ instance (v : AbsoluteValue T S) : Algebra R (WithAbs v) :=
   fast_instance% (equiv v).algebra R
 
 theorem algebraMap_right_apply {v : AbsoluteValue T S} (x : R) :
-    algebraMap R (WithAbs v) x = toAbs v (algebraMap R T x):= rfl
+    algebraMap R (WithAbs v) x = toAbs v (algebraMap R T x) := rfl
 
 theorem algebraMap_right_injective (v : AbsoluteValue T S)
     (h : Function.Injective (algebraMap R T)) : Function.Injective (algebraMap R (WithAbs v)) :=
   (toAbs_injective v).comp h
 
-attribute [local instance] algebraLeft in
 theorem ofAbs_algebraMap (v : AbsoluteValue R S) (w : AbsoluteValue T S) (x : WithAbs v) :
     (algebraMap (WithAbs v) (WithAbs w) x).ofAbs = algebraMap R T x.ofAbs := rfl
 
@@ -322,15 +311,11 @@ end WithAbs
 namespace AbsoluteValue
 
 variable {K L S : Type*} [CommRing K] [IsSimpleRing K] [CommRing L] [Algebra K L] [PartialOrder S]
-  [Nontrivial L] [Semiring S] (w : AbsoluteValue L S) (v : AbsoluteValue K S)
+  [Nontrivial L] [Semiring S]
 
 /-- An absolute value `w` of `L / K` lies over the absolute value `v` of `K` if `v` is the
 restriction of `w` to `K`. -/
-class LiesOver : Prop where
-  comp_eq' : w.comp (algebraMap K L).injective = v
-
-variable [w.LiesOver v]
-
-theorem LiesOver.comp_eq : w.comp (algebraMap K L).injective = v := LiesOver.comp_eq'
+class LiesOver (w : AbsoluteValue L S) (v : AbsoluteValue K S) : Prop where
+  comp_eq (w) (v) : w.comp (algebraMap K L).injective = v
 
 end AbsoluteValue

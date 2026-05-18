@@ -62,7 +62,7 @@ theorem nhds_list (as : List α) : 𝓝 as = traverse 𝓝 as := by
       replace hv := hv.flip
       simp only [List.forall₂_and_left, Function.flip_def] at hv ⊢
       exact ⟨hv.1, hu.flip⟩
-    refine mem_of_superset ?_ hvs
+    grw [← hvs]
     exact mem_traverse _ _ (this.imp fun a s ⟨hs, ha⟩ => IsOpen.mem_nhds hs ha)
 
 @[simp]
@@ -173,7 +173,8 @@ end List
 
 namespace List.Vector
 
-instance (n : ℕ) : TopologicalSpace (Vector α n) := by unfold Vector; infer_instance
+instance (n : ℕ) : TopologicalSpace (Vector α n) :=
+  inferInstanceAs <| TopologicalSpace (Subtype _)
 
 set_option backward.isDefEq.respectTransparency false in
 theorem tendsto_cons {n : ℕ} {a : α} {l : Vector α n} :

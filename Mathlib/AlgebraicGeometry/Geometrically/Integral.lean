@@ -15,7 +15,7 @@ public import Mathlib.AlgebraicGeometry.Geometrically.Irreducible
 - `AlgebraicGeometry.GeometricallyIntegral`:
   We say that morphism `f : X ⟶ Y` is geometrically integral if for all `Spec K ⟶ Y` with `K`
   a field, `X ×[Y] Spec K` is integral.
-  We also provide the fact that this is stable under base change (by infer_instance)
+  We also provide the fact that this is stable under base change (`by infer_instance`)
 - `GeometricallyIntegral.iff_geometricallyIntegral_fiber`:
   A scheme is geometrically integral over `S` iff the fibers of all
   `s : S` are geometrically integral.
@@ -26,7 +26,7 @@ public import Mathlib.AlgebraicGeometry.Geometrically.Irreducible
   If `X` is geometrically integral over a field, then it is integral.
 -/
 
-@[expose] public section
+public section
 
 open CategoryTheory MorphismProperty Limits
 

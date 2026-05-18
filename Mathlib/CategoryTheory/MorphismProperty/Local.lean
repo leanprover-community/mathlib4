@@ -32,7 +32,7 @@ The covers appearing in the definitions have index type in the morphism universe
 - Define source and target local closure of a morphism property.
 -/
 
-@[expose] public section
+public section
 
 universe w v u
 

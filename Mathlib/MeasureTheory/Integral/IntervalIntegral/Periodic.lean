@@ -89,7 +89,7 @@ instance : AddQuotientMeasureEqMeasurePreimage volume (volume : Measure (AddCirc
 /-- The covering map from `ℝ` to the "additive circle" `ℝ ⧸ (ℤ ∙ T)` is measure-preserving,
 considered with respect to the standard measure (defined to be the Haar measure of total mass `T`)
 on the additive circle, and with respect to the restriction of Lebesgue measure on `ℝ` to an
-interval (t, t + T]. -/
+interval $(t, t + T]$. -/
 protected theorem measurePreserving_mk (t : ℝ) :
     MeasurePreserving (β := AddCircle T) ((↑) : ℝ → AddCircle T)
       (volume.restrict (Ioc t (t + T))) :=
@@ -164,7 +164,7 @@ lemma measurePreserving_equivIoc {a : ℝ} :
 
 attribute [local instance] Subtype.measureSpace in
 /-- The lower integral of a function over `AddCircle T` is equal to the lower integral over an
-interval (t, t + T] in `ℝ` of its lift to `ℝ`. -/
+interval $(t, t + T]$ in `ℝ` of its lift to `ℝ`. -/
 protected theorem lintegral_preimage (t : ℝ) (f : AddCircle T → ℝ≥0∞) :
     (∫⁻ a in Ioc t (t + T), f a) = ∫⁻ b : AddCircle T, f b := by
   have m : MeasurableSet (Ioc t (t + T)) := measurableSet_Ioc
@@ -186,7 +186,7 @@ variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 
 attribute [local instance] Subtype.measureSpace in
 /-- The integral of an almost-everywhere strongly measurable function over `AddCircle T` is equal
-to the integral over an interval (t, t + T] in `ℝ` of its lift to `ℝ`. -/
+to the integral over an interval $(t, t + T]$ in `ℝ` of its lift to `ℝ`. -/
 protected theorem integral_preimage (t : ℝ) (f : AddCircle T → E) :
     (∫ a in Ioc t (t + T), f a) = ∫ b : AddCircle T, f b := by
   have m : MeasurableSet (Ioc t (t + T)) := measurableSet_Ioc
@@ -201,7 +201,7 @@ protected theorem integral_preimage (t : ℝ) (f : AddCircle T → E) :
   rfl
 
 /-- The integral of an almost-everywhere strongly measurable function over `AddCircle T` is equal
-to the integral over an interval (t, t + T] in `ℝ` of its lift to `ℝ`. -/
+to the integral over an interval $(t, t + T]$ in `ℝ` of its lift to `ℝ`. -/
 protected theorem intervalIntegral_preimage (t : ℝ) (f : AddCircle T → E) :
     ∫ a in t..t + T, f a = ∫ b : AddCircle T, f b := by
   rw [integral_of_le, AddCircle.integral_preimage T t f]
@@ -236,14 +236,14 @@ protected theorem measure_univ : volume (Set.univ : Set UnitAddCircle) = 1 := by
 /-- The covering map from `ℝ` to the "unit additive circle" `ℝ ⧸ ℤ` is measure-preserving,
 considered with respect to the standard measure (defined to be the Haar measure of total mass 1)
 on the additive circle, and with respect to the restriction of Lebesgue measure on `ℝ` to an
-interval (t, t + 1]. -/
+interval $(t, t + 1]$. -/
 protected theorem measurePreserving_mk (t : ℝ) :
     MeasurePreserving (β := UnitAddCircle) ((↑) : ℝ → UnitAddCircle)
       (volume.restrict (Ioc t (t + 1))) :=
   AddCircle.measurePreserving_mk 1 t
 
 /-- The integral of a measurable function over `UnitAddCircle` is equal to the integral over an
-interval (t, t + 1] in `ℝ` of its lift to `ℝ`. -/
+interval $(t, t + 1]$ in `ℝ` of its lift to `ℝ`. -/
 protected theorem lintegral_preimage (t : ℝ) (f : UnitAddCircle → ℝ≥0∞) :
     (∫⁻ a in Ioc t (t + 1), f a) = ∫⁻ b : UnitAddCircle, f b :=
   AddCircle.lintegral_preimage 1 t f
@@ -251,13 +251,13 @@ protected theorem lintegral_preimage (t : ℝ) (f : UnitAddCircle → ℝ≥0∞
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 
 /-- The integral of an almost-everywhere strongly measurable function over `UnitAddCircle` is
-equal to the integral over an interval (t, t + 1] in `ℝ` of its lift to `ℝ`. -/
+equal to the integral over an interval $(t, t + 1]$ in `ℝ` of its lift to `ℝ`. -/
 protected theorem integral_preimage (t : ℝ) (f : UnitAddCircle → E) :
     (∫ a in Ioc t (t + 1), f a) = ∫ b : UnitAddCircle, f b :=
   AddCircle.integral_preimage 1 t f
 
 /-- The integral of an almost-everywhere strongly measurable function over `UnitAddCircle` is
-equal to the integral over an interval (t, t + 1] in `ℝ` of its lift to `ℝ`. -/
+equal to the integral over an interval $(t, t + 1]$ in `ℝ` of its lift to `ℝ`. -/
 protected theorem intervalIntegral_preimage (t : ℝ) (f : UnitAddCircle → E) :
     ∫ a in t..t + 1, f a = ∫ b : UnitAddCircle, f b :=
   AddCircle.intervalIntegral_preimage 1 t f

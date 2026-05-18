@@ -45,7 +45,7 @@ lemma colim.map_mono' [HasColimitsOfShape J C]
     {c₁ : Cocone X₁} (hc₁ : IsColimit c₁) {c₂ : Cocone X₂} (hc₂ : IsColimit c₂)
     (f : c₁.pt ⟶ c₂.pt) (hf : ∀ j, c₁.ι.app j ≫ f = φ.app j ≫ c₂.ι.app j) : Mono f := by
   refine ((MorphismProperty.monomorphisms C).arrow_mk_iso_iff ?_).2
-    (inferInstanceAs (Mono (colim.map φ)))
+    ((inferInstance : Mono (colim.map φ)))
   exact Arrow.isoMk
     (IsColimit.coconePointUniqueUpToIso hc₁ (colimit.isColimit _))
     (IsColimit.coconePointUniqueUpToIso hc₂ (colimit.isColimit _))

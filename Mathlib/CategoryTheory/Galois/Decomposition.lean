@@ -287,7 +287,7 @@ lemma exists_galois_representative (X : C) : ∃ (A : C) (a : F.obj A),
     change F.map (fi1.hom ≫ fi2.inv) x = y
     simp only [map_comp, FintypeCat.comp_apply]
     rw [hfi1, ← hfi2]
-    exact DFunLike.congr_fun (F.mapIso fi2).hom_inv_id y
+    exact ConcreteCategory.congr_hom (F.mapIso fi2).hom_inv_id y
   · refine ⟨evaluation_injective_of_isConnected F A X a, ?_⟩
     intro x
     use u ≫ Pi.π _ x
@@ -321,7 +321,7 @@ lemma natTrans_ext_of_isGalois {G : C ⥤ FintypeCat.{w}} {t s : F ⟶ G}
     t = s := by
   ext X x
   obtain ⟨A, f, a, _, rfl⟩ := exists_hom_from_galois_of_fiber F X x
-  rw [FunctorToFintypeCat.naturality, FunctorToFintypeCat.naturality, h A]
+  rw [NatTrans.naturality_apply, NatTrans.naturality_apply, h A]
 
 end GaloisRep
 

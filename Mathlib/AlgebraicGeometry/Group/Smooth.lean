@@ -6,19 +6,20 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.AlgebraicGeometry.AlgClosed.Basic
-public import Mathlib.AlgebraicGeometry.Morphisms.Smooth
-public import Mathlib.CategoryTheory.Monoidal.Grp_
+public import Mathlib.AlgebraicGeometry.Morphisms.LocalFlatDescent
+public import Mathlib.AlgebraicGeometry.Geometrically.Reduced
+public import Mathlib.CategoryTheory.Monoidal.Grp
 
 /-!
 # Smoothness of group schemes
 
 ## Main results
-- `AlgebraicGeometry.smooth_of_grpObj_of_isAlgClosed`:
-  If `G` is a group scheme over an algebraically closed field `k` that is reduced and locally
+- `AlgebraicGeometry.smooth_of_grpObj`:
+  If `G` is a group scheme over a field `k` that is geometrically reduced and locally
   of finite type, then `G` is smooth over `k`.
 -/
 
-@[expose] public section
+public section
 
 open CategoryTheory
 
@@ -26,8 +27,8 @@ namespace AlgebraicGeometry
 
 universe u
 
-variable {K : Type u} [Field K] [IsAlgClosed K] {G : Scheme} (f : G ⟶ Spec (.of K))
-    [LocallyOfFinitePresentation f] [IsReduced G] [GrpObj (Over.mk f)]
+variable {K : Type u} [Field K] {G : Scheme} (f : G ⟶ Spec (.of K))
+    [LocallyOfFiniteType f] [GrpObj (Over.mk f)]
 
 set_option backward.isDefEq.respectTransparency false in
 open MonObj MonoidalCategory CartesianMonoidalCategory in
@@ -35,7 +36,7 @@ open MonObj MonoidalCategory CartesianMonoidalCategory in
 If `G` is a group scheme over an algebraically closed field `k` that is reduced and locally
 of finite type, then `G` is smooth over `k`.
 -/
-lemma smooth_of_grpObj_of_isAlgClosed : Smooth f := by
+private lemma smooth_of_grpObj_of_isAlgClosed [IsReduced G] [IsAlgClosed K] : Smooth f := by
   have := LocallyOfFiniteType.jacobsonSpace f
   have : Nonempty G := ⟨η[Over.mk f].1 (IsLocalRing.closedPoint _)⟩
   rw [← Scheme.Hom.smoothLocus_eq_top_iff, ← TopologicalSpace.Opens.coe_eq_univ,
@@ -55,9 +56,17 @@ lemma smooth_of_grpObj_of_isAlgClosed : Smooth f := by
     simp [comp_lift_assoc]
   have hα' : α.hom.left x = y := by
     simpa [x', y', pointEquivClosedPoint] using congr(($hα).left (IsLocalRing.closedPoint K))
-  have hαf : α.hom.left ≫ f = f := α.hom.w
   rw! [← hα', ← α.hom.left.mem_preimage, Scheme.Hom.preimage_smoothLocus_eq,
     show α.hom.left ≫ f = f from α.hom.w] at hy
   exact hx hy
+
+lemma smooth_of_grpObj [GeometricallyReduced f] : Smooth f := by
+  let Ω : Type u := AlgebraicClosure K
+  let g : Spec (.of Ω) ⟶ Spec (.of K) := Spec.map (CommRingCat.ofHom <| algebraMap K Ω)
+  apply MorphismProperty.of_pullback_snd_of_descendsAlong
+    (Q := @Surjective ⊓ @Flat ⊓ @QuasiCompact) (g := g)
+  · exact ⟨⟨inferInstance, inferInstance⟩, inferInstance⟩
+  · let : GrpObj (Over.mk (Limits.pullback.snd f g)) := Over.grpObjMkPullbackSnd
+    exact smooth_of_grpObj_of_isAlgClosed _
 
 end AlgebraicGeometry

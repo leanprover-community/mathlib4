@@ -19,7 +19,7 @@ remaining theorems analogous to other lemmas in `AlgebraicGeometry/Morphisms/*`.
 
 -/
 
-@[expose] public section
+public section
 
 
 noncomputable section
@@ -103,7 +103,7 @@ theorem isOpenImmersion_eq_inf :
 instance : IsZariskiLocalAtTarget (stalkwise (Function.Bijective ·)) := by
   apply stalkwiseIsZariskiLocalAtTarget_of_respectsIso
   rw [RingHom.toMorphismProperty_respectsIso_iff]
-  convert (inferInstanceAs (MorphismProperty.isomorphisms CommRingCat).RespectsIso)
+  convert (inferInstance : (MorphismProperty.isomorphisms CommRingCat).RespectsIso)
   ext
   exact (ConcreteCategory.isIso_iff_bijective _).symm
 

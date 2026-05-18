@@ -71,12 +71,12 @@ noncomputable instance : PreservesFiniteLimits (forget FintypeCat) :=
 as types. -/
 noncomputable def productEquiv {ι : Type*} [Finite ι] (X : ι → FintypeCat.{u}) :
     (∏ᶜ X : FintypeCat) ≃ ∀ i, X i :=
-  letI : Fintype ι := Fintype.ofFinite _
+  have : Fintype ι := Fintype.ofFinite _
   haveI : Small.{u} ι :=
     ⟨ULift (Fin (Fintype.card ι)), ⟨(Fintype.equivFin ι).trans Equiv.ulift.symm⟩⟩
-  let is₁ : FintypeCat.incl.obj (∏ᶜ fun i ↦ X i) ≅ (∏ᶜ fun i ↦ X i : Type u) :=
+  let is₁ : FintypeCat.incl.obj (∏ᶜ fun i ↦ X i) ≅ (∏ᶜ fun i ↦ X i) :=
     PreservesProduct.iso FintypeCat.incl (fun i ↦ X i)
-  let is₂ : (∏ᶜ fun i ↦ X i : Type u) ≅ Shrink.{u} (∀ i, X i) :=
+  let is₂ : (∏ᶜ fun i ↦ X i : Type _) ≅ (Shrink.{u} (∀ i, X i)) :=
     Types.Small.productIso (fun i ↦ X i)
   let e : (∀ i, X i) ≃ Shrink.{u} (∀ i, X i) := equivShrink _
   (equivEquivIso.symm is₁).trans ((equivEquivIso.symm is₂).trans e.symm)
@@ -84,7 +84,8 @@ noncomputable def productEquiv {ι : Type*} [Finite ι] (X : ι → FintypeCat.{
 @[simp]
 lemma productEquiv_apply {ι : Type*} [Finite ι] (X : ι → FintypeCat.{u})
     (x : (∏ᶜ X : FintypeCat)) (i : ι) : productEquiv X x i = Pi.π X i x := by
-  simpa [productEquiv] using (elementwise_of% piComparison_comp_π FintypeCat.incl X i) x
+  simpa [productEquiv, equivEquivIso, equivIsoIso, Iso.toEquiv] using
+    piComparison_comp_π_apply FintypeCat.incl X i x
 
 @[simp]
 lemma productEquiv_symm_comp_π_apply {ι : Type*} [Finite ι] (X : ι → FintypeCat.{u})
@@ -97,14 +98,14 @@ instance nonempty_pi_of_nonempty {ι : Type*} [Finite ι] (X : ι → FintypeCat
 
 /-- The colimit type of a functor from a finite category to Types that only
 involves finite objects is finite. -/
-instance finite_colimitType {J : Type} [SmallCategory J] [FinCategory J]
-    (K : J ⥤ Type*) [∀ j, Finite (K.obj j)] : Finite K.ColimitType :=
+instance finite_colimitType {J : Type*} [SmallCategory J] [FinCategory J]
+    (K : J ⥤ Type u) [∀ j, Finite (K.obj j)] : Finite K.ColimitType :=
   Quot.finite _
 
 /-- Any functor from a finite category to `Type*` that only involves finite objects,
 has a finite colimit. -/
-lemma finite_of_isColimit {J : Type} [SmallCategory J] [FinCategory J]
-    {K : J ⥤ Type*} [∀ j, Finite (K.obj j)] {c : Cocone K} (hc : IsColimit c) :
+lemma finite_of_isColimit {J : Type*} [SmallCategory J] [FinCategory J]
+    {K : J ⥤ Type u} [∀ j, Finite (K.obj j)] {c : Cocone K} (hc : IsColimit c) :
     Finite c.pt :=
   Finite.of_equiv _ ((Types.isColimit_iff_coconeTypesIsColimit c).1 ⟨hc⟩).equiv
 

@@ -145,6 +145,14 @@ lemma covariance_mul_const_left (c : ℝ) : cov[fun ω ↦ X ω * c, Y; μ] = co
 lemma covariance_mul_const_right (c : ℝ) : cov[X, fun ω ↦ Y ω * c; μ] = cov[X, Y; μ] * c := by
   simp [mul_comm, covariance_const_mul_right]
 
+lemma covariance_fun_div_left (c : ℝ) :
+    cov[fun ω ↦ X ω / c, Y; μ] = cov[X, Y; μ] / c := by
+  simp_rw [← inv_mul_eq_div, covariance_const_mul_left]
+
+lemma covariance_fun_div_right (c : ℝ) :
+    cov[X, fun ω ↦ Y ω / c; μ] = cov[X, Y; μ] / c := by
+  simp_rw [← inv_mul_eq_div, covariance_const_mul_right]
+
 @[deprecated (since := "2025-11-29")] alias covariance_mul_left := covariance_const_mul_left
 @[deprecated (since := "2025-11-29")] alias covariance_mul_right := covariance_const_mul_right
 
@@ -173,10 +181,18 @@ lemma covariance_sub_left [IsFiniteMeasure μ]
     cov[X - Y, Z; μ] = cov[X, Z; μ] - cov[Y, Z; μ] := by
   simp_rw [sub_eq_add_neg, covariance_add_left hX hY.neg hZ, covariance_neg_left]
 
+lemma covariance_fun_sub_left [IsFiniteMeasure μ]
+    (hX : MemLp X 2 μ) (hY : MemLp Y 2 μ) (hZ : MemLp Z 2 μ) :
+    cov[fun ω ↦ X ω - Y ω, Z; μ] = cov[X, Z; μ] - cov[Y, Z; μ] := covariance_sub_left hX hY hZ
+
 lemma covariance_sub_right [IsFiniteMeasure μ]
     (hX : MemLp X 2 μ) (hY : MemLp Y 2 μ) (hZ : MemLp Z 2 μ) :
     cov[X, Y - Z; μ] = cov[X, Y; μ] - cov[X, Z; μ] := by
   simp_rw [sub_eq_add_neg, covariance_add_right hX hY hZ.neg, covariance_neg_right]
+
+lemma covariance_fun_sub_right [IsFiniteMeasure μ]
+    (hX : MemLp X 2 μ) (hY : MemLp Y 2 μ) (hZ : MemLp Z 2 μ) :
+    cov[X, fun ω ↦ Y ω - Z ω; μ] = cov[X, Y; μ] - cov[X, Z; μ] := covariance_sub_right hX hY hZ
 
 @[simp]
 lemma covariance_sub_const_left [IsProbabilityMeasure μ] (hX : Integrable X μ) (c : ℝ) :
@@ -186,7 +202,7 @@ lemma covariance_sub_const_left [IsProbabilityMeasure μ] (hX : Integrable X μ)
 @[simp]
 lemma covariance_const_sub_left [IsProbabilityMeasure μ] (hX : Integrable X μ) (c : ℝ) :
     cov[fun ω ↦ c - X ω, Y; μ] = -cov[X, Y; μ] := by
-  simp [sub_eq_add_neg, hX.neg']
+  simp [sub_eq_add_neg, hX.fun_neg]
 
 @[simp]
 lemma covariance_sub_const_right [IsProbabilityMeasure μ] (hY : Integrable Y μ) (c : ℝ) :
@@ -196,7 +212,7 @@ lemma covariance_sub_const_right [IsProbabilityMeasure μ] (hY : Integrable Y μ
 @[simp]
 lemma covariance_const_sub_right [IsProbabilityMeasure μ] (hY : Integrable Y μ) (c : ℝ) :
     cov[X, fun ω ↦ c - Y ω; μ] = -cov[X, Y; μ] := by
-  simp [sub_eq_add_neg, hY.neg']
+  simp [sub_eq_add_neg, hY.fun_neg]
 
 section Sum
 
@@ -211,7 +227,7 @@ lemma covariance_sum_left' (hX : ∀ i ∈ s, MemLp (X i) 2 μ) (hY : MemLp Y 2 
     rw [Finset.sum_insert hi, Finset.sum_insert hi, covariance_add_left, h_ind]
     · exact fun j hj ↦ hX j (by simp [hj])
     · exact hX i (by simp)
-    · exact memLp_finset_sum' s (fun j hj ↦ hX j (by simp [hj]))
+    · exact memLp_finsetSum' s (fun j hj ↦ hX j (by simp [hj]))
     · exact hY
 
 lemma covariance_sum_left [Fintype ι] (hX : ∀ i, MemLp (X i) 2 μ) (hY : MemLp Y 2 μ) :
@@ -251,7 +267,7 @@ lemma covariance_sum_sum' {ι' : Type*} {Y : ι' → Ω → ℝ} {t : Finset ι'
     cov[∑ i ∈ s, X i, ∑ j ∈ t, Y j; μ] = ∑ i ∈ s, ∑ j ∈ t, cov[X i, Y j; μ] := by
   rw [covariance_sum_left' hX]
   · exact Finset.sum_congr rfl fun i hi ↦ by rw [covariance_sum_right' hY (hX i hi)]
-  · exact memLp_finset_sum' t hY
+  · exact memLp_finsetSum' t hY
 
 lemma covariance_sum_sum [Fintype ι] {ι' : Type*} [Fintype ι'] {Y : ι' → Ω → ℝ}
     (hX : ∀ i, MemLp (X i) 2 μ) (hY : ∀ i, MemLp (Y i) 2 μ) :

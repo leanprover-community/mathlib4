@@ -54,7 +54,6 @@ section Jordan
 
 variable {G α : Type*} [Group G] [MulAction G α]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- In a 2-transitive action, the normal closure of stabilizers is the full group. -/
 theorem normalClosure_of_stabilizer_eq_top (hsn' : 2 < ENat.card α)
     (hG' : IsMultiplyPretransitive G α 2) {a : α} :
@@ -103,7 +102,6 @@ open MulAction.IsPreprimitive
 
 open scoped Pointwise
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Simultaneously prove `MulAction.IsPreprimitive.is_two_pretransitive`
 and `MulAction.IsPreprimitive.is_two_preprimitive`. -/
 theorem MulAction.IsPreprimitive.is_two_motive_of_is_motive
@@ -419,9 +417,6 @@ theorem subgroup_eq_top_of_isPreprimitive_of_isSwap_mem
   convert Nat.prime_two
   rw [Nat.card_eq_fintype_card, Fintype.card_subtype, ← card_support_eq_two.mpr h2g]
   simp [SubMulAction.mem_ofFixingSubgroup_iff, support]
-
-@[deprecated (since := "2025-11-04")]
-alias eq_top_of_isPreprimitive_of_isSwap_mem := subgroup_eq_top_of_isPreprimitive_of_isSwap_mem
 
 /-- A primitive subgroup of `Equiv.Perm α` that contains a 3-cycle
 contains the alternating group (Jordan). -/

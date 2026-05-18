@@ -107,7 +107,6 @@ end Pi
 
 section Equalizer
 
-set_option backward.isDefEq.respectTransparency false in
 lemma equalizer_comp {A B : Under R} (f g : A ⟶ B) :
     (AlgHom.equalizer (toAlgHom f) (toAlgHom g)).val.toUnder ≫ f =
     (AlgHom.equalizer (toAlgHom f) (toAlgHom g)).val.toUnder ≫ g := by
@@ -121,12 +120,10 @@ def equalizerFork {A B : Under R} (f g : A ⟶ B) :
   Fork.ofι ((AlgHom.equalizer (toAlgHom f) (toAlgHom g)).val.toUnder)
     (by rw [equalizer_comp])
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma equalizerFork_ι {A B : Under R} (f g : A ⟶ B) :
     (Under.equalizerFork f g).ι = (AlgHom.equalizer (toAlgHom f) (toAlgHom g)).val.toUnder := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Variant of `Under.equalizerFork'` for algebra maps. This is definitionally equal to
 `Under.equalizerFork` but this is costly in applications. -/
 def equalizerFork' {A B : Type u} [CommRing A] [CommRing B] [Algebra R A] [Algebra R B]
@@ -134,7 +131,6 @@ def equalizerFork' {A B : Type u} [CommRing A] [CommRing B] [Algebra R A] [Algeb
     Fork f.toUnder g.toUnder :=
   Fork.ofι ((AlgHom.equalizer f g).val.toUnder) <| by ext a; exact a.property
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma equalizerFork'_ι {A B : Type u} [CommRing A] [CommRing B] [Algebra R A] [Algebra R B]
     (f g : A →ₐ[R] B) :
@@ -162,14 +158,12 @@ def tensorProdEqualizer {A B : Under R} (f g : A ⟶ B) :
     ((tensorProd R S).map ((AlgHom.equalizer (toAlgHom f) (toAlgHom g)).val.toUnder)) <| by
     rw [← Functor.map_comp, equalizer_comp, Functor.map_comp]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma tensorProdEqualizer_ι {A B : Under R} (f g : A ⟶ B) :
     (tensorProdEqualizer f g).ι = (tensorProd R S).map
       ((AlgHom.equalizer (toAlgHom f) (toAlgHom g)).val.toUnder) :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `S` is `R`-flat, `S ⊗[R] eq(f, g)` is isomorphic to `eq(𝟙 ⊗[R] f, 𝟙 ⊗[R] g)`. -/
 -- marked noncomputable for performance (only)
 noncomputable def equalizerForkTensorProdIso [Module.Flat R S] {A B : Under R} (f g : A ⟶ B) :

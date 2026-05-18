@@ -26,7 +26,6 @@ open scoped BigOperators ComplexConjugate
 
 variable {G : Type*} [Fintype G] [AddCommGroup G] {p : ℕ}
 
-set_option backward.isDefEq.respectTransparency false in
 /-- One can randomise by a function of dissociated support. -/
 lemma AddDissociated.randomisation (c : AddChar G ℂ → ℝ) (d : AddChar G ℂ → ℂ)
     (hcd : AddDissociated {ψ | d ψ ≠ 0}) : 𝔼 a, ∏ ψ, (c ψ + (d ψ * ψ a).re) = ∏ ψ, c ψ := by

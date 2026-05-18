@@ -28,7 +28,7 @@ public import Mathlib.Order.Filter.Ultrafilter.Defs
 ultraproduct, Los's theorem
 -/
 
-@[expose] public section
+public section
 
 universe u v
 
@@ -72,7 +72,7 @@ instance setoidPrestructure : L.Prestructure ((u : Filter α).productSetoid M) :
 variable {M} {u}
 
 instance «structure» : L.Structure ((u : Filter α).Product M) :=
-  Language.quotientStructure
+  inferInstanceAs <| L.Structure (Quotient _)
 
 theorem funMap_cast {n : ℕ} (f : L.Functions n) (x : Fin n → ∀ a, M a) :
     (funMap f fun i => (x i : (u : Filter α).Product M)) =
@@ -96,7 +96,6 @@ theorem boundedFormula_realize_cast {β : Type*} {n : ℕ} (φ : L.BoundedFormul
     (φ.Realize (fun i : β => (x i : (u : Filter α).Product M))
         (fun i => (v i : (u : Filter α).Product M))) ↔
       ∀ᶠ a : α in u, φ.Realize (fun i : β => x i a) fun i => v i a := by
-  letI := (u : Filter α).productSetoid M
   induction φ with
   | falsum => simp only [BoundedFormula.Realize, eventually_const]
   | equal =>

@@ -14,7 +14,7 @@ public import Mathlib.RingTheory.TwoSidedIdeal.Operations
 /-! # Linear topology on the ring of multivariate power series
 
 - `MvPowerSeries.LinearTopology.basis`: the ideals of the ring of multivariate power series
-all coefficients the exponent of which is smaller than some bound vanish.
+  all coefficients the exponent of which is smaller than some bound vanish.
 
 - `MvPowerSeries.LinearTopology.hasBasis_nhds_zero` :
   the two-sided ideals from `MvPowerSeries.LinearTopology.basis` form a basis
@@ -94,7 +94,7 @@ theorem basis_le_iff {J K : TwoSidedIdeal R} {d e : σ →₀ ℕ} (hK : K ≠ �
     · intro x hx
       have (d' : _) : coeff d' (C (σ := σ) x) ∈ J := by
         rw [coeff_C]; split_ifs <;> [exact hx; exact J.zero_mem]
-      simpa using h (C x) (fun _ _ ↦ this _) _ (zero_le _)
+      simpa using h (C x) (fun _ _ ↦ this _) _ zero_le
     · by_contra h'
       apply hK
       rw [eq_top_iff]

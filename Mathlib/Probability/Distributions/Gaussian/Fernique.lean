@@ -42,7 +42,6 @@ variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [MeasurableSpace
 
 section Rotation
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Characteristic function of a centered Gaussian measure.
 For a Gaussian measure, the hypothesis `∀ L : StrongDual ℝ E, μ[L] = 0` is equivalent to the simpler
 `μ[id] = 0`, but at this point we don't know yet that `μ` has a first moment so we can't use it.
@@ -203,19 +202,16 @@ lemma memLp_id (μ : Measure E) [IsGaussian μ] (p : ℝ≥0∞) (hp : p ≠ ∞
     exact fun x hx ↦ integrable_exp_mul_of_le_of_le hC_neg hC hx.1.le hx.2.le
   exact h_subset ⟨by simp [hC_pos], hC_pos⟩
 
+@[to_fun integrable_fun_id]
 lemma integrable_id : Integrable id μ :=
   memLp_one_iff_integrable.1 <| memLp_id μ 1 (by norm_num)
 
-lemma integrable_fun_id : Integrable (fun x ↦ x) μ := integrable_id
-
+@[to_fun memLp_two_fun_id]
 lemma memLp_two_id : MemLp id 2 μ := memLp_id μ 2 (by norm_num)
-
-lemma memLp_two_fun_id : MemLp (fun x ↦ x) 2 μ := memLp_two_id
 
 lemma integral_dual (L : StrongDual ℝ E) : μ[L] = L (∫ x, x ∂μ) :=
   L.integral_comp_comm ((memLp_id μ 1 (by simp)).integrable le_rfl)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A Gaussian measure with variance zero is a Dirac. -/
 lemma eq_dirac_of_variance_eq_zero (h : ∀ L : StrongDual ℝ E, Var[L; μ] = 0) :
     μ = Measure.dirac (∫ x, x ∂μ) := by

@@ -390,7 +390,7 @@ theorem radius_right_inv_pos_of_radius_pos_aux1 (n : ℕ) (p : ℕ → ℝ) (hp 
       rw [sum_sigma']
       gcongr
       · intro x _ _
-        exact prod_nonneg fun j _ => mul_nonneg hr (mul_nonneg (pow_nonneg ha _) (hp _))
+        exact prod_nonneg fun j _ ↦ (by positivity [ha, hp (x.snd.blocksFun j)])
       rintro ⟨k, c⟩ hd
       simp only [Set.mem_toFinset (s := {c | 1 < Composition.length c}), mem_Ico, mem_sigma,
         Set.mem_setOf_eq] at hd
@@ -513,7 +513,7 @@ theorem radius_rightInv_pos_of_radius_pos
     apply Nat.le_induction
     · simp only [S]
       rw [Ico_eq_empty_of_le (le_refl 1), sum_empty]
-      exact mul_nonneg (add_nonneg (norm_nonneg _) zero_le_one) apos.le
+      positivity
     · intro n one_le_n hn
       have In : 2 ≤ n + 1 := by lia
       have rSn : r * S n ≤ 1 / 2 :=
@@ -651,7 +651,6 @@ lemma HasFPowerSeriesAt.eventually_hasSum_of_comp {f : E → F} {g : F → G}
     exact cauchySeq_finset_of_norm_bounded Z (fun i ↦ le_rfl)
   exact tendsto_nhds_of_cauchySeq_of_subseq C tendsto_finset_range L
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If an open partial homeomorphism `f` is defined at `a` and has a power series expansion there
 with invertible linear term, then `f.symm` has a power series expansion at `f a`, given by the
 inverse of the initial power series. -/

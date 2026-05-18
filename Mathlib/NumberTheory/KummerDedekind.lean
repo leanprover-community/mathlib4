@@ -17,6 +17,7 @@ the ring of integers. This states the following: assume we are given
   - A prime ideal `I` of Dedekind domain `R`
   - An `R`-algebra `S` that is a Dedekind Domain
   - An `α : S` that is integral over `R` with minimal polynomial `f`
+
 If the conductor `𝓒` of `x` is such that `𝓒 ∩ R` is coprime to `I` then the prime
 factorisations of `I * S` and `f mod I` have the same shape, i.e. they have the same number of
 prime factors, and each prime factors of `I * S` can be paired with a prime factor of `f mod I` in
@@ -70,7 +71,6 @@ variable [Module.IsTorsionFree R S]
 
 attribute [local instance] Ideal.Quotient.field
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 The isomorphism of rings between `S / I` and `(R / I)[X] / minpoly x` when `I`
 and `(conductor R x) ∩ R` are coprime.
@@ -83,12 +83,11 @@ noncomputable def quotMapEquivQuotQuotMap (hx : (conductor R x).comap (algebraMa
     ((Algebra.adjoin.powerBasis' hx').quotientEquivQuotientMinpolyMap I).toRingEquiv.trans <|
     quotEquivOfEq (by rw [Algebra.adjoin.powerBasis'_minpoly_gen hx'])
 
-set_option backward.isDefEq.respectTransparency false in
 lemma quotMapEquivQuotQuotMap_symm_apply (hx : (conductor R x).comap (algebraMap R S) ⊔ I = ⊤)
     (hx' : IsIntegral R x) (Q : R[X]) :
     (quotMapEquivQuotQuotMap hx hx').symm (Q.map (Ideal.Quotient.mk I)) = Q.aeval x := by
   apply (quotMapEquivQuotQuotMap hx hx').injective
-  rw [quotMapEquivQuotQuotMap, AlgEquiv.toRingEquiv_eq_coe, RingEquiv.symm_trans_apply,
+  rw [quotMapEquivQuotQuotMap, RingEquiv.symm_trans_apply,
     RingEquiv.symm_symm, RingEquiv.coe_trans, Function.comp_apply, RingEquiv.symm_apply_apply,
     RingEquiv.symm_trans_apply, quotEquivOfEq_symm, quotEquivOfEq_mk]
   congr
@@ -107,12 +106,13 @@ noncomputable def normalizedFactorsMapEquivNormalizedFactorsMinPolyMk (hI : IsMa
     {J : Ideal S | J ∈ normalizedFactors (I.map (algebraMap R S))} ≃
       {d : (R ⧸ I)[X] |
         d ∈ normalizedFactors (Polynomial.map (Ideal.Quotient.mk I) (minpoly R x))} := by
-  refine (normalizedFactorsEquivOfQuotEquiv (quotMapEquivQuotQuotMap hx hx') ?_ ?_).trans ?_
+  refine (IsDedekindDomain.normalizedFactorsEquivOfQuotEquiv (quotMapEquivQuotQuotMap hx hx')
+    ?_ ?_).trans ?_
   · rwa [Ne, map_eq_bot_iff_of_injective (FaithfulSMul.algebraMap_injective R S), ← Ne]
   · by_contra h
     exact (show Polynomial.map (Ideal.Quotient.mk I) (minpoly R x) ≠ 0 from
       Polynomial.map_monic_ne_zero (minpoly.monic hx')) (span_singleton_eq_bot.mp h)
-  · refine (normalizedFactorsEquivSpanNormalizedFactors ?_).symm
+  · refine (Ideal.normalizedFactorsEquivSpanNormalizedFactors ?_).symm
     exact Polynomial.map_monic_ne_zero (minpoly.monic hx')
 
 open Classical in
@@ -126,8 +126,8 @@ theorem emultiplicity_factors_map_eq_emultiplicity
       emultiplicity (↑(normalizedFactorsMapEquivNormalizedFactorsMinPolyMk hI hI' hx hx' ⟨J, hJ⟩))
         (Polynomial.map (Ideal.Quotient.mk I) (minpoly R x)) := by
   rw [normalizedFactorsMapEquivNormalizedFactorsMinPolyMk, Equiv.coe_trans, Function.comp_apply,
-    emultiplicity_normalizedFactorsEquivSpanNormalizedFactors_symm_eq_emultiplicity,
-    normalizedFactorsEquivOfQuotEquiv_emultiplicity_eq_emultiplicity]
+    Ideal.emultiplicity_normalizedFactorsEquivSpanNormalizedFactors_symm_eq_emultiplicity,
+    IsDedekindDomain.normalizedFactorsEquivOfQuotEquiv_emultiplicity_eq_emultiplicity]
 
 set_option backward.isDefEq.respectTransparency false in
 open Classical in
@@ -218,12 +218,13 @@ theorem normalizedFactorsMapEquivNormalizedFactorsMinPolyMk_symm_apply_eq_span
     ((normalizedFactorsMapEquivNormalizedFactorsMinPolyMk hI hI' hx hx').symm ⟨_, hQ⟩).val =
     span (I.map (algebraMap R S) ∪ {Q.aeval x}) := by
   dsimp [normalizedFactorsMapEquivNormalizedFactorsMinPolyMk,
-    normalizedFactorsEquivSpanNormalizedFactors]
-  rw [normalizedFactorsEquivOfQuotEquiv_symm]
-  dsimp [normalizedFactorsEquivOfQuotEquiv, idealFactorsEquivOfQuotEquiv, OrderIso.ofHomInv]
+    Ideal.normalizedFactorsEquivSpanNormalizedFactors]
+  rw [IsDedekindDomain.normalizedFactorsEquivOfQuotEquiv_symm]
+  dsimp [IsDedekindDomain.normalizedFactorsEquivOfQuotEquiv,
+    IsDedekindDomain.idealFactorsEquivOfQuotEquiv, OrderIso.ofHomInv]
   simp only [map_span, image_singleton, coe_coe, quotMapEquivQuotQuotMap_symm_apply hx hx' Q]
   refine le_antisymm (fun a ha ↦ ?_) (span_le.mpr <| union_subset_iff.mpr <|
-    ⟨le_comap_of_map_le (by simp), by simp [mem_span_singleton]⟩)
+    ⟨le_comap_of_map_le (by simp), by simp⟩)
   rw [mem_comap, Ideal.mem_span_singleton] at ha
   obtain ⟨a', ha'⟩ := ha
   obtain ⟨b, hb⟩ := Ideal.Quotient.mk_surjective a'

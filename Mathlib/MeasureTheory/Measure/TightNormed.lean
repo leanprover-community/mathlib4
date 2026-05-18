@@ -36,7 +36,7 @@ public section
 
 open Filter
 
-open scoped Topology ENNReal InnerProductSpace
+open scoped Topology ENNReal NNReal InnerProductSpace
 
 namespace MeasureTheory
 
@@ -123,7 +123,7 @@ lemma isTightMeasureSet_range_iff_tendsto_limsup_measure_norm_gt :
       ↔ Tendsto (fun r : ℝ ↦ limsup (fun n ↦ μ n {x | r < ‖x‖}) atTop) atTop (𝓝 0) := by
   refine ⟨fun h ↦ ?_, isTightMeasureSet_range_of_tendsto_limsup_measure_norm_gt⟩
   have h_sup := tendsto_measure_norm_gt_of_isTightMeasureSet h
-  refine tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds h_sup (fun _ ↦ zero_le _) ?_
+  refine tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds h_sup (fun _ ↦ zero_le) ?_
   intro r
   simp_rw [iSup_range]
   exact limsup_le_iSup
@@ -166,9 +166,9 @@ lemma isTightMeasureSet_of_forall_basis_tendsto (b : OrthonormalBasis ι 𝕜 E)
       refine iSup_le fun μ ↦ (iSup_le fun hμS ↦ ?_)
       gcongr with i
       exact le_biSup (fun μ ↦ μ {x | r / √(Fintype.card ι) < ‖⟪b i, x⟫_𝕜‖}) hμS
-  refine tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds ?_ (fun _ ↦ zero_le _) h_le
+  refine tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds ?_ (fun _ ↦ zero_le) h_le
   rw [← Finset.sum_const_zero]
-  refine tendsto_finset_sum Finset.univ fun i _ ↦ (h i).comp ?_
+  refine tendsto_finsetSum Finset.univ fun i _ ↦ (h i).comp ?_
   exact tendsto_id.atTop_div_const (by positivity)
 
 variable (𝕜)
@@ -195,7 +195,7 @@ lemma isTightMeasureSet_iff_inner_tendsto :
     simp [not_lt.mpr hr]
   have h' : Tendsto (fun r ↦ ⨆ μ ∈ S, μ {x | r * ‖y‖⁻¹ < ‖x‖}) atTop (𝓝 0) :=
     h.comp <| (tendsto_mul_const_atTop_of_pos (by positivity)).mpr tendsto_id
-  refine tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds h' (fun _ ↦ zero_le _) ?_
+  refine tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds h' (fun _ ↦ zero_le) ?_
   intro r
   have h_le (μ : Measure E) : μ {x | r < ‖⟪y, x⟫_𝕜‖} ≤ μ {x | r * ‖y‖⁻¹ < ‖x‖} := by
     refine measure_mono fun x hx ↦ ?_
@@ -232,7 +232,7 @@ lemma isTightMeasureSet_range_iff_tendsto_limsup_inner :
   refine ⟨fun h z ↦ ?_, isTightMeasureSet_range_of_tendsto_limsup_inner 𝕜⟩
   rw [isTightMeasureSet_iff_inner_tendsto 𝕜] at h
   refine tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds (h z)
-    (fun _ ↦ zero_le _) fun r ↦ ?_
+    (fun _ ↦ zero_le) fun r ↦ ?_
   simp_rw [iSup_range]
   exact limsup_le_iSup
 
@@ -257,6 +257,19 @@ lemma isTightMeasureSet_range_of_tendsto_limsup_inner_of_norm_eq_one
   simp only [map_inv₀, RCLike.conj_ofReal, norm_mul, norm_inv, norm_algebraMap', norm_norm]
   rw [mul_lt_mul_iff_right₀]
   positivity
+
+lemma isTightMeasureSet_range_of_tendsto_limsup_measureReal_inner_of_norm_eq_one
+    (h : ∀ y, ‖y‖ = 1 →
+      Tendsto (fun r : ℝ ↦ limsup (fun n ↦ (μ n).real {x | r < ‖⟪y, x⟫_𝕜‖}) atTop) atTop (𝓝 0))
+    (C : ℝ≥0) (hμ : ∀ᶠ n in atTop, μ n .univ ≤ C) :
+    IsTightMeasureSet (Set.range μ) := by
+  refine isTightMeasureSet_range_of_tendsto_limsup_inner_of_norm_eq_one 𝕜 fun z hz ↦ ?_
+  have h_ofReal (r : ℝ) : limsup (fun n ↦ μ n {x | r < ‖⟪z, x⟫_𝕜‖}) atTop
+      = ENNReal.ofReal (limsup (fun n ↦ (μ n).real {x | r < ‖⟪z, x⟫_𝕜‖}) atTop) := by
+    simp_rw [measureReal_def]
+    rw [ENNReal.ofReal_limsup_toReal (C := C)]
+    filter_upwards [hμ] with n hμn using (measure_mono (Set.subset_univ _)).trans hμn
+  simpa only [h_ofReal, ← ENNReal.ofReal_zero] using ENNReal.tendsto_ofReal (h z hz)
 
 end InnerProductSpace
 

@@ -82,6 +82,24 @@ def postcomp {f g : X ⟶ Y} (h : P.LeftHomotopy f g) {Z : C} (p : Y ⟶ Z) :
     P.LeftHomotopy (f ≫ p) (g ≫ p) where
   h := h.h ≫ p
 
+/-- Left homotopies in a full subcategory identify to left homotopies in the
+ambient category. -/
+noncomputable def fullSubcategoryEquiv {P : ObjectProperty C} {X Y : P.FullSubcategory}
+    {Q : Precylinder X} {f g : X ⟶ Y} :
+    Q.LeftHomotopy f g ≃ (Q.map P.ι).LeftHomotopy f.hom g.hom where
+  toFun h :=
+    { h := h.h.hom
+      h₀ := by
+        dsimp
+        simp only [← h.h₀, ObjectProperty.FullSubcategory.comp_hom]
+      h₁ := by
+        dsimp
+        simp only [← h.h₁, ObjectProperty.FullSubcategory.comp_hom] }
+  invFun h :=
+    { h := P.homMk h.h
+      h₀ := by ext; exact h.h₀
+      h₁ := by ext; exact h.h₁ }
+
 end LeftHomotopy
 
 end Precylinder
@@ -121,14 +139,8 @@ lemma weakEquivalence_iff [(weakEquivalences C).HasTwoOutOfThreeProperty]
     [(weakEquivalences C).ContainsIdentities]
     {f₀ f₁ : X ⟶ Y} (h : P.LeftHomotopy f₀ f₁) :
     WeakEquivalence f₀ ↔ WeakEquivalence f₁ := by
-  revert P f₀ f₁
-  suffices ∀ (P : Cylinder X) {f₀ f₁ : X ⟶ Y} (h : P.LeftHomotopy f₀ f₁),
-      WeakEquivalence f₀ → WeakEquivalence f₁
-    from fun _ _ _ h ↦ ⟨this _ h, this _ h.symm⟩
-  intro P f₀ f₁ h h₀
-  have := weakEquivalence_of_precomp_of_fac h.h₀
-  rw [← h.h₁]
-  infer_instance
+  induction h
+  grind [weakEquivalence_precomp_iff]
 
 end
 

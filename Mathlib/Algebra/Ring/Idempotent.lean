@@ -19,7 +19,7 @@ This file proves result about idempotent elements of a ring, like:
   `1 - a` is an idempotent.
 -/
 
-@[expose] public section
+public section
 
 variable {R : Type*}
 

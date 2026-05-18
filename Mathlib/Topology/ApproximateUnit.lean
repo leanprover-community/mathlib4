@@ -20,7 +20,7 @@ Examples of approximate units include:
   where `a` ranges over the positive elements of norm strictly less than 1.
 -/
 
-@[expose] public section
+public section
 
 open Filter Topology
 
@@ -55,18 +55,18 @@ lemma mono {l l' : Filter α} (hl : l.IsApproximateUnit) (hle : l' ≤ l) [hl' :
 
 variable (α) in
 /-- In a topological unital magma, `𝓝 1` is an approximate unit. -/
-lemma nhds_one [ContinuousMul α] : IsApproximateUnit (𝓝 (1 : α)) where
+lemma nhds_one [SeparatelyContinuousMul α] : IsApproximateUnit (𝓝 (1 : α)) where
   tendsto_mul_left m := by simpa using tendsto_id (x := 𝓝 1) |>.const_mul m
   tendsto_mul_right m := by simpa using tendsto_id (x := 𝓝 1) |>.mul_const m
 
 /-- In a topological unital magma, `𝓝 1` is the largest approximate unit. -/
-lemma iff_neBot_and_le_nhds_one [ContinuousMul α] {l : Filter α} :
+lemma iff_neBot_and_le_nhds_one [SeparatelyContinuousMul α] {l : Filter α} :
     IsApproximateUnit l ↔ l.NeBot ∧ l ≤ 𝓝 1 :=
   ⟨fun hl ↦ ⟨hl.neBot, by simpa using hl.tendsto_mul_left 1⟩,
     And.elim fun _ hl ↦ nhds_one α |>.mono hl⟩
 
 /-- In a topological unital magma, `𝓝 1` is the largest approximate unit. -/
-lemma iff_le_nhds_one [ContinuousMul α] {l : Filter α} [l.NeBot] :
+lemma iff_le_nhds_one [SeparatelyContinuousMul α] {l : Filter α} [l.NeBot] :
     IsApproximateUnit l ↔ l ≤ 𝓝 1 := by
   simpa [iff_neBot_and_le_nhds_one] using fun _ ↦ ‹_›
 

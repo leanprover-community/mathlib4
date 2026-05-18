@@ -155,12 +155,6 @@ def comp (F : B ⥤ᵖ C) (G : C ⥤ᵖ D) : B ⥤ᵖ D where
   toPrelaxFunctor := F.toPrelaxFunctor.comp G.toPrelaxFunctor
   mapId := fun a => G.map₂Iso (F.mapId a) ≪≫ G.mapId (F.obj a)
   mapComp := fun f g => (G.map₂Iso (F.mapComp f g)) ≪≫ G.mapComp (F.map f) (F.map g)
-  -- Note: whilst these are all provable by `cat_disch`, the proof is very slow
-  map₂_whisker_left f η := by simp
-  map₂_whisker_right η h := by simp
-  map₂_associator f g h := by simp
-  map₂_left_unitor f := by simp
-  map₂_right_unitor f := by simp
 
 section
 

@@ -88,7 +88,7 @@ With `depth = some n`, calls `MVarId.congrN! n` instead, with `n` as the max rec
 -/
 def Lean.MVarId.convert (e : Expr) (symm : Bool)
     (depth : Option Nat := none) (config : Congr!.Config := {})
-    (patterns : List (TSyntax `rcasesPat) := []) (g : MVarId) :
+    (patterns : List (TSyntax `rintroPat) := []) (g : MVarId) :
     MetaM (List MVarId) := g.withContext do
   let src ← inferType e
   let tgt ← g.getType
@@ -109,7 +109,7 @@ With `depth = some n`, calls `MVarId.congrN! n` instead, with `n` as the max rec
 -/
 def Lean.MVarId.convertLocalDecl (g : MVarId) (fvarId : FVarId) (typeNew : Expr) (symm : Bool)
     (depth : Option Nat := none) (config : Congr!.Config := {})
-    (patterns : List (TSyntax `rcasesPat) := []) :
+    (patterns : List (TSyntax `rintroPat) := []) :
     MetaM (MVarId × List MVarId) := g.withContext do
   let typeOld ← fvarId.getType
   let v ← mkFreshExprMVar (← mkAppM ``Eq
@@ -152,9 +152,7 @@ example {n : ℕ} (e : Prime (2 * n + 1)) :
   convert e using 2
   -- One goal: ⊢ n + n = 2 * n
   ring
-```
 
-```lean
 -- `convert` can fail where `exact` succeeds.
 example (h : p 0) : p 1 := by
   fail_if_success
@@ -162,7 +160,6 @@ example (h : p 0) : p 1 := by
     done
   exact h -- succeeds
 
-```lean
 -- `convert with` names introduced variables.
 example (p q : Nat → Prop) (h : ∀ ε > 0, p ε) :
     ∀ ε > 0, q ε := by
@@ -171,6 +168,7 @@ example (p q : Nat → Prop) (h : ∀ ε > 0, p ε) :
   -- hε : ε > 0
   -- ⊢ q ε ↔ p ε
   sorry
+```
 -/
 syntax (name := convert) "convert" Lean.Parser.Tactic.optConfig " ←"? ppSpace term (" using " num)?
   (" with" (ppSpace colGt rintroPat)*)? : tactic
@@ -195,7 +193,7 @@ elab_rules : tactic
 | `(tactic| convert $cfg $[←%$sym]? $term $[using $n]? $[with $ps?*]?) =>
   withMainContext do
     let config ← Congr!.elabConfig (mkOptionalNode cfg)
-    let patterns := (Lean.Elab.Tactic.RCases.expandRIntroPats (ps?.getD #[])).toList
+    let patterns := (ps?.getD #[]).toList
     let expectedType ← mkFreshExprMVar (mkSort (← getLevel (← getMainTarget)))
     let (e, gs) ← elabTermForConvert term expectedType
     liftMetaTactic fun g ↦
@@ -236,7 +234,7 @@ elab_rules : tactic
     $[with $ps?*]? $[$loc?:location]?) => do
   let n : ℕ := n |>.map (·.getNat) |>.getD 1
   let config ← Congr!.elabConfig (mkOptionalNode cfg)
-  let patterns := (Lean.Elab.Tactic.RCases.expandRIntroPats (ps?.getD #[])).toList
+  let patterns := (ps?.getD #[]).toList
   withLocation (expandOptLocation (mkOptionalNode loc?))
     (atLocal := fun fvarId ↦ do
       let (e, gs) ← elabTermForConvert newType (← inferType (← fvarId.getType))

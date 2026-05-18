@@ -34,6 +34,7 @@ variable (R : Type w) [Ring R] {C : Type u₁} [Category.{v₁} C] {D : Type u�
 
 /-- If `L : C ⥤ D` is a localization functor and `C` is `R`-linear, then `D` is
 `R`-linear if we already know that `D` is preadditive and `L` is additive. -/
+@[implicit_reducible]
 noncomputable def linear : Linear R D := Linear.ofRingMorphism
   ((CatCenter.localizationRingHom L W).comp (Linear.toCatCenter R C))
 

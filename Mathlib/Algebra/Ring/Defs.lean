@@ -7,8 +7,8 @@ module
 
 public import Mathlib.Algebra.GroupWithZero.Defs
 public import Mathlib.Data.Int.Cast.Defs
+public import Mathlib.Tactic.CrossRefAttribute
 public import Mathlib.Tactic.Spread
-public import Mathlib.Tactic.StacksAttribute
 
 /-!
 # Semirings and rings
@@ -35,7 +35,7 @@ the present file is about their interaction.
 `Semiring`, `CommSemiring`, `Ring`, `CommRing`, domain, `IsDomain`, nonzero, units
 -/
 
-@[expose] public section
+public section
 
 
 /-!
@@ -140,7 +140,8 @@ class NonAssocRing (α : Type*) extends NonUnitalNonAssocRing α, NonAssocSemiri
 /-- A `Semiring` is a type with addition, multiplication, a `0` and a `1` where addition is
 commutative and associative, multiplication is associative and left and right distributive over
 addition, and `0` and `1` are additive and multiplicative identities. -/
-class Semiring (α : Type u) extends NonUnitalSemiring α, NonAssocSemiring α, MonoidWithZero α
+class Semiring (α : Type u) extends AddCommMonoid α, MonoidWithZero α, NonUnitalSemiring α,
+  NonAssocSemiring α
 
 /-- A `Ring` is a `Semiring` with negation making it an additive group. -/
 class Ring (R : Type u) extends Semiring R, AddCommGroup R, AddGroupWithOne R
@@ -235,12 +236,12 @@ instance (priority := 100) CommSemiring.toNonAssocCommSemiring [CommSemiring α]
 -- see Note [lower instance priority]
 instance (priority := 100) CommSemiring.toNonUnitalCommSemiring [CommSemiring α] :
     NonUnitalCommSemiring α :=
-  { inferInstanceAs (CommMonoid α), inferInstanceAs (CommSemiring α) with }
+  { (inferInstance : CommMonoid α), (inferInstance : CommSemiring α) with }
 
 -- see Note [lower instance priority]
 instance (priority := 100) CommSemiring.toCommMonoidWithZero [CommSemiring α] :
     CommMonoidWithZero α :=
-  { inferInstanceAs (CommMonoid α), inferInstanceAs (CommSemiring α) with }
+  { (inferInstance : CommMonoid α), (inferInstance : CommSemiring α) with }
 
 section CommSemiring
 
@@ -316,7 +317,7 @@ section MulZeroClass
 variable [MulZeroClass α] [HasDistribNeg α]
 
 instance (priority := 100) MulZeroClass.negZeroClass : NegZeroClass α where
-  __ := inferInstanceAs (Zero α); __ := inferInstanceAs (InvolutiveNeg α)
+  __ := (inferInstance : Zero α); __ := (inferInstance : InvolutiveNeg α)
   neg_zero := by rw [← zero_mul (0 : α), ← neg_mul, mul_zero, mul_zero]
 
 end MulZeroClass
@@ -359,6 +360,9 @@ theorem mul_sub_one (a b : α) : a * (b - 1) = a * b - a := by rw [mul_sub, mul_
 theorem one_sub_mul (a b : α) : (1 - a) * b = b - a * b := by rw [sub_mul, one_mul]
 
 theorem mul_one_sub (a b : α) : a * (1 - b) = a - a * b := by rw [mul_sub, mul_one]
+
+lemma mul_one_sub_mul (a b c : α) : a * (1 - b) * c = a * c - a * b * c := by
+  rw [mul_one_sub, sub_mul]
 
 end NonAssocRing
 
@@ -425,3 +429,95 @@ This is implemented as a mixin for `Semiring α`.
 To obtain an integral domain use `[CommRing α] [IsDomain α]`. -/
 @[stacks 09FE]
 class IsDomain (α : Type u) [Semiring α] : Prop extends IsCancelMulZero α, Nontrivial α
+
+namespace IsMulCommutative
+
+/-- A `NonUnitalNonAssocSemiring` which `IsMulCommutative` is a `NonUnitalNonAssocCommSemiring`.
+
+This is primarily used to deduce the bundled version from the unbundled one for commutative
+subobjects in a noncommutative ambient type. As such this is only available inside the
+`IsMulCommutative` scope so as to avoid deleterious effects to type class synthesis for bundled
+commutativity.
+
+See note [commutative subobjects]. -/
+scoped instance (priority := 50) [NonUnitalNonAssocSemiring R] [IsMulCommutative R] :
+    NonUnitalNonAssocCommSemiring R where
+
+/-- A `NonUnitalSemiring` which `IsMulCommutative` is a `NonUnitalCommSemiring`.
+
+This is primarily used to deduce the bundled version from the unbundled one for commutative
+subobjects in a noncommutative ambient type. As such this is only available inside the
+`IsMulCommutative` scope so as to avoid deleterious effects to type class synthesis for bundled
+commutativity.
+
+See note [commutative subobjects]. -/
+scoped instance (priority := 50) [NonUnitalSemiring R] [IsMulCommutative R] :
+    NonUnitalCommSemiring R where
+
+/-- A `NonUnitalNonAssocRing` which `IsMulCommutative` is a `NonUnitalNonAssocCommRing`.
+
+This is primarily used to deduce the bundled version from the unbundled one for commutative
+subobjects in a noncommutative ambient type. As such this is only available inside the
+`IsMulCommutative` scope so as to avoid deleterious effects to type class synthesis for bundled
+commutativity.
+
+See note [commutative subobjects]. -/
+scoped instance (priority := 50) [NonUnitalNonAssocRing R] [IsMulCommutative R] :
+    NonUnitalNonAssocCommRing R where
+
+/-- A `NonUnitalRing` which `IsMulCommutative` is a `NonUnitalCommRing`.
+
+This is primarily used to deduce the bundled version from the unbundled one for commutative
+subobjects in a noncommutative ambient type. As such this is only available inside the
+`IsMulCommutative` scope so as to avoid deleterious effects to type class synthesis for bundled
+commutativity.
+
+See note [commutative subobjects]. -/
+scoped instance (priority := 50) [NonUnitalRing R] [IsMulCommutative R] :
+    NonUnitalCommRing R where
+
+/-- A `NonAssocSemiring` which `IsMulCommutative` is a `NonAssocCommSemiring`.
+
+This is primarily used to deduce the bundled version from the unbundled one for commutative
+subobjects in a noncommutative ambient type. As such this is only available inside the
+`IsMulCommutative` scope so as to avoid deleterious effects to type class synthesis for bundled
+commutativity.
+
+See note [commutative subobjects]. -/
+scoped instance (priority := 50) [NonAssocSemiring R] [IsMulCommutative R] :
+    NonAssocCommSemiring R where
+
+/-- A `Semiring` which `IsMulCommutative` is a `CommSemiring`.
+
+This is primarily used to deduce the bundled version from the unbundled one for commutative
+subobjects in a noncommutative ambient type. As such this is only available inside the
+`IsMulCommutative` scope so as to avoid deleterious effects to type class synthesis for bundled
+commutativity.
+
+See note [commutative subobjects]. -/
+scoped instance (priority := 50) [Semiring R] [IsMulCommutative R] :
+    CommSemiring R where
+
+/-- A `NonAssocRing` which `IsMulCommutative` is a `NonAssocCommRing`.
+
+This is primarily used to deduce the bundled version from the unbundled one for commutative
+subobjects in a noncommutative ambient type. As such this is only available inside the
+`IsMulCommutative` scope so as to avoid deleterious effects to type class synthesis for bundled
+commutativity.
+
+See note [commutative subobjects]. -/
+scoped instance (priority := 50) [NonAssocRing R] [IsMulCommutative R] :
+    NonAssocCommRing R where
+
+/-- A `Ring` which `IsMulCommutative` is a `CommRing`.
+
+This is primarily used to deduce the bundled version from the unbundled one for commutative
+subobjects in a noncommutative ambient type. As such this is only available inside the
+`IsMulCommutative` scope so as to avoid deleterious effects to type class synthesis for bundled
+commutativity.
+
+See note [commutative subobjects]. -/
+scoped instance (priority := 50) [Ring R] [IsMulCommutative R] :
+    CommRing R where
+
+end IsMulCommutative

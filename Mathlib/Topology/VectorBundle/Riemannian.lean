@@ -30,9 +30,9 @@ depends continuously on the base point, we register automatically an instance of
 `[IsContinuousRiemannianBundle F E]` (and similarly if the data is smooth).
 
 The general theory should be built assuming `[IsContinuousRiemannianBundle F E]`, while the
-`[RiemannianBundle E]` mechanism is only to build data in specific situations.
-As instances related to Riemannian bundles are both costly and quite specific, they are scoped
-to the `Bundle` namespace.
+`[RiemannianBundle E]` mechanism is only to build data in specific situations, for instance for
+the tangent bundle. As instances related to Riemannian bundles are both costly and quite specific,
+they are scoped to the `Bundle` namespace.
 
 ## Keywords
 Vector bundle, Riemannian metric
@@ -80,7 +80,7 @@ instance : IsContinuousRiemannianBundle F₁ (Bundle.Trivial B F₁) := by
   refine ⟨continuousAt_id, ?_⟩
   convert continuousAt_const (y := innerSL ℝ)
   ext v w
-  simp [hom_trivializationAt_apply, inCoordinates, Trivialization.linearMapAt_apply]
+  simp [hom_trivializationAt_apply, inCoordinates]
 
 end Trivial
 
@@ -189,8 +189,7 @@ lemma eventually_norm_symmL_trivializationAt_self_comp_lt (x : B) {r : ℝ} (hr 
     have A : ((trivializationAt F E x).symm y)
        ((trivializationAt F E x).linearMapAt ℝ y v) = v := by
       convert ((trivializationAt F E x).continuousLinearEquivAt ℝ _ h'y).symm_apply_apply v
-      rw [Trivialization.coe_continuousLinearEquivAt_eq _ h'y]
-      rfl
+      simp [Trivialization.coe_continuousLinearEquivAt_eq _ h'y]
     simp [A, w]
   have hgx : g x ((trivializationAt F E x).symm x w) ((trivializationAt F E x).symm x w) =
       g' x w w := by
@@ -232,8 +231,7 @@ lemma eventually_norm_trivializationAt_lt (x : B) :
     simp only [coe_comp', Trivialization.continuousLinearMapAt_apply, Trivialization.symmL_apply,
       Function.comp_apply, coe_id', id_eq]
     convert ((trivializationAt F E x).continuousLinearEquivAt ℝ _ h'x).apply_symm_apply v
-    rw [Trivialization.coe_continuousLinearEquivAt_eq _ h'x]
-    rfl
+    simp [Trivialization.coe_continuousLinearEquivAt_eq _ h'x]
   have : (trivializationAt F E x).continuousLinearMapAt ℝ y =
     (ContinuousLinearMap.id _ _) ∘L ((trivializationAt F E x).continuousLinearMapAt ℝ y) := by simp
   grw [this, ← A, comp_assoc, opNorm_comp_le]
@@ -294,8 +292,7 @@ lemma eventually_norm_symmL_trivializationAt_comp_self_lt (x : B) {r : ℝ} (hr 
     have A : ((trivializationAt F E x).symm x)
        ((trivializationAt F E x).linearMapAt ℝ x v) = v := by
       convert ((trivializationAt F E x).continuousLinearEquivAt ℝ _ h'x).symm_apply_apply v
-      rw [Trivialization.coe_continuousLinearEquivAt_eq _ h'x]
-      rfl
+      simp [Trivialization.coe_continuousLinearEquivAt_eq _ h'x]
     simp [A, w]
   have hgy : g y ((trivializationAt F E x).symm y w) ((trivializationAt F E x).symm y w)
       = g' y w w := by
@@ -339,8 +336,7 @@ lemma eventually_norm_symmL_trivializationAt_lt (x : B) :
     simp only [coe_comp', Trivialization.continuousLinearMapAt_apply, Trivialization.symmL_apply,
       Function.comp_apply, coe_id', id_eq]
     convert ((trivializationAt F E x).continuousLinearEquivAt ℝ _ h'x).apply_symm_apply v
-    rw [Trivialization.coe_continuousLinearEquivAt_eq _ h'x]
-    rfl
+    simp [Trivialization.coe_continuousLinearEquivAt_eq _ h'x]
   have : (trivializationAt F E x).symmL ℝ y =
      ((trivializationAt F E x).symmL ℝ y) ∘L (ContinuousLinearMap.id _ _) := by simp
   grw [this, ← A, ← comp_assoc, opNorm_comp_le]
@@ -411,6 +407,15 @@ creating diamonds. Use as follows:
   `g : ContMDiffRiemannianMetric IB n F E` registers the inner product space on the fibers, and the
   fact that it varies smoothly (and continuously), i.e., `[IsContMDiffRiemannianBundle]` and
   `[IsContinuousRiemannianBundle]` instances.
+
+Note that this is only useful when there is a preexisting topology in the fibers of a vector
+bundle, like for the tangent bundle. This should *not* be used to express theorems for general
+bundles with a metric. Instead, use
+```
+variable {E : B → Type*} [TopologicalSpace (TotalSpace F E)]
+  [∀ x, NormedAddCommGroup (E x)] [∀ x, InnerProductSpace ℝ (E x)]
+  [FiberBundle F E] [VectorBundle ℝ F E] [IsContinuousRiemannianBundle F E]
+```
 -/
 class RiemannianBundle where
   /-- The family of inner products on the fibers -/
@@ -423,8 +428,19 @@ The normal priority for an instance which always applies like this one should be
 We use 80 as this is rather specialized, so we want other paths to be tried first typically.
 As this instance is quite specific and very costly because of higher-order unification, we
 also scope it to the `Bundle` namespace. -/
-noncomputable scoped instance (priority := 80) [h : RiemannianBundle E] (b : B) :
-    NormedAddCommGroup (E b) :=
+noncomputable scoped instance (priority := 80)
+    {B : Type*} {E : B → Type*} [(b : B) → TopologicalSpace (E b)]
+    [(b : B) → AddCommGroup (E b)] [(b : B) → Module ℝ (E b)]
+    /- We are careful about the parameter order, putting `RiemannianBundle E`
+    before `IsTopologicalAddGroup` to avoid the following loop: to put a `IsTopologicalAddGroup`
+    structure on `E b`, one tries to find a `NormedAddCommGroup`, then one tries to apply the
+    current instance. If `IsTopologicalAddGroup (E b)` were before `RiemannianBundle`, then one
+    would try to find a `IsTopologicalAddGroup` to apply the instance, and loop.
+    Normally, loops are detected by typeclass inference but here it is not the case as the loop is
+    at different depth levels. See lean4#13063. -/
+    [h : RiemannianBundle E] [∀ (b : B), IsTopologicalAddGroup (E b)]
+    [∀ (b : B), ContinuousConstSMul ℝ (E b)] (b : B) :
+    NormedAddCommGroup (E b) := fast_instance%
   (h.g.toCore b).toNormedAddCommGroupOfTopology (h.g.continuousAt b) (h.g.isVonNBounded b)
 
 /-- A fiber in a bundle satisfying the `[RiemannianBundle E]` typeclass inherits
@@ -434,8 +450,12 @@ The normal priority for an instance which always applies like this one should be
 We use 80 as this is rather specialized, so we want other paths to be tried first typically.
 As this instance is quite specific and very costly because of higher-order unification, we
 also scope it to the `Bundle` namespace. -/
-noncomputable scoped instance (priority := 80) [h : RiemannianBundle E] (b : B) :
-    InnerProductSpace ℝ (E b) :=
+noncomputable scoped instance (priority := 80)
+    {B : Type*} {E : B → Type*} [(b : B) → TopologicalSpace (E b)]
+    [(b : B) → AddCommGroup (E b)] [(b : B) → Module ℝ (E b)]
+    [h : RiemannianBundle E] [∀ (b : B), IsTopologicalAddGroup (E b)]
+    [∀ (b : B), ContinuousConstSMul ℝ (E b)] (b : B) :
+    InnerProductSpace ℝ (E b) := fast_instance%
   .ofCoreOfTopology (h.g.toCore b) (h.g.continuousAt b) (h.g.isVonNBounded b)
 
 variable (F E) in
@@ -471,7 +491,6 @@ def ContinuousRiemannianMetric.toRiemannianMetric (g : ContinuousRiemannianMetri
     simp only [A]
     fun_prop
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If a Riemannian bundle structure is defined using `g.toRiemannianMetric` where `g` is
 a `ContinuousRiemannianMetric`, then we make sure typeclass inference can infer automatically
 that the bundle is a continuous Riemannian bundle. -/

@@ -67,7 +67,6 @@ private noncomputable def mapPreimage (hf : Function.Surjective f) (x : AdicCauc
       let ⟨⟨d, _⟩, (p : f d = f (yₙ - y))⟩ := mapPreimageDelta hf x hy hyₙ
       ⟨yₙ - d, by simpa [p]⟩
 
-set_option backward.isDefEq.respectTransparency false in
 variable (I) in
 /-- Adic completion preserves surjectivity -/
 theorem map_surjective (hf : Function.Surjective f) : Function.Surjective (map I f) := fun y ↦ by
@@ -180,7 +179,6 @@ where
 
 end
 
-set_option backward.isDefEq.respectTransparency false in
 include hf hfg hg in
 /-- `AdicCompletion` over a Noetherian ring is exact on finitely generated modules. -/
 theorem map_exact : Function.Exact (map I f) (map I g) := by

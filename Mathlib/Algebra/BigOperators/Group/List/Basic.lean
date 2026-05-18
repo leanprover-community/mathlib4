@@ -216,6 +216,11 @@ theorem mul_prod_eraseIdx {i} (hlen : i < l.length) (hcomm : ∀ a' ∈ l.take i
       hcomm a' (by rwa [take_eraseIdx_eq_take_of_le l i i (Nat.le_refl i)] at a'_mem)),
     insertIdx_eraseIdx_getElem hlen]
 
+@[to_additive (attr := simp)]
+theorem prod_filter_bne_one [BEq M] [LawfulBEq M] (l : List M) :
+    (l.filter (· != 1)).prod = l.prod := by
+  classical induction l <;> grind
+
 end Monoid
 
 section CommMonoid
@@ -258,7 +263,7 @@ lemma prod_mul_prod_eq_prod_zipWith_mul_prod_drop :
   | [], ys => by simp
   | xs, [] => by simp
   | x :: xs, y :: ys => by
-    simp only [drop, length, zipWith_cons_cons, prod_cons]
+    simp only [drop, zipWith_cons_cons, prod_cons]
     conv =>
       lhs; rw [mul_assoc]; right; rw [mul_comm, mul_assoc]; right
       rw [mul_comm, prod_mul_prod_eq_prod_zipWith_mul_prod_drop xs ys]

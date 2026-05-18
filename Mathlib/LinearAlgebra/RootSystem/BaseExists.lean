@@ -195,7 +195,6 @@ lemma eq_baseOf_iff (s : Set ι) (f : M →+ ℚ)
 
 variable [P.IsReduced]
 
-set_option backward.isDefEq.respectTransparency false in
 private lemma baseOf_root_eq_baseOf_coroot_aux
     (f : M →+ ℚ) (g : N →+ ℚ) (hf : ∀ i, f (P.root i) ≠ 0)
     (hfg : ∀ i, 0 < f (P.root i) ↔ 0 < g (P.coroot i)) :

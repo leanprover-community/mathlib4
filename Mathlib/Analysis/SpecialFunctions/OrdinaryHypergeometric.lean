@@ -190,7 +190,7 @@ theorem ordinaryHypergeometricSeries_norm_div_succ_norm (n : ℕ)
         rw [norm_ne_zero_iff]
       any_goals
         apply (ascPochhammer_eval_eq_zero_iff n _).not.2
-        push_neg
+        push Not
         exact fun kn hkn ↦ by simp [habc kn hkn]
       exact cast_ne_zero.2 (factorial_ne_zero n)
 

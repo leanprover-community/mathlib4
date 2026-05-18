@@ -12,7 +12,7 @@ public import Mathlib.Algebra.Polynomial.Basic
 # Univariate monomials
 -/
 
-@[expose] public section
+public section
 
 
 noncomputable section

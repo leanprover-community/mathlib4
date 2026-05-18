@@ -27,6 +27,7 @@ on:
 # Limit permissions for GITHUB_TOKEN for the entire workflow
 permissions:
   contents: read
+  id-token: write
   # By default let's remove this permission (which is present in the other build pipelines)
   # from the CI experimentation runs to avoid unwitting side effects
   # pull-requests: write
@@ -44,5 +45,6 @@ jobs:
       pr_branch_ref: ${{ inputs.pr_branch_ref != '' && inputs.pr_branch_ref || github.sha }}
       run_post_ci: ${{ inputs.run_post_ci }}
       mathlib_ci_ref: ${{ inputs.mathlib_ci_ref }}
+      cache_application_id: ${{ vars.CACHE_NON_MASTER_WRITER_AZURE_APP_ID }}
       runs_on: pr
     secrets: inherit

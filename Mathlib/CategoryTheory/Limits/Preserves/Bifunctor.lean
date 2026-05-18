@@ -48,7 +48,6 @@ def Functor.mapCocone₂ (G : C₁ ⥤ C₂ ⥤ C) {K₁ : J₁ ⥤ C₁} {K₂ 
           ← Functor.map_comp, NatTrans.naturality, const_obj_map, const_obj_obj,
           ← NatTrans.comp_app_assoc, c₁.w] }
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a bifunctor `G : C₁ ⥤ C₂ ⥤ C`, diagrams `K₁ : J₁ ⥤ C₁` and `K₂ : J₂ ⥤ C₂`, and cones
 over these diagrams, `G.mapCone₂ c₁ c₂` is the cone over the diagram `J₁ × J₂ ⥤ C` obtained
 by applying `G` to both `c₁` and `c₂`. -/
@@ -217,9 +216,9 @@ instance of_preservesColimits_in_each_variable
         map f := { hom := G.map (K₁.map f) |>.app c₂.pt } }
     let P : ∀ j₁, IsColimit (Q₀.obj j₁) := fun j ↦ isColimitOfPreserves _ hc₂
     let E₀ : Q₀.coconePoints ≅ K₁ ⋙ G.flip.obj c₂.pt := NatIso.ofComponents (fun _ ↦ Iso.refl _)
-    let E₁ : (Cocones.precompose E₀.hom).obj (coconeOfCoconeUncurry P <| G.mapCocone₂ c₁ c₂) ≅
+    let E₁ : (Cocone.precompose E₀.hom).obj (coconeOfCoconeUncurry P <| G.mapCocone₂ c₁ c₂) ≅
         (G.flip.obj c₂.pt).mapCocone c₁ :=
-      Cocones.ext
+      Cocone.ext
         (Iso.refl _)
         (fun j₁ => by
           dsimp [E₀, Q₀]
@@ -250,7 +249,7 @@ theorem of_preservesColimit₂_flip : PreservesColimit₂ K₂ K₁ G.flip where
     apply IsColimit.ofWhiskerEquivalence (e := Prod.braiding _ _)
     refine IsColimit.equivOfNatIsoOfIso (Iso.refl _) (G.mapCocone₂ c₂ c₁) _ ?_ |>.toFun <|
       isColimitOfPreserves₂ G hc₂ hc₁
-    exact Cocones.ext (Iso.refl _) (fun ⟨j₁, j₂⟩ ↦ by simp [E₁, E₀])
+    exact Cocone.ext (Iso.refl _) (fun ⟨j₁, j₂⟩ ↦ by simp [E₁, E₀])
 
 end PreservesColimit₂
 
@@ -346,9 +345,9 @@ instance of_preservesLimits_in_each_variable
         map f := { hom := G.map (K₁.map f) |>.app c₂.pt } }
     let P : ∀ j₁, IsLimit (Q₀.obj j₁) := fun _ => isLimitOfPreserves _ hc₂
     let E₀ : Q₀.conePoints ≅ K₁ ⋙ G.flip.obj c₂.pt := NatIso.ofComponents (fun _ ↦ Iso.refl _)
-    let E₁ : (Cones.postcompose E₀.hom).obj (coneOfConeUncurry P <| G.mapCone₂ c₁ c₂) ≅
+    let E₁ : (Cone.postcompose E₀.hom).obj (coneOfConeUncurry P <| G.mapCone₂ c₁ c₂) ≅
         (G.flip.obj c₂.pt).mapCone c₁ :=
-      Cones.ext
+      Cone.ext
         (Iso.refl _)
         (fun j₁ => by
           dsimp [E₀, Q₀]
@@ -379,7 +378,7 @@ theorem of_preservesLimit₂_flip : PreservesLimit₂ K₂ K₁ G.flip where
     apply IsLimit.ofWhiskerEquivalence (e := Prod.braiding _ _)
     refine IsLimit.equivOfNatIsoOfIso (Iso.refl _) (G.mapCone₂ c₂ c₁) _ ?_ |>.toFun <|
       isLimitOfPreserves₂ G hc₂ hc₁
-    exact Cones.ext (Iso.refl _) (fun ⟨j₁, j₂⟩ ↦ by simp [E₁, E₀])
+    exact Cone.ext (Iso.refl _) (fun ⟨j₁, j₂⟩ ↦ by simp [E₁, E₀])
 
 end PreservesLimit₂
 
