@@ -71,7 +71,7 @@ def coyonedaUnit (c : C) : coyoneda.obj (op c) ⟶ F ⋙ coyoneda.obj (op (F.obj
 /-- Computing `coyonedaUnit F c` on a morphism `f : c ⟶ c'`: it returns `F.map f`. -/
 @[simp]
 lemma coyonedaUnit_app_apply (c : C) {c' : C} (f : c ⟶ c') :
-    (coyonedaUnit F c).app c' f = F.map f := rfl
+    ConcreteCategory.hom ((coyonedaUnit F c).app c') f = F.map f := rfl
 
 end
 
