@@ -203,15 +203,12 @@ theorem iteratedDerivWithin_comp_const_smul (hf : ContDiffOn 𝕜 n f s) (c : �
       hf.differentiableOn_iteratedDerivWithin (Nat.cast_lt.mpr n.lt_succ_self) h _ hcx
     have h₂ : DifferentiableWithinAt 𝕜 (fun x => iteratedDerivWithin n f s (c * x)) s x := by
       rw [← Function.comp_def]
-      apply DifferentiableWithinAt.comp
-      · exact hf.differentiableOn_iteratedDerivWithin (Nat.cast_lt.mpr n.lt_succ_self) h _ hcx
-      · exact differentiableWithinAt_id'.const_mul _
-      · exact hs
+      apply DifferentiableWithinAt.comp _ ?_ (by fun_prop) hs
+      exact hf.differentiableOn_iteratedDerivWithin (Nat.cast_lt.mpr n.lt_succ_self) h _ hcx
     rw [iteratedDerivWithin_succ, derivWithin_congr h₀ (ih hx hf.of_succ),
       derivWithin_fun_const_smul (c ^ n) h₂, iteratedDerivWithin_succ,
-      ← Function.comp_def,
-      derivWithin.scomp x h₁ (differentiableWithinAt_id'.const_mul _) hs,
-      derivWithin_const_mul _ differentiableWithinAt_id', derivWithin_id' _ _ (h _ hx),
+      ← Function.comp_def, derivWithin.scomp x h₁ (by fun_prop) hs,
+      derivWithin_const_mul _ differentiableWithinAt_id, derivWithin_id' _ _ (h _ hx),
       smul_smul, mul_one, pow_succ]
 
 open scoped Pointwise
