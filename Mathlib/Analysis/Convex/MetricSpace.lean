@@ -40,6 +40,8 @@ public section
 
 namespace Convexity
 
+attribute [local instance] AddTorsor.toConvexSpace
+
 open ConvexSpace
 
 variable {I X : Type*} [ConvexSpace ℝ X] [MetricSpace X]
