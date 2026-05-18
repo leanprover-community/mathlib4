@@ -19,7 +19,7 @@ namespace Nat
 
 namespace Prime
 
-variable {p a b k n : ℕ}
+variable {p a b k : ℕ}
 
 theorem dvd_choose_add (hp : Prime p) (hap : a < p) (hbp : b < p) (h : p ≤ a + b) :
     p ∣ choose (a + b) a := by
