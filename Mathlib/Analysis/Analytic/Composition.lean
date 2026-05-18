@@ -859,6 +859,7 @@ theorem AnalyticAt.comp_of_eq {g : F → G} {f : E → F} {y : F} {x : E} (hg : 
     (hf : AnalyticAt 𝕜 f x) (hy : f x = y) : AnalyticAt 𝕜 (g ∘ f) x := by
   rw [← hy] at hg
   exact hg.comp hf
+@[deprecated (since := "2026-05-18")] alias AnalyticAt.comp_of_eq' := AnalyticAt.fun_comp_of_eq
 
 theorem AnalyticAt.comp_analyticWithinAt {g : F → G} {f : E → F} {x : E} {s : Set E}
     (hg : AnalyticAt 𝕜 g (f x)) (hf : AnalyticWithinAt 𝕜 f s x) :
