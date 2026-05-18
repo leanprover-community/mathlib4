@@ -8,6 +8,7 @@ module
 public meta import Mathlib.Lean.Meta.RefinedDiscrTree.Encode
 public import Lean.Elab.Tactic.ElabTerm
 public import Mathlib.Tactic.ApplyRuleSets.Types
+public import Mathlib.Tactic.FunProp.Decl
 
 public meta section
 
@@ -126,6 +127,12 @@ private def mkRuleProcBody (xs : Ident) (names : Array (Nat × Name)) (body : Te
     result ← `(let $id:ident : Lean.Expr := $xs[$idx]!; $result)
   return result
 
+private def mkRuleProcTacticBody (goal : Ident)
+    (seq : TSyntax ``Lean.Parser.Tactic.tacticSeq) : MacroM Term := do
+  `(do
+    withOptions (·.setBool `linter.unusedTactic false) <|
+      Mathlib.Meta.FunProp.tacticToDischarge (← `(tactic| ($seq:tacticSeq))) $goal)
+
 private def removeUnusedForallBinders (e : Expr) (keepPrefix : Nat := 0) : MetaM Expr := do
   forallTelescope e fun xs body => do
     let mut result := body
@@ -162,7 +169,56 @@ private def attrInstancesOfAttributes (attrs : TSyntax ``Lean.Parser.Term.attrib
     else
       none
 
-/-- Syntax for a ruleproc declaration. -/
+/-- Declares a procedural rule for `apply_rulesets`.
+
+A `ruleproc` has a pattern, written like a theorem conclusion, and produces a value of type
+`RuleProc`. During search, `apply_rulesets` first matches the pattern against the current goal. If
+the pattern matches, the ruleproc is run with the matched pattern arguments, origin information, and
+the current goal expression.
+
+The simplest form is a meta-code ruleproc:
+
+```lean
+ruleproc solveNeedFirst : NeedFirst := fun origin goal => do
+  return some (Lean.mkConst ``NeedFirst.intro)
+```
+
+Named binders in the pattern are exposed in the body as `Lean.Expr` values through the argument
+array. For example, in
+
+```lean
+ruleproc reflByProc {A : Type} (a : A) : a = a := fun _ _ => do
+  return some (← Lean.Meta.mkAppM ``Eq.refl #[a])
+```
+
+the name `a` in the body is a `Lean.Expr` corresponding to the matched pattern argument.
+
+Binders before a comma are procedural parameters, not part of the matching pattern:
+
+```lean
+ruleproc procWithParam (n : Nat), {A : Prop} : A := fun _ _ => do
+  logInfo m!"parameter: {n}"
+  return none
+```
+
+Such a ruleproc must be supplied explicitly with its parameter, for example
+`apply_rulesets [procWithParam 7]`, unless all procedural parameters have defaults and the
+declaration elaborates to `RuleProc` without extra arguments.
+
+Ruleprocs can also be written in tactic mode:
+
+```lean
+ruleproc run_tactic (a b : Int) : a < b := by
+  omega
+```
+
+In tactic mode, the binders are used only for pattern matching. They are not introduced as local
+terms in the tactic script; if the tactic needs to inspect matched expressions, use the meta-code
+form instead.
+
+Adding an attribute such as `@[my_rules]` registers the ruleproc in that ruleset. Attribute
+registration is only allowed when the declaration has a default executable `RuleProc`; parameterized
+ruleprocs without defaults should be passed explicitly in the tactic call. -/
 syntax (name := ruleprocCmd) (docComment)? (Lean.Parser.Term.attributes)? "ruleproc " ident
   (ppSpace bracketedBinder)* ("," (ppSpace bracketedBinder)*)? " : " term " := " term : command
 
@@ -183,9 +239,19 @@ def elabRuleProc : Command.CommandElab := fun stx => do
   let (pattern, levelParams, names) ← Command.liftTermElabM <|
     closeRuleProcPattern pat
   let xs := mkIdent `__ruleprocArgs
-  let body ← liftMacroM <| mkRuleProcBody xs names body
-  Command.elabCommand <| ← `($[$doc?:docComment]? meta def $n $procBs* :
-    Mathlib.Tactic.ApplyRuleSets.RuleProc := fun $xs:ident => $body)
+  let cmd ← match body with
+    | `(term| by $seq:tacticSeq) =>
+      let origin := mkIdent `__ruleprocOrigin
+      let goal := mkIdent `__ruleprocGoal
+      let body ← liftMacroM <| mkRuleProcTacticBody goal seq
+      `($[$doc?:docComment]? meta def $n $procBs* :
+        Mathlib.Tactic.ApplyRuleSets.RuleProc :=
+          fun $xs:ident $origin:ident $goal:ident => $body)
+    | _ =>
+      let body ← liftMacroM <| mkRuleProcBody xs names body
+      `($[$doc?:docComment]? meta def $n $procBs* :
+        Mathlib.Tactic.ApplyRuleSets.RuleProc := fun $xs:ident => $body)
+  Command.elabCommand cmd
   Command.liftTermElabM do
     let procName ← realizeGlobalConstNoOverload n
     let default? ← try

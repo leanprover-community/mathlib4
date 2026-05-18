@@ -14,6 +14,32 @@ import Qq
 
 This file defines tactic elaboration for a configurable backward-search tactic using named rulesets.
 Rulesets contain theorem rules and procedural rules (`ruleproc`s) in one ordered database.
+
+The tactic searches backwards from the current goal using local hypotheses, optional introductions,
+explicit rules supplied in the tactic call, and rules from named rulesets. For example:
+
+```lean
+apply_rulesets [my_rules, some_theorem, localHyp]
+```
+
+Entries in the bracket list can be:
+* a ruleset name, such as `my_rules`,
+* a theorem, local hypothesis, or proof term to use as an explicit rule,
+* an erased declaration name, written `-Some.rule`, or
+* a tactic discharger, written `by tac`.
+
+Dischargers are tried in the order they appear:
+
+```lean
+apply_rulesets [my_rules, by assumption, by omega, by grind]
+apply_rulesets [my_rules, by first | assumption | omega | grind]
+```
+
+The old syntax `apply_rulesets (disch := tac) [...]` is still accepted for discoverability, but
+emits a warning recommending `apply_rulesets [..., by tac]`.
+
+`apply_rulesets?` is the same tactic with failed-subgoal collection enabled. If search fails, it
+offers code actions of the form `have : <subgoal> := sorry` for side goals it could not solve.
 -/
 
 public meta section
@@ -26,7 +52,8 @@ open Lean.Parser.Tactic
 
 open Parser.Tactic in
 syntax applyRuleSetErase := "-" term:max
-syntax applyRuleSetArg := applyRuleSetErase <|> term
+syntax applyRuleSetDischarger := "by " tacticSeq
+syntax applyRuleSetArg := applyRuleSetErase <|> applyRuleSetDischarger <|> term
 syntax applyRuleSetArgs := "[" applyRuleSetArg,* "]"
 
 /-- Config elaborator for `apply_rulesets`. -/
@@ -44,17 +71,33 @@ private def parseApplyRuleSetArgs (args : TSyntax ``applyRuleSetArgs) :
   | `(applyRuleSetArgs| [$xs,*]) => xs.getElems
   | _ => #[]
 
+abbrev Discharger := ArgOrigin → Expr → MetaM (Option Expr)
+
+private def firstDischarger (dischargers : Array Discharger) : Discharger := fun origin goal => do
+  for disch in dischargers do
+    if let some proof ← disch origin goal then
+      return some proof
+  return none
+
 open Mathlib.Meta.FunProp in
-private def tacticDischarger (d? : Option (TSyntax ``Parser.Tactic.discharger)) :
-    TacticM (ArgOrigin → Expr → MetaM (Option Expr)) := do
+private def deprecatedDischarger? (d? : Option (TSyntax ``Parser.Tactic.discharger)) :
+    TacticM (Option Discharger) := do
   match d? with
-  | none => return fun _ _ => pure none
+  | none => return none
   | some d =>
+    logWarningAt d "`apply_rulesets (disch := tac)` is deprecated; prefer \
+      `apply_rulesets [by tac]`"
     match d with
     | `(discharger| (discharger := $tac)) =>
       let disch := Mathlib.Meta.FunProp.tacticToDischarge (← `(tactic| ($tac)))
-      return fun _ e => disch e
-    | _ => return fun _ _ => pure none
+      return some fun _ e => disch e
+    | _ => return none
+
+open Mathlib.Meta.FunProp in
+private def tacticSeqDischarger (seq : TSyntax ``Lean.Parser.Tactic.tacticSeq) :
+    TacticM Discharger := do
+  let disch := Mathlib.Meta.FunProp.tacticToDischarge (← `(tactic| ($seq:tacticSeq)))
+  return fun _ e => disch e
 
 open Lean Meta in
 private partial def leadingIndent (source : String) (pos : String.Pos.Raw) : String :=
@@ -126,7 +169,9 @@ private def evalApplyRuleSetsCore (cfgStx : TSyntax ``Parser.Tactic.optConfig)
       { cfg with collectFailedSubgoals := true }
     else
       cfg
-  let disch ← tacticDischarger d?
+  let mut dischargers := #[]
+  if let some disch ← deprecatedDischarger? d? then
+    dischargers := dischargers.push disch
   let args := argsStx?.map parseApplyRuleSetArgs |>.getD #[]
   let mut rulesets := #[]
   let mut explicitTerms : Array Term := #[]
@@ -137,6 +182,8 @@ private def evalApplyRuleSetsCore (cfgStx : TSyntax ``Parser.Tactic.optConfig)
       match t.raw with
       | .ident .. => erased := erased.insert (← realizeGlobalConstNoOverload t.raw)
       | _ => throwErrorAt t "apply_rulesets only supports removals by name"
+    | `(applyRuleSetArg| by $seq:tacticSeq) =>
+      dischargers := dischargers.push (← tacticSeqDischarger seq)
     | `(applyRuleSetArg| $t:term) =>
       match t.raw with
       | .ident _ _ val _ =>
@@ -159,6 +206,7 @@ private def evalApplyRuleSetsCore (cfgStx : TSyntax ``Parser.Tactic.optConfig)
         explicitRules := explicitRules.push { rule with order := i }
       else
         explicitRules := explicitRules.push (← mkExplicitExprRule origin i explicitTerms[i] e)
+    let disch := firstDischarger dischargers
     Term.synthesizeSyntheticMVarsNoPostponing
     let ctx : Context :=
       { config := cfg,

@@ -21,6 +21,12 @@ ruleproc proc3 (param : Nat), {A : Prop} : A := fun _ _ => do
   logInfo m!"calling `proc3` on {A} with param := {param}"
   return none
 
+set_option linter.unusedTactic false in
+ruleproc run_tactic (a b : Int) : a < b := by grind
+
+example : (1 : Int) < 2 := by
+  apply_rulesets [run_tactic]
+
 example (p q : Prop) : p → q → p ∧ q := by
   fail_if_success apply_rulesets [test_rules, -Add.intro]
   apply_rulesets [test_rules]
@@ -58,7 +64,10 @@ example (p q : Prop) : p → q → p ∧ q := by
   apply_rulesets [test_rules]
 
 example : True := by
-  apply_rulesets (disch := trivial) [id]
+  apply_rulesets [id, by trivial]
+
+example : True := by
+  apply_rulesets [id, by assumption, by trivial]
 
 -- Explicit theorem/term rules are tried directly.
 example (p q : Prop) (hp : p) (hq : q) : p ∧ q := by
@@ -85,7 +94,7 @@ example (p q : Prop) : p → q → p ∧ q := by
 
 -- The tactic-level discharger is only needed after recursive search and assumption fail.
 example : True := by
-  apply_rulesets (disch := trivial) [id]
+  apply_rulesets [id, by trivial]
 
 -- `autoParam` arguments are solved by running their embedded tactic.
 example : True := by
