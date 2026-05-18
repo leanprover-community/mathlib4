@@ -11,6 +11,7 @@ public import Mathlib.Algebra.CharP.MixedCharZero
 public import Mathlib.NumberTheory.Padics.RingHoms
 public import Mathlib.RingTheory.AdicCompletion.Noetherian
 public import Mathlib.RingTheory.AdicCompletion.RingHom
+public import Mathlib.RingTheory.AdicCompletion.Topology
 public import Mathlib.RingTheory.Flat.Extension
 public import Mathlib.RingTheory.Flat.TorsionFree
 public import Mathlib.RingTheory.Ideal.Int
