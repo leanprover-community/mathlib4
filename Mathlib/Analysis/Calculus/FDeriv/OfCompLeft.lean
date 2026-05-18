@@ -12,6 +12,22 @@ import Mathlib.Analysis.Normed.Operator.NNNorm
 
 /-!
 # Inverse function theorem, the "easy half"
+
+In this file we prove several versions of the following theorem.
+Consider three functions `f : F → G`, `g : E → F`, and `h : E → G`,
+together with "candidate derivatives" `f' : F →L[𝕜] G`, `g' : E →L[𝕜] F`, and `h' : E →L[𝕜] G`.
+Suppose that
+
+- `f ∘ g = h` in a neighborhood of `a`;
+- `h` has derivative `h'` at `a`;
+- `f` has derivative `f'` at `g a`;
+- `g` is continuous at `a`;
+- either `f'` has a right inverse `f'⁻¹` and `g' = f'⁻¹ ∘ h'`,
+  or `f'` is a topological embedding and `h' = f' ∘ g'`.
+
+Then `g` has derivative `g'` at `a`.
+We prove these theorems for different differentiability predicates,
+then specialize it to the cases when `f'` is a linear equivalence and/or `h = id`.
 -/
 
 open Filter
