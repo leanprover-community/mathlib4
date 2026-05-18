@@ -828,11 +828,14 @@ theorem setToFun_const [CompleteSpace F] [IsFiniteMeasure μ]
   exact setToFun_indicator_const hT MeasurableSet.univ (measure_ne_top _ _) x
 
 theorem setToFun_simpleFunc [CompleteSpace F] (hT : DominatedFinMeasAdditive μ T C)
-    (f : SimpleFunc α E) :
+    (f : SimpleFunc α E) (hf : Integrable f μ) :
     setToFun μ T hT f = ∑ x ∈ f.range, T (f ⁻¹' {x}) x := by
-
-
-#exit
+  have h'f : MemLp f 1 μ := memLp_one_iff_integrable.mpr hf
+  let g := f.toLp h'f
+  have A : f =ᵐ[μ] g := h'f.coeFn_toLp.symm
+  rw [setToFun_congr_ae hT A, L1.setToFun_eq_setToL1 hT, L1.setToL1_eq_setToL1SCLM]
+  apply (SimpleFunc.setToSimpleFunc_congr T (fun s ↦ hT.eq_zero_of_measure_zero) hT.1 hf _).symm
+  grw [A, Lp.simpleFunc.toSimpleFunc_eq_toFun]
 
 section Order
 
