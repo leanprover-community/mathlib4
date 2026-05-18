@@ -1305,8 +1305,9 @@ theorem exists_orthogonal_basis [hK : Invertible (2 : K)] {B : LinearMap.BilinFo
   obtain ⟨x, hx⟩ := exists_bilinForm_self_ne_zero hB₁ hB₂
   rw [← Submodule.finrank_add_eq_of_isCompl (isCompl_span_singleton_orthogonal hx).symm,
     finrank_span_singleton (ne_zero_of_map hx)] at hd
-  let B' := B.domRestrict₁₂ (Submodule.orthogonalBilin (K ∙ x) B)
-    (Submodule.orthogonalBilin (K ∙ x) B)
+  let B' := B.domRestrict₁₂ (Submodule.orthogonalBilin B (K ∙ x))
+    (Submodule.orthogonalBilin B (K ∙ x))
+  rw [← Submodule.orthogonalBilin_span] at hd
   obtain ⟨v', hv₁⟩ := ih (hB₂.domRestrict _ : B'.IsSymm) (Nat.succ.inj hd)
   -- concatenate `x` with the basis obtained by induction
   let b :=
@@ -1317,6 +1318,7 @@ theorem exists_orthogonal_basis [hK : Invertible (2 : K)] {B : LinearMap.BilinFo
         rw [← hc, Submodule.neg_mem_iff] at hy
         have := (isCompl_span_singleton_orthogonal hx).disjoint
         rw [Submodule.disjoint_def] at this
+        rw [Submodule.orthogonalBilin_span] at hy
         have := this (c • x) (Submodule.smul_mem _ _ <| Submodule.mem_span_singleton_self _) hy
         exact (smul_eq_zero.1 this).resolve_right fun h => hx <| h.symm ▸ map_zero _)
       (by
