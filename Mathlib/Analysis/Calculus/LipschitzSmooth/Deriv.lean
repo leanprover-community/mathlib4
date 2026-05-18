@@ -1,0 +1,61 @@
+/-
+Copyright (c) 2026 Christoph Spiegel. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Christoph Spiegel
+-/
+module
+
+public import Mathlib.Analysis.Calculus.Deriv.Basic
+public import Mathlib.Analysis.Calculus.LipschitzSmooth.FDeriv
+
+/-!
+# Lipschitz smoothness in 1D via the derivative
+
+For a `K`-smooth function `f : ℝ → ℝ`, the descent inequality and the variation bound
+on the derivative take their classical 1D forms
+
+`f y ≤ f x + deriv f x * (y - x) + K/2 * (y - x)^2`,
+`(deriv f y - deriv f x) * (y - x) ≤ K * (y - x)^2`.
+
+These are the 1D restatements of the Fréchet-derivative forms in
+`Mathlib.Analysis.Calculus.LipschitzSmooth.FDeriv`, lifted via `fderiv_eq_deriv_mul`
+(the identity `(fderiv ℝ f x : ℝ → ℝ) y = deriv f x * y`).
+
+## Main results
+
+* `lipschitzSmoothWith_iff_deriv` — characterisation of `K`-smoothness in 1D
+  `deriv` form, under `Differentiable`.
+* `LipschitzSmoothWith.deriv_descent_le` — the descent inequality in 1D `deriv` form.
+* `LipschitzSmoothWith.deriv_sub_mul_le` — the variation bound in 1D `deriv` form.
+-/
+
+public section
+
+variable {K : NNReal} {f : ℝ → ℝ}
+
+/-- Characterisation of `LipschitzSmoothWith` for `f : ℝ → ℝ` in `deriv` form under
+`Differentiable`. -/
+theorem lipschitzSmoothWith_iff_deriv (hf : Differentiable ℝ f) :
+    LipschitzSmoothWith K f ↔
+      ∀ x y : ℝ, f y ≤ f x + deriv f x * (y - x) + ↑K / 2 * (y - x) ^ 2 := by
+  rw [lipschitzSmoothWith_iff_fderiv hf]
+  refine forall_congr' fun x => forall_congr' fun y => ?_
+  rw [fderiv_eq_deriv_mul, dist_comm, Real.dist_eq, sq_abs]
+
+namespace LipschitzSmoothWith
+
+/-- For a differentiable `K`-smooth `f : ℝ → ℝ`, the descent inequality in 1D form:
+`f y ≤ f x + deriv f x * (y - x) + K/2 * (y - x)^2`. -/
+theorem deriv_descent_le (h : LipschitzSmoothWith K f) (hf : Differentiable ℝ f) (x y : ℝ) :
+    f y ≤ f x + deriv f x * (y - x) + ↑K / 2 * (y - x) ^ 2 :=
+  (lipschitzSmoothWith_iff_deriv hf).mp h x y
+
+/-- For a differentiable `K`-smooth `f : ℝ → ℝ`, the variation bound in 1D form:
+`(deriv f y - deriv f x) * (y - x) ≤ K * (y - x)^2`. -/
+theorem deriv_sub_mul_le (h : LipschitzSmoothWith K f) (hf : Differentiable ℝ f) (x y : ℝ) :
+    (deriv f y - deriv f x) * (y - x) ≤ ↑K * (y - x) ^ 2 := by
+  have hbase := h.fderiv_sub_apply_le hf x y
+  rwa [ContinuousLinearMap.sub_apply, fderiv_eq_deriv_mul, fderiv_eq_deriv_mul, ← sub_mul,
+    dist_comm, Real.dist_eq, sq_abs] at hbase
+
+end LipschitzSmoothWith
