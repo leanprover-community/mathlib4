@@ -219,11 +219,15 @@ theorem nonempty_toType_iff {o : Ordinal} : Nonempty o.ToType ↔ o ≠ 0 := by
 
 @[deprecated (since := "2026-02-18")] alias toType_nonempty_iff_ne_zero := nonempty_toType_iff
 
+instance instNeZeroOne : NeZero (1 : Ordinal) :=
+  ⟨type_ne_zero_of_nonempty _⟩
+
+@[deprecated _root_.one_ne_zero (since := "2026-05-12")]
 protected theorem one_ne_zero : (1 : Ordinal) ≠ 0 :=
-  type_ne_zero_of_nonempty _
+  _root_.one_ne_zero
 
 instance nontrivial : Nontrivial Ordinal.{u} :=
-  ⟨⟨1, 0, Ordinal.one_ne_zero⟩⟩
+  ⟨⟨1, 0, one_ne_zero⟩⟩
 
 /-- `Quotient.inductionOn` specialized to ordinals.
 
@@ -353,9 +357,6 @@ protected theorem not_lt_zero (o : Ordinal) : ¬o < 0 :=
 
 @[deprecated eq_zero_or_pos (since := "2025-11-21")]
 protected theorem eq_zero_or_pos : ∀ a : Ordinal, a = 0 ∨ 0 < a := eq_bot_or_bot_lt
-
-instance instNeZeroOne : NeZero (1 : Ordinal) :=
-  ⟨Ordinal.one_ne_zero⟩
 
 theorem type_le_iff {α β} {r : α → α → Prop} {s : β → β → Prop} [IsWellOrder α r]
     [IsWellOrder β s] : type r ≤ type s ↔ Nonempty (r ≼i s) :=
@@ -1244,13 +1245,6 @@ def ord.orderEmbedding : Cardinal ↪o Ordinal :=
 @[simp]
 theorem ord.orderEmbedding_coe : (ord.orderEmbedding : Cardinal → Ordinal) = ord :=
   rfl
-
-set_option linter.deprecated false in
-/-- If a cardinal `c` is nonzero, then `c.ord.ToType` has a least element. -/
-@[implicit_reducible, deprecated WellFoundedLT.toOrderBot (since := "2025-04-12")]
-noncomputable def toTypeOrderBot {c : Cardinal} (hc : c ≠ 0) :
-    OrderBot c.ord.ToType :=
-  Ordinal.toTypeOrderBot (fun h ↦ hc (ord_injective (by simpa using h)))
 
 end Cardinal
 
