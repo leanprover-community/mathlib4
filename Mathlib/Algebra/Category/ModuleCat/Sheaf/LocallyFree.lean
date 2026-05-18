@@ -65,6 +65,7 @@ section
 variable [HasWeakSheafify J AddCommGrpCat.{u}] [J.WEqualsLocallyBijective AddCommGrpCat.{u}]
   [J.HasSheafCompose (forget₂ RingCat.{u} AddCommGrpCat.{u})]
 
+/-- The generating sections of the free sheaf of modules. -/
 @[expose, simps]
 def free.generatingSections (I : Type u) : (free (R := R) I).GeneratingSections where
   I := I
@@ -78,27 +79,9 @@ lemma free.generatingSections_π_id (I : Type u) :
     (free.generatingSections (R := R) I).π = 𝟙 (free I) :=
   Equiv.symm_apply_apply (free I).freeHomEquiv _
 
-instance free.generatingSections.π_isIso (I : Type u) :
-    IsIso (free.generatingSections (R := R) I).π := by
-  simp only [generatingSections_I, generatingSections_π_id]
-  infer_instance
-
 variable [∀ X, (J.over X).HasSheafCompose (forget₂ RingCat.{u} AddCommGrpCat.{u})]
   [∀ X, HasSheafify (J.over X) AddCommGrpCat.{u}] [HasBinaryProducts C]
   [∀ X, (J.over X).WEqualsLocallyBijective AddCommGrpCat.{u}] [HasSheafify J AddCommGrpCat]
-
-/-- Given `G : M.GeneratingSections`, we naturally obtain `M.LocalGeneratorsData` using the
-trivial cover of `C`. -/
-@[expose, simps]
-def GeneratingSections.localGeneratorsData {M : SheafOfModules.{u} R} (G : M.GeneratingSections) :
-    M.LocalGeneratorsData where
-  I := C
-  X := id
-  coversTop x := GrothendieckTopology.covering_of_eq_top J <| by
-    rw [Sieve.ext_iff]
-    intro _ f
-    simpa [Sieve.top_apply, iff_true] using ⟨x, Nonempty.intro f⟩
-  generators x := G.map (pushforward (𝟙 (R.over x))) (Iso.refl _)
 
 set_option backward.isDefEq.respectTransparency false in
 instance (I : Type u) :

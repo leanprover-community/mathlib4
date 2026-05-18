@@ -29,7 +29,7 @@ define sheaves of modules of finite type.
 
 @[expose] public section
 
-universe u v' u'
+universe u v' u' u₁ v₁
 
 open CategoryTheory Limits
 
@@ -104,6 +104,8 @@ instance (σ : M.GeneratingSections) (p : M ⟶ N) [Epi p] [σ.IsFiniteType] :
 
 end GeneratingSections
 
+section
+
 variable [∀ (X : C), HasWeakSheafify (J.over X) AddCommGrpCat.{u}]
   [∀ (X : C), (J.over X).WEqualsLocallyBijective AddCommGrpCat.{u}]
   [∀ (X : C), (J.over X).HasSheafCompose (forget₂ RingCat AddCommGrpCat.{u})]
@@ -138,5 +140,63 @@ noncomputable def localGeneratorsDataOfIsFiniteType (M : SheafOfModules.{u} R)
     [M.IsFiniteType] :
     M.LocalGeneratorsData :=
   (IsFiniteType.exists_localGeneratorsData M).choose
+
+end
+
+noncomputable section
+
+variable {C' : Type u₁} [Category.{v₁} C'] {J' : GrothendieckTopology C'} {S : Sheaf J' RingCat.{u}}
+  [HasSheafify J' AddCommGrpCat] [J'.WEqualsLocallyBijective AddCommGrpCat]
+  [J'.HasSheafCompose (forget₂ RingCat AddCommGrpCat)]
+
+variable {M : SheafOfModules.{u} R} (G : M.GeneratingSections)
+  (F : SheafOfModules.{u} R ⥤ SheafOfModules.{u} S) [PreservesColimitsOfSize.{u, u} F]
+  (η : unit S ≅ F.obj (unit R))
+
+-- `preservesColimitsOfSize_shrink` is not a global instance because it loops indefinitely.
+-- But here it is fine as an instance since the universe `u` is inferrable from the type of `F`.
+local instance : PreservesColimitsOfSize.{0, 0} F := preservesColimitsOfSize_shrink _
+
+/-- Let `F` be a functor from sheaf of `R`-module to sheaf of `S`-module, if `F` preserves
+colimits and `F.obj (unit R) ≅ unit S`, given generating sections `G : M.GeneratingSections`,
+then we obtain a morphism `free G.I ⟶ F.obj M`. -/
+def GeneratingSections.mapFreeHom : free G.I ⟶ F.obj M :=
+  (mapFreeIso F G.I η).hom ≫ F.map G.π
+
+/-- Let `F` be a functor from sheaf of `R`-module to sheaf of `S`-module, if `F` preserves
+colimits and `F.obj (unit R) ≅ unit S`, given generating sections `G : M.GeneratingSections`,
+then we obtain generating sections of `F.obj M`. -/
+@[simps]
+def GeneratingSections.map : (F.obj M).GeneratingSections where
+  I := G.I
+  s := (freeHomEquiv (F.obj M)) (G.mapFreeHom F η)
+  epi := by
+    simp only [mapFreeHom, Equiv.symm_apply_apply, epi_comp_iff_of_epi]
+    have : Epi G.π := inferInstance
+    infer_instance
+
+lemma GeneratingSections.map_π_eq (G : M.GeneratingSections)
+    (F : SheafOfModules.{u} R ⥤ SheafOfModules.{u} S) [PreservesColimitsOfSize.{u, u} F]
+    (η : unit S ≅ F.obj (unit R)) : (G.map F η).π = (mapFreeIso F G.I η).hom ≫ F.map G.π :=
+  (F.obj M).freeHomEquiv.symm_apply_eq.mpr rfl
+
+variable [∀ X, (J.over X).HasSheafCompose (forget₂ RingCat.{u} AddCommGrpCat.{u})]
+  [∀ X, HasSheafify (J.over X) AddCommGrpCat.{u}] [HasBinaryProducts C]
+  [∀ X, (J.over X).WEqualsLocallyBijective AddCommGrpCat.{u}] [HasSheafify J AddCommGrpCat]
+
+/-- Given `G : M.GeneratingSections`, we naturally obtain `M.LocalGeneratorsData` using the
+trivial cover of `C`. -/
+@[expose, simps]
+def GeneratingSections.localGeneratorsData {M : SheafOfModules.{u} R} (G : M.GeneratingSections) :
+    M.LocalGeneratorsData where
+  I := C
+  X := id
+  coversTop x := GrothendieckTopology.covering_of_eq_top J <| by
+    rw [Sieve.ext_iff]
+    intro _ f
+    simpa [Sieve.top_apply, iff_true] using ⟨x, Nonempty.intro f⟩
+  generators x := G.map (pushforward (𝟙 (R.over x))) (Iso.refl _)
+
+end
 
 end SheafOfModules
