@@ -886,11 +886,11 @@ section
 
 variable [Small.{v} R]
 
-lemma extClass_postcomp_surjective (M N : ModuleCat.{v} R) (x : R) (reg : IsSMulRegular M x)
+lemma postcomp_extClass_surjective (M N : ModuleCat.{v} R) (x : R) (reg : IsSMulRegular M x)
     (mem : x ∈ Module.annihilator R N) {a b : ℕ} (h : a + 1 = b) :
     Function.Surjective (reg.smulShortComplex_shortExact.extClass.postcomp N h) := by
   have epi := (Ext.covariant_sequence_exact₁' N reg.smulShortComplex_shortExact a b h).epi_f
-    (Ext.smul_id_postcomp_eq_zero_of_mem_annihilator mem b)
+    (Ext.postcomp_smul_id_eq_zero_of_mem_annihilator mem b)
   exact (AddCommGrpCat.epi_iff_surjective _).mp epi
 
 lemma ext_subsingleton_of_regualr_sequence (M N : ModuleCat.{v} R) {rs : List R}
@@ -914,14 +914,14 @@ lemma ext_subsingleton_of_regualr_sequence (M N : ModuleCat.{v} R) {rs : List R}
       simp only [List.mem_cons, forall_eq_or_imp] at mem'
       have : Subsingleton (Ext N (M.smulShortComplex a).X₃ n) :=
         ih (ModuleCat.of R (QuotSMulTop a M)) reg'.2 mem'.2 hn
-      exact (extClass_postcomp_surjective M N a reg'.1 mem'.1 (rfl : n + 1 = n + 1)).subsingleton
+      exact (postcomp_extClass_surjective M N a reg'.1 mem'.1 (rfl : n + 1 = n + 1)).subsingleton
 
-lemma extClass_postcomp_bijective_of_lt (M N : ModuleCat.{v} R) (x : R) (reg : IsSMulRegular M x)
+lemma postcomp_extClass_bijective_of_lt (M N : ModuleCat.{v} R) (x : R) (reg : IsSMulRegular M x)
     (mem : x ∈ Module.annihilator R N) {a b : ℕ} (h : a + 1 = b)
     {rs : List R} (reg' : IsWeaklyRegular M rs) (mem' : ∀ r ∈ rs, r ∈ Module.annihilator R N)
     (ltlen : a < rs.length) :
     Function.Bijective (reg.smulShortComplex_shortExact.extClass.postcomp N h) := by
-  refine ⟨?_, extClass_postcomp_surjective M N x reg mem h⟩
+  refine ⟨?_, postcomp_extClass_surjective M N x reg mem h⟩
   have : Subsingleton (Ext N (M.smulShortComplex x).X₂ a) :=
     ext_subsingleton_of_regualr_sequence M N reg' mem' a ltlen
   have mono := (Ext.covariant_sequence_exact₃' N reg.smulShortComplex_shortExact a b h).mono_g
@@ -964,7 +964,7 @@ lemma quotientRegularSequenceToExt_bijective (M N : ModuleCat.{v} R) {rs : List 
     · apply Function.Bijective.comp _ (LinearEquiv.bijective _)
       exact quotientRegularSequenceToExt_bijective
         (ModuleCat.of R (QuotSMulTop a M)) N reg'.2 mem'.2
-    · exact extClass_postcomp_bijective_of_lt M N a reg'.1 mem'.1
+    · exact postcomp_extClass_bijective_of_lt M N a reg'.1 mem'.1
         (rs'.length_cons (a := a)).symm reg mem (by simp)
 
 /-- The linear equivalence obtained from the bijectivity of `QuotientRegularSequenceToExt`. -/
@@ -1017,7 +1017,6 @@ lemma quotient_maximal_hom_nontrivial [IsArtinianRing R] :
   rcases (isAssociatedPrime_iff_exists_injective_linearMap _ _).mp this with ⟨_, f, hf⟩
   exact nontrivial_of_ne f 0 (LinearMap.ne_zero_of_injective hf)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma exist_linearMap_range_le_of_ne_bot [IsArtinianRing R] {I : Ideal R} (ne : I ≠ ⊥) :
     ∃ (f : (R ⧸ maximalIdeal R →ₗ[R] R)), Function.Injective f ∧ LinearMap.range f ≤ I := by
   have : maximalIdeal R ∈ associatedPrimes R I := by
@@ -1028,7 +1027,6 @@ lemma exist_linearMap_range_le_of_ne_bot [IsArtinianRing R] {I : Ideal R} (ne : 
   use I.subtype.comp f
   simpa [hf] using (le_of_le_of_eq (LinearMap.range_comp_le_range _ _) I.range_subtype)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma Ideal.bot_isIrreducible_iff_isPrincipal [IsArtinianRing R] :
     (⊥ : Ideal R).isIrreducible ↔ (⊤ : Submodule R (R ⧸ maximalIdeal R →ₗ[R] R)).IsPrincipal := by
   have := quotient_maximal_hom_nontrivial R
