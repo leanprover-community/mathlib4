@@ -184,6 +184,10 @@ variable [∀ X, (J.over X).HasSheafCompose (forget₂ RingCat.{u} AddCommGrpCat
   [∀ X, HasSheafify (J.over X) AddCommGrpCat.{u}] [HasBinaryProducts C]
   [∀ X, (J.over X).WEqualsLocallyBijective AddCommGrpCat.{u}]
 
+/-- The restriction of generating sections to `Over X` -/
+abbrev GeneratingSections.over {M : SheafOfModules.{u} R} (G : M.GeneratingSections) (X : C) :
+    (M.over X).GeneratingSections := G.map (pushforward (𝟙 (R.over X))) (Iso.refl _)
+
 /-- Given `G : M.GeneratingSections`, we naturally obtain `M.LocalGeneratorsData` using the
 trivial cover of `C`. -/
 @[expose, simps]
@@ -195,7 +199,41 @@ def GeneratingSections.localGeneratorsData {M : SheafOfModules.{u} R} (G : M.Gen
     rw [Sieve.ext_iff]
     intro _ f
     simpa [Sieve.top_apply, iff_true] using ⟨x, Nonempty.intro f⟩
-  generators x := G.map (pushforward (𝟙 (R.over x))) (Iso.refl _)
+  generators x := G.over x
+
+variable {C : Type u'} [Category.{u'} C] {J : GrothendieckTopology C} {R : Sheaf J RingCat.{u}}
+  [HasWeakSheafify J AddCommGrpCat.{u}] [J.WEqualsLocallyBijective AddCommGrpCat.{u}]
+  [J.HasSheafCompose (forget₂ RingCat.{u} AddCommGrpCat.{u})]
+
+variable (M : SheafOfModules.{u} R)
+
+variable [∀ X, (J.over X).HasSheafCompose (forget₂ RingCat.{u} AddCommGrpCat.{u})]
+  [∀ X, HasSheafify (J.over X) AddCommGrpCat.{u}] [HasBinaryProducts C]
+  [∀ X, (J.over X).WEqualsLocallyBijective AddCommGrpCat.{u}]
+
+variable [∀ X Y, ((J.over X).over Y).HasSheafCompose (forget₂ RingCat.{u} AddCommGrpCat.{u})]
+  [∀ X Y, HasSheafify ((J.over X).over Y) AddCommGrpCat.{u}]
+  [∀ X Y, ((J.over X).over Y).WEqualsLocallyBijective AddCommGrpCat.{u}]
+  (q : M.LocalGeneratorsData)
+  [∀ i, HasBinaryProducts (Over (q.X i))]
+
+@[expose, simps]
+def LocalGeneratorsData.over (X : C) :
+    (M.over X).LocalGeneratorsData where
+  I := q.I
+  X i := (Over.star X).obj (q.X i)
+  coversTop := by
+
+    sorry
+  generators i := by
+    have := (q.generators i).over ((Over.star (q.X i)).obj X)
+    let φ := Over.iteratedSliceEquiv ((Over.star (q.X i)).obj X)
+    let := (Over.star X).obj (q.X i)
+    have : ((Over.star X).obj (q.X i)).left ≅ ((Over.star (q.X i)).obj X).left := by
+      dsimp
+      sorry
+    sorry
+
 
 end
 
