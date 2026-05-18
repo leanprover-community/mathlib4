@@ -259,8 +259,6 @@ def isoMk (app : ∀ a, η.app a ≅ θ.app a)
   inv.as.naturality {a b} f := by
     simpa using _ ◁ (app b).inv ≫= (naturality f).symm =≫ (app a).inv ▷ _
 
-@[deprecated (since := "2025-11-11")] alias ModificationIso.ofComponents := isoMk
-
 end OplaxTrans
 
 namespace StrongTrans

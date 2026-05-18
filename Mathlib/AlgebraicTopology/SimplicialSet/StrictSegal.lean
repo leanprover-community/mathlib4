@@ -57,8 +57,6 @@ class IsStrictSegal (X : SSet.Truncated.{u} (n + 1)) : Prop where
 
 export IsStrictSegal (spine_bijective)
 
-@[deprecated (since := "2025-11-04")] alias IsStrictSegal.segal := spine_bijective
-
 lemma spine_injective (X : SSet.Truncated.{u} (n + 1)) [X.IsStrictSegal]
     {m : ℕ} {h : m ≤ n + 1} :
     Function.Injective (X.spine m) :=

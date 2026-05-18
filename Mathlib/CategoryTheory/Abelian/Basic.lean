@@ -429,8 +429,6 @@ def im : Arrow C ⥤ C where
   obj f := Abelian.image f.hom
   map {f g} u := kernel.lift _ (Abelian.image.ι f.hom ≫ u.right) <| by simp [← Arrow.w_assoc u]
 
-@[deprecated (since := "2025-10-31")] noncomputable alias imageFunctor := im
-
 /-- `Abelian.coimage` as a functor from the arrow category. -/
 @[simps]
 def coim : Arrow C ⥤ C where
@@ -445,8 +443,6 @@ set_option backward.defeqAttrib.useBackward true in
 @[simps!]
 def coimIsoIm : coim (C := C) ≅ im :=
   NatIso.ofComponents fun _ ↦ Abelian.coimageIsoImage _
-
-@[deprecated (since := "2025-10-31")] noncomputable alias coimageFunctorIsoImageFunctor := coimIsoIm
 
 /-- There is a canonical isomorphism between the abelian image and the categorical image of a
     morphism. -/
