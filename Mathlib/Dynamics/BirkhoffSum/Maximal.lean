@@ -215,9 +215,7 @@ theorem birkhoffAverageSupSet_eq_birkhoffSupSet {f : α → α} {g a} (ha : 0 < 
         rw [birkhoffSum_zero] at h
         exact lt_irrefl 0 h
     · exact birkhoffAverage_iff_birkhoffSum (by positivity)
-  conv =>
-    enter [1, 1, x, 1, n]
-    rw [this]
+  simp_rw [this]
 
 section MeasurePreserving
 
@@ -278,7 +276,7 @@ variable {E : Type*} [NormedAddCommGroup E] {g : α → E} (hg : Integrable g μ
 
 include hg
 
-/-- Maximal ergodic theorem: maximal ergodic operator satisfies a weak-type inequality. -/
+/-- Maximal ergodic theorem: the maximal ergodic operator satisfies a weak-type inequality. -/
 public theorem meas_birkhoffAverageSupSet_smul_const_le_norm :
     ⨆ a, a * μ.real (birkhoffAverageSupSet f (fun x ↦ ‖g x‖) a) ≤ ∫ x, ‖g x‖ ∂μ := by
   refine ciSup_le fun a ↦ ?_
