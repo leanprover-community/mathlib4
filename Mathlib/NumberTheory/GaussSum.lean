@@ -82,7 +82,7 @@ theorem gaussSum_mulShift (χ : MulChar R R') (ψ : AddChar R R') (a : Rˣ) :
 /-- Replacing `ψ` by `mulShift ψ a` multiplies the Gauss sum by `χ⁻¹ a`. -/
 theorem gaussSum_mulShift_eq (χ : MulChar R R') (ψ : AddChar R R') (a : Rˣ) :
     gaussSum χ (mulShift ψ a) = χ⁻¹ a * gaussSum χ ψ := by
-  rw [← gaussSum_mulShift χ ψ a, MulChar.inv_apply_eq_inv,
+  rw [← gaussSum_mulShift χ ψ a, inv_apply_eq_inv,
     Ring.inverse_mul_cancel_left _ _ (a.isUnit.map χ)]
 
 /-- Taking complex conjugates of a Gauss sum inverts both characters. -/
