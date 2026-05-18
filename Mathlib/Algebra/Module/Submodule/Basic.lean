@@ -131,7 +131,7 @@ theorem toAddSubgroup_strictMono : StrictMono (toAddSubgroup : Submodule R M →
 theorem toAddSubgroup_le : p.toAddSubgroup ≤ p'.toAddSubgroup ↔ p ≤ p' :=
   Iff.rfl
 
-@[gcongr, mono]
+@[mono]
 theorem toAddSubgroup_mono : Monotone (toAddSubgroup : Submodule R M → AddSubgroup M) :=
   toAddSubgroup_strictMono.monotone
 

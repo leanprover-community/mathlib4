@@ -40,7 +40,6 @@ variable
 
 section one_dimensional
 
-
 open scoped Topology
 
 section
@@ -48,6 +47,17 @@ section
 theorem Filter.EventuallyEq.iteratedDerivWithin_eq (hfg : f =ᶠ[𝓝[s] x] g) (hfg' : f x = g x) :
     iteratedDerivWithin n f s x = iteratedDerivWithin n g s x :=
   congr($(hfg.iteratedFDerivWithin_eq hfg' n) _)
+
+theorem Filter.EventuallyEq.iteratedDerivWithin' {s t : Set 𝕜}
+    (h : f =ᶠ[𝓝[s] x] g) (ht : t ⊆ s) (n : ℕ) :
+    iteratedDerivWithin n f t =ᶠ[𝓝[s] x] iteratedDerivWithin n g t := by
+  unfold iteratedDerivWithin
+  exact h.iteratedFDerivWithin' ht n |>.fun_comp (fun a ↦ a fun _ ↦ 1)
+
+/-- If two functions agree in a neighborhood within `s`, then so do their iterated derivatives. -/
+protected lemma Filter.EventuallyEq.iteratedDerivWithin {s : Set 𝕜} (h : f =ᶠ[𝓝[s] x] g) (n : ℕ) :
+    iteratedDerivWithin n f s =ᶠ[𝓝[s] x] iteratedDerivWithin n g s :=
+  h.iteratedDerivWithin' Set.Subset.rfl n
 
 theorem Filter.EventuallyEq.iteratedDerivWithin_eq_of_nhds_insert
     {𝕜 F : Type*} [NontriviallyNormedField 𝕜]
@@ -193,15 +203,12 @@ theorem iteratedDerivWithin_comp_const_smul (hf : ContDiffOn 𝕜 n f s) (c : �
       hf.differentiableOn_iteratedDerivWithin (Nat.cast_lt.mpr n.lt_succ_self) h _ hcx
     have h₂ : DifferentiableWithinAt 𝕜 (fun x => iteratedDerivWithin n f s (c * x)) s x := by
       rw [← Function.comp_def]
-      apply DifferentiableWithinAt.comp
-      · exact hf.differentiableOn_iteratedDerivWithin (Nat.cast_lt.mpr n.lt_succ_self) h _ hcx
-      · exact differentiableWithinAt_id'.const_mul _
-      · exact hs
+      apply DifferentiableWithinAt.comp _ ?_ (by fun_prop) hs
+      exact hf.differentiableOn_iteratedDerivWithin (Nat.cast_lt.mpr n.lt_succ_self) h _ hcx
     rw [iteratedDerivWithin_succ, derivWithin_congr h₀ (ih hx hf.of_succ),
       derivWithin_fun_const_smul (c ^ n) h₂, iteratedDerivWithin_succ,
-      ← Function.comp_def,
-      derivWithin.scomp x h₁ (differentiableWithinAt_id'.const_mul _) hs,
-      derivWithin_const_mul _ differentiableWithinAt_id', derivWithin_id' _ _ (h _ hx),
+      ← Function.comp_def, derivWithin.scomp x h₁ (by fun_prop) hs,
+      derivWithin_const_mul _ differentiableWithinAt_id, derivWithin_id' _ _ (h _ hx),
       smul_smul, mul_one, pow_succ]
 
 open scoped Pointwise
@@ -298,6 +305,13 @@ theorem iteratedDerivWithin_pow (m : ℕ) (k : ℕ) :
         show k < i → i - k = (i - (k + 1) + 1) by lia]; ring
 
 end
+
+/-- If two functions agree in a neighborhood, then so do their iterated derivatives. -/
+protected lemma Filter.EventuallyEq.iteratedDeriv
+    {𝕜 : Type*} [NontriviallyNormedField 𝕜] {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+    {f₁ f₂ : 𝕜 → F} {x : 𝕜} (h : f₁ =ᶠ[𝓝 x] f₂) (n : ℕ) :
+    iteratedDeriv n f₁ =ᶠ[𝓝 x] iteratedDeriv n f₂ := by
+  simp_all [← nhdsWithin_univ, ← iteratedDerivWithin_univ, EventuallyEq.iteratedDerivWithin]
 
 lemma iteratedDeriv_add (hf : ContDiffAt 𝕜 n f x) (hg : ContDiffAt 𝕜 n g x) :
     iteratedDeriv n (f + g) x = iteratedDeriv n f x + iteratedDeriv n g x := by
