@@ -28,7 +28,7 @@ open CategoryTheory MonObj ConcreteCategory
 
 namespace MonTypeEquivalenceMon
 
-instance monMonoid (A : Type u) [MonObj A] : Monoid A where
+instance (priority := 900) monMonoid (A : Type u) [MonObj A] : Monoid A where
   one := η[A] PUnit.unit
   mul x y := μ[A] (x, y)
   one_mul x := by convert congr_hom (CC := fun X ↦ X) (one_mul A) (PUnit.unit, x)
@@ -95,7 +95,8 @@ noncomputable instance monTypeInhabited : Inhabited (Mon (Type u)) :=
 
 namespace CommMonTypeEquivalenceCommMon
 
-instance commMonCommMonoid (A : Type u) [MonObj A] [IsCommMonObj A] : CommMonoid A :=
+instance (priority := 900) commMonCommMonoid (A : Type u) [MonObj A] [IsCommMonObj A] :
+    CommMonoid A :=
   { MonTypeEquivalenceMon.monMonoid A with
     mul_comm := fun x y => by convert congr_hom (CC := fun X ↦ X) (IsCommMonObj.mul_comm A) (y, x) }
 
