@@ -8,6 +8,12 @@ public import Mathlib.Tactic.Algebraize
 public import Mathlib.Tactic.ApplyAt
 public import Mathlib.Tactic.ApplyCongr
 public import Mathlib.Tactic.ApplyFun
+public import Mathlib.Tactic.ApplyRuleSets
+public import Mathlib.Tactic.ApplyRuleSets.Attr
+public import Mathlib.Tactic.ApplyRuleSets.Core
+public import Mathlib.Tactic.ApplyRuleSets.Elab
+public import Mathlib.Tactic.ApplyRuleSets.RuleProc
+public import Mathlib.Tactic.ApplyRuleSets.Types
 public import Mathlib.Tactic.ApplyWith
 public import Mathlib.Tactic.ArithMult
 public import Mathlib.Tactic.ArithMult.Init
