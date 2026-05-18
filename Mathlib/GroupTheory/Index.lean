@@ -610,9 +610,7 @@ lemma pow_mem_of_relIndex_ne_zero_of_dvd (h : H.relIndex K ≠ 0) {a : G} (ha : 
 @[to_additive (attr := simp) index_prod]
 lemma index_prod (H : Subgroup G) (K : Subgroup G') : (H.prod K).index = H.index * K.index := by
   simp_rw [index, ← Nat.card_prod]
-  refine Nat.card_congr
-    ((Quotient.congrRight (fun x y ↦ ?_)).trans (Setoid.prodQuotientEquiv _ _).symm)
-  rw [QuotientGroup.leftRel_prod]
+  exact Nat.card_congr (QuotientGroup.prodEquiv H K)
 
 @[to_additive (attr := simp)]
 lemma index_pi {ι : Type*} [Fintype ι] (H : ι → Subgroup G) :
@@ -724,6 +722,10 @@ theorem finiteIndex_iff_finite_quotient : FiniteIndex H ↔ Finite (G ⧸ H) :=
 @[to_additive]
 instance (priority := 100) finiteIndex_of_finite [Finite G] : FiniteIndex H :=
   finiteIndex_of_finite_quotient
+
+@[to_additive]
+instance [FiniteIndex H] [FiniteIndex K] : FiniteIndex (H.prod K) := by
+  simp_all [finiteIndex_iff]
 
 variable (H) in
 @[to_additive]

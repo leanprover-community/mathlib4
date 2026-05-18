@@ -452,7 +452,7 @@ open Fin.CommRing in -- TODO: should this be refactored to avoid needing the coe
 lemma Fin.addRothNumber_le_rothNumberNat (k n : ℕ) (hkn : k ≤ n) :
     addRothNumber (Iio k : Finset (Fin n.succ)) ≤ rothNumberNat k := by
   suffices h : Set.BijOn (Nat.cast : ℕ → Fin n.succ) (range k) (Iio k : Finset (Fin n.succ)) by
-    exact (AddMonoidHomClass.isAddFreimanHom (Nat.castRingHom _) h.mapsTo).addRothNumber_mono h
+    exact (AddHomClass.isAddFreimanHom (Nat.castRingHom _) h.mapsTo).addRothNumber_mono h
   refine ⟨?_, (CharP.natCast_injOn_Iio _ n.succ).mono (by simp; lia), ?_⟩
   · simpa using fun x ↦ natCast_strictMono hkn
   simp only [Set.SurjOn, coe_Iio, Set.subset_def, Set.mem_Iio, Set.mem_image, lt_def,

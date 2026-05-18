@@ -145,7 +145,6 @@ class IsLeftDerivabilityStructure : Prop where
 attribute [instance] IsLeftDerivabilityStructure.hasLeftResolutions
   IsLeftDerivabilityStructure.guitartExact'
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isLeftDerivabilityStructure_iff_op :
     Φ.IsLeftDerivabilityStructure ↔
       Φ.op.IsRightDerivabilityStructure := by
