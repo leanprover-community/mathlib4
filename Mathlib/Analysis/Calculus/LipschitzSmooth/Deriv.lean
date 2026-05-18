@@ -24,8 +24,8 @@ These are the 1D restatements of the Fréchet-derivative forms in
 ## Main results
 
 * `lipschitzSmoothWith_iff_deriv` — characterisation in 1D `deriv` form under `Differentiable`.
-* `LipschitzSmoothWith.{deriv_descent_le, deriv_sub_mul_le}` — the descent inequality and the
-  variance bound on the 1D `deriv`.
+* `LipschitzSmoothWith.deriv_descent_le`, `LipschitzSmoothWith.deriv_sub_mul_le` —
+  the descent inequality and the variance bound on the 1D `deriv`.
 -/
 
 public section

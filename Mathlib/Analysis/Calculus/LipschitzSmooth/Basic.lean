@@ -26,9 +26,9 @@ form live in the sibling files in this directory.
 ## Main results
 
 * `lipschitzSmoothWith_iff_lineDeriv` — characterisation as the underlying inequality.
-* `LipschitzSmoothWith.{lineDeriv_descent_le, lineDeriv_apply_sub_le, lineDeriv_sub_apply_le}` —
-  the descent inequality as a forward implication and the resulting variance bound on the
-  line-derivative.
+* `LipschitzSmoothWith.lineDeriv_descent_le`, `LipschitzSmoothWith.lineDeriv_apply_sub_le`,
+  `LipschitzSmoothWith.lineDeriv_sub_apply_le` — the descent inequality as a forward
+  implication and the resulting variance bound on the line-derivative.
 -/
 
 public section
