@@ -12,9 +12,18 @@ public import Mathlib.Algebra.Category.ModuleCat.Sheaf.Quasicoherent
 
 A sheaf of modules is locally free if it is locally isomorphic to a free module.
 
+## Main Definitions
+
+- `SheafOfModules.LocalGeneratorsData.IsLocallyFreeData`: This is defined as a predicate on
+`SheafOfModules.LocalGeneratorData` where `q : M.LocalGeneratorData` is said to be locally
+free data if `(q.generators i).π` is an isomorphism for all `i` in `q.I`.
+
+- `SheafOfModules.IsLocallyFree`: `M : SheafOfModules R` is locally free is there exists locally
+free data for it.
+
 -/
 
-@[expose] public section
+public section
 
 universe u v₁ u₁
 
@@ -56,7 +65,7 @@ section
 variable [HasWeakSheafify J AddCommGrpCat.{u}] [J.WEqualsLocallyBijective AddCommGrpCat.{u}]
   [J.HasSheafCompose (forget₂ RingCat.{u} AddCommGrpCat.{u})]
 
-@[simps]
+@[expose, simps]
 def free.generatingSections (I : Type u) : (free (R := R) I).GeneratingSections where
   I := I
   s (i) := freeSection i
@@ -78,7 +87,9 @@ variable [∀ X, (J.over X).HasSheafCompose (forget₂ RingCat.{u} AddCommGrpCat
   [∀ X, HasSheafify (J.over X) AddCommGrpCat.{u}] [HasBinaryProducts C]
   [∀ X, (J.over X).WEqualsLocallyBijective AddCommGrpCat.{u}] [HasSheafify J AddCommGrpCat]
 
-@[simps]
+/-- Given `G : M.GeneratingSections`, we naturally obtain `M.LocalGeneratorsData` using the
+trivial cover of `C`. -/
+@[expose, simps]
 def GeneratingSections.localGeneratorsData {M : SheafOfModules.{u} R} (G : M.GeneratingSections) :
     M.LocalGeneratorsData where
   I := C
@@ -92,13 +103,14 @@ def GeneratingSections.localGeneratorsData {M : SheafOfModules.{u} R} (G : M.Gen
 instance (I : Type u) :
     (free.generatingSections (R := R) I).localGeneratorsData.IsLocallyFreeData where
   iso i := by
+    dsimp
     erw [GeneratingSections.map_π_eq _ (pushforward (𝟙 (R.over i)))]
     simp only [free.generatingSections_I, free.generatingSections_π_id,
       CategoryTheory.Functor.map_id, Category.comp_id]
     infer_instance
 
 instance (I : Type u) : (free (R := R) I).IsLocallyFree where
-  nonempty_locallyFreeData := ⟨(free.generatingSections I).localGeneratorsData, inferInstance⟩
+  exists_locallyFreeData := ⟨(free.generatingSections I).localGeneratorsData, inferInstance⟩
 
 end
 
@@ -111,7 +123,7 @@ variable [∀ X, (J.over X).HasSheafCompose (forget₂ RingCat.{u} AddCommGrpCat
 namespace LocalGeneratorsData
 
 /-- Given locally free data, this is the quasiCoherentData where there are no relations. -/
-@[simps]
+@[expose, simps]
 def quasiCoherentData {M : SheafOfModules.{u} R} (q : M.LocalGeneratorsData) [q.IsLocallyFreeData] :
     M.QuasicoherentData where
   I := q.I
@@ -131,8 +143,8 @@ lemma quasiCoherentData_localGeneratorsData {M : SheafOfModules.{u} R}
 end LocalGeneratorsData
 
 instance (priority := 100) (M : SheafOfModules.{u} R) [h : M.IsLocallyFree] : M.IsQuasicoherent :=
-  have := h.nonempty_locallyFreeData.choose_spec
-  h.nonempty_locallyFreeData.choose.quasiCoherentData.isQuasicoherent
+  have := h.exists_locallyFreeData.choose_spec
+  h.exists_locallyFreeData.choose.quasiCoherentData.isQuasicoherent
 
 end
 
