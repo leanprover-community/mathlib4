@@ -175,18 +175,24 @@ theorem rootMultiplicity_X_sub_C [Nontrivial R] [DecidableEq R] {x y : R} :
     exact rootMultiplicity_X_sub_C_self
   exact rootMultiplicity_eq_zero (mt root_X_sub_C.mp (Ne.symm hxy))
 
-private theorem rootMultiplicity_comp_neg_X_le (p : R[X]) (a : R) :
-    (p.comp (-X)).rootMultiplicity a ≤ p.rootMultiplicity (-a) := by
+private theorem rootMultiplicity_comp_C_mul_X_add_C_le (p : R[X]) (a b c : R) (ha : IsUnit a) :
+    (p.comp (C a * X + C b)).rootMultiplicity c ≤ p.rootMultiplicity (a * c + b) := by
+  let : Invertible a := ha.invertible
   by_cases hp : p = 0
   · simp [hp]
-  have h := pow_rootMultiplicity_dvd (p.comp (-X)) a
-  rw [dvd_comp_neg_X_iff, pow_comp, sub_comp, X_comp, C_comp, ← neg_add', neg_pow] at h
-  simpa [le_rootMultiplicity_iff hp, isUnit_neg_one.pow] using h
+  rw [le_rootMultiplicity_iff hp]
+  have h := pow_rootMultiplicity_dvd (p.comp (C a * X + C b)) c
+  rw [dvd_comp_C_mul_X_add_C_iff, pow_comp] at h
+  refine (pow_dvd_pow_of_dvd ((isUnit_C.mpr ha).dvd_mul_left.mp (dvd_of_eq ?_)) _).trans h
+  simp [← map_mul, mul_sub, ← mul_assoc, sub_sub, add_comm, mul_add]
 
-theorem rootMultiplicity_comp_neg_X (p : R[X]) (a : R) :
-    (p.comp (-X)).rootMultiplicity a = p.rootMultiplicity (-a) := by
-  apply le_antisymm (rootMultiplicity_comp_neg_X_le p a)
-  simpa [comp_neg_X_comp_neg_X] using rootMultiplicity_comp_neg_X_le (p.comp (-X)) (-a)
+theorem rootMultiplicity_comp_C_mul_X_add_C (p : R[X]) (a b c : R) (ha : IsUnit a) :
+    (p.comp (C a * X + C b)).rootMultiplicity c = p.rootMultiplicity (a * c + b) := by
+  let : Invertible a := ha.invertible
+  apply le_antisymm (rootMultiplicity_comp_C_mul_X_add_C_le p a b c ha)
+  have := rootMultiplicity_comp_C_mul_X_add_C_le
+    (p.comp (C a * X + C b)) ⅟a (- ⅟a * b) (a * c + b) (isUnit_of_invertible ⅟a)
+  simpa [comp_assoc, mul_add, ← mul_assoc, ← map_mul] using this
 
 theorem rootMultiplicity_mul' {p q : R[X]} {x : R}
     (hpq : (p /ₘ (X - C x) ^ p.rootMultiplicity x).eval x *
