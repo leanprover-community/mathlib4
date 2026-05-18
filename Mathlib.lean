@@ -652,6 +652,7 @@ public import Mathlib.Algebra.Homology.LeftResolution.Transport
 public import Mathlib.Algebra.Homology.Linear
 public import Mathlib.Algebra.Homology.LocalCohomology
 public import Mathlib.Algebra.Homology.Localization
+public import Mathlib.Algebra.Homology.ModelCategory.Injective
 public import Mathlib.Algebra.Homology.ModelCategory.Lifting
 public import Mathlib.Algebra.Homology.Monoidal
 public import Mathlib.Algebra.Homology.Opposite
@@ -1323,6 +1324,7 @@ public import Mathlib.AlgebraicGeometry.AffineSpace
 public import Mathlib.AlgebraicGeometry.AffineTransitionLimit
 public import Mathlib.AlgebraicGeometry.AlgClosed.Basic
 public import Mathlib.AlgebraicGeometry.Artinian
+public import Mathlib.AlgebraicGeometry.Birational.RationalMap
 public import Mathlib.AlgebraicGeometry.ColimitsOver
 public import Mathlib.AlgebraicGeometry.Cover.Directed
 public import Mathlib.AlgebraicGeometry.Cover.MorphismProperty
@@ -1423,7 +1425,6 @@ public import Mathlib.AlgebraicGeometry.Properties
 public import Mathlib.AlgebraicGeometry.PullbackCarrier
 public import Mathlib.AlgebraicGeometry.Pullbacks
 public import Mathlib.AlgebraicGeometry.QuasiAffine
-public import Mathlib.AlgebraicGeometry.RationalMap
 public import Mathlib.AlgebraicGeometry.RelativeGluing
 public import Mathlib.AlgebraicGeometry.ResidueField
 public import Mathlib.AlgebraicGeometry.Restrict
@@ -1817,6 +1818,7 @@ public import Mathlib.Analysis.Complex.Arg
 public import Mathlib.Analysis.Complex.Asymptotics
 public import Mathlib.Analysis.Complex.Basic
 public import Mathlib.Analysis.Complex.BorelCaratheodory
+public import Mathlib.Analysis.Complex.BranchLogRoot
 public import Mathlib.Analysis.Complex.CanonicalDecomposition
 public import Mathlib.Analysis.Complex.Cardinality
 public import Mathlib.Analysis.Complex.CauchyIntegral
@@ -1864,6 +1866,7 @@ public import Mathlib.Analysis.Complex.Trigonometric
 public import Mathlib.Analysis.Complex.UnitDisc.Basic
 public import Mathlib.Analysis.Complex.UpperHalfPlane.Basic
 public import Mathlib.Analysis.Complex.UpperHalfPlane.Exp
+public import Mathlib.Analysis.Complex.UpperHalfPlane.FixedPoints
 public import Mathlib.Analysis.Complex.UpperHalfPlane.FunctionsBoundedAtInfty
 public import Mathlib.Analysis.Complex.UpperHalfPlane.Manifold
 public import Mathlib.Analysis.Complex.UpperHalfPlane.Measure
@@ -4606,6 +4609,7 @@ public import Mathlib.Geometry.Manifold.SmoothApprox
 public import Mathlib.Geometry.Manifold.SmoothEmbedding
 public import Mathlib.Geometry.Manifold.StructureGroupoid
 public import Mathlib.Geometry.Manifold.VectorBundle.Basic
+public import Mathlib.Geometry.Manifold.VectorBundle.ContMDiffSection
 public import Mathlib.Geometry.Manifold.VectorBundle.CovariantDerivative.Basic
 public import Mathlib.Geometry.Manifold.VectorBundle.CovariantDerivative.Torsion
 public import Mathlib.Geometry.Manifold.VectorBundle.FiberwiseLinear
@@ -6262,6 +6266,7 @@ public import Mathlib.RepresentationTheory.Basic
 public import Mathlib.RepresentationTheory.Character
 public import Mathlib.RepresentationTheory.Coinduced
 public import Mathlib.RepresentationTheory.Coinvariants
+public import Mathlib.RepresentationTheory.Continuous.Basic
 public import Mathlib.RepresentationTheory.Equiv
 public import Mathlib.RepresentationTheory.FDRep
 public import Mathlib.RepresentationTheory.FinGroupCharZero
@@ -6607,6 +6612,7 @@ public import Mathlib.RingTheory.LocalRing.Length
 public import Mathlib.RingTheory.LocalRing.LocalSubring
 public import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
 public import Mathlib.RingTheory.LocalRing.MaximalIdeal.Defs
+public import Mathlib.RingTheory.LocalRing.MaximalIdeal.Square
 public import Mathlib.RingTheory.LocalRing.Module
 public import Mathlib.RingTheory.LocalRing.NonLocalRing
 public import Mathlib.RingTheory.LocalRing.Quotient
@@ -7102,6 +7108,7 @@ public import Mathlib.Tactic.Contrapose
 public import Mathlib.Tactic.Conv
 public import Mathlib.Tactic.Convert
 public import Mathlib.Tactic.Core
+public import Mathlib.Tactic.CrossRefAttribute
 public import Mathlib.Tactic.DSimpPercent
 public import Mathlib.Tactic.DeclarationNames
 public import Mathlib.Tactic.DefEqAbuse
@@ -7318,7 +7325,6 @@ public import Mathlib.Tactic.Simps.Basic
 public import Mathlib.Tactic.Simps.NotationClass
 public import Mathlib.Tactic.SplitIfs
 public import Mathlib.Tactic.Spread
-public import Mathlib.Tactic.StacksAttribute
 public import Mathlib.Tactic.Subsingleton
 public import Mathlib.Tactic.Substs
 public import Mathlib.Tactic.SuccessIfFailWithMsg
@@ -7724,6 +7730,7 @@ public import Mathlib.Topology.Hom.ContinuousEvalConst
 public import Mathlib.Topology.Hom.Open
 public import Mathlib.Topology.Homeomorph.Defs
 public import Mathlib.Topology.Homeomorph.Lemmas
+public import Mathlib.Topology.Homeomorph.Quotient
 public import Mathlib.Topology.Homeomorph.TransferInstance
 public import Mathlib.Topology.Homotopy.Affine
 public import Mathlib.Topology.Homotopy.Basic
@@ -8018,6 +8025,7 @@ public import Mathlib.Topology.UrysohnsBounded
 public import Mathlib.Topology.UrysohnsLemma
 public import Mathlib.Topology.VectorBundle.Basic
 public import Mathlib.Topology.VectorBundle.Constructions
+public import Mathlib.Topology.VectorBundle.ContinuousAlternatingMap
 public import Mathlib.Topology.VectorBundle.FiniteDimensional
 public import Mathlib.Topology.VectorBundle.Hom
 public import Mathlib.Topology.VectorBundle.Riemannian
@@ -8029,6 +8037,7 @@ public import Mathlib.Util.AtomM
 public import Mathlib.Util.AtomM.Recurse
 public import Mathlib.Util.CompileInductive
 public import Mathlib.Util.CountHeartbeats
+public import Mathlib.Util.DelabNonCanonical
 public import Mathlib.Util.Delaborators
 public import Mathlib.Util.DischargerAsTactic
 public import Mathlib.Util.ElabWithoutMVars
