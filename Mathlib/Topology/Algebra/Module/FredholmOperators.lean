@@ -16,6 +16,7 @@ public import Mathlib.Topology.Algebra.Module.FiniteDimension
 public import Mathlib.Topology.Algebra.Module.LinearMap
 public import Mathlib.Topology.Maps.Strict.Basic
 public import Mathlib.Topology.Homeomorph.Defs
+public import Mathlib.RingTheory.Length
 
 section FindHome
 
@@ -36,12 +37,18 @@ lemma Module.sum_neg_one_pow_finrank_eq_zero_of_exact {n : ℕ} {k : Type*}
     rw [this]
     simp only [Int.reduceNeg, Fin.isValue, Fin.coe_ofNat_eq_mod, Nat.zero_mod, pow_zero, one_mul,
       Nat.one_mod, pow_one, neg_mul, Nat.mod_succ, even_two, Even.neg_pow, one_pow]
-    have := h_exact 1
-    dsimp [Exact] at this
-    refine Int.neg_eq_zero.mp ?_
-    -- have := LinearMap.rank_eq_of_surjective
-    sorry
+    have B := Module.length_eq_add_of_exact (f 0) (f 1) inj surj (h_exact 1)
+    rw [Module.length_eq_finrank, Module.length_eq_finrank , Module.length_eq_finrank] at B
+    simp only [Nat.reduceAdd, Fin.isValue, Fin.succ_zero_eq_one, Fin.castSucc_zero,
+      Fin.succ_one_eq_two] at B
+    norm_cast at B
+    zify at B
+    rw [add_comm, ← add_assoc, add_comm, add_eq_zero_iff_eq_neg', neg_neg, add_comm]
+    exact Int.neg_inj.mp (congrArg Neg.neg (id (Eq.symm B)))
   · sorry
+
+-- Module.length_eq_finrank
+--
 
 -- Can we have a simproc write this using `Module.sum_neg_one_pow_finrank_eq_zero_of_exact`
 -- Note the key point that the universes of the `Vᵢ` are allowed be different here.
