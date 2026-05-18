@@ -98,18 +98,16 @@ theorem zpow_log_le_self {b : ℕ} {r : R} (hb : 1 < b) (hr : 0 < r) : (b : R) ^
   · rw [log_of_one_le_right _ hr1]
     rw [zpow_natCast, ← Nat.cast_pow, ← Nat.le_floor_iff hr.le]
     exact Nat.pow_log_le_self b (Nat.floor_pos.mpr hr1).ne'
-  · rw [log_of_right_le_one _ hr1, zpow_neg, zpow_natCast, ← Nat.cast_pow]
-    exact inv_le_of_inv_le₀ hr (Nat.ceil_le.1 <| Nat.le_pow_clog hb _)
+  · rw [log_of_right_le_one _ hr1, zpow_neg]
+    exact_mod_cast inv_le_of_inv_le₀ hr (Nat.ceil_le.1 <| Nat.le_pow_clog hb _)
 
 theorem lt_zpow_succ_log_self {b : ℕ} (hb : 1 < b) (r : R) : r < (b : R) ^ (log b r + 1) := by
   rcases le_or_gt r 0 with hr | hr
   · rw [log_of_right_le_zero _ hr, zero_add, zpow_one]
     exact hr.trans_lt (zero_lt_one.trans_le <| mod_cast hb.le)
   rcases le_or_gt 1 r with hr1 | hr1
-  · rw [log_of_one_le_right _ hr1]
-    rw [Int.ofNat_add_one_out, zpow_natCast, ← Nat.cast_pow]
-    apply Nat.lt_of_floor_lt
-    exact Nat.lt_pow_succ_log_self hb _
+  · rw [log_of_one_le_right _ hr1, Int.ofNat_add_one_out]
+    exact_mod_cast Nat.lt_of_floor_lt <| Nat.lt_pow_succ_log_self hb _
   · rw [log_of_right_le_one _ hr1.le]
     have hcri : 1 < r⁻¹ := (one_lt_inv₀ hr).2 hr1
     have : 1 ≤ Nat.clog b ⌈r⁻¹⌉₊ :=

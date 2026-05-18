@@ -11,7 +11,7 @@ public import Mathlib.Algebra.Group.Submonoid.Basic
 public import Mathlib.Algebra.Group.ULift
 public import Mathlib.Order.Filter.Pointwise
 public import Mathlib.Topology.Algebra.MulAction
-public import Mathlib.Topology.ContinuousMap.Defs
+public import Mathlib.Topology.ContinuousMap.Basic
 public import Mathlib.Topology.Algebra.Monoid.Defs
 
 /-!
@@ -1054,6 +1054,12 @@ protected def mulRight (x : X) : C(X, X) :=
 theorem coe_mulRight (x : X) : ⇑(ContinuousMap.mulRight x) = fun y => y * x :=
   rfl
 
+@[to_additive]
+lemma mulRight_mul {X : Type*} [Semigroup X] [TopologicalSpace X] [SeparatelyContinuousMul X]
+    (x y : X) : ContinuousMap.mulRight (x * y) =
+    (ContinuousMap.mulRight y).comp (ContinuousMap.mulRight x) := by
+  ext; simp [mul_assoc]
+
 /-- The continuous map `fun y => x * y` -/
 @[to_additive /-- The continuous map `fun y => x + y` -/]
 protected def mulLeft (x : X) : C(X, X) :=
@@ -1062,5 +1068,11 @@ protected def mulLeft (x : X) : C(X, X) :=
 @[to_additive (attr := simp)]
 theorem coe_mulLeft (x : X) : ⇑(ContinuousMap.mulLeft x) = fun y => x * y :=
   rfl
+
+@[to_additive]
+lemma mulLeft_mul {X : Type*} [Semigroup X] [TopologicalSpace X] [SeparatelyContinuousMul X]
+    (x y : X) : ContinuousMap.mulLeft (x * y) =
+    (ContinuousMap.mulLeft x).comp (ContinuousMap.mulLeft y) := by
+  ext; simp [mul_assoc]
 
 end ContinuousMap
