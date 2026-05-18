@@ -680,7 +680,7 @@ theorem pow_zero (a : M) : a ^ 0 = 1 :=
 theorem pow_succ (a : M) (n : ℕ) : a ^ (n + 1) = a ^ n * a :=
   Monoid.npow_succ n a
 
-@[to_additive one_nsmul, simp]
+@[to_additive (attr := simp) one_nsmul]
 lemma pow_one (a : M) : a ^ 1 = a := by rw [pow_succ, pow_zero, one_mul]
 
 @[to_additive succ_nsmul'] lemma pow_succ' (a : M) : ∀ n, a ^ (n + 1) = a * a ^ n
@@ -1053,7 +1053,7 @@ theorem zpow_natCast (a : G) : ∀ n : ℕ, a ^ (n : ℤ) = a ^ n
     _ = a ^ (n + 1) := (pow_succ _ _).symm
 
 
-@[to_additive ofNat_zsmul]
+@[to_additive (attr := simp) ofNat_zsmul]
 lemma zpow_ofNat (a : G) (n : ℕ) : a ^ (ofNat(n) : ℤ) = a ^ OfNat.ofNat n :=
   zpow_natCast ..
 

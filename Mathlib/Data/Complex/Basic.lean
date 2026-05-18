@@ -722,6 +722,10 @@ theorem div_I (z : ℂ) : z / I = -(z * I) :=
 theorem inv_I : I⁻¹ = -I := by
   rw [inv_eq_one_div, div_I, one_mul]
 
+lemma I_zpow_eq_zpow_mod (m : ℤ) : I ^ m = I ^ (m % 4) := by
+  conv_lhs => rw [← Int.mul_ediv_add_emod m 4]
+  simp [zpow_add₀, zpow_mul, zpow_ofNat]
+
 theorem normSq_inv (z : ℂ) : normSq z⁻¹ = (normSq z)⁻¹ := by simp
 
 theorem normSq_div (z w : ℂ) : normSq (z / w) = normSq z / normSq w := by simp
