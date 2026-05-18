@@ -5,13 +5,12 @@ Authors: Chris Birkbeck
 -/
 module
 
-public import Mathlib.Algebra.Order.Floor.Semifield
 public import Mathlib.Data.Nat.ModEq
 public import Mathlib.NumberTheory.ModularForms.CuspFormSubmodule
 public import Mathlib.NumberTheory.ModularForms.Discriminant
-public import Mathlib.Data.Rat.Star
-public import Mathlib.LinearAlgebra.Dimension.Localization
 public import Mathlib.RingTheory.PowerSeries.Order
+
+import Mathlib.Algebra.Order.Floor.Semifield
 
 /-!
 # Dimension formula and Sturm bound for level 1 modular forms
@@ -98,15 +97,15 @@ lemma discriminantEquiv_apply (f : CuspForm 𝒮ℒ k) (z : ℍ) :
     (discriminantEquiv f) z = f z / Δ z := divDiscriminant_apply f z
 
 @[simp]
-lemma discriminant_mul_discriminantEquiv (f : CuspForm 𝒮ℒ k) :
-    (Δ : ℍ → ℂ) * (discriminantEquiv f : ℍ → ℂ) = f := by
-  ext z
-  rw [Pi.mul_apply, discriminantEquiv_apply, mul_div_cancel₀ _ (discriminant_ne_zero z)]
-
-@[simp]
 lemma discriminant_mul_discriminantEquiv_apply (f : CuspForm 𝒮ℒ k) (z : ℍ) :
     Δ z * (discriminantEquiv f) z = f z := by
   rw [discriminantEquiv_apply, mul_div_cancel₀ _ (discriminant_ne_zero z)]
+
+@[simp]
+lemma discriminant_mul_discriminantEquiv (f : CuspForm 𝒮ℒ k) :
+    (Δ : ℍ → ℂ) * (discriminantEquiv f : ℍ → ℂ) = f := by
+  ext z
+  rw [Pi.mul_apply, discriminant_mul_discriminantEquiv_apply]
 
 end CuspForm
 
@@ -114,14 +113,11 @@ namespace ModularForm
 
 /-- The order of the q-expansion of the modular discriminant is 1: the zeroth coefficient
 vanishes (Δ is a cusp form) and the first coefficient equals 1. -/
-lemma discriminant_qExpansion_order :
-    (qExpansion 1 ModularForm.discriminant).order = 1 := by
+lemma discriminant_qExpansion_order : (qExpansion 1 Δ).order = 1 := by
   refine PowerSeries.order_eq_nat.mpr
-    ⟨ModularForm.discriminant_qExpansion_coeff_one ▸ one_ne_zero, fun i hi ↦ ?_⟩
+    ⟨discriminant_qExpansion_coeff_one ▸ one_ne_zero, fun i hi ↦ ?_⟩
   obtain rfl : i = 0 := by lia
-  have h0 := (isCuspForm_iff_coeffZero_eq_zero
-    ((CuspForm.discriminant : ModularForm 𝒮ℒ 12))).mp ⟨CuspForm.discriminant, rfl⟩
-  simpa using h0
+  simpa using (isCuspForm_iff_coeffZero_eq_zero _).mp CuspForm.discriminant.isCuspForm
 
 /-- The q-expansion of a level-1 modular form whose zeroth coefficient vanishes factors as
 the q-expansion of `Δ` times the q-expansion of the corresponding form of weight `k - 12`
@@ -132,14 +128,11 @@ lemma qExpansion_eq_qExpansion_discriminant_mul (f : ModularForm 𝒮ℒ k)
       qExpansion 1 (CuspForm.discriminantEquiv (toCuspForm f hcusp)) := by
   have hfun : (f : ℍ → ℂ) = discriminant *
       (CuspForm.discriminantEquiv (toCuspForm f hcusp) : ℍ → ℂ) := by
-    rw [CuspForm.discriminant_mul_discriminantEquiv (toCuspForm f hcusp)]
-    ext z
-    exact (toCuspForm_apply f hcusp z).symm
-  rw [hfun]
-  exact UpperHalfPlane.qExpansion_mul
-    (CuspForm.coe_discriminant ▸ ModularFormClass.analyticAt_cuspFunction_zero
-      (CuspForm.discriminant : CuspForm 𝒮ℒ 12) one_pos one_mem_strictPeriods_SL)
-    (ModularFormClass.analyticAt_cuspFunction_zero _ one_pos one_mem_strictPeriods_SL)
+    rw [CuspForm.discriminant_mul_discriminantEquiv]
+    rfl
+  rw [hfun, ← CuspForm.coe_discriminant]
+  refine UpperHalfPlane.qExpansion_mul ?_ ?_ <;>
+    exact ModularFormClass.analyticAt_cuspFunction_zero _ one_pos one_mem_strictPeriods_SL
 
 end ModularForm
 
@@ -297,20 +290,24 @@ theorem sturm_bound_levelOne {k : ℤ} (f : ModularForm 𝒮ℒ k)
   induction hN : (k + 12).toNat using Nat.strong_induction_on generalizing k f with | _ N ih =>
   rcases lt_or_ge k 0 with hk | hk
   · exact rank_zero_iff_forall_zero.mp (levelOne_neg_weight_rank_zero hk) f
-  have h0 : (qExpansion 1 f).coeff 0 = 0 :=
-    PowerSeries.coeff_of_lt_order _ (lt_of_le_of_lt (by exact_mod_cast Nat.zero_le _) h)
-  set g := CuspForm.discriminantEquiv (toCuspForm f h0) with hg_def
-  have hg_zero : g = 0 := by
-    rcases lt_or_ge k 12 with hk12 | hk12
-    · exact rank_zero_iff_forall_zero.mp (levelOne_neg_weight_rank_zero (by lia)) g
-    refine ih k.toNat (by lia) g ?_ (by lia)
-    rw [qExpansion_eq_qExpansion_discriminant_mul f h0, PowerSeries.order_mul,
-      discriminant_qExpansion_order, add_comm] at h
-    rw [show (↑(k.toNat / 12) : ℕ∞) = ↑((k - 12).toNat / 12) + 1 from
-      mod_cast (by lia : k.toNat / 12 = (k - 12).toNat / 12 + 1)] at h
-    exact (ENat.add_lt_add_iff_right ENat.one_ne_top).mp h
-  exact (ModularForm.qExpansion_eq_zero_iff one_pos one_mem_strictPeriods_SL f).mp <| by
-    simp [qExpansion_eq_qExpansion_discriminant_mul f h0, ← hg_def, hg_zero, qExpansion_zero]
+  · have h0 : (qExpansion 1 f).coeff 0 = 0 :=
+      PowerSeries.coeff_of_lt_order _ (lt_of_le_of_lt (Nat.cast_nonneg _) h)
+    set g := CuspForm.discriminantEquiv (toCuspForm f h0) with hg_def
+    have hg_zero : g = 0 := by
+      rcases lt_or_ge k 12 with hk12 | hk12
+      · exact rank_zero_iff_forall_zero.mp (levelOne_neg_weight_rank_zero (by lia)) g
+      · refine ih k.toNat (by lia) g ?_ (by lia)
+        rw [qExpansion_eq_qExpansion_discriminant_mul f h0, PowerSeries.order_mul,
+          discriminant_qExpansion_order, add_comm, ← hg_def] at h
+        cases ha : (qExpansion 1 g).order with
+        | top => simp
+        | coe a =>
+          rw [ha] at h
+          norm_cast at h ⊢
+          lia
+    have := CuspForm.discriminant_mul_discriminantEquiv <| f.toCuspForm h0
+    ext z
+    simpa [← hg_def, hg_zero] using funext_iff.mp this _ |>.symm
 
 end ModularForm
 
