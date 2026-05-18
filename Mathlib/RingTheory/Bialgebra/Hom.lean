@@ -39,7 +39,6 @@ structure BialgHom (R A B : Type*) [CommSemiring R]
     [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
     [CoalgebraStruct R A] [CoalgebraStruct R B] extends A →ₗc[R] B, A →* B
 initialize_simps_projections BialgHom (as_prefix toCoalgHom)
-initialize_simps_projections BialgHom (as_prefix toMonoidHom)
 
 /-- Reinterpret a `BialgHom` as a `MonoidHom` -/
 add_decl_doc BialgHom.toMonoidHom
