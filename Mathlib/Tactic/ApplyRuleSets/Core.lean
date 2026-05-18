@@ -72,6 +72,28 @@ def withProfile {α} (op : Name) (x : ApplyRuleSetsM α) : ApplyRuleSetsM α := 
     profileExit
     throw e
 
+/-- Run `x` without charging its elapsed time to the currently active profile timer.
+
+Nested `withProfile` calls inside `x` are still recorded. This is used at public recursive-search
+entry points so callers such as ruleprocs are not charged for delegated `apply_rulesets` search. -/
+def withoutChargingCurrentTimer {α} (x : ApplyRuleSetsM α) : ApplyRuleSetsM α := do
+  let profile := (← get).profile
+  unless profile.enabled && !profile.stack.isEmpty do
+    return ← x
+  let now ← IO.monoNanosNow
+  profileChargeCurrent now
+  let oldStack := profile.stack
+  modify fun s => { s with profile := { s.profile with stack := [], lastNanos := now } }
+  try
+    let a ← x
+    let finish ← IO.monoNanosNow
+    modify fun s => { s with profile := { s.profile with stack := oldStack, lastNanos := finish } }
+    return a
+  catch e =>
+    let finish ← IO.monoNanosNow
+    modify fun s => { s with profile := { s.profile with stack := oldStack, lastNanos := finish } }
+    throw e
+
 def initProfileState : MetaM ProfileState := do
   let now ← IO.monoNanosNow
   return { enabled := true, startNanos := now, lastNanos := now }
@@ -295,6 +317,10 @@ partial def assumption? (origin : ArgOrigin) (goalType : Expr) : ApplyRuleSetsM 
   return none
 
 partial def applyRuleSets (origin : ArgOrigin) (goalType : Expr) :
+    ApplyRuleSetsM (Option Expr) :=
+  withoutChargingCurrentTimer <| applyRuleSetsCoreSearch origin goalType
+
+partial def applyRuleSetsCoreSearch (origin : ArgOrigin) (goalType : Expr) :
     ApplyRuleSetsM (Option Expr) := do
   let goal ← withProfile `goal.mk <| mkGoal goalType
   if let some r ← applyRuleSetsGoal origin goal then
@@ -349,7 +375,7 @@ partial def applyRuleSetsGoalCore (origin : ArgOrigin) (goal : Goal) (goalType :
         return none
       trace[Meta.Tactic.apply_rulesets] "introducing {xs.size} binder(s)"
       let some proof ← withIncreasedSearchDepth <| withIncreasedCacheDepth <|
-        applyRuleSets origin body | return none
+        applyRuleSetsCoreSearch origin body | return none
       return some (← withProfile `mkLambdaFVars <| mkLambdaFVars xs proof)
       | pure ()
     return some proof
@@ -387,7 +413,7 @@ partial def synthesizeProofArg? (ruleName : Name) (argIndex : Nat) (arg type : E
     return false
   let argName := (← getMCtx).getDecl arg.mvarId! |>.userName
   let origin := { ruleName, argIndex := some argIndex, argName := some argName }
-  if let some proof ← withIncreasedSearchDepth <| applyRuleSets origin type then
+  if let some proof ← withIncreasedSearchDepth <| applyRuleSetsCoreSearch origin type then
     if ← withProfile `isDefEq <| isDefEq arg proof then
       return true
     trace[Meta.Tactic.apply_rulesets]
@@ -474,7 +500,7 @@ partial def tryRule? (origin : ArgOrigin) (goal : Goal) (rule : Rule) :
       return none
     let args ← args.mapM instantiateMVars
     let proc ← withProfile `ruleproc.eval <| evalRuleProc procExpr
-    let some proof ← proc args origin goalType
+    let some proof ← withProfile `ruleproc.run <| proc args origin goalType
       | trace[Meta.Tactic.apply_rulesets] "ruleproc {rule.name} returned none"; return none
     let proofType ← inferType proof
     let ok ← withProfile `isDefEq <|
