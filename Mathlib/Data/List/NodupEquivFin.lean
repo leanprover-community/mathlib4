@@ -83,11 +83,6 @@ def getEquivOfForallCountEqOne [DecidableEq α] (l : List α) (h : ∀ x, l.coun
 
 variable [Preorder α] {l : List α}
 
-@[deprecated (since := "2025-10-11")]
-alias Sorted.get_mono := SortedLE.monotone_get
-@[deprecated (since := "2025-10-11")]
-alias Sorted.get_strictMono := SortedLT.strictMono_get
-
 variable [DecidableEq α]
 
 /-- If `l` is a list sorted w.r.t. `(<)`, then `List.get` defines an order isomorphism between
@@ -95,9 +90,6 @@ variable [DecidableEq α]
 def SortedLT.getIso (l : List α) (H : SortedLT l) : Fin (length l) ≃o { x // x ∈ l } where
   toEquiv := H.pairwise.nodup.getEquiv l
   map_rel_iff' := H.strictMono_get.le_iff_le
-
-@[deprecated (since := "2025-10-11")]
-alias Sorted.getIso := SortedLT.getIso
 
 variable (H : SortedLT l) {x : { x // x ∈ l }} {i : Fin l.length}
 
@@ -108,12 +100,6 @@ theorem SortedLT.coe_getIso_apply : (H.getIso l i : α) = get l i :=
 @[simp]
 theorem SortedLT.coe_getIso_symm_apply : ((H.getIso l).symm x : ℕ) = idxOf (↑x) l :=
   rfl
-
-@[deprecated (since := "2025-10-11")]
-alias Sorted.coe_getIso_apply := SortedLT.coe_getIso_apply
-
-@[deprecated (since := "2025-10-11")]
-alias Sorted.coe_getIso_symm_apply := SortedLT.coe_getIso_symm_apply
 
 end Sorted
 

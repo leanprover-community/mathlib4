@@ -30,7 +30,7 @@ The reason we chose `WithConv` is because together with the convolution product 
 `Mathlib/RingTheory/Coalgebra/Convolution.lean`, we get a ⋆-algebra when
 `star (WithConv.toConv comul) = WithConv.toConv (comm ∘ comul)`. -/
 
-@[expose] public section
+public section
 
 variable {R E F : Type*} [Semiring R] [InvolutiveStar R]
   [AddCommMonoid E] [Module R E] [StarAddMonoid E] [StarModule R E]

@@ -38,7 +38,6 @@ namespace AlgebraicGeometry
 
 open _root_.PrimeSpectrum
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The forgetful functor from `𝒪_{Spec R}` modules to sheaves of `R`-modules. -/
 def modulesSpecToSheaf :
     (Spec R).Modules ⥤ TopCat.Sheaf (ModuleCat R) (Spec R) :=
@@ -113,7 +112,7 @@ theorem toOpen_res (U V : Opens (PrimeSpectrum.Top R)) (i : V ⟶ U) :
     toOpen M U ≫ (modulesSpecToSheaf.obj (tilde M)).presheaf.map i.op = toOpen M V :=
   rfl
 
-instance (f : R) : IsLocalizedModule (.powers f) (toOpen M (basicOpen f)).hom :=
+instance (f : R) : IsLocalizedModule.Away f (toOpen M (basicOpen f)).hom :=
   .of_linearEquiv (.powers f) (StructureSheaf.toOpenₗ R M (basicOpen f))
     ((modulesSpecToSheafIso M).app _).toLinearEquiv.symm
 
@@ -392,7 +391,6 @@ def presentationTilde (s : Set M) (hs : Submodule.span R s = ⊤)
   refine IsCokernel.ofIso _ (CokernelCofork.mapIsColimit _ h₁ (tilde.functor R)) _ (tildeFinsupp t)
     (tildeFinsupp s) (.refl _) (by simp) (by simp)
 
-set_option backward.isDefEq.respectTransparency false in
 instance : (tilde M).IsQuasicoherent :=
   (presentationTilde.{u} _ .univ (by simp) _ (Submodule.span_eq _)).isQuasicoherent
 

@@ -154,12 +154,12 @@ theorem decomposeAux_coe {i : ι} (x : gradeBy R f i) :
     exact map_zero _
   · intro m b y hmy hb ih hmby
     have : Disjoint (Finsupp.single m b).support y.support := by
-      simpa only [Finsupp.support_single_ne_zero _ hb, Finset.disjoint_singleton_left]
+      simpa only [Finsupp.support_single _ hb, Finset.disjoint_singleton_left]
     rw [mem_gradeBy_iff, Finsupp.support_add_eq this, Finset.coe_union, Set.union_subset_iff]
       at hmby
     obtain ⟨h1, h2⟩ := hmby
     have : f m = i := by
-      rwa [Finsupp.support_single_ne_zero _ hb, Finset.coe_singleton, Set.singleton_subset_iff]
+      rwa [Finsupp.support_single _ hb, Finset.coe_singleton, Set.singleton_subset_iff]
         at h1
     subst this
     simp only [map_add, decomposeAux_single f m]
@@ -190,7 +190,7 @@ theorem GradesBy.decompose_single (m : M) (r : R) :
   decomposeAux_single _ _ _
 
 instance grade.gradedAlgebra : GradedAlgebra (grade R : ι → Submodule _ _) :=
-  AddMonoidAlgebra.gradeBy.gradedAlgebra (AddMonoidHom.id _)
+  inferInstanceAs <| GradedAlgebra (gradeBy R (AddMonoidHom.id ι))
 
 theorem grade.decompose_single (i : ι) (r : R) :
     DirectSum.decompose (grade R : ι → Submodule _ _) (Finsupp.single i r : AddMonoidAlgebra _ _) =

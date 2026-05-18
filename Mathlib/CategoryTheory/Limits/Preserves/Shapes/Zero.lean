@@ -81,7 +81,7 @@ instance (priority := 100) preservesZeroMorphisms_of_isLeftAdjoint (F : C ⥤ D)
     · rw [Adjunction.left_triangle_components]
       exact (Category.comp_id _).symm
     · simp only [← Category.assoc, ← F.map_comp, zero_comp]
-    · simp only [Adjunction.counit_naturality, comp_zero]
+    · simp
 
 set_option backward.isDefEq.respectTransparency false in
 instance (priority := 100) preservesZeroMorphisms_of_isRightAdjoint (G : C ⥤ D) [IsRightAdjoint G] :

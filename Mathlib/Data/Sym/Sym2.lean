@@ -537,14 +537,6 @@ theorem mem_diagSet_iff_isDiag (z : Sym2 α) : z ∈ diagSet ↔ z.IsDiag := .rf
 @[simp] lemma range_diag : .range (diag : α → Sym2 α) = diagSet := by
   ext ⟨a, b⟩; simp [diag, eq_comm]
 
-@[deprecated (since := "2025-11-05")] alias ⟨_, IsDiag.mem_range_diag⟩ := mem_diagSet_iff_isDiag
-
-@[deprecated range_diag (since := "2025-11-05")]
-theorem isDiag_iff_mem_range_diag (z : Sym2 α) : IsDiag z ↔ z ∈ Set.range (@diag α) := by simp
-
-@[deprecated mem_diagSet (since := "2025-11-05")]
-theorem mem_diagSet_iff_eq {a b : α} : s(a, b) ∈ diagSet ↔ a = b := by simp
-
 theorem diagSet_eq_setOf_isDiag : diagSet = {z : Sym2 α | z.IsDiag} := rfl
 
 set_option linter.deprecated false in
@@ -561,7 +553,7 @@ instance decidablePred_mem_diagSet (α : Type u) [DecidableEq α] : DecidablePre
   IsDiag.decidablePred _
 
 theorem other_ne {a : α} {z : Sym2 α} (hd : ¬IsDiag z) (h : a ∈ z) : Mem.other h ≠ a := by
-  contrapose! hd
+  contrapose hd
   have h' := Sym2.other_spec h
   rw [hd] at h'
   rw [← h']
@@ -620,20 +612,19 @@ lemma diagSet_eq_fromRel_eq : diagSet = fromRel (α := α) eq_equivalence.symmet
 lemma diagSet_compl_eq_fromRel_ne : diagSetᶜ = fromRel (α := α) (r := Ne) (fun _ _ ↦ Ne.symm) := by
   ext ⟨a, b⟩; simp
 
-@[simp] lemma diagSet_subset_fromRel (hr : Symmetric r) : diagSet ⊆ fromRel hr ↔ Reflexive r := by
-  simp [Set.subset_def, Sym2.forall, Reflexive]
+@[simp] lemma diagSet_subset_fromRel (hr : Symmetric r) : diagSet ⊆ fromRel hr ↔ Std.Refl r := by
+  simp [Set.subset_def, Sym2.forall, refl_def]
 
 @[simp] lemma disjoint_diagSet_fromRel (hr : Symmetric r) :
     Disjoint diagSet (fromRel hr) ↔ Std.Irrefl r := by
-  refine .trans ?_ ⟨(⟨·⟩), (·.irrefl)⟩
-  simp [Set.disjoint_left, Sym2.forall]
+  simp [Set.disjoint_left, Sym2.forall, irrefl_def]
 
 @[simp] lemma fromRel_subset_compl_diagSet (hr : Symmetric r) :
     fromRel hr ⊆ diagSetᶜ ↔ Std.Irrefl r := by simp [Set.subset_compl_iff_disjoint_left]
 
 @[deprecated diagSet_subset_fromRel (since := "2025-12-10")]
 theorem reflexive_iff_diagSet_subset_fromRel (sym : Symmetric r) :
-    Reflexive r ↔ diagSet ⊆ fromRel sym := by simp
+    Std.Refl r ↔ diagSet ⊆ fromRel sym := by simp
 
 @[deprecated fromRel_subset_compl_diagSet (since := "2025-12-10")]
 theorem irreflexive_iff_fromRel_subset_diagSet_compl (sym : Symmetric r) :

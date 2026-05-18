@@ -906,9 +906,7 @@ instance instProdIsBoundedSMul : IsBoundedSMul 𝕜 (WithLp p (α × β)) :=
       rw [prod_nnnorm_eq_add hpt, prod_nnnorm_eq_add hpt, one_div, NNReal.rpow_inv_le_iff hp0,
         NNReal.mul_rpow, ← NNReal.rpow_mul, inv_mul_cancel₀ hp0.ne', NNReal.rpow_one, mul_add,
         ← NNReal.mul_rpow, ← NNReal.mul_rpow]
-      exact add_le_add
-        (NNReal.rpow_le_rpow (nnnorm_smul_le _ _) hp0.le)
-        (NNReal.rpow_le_rpow (nnnorm_smul_le _ _) hp0.le)
+      gcongr <;> exact nnnorm_smul_le _ _
 
 variable {𝕜 p α β}
 
@@ -1152,7 +1150,7 @@ def withLpProdUnique [Unique β] : WithLp p (α × β) ≃ᵢ α where
   isometry_toFun x y : edist x.fst y.fst = edist x y := by
     rcases p.trichotomy with rfl | rfl | hp
     · absurd hp.elim; simp
-    · simp_rw [WithLp.prod_edist_eq_sup, Unique.eq_default, edist_self, max_zero_right]
+    · simp_rw [WithLp.prod_edist_eq_sup, Unique.eq_default, edist_self, max_zero]
     · simp_rw [WithLp.prod_edist_eq_add hp, Unique.eq_default, edist_self,
         ENNReal.zero_rpow_of_pos hp, add_zero, one_div, ENNReal.rpow_rpow_inv hp.ne']
 

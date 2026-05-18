@@ -181,7 +181,6 @@ lemma not_adj_iff_part_eq [DecidableEq V] :
   change t ∈ fp.part s ↔ fp.part s = fp.part t
   rw [fp.mem_part_iff_part_eq_part (mem_univ t) (mem_univ s), eq_comm]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma degree_eq_card_sub_part_card [DecidableEq V] :
     G.degree s = card V - #(h.finpartition.part s) :=
   calc
@@ -220,7 +219,7 @@ lemma card_parts_le [DecidableEq V] : #h.finpartition.parts ≤ r := by
   obtain ⟨z, -, hz⟩ := h.finpartition.exists_subset_part_bijOn
   have ncf : ¬G.CliqueFree #z := by
     refine IsNClique.not_cliqueFree ⟨fun v hv w hw hn ↦ ?_, rfl⟩
-    contrapose! hn
+    contrapose hn
     exact hz.injOn hv hw (by rwa [← h.not_adj_iff_part_eq])
   rw [Finset.card_eq_of_equiv hz.equiv] at ncf
   exact absurd (h.1.mono (Nat.succ_le_of_lt l)) ncf

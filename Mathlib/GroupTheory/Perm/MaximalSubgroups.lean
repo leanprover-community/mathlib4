@@ -35,7 +35,7 @@ The argument is taken from [M. Liebeck, C. Praeger, J. Saxl,
 alternating and symmetric groups*, 1987][LiebeckPraegerSaxl-1987].
 -/
 
-@[expose] public section
+public section
 
 open scoped Pointwise
 
@@ -214,7 +214,7 @@ lemma _root_.Subgroup.isPretransitive_of_stabilizer_lt
     obtain ⟨g, hg, rfl⟩ := moves a ha b hb
     rw [stabilizer_compl] at hg
     exact ⟨⟨g, hG.le hg⟩, rfl⟩
-  · contrapose! hG
+  · contrapose hG
     apply not_lt_of_ge
     --  `G ≤ stabilizer (Equiv.Perm α) s`
     have : G = Subgroup.map G.subtype ⊤ := by
@@ -410,7 +410,7 @@ theorem isCoatom_stabilizer {s : Set α}
     IsCoatom (stabilizer (Perm α) s) := by
   obtain h | h | h := Nat.lt_trichotomy s.ncard sᶜ.ncard
   · exact isCoatom_stabilizer_of_ncard_lt_ncard_compl hs_nonempty h
-  · contrapose! hα
+  · contrapose hα
     rw [← Set.ncard_add_ncard_compl s, two_mul, ← h]
   · rw [← stabilizer_compl]
     apply isCoatom_stabilizer_of_ncard_lt_ncard_compl hsc_nonempty

@@ -21,7 +21,7 @@ ordered ring, then it is commutative.
 In this file we prove the converse: a *commutative* star-ordered ring is an ordered ring.
 -/
 
-@[expose] public section
+public section
 
 namespace StarOrderedRing
 

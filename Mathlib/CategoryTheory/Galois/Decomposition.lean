@@ -321,7 +321,7 @@ lemma natTrans_ext_of_isGalois {G : C ⥤ FintypeCat.{w}} {t s : F ⟶ G}
     t = s := by
   ext X x
   obtain ⟨A, f, a, _, rfl⟩ := exists_hom_from_galois_of_fiber F X x
-  rw [FunctorToFintypeCat.naturality, FunctorToFintypeCat.naturality, h A]
+  rw [NatTrans.naturality_apply, NatTrans.naturality_apply, h A]
 
 end GaloisRep
 

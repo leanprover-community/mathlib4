@@ -95,16 +95,15 @@ at any point `x` in the disk of convergence. -/
 theorem hasFDerivAt_exp_of_mem_ball {x : 𝔸}
     (hx : x ∈ Metric.eball (0 : 𝔸) (expSeries 𝕂 𝔸).radius) :
     HasFDerivAt exp (exp x • (1 : 𝔸 →L[𝕂] 𝔸)) x := by
-  have hpos : 0 < (expSeries 𝕂 𝔸).radius := (zero_le _).trans_lt hx
   rw [hasFDerivAt_iff_isLittleO_nhds_zero]
   suffices
     (fun h => exp x * (exp (0 + h) - exp 0 - ContinuousLinearMap.id 𝕂 𝔸 h)) =ᶠ[𝓝 0] fun h =>
       exp (x + h) - exp x - exp x • ContinuousLinearMap.id 𝕂 𝔸 h by
     refine (IsLittleO.const_mul_left ?_ _).congr' this (EventuallyEq.refl _ _)
     rw [← hasFDerivAt_iff_isLittleO_nhds_zero]
-    exact hasFDerivAt_exp_zero_of_radius_pos hpos
+    exact hasFDerivAt_exp_zero_of_radius_pos hx.pos
   have : ∀ᶠ h in 𝓝 (0 : 𝔸), h ∈ Metric.eball (0 : 𝔸) (expSeries 𝕂 𝔸).radius :=
-    Metric.eball_mem_nhds _ hpos
+    Metric.eball_mem_nhds _ hx.pos
   filter_upwards [this] with _ hh
   rw [exp_add_of_mem_ball hx hh, exp_zero, zero_add, ContinuousLinearMap.id_apply, smul_eq_mul]
   ring
@@ -259,7 +258,6 @@ theorem hasFDerivAt_exp_smul_const_of_mem_ball (x : 𝔸) (t : 𝕊)
     HasFDerivAt (fun u : 𝕊 => exp (u • x)) (exp (t • x) • (1 : 𝕊 →L[𝕂] 𝕊).smulRight x) t := by
   -- TODO: prove this via `hasFDerivAt_exp_of_mem_ball` using the commutative ring
   -- `Algebra.elementalAlgebra 𝕊 x`. See https://github.com/leanprover-community/mathlib3/pull/19062 for discussion.
-  have hpos : 0 < (expSeries 𝕂 𝔸).radius := (zero_le _).trans_lt htx
   rw [hasFDerivAt_iff_isLittleO_nhds_zero]
   suffices (fun (h : 𝕊) => exp (t • x) *
       (exp ((0 + h) • x) - exp ((0 : 𝕊) • x) - ((1 : 𝕊 →L[𝕂] 𝕊).smulRight x) h)) =ᶠ[𝓝 0]
@@ -270,13 +268,13 @@ theorem hasFDerivAt_exp_smul_const_of_mem_ball (x : 𝔸) (t : 𝕊)
       (f' := (1 : 𝕊 →L[𝕂] 𝕊).smulRight x) (x := 0)]
     have : HasFDerivAt exp (1 : 𝔸 →L[𝕂] 𝔸) ((1 : 𝕊 →L[𝕂] 𝕊).smulRight x 0) := by
       rw [ContinuousLinearMap.smulRight_apply, ContinuousLinearMap.one_apply, zero_smul]
-      exact hasFDerivAt_exp_zero_of_radius_pos hpos
+      exact hasFDerivAt_exp_zero_of_radius_pos htx.pos
     exact this.comp 0 ((1 : 𝕊 →L[𝕂] 𝕊).smulRight x).hasFDerivAt
   have : Tendsto (fun h : 𝕊 => h • x) (𝓝 0) (𝓝 0) := by
     rw [← zero_smul 𝕊 x]
     exact tendsto_id.smul_const x
   have : ∀ᶠ h in 𝓝 (0 : 𝕊), h • x ∈ Metric.eball (0 : 𝔸) (expSeries 𝕂 𝔸).radius :=
-    this.eventually (Metric.eball_mem_nhds _ hpos)
+    this.eventually (Metric.eball_mem_nhds _ htx.pos)
   filter_upwards [this] with h hh
   have : Commute (t • x) (h • x) := ((Commute.refl x).smul_left t).smul_right h
   rw [add_smul t h, exp_add_of_commute_of_mem_ball this htx hh, zero_add, zero_smul, exp_zero,
@@ -389,6 +387,17 @@ theorem hasDerivAt_exp_smul_const' (x : 𝔸) (t : 𝕂) :
     HasDerivAt (fun u : 𝕂 => exp (u • x)) (x * exp (t • x)) t :=
   hasDerivAt_exp_smul_const_of_mem_ball' _ _ <|
     (expSeries_radius_eq_top 𝕂 𝔸).symm ▸ edist_lt_top _ _
+
+variable (𝕂) in
+@[fun_prop]
+lemma differentiable_exp_smul_const (x : 𝔸) :
+    Differentiable 𝕂 (fun t : 𝕂 ↦ exp (t • x)) :=
+  (⟨_, hasDerivAt_exp_smul_const x ·⟩)
+
+@[fun_prop]
+lemma differentiableAt_exp_smul_const (x : 𝔸) (r : 𝕂) :
+    DifferentiableAt 𝕂 (fun t : 𝕂 ↦ exp (t • x)) r :=
+  differentiable_exp_smul_const 𝕂 x |>.differentiableAt
 
 end RCLike
 

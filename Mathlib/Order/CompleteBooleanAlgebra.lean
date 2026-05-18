@@ -224,6 +224,7 @@ variable (minAx : MinimalAxioms α)
 
 /-- The `CompleteDistribLattice.MinimalAxioms` element corresponding to a complete distrib lattice.
 -/
+@[implicit_reducible]
 def of [CompleteDistribLattice α] : MinimalAxioms α where
   __ := ‹CompleteDistribLattice α›
   inf_sSup_le_iSup_inf a s := inf_sSup_eq.le
@@ -308,6 +309,7 @@ abbrev toCompleteDistribLattice : CompleteDistribLattice.MinimalAxioms α where
       _ = _ := by simp [sInf_eq_iInf', iInf_unique, iSup_bool_eq]
 
 /-- The `CompletelyDistribLattice.MinimalAxioms` element corresponding to a frame. -/
+@[implicit_reducible]
 def of [CompletelyDistribLattice α] : MinimalAxioms α := { ‹CompletelyDistribLattice α› with }
 
 end MinimalAxioms
@@ -529,6 +531,7 @@ theorem biInf_sup_biInf {ι ι' : Type*} {f : ι → α} {g : ι' → α} {s : S
 theorem sInf_sup_sInf : sInf s ⊔ sInf t = ⨅ p ∈ s ×ˢ t, (p : α × α).1 ⊔ p.2 :=
   @sSup_inf_sSup αᵒᵈ _ _ _
 
+@[to_dual existing]
 theorem iInf_sup_of_monotone {ι : Type*} [Preorder ι] [IsCodirectedOrder ι] {f g : ι → α}
     (hf : Monotone f) (hg : Monotone g) : ⨅ i, f i ⊔ g i = (⨅ i, f i) ⊔ ⨅ i, g i :=
   @iSup_inf_of_antitone αᵒᵈ _ _ _ _ _ _ hf.dual_right hg.dual_right

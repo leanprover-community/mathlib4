@@ -34,7 +34,7 @@ For Gaussian distributions in `ℝ`, see the file
 
 -/
 
-@[expose] public section
+public section
 
 open MeasureTheory Complex
 open scoped ENNReal NNReal
@@ -164,7 +164,6 @@ lemma IsGaussian.charFunDual_eq (L : StrongDual ℝ E) :
     · simp only [sup_eq_left]
       exact variance_nonneg _ _
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A finite measure is Gaussian iff its characteristic function has value
 `exp (μ[L] * I - Var[L; μ] / 2)` for every `L : Dual ℝ E`. -/
 theorem isGaussian_iff_charFunDual_eq {μ : Measure E} [IsFiniteMeasure μ] :

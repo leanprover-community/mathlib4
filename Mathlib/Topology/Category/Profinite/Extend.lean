@@ -47,7 +47,7 @@ lemma exists_hom (hc : IsLimit c) {X : FintypeCat} (f : c.pt ⟶ toProfinite.obj
   let f' : LocallyConstant c.pt (toProfinite.obj X) :=
     ⟨f, (IsLocallyConstant.iff_continuous _).mpr f.hom.hom.continuous⟩
   obtain ⟨i, g, h⟩ := exists_locallyConstant.{_, u} c hc f'
-  refine ⟨i, ⟨(g : _ → _)⟩, ?_⟩
+  refine ⟨i, ⟨↾g⟩, ?_⟩
   ext x
   exact LocallyConstant.congr_fun h x
 
@@ -117,7 +117,6 @@ section Limit
 
 variable {C : Type*} [Category* C] (G : Profinite ⥤ C)
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 Given a functor `G` from `Profinite` and `S : Profinite`, we obtain a cone on
 `(StructuredArrow.proj S toProfinite ⋙ toProfinite ⋙ G)` with cone point `G.obj S`.

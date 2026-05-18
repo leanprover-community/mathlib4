@@ -236,7 +236,7 @@ protected def binaryCofan (X Y : TopCat.{u}) : BinaryCofan X Y :=
 def binaryCofanIsColimit (X Y : TopCat.{u}) : IsColimit (TopCat.binaryCofan X Y) := by
   refine Limits.BinaryCofan.isColimitMk (fun s => ofHom
     { toFun := Sum.elim s.inl s.inr, continuous_toFun := ?_ }) ?_ ?_ ?_
-  · continuity
+  · fun_prop
   · intro s
     ext
     rfl
@@ -248,7 +248,7 @@ def binaryCofanIsColimit (X Y : TopCat.{u}) : IsColimit (TopCat.binaryCofan X Y)
     exacts [ConcreteCategory.congr_hom h₁ x, ConcreteCategory.congr_hom h₂ x]
 
 set_option backward.isDefEq.respectTransparency false in
-theorem binaryCofan_isColimit_iff {X Y : TopCat} (c : BinaryCofan X Y) :
+theorem binaryCofan_isColimit_iff {X Y : TopCat.{u}} (c : BinaryCofan X Y) :
     Nonempty (IsColimit c) ↔
       IsOpenEmbedding c.inl ∧ IsOpenEmbedding c.inr ∧ IsCompl (range c.inl) (range c.inr) := by
   classical
@@ -286,7 +286,7 @@ theorem binaryCofan_isColimit_iff {X Y : TopCat} (c : BinaryCofan X Y) :
             convert_to Continuous (f ∘ h₁.isEmbedding.toHomeomorph.symm)
             · ext ⟨x, hx⟩
               exact dif_pos hx
-            continuity
+            fun_prop
           · exact h₁.isOpen_range
         · revert h x
           simp only [← mem_compl_iff]
@@ -301,10 +301,9 @@ theorem binaryCofan_isColimit_iff {X Y : TopCat} (c : BinaryCofan X Y) :
               exact dif_neg hx
             apply Continuous.comp
             · exact g.hom.continuous_toFun
-            · apply Continuous.comp
-              · continuity
-              · rw [IsEmbedding.subtypeVal.isInducing.continuous_iff]
-                exact continuous_subtype_val
+            · apply Continuous.comp (by fun_prop)
+              rw [IsEmbedding.subtypeVal.isInducing.continuous_iff]
+              exact continuous_subtype_val
           · change IsOpen (Set.range c.inl)ᶜ
             rw [← eq_compl_iff_isCompl.mpr h₃.symm]
             exact h₂.isOpen_range

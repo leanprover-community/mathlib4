@@ -196,7 +196,6 @@ theorem continuous_map_sInf {α : Type*} [TopologicalSpace α]
     {S : Set (Setoid α)} {s : Setoid α} (h : s ∈ S) : Continuous (Setoid.map_sInf h) :=
   continuous_coinduced_rng
 
-set_option backward.isDefEq.respectTransparency false in
 instance {p : X → Prop} [TopologicalSpace X] [DiscreteTopology X] : DiscreteTopology (Subtype p) :=
   ⟨bot_unique fun s _ => ⟨(↑) '' s, isOpen_discrete _, preimage_image_eq _ Subtype.val_injective⟩⟩
 
@@ -654,6 +653,10 @@ open scoped Set.Notation
 lemma IsOpen.preimage_val {s t : Set X} (ht : IsOpen t) : IsOpen (s ↓∩ t) :=
   ht.preimage continuous_subtype_val
 
+lemma IsOpen.image_val {s : Set X} {t : Set s} (ht : IsOpen t) :
+    ∃ c, IsOpen c ∧ Subtype.val '' t = c ∩ s := by
+  simpa using IsInducing.subtypeVal.image_eq_isOpen_inter_range ht
+
 /-- If `s` is dense in `X` and `u` is open and dense in `s`, then `u = v ∩ s` for some `v` that is
 open and dense in `X`. -/
 lemma exists_open_dense_of_open_dense_subtype (hs : Dense s) {u : Set s} (huo : IsOpen u)
@@ -671,6 +674,10 @@ lemma exists_open_dense_of_open_dense_subtype (hs : Dense s) {u : Set s} (huo : 
 
 lemma IsClosed.preimage_val {s t : Set X} (ht : IsClosed t) : IsClosed (s ↓∩ t) :=
   ht.preimage continuous_subtype_val
+
+lemma IsClosed.image_val {s : Set X} {t : Set s} (ht : IsClosed t) :
+    ∃ c, IsClosed c ∧ Subtype.val '' t = c ∩ s := by
+  simpa using IsInducing.subtypeVal.image_eq_isClosed_inter_range ht
 
 @[simp] lemma IsOpen.inter_preimage_val_iff {s t : Set X} (hs : IsOpen s) :
     IsOpen (s ↓∩ t) ↔ IsOpen (s ∩ t) :=
@@ -702,6 +709,12 @@ theorem continuous_quot_mk : Continuous (@Quot.mk X r) :=
 theorem continuous_quot_lift {f : X → Y} (hr : ∀ a b, r a b → f a = f b) (h : Continuous f) :
     Continuous (Quot.lift f hr : Quot r → Y) :=
   continuous_coinduced_dom.2 h
+
+@[continuity, fun_prop]
+theorem continuous_quot_map {r' : Y → Y → Prop} {f : X → Y} (hr : ∀ a b, r a b → r' (f a) (f b))
+    (h : Continuous f) :
+    Continuous (Quot.map f hr : Quot r → Quot r') :=
+  continuous_quot_lift _ (continuous_quot_mk.comp h)
 
 theorem isQuotientMap_quotient_mk' : IsQuotientMap (@Quotient.mk' X s) :=
   isQuotientMap_quot_mk

@@ -249,7 +249,7 @@ theorem orderOf_a [NeZero n] (i : ZMod (2 * n)) :
 
 theorem exponent : Monoid.exponent (QuaternionGroup n) = 2 * lcm n 2 := by
   rw [← normalize_eq 2, ← lcm_mul_left, normalize_eq]
-  norm_num
+  simp only [Nat.reduceMul]
   rcases eq_zero_or_neZero n with rfl | hn
   · simp only [lcm_zero_left, mul_zero]
     exact Monoid.exponent_eq_zero_of_order_zero orderOf_a_one

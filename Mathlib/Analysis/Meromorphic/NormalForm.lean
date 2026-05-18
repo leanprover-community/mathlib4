@@ -281,7 +281,7 @@ theorem meromorphicNFAt_prod {x : 𝕜} {ι : Type*} {s : Finset ι} {f : ι →
   obtain ⟨τ, h₁τ, h₂τ⟩ := h₄f
   have {μ : ι} (hμ : μ ∈ s.erase τ) : f μ x ≠ 0 := by
     by_contra
-    have : τ = μ :=  h₂f (by aesop) (by aesop)
+    have : τ = μ := h₂f (by aesop) (by aesop)
     aesop
   rw [← Finset.mul_prod_erase _ _ h₁τ, meromorphicNFAt_mul_iff_left]
   · apply h₁f τ h₁τ
@@ -356,6 +356,16 @@ A function to 𝕜 is meromorphic in normal form at a point iff its inverse is.
 @[simp] theorem meromorphicNFAt_inv {f : 𝕜 → 𝕜} : MeromorphicNFAt f⁻¹ x ↔ MeromorphicNFAt f x where
   mp hf := inv_inv f ▸ hf.inv
   mpr hf := hf.inv
+
+theorem MeromorphicNFOn.div {f : 𝕜 → 𝕜} {g : 𝕜 → 𝕜} {x : 𝕜} (hf : AnalyticAt 𝕜 f x)
+    (hg : MeromorphicNFAt g x) (hor : g x ≠ 0 ∨ f x ≠ 0) : MeromorphicNFAt (f / g) x := by
+  rw [div_eq_mul_inv]
+  rcases hor with hgne | hfne
+  · have hf := hf.meromorphicNFAt
+    have hgAnalytic : AnalyticAt 𝕜 g x := by grind [meromorphicNFAt_iff_analyticAt_or]
+    have hgInvAnalytic : AnalyticAt 𝕜 g⁻¹ x := hgAnalytic.inv hgne
+    rwa [← meromorphicNFAt_mul_iff_left hgInvAnalytic (inv_ne_zero hgne)] at hf
+  · grind [meromorphicNFAt_mul_iff_right, hg.inv]
 
 /-!
 ### Continuous extension and conversion to normal form

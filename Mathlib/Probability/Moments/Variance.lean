@@ -134,7 +134,7 @@ lemma variance_of_not_memLp [IsFiniteMeasure μ] (hX : AEStronglyMeasurable X μ
 
 lemma memLp_two_of_variance_ne_zero [IsFiniteMeasure μ] (hX : AEStronglyMeasurable X μ)
     (h : Var[X; μ] ≠ 0) : MemLp X 2 μ := by
-  contrapose! h
+  contrapose h
   exact variance_of_not_memLp hX h
 
 theorem ofReal_variance [IsFiniteMeasure μ] (hX : MemLp X 2 μ) :
@@ -288,8 +288,8 @@ lemma variance_sum' [IsFiniteMeasure μ] (hX : ∀ i ∈ s, MemLp (X i) 2 μ) :
   rw [← covariance_self, covariance_sum_left' (by simpa)]
   · refine Finset.sum_congr rfl fun i hi ↦ ?_
     rw [covariance_sum_right' (by simpa) (hX i hi)]
-  · exact memLp_finset_sum' _ (by simpa)
-  · exact (memLp_finset_sum' _ (by simpa)).aemeasurable
+  · exact memLp_finsetSum' _ (by simpa)
+  · exact (memLp_finsetSum' _ (by simpa)).aemeasurable
 
 lemma variance_sum [IsFiniteMeasure μ] [Fintype ι] (hX : ∀ i, MemLp (X i) 2 μ) :
     Var[∑ i, X i; μ] = ∑ i, ∑ j, cov[X i, X j; μ] :=

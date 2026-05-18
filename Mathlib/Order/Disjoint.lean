@@ -145,10 +145,6 @@ theorem top_disjoint : Disjoint ⊤ a ↔ a = ⊥ :=
 theorem Disjoint.ne_top_of_ne_bot (h : Disjoint a b) (ha : a ≠ ⊥) : b ≠ ⊤ := by
   grind
 
-@[deprecated ne_bot_of_ne_top (since := "2025-11-07")]
-lemma Codisjoint.ne_bot_of_ne_top' (h : Codisjoint a b) (hb : b ≠ ⊤) : a ≠ ⊥ :=
-  ne_bot_of_ne_top h.symm hb
-
 end PartialBoundedOrder
 
 section SemilatticeInfBot

@@ -181,7 +181,6 @@ section principal
 
 variable {S : Set ι}
 
-set_option backward.isDefEq.respectTransparency false in
 theorem topologicalSpace_eq_of_principal :
     topologicalSpace R A (𝓟 S) =
       .induced ((↑) : Πʳ i, [R i, A i]_[𝓟 S] → Π i, R i) inferInstance :=
@@ -626,7 +625,7 @@ theorem locallyCompactSpace_of_group [Π i, Group (R i)] [∀ i, SubgroupClass (
     weaklyLocallyCompactSpace_of_cofinite hBopen.out hBcompact
   inferInstance
 
-open Pointwise in
+open scoped Pointwise in
 @[to_additive]
 instance [Π i, Group (R i)] [∀ i, SubgroupClass (S i) (R i)] [∀ i, IsTopologicalGroup (R i)]
     [hAcompact : ∀ i, CompactSpace (B i)] : LocallyCompactSpace (Πʳ i, [R i, B i]) :=

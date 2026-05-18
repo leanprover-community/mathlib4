@@ -222,13 +222,24 @@ lemma rank_mul_eq_right_of_isUnit_det [Fintype m] [DecidableEq m]
   have hAB : mulVecLin (A * B) = (LinearEquiv.ofIsUnitDet hA).comp (mulVecLin B) := by ext; simp
   rw [rank, rank, hAB, LinearMap.range_comp, LinearEquiv.finrank_map_eq]
 
-omit [Fintype n] in
-/-- Taking a subset of the rows and permuting the columns reduces the rank. -/
-theorem rank_submatrix_le [Nontrivial R] [Fintype m] [Fintype m₀] (f : n₀ → n) (e : m₀ ≃ m)
-    (A : Matrix n m R) : rank (A.submatrix f e) ≤ rank A := by
+/-- Taking a subset of the rows and columns reduces the rank. -/
+theorem rank_submatrix_le [Fintype n₀] (A : Matrix m n R) (r : m₀ → m) (c : n₀ → n) :
+    (A.submatrix r c).rank ≤ A.rank := by
+  nontriviality R
+  have := Module.Finite.span_of_finite R (Set.finite_range (A.submatrix r id).col)
+  calc
+    _ = (((A.submatrix r id)ᵀᵀ.submatrix id c)ᵀᵀ).rank := by simp
+    _ ≤ finrank R (span R (range (A.submatrix r id).col)) := by
+      rw [rank, Matrix.mulVecLin_transpose, Matrix.transpose_submatrix, transpose_transpose,
+        range_vecMulLinear, ← Matrix.transpose_submatrix, row_transpose]
+      exact Submodule.finrank_mono (Submodule.span_mono (fun v ⟨j, hj⟩ => ⟨c j, hj⟩))
+    _ = (A.submatrix r id)ᵀᵀ.rank := by
+      rw [rank, Matrix.mulVecLin_transpose, range_vecMulLinear]
+      rfl
+    _ = (A.submatrix r (Equiv.refl n)).rank := by simp
   rw [rank, rank, mulVecLin_submatrix, LinearMap.range_comp, LinearMap.range_comp,
-    show LinearMap.funLeft R R e.symm = LinearEquiv.funCongrLeft R R e.symm from rfl,
-    LinearEquiv.range, Submodule.map_top]
+    show LinearMap.funLeft R R (Equiv.refl n).symm = LinearEquiv.funCongrLeft R R
+      (Equiv.refl n).symm from rfl, LinearEquiv.range, Submodule.map_top]
   exact Submodule.finrank_map_le _ _
 
 theorem rank_reindex [Fintype n₀] (em : m ≃ m₀) (en : n ≃ n₀) (A : Matrix m n R) :

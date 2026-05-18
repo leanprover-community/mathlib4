@@ -31,8 +31,8 @@ definable.
 ## References
 
 * [Seymour Ginsburg and Edwin H. Spanier, *Bounded ALGOL-Like Languages*][ginsburg1964]
-* [Seymour Ginsburg and Edwin H. Spanier, *Semigroups, Presburger Formulas, and Languages*][
-  ginsburg1966]
+* [Seymour Ginsburg and Edwin H. Spanier, *Semigroups, Presburger Formulas, and
+  Languages*][ginsburg1966]
 * [Samuel Eilenberg and M. P. Schützenberger, *Rational Sets in Commutative Monoids*][eilenberg1969]
 -/
 

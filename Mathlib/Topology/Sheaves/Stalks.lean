@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Topology.Category.TopCat.OpenNhds
 public import Mathlib.Topology.Sheaves.SheafCondition.UniqueGluing
+public import Mathlib.CategoryTheory.Limits.ConcreteCategory.Filtered
 
 /-!
 # Stalks
@@ -357,14 +358,13 @@ theorem germ_stalkSpecializes (F : X.Presheaf C)
   colimit.ι_desc _ _
 
 @[simp]
-theorem stalkSpecializes_refl {C : Type*} [Category* C] [Limits.HasColimits C] {X : TopCat}
-    (F : X.Presheaf C) (x : X) : F.stalkSpecializes (specializes_refl x) = 𝟙 _ := by
+theorem stalkSpecializes_refl (F : X.Presheaf C) (x : X) :
+    F.stalkSpecializes (specializes_refl x) = 𝟙 _ := by
   ext
   simp
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
-theorem stalkSpecializes_comp {C : Type*} [Category* C] [Limits.HasColimits C] {X : TopCat}
-    (F : X.Presheaf C) {x y z : X} (h : x ⤳ y) (h' : y ⤳ z) :
+theorem stalkSpecializes_comp (F : X.Presheaf C) {x y z : X} (h : x ⤳ y) (h' : y ⤳ z) :
     F.stalkSpecializes h' ≫ F.stalkSpecializes h = F.stalkSpecializes (h.trans h') := by
   ext
   simp
@@ -387,7 +387,7 @@ theorem stalkSpecializes_stalkPushforward (f : X ⟶ Y) (F : X.Presheaf C) {x y 
 
 /-- The stalks are isomorphic on inseparable points -/
 @[simps]
-def stalkCongr {X : TopCat} {C : Type*} [Category* C] [HasColimits C] (F : X.Presheaf C) {x y : X}
+def stalkCongr (F : X.Presheaf C) {x y : X}
     (e : Inseparable x y) : F.stalk x ≅ F.stalk y :=
   ⟨F.stalkSpecializes e.ge, F.stalkSpecializes e.le, by simp, by simp⟩
 
@@ -426,10 +426,7 @@ theorem germ_eq (F : X.Presheaf C) {U V : Opens X} (x : X) (mU : x ∈ U) (mV : 
     (s : ToType (F.obj (op U))) (t : ToType (F.obj (op V)))
     (h : F.germ U x mU s = F.germ V x mV t) :
     ∃ (W : Opens X) (_m : x ∈ W) (iU : W ⟶ U) (iV : W ⟶ V), F.map iU.op s = F.map iV.op t := by
-  obtain ⟨W, iU, iV, e⟩ :=
-    (Types.FilteredColimit.isColimit_eq_iff.{v, v} _
-          (isColimitOfPreserves (forget C) (colimit.isColimit ((OpenNhds.inclusion x).op ⋙ F)))).mp
-        h
+  obtain ⟨W, iU, iV, e⟩ := (colimit.isColimit ((OpenNhds.inclusion x).op ⋙ F)).eq_iff.mp h
   exact ⟨(unop W).1, (unop W).2, iU.unop, iV.unop, e⟩
 
 theorem stalkFunctor_map_injective_of_app_injective {F G : Presheaf C X} {f : F ⟶ G}
@@ -626,7 +623,7 @@ theorem app_isIso_of_stalkFunctor_map_iso {F G : Sheaf C X} (f : F ⟶ G) (U : O
   rw [isIso_iff_bijective]
   apply app_bijective_of_stalkFunctor_map_bijective
   intro x hx
-  apply (isIso_iff_bijective _).mp
+  apply (bijective_iff_isIso_ofHom _).mpr
   exact Functor.map_isIso (forget C) ((stalkFunctor C (⟨x, hx⟩ : U).1).map f.1)
 
 include instCC in

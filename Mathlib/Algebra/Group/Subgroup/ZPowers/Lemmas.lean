@@ -18,7 +18,7 @@ subgroup, subgroups
 
 -/
 
-@[expose] public section
+public section
 
 variable {G : Type*} [Group G]
 variable {A : Type*} [AddGroup A]

@@ -97,7 +97,7 @@ theorem hasFDerivAt_integral_of_dominated_loc_of_lip' {F' : α → H →L[𝕜] 
       refine h_lipsch.mono fun a ha ↦ (ha x x_in).trans ?_
       rw [mul_comm ε]
       rw [mem_ball, dist_eq_norm] at x_in
-      exact mul_le_mul_of_nonneg_left x_in.le (b_nonneg _)
+      gcongr
     exact integrable_of_norm_sub_le (hF_meas x (hε x_in)) hF_int
       (bound_integrable.norm.const_mul ε) this
   have hF'_int : Integrable F' μ :=
@@ -233,8 +233,8 @@ theorem hasFDerivAt_integral_of_dominated_of_fderiv_le {F' : H → α → H →L
 open scoped Interval in
 /-- Differentiation under integral of `x ↦ ∫ x in a..b, F x a` at a given point `x₀`, assuming
 `F x₀` is integrable on `(a,b)`, `x ↦ F x a` is differentiable on a neighborhood of `x₀` for ae `a`
- with derivative norm uniformly bounded by an integrable function (the neighborhood is independent
- of `a`), and `F x` is ae-measurable for `x` in a possibly smaller neighborhood of `x₀`. -/
+with derivative norm uniformly bounded by an integrable function (the neighborhood is independent
+of `a`), and `F x` is ae-measurable for `x` in a possibly smaller neighborhood of `x₀`. -/
 theorem hasFDerivAt_integral_of_dominated_of_fderiv_le'' [NormedSpace ℝ H] {μ : Measure ℝ}
     {F : H → ℝ → E} {F' : H → ℝ → H →L[ℝ] E} {a b : ℝ} {bound : ℝ → ℝ} (hs : s ∈ 𝓝 x₀)
     (hF_meas : ∀ᶠ x in 𝓝 x₀, AEStronglyMeasurable (F x) <| μ.restrict (Ι a b))

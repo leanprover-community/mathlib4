@@ -139,12 +139,6 @@ instance instFourierInvPair : FourierInvPair 𝓢(V, E) 𝓢(V, E) where
     rw [fourier_coe, fourierInv_coe, f.continuous.fourier_fourierInv_eq f.integrable
       (𝓕 f).integrable]
 
-@[deprecated (since := "2025-11-13")]
-alias fourier_inversion := FourierTransform.fourierInv_fourier_eq
-
-@[deprecated (since := "2025-11-13")]
-alias fourier_inversion_inv := FourierTransform.fourier_fourierInv_eq
-
 @[deprecated (since := "2026-01-06")]
 alias fourierTransformCLE := FourierTransform.fourierCLE
 
@@ -172,19 +166,16 @@ end eval
 
 section deriv
 
-set_option backward.isDefEq.respectTransparency false
-
 /-- The derivative of the Fourier transform is given by the Fourier transform of the multiplication
 with `-(2 * π * Complex.I) • innerSL ℝ`. -/
 theorem fderivCLM_fourier_eq (f : 𝓢(V, E)) :
     fderivCLM 𝕜 V E (𝓕 f) = 𝓕 (-(2 * π * Complex.I) • smulRightCLM ℂ E (innerSL ℝ) f) := by
   ext1 x
-  change fderiv ℝ (𝓕 ⇑f) x = _
-  calc
-    _ = 𝓕 (VectorFourier.fourierSMulRight (innerSL ℝ) f) x := by
-      rw [fderiv_fourier f.integrable]
-      simpa using f.integrable_pow_mul volume 1
+  change fderiv ℝ (𝓕 ⇑f) x = 𝓕 (VectorFourier.fourierSMulRight (innerSL ℝ) f) x
+  rw [fderiv_fourier f.integrable]
+  simpa using f.integrable_pow_mul volume 1
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The Fourier transform of the derivative is given by multiplication of
 `(2 * π * Complex.I) • innerSL ℝ` with the Fourier transform. -/
 theorem fourier_fderivCLM_eq (f : 𝓢(V, E)) :
@@ -196,6 +187,7 @@ theorem fourier_fderivCLM_eq (f : 𝓢(V, E)) :
 
 open LineDeriv
 
+set_option backward.isDefEq.respectTransparency false in
 /- The line derivative in direction `m` of the Fourier transform is given by the Fourier transform
 of the multiplication with `-(2 * π * Complex.I) • (inner ℝ · m)`. -/
 theorem lineDerivOp_fourier_eq (f : 𝓢(V, E)) (m : V) :
@@ -207,6 +199,7 @@ theorem lineDerivOp_fourier_eq (f : 𝓢(V, E)) (m : V) :
   have : (inner ℝ · m).HasTemperateGrowth := ((innerSL ℝ).flip m).hasTemperateGrowth
   simp [this, innerSL_apply_apply ℝ]
 
+set_option backward.isDefEq.respectTransparency false in
 /- The Fourier transform of line derivative in direction `m` is given by multiplication of
 `(2 * π * Complex.I) • (inner ℝ · m)` with the Fourier transform. -/
 theorem fourier_lineDerivOp_eq (f : 𝓢(V, E)) (m : V) :
@@ -337,15 +330,9 @@ theorem integral_norm_sq_fourier (f : 𝓢(V, H)) :
 theorem inner_fourier_toL2_eq (f g : 𝓢(V, H)) :
     ⟪(𝓕 f).toLp 2, (𝓕 g).toLp 2⟫ = ⟪f.toLp 2, g.toLp 2⟫ := by simp
 
-@[deprecated (since := "2025-11-13")]
-alias inner_fourierTransformCLM_toL2_eq := inner_fourier_toL2_eq
-
 @[simp] theorem norm_fourier_toL2_eq (f : 𝓢(V, H)) :
     ‖(𝓕 f).toLp 2‖ = ‖f.toLp 2‖ := by
   simp_rw [norm_eq_sqrt_re_inner (𝕜 := ℂ), inner_fourier_toL2_eq]
-
-@[deprecated (since := "2025-11-13")]
-alias norm_fourierTransformCLM_toL2_eq := norm_fourier_toL2_eq
 
 end L2
 

@@ -15,7 +15,7 @@ public import Mathlib.Order.Atoms
 # Facts about ordered structures and ordered instances on subgroups
 -/
 
-@[expose] public section
+public section
 
 open Subgroup
 

@@ -76,7 +76,7 @@ instance (priority := 900) instAlgebra' {R A M} [CommSemiring R] [AddCommGroup M
     [Algebra R A] [Module R M] [Module A M] (Q : QuadraticForm A M)
     [IsScalarTower R A M] :
     Algebra R (CliffordAlgebra Q) :=
-  RingQuot.instAlgebra _
+  inferInstanceAs <| Algebra R (RingQuot _)
 
 -- verify there are no diamonds
 -- but doesn't work at `reducible_and_instances` https://github.com/leanprover-community/mathlib4/issues/10906
@@ -96,23 +96,18 @@ instance {R S A M} [CommSemiring R] [CommSemiring S] [AddCommGroup M] [CommRing 
     IsScalarTower R S (CliffordAlgebra Q) :=
   RingQuot.instIsScalarTower _
 
-#adaptation_note /-- Needed after leanprover/lean4#12564 -/
-instance : Module R (CliffordAlgebra Q) :=
-  inferInstanceAs <| Module R (RingQuot (CliffordAlgebra.Rel Q))
-
-/-- The canonical linear map `M →ₗ[R] CliffordAlgebra Q`.
--/
+/-- The canonical linear map `M →ₗ[R] CliffordAlgebra Q`. -/
 def ι : M →ₗ[R] CliffordAlgebra Q :=
   (RingQuot.mkAlgHom R _).toLinearMap.comp (TensorAlgebra.ι R)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- As well as being linear, `ι Q` squares to the quadratic form -/
 @[simp]
 theorem ι_sq_scalar (m : M) : ι Q m * ι Q m = algebraMap R _ (Q m) := by
   rw [ι]
   erw [LinearMap.comp_apply]
-  rw [AlgHom.toLinearMap_apply, ← map_mul (RingQuot.mkAlgHom R (Rel Q)),
-    RingQuot.mkAlgHom_rel R (Rel.of m), AlgHom.commutes]
+  rw [AlgHom.toLinearMap_apply]
+  erw [← map_mul (RingQuot.mkAlgHom R (Rel Q))]
+  rw [RingQuot.mkAlgHom_rel R (Rel.of m), AlgHom.commutes]
   rfl
 
 variable {Q} {A : Type*} [Semiring A] [Algebra R A]
@@ -196,7 +191,7 @@ theorem induction {C : CliffordAlgebra Q → Prop}
       mul_mem' := @mul
       add_mem' := @add
       algebraMap_mem' := algebraMap }
-  let of : { f : M →ₗ[R] s // ∀ m, f m * f m = _root_.algebraMap _ _ (Q m) } :=
+  let of : { f : M →ₗ[R] s // ∀ m, f m * f m = Algebra.algebraMap _ _ (Q m) } :=
     ⟨(CliffordAlgebra.ι Q).codRestrict (Subalgebra.toSubmodule s) ι,
       fun m => Subtype.ext <| ι_sq_scalar Q m⟩
   -- the mapping through the subalgebra is the identity
@@ -265,7 +260,7 @@ theorem ι_mul_ι_comm (a b : M) :
 theorem mul_ι_mul_ι_mul_comm (x : CliffordAlgebra Q) (a b : M) (y : CliffordAlgebra Q) :
     (x * ι Q a) * (ι Q b * y) =
       algebraMap R _ (QuadraticMap.polar Q a b) * (x * y) - (x * ι Q b) * (ι Q a * y) := by
-  rw [mul_assoc, ← mul_assoc _ _ y, ι_mul_ι_comm, sub_mul, mul_sub, Algebra.left_comm,  mul_assoc,
+  rw [mul_assoc, ← mul_assoc _ _ y, ι_mul_ι_comm, sub_mul, mul_sub, Algebra.left_comm, mul_assoc,
     mul_assoc]
 
 section isOrtho

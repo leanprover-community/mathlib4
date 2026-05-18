@@ -359,9 +359,6 @@ theorem hom_inv_associator {M N K : ModuleCat.{u} R} :
 
 namespace MonoidalCategory
 
-@[deprecated (since := "2025-10-29")] alias tensorObj := tensorObj_carrier
-@[deprecated (since := "2025-10-29")] alias tensorObj_def := tensorObj_carrier
-
 @[simp]
 theorem tensorHom_tmul {K L M N : ModuleCat.{u} R} (f : K ⟶ L) (g : M ⟶ N) (k : K) (m : M) :
     (f ⊗ₘ g) (k ⊗ₜ m) = f k ⊗ₜ g m :=
@@ -454,33 +451,19 @@ instance : MonoidalPreadditive (ModuleCat.{u} R) := by
   · intros
     ext : 1
     refine TensorProduct.ext (LinearMap.ext fun x => LinearMap.ext fun y => ?_)
-    simp only [LinearMap.compr₂ₛₗ_apply, TensorProduct.mk_apply, hom_zero, LinearMap.zero_apply]
-    -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
-    erw [MonoidalCategory.whiskerLeft_apply]
-    simp
+    simp [ModuleCat.hom_whiskerLeft]
   · intros
     ext : 1
     refine TensorProduct.ext (LinearMap.ext fun x => LinearMap.ext fun y => ?_)
-    simp only [LinearMap.compr₂ₛₗ_apply, TensorProduct.mk_apply, hom_zero, LinearMap.zero_apply, ]
-    -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
-    erw [MonoidalCategory.whiskerRight_apply]
-    simp
+    simp [ModuleCat.hom_whiskerRight]
   · intros
     ext : 1
     refine TensorProduct.ext (LinearMap.ext fun x => LinearMap.ext fun y => ?_)
-    simp only [LinearMap.compr₂ₛₗ_apply, TensorProduct.mk_apply, hom_add, LinearMap.add_apply]
-    -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
-    erw [MonoidalCategory.whiskerLeft_apply, MonoidalCategory.whiskerLeft_apply]
-    erw [MonoidalCategory.whiskerLeft_apply]
-    simp [TensorProduct.tmul_add]
+    simp [ModuleCat.hom_whiskerLeft]
   · intros
     ext : 1
     refine TensorProduct.ext (LinearMap.ext fun x => LinearMap.ext fun y => ?_)
-    simp only [LinearMap.compr₂ₛₗ_apply, TensorProduct.mk_apply, hom_add, LinearMap.add_apply]
-    -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
-    erw [MonoidalCategory.whiskerRight_apply, MonoidalCategory.whiskerRight_apply]
-    erw [MonoidalCategory.whiskerRight_apply]
-    simp [TensorProduct.add_tmul]
+    simp [ModuleCat.hom_whiskerRight]
 
 set_option backward.isDefEq.respectTransparency false in
 instance : MonoidalLinear R (ModuleCat.{u} R) := by
