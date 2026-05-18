@@ -53,6 +53,7 @@ variable [Zero V]
 
 To make this definition work for all types of distributions, we define it for any function from
 a `FunLike` type to a type with zero. -/
+@[fun_prop]
 def IsVanishingOn (f : F → V) (s : Set α) : Prop :=
     ∀ (u : F), tsupport u ⊆ s → f u = 0
 
@@ -176,7 +177,7 @@ namespace IsVanishingOn
 
 open scoped Topology
 
-@[grind .]
+@[fun_prop]
 theorem smulLeftCLM (hf : IsVanishingOn f s) {g : E → ℂ} (hg : g.HasTemperateGrowth) :
     IsVanishingOn (smulLeftCLM F g f) s := by
   intro u hu
@@ -186,14 +187,14 @@ theorem smulLeftCLM (hf : IsVanishingOn f s) {g : E → ℂ} (hg : g.HasTemperat
 
 open LineDeriv
 
-@[grind .]
+@[fun_prop]
 theorem lineDerivOp (hf : IsVanishingOn f s) (m : E) :
     IsVanishingOn (∂_{m} f : 𝓢'(E, F)) s := by
   intro u hu
   simp only [lineDerivOp_apply_apply, map_neg, neg_eq_zero]
   exact hf (∂_{m} u) <| (tsupport_fderiv_apply_subset ℝ m).trans hu
 
-@[grind .]
+@[fun_prop]
 theorem iteratedLineDerivOp {n : ℕ} (hf : IsVanishingOn f s) (m : Fin n → E) :
     IsVanishingOn (∂^{m} f : 𝓢'(E, F)) s := by
   induction n with
@@ -202,7 +203,7 @@ theorem iteratedLineDerivOp {n : ℕ} (hf : IsVanishingOn f s) (m : Fin n → E)
   | succ n IH =>
     exact (IH <| Fin.tail m).lineDerivOp (m 0)
 
-@[grind .]
+@[fun_prop]
 theorem _root_.TemperedDistribution.isVanishingOn_delta (x : E) :
     IsVanishingOn (TemperedDistribution.delta x) {x}ᶜ := by
   intro u hu
@@ -215,16 +216,16 @@ section Support
 
 theorem dsupport_smulLeftCLM_subset {g : E → ℂ} (hg : g.HasTemperateGrowth) :
     dsupport (smulLeftCLM F g f) ⊆ dsupport f := by
-  gcongr; grind
+  gcongr; fun_prop
 
 open LineDeriv
 
 theorem dsupport_lineDerivOp_subset (m : E) : dsupport (∂_{m} f : 𝓢'(E, F)) ⊆ dsupport f := by
-  gcongr; grind
+  gcongr; fun_prop
 
 theorem dsupport_iteratedLineDerivOp_subset {n : ℕ} (m : Fin n → E) :
     dsupport (∂^{m} f : 𝓢'(E, F)) ⊆ dsupport f := by
-  gcongr; grind
+  gcongr; fun_prop
 
 theorem dsupport_delta [FiniteDimensional ℝ E] (x : E) :
     dsupport (TemperedDistribution.delta x) = {x} := by

@@ -844,9 +844,6 @@ theorem degree_eq_one_iff_existsUnique_adj {G' : Subgraph G} {v : V} [Fintype (G
   rw [← finset_card_neighborSet_eq_degree, Finset.card_eq_one, Finset.singleton_iff_unique_mem]
   simp only [Set.mem_toFinset, mem_neighborSet]
 
-@[deprecated (since := "2025-10-31")]
-alias degree_eq_one_iff_unique_adj := degree_eq_one_iff_existsUnique_adj
-
 theorem nontrivial_verts_of_degree_ne_zero {G' : Subgraph G} {v : V} [Fintype (G'.neighborSet v)]
     (h : G'.degree v ≠ 0) : Nontrivial G'.verts := by
   by_contra
@@ -888,10 +885,6 @@ section MkProperties
 
 
 variable {G : SimpleGraph V} {G' : SimpleGraph W}
-
-@[deprecated "Use the `Unique` instance instead." (since := "2025-10-21")]
-instance nonempty_singletonSubgraph_verts (v : V) : Nonempty (G.singletonSubgraph v).verts :=
-  ⟨⟨v, Set.mem_singleton v⟩⟩
 
 instance (v : V) : Unique (G.singletonSubgraph v).verts :=
   Set.uniqueSingleton _
@@ -1245,7 +1238,7 @@ lemma le_induce_top_verts : G' ≤ (⊤ : G.Subgraph).induce G'.verts :=
 
 lemma le_induce_union : G'.induce s ⊔ G'.induce s' ≤ G'.induce (s ∪ s') := by
   constructor
-  · simp only [verts_sup, induce_verts, Set.Subset.rfl]
+  · simp
   · simp only [sup_adj, induce_adj, Set.mem_union]
     rintro v w (h | h) <;> simp [h]
 
