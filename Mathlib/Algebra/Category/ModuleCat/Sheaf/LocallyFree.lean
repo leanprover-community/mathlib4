@@ -47,7 +47,7 @@ end LocalGeneratorsData
 
 /-- A sheaf of modules is locally free if there exists locally free data for it. -/
 class IsLocallyFree (M : SheafOfModules.{u} R) : Prop where
-  nonempty_locallyFreeData : ∃ q : M.LocalGeneratorsData, q.IsLocallyFreeData
+  exists_locallyFreeData : ∃ q : M.LocalGeneratorsData, q.IsLocallyFreeData
 
 end
 
