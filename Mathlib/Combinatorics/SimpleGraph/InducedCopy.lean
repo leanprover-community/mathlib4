@@ -58,6 +58,38 @@ variable {V V' W W' X : Type*}
   {I : SimpleGraph X}
 
 /-!
+### Embedding to subgraph
+
+For a graph embedding `f : G ↪g H`, the image is an induced subgraph of `H` isomorphic to `G`.
+This packages the image as a `H.Subgraph`, together with the inducedness and isomorphism
+characterisations needed downstream.
+-/
+
+namespace Embedding
+
+/-- The induced subgraph corresponding to an embedding. -/
+abbrev toSubgraph (f : G ↪g H) : H.Subgraph := f.toCopy.toSubgraph
+
+@[simp] lemma toSubgraph_isInduced (f : G ↪g H) : (toSubgraph f).IsInduced := by
+  simp [toSubgraph, Copy.toSubgraph, Subgraph.IsInduced, Relation.map_apply_apply, f.injective]
+
+@[simp] lemma range_toSubgraph :
+    Set.range (toSubgraph : (G ↪g H) → H.Subgraph) =
+      {H' : H.Subgraph | H'.IsInduced ∧ Nonempty (G ≃g H'.coe)} := by
+  ext H'
+  simp only [Set.mem_range, Set.mem_setOf_eq]
+  constructor
+  · rintro ⟨f, rfl⟩
+    exact ⟨toSubgraph_isInduced f, ⟨f.toCopy.isoToSubgraph⟩⟩
+  · rintro ⟨hInd, ⟨e⟩⟩
+    refine ⟨(ofIsInduced H' hInd).comp e.toEmbedding, ?_⟩
+    have h : ((ofIsInduced H' hInd).comp e.toEmbedding).toHom =
+        H'.hom.comp e.toHom := by ext; simp
+    simp [toSubgraph, Copy.toSubgraph, h, Subgraph.map_comp]
+
+end Embedding
+
+/-!
 ### Induced containment
 
 A graph `H` *inducingly contains* a graph `G` if there is some graph embedding `G ↪g H`. This
@@ -248,30 +280,6 @@ abbrev UnlabeledEmbedding (G : SimpleGraph V) (H : SimpleGraph W) : Type _ :=
   {H' : H.Subgraph // H'.IsInduced ∧ Nonempty (G ≃g H'.coe)}
 
 instance [Finite W] : Finite (G.UnlabeledEmbedding H) := Subtype.finite
-
-namespace Embedding
-
-/-- The induced subgraph corresponding to an embedding. -/
-abbrev toSubgraph (f : G ↪g H) : H.Subgraph := f.toCopy.toSubgraph
-
-@[simp] lemma toSubgraph_isInduced (f : G ↪g H) : (toSubgraph f).IsInduced := by
-  simp [toSubgraph, Copy.toSubgraph, Subgraph.IsInduced, Relation.map_apply_apply, f.injective]
-
-@[simp] lemma range_toSubgraph :
-    Set.range (toSubgraph : (G ↪g H) → H.Subgraph) =
-      {H' : H.Subgraph | H'.IsInduced ∧ Nonempty (G ≃g H'.coe)} := by
-  ext H'
-  simp only [Set.mem_range, Set.mem_setOf_eq]
-  constructor
-  · rintro ⟨f, rfl⟩
-    exact ⟨toSubgraph_isInduced f, ⟨f.toCopy.isoToSubgraph⟩⟩
-  · rintro ⟨hInd, ⟨e⟩⟩
-    refine ⟨(ofIsInduced H' hInd).comp e.toEmbedding, ?_⟩
-    have h : ((ofIsInduced H' hInd).comp e.toEmbedding).toHom =
-        H'.hom.comp e.toHom := by ext; simp
-    simp [toSubgraph, Copy.toSubgraph, h, Subgraph.map_comp]
-
-end Embedding
 
 /-- `H.unlabeledEmbeddingCount G` is the number of induced `SimpleGraph.Subgraph`s of `H`
 isomorphic to `G`.
