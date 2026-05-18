@@ -234,7 +234,7 @@ theorem digits_ofDigits (b : ℕ) (h : 1 < b) (L : List ℕ) (w₁ : ∀ l ∈ L
         left
         simpa using w₂
       · right
-        contrapose! w₂
+        contrapose w₂
         refine digits_zero_of_eq_zero h.ne_bot w₂ _ ?_
         rw [List.getLast_cons h']
         exact List.getLast_mem h'
@@ -407,7 +407,7 @@ theorem ofDigits_digits_append_digits {b m n : ℕ} :
     ofDigits b (digits b n ++ digits b m) = n + b ^ (digits b n).length * m := by
   rw [ofDigits_append, ofDigits_digits, ofDigits_digits]
 
-@[mono]
+@[gcongr, mono]
 theorem ofDigits_monotone {p q : ℕ} (L : List ℕ) (h : p ≤ q) : ofDigits p L ≤ ofDigits q L := by
   induction L with
   | nil => rfl
@@ -533,7 +533,7 @@ lemma toDigitsCore_length (b f n e : Nat) (h_e_pos : 0 < e) (hlt : n < b ^ e) :
       | succ e =>
         specialize ih (n / b) _ (add_one_pos e) (Nat.div_lt_of_lt_mul <| by rwa [← pow_add_one'])
         split_ifs
-        · simp only [List.length_singleton, _root_.zero_le, succ_le_succ]
+        · simp
         · simp only [toDigitsCore_lens_eq b f (n / b) (Nat.digitChar <| n % b),
             Nat.succ_le_succ_iff, ih]
 

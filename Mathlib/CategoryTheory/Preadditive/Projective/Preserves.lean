@@ -17,7 +17,7 @@ then `F` preserves projective objects. We show that the converse is true if the 
 enough projectives.
 -/
 
-@[expose] public section
+public section
 
 universe v₁ v₂ v₃ u₁ u₂ u₃
 

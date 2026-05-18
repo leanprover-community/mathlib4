@@ -164,7 +164,7 @@ lemma ofCoeff_inj {x y : M →₀ R} : ofCoeff x = ofCoeff y ↔ x = y := ofCoef
   inferInstanceAs <| IsCancelAdd <| M →₀ R
 
 -- TODO: Replace this with `coeff`. See https://github.com/leanprover-community/mathlib4/pull/36746
-#adaptation_note /-- Since v4.29.0-rc7,
+#adaptation_note /-- Since nightly-2026-03-22,
 this is needed or we get errors in UniversalFactorizationRing.lean -/
 set_option backward.inferInstanceAs.wrap false in
 @[to_additive] instance instCoeFun : CoeFun R[M] fun _ ↦ M → R :=
@@ -271,9 +271,9 @@ section
 example : (smulZeroClass (A := ℕ) (R := R) (M := M)).toSMul = addCommMonoid.toNSMul := by
   with_reducible_and_instances rfl
 
--- Enusre that smul has good defeq properties
+-- Ensure that smul has good defeq properties
 private local instance {α} [Monoid M] [SMul M α] : SMul Mˣ α where smul m a := (m : M) • a
-example [Monoid A] [SMulZeroClass A R] (a : Units A) (x : R[M]) :
+example [Monoid A] (a : Units A) (x : R[M]) :
     a • x = (a : A) • x := by
   with_reducible_and_instances rfl
 end

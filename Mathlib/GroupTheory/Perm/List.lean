@@ -320,12 +320,6 @@ theorem formPerm_apply_mem_ne_self_iff (hl : Nodup l) (x : α) (hx : x ∈ l) :
   rw [Ne, formPerm_apply_mem_eq_self_iff _ hl x hx, not_le]
   exact ⟨Nat.succ_le_of_lt, Nat.lt_of_succ_le⟩
 
-@[deprecated (since := "2025-10-06")]
-alias mem_of_formPerm_ne_self := mem_of_formPerm_apply_ne
-
-@[deprecated (since := "2025-10-06")]
-alias formPerm_eq_self_of_notMem := List.formPerm_apply_of_notMem
-
 theorem formPerm_eq_one_iff (hl : Nodup l) : formPerm l = 1 ↔ l.length ≤ 1 := by
   rcases l with - | ⟨hd, tl⟩
   · simp

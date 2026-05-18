@@ -23,7 +23,7 @@ arguments of the same type.
 * `f.map_perm` expresses how `f` varies by a sign change under a permutation of its inputs.
 * An `AddCommMonoid`, `AddCommGroup`, and `Module` structure over `AlternatingMap`s that
   matches the definitions over `MultilinearMap`s.
-* `MultilinearMap.domDomCongr`, for permuting the elements within a family.
+* `AlternatingMap.domDomCongr`, for permuting the elements within a family.
 * `MultilinearMap.alternatization`, which makes an alternating map out of a non-alternating one.
 * `AlternatingMap.curryLeft`, for binding the leftmost argument of an alternating map indexed
   by `Fin n.succ`.
@@ -473,10 +473,14 @@ def compAlternatingMapₗ [Semiring S] [Module S N] [Module S N₂]
   map_add' := g.compAlternatingMap_add
   map_smul' := g.compAlternatingMap_smul
 
-theorem smulRight_eq_comp {R M₁ M₂ ι : Type*} [CommSemiring R] [AddCommMonoid M₁]
+theorem _root_.AlternatingMap.smulRight_eq_comp
+    {R M₁ M₂ ι : Type*} [CommSemiring R] [AddCommMonoid M₁]
     [AddCommMonoid M₂] [Module R M₁] [Module R M₂] (f : M₁ [⋀^ι]→ₗ[R] R) (z : M₂) :
     f.smulRight z = (LinearMap.id.smulRight z).compAlternatingMap f :=
   rfl
+
+@[deprecated (since := "2026-05-14")]
+alias smulRight_eq_comp := AlternatingMap.smulRight_eq_comp
 
 @[simp]
 theorem subtype_compAlternatingMap_codRestrict (f : M [⋀^ι]→ₗ[R] N) (p : Submodule R N)
@@ -620,6 +624,16 @@ section
 theorem map_update_sum {α : Type*} [DecidableEq ι] (t : Finset α) (i : ι) (g : α → M) (m : ι → M) :
     f (update m i (∑ a ∈ t, g a)) = ∑ a ∈ t, f (update m i (g a)) :=
   f.toMultilinearMap.map_update_sum t i g m
+
+theorem map_add_univ [DecidableEq ι] [Fintype ι] (m m' : ι → M) :
+    f (m + m') = ∑ s : Finset ι, f (s.piecewise m m') :=
+  f.toMultilinearMap.map_add_univ m m'
+
+theorem map_smul_univ {R : Type*} [CommSemiring R] {M : Type*} [AddCommMonoid M]
+    [Module R M] {N : Type*} [AddCommMonoid N] [Module R N] [Fintype ι]
+    (f : M [⋀^ι]→ₗ[R] N) (c : ι → R) (m : ι → M) :
+    (f fun i => c i • m i) = (∏ i, c i) • f m :=
+  f.toMultilinearMap.map_smul_univ c m
 
 end
 
@@ -824,14 +838,8 @@ def alternatization : MultilinearMap R (fun _ : ι => M) N' →+ M [⋀^ι]→�
       toFun := ⇑(∑ σ : Perm ι, Equiv.Perm.sign σ • m.domDomCongr σ)
       map_eq_zero_of_eq' := private fun v i j hvij hij =>
         alternization_map_eq_zero_of_eq_aux m v i j hij hvij }
-  map_add' a b := by
-    ext
-    simp only [mk_coe, AlternatingMap.coe_mk, sum_apply, smul_apply, domDomCongr_apply, add_apply,
-      smul_add, Finset.sum_add_distrib, AlternatingMap.add_apply]
-  map_zero' := by
-    ext
-    simp only [mk_coe, AlternatingMap.coe_mk, sum_apply, smul_apply, domDomCongr_apply,
-      zero_apply, smul_zero, Finset.sum_const_zero, AlternatingMap.zero_apply]
+  map_add' a b := by ext; simp [Finset.sum_add_distrib]
+  map_zero' := by ext; simp
 
 theorem alternatization_def (m : MultilinearMap R (fun _ : ι => M) N') :
     ⇑(alternatization m) = (∑ σ : Perm ι, Equiv.Perm.sign σ • m.domDomCongr σ :) :=

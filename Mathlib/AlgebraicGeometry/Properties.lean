@@ -9,6 +9,7 @@ public import Mathlib.AlgebraicGeometry.AffineScheme
 public import Mathlib.AlgebraicGeometry.Limits
 public import Mathlib.RingTheory.KrullDimension.Zero
 public import Mathlib.RingTheory.LocalProperties.Reduced
+public import Mathlib.RingTheory.Ideal.Height
 
 /-!
 # Basic properties of schemes
@@ -22,7 +23,7 @@ We provide some basic properties of schemes
   are reduced.
 -/
 
-@[expose] public section
+public section
 
 -- Explicit universe annotations were used in this file to improve performance https://github.com/leanprover-community/mathlib4/issues/12737
 
@@ -61,6 +62,9 @@ instance {X : Scheme.{u}} : PrespectralSpace X :=
 instance : ObjectProperty.IsClosedUnderIsomorphisms (C := Scheme) (IrreducibleSpace ·) :=
   ⟨fun e ↦ e.hom.homeomorph.irreducibleSpace_iff.mp⟩
 
+instance : ObjectProperty.IsClosedUnderIsomorphisms (C := Scheme) (ConnectedSpace ·) :=
+  ⟨fun e ↦ e.hom.homeomorph.connectedSpace_iff.mp⟩
+
 /-- A scheme `X` is reduced if all `𝒪ₓ(U)` are reduced. -/
 class IsReduced : Prop where
   component_reduced : ∀ U, _root_.IsReduced Γ(X, U) := by infer_instance
@@ -81,7 +85,7 @@ instance isReduced_stalk_of_isReduced [IsReduced X] (x : X) :
     _root_.IsReduced (X.presheaf.stalk x) := by
   constructor
   rintro g ⟨n, e⟩
-  obtain ⟨U, hxU, s, (rfl : (X.presheaf.germ U x hxU) s = g)⟩ := X.presheaf.germ_exist x g
+  obtain ⟨U, hxU, s, (rfl : (X.presheaf.germ U x hxU) s = g)⟩ := X.presheaf.exists_germ_eq g
   rw [← map_pow, ← map_zero (X.presheaf.germ _ x hxU).hom] at e
   obtain ⟨V, hxV, iU, iV, (e' : (X.presheaf.map iU.op) (s ^ n) = (X.presheaf.map iV.op) 0)⟩ :=
     X.presheaf.germ_eq x hxU hxU _ 0 e
@@ -246,7 +250,6 @@ instance Scheme.component_nontrivial (X : Scheme.{u}) (U : X.Opens) [Nonempty U]
     Nontrivial Γ(X, U) :=
   LocallyRingedSpace.component_nontrivial (hU := ‹_›)
 
-set_option backward.isDefEq.respectTransparency false in
 instance irreducibleSpace_of_isIntegral [IsIntegral X] : IrreducibleSpace X := by
   by_contra H
   replace H : ¬IsPreirreducible .univ := fun h =>
@@ -342,6 +345,38 @@ noncomputable
 instance [IsIntegral X] : OrderTop X where
   top := genericPoint X
   le_top a := genericPoint_specializes a
+
+open IrreducibleCloseds Set in
+@[stacks 02I4]
+lemma coheight_eq_of_isOpenImmersion {U X : Scheme} {x : U} (f : U ⟶ X) [IsOpenImmersion f] :
+    Order.coheight (f.base x) = Order.coheight x := f.isOpenEmbedding.coheight_eq
+
+open Order in
+lemma idealHeight_eq_coheight (R : CommRingCat) (x : Spec R) :
+    x.asIdeal.height = coheight x := by
+  rw [Ideal.height_eq_primeHeight x.asIdeal, Ideal.primeHeight,
+    ← Order.coheight_orderIso (specOrderIsoPrimeSpectrum R), ← height_ofDual,
+    specOrderIsoPrimeSpectrum_apply, OrderDual.ofDual_toDual]
+  rfl
+
+open Order in
+@[stacks 02IZ]
+lemma ringKrullDim_stalk_eq_coheight {X : Scheme} (x : X) :
+    ringKrullDim (X.presheaf.stalk x) = coheight x := by
+  wlog h : ∃ R, X = Spec R
+  · obtain ⟨R, f, hf, hsub⟩ := Scheme.exists_affine_mem_range_and_range_subset
+      (show x ∈ ⊤ from trivial)
+    obtain ⟨y, rfl⟩ := Set.mem_range.mp hsub.1
+    rw [coheight_eq_of_isOpenImmersion, ← this _ ⟨R, rfl⟩]
+    exact Order.krullDim_eq_of_orderIso
+      (PrimeSpectrum.comapEquiv (asIso (Scheme.Hom.stalkMap f y)).commRingCatIsoToRingEquiv)
+  obtain ⟨R, rfl⟩ := h
+  let k : Algebra ↑R ↑((Spec R).presheaf.stalk x) := StructureSheaf.stalkAlgebra (↑R) x
+  have : IsLocalization.AtPrime (↑((Spec R).presheaf.stalk x)) x.asIdeal :=
+    StructureSheaf.IsLocalization.to_stalk R x
+  rw [IsLocalization.AtPrime.ringKrullDim_eq_height x.asIdeal ((Spec R).presheaf.stalk x)]
+  apply WithBot.coe_eq_coe.mpr
+  exact idealHeight_eq_coheight R x
 
 lemma isField_of_isIntegral_of_subsingleton (X : Scheme.{u}) [IsIntegral X] [Subsingleton X] :
     IsField Γ(X, ⊤) := by

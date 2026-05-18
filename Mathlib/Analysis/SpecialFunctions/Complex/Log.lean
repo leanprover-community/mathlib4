@@ -149,6 +149,22 @@ theorem exp_eq_one_iff {x : ℂ} : exp x = 1 ↔ ∃ n : ℤ, x = n * (2 * π * 
   · rintro ⟨n, rfl⟩
     exact (exp_periodic.int_mul n).eq.trans exp_zero
 
+theorem exp_eq_one_iff_of_im_nonneg {x : ℂ} (hx : 0 ≤ x.im) :
+    exp x = 1 ↔ ∃ n : ℕ, x = n * (2 * π * I) := by
+  rw [exp_eq_one_iff]
+  refine ⟨fun ⟨n, hn⟩ ↦ ?_, fun ⟨n, hn⟩ ↦ ⟨n, by rw [hn]; norm_cast⟩⟩
+  have : 0 ≤ n * (2 * π) := by simpa [hn] using hx
+  lift n to ℕ using by exact_mod_cast nonneg_of_mul_nonneg_left this (by positivity)
+  exact ⟨n, hn⟩
+
+theorem exp_two_pi_mul_I_mul_div_eq_one_iff {k N : ℕ} (hN : N ≠ 0) :
+    exp (2 * π * I * k / N) = 1 ↔ N ∣ k := by
+  rw [exp_eq_one_iff]
+  conv in _ = _ => rw [← mul_comm (2 * π * I), mul_div_assoc, mul_right_inj' (by simp)]
+  field_simp [Nat.cast_ne_zero.mpr hN]
+  norm_cast
+  simp [← dvd_def, Int.ofNat_dvd]
+
 theorem exp_eq_exp_iff_exp_sub_eq_one {x y : ℂ} : exp x = exp y ↔ exp (x - y) = 1 := by
   rw [exp_sub, div_eq_one_iff_eq (exp_ne_zero _)]
 

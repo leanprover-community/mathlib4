@@ -170,7 +170,7 @@ theorem sInf_toSubfield (S : Set (IntermediateField F E)) :
 @[simp]
 theorem sSup_toSubfield (S : Set (IntermediateField F E)) (hS : S.Nonempty) :
     (sSup S).toSubfield = sSup (toSubfield '' S) := by
-  have h : toSubfield '' S = Subfield.closure '' (SetLike.coe '' S) := by
+  have h : toSubfield '' S = Subfield.closure '' SetLike.coe '' S := by
     rw [Set.image_image]
     congr! with x
     exact x.toSubfield.closure_eq.symm
@@ -484,7 +484,7 @@ theorem adjoin_induction {s : Set E} {p : ∀ x ∈ adjoin F s, Prop}
     {x} (h : x ∈ adjoin F s) : p x h :=
   Subfield.closure_induction
     (fun x hx ↦ Or.casesOn hx (fun ⟨x, hx⟩ ↦ hx ▸ algebraMap x) (mem x))
-    (by simp_rw [← (_root_.algebraMap F E).map_one]; exact algebraMap 1) add
+    (by simp_rw [← (Algebra.algebraMap F E).map_one]; exact algebraMap 1) add
     (fun x _ h ↦ by
       simp_rw [← neg_one_smul F x, Algebra.smul_def]; exact mul _ _ _ _ (algebraMap _) h) inv mul h
 
