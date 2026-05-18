@@ -118,8 +118,7 @@ theorem Ideal.map_height_le_one_of_mem_minimalPrimes {I p : Ideal R} {x : R}
     (hp : p ∈ (I ⊔ span {x}).minimalPrimes) : (p.map (Ideal.Quotient.mk I)).height ≤ 1 :=
   let f := Ideal.Quotient.mk I
   have : p.IsPrime := hp.isPrime
-  have hfp : RingHom.ker f ≤ p :=
-    I.mk_ker.trans_le (le_sup_left.trans hp.le)
+  have hfp : RingHom.ker f ≤ p := I.mk_ker.trans_le (le_sup_left.trans hp.le)
   height_le_one_of_isPrincipal_of_mem_minimalPrimes ((span {x}).map f) (p.map f)
     ⟨⟨map_isPrime_of_surjective Quotient.mk_surjective hfp,
       map_mono (le_sup_right.trans hp.le)⟩,
@@ -154,7 +153,6 @@ theorem Ideal.mem_minimalPrimes_span_of_mem_minimalPrimes_span_insert {q p : Ide
   have hI'q : span t ≤ q := span_le.mpr htq
   have hI'p : span t ≤ p := hI'q.trans hqp.le
   have := hp.isPrime
-  have lep := hp.le
   have : (p.map f).IsPrime := map_isPrime_of_surjective hf (by rwa [mk_ker])
   suffices h : (p.map f).height ≤ 1 by
     have h_lt : q.map f < p.map f := (map_mono hqp.le).lt_of_not_ge fun e ↦ hqp.not_ge <| by
@@ -169,7 +167,7 @@ theorem Ideal.mem_minimalPrimes_span_of_mem_minimalPrimes_span_insert {q p : Ide
     rwa [comap_map_of_surjective f hf, ← RingHom.ker_eq_comap_bot,
       mk_ker, sup_eq_left.mpr hI'q] at this
   refine height_le_one_of_isPrincipal_of_mem_minimalPrimes ((span {x}).map f) (p.map f) ⟨⟨this,
-    map_mono <| span_le.mpr <| Set.singleton_subset_iff.mpr <| lep <| subset_span <| .inl rfl⟩,
+    map_mono <| span_le.mpr <| Set.singleton_subset_iff.mpr <| hp.le <| subset_span <| .inl rfl⟩,
     fun r ⟨hr, hxr⟩ hrp ↦ map_le_iff_le_comap.mpr (hp.2 ⟨hr.comap f, ?_⟩ ?_)⟩
   · rw [span_le, Set.insert_subset_iff]
     have := map_le_iff_le_comap.mp hxr (subset_span rfl)
@@ -498,15 +496,3 @@ lemma ringKrullDim_le_spanFinrank_maximalIdeal [IsLocalRing R] :
       Ideal.IsPrime.ne_top'))
 
 end Algebra
-
-/-- In a Noetherian local ring of positive Krull dimension,
-the square of the maximal ideal is strictly contained in the maximal ideal. -/
-lemma IsLocalRing.maximalIdeal_sq_lt [IsLocalRing R] (h : 0 < ringKrullDim R) :
-    (IsLocalRing.maximalIdeal R) ^ 2 < IsLocalRing.maximalIdeal R := by
-  refine lt_of_le_of_ne (Ideal.pow_le_self two_ne_zero) fun h_eq => h.ne' ?_
-  have : IsLocalRing.maximalIdeal R = ⊥ :=
-    Submodule.eq_bot_of_le_smul_of_le_jacobson_bot _ _
-      (IsNoetherian.noetherian _)
-      (by rw [Ideal.smul_eq_mul, ← sq]; exact h_eq.symm.le)
-      (IsLocalRing.maximalIdeal_le_jacobson ⊥)
-  rw [← IsLocalRing.maximalIdeal_height_eq_ringKrullDim, this, Ideal.height_bot, WithBot.coe_zero]
