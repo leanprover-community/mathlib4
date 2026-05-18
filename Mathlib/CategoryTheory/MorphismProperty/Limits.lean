@@ -1010,7 +1010,7 @@ instance (P : MorphismProperty C) [P.HasPullbacks] (P' : MorphismProperty C) :
     P.HasPullbacksAgainst P' where
   hasPullbacksAlong := inferInstance
 
-lemma HasPullbacksAgainst_top_iff
+lemma hasPullbacksAgainst_top_iff
     (P : MorphismProperty C) :
     P.IsStableUnderBaseChangeAgainst ⊤ ↔ P.IsStableUnderBaseChange where
   mp h :=
@@ -1018,7 +1018,7 @@ lemma HasPullbacksAgainst_top_iff
       (h.isStableUnderBaseChangeAlong _ (by tauto)).of_isPullback h' h''⟩
   mpr _ := inferInstance
 
-lemma hasPullback_ofHasPullbacksAgainst
+lemma _root_.CategoryTheory.Limits.hasPullback_ofHasPullbacksAgainst
     {P : MorphismProperty C} {P' : MorphismProperty C} {c c' c'' : C}
     {f : c ⟶ c'} {g : c'' ⟶ c'} [P.HasPullbacksAgainst P'] (hf : P f) (hg : P' g) :
     Limits.HasPullback f g :=
@@ -1058,7 +1058,7 @@ instance (P : MorphismProperty C) [P.HasPushouts] (P' : MorphismProperty C) :
     P.HasPushoutsAgainst P' where
   hasPushoutsAlong := inferInstance
 
-lemma HasPushoutsAgainst_top_iff
+lemma hasPushoutsAgainst_top_iff
     (P : MorphismProperty C) :
     P.IsStableUnderCobaseChangeAgainst ⊤ ↔ P.IsStableUnderCobaseChange where
   mp h :=
@@ -1066,7 +1066,7 @@ lemma HasPushoutsAgainst_top_iff
       (h.isStableUnderCobaseChangeAlong _ (by tauto)).of_isPushout h' h''⟩
   mpr _ := inferInstance
 
-lemma hasPullback_ofHasPushoutsAgainst
+lemma _root_.CategoryTheory.Limits.hasPushout_ofHasPushoutsAgainst
     {P : MorphismProperty C} {P' : MorphismProperty C} {c c' c'' : C}
     {f : c ⟶ c'} {g : c ⟶ c''} [P.HasPushoutsAgainst P'] (hf : P f) (hg : P' g) :
     Limits.HasPushout f g :=
