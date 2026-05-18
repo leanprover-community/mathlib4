@@ -48,7 +48,8 @@ initialize ruleProcDeclExt : SimpleScopedEnvExtension RuleProcDecl (Std.HashMap 
 def registerRuleProcPattern (declName : Name) (pattern : Expr) (levelParams : Array Name := #[])
     (defaultProc? : Option Expr := none) : MetaM Unit := do
   if pattern.hasExprMVar then
-    throwError "invalid ruleproc pattern for `{.ofConstName declName}` contains expression metavariables"
+    throwError "invalid ruleproc pattern for `{.ofConstName declName}` contains expression \
+      metavariables"
   let levelParams := levelParams ++ (exprLevelParams pattern).filter (!levelParams.contains ·)
   let (_, _, conclusion) ← forallMetaTelescope pattern
   let keys ← keysForPattern conclusion
@@ -168,8 +169,8 @@ syntax (name := ruleprocCmd) (docComment)? (Lean.Parser.Term.attributes)? "rulep
 @[command_elab ruleprocCmd]
 def elabRuleProc : Command.CommandElab := fun stx => do
   let cmdStx := stx
-  let `(command| $[$doc?:docComment]? $[$attrs?:attributes]? ruleproc $n:ident $preBs* $[, $postBs*]? :
-      $pat:term := $body:term) := cmdStx
+  let `(command| $[$doc?:docComment]? $[$attrs?:attributes]? ruleproc $n:ident $preBs*
+      $[, $postBs*]? : $pat:term := $body:term) := cmdStx
     | throwUnsupportedSyntax
   let scope ← Command.getScope
   let varDecls : TSyntaxArray ``Lean.Parser.Term.bracketedBinder :=

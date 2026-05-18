@@ -54,14 +54,21 @@ def currentGoalCache? : ApplyRuleSetsM (Option GoalCache) := do
   let caches := (← get).goalCaches
   return caches.back?
 
-def cacheCurrentFailure (goal : Goal) : ApplyRuleSetsM Unit := do
+def modifyGoalCacheAt (i : Nat) (f : GoalCache → GoalCache) : ApplyRuleSetsM Unit := do
   modify fun s =>
-    let i := s.goalCaches.size - 1
     if h : i < s.goalCaches.size then
-      let cache := { s.goalCaches[i] with failures := s.goalCaches[i].failures.insert goal }
-      { s with goalCaches := s.goalCaches.set i cache }
+      { s with goalCaches := s.goalCaches.set i (f s.goalCaches[i]) }
     else
       s
+
+def modifyCurrentGoalCache (f : GoalCache → GoalCache) : ApplyRuleSetsM Unit := do
+  let caches := (← get).goalCaches
+  unless caches.isEmpty do
+    modifyGoalCacheAt (caches.size - 1) f
+
+def cacheCurrentFailure (goal : Goal) : ApplyRuleSetsM Unit := do
+  modifyCurrentGoalCache fun cache =>
+    { cache with failures := cache.failures.insert goal }
 
 def containsCurrentFailure (goal : Goal) : ApplyRuleSetsM Bool := do
   return (← currentGoalCache?).any (·.failures.contains goal)
@@ -84,6 +91,8 @@ def maxLocalIndex? (es : Array Expr) : MetaM (Option Nat) := do
 def successCacheIndex (goal : Goal) (proof : Expr) : ApplyRuleSetsM Nat := do
   let maxIdx? ← maxLocalIndex? #[goal.expr, proof]
   let caches := (← get).goalCaches
+  if caches.isEmpty then
+    return 0
   let some maxIdx := maxIdx? | return 0
   for h : i in [:caches.size] do
     if maxIdx < caches[i].minLctxIndex then
@@ -94,12 +103,8 @@ def cacheSuccess (goal : Goal) (proof : Expr) : ApplyRuleSetsM Unit := do
   let proof ← instantiateMVars proof
   unless proof.hasExprMVar do
     let i ← successCacheIndex goal proof
-    modify fun s =>
-      if h : i < s.goalCaches.size then
-        let cache := { s.goalCaches[i] with successes := s.goalCaches[i].successes.insert goal proof }
-        { s with goalCaches := s.goalCaches.set i cache }
-      else
-        s
+    modifyGoalCacheAt i fun cache =>
+      { cache with successes := cache.successes.insert goal proof }
 
 def mkGoal (e : Expr) : MetaM Goal := do
   let r ← abstractMVars (← instantiateMVars e)
@@ -200,7 +205,7 @@ partial def assumption? (origin : ArgOrigin) (goalType : Expr) : ApplyRuleSetsM 
 partial def applyRuleSets (origin : ArgOrigin) (goalType : Expr) :
     ApplyRuleSetsM (Option Expr) := do
   if let some r ← applyRuleSetsGoal origin (← mkGoal goalType) then
-    if ← isDefEq goalType (← inferType r) then
+    if ← withTransparency (← read).config.transparency <| isDefEq goalType (← inferType r) then
       return r
     else
       return none
@@ -266,6 +271,54 @@ partial def applyRuleSetsGoalCore (origin : ArgOrigin) (goal : Goal) (goalType :
   trace[Meta.Tactic.apply_rulesets] "no rule matched"
   return none
 
+partial def synthesizeInstanceArg? (ruleName : Name) (arg type : Expr) : ApplyRuleSetsM Bool := do
+  unless (← isClass? type).isSome do
+    return false
+  if let .some inst ← trySynthInstance type then
+    if ← isDefEq arg inst then
+      return true
+    trace[Meta.Tactic.apply_rulesets]
+      "{ruleName}, failed to assign instance{indentExpr type}\
+      \nsynthesized value{indentExpr inst}\nis not definitionally equal to{indentExpr arg}"
+  else
+    trace[Meta.Tactic.apply_rulesets]
+      "{ruleName}, failed to synthesize instance{indentExpr type}"
+  return false
+
+partial def synthesizeProofArg? (ruleName : Name) (argIndex : Nat) (arg type : Expr) :
+    ApplyRuleSetsM Bool := do
+  unless ← isProp type do
+    return false
+  let argName := (← getMCtx).getDecl arg.mvarId! |>.userName
+  let origin := { ruleName, argIndex := some argIndex, argName := some argName }
+  if let some proof ← withIncreasedSearchDepth <| applyRuleSets origin type then
+    if ← isDefEq arg proof then
+      return true
+    trace[Meta.Tactic.apply_rulesets]
+      "{ruleName}, failed to assign proof{indentExpr type}"
+  let ctx ← read
+  if let some proof ← ctx.disch origin type then
+    if ← isDefEq arg proof then
+      return true
+    trace[Meta.Tactic.apply_rulesets]
+      "{ruleName}, failed to assign discharger proof{indentExpr type}"
+  trace[Meta.Tactic.apply_rulesets]
+    "{ruleName}, failed to discharge hypothesis{indentExpr type}"
+  addFailedSubgoal arg
+  return true
+
+partial def checkPostponedArgs (ruleName : Name) (args : Array Expr) (allowPostponed : Bool) :
+    ApplyRuleSetsM Bool := do
+  let mut success := true
+  for arg in args do
+    if (← instantiateMVars arg).isMVar then
+      if allowPostponed then
+        continue
+      trace[Meta.Tactic.apply_rulesets]
+        "{ruleName}, failed to infer `({← ppExpr arg} : {← ppExpr (← inferType arg)})`"
+      success := false
+  return success
+
 /-- Synthesize arguments created by theorem or ruleproc application. -/
 partial def synthesizeArgs (ruleName : Name) (args : Array Expr)
     (allowPostponed := false) : ApplyRuleSetsM Bool := do
@@ -275,49 +328,16 @@ partial def synthesizeArgs (ruleName : Name) (args : Array Expr)
     let arg := args[i]
     if (← instantiateMVars arg).isMVar then
       let type ← inferType arg
-      if (← isClass? type).isSome then
-        if let .some inst ← trySynthInstance type then
-          if (← isDefEq arg inst) then
-            continue
-          else
-            trace[Meta.Tactic.apply_rulesets]
-              "{ruleName}, failed to assign instance{indentExpr type}\
-              \nsynthesized value{indentExpr inst}\nis not definitionally equal to{indentExpr arg}"
-        else
-          trace[Meta.Tactic.apply_rulesets]
-            "{ruleName}, failed to synthesize instance{indentExpr type}"
-      if (← isProp type) then
-        let argName := (← getMCtx).getDecl arg.mvarId! |>.userName
-        let origin := { ruleName, argIndex := some i, argName := some argName }
-        if let some proof ← withIncreasedSearchDepth <| applyRuleSets origin type then
-          if (← isDefEq arg proof) then
-            continue
-          else
-            trace[Meta.Tactic.apply_rulesets]
-              "{ruleName}, failed to assign proof{indentExpr type}"
-        let ctx ← read
-        if let some proof ← ctx.disch origin type then
-          if (← isDefEq arg proof) then
-            continue
-          else
-            trace[Meta.Tactic.apply_rulesets]
-              "{ruleName}, failed to assign discharger proof{indentExpr type}"
-        trace[Meta.Tactic.apply_rulesets]
-          "{ruleName}, failed to discharge hypothesis{indentExpr type}"
-        addFailedSubgoal arg
-        success := false
+      if ← synthesizeInstanceArg? ruleName arg type then
         continue
-      else
-        postponed := postponed.push arg
-  for arg in postponed do
-    if (← instantiateMVars arg).isMVar then
-      if allowPostponed then
+      if ← isProp type then
+        unless ← synthesizeProofArg? ruleName i arg type do
+          postponed := postponed.push arg
+        if (← instantiateMVars arg).isMVar then
+          success := false
         continue
-      trace[Meta.Tactic.apply_rulesets]
-        "{ruleName}, failed to infer `({← ppExpr arg} : {← ppExpr (← inferType arg)})`"
-      success := false
-      continue
-  return success
+      postponed := postponed.push arg
+  return success && (← checkPostponedArgs ruleName postponed allowPostponed)
 
 partial def tryRule? (origin : ArgOrigin) (goal : Goal) (rule : Rule) :
     ApplyRuleSetsM (Option Expr) := do

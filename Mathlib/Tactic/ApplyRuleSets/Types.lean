@@ -129,7 +129,6 @@ def Rule.allLevelParams (rule : Rule) : Array Name :=
 structure State where
   numSteps : Nat := 0
   depth : Nat := 0
-  messages : List String := []
   failedSubgoals : Array Expr := #[]
   /-- Per-run ruleset trees. `RefinedDiscrTree` resolves lazy entries during lookup, so each
   `getMatch` result must be stored back here for subsequent queries in the same tactic run. -/

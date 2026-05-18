@@ -62,8 +62,8 @@ def addProcRule (ruleSetName declName : Name) (kind : AttributeKind)
   let some decl ← getRuleProcDecl? declName
     | throwError "invalid ruleproc attribute: `{.ofConstName declName}` has no registered pattern"
   let some proc := decl.defaultProc?
-    | throwError "invalid ruleproc attribute: `{.ofConstName declName}` does not elaborate as a `RuleProc`; \
-      provide defaults for all ruleproc parameters before the comma"
+    | throwError "invalid ruleproc attribute: `{.ofConstName declName}` does not elaborate as a \
+      `RuleProc`; provide defaults for all ruleproc parameters before the comma"
   let rule : Rule := {
     origin := .decl declName
     type := .proc proc

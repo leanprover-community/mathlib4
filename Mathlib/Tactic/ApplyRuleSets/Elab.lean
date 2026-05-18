@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Tactic.ApplyRuleSets.Core
 public import Mathlib.Tactic.FunProp.Decl
+import Qq
 
 /-!
 # The `apply_rulesets` tactic
@@ -82,9 +83,10 @@ def addHaveSuggestions (ref : Syntax) (goals : Array Expr) : TacticM Unit := do
   for goal in goals do
     if !collected.contains goal then
       collected := collected.insert goal
+      let code := s!"have : {← ppExpr goal} := sorry"
       let suggestion : Suggestion := {
-        suggestion := .string s!"{indent}have : {← ppExpr goal} := sorry\n"
-        toCodeActionTitle? := some fun _ => "Insert `have` for current goal"
+        suggestion := .string s!"{indent}{code}\n"
+        toCodeActionTitle? := some fun _ => code
       }
       suggestions := suggestions.push suggestion
   addSuggestions ref suggestions (origSpan? := some (Syntax.ofRange insertionRange))
@@ -100,6 +102,19 @@ private def explicitOrigin (order : Nat) (ref : Syntax) (expr : Expr) : Origin :
     match expr.constName? with
     | some declName => .decl declName
     | none => .stx (explicitRuleId order) ref
+
+private def mkExplicitExprRule (origin : Origin) (order : Nat) (ref : Term) (e : Expr) :
+    TacticM Rule := do
+  let (e, pattern, levelParams) ←
+    if e.isLambda then
+      pure (e, ← inferType e, #[])
+    else
+      let e ← abstractMVars e
+      pure (e.expr, ← inferType e.expr, e.paramNames)
+  let rule : Rule := { origin, type := .expr e, pattern, levelParams, order }
+  if rule.hasExprMVar then
+    throwErrorAt ref "explicit rule contains expression metavariables"
+  return rule
 
 private def evalApplyRuleSetsCore (cfgStx : TSyntax ``Parser.Tactic.optConfig)
     (d? : Option (TSyntax ``Parser.Tactic.discharger))
@@ -143,30 +158,7 @@ private def evalApplyRuleSetsCore (cfgStx : TSyntax ``Parser.Tactic.optConfig)
       if let some rule ← explicitRuleProcRule? origin e then
         explicitRules := explicitRules.push { rule with order := i }
       else
-        if e.isLambda then
-          let type ← inferType e
-          let rule : Rule := {
-            origin := origin
-            type := .expr e
-            pattern := type
-            order := i
-          }
-          if rule.hasExprMVar then
-            throwErrorAt explicitTerms[i] "explicit rule contains expression metavariables"
-          explicitRules := explicitRules.push rule
-        else
-          let e ← abstractMVars e
-          let type ← inferType e.expr
-          let rule : Rule := {
-            origin := origin
-            type := .expr e.expr
-            pattern := type
-            levelParams := e.paramNames
-            order := i
-          }
-          if rule.hasExprMVar then
-            throwErrorAt explicitTerms[i] "explicit rule contains expression metavariables"
-          explicitRules := explicitRules.push rule
+        explicitRules := explicitRules.push (← mkExplicitExprRule origin i explicitTerms[i] e)
     Term.synthesizeSyntheticMVarsNoPostponing
     let ctx : Context :=
       { config := cfg,
