@@ -827,6 +827,13 @@ theorem setToFun_const [CompleteSpace F] [IsFiniteMeasure μ]
   rw [this]
   exact setToFun_indicator_const hT MeasurableSet.univ (measure_ne_top _ _) x
 
+theorem setToFun_simpleFunc [CompleteSpace F] (hT : DominatedFinMeasAdditive μ T C)
+    (f : SimpleFunc α E) :
+    setToFun μ T hT f = ∑ x ∈ f.range, T (f ⁻¹' {x}) x := by
+
+
+#exit
+
 section Order
 
 variable {G' G'' : Type*}
