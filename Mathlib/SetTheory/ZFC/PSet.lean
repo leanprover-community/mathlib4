@@ -35,7 +35,7 @@ universe u v
   is a family of pre-sets indexed by a type in `Type u`.
   The ZFC universe is defined as a quotient of this
   to ensure extensionality. -/
-@[pp_with_univ, use_set_notation]
+@[pp_with_univ, use_set_notation_for_order]
 inductive PSet : Type (u + 1)
   | mk (α : Type u) (A : α → PSet) : PSet
 
