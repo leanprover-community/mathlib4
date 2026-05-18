@@ -548,12 +548,6 @@ noncomputable def SymmetricCategory.ofFullyFaithful {C D : Type*} [Category* C] 
       simp +instances [h, BraidedCategory.ofFullyFaithful, BraidedCategory.ofFaithful] }
   .ofFaithful F
 
-@[deprecated (since := "2025-10-17")]
-alias symmetricCategoryOfFaithful := SymmetricCategory.ofFaithful
-
-@[deprecated (since := "2025-10-17")]
-alias symmetricCategoryOfFullyFaithful := SymmetricCategory.ofFullyFaithful
-
 namespace Functor.Braided
 
 instance : (𝟭 C).Braided where
