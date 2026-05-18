@@ -226,15 +226,23 @@ section OrderedAddMonoid
 
 variable [LinearOrder α]
 
-instance Lex.orderBot [AddCommMonoid N] [PartialOrder N] [CanonicallyOrderedAdd N] :
+instance Lex.orderBot [AddCommMonoid N] [PartialOrder N] [IsBotZeroClass N] :
     OrderBot (Lex (α →₀ N)) where
   bot := 0
   bot_le _ := Finsupp.toLex_monotone bot_le
 
-instance Colex.orderBot [AddCommMonoid N] [PartialOrder N] [CanonicallyOrderedAdd N] :
+instance Lex.isBotZeroClass [AddCommMonoid N] [PartialOrder N] [IsBotZeroClass N] :
+    IsBotZeroClass (Lex (α →₀ N)) where
+  isBot_zero := isBot_bot
+
+instance Colex.orderBot [AddCommMonoid N] [PartialOrder N] [IsBotZeroClass N] :
     OrderBot (Colex (α →₀ N)) where
   bot := 0
   bot_le _ := Finsupp.toColex_monotone bot_le
+
+instance Colex.isBotZeroClass [AddCommMonoid N] [PartialOrder N] [IsBotZeroClass N] :
+    IsBotZeroClass (Colex (α →₀ N)) where
+  isBot_zero := isBot_bot
 
 instance Lex.isOrderedCancelAddMonoid
     [AddCommMonoid N] [PartialOrder N] [IsOrderedCancelAddMonoid N] :
