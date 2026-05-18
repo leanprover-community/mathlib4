@@ -11,10 +11,11 @@ public import Mathlib.Algebra.Module.StablyFree.FreeOfInvertible
 public import Mathlib.Algebra.Module.StablyFree.HasFiniteFreeResolution
 public import Mathlib.RingTheory.Ideal.UFD
 public import Mathlib.RingTheory.LocalProperties.Invertible
+public import Mathlib.RingTheory.LocalRing.MaximalIdeal.Square
 public import Mathlib.RingTheory.RegularLocalRing.Localization
 
 /-!
-This file proves that any regular local ring is a unique factorization domain.
+# Any regular local ring is a UFD
 -/
 
 public section
@@ -23,20 +24,7 @@ universe u
 
 variable {R : Type u} [CommRing R]
 
-open Module Ideal
-
--- [Mathlib.LinearAlgebra.Dimension.FreeAndStrongRankCondition]
-theorem Ideal.isPrincipal_of_free {R : Type u} [Ring R] [StrongRankCondition R] {I : Ideal R}
-    [Module.Free R I] : I.IsPrincipal :=
-  (Submodule.rank_le_one_iff_isPrincipal I).1 ((Submodule.rank_le I).trans_eq (Module.rank_self R))
-
--- [Mathlib.RingTheory.Ideal.Height]
-lemma IsLocalization.AtPrime.ringKrullDim_lt_of_lt_maximalIdeal [IsLocalRing R]
-    {P : Ideal R} [P.IsPrime] [P.FiniteHeight] (hP : P < IsLocalRing.maximalIdeal R) :
-    ringKrullDim (Localization.AtPrime P) < ringKrullDim R := by
-  rw [IsLocalization.AtPrime.ringKrullDim_eq_height P _]
-  exact lt_of_lt_of_eq (by exact_mod_cast Ideal.height_strict_mono_of_isPrime hP)
-    IsLocalRing.maximalIdeal_height_eq_ringKrullDim
+open Module
 
 namespace IsRegularLocalRing
 
@@ -70,8 +58,8 @@ private lemma ufd_localization_away_of_prime_of_nonmaximal_localizations_ufd [Is
       have hd : Disjoint (P.primeCompl : Set (Localization.Away x)) Q := by
         simp [Ideal.primeCompl, ← le_compl_iff_disjoint_left, hQP]
       have hQh : Q'.height = 1 := by
-        simp [Q', IsLocalization.comap_map_of_isPrime_disjoint P.primeCompl (Localization.AtPrime P)
-          inferInstance hd, hQheight, ← IsLocalization.height_comap P.primeCompl Q']
+        simp [Q', IsLocalization.under_map_of_isPrime_disjoint P.primeCompl (Localization.AtPrime P)
+          inferInstance hd, hQheight, ← IsLocalization.height_under P.primeCompl Q']
       have := UniqueFactorizationMonoid.height_one_primes_principal hQh
       exact Module.Invertible.congr <| Q'.isoBaseOfIsPrincipal
         (Ideal.height_eq_zero_iff_eq_bot.not.mp (by simp [hQh])) ≪≫ₗ eIdeal.symm
@@ -84,7 +72,7 @@ private lemma ufd_localization_away_of_prime_of_nonmaximal_localizations_ufd [Is
       (Submodule.quotEquivOfEq _ _ (q.localized'_eq_map (Localization.Away x) M))
   have : HasFiniteFreeResolution (Localization.Away x) (Localization.Away x ⧸ Q) :=
     HasFiniteFreeResolution.of_linearEquiv <| AlgEquiv.toLinearEquiv <|
-      Ideal.quotientEquivAlgOfEq (Localization.Away x) (IsLocalization.map_comap M _ Q)
+      Ideal.quotientEquivAlgOfEq (Localization.Away x) (IsLocalization.map_under M _ Q)
   have : Free (Localization.Away x) Q := by
     have := HasFiniteFreeResolution.of_shortExact_of_middle_of_right _ _
       (Submodule.subtype_injective Q) (Submodule.mkQ_surjective Q) (LinearMap.exact_subtype_mkQ Q)
@@ -105,10 +93,11 @@ instance (priority := low) uniqueFactorizationMonoid [IsRegularLocalRing R] :
           have := (isField_of_isRegularLocalRing_of_dimension_zero h).isPrincipalIdealRing
           infer_instance
       | succ n =>
-          obtain ⟨x, hxm, hxnm⟩ := by
-            apply Set.exists_of_ssubset ((IsLocalRing.maximalIdeal_sq_lt_maximalIdeal S).mpr ?_)
-            contrapose h
-            simpa only [ringKrullDim_eq_zero_of_isField h] using not_eq_of_beq_eq_false rfl
+          have hsd : ringKrullDim S ≠ 0 := by
+            rw [h]
+            norm_cast
+          obtain ⟨x, hxm, hxnm⟩ :=
+            Set.exists_of_ssubset (IsLocalRing.maximalIdeal_sq_lt_of_ringKrullDim_ne_zero hsd)
           have hx_ne_zero : x ≠ 0 := fun hx0 ↦ hxnm (by simp [hx0])
           have : IsRegularLocalRing (S ⧸ Ideal.span {x}) := (quotient_span_singleton S hxm hxnm).1
           have hxp : Prime x := by
