@@ -835,8 +835,12 @@ theorem setToFun_simpleFunc [CompleteSpace F] (hT : DominatedFinMeasAdditive μ 
   have A : f =ᵐ[μ] g := h'f.coeFn_toLp.symm
   rw [setToFun_congr_ae hT A, L1.setToFun_eq_setToL1 hT, L1.setToL1_eq_setToL1SCLM]
   simp [L1.SimpleFunc.setToL1SCLM, L1.SimpleFunc.setToL1S]
-  apply (SimpleFunc.setToSimpleFunc_congr T _ _ hf _).symm
-  sorry
+  apply (SimpleFunc.setToSimpleFunc_congr T (fun s ↦ hT.eq_zero_of_measure_zero) hT.1 hf _).symm
+  grw [A]
+  symm
+
+
+#exit
 
 
 
