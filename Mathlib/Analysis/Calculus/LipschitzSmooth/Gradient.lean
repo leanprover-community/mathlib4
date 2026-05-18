@@ -23,10 +23,10 @@ equivalence with cocoercivity are deferred to follow-ups.
 
 ## Main results
 
-* `lipschitzSmoothWith_iff_inner_gradient` — characterisation in gradient form
-  under `Differentiable`.
-* `LipschitzSmoothWith.inner_gradient_descent_le` — the descent inequality in gradient form.
-* `LipschitzSmoothWith.inner_gradient_sub_le` — variance bound on the gradient.
+* `lipschitzSmoothWith_iff_inner_gradient` — characterisation in gradient form under
+  `Differentiable`.
+* `LipschitzSmoothWith.{inner_gradient_descent_le, inner_gradient_sub_le}` — the descent
+  inequality and the variance bound on the gradient.
 -/
 
 public section

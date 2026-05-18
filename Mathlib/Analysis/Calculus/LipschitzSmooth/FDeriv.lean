@@ -23,9 +23,8 @@ the full descent lemma — i.e. the converse direction
 ## Main results
 
 * `lipschitzSmoothWith_iff_fderiv` — characterisation in Fréchet form under `Differentiable`.
-* `LipschitzSmoothWith.fderiv_descent_le` — the descent inequality in Fréchet form.
-* `LipschitzSmoothWith.fderiv_apply_sub_le` — variance bound on the Fréchet derivative.
-* `LipschitzSmoothWith.fderiv_sub_apply_le` — function-subtraction restatement.
+* `LipschitzSmoothWith.{fderiv_descent_le, fderiv_apply_sub_le, fderiv_sub_apply_le}` —
+  the descent inequality and the variance bound on the Fréchet derivative.
 -/
 
 public section
