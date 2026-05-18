@@ -3621,6 +3621,7 @@ public import Mathlib.Combinatorics.SimpleGraph.Operations
 public import Mathlib.Combinatorics.SimpleGraph.Partition
 public import Mathlib.Combinatorics.SimpleGraph.Paths
 public import Mathlib.Combinatorics.SimpleGraph.Prod
+public import Mathlib.Combinatorics.SimpleGraph.QuotientGraph
 public import Mathlib.Combinatorics.SimpleGraph.Regularity.Bound
 public import Mathlib.Combinatorics.SimpleGraph.Regularity.Chunk
 public import Mathlib.Combinatorics.SimpleGraph.Regularity.Energy
@@ -3632,6 +3633,7 @@ public import Mathlib.Combinatorics.SimpleGraph.Representation
 public import Mathlib.Combinatorics.SimpleGraph.StronglyRegular
 public import Mathlib.Combinatorics.SimpleGraph.Subgraph
 public import Mathlib.Combinatorics.SimpleGraph.Sum
+public import Mathlib.Combinatorics.SimpleGraph.Symmetric
 public import Mathlib.Combinatorics.SimpleGraph.Trails
 public import Mathlib.Combinatorics.SimpleGraph.Triangle.Basic
 public import Mathlib.Combinatorics.SimpleGraph.Triangle.Counting
