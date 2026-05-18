@@ -109,6 +109,7 @@ theorem sdiff_subset_sdiff (hst : s ⊆ t) (hvu : v ⊆ u) : s \ u ⊆ t \ v := 
 variable (u) in
 lemma sdiff_subset_sdiff_left (h : s ⊆ t) : s \ u ⊆ t \ u := by gcongr
 
+variable (u) in
 lemma sdiff_subset_sdiff_right (h : s ⊆ t) : u \ t ⊆ u \ s := by gcongr
 
 theorem sdiff_subset_sdiff_iff_subset {r : Finset α} (hs : s ⊆ r) (ht : t ⊆ r) :
