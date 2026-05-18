@@ -228,7 +228,7 @@ Use `dense_iInter_of_isOpen` which works for any countable index type instead. -
 class BaireSpace (X : Type*) [TopologicalSpace X] : Prop where
   baire_property : ∀ f : ℕ → Set X, (∀ n, IsOpen (f n)) → (∀ n, Dense (f n)) → Dense (⋂ n, f n)
 
-/-- A type synonym for `X` associated with the topology `t`. -/
+/-- A one-field structure wrapper for `X` with the topology coinduced from `t`. -/
 structure WithTopology (X : Type*) (t : TopologicalSpace X) where
   /-- Converts an element of `X` to an element of `WithTopology X t`. -/
   toTopology (t) ::
