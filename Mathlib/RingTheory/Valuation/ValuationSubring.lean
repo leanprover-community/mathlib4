@@ -269,7 +269,7 @@ def mapOfLE (R S : ValuationSubring K) (h : R ≤ S) : R.ValueGroup →*₀ S.Va
   map_one' := rfl
   map_mul' := by rintro ⟨⟩ ⟨⟩; rfl
 
-@[mono]
+@[gcongr, mono]
 theorem monotone_mapOfLE (R S : ValuationSubring K) (h : R ≤ S) : Monotone (R.mapOfLE S h) := by
   rintro ⟨⟩ ⟨⟩ ⟨a, ha⟩; exact ⟨R.inclusion S h a, ha⟩
 

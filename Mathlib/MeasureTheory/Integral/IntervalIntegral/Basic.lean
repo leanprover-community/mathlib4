@@ -1089,7 +1089,7 @@ theorem sum_integral_adjacent_intervals {a : ℕ → ℝ} {n : ℕ}
     (hint : ∀ k < n, IntervalIntegrable f μ (a k) (a <| k + 1)) :
     ∑ k ∈ Finset.range n, ∫ x in a k..a <| k + 1, f x ∂μ = ∫ x in (a 0)..(a n), f x ∂μ := by
   rw [← Nat.Ico_zero_eq_range]
-  exact sum_integral_adjacent_intervals_Ico (zero_le n) fun k hk => hint k hk.2
+  exact sum_integral_adjacent_intervals_Ico zero_le fun k hk => hint k hk.2
 
 theorem integral_interval_sub_left (hab : IntervalIntegrable f μ a b)
     (hac : IntervalIntegrable f μ a c) :

@@ -270,7 +270,7 @@ lemma hf_modif_int :
     refine ContinuousOn.locallyIntegrableOn ?_ measurableSet_Ioi
     refine continuousOn_of_forall_continuousAt (fun x (hx : 0 < x) ↦ ?_)
     have : x ≠ 0 ∨ 0 ≤ -P.k := Or.inl hx.ne'
-    fun_prop (discharger := assumption)
+    fun_prop
   refine LocallyIntegrableOn.add (fun x hx ↦ ?_) (fun x hx ↦ ?_)
   · obtain ⟨s, hs, hs'⟩ := P.hf_int.sub (locallyIntegrableOn_const _) x hx
     exact ⟨s, hs, hs'.indicator measurableSet_Ioi⟩
@@ -338,7 +338,6 @@ lemma f_modif_aux1 : EqOn (fun x ↦ P.f_modif x - P.f x + P.f₀)
       indicator_of_notMem (mem_singleton_iff.not.mpr hx'.ne')]
     abel
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Compute the Mellin transform of the modifying term used to kill off the constants at
 `0` and `∞`. -/
 lemma f_modif_aux2 [CompleteSpace E] {s : ℂ} (hs : P.k < re s) :
@@ -446,7 +445,7 @@ theorem Λ_residue_k :
   · rw [(by rw [sub_self, zero_smul] : 𝓝 0 = 𝓝 ((P.k - P.k : ℂ) • (1 / P.k : ℂ) • P.f₀))]
     refine (continuous_sub_right _).continuousAt.smul (ContinuousAt.smul ?_ continuousAt_const)
     have := ofReal_ne_zero.mpr P.hk.ne'
-    fun_prop (discharger := assumption)
+    fun_prop
   · refine (tendsto_const_nhds.mono_left nhdsWithin_le_nhds).congr' ?_
     refine eventually_nhdsWithin_of_forall (fun s (hs : s ≠ P.k) ↦ ?_)
     match_scalars

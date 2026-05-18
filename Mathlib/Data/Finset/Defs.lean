@@ -122,10 +122,6 @@ instance decidableMem [_h : DecidableEq α] (a : α) (s : Finset α) : Decidable
 
 instance : PartialOrder (Finset α) := .ofSetLike (Finset α) α
 
-/-- Convert a finset to a set in the natural way. -/
-@[deprecated SetLike.coe (since := "2025-10-22")]
-abbrev toSet (s : Finset α) : Set α := s
-
 @[norm_cast, grind =]
 theorem mem_coe {a : α} {s : Finset α} : a ∈ (s : Set α) ↔ a ∈ (s : Finset α) :=
   Iff.rfl

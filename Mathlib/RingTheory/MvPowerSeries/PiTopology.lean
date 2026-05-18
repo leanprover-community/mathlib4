@@ -149,8 +149,7 @@ theorem tendsto_trunc_atTop [DecidableEq σ] [CommSemiring R] [Nonempty σ] (f :
   intro n hn
   rw [MvPolynomial.coeff_coe, coeff_trunc, if_pos]
   apply lt_of_lt_of_le _ hn
-  simp only [lt_add_iff_pos_right, Finsupp.lt_def]
-  refine ⟨zero_le _, ⟨s, by simp⟩⟩
+  simpa [Finsupp.lt_def] using ⟨s, by simp⟩
 
 /-- The inclusion of polynomials into power series has dense image -/
 theorem denseRange_toMvPowerSeries [CommSemiring R] :

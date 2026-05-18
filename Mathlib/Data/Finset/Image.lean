@@ -176,7 +176,7 @@ theorem filter_map {p : β → Prop} [DecidablePred p] :
 lemma map_filter' (p : α → Prop) [DecidablePred p] (f : α ↪ β) (s : Finset α)
     [DecidablePred (∃ a, p a ∧ f a = ·)] :
     (s.filter p).map f = (s.map f).filter fun b => ∃ a, p a ∧ f a = b := by
-  simp [Function.comp_def, filter_map, f.injective.eq_iff]
+  simp [filter_map]
 
 lemma filter_attach' [DecidableEq α] (s : Finset α) (p : s → Prop) [DecidablePred p] :
     s.attach.filter p =
@@ -594,7 +594,7 @@ theorem mem_subtype {p : α → Prop} [DecidablePred p] {s : Finset α} :
 theorem subtype_eq_empty {p : α → Prop} [DecidablePred p] {s : Finset α} :
     s.subtype p = ∅ ↔ ∀ x, p x → x ∉ s := by simp [Finset.ext_iff, Subtype.forall]
 
-@[mono]
+@[gcongr, mono]
 theorem subtype_mono {p : α → Prop} [DecidablePred p] : Monotone (Finset.subtype p) :=
   fun _ _ h _ hx => mem_subtype.2 <| h <| mem_subtype.1 hx
 

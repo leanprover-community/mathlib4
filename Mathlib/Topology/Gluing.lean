@@ -232,8 +232,8 @@ theorem preimage_range (i j : D.J) : 𝖣.ι j ⁻¹' Set.range (𝖣.ι i) = Se
     Set.preimage_range_inter]
 
 theorem preimage_image_eq_image (i j : D.J) (U : Set (𝖣.U i)) :
-    𝖣.ι j ⁻¹' (𝖣.ι i '' U) = D.f _ _ '' ((D.t j i ≫ D.f _ _) ⁻¹' U) := by
-  have : D.f _ _ ⁻¹' (𝖣.ι j ⁻¹' (𝖣.ι i '' U)) = (D.t j i ≫ D.f _ _) ⁻¹' U := by
+    𝖣.ι j ⁻¹' 𝖣.ι i '' U = D.f _ _ '' (D.t j i ≫ D.f _ _) ⁻¹' U := by
+  have : D.f _ _ ⁻¹' 𝖣.ι j ⁻¹' 𝖣.ι i '' U = (D.t j i ≫ D.f _ _) ⁻¹' U := by
     ext x
     conv_rhs => rw [← Set.preimage_image_eq U (D.ι_injective _)]
     simp
@@ -244,7 +244,7 @@ theorem preimage_image_eq_image (i j : D.J) (U : Set (𝖣.U i)) :
   exact Set.preimage_mono (Set.image_subset_range _ _)
 
 theorem preimage_image_eq_image' (i j : D.J) (U : Set (𝖣.U i)) :
-    𝖣.ι j ⁻¹' (𝖣.ι i '' U) = (D.t i j ≫ D.f _ _) '' (D.f _ _ ⁻¹' U) := by
+    𝖣.ι j ⁻¹' 𝖣.ι i '' U = (D.t i j ≫ D.f _ _) '' D.f _ _ ⁻¹' U := by
   convert D.preimage_image_eq_image i j U using 1
   rw [coe_comp, coe_comp, Set.image_comp]
   congr! 1

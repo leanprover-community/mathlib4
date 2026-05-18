@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.Category.ModuleCat.Sheaf.Free
 public import Mathlib.Algebra.Category.ModuleCat.Sheaf.PushforwardContinuous
-public import Mathlib.CategoryTheory.Sites.CoversTop
+public import Mathlib.CategoryTheory.Sites.CoversTop.Basic
 
 /-!
 # Generating sections of sheaves of modules
@@ -130,13 +130,5 @@ many sections. -/
 class IsFiniteType (M : SheafOfModules.{u} R) : Prop where
   exists_localGeneratorsData (M) :
     ∃ (σ : M.LocalGeneratorsData), σ.IsFiniteType
-
-/-- A choice of local generators when `M` is a sheaf of modules of finite type. -/
-@[deprecated "Use the lemma `IsFiniteType.exists_localGeneratorsData` instead."
-  (since := "2025-10-28")]
-noncomputable def localGeneratorsDataOfIsFiniteType (M : SheafOfModules.{u} R)
-    [M.IsFiniteType] :
-    M.LocalGeneratorsData :=
-  (IsFiniteType.exists_localGeneratorsData M).choose
 
 end SheafOfModules

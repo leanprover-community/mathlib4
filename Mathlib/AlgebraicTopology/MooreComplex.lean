@@ -124,7 +124,7 @@ variable {X} {Y : SimplicialObject C} (f : X ⟶ Y)
 -/
 @[simps!]
 def map (f : X ⟶ Y) : obj X ⟶ obj Y :=
-  ChainComplex.ofHom _ _ _ _ _ _
+  ChainComplex.ofHom
     (fun n => factorThru _ (arrow _ ≫ f.app (op ⦋n⦌)) (by
       cases n <;> dsimp
       · apply top_factors
@@ -133,8 +133,7 @@ def map (f : X ⟶ Y) : obj X ⟶ obj Y :=
           ← factorThru_arrow _ _ (finset_inf_arrow_factors Finset.univ _ i (by simp)),
           Category.assoc]
         rw [← SimplicialObject.δ_def, kernelSubobject_arrow_comp_assoc, zero_comp, comp_zero]))
-    fun n => by
-    cases n <;> dsimp [objD, objX] <;> cat_disch
+    fun n => by cases n <;> dsimp [objD, objX, ChainComplex.of.d] <;> cat_disch
 
 end NormalizedMooreComplex
 
@@ -156,7 +155,7 @@ def normalizedMooreComplex : SimplicialObject C ⥤ ChainComplex C ℕ where
 
 -- Not `@[simp]` as `simp` can prove this.
 theorem normalizedMooreComplex_objD (X : SimplicialObject C) (n : ℕ) :
-    ((normalizedMooreComplex C).obj X).d (n + 1) n = NormalizedMooreComplex.objD X n :=
-  ChainComplex.of_d _ _ (d_squared X) n
+    ((normalizedMooreComplex C).obj X).d (n + 1) n = NormalizedMooreComplex.objD X n := by
+  simp [-objD, -obj_X]
 
 end AlgebraicTopology

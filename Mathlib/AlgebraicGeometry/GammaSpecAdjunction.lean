@@ -205,8 +205,8 @@ theorem toStalk_stalkMap_toΓSpec (x : X) :
   rw [PresheafedSpace.Hom.stalkMap,
     ← algebraMap_germ (basicOpen (1 : Γ.obj (op X))) _ (by rw [basicOpen_one]; trivial),
     ← Category.assoc, Category.assoc (CommRingCat.ofHom _), stalkFunctor_map_germ, ← Category.assoc,
-    X.toΓSpecSheafedSpace_app_eq, X.toΓSpecCApp_spec, Γgerm]
-  erw [← stalkPushforward_germ _ _ X.presheaf ⊤]
+    X.toΓSpecSheafedSpace_app_eq, X.toΓSpecCApp_spec, Γgerm,
+    ← dsimp% stalkPushforward_germ _ _ X.presheaf ⊤]
   congr 1
   exact (X.toΓSpecBase _* X.presheaf).germ_res le_top.hom _ _
 
@@ -448,8 +448,6 @@ end ΓSpec
 
 theorem Scheme.toSpecΓ_apply (X : Scheme.{u}) (x) :
     Scheme.toSpecΓ X x = Spec.map (X.presheaf.Γgerm x) (IsLocalRing.closedPoint _) := rfl
-
-@[deprecated (since := "2025-10-17")] alias Scheme.toSpecΓ_base := Scheme.toSpecΓ_apply
 
 @[reassoc]
 theorem Scheme.toSpecΓ_naturality {X Y : Scheme.{u}} (f : X ⟶ Y) :

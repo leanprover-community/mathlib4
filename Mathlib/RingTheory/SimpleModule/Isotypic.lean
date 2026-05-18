@@ -221,7 +221,7 @@ theorem Submodule.le_linearEquiv_of_sSup_eq_top [IsSemisimpleModule R M]
   have := IsSimpleModule.nontrivial R N
   have ⟨_, compl⟩ := exists_isCompl N
   have ⟨m, hm, ne⟩ := exists_ne_zero_of_sSup_eq_top (ne_zero_of_surjective
-    (N.linearProjOfIsCompl_surjective compl)) _ hs
+    (projectionOnto_surjective compl)) _ hs
   have ⟨S, ⟨e⟩⟩ := linearEquiv_of_ne_zero ne
   exact ⟨m, hm, _, m.map_subtype_le S, ⟨e.trans (S.equivMapOfInjective _ m.subtype_injective)⟩⟩
 
