@@ -919,11 +919,6 @@ theorem ProdLex_iff [PartialOrder α] [Preorder β] {s : Set (α ×ₗ β)} :
 
 end Set.PartiallyWellOrderedOn
 
-@[deprecated isPWO_of_wellQuasiOrderedLE (since := "2025-11-11")]
-theorem Pi.isPWO {α : ι → Type*} [∀ i, Preorder (α i)] [∀ i, WellQuasiOrderedLE (α i)] [Finite ι]
-    (s : Set (∀ i, α i)) : s.IsPWO :=
-  isPWO_of_wellQuasiOrderedLE s
-
 section ProdLex
 variable {rα : α → α → Prop} {rβ : β → β → Prop} {f : γ → α} {g : γ → β} {s : Set γ}
 

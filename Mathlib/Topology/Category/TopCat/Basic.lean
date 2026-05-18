@@ -270,7 +270,7 @@ lemma isEmbedding_iff ⦃A X : TopCat⦄ (f : A ⟶ X) : isEmbedding f ↔ Topol
 
 /-- The constant morphism `X ⟶ Y` in `TopCat` given by `y : Y`. -/
 def const {X Y : TopCat.{u}} (y : Y) : X ⟶ Y :=
-  ofHom ⟨fun _ ↦ y, by continuity⟩
+  ofHom ⟨fun _ ↦ y, by fun_prop⟩
 
 @[simp]
 lemma const_apply {X Y : TopCat.{u}} (y : Y) (x : X) :
