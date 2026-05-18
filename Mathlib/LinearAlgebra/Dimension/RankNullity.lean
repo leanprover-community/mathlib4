@@ -104,14 +104,12 @@ theorem LinearMap.lift_rank_comap_le {f : M →ₗ[R] M'} (p : Submodule R M') :
     exact rank_mono fun x hx ↦ by aesop (add simp Subtype.ext_iff)
   have hr : Module.rank R f'.range ≤ Module.rank R p := by grw [Submodule.rank_le f'.range]
   rw [← f'.lift_rank_range_add_rank_ker]
-  gcongr
-  · rwa [lift_le]
-  · rwa [lift_le]
+  gcongr <;> rwa [lift_le]
 
 omit [HasRankNullity.{u} R] in
 lemma LinearMap.rank_quot_submodule_map_eq [HasRankNullity.{v} R]
     {f : M →ₗ[R] M'} (p : Submodule R M) :
-    (Module.rank R (M' ⧸ map f p)) =
+    Module.rank R (M' ⧸ map f p) =
       Module.rank R (M' ⧸ f.range) + Module.rank R (f.range ⧸ map f.rangeRestrict p) := by
   let f' : M' ⧸ map f p →ₗ[R] M' ⧸ f.range := factor map_le_range
   let +nondep e : (f.range ⧸ map f.rangeRestrict p) ≃ₗ[R] f'.ker := by
@@ -131,12 +129,10 @@ theorem LinearMap.lift_rank_quot_map_le [HasRankNullity.{v} R]
     {f : M →ₗ[R] M'} (p : Submodule R M) :
     lift.{u} (Module.rank R (M' ⧸ map f p)) ≤
       lift.{u} (Module.rank R (M' ⧸ f.range)) + lift.{v} (Module.rank R (M ⧸ p)) := by
-  have aux : lift.{u} (Module.rank R (f.range ⧸ map f.rangeRestrict p)) ≤
-      lift.{v} (Module.rank R (M ⧸ p)) := by
-    let f' : M ⧸ p →ₗ[R] f.range ⧸ map f.rangeRestrict p :=
-      mapQ p (map f.rangeRestrict p) f.rangeRestrict <| by rw [comap_map_eq]; exact le_sup_left
-    exact lift_rank_le_of_surjective f' <| by rw [← range_eq_top, range_mapQ]; simp
-  grw [rank_quot_submodule_map_eq, lift_add, aux]
+  rw [rank_quot_submodule_map_eq, lift_add]; gcongr
+  let f' : M ⧸ p →ₗ[R] f.range ⧸ map f.rangeRestrict p :=
+    mapQ p (map f.rangeRestrict p) f.rangeRestrict <| by rw [comap_map_eq]; exact le_sup_left
+  exact lift_rank_le_of_surjective f' <| by rw [← range_eq_top, range_mapQ]; simp
 
 theorem exists_linearIndepOn_of_lt_rank [StrongRankCondition R]
     {s : Set M} (hs : LinearIndepOn R id s) :

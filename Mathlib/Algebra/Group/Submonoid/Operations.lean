@@ -870,8 +870,7 @@ theorem submonoidMap_surjective (f : M →* N) (M' : Submonoid M) :
 @[to_additive (attr := grind inj)]
 theorem submonoidMap_injective {f : M →* N} (hf : Injective f) (M' : Submonoid M) :
     Injective (f.submonoidMap M') := by
-  intro _ _ _
-  grind [submonoidMap_apply_coe]
+  grind [Injective, submonoidMap_apply_coe]
 end MonoidHom
 
 namespace Submonoid
