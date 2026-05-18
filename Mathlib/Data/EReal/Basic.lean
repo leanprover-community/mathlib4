@@ -337,6 +337,10 @@ protected theorem coe_pos {x : ℝ} : (0 : EReal) < x ↔ 0 < x :=
 protected theorem coe_neg' {x : ℝ} : (x : EReal) < 0 ↔ x < 0 :=
   EReal.coe_lt_coe_iff
 
+@[simp, norm_cast]
+theorem coe_max (x y : ℝ) : (↑(max x y) : EReal) = max ↑x ↑y :=
+  rfl
+
 lemma toReal_eq_zero_iff {x : EReal} : x.toReal = 0 ↔ x = 0 ∨ x = ⊤ ∨ x = ⊥ := by
   cases x <;> norm_num
 
