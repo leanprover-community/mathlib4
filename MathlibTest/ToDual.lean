@@ -418,3 +418,22 @@ class Category.{v,u} (c : Type u) where
 
 @[to_dual self (reorder := A B, 2 4)]
 structure Comma {A : Type u} [Category.{v} A] {B : Type u'} [Category.{v'} B] where
+
+open Mathlib.Tactic Translate ToDual
+
+/-- info: "leftMono" -/
+#guard_msgs in
+#eval return GuessName.guessName (data.guessNameExt.getState (← getEnv)) "leftMono"
+
+to_dual_name_hint LeftMono FooBar
+
+/-- info: "fooBar" -/
+#guard_msgs in
+#eval return GuessName.guessName (data.guessNameExt.getState (← getEnv)) "leftMono"
+
+to_dual_name_hint Left Right
+to_dual_name_hint Epi Mono
+
+/-- info: "right_epi" -/
+#guard_msgs in
+#eval return GuessName.guessName (data.guessNameExt.getState (← getEnv)) "left_mono"

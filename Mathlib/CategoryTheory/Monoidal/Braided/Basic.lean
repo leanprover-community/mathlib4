@@ -548,12 +548,6 @@ noncomputable def SymmetricCategory.ofFullyFaithful {C D : Type*} [Category* C] 
       simp +instances [h, BraidedCategory.ofFullyFaithful, BraidedCategory.ofFaithful] }
   .ofFaithful F
 
-@[deprecated (since := "2025-10-17")]
-alias symmetricCategoryOfFaithful := SymmetricCategory.ofFaithful
-
-@[deprecated (since := "2025-10-17")]
-alias symmetricCategoryOfFullyFaithful := SymmetricCategory.ofFullyFaithful
-
 namespace Functor.Braided
 
 instance : (𝟭 C).Braided where
@@ -778,6 +772,14 @@ lemma tensorμ_comp_μ_tensorHom_μ_comp_μ (F : C ⥤ D) [F.LaxBraided] (W X Y 
 end Tensor
 
 end MonoidalCategory
+
+@[reassoc]
+theorem SymmetricCategory.tensorμ_braid_swap
+    {C : Type*} [Category* C] [MonoidalCategory C] [SymmetricCategory C]
+    (X Y : C) :
+    tensorμ X X Y Y ≫ (β_ (X ⊗ Y) (X ⊗ Y)).hom =
+      ((β_ X X).hom ⊗ₘ (β_ Y Y).hom) ≫ tensorμ X X Y Y := by
+  simp [tensorμ, SymmetricCategory.braiding_swap_eq_inv_braiding Y X, tensorHom_def]
 
 instance : BraidedCategory Cᵒᵖ where
   braiding X Y := (β_ Y.unop X.unop).op

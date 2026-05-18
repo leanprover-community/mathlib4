@@ -221,7 +221,7 @@ protected theorem HasProd.map [CommMonoid γ] [TopologicalSpace γ] (hf : HasPro
 protected theorem Topology.IsInducing.hasProd_iff [CommMonoid γ] [TopologicalSpace γ] {G}
     [FunLike G α γ] [MonoidHomClass G α γ] {g : G} (hg : IsInducing g) (f : β → α) (a : α) :
     HasProd (g ∘ f) (g a) L ↔ HasProd f a L := by
-  simp_rw [HasProd, comp_apply, ← map_prod]
+  simp_rw [HasProd, comp_apply, ← _root_.map_prod]
   exact hg.tendsto_nhds_iff.symm
 
 @[to_additive]
@@ -261,7 +261,7 @@ lemma Topology.IsClosedEmbedding.map_tprod {ι α α' G : Type*}
       simp only [Multipliable, HasProd] at h ⊢
       obtain ⟨b, hb⟩ := h
       obtain ⟨a, ha⟩ : b ∈ Set.range g :=
-        hge.isClosed_range.mem_of_tendsto hb (.of_forall <| by simp [← map_prod])
+        hge.isClosed_range.mem_of_tendsto hb (.of_forall <| by simp [← _root_.map_prod])
       use a
       simp [hge.tendsto_nhds_iff, Function.comp_def, ha, hb]
   · simpa [tprod_bot hL] using
@@ -288,7 +288,7 @@ lemma Topology.IsInducing.multipliable_iff_tprod_comp_mem_range [CommMonoid γ] 
     · by_cases hL : L.NeBot
       · exact ⟨_, hf.map_tprod g hg.continuous⟩
       · by_cases hfs : (mulSupport fun x ↦ g (f x)).Finite
-        · simp [tprod_bot hL, finprod_eq_prod _ hfs, ← map_prod]
+        · simp [tprod_bot hL, finprod_eq_prod _ hfs, ← _root_.map_prod]
         · exact ⟨1, by simp [tprod_bot hL, finprod_of_infinite_mulSupport hfs]⟩
   · rintro ⟨hgf, a, ha⟩
     use a

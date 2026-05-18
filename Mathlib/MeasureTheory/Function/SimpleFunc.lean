@@ -668,8 +668,6 @@ instance instPreorder : Preorder (α →ₛ β) := Preorder.lift (⇑)
 @[simp, norm_cast, gcongr] lemma coe_le_coe : ⇑f ≤ g ↔ f ≤ g := .rfl
 @[simp, norm_cast, gcongr] lemma coe_lt_coe : ⇑f < g ↔ f < g := .rfl
 
-@[deprecated (since := "2025-10-21")] alias coe_le := coe_le_coe
-
 @[simp, gcongr]
 lemma mk_le_mk {f g : α → β} {hf hg hf' hg'} : mk f hf hf' ≤ mk g hg hg' ↔ f ≤ g := Iff.rfl
 

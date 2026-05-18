@@ -403,7 +403,7 @@ variable (R M) in
 /-- The canonical linear map interpreting `s ∈ M_f` as a section of the structure sheaf
 on the basic open defined by `f ∈ R`. -/
 def toBasicOpenₗ (f : R) :
-    LocalizedModule (.powers f) M →ₗ[R] Γ(M, PrimeSpectrum.basicOpen f) :=
+    LocalizedModule.Away f M →ₗ[R] Γ(M, PrimeSpectrum.basicOpen f) :=
   IsLocalizedModule.lift (.powers f) (LocalizedModule.mkLinearMap ..) (toOpenₗ R M _) <| by
     simp only [Subtype.forall]
     exact Submonoid.powers_le (P := (IsUnit.submonoid _).comap (algebraMap R _)).mpr
@@ -511,7 +511,7 @@ theorem toBasicOpenₗ_surjective (f : R) : Function.Surjective (toBasicOpenₗ 
   simp_rw [one_smul, Finset.smul_sum, Submonoid.smul_def, smul_comm (b i), hab _ i, ← smul_assoc,
     ← Finset.sum_smul, hc]
 
-public instance (f : R) : IsLocalizedModule (.powers f) (toOpenₗ R M (basicOpen f)) := by
+public instance (f : R) : IsLocalizedModule.Away f (toOpenₗ R M (basicOpen f)) := by
   convert IsLocalizedModule.of_linearEquiv (.powers f) (LocalizedModule.mkLinearMap (.powers f) M)
     (.ofBijective _ ⟨toBasicOpenₗ_injective _, toBasicOpenₗ_surjective _⟩)
   ext x
@@ -537,7 +537,7 @@ public lemma algebraMap_obj_top_bijective :
 set_option backward.isDefEq.respectTransparency false in
 public instance (f : R) : IsLocalization.Away f Γ(R, basicOpen f) :=
   (isLocalizedModule_iff_isLocalization' _ _).mp <|
-    inferInstanceAs (IsLocalizedModule (.powers f) (toOpenₗ R R (basicOpen f)))
+    inferInstanceAs (IsLocalizedModule.Away f (toOpenₗ R R (basicOpen f)))
 
 end basicOpen
 
@@ -600,7 +600,7 @@ def modulePresheafStalkIso (x : PrimeSpectrum.Top R) :
       Limits.colimit.isoColimitCocone ⟨_, Limits.isColimitOfPreserves (forget₂ (ModuleCat R) Ab)
       (Limits.colimit.isColimit ((OpenNhds.inclusion x).op ⋙
         structurePresheafInModuleCat R M))⟩
-    obtain ⟨U, hxU, s, rfl⟩ := TopCat.Presheaf.germ_exist _ _ m
+    obtain ⟨U, hxU, s, rfl⟩ := TopCat.Presheaf.exists_germ_eq _ m
     have : TopCat.Presheaf.germ (moduleStructurePresheaf R M).presheaf U x hxU ≫ α.hom =
         (forget₂ _ _).map ((structurePresheafInModuleCat R M).germ U x hxU) :=
       Limits.colimit.isoColimitCocone_ι_hom (C := Ab) ..
@@ -828,7 +828,7 @@ def commRingCatStalkEquivModuleStalk (x : PrimeSpectrum.Top R) :
       (forget₂ CommRingCat RingCat ⋙ forget₂ RingCat AddCommGrpCat)
       (Limits.colimit.isColimit ((OpenNhds.inclusion x).op ⋙
         structurePresheafInCommRingCat R))⟩)
-    obtain ⟨U, hxU, s, rfl⟩ := TopCat.Presheaf.germ_exist _ _ m
+    obtain ⟨U, hxU, s, rfl⟩ := TopCat.Presheaf.exists_germ_eq _ m
     have : (TopCat.Presheaf.germ (moduleStructurePresheaf R R).presheaf U x hxU) ≫ α.hom =
         (forget₂ CommRingCat RingCat ⋙ forget₂ RingCat AddCommGrpCat).map
           ((structurePresheafInCommRingCat R).germ U x hxU) :=

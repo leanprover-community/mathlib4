@@ -84,19 +84,21 @@ noncomputable def unitIsoAux (F : C ⥤ AddCommGrpCat.{v}) [PreservesFiniteLimit
   letI : (F ⋙ forget AddCommGrpCat).Braided := .ofChosenFiniteProducts _
   letI : F.Monoidal := .ofChosenFiniteProducts _
   refine CommGrp.mkIso Multiplicative.toAdd.toIso (by
-    erw [Functor.mapCommGrp_obj_grp_one]
+    rw [Functor.obj.η_def X (F := F ⋙ forget AddCommGrpCat)]
     cat_disch) ?_
   dsimp [-Functor.comp_map, -ConcreteCategory.forget_map_eq_ofHom]
   have : F.Additive := Functor.additive_of_preserves_binary_products _
   simp only [Category.id_comp]
-  erw [Functor.mapCommGrp_obj_grp_mul]
-  erw [Functor.comp_map, F.map_add, Functor.Monoidal.μ_comp F (forget AddCommGrpCat) X X,
+  rw [Functor.obj.μ_def X (F := F ⋙ forget AddCommGrpCat), Preadditive.mul_def X,
+    Functor.comp_map, F.map_add,
+    Functor.Monoidal.μ_comp F (forget AddCommGrpCat) X X,
     Category.assoc, ← Functor.map_comp, Preadditive.comp_add, Functor.Monoidal.μ_fst,
     Functor.Monoidal.μ_snd]
   ext
-  simp only [TypeCat.Fun.toFun_apply, CategoryTheory.comp_apply, Equiv.toIso_hom_hom_apply,
-    Preadditive.commGrpEquivalence_functor_obj_X, Functor.comp_obj, types_tensorObj_def, hom_add,
-    tensor_apply, TypeCat.hom_ofHom, TypeCat.Fun.coe_mk, AddMonoidHom.add_apply]
+  -- `simp [types_tensorObj_def]` says
+  simp only [types_tensorObj_def, TypeCat.Fun.toFun_apply, CategoryTheory.comp_apply,
+    Equiv.toIso_hom_hom_apply, Functor.comp_obj, hom_add, tensor_apply, TypeCat.hom_ofHom,
+    TypeCat.Fun.coe_mk, AddMonoidHom.add_apply]
   rw [dsimp% [types_tensorObj_def, types_tensorUnit_def] μ_forget_apply]
   rfl
 
