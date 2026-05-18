@@ -153,4 +153,20 @@ public def suggestUnfold (e : Expr) (rwKind : RwKind) :
     {.element "div" #[] htmls}
   </details>
 
+open Elab in
+/-- `#unfold? e` gives all unfolds of `e`.
+In tactic mode, use `unfold?` instead. -/
+elab "#unfold? " e:term : command => do
+  withoutModifyingEnv <| Command.runTermElabM fun _ => Term.withDeclName `_unfold do
+    let e ← Term.elabTerm e none
+    Term.synthesizeSyntheticMVarsNoPostponing
+    let e ← Term.levelMVarToParam (← instantiateMVars e)  let e ← instantiateMVars e
+    let unfolds ← filteredUnfolds e
+    if unfolds.isEmpty then
+      logInfo m! "No unfolds found for {e}"
+    else
+      let unfolds := unfolds.toList.map (m! "· {·}")
+      logInfo (m! "Unfolds for {e}:\n"
+        ++ .joinSep unfolds "\n")
+
 end Mathlib.Tactic.ClickSuggestions
