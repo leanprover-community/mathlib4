@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2026 Aleksander Kiezun. All rights reserved.
+Copyright (c) 2026 Adam Kiezun. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Aleksander Kiezun
+Authors: Adam Kiezun
 -/
 module
 

@@ -9,6 +9,7 @@ public import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 public import Mathlib.Data.Nat.Prime.Defs
 public import Mathlib.Tactic.Zify
 
+import Mathlib.Algebra.BigOperators.Associated
 import Mathlib.Data.Nat.Prime.Basic
 
 /-!
@@ -55,18 +56,7 @@ theorem ascFactorial_eq_prod_range (n : ℕ) : ∀ k, n.ascFactorial k = ∏ i �
 
 lemma Prime.dvd_ascFactorial_iff {p k n : ℕ} (hp : p.Prime) :
     p ∣ k.ascFactorial n ↔ ∃ i < n, p ∣ k + i := by
-  induction n with
-  | zero => simp [Nat.ascFactorial_zero, hp.ne_one]
-  | succ n ih =>
-    rw [Nat.ascFactorial_succ, hp.dvd_mul, ih]
-    constructor
-    · rintro (h | ⟨i, hi, h⟩)
-      · exact ⟨n, lt_succ_self n, h⟩
-      · exact ⟨i, lt_succ_of_lt hi, h⟩
-    · rintro ⟨i, hi, h⟩
-      rcases lt_or_eq_of_le (Nat.le_of_lt_succ hi) with hi | rfl
-      · exact Or.inr ⟨i, hi, h⟩
-      · exact Or.inl h
+  simp [Nat.ascFactorial_eq_prod_range, hp.prime.dvd_finsetProd_iff]
 
 theorem descFactorial_eq_prod_range (n : ℕ) : ∀ k, n.descFactorial k = ∏ i ∈ range k, (n - i)
   | 0 => rfl
