@@ -364,32 +364,16 @@ theorem deriv_strictMono (f) : StrictMono (deriv f) :=
 theorem deriv_eq_id_of_nfp_eq_id (h : nfp f = id) : deriv f = id :=
   ((isNormal_deriv _).ext_iff .id).2 (by simp [h])
 
-@[deprecated (since := "2025-10-25")]
-alias deriv_id_of_nfp_id := deriv_eq_id_of_nfp_eq_id
-
 theorem deriv_fp (H : IsNormal f) : ∀ o, f (deriv f o) = deriv f o :=
   derivFamily_fp (i := ⟨⟩) H
-
-@[deprecated (since := "2025-10-25")]
-alias IsNormal.deriv_fp := deriv_fp
 
 theorem le_iff_deriv (H : IsNormal f) {a} : f a ≤ a ↔ ∃ o, deriv f o = a := by
   unfold deriv
   rw [← le_iff_derivFamily fun _ : Unit => H]
   exact ⟨fun h _ => h, fun h => h Unit.unit⟩
 
-@[deprecated (since := "2025-10-25")]
-alias IsNormal.le_iff_deriv := le_iff_deriv
-
 theorem mem_range_deriv (H : IsNormal f) {a} : a ∈ Set.range (deriv f) ↔ f a = a := by
   rw [Set.mem_range, ← H.strictMono.le_apply.ge_iff_eq', le_iff_deriv H]
-
-@[deprecated mem_range_deriv (since := "2025-10-25")]
-theorem fp_iff_deriv (H : IsNormal f) {a} : f a = a ↔ ∃ o, deriv f o = a :=
-  (mem_range_deriv H).symm
-
-@[deprecated mem_range_deriv (since := "2025-10-25")]
-alias IsNormal.fp_iff_deriv := fp_iff_deriv
 
 /-- `Ordinal.deriv` enumerates the fixed points of a normal function. -/
 theorem deriv_eq_enumOrd (H : IsNormal f) : deriv f = enumOrd (Function.fixedPoints f) := by
