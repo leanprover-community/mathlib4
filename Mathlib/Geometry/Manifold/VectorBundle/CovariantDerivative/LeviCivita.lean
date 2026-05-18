@@ -63,15 +63,17 @@ end funpropsetup
 variable
   {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
   {H : Type*} [TopologicalSpace H] (I : ModelWithCorners ℝ E H)
-  {M : Type*} [EMetricSpace M] [ChartedSpace H M] [IsManifold I 2 M]
 
 -- move this
+variable {M : Type*} [TopologicalSpace M] [ChartedSpace H M] [IsManifold I 1 M] in
 lemma injective_eval_vectorField (V : Type*) [AddCommGroup V] [Module ℝ V] [TopologicalSpace V]
     (x : M) :
     Function.Injective
       (fun A : TangentSpace I x →L[ℝ] V ↦
         fun (Z : Π x, TangentSpace I x) (_ : MDiffAt (T% Z) x) ↦ A (Z x)) :=
   VectorBundle.injective_eval_sec ..
+
+variable {M : Type*} [EMetricSpace M] [ChartedSpace H M] [IsManifold I 2 M]
 
 -- From now on, `M` is endowed with a Riemannian metric.
 variable
