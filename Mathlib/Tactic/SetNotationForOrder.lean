@@ -120,8 +120,8 @@ def elabSubsetLike (x y : Term) (le leCls sub subCls : Name) (expectedType? : Op
   let_expr f@SubsetElabAux α x y := e | throwError "unexpected result {e} when elaborating {rel}"
   -- If the type cannot be determined yet, we postpone elaboration until it is known.
   -- This behaviour is inspired by `resolveLValLoop` from the file `Lean.Elab.App`.
-  tryPostponeIfMVar α
   if ← isMVarApp α then
+    tryPostpone
     synthesizeSyntheticMVarsUsingDefault
     if ← isMVarApp α then
       Linter.logLintIf linter.setNotationForOrder (← getRef)
