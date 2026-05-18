@@ -146,7 +146,7 @@ theorem d_eq [DecidableEq G] :
       (coinvariantsTensorFreeLEquiv A (Fin n → G)).toModuleIso.hom := by
   ext : 3
   simp [d_single (k := k), TensorProduct.tmul_add, TensorProduct.tmul_sum,
-    barComplex.d_single (k := k), Representation.IntertwiningMap.toLinearMap_apply]
+    barComplex.d_single (k := k)]
 
 end inhomogeneousChains
 
