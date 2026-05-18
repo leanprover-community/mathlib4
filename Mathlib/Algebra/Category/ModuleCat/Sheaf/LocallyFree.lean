@@ -25,7 +25,7 @@ free data for it.
 
 public section
 
-universe u v₁ u₁
+universe u v₁ u₁ w
 
 open CategoryTheory Limits
 
@@ -133,6 +133,34 @@ end LocalGeneratorsData
 instance (priority := 100) (M : SheafOfModules.{u} R) [h : M.IsLocallyFree] : M.IsQuasicoherent :=
   have := h.exists_locallyFreeData.choose_spec
   h.exists_locallyFreeData.choose.quasiCoherentData.isQuasicoherent
+
+end
+
+section
+
+variable [∀ X, (J.over X).HasSheafCompose (forget₂ RingCat.{u} AddCommGrpCat.{u})]
+  [∀ X, HasSheafify (J.over X) AddCommGrpCat.{u}]
+  [∀ X, (J.over X).WEqualsLocallyBijective AddCommGrpCat.{u}]
+  [∀ X Y, ((J.over X).over Y).HasSheafCompose (forget₂ RingCat.{u} AddCommGrpCat.{u})]
+  [∀ X Y, HasSheafify ((J.over X).over Y) AddCommGrpCat.{u}]
+  [∀ X Y, ((J.over X).over Y).WEqualsLocallyBijective AddCommGrpCat.{u}]
+
+set_option backward.isDefEq.respectTransparency false in
+/-- Being locally free is local -/
+theorem LocalGenertorsData.IsLocallFreeData.of_coversTop (M : SheafOfModules.{u} R) {I : Type w}
+    (X : I → C) (hX : J.CoversTop X) (D : Π i, LocalGeneratorsData (M.over (X i)))
+    [h : ∀ i, (D i).IsLocallyFreeData] : (LocalGeneratorsData.bind M X hX D).IsLocallyFreeData where
+  iso i := by
+    rw [LocalGeneratorsData.bind_generators, GeneratingSections.ofEpi_π,
+      GeneratingSections.map_π_eq]
+    infer_instance
+
+theorem IsLocallyFree.of_coversTop (M : SheafOfModules.{u} R) {I : Type w} (X : I → C)
+    (hX : J.CoversTop X) [h : ∀ i, (M.over (X i)).IsLocallyFree] :
+    M.IsLocallyFree :=
+  have := fun i => (h i).1.choose_spec
+  have := LocalGenertorsData.IsLocallFreeData.of_coversTop M X hX (fun i => (h i).1.choose)
+  (LocalGeneratorsData.bind M X hX (fun i => (h i).1.choose)).isLocallyFree
 
 end
 

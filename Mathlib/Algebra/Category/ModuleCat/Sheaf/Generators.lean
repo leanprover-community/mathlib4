@@ -220,8 +220,8 @@ variable [∀ X Y, ((J.over X).over Y).HasSheafCompose (forget₂ RingCat.{u} Ad
 
 /-- Given a cover `X` and local generators for `M` restricted onto each `Mᵢ`, we may glue them
 into local generators of `M` itself. -/
-noncomputable def LocalGeneratorsData.bind {R : Sheaf J RingCat.{u}}
-    (M : SheafOfModules.{u} R) {I : Type u}
+@[simps]
+noncomputable def LocalGeneratorsData.bind (M : SheafOfModules.{u} R) {I : Type w}
     (X : I → C) (hX : J.CoversTop X) (D : Π i, LocalGeneratorsData (M.over (X i))) :
     M.LocalGeneratorsData where
   I := (i : I) × (D i).I

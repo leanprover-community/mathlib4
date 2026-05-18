@@ -357,7 +357,7 @@ variable [∀ X, (J.over X).HasSheafCompose (forget₂ RingCat.{u} AddCommGrpCat
 /-- Given an cover `X` and a quasicoherent data for `M` restricted onto each `Mᵢ`, we may glue them
 into a quasicoherent data of `M` itself. -/
 noncomputable def QuasicoherentData.bind {R : Sheaf J RingCat.{u}}
-    (M : SheafOfModules.{u} R) {I : Type u}
+    (M : SheafOfModules.{u} R) {I : Type w}
     (X : I → C) (hX : J.CoversTop X) (D : Π i, QuasicoherentData (M.over (X i))) :
     M.QuasicoherentData where
   I := (i : I) × (D i).I
