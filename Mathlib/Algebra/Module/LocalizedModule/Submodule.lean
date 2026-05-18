@@ -378,7 +378,7 @@ lemma localizedMap_surjective_iff_subsingleton_localized_coker {R : Type*} [Comm
     (φ : M →ₗ[R] N) : Function.Surjective (LocalizedModule.map S φ) ↔
       Subsingleton (LocalizedModule S (N ⧸ φ.range)) := by
   rw [(localizedQuotientEquiv S φ.range).symm.subsingleton_congr,
-    Submodule.Quotient.subsingleton_iff, Submodule.localized, 
+    Submodule.Quotient.subsingleton_iff, Submodule.localized,
     LinearMap.localized'_range_eq_range_localizedMap (Localization S) S (g := φ)
       (LocalizedModule.mkLinearMap S M) (LocalizedModule.mkLinearMap S N),
     LinearMap.range_eq_top]
