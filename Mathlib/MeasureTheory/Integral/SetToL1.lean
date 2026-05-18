@@ -830,12 +830,16 @@ theorem setToFun_const [CompleteSpace F] [IsFiniteMeasure μ]
 theorem setToFun_simpleFunc [CompleteSpace F] (hT : DominatedFinMeasAdditive μ T C)
     (f : SimpleFunc α E) (hf : Integrable f μ) :
     setToFun μ T hT f = ∑ x ∈ f.range, T (f ⁻¹' {x}) x := by
-  have : MemLp f 1 μ := memLp_one_iff_integrable.mpr hf
-  let g := Lp.simpleFunc.toLp f this
+  have h'f : MemLp f 1 μ := memLp_one_iff_integrable.mpr hf
+  let g := f.toLp h'f
+  have A : f =ᵐ[μ] g := h'f.coeFn_toLp.symm
+  rw [setToFun_congr_ae hT A, L1.setToFun_eq_setToL1 hT, L1.setToL1_eq_setToL1SCLM]
+  simp [L1.SimpleFunc.setToL1SCLM, L1.SimpleFunc.setToL1S]
+  apply (SimpleFunc.setToSimpleFunc_congr T _ _ hf _).symm
+  sorry
 
 
 
-#exit
 
 section Order
 
