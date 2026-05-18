@@ -29,11 +29,11 @@ variable {C : Type*} [Category* C]
 object `a : C`, together with a morphism `a ⟶ c` in Wₗ,
 and a morphism `a ⟶ c'` in Wᵣ. -/
 structure Span (c c' : C) where
-  /- The "apex" of the span -/
+  /-- the apex of the span -/
   apex : C
-  /- The left map -/
+  /-- the left map -/
   l : apex ⟶ c
-  /- The right map -/
+  /-- the right map -/
   r : apex ⟶ c'
   wl : Wₗ l
   wr : Wᵣ r
@@ -45,6 +45,7 @@ variable {Wₗ Wᵣ} {c c' : C}
 /-- A morphism of span is a morphism between the apices compatible
 with the projections. -/
 structure Hom (S₁ S₂ : Span Wₗ Wᵣ c c') : Type _ where
+  /-- the map between the apices -/
   hom : S₁.apex ⟶ S₂.apex
   hom_l : hom ≫ S₂.l = S₁.l := by cat_disch
   hom_r : hom ≫ S₂.r = S₁.r := by cat_disch
@@ -60,27 +61,22 @@ instance : Category (Span Wₗ Wᵣ c c') where
 
 attribute [grind =] id_hom comp_hom
 
-attribute [local ext] Hom in
-@[local ext, local grind ext]
+@[ext, grind ext]
 lemma hom_ext {S S' : Span Wₗ Wᵣ c c'} {f g : S ⟶ S'} (h : f.hom = g.hom) :
     f = g := by
-  change S.Hom S' at f g
-  change @Eq (S.Hom S') _ _
-  ext
-  exact h
+  cases f; cases g
+  grind
 
 set_option mathlib.tactic.category.grind true in
 /-- Construct an isomorphism of spans from an isomorphism between the
 apices that is compatible with the projections -/
-@[simps]
+@[simps (attr := grind =)]
 def mkIso {S S' : Span Wₗ Wᵣ c c'} (e : S.apex ≅ S'.apex)
     (hₗ : e.hom ≫ S'.l = S.l := by cat_disch)
     (hᵣ : e.hom ≫ S'.r = S.r := by cat_disch) :
     S ≅ S' where
   hom.hom := e.hom
   inv.hom := e.inv
-
-attribute [grind =] mkIso_hom_hom mkIso_inv_hom
 
 section bicategory
 
@@ -102,7 +98,7 @@ instance (S₁ : Span Wₗ Wᵣ c c') : Wᵣ.IsStableUnderBaseChangeAlong S₁.l
   MorphismProperty.IsStableUnderBaseChangeAgainst.isStableUnderBaseChangeAlong _ S₁.wl
 
 /-- The identity span, where both legs are identity morphisms. -/
-@[simps]
+@[simps (attr := grind =)]
 def id (c : C) :
     Span Wₗ Wᵣ c c where
   apex := c
@@ -125,7 +121,7 @@ c     c'    c''
 ```
 where the top diamond is a pullbacks square
 -/
-@[simps]
+@[simps (attr := grind =)]
 noncomputable def comp {c c' c'' : C}
     (S₁ : Span Wₗ Wᵣ c c') (S₂ : Span Wₗ Wᵣ c' c'') :
     Span Wₗ Wᵣ c c'' where
@@ -148,7 +144,9 @@ end Span
 variable (C) in
 /-- The bicategory of spans of `C` with left/right legs satisfying a given
 morphism property. This is a one-field structure wrapper around `C`. -/
-structure Spans (Wₗ Wᵣ : MorphismProperty C) : Type _ where of : C
+structure Spans (Wₗ Wᵣ : MorphismProperty C) : Type _ where
+  /-- the underlying object of `C` of a term in `Spans C _ _` -/
+  of : C
 
 variable [Wₗ.ContainsIdentities] [Wᵣ.ContainsIdentities] [Wₗ.HasPullbacksAgainst Wᵣ]
     [Wₗ.IsStableUnderBaseChangeAgainst Wᵣ] [Wᵣ.IsStableUnderBaseChangeAgainst Wₗ]
@@ -190,7 +188,7 @@ lemma hom₂_ext {X Y : Spans C Wₗ Wᵣ} {S S' : X ⟶ Y} {f g : S ⟶ S'}
     f = g :=
   Span.hom_ext h
 
-/- Constructor for 1-morphisms in `Spans C _ _` -/
+/-- Constructor for 1-morphisms in `Spans C _ _` -/
 abbrev mkHom {X Y : Spans C Wₗ Wᵣ} (apex : C) (l : apex ⟶ X.of) (r : apex ⟶ Y.of)
     (wl : Wₗ l) (wr : Wᵣ r) :
     X ⟶ Y where
@@ -200,7 +198,7 @@ abbrev mkHom {X Y : Spans C Wₗ Wᵣ} (apex : C) (l : apex ⟶ X.of) (r : apex 
   wl := wl
   wr := wr
 
-/- Constructor for 2-morphisms in `Spans C _ _` -/
+/-- Constructor for 2-morphisms in `Spans C _ _` -/
 @[simps]
 def mkHom₂ {X Y : Spans C Wₗ Wᵣ} {S S' : X ⟶ Y}
     (e : S.apex ⟶ S'.apex)
@@ -209,7 +207,7 @@ def mkHom₂ {X Y : Spans C Wₗ Wᵣ} {S S' : X ⟶ Y}
     S ⟶ S' where
   hom := e
 
-/- Constructor for 2-isomorphisms in `Spans C _ _` -/
+/-- Constructor for 2-isomorphisms in `Spans C _ _` -/
 abbrev mkIso₂ {X Y : Spans C Wₗ Wᵣ} {S S' : X ⟶ Y}
     (e : S.apex ≅ S'.apex)
     (hₗ : e.hom ≫ S'.l = S.l := by cat_disch)
@@ -221,6 +219,7 @@ abbrev mkIso₂ {X Y : Spans C Wₗ Wᵣ} {S S' : X ⟶ Y}
   inv.hom_r := by grind
 
 section compAPI
+
 /-! The goal of this section is to abstract as much as possible the fact that the
 composition uses an arbitrary pullback, and provides some "proxy" for working
 with the fact that apices of compositions of spans are pullbacks.
@@ -339,7 +338,7 @@ end
 
 end compAPI
 
-/-- The associator isomorphisms for the bicategory structure on spans -/
+/-- The associator isomorphisms for the bicategory structure on spans. -/
 @[no_expose]
 noncomputable def associator
     {c₁ c₂ c₃ c₄ : Spans C Wₗ Wᵣ}
@@ -349,12 +348,14 @@ noncomputable def associator
   inv := compLift (compLiftApex (πₗ ..) (πᵣ .. ≫ πₗ ..)) (πᵣ .. ≫ πᵣ ..)
 
 set_option backward.isDefEq.respectTransparency false in
+/-- The right unitor for the bicategory structure on spans. -/
 @[no_expose]
 noncomputable def rightUnitor {c c' : Spans C Wₗ Wᵣ} (S₁ : c ⟶ c') :
     S₁ ≫ (𝟙 c') ≅ S₁ where
   hom.hom := πₗ _ _
   inv := compLift (𝟙 _) S₁.r
 
+/-- The left unitor for the bicategory structure on spans. -/
 @[no_expose]
 noncomputable def leftUnitor {c c' : Spans C Wₗ Wᵣ} (S₁ : c ⟶ c') :
     (𝟙 c) ≫ S₁ ≅ S₁ where
@@ -389,125 +390,131 @@ noncomputable instance : Bicategory (Spans C Wₗ Wᵣ) where
 
 open CategoryTheory.Bicategory
 
+section
+
+variable {W X Y Z : Spans C Wₗ Wᵣ}
+
 @[reassoc (attr := simp), grind =]
-lemma whiskerLeft_hom_πₗ {X Y Z : Spans C Wₗ Wᵣ} (S : X ⟶ Y) {S₁ S₂ : Y ⟶ Z} (f : S₁ ⟶ S₂) :
+lemma whiskerLeft_hom_πₗ (S : X ⟶ Y) {S₁ S₂ : Y ⟶ Z} (f : S₁ ⟶ S₂) :
     (S ◁ f).hom ≫ πₗ .. = πₗ .. := by simp [whiskerLeft]
 
 @[reassoc (attr := simp), grind =]
-lemma whiskerLeft_hom_πᵣ {X Y Z : Spans C Wₗ Wᵣ} (S : X ⟶ Y) {S₁ S₂ : Y ⟶ Z} (f : S₁ ⟶ S₂) :
+lemma whiskerLeft_hom_πᵣ (S : X ⟶ Y) {S₁ S₂ : Y ⟶ Z} (f : S₁ ⟶ S₂) :
     (S ◁ f).hom ≫ πᵣ .. = πᵣ .. ≫ f.hom := by simp [whiskerLeft]
 
 @[reassoc (attr := simp), grind =]
-lemma whiskerRight_hom_πₗ {X Y Z : Spans C Wₗ Wᵣ} {S₁ S₂ : X ⟶ Y} (f : S₁ ⟶ S₂) (S : Y ⟶ Z) :
+lemma whiskerRight_hom_πₗ {S₁ S₂ : X ⟶ Y} (f : S₁ ⟶ S₂) (S : Y ⟶ Z) :
     (f ▷ S).hom ≫ πₗ .. = (πₗ .. ≫ f.hom) := by simp [whiskerRight]
 
 @[reassoc (attr := simp), grind =]
-lemma whiskerRight_hom_πᵣ {X Y Z : Spans C Wₗ Wᵣ} {S₁ S₂ : X ⟶ Y} (f : S₁ ⟶ S₂) (S : Y ⟶ Z) :
+lemma whiskerRight_hom_πᵣ {S₁ S₂ : X ⟶ Y} (f : S₁ ⟶ S₂) (S : Y ⟶ Z) :
     (f ▷ S).hom ≫ πᵣ .. = πᵣ .. := by simp [whiskerRight]
 
 @[reassoc (attr := simp), grind =]
-lemma associator_hom_hom_πₗ {W X Y Z : Spans C Wₗ Wᵣ} (S₁ : W ⟶ X) (S₂ : X ⟶ Y) (S₃ : Y ⟶ Z) :
+lemma associator_hom_hom_πₗ (S₁ : W ⟶ X) (S₂ : X ⟶ Y) (S₃ : Y ⟶ Z) :
     (α_ S₁ S₂ S₃).hom.hom ≫ πₗ .. = πₗ .. ≫ πₗ .. := by
   simp [Bicategory.associator, Spans.associator]
 
 @[reassoc (attr := simp), grind =]
-lemma associator_hom_hom_πᵣ_πₗ {W X Y Z : Spans C Wₗ Wᵣ} (S₁ : W ⟶ X) (S₂ : X ⟶ Y) (S₃ : Y ⟶ Z) :
+lemma associator_hom_hom_πᵣ_πₗ (S₁ : W ⟶ X) (S₂ : X ⟶ Y) (S₃ : Y ⟶ Z) :
     (α_ S₁ S₂ S₃).hom.hom ≫ πᵣ .. ≫ πₗ .. = πₗ .. ≫ πᵣ .. := by
   simp [Bicategory.associator, Spans.associator]
 
 @[reassoc (attr := simp), grind =]
-lemma associator_hom_hom_πᵣ_πᵣ {W X Y Z : Spans C Wₗ Wᵣ} (S₁ : W ⟶ X) (S₂ : X ⟶ Y) (S₃ : Y ⟶ Z) :
+lemma associator_hom_hom_πᵣ_πᵣ (S₁ : W ⟶ X) (S₂ : X ⟶ Y) (S₃ : Y ⟶ Z) :
     (α_ S₁ S₂ S₃).hom.hom ≫ πᵣ .. ≫ πᵣ .. = πᵣ .. := by
   simp [Bicategory.associator, Spans.associator]
 
 @[reassoc (attr := simp), grind =]
-lemma associator_inv_hom_πᵣ {W X Y Z : Spans C Wₗ Wᵣ} (S₁ : W ⟶ X) (S₂ : X ⟶ Y) (S₃ : Y ⟶ Z) :
+lemma associator_inv_hom_πᵣ (S₁ : W ⟶ X) (S₂ : X ⟶ Y) (S₃ : Y ⟶ Z) :
     (α_ S₁ S₂ S₃).inv.hom ≫ πᵣ .. = πᵣ .. ≫ πᵣ .. := by
   simp [Bicategory.associator, Spans.associator]
 
 @[reassoc (attr := simp), grind =]
-lemma associator_inv_hom_πₗ_πₗ {W X Y Z : Spans C Wₗ Wᵣ} (S₁ : W ⟶ X) (S₂ : X ⟶ Y) (S₃ : Y ⟶ Z) :
+lemma associator_inv_hom_πₗ_πₗ (S₁ : W ⟶ X) (S₂ : X ⟶ Y) (S₃ : Y ⟶ Z) :
     (α_ S₁ S₂ S₃).inv.hom ≫ πₗ .. ≫ πₗ .. = πₗ .. := by
   simp [Bicategory.associator, Spans.associator]
 
 @[reassoc (attr := simp), grind =]
-lemma associator_inv_hom_πₗ_πᵣ {W X Y Z : Spans C Wₗ Wᵣ} (S₁ : W ⟶ X) (S₂ : X ⟶ Y) (S₃ : Y ⟶ Z) :
+lemma associator_inv_hom_πₗ_πᵣ (S₁ : W ⟶ X) (S₂ : X ⟶ Y) (S₃ : Y ⟶ Z) :
     (α_ S₁ S₂ S₃).inv.hom ≫ πₗ .. ≫ πᵣ .. = πᵣ .. ≫ πₗ .. := by
   simp [Bicategory.associator, Spans.associator]
 
 @[simp, grind =]
-lemma leftUnitor_hom_hom {X Y : Spans C Wₗ Wᵣ} (S : X ⟶ Y) :
+lemma leftUnitor_hom_hom (S : X ⟶ Y) :
     (λ_ S).hom.hom = πᵣ .. := (rfl)
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp, grind =]
-lemma leftUnitor_inv_hom_πₗ {X Y : Spans C Wₗ Wᵣ} (S : X ⟶ Y) :
+lemma leftUnitor_inv_hom_πₗ (S : X ⟶ Y) :
     (λ_ S).inv.hom ≫ πₗ .. = S.l := by simp [Bicategory.leftUnitor, leftUnitor]
 
 @[simp, grind =]
-lemma leftUnitor_inv_hom_πᵣ {X Y : Spans C Wₗ Wᵣ} (S : X ⟶ Y) :
+lemma leftUnitor_inv_hom_πᵣ (S : X ⟶ Y) :
     (λ_ S).inv.hom ≫ πᵣ .. = 𝟙 _ := by simp [Bicategory.leftUnitor, leftUnitor]
 
 @[simp, grind =]
-lemma rightUnitor_hom_hom {X Y : Spans C Wₗ Wᵣ} (S : X ⟶ Y) :
+lemma rightUnitor_hom_hom (S : X ⟶ Y) :
     (ρ_ S).hom.hom = πₗ .. := (rfl)
 
 @[reassoc (attr := simp), grind =]
-lemma rightUnitor_inv_hom_πₗ {X Y : Spans C Wₗ Wᵣ} (S : X ⟶ Y) :
+lemma rightUnitor_inv_hom_πₗ (S : X ⟶ Y) :
     (ρ_ S).inv.hom ≫ πₗ .. = 𝟙 _ := by simp [Bicategory.rightUnitor, rightUnitor]
 
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp), grind =]
-lemma rightUnitor_inv_hom_πᵣ {X Y : Spans C Wₗ Wᵣ} (S : X ⟶ Y) :
+lemma rightUnitor_inv_hom_πᵣ (S : X ⟶ Y) :
     (ρ_ S).inv.hom ≫ πᵣ .. = S.r := by simp [Bicategory.rightUnitor, rightUnitor]
 
 @[reassoc (attr := simp), grind =]
-lemma hom_inv_id_hom {X Y : Spans C Wₗ Wᵣ} {S S' : X ⟶ Y} (e : S ≅ S') :
+lemma hom_inv_id_hom {S S' : X ⟶ Y} (e : S ≅ S') :
     e.hom.hom ≫ e.inv.hom = 𝟙 _ := by simp [← hom₂_comp_hom]
 
 @[reassoc (attr := simp), grind =]
-lemma inv_hom_id_hom {X Y : Spans C Wₗ Wᵣ} {S S' : X ⟶ Y} (e : S ≅ S') :
+lemma inv_hom_id_hom {S S' : X ⟶ Y} (e : S ≅ S') :
     e.inv.hom ≫ e.hom.hom = 𝟙 _ := by simp [← hom₂_comp_hom]
 
 /-- Extract the isomorphisms between the apices from the data of an isomorphism of 1-morphisms
 in `Spans C _ _`. -/
 @[simps]
-abbrev apexIso {X Y : Spans C Wₗ Wᵣ} {S S' : X ⟶ Y} (e : S ≅ S') :
+abbrev apexIso {S S' : X ⟶ Y} (e : S ≅ S') :
     S.apex ≅ S'.apex where
   hom := e.hom.hom
   inv := e.inv.hom
 
 @[simp]
-lemma apexIso_refl {X Y : Spans C Wₗ Wᵣ} (S : X ⟶ Y) : apexIso (Iso.refl S) = .refl _ := rfl
+lemma apexIso_refl (S : X ⟶ Y) : apexIso (Iso.refl S) = .refl _ := rfl
 
-instance {X Y : Spans C Wₗ Wᵣ} {S S' : X ⟶ Y} (e : S ⟶ S') [IsIso e] : IsIso e.hom :=
+instance {S S' : X ⟶ Y} (e : S ⟶ S') [IsIso e] : IsIso e.hom :=
   ⟨(inv e).hom, by simp [← hom₂_comp_hom]⟩
 
 @[simp, push ←]
-lemma inv_hom {X Y : Spans C Wₗ Wᵣ} {S S' : X ⟶ Y} (e : S ⟶ S') [IsIso e] :
+lemma inv_hom {S S' : X ⟶ Y} (e : S ⟶ S') [IsIso e] :
     (inv e).hom = inv e.hom := by
   apply IsIso.eq_inv_of_inv_hom_id
   simp [← hom₂_comp_hom]
 
-lemma eqToHom_hom {X Y : Spans C Wₗ Wᵣ} (S S' : X ⟶ Y) (h : S = S') :
+lemma eqToHom_hom (S S' : X ⟶ Y) (h : S = S') :
     (eqToHom h).hom = eqToHom (congr($(h).apex)) := by
   subst h
   simp
 
-instance {X : Spans C Wₗ Wᵣ} : IsIso (𝟙 X:).r := by dsimp; infer_instance
+instance : IsIso (𝟙 X:).r := by dsimp; infer_instance
 
-instance {X : Spans C Wₗ Wᵣ} : IsIso (𝟙 X:).l := by dsimp; infer_instance
+instance : IsIso (𝟙 X:).l := by dsimp; infer_instance
 
-instance {X Y : Spans C Wₗ Wᵣ} (S : X ⟶ Y) : IsIso (πᵣ (𝟙 _) S) := by
+instance (S : X ⟶ Y) : IsIso (πᵣ (𝟙 _) S) := by
   have := IsPullback.isIso_snd_of_isIso
     (IsPullback.of_isLimit <| Spans.isLimitCompPullbackCone (𝟙 _) S)
   exact this
 
-instance {X Y : Spans C Wₗ Wᵣ} (S : X ⟶ Y) : IsIso (πₗ S (𝟙 _)) :=
+instance (S : X ⟶ Y) : IsIso (πₗ S (𝟙 _)) :=
   by
   have := IsPullback.isIso_fst_of_isIso
     (IsPullback.of_isLimit <| Spans.isLimitCompPullbackCone S (𝟙 _))
   exact this
+
+end
 
 end Spans
 
