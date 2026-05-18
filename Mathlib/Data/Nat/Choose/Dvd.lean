@@ -6,6 +6,7 @@ Authors: Chris Hughes, Patrick Stevens
 module
 
 public import Mathlib.Data.Nat.Choose.Basic
+public import Mathlib.Data.Nat.Factorial.BigOperators
 public import Mathlib.Data.Nat.Prime.Factorial
 
 /-!
