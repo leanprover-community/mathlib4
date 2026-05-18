@@ -396,6 +396,10 @@ instance : CommSemiring ℂ :=
 instance : Semiring ℂ :=
   inferInstance
 
+instance : CommMonoid ℂ := inferInstance
+
+instance : Monoid ℂ := inferInstance
+
 /-- The "real part" map, considered as an additive group homomorphism. -/
 def reAddGroupHom : ℂ →+ ℝ where
   toFun := re

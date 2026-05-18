@@ -41,6 +41,8 @@ instance commRing : CommRing ℚ where
     simp only [intCast_eq_divInt, divInt_add_divInt _ _ Int.one_ne_zero Int.one_ne_zero,
       ← divInt_one_one, Int.natCast_add, Int.natCast_one, mul_one]
 
+instance : Ring ℚ := inferInstance
+
 instance commGroupWithZero : CommGroupWithZero ℚ :=
   { exists_pair_ne := ⟨0, 1, Rat.zero_ne_one⟩
     inv_zero := Rat.inv_zero
