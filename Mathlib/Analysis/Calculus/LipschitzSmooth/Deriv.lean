@@ -33,8 +33,6 @@ public section
 
 variable {K : NNReal} {f : ℝ → ℝ}
 
-/-- Characterisation of `LipschitzSmoothWith` for `f : ℝ → ℝ` in `deriv` form under
-`Differentiable`. -/
 theorem lipschitzSmoothWith_iff_deriv (hf : Differentiable ℝ f) :
     LipschitzSmoothWith K f ↔
       ∀ x y : ℝ, f y ≤ f x + deriv f x * (y - x) + ↑K / 2 * (y - x) ^ 2 := by
@@ -44,16 +42,12 @@ theorem lipschitzSmoothWith_iff_deriv (hf : Differentiable ℝ f) :
 
 namespace LipschitzSmoothWith
 
-/-- For a `K`-smooth `f : ℝ → ℝ` differentiable at `x`, the descent inequality in 1D form:
-`f y ≤ f x + deriv f x * (y - x) + K/2 * (y - x)^2`. -/
 theorem deriv_descent_le (h : LipschitzSmoothWith K f) (x y : ℝ)
     (hf : DifferentiableAt ℝ f x) :
     f y ≤ f x + deriv f x * (y - x) + ↑K / 2 * (y - x) ^ 2 := by
   have hbase := h.fderiv_descent_le x y hf
   rwa [fderiv_eq_deriv_mul, dist_comm, Real.dist_eq, sq_abs] at hbase
 
-/-- For a `K`-smooth `f : ℝ → ℝ` differentiable at `x` and `y`, the variation bound in 1D form:
-`(deriv f y - deriv f x) * (y - x) ≤ K * (y - x)^2`. -/
 theorem deriv_sub_mul_le (h : LipschitzSmoothWith K f) (x y : ℝ)
     (hfx : DifferentiableAt ℝ f x) (hfy : DifferentiableAt ℝ f y) :
     (deriv f y - deriv f x) * (y - x) ≤ ↑K * (y - x) ^ 2 := by

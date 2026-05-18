@@ -58,7 +58,6 @@ sibling files, predicated on the appropriate differentiability hypothesis. -/
 def LipschitzSmoothWith (K : NNReal) (f : F → ℝ) : Prop :=
   ∀ (x y : F), f y ≤ f x + lineDeriv ℝ f x (y - x) + ↑K / 2 * (dist x y) ^ 2
 
-/-- Characterisation of `LipschitzSmoothWith` in line-derivative form. -/
 theorem lipschitzSmoothWith_iff_lineDeriv {K : NNReal} {f : F → ℝ} :
     LipschitzSmoothWith K f ↔
       ∀ x y : F, f y ≤ f x + lineDeriv ℝ f x (y - x) + ↑K / 2 * (dist x y) ^ 2 :=
@@ -68,20 +67,15 @@ namespace LipschitzSmoothWith
 
 variable {K : NNReal} {f : F → ℝ}
 
-/-- The defining descent inequality of a `K`-smooth function in line-derivative form. -/
 theorem lineDeriv_descent_le (h : LipschitzSmoothWith K f) (x y : F) :
     f y ≤ f x + lineDeriv ℝ f x (y - x) + ↑K / 2 * (dist x y) ^ 2 :=
   h x y
 
-/-- A `K`-smooth `f` satisfies a quadratic upper bound on the variation of its line-derivative:
-`lineDeriv ℝ f y (y - x) - lineDeriv ℝ f x (y - x) ≤ K · (dist x y)²`. -/
 theorem lineDeriv_apply_sub_le (h : LipschitzSmoothWith K f) (x y : F) :
     lineDeriv ℝ f y (y - x) - lineDeriv ℝ f x (y - x) ≤ ↑K * (dist x y) ^ 2 := by
   linarith [h.lineDeriv_descent_le x y,
     lineDeriv_neg (𝕜 := ℝ) (f := f) ▸ neg_sub y _ ▸ dist_comm y _ ▸ h.lineDeriv_descent_le y x]
 
-/-- Function-subtraction restatement of `lineDeriv_apply_sub_le`:
-`(lineDeriv ℝ f y - lineDeriv ℝ f x) (y - x) ≤ K · (dist x y)²`. -/
 theorem lineDeriv_sub_apply_le (h : LipschitzSmoothWith K f) (x y : F) :
     (lineDeriv ℝ f y - lineDeriv ℝ f x) (y - x) ≤ ↑K * (dist x y) ^ 2 :=
   Pi.sub_apply (lineDeriv ℝ f _) _ _ ▸ h.lineDeriv_apply_sub_le x y
