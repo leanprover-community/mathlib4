@@ -205,7 +205,7 @@ def runLinter (ctx : ContextInfo) (lctx : LocalContext) (expectedType? : Option 
     msgs.foldl (init := msg ++ "\n") (m!"{·}\n• {.nestD ·}")
   if needsDiamondMsg then
     msg := msg ++ m!"\n\n\
-      When two instances of a type class are not definitionally equal to eachother, \
+      When two instances of a type class are not definitionally equal to each other, \
       they form an \"instance diamond\", which can lead to unexpected unification failures.\n\
       Consider assuming different instances."
   addMessageContextFull msg
