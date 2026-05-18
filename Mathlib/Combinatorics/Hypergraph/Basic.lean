@@ -211,7 +211,6 @@ lemma IsEmpty.vertexSet_eq (hH : H.IsEmpty) : V(H) = ∅ := hH.1
 
 lemma IsEmpty.edgeSet_eq (hH : H.IsEmpty) : E(H) = ∅ := hH.2
 
-@[simp]
 lemma isEmpty_iff_forall_not_mem : H.IsEmpty ↔ (∀ x, x ∉ V(H)) ∧ (∀ e, e ∉ E(H)) := by
    simp_rw [IsEmpty, Set.eq_empty_iff_forall_notMem]
 
