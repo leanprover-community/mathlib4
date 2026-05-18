@@ -114,6 +114,7 @@ theorem ker_eq_bot_of_inverse {τ₂₁ : R₂ →+* R} [RingHomInvPair τ₁₂
 theorem le_ker_iff_map [RingHomSurjective τ₁₂] {f : M →ₛₗ[τ₁₂] M₂} {p : Submodule R M} :
     p ≤ ker f ↔ map f p = ⊥ := by rw [ker, eq_bot_iff, map_le_iff_le_comap]
 
+@[simp]
 theorem ker_codRestrict {τ₂₁ : R₂ →+* R} (p : Submodule R M) (f : M₂ →ₛₗ[τ₂₁] M) (hf) :
     ker (codRestrict p f hf) = ker f := by rw [ker, comap_codRestrict, Submodule.map_bot]; rfl
 
@@ -178,11 +179,6 @@ theorem sub_mem_ker_iff {x y} : x - y ∈ ker f ↔ f x = f y := by rw [mem_ker,
 theorem disjoint_ker_iff_injOn {p : Submodule R M} :
     Disjoint p (LinearMap.ker f) ↔ Set.InjOn f p := by
   rw [disjoint_ker, Set.injOn_iff_map_eq_zero]
-
-@[deprecated disjoint_ker_iff_injOn (since := "2025-11-07")]
-theorem disjoint_ker' {p : Submodule R M} :
-    Disjoint p (ker f) ↔ ∀ x ∈ p, ∀ y ∈ p, f x = f y → x = y := by
-  simp [disjoint_ker_iff_injOn, Set.InjOn]
 
 theorem injOn_of_disjoint_ker {p : Submodule R M} {s : Set M} (h : s ⊆ p)
     (hd : Disjoint p (ker f)) : Set.InjOn f s :=

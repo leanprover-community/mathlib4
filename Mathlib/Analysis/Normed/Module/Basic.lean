@@ -333,9 +333,6 @@ theorem tendsto_algebraMap_cobounded (𝕜 𝕜' : Type*) [NormedField 𝕜] [Se
   ((AddMonoidHomClass.isometry_of_norm (algebraMap 𝕜 𝕜')
     (norm_algebraMap' (𝕜' := 𝕜'))).antilipschitz).tendsto_cobounded
 
-@[deprecated (since := "2025-11-04")] alias
-  algebraMap_cobounded_le_cobounded := tendsto_algebraMap_cobounded
-
 /-- In a normed algebra, the inclusion of the base field in the extended field is an isometry. -/
 theorem algebraMap_isometry [NormOneClass 𝕜'] : Isometry (algebraMap 𝕜 𝕜') := by
   refine Isometry.of_dist_eq fun x y => ?_
