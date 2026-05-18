@@ -1,3 +1,4 @@
+module
 import Mathlib.FieldTheory.IntermediateField.Basic
 
 example {K L : Type*} [Field K] [Field L] [Algebra K L]

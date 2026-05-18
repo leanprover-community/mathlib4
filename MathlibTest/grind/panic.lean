@@ -1,3 +1,4 @@
+module
 import Mathlib.Algebra.Ring.GrindInstances
 import Mathlib.Tactic.FastInstance
 

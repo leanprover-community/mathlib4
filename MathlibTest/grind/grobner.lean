@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dhruv Bhatia, Robert Y. Lewis, Mario Carneiro, Kim Morrison
 -/
 module
-public import Mathlib
+import Mathlib
 
 /-!
 Mathlib used to have a tactic (`polyrith`) that communicated with a remote Sage server
