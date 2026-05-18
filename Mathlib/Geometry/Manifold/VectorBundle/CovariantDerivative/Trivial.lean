@@ -40,18 +40,18 @@ set_option backward.isDefEq.respectTransparency false in
 variable (I M F) in
 @[simps]
 noncomputable def trivial [IsManifold I 1 M] :
-    IsCovariantDerivativeOn F (V := Trivial M F) (fun s x ↦ mfderiv I 𝓘(𝕜, F) s x) univ where
+    IsCovariantDerivativeOn F (V := Trivial M F) (fun s x ↦ mvfderiv I s x) univ where
   add hσ hσ' hx := by
     rw [mdifferentiableAt_section_trivial_iff] at hσ hσ'
-    rw [mfderiv_add hσ hσ']
-  leibniz hσ hf hx := by
+    rw [mvfderiv_add hσ hσ']
+  leibniz hσ hg hx := by
     rw [mdifferentiableAt_section] at hσ
     ext1 X₀
-    exact fromTangentSpace_mfderiv_smul_apply hf hσ X₀
+    simp at hσ
+    simp [mvfderiv_smul hg hσ]
 
 lemma of_endomorphism (A : (x : M) → F →L[𝕜] TangentSpace I x →L[𝕜] F) :
-    IsCovariantDerivativeOn F
-      (fun (s : M → F) x ↦ (fromTangentSpace (𝕜 := 𝕜) (s x) ∘L mfderiv% s x) + A x (s x)) univ :=
+    IsCovariantDerivativeOn F (fun (s : M → F) x ↦ d% s x + A x (s x)) univ :=
   trivial I M F |>.add_one_form A
 
 end trivial_bundle
@@ -108,7 +108,8 @@ noncomputable def of_endomorphism (A : E → E' →L[𝕜] E →L[𝕜] E') :
   toFun σ := fun x ↦ fderiv 𝕜 σ x + A x (σ x)
   isCovariantDerivativeOnUniv := by
     convert IsCovariantDerivativeOn.of_endomorphism (I := 𝓘(𝕜, E)) A
-    simp [mfderiv_eq_fderiv, NormedSpace.fromTangentSpace]
+    ext X -- TODO: missing API lemma, without the ext cannot see through mvfderiv...
+    simp [mvfderiv, NormedSpace.fromTangentSpace]
     rfl
 
 end CovariantDerivative
@@ -141,12 +142,11 @@ is of the form `D + A`, where `D` is the trivial covariant derivative, and `A` a
 lemma exists_one_form {cov : (M → F) → (Π x : M, TangentSpace I x →L[𝕜] F)}
     {s : Set M} (hcov : IsCovariantDerivativeOn F cov s) :
     ∃ (A : (x : M) → F →L[𝕜] TangentSpace I x →L[𝕜] F),
-    ∀ σ : M → F, ∀ x ∈ s, MDiffAt (T% σ) x →
-    letI d : TangentSpace I x →L[𝕜] F := mfderiv I 𝓘(𝕜, F) σ x
-    cov σ x = d + A x (σ x) := by
+    ∀ σ : M → F, ∀ x ∈ s, MDiffAt (T% σ) x → cov σ x = mvfderiv I σ x + A x (σ x) := by
   use hcov.difference (trivial I M F |>.mono <| subset_univ s)
   intro σ x hx hσ
   rw [hcov.difference_apply _ (by trivial) hσ]
+  simp only [mvfderiv]
   module
 
 noncomputable def one_form {cov : (M → F) → (Π x : M, TangentSpace I x →L[𝕜] F)}
