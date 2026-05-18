@@ -405,6 +405,14 @@ namespace IsTopologicalGroup
 variable {ι α G : Type*} [Group G] [u : UniformSpace G] [IsTopologicalGroup G]
 
 @[to_additive]
+theorem uniformCauchySeqOn_iff (F : ι → α → G) (p : Filter ι) (s : Set α)
+    (hu : IsTopologicalGroup.rightUniformSpace G = u) :
+    UniformCauchySeqOn F p s ↔ ∀ u ∈ 𝓝 (1 : G), ∀ᶠ m in p ×ˢ p, ∀ a ∈ s, F m.2 a / F m.1 a ∈ u := by
+  simp only [div_eq_mul_inv]
+  exact hu ▸ ⟨fun h u hu ↦ h _ ⟨u, hu, fun _ ↦ id⟩,
+    fun h _ ⟨u, hu, hv⟩ => mem_of_superset (h u hu) fun _ hi a ha => hv (hi a ha)⟩
+
+@[to_additive]
 theorem tendstoUniformly_iff (F : ι → α → G) (f : α → G) (p : Filter ι)
     (hu : IsTopologicalGroup.rightUniformSpace G = u) :
     TendstoUniformly F f p ↔ ∀ u ∈ 𝓝 (1 : G), ∀ᶠ i in p, ∀ a, F i a / f a ∈ u := by

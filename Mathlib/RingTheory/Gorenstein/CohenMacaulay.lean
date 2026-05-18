@@ -201,7 +201,7 @@ noncomputable def isLocalizedModule_map_of_disjoint_map (S : Submonoid R) (A : T
     [Module A Mp] [IsScalarTower R A Mp] : MS →ₗ[A] Mp :=
   have (s : S) : IsUnit ((algebraMap R (Module.End R Mp)) s.1) :=
     have : s.1 ∈ (p.comap (algebraMap R A)).primeCompl :=
-      ((IsLocalization.disjoint_comap_iff S A p).mpr Ideal.IsPrime.ne_top').le_compl_right s.2
+      ((IsLocalization.disjoint_under_iff S A p).mpr Ideal.IsPrime.ne_top').le_compl_right s.2
     IsLocalizedModule.map_units g ⟨s.1, this⟩
   (IsLocalizedModule.lift S f g this).extendScalarsOfIsLocalization S A
 
@@ -290,37 +290,37 @@ lemma ext_succ_nontrivial_of_eq_of_le [IsNoetherianRing R] (M : ModuleCat.{v} R)
     rw [← le_compl_iff_disjoint_left]
     intro r hr
     simpa using le_of_lt lt hr
-  let _ : (p.1.map f).IsPrime :=
+  have : (p.1.map f).IsPrime :=
     IsLocalization.isPrime_of_isPrime_disjoint q.1.primeCompl _ _ p.2 disj
   have ne : p.1.map f ≠ maximalIdeal (Localization q.1.primeCompl) := by
     by_contra eq
     absurd ne_of_lt lt
-    rw [PrimeSpectrum.ext_iff, ← IsLocalization.comap_map_of_isPrime_disjoint q.1.primeCompl Rq
-      p.2 disj, eq, Localization.AtPrime.comap_maximalIdeal]
+    rw [PrimeSpectrum.ext_iff,
+      ← IsLocalization.under_map_of_isPrime_disjoint q.1.primeCompl Rq p.2 disj, eq,
+      Localization.AtPrime.under_maximalIdeal]
   have sub' : Subsingleton (Ext (ModuleCat.of (Localization q.1.primeCompl) (Shrink.{v}
     (Localization q.1.primeCompl ⧸ (p.1.map f)))) (M.localizedModule q.1.primeCompl) i) := by
     apply ext_subsingleton_of_all_gt (M.localizedModule q.1.primeCompl) i (p.1.map f) ne
     intro r rgt hr
-    have cgt : r.comap f > p.1 := by
-      rw [← IsLocalization.comap_map_of_isPrime_disjoint q.1.primeCompl
+    have gt : r.under R > p.1 := by
+      rw [← IsLocalization.under_map_of_isPrime_disjoint q.1.primeCompl
         (Localization q.1.primeCompl) p.2 disj]
       apply lt_of_le_of_ne (Ideal.comap_mono (le_of_lt rgt))
       apply ne_of_apply_ne (Ideal.map f)
-      rw [IsLocalization.map_comap q.1.primeCompl, IsLocalization.map_comap q.1.primeCompl]
+      rw [IsLocalization.map_under q.1.primeCompl, IsLocalization.map_under q.1.primeCompl]
       exact ne_of_lt rgt
-    have cle : r.comap f ≤ q.1 := le_of_le_of_eq (Ideal.comap_mono (le_maximalIdeal_of_isPrime r))
-        (IsLocalization.AtPrime.comap_maximalIdeal (Localization q.1.primeCompl) q.1)
-    have ceq : r.comap f = q.1 := by simp [← eq_of_le ⟨r.comap f, r.comap_isPrime f⟩ cgt cle]
-    rw [← IsLocalization.map_comap q.1.primeCompl _ r, ceq,
-      Localization.AtPrime.map_eq_maximalIdeal]
+    have le : r.under R ≤ q.1 := le_of_le_of_eq (Ideal.comap_mono (le_maximalIdeal_of_isPrime r))
+      (IsLocalization.AtPrime.under_maximalIdeal (Localization q.1.primeCompl) q.1)
+    have eq : r.under R = q.1 := by simp [f, ← eq_of_le ⟨r.comap f, r.comap_isPrime f⟩ gt le]
+    rw [← IsLocalization.map_under q.1.primeCompl _ r, eq, Localization.AtPrime.map_eq_maximalIdeal]
     exact sub
   have le' : q.1.primeCompl ≤ p.1.primeCompl := by simpa [Ideal.primeCompl] using le_of_lt lt
-  let _ : Algebra Rq Rp := IsLocalization.localizationAlgebraOfSubmonoidLe Rq Rp _ _ le'
-  let _ := IsLocalization.localization_isScalarTower_of_submonoid_le Rq Rp _ _ le'
+  let : Algebra Rq Rp := IsLocalization.localizationAlgebraOfSubmonoidLe Rq Rp _ _ le'
+  have := IsLocalization.localization_isScalarTower_of_submonoid_le Rq Rp _ _ le'
   have isl0 : IsLocalization.AtPrime Rp (p.1.map f) := by
     have : IsLocalization.AtPrime (Localization.AtPrime (p.1.map f)) p.1 := by
       convert IsLocalization.isLocalization_atPrime_localization_atPrime q.1.primeCompl (p.1.map f)
-      rw [IsLocalization.comap_map_of_isPrime_disjoint q.1.primeCompl Rq p.2 disj]
+      exact (IsLocalization.under_map_of_isPrime_disjoint q.1.primeCompl Rq p.2 disj).symm
     let e := IsLocalization.algEquiv p.1.primeCompl Rp (Localization.AtPrime (p.1.map f))
     exact IsLocalization.isLocalization_of_algEquiv (p.1.map f).primeCompl (AlgEquiv.ofLinearEquiv
       (e.toLinearEquiv.extendScalarsOfIsLocalization q.1.primeCompl Rq) (by simp) (by simp)).symm
@@ -351,7 +351,7 @@ lemma ext_succ_nontrivial_of_eq_of_le [IsNoetherianRing R] (M : ModuleCat.{v} R)
   have : IsLocalizedModule.AtPrime ((p.1.map f).comap f)
     (M.localizedModuleMkLinearMap p.1.primeCompl) := by
     convert M.localizedModule_isLocalizedModule p.1.primeCompl
-    exact IsLocalization.comap_map_of_isPrime_disjoint q.1.primeCompl Rq p.2 disj
+    exact IsLocalization.under_map_of_isPrime_disjoint q.1.primeCompl Rq p.2 disj
   have : IsScalarTower R Rq (M.localizedModule p.1.primeCompl) := {
     smul_assoc r s z := by
       nth_rw 2 [← algebraMap_smul Rp r]
