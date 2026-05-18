@@ -284,5 +284,32 @@ theorem isTightMeasureSet_of_isCompact_closure (hcomp : IsCompact (closure S)) :
     exact isClosed_iInter fun n =>
       Finite.isClosed_biUnion (finite_Iic _) (fun _ _ ↦ isClosed_closure)
 
+theorem tendsto_of_forall_isCompact_of_isTightMeasureSet
+    {Ω ι : Type*} {mΩ : MeasurableSpace Ω} [TopologicalSpace Ω]
+    [OpensMeasurableSpace Ω] [T2Space Ω]
+    {L : Filter ι} [NeBot L] [L.IsCountablyGenerated]
+    {μs : ι → ProbabilityMeasure Ω} {μ : ProbabilityMeasure Ω}
+    (h₁ : IsTightMeasureSet (range (toMeasure ∘ μs)))
+    (h₂ : ∀ F, IsCompact F → limsup (fun i ↦ (μs i) F) L ≤ μ F) :
+    Tendsto (fun i ↦ μs i) L (nhds μ) := by
+  refine tendsto_of_forall_isClosed_limsup_le <| fun F hF_closed ↦ ?_
+  rw [← ENNReal.coe_le_coe, ENNReal.ofNNReal_limsup <|
+    isBoundedUnder_of_eventually_le (a := 1) (by simp)]
+  refine ENNReal.le_of_forall_pos_le_add <| fun ε hε _ ↦ ?_
+  rw [isTightMeasureSet_iff_exists_isCompact_measure_compl_le] at h₁
+  obtain ⟨K, hKc, hK_le⟩ := h₁ ε (by positivity)
+  grw [limsup_le_limsup (v := fun i ↦ μs i (F ∩ K) + (ε : ENNReal))]
+  · rw [limsup_add_const _ _ _ (by isBoundedDefault) (by isBoundedDefault)]
+    apply add_le_add _ (by simp)
+    specialize h₂ (F ∩ K) <| hKc.inter_left hF_closed
+    rw [← ENNReal.coe_le_coe, ENNReal.ofNNReal_limsup <|
+      isBoundedUnder_of_eventually_le (a := 1) (by simp)] at h₂
+    grw [h₂]
+    simpa using measure_mono <| by simp
+  · refine .of_forall (fun i ↦ ?_)
+    simp_rw [ProbabilityMeasure.ennreal_coeFn_eq_coeFn_toMeasure]
+    rw [← measure_inter_add_diff _ hKc.measurableSet]
+    apply add_le_add (by rfl)
+    apply le_trans (measure_mono (by simp)) <| hK_le (μs i) <| by simp
 
 end MeasureTheory
