@@ -624,6 +624,7 @@ simproc I_pow_eq_pow_mod' (I ^ _) := .ofQ fun u a e =>
   | 1, ~q(ℂ), ~q(I ^ ($n : ℕ)) => do
     let some n' := n.nat? | return .continue
     if n' < 4 then return .continue
+    -- we don't reduce `n % 4`, further, since `Nat.reduceMod` will handle that
     return .visit <| .mk q(I ^ ($n % 4)) <| .some q(I_pow_eq_pow_mod $n)
   | _, _, _ => return .continue
 
