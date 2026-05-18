@@ -32,7 +32,7 @@ This module defines `Hypergraph α` for a vertex type `α` (edges are defined as
 For `H : Hypergraph α`:
 
 * `H.vertexSet` (abbrev. `V(H)`) denotes the vertex set of `H` as a term in `Set α`.
-* `H.edgeSet` (abbreb. `E(H)`) denotes the edge set of `H` as a term in `Set (Set α)`. Hyperedges
+* `H.edgeSet` (abbrev. `E(H)`) denotes the edge set of `H` as a term in `Set (Set α)`. Hyperedges
   must be subsets of `V(H)`.
 * `H.Adj x y` means that there exists some edge containing both `x` and `y` (or, in other
   words, `x` and `y` are incident to some shared edge `e`).
