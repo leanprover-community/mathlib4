@@ -564,8 +564,8 @@ section toSubring
 variable [Ring R] (p : MvPowerSeries σ R) (T : Subring R) (hp : ∀ n, p.coeff n ∈ T)
 
 /-- Given a multivariate formal power series `p` and a subring `T` that contains the
- coefficients of `p`, return the corresponding multivariate formal power series
- whose coefficients are in `T`. -/
+coefficients of `p`, return the corresponding multivariate formal power series
+whose coefficients are in `T`. -/
 def toSubring : MvPowerSeries σ T := fun n => ⟨p.coeff n, hp n⟩
 
 @[simp]

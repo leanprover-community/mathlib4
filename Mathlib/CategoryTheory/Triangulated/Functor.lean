@@ -310,7 +310,6 @@ variable {X₁ X₂ X₃ Z₁₂ Z₂₃ Z₁₃ : C}
   (h : Octahedron comm h₁₂ h₂₃ h₁₃)
   (F : C ⥤ D) [F.CommShift ℤ] [F.IsTriangulated]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The image of an octahedron by a triangulated functor. -/
 @[simps]
 def map : Octahedron (by dsimp; rw [← F.map_comp, comm])
