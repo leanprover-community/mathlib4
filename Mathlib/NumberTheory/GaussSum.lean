@@ -87,13 +87,10 @@ theorem gaussSum_mulShift_eq (χ : MulChar R R') (ψ : AddChar R R') (a : Rˣ) :
 
 /-- Taking complex conjugates of a Gauss sum inverts both characters. -/
 lemma star_gaussSum_eq (χ : MulChar R ℂ) (ψ : AddChar R ℂ) :
-    star (gaussSum χ ψ) = gaussSum (χ⁻¹) (ψ⁻¹) := by
+    star (gaussSum χ ψ) = gaussSum χ⁻¹ ψ⁻¹ :=
   calc
-    _ = ∑ x, star (ψ x) * χ⁻¹ x := by
-      simp [gaussSum, star_mul, MulChar.star_apply']
-    _ = ∑ x, ψ⁻¹ x * χ⁻¹ x := by
-      refine Finset.sum_congr rfl fun x _ ↦ ?_
-      rw [← starRingEnd_apply, ← AddChar.map_neg_eq_conj ψ x, AddChar.inv_apply ψ x]
+    _ = ∑ x, star (ψ x) * χ⁻¹ x := by simp [gaussSum, star_mul, star_apply']
+    _ = ∑ x, ψ⁻¹ x * χ⁻¹ x := by simp [← starRingEnd_apply, map_neg_eq_conj]
     _ = _ := by simp [mul_comm, gaussSum]
 
 end GaussSumDef
