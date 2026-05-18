@@ -149,7 +149,7 @@ lemma Polynomial.localization_at_comap_maximal_isGorensteinLocalRing_of_isGorens
       simp only [Algebra.smul_def, Quotient.algebraMap_eq] at ha
       apply (mul_eq_zero_iff_left (Ideal.Quotient.eq_zero_iff_mem.not.mpr ?_)).mp ha
       rw [IsScalarTower.algebraMap_eq R R[X], ← Ideal.map_map, algebraMap_eq, ← Ideal.mem_comap,
-        IsLocalization.comap_map_of_isPrime_disjoint p.primeCompl RXp isp disj]
+        ← Ideal.under_def, IsLocalization.under_map_of_isPrime_disjoint p.primeCompl RXp isp disj]
       simp only [← Ker, RingHom.mem_ker, coe_mapRingHom, hy]
       contrapose! eq0
       simp [hz, eq0]
@@ -161,8 +161,8 @@ lemma Polynomial.localization_at_comap_maximal_isGorensteinLocalRing_of_isGorens
     apply AddCommGrpCat.subsingleton_of_isZero <| (Ext.contravariant_sequence_exact₃' S_exact
       (ModuleCat.of RXp RXp) (i - 1) i this).isZero_of_both_zeros
       (IsZero.eq_zero_of_src ?_ _) (IsZero.eq_zero_of_tgt ?_ _)
-    · exact @AddCommGrpCat.isZero_of_subsingleton _ (subsing (i - 1) (Nat.le_sub_one_of_lt hi))
-    · exact @AddCommGrpCat.isZero_of_subsingleton _ (subsing i (Nat.le_of_succ_le hi))
+    · exact AddCommGrpCat.isZero_of_iff_subsingleton.mpr (subsing (i - 1) (by omega))
+    · exact AddCommGrpCat.isZero_of_iff_subsingleton.mpr (subsing i (Nat.le_of_succ_le hi))
 
 set_option backward.isDefEq.respectTransparency false in
 theorem Polynomial.isGorensteinRing_of_isGorensteinRing [IsNoetherianRing R] [IsGorensteinRing R] :
@@ -181,18 +181,17 @@ theorem Polynomial.isGorensteinRing_of_isGorensteinRing [IsNoetherianRing R] [Is
   have : IsLocalization.AtPrime (Localization.AtPrime pS) p := by
     convert IsLocalization.isLocalization_isLocalization_atPrime_isLocalization pc
       (Localization.AtPrime pS) pS
-    exact (IsLocalization.comap_map_of_isPrime_disjoint pc _ ‹_› disj).symm
+    exact (IsLocalization.under_map_of_isPrime_disjoint pc _ ‹_› disj).symm
   have := (isGorensteinRing_def R).mp ‹_› q (comap_isPrime C p)
   have : comap C pS = maximalIdeal (Localization.AtPrime q) := by
-    rw [← IsLocalization.map_comap q.primeCompl _ (comap C pS),
-      ← IsLocalization.map_comap q.primeCompl _ (maximalIdeal (Localization.AtPrime q))]
+    rw [← IsLocalization.map_under q.primeCompl _ (comap C pS),
+      ← IsLocalization.map_under q.primeCompl _ (maximalIdeal (Localization.AtPrime q))]
     simp only [comap_comap, S, pS]
     rw [← Polynomial.algebraMap_eq (R := Localization.AtPrime q),
       ← IsScalarTower.algebraMap_eq R (Localization.AtPrime q) (Localization.AtPrime q)[X],
       IsScalarTower.algebraMap_eq R R[X] (Localization.AtPrime q)[X], ← comap_comap,
-      IsLocalization.comap_map_of_isPrime_disjoint pc _ ‹_› disj,
-      IsLocalization.AtPrime.comap_maximalIdeal (Localization.AtPrime q) q]
-    rfl
+      ← Ideal.under_def R[X], IsLocalization.under_map_of_isPrime_disjoint pc _ ‹_› disj]
+    simp [IsLocalization.AtPrime.under_maximalIdeal (Localization.AtPrime q) q, q]
   have := localization_at_comap_maximal_isGorensteinLocalRing_of_isGorensteinLocalRing
     (Localization.AtPrime q) pS this
   exact IsGorensteinLocalRing.of_ringEquiv (IsLocalization.algEquiv p.primeCompl
