@@ -364,7 +364,7 @@ lemma genWeightSpace_zero_normalizer_eq_self :
   intro y
   obtain ⟨k, hk⟩ := hm y y
   use k + 1
-  simpa [pow_succ, Module.End.mul_eq_comp]
+  simpa [pow_succ, Module.End.mul_def]
 
 lemma iSup_ucs_le_genWeightSpace_zero :
     ⨆ k, (⊥ : LieSubmodule R L M).ucs k ≤ genWeightSpace M (0 : L → R) := by
@@ -409,7 +409,7 @@ def posFittingCompOf (x : L) : LieSubmodule R L M :=
       change (φ ^ k).comp ((toModuleHom R L M : L ⊗[R] M →ₗ[R] M)) _ = _
       simp [φ, f₁, f₂, Module.End.commute_pow_left_of_commute h₂,
         LinearMap.comp_apply (g := (f₁ + f₂) ^ k), ← LinearMap.comp_apply (g := q),
-        ← Module.End.mul_eq_comp, ← hq] }
+        ← Module.End.mul_def, ← hq] }
 
 variable {M} in
 lemma mem_posFittingCompOf (x : L) (m : M) :

@@ -661,7 +661,7 @@ def linHom : Representation k G (V →ₗ[k] W) where
       map_add' := fun f₁ f₂ => by simp_rw [add_comp, comp_add]
       map_smul' := fun r f => by simp_rw [RingHom.id_apply, smul_comp, comp_smul] }
   map_one' := ext fun x => by simp [Module.End.one_eq_id]
-  map_mul' g h := ext fun x => by simp [Module.End.mul_eq_comp, comp_assoc]
+  map_mul' g h := ext fun x => by simp [Module.End.mul_def, comp_assoc]
 
 @[simp]
 theorem linHom_apply (g : G) (f : V →ₗ[k] W) : (linHom ρV ρW) g f = ρW g ∘ₗ f ∘ₗ ρV g⁻¹ :=

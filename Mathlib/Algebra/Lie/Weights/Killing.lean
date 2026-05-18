@@ -210,7 +210,7 @@ lemma eq_zero_of_isNilpotent_ad_of_mem_isCartanSubalgebra {x : L} (hx : x ∈ H)
   ext y
   have comm : Commute (toEnd K H L ⟨x, hx⟩) (toEnd K H L y) := by
     rw [commute_iff_lie_eq, ← LieHom.map_lie, trivial_lie_zero, map_zero]
-  rw [traceForm_apply_apply, ← Module.End.mul_eq_comp, LinearMap.zero_apply]
+  rw [traceForm_apply_apply, ← Module.End.mul_def, LinearMap.zero_apply]
   exact (LinearMap.isNilpotent_trace_of_isNilpotent (comm.isNilpotent_mul_right hx')).eq_zero
 
 @[simp]

@@ -75,11 +75,11 @@ lemma traceForm_apply_lie_apply (x y z : L) :
     _ = trace R _ (φ x * (φ y * φ z)) - trace R _ (φ y * (φ x * φ z)) := ?_
     _ = trace R _ (φ x * (φ y * φ z)) - trace R _ (φ x * (φ z * φ y)) := ?_
     _ = traceForm R L M x ⁅y, z⁆ := ?_
-  · simp only [LieHom.map_lie, Ring.lie_def, ← Module.End.mul_eq_comp]
+  · simp only [LieHom.map_lie, Ring.lie_def, ← Module.End.mul_def]
   · simp only [sub_mul, map_sub, mul_assoc]
   · simp only [LinearMap.trace_mul_cycle' R (φ x) (φ z) (φ y)]
   · simp only [traceForm_apply_apply, LieHom.map_lie, Ring.lie_def, mul_sub, map_sub,
-      ← Module.End.mul_eq_comp]
+      ← Module.End.mul_def]
 
 /-- Given a representation `M` of a Lie algebra `L`, the action of any `x : L` is skew-adjoint
 w.r.t. the trace form. -/
@@ -126,7 +126,7 @@ lemma trace_toEnd_mul_eq_zero_of_traceForm_eq_zero (h : traceForm R L M = 0)
     replace hbc : ⁅φ b, y⁆ = -φ c := by rw [hbc, Module.End.instLieRingModule_eq, lie_skew]
     rw [LieHom.map_lie, LinearMap.trace_lie_mul_eq, Ring.lie_def,
       ← LieRing.of_associative_ring_bracket, ← Module.End.instLieRingModule_eq, hbc, mul_neg,
-      map_neg, neg_eq_zero, Module.End.mul_eq_comp, ← traceForm_apply_apply, h,
+      map_neg, neg_eq_zero, Module.End.mul_def, ← traceForm_apply_apply, h,
       LinearMap.zero_apply, LinearMap.zero_apply]
   | zero => simp
   | add u v _ _ hu hv => simp [add_mul, hu, hv]
@@ -203,8 +203,8 @@ lemma eq_zero_of_mem_genWeightSpace_mem_posFitting [LieRing.IsNilpotent L]
     intro m n
     replace hB : ∀ m, B m (φ x n) = (-1 : R) • B (φ x m) n := by simp [hB]
     have : (-1 : R) ^ k • (-1 : R) = (-1 : R) ^ (k + 1) := by rw [pow_succ (-1 : R), smul_eq_mul]
-    conv_lhs => rw [pow_succ, Module.End.mul_eq_comp, LinearMap.comp_apply, ih, hB,
-      ← (φ x).comp_apply, ← Module.End.mul_eq_comp, ← pow_succ', ← smul_assoc, this]
+    conv_lhs => rw [pow_succ, Module.End.mul_def, LinearMap.comp_apply, ih, hB,
+      ← (φ x).comp_apply, ← Module.End.mul_def, ← pow_succ', ← smul_assoc, this]
   suffices ∀ (x : L) m, m ∈ posFittingCompOf R M x → B m₀ m = 0 by
     refine LieSubmodule.iSup_induction (motive := fun m ↦ (B m₀) m = 0) _ hm₁ this (map_zero _) ?_
     simp_all

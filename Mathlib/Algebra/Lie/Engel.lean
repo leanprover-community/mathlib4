@@ -122,7 +122,7 @@ theorem lcs_le_lcs_of_is_nilpotent_span_sup_eq_top {n i j : ℕ}
   | succ l ih =>
     simp only [LieIdeal.lcs_succ, i.add_succ l, lie_top_eq_of_span_sup_eq_top hxI, sup_le_iff]
     refine ⟨(Submodule.map_mono ih).trans ?_, le_sup_of_le_right ?_⟩
-    · rw [Submodule.map_sup, ← Submodule.map_comp, ← Module.End.mul_eq_comp, ← pow_succ', ←
+    · rw [Submodule.map_sup, ← Submodule.map_comp, ← Module.End.mul_def, ← pow_succ', ←
         I.lcs_succ]
       grw [coe_map_toEnd_le]
     · norm_cast

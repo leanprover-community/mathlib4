@@ -165,7 +165,7 @@ theorem surjective_of_injective_endomorphism (f : M →ₗ[R] M) (s : Injective 
   rw [IsArtinian, WellFoundedLT, isWellFounded_iff]
   refine (RelEmbedding.natGT (LinearMap.range <| f ^ ·) ?_).not_wellFounded
   intro n
-  simp_rw [pow_succ, Module.End.mul_eq_comp, LinearMap.range_comp, ← Submodule.map_top (f ^ n)]
+  simp_rw [pow_succ, Module.End.mul_def, LinearMap.range_comp, ← Submodule.map_top (f ^ n)]
   refine Submodule.map_strictMono_of_injective (Module.End.iterate_injective s n) (Ne.lt_top ?_)
   rwa [Ne, LinearMap.range_eq_top]
 

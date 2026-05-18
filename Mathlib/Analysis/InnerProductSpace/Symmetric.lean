@@ -119,7 +119,7 @@ lemma IsSymmetric.mul_of_commute {S T : E →ₗ[𝕜] E} (hS : S.IsSymmetric) (
 @[aesop safe apply]
 lemma IsSymmetric.pow {T : E →ₗ[𝕜] E} (hT : T.IsSymmetric) (n : ℕ) : (T ^ n).IsSymmetric := by
   refine Nat.le_induction (by simp [Module.End.one_eq_id]) (fun k _ ih ↦ ?_) n n.zero_le
-  rw [Module.End.iterate_succ, ← Module.End.mul_eq_comp]
+  rw [Module.End.iterate_succ, ← Module.End.mul_def]
   exact ih.mul_of_commute hT <| .pow_left rfl k
 
 /-- For a symmetric operator `T`, the function `fun x ↦ ⟪T x, x⟫` is real-valued. -/
