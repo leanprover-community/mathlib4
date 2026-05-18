@@ -107,8 +107,6 @@ theorem toFinset_subset [Fintype s] {t : Finset α} : s.toFinset ⊆ t ↔ s ⊆
 @[gcongr]
 alias ⟨_, toFinset_mono⟩ := toFinset_subset_toFinset
 
-@[deprecated (since := "2025-10-25")] alias toFinset_subset_toFinset_of_subset := toFinset_mono
-
 alias ⟨_, toFinset_strict_mono⟩ := toFinset_ssubset_toFinset
 
 @[simp]

@@ -86,9 +86,6 @@ theorem Unitary.spectrum_subset_circle (u : unitary E) :
       simpa only [norm_inv] using norm_le_norm_of_mem hk
     simpa using inv_le_of_inv_le₀ (norm_pos_iff.mpr hnk) this
 
-@[deprecated (since := "2025-10-29")] alias unitary.spectrum_subset_circle :=
-  Unitary.spectrum_subset_circle
-
 theorem spectrum.subset_circle_of_unitary {u : E} (h : u ∈ unitary E) :
     spectrum 𝕜 u ⊆ Metric.sphere 0 1 :=
   Unitary.spectrum_subset_circle ⟨u, h⟩

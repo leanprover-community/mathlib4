@@ -5,13 +5,12 @@ Authors: Chris Birkbeck
 -/
 module
 
-public import Mathlib.Algebra.Order.Floor.Semifield
 public import Mathlib.Data.Nat.ModEq
 public import Mathlib.NumberTheory.ModularForms.CuspFormSubmodule
 public import Mathlib.NumberTheory.ModularForms.Discriminant
-public import Mathlib.Data.Rat.Star
-public import Mathlib.LinearAlgebra.Dimension.Localization
 public import Mathlib.RingTheory.PowerSeries.Order
+
+import Mathlib.Algebra.Order.Floor.Semifield
 
 /-!
 # Dimension formula and Sturm bound for level 1 modular forms

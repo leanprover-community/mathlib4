@@ -895,10 +895,6 @@ lemma LinearIndependent.of_subsingleton [Subsingleton ι] (i : ι) (hi : v i ≠
 
 lemma LinearIndepOn.singleton (hi : v i ≠ 0) : LinearIndepOn R v {i} := by simp [hi]
 
-variable (R) in
-@[deprecated LinearIndepOn.singleton (since := "2025-11-11")]
-lemma LinearIndepOn.id_singleton {x : M} (hx : x ≠ 0) : LinearIndepOn R id {x} := .singleton hx
-
 end Module
 
 /-!
