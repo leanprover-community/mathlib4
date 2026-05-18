@@ -125,9 +125,6 @@ namespace ModEq
 
 theorem modulus_mul_add : m * a + b ≡ b [MOD m] := by simp [Nat.ModEq]
 
-@[deprecated (since := "2025-10-16")]
-alias self_mul_add := modulus_mul_add
-
 lemma of_dvd (d : m ∣ n) (h : a ≡ b [MOD n]) : a ≡ b [MOD m] :=
   modEq_of_dvd <| Int.ofNat_dvd.mpr d |>.trans h.dvd
 
