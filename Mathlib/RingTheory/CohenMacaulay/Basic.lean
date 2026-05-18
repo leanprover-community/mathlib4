@@ -324,7 +324,7 @@ lemma isLocalize_at_prime_dim_eq_prime_depth_of_isCohenMacaulay
         have : maximalIdeal Rₚ ∈
           ((Module.annihilator R M).map (algebraMap R Rₚ)).minimalPrimes := by
           simpa [IsLocalization.minimalPrimes_map p.primeCompl,
-            IsLocalization.AtPrime.comap_maximalIdeal Rₚ p] using min
+            IsLocalization.AtPrime.under_maximalIdeal Rₚ p] using min
         simp only [Ideal.minimalPrimes, Set.mem_setOf_eq] at this
         exact PrimeSpectrum.ext (this.eq_of_le ⟨I.2, le.trans hI⟩ (le_maximalIdeal_of_isPrime I.1))
       · simpa using IsLocalRing.closedPoint_mem_support Rₚ Mₚ
@@ -465,14 +465,14 @@ lemma isCohenMacaulayRing_iff [IsNoetherianRing R] : IsCohenMacaulayRing R ↔
   have disj := (Set.disjoint_compl_left_iff_subset.mpr le)
   have : (p.map (algebraMap R Rₘ)).IsPrime := by
     simpa [IsLocalization.isPrime_iff_isPrime_disjoint m.primeCompl Rₘ, hp,
-      IsLocalization.comap_map_of_isPrime_disjoint m.primeCompl Rₘ hp disj] using disj
+      IsLocalization.under_map_of_isPrime_disjoint m.primeCompl Rₘ hp disj] using disj
   have le' : m.primeCompl ≤ p.primeCompl := by simpa [Ideal.primeCompl] using le
   let : Algebra Rₘ Rₚ := IsLocalization.localizationAlgebraOfSubmonoidLe Rₘ Rₚ _ _ le'
   have := IsLocalization.localization_isScalarTower_of_submonoid_le Rₘ Rₚ _ _ le'
   have : IsLocalization.AtPrime (Localization.AtPrime (Ideal.map (algebraMap R Rₘ) p)) p := by
     convert IsLocalization.isLocalization_atPrime_localization_atPrime m.primeCompl
       (p.map (algebraMap R Rₘ))
-    rw [IsLocalization.comap_map_of_isPrime_disjoint m.primeCompl Rₘ hp disj]
+    rw [← Ideal.under_def, IsLocalization.under_map_of_isPrime_disjoint m.primeCompl Rₘ hp disj]
   let e' := (IsLocalization.algEquiv p.primeCompl Rₚ
       (Localization.AtPrime (Ideal.map (algebraMap R Rₘ) p)))
   let e : Rₚ ≃ₐ[Rₘ] Localization.AtPrime (Ideal.map (algebraMap R Rₘ) p) :=

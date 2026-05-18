@@ -46,7 +46,7 @@ theorem MeromorphicOn.intervalIntegrable_log_norm (hf : MeromorphicOn f [[a, b]]
       ((MeromorphicOn.divisor f [[a, b]]).finiteSupport isCompact_uIcc)
     have h₄g := MeromorphicOn.extract_zeros_poles_log h₂g h₃g
     rw [intervalIntegrable_congr_codiscreteWithin
-      (h₄g.filter_mono (Filter.codiscreteWithin.mono Set.uIoc_subset_uIcc))]
+      (h₄g.filter_mono (Filter.codiscreteWithin_mono Set.uIoc_subset_uIcc))]
     apply IntervalIntegrable.add
     · apply IntervalIntegrable.finsum
       intro i
@@ -60,7 +60,7 @@ theorem MeromorphicOn.intervalIntegrable_log_norm (hf : MeromorphicOn f [[a, b]]
   · rw [← hf.exists_meromorphicOrderAt_ne_top_iff_forall (isConnected_Icc inf_le_sup)] at t₀
     push Not at t₀
     have : (log ‖f ·‖) =ᶠ[Filter.codiscreteWithin (Ι a b)] 0 := by
-      apply Filter.EventuallyEq.filter_mono _ (Filter.codiscreteWithin.mono Set.uIoc_subset_uIcc)
+      apply Filter.EventuallyEq.filter_mono _ (Filter.codiscreteWithin_mono Set.uIoc_subset_uIcc)
       filter_upwards [hf.meromorphicNFAt_mem_codiscreteWithin,
         Filter.self_mem_codiscreteWithin [[a, b]]] with x h₁x h₂x
       simp only [Pi.zero_apply, log_eq_zero, norm_eq_zero]
