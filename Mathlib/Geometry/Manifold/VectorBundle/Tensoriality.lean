@@ -301,17 +301,17 @@ noncomputable def mkHom₃
     (Φ : (Π x : M, V x) → (Π x : M, V' x) → (Π x : M, V'' x) → A) (x : M)
     -- TODO: may require further differentiability conditions here, or not!
     -- if so, propagate down below
-    (hΦ₁ : ∀ τ τ', MDiffAt (T% τ) x → TensorialAt I F (Φ · τ τ') x)
-    (hΦ₂ : ∀ σ τ', MDiffAt (T% σ) x → TensorialAt I F' (Φ σ · τ') x)
-    (hΦ₃ : ∀ σ τ, MDiffAt (T% σ) x → TensorialAt I F'' (Φ σ τ ·) x) :
+    (hΦ₁ : ∀ τ υ, MDiffAt (T% τ) x → MDiffAt (T% υ) x → TensorialAt I F (Φ · τ υ) x)
+    (hΦ₂ : ∀ σ υ, MDiffAt (T% σ) x → MDiffAt (T% υ) x → TensorialAt I F' (Φ σ · υ) x)
+    (hΦ₃ : ∀ σ τ, MDiffAt (T% σ) x → MDiffAt (T% τ) x → TensorialAt I F'' (Φ σ τ ·) x) :
     V x →L[𝕜] V' x →L[𝕜] V'' x →L[𝕜] A :=
   sorry -- TODO: prove mutatis mutandis
 
 theorem mkHom₃_apply
     {Φ : (Π x : M, V x) → (Π x : M, V' x) → (Π x : M, V'' x) → A} {x}
-    (hΦ₁ : ∀ τ τ', MDiffAt (T% τ) x → TensorialAt I F (Φ · τ τ') x)
-    (hΦ₂ : ∀ σ τ', MDiffAt (T% σ) x → TensorialAt I F' (Φ σ · τ') x)
-    (hΦ₃ : ∀ σ τ, MDiffAt (T% σ) x → TensorialAt I F'' (Φ σ τ ·) x)
+    (hΦ₁ : ∀ τ υ, MDiffAt (T% τ) x → MDiffAt (T% υ) x → TensorialAt I F (Φ · τ υ) x)
+    (hΦ₂ : ∀ σ υ, MDiffAt (T% σ) x → MDiffAt (T% υ) x → TensorialAt I F' (Φ σ · υ) x)
+    (hΦ₃ : ∀ σ τ, MDiffAt (T% σ) x → MDiffAt (T% τ) x → TensorialAt I F'' (Φ σ τ ·) x)
     {σ : Π x : M, V x} (hσ : MDiffAt (T% σ) x) {τ : Π x : M, V' x} (hτ : MDiffAt (T% τ) x)
     {τ' : Π x : M, V'' x} (hτ : MDiffAt (T% τ') x) :
     mkHom₃ Φ x hΦ₁ hΦ₂ hΦ₃ (σ x) (τ x) (τ' x) = Φ σ τ τ' :=
@@ -319,9 +319,9 @@ theorem mkHom₃_apply
 
 theorem mkHom₃_apply_eq_extend
     {Φ : (Π x : M, V x) → (Π x : M, V' x) → (Π x : M, V'' x) → A} {x}
-    (hΦ₁ : ∀ τ τ', MDiffAt (T% τ) x → TensorialAt I F (Φ · τ τ') x)
-    (hΦ₂ : ∀ σ τ', MDiffAt (T% σ) x → TensorialAt I F' (Φ σ · τ') x)
-    (hΦ₃ : ∀ σ τ, MDiffAt (T% σ) x → TensorialAt I F'' (Φ σ τ ·) x)
+    (hΦ₁ : ∀ τ υ, MDiffAt (T% τ) x → MDiffAt (T% υ) x → TensorialAt I F (Φ · τ υ) x)
+    (hΦ₂ : ∀ σ υ, MDiffAt (T% σ) x → MDiffAt (T% υ) x → TensorialAt I F' (Φ σ · υ) x)
+    (hΦ₃ : ∀ σ τ, MDiffAt (T% σ) x → MDiffAt (T% τ) x → TensorialAt I F'' (Φ σ τ ·) x)
     (σ : V x) (τ : V' x) (τ' : V'' x) :
     mkHom₃ Φ x hΦ₁ hΦ₂ hΦ₃ σ τ τ' =
       Φ (FiberBundle.extend F σ) (FiberBundle.extend F' τ) (FiberBundle.extend F'' τ') :=

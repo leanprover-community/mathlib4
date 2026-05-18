@@ -104,12 +104,15 @@ A covariant derivative ∇ is called of class `C^k` iff, whenever `X` is a `C^k`
 deduce this automatically. We will prove in a later file that any `C^(k+1)` covariant derivative
 is `C^k`.
 -/
+-- Is this framing correct? It is a pretty weak condition if the space of C^k sections over `u` is
+-- small, which e.g. could happen over `ℂ` when `u` is compact. Not sure whether this definition
+-- retrieves the correct notion of "holomorphic connection" in this case.
 class ContMDiffCovariantDerivativeOn [IsManifold I 1 M] [VectorBundle 𝕜 F V] (k : ℕ∞ω)
     (cov : (Π x : M, V x) → (Π x : M, TangentSpace I x →L[𝕜] V x))
     (u : Set M) where
   contMDiff : ∀ {σ : Π x : M, V x}, CMDiff[u] (k + 1) (T% σ) →
-    letI cov (x : M) : TotalSpace (E →L[𝕜] F) fun x ↦ TangentSpace I x →L[𝕜] V x := ⟨x, cov σ x⟩
-    ContMDiffOn I (I.prod 𝓘(𝕜, E →L[𝕜] F)) k cov u
+    letI covσ (x : M) : TotalSpace (E →L[𝕜] F) fun x ↦ TangentSpace I x →L[𝕜] V x := ⟨x, cov σ x⟩
+    ContMDiffOn I (I.prod 𝓘(𝕜, E →L[𝕜] F)) k covσ u
     -- TODO elaborators are not working here. We want to use `T% (cov σ)` and CMDiff[u] k f
 
 variable {F}
