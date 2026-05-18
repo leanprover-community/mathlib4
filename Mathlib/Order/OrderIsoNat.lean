@@ -76,6 +76,95 @@ theorem not_wellFounded (f : ((· > ·) : ℕ → ℕ → Prop) ↪r r) : ¬Well
   rw [wellFounded_iff_isEmpty, not_isEmpty_iff]
   exact ⟨f⟩
 
+section LinearOrder
+
+variable {α : Type*} {r : α → α → Prop}
+
+-- This is for the proof of `infinite_iff_nonempty_relEmbedding_of_isWellOrder` without importing
+-- module `Mathlib.SetTheory.Ordinal.Arithmetic`.
+variable (α) in
+private noncomputable def omegaInitialSeqAux [Infinite α] [LinearOrder α] [wf : WellFoundedLT α] :
+    Nat → { a : α // (Set.Iic a).Finite }
+| 0 => letI OrderBot := wf.toOrderBot; ⟨⊥, by simp⟩
+| n' + 1 => by
+  letI pred := omegaInitialSeqAux n'
+  haveI hmin := wf.exists_minimal (Set.Iic pred.val)ᶜ pred.prop.infinite_compl.nonempty
+  refine ⟨hmin.choose, ?_⟩
+  suffices Set.Iic hmin.choose = insert hmin.choose (Set.Iic pred.val) from
+    this ▸ pred.prop.insert hmin.choose
+  grind [Minimal]
+
+variable (α) in
+private noncomputable abbrev omegaInitialSeq [Infinite α] [LinearOrder α] [WellFoundedLT α]
+    (n : Nat) : α := omegaInitialSeqAux α n
+
+variable (α) in
+private lemma omegaInitialSeq_lt_omegaInitialSeq_succ [Infinite α] [LinearOrder α]
+    [wf : WellFoundedLT α] (n : Nat) : omegaInitialSeq α n < omegaInitialSeq α (n + 1) := by
+  match n with
+  | 0 =>
+    unfold omegaInitialSeq omegaInitialSeqAux
+    generalize_proofs _ _ hmin
+    simpa [omegaInitialSeqAux, bot_lt_iff_ne_bot] using hmin.choose_spec.prop
+  | n' + 1 =>
+    simp only [Subtype.coe_lt_coe, omegaInitialSeqAux, Set.compl_Iic, Set.mem_Ioi, Subtype.mk_lt_mk]
+    generalize_proofs hmin hmin'
+    exact hmin'.choose_spec.prop
+
+theorem infinite_iff_nonempty_relEmbedding_of_isWellOrder [IsWellOrder α r] :
+    Infinite α ↔ Nonempty (((· < ·) : ℕ → ℕ → Prop) ↪r r) := by
+  refine ⟨fun _ ↦ ?_, (·.elim (Infinite.of_injective _ ·.injective))⟩
+  /- Auxiliary definition and lemmas `*omegaInitialSeq*` can be avoided with the following proof
+  with ordinal, which however requires to import module `Mathlib.SetTheory.Ordinal.Arithmetic`:
+  ```
+  rw [← (RelIso.relEmbeddingCongr (.refl _) (Ordinal.enum r)).nonempty_congr,
+    ← (RelIso.relEmbeddingCongr ULift.orderIso.toRelIsoLT (.refl _)).nonempty_congr,
+    ← Ordinal.type_le_iff']
+  simp [← Ordinal.aleph0_le_card, ← Ordinal.lift_card]
+  ``` -/
+  let : LinearOrder α := IsWellOrder.linearOrder r
+  exact ⟨natLT (omegaInitialSeq α) (omegaInitialSeq_lt_omegaInitialSeq_succ α)⟩
+
+theorem finite_iff_empty_relEmbedding_of_isWellOrder [IsWellOrder α r] :
+    Finite α ↔ IsEmpty (((· < ·) : ℕ → ℕ → Prop) ↪r r) := by
+  rw [← not_iff_not, not_finite_iff_infinite, not_isEmpty_iff,
+    infinite_iff_nonempty_relEmbedding_of_isWellOrder (r := r)]
+
+theorem _root_.IsWellOrder.finite_of_isWellOrder_of_isWellOrder_swap {α : Type*} (r : α → α → Prop)
+    [IsWellOrder α r] [IsWellFounded α (Function.swap r)] : Finite α := by
+  rw [finite_iff_empty_relEmbedding_of_isWellOrder (r := r)]
+  have : WellFounded (Function.swap r) := IsWellFounded.wf
+  rw [wellFounded_iff_isEmpty] at this
+  exact Function.isEmpty RelEmbedding.swap
+
+instance (priority := low) _root_.instFiniteOfWellFoundedLTOfWellFoundedGT {α : Type*}
+    [LinearOrder α] [WellFoundedLT α] [WellFoundedGT α] : Finite α :=
+  IsWellOrder.finite_of_isWellOrder_of_isWellOrder_swap LT.lt
+
+theorem infinite_iff_nonempty_relEmbedding_lt_or_nonempty_relEmbedding_gt
+    [Std.Trichotomous r] [IsStrictOrder α r] :
+    Infinite α ↔
+      Nonempty (((· < ·) : ℕ → ℕ → Prop) ↪r r) ∨
+      Nonempty (((· > ·) : ℕ → ℕ → Prop) ↪r r) := by
+  refine ⟨fun inf ↦ ?_, by rintro (h | h) <;> exact h.elim (Infinite.of_injective _ ·.injective)⟩
+  contrapose! inf with h
+  obtain ⟨h_lt, h_gt⟩ := h
+  apply (@Function.isEmpty _ _ · RelEmbedding.swap) at h_lt
+  rw [← wellFounded_iff_isEmpty, ← isWellFounded_iff] at h_gt h_lt
+  have : IsWellOrder α r := ⟨⟩
+  exact IsWellOrder.finite_of_isWellOrder_of_isWellOrder_swap r
+
+theorem finite_iff_isEmpty_relEmbedding_lt_and_isEmpty_relEmbedding_gt
+    [Std.Trichotomous r] [IsStrictOrder α r] :
+    Finite α ↔
+      IsEmpty (((· < ·) : ℕ → ℕ → Prop) ↪r r) ∧
+      IsEmpty (((· > ·) : ℕ → ℕ → Prop) ↪r r) := by
+  rw [← not_iff_not, Classical.not_and_iff_not_or_not, not_finite_iff_infinite,
+    not_isEmpty_iff, not_isEmpty_iff,
+    infinite_iff_nonempty_relEmbedding_lt_or_nonempty_relEmbedding_gt (r := r)]
+
+end LinearOrder
+
 end RelEmbedding
 
 theorem not_strictAnti_of_wellFoundedLT [Preorder α] [WellFoundedLT α] (f : ℕ → α) :
