@@ -66,14 +66,11 @@ def quasiCoherentData {M : SheafOfModules.{u} R} (q : M.LocalGeneratorsData) [q.
   I := q.I
   X := q.X
   coversTop := q.coversTop
-  presentation (i) := {
+  presentation i := {
     generators := q.generators i
-    relations := {
-      I := ULift Empty
-      s (j) := Empty.rec _ j.down
-      epi := IsZero.epi (IsZero.of_iso (isZero_zero _) (Limits.kernel.ofMono _)) _
-    }
-  }
+    relations.I := ULift Empty
+    relations.s j := Empty.rec _ j.down
+    relations.epi := IsZero.epi (IsZero.of_iso (isZero_zero _) (Limits.kernel.ofMono _)) _ }
 
 @[simp]
 lemma quasiCoherentData_localGeneratorsData {M : SheafOfModules.{u} R}
