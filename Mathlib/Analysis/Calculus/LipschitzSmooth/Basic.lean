@@ -10,23 +10,14 @@ public import Mathlib.Analysis.Calculus.LineDeriv.Basic
 /-!
 # Lipschitz smoothness
 
-A real-valued function `f` on a normed real vector space is **`K`-smooth** if
-it satisfies the quadratic descent inequality
+A real-valued function `f` on a normed real vector space is **`K`-smooth** if it satisfies
+the quadratic descent inequality
 
 `f y ≤ f x + lineDeriv ℝ f x (y - x) + (K / 2) (dist x y)²`
 
-for all `x, y`. This is the standard quadratic upper bound used to control
-descent steps in first-order convex optimisation. The `K / 2` convention
-makes the descent lemma constant-preserving: a `K`-Lipschitz Fréchet
-derivative implies `K`-smoothness.
-
-The predicate is stated using `lineDeriv` so it does not presuppose Fréchet
-differentiability; for differentiable `f`, `lineDeriv` and `fderiv` agree
-pointwise. Restatements in other derivative-flavoured forms live in the sibling
-files: `Mathlib.Analysis.Calculus.LipschitzSmooth.FDeriv` for `fderiv`,
-`Mathlib.Analysis.Calculus.LipschitzSmooth.Deriv` for the 1D `deriv` form,
-and `Mathlib.Analysis.Calculus.LipschitzSmooth.Gradient` for the Hilbert-space
-gradient form.
+for all `x, y`. The predicate uses `lineDeriv` so as not to presuppose Fréchet
+differentiability; restatements in `fderiv`, 1D `deriv`, and Hilbert-space gradient
+form live in the sibling files in this directory.
 
 ## Main definitions
 
@@ -35,10 +26,8 @@ gradient form.
 ## Main results
 
 * `lipschitzSmoothWith_iff_lineDeriv` — characterisation in line-derivative form.
-* `LipschitzSmoothWith.lineDeriv_descent_le` — the descent inequality extracted as
-  a forward implication.
-* `LipschitzSmoothWith.lineDeriv_apply_sub_le` — variance bound on the line-derivative,
-  with no additional hypotheses.
+* `LipschitzSmoothWith.lineDeriv_descent_le` — the descent inequality as a forward implication.
+* `LipschitzSmoothWith.lineDeriv_apply_sub_le` — variance bound on the line-derivative.
 * `LipschitzSmoothWith.lineDeriv_sub_apply_le` — function-subtraction restatement.
 -/
 
@@ -72,8 +61,9 @@ theorem lineDeriv_descent_le (h : LipschitzSmoothWith K f) (x y : F) :
 
 theorem lineDeriv_apply_sub_le (h : LipschitzSmoothWith K f) (x y : F) :
     lineDeriv ℝ f y (y - x) - lineDeriv ℝ f x (y - x) ≤ ↑K * (dist x y) ^ 2 := by
-  linarith [h.lineDeriv_descent_le x y,
-    lineDeriv_neg (𝕜 := ℝ) (f := f) ▸ neg_sub y _ ▸ dist_comm y _ ▸ h.lineDeriv_descent_le y x]
+  have hyx := h.lineDeriv_descent_le y x
+  rw [← neg_sub y x, lineDeriv_neg, dist_comm] at hyx
+  linarith [h.lineDeriv_descent_le x y, hyx]
 
 theorem lineDeriv_sub_apply_le (h : LipschitzSmoothWith K f) (x y : F) :
     (lineDeriv ℝ f y - lineDeriv ℝ f x) (y - x) ≤ ↑K * (dist x y) ^ 2 :=
