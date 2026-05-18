@@ -189,8 +189,7 @@ lemma GeneratingSections.map_π_eq (G : M.GeneratingSections)
 /-- Let `F` be a functor from sheaf of `R`-module to sheaf of `S`-module, if `F` preserves
 colimits and `F.obj (unit R) ≅ unit S`, given a `P : Presentation M`, then we will obtain
 generators of `Presentation (F.obj M)`. -/
-abbrev Presentation.mapGenerators : free P.generators.I ⟶ F.obj M :=
-  P.generators.mapFreeHom F η
+abbrev Presentation.mapGenerators : free P.generators.I ⟶ F.obj M := P.generators.mapFreeHom F η
 
 @[reassoc (attr := simp)]
 theorem Presentation.mapRelations_mapGenerators :

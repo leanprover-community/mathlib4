@@ -100,12 +100,12 @@ def GeneratingSections.localGeneratorsData {M : SheafOfModules.{u} R} (G : M.Gen
     simpa [Sieve.top_apply, iff_true] using ⟨x, Nonempty.intro f⟩
   generators x := G.map (pushforward (𝟙 (R.over x))) (Iso.refl _)
 
+set_option backward.isDefEq.respectTransparency false in
 instance (I : Type u) :
     (free.generatingSections (R := R) I).localGeneratorsData.IsLocallyFreeData where
   iso i := by
     dsimp
-    erw [GeneratingSections.map_π_eq _ (pushforward (𝟙 (R.over i)))]
-    simp only [free.generatingSections_I, free.generatingSections_π_id,
+    simp only [GeneratingSections.map_π_eq, free.generatingSections_I, free.generatingSections_π_id,
       CategoryTheory.Functor.map_id, Category.comp_id]
     infer_instance
 
