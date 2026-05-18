@@ -123,31 +123,26 @@ lemma hom_ext {f g : Coinvariants ρ →ₗ[k] W} (H : f ∘ₗ mk ρ = g ∘ₗ
 
 /-- Given `G`-representations on `k`-modules `V, W`, a linear map `V →ₗ[k] W` commuting with
 the representations induces a `k`-linear map between the coinvariants. -/
-noncomputable def map (f : V →ₗ[k] W) (hf : ∀ g, f ∘ₗ ρ g = τ g ∘ₗ f) :
+noncomputable def map (f : IntertwiningMap ρ τ) :
     Coinvariants ρ →ₗ[k] Coinvariants τ :=
   lift _ (mk _ ∘ₗ f) fun g => LinearMap.ext fun x => (mk_eq_iff _).2 <|
-    mem_ker_of_eq g (f x) _ <| by simpa using congr($((hf g).symm) x)
+    mem_ker_of_eq g (f x) _ <| by simpa using congr($((f.isIntertwining' g).symm) x)
 
 variable {ρ τ}
 
 @[simp]
-lemma map_comp_mk (f : V →ₗ[k] W) (hf : ∀ g, f ∘ₗ ρ g = τ g ∘ₗ f) :
-    map ρ τ f hf ∘ₗ mk ρ = mk τ ∘ₗ f := rfl
+lemma map_comp_mk (f : IntertwiningMap ρ τ) : map ρ τ f ∘ₗ mk ρ = mk τ ∘ₗ f := rfl
 
 @[simp]
-lemma map_mk (f : V →ₗ[k] W) (hf : ∀ g, f ∘ₗ ρ g = τ g ∘ₗ f) (x : V) :
-    map ρ τ f hf (mk _ x) = mk _ (f x) := rfl
+lemma map_mk (f : IntertwiningMap ρ τ) (x : V) : map ρ τ f (mk _ x) = mk _ (f x) := rfl
 
 @[simp]
-lemma map_id (ρ : Representation k G V) :
-    map ρ ρ LinearMap.id (by simp) = LinearMap.id := by
+lemma map_id (ρ : Representation k G V) : map ρ ρ (IntertwiningMap.id ρ) = LinearMap.id := by
   ext; rfl
 
 @[simp]
-lemma map_comp (φ : V →ₗ[k] W) (ψ : W →ₗ[k] X)
-    (H : ∀ g, φ ∘ₗ ρ g = τ g ∘ₗ φ) (h : ∀ g, ψ ∘ₗ τ g = υ g ∘ₗ ψ) :
-    map τ υ ψ h ∘ₗ map ρ τ φ H = map ρ υ (ψ ∘ₗ φ) (fun g => by
-      ext x; have : φ _ = _ := congr($(H g) x); have : ψ _ = _ := congr($(h g) (φ x)); simp_all) :=
+lemma map_comp (φ : IntertwiningMap ρ τ) (ψ : IntertwiningMap τ υ) :
+    map τ υ ψ ∘ₗ map ρ τ φ = map ρ υ (ψ.comp φ) :=
   hom_ext rfl
 
 end Coinvariants
@@ -351,7 +346,7 @@ variable (k G) [Monoid G] (A B : Rep.{w} k G)
 @[simps! obj_carrier map_hom]
 noncomputable def coinvariantsFunctor : Rep.{w} k G ⥤ ModuleCat k where
   obj A := ModuleCat.of k A.ρ.Coinvariants
-  map f := ModuleCat.ofHom (Representation.Coinvariants.map _ _ f.hom.toLinearMap f.hom.2)
+  map f := ModuleCat.ofHom (Representation.Coinvariants.map _ _ f.hom)
   map_id _ := by simp
   map_comp _ _ := by ext; simp
 
