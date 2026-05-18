@@ -87,14 +87,14 @@ lemma birkhoffMax_pos_of_mem_support {g n x}
   | inr h => exact h
 
 -- TODO: move elsewhere
-@[measurability]
+@[fun_prop]
 lemma birkhoffSum_measurable [MeasurableSpace α] {f : α → α} (hf : Measurable f) {g : α → ℝ}
     (hg : Measurable g) {n} : Measurable (birkhoffSum f g n) := by
   apply Finset.measurable_sum
   measurability
 
 -- TODO: move elsewhere
-@[measurability]
+@[fun_prop]
 lemma birkhoffMax_measurable [MeasurableSpace α] (hf : Measurable f) {g : α → ℝ}
     (hg : Measurable g) {n} : Measurable (birkhoffMax f g n) := by
   unfold birkhoffMax
@@ -108,14 +108,14 @@ variable {f : α → α} [MeasurableSpace α] (μ : Measure α := by volume_tac)
 include hf
 
 -- todo: move elsewhere
-@[measurability]
+@[fun_prop]
 lemma birkhoffSum_aestronglyMeasurable (hg : AEStronglyMeasurable g μ) :
     AEStronglyMeasurable (birkhoffSum f g n) μ := by
   apply Finset.aestronglyMeasurable_fun_sum
   exact fun i _ => hg.comp_measurePreserving (hf.iterate i)
 
 -- todo: move elsewhere
-@[measurability]
+@[fun_prop]
 lemma birkhoffMax_aestronglyMeasurable (hg : AEStronglyMeasurable g μ) :
     AEStronglyMeasurable (birkhoffMax f g n) μ := by
   unfold birkhoffMax
@@ -125,7 +125,7 @@ include hg
 
 -- todo: move elsewhere
 lemma birkhoffSum_integrable : Integrable (birkhoffSum f g n) μ :=
-  integrable_finset_sum _ fun _ _ ↦ (hf.iterate _).integrable_comp_of_integrable hg
+  integrable_finsetSum _ fun _ _ ↦ (hf.iterate _).integrable_comp_of_integrable hg
 
 -- todo: move elsewhere
 lemma birkhoffMax_integrable : Integrable (birkhoffMax f g n) μ := by
