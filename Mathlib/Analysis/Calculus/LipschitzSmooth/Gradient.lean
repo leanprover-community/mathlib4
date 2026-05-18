@@ -50,17 +50,20 @@ theorem lipschitzSmoothWith_iff_inner_gradient (hf : Differentiable ℝ f) :
 
 namespace LipschitzSmoothWith
 
-/-- For a differentiable `K`-smooth `f` on a Hilbert space, the descent inequality in
+/-- For a `K`-smooth `f` differentiable at `x` on a Hilbert space, the descent inequality in
 gradient form: `f y ≤ f x + ⟪∇ f x, y - x⟫ + K / 2 · ‖y - x‖²`. -/
-theorem inner_gradient_descent_le (h : LipschitzSmoothWith K f) (hf : Differentiable ℝ f)
-    (x y : F) : f y ≤ f x + ⟪∇ f x, y - x⟫ + ↑K / 2 * ‖y - x‖ ^ 2 :=
-  (lipschitzSmoothWith_iff_inner_gradient hf).mp h x y
+theorem inner_gradient_descent_le (h : LipschitzSmoothWith K f) (x y : F)
+    (hf : DifferentiableAt ℝ f x) :
+    f y ≤ f x + ⟪∇ f x, y - x⟫ + ↑K / 2 * ‖y - x‖ ^ 2 := by
+  rw [inner_gradient_left, ← dist_eq_norm']
+  exact h.fderiv_descent_le x y hf
 
-/-- For a differentiable `K`-smooth `f` on a Hilbert space, the gradient-variation bound:
-`⟪∇ f y - ∇ f x, y - x⟫ ≤ K * ‖y - x‖²`. -/
-theorem inner_gradient_sub_le (h : LipschitzSmoothWith K f) (hf : Differentiable ℝ f)
-    (x y : F) : ⟪∇ f y - ∇ f x, y - x⟫ ≤ ↑K * ‖y - x‖ ^ 2 := by
+/-- For a `K`-smooth `f` differentiable at `x` and `y` on a Hilbert space, the gradient-variation
+bound: `⟪∇ f y - ∇ f x, y - x⟫ ≤ K * ‖y - x‖²`. -/
+theorem inner_gradient_sub_le (h : LipschitzSmoothWith K f) (x y : F)
+    (hfx : DifferentiableAt ℝ f x) (hfy : DifferentiableAt ℝ f y) :
+    ⟪∇ f y - ∇ f x, y - x⟫ ≤ ↑K * ‖y - x‖ ^ 2 := by
   simp only [← dist_eq_norm', inner_sub_left, inner_gradient_left, ← ContinuousLinearMap.sub_apply]
-  exact h.fderiv_sub_apply_le hf x y
+  exact h.fderiv_sub_apply_le x y hfx hfy
 
 end LipschitzSmoothWith

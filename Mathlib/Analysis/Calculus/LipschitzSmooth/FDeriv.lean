@@ -48,24 +48,27 @@ theorem lipschitzSmoothWith_iff_fderiv (hf : Differentiable ℝ f) :
 namespace LipschitzSmoothWith
 
 /-- The descent inequality of a `K`-smooth `f` in Fréchet-derivative form, under
-`Differentiable`. -/
-theorem fderiv_descent_le (h : LipschitzSmoothWith K f)
-    (hf : Differentiable ℝ f) (x y : F) :
-    f y ≤ f x + fderiv ℝ f x (y - x) + ↑K / 2 * (dist x y) ^ 2 :=
-  (lipschitzSmoothWith_iff_fderiv hf).mp h x y
+`DifferentiableAt` at `x`. -/
+theorem fderiv_descent_le (h : LipschitzSmoothWith K f) (x y : F)
+    (hf : DifferentiableAt ℝ f x) :
+    f y ≤ f x + fderiv ℝ f x (y - x) + ↑K / 2 * (dist x y) ^ 2 := by
+  rw [← hf.lineDeriv_eq_fderiv]
+  exact h.lineDeriv_descent_le x y
 
-/-- For a differentiable `K`-smooth `f`, the variation of the Fréchet derivative satisfies
-`fderiv ℝ f y (y - x) - fderiv ℝ f x (y - x) ≤ K · (dist x y)²`. -/
-theorem fderiv_apply_sub_le (h : LipschitzSmoothWith K f) (hf : Differentiable ℝ f) (x y : F) :
+/-- For a `K`-smooth `f` differentiable at `x` and `y`, the variation of the Fréchet derivative
+satisfies `fderiv ℝ f y (y - x) - fderiv ℝ f x (y - x) ≤ K · (dist x y)²`. -/
+theorem fderiv_apply_sub_le (h : LipschitzSmoothWith K f) (x y : F)
+    (hfx : DifferentiableAt ℝ f x) (hfy : DifferentiableAt ℝ f y) :
     fderiv ℝ f y (y - x) - fderiv ℝ f x (y - x) ≤ ↑K * (dist x y) ^ 2 := by
-  rw [← (hf y).lineDeriv_eq_fderiv, ← (hf x).lineDeriv_eq_fderiv]
+  rw [← hfy.lineDeriv_eq_fderiv, ← hfx.lineDeriv_eq_fderiv]
   exact h.lineDeriv_apply_sub_le x y
 
 /-- Function-subtraction restatement of `fderiv_apply_sub_le`:
 `(fderiv ℝ f y - fderiv ℝ f x) (y - x) ≤ K · (dist x y)²`. -/
-theorem fderiv_sub_apply_le (h : LipschitzSmoothWith K f) (hf : Differentiable ℝ f) (x y : F) :
+theorem fderiv_sub_apply_le (h : LipschitzSmoothWith K f) (x y : F)
+    (hfx : DifferentiableAt ℝ f x) (hfy : DifferentiableAt ℝ f y) :
     (fderiv ℝ f y - fderiv ℝ f x) (y - x) ≤ ↑K * (dist x y) ^ 2 := by
   rw [ContinuousLinearMap.sub_apply]
-  exact h.fderiv_apply_sub_le hf x y
+  exact h.fderiv_apply_sub_le x y hfx hfy
 
 end LipschitzSmoothWith
