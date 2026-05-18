@@ -1,6 +1,7 @@
 module
 
 public import MathlibTest.ApplyRuleSetsAttr
+import Qq
 
 open Mathlib.Tactic.ApplyRuleSets
 
@@ -184,3 +185,59 @@ example : HasDeriv (fun x : Nat => x / x) (fun xdx =>
   · simp -zeta []; rfl
 
 end HasDeriv
+
+namespace Addition
+open Lean Meta Qq
+
+-- turn all Add instances to `test_rules`
+run_meta
+  let [u] ← mkFreshLevelMVars 1 | unreachable!
+  let A ← mkFreshExprMVar (mkSort u)
+  let e := Expr.app (.const ``Add [u]) A
+
+  let globalInstances ← getGlobalInstancesIndex
+  let candidates ← globalInstances.getUnify e
+  for inst in candidates do
+    let some name := inst.globalName? | continue
+    addTheoremRule `test_rules name .global inst.priority
+
+-- implement addition on structures
+@[test_rules (low+1)]
+ruleproc structure_add {A : Type _} : Add A := fun _ _ => do
+  let .const fn _ := A.getAppFn' | return none
+  let env ← getEnv
+  unless isStructure env fn do return none
+
+  let ctor := getStructureCtor env fn
+  let parms := A.getAppArgs
+  let ctorVal ← mkAppOptM ctor.name (parms.map some)
+
+  let (xs, _, _) ← forallMetaTelescope (← inferType ctorVal)
+  let r ←
+    withLocalDeclD `a A fun a => do
+    withLocalDeclD `b A fun b => do
+      for x in xs, i in [0:xs.size] do
+        let X ← inferType x
+        let addCls ← mkAppM ``Add #[X]
+        let addInst ← applyRuleSets default addCls
+        let ci ← mkAppOptM ``Add.add #[X, addInst, a.proj fn i, b.proj fn i]
+        x.mvarId!.assign ci
+
+      mkLambdaFVars #[a,b] (mkAppN ctorVal xs)
+
+  return ← mkAppM ``Add.mk #[r]
+
+structure Vec3 (α : Type _) where
+  (x y z : α)
+
+example : Add (Vec3 (Vec3 Nat)) := by apply_rulesets [test_rules]
+
+-- run_meta
+--   let globalInstances ← getGlobalInstancesIndex
+--   for inst in globalInstances.elements do
+--     let some name := inst.globalName? | continue
+--     addTheoremRule `tc_rules name .global inst.priority
+
+-- #check (by apply_rulesets [tc_rules, structure_add] : Add (Vec3 (Vec3 Nat)))
+
+end Addition
