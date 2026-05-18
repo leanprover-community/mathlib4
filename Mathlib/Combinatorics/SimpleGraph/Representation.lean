@@ -36,16 +36,17 @@ variable {G V : Type*} [Group G] [MulAction G V] {Γ : SimpleGraph V}
 
 /-! ### The connection set -/
 
-/-- The *connection set* of a basepoint `v` in a graph action: the set of group elements
+/-- The *connection set* of a basepoint `v`: the set of group elements
 that move `v` to one of its neighbors. -/
 def connectionSet (G : Type*) [Group G] [MulAction G V]
-    (Γ : SimpleGraph V) [GraphAction G V Γ] (v : V) : Set G :=
+    (Γ : SimpleGraph V) (v : V) : Set G :=
   {g : G | Γ.Adj v (g • v)}
 
 namespace connectionSet
 
 variable [GraphAction G V Γ] (v : V)
 
+omit [GraphAction G V Γ] in
 theorem one_not_mem : (1 : G) ∉ connectionSet G Γ v := by
   simp [connectionSet]
 
@@ -64,6 +65,7 @@ theorem double_coset_stable {g : G} (hg : g ∈ connectionSet G Γ v)
   have := GraphAction.adj_smul h₁ v (g • v) hg
   rwa [MulAction.mem_stabilizer_iff.mp hh₁] at this
 
+omit [GraphAction G V Γ] in
 theorem disjoint_stabilizer :
     Disjoint (connectionSet G Γ v) ↑(MulAction.stabilizer G v) := by
   rw [Set.disjoint_left]
