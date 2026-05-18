@@ -98,12 +98,10 @@ theorem LinearMap.rank_eq_of_surjective {f : M →ₗ[R] M₁} (h : Surjective f
 theorem LinearMap.lift_rank_comap_le {f : M →ₗ[R] M'} (p : Submodule R M') :
     lift.{v} (Module.rank R (comap f p)) ≤
       lift.{u} (Module.rank R p) + lift.{v} (Module.rank R f.ker) := by
-  set f' : comap f p →ₗ[R] p := f.restrict <| by aesop with hf'
+  let f' : comap f p →ₗ[R] p := f.restrict (by aesop)
   have hk : Module.rank R f'.ker ≤ Module.rank R f.ker := by
     rw [← rank_map_eq (injective_subtype (comap f p))]
-    apply rank_mono
-    rw [map_le_iff_le_comap]
-    exact fun x hx ↦ by aesop (add simp Subtype.ext_iff)
+    exact rank_mono fun x hx ↦ by aesop (add simp Subtype.ext_iff)
   have hr : Module.rank R f'.range ≤ Module.rank R p := by grw [Submodule.rank_le f'.range]
   rw [← f'.lift_rank_range_add_rank_ker]
   gcongr
@@ -122,9 +120,9 @@ theorem LinearMap.lift_rank_quot_map_le [HasRankNullity.{v} R]
     exact lift_rank_le_of_surjective f' <| by rw [← range_eq_top, range_mapQ]; simp
   have h₂ : (Module.rank R (M' ⧸ map f p)) =
       Module.rank R (M' ⧸ f.range) + Module.rank R (f.range ⧸ map f.rangeRestrict p) := by
-    set f' : M' ⧸ map f p →ₗ[R] M' ⧸ f.range := factor map_le_range with hf'
-    set e : (f.range ⧸ map f.rangeRestrict p) ≃ₗ[R] f'.ker := by
-      set g : f.range →ₗ[R] f'.ker :=
+    let f' : M' ⧸ map f p →ₗ[R] M' ⧸ f.range := factor map_le_range
+    let +nondep e : (f.range ⧸ map f.rangeRestrict p) ≃ₗ[R] f'.ker := by
+      let g : f.range →ₗ[R] f'.ker :=
         (LinearEquiv.ofEq (map (map f p).mkQ f.range) f'.ker) (by rw [ker_mapQ]; rfl) ∘ₗ
           (map f p).mkQ.submoduleMap f.range
       have g_surj : Surjective g := by simpa [g] using submoduleMap_surjective (map f p).mkQ f.range

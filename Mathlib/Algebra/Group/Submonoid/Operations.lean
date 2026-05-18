@@ -867,13 +867,11 @@ theorem submonoidMap_surjective (f : M →* N) (M' : Submonoid M) :
   rintro ⟨_, x, hx, rfl⟩
   exact ⟨⟨x, hx⟩, rfl⟩
 
-@[to_additive]
+@[to_additive (attr := grind inj)]
 theorem submonoidMap_injective {f : M →* N} (hf : Injective f) (M' : Submonoid M) :
     Injective (f.submonoidMap M') := by
-  rintro ⟨x, hx⟩ ⟨y, hy⟩ hxy
-  replace hxy : f x = f y := by simpa [submonoidMap] using hxy
-  simpa using hf hxy
-
+  intro _ _ _
+  grind [submonoidMap_apply_coe]
 end MonoidHom
 
 namespace Submonoid

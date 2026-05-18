@@ -663,6 +663,7 @@ theorem submoduleMap_coe_apply (f : M →ₗ[R] M₁) {p : Submodule R M} (x : p
 theorem submoduleMap_surjective (f : M →ₗ[R] M₁) (p : Submodule R M) :
     Function.Surjective (f.submoduleMap p) := f.toAddMonoidHom.addSubmonoidMap_surjective _
 
+@[grind inj]
 theorem submoduleMap_injective {f : M →ₗ[R] M₁} (hf : Injective f) (p : Submodule R M) :
     Injective (f.submoduleMap p) :=
   f.toAddMonoidHom.addSubmonoidMap_injective hf _
