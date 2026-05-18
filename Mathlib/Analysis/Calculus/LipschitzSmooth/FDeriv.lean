@@ -22,13 +22,10 @@ the full descent lemma — i.e. the converse direction
 
 ## Main results
 
-* `lipschitzSmoothWith_iff_fderiv` — characterisation of `K`-smoothness in Fréchet form
-  under `Differentiable`.
+* `lipschitzSmoothWith_iff_fderiv` — characterisation in Fréchet form under `Differentiable`.
 * `LipschitzSmoothWith.fderiv_descent_le` — the descent inequality in Fréchet form.
-* `LipschitzSmoothWith.fderiv_apply_sub_le` — variance bound on the Fréchet derivative,
-  `fderiv ℝ f y (y - x) - fderiv ℝ f x (y - x) ≤ K · (dist x y)²`.
-* `LipschitzSmoothWith.fderiv_sub_apply_le` — function-subtraction restatement,
-  `(fderiv ℝ f y - fderiv ℝ f x) (y - x) ≤ K · (dist x y)²`.
+* `LipschitzSmoothWith.fderiv_apply_sub_le` — variance bound on the Fréchet derivative.
+* `LipschitzSmoothWith.fderiv_sub_apply_le` — function-subtraction restatement.
 -/
 
 public section

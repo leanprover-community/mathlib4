@@ -22,11 +22,11 @@ derivative implies `K`-smoothness.
 
 The predicate is stated using `lineDeriv` so it does not presuppose Fréchet
 differentiability; for differentiable `f`, `lineDeriv` and `fderiv` agree
-pointwise. Fréchet-derivative restatements and the descent lemma — whose
-hypothesis `LipschitzWith K (fderiv ℝ f)` lives in the fderiv world — are in
-`Mathlib.Analysis.Calculus.LipschitzSmooth.FDeriv`. Inner-product-space restatements
-via the gradient `∇` and `⟪·, ·⟫` are in
-`Mathlib.Analysis.Calculus.LipschitzSmooth.Gradient`.
+pointwise. Restatements in other derivative-flavoured forms live in the sibling
+files: `Mathlib.Analysis.Calculus.LipschitzSmooth.FDeriv` for `fderiv`,
+`Mathlib.Analysis.Calculus.LipschitzSmooth.Deriv` for the 1D `deriv` form,
+and `Mathlib.Analysis.Calculus.LipschitzSmooth.Gradient` for the Hilbert-space
+gradient form.
 
 ## Main definitions
 
@@ -35,11 +35,10 @@ via the gradient `∇` and `⟪·, ·⟫` are in
 ## Main results
 
 * `lipschitzSmoothWith_iff_lineDeriv` — characterisation in line-derivative form.
-* `LipschitzSmoothWith.lineDeriv_descent_le` — the defining descent inequality
-  extracted as a forward implication.
-* `LipschitzSmoothWith.lineDeriv_apply_sub_le` — a `K`-smooth `f` satisfies the
-  quadratic upper bound `lineDeriv ℝ f y (y - x) - lineDeriv ℝ f x (y - x) ≤ K · (dist x y)²`
-  on the variation of its line-derivative, with no additional hypotheses.
+* `LipschitzSmoothWith.lineDeriv_descent_le` — the descent inequality extracted as
+  a forward implication.
+* `LipschitzSmoothWith.lineDeriv_apply_sub_le` — variance bound on the line-derivative,
+  with no additional hypotheses.
 * `LipschitzSmoothWith.lineDeriv_sub_apply_le` — function-subtraction restatement.
 -/
 

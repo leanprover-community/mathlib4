@@ -23,10 +23,9 @@ These are the 1D restatements of the Fréchet-derivative forms in
 
 ## Main results
 
-* `lipschitzSmoothWith_iff_deriv` — characterisation of `K`-smoothness in 1D
-  `deriv` form, under `Differentiable`.
+* `lipschitzSmoothWith_iff_deriv` — characterisation in 1D `deriv` form under `Differentiable`.
 * `LipschitzSmoothWith.deriv_descent_le` — the descent inequality in 1D `deriv` form.
-* `LipschitzSmoothWith.deriv_sub_mul_le` — the variation bound in 1D `deriv` form.
+* `LipschitzSmoothWith.deriv_sub_mul_le` — variance bound on the 1D `deriv`.
 -/
 
 public section

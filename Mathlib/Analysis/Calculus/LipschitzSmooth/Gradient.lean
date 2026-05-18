@@ -23,12 +23,10 @@ equivalence with cocoercivity are deferred to follow-ups.
 
 ## Main results
 
-* `lipschitzSmoothWith_iff_inner_gradient` — characterisation of `K`-smoothness
-  in gradient form under `Differentiable`.
-* `LipschitzSmoothWith.inner_gradient_descent_le` — the descent inequality in
-  gradient form.
-* `LipschitzSmoothWith.inner_gradient_sub_le` — the gradient-variation bound
-  `⟪∇ f y - ∇ f x, y - x⟫ ≤ K · ‖y - x‖²`.
+* `lipschitzSmoothWith_iff_inner_gradient` — characterisation in gradient form
+  under `Differentiable`.
+* `LipschitzSmoothWith.inner_gradient_descent_le` — the descent inequality in gradient form.
+* `LipschitzSmoothWith.inner_gradient_sub_le` — variance bound on the gradient.
 -/
 
 public section
@@ -36,7 +34,6 @@ public section
 variable {F : Type*} [NormedAddCommGroup F] [InnerProductSpace ℝ F] [CompleteSpace F]
 variable {K : NNReal} {f : F → ℝ}
 
-open InnerProductSpace
 open scoped Gradient RealInnerProductSpace
 
 theorem lipschitzSmoothWith_iff_inner_gradient (hf : Differentiable ℝ f) :
