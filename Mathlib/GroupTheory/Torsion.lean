@@ -381,37 +381,12 @@ theorem freeRank_eq_zero_of_finite [Finite G] [Group.FG G] : freeRank G = 0 :=
 theorem freeRank_congr (e : G ≃* H) [Group.FG G] [Group.FG H] : freeRank G = freeRank H :=
   Group.rank_congr (QuotientGroup.congr  (torsion G) (torsion H) e e.map_torsion)
 
--- PRed
-@[to_additive (attr := simps)]
-def _root_.QuotientGroup.prodEquiv (A : Subgroup G) (B : Subgroup H) :
-    (G × H) ⧸ (A.prod B) ≃ (G ⧸ A) × H ⧸ B where
-  toFun q := q.liftOn' (fun (g, h) ↦ (g, h))
-      (by simp [QuotientGroup.leftRel_apply, Subgroup.mem_prod, QuotientGroup.eq])
-  invFun q := q.1.liftOn₂' q.2 (fun g h ↦ (g, h))
-    (by simp [QuotientGroup.leftRel_apply, Subgroup.mem_prod, QuotientGroup.eq, ← and_imp])
-  left_inv q := q.inductionOn' (by simp)
-  right_inv := fun (q₁, q₂) ↦ Quotient.inductionOn₂' q₁ q₂ (by simp)
-
--- PRed
-@[to_additive (attr := simps!)]
-def _root_.QuotientGroup.prodMulEquiv (A : Subgroup G) (B : Subgroup H) [A.Normal] [B.Normal] :
-    (G × H) ⧸ (A.prod B) ≃* (G ⧸ A) × H ⧸ B where
-  __ := QuotientGroup.prodEquiv A B
-  map_mul' q₁ q₂ := Quotient.inductionOn₂' q₁ q₂ (fun _ _ ↦ rfl)
-
 variable (G H)
 
 @[to_additive]
-theorem freeRank_sum [Group.FG G] [Group.FG H] : freeRank (G × H) = freeRank G + freeRank H := by
+theorem freeRank_prod [Group.FG G] [Group.FG H] : freeRank (G × H) = freeRank G + freeRank H := by
   rw [freeRank_def, torsion_prod, Group.rank_congr
     (QuotientGroup.prodMulEquiv (torsion G) (torsion H))]
-  sorry
-
-open scoped DirectSum
-
-@[to_additive]
-theorem freeRank_sum' {ι : Type*} [Finite ι] (G : ι → Type*) : freeRank (⨁ i : ι, G i) = freeRank G + freeRank H := by
-
   sorry
 
 end CommGroup
