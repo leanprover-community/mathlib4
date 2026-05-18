@@ -136,7 +136,7 @@ theorem isCohenMacaulayRing_iff_unmixed : IsCohenMacaulayRing R ↔
     apply le_of_eq_of_le _ (IsAssociatedPrime.annihilator_le hp)
     rw [Submodule.annihilator_top, Ideal.annihilator_quotient]
   have ht_eq : (maximalIdeal (Localization.AtPrime p)).height = p.height := by
-    rw [← IsLocalization.height_under p.primeCompl, ← Ideal.under_def,
+    rw [← IsLocalization.height_under p.primeCompl,
       Localization.AtPrime.under_maximalIdeal]
   have mem : ∀ r ∈ List.map (algebraMap R (Localization.AtPrime p)) l,
     r ∈ maximalIdeal (Localization.AtPrime p) := by
