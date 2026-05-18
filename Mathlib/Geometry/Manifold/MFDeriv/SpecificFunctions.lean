@@ -899,7 +899,7 @@ theorem mfderivWithin_neg (hs : UniqueMDiffWithinAt I s x) :
   · exact hf.hasMFDerivWithinAt.neg.mfderivWithin hs
   · rw [if_neg hf]; rw [← mdifferentiableWithinAt_neg] at hf; rw [if_neg hf, neg_zero]
 
-theorem mfderiv_neg (f : M → E') (x : M) : mfderiv% (-f) x = -mfderiv% f x := by
+theorem mfderiv_neg : mfderiv% (-f) x = -mfderiv% f x := by
   rw [← mfderivWithin_univ, mfderivWithin_neg (uniqueMDiffWithinAt_univ I), mfderivWithin_univ]
 
 theorem HasMFDerivWithinAt.sub (hf : HasMFDerivAt[s] f z f') (hg : HasMFDerivAt[s] g z g') :

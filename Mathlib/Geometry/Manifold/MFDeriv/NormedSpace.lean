@@ -17,8 +17,13 @@ providing the same statements for higher smoothness. In this file, we do the sam
 differentiability.
 
 In addition to the above, this file provides
-* results about the differentiability of scalar multiplication (`mfderiv_smul` and friends), and
-* `mvfderiv`: the exterior derivative of a scalar function, as a section of the cotangent bundle
+* results about the differentiability of scalar multiplication (`mfderiv_smul` and friends),
+* `mvfderiv`: the exterior derivative of a vector-valued function, as a section of the
+  cotangent bundle; adds notation `d% f` for `mvfderiv I f` via a custom elaborator scoped to the
+  `Manifold` namespace, with a corresponding delaborator, and
+  adds basic lemmas about `mvfderiv` (such as addition, subtraction, multiplication and constants).
+* `mvfderivWithin` with notation `d[s]f` for `mvfderivWithin I f s` in the `Manifold` namespace:
+  the analogous concept within a set, with analogous API lemmas
 
 -/
 
@@ -485,7 +490,7 @@ lemma fromTangentSpace_mfderiv_smul_apply' (hf : MDiffAt f x) (hg : MDiffAt g x)
 
 end smul
 
-/-! ### Exterior derivative of a scalar function -/
+/-! ### Exterior derivative of a vector-valued function -/
 
 variable (I) in
 /-- The exterior derivative of a vector-valued function on `M` within a set,
@@ -589,6 +594,10 @@ end tests
 
 end Manifold
 
+@[simp, mfld_simps] lemma mvfderivWithin_univ {f : M → F} : d[(univ : Set M)] f = d% f := by
+  ext X
+  simp [mvfderiv, mvfderivWithin]
+
 lemma mvfderivWithin_const (c : F) {x : M} : d[s] (fun _ : M ↦ c) x = 0 := by
   simp [mvfderivWithin, mfderivWithin_const]
 
@@ -681,3 +690,5 @@ lemma mvfderiv_zero {x : M} : d% (0 : M → F) x = 0 := by
     rw [← mvfderiv_add (by exact mdifferentiable_const ..) (by exact mdifferentiable_const ..)]
     simp
   simpa using this
+
+@[deprecated (since := "2026-05-17")] alias extDerivFun_zero := mvfderiv_zero
