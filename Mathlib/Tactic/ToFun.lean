@@ -32,16 +32,25 @@ theorem Differentiable.mul (hf : Differentiable 𝕜 f) (hg : Differentiable �
 will generate a new lemma `Differentiable.fun_mul` with conclusion
 `Differentiable 𝕜 fun x => f x * g x`.
 
-Use the `to_fun (attr := ...)` syntax to add the same attribute to both declarations.
+You can specify the name of the new declaration manually, as in `@[to_fun Differentiable.fun_mul]`.
+If you do so, the newly generated name is namespaced to match the original declaration's name:
+tagging `Foo.bar` with `to_fun baz` generates `Foo.baz`;
+tagging `Foo.Bar.baz` with `Bars.baz` generates `Foo.Bars.baz`, etc.
+
+Use the `to_fun (attr := ...)` (or `to_fun (attr := ...) new_name`) syntax
+to add the same attribute to both declarations.
 -/
-syntax (name := to_fun) "to_fun" optAttrArg : attr
+syntax (name := to_fun) "to_fun" optAttrArg (ppSpace ident)? : attr
 
 def toFunImpl (src : Name) (stx : Syntax) (kind : AttributeKind) : AttrM Name := do
-  let `(attr| to_fun%$tk $optAttr) := stx | throwUnsupportedSyntax
+  let `(attr| to_fun%$tk $optAttr $[$id]?) := stx | throwUnsupportedSyntax
   if (kind != AttributeKind.global) then
     throwError "`to_fun` can only be used as a global attribute"
-  let tgt := (src.appendBefore "fun_")
-  MetaM.run' <| addRelatedDecl src tgt tk optAttr
+  let name := match id with
+    | some name =>
+      (src.splitAt name.getId.getNumParts).1 ++ name.getId
+    | none => src.appendBefore "fun_"
+  MetaM.run' <| addRelatedDecl src name tk optAttr
     (docstringPrefix? := s!"Eta-expanded form of `{src}`") (hoverInfo := true)
     fun value levels => do
     let type ← inferType value
@@ -53,7 +62,7 @@ def toFunImpl (src : Name) (stx : Syntax) (kind : AttributeKind) : AttrM Name :=
       | none => mkExpectedTypeHint value r.expr
       | some proof => mkAppOptM ``cast #[type, r.expr, proof, value]
     return (value, levels)
-  return tgt
+  return name
 
 initialize
   registerGeneratingAttr `to_fun ((#[·]) <$> toFunImpl · · ·)
