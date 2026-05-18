@@ -519,6 +519,10 @@ theorem Equiv.coinduced_symm {α β : Type*} (e : α ≃ β) :
     TopologicalSpace.coinduced e.symm = TopologicalSpace.induced e :=
   e.symm.induced_symm.symm
 
+lemma WithTopology.topology_eq_induced {X : Type*} (t : TopologicalSpace X) :
+    instTopologicalSpace X t = .induced (ofTopology t) t :=
+  congrFun (WithTopology.equiv X t).coinduced_symm t
+
 end GaloisConnection
 
 -- constructions using the complete lattice structure

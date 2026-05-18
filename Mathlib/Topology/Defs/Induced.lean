@@ -88,19 +88,27 @@ def coinduced (f : X → Y) (t : TopologicalSpace X) : TopologicalSpace Y where
   isOpen_inter _ _ h₁ h₂ := h₁.inter h₂
   isOpen_sUnion s h := by simpa only [preimage_sUnion] using isOpen_biUnion h
 
-instance WithTopology.instTopologicalSpace (X : Type*) (t : TopologicalSpace X) :
+end TopologicalSpace
+
+namespace WithTopology
+
+instance instTopologicalSpace (X : Type*) (t : TopologicalSpace X) :
     TopologicalSpace (WithTopology X t) :=
   .coinduced (WithTopology.toTopology t) t
 
-end TopologicalSpace
+lemma topology_eq_coinduced (X : Type*) (t : TopologicalSpace X) :
+    instTopologicalSpace X t = .coinduced (.toTopology t) t :=
+  rfl
 
 /-- `WithTopology.ofTopology` and `WithTopology.toTopology` as an equivalence. -/
 @[simps]
-protected def WithTopology.equiv (X : Type*) (t : TopologicalSpace X) : WithTopology X t ≃ X where
+protected def equiv (X : Type*) (t : TopologicalSpace X) : WithTopology X t ≃ X where
   toFun := WithTopology.ofTopology t
   invFun := WithTopology.toTopology t
   left_inv _ := rfl
   right_inv _ := rfl
+
+end WithTopology
 
 namespace Topology
 variable {X Y : Type*} [tX : TopologicalSpace X] [tY : TopologicalSpace Y]
