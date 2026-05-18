@@ -53,7 +53,7 @@ A map `f : M →+ N →+ P` additive in both components is `R`-balanced, or midd
 to `R`, if scalar multiplication in either argument is equivalent, `f (r • m) n = f m (r • n)`.
 Note that strictly the first action should be a right-action by `R`, but for now `R` is commutative
 so it doesn't matter. -/
--- TODO: use this to implement `SMul.aux`. For now we do not do this has caused
+-- TODO: use this to implement `SMul.aux`. For now we do not do this as it has caused
 -- performance issues in the past.
 def liftAddHom (f : M →+ N →+ P)
     (hf : ∀ (r : R) (m : M) (n : N), f (r • m) n = f m (r • n)) :
