@@ -58,7 +58,7 @@ all hypergraphs are *without repeated edge*.
 
 open Set
 
-variable {α β γ : Type*} {x y : α} {e e' f : Set α} 
+variable {α β γ : Type*} {x y : α} {e e' f : Set α}
 
 /--
 An undirected hypergraph with vertices of type `α` and edges of type `Set α`, as described by vertex
@@ -177,7 +177,7 @@ lemma sUnion_edgeSet_eq_vertexSet_iff_all_vertex_not_isolated :
 def IsLoop (H : Hypergraph α) (e : Set α) : Prop := e ∈ E(H) ∧ ∃ x ∈ V(H), e = {x}
 
 lemma isLoop_iff_mem_edgeSet_and_singleton : H.IsLoop e ↔ (e ∈ E(H) ∧ ∃ x, e = {x}) := by
-  grind [IsLoop, mem_vertexSet_of_mem_edgeSet] 
+  grind [IsLoop, mem_vertexSet_of_mem_edgeSet]
 
 lemma isLoop_iff_mem_and_ncard_one : H.IsLoop e ↔ (e ∈ E(H) ∧ Set.ncard e = 1) := by
   grind [IsLoop, ncard_eq_one, mem_vertexSet_of_mem_edgeSet]
