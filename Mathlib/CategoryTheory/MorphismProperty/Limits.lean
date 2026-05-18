@@ -1048,7 +1048,7 @@ lemma isStableUnderCobaseChangeAgainst_top_iff
   mpr _ := inferInstance
 
 /-- `P.HasPullbacksAgainst P'` states that for any morphism `f` satisfying `P'`,
-`P` has pullbacks along `f`. -/
+`P` has pushouts along `f`. -/
 class HasPushoutsAgainst
     (P P' : MorphismProperty C) : Prop where
   hasPushoutsAlong ⦃X Y : C ⦄ (f : X ⟶ Y) (hf : P' f) :
