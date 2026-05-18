@@ -71,8 +71,8 @@ lemma Module.FaithfullyFlat.of_flat_of_isLocalHom [IsLocalRing A] [IsLocalRing B
   rw [eqt, top_le_iff, Submodule.restrictScalars_eq_top_iff] at this
   exact Ideal.IsPrime.ne_top' this
 
-instance Module.FaithfullyFlat.of_isIntegral_of_isDomain [CommRing B] [IsDomain B] [Algebra A B]
-    [Module.Flat A B] [Algebra.IsIntegral A B] [FaithfulSMul A B] :
+instance Module.FaithfullyFlat.of_isIntegral_of_isDomain [IsDomain B] [Module.Flat A B]
+    [Algebra.IsIntegral A B] [FaithfulSMul A B] :
     Module.FaithfullyFlat A B := by
   refine Module.FaithfullyFlat.of_comap_surjective fun P ↦ ?_
   obtain ⟨P, hP₁, hP₂⟩ := Ideal.exists_ideal_over_prime_of_isIntegral_of_isDomain P.1 (S := B)
