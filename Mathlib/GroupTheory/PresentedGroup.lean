@@ -175,11 +175,11 @@ def coprodOf : α ⊕ β → Monoid.Coprod (PresentedGroup rels₁) (PresentedGr
 
 lemma lift_coprodOf_inl_eq_inl_mk : (FreeGroup.lift (coprodOf rels₁ rels₂)).comp
     (FreeGroup.map Sum.inl) = Monoid.Coprod.inl.comp (mk rels₁) :=
-  FreeGroup.ext_hom _ _ (by simp [coprodOf, of])
+  FreeGroup.ext_hom _ _ (fun _ ↦ rfl)
 
 lemma lift_coprodOf_inr_eq_inr_mk : (FreeGroup.lift (coprodOf rels₁ rels₂)).comp
     (FreeGroup.map Sum.inr) = Monoid.Coprod.inr.comp (mk rels₂) :=
-  FreeGroup.ext_hom _ _ (by simp [coprodOf, of])
+  FreeGroup.ext_hom _ _ (fun _ ↦ rfl)
 
 lemma coprodOf_kills_rels : ∀ r ∈ FreeGroup.map Sum.inl '' rels₁ ∪ FreeGroup.map Sum.inr '' rels₂,
       FreeGroup.lift (coprodOf rels₁ rels₂) r = 1 := by
