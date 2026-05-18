@@ -229,6 +229,7 @@ class BaireSpace (X : Type*) [TopologicalSpace X] : Prop where
   baire_property : ∀ f : ℕ → Set X, (∀ n, IsOpen (f n)) → (∀ n, Dense (f n)) → Dense (⋂ n, f n)
 
 /-- A one-field structure wrapper for `X` with the topology coinduced from `t`. -/
+@[ext]
 structure WithTopology (X : Type*) (t : TopologicalSpace X) where
   /-- Converts an element of `X` to an element of `WithTopology X t`. -/
   toTopology (t) ::
