@@ -498,10 +498,10 @@ noncomputable def cotangentEquivH1Cotangent (P : Extension.{u₃} R S) :
         Ideal.comap (MvPolynomial.isEmptyAlgEquiv P.Ring PEmpty).toRingEquiv.symm
       (RingHom.ker (MvPolynomial.aeval PEmpty.elim) ^ 2)
     simpa only [Ideal.comap_symm] using (Ideal.map_pow ..).symm
-  refine (.ofBijective (.codRestrictOfInjective (Cotangent.map P_to_G) h1Cotangentι
-    h1Cotangentι_injective mem_range) ⟨?_, ?_⟩) ≪≫ₗ G.equivH1Cotangent
+  refine .ofBijective (.codRestrictOfInjective (Cotangent.map P_to_G) h1Cotangentι
+    h1Cotangentι_injective mem_range) ⟨?_, ?_⟩ ≪≫ₗ G.equivH1Cotangent
   · intro x y hxy
-    simpa [← G.toExtension.h1Cotangentι_injective.eq_iff, inj.eq_iff] using hxy
+    simpa [← h1Cotangentι_injective.eq_iff, inj.eq_iff] using hxy
   · rintro ⟨x, hx⟩
     obtain ⟨⟨x, y_in⟩, rfl⟩ := Cotangent.mk_surjective x
     obtain ⟨y, rfl⟩ : ∃ y : P.Ring, algebraMap P.Ring G.toExtension.Ring y = x :=
