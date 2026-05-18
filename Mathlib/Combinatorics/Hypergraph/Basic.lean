@@ -58,7 +58,7 @@ all hypergraphs are *without repeated edge*.
 
 open Set
 
-variable {α β γ : Type*} {x y : α} {e e' f g : Set α} {l : Set (Set α)}
+variable {α β γ : Type*} {x y : α} {e e' f : Set α} 
 
 /--
 An undirected hypergraph with vertices of type `α` and edges of type `Set α`, as described by vertex
@@ -95,8 +95,7 @@ scoped notation "E(" H ")" => Hypergraph.edgeSet H
 lemma subset_vertexSet_of_mem_edgeSet (he : e ∈ E(H)) : e ⊆ V(H) :=
   H.subset_vertexSet_of_mem_edgeSet' he
 
-lemma _root_.Membership.mem.subset_vertexSet (he : e ∈ E(H)) : e ⊆ V(H) :=
-  H.subset_vertexSet_of_mem_edgeSet he
+alias _root_.Membership.mem.subset_vertexSet := subset_vertexSet_of_mem_edgeSet
 
 lemma edgeSet_subset_powerset_vertexSet {H : Hypergraph α} : E(H) ⊆ V(H).powerset :=
   fun _ ↦ subset_vertexSet_of_mem_edgeSet
@@ -146,12 +145,6 @@ lemma eAdj_comm (e f) : H.EAdj e f ↔ H.EAdj f e := ⟨.symm, .symm⟩
 
 /-! ## Basic Hypergraph Definitions & Predicates-/
 
-/-- The *star* of a vertex `x` is the set of all edges `e ∈ E(H)` incident to `x`. -/
-def star (H : Hypergraph α) (x : α) : Set (Set α) := {e ∈ E(H) | x ∈ e}
-
-/-- The *star set* is the set of subsets of `E(H)` of edges incident to a vertex in `V(H)`. -/
-def stars (H : Hypergraph α) : Set (Set (Set α)) := {H.star x | x ∈ V(H)}
-
 /-- The *image* of a hypergraph `H : Hypergraph α` under a function `f : α → β` is the hypergraph
 `Hᶠ : Hypergraph β` where the vertex set of `Hᶠ` is the image of `V(H)` under `f` and the edge set
 of `Hᶠ` is the set of images of the edges (subsets of vertices) in `E(H)`. -/
@@ -183,6 +176,9 @@ lemma sUnion_edgeSet_eq_vertexSet_iff_all_vertex_not_isolated :
 /-- A loop is an edge whose associated vertex subset consists of a single vertex. -/
 def IsLoop (H : Hypergraph α) (e : Set α) : Prop := e ∈ E(H) ∧ ∃ x ∈ V(H), e = {x}
 
+lemma isLoop_iff_mem_edgeSet_and_singleton : H.IsLoop e ↔ (e ∈ E(H) ∧ ∃ x, e = {x}) := by
+  grind [IsLoop, mem_vertexSet_of_mem_edgeSet] 
+
 lemma isLoop_iff_mem_and_ncard_one : H.IsLoop e ↔ (e ∈ E(H) ∧ Set.ncard e = 1) := by
   grind [IsLoop, ncard_eq_one, mem_vertexSet_of_mem_edgeSet]
 
@@ -191,7 +187,7 @@ lemma IsLoop.ncard_one (h : H.IsLoop e) : Set.ncard e = 1 := (isLoop_iff_mem_and
 /-- A hypergraph is empty if it has no vertices and no edges. -/
 def IsEmpty (H : Hypergraph α) : Prop := V(H) = ∅ ∧ E(H) = ∅
 
-/-- A hypergraph is nonempty if it has at least one vertex and at least one edge. -/
+/-- A hypergraph is nonempty if it has at least one vertex or at least one edge. -/
 def IsNonempty (H : Hypergraph α) : Prop := (∃ x, x ∈ V(H)) ∨ (∃ e, e ∈ E(H))
 
 /-- The empty hypergraph on a type. -/
@@ -225,8 +221,10 @@ lemma IsEmpty.not_mem_edgeSet (hH : H.IsEmpty) {e : Set α} : e ∉ E(H) := by
 lemma notMem_edgeSet_emptyHypergraph : e ∉ E(emptyHypergraph α) :=
   IsEmpty.not_mem_edgeSet isEmpty_emptyHypergraph
 
+@[simp]
 lemma not_isEmpty_iff : ¬H.IsEmpty ↔ H.IsNonempty := by grind [IsEmpty, IsNonempty]
 
+@[simp]
 lemma not_isNonempty : ¬H.IsNonempty ↔ H.IsEmpty := not_iff_comm.mp not_isEmpty_iff
 
 alias ⟨_, IsEmpty.not_isNonempty⟩ := not_isNonempty
@@ -238,22 +236,24 @@ lemma isEmpty_or_isNonempty : H.IsEmpty ∨ H.IsNonempty := by grind [IsEmpty, I
 /-- A hypergraph is trivial if it has at least one vertex but no edges. -/
 def IsTrivial (H : Hypergraph α) : Prop := Set.Nonempty V(H) ∧ E(H) = ∅
 
-/-- The trivial hypergraph with a given vertex set. -/
+/-- The trivial hypergraph with a given vertex set is defined by having no edges on that vertex
+set. -/
 @[simps]
 def trivialHypergraph (f : Set α) : Hypergraph α where
   vertexSet := f
   edgeSet := ∅
   subset_vertexSet_of_mem_edgeSet' := by simp
 
-lemma IsTrivial.not_isEmpty (hh : IsTrivial H) : ¬IsEmpty H := by
-  grind [IsEmpty, IsTrivial, Set.nonempty_iff_ne_empty]
+lemma IsTrivial.isNonempty (hh : IsTrivial H) : IsNonempty H := by
+  grind [IsNonempty, IsTrivial, Set.nonempty_iff_ne_empty]
 
 lemma IsTrivial.not_mem_edgeSet (h : H.IsTrivial) : e ∉ E(H) := by grind [IsTrivial]
 
 /-- A hypergraph is complete if every subset of the vertex set is in the edge set. -/
 def IsComplete (H : Hypergraph α) : Prop := ∀ e ⊆ V(H), e ∈ E(H)
 
-/-- The complete hypergraph with a given vertex set. -/
+/-- The complete hypergraph with a given vertex set, which has each subset of the vertex set as an
+edge. -/
 @[simps]
 def completeOn (f : Set α) : Hypergraph α where
   vertexSet := f
@@ -266,9 +266,6 @@ lemma isComplete_completeOn (f : Set α) : (completeOn f).IsComplete := fun _ a 
 
 lemma IsComplete.isNonempty (h : H.IsComplete) : H.IsNonempty :=
   Or.inr ⟨∅, h ∅ (Set.empty_subset _)⟩
-
-lemma IsComplete.not_isEmpty (h : H.IsComplete) : ¬ H.IsEmpty :=
-  H.not_isEmpty_iff.mpr h.isNonempty
 
 lemma IsComplete.not_isTrivial (h : H.IsComplete) : ¬ H.IsTrivial := by
   intro hH
