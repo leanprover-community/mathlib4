@@ -607,10 +607,6 @@ theorem Finsupp.sum_apply'' {A F : Type*} [AddZeroClass A] [AddCommMonoid F] [Fu
   | empty => simp [h0]
   | insert i s hi ih => simp [sum_insert hi, hadd, ih]
 
-@[deprecated "use instead `sum_finsetSum_index` (with equality reversed)" (since := "2025-11-07")]
-theorem Finsupp.sum_sum_index' (h0 : ∀ i, t i 0 = 0) (h1 : ∀ i x y, t i (x + y) = t i x + t i y) :
-    (∑ x ∈ s, f x).sum t = ∑ x ∈ s, (f x).sum t := (sum_finsetSum_index h0 h1).symm
-
 section
 
 variable [NonUnitalNonAssocSemiring R] [NonUnitalNonAssocSemiring S]

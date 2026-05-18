@@ -67,15 +67,9 @@ theorem iff_formallyUnramified_and_formallySmooth :
     FormallyEtale R A ↔ FormallyUnramified R A ∧ FormallySmooth R A :=
   ⟨fun _ ↦ ⟨inferInstance, inferInstance⟩, fun ⟨_, _⟩ ↦ ⟨inferInstance, inferInstance⟩⟩
 
-@[deprecated (since := "2025-11-03")]
-alias iff_unramified_and_smooth := iff_formallyUnramified_and_formallySmooth
-
 theorem of_formallyUnramified_and_formallySmooth [FormallyUnramified R A]
     [FormallySmooth R A] : FormallyEtale R A :=
   FormallyEtale.iff_formallyUnramified_and_formallySmooth.mpr ⟨‹_›, ‹_›⟩
-
-@[deprecated (since := "2025-11-03")]
-alias of_unramified_and_smooth := of_formallyUnramified_and_formallySmooth
 
 variable (R A) in
 lemma comp_bijective [FormallyEtale R A] (I : Ideal B) (hI : I ^ 2 = ⊥) :
@@ -263,8 +257,6 @@ theorem of_isLocalizationAway (r : R) [IsLocalization.Away r A] : Etale R A wher
   finitePresentation := IsLocalization.Away.finitePresentation r
 
 instance (s : A) [Algebra.Etale R A] : Algebra.Etale R (Localization.Away s) where
-
-@[deprecated (since := "2025-11-03")] alias of_isLocalization_Away := of_isLocalizationAway
 
 instance (R S : Type u) [CommRing R] [CommRing S] :
     letI : Algebra (R × S) S := (RingHom.snd R S).toAlgebra
