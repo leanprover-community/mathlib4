@@ -1053,7 +1053,7 @@ theorem zpow_natCast (a : G) : ∀ n : ℕ, a ^ (n : ℤ) = a ^ n
     _ = a ^ (n + 1) := (pow_succ _ _).symm
 
 
-@[to_additive (attr := simp) ofNat_zsmul]
+@[to_additive ofNat_zsmul, simp]
 lemma zpow_ofNat (a : G) (n : ℕ) : a ^ (ofNat(n) : ℤ) = a ^ OfNat.ofNat n :=
   zpow_natCast ..
 
