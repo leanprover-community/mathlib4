@@ -121,7 +121,7 @@ structure LocalGeneratorsData where
 
 /-- Shrink the indexing type of `LocalGeneratorsData` into the universe of the site. -/
 noncomputable
-def shrink {M : SheafOfModules.{u} R} (q : M.LocalGeneratorsData) :
+def LocalGeneratorsData.shrink {M : SheafOfModules.{u} R} (q : M.LocalGeneratorsData) :
     LocalGeneratorsData.{u'} M where
   I := Set.range q.X
   X i := q.X i.2.choose
