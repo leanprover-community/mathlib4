@@ -391,8 +391,7 @@ Product rule for Lie brackets: given two vector fields `V` and `W` on `M` and a 
 lemma mlieBracket_smul_right {f : M → 𝕜} (hf : MDiffAt f x)
     (hW : MDiffAt (fun x ↦ (W x : TangentBundle I M)) x) :
     mlieBracket I V (f • W) x =
-      mvfderiv% f x (V x) • (W x)
-      + (f x) • mlieBracket I V W x := by
+      d% f x (V x) • (W x) + (f x) • mlieBracket I V W x := by
   rw [← mdifferentiableWithinAt_univ] at hf hW
   rw [← mlieBracketWithin_univ, mvfderiv, ← mfderivWithin_univ]
   exact mlieBracketWithin_smul_right hf hW (uniqueMDiffWithinAt_univ I)
@@ -418,8 +417,7 @@ Product rule for Lie brackets: given two vector fields `V` and `W` on `M` and a 
 lemma mlieBracket_smul_left {f : M → 𝕜} (hf : MDiffAt f x)
     (hV : MDiffAt (fun x ↦ (V x : TangentBundle I M)) x) :
     mlieBracket I (f • V) W x =
-      - (mvfderiv% f x (W x)) • (V x)
-      + (f x) • mlieBracket I V W x := by
+      - (d% f x (W x)) • (V x) + (f x) • mlieBracket I V W x := by
   rw [← mdifferentiableWithinAt_univ] at hf hV
   rw [← mlieBracketWithin_univ, mvfderiv, ← mfderivWithin_univ]
   exact mlieBracketWithin_smul_left hf hV (uniqueMDiffWithinAt_univ I)

@@ -155,7 +155,7 @@ public lemma IsLeviCivitaConnection.apply_eq [FiniteDimensional ℝ E]
     (h : cov.IsLeviCivitaConnection)
     (hX : MDiffAt (T% X) x) (hY : MDiffAt (T% Y) x) (hZ : MDiffAt (T% Z) x) :
     ⟪∇ X Y, Z⟫ x =
-      (mvfderiv% ⟪Y, Z⟫ x (X x) + mvfderiv% ⟪Z, X⟫ x (Y x) - mvfderiv% ⟪X, Y⟫ x (Z x)
+      (d% ⟪Y, Z⟫ x (X x) + d% ⟪Z, X⟫ x (Y x) - d% ⟪X, Y⟫ x (Z x)
       - ⟪Y ,(VectorField.mlieBracket I X Z)⟫ x
       - ⟪Z, (VectorField.mlieBracket I Y X)⟫ x
       + ⟪X, (VectorField.mlieBracket I Z Y)⟫ x) / 2 := by
@@ -190,7 +190,7 @@ variable (X Y Z) in
 /-- Auxiliary quantity for the construction of the Levi-Civita connection:
 If `∇` is the Levi-Civita connection on `TM`, this formula will express `⟨∇ X Y, Z⟩`. -/
 noncomputable def leviCivitaAux (x : M) : ℝ :=
-  (mvfderiv% ⟪Y, Z⟫ x (X x) + mvfderiv% ⟪Z, X⟫ x (Y x) - mvfderiv% ⟪X, Y⟫ x (Z x)
+  (d% ⟪Y, Z⟫ x (X x) + d% ⟪Z, X⟫ x (Y x) - d% ⟪X, Y⟫ x (Z x)
   - ⟪Y ,(VectorField.mlieBracket I X Z)⟫ x
   - ⟪Z, (VectorField.mlieBracket I Y X)⟫ x
   + ⟪X, (VectorField.mlieBracket I Z Y)⟫ x) / 2
@@ -300,7 +300,7 @@ public theorem leviCivitaConnection_apply [FiniteDimensional ℝ E] {x : M}
     {Y : Π x : M, TangentSpace I x} (hY : MDiffAt (T% Y) x)
     {Z : Π x : M, TangentSpace I x} (hZ : MDiffAt (T% Z) x) :
     ⟪leviCivitaConnection I M Y x (X x), Z x⟫ =
-      (mvfderiv% ⟪Y, Z⟫ x (X x) + mvfderiv% ⟪Z, X⟫ x (Y x) - mvfderiv% ⟪X, Y⟫ x (Z x)
+      (d% ⟪Y, Z⟫ x (X x) + d% ⟪Z, X⟫ x (Y x) - d% ⟪X, Y⟫ x (Z x)
       - ⟪Y, VectorField.mlieBracket I X Z⟫ x
       - ⟪Z, VectorField.mlieBracket I Y X⟫ x
       + ⟪X, VectorField.mlieBracket I Z Y⟫ x) / 2 :=
@@ -311,7 +311,7 @@ public theorem leviCivitaConnection_apply_right [FiniteDimensional ℝ E] {x : M
     {Y : Π x : M, TangentSpace I x} (hY : MDiffAt (T% Y) x)
     {Z : Π x : M, TangentSpace I x} (hZ : MDiffAt (T% Z) x) :
     ⟪X x, leviCivitaConnection I M Y x (Z x)⟫ =
-      (mvfderiv% ⟪Y, X⟫ x (Z x) + mvfderiv% ⟪X, Z⟫ x (Y x) - mvfderiv% ⟪Z, Y⟫ x (X x)
+      (d% ⟪Y, X⟫ x (Z x) + d% ⟪X, Z⟫ x (Y x) - d% ⟪Z, Y⟫ x (X x)
       - ⟪Y ,VectorField.mlieBracket I Z X⟫ x
       - ⟪X, VectorField.mlieBracket I Y Z⟫ x
       + ⟪Z, VectorField.mlieBracket I X Y⟫ x) / 2 := by

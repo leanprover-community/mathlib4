@@ -348,7 +348,7 @@ instead using casting and definitional abuse.)
 
 It is good practice to use the equiv `NormedSpace.fromTangentSpace` throughout a computation. If
 this is done, typically `mfderiv[s] (f • g) x` will only turn up paired with this equiv (i.e., in an
-expression `(fromTangentSpace _) ∘L mfderiv[s] (f • g) x` or `mvfderiv[s] (f • g) x`),
+expression `(fromTangentSpace _) ∘L mfderiv[s] (f • g) x` or `d[s] (f • g) x`),
 and the more convenient lemma `mvderiv_smul` (see below) can be used instead. -/
 lemma mfderivWithin_smul
     (hf : MDiffAt[s] f x) (hg : MDiffAt[s] g x) (hs : UniqueMDiffWithinAt I s x) :
@@ -514,17 +514,17 @@ open scoped Bundle Manifold ContDiff
 
 open Lean Meta Elab Tactic
 
-/-- `mvfderiv[s] f x` elaborates to `mvfderivWithin I J f s x`,
+/-- `d[s] f x` (scoped to the `Manifold` namespace) elaborates to `mvfderivWithin I J f s x`,
 trying to determine `I` and `J` from the local context. -/
-scoped elab:max "mvfderiv[" s:term "]" ppSpace t:term:arg : term => do
+scoped elab:max "d[" s:term "]" ppSpace t:term:arg : term => do
   let es ← Term.elabTerm s none
   let e ← ensureIsFunction <| ← Term.elabTerm t none
   let (srcI, _tgtI) ← findModels e none
   mkAppM ``mvfderivWithin #[srcI, e, es]
 
-/-- `mvfderiv% f x` elaborates to `mvfderiv I J f x`,
+/-- `d% f x` (scoped to the `Manifold` namespace) elaborates to `mvfderiv I J f x`,
 trying to determine `I` and `J` from the local context. -/
-scoped elab:max "mvfderiv%" ppSpace t:term:arg : term => do
+scoped elab:max "d%" ppSpace t:term:arg : term => do
   let e ← ensureIsFunction <| ← Term.elabTerm t none
   let (srcI, _tgtI) ← findModels e none
   mkAppM ``mvfderiv #[srcI, e]
@@ -540,7 +540,7 @@ open Bundle PrettyPrinter Delaborator SubExpr
   withOverApp 16 do
   let ss ← withAppArg delab
   let fs ← withNaryArg 14 <| delab
-  `(mvfderiv[$ss] $fs) >>= annotateGoToSyntaxDef
+  `(d[$ss] $fs) >>= annotateGoToSyntaxDef
 
 /-- Delaborator for `mvfderiv`. -/
 -- There is no need to special-case any arguments which could use the T% s elaborator:
@@ -550,132 +550,134 @@ open Bundle PrettyPrinter Delaborator SubExpr
   whenPPOption getPPNotation do
   withOverApp 15 do
   let fs ← withAppArg delab
-  `(mvfderiv% $fs) >>= annotateGoToSyntaxDef
+  `(d% $fs) >>= annotateGoToSyntaxDef
 
 section tests
 
 variable {f : M → 𝕜}
 
-/-- info: mvfderiv[s] f : (x : M) → TangentSpace I x →L[𝕜] 𝕜 -/
+/-- info: d[s] f : (x : M) → TangentSpace I x →L[𝕜] 𝕜 -/
 #guard_msgs in
 #check mvfderivWithin I f s
-/-- info: mvfderiv[s] f x : TangentSpace I x →L[𝕜] 𝕜 -/
+/-- info: d[s] f x : TangentSpace I x →L[𝕜] 𝕜 -/
 #guard_msgs in
 #check mvfderivWithin I f s x
-/-- info: mvfderiv[s] f : (x : M) → TangentSpace I x →L[𝕜] 𝕜 -/
-#guard_msgs in
-#check mvfderiv[s] f
-/-- info: mvfderiv[s] f x : TangentSpace I x →L[𝕜] 𝕜 -/
-#guard_msgs in
-#check mvfderiv[s] f x
 
-/-- info: mvfderiv% f : (x : M) → TangentSpace I x →L[𝕜] 𝕜 -/
+/-- info: d[s] f : (x : M) → TangentSpace I x →L[𝕜] 𝕜 -/
+#guard_msgs in
+#check d[s] f
+/-- info: d[s] f x : TangentSpace I x →L[𝕜] 𝕜 -/
+#guard_msgs in
+#check d[s] f x
+
+/-- info: d% f : (x : M) → TangentSpace I x →L[𝕜] 𝕜 -/
 #guard_msgs in
 #check mvfderiv I f
-/-- info: mvfderiv% f : (x : M) → TangentSpace I x →L[𝕜] 𝕜 -/
+/-- info: d% f : (x : M) → TangentSpace I x →L[𝕜] 𝕜 -/
 #guard_msgs in
-#check mvfderiv% f
+#check d% f
 
-/-- info: mvfderiv% f x : TangentSpace I x →L[𝕜] 𝕜 -/
+/-- info: d% f x : TangentSpace I x →L[𝕜] 𝕜 -/
 #guard_msgs in
 #check mvfderiv I f x
 
-/-- info: mvfderiv% f x : TangentSpace I x →L[𝕜] 𝕜 -/
+/-- info: d% f x : TangentSpace I x →L[𝕜] 𝕜 -/
 #guard_msgs in
-#check mvfderiv% f x
+#check d% f x
 
 end tests
 
 end Manifold
 
-lemma mvfderivWithin_const (c : F) {x : M} : mvfderiv[s] (fun _ : M ↦ c) x = 0 := by
+lemma mvfderivWithin_const (c : F) {x : M} : d[s] (fun _ : M ↦ c) x = 0 := by
   simp [mvfderivWithin, mfderivWithin_const]
 
 @[simp, to_fun mvfderivWithin_fun_add]
 lemma mvfderivWithin_add {g g' : M → F} {x : M}
     (hg : MDiffAt[s] g x) (hg' : MDiffAt[s] g' x) (hs : UniqueMDiffWithinAt I s x) :
-    mvfderiv[s] (g + g') x = mvfderiv[s] g x + mvfderiv[s] g' x := by
+    d[s](g + g') x = d[s]g x + d[s]g' x := by
   simp [mvfderivWithin, mfderivWithin_add hg hg' hs]
   rfl
 
 @[simp, to_fun mvfderivWithin_fun_sub]
 lemma mvfderivWithin_sub {g g' : M → F} {x : M}
     (hg : MDiffAt[s] g x) (hg' : MDiffAt[s] g' x) (hs : UniqueMDiffWithinAt I s x) :
-    mvfderiv[s] (g - g') x = mvfderiv[s] g x - mvfderiv[s] g' x := by
+    d[s](g - g') x = d[s]g x - d[s]g' x := by
   simp [mvfderivWithin, mfderivWithin_sub hg hg' hs]
   rfl
 
 @[simp, to_fun mvfderivWithin_fun_neg]
 lemma mvfderivWithin_neg {g : M → F} {x : M} (hs : UniqueMDiffWithinAt I s x) :
-    mvfderiv[s] (-g) x = -mvfderiv[s] g x := by
+    d[s](-g) x = -d[s]g x := by
   simp [mvfderivWithin, mfderivWithin_neg hs]
   rfl
 
 @[simp, to_fun mvfderivWithin_fun_smul]
 lemma mvfderivWithin_smul {a : M → 𝕜} (ha : MDiffAt[s] a x) {g : M → F} (hg : MDiffAt[s] g x)
     (hs : UniqueMDiffWithinAt I s x) :
-    mvfderiv[s] (a • g) x =
-      a x • mvfderiv[s] g x + (mvfderiv[s] a x).smulRight (g x) := by
+    d[s](a • g) x =
+      a x • d[s] g x + (d[s] a x).smulRight (g x) := by
   ext v
   simp [mvfderivWithin, -Pi.smul_apply', -Pi.smul_apply,
     fromTangentSpace_mfderivWithin_smul_apply ha hg hs]
   rfl
 
 @[simp, to_fun mvfderivWithin_fun_mul]
-lemma mvfderivWithin_mul {f g : M → 𝕜} {x : M} (hf : MDiffAt f x) (hg : MDiffAt g x) :
-    mvfderiv% (f * g) x = f x • mvfderiv% g x + (g x) • (mvfderiv% f x) := by
+lemma mvfderivWithin_mul {f g : M → 𝕜} {x : M} (hf : MDiffAt[s] f x) (hg : MDiffAt[s] g x)
+    (hs : UniqueMDiffWithinAt I s x) :
+    d[s](f * g) x = f x • d[s]g x + (g x) • (d[s]f x) := by
   ext v
-  simp [mvfderiv, -Pi.smul_apply', -Pi.smul_apply, ← smul_eq_mul, mfderiv_smul hf hg]
+  simp [mvfderivWithin, -Pi.smul_apply', -Pi.smul_apply, ← smul_eq_mul, mfderivWithin_smul hf hg hs]
   simp [mul_comm _ (g x)]
 
 @[simp]
 lemma mvfderivWithin_zero {s : Set M} (hs : UniqueMDiffWithinAt I s x) :
-    mvfderiv[s] (0 : M → F) x = 0 := by
-  have : mvfderiv[s] (0 : M → F) x + mvfderiv[s] (0 : M → F) x = mvfderiv[s] (0 : M → F) x := by
+    d[s] (0 : M → F) x = 0 := by
+  have : d[s] (0 : M → F) x + d[s] (0 : M → F) x = d[s] (0 : M → F) x := by
     rw [← mvfderivWithin_add (by exact mdifferentiableWithinAt_const)
       (by exact mdifferentiableWithinAt_const) hs]
     simp
   simpa using this
 
-lemma mvfderiv_const (c : F) {x : M} : mvfderiv% (fun _ : M ↦ c) x = 0 := by
+lemma mvfderiv_const (c : F) {x : M} : d% (fun _ : M ↦ c) x = 0 := by
   simp [mvfderiv, mfderiv_const]
 
 @[simp, to_fun mvfderiv_fun_add]
 lemma mvfderiv_add {g g' : M → F} {x : M} (hg : MDiffAt g x) (hg' : MDiffAt g' x) :
-    mvfderiv% (g + g') x = mvfderiv% g x + mvfderiv% g' x := by
+    d% (g + g') x = d% g x + d% g' x := by
   simp [mvfderiv, mfderiv_add hg hg']
   rfl
 
 @[simp, to_fun mvfderiv_fun_sub]
 lemma mvfderiv_sub {g g' : M → F} {x : M} (hg : MDiffAt g x) (hg' : MDiffAt g' x) :
-    mvfderiv% (g - g') x = mvfderiv% g x - mvfderiv% g' x := by
+    d% (g - g') x = d% g x - d% g' x := by
   simp [mvfderiv, mfderiv_sub hg hg']
   rfl
 
 @[simp, to_fun mvfderiv_fun_neg]
 lemma mvfderiv_neg {g : M → F} {x : M} :
-    mvfderiv% (-g) x = -mvfderiv% g x := by
+    d% (-g) x = -d% g x := by
   simp [mvfderiv, mfderiv_neg]
   rfl
 
 @[simp, to_fun mvfderiv_fun_smul]
 lemma mvfderiv_smul {x : M} {a : M → 𝕜} (ha : MDiffAt a x) {g : M → F} (hg : MDiffAt g x) :
-    mvfderiv% (a • g) x =
-      a x • mvfderiv% g x + (mvfderiv% a x).smulRight (g x) := by
+    d% (a • g) x =
+      a x • d% g x + (d% a x).smulRight (g x) := by
   ext v
   simp [mvfderiv, -Pi.smul_apply', -Pi.smul_apply, fromTangentSpace_mfderiv_smul_apply ha hg]
   rfl
 
 @[simp, to_fun mvfderiv_fun_mul]
 lemma mvfderiv_mul {f g : M → 𝕜} {x : M} (hf : MDiffAt f x) (hg : MDiffAt g x) :
-    mvfderiv% (f * g) x = f x • mvfderiv% g x + (g x) • (mvfderiv% f x) := by
+    d% (f * g) x = f x • d% g x + (g x) • (d% f x) := by
   ext v
   simp [mvfderiv, -Pi.smul_apply', -Pi.smul_apply, ← smul_eq_mul, mfderiv_smul hf hg]
   simp [mul_comm _ (g x)]
 
 @[simp]
-lemma mvfderiv_zero {x : M} : mvfderiv% (0 : M → F) x = 0 := by
-  have : mvfderiv% (0 : M → F) x + mvfderiv% (0 : M → F) x = mvfderiv% (0 : M → F) x := by
+lemma mvfderiv_zero {x : M} : d% (0 : M → F) x = 0 := by
+  have : d% (0 : M → F) x + d% (0 : M → F) x = d% (0 : M → F) x := by
     rw [← mvfderiv_add (by exact mdifferentiable_const ..) (by exact mdifferentiable_const ..)]
     simp
   simpa using this

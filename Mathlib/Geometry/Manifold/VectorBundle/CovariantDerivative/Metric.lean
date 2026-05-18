@@ -89,12 +89,12 @@ variable {F}
 prefer using `compatibilityTensor` instead -/
 noncomputable def compatibilityTensorAux (σ τ : Π x : M, V x) (x : M) :
     TangentSpace I x →L[ℝ] ℝ :=
-  mvfderiv% ⟪σ, τ⟫ x - innerSL ℝ (τ x) ∘L cov σ x - innerSL ℝ (σ x) ∘L cov τ x
+  d% ⟪σ, τ⟫ x - innerSL ℝ (τ x) ∘L cov σ x - innerSL ℝ (σ x) ∘L cov τ x
 
 @[simp]
 lemma compatibilityTensorAux_apply (σ τ : Π x : M, V x) {x : M} (X₀ : TangentSpace I x) :
     compatibilityTensorAux I cov σ τ x X₀ =
-      mvfderiv% ⟪σ, τ⟫ x X₀ - inner ℝ (cov σ x X₀) (τ x) - inner ℝ (σ x) (cov τ x X₀) := by
+      d% ⟪σ, τ⟫ x X₀ - inner ℝ (cov σ x X₀) (τ x) - inner ℝ (σ x) (cov τ x X₀) := by
   rw [real_inner_comm]
   rfl
 
@@ -140,7 +140,7 @@ variable {I} [ContMDiffVectorBundle 1 F V I] in
 public theorem compatibilityTensor_apply [FiniteDimensional ℝ F] (x : M)
     (hσ : MDiffAt (T% σ) x) (hτ : MDiffAt (T% τ) x) :
     cov.compatibilityTensor x (σ x) (τ x) (X x) =
-    mvfderiv% ⟪σ, τ⟫ x (X x) - ⟪∇ X σ, τ⟫ x - ⟪σ, ∇ X τ⟫ x := by
+    d% ⟪σ, τ⟫ x (X x) - ⟪∇ X σ, τ⟫ x - ⟪σ, ∇ X τ⟫ x := by
   unfold compatibilityTensor
   rw [TensorialAt.mkHom₂_apply _ _ hσ hτ, compatibilityTensorAux_apply]
 
@@ -148,7 +148,7 @@ variable {I} [ContMDiffVectorBundle 1 F V I] in
 public theorem compatibilityTensor_apply_eq_extend [FiniteDimensional ℝ F] (X₀ : TangentSpace I x)
     (σ₀ τ₀ : V x) :
     cov.compatibilityTensor x σ₀ τ₀ X₀ =
-      mvfderiv% ⟪(FiberBundle.extend F σ₀), (FiberBundle.extend F τ₀)⟫ x X₀
+      d% ⟪(FiberBundle.extend F σ₀), (FiberBundle.extend F τ₀)⟫ x X₀
         - inner ℝ (cov (FiberBundle.extend F σ₀) x X₀) τ₀
         - inner ℝ σ₀ (cov (FiberBundle.extend F τ₀) x X₀) := by
   simp [compatibilityTensor, TensorialAt.mkHom₂_apply_eq_extend]
@@ -165,7 +165,7 @@ variable {cov} in
 public lemma IsCompatible.mvfderiv_inner_eq [FiniteDimensional ℝ F] (hcov : cov.IsCompatible)
     {x : M} (X : Π x, TangentSpace I x) {σ τ : (x : M) → V x}
     (hσ : MDiffAt (T% σ) x) (hτ : MDiffAt (T% τ) x) :
-    mvfderiv% ⟪σ, τ⟫ x (X x) = ⟪∇ X σ, τ⟫ x + ⟪σ, ∇ X τ⟫ x := by
+    d% ⟪σ, τ⟫ x (X x) = ⟪∇ X σ, τ⟫ x + ⟪σ, ∇ X τ⟫ x := by
   have H := congr($hcov x (σ x) (τ x) (X x))
   simp [compatibilityTensor_apply _ _ hσ hτ] at H
   linear_combination H
@@ -175,7 +175,7 @@ variable [IsManifold I 1 M]
 public lemma isCompatible_iff [FiniteDimensional ℝ F] :
     cov.IsCompatible ↔ ∀ {x : M} {X : Π x, TangentSpace I x} {σ τ : (x : M) → V x},
       MDiffAt (T% X) x → MDiffAt (T% σ) x → MDiffAt (T% τ) x →
-      mvfderiv% ⟪σ, τ⟫ x (X x) = ⟪∇ X σ, τ⟫ x + ⟪σ, ∇ X τ⟫ x := by
+      d% ⟪σ, τ⟫ x (X x) = ⟪∇ X σ, τ⟫ x + ⟪σ, ∇ X τ⟫ x := by
   refine ⟨fun hcov x X σ τ hX ↦ hcov.mvfderiv_inner_eq X, fun h ↦ ?_⟩
   ext1 x
   apply VectorBundle.injective_eval_sec I F; ext1 σ; ext1 hσ
