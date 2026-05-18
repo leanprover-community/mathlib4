@@ -261,4 +261,9 @@ theorem fib_succ_eq_succ_sum (n : ℕ) : fib (n + 1) = (∑ k ∈ Finset.range n
       _ = (fib n + ∑ k ∈ Finset.range n, fib k) + 1 := by rw [ih, add_assoc]
       _ = (∑ k ∈ Finset.range (n + 1), fib k) + 1 := by simp [Finset.range_add_one]
 
+theorem fib_mod_fib_succ {n : ℕ} (hn : 1 < n) :
+    fib (n + 2) % fib (n + 1) = fib n := by
+  rw [fib_add_two, Nat.add_mod_right,
+    Nat.mod_eq_of_lt (fib_lt_fib_succ hn)]
+
 end Nat

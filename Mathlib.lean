@@ -4150,6 +4150,7 @@ public import Mathlib.Data.Nat.Factorization.PrimePow
 public import Mathlib.Data.Nat.Factorization.Root
 public import Mathlib.Data.Nat.Factors
 public import Mathlib.Data.Nat.Fib.Basic
+public import Mathlib.Data.Nat.Fib.Lame
 public import Mathlib.Data.Nat.Fib.Zeckendorf
 public import Mathlib.Data.Nat.Find
 public import Mathlib.Data.Nat.GCD.Basic
