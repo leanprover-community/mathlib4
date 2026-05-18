@@ -192,12 +192,15 @@ theorem of_shortExact_of_isFlasque₁₂ {S : ShortComplex (Sheaf AddCommGrpCat 
 
 noncomputable section
 
+/-- The sheafification of the presheaf that is `ℤ` on `U` and `0` elsewhere. -/
 def freeAbSheaf (U : Opens X) : Sheaf AddCommGrpCat.{u} X :=
   (presheafToSheaf _ _).obj (yoneda.obj U ⋙ AddCommGrpCat.free)
 
+/-- If `U` is contained in `V`, we get a natural morphism from `freeAbSheaf U` to `freeAbSheaf V` -/
 def freeAbSheafMap {U V : Opens X} (i : U ⟶ V) : freeAbSheaf U ⟶ freeAbSheaf V :=
   (presheafToSheaf _ _).map (Functor.whiskerRight (yoneda.map i) AddCommGrpCat.free)
 
+/-- Morphisms out of `freeAbSheaf U` are in correspondance with the sections `I.obj.obj (op U)` -/
 def freeAbSheafHomEquiv (U : Opens X) (I : Sheaf AddCommGrpCat.{u} X) :
     (freeAbSheaf U ⟶ I) ≃ I.obj.obj (op U) :=
   ((sheafificationAdjunction _ _).homEquiv (yoneda.obj U ⋙ AddCommGrpCat.free) I).trans <|
@@ -231,14 +234,11 @@ end
 instance of_injective {X : TopCat.{u}}
     (I : TopCat.Sheaf AddCommGrpCat.{u} X) [Injective I] : IsFlasque I where
   epi := by
-    intro U V i
-    rw [AddCommGrpCat.epi_iff_surjective]
-    intro s
-    obtain ⟨h, hh⟩ :=
-      Injective.factors ((freeAbSheafHomEquiv (unop V) I).symm s) (freeAbSheafMap i.unop)
-    exact ⟨freeAbSheafHomEquiv (unop U) I h, by
-      erw [← freeAbSheafHomEquiv_naturality i.unop I h, hh]
-      simp⟩
+    refine fun i => ((AddCommGrpCat.epi_iff_surjective _).mpr (fun s => ?_))
+    obtain ⟨h, hh⟩ := Injective.factors ((freeAbSheafHomEquiv _ I).symm s) (freeAbSheafMap i.unop)
+    use freeAbSheafHomEquiv _ I h
+    rw [← Quiver.Hom.op_unop i, ← freeAbSheafHomEquiv_naturality, hh]
+    simp
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Flasque sheaves have no higher cohomology. For most applications, it is probably better to use
