@@ -38,7 +38,6 @@ universe u v w
 structure BialgHom (R A B : Type*) [CommSemiring R]
     [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
     [CoalgebraStruct R A] [CoalgebraStruct R B] extends A →ₗc[R] B, A →* B
-initialize_simps_projections BialgHom (as_prefix toCoalgHom)
 
 /-- Reinterpret a `BialgHom` as a `MonoidHom` -/
 add_decl_doc BialgHom.toMonoidHom
@@ -134,7 +133,7 @@ def Simps.apply {R α β : Type*} [CommSemiring R]
     [Algebra R β] [CoalgebraStruct R α] [CoalgebraStruct R β]
     (f : α →ₐc[R] β) : α → β := f
 
-initialize_simps_projections BialgHom (toFun → apply)
+initialize_simps_projections BialgHom (toFun → apply, as_prefix toCoalgHom)
 
 @[simp]
 protected theorem coe_coe {F : Type*} [FunLike F A B] [BialgHomClass F R A B] (f : F) :
