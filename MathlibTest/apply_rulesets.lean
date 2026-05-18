@@ -4,6 +4,40 @@ public import MathlibTest.ApplyRuleSetsAttr
 
 open Mathlib.Tactic.ApplyRuleSets
 
+open Lean
+ruleproc proc1 {A : Sort*} : A := fun _ _ => do
+  logInfo m!"calling `proc1` on {A}"
+  return none
+
+@[test_rules]
+ruleproc sortTrue {A : Sort*} : A := fun _ _ => do
+  return some (Lean.mkConst ``True.intro)
+
+ruleproc proc2 {A : Prop} : A := fun _ _ => do
+  logInfo m!"calling `proc2` on {A}"
+  return none
+
+ruleproc proc3 (param : Nat), {A : Prop} : A := fun _ _ => do
+  logInfo m!"calling `proc3` on {A} with param := {param}"
+  return none
+
+example (p q : Prop) : p → q → p ∧ q := by
+  fail_if_success apply_rulesets [test_rules, -Add.intro]
+  apply_rulesets [test_rules]
+
+example : True := by
+  apply_rulesets [sortTrue]
+
+example (p : Prop) (hp : p) : p := by
+  apply_rulesets
+
+example (p : Prop) (hp : p) : p := by
+  apply_rulesets []
+
+example : True := by
+  fail_if_success apply_rulesets [test_rules, -exactTrue, -sortTrue]
+  apply True.intro
+
 example (p q : Prop) (hp : p) (hq : q) : p ∧ q := by
   apply_rulesets [test_rules, hp, hq]
 

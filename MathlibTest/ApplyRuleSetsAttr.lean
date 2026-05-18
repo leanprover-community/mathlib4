@@ -1,7 +1,7 @@
 module
 
 public import MathlibTest.ApplyRuleSetsRegister
-import Mathlib
+-- import Mathlib
 
 open Mathlib.Tactic.ApplyRuleSets
 
@@ -67,52 +67,3 @@ theorem autoParamRule (h : autoParam True autoParamSource._auto_1) : True := h
 @[test_rules]
 ruleproc reflByProc {A : Type} (a : A) : a = a := fun _ _ => do
   return some (← Lean.Meta.mkAppM ``Eq.refl #[a])
-
-
-
--- open Lean Meta Elab Term Command
--- elab "simproc_elab%" e:term : term => do
-
-
---   let simprocName := `_root_.my_simproc
---   let simprocId := mkIdent  simprocName
---   let stx ← `(command| simproc_decl $simprocId (_) := $e)
---   liftCommandElabM (elabCommand stx)
---   -- logInfo m!"defining new simproc {simprocName}"
---   -- logInfo m!"new simproc {Expr.const `my_simproc []} : {← inferType (Expr.const `my_simproc [])}"
---   let env ← getEnv
---   let s? := env.find? simprocName
---   logInfo m!"found new simproc: {s?.isSome}"
---   elabTerm simprocId none
-
-
--- meta def rewriteNat (n : Nat) : Simp.Simproc := fun e => do
---   if (← inferType e) != .const ``Nat [] then
---     return .continue
-
---   let nExpr := mkNatLit n
---   let prf ← mkSorry (← mkEq e nExpr) true
-
---   return .done { expr := nExpr, proof? := prf }
-
--- set_option Elab.async false
-
-
--- theorem fake_theorem : 1 + 2 = sorry := by
---   let a := simproc_elab% (rewriteNat 42)
---   conv_lhs => simp [my_simproc]
---   sorry
-
--- #check my_simproc
-
--- run_meta
---   logInfo m!"is simproc: {← Lean.Meta.Simp.isSimproc ``my_simproc}"
-
--- #exit
--- #check my_simproc
-
-
-
--- #check Lean.Meta.Simp.isSimproc
-
--- #conv (simp [simproc_elab% (rewriteNat 42)]) => 1 + 2
