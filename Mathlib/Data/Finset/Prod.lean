@@ -8,6 +8,7 @@ module
 public import Mathlib.Data.Finset.Card
 public import Mathlib.Data.Finset.Union
 public import Mathlib.Data.List.OffDiag
+public import Mathlib.Data.Nat.Choose.Basic
 
 /-!
 # Finsets in product types
@@ -357,6 +358,26 @@ theorem offDiag_filter_lt_eq_filter_le {ι} [PartialOrder ι] [DecidableLE ι] [
     s.offDiag.filter (fun i => i.1 < i.2) = s.offDiag.filter (fun i => i.1 ≤ i.2) := by
   ext
   simpa using fun _ _ a ↦ (Ne.le_iff_lt a).symm
+
+/-- The number of strictly ordered pairs `(a, b)` with `a, b ∈ s` is `(#s).choose 2`. -/
+lemma card_product_filter_lt [LinearOrder α] :
+    #{x ∈ s ×ˢ s | x.1 < x.2} = (#s).choose 2 := by
+  have hswap : #{x ∈ s ×ˢ s | x.1 < x.2} = #{x ∈ s ×ˢ s | x.2 < x.1} := by
+    refine card_nbij' Prod.swap Prod.swap ?_ ?_ ?_ ?_ <;>
+      rintro ⟨a, b⟩ h <;> simp_all
+  have hunion : {x ∈ s ×ˢ s | x.1 < x.2} ∪ {x ∈ s ×ˢ s | x.2 < x.1} = s.offDiag := by
+    ext ⟨a, b⟩
+    simp only [mem_union, mem_filter, mem_product, mem_offDiag]
+    refine ⟨fun h => h.elim (fun ⟨⟨ha, hb⟩, hab⟩ => ⟨ha, hb, hab.ne⟩)
+        (fun ⟨⟨ha, hb⟩, hab⟩ => ⟨ha, hb, hab.ne'⟩), ?_⟩
+    rintro ⟨ha, hb, hab⟩
+    exact (lt_or_gt_of_ne hab).imp (⟨⟨ha, hb⟩, ·⟩) (⟨⟨ha, hb⟩, ·⟩)
+  have hdisj : Disjoint {x ∈ s ×ˢ s | x.1 < x.2} {x ∈ s ×ˢ s | x.2 < x.1} := by
+    simp +contextual [disjoint_left, le_of_lt]
+  have hcard := congr_arg Finset.card hunion
+  rw [card_union_of_disjoint hdisj, ← hswap, offDiag_card] at hcard
+  rw [Nat.choose_two_right, Nat.mul_sub, mul_one, ← hcard, ← Nat.two_mul,
+    Nat.mul_div_cancel_left _ (by simp)]
 
 end Diag
 
