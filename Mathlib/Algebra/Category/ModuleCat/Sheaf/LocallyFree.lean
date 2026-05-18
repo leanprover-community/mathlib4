@@ -79,7 +79,7 @@ lemma quasiCoherentData_localGeneratorsData {M : SheafOfModules.{u} R}
 
 end LocalGeneratorsData
 
-instance (M : SheafOfModules.{u} R) [h : M.IsLocallyFree] : M.IsQuasicoherent :=
+instance (priority := 100) (M : SheafOfModules.{u} R) [h : M.IsLocallyFree] : M.IsQuasicoherent :=
   have := h.nonempty_locallyFreeData.choose_spec
   h.nonempty_locallyFreeData.choose.quasiCoherentData.isQuasicoherent
 
