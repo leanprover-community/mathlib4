@@ -258,11 +258,11 @@ theorem intValuation_le_pow_iff_mem (r : R) (n : ℕ) :
     v.intValuation r ≤ exp (-(n : ℤ)) ↔ r ∈ v.asIdeal ^ n := by
   rw [intValuation_le_pow_iff_dvd, Ideal.dvd_span_singleton]
 
-theorem intValuation_le_exp_iff_le_emultiplicity (r : R) (n : ℕ) :
+theorem intValuation_le_exp_iff_le_emultiplicity {r : R} {n : ℕ} :
     v.intValuation r ≤ exp (-(n : ℤ)) ↔ n ≤ emultiplicity v.asIdeal (Ideal.span {r}) := by
   rw [intValuation_le_pow_iff_dvd, pow_dvd_iff_le_emultiplicity]
 
-theorem exp_le_intValuation_iff_emultiplicity_le (r : R) (n : ℕ) :
+theorem exp_le_intValuation_iff_emultiplicity_le {r : R} {n : ℕ} :
     exp (-(n : ℤ)) ≤ v.intValuation r ↔ emultiplicity v.asIdeal (Ideal.span {r}) ≤ n := by
   rw [← ENat.lt_coe_add_one_iff, ← ENat.coe_one, ← ENat.coe_add, emultiplicity_lt_iff_not_dvd,
     ← intValuation_le_pow_iff_dvd, not_le, Nat.cast_add, Nat.cast_one, neg_add, exp_add,
@@ -530,7 +530,7 @@ theorem exists_primeCompl_mul_eq_of_integer (x : K) (hv : v.valuation K x ≤ 1)
 
 /-- Given `a, b ∈ A` and `v b ≤ v a` we can find `y : A` such that `y * a` is close to `b` by
 the valuation `v`. -/
-theorem exists_intValuation_mul_sub_lt {a : R} (b : R) (hv : v.intValuation b ≤ v.intValuation a)
+theorem exists_intValuation_mul_sub_lt {a b : R} (hv : v.intValuation b ≤ v.intValuation a)
     (γ : Multiplicative ℤ) : ∃ y, v.intValuation (b - y * a) < γ := by
   -- If `a = 0`, then `b = 0`, so we can take `y = 0`.
   by_cases ha: a = 0
@@ -556,14 +556,14 @@ theorem exists_intValuation_mul_sub_lt {a : R} (b : R) (hv : v.intValuation b �
       ← eq_sub_iff_add_eq, ← intValuation_le_pow_iff_mem, Ideal.mem_span_singleton'] using hb
 
 /-- Given `x ∈ 𝒪[K]` we can find `a : A` such that `a` is close to `x` by the valuation `v`. -/
-theorem exists_valuation_sub_lt_of_integer (x : K) (hv : v.valuation K x ≤ 1)
+theorem exists_valuation_sub_lt_of_integer {x : K} (hv : v.valuation K x ≤ 1)
     (γ : (ℤᵐ⁰)ˣ) : ∃a, v.valuation K (algebraMap R K a - x) < γ := by
   -- Write `x = n / d`, with `v d = 1`.
   obtain ⟨n, ⟨d, hd⟩, hnd⟩ := exists_primeCompl_mul_eq_of_integer v x hv
   rw [← intValuation_eq_one_iff_mem_primeCompl] at hd
   have hd' : v.intValuation n ≤ v.intValuation d := by grw [v.intValuation_le_one n, hd]
   -- Get `a` such that `v (n - a * d) < γ` from the previous theorem.
-  obtain ⟨a, hval⟩ := exists_intValuation_mul_sub_lt v n hd' (WithZero.unitsWithZeroEquiv γ)
+  obtain ⟨a, hval⟩ := exists_intValuation_mul_sub_lt v hd' (WithZero.unitsWithZeroEquiv γ)
   rw [unitsWithZeroEquiv_apply, coe_unzero] at hval
   use a
   -- `v d = 1`, so `v (a - x) = v (x - a) = v (x - a) * v d = v (n - a * d) < γ`.
