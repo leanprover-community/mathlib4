@@ -37,7 +37,7 @@ instance : BorelSpace ℍ := ⟨borel_comap.symm⟩
 lemma measurableEmbedding_coe : MeasurableEmbedding UpperHalfPlane.coe :=
   isOpenEmbedding_coe.measurableEmbedding
 
-@[fun_prop, measurability]
+@[fun_prop]
 lemma measurable_coe : Measurable UpperHalfPlane.coe :=
   measurableEmbedding_coe.measurable
 
