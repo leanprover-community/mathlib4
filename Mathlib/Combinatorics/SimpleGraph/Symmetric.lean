@@ -73,6 +73,7 @@ section Lorimer
 
 variable (H : Subgroup G) (a : G) (ha_sq : a ^ 2 = 1) (ha_not : a ∉ H)
 
+/-- The coset graph `Sab(G, H, HaH)` for an involution `a ∉ H`. -/
 noncomputable abbrev sabidussiSymmetricGraph :=
   SimpleGraph.cosetGraph H (DoubleCoset.doubleCoset a (H : Set G) H)
     (doubleCoset_isConnectionSet H a ha_sq ha_not)
