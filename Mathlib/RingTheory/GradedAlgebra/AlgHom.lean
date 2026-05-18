@@ -74,8 +74,12 @@ instance : AlgHomClass (𝒜 →ₐᵍ[R] ℬ) R A B where
   map_one f := f.map_one
   commutes f := f.commutes
 
+attribute [coe] GradedAlgHom.toAlgHom
+
+instance : CoeOut (𝒜 →ₐᵍ[R] ℬ) (A →ₐ[R] B) := ⟨toAlgHom⟩
+
 @[simp] lemma toAlgHom_ofClass {F : Type*} [FunLike F A B] [GradedFunLike F 𝒜 ℬ]
-    [AlgHomClass F R A B] (f : F) : (ofClass f : A →ₐ[R] B) = f := rfl
+    [AlgHomClass F R A B] (f : F) : (ofClass f : A →ₐ[R] B) = AlgHomClass.toAlgHom f := rfl
 
 @[simp] lemma toGradedRingHom_ofClass {F : Type*} [FunLike F A B] [GradedFunLike F 𝒜 ℬ]
     [AlgHomClass F R A B] (f : F) :
@@ -94,8 +98,8 @@ initialize_simps_projections GradedAlgHom (toFun → apply)
 theorem coe_mks {f : A → B} (h₁ h₂ h₃ h₄ h₅ h₆) :
     ⇑(⟨⟨⟨⟨⟨f, h₁⟩, h₂⟩, h₃, h₄⟩, h₅⟩, h₆⟩ : 𝒜 →ₐᵍ[R] ℬ) = f := rfl
 
-@[simp, norm_cast]
-theorem coe_algHom_mk {f : A →ₐ[R] B} (h) : ((⟨f, h⟩ : 𝒜 →ₐᵍ[R] ℬ) : A →ₐ[R] B) = f := rfl
+theorem coe_algHom_mk {f : A →ₐ[R] B} (h) : ((⟨f, h⟩ : 𝒜 →ₐᵍ[R] ℬ) : A →ₐ[R] B) = f := by
+  dsimp only
 
 variable (f : 𝒜 →ₐᵍ[R] ℬ)
 

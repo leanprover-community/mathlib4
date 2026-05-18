@@ -46,7 +46,7 @@ Prove noetherianity of `MvPowerSeries` in finitely many variables.
 
 -/
 
-@[expose] public section
+public section
 
 variable {R : Type*}
 

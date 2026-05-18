@@ -54,9 +54,7 @@ assert_not_exists MonoidWithZero
 
 universe v u
 
-open CategoryTheory
-
-open CategoryTheory.Limits
+open CategoryTheory Limits
 
 namespace MonCat.Colimits
 

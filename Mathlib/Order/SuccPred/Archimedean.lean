@@ -16,7 +16,7 @@ public import Mathlib.Order.SuccPred.Basic
   ones.
 -/
 
-@[expose] public section
+public section
 
 variable {α β : Type*}
 

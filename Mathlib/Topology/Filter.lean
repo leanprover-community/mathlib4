@@ -33,7 +33,7 @@ This topology has the following important properties.
 filter, topological space
 -/
 
-@[expose] public section
+public section
 
 
 open Set Filter TopologicalSpace

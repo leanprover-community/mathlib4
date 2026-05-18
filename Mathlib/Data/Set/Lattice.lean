@@ -919,6 +919,10 @@ theorem iUnion₂_eq_univ_iff {s : ∀ i, κ i → Set α} :
 theorem sUnion_eq_univ_iff {c : Set (Set α)} : ⋃₀ c = univ ↔ ∀ a, ∃ b ∈ c, a ∈ b := by
   simp only [eq_univ_iff_forall, mem_sUnion]
 
+theorem iInter_eq_empty_of_eq_empty {i : ι} {f : ι → Set α} (h : f i = ∅) :
+    ⋂ j, f j = ∅ :=
+  subset_eq_empty (iInter_subset _ i) h
+
 -- classical
 theorem iInter_eq_empty_iff {f : ι → Set α} : ⋂ i, f i = ∅ ↔ ∀ x, ∃ i, x ∉ f i := by
   simp [Set.eq_empty_iff_forall_notMem]
@@ -979,7 +983,7 @@ theorem iUnion_eq_range_psigma (s : ι → Set β) : ⋃ i, s i = range fun a : 
   simp [Set.ext_iff]
 
 theorem iUnion_image_preimage_sigma_mk_eq_self {ι : Type*} {σ : ι → Type*} (s : Set (Sigma σ)) :
-    ⋃ i, Sigma.mk i '' (Sigma.mk i ⁻¹' s) = s := by
+    ⋃ i, Sigma.mk i '' Sigma.mk i ⁻¹' s = s := by
   ext x
   simp only [mem_iUnion, mem_image, mem_preimage]
   grind

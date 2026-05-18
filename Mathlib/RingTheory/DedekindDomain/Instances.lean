@@ -28,7 +28,7 @@ special case of *the* localization at a prime ideal is useful in working with De
 
 -/
 
-@[expose] public section
+public section
 
 open nonZeroDivisors IsLocalization Algebra Module IsFractionRing IsScalarTower
 

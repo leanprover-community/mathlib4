@@ -149,6 +149,7 @@ lemma forget_map (f : A ⟶ B) : (forget (Rep.{w} k G)).map f = (f : _ → _) :=
 
 /-- An equiv between the underlying representations induce isomorphism between objects in
   `Rep k G`. -/
+@[simps]
 def mkIso (e : ρ.Equiv σ) : of ρ ≅ of σ where
   hom := ofHom e.toIntertwiningMap
   inv := ofHom e.symm.toIntertwiningMap
@@ -559,7 +560,9 @@ end Action
 
 end ring
 
-variable {k : Type u} {G : Type v} [CommRing k] [Monoid G]
+section CommSemiring
+
+variable {k : Type u} {G : Type v} [CommSemiring k] [Monoid G]
 
 instance {M N : Rep k G} : SMul k (M ⟶ N) where
   smul r f := ofHom (r • f.hom)
@@ -587,7 +590,10 @@ instance : Linear k (Rep k G) where
   smul_comp _ _ _ := smul_comp
   comp_smul _ _ _ := comp_smul
 
-set_option backward.isDefEq.respectTransparency false in
+end CommSemiring
+
+variable {k : Type u} {G : Type v} [CommRing k] [Monoid G]
+
 instance : Functor.Linear k (forget₂ (Rep.{w} k G) (ModuleCat.{w} k)) where
   map_smul {X Y} f r := by
     ext
@@ -825,7 +831,7 @@ end MonoidalClosed
 
 section
 
-variable {G : Type v} [Group G] [Fintype G] (A : Rep.{w} k G)
+variable {k : Type u} [Semiring k] {G : Type v} [Group G] [Fintype G] (A : Rep.{w} k G)
 
 /-- Given a representation `A` of a finite group `G`, `norm A` is the representation morphism
 `A ⟶ A` defined by `x ↦ ∑ A.ρ g x` for `g` in `G`. -/

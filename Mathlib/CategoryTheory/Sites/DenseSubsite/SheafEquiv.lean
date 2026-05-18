@@ -24,7 +24,7 @@ which is defined in the file `Mathlib/CategoryTheory/Sites/DenseSubsite/Basic.le
 
 -/
 
-@[expose] public section
+public section
 
 universe w v u w'
 

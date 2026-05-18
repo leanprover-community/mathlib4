@@ -24,7 +24,7 @@ class `TopologicalLattice` as a topological space and lattice `L` extending `Con
 topological, lattice
 -/
 
-@[expose] public section
+public section
 
 open Filter
 

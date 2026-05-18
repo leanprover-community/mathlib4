@@ -62,7 +62,7 @@ We build theory about these definitions here, so we remind the definitions.
 sequentially closed, sequentially compact, sequential space
 -/
 
-@[expose] public section
+public section
 
 
 open Bornology Filter Function Set TopologicalSpace Topology

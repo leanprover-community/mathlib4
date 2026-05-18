@@ -159,6 +159,14 @@ def ofIsColimitCokernelCofork (hg : S.g = 0) (c : CokernelCofork S.f) (hc : IsCo
     (hc : IsColimit c) : (ofIsColimitCokernelCofork S hg c hc).f' = S.f := by
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
+@[simp]
+lemma ofIsColimitCokernelCofork_liftK (hg : S.g = 0) (c : CokernelCofork S.f) (hc : IsColimit c)
+    {T : C} (φ : T ⟶ S.X₂) :
+    dsimp% (ofIsColimitCokernelCofork S hg c hc).liftK φ (by simp [hg]) = φ := by
+  rw [← cancel_mono (ofIsColimitCokernelCofork S hg c hc).i, liftK_i]
+  simp
+
 /-- When the second map `S.g` is zero, this is the left homology data on `S` given by
 the chosen `cokernel S.f` -/
 @[simps!]

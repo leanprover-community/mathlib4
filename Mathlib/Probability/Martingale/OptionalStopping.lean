@@ -53,7 +53,7 @@ theorem Submartingale.expected_stoppedValue_mono {E : Type*} [NormedAddCommGroup
       convert (hπ i).compl using 1
       ext x
       simp; rfl
-    rw [integral_finset_sum]
+    rw [integral_finsetSum]
     · refine Finset.sum_nonneg fun i _ => ?_
       rw [integral_indicator (𝒢.le _ _ (this _)), integral_sub', sub_nonneg]
       · exact hf.setIntegral_le (Nat.le_succ i) (this _)
@@ -144,9 +144,6 @@ theorem smul_le_stoppedValue_hittingBtwn [IsFiniteMeasure μ] (hsub : Submarting
   · exact h
   · exact ENNReal.mul_ne_top (by simp) (measure_ne_top _ _)
   · exact le_trans (mul_nonneg ε.coe_nonneg ENNReal.toReal_nonneg) h
-
-@[deprecated (since := "2025-10-25")] alias smul_le_stoppedValue_hitting :=
-  smul_le_stoppedValue_hittingBtwn
 
 set_option backward.isDefEq.respectTransparency false in
 /-- **Doob's maximal inequality**: Given a non-negative submartingale `f`, for all `ε : ℝ≥0`,

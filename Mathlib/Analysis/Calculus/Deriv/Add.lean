@@ -163,9 +163,6 @@ theorem deriv_const_add (c : F) : deriv (c + f ·) x = deriv f x := by
 theorem deriv_const_add' (c : F) : (deriv (c + f ·)) = deriv f :=
   funext fun _ ↦ deriv_const_add c
 
-@[deprecated (since := "2025-10-06")]
-alias differentiableAt_comp_const_add := differentiableAt_comp_add_left
-
 lemma differentiableAt_comp_add_const {a b : 𝕜} :
     DifferentiableAt 𝕜 (fun x ↦ f (x + b)) a ↔ DifferentiableAt 𝕜 f (a + b) := by
   grind [add_comm, differentiableAt_comp_add_left]

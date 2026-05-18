@@ -18,7 +18,7 @@ In this file we define flat ring homomorphisms and show their meta properties.
 
 @[expose] public section
 
-universe u v
+universe u₁ u₂ u v
 
 open TensorProduct
 
@@ -170,6 +170,30 @@ lemma tensorProductMap {f : A →ₐ[S] C} {g : B →ₐ[R] D} (hf : f.Flat) (hg
 
 end
 
+lemma comp_iff_of_bijective_left {f : R →+* S} {g : S →+* T} (hg : Function.Bijective g) :
+    (g.comp f).Flat ↔ f.Flat := by
+  refine ⟨fun hf ↦ ?_, fun hf ↦ .comp hf (.of_bijective hg)⟩
+  let e := RingEquiv.ofBijective g hg
+  have : f = e.symm.toRingHom.comp (e.toRingHom.comp f) := by ext; simp
+  rw [this]
+  exact .comp hf (.of_bijective e.symm.bijective)
+
+lemma comp_iff_of_bijective_right {f : R →+* S} {g : T →+* R} (hg : Function.Bijective g) :
+    (f.comp g).Flat ↔ f.Flat := by
+  refine ⟨fun hf ↦ ?_, fun hf ↦ .comp (.of_bijective hg) hf⟩
+  let e := RingEquiv.ofBijective g hg
+  have : f = (f.comp e.toRingHom).comp e.symm.toRingHom := by ext; simp
+  rw [this]
+  exact .comp (.of_bijective e.symm.bijective) hf
+
+@[simp]
+lemma ulift_iff {f : R →+* S} : (ulift.{u₁, u₂} f).Flat ↔ f.Flat := by
+  refine ⟨fun hf ↦ ?_, fun hf ↦ ?_⟩
+  · rwa [← comp_ulift_eq.{u₁, u₂} f, comp_iff_of_bijective_left (Equiv.bijective _),
+      comp_iff_of_bijective_right (Equiv.bijective _)]
+  · exact .comp (.comp (.of_bijective <| Equiv.bijective _) hf)
+      (.of_bijective <| Equiv.bijective _)
+
 end RingHom.Flat
 
 section
@@ -195,3 +219,54 @@ lemma CommRingCat.inl_injective_of_flat
     |>.injective.comp (Algebra.TensorProduct.includeLeft_injective (S := R) (A := S) hg)
 
 end
+
+open CategoryTheory
+
+namespace CommRingCat
+
+/-- The morphism property of flat ring maps. -/
+def flat : MorphismProperty CommRingCat.{u} :=
+  RingHom.toMorphismProperty fun f ↦ f.Flat
+
+@[simp]
+lemma flat_iff {R S : CommRingCat.{u}} (f : R ⟶ S) :
+    flat f ↔ f.hom.Flat := .rfl
+
+lemma flat_ofHom_iff {R S : Type u} [CommRing R] [CommRing S] (f : R →+* S) :
+    flat (ofHom f) ↔ f.Flat := .rfl
+
+instance : flat.IsStableUnderCobaseChange := by
+  rw [flat, RingHom.isStableUnderCobaseChange_toMorphismProperty_iff]
+  exact RingHom.Flat.isStableUnderBaseChange
+
+end CommRingCat
+
+open CategoryTheory Limits
+
+set_option backward.isDefEq.respectTransparency false in
+/-- If `S ⊗[R] S → S` is flat, then also `T ⊗[R] A → T ⊗[S] A` is flat. -/
+-- TODO: If necessary, generalize the universes here by composing with suitable `ULift`
+-- isomorphisms.
+lemma RingHom.Flat.mapOfCompatibleSMul {R S : Type u} (T A : Type u)
+    [CommRing R] [CommRing S] [CommRing T] [CommRing A] [Algebra R S]
+    [Algebra R T] [Algebra S T] [IsScalarTower R S T]
+    [Algebra R A] [Algebra S A] [IsScalarTower R S A]
+    (h : (Algebra.TensorProduct.lmul' (S := S) R).Flat) :
+    (Algebra.TensorProduct.mapOfCompatibleSMul S R T T A).Flat := by
+  rw [← CommRingCat.flat_ofHom_iff] at h ⊢
+  apply MorphismProperty.of_isPushout _ h
+  · exact CommRingCat.ofHom
+      (Algebra.TensorProduct.map (IsScalarTower.toAlgHom R S T)
+      (IsScalarTower.toAlgHom R S A)).toRingHom
+  · exact CommRingCat.ofHom
+      (RingHom.comp (Algebra.TensorProduct.includeLeft (S := R)).toRingHom (algebraMap S T))
+  · refine .of_iso
+      (isPushout_map_codiagonal (CommRingCat.ofHom <| algebraMap S T)
+        (CommRingCat.ofHom <| algebraMap S A) (CommRingCat.ofHom <| algebraMap R S))
+      ?_ ?_ (.refl _) ?_ ?_ ?_ ?_ ?_
+    · exact (CommRingCat.isPushout_tensorProduct R S S).isoPushout.symm
+    · exact pushout.congrHom (by simp [IsScalarTower.algebraMap_eq R S T])
+          (by simp [IsScalarTower.algebraMap_eq R S A]) ≪≫
+        (CommRingCat.isPushout_tensorProduct R T A).isoPushout.symm
+    · exact (CommRingCat.isPushout_tensorProduct S T A).isoPushout.symm
+    all_goals ext <;> simp

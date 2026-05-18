@@ -15,7 +15,7 @@ This file defines the `Star` structure on tensor products. This also
 defines the `StarAddMonoid` and `StarModule` instances for tensor products.
 -/
 
-@[expose] public section
+public section
 
 namespace TensorProduct
 variable {R A B : Type*}

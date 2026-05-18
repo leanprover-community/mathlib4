@@ -61,6 +61,8 @@ In particular, if `p` is not contained in `P^n`, then the ramification index is 
 
 If there is no largest such `n` (e.g. because `p = ⊥`), then `ramificationIdx` is
 defined to be 0.
+
+Note: This definition of ramification index will eventually be replaced by `Ideal.ramificationIdx'`.
 -/
 noncomputable def ramificationIdx : ℕ := sSup {n | map f p ≤ P ^ n}
 
@@ -368,7 +370,7 @@ theorem ramificationIdx_algebra_tower' [IsDedekindDomain S] [IsDedekindDomain T]
       ramificationIdx p P * ramificationIdx P Q := by
   obtain rfl | hp := eq_or_ne p ⊥
   · simp
-  have : P.IsPrime := Ideal.over_def Q P ▸ Ideal.IsPrime.under S Q
+  have : P.IsPrime := isPrime_of_liesOver Q P
   have : Module.IsTorsionFree R T := by
     refine Module.IsTorsionFree.of_smul_eq_zero fun r m h ↦ ?_
     rwa [algebra_compatible_smul S, smul_eq_zero, FaithfulSMul.algebraMap_eq_zero_iff] at h

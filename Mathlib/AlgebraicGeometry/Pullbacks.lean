@@ -773,17 +773,11 @@ lemma isPullback_SpecMap_of_isPushout {A B C P : CommRingCat} (f : A ⟶ B) (g :
     IsPullback (Spec.map inl) (Spec.map inr) (Spec.map f) (Spec.map g) :=
   IsPullback.map Scheme.Spec h.op.flip
 
-@[deprecated (since := "2025-10-07")]
-alias isPullback_Spec_map_isPushout := isPullback_SpecMap_of_isPushout
-
 lemma isPullback_SpecMap_pushout {A B C : CommRingCat} (f : A ⟶ B) (g : A ⟶ C) :
     IsPullback (Spec.map (pushout.inl f g))
       (Spec.map (pushout.inr f g)) (Spec.map f) (Spec.map g) := by
   apply isPullback_SpecMap_of_isPushout
   exact IsPushout.of_hasPushout f g
-
-@[deprecated (since := "2025-10-07")]
-alias isPullback_Spec_map_pushout := isPullback_SpecMap_pushout
 
 lemma diagonal_SpecMap :
     pullback.diagonal (Spec.map (CommRingCat.ofHom (algebraMap R S))) =
@@ -793,8 +787,6 @@ lemma diagonal_SpecMap :
     AlgHom.toRingHom_eq_coe, Category.assoc, pullbackSpecIso_inv_fst, pullbackSpecIso_inv_snd]
   · congr 1; ext x; change x = Algebra.TensorProduct.lmul' R (S := S) (x ⊗ₜ[R] 1); simp
   · congr 1; ext x; change x = Algebra.TensorProduct.lmul' R (S := S) (1 ⊗ₜ[R] x); simp
-
-@[deprecated (since := "2025-10-07")] alias diagonal_Spec_map := diagonal_SpecMap
 
 end Spec
 

@@ -43,7 +43,7 @@ the literature while the compact coherentification is often called the k-ificati
 * <https://en.wikipedia.org/wiki/Compactly_generated_space>
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 

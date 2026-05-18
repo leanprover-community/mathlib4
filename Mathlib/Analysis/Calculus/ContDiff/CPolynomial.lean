@@ -19,7 +19,7 @@ public section
 
 open Filter Asymptotics
 
-open scoped ENNReal
+open scoped ENNReal ContDiff
 
 universe u v
 
@@ -33,7 +33,7 @@ variable {p : FormalMultilinearSeries 𝕜 E F} {r : ℝ≥0∞} {n : ℕ}
 variable {f : E → F} {x : E} {s : Set E}
 
 /-- A polynomial function is infinitely differentiable. -/
-theorem CPolynomialOn.contDiffOn (h : CPolynomialOn 𝕜 f s) {n : WithTop ℕ∞} :
+theorem CPolynomialOn.contDiffOn (h : CPolynomialOn 𝕜 f s) {n : ℕ∞ω} :
     ContDiffOn 𝕜 n f s := by
   let t := { x | CPolynomialAt 𝕜 f x }
   suffices ContDiffOn 𝕜 n f t from this.mono h
@@ -43,7 +43,7 @@ theorem CPolynomialOn.contDiffOn (h : CPolynomialOn 𝕜 f s) {n : WithTop ℕ�
   have H : CPolynomialOn 𝕜 f t := fun _x hx ↦ hx
   exact H.analyticOnNhd
 
-theorem CPolynomialAt.contDiffAt (h : CPolynomialAt 𝕜 f x) {n : WithTop ℕ∞} :
+theorem CPolynomialAt.contDiffAt (h : CPolynomialAt 𝕜 f x) {n : ℕ∞ω} :
     ContDiffAt 𝕜 n f x :=
   let ⟨_, hs, hf⟩ := h.exists_mem_nhds_cpolynomialOn
   hf.contDiffOn.contDiffAt hs
@@ -53,7 +53,7 @@ end fderiv
 namespace ContinuousMultilinearMap
 
 variable {ι : Type*} {E : ι → Type*} [∀ i, NormedAddCommGroup (E i)] [∀ i, NormedSpace 𝕜 (E i)]
-  [Fintype ι] (f : ContinuousMultilinearMap 𝕜 E F) {n : WithTop ℕ∞} {x : Π i, E i}
+  [Fintype ι] (f : ContinuousMultilinearMap 𝕜 E F) {n : ℕ∞ω} {x : Π i, E i}
 
 open FormalMultilinearSeries
 

@@ -139,7 +139,6 @@ theorem final_of_adjunction {L : C ⥤ D} {R : D ⥤ C} (adj : L ⊣ R) : Final 
             (show Zag u g from
               Or.inl ⟨StructuredArrow.homMk ((adj.homEquiv c g.right).symm g.hom) (by simp [u])⟩)) }
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If a functor `L : C ⥤ D` is a left adjoint, it is initial. -/
 theorem initial_of_adjunction {L : C ⥤ D} {R : D ⥤ C} (adj : L ⊣ R) : Initial L :=
   { out := fun d =>
@@ -329,9 +328,8 @@ instance (priority := 100) compCreatesColimit {B : Type u₄} [Category.{v₄} B
     exact (Cocone.whiskering F).mapIso i ≪≫ ((coconesEquiv F (G ⋙ H)).unitIso.app _).symm
 
 instance colimit_pre_isIso [HasColimit G] : IsIso (colimit.pre G F) := by
-  rw [colimit.pre_eq (colimitCoconeComp F (getColimitCocone G)) (getColimitCocone G)]
-  erw [IsColimit.desc_self]
-  dsimp
+  simp only [colimit.pre_eq (colimitCoconeComp F (getColimitCocone G)) (getColimitCocone G),
+    colimitCoconeComp_cocone, IsColimit.desc_self]
   infer_instance
 
 section
@@ -685,8 +683,8 @@ instance (priority := 100) compCreatesLimit {B : Type u₄} [Category.{v₄} B] 
 
 instance limit_pre_isIso [HasLimit G] : IsIso (limit.pre G F) := by
   rw [limit.pre_eq (limitConeComp F (getLimitCone G)) (getLimitCone G)]
-  erw [IsLimit.lift_self]
-  dsimp
+  simp only [limitConeComp_cone, Cone.whisker_pt, limitConeComp_isLimit, IsLimit.lift_self,
+    Category.id_comp, isIso_comp_left_iff]
   infer_instance
 
 section

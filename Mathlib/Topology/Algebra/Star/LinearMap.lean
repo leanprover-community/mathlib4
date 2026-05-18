@@ -23,7 +23,7 @@ Because there is a global `star` instance on `H →L[𝕜] H` (defined as the li
 Hilbert spaces), which is mathematically distinct from this `star`, we provide
 this instance on `WithConv (E →L[R] F)`. -/
 
-@[expose] public section
+public section
 
 namespace ContinuousLinearMap
 variable {R E F : Type*} [Semiring R] [InvolutiveStar R]

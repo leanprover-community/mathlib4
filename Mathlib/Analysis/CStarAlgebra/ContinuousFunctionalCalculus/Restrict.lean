@@ -132,18 +132,10 @@ protected theorem cfc (f : C(S, R)) (halg : IsClosedEmbedding (algebraMap R S)) 
       exact ((h a).mp ha).2.starAlgHom_injective (cfcHom_injective ((h a).mp ha).1) halg.injective
     case hom_id => exact ((h a).mp ha).2.starAlgHom_id <| cfcHom_id ((h a).mp ha).1
     case hom_map_spectrum =>
-      intro g
-      rw [SpectrumRestricts.starAlgHom_apply]
-      simp only [← @spectrum.preimage_algebraMap (R := R) S, cfcHom_map_spectrum]
-      ext x
-      simp only [Set.mem_preimage, Set.mem_range, ContinuousMap.comp_apply]
-      constructor
-      · rintro ⟨y, hy⟩
-        exact ⟨((h a).mp ha).2.homeomorph y, halg.injective hy⟩
-      · rintro ⟨y, rfl⟩
-        refine ⟨((h a).mp ha).2.homeomorph.symm y, ?_⟩
-        exact
-          congrArg (fun z => algebraMap R S (g z)) (((h a).mp ha).2.homeomorph.apply_symm_apply y)
+      simp only [SpectrumRestricts.starAlgHom_apply, ← @spectrum.preimage_algebraMap (R := R) S,
+        cfcHom_map_spectrum, Set.ext_iff, Set.mem_preimage, Set.mem_range, ContinuousMap.comp_apply,
+        ContinuousMap.coe_mk, StarAlgHom.ofId_apply, halg.injective.eq_iff]
+      exact fun _ _ ↦ ((h a).mp ha).2.homeomorph.exists_congr fun _ ↦ Iff.rfl
     case predicate_hom =>
       intro g
       rw [h]
@@ -273,7 +265,6 @@ lemma continuous_nonUnitalStarAlgHom {a : A} {φ : C(σₙ S a, S)₀ →⋆ₙ�
     Continuous (h.nonUnitalStarAlgHom φ) :=
   hφ.comp <| (continuous_postcomp _).comp (continuous_precomp _)
 
-set_option backward.isDefEq.respectTransparency false in
 variable [CompleteSpace R] in
 lemma isClosedEmbedding_nonUnitalStarAlgHom {a : A} {φ : C(σₙ S a, S)₀ →⋆ₙₐ[S] A}
     (hφ : IsClosedEmbedding φ) {f : C(S, R)} (h : QuasispectrumRestricts a f)
@@ -305,18 +296,10 @@ protected theorem cfc (f : C(S, R)) (halg : IsClosedEmbedding (algebraMap R S)) 
     case hom_injective => exact nonUnitalStarAlgHom_injective (cfcₙHom_injective _) _ halg.injective
     case hom_id => exact ((h a).mp ha).2.nonUnitalStarAlgHom_id <| cfcₙHom_id ((h a).mp ha).1
     case hom_map_spectrum =>
-      intro g
-      rw [nonUnitalStarAlgHom_apply]
-      simp only [← @quasispectrum.preimage_algebraMap (R := R) S, cfcₙHom_map_quasispectrum]
-      ext x
-      simp only [Set.mem_preimage, Set.mem_range]
-      constructor
-      · rintro ⟨y, hy⟩
-        exact ⟨((h a).mp ha).2.homeomorph y, halg.injective hy⟩
-      · rintro ⟨y, rfl⟩
-        refine ⟨((h a).mp ha).2.homeomorph.symm y, ?_⟩
-        exact
-          congrArg (fun z => algebraMap R S (g z)) (((h a).mp ha).2.homeomorph.apply_symm_apply y)
+      simp only [nonUnitalStarAlgHom_apply, ← @quasispectrum.preimage_algebraMap (R := R) S,
+        cfcₙHom_map_quasispectrum, Set.ext_iff, Set.mem_preimage, Set.mem_range, comp_apply, coe_mk,
+        ContinuousMap.coe_mk, StarAlgHom.ofId_apply, halg.injective.eq_iff]
+      exact fun _ _ ↦ ((h a).mp ha).2.homeomorph.exists_congr fun b ↦ Iff.rfl
     case predicate_hom =>
       intro g
       rw [h]

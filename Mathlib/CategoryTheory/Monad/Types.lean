@@ -35,9 +35,9 @@ variable (m : Type u → Type u) [_root_.Monad m] [LawfulMonad m]
 @[simps! obj map η_app μ_app]
 def ofTypeMonad : Monad (Type u) where
   toFunctor := ofTypeFunctor m
-  η := ⟨fun X ↦ TypeCat.ofHom (@pure m _ X), fun _ _ f => by
+  η := ⟨fun X ↦ ↾(@pure m _ X), fun _ _ f => by
     ext x; exact (LawfulApplicative.map_pure f x).symm⟩
-  μ := ⟨fun X ↦ TypeCat.ofHom (@joinM m _ X), fun _ _ _ => by ext _; exact joinM_map_map _ _⟩
+  μ := ⟨fun X ↦ ↾(@joinM m _ X), fun _ _ _ => by ext _; exact joinM_map_map _ _⟩
   assoc _ := by ext; exact joinM_map_joinM _
   left_unit _ := by ext; exact joinM_pure _
   right_unit _ := by ext; exact joinM_map_pure _
@@ -47,10 +47,10 @@ set_option backward.isDefEq.respectTransparency false in
 category-theoretic version, provided the monad is lawful.
 -/
 @[simps]
-def eq : KleisliCat m ≌ Kleisli (ofTypeMonad m) where
+def kleisliCatEquivKleisli : KleisliCat m ≌ Kleisli (ofTypeMonad m) where
   functor :=
     { obj X := Kleisli.mk _ X
-      map f := ⟨TypeCat.ofHom f⟩
+      map f := ⟨↾f⟩
       map_id := fun _ => rfl
       map_comp := fun f g => by
         ext
@@ -70,6 +70,8 @@ def eq : KleisliCat m ≌ Kleisli (ofTypeMonad m) where
     change f >=> pure = pure >=> f
     simp [functor_norm]
   counitIso := NatIso.ofComponents fun X => Iso.refl X
+
+@[deprecated (since := "2026-04-16")] alias eq := kleisliCatEquivKleisli
 
 end
 

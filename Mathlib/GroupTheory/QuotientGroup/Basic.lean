@@ -84,11 +84,6 @@ def kerLift : G ⧸ ker φ →* H :=
 theorem kerLift_mk (g : G) : (kerLift φ) g = φ g :=
   rfl
 
-@[deprecated (since := "2025-10-28")]
-alias _root_.QuotientAddGroup.kerLift_mk' := _root_.QuotientAddGroup.kerLift_mk
-@[to_additive existing, deprecated (since := "2025-10-28")]
-alias kerLift_mk' := kerLift_mk
-
 @[to_additive]
 theorem kerLift_injective : Injective (kerLift φ) := fun a b =>
   Quotient.inductionOn₂' a b fun a b (h : φ a = φ b) =>

@@ -297,18 +297,19 @@ theorem Multipliable.comp_injective {i : γ → β} (hf : Multipliable f) (hi : 
     (hf.mulIndicator (Set.range i))
 
 @[to_additive]
-theorem Multipliable.subtype (hf : Multipliable f) (s : Set β) : Multipliable (f ∘ (↑) : s → α) :=
+theorem Multipliable.subtype (hf : Multipliable f) (p : β → Prop) :
+    Multipliable (f ∘ (↑) : Subtype p → α) :=
   hf.comp_injective Subtype.coe_injective
 
 @[to_additive]
 theorem multipliable_subtype_and_compl {s : Set β} :
     ((Multipliable fun x : s ↦ f x) ∧ Multipliable fun x : ↑sᶜ ↦ f x) ↔ Multipliable f :=
-  ⟨and_imp.2 Multipliable.mul_compl, fun h ↦ ⟨h.subtype s, h.subtype sᶜ⟩⟩
+  ⟨and_imp.2 Multipliable.mul_compl, fun h ↦ ⟨h.subtype (· ∈ s), h.subtype (· ∈ sᶜ)⟩⟩
 
 @[to_additive]
 protected theorem Multipliable.tprod_subtype_mul_tprod_subtype_compl [T2Space α] {f : β → α}
     (hf : Multipliable f) (s : Set β) : (∏' x : s, f x) * ∏' x : ↑sᶜ, f x = ∏' x, f x :=
-  ((hf.subtype s).hasProd.mul_compl (hf.subtype { x | x ∉ s }).hasProd).unique hf.hasProd
+  ((hf.subtype _).hasProd.mul_compl (hf.subtype _).hasProd).unique hf.hasProd
 
 @[to_additive]
 protected theorem Multipliable.prod_mul_tprod_subtype_compl [T2Space α] {f : β → α}
@@ -352,8 +353,8 @@ theorem tendsto_tprod_compl_atTop_one (f : α → G) :
   by_cases H : Multipliable f
   · intro e he
     obtain ⟨s, hs⟩ := H.tprod_vanishing he
-    rw [Filter.mem_map, mem_atTop_sets]
-    exact ⟨s, fun t hts ↦ hs _ <| Set.disjoint_left.mpr fun a ha has ↦ ha (hts has)⟩
+    simp only [Filter.mem_map, mem_atTop_sets, Set.mem_preimage]
+    exact ⟨s, fun t hts ↦ hs tᶜ <| Set.disjoint_left.mpr fun a ha has ↦ ha (hts has)⟩
   · refine tendsto_const_nhds.congr fun _ ↦ (tprod_eq_one_of_not_multipliable ?_).symm
     rwa [Finset.multipliable_compl_iff]
 

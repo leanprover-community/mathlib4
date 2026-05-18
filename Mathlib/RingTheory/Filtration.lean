@@ -317,7 +317,7 @@ theorem submodule_eq_span_le_iff_stable_ge (n₀ : ℕ) :
       (Set.subset_iUnion₂ (s := fun i _ => (single R i '' (N F i : Set M))) i hi).trans
         Submodule.subset_span
     induction i with
-    | zero => exact this _ (zero_le _)
+    | zero => exact this _ zero_le
     | succ j hj => ?_
     by_cases hj' : j.succ ≤ n₀
     · exact this _ hj'

@@ -20,7 +20,7 @@ Some lemmas can be generalized using `OrderedGroup`, `CanonicallyOrderedMul` or 
 and subsequently be moved upstream to `Order.Interval.Finset`.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Ring
 

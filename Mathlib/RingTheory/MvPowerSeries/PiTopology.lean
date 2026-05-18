@@ -28,7 +28,7 @@ When `R` has `UniformSpace R`, we define the corresponding uniform structure.
 This topology can be included by writing `open scoped MvPowerSeries.WithPiTopology`.
 
 When the type of coefficients has the discrete topology, it corresponds to the topology defined by
-[N. Bourbaki, *Algebra {II}*, Chapter 4, §4, n°2][bourbaki1981].
+[N. Bourbaki, *Algebra II*, Chapter 4, §4, n°2][bourbaki1981].
 
 It is *not* the adic topology in general.
 
@@ -78,7 +78,7 @@ But future contributors wishing to clean this up should feel free to give it a t
 
 -/
 
-@[expose] public section
+public section
 
 namespace MvPowerSeries
 
@@ -149,8 +149,7 @@ theorem tendsto_trunc_atTop [DecidableEq σ] [CommSemiring R] [Nonempty σ] (f :
   intro n hn
   rw [MvPolynomial.coeff_coe, coeff_trunc, if_pos]
   apply lt_of_lt_of_le _ hn
-  simp only [lt_add_iff_pos_right, Finsupp.lt_def]
-  refine ⟨zero_le _, ⟨s, by simp⟩⟩
+  simpa [Finsupp.lt_def] using ⟨s, by simp⟩
 
 /-- The inclusion of polynomials into power series has dense image -/
 theorem denseRange_toMvPowerSeries [CommSemiring R] :
@@ -167,7 +166,7 @@ theorem instIsTopologicalSemiring [Semiring R] [IsTopologicalSemiring R] :
   continuous_add := continuous_pi fun d => continuous_add.comp
     (((continuous_coeff R d).fst').prodMk (continuous_coeff R d).snd')
   continuous_mul := continuous_pi fun _ =>
-    continuous_finset_sum _ fun i _ => continuous_mul.comp
+    continuous_finsetSum _ fun i _ => continuous_mul.comp
       ((continuous_coeff R i.fst).fst'.prodMk (continuous_coeff R i.snd).snd')
 
 /-- The ring topology on `MvPowerSeries` of a topological ring -/
@@ -227,7 +226,7 @@ theorem isTopologicallyNilpotent_of_constantCoeff_zero [CommSemiring R]
 
 /-- Assuming the base ring has a discrete topology, the powers of a `MvPowerSeries` converge to 0
 iff its constant coefficient is nilpotent.
-[N. Bourbaki, *Algebra {II}*, Chapter 4, §4, n°2, corollary of prop. 3][bourbaki1981]
+[N. Bourbaki, *Algebra II*, Chapter 4, §4, n°2, corollary of prop. 3][bourbaki1981]
 
 See also `MvPowerSeries.LinearTopology.isTopologicallyNilpotent_iff_constantCoeff`. -/
 theorem isTopologicallyNilpotent_iff_constantCoeff_isNilpotent
