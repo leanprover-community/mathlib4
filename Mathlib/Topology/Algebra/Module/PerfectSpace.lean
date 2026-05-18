@@ -20,7 +20,7 @@ variable (𝕜 E : Type*) [NontriviallyNormedField 𝕜] [AddCommGroup E] [Modul
 
 include 𝕜 in
 lemma perfectSpace_of_module : PerfectSpace E := by
-  refine ⟨fun x hx ↦ ?_⟩
+  intro x
   let ⟨r, hr₀, hr⟩ := NormedField.exists_norm_lt_one 𝕜
   obtain ⟨c, hc⟩ : ∃ (c : E), c ≠ 0 := exists_ne 0
   have A : Tendsto (fun (n : ℕ) ↦ x + r ^ n • c) atTop (𝓝 (x + (0 : 𝕜) • c)) := by
