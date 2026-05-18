@@ -66,12 +66,12 @@ variable
 
 -- move this
 variable {M : Type*} [TopologicalSpace M] [ChartedSpace H M] [IsManifold I 1 M] in
-lemma injective_eval_vectorField (V : Type*) [AddCommGroup V] [Module ℝ V] [TopologicalSpace V]
+lemma injective_eval_mdifferentiableAt_vectorField (V : Type*) [AddCommGroup V] [Module ℝ V] [TopologicalSpace V]
     (x : M) :
     Function.Injective
       (fun A : TangentSpace I x →L[ℝ] V ↦
         fun (Z : Π x, TangentSpace I x) (_ : MDiffAt (T% Z) x) ↦ A (Z x)) :=
-  VectorBundle.injective_eval_sec ..
+  VectorBundle.injective_eval_mdifferentiableAt_sec ..
 
 variable {M : Type*} [EMetricSpace M] [ChartedSpace H M] [IsManifold I 2 M]
 
@@ -95,14 +95,15 @@ lemma VectorBundle.completeSpace (R : Type*) [NontriviallyNormedField R]
   let e := VectorBundle.continuousLinearEquivAt R F E b
   rwa [completeSpace_congr (e := e.toEquiv) e.isUniformEmbedding]
 
--- move this, also perhaps generalize to general Riemannian vector bundles
-lemma injective_inner_vectorField [CompleteSpace E] (x : M) :
+-- move this, also perhaps generalize to general Riemannian vector bundles,
+-- and write a variant for `CMDiffAt n`
+lemma injective_inner_mdifferentiableAt_vectorField [CompleteSpace E] (x : M) :
     Function.Injective
       (fun X₀ : TangentSpace I x ↦
         fun (Z : Π x, TangentSpace I x) (_ : MDiffAt (T% Z) x) ↦ (⟪X₀, Z x⟫)) := by
   have := VectorBundle.completeSpace ℝ (TangentSpace I (M := M)) E
   set Φ := InnerProductSpace.toDual ℝ (TangentSpace I x)
-  exact (injective_eval_vectorField I ℝ x).comp Φ.injective
+  exact (injective_eval_mdifferentiableAt_vectorField I ℝ x).comp Φ.injective
 
 -- Let `cov` and `cov'` be covariant derivatives on `TM`.
 variable (cov cov' : CovariantDerivative I E (TangentSpace I : M → Type _))
@@ -181,7 +182,7 @@ public theorem IsLeviCivitaConnection.uniqueness [FiniteDimensional ℝ E]
     (hcov : cov.IsLeviCivitaConnection) (hcov' : cov'.IsLeviCivitaConnection)
     (hX : MDiffAt (T% X) x) (hY : MDiffAt (T% Y) x) :
     ∇ X Y x = ∇' X Y x := by
-  apply injective_inner_vectorField; ext Z hZ
+  apply injective_inner_mdifferentiableAt_vectorField; ext Z hZ
   exact (hcov.apply_eq I hX hY hZ).trans <| hcov'.apply_eq I hX hY hZ |>.symm
 
 end uniqueness
@@ -272,16 +273,16 @@ set_option backward.isDefEq.respectTransparency false in
 lemma isCovariantDerivativeOn_lcAux [FiniteDimensional ℝ E] :
     IsCovariantDerivativeOn E (lcAux I (M := M)) where
   add {Y Y'} x hY hY' _ := by
-    apply injective_eval_vectorField; ext X hX
-    apply injective_inner_vectorField; ext Z hZ
+    apply injective_eval_mdifferentiableAt_vectorField; ext X hX
+    apply injective_inner_mdifferentiableAt_vectorField; ext Z hZ
     simp (disch := fun_prop) [lcAux, dif_pos, TensorialAt.mkHom₂_apply, lcAux₁,
       leviCivitaAux, mvfderiv_fun_add,
       mlieBracket_add_left, mlieBracket_add_right,
       inner_add_left, inner_add_right]
     ring
   leibniz {Y f x} hY hf _ := by
-    apply injective_eval_vectorField; ext X hX
-    apply injective_inner_vectorField; ext Z hZ
+    apply injective_eval_mdifferentiableAt_vectorField; ext X hX
+    apply injective_inner_mdifferentiableAt_vectorField; ext Z hZ
     simp (disch := fun_prop) [lcAux, dif_pos, lcAux₁, TensorialAt.mkHom₂_apply,
       leviCivitaAux, mvfderiv_fun_mul,
       mlieBracket_smul_left, mlieBracket_smul_right,
@@ -337,7 +338,7 @@ public lemma leviCivitaConnection_torsion_eq_zero [FiniteDimensional ℝ E] :
     (leviCivitaConnection I M).torsion = 0 := by
   rw [CovariantDerivative.torsion_eq_zero_iff]
   intro X Y x hX hY
-  apply injective_inner_vectorField; ext Z hZ
+  apply injective_inner_mdifferentiableAt_vectorField; ext Z hZ
   simp (disch := fun_prop) [leviCivitaConnection_apply I,
     mlieBracket_swap (V := Y) (W := X), mlieBracket_swap (V := Z) (W := X),
     mlieBracket_swap (V := Z) (W := Y),

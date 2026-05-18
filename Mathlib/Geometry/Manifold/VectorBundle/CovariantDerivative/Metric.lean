@@ -178,9 +178,9 @@ public lemma isCompatible_iff [FiniteDimensional ℝ F] :
       d% ⟪σ, τ⟫ x (X x) = ⟪∇ X σ, τ⟫ x + ⟪σ, ∇ X τ⟫ x := by
   refine ⟨fun hcov x X σ τ hX ↦ hcov.mvfderiv_inner_eq X, fun h ↦ ?_⟩
   ext1 x
-  apply VectorBundle.injective_eval_sec I F; ext1 σ; ext1 hσ
-  apply VectorBundle.injective_eval_sec I F; ext1 τ; ext1 hτ
-  apply VectorBundle.injective_eval_sec I E (TangentSpace I); ext X hX
+  apply VectorBundle.injective_eval_mdifferentiableAt_sec I F; ext1 σ; ext1 hσ
+  apply VectorBundle.injective_eval_mdifferentiableAt_sec I F; ext1 τ; ext1 hτ
+  apply VectorBundle.injective_eval_mdifferentiableAt_sec I E (TangentSpace I); ext X hX
   simp (disch := assumption) [compatibilityTensor_apply]
   linear_combination h hX hσ hτ
 
