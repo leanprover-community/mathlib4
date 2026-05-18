@@ -876,8 +876,7 @@ variable (𝕜) in
 protected theorem Filter.EventuallyEq.iteratedFDeriv
     {f₁ f₂ : E → F} {x : E} (h : f₁ =ᶠ[𝓝 x] f₂) (n : ℕ) :
     iteratedFDeriv 𝕜 n f₁ =ᶠ[𝓝 x] iteratedFDeriv 𝕜 n f₂ := by
-  simp_all [← nhdsWithin_univ, ← iteratedFDerivWithin_univ,
-    Filter.EventuallyEq.iteratedFDerivWithin]
+  simp_all [← nhdsWithin_univ, ← iteratedFDerivWithin_univ, EventuallyEq.iteratedFDerivWithin]
 
 variable (𝕜) in
 /-- If two functions agree in a neighborhood, then so do their Taylor series. -/
@@ -885,7 +884,7 @@ protected theorem Filter.EventuallyEq.ftaylorSeries (h : f₁ =ᶠ[𝓝 x] f) :
     ftaylorSeries 𝕜 f₁ =ᶠ[𝓝 x] ftaylorSeries 𝕜 f := by
   filter_upwards [eventually_eventuallyEq_nhds.2 h] with e₁ he₁
   ext n : 1
-  exact (Filter.EventuallyEq.iteratedFDeriv 𝕜 he₁ n).eq_of_nhds
+  exact (he₁.iteratedFDeriv 𝕜 n).eq_of_nhds
 
 theorem HasFTaylorSeriesUpTo.eq_iteratedFDeriv
     (h : HasFTaylorSeriesUpTo n f p) {m : ℕ} (hmn : m ≤ n) (x : E) :

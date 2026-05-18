@@ -1,10 +1,54 @@
 import Mathlib.Tactic.ToFun
 import Mathlib.Analysis.Normed.Ring.Basic
 
+set_option pp.unicode.fun true
+
+variable {R : Type*}
+
+@[to_fun baz]
+lemma Foo.bar (f g : ℝ → ℝ) : f * g = g * f := mul_comm f g
+/-- info: Foo.baz (f g : ℝ → ℝ) : (fun i ↦ f i * g i) = fun i ↦ g i * f i -/
+#guard_msgs in #check Foo.baz
+
+@[to_fun baz']
+lemma _root_.Foo.bar' (f g : ℝ → ℝ) : f * g = g * f := mul_comm f g
+/-- info: Foo.baz' (f g : ℝ → ℝ) : (fun i ↦ f i * g i) = fun i ↦ g i * f i -/
+#guard_msgs in #check Foo.baz'
+
+namespace Test
+
+@[to_fun baz]
+lemma Foo.bar (f g : ℝ → ℝ) : f * g = g * f := mul_comm f g
+/-- info: Test.Foo.baz (f g : ℝ → ℝ) : (fun i ↦ f i * g i) = fun i ↦ g i * f i -/
+#guard_msgs in #check Test.Foo.baz
+
+@[to_fun baz'']
+lemma _root_.Foo.bar'' (f g : ℝ → ℝ) : f * g = g * f := mul_comm f g
+/-- info: Foo.baz'' (f g : ℝ → ℝ) : (fun i ↦ f i * g i) = fun i ↦ g i * f i -/
+#guard_msgs in #check Foo.baz''
+
+end Test
+
+@[to_fun Bars.baz]
+lemma Foo.Bar.baz (f g : ℝ → ℝ) : f * g = g * f := mul_comm f g
+/-- info: Foo.Bars.baz (f g : ℝ → ℝ) : (fun i ↦ f i * g i) = fun i ↦ g i * f i -/
+#guard_msgs in #check Foo.Bars.baz
+
+@[to_fun Baz.Bars.baz]
+lemma Foo.Bar.baz' (f g : ℝ → ℝ) : f * g = g * f := mul_comm f g
+/-- info: Baz.Bars.baz (f g : ℝ → ℝ) : (fun i ↦ f i * g i) = fun i ↦ g i * f i -/
+#guard_msgs in #check Baz.Bars.baz
+
+-- Specifying more components than the original lemma is fine.
+@[to_fun Bar.Bars.Bazzz.baz]
+lemma Foo.Bar.baz'' (f g : ℝ → ℝ) : f * g = g * f := mul_comm f g
+/-- info: Bar.Bars.Bazzz.baz (f g : ℝ → ℝ) : (fun i ↦ f i * g i) = fun i ↦ g i * f i -/
+#guard_msgs in #check Bar.Bars.Bazzz.baz
+
 @[to_fun]
 theorem Function.mul_comm (f g : ℝ → ℝ) : f * g = g * f := _root_.mul_comm f g
 
-/-- info: Function.fun_mul_comm (f g : ℝ → ℝ) : (fun i => f i * g i) = fun i => g i * f i -/
+/-- info: Function.fun_mul_comm (f g : ℝ → ℝ) : (fun i ↦ f i * g i) = fun i ↦ g i * f i -/
 #guard_msgs in
 #check Function.fun_mul_comm
 
@@ -35,6 +79,6 @@ lemma Pi.mul_def' {ι : Type*} {M : ι → Type*} [∀ i, Mul (M i)] (f g : ∀ 
 @[to_fun]
 theorem Function.mul_comm' (f g : ℝ → ℝ) : f * g = g * f := _root_.mul_comm f g
 
-/-- info: Function.fun_mul_comm' (f g : ℝ → ℝ) : (fun i => f i * g i) = fun i => g i * f i -/
+/-- info: Function.fun_mul_comm' (f g : ℝ → ℝ) : (fun i ↦ f i * g i) = fun i ↦ g i * f i -/
 #guard_msgs in
 #check Function.fun_mul_comm'
