@@ -33,18 +33,6 @@ lemma count_finRange {n : ℕ} (a : Fin n) : count a (finRange n) = 1 := by
 @[simp] theorem idxOf_finRange {k : ℕ} (i : Fin k) : (finRange k).idxOf i = i := by
   simpa using (nodup_finRange k).idxOf_getElem i
 
-@[deprecated finRange_eq_nil_iff (since := "2025-11-04")]
-alias finRange_eq_nil := finRange_eq_nil_iff
-
-@[deprecated (since := "2025-11-04")]
-alias finRange_map_get := map_get_finRange
-
-@[deprecated (since := "2025-11-04")]
-alias finRange_map_getElem := map_getElem_finRange
-
-@[deprecated (since := "2025-11-04")]
-alias map_coe_finRange := map_coe_finRange_eq_range
-
 theorem ofFn_eq_pmap {n} {f : Fin n → α} :
     ofFn f = pmap (fun i hi => f ⟨i, hi⟩) (range n) fun _ => mem_range.1 := by
   ext
