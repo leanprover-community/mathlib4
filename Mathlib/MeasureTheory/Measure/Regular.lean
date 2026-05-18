@@ -799,11 +799,11 @@ instance {ι : Type*} {μ : ι → Measure α} [∀ i, InnerRegular (μ i)] :
     simp only [hs, Measure.sum_apply]
     exact ENNReal.summable.hasSum
   obtain ⟨a, ha⟩ : ∃ (a : Finset ι), r < (∑ i ∈ a, μ i) s := by
-    simp only [coe_finset_sum, Finset.sum_apply]
+    simp only [coe_finsetSum, Finset.sum_apply]
     exact ((tendsto_order.1 this).1 r hr).exists
   rcases MeasurableSet.exists_lt_isCompact hs ha with ⟨K, Ks, hK, h'K⟩
   refine ⟨K, Ks, hK, h'K.trans_le ?_⟩
-  simp only [coe_finset_sum, Finset.sum_apply]
+  simp only [coe_finsetSum, Finset.sum_apply]
   exact (ENNReal.sum_le_tsum _).trans (le_sum_apply _ _)
 
 end InnerRegular

@@ -15,7 +15,7 @@ import Mathlib.Probability.Distributions.Gaussian.Fernique
 
 In this file we prove basic properties of Gaussian random variables.
 
-# Implementation note
+## Implementation note
 
 Many lemmas are duplicated with an expanded form of some function. For instance there is
 `HasGaussianLaw.add` and `HasGaussianLaw.fun_add`. The reason is that if someone wants for instance
@@ -54,7 +54,7 @@ variable {mE} in
 lemma IsGaussian.hasGaussianLaw_id {μ : Measure E} [IsGaussian μ] : HasGaussianLaw id μ where
   isGaussian_map := by rwa [Measure.map_id]
 
-@[fun_prop, measurability]
+@[fun_prop]
 lemma HasGaussianLaw.aemeasurable (hX : HasGaussianLaw X P) : AEMeasurable X P :=
   AEMeasurable.of_map_ne_zero hX.isGaussian_map.toIsProbabilityMeasure.ne_zero
 

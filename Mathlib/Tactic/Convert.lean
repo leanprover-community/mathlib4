@@ -88,7 +88,7 @@ With `depth = some n`, calls `MVarId.congrN! n` instead, with `n` as the max rec
 -/
 def Lean.MVarId.convert (e : Expr) (symm : Bool)
     (depth : Option Nat := none) (config : Congr!.Config := {})
-    (patterns : List (TSyntax `rcasesPat) := []) (g : MVarId) :
+    (patterns : List (TSyntax `rintroPat) := []) (g : MVarId) :
     MetaM (List MVarId) := g.withContext do
   let src ← inferType e
   let tgt ← g.getType
@@ -109,7 +109,7 @@ With `depth = some n`, calls `MVarId.congrN! n` instead, with `n` as the max rec
 -/
 def Lean.MVarId.convertLocalDecl (g : MVarId) (fvarId : FVarId) (typeNew : Expr) (symm : Bool)
     (depth : Option Nat := none) (config : Congr!.Config := {})
-    (patterns : List (TSyntax `rcasesPat) := []) :
+    (patterns : List (TSyntax `rintroPat) := []) :
     MetaM (MVarId × List MVarId) := g.withContext do
   let typeOld ← fvarId.getType
   let v ← mkFreshExprMVar (← mkAppM ``Eq
@@ -193,7 +193,7 @@ elab_rules : tactic
 | `(tactic| convert $cfg $[←%$sym]? $term $[using $n]? $[with $ps?*]?) =>
   withMainContext do
     let config ← Congr!.elabConfig (mkOptionalNode cfg)
-    let patterns := (Lean.Elab.Tactic.RCases.expandRIntroPats (ps?.getD #[])).toList
+    let patterns := (ps?.getD #[]).toList
     let expectedType ← mkFreshExprMVar (mkSort (← getLevel (← getMainTarget)))
     let (e, gs) ← elabTermForConvert term expectedType
     liftMetaTactic fun g ↦
@@ -234,7 +234,7 @@ elab_rules : tactic
     $[with $ps?*]? $[$loc?:location]?) => do
   let n : ℕ := n |>.map (·.getNat) |>.getD 1
   let config ← Congr!.elabConfig (mkOptionalNode cfg)
-  let patterns := (Lean.Elab.Tactic.RCases.expandRIntroPats (ps?.getD #[])).toList
+  let patterns := (ps?.getD #[]).toList
   withLocation (expandOptLocation (mkOptionalNode loc?))
     (atLocal := fun fvarId ↦ do
       let (e, gs) ← elabTermForConvert newType (← inferType (← fvarId.getType))

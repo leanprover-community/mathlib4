@@ -104,7 +104,7 @@ immediate predecessors and what conditions are added to each of them.
   - `CommRing` & `IsDomain` & linear order structure
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists MonoidHom
 

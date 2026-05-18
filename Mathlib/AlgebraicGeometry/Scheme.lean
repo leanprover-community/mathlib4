@@ -350,7 +350,7 @@ unif_hint forget_obj_eq_coe (X : Scheme) where ⊢ forget.obj X ≟ (X : Type*)
 
 @[simp] lemma forget_obj (X) : Scheme.forget.obj X = X := rfl
 lemma forget_map' {X Y} (f : X ⟶ Y) : (forget.map f : _ → _) = f := rfl
-@[simp] lemma forget_map {X Y} (f : X ⟶ Y) : forget.map f = TypeCat.ofHom f := rfl
+@[simp] lemma forget_map {X Y} (f : X ⟶ Y) : forget.map f = ↾f := rfl
 
 namespace Hom
 
@@ -528,6 +528,21 @@ lemma Spec.map_inv {R S : CommRingCat} (f : R ⟶ S) [IsIso f] :
     Spec.map (inv f) = inv (Spec.map f) := by
   change Scheme.Spec.map (inv f).op = inv (Scheme.Spec.map f.op)
   rw [op_inv, ← Scheme.Spec.map_inv]
+
+/-- `Spec R` with the specialization order is order isomorphic to the dual of the prime
+spectrum of `R`. -/
+@[simps]
+def specOrderIsoPrimeSpectrum (R : CommRingCat) : Spec R ≃o (PrimeSpectrum R)ᵒᵈ where
+  toFun x := .toDual x
+  invFun x := OrderDual.ofDual x
+  map_rel_iff' {a b} := PrimeSpectrum.le_iff_specializes b a
+
+/-- `PrimeSpectrum R` with the inclusion order is order isomorphic to the dual of `Spec R`. -/
+@[simps]
+def primeSpectrumOrderIsoSpec (R : Type u) [CommRing R] : PrimeSpectrum R ≃o (Spec (.of R))ᵒᵈ where
+  toFun x := .toDual x
+  invFun x := OrderDual.ofDual x
+  map_rel_iff' {a b} := (PrimeSpectrum.le_iff_specializes a b).symm
 
 section
 

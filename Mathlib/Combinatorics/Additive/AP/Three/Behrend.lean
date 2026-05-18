@@ -176,7 +176,7 @@ nonrec theorem threeAPFree_sphere : ThreeAPFree (sphere n d k : Set (Fin n → �
     { toFun := fun f => toLp 2 (((↑) : ℕ → ℝ) ∘ f)
       map_zero' := PiLp.ext fun _ => cast_zero
       map_add' := fun _ _ => PiLp.ext fun _ => cast_add _ _ }
-  refine ThreeAPFree.of_image (AddMonoidHomClass.isAddFreimanHom f (Set.mapsTo_image _ _))
+  refine ThreeAPFree.of_image (AddHomClass.isAddFreimanHom f (Set.mapsTo_image _ _))
     ((toLp_injective 2).comp_injOn cast_injective.comp_left.injOn) (Set.subset_univ _) ?_
   refine (threeAPFree_sphere 0 (√↑k)).mono (Set.image_subset_iff.2 fun x => ?_)
   rw [Set.mem_preimage, mem_sphere_zero_iff_norm]
@@ -249,9 +249,7 @@ theorem exists_large_sphere (n d : ℕ) :
   · simp
   obtain rfl | hd := d.eq_zero_or_pos
   · simp
-  refine (div_le_div_of_nonneg_left ?_ ?_ ?_).trans hk
-  · exact cast_nonneg _
-  · exact cast_add_one_pos _
+  refine (div_le_div_of_nonneg_left (by positivity) (by positivity) ?_).trans hk
   simp only [← le_sub_iff_add_le', cast_mul, ← mul_sub, cast_pow, cast_sub hd, sub_sq, one_pow,
     cast_one, mul_one, sub_add, sub_sub_self]
   apply one_le_mul_of_one_le_of_one_le

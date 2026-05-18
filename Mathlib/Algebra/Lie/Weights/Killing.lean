@@ -222,7 +222,7 @@ lemma corootSpace_zero_eq_bot :
   rintro - ⟨y, hy, z, hz, rfl⟩
   suffices ⁅(⟨y, hy⟩ : H), (⟨z, hz⟩ : H)⁆ = 0 by
     simpa only [Subtype.ext_iff, LieSubalgebra.coe_bracket, ZeroMemClass.coe_zero] using this
-  simp
+  simp [trivial_lie_zero]
 
 variable {K L} in
 /-- The restriction of the Killing form to a Cartan subalgebra, as a linear equivalence to the

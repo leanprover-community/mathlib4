@@ -167,8 +167,8 @@ set_option backward.isDefEq.respectTransparency false in
 def equivPolynomialSelf : PolynomialModule R R ≃ₗ[R[X]] R[X] :=
   { (Polynomial.toFinsuppIso R).symm with
     map_smul' := fun r x => by
-      dsimp
-      rw [← RingEquiv.coe_toEquiv_symm, RingEquiv.coe_toEquiv]
+      dsimp only [RingEquiv.toEquiv_eq_coe, RingEquiv.coe_toEquiv_symm, Equiv.toFun_as_coe,
+        RingHom.id_apply, smul_eq_mul, RingEquiv.coe_coe_toEquiv_symm]
       induction x using induction_linear with
       | zero => rw [smul_zero, map_zero, mul_zero]
       | add _ _ hp hq => rw [smul_add, map_add, map_add, mul_add, hp, hq]

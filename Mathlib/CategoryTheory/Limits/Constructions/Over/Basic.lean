@@ -18,7 +18,7 @@ Declare instances for limits in the over category: If `C` has finite wide pullba
 finite limits, and if `C` has arbitrary wide pullbacks then `Over B` has limits.
 -/
 
-@[expose] public section
+public section
 
 
 universe w v u

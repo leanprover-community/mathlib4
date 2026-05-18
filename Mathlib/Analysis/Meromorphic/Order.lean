@@ -384,6 +384,25 @@ The order of a constant function is `⊤` if the constant is zero and `0` otherw
 We establish additivity of the order under multiplication and taking powers.
 -/
 
+/-- The order of a function `f` equals the order of `-f`. -/
+theorem meromorphicOrderAt_neg {f : 𝕜 → E} :
+    meromorphicOrderAt f x = meromorphicOrderAt (-f) x := by
+  by_cases h₁ : ¬MeromorphicAt f x
+  · aesop
+  rw [not_not] at h₁
+  by_cases h₂ : meromorphicOrderAt f x = ⊤
+  · rw [h₂, eq_comm]
+    simp_all [meromorphicOrderAt_eq_top_iff]
+  lift meromorphicOrderAt f x to ℤ using h₂ with n hn
+  rw [eq_comm, meromorphicOrderAt_eq_int_iff (by fun_prop)] at *
+  obtain ⟨g, hg⟩ := hn
+  use -g
+  simp_all
+
+/-- The order of a function `f` equals the order of `-f`. -/
+theorem meromorphicOrderAt_fun_neg {f : 𝕜 → E} :
+    meromorphicOrderAt f x = meromorphicOrderAt (fun z ↦ -f z) x := meromorphicOrderAt_neg
+
 /-- The order is additive when multiplying scalar-valued and vector-valued meromorphic functions. -/
 @[to_fun] theorem meromorphicOrderAt_smul {f : 𝕜 → 𝕜} {g : 𝕜 → E}
     (hf : MeromorphicAt f x) (hg : MeromorphicAt g x) :
@@ -574,7 +593,7 @@ theorem meromorphicOrderAt_add (hf₁ : MeromorphicAt f₁ x) (hf₂ : Meromorph
   exact le_add_of_nonneg_right h₁g.meromorphicOrderAt_nonneg
 
 /--
-Helper lemma for meromorphicOrderAt_add_of_ne.
+Helper lemma for `meromorphicOrderAt_add_of_ne`.
 -/
 lemma meromorphicOrderAt_add_eq_left_of_lt (hf₂ : MeromorphicAt f₂ x)
     (h : meromorphicOrderAt f₁ x < meromorphicOrderAt f₂ x) :
@@ -604,7 +623,7 @@ lemma meromorphicOrderAt_add_eq_left_of_lt (hf₂ : MeromorphicAt f₂ x)
     simp_all [smul_add, ← smul_assoc, ← zpow_add', sub_ne_zero]
 
 /--
-Helper lemma for meromorphicOrderAt_add_of_ne.
+Helper lemma for `meromorphicOrderAt_add_of_ne`.
 -/
 lemma meromorphicOrderAt_add_eq_right_of_lt (hf₁ : MeromorphicAt f₁ x)
     (h : meromorphicOrderAt f₂ x < meromorphicOrderAt f₁ x) :
@@ -765,6 +784,17 @@ theorem codiscrete_setOf_meromorphicOrderAt_eq_zero_or_top (hf : MeromorphicOn f
     rcases h₁a with h' | h'
     · simp +contextual [h'.meromorphicOrderAt_eq, h'.analyticOrderAt_eq_zero.2, h'₁a]
     · exact fun ha ↦ (h' ha).elim
+
+/--
+Variant of `codiscrete_setOf_meromorphicOrderAt_eq_zero_or_top`: The set where a meromorphic
+function has zero or infinite order is codiscrete within its domain of meromorphicity.
+-/
+theorem codiscreteWithin_setOf_meromorphicOrderAt_eq_zero_or_top (h₁f : MeromorphicOn f U)
+    (h₂f : ∀ u ∈ U, meromorphicOrderAt f u ≠ ⊤) :
+    {u ∈ U | meromorphicOrderAt f u = 0 ∨ meromorphicOrderAt f u = ⊤} ∈ codiscreteWithin U := by
+  convert mem_codiscrete_subtype_iff_mem_codiscreteWithin.1
+    h₁f.codiscrete_setOf_meromorphicOrderAt_eq_zero_or_top
+  aesop
 
 end MeromorphicOn
 

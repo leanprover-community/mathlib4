@@ -85,6 +85,11 @@ Non-defeq error
 instance : Mul Nat := ⟨(· * · )⟩
 
 /--
+warning: An instance of `Mul Nat` already exists.
+Please use `inferInstance` instead of `fast_instance%`
+
+Note: This linter can be disabled with `set_option linter.fast_instance_existing false`
+---
 error: Provided instance
   { mul := fun x y => y * x }
 is not defeq to inferred instance

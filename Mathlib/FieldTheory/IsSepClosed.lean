@@ -104,18 +104,12 @@ theorem exists_root_C_mul_X_pow_add_C_mul_X_add_C
     [IsSepClosed k] {n : ℕ} (a b c : k) (hn : (n : k) = 0) (hn' : 2 ≤ n) (hb : b ≠ 0) :
     ∃ x, a * x ^ n + b * x + c = 0 := by
   let f : k[X] := C a * X ^ n + C b * X + C c
-  have hdeg : f.degree ≠ 0 := degree_ne_of_natDegree_ne <| by
+  -- Specify `n := 0` below, otherwise Lean unfolds `0` to `Zero.zero`.
+  have hdeg : f.degree ≠ 0 := degree_ne_of_natDegree_ne (n := 0) <| by
+    have : C 0 * X ^ n + C b * X = 0 * X ^ n + C b * X := by grind
     by_cases ha : a = 0
-    · suffices f.natDegree = 1 from this ▸ one_ne_zero
-      simp_rw [f, ha, map_zero, zero_mul, zero_add]
-      compute_degree!
-    · suffices f.natDegree = n from this ▸ (lt_of_lt_of_le zero_lt_two hn').ne'
-      simp_rw [f]
-      have h0 : n ≠ 0 := by linarith only [hn']
-      have h1 : n ≠ 1 := by linarith only [hn']
-      have : 1 ≤ n := le_trans one_le_two hn'
-      compute_degree!
-      simp [h0, h1, ha]
+    · grind [zero_add]
+    · grind [natDegree_add_eq_left_of_natDegree_lt]
   have hsep : f.Separable := separable_C_mul_X_pow_add_C_mul_X_add_C a b c hn hb.isUnit
   obtain ⟨x, hx⟩ := exists_root f hdeg hsep
   exact ⟨x, by simpa [f] using hx⟩

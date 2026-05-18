@@ -16,7 +16,7 @@ colimits in `P.Over ⊤ X` for `X : Scheme` of locally directed diagrams of open
 exist and agree with the colimit in `Scheme`.
 -/
 
-@[expose] public section
+public section
 
 universe u
 

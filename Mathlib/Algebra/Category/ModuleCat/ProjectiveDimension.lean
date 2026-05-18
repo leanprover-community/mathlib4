@@ -16,7 +16,7 @@ public import Mathlib.CategoryTheory.Abelian.Projective.Dimension
 
 -/
 
-@[expose] public section
+public section
 
 universe v v' u u'
 

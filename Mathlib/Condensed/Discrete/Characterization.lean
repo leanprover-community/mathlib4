@@ -31,7 +31,7 @@ condensed `R`-modules are nearly identical (`CondensedMod.isDiscrete_tfae`,
 `LightCondSet.isDiscrete_tfae`, and `LightCondMod.isDiscrete_tfae`).
 -/
 
-@[expose] public section
+public section
 
 universe u
 

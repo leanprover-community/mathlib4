@@ -91,7 +91,7 @@ theorem one_opow (a : Ordinal) : (1 : Ordinal) ^ a = 1 := by
     simp only [opow_succ, ih, mul_one]
   | limit b l IH =>
     refine eq_of_forall_ge_iff fun c => ?_
-    rw [opow_le_of_isSuccLimit Ordinal.one_ne_zero l]
+    rw [opow_le_of_isSuccLimit one_ne_zero l]
     exact ⟨fun H => by simpa only [opow_zero] using H 0 l.bot_lt, fun H b' h => by rwa [IH _ h]⟩
 
 theorem opow_pos {a : Ordinal} (b : Ordinal) (a0 : 0 < a) : 0 < a ^ b := by
@@ -150,6 +150,18 @@ theorem one_lt_opow {a b : Ordinal} : 1 < a ^ b ↔ 1 < a ∧ b ≠ 0 := by
 theorem one_lt_pow {a : Ordinal} {n : ℕ} : 1 < a ^ n ↔ 1 < a ∧ n ≠ 0 :=
   mod_cast one_lt_opow (b := n)
 
+@[simp]
+theorem opow_eq_one_iff {a b : Ordinal} : a ^ b = 1 ↔ a = 1 ∨ b = 0 := by
+  refine ⟨fun h ↦ ?_, by simp +contextual [or_imp]⟩
+  contrapose! h
+  obtain ha | ha := le_or_gt a 1
+  · simp_all [le_one_iff]
+  · simpa using ((opow_lt_opow_iff_right ha).2 h.2.pos).ne'
+
+@[simp]
+theorem pow_eq_one_iff {a : Ordinal} {n : ℕ} : a ^ n = 1 ↔ a = 1 ∨ n = 0 :=
+  mod_cast opow_eq_one_iff (b := n)
+
 theorem isSuccLimit_opow {a b : Ordinal} (a1 : 1 < a) : IsSuccLimit b → IsSuccLimit (a ^ b) :=
   (isNormal_opow a1).map_isSuccLimit
 
@@ -186,8 +198,8 @@ theorem left_le_opow (a : Ordinal) {b : Ordinal} (b1 : 0 < b) : a ≤ a ^ b := b
   rcases le_or_gt a 1 with a1 | a1
   · rcases lt_or_eq_of_le a1 with a0 | a1
     · rw [lt_one_iff] at a0
-      rw [a0, zero_opow Ordinal.one_ne_zero]
-      exact zero_le _
+      rw [a0, zero_opow one_ne_zero]
+      exact zero_le
     rw [a1, one_opow, one_opow]
   rwa [opow_le_opow_iff_right a1, one_le_iff_pos]
 
@@ -200,7 +212,7 @@ theorem right_le_opow {a : Ordinal} (b : Ordinal) (a1 : 1 < a) : b ≤ a ^ b :=
 
 theorem opow_lt_opow_left_of_succ {a b c : Ordinal} (ab : a < b) : a ^ succ c < b ^ succ c := by
   rw [opow_succ, opow_succ]
-  exact mul_lt_mul_of_le_of_lt_of_nonneg_of_pos (by gcongr) ab (zero_le _) (opow_pos _ ab.bot_lt)
+  exact mul_lt_mul_of_le_of_lt_of_nonneg_of_pos (by gcongr) ab zero_le (opow_pos _ ab.bot_lt)
 
 theorem opow_add (a b c : Ordinal) : a ^ (b + c) = a ^ b * a ^ c := by
   obtain rfl | ha := eq_zero_or_pos a
