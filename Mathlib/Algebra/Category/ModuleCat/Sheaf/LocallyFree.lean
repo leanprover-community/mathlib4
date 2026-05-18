@@ -39,7 +39,7 @@ namespace LocalGeneratorsData
 /-- Local generator data `q` is locally free data if all of the natural morphisms
 `free (q.generators i).I ⟶ M.over (q.X i)` are isomorphisms -/
 class IsLocallyFreeData {M : SheafOfModules.{u} R} (q : M.LocalGeneratorsData) : Prop where
-  iso : ∀ i, IsIso (q.generators i).π
+  iso : ∀ i, IsIso (q.generators i).π := by infer_instance
 
 attribute [instance] IsLocallyFreeData.iso
 
@@ -48,6 +48,57 @@ end LocalGeneratorsData
 /-- A sheaf of modules is locally free if there exists locally free data for it. -/
 class IsLocallyFree (M : SheafOfModules.{u} R) : Prop where
   nonempty_locallyFreeData : ∃ q : M.LocalGeneratorsData, q.IsLocallyFreeData
+
+end
+
+section
+
+variable [HasWeakSheafify J AddCommGrpCat.{u}] [J.WEqualsLocallyBijective AddCommGrpCat.{u}]
+  [J.HasSheafCompose (forget₂ RingCat.{u} AddCommGrpCat.{u})]
+
+@[simps]
+def free.generatingSections (I : Type u) : (free (R := R) I).GeneratingSections where
+  I := I
+  s (i) := freeSection i
+  epi := by
+    simp only [Equiv.symm_apply_apply]
+    infer_instance
+
+@[simp]
+lemma free.generatingSections_π_id (I : Type u) :
+    (free.generatingSections (R := R) I).π = 𝟙 (free I) :=
+  Equiv.symm_apply_apply (free I).freeHomEquiv _
+
+instance free.generatingSections.π_isIso (I : Type u) :
+    IsIso (free.generatingSections (R := R) I).π := by
+  simp only [generatingSections_I, generatingSections_π_id]
+  infer_instance
+
+variable [∀ X, (J.over X).HasSheafCompose (forget₂ RingCat.{u} AddCommGrpCat.{u})]
+  [∀ X, HasSheafify (J.over X) AddCommGrpCat.{u}] [HasBinaryProducts C]
+  [∀ X, (J.over X).WEqualsLocallyBijective AddCommGrpCat.{u}] [HasSheafify J AddCommGrpCat]
+
+@[simps]
+def GeneratingSections.localGeneratorsData {M : SheafOfModules.{u} R} (G : M.GeneratingSections) :
+    M.LocalGeneratorsData where
+  I := C
+  X := id
+  coversTop x := GrothendieckTopology.covering_of_eq_top J <| by
+    rw [Sieve.ext_iff]
+    intro _ f
+    simpa [Sieve.top_apply, iff_true] using ⟨x, Nonempty.intro f⟩
+  generators x := G.map (pushforward (𝟙 (R.over x))) (Iso.refl _)
+
+instance (I : Type u) :
+    (free.generatingSections (R := R) I).localGeneratorsData.IsLocallyFreeData where
+  iso i := by
+    erw [GeneratingSections.map_π_eq _ (pushforward (𝟙 (R.over i)))]
+    simp only [free.generatingSections_I, free.generatingSections_π_id,
+      CategoryTheory.Functor.map_id, Category.comp_id]
+    infer_instance
+
+instance (I : Type u) : (free (R := R) I).IsLocallyFree where
+  nonempty_locallyFreeData := ⟨(free.generatingSections I).localGeneratorsData, inferInstance⟩
 
 end
 

@@ -161,15 +161,41 @@ def Presentation.mapRelations : free P.relations.I (R := S) ⟶ free P.generator
     F.map (kernel.ι _) ≫ (mapFreeIso F P.generators.I η).inv
 
 /-- Let `F` be a functor from sheaf of `R`-module to sheaf of `S`-module, if `F` preserves
+colimits and `F.obj (unit R) ≅ unit S`, given generating sections `G : M.GeneratingSections`,
+then we obtain a morphism `free G.I ⟶ F.obj M`. -/
+def GeneratingSections.mapFreeHom (G : M.GeneratingSections)
+    (F : SheafOfModules.{u} R ⥤ SheafOfModules.{u} S) [PreservesColimitsOfSize.{u, u} F]
+    (η : unit S ≅ F.obj (unit R)) : free G.I ⟶ F.obj M :=
+  (mapFreeIso F G.I η).hom ≫ F.map G.π
+
+/-- Let `F` be a functor from sheaf of `R`-module to sheaf of `S`-module, if `F` preserves
+colimits and `F.obj (unit R) ≅ unit S`, given generating sections `G : M.GeneratingSections`,
+then we obtain generating sections of `Presentation (F.obj M)`. -/
+@[simps]
+def GeneratingSections.map (G : M.GeneratingSections)
+    (F : SheafOfModules.{u} R ⥤ SheafOfModules.{u} S) [PreservesColimitsOfSize.{u, u} F]
+    (η : unit S ≅ F.obj (unit R)) : (F.obj M).GeneratingSections where
+  I := G.I
+  s := (freeHomEquiv (F.obj M)) (G.mapFreeHom F η)
+  epi := by
+    simp only [mapFreeHom, Equiv.symm_apply_apply, epi_comp_iff_of_epi]
+    infer_instance
+
+lemma GeneratingSections.map_π_eq (G : M.GeneratingSections)
+    (F : SheafOfModules.{u} R ⥤ SheafOfModules.{u} S) [PreservesColimitsOfSize.{u, u} F]
+    (η : unit S ≅ F.obj (unit R)) : (G.map F η).π = (mapFreeIso F G.I η).hom ≫ F.map G.π :=
+  (F.obj M).freeHomEquiv.symm_apply_eq.mpr rfl
+
+/-- Let `F` be a functor from sheaf of `R`-module to sheaf of `S`-module, if `F` preserves
 colimits and `F.obj (unit R) ≅ unit S`, given a `P : Presentation M`, then we will obtain
 generators of `Presentation (F.obj M)`. -/
-def Presentation.mapGenerators : free P.generators.I ⟶ F.obj M :=
-  (mapFreeIso F P.generators.I η).hom ≫ F.map (P.generators.π)
+abbrev Presentation.mapGenerators : free P.generators.I ⟶ F.obj M :=
+  P.generators.mapFreeHom F η
 
 @[reassoc (attr := simp)]
 theorem Presentation.mapRelations_mapGenerators :
     P.mapRelations F η ≫ P.mapGenerators F η = 0 := by
-  simp only [mapRelations, mapGenerators, Category.assoc, Iso.inv_hom_id_assoc,
+  simp only [mapRelations, GeneratingSections.mapFreeHom, Category.assoc, Iso.inv_hom_id_assoc,
     ← Functor.map_comp, kernel.condition, Functor.map_zero, comp_zero]
 
 /-- Let `F` be a functor from sheaf of `R`-module to sheaf of `S`-module, if `F` preserves
@@ -183,7 +209,7 @@ def Presentation.map : Presentation (F.obj M) :=
       (parallelPairIsoMk (mapFreeIso F _ η).symm (mapFreeIso F _ η).symm
         (by simp [Presentation.mapRelations]) (by simp)) _ _ ?_ (isColimitOfPreserves F P.isColimit)
     exact (Cocone.ext (Iso.refl _) <| by rintro (_ | _)
-      <;> simp [Presentation.mapRelations, Presentation.mapGenerators, ← Functor.map_comp])
+      <;> simp [Presentation.mapRelations, GeneratingSections.mapFreeHom, ← Functor.map_comp])
 
 theorem Presentation.map_π_eq :
     (P.map F η).generators.π = (mapFreeIso F _ η).hom ≫ F.map (P.generators.π) :=
