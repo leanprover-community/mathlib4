@@ -983,7 +983,7 @@ any morphism `g` with the same codomain as `f` satisfying `P'`, any pullback of 
 also satisfies `P`. -/
 class IsStableUnderBaseChangeAgainst
     (P P' : MorphismProperty C) : Prop where
-  isStableUnderBaseChangeAlong ⦃X Y : C ⦄ (f : X ⟶ Y) (hf : P' f) :
+  isStableUnderBaseChangeAlong ⦃X Y : C⦄ (f : X ⟶ Y) (hf : P' f) :
     P.IsStableUnderBaseChangeAlong f
 
 instance (P : MorphismProperty C) [P.IsStableUnderBaseChange]
@@ -993,10 +993,11 @@ instance (P : MorphismProperty C) [P.IsStableUnderBaseChange]
 
 lemma isStableUnderBaseChangeAgainst_top_iff
     (P : MorphismProperty C) :
-    P.IsStableUnderBaseChangeAgainst ⊤ ↔ P.IsStableUnderBaseChange :=
-  ⟨ fun h ↦ ⟨fun {_ _ _ _} _ _ _ _ h' h'' ↦
-      (h.isStableUnderBaseChangeAlong _ (by tauto)).of_isPullback h' h''⟩,
-    fun _ ↦ inferInstance ⟩
+    P.IsStableUnderBaseChangeAgainst ⊤ ↔ P.IsStableUnderBaseChange where
+  mp h :=
+    ⟨fun {_ _ _ _} _ _ _ _ h' h'' ↦
+      (h.isStableUnderBaseChangeAlong _ (by tauto)).of_isPullback h' h''⟩
+  mpr _ := inferInstance
 
 /-- `P.HasPullbacksAgainst P'` states that for any morphism `f` satisfying `P'`,
 `P` has pullbacks along `f`. -/
@@ -1011,10 +1012,11 @@ instance (P : MorphismProperty C) [P.HasPullbacks] (P' : MorphismProperty C) :
 
 lemma HasPullbacksAgainst_top_iff
     (P : MorphismProperty C) :
-    P.IsStableUnderBaseChangeAgainst ⊤ ↔ P.IsStableUnderBaseChange :=
-  ⟨ fun h ↦ ⟨fun {_ _ _ _} _ _ _ _ h' h'' ↦
-      (h.isStableUnderBaseChangeAlong _ (by tauto)).of_isPullback h' h''⟩,
-    fun _ ↦ inferInstance⟩
+    P.IsStableUnderBaseChangeAgainst ⊤ ↔ P.IsStableUnderBaseChange where
+  mp h :=
+    ⟨fun {_ _ _ _} _ _ _ _ h' h'' ↦
+      (h.isStableUnderBaseChangeAlong _ (by tauto)).of_isPullback h' h''⟩
+  mpr _ := inferInstance
 
 lemma hasPullback_ofHasPullbacksAgainst
     {P : MorphismProperty C} {P' : MorphismProperty C} {c c' c'' : C}
@@ -1039,10 +1041,11 @@ instance (P : MorphismProperty C) [P.IsStableUnderCobaseChange]
 
 lemma isStableUnderCobaseChangeAgainst_top_iff
     (P : MorphismProperty C) :
-    P.IsStableUnderCobaseChangeAgainst ⊤ ↔ P.IsStableUnderCobaseChange :=
-  ⟨ fun h ↦ ⟨fun {_ _ _ _} _ _ _ _ h' h'' ↦
-      (h.isStableUnderCobaseChangeAlong _ (by tauto)).of_isPushout h' h''⟩,
-    fun _ ↦ inferInstance ⟩
+    P.IsStableUnderCobaseChangeAgainst ⊤ ↔ P.IsStableUnderCobaseChange where
+  mp h :=
+    ⟨fun {_ _ _ _} _ _ _ _ h' h'' ↦
+      (h.isStableUnderCobaseChangeAlong _ (by tauto)).of_isPushout h' h''⟩
+  mpr _ := inferInstance
 
 /-- `P.HasPullbacksAgainst P'` states that for any morphism `f` satisfying `P'`,
 `P` has pullbacks along `f`. -/
@@ -1057,10 +1060,11 @@ instance (P : MorphismProperty C) [P.HasPushouts] (P' : MorphismProperty C) :
 
 lemma HasPushoutsAgainst_top_iff
     (P : MorphismProperty C) :
-    P.IsStableUnderCobaseChangeAgainst ⊤ ↔ P.IsStableUnderCobaseChange :=
-  ⟨ fun h ↦ ⟨fun {_ _ _ _} _ _ _ _ h' h'' ↦
-      (h.isStableUnderCobaseChangeAlong _ (by tauto)).of_isPushout h' h''⟩,
-    fun _ ↦ inferInstance⟩
+    P.IsStableUnderCobaseChangeAgainst ⊤ ↔ P.IsStableUnderCobaseChange where
+  mp h :=
+    ⟨fun {_ _ _ _} _ _ _ _ h' h'' ↦
+      (h.isStableUnderCobaseChangeAlong _ (by tauto)).of_isPushout h' h''⟩
+  mpr _ := inferInstance
 
 lemma hasPullback_ofHasPushoutsAgainst
     {P : MorphismProperty C} {P' : MorphismProperty C} {c c' c'' : C}
