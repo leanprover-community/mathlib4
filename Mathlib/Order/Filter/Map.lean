@@ -239,6 +239,11 @@ theorem Eventually.comap {p : β → Prop} (hf : ∀ᶠ b in g, p b) (f : α →
     ∀ᶠ a in comap f g, p (f a) :=
   preimage_mem_comap hf
 
+@[simp]
+lemma EventuallyEq.comp_comap {F : Filter β} {f g : β → γ} (h : α → β)
+    (hfg : f =ᶠ[F] g) : f.comp h =ᶠ[comap h F] g.comp h :=
+  hfg.comap _
+
 theorem comap_id : comap id f = f :=
   le_antisymm (fun _ => preimage_mem_comap) fun _ ⟨_, ht, hst⟩ => mem_of_superset ht hst
 
