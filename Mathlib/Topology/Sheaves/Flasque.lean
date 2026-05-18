@@ -217,8 +217,7 @@ lemma freeAbSheafHomEquiv_naturality {U V : Opens X} (i : U ⟶ V)
   erw [Adjunction.homEquiv_naturality_left, Adjunction.homEquiv_naturality_left]
   convert (NatTrans.naturality ((Adjunction.whiskerRight _ AddCommGrpCat.adj).homEquiv _ _
     ((sheafificationAdjunction _ _).homEquiv _ I f)) i.op) using 1
-  exact ⟨fun _ => (NatTrans.naturality ((Adjunction.whiskerRight _ _).homEquiv _ _ _) i.op),
-    fun h => congr_arg (fun g => g (𝟙 V)) h⟩
+  exact ⟨fun _ => (NatTrans.naturality _ _), fun h => congr_arg (fun g => g (𝟙 V)) h⟩
 
 set_option backward.isDefEq.respectTransparency false in
 instance freeAbSheafMap_mono {U V : Opens X} (i : U ⟶ V) :
@@ -229,8 +228,7 @@ instance freeAbSheafMap_mono {U V : Opens X} (i : U ⟶ V) :
 
 end
 
--- Injective sheaves are flasque (proved by Aristotle 8f42abaa).
--- Uses free abelian sheaf + Yoneda identification + Injective.factors.
+/-- Injective sheaves are flasque. -/
 instance of_injective {X : TopCat.{u}}
     (I : TopCat.Sheaf AddCommGrpCat.{u} X) [Injective I] : IsFlasque I where
   epi := by
