@@ -136,7 +136,7 @@ protected def map {X Y : Type*} (f : X → Y) : 𝐤X  → 𝐤Y :=
 
 protected lemma map_comp_mk {X Y : Type*} {f : X → Y} :
     (CompactCoherentification.map f) ∘ (CompactCoherentification.mk X) =
-      (CompactCoherentification.mk Y) ∘ f :=
+      (CompactCoherentification.mk Y) ∘ f := by
   rfl
 
 variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
