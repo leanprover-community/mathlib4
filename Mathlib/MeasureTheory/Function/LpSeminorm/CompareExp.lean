@@ -66,23 +66,21 @@ theorem eLpNorm'_le_eLpNormEssSup_mul_rpow_measure_univ {q : ℝ} (hq_pos : 0 < 
 theorem eLpNorm_le_eLpNorm_mul_rpow_measure_univ {p q : ℝ≥0∞} (hpq : p ≤ q)
     (hf : AEStronglyMeasurable f μ) :
     eLpNorm f p μ ≤ eLpNorm f q μ * μ Set.univ ^ (1 / p.toReal - 1 / q.toReal) := by
-  by_cases hp0 : p = 0
-  · simp [hp0, zero_le]
-  rw [← Ne] at hp0
-  have hp0_lt : 0 < p := lt_of_le_of_ne (zero_le _) hp0.symm
-  have hq0_lt : 0 < q := lt_of_lt_of_le hp0_lt hpq
-  by_cases hq_top : q = ∞
-  · simp only [hq_top, _root_.div_zero, one_div, ENNReal.toReal_top, sub_zero, eLpNorm_exponent_top]
-    by_cases hp_top : p = ∞
-    · simp [hp_top]
+  obtain rfl | hp0 := eq_or_ne p 0
+  · simp
+  have hq0_lt : 0 < q := hp0.pos.trans_le hpq
+  obtain rfl | hq_top := eq_or_ne q ∞
+  · simp only [_root_.div_zero, one_div, ENNReal.toReal_top, sub_zero]
+    obtain rfl | hp_top := eq_or_ne p ∞
+    · simp
     rw [eLpNorm_eq_eLpNorm' hp0 hp_top]
-    have hp_pos : 0 < p.toReal := ENNReal.toReal_pos hp0_lt.ne' hp_top
+    have hp_pos : 0 < p.toReal := ENNReal.toReal_pos hp0 hp_top
     refine (eLpNorm'_le_eLpNormEssSup_mul_rpow_measure_univ hp_pos).trans (le_of_eq ?_)
     congr
     exact one_div _
   have hp_lt_top : p < ∞ := hpq.trans_lt (lt_top_iff_ne_top.mpr hq_top)
-  have hp_pos : 0 < p.toReal := ENNReal.toReal_pos hp0_lt.ne' hp_lt_top.ne
-  rw [eLpNorm_eq_eLpNorm' hp0_lt.ne.symm hp_lt_top.ne, eLpNorm_eq_eLpNorm' hq0_lt.ne.symm hq_top]
+  have hp_pos : 0 < p.toReal := ENNReal.toReal_pos hp0 hp_lt_top.ne
+  rw [eLpNorm_eq_eLpNorm' hp0 hp_lt_top.ne, eLpNorm_eq_eLpNorm' hq0_lt.ne.symm hq_top]
   have hpq_real : p.toReal ≤ q.toReal := ENNReal.toReal_mono hq_top hpq
   exact eLpNorm'_le_eLpNorm'_mul_rpow_measure_univ hp_pos hpq_real hf
 
@@ -135,8 +133,8 @@ theorem MemLp.mono_exponent {p q : ℝ≥0∞} [IsFiniteMeasure μ] (hfq : MemLp
     exact ENNReal.rpow_lt_top_of_nonneg (by simp [hp_pos.le]) (by finiteness)
   have hq0 : q ≠ 0 := by
     by_contra hq_eq_zero
-    have hp_eq_zero : p = 0 := le_antisymm (by rwa [hq_eq_zero] at hpq) (zero_le _)
-    rw [hp_eq_zero, ENNReal.toReal_zero] at hp_pos
+    obtain rfl : p = 0 := le_antisymm (by rwa [hq_eq_zero] at hpq) zero_le
+    rw [ENNReal.toReal_zero] at hp_pos
     exact (lt_irrefl _) hp_pos
   have hpq_real : p.toReal ≤ q.toReal := ENNReal.toReal_mono hq_top hpq
   rw [eLpNorm_eq_eLpNorm' hp0 hp_top]

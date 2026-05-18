@@ -421,7 +421,7 @@ theorem closedEBall_top (x : α) : closedEBall x ∞ = univ :=
 theorem eball_subset_closedEBall : eball x ε ⊆ closedEBall x ε := fun _ h => le_of_lt h.out
 
 theorem pos_of_mem_eball (hy : y ∈ eball x ε) : 0 < ε :=
-  lt_of_le_of_lt (zero_le _) hy
+  hy.pos
 
 theorem mem_eball_self (h : 0 < ε) : x ∈ eball x ε := by
   rwa [mem_eball, edist_self]

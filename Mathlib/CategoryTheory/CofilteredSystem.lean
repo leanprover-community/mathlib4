@@ -165,7 +165,7 @@ theorem isMittagLeffler_of_surjective (h : ∀ ⦃i j : J⦄ (f : i ⟶ j), Func
 @[simps]
 def toPreimages : J ⥤ Type v where
   obj j := ⋂ f : j ⟶ i, F.map f ⁻¹' s
-  map g := TypeCat.ofHom (MapsTo.restrict (F.map g) _ _ fun x h => by
+  map g := ↾(MapsTo.restrict (F.map g) _ _ fun x h => by
     rw [mem_iInter] at h ⊢
     intro f
     rw [← mem_preimage, preimage_preimage, mem_preimage]
@@ -234,7 +234,7 @@ theorem isMittagLeffler_of_exists_finite_range
     { s : Finset (F.obj j) | ∃ (i : _) (f : i ⟶ j), ↑s = range (F.map f) }
     ⟨_, i, hi, hf.coe_toFinset⟩
   refine ⟨i, f, fun k g =>
-    (directedOn_range.mp <| F.ranges_directed j).is_bot_of_is_min ⟨⟨i, f⟩, rfl⟩ ?_ _ ⟨⟨k, g⟩, rfl⟩⟩
+    (F.ranges_directed j).directedOn_range.is_bot_of_is_min ⟨⟨i, f⟩, rfl⟩ ?_ _ ⟨⟨k, g⟩, rfl⟩⟩
   rintro _ ⟨⟨k', g'⟩, rfl⟩ hl
   refine (eq_of_le_of_not_lt hl ?_).ge
   have := hmin _ ⟨k', g', (m.finite_toSet.subset <| hm.substr hl).coe_toFinset⟩
@@ -244,7 +244,7 @@ theorem isMittagLeffler_of_exists_finite_range
 @[simps obj map]
 def toEventualRanges : J ⥤ Type v where
   obj j := F.eventualRange j
-  map f := TypeCat.ofHom ((F.eventualRange_mapsTo f).restrict _ _ _)
+  map f := ↾((F.eventualRange_mapsTo f).restrict _ _ _)
 
 instance toEventualRanges_finite [∀ j, Finite (F.obj j)] : ∀ j, Finite (F.toEventualRanges.obj j) :=
   fun _ => Subtype.finite

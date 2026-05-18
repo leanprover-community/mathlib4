@@ -123,7 +123,7 @@ lemma isTightMeasureSet_range_iff_tendsto_limsup_measure_norm_gt :
       ↔ Tendsto (fun r : ℝ ↦ limsup (fun n ↦ μ n {x | r < ‖x‖}) atTop) atTop (𝓝 0) := by
   refine ⟨fun h ↦ ?_, isTightMeasureSet_range_of_tendsto_limsup_measure_norm_gt⟩
   have h_sup := tendsto_measure_norm_gt_of_isTightMeasureSet h
-  refine tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds h_sup (fun _ ↦ zero_le _) ?_
+  refine tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds h_sup (fun _ ↦ zero_le) ?_
   intro r
   simp_rw [iSup_range]
   exact limsup_le_iSup
@@ -166,7 +166,7 @@ lemma isTightMeasureSet_of_forall_basis_tendsto (b : OrthonormalBasis ι 𝕜 E)
       refine iSup_le fun μ ↦ (iSup_le fun hμS ↦ ?_)
       gcongr with i
       exact le_biSup (fun μ ↦ μ {x | r / √(Fintype.card ι) < ‖⟪b i, x⟫_𝕜‖}) hμS
-  refine tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds ?_ (fun _ ↦ zero_le _) h_le
+  refine tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds ?_ (fun _ ↦ zero_le) h_le
   rw [← Finset.sum_const_zero]
   refine tendsto_finsetSum Finset.univ fun i _ ↦ (h i).comp ?_
   exact tendsto_id.atTop_div_const (by positivity)
@@ -195,7 +195,7 @@ lemma isTightMeasureSet_iff_inner_tendsto :
     simp [not_lt.mpr hr]
   have h' : Tendsto (fun r ↦ ⨆ μ ∈ S, μ {x | r * ‖y‖⁻¹ < ‖x‖}) atTop (𝓝 0) :=
     h.comp <| (tendsto_mul_const_atTop_of_pos (by positivity)).mpr tendsto_id
-  refine tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds h' (fun _ ↦ zero_le _) ?_
+  refine tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds h' (fun _ ↦ zero_le) ?_
   intro r
   have h_le (μ : Measure E) : μ {x | r < ‖⟪y, x⟫_𝕜‖} ≤ μ {x | r * ‖y‖⁻¹ < ‖x‖} := by
     refine measure_mono fun x hx ↦ ?_
@@ -232,7 +232,7 @@ lemma isTightMeasureSet_range_iff_tendsto_limsup_inner :
   refine ⟨fun h z ↦ ?_, isTightMeasureSet_range_of_tendsto_limsup_inner 𝕜⟩
   rw [isTightMeasureSet_iff_inner_tendsto 𝕜] at h
   refine tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds (h z)
-    (fun _ ↦ zero_le _) fun r ↦ ?_
+    (fun _ ↦ zero_le) fun r ↦ ?_
   simp_rw [iSup_range]
   exact limsup_le_iSup
 

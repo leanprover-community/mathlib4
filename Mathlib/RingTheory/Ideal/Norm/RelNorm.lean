@@ -99,7 +99,7 @@ theorem map_spanIntNorm (I : Ideal S) {T : Type*} [Semiring T] (f : R →+* T) :
   nth_rw 2 [map]
   simp [map_span, Set.image_image]
 
-@[mono]
+@[gcongr, mono]
 theorem spanNorm_mono {I J : Ideal S} (h : I ≤ J) : spanNorm R I ≤ spanNorm R J :=
   Ideal.span_mono (Set.monotone_image h)
 
@@ -302,7 +302,7 @@ theorem map_relNorm (I : Ideal S) {T : Type*} [Semiring T] (f : R →+* T) :
     map f (relNorm R I) = span (f ∘ Algebra.intNorm R S '' (I : Set S)) :=
   map_spanIntNorm R I f
 
-@[mono]
+@[gcongr, mono]
 theorem relNorm_mono {I J : Ideal S} (h : I ≤ J) : relNorm R I ≤ relNorm R J :=
   spanNorm_mono R h
 

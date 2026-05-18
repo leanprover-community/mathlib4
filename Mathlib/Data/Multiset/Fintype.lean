@@ -131,7 +131,7 @@ theorem mem_of_mem_toEnumFinset {p : α × ℕ} (h : p ∈ m.toEnumFinset) : p.1
     lia
   exact Nat.le_of_pred_lt (han.trans_lt <| by simpa using hsm hn)
 
-@[mono]
+@[gcongr, mono]
 theorem toEnumFinset_mono {m₁ m₂ : Multiset α} (h : m₁ ≤ m₂) :
     m₁.toEnumFinset ⊆ m₂.toEnumFinset := by
   intro p
