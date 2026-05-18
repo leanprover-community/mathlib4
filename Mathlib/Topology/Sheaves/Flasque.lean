@@ -193,11 +193,11 @@ theorem of_shortExact_of_isFlasque₁₂ {S : ShortComplex (Sheaf AddCommGrpCat 
 noncomputable section
 
 /-- The sheafification of the presheaf that is `ℤ` on `U` and `0` elsewhere. -/
-def freeAbSheaf (U : Opens X) : Sheaf AddCommGrpCat.{u} X :=
+abbrev freeAbSheaf (U : Opens X) : Sheaf AddCommGrpCat.{u} X :=
   (presheafToSheaf _ _).obj (yoneda.obj U ⋙ AddCommGrpCat.free)
 
 /-- If `U` is contained in `V`, we get a natural morphism from `freeAbSheaf U` to `freeAbSheaf V` -/
-def freeAbSheafMap {U V : Opens X} (i : U ⟶ V) : freeAbSheaf U ⟶ freeAbSheaf V :=
+abbrev freeAbSheafMap {U V : Opens X} (i : U ⟶ V) : freeAbSheaf U ⟶ freeAbSheaf V :=
   (presheafToSheaf _ _).map (Functor.whiskerRight (yoneda.map i) AddCommGrpCat.free)
 
 /-- Morphisms out of `freeAbSheaf U` are in correspondance with the sections `I.obj.obj (op U)` -/
@@ -213,11 +213,10 @@ lemma freeAbSheafHomEquiv_naturality {U V : Opens X} (i : U ⟶ V)
     (I : Sheaf AddCommGrpCat.{u} X) (f : freeAbSheaf V ⟶ I) :
     freeAbSheafHomEquiv U I (freeAbSheafMap i ≫ f) =
       I.obj.map i.op (freeAbSheafHomEquiv V I f) := by
-  dsimp [freeAbSheafHomEquiv, freeAbSheafMap, yonedaEquiv]
-  erw [Adjunction.homEquiv_naturality_left, Adjunction.homEquiv_naturality_left]
-  convert (NatTrans.naturality ((Adjunction.whiskerRight _ AddCommGrpCat.adj).homEquiv _ _
-    ((sheafificationAdjunction _ _).homEquiv _ I f)) i.op) using 1
-  exact ⟨fun _ => (NatTrans.naturality _ _), fun h => congr_arg (fun g => g (𝟙 V)) h⟩
+  simp only [freeAbSheafHomEquiv, Equiv.trans_apply]
+  rw [Adjunction.homEquiv_naturality_left, ← Functor.whiskeringRight_obj_map]
+  erw [Adjunction.homEquiv_naturality_left]
+  exact (yonedaEquiv_naturality _ i).symm
 
 set_option backward.isDefEq.respectTransparency false in
 instance freeAbSheafMap_mono {U V : Opens X} (i : U ⟶ V) :
