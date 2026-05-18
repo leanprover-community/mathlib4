@@ -113,8 +113,7 @@ lemma discriminant_mul_discriminantEquiv_apply (f : CuspForm 𝒮ℒ k) (z : ℍ
 @[simp]
 lemma discriminant_mul_discriminantEquiv (f : CuspForm 𝒮ℒ k) :
     Δ * (CuspForm.discriminantEquiv f : ℍ → ℂ) = f := by
-  ext z
-  rw [Pi.mul_apply, discriminant_mul_discriminantEquiv_apply]
+  grind [Pi.mul_apply, discriminant_mul_discriminantEquiv_apply]
 
 /-- The order of the q-expansion of the modular discriminant is 1: the zeroth coefficient
 vanishes (Δ is a cusp form) and the first coefficient equals 1. -/
@@ -132,8 +131,7 @@ lemma qExpansion_eq_qExpansion_discriminant_mul (f : ModularForm 𝒮ℒ k)
     (hcusp : (qExpansion 1 f).coeff 0 = 0) :
     qExpansion 1 f = qExpansion 1 discriminant *
       qExpansion 1 (CuspForm.discriminantEquiv (toCuspForm f hcusp)) := by
-  rw [show (⇑f : ℍ → ℂ) = discriminant *
-      (CuspForm.discriminantEquiv (toCuspForm f hcusp) : ℍ → ℂ) from
+  rw [show (f : ℍ → ℂ) = discriminant * (toCuspForm f hcusp).discriminantEquiv from
       (discriminant_mul_discriminantEquiv (toCuspForm f hcusp)).symm, ← CuspForm.coe_discriminant]
   exact ModularForm.qExpansion_mul_coe one_pos one_mem_strictPeriods_SL _ _
 
@@ -272,7 +270,7 @@ theorem dimension_level_one (k : ℕ) (hk2 : Even k) :
       ihn (k - 12) (by lia) (by grind)]
     simp only [Nat.ModEq, show k / 12 = (k - 12) / 12 + 1 by lia,
       show (k - 12) % 12 = k % 12 by lia]
-    split_ifs <;> push_cast <;> ring
+    split_ifs <;> grind
 
 instance (k : ℤ) : FiniteDimensional ℂ (ModularForm 𝒮ℒ k) := by
   rw [FiniteDimensional, ← Module.rank_lt_aleph0_iff]
@@ -316,8 +314,8 @@ theorem sturm_bound_levelOne {k : ℤ} (f : ModularForm 𝒮ℒ k)
     (h : (↑(k.toNat / 12) : ℕ∞) < (qExpansion 1 f).order) : f = 0 := by
   rcases lt_or_ge k 0 with hk | hk
   · exact rank_zero_iff_forall_zero.mp (levelOne_neg_weight_rank_zero hk) f
-  obtain ⟨n, rfl⟩ : ∃ n : ℕ, k = (n : ℤ) := ⟨k.toNat, (Int.toNat_of_nonneg hk).symm⟩
-  exact sturm_bound_levelOne_nat f (by simpa using h)
+  · obtain ⟨n, rfl⟩ : ∃ n : ℕ, k = (n : ℤ) := ⟨k.toNat, (Int.toNat_of_nonneg hk).symm⟩
+    exact sturm_bound_levelOne_nat f (by simpa using h)
 
 end ModularForm
 
