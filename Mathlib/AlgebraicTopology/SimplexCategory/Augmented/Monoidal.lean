@@ -219,7 +219,6 @@ theorem tensorObj_hom_ext {x y z : AugmentedSimplexCategory} (f g : x ⊗ y ⟶ 
   | .star, .star, .of z, f, g => rfl
   | .star, .star, .star, f, g => rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma inl_comp_tensorHom {x₁ y₁ x₂ y₂ : AugmentedSimplexCategory}
     (f₁ : x₁ ⟶ y₁) (f₂ : x₂ ⟶ y₂) : inl x₁ x₂ ≫ (f₁ ⊗ₘ f₂) = f₁ ≫ inl y₁ y₂ :=
@@ -245,7 +244,6 @@ lemma inl_comp_tensorHom {x₁ y₁ x₂ y₂ : AugmentedSimplexCategory}
   | _, _, .star, _, f₁, f₂ => by cat_disch
   | .star, _, _, _, _, _ => rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma inr_comp_tensorHom {x₁ y₁ x₂ y₂ : AugmentedSimplexCategory}
     (f₁ : x₁ ⟶ y₁) (f₂ : x₂ ⟶ y₂) : inr x₁ x₂ ≫ (f₁ ⊗ₘ f₂) = f₂ ≫ inr y₁ y₂ :=

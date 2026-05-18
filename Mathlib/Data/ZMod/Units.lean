@@ -60,7 +60,7 @@ theorem unitsMap_surjective [hm : NeZero m] (h : n ∣ m) :
   · have h := Nat.dvd_sub hp hpx
     rw [add_comm, Nat.add_sub_cancel] at h
     rcases pp.dvd_mul.mp h with h | h
-    · have ⟨q, hq, hq'⟩ := (pp.prime.dvd_finset_prod_iff id).mp h
+    · have ⟨q, hq, hq'⟩ := (pp.prime.dvd_finsetProd_iff id).mp h
       rw [Finset.mem_filter, Nat.mem_primeFactors,
         ← (Nat.prime_dvd_prime_iff_eq pp hq.1.1).mp hq'] at hq
       exact hq.2 hpx

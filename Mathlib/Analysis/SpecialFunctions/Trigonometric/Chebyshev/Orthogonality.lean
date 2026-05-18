@@ -22,13 +22,13 @@ Chebyshev T polynomials are orthogonal with respect to `√(1 - x ^ 2)⁻¹`.
 
 ## Main statements
 
-* integrable_measureT: continuous functions are integrable with respect to Lebesgue measure
+* `integrable_measureT`: continuous functions are integrable with respect to Lebesgue measure
   scaled by `√(1 - x ^ 2)⁻¹` and restricted to `(-1, 1]`.
-* integral_eval_T_real_mul_evalT_real_measureT_of_ne:
+* `integral_eval_T_real_mul_evalT_real_measureT_of_ne`:
   if `n ≠ m` then the integral of `T_n * T_m` equals `0`.
-* integral_eval_T_real_mul_self_measureT_zero:
+* `integral_eval_T_real_mul_self_measureT_zero`:
   if `n = m = 0` then the integral equals `π`.
-* integral_eval_T_real_mul_self_measureT_of_ne_zero:
+* `integral_eval_T_real_mul_self_measureT_of_ne_zero`:
   if `n = m ≠ 0` then the integral equals `π / 2`.
 
 ## TODO

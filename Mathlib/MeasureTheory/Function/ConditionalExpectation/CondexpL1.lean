@@ -248,8 +248,8 @@ theorem aestronglyMeasurable_condExpInd (hs : MeasurableSet s) (hμs : μ s ≠ 
 @[simp]
 theorem condExpInd_empty : condExpInd G hm μ ∅ = (0 : G →L[ℝ] α →₁[μ] G) := by
   ext x
-  grw [condExpInd_ae_eq_condExpIndSMul, condExpIndSMul_empty, zero_apply, Lp.coeFn_zero,
-    Lp.coeFn_zero]
+  grw [condExpInd_ae_eq_condExpIndSMul hm MeasurableSet.empty (by simp), condExpIndSMul_empty,
+    zero_apply, Lp.coeFn_zero, Lp.coeFn_zero]
 
 theorem condExpInd_smul' [NormedSpace ℝ F] [SMulCommClass ℝ 𝕜 F] (c : 𝕜) (x : F) :
     condExpInd F hm μ s (c • x) = c • condExpInd F hm μ s x :=
@@ -291,7 +291,8 @@ theorem setIntegral_condExpInd (hs : MeasurableSet[m] s) (ht : MeasurableSet t) 
 theorem condExpInd_of_measurable (hs : MeasurableSet[m] s) (hμs : μ s ≠ ∞) (c : G) :
     condExpInd G hm μ s c = indicatorConstLp 1 (hm s hs) hμs c := by
   ext1
-  grw [indicatorConstLp_coeFn, condExpInd_ae_eq_condExpIndSMul, condExpIndSMul_ae_eq_smul]
+  grw [indicatorConstLp_coeFn, condExpInd_ae_eq_condExpIndSMul hm (hm s hs) hμs,
+    condExpIndSMul_ae_eq_smul]
   rw [condExpL2_indicator_of_measurable hm hs hμs (1 : ℝ)]
   filter_upwards [@indicatorConstLp_coeFn α _ _ 2 μ _ s (hm s hs) hμs (1 : ℝ)] with x hx
   rw [hx]

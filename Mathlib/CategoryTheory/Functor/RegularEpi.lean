@@ -19,7 +19,7 @@ regular epi category. This is an instance that applies directly when `D` is `Typ
 
 -/
 
-@[expose] public section
+public section
 
 namespace CategoryTheory.Functor
 

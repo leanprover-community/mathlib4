@@ -22,7 +22,7 @@ In this file we prove some theorems about (semi)normed spaces over real numbers.
   similar lemmas assuming that the ambient space is separated and nontrivial instead of `r ≠ 0`.
 -/
 
-@[expose] public section
+public section
 
 open Metric Set Function Filter
 open scoped NNReal Topology

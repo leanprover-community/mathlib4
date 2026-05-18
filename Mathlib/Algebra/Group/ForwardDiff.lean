@@ -116,9 +116,11 @@ end fwdDiff_aux
 
 open fwdDiff_aux
 
-@[simp] lemma fwdDiff_finset_sum {α : Type*} (s : Finset α) (f : α → M → G) :
+@[simp] lemma fwdDiff_finsetSum {α : Type*} (s : Finset α) (f : α → M → G) :
     Δ_[h] (∑ k ∈ s, f k) = ∑ k ∈ s, Δ_[h] (f k) :=
   map_sum (fwdDiffₗ M G h) f s
+
+@[deprecated (since := "2026-04-08")] alias fwdDiff_finset_sum := fwdDiff_finsetSum
 
 @[simp] lemma fwdDiff_iter_add (f g : M → G) (n : ℕ) :
     Δ_[h]^[n] (f + g) = Δ_[h]^[n] f + Δ_[h]^[n] g := by
@@ -130,9 +132,11 @@ open fwdDiff_aux
   | zero => simp only [iterate_zero, id_eq]
   | succ n IH => simp only [iterate_succ_apply, fwdDiff_const_smul, IH]
 
-@[simp] lemma fwdDiff_iter_finset_sum {α : Type*} (s : Finset α) (f : α → M → G) (n : ℕ) :
+@[simp] lemma fwdDiff_iter_finsetSum {α : Type*} (s : Finset α) (f : α → M → G) (n : ℕ) :
     Δ_[h]^[n] (∑ k ∈ s, f k) = ∑ k ∈ s, Δ_[h]^[n] (f k) := by
   simpa only [coe_fwdDiffₗ_pow] using map_sum (fwdDiffₗ M G h ^ n) f s
+
+@[deprecated (since := "2026-04-08")] alias fwdDiff_iter_finset_sum := fwdDiff_iter_finsetSum
 
 section newton_formulae
 
@@ -238,7 +242,7 @@ theorem fwdDiff_iter_pow_eq_zero_of_lt {j n : ℕ} (h : j < n) :
     have : (Δ_[1] fun (r : R) ↦ r ^ j) = ∑ i ∈ range j, j.choose i • fun r ↦ r ^ i := by
       ext x
       simp [nsmul_eq_mul, fwdDiff, add_pow, sum_range_succ, mul_comm]
-    rw [iterate_succ_apply, this, fwdDiff_iter_finset_sum]
+    rw [iterate_succ_apply, this, fwdDiff_iter_finsetSum]
     exact sum_eq_zero fun i hi ↦ by
       rw [fwdDiff_iter_const_smul, ih (by have := mem_range.1 hi; lia), nsmul_zero]
 
@@ -254,7 +258,7 @@ theorem fwdDiff_iter_eq_factorial {n : ℕ} :
       ∑ i ∈ range (n + 1), (n + 1).choose i • fun r ↦ r ^ i := by
       ext x
       simp [nsmul_eq_mul, fwdDiff, add_pow, sum_range_succ, mul_comm]
-    simp_rw [iterate_succ_apply, this, fwdDiff_iter_finset_sum, fwdDiff_iter_const_smul,
+    simp_rw [iterate_succ_apply, this, fwdDiff_iter_finsetSum, fwdDiff_iter_const_smul,
        sum_range_succ]
     simpa [IH, factorial_succ] using sum_eq_zero fun i hi ↦ by
       rw [fwdDiff_iter_pow_eq_zero_of_lt (by have := mem_range.1 hi; lia), mul_zero]
@@ -262,7 +266,7 @@ theorem fwdDiff_iter_eq_factorial {n : ℕ} :
 theorem Polynomial.fwdDiff_iter_degree_eq_factorial (P : R[X]) :
     Δ_[1]^[P.natDegree] P.eval = P.leadingCoeff • P.natDegree ! := funext fun x ↦ by
   simp_rw [P.eval_eq_sum_range, ← sum_apply _ _ (fun i x ↦ P.coeff i * x ^ i),
-    fwdDiff_iter_finset_sum, ← smul_eq_mul, ← Pi.smul_def, fwdDiff_iter_const_smul, Pi.smul_apply]
+    fwdDiff_iter_finsetSum, ← smul_eq_mul, ← Pi.smul_def, fwdDiff_iter_const_smul, Pi.smul_apply]
   rw [sum_apply, sum_range_succ, sum_eq_zero (fun i hi ↦ ?_), zero_add,
     fwdDiff_iter_eq_factorial, leadingCoeff, Pi.smul_apply]
   rw [fwdDiff_iter_pow_eq_zero_of_lt (mem_range.mp hi), smul_zero, Pi.zero_apply]
@@ -285,7 +289,7 @@ sums over `range n`).
 -/
 theorem fwdDiff_iter_sum_mul_pow_eq_zero {n : ℕ} (P : ℕ → R) :
     Δ_[1]^[n] (fun r : R ↦ ∑ k ∈ range n, P k * r ^ k) = 0 := by
-  simp_rw [← sum_apply _ _ (fun i x ↦ P i * x ^ i), fwdDiff_iter_finset_sum, sum_fn, ← smul_eq_mul,
+  simp_rw [← sum_apply _ _ (fun i x ↦ P i * x ^ i), fwdDiff_iter_finsetSum, sum_fn, ← smul_eq_mul,
     ← Pi.smul_def, fwdDiff_iter_const_smul, ← sum_fn]
   exact sum_eq_zero fun i hi ↦ smul_eq_zero_of_right _ <| fwdDiff_iter_pow_eq_zero_of_lt
     <| mem_range.mp hi

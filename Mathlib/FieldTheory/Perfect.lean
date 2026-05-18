@@ -52,6 +52,8 @@ section PerfectRing
 section Monoid
 variable (M : Type*) (p q : ℕ) [CommMonoid M] [PerfectRing M p] [PerfectRing M q]
 
+namespace PerfectRing
+
 instance one : PerfectRing M 1 :=
   ⟨by simpa using bijective_id⟩
 
@@ -60,6 +62,8 @@ instance mul : PerfectRing M (p * q) :=
 
 instance pow (n : ℕ) : PerfectRing M (p ^ n) :=
   n.recOn (inferInstanceAs (PerfectRing M 1)) fun n _ ↦ inferInstanceAs (PerfectRing M (p ^ n * p))
+
+end PerfectRing
 
 /-- The `p`-th power automorphism for a perfect monoid. -/
 @[simps! apply]

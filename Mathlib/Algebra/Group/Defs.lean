@@ -1213,13 +1213,10 @@ variable [Group G] {a b : G}
 theorem inv_mul_cancel (a : G) : a⁻¹ * a = 1 :=
   Group.inv_mul_cancel a
 
-set_option backward.privateInPublic true in
 @[to_additive]
 private theorem inv_eq_of_mul (h : a * b = 1) : a⁻¹ = b :=
   left_inv_eq_right_inv (inv_mul_cancel a) h
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 @[to_additive (attr := simp)]
 theorem mul_inv_cancel (a : G) : a * a⁻¹ = 1 := by
   rw [← inv_mul_cancel a⁻¹, inv_eq_of_mul (inv_mul_cancel a)]
@@ -1251,14 +1248,13 @@ theorem inv_mul_cancel_right (a b : G) : a * b⁻¹ * b = a := by
 theorem div_mul_cancel (a b : G) : a / b * b = a := by
   rw [div_eq_mul_inv, inv_mul_cancel_right a b]
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 @[to_additive]
-instance (priority := 100) Group.toDivisionMonoid : DivisionMonoid G :=
-  { inv_inv := fun a ↦ inv_eq_of_mul (inv_mul_cancel a)
-    mul_inv_rev :=
-      fun a b ↦ inv_eq_of_mul <| by rw [mul_assoc, mul_inv_cancel_left, mul_inv_cancel]
-    inv_eq_of_mul := fun _ _ ↦ inv_eq_of_mul }
+instance (priority := 100) Group.toDivisionMonoid : DivisionMonoid G where
+  inv_inv a := by exact inv_eq_of_mul (inv_mul_cancel a)
+  mul_inv_rev a b := by
+    apply inv_eq_of_mul
+    rw [mul_assoc, mul_inv_cancel_left, mul_inv_cancel]
+  inv_eq_of_mul _ _ := by exact inv_eq_of_mul
 
 -- see Note [lower instance priority]
 @[to_additive]

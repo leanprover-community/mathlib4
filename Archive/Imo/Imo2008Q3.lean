@@ -64,7 +64,7 @@ theorem p_lemma (p : ℕ) (hpp : Nat.Prime p) (hp_mod_4_eq_1 : p ≡ 1 [MOD 4]) 
     linarith only [hreal₂, hreal₃]
   have hreal₆ : (k : ℝ) > sqrt (2 * n) := by
     refine lt_of_pow_lt_pow_left₀ 2 k.cast_nonneg ?_
-    rw [sq_sqrt (mul_nonneg zero_le_two n.cast_nonneg)]
+    rw [sq_sqrt (by positivity)]
     linarith only [hreal₁, hreal₃, hreal₅]
   exact ⟨n, hnat₁, by linarith only [hreal₆, hreal₁]⟩
 

@@ -6,7 +6,8 @@ Authors: Heather Macbeth, Arend Mellendijk, Michael Rothgang
 module
 
 public import Mathlib.Algebra.BigOperators.Group.List.Basic
-public import Mathlib.Algebra.Field.Power  -- shake: keep (Qq dependency)
+public import Mathlib.Algebra.Field.Defs  -- shake: keep (Qq dependency)
+public import Mathlib.Algebra.Ring.Int.Parity -- shake: keep (Qq dependency)
 public import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic
 public import Mathlib.Util.Qq
 

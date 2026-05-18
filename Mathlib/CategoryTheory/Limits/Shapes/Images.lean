@@ -146,7 +146,6 @@ def ofIsoComp {X' : C} (g : X' ⟶ X) [IsIso g] (F : MonoFactorisation (g ≫ f)
   m := F.m
   e := inv g ≫ F.e
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `f` and `g` are isomorphic arrows, then a mono factorisation of `f`
 gives a mono factorisation of `g` -/
 @[simps]
@@ -185,7 +184,7 @@ def copy (F : MonoFactorisation f) (m : F.I ⟶ Y) (e : X ⟶ F.I)
 @[simp]
 lemma fac_apply {F G : C ⥤ Type w} {f : F ⟶ G} {X : C}
     (H : MonoFactorisation f) (x : F.obj X) : H.m.app X (H.e.app X x) = f.app X x := by
-  simp [← types_comp_apply, ← NatTrans.comp_app]
+  simp [← comp_apply, ← NatTrans.comp_app]
 
 end MonoFactorisation
 
@@ -698,7 +697,6 @@ instance inhabitedImageMap {f : Arrow C} [HasImage f.hom] : Inhabited (ImageMap 
 
 attribute [reassoc (attr := simp)] ImageMap.map_ι
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem ImageMap.factor_map {f g : Arrow C} [HasImage f.hom] [HasImage g.hom] (sq : f ⟶ g)
     (m : ImageMap sq) : factorThruImage f.hom ≫ m.map = sq.left ≫ factorThruImage g.hom :=
@@ -734,7 +732,6 @@ def HasImageMap.imageMap {f g : Arrow C} [HasImage f.hom] [HasImage g.hom] (sq :
     [HasImageMap sq] : ImageMap sq :=
   Classical.choice <| @HasImageMap.has_image_map _ _ _ _ _ _ sq _
 
-set_option backward.isDefEq.respectTransparency false in
 -- see Note [lower instance priority]
 instance (priority := 100) hasImageMapOfIsIso {f g : Arrow C} [HasImage f.hom] [HasImage g.hom]
     (sq : f ⟶ g) [IsIso sq] : HasImageMap sq :=
@@ -745,7 +742,6 @@ instance (priority := 100) hasImageMapOfIsIso {f g : Arrow C} [HasImage f.hom] [
           image.lift_fac, Category.assoc, ← Comma.comp_right, IsIso.hom_inv_id, Comma.id_right,
           Category.comp_id] }
 
-set_option backward.isDefEq.respectTransparency false in
 instance HasImageMap.comp {f g h : Arrow C} [HasImage f.hom] [HasImage g.hom] [HasImage h.hom]
     (sq1 : f ⟶ g) (sq2 : g ⟶ h) [HasImageMap sq1] [HasImageMap sq2] : HasImageMap (sq1 ≫ sq2) :=
   HasImageMap.mk
@@ -772,7 +768,7 @@ theorem ImageMap.map_uniq {f g : Arrow C} [HasImage f.hom] [HasImage g.hom]
   apply ImageMap.map_uniq_aux _ F.map_ι _ G.map_ι
 
 @[deprecated (since := "2026-04-08")]
-alias ImageMap.mk.injEq' :=  ImageMap.mk.injEq
+alias ImageMap.mk.injEq' := ImageMap.mk.injEq
 
 instance : Subsingleton (ImageMap sq) :=
   Subsingleton.intro fun a b =>
@@ -786,11 +782,9 @@ variable [HasImageMap sq]
 abbrev image.map : image f.hom ⟶ image g.hom :=
   (HasImageMap.imageMap sq).map
 
-set_option backward.isDefEq.respectTransparency false in
 theorem image.factor_map :
     factorThruImage f.hom ≫ image.map sq = sq.left ≫ factorThruImage g.hom := by simp
 
-set_option backward.isDefEq.respectTransparency false in
 theorem image.map_ι : image.map sq ≫ image.ι g.hom = image.ι f.hom ≫ sq.right := by simp
 
 theorem image.map_homMk'_ι {X Y P Q : C} {k : X ⟶ Y} [HasImage k] {l : P ⟶ Q} [HasImage l]
@@ -803,7 +797,6 @@ section
 variable {h : Arrow C} [HasImage h.hom] (sq' : g ⟶ h)
 variable [HasImageMap sq']
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Image maps for composable commutative squares induce an image map in the composite square. -/
 def imageMapComp : ImageMap (sq ≫ sq') where map := image.map sq ≫ image.map sq'
 
@@ -947,7 +940,6 @@ section HasStrongEpiImages
 
 variable [HasImages C]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A category with strong epi images has image maps. -/
 instance (priority := 100) hasImageMapsOfHasStrongEpiImages [HasStrongEpiImages C] :
     HasImageMaps C where

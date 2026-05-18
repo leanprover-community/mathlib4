@@ -25,3 +25,12 @@ example (h : c → b) : (a → b → c) → (a → b → b) := by
 example (h : ∀ n : Nat, 0 ≤ n) : ∀ n : Int, 0 ≤ n := by
   revert h
   gcongr
+
+def True' := True
+
+example (h : a → b) : (b → True) → (a → True') := by
+  gcongr ?_ → _
+
+example (h : a → b) : (b → True) → (a → True') := by
+  gcongr
+  exact id

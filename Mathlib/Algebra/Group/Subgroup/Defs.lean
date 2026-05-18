@@ -396,8 +396,11 @@ theorem toSubmonoid_mono : Monotone (toSubmonoid : Subgroup G → Submonoid G) :
 theorem toSubmonoid_le {p q : Subgroup G} : p.toSubmonoid ≤ q.toSubmonoid ↔ p ≤ q :=
   Iff.rfl
 
-@[to_additive (attr := simp)]
+@[to_additive]
 lemma coe_nonempty (s : Subgroup G) : (s : Set G).Nonempty := ⟨1, one_mem _⟩
+
+attribute [deprecated OneMemClass.coe_nonempty (since := "2026-04-20")] Subgroup.coe_nonempty
+attribute [deprecated ZeroMemClass.coe_nonempty (since := "2026-04-20")] AddSubgroup.coe_nonempty
 
 end Subgroup
 
@@ -546,15 +549,13 @@ theorem mk_eq_one {g : G} {h} : (⟨g, h⟩ : H) = 1 ↔ g = 1 := Submonoid.mk_e
 
 /-- A subgroup of a group inherits a group structure. -/
 @[to_additive /-- An `AddSubgroup` of an `AddGroup` inherits an `AddGroup` structure. -/]
-instance toGroup {G : Type*} [Group G] (H : Subgroup G) : Group H := fast_instance%
-  Subtype.coe_injective.group _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
-    (fun _ _ => rfl) fun _ _ => rfl
+instance toGroup {G : Type*} [Group G] (H : Subgroup G) : Group H :=
+  SubgroupClass.toGroup H
 
 /-- A subgroup of a `CommGroup` is a `CommGroup`. -/
 @[to_additive /-- An `AddSubgroup` of an `AddCommGroup` is an `AddCommGroup`. -/]
-instance toCommGroup {G : Type*} [CommGroup G] (H : Subgroup G) : CommGroup H := fast_instance%
-  Subtype.coe_injective.commGroup _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
-    (fun _ _ => rfl) fun _ _ => rfl
+instance toCommGroup {G : Type*} [CommGroup G] (H : Subgroup G) : CommGroup H :=
+  SubgroupClass.toCommGroup H
 
 /-- The natural group hom from a subgroup of group `G` to `G`. -/
 @[to_additive /-- The natural group hom from an `AddSubgroup` of `AddGroup` `G` to `G`. -/]
@@ -627,8 +628,10 @@ namespace Subgroup
 variable {H : Subgroup G}
 
 @[to_additive]
-instance (priority := 100) normal_of_comm {G : Type*} [CommGroup G] (H : Subgroup G) : H.Normal :=
-  ⟨by simp [mul_comm]⟩
+instance (priority := 100) normal_of_isMulCommutative [IsMulCommutative G] (H : Subgroup G) :
+    H.Normal := ⟨by simp [mul_comm']⟩
+
+@[deprecated (since := "2026-04-10")] alias normal_of_comm := normal_of_isMulCommutative
 
 namespace Normal
 

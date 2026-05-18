@@ -1111,6 +1111,17 @@ lemma end_apply (ij : ι × ι) : (b.end ij) = (Matrix.toLin b b) (Matrix.stdBas
 lemma end_apply_apply (ij : ι × ι) (k : ι) : (b.end ij) (b k) = if ij.2 = k then b ij.1 else 0 :=
   linearMap_apply_apply b b ij k
 
+lemma lie_end_of_apply_eq_smul {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M]
+    (b : Basis ι R M) (a : ι → R) (s : Module.End R M)
+    (hs : ∀ k, s (b k) = a k • b k) (i j : ι) :
+    ⁅s, b.end (i, j)⁆ = (a i - a j) • b.end (i, j) := by
+  refine b.ext fun k ↦ ?_
+  simp only [Ring.lie_def, LinearMap.sub_apply, End.mul_apply, LinearMap.smul_apply,
+    Basis.end_apply_apply, smul_ite, smul_zero, sub_smul]
+  rcases eq_or_ne j k with rfl | hjk
+  · simp [hs, Basis.end_apply_apply]
+  · simp [hs, Basis.end_apply_apply, hjk]
+
 end Module.Basis
 
 section

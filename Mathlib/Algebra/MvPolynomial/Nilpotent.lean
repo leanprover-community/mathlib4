@@ -19,7 +19,7 @@ We prove that
   and its other coefficients are nilpotent.
 -/
 
-@[expose] public section
+public section
 
 namespace MvPolynomial
 
@@ -72,7 +72,7 @@ theorem isUnit_iff : IsUnit P ↔ IsUnit (P.coeff 0) ∧ ∀ i ≠ 0, IsNilpoten
     simpa using this.isUnit_add_right_of_commute (h₁.map C) (.all _ _)
 
 instance : IsLocalHom (C : _ →+* MvPolynomial σ R) where
-  map_nonunit := by classical simp +contextual [isUnit_iff, coeff_C, apply_ite]
+  map_nonunit := by classical simp +contextual [isUnit_iff, coeff_C]
 
 instance : IsLocalHom (algebraMap R (MvPolynomial σ R)) :=
   inferInstanceAs (IsLocalHom C)

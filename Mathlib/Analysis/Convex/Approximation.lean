@@ -30,7 +30,7 @@ of continuous affine linear functions. We follow the proof in
 
 -/
 
-@[expose] public section
+public section
 
 open Function Set RCLike ContinuousLinearMap
 
@@ -220,19 +220,11 @@ theorem univ_sSup_of_nat_affine_eq [HereditarilyLindelofSpace E]
     (hφc : LowerSemicontinuous φ) (hφcv : ConvexOn ℝ univ φ) :
     ∃ (l : ℕ → E →L[𝕜] 𝕜) (c : ℕ → ℝ), (∀ i, re ∘ (l i) + const E (c i) ≤ φ)
       ∧ ⨆ i, re ∘ (l i) + const E (c i) = φ := by
-  obtain ⟨𝓕', h𝓕'⟩ := hφcv.univ_sSup_of_countable_affine_eq (𝕜 := 𝕜) hφc
-  by_cases! he : 𝓕'.Nonempty
-  · obtain ⟨f, hf⟩ := h𝓕'.1.exists_eq_range he
-    have (i : ℕ) : ∃ (l : E →L[𝕜] 𝕜) (c : ℝ), f i = re ∘ l + const E c := by simp_all
-    choose l c hlc using this
-    refine ⟨l, c, fun i => (hlc i) ▸ (h𝓕'.2.2 (f i) (hf ▸ mem_range_self i)).1, ?_⟩
-    calc
-    _ = ⨆ i, f i := by congr with i x; exact congrFun (hlc i).symm x
-    _ = _ := by rw [← sSup_range, ← hf, h𝓕'.2.1]
-  · refine ⟨fun _ => 0, fun _ => 0, fun i x => ?_, ?_⟩
-    · simp_all [← congrFun h𝓕'.2.1 x]
-    · ext x
-      simp_all [← congrFun h𝓕'.2.1 x]
+  obtain ⟨l, c, hle, hsup⟩ := hφcv.sSup_of_nat_affine_eq (𝕜 := 𝕜) (s := univ) isClosed_univ
+    (lowerSemicontinuousOn_univ_iff.2 hφc)
+  refine ⟨l, c, fun i x ↦ hle i ⟨x, trivial⟩, ?_⟩
+  ext x
+  simpa using congrFun hsup ⟨x, trivial⟩
 
 end RCLike
 

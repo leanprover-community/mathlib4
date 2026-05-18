@@ -244,7 +244,7 @@ theorem toDeleteEdges_cons (s : Set (Sym2 V)) {u v w : V} (h : G.Adj u v) (p : G
 This is an abbreviation for `SimpleGraph.Walk.toDeleteEdges`. -/
 abbrev toDeleteEdge (e : Sym2 V) (p : G.Walk v w) (hp : e ∉ p.edges) :
     (G.deleteEdges {e}).Walk v w :=
-  p.toDeleteEdges {e} (fun _ => by contrapose!; simp +contextual [hp])
+  p.toDeleteEdges {e} (fun _ ↦ by contrapose; simp +contextual [hp])
 
 @[simp]
 theorem map_toDeleteEdges_eq (s : Set (Sym2 V)) {p : G.Walk v w} (hp) :

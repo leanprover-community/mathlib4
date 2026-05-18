@@ -400,10 +400,6 @@ theorem monomial_zero_right (n : ℕ) : monomial n (0 : R) = 0 :=
 theorem monomial_zero_one : monomial 0 (1 : R) = 1 :=
   rfl
 
-@[deprecated map_add (since := "2025-11-15")]
-theorem monomial_add (n : ℕ) (r s : R) : monomial n (r + s) = monomial n r + monomial n s :=
-  (monomial n).map_add _ _
-
 theorem monomial_mul_monomial (n m : ℕ) (r s : R) :
     monomial n r * monomial m s = monomial (n + m) (r * s) :=
   toFinsupp_injective <| by
@@ -679,6 +675,7 @@ theorem C_mul_X_eq_monomial : C a * X = monomial 1 a := by rw [← C_mul_X_pow_e
 theorem toFinsupp_C_mul_X (a : R) : (C a * X).toFinsupp = .single 1 a := by
   rw [C_mul_X_eq_monomial, toFinsupp_monomial]
 
+@[grind inj]
 theorem C_injective : Injective (C : R → R[X]) :=
   monomial_injective 0
 
@@ -747,7 +744,7 @@ theorem eq_zero_of_eq_zero (h : (0 : R) = (1 : R)) (p : R[X]) : p = 0 := by
 section Fewnomials
 
 theorem support_monomial (n) {a : R} (H : a ≠ 0) : (monomial n a).support = singleton n := by
-  rw [← ofFinsupp_single, support]; exact Finsupp.support_single_ne_zero _ H
+  rw [← ofFinsupp_single, support]; exact Finsupp.support_single _ H
 
 theorem support_monomial' (n) (a : R) : (monomial n a).support ⊆ singleton n := by
   rw [← ofFinsupp_single, support]

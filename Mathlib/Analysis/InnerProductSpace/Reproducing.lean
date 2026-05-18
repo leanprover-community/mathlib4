@@ -32,7 +32,7 @@ positive semidefinite matrices.
 
 ## References
 * [Paulsen, Vern I. and Raghupathi, Mrinal,
-  *An introduction to the theory of reproducing kernel {H}ilbert spaces*][MR3526117]
+  *An introduction to the theory of reproducing kernel Hilbert spaces*][MR3526117]
 -/
 
 public noncomputable section
@@ -198,7 +198,7 @@ theorem posSemidef_tfae : List.TFAE [K.PosSemidef, K.IsHermitian ∧ ∀ (f : X 
   tfae_have 1 → 2 := fun h ff ↦ by
     rw [Finsupp.sum_comm]
     convert h (ff.sum fun xv z ↦ .single xv.1
-      ((z/‖v‖ ^ 2) • (innerSL 𝕜 v).smulRight xv.2)) v
+      ((z / ‖v‖ ^ 2) • (innerSL 𝕜 v).smulRight xv.2)) v
     simp [Finsupp.sum_sum_index, inner_add_right, inner_add_left, ← smul_assoc, hv]
     simp [inner_smul_left, inner_smul_right, ← mul_assoc, mul_comm]
   tfae_have 2 → 3 := fun h vv ↦ by

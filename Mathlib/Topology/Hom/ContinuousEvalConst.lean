@@ -21,7 +21,7 @@ Whenever we add a type of bundled dependent functions with a topology having thi
 we may decide to generalize from `FunLike` to `DFunLike`.
 -/
 
-@[expose] public section
+public section
 
 open scoped Topology
 open Filter

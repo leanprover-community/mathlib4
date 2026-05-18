@@ -87,7 +87,7 @@ theorem IsLocalExtrOn.exists_multipliers_of_hasStrictFDerivAt_1d {f : E → ℝ}
     (hφ' : HasStrictFDerivAt φ φ' x₀) : ∃ a b : ℝ, (a, b) ≠ 0 ∧ a • f' + b • φ' = 0 := by
   obtain ⟨Λ, Λ₀, hΛ, hfΛ⟩ := hextr.exists_linear_map_of_hasStrictFDerivAt hf' hφ'
   refine ⟨Λ 1, Λ₀, ?_, ?_⟩
-  · contrapose! hΛ
+  · contrapose hΛ
     simp only [Prod.mk_eq_zero] at hΛ ⊢
     refine ⟨LinearMap.ext fun x => ?_, hΛ.2⟩
     simpa [hΛ.1] using Λ.map_smul x 1

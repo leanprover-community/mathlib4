@@ -6,7 +6,7 @@ Authors: Kim Morrison
 module
 
 public import Mathlib.CategoryTheory.Monoidal.Braided.Basic
-public import Mathlib.CategoryTheory.Monoidal.Mon_
+public import Mathlib.CategoryTheory.Monoidal.Mon
 
 /-!
 # The category of commutative monoids in a braided monoidal category.

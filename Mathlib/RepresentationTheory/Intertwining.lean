@@ -40,7 +40,7 @@ structure IntertwiningMap extends V →ₗ[A] W where
 /-- An intertwining map constructed form the linear map and the fact that it is intertwining. -/
 def _root_.LinearMap.intertwiningMap_of_isIntertwiningMap
     (hf : ∀ (g : G), ∀ (v : V), f (ρ g v) = σ g (f v)) : IntertwiningMap ρ σ :=
-  { f with isIntertwining' g := by ext v; exact hf g v}
+  { f with isIntertwining' g := by ext v; exact hf g v }
 
 lemma IntertwiningMap.isIntertwining_assoc {f : IntertwiningMap ρ σ} (g : G) (l : U →ₗ[A] V) :
     f.toLinearMap ∘ₗ ρ g ∘ₗ l = σ g ∘ₗ f.toLinearMap ∘ₗ l := by
@@ -307,7 +307,7 @@ def refl : Equiv ρ ρ where
 lemma coe_invFun : φ.invFun = φ.symm := rfl
 
 theorem toLinearEquiv_toLinearMap :
-  φ.toLinearEquiv.toLinearMap  = φ.toIntertwiningMap.toLinearMap := rfl
+  φ.toLinearEquiv.toLinearMap = φ.toIntertwiningMap.toLinearMap := rfl
 
 theorem toLinearEquiv_apply (v : V) : φ.toLinearEquiv v = φ.toIntertwiningMap v := rfl
 
@@ -324,7 +324,7 @@ open LinearMap in
 lemma _root_.LinearEquiv.isIntertwining_symm_isIntertwining {e : V ≃ₗ[A] W}
     (he : ∀ g, e ∘ₗ (ρ g) = (σ g) ∘ₗ e) (g : G) :
     e.symm ∘ₗ (σ g) = (ρ g) ∘ₗ e.symm := by
-  apply e.comp_toLinearMap_eq_iff _ _|>.1
+  apply e.comp_toLinearMap_eq_iff _ _ |>.1
   rw [← comp_assoc, ← comp_assoc, he g, e.comp_symm, id_comp, comp_assoc, e.comp_symm, comp_id]
 
 @[simp]
@@ -532,7 +532,7 @@ noncomputable
 def ofBijective (f : IntertwiningMap ρ σ) (hf : Function.Bijective f) :
     Equiv ρ σ where
   isIntertwining' := f.isIntertwining'
-  toLinearEquiv :=  LinearEquiv.ofBijective f.toLinearMap hf
+  toLinearEquiv := LinearEquiv.ofBijective f.toLinearMap hf
 
 @[simp]
 theorem coe_ofBijective (f : IntertwiningMap ρ σ) (hf : Function.Bijective f) :

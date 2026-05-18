@@ -137,7 +137,7 @@ variable {φ : R →+* S}
 -- We endow MvPowerSeries σ R with the product uniform structure
 set_option backward.privateInPublic true in
 private instance : UniformSpace (MvPolynomial σ R) :=
-  comap toMvPowerSeries (Pi.uniformSpace _)
+  comap toMvPowerSeries inferInstance
 
 set_option backward.privateInPublic true in
 /-- The induced uniform structure of MvPolynomial σ R is an additive group uniform structure -/

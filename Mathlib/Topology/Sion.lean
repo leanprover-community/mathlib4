@@ -27,7 +27,7 @@ The classical case of the theorem assumes that `f` is continuous,
 As a particular case, one get the von Neumann theorem where
 `f` is bilinear and `E`, `F` are finite dimensional.
 
-We follow the proof of [Komiya-1988][Komiya (1988)].
+We follow the proof of [Komiya (1988)][Komiya-1988].
 
 ## Remark on implementation
 
@@ -52,14 +52,14 @@ We follow the proof of [Komiya-1988][Komiya (1988)].
 
 ## References
 
-- [vonNeumann-1928][Neumann, John von (1928).
-  ”Zur Theorie der Gesellschaftsspiele”. *Mathematische Annalen* 100 (1): 295‑320]
+- [Neumann, John von (1928).
+  ”Zur Theorie der Gesellschaftsspiele”. *Mathematische Annalen* 100 (1): 295‑320][vonNeumann-1928]
 
-- [Sion-1958][Sion, Maurice (1958).
-  ”On general minimax theorems”. *Pacific Journal of Mathematics* 8 (1): 171‑76.]
+- [Sion, Maurice (1958).
+  ”On general minimax theorems”. *Pacific Journal of Mathematics* 8 (1): 171‑76.][Sion-1958]
 
-- [Komiya-1988][Komiya, Hidetoshi (1988).
-  “Elementary Proof for Sion’s Minimax Theorem”. *Kodai Mathematical Journal* 11 (1).]
+- [Komiya, Hidetoshi (1988).
+  “Elementary Proof for Sion’s Minimax Theorem”. *Kodai Mathematical Journal* 11 (1).][Komiya-1988]
 
 -/
 
@@ -74,7 +74,7 @@ variable {E F : Type*} {β : Type*} [LinearOrder β]
 
 /-- The familywise sublevel sets of `f`, the first variable serving as a parameter -/
 def sublevelLeft (b : β) (z : F) : Set X :=
-  (fun x => f x z) ∘ (fun x ↦ ↑x)⁻¹' Iic b
+  (fun x => f x z) ∘ (fun x ↦ ↑x) ⁻¹' Iic b
 
 variable {X Y f}
 
@@ -175,8 +175,7 @@ variable [TopologicalSpace F] [AddCommGroup F] [Module ℝ F]
 
 variable (X Y f) in
 /-- The set of parameters `z` in the segment `[y, y']` such that `f b z ≤ f b' y`. -/
-def setOf_sublevelLeft_subset [AddCommGroup F] [Module ℝ F]
-    (b b' : β) (y y' : Y) : Set (segment ℝ y.val y'.val) :=
+def setOf_sublevelLeft_subset (b b' : β) (y y' : Y) : Set (segment ℝ y.val y'.val) :=
     {z | sublevelLeft X f b z ⊆ sublevelLeft X f b' y}
 
 include ne_X kX hfx hfx' cY hfy hfy' in
@@ -355,7 +354,7 @@ public theorem minimax
   · -- the case when `Y` is empty is trivial
     simp only [mem_empty_iff_false, IsEmpty.forall_iff, implies_true, false_and, exists_const,
       setOf_false, isLUB_empty_iff] at *
-    replace hsup_y : ∀ x ∈ X,  sup_y x = sup_inf :=
+    replace hsup_y : ∀ x ∈ X, sup_y x = sup_inf :=
       fun x hx ↦ le_antisymm (hsup_y x hx sup_inf) (hsup_inf (sup_y x))
     suffices {t | ∃ x ∈ X, sup_y x = t} = {sup_inf} from (this ▸ hinf_sup).unique (by simp) |>.le
     ext t
@@ -392,7 +391,7 @@ public theorem minimax
   simp only [lt_isLUB_iff hsup_inf, mem_setOf_eq, exists_exists_and_eq_and]
   use y0 hs', hy0 hs'
   specialize ht0 hs'
-  obtain ⟨a, ha, h⟩ := LowerSemicontinuousOn.exists_isMinOn ne_X kX (hfy (y0  hs') (hy0 hs'))
+  obtain ⟨a, ha, h⟩ := LowerSemicontinuousOn.exists_isMinOn ne_X kX (hfy (y0 hs') (hy0 hs'))
   apply lt_of_lt_of_le (ht0 a ha)
   simpa [le_isGLB_iff (hinf_x (y0 hs') (hy0 hs')), mem_lowerBounds]
 
@@ -501,7 +500,7 @@ when `β` is given a Dedekind-MacNeille completion `ι : β ↪o γ` -/
 public theorem DMCompletion.exists_isSaddlePointOn :
   ∃ a ∈ X, ∃ b ∈ Y, IsSaddlePointOn X Y f a b := by
   -- Reduce to the cae of EReal-valued functions
-  let φ : E → F → γ := fun x y ↦  ι (f x y)
+  let φ : E → F → γ := fun x y ↦ ι (f x y)
   -- suffices : ∃ a ∈ X, ∃ b ∈ Y, IsSaddlePointOn X Y φ a b
   have hφx (x) (hx : x ∈ X) : UpperSemicontinuousOn (fun y ↦ φ x y) Y := by
     convert Continuous.comp_upperSemicontinuousOn hι (hfx x hx) ι.monotone

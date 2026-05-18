@@ -8,7 +8,7 @@ module
 public import Mathlib.CategoryTheory.Shift.Basic
 public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 
-/-! Sequences of functors from a category equipped with a shift
+/-! # Sequences of functors from a category equipped with a shift
 
 Let `F : C ⥤ A` be a functor from a category `C` that is equipped with a
 shift by an additive monoid `M`. In this file, we define a typeclass
@@ -60,7 +60,7 @@ class ShiftSequence where
 @[implicit_reducible]
 noncomputable def ShiftSequence.tautological : ShiftSequence F M where
   sequence n := shiftFunctor C n ⋙ F
-  isoZero := isoWhiskerRight (shiftFunctorZero C M) F ≪≫ F.rightUnitor
+  isoZero := isoWhiskerRight (shiftFunctorZero C M) F ≪≫ F.leftUnitor
   shiftIso n a a' ha' := (Functor.associator _ _ _).symm ≪≫
     isoWhiskerRight (shiftFunctorAdd' C n a a' ha').symm _
   shiftIso_zero a := by

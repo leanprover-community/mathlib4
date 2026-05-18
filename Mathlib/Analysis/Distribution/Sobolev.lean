@@ -43,7 +43,7 @@ the definition of the Sobolev spaces.
 
 ## References
 * [M. Taylor, *Partial Differential Equations 1*][taylorPDE1]
-* [W. McLean, *Strongly Elliptic Systems and Boundary Integral Equations][mclean2000]
+* [W. McLean, *Strongly Elliptic Systems and Boundary Integral Equations*][mclean2000]
 
 -/
 
@@ -106,7 +106,7 @@ open scoped Real Laplacian LineDeriv
 theorem besselPotential_neg_one_lineDerivOp_eq {m : E} (f : 𝓢'(E, F)) :
     (besselPotential E F (-1)) (∂_{m} f) =
       (2 * π * Complex.I) • fourierMultiplierCLM F (fun x ↦ Complex.ofReal <|
-      inner ℝ x m * (1 + ‖x‖ ^ 2) ^ (-1/2 : ℝ)) f := by
+      inner ℝ x m * (1 + ‖x‖ ^ 2) ^ (-1 / 2 : ℝ)) f := by
   rw [lineDeriv_eq_fourierMultiplierCLM, besselPotential,
     ContinuousLinearMap.map_smul_of_tower,
     fourierMultiplierCLM_fourierMultiplierCLM_apply (by fun_prop) (by fun_prop)]
@@ -114,7 +114,6 @@ theorem besselPotential_neg_one_lineDerivOp_eq {m : E} (f : 𝓢'(E, F)) :
   ext x
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 theorem besselPotential_neg_two_laplacian_eq (f : 𝓢'(E, F)) :
     (besselPotential E F (-2)) (Δ f) = -(2 * π) ^ 2 •
       fourierMultiplierCLM F (fun x ↦ Complex.ofReal <| ‖x‖ ^ 2 * (1 + ‖x‖ ^ 2) ^ (-1 : ℝ)) f := by
@@ -198,7 +197,6 @@ theorem memSobolev_besselPotential_iff {s r : ℝ} {p : ℝ≥0∞} [hp : Fact (
     MemSobolev s p (besselPotential E F r f) ↔ MemSobolev (r + s) p f := by
   simp [MemSobolev]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Schwartz functions are in every Sobolev space. -/
 theorem _root_.SchwartzMap.memSobolev {s : ℝ} {p : ℝ≥0∞} [hp : Fact (1 ≤ p)] (f : 𝓢(E, F)) :
     MemSobolev s p (f : 𝓢'(E, F)) := by
@@ -242,8 +240,8 @@ a `L1` function.
 This is the main calculation of the Sobolev embedding theorem. -/
 theorem MemSobolev.fourier_memL1 {s : ℝ} (hs : Module.finrank ℝ E < 2 * s) {f : 𝓢'(E, F)}
     (hf : MemSobolev s 2 f) :
-    ∃ (v : Lp F 1 (volume : Measure E)), 𝓕 f  = (v : 𝓢'(E, F)) := by
-  obtain ⟨u, hu⟩ :=  memSobolev_iff_exists_smulLeftCLM_fourier.mp hf
+    ∃ (v : Lp F 1 (volume : Measure E)), 𝓕 f = (v : 𝓢'(E, F)) := by
+  obtain ⟨u, hu⟩ := memSobolev_iff_exists_smulLeftCLM_fourier.mp hf
   have : MemLp (fun x : E ↦ (1 + ‖x‖ ^ 2) ^ (-s / 2)) 2 := by
     constructor
     · have : (fun x : E ↦ (1 + ‖x‖ ^ 2) ^ (-s / 2)).HasTemperateGrowth := by

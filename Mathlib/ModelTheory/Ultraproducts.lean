@@ -28,7 +28,7 @@ public import Mathlib.Order.Filter.Ultrafilter.Defs
 ultraproduct, Los's theorem
 -/
 
-@[expose] public section
+public section
 
 universe u v
 

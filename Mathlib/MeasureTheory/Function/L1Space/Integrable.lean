@@ -235,7 +235,7 @@ lemma integrable_norm_rpow_of_le [IsFiniteMeasure μ] {f : α → β} (hf : AESt
   rcases hq.eq_or_lt with (rfl | hq)
   · grind
   rw [← ENNReal.toReal_ofReal hp.le, integrable_norm_rpow_iff hf (by simp [hp]) (by simp)]
-  rw [← ENNReal.toReal_ofReal hq.le, integrable_norm_rpow_iff hf  (by simp [hq]) (by simp)] at hint
+  rw [← ENNReal.toReal_ofReal hq.le, integrable_norm_rpow_iff hf (by simp [hq]) (by simp)] at hint
   exact MemLp.mono_exponent hint (ENNReal.ofReal_le_ofReal hpq)
 
 lemma integrable_norm_pow_of_le [IsFiniteMeasure μ] {f : α → β} (hf : AEStronglyMeasurable f μ)
@@ -297,11 +297,14 @@ lemma integrable_dirac' {a : α} {f : α → ε} (hf : StronglyMeasurable f) (hf
     Integrable f (Measure.dirac a) :=
   ⟨hf.aestronglyMeasurable, by simpa [HasFiniteIntegral, lintegral_dirac' _ hf.enorm]⟩
 
-theorem integrable_finset_sum_measure [PseudoMetrizableSpace ε]
+theorem integrable_finsetSum_measure [PseudoMetrizableSpace ε]
     {ι} {m : MeasurableSpace α} {f : α → ε} {μ : ι → Measure α}
     {s : Finset ι} : Integrable f (∑ i ∈ s, μ i) ↔ ∀ i ∈ s, Integrable f (μ i) := by
   classical
   induction s using Finset.induction_on <;> simp [*]
+
+@[deprecated (since := "2026-04-08")]
+alias integrable_finset_sum_measure := integrable_finsetSum_measure
 
 section
 
@@ -433,15 +436,19 @@ section ESeminormedAddCommMonoid
 variable {ε' : Type*} [TopologicalSpace ε'] [ESeminormedAddCommMonoid ε'] [ContinuousAdd ε']
 
 @[fun_prop]
-theorem integrable_finset_sum' {ι} (s : Finset ι) {f : ι → α → ε'}
+theorem integrable_finsetSum' {ι} (s : Finset ι) {f : ι → α → ε'}
     (hf : ∀ i ∈ s, Integrable (f i) μ) : Integrable (∑ i ∈ s, f i) μ :=
   Finset.sum_induction f (fun g => Integrable g μ) (fun _ _ => Integrable.add)
     (integrable_zero _ _ _) hf
 
+@[deprecated (since := "2026-04-08")] alias integrable_finset_sum' := integrable_finsetSum'
+
 @[fun_prop]
-theorem integrable_finset_sum {ι} (s : Finset ι) {f : ι → α → ε'}
+theorem integrable_finsetSum {ι} (s : Finset ι) {f : ι → α → ε'}
     (hf : ∀ i ∈ s, Integrable (f i) μ) : Integrable (fun a => ∑ i ∈ s, f i a) μ := by
-  simpa only [← Finset.sum_apply] using integrable_finset_sum' s hf
+  simpa only [← Finset.sum_apply] using integrable_finsetSum' s hf
+
+@[deprecated (since := "2026-04-08")] alias integrable_finset_sum := integrable_finsetSum
 
 end ESeminormedAddCommMonoid
 

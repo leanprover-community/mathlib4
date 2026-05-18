@@ -289,8 +289,10 @@ def orderCore (only? : Bool) (hyps : Array Expr) (negGoal : Expr) (g : MVarId) :
 /-- Args for the `order` tactic. -/
 syntax orderArgs := (&" only")? (" [" term,* "]")?
 
-/-- `order_core` is the part of the `order` tactic that tries to find a contradiction. -/
-syntax (name := order_core) "order_core" orderArgs ident : tactic
+/-- `order_core` is an implementation detail of the `order` tactic. It proves the main goal,
+which must be `⊢ False`, by deriving a contradiction from hypotheses which are formulas in the
+language of orders. -/
+local syntax (name := order_core) "order_core" orderArgs ident : tactic
 
 open Syntax in
 elab_rules : tactic
@@ -299,8 +301,16 @@ elab_rules : tactic
     let args ← ((args.map (TSepArray.getElems)).getD {}).mapM (elabTermWithoutNewMVars `order)
     commitIfNoEx do liftMetaFinishingTactic <| orderCore o.isSome args negGoal
 
-/-- A finishing tactic for solving goals in arbitrary `Preorder`, `PartialOrder`,
-or `LinearOrder`. Supports `⊤`, `⊥`, and lattice operations. -/
+/-- `order` solves the main goal if it can be derived from the local hypotheses and the axioms of
+`Preorder`, `PartialOrder` or `LinearOrder`. Also supports `⊤`, `⊥` and lattice operations.
+
+This tactic fails if it cannot prove the main goal.
+
+* `order [e₁, ..., eₙ]` uses the terms `e₁`, ... `eₙ` as hypotheses, in addition to the local
+  context.
+* `order only [e₁, ..., eₙ]` uses only the terms `e₁`, ... `eₙ` as hypotheses (ignoring the local
+  context).
+-/
 macro "order" args:orderArgs : tactic => `(tactic|
   · intros
     by_contra! _order_neg_goal

@@ -27,9 +27,7 @@ noncomputable section
 
 universe v u
 
-open MvPolynomial Opposite
-
-open CategoryTheory
+open MvPolynomial Opposite CategoryTheory
 
 namespace CommRingCat
 
@@ -45,17 +43,18 @@ theorem free_obj_coe {α : Type u} : (free.obj α : Type u) = MvPolynomial α �
   rfl
 
 -- This is not a `@[simp]` lemma as the left-hand side simplifies via `dsimp`.
-theorem free_map_coe {α β : Type u} {f : α → β} : ⇑(free.map f) = ⇑(rename f) :=
+theorem free_map_coe {α β : Type u} {f : α ⟶ β} : ⇑(free.map f) = ⇑(rename f) :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The free-forgetful adjunction for commutative rings. -/
 def adj : free ⊣ forget CommRingCat.{u} :=
   Adjunction.mkOfHomEquiv
     { homEquiv := fun _ _ ↦
-        { toFun := fun f ↦ homEquiv f.hom
+        { toFun := fun f ↦ ↾(homEquiv f.hom)
           invFun := fun f ↦ ofHom <| homEquiv.symm f
           left_inv := fun f ↦ congrArg ofHom (homEquiv.left_inv f.hom)
-          right_inv := fun f ↦ homEquiv.right_inv f }
+          right_inv := by cat_disch }
       homEquiv_naturality_left_symm := fun {_ _ Y} f g =>
         hom_ext <| RingHom.ext fun x ↦ eval₂_cast_comp f (Int.castRingHom Y) g x }
 
@@ -66,7 +65,7 @@ instance : (forget CommRingCat.{u}).IsRightAdjoint :=
 @[simps]
 def coyoneda : Type vᵒᵖ ⥤ CommRingCat.{u} ⥤ CommRingCat.{max u v} where
   obj n :=
-  { obj R := CommRingCat.of ((unop n) → R)
+  { obj R := CommRingCat.of (unop n → R)
     map {R S} φ := CommRingCat.ofHom (Pi.ringHom (φ.hom.comp <| Pi.evalRingHom _ ·)) }
   map {m n} f :=
   { app R := CommRingCat.ofHom (Pi.ringHom (Pi.evalRingHom _ <| f.unop ·)) }
@@ -74,7 +73,7 @@ def coyoneda : Type vᵒᵖ ⥤ CommRingCat.{u} ⥤ CommRingCat.{max u v} where
 /-- The adjunction `Hom_{CRing}(Fun(n, R), S) ≃ Fun(n, Hom_{CRing}(R, S))`. -/
 def coyonedaAdj (R : CommRingCat.{u}) :
     (coyoneda.flip.obj R).rightOp ⊣ yoneda.obj R where
-  unit := { app n i := CommRingCat.ofHom (Pi.evalRingHom _ i) }
+  unit := { app n := ↾fun i ↦ CommRingCat.ofHom (Pi.evalRingHom _ i) }
   counit := { app S := (CommRingCat.ofHom (Pi.ringHom fun f ↦ f.hom)).op }
 
 instance (R : CommRingCat.{u}) : (yoneda.obj R).IsRightAdjoint := ⟨_, ⟨coyonedaAdj R⟩⟩

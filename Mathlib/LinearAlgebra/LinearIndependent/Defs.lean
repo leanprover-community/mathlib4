@@ -239,7 +239,7 @@ theorem linearIndependent_iff'ₛ :
         refine _root_.by_contradiction fun hni ↦ hni <| hv (f.support ∪ g.support) f g ?_ _ ?_
         · rwa [← sum_subset subset_union_left, ← sum_subset subset_union_right] <;>
             rintro i - hi <;> rw [Finsupp.notMem_support_iff.mp hi, zero_smul]
-        · contrapose! hni
+        · contrapose hni
           simp_rw [notMem_union, Finsupp.notMem_support_iff] at hni
           rw [hni.1, hni.2]⟩
 
@@ -894,10 +894,6 @@ lemma LinearIndependent.of_subsingleton [Subsingleton ι] (i : ι) (hi : v i ≠
     LinearIndependent R v := .of_subsingleton' i (by simp [hi])
 
 lemma LinearIndepOn.singleton (hi : v i ≠ 0) : LinearIndepOn R v {i} := by simp [hi]
-
-variable (R) in
-@[deprecated LinearIndepOn.singleton (since := "2025-11-11")]
-lemma LinearIndepOn.id_singleton {x : M} (hx : x ≠ 0) : LinearIndepOn R id {x} := .singleton hx
 
 end Module
 

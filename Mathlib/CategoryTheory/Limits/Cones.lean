@@ -67,16 +67,16 @@ variable (F : J ⥤ C)
 type of natural transformations from the constant functor with value `X` to `F`.
 An object representing this functor is a limit of `F`.
 -/
-@[simps!]
-def cones : Cᵒᵖ ⥤ Type max u₁ v₃ :=
+@[simps! obj map]
+def cones : Cᵒᵖ ⥤ Type (max u₁ v₃) :=
   (const J).op ⋙ yoneda.obj F
 
 /-- If `F : J ⥤ C` then `F.cocones` is the functor assigning to an object `(X : C)`
 the type of natural transformations from `F` to the constant functor with value `X`.
 An object corepresenting this functor is a colimit of `F`.
 -/
-@[simps!]
-def cocones : C ⥤ Type max u₁ v₃ :=
+@[simps! obj map]
+def cocones : C ⥤ Type (max u₁ v₃) :=
   const J ⋙ coyoneda.obj (op F)
 
 end Functor
@@ -88,16 +88,16 @@ variable (J C)
 /-- Functorially associated to each functor `J ⥤ C`, we have the `C`-presheaf consisting of
 cones with a given cone point.
 -/
-@[simps!]
-def cones : (J ⥤ C) ⥤ Cᵒᵖ ⥤ Type max u₁ v₃ where
+@[simps! obj_obj obj_map map_app]
+def cones : (J ⥤ C) ⥤ Cᵒᵖ ⥤ Type (max u₁ v₃) where
   obj := Functor.cones
   map f := whiskerLeft (const J).op (yoneda.map f)
 
 /-- Contravariantly associated to each functor `J ⥤ C`, we have the `C`-copresheaf consisting of
 cocones with a given cocone point.
 -/
-@[simps!]
-def cocones : (J ⥤ C)ᵒᵖ ⥤ C ⥤ Type max u₁ v₃ where
+@[simps! obj_obj obj_map map_app]
+def cocones : (J ⥤ C)ᵒᵖ ⥤ C ⥤ Type (max u₁ v₃) where
   obj F := Functor.cocones (unop F)
   map f := whiskerLeft (const J) (coyoneda.map f)
 
@@ -157,6 +157,8 @@ theorem Cone.w {F : J ⥤ C} (c : Cone F) {j j' : J} (f : j ⟶ j') :
     dsimp% c.π.app j ≫ F.map f = c.π.app j' := by
   simpa using (c.π.naturality f).symm
 
+attribute [elementwise] Cocone.w Cone.w
+
 end
 
 variable {F : J ⥤ C}
@@ -165,24 +167,24 @@ namespace Cone
 
 /-- The isomorphism between a cone on `F` and an element of the functor `F.cones`. -/
 @[simps!]
-def equiv (F : J ⥤ C) : Cone F ≅ Σ X, F.cones.obj X where
-  hom c := ⟨op c.pt, c.π⟩
-  inv c :=
+def equiv (F : J ⥤ C) : dsimp% Cone F ≅ Σ X, F.cones.obj X where
+  hom := ↾fun c ↦ ⟨op c.pt, c.π⟩
+  inv := ↾fun c ↦
     { pt := c.1.unop
       π := c.2 }
   hom_inv_id := by
-    funext X
+    ext X
     cases X
     rfl
   inv_hom_id := by
-    funext X
+    ext X
     cases X
-    rfl
+    all_goals rfl
 
 /-- A map to the vertex of a cone naturally induces a cone by composition. -/
 @[simps]
-def extensions (c : Cone F) : yoneda.obj c.pt ⋙ uliftFunctor.{u₁} ⟶ F.cones where
-  app _ f := (const J).map f.down ≫ c.π
+def extensions (c : Cone F) : uliftYoneda.obj c.pt ⟶ F.cones where
+  app _ := ↾fun f ↦ (const J).map f.down ≫ c.π
 
 /-- A map to the vertex of a cone induces a cone by composition. -/
 @[to_dual (attr := simps)
@@ -206,23 +208,23 @@ namespace Cocone
 
 /-- The isomorphism between a cocone on `F` and an element of the functor `F.cocones`. -/
 def equiv (F : J ⥤ C) : Cocone F ≅ Σ X, F.cocones.obj X where
-  hom c := ⟨c.pt, c.ι⟩
-  inv c :=
+  hom := ↾fun c ↦ ⟨c.pt, c.ι⟩
+  inv := ↾fun c ↦
     { pt := c.1
       ι := c.2 }
   hom_inv_id := by
-    funext X
+    ext X
     cases X
     rfl
   inv_hom_id := by
-    funext X
+    ext X
     cases X
-    rfl
+    all_goals rfl
 
 /-- A map from the vertex of a cocone naturally induces a cocone by composition. -/
 @[simps]
 def extensions (c : Cocone F) : coyoneda.obj (op c.pt) ⋙ uliftFunctor.{u₁} ⟶ F.cocones where
-  app _ f := c.ι ≫ (const J).map f.down
+  app _ := ↾fun f ↦ c.ι ≫ (const J).map f.down
 
 end Cocone
 
@@ -244,7 +246,7 @@ structure CoconeMorphism (A B : Cocone F) where
   w (j : J) : dsimp% A.ι.app j ≫ hom = B.ι.app j := by cat_disch
 
 attribute [reassoc (attr := simp)] ConeMorphism.w CoconeMorphism.w
-attribute [to_dual existing] ConeMorphism.mk.congr_simp ConeMorphism.casesOn
+attribute [to_dual existing] ConeMorphism.casesOn
 
 @[to_dual]
 instance inhabitedConeMorphism (A : Cone F) : Inhabited (ConeMorphism A A) :=

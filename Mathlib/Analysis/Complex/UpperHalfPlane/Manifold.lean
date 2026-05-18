@@ -31,7 +31,7 @@ open Filter
 
 open scoped Manifold ContDiff MatrixGroups Topology
 
-variable {n : WithTop ℕ∞}
+variable {n : ℕ∞ω}
 
 namespace UpperHalfPlane
 
@@ -83,10 +83,10 @@ lemma mdifferentiable_iff {f : ℍ → ℂ} :
      <| isOpen_upperHalfPlaneSet.mem_nhds hz⟩
 
 lemma contMDiff_num (g : GL (Fin 2) ℝ) : CMDiff n (fun τ : ℍ ↦ num g τ) :=
-  (contMDiff_const.smul contMDiff_coe).add contMDiff_const
+  (contMDiff_const.mul contMDiff_coe).add contMDiff_const
 
 lemma contMDiff_denom (g : GL (Fin 2) ℝ) : CMDiff n (fun τ : ℍ ↦ denom g τ) :=
-  (contMDiff_const.smul contMDiff_coe).add contMDiff_const
+  (contMDiff_const.mul contMDiff_coe).add contMDiff_const
 
 lemma contMDiff_denom_zpow (g : GL (Fin 2) ℝ) (k : ℤ) : CMDiff n (denom g · ^ k : ℍ → ℂ) := by
   intro τ
@@ -200,11 +200,6 @@ end Complex
 
 
 section Real
-
--- set flag locally in this section; every decl fails without it
--- the underlying problem seems to be elsewhere, something to do with unifying different
--- `ℝ`-module structures on `ℂ`
-set_option backward.isDefEq.respectTransparency false
 
 /-- `ℝ`-linear map from `ℂ` to itself, which we shall show is the real derivative of the
 `GL(2, ℝ)`-action on `ℍ`. -/
