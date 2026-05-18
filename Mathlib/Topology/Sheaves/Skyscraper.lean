@@ -240,6 +240,7 @@ theorem skyscraperPresheaf_isSheaf : (skyscraperPresheaf p₀ A).IsSheaf := by
 The skyscraper presheaf supported at `p₀` with value `A` is the sheaf that assigns `A` to all opens
 `U` that contain `p₀` and assigns `*` otherwise.
 -/
+@[simps!]
 def skyscraperSheaf : Sheaf C X :=
   ⟨skyscraperPresheaf p₀ A, skyscraperPresheaf_isSheaf _ _⟩
 
@@ -409,6 +410,18 @@ only when the fact that `skyscraperPresheafFunctor` factors through `Sheaf C X` 
 noncomputable def skyscraperSheafForgetAdjunction [HasColimits C] :
     Presheaf.stalkFunctor C p₀ ⊣ skyscraperSheafFunctor p₀ ⋙ Sheaf.forget C X :=
   skyscraperPresheafStalkAdjunction p₀
+
+variable {A p₀} in
+/--
+On an open set not containing `p₀`, the value of skyscraper sheaf supported at `p₀` is a terminal
+object.
+-/
+noncomputable
+def isTerminalSkyscraperSheafObjObjOfNotMem {U : (Opens X)ᵒᵖ} (h : p₀ ∉ unop U) :
+    IsTerminal ((skyscraperSheaf p₀ A).obj.obj U) := by
+  dsimp
+  rw [if_neg h]
+  exact terminalIsTerminal
 
 end
 
