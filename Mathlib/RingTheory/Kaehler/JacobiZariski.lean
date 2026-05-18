@@ -546,6 +546,37 @@ theorem exact_h1CotangentToCotangent_cotangentComplex (P : Extension.{u₃} R S)
     LinearEquiv.conj_symm_exact_iff_exact]
   exact H1Cotangent.exact_map_δ R P.Ring S
 
+variable {R' : Type w₁} {S' : Type w₂} [CommRing R'] [CommRing S'] [Algebra R' S']
+variable {P : Extension.{u₃} R S} {P' : Extension.{w₃} R' S'}
+variable [Algebra R R'] [Algebra S S'] [Algebra R S']
+variable [IsScalarTower R R' S'] [IsScalarTower R S S']
+
+lemma Cotangent.map_comp_h1CotangentToCotangent (f : P.Hom P') :
+    (Cotangent.map f).comp P.h1CotangentToCotangent =
+      (P'.h1CotangentToCotangent.restrictScalars S).comp (Algebra.H1Cotangent.map R R' S S') := by
+  algebraize [f.toRingHom, (algebraMap P'.Ring S').comp f.toRingHom]
+  have : IsScalarTower P.Ring S S' := .of_algebraMap_eq f.algebraMap_toRingHom
+  have : IsScalarTower R P.Ring P'.Ring :=
+    .of_algebraMap_eq fun x ↦ (f.toRingHom_algebraMap x).symm
+  dsimp [h1CotangentToCotangent, Algebra.H1Cotangent.map]
+  rw [LinearMap.comp_assoc, ← H1Cotangent.map_comp, H1Cotangent.map_eq _
+    ((Generators.self R S).defaultHom (Generators.self P'.Ring S')).toExtensionHom,
+    ← LinearEquiv.restrictScalars_toLinearMap, ← LinearEquiv.restrictScalars_symm,
+    eq_comm, LinearEquiv.toLinearMap_symm_comp_eq, ← LinearMap.comp_assoc,
+    ← LinearMap.comp_assoc]
+  suffices ((LinearEquiv.restrictScalars S P'.cotangentEquivH1Cotangent).toLinearMap ∘ₗ map f) ∘ₗ
+      P.cotangentEquivH1Cotangent.symm.toLinearMap = Algebra.H1Cotangent.map P.Ring P'.Ring S S' by
+    rw [this, Algebra.H1Cotangent.map, ← LinearMap.restrictScalars_self S <| H1Cotangent.map
+      ((Generators.self P.Ring S).defaultHom (Generators.self P'.Ring S')).toExtensionHom,
+      ← H1Cotangent.map_comp]
+    exact H1Cotangent.map_eq ..
+  rw [LinearEquiv.comp_toLinearMap_symm_eq]
+  ext x; obtain ⟨⟨x, x_in⟩, rfl⟩ := mk_surjective x
+  simp [-Generators.toExtension_Ring, Algebra.H1Cotangent.map, cotangentEquivH1Cotangent,
+    ← h1Cotangentι_apply]
+  simp [-Generators.toExtension_Ring, IsScalarTower.algebraMap_apply P.Ring P'.Ring
+    (Generators.self P'.Ring S').toExtension.Ring x, ← RingHom.algebraMap_toAlgebra f.toRingHom]
+
 end Extension
 
 end Algebra
