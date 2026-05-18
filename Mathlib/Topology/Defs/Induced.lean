@@ -90,9 +90,17 @@ def coinduced (f : X → Y) (t : TopologicalSpace X) : TopologicalSpace Y where
 
 instance WithTopology.instTopologicalSpace (X : Type*) (t : TopologicalSpace X) :
     TopologicalSpace (WithTopology X t) :=
-  .coinduced .mk t
+  .coinduced (WithTopology.toTopology t) t
 
 end TopologicalSpace
+
+/-- `WithTopology.ofTopology` and `WithTopology.toTopology` as an equivalence. -/
+@[simps apply symm_apply]
+protected def WithTopology.equiv (X : Type*) (t : TopologicalSpace X) : WithTopology X t ≃ X where
+  toFun := WithTopology.ofTopology t
+  invFun := WithTopology.toTopology t
+  left_inv _ := rfl
+  right_inv _ := rfl
 
 namespace Topology
 variable {X Y : Type*} [tX : TopologicalSpace X] [tY : TopologicalSpace Y]

@@ -1,0 +1,157 @@
+/-
+Copyright (c) 2026 Yury Kudryashov. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Yury Kudryashov, Gemini CLI
+-/
+module
+
+public import Mathlib.Topology.Defs.Induced
+
+/-!
+# Basic lemmas and instances about the `WithTopology` type synonym
+
+`WithTopology X t` is a copy of `X` equipped with the topology `t`.
+This is useful for providing multiple topologies on the same type
+without causing instance conflicts.
+
+In this file we setup basic API about this type
+and transfer instances (basic, order) from `X` to `WithTopology X t`.
+
+## Implementation notes
+
+The pattern here is the same one as is used by `Lex` for order structures
+and `WithLp` for metric structures.
+
+## AI usage disclosure
+
+The first draft of this file was written by Gemini CLI.
+It was thoroughly reviewed by me (Yury Kudryashov) before submitting a PR.
+-/
+
+public section
+
+variable {X : Type*} (t : TopologicalSpace X)
+
+namespace WithTopology
+
+@[simp] lemma ofTopology_toTopology (x : X) : ofTopology t (toTopology t x) = x := rfl
+
+@[simp]
+lemma toTopology_ofTopology (x : WithTopology X t) :
+  toTopology t (ofTopology t x) = x := rfl
+
+lemma ofTopology_surjective : Function.Surjective (ofTopology t) :=
+  Function.RightInverse.surjective <| ofTopology_toTopology _
+
+lemma toTopology_surjective : Function.Surjective (toTopology t) :=
+  Function.RightInverse.surjective <| toTopology_ofTopology _
+
+lemma ofTopology_injective : Function.Injective (ofTopology t) :=
+  Function.LeftInverse.injective <| toTopology_ofTopology _
+
+lemma toTopology_injective : Function.Injective (toTopology t) :=
+  Function.LeftInverse.injective <| ofTopology_toTopology _
+
+lemma ofTopology_bijective : Function.Bijective (ofTopology t) :=
+  ⟨ofTopology_injective t, ofTopology_surjective t⟩
+
+lemma toTopology_bijective : Function.Bijective (toTopology t) :=
+  ⟨toTopology_injective t, toTopology_surjective t⟩
+
+@[simp] lemma toTopology_inj {x y : X} : toTopology t x = toTopology t y ↔ x = y :=
+  (toTopology_injective t).eq_iff
+
+@[simp] lemma ofTopology_inj {x y : WithTopology X t} : ofTopology t x = ofTopology t y ↔ x = y :=
+  (ofTopology_injective t).eq_iff
+
+@[ext] protected theorem ext {x y : WithTopology X t} (h : x.ofTopology = y.ofTopology) : x = y :=
+  ofTopology_injective t h
+
+/-! ### Set-theoretic lemmas -/
+
+open Set
+
+lemma image_ofTopology (s : Set (WithTopology X t)) : ofTopology t '' s = toTopology t ⁻¹' s :=
+  WithTopology.equiv X t |>.symm.image_symm_eq_preimage _
+
+lemma preimage_toTopology (s : Set (WithTopology X t)) : toTopology t ⁻¹' s = ofTopology t '' s :=
+  (image_ofTopology t s).symm
+
+lemma image_toTopology (s : Set X) : toTopology t '' s = ofTopology t ⁻¹' s :=
+  WithTopology.equiv X t |>.symm.image_eq_preimage_symm _
+
+lemma preimage_ofTopology (s : Set X) : ofTopology t ⁻¹' s = toTopology t '' s :=
+  (image_toTopology t s).symm
+
+/-!
+### Instance transfers
+
+In this section we transfer some instances from `X` to `WithTopology X t`.
+-/
+
+instance [Nonempty X] : Nonempty (WithTopology X t) :=
+  (WithTopology.equiv X t).nonempty
+
+instance [Inhabited X] : Inhabited (WithTopology X t) :=
+  ⟨toTopology t default⟩
+
+instance [Subsingleton X] : Subsingleton (WithTopology X t) :=
+  (WithTopology.equiv X t).subsingleton
+
+instance [Unique X] : Unique (WithTopology X t) := .mk' _
+
+instance [Finite X] : Finite (WithTopology X t) := .of_equiv _ (WithTopology.equiv X t).symm
+
+instance [Infinite X] : Infinite (WithTopology X t) := .of_injective _ <| toTopology_injective _
+
+instance [Fintype X] : Fintype (WithTopology X t) :=
+  .ofBijective (.toTopology t) (toTopology_bijective t)
+
+deriving instance BEq, DecidableEq for WithTopology
+
+instance [BEq X] [ReflBEq X] : ReflBEq (WithTopology X t) where
+  rfl {x} := BEq.refl x.ofTopology
+
+instance [BEq X] [LawfulBEq X] : LawfulBEq (WithTopology X t) where
+  eq_of_beq h := ofTopology_injective _ <| eq_of_beq h
+
+instance [LE X] : LE (WithTopology X t) where
+  le x y := ofTopology t x ≤ ofTopology t y
+
+instance [LT X] : LT (WithTopology X t) where
+  lt x y := ofTopology t x < ofTopology t y
+
+-- TODO: `inferInstance` works here, but it shouldn't
+instance [LE X] [DecidableLE X] : DecidableLE (WithTopology X t) := fun x y ↦
+  inferInstanceAs (Decidable (x.ofTopology ≤ y.ofTopology))
+
+-- TODO: `inferInstance` works here, but it shouldn't
+instance [LT X] [DecidableLT X] : DecidableLT (WithTopology X t) := fun x y ↦
+  inferInstanceAs (Decidable (x.ofTopology < y.ofTopology))
+
+instance [Preorder X] : Preorder (WithTopology X t) :=
+  .lift <| ofTopology t
+
+instance [PartialOrder X] : PartialOrder (WithTopology X t) :=
+  ofTopology_injective t |>.partialOrder _ .rfl .rfl
+
+@[to_dual]
+instance [Max X] : Max (WithTopology X t) where
+  max x y := toTopology t (max x.ofTopology y.ofTopology)
+
+@[to_dual]
+instance [SemilatticeSup X] : SemilatticeSup (WithTopology X t) :=
+  ofTopology_injective t |>.semilatticeSup _ .rfl .rfl fun _ _ ↦ rfl
+
+instance [Lattice X] : Lattice (WithTopology X t) where
+
+instance [DistribLattice X] : DistribLattice (WithTopology X t) where
+  le_sup_inf _ _ _ := le_sup_inf (α := X)
+
+instance [Ord X] : Ord (WithTopology X t) where
+  compare x y := compare x.ofTopology y.ofTopology
+
+instance [LinearOrder X] : LinearOrder (WithTopology X t) :=
+  ofTopology_injective t |>.linearOrder _ .rfl .rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
+
+end WithTopology

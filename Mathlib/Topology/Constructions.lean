@@ -13,6 +13,7 @@ public import Mathlib.Order.Filter.Cofinite
 public import Mathlib.Order.Filter.Curry
 public import Mathlib.Topology.Constructions.SumProd
 public import Mathlib.Topology.NhdsSet
+import Mathlib.Topology.WithTopology
 
 /-!
 # Constructions of new topological spaces from old ones
@@ -273,7 +274,8 @@ lemma DiscreteTopology.isDiscrete [DiscreteTopology s] : IsDiscrete s := ⟨infe
 end IsDiscrete
 
 /-- Cofinite topology. A set is open if it's empty or cofinite. -/
-def TopologicalSpace.cofinite {X : Type*} : TopologicalSpace X where
+@[implicit_reducible]
+protected def TopologicalSpace.cofinite {X : Type*} : TopologicalSpace X where
   IsOpen s := s.Nonempty → Set.Finite sᶜ
   isOpen_univ := by simp
   isOpen_inter s t := by
@@ -293,13 +295,14 @@ abbrev CofiniteTopology (X : Type*) :=
 namespace CofiniteTopology
 
 /-- The identity equivalence between `X` and `CofiniteTopology X`. -/
-def of : X ≃ CofiniteTopology X :=
-  Equiv.refl X
+def of : X ≃ CofiniteTopology X := (WithTopology.equiv _ _).symm
 
 instance [Inhabited X] : Inhabited (CofiniteTopology X) where default := of default
 
-theorem isOpen_iff {s : Set (CofiniteTopology X)} : IsOpen s ↔ s.Nonempty → sᶜ.Finite :=
-  Iff.rfl
+theorem isOpen_iff {s : Set (CofiniteTopology X)} : IsOpen s ↔ s.Nonempty → sᶜ.Finite := by
+  simp_rw [isOpen_coinduced, TopologicalSpace.cofinite, isOpen_mk, ← Set.preimage_compl,
+    WithTopology.preimage_toTopology, image_nonempty,
+    finite_image_iff (WithTopology.ofTopology_injective _).injOn]
 
 theorem isOpen_iff' {s : Set (CofiniteTopology X)} : IsOpen s ↔ s = ∅ ∨ sᶜ.Finite := by
   simp only [isOpen_iff, nonempty_iff_ne_empty, or_iff_not_imp_left]
@@ -309,7 +312,7 @@ theorem isClosed_iff {s : Set (CofiniteTopology X)} : IsClosed s ↔ s = univ �
 
 theorem nhds_eq (x : CofiniteTopology X) : 𝓝 x = pure x ⊔ cofinite := by
   ext U
-  rw [mem_nhds_iff]
+  simp_rw [mem_nhds_iff, isOpen_iff]
   constructor
   · rintro ⟨V, hVU, V_op, haV⟩
     exact mem_sup.mpr ⟨hVU haV, mem_of_superset (V_op ⟨_, haV⟩) hVU⟩

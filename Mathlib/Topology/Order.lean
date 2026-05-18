@@ -471,6 +471,9 @@ theorem induced_sInf {s : Set (TopologicalSpace α)} :
 theorem coinduced_bot : (⊥ : TopologicalSpace α).coinduced f = ⊥ :=
   (gc_coinduced_induced f).l_bot
 
+instance : DiscreteTopology (WithTopology α ⊥) where
+  eq_bot := coinduced_bot
+
 @[simp]
 theorem coinduced_sup : (t₁ ⊔ t₂).coinduced f = t₁.coinduced f ⊔ t₂.coinduced f :=
   (gc_coinduced_induced f).l_sup

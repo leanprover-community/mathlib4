@@ -228,5 +228,20 @@ Use `dense_iInter_of_isOpen` which works for any countable index type instead. -
 class BaireSpace (X : Type*) [TopologicalSpace X] : Prop where
   baire_property : ∀ f : ℕ → Set X, (∀ n, IsOpen (f n)) → (∀ n, Dense (f n)) → Dense (⋂ n, f n)
 
+/-- A type synonym for `X` associated with the topology `t`. -/
 structure WithTopology (X : Type*) (t : TopologicalSpace X) where
-  val : X
+  /-- Converts an element of `X` to an element of `WithTopology X t`. -/
+  toTopology (t) ::
+  /-- Converts an element of `WithTopology X t` to an element of `X`. -/
+  ofTopology (t) : X
+
+section Notation
+
+open Lean.PrettyPrinter.Delaborator
+
+/-- This prevents `toTopology t x` being printed as `{ ofTopology := x }`
+by `delabStructureInstance`. -/
+@[app_delab WithTopology.toTopology]
+meta def WithTopology.delabToTopology : Delab := delabApp
+
+end Notation
