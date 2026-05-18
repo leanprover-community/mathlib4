@@ -384,7 +384,7 @@ theorem ker_comp_eq_of_commute_of_disjoint_ker [FiniteDimensional K V] {f g : V 
     ker (f ∘ₗ g) = ker f ⊔ ker g := by
   suffices ∀ x, f x = 0 → f (g x) = 0 by rw [ker_comp, comap_eq_sup_ker_of_disjoint _ h']; simpa
   intro x hx
-  rw [← comp_apply, ← Module.End.mul_eq_comp, h.eq, Module.End.mul_apply, hx, map_zero]
+  rw [← comp_apply, ← Module.End.mul_def, h.eq, Module.End.mul_apply, hx, map_zero]
 
 theorem ker_noncommProd_eq_of_supIndep_ker [FiniteDimensional K V] {ι : Type*} {f : ι → V →ₗ[K] V}
     (s : Finset ι) (comm) (h : s.SupIndep fun i ↦ ker (f i)) :
@@ -395,7 +395,7 @@ theorem ker_noncommProd_eq_of_supIndep_ker [FiniteDimensional K V] {ι : Type*} 
   | insert i s hi ih =>
     replace ih : ker (Finset.noncommProd s f <| Set.Pairwise.mono (s.subset_insert i) comm) =
         ⨆ x ∈ s, ker (f x) := ih _ (h.subset (s.subset_insert i))
-    rw [Finset.noncommProd_insert_of_notMem _ _ _ _ hi, Module.End.mul_eq_comp,
+    rw [Finset.noncommProd_insert_of_notMem _ _ _ _ hi, Module.End.mul_def,
       ker_comp_eq_of_commute_of_disjoint_ker]
     · simp_rw [Finset.mem_insert_coe, iSup_insert, Finset.mem_coe, ih]
     · exact s.noncommProd_commute _ _ _ fun j hj ↦
@@ -652,7 +652,7 @@ theorem ker_pow_constant {f : End K V} {k : ℕ}
     · rw [add_comm, pow_add]
       apply LinearMap.ker_le_ker_comp
     · rw [ker_pow_constant h m, add_comm m 1, ← add_assoc, pow_add, pow_add f k m,
-        Module.End.mul_eq_comp, Module.End.mul_eq_comp, LinearMap.ker_comp, LinearMap.ker_comp, h,
+        Module.End.mul_def, Module.End.mul_def, LinearMap.ker_comp, LinearMap.ker_comp, h,
         Nat.add_one]
 
 end End

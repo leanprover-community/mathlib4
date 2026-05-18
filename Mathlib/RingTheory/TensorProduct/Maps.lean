@@ -801,7 +801,7 @@ def tensorProductEnd : A ⊗[R] (End R M) →ₐ[A] End A (A ⊗[R] M) :=
     (fun a b f g ↦ by
       apply LinearMap.ext
       intro x
-      simp only [tensorProduct, mul_comm a b, Module.End.mul_eq_comp,
+      simp only [tensorProduct, mul_comm a b, Module.End.mul_def,
         TensorProduct.AlgebraTensorModule.lift_apply, TensorProduct.lift.tmul, coe_restrictScalars,
         coe_mk, AddHom.coe_mk, mul_smul, smul_apply, baseChangeHom_apply, baseChange_comp,
         comp_apply, Algebra.mul_smul_comm, Algebra.smul_mul_assoc])

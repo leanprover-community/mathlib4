@@ -443,7 +443,7 @@ theorem Matrix.toLin'_pow (M : Matrix n n R) (k : ℕ) :
     (M ^ k).toLin' = M.toLin' ^ k := by
   induction k with
   | zero => simp [End.one_eq_id]
-  | succ n ih => rw [pow_succ, pow_succ, toLin'_mul, ih, Module.End.mul_eq_comp]
+  | succ n ih => rw [pow_succ, pow_succ, toLin'_mul, ih, Module.End.mul_def]
 
 @[simp]
 theorem Matrix.toLin'_submatrix [Fintype l] [DecidableEq l] (f₁ : m → k) (e₂ : n ≃ l)
@@ -761,7 +761,7 @@ theorem LinearMap.toMatrix_comp [Finite l] [DecidableEq m] (f : M₂ →ₗ[R] M
 
 theorem LinearMap.toMatrix_mul (f g : M₁ →ₗ[R] M₁) :
     LinearMap.toMatrix v₁ v₁ (f * g) = LinearMap.toMatrix v₁ v₁ f * LinearMap.toMatrix v₁ v₁ g := by
-  rw [Module.End.mul_eq_comp, LinearMap.toMatrix_comp v₁ v₁ v₁ f g]
+  rw [Module.End.mul_def, LinearMap.toMatrix_comp v₁ v₁ v₁ f g]
 
 lemma LinearMap.toMatrix_pow (f : M₁ →ₗ[R] M₁) (k : ℕ) :
     (toMatrix v₁ v₁ f) ^ k = toMatrix v₁ v₁ (f ^ k) := by
@@ -781,7 +781,7 @@ theorem Matrix.toLin_pow (A : Matrix n n R) (k : ℕ) :
     (A ^ k).toLin v₁ v₁ = (A.toLin v₁ v₁) ^ k := by
   induction k with
   | zero => simp only [pow_zero, toLin_one, End.one_eq_id]
-  | succ n ih => rw [pow_succ, pow_succ, toLin_mul v₁ v₁, ih, Module.End.mul_eq_comp]
+  | succ n ih => rw [pow_succ, pow_succ, toLin_mul v₁ v₁, ih, Module.End.mul_def]
 
 /-- Shortcut lemma for `Matrix.toLin_mul` and `LinearMap.comp_apply`. -/
 theorem Matrix.toLin_mul_apply [Finite l] [DecidableEq m] (A : Matrix l m R) (B : Matrix m n R)
@@ -877,7 +877,7 @@ theorem LinearMap.toMatrixAlgEquiv_comp (f g : M₁ →ₗ[R] M₁) :
 theorem LinearMap.toMatrixAlgEquiv_mul (f g : M₁ →ₗ[R] M₁) :
     LinearMap.toMatrixAlgEquiv v₁ (f * g) =
       LinearMap.toMatrixAlgEquiv v₁ f * LinearMap.toMatrixAlgEquiv v₁ g := by
-  rw [Module.End.mul_eq_comp, LinearMap.toMatrixAlgEquiv_comp v₁ f g]
+  rw [Module.End.mul_def, LinearMap.toMatrixAlgEquiv_comp v₁ f g]
 
 theorem Matrix.toLinAlgEquiv_mul (A B : Matrix n n R) :
     Matrix.toLinAlgEquiv v₁ (A * B) =

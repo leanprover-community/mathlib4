@@ -364,7 +364,7 @@ lemma Dual.eq_of_preReflection_mapsTo [CharZero R] [IsDomain R] [IsTorsionFree R
       have : ((f - g).smulRight x).comp ((n : R) • (f - g).smulRight x) = 0 := by
         ext; simp [hf₁, hg₁]
       rw [pow_succ', LinearEquiv.coe_toLinearMap_mul, ih, hu, add_mul, mul_add, mul_add]
-      simp_rw [Module.End.mul_eq_comp, LinearMap.comp_id, LinearMap.id_comp, this, add_zero,
+      simp_rw [Module.End.mul_def, LinearMap.comp_id, LinearMap.id_comp, this, add_zero,
         add_assoc, Nat.cast_succ, add_smul, one_smul]
   suffices IsOfFinOrder u by
     obtain ⟨n, hn₀, hn₁⟩ := isOfFinOrder_iff_pow_eq_one.mp this

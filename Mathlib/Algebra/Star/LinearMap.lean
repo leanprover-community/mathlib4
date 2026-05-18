@@ -268,8 +268,8 @@ instance Units.intrinsicStar : Star (WithConv (End R E)ˣ) where
     refine ⟨(star (toConv ↑f.ofConv : WithConv (End R E))).ofConv,
       (star (toConv ↑(f.ofConv⁻¹ : (End R E)ˣ))).ofConv, ?_, ?_⟩
     all_goals
-      rw [mul_eq_comp, ← toConv_injective.eq_iff, ← LinearMap.intrinsicStar_comp']
-      simp [← mul_eq_comp, one_eq_id]
+      rw [mul_def, ← toConv_injective.eq_iff, ← LinearMap.intrinsicStar_comp']
+      simp [← mul_def, one_eq_id]
 
 theorem IsUnit.intrinsicStar {f : WithConv (End R E)} (hf : IsUnit f.ofConv) :
     IsUnit (star f).ofConv := by

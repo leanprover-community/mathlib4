@@ -156,7 +156,7 @@ theorem pow_mulLeftLinearMap (a : Matrix m m A) (k : ℕ) :
   match k with
   | 0 => by rw [pow_zero, pow_zero, mulLeftLinearMap_one, Module.End.one_eq_id]
   | (n + 1) => by
-    rw [pow_succ, pow_succ, mulLeftLinearMap_mul, Module.End.mul_eq_comp, pow_mulLeftLinearMap]
+    rw [pow_succ, pow_succ, mulLeftLinearMap_mul, Module.End.mul_def, pow_mulLeftLinearMap]
 
 end left
 
@@ -189,7 +189,7 @@ theorem pow_mulRightLinearMap (a : Matrix m m A) (k : ℕ) :
   match k with
   | 0 => by rw [pow_zero, pow_zero, mulRightLinearMap_one, Module.End.one_eq_id]
   | (n + 1) => by
-    rw [pow_succ, pow_succ', mulRightLinearMap_mul, Module.End.mul_eq_comp, pow_mulRightLinearMap]
+    rw [pow_succ, pow_succ', mulRightLinearMap_mul, Module.End.mul_def, pow_mulRightLinearMap]
 
 end right
 

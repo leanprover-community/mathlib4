@@ -405,10 +405,10 @@ noncomputable def exp (h : IsNilpotent D.toLinearMap) :
     invFun x := IsNilpotent.exp (- D.toLinearMap) x
     left_inv x := by
       simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, ← LinearMap.comp_apply,
-        ← Module.End.mul_eq_comp, h.exp_neg_mul_exp_self, Module.End.one_apply]
+        ← Module.End.mul_def, h.exp_neg_mul_exp_self, Module.End.one_apply]
     right_inv x := by
       simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, ← LinearMap.comp_apply,
-        ← Module.End.mul_eq_comp, h.exp_mul_exp_neg_self, Module.End.one_apply] }
+        ← Module.End.mul_def, h.exp_mul_exp_neg_self, Module.End.one_apply] }
 
 lemma exp_apply (h : IsNilpotent D.toLinearMap) :
     exp D h = IsNilpotent.exp D.toLinearMap :=

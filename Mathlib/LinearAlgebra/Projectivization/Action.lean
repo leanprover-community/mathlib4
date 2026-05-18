@@ -43,7 +43,7 @@ instance : MulAction G (ℙ K V) where
     (DistribMulAction.toLinearEquiv _ _ g).injective
   one_smul x := show map _ _ _ = _ by simp [map_one, Module.End.one_eq_id]
   mul_smul g g' x := show map _ _ _ = map _ _ (map _ _ _) by
-    simp_rw [map_mul, Module.End.mul_eq_comp]
+    simp_rw [map_mul, Module.End.mul_def]
     rw [map_comp, Function.comp_apply]
 
 lemma generalLinearGroup_smul_def (g : LinearMap.GeneralLinearGroup K V) (x : ℙ K V) :

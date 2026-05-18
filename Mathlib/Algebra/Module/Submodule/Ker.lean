@@ -92,7 +92,7 @@ theorem ker_le_ker_comp (f : M →ₛₗ[τ₁₂] M₂) (g : M₂ →ₛₗ[τ�
 theorem ker_sup_ker_le_ker_comp_of_commute {f g : M →ₗ[R] M} (h : Commute f g) :
     ker f ⊔ ker g ≤ ker (f ∘ₗ g) := by
   refine sup_le_iff.mpr ⟨?_, ker_le_ker_comp g f⟩
-  rw [← Module.End.mul_eq_comp, h.eq, Module.End.mul_eq_comp]
+  rw [← Module.End.mul_def, h.eq, Module.End.mul_def]
   exact ker_le_ker_comp f g
 
 @[simp]

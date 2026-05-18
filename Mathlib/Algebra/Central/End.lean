@@ -47,7 +47,7 @@ public theorem LinearEquiv.conjAlgEquiv_ext_iff {M₂ : Type*} [AddCommMonoid M�
   conv_lhs => rw [eq_comm]
   simp_rw [AlgEquiv.ext_iff, conjAlgEquiv_apply, ← eq_toLinearMap_symm_comp, ← comp_assoc,
     eq_comp_toLinearMap_symm, comp_assoc, ← comp_assoc _ _ g.symm.toLinearMap, comp_coe,
-    ← End.mul_eq_comp, ← Subalgebra.mem_center_iff (R := S), Algebra.IsCentral.center_eq_bot,
+    ← End.mul_def, ← Subalgebra.mem_center_iff (R := S), Algebra.IsCentral.center_eq_bot,
     ← comp_coe, Algebra.mem_bot, Set.mem_range, Algebra.algebraMap_eq_smul_one,
     eq_toLinearMap_symm_comp, eq_comm, LinearMap.ext_iff, funext_iff, comp_apply, coe_coe,
     LinearMap.smul_apply, End.one_apply, Pi.smul_apply, LinearMapClass.map_smul_of_tower g]

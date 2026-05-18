@@ -369,7 +369,7 @@ lemma mapsTo_genEigenspace_of_comm {f g : End R M} (h : Commute f g) (μ : R) (k
   replace h : Commute ((f - μ • (1 : End R M)) ^ l) g :=
     (h.sub_left <| Algebra.commute_algebraMap_left μ g).pow_left l
   use l, hl
-  rw [← LinearMap.comp_apply, ← Module.End.mul_eq_comp, h.eq, Module.End.mul_eq_comp,
+  rw [← LinearMap.comp_apply, ← Module.End.mul_def, h.eq, Module.End.mul_def,
     LinearMap.comp_apply, hx, map_zero]
 
 /-- The restriction of `f - μ • 1` to the `k`-fold generalized `μ`-eigenspace is nilpotent. -/
