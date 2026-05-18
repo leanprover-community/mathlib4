@@ -260,11 +260,11 @@ variable (R₀ : Type*) [CommSemiring R₀] [Algebra R₀ R]
 
 @[simp] lemma coe_restrictScalars : ⇑(f.restrictScalars R₀) = f := rfl
 
-@[simp] lemma restrictScalars_coe_toAlgHom :
+@[simp] lemma restrictScalars_toAlgHom :
     (f : A →ₐ[R] B).restrictScalars R₀ = f.restrictScalars R₀ := rfl
 
 @[deprecated (since := "2026-05-05")]
-alias restrictScalars_coe_algHom := restrictScalars_coe_toAlgHom
+alias restrictScalars_coe_algHom := restrictScalars_toAlgHom
 
 @[simp] lemma restrictScalars_coe_linearMap :
     (f : A →ₗ[R] B).restrictScalars R₀ = f.restrictScalars R₀ := rfl
