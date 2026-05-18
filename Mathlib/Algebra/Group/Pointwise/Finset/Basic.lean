@@ -224,7 +224,7 @@ attribute [aesop safe apply (rule_sets := [finsetNonempty])] Nonempty.inv Nonemp
 @[to_additive (attr := simp)]
 theorem inv_eq_empty : s⁻¹ = ∅ ↔ s = ∅ := image_eq_empty
 
-@[to_additive (attr := mono, gcongr high)]
+@[to_additive (attr := mono, gcongr)]
 theorem inv_subset_inv (h : s ⊆ t) : s⁻¹ ⊆ t⁻¹ :=
   image_subset_image h
 
@@ -385,7 +385,7 @@ theorem Nonempty.of_mul_right : (s * t).Nonempty → t.Nonempty :=
 theorem singleton_mul_singleton (a b : α) : ({a} : Finset α) * {b} = {a * b} :=
   image₂_singleton
 
-@[to_additive]
+@[to_additive (attr := mono, gcongr)]
 theorem mul_subset_mul : s₁ ⊆ s₂ → t₁ ⊆ t₂ → s₁ * t₁ ⊆ s₂ * t₂ :=
   image₂_subset
 
@@ -608,7 +608,7 @@ theorem singleton_div (a : α) : {a} / s = s.image (a / ·) :=
 theorem singleton_div_singleton (a b : α) : ({a} : Finset α) / {b} = {a / b} :=
   image₂_singleton
 
-@[to_additive (attr := mono, gcongr high)]
+@[to_additive (attr := mono, gcongr)]
 theorem div_subset_div : s₁ ⊆ s₂ → t₁ ⊆ t₂ → s₁ / t₁ ⊆ s₂ / t₂ :=
   image₂_subset
 
@@ -829,7 +829,7 @@ lemma pow_subset_pow_left (hst : s ⊆ t) : s ^ n ⊆ t ^ n := pow_left_mono n h
 lemma pow_subset_pow_right (hs : 1 ∈ s) (hmn : m ≤ n) : s ^ m ⊆ s ^ n :=
   Finset.pow_right_monotone hs hmn
 
-@[to_additive (attr := gcongr high)]
+@[to_additive (attr := gcongr)]
 lemma pow_subset_pow (hst : s ⊆ t) (ht : 1 ∈ t) (hmn : m ≤ n) : s ^ m ⊆ t ^ n :=
   (pow_subset_pow_left hst).trans (pow_subset_pow_right ht hmn)
 
