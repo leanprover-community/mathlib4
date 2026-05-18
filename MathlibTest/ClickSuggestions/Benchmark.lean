@@ -18,8 +18,6 @@ There is a trade-off between two design decisions:
 (1) takes less time overall, but more time upfront. Currently, we use (2).
 -/
 
-public meta section
-
 namespace InfoviewSearch
 open Lean Meta
 

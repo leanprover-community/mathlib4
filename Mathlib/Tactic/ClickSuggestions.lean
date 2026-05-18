@@ -71,7 +71,7 @@ public def generateSuggestions (loc : SubExpr.GoalsLocation)
   -- we should figure out how to use `rename_i` to actually refer to shadowed local variables.
   let lctx := (← getLCtx) |>.sanitizeNames.run' {options := (← getOptions)}
   Meta.withLCtx' lctx do
-  -- Pre-emptively instantiate all metavariables, to avoid annoying issues later on.
+  -- Instantiate all metavariables, so that we will not need to do this later on.
   instantiateMVarDeclMVars loc.mvarId
   trackingComputation "click_suggestions" do
   let (fvarId?, pos) ← match loc.loc with
