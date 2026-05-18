@@ -349,8 +349,7 @@ instance IsLocalizedFullyFaithful.comp
 
 /-- The localizer morphism from `W₁.arrow` to `W₂.arrow` that is induced by
 `Φ : LocalizerMorphism W₁ W₂`. -/
-@[simps]
-def arrow : LocalizerMorphism W₁.arrow W₂.arrow where
+abbrev arrow : LocalizerMorphism W₁.arrow W₂.arrow where
   functor := Φ.functor.mapArrow
   map _ _ _ hf := ⟨Φ.map _ hf.1, Φ.map _ hf.2⟩
 
@@ -372,6 +371,11 @@ instance (Ψ : LocalizerMorphism W₂ W₃) [Φ.IsInduced] [Ψ.IsInduced] :
     (Φ.comp Ψ).IsInduced where
   inverseImage_eq := by
     simp [← Φ.inverseImage_eq, ← Ψ.inverseImage_eq]
+
+instance [Φ.IsInduced] : Φ.arrow.IsInduced where
+  inverseImage_eq := by
+    simp only [← Φ.inverseImage_eq]
+    rfl
 
 section
 
