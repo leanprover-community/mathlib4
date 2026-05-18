@@ -17,6 +17,94 @@ namespace Tactic.ApplyRuleSets
 
 open Lean Meta Elab Tactic
 
+def ProfileEntry.addNanos (entry : ProfileEntry) (nanos : Nat) : ProfileEntry :=
+  { entry with nanos := entry.nanos + nanos }
+
+def ProfileEntry.incCount (entry : ProfileEntry) : ProfileEntry :=
+  { entry with count := entry.count + 1 }
+
+def profileChargeCurrent (now : Nat) : ApplyRuleSetsM Unit := do
+  let profile := (← get).profile
+  unless profile.enabled do
+    return ()
+  let some op := profile.stack.head? | return ()
+  let elapsed := now - profile.lastNanos
+  let entry := (profile.times.get? op).getD {}
+  modify fun s =>
+    { s with profile :=
+      { s.profile with
+        lastNanos := now
+        times := s.profile.times.insert op (entry.addNanos elapsed) } }
+
+def profileEnter (op : Name) : ApplyRuleSetsM Unit := do
+  unless (← get).profile.enabled do
+    return ()
+  let now ← IO.monoNanosNow
+  profileChargeCurrent now
+  let entry := ((← get).profile.times.get? op).getD {}
+  modify fun s =>
+    { s with profile :=
+      { s.profile with
+        lastNanos := now
+        stack := op :: s.profile.stack
+        times := s.profile.times.insert op entry.incCount } }
+
+def profileExit : ApplyRuleSetsM Unit := do
+  unless (← get).profile.enabled do
+    return ()
+  let now ← IO.monoNanosNow
+  profileChargeCurrent now
+  modify fun s =>
+    { s with profile :=
+      { s.profile with
+        lastNanos := now
+        stack := s.profile.stack.tail } }
+
+def withProfile {α} (op : Name) (x : ApplyRuleSetsM α) : ApplyRuleSetsM α := do
+  unless (← get).profile.enabled do
+    return ← x
+  profileEnter op
+  try
+    let a ← x
+    profileExit
+    return a
+  catch e =>
+    profileExit
+    throw e
+
+def initProfileState : MetaM ProfileState := do
+  let now ← IO.monoNanosNow
+  return { enabled := true, startNanos := now, lastNanos := now }
+
+def formatProfileNanos (nanos : Nat) : String :=
+  let ms := nanos / 1_000_000
+  let frac := (nanos % 1_000_000) / 1_000
+  s!"{ms}.{frac / 100}{(frac / 10) % 10}{frac % 10}ms"
+
+def formatProfilePct (nanos total : Nat) : String :=
+  if total == 0 then
+    "0.0%"
+  else
+    let tenths := (nanos * 1000) / total
+    s!"{tenths / 10}.{tenths % 10}%"
+
+def finishProfileReport (profile : ProfileState) : MetaM MessageData := do
+  let finish ← IO.monoNanosNow
+  let total := finish - profile.startNanos
+  let entries := profile.times.toArray.qsort fun a b => a.2.nanos > b.2.nanos
+  let mut categorized := 0
+  let mut lines : Array MessageData :=
+    #[m!"apply_rulesets profile: total {formatProfileNanos total}"]
+  for (op, entry) in entries do
+    categorized := categorized + entry.nanos
+    lines := lines.push <| m!"  {op}: {formatProfileNanos entry.nanos} \
+      ({formatProfilePct entry.nanos total}), {entry.count} call(s)"
+  let uncategorized := total - categorized
+  if uncategorized > 0 then
+    lines := lines.push <| m!"  uncategorized: {formatProfileNanos uncategorized} \
+      ({formatProfilePct uncategorized total})"
+  return MessageData.joinSep lines.toList "\n"
+
 /-- Increase and check step count. -/
 def checkStep : ApplyRuleSetsM Unit := do
   let n := (← get).numSteps
@@ -116,30 +204,31 @@ def Goal.open {α} (goal : Goal) (k : Array Expr → Expr → MetaM α) : MetaM 
   k outputs body
 
 /-- Run the tactic embedded in an `autoParam` goal. -/
-def runAutoParam? (goalType : Expr) : MetaM (Option Expr) := do
-  let some (.const tacticDecl _) := goalType.getAutoParamTactic?
-    | return none
-  let goalType := goalType.appFn!.appArg!
-  let .ok tacticSyntax := evalSyntaxConstant (← getEnv) (← getOptions) tacticDecl
-    | return none
-  let tacticSeq : TSyntax `Lean.Parser.Tactic.tacticSeq := ⟨tacticSyntax⟩
-  let tacticCode ← `(tactic| try ($tacticSeq:tacticSeq))
-  let mvar ← mkFreshExprSyntheticOpaqueMVar goalType `apply_rulesets.autoParam
-  let runTac? : TermElabM (Option Expr) := do
-    try
-      Term.withoutModifyingElabMetaStateWithInfo do
-        Term.withSynthesize (postpone := .no) do
-          discard <| Tactic.run mvar.mvarId! <|
-            Tactic.evalTactic tacticCode *> Tactic.pruneSolvedGoals
-        let result ← instantiateMVars mvar
-        if result.hasExprMVar then
-          return none
-        else
-          return some result
-    catch _ =>
-      return none
-  let (result?, _) ← runTac?.run {} {}
-  return result?
+def runAutoParam? (goalType : Expr) : ApplyRuleSetsM (Option Expr) :=
+  withProfile `autoParam do
+    let some (.const tacticDecl _) := goalType.getAutoParamTactic?
+      | return none
+    let goalType := goalType.appFn!.appArg!
+    let .ok tacticSyntax := evalSyntaxConstant (← getEnv) (← getOptions) tacticDecl
+      | return none
+    let tacticSeq : TSyntax `Lean.Parser.Tactic.tacticSeq := ⟨tacticSyntax⟩
+    let tacticCode ← `(tactic| try ($tacticSeq:tacticSeq))
+    let mvar ← mkFreshExprSyntheticOpaqueMVar goalType `apply_rulesets.autoParam
+    let runTac? : TermElabM (Option Expr) := do
+      try
+        Term.withoutModifyingElabMetaStateWithInfo do
+          Term.withSynthesize (postpone := .no) do
+            discard <| Tactic.run mvar.mvarId! <|
+              Tactic.evalTactic tacticCode *> Tactic.pruneSolvedGoals
+          let result ← instantiateMVars mvar
+          if result.hasExprMVar then
+            return none
+          else
+            return some result
+      catch _ =>
+        return none
+    let (result?, _) ← runTac?.run {} {}
+    return result?
 
 /-- Query selected rulesets for candidates matching `goalType`. -/
 def takeRuleSetTree (rsName : Name) : ApplyRuleSetsM (RefinedDiscrTree Rule) := do
@@ -152,8 +241,9 @@ def queryRuleSets (goalType : Expr) (rulesets : Array Name) : ApplyRuleSetsM (Ar
   let mut out := #[]
   for rsName in rulesets do
     let tree ← takeRuleSetTree rsName
-    let (result, tree) ← withConfig (fun cfg => { cfg with iota := false, zeta := false }) <|
-      tree.getMatch goalType true true
+    let (result, tree) ← withProfile `discrTree.getMatch <|
+      withConfig (fun cfg => { cfg with iota := false, zeta := false }) <|
+        tree.getMatch goalType true true
     modify fun s =>
       { s with ruleSetTrees := s.ruleSetTrees.alter rsName fun _ => some tree }
     out := out ++ result.toArray
@@ -179,18 +269,19 @@ def Rule.instantiate (rule : Rule) : MetaM (RuleType × Expr) := do
 def matchRuleConclusion (_rule : Rule) (conclusion goal : Expr) : ApplyRuleSetsM Bool := do
   let conclusion ← instantiateMVars conclusion
   let goal ← instantiateMVars goal
-  withTransparency (← read).config.transparency <| isDefEq conclusion goal
+  withProfile `isDefEq <|
+    withTransparency (← read).config.transparency <| isDefEq conclusion goal
 
 mutual
 
 /-- Try to solve a proposition goal by a local hypothesis. -/
 partial def assumption? (origin : ArgOrigin) (goalType : Expr) : ApplyRuleSetsM (Option Expr) := do
-  unless ← isProp goalType do
+  unless ← withProfile `isProp <| isProp goalType do
     return none
   for localDecl in ← getLCtx do
     unless localDecl.isAuxDecl do
-      if ← isProp localDecl.type then
-        if ← isDefEq localDecl.type goalType then
+      if ← withProfile `isProp <| isProp localDecl.type then
+        if ← withProfile `isDefEq <| isDefEq localDecl.type goalType then
           return some (mkFVar localDecl.fvarId)
         if localDecl.type.isForall then
           let rule : Rule := {
@@ -198,14 +289,17 @@ partial def assumption? (origin : ArgOrigin) (goalType : Expr) : ApplyRuleSetsM 
             pattern := localDecl.type
             type := .expr (.fvar localDecl.fvarId)
           }
-          if let some r ← tryRule? origin (← mkGoal goalType) rule then
+          let goal ← withProfile `goal.mk <| mkGoal goalType
+          if let some r ← tryRule? origin goal rule then
             return r
   return none
 
 partial def applyRuleSets (origin : ArgOrigin) (goalType : Expr) :
     ApplyRuleSetsM (Option Expr) := do
-  if let some r ← applyRuleSetsGoal origin (← mkGoal goalType) then
-    if ← withTransparency (← read).config.transparency <| isDefEq goalType (← inferType r) then
+  let goal ← withProfile `goal.mk <| mkGoal goalType
+  if let some r ← applyRuleSetsGoal origin goal then
+    if ← withProfile `isDefEq <|
+        withTransparency (← read).config.transparency <| isDefEq goalType (← inferType r) then
       return r
     else
       return none
@@ -214,21 +308,21 @@ partial def applyRuleSets (origin : ArgOrigin) (goalType : Expr) :
 
 partial def applyRuleSetsGoal (origin : ArgOrigin) (goal : Goal) :
     ApplyRuleSetsM (Option Expr) := do
-  let goalType ← goal.open fun _ goalType => pure goalType
+  let goalType ← withProfile `goal.open <| goal.open fun _ goalType => pure goalType
   withTraceNode `Meta.Tactic.apply_rulesets
     (fun _ => return s!"{← ppExpr goalType}") do
-  if ← containsCurrentFailure goal then
+  if ← withProfile `cache.lookup <| containsCurrentFailure goal then
     trace[Meta.Tactic.apply_rulesets] "failed goal cache hit"
     return none
-  if let some proof ← findCachedSuccess? goal then
+  if let some proof ← withProfile `cache.lookup <| findCachedSuccess? goal then
     trace[Meta.Tactic.apply_rulesets] "successful goal cache hit"
     return some proof
   match ← applyRuleSetsGoalCore origin goal goalType with
   | some proof =>
-    cacheSuccess goal proof
+    withProfile `cache.insertSuccess <| cacheSuccess goal proof
     return some proof
   | none =>
-    cacheCurrentFailure goal
+    withProfile `cache.insertFailure <| cacheCurrentFailure goal
     return none
 
 partial def applyRuleSetsGoalCore (origin : ArgOrigin) (goal : Goal) (goalType : Expr) :
@@ -249,16 +343,18 @@ partial def applyRuleSetsGoalCore (origin : ArgOrigin) (goal : Goal) (goalType :
       trace[Meta.Tactic.apply_rulesets] "solved by local assumption"
       return some proof
   if cfg.intro then
-    let some proof ← forallTelescopeReducing goalType fun xs body => do
+    let some proof ← withProfile `forallMetaTelescope <|
+      forallTelescopeReducing goalType fun xs body => do
       if xs.isEmpty then
         return none
       trace[Meta.Tactic.apply_rulesets] "introducing {xs.size} binder(s)"
       let some proof ← withIncreasedSearchDepth <| withIncreasedCacheDepth <|
         applyRuleSets origin body | return none
-      return some (← mkLambdaFVars xs proof)
+      return some (← withProfile `mkLambdaFVars <| mkLambdaFVars xs proof)
       | pure ()
     return some proof
-  let rules := sortRules (← queryRuleSets goalType (← read).rulesets)
+  let rules ← withProfile `rules.querySort do
+    return sortRules (← queryRuleSets goalType (← read).rulesets)
   trace[Meta.Tactic.apply_rulesets]
     "candidate rules: {rules.map fun rule => rule.name}"
   for rule in (← read).explicitRules do
@@ -274,8 +370,8 @@ partial def applyRuleSetsGoalCore (origin : ArgOrigin) (goal : Goal) (goalType :
 partial def synthesizeInstanceArg? (ruleName : Name) (arg type : Expr) : ApplyRuleSetsM Bool := do
   unless (← isClass? type).isSome do
     return false
-  if let .some inst ← trySynthInstance type then
-    if ← isDefEq arg inst then
+  if let .some inst ← withProfile `synthInstance <| trySynthInstance type then
+    if ← withProfile `isDefEq <| isDefEq arg inst then
       return true
     trace[Meta.Tactic.apply_rulesets]
       "{ruleName}, failed to assign instance{indentExpr type}\
@@ -292,13 +388,13 @@ partial def synthesizeProofArg? (ruleName : Name) (argIndex : Nat) (arg type : E
   let argName := (← getMCtx).getDecl arg.mvarId! |>.userName
   let origin := { ruleName, argIndex := some argIndex, argName := some argName }
   if let some proof ← withIncreasedSearchDepth <| applyRuleSets origin type then
-    if ← isDefEq arg proof then
+    if ← withProfile `isDefEq <| isDefEq arg proof then
       return true
     trace[Meta.Tactic.apply_rulesets]
       "{ruleName}, failed to assign proof{indentExpr type}"
   let ctx ← read
-  if let some proof ← ctx.disch origin type then
-    if ← isDefEq arg proof then
+  if let some proof ← withProfile `discharger <| ctx.disch origin type then
+    if ← withProfile `isDefEq <| isDefEq arg proof then
       return true
     trace[Meta.Tactic.apply_rulesets]
       "{ruleName}, failed to assign discharger proof{indentExpr type}"
@@ -311,7 +407,7 @@ partial def checkPostponedArgs (ruleName : Name) (args : Array Expr) (allowPostp
     ApplyRuleSetsM Bool := do
   let mut success := true
   for arg in args do
-    if (← instantiateMVars arg).isMVar then
+    if (← withProfile `instantiateMVars <| instantiateMVars arg).isMVar then
       if allowPostponed then
         continue
       trace[Meta.Tactic.apply_rulesets]
@@ -326,14 +422,14 @@ partial def synthesizeArgs (ruleName : Name) (args : Array Expr)
   let mut postponed := #[]
   for h : i in [:args.size] do
     let arg := args[i]
-    if (← instantiateMVars arg).isMVar then
-      let type ← inferType arg
+    if (← withProfile `instantiateMVars <| instantiateMVars arg).isMVar then
+      let type ← withProfile `inferType <| inferType arg
       if ← synthesizeInstanceArg? ruleName arg type then
         continue
-      if ← isProp type then
+      if ← withProfile `isProp <| isProp type then
         unless ← synthesizeProofArg? ruleName i arg type do
           postponed := postponed.push arg
-        if (← instantiateMVars arg).isMVar then
+        if (← withProfile `instantiateMVars <| instantiateMVars arg).isMVar then
           success := false
         continue
       postponed := postponed.push arg
@@ -357,9 +453,9 @@ partial def tryRule? (origin : ArgOrigin) (goal : Goal) (rule : Rule) :
   if rule.hasExprMVar then
     trace[Meta.Tactic.apply_rulesets] "rule contains expression metavariables"
     return none
-  let goalType ← goal.open fun _ goalType => pure goalType
-  let (ruleType, pattern) ← rule.instantiate
-  let (args, _, conclusion) ← forallMetaTelescope pattern
+  let goalType ← withProfile `goal.open <| goal.open fun _ goalType => pure goalType
+  let (ruleType, pattern) ← withProfile `rule.instantiate <| rule.instantiate
+  let (args, _, conclusion) ← withProfile `forallMetaTelescope <| forallMetaTelescope pattern
   let ok ← matchRuleConclusion rule conclusion goalType
   unless ok do
     trace[Meta.Tactic.apply_rulesets]
@@ -369,18 +465,20 @@ partial def tryRule? (origin : ArgOrigin) (goal : Goal) (rule : Rule) :
   | .expr expr =>
     unless ← synthesizeArgs rule.name args do
       return none
-    return some (← instantiateMVars (mkAppN expr args))
+    let proof ← withProfile `mkApp <| instantiateMVars (mkAppN expr args)
+    return some proof
   | .proc procExpr =>
     unless ← synthesizeArgs rule.name args (allowPostponed := true) do
       trace[Meta.Tactic.apply_rulesets]
         "failed to synthesize ruleproc arguments for {rule.name}"
       return none
     let args ← args.mapM instantiateMVars
-    let proc ← evalRuleProc procExpr
+    let proc ← withProfile `ruleproc.eval <| evalRuleProc procExpr
     let some proof ← proc args origin goalType
       | trace[Meta.Tactic.apply_rulesets] "ruleproc {rule.name} returned none"; return none
     let proofType ← inferType proof
-    let ok ← withTransparency (← read).config.transparency <| isDefEq proofType goalType
+    let ok ← withProfile `isDefEq <|
+      withTransparency (← read).config.transparency <| isDefEq proofType goalType
     unless ok do
       trace[Meta.Tactic.apply_rulesets]
         "ruleproc {rule.name} returned proof of wrong type{indentExpr proofType}\

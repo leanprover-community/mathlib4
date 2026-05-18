@@ -35,6 +35,15 @@ example (p q : Prop) : p → q → p ∧ q := by
 example : True := by
   apply_rulesets [sortTrue]
 
+def applyRuleSetsBigConj : Nat → (Nat → Prop) → Prop
+  | 0, _ => True
+  | n + 1, p => p n ∧ applyRuleSetsBigConj n p
+
+-- This is intentionally large enough to exercise repeated recursive rule application, local
+-- forall-hypothesis instantiation, and the success cache without relying on timing thresholds.
+example (p : Nat → Prop) (h : ∀ i, p i) : applyRuleSetsBigConj 64 p := by
+  apply_rulesets (config := { maxDepth := 200 }) +profile [And.intro, True.intro, h]
+
 example (p : Prop) (hp : p) : p := by
   apply_rulesets
 
@@ -151,6 +160,14 @@ local instance [Add α] [Add β] : Add (α × β) := ⟨fun (x,y) (x',y') => (x+
 theorem add [Add β] (f g : α → β) (_ : HasDeriv f f') (_ : HasDeriv g g') :
     HasDeriv (fun x : α => f x + g x) (fun xdx => f' xdx + g' xdx) := ⟨⟩
 
+@[has_deriv]
+theorem mul [Add β] [Mul β] (f g : α → β) (_ : HasDeriv f f') (_ : HasDeriv g g') :
+    HasDeriv (fun x : α => f x * g x) (fun xdx =>
+      let (y,dy) := f' xdx
+      let (z,dz) := g' xdx
+      let y := y; let z := z
+      (y * z, dy * z + y * dz)) := ⟨⟩
+
 @[has_deriv high]
 theorem div_bad [Div β] (f g : α → β) (_ : HasDeriv f f') (_ : HasDeriv g g')
     (_ : False) :
@@ -183,6 +200,12 @@ example : HasDeriv (fun x : Nat => x / x) (fun xdx =>
   apply congr_deriv
   · apply_rulesets [has_deriv]
   · simp -zeta []; rfl
+
+
+-- example : HasDeriv (fun x : Nat => (x * x + x) / ((x + x)*(x + x))) sorry := by
+--   apply congr_deriv
+--   · apply_rulesets [has_deriv]
+--   · sorry
 
 end HasDeriv
 

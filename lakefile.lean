@@ -77,6 +77,10 @@ lean_lib Archive where
 lean_lib Counterexamples where
   leanOptions := mathlibLeanOptions
 
+lean_lib ApplyRuleSets where
+  precompileModules := true
+  roots := #[`Mathlib.Tactic.ApplyRuleSets]
+
 /-- Additional documentation in the form of modules that only contain module docstrings. -/
 lean_lib docs where
   roots := #[`docs]

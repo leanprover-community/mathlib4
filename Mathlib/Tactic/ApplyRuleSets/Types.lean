@@ -37,6 +37,8 @@ structure Config extends ApplyConfig where
   /-- Failed subgoals are collected during the search and code action adding
   `have : <subgoal> := sorry` is offered at the end. -/
   collectFailedSubgoals : Bool := false
+  /-- Print an exclusive timing profile for selected `apply_rulesets` operations. -/
+  profile : Bool := false
 
 instance : Inhabited Config := ⟨{}⟩
 
@@ -107,6 +109,25 @@ structure GoalCache where
   failures : Std.HashSet Goal := {}
 deriving Inhabited
 
+/-- Accumulated timing data for one profiling category. -/
+structure ProfileEntry where
+  nanos : Nat := 0
+  count : Nat := 0
+deriving Inhabited
+
+/-- Exclusive profiling state for `apply_rulesets`.
+
+The currently active operation is the head of `stack`. Whenever a new operation starts or ends, the
+elapsed time since `lastNanos` is charged to the previous stack head, so operation counters do not
+overlap. -/
+structure ProfileState where
+  enabled : Bool := false
+  startNanos : Nat := 0
+  lastNanos : Nat := 0
+  stack : List Name := []
+  times : Std.HashMap Name ProfileEntry := {}
+deriving Inhabited
+
 def Rule.name (rule : Rule) : Name :=
   rule.origin.name
 
@@ -135,6 +156,7 @@ structure State where
   ruleSetTrees : Std.HashMap Name (RefinedDiscrTree Rule) := {}
   /-- Stack of goal caches, one for each local-context depth used by introduced binders. -/
   goalCaches : Array GoalCache := #[]
+  profile : ProfileState := {}
 
 /-- Search context. -/
 structure Context where

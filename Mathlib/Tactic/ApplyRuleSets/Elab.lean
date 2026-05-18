@@ -55,13 +55,15 @@ syntax applyRuleSetErase := "-" term:max
 syntax applyRuleSetDischarger := "by " tacticSeq
 syntax applyRuleSetArg := applyRuleSetErase <|> applyRuleSetDischarger <|> term
 syntax applyRuleSetArgs := "[" applyRuleSetArg,* "]"
+syntax applyRuleSetsProfile := "+profile"
 
 /-- Config elaborator for `apply_rulesets`. -/
 declare_config_elab elabApplyRuleSetsConfig Config
 
-syntax (name := applyRuleSetsTac) "apply_rulesets" optConfig (discharger)?
+syntax (name := applyRuleSetsTac) "apply_rulesets" optConfig (applyRuleSetsProfile)? (discharger)?
   (ppSpace applyRuleSetArgs)? : tactic
-syntax (name := applyRuleSetsQuestionTac) "apply_rulesets?" optConfig (discharger)?
+syntax (name := applyRuleSetsQuestionTac) "apply_rulesets?" optConfig (applyRuleSetsProfile)?
+  (discharger)?
   (ppSpace applyRuleSetArgs)? : tactic
 
 open Parser.Tactic in
@@ -160,15 +162,15 @@ private def mkExplicitExprRule (origin : Origin) (order : Nat) (ref : Term) (e :
   return rule
 
 private def evalApplyRuleSetsCore (cfgStx : TSyntax ``Parser.Tactic.optConfig)
+    (profileStx? : Option (TSyntax ``applyRuleSetsProfile))
     (d? : Option (TSyntax ``Parser.Tactic.discharger))
     (argsStx? : Option (TSyntax ``applyRuleSetArgs)) (forceCollectFailedSubgoals : Bool) :
     TacticM Unit := do
   let cfg ← elabApplyRuleSetsConfig cfgStx
   let cfg :=
-    if forceCollectFailedSubgoals then
-      { cfg with collectFailedSubgoals := true }
-    else
-      cfg
+    { cfg with
+      collectFailedSubgoals := cfg.collectFailedSubgoals || forceCollectFailedSubgoals
+      profile := cfg.profile || profileStx?.isSome }
   let mut dischargers := #[]
   if let some disch ← deprecatedDischarger? d? then
     dischargers := dischargers.push disch
@@ -215,8 +217,11 @@ private def evalApplyRuleSetsCore (cfgStx : TSyntax ``Parser.Tactic.optConfig)
         erased := erased,
         disch := disch
         lctxInitIndices := (← getLCtx).numIndices }
-    let s : State := { goalCaches := #[{ minLctxIndex := (← getLCtx).numIndices }] }
+    let profile ← if cfg.profile then initProfileState else pure {}
+    let s : State := { goalCaches := #[{ minLctxIndex := (← getLCtx).numIndices }], profile }
     let (proof?, s) ← (applyRuleSets { ruleName := Name.anonymous } goalType).run ctx |>.run s
+    if cfg.profile then
+      logInfo (← finishProfileReport s.profile)
     match proof? with
     | some proof => goal.assign proof; replaceMainGoal []
     | none =>
@@ -226,15 +231,19 @@ private def evalApplyRuleSetsCore (cfgStx : TSyntax ``Parser.Tactic.optConfig)
 
 @[tactic applyRuleSetsTac]
 def evalApplyRuleSets : Tactic := fun stx => do
-  let `(tactic| apply_rulesets $cfgStx:optConfig $[$d?]? $[$argsStx?:applyRuleSetArgs]?) := stx
+  let `(tactic|
+      apply_rulesets $cfgStx:optConfig $[$profileStx?:applyRuleSetsProfile]?
+        $[$d?]? $[$argsStx?:applyRuleSetArgs]?) := stx
     | throwUnsupportedSyntax
-  evalApplyRuleSetsCore cfgStx d? argsStx? (forceCollectFailedSubgoals := false)
+  evalApplyRuleSetsCore cfgStx profileStx? d? argsStx? (forceCollectFailedSubgoals := false)
 
 @[tactic applyRuleSetsQuestionTac]
 def evalApplyRuleSetsQuestion : Tactic := fun stx => do
-  let `(tactic| apply_rulesets? $cfgStx:optConfig $[$d?]? $[$argsStx?:applyRuleSetArgs]?) := stx
+  let `(tactic|
+      apply_rulesets? $cfgStx:optConfig $[$profileStx?:applyRuleSetsProfile]?
+        $[$d?]? $[$argsStx?:applyRuleSetArgs]?) := stx
     | throwUnsupportedSyntax
-  evalApplyRuleSetsCore cfgStx d? argsStx? (forceCollectFailedSubgoals := true)
+  evalApplyRuleSetsCore cfgStx profileStx? d? argsStx? (forceCollectFailedSubgoals := true)
 
 
 end Tactic.ApplyRuleSets
