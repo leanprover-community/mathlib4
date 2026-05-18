@@ -37,11 +37,9 @@ variable {α : Type*}
 generators `x : α` and relations `rels` as a quotient of `FreeGroup α`. -/
 def PresentedGroup (rels : Set (FreeGroup α)) :=
   FreeGroup α ⧸ Subgroup.normalClosure rels
+deriving Group
 
 namespace PresentedGroup
-
-instance (rels : Set (FreeGroup α)) : Group (PresentedGroup rels) :=
-  QuotientGroup.Quotient.group _
 
 /-- The canonical map from the free group on `α` to a presented group with generators `x : α`,
 where `x` is mapped to its equivalence class under the given set of relations `rels` -/

@@ -5,7 +5,7 @@ Authors: Simon Hudon
 -/
 module
 
-public import Mathlib.Order.OmegaCompletePartialOrder
+public import Mathlib.Order.BourbakiWitt
 public import Mathlib.Topology.Order.ScottTopology
 
 /-!

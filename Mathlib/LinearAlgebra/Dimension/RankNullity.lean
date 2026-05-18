@@ -29,7 +29,7 @@ TODO: prove the rank-nullity theorem for `[Ring R] [IsDomain R] [StrongRankCondi
 See `nonempty_oreSet_of_strongRankCondition` for a start.
 -/
 
-@[expose] public section
+public section
 universe u v
 
 open Function Set Cardinal Module Submodule LinearMap

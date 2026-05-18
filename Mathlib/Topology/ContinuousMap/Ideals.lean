@@ -10,7 +10,7 @@ public import Mathlib.Topology.ContinuousMap.Compact
 public import Mathlib.Topology.UrysohnsLemma
 public import Mathlib.Analysis.RCLike.Basic
 public import Mathlib.Analysis.Normed.Ring.Units
-public import Mathlib.Topology.Algebra.Module.CharacterSpace
+public import Mathlib.Topology.Algebra.Module.Spaces.CharacterSpace
 
 /-!
 # Ideals of continuous functions
@@ -165,7 +165,6 @@ open RCLike
 
 variable {X 𝕜 : Type*} [RCLike 𝕜] [TopologicalSpace X]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- An auxiliary lemma used in the proof of `ContinuousMap.idealOfSet_ofIdeal_eq_closure` which may
 be useful on its own. -/
 theorem exists_mul_le_one_eqOn_ge (f : C(X, ℝ≥0)) {c : ℝ≥0} (hc : 0 < c) :
@@ -335,7 +334,6 @@ def idealOpensGI :
           (isClosed_of_closure_subset <|
               (idealOfSet_ofIdeal_eq_closure I ▸ hI : I.closure ≤ I)).closure_eq)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem idealOfSet_isMaximal_iff (s : Opens X) :
     (idealOfSet 𝕜 (s : Set X)).IsMaximal ↔ IsCoatom s := by
   rw [Ideal.isMaximal_def]

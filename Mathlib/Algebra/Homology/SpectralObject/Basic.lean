@@ -120,7 +120,7 @@ def sc₃ (n₀ n₁ : ℤ) (hn₁ : n₀ + 1 = n₁ := by lia) : ShortComplex C
   ShortComplex.mk _ _ (X.zero₃ f g fg h n₀ n₁ hn₁)
 
 lemma exact₁ (n₀ n₁ : ℤ) (hn₁ : n₀ + 1 = n₁ := by lia) :
-    (X.sc₁ f g fg h n₀ n₁ hn₁ ).Exact := by
+    (X.sc₁ f g fg h n₀ n₁ hn₁).Exact := by
   subst h
   exact (X.exact₁' n₀ n₁ hn₁ (mk₂ f g)).exact 0
 

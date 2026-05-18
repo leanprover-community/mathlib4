@@ -11,6 +11,7 @@ public import Mathlib.Algebra.Ring.TransferInstance
 public import Mathlib.Topology.Algebra.GroupCompletion
 public import Mathlib.Topology.Algebra.Ring.Ideal
 public import Mathlib.Topology.Algebra.IsUniformGroup.Basic
+public import Mathlib.Topology.Algebra.SeparationQuotient.Basic
 
 /-!
 # Completion of topological rings:
@@ -239,7 +240,7 @@ theorem inseparableSetoid_ring (α) [Ring α] [TopologicalSpace α] [IsTopologic
 /-- Given a topological ring `α` equipped with a uniform structure that makes subtraction uniformly
 continuous, get a homeomorphism between the separated quotient of `α` and the quotient ring
 corresponding to the closure of zero. -/
-def sepQuotHomeomorphRingQuot (α) [CommRing α] [TopologicalSpace α] [IsTopologicalRing α] :
+def sepQuotHomeomorphRingQuot (α) [Ring α] [TopologicalSpace α] [IsTopologicalRing α] :
     SeparationQuotient α ≃ₜ α ⧸ (⊥ : Ideal α).closure where
   toEquiv := Quotient.congrRight fun x y => by rw [inseparableSetoid_ring]
   continuous_toFun := continuous_id.quotient_map' <| by
@@ -247,26 +248,14 @@ def sepQuotHomeomorphRingQuot (α) [CommRing α] [TopologicalSpace α] [IsTopolo
   continuous_invFun := continuous_id.quotient_map' <| by
     rw [inseparableSetoid_ring]; exact fun _ _ ↦ id
 
-instance commRing [CommRing α] [TopologicalSpace α] [IsTopologicalRing α] :
-    CommRing (SeparationQuotient α) :=
-  (sepQuotHomeomorphRingQuot _).commRing
-
 /-- Given a topological ring `α` equipped with a uniform structure that makes subtraction uniformly
 continuous, get an equivalence between the separated quotient of `α` and the quotient ring
 corresponding to the closure of zero. -/
 def sepQuotRingEquivRingQuot (α) [CommRing α] [TopologicalSpace α] [IsTopologicalRing α] :
-    SeparationQuotient α ≃+* α ⧸ (⊥ : Ideal α).closure :=
-  (sepQuotHomeomorphRingQuot _).ringEquiv
-
-instance topologicalRing [CommRing α] [TopologicalSpace α] [IsTopologicalRing α] :
-    IsTopologicalRing (SeparationQuotient α) where
-  toContinuousAdd :=
-    (sepQuotHomeomorphRingQuot α).isInducing.continuousAdd (sepQuotRingEquivRingQuot α)
-  toContinuousMul :=
-    (sepQuotHomeomorphRingQuot α).isInducing.continuousMul (sepQuotRingEquivRingQuot α)
-  toContinuousNeg :=
-    (sepQuotHomeomorphRingQuot α).isInducing.continuousNeg <|
-      map_neg (sepQuotRingEquivRingQuot α)
+    SeparationQuotient α ≃+* α ⧸ (⊥ : Ideal α).closure where
+  __ := sepQuotHomeomorphRingQuot α
+  map_mul' := SeparationQuotient.surjective_mk.forall₂.2 (fun _ _ ↦ rfl)
+  map_add' := SeparationQuotient.surjective_mk.forall₂.2 (fun _ _ ↦ rfl)
 
 end UniformSpace
 

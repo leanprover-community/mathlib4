@@ -144,7 +144,9 @@ lemma commutator_le_focalSubgroup : ⁅H, H⁆ ≤ focalSubgroup H := by
 
 @[to_additive]
 instance : IsMulCommutative (H ⧸ focalSubgroupOf H) :=
-  ⟨⟨(Normal.quotient_commutative_iff_commutator_le.mpr H.commutator_le_focalSubgroupOf).comm⟩⟩
+  Normal.quotient_commutative_iff_commutator_le.mpr H.commutator_le_focalSubgroupOf
+
+open scoped IsMulCommutative
 
 /-- The transfer homomorphism `V : G → H/H*` from `G` the abelian quotient `H/H*`. -/
 @[to_additive /-- The transfer homomorphism `V : G → H/H*` from `G` the abelian quotient `H/H*`. -/]
@@ -199,6 +201,7 @@ lemma ker_transferFocal_inf_eq_focalSubgroup : P.transferFocal.ker ⊓ P = P.foc
   rw [← subgroupOf_map_subtype, ← MonoidHom.ker_restrict, ← map_focalSubgroupOf]
   exact congr_arg _ (ker_restrict_transferFocal_eq_focalSubgroupOf P)
 
+open scoped IsMulCommutative in
 /--
 **The Focal Subgroup Theorem**
 

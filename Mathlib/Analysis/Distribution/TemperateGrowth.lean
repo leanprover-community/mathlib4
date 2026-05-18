@@ -88,10 +88,6 @@ theorem HasTemperateGrowth.norm_iteratedFDeriv_le_uniform {f : E → F}
     pi_norm_le_iff_of_nonneg, Fin.forall_iff, Nat.lt_succ_iff] at hC
   exact ⟨k, C, C_nonneg, fun N hN x ↦ hC x N hN⟩
 
-@[deprecated (since := "2025-10-30")]
-alias HasTemperateGrowth.norm_iteratedFDeriv_le_uniform_aux :=
-  HasTemperateGrowth.norm_iteratedFDeriv_le_uniform
-
 lemma HasTemperateGrowth.of_fderiv {f : E → F}
     (h'f : Function.HasTemperateGrowth (fderiv ℝ f)) (hf : Differentiable ℝ f) {k : ℕ} {C : ℝ}
     (h : ∀ x, ‖f x‖ ≤ C * (1 + ‖x‖) ^ k) :
@@ -136,7 +132,7 @@ theorem HasTemperateGrowth.comp' [NormedAddCommGroup D] [NormedSpace ℝ D] {g :
   refine ⟨hg₁.comp_contDiff hf.1 (ht ⟨·, rfl⟩), fun n ↦ ?_⟩
   obtain ⟨k₁, C₁, hC₁, h₁⟩ := hf.norm_iteratedFDeriv_le_uniform n
   obtain ⟨k₂, C₂, hC₂, h₂⟩ := hg₂ n
-  have h₁' : ∀ x, ‖f x‖ ≤ C₁ * (1 + ‖x‖) ^ k₁ := by simpa using h₁ 0 (zero_le _)
+  have h₁' : ∀ x, ‖f x‖ ≤ C₁ * (1 + ‖x‖) ^ k₁ := by simpa using h₁ 0
   set C₃ := ∑ k ∈ Finset.range (k₂ + 1), C₂ * (k₂.choose k : ℝ) * (C₁ ^ k)
   use k₁ * k₂ + k₁ * n, n ! * C₃ * (1 + C₁) ^ n
   intro x
@@ -253,7 +249,7 @@ theorem _root_.ContinuousLinearMap.bilinear_hasTemperateGrowth [NormedSpace 𝕜
 lemma HasTemperateGrowth.id : Function.HasTemperateGrowth (id : E → E) := by
   apply Function.HasTemperateGrowth.of_fderiv (k := 1) (C := 1)
   · convert Function.HasTemperateGrowth.const (ContinuousLinearMap.id ℝ E)
-    exact fderiv_id'
+    exact fderiv_fun_id
   · apply differentiable_id
   · simp
 

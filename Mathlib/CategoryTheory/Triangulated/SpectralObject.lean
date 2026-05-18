@@ -80,7 +80,7 @@ are composable. -/
 def δ : X.ω₁.obj (mk₁ g) ⟶ (X.ω₁.obj (mk₁ f))⟦(1 : ℤ)⟧ :=
   X.δ'.app (mk₂ f g)
 
-/-- The distinguished triangle attached to a spectral object `E : SpectralObjet C ι`
+/-- The distinguished triangle attached to a spectral object `E : SpectralObject C ι`
 and composable morphisms `f : i ⟶ j` and `g : j ⟶ k` in `ι`. -/
 @[simps!]
 def triangle : Triangle C :=

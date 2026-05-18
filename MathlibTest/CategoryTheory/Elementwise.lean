@@ -66,7 +66,6 @@ lemma bar [Category C] {FC : C → C → Type _} {CC : C → Type _} [∀ X Y, F
 example {M N K : Type} {f : M ⟶ N} {g : N ⟶ K} {h : M ⟶ K} (w : f ≫ g = h) (x : M) :
   g (f x) = h x := by
   have := elementwise_of% w
-  dsimp at this -- Temporarily added while the category of types is being refactored
   guard_hyp this : ∀ (x : M), g (f x) = h x
   exact this x
 
@@ -118,14 +117,12 @@ end Mon
 
 example {α β : Type} (f g : α ⟶ β) (w : f = g) (a : α) : f a = g a := by
   replace w := elementwise_of% w
-  dsimp at w -- Temporarily added while the category of types is being refactored
   guard_hyp w : ∀ (x : α), f x = g x
   rw [w]
 
 
 example {α β : Type} (f g : α ⟶ β) (w : f ≫ 𝟙 β = g) (a : α) : f a = g a := by
   replace w := elementwise_of% w
-  dsimp at w -- Temporarily added while the category of types is being refactored
   guard_hyp w : ∀ (x : α), f x = g x
   rw [w]
 
@@ -187,7 +184,6 @@ lemma bar [Category C]
 example {M N K : Type} {f : M ⟶ N} {g : N ⟶ K} {h : M ⟶ K} (w : f ≫ g = h) (x : M) :
   g (f x) = h x := by
   have := elementwise_of% w
-  dsimp at this -- Temporarily added while the category of types is being refactored
   guard_hyp this : ∀ (x : M), g (f x) = h x
   exact this x
 
@@ -225,14 +221,12 @@ end Mon
 
 example {α β : Type} (f g : α ⟶ β) (w : f = g) (a : α) : f a = g a := by
   replace w := elementwise_of% w
-  dsimp at w -- Temporarily added while the category of types is being refactored
   guard_hyp w : ∀ (x : α), f x = g x
   rw [w]
 
 
 example {α β : Type} (f g : α ⟶ β) (w : f ≫ 𝟙 β = g) (a : α) : f a = g a := by
   replace w := elementwise_of% w
-  dsimp at w -- Temporarily added while the category of types is being refactored
   guard_hyp w : ∀ (x : α), f x = g x
   rw [w]
 

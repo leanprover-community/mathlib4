@@ -298,9 +298,6 @@ theorem exp_strictMono : StrictMono exp := fun x y h => by
   exact (lt_mul_iff_one_lt_left (exp_pos _)).2
       (lt_of_lt_of_le (by linarith) (add_one_le_exp_of_nonneg (by linarith)))
 
-@[deprecated exp_strictMono (since := "2025-10-20")]
-theorem exp_lt_exp_of_lt {x y : ℝ} (h : x < y) : exp x < exp y := exp_strictMono h
-
 @[gcongr, mono]
 theorem exp_monotone : Monotone exp :=
   exp_strictMono.monotone
@@ -670,6 +667,12 @@ lemma le_inv_mul_exp (x : ℝ) {c : ℝ} (hc : 0 < c) : x ≤ c⁻¹ * exp (c * 
   calc c * x
   _ ≤ c * x + 1 := le_add_of_nonneg_right zero_le_one
   _ ≤ _ := Real.add_one_le_exp (c * x)
+
+theorem prod_one_add_le_exp_sum {ι : Type*} (s : Finset ι) {f : ι → ℝ}
+    (hf : ∀ i, 0 ≤ f i) : ∏ i ∈ s, (1 + f i) ≤ exp (∑ i ∈ s, f i) :=
+  (Finset.prod_le_prod (fun i _ ↦ add_nonneg zero_le_one (hf i))
+    fun i _ ↦ (add_comm 1 (f i)).le.trans (add_one_le_exp _)).trans
+    (exp_sum s f).symm.le
 
 end Real
 

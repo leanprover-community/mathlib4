@@ -247,11 +247,12 @@ lemma formallySmooth_stalkMap_iff {f : X ⟶ Y} {x : X} (U : Y.Opens)
     (f.stalkMap x).hom.FormallySmooth ↔
       hV.primeIdealOf ⟨x, hx⟩ ∈ Algebra.smoothLocus Γ(Y, U) Γ(X, V) := by
   letI := (f.appLE U V hVU).hom.toAlgebra
-  have : (hV.primeIdealOf ⟨x, hx⟩).asIdeal.LiesOver (hU.primeIdealOf ⟨f x, hVU hx⟩).asIdeal :=
+  let p := (hU.primeIdealOf ⟨f x, hVU hx⟩).asIdeal
+  let q := (hV.primeIdealOf ⟨x, hx⟩).asIdeal
+  have : q.LiesOver p :=
     ⟨congr($(IsAffineOpen.comap_primeIdealOf_appLE U hU V hV hVU hx).1).symm⟩
-  trans Algebra.FormallySmooth
-    (Localization.AtPrime (hU.primeIdealOf ⟨f x, hVU hx⟩).asIdeal)
-    (Localization.AtPrime (hV.primeIdealOf ⟨x, hx⟩).asIdeal)
+  let := Localization.AtPrime.algebraOfLiesOver p q
+  trans Algebra.FormallySmooth (Localization.AtPrime p) (Localization.AtPrime q)
   · rw [← formallySmooth_algebraMap]
     exact RingHom.FormallySmooth.respectsIso.arrow_mk_iso_iff
       (IsAffineOpen.arrowStalkMapIso f U hU V hV hVU hx)
@@ -302,7 +303,6 @@ def Scheme.Hom.smoothLocus (f : X ⟶ Y) [LocallyOfFinitePresentation f] : X.Ope
 lemma Scheme.Hom.mem_smoothLocus {f : X ⟶ Y} [LocallyOfFinitePresentation f] {x : X} :
     x ∈ f.smoothLocus ↔ (f.stalkMap x).hom.FormallySmooth := .rfl
 
-set_option backward.isDefEq.respectTransparency false in
 lemma Scheme.Hom.smoothLocus_eq_top (f : X ⟶ Y) [Smooth f] :
     f.smoothLocus = ⊤ := by
   rw [← top_le_iff]
@@ -355,10 +355,6 @@ lemma Scheme.Hom.genericPoint_mem_smoothLocus_of_perfectField
     Algebra.IsAlgebraic.perfectField (K := K)
       (L := (Spec.structureSheaf K).presheaf.stalk (f (genericPoint X)))
   exact Algebra.FormallySmooth.of_perfectField
-
-instance {X : Scheme} [IsReduced X] (U : X.Opens) : IsReduced U :=
-  isReduced_of_isOpenImmersion U.ι
-
 
 lemma Scheme.Hom.dense_smoothLocus_of_perfectField
     {K : Type u} [Field K] [PerfectField K] [IsReduced X]

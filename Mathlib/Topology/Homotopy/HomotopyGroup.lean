@@ -33,8 +33,6 @@ We provide a group instance using path composition and show commutativity when `
 
 TODO:
 * `Ω^M (Ω^N X) ≃ₜ Ω^(M⊕N) X`, and `Ω^M X ≃ₜ Ω^N X` when `M ≃ N`. Similarly for `π_`.
-* Path-induced homomorphisms. Show that `HomotopyGroup.pi1EquivFundamentalGroup`
-  is a group isomorphism.
 * Examples with `𝕊^n`: `π_n (𝕊^n) = ℤ`, `π_m (𝕊^n)` trivial for `m < n`.
 * Actions of π_1 on π_n.
 * Lie algebra: `⁅π_(n+1), π_(m+1)⁆` contained in `π_(n+m+1)`.
@@ -527,6 +525,17 @@ def homotopyGroupEquivFundamentalGroupOfUnique (N) [Unique N] :
 def HomotopyGroup.pi1EquivFundamentalGroup : π_ 1 X x ≃ FundamentalGroup X x :=
   homotopyGroupEquivFundamentalGroupOfUnique (Fin 1)
 
+lemma HomotopyGroup.genLoopEquivOfUnique_transAt (N) [DecidableEq N] [Unique N] (p q : Ω^ N X x) :
+    genLoopEquivOfUnique _ (transAt default q p) =
+      (genLoopEquivOfUnique _ q).trans (genLoopEquivOfUnique _ p) := by
+  ext t
+  simp only [genLoopEquivOfUnique, GenLoop.transAt, GenLoop.copy,
+    one_div, Equiv.coe_fn_mk, GenLoop.mk_apply, ContinuousMap.coe_mk, Path.coe_mk', Path.trans,
+    Function.comp_apply]
+  refine ite_congr rfl (fun _ ↦ congrArg q ?_)
+    fun _ ↦ congrArg p ?_
+  <;> (ext i; rw [Unique.eq_default i]; simp)
+
 namespace HomotopyGroup
 
 /-- Group structure on `HomotopyGroup N X x` for nonempty `N` (in particular `π_(n+1) X x`). -/
@@ -588,11 +597,31 @@ theorem inv_spec [Nonempty N] {i} {p : Ω^ N X x} :
   In particular, multiplication on `π_(n+2)` is commutative. -/
 instance commGroup [Nontrivial N] : CommGroup (HomotopyGroup N X x) :=
   let h := exists_ne (Classical.arbitrary N)
-  @EckmannHilton.commGroup (HomotopyGroup N X x) _ 1 (isUnital_auxGroup <| Classical.choose h) _
+  fast_instance% @EckmannHilton.commGroup (HomotopyGroup N X x) _ 1
+    (isUnital_auxGroup <| Classical.choose h) _
     (by
       rintro ⟨a⟩ ⟨b⟩ ⟨c⟩ ⟨d⟩
       apply congr_arg Quotient.mk'
       simp only [fromLoop_trans_toLoop, transAt_distrib <| Classical.choose_spec h, coe_toEquiv,
         loopHomeo_apply, coe_symm_toEquiv, loopHomeo_symm_apply])
+
+/-- The homotopy group at `x` indexed by a singleton is isomorphic to the fundamental group,
+  i.e. the loops based at `x` up to homotopy. -/
+def homotopyGroupOfUniqueMulEquivFundamentalGroup (N) [Unique N] :
+    HomotopyGroup N X x ≃* FundamentalGroup X x where
+  toEquiv := homotopyGroupEquivFundamentalGroupOfUnique N
+  map_mul' a b := Quotient.inductionOn₂ a b fun p q => by
+    simp only [HomotopyGroup.mul_spec (i := default)]
+    apply Quotient.sound
+    simp [genLoopEquivOfUnique_transAt]
+
+/-- The first homotopy group at `x` is isomorphic to the fundamental group. -/
+def pi1MulEquivFundamentalGroup :
+    π_ 1 X x ≃* FundamentalGroup X x where
+  toEquiv := HomotopyGroup.pi1EquivFundamentalGroup (X := X) (x := x)
+  map_mul' a b := Quotient.inductionOn₂ a b fun p q => by
+    simp only [HomotopyGroup.mul_spec (i := (0 : Fin 1))]
+    apply Quotient.sound
+    rw [Unique.eq_default 0, genLoopEquivOfUnique_transAt]
 
 end HomotopyGroup

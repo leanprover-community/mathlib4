@@ -5,7 +5,9 @@ Authors: Luigi Massacci, Anatole Dedecker
 -/
 module
 
+public import Mathlib.Analysis.Calculus.LineDeriv.Basic
 public import Mathlib.Analysis.Distribution.ContDiffMapSupportedIn
+public import Mathlib.Analysis.Distribution.DerivNotation
 
 /-!
 # Continuously differentiable functions with compact support
@@ -124,6 +126,10 @@ protected theorem contDiff (f : 𝓓^{n}(Ω, F)) : ContDiff ℝ n f := map_contD
 protected theorem hasCompactSupport (f : 𝓓^{n}(Ω, F)) : HasCompactSupport f :=
   map_hasCompactSupport f
 protected theorem tsupport_subset (f : 𝓓^{n}(Ω, F)) : tsupport f ⊆ Ω := tsupport_map_subset f
+
+@[fun_prop]
+protected theorem continuous (f : 𝓓^{n}(Ω, F)) : Continuous f :=
+  f.contDiff.continuous
 
 @[simp]
 theorem toFun_eq_coe {f : 𝓓^{n}(Ω, F)} : f.toFun = (f : E → F) :=
@@ -314,7 +320,6 @@ noncomputable def ofSupportedInCLM [SMulCommClass ℝ 𝕜 F] {K : Compacts E}
 
 @[deprecated (since := "2025-12-10")] alias coe_ofSupportedInLM := coe_ofSupportedInCLM
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The **universal property** of the topology on `𝓓^{n}(Ω, F)`: a **linear** map from
 `𝓓^{n}(Ω, F)` to a locally convex topological vector space is continuous if and only if its
 precomposition with the inclusion `ofSupportedIn K_sub_Ω : 𝓓^{n}_{K}(E, F) → 𝓓^{n}(Ω, F)` is
@@ -401,6 +406,10 @@ variable (𝕜) in
 theorem injective_toBoundedContinuousFunctionCLM [Algebra ℝ 𝕜] [IsScalarTower ℝ 𝕜 F] :
     Function.Injective (toBoundedContinuousFunctionCLM 𝕜 : 𝓓^{n}(Ω, F) →L[𝕜] E →ᵇ F) :=
   fun f g ↦ by simp [toBoundedContinuousFunctionCLM]
+
+instance : ContinuousEval 𝓓^{n}(Ω, F) E F :=
+  ContinuousEval.of_continuous_forget
+    (toBoundedContinuousFunctionCLM ℝ).continuous
 
 instance : T3Space 𝓓^{n}(Ω, F) :=
   suffices T2Space 𝓓^{n}(Ω, F) from inferInstance
@@ -508,9 +517,9 @@ lemma fderivCLM_apply_of_le (f : 𝓓^{n}(Ω, F)) (hk : k + 1 ≤ n) :
     fderivCLM 𝕜 n k f = fderiv ℝ f := by
   simp [hk]
 
-lemma fderivCLM_apply_of_gt (f : 𝓓^{n}(Ω, F)) (hk : n < k + 1) :
-    fderivCLM 𝕜 n k f = 0 := by
-  ext : 1
+lemma fderivCLM_apply_of_gt (hk : n < k + 1) :
+    (fderivCLM 𝕜 n k : 𝓓^{n}(Ω, F) →L[𝕜] 𝓓^{k}(Ω, E →L[ℝ] F)) = 0 := by
+  ext : 2
   simp [not_le_of_gt hk]
 
 variable (𝕜) in
@@ -528,5 +537,199 @@ lemma fderivCLM_eq_of_scalars (𝕜' : Type*)
   rfl
 
 end FDerivCLM
+
+section LineDerivCLM
+
+variable [Algebra ℝ 𝕜] [IsScalarTower ℝ 𝕜 F]
+
+variable (𝕜) in
+/-- `lineDerivCLM 𝕜 v` is the continuous `𝕜`-linear-map sending `f : 𝓓^{n}_{K}(E, F)` to
+its derivative along the vector `v`, which is an element of `𝓓^{k}_{K}(E, F)`.
+This only makes mathematical sense if `k + 1 ≤ n`, otherwise we define it as the zero map.
+
+The parameters `n` and `k` are implicit as they can often be inferred from context, or
+specified by a type ascription. For `n = k = ⊤`, we also provide instances of the `LineDeriv`
+notation typeclass. -/
+noncomputable def lineDerivCLM (v : E) :
+    𝓓^{n}(Ω, F) →L[𝕜] 𝓓^{k}(Ω, F) :=
+  -- Cannot use `ContinuousLinearMap.apply` here because we are mixing `ℝ` and `𝕜`
+  letI ev_v : (E →L[ℝ] F) →L[𝕜] F :=
+  { toFun f := f v
+    map_add' _ _ := rfl
+    map_smul' _ _ := rfl }
+  postcompCLM ev_v ∘L fderivCLM 𝕜 n k
+
+lemma lineDerivCLM_eq_fderivCLM {f : 𝓓^{n}(Ω, F)} {v : E} {x : E} :
+    (lineDerivCLM 𝕜 v f : 𝓓^{k}(Ω, F)) x = fderivCLM 𝕜 n k f x v :=
+  rfl
+
+@[simp]
+lemma lineDerivCLM_apply {f : 𝓓^{n}(Ω, F)} {v : E} {x : E} :
+    (lineDerivCLM 𝕜 v f : 𝓓^{k}(Ω, F)) x = if k + 1 ≤ n then lineDeriv ℝ f x v else 0 := by
+  rw [lineDerivCLM_eq_fderivCLM, fderivCLM_apply]
+  split_ifs with hk
+  · have hk' : 0 < (n : ℕ∞ω) := mod_cast (ENat.add_one_pos.trans_le hk)
+    rw [(f.contDiff.differentiable hk'.ne').differentiableAt.lineDeriv_eq_fderiv]
+  · rfl
+
+lemma lineDerivCLM_apply_of_le {f : 𝓓^{n}(Ω, F)} {v : E} {x : E} (hk : k + 1 ≤ n) :
+    (lineDerivCLM 𝕜 v f : 𝓓^{k}(Ω, F)) x = lineDeriv ℝ f x v := by
+  simp [hk]
+
+lemma lineDerivCLM_apply_of_gt {v : E} (hk : n < k + 1) :
+    (lineDerivCLM 𝕜 v : 𝓓^{n}(Ω, F) →L[𝕜] 𝓓^{k}(Ω, F)) = 0 := by
+  ext
+  simp [not_le_of_gt hk]
+
+variable (𝕜) in
+lemma lineDerivCLM_eq_of_scalars (𝕜' : Type*)
+    [NontriviallyNormedField 𝕜'] [NormedSpace 𝕜' F] [Algebra ℝ 𝕜'] [IsScalarTower ℝ 𝕜' F]
+    {v : E} : (lineDerivCLM 𝕜 v : 𝓓^{n}(Ω, F) → 𝓓^{k}(Ω, F)) = lineDerivCLM 𝕜' v :=
+  rfl
+
+lemma lineDerivCLM_add {v₁ v₂ : E} :
+    (lineDerivCLM 𝕜 (v₁ + v₂) : 𝓓^{n}(Ω, F) →L[𝕜] 𝓓^{k}(Ω, F)) =
+      lineDerivCLM 𝕜 v₁ + lineDerivCLM 𝕜 v₂ := by
+  ext
+  simp [-lineDerivCLM_apply, lineDerivCLM_eq_fderivCLM]
+
+lemma lineDerivCLM_smul {c : ℝ} {v : E} :
+    (lineDerivCLM 𝕜 (c • v) : 𝓓^{n}(Ω, F) →L[𝕜] 𝓓^{k}(Ω, F)) =
+      c • lineDerivCLM 𝕜 v := by
+  ext
+  simp [-lineDerivCLM_apply, lineDerivCLM_eq_fderivCLM]
+
+open LineDeriv
+
+/-- Note: we cannot express the full generality of `lineDerivCLM` purely in terms of this typeclass,
+because (by design) the target type `𝓓^{k}_{K}(E, F)` is not determined by the input type
+`𝓓^{n}_{K}(E, F)`. -/
+noncomputable instance : LineDeriv E 𝓓(Ω, F) 𝓓(Ω, F) where
+  lineDerivOp v := lineDerivCLM ℝ v
+
+variable (𝕜) in
+lemma lineDerivOp_eq_lineDerivCLM {v : E} {f : 𝓓(Ω, F)} :
+    ∂_{v} f = lineDerivCLM 𝕜 v f :=
+  rfl
+
+noncomputable instance : LineDerivAdd E 𝓓(Ω, F) 𝓓(Ω, F) where
+  lineDerivOp_add v := map_add (lineDerivCLM ℝ v)
+  lineDerivOp_left_add _ _ f := congr($lineDerivCLM_add f)
+
+noncomputable instance : LineDerivSMul 𝕜 E 𝓓(Ω, F) 𝓓(Ω, F) where
+  lineDerivOp_smul v := map_smul (lineDerivCLM 𝕜 v)
+
+noncomputable instance : LineDerivLeftSMul ℝ E 𝓓(Ω, F) 𝓓(Ω, F) where
+  lineDerivOp_left_smul _ _ f := congr($lineDerivCLM_smul f)
+
+noncomputable instance : ContinuousLineDeriv E 𝓓(Ω, F) 𝓓(Ω, F) where
+  continuous_lineDerivOp v := (lineDerivCLM ℝ v).continuous
+
+lemma lineDerivOpCLM_eq_lineDerivCLM {v : E} :
+    lineDerivOpCLM 𝕜 𝓓(Ω, F) v = lineDerivCLM 𝕜 v :=
+  rfl
+
+end LineDerivCLM
+
+section Integral
+
+open MeasureTheory
+
+variable {m : MeasurableSpace E} [OpensMeasurableSpace E] {F₁ F₂ F₃ : Type*}
+  [NormedAddCommGroup F₁] [NormedSpace 𝕜 F₁] [NormedSpace ℝ F₁]
+  [NormedAddCommGroup F₂] [NormedSpace 𝕜 F₂]
+  [NormedAddCommGroup F₃] [NormedSpace 𝕜 F₃]
+
+@[fun_prop]
+protected theorem stronglyMeasurable (f : 𝓓^{n}(Ω, F)) :
+    StronglyMeasurable f := by
+  exact f.continuous.stronglyMeasurable_of_hasCompactSupport f.hasCompactSupport
+
+@[fun_prop]
+protected theorem aestronglyMeasurable {μ : Measure E} (f : 𝓓^{n}(Ω, F)) :
+    AEStronglyMeasurable f μ :=
+  f.stronglyMeasurable.aestronglyMeasurable
+
+protected theorem memLp_top {μ : Measure E} (f : 𝓓^{n}(Ω, F)) :
+    MemLp f ⊤ μ :=
+  f.continuous.memLp_top_of_hasCompactSupport f.hasCompactSupport μ
+
+protected theorem integrable_bilin (B : F₁ →L[𝕜] F₂ →L[𝕜] F₃) {μ : Measure E} {φ : E → F₂}
+    (hφ : LocallyIntegrableOn φ Ω μ) (f : 𝓓^{n}(Ω, F₁)) :
+    Integrable (fun x ↦ B (f x) (φ x)) μ := by
+  suffices IntegrableOn (fun x ↦ B (f x) (φ x)) (tsupport f) μ by
+    rwa [integrableOn_iff_integrable_of_support_subset] at this
+    refine subset_trans ?_ (subset_tsupport f)
+    exact fun x hx hfx ↦ hx (by simp [hfx])
+  replace hφ := hφ.integrableOn_compact_subset f.tsupport_subset f.hasCompactSupport
+  rw [IntegrableOn, ← memLp_one_iff_integrable] at hφ ⊢
+  exact B.memLp_of_bilin 1 f.memLp_top hφ
+
+/-- A test function on `Ω` is `μ`-integrable for any measure `μ` on `E` satisfying
+`LocallyIntegrableOn 1 Ω μ`. Note that this is a weaker assumption than both
+- `IsLocallyFiniteMeasure (μ.restrict Ω)` (because we say nothing about points outside of `Ω`)
+- `IsFiniteMeasureOnCompacts (μ.restrict Ω)` (because we say nothing about compacts not
+  contained in `Ω`)
+
+For example, if `μ` is the measure with density `fun (x : ℝ) ↦ x⁻¹` with respect to the Lebesgue
+measure and `Ω` is the open set `Ioo 0 1`, we have `LocallyIntegrableOn 1 Ω μ` (hence `μ` defines
+a distribution on `Ω`) but the other two conditions are not satisfied.
+-/
+protected theorem integrable {μ : Measure E}
+    (H : LocallyIntegrableOn (fun (_ : E) ↦ (1 : ℝ)) Ω μ)
+    (f : 𝓓^{n}(Ω, F)) : Integrable f μ := by
+  rw [← integrableOn_iff_integrable_of_support_subset (subset_tsupport f)]
+  replace H := H.integrableOn_compact_subset f.tsupport_subset f.hasCompactSupport
+  suffices IntegrableOn ((1 : ℝ) • f) (tsupport f) μ by simpa
+  rw [IntegrableOn, ← memLp_one_iff_integrable] at H ⊢
+  exact f.memLp_top.smul H
+
+variable [Algebra ℝ 𝕜] [IsScalarTower ℝ 𝕜 F₁] [NormedSpace ℝ F₃] [IsScalarTower ℝ 𝕜 F₃]
+
+-- TODO: semilinearize
+/-- Given a continuous `𝕜`-bilinear map `B : F₁ →L[𝕜] F₂ →L[𝕜] F₃`, a measure `μ` on `E`,
+and a function `φ : E → F₂` which is locally `μ`-integrable, this is the *continuous* `𝕜`-linear map
+`f ↦ ∫ x, B (f x) (φ x) ∂μ` from `𝓓^{n}(E, F₁)` to `F₃`. Otherwise, this is the zero map. -/
+noncomputable def integralAgainstBilinCLM (B : F₁ →L[𝕜] F₂ →L[𝕜] F₃) (μ : Measure E) (φ : E → F₂) :
+    𝓓^{n}(Ω, F₁) →L[𝕜] F₃ := open scoped Classical in
+  TestFunction.limitCLM 𝕜
+    (fun f ↦ if LocallyIntegrableOn φ Ω μ then ∫ x, B (f x) (φ x) ∂μ else 0)
+    (fun K K_sub_Ω ↦
+      if LocallyIntegrableOn φ Ω μ
+      then ContDiffMapSupportedIn.integralAgainstBilinCLM B μ φ
+      else 0)
+    (fun K K_sub_Ω f ↦ by
+      split_ifs with h
+      · simp [h.integrableOn_compact_subset K_sub_Ω K.2]
+      · simp)
+
+open scoped Classical in
+@[simp]
+lemma integralAgainstBilinCLM_apply {B : F₁ →L[𝕜] F₂ →L[𝕜] F₃} {μ : Measure E} {φ : E → F₂}
+    {f : 𝓓^{n}(Ω, F₁)} :
+    integralAgainstBilinCLM B μ φ f =
+      if LocallyIntegrableOn φ Ω μ then ∫ x, B (f x) (φ x) ∂μ else 0 :=
+  rfl
+
+lemma integralAgainstBilinCLM_eq_integral {B : F₁ →L[𝕜] F₂ →L[𝕜] F₃} {μ : Measure E} {φ : E → F₂}
+    (hφ : LocallyIntegrableOn φ Ω μ) {f : 𝓓^{n}(Ω, F₁)} :
+    integralAgainstBilinCLM B μ φ f = ∫ x, B (f x) (φ x) ∂μ := by
+  simp [hφ]
+
+lemma integralAgainstBilinCLM_eq_zero {B : F₁ →L[𝕜] F₂ →L[𝕜] F₃} {μ : Measure E} {φ : E → F₂}
+    (hφ : ¬ LocallyIntegrableOn φ Ω μ) :
+    (integralAgainstBilinCLM B μ φ : 𝓓^{n}(Ω, F₁) →L[𝕜] F₃) = 0 := by
+  ext
+  simp [hφ]
+
+lemma integralAgainstBilinCLM_ofSupportedIn {B : F₁ →L[𝕜] F₂ →L[𝕜] F₃} {μ : Measure E} {φ : E → F₂}
+    (hφ : LocallyIntegrableOn φ Ω μ) {K : Compacts E} (K_sub_Ω : (K : Set E) ⊆ Ω)
+    {f : 𝓓^{n}_{K}(E, F₁)} :
+    integralAgainstBilinCLM B μ φ (ofSupportedIn K_sub_Ω f) =
+      ContDiffMapSupportedIn.integralAgainstBilinCLM B μ φ f := by
+  have hφ' := hφ.integrableOn_compact_subset K_sub_Ω K.isCompact
+  simp [hφ, hφ']
+
+end Integral
 
 end TestFunction

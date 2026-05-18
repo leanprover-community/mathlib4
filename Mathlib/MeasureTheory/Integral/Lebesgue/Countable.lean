@@ -303,7 +303,7 @@ theorem SimpleFunc.exists_lt_lintegral_simpleFunc_of_lt_lintegral {m : Measurabl
       Measure.exists_subset_measure_lt_top hs this
     refine ⟨piecewise t ht (const α c) (const α 0), fun x => ?_, ?_, ?_⟩
     · refine indicator_le_indicator_of_subset ts (fun x => ?_) x
-      exact zero_le _
+      exact zero_le
     · simp only [ht, const_zero, coe_piecewise, coe_const, SimpleFunc.coe_zero, univ_inter,
         piecewise_eq_indicator, ENNReal.coe_indicator, Function.const_apply, lintegral_indicator,
         lintegral_const, Measure.restrict_apply', ENNReal.mul_lt_top ENNReal.coe_lt_top t_top]

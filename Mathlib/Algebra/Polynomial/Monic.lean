@@ -105,12 +105,12 @@ theorem Monic.add_of_right (hq : Monic q) (hpq : degree p < degree q) : Monic (p
   rwa [Monic, leadingCoeff_add_of_degree_lt hpq]
 
 theorem Monic.of_mul_monic_left (hp : p.Monic) (hpq : (p * q).Monic) : q.Monic := by
-  contrapose! hpq
+  contrapose hpq
   rw [Monic.def] at hpq ⊢
   rwa [leadingCoeff_monic_mul hp]
 
 theorem Monic.of_mul_monic_right (hq : q.Monic) (hpq : (p * q).Monic) : p.Monic := by
-  contrapose! hpq
+  contrapose hpq
   rw [Monic.def] at hpq ⊢
   rwa [leadingCoeff_mul_monic hq]
 
@@ -128,8 +128,6 @@ lemma comp_X_add_C (hp : p.Monic) (r : R) : (p.comp (X + C r)).Monic := by
   refine hp.comp (monic_X_add_C _) fun ha ↦ ?_
   rw [natDegree_X_add_C] at ha
   exact one_ne_zero ha
-
-@[deprecated (since := "2025-10-26")] alias natDegree_eq_zero_iff_eq_one := natDegree_eq_zero
 
 @[simp]
 theorem degree_le_zero_iff_eq_one (hp : p.Monic) : p.degree ≤ 0 ↔ p = 1 := by
@@ -407,11 +405,6 @@ open Function
 
 variable [Semiring S] {f : R →+* S}
 
-@[deprecated (since := "2025-10-26")]
-alias leadingCoeff_map' := leadingCoeff_map_of_injective
-@[deprecated (since := "2025-10-26")]
-alias leadingCoeff_of_injective := leadingCoeff_map_of_injective
-
 theorem monic_of_injective (hf : Injective f) {p : R[X]} (hp : (p.map f).Monic) : p.Monic := by
   apply hf
   rw [← leadingCoeff_map_of_injective hf, hp.leadingCoeff, f.map_one]
@@ -503,7 +496,7 @@ theorem Monic.mul_right_ne_zero (hp : Monic p) {q : R[X]} (hq : q ≠ 0) : p * q
 theorem Monic.mul_natDegree_lt_iff (h : Monic p) {q : R[X]} :
     (p * q).natDegree < p.natDegree ↔ p ≠ 1 ∧ q = 0 := by
   by_cases hq : q = 0
-  · suffices 0 < p.natDegree ↔ p.natDegree ≠ 0 by simpa [hq, ← h.natDegree_eq_zero]
+  · suffices 0 < p.natDegree ↔ p.natDegree ≠ 0 by simp [hq, ← h.natDegree_eq_zero, iffComm]
     exact ⟨fun h => h.ne', fun h => lt_of_le_of_ne (Nat.zero_le _) h.symm⟩
   · simp [h.natDegree_mul', hq]
 
@@ -541,7 +534,7 @@ theorem natDegree_smul_of_smul_regular {S : Type*} [SMulZeroClass S R] {k : S}
   · simp [hp]
   rw [← Nat.cast_inj (R := WithBot ℕ), ← degree_eq_natDegree hp, ← degree_eq_natDegree,
     degree_smul_of_smul_regular p h]
-  contrapose! hp
+  contrapose hp
   rw [← smul_zero k] at hp
   exact h.polynomial hp
 

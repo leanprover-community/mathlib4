@@ -23,7 +23,7 @@ space structure.
 We use `ℕ →ᵇ ℝ`, not `lpSpace` for `l^∞` to avoid heavy imports.
 -/
 
-@[expose] public section
+public section
 
 open Filter Metric Set Topology
 open scoped BoundedContinuousFunction

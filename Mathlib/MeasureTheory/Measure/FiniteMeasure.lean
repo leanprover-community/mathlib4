@@ -9,7 +9,7 @@ public import Mathlib.Analysis.RCLike.Lemmas
 public import Mathlib.MeasureTheory.Integral.Bochner.ContinuousLinearMap
 public import Mathlib.MeasureTheory.Measure.HasOuterApproxClosed
 public import Mathlib.MeasureTheory.Measure.Prod
-public import Mathlib.Topology.Algebra.Module.WeakDual
+public import Mathlib.Topology.Algebra.Module.Spaces.WeakDual
 public import Mathlib.Topology.TietzeExtension
 
 /-!
@@ -259,7 +259,6 @@ theorem coeFn_smul [IsScalarTower R ℝ≥0 ℝ≥0] (c : R) (μ : FiniteMeasure
     (⇑(c • μ) : Set Ω → ℝ≥0) = c • (⇑μ : Set Ω → ℝ≥0) := by
   funext; simp [← ENNReal.coe_inj, ENNReal.coe_smul]
 
-set_option backward.isDefEq.respectTransparency false in
 instance instAddCommMonoid : AddCommMonoid (FiniteMeasure Ω) := fast_instance%
   toMeasure_injective.addCommMonoid _ toMeasure_zero toMeasure_add fun _ _ ↦ toMeasure_smul _ _
 
@@ -318,9 +317,9 @@ lemma restrict_biUnion_finset {ι : Type*} {μ : FiniteMeasure Ω} {T : Finset �
     {s : ι → Set Ω} (hd : (T : Set ι).Pairwise (Disjoint on s)) (hm : ∀ i, MeasurableSet (s i)) :
     μ.restrict (⋃ i ∈ T, s i) = ∑ i ∈ T, μ.restrict (s i) := by
   ext t ht
-  simp only [restrict_measure_eq, toMeasure_sum, Measure.coe_finset_sum, Finset.sum_apply]
+  simp only [restrict_measure_eq, toMeasure_sum, Measure.coe_finsetSum, Finset.sum_apply]
   rw [Measure.restrict_biUnion_finset hd hm]
-  simp only [Measure.sum_fintype, Finset.univ_eq_attach, Measure.coe_finset_sum, Finset.sum_apply]
+  simp only [Measure.sum_fintype, Finset.univ_eq_attach, Measure.coe_finsetSum, Finset.sum_apply]
   conv_rhs => rw [← Finset.sum_attach]
 
 @[simp]
@@ -502,7 +501,7 @@ theorem toWeakDualBCNN_apply (μ : FiniteMeasure Ω) (f : Ω →ᵇ ℝ≥0) :
     μ.toWeakDualBCNN f = (∫⁻ x, f x ∂(μ : Measure Ω)).toNNReal := rfl
 
 /-- The topology of weak convergence on `MeasureTheory.FiniteMeasure Ω` is inherited (induced)
-from the weak-* topology on `WeakDual ℝ≥0 (Ω →ᵇ ℝ≥0)` via the function
+from the weak-\* topology on `WeakDual ℝ≥0 (Ω →ᵇ ℝ≥0)` via the function
 `MeasureTheory.FiniteMeasure.toWeakDualBCNN`. -/
 instance instTopologicalSpace : TopologicalSpace (FiniteMeasure Ω) :=
   TopologicalSpace.induced toWeakDualBCNN inferInstance

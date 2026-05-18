@@ -400,7 +400,7 @@ def prod (f : P₁ →ᴬ[k] P₂) (g : P₁ →ᴬ[k] P₃) : P₁ →ᴬ[k] P�
   __ := AffineMap.prod f g
   cont := by eta_expand; dsimp; fun_prop
 
-theorem coe_prod (f : P₁ →ᴬ[k] P₂) (g : P₁ →ᴬ[k] P₃) : prod f g = Pi.prod f g :=
+theorem coe_prod (f : P₁ →ᴬ[k] P₂) (g : P₁ →ᴬ[k] P₃) : prod f g = Function.prod f g :=
   rfl
 
 @[simp]
@@ -472,3 +472,125 @@ theorem _root_.ContinuousAffineMap.decomp (f : V →ᴬ[R] W) :
     Pi.add_apply, LinearMap.map_zero, zero_add, ← Function.const_def]
 
 end ContinuousLinearMap
+
+namespace ContinuousAffineMap
+
+variable (R S V : Type*) {W : Type*} (Q : Type*) [Ring S] [Ring R]
+variable [AddCommGroup V] [Module R V] [TopologicalSpace V] [IsTopologicalAddGroup V]
+variable [AddCommGroup W] [Module R W] [TopologicalSpace W]
+variable [Module S W] [SMulCommClass R S W] [ContinuousConstSMul S W]
+variable [AddTorsor W Q] [TopologicalSpace Q]
+
+section
+
+variable [IsTopologicalAddTorsor Q]
+
+/-- The space of continuous affine maps from a topological vector space to a topological affine
+space is in bijection with the product of the codomain with the space of linear maps, by taking the
+value of the affine map at `(0 : V)` and the linear part. -/
+def decompEquiv : (V →ᴬ[R] Q) ≃ Q × (V →L[R] W) where
+  toFun f := ⟨f 0, f.contLinear⟩
+  invFun p :=
+    haveI := IsTopologicalAddTorsor.to_isTopologicalAddGroup W Q
+    p.2.toContinuousAffineMap +ᵥ const R V p.1
+  left_inv f := by
+    ext x
+    simp_rw [vadd_apply, f.contLinear.coe_toContinuousAffineMap, coe_const, Function.const_apply,
+      ← f.map_vadd, vadd_eq_add, add_zero]
+  right_inv := by
+    haveI := IsTopologicalAddTorsor.to_isTopologicalAddGroup W Q
+    rintro ⟨v, f⟩; ext <;> simp
+
+@[simp]
+theorem fst_decompEquiv (f : V →ᴬ[R] Q) :
+    (decompEquiv R V Q f).1 = f 0 :=
+  rfl
+
+@[simp]
+theorem snd_decompEquiv (f : V →ᴬ[R] Q) :
+    (decompEquiv R V Q f).2 = f.contLinear :=
+  rfl
+
+@[simp]
+theorem decompEquiv_symm_apply (p : Q × (V →L[R] W)) (x : V) :
+    (decompEquiv R V Q).symm p x = p.2 x +ᵥ p.1 :=
+  rfl
+
+@[simp]
+theorem decompEquiv_symm_contLinear (p : Q × (V →L[R] W)) :
+    ((decompEquiv R V Q).symm p).contLinear = p.2 := by
+  haveI := IsTopologicalAddTorsor.to_isTopologicalAddGroup W Q
+  ext; simp [decompEquiv]
+
+end
+
+section
+
+variable (W) [IsTopologicalAddGroup W]
+
+/-- The space of continuous affine maps between topological vector spaces is linearly isomorphic to
+the product of the codomain with the space of linear maps, by taking the value of the affine map at
+`(0 : V)` and the linear part. -/
+def decompLinearEquiv : (V →ᴬ[R] W) ≃ₗ[S] W × (V →L[R] W) where
+  __ := decompEquiv R V W
+  map_add' _ _ := rfl
+  map_smul' _ _ := rfl
+
+@[simp]
+theorem fst_decompLinearEquiv (f : V →ᴬ[R] W) :
+    (decompLinearEquiv R S V W f).1 = f 0 :=
+  rfl
+
+@[simp]
+theorem snd_decompLinearEquiv (f : V →ᴬ[R] W) :
+    (decompLinearEquiv R S V W f).2 = f.contLinear :=
+  rfl
+
+@[simp]
+theorem decompLinearEquiv_symm_apply (p : W × (V →L[R] W)) (x : V) :
+    (decompLinearEquiv R S V W).symm p x = p.2 x + p.1 :=
+  rfl
+
+@[simp]
+theorem decompLinearEquiv_symm_contLinear (p : W × (V →L[R] W)) :
+    ((decompLinearEquiv R S V W).symm p).contLinear = p.2 := by
+  ext; simp [decompLinearEquiv]
+
+end
+
+section
+
+variable [IsTopologicalAddGroup W] [IsTopologicalAddTorsor Q]
+
+/-- The space of continuous affine maps from a topological vector space to a topological affine
+space is affinely isomorphic to the product of the codomain with the space of linear maps, by taking
+the value of the affine map at `(0 : V)` and the linear part. -/
+@[simps linear]
+def decompAffineEquiv : (V →ᴬ[R] Q) ≃ᵃ[S] Q × (V →L[R] W) where
+  __ := decompEquiv R V Q
+  linear := decompLinearEquiv R S V W
+  map_vadd' _ _ := rfl
+
+@[simp]
+theorem fst_decompAffineEquiv (f : V →ᴬ[R] Q) :
+    (decompAffineEquiv R S V Q f).1 = f 0 :=
+  rfl
+
+@[simp]
+theorem snd_decompAffineEquiv (f : V →ᴬ[R] Q) :
+    (decompAffineEquiv R S V Q f).2 = f.contLinear :=
+  rfl
+
+@[simp]
+theorem decompAffineEquiv_symm_apply (p : Q × (V →L[R] W)) (x : V) :
+    (decompAffineEquiv R S V Q).symm p x = p.2 x +ᵥ p.1 :=
+  rfl
+
+@[simp]
+theorem decompAffineEquiv_symm_contLinear (p : Q × (V →L[R] W)) :
+    ((decompAffineEquiv R S V Q).symm p).contLinear = p.2 := by
+  rw [decompAffineEquiv, ← AffineEquiv.coe_symm_toEquiv, decompEquiv_symm_contLinear]
+
+end
+
+end ContinuousAffineMap
