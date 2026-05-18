@@ -109,7 +109,7 @@ noncomputable def curvatureTensorAux :
       (Π x : M, V x) → (Π x : M, V x) :=
   fun X Y σ ↦ (∇ X (∇ Y σ)) - (∇ Y (∇ X σ)) - ∇ (VectorField.mlieBracket I X Y) σ
 
-variable [IsManifold I 2 M] [CompleteSpace E]
+variable [IsManifold I 2 M]
   {cov cov' : (Π x : M, V x) → (Π x : M, TangentSpace I x →L[𝕜] V x)}
   {X X' Y Z : Π x : M, TangentSpace I x}
 
@@ -120,7 +120,7 @@ lemma temp
     [hcov' : ContMDiffCovariantDerivativeOn F 1 cov univ] -- is this the right regularity?
     {x : M} {σ : Π x, V x} {X : (x : M) → TangentSpace I x}
     (hσ : CMDiffAt 2 (T% σ) x) (hX : CMDiffAt 1 (T% X) x) :
-    CMDiffAt 1 (fun x ↦ TotalSpace.mk' F x ((cov σ x) (X x))) x :=
+    CMDiffAt 1 (T% (fun x ↦ (cov σ x) (X x))) x :=
   (hcov'.contMDiff' hcov hσ).clm_bundle_apply hX
 
 lemma temp_mdiff
@@ -129,7 +129,7 @@ lemma temp_mdiff
     [hcov' : ContMDiffCovariantDerivativeOn F 1 cov univ] -- is this the right regularity?
     {x : M} {σ : Π x, V x} {X : (x : M) → TangentSpace I x}
     (hσ : CMDiffAt 2 (T% σ) x) (hX : MDiffAt (T% X) x) :
-    MDiffAt (fun x ↦ TotalSpace.mk' F x ((cov σ x) (X x))) x :=
+    MDiffAt (T% (fun x ↦ (cov σ x) (X x))) x :=
   -- requires adapting `ContMDiffAt.clm_bundle_apply` to `MDifferentiableAt` hypotheses
   sorry
 
@@ -142,7 +142,7 @@ lemma temp_mdiff
 --     (hσ : CMDiffAt 1 (T% σ) x)
 --     (aux : ContMDiffAt I (I.prod 𝓘(𝕜, E →L[𝕜] F)) 1
 --       (fun x ↦ TotalSpace.mk' (E →L[𝕜] F) x (cov σ x)) x) :
---     ContMDiffAt I (I.prod 𝓘(𝕜, F)) 1 (fun x ↦ TotalSpace.mk' F x ((cov σ x) (X x))) x := by
+--     ContMDiffAt I (I.prod 𝓘(𝕜, F)) 1 (T% (fun x ↦ (cov σ x) (X x))) x := by
 --   sorry
 
 /- Lessons learned from the experiment below:
@@ -158,13 +158,13 @@ lemma temp_mdiff
 --     (hcov : IsCovariantDerivativeOn F cov) [hcov' : ContMDiffCovariantDerivativeOn F 1 cov univ]
 --     {x : M} {Y Z : (x : M) → TangentSpace I x} {τ : Π x, V x}
 --     (hτ : CMDiffAt 2 (T% τ) x) :
---     (MDiffAt fun x ↦ TotalSpace.mk' F x ((cov τ x) (VectorField.mlieBracket I Z Y x))) x := by
+--     (MDiffAt (T% (fun x ↦ (cov τ x) (VectorField.mlieBracket I Z Y x)))) x := by
 --   apply ContMDiffAt.mdifferentiableAt _ one_ne_zero
 --   apply temp' F hcov ?_ (hcov'.contMDiff' hcov hτ)
 --   apply hτ.of_le
 --   norm_num
 
-variable [VectorBundle 𝕜 F V]
+variable [CompleteSpace E] [VectorBundle 𝕜 F V]
 
 theorem curvatureTensorAux_tensorial₁ (hcov : IsCovariantDerivativeOn F cov) (x : M)
     [hcov' : ContMDiffCovariantDerivativeOn F 1 cov univ]
@@ -185,8 +185,8 @@ theorem curvatureTensorAux_tensorial₁ (hcov : IsCovariantDerivativeOn F cov) (
     set B := cov (fun x ↦ (cov τ x) (Y x)) x (X' x)
     set C := cov (fun x ↦ (cov τ x) (X x)) x
     set D := cov (fun x ↦ (cov τ x) (X' x)) x
-    have hτX : MDiffAt (fun x ↦ TotalSpace.mk' F x (cov τ x (X x))) x := temp_mdiff F hcov hτ hX
-    have hτX' : MDiffAt (fun x ↦ TotalSpace.mk' F x (cov τ x (X' x))) x := temp_mdiff F hcov hτ hX'
+    have hτX : MDiffAt (T% (fun x ↦ cov τ x (X x))) x := temp_mdiff F hcov hτ hX
+    have hτX' : MDiffAt (T% (fun x ↦ cov τ x (X' x))) x := temp_mdiff F hcov hτ hX'
     conv =>
       enter [1, 1, 2]
       equals (cov (fun x ↦ (cov τ x) (X x)) x) (Y x)
