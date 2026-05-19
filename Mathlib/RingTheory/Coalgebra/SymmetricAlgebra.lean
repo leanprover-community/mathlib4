@@ -40,8 +40,8 @@ homomorphism, lifted from `x ↦ ι x ⊗ 1 + 1 ⊗ ι x`. -/
 protected def comulAlgHom : SymmetricAlgebra R M →ₐ[R]
     (SymmetricAlgebra R M ⊗[R] SymmetricAlgebra R M) :=
   lift <|
-    (TensorProduct.mk R _ _).flip (1 : SymmetricAlgebra R M) ∘ₗ ι R M +
-    TensorProduct.mk R _ _ (1 : SymmetricAlgebra R M) ∘ₗ ι R M
+    (TensorProduct.mk R _ _).flip 1 ∘ₗ ι R M +
+    TensorProduct.mk R _ _ 1 ∘ₗ ι R M
 
 protected theorem comulAlgHom_ι (x : M) :
     SymmetricAlgebra.comulAlgHom R M (ι R M x) =
