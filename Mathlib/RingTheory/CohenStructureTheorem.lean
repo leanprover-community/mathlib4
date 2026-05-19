@@ -74,8 +74,11 @@ lemma exists_isCohenRing_of_not_charZero (k : Type u) [Field k] (charpos : ¬ Ch
   simp only [charpos, false_or] at char
   rcases char with ⟨p, _, char⟩
   let := ZMod.algebra k p
-  let := ((algebraMap (ZMod p) k).comp PadicInt.residueField.toRingHom).toAlgebra
-  rcases exists_isLocalHom_flat (PadicInt p) k with ⟨R, _, _, _, _, flat, maxeq, ⟨iso⟩⟩
+  let := ((algebraMap (ZMod p) k).comp PadicInt.toZMod).toAlgebra
+  let : IsLocalHom (algebraMap ℤ_[p] k) := by
+    apply ((local_hom_TFAE _).out 0 3).mpr
+    simp [PadicInt.maximalIdeal_eq_span_p]
+  rcases exists_isLocalHom_flat (PadicInt p) k with ⟨R, _, _, _, flat, maxeq, ⟨iso⟩⟩
   simp only [PadicInt.maximalIdeal_eq_span_p, Ideal.map_span, Set.image_singleton,
     map_natCast] at maxeq
   have maxfg : (maximalIdeal R).FG := by
@@ -116,24 +119,27 @@ lemma exists_isCohenRing_of_not_charZero (k : Type u) [Field k] (charpos : ¬ Ch
       Ideal.Quotient.eq_zero_iff_mem] using mem_of_mem_succ this
   let : Field (R ⧸ maximalIdeal R) := Ideal.Quotient.field (maximalIdeal R)
   have : IsNoetherianRing R' := AdicCompletion.isNoetherianRing_of_fg _ maxfg
-  have spanle : (maximalIdeal R').spanFinrank ≤ 1 := by
-    rw [maxeq']
-    exact le_of_le_of_eq (Submodule.spanFinrank_span_le_ncard_of_finite (Set.finite_singleton _))
-      (Set.ncard_singleton _)
-  have dimge : 1 ≤ ringKrullDim R' := by
-    apply (WithBot.one_le_iff_pos _).mpr
-    by_contra! le
-    let : Ring.KrullDimLE 0 R' := Ring.krullDimLE_iff.mpr le
-    have disj := Ideal.disjoint_nonZeroDivisors_of_mem_minimalPrimes
-      (Ideal.mem_minimalPrimes_of_krullDimLE_zero (maximalIdeal R'))
-    absurd Disjoint.notMem_of_mem_right disj reg'
-    simp [maxeq']
-  have dimle := ringKrullDim_le_spanFinrank_maximalIdeal R'
-  have : IsRegularLocalRing R' :=
-    (isRegularLocalRing_iff _).mpr (le_antisymm ((Nat.cast_le.mpr spanle).trans dimge) dimle)
-  have : IsDiscreteValuationRing R' :=
-    IsDiscreteValuationRing.of_isRegularLocalRing_of_ringKrullDim_eq_one _
-      (le_antisymm (dimle.trans (Nat.cast_le.mpr spanle)) dimge)
+  have : IsDomain R' := by
+    obtain ⟨⟨q, hq⟩⟩ : Nonempty (minimalPrimes R') := Ideal.nonempty_minimalPrimes top_ne_bot.symm
+    have := hq.1.1
+    have pnmem : (p : R') ∉ q := by
+      contrapose reg'
+      exact notMem_nonZeroDivisors_of_mem_mem_minimalPrimes reg' hq
+    suffices q = ⊥ from @IsDomain.of_bot_isPrime R' _ (this ▸ hq.1.1)
+    have : Ideal.span {(p : R')} * q = q := by
+      refine Ideal.mul_le_left.antisymm ?_
+      intro y hyp
+      obtain ⟨y, rfl⟩ :=
+        Ideal.mem_span_singleton.mp ((le_maximalIdeal_of_isPrime q).trans_eq maxeq' hyp)
+      exact Ideal.mul_mem_mul (Ideal.mem_span_singleton_self _)
+        ((Ideal.IsPrime.mul_mem_left_iff pnmem).mp hyp)
+    exact Submodule.eq_bot_of_eq_ideal_smul_of_le_jacobson_annihilator (IsNoetherian.noetherian _)
+      this.symm (maxeq'.symm.trans_le (maximalIdeal_le_jacobson _))
+  have nisf : ¬ IsField R' := by
+    simpa [isField_iff_maximalIdeal_eq, maxeq'] using nonZeroDivisors.ne_zero reg'
+  have : IsDiscreteValuationRing R' := by
+    apply ((IsDiscreteValuationRing.TFAE R' nisf).out 0 4).mpr
+    use (p : R')
   have : IsAdicComplete (maximalIdeal R') R' := AdicCompletion.isAdicComplete_of_fg maxfg
   use R', inferInstance, inferInstance
   let e : k ≃+* ResidueField R' := iso.toRingEquiv.trans
@@ -416,21 +422,6 @@ lemma exists_isCohenRing_residueField_map_bijective [IsAdicComplete (maximalIdea
   exact e.bijective
 
 end
-
-section fromPR
-
-instance MvPowerSeries.isAdicComplete (σ : Type*) [Finite σ] :
-    IsAdicComplete (.span (.range X) : Ideal (MvPowerSeries σ R)) (MvPowerSeries σ R) := by
-  have : Ideal.map (toAdicCompletionAlgEquiv σ R).toRingEquiv (Ideal.span (Set.range X)) =
-    (MvPolynomial.idealOfVars σ R).map (algebraMap ..):= by
-    simp_rw [Ideal.map_span, ← Set.range_comp]
-    congr 2; ext1
-    simp [AdicCompletion.algebraMap_apply, ← MvPolynomial.coe_X, toAdicCompletion_coe]
-  rw [← IsAdicComplete.congr_ringEquiv _ (toAdicCompletionAlgEquiv σ R).toRingEquiv, this,
-    IsAdicComplete.map_algebraMap_iff]
-  exact AdicCompletion.isAdicComplete (MvPolynomial.idealOfVars_fg σ R)
-
-end fromPR
 
 variable {R} in
 set_option backward.isDefEq.respectTransparency false in

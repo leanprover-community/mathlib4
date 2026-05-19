@@ -92,6 +92,33 @@ lemma Algebra.isSeparablyGenerated_of_equiv {K' : Type w} [Field K'] [Algebra k 
     (IntermediateField.equivOfEq eq)
   exact Algebra.IsSeparable.of_equiv_equiv e'.toRingEquiv e.toRingEquiv rfl
 
+lemma Algebra.isSeparable_iff_isSeparablyGenerated_and_isAlgebraic :
+    Algebra.IsSeparable k K ↔ (Algebra.IsSeparablyGenerated k K ∧ Algebra.IsAlgebraic k K) := by
+  refine ⟨fun h ↦ ⟨?_, inferInstance⟩, fun ⟨⟨ι, T, isT, sep⟩, alg⟩ ↦ ?_⟩
+  · use (∅ : Set K), fun x ↦ 0
+    have eqbot : IntermediateField.adjoin k (Set.range fun (x : (∅ : Set K)) ↦ (0 : K)) = ⊥ :=
+      IntermediateField.adjoin_eq_bot_iff.mpr (fun _ ↦ by simp)
+    have sep : Algebra.IsSeparable (⊥ : IntermediateField k K) K := by
+      apply IsSeparable.of_equiv_equiv (IntermediateField.botEquiv k K).symm.toRingEquiv
+        (RingEquiv.refl K)
+      ext
+      simp [-AlgEquiv.symm_toRingEquiv]
+    refine ⟨isTranscendenceBasis_iff_algebraicIndependent_isAlgebraic.mpr ⟨?_, ?_⟩, ?_⟩
+    · simpa using RingHom.injective _
+    · rw [← IntermediateField.isAlgebraic_adjoin_iff_top, eqbot]
+      exact sep.isAlgebraic
+    · rw [eqbot]
+      exact sep
+  · have := isT.isEmpty_iff_isAlgebraic.mpr alg
+    have : IntermediateField.adjoin k (Set.range T) = ⊥ :=
+      IntermediateField.adjoin_eq_bot_iff.mpr (fun _ ↦ by simp)
+    rw [this] at sep
+    apply IsSeparable.of_equiv_equiv (IntermediateField.botEquiv k K).toRingEquiv
+      (RingEquiv.refl K)
+    ext x
+    rcases (IntermediateField.botEquiv k K).symm.surjective x with ⟨y, rfl⟩
+    simp
+
 /-- A field extension is transcendental separable if every finitely generated subextension is
 separably generated. -/
 @[mk_iff, stacks 030O "Part 2"]
@@ -99,27 +126,40 @@ class Algebra.IsTranscendentalSeparable : Prop where
   forall_isSeparablyGenerated : ∀ (A' : IntermediateField k K),
     Algebra.EssFiniteType k A' → Algebra.IsSeparablyGenerated k A'
 
+lemma Algebra.isSeparable_iff_isTranscendentalSeparable_and_isAlgebraic :
+    Algebra.IsSeparable k K ↔
+      (Algebra.IsTranscendentalSeparable k K ∧ Algebra.IsAlgebraic k K) := by
+  refine ⟨fun h ↦ ⟨⟨fun L hL ↦ ?_⟩, inferInstance⟩, fun ⟨sep, alg⟩ ↦ ?_⟩
+  · exact ((Algebra.isSeparable_iff_isSeparablyGenerated_and_isAlgebraic k L).mp inferInstance).1
+  · refine Algebra.isSeparable_iff.mpr (fun x ↦ ⟨IsIntegral.isIntegral x, ?_⟩)
+    let L := IntermediateField.adjoin k {x}
+    have fin : EssFiniteType k L := IntermediateField.essFiniteType_iff.mpr
+      (IntermediateField.fg_adjoin_of_finite (Set.finite_singleton x))
+    have sep' := (Algebra.isSeparable_iff_isSeparablyGenerated_and_isAlgebraic k L).mpr
+      ⟨sep.1 L fin, inferInstance⟩
+    exact Subalgebra.isSeparable_iff.mp sep' x (by simp [L])
+
 end
 
 lemma localization_minimal_isField {S : Type*} [CommRing S] [IsReduced S]
     (p : Ideal S) (min : p ∈ minimalPrimes S) :
-    letI := Ideal.minimalPrimes_isPrime min
+    letI := min.isPrime
     IsField (Localization.AtPrime p) := by
-  let := Ideal.minimalPrimes_isPrime min
+  let := min.isPrime
   rw [IsLocalRing.isField_iff_maximalIdeal_eq, eq_bot_iff]
   intro x hx
   apply IsReduced.eq_zero x (nilpotent_iff_mem_prime.mpr (fun q hq ↦ ?_))
   convert hx
   have : Ideal.comap (algebraMap S (Localization.AtPrime p)) q ≤ p := by
-    apply le_of_le_of_eq _ (IsLocalization.AtPrime.comap_maximalIdeal (Localization.AtPrime p) p)
+    apply le_of_le_of_eq _ (IsLocalization.AtPrime.under_maximalIdeal (Localization.AtPrime p) p)
     exact Ideal.comap_mono (IsLocalRing.le_maximalIdeal_of_isPrime q)
-  rw [← Localization.AtPrime.eq_maximalIdeal_iff_comap_eq]
+  rw [← Localization.AtPrime.eq_maximalIdeal_iff_under_eq]
   exact le_antisymm this (min.2 ⟨q.comap_isPrime _, bot_le⟩ this)
 
 /-- The map of a ring to product of its localizations at minimal primes. -/
 def toLocalizationMinimal (S : Type*) [CommRing S] :=
   (Pi.ringHom (fun (p : minimalPrimes S) ↦
-    letI := Ideal.minimalPrimes_isPrime p.2
+    letI := p.2.isPrime
     algebraMap S (Localization.AtPrime p.1)))
 
 /-- The map of a reduced ring to product of its localizations at minimal primes is injective. -/
@@ -129,10 +169,11 @@ lemma isReduced_injective_to_prod_localizations (S : Type*) [CommRing S] [IsRedu
   intro x hx
   apply IsReduced.eq_zero x (nilpotent_iff_mem_prime.mpr (fun q hq ↦ ?_))
   rcases Ideal.exists_minimalPrimes_le (bot_le (a := q)) with ⟨p, min, hp⟩
-  let := Ideal.minimalPrimes_isPrime min
+  let := min.isPrime
   apply hp
-  rw [← IsLocalization.AtPrime.comap_maximalIdeal (Localization.AtPrime p) p, Ideal.mem_comap]
-  have : (toLocalizationMinimal S) x ⟨p, min⟩ = 0 := by simp [hx]
+  rw [← IsLocalization.AtPrime.under_maximalIdeal (Localization.AtPrime p) p, Ideal.mem_comap]
+  have : (toLocalizationMinimal S) x ⟨p, min⟩ = 0 := by
+    rw [hx, Pi.zero_apply]
   simp only [toLocalizationMinimal, Pi.ringHom_apply] at this
   simp [this]
 
@@ -290,25 +331,24 @@ lemma tensorProduct_isReduced_of_isTranscendentalBasis_of_isReduced [IsReduced S
   classical
   have : IsNoetherianRing S := Algebra.FiniteType.isNoetherianRing k S
   have h (x : k) (y : S) : (toLocalizationMinimal S) (x • y) = x • (toLocalizationMinimal S) y := by
+    rw [Algebra.smul_def, map_mul]
     ext p
-    simp [toLocalizationMinimal, Algebra.smul_def, ← IsScalarTower.algebraMap_apply]
+    rw [Pi.mul_apply, Pi.smul_apply, Algebra.smul_def, IsScalarTower.algebraMap_apply k S]
+    rfl
   let g := AlgHom.mk' (toLocalizationMinimal S) h
   have inj : Function.Injective (Algebra.TensorProduct.lTensor K g) :=
     Module.Flat.lTensor_preserves_injective_linearMap _
       (isReduced_injective_to_prod_localizations S)
   let : Fintype (minimalPrimes S) := (minimalPrimes.finite_of_isNoetherianRing S).fintype
   have (p : minimalPrimes S) :
-    letI := Ideal.minimalPrimes_isPrime p.2
+    letI := p.2.isPrime
     IsReduced (K ⊗[k] Localization.AtPrime p.1) := by
     let := (localization_minimal_isField p.1 p.2).toField
     exact tensorProduct_isReduced_of_isTranscendentalBasis_of_isDomain k K _ f isT
   have : IsReduced (K ⊗[k] ((p : (minimalPrimes S)) →
-    letI := Ideal.minimalPrimes_isPrime p.2
-    Localization.AtPrime p.1)) := by
-    apply isReduced_of_injective _ (Algebra.TensorProduct.piRight k k K
-      (fun (p : (minimalPrimes S)) ↦
-        letI := Ideal.minimalPrimes_isPrime p.2
-        Localization.AtPrime p.1)).injective
+    letI := p.2.isPrime
+    Localization.AtPrime p.1)) :=
+    isReduced_of_injective _ (Algebra.TensorProduct.piRight k k K _).injective
   exact isReduced_of_injective _ inj
 
 lemma tensorProduct_isReduced_of_isTranscendentalSeparable_of_isReduced_of_essFiniteType
@@ -458,6 +498,16 @@ lemma linearIndepOn_pow_of_isReduced_tensorProduct (hp : Nat.Prime p)
 
 instance : ExpChar (AlgebraicClosure k) p := ExpChar.of_injective_algebraMap' k _
 
+lemma isReduced_adjoinPthRoots_of_isReduced_algebraicClosure (hp : Nat.Prime p)
+    (red : IsReduced (AlgebraicClosure k ⊗[k] K)) : IsReduced (adjoinPthRoots k p ⊗[k] K) := by
+  have : Fact (Nat.Prime p) := ⟨hp⟩
+  let f : (adjoinPthRoots k p) →ₐ[k] (AlgebraicClosure k) :=
+      (IsAlgClosure.equiv k (AlgebraicClosure (adjoinPthRoots k p))
+        (AlgebraicClosure k)).toAlgHom.comp (IsScalarTower.toAlgHom k (adjoinPthRoots k p) _)
+  have : Function.Injective (Algebra.TensorProduct.rTensor K f) :=
+    Module.Flat.rTensor_preserves_injective_linearMap _ (RingHom.injective _)
+  exact isReduced_of_injective _ this
+
 @[stacks 030W]
 lemma Algebra.isTranscendentalSeparable_tfae (hp : Nat.Prime p) :
     [ Algebra.IsTranscendentalSeparable k K,
@@ -469,18 +519,11 @@ lemma Algebra.isTranscendentalSeparable_tfae (hp : Nat.Prime p) :
     intro sep
     have := tensorProduct_isReduced_of_isTranscendentalSeparable_of_isReduced
       k K (AlgebraicClosure k)
-    apply (Algebra.isGeometricallyReduced_iff k K).mpr
+    apply (Algebra.isGeometricallyReduced_field_iff k K).mpr
     exact isReduced_of_injective _ (Algebra.TensorProduct.comm k _ K).injective
   tfae_have 4 → 3 := by
-    have : Fact (Nat.Prime p) := ⟨hp⟩
-    simp only [isGeometricallyReduced_iff]
-    intro red
-    let f : (adjoinPthRoots k p) →ₐ[k] (AlgebraicClosure k) :=
-      (IsAlgClosure.equiv k (AlgebraicClosure (adjoinPthRoots k p))
-        (AlgebraicClosure k)).toAlgHom.comp (IsScalarTower.toAlgHom k (adjoinPthRoots k p) _)
-    have : Function.Injective (Algebra.TensorProduct.rTensor K f) :=
-      Module.Flat.rTensor_preserves_injective_linearMap _ (RingHom.injective _)
-    exact isReduced_of_injective _ this
+    simp only [isGeometricallyReduced_field_iff]
+    exact isReduced_adjoinPthRoots_of_isReduced_algebraicClosure k K p hp
   tfae_have 3 → 2 := fun red s li ↦ linearIndepOn_pow_of_isReduced_tensorProduct k K p hp red s li
   tfae_have 2 → 1 := by
     simp only [Algebra.isTranscendentalSeparable_iff, Algebra.isSeparablyGenerated_iff]
