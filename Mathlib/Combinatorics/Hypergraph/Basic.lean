@@ -188,24 +188,22 @@ lemma IsLoop.ncard_one (h : H.IsLoop e) : Set.ncard e = 1 := (isLoop_iff_mem_and
 def IsEmpty (H : Hypergraph α) : Prop := V(H) = ∅ ∧ E(H) = ∅
 
 /-- A hypergraph is nonempty if it has at least one vertex or at least one edge. -/
-def IsNonempty (H : Hypergraph α) : Prop := (∃ x, x ∈ V(H)) ∨ (∃ e, e ∈ E(H))
+def IsNonempty (H : Hypergraph α) : Prop := V(H).Nonempty ∨ E(H).Nonempty
 
 /-- The empty hypergraph on a type. -/
 @[simps]
-def emptyHypergraph (α : Type*) : Hypergraph α where
+def empty (α : Type*) : Hypergraph α where
   vertexSet := ∅
   edgeSet := ∅
   subset_vertexSet_of_mem_edgeSet' := by simp
 
 @[simp]
-lemma isNonempty_of_nonempty_vertexSet (hV : V(H).Nonempty) : H.IsNonempty :=
+lemma IsNonempty.of_nonempty_vertexSet (hV : V(H).Nonempty) : H.IsNonempty :=
   .inl hV
 
-lemma isEmpty_emptyHypergraph : IsEmpty (emptyHypergraph α) :=
-  ⟨rfl, rfl⟩
+lemma IsEmpty.emptyHypergraph : IsEmpty (empty α) := ⟨rfl, rfl⟩
 
-lemma IsEmpty.eq_emptyHypergraph (h : H.IsEmpty) : H = emptyHypergraph α :=
-  Hypergraph.ext_iff.mpr h
+lemma IsEmpty.eq_empty (h : H.IsEmpty) : H = empty α := Hypergraph.ext_iff.mpr h
 
 lemma IsEmpty.vertexSet_eq (hH : H.IsEmpty) : V(H) = ∅ := hH.1
 
@@ -217,11 +215,12 @@ lemma isEmpty_iff_forall_not_mem : H.IsEmpty ↔ (∀ x, x ∉ V(H)) ∧ (∀ e,
 lemma IsEmpty.not_mem_edgeSet (hH : H.IsEmpty) {e : Set α} : e ∉ E(H) := by
   grind [IsEmpty]
 
-lemma notMem_edgeSet_emptyHypergraph : e ∉ E(emptyHypergraph α) :=
-  IsEmpty.not_mem_edgeSet isEmpty_emptyHypergraph
+lemma notMem_edgeSet_empty : e ∉ E(empty α) :=
+  IsEmpty.not_mem_edgeSet IsEmpty.emptyHypergraph
 
 @[simp]
-lemma not_isEmpty_iff : ¬H.IsEmpty ↔ H.IsNonempty := by grind [IsEmpty, IsNonempty]
+lemma not_isEmpty_iff : ¬H.IsEmpty ↔ H.IsNonempty := by
+  grind [IsEmpty, IsNonempty, Set.Nonempty]
 
 @[simp]
 lemma not_isNonempty : ¬H.IsNonempty ↔ H.IsEmpty := not_iff_comm.mp not_isEmpty_iff
@@ -230,7 +229,7 @@ alias ⟨_, IsEmpty.not_isNonempty⟩ := not_isNonempty
 alias ⟨_, IsNonempty.not_isEmpty⟩ := not_isEmpty_iff
 
 variable (H) in
-lemma isEmpty_or_isNonempty : H.IsEmpty ∨ H.IsNonempty := by grind [IsEmpty, IsNonempty]
+lemma isEmpty_or_isNonempty : H.IsEmpty ∨ H.IsNonempty := by grind [IsEmpty, IsNonempty, Set.Nonempty]
 
 /-- A hypergraph is trivial if it has at least one vertex but no edges. -/
 def IsTrivial (H : Hypergraph α) : Prop := Set.Nonempty V(H) ∧ E(H) = ∅
@@ -238,12 +237,16 @@ def IsTrivial (H : Hypergraph α) : Prop := Set.Nonempty V(H) ∧ E(H) = ∅
 /-- The trivial hypergraph with a given vertex set is defined by having no edges on that vertex
 set. -/
 @[simps]
-def trivialHypergraph (f : Set α) : Hypergraph α where
+def trivialOn (f : Set α) : Hypergraph α where
   vertexSet := f
   edgeSet := ∅
   subset_vertexSet_of_mem_edgeSet' := by simp
 
-lemma IsTrivial.isNonempty (hh : IsTrivial H) : IsNonempty H := by
+lemma isTrivial_trivialOn (hf : Set.Nonempty f) :
+    IsTrivial (trivialOn f) := by
+  grind [trivialOn, IsTrivial]
+
+lemma IsTrivial.isNonempty (h : IsTrivial H) : IsNonempty H := by
   grind [IsNonempty, IsTrivial, Set.nonempty_iff_ne_empty]
 
 lemma IsTrivial.not_mem_edgeSet (h : H.IsTrivial) : e ∉ E(H) := by grind [IsTrivial]
@@ -261,7 +264,7 @@ def completeOn (f : Set α) : Hypergraph α where
 
 lemma mem_completeOn : e ∈ E(completeOn f) ↔ e ⊆ f := by simp
 
-lemma isComplete_completeOn (f : Set α) : (completeOn f).IsComplete := fun _ a ↦ a
+lemma IsComplete.completeOn (f : Set α) : (completeOn f).IsComplete := fun _ a ↦ a
 
 lemma IsComplete.isNonempty (h : H.IsComplete) : H.IsNonempty :=
   Or.inr ⟨∅, h ∅ (Set.empty_subset _)⟩
@@ -270,7 +273,7 @@ lemma IsComplete.not_isTrivial (h : H.IsComplete) : ¬ H.IsTrivial := by
   intro hH
   exact hH.not_mem_edgeSet (h ∅ (Set.empty_subset _))
 
-lemma completeOn_not_isTrivial (f : Set α) : ¬ (completeOn f).IsTrivial :=
-  (isComplete_completeOn f).not_isTrivial
+lemma not_isTrivial_completeOn (f : Set α) : ¬ (completeOn f).IsTrivial :=
+  (IsComplete.completeOn f).not_isTrivial
 
 end Hypergraph
