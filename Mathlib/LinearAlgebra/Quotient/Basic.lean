@@ -240,6 +240,10 @@ theorem ker_liftQ_eq_bot' (f : M →ₛₗ[τ₁₂] M₂) (h : p = ker f) :
     ker (p.liftQ f (le_of_eq h)) = ⊥ :=
   ker_liftQ_eq_bot p f h.le h.ge
 
+theorem range_mapQ [RingHomSurjective τ₁₂] (f : M →ₛₗ[τ₁₂] M₂) (h : p ≤ comap f q) :
+    (p.mapQ q f h).range = f.range.map q.mkQ := by
+  rw [mapQ, range_liftQ, range_comp]
+
 section
 
 variable {p p' p''}
