@@ -123,7 +123,7 @@ theorem transcendental_aeval_iff {r : A} {f : K[X]} :
     Transcendental K (Polynomial.aeval r f) ↔ Transcendental K r ∧ Transcendental K f := by
   refine ⟨fun h ↦ ⟨?_, h.of_aeval⟩, fun ⟨h1, h2⟩ ↦ h1.aeval_of_transcendental h2⟩
   rw [Transcendental] at h ⊢
-  contrapose! h
+  contrapose h
   rw [isAlgebraic_iff_isIntegral] at h ⊢
   exact .of_mem_of_fg _ h.fg_adjoin_singleton _ (aeval_mem_adjoin_singleton _ _)
 
@@ -150,7 +150,7 @@ namespace IsAlgebraic
 
 theorem exists_integral_multiple (hz : IsAlgebraic R z) : ∃ y ≠ (0 : R), IsIntegral R (y • z) := by
   by_cases inj : Function.Injective (algebraMap R A); swap
-  · rw [injective_iff_map_eq_zero] at inj; push_neg at inj
+  · rw [injective_iff_map_eq_zero] at inj; push Not at inj
     have ⟨r, eq, ne⟩ := inj
     exact ⟨r, ne, by simpa [← algebraMap_smul A, eq, zero_smul] using isIntegral_zero⟩
   have ⟨p, p_ne_zero, px⟩ := hz
@@ -239,8 +239,8 @@ theorem restrictScalars [Algebra.IsAlgebraic R S]
     exact int _ (Finset.mem_image_of_mem _ <| support_smul _ _ hn)
   have : IsAlgebraic (integralClosure R S) a := by
     refine ⟨p, ?_, ?_⟩
-    · simpa only [← Polynomial.map_ne_zero_iff (f := Subring.subtype _) Subtype.val_injective,
-        p, map_toSubring, smul_ne_zero_iff] using And.intro hr hp
+    · simpa only [← Polynomial.map_ne_zero_iff (f := Subring.subtype _) (p := p)
+        Subtype.val_injective, p, map_toSubring, smul_ne_zero_iff] using And.intro hr hp
     rw [← eval_map_algebraMap, Subalgebra.algebraMap_eq, ← map_map, ← Subalgebra.toSubring_subtype,
       map_toSubring, eval_map_algebraMap, ← AlgHom.restrictScalars_apply R,
       map_smul, AlgHom.restrictScalars_apply, eval0, smul_zero]

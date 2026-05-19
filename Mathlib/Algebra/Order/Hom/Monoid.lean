@@ -175,6 +175,30 @@ instance [EquivLike F α β] [OrderIsoClass F α β] [MulEquivClass F α β] : C
 
 end Monoid
 
+section MonoidHomClass
+
+variable [Group α] [Monoid β]
+variable {F : Type*} [FunLike F α β] [MonoidHomClass F α β]
+
+@[to_additive]
+theorem map_inv_le_map_inv_iff_map_le_map [LE β] [MulRightMono β] [MulLeftMono β]
+    {f g : F} {x : α} : f x⁻¹ ≤ g x⁻¹ ↔ g x ≤ f x := by
+  suffices h : ∀ (f g : F) (x), f x⁻¹ ≤ g x⁻¹ → g x ≤ f x from
+    ⟨h f g x, by simpa using h g f x⁻¹⟩
+  exact fun f g x hfg ↦ calc
+    _ = f x * (f x⁻¹ * g x) := by simp [← mul_assoc, ← map_mul]
+    _ ≤ f x * (g x⁻¹ * g x) := by gcongr
+    _ = f x                 := by simp [← map_mul]
+
+@[to_additive]
+theorem MonoidHomClass.ext_iff_le [PartialOrder β] [MulRightMono β] [MulLeftMono β] {f g : F} :
+    f = g ↔ ∀ x, f x ≤ g x where
+  mp := by simp +contextual
+  mpr h := DFunLike.ext f g
+    fun x ↦ le_antisymm (h x) (map_inv_le_map_inv_iff_map_le_map.mp <| h x⁻¹)
+
+end MonoidHomClass
+
 section OrderedZero
 
 variable [FunLike F α β]
@@ -405,9 +429,9 @@ end Preorder
 
 section Mul
 
-variable [CommMonoid α] [PartialOrder α]
-  [CommMonoid β] [PartialOrder β]
-  [CommMonoid γ] [PartialOrder γ]
+variable [CommMonoid α] [Preorder α]
+  [CommMonoid β] [Preorder β]
+  [CommMonoid γ] [Preorder γ]
 
 /-- For two ordered monoid morphisms `f` and `g`, their product is the ordered monoid morphism
 sending `a` to `f a * g a`. -/
@@ -452,7 +476,7 @@ end OrderedCommMonoid
 
 section OrderedCommGroup
 
-variable {_ : CommGroup α} {_ : PartialOrder α} {_ : CommGroup β} {_ : PartialOrder β}
+variable {_ : CommGroup α} {_ : Preorder α} {_ : CommGroup β} {_ : PartialOrder β}
 
 /-- Makes an ordered group homomorphism from a proof that the map preserves multiplication. -/
 @[to_additive
@@ -509,7 +533,7 @@ theorem mk_coe (f : α ≃*o β) (h) : OrderMonoidIso.mk (f : α ≃* β) h = f 
 
 /-- Reinterpret an ordered monoid isomorphism as an order isomorphism. -/
 @[to_additive
-/-- Reinterpret an ordered additive monoid isomomorphism as an order isomomorphism. -/]
+/-- Reinterpret an ordered additive monoid isomorphism as an order isomorphism. -/]
 def toOrderIso (f : α ≃*o β) : α ≃o β :=
   { f with
     map_rel_iff' := map_le_map_iff f }
@@ -694,6 +718,14 @@ theorem symm_comp_eq (e : α ≃*o β) (f : α → α) (g : α → β) :
     e.symm ∘ g = f ↔ g = e ∘ f :=
   e.toEquiv.symm_comp_eq f g
 
+@[to_additive]
+lemma lt_symm_apply (e : α ≃*o β) {x : α} {y : β} : x < e.symm y ↔ e x < y :=
+  e.toOrderIso.lt_symm_apply
+
+@[to_additive]
+lemma symm_apply_lt (e : α ≃*o β) {x : α} {y : β} : e.symm y < x ↔ y < e x :=
+  e.toOrderIso.symm_apply_lt
+
 variable (f)
 
 @[to_additive]
@@ -711,7 +743,7 @@ end Preorder
 
 section OrderedCommGroup
 
-variable {_ : CommGroup α} {_ : PartialOrder α} {_ : CommGroup β} {_ : PartialOrder β}
+variable {_ : CommGroup α} {_ : Preorder α} {_ : CommGroup β} {_ : PartialOrder β}
 
 /-- Makes an ordered group isomorphism from a proof that the map preserves multiplication. -/
 @[to_additive

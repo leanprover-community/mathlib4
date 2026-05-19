@@ -225,6 +225,7 @@ theorem factor_orderIso_map_one_eq_bot [IsCancelMulZero N] {m : Associates M} {n
   letI : BotHomClass ({ l // l ≤ m } ≃o { l // l ≤ n }) _ _ := OrderIsoClass.toBotHomClass
   exact map_bot d
 
+set_option backward.isDefEq.respectTransparency false in
 theorem coe_factor_orderIso_map_eq_one_iff [IsCancelMulZero N]
     {m u : Associates M} {n : Associates N} (hu' : u ≤ m)
     (d : Set.Iic m ≃o Set.Iic n) : (d ⟨u, hu'⟩ : Associates N) = 1 ↔ u = 1 :=
@@ -274,6 +275,7 @@ theorem pow_image_of_prime_by_factor_orderIso_dvd
     simpa [Subtype.mk_le_mk] using hc₁''.2 ⟨i, rfl⟩
   exact ne_zero_of_dvd_ne_zero hn (Subtype.prop (d ⟨c₁ 1 ^ s, _⟩))
 
+set_option backward.isDefEq.respectTransparency false in
 theorem map_prime_of_factor_orderIso {m p : Associates M} {n : Associates N} (hn : n ≠ 0)
     (hp : p ∈ normalizedFactors m) (d : Set.Iic m ≃o Set.Iic n) :
     Prime (d ⟨p, dvd_of_mem_normalizedFactors hp⟩ : Associates N) := by

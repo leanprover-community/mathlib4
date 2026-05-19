@@ -1,3 +1,4 @@
+module
 import Mathlib
 
 -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/category.20theory.20import.20breaks.20CommRing.20synthesis/near/449132250

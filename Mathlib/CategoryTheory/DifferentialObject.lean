@@ -161,6 +161,7 @@ universe v' u'
 variable (D : Type u') [Category.{v'} D]
 variable [HasZeroMorphisms D] [HasShift D S]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A functor `F : C ⥤ D` which commutes with shift functors on `C` and `D` and preserves zero
 morphisms can be lifted to a functor `DifferentialObject S C ⥤ DifferentialObject S D`. -/
 @[simps]
@@ -273,6 +274,7 @@ def shiftFunctor (n : S) : DifferentialObject S C ⥤ DifferentialObject S C whe
   map_id X := by ext1; dsimp; rw [Functor.map_id]
   map_comp f g := by ext1; dsimp; rw [Functor.map_comp]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The shift functor on `DifferentialObject S C` is additive. -/
 @[simps!]
 nonrec def shiftFunctorAdd (m n : S) :
@@ -290,6 +292,7 @@ nonrec def shiftFunctorAdd (m n : S) :
 
 section
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The shift by zero is naturally isomorphic to the identity. -/
 @[simps!]
 def shiftZero : shiftFunctor C (0 : S) ≅ 𝟭 (DifferentialObject S C) := by

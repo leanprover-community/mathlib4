@@ -116,6 +116,7 @@ variable {K L} [IsGalois K L]
 
 open Additive Rep
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given `L/K` finite and Galois, and `x : Lˣ`, this essentially says
 `(∏ σ) • x = N_{L/K}(x)`, where the product is over `σ ∈ Gal(L/K)`. -/
 theorem norm_ofAlgebraAutOnUnits_eq (x : Lˣ) :
@@ -125,6 +126,7 @@ theorem norm_ofAlgebraAutOnUnits_eq (x : Lˣ) :
 
 variable [IsCyclic (L ≃ₐ[K] L)] {g : Gal(L/K)}
 
+set_option backward.isDefEq.respectTransparency false in
 attribute [local instance] IsCyclic.commGroup in
 /-- Hilbert's Theorem 90: given a finite cyclic Galois extension `L/K`, an element `x : L` such
 that `N_{L/K}(x) = 1`, and a generator `g` of `Gal(L/K)`, there exists `y : Lˣ`
@@ -148,8 +150,14 @@ theorem exists_div_of_norm_eq_one (hg : ∀ x, x ∈ Subgroup.zpowers g) {x : L}
   rcases this.1 (Subsingleton.elim (α := groupCohomology.H1 (Rep.ofAlgebraAutOnUnits K L)) _ _)
     with ⟨y, hy⟩
   use toMul <| toAdditive y
-  simpa [xu, sub_eq_add_neg, div_eq_mul_inv, -toAdditive_apply] using
-    Units.ext_iff.1 congr(toMul <| toAdditive $hy)
+  have := Units.ext_iff.1 congr(toMul <| toAdditive $hy)
+  simp only [ofAlgebraAutOnUnits.eq_1, sub_hom, hom_id,
+    Representation.IntertwiningMap.sub_toLinearMap, Representation.IntertwiningMap.toLinearMap_id,
+    LinearMap.sub_apply, Representation.IntertwiningMap.coe_toLinearMap, applyAsHom_apply,
+    ofMulDistribMulAction_ρ_apply_apply, AlgEquiv.smul_units_def, LinearMap.id_coe, id_eq,
+    toAdditive_symm_apply, toAdditive_apply, toMul_ofMul, IsUnit.unit_spec, xu] at this
+  rw [← this, toMul_sub]
+  simp
 
 variable {A B : Type*} [CommRing A] [CommRing B] [Algebra A B] [Algebra A L] [Algebra A K]
 variable [Algebra B L] [IsScalarTower A B L] [IsScalarTower A K L] [IsFractionRing A K] [IsDomain A]

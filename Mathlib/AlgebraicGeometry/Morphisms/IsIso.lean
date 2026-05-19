@@ -15,7 +15,7 @@ public import Mathlib.AlgebraicGeometry.Morphisms.OpenImmersion
 
 universe u
 
-@[expose] public section
+public section
 
 open CategoryTheory MorphismProperty
 
@@ -44,6 +44,7 @@ lemma isomorphisms_eq_stalkwise :
 
 example : IsZariskiLocalAtTarget (isomorphisms Scheme) := inferInstance
 
+set_option backward.isDefEq.respectTransparency false in
 instance : HasAffineProperty (isomorphisms Scheme) fun X _ f _ ↦ IsAffine X ∧ IsIso (f.appTop) := by
   convert HasAffineProperty.of_isZariskiLocalAtTarget (isomorphisms Scheme) with X Y f hY
   exact ⟨fun ⟨_, _⟩ ↦ (arrow_mk_iso_iff (isomorphisms _) (arrowIsoSpecΓOfIsAffine f)).mpr
@@ -53,6 +54,7 @@ instance : HasAffineProperty (isomorphisms Scheme) fun X _ f _ ↦ IsAffine X �
 instance : IsZariskiLocalAtTarget (monomorphisms Scheme) :=
   diagonal_isomorphisms (C := Scheme).symm ▸ inferInstance
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isIso_SpecMap_iff {R S : CommRingCat.{u}} {f : R ⟶ S} :
     IsIso (Spec.map f) ↔ Function.Bijective f.hom := by
   rw [← ConcreteCategory.isIso_iff_bijective]

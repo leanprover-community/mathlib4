@@ -65,13 +65,14 @@ def asLimitCone : Cone S.diagram where
   pt := S
   π := {
     app := fun n ↦ (lightToProfiniteFullyFaithful.preimageIso <|
-      (Cones.forget _).mapIso S.isoMapCone).inv ≫ S.asLimitConeAux.π.app n
+      (Cone.forget _).mapIso S.isoMapCone).inv ≫ S.asLimitConeAux.π.app n
     naturality := fun _ _ _ ↦ by simp only [Category.assoc, S.asLimitConeAux.w]; rfl }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `S.asLimitCone` is indeed a limit cone. -/
 def asLimit : IsLimit S.asLimitCone := S.asLimitAux.ofIsoLimit <|
-  Cones.ext (lightToProfiniteFullyFaithful.preimageIso <|
-    (Cones.forget _).mapIso S.isoMapCone) (fun _ ↦ by rw [← @Iso.inv_comp_eq]; rfl)
+  Cone.ext (lightToProfiniteFullyFaithful.preimageIso <|
+    (Cone.forget _).mapIso S.isoMapCone) (fun _ ↦ by rw [← @Iso.inv_comp_eq]; rfl)
 
 /-- A bundled version of `S.asLimitCone` and `S.asLimit`. -/
 def lim : Limits.LimitCone S.diagram := ⟨S.asLimitCone, S.asLimit⟩

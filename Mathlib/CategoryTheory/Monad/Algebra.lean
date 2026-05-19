@@ -131,6 +131,7 @@ def forget : Algebra T ⥤ C where
   obj A := A.A
   map f := f.f
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The free functor from the Eilenberg-Moore category, constructing an algebra for any object. -/
 @[simps]
 def free : C ⥤ Algebra T where
@@ -145,6 +146,7 @@ def free : C ⥤ Algebra T where
 instance [Inhabited C] : Inhabited (Algebra T) :=
   ⟨(free T).obj default⟩
 
+set_option backward.isDefEq.respectTransparency false in
 -- The other two `simps` projection lemmas can be derived from these two, so `simp_nf` complains if
 -- those are added too
 /-- The adjunction between the free and forgetful constructions for Eilenberg-Moore algebras for
@@ -188,6 +190,7 @@ theorem algebra_mono_of_mono {X Y : Algebra T} (f : X ⟶ Y) [h : Mono f.f] : Mo
 instance : T.forget.IsRightAdjoint :=
   ⟨T.free, ⟨T.adj⟩⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 Given a monad morphism from `T₂` to `T₁`, we get a functor from the algebras of `T₁` to algebras of
 `T₂`.
@@ -340,6 +343,7 @@ def forget : Coalgebra G ⥤ C where
   obj A := A.A
   map f := f.f
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The cofree functor from the Eilenberg-Moore category, constructing a coalgebra for any
 object. -/
 @[simps]
@@ -352,6 +356,7 @@ def cofree : C ⥤ Coalgebra G where
     { f := G.map f
       h := (G.δ.naturality _).symm }
 
+set_option backward.isDefEq.respectTransparency false in
 -- The other two `simps` projection lemmas can be derived from these two, so `simp_nf` complains if
 -- those are added too
 /-- The adjunction between the cofree and forgetful constructions for Eilenberg-Moore coalgebras

@@ -99,6 +99,7 @@ theorem associatesEquivIsPrincipal_map_one :
     (associatesEquivIsPrincipal R 1 : Ideal R) = 1 := by
   rw [one_eq_mk_one, associatesEquivIsPrincipal_apply, span_singleton_one, one_eq_top]
 
+set_option backward.isDefEq.respectTransparency false in
 variable (R) in
 /-- The `MulEquiv` version of `Ideal.associatesEquivIsPrincipal`. -/
 noncomputable def associatesMulEquivIsPrincipal :
@@ -123,7 +124,8 @@ noncomputable def associatesNonZeroDivisorsEquivIsPrincipal :
           associatesEquivIsPrincipal_apply, span_singleton_nonZeroDivisors])
     _ ≃ {I : Ideal R // IsPrincipal I ∧ I ∈ (Ideal R)⁰} :=
       Equiv.subtypeSubtypeEquivSubtypeInter (fun I ↦ IsPrincipal I) (fun I ↦ I ∈ (Ideal R)⁰)
-    _ ≃ {I : Ideal R // I ∈ (Ideal R)⁰ ∧ IsPrincipal I} := Equiv.setCongr (by simp_rw [and_comm])
+    _ ≃ {I : Ideal R // I ∈ (Ideal R)⁰ ∧ IsPrincipal I} :=
+      .subtypeEquivProp <| by simp_rw [and_comm]
     _ ≃ {I : (Ideal R)⁰ // IsPrincipal I.1} := (Equiv.subtypeSubtypeEquivSubtypeInter _ _).symm
 
 @[simp]
@@ -147,6 +149,7 @@ theorem associatesNonZeroDivisorsEquivIsPrincipal_map_one :
   rw [associatesNonZeroDivisorsEquivIsPrincipal_coe, map_one, OneMemClass.coe_one,
     associatesEquivIsPrincipal_map_one]
 
+set_option backward.isDefEq.respectTransparency false in
 variable (R) in
 /-- The `MulEquiv` version of `Ideal.associatesNonZeroDivisorsEquivIsPrincipal`. -/
 noncomputable def associatesNonZeroDivisorsMulEquivIsPrincipal :

@@ -24,7 +24,7 @@ As in other polynomial files, we typically use the notation:
 + `R : Type*` `[CommRing R]` (the coefficients)
 
 + `s : σ →₀ ℕ`, a function from `σ` to `ℕ` which is zero away from a finite set.
-This will give rise to a monomial in `MvPolynomial σ R` which mathematicians might call `X^s`
+  This will give rise to a monomial in `MvPolynomial σ R` which mathematicians might call `X^s`.
 
 + `a : R`
 
@@ -39,7 +39,7 @@ This will give rise to a monomial in `MvPolynomial σ R` which mathematicians mi
 
 noncomputable section
 
-open Set Function Finsupp AddMonoidAlgebra
+open Set Function Finsupp
 
 universe u v
 
@@ -53,9 +53,6 @@ section CommRing
 
 variable [CommRing R]
 variable {p q : MvPolynomial σ R}
-
-instance instCommRingMvPolynomial : CommRing (MvPolynomial σ R) :=
-  AddMonoidAlgebra.commRing
 
 variable (σ a a')
 

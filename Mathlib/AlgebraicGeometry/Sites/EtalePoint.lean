@@ -34,6 +34,7 @@ namespace AlgebraicGeometry.Scheme
 variable {S : Scheme.{u}} {Ω : Type u} [Field Ω] [IsSepClosed Ω]
   (s : Spec (.of Ω) ⟶ S)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma exists_fac_of_etale_of_isSepClosed {X S : Scheme.{u}} (f : X ⟶ S) [Etale f]
     {Ω : Type u} [Field Ω] [IsSepClosed Ω] (s : Spec (.of Ω) ⟶ S)
     (x : X) (hx : f x = s default) :
@@ -86,12 +87,12 @@ noncomputable def pointSmallEtale : (smallEtaleTopology S).Point where
     obtain ⟨l, hl₁, hl₂⟩ := exists_fac_of_etale_of_isSepClosed (𝒰.f i) φ _ hy
     have : 𝒰.f i ≫ f = 𝒰.X i ↘ S := HomIsOver.comp_over (f := 𝒰.f i) (S := S)
     exact ⟨(𝒰.X i).asOverProp S inferInstance,
-      MorphismProperty.Over.homMk (𝒰.f i), le _ ⟨i⟩, Over.homMk l, by cat_disch⟩
+      MorphismProperty.Over.homMk (𝒰.f i), le _ _ ⟨i⟩, Over.homMk l, by cat_disch⟩
 
 variable {s₀ : S} (hs₀ : s default = s₀)
 
 @[simps]
-def pointSmallEtaleFiberObjToPreimage {X : S.Etale}
+noncomputable def pointSmallEtaleFiberObjToPreimage {X : S.Etale}
     (t : (pointSmallEtale s).fiber.obj X) :
     X.hom ⁻¹' {s₀} :=
   ⟨t.left (default : Spec (.of Ω)), by
@@ -100,11 +101,13 @@ def pointSmallEtaleFiberObjToPreimage {X : S.Etale}
     rw [← this] at hs₀
     simpa⟩
 
+set_option backward.isDefEq.respectTransparency false in
 instance {Y X : Scheme.{u}} (f : Y ⟶ X) [Etale f] (x : X) :
     Etale (f.fiberToSpecResidueField x) := by
   dsimp [Hom.fiberToSpecResidueField]
   infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 lemma pointSmallEtaleFiberObjToPreimage_surjective (X : S.Etale) :
     Function.Surjective (pointSmallEtaleFiberObjToPreimage s hs₀ (X := X)) := by
   intro y
@@ -118,6 +121,7 @@ lemma pointSmallEtaleFiberObjToPreimage_surjective (X : S.Etale) :
   rw [Category.assoc, X.hom.fiber_fac, reassoc_of% hl]
   cat_disch
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isConservative_pointSmallEtale
     {ι : Type*} {S : Scheme.{u}}
     {Ω : ι → Type u} [∀ i, Field (Ω i)] [∀ i, IsSepClosed (Ω i)]

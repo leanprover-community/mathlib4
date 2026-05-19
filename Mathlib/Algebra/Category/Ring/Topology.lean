@@ -134,7 +134,7 @@ lemma isClosedEmbedding_hom [IsTopologicalRing R] [T1Space R] :
     (.uniqueProd (⊥_ CommRingCat ⟶ R) _)).isClosedEmbedding.comp
     (isClosedEmbedding_precomp_of_surjective f this) using 2 with g
   ext x
-  simp [f]
+  simp +instances [f]
 
 instance [T2Space R] : T2Space (A ⟶ R) :=
   (isEmbedding_hom R A).t2Space
@@ -145,6 +145,7 @@ instance [IsTopologicalRing R] [T1Space R] [CompactSpace R] :
 
 open Limits
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `Hom(B ⊗[A] C, R)` has the subspace topology from `Hom(B, R) × Hom(C, R)`. -/
 lemma isEmbedding_pushout [IsTopologicalRing R] (φ : A ⟶ B) (ψ : A ⟶ C) :
     IsEmbedding fun f : pushout φ ψ ⟶ R ↦ (pushout.inl φ ψ ≫ f, pushout.inr φ ψ ≫ f) := by

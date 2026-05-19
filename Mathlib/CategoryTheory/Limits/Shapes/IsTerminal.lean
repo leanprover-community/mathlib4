@@ -31,7 +31,7 @@ noncomputable section
 
 universe w w' v v₁ v₂ u u₁ u₂
 
-open CategoryTheory
+open CategoryTheory Opposite
 
 namespace CategoryTheory.Limits
 
@@ -115,9 +115,7 @@ def isInitialEquivUnique (F : Discrete.{0} PEmpty.{1} ⥤ C) (X : C) :
     { desc := fun s => (u s.pt).default
       uniq := fun s _ _ => (u s.pt).2 _ }
   left_inv := by dsimp [Function.LeftInverse]; intro; simp only [eq_iff_true_of_subsingleton]
-  right_inv := by
-    #adaptation_note /-- 19-07-2025 grind stopped working -/
-    intro x; dsimp
+  right_inv := by grind
 
 /-- An object `X` is initial if for every `Y` there is a unique morphism `X ⟶ Y`
     (as an instance). -/
@@ -357,6 +355,7 @@ def limitOfDiagramInitial {X : J} (tX : IsInitial X) (F : J ⥤ C) :
     simp_rw [← w X, coneOfDiagramInitial_π_app, tX.hom_ext (tX.to X) (𝟙 _)]
     simp
 
+set_option backward.isDefEq.respectTransparency false in
 /-- From a functor `F : J ⥤ C`, given a terminal object of `J`, construct a cone for `J`,
 provided that the morphisms in the diagram are isomorphisms.
 In `limitOfDiagramTerminal` we show it is a limit cone. -/
@@ -402,6 +401,7 @@ lemma IsColimit.isIso_ι_app_of_isTerminal {F : J ⥤ C} {c : Cocone F} (hc : Is
   change IsIso (coconePointUniqueUpToIso (colimitOfDiagramTerminal hX F) hc).hom
   infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 /-- From a functor `F : J ⥤ C`, given an initial object of `J`, construct a cocone for `J`,
 provided that the morphisms in the diagram are isomorphisms.
 In `colimitOfDiagramInitial` we show it is a colimit cocone. -/
@@ -445,4 +445,50 @@ lemma isIso_of_isInitial {X Y : C} (hX : IsInitial X) (hY : IsInitial Y) (f : X 
 
 end
 
-end CategoryTheory.Limits
+/-- An initial object is terminal in the opposite category. -/
+def IsInitial.op {X : C} (hX : IsInitial X) : IsTerminal (op X) :=
+  IsTerminal.ofUniqueHom (fun _ ↦ (hX.to _).op)
+    (fun _ _ ↦ Quiver.Hom.unop_inj (hX.hom_ext _ _))
+
+/-- An initial object in the opposite category is terminal in the original category. -/
+def IsInitial.unop {X : Cᵒᵖ} (hX : IsInitial X) : IsTerminal X.unop :=
+  IsTerminal.ofUniqueHom (fun _ ↦ (hX.to _).unop)
+    (fun _ _ ↦ Quiver.Hom.op_inj (hX.hom_ext _ _))
+
+/-- A terminal object is initial in the opposite category. -/
+def IsTerminal.op {X : C} (hX : IsTerminal X) : IsInitial (op X) :=
+  IsInitial.ofUniqueHom (fun _ ↦ (hX.from _).op)
+    (fun _ _ ↦ Quiver.Hom.unop_inj (hX.hom_ext _ _))
+
+/-- A terminal object in the opposite category is initial in the original category. -/
+def IsTerminal.unop {X : Cᵒᵖ} (hX : IsTerminal X) : IsInitial X.unop :=
+  IsInitial.ofUniqueHom (fun _ ↦ (hX.from _).unop)
+    (fun _ _ ↦ Quiver.Hom.op_inj (hX.hom_ext _ _))
+
+end Limits
+
+namespace Functor
+open Limits
+variable (C : Type*) [Category* C] {D : Type*} [Category* D]
+
+/-- The constant functor returning a specific terminal object is indeed terminal. -/
+def isTerminalConst {X : D} (hX : IsTerminal X) :
+    IsTerminal ((Functor.const C).obj X) :=
+  .ofUniqueHom (fun Y => { app Z := hX.from (Y.obj Z) }) (by intros; ext; apply hX.hom_ext)
+
+@[simp]
+lemma isTerminalConst_from_app {X : D} (hX : IsTerminal X)
+    (F : C ⥤ D) (Y : C) : ((isTerminalConst C hX).from F).app Y = hX.from (F.obj Y) := rfl
+
+/-- The constant functor returning a specific initial object is indeed initial. -/
+def isInitialConst {X : D} (hX : IsInitial X) :
+    IsInitial ((Functor.const C).obj X) :=
+  .ofUniqueHom (fun Y => { app Z := hX.to (Y.obj Z) }) (by intros; ext; apply hX.hom_ext)
+
+@[simp]
+lemma isInitialConst_to_app {X : D} (hX : IsInitial X)
+    (F : C ⥤ D) (Y : C) : ((isInitialConst C hX).to F).app Y = hX.to (F.obj Y) := rfl
+
+end Functor
+
+end CategoryTheory

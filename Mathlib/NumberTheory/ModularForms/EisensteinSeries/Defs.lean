@@ -47,7 +47,7 @@ def gammaSet := {v : Fin 2 → ℤ | (↑) ∘ v = a ∧ (v 0).gcd (v 1) = r}
 open scoped Function in -- required for scoped `on` notation
 lemma pairwise_disjoint_gammaSet : Pairwise (Disjoint on gammaSet N r) := by
   refine fun u v huv ↦ ?_
-  contrapose! huv
+  contrapose huv
   obtain ⟨f, hf⟩ := Set.not_disjoint_iff.mp huv
   exact hf.1.1.symm.trans hf.2.1
 
@@ -132,9 +132,8 @@ lemma gammaSetDivGcdEquiv_eq (r : ℕ) [NeZero r] (v : gammaSet 1 r 0) :
 def gammaSetDivGcdSigmaEquiv : (Fin 2 → ℤ) ≃ (Σ r : ℕ, gammaSet 1 r 0) := by
   apply (Equiv.sigmaFiberEquiv finGcdMap).symm.trans
   refine Equiv.sigmaCongrRight fun b => ?_
-  apply Equiv.setCongr
-  rw [gammaSet_one_eq]
-  rfl
+  apply Equiv.subtypeEquivProp
+  simp [gammaSet_one_eq]
 
 @[simp]
 lemma gammaSetDivGcdSigmaEquiv_symm_eq (v : Σ r : ℕ, gammaSet 1 r 0) :

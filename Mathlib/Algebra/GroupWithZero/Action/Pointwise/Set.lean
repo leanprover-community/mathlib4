@@ -46,6 +46,7 @@ variable [Zero β] [SMulZeroClass α β] {s : Set α} {t : Set β} {a : α}
 
 /-- If scalar multiplication by elements of `α` sends `(0 : β)` to zero,
 then the same is true for `(0 : Set β)`. -/
+@[instance_reducible]
 protected def smulZeroClassSet : SMulZeroClass α (Set β) where
   smul_zero _ := image_singleton.trans <| by rw [smul_zero, singleton_zero]
 
@@ -87,6 +88,7 @@ end SMulWithZero
 
 /-- If the scalar multiplication `(· • ·) : α → β → β` is distributive,
 then so is `(· • ·) : α → Set β → Set β`. -/
+@[instance_reducible]
 protected noncomputable def distribSMulSet [AddZeroClass β] [DistribSMul α β] :
     DistribSMul α (Set β) where
   smul_add _ _ _ := image_image2_distrib <| smul_add _
@@ -95,12 +97,14 @@ scoped[Pointwise] attribute [instance] Set.distribSMulSet
 
 /-- A distributive multiplicative action of a monoid on an additive monoid `β` gives a distributive
 multiplicative action on `Set β`. -/
+@[instance_reducible]
 protected noncomputable def distribMulActionSet [Monoid α] [AddMonoid β] [DistribMulAction α β] :
     DistribMulAction α (Set β) where
   smul_add := smul_add
   smul_zero := smul_zero
 
 /-- A multiplicative action of a monoid on a monoid `β` gives a multiplicative action on `Set β`. -/
+@[instance_reducible]
 protected noncomputable def mulDistribMulActionSet [Monoid α] [Monoid β] [MulDistribMulAction α β] :
     MulDistribMulAction α (Set β) where
   smul_mul _ _ _ := image_image2_distrib <| smul_mul' _

@@ -19,7 +19,7 @@ and division (apart from zero in the denominator). We also prove theorems like
 then `f * g` tends to positive infinity.
 -/
 
-@[expose] public section
+public section
 
 
 open Set Filter TopologicalSpace Function
@@ -103,9 +103,6 @@ instance (priority := 100) IsStrictOrderedRing.toContinuousInv₀ [ContinuousMul
     exact hxx'.trans_lt <| lt_inv_of_lt_inv₀ hy.1 hy.2
   · filter_upwards [Ioi_mem_nhds (inv_lt_one_of_one_lt₀ hx)] with y hy
     exact inv_lt_of_inv_lt₀ (by positivity) hy
-
-@[deprecated (since := "2025-09-01")] alias IsStrictOrderedRing.toHasContinuousInv₀ :=
-  IsStrictOrderedRing.toContinuousInv₀
 
 end Semifield
 

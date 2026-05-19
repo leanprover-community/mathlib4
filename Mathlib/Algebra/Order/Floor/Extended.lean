@@ -70,7 +70,9 @@ lemma floor_lt_top : ⌊r⌋ₑ < ⊤ ↔ r < ∞ := by cases r <;> simp
 @[simp] lemma ceil_lt_top : ⌈r⌉ₑ < ⊤ ↔ r < ∞ := by cases r <;> simp
 
 @[simp] lemma le_floor : n ≤ ⌊r⌋ₑ ↔ n ≤ r := by cases r <;> cases n <;> simp [Nat.le_floor_iff]
+
 @[simp] lemma ceil_le : ⌈r⌉ₑ ≤ n ↔ r ≤ n := by cases r <;> cases n <;> simp
+
 @[simp] lemma floor_lt : ⌊r⌋ₑ < n ↔ r < n := lt_iff_lt_of_le_iff_le le_floor
 @[simp] lemma lt_ceil : n < ⌈r⌉ₑ ↔ n < r := lt_iff_lt_of_le_iff_le ceil_le
 
@@ -200,7 +202,7 @@ lemma floor_sub_ofNat (r : ℝ≥0∞) (n : ℕ) [n.AtLeastTwo] : ⌊r - ofNat(n
 
 @[bound]
 lemma ceil_lt_add_one (hr : r ≠ ∞) : (⌈r⌉ₑ : ℝ≥0∞) < r + 1 := by
-  lift r to ℝ≥0 using hr; simpa using mod_cast Nat.ceil_lt_add_one (zero_le r)
+  lift r to ℝ≥0 using hr; simpa using mod_cast Nat.ceil_lt_add_one zero_le
 
 @[bound]
 lemma ceil_add_le : ∀ (r s : ℝ≥0∞), ⌈r + s⌉ₑ ≤ ⌈r⌉ₑ + ⌈s⌉ₑ
@@ -213,6 +215,30 @@ lemma ceil_add_le : ∀ (r s : ℝ≥0∞), ⌈r + s⌉ₑ ≤ ⌈r⌉ₑ + ⌈s
 
 @[simp] lemma toENNReal_iInf {ι : Sort*} (f : ι → ℕ∞) :
     toENNReal (⨅ i, f i) = ⨅ i, toENNReal (f i) := eq_of_forall_le_iff fun _ ↦ by simp [← ceil_le]
+
+@[simp] lemma preimage_toENNReal_Ioi (a : ℝ≥0∞) :
+    toENNReal ⁻¹' Set.Ioi a = Set.Ioi ⌊a⌋ₑ := by ext; simp
+
+@[simp] lemma preimage_toENNReal_Iio (a : ℝ≥0∞) :
+    toENNReal ⁻¹' Set.Iio a = Set.Iio ⌈a⌉ₑ := by ext; simp
+
+@[simp] lemma preimage_toENNReal_Iic (a : ℝ≥0∞) :
+    toENNReal ⁻¹' Set.Iic a = Set.Iic ⌊a⌋ₑ := by ext; simp
+
+@[simp] lemma preimage_toENNReal_Ici (a : ℝ≥0∞) :
+    toENNReal ⁻¹' Set.Ici a = Set.Ici ⌈a⌉ₑ := by ext; simp
+
+@[simp] lemma preimage_toENNReal_Icc (a b : ℝ≥0∞) :
+    toENNReal ⁻¹' Set.Icc a b = Set.Icc ⌈a⌉ₑ ⌊b⌋ₑ := by ext; simp
+
+@[simp] lemma preimage_toENNReal_Ico (a b : ℝ≥0∞) :
+    toENNReal ⁻¹' Set.Ico a b = Set.Ico ⌈a⌉ₑ ⌈b⌉ₑ := by ext; simp
+
+@[simp] lemma preimage_toENNReal_Ioc (a b : ℝ≥0∞) :
+    toENNReal ⁻¹' Set.Ioc a b = Set.Ioc ⌊a⌋ₑ ⌊b⌋ₑ := by ext; simp
+
+@[simp] lemma preimage_toENNReal_Ioo (a b : ℝ≥0∞) :
+    toENNReal ⁻¹' Set.Ioo a b = Set.Ioo ⌊a⌋ₑ ⌈b⌉ₑ := by ext; simp
 
 end ENat
 

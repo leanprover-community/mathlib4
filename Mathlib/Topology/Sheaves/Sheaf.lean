@@ -132,10 +132,10 @@ def forget : TopCat.Sheaf C X ⥤ TopCat.Presheaf C X :=
 -- https://github.com/leanprover-community/mathlib4/issues/380
 
 instance forget_full : (forget C X).Full where
-  map_surjective f := ⟨Sheaf.Hom.mk f, rfl⟩
+  map_surjective f := ⟨ObjectProperty.homMk f, rfl⟩
 
 instance forgetFaithful : (forget C X).Faithful where
-  map_injective := Sheaf.Hom.ext
+  map_injective := Sheaf.hom_ext
 
 -- Note: These can be proved by simp.
 theorem id_app (F : Sheaf C X) (t) : (𝟙 F : F ⟶ F).1.app t = 𝟙 _ :=
@@ -160,7 +160,7 @@ lemma Presheaf.IsSheaf.section_ext {X : TopCat.{u}}
     ((Presheaf.isSheaf_iff_isSheaf_forget (C := Opens X) (A' := A) _ F (forget _)).mp hF)
   choose V hV hxV H using fun x : U.unop ↦ hst x.1 x.2
   refine (this.isSheafFor (.ofArrows V fun x ↦ homOfLE (hV x)) ?_).isSeparatedFor.ext ?_
-  · exact fun x hx ↦ ⟨V ⟨x, hx⟩, homOfLE (hV _), Sieve.le_generate _ _ (.mk _), hxV _⟩
+  · exact fun x hx ↦ ⟨V ⟨x, hx⟩, homOfLE (hV _), Sieve.ofArrows_mk _ _ _, hxV _⟩
   · rintro _ _ ⟨x⟩; exact H x
 
 end TopCat

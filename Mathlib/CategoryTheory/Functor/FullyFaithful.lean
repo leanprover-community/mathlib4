@@ -45,6 +45,8 @@ namespace Functor
 class Full (F : C ⥤ D) : Prop where
   map_surjective {X Y : C} : Function.Surjective (F.map (X := X) (Y := Y))
 
+attribute [to_dual self] Full.map_surjective Full.mk
+
 /-- A functor `F : C ⥤ D` is faithful if for each `X Y : C`, `F.map` is injective. -/
 @[stacks 001C]
 class Faithful (F : C ⥤ D) : Prop where
@@ -52,9 +54,11 @@ class Faithful (F : C ⥤ D) : Prop where
   map_injective : ∀ {X Y : C}, Function.Injective (F.map : (X ⟶ Y) → (F.obj X ⟶ F.obj Y)) := by
     cat_disch
 
+attribute [to_dual self] Faithful.map_injective Faithful.mk
+
 variable {X Y : C}
 
-@[grind inj]
+@[grind inj, to_dual self]
 theorem map_injective (F : C ⥤ D) [Faithful F] :
     Function.Injective <| (F.map : (X ⟶ Y) → (F.obj X ⟶ F.obj Y)) :=
   Faithful.map_injective
@@ -72,10 +76,11 @@ theorem map_surjective (F : C ⥤ D) [Full F] :
   Full.map_surjective
 
 /-- The choice of a preimage of a morphism under a full functor. -/
+@[to_dual self]
 noncomputable def preimage (F : C ⥤ D) [Full F] (f : F.obj X ⟶ F.obj Y) : X ⟶ Y :=
   (F.map_surjective f).choose
 
-@[simp]
+@[simp, to_dual self]
 theorem map_preimage (F : C ⥤ D) [Full F] {X Y : C} (f : F.obj X ⟶ F.obj Y) :
     F.map (preimage F f) = f :=
   (F.map_surjective f).choose_spec

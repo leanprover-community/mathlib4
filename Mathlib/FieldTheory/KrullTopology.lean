@@ -100,6 +100,7 @@ theorem mem_galBasis_iff (K L : Type*) [Field K] [Field L] [Algebra K L] (U : Se
 
 /-- For a field extension `L/K`, `galGroupBasis K L` is the group filter basis on `Gal(L/K)`
 whose sets are `Gal(L/E)` for finite subextensions `E/K`. -/
+@[implicit_reducible]
 def galGroupBasis (K L : Type*) [Field K] [Field L] [Algebra K L] :
     GroupFilterBasis Gal(L/K) where
   toFilterBasis := galBasis K L

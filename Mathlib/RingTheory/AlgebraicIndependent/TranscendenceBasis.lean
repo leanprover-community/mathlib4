@@ -18,16 +18,14 @@ This file defines the transcendence basis as a maximal algebraically independent
 ## Main results
 
 * `exists_isTranscendenceBasis`: a ring extension has a transcendence basis
+* `IsTranscendenceBasis.lift_cardinalMk_eq_trdeg`: any transcendence basis of a domain has
+  cardinality equal to transcendental degree.
 * `IsTranscendenceBasis.lift_cardinalMk_eq`: any two transcendence bases of a domain have the
   same cardinality.
 
 ## References
 
 * [Stacks: Transcendence](https://stacks.math.columbia.edu/tag/030D)
-
-## TODO
-Define the transcendence degree and show it is independent of the choice of a
-transcendence basis.
 
 ## Tags
 transcendence basis, transcendence degree, transcendence
@@ -74,9 +72,9 @@ open Cardinal in
 theorem trdeg_eq_iSup_cardinalMk_isTranscendenceBasis :
     trdeg R A = ⨆ ι : { s : Set A // IsTranscendenceBasis R ((↑) : s → A) }, #ι.1 := by
   refine (ciSup_le' fun s ↦ ?_).antisymm
-    (ciSup_le' fun s ↦ le_ciSup_of_le (bddAbove_range _) ⟨s, s.2.1⟩ le_rfl)
+    (ciSup_le' fun s ↦ le_ciSup_of_le bddAbove_of_small ⟨s, s.2.1⟩ le_rfl)
   choose t ht using exists_isTranscendenceBasis_superset s.2
-  exact le_ciSup_of_le (bddAbove_range _) ⟨t, ht.2⟩ (mk_le_mk_of_subset ht.1)
+  exact le_ciSup_of_le bddAbove_of_small ⟨t, ht.2⟩ (mk_le_mk_of_subset ht.1)
 
 variable {R}
 
@@ -186,7 +184,7 @@ theorem IsTranscendenceBasis.polynomial [Nonempty ι] [Subsingleton ι] :
   nontriviality R
   have := (nonempty_unique ι).some
   refine (isTranscendenceBasis_equiv (Equiv.equivPUnit.{_, 1} _).symm).mp <|
-    (MvPolynomial.pUnitAlgEquiv R).symm.isTranscendenceBasis_iff.mp ?_
+    (MvPolynomial.uniqueAlgEquiv R PUnit).symm.isTranscendenceBasis_iff.mp ?_
   convert IsTranscendenceBasis.mvPolynomial PUnit R
   ext; simp
 
@@ -272,7 +270,7 @@ private def indepMatroid : IndepMatroid A where
       exact h b ⟨hb, fun hbI ↦ this ⟨b, hbI⟩⟩ .of_subsingleton
     apply I_ind.isTranscendenceBasis_iff_isAlgebraic.mpr
     replace B_base := B_base.isAlgebraic
-    simp_rw [id_eq]
+    simp_rw +instances [id_eq]
     rw [Subtype.range_val] at B_base ⊢
     refine ⟨fun a ↦ (B_base.1 a).adjoin_of_forall_isAlgebraic fun x hx ↦ ?_⟩
     contrapose! h
@@ -342,6 +340,7 @@ theorem matroid_closure_eq [IsDomain A] {s : Set A} :
     forall_mem_insert]
   exact fun _ ↦ and_iff_left fun x hx ↦ isAlgebraic_algebraMap (⟨x, subset_adjoin hx⟩ : adjoin R B)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem matroid_isFlat_iff [IsDomain A] {s : Set A} :
     (matroid R A).IsFlat s ↔ ∃ S : Subalgebra R A, S = s ∧ ∀ a : A, IsAlgebraic S a → a ∈ s := by
   rw [Matroid.isFlat_iff_closure_eq, matroid_closure_eq]
@@ -415,10 +414,11 @@ namespace IsTranscendenceBasis
 
 variable [Nontrivial R] [NoZeroDivisors A]
 
+/-- Any transcendence basis of a domain has cardinality equal to transcendental degree. -/
 theorem lift_cardinalMk_eq_trdeg (hx : IsTranscendenceBasis R x) :
     lift.{w} #ι = lift.{u} (trdeg R A) := by
   have := (faithfulSMul_iff_algebraMap_injective R A).mpr hx.1.algebraMap_injective
-  rw [← matroid_cRank_eq, ← ((matroid_isBase_iff).mpr hx.to_subtype_range).cardinalMk_eq_cRank,
+  rw [← matroid_cRank_eq, ← (matroid_isBase_iff.mpr hx.to_subtype_range).cardinalMk_eq_cRank,
     lift_mk_eq'.mpr ⟨.ofInjective _ hx.1.injective⟩]
 
 theorem cardinalMk_eq_trdeg {ι : Type w} {x : ι → A} (hx : IsTranscendenceBasis R x) :

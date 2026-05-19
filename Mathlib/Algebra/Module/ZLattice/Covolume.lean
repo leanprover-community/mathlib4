@@ -28,7 +28,7 @@ Let `L` be a `ℤ`-lattice `L` defined as a discrete `ℤ`-submodule of `E` that
   value of the determinant of any `ℤ`-basis of `L`.
 
 * `ZLattice.covolume_div_covolume_eq_relIndex`: Let `L₁` be a sub-`ℤ`-lattice of `L₂`. Then the
-index of `L₁` inside `L₂` is equal to `covolume L₁ / covolume L₂`.
+  index of `L₁` inside `L₂` is equal to `covolume L₁ / covolume L₂`.
 
 * `ZLattice.covolume.tendsto_card_div_pow`: Let `s` be a bounded measurable set of `ι → ℝ`, then
   the number of points in `s ∩ n⁻¹ • L` divided by `n ^ card ι` tends to `volume s / covolume L`
@@ -162,9 +162,6 @@ theorem covolume_div_covolume_eq_relIndex {ι : Type*} [Fintype ι] (L₁ L₂ :
     rw [Matrix.map_apply, Basis.toMatrix_apply, Basis.toMatrix_apply, Basis.ofZLatticeBasis_apply]
     exact (b₂.ofZLatticeBasis_repr_apply ℝ L₂ ⟨b₁ j, h (coe_mem _)⟩ i)
 
-@[deprecated (since := "2025-08-12")]
-alias covolume_div_covolume_eq_relindex := covolume_div_covolume_eq_relIndex
-
 /--
 A more general version of `covolume_div_covolume_eq_relIndex`;
 see the `Naming conventions` section in the introduction.
@@ -183,9 +180,6 @@ theorem covolume_div_covolume_eq_relIndex' {E : Type*} [NormedAddCommGroup E]
     ZLattice.comap_toAddSubgroup, Nat.cast_inj, LinearEquiv.toAddMonoidHom_commutes,
     AddSubgroup.comap_equiv_eq_map_symm', AddSubgroup.comap_equiv_eq_map_symm',
     AddSubgroup.relIndex_map_map_of_injective _ _ f.symm.injective]
-
-@[deprecated (since := "2025-08-12")]
-alias covolume_div_covolume_eq_relindex' := covolume_div_covolume_eq_relIndex'
 
 theorem volume_image_eq_volume_div_covolume {ι : Type*} [Fintype ι] (L : Submodule ℤ (ι → ℝ))
     [DiscreteTopology L] [IsZLattice ℝ L] (b : Basis ι ℤ L) {s : Set (ι → ℝ)} :

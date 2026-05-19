@@ -393,10 +393,10 @@ instance Pi.t2Space {Y : X → Type v} [∀ a, TopologicalSpace (Y a)]
 instance Sigma.t2Space {ι} {X : ι → Type*} [∀ i, TopologicalSpace (X i)] [∀ a, T2Space (X a)] :
     T2Space (Σ i, X i) := by
   constructor
-  rintro ⟨i, x⟩ ⟨j, y⟩ neq
+  rintro ⟨i, x⟩ ⟨j, y⟩ ne
   rcases eq_or_ne i j with (rfl | h)
-  · replace neq : x ≠ y := ne_of_apply_ne _ neq
-    exact separated_by_isOpenEmbedding .sigmaMk neq
+  · replace ne : x ≠ y := ne_of_apply_ne _ ne
+    exact separated_by_isOpenEmbedding .sigmaMk ne
   · let _ := (⊥ : TopologicalSpace ι); have : DiscreteTopology ι := ⟨rfl⟩
     exact separated_by_continuous (continuous_def.2 fun u _ => isOpen_sigma_fst_preimage u) h
 
@@ -404,6 +404,7 @@ section
 variable (X)
 
 /-- The smallest equivalence relation on a topological space giving a T2 quotient. -/
+@[implicit_reducible]
 def t2Setoid : Setoid X := sInf {s | T2Space (Quotient s)}
 
 /-- The largest T2 quotient of a topological space. This construction is left-adjoint to the
@@ -572,6 +573,11 @@ section SeparatedFinset
 theorem SeparatedNhds.of_finset_finset [T2Space X] (s t : Finset X) (h : Disjoint s t) :
     SeparatedNhds (s : Set X) t :=
   .of_isCompact_isCompact s.finite_toSet.isCompact t.finite_toSet.isCompact <| mod_cast h
+
+theorem SeparatedNhds.of_finite [T2Space X] {s t : Set X} (hs : s.Finite) (ht : t.Finite)
+    (h : Disjoint s t) : SeparatedNhds s t := by
+  rw [← hs.coe_toFinset, ← ht.coe_toFinset]
+  exact SeparatedNhds.of_finset_finset _ _ (Finite.disjoint_toFinset.2 h)
 
 theorem SeparatedNhds.of_singleton_finset [T2Space X] {x : X} {s : Finset X} (h : x ∉ s) :
     SeparatedNhds ({x} : Set X) s :=

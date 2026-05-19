@@ -125,17 +125,10 @@ noncomputable def partialLeftAdjoint : F.PartialLeftAdjointSource ⥤ D where
   map := F.partialLeftAdjointMap
   map_id X := by
     apply F.partialLeftAdjointHomEquiv.injective
-    dsimp
-    rw [partialLeftAdjointHomEquiv_map]
-    erw [id_comp]
+    simp [partialLeftAdjointHomEquiv_map]
   map_comp {X Y Z} f g := by
     apply F.partialLeftAdjointHomEquiv.injective
-    dsimp
-    rw [partialLeftAdjointHomEquiv_map, partialLeftAdjointHomEquiv_comp,
-      partialLeftAdjointHomEquiv_map, assoc]
-    erw [assoc]
-    rw [← F.partialLeftAdjointHomEquiv_comp, id_comp,
-      partialLeftAdjointHomEquiv_map]
+    simp [partialLeftAdjointHomEquiv_comp, ← F.partialLeftAdjointHomEquiv_comp]
 
 variable {F}
 
@@ -155,6 +148,7 @@ lemma isRightAdjoint_iff_leftAdjointObjIsDefined_eq_top :
   simpa only [Pi.top_apply, Prop.top_eq_true, iff_true]
     using leftAdjointObjIsDefined_of_adjunction (Adjunction.ofIsRightAdjoint F) X
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary definition for `leftAdjointObjIsDefined_of_isColimit`. -/
 noncomputable def corepresentableByCompCoyonedaObjOfIsColimit {J : Type*} [Category* J]
     {R : J ⥤ F.PartialLeftAdjointSource}
@@ -280,17 +274,10 @@ noncomputable def partialRightAdjoint : F.PartialRightAdjointSource ⥤ C where
   map := F.partialRightAdjointMap
   map_id X := by
     apply F.partialRightAdjointHomEquiv.injective
-    dsimp
-    rw [partialRightAdjointHomEquiv_map]
-    erw [comp_id]
+    simp [partialRightAdjointHomEquiv_map]
   map_comp {X Y Z} f g := by
     apply F.partialRightAdjointHomEquiv.injective
-    dsimp
-    rw [partialRightAdjointHomEquiv_map, partialRightAdjointHomEquiv_comp,
-      partialRightAdjointHomEquiv_map, ← assoc]
-    erw [← assoc]
-    rw [← F.partialRightAdjointHomEquiv_comp, comp_id,
-      partialRightAdjointHomEquiv_map]
+    simp [partialRightAdjointHomEquiv_comp, ← assoc, ← F.partialRightAdjointHomEquiv_comp]
 
 variable {F}
 
@@ -310,6 +297,7 @@ lemma isLeftAdjoint_iff_rightAdjointObjIsDefined_eq_top :
   simpa only [Pi.top_apply, Prop.top_eq_true, iff_true]
     using rightAdjointObjIsDefined_of_adjunction (Adjunction.ofIsLeftAdjoint F) X
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary definition for `rightAdjointObjIsDefined_of_isLimit`. -/
 noncomputable def representableByCompYonedaObjOfIsLimit {J : Type*} [Category* J]
     {R : J ⥤ F.PartialRightAdjointSource}

@@ -264,7 +264,7 @@ lemma qExpansion_coeff_isBigO_of_norm_isBigO {k : ℤ} {Γ : Subgroup (GL (Fin 2
   use (1 / Real.exp (-2 * Real.pi / ↑h)) * C
   filter_upwards [eventually_gt_atTop 0,
     (tendsto_inv_atTop_zero.comp tendsto_natCast_atTop_atTop).eventually hC] with n hn hn'
-  rw [qExpansion_coeff_eq_intervalIntegral (t := 1 / n) f hh hΓ _ (by positivity),
+  rw [ModularFormClass.qExpansion_coeff_eq_intervalIntegral (t := 1 / n) f hh hΓ _ (by positivity),
     ← intervalIntegral.integral_const_mul]
   simp only [ofReal_div, ofReal_one, ofReal_natCast]
   refine intervalIntegral.norm_integral_le_integral_norm (by positivity) |>.trans ?_
@@ -311,7 +311,7 @@ This is not optimal -- the optimal exponent is `(k - 1) / 2 + ε` for any `0 < �
 congruence levels -- but is much easier to prove than the optimal result. -/
 lemma CuspFormClass.qExpansion_isBigO {k : ℤ} {Γ : Subgroup (GL (Fin 2) ℝ)}
     [Γ.IsArithmetic] {F : Type*} [FunLike F ℍ ℂ] [CuspFormClass F Γ k] (f : F) :
-    (fun n ↦ (ModularFormClass.qExpansion Γ.strictWidthInfty f).coeff n)
+    (fun n ↦ (UpperHalfPlane.qExpansion Γ.strictWidthInfty f).coeff n)
       =O[atTop] fun n ↦ (n : ℝ) ^ ((k : ℝ) / 2) := by
   apply qExpansion_coeff_isBigO_of_norm_isBigO
   obtain ⟨C, hC⟩ := exists_bound f

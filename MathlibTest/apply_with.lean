@@ -1,3 +1,4 @@
+module
 import Mathlib.Tactic.ApplyWith
 
 set_option autoImplicit true
@@ -18,6 +19,7 @@ example (f : ∀ x : Nat, x = x → α) : α := by
 class Foo where
   val : Nat
 
+set_option warn.classDefReducibility false in
 def foo : Foo where
   val := 37
 

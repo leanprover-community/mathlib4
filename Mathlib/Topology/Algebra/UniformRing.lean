@@ -11,6 +11,7 @@ public import Mathlib.Algebra.Ring.TransferInstance
 public import Mathlib.Topology.Algebra.GroupCompletion
 public import Mathlib.Topology.Algebra.Ring.Ideal
 public import Mathlib.Topology.Algebra.IsUniformGroup.Basic
+public import Mathlib.Topology.Algebra.SeparationQuotient.Basic
 
 /-!
 # Completion of topological rings:
@@ -81,8 +82,8 @@ instance : ContinuousMul (Completion α) where
     exact (di.extend_Z_bilin di this :)
 
 instance ring : Ring (Completion α) :=
-  { AddMonoidWithOne.unary, (inferInstanceAs (AddCommGroup (Completion α))),
-      (inferInstanceAs (Mul (Completion α))), (inferInstanceAs (One (Completion α))) with
+  { AddMonoidWithOne.unary, ((inferInstance : AddCommGroup (Completion α))),
+      ((inferInstance : Mul (Completion α))), ((inferInstance : One (Completion α))) with
     zero_mul a :=
       Completion.induction_on a (isClosed_eq (by fun_prop) continuous_const)
         fun a => by rw [← coe_zero, ← coe_mul, zero_mul]
@@ -191,13 +192,13 @@ theorem map_smul_eq_mul_coe (r : R) :
     Completion.map (r • ·) = ((algebraMap R A r : Completion A) * ·) := by
   ext x
   refine Completion.induction_on x ?_ fun a => ?_
-  · exact isClosed_eq Completion.continuous_map (continuous_mul_left _)
+  · exact isClosed_eq Completion.continuous_map (continuous_const_mul _)
   · simp_rw [map_coe (uniformContinuous_const_smul r) a, Algebra.smul_def, coe_mul]
 
 instance algebra : Algebra R (Completion A) where
   algebraMap := (UniformSpace.Completion.coeRingHom : A →+* Completion A).comp (algebraMap R A)
   commutes' := fun r x =>
-    Completion.induction_on x (isClosed_eq (continuous_mul_left _) (continuous_mul_right _))
+    Completion.induction_on x (isClosed_eq (continuous_const_mul _) (continuous_mul_const _))
       fun a => by
       simpa only [coe_mul] using congr_arg ((↑) : A → Completion A) (Algebra.commutes r a)
   smul_def' := fun r x => congr_fun (map_smul_eq_mul_coe A R r) x
@@ -239,7 +240,7 @@ theorem inseparableSetoid_ring (α) [Ring α] [TopologicalSpace α] [IsTopologic
 /-- Given a topological ring `α` equipped with a uniform structure that makes subtraction uniformly
 continuous, get a homeomorphism between the separated quotient of `α` and the quotient ring
 corresponding to the closure of zero. -/
-def sepQuotHomeomorphRingQuot (α) [CommRing α] [TopologicalSpace α] [IsTopologicalRing α] :
+def sepQuotHomeomorphRingQuot (α) [Ring α] [TopologicalSpace α] [IsTopologicalRing α] :
     SeparationQuotient α ≃ₜ α ⧸ (⊥ : Ideal α).closure where
   toEquiv := Quotient.congrRight fun x y => by rw [inseparableSetoid_ring]
   continuous_toFun := continuous_id.quotient_map' <| by
@@ -247,26 +248,14 @@ def sepQuotHomeomorphRingQuot (α) [CommRing α] [TopologicalSpace α] [IsTopolo
   continuous_invFun := continuous_id.quotient_map' <| by
     rw [inseparableSetoid_ring]; exact fun _ _ ↦ id
 
-instance commRing [CommRing α] [TopologicalSpace α] [IsTopologicalRing α] :
-    CommRing (SeparationQuotient α) :=
-  (sepQuotHomeomorphRingQuot _).commRing
-
 /-- Given a topological ring `α` equipped with a uniform structure that makes subtraction uniformly
 continuous, get an equivalence between the separated quotient of `α` and the quotient ring
 corresponding to the closure of zero. -/
 def sepQuotRingEquivRingQuot (α) [CommRing α] [TopologicalSpace α] [IsTopologicalRing α] :
-    SeparationQuotient α ≃+* α ⧸ (⊥ : Ideal α).closure :=
-  (sepQuotHomeomorphRingQuot _).ringEquiv
-
-instance topologicalRing [CommRing α] [TopologicalSpace α] [IsTopologicalRing α] :
-    IsTopologicalRing (SeparationQuotient α) where
-  toContinuousAdd :=
-    (sepQuotHomeomorphRingQuot α).isInducing.continuousAdd (sepQuotRingEquivRingQuot α)
-  toContinuousMul :=
-    (sepQuotHomeomorphRingQuot α).isInducing.continuousMul (sepQuotRingEquivRingQuot α)
-  toContinuousNeg :=
-    (sepQuotHomeomorphRingQuot α).isInducing.continuousNeg <|
-      map_neg (sepQuotRingEquivRingQuot α)
+    SeparationQuotient α ≃+* α ⧸ (⊥ : Ideal α).closure where
+  __ := sepQuotHomeomorphRingQuot α
+  map_mul' := SeparationQuotient.surjective_mk.forall₂.2 (fun _ _ ↦ rfl)
+  map_add' := SeparationQuotient.surjective_mk.forall₂.2 (fun _ _ ↦ rfl)
 
 end UniformSpace
 

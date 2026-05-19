@@ -528,15 +528,12 @@ theorem mk_coe' (f h₁ h₂ h₃ h₄) :
     (LinearEquiv.mk ⟨⟨f, h₁⟩, h₂⟩ (⇑e) h₃ h₄ : M₂ ≃ₛₗ[σ'] M) = e.symm :=
   symm_bijective.injective <| ext fun _ ↦ rfl
 
-/-- Auxiliary definition to avoid looping in `dsimp` with `LinearEquiv.symm_mk`. -/
-protected def symm_mk.aux (f h₁ h₂ h₃ h₄) := (⟨⟨⟨e, h₁⟩, h₂⟩, f, h₃, h₄⟩ : M ≃ₛₗ[σ] M₂).symm
-
 @[simp]
-theorem symm_mk (f h₁ h₂ h₃ h₄) :
-    (⟨⟨⟨e, h₁⟩, h₂⟩, f, h₃, h₄⟩ : M ≃ₛₗ[σ] M₂).symm =
-      { symm_mk.aux e f h₁ h₂ h₃ h₄ with
-        toFun := f
-        invFun := e } :=
+theorem symm_mk (toLinearMap invFun h₁ h₂) : dsimp%
+    (mk toLinearMap invFun h₁ h₂ : M ≃ₛₗ[σ] M₂).symm =
+      { (mk toLinearMap invFun h₁ h₂ : M ≃ₛₗ[σ] M₂).symm with
+        toFun := invFun
+        invFun := toLinearMap } :=
   rfl
 
 /-- For a more powerful version, see `coe_symm_mk'`. -/
@@ -590,6 +587,10 @@ def _root_.RingEquiv.toSemilinearEquiv (f : R ≃+* S) :
   { f with
     toFun := f
     map_smul' := f.map_mul }
+
+@[simp]
+lemma _root_.RingEquiv.symm_toSemilinearEquiv_symm_apply (f : R ≃+* S) (x : R) :
+  f.symm.toSemilinearEquiv.symm (σ' := RingHomClass.toRingHom f) x = f x := rfl
 
 variable [AddCommMonoid M]
 

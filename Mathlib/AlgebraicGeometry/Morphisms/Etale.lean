@@ -132,19 +132,28 @@ instance : MorphismProperty.HasOfPostcompProperty @Etale @Etale := by
   intro X Y f hf
   constructor <;> infer_instance
 
+lemma iff_flat_and_formallyUnramified {f : X ⟶ Y} :
+    Etale f ↔ Flat f ∧ FormallyUnramified f ∧ LocallyOfFinitePresentation f := by
+  rw [etale_iff, flat_iff, formallyUnramified_iff, locallyOfFinitePresentation_iff]
+  grind [RingHom.Etale.iff_flat_and_formallyUnramified]
+
+lemma of_formallyUnramified_of_flat [Flat f] [FormallyUnramified f]
+    [LocallyOfFinitePresentation f] :
+    Etale f := by
+  rw [Etale.iff_flat_and_formallyUnramified]
+  exact ⟨inferInstance, inferInstance, inferInstance⟩
+
 end Etale
 
 namespace Scheme
 
 /-- The category `Etale X` is the category of schemes étale over `X`. -/
 protected def Etale (X : Scheme.{u}) : Type _ := MorphismProperty.Over @Etale ⊤ X
+deriving Category, HasPullbacks, HasFiniteLimits
 
 variable (X : Scheme.{u})
 
-instance (Y : X.Etale) : Etale Y.hom := Y.prop
-
-instance : Category X.Etale :=
-  inferInstanceAs <| Category (MorphismProperty.Over @Etale ⊤ X)
+instance (Y : X.Etale) : dsimp% Etale Y.hom := Y.prop
 
 instance {X : Scheme.{u}} {Z Y : X.Etale} (f : Z ⟶ Y) : Etale f.left := by
   have : Etale (f.left ≫ Y.hom) := by rw [CategoryTheory.Over.w]; infer_instance
@@ -158,12 +167,17 @@ def Etale.forget : X.Etale ⥤ Over X :=
 def Etale.forgetFullyFaithful : (Etale.forget X).FullyFaithful :=
   MorphismProperty.Comma.forgetFullyFaithful _ _ _
 
+-- Note: using `deriving Functor.Full/Faithful` in the declaration of `Etale.forget`
+-- would "succeed", but it seems it would fail to create the next two instances
 instance : (Etale.forget X).Full :=
-  inferInstanceAs <| (MorphismProperty.Comma.forget _ _ _ _ _).Full
+  (Etale.forgetFullyFaithful X).full
+
 instance : (Etale.forget X).Faithful :=
-  inferInstanceAs <| (MorphismProperty.Comma.forget _ _ _ _ _).Faithful
+  (Etale.forgetFullyFaithful X).faithful
 
 variable {X} in
+/-- Constructor for objects in the étale site of a scheme `X`: it takes
+an étale morphism `f : Y ⟶ X` as an input. -/
 abbrev Etale.mk {Y : Scheme.{u}} (f : Y ⟶ X) [Etale f] : X.Etale :=
   MorphismProperty.Over.mk _ f inferInstance
 
@@ -186,9 +200,6 @@ def Etale.rec {motive : X.Etale → Sort*}
     (T : X.Etale) :
     motive T :=
   mk _ _ T.prop
-
-instance : HasFiniteLimits X.Etale :=
-  inferInstanceAs (HasFiniteLimits (MorphismProperty.Over _ ⊤ X))
 
 instance : PreservesFiniteLimits (Etale.forget X) :=
   inferInstanceAs (PreservesFiniteLimits (MorphismProperty.Over.forget _ ⊤ X))

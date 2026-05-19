@@ -130,7 +130,7 @@ protected lemma IsAtom.le_iSup (ha : IsAtom a) : a ≤ iSup f ↔ ∃ i, a ≤ f
   refine ⟨?_, fun ⟨i, hi⟩ => le_trans hi (le_iSup _ _)⟩
   change (a ≤ ⨆ i, f i) → _
   refine fun h => of_not_not fun ha' => ?_
-  push_neg at ha'
+  push Not at ha'
   have ha'' : Disjoint a (⨆ i, f i) :=
     disjoint_iSup_iff.2 fun i => fun x hxa hxf => le_bot_iff.2 <| of_not_not fun hx =>
       have hxa : x < a := (le_iff_eq_or_lt.1 hxa).resolve_left (by rintro rfl; exact ha' _ hxf)
@@ -241,7 +241,7 @@ theorem covBy_iff {K L : A} :
 theorem covBy_iff' {K L : A} :
     K ⋖ L ↔ K < L ∧ ∀ H g, K ≤ H → H ≤ L → g ∉ H → g ∈ L → H = K := by
   refine and_congr_right fun _ ↦ forall_congr' fun H ↦ not_iff_not.mp ?_
-  push_neg
+  push Not
   rw [lt_iff_le_and_ne, lt_iff_le_not_ge, and_and_and_comm]
   simp_rw [exists_and_left, and_assoc, and_congr_right_iff, ← and_assoc, and_comm, exists_and_left,
     SetLike.not_le_iff_exists, ne_comm, implies_true]
@@ -490,7 +490,7 @@ theorem IsStronglyAtomic.of_wellFounded_lt (h : WellFounded ((· < ·) : α → 
     refine ⟨WellFounded.min h (Set.Ioc a b) ⟨b, hab,rfl.le⟩, ?_⟩
     have hmem := (WellFounded.min_mem h (Set.Ioc a b) ⟨b, hab,rfl.le⟩)
     exact ⟨⟨hmem.1,fun c hac hlt ↦ WellFounded.not_lt_min h
-      (Set.Ioc a b) ⟨b, hab,rfl.le⟩ ⟨hac, hlt.le.trans hmem.2⟩ hlt ⟩, hmem.2⟩
+      (Set.Ioc a b) ⟨hac, hlt.le.trans hmem.2⟩ hlt⟩, hmem.2⟩
 
 theorem IsStronglyCoatomic.of_wellFounded_gt (h : WellFounded ((· > ·) : α → α → Prop)) :
     IsStronglyCoatomic α :=
@@ -693,7 +693,7 @@ theorem exists_mem_le_of_le_sSup_of_isAtom {α} [CompleteAtomicBooleanAlgebra α
 lemma eq_setOf_le_sSup_and_isAtom {α} [CompleteAtomicBooleanAlgebra α] {S : Set α}
     (hS : ∀ a ∈ S, IsAtom a) : S = {a | a ≤ sSup S ∧ IsAtom a} := by
   ext a
-  refine ⟨fun h => ⟨CompleteLattice.le_sSup S a h, hS a h⟩, fun ⟨hale, hatom⟩ => ?_⟩
+  refine ⟨fun h => ⟨le_sSup h, hS a h⟩, fun ⟨hale, hatom⟩ => ?_⟩
   obtain ⟨b, hbS, hba⟩ := (IsAtom.le_sSup hatom).mp hale
   obtain rfl | rfl := (hS b hbS).le_iff.mp hba
   · simpa using hatom.1
@@ -757,6 +757,7 @@ instance OrderDual.instIsSimpleOrder {α} [LE α] [BoundedOrder α] [IsSimpleOrd
     IsSimpleOrder αᵒᵈ := isSimpleOrder_iff_isSimpleOrder_orderDual.1 (by infer_instance)
 
 /-- A simple `BoundedOrder` induces a preorder. This is not an instance to prevent loops. -/
+@[implicit_reducible]
 protected def IsSimpleOrder.preorder {α} [LE α] [BoundedOrder α] [IsSimpleOrder α] :
     Preorder α where
   le_refl a := by rcases eq_bot_or_eq_top a with (rfl | rfl) <;> simp
@@ -769,6 +770,7 @@ protected def IsSimpleOrder.preorder {α} [LE α] [BoundedOrder α] [IsSimpleOrd
 
 /-- A simple partial ordered `BoundedOrder` induces a linear order.
 This is not an instance to prevent loops. -/
+@[implicit_reducible]
 protected def IsSimpleOrder.linearOrder [DecidableEq α] : LinearOrder α :=
   { (inferInstance : PartialOrder α) with
     le_total := fun a b => by rcases eq_bot_or_eq_top a with (rfl | rfl) <;> simp
@@ -825,12 +827,14 @@ variable [Lattice α] [BoundedOrder α] [IsSimpleOrder α]
 
 /-- A simple partial ordered `BoundedOrder` induces a lattice.
 This is not an instance to prevent loops -/
+@[implicit_reducible]
 protected def lattice {α} [DecidableEq α] [PartialOrder α] [BoundedOrder α] [IsSimpleOrder α] :
     Lattice α :=
   @LinearOrder.toLattice α IsSimpleOrder.linearOrder
 
 /-- A lattice that is a `BoundedOrder` is a distributive lattice.
 This is not an instance to prevent loops -/
+@[implicit_reducible]
 protected def distribLattice : DistribLattice α :=
   { (inferInstance : Lattice α) with
     le_sup_inf := fun x y z => by rcases eq_bot_or_eq_top x with (rfl | rfl) <;> simp }
@@ -869,9 +873,10 @@ def orderIsoBool : α ≃o Bool :=
         · simp }
 
 /-- A simple `BoundedOrder` is also a `BooleanAlgebra`. -/
+@[implicit_reducible]
 protected def booleanAlgebra {α} [DecidableEq α] [Lattice α] [BoundedOrder α] [IsSimpleOrder α] :
     BooleanAlgebra α :=
-  { inferInstanceAs (BoundedOrder α), IsSimpleOrder.distribLattice with
+  { (inferInstance : BoundedOrder α), IsSimpleOrder.distribLattice with
     compl := fun x => if x = ⊥ then ⊤ else ⊥
     sdiff := fun x y => if x = ⊤ ∧ y = ⊥ then ⊤ else ⊥
     sdiff_eq := fun x y => by
@@ -888,34 +893,36 @@ variable [Lattice α] [BoundedOrder α] [IsSimpleOrder α]
 
 open Classical in
 /-- A simple `BoundedOrder` is also complete. -/
+@[implicit_reducible]
 protected noncomputable def completeLattice : CompleteLattice α :=
   { (inferInstance : Lattice α),
     (inferInstance : BoundedOrder α) with
     sSup := fun s => if ⊤ ∈ s then ⊤ else ⊥
     sInf := fun s => if ⊥ ∈ s then ⊥ else ⊤
-    le_sSup := fun s x h => by
-      rcases eq_bot_or_eq_top x with (rfl | rfl)
-      · exact bot_le
-      · rw [if_pos h]
-    sSup_le := fun s x h => by
-      rcases eq_bot_or_eq_top x with (rfl | rfl)
-      · rw [if_neg]
-        intro con
-        exact bot_ne_top (eq_top_iff.2 (h ⊤ con))
-      · exact le_top
-    sInf_le := fun s x h => by
-      rcases eq_bot_or_eq_top x with (rfl | rfl)
-      · rw [if_pos h]
-      · exact le_top
-    le_sInf := fun s x h => by
-      rcases eq_bot_or_eq_top x with (rfl | rfl)
-      · exact bot_le
-      · rw [if_neg]
-        intro con
-        exact top_ne_bot (eq_bot_iff.2 (h ⊥ con)) }
+    isLUB_sSup s := by
+      refine ⟨fun x h ↦ ?_, fun x h ↦ ?_⟩
+      · rcases eq_bot_or_eq_top x with (rfl | rfl)
+        · exact bot_le
+        · rw [if_pos h]
+      · rcases eq_bot_or_eq_top x with (rfl | rfl)
+        · rw [if_neg]
+          intro con
+          exact bot_ne_top (eq_top_iff.2 (h con))
+        · exact le_top
+    isGLB_sInf s := by
+      refine ⟨fun x h ↦ ?_, fun x h ↦ ?_⟩
+      · rcases eq_bot_or_eq_top x with (rfl | rfl)
+        · rw [if_pos h]
+        · exact le_top
+      · rcases eq_bot_or_eq_top x with (rfl | rfl)
+        · exact bot_le
+        · rw [if_neg]
+          intro con
+          exact top_ne_bot (eq_bot_iff.2 (h con)) }
 
 open Classical in
 /-- A simple `BoundedOrder` is also a `CompleteBooleanAlgebra`. -/
+@[implicit_reducible]
 protected noncomputable def completeBooleanAlgebra : CompleteBooleanAlgebra α :=
   { __ := IsSimpleOrder.completeLattice
     __ := IsSimpleOrder.booleanAlgebra }

@@ -49,6 +49,7 @@ structure SupHom (α β : Type*) [Max α] [Max β] where
   map_sup' (a b : α) : toFun (a ⊔ b) = toFun a ⊔ toFun b
 
 /-- The type of `⊓`-preserving functions from `α` to `β`. -/
+@[to_dual existing]
 structure InfHom (α β : Type*) [Min α] [Min β] where
   /-- The underlying function of an `InfHom`.
 
@@ -61,11 +62,11 @@ structure InfHom (α β : Type*) [Min α] [Min β] where
   map_inf' (a b : α) : toFun (a ⊓ b) = toFun a ⊓ toFun b
 
 /-- The type of lattice homomorphisms from `α` to `β`. -/
-structure LatticeHom (α β : Type*) [Lattice α] [Lattice β] extends SupHom α β where
-  /-- A `LatticeHom` preserves infima.
+structure LatticeHom (α β : Type*) [Lattice α] [Lattice β] extends SupHom α β, InfHom α β where
 
-  Do not use this directly. Use `map_inf` instead. -/
-  map_inf' (a b : α) : toFun (a ⊓ b) = toFun a ⊓ toFun b
+attribute [nolint docBlame] LatticeHom.toInfHom
+
+attribute [to_dual existing] LatticeHom.toInfHom
 
 section
 
@@ -79,6 +80,7 @@ class SupHomClass (F α β : Type*) [Max α] [Max β] [FunLike F α β] : Prop w
 /-- `InfHomClass F α β` states that `F` is a type of `⊓`-preserving morphisms.
 
 You should extend this class when you extend `InfHom`. -/
+@[to_dual existing]
 class InfHomClass (F α β : Type*) [Min α] [Min β] [FunLike F α β] : Prop where
   /-- An `InfHomClass` morphism preserves infima. -/
   map_inf (f : F) (a b : α) : f (a ⊓ b) = f a ⊓ f b
@@ -87,9 +89,9 @@ class InfHomClass (F α β : Type*) [Min α] [Min β] [FunLike F α β] : Prop w
 
 You should extend this class when you extend `LatticeHom`. -/
 class LatticeHomClass (F α β : Type*) [Lattice α] [Lattice β] [FunLike F α β] : Prop
-  extends SupHomClass F α β where
-  /-- A `LatticeHomClass` morphism preserves infima. -/
-  map_inf (f : F) (a b : α) : f (a ⊓ b) = f a ⊓ f b
+  extends SupHomClass F α β, InfHomClass F α β where
+
+attribute [to_dual existing] LatticeHomClass.toInfHomClass
 
 end
 
@@ -104,21 +106,10 @@ section Hom
 variable [FunLike F α β]
 
 -- See note [lower instance priority]
+@[to_dual]
 instance (priority := 100) SupHomClass.toOrderHomClass [SemilatticeSup α] [SemilatticeSup β]
-    [SupHomClass F α β] : OrderHomClass F α β :=
-  { ‹SupHomClass F α β› with
-    map_rel := fun f a b h => by rw [← sup_eq_right, ← map_sup, sup_eq_right.2 h] }
-
--- See note [lower instance priority]
-instance (priority := 100) InfHomClass.toOrderHomClass [SemilatticeInf α] [SemilatticeInf β]
-    [InfHomClass F α β] : OrderHomClass F α β :=
-  { ‹InfHomClass F α β› with
-    map_rel := fun f a b h => by rw [← inf_eq_left, ← map_inf, inf_eq_left.2 h] }
-
--- See note [lower instance priority]
-instance (priority := 100) LatticeHomClass.toInfHomClass [Lattice α] [Lattice β]
-    [LatticeHomClass F α β] : InfHomClass F α β :=
-  { ‹LatticeHomClass F α β› with }
+    [SupHomClass F α β] : OrderHomClass F α β where
+  map_rel := fun f a b h => by rw [← sup_eq_right, ← map_sup, sup_eq_right.2 h]
 
 end Hom
 
@@ -127,24 +118,15 @@ section Equiv
 variable [EquivLike F α β]
 
 -- See note [lower instance priority]
+@[to_dual]
 instance (priority := 100) OrderIsoClass.toSupHomClass [SemilatticeSup α] [SemilatticeSup β]
-    [OrderIsoClass F α β] : SupHomClass F α β :=
-  { show OrderHomClass F α β from inferInstance with
-    map_sup := fun f a b =>
-      eq_of_forall_ge_iff fun c => by simp only [← le_map_inv_iff, sup_le_iff] }
-
-
--- See note [lower instance priority]
-instance (priority := 100) OrderIsoClass.toInfHomClass [SemilatticeInf α] [SemilatticeInf β]
-    [OrderIsoClass F α β] : InfHomClass F α β :=
-  { show OrderHomClass F α β from inferInstance with
-    map_inf := fun f a b =>
-      eq_of_forall_le_iff fun c => by simp only [← map_inv_le_iff, le_inf_iff] }
+    [OrderIsoClass F α β] : SupHomClass F α β where
+  map_sup := fun f a b =>
+    eq_of_forall_ge_iff fun c => by simp only [← le_map_inv_iff, sup_le_iff]
 
 -- See note [lower instance priority]
 instance (priority := 100) OrderIsoClass.toLatticeHomClass [Lattice α] [Lattice β]
-    [OrderIsoClass F α β] : LatticeHomClass F α β :=
-  { OrderIsoClass.toSupHomClass, OrderIsoClass.toInfHomClass with }
+    [OrderIsoClass F α β] : LatticeHomClass F α β where
 
 end Equiv
 
@@ -164,11 +146,9 @@ end OrderEmbedding
 
 variable [FunLike F α β]
 
+@[to_dual]
 instance [Max α] [Max β] [SupHomClass F α β] : CoeTC F (SupHom α β) :=
   ⟨fun f => ⟨f, map_sup f⟩⟩
-
-instance [Min α] [Min β] [InfHomClass F α β] : CoeTC F (InfHom α β) :=
-  ⟨fun f => ⟨f, map_inf f⟩⟩
 
 instance [Lattice α] [Lattice β] [LatticeHomClass F α β] : CoeTC F (LatticeHom α β) :=
   ⟨fun f =>
@@ -186,81 +166,91 @@ section Sup
 
 variable [Max β] [Max γ] [Max δ]
 
+@[to_dual]
 instance : FunLike (SupHom α β) α β where
   coe := SupHom.toFun
   coe_injective' f g h := by cases f; cases g; congr
 
+@[to_dual]
 instance : SupHomClass (SupHom α β) α β where
   map_sup := SupHom.map_sup'
 
-@[simp] lemma toFun_eq_coe (f : SupHom α β) : f.toFun = f := rfl
+@[to_dual (attr := simp)] lemma toFun_eq_coe (f : SupHom α β) : f.toFun = f := rfl
 
-@[simp, norm_cast] lemma coe_mk (f : α → β) (hf) : ⇑(mk f hf) = f := rfl
+@[to_dual (attr := simp, norm_cast)]
+lemma coe_mk (f : α → β) (hf) : ⇑(mk f hf) = f := rfl
 
-@[ext]
+@[to_dual (attr := ext)]
 theorem ext {f g : SupHom α β} (h : ∀ a, f a = g a) : f = g :=
   DFunLike.ext f g h
 
 /-- Copy of a `SupHom` with a new `toFun` equal to the old one. Useful to fix definitional
 equalities. -/
+@[to_dual /--
+Copy of an `InfHom` with a new `toFun` equal to the old one. Useful to fix definitional
+equalities. -/]
 protected def copy (f : SupHom α β) (f' : α → β) (h : f' = f) : SupHom α β where
   toFun := f'
   map_sup' := h.symm ▸ f.map_sup'
 
-@[simp]
+@[to_dual (attr := simp)]
 theorem coe_copy (f : SupHom α β) (f' : α → β) (h : f' = f) : ⇑(f.copy f' h) = f' :=
   rfl
 
+@[to_dual]
 theorem copy_eq (f : SupHom α β) (f' : α → β) (h : f' = f) : f.copy f' h = f :=
   DFunLike.ext' h
 
 variable (α)
 
 /-- `id` as a `SupHom`. -/
+@[to_dual /-- `id` as an `InfHom`. -/]
 protected def id : SupHom α α :=
   ⟨id, fun _ _ => rfl⟩
 
+@[to_dual]
 instance : Inhabited (SupHom α α) :=
   ⟨SupHom.id α⟩
 
-@[simp, norm_cast]
+@[to_dual (attr := simp, norm_cast)]
 theorem coe_id : ⇑(SupHom.id α) = id :=
   rfl
 
 variable {α}
 
-@[simp]
+@[to_dual (attr := simp)]
 theorem id_apply (a : α) : SupHom.id α a = a :=
   rfl
 
 /-- Composition of `SupHom`s as a `SupHom`. -/
+@[to_dual /-- Composition of `InfHom`s as an `InfHom`. -/]
 def comp (f : SupHom β γ) (g : SupHom α β) : SupHom α γ where
   toFun := f ∘ g
   map_sup' a b := by rw [comp_apply, map_sup, map_sup]; rfl
 
-@[simp]
+@[to_dual (attr := simp)]
 theorem coe_comp (f : SupHom β γ) (g : SupHom α β) : (f.comp g : α → γ) = f ∘ g :=
   rfl
 
-@[simp]
+@[to_dual (attr := simp)]
 theorem comp_apply (f : SupHom β γ) (g : SupHom α β) (a : α) : (f.comp g) a = f (g a) :=
   rfl
 
-@[simp]
+@[to_dual (attr := simp)]
 theorem comp_assoc (f : SupHom γ δ) (g : SupHom β γ) (h : SupHom α β) :
     (f.comp g).comp h = f.comp (g.comp h) :=
   rfl
 
-@[simp] theorem comp_id (f : SupHom α β) : f.comp (SupHom.id α) = f := rfl
+@[to_dual (attr := simp)] theorem comp_id (f : SupHom α β) : f.comp (SupHom.id α) = f := rfl
 
-@[simp] theorem id_comp (f : SupHom α β) : (SupHom.id β).comp f = f := rfl
+@[to_dual (attr := simp)] theorem id_comp (f : SupHom α β) : (SupHom.id β).comp f = f := rfl
 
-@[simp]
+@[to_dual (attr := simp)]
 theorem cancel_right {g₁ g₂ : SupHom β γ} {f : SupHom α β} (hf : Surjective f) :
     g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
   ⟨fun h => SupHom.ext <| hf.forall.2 <| DFunLike.ext_iff.1 h, fun h => congr_arg₂ _ h rfl⟩
 
-@[simp]
+@[to_dual (attr := simp)]
 theorem cancel_left {g : SupHom β γ} {f₁ f₂ : SupHom α β} (hg : Injective g) :
     g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
   ⟨fun h => SupHom.ext fun a => hg <| by rw [← SupHom.comp_apply, h, SupHom.comp_apply],
@@ -271,70 +261,85 @@ end Sup
 variable (α) [SemilatticeSup β]
 
 /-- The constant function as a `SupHom`. -/
+@[to_dual /-- The constant function as an `InfHom`. -/]
 def const (b : β) : SupHom α β := ⟨fun _ ↦ b, fun _ _ ↦ (sup_idem _).symm⟩
 
-@[simp]
+@[to_dual (attr := simp)]
 theorem coe_const (b : β) : ⇑(const α b) = Function.const α b :=
   rfl
 
-@[simp]
+@[to_dual (attr := simp)]
 theorem const_apply (b : β) (a : α) : const α b a = b :=
   rfl
 
 variable {α}
 
+@[to_dual]
 instance : Max (SupHom α β) :=
   ⟨fun f g =>
     ⟨f ⊔ g, fun a b => by
       rw [Pi.sup_apply, map_sup, map_sup]
       exact sup_sup_sup_comm _ _ _ _⟩⟩
 
-instance : SemilatticeSup (SupHom α β) :=
-  (DFunLike.coe_injective.semilatticeSup _) fun _ _ => rfl
+@[to_dual]
+instance : PartialOrder (SupHom α β) :=
+  PartialOrder.lift _ DFunLike.coe_injective
 
+@[to_dual]
+instance : SemilatticeSup (SupHom α β) :=
+  DFunLike.coe_injective.semilatticeSup _ .rfl .rfl fun _ _ ↦ rfl
+
+@[to_dual]
 instance [Bot β] : Bot (SupHom α β) :=
   ⟨SupHom.const α ⊥⟩
 
+@[to_dual]
 instance [Top β] : Top (SupHom α β) :=
   ⟨SupHom.const α ⊤⟩
 
+@[to_dual]
 instance [OrderBot β] : OrderBot (SupHom α β) :=
   OrderBot.lift ((↑) : _ → α → β) (fun _ _ => id) rfl
 
+@[to_dual]
 instance [OrderTop β] : OrderTop (SupHom α β) :=
   OrderTop.lift ((↑) : _ → α → β) (fun _ _ => id) rfl
 
+@[to_dual]
 instance [BoundedOrder β] : BoundedOrder (SupHom α β) :=
   BoundedOrder.lift ((↑) : _ → α → β) (fun _ _ => id) rfl rfl
 
-@[simp]
+@[to_dual (attr := simp)]
 theorem coe_sup (f g : SupHom α β) : ⇑(f ⊔ g) = ⇑f ⊔ ⇑g :=
   rfl
 
-@[simp]
+@[to_dual (attr := simp)]
 theorem coe_bot [Bot β] : ⇑(⊥ : SupHom α β) = ⊥ :=
   rfl
 
-@[simp]
+@[to_dual (attr := simp)]
 theorem coe_top [Top β] : ⇑(⊤ : SupHom α β) = ⊤ :=
   rfl
 
-@[simp]
+@[to_dual (attr := simp)]
 theorem sup_apply (f g : SupHom α β) (a : α) : (f ⊔ g) a = f a ⊔ g a :=
   rfl
 
-@[simp]
+@[to_dual (attr := simp)]
 theorem bot_apply [Bot β] (a : α) : (⊥ : SupHom α β) a = ⊥ :=
   rfl
 
-@[simp]
+@[to_dual (attr := simp)]
 theorem top_apply [Top β] (a : α) : (⊤ : SupHom α β) a = ⊤ :=
   rfl
 
-@[simp, gcongr] lemma mk_le_mk (toFun₁ toFun₂ : α → β) (map_sup₁ map_sup₂) :
+@[to_dual (attr := simp, gcongr) (reorder := toFun₁ toFun₂, map_sup₁ map_sup₂)
+  (rename := toFun₁ ↔ toFun₂, map_sup₁ → map_inf₂, map_sup₂ → map_inf₁)]
+lemma mk_le_mk (toFun₁ toFun₂ : α → β) (map_sup₁ map_sup₂) :
     mk toFun₁ map_sup₁ ≤ mk toFun₂ map_sup₂ ↔ toFun₁ ≤ toFun₂ := .rfl
 
 /-- `Subtype.val` as a `SupHom`. -/
+@[to_dual (rename := Psup → Pinf) /-- `Subtype.val` as an `InfHom`. -/]
 def subtypeVal {P : β → Prop}
     (Psup : ∀ ⦃x y : β⦄, P x → P y → P (x ⊔ y)) :
     letI := Subtype.semilatticeSup Psup
@@ -342,196 +347,17 @@ def subtypeVal {P : β → Prop}
   letI := Subtype.semilatticeSup Psup
   .mk Subtype.val (by simp)
 
-@[simp]
+@[to_dual (attr := simp) (rename := Psup → Pinf)]
 lemma subtypeVal_apply {P : β → Prop}
     (Psup : ∀ ⦃x y : β⦄, P x → P y → P (x ⊔ y)) (x : {x : β // P x}) :
     subtypeVal Psup x = x := rfl
 
-@[simp]
+@[to_dual (attr := simp) (rename := Psup → Pinf)]
 lemma subtypeVal_coe {P : β → Prop}
     (Psup : ∀ ⦃x y : β⦄, P x → P y → P (x ⊔ y)) :
     ⇑(subtypeVal Psup) = Subtype.val := rfl
 
 end SupHom
-
-/-! ### Infimum homomorphisms -/
-
-
-namespace InfHom
-
-variable [Min α]
-
-section Inf
-
-variable [Min β] [Min γ] [Min δ]
-
-instance : FunLike (InfHom α β) α β where
-  coe := InfHom.toFun
-  coe_injective' f g h := by cases f; cases g; congr
-
-instance : InfHomClass (InfHom α β) α β where
-  map_inf := InfHom.map_inf'
-
-@[simp] lemma toFun_eq_coe (f : InfHom α β) : f.toFun = (f : α → β) := rfl
-
-@[simp, norm_cast] lemma coe_mk (f : α → β) (hf) : ⇑(mk f hf) = f := rfl
-
-@[ext]
-theorem ext {f g : InfHom α β} (h : ∀ a, f a = g a) : f = g :=
-  DFunLike.ext f g h
-
-/-- Copy of an `InfHom` with a new `toFun` equal to the old one. Useful to fix definitional
-equalities. -/
-protected def copy (f : InfHom α β) (f' : α → β) (h : f' = f) : InfHom α β where
-  toFun := f'
-  map_inf' := h.symm ▸ f.map_inf'
-
-@[simp]
-theorem coe_copy (f : InfHom α β) (f' : α → β) (h : f' = f) : ⇑(f.copy f' h) = f' :=
-  rfl
-
-theorem copy_eq (f : InfHom α β) (f' : α → β) (h : f' = f) : f.copy f' h = f :=
-  DFunLike.ext' h
-
-variable (α)
-
-/-- `id` as an `InfHom`. -/
-protected def id : InfHom α α :=
-  ⟨id, fun _ _ => rfl⟩
-
-instance : Inhabited (InfHom α α) :=
-  ⟨InfHom.id α⟩
-
-@[simp, norm_cast]
-theorem coe_id : ⇑(InfHom.id α) = id :=
-  rfl
-
-variable {α}
-
-@[simp]
-theorem id_apply (a : α) : InfHom.id α a = a :=
-  rfl
-
-/-- Composition of `InfHom`s as an `InfHom`. -/
-def comp (f : InfHom β γ) (g : InfHom α β) : InfHom α γ where
-  toFun := f ∘ g
-  map_inf' a b := by rw [comp_apply, map_inf, map_inf]; rfl
-
-@[simp]
-theorem coe_comp (f : InfHom β γ) (g : InfHom α β) : (f.comp g : α → γ) = f ∘ g :=
-  rfl
-
-@[simp]
-theorem comp_apply (f : InfHom β γ) (g : InfHom α β) (a : α) : (f.comp g) a = f (g a) :=
-  rfl
-
-@[simp]
-theorem comp_assoc (f : InfHom γ δ) (g : InfHom β γ) (h : InfHom α β) :
-    (f.comp g).comp h = f.comp (g.comp h) :=
-  rfl
-
-@[simp] theorem comp_id (f : InfHom α β) : f.comp (InfHom.id α) = f := rfl
-
-@[simp] theorem id_comp (f : InfHom α β) : (InfHom.id β).comp f = f := rfl
-
-@[simp]
-theorem cancel_right {g₁ g₂ : InfHom β γ} {f : InfHom α β} (hf : Surjective f) :
-    g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
-  ⟨fun h => InfHom.ext <| hf.forall.2 <| DFunLike.ext_iff.1 h, fun h => congr_arg₂ _ h rfl⟩
-
-@[simp]
-theorem cancel_left {g : InfHom β γ} {f₁ f₂ : InfHom α β} (hg : Injective g) :
-    g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
-  ⟨fun h => InfHom.ext fun a => hg <| by rw [← InfHom.comp_apply, h, InfHom.comp_apply],
-    congr_arg _⟩
-
-end Inf
-
-variable (α) [SemilatticeInf β]
-
-/-- The constant function as an `InfHom`. -/
-def const (b : β) : InfHom α β := ⟨fun _ ↦ b, fun _ _ ↦ (inf_idem _).symm⟩
-
-@[simp]
-theorem coe_const (b : β) : ⇑(const α b) = Function.const α b :=
-  rfl
-
-@[simp]
-theorem const_apply (b : β) (a : α) : const α b a = b :=
-  rfl
-
-variable {α}
-
-instance : Min (InfHom α β) :=
-  ⟨fun f g =>
-    ⟨f ⊓ g, fun a b => by
-      rw [Pi.inf_apply, map_inf, map_inf]
-      exact inf_inf_inf_comm _ _ _ _⟩⟩
-
-instance : SemilatticeInf (InfHom α β) :=
-  (DFunLike.coe_injective.semilatticeInf _) fun _ _ => rfl
-
-instance [Bot β] : Bot (InfHom α β) :=
-  ⟨InfHom.const α ⊥⟩
-
-instance [Top β] : Top (InfHom α β) :=
-  ⟨InfHom.const α ⊤⟩
-
-instance [OrderBot β] : OrderBot (InfHom α β) :=
-  OrderBot.lift ((↑) : _ → α → β) (fun _ _ => id) rfl
-
-instance [OrderTop β] : OrderTop (InfHom α β) :=
-  OrderTop.lift ((↑) : _ → α → β) (fun _ _ => id) rfl
-
-instance [BoundedOrder β] : BoundedOrder (InfHom α β) :=
-  BoundedOrder.lift ((↑) : _ → α → β) (fun _ _ => id) rfl rfl
-
-@[simp]
-theorem coe_inf (f g : InfHom α β) : ⇑(f ⊓ g) = ⇑f ⊓ ⇑g :=
-  rfl
-
-@[simp]
-theorem coe_bot [Bot β] : ⇑(⊥ : InfHom α β) = ⊥ :=
-  rfl
-
-@[simp]
-theorem coe_top [Top β] : ⇑(⊤ : InfHom α β) = ⊤ :=
-  rfl
-
-@[simp]
-theorem inf_apply (f g : InfHom α β) (a : α) : (f ⊓ g) a = f a ⊓ g a :=
-  rfl
-
-@[simp]
-theorem bot_apply [Bot β] (a : α) : (⊥ : InfHom α β) a = ⊥ :=
-  rfl
-
-@[simp]
-theorem top_apply [Top β] (a : α) : (⊤ : InfHom α β) a = ⊤ :=
-  rfl
-
-@[simp, gcongr] lemma mk_le_mk (toFun₁ toFun₂ : α → β) (map_inf₁ map_inf₂) :
-    mk toFun₁ map_inf₁ ≤ mk toFun₂ map_inf₂ ↔ toFun₁ ≤ toFun₂ := .rfl
-
-/-- `Subtype.val` as an `InfHom`. -/
-def subtypeVal {P : β → Prop}
-    (Pinf : ∀ ⦃x y : β⦄, P x → P y → P (x ⊓ y)) :
-    letI := Subtype.semilatticeInf Pinf
-    InfHom {x : β // P x} β :=
-  letI := Subtype.semilatticeInf Pinf
-  .mk Subtype.val (by simp)
-
-@[simp]
-lemma subtypeVal_apply {P : β → Prop}
-    (Pinf : ∀ ⦃x y : β⦄, P x → P y → P (x ⊓ y)) (x : {x : β // P x}) :
-    subtypeVal Pinf x = x := rfl
-
-@[simp]
-lemma subtypeVal_coe {P : β → Prop}
-    (Pinf : ∀ ⦃x y : β⦄, P x → P y → P (x ⊓ y)) :
-    ⇑(subtypeVal Pinf) = Subtype.val := rfl
-
-end InfHom
 
 /-! ### Lattice homomorphisms -/
 
@@ -539,10 +365,6 @@ end InfHom
 namespace LatticeHom
 
 variable [Lattice α] [Lattice β] [Lattice γ] [Lattice δ]
-
-/-- Reinterpret a `LatticeHom` as an `InfHom`. -/
-def toInfHom (f : LatticeHom α β) : InfHom α β :=
-  { f with }
 
 instance : FunLike (LatticeHom α β) α β where
   coe f := f.toFun
@@ -554,8 +376,7 @@ instance : LatticeHomClass (LatticeHom α β) α β where
 
 lemma toFun_eq_coe (f : LatticeHom α β) : f.toFun = f := rfl
 
-@[simp] lemma coe_toSupHom (f : LatticeHom α β) : ⇑f.toSupHom = f := rfl
-@[simp] lemma coe_toInfHom (f : LatticeHom α β) : ⇑f.toInfHom = f := rfl
+@[to_dual (attr := simp)] lemma coe_toSupHom (f : LatticeHom α β) : ⇑f.toSupHom = f := rfl
 @[simp] lemma coe_mk (f : SupHom α β) (hf) : ⇑(mk f hf) = f := rfl
 
 @[ext]
@@ -607,24 +428,15 @@ theorem coe_comp (f : LatticeHom β γ) (g : LatticeHom α β) : (f.comp g : α 
 theorem comp_apply (f : LatticeHom β γ) (g : LatticeHom α β) (a : α) : (f.comp g) a = f (g a) :=
   rfl
 
-@[simp]
+@[to_dual (attr := simp)]
 -- `simp`-normal form of `coe_comp_sup_hom`
 theorem coe_comp_sup_hom' (f : LatticeHom β γ) (g : LatticeHom α β) :
     ⟨f ∘ g, map_sup (f.comp g)⟩ = (f : SupHom β γ).comp g :=
   rfl
 
+@[to_dual]
 theorem coe_comp_sup_hom (f : LatticeHom β γ) (g : LatticeHom α β) :
     (f.comp g : SupHom α γ) = (f : SupHom β γ).comp g :=
-  rfl
-
-@[simp]
--- `simp`-normal form of `coe_comp_inf_hom`
-theorem coe_comp_inf_hom' (f : LatticeHom β γ) (g : LatticeHom α β) :
-    ⟨f ∘ g, map_inf (f.comp g)⟩ = (f : InfHom β γ).comp g :=
-  rfl
-
-theorem coe_comp_inf_hom (f : LatticeHom β γ) (g : LatticeHom α β) :
-    (f.comp g : InfHom α γ) = (f : InfHom β γ).comp g :=
   rfl
 
 @[simp]
@@ -652,6 +464,7 @@ theorem cancel_left {g : LatticeHom β γ} {f₁ f₂ : LatticeHom α β} (hg : 
     congr_arg _⟩
 
 /-- `Subtype.val` as a `LatticeHom`. -/
+@[to_dual self (reorder := 4 5)]
 def subtypeVal {P : β → Prop}
     (Psup : ∀ ⦃x y⦄, P x → P y → P (x ⊔ y)) (Pinf : ∀ ⦃x y⦄, P x → P y → P (x ⊓ y)) :
     letI := Subtype.lattice Psup Pinf
@@ -659,13 +472,13 @@ def subtypeVal {P : β → Prop}
   letI := Subtype.lattice Psup Pinf
   .mk (SupHom.subtypeVal Psup) (by simp [Subtype.coe_inf Pinf])
 
-@[simp]
+@[simp, to_dual self (reorder := 4 5)]
 lemma subtypeVal_apply {P : β → Prop}
     (Psup : ∀ ⦃x y⦄, P x → P y → P (x ⊔ y)) (Pinf : ∀ ⦃x y⦄, P x → P y → P (x ⊓ y))
     (x : {x : β // P x}) :
     subtypeVal Psup Pinf x = x := rfl
 
-@[simp]
+@[simp, to_dual self (reorder := 4 5)]
 lemma subtypeVal_coe {P : β → Prop}
     (Psup : ∀ ⦃x y⦄, P x → P y → P (x ⊔ y)) (Pinf : ∀ ⦃x y⦄, P x → P y → P (x ⊓ y)) :
     ⇑(subtypeVal Psup Pinf) = Subtype.val := rfl
@@ -709,62 +522,32 @@ namespace SupHom
 variable [Max α] [Max β] [Max γ]
 
 /-- Reinterpret a supremum homomorphism as an infimum homomorphism between the dual lattices. -/
-@[simps]
+@[to_dual (attr := simps) /--
+Reinterpret an infimum homomorphism as a supremum homomorphism between the dual lattices. -/]
 protected def dual : SupHom α β ≃ InfHom αᵒᵈ βᵒᵈ where
   toFun f := ⟨f, f.map_sup'⟩
   invFun f := ⟨f, f.map_inf'⟩
 
-@[simp]
+@[to_dual (attr := simp)]
 theorem dual_id : SupHom.dual (SupHom.id α) = InfHom.id _ :=
   rfl
 
-@[simp]
+@[to_dual (attr := simp)]
 theorem dual_comp (g : SupHom β γ) (f : SupHom α β) :
     SupHom.dual (g.comp f) = (SupHom.dual g).comp (SupHom.dual f) :=
   rfl
 
-@[simp]
+@[to_dual (attr := simp)]
 theorem symm_dual_id : SupHom.dual.symm (InfHom.id _) = SupHom.id α :=
   rfl
 
-@[simp]
+@[to_dual (attr := simp)]
 theorem symm_dual_comp (g : InfHom βᵒᵈ γᵒᵈ) (f : InfHom αᵒᵈ βᵒᵈ) :
     SupHom.dual.symm (g.comp f) =
       (SupHom.dual.symm g).comp (SupHom.dual.symm f) :=
   rfl
 
 end SupHom
-
-namespace InfHom
-
-variable [Min α] [Min β] [Min γ]
-
-/-- Reinterpret an infimum homomorphism as a supremum homomorphism between the dual lattices. -/
-@[simps]
-protected def dual : InfHom α β ≃ SupHom αᵒᵈ βᵒᵈ where
-  toFun f := ⟨f, f.map_inf'⟩
-  invFun f := ⟨f, f.map_sup'⟩
-
-@[simp]
-theorem dual_id : InfHom.dual (InfHom.id α) = SupHom.id _ :=
-  rfl
-
-@[simp]
-theorem dual_comp (g : InfHom β γ) (f : InfHom α β) :
-    InfHom.dual (g.comp f) = (InfHom.dual g).comp (InfHom.dual f) :=
-  rfl
-
-@[simp]
-theorem symm_dual_id : InfHom.dual.symm (SupHom.id _) = InfHom.id α :=
-  rfl
-
-@[simp]
-theorem symm_dual_comp (g : SupHom βᵒᵈ γᵒᵈ) (f : SupHom αᵒᵈ βᵒᵈ) :
-    InfHom.dual.symm (g.comp f) =
-      (InfHom.dual.symm g).comp (InfHom.dual.symm f) :=
-  rfl
-
-end InfHom
 
 namespace LatticeHom
 

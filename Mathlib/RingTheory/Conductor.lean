@@ -52,23 +52,23 @@ theorem conductor_eq_top_of_powerBasis (pb : PowerBasis R S) : conductor R pb.ge
   conductor_eq_top_of_adjoin_eq_top pb.adjoin_gen_eq_top
 
 theorem adjoin_eq_top_of_conductor_eq_top {x : S} (h : conductor R x = ⊤) :
-    Algebra.adjoin R {x} = ⊤ :=
-  Algebra.eq_top_iff.mpr fun y ↦
-    one_mul y ▸ (mem_conductor_iff).mp ((Ideal.eq_top_iff_one (conductor R x)).mp h) y
+    R[x] = ⊤ :=
+  eq_top_iff.mpr fun y ↦
+    one_mul y ▸ mem_conductor_iff.mp ((Ideal.eq_top_iff_one (conductor R x)).mp h) y
 
 theorem conductor_eq_top_iff_adjoin_eq_top {x : S} :
-    conductor R x = ⊤ ↔ Algebra.adjoin R {x} = ⊤ :=
+    conductor R x = ⊤ ↔ R[x] = ⊤ :=
   ⟨fun h ↦ adjoin_eq_top_of_conductor_eq_top h, fun h ↦ conductor_eq_top_of_adjoin_eq_top h⟩
 
 open IsLocalization in
 lemma mem_coeSubmodule_conductor {L} [CommRing L] [Algebra S L] [Algebra R L]
     [IsScalarTower R S L] [IsDomain S] [IsTorsionFree S L] {x : S} {y : L} :
     y ∈ coeSubmodule L (conductor R x) ↔ ∀ z : S,
-      y * (algebraMap S L) z ∈ Algebra.adjoin R {algebraMap S L x} := by
+      y * (algebraMap S L) z ∈ R[algebraMap S L x] := by
   cases subsingleton_or_nontrivial L
   · rw [Subsingleton.elim (coeSubmodule L _) ⊤, Subsingleton.elim (Algebra.adjoin R _) ⊤]; simp
-  trans ∀ z, y * (algebraMap S L) z ∈ (Algebra.adjoin R {x}).map (IsScalarTower.toAlgHom R S L)
-  · simp only [coeSubmodule, Submodule.mem_map, Algebra.linearMap_apply, Subalgebra.mem_map,
+  trans ∀ z, y * (algebraMap S L) z ∈ (R[x]).map (IsScalarTower.toAlgHom R S L)
+  · simp only [coeSubmodule, Submodule.mem_map, linearMap_apply, Subalgebra.mem_map,
       IsScalarTower.coe_toAlgHom']
     constructor
     · rintro ⟨y, hy, rfl⟩ z

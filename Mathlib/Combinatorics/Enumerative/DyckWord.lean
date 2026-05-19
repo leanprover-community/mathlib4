@@ -5,7 +5,7 @@ Authors: Jeremy Tan
 -/
 module
 
-public import Mathlib.Combinatorics.Enumerative.Catalan
+public import Mathlib.Combinatorics.Enumerative.Catalan.Tree
 
 import Batteries.Data.List.Count
 import Mathlib.Tactic.Positivity.Finset
@@ -173,7 +173,7 @@ def nest : DyckWord where
     rw [take_of_length_le (show [U].length ≤ i by rwa [length_singleton]), count_singleton']
     simp only [reduceCtorEq, ite_false]
     rw [add_comm]
-    exact add_le_add (zero_le _) (count_le_length.trans (by simp))
+    exact add_le_add zero_le (count_le_length.trans (by simp))
 
 @[simp] lemma nest_ne_zero : p.nest ≠ 0 := by simp [← toList_ne_nil, nest]
 
@@ -468,7 +468,7 @@ lemma monotone_semilength : Monotone semilength := fun p q pq ↦ by
 lemma strictMono_semilength : StrictMono semilength := fun p q pq ↦ by
   obtain ⟨plq, pnq⟩ := lt_iff_le_and_ne.mp pq
   apply lt_of_le_of_ne (monotone_semilength plq)
-  contrapose! pnq
+  contrapose pnq
   replace pnq := congr(2 * $(pnq))
   simp_rw [two_mul_semilength_eq_length] at pnq
   exact DyckWord.ext ((infix_of_le plq).eq_of_length pnq)

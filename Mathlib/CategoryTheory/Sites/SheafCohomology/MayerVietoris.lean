@@ -82,6 +82,7 @@ lemma fromBiprod_biprodIsoProd_inv_apply {n : ℕ}
   rw [← ConcreteCategory.comp_apply]
   simp [AddCommGrpCat.biprodIsoProd_inv_comp_desc, sub_eq_add_neg]
 
+set_option backward.isDefEq.respectTransparency false in
 attribute [local simp] toBiprod_apply in
 lemma biprodAddEquiv_symm_biprodIsoProd_hom_toBiprod_apply
     {n : ℕ} (x : F.H' n S.X₄) :
@@ -89,6 +90,7 @@ lemma biprodAddEquiv_symm_biprodIsoProd_hom_toBiprod_apply
       (Ext.mk₀ S.shortComplex.g).comp x (zero_add n) :=
   Ext.biprodAddEquiv.injective (by cat_disch)
 
+set_option backward.isDefEq.respectTransparency false in
 attribute [local simp] sub_eq_add_neg in
 lemma mk₀_f_comp_biprodAddEquiv_symm_biprodIsoProd_hom
     {n : ℕ} (x : ↑(F.H' n S.X₂ ⊞ F.H' n S.X₃)) :
@@ -119,6 +121,7 @@ noncomputable abbrev sequence : ComposableArrows AddCommGrpCat.{w} 5 :=
   mk₅ (S.toBiprod F n₀) (S.fromBiprod F n₀) (S.δ F n₀ n₁ h)
     (S.toBiprod F n₁) (S.fromBiprod F n₁)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Comparison isomorphism from the Mayer-Vietoris sequence and the
 contravariant sequence of `Ext`-groups. -/
 noncomputable def sequenceIso : S.sequence F n₀ n₁ h ≅

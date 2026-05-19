@@ -136,6 +136,11 @@ theorem eq_cuspFunction (hh : h ≠ 0) (hf : Periodic f h) (z : ℂ) :
   obtain ⟨m, hm⟩ := qParam_left_inv_mod_period hh z
   simpa only [this, hm] using hf.int_mul m z
 
+lemma tendsto_nhds_zero {f : ℂ → ℂ} (hcts : ContinuousAt (cuspFunction h f) 0) :
+    Tendsto (fun x ↦ f (invQParam h x)) (𝓝[≠] 0) (𝓝 (cuspFunction h f 0)) := by
+  apply (tendsto_nhdsWithin_of_tendsto_nhds hcts.tendsto).congr'
+  filter_upwards [self_mem_nhdsWithin] with a using cuspFunction_eq_of_nonzero h f
+
 end PeriodicOnℂ
 
 section HoloOnC
@@ -156,11 +161,12 @@ theorem differentiableAt_cuspFunction (hh : h ≠ 0) (hf : Periodic f h)
   have diff_ne : q * (2 * π * I / h) ≠ 0 :=
     mul_ne_zero (exp_ne_zero _) (div_ne_zero two_pi_I_ne_zero <| mod_cast hh)
   let L := (qdiff.localInverse (𝕢 h) _ z) diff_ne
-  have diff_L : DifferentiableAt ℂ L q := (qdiff.to_localInverse diff_ne).differentiableAt
+  have diff_L : DifferentiableAt ℂ L q :=
+    (qdiff.to_localInverse diff_ne).hasStrictFDerivAt.differentiableAt
   have hL : 𝕢 h ∘ L =ᶠ[𝓝 q] (id : ℂ → ℂ) :=
     (qdiff.hasStrictFDerivAt_equiv diff_ne).eventually_right_inverse
   -- Thus, if F = cuspFunction h f, we have F q' = f (L q') for q' near q.
-  -- Since L is differentiable at q, and f is diff'ble at L q [ = z], we conclude
+  -- Since L is differentiable at q, and f is differentiable at L q [ = z], we conclude
   -- that F is differentiable at q.
   have hF := hL.fun_comp (cuspFunction h f)
   have : cuspFunction h f ∘ 𝕢 h ∘ L = f ∘ L := funext fun z ↦ eq_cuspFunction hh hf (L z)
@@ -245,5 +251,37 @@ theorem exp_decay_of_zero_at_inf (hh : 0 < h) (hf : Periodic f h)
     exp_decay_sub_of_bounded_at_inf hh hf h_hol h_zer.boundedAtFilter
 
 end HoloAtInfC
+
+section arithmetic
+
+lemma cuspFunction_smul {h} {f : ℂ → ℂ} (hfcts : ContinuousAt (cuspFunction h f) 0) (a : ℂ) :
+    cuspFunction h (a • f) = a • cuspFunction h f := by
+  simp only [cuspFunction] at *
+  ext y
+  obtain rfl | hy := eq_or_ne y 0
+  · simpa using (Tendsto.const_mul _ (by simpa using hfcts)).limUnder_eq
+  · simp [hy]
+
+lemma cuspFunction_neg {h} {f : ℂ → ℂ} (hfcts : ContinuousAt (cuspFunction h f) 0) :
+    cuspFunction h (-f) = -cuspFunction h f := by
+  simpa using cuspFunction_smul hfcts (-1)
+
+lemma cuspFunction_add {h} {f g : ℂ → ℂ} (hfcts : ContinuousAt (cuspFunction h f) 0)
+    (hgcts : ContinuousAt (cuspFunction h g) 0) :
+    cuspFunction h (f + g) = cuspFunction h f + cuspFunction h g := by
+  simp only [cuspFunction]
+  ext y
+  obtain hy | rfl := ne_or_eq y 0
+  · simp [hy]
+  · simpa using (tendsto_nhds_limUnder ⟨_, tendsto_nhds_zero hfcts⟩).add
+      (tendsto_nhds_limUnder ⟨_, tendsto_nhds_zero hgcts⟩) |>.limUnder_eq
+
+lemma cuspFunction_sub {h} {f g : ℂ → ℂ} (hfcts : ContinuousAt (cuspFunction h f) 0)
+    (hgcts : ContinuousAt (cuspFunction h g) 0) :
+    cuspFunction h (f - g) = cuspFunction h f - cuspFunction h g := by
+  simpa [sub_eq_add_neg, ← cuspFunction_neg hgcts]
+    using cuspFunction_add hfcts (by simp [cuspFunction_neg, hgcts])
+
+end arithmetic
 
 end Function.Periodic

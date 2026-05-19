@@ -9,8 +9,10 @@ public import Mathlib.Data.Finset.Lattice.Union
 public import Mathlib.Data.Finset.Lattice.Prod
 public import Mathlib.Data.Finset.Sigma
 public import Mathlib.Data.Fintype.Basic
+public import Mathlib.Data.Set.Finite.Basic
 public import Mathlib.Order.CompleteLatticeIntervals
 public import Mathlib.Order.ModularLattice
+public import Mathlib.Tactic.FinCases
 
 /-!
 # Supremum independence
@@ -351,14 +353,6 @@ theorem iSupIndep_def'' :
 theorem iSupIndep_subsingleton [Subsingleton ι] (t : ι → α) : iSupIndep t :=
   fun i ↦ by simp [← Subsingleton.elim i]
 
-@[deprecated "use iSupIndep_subsingleton instead" (since := "2025-09-18")]
-theorem iSupIndep_empty (t : Empty → α) : iSupIndep t :=
-  nofun
-
-@[deprecated "use iSupIndep_subsingleton instead" (since := "2025-09-18")]
-theorem iSupIndep_pempty (t : PEmpty → α) : iSupIndep t :=
-  nofun
-
 include ht in
 /-- If the elements of a set are independent, then any pair within that set is disjoint. -/
 theorem iSupIndep.pairwiseDisjoint : Pairwise (Disjoint on t) := fun x y h =>
@@ -417,8 +411,8 @@ lemma iSupIndep.injOn_iInf {β : ι → Type*} (t : (i : ι) → β i → α) (h
     InjOn (fun b : (i : ι) → β i ↦ ⨅ i, t i (b i)) {b | ⨅ i, t i (b i) ≠ ⊥} := by
   intro b₁ hb₁ b₂ hb₂ h_eq
   beta_reduce at h_eq
-  by_contra h_neq
-  obtain ⟨i, hi⟩ : ∃ i, b₁ i ≠ b₂ i := Function.ne_iff.mp h_neq
+  by_contra h_ne
+  obtain ⟨i, hi⟩ : ∃ i, b₁ i ≠ b₂ i := Function.ne_iff.mp h_ne
   have := calc
     ⨅ i, t i (b₁ i) ≤ t i (b₁ i) ⊓ t i (b₂ i) := le_inf (iInf_le ..) (h_eq ▸ iInf_le ..)
     _ = ⊥ := (ht i (b₁ i) |>.mono_right <| le_iSup₂_of_le (b₂ i) hi.symm le_rfl).eq_bot
@@ -438,6 +432,25 @@ theorem iSupIndep_pair {i j : ι} (hij : i ≠ j) (huniv : ∀ k, k = i ∨ k = 
       rw [(huniv i).resolve_left hi]
     · refine h.symm.mono_right (iSup_le fun j => iSup_le fun hj => Eq.le ?_)
       rw [(huniv j).resolve_right hj]
+
+@[simp]
+lemma iSup_fin_three {α : Type*} [CompleteLattice α] {f : Fin 3 → α} :
+    ⨆ i, f i = f 0 ⊔ f 1 ⊔ f 2 := by
+  suffices ⨆ i ∈ Finset.univ, f i = f 0 ⊔ f 1 ⊔ f 2 by simp [← this]
+  rw [← Finset.sup_eq_iSup, show (Finset.univ : Finset (Fin 3)) = {0, 1, 2} from rfl]
+  simp [sup_assoc]
+
+lemma iSupIndep_fin_three {α : Type*} [CompleteLattice α] {f : Fin 3 → α} :
+    iSupIndep f ↔
+      Disjoint (f 0) (f 1 ⊔ f 2) ∧
+      Disjoint (f 1) (f 2 ⊔ f 0) ∧
+      Disjoint (f 2) (f 0 ⊔ f 1) := by
+  rw [iSupIndep_def, sup_comm (f 2) (f 0)]
+  refine ⟨fun h ↦ ⟨?_, ?_, ?_⟩, fun ⟨h₀, h₁, h₂⟩ i ↦ ?_⟩
+  · simpa using h 0
+  · simpa using h 1
+  · simpa using h 2
+  · fin_cases i <;> simpa
 
 /-- Composing an independent indexed family with an order isomorphism on the elements results in
 another independent indexed family. -/
@@ -466,7 +479,7 @@ lemma iSupIndep.of_coe_Iic_comp {ι : Sort*} {a : α} {t : ι → Set.Iic a}
   simp_rw [Function.comp_apply, ← Set.Iic.coe_iSup] at ht
   exact @ht x
 
-theorem iSupIndep_iff_supIndep {s : Finset ι} {f : ι → α} :
+theorem iSupIndep_comp_coe_iff_supIndep {s : Finset ι} {f : ι → α} :
     iSupIndep (f ∘ ((↑) : s → ι)) ↔ s.SupIndep f := by
   classical
     rw [Finset.supIndep_iff_disjoint_erase]
@@ -477,18 +490,60 @@ theorem iSupIndep_iff_supIndep {s : Finset ι} {f : ι → α} :
     congr! 1
     simp [iSup_and, @iSup_comm _ (_ ∈ s)]
 
-alias ⟨iSupIndep.supIndep, Finset.SupIndep.independent⟩ := iSupIndep_iff_supIndep
+alias ⟨iSupIndep.supIndep, Finset.SupIndep.independent⟩ := iSupIndep_comp_coe_iff_supIndep
 
 theorem iSupIndep.supIndep' {f : ι → α} (s : Finset ι) (h : iSupIndep f) : s.SupIndep f :=
   iSupIndep.supIndep (h.comp Subtype.coe_injective)
 
-/-- A variant of `CompleteLattice.iSupIndep_iff_supIndep` for `Fintype`s. -/
+/-- A variant of `iSupIndep_comp_coe_iff_supIndep` for `Fintype`s. -/
 theorem iSupIndep_iff_supIndep_univ [Fintype ι] {f : ι → α} :
     iSupIndep f ↔ Finset.univ.SupIndep f := by
   classical
     simp [Finset.supIndep_iff_disjoint_erase, iSupIndep, Finset.sup_eq_iSup]
 
 alias ⟨iSupIndep.sup_indep_univ, Finset.SupIndep.iSupIndep_of_univ⟩ := iSupIndep_iff_supIndep_univ
+
+lemma iSupIndep.le_iff_eq_of_iSup_eq_top [IsModularLattice α] {f g : ι → α}
+    (h₁ : iSupIndep g) (h₂ : iSup f = ⊤) :
+    f ≤ g ↔ f = g := by
+  refine ⟨fun h₃ ↦ funext fun i ↦ ?_, le_of_eq⟩
+  replace h₁ : Disjoint (⨆ (j) (_ : j ≠ i), f j) (g i) :=
+    Disjoint.mono_left (iSup₂_mono fun j _ ↦ h₃ j) (h₁ i).symm
+  replace h₂ : Codisjoint (f i) (⨆ (j) (_ : j ≠ i), f j) := by
+    rw [codisjoint_iff, ← iSup_split_single f i, h₂]
+  exact (le_iff_eq_of_codisjoint_of_disjoint h₂ h₁).mp (h₃ i)
+
+/-- See also `iSupIndep.disjoint_biSup_biSup` where it is shown that the hypothesis `s.Finite` may
+be omitted if the lattice is compactly-generated. -/
+lemma iSupIndep.disjoint_biSup_biSup' [IsModularLattice α]
+    {f : ι → α} {s t : Set ι} (hf : iSupIndep f) (hst : Disjoint s t) (hs : s.Finite) :
+    Disjoint (⨆ i ∈ s, f i) (⨆ i ∈ t, f i) := by
+  suffices ∀ (s : Finset ι) (hst : Disjoint ↑s t), Disjoint (⨆ i ∈ s, f i) (⨆ i ∈ t, f i) by
+    specialize this hs.toFinset
+    aesop
+  clear! s
+  intro s hst
+  classical
+  induction s using Finset.induction_on generalizing t with
+  | empty => simp
+  | insert j s₀ hj ih =>
+    have hjt : j ∉ t := by aesop
+    replace hst : Disjoint ↑s₀ (insert j t) := by aesop
+    replace ih : Disjoint (⨆ i ∈ s₀, f i) (f j ⊔ ⨆ i ∈ t, f i) := by
+      specialize ih hst
+      rwa [iSup_insert] at ih
+    have : Disjoint (f j) ((⨆ i ∈ t, f i) ⊔ (⨆ i ∈ (s₀ : Set ι), f i)) := by
+      rw [← iSup_union]
+      exact disjoint_biSup hf <| by aesop
+    rw [s₀.iSup_insert j f, disjoint_comm, sup_comm]
+    exact disjoint_sup_right_of_disjoint_sup_right ih this
+
+lemma iSupIndep.mem_of_biSup_eq_top {f : ι → α} {s : Set ι}
+    (h₁ : iSupIndep f) (h₂ : ⨆ i ∈ s, f i = ⊤) {i : ι} (hi : f i ≠ ⊥) :
+    i ∈ s := by
+  by_contra contra
+  replace h₁ : Disjoint (f i) (⨆ i ∈ s, f i) := (h₁ i).mono_right <| biSup_mono <| by aesop
+  aesop
 
 end CompleteLattice
 

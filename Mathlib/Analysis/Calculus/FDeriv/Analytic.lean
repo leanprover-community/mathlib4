@@ -99,7 +99,7 @@ theorem HasFPowerSeriesAt.hasStrictFDerivAt (h : HasFPowerSeriesAt f p x) :
 
 theorem HasFPowerSeriesWithinAt.hasFDerivWithinAt (h : HasFPowerSeriesWithinAt f p s x) :
     HasFDerivWithinAt f (continuousMultilinearCurryFin1 𝕜 E F (p 1)) (insert x s) x := by
-  rw [HasFDerivWithinAt, hasFDerivAtFilter_iff_isLittleO, isLittleO_iff]
+  rw [hasFDerivWithinAt_iff_isLittleO, isLittleO_iff]
   intro c hc
   have : Tendsto (fun y ↦ (y, x)) (𝓝[insert x s] x) (𝓝[insert x s ×ˢ insert x s] (x, x)) := by
     rw [nhdsWithin_prod_eq]
@@ -758,17 +758,17 @@ theorem hasFTaylorSeriesUpTo_iteratedFDeriv :
           apply h
           simp_rw [← Equiv.embeddingFinSucc_snd e]
     · have hkf : k ∉ Set.range (Equiv.embeddingFinSucc n ι e).1 := by
-        contrapose! hke
+        contrapose hke
         rw [Equiv.embeddingFinSucc_fst] at hke
         exact Set.range_comp_subset_range _ _ hke
       simp only [hke, hkf, ↓reduceDIte, Pi.compRightL,
         ContinuousLinearMap.coe_mk', LinearMap.coe_mk, AddHom.coe_mk]
       rw [Function.update_of_ne]
-      contrapose! hke
+      contrapose hke
       rw [show k = _ from Subtype.ext_iff.1 hke, Equiv.embeddingFinSucc_snd e]
       exact Set.mem_range_self _
   · rintro n -
-    apply continuous_finset_sum _ (fun e _ ↦ ?_)
+    apply continuous_finsetSum _ (fun e _ ↦ ?_)
     exact (ContinuousMultilinearMap.coe_continuous _).comp (ContinuousLinearMap.continuous _)
 
 theorem iteratedFDeriv_eq (n : ℕ) :

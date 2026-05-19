@@ -6,6 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Sites.Point.Category
+public import Mathlib.CategoryTheory.Sites.Point.Skyscraper
 public import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Types
 public import Mathlib.CategoryTheory.Functor.ReflectsIso.Jointly
 public import Mathlib.CategoryTheory.Types.Epimorphisms
@@ -27,13 +28,9 @@ We provide a constructor `ObjectProperty.IsConservativeFamilyOfPoints.mk'`
 which allows to verify that a family of points is conservative
 using a condition involving covering sieves (SGA 4 IV 6.5 (a)).
 
-## TODO
-* Formalize SGA 4 IV 6.5 (a) which characterizes conservative families
-of points.
-
 -/
 
-@[expose] public section
+public section
 
 universe w w' v v' u u'
 
@@ -42,11 +39,10 @@ namespace CategoryTheory
 open Limits Opposite
 
 variable {C : Type u} [Category.{v} C] {J : GrothendieckTopology C}
-  {P : ObjectProperty (GrothendieckTopology.Point.{w} J)}
+  (P : ObjectProperty (GrothendieckTopology.Point.{w} J))
 
 namespace ObjectProperty
 
-variable (P) in
 /-- Let `P : ObjectProperty J.Point` a family of points of a
 site `(C, J)`). We say that it is a conservative family of points
 if the corresponding fiber functors `Sheaf J (Type w) ⥤ Type w`
@@ -59,24 +55,23 @@ structure IsConservativeFamilyOfPoints : Prop where
 
 namespace IsConservativeFamilyOfPoints
 
-variable [LocallySmall.{w} C]
+variable {P} (hP : P.IsConservativeFamilyOfPoints)
+  (A : Type u') [Category.{v'} A] [LocallySmall.{w} C]
 
 section
 
 variable
-  (hP : P.IsConservativeFamilyOfPoints)
-  (A : Type u') [Category.{v'} A]
   [HasColimitsOfSize.{w, w} A]
   {FC : A → A → Type*} {CC : A → Type w}
   [∀ (X Y : A), FunLike (FC X Y) (CC X) (CC Y)]
   [ConcreteCategory.{w} A FC]
+  [(forget A).ReflectsIsomorphisms]
   [PreservesFilteredColimitsOfSize.{w, w} (forget A)]
+  [hJ : J.HasSheafCompose (forget A)]
 
-include hP
-
+include hP hJ in
 @[stacks 00YK "(1)"]
-lemma jointlyReflectIsomorphisms [(forget A).ReflectsIsomorphisms]
-    [J.HasSheafCompose (forget A)] :
+lemma jointlyReflectIsomorphisms :
     JointlyReflectIsomorphisms
       (fun (Φ : P.FullSubcategory) ↦ Φ.obj.sheafFiber (A := A)) where
   isIso {K L} f _ := by
@@ -87,28 +82,41 @@ lemma jointlyReflectIsomorphisms [(forget A).ReflectsIsomorphisms]
         (Φ.obj.sheafFiberCompIso (forget A))).app (Arrow.mk f))).2
           (inferInstanceAs (IsIso ((forget A).map (Φ.obj.sheafFiber.map f))))
 
+include hP hJ in
 @[stacks 00YL "(1)"]
-lemma jointlyReflectMonomorphisms [AB5OfSize.{w, w} A] [HasFiniteLimits A]
-    [(forget A).ReflectsIsomorphisms] [J.HasSheafCompose (forget A)] :
+lemma jointlyReflectMonomorphisms [AB5OfSize.{w, w} A] [HasFiniteLimits A] :
     JointlyReflectMonomorphisms
       (fun (Φ : P.FullSubcategory) ↦ Φ.obj.sheafFiber (A := A)) :=
   (hP.jointlyReflectIsomorphisms A).jointlyReflectMonomorphisms
 
+include hP hJ in
 @[stacks 00YL "(2)"]
 lemma jointlyReflectEpimorphisms
-    [J.WEqualsLocallyBijective A] [HasSheafify J A]
-    [(forget A).ReflectsIsomorphisms] [J.HasSheafCompose (forget A)] :
+    [HasWeakSheafify J A] [HasProducts.{w} A] :
     JointlyReflectEpimorphisms
       (fun (Φ : P.FullSubcategory) ↦ Φ.obj.sheafFiber (A := A)) :=
   (hP.jointlyReflectIsomorphisms A).jointlyReflectEpimorphisms
 
+include hP hJ in
 @[stacks 00YL "(3)"]
-lemma jointlyFaithful [AB5OfSize.{w, w} A] [HasFiniteLimits A]
-    [(forget A).ReflectsIsomorphisms] [J.HasSheafCompose (forget A)] :
+lemma jointlyFaithful [AB5OfSize.{w, w} A] [HasFiniteLimits A] :
     JointlyFaithful
       (fun (Φ : P.FullSubcategory) ↦ Φ.obj.sheafFiber (A := A)) :=
   (hP.jointlyReflectIsomorphisms A).jointlyFaithful
 
+variable {A} in
+include hP hJ in
+lemma W_iff {F G : Cᵒᵖ ⥤ A} (f : F ⟶ G) [HasWeakSheafify J A]
+    [HasProducts.{w} A] :
+    J.W f ↔ ∀ (Φ : P.FullSubcategory), IsIso (Φ.obj.presheafFiber.map f) := by
+  rw [GrothendieckTopology.W_iff, (hP.jointlyReflectIsomorphisms A).isIso_iff]
+  exact forall_congr'
+    (fun Φ ↦ (MorphismProperty.isomorphisms A).arrow_mk_iso_iff
+      (((Functor.mapArrowFunctor _ _).mapIso
+        (Φ.obj.presheafToSheafCompSheafFiberIso A)).app (Arrow.mk f)))
+
+omit [(forget A).ReflectsIsomorphisms] hJ in
+include hP in
 variable {A} in
 lemma jointly_reflect_isLocallySurjective
     [J.WEqualsLocallyBijective (Type w)] [HasSheafify J (Type w)]
@@ -116,7 +124,7 @@ lemma jointly_reflect_isLocallySurjective
     (hf : ∀ (Φ : P.FullSubcategory),
       Function.Surjective (Φ.obj.presheafFiber.map f)) :
     Presheaf.IsLocallySurjective J f := by
-  simp only [← epi_iff_surjective] at hf
+  simp only [← ofHom_epi_iff_surjective] at hf
   rw [Presheaf.isLocallySurjective_iff_whisker_forget,
     ← Presheaf.isLocallySurjective_presheafToSheaf_map_iff,
     Sheaf.isLocallySurjective_iff_epi,
@@ -124,11 +132,12 @@ lemma jointly_reflect_isLocallySurjective
   exact fun Φ ↦ ((MorphismProperty.epimorphisms (Type w)).arrow_mk_iso_iff
     (((Functor.mapArrowFunctor _ _).mapIso
       ((Φ.obj.presheafFiberCompIso (forget A)).symm ≪≫
-        Functor.isoWhiskerLeft _ (Φ.obj.presheafToSheafCompSheafFiber (Type w)).symm)).app
+        Functor.isoWhiskerLeft _ (Φ.obj.presheafToSheafCompSheafFiberIso (Type w)).symm)).app
           (Arrow.mk f))).1 (hf Φ)
 
 end
 
+set_option backward.isDefEq.respectTransparency false in
 lemma jointly_reflect_ofArrows_mem
     [HasSheafify J (Type w)] [J.WEqualsLocallyBijective (Type w)]
     (hP : P.IsConservativeFamilyOfPoints)
@@ -139,17 +148,37 @@ lemma jointly_reflect_ofArrows_mem
   refine ⟨fun hf Φ x ↦ ?_, fun hf ↦ ?_⟩
   · obtain ⟨Z, _, ⟨_, p, _, ⟨i⟩, rfl⟩, z, rfl⟩ := Φ.obj.jointly_surjective _ hf x
     exact ⟨i, Φ.obj.fiber.map p z, by simp⟩
-  · rw [J.ofArrows_mem_iff_isLocallySurjective]
+  · rw [J.ofArrows_mem_iff_isLocallySurjective_sigmaDesc_shrinkYoneda_map]
     refine hP.jointly_reflect_isLocallySurjective _ (fun Φ x ↦ ?_)
     obtain ⟨x, rfl⟩ := (Φ.obj.shrinkYonedaCompPresheafFiberIso.app X).toEquiv.symm.surjective x
     obtain ⟨i, y, rfl⟩ := hf Φ x
     refine ⟨Φ.obj.presheafFiber.map (Sigma.ι (fun i ↦ shrinkYoneda.{w}.obj (U i)) i)
       (Φ.obj.shrinkYonedaCompPresheafFiberIso.inv.app _ y), ?_⟩
-    have := congr_fun (Φ.obj.shrinkYonedaCompPresheafFiberIso.inv.naturality (f i)) y
+    have := ConcreteCategory.congr_hom
+      (Φ.obj.shrinkYonedaCompPresheafFiberIso.inv.naturality (f i)) y
     dsimp at this ⊢
     rw [this, ← Sigma.ι_desc (fun i ↦ shrinkYoneda.{w}.map (f i)) i, Functor.map_comp]
     rfl
 
+lemma jointly_reflect_ofArrows_mem_of_small
+    [HasSheafify J (Type w)] [J.WEqualsLocallyBijective (Type w)]
+    (hP : P.IsConservativeFamilyOfPoints) [ObjectProperty.Small.{w} P]
+    {X : C} {ι : Type*} {U : ι → C} (f : ∀ i, U i ⟶ X) :
+    Sieve.ofArrows _ f ∈ J X ↔
+      ∀ (Φ : P.FullSubcategory) (x : Φ.obj.fiber.obj X),
+        ∃ (i : ι) (y : Φ.obj.fiber.obj (U i)), Φ.obj.fiber.map (f i) y = x := by
+  refine ⟨fun hf Φ x ↦ ?_, fun hf ↦ ?_⟩
+  · obtain ⟨Z, _, ⟨_, p, _, ⟨i⟩, rfl⟩, z, rfl⟩ := Φ.obj.jointly_surjective _ hf x
+    exact ⟨i, Φ.obj.fiber.map p z, by simp⟩
+  · let ι' : Type _ := Σ (Φ : P.FullSubcategory), Φ.obj.fiber.obj X
+    choose i y hy using fun (j : ι') ↦ hf j.1 j.2
+    refine J.superset_covering (S := Sieve.ofArrows _ (fun i' ↦ f (i i'))) ?_ ?_
+    · rw [Sieve.generate_le_iff, Presieve.ofArrows_le_iff]
+      exact fun _ ↦ Sieve.ofArrows_mk _ _ _
+    · rw [hP.jointly_reflect_ofArrows_mem]
+      exact fun Φ x ↦ ⟨_, _, hy ⟨Φ, x⟩⟩
+
+set_option backward.isDefEq.respectTransparency false in
 private lemma mk'.isLocallySurjective
     (hP : ∀ ⦃X : C⦄ (S : Sieve X) (_ : ∀ (Φ : P.FullSubcategory) (x : Φ.obj.fiber.obj X),
       ∃ (Y : C) (g : Y ⟶ X) (_ : S g) (y : Φ.obj.fiber.obj Y), Φ.obj.fiber.map g y = x),
@@ -172,7 +201,8 @@ private lemma mk'.isLocallySurjective
       (Presheaf.imageSieve_mem J f' (shrinkYonedaObjObjEquiv.symm (𝟙 U)))
     rintro V g ⟨v, hv⟩
     refine ⟨(pullback.fst f (shrinkYonedaEquiv.{w}.symm s)).app _ v, ?_⟩
-    refine (congr_fun (NatTrans.congr_app (pullback.condition (f := f)) (op V)) _).trans ?_
+    refine (ConcreteCategory.congr_hom (NatTrans.congr_app
+      (pullback.condition (f := f)) (op V)) _).trans ?_
     dsimp at hv ⊢
     refine (congr_arg _ hv).trans ?_
     refine (congr_arg _ (shrinkYoneda_obj_map_shrinkYonedaObjObjEquiv_symm g.op (𝟙 _))).trans ?_
@@ -193,7 +223,7 @@ private lemma mk'.isLocallySurjective
   refine ⟨V, t, ⟨y, ht.symm.trans ?_⟩, v, ?_⟩
   · simpa using (shrinkYoneda_obj_map_shrinkYonedaObjObjEquiv_symm t.op (𝟙 _)).symm
   · refine (Φ.obj.shrinkYonedaCompPresheafFiberIso.symm.app U).toEquiv.injective ?_
-    dsimp
+    dsimp [-Functor.comp_obj]
     trans (Φ.obj.toPresheafFiber V v (shrinkYoneda.{w}.obj U)) (shrinkYonedaObjObjEquiv.symm t)
     · rw [← Φ.obj.presheafFiber_map_shrinkYoneda_map_shrinkYonedaCompPresheafFiberIso_inv_app]
       exact Φ.obj.shrinkYonedaCompPresheafFiberIso.inv.naturality_apply t v
@@ -202,10 +232,10 @@ private lemma mk'.isLocallySurjective
         (Φ.obj.toPresheafFiber_naturality_apply f _ v y).symm
 
 /- Let `P` be family of points of a site `(C, J)`, we show that `P` is a conservative
-family of points if the following condition is satisfied:
+family of points if the following condition is satisfied (SGA 4 IV 6.5 (a)):
 for any sieve `S : Sieve X`, if the family of maps `Φ.map.fiber.map f`
 for all morphisms `f` in the sieve `S` is jointly surjective for any `Φ` in `P`,
-then `S` is a covering sieve for `J`. SGA 4 IV 6.5 (a) -/
+then `S` is a covering sieve for `J`. -/
 lemma mk' [HasSheafify J (Type w)]
     (hP : ∀ ⦃X : C⦄ (S : Sieve X) (_ : ∀ (Φ : P.FullSubcategory) (x : Φ.obj.fiber.obj X),
       ∃ (Y : C) (g : Y ⟶ X) (_ : S g) (y : Φ.obj.fiber.obj Y), Φ.obj.fiber.map g y = x),
@@ -213,15 +243,16 @@ lemma mk' [HasSheafify J (Type w)]
     P.IsConservativeFamilyOfPoints where
   jointlyReflectIsomorphisms_type :=
     JointlyFaithful.jointlyReflectsIsomorphisms
-      (JointlyFaithful.of_jointly_reflects_isIso_of_mono (fun F₁ F₂ f _ hf ↦ by
+      (JointlyFaithful.of_jointly_reflects_isIso_of_mono (fun _ _ f _ hf ↦ by
         have : Epi f := by
-          have : Mono f.val := inferInstanceAs (Mono ((sheafToPresheaf _ _).map f))
           rw [← Sheaf.isLocallySurjective_iff_epi]
           exact mk'.isLocallySurjective hP _
             (fun Φ ↦ ((isIso_iff_bijective _).1 (hf Φ)).2)
         exact Balanced.isIso_of_mono_of_epi f))
 
-end ObjectProperty.IsConservativeFamilyOfPoints
+end IsConservativeFamilyOfPoints
+
+end ObjectProperty
 
 namespace GrothendieckTopology
 
@@ -229,8 +260,8 @@ namespace GrothendieckTopology
 if it has a `w`-small conservative family of points. -/
 class HasEnoughPoints (J : GrothendieckTopology C) : Prop where
   exists_objectProperty (J) :
-      ∃ (P : ObjectProperty (Point.{w} J)),
-        ObjectProperty.Small.{w} P ∧ P.IsConservativeFamilyOfPoints
+    ∃ (P : ObjectProperty (Point.{w} J)),
+      ObjectProperty.Small.{w} P ∧ P.IsConservativeFamilyOfPoints
 
 end GrothendieckTopology
 

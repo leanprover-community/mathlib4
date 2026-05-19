@@ -600,8 +600,7 @@ lemma closure_prod_one (s : Set M) : closure (s ×ˢ ({1} : Set N)) = (closure s
   le_antisymm
     (closure_le.2 <| Set.prod_subset_prod_iff.2 <| .inl ⟨subset_closure, .rfl⟩)
     (prod_le_iff.2 ⟨
-      map_le_of_le_comap _ <| closure_le.2 fun _x hx => subset_closure ⟨hx, rfl⟩,
-      by simp⟩)
+      map_le_of_le_comap _ <| closure_le.2 fun _x hx => subset_closure ⟨hx, rfl⟩, by simp⟩)
 
 @[to_additive (attr := simp) closure_zero_prod]
 lemma closure_one_prod (t : Set N) : closure (({1} : Set M) ×ˢ t) = .prod ⊥ (closure t) :=
@@ -718,8 +717,24 @@ theorem restrict_apply {N S : Type*} [MulOneClass N] [SetLike S M] [SubmonoidCla
   rfl
 
 @[to_additive (attr := simp)]
+theorem restrict_eq_one_iff {N S : Type*} [MulOneClass N] {f : M →* N} [SetLike S M]
+    [SubmonoidClass S M] {s : S} :
+    f.restrict s = 1 ↔ ∀ x ∈ s, f x = 1 := by
+  simp [MonoidHom.ext_iff]
+
+@[to_additive (attr := simp)]
 theorem restrict_mrange (f : M →* N) : mrange (f.restrict S) = S.map f := by
   simp [SetLike.ext_iff]
+
+/--
+A version of `MonoidHom.restrict` as an homomorphism.
+-/
+@[to_additive (attr := simps apply) /-- A version of `AddMonoidHom.restrict` as an homomorphism. -/]
+def restrictHom {S : Type*} [SetLike S M] [SubmonoidClass S M] (M' : S) (A : Type*)
+    [CommMonoid A] : (M →* A) →* (M' →* A) where
+  toFun f := f.restrict M'
+  map_one' := by ext; simp
+  map_mul' _ _ := by ext; simp
 
 /-- Restriction of a monoid hom to a submonoid of the codomain. -/
 @[to_additive (attr := simps apply)
@@ -851,6 +866,11 @@ theorem submonoidMap_surjective (f : M →* N) (M' : Submonoid M) :
     Function.Surjective (f.submonoidMap M') := by
   rintro ⟨_, x, hx, rfl⟩
   exact ⟨⟨x, hx⟩, rfl⟩
+
+@[to_additive (attr := grind inj)]
+theorem submonoidMap_injective {f : M →* N} (hf : Injective f) (M' : Submonoid M) :
+    Injective (f.submonoidMap M') := by
+  grind [Injective, submonoidMap_apply_coe]
 
 end MonoidHom
 
@@ -1083,9 +1103,6 @@ theorem submonoidMap_symm_apply (e : M ≃* N) (S : Submonoid M) (g : S.map (e :
     (e.submonoidMap S).symm g = ⟨e.symm g, SetLike.mem_coe.1 <| Set.mem_image_equiv.1 g.2⟩ :=
   rfl
 
-@[deprecated (since := "2025-08-20")]
-alias _root_.AddEquiv.add_submonoid_map_symm_apply := AddEquiv.addSubmonoidMap_symm_apply
-
 end MulEquiv
 
 @[to_additive (attr := simp)]
@@ -1107,7 +1124,8 @@ namespace Submonoid
 elements of `M`. -/
 @[to_additive (attr := simps!) /-- The additive equivalence between the type of additive units of
 `M` and the additive submonoid whose elements are the additive units of `M`. -/]
-noncomputable def unitsTypeEquivIsUnitSubmonoid [Monoid M] : Mˣ ≃* IsUnit.submonoid M where
+noncomputable def unitsTypeEquivIsUnitSubmonoid {M : Type*} [Monoid M] :
+    Mˣ ≃* IsUnit.submonoid M where
   toFun x := ⟨x, Units.isUnit x⟩
   invFun x := x.prop.unit
   left_inv _ := IsUnit.unit_of_val_units _

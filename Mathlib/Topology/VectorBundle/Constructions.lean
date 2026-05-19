@@ -28,7 +28,7 @@ This file contains several standard constructions on vector bundles:
 Vector bundle, direct sum, pullback
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -96,7 +96,7 @@ variable (𝕜 : Type*) {B : Type*} [NontriviallyNormedField 𝕜] [TopologicalS
   (F₂ : Type*) [NormedAddCommGroup F₂] [NormedSpace 𝕜 F₂] (E₂ : B → Type*)
   [TopologicalSpace (TotalSpace F₂ E₂)]
 
-namespace Trivialization
+namespace Bundle.Trivialization
 
 variable {F₁ E₁ F₂ E₂}
 variable [∀ x, AddCommMonoid (E₁ x)] [∀ x, Module 𝕜 (E₁ x)]
@@ -129,7 +129,7 @@ theorem prod_apply' [e₁.IsLinear 𝕜] [e₂.IsLinear 𝕜] {x : B} (hx₁ : x
       ⟨x, e₁.continuousLinearEquivAt 𝕜 x hx₁ v₁, e₂.continuousLinearEquivAt 𝕜 x hx₂ v₂⟩ :=
   rfl
 
-end Trivialization
+end Bundle.Trivialization
 
 open Trivialization
 
@@ -161,7 +161,7 @@ instance VectorBundle.prod [VectorBundle 𝕜 F₁ E₁] [VectorBundle 𝕜 F₂
 variable {𝕜 F₁ E₁ F₂ E₂}
 
 @[simp]
-theorem Trivialization.continuousLinearEquivAt_prod {e₁ : Trivialization F₁ (π F₁ E₁)}
+theorem Bundle.Trivialization.continuousLinearEquivAt_prod {e₁ : Trivialization F₁ (π F₁ E₁)}
     {e₂ : Trivialization F₂ (π F₂ E₂)} [e₁.IsLinear 𝕜] [e₂.IsLinear 𝕜] {x : B}
     (hx : x ∈ (e₁.prod e₂).baseSet) :
     (e₁.prod e₂).continuousLinearEquivAt 𝕜 x hx =
@@ -188,8 +188,8 @@ variable {E F} [TopologicalSpace B'] [TopologicalSpace (TotalSpace F E)] [Nontri
   [NormedAddCommGroup F] [NormedSpace 𝕜 F] [TopologicalSpace B] [∀ x, AddCommMonoid (E x)]
   [∀ x, Module 𝕜 (E x)] {K : Type*} [FunLike K B' B] [ContinuousMapClass K B' B]
 
-instance Trivialization.pullback_linear (e : Trivialization F (π F E)) [e.IsLinear 𝕜] (f : K) :
-    (Trivialization.pullback (B' := B') e f).IsLinear 𝕜 where
+instance Bundle.Trivialization.pullback_linear (e : Trivialization F (π F E)) [e.IsLinear 𝕜]
+    (f : K) : (e.pullback (B' := B') f).IsLinear 𝕜 where
   linear _ h := e.linear 𝕜 h
 
 instance VectorBundle.pullback [∀ x, TopologicalSpace (E x)] [FiberBundle F E] [VectorBundle 𝕜 F E]

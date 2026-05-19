@@ -81,7 +81,7 @@ instance : Bot (Precoverage C) where
 
 instance : CompleteLattice (Precoverage C) :=
   Function.Injective.completeLattice Precoverage.coverings (fun _ _ hab ↦ Precoverage.ext hab)
-    (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ ↦ rfl) rfl rfl
+    .rfl .rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ ↦ rfl) rfl rfl
 
 /-- A precoverage has isomorphisms if singleton presieves by isomorphisms are covering. -/
 class HasIsos (J : Precoverage C) : Prop where
@@ -223,7 +223,7 @@ open Limits
 /-- If `J` is a precoverage on `D`, we obtain a precoverage on `C` by declaring a presieve on `D`
 to be covering if its image under `F` is. -/
 def comap (F : C ⥤ D) (J : Precoverage D) : Precoverage C where
-  coverings Y R := R.map F ∈ J (F.obj Y)
+  coverings Y := {R | R.map F ∈ J (F.obj Y)}
 
 @[simp]
 lemma mem_comap_iff {X : C} {R : Presieve X} :
@@ -231,11 +231,13 @@ lemma mem_comap_iff {X : C} {R : Presieve X} :
 
 lemma comap_inf : (J ⊓ K).comap F = J.comap F ⊓ K.comap F := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma comap_id (K : Precoverage C) : K.comap (𝟭 C) = K := by
   ext
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 lemma comap_comp {E : Type*} [Category* E] (F : C ⥤ D) (G : D ⥤ E) (J : Precoverage E) :
     J.comap (F ⋙ G) = (J.comap G).comap F := by
   ext X R

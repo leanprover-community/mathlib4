@@ -85,6 +85,7 @@ section
 
 variable {K L : CochainComplex C ℤ} {f g : K ⟶ L}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given an homotopy between morphisms of cochain complexes indexed by `ℤ`,
 this is the corresponding homotopy between morphisms of cochain complexes
 in the opposite category. -/
@@ -117,6 +118,7 @@ lemma homotopyOp_hom_eq (h : Homotopy f g)
   obtain rfl : q' = -q := by lia
   simp [homotopyOp]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The homotopy between two morphisms of cochain complexes indexed by `ℤ`
 which correspond to an homotopy between morphisms of cochain complexes
 in the opposite category. -/

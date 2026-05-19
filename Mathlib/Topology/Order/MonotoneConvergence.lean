@@ -27,7 +27,7 @@ then `f n ≤ a` for all `n`.
 monotone convergence
 -/
 
-@[expose] public section
+public section
 
 open Filter Set Function
 open scoped Topology
@@ -111,12 +111,15 @@ end IsGLB
 
 section CiSup
 
-variable [ConditionallyCompleteLattice α] [SupConvergenceClass α] {f : ι → α}
+variable [ConditionallyCompletePartialOrderSup α] [SupConvergenceClass α] {f : ι → α}
 
 theorem tendsto_atTop_ciSup (h_mono : Monotone f) (hbdd : BddAbove <| range f) :
     Tendsto f atTop (𝓝 (⨆ i, f i)) := by
-  cases isEmpty_or_nonempty ι
-  exacts [tendsto_of_isEmpty, tendsto_atTop_isLUB h_mono (isLUB_ciSup hbdd)]
+  obtain (h | h) := eq_or_ne atTop (⊥ : Filter ι)
+  · simp [h]
+  · obtain ⟨h₁, h₂⟩ := Filter.atTop_neBot_iff.mp ⟨h⟩
+    exact tendsto_atTop_isLUB h_mono <|
+      h_mono.directed_le.directedOn_range.isLUB_csSup (Set.range_nonempty f) hbdd
 
 theorem tendsto_atBot_ciSup (h_anti : Antitone f) (hbdd : BddAbove <| range f) :
     Tendsto f atBot (𝓝 (⨆ i, f i)) := by convert tendsto_atTop_ciSup h_anti.dual hbdd.dual using 1
@@ -125,7 +128,7 @@ end CiSup
 
 section CiInf
 
-variable [ConditionallyCompleteLattice α] [InfConvergenceClass α] {f : ι → α}
+variable [ConditionallyCompletePartialOrderInf α] [InfConvergenceClass α] {f : ι → α}
 
 theorem tendsto_atBot_ciInf (h_mono : Monotone f) (hbdd : BddBelow <| range f) :
     Tendsto f atBot (𝓝 (⨅ i, f i)) := by convert tendsto_atTop_ciSup h_mono.dual hbdd.dual using 1

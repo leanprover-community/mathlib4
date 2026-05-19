@@ -9,7 +9,7 @@ public import Mathlib.Analysis.RCLike.Lemmas
 public import Mathlib.MeasureTheory.Integral.Bochner.ContinuousLinearMap
 public import Mathlib.MeasureTheory.Measure.HasOuterApproxClosed
 public import Mathlib.MeasureTheory.Measure.Prod
-public import Mathlib.Topology.Algebra.Module.WeakDual
+public import Mathlib.Topology.Algebra.Module.Spaces.WeakDual
 public import Mathlib.Topology.TietzeExtension
 
 /-!
@@ -259,7 +259,7 @@ theorem coeFn_smul [IsScalarTower R ℝ≥0 ℝ≥0] (c : R) (μ : FiniteMeasure
     (⇑(c • μ) : Set Ω → ℝ≥0) = c • (⇑μ : Set Ω → ℝ≥0) := by
   funext; simp [← ENNReal.coe_inj, ENNReal.coe_smul]
 
-instance instAddCommMonoid : AddCommMonoid (FiniteMeasure Ω) :=
+instance instAddCommMonoid : AddCommMonoid (FiniteMeasure Ω) := fast_instance%
   toMeasure_injective.addCommMonoid _ toMeasure_zero toMeasure_add fun _ _ ↦ toMeasure_smul _ _
 
 /-- Coercion is an `AddMonoidHom`. -/
@@ -317,9 +317,9 @@ lemma restrict_biUnion_finset {ι : Type*} {μ : FiniteMeasure Ω} {T : Finset �
     {s : ι → Set Ω} (hd : (T : Set ι).Pairwise (Disjoint on s)) (hm : ∀ i, MeasurableSet (s i)) :
     μ.restrict (⋃ i ∈ T, s i) = ∑ i ∈ T, μ.restrict (s i) := by
   ext t ht
-  simp only [restrict_measure_eq, toMeasure_sum, Measure.coe_finset_sum, Finset.sum_apply]
+  simp only [restrict_measure_eq, toMeasure_sum, Measure.coe_finsetSum, Finset.sum_apply]
   rw [Measure.restrict_biUnion_finset hd hm]
-  simp only [Measure.sum_fintype, Finset.univ_eq_attach, Measure.coe_finset_sum, Finset.sum_apply]
+  simp only [Measure.sum_fintype, Finset.univ_eq_attach, Measure.coe_finsetSum, Finset.sum_apply]
   conv_rhs => rw [← Finset.sum_attach]
 
 @[simp]
@@ -330,7 +330,8 @@ theorem restrict_nonzero_iff (μ : FiniteMeasure Ω) (A : Set Ω) : μ.restrict 
   simp
 
 /-- The type of finite measures is a measurable space when equipped with the Giry monad. -/
-instance : MeasurableSpace (FiniteMeasure Ω) := Subtype.instMeasurableSpace
+instance : MeasurableSpace (FiniteMeasure Ω) :=
+  inferInstanceAs <| MeasurableSpace (Subtype _)
 
 /-- The set of all finite measures is a measurable set in the Giry monad. -/
 lemma measurableSet_isFiniteMeasure : MeasurableSet { μ : Measure Ω | IsFiniteMeasure μ } := by
@@ -500,7 +501,7 @@ theorem toWeakDualBCNN_apply (μ : FiniteMeasure Ω) (f : Ω →ᵇ ℝ≥0) :
     μ.toWeakDualBCNN f = (∫⁻ x, f x ∂(μ : Measure Ω)).toNNReal := rfl
 
 /-- The topology of weak convergence on `MeasureTheory.FiniteMeasure Ω` is inherited (induced)
-from the weak-* topology on `WeakDual ℝ≥0 (Ω →ᵇ ℝ≥0)` via the function
+from the weak-\* topology on `WeakDual ℝ≥0 (Ω →ᵇ ℝ≥0)` via the function
 `MeasureTheory.FiniteMeasure.toWeakDualBCNN`. -/
 instance instTopologicalSpace : TopologicalSpace (FiniteMeasure Ω) :=
   TopologicalSpace.induced toWeakDualBCNN inferInstance
@@ -707,7 +708,7 @@ theorem tendsto_of_forall_integral_tendsto {γ : Type*} {F : Filter γ} {μs : �
   intro f
   apply (ENNReal.tendsto_toReal_iff (fi := F)
       (fun i ↦ (f.lintegral_lt_top_of_nnreal (μs i)).ne) (f.lintegral_lt_top_of_nnreal μ).ne).mp
-  have lip : LipschitzWith 1 ((↑) : ℝ≥0 → ℝ) := isometry_subtype_coe.lipschitz
+  have lip : LipschitzWith 1 ((↑) : ℝ≥0 → ℝ) := NNReal.isometry_coe.lipschitz
   set f₀ := BoundedContinuousFunction.comp _ lip f with _def_f₀
   have f₀_eq : ⇑f₀ = ((↑) : ℝ≥0 → ℝ) ∘ ⇑f := rfl
   have f₀_nn : 0 ≤ ⇑f₀ := fun _ ↦ by
@@ -795,14 +796,14 @@ integrals of every continuous bounded nonnegative function are continuous. -/
 lemma continuous_iff_forall_continuous_lintegral :
     Continuous μs ↔ ∀ f : Ω →ᵇ ℝ≥0, Continuous fun x ↦ ∫⁻ ω, f ω ∂(μs x) := by
   simp [continuous_iff_continuousAt, ContinuousAt, tendsto_iff_forall_lintegral_tendsto,
-    forall_swap (α := X)]
+    forall_comm (α := X)]
 
 /-- The characterization of weak convergence of finite measures by the usual (defining)
 condition that the integrals of every continuous bounded function are continuous. -/
 lemma continuous_iff_forall_continuous_integral :
     Continuous μs ↔ ∀ f : Ω →ᵇ ℝ, Continuous fun x ↦ ∫ ω, f ω ∂(μs x) := by
   simp [continuous_iff_continuousAt, ContinuousAt, tendsto_iff_forall_integral_tendsto,
-    forall_swap (α := X)]
+    forall_comm (α := X)]
 
 @[fun_prop]
 lemma continuous_lintegral_boundedContinuousFunction [MeasurableSpace X] [OpensMeasurableSpace X]

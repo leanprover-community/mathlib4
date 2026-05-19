@@ -5,6 +5,7 @@ Authors: Johannes Hölzl
 -/
 module
 
+public import Lean.PrettyPrinter.Delaborator.Builtins
 public import Mathlib.Logic.Function.Defs
 public import Mathlib.Logic.Function.Iterate
 public import Mathlib.Tactic.Inhabit
