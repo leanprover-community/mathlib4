@@ -25,9 +25,6 @@ variable (R : Type*) [CommSemiring R] (M : Type*) [AddCommMonoid M] [Module R M]
 
 open scoped TensorProduct
 
-theorem algebraMapInv_ι (x : M) : algebraMapInv (R := R) (M := M) (ι R M x) = 0 := by
-  simp [algebraMapInv]
-
 /-- The comultiplication on `SymmetricAlgebra R M` as an algebra
 homomorphism, lifted from `x ↦ ι x ⊗ 1 + 1 ⊗ ι x`. -/
 protected def comulAlgHom : SymmetricAlgebra R M →ₐ[R]
@@ -90,7 +87,7 @@ theorem comul_ι (x : M) :
 @[simp]
 theorem counit_ι (x : M) :
     Coalgebra.counit (R := R) (ι R M x) = 0 :=
-  algebraMapInv_ι R M x
+  algebraMapInv_ι x
 
 protected theorem comulAlgHom_comm :
     (Algebra.TensorProduct.comm R (SymmetricAlgebra R M)
