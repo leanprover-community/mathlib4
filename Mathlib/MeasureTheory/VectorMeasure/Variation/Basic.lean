@@ -161,6 +161,18 @@ lemma variation_restrict_le (μ : VectorMeasure X V) (s : Set X) :
   · simp [variation_restrict μ hs]
   · simp only [restrict_not_measurable _ hs, variation_zero, Measure.zero_le]
 
+lemma variation_apply_eq_zero {μ : VectorMeasure X V} {s : Set X} (hs : MeasurableSet s) :
+    μ.variation s = 0 ↔ ∀ t, t ⊆ s → MeasurableSet t → μ t = 0 := by
+  refine ⟨fun h t hts ht ↦ ?_, fun h ↦ ?_⟩
+  · apply enorm_eq_zero.1
+    apply le_antisymm ?_ zero_le
+    rw [← h]
+    apply (enorm_measure_le_variation _ _).trans (measure_mono hts)
+  · apply le_antisymm ?_ zero_le
+    change μ.variation s ≤ (0 : Measure X) s
+    apply variation_apply_le_of_forall_enorm_le hs (fun t ht hts ↦ ?_)
+    simp [h t hts ht]
+
 @[simp] lemma variation_eq_zero {μ : VectorMeasure X V} :
     μ.variation = 0 ↔ μ = 0 := by
   refine ⟨fun h ↦ ?_, fun h ↦ by simp [h]⟩

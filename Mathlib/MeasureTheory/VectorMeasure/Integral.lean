@@ -545,13 +545,52 @@ theorem integral_map {β : Type*} [MeasurableSpace β]
   intro s x hs
   simp [hs, VectorMeasure.map, transpose, hφ]
 
+#check MeasurableEmbedding.comap_apply
+
+theorem _root_.MeasurableEmbedding.integral_map_vectorMeasure
+    {β : Type*} [MeasurableSpace β] {φ : X → β}
+    (hφ : MeasurableEmbedding φ) (f : β → E) :
+    μ.Integrable (f ∘ φ) B ↔ (μ.map φ).Integrable f B := by
+  simp_rw [VectorMeasure.Integrable,
+    ← hφ.integrable_map_iff (g := f) (μ := (μ.transpose B).variation)]
+  congr!
+  apply le_antisymm ?_ variation_transpose_map_le
+  apply Measure.le_iff.2 (fun s hs ↦ ?_)
+  simp only [hφ.measurable, hs, Measure.map_apply]
+  have : ((μ.map φ).transpose B).variation s = ((μ.map φ).transpose B).variation (s ∩ range φ) := by
+    nth_rw 1 [← inter_union_diff s (range φ)]
+    have : ((μ.map φ).transpose B).variation (s \ range φ) = 0 := by
+
+    rw [measure_union (by grind) (hs.diff hφ.measurableSet_range), this, add_zero]
+  rw [this, ← hφ.comap_preimage]
+  apply variation_le_of_forall_enorm_le (fun t ht ↦ ?_)
+  simp only [hφ.comap_apply]
+  apply le_trans ?_ (enorm_measure_le_variation _ _)
+  simp only [transpose, mapRange_apply, LinearMap.toAddMonoidHom_coe, coe_coe]
+  rw [map_apply _ hφ.measurable (hφ.measurableSet_image.2 ht), preimage_image_eq _ hφ.injective]
+
+
+
+
+
+
+
+
+#exit
+
 theorem _root_.MeasurableEmbedding.integral_map_vectorMeasure
     {β : Type*} [MeasurableSpace β] {φ : X → β}
     (hφ : MeasurableEmbedding φ) (f : β → E) :
     ∫ᵛ y, f y ∂[B; μ.map φ] = ∫ᵛ x, f (φ x) ∂[B; μ] := by
   by_cases hfm : AEStronglyMeasurable f ((μ.transpose B).variation.map φ)
-  · exact integral_map hφ.measurable hfm
-  · rw [integral_non_aestronglyMeasurable hgm, integral_non_aestronglyMeasurable]
+  · by_cases h'fm : μ.Integrable (f ∘ φ) B
+    · apply integral_map hφ.measurable hfm h'fm
+    · rw [integral_undef, integral_undef]
+      · exact h'fm
+      · contrapose! h'fm
+
+        sorry
+  · rw [integral_non_aestronglyMeasurable hfm, integral_non_aestronglyMeasurable]
     exact fun hgf => hgm (hf.aestronglyMeasurable_map_iff.2 hgf)
 
 #exit
