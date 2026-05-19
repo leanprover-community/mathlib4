@@ -27,40 +27,37 @@ section FindHome
 -- provide the argument from Bourbaki, which may be a simple substitution without induction.
 -- Maybe the following will help...
 
-/- This may be tricky, because it's for `Fin` and not a `Fintype`. -/
 lemma Fin.sum_even_odd {n : ℕ} [NeZero n] {f : Fin n → ℤ} :
   ∑ i, f i =
-    ∑ (i : Fin ((Nat.floor ((n - 1) / 2)))), f (Fin.ofNat n (2 * i + 1))
-    + ∑ (i : Fin (Nat.floor (n / 2))), f (Fin.ofNat n (2 * i)) := by sorry
+    ∑ (i : Fin (n / 2)), f (Fin.ofNat n (2 * i + 1))
+    + ∑ (i : Fin ((n + 1) / 2)), f (Fin.ofNat n (2 * i)) := by sorry
 
 /- Needs golf and a correct name, but I think this will work. -/
 lemma alt_sum_eq_zero_of_sum_even_eq_sum_odd {n : ℕ} [NeZero n] {f : Fin n → ℤ}
-  (hf : ∑ (i : Fin ((Nat.floor ((n - 1) / 2)))), f (Fin.ofNat n (2 * i + 1))
-    = ∑ (i : Fin (Nat.floor (n / 2))), f (Fin.ofNat n (2 * i))) :
+  (hf : ∑ (i : Fin (n / 2)), f (Fin.ofNat n (2 * i + 1))
+    = ∑ (i : Fin ((n + 1) / 2)), f (Fin.ofNat n (2 * i))) :
       ∑ i, (-1) ^ (i.val) * f i = 0 := by
   rw [Fin.sum_even_odd]
-  simp only [Nat.floor_nat, id_eq, Int.reduceNeg, Fin.ofNat_eq_cast, Fin.val_natCast]
-  have h_odd (x : Fin (Nat.floor ((n - 1) / 2))) : (-1) ^ ((2 * x + 1) % n) = -1 := by
-    simp only [Int.reduceNeg, Nat.floor_nat, id_eq]
+  simp only [Int.reduceNeg, Fin.ofNat_eq_cast, Fin.val_natCast]
+  have h_odd (x : Fin (n / 2)) : (-1) ^ ((2 * x + 1) % n) = -1 := by
     have : (2 * x + 1) % n = ((2 * x + 1) : ℕ) := by
       refine Nat.mod_eq_of_lt ?_
-      have : x < (n - 1) / 2 := x.isLt
+      have : x < n / 2 := x.isLt
       grind
     rw [this]
-    simp only [Int.reduceNeg, Nat.floor_nat, id_eq]
     have : Odd (2 * (x : ℕ) + 1) := by
-      simp only [Nat.floor_nat, id_eq, even_two, Even.mul_right, Even.add_one]
+      simp only [even_two, Even.mul_right, Even.add_one]
     exact Odd.neg_one_pow this
-  have h_even (x : Fin (Nat.floor (n / 2))) : (-1) ^ (2 * x % n) = 1 := by
-   simp only [Int.reduceNeg, Nat.floor_nat, id_eq]
+  have h_even (x : Fin ((n + 1) / 2)) : (-1) ^ (2 * x % n) = 1 := by
    have : (2 * x) % n = (2 * x : ℕ) := by
      refine Nat.mod_eq_of_lt ?_
-     have : x < n / 2 := x.isLt
+     have : x < (n + 1)/ 2 := x.isLt
      grind
    rw [this]
-   simp only [Int.reduceNeg, Nat.floor_nat, id_eq, even_two, Even.mul_right, Even.neg_pow, one_pow]
-  simp only [Int.reduceNeg, h_odd, neg_mul, one_mul, Finset.sum_neg_distrib, h_even]
-  simp_all only [Nat.floor_nat, id_eq, Fin.ofNat_eq_cast, Int.reduceNeg, neg_add_cancel]
+   simp only [Int.reduceNeg, even_two, Even.mul_right, Even.neg_pow, one_pow]
+  simp only [Int.reduceNeg, h_odd, neg_mul, one_mul, Finset.sum_neg_distrib]
+  simp_all only [Fin.ofNat_eq_cast, Int.reduceNeg, one_mul, neg_add_cancel]
+
 
 open Function Module in
 lemma Module.sum_neg_one_pow_finrank_eq_zero_of_exact' {n : ℕ} {k : Type*}
@@ -75,6 +72,8 @@ lemma Module.sum_neg_one_pow_finrank_eq_zero_of_exact' {n : ℕ} {k : Type*}
   -- It may be necessary to prove an exactness statment for vector spaces particularly so
   -- as to avoid this inj and surj?
   sorry
+
+#exit
 
 -- I do think we need to begin with a three term exact sequence for this, since even
 -- Bourbaki derives the result as a corollary of Rank-Nullity. I've started the ball
