@@ -49,8 +49,7 @@ noncomputable instance : MetricSpace (DirectLimit G f) where
     intro i x y
     rw [DirectLimit.lift₂_def]
     intro h
-    have h' := eq_of_dist_eq_zero h
-    rw [h']
+    simp [eq_of_dist_eq_zero h]
 
 lemma dist_def (i : ι) (x y : G i) :
     dist (α := DirectLimit G f) ⟦⟨i,x⟩⟧ ⟦⟨i,y⟩⟧ = dist x y := by
