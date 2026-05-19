@@ -283,37 +283,32 @@ instance (k : ℤ) : FiniteDimensional ℂ (ModularForm 𝒮ℒ k) := by
     exact Cardinal.aleph0_pos
 
 /-- **Sturm bound for level-1 modular forms (natural weight).** If a modular form `f` of weight
-`(k : ℤ)` for `k : ℕ` has q-expansion of order strictly greater than `k / 12`, then `f` is
-identically zero. -/
-theorem sturm_bound_levelOne_nat {k : ℕ} (f : ModularForm 𝒮ℒ (k : ℤ))
+`k : ℕ` has q-expansion of order strictly greater than `k / 12`, then `f` is identically zero. -/
+theorem sturm_bound_levelOne_nat {k : ℕ} {f : ModularForm 𝒮ℒ (k : ℤ)}
     (h : (↑(k / 12) : ℕ∞) < (qExpansion 1 f).order) : f = 0 := by
   induction k using Nat.strong_induction_on with | _ k ih =>
   have h0 : (qExpansion 1 f).coeff 0 = 0 :=
-    PowerSeries.coeff_of_lt_order _ (lt_of_le_of_lt (Nat.cast_nonneg _) h)
-  set g := CuspForm.discriminantEquiv (toCuspForm f h0) with hg_def
-  have hg_zero : g = 0 := by
-    rcases lt_or_ge k 12 with hk12 | hk12
-    · exact rank_zero_iff_forall_zero.mp (levelOne_neg_weight_rank_zero (by lia)) g
-    · have hcast : ((k : ℤ) - 12) = ((k - 12 : ℕ) : ℤ) := by lia
-      rw [← mcast_eq_zero_iff hcast rfl]
-      refine ih (k - 12) (by lia) _ ?_
-      have hsucc : k / 12 = (k - 12) / 12 + 1 := by lia
-      rw [qExpansion_eq_qExpansion_discriminant_mul f h0, PowerSeries.order_mul,
-        discriminant_qExpansion_order, add_comm, ← hg_def, hsucc, Nat.cast_add, Nat.cast_one] at h
-      exact (ENat.add_lt_add_iff_right (ENat.coe_ne_top 1)).mp h
-  have := discriminant_mul_discriminantEquiv <| f.toCuspForm h0
-  ext z
-  simpa [← hg_def, hg_zero] using funext_iff.mp this _ |>.symm
+    PowerSeries.coeff_of_lt_order _ ((Nat.cast_nonneg _).trans_lt h)
+  suffices CuspForm.discriminantEquiv (toCuspForm f h0) = 0 by
+    simpa [CuspForm.discriminantEquiv.map_eq_zero_iff, DFunLike.ext_iff]
+  rcases lt_or_ge k 12 with hk12 | hk12
+  · apply rank_zero_iff_forall_zero.mp (levelOne_neg_weight_rank_zero (by lia))
+  · rw [← mcast_eq_zero_iff (b := ↑(k - 12)) (by lia) rfl]
+    refine ih (k - 12) (by lia) ?_
+    have hsucc : k / 12 = (k - 12) / 12 + 1 := by lia
+    rw [qExpansion_eq_qExpansion_discriminant_mul f h0, PowerSeries.order_mul,
+      discriminant_qExpansion_order, add_comm, hsucc, Nat.cast_add, Nat.cast_one] at h
+    exact (ENat.add_lt_add_iff_right (ENat.coe_ne_top 1)).mp h
 
 /-- **Sturm bound for level-1 modular forms.** If a modular form `f` of weight `k` for `SL(2, ℤ)`
 has q-expansion of order strictly greater than `k / 12`, then `f` is identically zero.
 Corollary of the natural-weight version `sturm_bound_levelOne_nat`. -/
-theorem sturm_bound_levelOne {k : ℤ} (f : ModularForm 𝒮ℒ k)
+theorem sturm_bound_levelOne {k : ℤ} {f : ModularForm 𝒮ℒ k}
     (h : (↑(k.toNat / 12) : ℕ∞) < (qExpansion 1 f).order) : f = 0 := by
   rcases lt_or_ge k 0 with hk | hk
   · exact rank_zero_iff_forall_zero.mp (levelOne_neg_weight_rank_zero hk) f
-  · obtain ⟨n, rfl⟩ : ∃ n : ℕ, k = (n : ℤ) := ⟨k.toNat, (Int.toNat_of_nonneg hk).symm⟩
-    exact sturm_bound_levelOne_nat f (by simpa using h)
+  · lift k to ℕ using hk
+    exact sturm_bound_levelOne_nat (mod_cast h)
 
 end ModularForm
 
