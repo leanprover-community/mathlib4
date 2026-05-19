@@ -160,7 +160,8 @@ lemma CategoryTheory.Functor.mapHomologicalComplex_sc {C D : Type*} [Category* C
 end preliminaries
 
 noncomputable abbrev koszulAlgebra [IsNoetherianRing R] [IsLocalRing R] :=
-  koszulComplex.ofList (maximalIdeal R).finite_generators_of_isNoetherian.toFinset.toList
+  koszulComplex.ofList
+    (Submodule.FG.finite_generators (maximalIdeal R).fg_of_isNoetherianRing).toFinset.toList
 
 lemma koszulAlgebra.annihilator_homology [IsNoetherianRing R] [IsLocalRing R] (i : ℕ) :
     maximalIdeal R ≤ Module.annihilator R ((koszulAlgebra R).homology i) := by
@@ -178,13 +179,16 @@ noncomputable instance [IsNoetherianRing R] [IsLocalRing R] (i : ℕ) :
 
 noncomputable instance [IsNoetherianRing R] [IsLocalRing R] (i : ℕ) :
     Module.Finite R ((koszulAlgebra R).X i) := by
+  simp only [koszulComplex.ofList, koszulComplex]
+  exact exteriorPower.instFinite
 
+noncomputable instance [IsNoetherianRing R] [IsLocalRing R] (i : ℕ) :
+    Module.Finite R ((koszulAlgebra R).homology i) := by
   sorry
 
 noncomputable instance [IsNoetherianRing R] [IsLocalRing R] (i : ℕ) :
-    Module.Finite (ResidueField R) ((koszulAlgebra R).homology i) := by
-
-  sorry
+    Module.Finite (ResidueField R) ((koszulAlgebra R).homology i) :=
+  Module.Finite.of_restrictScalars_finite R _ _
 
 noncomputable def Epsilon1 [IsNoetherianRing R] [IsLocalRing R] : ℕ :=
   Module.finrank (ResidueField R) ((koszulAlgebra R).homology 1)
@@ -197,7 +201,7 @@ set_option backward.isDefEq.respectTransparency false in
 lemma epsilon1_eq_of_ringEquiv_aux {R : Type u} [CommRing R] [IsNoetherianRing R] [IsLocalRing R]
     {R' : Type (max u v)} [CommRing R'] [IsNoetherianRing R'] [IsLocalRing R'] (e : R ≃+* R') :
     Epsilon1 R = Epsilon1 R' := by
-  let l := (maximalIdeal R).finite_generators_of_isNoetherian.toFinset.toList
+  let l := (Submodule.FG.finite_generators (maximalIdeal R).fg_of_isNoetherianRing).toFinset.toList
   let l' := l.map (RingHomClass.toRingHom e)
   have eq1 : Ideal.ofList l = maximalIdeal R := by
     simpa [l, Ideal.ofList] using (maximalIdeal R).span_generators
@@ -215,7 +219,7 @@ lemma epsilon1_eq_of_ringEquiv_aux {R : Type u} [CommRing R] [IsNoetherianRing R
     rw [← map_ringEquiv_maximalIdeal e, Ideal.spanFinrank_map_eq_of_ringEquiv e]
     simp [l', len1]
   let e1 := koszulComplex.baseChange_iso R' e l l' rfl
-  obtain ⟨e2⟩ := koszulComplex.nonempty_iso_of_minimal_generators' eq2 len2
+  obtain ⟨e2⟩ := koszulComplex.nonempty_iso_of_minimal_generators' Ideal.IsPrime.ne_top' eq2 len2
   let F := ModuleCat.extendScalars (RingHomClass.toRingHom e)
   let e' : koszulAlgebra R' ≅ (F.mapHomologicalComplex _).obj (koszulAlgebra R) := e2.trans e1
   let h1R := (koszulAlgebra R).homology 1
@@ -334,13 +338,14 @@ lemma epsilon1_eq_spanFinrank (S : Type u) [CommRing S] [IsRegularLocalRing S] (
   have sprkeq : (maximalIdeal (S ⧸ I)).spanFinrank = (maximalIdeal S).spanFinrank :=
     spanFinrank_eq_of_surjective_of_ker_le (Ideal.Quotient.mk I) Ideal.Quotient.mk_surjective
       (le_of_eq_of_le Ideal.mk_ker le)
-  let l := (maximalIdeal S).finite_generators_of_isNoetherian.toFinset.toList
+  let l := (Submodule.FG.finite_generators (maximalIdeal S).fg_of_isNoetherianRing).toFinset.toList
   have eq1 : Ideal.ofList l = maximalIdeal S := by
     simpa [l, Ideal.ofList] using (maximalIdeal S).span_generators
   have len : l.length = (maximalIdeal S).spanFinrank := by
     simp [l, ← Set.ncard_eq_toFinset_card,
       Submodule.FG.generators_ncard (maximalIdeal S).fg_of_isNoetherianRing]
-  have len' : (maximalIdeal (S ⧸ I)).finite_generators_of_isNoetherian.toFinset.toList.length =
+  have len' : (Submodule.FG.finite_generators
+    (maximalIdeal (S ⧸ I)).fg_of_isNoetherianRing).toFinset.toList.length =
     (maximalIdeal (S ⧸ I)).spanFinrank := by
     simp [← Set.ncard_eq_toFinset_card,
       Submodule.FG.generators_ncard (maximalIdeal (S ⧸ I)).fg_of_isNoetherianRing]
@@ -352,7 +357,7 @@ lemma epsilon1_eq_spanFinrank (S : Type u) [CommRing S] [IsRegularLocalRing S] (
     simp [← comapeq, Ideal.map_comap_of_surjective _ Ideal.Quotient.mk_surjective]
   have len'' : l'.length = (maximalIdeal (S ⧸ I)).spanFinrank := by simp [sprkeq, l', l, len]
   let e1 := koszulComplex.baseChange_iso (S ⧸ I) (Ideal.Quotient.mk I) l l' rfl
-  obtain ⟨e2⟩ := koszulComplex.nonempty_iso_of_minimal_generators' eq2 len''
+  obtain ⟨e2⟩ := koszulComplex.nonempty_iso_of_minimal_generators' Ideal.IsPrime.ne_top' eq2 len''
   let e : koszulAlgebra (S ⧸ I) ≅
     ((ModuleCat.extendScalars (Ideal.Quotient.mk I)).mapHomologicalComplex
     _).obj (koszulAlgebra S) := e2.trans e1
@@ -373,8 +378,7 @@ lemma epsilon1_eq_spanFinrank (S : Type u) [CommRing S] [IsRegularLocalRing S] (
     · simp [l, len, IsRegularLocalRing.spanFinrank_maximalIdeal]
   let eh' : h1 ≃ₗ[S⧸ I] (T.map F).homology :=
     (eh.trans (HomologicalComplex.homologyIsoSc' _ 2 1 0 preveq nexteq)).toLinearEquiv
-  let e3 : T.X₃ ≃ₗ[S] S := koszulComplex.XZeroLinearEquivRing (Fintype.linearCombination S
-    (maximalIdeal S).finite_generators_of_isNoetherian.toFinset.toList.get)
+  let e3 : T.X₃ ≃ₗ[S] S := koszulComplex.XZeroLinearEquivRing (Fintype.linearCombination S l.get)
   let f : T.X₁ →ₗ[S] T.X₂ := T.f.hom
   let g : T.X₂ →ₗ[S] T.X₃ := T.g.hom
   let g' : T.X₂ →ₗ[S] S := e3.comp g
@@ -528,7 +532,7 @@ set_option backward.isDefEq.respectTransparency false in
 lemma AdicCompletion.epsilon1_eq : Epsilon1 (AdicCompletion (maximalIdeal R) R) = Epsilon1 R := by
   let R' := (AdicCompletion (maximalIdeal R) R)
   let flat : Module.Flat R R' := AdicCompletion.flat_of_isNoetherian (maximalIdeal R)
-  let l := (maximalIdeal R).finite_generators_of_isNoetherian.toFinset.toList
+  let l := (Submodule.FG.finite_generators (maximalIdeal R).fg_of_isNoetherianRing).toFinset.toList
   let l' := l.map (algebraMap R R')
   have eq1 : Ideal.ofList l = maximalIdeal R := by
     simpa [l, Ideal.ofList] using (maximalIdeal R).span_generators
@@ -544,7 +548,7 @@ lemma AdicCompletion.epsilon1_eq : Epsilon1 (AdicCompletion (maximalIdeal R) R) 
   have len2 : l'.length = (maximalIdeal R').spanFinrank := by
     simp [R', l', sprkeq, len1]
   let e1 := koszulComplex.baseChange_iso _ (algebraMap R R') l l' rfl
-  obtain ⟨e2⟩ := koszulComplex.nonempty_iso_of_minimal_generators' eq2 len2
+  obtain ⟨e2⟩ := koszulComplex.nonempty_iso_of_minimal_generators' Ideal.IsPrime.ne_top' eq2 len2
   let F := (ModuleCat.extendScalars (algebraMap R R'))
   let e : koszulAlgebra R' ≅ (F.mapHomologicalComplex _).obj (koszulAlgebra R) := e2.trans e1
   let h1R := (koszulAlgebra R).homology 1
