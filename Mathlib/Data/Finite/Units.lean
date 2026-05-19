@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2026 Alex Brodbelt. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Alex Brodbelt and Eric Wieser
+Authors: Alex Brodbelt, Eric Wieser
 -/
 module
 
@@ -24,10 +24,6 @@ theorem Units.finite_iff₀ {G : Type*} [GroupWithZero G] : Finite Gˣ ↔ Finit
 @[simp]
 theorem Units.infinite_iff₀ {G : Type*} [GroupWithZero G] : Infinite Gˣ ↔ Infinite G := by
   simpa only [not_finite_iff_infinite] using Units.finite_iff₀ (G := G).not
-
-/-- If a `GroupWithZero` is finite then its `Units` are finite -/
-instance {G : Type*} [GroupWithZero G] [hG : Finite G] : Finite Gˣ :=
-  Units.finite_iff₀.2 ‹_›
 
 /-- If a `GroupWithZero` is finite then its `Units` are finite -/
 instance {G : Type*} [GroupWithZero G] [hG : Infinite G] : Infinite Gˣ :=
