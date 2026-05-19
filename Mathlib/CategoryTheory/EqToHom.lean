@@ -147,7 +147,7 @@ theorem eqToHom_iso_inv_naturality {f g : β → C} (z : ∀ b, f b ≅ g b) {j 
   cases w
   simp
 
-/-- Reducible form of congrArg_mpr_hom_left -/
+/-- Reducible form of `congrArg_mpr_hom_left` -/
 @[simp]
 theorem congrArg_cast_hom_left {X Y Z : C} (p : X = Y) (q : Y ⟶ Z) :
     cast (congrArg (fun W : C => W ⟶ Z) p.symm) q = eqToHom p ≫ q := by

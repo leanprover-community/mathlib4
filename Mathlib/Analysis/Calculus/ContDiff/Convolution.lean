@@ -25,7 +25,7 @@ Criteria for a convolution of functions to be differentiable.
 
 -/
 
-@[expose] public section
+public section
 open Set Function Filter MeasureTheory MeasureTheory.Measure TopologicalSpace
 
 open Bornology ContinuousLinearMap Metric Topology
@@ -40,13 +40,6 @@ variable [NormedAddCommGroup E] [NormedAddCommGroup E'] [NormedAddCommGroup E'']
   [NormedAddCommGroup F] {f f' : G → E} {g g' : G → E'} {x x' : G} {y y' : E}
 
 namespace MeasureTheory
-section NontriviallyNormedField
-
-variable [NontriviallyNormedField 𝕜]
-variable [NormedSpace 𝕜 E] [NormedSpace 𝕜 E'] [NormedSpace 𝕜 E''] [NormedSpace 𝕜 F]
-variable (L : E →L[𝕜] E' →L[𝕜] F)
-
-end NontriviallyNormedField
 
 open scoped Convolution
 

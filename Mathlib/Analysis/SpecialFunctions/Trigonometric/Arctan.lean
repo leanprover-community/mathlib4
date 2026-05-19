@@ -170,15 +170,8 @@ theorem arctan_strictMono : StrictMono arctan := tanOrderIso.symm.strictMono
 @[gcongr]
 theorem arctan_mono : Monotone arctan := arctan_strictMono.monotone
 
-@[deprecated arctan_strictMono (since := "2025-10-20")]
-lemma arctan_lt_arctan (hxy : x < y) : arctan x < arctan y := arctan_strictMono hxy
-
 @[simp]
 theorem arctan_lt_arctan_iff : arctan x < arctan y ↔ x < y := arctan_strictMono.lt_iff_lt
-
-@[deprecated arctan_mono (since := "2025-10-20")]
-lemma arctan_le_arctan (hxy : x ≤ y) : arctan x ≤ arctan y :=
-  arctan_strictMono.monotone hxy
 
 @[simp]
 theorem arctan_le_arctan_iff : arctan x ≤ arctan y ↔ x ≤ y := arctan_strictMono.le_iff_le
@@ -263,8 +256,7 @@ theorem arccos_eq_arctan (h : 0 < x) : arccos x = arctan (√(1 - x ^ 2) / x) :=
 
 theorem arctan_inv_of_pos (h : 0 < x) : arctan x⁻¹ = π / 2 - arctan x := by
   rw [← arctan_tan (x := _ - _), tan_pi_div_two_sub, tan_arctan]
-  · norm_num
-    exact (arctan_lt_pi_div_two x).trans (half_lt_self_iff.mpr pi_pos)
+  · simpa using (arctan_lt_pi_div_two x).trans (half_lt_self_iff.mpr pi_pos)
   · rw [sub_lt_self_iff, ← arctan_zero]
     exact tanOrderIso.symm.strictMono h
 

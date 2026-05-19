@@ -81,9 +81,8 @@ lemma extensiveTopology.surjective_of_isLocallySurjective_sheaf_of_types [Finita
     Functor.mapCone_pt, Cone.whisker_pt, Cocone.op_pt, Cofan.mk_pt, Functor.const_obj_obj,
     Functor.mapCone_π_app, Cone.whisker_π, Cocone.op_π, Functor.whiskerLeft_app, NatTrans.op_app,
     Cofan.mk_ι_app]
-  rw [← (h' a).choose_spec]
-  erw [← NatTrans.naturality_apply (φ := f)]
-  change f.app _ ((i.hom ≫ F.map (π a).op) y) = _
+  rw [← (h' a).choose_spec, ← NatTrans.naturality_apply (φ := f)]
+  simp only [IsLimit.conePointsIsoOfNatIso_hom, ← comp_apply, i]
   erw [IsLimit.map_π]
   rfl
 
@@ -122,20 +121,19 @@ lemma regularTopology.isLocallySurjective_sheaf_of_types [Preregular C] [Finitar
     have := preservesLimitsOfShape_of_equiv (Discrete.opposite α).symm G
     apply Concrete.isLimit_ext _ (isLimitOfPreserves G (coproductIsCoproduct Z).op)
     intro ⟨⟨a⟩⟩
-    simp only [Functor.comp_obj, Functor.op_obj, Discrete.functor_obj, Functor.mapCone_pt,
+    simp only [Functor.comp_obj, Functor.op_obj, Discrete.functor_obj_eq_as, Functor.mapCone_pt,
       Cocone.op_pt, Cofan.mk_pt, Functor.const_obj_obj, Functor.mapCone_π_app, Cocone.op_π,
-      NatTrans.op_app, Cofan.mk_ι_app, Functor.mapIso_symm, Iso.symm_hom, Iso.trans_hom,
-      Functor.mapIso_inv, types_comp_apply, i', ← NatTrans.naturality_apply f (Sigma.ι Z a).op]
+      NatTrans.op_app, Cofan.mk_ι_app, Functor.mapIso_symm, Iso.trans_hom, Iso.symm_hom,
+      Functor.mapIso_inv, comp_apply, ← f.naturality_apply (Sigma.ι Z a).op, i']
     have : f.app ⟨Z a⟩ (x a) = G.map (π a).op y := (h' a).choose_spec
     convert this
-    · change F.map _ (F.map _ _) = _
-      rw [← FunctorToTypes.map_comp_apply, opCoproductIsoProduct_inv_comp_ι, ← piComparison_comp_π]
+    · rw [← Functor.map_comp_apply, opCoproductIsoProduct_inv_comp_ι, ← piComparison_comp_π]
       change ((PreservesProduct.iso F _).hom ≫ _) _ = _
       have := Types.productIso_hom_comp_eval (fun a ↦ F.obj (op (Z a))) a
       rw [← Iso.eq_inv_comp] at this
-      simp only [types_comp_apply, inv_hom_id_apply, congrFun this x]
-    · change G.map _ (G.map _ _) = _
-      simp only [← FunctorToTypes.map_comp_apply, ← op_comp, Sigma.ι_desc]
+      simp only [types_comp_apply, Iso.inv_hom_id_apply]
+      simp [← comp_apply]
+    · simp only [← Functor.map_comp_apply, ← op_comp, Sigma.ι_desc]
 
 lemma coherentTopology.presheafIsLocallySurjective_iff {F G : Cᵒᵖ ⥤ D} (f : F ⟶ G)
     [Preregular C] [FinitaryPreExtensive C] [PreservesFiniteProducts F] [PreservesFiniteProducts G]

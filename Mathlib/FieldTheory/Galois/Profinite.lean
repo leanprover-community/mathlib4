@@ -61,7 +61,6 @@ variable {k K : Type*} [Field k] [Field K] [Algebra k K]
 
 section Profinite
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The (finite) Galois group `Gal(L / k)` associated to a
 `L : FiniteGaloisIntermediateField k K` `L`. -/
 def FiniteGaloisIntermediateField.finGaloisGroup (L : FiniteGaloisIntermediateField k K) :
@@ -69,7 +68,6 @@ def FiniteGaloisIntermediateField.finGaloisGroup (L : FiniteGaloisIntermediateFi
   letI := AlgEquiv.fintype k L
   FiniteGrp.of Gal(L/k)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- For `FiniteGaloisIntermediateField` s `L₁` and `L₂` with `L₂ ≤ L₁`
   the restriction homomorphism from `Gal(L₁/k)` to `Gal(L₂/k)` -/
 noncomputable def finGaloisGroupMap {L₁ L₂ : (FiniteGaloisIntermediateField k K)ᵒᵖ}
@@ -86,7 +84,6 @@ lemma map_id (L : (FiniteGaloisIntermediateField k K)ᵒᵖ) :
     (finGaloisGroupMap (𝟙 L)) = 𝟙 L.unop.finGaloisGroup :=
   ConcreteCategory.ext (AlgEquiv.restrictNormalHom_id _ _)
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma map_comp {L₁ L₂ L₃ : (FiniteGaloisIntermediateField k K)ᵒᵖ} (f : L₁ ⟶ L₂) (g : L₂ ⟶ L₃) :
     finGaloisGroupMap (f ≫ g) = finGaloisGroupMap f ≫ finGaloisGroupMap g := by
@@ -127,7 +124,6 @@ noncomputable abbrev asProfiniteGaloisGroupFunctor :
     (FiniteGaloisIntermediateField k K)ᵒᵖ ⥤ ProfiniteGrp :=
   (finGaloisGroupFunctor k K) ⋙ forget₂ FiniteGrp ProfiniteGrp
 
-set_option backward.isDefEq.respectTransparency false in
 variable (k K) in
 /--
 The homomorphism from `Gal(K/k)` to `lim Gal(L/k)` where `L` is a
@@ -149,7 +145,6 @@ noncomputable def algEquivToLimit : Gal(K/k) →* limit (asProfiniteGaloisGroupF
     simp only [map_mul]
     rfl
 
-set_option backward.isDefEq.respectTransparency false in
 theorem restrictNormalHom_continuous (L : IntermediateField k K) [Normal k L] :
     Continuous (AlgEquiv.restrictNormalHom (F := k) (K₁ := K) L) := by
   apply continuous_of_continuousAt_one _ (continuousAt_def.mpr _)
@@ -189,7 +184,6 @@ lemma finGaloisGroupFunctor_map_proj_eq_proj (g : limit (asProfiniteGaloisGroupF
     (finGaloisGroupFunctor k K).map h.op (proj L₂ g) = proj L₁ g :=
   g.prop h.op
 
-set_option backward.isDefEq.respectTransparency false in
 lemma proj_of_le (L : FiniteGaloisIntermediateField k K)
     (g : limit (asProfiniteGaloisGroupFunctor k K)) (x : L)
     (L' : FiniteGaloisIntermediateField k K) (h : L ≤ L') :
@@ -231,7 +225,6 @@ lemma mk_toAlgEquivAux [IsGalois k K] (g : limit (asProfiniteGaloisGroupFunctor 
     (⟨toAlgEquivAux g x, hx'⟩ : L.toIntermediateField) = proj L g ⟨x, hx⟩ := by
   rw [Subtype.ext_iff, Subtype.coe_mk, toAlgEquivAux_eq_proj_of_mem]
 
-set_option backward.isDefEq.respectTransparency false in
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 lemma toAlgEquivAux_eq_liftNormal [IsGalois k K] (g : limit (asProfiniteGaloisGroupFunctor k K))
@@ -276,7 +269,6 @@ noncomputable def limitToAlgEquiv [IsGalois k K]
   commutes' x := by
     simp only [toAlgEquivAux_eq_liftNormal g _ ⊥ (algebraMap_mem _ x), AlgEquiv.commutes]
 
-set_option backward.isDefEq.respectTransparency false in
 variable (k K) in
 /-- `algEquivToLimit` as a `MulEquiv`. -/
 noncomputable def mulEquivToLimit [IsGalois k K] :
@@ -312,7 +304,7 @@ lemma isOpen_mulEquivToLimit_image_fixingSubgroup [IsGalois k K]
     exact (isOpen_induced <| (continuous_apply (op L)).isOpen_preimage {1} trivial)
   ext x
   obtain ⟨σ, rfl⟩ := (mulEquivToLimit k K).surjective x
-  simpa using FiniteGaloisIntermediateField.mem_fixingSubgroup_iff _ _
+  simpa using FiniteGaloisIntermediateField.mem_fixingSubgroup_iff σ L
 
 set_option backward.isDefEq.respectTransparency false in
 lemma mulEquivToLimit_symm_continuous [IsGalois k K] : Continuous (mulEquivToLimit k K).symm := by

@@ -197,6 +197,15 @@ theorem toCocone_ι_app (B : Bicone F) (j : Discrete J) : B.toCocone.ι.app j = 
 
 theorem toCocone_ι_app_mk (B : Bicone F) (j : J) : B.toCocone.ι.app ⟨j⟩ = B.ι j := rfl
 
+/-- The retract of a bicone `B` given by `B.ι j` and `B.π j`. -/
+def retract (B : Bicone F) (j : J) : Retract (F j) B.pt where
+  i := B.ι j
+  r := B.π j
+
+instance (B : Bicone F) (j : J) : IsSplitMono (B.ι j) := (B.retract j).instIsSplitMonoI
+
+instance (B : Bicone F) (j : J) : IsSplitEpi (B.π j) := (B.retract j).instIsSplitEpiR
+
 set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 /-- We can turn any limit cone over a discrete collection of objects into a bicone. -/
@@ -602,9 +611,9 @@ instance biproduct.map_epi {f g : J → C} [HasBiproduct f] [HasBiproduct g] (p 
   have : biproduct.map p =
       (biproduct.isoCoproduct _).hom ≫ Sigma.map p ≫ (biproduct.isoCoproduct _).inv := by
     ext
-    simp only [map_π, isoCoproduct_hom, isoCoproduct_inv, Category.assoc, ι_desc_assoc,
-      ι_colimMap_assoc, Discrete.functor_obj_eq_as, Discrete.natTrans_app, colimit.ι_desc_assoc,
-      Cofan.mk_pt, Cofan.mk_ι_app, ι_π, ι_π_assoc]
+    simp only [map_π, ι_π_assoc, isoCoproduct_hom, isoCoproduct_inv, Category.assoc, ι_desc_assoc,
+      Sigma.ι_map_assoc, colimit.ι_desc_assoc, Discrete.functor_obj_eq_as, Cofan.mk_pt,
+      Cofan.mk_ι_app, ι_π]
     split
     all_goals simp_all
   rw [this]
@@ -1008,11 +1017,11 @@ variable {J : Type w}
 variable {C : Type u} [Category.{v} C] [HasZeroMorphisms C]
 variable {D : Type uD} [Category.{uD'} D] [HasZeroMorphisms D]
 
-instance biproduct.ι_mono (f : J → C) [HasBiproduct f] (b : J) : IsSplitMono (biproduct.ι f b) := by
-  classical exact IsSplitMono.mk' { retraction := biproduct.desc <| Pi.single b (𝟙 (f b)) }
+instance biproduct.ι_mono (f : J → C) [HasBiproduct f] (b : J) : IsSplitMono (biproduct.ι f b) :=
+  (biproduct.bicone f).instIsSplitMonoι b
 
-instance biproduct.π_epi (f : J → C) [HasBiproduct f] (b : J) : IsSplitEpi (biproduct.π f b) := by
-  classical exact IsSplitEpi.mk' { section_ := biproduct.lift <| Pi.single b (𝟙 (f b)) }
+instance biproduct.π_epi (f : J → C) [HasBiproduct f] (b : J) : IsSplitEpi (biproduct.π f b) :=
+  (biproduct.bicone f).instIsSplitEpiπ b
 
 /-- Auxiliary lemma for `biproduct.uniqueUpToIso`. -/
 theorem biproduct.conePointUniqueUpToIso_hom (f : J → C) [HasBiproduct f] {b : Bicone f}

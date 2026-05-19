@@ -142,7 +142,6 @@ lemma ContinuousMap.integral_apply [NormedSpace ℝ E] [CompleteSpace E] {f : X 
           (ContinuousLinearMap.integral_comp_comm _ hf).symm
     _ = _ := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 open scoped ContinuousMapZero in
 theorem ContinuousMapZero.integral_apply {R : Type*} [NormedCommRing R] [Zero Y]
     [NormedAlgebra ℝ R] [CompleteSpace R] {f : X → C(Y, R)₀}
@@ -248,7 +247,6 @@ lemma integral_mul_const_of_integrable {A : Type*} [NonUnitalNormedRing A] [Norm
     rw [ContinuousLinearMap.integral_comp_comm _ hf]
   · simp [integral, hA]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem integral_withDensity_eq_integral_smul {f : X → ℝ≥0} (f_meas : Measurable f) (g : X → E) :
     ∫ x, g x ∂μ.withDensity (fun x => f x) = ∫ x, f x • g x ∂μ := by
   by_cases hE : CompleteSpace E; swap; · simp [integral, hE]

@@ -72,7 +72,6 @@ section fintype
 
 variable [Fintype ι] [Fintype κ]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A finite measure `μ` over `(Π i, X i) × (Π j, Y j)` is determined by the values
 `∫⁻ p, (Π i, f i (p.1 i)) * (Π j, g j (p.2 j)) ∂μ`, for `f : (i : ι) → X i → ℝ≥0`
 and `g : (j : κ) → Y j → ℝ≥0` any families of bounded continuous functions. -/
@@ -111,9 +110,9 @@ lemma ext_of_lintegral_prod_mul_prod_boundedContinuousFunction
   rintro - ⟨-, ⟨s, hs, rfl⟩, -, ⟨t, ht, rfl⟩, rfl⟩
   simp only [Set.mem_pi, mem_univ, mem_setOf_eq, forall_const] at hs ht
   have (p : (Π i, X i) × (Π j, Y j)) := ENNReal.continuous_coe.tendsto _ |>.comp <|
-    (tendsto_finset_prod Finset.univ (fun i _ ↦ tendsto_pi_nhds.1
+    (tendsto_finsetProd Finset.univ (fun i _ ↦ tendsto_pi_nhds.1
       (HasOuterApproxClosed.tendsto_apprSeq (hs i)) (p.1 i))).mul
-    (tendsto_finset_prod Finset.univ (fun j _ ↦ tendsto_pi_nhds.1
+    (tendsto_finsetProd Finset.univ (fun j _ ↦ tendsto_pi_nhds.1
       (HasOuterApproxClosed.tendsto_apprSeq (ht j)) (p.2 j)))
   have hp1 (x : Π i, X i) : ∏ i, (s i).indicator (fun _ ↦ (1 : ℝ≥0)) (x i) =
       (Set.univ.pi s).indicator 1 x := by
@@ -166,7 +165,7 @@ lemma ext_of_integral_prod_mul_prod_boundedContinuousFunction
     μ = ν := by
   refine ext_of_lintegral_prod_mul_prod_boundedContinuousFunction fun f g ↦ ?_
   rw [← toReal_eq_toReal_iff']
-  · simp only [coe_finset_prod]
+  · simp only [coe_finsetProd]
     have {μ : Measure ((Π i, X i) × Π j, Y j)} :
         (∫⁻ p, (∏ i, (f i (p.1 i) : ℝ≥0∞)) * ∏ j, (g j (p.2 j) : ℝ≥0∞) ∂μ).toReal =
           ∫ p, (∏ i, (f i (p.1 i)).toReal) * ∏ j, (g j (p.2 j)).toReal ∂μ := by

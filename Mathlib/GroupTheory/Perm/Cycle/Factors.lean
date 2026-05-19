@@ -177,7 +177,7 @@ theorem cycleOf_mul_of_apply_right_eq_self [DecidableRel f.SameCycle]
     rw [cycleOf_apply_apply_zpow_self]
     simp [h.mul_zpow, zpow_apply_eq_self_of_apply_eq_self hx]
   · rw [cycleOf_apply_of_not_sameCycle hxy, cycleOf_apply_of_not_sameCycle]
-    contrapose! hxy
+    contrapose hxy
     obtain ⟨z, rfl⟩ := hxy
     refine ⟨z, ?_⟩
     simp [h.mul_zpow, zpow_apply_eq_self_of_apply_eq_self hx]
@@ -552,7 +552,7 @@ theorem cycleOf_mem_cycleFactorsFinset_iff {f : Perm α} {x : α} :
   rw [mem_cycleFactorsFinset_iff]
   constructor
   · rintro ⟨hc, _⟩
-    contrapose! hc
+    contrapose hc
     rw [notMem_support, ← cycleOf_eq_one_iff] at hc
     simp [hc]
   · intro hx
@@ -669,7 +669,7 @@ theorem Disjoint.cycleFactorsFinset_mul_eq_union {f g : Perm α} (h : Disjoint f
     cycleFactorsFinset (f * g) = cycleFactorsFinset f ∪ cycleFactorsFinset g := by
   rw [cycleFactorsFinset_eq_finset]
   refine ⟨?_, ?_, ?_⟩
-  · simp [or_imp, mem_cycleFactorsFinset_iff, forall_swap]
+  · simp [or_imp, mem_cycleFactorsFinset_iff, forall_comm]
   · rw [coe_union, Set.pairwise_union_of_symmetric Disjoint.symmetric]
     exact
       ⟨cycleFactorsFinset_pairwise_disjoint _, cycleFactorsFinset_pairwise_disjoint _,

@@ -258,11 +258,7 @@ theorem isIso_toPlus_of_isSheaf (hP : Presheaf.IsSheaf J P) : IsIso (J.toPlus P)
   intro S T e
   have : S.unop.toMultiequalizer P ≫ (J.diagram P X.unop).map e = T.unop.toMultiequalizer P :=
     Multiequalizer.hom_ext _ _ _ (fun II => by simp)
-  have :
-    (J.diagram P X.unop).map e = inv (S.unop.toMultiequalizer P) ≫ T.unop.toMultiequalizer P := by
-    simp [← this]
-  rw [this]
-  infer_instance
+  exact IsIso.of_isIso_fac_left this
 
 /-- The natural isomorphism between `P` and `P⁺` when `P` is a sheaf. -/
 def isoToPlus (hP : Presheaf.IsSheaf J P) : P ≅ J.plusObj P :=

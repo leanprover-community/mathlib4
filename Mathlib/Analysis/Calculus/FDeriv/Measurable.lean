@@ -319,7 +319,7 @@ theorem D_subset_differentiable_set {K : Set (E →L[𝕜] F)} (hK : IsComplete 
       lia
     set m := k - 1
     have m_ge : n e ≤ m := Nat.le_sub_one_of_lt k_gt
-    have km : k = m + 1 := (Nat.succ_pred_eq_of_pos (lt_of_le_of_lt (zero_le _) k_gt)).symm
+    have km : k = m + 1 := (Nat.succ_pred_eq_of_pos k_gt.pos).symm
     rw [km] at hk h'k
     -- `f` is well approximated by `L e (n e) k` at the relevant scale
     -- (in fact, we use `m = k - 1` instead of `k` because of the precise definition of `A`).
@@ -646,7 +646,7 @@ theorem D_subset_differentiable_set {K : Set F} (hK : IsComplete K) :
       lia
     set m := k - 1
     have m_ge : n e ≤ m := Nat.le_sub_one_of_lt k_gt
-    have km : k = m + 1 := (Nat.succ_pred_eq_of_pos (lt_of_le_of_lt (zero_le _) k_gt)).symm
+    have km : k = m + 1 := (Nat.succ_pred_eq_of_pos k_gt.pos).symm
     rw [km] at hk h'k
     -- `f` is well approximated by `L e (n e) k` at the relevant scale
     -- (in fact, we use `m = k - 1` instead of `k` because of the precise definition of `A`).

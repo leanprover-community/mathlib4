@@ -32,9 +32,6 @@ def toOpenPartialHomeomorph (hf : ContDiffAt 𝕂 n f a) (hf' : HasFDerivAt f (f
     (hn : n ≠ 0) : OpenPartialHomeomorph E F :=
   (hf.hasStrictFDerivAt' hf' hn).toOpenPartialHomeomorph f
 
-@[deprecated (since := "2025-08-29")] noncomputable alias
-  toPartialHomeomorph := toOpenPartialHomeomorph
-
 variable {f}
 
 @[simp]
@@ -43,24 +40,15 @@ theorem toOpenPartialHomeomorph_coe (hf : ContDiffAt 𝕂 n f a)
     (hf.toOpenPartialHomeomorph f hf' hn : E → F) = f :=
   rfl
 
-@[deprecated (since := "2025-08-29")] alias
-  toPartialHomeomorph_coe := toOpenPartialHomeomorph_coe
-
 theorem mem_toOpenPartialHomeomorph_source (hf : ContDiffAt 𝕂 n f a)
     (hf' : HasFDerivAt f (f' : E →L[𝕂] F) a) (hn : n ≠ 0) :
     a ∈ (hf.toOpenPartialHomeomorph f hf' hn).source :=
   (hf.hasStrictFDerivAt' hf' hn).mem_toOpenPartialHomeomorph_source
 
-@[deprecated (since := "2025-08-29")] alias
-  mem_toPartialHomeomorph_source := mem_toOpenPartialHomeomorph_source
-
 theorem image_mem_toOpenPartialHomeomorph_target (hf : ContDiffAt 𝕂 n f a)
     (hf' : HasFDerivAt f (f' : E →L[𝕂] F) a) (hn : n ≠ 0) :
     f a ∈ (hf.toOpenPartialHomeomorph f hf' hn).target :=
   (hf.hasStrictFDerivAt' hf' hn).image_mem_toOpenPartialHomeomorph_target
-
-@[deprecated (since := "2025-08-29")] alias
-  image_mem_toPartialHomeomorph_target := image_mem_toOpenPartialHomeomorph_target
 
 /-- Given a `ContDiff` function over `𝕂` (which is `ℝ` or `ℂ`) with an invertible derivative
 at `a`, returns a function that is locally inverse to `f`. -/

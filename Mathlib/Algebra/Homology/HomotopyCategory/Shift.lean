@@ -115,7 +115,7 @@ instance : HasShift (CochainComplex C ℤ) ℤ := hasShiftMk _ _
 
 instance (n : ℤ) :
     (CategoryTheory.shiftFunctor (HomologicalComplex C (ComplexShape.up ℤ)) n).Additive :=
-  (inferInstance : (CochainComplex.shiftFunctor C n).Additive)
+  inferInstanceAs <| (CochainComplex.shiftFunctor C n).Additive
 
 instance (n : ℤ) {R : Type*} [Ring R] [Linear R C] :
     Functor.Linear R
@@ -307,6 +307,12 @@ noncomputable instance hasShift :
     HasShift (HomotopyCategory C (ComplexShape.up ℤ)) ℤ := by
   dsimp only [HomotopyCategory]
   infer_instance
+
+variable {C} in
+lemma shift_quotient_obj (K : HomologicalComplex C (.up ℤ)) (n : ℤ) :
+    ((HomotopyCategory.quotient _ _).obj K)⟦n⟧ =
+    (HomotopyCategory.quotient _ _).obj (K⟦n⟧) :=
+  Quotient.functor_obj_shift ..
 
 noncomputable instance commShiftQuotient :
     (HomotopyCategory.quotient C (ComplexShape.up ℤ)).CommShift ℤ :=

@@ -24,11 +24,9 @@ in `Mathlib/Algebra/Category/Grp/EnoughInjectives.lean`.
 
 -/
 
-@[expose] public section
+public section
 
 open CategoryTheory
-
-open Pointwise
 
 universe u
 

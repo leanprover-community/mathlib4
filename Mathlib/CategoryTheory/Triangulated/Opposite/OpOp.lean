@@ -205,7 +205,7 @@ instance : (opOp C).IsTriangulated where
     simp [Functor.map_comp, shift_shiftFunctorCompIsoId_hom_app, ← reassoc_of% this]
 
 instance : (opOpEquivalence C).IsTriangulated :=
-  .mk'' _ (by dsimp; infer_instance)
+  .mk'' _ <| inferInstanceAs <| (opOp C).IsTriangulated
 
 instance : (unopUnop C).IsTriangulated :=
   inferInstanceAs ((opOpEquivalence C).functor.IsTriangulated)

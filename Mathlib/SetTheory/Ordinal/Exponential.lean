@@ -5,6 +5,7 @@ Authors: Mario Carneiro, Floris van Doorn, Violeta Hernández Palacios
 -/
 module
 
+public import Mathlib.Data.Nat.Log
 public import Mathlib.SetTheory.Ordinal.Family
 
 /-!
@@ -15,9 +16,7 @@ related by the lemma `Ordinal.opow_le_iff_le_log : b ^ c ≤ x ↔ c ≤ log b x
 `b`, `c`.
 -/
 
-@[expose] public section
-
-noncomputable section
+public noncomputable section
 
 open Function Set Equiv Order
 open scoped Cardinal Ordinal
@@ -29,6 +28,7 @@ namespace Ordinal
 /-- The ordinal exponential, defined by transfinite recursion.
 
 We call this `opow` in theorems in order to disambiguate from other exponentials. -/
+@[no_expose]
 instance instPow : Pow Ordinal Ordinal :=
   ⟨fun a b ↦ if a = 0 then 1 - b else
     limitRecOn b 1 (fun _ x ↦ x * a) fun o _ f ↦ ⨆ x : Iio o, f x.1 x.2⟩
@@ -58,7 +58,7 @@ theorem opow_zero (a : Ordinal) : a ^ (0 : Ordinal) = 1 := by
 @[simp]
 theorem opow_add_one (a b : Ordinal) : a ^ (b + 1) = a ^ b * a := by
   obtain rfl | h := eq_or_ne a 0
-  · rw [zero_opow (add_one_ne_zero b), mul_zero]
+  · rw [zero_opow (add_pos_of_right zero_lt_one b).ne', mul_zero]
   · rw [opow_of_ne_zero h, opow_of_ne_zero h]
     exact limitRecOn_succ ..
 
@@ -91,7 +91,7 @@ theorem one_opow (a : Ordinal) : (1 : Ordinal) ^ a = 1 := by
     simp only [opow_succ, ih, mul_one]
   | limit b l IH =>
     refine eq_of_forall_ge_iff fun c => ?_
-    rw [opow_le_of_isSuccLimit Ordinal.one_ne_zero l]
+    rw [opow_le_of_isSuccLimit one_ne_zero l]
     exact ⟨fun H => by simpa only [opow_zero] using H 0 l.bot_lt, fun H b' h => by rwa [IH _ h]⟩
 
 theorem opow_pos {a : Ordinal} (b : Ordinal) (a0 : 0 < a) : 0 < a ^ b := by
@@ -150,6 +150,18 @@ theorem one_lt_opow {a b : Ordinal} : 1 < a ^ b ↔ 1 < a ∧ b ≠ 0 := by
 theorem one_lt_pow {a : Ordinal} {n : ℕ} : 1 < a ^ n ↔ 1 < a ∧ n ≠ 0 :=
   mod_cast one_lt_opow (b := n)
 
+@[simp]
+theorem opow_eq_one_iff {a b : Ordinal} : a ^ b = 1 ↔ a = 1 ∨ b = 0 := by
+  refine ⟨fun h ↦ ?_, by simp +contextual [or_imp]⟩
+  contrapose! h
+  obtain ha | ha := le_or_gt a 1
+  · simp_all [le_one_iff]
+  · simpa using ((opow_lt_opow_iff_right ha).2 h.2.pos).ne'
+
+@[simp]
+theorem pow_eq_one_iff {a : Ordinal} {n : ℕ} : a ^ n = 1 ↔ a = 1 ∨ n = 0 :=
+  mod_cast opow_eq_one_iff (b := n)
+
 theorem isSuccLimit_opow {a b : Ordinal} (a1 : 1 < a) : IsSuccLimit b → IsSuccLimit (a ^ b) :=
   (isNormal_opow a1).map_isSuccLimit
 
@@ -185,9 +197,9 @@ theorem left_le_opow (a : Ordinal) {b : Ordinal} (b1 : 0 < b) : a ≤ a ^ b := b
   nth_rw 1 [← opow_one a]
   rcases le_or_gt a 1 with a1 | a1
   · rcases lt_or_eq_of_le a1 with a0 | a1
-    · rw [lt_one_iff_zero] at a0
-      rw [a0, zero_opow Ordinal.one_ne_zero]
-      exact zero_le _
+    · rw [lt_one_iff] at a0
+      rw [a0, zero_opow one_ne_zero]
+      exact zero_le
     rw [a1, one_opow, one_opow]
   rwa [opow_le_opow_iff_right a1, one_le_iff_pos]
 
@@ -200,7 +212,7 @@ theorem right_le_opow {a : Ordinal} (b : Ordinal) (a1 : 1 < a) : b ≤ a ^ b :=
 
 theorem opow_lt_opow_left_of_succ {a b c : Ordinal} (ab : a < b) : a ^ succ c < b ^ succ c := by
   rw [opow_succ, opow_succ]
-  exact mul_lt_mul_of_le_of_lt_of_nonneg_of_pos (by gcongr) ab (zero_le _) (opow_pos _ ab.bot_lt)
+  exact mul_lt_mul_of_le_of_lt_of_nonneg_of_pos (by gcongr) ab zero_le (opow_pos _ ab.bot_lt)
 
 theorem opow_add (a b c : Ordinal) : a ^ (b + c) = a ^ b * a ^ c := by
   obtain rfl | ha := eq_zero_or_pos a
@@ -256,21 +268,11 @@ theorem opow_mul_add_lt_opow_mul {b u w x : Ordinal} {v : Ordinal} (hw : w < b ^
   · rwa [mul_add_one, add_lt_add_iff_left]
   · grw [add_one_le_of_lt hv]
 
-@[deprecated opow_mul_add_lt_opow_mul (since := "2025-08-27")]
-theorem opow_mul_add_lt_opow_mul_succ {b u w : Ordinal} (v : Ordinal) (hw : w < b ^ u) :
-    b ^ u * v + w < b ^ u * succ v :=
-  opow_mul_add_lt_opow_mul hw (lt_succ v)
-
 theorem opow_mul_add_lt_opow {b u v w x : Ordinal} (hv : v < b) (hw : w < b ^ u) (hu : u < x) :
     b ^ u * v + w < b ^ x := by
   apply (opow_mul_add_lt_opow_mul hw hv).trans_le
   rw [← opow_succ]
   exact opow_le_opow_right hv.pos (succ_le_of_lt hu)
-
-@[deprecated opow_mul_add_lt_opow_succ (since := "2025-08-27")]
-theorem opow_mul_add_lt_opow_succ {b u v w : Ordinal} (hvb : v < b) (hw : w < b ^ u) :
-    b ^ u * v + w < b ^ succ u :=
-  opow_mul_add_lt_opow hvb hw (lt_succ u)
 
 theorem opow_mul_lt_opow {b u v x : Ordinal} (hv : v < b) (hu : u < x) : b ^ u * v < b ^ x := by
   simpa using opow_mul_add_lt_opow hv (opow_pos _ hv.pos) hu
@@ -420,13 +422,13 @@ theorem log_mod_opow_log_lt_log_self {b o : Ordinal} (hb : 1 < b) (hbo : b ≤ o
     exact mod_lt _ (opow_pos _ hb.pos).ne'
 
 theorem log_eq_iff {b x : Ordinal} (hb : 1 < b) (hx : x ≠ 0) (y : Ordinal) :
-    log b x = y ↔ b ^ y ≤ x ∧ x < b ^ succ y := by
+    log b x = y ↔ b ^ y ≤ x ∧ x < b ^ (y + 1) := by
   constructor
   · rintro rfl
     use opow_log_le_self b hx, lt_opow_succ_log_self hb x
   · rintro ⟨hx₁, hx₂⟩
     apply le_antisymm
-    · rwa [← lt_succ_iff, ← lt_opow_iff_log_lt hb hx]
+    · rwa [← lt_add_one_iff, ← lt_opow_iff_log_lt hb hx]
     · rwa [← opow_le_iff_le_log hb hx]
 
 theorem log_opow_mul_add {b u v w : Ordinal} (hb : 1 < b) (hv : v ≠ 0) (hw : w < b ^ u) :
@@ -435,7 +437,7 @@ theorem log_opow_mul_add {b u v w : Ordinal} (hb : 1 < b) (hv : v ≠ 0) (hw : w
   · constructor
     · grw [opow_add, opow_log_le_self b hv, ← le_self_add]
     · apply (add_lt_add_right hw _).trans_le
-      rw [← mul_add_one, succ_eq_add_one, add_assoc, opow_add]
+      rw [← mul_add_one, add_assoc, opow_add]
       gcongr
       rw [add_one_le_iff]
       exact lt_opow_succ_log_self hb _
@@ -494,7 +496,7 @@ theorem lt_omega0_opow {a b : Ordinal} (hb : b ≠ 0) :
 
 theorem lt_omega0_opow_succ {a b : Ordinal} : a < ω ^ succ b ↔ ∃ n : ℕ, a < ω ^ b * n := by
   refine ⟨fun ha ↦ ?_, fun ⟨n, hn⟩ ↦ hn.trans (omega0_opow_mul_nat_lt (lt_succ b) n)⟩
-  obtain ⟨c, hc, n, hn⟩ := (lt_omega0_opow (add_one_ne_zero b)).1 ha
+  obtain ⟨c, hc, n, hn⟩ := (lt_omega0_opow (add_pos_of_right zero_lt_one b).ne').1 ha
   refine ⟨n, hn.trans_le ?_⟩
   grw [lt_succ_iff.1 hc]
   exact omega0_pos
@@ -529,6 +531,14 @@ theorem iSup_pow_natCast {o : Ordinal} (ho : 0 < o) : ⨆ n : ℕ, o ^ n = o ^ �
 
 @[deprecated (since := "2025-12-25")]
 alias iSup_pow := iSup_pow_natCast
+
+@[simp, norm_cast]
+lemma natCast_log (m n : ℕ) : ↑(Nat.log m n) = Ordinal.log ↑m ↑n := by
+  obtain hm | hm := le_or_gt m 1
+  case inl => rw_mod_cast [Nat.log_of_left_le_one hm, log_of_left_le_one (mod_cast hm)]
+  obtain rfl | hn := eq_or_ne n 0
+  case inl => simp
+  rw_mod_cast [eq_comm, log_eq_iff (mod_cast hm) (mod_cast hn), ← Nat.log_eq_iff (.inr ⟨hm, hn⟩)]
 
 end Ordinal
 

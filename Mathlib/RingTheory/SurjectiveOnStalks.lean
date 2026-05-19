@@ -215,7 +215,7 @@ lemma SurjectiveOnStalks.tensorProductMap
     (Algebra.TensorProduct.comm _ _ _).toRingEquiv.surjectiveOnStalks |>.comp <|
     RingHom.SurjectiveOnStalks.tensorProductMap_id (T := S) Hg |>.comp <|
     (Algebra.TensorProduct.comm _ _ _).toRingEquiv.surjectiveOnStalks
-  simp only [AlgHom.toRingHom_eq_coe, AlgEquiv.toRingEquiv_eq_coe, RingEquiv.toRingHom_eq_coe,
+  simp only [AlgHom.toRingHom_eq_coe, RingEquiv.toRingHom_eq_coe,
     AlgEquiv.toRingEquiv_toRingHom, ← AlgEquiv.toAlgHom_toRingHom, ← AlgHom.comp_toRingHom]
   congr
   ext <;> simp

@@ -60,30 +60,30 @@ theorem range_eq (e : α ≃o β) : Set.range e = Set.univ :=
   e.surjective.range_eq
 
 @[simp]
-theorem symm_image_image (e : α ≃o β) (s : Set α) : e.symm '' (e '' s) = s :=
+theorem symm_image_image (e : α ≃o β) (s : Set α) : e.symm '' e '' s = s :=
   e.toEquiv.symm_image_image s
 
 @[simp]
-theorem image_symm_image (e : α ≃o β) (s : Set β) : e '' (e.symm '' s) = s :=
+theorem image_symm_image (e : α ≃o β) (s : Set β) : e '' e.symm '' s = s :=
   e.toEquiv.image_symm_image s
 
 theorem image_eq_preimage_symm (e : α ≃o β) (s : Set α) : e '' s = e.symm ⁻¹' s :=
   e.toEquiv.image_eq_preimage_symm s
 
 @[simp]
-theorem preimage_symm_preimage (e : α ≃o β) (s : Set α) : e ⁻¹' (e.symm ⁻¹' s) = s :=
+theorem preimage_symm_preimage (e : α ≃o β) (s : Set α) : e ⁻¹' e.symm ⁻¹' s = s :=
   e.toEquiv.preimage_symm_preimage s
 
 @[simp]
-theorem symm_preimage_preimage (e : α ≃o β) (s : Set β) : e.symm ⁻¹' (e ⁻¹' s) = s :=
+theorem symm_preimage_preimage (e : α ≃o β) (s : Set β) : e.symm ⁻¹' e ⁻¹' s = s :=
   e.toEquiv.symm_preimage_preimage s
 
 @[simp]
-theorem image_preimage (e : α ≃o β) (s : Set β) : e '' (e ⁻¹' s) = s :=
+theorem image_preimage (e : α ≃o β) (s : Set β) : e '' e ⁻¹' s = s :=
   e.toEquiv.image_preimage s
 
 @[simp]
-theorem preimage_image (e : α ≃o β) (s : Set α) : e ⁻¹' (e '' s) = s :=
+theorem preimage_image (e : α ≃o β) (s : Set α) : e ⁻¹' e '' s = s :=
   e.toEquiv.preimage_image s
 
 end LE
@@ -192,7 +192,6 @@ instance subsingleton_of_wellFoundedGT' [LinearOrder β] [WellFoundedGT β] [Pre
 
 instance unique_of_wellFoundedGT [LinearOrder α] [WellFoundedGT α] : Unique (α ≃o α) := Unique.mk' _
 
-set_option backward.isDefEq.respectTransparency false in
 /-- An order isomorphism between lattices induces an order isomorphism between corresponding
 interval sublattices. -/
 protected def Iic [Lattice α] [Lattice β] (e : α ≃o β) (x : α) :
@@ -203,7 +202,6 @@ protected def Iic [Lattice α] [Lattice β] (e : α ≃o β) (x : α) :
   right_inv y := by simp
   map_rel_iff' := by simp
 
-set_option backward.isDefEq.respectTransparency false in
 /-- An order isomorphism between lattices induces an order isomorphism between corresponding
 interval sublattices. -/
 protected def Ici [Lattice α] [Lattice β] (e : α ≃o β) (x : α) :
@@ -214,7 +212,6 @@ protected def Ici [Lattice α] [Lattice β] (e : α ≃o β) (x : α) :
   right_inv y := by simp
   map_rel_iff' := by simp
 
-set_option backward.isDefEq.respectTransparency false in
 /-- An order isomorphism between lattices induces an order isomorphism between corresponding
 interval sublattices. -/
 protected def Icc [Lattice α] [Lattice β] (e : α ≃o β) (x y : α) :

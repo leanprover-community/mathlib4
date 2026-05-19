@@ -73,9 +73,6 @@ instance : Zero (LieSubmodule R L M) :=
 instance : Inhabited (LieSubmodule R L M) :=
   ⟨0⟩
 
-instance (priority := high) coeSort : CoeSort (LieSubmodule R L M) (Type w) where
-  coe N := { x : M // x ∈ N }
-
 instance (priority := mid) coeSubmodule : CoeOut (LieSubmodule R L M) (Submodule R M) :=
   ⟨toSubmodule⟩
 
@@ -334,8 +331,6 @@ instance : InfSet (LieSubmodule R L M) :=
 theorem coe_inf : (↑(N ⊓ N') : Set M) = ↑N ∩ ↑N' :=
   rfl
 
-@[deprecated (since := "2025-08-31")] alias inf_coe := coe_inf
-
 @[norm_cast, simp]
 theorem inf_toSubmodule :
     (↑(N ⊓ N') : Submodule R M) = (N : Submodule R M) ⊓ (N' : Submodule R M) :=
@@ -362,13 +357,9 @@ theorem coe_sInf (S : Set (LieSubmodule R L M)) : (↑(sInf S) : Set M) = ⋂ s 
   simp only [mem_iInter, mem_setOf_eq, forall_apply_eq_imp_iff₂, exists_imp,
     and_imp, SetLike.mem_coe, mem_toSubmodule]
 
-@[deprecated (since := "2025-08-31")] alias sInf_coe := coe_sInf
-
 @[simp]
 theorem coe_iInf {ι} (p : ι → LieSubmodule R L M) : (↑(⨅ i, p i) : Set M) = ⋂ i, ↑(p i) := by
   rw [iInf, coe_sInf]; simp only [Set.mem_range, Set.iInter_exists, Set.iInter_iInter_eq']
-
-@[deprecated (since := "2025-08-31")] alias iInf_coe := coe_iInf
 
 @[simp]
 theorem mem_iInf {ι} (p : ι → LieSubmodule R L M) {x} : x ∈ ⨅ i, p i ↔ ∀ i, x ∈ p i := by
