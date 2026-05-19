@@ -554,19 +554,123 @@ lemma _root_.CategoryTheory.Functor.PreservesOneHypercovers.of_coverPreserving
       simp
     · exact pullback.condition
 
-def fooooo {C : Type*} [Category* C] [Quiver.IsThin C]
+def _root_.CategoryTheory.Limits.BinaryFan.IsLimit.lift
+    {C : Type*} [Category* C] {W X Y : C} {s : BinaryFan X Y} (h : IsLimit s)
+    (f : W ⟶ X) (g : W ⟶ Y) :
+    W ⟶ s.pt :=
+  h.lift (BinaryFan.mk f g)
+
+@[reassoc (attr := simp)]
+lemma _root_.CategoryTheory.Limits.BinaryFan.IsLimit.lift_fst
+    {C : Type*} [Category* C] {W X Y : C} {s : BinaryFan X Y} (h : IsLimit s)
+    (f : W ⟶ X) (g : W ⟶ Y) :
+    BinaryFan.IsLimit.lift h f g ≫ s.fst = f :=
+  h.fac (BinaryFan.mk f g) _
+
+@[reassoc (attr := simp)]
+lemma _root_.CategoryTheory.Limits.BinaryFan.IsLimit.lift_snd
+    {C : Type*} [Category* C] {W X Y : C} {s : BinaryFan X Y} (h : IsLimit s)
+    (f : W ⟶ X) (g : W ⟶ Y) :
+    BinaryFan.IsLimit.lift h f g ≫ s.snd = g :=
+  h.fac (BinaryFan.mk f g) _
+
+def _root_.CategoryTheory.Limits.isLimitEquivFanOfIsThin {C : Type*} [Category* C]
+    [Quiver.IsThin C] {J : Type*} [Category* J] {K : J ⥤ C} (c : Cone K) :
+    IsLimit c ≃ IsLimit (Fan.mk c.pt c.π.app) where
+  toFun hc := Limits.mkFanLimit _ (fun s ↦ hc.lift { pt := s.pt, π.app j := s.proj j })
+    (by subsingleton) (by subsingleton)
+  invFun h := { lift s := Fan.IsLimit.lift h s.π.app }
+
+def _root_.CategoryTheory.isPullback_iff_isLimit_binaryFan_of_isThin {C : Type*} [Category* C]
+    [Quiver.IsThin C] {P X Y Z : C} {fst : P ⟶ X} {snd : P ⟶ Y} {f : X ⟶ Z} {g : Y ⟶ Z} :
+    IsPullback fst snd f g ↔ Nonempty (IsLimit (BinaryFan.mk fst snd)) := by
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · exact ⟨BinaryFan.IsLimit.mk _ (fun u v ↦ h.lift u v (by subsingleton))
+      (by subsingleton) (by subsingleton) (by subsingleton)⟩
+  · exact ⟨⟨by subsingleton⟩,
+      ⟨PullbackCone.IsLimit.mk _ (fun s ↦ BinaryFan.IsLimit.lift h.some s.fst s.snd)
+      (by subsingleton) (by subsingleton) (by subsingleton)⟩⟩
+
+lemma _root_.CategoryTheory.IsPullback.preservesLimit_cospan_iff
+    {C D : Type*} [Category* C] [Category* D] {F : C ⥤ D}
     {P X Y Z : C} {fst : P ⟶ X} {snd : P ⟶ Y} {f : X ⟶ Z} {g : Y ⟶ Z}
     (h : IsPullback fst snd f g) :
-    IsLimit (BinaryFan.mk fst snd) :=
-  BinaryFan.IsLimit.mk _ _ _ _ _
+    PreservesLimit (cospan f g) F ↔ IsPullback (F.map fst) (F.map snd) (F.map f) (F.map g) := by
+  refine ⟨fun _ ↦ h.map _, fun hF ↦ ?_⟩
+  apply preservesLimit_of_preserves_limit_cone h.isLimit
+  exact (PullbackCone.isLimitMapConeEquiv _ _).symm hF.isLimit
+
+lemma _root_.CategoryTheory.Limits.PreservesLimit.mk'
+    {J C D : Type*} [Category* J] [Category* C] [Category* D] {K : J ⥤ C} {F : C ⥤ D}
+    (h : HasLimit K → PreservesLimit K F) :
+    PreservesLimit K F where
+  preserves hc := (h ⟨_, hc⟩).preserves hc
+
+lemma _root_.CategoryTheory.Limits.preservesLimitsOfShape_walkingCospan_of_forall_isPullback
+    {C D : Type*} [Category* C] [Category* D] (F : C ⥤ D)
+    (H : ∀ ⦃X Y Z : C⦄ (f : X ⟶ Z) (g : Y ⟶ Z) [HasPullback f g],
+      ∃ (P : C) (fst : P ⟶ X) (snd : P ⟶ Y),
+        IsPullback fst snd f g ∧ IsPullback (F.map fst) (F.map snd) (F.map f) (F.map g)) :
+    PreservesLimitsOfShape WalkingCospan F := by
+  suffices h : ∀ {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z), PreservesLimit (cospan f g) F by
+    constructor
+    intro K
+    apply preservesLimit_of_iso_diagram _ (Limits.diagramIsoCospan K).symm
+  intro X Y Z f g
+  refine .mk' fun h ↦ ?_
+  obtain ⟨P, fst, snd, h, h'⟩ := H f g
+  rwa [h.preservesLimit_cospan_iff]
+
+def _root_.CategoryTheory.Limits.BinaryFan.isLimitMapConeEquiv
+    {C D : Type*} [Category* C] [Category* D] {F : C ⥤ D} {X Y : C}
+    {s : BinaryFan X Y} :
+    IsLimit (F.mapCone s) ≃ IsLimit (BinaryFan.mk (F.map s.fst) (F.map s.snd)) :=
+  IsLimit.equivOfNatIsoOfIso (diagramIsoPair _) _ _ <| BinaryFan.ext (Iso.refl _)
+    (by simp [BinaryFan.fst]) (by simp [BinaryFan.snd])
+
+instance (priority := low) {C D : Type*} [Category* C] [Category* D] [Quiver.IsThin C]
+    [Quiver.IsThin D] (F : C ⥤ D)
+    [PreservesLimitsOfShape (Discrete WalkingPair) F] :
+    PreservesLimitsOfShape WalkingCospan F := by
+  apply preservesLimitsOfShape_walkingCospan_of_forall_isPullback
+  intro X Y Z f g hfg
+  use pullback f g, pullback.fst f g, pullback.snd f g, .of_hasPullback f g
+  rw [isPullback_iff_isLimit_binaryFan_of_isThin]
+  constructor
+  refine (BinaryFan.mk (pullback.fst f g) (pullback.snd f g)).isLimitMapConeEquiv ?_
+  apply isLimitOfPreserves
+  apply Nonempty.some
+  rw [← CategoryTheory.isPullback_iff_isLimit_binaryFan_of_isThin (f := f) (g := g)]
+  exact .of_hasPullback f g
+
+lemma TopologicalSpace.Opens.coe_iInf {X : Type*} [TopologicalSpace X] {ι : Type*} [Finite ι]
+    (U : ι → TopologicalSpace.Opens X) :
+    (((⨅ i, U i) : Opens X) : Set X) = ⋂ i, U i := by
+  induction ι using Finite.induction_empty_option with
+  | of_equiv e ih => rw [← e.iInf_comp, ← e.surjective.iInter_comp, ih]
+  | h_empty => simp
+  | h_option ih => rw [iInf_option, Set.iInter_option, Opens.coe_inf, ih]
+
+instance {X Y : TopCat.{u}} (f : X ⟶ Y) (hf : Topology.IsOpenEmbedding f) {ι : Type*} [Nonempty ι]
+    [Finite ι] :
+    PreservesLimitsOfShape (Discrete ι) hf.functor := by
+  apply +allowSynthFailures Limits.preservesLimitsOfShape_of_discrete
+  intro g
+  refine preservesLimit_of_preserves_limit_cone (Preorder.isLimitIInf g) ?_
+  refine (Limits.Fan.isLimitMapConeEquiv _ _ _).symm (Preorder.isLimitOfIsGLB _ _ ?_)
+  simp only [Discrete.range_functor, homOfLE_leOfHom, Fan.mk_pt]
+  have : hf.functor.obj (⨅ i, g i) = ⨅ i, hf.functor.obj (g i) := by
+    ext : 1
+    simp only [IsOpenMap.coe_functor_obj, TopologicalSpace.Opens.coe_iInf]
+    rw [Set.InjOn.image_iInter_eq]
+    exact hf.injective.injOn
+  rw [this]
+  apply isGLB_iInf
 
 instance {X Y : TopCat.{u}} (f : X ⟶ Y) (hf : Topology.IsOpenEmbedding f) :
     PreservesLimitsOfShape WalkingCospan hf.functor := by
-  constructor
-  intro K
-  sorry
+  infer_instance
 
-#exit
 instance {X Y : Scheme.{u}} (f : X ⟶ Y) [IsOpenImmersion f] :
     PreservesLimitsOfShape WalkingCospan (Scheme.Hom.opensFunctor f) := by
   dsimp [Scheme.Hom.opensFunctor]
