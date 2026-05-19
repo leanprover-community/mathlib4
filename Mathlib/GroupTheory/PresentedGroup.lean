@@ -32,7 +32,7 @@ generators, relations, group presentations
 @[expose] public section
 
 
-variable {α : Type*}
+variable {α β : Type*}
 
 /-- Given a set of relations, `rels`, over a type `α`, `PresentedGroup` constructs the group with
 generators `x : α` and relations `rels` as a quotient of `FreeGroup α`. -/
@@ -60,7 +60,7 @@ open Subgroup in
 `FreeGroup α →* FreeGroup β` induces a homomorphism
 `PresentedGroup s →* PresentedGroup t` if the image of `s` is contained in `t`.
 -/
-protected def map {α β : Type*} (f : FreeGroup α →* FreeGroup β)
+protected def map (f : FreeGroup α →* FreeGroup β)
     {s : Set (FreeGroup α)} {t : Set (FreeGroup β)} (hst : s.MapsTo f t) :
     PresentedGroup s →* PresentedGroup t :=
   QuotientGroup.map _ _ f
@@ -151,8 +151,6 @@ theorem ext {φ ψ : PresentedGroup rels →* G} (hx : ∀ (x : α), φ (.of x) 
   ext
   apply hx
 
-variable {β : Type*}
-
 /-- Presented groups of isomorphic types are isomorphic. -/
 def equivPresentedGroup (rels : Set (FreeGroup α)) (e : α ≃ β) :
     PresentedGroup rels ≃* PresentedGroup (FreeGroup.freeGroupCongr e '' rels) :=
@@ -176,7 +174,6 @@ instance (rels : Set (FreeGroup α)) : Inhabited (PresentedGroup rels) :=
 
 section Coprod
 
-variable {β : Type*}
 variable (rels₁ : Set (FreeGroup α)) (rels₂ : Set (FreeGroup β))
 
 /--
