@@ -98,6 +98,7 @@ protected theorem continuousOn : ContinuousOn e e.source :=
 theorem continuousOn_symm : ContinuousOn e.symm e.target :=
   e.continuousOn_invFun
 
+@[simp, mfld_simps]
 theorem mk_coe (e : PartialEquiv X Y) (h1 h2 h3 h4) :
     (OpenPartialHomeomorph.mk e h1 h2 h3 h4 : X → Y) = e :=
   rfl

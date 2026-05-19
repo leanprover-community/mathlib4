@@ -43,7 +43,7 @@ protected def trans' (h : e.target = e'.source) : OpenPartialHomeomorph X Z wher
   open_source := e.open_source
   open_target := e'.open_target
   continuousOn_toFun := e'.continuousOn.comp e.continuousOn <| h ▸ e.mapsTo
-  continuousOn_invFun := e.continuousOn_symm.comp e'.continuousOn_symm <| h.symm ▸ e'.symm_mapsTo
+  continuousOn_invFun := e.continuousOn_symm.comp e'.continuousOn_symm <| h.symm ▸ e'.mapsTo_symm
 
 /-- Composing two open partial homeomorphisms, by restricting to the maximal domain where their
 composition is well defined.
