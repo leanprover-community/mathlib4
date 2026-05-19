@@ -19,15 +19,14 @@ in which each generator `ι x` is primitive: `Δ(ι x) = ι x ⊗ 1 + 1 ⊗ ι x
 
 public section
 
+noncomputable section
+
 namespace SymmetricAlgebra
 
 variable (R : Type*) [CommSemiring R] (M : Type*) [AddCommMonoid M] [Module R M]
 
 open scoped TensorProduct
 
-noncomputable section
-
-@[simp]
 theorem algebraMapInv_ι (x : M) : algebraMapInv (R := R) (M := M) (ι R M x) = 0 := by
   simp [algebraMapInv]
 
@@ -104,8 +103,6 @@ protected theorem comulAlgHom_comm :
     AlgEquiv.coe_algHom, SymmetricAlgebra.comulAlgHom_ι, map_add,
     Algebra.TensorProduct.comm_tmul]
   abel
-
-end
 
 instance instIsCocomm : Coalgebra.IsCocomm R (SymmetricAlgebra R M) where
   comm_comp_comul := congr(($(SymmetricAlgebra.comulAlgHom_comm R M)).toLinearMap)
