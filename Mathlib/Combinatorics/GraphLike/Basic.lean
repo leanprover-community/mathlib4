@@ -7,8 +7,9 @@ module
 
 public import Mathlib.Data.PFun
 public import Mathlib.Combinatorics.Graph.Basic
-public import Mathlib.Combinatorics.SimpleGraph.Basic
+public import Mathlib.Combinatorics.SimpleGraph.Dart
 public import Mathlib.Combinatorics.Digraph.Basic
+public import Mathlib.AlgebraicTopology.SimplicialComplex.Basic
 
 /-! # Typeclass for graph-like data
 
@@ -24,11 +25,22 @@ open Prod Set
 
 variable {V E Gr : Type*} {G : Gr} {e : E} {x y : V}
 
+/-- The type `Gr` consists of graph-like objects on vertices `V` and edges `E`. Note that we
+*cannot* require the converse of `isSource_left_of_isLink` and `isTarget_right_of_isLink` taken
+together, as might be tempting: in an undirected graph we want, for instance `IsLink G e x y` and
+`IsLink G e y x` to both be true, and this converse would then imply `IsLink H e x x`, which we
+don't necessarily want. We also can't take `is{Source / Target}_{left / right}_of_isLink` as a
+definition, to account for edges which have inputs but no outputs. -/
 class HyperGraphLike (V E : outParam Type*) (Gr : Type*) where
+  /-- The set of vertices of a graph. -/
   verts : Gr → Set V
+  /-- The set of edges of a graph. -/
   edges : Gr → Set E
+  /-- A vertex can acts as an input to an edge. -/
   IsSource : Gr → E → V → Prop
+  /-- A vertex can acts as an output from an edge. -/
   IsTarget : Gr → E → V → Prop
+  /-- An edges represents a walk of length one. -/
   IsLink : Gr → E → V → V → Prop
   mem_edges_of_isSource : ∀ ⦃G e x⦄, IsSource G e x → e ∈ edges G
   mem_edges_of_isTarget : ∀ ⦃G e x⦄, IsTarget G e x → e ∈ edges G
@@ -39,8 +51,10 @@ class HyperGraphLike (V E : outParam Type*) (Gr : Type*) where
 
 namespace HyperGraphLike
 
-variable [instHGL : HyperGraphLike V E Gr]
+variable [HyperGraphLike V E Gr]
 
+/-- Construct an instance based on source and target relations. `IsLink G e x y` is defined to be
+`IsSource G e x ∧ IsTarget G e y`. -/
 @[implicit_reducible]
 def ofIsSourceIsTarget (verts : Gr → Set V) (edges : Gr → Set E)
     (IsSource : Gr → E → V → Prop) (IsTarget : Gr → E → V → Prop)
@@ -79,6 +93,7 @@ lemma IsLink.mem_verts_right (h : IsLink G e x y) : y ∈ verts G := h.isTarget_
 
 lemma IsLink.mem_edges (h : IsLink G e x y) : e ∈ edges G := h.isSource_left.mem_edges
 
+/-- Notion of adjacency derived from `IsLink`. -/
 def Adj (G : Gr) (x y : V) : Prop := ∃ e, IsLink G e x y
 
 lemma Adj.mem_verts_left (h : Adj G x y) : x ∈ verts G :=
@@ -89,6 +104,7 @@ lemma Adj.mem_verts_right (h : Adj G x y) : y ∈ verts G :=
   have ⟨_, h⟩ := h
   h.mem_verts_right
 
+/-- A `Dart` is a walk of length one. -/
 structure Dart (G : Gr) where
   src : V
   tgt : V
@@ -110,6 +126,7 @@ lemma edge_mem (d : Dart G) : d.edge ∈ edges G := d.h.mem_edges
 
 lemma adj (d : Dart G) : Adj G d.src d.tgt := ⟨d.edge, d.h⟩
 
+/-- Darts are adjacent if they can appear as consecutive steps in a walk. -/
 def AdjDart (d d' : Dart G) : Prop := d.tgt = d'.src
 
 end Dart
@@ -118,6 +135,8 @@ end HyperGraphLike
 
 open HyperGraphLike
 
+/-- A class for hypergraphs with no orientation on edges, so that `IsSource` and `IsTarget` agree
+and `IsLink` is symmetric. -/
 class HyperGraphLike.Symm (V E : outParam Type*) (Gr : Type*) extends HyperGraphLike V E Gr where
   isSource_iff_isTarget : ∀ ⦃G e x⦄, IsSource G e x ↔ IsTarget G e x
   isLink_symm : ∀ ⦃G e⦄, Symmetric (IsLink G e)
@@ -134,6 +153,9 @@ lemma adj_symm : Symmetric (Adj G) := by
 
 end HyperGraphLike.Symm
 
+/-- A `GraphLike` type, where each edge connects a unique (not necessarily distinct) pair
+of vertices. For this class and those inheriting it, `IsSource` and `IsTarget` are inferred from
+`IsLink`. -/
 class GraphLike (V E : outParam Type*) (Gr : Type*) extends HyperGraphLike V E Gr where
   mem_edges_iff_exists_isLink : ∀ ⦃G e⦄, e ∈ edges G ↔ ∃ x y, IsLink G e x y
   isSource_iff_exists_isLink : ∀ ⦃G e x⦄, IsSource G e x ↔ ∃ y, IsLink G e x y
@@ -141,8 +163,10 @@ class GraphLike (V E : outParam Type*) (Gr : Type*) extends HyperGraphLike V E G
   eq_and_eq_or_eq_and_eq_of_isLink_of_isLink : ∀ ⦃G : Gr⦄ ⦃e x y x' y'⦄,
       IsLink G e x y → IsLink G e x' y' → x = x' ∧ y = y' ∨ x = y' ∧ y = x'
 
-namespace DirGraphLike
+namespace GraphLike
 
+/-- Construct a `GraphLike` instance directly from the `IsLink` relation. `IsSource` and `IsTarget`
+are given their only possible definitions. -/
 @[implicit_reducible]
 def ofIsLink (verts : Gr → Set V) (IsLink : Gr → E → V → V → Prop)
     (mem_verts_left_of_isLink : ∀ ⦃G e x y⦄, IsLink G e x y → x ∈ verts G)
@@ -166,11 +190,9 @@ def ofIsLink (verts : Gr → Set V) (IsLink : Gr → E → V → V → Prop)
   isSource_left_of_isLink _ _ _ y h := ⟨y, h⟩
   isTarget_right_of_isLink _ _ x _ h := ⟨x, h⟩
 
+/-- A simple `GraphLike` type has at most one edge linking any two vertices. -/
 class Simple (V E : outParam Type*) (Gr : Type*) extends GraphLike V E Gr where
   eq_of_isLink_of_isLink : ∀ ⦃G e e' x y⦄, IsLink G e x y → IsLink G e' x y → e = e'
-
-class Directed (V E : outParam Type*) (Gr : Type*) extends GraphLike V E Gr where
-  existsUnique_isLink_of_mem_edges : ∀ ⦃G e⦄, e ∈ edges G → ∃! x, ∃! y, IsLink G e x y
 
 variable [GraphLike V E Gr]
 
@@ -182,10 +204,11 @@ lemma eq_endpoints_of_isLink (h : IsLink G e x y) : s(x, y) = endpoints h.mem_ed
   simpa [endpoints] using eq_and_eq_or_eq_and_eq_of_isLink_of_isLink (G := G) (e := e) h <|
     Classical.choose_spec <| Classical.choose_spec (mem_edges_iff_exists_isLink.mp h.mem_edges)
 
-end DirGraphLike
+end GraphLike
 
-open DirGraphLike
+open GraphLike
 
+/-- In a `DigraphLike` type, each edge has a unique source and target. -/
 class DigraphLike (V E : outParam Type*) (Gr : Type*) extends
     GraphLike V E Gr where
   eq_of_isSource_of_isSource : ∀ ⦃G e x x'⦄, IsSource G e x → IsSource G e x' → x = x'
@@ -245,25 +268,34 @@ lemma isLink_iff_eq_src_eq_tgt (he : e ∈ edges G) (x y : V) :
   ⟨fun h => ⟨eq_src_left_of_isLink h, eq_tgt_right_of_isLink h⟩,
     fun ⟨hx, hy⟩ => hx ▸ hy ▸ isLink_src_tgt he⟩
 
+lemma eq_and_eq_of_isLink_of_isLink {e : E} {x y x' y' : V} (h : IsLink G e x y)
+    (h' : IsLink G e x' y') : x = x' ∧ y = y' :=
+  ⟨eq_of_isSource_of_isSource h.isSource_left h'.isSource_left,
+  eq_of_isTarget_of_isTarget h.isTarget_right h'.isTarget_right⟩
+
 end DigraphLike
 
 open DigraphLike
 
+/-- In an irreflexive hypergraph-like type, there is no length-one walk from a vertex to itself. -/
 class IrreflHyperGraphLike (V E : outParam Type*) (Gr : Type*) extends
     HyperGraphLike V E Gr where
   not_isLink_self_self : ∀ ⦃G e x⦄, ¬ (IsLink G e x x)
 
+/-- `Digraph` is indeed `DigraphLike`... -/
 instance instDigraphLikeDigraph : DigraphLike V (V × V) (Digraph V) :=
   ofSourceTarget (Gr := Digraph V)
   (verts := fun _ => Set.univ) (edges := fun G => {p : V × V | G.Adj p.1 p.2})
   (src := fun _ => Prod.fst) (tgt := fun _ => Prod.snd)
   (mem_verts_src := fun _ _ _ => trivial) (mem_verts_tgt := fun _ _ _ => trivial)
 
+/-- ... and simple. -/
 instance : GraphLike.Simple V (V × V) (Digraph V) where
   eq_of_isLink_of_isLink G e e' x y h h' := by
     cases e; cases e'
     simp_all [IsLink]
 
+/-- `Graph` is `GraphLike`. -/
 instance : GraphLike V E (Graph V E) := by
   refine ofIsLink Graph.vertexSet Graph.IsLink ?_ ?_ ?_
   · intro G e x y h
@@ -278,6 +310,7 @@ lemma Graph.edges_eq_edgeSet (G : Graph V E) : edges G = G.edgeSet := by
   ext x
   simp [edges, G.edge_mem_iff_exists_isLink]
 
+/-- `Graph` is symmetric. -/
 instance : HyperGraphLike.Symm V E (Graph V E) where
   isSource_iff_isTarget G e x := by
     simp [IsSource, IsTarget]
@@ -286,6 +319,7 @@ instance : HyperGraphLike.Symm V E (Graph V E) where
     intro x y h
     exact h.symm
 
+/-- `SimpleGraph` is `Graphlike`, ... -/
 instance : GraphLike V (Sym2 V) (SimpleGraph V) := by
   refine ofIsLink (fun _ => Set.univ) (fun (G : SimpleGraph V) e x y => G.Adj x y ∧ e = s(x, y))
     ?_ ?_ ?_
@@ -294,6 +328,7 @@ instance : GraphLike V (Sym2 V) (SimpleGraph V) := by
   · rintro G e x y x' y' ⟨_, rfl⟩ ⟨_, h⟩
     grind
 
+/-- ... symmetric, ... -/
 instance : HyperGraphLike.Symm V (Sym2 V) (SimpleGraph V) where
   isSource_iff_isTarget G e x := by
     simp [IsSource, IsTarget]
@@ -302,10 +337,35 @@ instance : HyperGraphLike.Symm V (Sym2 V) (SimpleGraph V) where
     simp [IsLink]
     grind [G.adj_comm]
 
+/-- ... simple, ... -/
+instance : GraphLike.Simple V (Sym2 V) (SimpleGraph V) where
+  eq_of_isLink_of_isLink G e e' x y := by rintro ⟨h, rfl⟩ ⟨h', rfl⟩; rfl
+
+/-- ... and irreflexive. -/
 instance : IrreflHyperGraphLike V (Sym2 V) (SimpleGraph V) where
   not_isLink_self_self G e x := by simp [IsLink]
 
+-- sanity checks.
+lemma SimpleGraph.edges_eq_edgeSet (G : SimpleGraph V) : edges G = G.edgeSet := by
+  ext x
+  rcases x with ⟨x, y⟩
+  simp [edges]
+  grind [G.adj_comm]
+
+lemma SimpleGraph.adj_iff_adj (G : SimpleGraph V) (x y : V) :
+    G.Adj x y ↔ HyperGraphLike.Adj G x y := by
+  simp [HyperGraphLike.Adj, IsLink]
+
+def SimpleGraph.dart_equiv_dart (G : SimpleGraph V) :
+    G.Dart ≃ HyperGraphLike.Dart G where
+  toFun d := ⟨d.fst, d.snd, s(d.fst, d.snd), d.adj, rfl⟩
+  invFun d := ⟨⟨d.src, d.tgt⟩, (G.adj_iff_adj _ _).mpr d.adj⟩
+  right_inv d := by rcases d with ⟨x, y, e, h, rfl⟩; simp
+
 section HalfEdge
+
+/-! A rough definition and instance(s) to show that a graph-like type defined in terms of half-edges
+can be fit (faithfully imo) into this framework. -/
 
 structure BondGraph (V E : Type*) where
   verts : Set V
@@ -392,3 +452,9 @@ instance : IrreflHyperGraphLike V (Sym2 E) (IrreflBondGraph V E) where
     exact G.endpoint_ne_endpoint_swap hf h.symm
 
 end HalfEdge
+
+-- i don't think this is particularly interesting but it is at least possible
+instance : HyperGraphLike V (Finset V) (AbstractSimplicialComplex V) := by
+  refine ofIsSourceIsTarget (fun _ => Set.univ) (fun K => K.faces) (fun K e x => e ∈ K ∧ x ∈ e)
+      (fun K e x => e ∈ K ∧ x ∈ e) (fun _ _ _ h => h.1) (fun _ _ _ h => h.1)
+      (fun _ _ _ _ => trivial) (fun _ _ _ _ => trivial)
