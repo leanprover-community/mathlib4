@@ -516,67 +516,45 @@ theorem integral_smul_nnreal_measure (f : X → E) (c : ℝ≥0) :
 
 open TopologicalSpace
 
-theorem Integrable.map {β : Type*} [MeasurableSpace β] {φ : X → β} (hφ : Measurable φ)
-    {f : β → E} (hfm : StronglyMeasurable f) (h : μ.Integrable (f ∘ φ) B) :
-    (μ.map φ).Integrable f B := by
-  simp_rw [VectorMeasure.Integrable] at h ⊢
-  apply ((integrable_map_measure hfm.aestronglyMeasurable hφ.aemeasurable).2 h).mono_measure
+lemma variation_transpose_map_le {β : Type*} [MeasurableSpace β] {φ : X → β} :
+   ((μ.map φ).transpose B).variation ≤ Measure.map φ (μ.transpose B).variation := by
+  by_cases hφ : Measurable φ; swap
+  · simp [VectorMeasure.map, hφ, transpose, Measure.zero_le]
   apply variation_le_of_forall_enorm_le (fun s hs ↦ ?_)
   simp only [transpose, mapRange_apply, LinearMap.toAddMonoidHom_coe, coe_coe,
     Measure.map_apply hφ hs]
   apply le_trans ?_ (enorm_measure_le_variation _ _)
   simp [VectorMeasure.map_apply _ hφ hs]
 
-theorem integral_map_of_stronglyMeasurable {β : Type*} [MeasurableSpace β]
-    {φ : X → β} (hφ : Measurable φ) {f : β → E} (hfm : StronglyMeasurable f)
+theorem Integrable.map {β : Type*} [MeasurableSpace β] {φ : X → β}
+    {f : β → E} (hfm : AEStronglyMeasurable f ((μ.transpose B).variation.map φ))
+    (h : μ.Integrable (f ∘ φ) B) :
+    (μ.map φ).Integrable f B := by
+  by_cases hφ : Measurable φ; swap
+  · simp [VectorMeasure.map, hφ]
+  simp_rw [VectorMeasure.Integrable] at h ⊢
+  apply ((integrable_map_measure hfm hφ.aemeasurable).2 h).mono_measure
+  apply variation_transpose_map_le
+
+theorem integral_map {β : Type*} [MeasurableSpace β]
+    {φ : X → β} (hφ : Measurable φ) {f : β → E}
+    (hfm : AEStronglyMeasurable f ((μ.transpose B).variation.map φ))
     (hfi' : μ.Integrable (f ∘ φ) B) :
     ∫ᵛ y, f y ∂[B; μ.map φ] = ∫ᵛ x, f (φ x) ∂[B; μ] := by
-  by_cases hG : CompleteSpace G; swap
-  · simp [integral, setToFun, hG]
-  have hfi : (μ.map φ).Integrable f B := hfi'.map hφ hfm
-  borelize E
-  have : SeparableSpace (range f ∪ {0} : Set E) := hfm.separableSpace_range_union_singleton
-  refine tendsto_nhds_unique
-    (tendsto_setToFun_approxOn_of_measurable_of_range_subset
-      ((dominatedFinMeasAdditive_cbmApplyMeasure (μ.map φ) B)) hfm.measurable hfi _ Subset.rfl) ?_
-  convert tendsto_setToFun_approxOn_of_measurable_of_range_subset
-    (dominatedFinMeasAdditive_cbmApplyMeasure μ B) (hfm.measurable.comp hφ) hfi' (range f ∪ {0})
-    (union_subset_union_left {0} (range_comp_subset_range φ f)) using 1
-  ext i : 1
-  rw [setToFun_simpleFunc _ _ (SimpleFunc.integrable_approxOn_range _ hfi _),
-    setToFun_simpleFunc]; swap
-  · apply SimpleFunc.integrable_approxOn _ hfi' (by simp) (by simp)
-  rw [SimpleFunc.approxOn_comp hfm.measurable hφ]
-  simp [cbmApplyMeasure]
+  apply setToFun_of_le_map _ _ hfi' hfm hφ variation_transpose_map_le
+  intro s x hs
+  simp [hs, VectorMeasure.map, transpose, hφ]
 
-#exit
-
-
-  refine (Finset.sum_subset (SimpleFunc.range_comp_subset_range _ hφ) fun y _ hy => ?_).symm
-  rw [SimpleFunc.mem_range, ← Set.preimage_singleton_eq_empty, SimpleFunc.coe_comp] at hy
-  rw [hy]
-  simp
-
-#exit
-
-theorem integral_map {β} [MeasurableSpace β] {φ : X → β} (hφ : AEMeasurable φ μ) {f : β → G}
-    (hfm : AEStronglyMeasurable f (Measure.map φ μ)) :
-    ∫ᵛ y, f y ∂Measure.map φ μ = ∫ᵛ x, f (φ x) ∂[B; μ] :=
-  let g := hfm.mk f
-  calc
-    ∫ᵛ y, f y ∂Measure.map φ μ = ∫ᵛ y, g y ∂Measure.map φ μ := integral_congr_ae hfm.ae_eq_mk
-    _ = ∫ᵛ y, g y ∂Measure.map (hφ.mk φ) μ := by congr 1; exact Measure.map_congr hφ.ae_eq_mk
-    _ = ∫ᵛ x, g (hφ.mk φ x) ∂[B; μ] :=
-      (integral_map_of_stronglyMeasurable hφ.measurable_mk hfm.stronglyMeasurable_mk)
-    _ = ∫ᵛ x, g (φ x) ∂[B; μ] := integral_congr_ae (hφ.ae_eq_mk.symm.fun_comp _)
-    _ = ∫ᵛ x, f (φ x) ∂[B; μ] := integral_congr_ae <| ae_eq_comp hφ hfm.ae_eq_mk.symm
-
-theorem _root_.MeasurableEmbedding.integral_map {β} {_ : MeasurableSpace β} {f : X → β}
-    (hf : MeasurableEmbedding f) (g : β → G) : ∫ᵛ y, g y ∂Measure.map f μ = ∫ᵛ x, g (f x) ∂[B; μ] := by
-  by_cases hgm : AEStronglyMeasurable g (Measure.map f μ)
-  · exact MeasureTheory.integral_map hf.measurable.aemeasurable hgm
+theorem _root_.MeasurableEmbedding.integral_map_vectorMeasure
+    {β : Type*} [MeasurableSpace β] {φ : X → β}
+    (hφ : MeasurableEmbedding φ) (f : β → E) :
+    ∫ᵛ y, f y ∂[B; μ.map φ] = ∫ᵛ x, f (φ x) ∂[B; μ] := by
+  by_cases hfm : AEStronglyMeasurable f ((μ.transpose B).variation.map φ)
+  · exact integral_map hφ.measurable hfm
   · rw [integral_non_aestronglyMeasurable hgm, integral_non_aestronglyMeasurable]
     exact fun hgf => hgm (hf.aestronglyMeasurable_map_iff.2 hgf)
+
+#exit
 
 theorem _root_.Topology.IsClosedEmbedding.integral_map {β} [TopologicalSpace X] [BorelSpace X]
     [TopologicalSpace β] [MeasurableSpace β] [BorelSpace β] {φ : X → β} (hφ : IsClosedEmbedding φ)

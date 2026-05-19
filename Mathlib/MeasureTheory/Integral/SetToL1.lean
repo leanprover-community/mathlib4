@@ -942,7 +942,8 @@ theorem tendsto_setToFun_approxOn_of_measurable_of_range_subset
   refine tendsto_setToFun_approxOn_of_measurable hT hf fmeas ?_ _ (integrable_zero _ _ _)
   exact Eventually.of_forall fun x => subset_closure (hs (Set.mem_union_left _ (mem_range_self _)))
 
-theorem setToFun_of_le_map (hT : DominatedFinMeasAdditive μ T C) {β : Type*} {_ : MeasurableSpace β}
+theorem setToFun_of_le_map_of_stronglyMeasurable
+    (hT : DominatedFinMeasAdditive μ T C) {β : Type*} {_ : MeasurableSpace β}
     {μ' : Measure β} {φ : α → β} {T' : Set β → E →L[ℝ] F} (hT' : DominatedFinMeasAdditive μ' T' C')
     {f : β → E} (hf : Integrable (f ∘ φ) μ) (hfm : StronglyMeasurable f) (hφ : Measurable φ)
     (hμ' : μ' ≤ μ.map φ)
@@ -969,6 +970,23 @@ theorem setToFun_of_le_map (hT : DominatedFinMeasAdditive μ T C) {β : Type*} {
   refine (Finset.sum_subset (SimpleFunc.range_comp_subset_range _ hφ) fun y _ hy => ?_).symm
   rw [SimpleFunc.mem_range, ← Set.preimage_singleton_eq_empty, SimpleFunc.coe_comp] at hy
   simp [hy, hT.1.map_empty_eq_zero]
+
+theorem setToFun_of_le_map
+    (hT : DominatedFinMeasAdditive μ T C) {β : Type*} {_ : MeasurableSpace β}
+    {μ' : Measure β} {φ : α → β} {T' : Set β → E →L[ℝ] F} (hT' : DominatedFinMeasAdditive μ' T' C')
+    {f : β → E} (hf : Integrable (f ∘ φ) μ) (hfm : AEStronglyMeasurable f (μ.map φ))
+    (hφ : Measurable φ) (hμ' : μ' ≤ μ.map φ)
+    (h : ∀ (s : Set β) (x : E), MeasurableSet s → T' s x = T (φ ⁻¹' s) x) :
+    setToFun μ' T' hT' f = setToFun μ T hT (f ∘ φ) := by
+  let g := hfm.mk
+  have A : setToFun μ' T' hT' f = setToFun μ' T' hT' g :=
+    setToFun_congr_ae _ (ae_mono hμ' hfm.ae_eq_mk)
+  have B : setToFun μ T hT (f ∘ φ) = setToFun μ T hT (g ∘ φ) := by
+    apply setToFun_congr_ae
+    exact ae_of_ae_map hφ.aemeasurable hfm.ae_eq_mk
+  rw [A, B]
+  exact setToFun_of_le_map_of_stronglyMeasurable _ _
+    (hf.congr (ae_of_ae_map hφ.aemeasurable hfm.ae_eq_mk)) hfm.stronglyMeasurable_mk hφ hμ' h
 
 /-- Auxiliary lemma for `setToFun_congr_measure`: the function sending `f : α →₁[μ] G` to
 `f : α →₁[μ'] G` is continuous when `μ' ≤ c' • μ` for `c' ≠ ∞`. -/
