@@ -154,7 +154,7 @@ theorem geom_mean_le_arith_mean {ι : Type*} (s : Finset ι) (w : ι → ℝ) (z
     (hw : ∀ i ∈ s, 0 ≤ w i) (hw' : 0 < ∑ i ∈ s, w i) (hz : ∀ i ∈ s, 0 ≤ z i) :
     (∏ i ∈ s, z i ^ w i) ^ (∑ i ∈ s, w i)⁻¹ ≤ (∑ i ∈ s, w i * z i) / (∑ i ∈ s, w i) := by
   convert geom_mean_le_arith_mean_weighted s (fun i => (w i) / ∑ i ∈ s, w i) z ?_ ?_ hz using 2
-  · rw [← finset_prod_rpow _ _ (fun i hi => rpow_nonneg (hz _ hi) _) _]
+  · rw [← finsetProd_rpow _ _ (fun i hi => rpow_nonneg (hz _ hi) _) _]
     refine Finset.prod_congr rfl (fun _ ih => ?_)
     rw [div_eq_mul_inv, rpow_mul (hz _ ih)]
   · simp_rw [div_eq_mul_inv, mul_assoc, mul_comm, ← mul_assoc, ← Finset.sum_mul, mul_comm]
@@ -370,7 +370,7 @@ theorem harm_mean_le_geom_mean {ι : Type*} (s : Finset ι) (hs : s.Nonempty) (w
     nth_rw 1 [div_eq_mul_inv, (show n = (n⁻¹)⁻¹ by simp), ← mul_inv, Finset.mul_sum _ _ n⁻¹]
     simp_rw [inv_mul_eq_div n ((w _) / (z _)), div_right_comm _ _ n]
     convert this
-    rw [← Real.finset_prod_rpow s _ (fun i hi ↦ by positivity [hz i hi])]
+    rw [← Real.finsetProd_rpow s _ (fun i hi ↦ by positivity [hz i hi])]
     refine Finset.prod_congr rfl (fun i hi => ?_)
     rw [← Real.rpow_mul (le_of_lt <| hz i hi) (w _) n⁻¹, div_eq_mul_inv (w _) n]
   · exact fun i hi ↦ div_pos (hw i hi) hw'
@@ -550,9 +550,9 @@ theorem summable_and_Lr_rpow_le_Lp_mul_Lq_tsum {f g : ι → ℝ≥0} {p q r : �
     obtain ⟨hp, hq, hr⟩ := hpqr.all_pos
     refine le_trans (Lr_rpow_le_Lp_mul_Lq s f g hpqr) (mul_le_mul ?_ ?_ bot_le bot_le)
     · gcongr
-      exact hf.sum_le_tsum _ (fun _ _ => zero_le _)
+      exact hf.sum_le_tsum _ (fun _ _ => zero_le)
     · gcongr
-      exact hg.sum_le_tsum _ (fun _ _ => zero_le _)
+      exact hg.sum_le_tsum _ (fun _ _ => zero_le)
   have bdd : BddAbove (Set.range fun s => ∑ i ∈ s, (f i * g i) ^ r) := by
     refine ⟨(∑' i, f i ^ p) ^ (r / p) * (∑' i, g i ^ q) ^ (r / q), ?_⟩
     rintro a ⟨s, rfl⟩
@@ -688,7 +688,7 @@ theorem Lp_add_le_tsum {f g : ι → ℝ≥0} {p : ℝ} (hp : 1 ≤ p) (hf : Sum
     rw [one_div, ← NNReal.rpow_inv_le_iff pos, ← one_div]
     refine le_trans (Lp_add_le s f g hp) ?_
     gcongr <;>
-      refine Summable.sum_le_tsum _ (fun _ _ ↦ zero_le _) ?_
+      refine Summable.sum_le_tsum _ (fun _ _ ↦ zero_le) ?_
     exacts [hf, hg]
   have bdd : BddAbove (Set.range fun s => ∑ i ∈ s, (f i + g i) ^ p) := by
     refine ⟨((∑' i, f i ^ p) ^ (1 / p) + (∑' i, g i ^ p) ^ (1 / p)) ^ p, ?_⟩
@@ -958,7 +958,7 @@ theorem Lp_add_le_hasSum_of_nonneg (hp : 1 ≤ p) (hf : ∀ i, 0 ≤ f i) (hg : 
   -- After https://github.com/leanprover/lean4/pull/2734, `norm_cast` needs help with beta reduction.
   beta_reduce
   norm_cast
-  exact ⟨zero_le _, hC₁, hC₂⟩
+  exact ⟨zero_le, hC₁, hC₂⟩
 
 end Real
 
@@ -1010,9 +1010,9 @@ lemma inner_le_weight_mul_Lp_of_nonneg (s : Finset ι) {p : ℝ} (hp : 1 ≤ p) 
   have := coe_le_coe.2 <| NNReal.inner_le_weight_mul_Lp s hp.le (fun i ↦ ENNReal.toNNReal (w i))
     fun i ↦ ENNReal.toNNReal (f i)
   rw [coe_mul] at this
-  simp_rw [coe_rpow_of_nonneg _ <| inv_nonneg.2 hp₀.le, coe_finset_sum, ← ENNReal.toNNReal_rpow,
+  simp_rw [coe_rpow_of_nonneg _ <| inv_nonneg.2 hp₀.le, coe_finsetSum, ← ENNReal.toNNReal_rpow,
     ← ENNReal.toNNReal_mul, sum_congr rfl fun i hi ↦ coe_toNNReal (H'.2 i hi)] at this
-  simp only [toNNReal_mul, coe_mul, sub_nonneg, hp₁.le, coe_rpow_of_nonneg, coe_finset_sum] at this
+  simp only [toNNReal_mul, coe_mul, sub_nonneg, hp₁.le, coe_rpow_of_nonneg, coe_finsetSum] at this
   convert this using 2 with i hi
   · obtain hw | hw := eq_or_ne (w i) 0
     · simp [hw]

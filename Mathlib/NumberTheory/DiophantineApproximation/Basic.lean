@@ -55,7 +55,7 @@ in this file, whereas the other, `Real.exists_convs_eq_rat` defined in the file
 ## Implementation notes
 
 We use the namespace `Real` for the results on real numbers and `Rat` for the results
-on rational numbers. We introduce a secondary namespace `real.contfrac_legendre`
+on rational numbers. We introduce a secondary namespace `Real.ContfracLegendre`
 to separate off a definition and some technical auxiliary lemmas used in the proof
 of Legendre's Theorem. For remarks on the proof of Legendre's Theorem, see below.
 

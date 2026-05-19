@@ -19,7 +19,7 @@ We prove some simple lemmas about `IsFixedPt` and `∘`, `iterate`, and `Semicon
 fixed point
 -/
 
-@[expose] public section
+public section
 
 open Equiv
 

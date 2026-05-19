@@ -60,6 +60,7 @@ structure ModuleCat where
   [isAddCommGroup : AddCommGroup carrier]
   [isModule : Module R carrier]
 
+initialize_simps_projections ModuleCat (-isModule, -isAddCommGroup)
 attribute [instance] ModuleCat.isAddCommGroup
 attribute [instance 1100] ModuleCat.isModule
 
@@ -299,8 +300,8 @@ in `ModuleCat` -/
 @[simps]
 def linearEquivIsoModuleIso {X Y : Type u} [AddCommGroup X] [AddCommGroup Y] [Module R X]
     [Module R Y] : (X ≃ₗ[R] Y) ≅ (ModuleCat.of R X ≅ ModuleCat.of R Y) where
-  hom := TypeCat.ofHom (fun e ↦ e.toModuleIso)
-  inv := TypeCat.ofHom (fun i ↦ i.toLinearEquiv)
+  hom := ↾fun e ↦ e.toModuleIso
+  inv := ↾fun i ↦ i.toLinearEquiv
 
 end
 

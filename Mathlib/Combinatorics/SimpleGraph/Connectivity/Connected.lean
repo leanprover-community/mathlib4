@@ -129,11 +129,11 @@ protected theorem Reachable.map {u v : V} {G : SimpleGraph V} {G' : SimpleGraph 
     (h : G.Reachable u v) : G'.Reachable (f u) (f v) :=
   h.elim fun p => ⟨p.map f⟩
 
-@[mono]
+@[gcongr, mono]
 protected lemma Reachable.mono {u v : V} {G G' : SimpleGraph V}
     (h : G ≤ G') (Guv : G.Reachable u v) : G'.Reachable u v := Guv.map (.ofLE h)
 
-@[mono]
+@[gcongr, mono]
 theorem Reachable.mono' {G G' : SimpleGraph V} (h : G ≤ G') : G.Reachable ≤ G'.Reachable :=
   fun _ _ ↦ Reachable.mono h
 
@@ -230,7 +230,7 @@ theorem Preconnected.map {G : SimpleGraph V} {H : SimpleGraph V'} (f : G →g H)
     (hG : G.Preconnected) : H.Preconnected :=
   hf.forall₂.2 fun _ _ => Nonempty.map (Walk.map _) <| hG _ _
 
-@[mono]
+@[gcongr, mono]
 protected lemma Preconnected.mono {G G' : SimpleGraph V} (h : G ≤ G') (hG : G.Preconnected) :
     G'.Preconnected := fun u v => (hG u v).mono h
 
@@ -329,7 +329,7 @@ theorem Connected.map {G : SimpleGraph V} {H : SimpleGraph V'} (f : G →g H) (h
   haveI := hG.nonempty.map f
   ⟨hG.preconnected.map f hf⟩
 
-@[mono]
+@[gcongr, mono]
 protected lemma Connected.mono {G G' : SimpleGraph V} (h : G ≤ G')
     (hG : G.Connected) : G'.Connected where
   preconnected := hG.preconnected.mono h

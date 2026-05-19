@@ -504,8 +504,8 @@ section toSubring
 variable [Ring R] (p : PowerSeries R) (T : Subring R) (hp : ∀ n, p.coeff n ∈ T)
 
 /-- Given a formal power series `p` and a subring `T` that contains the
- coefficients of `p`, return the corresponding formal power series
- whose coefficients are in `T`. -/
+coefficients of `p`, return the corresponding formal power series
+whose coefficients are in `T`. -/
 def toSubring : PowerSeries T := mk fun n => ⟨p.coeff n, hp n⟩
 
 @[simp]
@@ -620,7 +620,7 @@ theorem coeff_prod [DecidableEq ι] (f : ι → PowerSeries R) (d : ℕ) (s : Fi
 
 theorem prod_monomial (f : ι → ℕ) (g : ι → R) (s : Finset ι) :
     ∏ i ∈ s, monomial (f i) (g i) = monomial (∑ i ∈ s, f i) (∏ i ∈ s, g i) := by
-  simpa [monomial, Finsupp.single_finset_sum] using
+  simpa [monomial, Finsupp.single_finsetSum] using
     MvPowerSeries.prod_monomial (fun i ↦ Finsupp.single () (f i)) g s
 
 theorem monomial_pow (m : ℕ) (a : R) (n : ℕ) : (monomial m a) ^ n = monomial (n * m) (a ^ n) := by

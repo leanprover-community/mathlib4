@@ -5,6 +5,7 @@ General algebra:
     functor: 'CategoryTheory.Functor'
     natural transformation: 'CategoryTheory.NatTrans'
     Yoneda embedding: 'CategoryTheory.yoneda'
+    isomorphism: 'CategoryTheory.Iso'
     adjunction: 'CategoryTheory.Adjunction'
     monad: 'CategoryTheory.Monad'
     comma category: 'CategoryTheory.Comma'
@@ -14,6 +15,7 @@ General algebra:
     monoidal category: 'CategoryTheory.MonoidalCategory'
     Cartesian closed: 'CategoryTheory.MonoidalClosed'
     abelian category: 'CategoryTheory.Abelian'
+    Grothendieck topology: 'CategoryTheory.GrothendieckTopology'
 
   Numbers:
     natural number: 'Nat'
@@ -51,7 +53,7 @@ General algebra:
     permutation group of a type: 'Equiv.Perm'
     Cayley's theorem: 'Equiv.Perm.subgroupOfMulAction'
     alternating group: 'alternatingGroup'
-    A5 is simple: 'alternatingGroup.isSimpleGroup_five'
+    alternating groups on 5 letters or more are simple: 'alternatingGroup.isSimpleGroup'
     classification of abelian simple groups: CommGroup.is_simple_iff_prime_card
     structure of finitely generated abelian groups: 'AddCommGroup.equiv_free_prod_directSum_zmod'
     Lagrange's theorem: 'Subgroup.card_subgroup_dvd_card'
@@ -116,6 +118,7 @@ General algebra:
 
   Field theory:
     field: 'Field'
+    subfield: 'Subfield'
     characteristic of a ring: 'ringChar'
     characteristic zero: 'CharZero'
     characteristic p: 'CharP'
