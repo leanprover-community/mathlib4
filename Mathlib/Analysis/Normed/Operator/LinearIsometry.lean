@@ -144,6 +144,13 @@ instance instFunLike : FunLike (E →ₛₗᵢ[σ₁₂] E₂) E E₂ where
   coe f := f.toFun
   coe_injective' _ _ h := toLinearMap_injective (DFunLike.coe_injective h)
 
+instance instSemilinearMapClass : SemilinearMapClass (E →ₛₗᵢ[σ₁₂] E₂) σ₁₂ E E₂ where
+  map_add f := map_add f.toLinearMap
+  map_smulₛₗ f := map_smulₛₗ f.toLinearMap
+
+instance instIsometryClass : IsometryClass (E →ₛₗᵢ[σ₁₂] E₂) E E₂ where
+  isometry f := AddMonoidHomClass.isometry_of_norm f f.norm_map'
+
 instance instSemilinearIsometryClass : SemilinearIsometryClass (E →ₛₗᵢ[σ₁₂] E₂) σ₁₂ E E₂ where
   map_add f := map_add f.toLinearMap
   map_smulₛₗ f := map_smulₛₗ f.toLinearMap
@@ -193,36 +200,33 @@ protected theorem map_smulₛₗ (c : R) (x : E) : f (c • x) = σ₁₂ c • 
 protected theorem map_smul [Module R E₂] (f : E →ₗᵢ[R] E₂) (c : R) (x : E) : f (c • x) = c • f x :=
   f.toLinearMap.map_smul c x
 
-@[simp]
 theorem norm_map (x : E) : ‖f x‖ = ‖x‖ :=
-  SemilinearIsometryClass.norm_map f x
+  _root_.norm_map f x
 
-@[simp] -- Should be replaced with `SemilinearIsometryClass.nnorm_map` when https://github.com/leanprover/lean4/issues/3107 is fixed.
 theorem nnnorm_map (x : E) : ‖f x‖₊ = ‖x‖₊ :=
-  NNReal.eq <| norm_map f x
+  _root_.nnnorm_map f x
 
-@[simp] -- Should be replaced with `SemilinearIsometryClass.enorm_map` when https://github.com/leanprover/lean4/issues/3107 is fixed.
-theorem enorm_map (x : E) : ‖f x‖ₑ = ‖x‖ₑ := by
-  simp [enorm]
+theorem enorm_map (x : E) : ‖f x‖ₑ = ‖x‖ₑ :=
+  _root_.enorm_map f x
 
 protected theorem isometry : Isometry f :=
   AddMonoidHomClass.isometry_of_norm f.toLinearMap (norm_map _)
 
 lemma isEmbedding (f : F →ₛₗᵢ[σ₁₂] E₂) : IsEmbedding f := f.isometry.isEmbedding
 
-@[simp]
-theorem isComplete_image_iff [SemilinearIsometryClass 𝓕 σ₁₂ E E₂] (f : 𝓕) {s : Set E} :
+@[deprecated IsometryClass.isComplete_image_iff (since := "2026-01-01")]
+theorem isComplete_image_iff [IsometryClass 𝓕 E E₂] (f : 𝓕) {s : Set E} :
     IsComplete (f '' s) ↔ IsComplete s :=
-  _root_.isComplete_image_iff (SemilinearIsometryClass.isometry f).isUniformInducing
+  IsometryClass.isComplete_image_iff f
 
-@[deprecated LinearIsometry.isComplete_image_iff (since := "2025-12-25")]
+@[deprecated IsometryClass.isComplete_image_iff (since := "2025-12-25")]
 theorem isComplete_image_iff' (f : LinearIsometry σ₁₂ E E₂) {s : Set E} :
     IsComplete (f '' s) ↔ IsComplete s :=
-  LinearIsometry.isComplete_image_iff _
+  IsometryClass.isComplete_image_iff _
 
 theorem isComplete_map_iff [RingHomSurjective σ₁₂] {p : Submodule R E} :
     IsComplete (p.map f.toLinearMap : Set E₂) ↔ IsComplete (p : Set E) :=
-  isComplete_image_iff f
+  IsometryClass.isComplete_image_iff f
 
 @[deprecated (since := "2025-12-25")]
 alias isComplete_map_iff' := isComplete_map_iff
@@ -231,13 +235,9 @@ instance completeSpace_map [RingHomSurjective σ₁₂] (p : Submodule R E) [Com
     CompleteSpace (p.map (f : E →ₛₗ[σ₁₂] E₂)) :=
   ((isComplete_map_iff f).2 <| completeSpace_coe_iff_isComplete.1 ‹_›).completeSpace_coe
 
-@[simp]
-theorem dist_map (x y : E) : dist (f x) (f y) = dist x y :=
-  f.isometry.dist_eq x y
+theorem dist_map (x y : E) : dist (f x) (f y) = dist x y := IsometryClass.dist_map f x y
 
-@[simp]
-theorem edist_map (x y : E) : edist (f x) (f y) = edist x y :=
-  f.isometry.edist_eq x y
+theorem edist_map (x y : E) : edist (f x) (f y) = edist x y := IsometryClass.edist_map f x y
 
 protected theorem injective : Injective f₁ :=
   Isometry.injective (LinearIsometry.isometry f₁)
@@ -490,6 +490,15 @@ instance instEquivLike : EquivLike (E ≃ₛₗᵢ[σ₁₂] E₂) E E₂ where
   left_inv e := e.left_inv
   right_inv e := e.right_inv
 
+instance instSemilinearEquivClass :
+    SemilinearEquivClass (E ≃ₛₗᵢ[σ₁₂] E₂) σ₁₂ E E₂ where
+  map_add f := map_add f.toLinearEquiv
+  map_smulₛₗ e := map_smulₛₗ e.toLinearEquiv
+
+instance instIsometryClass :
+    IsometryClass (E ≃ₛₗᵢ[σ₁₂] E₂) E E₂ where
+  isometry e := AddMonoidHomClass.isometry_of_norm e e.norm_map'
+
 instance instSemilinearIsometryEquivClass :
     SemilinearIsometryEquivClass (E ≃ₛₗᵢ[σ₁₂] E₂) σ₁₂ E E₂ where
   map_add f := map_add f.toLinearEquiv
@@ -531,7 +540,6 @@ def ofBounds (e : E ≃ₛₗ[σ₁₂] E₂) (h₁ : ∀ x, ‖e x‖ ≤ ‖x�
     E ≃ₛₗᵢ[σ₁₂] E₂ :=
   ⟨e, fun x => le_antisymm (h₁ x) <| by simpa only [e.symm_apply_apply] using h₂ (e x)⟩
 
-@[simp]
 theorem norm_map (x : E) : ‖e x‖ = ‖x‖ :=
   e.norm_map' x
 
@@ -859,17 +867,14 @@ theorem map_smulₛₗ (c : R) (x : E) : e (c • x) = σ₁₂ c • e x :=
 theorem map_smul [Module R E₂] {e : E ≃ₗᵢ[R] E₂} (c : R) (x : E) : e (c • x) = c • e x :=
   e.1.map_smul c x
 
-@[simp] -- Should be replaced with `SemilinearIsometryClass.nnorm_map` when https://github.com/leanprover/lean4/issues/3107 is fixed.
 theorem nnnorm_map (x : E) : ‖e x‖₊ = ‖x‖₊ :=
-  SemilinearIsometryClass.nnnorm_map e x
+  _root_.nnnorm_map e x
 
-@[simp]
 theorem dist_map (x y : E) : dist (e x) (e y) = dist x y :=
-  e.toLinearIsometry.dist_map x y
+  IsometryClass.dist_map e x y
 
-@[simp]
 theorem edist_map (x y : E) : edist (e x) (e y) = edist x y :=
-  e.toLinearIsometry.edist_map x y
+  IsometryClass.edist_map e x y
 
 protected theorem bijective : Bijective e :=
   e.1.bijective
