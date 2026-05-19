@@ -9,6 +9,8 @@ public import Mathlib.Algebra.Algebra.Basic
 public import Mathlib.Topology.Algebra.FilterBasis
 public import Mathlib.Topology.Algebra.Nonarchimedean.Basic
 
+public import Mathlib.Tactic.Algebra.Basic
+
 /-!
 # Neighborhood bases for non-archimedean rings and modules
 

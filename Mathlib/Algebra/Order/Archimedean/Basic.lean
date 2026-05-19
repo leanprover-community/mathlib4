@@ -34,8 +34,6 @@ means that for all elements `x` and `y > 0` there exists a natural number `n` su
 
 @[expose] public section
 
-assert_not_exists Finset
-
 open Int Set
 
 variable {G M R K : Type*}

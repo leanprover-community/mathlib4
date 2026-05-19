@@ -36,8 +36,6 @@ subgroups of `ℝ`.
 
 public section
 
-assert_not_exists Finset
-
 open Set
 variable {G : Type*} [CommGroup G] [LinearOrder G] [IsOrderedMonoid G] [MulArchimedean G]
 

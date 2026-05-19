@@ -30,8 +30,6 @@ WithZero, multiplicative, nnreal
 
 @[expose] public section
 
-assert_not_exists Finset
-
 noncomputable section
 
 open scoped NNReal

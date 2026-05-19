@@ -14,6 +14,7 @@ public import Mathlib.Data.Nat.Cast.Field
 public import Mathlib.LinearAlgebra.TensorProduct.Tower
 public import Mathlib.RingTheory.Nilpotent.Basic
 public import Mathlib.RingTheory.TensorProduct.Maps
+public import Mathlib.Tactic.Algebra.Basic
 public import Mathlib.Tactic.FieldSimp
 
 /-!

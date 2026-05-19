@@ -15,8 +15,6 @@ public import Mathlib.Data.Nat.Choose.Sum
 
 @[expose] public section
 
-assert_not_exists Algebra LinearMap orderOf
-
 open Finset
 
 variable {R S : Type*}

@@ -18,8 +18,6 @@ conditionally complete.
 
 public section
 
-assert_not_exists Finset
-
 variable {α β : Type*} [Field α] [LinearOrder α] [Field β] [LinearOrder β]
 
 /-- There is at most one ordered ring homomorphism from a linear ordered field to an archimedean

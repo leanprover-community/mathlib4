@@ -26,8 +26,6 @@ don't have those yet.
 
 public section
 
-assert_not_exists Finset
-
 open Set
 
 open scoped Pointwise

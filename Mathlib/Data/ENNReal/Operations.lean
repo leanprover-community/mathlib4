@@ -22,8 +22,6 @@ Note: the definitions of the operations included in this file can be found in
 
 public section
 
-assert_not_exists Finset
-
 open Set NNReal ENNReal
 
 namespace ENNReal

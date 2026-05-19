@@ -142,6 +142,21 @@ theorem _root_.NumberField.mixedEmbedding.covolume_idealLattice (I : (Fractional
     ENNReal.coe_toReal, Real.coe_sqrt, coe_nnnorm, Int.norm_eq_abs,
     ENNReal.toReal_ofReal (Rat.cast_nonneg.mpr (FractionalIdeal.absNorm_nonneg I.val)), mul_assoc]
 
+-- example (m n : ℕ) :
+--     ↑(m) + 2 * ↑(n) - ↑(n) - ↑(m) + ↑(n) = (2 : ℤ) * ↑(n) := by
+--   algebra with ℤ
+--   -- ring1
+
+
+-- example (K : Type u_1)
+--     [Field K]
+--     [NumberField K] :
+--     ↑(nrRealPlaces K) + 2 * ↑(nrComplexPlaces K) - ↑(nrComplexPlaces K) - ↑(nrRealPlaces K) +
+-- ↑(nrComplexPlaces K) = (2 : ℤ) * ↑(nrComplexPlaces K) := by
+--   run_tac
+--     Lean.Elab.Tactic.liftMetaTactic' Mathlib.Tactic.Algebra.preprocess
+--   ring1
+
 theorem exists_ne_zero_mem_ideal_of_norm_le_mul_sqrt_discr (I : (FractionalIdeal (𝓞 K)⁰ K)ˣ) :
     ∃ a ∈ (I : FractionalIdeal (𝓞 K)⁰ K), a ≠ 0 ∧
       |Algebra.norm ℚ (a : K)| ≤ FractionalIdeal.absNorm I.1 * (4 / π) ^ nrComplexPlaces K *
@@ -190,6 +205,7 @@ theorem exists_ne_zero_mem_ideal_of_norm_le_mul_sqrt_discr (I : (FractionalIdeal
       rw [Int.norm_eq_abs, zpow_mul, show (2 : ℝ) ^ (2 : ℤ) = 4 by norm_cast, div_pow,
         inv_eq_one_div, div_pow, one_pow, zpow_natCast]
       ring
+
 
 theorem exists_ne_zero_mem_ringOfIntegers_of_norm_le_mul_sqrt_discr :
     ∃ (a : 𝓞 K), a ≠ 0 ∧

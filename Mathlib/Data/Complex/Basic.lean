@@ -22,8 +22,6 @@ of characteristic zero. For the result that the complex numbers are algebraicall
 
 @[expose] public section
 
-assert_not_exists Multiset Algebra
-
 open Set Function
 
 /-! ### Definition and basic arithmetic -/

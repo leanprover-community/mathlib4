@@ -41,8 +41,6 @@ metric, pseudometric space, dist
 
 @[expose] public section
 
-assert_not_exists Finset.sum
-
 open Set Filter Bornology
 open scoped NNReal Uniformity
 

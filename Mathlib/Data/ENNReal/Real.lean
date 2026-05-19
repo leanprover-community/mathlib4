@@ -28,8 +28,6 @@ This file provides a `positivity` extension for `ENNReal.ofReal`.
 
 @[expose] public section
 
-assert_not_exists Finset
-
 open Set NNReal ENNReal
 
 namespace ENNReal

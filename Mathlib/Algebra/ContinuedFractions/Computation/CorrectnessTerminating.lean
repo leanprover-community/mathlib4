@@ -45,8 +45,6 @@ information about the computation process, refer to `Algebra.ContinuedFractions.
 
 @[expose] public section
 
-assert_not_exists Finset
-
 namespace GenContFract
 
 open GenContFract (of)

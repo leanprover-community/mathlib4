@@ -147,6 +147,11 @@ theorem add_eq_of_zero_add {a₁ a₂ b₁ b₂ : A}
   subst_vars
   simp
 
+/- ExProd.equateScalarsProd -/
+theorem algebraMap_eq_algebraMap' {r s : R} (h : r = s) :
+    algebraMap R A r = algebraMap R A s := by
+  simp [h]
+
 /- equateScalarsSum -/
 theorem add_eq_of_add_zero {a₁ a₂ b₁ b₂ : A}
     (hb₁ : b₁ = 0) (ha : a₁ + a₂ = b₂) :
@@ -189,6 +194,12 @@ theorem add_algebraMap_isNat_zero {r s : R} (h : r + s = 0) :
     IsNat (algebraMap R A r + algebraMap R A s) 0 := by
   rw [← map_add, h, map_zero]
   exact ⟨by simp⟩
+
+/- RingCompute.cast -/
+theorem cast_zero_smul_eq_zero_mul {R' : Type*} [HSMul R' A A] {r' : R'} {r : R}
+    (hr : r = 0) (h_smul : ∀ (a : A), r • a = r' • a) (a : A) :
+    r' • a = (0 : A) * a := by
+  simp [← h_smul, hr]
 
 /- RingCompute.cast -/
 theorem cast_smul_eq_mul {R' : Type*} [HSMul R' A A] {r' : R'} {r r'' : R}

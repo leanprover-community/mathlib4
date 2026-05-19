@@ -198,7 +198,8 @@ private theorem det_projVandermonde_of_field (v w : Fin n → K) :
   rw [mul_eq_zero, mul_eq_zero]
   refine .inl (.inr ?_)
   simp only [of_apply, projVandermonde_apply_of_ne_zero h0, val_succ, val_castSucc, cons_succ, W, r]
-  ring
+  -- Problem : (algebraMap ℤ K 1)⁻¹
+  ring1
 
 /-- The formula for the determinant of a projective Vandermonde matrix. -/
 theorem det_projVandermonde (v w : Fin n → R) : (projVandermonde v w).det =

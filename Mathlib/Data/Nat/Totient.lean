@@ -27,8 +27,6 @@ We prove the divisor sum formula, namely that `n` equals `φ` summed over the di
 
 @[expose] public section
 
-assert_not_exists Algebra LinearMap
-
 open Finset
 
 namespace Nat

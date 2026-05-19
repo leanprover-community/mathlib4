@@ -27,8 +27,6 @@ rat, rationals, ℚ, floor
 
 @[expose] public section
 
-assert_not_exists Finset
-
 open Int
 
 namespace Rat
