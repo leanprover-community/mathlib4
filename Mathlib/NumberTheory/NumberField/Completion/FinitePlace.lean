@@ -423,7 +423,7 @@ alias IsDedekindDomain.HeightOneSpectrum.equivHeightOneSpectrum_symm_apply :=
 @[deprecated (since := "2026-03-11")]
 alias IsDedekindDomain.HeightOneSpectrum.embedding_mul_absNorm := embedding_mul_absNorm
 
-lemma finprod_finitePlace_pow_multiplicity {I : Ideal (𝓞 K)} (hI : I ≠ 0) :
+lemma finprod_finitePlace_pow_multiplicity {I : Ideal (𝓞 K)} (hI : I ≠ ⊥) :
     ∏ᶠ v : FinitePlace K, v.maximalIdeal.asIdeal ^ multiplicity v.maximalIdeal.asIdeal I = I := by
   conv_rhs => rw [← finprod_heightOneSpectrum_pow_multiplicity hI]
   simp only [← finprod_comp_equiv (equivHeightOneSpectrum (K := K)), equivHeightOneSpectrum_apply]
