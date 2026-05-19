@@ -188,12 +188,12 @@ def toCoprod : α ⊕ β → Monoid.Coprod (PresentedGroup rels₁) (PresentedGr
 @[simp]
 lemma lift_toCoprod_inl_eq_inl_mk : (FreeGroup.lift (toCoprod rels₁ rels₂)).comp
     (FreeGroup.map Sum.inl) = Monoid.Coprod.inl.comp (mk rels₁) :=
-  FreeGroup.ext_hom _ _ (fun _ ↦ rfl)
+  FreeGroup.ext_hom _ _ fun _ ↦ rfl
 
 @[simp]
 lemma lift_toCoprod_inr_eq_inr_mk : (FreeGroup.lift (toCoprod rels₁ rels₂)).comp
     (FreeGroup.map Sum.inr) = Monoid.Coprod.inr.comp (mk rels₂) :=
-  FreeGroup.ext_hom _ _ (fun _ ↦ rfl)
+  FreeGroup.ext_hom _ _ fun _ ↦ rfl
 
 lemma lift_toCoprod_eq_one (r : FreeGroup (α ⊕ β))
     (hr : r ∈ FreeGroup.map Sum.inl '' rels₁ ∪ FreeGroup.map Sum.inr '' rels₂) :
@@ -210,9 +210,9 @@ def coprodPresentations :
   MonoidHom.toMulEquiv
     (toGroup (lift_toCoprod_eq_one rels₁ rels₂))
     (Monoid.Coprod.lift
-      (PresentedGroup.map (FreeGroup.map Sum.inl) (fun r hr ↦ .inl ⟨r, hr, rfl⟩))
-      (PresentedGroup.map (FreeGroup.map Sum.inr) (fun r hr ↦ .inr ⟨r, hr, rfl⟩)))
+      (PresentedGroup.map (FreeGroup.map Sum.inl) fun r hr ↦ .inl ⟨r, hr, rfl⟩)
+      (PresentedGroup.map (FreeGroup.map Sum.inr) fun r hr ↦ .inr ⟨r, hr, rfl⟩))
     (ext <| Sum.rec (fun _ ↦ rfl) (fun _ ↦ rfl))
-    (Monoid.Coprod.hom_ext (ext (fun _ ↦ rfl)) (ext (fun _ ↦ rfl)))
+    (Monoid.Coprod.hom_ext (ext fun _ ↦ rfl) (ext fun _ ↦ rfl))
 end Coprod
 end PresentedGroup
