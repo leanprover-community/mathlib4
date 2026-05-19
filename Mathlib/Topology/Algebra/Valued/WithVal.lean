@@ -127,9 +127,9 @@ lemma toVal_bijective : Function.Bijective (toVal v) :=
 
 @[simp] lemma ofVal_intCast (z : ℤ) : ofVal (z : WithVal v) = z := rfl
 
-@[simp] lemma toVal_ofNat (n : ℕ) : toVal v ofNat(n) = ofNat(n) := rfl
+@[simp] lemma toVal_ofNat (n : ℕ) [n.AtLeastTwo] : toVal v ofNat(n) = ofNat(n) := rfl
 
-@[simp] lemma ofVal_ofNat (n : ℕ) : ofVal (ofNat(n) : WithVal v) = ofNat(n) := rfl
+@[simp] lemma ofVal_ofNat (n : ℕ) [n.AtLeastTwo] : ofVal (ofNat(n) : WithVal v) = ofNat(n) := rfl
 
 @[simp] lemma toVal_eq_zero (x : R) : toVal v x = 0 ↔ x = 0 := (toVal_injective v).eq_iff
 
