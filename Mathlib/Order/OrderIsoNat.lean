@@ -80,6 +80,7 @@ theorem not_wellFounded (f : ((· > ·) : ℕ → ℕ → Prop) ↪r r) : ¬Well
 section LinearOrder
 
 variable {α : Type*} {r : α → α → Prop}
+
 theorem infinite_iff_nonempty_relEmbedding_of_isWellOrder [IsWellOrder α r] :
     Infinite α ↔ Nonempty (((· < ·) : ℕ → ℕ → Prop) ↪r r) := by
   refine ⟨fun _ ↦ ?_, (·.elim (Infinite.of_injective _ ·.injective))⟩
@@ -100,19 +101,18 @@ theorem finite_iff_empty_relEmbedding_of_isWellOrder [IsWellOrder α r] :
   rw [← not_iff_not, not_finite_iff_infinite, not_isEmpty_iff,
     infinite_iff_nonempty_relEmbedding_of_isWellOrder (r := r)]
 
-theorem _root_.IsWellOrder.finite_of_isWellOrder_of_isWellOrder_swap {α : Type*} (r : α → α → Prop)
+theorem _root_.IsWellOrder.finite_of_isWellOrder_of_isWellOrder_swap
     [IsWellOrder α r] [IsWellFounded α (Function.swap r)] : Finite α := by
   rw [finite_iff_empty_relEmbedding_of_isWellOrder (r := r)]
   have : WellFounded (Function.swap r) := IsWellFounded.wf
   rw [wellFounded_iff_isEmpty] at this
   exact Function.isEmpty RelEmbedding.swap
 
-instance (priority := low) _root_.instFiniteOfWellFoundedLTOfWellFoundedGT {α : Type*}
+instance (priority := low) _root_.instFiniteOfWellFoundedLTOfWellFoundedGT
     [LinearOrder α] [WellFoundedLT α] [WellFoundedGT α] : Finite α :=
-  IsWellOrder.finite_of_isWellOrder_of_isWellOrder_swap LT.lt
+  IsWellOrder.finite_of_isWellOrder_of_isWellOrder_swap (r := LT.lt)
 
-theorem infinite_iff_nonempty_relEmbedding_lt_or_nonempty_relEmbedding_gt
-    [IsStrictTotalOrder α r] :
+theorem infinite_iff_nonempty_relEmbedding_lt_or_nonempty_relEmbedding_gt [IsStrictTotalOrder α r] :
     Infinite α ↔
       Nonempty (((· < ·) : ℕ → ℕ → Prop) ↪r r) ∨
       Nonempty (((· > ·) : ℕ → ℕ → Prop) ↪r r) := by
@@ -122,10 +122,9 @@ theorem infinite_iff_nonempty_relEmbedding_lt_or_nonempty_relEmbedding_gt
   apply (@Function.isEmpty _ _ · RelEmbedding.swap) at h_lt
   rw [← wellFounded_iff_isEmpty, ← isWellFounded_iff] at h_gt h_lt
   have : IsWellOrder α r := ⟨⟩
-  exact IsWellOrder.finite_of_isWellOrder_of_isWellOrder_swap r
+  exact IsWellOrder.finite_of_isWellOrder_of_isWellOrder_swap (r := r)
 
-theorem finite_iff_isEmpty_relEmbedding_lt_and_isEmpty_relEmbedding_gt
-    [IsStrictTotalOrder α r] :
+theorem finite_iff_isEmpty_relEmbedding_lt_and_isEmpty_relEmbedding_gt [IsStrictTotalOrder α r] :
     Finite α ↔
       IsEmpty (((· < ·) : ℕ → ℕ → Prop) ↪r r) ∧
       IsEmpty (((· > ·) : ℕ → ℕ → Prop) ↪r r) := by
