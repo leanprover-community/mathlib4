@@ -12,8 +12,8 @@ public import Mathlib.RingTheory.TensorProduct.Maps
 /-!
 # Coalgebra structure on `SymmetricAlgebra R M`
 
-`S(M)` carries the canonical cocommutative coalgebra structure in which
-each generator `ι x` is primitive: `Δ(ι x) = ι x ⊗ 1 + 1 ⊗ ι x` and
+`SymmetricAlgebra R M` carries the canonical cocommutative coalgebra structure
+in which each generator `ι x` is primitive: `Δ(ι x) = ι x ⊗ 1 + 1 ⊗ ι x` and
 `ε(ι x) = 0`.
 
 ## Main definitions
@@ -101,7 +101,7 @@ theorem comul_ι (x : M) :
 
 @[simp]
 theorem counit_ι (x : M) :
-    Coalgebra.counit (R := R) (A := SymmetricAlgebra R M) (ι R M x) = 0 :=
+    Coalgebra.counit (R := R) (ι R M x) = 0 :=
   algebraMapInv_ι R M x
 
 protected theorem comulAlgHom_comm :

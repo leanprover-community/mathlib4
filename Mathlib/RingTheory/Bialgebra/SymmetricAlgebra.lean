@@ -11,10 +11,10 @@ public import Mathlib.RingTheory.Bialgebra.Basic
 /-!
 # Bialgebra structure on `SymmetricAlgebra R M`
 
-`S(M)` is the universal cocommutative graded connected commutative
-`R`-bialgebra on `M`: each generator `ι x` is primitive, with
-`Δ(ι x) = ι x ⊗ 1 + 1 ⊗ ι x` and `ε(ι x) = 0`. The coalgebra structure
-is in `Mathlib/RingTheory/Coalgebra/SymmetricAlgebra.lean`.
+`SymmetricAlgebra R M` is the cocommutative commutative `R`-bialgebra on `M`
+in which each generator `ι x` is primitive: `Δ(ι x) = ι x ⊗ 1 + 1 ⊗ ι x` and
+`ε(ι x) = 0`. The coalgebra structure is in
+`Mathlib/RingTheory/Coalgebra/SymmetricAlgebra.lean`.
 -/
 
 public section
