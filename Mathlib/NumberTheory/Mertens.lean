@@ -53,19 +53,13 @@ noncomputable def oddLogDivMulPredReal (x : ℝ) : ℝ :=
 lemma summable_primeLogDivMulPred :
     Summable fun p : {p : ℕ // Nat.Prime p} ↦ primeLogDivMulPred p := by
   have hmajor : Summable fun p : {p : ℕ // Nat.Prime p} ↦
-      (4 : ℝ) * ((p : ℕ) : ℝ) ^ (-(3 / 2 : ℝ)) := by
-    exact (Nat.Primes.summable_rpow.mpr (by norm_num : -(3 / 2 : ℝ) < -1)).mul_left 4
+      (4 : ℝ) * ((p : ℕ) : ℝ) ^ (-(3 / 2 : ℝ)) :=
+    (Nat.Primes.summable_rpow.mpr (by norm_num)).mul_left 4
   refine Summable.of_nonneg_of_le ?_ ?_ hmajor
-  · intro p
-    let n : ℕ := p
-    have hp : Nat.Prime n := p.property
-    have hn0 : 0 < (n : ℝ) := by exact_mod_cast hp.pos
+  · intro ⟨n, hp⟩
     have hn1 : 1 < (n : ℝ) := by exact_mod_cast hp.one_lt
     exact div_nonneg (log_natCast_nonneg n) (by positivity)
-  · intro p
-    let n : ℕ := p
-    have hp : Nat.Prime n := p.property
-    have hn2 : 2 ≤ n := hp.two_le
+  · intro ⟨n, hp⟩
     have hn0 : 0 < (n : ℝ) := by exact_mod_cast hp.pos
     have hn1 : 1 < (n : ℝ) := by exact_mod_cast hp.one_lt
     have hlog : log (n : ℝ) ≤ 2 * (n : ℝ) ^ (1 / 2 : ℝ) := by
@@ -73,35 +67,29 @@ lemma summable_primeLogDivMulPred :
       norm_num at h ⊢
       linarith
     have hden_lower : ((n : ℝ) ^ 2) / 2 ≤ (n : ℝ) * ((n : ℝ) - 1) := by
-      have hn2r : (2 : ℝ) ≤ n := by exact_mod_cast hn2
+      have hn2r : (2 : ℝ) ≤ n := by exact_mod_cast hp.two_le
       nlinarith [sq_nonneg ((n : ℝ) - 2)]
     calc
-      primeLogDivMulPred p
-          = log (n : ℝ) / ((n : ℝ) * ((n : ℝ) - 1)) := by
-              simp [primeLogDivMulPred, n]
-      _ ≤ (2 * (n : ℝ) ^ (1 / 2 : ℝ)) / ((n : ℝ) * ((n : ℝ) - 1)) := by
-          gcongr
+      _ = log (n : ℝ) / ((n : ℝ) * ((n : ℝ) - 1)) := by
+        simp [primeLogDivMulPred]
       _ ≤ (2 * (n : ℝ) ^ (1 / 2 : ℝ)) / (((n : ℝ) ^ 2) / 2) := by
-          gcongr
+        gcongr
       _ = 4 * ((n : ℝ) ^ (1 / 2 : ℝ) / (n : ℝ) ^ 2) := by ring
       _ = 4 * ((n : ℝ) ^ (1 / 2 : ℝ) / (n : ℝ) ^ (2 : ℝ)) := by
           norm_num [rpow_natCast]
       _ = 4 * (n : ℝ) ^ ((1 / 2 : ℝ) - 2) := by rw [rpow_sub hn0]
       _ = 4 * (n : ℝ) ^ (-(3 / 2 : ℝ)) := by norm_num
-      _ = 4 * ((p : ℕ) : ℝ) ^ (-(3 / 2 : ℝ)) := by simp [n]
 
 lemma summable_primeLogDivMulPred_tail :
     Summable fun p : {p : ℕ // Nat.Prime p ∧ 5 ≤ p} ↦ primeLogDivMulPred p := by
-  let e := (Equiv.subtypeSubtypeEquivSubtypeInter
-    (fun p : ℕ ↦ Nat.Prime p) (fun p ↦ 5 ≤ p)).symm
+  let e := (Equiv.subtypeSubtypeEquivSubtypeInter (fun p : ℕ ↦ p.Prime) (fun p ↦ 5 ≤ p)).symm
   exact (e.summable_iff).mpr (summable_primeLogDivMulPred.subtype
-      (fun q : {p : ℕ // Nat.Prime p} ↦ 5 ≤ (q : ℕ)))
+    (fun q : {p : ℕ // p.Prime} ↦ 5 ≤ (q : ℕ)))
 
 lemma summable_oddLogDivMulPred_tail :
     Summable fun k : {k : ℕ // 2 ≤ k} ↦ oddLogDivMulPred k := by
-  have hpow : Summable fun n : ℕ ↦ 2 * (1 / (n : ℝ) ^ ((3 : ℝ) / 2)) := by
-    exact (summable_one_div_nat_rpow.mpr
-      (by norm_num : (1 : ℝ) < (3 : ℝ) / 2)).mul_left 2
+  have hpow : Summable fun n : ℕ ↦ 2 * (1 / (n : ℝ) ^ ((3 : ℝ) / 2)) :=
+    (summable_one_div_nat_rpow.mpr (by norm_num)).mul_left 2
   have hsqrt : Summable fun n : ℕ ↦ 2 / (sqrt (n : ℝ) * (n : ℝ)) := by
     refine hpow.congr ?_
     intro n
@@ -772,23 +760,17 @@ lemma sum_log_ge_add_one {x : ℕ} (hx : 1 ≤ x) :
   norm_num at hint
   linarith
 
-lemma log_factorial_eq_sum_prime_factorization {n : ℕ} :
-    log (n.factorial : ℝ) =
-      ∑ p ∈ Ioc 0 n with Nat.Prime p, (Nat.factorization n.factorial p : ℝ) * log (p : ℝ) := by
-  rw [log_nat_eq_sum_factorization n.factorial]
-  rw [Finsupp.sum_of_support_subset (Nat.factorization n.factorial)
-    (s := (Ioc 0 n).filter Nat.Prime)
-    (g := fun p t ↦ (t : ℝ) * log (p : ℝ))]
+lemma log_factorial_eq_sum_prime_factorization {n : ℕ} : log (n.factorial) =
+    ∑ p ∈ Ioc 0 n with Nat.Prime p, (Nat.factorization n.factorial p) * log p := by
+  rw [log_nat_eq_sum_factorization n.factorial,
+    Finsupp.sum_of_support_subset (Nat.factorization n.factorial)]
   · intro p hp
     rw [mem_filter, mem_Ioc]
-    have hpPrime : Nat.Prime p := by
-      rw [Nat.support_factorization] at hp
-      exact Nat.prime_of_mem_primeFactors hp
+    have hpPrime : Nat.Prime p := Nat.prime_of_mem_primeFactors hp
     have hpDvd : p ∣ n.factorial :=
       Nat.dvd_of_factorization_pos (Finsupp.mem_support_iff.mp hp)
     exact ⟨⟨hpPrime.pos, (Nat.Prime.dvd_factorial hpPrime).mp hpDvd⟩, hpPrime⟩
-  · intro p hp
-    simp
+  · simp
 
 lemma log_factorial_le_mul_log {n : ℕ} :
     log (n.factorial : ℝ) ≤ (n : ℝ) * log (n : ℝ) := by
