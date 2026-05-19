@@ -357,6 +357,12 @@ theorem sigmaCurry_apply (f : ⨁ i : Σ _i, _, δ i.1 i.2) (i : ι) (j : α i) 
     sigmaCurry f i j = f ⟨i, j⟩ :=
   DFinsupp.sigmaCurry_apply (δ := δ) _ i j
 
+@[simp]
+theorem sigmaCurry_of [∀ i : ι, DecidableEq (α i)] (k : (i : ι) × α i)(x : δ k.1 k.2) :
+    sigmaCurry (of (fun k ↦ δ k.1 k.2) k x) =
+      of (fun i' ↦ ⨁ (j' : α i'), δ i' j') k.1 (of (fun j' ↦ δ k.1 j') k.2 x) := by
+  exact DFinsupp.sigmaCurry_single k x
+
 /-- The natural map between `⨁ i (j : α i), δ i j` and `Π₀ (i : Σ i, α i), δ i.1 i.2`, inverse of
 `curry`. -/
 def sigmaUncurry : (⨁ (i) (j), δ i j) →+ ⨁ i : Σ _i, _, δ i.1 i.2 where
