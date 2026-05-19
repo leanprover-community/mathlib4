@@ -340,56 +340,33 @@ lemma oddLogDivMulPred_nonneg (k : ℕ) : 0 ≤ oddLogDivMulPred k :=
 lemma oddLogDivMulPredReal_nonneg {x : ℝ} (hx : 2 ≤ x) : 0 ≤ oddLogDivMulPredReal x :=
   div_nonneg (log_nonneg (by nlinarith)) (by positivity)
 
-lemma oddLogDivMulPredReal_antitoneOn :
-    AntitoneOn oddLogDivMulPredReal (Set.Ici 2) := by
+lemma oddLogDivMulPredReal_strictAntiOn : StrictAntiOn oddLogDivMulPredReal (Set.Ici 2) := by
   intro x hx y hy hxy
   have hx2 : 2 ≤ x := hx
-  have hy2 : 2 ≤ y := hy
   have hxarg : exp 1 ≤ 2 * x + 1 := by
     linarith [exp_one_lt_three]
   have hyarg : exp 1 ≤ 2 * y + 1 := by
     linarith [exp_one_lt_three]
-  have hxarg_pos : 0 < 2 * x + 1 := by nlinarith
-  have hyarg_pos : 0 < 2 * y + 1 := by nlinarith
   have hxden_pos : 0 < 2 * x := by nlinarith
   have hyden_pos : 0 < 2 * y := by nlinarith
   have hlogdiv :
       log (2 * y + 1) / (2 * y + 1) ≤
         log (2 * x + 1) / (2 * x + 1) :=
     log_div_self_antitoneOn hxarg hyarg (by nlinarith)
-  have hinv : (2 * y)⁻¹ ≤ (2 * x)⁻¹ :=
-    inv_anti₀ hxden_pos (by nlinarith)
-  have hright_nonneg : 0 ≤ log (2 * x + 1) / (2 * x + 1) :=
-    div_nonneg (log_nonneg (by nlinarith)) hxarg_pos.le
+  have hinv : (2 * y)⁻¹ < (2 * x)⁻¹ :=
+    inv_strictAntiOn hxden_pos hyden_pos (by nlinarith)
+  have hright_pos : 0 < log (2 * x + 1) / (2 * x + 1) :=
+    div_pos (log_pos (by nlinarith)) (by nlinarith)
   have hleft2_nonneg : 0 ≤ (2 * y)⁻¹ := inv_nonneg.mpr hyden_pos.le
   calc
     _ = (log (2 * y + 1) / (2 * y + 1)) * (2 * y)⁻¹ := by
       rw [oddLogDivMulPredReal]
-      field_simp [hyarg_pos.ne', hyden_pos.ne']
-    _ ≤ (log (2 * x + 1) / (2 * x + 1)) * (2 * x)⁻¹ :=
-      mul_le_mul hlogdiv hinv hleft2_nonneg hright_nonneg
+      field_simp [hyden_pos.ne']
+    _ < (log (2 * x + 1) / (2 * x + 1)) * (2 * x)⁻¹ :=
+      mul_lt_mul' hlogdiv hinv hleft2_nonneg hright_pos
     _ = oddLogDivMulPredReal x := by
       rw [oddLogDivMulPredReal]
-      field_simp [hxarg_pos.ne', hxden_pos.ne']
-
-lemma oddLogDivMulPredReal_three_lt_two :
-    oddLogDivMulPredReal 3 < oddLogDivMulPredReal 2 := by
-  have h5 : exp 1 ≤ 5 := by linarith [exp_one_lt_three]
-  have h7 : exp 1 ≤ 7 := by linarith [exp_one_lt_three]
-  have hlogdiv : log 7 / 7 ≤ log 5 / 5 :=
-    log_div_self_antitoneOn h5 h7 (by norm_num)
-  have hlogdiv_pos : 0 < log 7 / 7 :=
-    div_pos (log_pos (by norm_num)) (by norm_num)
-  have hinv_lt : (6 : ℝ)⁻¹ < 4⁻¹ := by norm_num
-  calc
-    oddLogDivMulPredReal 3 = (log 7 / 7) * 6⁻¹ := by
-      norm_num [oddLogDivMulPredReal]
-      ring
-    _ < (log 7 / 7) * 4⁻¹ := mul_lt_mul_of_pos_left hinv_lt hlogdiv_pos
-    _ ≤ (log 5 / 5) * 4⁻¹ := mul_le_mul_of_nonneg_right hlogdiv (by norm_num)
-    _ = oddLogDivMulPredReal 2 := by
-      norm_num [oddLogDivMulPredReal]
-      ring
+      field_simp [ hxden_pos.ne']
 
 lemma oddLogDivMulPredReal_three_lt_integral_two_three :
     oddLogDivMulPredReal 3 < ∫ x in 2..3, oddLogDivMulPredReal x := by
@@ -410,9 +387,9 @@ lemma oddLogDivMulPredReal_three_lt_integral_two_three :
       have hden_pos : 0 < 2 * x := by nlinarith [hx.1]
       exact mul_ne_zero harg_pos.ne' hden_pos.ne'
   · intro x hx
-    exact oddLogDivMulPredReal_antitoneOn hx.1.le (by norm_num) hx.2
+    exact oddLogDivMulPredReal_strictAntiOn.antitoneOn hx.1.le (by norm_num) hx.2
   · refine ⟨2, by norm_num, ?_⟩
-    simpa [c] using oddLogDivMulPredReal_three_lt_two
+    exact oddLogDivMulPredReal_strictAntiOn (by norm_num) (by norm_num) (by norm_num)
 
 lemma tsum_oddLogDivMulPred_nat_tail_lt_integral :
     ∑' n : ℕ, oddLogDivMulPred (n + 3) < ∫ x in Set.Ioi 2, oddLogDivMulPredReal x := by
@@ -457,7 +434,7 @@ lemma tsum_oddLogDivMulPred_nat_tail_lt_integral :
         ring_nf
       have hanti_interval :
           AntitoneOn oddLogDivMulPredReal (Set.Icc 3 ((m + 3 : ℕ) : ℝ)) :=
-        oddLogDivMulPredReal_antitoneOn.mono fun x hx ↦ le_trans (by norm_num) hx.1
+        oddLogDivMulPredReal_strictAntiOn.antitoneOn.mono fun x hx ↦ le_trans (by norm_num) hx.1
       have hrest_le :
           (∑ i ∈ range m, oddLogDivMulPred (i + 4))
             ≤ ∫ x in 3..((m + 3 : ℕ) : ℝ), oddLogDivMulPredReal x := by
@@ -796,10 +773,9 @@ lemma factorial_prime_exponent_upper_split {n p : ℕ} (hp : Nat.Prime p) :
         linarith
       simp [field]
 
-lemma log_factorial_le_mul_primeLogSum_add_error {n : ℕ} :
-    log (n.factorial) ≤
-      n * (∑ p ∈ Ioc 0 n with Nat.Prime p, log (p : ℝ) / p) +
-      n * ∑ p ∈ Ioc 0 n with Nat.Prime p, primeLogDivMulPred p := by
+lemma log_factorial_le_mul_primeLogSum_add_error {n : ℕ} : log (n.factorial) ≤
+    n * ∑ p ∈ Ioc 0 n with Nat.Prime p, log (p : ℝ) / p +
+    n * ∑ p ∈ Ioc 0 n with Nat.Prime p, primeLogDivMulPred p := by
   rw [log_factorial_eq_sum_prime_factorization]
   calc
     _ ≤ ∑ p ∈ Ioc 0 n with Nat.Prime p,
@@ -807,9 +783,8 @@ lemma log_factorial_le_mul_primeLogSum_add_error {n : ℕ} :
       refine sum_le_sum ?_
       intro p hp
       rw [mem_filter] at hp
-      have hpPrime : Nat.Prime p := hp.2
-      have hlog_nonneg : 0 ≤ log (p : ℝ) := log_nonneg (by exact_mod_cast hpPrime.one_le)
-      exact mul_le_mul_of_nonneg_right (factorial_prime_exponent_upper_split hpPrime)
+      have hlog_nonneg : 0 ≤ log (p : ℝ) := log_nonneg (by exact_mod_cast hp.2.one_le)
+      exact mul_le_mul_of_nonneg_right (factorial_prime_exponent_upper_split hp.2)
         hlog_nonneg
     _ = (n : ℝ) * (∑ p ∈ Ioc 0 n with Nat.Prime p, log (p : ℝ) / p) +
         (n : ℝ) * ∑ p ∈ Ioc 0 n with Nat.Prime p, primeLogDivMulPred p := by
@@ -817,12 +792,9 @@ lemma log_factorial_le_mul_primeLogSum_add_error {n : ℕ} :
       refine sum_congr rfl ?_
       intro p hp
       rw [mem_filter] at hp
-      have hpPrime : Nat.Prime p := hp.2
-      have hpred0 : (p : ℝ) - 1 ≠ 0 := by
-        have hpgt : (1 : ℝ) < p := by exact_mod_cast hpPrime.one_lt
-        linarith
+      have hpgt : (1 : ℝ) < p := by exact_mod_cast hp.2.one_lt
       rw [primeLogDivMulPred]
-      field_simp [hpred0]
+      field_simp
 
 lemma finite_primeLogDivMulPred_lt_one {n : ℕ} :
     ∑ p ∈ Ioc 0 n with Nat.Prime p, primeLogDivMulPred p < 1 := by
@@ -851,12 +823,10 @@ lemma log_factorial_lt_mul_primeLogSum_add_self {n : ℕ} (hn : 1 ≤ n) :
 
 lemma neg_two_lt_primeLogSum_sub_log {n : ℕ} (hn : 1 ≤ n) :
     -2 < ∑ p ∈ Ioc 0 n with Nat.Prime p, log p / p - log n := by
-  have hn0 : n ≠ 0 := by omega
   have hfactorial_lower : n * log n - n < log (n.factorial) := by
-    have hstirling := Stirling.le_log_factorial_stirling hn0
-    have hlogn : 0 ≤ log (n : ℝ) := log_natCast_nonneg n
-    have hlogpi : 0 < log (2 * π) := log_pos (by nlinarith [pi_gt_three])
-    nlinarith
+    have hn0 : n ≠ 0 := by lia
+    have : 0 < log (2 * π) := log_pos (by nlinarith [pi_gt_three])
+    nlinarith [log_natCast_nonneg n, Stirling.le_log_factorial_stirling hn0]
   nlinarith [hfactorial_lower, log_factorial_lt_mul_primeLogSum_add_self hn]
 
 /-- **Mertens' first theorem**: for every natural number `n ≥ 2`, the sum of `log p / p` over
