@@ -27,19 +27,21 @@ public section
 noncomputable section
 
 /-- The class of non-unital (complex) C⋆-algebras. -/
-class NonUnitalCStarAlgebra (A : Type*) extends NonUnitalNormedRing A, StarRing A, CompleteSpace A,
+class NonUnitalCStarAlgebra (A : Type*) extends NormMetric A, NonUnitalRing A, IsNormedRing A,
+    StarRing A, CompleteSpace A,
     CStarRing A, NormedSpace ℂ A, IsScalarTower ℂ A A, SMulCommClass ℂ A A, StarModule ℂ A where
 
 /-- The class of non-unital commutative (complex) C⋆-algebras. -/
 class NonUnitalCommCStarAlgebra (A : Type*) extends
-    NonUnitalNormedCommRing A, NonUnitalCStarAlgebra A
+    NonUnitalCStarAlgebra A, NonUnitalCommRing A
 
 /-- The class of unital (complex) C⋆-algebras. -/
-class CStarAlgebra (A : Type*) extends NormedRing A, StarRing A, CompleteSpace A, CStarRing A,
+class CStarAlgebra (A : Type*) extends NormMetric A, Ring A, IsNormedRing A,
+    StarRing A, CompleteSpace A, CStarRing A,
     NormedAlgebra ℂ A, StarModule ℂ A where
 
 /-- The class of unital commutative (complex) C⋆-algebras. -/
-class CommCStarAlgebra (A : Type*) extends NormedCommRing A, CStarAlgebra A
+class CommCStarAlgebra (A : Type*) extends CStarAlgebra A, CommRing A
 
 noncomputable instance (priority := 100) CStarAlgebra.toNonUnitalCStarAlgebra (A : Type*)
     [CStarAlgebra A] : NonUnitalCStarAlgebra A where

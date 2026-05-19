@@ -475,13 +475,17 @@ noncomputable instance [NormedAddCommGroup R] : Norm C(α, R)₀ where
 lemma norm_def [NormedAddCommGroup R] (f : C(α, R)₀) : ‖f‖ = ‖(f : C(α, R))‖ :=
   rfl
 
-noncomputable instance [NormedAddCommGroup R] : NormedAddCommGroup C(α, R)₀ where
-  dist_eq f g := NormedAddGroup.dist_eq (f : C(α, R)) g
+noncomputable instance [NormedAddCommGroup R] : NormMetric C(α, R)₀ where
 
-noncomputable instance [NormedCommRing R] : NonUnitalNormedCommRing C(α, R)₀ where
-  dist_eq f g := NormedAddGroup.dist_eq (f : C(α, R)) g
+instance [NormedAddCommGroup R] : IsNormedAddGroup C(α, R)₀ where
+  dist_eq f g := IsNormedAddGroup.dist_eq (f : C(α, R)) g
+
+noncomputable example [NormedAddCommGroup R] : NormedAddCommGroup C(α, R)₀ where
+
+noncomputable instance [NormedCommRing R] : IsNormedRing C(α, R)₀ where
   norm_mul_le f g := norm_mul_le (f : C(α, R)) g
-  mul_comm f g := mul_comm f g
+
+noncomputable example [NormedCommRing R] : NonUnitalNormedCommRing C(α, R)₀ where
 
 noncomputable instance [NormedField 𝕜] [NormedCommRing R] [NormedAlgebra 𝕜 R] :
     NormedSpace 𝕜 C(α, R)₀ where

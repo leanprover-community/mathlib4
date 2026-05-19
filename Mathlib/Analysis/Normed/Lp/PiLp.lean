@@ -673,10 +673,12 @@ lemma isometry_ofLp_infty [∀ i, PseudoEMetricSpace (β i)] :
     (by simpa only [ENNReal.div_top, ENNReal.toReal_zero, NNReal.rpow_zero, ENNReal.coe_one,
       one_mul] using antilipschitzWith_ofLp ∞ β x y)
 
+instance [∀ i, SeminormedAddCommGroup (β i)] : NormPseudoMetric (PiLp p β) where
+
 /-- seminormed group instance on the product of finitely many normed groups, using the `L^p`
 norm. -/
-instance seminormedAddCommGroup [∀ i, SeminormedAddCommGroup (β i)] :
-    SeminormedAddCommGroup (PiLp p β) where
+instance instIsNormedAddGroup [∀ i, SeminormedAddCommGroup (β i)] :
+    IsNormedAddGroup (PiLp p β) where
   dist_eq := fun x y => by
     rcases p.dichotomy with (rfl | h)
     · simp only [dist_eq_iSup, norm_eq_ciSup, dist_eq_norm, add_apply, neg_apply, norm_neg_add]
@@ -686,6 +688,10 @@ instance seminormedAddCommGroup [∀ i, SeminormedAddCommGroup (β i)] :
         linarith
       simp only [dist_eq_sum (zero_lt_one.trans_le h), norm_eq_sum (zero_lt_one.trans_le h),
         dist_eq_norm, add_apply, neg_apply, norm_neg_add]
+
+/-- seminormed group instance on the product of finitely many normed groups, using the `L^p`
+norm. -/
+example [∀ i, SeminormedAddCommGroup (β i)] : SeminormedAddCommGroup (PiLp p β) where
 
 omit [Fintype ι] in
 lemma isUniformInducing_toLp [Finite ι] [∀ i, PseudoEMetricSpace (β i)] :
@@ -711,10 +717,10 @@ theorem norm_apply_le [∀ i, SeminormedAddCommGroup (β i)] (x : PiLp p β) (i 
 
 end
 
+instance instNormMetric [∀ i, NormedAddCommGroup (α i)] : NormMetric (PiLp p α) where
+
 /-- normed group instance on the product of finitely many normed groups, using the `L^p` norm. -/
-instance normedAddCommGroup [∀ i, NormedAddCommGroup (α i)] : NormedAddCommGroup (PiLp p α) :=
-  { PiLp.seminormedAddCommGroup p α with
-    eq_of_dist_eq_zero := eq_of_dist_eq_zero }
+example [∀ i, NormedAddCommGroup (α i)] : NormedAddCommGroup (PiLp p α) where
 
 theorem nnnorm_eq_sum {p : ℝ≥0∞} [Fact (1 ≤ p)] {β : ι → Type*} (hp : p ≠ ∞)
     [∀ i, SeminormedAddCommGroup (β i)] (f : PiLp p β) :
@@ -1215,7 +1221,8 @@ of `Π i, α i`. See for instance `Matrix.frobeniusSeminormedAddCommGroup`.
 -/
 
 -- This prevents Lean from elaborating terms of `Π i, α i` with an unintended norm.
-attribute [-instance] Pi.seminormedAddGroup
+attribute [-instance] Pi.instNormPseudoMetric
+attribute [-instance] Pi.instNormMetric
 
 variable [Fact (1 ≤ p)] [Fintype ι]
 
@@ -1235,19 +1242,36 @@ lemma dist_pseudoMetricSpaceToPi [∀ i, PseudoMetricSpace (α i)] (x y : Π i, 
 /-- This definition allows to endow `Π i, α i` with the Lp norm with the uniformity and bornology
 being defeq to the product ones. It is useful to endow a type synonym of `Π i, α i` with the
 Lp norm. -/
-abbrev seminormedAddCommGroupToPi [∀ i, SeminormedAddCommGroup (α i)] :
-    SeminormedAddCommGroup (Π i, α i) where
+abbrev normPseudoMetricToPi [∀ i, SeminormedAddCommGroup (α i)] :
+    NormPseudoMetric (Π i, α i) where
   norm x := ‖toLp p x‖
   toPseudoMetricSpace := pseudoMetricSpaceToPi p α
-  dist_eq x y := by
-    rw [dist_pseudoMetricSpaceToPi, SeminormedAddCommGroup.dist_eq, toLp_add, toLp_neg]
 
-lemma norm_seminormedAddCommGroupToPi [∀ i, SeminormedAddCommGroup (α i)] (x : Π i, α i) :
-    @Norm.norm _ (seminormedAddCommGroupToPi p α).toNorm x = ‖toLp p x‖ := rfl
+lemma norm_normPseudoMetricToPi [∀ i, SeminormedAddCommGroup (α i)] (x : Π i, α i) :
+    @Norm.norm _ (normPseudoMetricToPi p α).toNorm x = ‖toLp p x‖ := rfl
+
+lemma isNormedAddGroupToPi [∀ i, SeminormedAddCommGroup (α i)] :
+    letI := normPseudoMetricToPi p α
+    IsNormedAddGroup (Π i, α i) :=
+  letI := normPseudoMetricToPi p α
+  { dist_eq x y := by
+      rw [dist_pseudoMetricSpaceToPi, IsNormedAddGroup.dist_eq, norm_normPseudoMetricToPi,
+        toLp_add, toLp_neg] }
+
+/-- This definition allows to endow `Π i, α i` with the Lp norm with the uniformity and bornology
+being defeq to the product ones. It is useful to endow a type synonym of `Π i, α i` with the
+Lp norm. -/
+abbrev seminormedAddCommGroupToPi [∀ i, SeminormedAddCommGroup (α i)] :
+    SeminormedAddCommGroup (Π i, α i) where
+  toNormPseudoMetric := normPseudoMetricToPi p α
+  toIsNormedAddGroup := isNormedAddGroupToPi p α
+
+@[deprecated (since := "2026-05-17")]
+alias norm_seminormedAddCommGroupToPi := norm_normPseudoMetricToPi
 
 lemma nnnorm_seminormedAddCommGroupToPi [∀ i, SeminormedAddCommGroup (α i)] (x : Π i, α i) :
-    @NNNorm.nnnorm _ (seminormedAddCommGroupToPi p α).toSeminormedAddGroup.toNNNorm x =
-    ‖toLp p x‖₊ := rfl
+    letI := seminormedAddCommGroupToPi p α
+    ‖x‖₊ = ‖toLp p x‖₊ := rfl
 
 lemma isBoundedSMulSeminormedAddCommGroupToPi
     [∀ i, SeminormedAddCommGroup (α i)] {R : Type*} [SeminormedRing R]
@@ -1266,7 +1290,7 @@ lemma normSMulClassSeminormedAddCommGroupToPi
     NormSMulClass R (Π i, α i) := by
   letI := seminormedAddCommGroupToPi p α
   refine ⟨fun x y ↦ ?_⟩
-  simp [norm_seminormedAddCommGroupToPi, norm_smul]
+  simp [norm_normPseudoMetricToPi, norm_smul]
 
 /-- This definition allows to endow `Π i, α i` with a normed space structure corresponding to
 the Lp norm. It is useful for type synonyms of `Π i, α i`. -/
@@ -1277,21 +1301,27 @@ abbrev normedSpaceSeminormedAddCommGroupToPi
     NormedSpace R (Π i, α i) := by
   letI := seminormedAddCommGroupToPi p α
   refine ⟨fun x y ↦ ?_⟩
-  simp [norm_seminormedAddCommGroupToPi, norm_smul]
+  simp [norm_normPseudoMetricToPi, norm_smul]
+
+/-- This definition allows to endow `Π i, α i` with the Lp norm with the uniformity and bornology
+being defeq to the product ones. It is useful to endow a type synonym of `Π i, α i` with the
+Lp norm. -/
+abbrev normMetricToPi [∀ i, NormedAddCommGroup (α i)] :
+    NormMetric (Π i, α i) where
+  norm x := ‖toLp p x‖
+  toPseudoMetricSpace := pseudoMetricSpaceToPi p α
+  eq_of_dist_eq_zero {x y} h := by
+    rw [dist_pseudoMetricSpaceToPi] at h
+    apply eq_of_dist_eq_zero at h
+    exact WithLp.toLp_injective p h
 
 /-- This definition allows to endow `Π i, α i` with the Lp norm with the uniformity and bornology
 being defeq to the product ones. It is useful to endow a type synonym of `Π i, α i` with the
 Lp norm. -/
 abbrev normedAddCommGroupToPi [∀ i, NormedAddCommGroup (α i)] :
     NormedAddCommGroup (Π i, α i) where
-  norm x := ‖toLp p x‖
-  toPseudoMetricSpace := pseudoMetricSpaceToPi p α
-  dist_eq x y := by
-    rw [dist_pseudoMetricSpaceToPi, SeminormedAddCommGroup.dist_eq, toLp_add, toLp_neg]
-  eq_of_dist_eq_zero {x y} h := by
-    rw [dist_pseudoMetricSpaceToPi] at h
-    apply eq_of_dist_eq_zero at h
-    exact WithLp.toLp_injective p h
+  toNormMetric := normMetricToPi p α
+  toIsNormedAddGroup := isNormedAddGroupToPi p α
 
 end toPi
 

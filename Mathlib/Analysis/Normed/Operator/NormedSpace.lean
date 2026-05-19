@@ -106,14 +106,15 @@ theorem opNorm_zero_iff [RingHomIsometric σ₁₂] : ‖f‖ = 0 ↔ f = 0 :=
       rintro rfl
       exact opNorm_zero)
 
+instance toNormMetric [RingHomIsometric σ₁₂] : NormMetric (E →SL[σ₁₂] F) :=
+  .ofAddSeparation fun f => (opNorm_zero_iff f).mp
+
 /-- Continuous linear maps themselves form a normed space with respect to the operator norm. -/
-instance toNormedAddCommGroup [RingHomIsometric σ₁₂] : NormedAddCommGroup (E →SL[σ₁₂] F) :=
-  NormedAddCommGroup.ofSeparation fun f => (opNorm_zero_iff f).mp
+example [RingHomIsometric σ₁₂] : NormedAddCommGroup (E →SL[σ₁₂] F) :=
+  inferInstance
 
 /-- Continuous linear maps form a normed ring with respect to the operator norm. -/
-instance toNormedRing : NormedRing (E →L[𝕜] E) where
-  __ := toNormedAddCommGroup
-  __ := toSeminormedRing
+example : NormedRing (E →L[𝕜] E) where
 
 /-- If a continuous linear map is a topology embedding, then it is expands the distances
 by a positive factor. -/

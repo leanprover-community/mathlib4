@@ -153,11 +153,21 @@ theorem seminorm_one_eq_one_iff_ne_zero (hp : p 1 ≤ 1) : p 1 = 1 ↔ p ≠ 0 :
   · refine hp.antisymm ((le_mul_iff_one_le_left hp0).1 ?_)
     simpa only [one_mul] using map_mul_le_mul p (1 : R) _
 
+/-- The `NormPseudoMetric` structure on a ring `R` determined by a `RingSeminorm`. -/
+abbrev toNormPseudoMetric : NormPseudoMetric R :=
+  p.toAddGroupSeminorm.toNormPseudoMetric
+
+/-- The `IsNormedRing` structure on a ring `R` determined by a `RingSeminorm`. -/
+abbrev toIsNormedRing :
+    letI := p.toNormPseudoMetric
+    IsNormedRing R :=
+  letI := p.toNormPseudoMetric
+  { norm_mul_le := map_mul_le_mul p }
+
 /-- The `SeminormedRing` structure on a ring `R` determined by a `RingSeminorm`. -/
 abbrev toSeminormedRing : SeminormedRing R where
-  __ := ‹Ring R›
-  __ := p.toAddGroupSeminorm.toSeminormedAddCommGroup
-  norm_mul_le := map_mul_le_mul p
+  toNormPseudoMetric := p.toNormPseudoMetric
+  toIsNormedRing := p.toIsNormedRing
 
 end Ring
 
@@ -268,9 +278,8 @@ end NonUnitalRing
 /-- The `NormedRing` structure on a ring `R` determined by a `RingNorm`. -/
 -- See note |reducible non-instances]
 abbrev toNormedRing [Ring R] (f : RingNorm R) : NormedRing R where
-  __ := ‹Ring R›
-  __ := f.toAddGroupNorm.toNormedAddCommGroup
-  norm_mul_le := map_mul_le_mul f
+  toNormMetric := f.toNormMetric
+  toIsNormedRing := f.toIsNormedRing
 
 end RingNorm
 

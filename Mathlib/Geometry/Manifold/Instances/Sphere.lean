@@ -200,7 +200,6 @@ theorem continuous_stereoInvFun (hv : ‖v‖ = 1) : Continuous (stereoInvFun hv
     ((contDiff_stereoInvFunAux (m := 0)).continuous.comp continuous_subtype_val)
 
 open scoped InnerProductSpace in
-attribute [-simp] AddSubgroupClass.coe_norm Submodule.coe_norm in
 theorem stereo_left_inv (hv : ‖v‖ = 1) {x : sphere (0 : E) 1} (hx : (x : E) ≠ v) :
     stereoInvFun hv (stereoToFun v x) = x := by
   ext

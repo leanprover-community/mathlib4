@@ -168,17 +168,15 @@ theorem _root_.BoundedContinuousFunction.norm_toContinuousMap_eq (f : α →ᵇ 
 
 open BoundedContinuousFunction
 
-instance : SeminormedAddCommGroup C(α, E) where
-  __ := ContinuousMap.instPseudoMetricSpace _ _
-  __ := ContinuousMap.instAddCommGroupContinuousMap
+instance : NormPseudoMetric C(α, E) where
+
+instance : IsNormedAddGroup C(α, E) where
   dist_eq x y := by rw [← norm_mkOfCompact, ← dist_mkOfCompact, dist_eq_norm_neg_add,
     mkOfCompact_add, mkOfCompact_neg]
-  dist := dist
-  norm := norm
 
-instance {E : Type*} [NormedAddCommGroup E] : NormedAddCommGroup C(α, E) where
-  __ : SeminormedAddCommGroup C(α, E) := inferInstance
-  __ : MetricSpace C(α, E) := inferInstance
+instance {E : Type*} [NormedAddCommGroup E] : NormMetric C(α, E) where
+
+example {E : Type*} [NormedAddCommGroup E] : NormedAddCommGroup C(α, E) where
 
 instance [Nonempty α] [One E] [NormOneClass E] : NormOneClass C(α, E) where
   norm_one := by simp only [← norm_mkOfCompact, mkOfCompact_one, norm_one]
@@ -245,38 +243,24 @@ section
 
 variable {R : Type*}
 
-instance [NonUnitalSeminormedRing R] : NonUnitalSeminormedRing C(α, R) where
-  __ : SeminormedAddCommGroup C(α, R) := inferInstance
-  __ : NonUnitalRing C(α, R) := inferInstance
+instance [NonUnitalSeminormedRing R] : IsNormedRing C(α, R) where
   norm_mul_le f g := norm_mul_le (mkOfCompact f) (mkOfCompact g)
 
-instance [NonUnitalSeminormedCommRing R] : NonUnitalSeminormedCommRing C(α, R) where
-  __ : NonUnitalSeminormedRing C(α, R) := inferInstance
-  __ : NonUnitalCommRing C(α, R) := inferInstance
+example [NonUnitalSeminormedRing R] : NonUnitalSeminormedRing C(α, R) where
 
-instance [SeminormedRing R] : SeminormedRing C(α, R) where
-  __ : NonUnitalSeminormedRing C(α, R) := inferInstance
-  __ : Ring C(α, R) := inferInstance
+example [NonUnitalSeminormedCommRing R] : NonUnitalSeminormedCommRing C(α, R) where
 
-instance [SeminormedCommRing R] : SeminormedCommRing C(α, R) where
-  __ : SeminormedRing C(α, R) := inferInstance
-  __ : CommRing C(α, R) := inferInstance
+example [SeminormedRing R] : SeminormedRing C(α, R) where
 
-instance [NonUnitalNormedRing R] : NonUnitalNormedRing C(α, R) where
-  __ : NormedAddCommGroup C(α, R) := inferInstance
-  __ : NonUnitalSeminormedRing C(α, R) := inferInstance
+example [SeminormedCommRing R] : SeminormedCommRing C(α, R) where
 
-instance [NonUnitalNormedCommRing R] : NonUnitalNormedCommRing C(α, R) where
-  __ : NonUnitalNormedRing C(α, R) := inferInstance
-  __ : NonUnitalCommRing C(α, R) := inferInstance
+example [NonUnitalNormedRing R] : NonUnitalNormedRing C(α, R) where
 
-instance [NormedRing R] : NormedRing C(α, R) where
-  __ : NormedAddCommGroup C(α, R) := inferInstance
-  __ : SeminormedRing C(α, R) := inferInstance
+example [NonUnitalNormedCommRing R] : NonUnitalNormedCommRing C(α, R) where
 
-instance [NormedCommRing R] : NormedCommRing C(α, R) where
-  __ : NormedRing C(α, R) := inferInstance
-  __ : CommRing C(α, R) := inferInstance
+example [NormedRing R] : NormedRing C(α, R) where
+
+example [NormedCommRing R] : NormedCommRing C(α, R) where
 
 end
 

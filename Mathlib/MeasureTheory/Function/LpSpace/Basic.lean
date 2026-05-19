@@ -371,8 +371,8 @@ theorem norm_le_of_ae_bound [IsFiniteMeasure μ] {f : Lp E p μ} {C : ℝ} (hC :
   have := nnnorm_le_of_ae_bound hfC
   rwa [← NNReal.coe_le_coe, NNReal.coe_mul, NNReal.coe_rpow] at this
 
-instance instNormedAddCommGroup [hp : Fact (1 ≤ p)] : NormedAddCommGroup (Lp E p μ) :=
-  { AddGroupNorm.toNormedAddCommGroup
+instance instNormMetric [hp : Fact (1 ≤ p)] : NormMetric (Lp E p μ) :=
+  { AddGroupNorm.toNormMetric
       { toFun := (norm : Lp E p μ → ℝ)
         map_zero' := norm_zero
         neg' := by simp only [norm_neg, implies_true] -- squeezed for performance reasons
@@ -386,6 +386,10 @@ instance instNormedAddCommGroup [hp : Fact (1 ≤ p)] : NormedAddCommGroup (Lp E
         eq_zero_of_map_eq_zero' _ := (norm_eq_zero_iff <| zero_lt_one.trans_le hp.1).1 } with
     edist := edist
     edist_dist := Lp.edist_dist }
+
+instance instIsNormedAddGroup [hp : Fact (1 ≤ p)] : IsNormedAddGroup (Lp E p μ) where
+
+example [hp : Fact (1 ≤ p)] : NormedAddCommGroup (Lp E p μ) where
 
 -- check no diamond is created
 example [Fact (1 ≤ p)] : PseudoEMetricSpace.toEDist = (Lp.instEDist : EDist (Lp E p μ)) := by

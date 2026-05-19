@@ -176,9 +176,14 @@ variable [Ring R]
 
 instance (v : AbsoluteValue R S) : Ring (WithAbs v) := fast_instance% (equiv v).ring
 
-noncomputable instance normedRing (v : AbsoluteValue R ℝ) : NormedRing (WithAbs v) :=
-  letI := v.toNormedRing
-  fast_instance% (equiv v).normedRing
+instance instNormMetric (v : AbsoluteValue R ℝ) : NormMetric (WithAbs v) :=
+  letI := v.toNormMetric
+  fast_instance% NormMetric.induced _ _ (equiv v) (equiv v).injective
+
+instance instIsNormedRing (v : AbsoluteValue R ℝ) : IsNormedRing (WithAbs v) :=
+  letI := v.toNormMetric
+  letI := v.toIsNormedRing
+  (equiv v).isNormedRing
 
 lemma norm_eq_apply_ofAbs (v : AbsoluteValue R ℝ) (x : WithAbs v) : ‖x‖ = v x.ofAbs := rfl
 lemma norm_toAbs_eq (v : AbsoluteValue R ℝ) (x : R) : ‖toAbs v x‖ = v x := rfl

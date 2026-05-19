@@ -525,8 +525,8 @@ theorem norm_neg ⦃f : lp E p⦄ : ‖-f‖ = ‖f‖ := by
     apply (lp.hasSum_norm hp (-f)).unique
     simpa only [coeFn_neg, Pi.neg_apply, _root_.norm_neg] using lp.hasSum_norm hp f
 
-instance normedAddCommGroup [hp : Fact (1 ≤ p)] : NormedAddCommGroup (lp E p) :=
-  fast_instance% AddGroupNorm.toNormedAddCommGroup
+instance instNormMetric [hp : Fact (1 ≤ p)] : NormMetric (lp E p) :=
+  fast_instance% AddGroupNorm.toNormMetric
     { toFun := norm
       map_zero' := norm_zero
       neg' := norm_neg
@@ -554,6 +554,8 @@ instance normedAddCommGroup [hp : Fact (1 ≤ p)] : NormedAddCommGroup (lp E p) 
           gcongr
           apply norm_add_le
       eq_zero_of_map_eq_zero' := fun _ => norm_eq_zero_iff.1 }
+
+instance instIsNormedAddGroup [hp : Fact (1 ≤ p)] : IsNormedAddGroup (lp E p) where
 
 -- TODO: define an `ENNReal` version of `HolderConjugate`, and then express this inequality
 -- in a better version which also covers the case `p = 1, q = ∞`.
@@ -843,16 +845,18 @@ instance nonUnitalRing : NonUnitalRing (lp B ∞) := fast_instance%
   Function.Injective.nonUnitalRing lp.coeFun.coe Subtype.coe_injective (lp.coeFn_zero B ∞)
     lp.coeFn_add infty_coeFn_mul lp.coeFn_neg lp.coeFn_sub (fun _ _ => rfl) fun _ _ => rfl
 
-instance nonUnitalNormedRing : NonUnitalNormedRing (lp B ∞) :=
-  { lp.nonUnitalRing, lp.normedAddCommGroup with
-    norm_mul_le f g := lp.norm_le_of_forall_le (by positivity) fun i ↦ calc
-      ‖(f * g) i‖ ≤ ‖f i‖ * ‖g i‖ := norm_mul_le _ _
-      _ ≤ ‖f‖ * ‖g‖ := mul_le_mul (lp.norm_apply_le_norm ENNReal.top_ne_zero f i)
-        (lp.norm_apply_le_norm ENNReal.top_ne_zero g i) (norm_nonneg _) (norm_nonneg _) }
+instance instIsNormedRing : IsNormedRing (lp B ∞) where
+  norm_mul_le f g := lp.norm_le_of_forall_le (by positivity) fun i ↦ calc
+    ‖(f * g) i‖ ≤ ‖f i‖ * ‖g i‖ := norm_mul_le _ _
+    _ ≤ ‖f‖ * ‖g‖ := mul_le_mul (lp.norm_apply_le_norm ENNReal.top_ne_zero f i)
+      (lp.norm_apply_le_norm ENNReal.top_ne_zero g i) (norm_nonneg _) (norm_nonneg _)
 
-instance nonUnitalNormedCommRing {B : I → Type*} [∀ i, NonUnitalNormedCommRing (B i)] :
-    NonUnitalNormedCommRing (lp B ∞) where
+instance instNonUnitalCommRing {B : I → Type*} [∀ i, NonUnitalNormedCommRing (B i)] :
+    NonUnitalCommRing (lp B ∞) where
   mul_comm _ _ := ext <| mul_comm ..
+
+example {B : I → Type*} [∀ i, NonUnitalNormedCommRing (B i)] :
+    NonUnitalNormedCommRing (lp B ∞) where
 
 -- we also want a `NonUnitalNormedCommRing` instance, but this has to wait for https://github.com/leanprover-community/mathlib3/pull/13719
 instance infty_isScalarTower {𝕜} [NormedRing 𝕜] [∀ i, Module 𝕜 (B i)] [∀ i, IsBoundedSMul 𝕜 (B i)]
@@ -934,8 +938,7 @@ theorem infty_coeFn_intCast (z : ℤ) : ⇑(z : lp B ∞) = z :=
 instance [Nonempty I] : NormOneClass (lp B ∞) where
   norm_one := by simp_rw [lp.norm_eq_ciSup, infty_coeFn_one, Pi.one_apply, norm_one, ciSup_const]
 
-instance inftyNormedRing : NormedRing (lp B ∞) :=
-  { lp.inftyRing, lp.nonUnitalNormedRing with }
+example : NormedRing (lp B ∞) where
 
 end NormedRing
 
@@ -943,8 +946,10 @@ section NormedCommRing
 
 variable {I : Type*} {B : I → Type*} [∀ i, NormedCommRing (B i)] [∀ i, NormOneClass (B i)]
 
-instance inftyNormedCommRing : NormedCommRing (lp B ∞) where
+instance inftyCommRing : CommRing (lp B ∞) where
   mul_comm := mul_comm
+
+example : NormedCommRing (lp B ∞) where
 
 end NormedCommRing
 

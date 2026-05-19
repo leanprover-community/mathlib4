@@ -117,22 +117,24 @@ normed vector spaces `F`. In fact, we only take in the same universe as `⨂[�
 prove in `PiTensorProduct.norm_eval_le_injectiveSeminorm` that this gives the same result.
 -/
 noncomputable irreducible_def injectiveSeminorm : Seminorm 𝕜 (⨂[𝕜] i, E i) :=
-  sSup {p | ∃ (G : Type (max uι u𝕜 uE)) (_ : SeminormedAddCommGroup G)
-  (_ : NormedSpace 𝕜 G), p = Seminorm.comp (normSeminorm 𝕜 (ContinuousMultilinearMap 𝕜 E G →L[𝕜] G))
+  sSup {p | ∃ (G : Type (max uι u𝕜 uE)) (_ : NormPseudoMetric G) (_ : AddCommGroup G)
+  (_ : IsNormedAddGroup G) (_ : NormedSpace 𝕜 G),
+  p = Seminorm.comp (normSeminorm 𝕜 (ContinuousMultilinearMap 𝕜 E G →L[𝕜] G))
   (toDualContinuousMultilinearMap G (𝕜 := 𝕜) (E := E))}
 
 lemma dualSeminorms_bounded : BddAbove {p | ∃ (G : Type (max uι u𝕜 uE))
-    (_ : SeminormedAddCommGroup G) (_ : NormedSpace 𝕜 G),
+    (_ : NormPseudoMetric G) (_ : AddCommGroup G) (_ : IsNormedAddGroup G) (_ : NormedSpace 𝕜 G),
     p = Seminorm.comp (normSeminorm 𝕜 (ContinuousMultilinearMap 𝕜 E G →L[𝕜] G))
     (toDualContinuousMultilinearMap G (𝕜 := 𝕜) (E := E))} := by
   use projectiveSeminorm
   simp only [mem_upperBounds, Set.mem_setOf_eq, forall_exists_index]
-  intro p G _ _ hp x
+  intro p G _ _ _ _ hp x
   simpa [hp] using toDualContinuousMultilinearMap_le_projectiveSeminorm _
 
 theorem injectiveSeminorm_apply (x : ⨂[𝕜] i, E i) :
     injectiveSeminorm x = ⨆ p : {p | ∃ (G : Type (max uι u𝕜 uE))
-    (_ : SeminormedAddCommGroup G) (_ : NormedSpace 𝕜 G), p = Seminorm.comp (normSeminorm 𝕜
+    (_ : NormPseudoMetric G) (_ : AddCommGroup G) (_ : IsNormedAddGroup G) (_ : NormedSpace 𝕜 G),
+    p = Seminorm.comp (normSeminorm 𝕜
     (ContinuousMultilinearMap 𝕜 E G →L[𝕜] G))
     (toDualContinuousMultilinearMap G (𝕜 := 𝕜) (E := E))}, p.1 x := by
   simpa only [injectiveSeminorm, Set.coe_setOf, Set.mem_setOf_eq]
@@ -156,7 +158,8 @@ theorem norm_eval_le_injectiveSeminorm (f : ContinuousMultilinearMap 𝕜 E F) (
   set G := (⨂[𝕜] i, E i) ⧸ LinearMap.ker (lift f.toMultilinearMap)
   set G' := LinearMap.range (lift f.toMultilinearMap)
   set e := LinearMap.quotKerEquivRange (lift f.toMultilinearMap)
-  letI := SeminormedAddCommGroup.induced G G' e
+  letI := NormPseudoMetric.induced G G' e
+  letI := IsNormedAddGroup.induced G G' e
   letI := NormedSpace.induced 𝕜 G G' e
   set f'₀ := lift.symm (e.symm.toLinearMap ∘ₗ LinearMap.rangeRestrict (lift f.toMultilinearMap))
   have hf'₀ : ∀ (x : Π (i : ι), E i), ‖f'₀ x‖ ≤ ‖f‖ * ∏ i, ‖x i‖ := fun x ↦ by
@@ -184,7 +187,7 @@ theorem norm_eval_le_injectiveSeminorm (f : ContinuousMultilinearMap 𝕜 E F) (
     simp only [injectiveSeminorm]
     refine le_csSup dualSeminorms_bounded ?_
     rw [Set.mem_setOf]
-    existsi G, inferInstance, inferInstance
+    existsi G, inferInstance, inferInstance, inferInstance, inferInstance
     rfl
   refine le_trans ?_ (mul_le_mul_of_nonneg_left (hle x) (norm_nonneg f'))
   simp only [Seminorm.comp_apply, coe_normSeminorm, ← toDualContinuousMultilinearMap_apply_apply]
@@ -197,14 +200,14 @@ theorem injectiveSeminorm_le_projectiveSeminorm :
   refine csSup_le ?_ ?_
   · existsi 0
     simp only [Set.mem_setOf_eq]
-    existsi PUnit, inferInstance, inferInstance
+    existsi PUnit, inferInstance, inferInstance, inferInstance, inferInstance
     ext x
     simp only [Seminorm.zero_apply, Seminorm.comp_apply, coe_normSeminorm]
     rw [Subsingleton.elim (toDualContinuousMultilinearMap PUnit.{(max (max uE uι) u𝕜) + 1} x) 0,
       norm_zero]
   · intro p hp
     simp only [Set.mem_setOf_eq] at hp
-    obtain ⟨G, _, _, h⟩ := hp
+    obtain ⟨G, _, _, _, _, h⟩ := hp
     rw [h]; intro x; simp only [Seminorm.comp_apply, coe_normSeminorm]
     exact toDualContinuousMultilinearMap_le_projectiveSeminorm _
 
@@ -215,8 +218,10 @@ theorem injectiveSeminorm_tprod_le (m : Π (i : ι), E i) :
 -- Use `projectiveSeminorm` to turn the `PiTensorProduct` into a seminormed space.
 -- The definition `injectiveSeminorm` is subject to deprecication in a follow-up PR. See:
 -- https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/injectiveSeminorm/with/568798633
-noncomputable instance : SeminormedAddCommGroup (⨂[𝕜] i, E i) :=
-  AddGroupSeminorm.toSeminormedAddCommGroup projectiveSeminorm.toAddGroupSeminorm
+noncomputable instance : NormPseudoMetric (⨂[𝕜] i, E i) :=
+  AddGroupSeminorm.toNormPseudoMetric projectiveSeminorm.toAddGroupSeminorm
+
+instance : IsNormedAddGroup (⨂[𝕜] i, E i) where
 
 noncomputable instance : NormedSpace 𝕜 (⨂[𝕜] i, E i) := ⟨projectiveSeminorm_smul_le⟩
 

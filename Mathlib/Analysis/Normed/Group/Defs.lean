@@ -345,14 +345,26 @@ structure NormedCommGroup (E : Type*) where
 attribute [instance] NormedCommGroup.mk
 
 -- See note [reducible non-instances]
-/-- Construct a `NormedGroup` from a `SeminormedGroup` satisfying `∀ x, ‖x‖ = 0 → x = 1`. This
-avoids having to go back to the `(Pseudo)MetricSpace` level when declaring a `NormedGroup`
-instance as a special case of a more general `SeminormedGroup` instance. -/
-abbrev NormMetric.ofSeparation [SeminormedGroup E] (h : ∀ x : E, ‖x‖ = 0 → x = 1) :
+/-- missing doc -/
+@[to_additive /-- missing doc -/]
+abbrev NormMetric.ofMulSeparation [NormPseudoMetric E] [Group E] [IsNormedGroup E]
+    (h : ∀ x : E, ‖x‖ = 0 → x = 1) :
     NormMetric E where
   toMetricSpace :=
     { eq_of_dist_eq_zero := fun hxy =>
         inv_mul_eq_one.1 <| h _ <| (IsNormedGroup.dist_eq _ _).symm.trans hxy }
+
+-- See note [reducible non-instances]
+/-- Construct a `NormedGroup` from a `SeminormedGroup` satisfying `∀ x, ‖x‖ = 0 → x = 1`. This
+avoids having to go back to the `(Pseudo)MetricSpace` level when declaring a `NormedGroup`
+instance as a special case of a more general `SeminormedGroup` instance. -/
+@[to_additive /-- Construct a `NormedAddGroup` from a `SeminormedAddGroup`
+satisfying `∀ x, ‖x‖ = 0 → x = 0`. This avoids having to go back to the `(Pseudo)MetricSpace`
+level when declaring a `NormedAddGroup` instance as a special case of a more general
+`SeminormedAddGroup` instance. -/]
+abbrev NormedGroup.ofSeparation [SeminormedGroup E] (h : ∀ x : E, ‖x‖ = 0 → x = 1) :
+    NormedGroup E where
+  toNormMetric := .ofMulSeparation h
 
 -- See note [reducible non-instances]
 /-- Construct a seminormed group from a multiplication-invariant distance. -/

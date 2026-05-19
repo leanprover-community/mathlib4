@@ -199,13 +199,13 @@ instance instAddCommGroup : AddCommGroup (α →ᵇ β) := fast_instance%
   DFunLike.coe_injective.addCommGroup _ coe_zero coe_add coe_neg coe_sub (fun _ _ => coe_nsmul _ _)
     fun _ _ => coe_zsmul _ _
 
-instance instSeminormedAddCommGroup : SeminormedAddCommGroup (α →ᵇ β) where
+instance instNormPseudoMetric : NormPseudoMetric (α →ᵇ β) where
+
+instance instIsNormedAddGroup : IsNormedAddGroup (α →ᵇ β) where
   dist_eq f g := by simp only [norm_eq, dist_eq, dist_eq_norm_neg_add, add_apply, neg_apply]
 
-instance instNormedAddCommGroup {α β} [TopologicalSpace α] [NormedAddCommGroup β] :
-    NormedAddCommGroup (α →ᵇ β) :=
-  { instSeminormedAddCommGroup with
-    eq_of_dist_eq_zero }
+instance instNormMetric {α β} [TopologicalSpace α] [NormedAddCommGroup β] :
+    NormMetric (α →ᵇ β) where
 
 theorem nnnorm_def : ‖f‖₊ = nndist f 0 := rfl
 
@@ -297,9 +297,7 @@ instance instNonUnitalRing : NonUnitalRing (α →ᵇ R) := fast_instance%
   DFunLike.coe_injective.nonUnitalRing _ coe_zero coe_add coe_mul coe_neg coe_sub
     (fun _ _ => coe_nsmul _ _) fun _ _ => coe_zsmul _ _
 
-instance instNonUnitalSeminormedRing : NonUnitalSeminormedRing (α →ᵇ R) where
-  __ := instSeminormedAddCommGroup
-  __ := instNonUnitalRing
+instance instIsNormedRing : IsNormedRing (α →ᵇ R) where
   norm_mul_le f g := norm_ofNormedAddCommGroup_le _ (by positivity)
     (fun x ↦ (norm_mul_le _ _).trans <| mul_le_mul
       (norm_coe_le_norm f x) (norm_coe_le_norm g x) (norm_nonneg _) (norm_nonneg _))
@@ -343,17 +341,17 @@ lemma nnnorm_sum_eq_sup [IsCancelMulZero R] {ι : Type*} {f : ι → (α →ᵇ 
 
 end Seminormed
 
-instance instNonUnitalSeminormedCommRing [NonUnitalSeminormedCommRing R] :
-    NonUnitalSeminormedCommRing (α →ᵇ R) where
+instance instNonUnitalCommRing [NonUnitalSeminormedCommRing R] :
+    NonUnitalCommRing (α →ᵇ R) where
   mul_comm _ _ := ext fun _ ↦ mul_comm ..
 
-instance instNonUnitalNormedRing [NonUnitalNormedRing R] : NonUnitalNormedRing (α →ᵇ R) where
-  __ := instNonUnitalSeminormedRing
-  __ := instNormedAddCommGroup
+example [NonUnitalSeminormedCommRing R] :
+    NonUnitalSeminormedCommRing (α →ᵇ R) where
 
-instance instNonUnitalNormedCommRing [NonUnitalNormedCommRing R] :
+example [NonUnitalNormedRing R] : NonUnitalNormedRing (α →ᵇ R) where
+
+example [NonUnitalNormedCommRing R] :
     NonUnitalNormedCommRing (α →ᵇ R) where
-  mul_comm := mul_comm
 
 end NonUnital
 
@@ -393,9 +391,7 @@ instance instRing : Ring (α →ᵇ R) := fast_instance%
     (fun _ _ => coe_nsmul _ _) (fun _ _ => coe_zsmul _ _) (fun _ _ => coe_pow _ _) coe_natCast
     coe_intCast
 
-instance instSeminormedRing : SeminormedRing (α →ᵇ R) where
-  __ := instRing
-  __ := instNonUnitalSeminormedRing
+example : SeminormedRing (α →ᵇ R) where
 
 /-- Composition on the left by a (lipschitz-continuous) homomorphism of topological semirings, as a
 `RingHom`. Similar to `RingHom.compLeftContinuous`. -/
@@ -408,9 +404,7 @@ protected def _root_.RingHom.compLeftContinuousBounded (α : Type*)
 
 end Seminormed
 
-instance instNormedRing [NormedRing R] : NormedRing (α →ᵇ R) where
-  __ := instRing
-  __ := instNonUnitalNormedRing
+example [NormedRing R] : NormedRing (α →ᵇ R) where
 
 end NormedRing
 
@@ -421,13 +415,9 @@ variable [TopologicalSpace α] {R : Type*}
 instance instCommRing [SeminormedCommRing R] : CommRing (α →ᵇ R) where
   mul_comm _ _ := ext fun _ ↦ mul_comm _ _
 
-instance instSeminormedCommRing [SeminormedCommRing R] : SeminormedCommRing (α →ᵇ R) where
-  __ := instCommRing
-  __ := instNonUnitalSeminormedRing
+example [SeminormedCommRing R] : SeminormedCommRing (α →ᵇ R) where
 
-instance instNormedCommRing [NormedCommRing R] : NormedCommRing (α →ᵇ R) where
-  __ := instSeminormedCommRing
-  __ := instNormedAddCommGroup
+example [NormedCommRing R] : NormedCommRing (α →ᵇ R) where
 
 end NormedCommRing
 

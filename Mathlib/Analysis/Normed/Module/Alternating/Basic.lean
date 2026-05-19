@@ -171,13 +171,15 @@ variable [Fintype ι] {f : E [⋀^ι]→L[𝕜] F} {m : ι → E}
 theorem bound (f : E [⋀^ι]→L[𝕜] F) : ∃ (C : ℝ), 0 < C ∧ (∀ m, ‖f m‖ ≤ C * ∏ i, ‖m i‖) :=
   f.toContinuousMultilinearMap.bound
 
+instance instNormPseudoMetric : NormPseudoMetric (E [⋀^ι]→L[𝕜] F) where
+  toPseudoMetricSpace := .induced toContinuousMultilinearMap inferInstance
+  norm f := ‖f.toContinuousMultilinearMap‖
+
 /-- Continuous alternating maps form a seminormed additive commutative group.
 We override projection to `PseudoMetricSpace` to ensure that instances commute
 in `with_reducible_and_instances`. -/
-instance instSeminormedAddCommGroup : SeminormedAddCommGroup (E [⋀^ι]→L[𝕜] F) where
-  toPseudoMetricSpace := .induced toContinuousMultilinearMap inferInstance
-  __ := SeminormedAddCommGroup.induced _ _ (toMultilinearAddHom : E [⋀^ι]→L[𝕜] F →+ _)
-  norm f := ‖f.toContinuousMultilinearMap‖
+instance instIsNormedAddGroup : IsNormedAddGroup (E [⋀^ι]→L[𝕜] F) :=
+  .induced _ _ (toMultilinearAddHom : E [⋀^ι]→L[𝕜] F →+ _)
 
 @[simp] theorem norm_toContinuousMultilinearMap (f : E [⋀^ι]→L[𝕜] F) : ‖f.1‖ = ‖f‖ := rfl
 @[simp] theorem nnnorm_toContinuousMultilinearMap (f : E [⋀^ι]→L[𝕜] F) : ‖f.1‖₊ = ‖f‖₊ := rfl
@@ -623,10 +625,11 @@ variable {𝕜 : Type u} {n : ℕ} {E : Type wE} {F : Type wF} {ι : Type v}
 
 namespace ContinuousAlternatingMap
 
+instance instNormMetric : NormMetric (E [⋀^ι]→L[𝕜] F) :=
+  NormMetric.ofAddSeparation fun _f hf ↦ toContinuousMultilinearMap_injective <| norm_eq_zero.mp hf
+
 /-- Continuous alternating maps themselves form a normed group with respect to the operator norm. -/
-instance instNormedAddCommGroup : NormedAddCommGroup (E [⋀^ι]→L[𝕜] F) :=
-  NormedAddCommGroup.ofSeparation fun _f hf ↦
-    toContinuousMultilinearMap_injective <| norm_eq_zero.mp hf
+example : NormedAddCommGroup (E [⋀^ι]→L[𝕜] F) where
 
 variable (𝕜 F) in
 theorem norm_ofSubsingleton_id [Subsingleton ι] [Nontrivial F] (i : ι) :

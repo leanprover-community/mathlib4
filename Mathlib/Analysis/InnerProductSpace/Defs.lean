@@ -408,7 +408,16 @@ def toSeminormedAddCommGroup : SeminormedAddCommGroup F :=
           linarith
         exact nonneg_le_nonneg_of_sq_le_sq (add_nonneg (sqrt_nonneg _) (sqrt_nonneg _)) this }
 
-attribute [local instance] toSeminormedAddCommGroup
+/-- `NormPseudoMetric` structure constructed from a `PreInnerProductSpace.Core` structure -/
+@[instance_reducible]
+def toNormPseudoMetric : NormPseudoMetric F :=
+  (toSeminormedAddCommGroup (𝕜 := 𝕜)).toNormPseudoMetric
+
+attribute [local instance] toNormPseudoMetric
+
+lemma toIsNormedAddGroup : IsNormedAddGroup F := toSeminormedAddCommGroup.toIsNormedAddGroup
+
+attribute [local instance] toIsNormedAddGroup
 
 /-- Normed space (which is actually a seminorm in general) structure constructed from a
 `PreInnerProductSpace.Core` structure -/
@@ -485,7 +494,14 @@ def toNormedAddCommGroup : NormedAddCommGroup F :=
 
 section
 
-attribute [local instance] toNormedAddCommGroup
+/-- `NormMetric` structure constructed from a `PreInnerProductSpace.Core` structure -/
+@[instance_reducible]
+def toNormMetric : NormMetric F :=
+  (toNormedAddCommGroup (𝕜 := 𝕜)).toNormMetric
+
+attribute [local instance] toNormMetric
+
+attribute [local instance] toIsNormedAddGroup
 
 omit cd in
 /-- Normed space core structure constructed from an `InnerProductSpace.Core` structure -/
@@ -506,9 +522,9 @@ lemma topology_eq
     [tF : TopologicalSpace F] [IsTopologicalAddGroup F] [ContinuousConstSMul 𝕜 F]
     (h : ContinuousAt (fun (v : F) ↦ cd.inner v v) 0)
     (h' : IsVonNBounded 𝕜 {v : F | re (cd.inner v v) < 1}) :
-    tF = cd.toNormedAddCommGroup.toMetricSpace.toUniformSpace.toTopologicalSpace := by
-  let p : Seminorm 𝕜 F := @normSeminorm 𝕜 F _ cd.toNormedAddCommGroup.toSeminormedAddCommGroup
-    InnerProductSpace.Core.toNormedSpace
+    tF = cd.toNormMetric.toMetricSpace.toUniformSpace.toTopologicalSpace := by
+  let := cd.toNormedAddCommGroup
+  let p : Seminorm 𝕜 F := @normSeminorm 𝕜 F _ _ InnerProductSpace.Core.toNormedSpace
   suffices WithSeminorms (fun (i : Fin 1) ↦ p) by
     rw [(SeminormFamily.withSeminorms_iff_topologicalSpace_eq_iInf _).1 this]
     simp
@@ -529,12 +545,33 @@ lemma topology_eq
 
 /-- Normed space structure constructed from an `InnerProductSpace.Core` structure, adjusting the
 topology to make sure it is defeq to an already existing topology. -/
+@[reducible] def toNormMetricOfTopology
+    [tF : TopologicalSpace F] [IsTopologicalAddGroup F] [ContinuousConstSMul 𝕜 F]
+    (h : ContinuousAt (fun (v : F) ↦ cd.inner v v) 0)
+    (h' : IsVonNBounded 𝕜 {v : F | re (cd.inner v v) < 1}) :
+    NormMetric F :=
+  .ofCoreReplaceTopology cd.toNormedSpaceCore (cd.topology_eq h h')
+
+/-- Normed space structure constructed from an `InnerProductSpace.Core` structure, adjusting the
+topology to make sure it is defeq to an already existing topology. -/
+@[reducible] def toIsNormedAddGroupOfTopology
+    [tF : TopologicalSpace F] [IsTopologicalAddGroup F] [ContinuousConstSMul 𝕜 F]
+    (h : ContinuousAt (fun (v : F) ↦ cd.inner v v) 0)
+    (h' : IsVonNBounded 𝕜 {v : F | re (cd.inner v v) < 1}) :
+    letI := toNormMetricOfTopology h h'
+    IsNormedAddGroup F :=
+  letI := toNormMetricOfTopology h h'
+  {}
+
+/-- Normed space structure constructed from an `InnerProductSpace.Core` structure, adjusting the
+topology to make sure it is defeq to an already existing topology. -/
 @[reducible] def toNormedAddCommGroupOfTopology
     [tF : TopologicalSpace F] [IsTopologicalAddGroup F] [ContinuousConstSMul 𝕜 F]
     (h : ContinuousAt (fun (v : F) ↦ cd.inner v v) 0)
     (h' : IsVonNBounded 𝕜 {v : F | re (cd.inner v v) < 1}) :
-    NormedAddCommGroup F :=
-  NormedAddCommGroup.ofCoreReplaceTopology cd.toNormedSpaceCore (cd.topology_eq h h')
+    NormedAddCommGroup F where
+  toNormMetric := toNormMetricOfTopology h h'
+  toIsNormedAddGroup := toIsNormedAddGroupOfTopology h h'
 
 /-- Normed space structure constructed from an `InnerProductSpace.Core` structure, adjusting the
 topology to make sure it is defeq to an already existing topology. -/
@@ -558,7 +595,8 @@ end InnerProductSpace.Core
 
 section
 
-attribute [local instance] InnerProductSpace.Core.toSeminormedAddCommGroup
+attribute [local instance] InnerProductSpace.Core.toNormPseudoMetric
+  InnerProductSpace.Core.toIsNormedAddGroup
 
 /-- Given a `PreInnerProductSpace.Core` structure on a space, one can use it to turn
 the space into a pre-inner product space (i.e., `SeminormedAddCommGroup` and `InnerProductSpace`).

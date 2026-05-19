@@ -252,7 +252,7 @@ theorem lpMeasToLpTrim_smul (hm : m ≤ m0) (c : 𝕜) (f : lpMeas F 𝕜 m p μ
   grw [Lp.coeFn_smul, lpMeasToLpTrim_ae_eq]
 
 /-- `lpMeasSubgroupToLpTrim` preserves the norm. -/
-theorem lpMeasSubgroupToLpTrim_norm_map [hp : Fact (1 ≤ p)] (hm : m ≤ m0)
+theorem lpMeasSubgroupToLpTrim_norm_map (hm : m ≤ m0)
     (f : lpMeasSubgroup F m p μ) : ‖lpMeasSubgroupToLpTrim F p μ hm f‖ = ‖f‖ := by
   rw [Lp.norm_def, eLpNorm_trim hm (Lp.stronglyMeasurable _),
     eLpNorm_congr_ae (lpMeasSubgroupToLpTrim_ae_eq hm _), ← Lp.norm_def]

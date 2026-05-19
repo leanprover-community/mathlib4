@@ -76,10 +76,23 @@ variable [SeminormedAddCommGroup α] [SeminormedAddCommGroup β]
 declared as an instance because there are several natural choices for defining the norm of a
 matrix. -/
 @[instance_reducible]
-protected def seminormedAddCommGroup : SeminormedAddCommGroup (Matrix m n α) :=
-  fast_instance% Pi.seminormedAddCommGroup
+protected def normPseudoMetric : NormPseudoMetric (Matrix m n α) :=
+  fast_instance% Pi.instNormPseudoMetric
 
-attribute [local instance] Matrix.seminormedAddCommGroup
+protected lemma isNormedAddGroup :
+    letI : NormPseudoMetric (Matrix m n α) := Matrix.normPseudoMetric
+    IsNormedAddGroup (Matrix m n α) :=
+  Pi.instIsNormedAddGroup
+
+/-- Seminormed group instance (using sup norm of sup norm) for matrices over a seminormed group. Not
+declared as an instance because there are several natural choices for defining the norm of a
+matrix. -/
+@[instance_reducible]
+protected def seminormedAddCommGroup : SeminormedAddCommGroup (Matrix m n α) where
+  toNormPseudoMetric := Matrix.normPseudoMetric
+  toIsNormedAddGroup := Matrix.isNormedAddGroup
+
+attribute [local instance] Matrix.normPseudoMetric Matrix.isNormedAddGroup
 
 theorem norm_def (A : Matrix m n α) : ‖A‖ = ‖fun i j => A i j‖ := rfl
 
@@ -180,12 +193,20 @@ end SeminormedAddCommGroup
 declared as an instance because there are several natural choices for defining the norm of a
 matrix. -/
 @[instance_reducible]
-protected def normedAddCommGroup [NormedAddCommGroup α] : NormedAddCommGroup (Matrix m n α) :=
-  fast_instance% Pi.normedAddCommGroup
+protected def normMetric [NormedAddCommGroup α] : NormMetric (Matrix m n α) :=
+  fast_instance% Pi.instNormMetric
+
+/-- Normed group instance (using sup norm of sup norm) for matrices over a normed group.  Not
+declared as an instance because there are several natural choices for defining the norm of a
+matrix. -/
+@[instance_reducible]
+protected def normedAddCommGroup [NormedAddCommGroup α] : NormedAddCommGroup (Matrix m n α) where
+  toNormMetric := Matrix.normMetric
+  toIsNormedAddGroup := Matrix.isNormedAddGroup
 
 section NormedSpace
 
-attribute [local instance] Matrix.seminormedAddCommGroup
+attribute [local instance] Matrix.normPseudoMetric Matrix.isNormedAddGroup
 
 /-- This applies to the sup norm of sup norm. -/
 protected theorem isBoundedSMul [SeminormedRing R] [SeminormedAddCommGroup α] [Module R α]
@@ -209,8 +230,9 @@ protected def normedSpace : NormedSpace R (Matrix m n α) :=
 namespace Norms.Elementwise
 
 attribute [scoped instance]
-  Matrix.seminormedAddCommGroup
-  Matrix.normedAddCommGroup
+  Matrix.normPseudoMetric
+  Matrix.normMetric
+  Matrix.isNormedAddGroup
   Matrix.normedSpace
   Matrix.isBoundedSMul
   Matrix.normSMulClass
@@ -236,19 +258,46 @@ section LinftyOp
 declared as an instance because there are several natural choices for defining the norm of a
 matrix. -/
 @[instance_reducible, local instance]
-protected def linftyOpSeminormedAddCommGroup [SeminormedAddCommGroup α] :
-    SeminormedAddCommGroup (Matrix m n α) :=
+protected def linftyOpNormPseudoMetric [SeminormedAddCommGroup α] :
+    NormPseudoMetric (Matrix m n α) :=
   fast_instance%
-  @Pi.seminormedAddCommGroup m _ _ (fun _ ↦ PiLp.seminormedAddCommGroupToPi 1 (fun _ : n ↦ α))
+  @Pi.instNormPseudoMetric m _ _ (fun _ ↦
+    { toNormPseudoMetric := PiLp.normPseudoMetricToPi 1 (fun _ ↦ α)
+      toIsNormedAddGroup := PiLp.isNormedAddGroupToPi 1 (fun _ ↦ α) })
+
+@[local instance]
+protected lemma linftyOpIsNormedAddGroup [SeminormedAddCommGroup α] :
+    IsNormedAddGroup (Matrix m n α) :=
+  @Pi.instIsNormedAddGroup m _ _ (fun _ ↦
+    { toNormPseudoMetric := PiLp.normPseudoMetricToPi 1 (fun _ ↦ α)
+      toIsNormedAddGroup := PiLp.isNormedAddGroupToPi 1 (fun _ ↦ α) })
+
+/-- Seminormed group instance (using sup norm of L1 norm) for matrices over a seminormed group. Not
+declared as an instance because there are several natural choices for defining the norm of a
+matrix. -/
+@[instance_reducible]
+protected def linftyOpSeminormedAddCommGroup [SeminormedAddCommGroup α] :
+    SeminormedAddCommGroup (Matrix m n α) where
 
 /-- Normed group instance (using sup norm of L1 norm) for matrices over a normed ring.  Not
 declared as an instance because there are several natural choices for defining the norm of a
 matrix. -/
 @[instance_reducible, local instance]
-protected def linftyOpNormedAddCommGroup [NormedAddCommGroup α] :
-    NormedAddCommGroup (Matrix m n α) :=
+protected def linftyOpNormMetric [NormedAddCommGroup α] :
+    NormMetric (Matrix m n α) :=
   fast_instance%
-  @Pi.normedAddCommGroup m _ _ (fun _ ↦ PiLp.normedAddCommGroupToPi 1 (fun _ : n ↦ α))
+  @Pi.instNormMetric m _ _ (fun _ ↦
+    { toNormMetric := PiLp.normMetricToPi 1 (fun _ ↦ α)
+      toIsNormedAddGroup := PiLp.isNormedAddGroupToPi 1 (fun _ ↦ α) })
+
+/-- Normed group instance (using sup norm of L1 norm) for matrices over a normed ring.  Not
+declared as an instance because there are several natural choices for defining the norm of a
+matrix. -/
+@[instance_reducible]
+protected def linftyOpNormedAddCommGroup [NormedAddCommGroup α] :
+    NormedAddCommGroup (Matrix m n α) where
+  toNormMetric := Matrix.linftyOpNormMetric
+  toIsNormedAddGroup := Matrix.linftyOpIsNormedAddGroup
 
 /-- This applies to the sup norm of L1 norm. -/
 @[local instance]
@@ -359,11 +408,17 @@ end NonUnitalSeminormedRing
 /-- Seminormed non-unital ring instance (using sup norm of L1 norm) for matrices over a seminormed
 non-unital ring. Not declared as an instance because there are several natural choices for defining
 the norm of a matrix. -/
-@[instance_reducible, local instance]
+@[local instance]
+protected lemma linftyOpIsNormedRing [NonUnitalSeminormedRing α] :
+    IsNormedRing (Matrix n n α) where
+  norm_mul_le := linfty_opNorm_mul
+
+/-- Seminormed non-unital ring instance (using sup norm of L1 norm) for matrices over a seminormed
+non-unital ring. Not declared as an instance because there are several natural choices for defining
+the norm of a matrix. -/
+@[instance_reducible]
 protected def linftyOpNonUnitalSemiNormedRing [NonUnitalSeminormedRing α] :
-    NonUnitalSeminormedRing (Matrix n n α) :=
-  { Matrix.linftyOpSeminormedAddCommGroup, Matrix.instNonUnitalRing with
-    norm_mul_le := linfty_opNorm_mul }
+    NonUnitalSeminormedRing (Matrix n n α) where
 
 /-- The `L₁-L∞` norm preserves one on non-empty matrices. Note this is safe as an instance, as it
 carries no data. -/
@@ -373,27 +428,22 @@ instance linfty_opNormOneClass [SeminormedRing α] [NormOneClass α] [DecidableE
 /-- Seminormed ring instance (using sup norm of L1 norm) for matrices over a seminormed ring. Not
 declared as an instance because there are several natural choices for defining the norm of a
 matrix. -/
-@[instance_reducible, local instance]
+@[instance_reducible]
 protected def linftyOpSemiNormedRing [SeminormedRing α] [DecidableEq n] :
-    SeminormedRing (Matrix n n α) :=
-  { Matrix.linftyOpNonUnitalSemiNormedRing, Matrix.instRing with }
+    SeminormedRing (Matrix n n α) where
 
 /-- Normed non-unital ring instance (using sup norm of L1 norm) for matrices over a normed
 non-unital ring. Not declared as an instance because there are several natural choices for defining
 the norm of a matrix. -/
-@[instance_reducible, local instance]
+@[instance_reducible]
 protected def linftyOpNonUnitalNormedRing [NonUnitalNormedRing α] :
-    NonUnitalNormedRing (Matrix n n α) :=
-  { Matrix.linftyOpNonUnitalSemiNormedRing with
-    eq_of_dist_eq_zero := eq_of_dist_eq_zero }
+    NonUnitalNormedRing (Matrix n n α) where
 
 /-- Normed ring instance (using sup norm of L1 norm) for matrices over a normed ring.  Not
 declared as an instance because there are several natural choices for defining the norm of a
 matrix. -/
-@[instance_reducible, local instance]
-protected def linftyOpNormedRing [NormedRing α] [DecidableEq n] : NormedRing (Matrix n n α) :=
-  { Matrix.linftyOpSemiNormedRing with
-    eq_of_dist_eq_zero := eq_of_dist_eq_zero }
+@[instance_reducible]
+protected def linftyOpNormedRing [NormedRing α] [DecidableEq n] : NormedRing (Matrix n n α) where
 
 /-- Normed algebra instance (using sup norm of L1 norm) for matrices over a normed algebra. Not
 declared as an instance because there are several natural choices for defining the norm of a
@@ -470,15 +520,13 @@ end
 
 namespace Norms.Operator
 attribute [scoped instance]
-  Matrix.linftyOpSeminormedAddCommGroup
-  Matrix.linftyOpNormedAddCommGroup
+  Matrix.linftyOpNormMetric
+  Matrix.linftyOpNormPseudoMetric
+  Matrix.linftyOpIsNormedAddGroup
   Matrix.linftyOpNormedSpace
   Matrix.linftyOpIsBoundedSMul
   Matrix.linftyOpNormSMulClass
-  Matrix.linftyOpNonUnitalSemiNormedRing
-  Matrix.linftyOpSemiNormedRing
-  Matrix.linftyOpNonUnitalNormedRing
-  Matrix.linftyOpNormedRing
+  Matrix.linftyOpIsNormedRing
   Matrix.linftyOpNormedAlgebra
 end Norms.Operator
 
@@ -499,17 +547,38 @@ open scoped Matrix
 declared as an instance because there are several natural choices for defining the norm of a
 matrix. -/
 @[instance_reducible, local instance]
-def frobeniusSeminormedAddCommGroup [SeminormedAddCommGroup α] :
-    SeminormedAddCommGroup (Matrix m n α) :=
+def frobeniusNormPseudoMetric [SeminormedAddCommGroup α] :
+    NormPseudoMetric (Matrix m n α) :=
   fast_instance%
-  @PiLp.seminormedAddCommGroupToPi 2 _ _ _ _ (fun _ ↦ PiLp.seminormedAddCommGroupToPi 2 _)
+  @PiLp.normPseudoMetricToPi 2 _ _ _ _ (fun _ ↦ PiLp.seminormedAddCommGroupToPi 2 _)
+
+/-- Seminormed group instance (using the Frobenius norm) for matrices over a seminormed group. Not
+declared as an instance because there are several natural choices for defining the norm of a
+matrix. -/
+@[local instance]
+lemma frobeniusIsNormedAddGroup [SeminormedAddCommGroup α] :
+    IsNormedAddGroup (Matrix m n α) :=
+  @PiLp.isNormedAddGroupToPi 2 _ _ _ _ (fun _ ↦ PiLp.seminormedAddCommGroupToPi 2 _)
+
+/-- Seminormed group instance (using the Frobenius norm) for matrices over a seminormed group. Not
+declared as an instance because there are several natural choices for defining the norm of a
+matrix. -/
+@[instance_reducible]
+def frobeniusSeminormedAddCommGroup [SeminormedAddCommGroup α] :
+    SeminormedAddCommGroup (Matrix m n α) where
 
 /-- Normed group instance (using the Frobenius norm) for matrices over a normed group.  Not
 declared as an instance because there are several natural choices for defining the norm of a
 matrix. -/
 @[instance_reducible, local instance]
-def frobeniusNormedAddCommGroup [NormedAddCommGroup α] : NormedAddCommGroup (Matrix m n α) :=
-  fast_instance% @PiLp.normedAddCommGroupToPi 2 _ _ _ _ (fun _ ↦ PiLp.normedAddCommGroupToPi 2 _)
+def frobeniusNormMetric [NormedAddCommGroup α] : NormMetric (Matrix m n α) :=
+  fast_instance% @PiLp.normMetricToPi 2 _ _ _ _ (fun _ ↦ PiLp.normedAddCommGroupToPi 2 _)
+
+/-- Normed group instance (using the Frobenius norm) for matrices over a normed group.  Not
+declared as an instance because there are several natural choices for defining the norm of a
+matrix. -/
+@[instance_reducible]
+def frobeniusNormedAddCommGroup [NormedAddCommGroup α] : NormedAddCommGroup (Matrix m n α) where
 
 /-- This applies to the Frobenius norm. -/
 @[local instance]
@@ -650,11 +719,15 @@ theorem frobenius_norm_mul (A : Matrix l m α) (B : Matrix m n α) : ‖A * B‖
 /-- Normed ring instance (using the Frobenius norm) for matrices over `ℝ` or `ℂ`.  Not
 declared as an instance because there are several natural choices for defining the norm of a
 matrix. -/
-@[instance_reducible, local instance]
-def frobeniusNormedRing [DecidableEq m] : NormedRing (Matrix m m α) :=
-  { Matrix.frobeniusSeminormedAddCommGroup, Matrix.instRing with
-    norm_mul_le := frobenius_norm_mul
-    eq_of_dist_eq_zero := eq_of_dist_eq_zero }
+@[local instance]
+lemma frobeniusIsNormedRing : IsNormedRing (Matrix m m α) where
+  norm_mul_le := frobenius_norm_mul
+
+/-- Normed ring instance (using the Frobenius norm) for matrices over `ℝ` or `ℂ`.  Not
+declared as an instance because there are several natural choices for defining the norm of a
+matrix. -/
+@[instance_reducible]
+def frobeniusNormedRing [DecidableEq m] : NormedRing (Matrix m m α) where
 
 /-- Normed algebra instance (using the Frobenius norm) for matrices over `ℝ` or `ℂ`.  Not
 declared as an instance because there are several natural choices for defining the norm of a
@@ -670,10 +743,11 @@ end frobenius
 
 namespace Norms.Frobenius
 attribute [scoped instance]
-  Matrix.frobeniusSeminormedAddCommGroup
-  Matrix.frobeniusNormedAddCommGroup
+  Matrix.frobeniusNormPseudoMetric
+  Matrix.frobeniusNormMetric
+  Matrix.frobeniusIsNormedAddGroup
   Matrix.frobeniusNormedSpace
-  Matrix.frobeniusNormedRing
+  Matrix.frobeniusIsNormedRing
   Matrix.frobeniusNormedAlgebra
   Matrix.frobeniusIsBoundedSMul
   Matrix.frobeniusNormSMulClass

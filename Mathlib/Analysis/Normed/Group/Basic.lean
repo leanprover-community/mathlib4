@@ -719,11 +719,7 @@ abbrev NormMetric.induced [NormMetric F] (f : E → F) (hf : Injective f) :
 
 variable [FunLike 𝓕 E F]
 
--- See note [reducible non-instances]
-/-- A group homomorphism from a `Group` to a `SeminormedGroup` induces a `SeminormedGroup`
-structure on the domain. -/
-@[to_additive /-- A group homomorphism from an `AddGroup` to a
-`SeminormedAddGroup` induces a `SeminormedAddGroup` structure on the domain. -/]
+@[to_additive]
 lemma IsNormedGroup.induced [Group E] [SeminormedGroup F] [MonoidHomClass 𝓕 E F] (f : 𝓕) :
     letI : NormPseudoMetric E := .induced E F f
     IsNormedGroup E :=

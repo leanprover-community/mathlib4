@@ -844,6 +844,16 @@ theorem stdOrthonormalBasis_map_eq :
       mixedEmbedding.stdBasis K := by
   ext <;> rfl
 
+-- TODO: why does it need this instance to help
+open Classical in
+instance : MeasureSpace (euclidean.mixedSpace K) :=
+  let : NormedAddCommGroup (euclidean.mixedSpace K) := inferInstance
+  let : InnerProductSpace ℝ (euclidean.mixedSpace K) := inferInstance
+  let : FiniteDimensional ℝ (euclidean.mixedSpace K) := inferInstance
+  let : MeasurableSpace (euclidean.mixedSpace K) := inferInstance
+  let : BorelSpace (euclidean.mixedSpace K) := inferInstance
+  inferInstance
+
 open Classical in
 theorem volumePreserving_toMixed :
     MeasurePreserving (toMixed K) where

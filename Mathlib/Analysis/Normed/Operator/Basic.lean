@@ -379,10 +379,15 @@ private lemma uniformity_eq_seminorm :
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 instance toPseudoMetricSpace : PseudoMetricSpace (E →SL[σ₁₂] F) := .replaceUniformity
-  ContinuousLinearMap.seminorm.toSeminormedAddCommGroup.toPseudoMetricSpace uniformity_eq_seminorm
+  ContinuousLinearMap.seminorm.toNormPseudoMetric.toPseudoMetricSpace uniformity_eq_seminorm
+
+instance toNormPseudoMetric : NormPseudoMetric (E →SL[σ₁₂] F) where
+
+instance toIsNormedAddGroup : IsNormedAddGroup (E →SL[σ₁₂] F) where
 
 /-- Continuous linear maps themselves form a seminormed space with respect to the operator norm. -/
-instance toSeminormedAddCommGroup : SeminormedAddCommGroup (E →SL[σ₁₂] F) where
+@[instance_reducible]
+def toSeminormedAddCommGroup : SeminormedAddCommGroup (E →SL[σ₁₂] F) where
 
 /-- If a normed space is (topologically) non-trivial, then the norm of the identity equals `1`. -/
 @[simp]
@@ -399,9 +404,12 @@ theorem opNorm_comp_le (f : E →SL[σ₁₂] F) : ‖h.comp f‖ ≤ ‖h‖ * 
     rw [mul_assoc]
     exact h.le_opNorm_of_le (f.le_opNorm x)⟩
 
-/-- Continuous linear maps form a seminormed ring with respect to the operator norm. -/
-instance toSeminormedRing : SeminormedRing (E →L[𝕜] E) :=
-  { toSeminormedAddCommGroup, ring with norm_mul_le := opNorm_comp_le }
+instance toIsNormedRing : IsNormedRing (E →L[𝕜] E) :=
+  { toIsNormedAddGroup with norm_mul_le := opNorm_comp_le }
+
+/-- Continuous linear maps themselves form a seminormed space with respect to the operator norm. -/
+@[instance_reducible]
+def toSeminormedRing : SeminormedRing (E →L[𝕜] E) where
 
 /-- For a normed space `E`, continuous linear endomorphisms form a normed algebra with
 respect to the operator norm. -/

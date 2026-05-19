@@ -859,24 +859,42 @@ namespace spectralNorm
 
 variable (K L)
 
+/-- `L` with the spectral norm is a `NormMetric`. -/
+@[implicit_reducible]
+def normMetric : NormMetric L where
+  norm x := (spectralNorm K L x : ℝ)
+  dist x y := (spectralNorm K L (x - y) : ℝ)
+  dist_self x := by simp [sub_self, spectralNorm_zero]
+  dist_comm x y := by rw [← neg_sub, spectralNorm_neg (Algebra.IsAlgebraic.isAlgebraic _)]
+  dist_triangle x y z :=
+    sub_add_sub_cancel x y z ▸ isNonarchimedean_spectralNorm.add_le spectralNorm_nonneg
+  eq_of_dist_eq_zero hxy := by
+    rw [← sub_eq_zero]
+    exact (map_eq_zero_iff_eq_zero (spectralMulAlgNorm K L)).mp hxy
+  edist_dist x y := by rw [ENNReal.ofReal_eq_coe_nnreal]
+
+lemma isNormedAddGroup :
+    letI := normMetric K L
+    IsNormedAddGroup L :=
+  letI := normMetric K L
+  { dist_eq x y := by
+      dsimp [dist, ‖·‖]
+      rw [← spectralNorm_neg, sub_eq_add_neg, neg_add, neg_neg]
+      exact Algebra.IsAlgebraic.isAlgebraic (x - y) }
+
+lemma normMulClass :
+    letI := normMetric K L
+    NormMulClass L :=
+  letI := normMetric K L
+  { norm_mul x y := by simp [‖·‖, ← spectralMulAlgNorm_def, map_mul] }
+
 /-- `L` with the spectral norm is a `NormedField`. -/
 @[implicit_reducible]
 def normedField : NormedField L :=
   { (inferInstance : Field L) with
-    norm x := (spectralNorm K L x : ℝ)
-    dist x y := (spectralNorm K L (x - y) : ℝ)
-    dist_self x := by simp [sub_self, spectralNorm_zero]
-    dist_comm x y := by rw [← neg_sub, spectralNorm_neg (Algebra.IsAlgebraic.isAlgebraic _)]
-    dist_triangle x y z :=
-      sub_add_sub_cancel x y z ▸ isNonarchimedean_spectralNorm.add_le spectralNorm_nonneg
-    eq_of_dist_eq_zero hxy := by
-      rw [← sub_eq_zero]
-      exact (map_eq_zero_iff_eq_zero (spectralMulAlgNorm K L)).mp hxy
-    dist_eq x y := by
-      rw [← spectralNorm_neg, sub_eq_add_neg, neg_add, neg_neg]
-      exact Algebra.IsAlgebraic.isAlgebraic (x - y)
-    norm_mul x y := by simp [← spectralMulAlgNorm_def, map_mul]
-    edist_dist x y := by rw [ENNReal.ofReal_eq_coe_nnreal] }
+    toNormMetric := normMetric K L
+    dist_eq := (isNormedAddGroup K L).dist_eq
+    norm_mul := (normMulClass K L).norm_mul }
 
 /-- `L` with the spectral norm is a `NontriviallyNormedField`. -/
 @[implicit_reducible]
@@ -885,6 +903,12 @@ def nontriviallyNormedField : NontriviallyNormedField L where
   non_trivial :=
     let ⟨x, hx⟩ := NontriviallyNormedField.non_trivial (α := K)
     ⟨algebraMap K L x, hx.trans_eq <| (spectralNorm_extends _).symm⟩
+
+lemma isNormedRing :
+    letI := normMetric K L
+    IsNormedRing L :=
+  letI := normedField K L
+  inferInstance
 
 /-- `L` with the spectral norm is a `SeminormedRing`. -/
 @[implicit_reducible]
@@ -895,13 +919,13 @@ def seminormedRing : SeminormedRing L := by
 /-- `L` with the spectral norm is a `NormedAddCommGroup`. -/
 @[implicit_reducible]
 def normedAddCommGroup : NormedAddCommGroup L := by
-  haveI : NormedField L := normedField K L
+  letI : NormedField L := normedField K L
   infer_instance
 
 /-- `L` with the spectral norm is a `SeminormedAddCommGroup`. -/
 @[implicit_reducible]
 def seminormedAddCommGroup : SeminormedAddCommGroup L := by
-  have : NormedField L := normedField K L
+  letI : NormedField L := normedField K L
   infer_instance
 
 /-- `L` with the spectral norm is a `NormedSpace` over `K`. -/

@@ -37,7 +37,7 @@ open scoped Topology NNReal ENNReal
 
 /-- A normed division ring is a division ring endowed with a seminorm which satisfies the equality
 `‖x y‖ = ‖x‖ ‖y‖`. -/
-class NormedDivisionRing (α : Type*) extends Norm α, DivisionRing α, MetricSpace α where
+class NormedDivisionRing (α : Type*) extends NormMetric α, DivisionRing α where
   /-- The distance is induced by the norm. -/
   dist_eq : ∀ x y, dist x y = norm (-x + y)
   /-- The norm is multiplicative. -/
@@ -45,8 +45,8 @@ class NormedDivisionRing (α : Type*) extends Norm α, DivisionRing α, MetricSp
 
 -- see Note [lower instance priority]
 /-- A normed division ring is a normed ring. -/
-instance (priority := 100) NormedDivisionRing.toNormedRing [β : NormedDivisionRing α] :
-    NormedRing α :=
+instance (priority := 100) NormedDivisionRing.toIsNormedRing [β : NormedDivisionRing α] :
+    IsNormedRing α :=
   { β with norm_mul_le a b := (NormedDivisionRing.norm_mul a b).le }
 
 -- see Note [lower instance priority]
@@ -148,7 +148,7 @@ end NormedDivisionRing
 end NormedDivisionRing
 
 /-- A normed field is a field with a norm satisfying ‖x y‖ = ‖x‖ ‖y‖. -/
-class NormedField (α : Type*) extends Norm α, Field α, MetricSpace α where
+class NormedField (α : Type*) extends NormMetric α, Field α where
   /-- The distance is induced by the norm. -/
   dist_eq : ∀ x y, dist x y = norm (-x + y)
   /-- The norm is multiplicative. -/
@@ -183,10 +183,6 @@ variable [NormedField α]
 -- see Note [lower instance priority]
 instance (priority := 100) NormedField.toNormedDivisionRing : NormedDivisionRing α :=
   { ‹NormedField α› with }
-
--- see Note [lower instance priority]
-instance (priority := 100) NormedField.toNormedCommRing : NormedCommRing α :=
-  { ‹NormedField α› with norm_mul_le a b := (norm_mul a b).le }
 
 end NormedField
 
@@ -359,7 +355,8 @@ namespace AbsoluteValue
 @[implicit_reducible]
 noncomputable def toNormedField {K : Type*} [Field K] (v : AbsoluteValue K ℝ) : NormedField K where
   toField := inferInstanceAs (Field K)
-  __ := v.toNormedRing
+  __ := v.toNormMetric
+  __ := v.toIsNormedRing
   norm_mul := v.map_mul
 
 end AbsoluteValue

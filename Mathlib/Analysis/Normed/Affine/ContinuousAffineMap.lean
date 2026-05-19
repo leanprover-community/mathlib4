@@ -69,8 +69,8 @@ theorem norm_eq (h : f 0 = 0) : ‖f‖ = ‖f.contLinear‖ :=
     _ = max 0 ‖f.contLinear‖ := by rw [h, norm_zero]
     _ = ‖f.contLinear‖ := max_eq_right (norm_nonneg _)
 
-noncomputable instance : NormedAddCommGroup (V →ᴬ[𝕜] W) :=
-  AddGroupNorm.toNormedAddCommGroup
+noncomputable instance : NormMetric (V →ᴬ[𝕜] W) :=
+  AddGroupNorm.toNormMetric
     { toFun := fun f => max ‖f 0‖ ‖f.contLinear‖
       map_zero' := by simp [(ContinuousAffineMap.zero_apply)]
       neg' := fun f => by
@@ -92,6 +92,10 @@ noncomputable instance : NormedAddCommGroup (V →ᴬ[𝕜] W) :=
           simp only [norm_le_zero_iff, coe_const, Function.const_apply] at h₂
           rw [h₂]
           rfl }
+
+instance : IsNormedAddGroup (V →ᴬ[𝕜] W) where
+
+noncomputable example : NormedAddCommGroup (V →ᴬ[𝕜] W) where
 
 noncomputable instance : NormedSpace 𝕜 (V →ᴬ[𝕜] W) where
   norm_smul_le t f := by

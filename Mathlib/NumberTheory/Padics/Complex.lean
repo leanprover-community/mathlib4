@@ -206,9 +206,10 @@ theorem isNonarchimedean : IsNonarchimedean (Norm.norm : ℂ_[p] → ℝ) :=
 theorem norm_eq_norm' : (‖·‖ : ℂ_[p] → ℝ) = Valued.v.norm := by
   apply UniformSpace.Completion.extension_unique (f := @norm (PadicAlgCl p) _) (g := Valued.v.norm)
   · exact uniformContinuous_norm
-  · letI S := (Valued.toNormedField ℂ_[p] NNReal).toNormedCommRing.toNormedRing.toSeminormedRing
-    letI := S.toNonUnitalSeminormedRing.toSeminormedAddCommGroup.toSeminormedAddGroup
-    exact @uniformContinuous_norm ℂ_[p] this
+  · letI := (Valued.toNormedField ℂ_[p] NNReal).toNormMetric
+    letI := (Valued.toNormedField ℂ_[p] NNReal).toNormedDivisionRing.toIsNormedRing
+      |>.toIsNormedAddGroup
+    exact uniformContinuous_norm
   · intro x
     simp only [Valued.v.norm_def, RankOne.hom_eq_embedding]
     erw [embedding_restrict (PadicComplex.valued p).v x, valuation_extends]

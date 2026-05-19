@@ -108,8 +108,7 @@ theorem summable_inner (f g : lp G 2) : Summable fun i => ⟪f i, g i⟫ := by
   exact norm_inner_le_norm (𝕜 := 𝕜) _ _
 
 instance instInnerProductSpace : InnerProductSpace 𝕜 (lp G 2) :=
-  { lp.normedAddCommGroup (E := G) (p := 2) with
-    inner := fun f g => ∑' i, ⟪f i, g i⟫
+  { inner := fun f g => ∑' i, ⟪f i, g i⟫
     norm_sq_eq_re_inner := fun f => by
       calc
         ‖f‖ ^ 2 = ‖f‖ ^ (2 : ℝ≥0∞).toReal := by norm_cast

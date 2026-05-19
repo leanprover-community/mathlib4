@@ -115,14 +115,30 @@ variable {𝕜 A}
 
 section Aux
 
+/-- missing doc -/
+noncomputable abbrev normMetricAux : NormMetric (Unitization 𝕜 A) :=
+  NormMetric.induced (Unitization 𝕜 A) (𝕜 × (A →L[𝕜] A)) (splitMul 𝕜 A) (splitMul_injective 𝕜 A)
+
 /-- Pull back the normed ring structure from `𝕜 × (A →L[𝕜] A)` to `Unitization 𝕜 A` using the
 algebra homomorphism `Unitization.splitMul 𝕜 A`. This does not give us the desired topology,
 uniformity or bornology on `Unitization 𝕜 A` (which we want to agree with `Prod`), so we only use
 it as a local instance to build the real one. -/
-noncomputable abbrev normedRingAux : NormedRing (Unitization 𝕜 A) :=
-  NormedRing.induced (Unitization 𝕜 A) (𝕜 × (A →L[𝕜] A)) (splitMul 𝕜 A) (splitMul_injective 𝕜 A)
+lemma isNormedRingAux :
+    letI : NormMetric (Unitization 𝕜 A) := normMetricAux
+    IsNormedRing (Unitization 𝕜 A) :=
+  IsNormedRing.induced (Unitization 𝕜 A) (𝕜 × (A →L[𝕜] A)) (splitMul 𝕜 A)
 
-attribute [local instance] Unitization.normedRingAux
+/-- Pull back the normed ring structure from `𝕜 × (A →L[𝕜] A)` to `Unitization 𝕜 A` using the
+algebra homomorphism `Unitization.splitMul 𝕜 A`. This does not give us the desired topology,
+uniformity or bornology on `Unitization 𝕜 A` (which we want to agree with `Prod`), so we only use
+it as a local instance to build the real one. -/
+noncomputable abbrev normedRingAux : NormedRing (Unitization 𝕜 A) where
+  toNormMetric := normMetricAux
+  toIsNormedRing := isNormedRingAux
+
+attribute [local instance] Unitization.normMetricAux
+
+attribute [local instance] Unitization.isNormedRingAux
 
 /-- Pull back the normed algebra structure from `𝕜 × (A →L[𝕜] A)` to `Unitization 𝕜 A` using the
 algebra homomorphism `Unitization.splitMul 𝕜 A`. This uses the wrong `NormedRing` instance (i.e.,
@@ -228,15 +244,21 @@ instance instT2Space : T2Space (Unitization 𝕜 A) :=
 algebra homomorphism `Unitization.splitMul 𝕜 A`, but replace the bornology and the uniformity so
 that they coincide with `𝕜 × A`. -/
 noncomputable instance instMetricSpace : MetricSpace (Unitization 𝕜 A) :=
-  (normedRingAux.toMetricSpace.replaceUniformity uniformity_eq_aux).replaceBornology
+  (normMetricAux.toMetricSpace.replaceUniformity uniformity_eq_aux).replaceBornology
     fun s => Filter.ext_iff.1 cobounded_eq_aux (sᶜ)
+
+noncomputable instance instNormMetric : NormMetric (Unitization 𝕜 A) where
+  norm := normMetricAux.norm
 
 /-- Pull back the normed ring structure from `𝕜 × (A →L[𝕜] A)` to `Unitization 𝕜 A` using the
 algebra homomorphism `Unitization.splitMul 𝕜 A`. -/
-noncomputable instance instNormedRing : NormedRing (Unitization 𝕜 A) where
-  dist_eq := normedRingAux.dist_eq
-  norm_mul_le := normedRingAux.norm_mul_le
-  norm := normedRingAux.norm
+instance instIsNormedRing : IsNormedRing (Unitization 𝕜 A) where
+  dist_eq := isNormedRingAux.dist_eq
+  norm_mul_le := isNormedRingAux.norm_mul_le
+
+/-- Pull back the normed ring structure from `𝕜 × (A →L[𝕜] A)` to `Unitization 𝕜 A` using the
+algebra homomorphism `Unitization.splitMul 𝕜 A`. -/
+example : NormedRing (Unitization 𝕜 A) where
 
 /-- Pull back the normed algebra structure from `𝕜 × (A →L[𝕜] A)` to `Unitization 𝕜 A` using the
 algebra homomorphism `Unitization.splitMul 𝕜 A`. -/
@@ -268,7 +290,7 @@ lemma nndist_inr (a b : A) : nndist (a : Unitization 𝕜 A) (b : Unitization �
 
 /- These examples verify that the bornology and uniformity (hence also the topology) are the
 correct ones. -/
-example : (instNormedRing (𝕜 := 𝕜) (A := A)).toMetricSpace = instMetricSpace := rfl
+example : (instNormMetric (𝕜 := 𝕜) (A := A)).toMetricSpace = instMetricSpace := rfl
 example : (instMetricSpace (𝕜 := 𝕜) (A := A)).toBornology = instBornology := rfl
 example : (instMetricSpace (𝕜 := 𝕜) (A := A)).toUniformSpace = instUniformSpace := rfl
 
