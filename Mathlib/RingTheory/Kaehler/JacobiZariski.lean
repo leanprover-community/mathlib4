@@ -478,14 +478,8 @@ noncomputable def cotangentEquivH1Cotangent (P : Extension.{u₃} R S) :
     simp_rw [Extension.ker, RingHom.ker, Ideal.comap_comap, ← IsScalarTower.algebraMap_eq]
   have mem_range (x : P.Cotangent) : Cotangent.map P_to_G x ∈ h1Cotangentι.range := by
     obtain ⟨x, rfl⟩ := Cotangent.mk_surjective x
-    have : 1 ⊗ₜ[P.Ring] P_to_G.toAlgHom x - P_to_G.toAlgHom x ⊗ₜ[P.Ring] 1 = 0 := by
-      simp only [Hom.toAlgHom_ofAlgHom, IsScalarTower.coe_toAlgHom', P_to_G]
-      rw [sub_eq_zero, eq_comm, tmul_eq_smul_one_tmul, ← algebra_compatible_smul, smul_tmul',
-        smul_tmul, algebra_compatible_smul G.toExtension.Ring, smul_eq_mul, mul_one]
-    rw [← exact_hCotangentι_cotangentComplex.linearMap_ker_eq, LinearMap.mem_ker,
-      Cotangent.map_mk, cotangentComplex_mk, D_apply, (Submodule.mk_eq_zero ..).mpr this,
-      LinearMap.map_zero]
-    exact tmul_zero ..
+    simp [-Generators.toExtension_Ring, ← exact_hCotangentι_cotangentComplex.linearMap_ker_eq,
+      P_to_G]
   have inj : Function.Injective (Cotangent.map P_to_G) := by
     refine (injective_iff_map_eq_zero _).mpr fun x hx ↦ ?_
     obtain ⟨⟨x, x_in⟩, rfl⟩ := Cotangent.mk_surjective x
