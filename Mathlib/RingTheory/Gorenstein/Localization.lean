@@ -64,14 +64,14 @@ lemma isGorensteinRing_iff [IsNoetherianRing R] : IsGorensteinRing R ↔
   have disj := (Set.disjoint_compl_left_iff_subset.mpr le)
   have : (p.map (algebraMap R Rₘ)).IsPrime := by
     simpa [IsLocalization.isPrime_iff_isPrime_disjoint m.primeCompl Rₘ, hp,
-      IsLocalization.comap_map_of_isPrime_disjoint m.primeCompl Rₘ hp disj] using disj
+      IsLocalization.under_map_of_isPrime_disjoint m.primeCompl Rₘ hp disj] using disj
   have le' : m.primeCompl ≤ p.primeCompl := by simpa [Ideal.primeCompl] using le
   let : Algebra Rₘ Rₚ := IsLocalization.localizationAlgebraOfSubmonoidLe Rₘ Rₚ _ _ le'
   have := IsLocalization.localization_isScalarTower_of_submonoid_le Rₘ Rₚ _ _ le'
   have : IsLocalization.AtPrime (Localization.AtPrime (Ideal.map (algebraMap R Rₘ) p)) p := by
     convert IsLocalization.isLocalization_atPrime_localization_atPrime m.primeCompl
       (p.map (algebraMap R Rₘ))
-    rw [IsLocalization.comap_map_of_isPrime_disjoint m.primeCompl Rₘ hp disj]
+    exact (IsLocalization.under_map_of_isPrime_disjoint m.primeCompl Rₘ hp disj).symm
   let e' := (IsLocalization.algEquiv p.primeCompl Rₚ
       (Localization.AtPrime (Ideal.map (algebraMap R Rₘ) p)))
   let e : Rₚ ≃ₐ[Rₘ] Localization.AtPrime (Ideal.map (algebraMap R Rₘ) p) :=
@@ -93,7 +93,7 @@ lemma IsGorensteinRing.of_isGorensteinLocalRing [IsGorensteinLocalRing R]
 
 lemma IsGorensteinLocalRing.of_isLocalRing_of_isGorensteinRing [IsLocalRing R]
     [IsGorensteinRing R] : IsGorensteinLocalRing R := by
-  have := IsLocalization.of_le_isUnit (S :=  (maximalIdeal R).primeCompl)
+  have := IsLocalization.of_le_isUnit (S := (maximalIdeal R).primeCompl)
     (fun x hx ↦ by simpa using hx)
   have := (isGorensteinRing_def R).mp ‹_› (maximalIdeal R) inferInstance
   let e := (IsLocalization.algEquiv (maximalIdeal R).primeCompl R
