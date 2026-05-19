@@ -98,10 +98,17 @@ theorem convexCombination_assoc (f : StdSimplex R (StdSimplex R P)) :
       simp only [Finsupp.coe_smul, Pi.smul_apply, smul_eq_mul, hp', mul_zero,
         not_true_eq_false] at hp
 
-instance instConvexSpace : ConvexSpace R P where
+/-- Any affine space is a convex space.
+
+This is not an instance because its convex combination operation is defined through the choice of an
+arbitrary basepoint, which makes it very diamond-prone. -/
+@[implicit_reducible]
+def toConvexSpace : ConvexSpace R P where
   sConvexComb := convexCombination
   sConvexComb_single := convexCombination_single
   assoc := convexCombination_assoc
+
+attribute [local instance] toConvexSpace
 
 /-- `ConvexSpace.sConvexComb` in an affine space is the affine combination. -/
 theorem sConvexComb_eq_affineCombination (s : StdSimplex R P) :
@@ -155,6 +162,8 @@ end AddTorsor
 open Finsupp
 
 namespace Convexity
+
+attribute [local instance] AddTorsor.toConvexSpace
 
 theorem sConvexComb_eq_sum (f : StdSimplex R V) :
     f.sConvexComb = f.weights.sum fun i r ↦ r • i := by
