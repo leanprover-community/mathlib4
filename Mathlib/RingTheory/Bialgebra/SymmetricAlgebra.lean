@@ -48,12 +48,13 @@ theorem counit_ι (x : M) :
 
 instance instIsCocomm : Coalgebra.IsCocomm R (SymmetricAlgebra R M) where
   comm_comp_comul := by
-    suffices h : (Algebra.TensorProduct.comm R (SymmetricAlgebra R M)
+    have h : (Algebra.TensorProduct.comm R (SymmetricAlgebra R M)
           (SymmetricAlgebra R M)).toAlgHom.comp (Bialgebra.comulAlgHom R _) =
-        Bialgebra.comulAlgHom R (SymmetricAlgebra R M) from congr(($h).toLinearMap)
-    ext x
-    simp
-    abel
+        Bialgebra.comulAlgHom R (SymmetricAlgebra R M) := by
+      ext x
+      simp
+      abel
+    exact congr(($h).toLinearMap)
 
 @[simp]
 theorem counitAlgHom_eq :
