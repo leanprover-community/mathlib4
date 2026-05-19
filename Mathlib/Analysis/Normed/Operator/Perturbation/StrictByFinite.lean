@@ -375,8 +375,6 @@ end FiniteRank
 
 section FiniteDimQuotient
 
--- TODO: better name
--- TODO: use ∘ or ∘L ? The simp NF is ∘
 /-- Consider `u : E →L[𝕜] F` and `B` a *complemented* finite dimensional subspace `F`. We have
 that `u` is strict with closed range if and only if `B.mkQL ∘L u` is strict with closed range.
 
