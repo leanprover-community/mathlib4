@@ -725,9 +725,12 @@ theorem continuousOn_lift {hf : ∀ x y, (x ~ᵢ y) → f x = f y} {s : Set (Sep
   simp only [ContinuousOn, surjective_mk.forall, continuousWithinAt_lift, mem_preimage]
 
 @[simp]
-theorem continuous_lift {hf : ∀ x y, (x ~ᵢ y) → f x = f y} :
+theorem continuous_lift_iff {hf : ∀ x y, (x ~ᵢ y) → f x = f y} :
     Continuous (lift f hf) ↔ Continuous f := by
   simp only [← continuousOn_univ, continuousOn_lift, preimage_univ]
+
+alias ⟨_, continuous_lift⟩ := continuous_lift_iff
+attribute [fun_prop] continuous_lift
 
 /-- Lift a map `f : X → Y → α` such that `Inseparable a b → Inseparable c d → f a c = f b d` to a
 map `SeparationQuotient X → SeparationQuotient Y → α`. -/
