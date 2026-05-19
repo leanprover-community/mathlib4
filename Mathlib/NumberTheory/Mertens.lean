@@ -102,26 +102,11 @@ lemma summable_primeLogDivMulPred :
 
 lemma summable_primeLogDivMulPred_tail :
     Summable fun p : {p : ℕ // Nat.Prime p ∧ 5 ≤ p} ↦ primeLogDivMulPred p := by
-  let e :
-      {p : ℕ // Nat.Prime p ∧ 5 ≤ p} ≃
-        {q : {p : ℕ // Nat.Prime p} // 5 ≤ (q : ℕ)} :=
-    { toFun := fun p ↦ ⟨⟨p, p.property.1⟩, p.property.2⟩
-      invFun := fun q ↦ ⟨q.1, q.1.property, q.2⟩
-      left_inv := by
-        intro p
-        ext
-        rfl
-      right_inv := by
-        intro q
-        ext
-        rfl }
-  have h :
-      Summable fun q : {q : {p : ℕ // Nat.Prime p} // 5 ≤ (q : ℕ)} ↦
-        primeLogDivMulPred q.1 := by
-    simpa [Function.comp_def] using
-      (summable_primeLogDivMulPred.subtype
-        (fun q : {p : ℕ // Nat.Prime p} ↦ 5 ≤ (q : ℕ)))
-  simpa [e, Function.comp_def] using (e.summable_iff).mpr h
+  let e := (Equiv.subtypeSubtypeEquivSubtypeInter
+    (fun p : ℕ ↦ Nat.Prime p) (fun p ↦ 5 ≤ p)).symm
+  simpa [e, Function.comp_def] using (e.summable_iff).mpr
+    (summable_primeLogDivMulPred.subtype
+      (fun q : {p : ℕ // Nat.Prime p} ↦ 5 ≤ (q : ℕ)))
 
 lemma summable_oddLogDivMulPred_tail :
     Summable fun k : {k : ℕ // 2 ≤ k} ↦ oddLogDivMulPred k := by
@@ -292,41 +277,29 @@ lemma tsum_primeLogDivMulPred_split_two_three :
   have htail :
       (∑' q : {q : P // q ∉ s}, primeLogDivMulPred q.1)
         = ∑' p : {p : ℕ // Nat.Prime p ∧ 5 ≤ p}, primeLogDivMulPred p := by
+    have hmem_iff : ∀ q : P, q ∉ s ↔ 5 ≤ (q : ℕ) := by
+      intro q
+      simp only [mem_insert, mem_singleton, not_or, s, p2, p3]
+      constructor
+      · rintro ⟨hnot2, hnot3⟩
+        have hnot2' : (q : ℕ) ≠ 2 := fun h ↦ hnot2 (Subtype.ext h)
+        have hnot3' : (q : ℕ) ≠ 3 := fun h ↦ hnot3 (Subtype.ext h)
+        have hnot4 : (q : ℕ) ≠ 4 := by
+          intro h4
+          exact (by decide : ¬ Nat.Prime 4) (by simpa [h4] using q.property)
+        have h2le : 2 ≤ (q : ℕ) := q.property.two_le
+        exact by omega
+      · intro h5
+        constructor
+        · intro hq
+          have : (q : ℕ) = 2 := congrArg Subtype.val hq
+          omega
+        · intro hq
+          have : (q : ℕ) = 3 := congrArg Subtype.val hq
+          omega
     let e : {q : P // q ∉ s} ≃ {p : ℕ // Nat.Prime p ∧ 5 ≤ p} :=
-      { toFun := fun q ↦ ⟨q.1.1, q.1.2, by
-          have hnot2 : (q.1 : ℕ) ≠ 2 := by
-            intro h2
-            have hq : q.1 = p2 := Subtype.ext h2
-            exact q.2 (by simp [s, hq])
-          have hnot3 : (q.1 : ℕ) ≠ 3 := by
-            intro h3
-            have hq : q.1 = p3 := Subtype.ext h3
-            exact q.2 (by simp [s, hq])
-          have hnot4 : (q.1 : ℕ) ≠ 4 := by
-            intro h4
-            have hp4 : Nat.Prime 4 := by simpa [h4] using q.1.2
-            exact (by decide : ¬ Nat.Prime 4) hp4
-          have h2le : 2 ≤ (q.1 : ℕ) := q.1.2.two_le
-          omega⟩
-        invFun := fun p ↦ ⟨⟨p.1, p.2.1⟩, by
-          intro hmem
-          have hp5 : 5 ≤ p.1 := p.2.2
-          have hmem' :
-              (⟨p.1, p.2.1⟩ : P) = p2 ∨ (⟨p.1, p.2.1⟩ : P) = p3 := by
-            simpa [s] using hmem
-          rcases hmem' with hp_eq | hp_eq
-          · have : p.1 = 2 := congrArg Subtype.val hp_eq
-            omega
-          · have : p.1 = 3 := congrArg Subtype.val hp_eq
-            omega⟩
-        left_inv := by
-          intro q
-          ext
-          rfl
-        right_inv := by
-          intro p
-          ext
-          rfl }
+      (Equiv.subtypeEquiv (Equiv.refl P) hmem_iff).trans <|
+        Equiv.subtypeSubtypeEquivSubtypeInter (fun p : ℕ ↦ Nat.Prime p) fun p ↦ 5 ≤ p
     simpa [e, Function.comp_def] using
       (e.tsum_eq (fun p : {p : ℕ // Nat.Prime p ∧ 5 ≤ p} ↦ primeLogDivMulPred p))
   calc
@@ -409,10 +382,7 @@ lemma prime_tail_lt_odd_tail :
   have hk4_pos : 0 < oddLogDivMulPred k4 := by
     change 0 < oddLogDivMulPred (4 : ℕ)
     simpa [oddLogDivMulPred] using log_pos (by norm_num : (1 : ℝ) < 9)
-  have hsplit :
-      (∑' k : K, oddLogDivMulPred k) = oddLogDivMulPred k4 + ∑' k : K, rest k := by
-    simpa [rest] using (summable_oddLogDivMulPred_tail.tsum_eq_add_tsum_ite k4)
-  rw [hsplit]
+  rw [summable_oddLogDivMulPred_tail.tsum_eq_add_tsum_ite k4]
   exact lt_of_le_of_lt hleRest (by linarith)
 
 
@@ -637,33 +607,19 @@ lemma integral_oddLogDivMulPredReal_eq_half_integral :
       = (1 / 2 : ℝ) *
         ∫ u in Set.Ioi (5 : ℝ), log u / (u * (u - 1)) := by
   let g : ℝ → ℝ := fun u ↦ log u / (u * (u - 1))
-  have hscale :
-      (∫ x in Set.Ioi (2 : ℝ), (fun y : ℝ ↦ g (y + 1)) (2 * x))
-        = (2 : ℝ)⁻¹ • ∫ y in Set.Ioi ((2 : ℝ) * 2), (fun y : ℝ ↦ g (y + 1)) y := by
-    exact integral_comp_mul_left_Ioi (fun y : ℝ ↦ g (y + 1)) (2 : ℝ)
-      (b := (2 : ℝ)) (by norm_num)
-  have hscale' :
-      (∫ x in Set.Ioi (2 : ℝ), g (2 * x + 1))
-        = (1 / 2 : ℝ) * ∫ y in Set.Ioi (4 : ℝ), g (y + 1) := by
-    rw [hscale]
-    norm_num
   have hshift :
       (∫ y in Set.Ioi (4 : ℝ), g (y + 1)) = ∫ u in Set.Ioi (5 : ℝ), g u := by
-    have hshift' :
-        (∫ y in Set.Ioi (4 : ℝ), g (y + 1)) =
-          ∫ u in Set.Ioi ((4 : ℝ) + 1), g u := by
-      rw [← integral_indicator measurableSet_Ioi, ← integral_indicator measurableSet_Ioi]
-      rw [← integral_add_right_eq_self
-        (fun u : ℝ ↦ Set.indicator (Set.Ioi (4 + 1 : ℝ)) g u) (1 : ℝ)]
-      congr 1
-      ext y
-      by_cases hy : (4 : ℝ) < y
-      · have hy' : (4 : ℝ) + 1 < y + 1 := by linarith
-        simp [Set.mem_Ioi, hy, hy']
-      · have hy' : ¬ (4 : ℝ) + 1 < y + 1 := by linarith
-        simp [Set.mem_Ioi, hy, hy']
-    rw [show (4 : ℝ) + 1 = 5 by norm_num] at hshift'
-    exact hshift'
+    rw [← show (4 : ℝ) + 1 = 5 by norm_num]
+    rw [← integral_indicator measurableSet_Ioi, ← integral_indicator measurableSet_Ioi]
+    rw [← integral_add_right_eq_self
+      (fun u : ℝ ↦ Set.indicator (Set.Ioi (4 + 1 : ℝ)) g u) (1 : ℝ)]
+    congr 1
+    ext y
+    by_cases hy : (4 : ℝ) < y
+    · have hy' : (4 : ℝ) + 1 < y + 1 := by linarith
+      simp [Set.mem_Ioi, hy, hy']
+    · have hy' : ¬ (4 : ℝ) + 1 < y + 1 := by linarith
+      simp [Set.mem_Ioi, hy, hy']
   calc
     (∫ x in Set.Ioi (2 : ℝ), oddLogDivMulPredReal x)
         = ∫ x in Set.Ioi (2 : ℝ), g (2 * x + 1) := by
@@ -672,7 +628,10 @@ lemma integral_oddLogDivMulPredReal_eq_half_integral :
           rw [oddLogDivMulPredReal]
           dsimp [g]
           ring_nf
-    _ = (1 / 2 : ℝ) * ∫ u in Set.Ioi (5 : ℝ), g u := by rw [hscale', hshift]
+    _ = (1 / 2 : ℝ) * ∫ y in Set.Ioi (4 : ℝ), g (y + 1) := by
+          rw [integral_comp_mul_left_Ioi (fun y : ℝ ↦ g (y + 1)) 2 (by norm_num)]
+          norm_num
+    _ = (1 / 2 : ℝ) * ∫ u in Set.Ioi (5 : ℝ), g u := by rw [hshift]
     _ = (1 / 2 : ℝ) *
         ∫ u in Set.Ioi (5 : ℝ), log u / (u * (u - 1)) := by
           rfl
@@ -786,8 +745,7 @@ lemma integral_log_div_sq_Ioi_five :
         ring
       · norm_num
     simpa [F] using h.neg
-  have hFTC := integral_Ioi_of_hasDerivAt_of_nonneg'
-    (a := (5 : ℝ)) (g := F) hderiv hpos hlim
+  have hFTC := integral_Ioi_of_hasDerivAt_of_nonneg' (a := (5 : ℝ)) (g := F) hderiv hpos hlim
   simpa [F] using hFTC
 
 lemma integral_oddLogDivMulPredReal_le_log_five_add_one_div_eight :
@@ -847,17 +805,13 @@ lemma sum_log_ge_add_one {x : ℕ} (hx : 1 ≤ x) :
     exact log_le_log ha0 hab
   have hint : (∫ t in (1 : ℝ)..(x : ℝ), log t) ≤ ∑ n ∈ Ico 1 x, log (n + 1 : ℕ) := by
     simpa using hmono.integral_le_sum_Ico hx
-  have hsum : ∑ n ∈ Ico 1 x, log (n + 1 : ℕ) = ∑ n ∈ Ioc 1 x, log n := by
-    rw [sum_Ico_add' (fun n : ℕ ↦ log n) 1 x (c := 1), Ico_add_one_add_one_eq_Ioc]
-  rw [hsum] at hint
-  have hIoc : ∑ n ∈ Ioc 1 x, log n = ∑ n ∈ Ioc 0 x, log n := by
+  rw [sum_Ico_add' (fun n : ℕ ↦ log n) 1 x (c := 1), Ico_add_one_add_one_eq_Ioc] at hint
+  replace hint : (∫ t in (1 : ℝ)..(x : ℝ), log t) ≤ ∑ n ∈ Ioc 0 x, log n := by
+    convert hint using 1
     rw [(by rfl : Ioc 0 x = Icc 1 x), ← add_sum_Ioc_eq_sum_Icc hx]
     simp
-  rw [hIoc] at hint
-  have hint_eq : (∫ t in (1 : ℝ)..(x : ℝ), log t) = (x : ℝ) * log x - x + 1 := by
-    rw [integral_log]
-    norm_num
-  rw [hint_eq] at hint
+  rw [integral_log] at hint
+  norm_num at hint
   linarith
 
 lemma log_factorial_eq_sum_prime_factorization {n : ℕ} :
