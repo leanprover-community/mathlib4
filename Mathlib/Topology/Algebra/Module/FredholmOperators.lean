@@ -29,8 +29,8 @@ section FindHome
 
 lemma Fin.sum_even_odd {n : ℕ} [NeZero n] {f : Fin n → ℤ} :
     ∑ i : Fin n, f i =
-      ∑ i ∈ Finset.filter (fun i : Fin n => i.val % 2 = 1) Finset.univ, f i
-        + ∑ i ∈ Finset.filter (fun i : Fin n => i.val % 2 = 0) Finset.univ, f i := by
+      ∑ i ∈ Finset.filter (fun i : Fin n ↦ i.val % 2 = 1) Finset.univ, f i
+        + ∑ i ∈ Finset.filter (fun i : Fin n ↦ i.val % 2 = 0) Finset.univ, f i := by
    simpa only [add_comm, Finset.sum_filter] using
         by rw [← Finset.sum_add_distrib]
            congr
@@ -39,8 +39,8 @@ lemma Fin.sum_even_odd {n : ℕ} [NeZero n] {f : Fin n → ℤ} :
 
 /- Name is still terrible. -/
 lemma alt_sum_eq_zero_of_sum_even_eq_sum_odd {n : ℕ} [NeZero n] {f : Fin n → ℤ}
-  (hf : ∑ i ∈ Finset.filter (fun i : Fin n => i.val % 2 = 1) Finset.univ, f i
-      = ∑ i ∈ Finset.filter (fun i : Fin n => i.val % 2 = 0) Finset.univ, f i) :
+  (hf : ∑ i ∈ Finset.filter (fun i : Fin n ↦ i.val % 2 = 1) Finset.univ, f i
+      = ∑ i ∈ Finset.filter (fun i : Fin n ↦ i.val % 2 = 0) Finset.univ, f i) :
           ∑ i, (-1) ^ (i.val) * f i = 0 := by
   rw [Fin.sum_even_odd]
   have h_odd (i : Fin n) (hi : i.val % 2 = 1) : (-1) ^ (i : ℕ) = -1 := by
@@ -49,14 +49,14 @@ lemma alt_sum_eq_zero_of_sum_even_eq_sum_odd {n : ℕ} [NeZero n] {f : Fin n →
   have h_even (i : Fin n) (hi : i.val % 2 = 0) : (-1) ^ (i : ℕ) = 1 := by
      rw [← Nat.mod_add_div i 2, hi]
      norm_num
-  have : ∑ i ∈ Finset.filter (fun i : Fin n => i.val % 2 = 1) Finset.univ, (-1) ^ i.val * f i =
-      - ∑ i ∈ Finset.filter (fun i : Fin n => i.val % 2 = 1) Finset.univ, f i := by
+  have : ∑ i ∈ Finset.filter (fun i : Fin n ↦ i.val % 2 = 1) Finset.univ, (-1) ^ i.val * f i =
+      - ∑ i ∈ Finset.filter (fun i : Fin n ↦ i.val % 2 = 1) Finset.univ, f i := by
     rw [← Finset.sum_neg_distrib, Finset.sum_congr rfl fun x hx =>
       by rw [h_odd x (Finset.mem_filter.mp hx |>.2)]]
     norm_num
-  have : ∑ i ∈ Finset.filter (fun i : Fin n => i.val % 2 = 0) Finset.univ, (-1) ^ i.val * f i =
-      ∑ i ∈ Finset.filter (fun i : Fin n => i.val % 2 = 0) Finset.univ, f i := by
-    exact Finset.sum_congr rfl fun x hx => by aesop
+  have : ∑ i ∈ Finset.filter (fun i : Fin n ↦ i.val % 2 = 0) Finset.univ, (-1) ^ i.val * f i =
+      ∑ i ∈ Finset.filter (fun i : Fin n ↦ i.val % 2 = 0) Finset.univ, f i := by
+    exact Finset.sum_congr rfl fun x hx ↦ by aesop
   grind
 
 /- The following should now reduce to the Bourbaki proof. -/
