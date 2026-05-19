@@ -26,6 +26,11 @@ In this file we establish behaviour of `Module.Finite` under localizations.
   and `{ r }` is a finite set generating the unit ideal such that
   `Mᵣ` is a finite `Rᵣ`-module for each `r`, then `M` is a finite `R`-module.
 
+## TODO
+
+* Move the results that `Module.Finite` over a semilocal ring is a local property from
+  `Mathlib/RingTheory/LocalProperties/Semilocal.lean` to this file.
+
 -/
 
 @[expose] public section
