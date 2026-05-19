@@ -91,6 +91,21 @@ instance HomogenizationExpr.setoid : Setoid (HomogenizationExpr k V P) where
     · linear_combination (norm := affine P) h₁ + h₂
     · simp
 
+instance HomogenizationExpr.decidableEquiv [DecidableEq k] [DecidableEq V] :
+    ∀ {x y : HomogenizationExpr k V P}, Decidable (x ≈ y)
+  | .mk v₁ c₁ p₁, .mk v₂ c₂ p₂ =>
+    decidable_of_iff (c₁ = c₂ ∧ v₁ - v₂ = c₁ • (p₂ -ᵥ p₁))
+      ⟨fun ⟨rfl, h⟩ => .mk_mk h, fun | .mk_mk h => ⟨rfl, h⟩⟩
+  | .mk v₁ c _, .ofVector v₂ =>
+    decidable_of_iff (0 = c ∧ v₁ = v₂)
+      ⟨fun ⟨rfl, rfl⟩ => .mk_ofVector, fun | .mk_ofVector => ⟨rfl, rfl⟩⟩
+  | .ofVector v₁, .mk v₂ c _ =>
+    decidable_of_iff (0 = c ∧ v₁ = v₂)
+      ⟨fun ⟨rfl, rfl⟩ => .ofVector_mk, fun | .ofVector_mk => ⟨rfl, rfl⟩⟩
+  | .ofVector v₁, .ofVector v₂ =>
+    decidable_of_iff (v₁ = v₂)
+      ⟨fun | rfl => .ofVector_ofVector, fun | .ofVector_ofVector => rfl⟩
+
 variable (k P) in
 /-- Given an affine space `P` over `k`, `Homogenization k P` is a vector space containing `P` as a
 hyperplane that does not pass through the origin.
@@ -117,6 +132,9 @@ private theorem mk_induction_of_point (p : P) {motive : Homogenization k P → P
     affine P
   · convert mk_mk v 0 using 1
     exact Quot.sound .ofVector_mk
+
+instance [DecidableEq k] [DecidableEq V] : DecidableEq (Homogenization k P) :=
+  Quotient.decidableEq
 
 section Module
 
