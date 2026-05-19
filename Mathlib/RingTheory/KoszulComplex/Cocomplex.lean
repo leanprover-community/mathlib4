@@ -179,27 +179,25 @@ end regular
 
 section change_generators
 
-lemma nonempty_linearEquiv_of_minimal_generators (I : Ideal R) (hI : I ≤ Ring.jacobson R)
+lemma nonempty_linearEquiv_of_minimal_generators [IsLocalRing R] (I : Ideal R) (hI : I ≠ ⊤)
     (l l' : List R) (hl : Ideal.ofList l = I) (hl' : Ideal.ofList l' = I)
     (hl_min : l.length = I.spanFinrank) (hl'_min : l'.length = I.spanFinrank) :
   ∃ e : (Fin l.length → R) ≃ₗ[R] (Fin l'.length → R), e l.get = l'.get := sorry
 
 theorem nonempty_iso_of_minimal_generators [IsLocalRing R]
-    {I : Ideal R} (h : I ≠ ⊤) {l l' : List R}
+    {I : Ideal R} (hI : I ≠ ⊤) {l l' : List R}
     (hl : Ideal.ofList l = I) (hl' : Ideal.ofList l' = I)
     (hl_min : l.length = I.spanFinrank) (hl'_min : l'.length = I.spanFinrank) :
     Nonempty <| ofList R l ≅ ofList R l' := by
-  have hI : I ≤ Ring.jacobson R := by
-    simpa [IsLocalRing.ringJacobson_eq_maximalIdeal] using IsLocalRing.le_maximalIdeal h
   obtain ⟨e, h⟩ := nonempty_linearEquiv_of_minimal_generators R I hI l l' hl hl' hl_min hl'_min
   exact ⟨isoOfEquiv R e h⟩
 
 theorem nonempty_iso_of_minimal_generators'
-    [IsNoetherianRing R] [IsLocalRing R] {I : Ideal R} (h : I ≠ ⊤) {l : List R}
+    [IsNoetherianRing R] [IsLocalRing R] {I : Ideal R} (hI : I ≠ ⊤) {l : List R}
     (eq : Ideal.ofList l = I) (min : l.length = I.spanFinrank) :
     Nonempty (ofList R (Submodule.FG.finite_generators I.fg_of_isNoetherianRing).toFinset.toList ≅
       ofList R l) := by
-  refine nonempty_iso_of_minimal_generators R h ?_ eq ?_ min
+  refine nonempty_iso_of_minimal_generators R hI ?_ eq ?_ min
   · simp only [Ideal.ofList, Finset.mem_toList, Set.Finite.mem_toFinset, Set.setOf_mem_eq]
     exact I.span_generators
   · simp only [Finset.length_toList, ← Set.ncard_eq_toFinset_card _ _]
