@@ -55,6 +55,18 @@ mapped to the equivalence class of the image of `x` in `FreeGroup α`. -/
 def of {rels : Set (FreeGroup α)} (x : α) : PresentedGroup rels :=
   mk rels (FreeGroup.of x)
 
+open Subgroup in
+/--
+`FreeGroup α →* FreeGroup β` induces a homomorphism
+`PresentedGroup s →* PresentedGroup t` if the image of `s` is contained in `t`.
+-/
+protected def map {α β : Type*} (f : FreeGroup α →* FreeGroup β)
+    {s : Set (FreeGroup α)} {t : Set (FreeGroup β)} (hst : s.MapsTo f t) :
+    PresentedGroup s →* PresentedGroup t :=
+  QuotientGroup.map _ _ f
+    ((comap_normalClosure_image_ge s f).trans
+    (comap_mono (normalClosure_mono hst.image_subset)))
+
 lemma mk_eq_one_iff {rels : Set (FreeGroup α)} {x : FreeGroup α} :
     mk rels x = 1 ↔ x ∈ Subgroup.normalClosure rels :=
   QuotientGroup.eq_one_iff _
