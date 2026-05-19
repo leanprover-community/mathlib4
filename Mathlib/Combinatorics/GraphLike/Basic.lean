@@ -19,7 +19,7 @@ public import Mathlib.AlgebraicTopology.SimplicialComplex.Basic
 no duplicated edges) no longer works, bc the same edge could be traversed both ways.
 -/
 
-public section
+@[expose] public section
 
 open Prod Set
 
