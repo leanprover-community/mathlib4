@@ -29,12 +29,9 @@ variable (D : Type*) [Category* D]
     {FD : outParam <| D → D → Type t₂} {CD : outParam <| D → Type w}
     [outParam <| ∀ X Y, FunLike (FD X Y) (CD X) (CD Y)] [ConcreteCategory.{w} D FD]
 
--- This should not be an instance, as it causes a typeclass loop
--- with `CategoryTheory.hasForgetToType`.
 /-- A `forget₂ C D` forgetful functor between concrete categories `C` and `D`
-where `forget C` reflects isomorphisms, itself reflects isomorphisms.
--/
-theorem reflectsIsomorphisms_forget₂ [HasForget₂ C D] [(forget C).ReflectsIsomorphisms] :
+where `forget C` reflects isomorphisms, itself reflects isomorphisms. -/
+instance reflectsIsomorphisms_forget₂ [HasForget₂ C D] [(forget C).ReflectsIsomorphisms] :
     (forget₂ C D).ReflectsIsomorphisms :=
   { reflects := fun X Y f {i} => by
       haveI i' : IsIso ((forget D).map ((forget₂ C D).map f)) := Functor.map_isIso (forget D) _
