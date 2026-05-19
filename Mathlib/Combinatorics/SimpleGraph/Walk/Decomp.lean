@@ -10,6 +10,7 @@ public import Mathlib.Combinatorics.SimpleGraph.Walk.Subwalks
 
 /-!
 # Decomposing walks
+
 ## Main definitions
 - `takeUntil`: The path obtained by taking edges of an existing path until a given vertex.
 - `dropUntil`: The path obtained by dropping edges of an existing path until a given vertex.
@@ -64,12 +65,8 @@ lemma takeUntil_eq_take (p : G.Walk u v) (h : w ∈ p.support) :
   | nil =>
     simp only [takeUntil, eq_mpr_eq_cast, support_nil, getVert_nil, take, support_copy]
     grind [mem_support_nil_iff, support_nil]
-  | @cons a _ _ _ p ih =>
-    by_cases! h' : w = a
-    · grind [List.idxOf_cons_self, take_zero, copy_rfl_rfl, support_nil, takeUntil_first]
-    · rw [take_cons_eq _ _ _ (by grind), takeUntil_cons (List.mem_of_ne_of_mem h' h) h'.symm,
-        support_cons, support_copy, ih (by grind)]
-      grind
+  | cons hadj p ih =>
+    grind [takeUntil, support, copy_rfl_rfl, take_support_eq_support_take_succ]
 
 lemma length_takeUntil (p : G.Walk u v) (h : w ∈ p.support) :
     (p.takeUntil w h).length = p.support.idxOf w := by
@@ -232,14 +229,7 @@ lemma takeUntil_append_of_mem_left {x : V} (p : G.Walk u v) (q : G.Walk v w) (hx
     (p.append q).takeUntil x (subset_support_append_left _ _ hx) = p.takeUntil _ hx := by
   induction p with
   | nil => rw [mem_support_nil_iff] at hx; subst_vars; simp
-  | @cons u _ _ _ _ ih =>
-    rw [support_cons] at hx
-    by_cases hxu : u = x
-    · subst_vars; simp
-    · have := List.mem_of_ne_of_mem (fun hf ↦ hxu hf.symm) hx
-      simp_rw [takeUntil_cons this hxu, cons_append,
-        takeUntil_cons (subset_support_append_left _ _ this) hxu]
-      simpa using ih _ this
+  | cons => grind [cons_append, takeUntil]
 
 lemma getVert_takeUntil {u v : V} {n : ℕ} {p : G.Walk u v} (hw : w ∈ p.support)
     (hn : n ≤ (p.takeUntil w hw).length) : (p.takeUntil w hw).getVert n = p.getVert n := by
@@ -265,7 +255,7 @@ lemma getVert_lt_length_takeUntil_ne {n : ℕ} {p : G.Walk v w} (h : u ∈ p.sup
   have : p.getVert n ∈ (p.takeUntil _ h).support.dropLast := by
     simp_rw [p.getVert_takeUntil h hn.le ▸ getVert_eq_support_getElem _ hn.le,
       ← List.getElem_dropLast h₁, List.getElem_mem h₁]
-  have := support_eq_concat _ ▸ p.count_support_takeUntil_eq_one h
+  have := dropLast_support_concat _ ▸ p.count_support_takeUntil_eq_one h
   grind [List.not_mem_of_count_eq_zero]
 
 theorem getVert_le_length_takeUntil_eq_iff {n : ℕ} {p : G.Walk v w} (h : u ∈ p.support)
@@ -319,6 +309,12 @@ theorem rotate_darts (c : G.Walk v v) (u : V) (h) : (c.rotate u h).darts ~r c.da
 
 theorem rotate_edges (c : G.Walk v v) (u : V) (h) : (c.rotate u h).edges ~r c.edges :=
   (rotate_darts c u h).map _
+
+@[simp] lemma length_rotate (c : G.Walk v v) (u : V) (h) : (c.rotate u h).length = c.length := by
+  simpa using (rotate_edges c u h).perm.length_eq
+
+@[simp] lemma rotate_eq_nil {c : G.Walk v v} {u : V} (h) : c.rotate u h = nil ↔ c = nil := by
+  simp [← length_eq_zero_iff]
 
 end WalkDecomp
 

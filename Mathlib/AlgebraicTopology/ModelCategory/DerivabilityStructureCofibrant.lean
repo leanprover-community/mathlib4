@@ -23,7 +23,7 @@ Corollaire 10.10 in [the paper by Kahn and Maltsiniotis][KahnMaltsiniotis2008].
 
 universe v u
 
-@[expose] public section
+public section
 
 open CategoryTheory Limits
 

@@ -54,7 +54,7 @@ Noetherian, noetherian, Noetherian ring, Noetherian module, noetherian ring, noe
 
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Matrix
 

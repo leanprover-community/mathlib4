@@ -8,6 +8,10 @@ module
 public import Mathlib.Algebra.Lie.OfAssociative
 public import Mathlib.RingTheory.AdicCompletion.Exactness
 public import Mathlib.RingTheory.Finiteness.Ideal
+public import Mathlib.RingTheory.MvPowerSeries.Equiv
+public import Mathlib.RingTheory.PowerSeries.Basic
+
+import Mathlib.RingTheory.AdicCompletion.Topology
 
 /-!
 # Completeness of the Adic Completion for Finitely Generated Ideals
@@ -31,6 +35,9 @@ when the ideal `I` is finitely generated.
 
 * `AdicCompletion.isAdicComplete`: `AdicCompletion I M` is `I`-adically complete if `I` is
   finitely generated.
+
+* `MvPowerSeries.isAdicComplete`: Multivariate power series is adic complete with respect to
+  the ideal spanned by all variables when the index is finite.
 
 -/
 
@@ -78,7 +85,7 @@ private lemma ofValEqZeroAux_exists {x : AdicCompletion I M} (h : c = b + a)
   simpa [← LinearMap.mem_range, range_powSMulQuotInclusion] using
     (val_apply_mem_smul_top_iff I (show a ≤ c by lia)).mpr ha
 
-/-- An auxillary lift function used in the definition of `ofValEqZero`.
+/-- An auxiliary lift function used in the definition of `ofValEqZero`.
 Use `ofValEqZero` instead. -/
 def ofValEqZeroAux {x : AdicCompletion I M} (h : c = b + a) (ha : x.val a = 0) :
     ↥(I ^ a • ⊤ : Submodule R M) ⧸ I ^ b • (⊤ : Submodule R ↥(I ^ a • ⊤ : Submodule R M)) :=
@@ -188,3 +195,27 @@ theorem isAdicComplete (h : I.FG) : IsAdicComplete I (AdicCompletion I M) where
     simp [L]
 
 end AdicCompletion
+
+namespace MvPowerSeries
+
+instance {σ : Type*} [Finite σ] :
+    IsAdicComplete (.span (.range X) : Ideal (MvPowerSeries σ R)) (MvPowerSeries σ R) := by
+  have : Ideal.map (toAdicCompletionAlgEquiv σ R).toRingEquiv (Ideal.span (Set.range X)) =
+    (MvPolynomial.idealOfVars σ R).map (algebraMap ..):= by
+    simp_rw [Ideal.map_span, ← Set.range_comp]
+    congr 2; ext1
+    simp [AdicCompletion.algebraMap_apply, ← MvPolynomial.coe_X, toAdicCompletion_coe]
+  rw [← IsAdicComplete.congr_ringEquiv _ (toAdicCompletionAlgEquiv σ R).toRingEquiv, this,
+    IsAdicComplete.map_algebraMap_iff]
+  exact AdicCompletion.isAdicComplete (MvPolynomial.idealOfVars_fg σ R)
+
+end MvPowerSeries
+
+namespace PowerSeries
+
+instance : IsAdicComplete (.span {X} : Ideal (PowerSeries R)) (PowerSeries R) := by
+  have : IsAdicComplete (.span (.range MvPowerSeries.X) : Ideal (MvPowerSeries Unit R))
+    (MvPowerSeries Unit R) := inferInstance
+  rwa [Set.range_unique] at this
+
+end PowerSeries

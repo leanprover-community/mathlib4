@@ -192,6 +192,10 @@ theorem toMultilinearMap_add (f g : ContinuousMultilinearMap R M₁ M₂) :
     (f + g).toMultilinearMap = f.toMultilinearMap + g.toMultilinearMap :=
   rfl
 
+-- The `AddMonoid` instance exists to help speedup unification
+instance : AddMonoid (ContinuousMultilinearMap R M₁ M₂) := fast_instance%
+  toMultilinearMap_injective.addMonoid _ rfl (fun _ _ => rfl) fun _ _ => rfl
+
 instance addCommMonoid : AddCommMonoid (ContinuousMultilinearMap R M₁ M₂) := fast_instance%
   toMultilinearMap_injective.addCommMonoid _ rfl (fun _ _ => rfl) fun _ _ => rfl
 
@@ -212,8 +216,7 @@ end ContinuousAdd
 linear map obtained by fixing all coordinates but `i` equal to those of `m`, and varying the
 `i`-th coordinate. -/
 @[simps!] def toContinuousLinearMap [DecidableEq ι] (m : ∀ i, M₁ i) (i : ι) : M₁ i →L[R] M₂ :=
-  { f.toMultilinearMap.toLinearMap m i with
-    cont := f.cont.comp (continuous_const.update i continuous_id) }
+  { f.toMultilinearMap.toLinearMap m i with }
 
 /-- The Cartesian product of two continuous multilinear maps, as a continuous multilinear map. -/
 def prod (f : ContinuousMultilinearMap R M₁ M₂) (g : ContinuousMultilinearMap R M₁ M₃) :
@@ -627,7 +630,7 @@ over `𝕜`, associating to `m` the product of all the `m i`.
 
 See also `ContinuousMultilinearMap.mkPiAlgebraFin`. -/
 protected def mkPiAlgebra : ContinuousMultilinearMap R (fun _ : ι => A) A where
-  cont := continuous_finset_prod _ fun _ _ => continuous_apply _
+  cont := continuous_finsetProd _ fun _ _ => continuous_apply _
   toMultilinearMap := MultilinearMap.mkPiAlgebra R ι A
 
 @[simp]

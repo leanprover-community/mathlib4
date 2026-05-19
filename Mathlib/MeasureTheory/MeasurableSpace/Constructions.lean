@@ -54,7 +54,6 @@ theorem ENat.measurable_iff {α : Type*} [MeasurableSpace α] {f : α → ℕ∞
     exact .compl <| .iUnion h
   | coe n => exact h n
 
-@[measurability]
 theorem measurable_unit [MeasurableSpace α] (f : Unit → α) : Measurable f :=
   measurable_from_top
 
@@ -78,7 +77,6 @@ section Nat
 
 variable {mα : MeasurableSpace α}
 
-@[measurability]
 theorem measurable_from_nat {f : ℕ → α} : Measurable f :=
   measurable_from_top
 
@@ -392,7 +390,6 @@ theorem Measurable.fst {f : α → β × γ} (hf : Measurable f) : Measurable fu
 theorem Measurable.snd {f : α → β × γ} (hf : Measurable f) : Measurable fun a : α => (f a).2 :=
   measurable_snd.comp hf
 
-@[measurability]
 theorem Measurable.prod {f : α → β × γ} (hf₁ : Measurable fun a => (f a).1)
     (hf₂ : Measurable fun a => (f a).2) : Measurable f :=
   Measurable.of_le_map <|

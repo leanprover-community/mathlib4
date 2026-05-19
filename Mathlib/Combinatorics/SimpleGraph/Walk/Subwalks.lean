@@ -120,9 +120,8 @@ theorem isSubwalk_iff_support_isInfix {v w v' w' : V} {p₁ : G.Walk v w} {p₂ 
     simp only [← h, support_append, support_copy, take_support_eq_support_take_succ,
       List.take_append, drop_support_eq_support_drop_min, List.tail_drop]
     rw [Nat.min_eq_left (by grind), List.drop_append, List.drop_append,
-      List.drop_eq_nil_of_le (by lia), List.drop_eq_nil_of_le (by grind),
-      p₁.support_eq_cons]
-    simp +arith
+      List.drop_eq_nil_of_le (by lia), List.drop_eq_nil_of_le (by grind), ← p₁.cons_tail_support]
+    simp +arith [-cons_tail_support]
 
 theorem isSubwalk_iff_darts_isInfix {p₁ : G.Walk u v} {p₂ : G.Walk u' v'} (hnil : ¬p₁.Nil) :
     p₁.IsSubwalk p₂ ↔ p₁.darts <:+: p₂.darts := by

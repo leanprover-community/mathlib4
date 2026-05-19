@@ -81,12 +81,6 @@ theorem toSubsemiring_strictMono : StrictMono (toSubsemiring : Subring R → Sub
 theorem toSubsemiring_mono : Monotone (toSubsemiring : Subring R → Subsemiring R) :=
   toSubsemiring_strictMono.monotone
 
-@[deprecated toSubsemiring_strictMono (since := "2025-10-20")]
-lemma toSubsemiring_lt_toSubsemiring (hst : s < t) : s.toSubsemiring < t.toSubsemiring := hst
-
-@[deprecated toSubsemiring_mono (since := "2025-10-20")]
-lemma toSubsemiring_le_toSubsemiring (hst : s ≤ t) : s.toSubsemiring ≤ t.toSubsemiring := hst
-
 @[gcongr, mono]
 theorem toAddSubgroup_strictMono : StrictMono (toAddSubgroup : Subring R → AddSubgroup R) :=
   fun _ _ => id
@@ -94,12 +88,6 @@ theorem toAddSubgroup_strictMono : StrictMono (toAddSubgroup : Subring R → Add
 @[gcongr, mono]
 theorem toAddSubgroup_mono : Monotone (toAddSubgroup : Subring R → AddSubgroup R) :=
   toAddSubgroup_strictMono.monotone
-
-@[deprecated toAddSubgroup_strictMono (since := "2025-10-20")]
-lemma toAddSubgroup_lt_toAddSubgroup (hst : s < t) : s.toAddSubgroup < t.toAddSubgroup := hst
-
-@[deprecated toAddSubgroup_mono (since := "2025-10-20")]
-lemma toAddSubgroup_le_toAddSubgroup (hst : s ≤ t) : s.toAddSubgroup ≤ t.toAddSubgroup := hst
 
 @[mono]
 theorem toSubmonoid_strictMono : StrictMono (fun s : Subring R => s.toSubmonoid) := fun _ _ => id
@@ -395,8 +383,9 @@ theorem center_eq_top (R) [CommRing R] : center R = ⊤ :=
   SetLike.coe_injective (Set.center_eq_univ R)
 
 /-- The center is commutative. -/
-instance {R} [Ring R] : CommRing (center R) :=
-  { (inferInstance : CommSemiring (Subsemiring.center R)), (center R).toRing with }
+instance {R} [Ring R] : CommRing (center R) where
+  __ := (center R).toRing
+  __ : CommSemiring (center R) := inferInstanceAs <| CommSemiring (Subsemiring.center R)
 
 /-- The center of isomorphic (not necessarily associative) rings are isomorphic. -/
 @[simps!] def centerCongr (e : R ≃+* S) : center R ≃+* center S :=
@@ -789,6 +778,17 @@ theorem coe_sSup_of_directedOn {S : Set (Subring R)} (Sne : S.Nonempty)
     (hS : DirectedOn (· ≤ ·) S) : (↑(sSup S) : Set R) = ⋃ s ∈ S, ↑s :=
   Set.ext fun x => by simp [mem_sSup_of_directedOn Sne hS]
 
+theorem isMulCommutative_iSup {ι : Sort*} [Nonempty ι] {S : ι → Subring R}
+    [hS : ∀ i, IsMulCommutative (S i)] (dir : Directed (· ≤ ·) S) :
+    IsMulCommutative (⨆ i, S i : Subring R) := by
+  simpa [isMulCommutative_iff, ← SetLike.mem_coe, coe_iSup_of_directed dir,
+    Subsemigroup.coe_iSup_of_directed dir] using Subsemigroup.isMulCommutative_iSup dir
+
+instance instIsMulCommutative_iSup {ι : Type*} [Nonempty ι] [Preorder ι] [IsDirectedOrder ι]
+    {S : ι →o Subring R} [hS : ∀ i, IsMulCommutative (S i)] :
+    IsMulCommutative (⨆ i, S i : Subring R) :=
+  Subring.isMulCommutative_iSup S.monotone.directed_le
+
 theorem mem_map_equiv {f : R ≃+* S} {K : Subring R} {x : S} :
     x ∈ K.map (f : R →+* S) ↔ f.symm x ∈ K :=
   @Set.mem_image_equiv _ _ (K : Set R) f.toEquiv x
@@ -833,6 +833,11 @@ theorem range_eq_top {f : R →+* S} :
 theorem range_eq_top_of_surjective (f : R →+* S) (hf : Function.Surjective f) :
     f.range = (⊤ : Subring S) :=
   range_eq_top.2 hf
+
+@[simp]
+theorem domRestrict_comp_rangeRestrict (g : S →+* T) (f : R →+* S) :
+    (g.domRestrict f.range).comp (f.rangeRestrict) = g.comp f :=
+  rfl
 
 section eqLocus
 
@@ -926,6 +931,14 @@ def subringCongr (h : s = t) : s ≃+* t :=
   { Equiv.setCongr <| congr_arg _ h with
     map_mul' := fun _ _ => rfl
     map_add' := fun _ _ => rfl }
+
+@[simp]
+theorem subringCongr_symm (h : s = t) :
+    (subringCongr h).symm = subringCongr h.symm := rfl
+
+@[simp]
+theorem coe_subringCongr_apply (h : s = t) (x : s) :
+    (subringCongr h x).val = x.val := rfl
 
 /-- Restrict a ring homomorphism with a left inverse to a ring isomorphism to its
 `RingHom.range`. -/

@@ -763,7 +763,7 @@ instance sum : Primcodable (α ⊕ β) :=
                 to₂ <| nat_double.comp (Primrec.encode.comp snd)))).of_eq
         fun n =>
         show _ = encode (decodeSum n) by
-          simp only [decodeSum, Nat.boddDiv2_eq]
+          simp only [decodeSum]
           cases Nat.bodd n <;> simp
           · cases @decode α _ n.div2 <;> rfl
           · cases @decode β _ n.div2 <;> rfl⟩
@@ -843,7 +843,7 @@ theorem mem_range_encode : PrimrecPred (fun n => n ∈ Set.range (encode : α �
   this.of_eq fun _ => decode₂_ne_none_iff
 
 instance ulower : Primcodable (ULower α) :=
-  Primcodable.subtype mem_range_encode
+  fast_instance% Primcodable.subtype mem_range_encode
 
 end ULower
 
@@ -886,11 +886,11 @@ theorem option_get {f : α → Option β} {h : ∀ a, (f a).isSome} :
 
 theorem ulower_down : Primrec (ULower.down : α → ULower α) :=
   letI : ∀ a, Decidable (a ∈ Set.range (encode : α → ℕ)) := decidableRangeEncode _
-  subtype_mk .encode
+  subtype_mk .encode (hp := Primcodable.mem_range_encode)
 
 theorem ulower_up : Primrec (ULower.up : ULower α → α) :=
   letI : ∀ a, Decidable (a ∈ Set.range (encode : α → ℕ)) := decidableRangeEncode _
-  option_get (Primrec.decode₂.comp subtype_val)
+  option_get (Primrec.decode₂.comp (subtype_val (hp := Primcodable.mem_range_encode)))
 
 theorem fin_val_iff {n} {f : α → Fin n} : (Primrec fun a => (f a).1) ↔ Primrec f := by
   letI : Primcodable { a // a < n } := Primcodable.subtype (nat_lt.comp .id (const _))

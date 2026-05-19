@@ -119,7 +119,7 @@ omit [Countable ι] in
 theorem hasSum_integral_measure (hf : Integrable f (Measure.sum μ)) :
     HasSum (fun i ↦ ∫ x, f x ∂μ i) (∫ x, f x ∂Measure.sum μ) := by
   have hfi : ∀ i, Integrable f (μ i) := fun i ↦ hf.mono_measure (Measure.le_sum _ _)
-  simp only [HasSum, ← integral_finset_sum_measure fun i _ ↦ hfi i]
+  simp only [HasSum, ← integral_finsetSum_measure fun i _ ↦ hfi i]
   refine Metric.nhds_basis_ball.tendsto_right_iff.mpr fun ε ε0 ↦ ?_
   lift ε to ℝ≥0 using ε0.le
   have hf_lt : (∫⁻ x, ‖f x‖ₑ ∂Measure.sum μ) < ∞ := hf.2
@@ -133,7 +133,7 @@ theorem hasSum_integral_measure (hf : Integrable f (Measure.sum μ)) :
   rw [Metric.mem_ball, ← coe_nndist, NNReal.coe_lt_coe, ← ENNReal.coe_lt_coe, ← hν]
   rw [← hν, integrable_add_measure] at hf
   refine (nndist_integral_add_measure_le_lintegral hf.1 hf.2).trans_lt ?_
-  rw [← hν, lintegral_add_measure, lintegral_finset_sum_measure] at hs
+  rw [← hν, lintegral_add_measure, lintegral_finsetSum_measure] at hs
   exact lt_of_add_lt_add_left hs
 
 omit [Countable ι] in
@@ -159,7 +159,7 @@ lemma integral_sum_dirac [FiniteDimensional ℝ E] (hc : ∀ i, c i ≠ ∞) :
 lemma hasSum_integral_sum_dirac [CompleteSpace E] (hc : ∀ i, c i ≠ ∞)
     (hf : Summable (fun i ↦ (c i).toReal * ‖f (x i)‖)) :
     HasSum (fun i ↦ (c i).toReal • f (x i))
-      (∫ x, f x ∂Measure.sum (fun i ↦ (c i) • .dirac (x i)))  := by
+      (∫ x, f x ∂Measure.sum (fun i ↦ (c i) • .dirac (x i))) := by
   simpa using hasSum_integral_measure (integrable_sum_dirac hc hf)
 
 /-- If the sequence `fun i ↦ (c i).toReal * ‖f (x i)‖` is summable, then

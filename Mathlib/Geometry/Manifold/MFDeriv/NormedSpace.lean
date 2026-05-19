@@ -5,6 +5,7 @@ Authors: Sébastien Gouëzel, Floris van Doorn
 -/
 module
 
+public import Mathlib.Geometry.Manifold.Algebra.SMul
 public import Mathlib.Geometry.Manifold.ContMDiff.NormedSpace
 public import Mathlib.Geometry.Manifold.MFDeriv.SpecificFunctions
 
@@ -17,7 +18,7 @@ differentiability.
 
 In addition to the above, this file provides
 * results about the differentiability of scalar multiplication (`mfderiv_smul` and friends), and
-* `extDerivFun`: the exterior derivative of a scalar function, as a section of the cotangent bundle
+* `mvfderiv`: the exterior derivative of a scalar function, as a section of the cotangent bundle
 
 -/
 
@@ -83,7 +84,7 @@ theorem Differentiable.comp_mdifferentiable {g : F → F'} {f : M → F}
 
 end Module
 
-section ExtChartAt
+section extChartAt
 
 variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F] {f : M → F}
 
@@ -101,7 +102,7 @@ theorem DifferentiableWithinAt.mdifferentiableWithinAt_of_comp_extChartAt_symm [
   refine (mdifferentiableWithinAt_iff_source_of_mem_source (mem_chart_source H x)).2 ?_
   simpa [extChartAt_self_eq] using hf.mdifferentiableWithinAt
 
-end ExtChartAt
+end extChartAt
 
 /-! ### Linear maps between normed spaces are differentiable -/
 
@@ -277,7 +278,7 @@ lemma HasMFDerivAt.smul
     letI g'_ : TangentSpace I x →L[𝕜] TangentSpace 𝓘(𝕜, V) ((f • g) x) :=
       (fromTangentSpace _).symm.toContinuousLinearMap ∘L g'
     -- canonically identify `g x` with a linear map into a tangent space at `(f • g) x`
-    letI gx :  𝕜 →L[𝕜] TangentSpace 𝓘(𝕜, V) ((f • g) x) :=
+    letI gx : 𝕜 →L[𝕜] TangentSpace 𝓘(𝕜, V) ((f • g) x) :=
       toSpanSingleton 𝕜 ((fromTangentSpace _).symm (g x))
     -- now the main statement typechecks
     HasMFDerivAt% (f • g) x (f x • g'_ + gx ∘L f') := by
@@ -395,23 +396,34 @@ lemma fromTangentSpace_mfderiv_smul_apply' (hf : MDiffAt f x) (hg : MDiffAt g x)
 
 end smul
 
-/-! ### Exterior derivative of a scalar function -/
+/-! ### Exterior derivative of a vector-valued function -/
 
-/-- The exterior derivative of a scalar function on `M`, as a section of the cotangent bundle. -/
-noncomputable abbrev extDerivFun (g : M → 𝕜) :
-    Π x : M, TangentSpace I x →L[𝕜] 𝕜 :=
+variable (I) in
+/-- The exterior derivative of a vector-valued function on `M`,
+as a section of the cotangent bundle.
+
+Future: this could be generalised to functions into additive torsors over abelian Lie groups.
+-/
+noncomputable abbrev mvfderiv (g : M → F) :
+    Π x : M, TangentSpace I x →L[𝕜] F :=
   fun x ↦ (NormedSpace.fromTangentSpace <| g x).toContinuousLinearMap ∘L (mfderiv% g x)
 
-@[simp]
-lemma extDerivFun_add {g g' : M → 𝕜} {x : M} (hg : MDiffAt g x) (hg' : MDiffAt g' x) :
-    extDerivFun (g + g') x = extDerivFun (I := I) g x + extDerivFun g' x := by
-  simp [extDerivFun, mfderiv_add hg hg']
-  congr
+@[deprecated (since := "2026-05-17")] alias extDerivFun := mvfderiv
 
 @[simp]
-lemma extDerivFun_zero {x : M} : extDerivFun (I := I) (0 : M → 𝕜) x = 0 := by
-  have : extDerivFun (0 : M → 𝕜) x + extDerivFun (0 : M → 𝕜) x =
-      extDerivFun (I := I) (0 : M → 𝕜) x := by
-    rw [← extDerivFun_add (by exact mdifferentiable_const ..) (by exact mdifferentiable_const ..)]
+lemma mvfderiv_add {g g' : M → F} {x : M} (hg : MDiffAt g x) (hg' : MDiffAt g' x) :
+    mvfderiv I (g + g') x = mvfderiv I g x + mvfderiv I g' x := by
+  simp [mvfderiv, mfderiv_add hg hg']
+  congr
+
+@[deprecated (since := "2026-05-17")] alias extDerivFun_add := mvfderiv_add
+
+@[simp]
+lemma mvfderiv_zero {x : M} : mvfderiv (I := I) (0 : M → F) x = 0 := by
+  have : mvfderiv I (0 : M → F) x + mvfderiv I (0 : M → F) x =
+      mvfderiv I (0 : M → F) x := by
+    rw [← mvfderiv_add (by exact mdifferentiable_const ..) (by exact mdifferentiable_const ..)]
     simp
   simpa using this
+
+@[deprecated (since := "2026-05-17")] alias extDerivFun_zero := mvfderiv_zero

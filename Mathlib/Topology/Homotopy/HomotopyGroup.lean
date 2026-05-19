@@ -597,7 +597,8 @@ theorem inv_spec [Nonempty N] {i} {p : Ω^ N X x} :
   In particular, multiplication on `π_(n+2)` is commutative. -/
 instance commGroup [Nontrivial N] : CommGroup (HomotopyGroup N X x) :=
   let h := exists_ne (Classical.arbitrary N)
-  @EckmannHilton.commGroup (HomotopyGroup N X x) _ 1 (isUnital_auxGroup <| Classical.choose h) _
+  fast_instance% @EckmannHilton.commGroup (HomotopyGroup N X x) _ 1
+    (isUnital_auxGroup <| Classical.choose h) _
     (by
       rintro ⟨a⟩ ⟨b⟩ ⟨c⟩ ⟨d⟩
       apply congr_arg Quotient.mk'

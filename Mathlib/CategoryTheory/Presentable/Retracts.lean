@@ -13,7 +13,7 @@ public import Mathlib.CategoryTheory.ObjectProperty.Retract
 
 -/
 
-@[expose] public section
+public section
 
 universe w v u
 
