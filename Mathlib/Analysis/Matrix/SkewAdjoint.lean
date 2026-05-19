@@ -27,7 +27,7 @@ theorem im_smul_hermitian_mem_skewAdjoint (x : ℝ) (h : M.IsHermitian) :
   simp [skewAdjoint.mem_iff, h.isSelfAdjoint.star_eq]
 
 /-- If `M` is Hermitian, then multiplying `M` by an imaginary scalar `Complex.I * x` will result in
-a self-adjoint matrix `(Complex.I * x) • M`. -/ 
+a self-adjoint matrix `(Complex.I * x) • M`. -/
 theorem im_smul_skewAdjoint_isHermitian (x : ℝ) (h : M ∈ skewAdjoint (Matrix n n ℂ)) :
     ((Complex.I * x) • M).IsHermitian := by
   simp [Matrix.IsHermitian, skewAdjoint.mem_iff.mp h, ←Matrix.star_eq_conjTranspose]
