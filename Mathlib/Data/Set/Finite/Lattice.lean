@@ -266,6 +266,7 @@ theorem eq_finite_iUnion_of_finite_subset_iUnion {ι} {s : ι → Set α} {t : S
 
 variable {s t : Set α}
 
+set_option backward.isDefEq.respectTransparency false in
 theorem infinite_iUnion {ι : Type*} [Infinite ι] {s : ι → Set α} (hs : Function.Injective s) :
     (⋃ i, s i).Infinite :=
   fun hfin ↦ @not_injective_infinite_finite ι _ _ hfin.finite_subsets.to_subtype
