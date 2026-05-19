@@ -77,7 +77,7 @@ theorem InftyValuation.map_add_le_max' (x y : RatFunc F) :
       conv_rhs => rw [max_comm, inftyValuationDef, if_pos (Eq.refl _)]
       rw [max_eq_right (WithZero.zero_le (inftyValuationDef F x))]
     · by_cases hxy : x + y = 0
-      · rw [inftyValuationDef, if_pos hxy]; exact zero_le'
+      · rw [inftyValuationDef, if_pos hxy]; exact zero_le
       · rw [inftyValuationDef, inftyValuationDef, inftyValuationDef, if_neg hx, if_neg hy,
           if_neg hxy]
         simpa using RatFunc.intDegree_add_le hy hxy

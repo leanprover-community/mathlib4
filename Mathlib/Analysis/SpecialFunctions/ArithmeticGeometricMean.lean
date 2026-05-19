@@ -38,7 +38,7 @@ lemma sqrt_mul_lt_half_add_of_ne {x y : ℝ≥0} (h : x ≠ y) : sqrt (x * y) < 
   wlog hl : y < x generalizing x y
   · specialize this h.symm (h.gt_or_lt.resolve_left hl)
     rwa [mul_comm, add_comm]
-  have key : 0 < (x - y) ^ 2 := sq_pos_iff.mpr (by rwa [← zero_lt_iff, tsub_pos_iff_lt])
+  have key : 0 < (x - y) ^ 2 := sq_pos_iff.mpr (by rwa [← pos_iff_ne_zero, tsub_pos_iff_lt])
   rw [sq, tsub_mul, mul_tsub, mul_tsub, tsub_tsub_eq_add_tsub_of_le (by gcongr),
     tsub_add_eq_add_tsub (by gcongr), tsub_tsub, show x * y + y * x = 2 * x * y by ring,
     tsub_pos_iff_lt, ← sq, ← sq] at key

@@ -191,7 +191,7 @@ private theorem Polynomial.flt_catalan_aux
         lia
       · rw [eq_a, eq_b, eq_c, ← expand_C ch u, ← expand_C ch v, ← expand_C ch w] at heq
         simp_rw [← map_pow, ← map_mul, ← map_add] at heq
-        rwa [Polynomial.expand_eq_zero (zero_lt_iff.mpr chn0)] at heq
+        rwa [Polynomial.expand_eq_zero chn0.pos] at heq
 
 /-- Nonsolvability of the Fermat-Catalan equation. -/
 theorem Polynomial.flt_catalan

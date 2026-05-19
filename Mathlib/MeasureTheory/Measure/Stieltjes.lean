@@ -288,7 +288,7 @@ theorem length_empty : f.length ∅ = 0 := by
   · simp [length_eq_of_isEmpty]
   inhabit R
   rw [length_eq]
-  exact nonpos_iff_eq_zero.1 <| iInf_le_of_le default <| iInf_le_of_le default <| by simp
+  exact eq_zero_of_nonpos <| iInf_le_of_le default <| iInf_le_of_le default <| by simp
 
 @[simp]
 theorem length_Ioc (a b : R) : f.length (Ioc a b) = ofReal (f b - f a) := by

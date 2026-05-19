@@ -365,9 +365,7 @@ theorem norm_iteratedFDerivWithin_comp_le_aux {Fu Gu : Type u} [NormedAddCommGro
   | hi n IH =>
   have M : (n : ℕ∞ω) < n.succ := Nat.cast_lt.2 n.lt_succ_self
   have Cnonneg : 0 ≤ C := (norm_nonneg _).trans (hC 0 bot_le)
-  have Dnonneg : 0 ≤ D := by
-    have : 1 ≤ n + 1 := by simp only [le_add_iff_nonneg_left, zero_le']
-    simpa only [pow_one] using (norm_nonneg _).trans (hD 1 le_rfl this)
+  have Dnonneg : 0 ≤ D := by simpa using (norm_nonneg _).trans (hD 1 le_rfl le_add_self)
   -- use the inductive assumption to bound the derivatives of `g' ∘ f`.
   have I : ∀ i ∈ Finset.range (n + 1),
       ‖iteratedFDerivWithin 𝕜 i (fderivWithin 𝕜 g t ∘ f) s x‖ ≤ i ! * C * D ^ i := by

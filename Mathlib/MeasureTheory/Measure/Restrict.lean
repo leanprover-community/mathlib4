@@ -654,7 +654,7 @@ theorem ae_restrict_of_ae_restrict_of_subset {s t : Set α} {p : α → Prop} (h
 
 theorem ae_of_ae_restrict_of_ae_restrict_compl (t : Set α) {p : α → Prop}
     (ht : ∀ᵐ x ∂μ.restrict t, p x) (htc : ∀ᵐ x ∂μ.restrict tᶜ, p x) : ∀ᵐ x ∂μ, p x :=
-  nonpos_iff_eq_zero.1 <|
+  eq_zero_of_nonpos <|
     calc
       μ { x | ¬p x } ≤ μ ({ x | ¬p x } ∩ t) + μ ({ x | ¬p x } ∩ tᶜ) :=
         measure_le_inter_add_diff _ _ _

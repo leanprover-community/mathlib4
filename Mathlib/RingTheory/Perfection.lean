@@ -584,8 +584,7 @@ theorem preVal_add (x y : ModP O p) :
   rw [preVal_mk hv hx0, preVal_mk hv hy0, preVal_mk hv hxy0, map_add]; exact v.map_add _ _
 
 theorem v_p_lt_preVal {x : ModP O p} : v p < preVal K v O p x ↔ x ≠ 0 := by
-  refine ⟨fun h hx => by rw [hx, preVal_zero] at h; exact not_lt_zero' h,
-    fun h => lt_of_not_ge fun hp => h ?_⟩
+  refine ⟨fun h hx => by simp [hx] at h, fun h => lt_of_not_ge fun hp => h ?_⟩
   obtain ⟨r, rfl⟩ := Ideal.Quotient.mk_surjective x
   rw [preVal_mk hv h, ← map_natCast (algebraMap O K) p, hv.le_iff_dvd] at hp
   · rw [Ideal.Quotient.eq_zero_iff_mem, Ideal.mem_span_singleton]; exact hp
@@ -594,7 +593,7 @@ theorem preVal_eq_zero {x : ModP O p} : preVal K v O p x = 0 ↔ x = 0 :=
   ⟨fun hvx =>
     by_contradiction fun hx0 : x ≠ 0 => by
       rw [← v_p_lt_preVal (hv := hv), hvx] at hx0
-      exact not_lt_zero' hx0,
+      exact hx0.pos.false,
     fun hx => hx.symm ▸ preVal_zero⟩
 
 theorem v_p_lt_val {x : O} :
@@ -616,10 +615,9 @@ theorem mul_ne_zero_of_pow_p_ne_zero {x y : ModP O p} (hx : x ^ p ≠ 0) (hy : y
   rw [← v_p_lt_val hv] at hx hy ⊢
   rw [map_pow, v.map_pow, ← rpow_lt_rpow_iff h1p, ← rpow_natCast, ← rpow_mul,
     mul_one_div_cancel (Nat.cast_ne_zero.2 hp.1.ne_zero : (p : ℝ) ≠ 0), rpow_one] at hx hy
-  rw [map_mul, v.map_mul]; refine lt_of_le_of_lt ?_ (mul_lt_mul'' hx hy zero_le' zero_le')
-  by_cases hvp : v p = 0
+  rw [map_mul, v.map_mul]; refine lt_of_le_of_lt ?_ (mul_lt_mul'' hx hy zero_le zero_le)
+  obtain hvp | hvp := eq_zero_or_pos (v p)
   · rw [hvp]; exact zero_le
-  replace hvp := zero_lt_iff.2 hvp
   conv_lhs => rw [← rpow_one (v p)]
   rw [← rpow_add (ne_of_gt hvp)]
   refine rpow_le_rpow_of_exponent_ge hvp (map_natCast (algebraMap O K) p ▸ hv.2 _) ?_

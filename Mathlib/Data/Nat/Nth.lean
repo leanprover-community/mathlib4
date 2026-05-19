@@ -242,7 +242,7 @@ theorem nth_eq_zero {n} :
     nth p n = 0 ↔ p 0 ∧ n = 0 ∨ ∃ hf : (setOf p).Finite, #hf.toFinset ≤ n := by
   refine ⟨fun h => ?_, ?_⟩
   · simp only [or_iff_not_imp_right, not_exists, not_le]
-    exact fun hn => ⟨h ▸ nth_mem _ hn, nonpos_iff_eq_zero.1 <| h ▸ le_nth hn⟩
+    exact fun hn => ⟨h ▸ nth_mem _ hn, (h ▸ le_nth hn).eq_zero⟩
   · rintro (⟨h₀, rfl⟩ | ⟨hf, hle⟩)
     exacts [nth_zero_of_zero h₀, nth_of_card_le hf hle]
 

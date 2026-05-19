@@ -141,7 +141,7 @@ theorem intValuation.map_add_le_max' (x y : R) :
     · rw [hy, add_zero]
       order
     · by_cases hxy : x + y = 0
-      · rw [intValuationDef, if_pos hxy]; exact zero_le'
+      · rw [intValuationDef, if_pos hxy]; exact zero_le
       · rw [v.intValuationDef_if_neg hxy, v.intValuationDef_if_neg hx, v.intValuationDef_if_neg hy,
           le_max_iff]
         simp only [exp_le_exp, neg_le_neg_iff, Nat.cast_le, ← min_le_iff]
@@ -216,11 +216,9 @@ theorem intValuation_lt_one_iff_dvd (r : R) :
   by_cases hr : r = 0
   · simp [hr]
   · rw [v.intValuation_if_neg hr, ← exp_zero, exp_lt_exp,
-      neg_lt_zero, ← Int.ofNat_zero, Int.ofNat_lt, zero_lt_iff]
-    have h : (Ideal.span {r} : Ideal R) ≠ 0 := by
-      rw [Ne, Ideal.zero_eq_bot, Ideal.span_singleton_eq_bot]
-      exact hr
-    exact Associates.count_ne_zero_iff_dvd h v.irreducible
+      neg_lt_zero, ← Int.ofNat_zero, Int.ofNat_lt, pos_iff_ne_zero]
+    apply Associates.count_ne_zero_iff_dvd _ v.irreducible
+    rwa [Ne, Ideal.zero_eq_bot, Ideal.span_singleton_eq_bot]
 
 /-- The `v`-adic valuation of `r : R` is less than 1 if and only if `r ∈ v`. -/
 theorem intValuation_lt_one_iff_mem (r : R) :
@@ -236,9 +234,8 @@ theorem intValuation_eq_one_iff_mem_primeCompl (r : R) :
 `vⁿ` divides the ideal `(r)`. -/
 theorem intValuation_le_pow_iff_dvd (r : R) (n : ℕ) :
     v.intValuation r ≤ exp (-(n : ℤ)) ↔ v.asIdeal ^ n ∣ Ideal.span {r} := by
-  classical
-  by_cases hr : r = 0
-  · simp_rw [hr, Valuation.map_zero, Ideal.dvd_span_singleton, zero_le', Submodule.zero_mem]
+  obtain rfl | hr := eq_or_ne r 0
+  · simp
   · rw [v.intValuation_if_neg hr, exp_le_exp, neg_le_neg_iff, Int.ofNat_le,
       Ideal.dvd_span_singleton, ← Associates.le_singleton_iff,
       Associates.prime_pow_dvd_iff_le (Associates.mk_ne_zero'.mpr hr) v.associates_irreducible]

@@ -424,7 +424,7 @@ lemma getElem_alternatingWord (i j : B) (p k : ℕ) (hk : k < p) :
     (alternatingWord i j p)[k]'(by simp [hk]) = (if Even (p + k) then i else j) := by
   revert k
   induction p with
-  | zero => grind [not_lt_zero']
+  | zero => grind [not_lt_zero]
   | succ n h => grind [CoxeterSystem.alternatingWord_succ']
 
 lemma getElem_alternatingWord_swapIndices (i j : B) (p k : ℕ) (h : k + 1 < p) :
