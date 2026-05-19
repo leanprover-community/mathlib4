@@ -35,7 +35,7 @@ noncomputable def koszulComplexAuxAlternating (n : ℕ) :
 lemma koszulComplexAuxAlternating_apply (n : ℕ) (x : Fin (n + 1) → M) :
     koszulComplexAuxAlternating φ n x =
       ∑ i : Fin (n + 1),
-        ((-1 : R) ^ (i : ℕ) * φ (x i)) • exteriorPower.ιMulti R n (x ∘ i.succAbove) := by
+        ((-1 : R) ^ (i : ℕ) * φ (x i)) • exteriorPower.ιMulti R n (i.removeNth x) := by
   rw [koszulComplexAuxAlternating, AlternatingMap.alternatizeUncurryFin_apply]
   refine Finset.sum_congr rfl ?_
   intro i _
@@ -78,7 +78,9 @@ noncomputable def koszulComplex : ChainComplex (ModuleCat R) ℕ :=
     (fun n ↦ ModuleCat.ofHom (koszulComplexAux φ n))
     (fun n ↦ by simp [← ModuleCat.ofHom_comp, koszulComplexAux_comp_eq_zero])
 
-theorem d_eq_koszulComplexAux (i : ℕ) :
+lemma X_eq_exteriorPower (i : ℕ) : (koszulComplex φ).X i = ModuleCat.of R (⋀[R]^i M) := rfl
+
+lemma d_eq_koszulComplexAux (i : ℕ) :
     (koszulComplex φ).d (i + 1) i = ModuleCat.ofHom (koszulComplexAux φ i) := by
   simp [koszulComplex]
 
@@ -94,11 +96,59 @@ noncomputable def ofList (l : List R) := koszulComplex (Fintype.linearCombinatio
 
 section functoriality
 
+lemma mapAuxAlternating_apply (f : M →ₗ[R] N) (φ' : N →ₗ[R] R) (h : φ' ∘ₗ f = φ)
+    (i : ℕ) (v : Fin (i + 1) → M) :
+    ((koszulComplexAuxAlternating φ' i) (f ∘ v) : ⋀[R]^i N) =
+      exteriorPower.map i f ((koszulComplexAuxAlternating φ i) v) := by
+  calc
+    _ = ∑ x : Fin (i + 1), (-1) ^ (x : ℕ) • φ' (f (v x)) •
+          exteriorPower.ιMulti R i (x.removeNth (f ∘ v)) := by
+      simp [koszulComplexAuxAlternating, AlternatingMap.alternatizeUncurryFin_apply]
+    _ = ∑ x : Fin (i + 1), (-1) ^ (x : ℕ) • φ (v x) •
+          exteriorPower.ιMulti R i (f ∘ x.removeNth v) := by
+      refine Finset.sum_congr rfl (fun x hx ↦ ?_)
+      simp only [← h, LinearMap.coe_comp, Function.comp_apply]
+      rfl
+    _ = exteriorPower.map i f ((koszulComplexAuxAlternating φ i) v) := by
+      rw [koszulComplexAuxAlternating, AlternatingMap.alternatizeUncurryFin_apply]
+      simp [map_sum, map_smul, exteriorPower.map_apply_ιMulti]
+
+lemma map_aux_comm (f : M →ₗ[R] N) (φ' : N →ₗ[R] R) (h : φ' ∘ₗ f = φ) (i : ℕ) :
+    ModuleCat.ofHom (exteriorPower.map (i + 1) f) ≫ ModuleCat.ofHom (koszulComplexAux φ' i) =
+      ModuleCat.ofHom (koszulComplexAux φ i) ≫ ModuleCat.ofHom (exteriorPower.map i f) := by
+  ext v
+  simp [koszulComplexAux, mapAuxAlternating_apply (φ := φ) (f := f) (φ' := φ') h]
+
 noncomputable def map (f : M →ₗ[R] N) (φ' : N →ₗ[R] R) (h : φ' ∘ₗ f = φ) :
-    koszulComplex φ ⟶ koszulComplex φ' := sorry
+    koszulComplex φ ⟶ koszulComplex φ' :=
+  ChainComplex.ofHom
+    (fun i ↦ ModuleCat.ofHom (exteriorPower.map i f))
+    (fun i ↦ by simpa [d_eq_koszulComplexAux] using map_aux_comm φ f φ' h i)
+
+variable {L : Type v} [AddCommGroup L] [Module R L]
+
+variable {φ} in
+lemma map_comp_condition {f : M →ₗ[R] N} {φ' : N →ₗ[R] R} {g : N →ₗ[R] L} {φ'' : L →ₗ[R] R}
+    (h : φ' ∘ₗ f = φ) (h' : φ'' ∘ₗ g = φ') : φ'' ∘ₗ (g ∘ₗ f) = φ := by
+  simp [← h, ← h', LinearMap.comp_assoc]
+
+lemma map_comp (f : M →ₗ[R] N) (φ' : N →ₗ[R] R) (g : N →ₗ[R] L) (φ'' : L →ₗ[R] R)
+    (h : φ' ∘ₗ f = φ) (h' : φ'' ∘ₗ g = φ') :
+    koszulComplex.map φ f φ' h ≫ koszulComplex.map φ' g φ'' h' =
+      koszulComplex.map φ (g ∘ₗ f) φ'' (map_comp_condition h h') := by
+  ext i x
+  simp [map, X_eq_exteriorPower, exteriorPower.map_comp]
 
 noncomputable def isoOfEquiv (f : M ≃ₗ[R] N) (φ' : N →ₗ[R] R) (h : φ' ∘ₗ f = φ) :
-    koszulComplex φ ≅ koszulComplex φ' := sorry
+    koszulComplex φ ≅ koszulComplex φ' where
+  hom := koszulComplex.map φ f φ' h
+  inv := koszulComplex.map φ' f.symm φ ((f.comp_toLinearMap_symm_eq φ' φ).mpr h.symm)
+  hom_inv_id := by
+    ext i x
+    simp [map, X_eq_exteriorPower, ← exteriorPower.map_comp]
+  inv_hom_id := by
+    ext i x
+    simp [map, X_eq_exteriorPower, ← exteriorPower.map_comp]
 
 end functoriality
 
@@ -108,13 +158,10 @@ noncomputable def XZeroLinearEquivRing : (koszulComplex φ).X 0 ≃ₗ[R] R :=
   exteriorPower.zeroEquiv R M
 
 set_option backward.isDefEq.respectTransparency false in
-lemma X_isZero_of_card_generators_le {ι : Type*} [Finite ι] (g : ι → M)
+lemma X_isZero_of_card_generators_le {ι : Type*} [Finite ι] [LinearOrder ι] (g : ι → M)
     (hg : Submodule.span R (Set.range g) = ⊤) (i : ℕ) (hi : Nat.card ι < i) :
-    IsZero ((koszulComplex φ).X i) := by
-  have hIsZero : IsZero (ModuleCat.of R (⋀[R]^i M)) := by
-    apply ModuleCat.isZero_of_iff_subsingleton.mpr
-    sorry
-  simpa [koszulComplex, ModuleCat.exteriorPower] using hIsZero
+    IsZero ((koszulComplex φ).X i) :=
+  ModuleCat.isZero_of_iff_subsingleton.mpr (subsingleton_of_card_generators_le R M g hg i hi)
 
 lemma ofList_X_isZero_of_length_le (l : List R) (i : ℕ) (hi : l.length < i) :
     IsZero ((ofList l).X i) := X_isZero_of_card_generators_le _
