@@ -95,6 +95,7 @@ lemma bijective_algebraMap_quotient [Algebra.IsFiniteSplit k R] (p : Ideal R) [p
       (Function.surjective_eval _)
   simpa [← g.symm.toAlgHom.comp_algebraMap] using g.symm.bijective
 
+set_option backward.isDefEq.respectTransparency false in
 variable (k R) in
 /-- If `R` is finite split over a field `k`, the `k`-rational points of `R`
 are in one-to-one correspondence with its prime spectrum. -/
@@ -116,7 +117,7 @@ def algHomEquivPrimeSpectrum [Algebra.IsFiniteSplit k R] : (R →ₐ[k] k) ≃ P
   right_inv p := by
     ext : 1
     dsimp
-    rw [← AlgHom.comap_ker, ← RingHom.ker_coe_toRingHom, AlgHomClass.toRingHom_toAlgHom,
+    rw [← AlgHom.comap_ker, ← RingHom.ker_coe_toRingHom, AlgEquiv.toAlgHom_toRingHom,
       AlgHom.ker_coe_equiv, ← RingHom.ker_eq_comap_bot, ← RingHom.ker_coe_toRingHom,
       Ideal.Quotient.mkₐ_ker]
 
