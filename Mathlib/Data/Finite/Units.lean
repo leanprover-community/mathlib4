@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.GroupWithZero.Units.Equiv
 public import Mathlib.Data.Finite.Subtype
-public import Mathlib
 
 /-!
 # `Finite`ness conditions for `Units` of `GroupWithZero`
