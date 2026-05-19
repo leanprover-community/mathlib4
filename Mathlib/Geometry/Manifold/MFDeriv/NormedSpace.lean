@@ -540,7 +540,13 @@ scoped elab:max "d[" s:term "]" ppSpace t:term:arg : term => do
   let (srcI, _tgtI) ← findModels e none
   mkAppM ``mvfderivWithin #[srcI, e, es]
 
-/-- `d% f x` (scoped to the `Manifold` namespace) elaborates to `mvfderiv I J f x`,
+-- Options for this case
+-- * doc-string for Y is "given text" prepended to the doc-string of X
+-- * hover is able to recursively specify
+-- * toss the hover information to the infoview (where we can recursively specify)
+set_option doc.verso true in
+/-- Given {given}`f` and {given}`x`,
+`d% f x` (scoped to the {lit}`Manifold` namespace) elaborates to {name}`mvfderiv`,
 trying to determine `I` and `J` from the local context. -/
 scoped elab:max "d%" ppSpace t:term:arg : term => do
   let e ← ensureIsFunction <| ← Term.elabTerm t none
