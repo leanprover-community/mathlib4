@@ -27,15 +27,14 @@ section FindHome
 -- provide the argument from Bourbaki, which may be a simple substitution without induction.
 -- Maybe the following will help...
 
-variable {n : ℕ}
-
+/- This may be tricky, because it's for `Fin` and not a `Fintype`. -/
 lemma Fin.sum_even_odd {n : ℕ} [NeZero n] {f : Fin n → ℤ} :
   ∑ i, f i =
     ∑ (i : Fin ((Nat.floor ((n - 1) / 2)))), f (Fin.ofNat n (2 * i + 1))
     + ∑ (i : Fin (Nat.floor (n / 2))), f (Fin.ofNat n (2 * i)) := by sorry
 
-/- Needs golf, but I think this will work. -/
-example {n : ℕ} [NeZero n] {f : Fin n → ℤ}
+/- Needs golf and a correct name, but I think this will work. -/
+lemma alt_sum_eq_zero_of_sum_even_eq_sum_odd {n : ℕ} [NeZero n] {f : Fin n → ℤ}
   (hf : ∑ (i : Fin ((Nat.floor ((n - 1) / 2)))), f (Fin.ofNat n (2 * i + 1))
     = ∑ (i : Fin (Nat.floor (n / 2))), f (Fin.ofNat n (2 * i))) :
       ∑ i, (-1) ^ (i.val) * f i = 0 := by
@@ -62,6 +61,20 @@ example {n : ℕ} [NeZero n] {f : Fin n → ℤ}
    simp only [Int.reduceNeg, Nat.floor_nat, id_eq, even_two, Even.mul_right, Even.neg_pow, one_pow]
   simp only [Int.reduceNeg, h_odd, neg_mul, one_mul, Finset.sum_neg_distrib, h_even]
   simp_all only [Nat.floor_nat, id_eq, Fin.ofNat_eq_cast, Int.reduceNeg, neg_add_cancel]
+
+open Function Module in
+lemma Module.sum_neg_one_pow_finrank_eq_zero_of_exact' {n : ℕ} {k : Type*}
+    (V : Fin (n + 3) → Type*) [Field k] [∀ i, AddCommGroup (V i)] [∀ i, Module k (V i)]
+    [∀ i, FiniteDimensional k (V i)] (f : (i : Fin (n + 2)) → V i.castSucc →ₗ[k] V i.succ)
+    (inj : Injective (f 0)) (h_exact : ∀ i : Fin (n + 1), Exact (f i.castSucc) (f i.succ))
+    (surj : Surjective (f (Fin.last _))) :
+    ∑ i, (-1) ^ i.val • (finrank k (V i) : ℤ) = 0 := by
+  apply alt_sum_eq_zero_of_sum_even_eq_sum_odd
+  -- Module.length_eq_add_of_exact (f 0) (f 1) inj surj (h_exact 1) --need to use this move to
+  -- replace the terms in the sum with sums. Not sure how to deal with inj and surj here.
+  -- It may be necessary to prove an exactness statment for vector spaces particularly so
+  -- as to avoid this inj and surj?
+  sorry
 
 -- I do think we need to begin with a three term exact sequence for this, since even
 -- Bourbaki derives the result as a corollary of Rank-Nullity. I've started the ball
