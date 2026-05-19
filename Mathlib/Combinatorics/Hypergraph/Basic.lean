@@ -229,7 +229,8 @@ alias ⟨_, IsEmpty.not_isNonempty⟩ := not_isNonempty
 alias ⟨_, IsNonempty.not_isEmpty⟩ := not_isEmpty_iff
 
 variable (H) in
-lemma isEmpty_or_isNonempty : H.IsEmpty ∨ H.IsNonempty := by grind [IsEmpty, IsNonempty, Set.Nonempty]
+lemma isEmpty_or_isNonempty : H.IsEmpty ∨ H.IsNonempty := by
+  grind [IsEmpty, IsNonempty, Set.Nonempty]
 
 /-- A hypergraph is trivial if it has at least one vertex but no edges. -/
 def IsTrivial (H : Hypergraph α) : Prop := Set.Nonempty V(H) ∧ E(H) = ∅
