@@ -20,6 +20,49 @@ public import Mathlib.RingTheory.Length
 
 section FindHome
 
+-- Ok. What Bourbaki does suggests an interesting alternative approach. If we can show
+-- that the sum of absolute values of even terms equals the sum of absolute value of odd terms
+--  then the
+-- alternating sum of the terms is zero (of course for finite sums), then it will be enough to
+-- provide the argument from Bourbaki, which may be a simple substitution without induction.
+-- Maybe the following will help...
+
+variable {n : ℕ}
+
+lemma Fin.sum_even_odd {n : ℕ} [NeZero n] {f : Fin n → ℤ} :
+  ∑ i, f i =
+    ∑ (i : Fin ((Nat.floor ((n - 1) / 2)))), f (Fin.ofNat n (2 * i + 1))
+    + ∑ (i : Fin (Nat.floor (n / 2))), f (Fin.ofNat n (2 * i)) := by sorry
+
+/- Needs golf, but I think this will work. -/
+example {n : ℕ} [NeZero n] {f : Fin n → ℤ}
+  (hf : ∑ (i : Fin ((Nat.floor ((n - 1) / 2)))), f (Fin.ofNat n (2 * i + 1))
+    = ∑ (i : Fin (Nat.floor (n / 2))), f (Fin.ofNat n (2 * i))) :
+      ∑ i, (-1) ^ (i.val) * f i = 0 := by
+  rw [Fin.sum_even_odd]
+  simp only [Nat.floor_nat, id_eq, Int.reduceNeg, Fin.ofNat_eq_cast, Fin.val_natCast]
+  have h_odd (x : Fin (Nat.floor ((n - 1) / 2))) : (-1) ^ ((2 * x + 1) % n) = -1 := by
+    simp only [Int.reduceNeg, Nat.floor_nat, id_eq]
+    have : (2 * x + 1) % n = ((2 * x + 1) : ℕ) := by
+      refine Nat.mod_eq_of_lt ?_
+      have : x < (n - 1) / 2 := x.isLt
+      grind
+    rw [this]
+    simp only [Int.reduceNeg, Nat.floor_nat, id_eq]
+    have : Odd (2 * (x : ℕ) + 1) := by
+      simp only [Nat.floor_nat, id_eq, even_two, Even.mul_right, Even.add_one]
+    exact Odd.neg_one_pow this
+  have h_even (x : Fin (Nat.floor (n / 2))) : (-1) ^ (2 * x % n) = 1 := by
+   simp only [Int.reduceNeg, Nat.floor_nat, id_eq]
+   have : (2 * x) % n = (2 * x : ℕ) := by
+     refine Nat.mod_eq_of_lt ?_
+     have : x < n / 2 := x.isLt
+     grind
+   rw [this]
+   simp only [Int.reduceNeg, Nat.floor_nat, id_eq, even_two, Even.mul_right, Even.neg_pow, one_pow]
+  simp only [Int.reduceNeg, h_odd, neg_mul, one_mul, Finset.sum_neg_distrib, h_even]
+  simp_all only [Nat.floor_nat, id_eq, Fin.ofNat_eq_cast, Int.reduceNeg, neg_add_cancel]
+
 -- I do think we need to begin with a three term exact sequence for this, since even
 -- Bourbaki derives the result as a corollary of Rank-Nullity. I've started the ball
 -- rolling on this. I'd be delighted to be proven wrong by splitting of the zero case
