@@ -132,9 +132,10 @@ noncomputable def directImageCofork {M N : Monad C} (φ : M ⟶ N) (c : M.Algebr
 theorem hasPBW_iff {M N : Monad C} (φ : M ⟶ N) [HasReflexiveCoequalizers (Algebra N)] :
     HasPBW φ ↔ (inducedRightModule φ).IsFree := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · obtain ⟨X, h⟩ := h
+  · obtain ⟨X, ⟨iso⟩⟩ := h
     sorry
-  · sorry
+  · obtain ⟨X, ⟨iso⟩⟩ := h
+    sorry
 
 end Monad
 
