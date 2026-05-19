@@ -141,7 +141,7 @@ end SqStruct
 @[simps]
 def sqFunctor : Jᵒᵖ ⥤ Type _ where
   obj j := SqStruct c p f g j.unop
-  map α := TypeCat.ofHom (fun sq' ↦ sq'.map α.unop)
+  map α := ↾fun sq' ↦ sq'.map α.unop
 
 variable [F.IsWellOrderContinuous]
 
@@ -264,6 +264,8 @@ instance isStableUnderTransfiniteCompositionOfShape_llp :
   exact (MorphismProperty.arrow_mk_iso_iff _
     (Arrow.isoMk h.isoBot.symm (Iso.refl _))).2 this
 
+instance : MorphismProperty.IsStableUnderTransfiniteComposition.{w} W.llp where
+
 lemma transfiniteCompositionsOfShape_le_llp_rlp :
     W.transfiniteCompositionsOfShape J ≤ W.rlp.llp := by
   have := W.rlp.isStableUnderTransfiniteCompositionOfShape_llp J
@@ -288,7 +290,7 @@ lemma transfiniteCompositions_le_llp_rlp :
 
 lemma transfiniteCompositions_pushouts_coproducts_le_llp_rlp :
     (transfiniteCompositions.{w} (coproducts.{w} W).pushouts) ≤ W.rlp.llp := by
-  simpa using transfiniteCompositions_le_llp_rlp (coproducts.{w} W).pushouts
+  simpa using transfiniteCompositions_le_llp_rlp.{w} (coproducts.{w} W).pushouts
 
 lemma retracts_transfiniteComposition_pushouts_coproducts_le_llp_rlp :
     (transfiniteCompositions.{w} (coproducts.{w} W).pushouts).retracts ≤ W.rlp.llp := by

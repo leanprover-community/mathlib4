@@ -110,9 +110,6 @@ namespace IsAdmissible
 @[grind →] lemma of_cons {m a L} (h : IsAdmissible m (a :: L)) :
     IsAdmissible (m + 1) L := by cases L <;> grind
 
-@[deprecated (since := "2025-10-15")]
-alias tail := IsAdmissible.of_cons
-
 lemma cons {m a L} (hL : IsAdmissible (m + 1) L) (ha : a ≤ m)
     (ha' : (_ : 0 < L.length) → a < L[0]) : IsAdmissible m (a :: L) := by cases L <;> grind
 

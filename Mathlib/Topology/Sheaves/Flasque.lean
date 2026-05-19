@@ -29,7 +29,7 @@ We define and prove basic properties about flasque sheaves on topological spaces
 
 -/
 
-@[expose] public section
+public section
 
 universe u v w
 

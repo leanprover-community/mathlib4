@@ -21,7 +21,7 @@ may differ between the multiplicative and the additive version of a lemma.
 The reason is that we did not want to change existing names in the library.
 -/
 
-@[expose] public section
+public section
 
 /-
 `NeZero` theory should not be needed at this point in the ordered algebraic hierarchy.
@@ -69,12 +69,6 @@ insert_to_additive_translation LinearOrderedCommGroup LinearOrderedAddCommGroup
 section LinearOrderedCommGroup
 
 variable [CommGroup α] [LinearOrder α] [IsOrderedMonoid α] {a : α}
-
-@[deprecated (since := "2025-10-06")]
-alias LinearOrderedCommGroup.mul_lt_mul_left' := mul_lt_mul_right
-
-@[deprecated (since := "2025-10-06")]
-alias LinearOrderedCommGroup.mul_lt_mul_right' := mul_lt_mul_left
 
 @[to_additive eq_zero_of_neg_eq]
 theorem eq_one_of_inv_eq' (h : a⁻¹ = a) : a = 1 :=

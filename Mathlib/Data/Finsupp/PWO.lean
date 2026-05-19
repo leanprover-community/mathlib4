@@ -25,7 +25,7 @@ It is in a separate file for now so as to not add imports to the file `Order.Wel
 Dickson, order, partial well order
 -/
 
-@[expose] public section
+public section
 /-- A version of **Dickson's lemma**: `σ →₀ α` is well-quasi-ordered when `σ` is `Finite` and `α` is
 well-quasi-ordered.
 This version uses finsupps on a finite type as it is intended for use with `MVPowerSeries`.

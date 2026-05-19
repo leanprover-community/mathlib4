@@ -40,7 +40,6 @@ variable
 
 section one_dimensional
 
-
 open scoped Topology
 
 section
@@ -48,6 +47,17 @@ section
 theorem Filter.EventuallyEq.iteratedDerivWithin_eq (hfg : f =ᶠ[𝓝[s] x] g) (hfg' : f x = g x) :
     iteratedDerivWithin n f s x = iteratedDerivWithin n g s x :=
   congr($(hfg.iteratedFDerivWithin_eq hfg' n) _)
+
+theorem Filter.EventuallyEq.iteratedDerivWithin' {s t : Set 𝕜}
+    (h : f =ᶠ[𝓝[s] x] g) (ht : t ⊆ s) (n : ℕ) :
+    iteratedDerivWithin n f t =ᶠ[𝓝[s] x] iteratedDerivWithin n g t := by
+  unfold iteratedDerivWithin
+  exact h.iteratedFDerivWithin' ht n |>.fun_comp (fun a ↦ a fun _ ↦ 1)
+
+/-- If two functions agree in a neighborhood within `s`, then so do their iterated derivatives. -/
+protected lemma Filter.EventuallyEq.iteratedDerivWithin {s : Set 𝕜} (h : f =ᶠ[𝓝[s] x] g) (n : ℕ) :
+    iteratedDerivWithin n f s =ᶠ[𝓝[s] x] iteratedDerivWithin n g s :=
+  h.iteratedDerivWithin' Set.Subset.rfl n
 
 theorem Filter.EventuallyEq.iteratedDerivWithin_eq_of_nhds_insert
     {𝕜 F : Type*} [NontriviallyNormedField 𝕜]
@@ -204,6 +214,40 @@ theorem iteratedDerivWithin_comp_const_smul (hf : ContDiffOn 𝕜 n f s) (c : �
       derivWithin_const_mul _ differentiableWithinAt_id', derivWithin_id' _ _ (h _ hx),
       smul_smul, mul_one, pow_succ]
 
+open scoped Pointwise
+
+omit hx h in
+lemma iteratedDerivWithin_comp_neg (a : 𝕜) : iteratedDerivWithin n (fun x ↦ f (-x)) s a
+    = (-1 : 𝕜) ^ n • iteratedDerivWithin n f (-s) (-a) := by
+  simp [iteratedDerivWithin, iteratedFDerivWithin_comp_neg n a]
+
+omit hx h in
+theorem iteratedDerivWithin_comp_const_add (c : 𝕜) :
+    iteratedDerivWithin n (fun z => f (c + z)) s =
+      fun x ↦ iteratedDerivWithin n f (c +ᵥ s) (c + x) := by
+  ext x
+  simp [iteratedDerivWithin, ← iteratedFDerivWithin_comp_add_left n c x]
+
+omit hx h in
+theorem iteratedDerivWithin_comp_add_const (c : 𝕜) :
+    iteratedDerivWithin n (fun z => f (z + c)) s =
+      fun x ↦ iteratedDerivWithin n f (c +ᵥ s) (x + c) := by
+  ext x
+  simp [iteratedDerivWithin, ← iteratedFDerivWithin_comp_add_right n c x]
+
+omit hx h in
+theorem iteratedDerivWithin_comp_sub_const (c : 𝕜) :
+    iteratedDerivWithin n (fun z => f (z - c)) s =
+      fun x ↦ iteratedDerivWithin n f (-c +ᵥ s) (x - c) := by
+  simpa only [sub_eq_add_neg] using iteratedDerivWithin_comp_add_const (-c)
+
+omit hx h in
+theorem iteratedDerivWithin_comp_const_sub (c : 𝕜) :
+    iteratedDerivWithin n (fun z => f (c - z)) s =
+      fun x ↦ (-1 : 𝕜) ^ n • iteratedDerivWithin n f (c +ᵥ -s) (c - x) := by
+  ext a
+  simp [iteratedDerivWithin, iteratedFDerivWithin_comp_const_sub]
+
 lemma iteratedDerivWithin_id :
     iteratedDerivWithin n id s x = if n = 0 then x else if n = 1 then 1 else 0 := by
   obtain (_ | n) := n
@@ -264,6 +308,13 @@ theorem iteratedDerivWithin_pow (m : ℕ) (k : ℕ) :
         show k < i → i - k = (i - (k + 1) + 1) by lia]; ring
 
 end
+
+/-- If two functions agree in a neighborhood, then so do their iterated derivatives. -/
+protected lemma Filter.EventuallyEq.iteratedDeriv
+    {𝕜 : Type*} [NontriviallyNormedField 𝕜] {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+    {f₁ f₂ : 𝕜 → F} {x : 𝕜} (h : f₁ =ᶠ[𝓝 x] f₂) (n : ℕ) :
+    iteratedDeriv n f₁ =ᶠ[𝓝 x] iteratedDeriv n f₂ := by
+  simp_all [← nhdsWithin_univ, ← iteratedDerivWithin_univ, EventuallyEq.iteratedDerivWithin]
 
 lemma iteratedDeriv_add (hf : ContDiffAt 𝕜 n f x) (hg : ContDiffAt 𝕜 n g x) :
     iteratedDeriv n (f + g) x = iteratedDeriv n f x + iteratedDeriv n g x := by
@@ -371,14 +422,7 @@ theorem iteratedDeriv_comp_const_mul {n : ℕ} {f : 𝕜 → 𝕜} (h : ContDiff
 
 lemma iteratedDeriv_comp_neg (n : ℕ) (f : 𝕜 → F) (a : 𝕜) :
     iteratedDeriv n (fun x ↦ f (-x)) a = (-1 : 𝕜) ^ n • iteratedDeriv n f (-a) := by
-  induction n generalizing a with
-  | zero => simp only [iteratedDeriv_zero, pow_zero, one_smul]
-  | succ n ih =>
-    have ih' : iteratedDeriv n (fun x ↦ f (-x)) = fun x ↦ (-1 : 𝕜) ^ n • iteratedDeriv n f (-x) :=
-      funext ih
-    rw [iteratedDeriv_succ, iteratedDeriv_succ, ih', pow_succ', neg_mul, one_mul,
-      deriv_comp_neg (f := fun x ↦ (-1 : 𝕜) ^ n • iteratedDeriv n f x), deriv_fun_const_smul_field,
-      neg_smul]
+  simp [iteratedDeriv, ← iteratedFDerivWithin_univ, iteratedFDerivWithin_comp_neg]
 
 lemma iteratedDeriv_id {n : ℕ} {x : 𝕜} :
     iteratedDeriv n id x = if n = 0 then x else if n = 1 then 1 else 0 := by

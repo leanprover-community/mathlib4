@@ -148,7 +148,7 @@ variable
   [∀ r : s, Module (Rₚ r) (Mₚ r)]
   [∀ r : s, IsScalarTower R (Rₚ r) (Mₚ r)]
   (f : ∀ r : s, M →ₗ[R] Mₚ r)
-  [∀ r : s, IsLocalizedModule (.powers r.1) (f r)]
+  [∀ r : s, IsLocalizedModule.Away r.1 (f r)]
 
 theorem Module.eq_of_isLocalized_span (x y : M) (h : ∀ r : s, f r x = f r y) : x = y := by
   suffices Module.eqIdeal R x y = ⊤ by simpa [Module.eqIdeal] using (eq_top_iff_one _).mp this

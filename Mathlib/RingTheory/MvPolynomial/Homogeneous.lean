@@ -182,7 +182,7 @@ variable {σ}
 
 theorem isHomogeneous_X (i : σ) : IsHomogeneous (X i : MvPolynomial σ R) 1 := by
   apply isHomogeneous_monomial
-  simp only [degree_apply, Finsupp.support_single_ne_zero _ one_ne_zero, Finset.sum_singleton,
+  simp only [degree_apply, Finsupp.support_single _ one_ne_zero, Finset.sum_singleton,
     single_eq_same]
 
 variable {R} in
@@ -575,6 +575,11 @@ theorem homogeneousComponent_of_mem {m n : ℕ} {p : MvPolynomial σ R}
     (h : p ∈ homogeneousSubmodule σ R n) :
     homogeneousComponent m p = if m = n then p else 0 :=
   weightedHomogeneousComponent_of_mem h
+
+lemma support_homogeneousComponent (n : ℕ) (p : MvPolynomial σ R) :
+    (homogeneousComponent n p).support = {c ∈ p.support | c.degree = n} := by
+  rw [degree_eq_weight_one]
+  exact support_weightedHomogeneousComponent n p
 
 end HomogeneousComponent
 

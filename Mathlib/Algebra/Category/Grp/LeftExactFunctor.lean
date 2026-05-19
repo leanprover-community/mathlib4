@@ -45,8 +45,7 @@ namespace leftExactFunctorForgetEquivalence
 
 attribute [local instance] hasFiniteProducts_of_hasFiniteBiproducts
 
--- This was deprecated on 2025-10-10 but is still used as a local instance here!
-attribute [local instance] AddCommGrpCat.cartesianMonoidalCategoryAddCommGrp
+attribute [local instance] AddCommGrpCat.cartesianMonoidalCategory
 
 set_option backward.privateInPublic true in
 private noncomputable local instance : CartesianMonoidalCategory C := .ofHasFiniteProducts

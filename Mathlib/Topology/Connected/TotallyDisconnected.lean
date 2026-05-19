@@ -306,7 +306,7 @@ theorem Continuous.connectedComponentsMap_continuous {β : Type*} [TopologicalSp
 lemma Topology.IsCoinducing.connectedComponentsMap {β : Type*} [TopologicalSpace β] {f : α → β}
     (hf : IsCoinducing f) :
     IsCoinducing hf.continuous.connectedComponentsMap := by
-  rw [← ConnectedComponents.isQuotientMap_coe.of_comp_iff]
+  rw [← ConnectedComponents.isQuotientMap_coe.isCoinducing.of_comp_iff]
   exact ConnectedComponents.isQuotientMap_coe.isCoinducing.comp hf
 
 @[simp]

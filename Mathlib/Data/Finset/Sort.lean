@@ -48,9 +48,6 @@ theorem sort_val : Multiset.sort s.val r = sort s r :=
 theorem pairwise_sort : List.Pairwise r (sort s r) :=
   Multiset.pairwise_sort _ _
 
-@[deprecated (since := "2025-10-11")]
-alias sort_sorted := pairwise_sort
-
 @[simp]
 theorem sort_eq : ↑(sort s r) = s.1 :=
   Multiset.sort_eq _ _

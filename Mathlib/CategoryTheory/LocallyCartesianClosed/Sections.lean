@@ -53,7 +53,6 @@ open ChosenPullbacksAlong
 
 variable (I) [ChosenPullbacksAlong (curryRightUnitorHom I)]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The functor mapping an object `X : Over I` to the object of sections of `X` over `I`, defined
 by the following pullback diagram. The functor's mapping of morphisms is induced by `pullbackMap`,
 that is by the universal property of chosen pullbacks.
