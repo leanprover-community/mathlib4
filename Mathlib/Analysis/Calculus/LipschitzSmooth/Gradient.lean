@@ -11,22 +11,11 @@ public import Mathlib.Analysis.Calculus.LipschitzSmooth.FDeriv
 /-!
 # Lipschitz smoothness on a Hilbert space via the gradient
 
-On a Hilbert space `F`, the `LipschitzSmoothWith` predicate from
-`Mathlib.Analysis.Calculus.LipschitzSmooth.Basic` admits a gradient-form
+On a Hilbert space `F`, the `LipschitzSmoothWith` predicate admits a gradient-form
 characterisation. For differentiable `f`, `fderiv ℝ f x (y - x) = ⟪∇ f x, y - x⟫`
-via Riesz representation (`inner_gradient_left`), and the descent inequality
-becomes `f y ≤ f x + ⟪∇ f x, y - x⟫ + K/2 · ‖y - x‖²`.
-
-This file provides only the characterisation and the elementary variance-bound
-consequences; the descent lemma (converse direction) and the Baillon-Haddad
-equivalence with cocoercivity are deferred to follow-ups.
-
-## Main results
-
-* `lipschitzSmoothWith_iff_inner_gradient` — characterisation in gradient form under
-  `Differentiable`.
-* `LipschitzSmoothWith.inner_gradient_descent_le`, `LipschitzSmoothWith.inner_gradient_sub_le` —
-  the descent inequality and the variance bound on the gradient.
+via Riesz representation (`inner_gradient_left`), and the descent inequality becomes
+`f y ≤ f x + ⟪∇ f x, y - x⟫ + K/2 · ‖y - x‖²`. The descent lemma (converse direction)
+and the Baillon-Haddad equivalence with cocoercivity are deferred to follow-ups.
 -/
 
 public section

@@ -12,20 +12,13 @@ public import Mathlib.Analysis.Calculus.LipschitzSmooth.FDeriv
 # Lipschitz smoothness in 1D via the derivative
 
 For a `K`-smooth function `f : ℝ → ℝ`, the descent inequality and the variation bound
-on the derivative take their classical 1D forms
+take their classical 1D forms
 
-`f y ≤ f x + deriv f x * (y - x) + K/2 * (y - x)^2`,
-`(deriv f y - deriv f x) * (y - x) ≤ K * (y - x)^2`.
+`f y ≤ f x + deriv f x * (y - x) + K/2 * (y - x)²`,
+`(deriv f y - deriv f x) * (y - x) ≤ K * (y - x)²`.
 
-These are the 1D restatements of the Fréchet-derivative forms in
-`Mathlib.Analysis.Calculus.LipschitzSmooth.FDeriv`, lifted via `fderiv_eq_deriv_mul`
-(the identity `(fderiv ℝ f x : ℝ → ℝ) y = deriv f x * y`).
-
-## Main results
-
-* `lipschitzSmoothWith_iff_deriv` — characterisation in 1D `deriv` form under `Differentiable`.
-* `LipschitzSmoothWith.deriv_descent_le`, `LipschitzSmoothWith.deriv_sub_mul_le` —
-  the descent inequality and the variance bound on the 1D `deriv`.
+These are 1D restatements of the Fréchet-derivative forms in
+`Mathlib.Analysis.Calculus.LipschitzSmooth.FDeriv`, lifted via `fderiv_eq_deriv_mul`.
 -/
 
 public section

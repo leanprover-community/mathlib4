@@ -11,21 +11,11 @@ public import Mathlib.Analysis.Calculus.LipschitzSmooth.Basic
 /-!
 # Lipschitz smoothness via the Fréchet derivative
 
-Fréchet-derivative restatements of the `LipschitzSmoothWith` predicate from
-`Mathlib.Analysis.Calculus.LipschitzSmooth.Basic`. For differentiable `f`,
-`lineDeriv ℝ f x v = fderiv ℝ f x v` pointwise, and the predicate is equivalent
-to the corresponding descent inequality stated in `fderiv` form.
-
-This file provides only the equivalence and the elementary variance-bound consequences;
-the full descent lemma — i.e. the converse direction
-`LipschitzWith K (fderiv ℝ f) → LipschitzSmoothWith K f` — is deferred to a follow-up.
-
-## Main results
-
-* `lipschitzSmoothWith_iff_fderiv` — characterisation in Fréchet form under `Differentiable`.
-* `LipschitzSmoothWith.fderiv_descent_le`, `LipschitzSmoothWith.fderiv_apply_sub_le`,
-  `LipschitzSmoothWith.fderiv_sub_apply_le` — the descent inequality and the variance
-  bound on the Fréchet derivative.
+Fréchet-derivative restatements of the `LipschitzSmoothWith` predicate. For differentiable
+`f`, `lineDeriv ℝ f x v = fderiv ℝ f x v` pointwise, and the predicate is equivalent to
+the corresponding descent inequality stated in `fderiv` form. The full descent lemma —
+the converse direction `LipschitzWith K (fderiv ℝ f) → LipschitzSmoothWith K f` — is
+deferred to a follow-up.
 -/
 
 public section

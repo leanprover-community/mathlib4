@@ -18,17 +18,6 @@ the quadratic descent inequality
 for all `x, y`. The predicate uses `lineDeriv` so as not to presuppose Fréchet
 differentiability; restatements in `fderiv`, 1D `deriv`, and Hilbert-space gradient
 form live in the sibling files in this directory.
-
-## Main definitions
-
-* `LipschitzSmoothWith K f` — the predicate above.
-
-## Main results
-
-* `lipschitzSmoothWith_iff_lineDeriv` — characterisation as the underlying inequality.
-* `LipschitzSmoothWith.lineDeriv_descent_le`, `LipschitzSmoothWith.lineDeriv_apply_sub_le`,
-  `LipschitzSmoothWith.lineDeriv_sub_apply_le` — the descent inequality as a forward
-  implication and the resulting variance bound on the line-derivative.
 -/
 
 public section
