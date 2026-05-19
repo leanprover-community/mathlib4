@@ -280,6 +280,25 @@ abbrev UnlabeledEmbedding (G : SimpleGraph V) (H : SimpleGraph W) : Type _ :=
 
 instance [Finite W] : Finite (G.UnlabeledEmbedding H) := Subtype.finite
 
+/-- The canonical map from a labeled embedding to its unlabeled induced image. -/
+@[expose] def Embedding.toUnlabeledEmbedding (f : Embedding G H) : G.UnlabeledEmbedding H :=
+  ⟨f.toSubgraph, f.toSubgraph_isInduced, ⟨f.toCopy.isoToSubgraph⟩⟩
+
+@[simp] lemma Embedding.toUnlabeledEmbedding_val (f : Embedding G H) :
+    f.toUnlabeledEmbedding.val = f.toSubgraph := rfl
+
+lemma UnlabeledEmbedding.exists_toSubgraph_eq_val (S : G.UnlabeledEmbedding H) :
+    ∃ f : Embedding G H, f.toSubgraph = S.val :=
+  Set.mem_range.mp (Embedding.range_toSubgraph ▸ S.property)
+
+/-- A noncomputable representative labeled embedding of an unlabeled induced copy. -/
+noncomputable def UnlabeledEmbedding.out (S : G.UnlabeledEmbedding H) : Embedding G H :=
+  S.exists_toSubgraph_eq_val.choose
+
+@[simp] lemma UnlabeledEmbedding.toSubgraph_out (S : G.UnlabeledEmbedding H) :
+    S.out.toSubgraph = S.val :=
+  S.exists_toSubgraph_eq_val.choose_spec
+
 /-- `H.unlabeledEmbeddingCount G` is the number of induced `SimpleGraph.Subgraph`s of `H`
 isomorphic to `G`.
 See `SimpleGraph.embeddingCount` for the number of induced labeled copies. -/
@@ -304,13 +323,8 @@ unlabeled ones. -/
 lemma unlabeledEmbeddingCount_le_embeddingCount [Finite V] [Finite W] :
     H.unlabeledEmbeddingCount G ≤ H.embeddingCount G := by
   rw [unlabeledEmbeddingCount, embeddingCount]
-  apply Nat.card_le_card_of_surjective
-    (fun f : Embedding G H ↦ (⟨Embedding.toSubgraph f, f.toSubgraph_isInduced,
-      ⟨f.toCopy.isoToSubgraph⟩⟩ : G.UnlabeledEmbedding H))
-  rintro ⟨H', hInd, ⟨e⟩⟩
-  obtain ⟨f, hf⟩ : ∃ f : Embedding G H, Embedding.toSubgraph f = H' := by
-    rw [← Set.mem_range, Embedding.range_toSubgraph]; exact ⟨hInd, ⟨e⟩⟩
-  exact ⟨f, Subtype.ext hf⟩
+  exact Nat.card_le_card_of_surjective Embedding.toUnlabeledEmbedding
+    fun S ↦ ⟨S.out, Subtype.ext S.toSubgraph_out⟩
 
 private instance [IsEmpty V] : Nonempty (G.UnlabeledEmbedding H) :=
   let ⟨H', hInd, ⟨e⟩⟩ := (IsIndContained.of_isEmpty (G := G) (H := H)).exists_iso_subgraph

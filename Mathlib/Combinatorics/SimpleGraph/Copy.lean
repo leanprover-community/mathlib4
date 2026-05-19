@@ -461,6 +461,23 @@ abbrev UnlabeledCopy (G : SimpleGraph V) (H : SimpleGraph W) : Type _ :=
 
 instance [Finite W] : Finite (G.UnlabeledCopy H) := Subtype.finite
 
+/-- The canonical map from a labeled copy to its unlabeled image. -/
+@[expose] def Copy.toUnlabeledCopy (f : Copy G H) : G.UnlabeledCopy H :=
+  ⟨f.toSubgraph, ⟨f.isoToSubgraph⟩⟩
+
+@[simp] lemma Copy.toUnlabeledCopy_val (f : Copy G H) : f.toUnlabeledCopy.val = f.toSubgraph := rfl
+
+lemma UnlabeledCopy.exists_toSubgraph_eq_val (S : G.UnlabeledCopy H) :
+    ∃ f : Copy G H, f.toSubgraph = S.val :=
+  Set.mem_range.mp (Copy.range_toSubgraph ▸ S.property)
+
+/-- A noncomputable representative labeled copy of an unlabeled copy. -/
+noncomputable def UnlabeledCopy.out (S : G.UnlabeledCopy H) : Copy G H :=
+  S.exists_toSubgraph_eq_val.choose
+
+@[simp] lemma UnlabeledCopy.toSubgraph_out (S : G.UnlabeledCopy H) : S.out.toSubgraph = S.val :=
+  S.exists_toSubgraph_eq_val.choose_spec
+
 /-- `H.unlabeledCopyCount G` is the number of `SimpleGraph.Subgraph`s of `H` isomorphic to `G`. See
 `SimpleGraph.copyCount` for the number of labeled copies. -/
 noncomputable def unlabeledCopyCount (H : SimpleGraph W) (G : SimpleGraph V) : ℕ :=
@@ -492,12 +509,8 @@ lemma copyCount_eq_card_image_copyToSubgraph [Fintype {f : G →g H // Injective
 lemma unlabeledCopyCount_le_copyCount [Finite V] [Finite W] :
     H.unlabeledCopyCount G ≤ H.copyCount G := by
   rw [unlabeledCopyCount, copyCount]
-  apply Nat.card_le_card_of_surjective
-    (fun c : Copy G H ↦ (⟨c.toSubgraph, ⟨c.isoToSubgraph⟩⟩ : G.UnlabeledCopy H))
-  rintro ⟨H', hG'⟩
-  obtain ⟨c, hc⟩ : ∃ c, Copy.toSubgraph c = H' := by
-    rwa [← Set.mem_range, Copy.range_toSubgraph]
-  exact ⟨c, Subtype.ext hc⟩
+  exact Nat.card_le_card_of_surjective Copy.toUnlabeledCopy
+    fun S ↦ ⟨S.out, Subtype.ext S.toSubgraph_out⟩
 
 instance uniqueUnlabeledCopyBot [Finite W] (H : SimpleGraph W) :
     Unique ((⊥ : SimpleGraph W).UnlabeledCopy H) where
