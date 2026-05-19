@@ -21,9 +21,7 @@ In this file, we prove that `Module.FinitePresentation` is a local property.
 
 public section
 
-universe u v
-
-variable {R : Type u} [CommRing R] {M : Type v} [AddCommGroup M] [Module R M] (s : Set R)
+variable {R : Type*} [CommRing R] {M : Type*} [AddCommGroup M] [Module R M] (s : Set R)
 
 theorem Module.FinitePresentation.of_localizationSpan' (hs : Ideal.span s = ⊤)
     {Mₚ : ∀ (_ : s), Type*} [∀ (g : s), AddCommGroup (Mₚ g)] [∀ (g : s), Module R (Mₚ g)]
