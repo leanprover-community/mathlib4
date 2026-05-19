@@ -182,35 +182,23 @@ variable (rels₁ : Set (FreeGroup α)) (rels₂ : Set (FreeGroup β))
 /--
 The canonical inclusion map from the disjoint union of types to the free product of the relations
 -/
-def coprodOf : α ⊕ β → Monoid.Coprod (PresentedGroup rels₁) (PresentedGroup rels₂) :=
+def toCoprod : α ⊕ β → Monoid.Coprod (PresentedGroup rels₁) (PresentedGroup rels₂) :=
   Sum.elim (Monoid.Coprod.inl ∘ .of) (Monoid.Coprod.inr ∘ .of)
 
-lemma lift_coprodOf_inl_eq_inl_mk : (FreeGroup.lift (coprodOf rels₁ rels₂)).comp
+@[simp]
+lemma lift_toCoprod_inl_eq_inl_mk : (FreeGroup.lift (toCoprod rels₁ rels₂)).comp
     (FreeGroup.map Sum.inl) = Monoid.Coprod.inl.comp (mk rels₁) :=
   FreeGroup.ext_hom _ _ (fun _ ↦ rfl)
 
-lemma lift_coprodOf_inr_eq_inr_mk : (FreeGroup.lift (coprodOf rels₁ rels₂)).comp
+@[simp]
+lemma lift_toCoprod_inr_eq_inr_mk : (FreeGroup.lift (toCoprod rels₁ rels₂)).comp
     (FreeGroup.map Sum.inr) = Monoid.Coprod.inr.comp (mk rels₂) :=
   FreeGroup.ext_hom _ _ (fun _ ↦ rfl)
 
-lemma coprodOf_kills_rels : ∀ r ∈ FreeGroup.map Sum.inl '' rels₁ ∪ FreeGroup.map Sum.inr '' rels₂,
-      FreeGroup.lift (coprodOf rels₁ rels₂) r = 1 := by
-  rintro r (⟨r, hr, rfl⟩ | ⟨r, hr, rfl⟩) <;>
-  simp only [← MonoidHom.comp_apply]
-  · simp [lift_coprodOf_inl_eq_inl_mk, one_of_mem hr]
-  · simp [lift_coprodOf_inr_eq_inr_mk, one_of_mem hr]
-
-open Subgroup in
-/--
-`FreeGroup α →* FreeGroup β` induces a homomorphism
-`PresentedGroup s →* PresentedGroup t` if the image of `s` is contained in `t`.
--/
-protected def map {α β : Type*} (f : FreeGroup α →* FreeGroup β)
-    {s : Set (FreeGroup α)} {t : Set (FreeGroup β)} (hst : s.MapsTo f t) :
-    PresentedGroup s →* PresentedGroup t :=
-  QuotientGroup.map _ _ f
-    ((comap_normalClosure_image_ge s f).trans
-    (comap_mono (normalClosure_mono hst.image_subset)))
+lemma lift_toCoprod_eq_one (r : FreeGroup (α ⊕ β))
+    (hr : r ∈ FreeGroup.map Sum.inl '' rels₁ ∪ FreeGroup.map Sum.inr '' rels₂) :
+    FreeGroup.lift (toCoprod rels₁ rels₂) r = 1 := by
+  obtain ⟨r, hr, rfl⟩ | ⟨r, hr, rfl⟩ := hr <;> simp [← MonoidHom.comp_apply, one_of_mem hr]
 
 /--
 The free product (Coproduct) of presentations is isomorphic to the presentation of the union over
@@ -220,7 +208,7 @@ def coprodPresentations :
     PresentedGroup (FreeGroup.map Sum.inl '' rels₁ ∪ FreeGroup.map Sum.inr '' rels₂) ≃*
     Monoid.Coprod (PresentedGroup rels₁) (PresentedGroup rels₂) :=
   MonoidHom.toMulEquiv
-    (toGroup (coprodOf_kills_rels rels₁ rels₂))
+    (toGroup (lift_toCoprod_eq_one rels₁ rels₂))
     (Monoid.Coprod.lift
       (PresentedGroup.map (FreeGroup.map Sum.inl) (fun r hr ↦ .inl ⟨r, hr, rfl⟩))
       (PresentedGroup.map (FreeGroup.map Sum.inr) (fun r hr ↦ .inr ⟨r, hr, rfl⟩)))
