@@ -9,6 +9,7 @@ public import Mathlib.Algebra.Order.Ring.WithTop
 public import Mathlib.Algebra.Order.Sub.WithTop
 public import Mathlib.Data.NNReal.Defs
 public import Mathlib.Order.Interval.Set.WithBotTop
+import Mathlib.Tactic.Finiteness
 
 /-!
 # Extended non-negative reals
@@ -236,8 +237,12 @@ theorem coe_comp_toNNReal_comp {ι : Type*} {f : ι → ℝ≥0∞} (hf : ∀ x,
   ext x
   simp [coe_toNNReal (hf x)]
 
+/-- Mark a proposition as ... `finiteness` tactic as autoparam. -/
+def autofinite (p : Prop) : Prop := p
+
 @[simp]
-theorem ofReal_toReal {a : ℝ≥0∞} (h : a ≠ ∞) : ENNReal.ofReal a.toReal = a := by
+theorem ofReal_toReal {a : ℝ≥0∞} (h : autofinite (a ≠ ∞)) : ENNReal.ofReal a.toReal = a := by
+  simp [autofinite] at h -- XXX
   simp [ENNReal.toReal, ENNReal.ofReal, h]
 
 @[simp]
@@ -290,8 +295,50 @@ theorem ofNNReal_toNNReal (x : ℝ) : (Real.toNNReal x : ℝ≥0∞) = ENNReal.o
 
 @[simp] theorem ofReal_one : ENNReal.ofReal (1 : ℝ) = (1 : ℝ≥0∞) := by simp [ENNReal.ofReal]
 
+-- write a simproc that fires on autofinite and dispatches to the finiteness tactic
+-- should make ofReal_toReal work in simp the way I want to
+
+-- greedy version: define a simproc firing on every goal of the shape a ≠ ∞ ... might be too strong!
+
+open Lean Meta Elab in
+simproc_decl autofinite' (autofinite _) := fun e ↦ do
+  trace[Meta.debug] m!"entering simproc autofinite' on expression `{e}`"
+  -- p is the argument passed to autofinite, i.e. the goal to prove
+  let goal := e.appArg!
+  trace[Meta.debug] m!"goal is {goal}"
+  -- Note: finiteness is a macro for macro
+  let tacticCode ← `(by finiteness)
+  -- This is cargo-culted from XXX.
+  let disch : Simp.Discharge := fun e => do
+    let mvar ← mkFreshExprSyntheticOpaqueMVar e `simp.discharger
+    trace[Meta.debug] m!"mvar is {mvar}"
+    let runTac? : TermElabM (Option Expr) :=
+      try
+        Term.withoutModifyingElabMetaStateWithInfo do
+          Term.withSynthesize (postpone := .no) do
+            Term.runTactic (report := false) mvar.mvarId! tacticCode .term
+          let result ← instantiateMVars mvar
+          if result.hasExprMVar then
+            trace[Meta.debug] "foobar"
+            return none
+          else
+            return some result
+      catch msg =>
+        trace[Meta.debug] "in the catch case: {msg.toMessageData}"
+        return none
+    let (result?, _) ← liftM (m := MetaM) <| Term.TermElabM.run runTac?
+    return result?
+  match (← disch goal) with
+  | some pf => return Simp.Step.done {
+      expr := mkConst ``True, proof? := mkApp2 (mkConst ``eq_true) goal pf }
+  | none =>
+    trace[Meta.debug] m!"discharging failed"
+    return Simp.Step.continue
+
+attribute [simp] autofinite'
+
 theorem ofReal_toReal_le {a : ℝ≥0∞} : ENNReal.ofReal a.toReal ≤ a :=
-  if ha : a = ∞ then ha.symm ▸ le_top else le_of_eq (ofReal_toReal ha)
+  if ha : a = ∞ then ha.symm ▸ le_top else (by simp)
 
 theorem forall_ennreal {p : ℝ≥0∞ → Prop} : (∀ a, p a) ↔ (∀ r : ℝ≥0, p r) ∧ p ∞ :=
   WithTop.forall.trans and_comm
@@ -345,7 +392,9 @@ theorem ofReal_ne_top {r : ℝ} : ENNReal.ofReal r ≠ ∞ := coe_ne_top
 theorem ofReal_toReal_eq_iff : ENNReal.ofReal a.toReal = a ↔ a ≠ ⊤ :=
   ⟨fun h => by
     rw [← h]
-    exact ofReal_ne_top, ofReal_toReal⟩
+    exact ofReal_ne_top, by intro; simp⟩
+    -- +contextual adds hypotheses of implications as additional simp lemmas, not local hypotheses,
+    -- so doesn't work here!
 
 @[simp]
 theorem toReal_ofReal_eq_iff {a : ℝ} : (ENNReal.ofReal a).toReal = a ↔ 0 ≤ a :=
