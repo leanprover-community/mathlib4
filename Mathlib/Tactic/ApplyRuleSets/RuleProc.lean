@@ -25,12 +25,17 @@ abbrev RuleProc := Array Expr → ArgOrigin → Expr → ApplyRuleSetsM (Option 
 def keysForPattern (pattern : Expr) : MetaM (List (Key × LazyEntry)) := do
   RefinedDiscrTree.initializeLazyEntryWithEta pattern
 
+/-- Compute a plain discrimination-tree path for a theorem conclusion or ruleproc pattern. -/
+def discrPathForPattern (pattern : Expr) : MetaM (Array DiscrTree.Key) := do
+  DiscrTree.mkPath pattern
+
 /-- Persistent information about a declared ruleproc pattern. -/
 structure RuleProcDecl where
   declName : Name
   pattern : Expr
   levelParams : Array Name := #[]
-  keys : List (Key × LazyEntry)
+  refinedKeys : List (Key × LazyEntry)
+  discrPath : Array DiscrTree.Key
   /-- The declaration applied to default procedural parameters, if it has type `RuleProc`.
   This is used when registering a ruleproc in a ruleset with an attribute. Parameterized
   ruleprocs without defaults have no default proc and must be supplied explicitly, e.g.
@@ -53,9 +58,10 @@ def registerRuleProcPattern (declName : Name) (pattern : Expr) (levelParams : Ar
       metavariables"
   let levelParams := levelParams ++ (exprLevelParams pattern).filter (!levelParams.contains ·)
   let (_, _, conclusion) ← forallMetaTelescope pattern
-  let keys ← keysForPattern conclusion
+  let refinedKeys ← keysForPattern conclusion
+  let discrPath ← discrPathForPattern conclusion
   modifyEnv fun env => ruleProcDeclExt.addEntry env {
-    declName, pattern, levelParams, keys, defaultProc? }
+    declName, pattern, levelParams, refinedKeys, discrPath, defaultProc? }
 
 /-- Return registered pattern information for a ruleproc declaration. -/
 def getRuleProcDecl? (declName : Name) : CoreM (Option RuleProcDecl) := do

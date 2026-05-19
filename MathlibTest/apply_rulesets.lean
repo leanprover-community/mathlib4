@@ -41,8 +41,55 @@ def applyRuleSetsBigConj : Nat → (Nat → Prop) → Prop
 
 -- This is intentionally large enough to exercise repeated recursive rule application, local
 -- forall-hypothesis instantiation, and the success cache without relying on timing thresholds.
-example (p : Nat → Prop) (h : ∀ i, p i) : applyRuleSetsBigConj 64 p := by
-  apply_rulesets (config := { maxDepth := 200 }) +profile [And.intro, True.intro, h]
+-- set_option trace.profiler true in
+#time example (p : Nat → Prop) (h : ∀ i, p i) : applyRuleSetsBigConj 64 p := by
+  dsimp [applyRuleSetsBigConj]
+  apply_rulesets (config := { maxDepth := 200, transparency := .reducible }) +profile [And.intro, True.intro, h]
+
+#time example (p : Nat → Prop) (h : ∀ i, p i) : applyRuleSetsBigConj 64 p := by
+  dsimp [applyRuleSetsBigConj]
+  apply_rulesets (config := { maxDepth := 200 }) [And.intro, True.intro, h]
+
+inductive ApplyRuleSetsProfileClassGoal (α : Type) : Prop where
+  | intro [Inhabited α]
+
+theorem applyRuleSetsProfileClassRule {α : Type} [Inhabited α] :
+    ApplyRuleSetsProfileClassGoal α :=
+  .intro
+
+inductive ApplyRuleSetsProfileDischarged : Prop where
+  | intro
+
+theorem applyRuleSetsProfileDischargedRule (_ : (0 : Nat) ≤ 0) :
+    ApplyRuleSetsProfileDischarged :=
+  .intro
+
+def applyRuleSetsProfileStress : Nat → (Nat → Prop) → Prop
+  | 0, _ => True
+  | n + 1, p =>
+    (p n ∧ applyRuleSetsProfileStress n p) ∧
+      (p n → p n) ∧
+      ApplyRuleSetsProfileClassGoal Nat ∧
+      ApplyRuleSetsProfileClassGoal Nat ∧
+      ApplyRuleSetsProfileDischarged ∧
+      True
+
+-- This intentionally mixes explicit-rule failures and successes, ruleset lookup, repeated local
+-- forall-hypothesis instantiation, narrow introductions, typeclass synthesis, discharger fallback, and
+-- repeated identical goals that can hit the success cache.
+#time example (p : Nat → Prop) (h : ∀ i, p i) : applyRuleSetsProfileStress 16 p := by
+  dsimp [applyRuleSetsProfileStress]
+  apply_rulesets (config := { maxDepth := 300 }) +profile
+    [test_rules, @applyRuleSetsProfileClassRule Nat inferInstance,
+      applyRuleSetsProfileDischargedRule,
+      True.intro, h, by decide]
+
+#time example (p : Nat → Prop) (h : ∀ i, p i) : applyRuleSetsProfileStress 16 p := by
+  dsimp [applyRuleSetsProfileStress]
+  apply_rulesets (config := { maxDepth := 300, useRefinedDiscrTree := false }) +profile
+    [test_rules, @applyRuleSetsProfileClassRule Nat inferInstance,
+      applyRuleSetsProfileDischargedRule,
+      True.intro, h, by decide]
 
 example (p : Prop) (hp : p) : p := by
   apply_rulesets
@@ -202,10 +249,10 @@ example : HasDeriv (fun x : Nat => x / x) (fun xdx =>
   · simp -zeta []; rfl
 
 
--- example : HasDeriv (fun x : Nat => (x * x + x) / ((x + x)*(x + x))) sorry := by
---   apply congr_deriv
---   · apply_rulesets [has_deriv]
---   · sorry
+example : HasDeriv (fun x : Nat => (x * x + x) / ((x + x)*(x + x))) sorry := by
+  apply congr_deriv
+  · apply_rulesets [has_deriv]
+  · sorry
 
 end HasDeriv
 

@@ -210,7 +210,7 @@ def successCacheIndex (goal : Goal) (proof : Expr) : ApplyRuleSetsM Nat := do
   return caches.size - 1
 
 def cacheSuccess (goal : Goal) (proof : Expr) : ApplyRuleSetsM Unit := do
-  let proof ← instantiateMVars proof
+  let proof ← withProfile `instantiateMVars <| instantiateMVars proof
   unless proof.hasExprMVar do
     let i ← successCacheIndex goal proof
     modifyGoalCacheAt i fun cache =>
@@ -255,20 +255,32 @@ def runAutoParam? (goalType : Expr) : ApplyRuleSetsM (Option Expr) :=
 /-- Query selected rulesets for candidates matching `goalType`. -/
 def takeRuleSetTree (rsName : Name) : ApplyRuleSetsM (RefinedDiscrTree Rule) := do
   let tree? ← modifyGet fun s =>
-    (s.ruleSetTrees.get? rsName,
-      { s with ruleSetTrees := s.ruleSetTrees.alter rsName fun _ => none })
-  return tree?.getD (← getRuleSet rsName).tree
+    (s.refinedRuleSetTrees.get? rsName,
+      { s with refinedRuleSetTrees := s.refinedRuleSetTrees.alter rsName fun _ => none })
+  return tree?.getD (← getRuleSet rsName).refinedTree
+
+def queryRuleSetRefined (goalType : Expr) (rsName : Name) : ApplyRuleSetsM (Array Rule) := do
+  let tree ← takeRuleSetTree rsName
+  let (result, tree) ← withProfile `refinedDiscrTree.getMatch <|
+    withConfig (fun cfg => { cfg with iota := false, zeta := false }) <|
+      tree.getMatch goalType true true
+  modify fun s =>
+    { s with refinedRuleSetTrees := s.refinedRuleSetTrees.alter rsName fun _ => some tree }
+  return result.toArray
+
+def queryRuleSetPlain (goalType : Expr) (rsName : Name) : ApplyRuleSetsM (Array Rule) := do
+  withProfile `discrTree.getMatch do
+    return ← (← getRuleSet rsName).discrTree.getMatch goalType
 
 def queryRuleSets (goalType : Expr) (rulesets : Array Name) : ApplyRuleSetsM (Array Rule) := do
   let mut out := #[]
   for rsName in rulesets do
-    let tree ← takeRuleSetTree rsName
-    let (result, tree) ← withProfile `discrTree.getMatch <|
-      withConfig (fun cfg => { cfg with iota := false, zeta := false }) <|
-        tree.getMatch goalType true true
-    modify fun s =>
-      { s with ruleSetTrees := s.ruleSetTrees.alter rsName fun _ => some tree }
-    out := out ++ result.toArray
+    let result ←
+      if (← read).config.useRefinedDiscrTree then
+        queryRuleSetRefined goalType rsName
+      else
+        queryRuleSetPlain goalType rsName
+    out := out ++ result
   return out
 
 /-- Sort candidates by priority, explicitness, and insertion order. -/
@@ -289,8 +301,8 @@ def Rule.instantiate (rule : Rule) : MetaM (RuleType × Expr) := do
   return (type, pattern)
 
 def matchRuleConclusion (_rule : Rule) (conclusion goal : Expr) : ApplyRuleSetsM Bool := do
-  let conclusion ← instantiateMVars conclusion
-  let goal ← instantiateMVars goal
+  let conclusion ← withProfile `instantiateMVars <| instantiateMVars conclusion
+  let goal ← withProfile `instantiateMVars <| instantiateMVars goal
   withProfile `isDefEq <|
     withTransparency (← read).config.transparency <| isDefEq conclusion goal
 
@@ -300,6 +312,7 @@ mutual
 partial def assumption? (origin : ArgOrigin) (goalType : Expr) : ApplyRuleSetsM (Option Expr) := do
   unless ← withProfile `isProp <| isProp goalType do
     return none
+  withProfile `assumption do
   for localDecl in ← getLCtx do
     unless localDecl.isAuxDecl do
       if ← withProfile `isProp <| isProp localDecl.type then
@@ -312,7 +325,7 @@ partial def assumption? (origin : ArgOrigin) (goalType : Expr) : ApplyRuleSetsM 
             type := .expr (.fvar localDecl.fvarId)
           }
           let goal ← withProfile `goal.mk <| mkGoal goalType
-          if let some r ← tryRule? origin goal rule then
+          if let some r ← withoutChargingCurrentTimer <| tryRule? origin goal rule then
             return r
   return none
 
@@ -491,18 +504,18 @@ partial def tryRule? (origin : ArgOrigin) (goal : Goal) (rule : Rule) :
   | .expr expr =>
     unless ← synthesizeArgs rule.name args do
       return none
-    let proof ← withProfile `mkApp <| instantiateMVars (mkAppN expr args)
+    let proof ← withProfile `instantiateMVars <| instantiateMVars (mkAppN expr args)
     return some proof
   | .proc procExpr =>
     unless ← synthesizeArgs rule.name args (allowPostponed := true) do
       trace[Meta.Tactic.apply_rulesets]
         "failed to synthesize ruleproc arguments for {rule.name}"
       return none
-    let args ← args.mapM instantiateMVars
+    let args ← withProfile `instantiateMVars <| args.mapM instantiateMVars
     let proc ← withProfile `ruleproc.eval <| evalRuleProc procExpr
     let some proof ← withProfile `ruleproc.run <| proc args origin goalType
       | trace[Meta.Tactic.apply_rulesets] "ruleproc {rule.name} returned none"; return none
-    let proofType ← inferType proof
+    let proofType ← withProfile `inferType <| inferType proof
     let ok ← withProfile `isDefEq <|
       withTransparency (← read).config.transparency <| isDefEq proofType goalType
     unless ok do

@@ -22,9 +22,10 @@ initialize ruleSetsExt : SimpleScopedEnvExtension RuleSetExtEntry RuleSets ←
     addEntry := fun s e =>
       let rule := { e.rule with order := s.nextOrder }
       let rs := s.ruleSets.getD e.ruleSetName {}
-      let tree := e.keys.foldl (fun t (key, lazyEntry) =>
-        RefinedDiscrTree.insert t key (lazyEntry, rule)) rs.tree
-      let rs := { entries := rs.entries.push rule, tree := tree }
+      let refinedTree := e.refinedKeys.foldl (fun t (key, lazyEntry) =>
+        RefinedDiscrTree.insert t key (lazyEntry, rule)) rs.refinedTree
+      let discrTree := rs.discrTree.insertKeyValue e.discrPath rule
+      let rs := { entries := rs.entries.push rule, refinedTree, discrTree }
       { ruleSets := s.ruleSets.insert e.ruleSetName rs, nextOrder := s.nextOrder + 1 }
   }
 
@@ -42,7 +43,8 @@ def addTheoremRule (ruleSetName declName : Name) (kind : AttributeKind)
   let info ← getConstInfo declName
   let pattern := info.type
   let (_, _, conclusion) ← forallMetaTelescope pattern
-  let keys ← keysForPattern conclusion
+  let refinedKeys ← keysForPattern conclusion
+  let discrPath ← discrPathForPattern conclusion
   let value := mkConst declName (info.levelParams.map Level.param)
   let rule : Rule := {
     origin := .decl declName
@@ -53,7 +55,7 @@ def addTheoremRule (ruleSetName declName : Name) (kind : AttributeKind)
   }
   if rule.hasExprMVar then
     throwError "invalid theorem rule `{.ofConstName declName}` contains expression metavariables"
-  ruleSetsExt.add { ruleSetName, rule, keys } kind
+  ruleSetsExt.add { ruleSetName, rule, refinedKeys, discrPath } kind
   trace[Meta.Tactic.apply_rulesets.attr] "added theorem rule {declName} to {ruleSetName}"
 
 /-- Register a ruleproc in a ruleset. -/
@@ -73,7 +75,11 @@ def addProcRule (ruleSetName declName : Name) (kind : AttributeKind)
   }
   if rule.hasExprMVar then
     throwError "invalid ruleproc rule `{.ofConstName declName}` contains expression metavariables"
-  ruleSetsExt.add { ruleSetName, rule, keys := decl.keys } kind
+  ruleSetsExt.add {
+    ruleSetName := ruleSetName
+    rule := rule
+    refinedKeys := decl.refinedKeys
+    discrPath := decl.discrPath } kind
   trace[Meta.Tactic.apply_rulesets.attr] "added ruleproc {declName} to {ruleSetName}"
 
 /-- Register the theorem and proc attributes for a ruleset. -/

@@ -6,6 +6,7 @@ Authors: Tomáš Skřivan
 module
 
 public meta import Mathlib.Lean.Meta.RefinedDiscrTree.Initialize
+public import Lean.Meta.DiscrTree
 public import Lean.Elab.Tactic.Config
 public import Lean.Meta.Tactic.SolveByElim
 
@@ -27,7 +28,7 @@ structure Config extends ApplyConfig where
   /-- Maximum number of candidate attempts. -/
   maxSteps : Nat := 10000
   /-- Transparency used by unification. -/
-  transparency : TransparencyMode := .default
+  transparency : TransparencyMode := .reducible
   /-- Use local hypotheses to solve proposition goals. -/
   assumption : Bool := true
   /-- Introduce leading binders and continue recursively. -/
@@ -39,6 +40,9 @@ structure Config extends ApplyConfig where
   collectFailedSubgoals : Bool := false
   /-- Print an exclusive timing profile for selected `apply_rulesets` operations. -/
   profile : Bool := false
+  /-- Use `RefinedDiscrTree` for ruleset lookup. If false, use Lean's plain `DiscrTree` instead.
+  This is intended for profiling and comparison; candidate sets may differ. -/
+  useRefinedDiscrTree : Bool := true
 
 instance : Inhabited Config := ⟨{}⟩
 
@@ -90,6 +94,11 @@ structure Rule where
   priority : Nat := eval_prio default
   order : Nat := 0
 deriving Inhabited
+
+instance : BEq Rule where
+  -- `DiscrTree` uses `BEq` only to deduplicate values. Rules are ordered explicitly, so keep every
+  -- registered entry even if two rule payloads are structurally identical.
+  beq _ _ := false
 
 /-- A canonicalized goal used by `apply_rulesets` internally.
 
@@ -153,7 +162,7 @@ structure State where
   failedSubgoals : Array Expr := #[]
   /-- Per-run ruleset trees. `RefinedDiscrTree` resolves lazy entries during lookup, so each
   `getMatch` result must be stored back here for subsequent queries in the same tactic run. -/
-  ruleSetTrees : Std.HashMap Name (RefinedDiscrTree Rule) := {}
+  refinedRuleSetTrees : Std.HashMap Name (RefinedDiscrTree Rule) := {}
   /-- Stack of goal caches, one for each local-context depth used by introduced binders. -/
   goalCaches : Array GoalCache := #[]
   profile : ProfileState := {}
@@ -174,7 +183,8 @@ abbrev ApplyRuleSetsM := ReaderT Context <| StateT State MetaM
 /-- Ruleset data kept in the environment. -/
 structure RuleSet where
   entries : Array Rule := #[]
-  tree : RefinedDiscrTree Rule := {}
+  refinedTree : RefinedDiscrTree Rule := {}
+  discrTree : DiscrTree Rule := {}
 deriving Inhabited
 
 /-- All registered rulesets. -/
@@ -187,7 +197,8 @@ deriving Inhabited
 structure RuleSetExtEntry where
   ruleSetName : Name
   rule : Rule
-  keys : List (Key × LazyEntry)
+  refinedKeys : List (Key × LazyEntry)
+  discrPath : Array DiscrTree.Key
 deriving Inhabited
 
 def addFailedSubgoal (e : Expr) : ApplyRuleSetsM Unit := do
