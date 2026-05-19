@@ -527,8 +527,6 @@ theorem Integrable.map {β : Type*} [MeasurableSpace β] {φ : X → β} (hφ : 
   apply le_trans ?_ (enorm_measure_le_variation _ _)
   simp [VectorMeasure.map_apply _ hφ hs]
 
-#check SimpleFunc
-
 theorem integral_map_of_stronglyMeasurable {β : Type*} [MeasurableSpace β]
     {φ : X → β} (hφ : Measurable φ) {f : β → E} (hfm : StronglyMeasurable f)
     (hfi' : μ.Integrable (f ∘ φ) B) :
@@ -542,12 +540,18 @@ theorem integral_map_of_stronglyMeasurable {β : Type*} [MeasurableSpace β]
     (tendsto_setToFun_approxOn_of_measurable_of_range_subset
       ((dominatedFinMeasAdditive_cbmApplyMeasure (μ.map φ) B)) hfm.measurable hfi _ Subset.rfl) ?_
   convert tendsto_setToFun_approxOn_of_measurable_of_range_subset
-    (dominatedFinMeasAdditive_cbmApplyMeasure μ B)
-    (hfm.measurable.comp hφ) hfi' (range f ∪ {0})
+    (dominatedFinMeasAdditive_cbmApplyMeasure μ B) (hfm.measurable.comp hφ) hfi' (range f ∪ {0})
     (union_subset_union_left {0} (range_comp_subset_range φ f)) using 1
-  ext1 i
-  simp only [SimpleFunc.integral_eq, hφ, SimpleFunc.measurableSet_preimage, map_measureReal_apply,
-    ← preimage_comp]
+  ext i : 1
+  rw [setToFun_simpleFunc _ _ (SimpleFunc.integrable_approxOn_range _ hfi _),
+    setToFun_simpleFunc]; swap
+  · apply SimpleFunc.integrable_approxOn _ hfi' (by simp) (by simp)
+  rw [SimpleFunc.approxOn_comp hfm.measurable hφ]
+  simp [cbmApplyMeasure]
+
+#exit
+
+
   refine (Finset.sum_subset (SimpleFunc.range_comp_subset_range _ hφ) fun y _ hy => ?_).symm
   rw [SimpleFunc.mem_range, ← Set.preimage_singleton_eq_empty, SimpleFunc.coe_comp] at hy
   rw [hy]
