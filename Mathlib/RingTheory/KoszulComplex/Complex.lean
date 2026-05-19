@@ -278,7 +278,7 @@ noncomputable def koszulComplex : ChainComplex (ModuleCat R) ℕ :=
   ChainComplex.of
     (ModuleCat.of R M).exteriorPower
     (fun n ↦ ModuleCat.ofHom (koszulComplex_aux φ n))
-    (fun n ↦ by simp [← ModuleCat.ofHom_comp, koszulComplex_aux_comp_eq_zero]; rfl)
+    (fun n ↦ by simp [← ModuleCat.ofHom_comp, koszulComplex_aux_comp_eq_zero])
 
 section DifferentialGradedAlgebra
 
