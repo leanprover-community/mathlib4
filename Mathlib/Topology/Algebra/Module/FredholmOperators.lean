@@ -28,36 +28,35 @@ section FindHome
 -- Maybe the following will help...
 
 lemma Fin.sum_even_odd {n : ℕ} [NeZero n] {f : Fin n → ℤ} :
-  ∑ i, f i =
-    ∑ (i : Fin (n / 2)), f (Fin.ofNat n (2 * i + 1))
-    + ∑ (i : Fin ((n + 1) / 2)), f (Fin.ofNat n (2 * i)) := by sorry
+    ∑ i : Fin n, f i =
+      ∑ i ∈ Finset.filter (fun i : Fin n => i.val % 2 = 1) Finset.univ, f i
+        + ∑ i ∈ Finset.filter (fun i : Fin n => i.val % 2 = 0) Finset.univ, f i := by
+   simpa only [add_comm, Finset.sum_filter] using
+        by rw [← Finset.sum_add_distrib]
+           congr
+           ext
+           aesop
 
-/- Needs golf and a correct name, but I think this will work. -/
 lemma alt_sum_eq_zero_of_sum_even_eq_sum_odd {n : ℕ} [NeZero n] {f : Fin n → ℤ}
-  (hf : ∑ (i : Fin (n / 2)), f (Fin.ofNat n (2 * i + 1))
-    = ∑ (i : Fin ((n + 1) / 2)), f (Fin.ofNat n (2 * i))) :
-      ∑ i, (-1) ^ (i.val) * f i = 0 := by
+  (hf : ∑ i ∈ Finset.filter (fun i : Fin n => i.val % 2 = 1) Finset.univ, f i
+      = ∑ i ∈ Finset.filter (fun i : Fin n => i.val % 2 = 0) Finset.univ, f i) :
+        ∑ i, (-1) ^ (i.val) * f i = 0 := by
   rw [Fin.sum_even_odd]
-  simp only [Int.reduceNeg, Fin.ofNat_eq_cast, Fin.val_natCast]
-  have h_odd (x : Fin (n / 2)) : (-1) ^ ((2 * x + 1) % n) = -1 := by
-    have : (2 * x + 1) % n = ((2 * x + 1) : ℕ) := by
-      refine Nat.mod_eq_of_lt ?_
-      have : x < n / 2 := x.isLt
-      grind
-    rw [this]
-    have : Odd (2 * (x : ℕ) + 1) := by
-      simp only [even_two, Even.mul_right, Even.add_one]
-    exact Odd.neg_one_pow this
-  have h_even (x : Fin ((n + 1) / 2)) : (-1) ^ (2 * x % n) = 1 := by
-   have : (2 * x) % n = (2 * x : ℕ) := by
-     refine Nat.mod_eq_of_lt ?_
-     have : x < (n + 1)/ 2 := x.isLt
-     grind
-   rw [this]
-   simp only [Int.reduceNeg, even_two, Even.mul_right, Even.neg_pow, one_pow]
-  simp only [Int.reduceNeg, h_odd, neg_mul, one_mul, Finset.sum_neg_distrib]
-  simp_all only [Fin.ofNat_eq_cast, Int.reduceNeg, one_mul, neg_add_cancel]
-
+  have h_odd (i : Fin n) (hi : i.val % 2 = 1) : (-1) ^ (i : ℕ) = -1 := by
+    rw [← Nat.mod_add_div i 2, hi]
+    norm_num [pow_add, pow_mul]
+  have h_even (i : Fin n) (hi : i.val % 2 = 0) : (-1) ^ (i : ℕ) = 1 := by
+     rw [← Nat.mod_add_div i 2, hi]
+     norm_num
+  have : ∑ i ∈ Finset.filter (fun i : Fin n => i.val % 2 = 1) Finset.univ, (-1) ^ i.val * f i =
+      - ∑ i ∈ Finset.filter (fun i : Fin n => i.val % 2 = 1) Finset.univ, f i := by
+    rw [← Finset.sum_neg_distrib, Finset.sum_congr rfl fun x hx =>
+      by rw [ h_odd x ( Finset.mem_filter.mp hx |>.2)]]
+    norm_num
+  have : ∑ i ∈ Finset.filter (fun i : Fin n => i.val % 2 = 0) Finset.univ, (-1) ^ i.val * f i =
+      ∑ i ∈ Finset.filter (fun i : Fin n => i.val % 2 = 0) Finset.univ, f i := by
+    exact Finset.sum_congr rfl fun x hx => by aesop
+  grind
 
 open Function Module in
 lemma Module.sum_neg_one_pow_finrank_eq_zero_of_exact' {n : ℕ} {k : Type*}
