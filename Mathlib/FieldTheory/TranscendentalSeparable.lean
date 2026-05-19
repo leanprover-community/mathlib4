@@ -92,12 +92,12 @@ lemma Algebra.isSeparable_iff_isTranscendentalSeparable_and_isAlgebraic :
       (Algebra.IsTranscendentalSeparable k K ∧ Algebra.IsAlgebraic k K) := by
   refine ⟨fun h ↦ ⟨⟨fun L hL ↦ ?_⟩, inferInstance⟩, fun ⟨sep, alg⟩ ↦ ?_⟩
   · exact ((Algebra.isSeparable_iff_isSeparablyGenerated_and_isAlgebraic k L).mp inferInstance).1
-  · refine Algebra.isSeparable_iff.mpr (fun x ↦ ⟨IsIntegral.isIntegral x, ?_⟩)
+  · refine Algebra.isSeparable_iff.mpr fun x ↦ ⟨IsIntegral.isIntegral x, ?_⟩
     let L := IntermediateField.adjoin k {x}
     have fin : EssFiniteType k L := IntermediateField.essFiniteType_iff.mpr
       (IntermediateField.fg_adjoin_of_finite (Set.finite_singleton x))
     have sep' := (Algebra.isSeparable_iff_isSeparablyGenerated_and_isAlgebraic k L).mpr
-      ⟨sep.1 L fin, inferInstance⟩
+      ⟨sep.forall_isSeparablyGenerated L fin, inferInstance⟩
     exact Subalgebra.isSeparable_iff.mp sep' x (by simp [L])
 
 end
