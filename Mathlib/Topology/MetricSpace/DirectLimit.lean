@@ -17,7 +17,7 @@ variable {T : ∀ ⦃i j : ι⦄, i ≤ j → Type*} {f : ∀ _ _ h, T h}
 variable [∀ i j (h : i ≤ j), FunLike (T h) (G i) (G j)] [DirectedSystem G (f · · ·)]
 variable [IsDirectedOrder ι]
 
-namespace Metric
+namespace MetricSpace
 
 variable [∀ i, MetricSpace (G i)]
 variable [∀ i j h, IsometryClass (T h) (G i) (G j)]
@@ -47,7 +47,7 @@ noncomputable instance : MetricSpace (DirectLimit G f) where
     have h' := eq_of_dist_eq_zero h
     rw [h']
 
-lemma MetricSpace.dist_def (i : ι) (x y : G i) :
+lemma dist_def (i : ι) (x y : G i) :
     dist (α := DirectLimit G f) ⟦⟨i,x⟩⟧ ⟦⟨i,y⟩⟧ = dist x y := by
   change DirectLimit.lift₂ f f
     (fun i ↦ dist (α := G i))
@@ -55,6 +55,6 @@ lemma MetricSpace.dist_def (i : ι) (x y : G i) :
     ⟦⟨i, x⟩⟧ ⟦⟨i, y⟩⟧ = dist x y
   rw [lift₂_def]
 
-end Metric
+end MetricSpace
 
 end DirectLimit
