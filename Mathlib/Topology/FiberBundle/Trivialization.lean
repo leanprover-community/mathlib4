@@ -412,8 +412,9 @@ initialize_simps_projections Trivialization (toFun → apply, invFun → symm_ap
 theorem toPretrivialization_injective :
     Function.Injective fun e : Trivialization F proj => e.toPretrivialization := fun e e' h => by
   ext1
-  exacts [OpenPartialHomeomorph.toPartialEquiv_injective
-    (congr_arg Pretrivialization.toPartialEquiv h), congr_arg Pretrivialization.baseSet h]
+  exacts [OpenPartialHomeomorph.toPartialHomeomorph_injective
+    (PartialHomeomorph.toPartialEquiv_injective (congr_arg Pretrivialization.toPartialEquiv h)),
+    congr_arg Pretrivialization.baseSet h]
 
 @[simp, mfld_simps]
 theorem coe_coe : ⇑e.toOpenPartialHomeomorph = e :=
