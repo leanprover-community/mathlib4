@@ -26,6 +26,7 @@ open scoped BigOperators Matrix.Norms.Frobenius
 attribute [local instance] Matrix.frobeniusSeminormedAddCommGroup
 attribute [local instance] Matrix.frobeniusNormedAddCommGroup
 attribute [local instance] Matrix.frobeniusNormedSpace
+attribute [local instance] Fintype.ofFinite
 
 namespace Matrix
 
@@ -82,19 +83,20 @@ section ChainRule
 
 variable {𝕜 m n p q r s : Type*}
 variable [NontriviallyNormedField 𝕜]
-variable [Fintype m] [Fintype n] [Fintype p] [Fintype q] [Fintype r] [Fintype s]
 variable (F : Matrix m n 𝕜 → Matrix p q 𝕜)
 variable (G : Matrix p q 𝕜 → Matrix r s 𝕜)
 variable (X : Matrix m n 𝕜)
 
 @[simp]
 theorem matrix_fderiv_comp
+    [Finite m] [Finite n] [Finite p] [Finite q] [Finite r] [Finite s]
     (hF : DifferentiableAt 𝕜 F X)
     (hG : DifferentiableAt 𝕜 G (F X)) :
     fderiv 𝕜 (G ∘ F) X = (fderiv 𝕜 G (F X)).comp (fderiv 𝕜 F X) := by
   simpa using (fderiv_comp X hG hF)
 
 theorem jacobianMatrix_comp
+    [Finite m] [Finite n] [Fintype p] [Fintype q] [Finite r] [Finite s]
     [DecidableEq m] [DecidableEq n] [DecidableEq p] [DecidableEq q]
     (hF : DifferentiableAt 𝕜 F X)
     (hG : DifferentiableAt 𝕜 G (F X))
@@ -146,7 +148,7 @@ theorem jacobianMatrix_const
 
 section Fintype
 
-variable [Fintype m] [Fintype n] [Fintype p] [Fintype q]
+variable [Finite m] [Finite n] [Finite p] [Finite q]
 
 theorem jacobianMatrix_add
     (F G : Matrix m n 𝕜 → Matrix p q 𝕜) (X : Matrix m n 𝕜)
