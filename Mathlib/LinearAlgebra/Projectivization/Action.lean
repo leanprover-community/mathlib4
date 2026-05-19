@@ -165,6 +165,24 @@ instance specialLinearGroup_is_two_pretransitive :
 instance : IsPreprimitive (SpecialLinearGroup K V) (ℙ K V) :=
   isPreprimitive_of_is_two_pretransitive inferInstance
 
+variable {ι : Type*} [Fintype ι] [DecidableEq ι]
+
+instance : IsMultiplyPretransitive (Matrix.SpecialLinearGroup ι K) (ℙ K (ι → K)) 2 :=
+  let φ : SpecialLinearGroup K (ι → K) →* Matrix.SpecialLinearGroup ι K :=
+    Matrix.SpecialLinearGroup.toLin'_equiv.symm.toMonoidHom
+  let f : ℙ K (ι → K) →ₑ[φ] ℙ K (ι → K) :=
+    { toFun := id
+      map_smul' g D := by
+        induction D using Projectivization.ind with | _ v hv => ?_
+        simp only [smul_mk, id_eq, mk_eq_mk_iff']
+        refine ⟨1, ?_⟩
+        simp [one_smul, Matrix.SpecialLinearGroup.smulVec_def,
+          φ, Matrix.SpecialLinearGroup.toLin'_equiv, SpecialLinearGroup.smul_def]}
+  IsPretransitive.of_embedding (f := f) Function.surjective_id
+
+instance prePrimitive_SL : IsPreprimitive (Matrix.SpecialLinearGroup ι K) (ℙ K (ι → K)) :=
+  isPreprimitive_of_is_two_pretransitive inferInstance
+
 end Field
 
 end Projectivization
