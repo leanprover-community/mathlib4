@@ -653,6 +653,10 @@ open scoped Set.Notation
 lemma IsOpen.preimage_val {s t : Set X} (ht : IsOpen t) : IsOpen (s ↓∩ t) :=
   ht.preimage continuous_subtype_val
 
+lemma IsOpen.image_val {s : Set X} {t : Set s} (ht : IsOpen t) :
+    ∃ c, IsOpen c ∧ Subtype.val '' t = c ∩ s := by
+  simpa using IsInducing.subtypeVal.image_eq_isOpen_inter_range ht
+
 /-- If `s` is dense in `X` and `u` is open and dense in `s`, then `u = v ∩ s` for some `v` that is
 open and dense in `X`. -/
 lemma exists_open_dense_of_open_dense_subtype (hs : Dense s) {u : Set s} (huo : IsOpen u)
@@ -670,6 +674,10 @@ lemma exists_open_dense_of_open_dense_subtype (hs : Dense s) {u : Set s} (huo : 
 
 lemma IsClosed.preimage_val {s t : Set X} (ht : IsClosed t) : IsClosed (s ↓∩ t) :=
   ht.preimage continuous_subtype_val
+
+lemma IsClosed.image_val {s : Set X} {t : Set s} (ht : IsClosed t) :
+    ∃ c, IsClosed c ∧ Subtype.val '' t = c ∩ s := by
+  simpa using IsInducing.subtypeVal.image_eq_isClosed_inter_range ht
 
 @[simp] lemma IsOpen.inter_preimage_val_iff {s t : Set X} (hs : IsOpen s) :
     IsOpen (s ↓∩ t) ↔ IsOpen (s ∩ t) :=
@@ -915,7 +923,7 @@ theorem continuous_update [DecidableEq ι] (i : ι) :
   continuous_fst.update i continuous_snd
 
 /-- `Pi.mulSingle i x` is continuous in `x`. -/
-@[to_additive (attr := continuity) /-- `Pi.single i x` is continuous in `x`. -/]
+@[to_additive (attr := continuity, fun_prop) /-- `Pi.single i x` is continuous in `x`. -/]
 theorem continuous_mulSingle [∀ i, One (A i)] [DecidableEq ι] (i : ι) :
     Continuous fun x => (Pi.mulSingle i x : ∀ i, A i) :=
   continuous_const.update _ continuous_id
@@ -1252,8 +1260,10 @@ theorem continuous_sigma_iff {f : Sigma σ → X} :
   rw [continuous_iSup_dom]
   exact forall_congr' fun _ => continuous_coinduced_dom
 
+-- NB. This is a bad `fun_prop` theorem: because of its hypotheses, this would be classified as a
+-- transition theorem, and most likely never fire.
 /-- A map out of a sum type is continuous if its restriction to each summand is. -/
-@[continuity, fun_prop]
+@[continuity]
 theorem continuous_sigma {f : Sigma σ → X} (hf : ∀ i, Continuous fun a => f ⟨i, a⟩) :
     Continuous f :=
   continuous_sigma_iff.2 hf
