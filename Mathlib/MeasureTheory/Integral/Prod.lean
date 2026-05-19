@@ -502,7 +502,7 @@ theorem integral_prod (f : α × β → E) (hf : Integrable f (μ.prod ν)) :
       measureReal_def,
       integral_toReal (measurable_measure_prodMk_left hs).aemeasurable
         (ae_measure_lt_top hs h2s.ne)]
-    rw [prod_apply hs]
+    rw [Measure.prod_apply hs]
   · rintro f g - i_f i_g hf hg
     simp_rw [integral_add' i_f i_g, integral_integral_add' i_f i_g, hf, hg]
   · exact isClosed_eq continuous_integral continuous_integral_integral

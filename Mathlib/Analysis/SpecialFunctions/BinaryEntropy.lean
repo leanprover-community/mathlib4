@@ -172,7 +172,7 @@ This is due to definition of `Real.log` for negative numbers. -/
   rw [ne_comm, ← sub_ne_zero] at hp₁
   unfold binEntropy
   simp only [log_inv, mul_neg]
-  fun_prop (disch := assumption)
+  fun_prop
 
 lemma differentiableAt_binEntropy_iff_ne_zero_one :
     DifferentiableAt ℝ binEntropy p ↔ p ≠ 0 ∧ p ≠ 1 := by
@@ -194,7 +194,7 @@ lemma deriv_binEntropy (p : ℝ) : deriv binEntropy p = log (1 - p) - log p := b
     rw [binEntropy_eq_negMulLog_add_negMulLog_one_sub', deriv_fun_add, deriv_comp_const_sub,
       deriv_negMulLog hp₀, deriv_negMulLog hp₁]
     · ring
-    all_goals fun_prop (disch := assumption)
+    all_goals fun_prop
   -- pathological case where `deriv = 0` since `binEntropy` is not differentiable there
   · rw [deriv_zero_of_not_differentiableAt (differentiableAt_binEntropy_iff_ne_zero_one.not.2 hp)]
     push +distrib Not at hp
@@ -243,7 +243,7 @@ This is due to definition of `Real.log` for negative numbers. -/
   unfold qaryEntropy; fun_prop
 
 @[fun_prop] lemma differentiableAt_qaryEntropy (hp₀ : p ≠ 0) (hp₁ : p ≠ 1) :
-    DifferentiableAt ℝ (qaryEntropy q) p := by unfold qaryEntropy; fun_prop (disch := assumption)
+    DifferentiableAt ℝ (qaryEntropy q) p := by unfold qaryEntropy; fun_prop
 
 lemma deriv_qaryEntropy (hp₀ : p ≠ 0) (hp₁ : p ≠ 1) :
     deriv (qaryEntropy q) p = log (q - 1) + log (1 - p) - log p := by
@@ -251,7 +251,7 @@ lemma deriv_qaryEntropy (hp₀ : p ≠ 0) (hp₁ : p ≠ 1) :
   rw [deriv_fun_add]
   · simp only [Int.cast_sub, Int.cast_natCast, Int.cast_one, differentiableAt_fun_id,
       deriv_mul_const, deriv_id'', one_mul, deriv_binEntropy, add_sub_assoc]
-  all_goals fun_prop (disch := assumption)
+  all_goals fun_prop
 
 /-- Binary entropy has derivative `log (1 - p) - log p`. -/
 lemma hasDerivAt_binEntropy (hp₀ : p ≠ 0) (hp₁ : p ≠ 1) :
