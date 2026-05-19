@@ -36,14 +36,8 @@ noncomputable instance : MetricSpace (DirectLimit G f) where
     rw [← dist_self x]
     apply DirectLimit.lift₂_def f f (fun i ↦ dist (α := G i) )
       (fun i j h x y ↦ (IsometryClass.dist_eq (f i j h) x y).symm) i x x
-  dist_comm := by
-    apply DirectLimit.induction₂
-    intro i x y
-    simp_rw [lift₂_def, dist_comm x y]
-  dist_triangle := by
-    apply DirectLimit.induction₃
-    intro i x y z
-    simp_rw [lift₂_def, dist_triangle]
+  dist_comm := DirectLimit.induction₂ f (fun i x y ↦ by simp_rw [lift₂_def, dist_comm x y])
+  dist_triangle := DirectLimit.induction₃ f (fun i x y z ↦ by simp_rw [lift₂_def, dist_triangle])
   eq_of_dist_eq_zero := by
     apply DirectLimit.induction₂
     intro i x y
