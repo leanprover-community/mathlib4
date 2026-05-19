@@ -20,6 +20,8 @@ In this file we translate ring theoretic properties of a property of ring homomo
 
 - `CommRingCat.Under.hasFiniteLimits`: If `P` is stable under finite products and equalizers,
   `P.Under ⊤ R` has finite limits.
+- `RingHom.HasStableEqualizers.preservesFiniteLimits_pushout`: If `P` has stable equalizers,
+  base change along arbitrary morphisms preserve finite limits.
 -/
 
 @[expose] public section
