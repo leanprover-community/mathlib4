@@ -63,11 +63,9 @@ lemma one_le_autCount [Finite V] : 1 ≤ G.autCount := autCount_pos
 
 namespace Copy
 
-/-- Precomposing a copy by an automorphism of the guest does not change the image subgraph. -/
 lemma toSubgraph_comp_iso (f : Copy G H) (σ : G.Aut) :
     (f.comp σ.toCopy).toSubgraph = f.toSubgraph := by simp
 
-/-- Precomposition with automorphisms of the guest is injective on copies. -/
 lemma comp_toCopy_injective (f : Copy G H) :
     Injective fun σ : G.Aut ↦ f.comp σ.toCopy := fun σ₁ σ₂ h ↦ by
   ext v; simpa using DFunLike.congr_fun h v
@@ -118,11 +116,9 @@ end Copy
 
 namespace Embedding
 
-/-- Precomposing an embedding by an automorphism of the guest does not change the image subgraph. -/
 lemma toSubgraph_comp_iso (f : Embedding G H) (σ : G.Aut) :
     (f.comp σ.toEmbedding).toSubgraph = f.toSubgraph := by simp
 
-/-- Precomposition with automorphisms of the guest is injective on embeddings. -/
 lemma comp_toEmbedding_injective (f : Embedding G H) :
     Injective fun σ : G.Aut ↦ f.comp σ.toEmbedding := fun σ₁ σ₂ h ↦ by
   ext v; simpa using DFunLike.congr_fun h v
