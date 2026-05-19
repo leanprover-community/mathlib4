@@ -865,7 +865,7 @@ theorem map_normalClosure (s : Set G) (f : G →* N) (hf : Surjective f) :
     (normalClosure s).map f = normalClosure (f '' s) := by
   have : Normal (map f (normalClosure s)) := Normal.map inferInstance f hf
   apply le_antisymm
-  · simp [map_normalClosure_le]
+  · exact map_normalClosure_le s f
   · exact normalClosure_le_normal (Set.image_mono subset_normalClosure)
 
 @[to_additive]
