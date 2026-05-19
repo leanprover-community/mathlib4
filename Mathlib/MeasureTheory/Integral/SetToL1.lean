@@ -942,36 +942,33 @@ theorem tendsto_setToFun_approxOn_of_measurable_of_range_subset
   refine tendsto_setToFun_approxOn_of_measurable hT hf fmeas ?_ _ (integrable_zero _ _ _)
   exact Eventually.of_forall fun x => subset_closure (hs (Set.mem_union_left _ (mem_range_self _)))
 
-
-#where
-
-theorem setToFun_map (hT : DominatedFinMeasAdditive μ T C) {β : Type*} {_ : MeasurableSpace β}
+theorem setToFun_of_le_map (hT : DominatedFinMeasAdditive μ T C) {β : Type*} {_ : MeasurableSpace β}
     {μ' : Measure β} {φ : α → β} {T' : Set β → E →L[ℝ] F} (hT' : DominatedFinMeasAdditive μ' T' C')
     {f : β → E} (hf : Integrable (f ∘ φ) μ) (hfm : StronglyMeasurable f) (hφ : Measurable φ)
     (hμ' : μ' ≤ μ.map φ)
-    (h : ∀ (s : Set β) (x : E), MeasurableSet s → T' s x = T (φ⁻¹' s) x) :
+    (h : ∀ (s : Set β) (x : E), MeasurableSet s → T' s x = T (φ ⁻¹' s) x) :
     setToFun μ' T' hT' f = setToFun μ T hT (f ∘ φ) := by
   by_cases hF : CompleteSpace F; swap
   · simp [setToFun, hF]
-  have : Integrable f μ' :=
+  have hfi' : Integrable f μ' :=
     ((integrable_map_measure hfm.aestronglyMeasurable hφ.aemeasurable).2 hf).mono_measure hμ'
   borelize E
   have : SeparableSpace (range f ∪ {0} : Set E) := hfm.separableSpace_range_union_singleton
   refine tendsto_nhds_unique
     (tendsto_setToFun_approxOn_of_measurable_of_range_subset
-      hT' hfm.measurable ?_ _ Subset.rfl) ?_
+      hT' hfm.measurable hfi' _ Subset.rfl) ?_
   convert tendsto_setToFun_approxOn_of_measurable_of_range_subset
-    (dominatedFinMeasAdditive_cbmApplyMeasure μ B) (hfm.measurable.comp hφ) hfi' (range f ∪ {0})
+    hT (hfm.measurable.comp hφ) hf (range f ∪ {0})
     (union_subset_union_left {0} (range_comp_subset_range φ f)) using 1
   ext i : 1
-  rw [setToFun_simpleFunc _ _ (SimpleFunc.integrable_approxOn_range _ hfi _),
-    setToFun_simpleFunc]; swap
-  · apply SimpleFunc.integrable_approxOn _ hfi' (by simp) (by simp)
-  rw [SimpleFunc.approxOn_comp hfm.measurable hφ]
-  simp [cbmApplyMeasure]
-
-
-#exit
+  rw [setToFun_simpleFunc _ _ (SimpleFunc.integrable_approxOn_range _ hfi' _),
+    setToFun_simpleFunc, SimpleFunc.approxOn_comp hfm.measurable hφ]; swap
+  · apply SimpleFunc.integrable_approxOn _ hf (by simp) (by simp)
+  simp only [union_singleton, SimpleFunc.measurableSet_preimage, h, ← preimage_comp,
+    SimpleFunc.coe_comp]
+  refine (Finset.sum_subset (SimpleFunc.range_comp_subset_range _ hφ) fun y _ hy => ?_).symm
+  rw [SimpleFunc.mem_range, ← Set.preimage_singleton_eq_empty, SimpleFunc.coe_comp] at hy
+  simp [hy, hT.1.map_empty_eq_zero]
 
 /-- Auxiliary lemma for `setToFun_congr_measure`: the function sending `f : α →₁[μ] G` to
 `f : α →₁[μ'] G` is continuous when `μ' ≤ c' • μ` for `c' ≠ ∞`. -/
