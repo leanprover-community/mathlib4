@@ -3,9 +3,11 @@ Copyright (c) 2024 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Data.Nat.Factorization.LCM
-import Mathlib.Algebra.Group.TypeTags.Finite
-import Mathlib.RingTheory.RootsOfUnity.Basic
+module
+
+public import Mathlib.Data.Nat.Factorization.LCM
+public import Mathlib.Algebra.Group.TypeTags.Finite
+public import Mathlib.RingTheory.RootsOfUnity.Basic
 
 /-!
 # Primitive roots of unity
@@ -29,6 +31,8 @@ monoids, expressing that an element is a primitive root of unity.
   a primitive `k`-th root of unity is equal to the `k`-th roots of unity.
 * `IsPrimitiveRoot.card_primitiveRoots`: if an integral domain
   has a primitive `k`-th root of unity, then it has `φ k` of them.
+* `primitiveRootsPowEquivOfCoprime`: An equivalence between `primitiveRoots k R` that takes each
+  root to a coprime power `a`.
 
 ## Implementation details
 
@@ -41,6 +45,8 @@ This creates a little bit of friction with how `rootsOfUnity` is implemented (as
 of the `Units`), but lemmas like `IsPrimitiveRoot.isUnit` and
 `IsPrimitiveRoot.coe_units_iff` should provide the necessary glue.
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -99,11 +105,9 @@ variable {k l : ℕ}
 theorem mk_of_lt (ζ : M) (hk : 0 < k) (h1 : ζ ^ k = 1) (h : ∀ l : ℕ, 0 < l → l < k → ζ ^ l ≠ 1) :
     IsPrimitiveRoot ζ k := by
   refine ⟨h1, fun l hl ↦ ?_⟩
-  suffices k.gcd l = k by exact this ▸ k.gcd_dvd_right l
-  rw [eq_iff_le_not_lt]
-  refine ⟨Nat.le_of_dvd hk (k.gcd_dvd_left l), ?_⟩
-  intro h'; apply h _ (Nat.gcd_pos_of_pos_left _ hk) h'
-  exact pow_gcd_eq_one _ h1 hl
+  suffices k.gcd l = k from this ▸ k.gcd_dvd_right l
+  refine (Nat.le_of_dvd hk (k.gcd_dvd_left l)).eq_of_not_lt fun h' ↦ ?_
+  exact h _ (Nat.gcd_pos_of_pos_left _ hk) h' (by simp [h1, hl])
 
 section CommMonoid
 
@@ -117,9 +121,11 @@ theorem pow_eq_one_iff_dvd (h : IsPrimitiveRoot ζ k) (l : ℕ) : ζ ^ l = 1 ↔
   ⟨h.dvd_of_pow_eq_one l, by
     rintro ⟨i, rfl⟩; simp only [pow_mul, h.pow_eq_one, one_pow]⟩
 
-theorem isUnit (h : IsPrimitiveRoot ζ k) (h0 : k ≠ 0) : IsUnit ζ := by
-  apply isUnit_of_mul_eq_one ζ (ζ ^ (k - 1))
-  rw [← pow_succ', Nat.sub_one_add_one h0, h.pow_eq_one]
+theorem isUnit (h : IsPrimitiveRoot ζ k) (h0 : k ≠ 0) : IsUnit ζ :=
+  .of_mul_eq_one (ζ ^ (k - 1)) <| by rw [← pow_succ', Nat.sub_one_add_one h0, h.pow_eq_one]
+
+theorem isOfFinOrder (h : IsPrimitiveRoot ζ k) (h0 : k ≠ 0) : IsOfFinOrder ζ :=
+  ⟨k, Nat.ne_zero_iff_zero_lt.mp h0, (isPeriodicPt_mul_iff_pow_eq_one _).mpr h.pow_eq_one⟩
 
 theorem pow_ne_one_of_pos_of_lt (h : IsPrimitiveRoot ζ k) (h0 : l ≠ 0) (hl : l < k) : ζ ^ l ≠ 1 :=
   mt (Nat.le_of_dvd (Nat.pos_iff_ne_zero.mpr h0) ∘ h.dvd_of_pow_eq_one _) <| not_le_of_gt hl
@@ -315,7 +321,7 @@ end CommMonoidWithZero
 
 section CancelCommMonoidWithZero
 
-variable {M₀ : Type*} [CancelCommMonoidWithZero M₀]
+variable {M₀ : Type*} [CommMonoidWithZero M₀] [IsCancelMulZero M₀]
 
 lemma injOn_pow_mul {n : ℕ} {ζ : M₀} (hζ : IsPrimitiveRoot ζ n) {α : M₀} (hα : α ≠ 0) :
     Set.InjOn (ζ ^ · * α) (Finset.range n) :=
@@ -366,10 +372,17 @@ end DivisionCommMonoid
 
 section CommRing
 
-variable [CommRing R] {n : ℕ} {ζ : R}
+variable [CommRing R] {n n' : ℕ} {ζ : R}
 
 theorem sub_one_ne_zero (hn : 1 < n) (hζ : IsPrimitiveRoot ζ n) : ζ - 1 ≠ 0 :=
   sub_ne_zero.mpr <| hζ.ne_one hn
+
+theorem isRoot (hζ : IsPrimitiveRoot ζ n) : (X ^ n - 1 : R[X]).IsRoot ζ := by
+  simp [hζ.pow_eq_one]
+
+theorem isRoot_of_dvd (hζ : IsPrimitiveRoot ζ n) : n ∣ n' → (X ^ n' - 1 : R[X]).IsRoot ζ := by
+  rintro ⟨k, rfl⟩
+  simp [pow_mul, hζ.pow_eq_one]
 
 end CommRing
 
@@ -418,12 +431,17 @@ theorem geom_sum_eq_zero [IsDomain R] {ζ : R} (hζ : IsPrimitiveRoot ζ k) (hk 
   refine eq_zero_of_ne_zero_of_mul_left_eq_zero (sub_ne_zero_of_ne (hζ.ne_one hk).symm) ?_
   rw [mul_neg_geom_sum, hζ.pow_eq_one, sub_self]
 
+theorem isRoot_geom_sum [IsDomain R] {ζ : R} (hζ : IsPrimitiveRoot ζ k) (hk : 1 < k) :
+    (∑ i ∈ range k, X ^ i).IsRoot ζ := by
+  simp [geom_sum_eq_zero hζ hk]
+
 /-- If `1 < k`, then `ζ ^ k.pred = -(∑ i ∈ range k.pred, ζ ^ i)`. -/
 theorem pow_sub_one_eq [IsDomain R] {ζ : R} (hζ : IsPrimitiveRoot ζ k) (hk : 1 < k) :
     ζ ^ k.pred = -∑ i ∈ range k.pred, ζ ^ i := by
   rw [eq_neg_iff_add_eq_zero, add_comm, ← sum_range_succ, ← Nat.succ_eq_add_one,
     Nat.succ_pred_eq_of_pos (pos_of_gt hk), hζ.geom_sum_eq_zero hk]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The (additive) monoid equivalence between `ZMod k`
 and the powers of a primitive root of unity `ζ`. -/
 def zmodEquivZPowers (h : IsPrimitiveRoot ζ k) : ZMod k ≃+ Additive (Subgroup.zpowers ζ) :=
@@ -610,7 +628,7 @@ theorem card_nthRoots {n : ℕ} {ζ : R} (hζ : IsPrimitiveRoot ζ n) (a : R) :
   · obtain ⟨α, hα⟩ := h
     rw [nthRoots_eq hζ hα, Multiset.card_map, Multiset.card_range]
   · obtain (rfl | hn) := n.eq_zero_or_pos; · simp
-    push_neg at h
+    push Not at h
     simpa only [Multiset.card_eq_zero, Multiset.eq_zero_iff_forall_notMem, mem_nthRoots hn]
 
 /-- A variant of `IsPrimitiveRoot.card_rootsOfUnity` for `ζ : Rˣ`. -/
@@ -690,6 +708,35 @@ theorem card_primitiveRoots {ζ : R} {k : ℕ} (h : IsPrimitiveRoot ζ k) :
     rw [mem_primitiveRoots (Nat.pos_of_ne_zero h0), h.isPrimitiveRoot_iff] at hξ
     rcases hξ with ⟨i, hin, hi, H⟩
     exact ⟨i, ⟨hin, hi.symm⟩, H⟩
+
+/-- Equivalence of coprime powers of primitive roots. If a * b ≡ 1 (mod n), then x ↦ x ^ a and
+    x ↦ x ^ b restricts to a bijection on the n-th primitive roots. -/
+@[simps]
+def primitiveRootsPowEquiv {a b n : ℕ} (h : a * b ≡ 1 [MOD n]) :
+    primitiveRoots n R ≃ primitiveRoots n R where
+  toFun x := ⟨x.1 ^ a,
+    have hr : 0 < n := by by_contra! h; cases x; simp_all
+    have hr' : a.Coprime n := by
+      simpa [(a.gcd_dvd_left n).trans] using h.dvd_iff (Nat.gcd_dvd_right a n)
+    (mem_primitiveRoots hr).mpr <| ((mem_primitiveRoots hr).mp x.2).pow_of_coprime _ hr'⟩
+  invFun x := ⟨x.1 ^ b,
+    have hr : 0 < n := by by_contra! h; cases x; simp_all
+    have hr' : b.Coprime n := by
+      simpa [(b.gcd_dvd_left n).trans] using h.dvd_iff (Nat.gcd_dvd_right b n)
+    (mem_primitiveRoots hr).mpr <| ((mem_primitiveRoots hr).mp x.2).pow_of_coprime _ hr'⟩
+  left_inv x := by ext; simp [← pow_mul,
+    pow_eq_pow_of_modEq h (isPrimitiveRoot_of_mem_primitiveRoots x.2).pow_eq_one]
+  right_inv x := by ext; simp [← pow_mul, mul_comm b,
+    pow_eq_pow_of_modEq h (isPrimitiveRoot_of_mem_primitiveRoots x.2).pow_eq_one]
+
+/-- Equivalence of coprime powers of primitive roots. Every `n`-th primitive root is taken to the
+    `a`-th power given that `n` and `a` are coprime. -/
+@[simps! apply_coe]
+def primitiveRootsPowEquivOfCoprime {a n : ℕ} (h : a.Coprime n) [NeZero n] :
+    primitiveRoots n R ≃ primitiveRoots n R :=
+  haveI h2 := Nat.exists_mul_mod_eq_of_coprime 1 h NeZero.out
+  haveI h3 : a * h2.choose ≡ 1 [MOD n] := by grind [Nat.ModEq]
+  primitiveRootsPowEquiv h3
 
 /-- The sets `primitiveRoots k R` are pairwise disjoint. -/
 theorem disjoint {k l : ℕ} (h : k ≠ l) : Disjoint (primitiveRoots k R) (primitiveRoots l R) :=
@@ -800,7 +847,7 @@ lemma IsCyclic.exists_apply_ne_one {G G' : Type*} [Group G] [IsCyclic G] [Finite
   have hφg : IsPrimitiveRoot (φ g) (Nat.card G) := by
     rwa [monoidHomOfForallMemZpowers_apply_gen hg hζg]
   use φ
-  contrapose! ha
+  contrapose ha
   specialize hg a
   rw [← mem_powers_iff_mem_zpowers, Submonoid.mem_powers_iff] at hg
   obtain ⟨k, hk⟩ := hg

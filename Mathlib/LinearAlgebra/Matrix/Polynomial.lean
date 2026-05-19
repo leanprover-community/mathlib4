@@ -3,10 +3,12 @@ Copyright (c) 2021 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.Algebra.Polynomial.BigOperators
-import Mathlib.Algebra.Polynomial.Degree.Lemmas
-import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
-import Mathlib.Tactic.ComputeDegree
+module
+
+public import Mathlib.Algebra.Polynomial.BigOperators
+public import Mathlib.Algebra.Polynomial.Degree.Lemmas
+public import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
+public import Mathlib.Tactic.ComputeDegree
 
 /-!
 # Matrices of polynomials and polynomials of matrices
@@ -23,6 +25,8 @@ In particular, we give results about the polynomial given by
 
 matrix determinant, polynomial
 -/
+
+public section
 
 
 open Matrix Polynomial
@@ -57,7 +61,7 @@ theorem natDegree_det_X_add_C_le (A B : Matrix n n α) :
 
 theorem coeff_det_X_add_C_zero (A B : Matrix n n α) :
     coeff (det ((X : α[X]) • A.map C + B.map C)) 0 = det B := by
-  rw [det_apply, finset_sum_coeff, det_apply]
+  rw [det_apply, finsetSum_coeff, det_apply]
   refine Finset.sum_congr rfl ?_
   rintro g -
   convert coeff_smul (R := α) (sign g) _ 0
@@ -67,7 +71,7 @@ theorem coeff_det_X_add_C_zero (A B : Matrix n n α) :
 
 theorem coeff_det_X_add_C_card (A B : Matrix n n α) :
     coeff (det ((X : α[X]) • A.map C + B.map C)) (Fintype.card n) = det A := by
-  rw [det_apply, det_apply, finset_sum_coeff]
+  rw [det_apply, det_apply, finsetSum_coeff]
   refine Finset.sum_congr rfl ?_
   simp only [Finset.mem_univ, forall_true_left]
   intro g
@@ -84,9 +88,9 @@ theorem leadingCoeff_det_X_one_add_C (A : Matrix n n α) :
   cases subsingleton_or_nontrivial α
   · simp [eq_iff_true_of_subsingleton]
   rw [← @det_one n, ← coeff_det_X_add_C_card _ A, leadingCoeff]
-  simp only [Matrix.map_one, C_eq_zero, RingHom.map_one]
+  simp only [Matrix.map_one, C_eq_zero, map_one]
   rcases (natDegree_det_X_add_C_le 1 A).eq_or_lt with h | h
-  · simp only [RingHom.map_one, Matrix.map_one, C_eq_zero] at h
+  · simp only [map_one, Matrix.map_one, C_eq_zero] at h
     rw [h]
   · -- contradiction. we have a hypothesis that the degree is less than |n|
     -- but we know that coeff _ n = 1

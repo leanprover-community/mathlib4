@@ -3,10 +3,12 @@ Copyright (c) 2020 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-import Mathlib.MeasureTheory.Function.LpSeminorm.Prod
-import Mathlib.MeasureTheory.Integral.DominatedConvergence
-import Mathlib.MeasureTheory.Integral.Bochner.Set
-import Mathlib.MeasureTheory.Measure.Prod
+module
+
+public import Mathlib.MeasureTheory.Function.LpSeminorm.Prod
+public import Mathlib.MeasureTheory.Integral.DominatedConvergence
+public import Mathlib.MeasureTheory.Integral.Bochner.Set
+public import Mathlib.MeasureTheory.Measure.Prod
 
 /-!
 # Integration with respect to the product measure
@@ -24,7 +26,7 @@ In this file we prove Fubini's theorem.
   Tonelli's theorem (see `MeasureTheory.lintegral_prod`). The lemma
   `MeasureTheory.Integrable.integral_prod_right` states that the inner integral of the right-hand
   side is integrable.
-* `MeasureTheory.integral_integral_swap_of_hasCompactSupport`: a version of Fubini theorem for
+* `MeasureTheory.integral_integral_swap_of_hasCompactSupport`: a version of Fubini's theorem for
   continuous functions with compact support, which does not assume that the measures are σ-finite
   contrary to all the usual versions of Fubini.
 
@@ -32,6 +34,8 @@ In this file we prove Fubini's theorem.
 
 product measure, Fubini's theorem, Fubini-Tonelli theorem
 -/
+
+public section
 
 
 noncomputable section
@@ -157,8 +161,6 @@ theorem integrable_measure_prodMk_left {s : Set (α × β)} (hs : MeasurableSet 
   simp [ofReal_toReal, hx]
 
 end Measure
-
-open Measure
 
 end MeasureTheory
 
@@ -471,12 +473,9 @@ theorem continuous_integral_integral :
     tendsto_integral_of_L1 _ (L1.integrable_coeFn g).integral_prod_left
       (Eventually.of_forall fun h => (L1.integrable_coeFn h).integral_prod_left) ?_
   simp_rw [← lintegral_fn_integral_sub _ (L1.integrable_coeFn _) (L1.integrable_coeFn g)]
-  apply tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds _ (fun i => zero_le _) _
+  apply tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds _ (fun i => zero_le) _
   · exact fun i => ∫⁻ x, ∫⁻ y, ‖i (x, y) - g (x, y)‖ₑ ∂ν ∂μ
   swap; · exact fun i => lintegral_mono fun x => enorm_integral_le_lintegral_enorm _
-  change
-    Tendsto (fun i : α × β →₁[μ.prod ν] E => ∫⁻ x, ∫⁻ y : β, ‖i (x, y) - g (x, y)‖ₑ ∂ν ∂μ) (𝓝 g)
-      (𝓝 0)
   have this (i : α × β →₁[μ.prod ν] E) : Measurable fun z => ‖i z - g z‖ₑ :=
     ((Lp.stronglyMeasurable i).sub (Lp.stronglyMeasurable g)).enorm
   simp_rw [← lintegral_prod _ (this _).aemeasurable, ← L1.ofReal_norm_sub_eq_lintegral,
@@ -500,7 +499,7 @@ theorem integral_prod (f : α × β → E) (hf : Integrable f (μ.prod ν)) :
       measureReal_def,
       integral_toReal (measurable_measure_prodMk_left hs).aemeasurable
         (ae_measure_lt_top hs h2s.ne)]
-    rw [prod_apply hs]
+    rw [Measure.prod_apply hs]
   · rintro f g - i_f i_g hf hg
     simp_rw [integral_add' i_f i_g, integral_integral_add' i_f i_g, hf, hg]
   · exact isClosed_eq continuous_integral continuous_integral_integral

@@ -3,11 +3,13 @@ Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca, Johan Commelin
 -/
-import Mathlib.Algebra.Polynomial.FieldDivision
-import Mathlib.Algebra.Polynomial.Lifts
-import Mathlib.FieldTheory.Minpoly.Basic
-import Mathlib.RingTheory.Algebraic.Integral
-import Mathlib.RingTheory.LocalRing.Basic
+module
+
+public import Mathlib.Algebra.Polynomial.FieldDivision
+public import Mathlib.Algebra.Polynomial.Lifts
+public import Mathlib.FieldTheory.Minpoly.Basic
+public import Mathlib.RingTheory.Algebraic.Integral
+public import Mathlib.RingTheory.LocalRing.Basic
 
 /-!
 # Minimal polynomials on an algebra over a field
@@ -17,6 +19,8 @@ and derives some well-known properties, amongst which the fact that minimal poly
 are irreducible, and uniquely determined by their defining property.
 
 -/
+
+@[expose] public section
 
 
 open Polynomial Set Function minpoly
@@ -72,7 +76,7 @@ theorem dvd {p : A[X]} (hp : Polynomial.aeval x p = 0) : minpoly A x ∣ p := by
   rw [← modByMonic_eq_zero_iff_dvd (monic hx)]
   by_contra hnz
   apply degree_le_of_ne_zero A x hnz
-    ((aeval_modByMonic_eq_self_of_root (monic hx) (aeval _ _)).trans hp) |>.not_gt
+    ((aeval_modByMonic_eq_self_of_root (aeval _ _)).trans hp) |>.not_gt
   exact degree_modByMonic_lt _ (monic hx)
 
 variable {A x} in
@@ -157,6 +161,11 @@ theorem eq_of_irreducible [Nontrivial B] {p : A[X]} (hp1 : Irreducible p)
   · rw [aeval_mul, hp2, zero_mul]
   · rwa [Polynomial.Monic, leadingCoeff_mul, leadingCoeff_C, mul_inv_cancel₀]
 
+theorem Irreducible.eq_minpoly [Nontrivial B] {p : A[X]} (hi : Irreducible p)
+    (hx : Polynomial.aeval x p = 0) : p = C p.leadingCoeff * minpoly A x := by
+  rw [← minpoly.eq_of_irreducible hi hx, mul_comm, mul_assoc, ← C_mul,
+    inv_mul_cancel₀ (leadingCoeff_ne_zero.mpr hi.ne_zero), C_1, mul_one]
+
 theorem add_algebraMap {B : Type*} [CommRing B] [Algebra A B] (x : B)
     (a : A) : minpoly A (x + algebraMap A B a) = (minpoly A x).comp (X - C a) := by
   by_cases hx : IsIntegral A x
@@ -179,22 +188,15 @@ theorem sub_algebraMap {B : Type*} [CommRing B] [Algebra A B] (x : B)
   simpa [sub_eq_add_neg] using add_algebraMap x (-a)
 
 theorem neg {B : Type*} [Ring B] [Algebra A B] (x : B) :
-    minpoly A (- x) = (-1) ^ (natDegree (minpoly A x)) * (minpoly A x).comp (- X) := by
+    minpoly A (-x) = (-1) ^ (natDegree (minpoly A x)) * (minpoly A x).comp (-X) := by
   by_cases hx : IsIntegral A x
   · refine (minpoly.unique _ _ ((minpoly.monic hx).neg_one_pow_natDegree_mul_comp_neg_X)
         ?_ fun q qmo hq => ?_).symm
     · simp [aeval_comp]
-    · have : (Polynomial.aeval x) ((-1) ^ q.natDegree * q.comp (- X)) = 0 := by
+    · have : (Polynomial.aeval x) ((-1) ^ q.natDegree * q.comp (-X)) = 0 := by
         simpa [aeval_comp] using hq
       have H := minpoly.min A x qmo.neg_one_pow_natDegree_mul_comp_neg_X this
-      have n1 := ((minpoly.monic hx).neg_one_pow_natDegree_mul_comp_neg_X).ne_zero
-      have n2 := qmo.neg_one_pow_natDegree_mul_comp_neg_X.ne_zero
-      rw [degree_eq_natDegree qmo.ne_zero,
-        degree_eq_natDegree n1, natDegree_mul (by simp) (right_ne_zero_of_mul n1), natDegree_comp]
-      rw [degree_eq_natDegree (minpoly.ne_zero hx),
-        degree_eq_natDegree qmo.neg_one_pow_natDegree_mul_comp_neg_X.ne_zero,
-        natDegree_mul (by simp) (right_ne_zero_of_mul n2), natDegree_comp] at H
-      simpa using H
+      simp_all
   · rw [minpoly.eq_zero hx, minpoly.eq_zero, zero_comp]
     · simp only [natDegree_zero, pow_zero, mul_zero]
     · exact IsIntegral.neg_iff.not.mpr hx
@@ -214,6 +216,7 @@ section AlgHomFintype
 
 open scoped Classical in
 /-- A technical finiteness result. -/
+@[implicit_reducible]
 noncomputable def Fintype.subtypeProd {E : Type*} {X : Set E} (hX : X.Finite) {L : Type*}
     (F : E → Multiset L) : Fintype (∀ x : X, { l : L // l ∈ F x }) :=
   @Pi.instFintype _ _ _ (Finite.fintype hX) _
@@ -221,7 +224,7 @@ noncomputable def Fintype.subtypeProd {E : Type*} {X : Set E} (hX : X.Finite) {L
 variable (F E K : Type*) [Field F] [Ring E] [CommRing K] [IsDomain K] [Algebra F E] [Algebra F K]
   [FiniteDimensional F E]
 
-/-- Function from Hom_K(E,L) to pi type Π (x : basis), roots of min poly of x -/
+/-- Function from `Hom_K(E,L)` to pi type Π (x : basis), roots of min poly of x -/
 def rootsOfMinPolyPiType (φ : E →ₐ[F] K)
     (x : range (Module.finBasis F E : _ → E)) :
     { l : K // l ∈ (minpoly F x.1).aroots K } :=
@@ -262,12 +265,12 @@ variable (A)
 /-- The minimal polynomial of `0` is `X`. -/
 @[simp]
 theorem zero : minpoly A (0 : B) = X := by
-  simpa only [add_zero, C_0, sub_eq_add_neg, neg_zero, RingHom.map_zero] using eq_X_sub_C B (0 : A)
+  simpa only [add_zero, C_0, sub_eq_add_neg, neg_zero, map_zero] using eq_X_sub_C B (0 : A)
 
 /-- The minimal polynomial of `1` is `X - 1`. -/
 @[simp]
 theorem one : minpoly A (1 : B) = X - 1 := by
-  simpa only [RingHom.map_one, C_1, sub_eq_add_neg] using eq_X_sub_C B (1 : A)
+  simpa only [map_one, C_1, sub_eq_add_neg] using eq_X_sub_C B (1 : A)
 
 end Ring
 
@@ -301,13 +304,13 @@ theorem coeff_zero_eq_zero (hx : IsIntegral A x) : coeff (minpoly A x) 0 = 0 ↔
   · intro h
     have zero_root := zero_isRoot_of_coeff_zero_eq_zero h
     rw [← root hx zero_root]
-    exact RingHom.map_zero _
+    exact map_zero _
   · rintro rfl
     simp
 
 /-- The minimal polynomial of a nonzero element has nonzero constant coefficient. -/
 theorem coeff_zero_ne_zero (hx : IsIntegral A x) (h : x ≠ 0) : coeff (minpoly A x) 0 ≠ 0 := by
-  contrapose! h
+  contrapose h
   simpa only [hx, coeff_zero_eq_zero] using h
 
 end IsDomain

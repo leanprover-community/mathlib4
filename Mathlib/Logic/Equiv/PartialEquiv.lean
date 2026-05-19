@@ -3,10 +3,12 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Data.Set.Piecewise
-import Mathlib.Logic.Equiv.Defs
-import Mathlib.Tactic.Core
-import Mathlib.Tactic.Attr.Core
+module
+
+public import Mathlib.Data.Set.Piecewise
+public import Mathlib.Logic.Equiv.Defs
+public import Mathlib.Tactic.Core
+public import Mathlib.Tactic.Attr.Core
 
 /-!
 # Partial equivalences
@@ -66,19 +68,16 @@ If a lemma deals with the intersection of a set with either source or target of 
 then it should use `e.source ∩ s` or `e.target ∩ t`, not `s ∩ e.source` or `t ∩ e.target`.
 
 -/
+
+@[expose] public section
 open Lean Meta Elab Tactic
 
 /-! Implementation of the `mfld_set_tac` tactic for working with the domains of partially-defined
 functions (`PartialEquiv`, `OpenPartialHomeomorph`, etc).
 
-This is in a separate file from `Mathlib/Logic/Equiv/MfldSimpsAttr.lean` because attributes need a
+This is in a separate file from `Mathlib/Tactic/Attr/Register.lean` because attributes need a
 new file to become functional.
 -/
-
-/-- Common `@[simps]` configuration options used for manifold-related declarations. -/
-@[deprecated "Use `@[simps (attr := mfld_simps) -fullyApplied]` instead" (since := "2025-09-23")]
-def mfld_cfg : Simps.Config where
-  fullyApplied := false
 
 namespace Tactic.MfldSetTac
 
@@ -431,7 +430,7 @@ theorem symm_image_target_inter_eq' (s : Set β) : e.symm '' (e.target ∩ s) = 
   e.symm.image_source_inter_eq' _
 
 theorem source_inter_preimage_inv_preimage (s : Set α) :
-    e.source ∩ e ⁻¹' (e.symm ⁻¹' s) = e.source ∩ s :=
+    e.source ∩ e ⁻¹' e.symm ⁻¹' s = e.source ∩ s :=
   Set.ext fun x => and_congr_right_iff.2 fun hx =>
     by simp only [mem_preimage, e.left_inv hx]
 
@@ -440,13 +439,13 @@ theorem source_inter_preimage_target_inter (s : Set β) :
   ext fun _ => ⟨fun hx => ⟨hx.1, hx.2.2⟩, fun hx => ⟨hx.1, e.map_source hx.1, hx.2⟩⟩
 
 theorem target_inter_inv_preimage_preimage (s : Set β) :
-    e.target ∩ e.symm ⁻¹' (e ⁻¹' s) = e.target ∩ s :=
+    e.target ∩ e.symm ⁻¹' e ⁻¹' s = e.target ∩ s :=
   e.symm.source_inter_preimage_inv_preimage _
 
-theorem symm_image_image_of_subset_source {s : Set α} (h : s ⊆ e.source) : e.symm '' (e '' s) = s :=
+theorem symm_image_image_of_subset_source {s : Set α} (h : s ⊆ e.source) : e.symm '' e '' s = s :=
   (e.leftInvOn.mono h).image_image
 
-theorem image_symm_image_of_subset_target {s : Set β} (h : s ⊆ e.target) : e '' (e.symm '' s) = s :=
+theorem image_symm_image_of_subset_target {s : Set β} (h : s ⊆ e.target) : e '' e.symm '' s = s :=
   e.symm.symm_image_image_of_subset_source h
 
 theorem source_subset_preimage_target : e.source ⊆ e ⁻¹' e.target :=
@@ -673,7 +672,7 @@ def EqOnSource (e e' : PartialEquiv α β) : Prop :=
 `PartialEquiv`s. -/
 instance eqOnSourceSetoid : Setoid (PartialEquiv α β) where
   r := EqOnSource
-  iseqv := by constructor <;> simp only [EqOnSource, EqOn] <;> aesop
+  iseqv := by constructor <;> grind [EqOnSource, EqOn]
 
 theorem eqOnSource_refl : e ≈ e :=
   Setoid.refl _
@@ -750,6 +749,7 @@ theorem eq_of_eqOnSource_univ (e e' : PartialEquiv α β) (h : e ≈ e') (s : e.
 
 section Prod
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- The product of two partial equivalences, as a partial equivalence on the product. -/
 def prod (e : PartialEquiv α β) (e' : PartialEquiv γ δ) : PartialEquiv (α × γ) (β × δ) where
   source := e.source ×ˢ e'.source
@@ -958,6 +958,15 @@ theorem trans_transPartialEquiv (e : α ≃ β) (e' : β ≃ γ) (f'' : PartialE
     (e.trans e').transPartialEquiv f'' = e.transPartialEquiv (e'.transPartialEquiv f'') := by
   simp only [transPartialEquiv_eq_trans, PartialEquiv.trans_assoc, trans_toPartialEquiv]
 
+@[simp]
+lemma coe_transPartialEquiv {f : α ≃ β} {g : PartialEquiv β γ} : f.transPartialEquiv g = g ∘ f :=
+  rfl
+
+@[simp]
+lemma coe_transPartialEquiv_symm {f : α ≃ β} {g : PartialEquiv β γ} :
+    (f.transPartialEquiv g).symm = f.symm ∘ g.symm :=
+  rfl
+
 end Equiv
 
 namespace PartialEquiv
@@ -982,5 +991,12 @@ theorem transEquiv_transEquiv (e : PartialEquiv α β) (f' : β ≃ γ) (f'' : �
 theorem trans_transEquiv (e : PartialEquiv α β) (e' : PartialEquiv β γ) (f'' : γ ≃ δ) :
     (e.trans e').transEquiv f'' = e.trans (e'.transEquiv f'') := by
   simp only [transEquiv_eq_trans, trans_assoc]
+
+@[simp] lemma coe_transEquiv {f : PartialEquiv α β} {g : β ≃ γ} : f.transEquiv g = g ∘ f := rfl
+
+@[simp]
+lemma coe_transEquiv_symm {f : PartialEquiv α β} {g : β ≃ γ} :
+    (f.transEquiv g).symm = f.symm ∘ g.symm :=
+  rfl
 
 end PartialEquiv

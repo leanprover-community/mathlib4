@@ -3,8 +3,10 @@ Copyright (c) 2024 Etienne Marion. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Etienne Marion
 -/
-import Mathlib.Analysis.Calculus.Deriv.Abs
-import Mathlib.Analysis.Calculus.LineDeriv.Basic
+module
+
+public import Mathlib.Analysis.Calculus.Deriv.Abs
+public import Mathlib.Analysis.Calculus.LineDeriv.Basic
 
 /-!
 # Differentiability of the norm in a real normed vector space
@@ -34,6 +36,8 @@ at `t • x` when `t ≠ 0`.
 differentiability, norm
 
 -/
+
+public section
 
 open ContinuousLinearMap Filter NNReal Real Set
 
@@ -72,17 +76,16 @@ theorem contDiffAt_norm_smul_iff (ht : t ≠ 0) :
 
 theorem ContDiffAt.contDiffAt_norm_of_smul (h : ContDiffAt ℝ n (‖·‖) (t • x)) :
     ContDiffAt ℝ n (‖·‖) x := by
-  rcases eq_bot_or_bot_lt n with rfl | hn
+  rcases eq_or_ne n 0 with rfl | hn
   · apply contDiffAt_zero.2
     exact ⟨univ, univ_mem, continuous_norm.continuousOn⟩
-  replace hn : 1 ≤ n := ENat.add_one_natCast_le_withTop_of_lt hn
   obtain rfl | ht := eq_or_ne t 0
-  · by_cases! hE : Nontrivial E
-    · rw [zero_smul] at h
-      exact (mt (ContDiffAt.differentiableAt · (mod_cast hn)))
-        (not_differentiableAt_norm_zero E) h |>.elim
-    · rw [eq_const_of_subsingleton (‖·‖) 0]
+  · suffices Subsingleton E by
+      rw [eq_const_of_subsingleton (‖·‖) 0]
       exact contDiffAt_const
+    rw [zero_smul] at h
+    by_contra!
+    exact not_differentiableAt_norm_zero E <| h.differentiableAt hn
   · exact contDiffAt_norm_smul_iff ht |>.2 h
 
 theorem HasStrictFDerivAt.hasStrictFDerivAt_norm_smul
@@ -144,10 +147,10 @@ theorem differentiableAt_norm_smul (ht : t ≠ 0) :
 theorem DifferentiableAt.differentiableAt_norm_of_smul (h : DifferentiableAt ℝ (‖·‖) (t • x)) :
     DifferentiableAt ℝ (‖·‖) x := by
   obtain rfl | ht := eq_or_ne t 0
-  · by_cases! hE : Nontrivial E
-    · rw [zero_smul] at h
-      exact not_differentiableAt_norm_zero E h |>.elim
-    · exact (hasFDerivAt_of_subsingleton _ _).differentiableAt
+  · suffices Subsingleton E from (hasFDerivAt_of_subsingleton _ _).differentiableAt
+    rw [zero_smul] at h
+    by_contra!
+    exact not_differentiableAt_norm_zero E h
   · exact differentiableAt_norm_smul ht |>.2 h
 
 theorem DifferentiableAt.fderiv_norm_self {x : E} (h : DifferentiableAt ℝ (‖·‖) x) :

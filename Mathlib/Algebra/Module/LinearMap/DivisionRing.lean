@@ -3,8 +3,10 @@ Copyright (c) 2025 Monica Omar. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Monica Omar
 -/
-import Mathlib.Algebra.Module.Submodule.Range
-import Mathlib.LinearAlgebra.Span.Defs
+module
+
+public import Mathlib.Algebra.Module.Submodule.Range
+public import Mathlib.LinearAlgebra.Span.Defs
 
 /-!
 # Some lemmas about linear functionals on division rings
@@ -17,6 +19,8 @@ This file proves some results on linear functionals on division semirings.
 * `LinearMap.range_smulRight_apply`: for a nonzero linear functional `f` and element `x`,
   the range of `f.smulRight x` is the span of the set `{x}`.
 -/
+
+public section
 
 namespace LinearMap
 variable {R M M₁ : Type*} [AddCommMonoid M] [AddCommMonoid M₁]

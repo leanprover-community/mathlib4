@@ -3,10 +3,12 @@ Copyright (c) 2020 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
 -/
-import Mathlib.Algebra.Polynomial.Splits
-import Mathlib.FieldTheory.RatFunc.AsPolynomial
-import Mathlib.NumberTheory.ArithmeticFunction
-import Mathlib.RingTheory.RootsOfUnity.Complex
+module
+
+public import Mathlib.Algebra.Polynomial.Splits
+public import Mathlib.FieldTheory.RatFunc.AsPolynomial
+public import Mathlib.NumberTheory.ArithmeticFunction.Moebius
+public import Mathlib.RingTheory.RootsOfUnity.Complex
 
 /-!
 # Cyclotomic polynomials.
@@ -14,7 +16,7 @@ import Mathlib.RingTheory.RootsOfUnity.Complex
 For `n : ℕ` and an integral domain `R`, we define a modified version of the `n`-th cyclotomic
 polynomial with coefficients in `R`, denoted `cyclotomic' n R`, as `∏ (X - μ)`, where `μ` varies
 over the primitive `n`th roots of unity. If there is a primitive `n`th root of unity in `R` then
-this the standard definition. We then define the standard cyclotomic polynomial `cyclotomic n R`
+this is the standard definition. We then define the standard cyclotomic polynomial `cyclotomic n R`
 with coefficients in any ring `R`.
 
 ## Main definition
@@ -39,6 +41,8 @@ not the standard one unless there is a primitive `n`th root of unity in `R`. For
 To get the standard cyclotomic polynomials, we use `unique_int_coeff_of_cycl`, with `R = ℂ`,
 to get a polynomial with integer coefficients and then we map it to `R[X]`, for any ring `R`.
 -/
+
+@[expose] public section
 
 
 open scoped Polynomial
@@ -68,8 +72,7 @@ theorem cyclotomic'_zero (R : Type*) [CommRing R] [IsDomain R] : cyclotomic' 0 R
 /-- The first modified cyclotomic polynomial is `X - 1`. -/
 @[simp]
 theorem cyclotomic'_one (R : Type*) [CommRing R] [IsDomain R] : cyclotomic' 1 R = X - 1 := by
-  simp only [cyclotomic', Finset.prod_singleton, RingHom.map_one,
-    IsPrimitiveRoot.primitiveRoots_one]
+  simp only [cyclotomic', Finset.prod_singleton, map_one, IsPrimitiveRoot.primitiveRoots_one]
 
 /-- The second modified cyclotomic polynomial is `X + 1` if the characteristic of `R` is not `2`. -/
 -- Cannot be @[simp] because `p` cannot be inferred by `simp`.
@@ -79,7 +82,7 @@ theorem cyclotomic'_two (R : Type*) [CommRing R] [IsDomain R] (p : ℕ) [CharP R
   have prim_root_two : primitiveRoots 2 R = {(-1 : R)} := by
     simp only [Finset.eq_singleton_iff_unique_mem, mem_primitiveRoots two_pos]
     exact ⟨IsPrimitiveRoot.neg_one p hp, fun x => IsPrimitiveRoot.eq_neg_one_of_two_right⟩
-  simp only [prim_root_two, Finset.prod_singleton, RingHom.map_neg, RingHom.map_one, sub_neg_eq_add]
+  simp only [prim_root_two, Finset.prod_singleton, map_neg, map_one, sub_neg_eq_add]
 
 /-- `cyclotomic' n R` is monic. -/
 theorem cyclotomic'.monic (n : ℕ) (R : Type*) [CommRing R] [IsDomain R] :
@@ -132,14 +135,14 @@ section Field
 variable {K : Type*} [Field K]
 
 /-- `cyclotomic' n K` splits. -/
-theorem cyclotomic'_splits (n : ℕ) : Splits (RingHom.id K) (cyclotomic' n K) := by
-  apply splits_prod (RingHom.id K)
+theorem cyclotomic'_splits (n : ℕ) : Splits (cyclotomic' n K) := by
+  apply Splits.prod
   intro z _
-  simp only [splits_X_sub_C (RingHom.id K)]
+  simp only [Splits.X_sub_C]
 
 /-- If there is a primitive `n`-th root of unity in `K`, then `X ^ n - 1` splits. -/
 theorem X_pow_sub_one_splits {ζ : K} {n : ℕ} (h : IsPrimitiveRoot ζ n) :
-    Splits (RingHom.id K) (X ^ n - C (1 : K)) := by
+    Splits (X ^ n - C (1 : K)) := by
   rw [splits_iff_card_roots, ← nthRoots, IsPrimitiveRoot.card_nthRoots_one h, natDegree_X_pow_sub_C]
 
 /-- If there is a primitive `n`-th root of unity in `K`, then
@@ -613,7 +616,7 @@ private theorem _root_.IsPrimitiveRoot.pow_sub_pow_eq_prod_sub_mul_field {K : Ty
   · simp only [hy, zero_pow (Nat.ne_zero_of_lt hpos), sub_zero, mul_zero, prod_const]
     congr
     rw [h.card_nthRootsFinset]
-  convert congr_arg (eval (x/y) · * y ^ card (nthRootsFinset n (1 : K)))
+  convert congr_arg (eval (x / y) · * y ^ card (nthRootsFinset n (1 : K)))
     <| X_pow_sub_one_eq_prod hpos h
     using 1
   · simp [sub_mul, div_pow, hy, h.card_nthRootsFinset]
@@ -635,7 +638,7 @@ theorem _root_.IsPrimitiveRoot.pow_sub_pow_eq_prod_sub_mul (hpos : 0 < n)
   refine (prod_nbij (algebraMap R K) (fun a ha ↦ map_mem_nthRootsFinset_one ha _)
     (fun a _ b _ H ↦ FaithfulSMul.algebraMap_injective R K H) (fun a ha ↦ ?_) (fun _ _ ↦ rfl)).symm
   have := Set.surj_on_of_inj_on_of_ncard_le (s := nthRootsFinset n (1 : R))
-    (t := nthRootsFinset n (1: K)) _ (fun _ hr ↦ map_mem_nthRootsFinset_one hr _)
+    (t := nthRootsFinset n (1 : K)) _ (fun _ hr ↦ map_mem_nthRootsFinset_one hr _)
     (fun a _ b _ H ↦ FaithfulSMul.algebraMap_injective R K H)
     (by simp [h.card_nthRootsFinset, h'.card_nthRootsFinset])
   obtain ⟨x, hx, hx1⟩ := this _ ha

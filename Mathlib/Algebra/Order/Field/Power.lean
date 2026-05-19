@@ -3,14 +3,19 @@ Copyright (c) 2014 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis, Leonardo de Moura, Mario Carneiro, Floris van Doorn, Sabbir Rahman
 -/
-import Mathlib.Algebra.Order.Ring.Abs
-import Mathlib.Algebra.Order.Ring.Pow
-import Mathlib.Algebra.Ring.CharZero
-import Mathlib.Tactic.Positivity.Core
+module
+
+public import Mathlib.Algebra.GroupWithZero.Units.Lemmas
+public import Mathlib.Algebra.Order.Ring.Abs
+public import Mathlib.Algebra.Order.Ring.Pow
+public import Mathlib.Algebra.Ring.CharZero
+public import Mathlib.Tactic.Positivity.Core
 
 /-!
 # Lemmas about powers in ordered fields.
 -/
+
+public section
 
 
 variable {α : Type*}
@@ -56,6 +61,11 @@ lemma Odd.zpow_pos_iff (hn : Odd n) : 0 < a ^ n ↔ 0 < a := lt_iff_lt_of_le_iff
 alias ⟨_, Odd.zpow_neg⟩ := Odd.zpow_neg_iff
 
 alias ⟨_, Odd.zpow_nonpos⟩ := Odd.zpow_nonpos_iff
+
+@[simp]
+theorem abs_zpow (a : α) (p : ℤ) : |a ^ p| = |a| ^ p := map_zpow₀ absHom a p
+
+theorem abs_neg_one_zpow (p : ℤ) : |(-1 : α) ^ p| = 1 := by simp
 
 omit [IsStrictOrderedRing α] in
 theorem Even.zpow_abs {p : ℤ} (hp : Even p) (a : α) : |a| ^ p = a ^ p := by
@@ -113,7 +123,7 @@ open Lean Meta Qq
 /-- The `positivity` extension which identifies expressions of the form `a ^ (b : ℤ)`,
 such that `positivity` successfully recognises both `a` and `b`. -/
 @[positivity _ ^ (_ : ℤ), Pow.pow _ (_ : ℤ)]
-def evalZPow : PositivityExt where eval {u α} zα pα e := do
+meta def evalZPow : PositivityExt where eval {u α} zα pα e := do
   let .app (.app _ (a : Q($α))) (b : Q(ℤ)) ← withReducible (whnf e) | throwError "not ^"
   let result ← catchNone do
     let _a ← synthInstanceQ q(Field $α)

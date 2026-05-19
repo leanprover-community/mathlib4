@@ -3,7 +3,9 @@ Copyright (c) 2022 Wrenna Robson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Wrenna Robson
 -/
-import Mathlib.Topology.MetricSpace.Basic
+module
+
+public import Mathlib.Topology.MetricSpace.Basic
 
 /-!
 # Infimum separation
@@ -24,6 +26,8 @@ All lemmas and definitions are in the `Set` namespace to give access to dot nota
 * `Set.infsep`: Infimum separation of a set (when in a pseudometric space).
 
 -/
+
+@[expose] public section
 
 
 variable {α β : Type*}
@@ -138,8 +142,7 @@ theorem einfsep_eq_iInf : s.einfsep = ⨅ d : s.offDiag, (uncurry edist) (d : α
   simp_rw [le_einfsep_iff, le_iInf_iff, imp_forall_iff, SetCoe.forall, mem_offDiag,
     Prod.forall, uncurry_apply_pair, and_imp]
 
-theorem einfsep_of_fintype [DecidableEq α] [Fintype s] :
-    s.einfsep = s.offDiag.toFinset.inf (uncurry edist) := by
+theorem einfsep_of_fintype [Fintype s] : s.einfsep = s.offDiag.toFinset.inf (uncurry edist) := by
   refine eq_of_forall_le_iff fun _ => ?_
   simp_rw [le_einfsep_iff, imp_forall_iff, Finset.le_inf_iff, mem_toFinset, mem_offDiag,
     Prod.forall, uncurry_apply_pair, and_imp]
@@ -149,9 +152,9 @@ theorem Finite.einfsep (hs : s.Finite) : s.einfsep = hs.offDiag.toFinset.inf (un
   simp_rw [le_einfsep_iff, imp_forall_iff, Finset.le_inf_iff, Finite.mem_toFinset, mem_offDiag,
     Prod.forall, uncurry_apply_pair, and_imp]
 
-theorem Finset.coe_einfsep [DecidableEq α] {s : Finset α} :
+theorem Finset.coe_einfsep {s : Finset α} :
     (s : Set α).einfsep = s.offDiag.inf (uncurry edist) := by
-  simp_rw [einfsep_of_fintype, ← Finset.coe_offDiag, Finset.toFinset_coe]
+  classical simp_rw [einfsep_of_fintype, ← Finset.coe_offDiag, Finset.toFinset_coe]
 
 theorem Nontrivial.einfsep_exists_of_finite [Finite s] (hs : s.Nontrivial) :
     ∃ x ∈ s, ∃ y ∈ s, x ≠ y ∧ s.einfsep = edist x y := by
@@ -332,9 +335,7 @@ theorem Nontrivial.le_infsep_iff {d} (hs : s.Nontrivial) :
 
 theorem Nontrivial.infsep_lt_iff {d} (hs : s.Nontrivial) :
     s.infsep < d ↔ ∃ x ∈ s, ∃ y ∈ s, x ≠ y ∧ dist x y < d := by
-  rw [← not_iff_not]
-  push_neg
-  exact hs.le_infsep_iff
+  contrapose!; exact hs.le_infsep_iff
 
 theorem Nontrivial.le_infsep {d} (hs : s.Nontrivial)
     (h : ∀ x ∈ s, ∀ y ∈ s, x ≠ y → d ≤ dist x y) : d ≤ s.infsep :=
@@ -385,7 +386,7 @@ theorem Nontrivial.infsep_eq_iInf (hs : s.Nontrivial) :
     s.infsep = ⨅ d : s.offDiag, (uncurry dist) (d : α × α) := by
   classical rw [Set.infsep_eq_iInf, if_pos hs]
 
-theorem infsep_of_fintype [Decidable s.Nontrivial] [DecidableEq α] [Fintype s] : s.infsep =
+theorem infsep_of_fintype [Decidable s.Nontrivial] [Fintype s] : s.infsep =
     if hs : s.Nontrivial then s.offDiag.toFinset.inf' (by simpa) (uncurry dist) else 0 := by
   split_ifs with hs
   · refine eq_of_forall_le_iff fun _ => ?_
@@ -394,7 +395,7 @@ theorem infsep_of_fintype [Decidable s.Nontrivial] [DecidableEq α] [Fintype s] 
   · rw [not_nontrivial_iff] at hs
     exact hs.infsep_zero
 
-theorem Nontrivial.infsep_of_fintype [DecidableEq α] [Fintype s] (hs : s.Nontrivial) :
+theorem Nontrivial.infsep_of_fintype [Fintype s] (hs : s.Nontrivial) :
     s.infsep = s.offDiag.toFinset.inf' (by simpa) (uncurry dist) := by
   classical rw [Set.infsep_of_fintype, dif_pos hs]
 
@@ -412,20 +413,20 @@ theorem Finite.infsep_of_nontrivial (hsf : s.Finite) (hs : s.Nontrivial) :
     s.infsep = hsf.offDiag.toFinset.inf' (by simpa) (uncurry dist) := by
   classical simp_rw [hsf.infsep, dif_pos hs]
 
-theorem _root_.Finset.coe_infsep [DecidableEq α] (s : Finset α) : (s : Set α).infsep =
+theorem _root_.Finset.coe_infsep (s : Finset α) : (s : Set α).infsep =
     if hs : s.offDiag.Nonempty then s.offDiag.inf' hs (uncurry dist) else 0 := by
   have H : (s : Set α).Nontrivial ↔ s.offDiag.Nonempty := by
     rw [← Set.offDiag_nonempty, ← Finset.coe_offDiag, Finset.coe_nonempty]
   split_ifs with hs
-  · simp_rw [(H.mpr hs).infsep_of_fintype, ← Finset.coe_offDiag, Finset.toFinset_coe]
+  · classical simp_rw [(H.mpr hs).infsep_of_fintype, ← Finset.coe_offDiag, Finset.toFinset_coe]
   · exact (not_nontrivial_iff.mp (H.mp.mt hs)).infsep_zero
 
-theorem _root_.Finset.coe_infsep_of_offDiag_nonempty [DecidableEq α] {s : Finset α}
+theorem _root_.Finset.coe_infsep_of_offDiag_nonempty {s : Finset α}
     (hs : s.offDiag.Nonempty) : (s : Set α).infsep = s.offDiag.inf' hs (uncurry dist) := by
   rw [Finset.coe_infsep, dif_pos hs]
 
 theorem _root_.Finset.coe_infsep_of_offDiag_empty
-    [DecidableEq α] {s : Finset α} (hs : s.offDiag = ∅) : (s : Set α).infsep = 0 := by
+    {s : Finset α} (hs : s.offDiag = ∅) : (s : Set α).infsep = 0 := by
   rw [← Finset.not_nonempty_iff_eq_empty] at hs
   rw [Finset.coe_infsep, dif_neg hs]
 

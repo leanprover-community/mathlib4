@@ -3,8 +3,10 @@ Copyright (c) 2023 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Etienne Marion
 -/
-import Mathlib.Probability.Kernel.Composition.MeasureComp
-import Mathlib.Probability.Kernel.MeasurableIntegral
+module
+
+public import Mathlib.Probability.Kernel.Composition.MeasureComp
+public import Mathlib.Probability.Kernel.MeasurableIntegral
 
 /-!
 # Bochner integral of a function against the composition and the composition-products of two kernels
@@ -43,6 +45,8 @@ the proofs about the composition are only simplified versions of the ones for th
 composition-product. However it is necessary to do all the proofs once again because the
 composition-product requires s-finiteness while the composition does not.
 -/
+
+public section
 
 
 noncomputable section
@@ -215,13 +219,9 @@ theorem Kernel.continuous_integral_integral :
     tendsto_integral_of_L1 _ (L1.integrable_coeFn g).integral_compProd
       (Eventually.of_forall fun h => (L1.integrable_coeFn h).integral_compProd) ?_
   simp_rw [← lintegral_fn_integral_sub (‖·‖ₑ) (L1.integrable_coeFn _) (L1.integrable_coeFn g)]
-  apply tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds _ (fun i => zero_le _) _
+  apply tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds _ (fun i => zero_le) _
   · exact fun i => ∫⁻ x, ∫⁻ y, ‖i (x, y) - g (x, y)‖ₑ ∂η (a, x) ∂κ a
   swap; · exact fun i => lintegral_mono fun x => enorm_integral_le_lintegral_enorm _
-  change
-    Tendsto
-      (fun i : β × γ →₁[(κ ⊗ₖ η) a] E => ∫⁻ x, ∫⁻ y : γ, ‖i (x, y) - g (x, y)‖ₑ ∂η (a, x) ∂κ a)
-      (𝓝 g) (𝓝 0)
   have this (i : Lp (α := β × γ) E 1 (((κ ⊗ₖ η) a) : Measure (β × γ))) :
       Measurable fun z => ‖i z - g z‖ₑ :=
     ((Lp.stronglyMeasurable i).sub (Lp.stronglyMeasurable g)).enorm
@@ -326,6 +326,14 @@ theorem integrable_comp_iff ⦃f : γ → E⦄ (hf : AEStronglyMeasurable f ((η
   simp only [Integrable, hf, hasFiniteIntegral_comp_iff' hf, true_and, eventually_and, hf.comp,
     hf.norm.integral_kernel_comp]
 
+protected lemma _root_.MeasureTheory.Measure.integrable_comp_iff {μ : Measure α} {f : β → E}
+    (hf : AEStronglyMeasurable f (κ ∘ₘ μ)) :
+    Integrable f (κ ∘ₘ μ)
+      ↔ (∀ᵐ x ∂μ, Integrable f (κ x)) ∧ Integrable (fun x ↦ ∫ y, ‖f y‖ ∂κ x) μ := by
+  rw [Measure.comp_eq_comp_const_apply, ProbabilityTheory.integrable_comp_iff]
+  · simp
+  · simpa [Kernel.comp_apply]
+
 theorem _root_.MeasureTheory.Integrable.ae_of_comp ⦃f : γ → E⦄ (hf : Integrable f ((η ∘ₖ κ) a)) :
     ∀ᵐ x ∂κ a, Integrable f (η x) := ((integrable_comp_iff hf.1).1 hf).1
 
@@ -394,7 +402,7 @@ theorem continuous_integral_integral_comp :
   simp_rw [← lintegral_fn_integral_sub_comp (‖·‖ₑ) (L1.integrable_coeFn _) (L1.integrable_coeFn g)]
   refine tendsto_of_tendsto_of_tendsto_of_le_of_le
     (h := fun i ↦ ∫⁻ x, ∫⁻ y, ‖i y - g y‖ₑ ∂η x ∂κ a)
-    tendsto_const_nhds ?_ (fun _ ↦ zero_le _) ?_
+    tendsto_const_nhds ?_ (fun _ ↦ zero_le) ?_
   swap; · exact fun _ ↦ lintegral_mono fun _ ↦ enorm_integral_le_lintegral_enorm _
   have (i : γ →₁[(η ∘ₖ κ) a] E) : Measurable fun z ↦ ‖i z - g z‖ₑ :=
     ((Lp.stronglyMeasurable i).sub (Lp.stronglyMeasurable g)).enorm

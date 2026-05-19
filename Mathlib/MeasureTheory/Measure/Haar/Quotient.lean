@@ -3,11 +3,13 @@ Copyright (c) 2022 Alex Kontorovich and Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex Kontorovich, Heather Macbeth
 -/
-import Mathlib.Algebra.Group.Opposite
-import Mathlib.MeasureTheory.Constructions.Polish.Basic
-import Mathlib.MeasureTheory.Group.FundamentalDomain
-import Mathlib.MeasureTheory.Integral.DominatedConvergence
-import Mathlib.MeasureTheory.Measure.Haar.Basic
+module
+
+public import Mathlib.Algebra.Group.Opposite
+public import Mathlib.MeasureTheory.Constructions.Polish.Basic
+public import Mathlib.MeasureTheory.Group.FundamentalDomain
+public import Mathlib.MeasureTheory.Integral.DominatedConvergence
+public import Mathlib.MeasureTheory.Measure.Haar.Basic
 
 /-!
 # Haar quotient measure
@@ -44,6 +46,8 @@ Note that a group `G` with Haar measure that is both left and right invariant is
 **unimodular**.
 -/
 
+public section
+
 open Set MeasureTheory TopologicalSpace MeasureTheory.Measure
 
 open scoped Pointwise NNReal ENNReal
@@ -56,8 +60,6 @@ section
 instance QuotientGroup.measurableSMul {G : Type*} [Group G] {Γ : Subgroup G} [MeasurableSpace G]
     [TopologicalSpace G] [IsTopologicalGroup G] [BorelSpace G] [BorelSpace (G ⧸ Γ)] :
     MeasurableSMul G (G ⧸ Γ) where
-  measurable_const_smul g := (continuous_const_smul g).measurable
-  measurable_smul_const _ := (continuous_id.smul continuous_const).measurable
 
 end
 
@@ -92,8 +94,7 @@ lemma MeasureTheory.QuotientMeasureEqMeasurePreimage.smulInvariantMeasure_quotie
     have meas_π : Measurable π := continuous_quotient_mk'.measurable
     obtain ⟨𝓕, h𝓕⟩ := hasFun.ExistsIsFundamentalDomain
     have h𝓕_translate_fundom : IsFundamentalDomain Γ.op (g • 𝓕) ν := h𝓕.smul_of_comm g
-    -- TODO: why `rw` fails with both of these rewrites?
-    erw [h𝓕.projection_respects_measure_apply (μ := μ)
+    rw [h𝓕.projection_respects_measure_apply (μ := μ)
       (meas_π (measurableSet_preimage (measurable_const_smul g) hA)),
       h𝓕_translate_fundom.projection_respects_measure_apply (μ := μ) hA]
     change ν ((π ⁻¹' _) ∩ _) = ν ((π ⁻¹' _) ∩ _)
@@ -231,20 +232,17 @@ theorem MeasureTheory.QuotientMeasureEqMeasurePreimage.haarMeasure_quotient [Loc
     ne_top_of_lt <| QuotientMeasureEqMeasurePreimage.covolume_ne_top μ (ν := ν)
   obtain ⟨s, fund_dom_s⟩ := i
   rw [fund_dom_s.covolume_eq_volume] at finiteCovol
-  -- TODO: why `rw` fails?
-  erw [fund_dom_s.projection_respects_measure_apply μ K'.isCompact.measurableSet]
+  rw [fund_dom_s.projection_respects_measure_apply μ K'.isCompact.measurableSet]
   apply IsHaarMeasure.smul
   · intro h
-    haveI i' : IsOpenPosMeasure (ν : Measure G) := inferInstance
+    have i' : IsOpenPosMeasure (ν : Measure G) := inferInstance
     apply IsOpenPosMeasure.open_pos (interior K) (μ := ν) (self := i')
     · exact isOpen_interior
     · exact K.interior_nonempty
-    rw [← le_zero_iff,
-      ← fund_dom_s.measure_zero_of_invariant _ (fun g ↦ QuotientGroup.sound _ _ g) h]
-    apply measure_mono
-    refine interior_subset.trans ?_
+    refine measure_mono_null (interior_subset.trans ?_) <|
+      fund_dom_s.measure_zero_of_invariant _ (fun g ↦ QuotientGroup.sound _ _ g) h
     rw [QuotientGroup.coe_mk']
-    change (K : Set G) ⊆ π ⁻¹' (π '' K)
+    change (K : Set G) ⊆ π ⁻¹' π '' K
     exact subset_preimage_image π K
   · change ν (π ⁻¹' (π '' K) ∩ s) ≠ ⊤
     apply ne_of_lt
@@ -295,11 +293,7 @@ theorem IsFundamentalDomain.QuotientMeasureEqMeasurePreimage_smulHaarMeasure {�
     QuotientMeasureEqMeasurePreimage ν
       ((ν ((π ⁻¹' (K : Set (G ⧸ Γ))) ∩ 𝓕)) • haarMeasure K) := by
   set c := ν ((π ⁻¹' (K : Set (G ⧸ Γ))) ∩ 𝓕)
-  have c_ne_top : c ≠ ∞ := by
-    contrapose! h𝓕_finite
-    have : c ≤ ν 𝓕 := measure_mono (Set.inter_subset_right)
-    rw [h𝓕_finite] at this
-    exact top_unique this
+  have c_ne_top : c ≠ ∞ := measure_inter_ne_top_of_right_ne_top h𝓕_finite
   set μ := c • haarMeasure K
   have hμK : μ K = c := by simp [μ, haarMeasure_self]
   haveI : SigmaFinite μ := by
@@ -453,7 +447,7 @@ lemma QuotientAddGroup.integral_mul_eq_integral_automorphize_mul {K : Type*} [No
   let π : G' → G' ⧸ Γ' := QuotientAddGroup.mk
   have meas_π : Measurable π := continuous_quotient_mk'.measurable
   have H₀ : QuotientAddGroup.automorphize ((g ∘ π) * f) = g * (QuotientAddGroup.automorphize f) :=
-    by exact QuotientAddGroup.automorphize_smul_left f g
+    QuotientAddGroup.automorphize_smul_left f g
   calc ∫ (x : G'), g (π x) * f x ∂μ' =
     ∫ (x : G' ⧸ Γ'), QuotientAddGroup.automorphize ((g ∘ π) * f) x ∂μ_𝓕 := ?_
     _ = ∫ (x : G' ⧸ Γ'), g x * (QuotientAddGroup.automorphize f x) ∂μ_𝓕 := by simp [H₀]

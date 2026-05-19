@@ -3,9 +3,11 @@ Copyright (c) 2024 Yaël Dillies, Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Andrew Yang
 -/
-import Mathlib.Algebra.Algebra.Operations
-import Mathlib.Algebra.Polynomial.Div
-import Mathlib.RingTheory.Ideal.Span
+module
+
+public import Mathlib.Algebra.Algebra.Operations
+public import Mathlib.Algebra.Polynomial.Div
+public import Mathlib.RingTheory.Ideal.Span
 
 /-!
 # Bounding the coefficients of the quotient and remainder of polynomials
@@ -17,10 +19,12 @@ Precisely, we show that each summand needs at most one coefficient of `p` and `d
 of `q`.
 -/
 
+public section
+
 namespace Polynomial
 variable {ι R S : Type*} [CommRing R] [Ring S] [Algebra R S]
 
-local notation "deg("p")" => natDegree p
+local notation3 "deg("p")" => natDegree p
 local notation3 "coeffs("p")" => Set.range (coeff p)
 local notation3 "spanCoeffs("p")" => 1 ⊔ Submodule.span R coeffs(p)
 
@@ -107,9 +111,9 @@ lemma coeff_divByMonic_mem_pow_natDegree_mul (p q : S[X])
 variable [DecidableEq ι] {i j : ι}
 
 open Function Ideal in
-lemma idealSpan_range_update_divByMonic (hij : i ≠ j) (v : ι → R[X]) (hi : (v i).Monic) :
+lemma idealSpan_range_update_divByMonic (hij : i ≠ j) (v : ι → R[X]) :
     span (Set.range (Function.update v j (v j %ₘ v i))) = span (Set.range v) := by
-  rw [modByMonic_eq_sub_mul_div _ hi, mul_comm, ← smul_eq_mul, Ideal.span, Ideal.span,
+  rw [modByMonic_eq_sub_mul_div, mul_comm, ← smul_eq_mul, Ideal.span, Ideal.span,
     Submodule.span_range_update_sub_smul hij]
 
 end Polynomial

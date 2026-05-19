@@ -3,8 +3,10 @@ Copyright (c) 2022 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.ModelTheory.Satisfiability
-import Mathlib.Combinatorics.SimpleGraph.Basic
+module
+
+public import Mathlib.ModelTheory.Satisfiability
+public import Mathlib.Combinatorics.SimpleGraph.Basic
 
 /-!
 # First-Order Structures in Graph Theory
@@ -20,6 +22,8 @@ This file defines first-order languages, structures, and theories in graph theor
 - `FirstOrder.Language.simpleGraphOfStructure` gives the simple graph corresponding to a model
   of the theory of simple graphs.
 -/
+
+@[expose] public section
 
 universe u
 
@@ -49,6 +53,7 @@ protected def graph : Language := ⟨fun _ => Empty, graphRel⟩
 abbrev adj : Language.graph.Relations 2 := .adj
 
 /-- Any simple graph can be thought of as a structure in the language of graphs. -/
+@[implicit_reducible]
 def _root_.SimpleGraph.structure (G : SimpleGraph V) : Language.graph.Structure V where
   RelMap | .adj => (fun x => G.Adj (x 0) (x 1))
 
@@ -66,7 +71,7 @@ protected def Theory.simpleGraph : Language.graph.Theory :=
 @[simp]
 theorem Theory.simpleGraph_model_iff [Language.graph.Structure V] :
     V ⊨ Theory.simpleGraph ↔
-      (Irreflexive fun x y : V => RelMap adj ![x, y]) ∧
+      (Std.Irrefl fun x y : V => RelMap adj ![x, y]) ∧
         Symmetric fun x y : V => RelMap adj ![x, y] := by
   simp [Theory.simpleGraph]
 

@@ -3,11 +3,13 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Algebra.Group.Hom.Defs
-import Mathlib.Algebra.Group.Nat.Defs
-import Mathlib.Algebra.Order.Monoid.Unbundled.ExistsOfLE
-import Mathlib.Algebra.Order.Sub.Defs
-import Mathlib.Data.Multiset.Fold
+module
+
+public import Mathlib.Algebra.Group.Hom.Defs
+public import Mathlib.Algebra.Group.Nat.Defs
+public import Mathlib.Algebra.Order.Monoid.Unbundled.ExistsOfLE
+public import Mathlib.Algebra.Order.Sub.Defs
+public import Mathlib.Data.Multiset.Fold
 
 /-!
 # Multisets form an ordered monoid
@@ -16,6 +18,8 @@ This file contains the ordered monoid instance on multisets, and lemmas related 
 
 See note [foundational algebra order theory].
 -/
+
+@[expose] public section
 
 open List Nat
 
@@ -28,7 +32,7 @@ namespace Multiset
 instance instAddLeftMono : AddLeftMono (Multiset α) where elim _s _t _u := Multiset.add_le_add_left
 
 instance instAddLeftReflectLE : AddLeftReflectLE (Multiset α) where
-  elim _s _t _u := Multiset.le_of_add_le_add_left
+  le_of_add_le_add_left := Multiset.le_of_add_le_add_left
 
 instance instAddCancelCommMonoid : AddCancelCommMonoid (Multiset α) where
   add_comm := Multiset.add_comm

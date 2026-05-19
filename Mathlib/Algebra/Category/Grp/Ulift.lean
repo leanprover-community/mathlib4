@@ -3,10 +3,12 @@ Copyright (c) 2024 Sophie Morel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sophie Morel
 -/
-import Mathlib.Algebra.Category.Grp.LargeColimits
-import Mathlib.Algebra.Category.Grp.Limits
-import Mathlib.Algebra.Module.CharacterModule
-import Mathlib.CategoryTheory.Limits.Preserves.Ulift
+module
+
+public import Mathlib.Algebra.Category.Grp.LargeColimits
+public import Mathlib.Algebra.Category.Grp.Limits
+public import Mathlib.Algebra.Module.CharacterModule
+public import Mathlib.CategoryTheory.Limits.Preserves.Ulift
 
 /-!
 # Properties of the universe lift functor for groups
@@ -67,6 +69,8 @@ of `K ⋙ GrpCat.uliftFunctor.{u + 1}` is nontrivial (it is the "union" of all t
 too big to be in `GrpCat.{u}`).
 -/
 
+@[expose] public section
+
 universe v w w' u
 
 open CategoryTheory Limits
@@ -99,8 +103,8 @@ instance : uliftFunctor.{u, v}.Full := uliftFunctorFullyFaithful.full
 @[to_additive]
 noncomputable instance uliftFunctor_preservesLimit {J : Type w} [Category.{w'} J]
     (K : J ⥤ GrpCat.{u}) : PreservesLimit K uliftFunctor.{v, u} where
-  preserves lc := ⟨isLimitOfReflects (forget GrpCat.{max u v})
-    (isLimitOfPreserves CategoryTheory.uliftFunctor (isLimitOfPreserves (forget GrpCat) lc))⟩
+  preserves lc := ⟨isLimitOfReflects (forget GrpCat) <|
+    isLimitOfPreserves CategoryTheory.uliftFunctor.{v} (isLimitOfPreserves (forget GrpCat) lc)⟩
 
 @[to_additive]
 noncomputable instance uliftFunctor_preservesLimitsOfShape {J : Type w} [Category.{w'} J] :
@@ -149,8 +153,8 @@ instance : uliftFunctor.{u, v}.Full := uliftFunctorFullyFaithful.full
 @[to_additive]
 noncomputable instance uliftFunctor_preservesLimit {J : Type w} [Category.{w'} J]
     (K : J ⥤ CommGrpCat.{u}) : PreservesLimit K uliftFunctor.{v, u} where
-  preserves lc := ⟨isLimitOfReflects (forget CommGrpCat.{max u v})
-    (isLimitOfPreserves CategoryTheory.uliftFunctor (isLimitOfPreserves (forget CommGrpCat) lc))⟩
+  preserves lc := ⟨isLimitOfReflects (forget CommGrpCat) <|
+    isLimitOfPreserves CategoryTheory.uliftFunctor.{v} (isLimitOfPreserves (forget CommGrpCat) lc)⟩
 
 @[to_additive]
 noncomputable instance uliftFunctor_preservesLimitsOfShape {J : Type w} [Category.{w'} J] :
@@ -179,7 +183,7 @@ namespace AddCommGrpCat
 /-- The universe lift for commutative additive groups is additive.
 -/
 instance uliftFunctor_additive :
-    AddCommGrpCat.uliftFunctor.{u,v}.Additive where
+    AddCommGrpCat.uliftFunctor.{u, v}.Additive where
 
 open Colimits in
 /--

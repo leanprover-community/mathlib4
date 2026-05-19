@@ -3,10 +3,13 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Oliver Nash
 -/
-import Mathlib.Topology.OpenPartialHomeomorph
-import Mathlib.Analysis.Normed.Group.AddTorsor
-import Mathlib.Analysis.Normed.Module.Ball.Pointwise
-import Mathlib.Data.Real.Sqrt
+module
+
+public import Mathlib.Topology.OpenPartialHomeomorph.Composition
+public import Mathlib.Analysis.Normed.Group.AddTorsor
+public import Mathlib.Analysis.Normed.Module.Ball.Pointwise
+public import Mathlib.Data.Real.Sqrt
+public import Mathlib.Tactic.Module
 
 /-!
 # (Local) homeomorphism between a normed space and a ball
@@ -29,6 +32,8 @@ to a ball of positive radius in an affine space over `E`, see `OpenPartialHomeom
 
 homeomorphism, ball
 -/
+
+@[expose] public section
 
 open Set Metric Pointwise
 variable {E : Type*} [SeminormedAddCommGroup E] [NormedSpace ℝ E]

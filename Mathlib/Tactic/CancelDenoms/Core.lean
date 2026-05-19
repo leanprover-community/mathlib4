@@ -3,13 +3,16 @@ Copyright (c) 2020 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis
 -/
-import Mathlib.Algebra.Field.Basic
-import Mathlib.Algebra.Order.Ring.Defs
-import Mathlib.Data.Tree.Basic
-import Mathlib.Logic.Basic
-import Mathlib.Tactic.NormNum.Core
-import Mathlib.Util.SynthesizeUsing
-import Mathlib.Util.Qq
+module
+
+public meta import Mathlib.Data.Tree.Basic
+public meta import Mathlib.Logic.Basic
+public import Mathlib.Algebra.Field.Basic
+public meta import Mathlib.Algebra.Group.Nat.Defs
+public import Mathlib.Algebra.Order.Ring.Defs
+public import Mathlib.Data.Tree.Basic
+public import Mathlib.Tactic.NormNum.Core
+public import Mathlib.Util.SynthesizeUsing
 
 /-!
 # A tactic for canceling numeric denominators
@@ -28,11 +31,13 @@ There are likely some rough edges to it.
 Improving this tactic would be a good project for someone interested in learning tactic programming.
 -/
 
+public meta section
+
 open Lean Parser Tactic Mathlib Meta NormNum Qq
 
 initialize registerTraceClass `CancelDenoms
 
-namespace CancelDenoms
+namespace Mathlib.Tactic.CancelDenoms
 
 /-! ### Lemmas used in the procedure -/
 
@@ -134,7 +139,7 @@ partial def findCancelFactor (e : Expr) : ℕ × Tree ℕ :=
     | none => (1, .node 1 .nil .nil)
   | _ => (1, .node 1 .nil .nil)
 
-def synthesizeUsingNormNum (type : Q(Prop)) : MetaM Q($type) := do
+private def synthesizeUsingNormNum (type : Q(Prop)) : MetaM Q($type) := do
   try
     synthesizeUsingTactic' type (← `(tactic| norm_num))
   catch e =>
@@ -322,21 +327,24 @@ syntax (name := cancelDenoms) "cancel_denoms" (location)? : tactic
 
 open Elab Tactic
 
-def cancelDenominatorsAt (fvar : FVarId) : TacticM Unit := do
+private def cancelDenominatorsAt (fvar : FVarId) : TacticM Unit := do
   let t ← instantiateMVars (← fvar.getDecl).type
   let (new, eqPrf) ← CancelDenoms.cancelDenominatorsInType t
   liftMetaTactic' fun g => do
     let res ← g.replaceLocalDecl fvar new eqPrf
     return res.mvarId
 
-def cancelDenominatorsTarget : TacticM Unit := do
+private def cancelDenominatorsTarget : TacticM Unit := do
   let (new, eqPrf) ← CancelDenoms.cancelDenominatorsInType (← getMainTarget)
   liftMetaTactic' fun g => g.replaceTargetEq new eqPrf
 
-def cancelDenominators (loc : Location) : TacticM Unit := do
+private def cancelDenominators (loc : Location) : TacticM Unit := do
   withLocation loc cancelDenominatorsAt cancelDenominatorsTarget
     (fun _ ↦ throwError "Failed to cancel any denominators")
 
+@[tactic_alt cancelDenoms]
 elab "cancel_denoms" loc?:(location)? : tactic => do
   cancelDenominators (expandOptLocation (Lean.mkOptionalNode loc?))
   Lean.Elab.Tactic.evalTactic (← `(tactic| try norm_num [← mul_assoc] $[$loc?]?))
+
+end Mathlib.Tactic

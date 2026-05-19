@@ -3,8 +3,11 @@ Copyright (c) 2018 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Functor.Const
-import Mathlib.CategoryTheory.Discrete.Basic
+module
+
+public import Mathlib.CategoryTheory.Functor.Const
+public import Mathlib.CategoryTheory.Discrete.Basic
+public import Mathlib.Data.ULift
 
 /-!
 # The category `Discrete PUnit`
@@ -14,6 +17,7 @@ show that any two functors to `Discrete PUnit` are naturally isomorphic,
 and construct the equivalence `(Discrete PUnit ⥤ C) ≌ C`.
 -/
 
+@[expose] public section
 
 universe w v u
 
@@ -44,6 +48,7 @@ theorem punit_ext' (F G : C ⥤ Discrete PUnit.{w + 1}) : F = G :=
 abbrev fromPUnit (X : C) : Discrete PUnit.{w + 1} ⥤ C :=
   (Functor.const _).obj X
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Functors from `Discrete PUnit` are equivalent to the category itself. -/
 @[simps]
 def equiv : Discrete PUnit.{w + 1} ⥤ C ≌ C where
@@ -56,6 +61,7 @@ def equiv : Discrete PUnit.{w + 1} ⥤ C ≌ C where
 
 end Functor
 
+set_option backward.defeqAttrib.useBackward true in
 /-- A category being equivalent to `PUnit` is equivalent to it having a unique morphism between
   any two objects. (In fact, such a category is also a groupoid;
   see `CategoryTheory.Groupoid.ofHomUnique`) -/
@@ -70,7 +76,6 @@ theorem equiv_punit_iff_unique :
       exact hx ≫ hy
     suffices sub : Subsingleton (x ⟶ y) from uniqueOfSubsingleton f
     have : ∀ z, z = h.unit.app x ≫ (h.functor ⋙ h.inverse).map z ≫ h.unitInv.app y := by
-      intro z
       simp
     apply Subsingleton.intro
     intro a b

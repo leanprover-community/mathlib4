@@ -17,7 +17,7 @@ numbers to the positive real numbers) such that
       ```
 for all positive real numbers `w`, `x`, `y`, `z`, satisfying `wx = yz`.
 
-# Solution
+## Solution
 The desired theorem is that either `f = fun x => x` or `f = fun x => 1/x`
 -/
 
@@ -33,7 +33,8 @@ end Imo2008Q4
 
 open Imo2008Q4
 
-theorem imo2008_q4 (f : ℝ → ℝ) (H₁ : ∀ x > 0, f x > 0) :
+set_option linter.flexible false in
+theorem imo2008_q4 (f : ℝ → ℝ) (H₁ : ∀ x > 0, 0 < f x) :
     (∀ w x y z : ℝ, 0 < w → 0 < x → 0 < y → 0 < z → w * x = y * z →
       (f w ^ 2 + f x ^ 2) / (f (y ^ 2) + f (z ^ 2)) = (w ^ 2 + x ^ 2) / (y ^ 2 + z ^ 2)) ↔
     (∀ x > 0, f x = x) ∨ ∀ x > 0, f x = 1 / x := by
@@ -58,16 +59,15 @@ theorem imo2008_q4 (f : ℝ → ℝ) (H₁ : ∀ x > 0, f x > 0) :
     specialize H₂ 1 x (sqrt x) (sqrt x) zero_lt_one
     grind [sqrt_pos]
   have h₃ : ∀ x > 0, f x = x ∨ f x = 1 / x := by simpa [sub_eq_zero] using h₂
-  by_contra! h
-  rcases h with ⟨⟨b, hb, hfb₁⟩, ⟨a, ha, hfa₁⟩⟩
+  by_contra! ⟨⟨b, hb, hfb₁⟩, ⟨a, ha, hfa₁⟩⟩
   obtain hfa₂ := Or.resolve_right (h₃ a ha) hfa₁
   -- f(a) ≠ 1/a, f(a) = a
   obtain hfb₂ := Or.resolve_left (h₃ b hb) hfb₁
   -- f(b) ≠ b, f(b) = 1/b
-  have hab : a * b > 0 := mul_pos ha hb
-  have habss : a * b = sqrt (a * b) * sqrt (a * b) := (mul_self_sqrt (le_of_lt hab)).symm
+  have hab : 0 < a * b := by positivity
+  have habss : a * b = sqrt (a * b) * sqrt (a * b) := (mul_self_sqrt hab.le).symm
   specialize H₂ a b (sqrt (a * b)) (sqrt (a * b)) ha hb (sqrt_pos.mpr hab) (sqrt_pos.mpr hab) habss
-  rw [sq_sqrt (le_of_lt hab), ← two_mul (f (a * b)), ← two_mul (a * b)] at H₂
+  rw [sq_sqrt hab.le, ← two_mul (f (a * b)), ← two_mul (a * b)] at H₂
   rw [hfa₂, hfb₂] at H₂
   have h2ab_ne_0 : 2 * (a * b) ≠ 0 := by positivity
   specialize h₃ (a * b) hab

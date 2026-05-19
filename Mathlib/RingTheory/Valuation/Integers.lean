@@ -3,7 +3,9 @@ Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.RingTheory.Valuation.Basic
+module
+
+public import Mathlib.RingTheory.Valuation.Basic
 
 /-!
 # Ring of integers under a given valuation
@@ -12,6 +14,8 @@ The elements with valuation less than or equal to 1.
 
 TODO: Define characteristic predicate.
 -/
+
+@[expose] public section
 
 open Set
 
@@ -52,7 +56,7 @@ structure Integers : Prop where
 
 -- typeclass shortcut
 instance : Algebra v.integer R :=
-  Algebra.ofSubring v.integer
+  inferInstance
 
 theorem integer.integers : v.Integers v.integer :=
   { hom_inj := Subtype.coe_injective
@@ -85,14 +89,14 @@ theorem isUnit_of_one (hv : Integers v O) {x : O} (hx : IsUnit (algebraMap O R x
     rw [← one_mul (v _), ← hvx, ← v.map_mul, ← hu, u.mul_inv, hu, hvx, v.map_one]
   let ⟨r1, hr1⟩ := hv.3 h1
   let ⟨r2, hr2⟩ := hv.3 h2
-  ⟨⟨r1, r2, hv.1 <| by rw [RingHom.map_mul, RingHom.map_one, hr1, hr2, Units.mul_inv],
-      hv.1 <| by rw [RingHom.map_mul, RingHom.map_one, hr1, hr2, Units.inv_mul]⟩,
+  ⟨⟨r1, r2, hv.1 <| by rw [map_mul, map_one, hr1, hr2, Units.mul_inv],
+      hv.1 <| by rw [map_mul, map_one, hr1, hr2, Units.inv_mul]⟩,
     hv.1 <| hr1.trans hu⟩
 
 theorem le_of_dvd (hv : Integers v O) {x y : O} (h : x ∣ y) :
     v (algebraMap O R y) ≤ v (algebraMap O R x) := by
   obtain ⟨z, rfl⟩ := h
-  grw [← mul_one (v (algebraMap O R x)), RingHom.map_mul, v.map_mul, hv.2 z]
+  grw [← mul_one (v (algebraMap O R x)), map_mul, v.map_mul, hv.2 z]
 
 lemma nontrivial_iff (hv : v.Integers O) : Nontrivial O ↔ Nontrivial R := by
   constructor <;> intro h
@@ -104,6 +108,10 @@ lemma nontrivial_iff (hv : v.Integers O) : Nontrivial O ↔ Nontrivial R := by
     simp [ho1] at ho0
 
 end Integers
+
+theorem IsTrivialOn.of_le_one {k : Type*} [Field k] [Algebra k R] (v : Valuation R Γ₀)
+    (hle : ∀ (x : k), v (algebraMap k R x) ≤ 1) : v.IsTrivialOn k where
+  eq_one a ha := Valuation.Integers.one_of_isUnit' (IsUnit.mk0 a ha) hle
 
 lemma integers_nontrivial (v : Valuation R Γ₀) :
     Nontrivial v.integer ↔ Nontrivial R :=
@@ -193,7 +201,7 @@ theorem eq_algebraMap_or_inv_eq_algebraMap (hv : Integers v O) (x : F) :
 lemma coe_span_singleton_eq_setOf_le_v_algebraMap (hv : Integers v O) (x : O) :
     (Ideal.span {x} : Set O) = {y : O | v (algebraMap O F y) ≤ v (algebraMap O F x)} := by
   rcases eq_or_ne x 0 with rfl | hx
-  · simp [Set.singleton_zero, Ideal.span_zero, map_eq_zero_iff _ hv.hom_inj]
+  · simp [Set.singleton_zero, map_eq_zero_iff _ hv.hom_inj]
   ext
   simp [SetLike.mem_coe, Ideal.mem_span_singleton, hv.dvd_iff_le]
 
@@ -211,7 +219,7 @@ lemma isPrincipal_iff_exists_isGreatest (hv : Integers v O) {I : Ideal O} :
   constructor <;> rintro ⟨x, hx⟩
   · refine ⟨(v ∘ algebraMap O F) x, ?_, ?_⟩
     · refine Set.mem_image_of_mem _ ?_
-      simp [hx, Ideal.mem_span_singleton_self]
+      simp [hx]
     · intro y hy
       simp only [Function.comp_apply, hx, Ideal.submodule_span_eq, Set.mem_image,
         SetLike.mem_coe, Ideal.mem_span_singleton] at hy

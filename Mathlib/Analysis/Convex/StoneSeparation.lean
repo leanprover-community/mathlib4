@@ -3,8 +3,10 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Analysis.Convex.Combination
-import Mathlib.Analysis.Convex.Join
+module
+
+public import Mathlib.Analysis.Convex.Combination
+public import Mathlib.Analysis.Convex.Join
 
 /-!
 # Stone's separation theorem
@@ -16,6 +18,8 @@ In locally convex real topological vector spaces, the Hahn-Banach separation the
 stronger statements: one may find a separating hyperplane, instead of merely a convex set whose
 complement is convex.
 -/
+
+public section
 
 
 open Set

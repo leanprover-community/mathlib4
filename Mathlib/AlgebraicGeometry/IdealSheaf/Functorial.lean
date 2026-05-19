@@ -3,8 +3,10 @@ Copyright (c) 2025 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.AlgebraicGeometry.Morphisms.ClosedImmersion
-import Mathlib.AlgebraicGeometry.PullbackCarrier
+module
+
+public import Mathlib.AlgebraicGeometry.Morphisms.ClosedImmersion
+public import Mathlib.AlgebraicGeometry.PullbackCarrier
 
 /-!
 # Functorial constructions of ideal sheaves
@@ -18,6 +20,8 @@ We define the pullback and pushforward of ideal sheaves in this file.
   The Galois connection between pullback and pushforward.
 
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -50,6 +54,7 @@ lemma comapIso_hom_fst (I : Y.IdealSheafData) (f : X ⟶ Y) :
     (I.comapIso f).hom ≫ pullback.fst _ _ = (I.comap f).subschemeι := by
   rw [← comapIso_inv_subschemeι, Iso.hom_inv_id_assoc]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma comap_comp (I : Z.IdealSheafData) (f : X ⟶ Y) (g : Y ⟶ Z) :
     I.comap (f ≫ g) = (I.comap g).comap f := by
@@ -78,6 +83,7 @@ lemma ker_fst_of_isClosedImmersion (i : Z ⟶ Y) (f : X ⟶ Y) [IsClosedImmersio
   rw [← Hom.ker_comp_of_isIso (pullback.map f i f i.imageι (𝟙 _) (i.toImage) (𝟙 _)
     (by simp) (by simp)), pullback.lift_fst, Category.comp_id]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- To show that the pullback of the closed immersion `iX` along `f` is the closed immersion
 `iY`, it suffices to check that the preimage of `ker iY` under `f` is `ker iX`. -/
 lemma _root_.AlgebraicGeometry.isPullback_of_isClosedImmersion
@@ -114,7 +120,9 @@ variable (I I₁ I₂ : X.IdealSheafData) (J J₁ J₂ : Y.IdealSheafData) (f : 
 /-- Pushforward and pullback of ideal sheaves forms a Galois connection. -/
 lemma map_gc : GaloisConnection (comap · f) (map · f) := fun _ _ ↦ le_map_iff_comap_le.symm
 
-set_option linter.style.commandStart false
+section
+set_option linter.style.whitespace false -- manual alignment is not recognised
+
 lemma map_mono          : Monotone (map · f)                          := (map_gc f).monotone_u
 lemma comap_mono        : Monotone (comap · f)                        := (map_gc f).monotone_l
 lemma le_map_comap      : J ≤ (J.comap f).map f                       := (map_gc f).le_u_l J
@@ -123,7 +131,8 @@ lemma comap_map_le      : (I.map f).comap f ≤ I                       := (map_
 @[simp] lemma comap_bot : comap ⊥ f = ⊥                               := (map_gc f).l_bot
 @[simp] lemma map_inf   : map (I₁ ⊓ I₂) f = map I₁ f ⊓ map I₂ f       := (map_gc f).u_inf
 @[simp] lemma comap_sup : comap (J₁ ⊔ J₂) f = comap J₁ f ⊔ comap J₂ f := (map_gc f).l_sup
-set_option linter.style.commandStart true
+
+end
 
 end gc
 
@@ -172,6 +181,7 @@ lemma support_map (I : X.IdealSheafData) (f : X ⟶ Y) [QuasiCompact f] :
   rw [map, Scheme.Hom.support_ker, Scheme.Hom.comp_base, TopCat.coe_comp,
     Set.range_comp, range_subschemeι, TopologicalSpace.Closeds.coe_closure]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma ideal_map (I : X.IdealSheafData) (f : X ⟶ Y) [QuasiCompact f] (U : Y.affineOpens)
     (H : IsAffineOpen (f ⁻¹ᵁ U)) :
     (I.map f).ideal U = (I.ideal ⟨_, H⟩).comap (f.app U).hom := by

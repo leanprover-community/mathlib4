@@ -3,10 +3,12 @@ Copyright (c) 2025 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
-import Mathlib.LinearAlgebra.Quotient.Basic
-import Mathlib.RingTheory.Finiteness.Basic
-import Mathlib.RingTheory.Ideal.Maps
-import Mathlib.RingTheory.Ideal.Quotient.Defs
+module
+
+public import Mathlib.LinearAlgebra.Quotient.Basic
+public import Mathlib.RingTheory.Finiteness.Basic
+public import Mathlib.RingTheory.Ideal.Maps
+public import Mathlib.RingTheory.Ideal.Quotient.Defs
 
 /-!
 # Jacobson radical of modules and rings
@@ -24,6 +26,8 @@ it is in fact a two-sided ideal, and equals the intersection of all maximal righ
 * [F. Lorenz, *Algebra: Volume II: Fields with Structure, Algebras and Advanced Topics*][Lorenz2008]
 -/
 
+@[expose] public section
+
 assert_not_exists Cardinal
 
 namespace Module
@@ -33,7 +37,7 @@ open Submodule
 variable (R R₂ M M₂ : Type*) [Ring R] [Ring R₂]
 variable [AddCommGroup M] [Module R M] [AddCommGroup M₂] [Module R₂ M₂]
 variable {τ₁₂ : R →+* R₂} [RingHomSurjective τ₁₂]
-variable {F : Type*} [FunLike F M M₂] [SemilinearMapClass F τ₁₂ M M₂] (f : F)
+variable (f : M →ₛₗ[τ₁₂] M₂)
 
 /-- The Jacobson radical of an `R`-module `M` is the infimum of all maximal submodules in `M`. -/
 def jacobson : Submodule R M :=
@@ -51,11 +55,10 @@ theorem le_comap_jacobson : jacobson R M ≤ comap f (jacobson R₂ M₂) := by
 theorem map_jacobson_le : map f (jacobson R M) ≤ jacobson R₂ M₂ :=
   map_le_iff_le_comap.mpr (le_comap_jacobson f)
 
-include τ₁₂ in
 theorem jacobson_eq_bot_of_injective (inj : Function.Injective f) (h : jacobson R₂ M₂ = ⊥) :
     jacobson R M = ⊥ :=
   le_bot_iff.mp <| (le_comap_jacobson f).trans <| by
-    simp_rw [h, comap_bot, ((LinearMapClass.ker_eq_bot _).mpr inj).le]
+    simp_rw [h, comap_bot, (LinearMap.ker_eq_bot.mpr inj).le]
 
 variable {f}
 
@@ -74,11 +77,11 @@ theorem comap_jacobson_of_ker_le (surj : Function.Surjective f)
 
 theorem map_jacobson_of_bijective (hf : Function.Bijective f) :
     map f (jacobson R M) = jacobson R₂ M₂ :=
-  map_jacobson_of_ker_le hf.2 <| by simp_rw [(LinearMapClass.ker_eq_bot _).mpr hf.1, bot_le]
+  map_jacobson_of_ker_le hf.2 <| by simp_rw [LinearMap.ker_eq_bot.mpr hf.1, bot_le]
 
 theorem comap_jacobson_of_bijective (hf : Function.Bijective f) :
     comap f (jacobson R₂ M₂) = jacobson R M :=
-  comap_jacobson_of_ker_le hf.2 <| by simp_rw [(LinearMapClass.ker_eq_bot _).mpr hf.1, bot_le]
+  comap_jacobson_of_ker_le hf.2 <| by simp_rw [LinearMap.ker_eq_bot.mpr hf.1, bot_le]
 
 theorem jacobson_quotient_of_le {N : Submodule R M} (le : N ≤ jacobson R M) :
     jacobson R (M ⧸ N) = map N.mkQ (jacobson R M) :=
@@ -132,6 +135,10 @@ instance : (jacobson R).IsTwoSided :=
   ⟨fun b ha ↦ Module.le_comap_jacobson (f := LinearMap.toSpanSingleton R R b) ha⟩
 
 variable {R R₂}
+
+lemma jacobson_le_of_isMaximal (m : Ideal R) [m.IsMaximal] : jacobson R ≤ m := by
+  rw [Ring.jacobson_eq_sInf_isMaximal]
+  exact sInf_le ‹_›
 
 theorem le_comap_jacobson : jacobson R ≤ Ideal.comap f (jacobson R₂) :=
   Module.le_comap_jacobson f.toSemilinearMap

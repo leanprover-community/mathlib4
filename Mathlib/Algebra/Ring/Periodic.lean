@@ -3,7 +3,9 @@ Copyright (c) 2021 Benjamin Davidson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Benjamin Davidson
 -/
-import Mathlib.Algebra.Ring.NegOnePow
+module
+
+public import Mathlib.Algebra.Ring.NegOnePow
 
 /-!
 # Periodicity
@@ -24,6 +26,8 @@ Note that any `c`-antiperiodic function will necessarily also be `2 • c`-perio
 
 period, periodic, periodicity, antiperiodic
 -/
+
+@[expose] public section
 
 assert_not_exists Field
 
@@ -76,7 +80,7 @@ theorem _root_.Multiset.periodic_prod [Add α] [CommMonoid β] (s : Multiset (α
 @[to_additive]
 theorem _root_.Finset.periodic_prod [Add α] [CommMonoid β] {ι : Type*} {f : ι → α → β}
     (s : Finset ι) (hs : ∀ i ∈ s, Periodic (f i) c) : Periodic (∏ i ∈ s, f i) c :=
-  s.prod_map_toList f ▸ (s.toList.map f).periodic_prod (by simpa [-Periodic] )
+  s.prod_map_toList f ▸ (s.toList.map f).periodic_prod (by simpa [-Periodic])
 
 @[to_additive]
 protected theorem Periodic.smul [Add α] [SMul γ β] (h : Periodic f c) (a : γ) :

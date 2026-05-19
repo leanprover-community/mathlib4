@@ -3,8 +3,10 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Vector.Basic
-import Mathlib.Logic.Equiv.Finset
+module
+
+public import Mathlib.Data.Vector.Basic
+public import Mathlib.Logic.Equiv.Finset
 
 /-!
 # Encodability of Pi types
@@ -17,6 +19,8 @@ This file provides instances of `Encodable` for types of vectors and (dependent)
   finite domain and countable codomain are encodable
 -/
 
+@[expose] public section
+
 open List (Vector)
 open Nat List
 
@@ -26,11 +30,11 @@ variable {α : Type*}
 
 /-- If `α` is encodable, then so is `Vector α n`. -/
 instance List.Vector.encodable [Encodable α] {n} : Encodable (List.Vector α n) :=
-  Subtype.encodable
+  inferInstanceAs <| Encodable (Subtype _)
 
 /-- If `α` is countable, then so is `Vector α n`. -/
 instance List.Vector.countable [Countable α] {n} : Countable (List.Vector α n) :=
-  Subtype.countable
+  inferInstanceAs <| Countable (Subtype _)
 
 /-- If `α` is encodable, then so is `Fin n → α`. -/
 instance finArrow [Encodable α] {n} : Encodable (Fin n → α) :=

@@ -3,9 +3,10 @@ Copyright (c) 2024 Calle Sönne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Paul Lezeau, Calle Sönne
 -/
+module
 
-import Mathlib.CategoryTheory.Functor.Category
-import Mathlib.CategoryTheory.CommSq
+public import Mathlib.CategoryTheory.Functor.Category
+public import Mathlib.CategoryTheory.CommSq
 
 /-!
 
@@ -21,7 +22,7 @@ Given morphism `φ : a ⟶ b` in `𝒳` and `f : R ⟶ S` in `𝒮`, `p.IsHomLif
 which expresses the fact that `f = p(φ)`.
 
 We also define a macro `subst_hom_lift p f φ` which can be used to substitute `f` with `p(φ)` in a
-goal, this tactic is just short for `obtain ⟨⟩ := inferInstanceAs (p.IsHomLift f φ)`, and
+goal, this tactic is just short for `obtain ⟨⟩ := (inferInstance : p.IsHomLift f φ)`, and
 it is used to make the code more readable.
 
 ## Implementation
@@ -30,6 +31,8 @@ The class `IsHomLift` is defined as an inductive with the single constructor
 `.rfl (a : α) : Eq a a`.
 
 -/
+
+@[expose] public section
 
 universe u₁ v₁ u₂ v₂
 
@@ -54,7 +57,7 @@ class inductive Functor.IsHomLift : ∀ {R S : 𝒮} {a b : 𝒳} (_ : R ⟶ S) 
 
 /-- `subst_hom_lift p f φ` tries to substitute `f` with `p(φ)` by using `p.IsHomLift f φ` -/
 macro "subst_hom_lift" p:term:max f:term:max φ:term:max : tactic =>
-  `(tactic| obtain ⟨⟩ := inferInstanceAs (Functor.IsHomLift $p $f $φ))
+  `(tactic| obtain ⟨⟩ := (inferInstance : Functor.IsHomLift $p $f $φ))
 
 namespace IsHomLift
 
@@ -130,7 +133,7 @@ instance comp_of_lift_id (R : 𝒮) {a b c : 𝒳} (φ : a ⟶ b) (ψ : b ⟶ c)
 
 instance comp_lift_id_right {a b c : 𝒳} {S T : 𝒮} (f : S ⟶ T) (φ : a ⟶ b) [p.IsHomLift f φ]
     (ψ : b ⟶ c) [p.IsHomLift (𝟙 T) ψ] : p.IsHomLift f (φ ≫ ψ) := by
-  simpa using inferInstanceAs (p.IsHomLift (f ≫ 𝟙 T) (φ ≫ ψ))
+  simpa using (inferInstance : p.IsHomLift (f ≫ 𝟙 T) (φ ≫ ψ))
 
 /-- If `φ : a ⟶ b` lifts `f` and `ψ : b ⟶ c` lifts `𝟙 T`, then `φ ≫ ψ` lifts `f` -/
 lemma comp_lift_id_right' {R S : 𝒮} {a b c : 𝒳} (f : R ⟶ S) (φ : a ⟶ b) [p.IsHomLift f φ]
@@ -140,7 +143,7 @@ lemma comp_lift_id_right' {R S : 𝒮} {a b c : 𝒳} (f : R ⟶ S) (φ : a ⟶ 
 
 instance comp_lift_id_left {a b c : 𝒳} {S T : 𝒮} (f : S ⟶ T) (ψ : b ⟶ c) [p.IsHomLift f ψ]
     (φ : a ⟶ b) [p.IsHomLift (𝟙 S) φ] : p.IsHomLift f (φ ≫ ψ) := by
-  simpa using inferInstanceAs (p.IsHomLift (𝟙 S ≫ f) (φ ≫ ψ))
+  simpa using (inferInstance : p.IsHomLift (𝟙 S ≫ f) (φ ≫ ψ))
 
 /-- If `φ : a ⟶ b` lifts `𝟙 T` and `ψ : b ⟶ c` lifts `f`, then `φ  ≫ ψ` lifts `f` -/
 lemma comp_lift_id_left' {a b c : 𝒳} (R : 𝒮) (φ : a ⟶ b) [p.IsHomLift (𝟙 R) φ]

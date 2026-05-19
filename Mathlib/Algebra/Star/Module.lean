@@ -3,12 +3,14 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser, Frédéric Dupuis
 -/
-import Mathlib.Algebra.Star.SelfAdjoint
-import Mathlib.Algebra.Module.Basic
-import Mathlib.Algebra.Module.Equiv.Defs
-import Mathlib.Algebra.Module.LinearMap.Star
-import Mathlib.Algebra.Module.Rat
-import Mathlib.LinearAlgebra.Prod
+module
+
+public import Mathlib.Algebra.Star.SelfAdjoint
+public import Mathlib.Algebra.Module.Basic
+public import Mathlib.Algebra.Module.Equiv.Defs
+public import Mathlib.Algebra.Module.LinearMap.Star
+public import Mathlib.Algebra.Module.Rat
+public import Mathlib.LinearAlgebra.Prod
 
 /-!
 # The star operation, bundled as a star-linear equiv
@@ -29,6 +31,8 @@ This file also provides some lemmas that need `Algebra.Module.Basic` imported to
   the appropriate `RingHomInvPair` instances to be able to define the semilinear
   equivalence.
 -/
+
+@[expose] public section
 
 
 section SMulLemmas

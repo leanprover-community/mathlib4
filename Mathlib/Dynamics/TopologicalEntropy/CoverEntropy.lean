@@ -3,10 +3,12 @@ Copyright (c) 2024 Damien Thomine. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damien Thomine, Pietro Monticone
 -/
-import Mathlib.Analysis.Asymptotics.ExpGrowth
-import Mathlib.Data.ENat.Lattice
-import Mathlib.Data.Real.ENatENNReal
-import Mathlib.Dynamics.TopologicalEntropy.DynamicalEntourage
+module
+
+public import Mathlib.Analysis.Asymptotics.ExpGrowth
+public import Mathlib.Data.ENat.Lattice
+public import Mathlib.Data.Real.ENatENNReal
+public import Mathlib.Dynamics.TopologicalEntropy.DynamicalEntourage
 
 /-!
 # Topological entropy via covers
@@ -31,10 +33,10 @@ reals `[-∞, +∞]`. The consequence is that we use `ℕ∞`, `ℝ≥0∞` and 
 - `IsDynCoverOf`: property that dynamical balls centered on a subset `s` cover a subset `F`.
 - `coverMincard`: minimal cardinality of a dynamical cover. Takes values in `ℕ∞`.
 - `coverEntropyInfEntourage`/`coverEntropyEntourage`: exponential growth of `coverMincard`.
-The former is defined with a `liminf`, the later with a `limsup`. Take values in `EReal`.
+  The former is defined with a `liminf`, the later with a `limsup`. Take values in `EReal`.
 - `coverEntropyInf`/`coverEntropy`: supremum of `coverEntropyInfEntourage`/`coverEntropyEntourage`
-over all entourages (or limit as the entourages go to the diagonal). These are Bowen-Dinaburg's
-versions of the topological entropy with covers. Take values in `EReal`.
+  over all entourages (or limit as the entourages go to the diagonal). These are Bowen-Dinaburg's
+  versions of the topological entropy with covers. Take values in `EReal`.
 
 ## Implementation notes
 There are two competing definitions of topological entropy in this file: one uses a `liminf`,
@@ -46,11 +48,11 @@ using only `coverEntropy`.
 
 ## Main results
 - `IsDynCoverOf.iterate_le_pow`: given a dynamical cover at time `n`, creates dynamical covers
-at all iterates `n * m` with controlled cardinality.
+  at all iterates `n * m` with controlled cardinality.
 - `IsDynCoverOf.coverEntropyEntourage_le_log_card_div`: upper bound on `coverEntropyEntourage`
-given any dynamical cover.
+  given any dynamical cover.
 - `coverEntropyInf_eq_coverEntropy`: equality between the notions of topological entropy defined
-with a `liminf` and a `limsup`.
+  with a `liminf` and a `limsup`.
 
 ## Tags
 cover, entropy
@@ -59,12 +61,14 @@ cover, entropy
 Get versions of the topological entropy on (pseudo-e)metric spaces.
 -/
 
-open Set Uniformity UniformSpace
-open scoped SetRel
+@[expose] public section
+
+open Set SetRel Uniformity UniformSpace
+open scoped Finset
 
 namespace Dynamics
 
-variable {X : Type*}
+variable {X : Type*} {T : X → X} {U V : SetRel X X} {n : ℕ} {F s : Set X} {m n : ℕ}
 
 /-! ### Dynamical covers -/
 
@@ -72,63 +76,44 @@ variable {X : Type*}
 dynamical cover of `F` if any orbit of length `n` in `F` is `U`-shadowed by an orbit of length `n`
 of a point in `s`. -/
 def IsDynCoverOf (T : X → X) (F : Set X) (U : SetRel X X) (n : ℕ) (s : Set X) : Prop :=
-  F ⊆ ⋃ x ∈ s, ball x (dynEntourage T U n)
+  IsCover (dynEntourage T U n) F s
 
-lemma IsDynCoverOf.of_le {T : X → X} {F : Set X} {U : SetRel X X} {m n : ℕ} (m_n : m ≤ n)
-    {s : Set X} (h : IsDynCoverOf T F U n s) :
-    IsDynCoverOf T F U m s :=
-  h.trans (iUnion₂_mono fun x _ ↦ ball_mono (dynEntourage_antitone T U m_n) x)
+lemma IsDynCoverOf.of_le (m_n : m ≤ n) (h : IsDynCoverOf T F U n s) : IsDynCoverOf T F U m s :=
+  h.mono_entourage <| by gcongr
 
-lemma IsDynCoverOf.of_entourage_subset {T : X → X} {F : Set X} {U V : SetRel X X} (U_V : U ⊆ V)
-    {n : ℕ} {s : Set X} (h : IsDynCoverOf T F U n s) :
-    IsDynCoverOf T F V n s :=
-  h.trans (iUnion₂_mono fun x _ ↦ ball_mono (dynEntourage_monotone T n U_V) x)
+lemma IsDynCoverOf.of_entourage_subset (U_V : U ⊆ V) (h : IsDynCoverOf T F U n s) :
+    IsDynCoverOf T F V n s := h.mono_entourage <| by gcongr
 
-@[simp]
-lemma isDynCoverOf_empty {T : X → X} {U : SetRel X X} {n : ℕ} {s : Set X} :
-    IsDynCoverOf T ∅ U n s := by
-  simp only [IsDynCoverOf, empty_subset]
+@[simp] lemma isDynCoverOf_empty : IsDynCoverOf T ∅ U n s := .empty
 
-lemma IsDynCoverOf.nonempty {T : X → X} {F : Set X} (h : F.Nonempty) {U : SetRel X X} {n : ℕ}
-    {s : Set X} (h' : IsDynCoverOf T F U n s) :
-    s.Nonempty := by
-  obtain ⟨x, x_s, _⟩ := nonempty_biUnion.1 (Nonempty.mono h' h)
-  exact nonempty_of_mem x_s
+@[simp] lemma isDynCoverOf_empty_right : IsDynCoverOf T F U n ∅ ↔ F = ∅ := by simp [IsDynCoverOf]
 
-lemma isDynCoverOf_zero (T : X → X) (F : Set X) (U : SetRel X X) {s : Set X} (h : s.Nonempty) :
-    IsDynCoverOf T F U 0 s := by
-  simp only [IsDynCoverOf, ball, dynEntourage, not_lt_zero', Prod.map_iterate, iInter_of_empty,
-    iInter_univ, preimage_univ]
-  obtain ⟨x, x_s⟩ := h
-  exact subset_iUnion₂_of_subset x x_s (subset_univ F)
+nonrec lemma IsDynCoverOf.nonempty (h : F.Nonempty) (h' : IsDynCoverOf T F U n s) : s.Nonempty :=
+  h'.nonempty h
 
-lemma isDynCoverOf_univ (T : X → X) (F : Set X) (n : ℕ) {s : Set X} (h : s.Nonempty) :
-    IsDynCoverOf T F univ n s := by
-  simp only [IsDynCoverOf, ball, dynEntourage, Prod.map_iterate, preimage_univ, iInter_univ]
-  obtain ⟨x, x_s⟩ := h
-  exact subset_iUnion₂_of_subset x x_s (subset_univ F)
+lemma isDynCoverOf_zero (T : X → X) (F : Set X) (U : SetRel X X) (h : s.Nonempty) :
+    IsDynCoverOf T F U 0 s := by simp [IsDynCoverOf, h]
 
-lemma IsDynCoverOf.nonempty_inter {T : X → X} {F : Set X} {U : SetRel X X} {n : ℕ} {s : Finset X}
-    (h : IsDynCoverOf T F U n s) :
-    ∃ t : Finset X, IsDynCoverOf T F U n t ∧ t.card ≤ s.card
-    ∧ ∀ x ∈ t, ((ball x (dynEntourage T U n)) ∩ F).Nonempty := by
+lemma isDynCoverOf_univ (T : X → X) (F : Set X) (n : ℕ) (h : s.Nonempty) :
+    IsDynCoverOf T F univ n s := by simp [IsDynCoverOf, h]
+
+lemma IsDynCoverOf.nonempty_inter [U.IsSymm] {s : Finset X} (h : IsDynCoverOf T F U n s) :
+    ∃ t : Finset X, IsDynCoverOf T F U n t ∧ #t ≤ #s ∧
+      ∀ x ∈ t, (ball x (dynEntourage T U n) ∩ F).Nonempty := by
   classical
-  use Finset.filter (fun x : X ↦ ((ball x (dynEntourage T U n)) ∩ F).Nonempty) s
+  use {x ∈ s | (ball x (dynEntourage T U n) ∩ F).Nonempty}
   simp only [Finset.coe_filter, Finset.mem_filter, and_imp, imp_self, implies_true, and_true]
-  refine ⟨fun y y_F ↦ ?_, Finset.card_mono (s.filter_subset _)⟩
-  specialize h y_F
-  simp only [mem_iUnion, exists_prop] at h
-  obtain ⟨z, z_s, y_Bz⟩ := h
-  simp only [mem_setOf_eq, mem_iUnion, exists_prop]
-  exact ⟨z, ⟨z_s, nonempty_of_mem ⟨y_Bz, y_F⟩⟩, y_Bz⟩
+  refine ⟨fun y y_F ↦ ?_, Finset.card_mono (Finset.filter_subset _ s)⟩
+  obtain ⟨z, z_s, y_Bz⟩ := h y_F
+  exact ⟨z, ⟨z_s, _, (dynEntourage T U n).symm y_Bz, y_F⟩, y_Bz⟩
 
 /-- From a dynamical cover `s` with entourage `U` and time `m`, we construct covers with entourage
 `U ○ U` and any multiple `m * n` of `m` with controlled cardinality. This lemma is the first step
 in a submultiplicative-like property of `coverMincard`, with consequences such as explicit bounds
 for the topological entropy (`coverEntropyInfEntourage_le_card_div`) and an equality between
 two notions of topological entropy (`coverEntropyInf_eq_coverEntropySup_of_inv`). -/
-lemma IsDynCoverOf.iterate_le_pow {T : X → X} {F : Set X} (F_inv : MapsTo T F F) {U : SetRel X X}
-    [U.IsSymm] {m : ℕ} (n : ℕ) {s : Finset X} (h : IsDynCoverOf T F U m s) :
+lemma IsDynCoverOf.iterate_le_pow (F_inv : MapsTo T F F) [U.IsSymm] (n : ℕ) {s : Finset X}
+    (h : IsDynCoverOf T F U m s) :
     ∃ t : Finset X, IsDynCoverOf T F (U ○ U) (m * n) t ∧ t.card ≤ s.card ^ n := by
   classical
   -- Deal with the edge cases: `F = ∅` or `m = 0`.
@@ -159,8 +144,8 @@ lemma IsDynCoverOf.iterate_le_pow {T : X → X} {F : Set X} (F_inv : MapsTo T F 
     · exact inter_empt ▸ ⟨x, empty_subset _⟩
     · obtain ⟨y, y_int⟩ := inter_nemp
       refine ⟨y, fun z z_int ↦ ?_⟩
-      simp only [ball, dynEntourage, Prod.map_iterate, mem_preimage, mem_iInter,
-        Prod.map_apply] at y_int z_int ⊢
+      simp only [ball, dynEntourage, Prod.map_iterate, mem_iInter, Set.mem_preimage, Prod.map_apply,
+        mem_comp] at y_int z_int ⊢
       intro k k_mn
       replace k_mn := Nat.div_lt_of_lt_mul k_mn
       specialize z_int ⟨(k / m), k_mn⟩ (k % m) (Nat.mod_lt k m_pos)
@@ -183,37 +168,33 @@ lemma IsDynCoverOf.iterate_le_pow {T : X → X} {F : Set X} (F_inv : MapsTo T F 
     have key : ∀ k : Fin n, ∃ z : s, y ∈ T^[m * k] ⁻¹' ball z (dynEntourage T U m) := by
       intro k
       have := h (MapsTo.iterate F_inv (m * k) y_F)
-      simp only [mem_iUnion, exists_prop] at this
+      simp only [Finset.mem_coe] at this
       obtain ⟨z, z_s, hz⟩ := this
-      exact ⟨⟨z, z_s⟩, hz⟩
+      exact ⟨⟨z, z_s⟩, (dynEntourage T U m).symm hz⟩
     choose! t ht using key
     simp only [toFinset_range, Finset.coe_image, Finset.coe_univ, image_univ, mem_range,
-      iUnion_exists, iUnion_iUnion_eq', mem_iUnion, sn]
-    use t
-    apply h_dyncover t
-    simp only [mem_iInter, mem_preimage] at ht ⊢
-    exact ht
+      exists_exists_eq_and, sn]
+    refine ⟨t, (dynEntourage T (U ○ U) (m * n)).symm <| h_dyncover t <| by simpa using ht⟩
   · rw [toFinset_card]
     apply (Fintype.card_range_le dyncover).trans
     simp only [Fintype.card_fun, Fintype.card_coe, Fintype.card_fin, le_refl]
 
-lemma exists_isDynCoverOf_of_isCompact_uniformContinuous [UniformSpace X] {T : X → X} {F : Set X}
-    (F_comp : IsCompact F) (h : UniformContinuous T) {U : SetRel X X} (U_uni : U ∈ 𝓤 X) (n : ℕ) :
+lemma exists_isDynCoverOf_of_isCompact_uniformContinuous [UniformSpace X]
+    (F_comp : IsCompact F) (h : UniformContinuous T) (U_uni : U ∈ 𝓤 X) (n : ℕ) :
     ∃ s : Finset X, IsDynCoverOf T F U n s := by
-  have uni_ite := dynEntourage_mem_uniformity h U_uni n
-  let open_cover := fun x : X ↦ ball x (dynEntourage T U n)
-  obtain ⟨s, _, s_cover⟩ := IsCompact.elim_nhds_subcover F_comp open_cover
-    fun (x : X) _ ↦ ball_mem_nhds x uni_ite
-  exact ⟨s, s_cover⟩
+  obtain ⟨(V : SetRel X X), hV, hVsymm, hVU⟩ := symm_of_uniformity U_uni
+  have uni_ite := dynEntourage_mem_uniformity h hV n
+  let openCover x := ball x (dynEntourage T V n)
+  obtain ⟨s, _, s_cover⟩ := F_comp.elim_nhds_subcover openCover fun x _ ↦ ball_mem_nhds x uni_ite
+  exact ⟨s, .of_entourage_subset hVU <| .of_subset_iUnion_ball s_cover⟩
 
-lemma exists_isDynCoverOf_of_isCompact_invariant [UniformSpace X] {T : X → X} {F : Set X}
-    (F_comp : IsCompact F) (F_inv : MapsTo T F F) {U : SetRel X X} (U_uni : U ∈ 𝓤 X) (n : ℕ) :
+lemma exists_isDynCoverOf_of_isCompact_invariant [UniformSpace X]
+    (F_comp : IsCompact F) (F_inv : MapsTo T F F) (U_uni : U ∈ 𝓤 X) (n : ℕ) :
     ∃ s : Finset X, IsDynCoverOf T F U n s := by
-  obtain ⟨V, V_uni, V_symm, V_U⟩ := comp_symm_mem_uniformity_sets U_uni
-  obtain ⟨s, _, s_cover⟩ := IsCompact.elim_nhds_subcover F_comp (fun x : X ↦ ball x V)
+  obtain ⟨(V : SetRel X X), V_uni, V_symm, V_U⟩ := comp_symm_mem_uniformity_sets U_uni
+  obtain ⟨s, _, s_cover⟩ := F_comp.elim_nhds_subcover (ball · V)
     fun (x : X) _ ↦ ball_mem_nhds x V_uni
-  have : IsDynCoverOf T F V 1 s := by
-    simp only [IsDynCoverOf, Finset.mem_coe, dynEntourage_one, s_cover]
+  have : IsDynCoverOf T F V 1 s := .of_subset_iUnion_ball <| by simpa using s_cover
   obtain ⟨t, t_dyncover, t_card⟩ := this.iterate_le_pow F_inv n
   rw [one_mul n] at t_dyncover
   exact ⟨t, t_dyncover.of_entourage_subset V_U⟩
@@ -225,8 +206,7 @@ lemma exists_isDynCoverOf_of_isCompact_invariant [UniformSpace X] {T : X → X} 
 noncomputable def coverMincard (T : X → X) (F : Set X) (U : SetRel X X) (n : ℕ) : ℕ∞ :=
   ⨅ (s : Finset X) (_ : IsDynCoverOf T F U n s), (s.card : ℕ∞)
 
-lemma IsDynCoverOf.coverMincard_le_card {T : X → X} {F : Set X} {U : SetRel X X} {n : ℕ}
-    {s : Finset X} (h : IsDynCoverOf T F U n s) :
+lemma IsDynCoverOf.coverMincard_le_card {s : Finset X} (h : IsDynCoverOf T F U n s) :
     coverMincard T F U n ≤ s.card :=
   iInf₂_le s h
 
@@ -238,6 +218,7 @@ lemma coverMincard_antitone (T : X → X) (F : Set X) (n : ℕ) :
     Antitone fun U : SetRel X X ↦ coverMincard T F U n :=
   fun _ _ U_V ↦ biInf_mono fun _ h ↦ h.of_entourage_subset U_V
 
+set_option backward.isDefEq.respectTransparency false in
 lemma coverMincard_finite_iff (T : X → X) (F : Set X) (U : SetRel X X) (n : ℕ) :
     coverMincard T F U n < ⊤ ↔
     ∃ s : Finset X, IsDynCoverOf T F U n s ∧ s.card = coverMincard T F U n := by
@@ -259,24 +240,20 @@ lemma coverMincard_finite_iff (T : X → X) (F : Set X) (U : SetRel X X) (n : �
   exact key
 
 @[simp]
-lemma coverMincard_empty {T : X → X} {U : SetRel X X} {n : ℕ} : coverMincard T ∅ U n = 0 :=
-  (sInf_le (by simp [IsDynCoverOf])).antisymm (zero_le (coverMincard T ∅ U n))
+lemma coverMincard_empty : coverMincard T ∅ U n = 0 := by
+  rw [← nonpos_iff_eq_zero]
+  exact sInf_le (by simp [IsDynCoverOf])
 
 lemma coverMincard_eq_zero_iff (T : X → X) (F : Set X) (U : SetRel X X) (n : ℕ) :
     coverMincard T F U n = 0 ↔ F = ∅ := by
-  refine ⟨fun h ↦ subset_empty_iff.1 ?_, fun F_empt ↦ by rw [F_empt, coverMincard_empty]⟩
-  have := coverMincard_finite_iff T F U n
-  rw [h, eq_true ENat.top_pos, true_iff] at this
-  simp only [IsDynCoverOf, Finset.mem_coe, Nat.cast_eq_zero, Finset.card_eq_zero, exists_eq_right,
-    Finset.notMem_empty, iUnion_of_empty, iUnion_empty] at this
-  exact this
+  simp [coverMincard, ENat.iInf_eq_zero]
 
 lemma one_le_coverMincard_iff (T : X → X) (F : Set X) (U : SetRel X X) (n : ℕ) :
     1 ≤ coverMincard T F U n ↔ F.Nonempty := by
   rw [ENat.one_le_iff_ne_zero, nonempty_iff_ne_empty, not_iff_not]
   exact coverMincard_eq_zero_iff T F U n
 
-lemma coverMincard_zero (T : X → X) {F : Set X} (h : F.Nonempty) (U : SetRel X X) :
+lemma coverMincard_zero (T : X → X) (h : F.Nonempty) (U : SetRel X X) :
     coverMincard T F U 0 = 1 := by
   apply le_antisymm _ ((one_le_coverMincard_iff T F U 0).2 h)
   obtain ⟨x, _⟩ := h
@@ -285,8 +262,7 @@ lemma coverMincard_zero (T : X → X) {F : Set X} (h : F.Nonempty) (U : SetRel X
   apply this.coverMincard_le_card.trans_eq
   rw [Finset.card_singleton, Nat.cast_one]
 
-lemma coverMincard_univ (T : X → X) {F : Set X} (h : F.Nonempty) (n : ℕ) :
-    coverMincard T F univ n = 1 := by
+lemma coverMincard_univ (T : X → X) (h : F.Nonempty) (n : ℕ) : coverMincard T F univ n = 1 := by
   apply le_antisymm _ ((one_le_coverMincard_iff T F univ n).2 h)
   obtain ⟨x, _⟩ := h
   have := isDynCoverOf_univ T F n (singleton_nonempty x)
@@ -294,11 +270,10 @@ lemma coverMincard_univ (T : X → X) {F : Set X} (h : F.Nonempty) (n : ℕ) :
   apply this.coverMincard_le_card.trans_eq
   rw [Finset.card_singleton, Nat.cast_one]
 
-lemma coverMincard_mul_le_pow {T : X → X} {F : Set X} (F_inv : MapsTo T F F) {U : SetRel X X}
-    [U.IsSymm] (m n : ℕ) :
+lemma coverMincard_mul_le_pow (F_inv : MapsTo T F F) [U.IsSymm] (m n : ℕ) :
     coverMincard T F (U ○ U) (m * n) ≤ coverMincard T F U m ^ n := by
   rcases F.eq_empty_or_nonempty with rfl | F_nonempty
-  · rw [coverMincard_empty]; exact zero_le _
+  · simp
   obtain rfl | hn := eq_or_ne n 0
   · rw [mul_zero, coverMincard_zero T F_nonempty (U ○ U), pow_zero]
   rcases eq_top_or_lt_top (coverMincard T F U m) with h | h
@@ -308,21 +283,19 @@ lemma coverMincard_mul_le_pow {T : X → X} {F : Set X} (F_inv : MapsTo T F F) {
     rw [← s_coverMincard]
     exact t_cover.coverMincard_le_card.trans (WithTop.coe_le_coe.2 t_sn)
 
-lemma coverMincard_le_pow {T : X → X} {F : Set X} (F_inv : MapsTo T F F) {U : SetRel X X}
-    [U.IsSymm] {m : ℕ} (m_pos : 0 < m) (n : ℕ) :
+lemma coverMincard_le_pow (F_inv : MapsTo T F F) [U.IsSymm] (m_pos : 0 < m) (n : ℕ) :
     coverMincard T F (U ○ U) n ≤ coverMincard T F U m ^ (n / m + 1) :=
   (coverMincard_monotone_time T F (U ○ U) (Nat.lt_mul_div_succ n m_pos).le).trans
     (coverMincard_mul_le_pow F_inv m (n / m + 1))
 
-lemma coverMincard_finite_of_isCompact_uniformContinuous [UniformSpace X] {T : X → X}
-    {F : Set X} (F_comp : IsCompact F) (h : UniformContinuous T) {U : SetRel X X} (U_uni : U ∈ 𝓤 X)
-    (n : ℕ) :
+lemma coverMincard_finite_of_isCompact_uniformContinuous [UniformSpace X] (F_comp : IsCompact F)
+    (h : UniformContinuous T) (U_uni : U ∈ 𝓤 X) (n : ℕ) :
     coverMincard T F U n < ⊤ := by
   obtain ⟨s, s_cover⟩ := exists_isDynCoverOf_of_isCompact_uniformContinuous F_comp h U_uni n
   exact s_cover.coverMincard_le_card.trans_lt (WithTop.coe_lt_top s.card)
 
-lemma coverMincard_finite_of_isCompact_invariant [UniformSpace X] {T : X → X} {F : Set X}
-    (F_comp : IsCompact F) (F_inv : MapsTo T F F) {U : SetRel X X} (U_uni : U ∈ 𝓤 X) (n : ℕ) :
+lemma coverMincard_finite_of_isCompact_invariant [UniformSpace X] (F_comp : IsCompact F)
+    (F_inv : MapsTo T F F) (U_uni : U ∈ 𝓤 X) (n : ℕ) :
     coverMincard T F U n < ⊤ := by
   obtain ⟨s, s_cover⟩ := exists_isDynCoverOf_of_isCompact_invariant F_comp F_inv U_uni n
   exact s_cover.coverMincard_le_card.trans_lt (WithTop.coe_lt_top s.card)
@@ -330,23 +303,22 @@ lemma coverMincard_finite_of_isCompact_invariant [UniformSpace X] {T : X → X} 
 /-- All dynamical balls of a minimal dynamical cover of `F` intersect `F`. This lemma is the key
   to relate Bowen-Dinaburg's definition of topological entropy with covers and their definition
   of topological entropy with nets. -/
-lemma nonempty_inter_of_coverMincard {T : X → X} {F : Set X} {U : SetRel X X} {n : ℕ}
-    {s : Finset X} (h : IsDynCoverOf T F U n s) (h' : s.card = coverMincard T F U n) :
+lemma nonempty_inter_of_coverMincard [U.IsSymm] {s : Finset X} (h : IsDynCoverOf T F U n s)
+    (h' : #s = coverMincard T F U n) :
     ∀ x ∈ s, (F ∩ ball x (dynEntourage T U n)).Nonempty := by
   -- Otherwise, there is a ball which does not intersect `F`. Removing it yields a smaller cover.
   classical
-  by_contra! hypo
-  obtain ⟨x, x_s, ball_empt⟩ := hypo
+  by_contra! ⟨x, x_s, ball_empt⟩
   have smaller_cover : IsDynCoverOf T F U n (s.erase x) := by
     intro y y_F
     specialize h y_F
-    simp only [s.mem_coe, mem_iUnion, exists_prop] at h
-    simp only [s.coe_erase, mem_diff, s.mem_coe, mem_singleton_iff, mem_iUnion, exists_prop]
+    simp only [s.mem_coe] at h
+    simp only [s.coe_erase, mem_diff, s.mem_coe, mem_singleton_iff]
     obtain ⟨z, z_s, hz⟩ := h
     refine ⟨z, ⟨z_s, fun z_x ↦ notMem_empty y ?_⟩, hz⟩
     rw [← ball_empt]
     rw [z_x] at hz
-    exact mem_inter y_F hz
+    exact mem_inter y_F <| (dynEntourage T U n).symm hz
   apply smaller_cover.coverMincard_le_card.not_gt
   rw [← h']
   exact_mod_cast s.card_erase_lt_of_mem x_s
@@ -380,17 +352,15 @@ lemma coverEntropyInfEntourage_le_coverEntropyEntourage (T : X → X) (F : Set X
   expGrowthInf_le_expGrowthSup
 
 @[simp]
-lemma coverEntropyEntourage_empty {T : X → X} {U : SetRel X X} :
-    coverEntropyEntourage T ∅ U = ⊥ := by
+lemma coverEntropyEntourage_empty : coverEntropyEntourage T ∅ U = ⊥ := by
   simp only [coverEntropyEntourage, coverMincard_empty]
   rw [ENat.toENNReal_zero, ← Pi.zero_def, expGrowthSup_zero]
 
 @[simp]
-lemma coverEntropyInfEntourage_empty {T : X → X} {U : SetRel X X} :
-    coverEntropyInfEntourage T ∅ U = ⊥ :=
+lemma coverEntropyInfEntourage_empty : coverEntropyInfEntourage T ∅ U = ⊥ :=
   eq_bot_mono (coverEntropyInfEntourage_le_coverEntropyEntourage T ∅ U) coverEntropyEntourage_empty
 
-lemma coverEntropyInfEntourage_nonneg (T : X → X) {F : Set X} (h : F.Nonempty) (U : SetRel X X) :
+lemma coverEntropyInfEntourage_nonneg (T : X → X) (h : F.Nonempty) (U : SetRel X X) :
     0 ≤ coverEntropyInfEntourage T F U := by
   apply Monotone.expGrowthInf_nonneg
   · exact fun _ _ m_n ↦ ENat.toENNReal_mono (coverMincard_monotone_time T F U m_n)
@@ -399,23 +369,23 @@ lemma coverEntropyInfEntourage_nonneg (T : X → X) {F : Set X} (h : F.Nonempty)
     rw [coverMincard_zero T h U, Pi.zero_apply, ENat.toENNReal_one]
     exact one_ne_zero
 
-lemma coverEntropyEntourage_nonneg (T : X → X) {F : Set X} (h : F.Nonempty) (U : SetRel X X) :
+lemma coverEntropyEntourage_nonneg (T : X → X) (h : F.Nonempty) (U : SetRel X X) :
     0 ≤ coverEntropyEntourage T F U :=
   (coverEntropyInfEntourage_nonneg T h U).trans
     (coverEntropyInfEntourage_le_coverEntropyEntourage T F U)
 
-lemma coverEntropyEntourage_univ (T : X → X) {F : Set X} (h : F.Nonempty) :
+lemma coverEntropyEntourage_univ (T : X → X) (h : F.Nonempty) :
     coverEntropyEntourage T F univ = 0 := by
   rw [← expGrowthSup_const one_ne_zero one_ne_top, coverEntropyEntourage]
   simp only [coverMincard_univ T h, ENat.toENNReal_one]
 
-lemma coverEntropyInfEntourage_univ (T : X → X) {F : Set X} (h : F.Nonempty) :
+lemma coverEntropyInfEntourage_univ (T : X → X) (h : F.Nonempty) :
     coverEntropyInfEntourage T F univ = 0 := by
   rw [← expGrowthInf_const one_ne_zero one_ne_top, coverEntropyInfEntourage]
   simp only [coverMincard_univ T h, ENat.toENNReal_one]
 
-lemma coverEntropyEntourage_le_log_coverMincard_div {T : X → X} {F : Set X} (F_inv : MapsTo T F F)
-    {U : SetRel X X} [U.IsSymm] {n : ℕ} (n_pos : n ≠ 0) :
+lemma coverEntropyEntourage_le_log_coverMincard_div (F_inv : MapsTo T F F) [U.IsSymm]
+    (n_pos : n ≠ 0) :
     coverEntropyEntourage T F (U ○ U) ≤ log (coverMincard T F U n) / n := by
   have cv_mono : Monotone fun m ↦ (coverMincard T F (U ○ U) m).toENNReal :=
     fun _ _ k_m ↦ ENat.toENNReal_mono (coverMincard_monotone_time T F (U ○ U) k_m)
@@ -428,22 +398,20 @@ lemma coverEntropyEntourage_le_log_coverMincard_div {T : X → X} {F : Set X} (F
   rw [← ENat.toENNReal_pow]
   exact ENat.toENNReal_mono (coverMincard_mul_le_pow F_inv n m)
 
-lemma IsDynCoverOf.coverEntropyEntourage_le_log_card_div {T : X → X} {F : Set X}
-    (F_inv : MapsTo T F F) {U : SetRel X X} [U.IsSymm] {n : ℕ} (n_pos : n ≠ 0)
-    {s : Finset X} (h : IsDynCoverOf T F U n s) :
+lemma IsDynCoverOf.coverEntropyEntourage_le_log_card_div (F_inv : MapsTo T F F) [U.IsSymm]
+    (n_pos : n ≠ 0) {s : Finset X} (h : IsDynCoverOf T F U n s) :
     coverEntropyEntourage T F (U ○ U) ≤ log s.card / n := by
   apply (coverEntropyEntourage_le_log_coverMincard_div F_inv n_pos).trans
   apply monotone_div_right_of_nonneg n.cast_nonneg' (log_monotone _)
   exact_mod_cast coverMincard_le_card h
 
-lemma coverEntropyEntourage_le_coverEntropyInfEntourage {T : X → X} {F : Set X}
-    (F_inv : MapsTo T F F) {U : SetRel X X} [U.IsSymm] :
+lemma coverEntropyEntourage_le_coverEntropyInfEntourage (F_inv : MapsTo T F F) [U.IsSymm] :
     coverEntropyEntourage T F (U ○ U) ≤ coverEntropyInfEntourage T F U := by
   refine (le_liminf_of_le) (eventually_atTop.2 ⟨1, fun m m_pos ↦ ?_⟩)
   exact coverEntropyEntourage_le_log_coverMincard_div F_inv (Nat.one_le_iff_ne_zero.1 m_pos)
 
-lemma coverEntropyEntourage_finite_of_isCompact_invariant [UniformSpace X] {T : X → X} {F : Set X}
-    (F_comp : IsCompact F) (F_inv : MapsTo T F F) {U : SetRel X X} (U_uni : U ∈ 𝓤 X) :
+lemma coverEntropyEntourage_finite_of_isCompact_invariant [UniformSpace X]
+    (F_comp : IsCompact F) (F_inv : MapsTo T F F) (U_uni : U ∈ 𝓤 X) :
     coverEntropyEntourage T F U < ⊤ := by
   obtain ⟨V, V_uni, V_symm, V_U⟩ := comp_symm_mem_uniformity_sets U_uni
   obtain ⟨s, s_cover⟩ := exists_isDynCoverOf_of_isCompact_invariant F_comp F_inv V_uni 1
@@ -478,12 +446,12 @@ lemma coverEntropy_antitone (T : X → X) (F : Set X) :
 
 variable [UniformSpace X]
 
-lemma coverEntropyEntourage_le_coverEntropy (T : X → X) (F : Set X) {U : SetRel X X}
+lemma coverEntropyEntourage_le_coverEntropy (T : X → X) (F : Set X)
     (h : U ∈ 𝓤 X) :
     coverEntropyEntourage T F U ≤ coverEntropy T F :=
   le_iSup₂ (f := fun (U : SetRel X X) (_ : U ∈ 𝓤 X) ↦ coverEntropyEntourage T F U) U h
 
-lemma coverEntropyInfEntourage_le_coverEntropyInf (T : X → X) (F : Set X) {U : SetRel X X}
+lemma coverEntropyInfEntourage_le_coverEntropyInf (T : X → X) (F : Set X)
     (h : U ∈ 𝓤 X) :
     coverEntropyInfEntourage T F U ≤ coverEntropyInf T F :=
   le_iSup₂ (f := fun (U : SetRel X X) (_ : U ∈ 𝓤 X) ↦ coverEntropyInfEntourage T F U) U h
@@ -512,23 +480,21 @@ lemma coverEntropyInf_le_coverEntropy (T : X → X) (F : Set X) :
     coverEntropyInfEntourage_le_coverEntropyEntourage T F U
 
 @[simp]
-lemma coverEntropy_empty {T : X → X} : coverEntropy T ∅ = ⊥ := by
+lemma coverEntropy_empty : coverEntropy T ∅ = ⊥ := by
   simp only [coverEntropy, coverEntropyEntourage_empty, iSup_bot]
 
 @[simp]
-lemma coverEntropyInf_empty {T : X → X} : coverEntropyInf T ∅ = ⊥ := by
+lemma coverEntropyInf_empty : coverEntropyInf T ∅ = ⊥ := by
   simp only [coverEntropyInf, coverEntropyInfEntourage_empty, iSup_bot]
 
-lemma coverEntropyInf_nonneg (T : X → X) {F : Set X} (h : F.Nonempty) :
-    0 ≤ coverEntropyInf T F :=
+lemma coverEntropyInf_nonneg (T : X → X) (h : F.Nonempty) : 0 ≤ coverEntropyInf T F :=
   (coverEntropyInfEntourage_le_coverEntropyInf T F univ_mem).trans_eq'
-    (coverEntropyInfEntourage_univ T h).symm
+    (coverEntropyInfEntourage_univ T h)
 
-lemma coverEntropy_nonneg (T : X → X) {F : Set X} (h : F.Nonempty) :
-    0 ≤ coverEntropy T F :=
+lemma coverEntropy_nonneg (T : X → X) (h : F.Nonempty) : 0 ≤ coverEntropy T F :=
   (coverEntropyInf_nonneg T h).trans (coverEntropyInf_le_coverEntropy T F)
 
-lemma coverEntropyInf_eq_coverEntropy (T : X → X) {F : Set X} (h : MapsTo T F F) :
+lemma coverEntropyInf_eq_coverEntropy (T : X → X) (h : MapsTo T F F) :
     coverEntropyInf T F = coverEntropy T F := by
   refine le_antisymm (coverEntropyInf_le_coverEntropy T F) (iSup₂_le fun U U_uni ↦ ?_)
   obtain ⟨V, V_uni, V_symm, V_U⟩ := comp_symm_mem_uniformity_sets U_uni

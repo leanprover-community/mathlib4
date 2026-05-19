@@ -3,8 +3,10 @@ Copyright (c) 2025 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.MeasureTheory.Measure.Typeclasses.Probability
-import Mathlib.MeasureTheory.Measure.Typeclasses.SFinite
+module
+
+public import Mathlib.MeasureTheory.Measure.Typeclasses.Probability
+public import Mathlib.MeasureTheory.Measure.Typeclasses.SFinite
 
 /-!
 # Measures as real-valued functions
@@ -25,6 +27,8 @@ There are no lemmas on infinite sums, as summability issues are really
 more painful with reals than nonnegative extended reals. They should probably be added in the long
 run.
 -/
+
+public section
 
 open MeasureTheory Measure Set
 open scoped ENNReal NNReal Function symmDiff
@@ -50,9 +54,7 @@ theorem measureReal_zero_apply (s : Set α) : (0 : Measure α).real s = 0 := rfl
 
 @[simp] theorem measureReal_empty : μ.real ∅ = 0 := by simp [Measure.real]
 
-@[simp] theorem measureReal_univ_eq_one [IsProbabilityMeasure μ] :
-    μ.real Set.univ = 1 := by
-  simp [Measure.real]
+@[deprecated (since := "2025-11-22")] alias measureReal_univ_eq_one := probReal_univ
 
 @[simp]
 theorem measureReal_univ_pos [IsFiniteMeasure μ] [NeZero μ] : 0 < μ.real Set.univ :=
@@ -76,9 +78,14 @@ theorem nonempty_of_measureReal_ne_zero (h : μ.real s ≠ 0) : s.Nonempty :=
     (c • μ).real s = c * μ.real s := by
   simp [measureReal_def]
 
+theorem map_measureReal_apply_of_aemeasurable [MeasurableSpace β] {f : α → β}
+    (hf : AEMeasurable f μ) {s : Set β} (hs : MeasurableSet s) :
+    (μ.map f).real s = μ.real (f ⁻¹' s) := by
+  simp_rw [measureReal_def, map_apply_of_aemeasurable hf hs]
+
 theorem map_measureReal_apply [MeasurableSpace β] {f : α → β} (hf : Measurable f)
-    {s : Set β} (hs : MeasurableSet s) : (μ.map f).real s = μ.real (f ⁻¹' s) := by
-  simp_rw [measureReal_def, map_apply hf hs]
+    {s : Set β} (hs : MeasurableSet s) : (μ.map f).real s = μ.real (f ⁻¹' s) :=
+  map_measureReal_apply_of_aemeasurable hf.aemeasurable hs
 
 @[gcongr] theorem measureReal_mono (h : s₁ ⊆ s₂) (h₂ : μ s₂ ≠ ∞ := by finiteness) :
     μ.real s₁ ≤ μ.real s₂ :=
@@ -432,6 +439,14 @@ theorem nonempty_inter_of_measureReal_lt_add'
   rw [inter_comm]
   exact nonempty_inter_of_measureReal_lt_add hs h't h's h hu
 
+variable [IsProbabilityMeasure μ]
+
+lemma probReal_compl_eq_one_sub₀ (h : NullMeasurableSet s μ) : μ.real sᶜ = 1 - μ.real s := by
+  rw [measureReal_compl₀ h, probReal_univ]
+
+lemma probReal_compl_eq_one_sub (hs : MeasurableSet s) : μ.real sᶜ = 1 - μ.real s :=
+  probReal_compl_eq_one_sub₀ hs.nullMeasurableSet
+
 end MeasureTheory
 
 namespace Mathlib.Meta.Positivity
@@ -440,7 +455,7 @@ open Lean Meta Qq Function
 
 /-- Extension for the `positivity` tactic: applications of `μ.real` are nonnegative. -/
 @[positivity MeasureTheory.Measure.real _ _]
-def evalMeasureReal : PositivityExt where eval {_ _} _zα _pα e := do
+meta def evalMeasureReal : PositivityExt where eval {_ _} _zα _pα e := do
   let .app (.app _ a) b ← whnfR e | throwError "not measureReal"
   let p ← mkAppOptM ``MeasureTheory.measureReal_nonneg #[none, none, a, b]
   pure (.nonnegative p)

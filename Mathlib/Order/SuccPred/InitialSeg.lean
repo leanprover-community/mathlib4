@@ -3,14 +3,18 @@ Copyright (c) 2024 Violeta Hernández Palacios. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios
 -/
-import Mathlib.Order.InitialSeg
-import Mathlib.Order.SuccPred.Limit
+module
+
+public import Mathlib.Order.InitialSeg
+public import Mathlib.Order.SuccPred.Limit
 
 /-!
 # Initial segments and successors
 
 We establish some connections between initial segment embeddings and successors and predecessors.
 -/
+
+public section
 
 variable {α β : Type*} {a b : α} [PartialOrder α] [PartialOrder β]
 

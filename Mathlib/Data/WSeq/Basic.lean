@@ -3,8 +3,10 @@ Copyright (c) 2017 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Seq.Basic
-import Mathlib.Util.CompileInductive
+module
+
+public import Mathlib.Data.Seq.Basic
+public import Mathlib.Util.CompileInductive
 
 /-!
 # Partially defined possibly infinite lists
@@ -12,6 +14,8 @@ import Mathlib.Util.CompileInductive
 This file provides a `WSeq α` type representing partially defined possibly infinite lists
 (referred here as weak sequences).
 -/
+
+@[expose] public section
 
 namespace Stream'
 
@@ -100,8 +104,6 @@ instance membership : Membership α (WSeq α) :=
 
 theorem notMem_nil (a : α) : a ∉ @nil α :=
   Seq.notMem_nil (some a)
-
-@[deprecated (since := "2025-05-23")] alias not_mem_nil := notMem_nil
 
 /-- Get the head of a weak sequence. This involves a possibly
   infinite computation. -/
@@ -419,6 +421,7 @@ theorem mem_think (s : WSeq α) (a) : a ∈ think s ↔ a ∈ s := by
     injections
   · apply Stream'.mem_cons_of_mem _ h
 
+set_option linter.flexible false in -- TODO: fix non-terminal simp
 theorem eq_or_mem_iff_mem {s : WSeq α} {a a' s'} :
     some (a', s') ∈ destruct s → (a ∈ s ↔ a = a' ∨ a ∈ s') := by
   generalize e : destruct s = c; intro h
@@ -430,7 +433,6 @@ theorem eq_or_mem_iff_mem {s : WSeq α} {a a' s'} :
     simp at this
   · obtain ⟨i1, i2⟩ := this
     rw [i1, i2]
-    obtain ⟨f, al⟩ := s'
     dsimp only [cons, Membership.mem, WSeq.Mem, Seq.Mem, Seq.cons]
     have h_a_eq_a' : a = a' ↔ some (some a) = some (some a') := by simp
     rw [h_a_eq_a']
@@ -451,6 +453,7 @@ theorem mem_cons_of_mem {s : WSeq α} (b) {a} (h : a ∈ s) : a ∈ cons b s :=
 theorem mem_cons (s : WSeq α) (a) : a ∈ cons a s :=
   (mem_cons_iff _ _).2 (Or.inl rfl)
 
+set_option linter.flexible false in -- TODO: fix non-terminal simp
 theorem mem_of_mem_tail {s : WSeq α} {a} : a ∈ tail s → a ∈ s := by
   intro h; have := h; obtain ⟨n, e⟩ := h; revert s; simp only [Stream'.get]
   induction n <;> intro s <;> induction s using WSeq.recOn <;>
@@ -597,7 +600,8 @@ theorem toList'_map (l : List α) (s : WSeq α) :
               | some (some a, s') => Sum.inr (a::l, s')) (l', s)))
       ?_ ⟨[], s, rfl, rfl⟩
   intro s1 s2 h; rcases h with ⟨l', s, h⟩; rw [h.left, h.right]
-  induction s using WSeq.recOn <;> simp [nil, cons, think]
+  induction s using WSeq.recOn
+  case nil => simp
   case cons a s => refine ⟨a :: l', s, ?_, ?_⟩ <;> simp
   case think s => refine ⟨l', s, ?_, ?_⟩ <;> simp
 
@@ -683,6 +687,8 @@ theorem map_comp (f : α → β) (g : β → γ) (s : WSeq α) : map (g ∘ f) s
 theorem mem_map (f : α → β) {a : α} {s : WSeq α} : a ∈ s → f a ∈ map f s :=
   Seq.mem_map (Option.map f)
 
+set_option backward.isDefEq.respectTransparency false in
+set_option linter.flexible false in -- TODO: fix non-terminal simp
 -- The converse is not true without additional assumptions
 theorem exists_of_mem_join {a : α} : ∀ {S : WSeq (WSeq α)}, a ∈ join S → ∃ s, s ∈ S ∧ a ∈ s := by
   suffices
@@ -734,8 +740,9 @@ theorem destruct_map (f : α → β) (s : WSeq α) :
   · intro c1 c2 h
     obtain ⟨s, h⟩ := h
     rw [h.left, h.right]
-    induction s using WSeq.recOn <;> simp
-    case think s => exact ⟨s, rfl, rfl⟩
+    induction s using WSeq.recOn
+    case nil | cons => simp
+    case think s => exact ⟨s, by simp⟩
   · exact ⟨s, rfl, rfl⟩
 
 /-- auxiliary definition of `destruct_append` over weak sequences -/
@@ -752,11 +759,13 @@ theorem destruct_append (s t : WSeq α) :
         ∃ s t, c1 = destruct (append s t) ∧ c2 = (destruct s).bind (destruct_append.aux t))
       _ ⟨s, t, rfl, rfl⟩
   intro c1 c2 h; rcases h with ⟨s, t, h⟩; rw [h.left, h.right]
-  induction s using WSeq.recOn <;> simp
+  induction s using WSeq.recOn
   case nil =>
-    induction t using WSeq.recOn <;> simp
-    case think t => refine ⟨nil, t, ?_, ?_⟩ <;> simp
-  case think s => exact ⟨s, t, rfl, rfl⟩
+    induction t using WSeq.recOn
+    case nil | cons => simp
+    case think t => exact ⟨nil, t, by simp⟩
+  case cons => simp
+  case think s => exact ⟨s, t, by simp⟩
 
 /-- auxiliary definition of `destruct_join` over weak sequences -/
 @[simp]
@@ -776,9 +785,11 @@ theorem destruct_join (S : WSeq (WSeq α)) :
     match c1, c2, h with
     | c, _, Or.inl <| rfl => by cases c.destruct <;> simp
     | _, _, Or.inr ⟨S, rfl, rfl⟩ => by
-      induction S using WSeq.recOn <;> simp
-      case think S => refine Or.inr ⟨S, rfl, rfl⟩
+      induction S using WSeq.recOn
+      case nil | cons => simp
+      case think S => exact Or.inr ⟨S, by simp⟩
 
+set_option linter.flexible false in -- TODO: fix non-terminal simp
 @[simp]
 theorem map_join (f : α → β) (S) : map f (join S) = join (map (map f) S) := by
   apply

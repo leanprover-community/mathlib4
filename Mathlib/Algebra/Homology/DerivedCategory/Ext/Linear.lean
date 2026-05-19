@@ -3,19 +3,23 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.DerivedCategory.Ext.Basic
-import Mathlib.Algebra.Homology.DerivedCategory.Linear
-import Mathlib.Algebra.Module.TransferInstance
-import Mathlib.LinearAlgebra.BilinearMap
+module
+
+public import Mathlib.Algebra.Homology.DerivedCategory.Ext.Basic
+public import Mathlib.Algebra.Homology.DerivedCategory.Linear
+public import Mathlib.Algebra.Module.TransferInstance
+public import Mathlib.LinearAlgebra.BilinearMap
 
 /-!
 # Ext-modules in linear categories
 
-In this file, we show that if `C` is a `R`-linear abelian category,
-then there is a `R`-module structure on the groups `Ext X Y n`
+In this file, we show that if `C` is an `R`-linear abelian category,
+then there is an `R`-module structure on the groups `Ext X Y n`
 for `X` and `Y` in `C` and `n : ℕ`.
 
 -/
+
+@[expose] public section
 
 universe w' w t v u
 

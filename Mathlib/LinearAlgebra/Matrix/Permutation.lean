@@ -3,12 +3,13 @@ Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
+module
 
-import Mathlib.Analysis.CStarAlgebra.Matrix
-import Mathlib.Data.Matrix.PEquiv
-import Mathlib.Data.Set.Card
-import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
-import Mathlib.LinearAlgebra.Matrix.Trace
+public import Mathlib.Analysis.CStarAlgebra.Matrix
+public import Mathlib.Data.Matrix.PEquiv
+public import Mathlib.Data.Set.Card
+public import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
+public import Mathlib.LinearAlgebra.Matrix.Trace
 
 /-!
 # Permutation matrices
@@ -26,9 +27,11 @@ This file defines the matrix associated with a permutation
 
 -/
 
+@[expose] public section
+
 open Equiv
 
-variable {n R : Type*} [DecidableEq n] (σ : Perm n)
+variable {n R : Type*} [DecidableEq n] (σ τ : Perm n)
 
 variable (R) in
 /-- the permutation matrix associated with an `Equiv.Perm` -/
@@ -36,6 +39,13 @@ abbrev Equiv.Perm.permMatrix [Zero R] [One R] : Matrix n n R :=
   σ.toPEquiv.toMatrix
 
 namespace Matrix
+
+@[simp] lemma permMatrix_refl [Zero R] [One R] : Equiv.Perm.permMatrix R (.refl n) = 1 := by
+  simp [← Matrix.ext_iff, Matrix.one_apply]
+
+@[simp]
+lemma permMatrix_one [Zero R] [One R] : (1 : Equiv.Perm n).permMatrix R = 1 :=
+  permMatrix_refl
 
 @[simp]
 lemma transpose_permMatrix [Zero R] [One R] : (σ.permMatrix R).transpose = (σ⁻¹).permMatrix R := by
@@ -69,7 +79,19 @@ lemma permMatrix_mulVec {v : n → R} [CommRing R] :
 lemma vecMul_permMatrix {v : n → R} [CommRing R] :
     v ᵥ* σ.permMatrix R = v ∘ σ.symm := by
   ext j
-  simp [vecMul_eq_sum, Pi.single, Function.update, ← Equiv.symm_apply_eq]
+  simp [vecMul_eq_sum, Pi.single, Function.update, ← Equiv.symm_apply_eq σ]
+
+@[simp]
+lemma permMatrix_mul [NonAssocSemiring R] :
+    (σ * τ).permMatrix R = τ.permMatrix R * σ.permMatrix R := by
+  rw [Perm.permMatrix, Perm.mul_def, toPEquiv_trans, PEquiv.toMatrix_trans]
+
+/-- `permMatrix` as a homomorphism. -/
+@[simps]
+def permMatrixHom [NonAssocSemiring R] : Perm n →* Matrix n n R where
+  toFun σ := σ⁻¹.permMatrix R
+  map_one' := permMatrix_one
+  map_mul' σ τ := by rw [_root_.mul_inv_rev, permMatrix_mul]
 
 open scoped Matrix.Norms.L2Operator
 
@@ -81,7 +103,7 @@ See `Matrix.permMatrix_l2_opNorm_eq` for the equality statement assuming the mat
 -/
 theorem permMatrix_l2_opNorm_le : ‖σ.permMatrix 𝕜‖ ≤ 1 :=
   ContinuousLinearMap.opNorm_le_bound _ (by simp) <| by
-    simp [EuclideanSpace.norm_eq, toEuclideanLin_apply, permMatrix_mulVec,
+    simp [EuclideanSpace.norm_eq, toLpLin_apply, permMatrix_mulVec,
       σ.sum_comp _ (fun i ↦ ‖_‖ ^ 2)]
 
 /--
@@ -92,7 +114,7 @@ See `Matrix.permMatrix_l2_opNorm_le` for the inequality version of the empty cas
 theorem permMatrix_l2_opNorm_eq [Nonempty n] : ‖σ.permMatrix 𝕜‖ = 1 :=
   le_antisymm (permMatrix_l2_opNorm_le σ) <| by
     inhabit n
-    simpa [EuclideanSpace.norm_eq, permMatrix_mulVec, ← Equiv.eq_symm_apply, apply_ite] using
+    simpa [EuclideanSpace.norm_eq, permMatrix_mulVec, ← Equiv.eq_symm_apply σ, apply_ite] using
       (σ.permMatrix 𝕜).l2_opNorm_mulVec (WithLp.toLp _ (Pi.single default 1))
 
 end Matrix

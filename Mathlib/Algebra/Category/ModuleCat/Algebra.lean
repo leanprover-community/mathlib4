@@ -3,9 +3,11 @@ Copyright (c) 2022 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Algebra.Algebra.RestrictScalars
-import Mathlib.CategoryTheory.Linear.Basic
-import Mathlib.Algebra.Category.ModuleCat.Basic
+module
+
+public import Mathlib.Algebra.Algebra.RestrictScalars
+public import Mathlib.CategoryTheory.Linear.Basic
+public import Mathlib.Algebra.Category.ModuleCat.Basic
 
 /-!
 # Additional typeclass for modules over an algebra
@@ -29,6 +31,8 @@ that carries these typeclasses, this seems hard to achieve.
 requiring users to write `ModuleCat' ℤ A` when `A` is merely a ring.)
 -/
 
+@[expose] public section
+
 
 universe v u w
 
@@ -40,13 +44,14 @@ variable {k : Type u} [Field k]
 variable {A : Type w} [Ring A] [Algebra k A]
 
 /-- Type synonym for considering a module over a `k`-algebra as a `k`-module. -/
+@[instance_reducible]
 def moduleOfAlgebraModule (M : ModuleCat.{v} A) : Module k M :=
-  RestrictScalars.module k A M
+  Module.restrictScalars k A M
 
 attribute [scoped instance] ModuleCat.moduleOfAlgebraModule
 
 theorem isScalarTower_of_algebra_moduleCat (M : ModuleCat.{v} A) : IsScalarTower k A M :=
-  RestrictScalars.isScalarTower k A M
+  IsScalarTower.restrictScalars k A M
 
 attribute [scoped instance] ModuleCat.isScalarTower_of_algebra_moduleCat
 

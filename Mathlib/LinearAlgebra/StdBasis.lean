@@ -3,10 +3,12 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Algebra.Algebra.Pi
-import Mathlib.LinearAlgebra.Finsupp.VectorSpace
-import Mathlib.LinearAlgebra.FreeModule.Basic
-import Mathlib.LinearAlgebra.LinearIndependent.Lemmas
+module
+
+public import Mathlib.Algebra.Algebra.Pi
+public import Mathlib.LinearAlgebra.Finsupp.VectorSpace
+public import Mathlib.LinearAlgebra.FreeModule.Basic
+public import Mathlib.LinearAlgebra.LinearIndependent.Lemmas
 
 /-!
 # The standard basis
@@ -31,15 +33,12 @@ this is a basis over `Fin 3 → R`.
 
 -/
 
-open Function Module Set Submodule
+@[expose] public section
+
+open Function LinearMap Module Set Submodule
 
 namespace Pi
-
-open LinearMap
-
-open Set
-
-variable {R : Type*}
+variable {ι R M : Type*}
 
 section Module
 
@@ -56,12 +55,11 @@ theorem linearIndependent_single_one (ι R : Type*) [Semiring R] [DecidableEq ι
   exact Pi.linearIndependent_single (fun (_ : ι) (_ : Unit) ↦ (1 : R))
     <| by simp +contextual [Fintype.linearIndependent_iffₛ]
 
-lemma linearIndependent_single_of_ne_zero {ι R M : Type*} [Ring R] [AddCommGroup M] [Module R M]
-    [NoZeroSMulDivisors R M] [DecidableEq ι] {v : ι → M} (hv : ∀ i, v i ≠ 0) :
+lemma linearIndependent_single_of_ne_zero [Ring R] [IsDomain R] [AddCommGroup M] [Module R M]
+    [IsTorsionFree R M] [DecidableEq ι] {v : ι → M} (hv : ∀ i, v i ≠ 0) :
     LinearIndependent R fun i : ι ↦ Pi.single i (v i) := by
   rw [← linearIndependent_equiv (Equiv.sigmaPUnit ι)]
-  exact linearIndependent_single (fun i (_ : Unit) ↦ v i) <| by
-    simp +contextual [Fintype.linearIndependent_iff, hv]
+  exact linearIndependent_single (fun i (_ : Unit) ↦ v i) <| by simp +contextual [hv]
 
 variable [Semiring R] [∀ i, AddCommMonoid (Ms i)] [∀ i, Module R (Ms i)]
 
@@ -97,7 +95,7 @@ theorem basis_repr_single [DecidableEq η] (s : ∀ j, Basis (ιs j) R (Ms j)) (
   simp only [Pi.basis, LinearEquiv.trans_apply, Finsupp.sigmaFinsuppLEquivPiFinsupp_symm_apply,
     LinearEquiv.piCongrRight]
   dsimp
-  rw [Pi.single_eq_of_ne (Ne.symm hj), LinearEquiv.map_zero, Finsupp.zero_apply,
+  rw [Pi.single_eq_of_ne (Ne.symm hj), map_zero, Finsupp.zero_apply,
     Finsupp.single_eq_of_ne]
   rintro ⟨⟩
   contradiction
@@ -134,6 +132,18 @@ theorem basisFun_repr (x : η → R) (i : η) : (Pi.basisFun R η).repr x i = x 
 @[simp]
 theorem basisFun_equivFun : (Pi.basisFun R η).equivFun = LinearEquiv.refl _ _ :=
   Basis.equivFun_ofEquivFun _
+
+variable {η}
+
+/-- The `R`-submodule of `η → R` consisting of functions supported in the subset `s`. -/
+def spanSubset (s : Set η) : Submodule R (η → R) :=
+  .span R (Pi.basisFun R η '' s)
+
+variable {R} {s : Set η}
+
+lemma mem_spanSubset_iff {s : Set η} {v : η → R} :
+    v ∈ spanSubset R s ↔ ∀ i ∉ s, v i = 0 := by
+  simp [spanSubset, Module.Basis.mem_span_image, Finsupp.support_subset_iff]
 
 end
 

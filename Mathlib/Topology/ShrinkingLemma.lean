@@ -3,7 +3,9 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Reid Barton
 -/
-import Mathlib.Topology.Separation.Regular
+module
+
+public import Mathlib.Topology.Separation.Regular
 
 /-!
 # The shrinking lemma
@@ -25,6 +27,8 @@ We prove two versions of the lemma:
 
 normal space, shrinking lemma
 -/
+
+@[expose] public section
 
 open Set Function
 
@@ -116,7 +120,7 @@ theorem mem_find_carrier_iff {c : Set (PartialRefinement u s p)} {i : ι} (ne : 
   split_ifs with h
   · have := h.choose_spec
     exact iff_of_true this.2 (mem_iUnion₂.2 ⟨_, this.1, this.2⟩)
-  · push_neg at h
+  · push Not at h
     refine iff_of_false (h _ ne.some_mem) ?_
     simpa only [chainSupCarrier, mem_iUnion₂, not_exists]
 
@@ -220,7 +224,7 @@ theorem exists_subset_iUnion_closure_subset (hs : IsClosed s) (uo : ∀ i, IsOpe
   rcases zorn_le_nonempty this with ⟨v, hv⟩
   suffices ∀ i, i ∈ v.carrier from
     ⟨v, v.subset_iUnion, fun i => v.isOpen _, fun i => v.closure_subset (this i)⟩
-  refine fun i ↦ by_contra fun hi ↦ ?_
+  intro i; by_contra hi
   rcases v.exists_gt hs i hi with ⟨v', hlt⟩
   exact hv.not_lt hlt
 

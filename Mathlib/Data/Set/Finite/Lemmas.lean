@@ -3,11 +3,13 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Kyle Miller
 -/
-import Mathlib.Data.Finset.Max
-import Mathlib.Data.Set.Finite.Basic
-import Mathlib.Data.Set.Lattice
-import Mathlib.Data.Fintype.Powerset
-import Mathlib.Logic.Embedding.Set
+module
+
+public import Mathlib.Data.Finset.Max
+public import Mathlib.Data.Set.Finite.Basic
+public import Mathlib.Data.Set.Lattice
+public import Mathlib.Data.Fintype.Powerset
+public import Mathlib.Logic.Embedding.Set
 
 /-!
 # Lemmas on finiteness of sets
@@ -19,6 +21,8 @@ If your proof has as *result* `Set.Finite`, then it should go to a more specific
 
 finite sets
 -/
+
+public section
 
 assert_not_exists IsOrderedRing MonoidWithZero
 
@@ -58,6 +62,9 @@ theorem Finite.induction_to {C : Set α → Prop} {S : Set α} (h : S.Finite)
 theorem Finite.induction_to_univ [Finite α] {C : Set α → Prop} (S0 : Set α)
     (H0 : C S0) (H1 : ∀ S ≠ univ, C S → ∃ a ∉ S, C (insert a S)) : C univ :=
   finite_univ.induction_to S0 (subset_univ S0) H0 (by simpa [ssubset_univ_iff])
+
+theorem sUnion_finite_eq_univ {X : Type*} : ⋃₀ {(s : Set X) | Set.Finite s} = Set.univ :=
+  sUnion_eq_univ_iff.mpr fun x ↦ ⟨{x}, finite_singleton x, rfl⟩
 
 /-! ### Infinite sets -/
 

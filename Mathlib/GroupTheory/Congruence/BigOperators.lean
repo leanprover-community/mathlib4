@@ -3,16 +3,19 @@ Copyright (c) 2019 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
+module
 
-import Mathlib.Algebra.BigOperators.Group.Multiset.Basic
-import Mathlib.Algebra.BigOperators.Group.List.Lemmas
-import Mathlib.GroupTheory.Congruence.Defs
-import Mathlib.Algebra.BigOperators.Group.Finset.Defs
+public import Mathlib.Algebra.BigOperators.Group.Multiset.Basic
+public import Mathlib.Algebra.BigOperators.Group.List.Lemmas
+public import Mathlib.GroupTheory.Congruence.Defs
+public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 
 /-!
 # Interactions between `∑, ∏` and `(Add)Con`
 
 -/
+
+public section
 
 namespace Con
 
@@ -37,9 +40,15 @@ protected theorem multiset_prod {ι M : Type*} [CommMonoid M] (c : Con M) {s : M
 
 /-- Multiplicative congruence relations preserve finite product. -/
 @[to_additive /-- Additive congruence relations preserve finite sum. -/]
-protected theorem finset_prod {ι M : Type*} [CommMonoid M] (c : Con M) (s : Finset ι)
+protected theorem finsetProd {ι M : Type*} [CommMonoid M] (c : Con M) (s : Finset ι)
     {f g : ι → M} (h : ∀ i ∈ s, c (f i) (g i)) :
     c (s.prod f) (s.prod g) :=
   c.multiset_prod h
+
+@[deprecated (since := "2026-04-08")]
+protected alias _root_.AddCon.finset_sum := AddCon.finsetSum
+
+@[to_additive existing, deprecated (since := "2026-04-08")]
+protected alias finset_prod := Con.finsetProd
 
 end Con

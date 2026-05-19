@@ -3,7 +3,9 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Yury Kudryashov
 -/
-import Mathlib.Algebra.Algebra.Tower
+module
+
+public import Mathlib.Algebra.Algebra.Tower
 
 /-!
 
@@ -24,6 +26,8 @@ typeclass instead.
   but sometimes it is helpful to avoid using this fact, to keep instances from leaking).
 * `RestrictScalars.ringEquiv : RestrictScalars R S A ≃+* A`: the ring equivalence
   between the restricted and original space when the module is an algebra.
+* `Module.restrictScalars R S M`, `Algebra.restrictScalars R S A`: non-instance definitions for
+  `Module R M` and `Algebra R A`.
 
 ## See also
 
@@ -37,6 +41,8 @@ refer to restricting the scalar type in a bundled type, such as from `A →ₗ[R
 * `Submodule.restrictScalars`
 * `Subalgebra.restrictScalars`
 -/
+
+@[expose] public section
 
 
 variable (R S M A : Type*)
@@ -88,6 +94,7 @@ section
 variable [Semiring S] [AddCommMonoid M]
 
 /-- We temporarily install an action of the original ring on `RestrictScalars R S M`. -/
+@[instance_reducible]
 def RestrictScalars.moduleOrig [I : Module S M] : Module S (RestrictScalars R S M) := I
 
 variable [CommSemiring R] [Algebra R S]
@@ -97,19 +104,31 @@ section
 attribute [local instance] RestrictScalars.moduleOrig
 
 /-- When `M` is a module over a ring `S`, and `S` is an algebra over `R`, then `M` inherits a
+module structure over `R`. Not an instance because `S` cannot be inferred.
+
+The preferred way of setting this up is `[Module R M] [Module S M] [IsScalarTower R S M]`.
+-/
+abbrev Module.restrictScalars [Module S M] : Module R M :=
+  Module.compHom M (algebraMap R S)
+
+/-- When `M` is a module over a ring `S`, and `S` is an algebra over `R`, then `M` inherits a
 module structure over `R`.
 
 The preferred way of setting this up is `[Module R M] [Module S M] [IsScalarTower R S M]`.
 -/
 instance RestrictScalars.module [Module S M] : Module R (RestrictScalars R S M) :=
-  Module.compHom M (algebraMap R S)
+  Module.restrictScalars R S M
+
+/-- `Module.restrictScalars` forms a scalar tower. -/
+theorem IsScalarTower.restrictScalars [Module S M] :
+    letI := Module.restrictScalars R S M
+    IsScalarTower R S M :=
+  IsScalarTower.of_compHom R S M
 
 /-- This instance is only relevant when `RestrictScalars.moduleOrig` is available as an instance.
 -/
 instance RestrictScalars.isScalarTower [Module S M] : IsScalarTower R S (RestrictScalars R S M) :=
-  ⟨fun r S M ↦ by
-    rw [Algebra.smul_def, mul_smul]
-    rfl⟩
+   IsScalarTower.restrictScalars R S M
 
 end
 
@@ -197,11 +216,13 @@ theorem RestrictScalars.ringEquiv_map_smul (r : R) (x : RestrictScalars R S A) :
       algebraMap R S r • RestrictScalars.ringEquiv R S A x :=
   rfl
 
+/-- `R ⟶ S` induces `S-Alg ⥤ R-Alg`. Not an instance because `S` cannot be inferred. -/
+abbrev Algebra.restrictScalars : Algebra R A :=
+  Algebra.compHom A (algebraMap R S)
+
 /-- `R ⟶ S` induces `S-Alg ⥤ R-Alg` -/
-instance RestrictScalars.algebra : Algebra R (RestrictScalars R S A) where
-  algebraMap := (algebraMap S A).comp (algebraMap R S)
-  commutes' := fun _ _ ↦ Algebra.commutes' (A := A) _ _
-  smul_def' := fun _ _ ↦ Algebra.smul_def' (A := A) _ _
+instance RestrictScalars.algebra : Algebra R (RestrictScalars R S A) :=
+  Algebra.restrictScalars R S A
 
 @[simp]
 theorem RestrictScalars.ringEquiv_algebraMap (r : R) :

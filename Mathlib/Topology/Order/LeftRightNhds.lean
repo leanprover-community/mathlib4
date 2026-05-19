@@ -3,10 +3,11 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
 -/
-import Mathlib.Algebra.Ring.Pointwise.Set
-import Mathlib.Order.Filter.AtTopBot.CompleteLattice
-import Mathlib.Order.Filter.AtTopBot.Group
-import Mathlib.Topology.Order.Basic
+module
+
+public import Mathlib.Order.Filter.AtTopBot.CompleteLattice
+public import Mathlib.Order.Filter.AtTopBot.Group
+public import Mathlib.Topology.Order.Basic
 
 /-!
 # Neighborhoods to the left and to the right on an `OrderTopology`
@@ -14,6 +15,8 @@ import Mathlib.Topology.Order.Basic
 We've seen some properties of left and right neighborhood of a point in an `OrderClosedTopology`.
 In an `OrderTopology`, such neighborhoods can be characterized as the sets containing suitable
 intervals to the right or to the left of `a`. We give now these characterizations. -/
+
+public section
 
 open Set Filter TopologicalSpace Topology Function
 
@@ -132,8 +135,8 @@ theorem countable_setOf_isolated_right_within [SecondCountableTopology α] {s : 
   apply Set.PairwiseDisjoint.countable_of_Ioo (y := y) _ hy
   simp only [PairwiseDisjoint, Set.Pairwise, Function.onFun]
   intro a ha b hb hab
-  wlog H : a < b generalizing a b with h
-  · have : b < a := lt_of_le_of_ne (not_lt.1 H) hab.symm
+  wlog! H : a < b generalizing a b with h
+  · have : b < a := lt_of_le_of_ne H hab.symm
     exact (h hb ha hab.symm this).symm
   have : y a ≤ b := by
     by_contra!
@@ -169,11 +172,11 @@ open List in
 3. `s` includes `(l, b)` for some `l ∈ [a, b)`
 4. `s` includes `(l, b)` for some `l < b` -/
 theorem TFAE_mem_nhdsLT {a b : α} (h : a < b) (s : Set α) :
-    TFAE [s ∈ 𝓝[<] b,-- 0 : `s` is a neighborhood of `b` within `(-∞, b)`
-        s ∈ 𝓝[Ico a b] b,-- 1 : `s` is a neighborhood of `b` within `[a, b)`
-        s ∈ 𝓝[Ioo a b] b,-- 2 : `s` is a neighborhood of `b` within `(a, b)`
-        ∃ l ∈ Ico a b, Ioo l b ⊆ s,-- 3 : `s` includes `(l, b)` for some `l ∈ [a, b)`
-        ∃ l ∈ Iio b, Ioo l b ⊆ s] := by-- 4 : `s` includes `(l, b)` for some `l < b`
+    TFAE [s ∈ 𝓝[<] b, -- 0 : `s` is a neighborhood of `b` within `(-∞, b)`
+        s ∈ 𝓝[Ico a b] b, -- 1 : `s` is a neighborhood of `b` within `[a, b)`
+        s ∈ 𝓝[Ioo a b] b, -- 2 : `s` is a neighborhood of `b` within `(a, b)`
+        ∃ l ∈ Ico a b, Ioo l b ⊆ s, -- 3 : `s` includes `(l, b)` for some `l ∈ [a, b)`
+        ∃ l ∈ Iio b, Ioo l b ⊆ s] := by -- 4 : `s` includes `(l, b)` for some `l < b`
   simpa using TFAE_mem_nhdsGT h.dual (ofDual ⁻¹' s)
 
 theorem mem_nhdsLT_iff_exists_mem_Ico_Ioo_subset {a l' : α} {s : Set α} (hl' : l' < a) :
@@ -208,7 +211,7 @@ theorem nhdsLT_basis [NoMinOrder α] (a : α) : (𝓝[<] a).HasBasis (· < a) (I
   nhdsLT_basis_of_exists_lt <| exists_lt a
 
 theorem nhdsLT_eq_bot_iff {a : α} : 𝓝[<] a = ⊥ ↔ IsBot a ∨ ∃ b, b ⋖ a := by
-  convert (config := {preTransparency := .default}) nhdsGT_eq_bot_iff (a := OrderDual.toDual a)
+  convert (config := { preTransparency := .default }) nhdsGT_eq_bot_iff (a := OrderDual.toDual a)
     using 4
   exact ofDual_covBy_ofDual_iff
 
@@ -280,11 +283,11 @@ open List in
 3. `s` includes `(l, b]` for some `l ∈ [a, b)`
 4. `s` includes `(l, b]` for some `l < b` -/
 theorem TFAE_mem_nhdsLE {a b : α} (h : a < b) (s : Set α) :
-    TFAE [s ∈ 𝓝[≤] b,-- 0 : `s` is a neighborhood of `b` within `(-∞, b]`
-      s ∈ 𝓝[Icc a b] b,-- 1 : `s` is a neighborhood of `b` within `[a, b]`
-      s ∈ 𝓝[Ioc a b] b,-- 2 : `s` is a neighborhood of `b` within `(a, b]`
-      ∃ l ∈ Ico a b, Ioc l b ⊆ s,-- 3 : `s` includes `(l, b]` for some `l ∈ [a, b)`
-      ∃ l ∈ Iio b, Ioc l b ⊆ s] := by-- 4 : `s` includes `(l, b]` for some `l < b`
+    TFAE [s ∈ 𝓝[≤] b, -- 0 : `s` is a neighborhood of `b` within `(-∞, b]`
+      s ∈ 𝓝[Icc a b] b, -- 1 : `s` is a neighborhood of `b` within `[a, b]`
+      s ∈ 𝓝[Ioc a b] b, -- 2 : `s` is a neighborhood of `b` within `(a, b]`
+      ∃ l ∈ Ico a b, Ioc l b ⊆ s, -- 3 : `s` includes `(l, b]` for some `l ∈ [a, b)`
+      ∃ l ∈ Iio b, Ioc l b ⊆ s] := by -- 4 : `s` includes `(l, b]` for some `l < b`
   simpa using TFAE_mem_nhdsGE h.dual (ofDual ⁻¹' s)
 
 theorem mem_nhdsLE_iff_exists_mem_Ico_Ioc_subset {a l' : α} {s : Set α} (hl' : l' < a) :

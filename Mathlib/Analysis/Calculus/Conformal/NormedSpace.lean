@@ -3,9 +3,11 @@ Copyright (c) 2021 Yourong Zang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yourong Zang
 -/
-import Mathlib.Analysis.Calculus.FDeriv.Add
-import Mathlib.Analysis.Calculus.FDeriv.Const
-import Mathlib.Analysis.Normed.Operator.Conformal
+module
+
+public import Mathlib.Analysis.Calculus.FDeriv.Add
+public import Mathlib.Analysis.Calculus.FDeriv.Const
+public import Mathlib.Analysis.Normed.Operator.Conformal
 
 /-!
 # Conformal Maps
@@ -39,6 +41,8 @@ conformal
 The definition of conformality in this file does NOT require the maps to be orientation-preserving.
 Maps such as the complex conjugate are considered to be conformal.
 -/
+
+@[expose] public section
 
 
 noncomputable section

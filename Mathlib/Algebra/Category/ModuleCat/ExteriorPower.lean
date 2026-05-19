@@ -3,8 +3,10 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.LinearAlgebra.ExteriorPower.Basic
-import Mathlib.Algebra.Category.ModuleCat.Basic
+module
+
+public import Mathlib.LinearAlgebra.ExteriorPower.Basic
+public import Mathlib.Algebra.Category.ModuleCat.Basic
 
 /-!
 # The exterior powers as functors on the category of modules
@@ -13,6 +15,8 @@ In this file, given `M : ModuleCat R` and `n : ℕ`, we define `M.exteriorPower 
 and this extends to a functor `ModuleCat.exteriorPower.functor : ModuleCat R ⥤ ModuleCat R`.
 
 -/
+
+@[expose] public section
 
 universe v u
 
@@ -131,10 +135,12 @@ lemma iso₁_hom_naturality {M N : ModuleCat.{u} R} (f : M ⟶ N) :
 
 variable (R)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The natural isomorphism `M.exteriorPower 0 ≅ ModuleCat.of R R`. -/
 noncomputable def natIso₀ : functor.{u} R 0 ≅ (Functor.const _).obj (ModuleCat.of R R) :=
   NatIso.ofComponents iso₀
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The natural isomorphism `M.exteriorPower 1 ≅ M`. -/
 noncomputable def natIso₁ : functor.{u} R 1 ≅ 𝟭 _ :=
   NatIso.ofComponents iso₁

@@ -3,8 +3,9 @@ Copyright (c) 2022 Felix Weilacher. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Felix Weilacher
 -/
+module
 
-import Mathlib.Topology.Separation.Regular
+public import Mathlib.Topology.Separation.Regular
 
 /-!
 # Perfect Sets
@@ -49,6 +50,8 @@ namely Polish spaces.
 accumulation point, perfect set, dense-in-itself, cantor-bendixson.
 
 -/
+
+@[expose] public section
 
 
 open Topology Filter Set TopologicalSpace
@@ -122,6 +125,20 @@ theorem Preperfect.perfect_closure (hC : Preperfect C) : Perfect (closure C) := 
   rw [closure_eq_cluster_pts] at hx
   exact hx
 
+/-
+Open subsects in perfect spaces are preperfect.
+-/
+theorem IsOpen.preperfect [PerfectSpace α] {U : Set α} (hU : IsOpen U) :
+    Preperfect U := by
+  simpa using PerfectSpace.univ_preperfect.open_inter hU
+
+/-
+Closures of open subsects in perfect spaces are preperfect, hence perfect.
+-/
+theorem IsOpen.perfect_closure [PerfectSpace α] {U : Set α} (hU : IsOpen U) :
+    Perfect (closure U) :=
+  hU.preperfect.perfect_closure
+
 /-- In a T1 space, being preperfect is equivalent to having perfect closure. -/
 theorem preperfect_iff_perfect_closure [T1Space α] : Preperfect C ↔ Perfect (closure C) := by
   constructor <;> intro h
@@ -188,6 +205,12 @@ lemma IsPreconnected.preperfect_of_nontrivial [T1Space α] {U : Set α} (hu : U.
       ← accPt_principal_iff_clusterPt] at h
     exact h
 
+instance [T1Space α] [ConnectedSpace α] [Nontrivial α] : PerfectSpace α := by
+  constructor
+  apply isPreconnected_univ.preperfect_of_nontrivial
+  rw [Set.nontrivial_univ_iff]
+  infer_instance
+
 end Preperfect
 
 section Kernel
@@ -203,8 +226,8 @@ theorem exists_countable_union_perfect_of_isClosed [SecondCountableTopology α]
   have Vct : (V ∩ C).Countable := by
     simp only [V, iUnion_inter]
     apply Countable.biUnion
-    · exact Countable.mono inter_subset_left bct
-    · exact inter_subset_right
+    · exact bct.mono (sep_subset _ _)
+    · exact sep_subset_setOf _ _
   refine ⟨V ∩ C, D, Vct, ⟨?_, ?_⟩, ?_⟩
   · refine hclosed.sdiff (isOpen_biUnion fun _ ↦ ?_)
     exact fun ⟨Ub, _⟩ ↦ IsTopologicalBasis.isOpen bbasis Ub

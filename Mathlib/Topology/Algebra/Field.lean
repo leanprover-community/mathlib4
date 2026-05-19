@@ -3,12 +3,14 @@ Copyright (c) 2021 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Kim Morrison
 -/
-import Mathlib.Algebra.Field.Subfield.Defs
-import Mathlib.Algebra.GroupWithZero.Divisibility
-import Mathlib.Algebra.Order.Group.Pointwise.Interval
-import Mathlib.Topology.Algebra.GroupWithZero
-import Mathlib.Topology.Algebra.Ring.Basic
-import Mathlib.Topology.Order.LocalExtr
+module
+
+public import Mathlib.Algebra.Field.Subfield.Defs
+public import Mathlib.Algebra.GroupWithZero.Divisibility
+public import Mathlib.Algebra.Order.Group.Pointwise.Interval
+public import Mathlib.Topology.Algebra.GroupWithZero
+public import Mathlib.Topology.Algebra.Ring.Basic
+public import Mathlib.Topology.Order.LocalExtr
 
 /-!
 # Topological fields
@@ -18,17 +20,19 @@ non-zero element.
 
 -/
 
+@[expose] public section
+
 variable {K : Type*} [DivisionRing K] [TopologicalSpace K]
 
 /-- Left-multiplication by a nonzero element of a topological division ring is proper, i.e.,
 inverse images of compact sets are compact. -/
-theorem Filter.tendsto_cocompact_mul_left₀ [ContinuousMul K] {a : K} (ha : a ≠ 0) :
+theorem Filter.tendsto_cocompact_mul_left₀ [SeparatelyContinuousMul K] {a : K} (ha : a ≠ 0) :
     Filter.Tendsto (fun x : K => a * x) (Filter.cocompact K) (Filter.cocompact K) :=
   Filter.tendsto_cocompact_mul_left (inv_mul_cancel₀ ha)
 
 /-- Right-multiplication by a nonzero element of a topological division ring is proper, i.e.,
 inverse images of compact sets are compact. -/
-theorem Filter.tendsto_cocompact_mul_right₀ [ContinuousMul K] {a : K} (ha : a ≠ 0) :
+theorem Filter.tendsto_cocompact_mul_right₀ [SeparatelyContinuousMul K] {a : K} (ha : a ≠ 0) :
     Filter.Tendsto (fun x : K => x * a) (Filter.cocompact K) (Filter.cocompact K) :=
   Filter.tendsto_cocompact_mul_right (mul_inv_cancel₀ ha)
 
@@ -156,7 +160,7 @@ open Topology
 
 theorem IsLocalMin.inv {f : α → β} {a : α} (h1 : IsLocalMin f a) (h2 : ∀ᶠ z in 𝓝 a, 0 < f z) :
     IsLocalMax f⁻¹ a := by
-  filter_upwards [h1, h2] with z h3 h4 using(inv_le_inv₀ h4 h2.self_of_nhds).mpr h3
+  filter_upwards [h1, h2] with z h3 h4 using (inv_le_inv₀ h4 h2.self_of_nhds).mpr h3
 
 end LocalExtr
 
@@ -174,10 +178,9 @@ variable {α 𝕜 : Type*} {f g : α → 𝕜} {S : Set α} [TopologicalSpace α
 theorem IsPreconnected.eq_one_or_eq_neg_one_of_sq_eq [Ring 𝕜] [NoZeroDivisors 𝕜]
     (hS : IsPreconnected S) (hf : ContinuousOn f S) (hsq : EqOn (f ^ 2) 1 S) :
     EqOn f 1 S ∨ EqOn f (-1) S := by
-  have : DiscreteTopology ({1, -1} : Set 𝕜) := Finite.instDiscreteTopology
   have hmaps : MapsTo f S {1, -1} := by
     simpa only [EqOn, Pi.one_apply, Pi.pow_apply, sq_eq_one_iff] using hsq
-  simpa using hS.eqOn_const_of_mapsTo hf hmaps
+  simpa using hS.eqOn_const_of_mapsTo (toFinite _).isDiscrete hf hmaps
 
 /-- If `f, g` are functions `α → 𝕜`, both continuous on a preconnected set `S`, with
 `f ^ 2 = g ^ 2` on `S`, and `g z ≠ 0` all `z ∈ S`, then either `f = g` or `f = -g` on

@@ -3,23 +3,27 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Alex Kontorovich
 -/
-import Mathlib.Data.Set.Piecewise
-import Mathlib.Order.Filter.Tendsto
-import Mathlib.Order.Filter.Bases.Finite
+module
+
+public import Mathlib.Data.Set.Piecewise
+public import Mathlib.Order.Filter.Tendsto
+public import Mathlib.Order.Filter.Bases.Finite
 
 /-!
 # (Co)product of a family of filters
 
-In this file we define two filters on `Π i, α i` and prove some basic properties of these filters.
+In this file we prove some basic properties of two filters on `Π i, α i`.
 
 * `Filter.pi (f : Π i, Filter (α i))` to be the maximal filter on `Π i, α i` such that
   `∀ i, Filter.Tendsto (Function.eval i) (Filter.pi f) (f i)`. It is defined as
-  `Π i, Filter.comap (Function.eval i) (f i)`. This is a generalization of `Filter.prod` to indexed
-  products.
+  `Π i, Filter.comap (Function.eval i) (f i)`. This is a generalization of binary products to
+  indexed products.
 
 * `Filter.coprodᵢ (f : Π i, Filter (α i))`: a generalization of `Filter.coprod`; it is the supremum
   of `comap (eval i) (f i)`.
 -/
+
+@[expose] public section
 
 
 open Set Function Filter
@@ -46,7 +50,7 @@ alias ⟨Tendsto.apply, _⟩ := tendsto_pi
 theorem le_pi {g : Filter (∀ i, α i)} : g ≤ pi f ↔ ∀ i, Tendsto (eval i) g (f i) :=
   tendsto_pi
 
-@[mono]
+@[gcongr, mono]
 theorem pi_mono (h : ∀ i, f₁ i ≤ f₂ i) : pi f₁ ≤ pi f₂ :=
   iInf_mono fun i => comap_mono <| h i
 
@@ -303,7 +307,7 @@ theorem coprodᵢ_neBot [∀ i, Nonempty (α i)] [Nonempty ι] (f : ∀ i, Filte
     [H : ∀ i, NeBot (f i)] : NeBot (Filter.coprodᵢ f) :=
   (H (Classical.arbitrary ι)).coprodᵢ
 
-@[mono]
+@[gcongr, mono]
 theorem coprodᵢ_mono (hf : ∀ i, f₁ i ≤ f₂ i) : Filter.coprodᵢ f₁ ≤ Filter.coprodᵢ f₂ :=
   iSup_mono fun i => comap_mono (hf i)
 

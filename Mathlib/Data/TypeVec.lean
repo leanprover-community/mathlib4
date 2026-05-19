@@ -3,9 +3,11 @@ Copyright (c) 2018 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Mario Carneiro, Simon Hudon
 -/
-import Mathlib.Data.Fin.Fin2
-import Mathlib.Logic.Function.Basic
-import Mathlib.Tactic.Common
+module
+
+public import Mathlib.Data.Fin.Fin2
+public import Mathlib.Logic.Function.Basic
+public import Mathlib.Tactic.Common
 
 /-!
 
@@ -29,6 +31,8 @@ Also, support functions for operating with n-tuples of types, such as:
 Since e.g. `append1 α.drop α.last` is propositionally equal to `α` but not definitionally equal
 to it, we need support functions and lemmas to mediate between constructions.
 -/
+
+@[expose] public section
 
 universe u v w x
 
@@ -419,7 +423,7 @@ def ofRepeat {α : Sort _} : ∀ {n i}, «repeat» n α i → α
 
 theorem const_iff_true {α : TypeVec n} {i x p} : ofRepeat (TypeVec.const p α i x) ↔ p := by
   induction i with
-  | fz      => rfl
+  | fz => rfl
   | fs _ ih =>
     rw [TypeVec.const]
     exact ih
@@ -555,7 +559,7 @@ theorem subtypeVal_nil {α : TypeVec.{u} 0} (ps : α ⟹ «repeat» 0 Prop) :
 theorem diag_sub_val {n} {α : TypeVec.{u} n} : subtypeVal (repeatEq α) ⊚ diagSub = prod.diag := by
   ext i x
   induction i with
-  | fz => simp only [comp, subtypeVal, repeatEq.eq_2, diagSub, prod.diag]
+  | fz => simp only [comp, subtypeVal, diagSub, prod.diag]
   | fs _ i_ih => apply @i_ih (drop α)
 
 theorem prod_id : ∀ {n} {α β : TypeVec.{u} n}, (id ⊗' id) = (id : α ⊗ β ⟹ _) := by
@@ -637,8 +641,6 @@ theorem dropFun_id {α : TypeVec (n + 1)} : dropFun (@TypeVec.id _ α) = id :=
 @[simp]
 theorem prod_map_id {α β : TypeVec n} : (@TypeVec.id _ α ⊗' @TypeVec.id _ β) = id := prod_id
 
-@[deprecated (since := "2025-08-14")] alias subtypeVal_diagSub := diag_sub_val
-
 @[simp]
 theorem toSubtype_of_subtype {α : TypeVec n} (p : α ⟹ «repeat» n Prop) :
     toSubtype p ⊚ ofSubtype p = id := by
@@ -667,6 +669,7 @@ theorem toSubtype'_of_subtype' {α : TypeVec n} (r : α ⊗ α ⟹ «repeat» n 
   <;> dsimp only [id, toSubtype', comp, ofSubtype'] at *
   <;> simp [*]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem subtypeVal_toSubtype' {α : TypeVec n} (r : α ⊗ α ⟹ «repeat» n Prop) :
     subtypeVal r ⊚ toSubtype' r = fun i x => prod.mk i x.1.fst x.1.snd := by
   ext i x

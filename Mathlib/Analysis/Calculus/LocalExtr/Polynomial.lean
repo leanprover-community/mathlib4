@@ -3,9 +3,11 @@ Copyright (c) 2021 Benjamin Davidson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Benjamin Davidson, Yury Kudryashov
 -/
-import Mathlib.Analysis.Calculus.LocalExtr.Rolle
-import Mathlib.Analysis.Calculus.Deriv.Polynomial
-import Mathlib.Topology.Algebra.Polynomial
+module
+
+public import Mathlib.Analysis.Calculus.LocalExtr.Rolle
+public import Mathlib.Analysis.Calculus.Deriv.Polynomial
+public import Mathlib.Topology.Algebra.Polynomial
 
 /-!
 # Rolle's Theorem for polynomials
@@ -27,6 +29,8 @@ Namely, we prove the following facts.
 polynomial, Rolle's Theorem, root
 -/
 
+public section
+
 namespace Polynomial
 
 /-- The number of roots of a real polynomial `p` is at most the number of roots of its derivative
@@ -34,8 +38,8 @@ that are not roots of `p` plus one. -/
 theorem card_roots_toFinset_le_card_roots_derivative_diff_roots_succ (p : ℝ[X]) :
     p.roots.toFinset.card ≤ (p.derivative.roots.toFinset \ p.roots.toFinset).card + 1 := by
   rcases eq_or_ne (derivative p) 0 with hp' | hp'
-  · rw [eq_C_of_derivative_eq_zero hp', roots_C, Multiset.toFinset_zero, Finset.card_empty]
-    exact zero_le _
+  · rw [eq_C_of_derivative_eq_zero hp']
+    simp
   have hp : p ≠ 0 := ne_of_apply_ne derivative (by rwa [derivative_zero])
   refine Finset.card_le_diff_of_interleaved fun x hx y hy hxy hxy' => ?_
   rw [Multiset.mem_toFinset, mem_roots hp] at hx hy

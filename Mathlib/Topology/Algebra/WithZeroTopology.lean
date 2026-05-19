@@ -3,10 +3,12 @@ Copyright (c) 2021 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
 -/
-import Mathlib.Algebra.Order.GroupWithZero.Canonical
-import Mathlib.Topology.Algebra.GroupWithZero
-import Mathlib.Topology.Order.OrderClosed
-import Mathlib.Topology.Separation.Regular
+module
+
+public import Mathlib.Algebra.Order.GroupWithZero.Canonical
+public import Mathlib.Topology.Algebra.GroupWithZero
+public import Mathlib.Topology.Order.OrderClosed
+public import Mathlib.Topology.Separation.Regular
 
 /-!
 # The topology on linearly ordered commutative groups with zero
@@ -31,6 +33,8 @@ a linearly ordered commutative group with zero. You can locally activate this to
 `open WithZeroTopology`.
 -/
 
+public section
+
 open Topology Filter TopologicalSpace Filter Set Function
 
 namespace WithZeroTopology
@@ -39,7 +43,8 @@ variable {α Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀] {γ γ₁ γ�
   {f : α → Γ₀}
 
 /-- The topology on a linearly ordered commutative group with a zero element adjoined.
-A subset U is open if 0 ∉ U or if there is an invertible element γ₀ such that {γ | γ < γ₀} ⊆ U. -/
+A subset `U` is open if `0 ∉ U` or if there is an invertible element γ₀ such that
+`{γ | γ < γ₀} ⊆ U`. -/
 scoped instance (priority := 100) topologicalSpace : TopologicalSpace Γ₀ :=
   nhdsAdjoint 0 <| ⨅ γ ≠ 0, 𝓟 (Iio γ)
 

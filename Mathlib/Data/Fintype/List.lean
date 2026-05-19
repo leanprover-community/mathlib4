@@ -3,9 +3,11 @@ Copyright (c) 2021 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.Data.Finset.Powerset
-import Mathlib.Data.Fintype.Defs
-import Mathlib.Data.List.Permutation
+module
+
+public import Mathlib.Data.Finset.Powerset
+public import Mathlib.Data.Fintype.Defs
+public import Mathlib.Data.List.Permutation
 
 /-!
 
@@ -20,6 +22,8 @@ to the `Multiset (List α)` is provided.
 This function is applied to the `Finset.powerset` of `Finset.univ`.
 
 -/
+
+@[expose] public section
 
 
 variable {α : Type*}
@@ -53,7 +57,7 @@ theorem mem_lists_iff (s : Multiset α) (l : List α) : l ∈ lists s ↔ s = �
 end Multiset
 
 instance fintypeNodupList [Fintype α] : Fintype { l : List α // l.Nodup } := by
-  refine Fintype.ofFinset ?_ ?_
+  refine Fintype.subtype ?_ ?_
   · let univSubsets := ((Finset.univ : Finset α).powerset.1 : (Multiset (Finset α)))
     let allPerms := Multiset.bind univSubsets (fun s => (Multiset.lists s.1))
     refine ⟨allPerms, Multiset.nodup_bind.mpr ?_⟩
@@ -71,7 +75,7 @@ instance fintypeNodupList [Fintype α] : Fintype { l : List α // l.Nodup } := b
       simp only [_root_.Disjoint]
       rw [← m.coe_toList, ← n.coe_toList, Multiset.lists_coe, Multiset.lists_coe]
       have := Multiset.coe_disjoint m.toList.permutations n.toList.permutations
-      rw  [_root_.Disjoint] at this
+      rw [_root_.Disjoint] at this
       rw [this]
       simp only [ne_eq]
       rw [List.disjoint_iff_ne]

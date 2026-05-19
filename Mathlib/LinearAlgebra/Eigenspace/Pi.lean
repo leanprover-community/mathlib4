@@ -3,7 +3,9 @@ Copyright (c) 2024 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.LinearAlgebra.Eigenspace.Triangularizable
+module
+
+public import Mathlib.LinearAlgebra.Eigenspace.Triangularizable
 
 /-!
 # Simultaneous eigenvectors and eigenvalues for families of endomorphisms
@@ -23,6 +25,8 @@ for commuting endomorphisms but there are important more general situations wher
   is true of each map individually.
 
 -/
+
+public section
 
 open Function Set
 
@@ -68,7 +72,7 @@ lemma iInf_maxGenEigenspace_restrict_map_subtype_eq
     ext
     rw [p.inf_genEigenspace (f _) (h _)]
 
-variable [NoZeroSMulDivisors R M]
+variable [IsDomain R] [IsTorsionFree R M]
 
 lemma disjoint_iInf_maxGenEigenspace {χ₁ χ₂ : ι → R} (h : χ₁ ≠ χ₂) :
     Disjoint (⨅ i, (f i).maxGenEigenspace (χ₁ i)) (⨅ i, (f i).maxGenEigenspace (χ₂ i)) := by
@@ -95,7 +99,7 @@ lemma independent_iInf_maxGenEigenspace_of_forall_mapsTo
   suffices ∀ χ (s : Finset (ι → R)) (_ : χ ∉ s),
       Disjoint (⨅ i, (f i).maxGenEigenspace (χ i))
         (s.sup fun (χ : ι → R) ↦ ⨅ i, (f i).maxGenEigenspace (χ i)) by
-    simpa only [iSupIndep_iff_supIndep_of_injOn (injOn_iInf_maxGenEigenspace f),
+    simpa only [iSupIndep_iff_supIndep,
       Finset.supIndep_iff_disjoint_erase] using fun s χ _ ↦ this _ _ (s.notMem_erase χ)
   intro χ₁ s
   induction s using Finset.induction_on with

@@ -3,8 +3,10 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.TotalComplex
-import Mathlib.CategoryTheory.GradedObject.Bifunctor
+module
+
+public import Mathlib.Algebra.Homology.TotalComplex
+public import Mathlib.CategoryTheory.GradedObject.Bifunctor
 
 /-!
 # The action of a bifunctor on homological complexes
@@ -21,11 +23,13 @@ bicomplex `(((F.mapBifunctorHomologicalComplex c₁ c₂).obj K₁).obj K₂)`.
 
 -/
 
+@[expose] public section
+
 assert_not_exists TwoSidedIdeal
 
 open CategoryTheory Limits
 
-variable {C₁ C₂ D : Type*} [Category C₁] [Category C₂] [Category D]
+variable {C₁ C₂ D : Type*} [Category* C₁] [Category* C₂] [Category* D]
 
 namespace CategoryTheory
 
@@ -35,6 +39,8 @@ variable [HasZeroMorphisms C₁] [HasZeroMorphisms C₂] [HasZeroMorphisms D]
   (F : C₁ ⥤ C₂ ⥤ D) {I₁ I₂ J : Type*} (c₁ : ComplexShape I₁) (c₂ : ComplexShape I₂)
   [F.PreservesZeroMorphisms] [∀ X₁, (F.obj X₁).PreservesZeroMorphisms]
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 variable {c₁} in
 /-- Auxiliary definition for `mapBifunctorHomologicalComplex`. -/
 @[simps!]
@@ -69,6 +75,8 @@ def mapBifunctorHomologicalComplexObj (K₁ : HomologicalComplex C₁ c₁) :
   map_id K₂ := by dsimp; ext; dsimp; rw [Functor.map_id]
   map_comp f g := by dsimp; ext; dsimp; rw [Functor.map_comp]
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a functor `F : C₁ ⥤ C₂ ⥤ D`, this is the bifunctor which sends
 `K₁ : HomologicalComplex C₁ c₁` and `K₂ : HomologicalComplex C₂ c₂` to the bicomplex
 which is degree `(i₁, i₂)` consists of `(F.obj (K₁.X i₁)).obj (K₂.X i₂)`. -/
@@ -267,6 +275,7 @@ noncomputable def mapBifunctorMap : mapBifunctor K₁ K₂ F c ⟶ mapBifunctor 
   HomologicalComplex₂.total.map (((F.mapBifunctorHomologicalComplex c₁ c₂).map f₁).app K₂ ≫
     ((F.mapBifunctorHomologicalComplex c₁ c₂).obj L₁).map f₂) c
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma ι_mapBifunctorMap (i₁ : I₁) (i₂ : I₂) (j : J)
     (h : ComplexShape.π c₁ c₂ c (i₁, i₂) = j) :
@@ -278,3 +287,31 @@ lemma ι_mapBifunctorMap (i₁ : I₁) (i₂ : I₂) (j : J)
 end
 
 end HomologicalComplex
+
+namespace CategoryTheory.Functor
+
+variable [HasZeroMorphisms C₁] [HasZeroMorphisms C₂] [Preadditive D]
+  (F : C₁ ⥤ C₂ ⥤ D) [F.PreservesZeroMorphisms] [∀ X₁, (F.obj X₁).PreservesZeroMorphisms]
+  {I₁ I₂ J : Type*} (c₁ : ComplexShape I₁) (c₂ : ComplexShape I₂) (c : ComplexShape J)
+  [DecidableEq J] [TotalComplexShape c₁ c₂ c]
+
+open HomologicalComplex
+
+/-- The bifunctor on homological complexes that is induced by a bifunctor. -/
+@[simps]
+noncomputable def map₂HomologicalComplex
+    [∀ (K₁ : HomologicalComplex C₁ c₁) (K₂ : HomologicalComplex C₂ c₂),
+      HasMapBifunctor K₁ K₂ F c] :
+    HomologicalComplex C₁ c₁ ⥤ HomologicalComplex C₂ c₂ ⥤ HomologicalComplex D c where
+  obj K₁ :=
+    { obj K₂ := mapBifunctor K₁ K₂ F c
+      map g := mapBifunctorMap (𝟙 K₁) g _ _ }
+  map f := { app K₂ := mapBifunctorMap f (𝟙 K₂) _ _ }
+
+/-- The bifunctor on cochain complexes that is induced by a bifunctor. -/
+noncomputable abbrev map₂CochainComplex
+    [∀ (K₁ : CochainComplex C₁ ℤ) (K₂ : CochainComplex C₂ ℤ), HasMapBifunctor K₁ K₂ F (.up ℤ)] :
+    CochainComplex C₁ ℤ ⥤ CochainComplex C₂ ℤ ⥤ CochainComplex D ℤ :=
+  F.map₂HomologicalComplex _ _ _
+
+end CategoryTheory.Functor

@@ -3,8 +3,10 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.Idempotents
-import Mathlib.RingTheory.Smooth.Basic
+module
+
+public import Mathlib.RingTheory.Idempotents
+public import Mathlib.RingTheory.Smooth.Basic
 
 /-!
 
@@ -16,6 +18,8 @@ import Mathlib.RingTheory.Smooth.Basic
   if and only if each `A i` is `R`-formally-smooth.
 
 -/
+
+public section
 
 namespace Algebra.FormallySmooth
 
@@ -37,7 +41,7 @@ theorem of_pi [FormallySmooth R (Π i, A i)] (i) :
       simp [pow_two, sub_mul, mul_sub, ← Pi.single_mul]
     · intro x y
       change Ideal.Quotient.mk _ _ = Ideal.Quotient.mk _ _ * Ideal.Quotient.mk _ _
-      simp only [AlgHom.toRingHom_eq_coe, LinearMap.coe_single, Pi.single_mul, map_mul]
+      simp +instances only [AlgHom.toRingHom_eq_coe, LinearMap.coe_single, Pi.single_mul, map_mul]
   · ext x
     change (Pi.single i x) i = x
     simp
@@ -86,7 +90,7 @@ theorem pi_iff [Finite I] :
     use iso.symm.toAlgHom.comp (Pi.algHom _ _ fun i ↦ (a i).comp (Pi.evalAlgHom R A i))
     ext x; rw [← AlgHom.toLinearMap_apply, ← AlgHom.toLinearMap_apply]; congr 1
     ext i x
-    simp only [AlgEquiv.toAlgHom_eq_coe, AlgHom.comp_toLinearMap, AlgEquiv.toAlgHom_toLinearMap,
+    simp only [AlgHom.comp_toLinearMap, AlgEquiv.toAlgHom_toLinearMap,
       LinearMap.coe_comp, LinearMap.coe_single, Function.comp_apply, AlgHom.toLinearMap_apply,
       AlgEquiv.toLinearMap_apply, Ideal.Quotient.mkₐ_eq_mk]
     obtain ⟨y, hy⟩ := Ideal.Quotient.mk_surjective (a i x)

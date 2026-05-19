@@ -3,8 +3,10 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Topology.Order.OrderClosed
-import Mathlib.Topology.Order.LocalExtr
+module
+
+public import Mathlib.Topology.Order.OrderClosed
+public import Mathlib.Topology.Order.LocalExtr
 
 /-!
 # Maximum/minimum on the closure of a set
@@ -13,6 +15,8 @@ In this file we prove several versions of the following statement: if `f : X →
 not) maximum (or minimum) on a set `s` at a point `a` and is continuous on the closure of `s`, then
 `f` has an extremum of the same type on `Closure s` at `a`.
 -/
+
+public section
 
 
 open Filter Set

@@ -3,8 +3,9 @@ Copyright (c) 2018 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
 -/
+module
 
-import Mathlib.CategoryTheory.Category.Basic
+public import Mathlib.CategoryTheory.Category.Basic
 
 /-!
 # The Kleisli construction on the Type category
@@ -17,6 +18,8 @@ the equivalence between the two.
 
 Generalise this to work with CategoryTheory.Monad
 -/
+
+@[expose] public section
 
 
 universe u v

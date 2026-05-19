@@ -4,9 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Patrick Massot, Sébastien Gouëzel, Zhouhang Zhou, Reid Barton,
 Anatole Dedecker
 -/
-import Mathlib.Logic.Equiv.Fin.Basic
-import Mathlib.Topology.UniformSpace.UniformEmbedding
-import Mathlib.Topology.UniformSpace.Pi
+module
+
+public import Mathlib.Logic.Equiv.Fin.Basic
+public import Mathlib.Topology.UniformSpace.UniformEmbedding
+public import Mathlib.Topology.UniformSpace.Pi
 
 /-!
 # Uniform isomorphisms
@@ -14,12 +16,14 @@ import Mathlib.Topology.UniformSpace.Pi
 This file defines uniform isomorphisms between two uniform spaces. They are bijections with both
 directions uniformly continuous. We denote uniform isomorphisms with the notation `≃ᵤ`.
 
-# Main definitions
+## Main definitions
 
 * `UniformEquiv α β`: The type of uniform isomorphisms from `α` to `β`.
   This type can be denoted using the following notation: `α ≃ᵤ β`.
 
 -/
+
+@[expose] public section
 
 
 open Set Filter
@@ -185,11 +189,11 @@ theorem preimage_symm (h : α ≃ᵤ β) : preimage h.symm = image h :=
   (funext h.toEquiv.image_eq_preimage_symm).symm
 
 @[simp]
-theorem image_preimage (h : α ≃ᵤ β) (s : Set β) : h '' (h ⁻¹' s) = s :=
+theorem image_preimage (h : α ≃ᵤ β) (s : Set β) : h '' h ⁻¹' s = s :=
   h.toEquiv.image_preimage s
 
 @[simp]
-theorem preimage_image (h : α ≃ᵤ β) (s : Set α) : h ⁻¹' (h '' s) = s :=
+theorem preimage_image (h : α ≃ᵤ β) (s : Set α) : h ⁻¹' h '' s = s :=
   h.toEquiv.preimage_image s
 
 theorem isUniformInducing (h : α ≃ᵤ β) : IsUniformInducing h :=
@@ -269,14 +273,16 @@ def prodAssoc : (α × β) × γ ≃ᵤ α × β × γ where
 
 /-- `α × {*}` is uniformly isomorphic to `α`. -/
 @[simps! -fullyApplied apply]
-def prodPunit : α × PUnit ≃ᵤ α where
+def prodPUnit : α × PUnit ≃ᵤ α where
   toEquiv := Equiv.prodPUnit α
   uniformContinuous_toFun := uniformContinuous_fst
   uniformContinuous_invFun := uniformContinuous_id.prodMk uniformContinuous_const
 
+@[deprecated (since := "2026-02-08")] alias prodPunit := prodPUnit
+
 /-- `{*} × α` is uniformly isomorphic to `α`. -/
 def punitProd : PUnit × α ≃ᵤ α :=
-  (prodComm _ _).trans (prodPunit _)
+  (prodComm _ _).trans (prodPUnit _)
 
 @[simp]
 theorem coe_punitProd : ⇑(punitProd α) = Prod.snd :=

@@ -3,9 +3,11 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.Adjunction.FullyFaithful
-import Mathlib.CategoryTheory.Monoidal.Functor
-import Mathlib.CategoryTheory.ObjectProperty.FullSubcategory
+module
+
+public import Mathlib.CategoryTheory.Adjunction.FullyFaithful
+public import Mathlib.CategoryTheory.Monoidal.Functor
+public import Mathlib.CategoryTheory.ObjectProperty.FullSubcategory
 
 /-!
 # Monoidal natural transformations
@@ -15,6 +17,8 @@ an additional compatibility relation with the tensorators:
 `F.μ X Y ≫ app (X ⊗ Y) = (app X ⊗ app Y) ≫ G.μ X Y`.
 
 -/
+
+@[expose] public section
 
 open CategoryTheory
 
@@ -54,6 +58,7 @@ instance id : IsMonoidal (𝟙 F₁) where
 instance comp (τ' : F₂ ⟶ F₃) [IsMonoidal τ] [IsMonoidal τ'] :
     IsMonoidal (τ ≫ τ') where
 
+set_option backward.defeqAttrib.useBackward true in
 instance hcomp {G₁ G₂ : D ⥤ E} [G₁.LaxMonoidal] [G₂.LaxMonoidal] (τ' : G₁ ⟶ G₂)
     [IsMonoidal τ] [IsMonoidal τ'] : IsMonoidal (τ ◫ τ') where
   unit := by
@@ -63,10 +68,24 @@ instance hcomp {G₁ G₂ : D ⥤ E} [G₁.LaxMonoidal] [G₂.LaxMonoidal] (τ' 
       tensor_assoc, ← tensorHom_comp_tensorHom, μ_natural_assoc]
     simp only [← map_comp, tensor]
 
+instance whiskerRight {G₁ : D ⥤ E} [G₁.LaxMonoidal] [IsMonoidal τ] :
+    IsMonoidal (Functor.whiskerRight τ G₁) := by
+  rw [← Functor.hcomp_id]
+  infer_instance
+
+instance whiskerLeft {G₁ G₂ : D ⥤ E} [G₁.LaxMonoidal] [G₂.LaxMonoidal]
+    (τ' : G₁ ⟶ G₂) [IsMonoidal τ'] :
+    IsMonoidal (Functor.whiskerLeft F₁ τ') := by
+  rw [← Functor.id_hcomp]
+  infer_instance
+
+set_option backward.defeqAttrib.useBackward true in
 instance (F : C ⥤ D) [F.LaxMonoidal] : NatTrans.IsMonoidal F.leftUnitor.hom where
 
+set_option backward.defeqAttrib.useBackward true in
 instance (F : C ⥤ D) [F.LaxMonoidal] : NatTrans.IsMonoidal F.rightUnitor.hom where
 
+set_option backward.defeqAttrib.useBackward true in
 instance (F : C ⥤ D) (G : D ⥤ E) (H : E ⥤ E') [F.LaxMonoidal] [G.LaxMonoidal] [H.LaxMonoidal] :
     NatTrans.IsMonoidal (Functor.associator F G H).hom where
   unit := by
@@ -78,6 +97,7 @@ instance (F : C ⥤ D) (G : D ⥤ E) (H : E ⥤ E') [F.LaxMonoidal] [G.LaxMonoid
 
 end IsMonoidal
 
+set_option backward.isDefEq.respectTransparency false in
 instance {F G : C ⥤ D} {H K : C ⥤ E} (α : F ⟶ G) (β : H ⟶ K)
     [F.LaxMonoidal] [G.LaxMonoidal] [IsMonoidal α]
     [H.LaxMonoidal] [K.LaxMonoidal] [IsMonoidal β] :
@@ -118,6 +138,8 @@ namespace IsMonoidal
 
 variable [F.Monoidal] [G.LaxMonoidal] [adj.IsMonoidal]
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 instance : NatTrans.IsMonoidal adj.unit where
   unit := by
     dsimp
@@ -128,6 +150,7 @@ instance : NatTrans.IsMonoidal adj.unit where
     dsimp
     rw [← unit_app_tensor_comp_map_δ_assoc, id_comp, Monoidal.map_δ_μ, comp_id]
 
+set_option backward.isDefEq.respectTransparency false in
 instance : NatTrans.IsMonoidal adj.counit where
   unit := by
     dsimp
@@ -215,7 +238,7 @@ a monoidal natural transformation.
 lemma natTransIsMonoidal_of_transport {F G : C ⥤ D} [F.Monoidal] (e : F ≅ G) :
     letI : G.Monoidal := transport e
     e.hom.IsMonoidal := by
-  letI G.Monoidal := transport e
+  letI : G.Monoidal := transport e
   refine ⟨rfl, fun X Y ↦ ?_⟩
   simp [transport_μ, tensorHom_comp_tensorHom_assoc]
 

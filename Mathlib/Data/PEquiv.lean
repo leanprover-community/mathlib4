@@ -3,10 +3,12 @@ Copyright (c) 2019 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.Data.Option.Basic
-import Batteries.Tactic.Congr
-import Mathlib.Data.Set.Basic
-import Mathlib.Tactic.Contrapose
+module
+
+public import Mathlib.Data.Option.Basic
+public import Batteries.Tactic.Congr
+public import Mathlib.Data.Set.Basic
+public import Mathlib.Tactic.Contrapose
 
 /-!
 
@@ -39,6 +41,8 @@ a definition of `⊥`, which is the empty `PEquiv` (sends all to `none`), which 
 pequiv, partial equivalence
 
 -/
+
+@[expose] public section
 
 assert_not_exists RelIso
 
@@ -143,8 +147,8 @@ theorem trans_eq_some (f : α ≃. β) (g : β ≃. γ) (a : α) (c : γ) :
 theorem trans_eq_none (f : α ≃. β) (g : β ≃. γ) (a : α) :
     f.trans g a = none ↔ ∀ b c, b ∉ f a ∨ c ∉ g b := by
   simp only [eq_none_iff_forall_not_mem, mem_trans, imp_iff_not_or.symm]
-  push_neg
-  exact forall_swap
+  push Not
+  exact forall_comm
 
 @[simp]
 theorem refl_trans (f : α ≃. β) : (PEquiv.refl α).trans f = f := by

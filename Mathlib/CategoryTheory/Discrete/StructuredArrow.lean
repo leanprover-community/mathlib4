@@ -3,8 +3,10 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Discrete.Basic
-import Mathlib.CategoryTheory.Comma.StructuredArrow.Basic
+module
+
+public import Mathlib.CategoryTheory.Discrete.Basic
+public import Mathlib.CategoryTheory.Comma.StructuredArrow.Basic
 
 /-!
 # Structured arrows when the target category is discrete
@@ -16,6 +18,8 @@ if `F : C ⥤ Discrete T`, then the categories
 
 -/
 
+@[expose] public section
+
 universe w v v' u u'
 
 namespace CategoryTheory
@@ -24,6 +28,7 @@ variable {C : Type u} [Category.{v} C] {T : Type w}
 
 namespace Discrete
 
+set_option backward.defeqAttrib.useBackward true in
 /-- If `F : C ⥤ Discrete T` is a functor with `T` containing
 a unique element `t`, then this is the equivalence
 `StructuredArrow (Discrete.mk t) F ≌ C`. -/
@@ -36,6 +41,7 @@ def structuredArrowEquivalenceOfUnique
   unitIso := NatIso.ofComponents (fun _ ↦ StructuredArrow.isoMk (Iso.refl _))
   counitIso := Iso.refl _
 
+set_option backward.defeqAttrib.useBackward true in
 /-- If `F : C ⥤ Discrete T` is a functor with `T` containing
 a unique element `t`, then this is the equivalence
 `CostructuredArrow F (Discrete.mk t) ≌ C`. -/

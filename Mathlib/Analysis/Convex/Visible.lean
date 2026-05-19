@@ -3,13 +3,15 @@ Copyright (c) 2024 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.BigOperators.Field
-import Mathlib.Algebra.Group.Pointwise.Set.Card
-import Mathlib.Analysis.Convex.Between
-import Mathlib.Analysis.Convex.Combination
-import Mathlib.Topology.Algebra.Affine
-import Mathlib.Topology.MetricSpace.Pseudo.Lemmas
-import Mathlib.Topology.Order.Monotone
+module
+
+public import Mathlib.Algebra.BigOperators.Field
+public import Mathlib.Algebra.Group.Pointwise.Set.Card
+public import Mathlib.Analysis.Convex.Between
+public import Mathlib.Analysis.Convex.Combination
+public import Mathlib.Topology.Algebra.Affine
+public import Mathlib.Topology.MetricSpace.Pseudo.Lemmas
+public import Mathlib.Topology.Order.Monotone
 
 /-!
 # Points in sight
@@ -22,6 +24,8 @@ elements of a set a point sees in terms of the dimension of that set.
 The art gallery problem can be stated using the visibility predicate: A set `A` (the art gallery) is
 guarded by a finite set `G` (the guards) iff `∀ a ∈ A, ∃ g ∈ G, IsVisible ℝ sᶜ a g`.
 -/
+
+@[expose] public section
 
 open AffineMap Filter Finset Set
 open scoped Cardinal Pointwise Topology

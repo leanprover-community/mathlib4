@@ -3,12 +3,14 @@ Copyright (c) 2020 Kevin Kappelmann. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Kappelmann
 -/
-import Mathlib.Algebra.ContinuedFractions.Determinant
-import Mathlib.Algebra.ContinuedFractions.Computation.CorrectnessTerminating
-import Mathlib.Algebra.Order.Ring.Basic
-import Mathlib.Data.Nat.Fib.Basic
-import Mathlib.Tactic.Monotonicity
-import Mathlib.Tactic.GCongr
+module
+
+public import Mathlib.Algebra.ContinuedFractions.Determinant
+public import Mathlib.Algebra.ContinuedFractions.Computation.CorrectnessTerminating
+public import Mathlib.Algebra.Order.Ring.Basic
+public import Mathlib.Data.Nat.Fib.Basic
+public import Mathlib.Tactic.Monotonicity
+public import Mathlib.Tactic.GCongr
 
 /-!
 # Approximations for Continued Fraction Computations (`GenContFract.of`)
@@ -45,6 +47,8 @@ in `Algebra.ContinuedFractions.Computation.ApproximationCorollaries`.
 - [*Hardy, GH and Wright, EM and Heath-Brown, Roger and Silverman, Joseph*][hardy2008introduction]
 
 -/
+
+@[expose] public section
 
 open GenContFract
 
@@ -209,9 +213,9 @@ theorem fib_le_of_contsAux_b :
       intro n IH hyp
       rcases n with (_ | _ | n)
       · simp [contsAux] -- case n = 0
-      · simp [contsAux] -- case n = 1
+      · simp -- case n = 1
       · let g := of v -- case 2 ≤ n
-        have : ¬n + 2 ≤ 1 := by omega
+        have : ¬n + 2 ≤ 1 := by lia
         have not_terminatedAt_n : ¬g.TerminatedAt n := Or.resolve_left hyp this
         obtain ⟨gp, s_ppred_nth_eq⟩ : ∃ gp, g.s.get? n = some gp :=
           Option.ne_none_iff_exists'.mp not_terminatedAt_n
@@ -375,7 +379,7 @@ theorem sub_convs_eq {ifp : IntFractPair K}
     have B_ineq : (fib (n + 1) : K) ≤ B :=
       haveI : n + 1 ≤ 1 ∨ ¬g.TerminatedAt (n + 1 - 2) := by
         rcases n_eq_zero_or_not_terminatedAt_pred_n with n_eq_zero | not_terminatedAt_pred_n
-        · simp [n_eq_zero, le_refl]
+        · simp [n_eq_zero]
         · exact Or.inr not_terminatedAt_pred_n
       fib_le_of_contsAux_b this
     have zero_lt_B : 0 < B := B_ineq.trans_lt' <| cast_pos.2 <| fib_pos.2 n.succ_pos

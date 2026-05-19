@@ -3,10 +3,12 @@ Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.Lie.Basic
-import Mathlib.Algebra.Lie.Subalgebra
-import Mathlib.Algebra.Lie.Submodule
-import Mathlib.Algebra.Algebra.Subalgebra.Basic
+module
+
+public import Mathlib.Algebra.Lie.Basic
+public import Mathlib.Algebra.Lie.Subalgebra
+public import Mathlib.Algebra.Lie.Submodule
+public import Mathlib.Algebra.Algebra.Subalgebra.Basic
 
 /-!
 # Lie algebras of associative algebras
@@ -31,6 +33,8 @@ make such a definition in this file.
 
 lie algebra, ring commutator, adjoint action
 -/
+
+@[expose] public section
 
 
 universe u v w w₁ w₂
@@ -67,9 +71,9 @@ bracket equal to its ring commutator.
 
 Note that this cannot be a global instance because it would create a diamond when `M = A`,
 specifically we can build two mathematically-different `bracket A A`s:
- 1. `@Ring.bracket A _` which says `⁅a, b⁆ = a * b - b * a`
- 2. `(@LieRingModule.ofAssociativeModule A _ A _ _).toBracket` which says `⁅a, b⁆ = a • b`
-    (and thus `⁅a, b⁆ = a * b`)
+1. `@Ring.bracket A _` which says `⁅a, b⁆ = a * b - b * a`
+2. `(@LieRingModule.ofAssociativeModule A _ A _ _).toBracket` which says `⁅a, b⁆ = a • b`
+  (and thus `⁅a, b⁆ = a * b`)
 
 See note [reducible non-instances] -/
 abbrev LieRingModule.ofAssociativeModule : LieRingModule A M where
@@ -118,6 +122,14 @@ instance Module.End.instLieModule : LieModule R (Module.End R M) M :=
   LieModule.ofAssociativeModule
 
 @[simp] lemma Module.End.lie_apply (f : Module.End R M) (m : M) : ⁅f, m⁆ = f m := rfl
+
+-- TODO: fix this
+/-- Unfortunately we now have two brackets which are not equal at reducible transparency, even
+though they are equal at default transparency. We can use this lemma on rare occasions when this
+matters. -/
+theorem Module.End.instLieRingModule_eq :
+    LinearMap.instLieRingModule (L := Module.End R M) (M := M) (N := M) = lieRingSelfModule :=
+  rfl
 
 end AssociativeRepresentation
 

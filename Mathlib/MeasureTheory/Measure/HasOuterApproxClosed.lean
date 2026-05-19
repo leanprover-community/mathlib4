@@ -3,8 +3,10 @@ Copyright (c) 2022 Kalle Kytölä. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kalle Kytölä
 -/
-import Mathlib.MeasureTheory.Integral.BoundedContinuousFunction
-import Mathlib.Topology.MetricSpace.ThickenedIndicator
+module
+
+public import Mathlib.MeasureTheory.Integral.BoundedContinuousFunction
+public import Mathlib.Topology.MetricSpace.ThickenedIndicator
 
 /-!
 # Spaces where indicators of closed sets have decreasing approximations by continuous functions
@@ -33,6 +35,8 @@ convergence in distribution for random variables behave somewhat well in spaces 
   of all bounded continuous functions with respect to both agree.
 
 -/
+
+@[expose] public section
 
 open BoundedContinuousFunction MeasureTheory Topology Metric Filter Set ENNReal NNReal
 open scoped Topology ENNReal NNReal BoundedContinuousFunction

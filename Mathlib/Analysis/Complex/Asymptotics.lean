@@ -3,14 +3,18 @@ Copyright (c) 2024 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.Complex.Basic
-import Mathlib.Analysis.Asymptotics.Theta
+module
+
+public import Mathlib.Analysis.Complex.Basic
+public import Mathlib.Analysis.Asymptotics.Theta
 
 /-!
 # Lemmas about asymptotics and the natural embedding `ℝ → ℂ`
 
 In this file we prove several trivial lemmas about `Asymptotics.IsBigO` etc. and `(↑) : ℝ → ℂ`.
 -/
+
+public section
 
 namespace Complex
 

@@ -3,8 +3,10 @@ Copyright (c) 2014 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad
 -/
-import Mathlib.Logic.Basic
-import Mathlib.Order.Defs.LinearOrder
+module
+
+public import Mathlib.Logic.Basic
+public import Mathlib.Order.Defs.LinearOrder
 
 /-!
 # Booleans
@@ -16,6 +18,8 @@ relation to decidable propositions.
 bool, boolean, Bool, De Morgan
 
 -/
+
+@[expose] public section
 
 namespace Bool
 
@@ -89,7 +93,7 @@ theorem of_decide_false {p : Prop} [Decidable p] : decide p = false → ¬p :=
 theorem decide_congr {p q : Prop} [Decidable p] [Decidable q] (h : p ↔ q) : decide p = decide q :=
   decide_eq_decide.mpr h
 
-theorem coe_xor_iff (a b : Bool) : xor a b ↔ Xor' (a = true) (b = true) := by grind
+theorem coe_xor_iff (a b : Bool) : xor a b ↔ Xor (a = true) (b = true) := by grind
 
 end
 
@@ -109,7 +113,7 @@ theorem and_elim_right : ∀ {a b : Bool}, a && b → b := by decide
 
 lemma eq_not_iff : ∀ {a b : Bool}, a = !b ↔ a ≠ b := by decide
 
-lemma not_eq_iff : ∀ {a b : Bool}, !a = b ↔ a ≠ b := by decide
+lemma not_eq_iff : ∀ {a b : Bool}, (!a) = b ↔ a ≠ b := by decide
 
 theorem ne_not {a b : Bool} : a ≠ !b ↔ a = b :=
   not_eq_not
@@ -123,9 +127,9 @@ lemma eq_or_eq_not : ∀ a b, a = b ∨ a = !b := by decide
 -- TODO naming issue: these two `not` are different.
 theorem not_iff_not : ∀ {b : Bool}, !b ↔ ¬b := by simp
 
-theorem eq_true_of_not_eq_false' {a : Bool} : !a = false → a = true := by grind
+theorem eq_true_of_not_eq_false' {a : Bool} : (!a) = false → a = true := by decide +revert
 
-theorem eq_false_of_not_eq_true' {a : Bool} : !a = true → a = false := by grind
+theorem eq_false_of_not_eq_true' {a : Bool} : (!a) = true → a = false := by decide +revert
 
 theorem bne_eq_xor : bne = xor := by constructor
 

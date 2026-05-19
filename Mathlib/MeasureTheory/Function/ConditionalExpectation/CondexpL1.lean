@@ -3,13 +3,15 @@ Copyright (c) 2021 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.MeasureTheory.Function.ConditionalExpectation.CondexpL2
-import Mathlib.MeasureTheory.Measure.Real
+module
+
+public import Mathlib.MeasureTheory.Function.ConditionalExpectation.CondexpL2
+public import Mathlib.MeasureTheory.Measure.Real
 
 /-! # Conditional expectation in L1
 
 This file contains two more steps of the construction of the conditional expectation, which is
-completed in `MeasureTheory.Function.ConditionalExpectation.Basic`. See that file for a
+completed in `Mathlib/MeasureTheory/Function/ConditionalExpectation/Basic.lean`. See that file for a
 description of the full process.
 
 The conditional expectation of an `L²` function is defined in
@@ -26,6 +28,8 @@ The conditional expectation of an `L²` function is defined in
 * `condExpL1`: Conditional expectation of a function as a linear map from `L1` to itself.
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -244,8 +248,8 @@ theorem aestronglyMeasurable_condExpInd (hs : MeasurableSet s) (hμs : μ s ≠ 
 @[simp]
 theorem condExpInd_empty : condExpInd G hm μ ∅ = (0 : G →L[ℝ] α →₁[μ] G) := by
   ext x
-  grw [condExpInd_ae_eq_condExpIndSMul, condExpIndSMul_empty, zero_apply, Lp.coeFn_zero,
-    Lp.coeFn_zero]
+  grw [condExpInd_ae_eq_condExpIndSMul hm MeasurableSet.empty (by simp), condExpIndSMul_empty,
+    zero_apply, Lp.coeFn_zero, Lp.coeFn_zero]
 
 theorem condExpInd_smul' [NormedSpace ℝ F] [SMulCommClass ℝ 𝕜 F] (c : 𝕜) (x : F) :
     condExpInd F hm μ s (c • x) = c • condExpInd F hm μ s x :=
@@ -287,7 +291,8 @@ theorem setIntegral_condExpInd (hs : MeasurableSet[m] s) (ht : MeasurableSet t) 
 theorem condExpInd_of_measurable (hs : MeasurableSet[m] s) (hμs : μ s ≠ ∞) (c : G) :
     condExpInd G hm μ s c = indicatorConstLp 1 (hm s hs) hμs c := by
   ext1
-  grw [indicatorConstLp_coeFn, condExpInd_ae_eq_condExpIndSMul, condExpIndSMul_ae_eq_smul]
+  grw [indicatorConstLp_coeFn, condExpInd_ae_eq_condExpIndSMul hm (hm s hs) hμs,
+    condExpIndSMul_ae_eq_smul]
   rw [condExpL2_indicator_of_measurable hm hs hμs (1 : ℝ)]
   filter_upwards [@indicatorConstLp_coeFn α _ _ 2 μ _ s (hm s hs) hμs (1 : ℝ)] with x hx
   rw [hx]
@@ -499,7 +504,7 @@ theorem condExpL1_of_aestronglyMeasurable' (hfm : AEStronglyMeasurable[m] f μ)
   exact hfm.congr hfi.coeFn_toL1.symm
 
 theorem condExpL1_mono {E}
-    [NormedAddCommGroup E] [PartialOrder E] [OrderClosedTopology E] [IsOrderedAddMonoid E]
+    [NormedAddCommGroup E] [PartialOrder E] [ClosedIciTopology E] [IsOrderedAddMonoid E]
     [CompleteSpace E] [NormedSpace ℝ E] [IsOrderedModule ℝ E] {f g : α → E} (hf : Integrable f μ)
     (hg : Integrable g μ) (hfg : f ≤ᵐ[μ] g) :
     condExpL1 hm μ f ≤ᵐ[μ] condExpL1 hm μ g := by

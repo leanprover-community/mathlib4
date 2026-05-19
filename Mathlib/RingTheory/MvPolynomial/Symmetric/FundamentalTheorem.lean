@@ -3,10 +3,12 @@ Copyright (c) 2023 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
-import Mathlib.RingTheory.MvPolynomial.Symmetric.Defs
-import Mathlib.RingTheory.MvPolynomial.Tower
-import Mathlib.Data.Finsupp.Notation
-import Mathlib.Data.Finsupp.WellFounded
+module
+
+public import Mathlib.RingTheory.MvPolynomial.Symmetric.Defs
+public import Mathlib.RingTheory.MvPolynomial.Tower
+public import Mathlib.Data.Finsupp.Notation
+public import Mathlib.Data.Finsupp.WellFounded
 
 /-!
 # The Fundamental Theorem of Symmetric Polynomials
@@ -49,6 +51,8 @@ injective whenever `n ≤ m`, and then transfer the results to any Fintype `σ`.
 `MvPolynomial.injective_esymmAlgHom` and `MvPolynomial.esymmAlgHom_surjective`.
 
 -/
+
+@[expose] public section
 
 variable {σ τ R : Type*} {n m k : ℕ}
 
@@ -138,7 +142,7 @@ lemma esymmAlgHom_apply (p : MvPolynomial (Fin n) R) :
 lemma rename_esymmAlgHom (e : σ ≃ τ) :
     (renameSymmetricSubalgebra e).toAlgHom.comp (esymmAlgHom σ R n) = esymmAlgHom τ R n := by
   ext i : 2
-  simp_rw [AlgHom.comp_apply, esymmAlgHom, aeval_X, AlgEquiv.toAlgHom_eq_coe, AlgHom.coe_coe,
+  simp_rw [AlgHom.comp_apply, esymmAlgHom, aeval_X, AlgEquiv.coe_algHom,
     renameSymmetricSubalgebra_apply_coe, rename_esymm]
 
 variable (σ) in
@@ -219,6 +223,7 @@ lemma leadingCoeff_esymmAlgHomMonomial (t : Fin n →₀ ℕ) (hnm : n ≤ m) :
         ih]
     exacts [toLex.injective, toLex_add]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma supDegree_esymmAlgHomMonomial (hr : r ≠ 0) (t : Fin n →₀ ℕ) (hnm : n ≤ m) :
     ofLex (supDegree toLex <| esymmAlgHomMonomial (Fin m) t r) = accumulate n m t := by
   nontriviality R
@@ -239,11 +244,10 @@ omit [Fintype σ] in
 lemma IsSymmetric.antitone_supDegree [LinearOrder σ] {p : MvPolynomial σ R} (hp : p.IsSymmetric) :
     Antitone ↑(ofLex <| p.supDegree toLex) := by
   obtain rfl | h0 := eq_or_ne p 0
-  · rw [supDegree_zero, Finsupp.bot_eq_zero]
+  · rw [supDegree_zero, bot_eq_zero (α := Lex (σ →₀ ℕ))]
     exact Pi.zero_mono
   rw [Antitone]
-  by_contra! h
-  obtain ⟨i, j, hle, hlt⟩ := h
+  by_contra! ⟨i, j, hle, hlt⟩
   apply (le_sup (s := p.support) (f := toLex) _).not_gt
   pick_goal 3
   · rw [← hp (Equiv.swap i j), mem_support_iff, coeff_rename_mapDomain _ (Equiv.injective _)]
@@ -269,8 +273,8 @@ lemma esymmAlgHom_fin_injective (h : n ≤ m) :
   rw [injective_iff_map_eq_zero]
   refine fun p ↦ (fun hp ↦ ?_).mtr
   rw [p.as_sum, map_sum (esymmAlgHom (Fin m) R n), ← Subalgebra.coe_eq_zero,
-    AddSubmonoidClass.coe_finset_sum]
-  refine sum_ne_zero_of_injOn_supDegree (D := toLex) (support_eq_empty.not.2 hp) (fun t ht ↦ ?_)
+    AddSubmonoidClass.coe_finsetSum]
+  refine sum_ne_zero_of_injOn_supDegree (D := toLex) (support_nonempty.2 hp) (fun t ht ↦ ?_)
     (fun t ht s hs he ↦ DFunLike.ext' <| accumulate_injective h ?_)
   · rw [← esymmAlgHomMonomial, Ne, ← leadingCoeff_eq_zero toLex.injective,
       leadingCoeff_esymmAlgHomMonomial t h]

@@ -4,9 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Kenny Lau, Johan Commelin, Mario Carneiro, Kevin Buzzard,
 Amelia Livingston, Yury Kudryashov, Yakov Pechersky, Jireh Loreaux
 -/
-import Mathlib.Algebra.Group.Prod
-import Mathlib.Algebra.Group.Subsemigroup.Basic
-import Mathlib.Algebra.Group.TypeTags.Basic
+module
+
+public import Mathlib.Algebra.Group.Prod
+public import Mathlib.Algebra.Group.Subsemigroup.Basic
+public import Mathlib.Algebra.Group.TypeTags.Basic
 
 /-!
 # Operations on `Subsemigroup`s
@@ -54,13 +56,15 @@ In this file we define various operations on `Subsemigroup`s and `MulHom`s.
 
 ### Implementation notes
 
-This file follows closely `GroupTheory/Submonoid/Operations.lean`, omitting only that which is
-necessary.
+This file follows closely `Mathlib/Algebra/Group/Submonoid/Operations.lean`, omitting only that
+which is necessary.
 
 ## Tags
 
 subsemigroup, range, product, map, comap
 -/
+
+@[expose] public section
 
 assert_not_exists MonoidWithZero
 
@@ -554,7 +558,7 @@ private theorem srange_mk_aux_mul {f : M → N} (hf : ∀ (x y : M), f (x * y) =
   (srange ⟨f, hf⟩).mul_mem hx hy
 
 @[to_additive (attr := simp)] theorem srange_mk (f : M → N) (hf) :
-    srange ⟨f, hf⟩ = ⟨Set.range f, srange_mk_aux_mul hf⟩ := rfl
+    srange ⟨f, hf⟩ = ⟨Set.range f, by exact srange_mk_aux_mul hf⟩ := rfl
 
 @[to_additive]
 theorem srange_eq_map (f : M →ₙ* N) : f.srange = (⊤ : Subsemigroup M).map f :=

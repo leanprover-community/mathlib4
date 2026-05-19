@@ -3,8 +3,10 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.AlgebraicGeometry.Stalk
-import Mathlib.Geometry.RingedSpace.LocallyRingedSpace.ResidueField
+module
+
+public import Mathlib.AlgebraicGeometry.Stalk
+public import Mathlib.Geometry.RingedSpace.LocallyRingedSpace.ResidueField
 
 /-!
 
@@ -25,6 +27,8 @@ The following are in the `AlgebraicGeometry.Scheme` namespace:
 
 
 -/
+
+@[expose] public section
 
 universe u
 
@@ -62,8 +66,6 @@ instance {X : Scheme.{u}} (x) : IsPreimmersion (Spec.map (X.residue x)) :=
 lemma SpecMap_residue_apply {X : Scheme.{u}} (x : X) (s : Spec (X.residueField x)) :
     Spec.map (X.residue x) s = closedPoint (X.presheaf.stalk x) :=
   IsLocalRing.PrimeSpectrum.comap_residue _ s
-
-@[deprecated (since := "2025-10-07")] alias Spec_map_residue_apply := SpecMap_residue_apply
 
 lemma residue_surjective (X : Scheme.{u}) (x) : Function.Surjective (X.residue x) :=
   Ideal.Quotient.mk_surjective
@@ -105,9 +107,6 @@ abbrev Γevaluation (x : X) : Γ(X, ⊤) ⟶ X.residueField x :=
 lemma evaluation_eq_zero_iff_notMem_basicOpen (x : X) (hx : x ∈ U) (f : Γ(X, U)) :
     X.evaluation U x hx f = 0 ↔ x ∉ X.basicOpen f :=
   X.toLocallyRingedSpace.evaluation_eq_zero_iff_notMem_basicOpen ⟨x, hx⟩ f
-
-@[deprecated (since := "2025-05-23")]
-alias evaluation_eq_zero_iff_not_mem_basicOpen := evaluation_eq_zero_iff_notMem_basicOpen
 
 lemma evaluation_ne_zero_iff_mem_basicOpen (x : X) (hx : x ∈ U) (f : Γ(X, U)) :
     X.evaluation U x hx f ≠ 0 ↔ x ∈ X.basicOpen f := by
@@ -246,13 +245,6 @@ lemma Hom.SpecMap_residueFieldMap_fromSpecResidueField (x : X) :
     ← Spec.map_comp_assoc]
   rfl
 
-@[deprecated (since := "2025-10-07")]
-alias Hom.Spec_map_residueFieldMap_fromSpecResidueField :=
-  Hom.SpecMap_residueFieldMap_fromSpecResidueField
-@[deprecated (since := "2025-10-07")]
-alias Hom.Spec_map_residueFieldMap_fromSpecResidueField_assoc :=
-  Hom.SpecMap_residueFieldMap_fromSpecResidueField_assoc
-
 instance [X.Over Y] (x : X) : Spec.map ((X ↘ Y).residueFieldMap x) |>.IsOver Y where
 
 @[simp]
@@ -277,6 +269,39 @@ lemma descResidueField_stalkClosedPointTo_fromSpecResidueField
   rw [X.descResidueField_fromSpecResidueField, Scheme.Spec_stalkClosedPointTo_fromSpecStalk]
 
 end fromResidueField
+
+section Spec
+
+variable (R : CommRingCat) (x : Spec R)
+
+/-- The residue fields of `Spec R` are isomorphic to `Ideal.ResidueField`. -/
+noncomputable
+def Spec.residueFieldIso :
+    (Spec R).residueField x ≅ .of x.asIdeal.ResidueField :=
+  (IsLocalRing.ResidueField.mapEquiv
+    (Spec.stalkIso R x).commRingCatIsoToRingEquiv).toCommRingCatIso
+
+@[reassoc (attr := simp)]
+lemma Spec.algebraMap_residueFieldIso_inv :
+    CommRingCat.ofHom (algebraMap R _) ≫ (residueFieldIso R x).inv =
+      (Scheme.ΓSpecIso R).inv ≫ (Spec R).presheaf.germ ⊤ x trivial ≫ (Spec R).residue x := by
+  rw [← Spec.algebraMap_stalkIso_inv_assoc]; rfl
+
+@[reassoc (attr := simp)]
+lemma Spec.residue_residueFieldIso_hom :
+    (Spec R).residue x ≫ (residueFieldIso R x).hom =
+      (Spec.stalkIso R x).hom ≫ CommRingCat.ofHom (algebraMap _ _) := rfl
+
+@[reassoc (attr := simp)]
+lemma Spec.map_residueFieldIso_inv_eq_fromSpecResidueField :
+    Spec.map (residueFieldIso _ _).inv ≫
+      Spec.map (CommRingCat.ofHom (algebraMap R x.asIdeal.ResidueField)) =
+    (Spec R).fromSpecResidueField x := by
+  simp only [Scheme.fromSpecResidueField, Spec.fromSpecStalk_eq, ← Spec.map_comp]
+  rw [Spec.map_inj]
+  simp [← Scheme.Spec.algebraMap_residueFieldIso_inv]
+
+end Spec
 
 /-- A helper lemma to work with `AlgebraicGeometry.Scheme.SpecToEquivOfField`. -/
 lemma SpecToEquivOfField_eq_iff {K : Type*} [Field K] {X : Scheme}

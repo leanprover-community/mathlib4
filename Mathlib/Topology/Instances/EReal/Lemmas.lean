@@ -3,8 +3,10 @@ Copyright (c) 2021 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Data.EReal.Inv
-import Mathlib.Topology.Semicontinuous
+module
+
+public import Mathlib.Data.EReal.Inv
+public import Mathlib.Topology.Semicontinuity.Basic
 
 /-!
 # Topological structure on `EReal`
@@ -22,6 +24,8 @@ We prove basic properties of the topology on `EReal`.
 
 Most proofs are adapted from the corresponding proofs on `ℝ≥0∞`.
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -295,6 +299,34 @@ lemma liminf_add_top_of_ne_bot (h : liminf u f = ⊤) (h' : liminf v f ≠ ⊥) 
     liminf (u + v) f = ⊤ := by
   apply top_le_iff.1 (le_trans _ le_liminf_add)
   rw [h, top_add_of_ne_bot h']
+
+theorem limsup_const_mul_of_nonneg_of_ne_top [NeBot f] {c : EReal} (h₁ : 0 ≤ c) (h₂ : c ≠ ⊤) :
+    limsup (fun x => c * u x) f = c * limsup u f := by
+  obtain rfl | h₃ := h₁.eq_or_lt
+  · simp
+  simp_rw [EReal.mul_comm (x := c)]
+  apply eq_of_le_of_ge
+  · rw [limsup_le_iff]
+    simpa [← EReal.lt_div_iff (by aesop) (by aesop)]
+      using fun _ ↦ eventually_lt_of_limsup_lt
+  · rw [le_limsup_iff]
+    simpa [← EReal.div_lt_iff (by aesop) (by aesop)]
+      using fun _ ↦ frequently_lt_of_lt_limsup
+
+theorem limsup_const_mul_of_nonpos_of_ne_bot [NeBot f] {c : EReal} (h₁ : c ≤ 0) (h₂ : c ≠ ⊥) :
+    limsup (fun x => c * u x) f = c * liminf u f := by
+  simpa [limsup_neg] using
+    limsup_const_mul_of_nonneg_of_ne_top (u := -u) (c := -c) (by aesop) (by aesop)
+
+theorem liminf_const_mul_of_nonneg_of_ne_top [NeBot f] {c : EReal} (h₁ : 0 ≤ c) (h₂ : c ≠ ⊤) :
+    liminf (fun x => c * u x) f = c * liminf u f := by
+  simpa [mul_neg, ← Pi.neg_def, limsup_neg] using
+    limsup_const_mul_of_nonneg_of_ne_top (u := -u) (by aesop) (by aesop)
+
+theorem liminf_const_mul_of_nonpos_of_ne_bot [NeBot f] {c : EReal} (h₁ : c ≤ 0) (h₂ : c ≠ ⊥) :
+    liminf (fun x => c * u x) f = c * limsup u f := by
+  simpa [neg_mul, ← Pi.neg_def, limsup_neg] using
+    limsup_const_mul_of_nonneg_of_ne_top (c := -c) (by aesop) (by aesop)
 
 lemma le_limsup_mul (hu : ∃ᶠ x in f, 0 ≤ u x) (hv : 0 ≤ᶠ[f] v) :
     limsup u f * liminf v f ≤ limsup (u * v) f := by

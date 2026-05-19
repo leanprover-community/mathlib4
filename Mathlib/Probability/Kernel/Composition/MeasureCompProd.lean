@@ -3,9 +3,11 @@ Copyright (c) 2023 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.MeasureTheory.Measure.Decomposition.Lebesgue
-import Mathlib.MeasureTheory.Measure.Prod
-import Mathlib.Probability.Kernel.Composition.CompProd
+module
+
+public import Mathlib.MeasureTheory.Measure.Decomposition.Lebesgue
+public import Mathlib.MeasureTheory.Measure.Prod
+public import Mathlib.Probability.Kernel.Composition.CompProd
 
 /-!
 # Composition-Product of a measure and a kernel
@@ -24,6 +26,8 @@ This operation, denoted by `⊗ₘ`, takes `μ : Measure α` and `κ : Kernel α
 
 * `μ ⊗ₘ κ = μ.compProd κ`
 -/
+
+@[expose] public section
 
 open scoped ENNReal
 
@@ -120,6 +124,16 @@ lemma ae_compProd_iff [SFinite μ] [IsSFiniteKernel κ] {p : α × β → Prop}
     (hp : MeasurableSet {x | p x}) :
     (∀ᵐ x ∂(μ ⊗ₘ κ), p x) ↔ ∀ᵐ a ∂μ, ∀ᵐ b ∂(κ a), p (a, b) :=
   Kernel.ae_compProd_iff hp
+
+lemma ae_compProd_of_ae_fst (κ : Kernel α β) {p : α → Prop} (hp : MeasurableSet {x | p x})
+    (h : ∀ᵐ a ∂μ, p a) :
+    ∀ᵐ x ∂(μ ⊗ₘ κ), p x.1 :=
+  ae_compProd_of_ae_ae (measurable_fst hp) <| by filter_upwards [h] with a ha using by simp [ha]
+
+lemma ae_eq_compProd_of_ae_eq_fst {γ : Type*} {mγ : MeasurableSpace γ} [MeasurableEq γ]
+    (κ : Kernel α β) {f g : α → γ} (hf : Measurable f) (hg : Measurable g) (h : f =ᵐ[μ] g) :
+    (fun p ↦ f p.1) =ᵐ[μ ⊗ₘ κ] (fun p ↦ g p.1) :=
+  ae_compProd_of_ae_fst κ (measurableSet_eq_fun hf hg) h
 
 /-- The composition product of a measure and a constant kernel is the product between the two
 measures. -/

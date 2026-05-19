@@ -3,8 +3,10 @@ Copyright (c) 2024 Scott Carnahan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Carnahan
 -/
-import Mathlib.LinearAlgebra.RootSystem.Hom
-import Mathlib.RepresentationTheory.Basic
+module
+
+public import Mathlib.LinearAlgebra.RootSystem.Hom
+public import Mathlib.RepresentationTheory.Basic
 
 /-!
 # The Weyl group of a root pairing
@@ -29,6 +31,8 @@ on roots.
 ## TODO
 * faithfulness of `weylGroupToPerm` when multiplication by 2 is injective on the weight space.
 -/
+
+@[expose] public section
 
 open Set Function
 
@@ -94,6 +98,7 @@ lemma weylGroup.induction' [Nonempty ι] {pred : (g : Aut P) → g ∈ P.weylGro
     rw [sq, mul_eq_one_iff_inv_eq, Equiv.reflection_inv P i]
   simpa [sq, ← this] using mul _ _ _ _ (mem i) (mem i)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma range_weylGroup_weightHom :
     MonoidHom.range ((Equiv.weightHom P).restrict P.weylGroup) =
       Subgroup.closure (range P.reflection) := by
@@ -120,6 +125,7 @@ lemma range_weylGroup_weightHom :
     | mul w₁ w₂ hw₁ hw₂ h₁ h₂ =>
       simpa only [← Submonoid.mk_mul_mk _ w₁ w₂ hw₁ hw₂, map_mul] using Subgroup.mul_mem _ h₁ h₂
 
+set_option backward.isDefEq.respectTransparency false in
 lemma range_weylGroup_coweightHom :
     MonoidHom.range ((Equiv.coweightHom P).restrict P.weylGroup) =
       Subgroup.closure (range (MulOpposite.op ∘ P.coreflection)) := by

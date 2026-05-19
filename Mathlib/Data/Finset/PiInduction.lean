@@ -3,9 +3,11 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Data.Finset.Max
-import Mathlib.Data.Finset.Sigma
-import Mathlib.Data.Fintype.Basic
+module
+
+public import Mathlib.Data.Finset.Max
+public import Mathlib.Data.Finset.Sigma
+public import Mathlib.Data.Fintype.Basic
 
 /-!
 # Induction principles for `∀ i, Finset (α i)`
@@ -24,6 +26,8 @@ finite type.
 ## Tags
 finite set, finite type, induction, function
 -/
+
+public section
 
 
 open Function
@@ -76,7 +80,7 @@ theorem induction_on_pi {p : (∀ i, Finset (α i)) → Prop} (f : ∀ i, Finset
 
 /-- Given a predicate on functions `∀ i, Finset (α i)` defined on a finite type, it is true on all
 maps provided that it is true on `fun _ ↦ ∅` and for any function `g : ∀ i, Finset (α i)`, an index
-`i : ι`, and an element`x : α i` that is strictly greater than all elements of `g i`, `p g` implies
+`i : ι`, and an element `x : α i` that is strictly greater than all elements of `g i`, `p g` implies
 `p (update g i (insert x (g i)))`.
 
 This lemma requires `LinearOrder` instances on all `α i`. See also `Finset.induction_on_pi` for a
@@ -92,7 +96,7 @@ theorem induction_on_pi_max [∀ i, LinearOrder (α i)] {p : (∀ i, Finset (α 
 
 /-- Given a predicate on functions `∀ i, Finset (α i)` defined on a finite type, it is true on all
 maps provided that it is true on `fun _ ↦ ∅` and for any function `g : ∀ i, Finset (α i)`, an index
-`i : ι`, and an element`x : α i` that is strictly less than all elements of `g i`, `p g` implies
+`i : ι`, and an element `x : α i` that is strictly less than all elements of `g i`, `p g` implies
 `p (update g i (insert x (g i)))`.
 
 This lemma requires `LinearOrder` instances on all `α i`. See also `Finset.induction_on_pi` for a

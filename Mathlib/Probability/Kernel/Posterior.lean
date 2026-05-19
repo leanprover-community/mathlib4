@@ -3,9 +3,12 @@ Copyright (c) 2024 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.Probability.Kernel.CompProdEqIff
-import Mathlib.Probability.Kernel.Composition.Lemmas
-import Mathlib.Probability.Kernel.Disintegration.StandardBorel
+module
+
+public import Mathlib.Probability.Kernel.CompProdEqIff
+public import Mathlib.Probability.Kernel.Composition.Lemmas
+public import Mathlib.Probability.Kernel.Disintegration.StandardBorel
+public import Mathlib.Probability.Kernel.Deterministic
 
 /-!
 
@@ -47,6 +50,8 @@ This notation emphasizes that the posterior is a kind of inverse of `κ`, which 
 denote `κ†`, but we have to also specify the measure `μ`.
 
 -/
+
+@[expose] public section
 
 open scoped ENNReal
 
@@ -147,7 +152,7 @@ lemma deterministic_comp_posterior [MeasurableSpace.CountablyGenerated 𝓧]
   _ = (Kernel.deterministic f hf ∥ₖ Kernel.deterministic f hf) ∘ₘ Kernel.copy Ω ∘ₘ μ := by
     rw [Measure.comp_assoc, Kernel.parallelComp_comp_parallelComp, Kernel.id_comp, Kernel.comp_id]
   _ = (Kernel.copy 𝓧 ∘ₖ Kernel.deterministic f hf) ∘ₘ μ := by -- `deterministic` is used here
-    rw [Measure.comp_assoc, Kernel.deterministic_comp_copy]
+    rw [Measure.comp_assoc, Kernel.parallelComp_self_comp_copy]
   _ = μ.map f ⊗ₘ Kernel.id := by
     rw [Measure.compProd_id_eq_copy_comp, ← Measure.comp_assoc,
       Measure.deterministic_comp_eq_map]
@@ -270,7 +275,7 @@ lemma rnDeriv_posterior_symm (h_ac : ∀ᵐ ω ∂μ, κ ω ≪ κ ∘ₘ μ) :
       (κ†μ).rnDeriv (Kernel.const _ μ) x ω = κ.rnDeriv (Kernel.const _ (κ ∘ₘ μ)) ω x := by
   rw [Measure.ae_ae_comm]
   · exact rnDeriv_posterior h_ac
-  · exact measurableSet_eq_fun' (by fun_prop) (by fun_prop)
+  · measurability
 
 /-- If `κ ω ≪ κ ∘ₘ μ` for `μ`-almost every `ω`, then for `κ ∘ₘ μ`-almost every `x`,
 `κ†μ x = μ.withDensity (fun ω ↦ κ.rnDeriv (Kernel.const _ (κ ∘ₘ μ)) ω x)`.

@@ -3,12 +3,14 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.Algebra.Algebra.Rat
-import Mathlib.Algebra.Lie.Weights.Killing
-import Mathlib.Algebra.Module.Torsion.Free
-import Mathlib.LinearAlgebra.RootSystem.Basic
-import Mathlib.LinearAlgebra.RootSystem.Finite.CanonicalBilinear
-import Mathlib.LinearAlgebra.RootSystem.Reduced
+module
+
+public import Mathlib.Algebra.Algebra.Rat
+public import Mathlib.Algebra.Lie.Weights.Killing
+public import Mathlib.Algebra.Module.Torsion.Free
+public import Mathlib.LinearAlgebra.RootSystem.Basic
+public import Mathlib.LinearAlgebra.RootSystem.Finite.CanonicalBilinear
+public import Mathlib.LinearAlgebra.RootSystem.Reduced
 
 /-!
 # The root system associated with a Lie algebra
@@ -34,6 +36,8 @@ characteristic 0 form a root system. We achieve this by studying root chains.
 
 -/
 
+@[expose] public section
+
 noncomputable section
 
 namespace LieAlgebra.IsKilling
@@ -46,6 +50,7 @@ variable {K L : Type*} [Field K] [CharZero K] [LieRing L] [LieAlgebra K L]
 
 variable (α β : Weight K H L)
 
+set_option backward.privateInPublic true in
 private lemma chainLength_aux (hα : α.IsNonZero) {x} (hx : x ∈ rootSpace H (chainTop α β)) :
     ∃ n : ℕ, n • x = ⁅coroot α, x⁆ := by
   by_cases hx' : x = 0
@@ -59,6 +64,8 @@ private lemma chainLength_aux (hα : α.IsNonZero) {x} (hx : x ∈ rootSpace H (
   obtain ⟨μ, hμ⟩ := this.exists_nat
   exact ⟨μ, by rw [← Nat.cast_smul_eq_nsmul K, ← hμ, lie_eq_smul_of_mem_rootSpace hx]⟩
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- The length of the `α`-chain through `β`. See `chainBotCoeff_add_chainTopCoeff`. -/
 def chainLength (α β : Weight K H L) : ℕ :=
   letI := Classical.propDecidable
@@ -97,7 +104,7 @@ lemma apply_coroot_eq_cast' :
     this, mul_comm (2 : K)]
 
 lemma rootSpace_neg_nsmul_add_chainTop_of_le {n : ℕ} (hn : n ≤ chainLength α β) :
-    rootSpace H (- (n • α) + chainTop α β) ≠ ⊥ := by
+    rootSpace H (-(n • α) + chainTop α β) ≠ ⊥ := by
   by_cases hα : α.IsZero
   · simpa only [hα.eq, smul_zero, neg_zero, chainTop_zero, zero_add, ne_eq] using β.2
   obtain ⟨x, hx, x_ne0⟩ := (chainTop α β).exists_ne_zero
@@ -110,10 +117,10 @@ lemma rootSpace_neg_nsmul_add_chainTop_of_le {n : ℕ} (hn : n ≤ chainLength �
   exact ⟨_, toEnd_pow_apply_mem hf hx n, prim.pow_toEnd_f_ne_zero_of_eq_nat rfl hn⟩
 
 lemma rootSpace_neg_nsmul_add_chainTop_of_lt (hα : α.IsNonZero) {n : ℕ} (hn : chainLength α β < n) :
-    rootSpace H (- (n • α) + chainTop α β) = ⊥ := by
+    rootSpace H (-(n • α) + chainTop α β) = ⊥ := by
   by_contra e
   let W : Weight K H L := ⟨_, e⟩
-  have hW : (W : H → K) = - (n • α) + chainTop α β := rfl
+  have hW : (W : H → K) = -(n • α) + chainTop α β := rfl
   have H₁ : 1 + n + chainTopCoeff (-α) W ≤ chainLength (-α) W := by
     have := apply_coroot_eq_cast' (-α) W
     simp only [coroot_neg, map_neg, hW, nsmul_eq_mul, Pi.natCast_def, coe_chainTop, zsmul_eq_mul,
@@ -121,7 +128,7 @@ lemma rootSpace_neg_nsmul_add_chainTop_of_lt (hα : α.IsNonZero) {n : ℕ} (hn 
       apply_coroot_eq_cast' α β, Int.cast_sub, Int.cast_mul, Int.cast_ofNat, mul_comm (2 : K),
       add_sub_cancel, add_sub, Nat.cast_inj, eq_sub_iff_add_eq, ← Nat.cast_add, ← sub_eq_neg_add,
       sub_eq_iff_eq_add] at this
-    omega
+    lia
   have H₂ : ((1 + n + chainTopCoeff (-α) W) • α + chainTop (-α) W : H → K) =
       (chainTopCoeff α β + 1) • α + β := by
     simp only [Weight.coe_neg, ← Nat.cast_smul_eq_nsmul ℤ, Nat.cast_add, Nat.cast_one, coe_chainTop,
@@ -186,7 +193,7 @@ lemma chainLength_zero [Nontrivial L] : chainLength 0 β = 0 := by
   `β (coroot α) = q - r`. In particular, it is an integer. -/
 lemma apply_coroot_eq_cast :
     β (coroot α) = (chainBotCoeff α β - chainTopCoeff α β : ℤ) := by
-  rw [apply_coroot_eq_cast', ← chainTopCoeff_add_chainBotCoeff]; congr 1; cutsat
+  rw [apply_coroot_eq_cast', ← chainTopCoeff_add_chainBotCoeff]; congr 1; lia
 
 lemma le_chainBotCoeff_of_rootSpace_ne_top
     (hα : α.IsNonZero) (n : ℤ) (hn : rootSpace H (-n • α + β) ≠ ⊥) :
@@ -314,7 +321,7 @@ lemma eq_neg_one_or_eq_zero_or_eq_one_of_eq_smul
   have H := apply_coroot_eq_cast' α β
   rw [h] at H
   simp only [Pi.smul_apply, root_apply_coroot hα] at H
-  rcases (chainLength α β).even_or_odd with (⟨n, hn⟩|⟨n, hn⟩)
+  rcases (chainLength α β).even_or_odd with (⟨n, hn⟩ | ⟨n, hn⟩)
   · rw [hn, ← two_mul] at H
     simp only [smul_eq_mul, Nat.cast_mul, Nat.cast_ofNat, ← mul_sub, ← mul_comm (2 : K),
       Int.cast_sub, Int.cast_mul, Int.cast_ofNat, Int.cast_natCast,
@@ -337,7 +344,7 @@ lemma eq_neg_one_or_eq_zero_or_eq_one_of_eq_smul
     swap
     · simp only [tsub_le_iff_right, le_add_iff_nonneg_right, Nat.cast_nonneg, neg_sub, true_and]
       rw [← Nat.cast_add, chainBotCoeff_add_chainTopCoeff, hn]
-      cutsat
+      lia
     rw [h, hk, ← Int.cast_smul_eq_zsmul K, ← add_smul] at this
     simp only [Int.cast_sub, Int.cast_natCast,
       sub_add_sub_cancel', add_sub_cancel_left, ne_eq] at this
@@ -361,7 +368,7 @@ def reflectRoot (α β : Weight K H L) : Weight K H L where
     · simpa [hα.eq] using β.genWeightSpace_ne_bot
     rw [sub_eq_neg_add, apply_coroot_eq_cast α β, ← neg_smul, ← Int.cast_neg,
       Int.cast_smul_eq_zsmul, rootSpace_zsmul_add_ne_bot_iff α β hα]
-    omega
+    lia
 
 lemma reflectRoot_isNonZero (α β : Weight K H L) (hβ : β.IsNonZero) :
     (reflectRoot α β).IsNonZero := by
@@ -378,12 +385,12 @@ variable (H)
 /-- The root system of a finite-dimensional Lie algebra with non-degenerate Killing form over a
 field of characteristic zero, relative to a splitting Cartan subalgebra. -/
 def rootSystem :
-    RootSystem H.root K (Dual K H) H :=
-  RootSystem.mk'
+    RootPairing H.root K (Dual K H) H :=
+  RootPairing.mk''
     .id
     { toFun := (↑)
       inj' := by
-        intro α β h; ext x; simpa using LinearMap.congr_fun h x  }
+        intro α β h; ext x; simpa using LinearMap.congr_fun h x }
     { toFun := coroot ∘ (↑)
       inj' := by rintro ⟨α, hα⟩ ⟨β, hβ⟩ h; simpa using h }
     (fun ⟨α, hα⟩ ↦ by simpa using root_apply_coroot <| by simpa using hα)
@@ -392,8 +399,10 @@ def rootSystem :
       simpa using
         ⟨reflectRoot α β, by simpa using reflectRoot_isNonZero α β <| by simpa using hβ, rfl⟩)
     (by convert span_weight_isNonZero_eq_top K L H; ext; simp)
-    (fun α β ↦
-      ⟨chainBotCoeff β.1 α.1 - chainTopCoeff β.1 α.1, by simp [apply_coroot_eq_cast β.1 α.1]⟩)
+
+instance : (rootSystem H).IsRootSystem :=
+  RootPairing.isRootSystem_mk'' fun α β ↦
+    ⟨chainBotCoeff β.1 α.1 - chainTopCoeff β.1 α.1, by simp [apply_coroot_eq_cast β.1 α.1]⟩
 
 @[simp]
 lemma corootForm_rootSystem_eq_killing :
@@ -405,6 +414,25 @@ lemma corootForm_rootSystem_eq_killing :
 @[simp] lemma rootSystem_pairing_apply (α β) : (rootSystem H).pairing β α = β.1 (coroot α.1) := rfl
 @[simp] lemma rootSystem_root_apply (α) : (rootSystem H).root α = α := rfl
 @[simp] lemma rootSystem_coroot_apply (α) : (rootSystem H).coroot α = coroot α := rfl
+
+open LieSubmodule in
+@[simp]
+lemma biSup_corootSpace_eq_top :
+    ⨆ α : Weight K H L, ⨆ (_ : α.IsNonZero), corootSpace α = ⊤ := by
+  simp only [← toSubmodule_inj, top_toSubmodule, iSup_toSubmodule,
+    ← RootPairing.IsRootSystem.span_coroot_eq_top (P := rootSystem H),
+    coe_corootSpace_eq_span_singleton, Submodule.iSup_span]
+  congr
+  ext α
+  simp [eq_comm]
+
+set_option backward.isDefEq.respectTransparency false in
+@[simp]
+lemma biSup_corootSubmodule_eq_cartan :
+    ⨆ α : Weight K H L, ⨆ (_ : α.IsNonZero), corootSubmodule α = H.toLieSubmodule := by
+  suffices ⨆ α : Weight K H L, ⨆ (_ : α.IsNonZero), corootSpace α = ⊤ from
+    le_antisymm (by simp) (by simp [← LieSubmodule.map_iSup, this])
+  simp
 
 instance : (rootSystem H).IsCrystallographic where
   exists_value α β :=

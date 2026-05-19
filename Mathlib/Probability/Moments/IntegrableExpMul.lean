@@ -3,8 +3,10 @@ Copyright (c) 2024 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.MeasureTheory.Function.L1Space.Integrable
-import Mathlib.MeasureTheory.Order.Group.Lattice
+module
+
+public import Mathlib.MeasureTheory.Function.L1Space.Integrable
+public import Mathlib.MeasureTheory.Order.Group.Lattice
 
 /-!
 # Domain of the moment-generating function
@@ -34,6 +36,8 @@ We prove the integrability of other functions for `t` in the interior of that in
   `integrableExpSet X μ`, then `X` is in `ℒp` for all finite `p`.
 
 -/
+
+@[expose] public section
 
 
 open MeasureTheory Filter Finset Real
@@ -115,9 +119,9 @@ lemma integrable_of_mem_integrableExpSet (h : t ∈ integrableExpSet X μ) :
 /-- `integrableExpSet X μ` is a convex subset of `ℝ` (it is an interval). -/
 lemma convex_integrableExpSet : Convex ℝ (integrableExpSet X μ) := by
   rintro t₁ ht₁ t₂ ht₂ a b ha hb hab
-  wlog h_le : t₁ ≤ t₂
+  wlog! h_le : t₁ ≤ t₂
   · rw [add_comm] at hab ⊢
-    exact this ht₂ ht₁ hb ha hab (not_le.mp h_le).le
+    exact this ht₂ ht₁ hb ha hab h_le.le
   refine integrable_exp_mul_of_le_of_le ht₁ ht₂ ?_ ?_
   · simp only [smul_eq_mul]
     calc t₁
@@ -218,7 +222,7 @@ lemma rpow_abs_le_mul_max_exp_of_pos (x : ℝ) {t p : ℝ} (hp : 0 ≤ p) (ht : 
       exact le_max_left _ _
   calc |x| ^ p
   _ ≤ ((t / p)⁻¹ * max (exp (t / p * x)) (exp (-t / p * x))) ^ p := by
-    refine rpow_le_rpow (abs_nonneg _) ?_ hp
+    gcongr
     convert h_abs_le (t / p) (div_pos ht (hp.lt_of_ne' hp_zero)) using 5
     rw [neg_div]
   _ = (p / t) ^ p * max (exp (t * x)) (exp (-t * x)) := by
@@ -294,7 +298,7 @@ lemma integrable_rpow_abs_mul_exp_add_of_integrable_exp_mul {x : ℝ}
     congr
     symm
     simp only [abs_eq_self]
-    exact rpow_nonneg (div_nonneg hp (sub_nonneg_of_le hx.le)) _
+    positivity [sub_nonneg_of_le hx.le]
 
 /-- If `exp ((v + t) * X)` and `exp ((v - t) * X)` are integrable
 then for any `n : ℕ` and any `x ∈ [0, |t|)`,
@@ -534,6 +538,11 @@ lemma memLp_of_mem_interior_integrableExpSet (h : 0 ∈ interior (integrableExpS
   rw [← integrable_norm_rpow_iff hX.aestronglyMeasurable (mod_cast hp_zero) (by simp)]
   simp only [norm_eq_abs, ENNReal.coe_toReal]
   exact integrable_rpow_abs_of_mem_interior_integrableExpSet h p.2
+
+/-- If 0 belongs to the interior of the interval `integrableExpSet X μ`, then `X` is integrable. -/
+lemma integrable_of_mem_interior_integrableExpSet (h : 0 ∈ interior (integrableExpSet X μ)) :
+    Integrable X μ := by
+  simpa using integrable_pow_of_mem_interior_integrableExpSet h 1
 
 section Complex
 

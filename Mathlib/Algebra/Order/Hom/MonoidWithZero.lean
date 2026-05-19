@@ -3,8 +3,10 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.Order.GroupWithZero.Canonical
-import Mathlib.Algebra.Order.Hom.Monoid
+module
+
+public import Mathlib.Algebra.Order.GroupWithZero.Canonical
+public import Mathlib.Algebra.Order.Hom.Monoid
 
 /-!
 # Ordered monoid and group homomorphisms
@@ -27,6 +29,8 @@ This file defines morphisms between (additive) ordered monoids with zero.
 
 monoid with zero
 -/
+
+@[expose] public section
 
 
 open Function
@@ -261,7 +265,7 @@ end LinearOrderedCommMonoidWithZero
 end OrderMonoidWithZeroHom
 
 /-- Any ordered group is isomorphic to the units of itself adjoined with `0`. -/
-@[simps!]
+@[simps! -isSimp]
 def OrderMonoidIso.unitsWithZero {α : Type*} [Group α] [Preorder α] : (WithZero α)ˣ ≃*o α where
   toMulEquiv := WithZero.unitsWithZeroEquiv
   map_le_map_iff' {a b} := by simp [WithZero.unitsWithZeroEquiv]

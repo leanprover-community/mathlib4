@@ -3,10 +3,12 @@ Copyright (c) 2022 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Calculus.ContDiff.Operations
-import Mathlib.Analysis.Calculus.UniformLimitsDeriv
-import Mathlib.Topology.Algebra.InfiniteSum.Module
-import Mathlib.Analysis.Normed.Group.FunctionSeries
+module
+
+public import Mathlib.Analysis.Calculus.ContDiff.Operations
+public import Mathlib.Analysis.Calculus.UniformLimitsDeriv
+public import Mathlib.Topology.Algebra.InfiniteSum.Module
+public import Mathlib.Analysis.Normed.Group.FunctionSeries
 
 /-!
 # Smoothness of series
@@ -20,6 +22,8 @@ More specifically,
 
 We also give versions of these statements which are localized to a set.
 -/
+
+public section
 
 
 open Set Metric TopologicalSpace Function Asymptotics Filter
@@ -269,8 +273,8 @@ theorem contDiff_tsum_of_eventually (hf : ∀ i, ContDiff 𝕜 N (f i))
         fun x => ∑' i : { i // i ∉ T }, f i x := by
       ext1 x
       refine (Summable.sum_add_tsum_subtype_compl ?_ T).symm
-      refine .of_norm_bounded_eventually (hv 0 (zero_le _)) ?_
-      filter_upwards [h'f 0 (zero_le _)] with i hi
+      refine .of_norm_bounded_eventually (hv 0 zero_le) ?_
+      filter_upwards [h'f 0 zero_le] with i hi
       simpa only [norm_iteratedFDeriv_zero] using hi x
     rw [this]
     apply (ContDiff.sum fun i _ => (hf i).of_le (mod_cast hm)).add

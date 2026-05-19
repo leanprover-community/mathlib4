@@ -3,7 +3,9 @@ Copyright (c) 2025 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Instances
+module
+
+public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Instances
 
 /-! # Commuting with applications of the continuous functional calculus
 
@@ -26,6 +28,8 @@ to call these lemmas, and give a straightforward proof by induction.
 
 -/
 
+public section
+
 variable {𝕜 A : Type*}
 
 open scoped NNReal
@@ -35,7 +39,8 @@ section Unital
 section RCLike
 
 variable {p : A → Prop} [RCLike 𝕜] [Ring A] [StarRing A] [Algebra 𝕜 A]
-variable [TopologicalSpace A] [ContinuousFunctionalCalculus 𝕜 A p] [IsTopologicalRing A] [T2Space A]
+variable [TopologicalSpace A] [ContinuousFunctionalCalculus 𝕜 A p]
+  [IsSemitopologicalRing A] [T2Space A]
 
 open StarAlgebra.elemental in
 protected theorem Commute.cfcHom {a b : A} (ha : p a) (hb₁ : Commute a b)

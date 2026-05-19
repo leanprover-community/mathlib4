@@ -3,7 +3,9 @@ Copyright (c) 2022 Michael Blyth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Blyth
 -/
-import Mathlib.LinearAlgebra.Projectivization.Basic
+module
+
+public import Mathlib.LinearAlgebra.Projectivization.Basic
 
 /-!
 # Subspaces of Projective Space
@@ -27,8 +29,10 @@ also in the subset.
   projective space and the submodules of the underlying vector space.
 -/
 
+@[expose] public section
 
-variable (K V : Type*) [Field K] [AddCommGroup V] [Module K V]
+
+variable (K V : Type*) [DivisionRing K] [AddCommGroup V] [Module K V]
 
 namespace Projectivization
 
@@ -55,6 +59,8 @@ instance : SetLike (Subspace K V) (ℙ K V) where
     cases A
     cases B
     simp
+
+instance : PartialOrder (Subspace K V) := .ofSetLike (Subspace K V) (ℙ K V)
 
 @[simp]
 theorem mem_carrier_iff (A : Subspace K V) (x : ℙ K V) : x ∈ A.carrier ↔ x ∈ A :=
@@ -144,7 +150,7 @@ theorem span_le_subspace_iff {S : Set (ℙ K V)} {W : Subspace K V} : span S ≤
 
 /-- If a set of points is a subset of another set of points, then its span will be contained in the
 span of that set. -/
-@[mono]
+@[gcongr, mono]
 theorem monotone_span : Monotone (span : Set (ℙ K V) → Subspace K V) :=
   gi.gc.monotone_l
 

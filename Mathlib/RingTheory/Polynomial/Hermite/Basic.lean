@@ -3,8 +3,10 @@ Copyright (c) 2023 Luke Mantle. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Luke Mantle
 -/
-import Mathlib.Algebra.Polynomial.Derivative
-import Mathlib.Data.Nat.Factorial.DoubleFactorial
+module
+
+public import Mathlib.Algebra.Polynomial.Derivative
+public import Mathlib.Data.Nat.Factorial.DoubleFactorial
 
 /-!
 # Hermite polynomials
@@ -33,6 +35,8 @@ This file defines `Polynomial.hermite n`, the `n`th probabilists' Hermite polyno
 * [Hermite Polynomials](https://en.wikipedia.org/wiki/Hermite_polynomials)
 
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -182,7 +186,7 @@ theorem coeff_hermite_of_even_add {n k : ℕ} (hnk : Even (n + k)) :
   rcases le_or_gt k n with h_le | h_lt
   · rw [Nat.even_add, ← Nat.even_sub h_le] at hnk
     obtain ⟨m, hm⟩ := hnk
-    rw [(by cutsat : n = 2 * m + k),
+    rw [(by lia : n = 2 * m + k),
       Nat.add_sub_cancel, Nat.mul_div_cancel_left _ (Nat.succ_pos 1), coeff_hermite_explicit]
   · simp [Nat.choose_eq_zero_of_lt h_lt, coeff_hermite_of_lt h_lt]
 

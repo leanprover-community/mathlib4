@@ -3,7 +3,9 @@ Copyright (c) 2020 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
 -/
-import Mathlib.Analysis.SpecificLimits.Basic
+module
+
+public import Mathlib.Analysis.SpecificLimits.Basic
 
 /-!
 # Hofer's lemma
@@ -17,6 +19,8 @@ example of a proof needing to construct a sequence by induction in the middle of
 
 * H. Hofer and C. Viterbo, *The Weinstein conjecture in the presence of holomorphic spheres*
 -/
+
+public section
 
 open Topology Filter Finset
 

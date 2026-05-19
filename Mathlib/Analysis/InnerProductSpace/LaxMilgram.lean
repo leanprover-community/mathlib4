@@ -3,7 +3,9 @@ Copyright (c) 2022 Daniel Roca González. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Daniel Roca González
 -/
-import Mathlib.Analysis.InnerProductSpace.Dual
+module
+
+public import Mathlib.Analysis.InnerProductSpace.Dual
 
 /-!
 # The Lax-Milgram Theorem
@@ -27,6 +29,8 @@ that is, the map `InnerProductSpace.continuousLinearMapOfBilin` from
 
 dual, Lax-Milgram
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -67,19 +71,18 @@ theorem antilipschitz (coercive : IsCoercive B) : ∃ C : ℝ≥0, 0 < C ∧ Ant
     inv_mul_le_iff₀ (inv_pos.mpr C_pos)]
   simpa using below_bound
 
-theorem ker_eq_bot (coercive : IsCoercive B) : ker B♯ = ⊥ := by
-  rw [LinearMapClass.ker_eq_bot]
+theorem ker_eq_bot (coercive : IsCoercive B) : B♯.ker = ⊥ := by
+  rw [LinearMap.ker_eq_bot]
   rcases coercive.antilipschitz with ⟨_, _, antilipschitz⟩
   exact antilipschitz.injective
 
-theorem isClosed_range (coercive : IsCoercive B) : IsClosed (range B♯ : Set V) := by
+theorem isClosed_range (coercive : IsCoercive B) : IsClosed (B♯.range : Set V) := by
   rcases coercive.antilipschitz with ⟨_, _, antilipschitz⟩
   exact antilipschitz.isClosed_range B♯.uniformContinuous
 
-
-theorem range_eq_top (coercive : IsCoercive B) : range B♯ = ⊤ := by
+theorem range_eq_top (coercive : IsCoercive B) : B♯.range = ⊤ := by
   haveI := coercive.isClosed_range.completeSpace_coe
-  rw [← (range B♯).orthogonal_orthogonal]
+  rw [← B♯.range.orthogonal_orthogonal]
   rw [Submodule.eq_top_iff']
   intro v w mem_w_orthogonal
   rcases coercive with ⟨C, C_pos, coercivity⟩

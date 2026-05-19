@@ -3,10 +3,12 @@ Copyright (c) 2024 Jineon Baek and Seewoo Lee. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jineon Baek, Seewoo Lee
 -/
-import Mathlib.Algebra.Polynomial.AlgebraMap
-import Mathlib.Algebra.Polynomial.Derivative
-import Mathlib.LinearAlgebra.SesquilinearForm.Basic
-import Mathlib.RingTheory.Coprime.Basic
+module
+
+public import Mathlib.Algebra.Polynomial.AlgebraMap
+public import Mathlib.Algebra.Polynomial.Derivative
+public import Mathlib.LinearAlgebra.SesquilinearForm.Basic
+public import Mathlib.RingTheory.Coprime.Basic
 
 /-!
 # Wronskian of a pair of polynomial
@@ -26,6 +28,8 @@ We also prove basic properties of it.
 
 - Define Wronskian for n-tuple of polynomials, not necessarily two.
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -101,8 +105,8 @@ theorem degree_wronskian_lt_add {a b : R[X]} (ha : a ≠ 0) (hb : b ≠ 0) :
 
 /--
 `natDegree` version of the above theorem.
-Note this would be false with just `(ha : a ≠ 0) (hb : b ≠ 0),
-as when `a = b = 1` we have `(wronskian a b).natDegree = a.natDegree = b.natDegree = 0`.
+Note this would be false with just `(ha : a ≠ 0)` and `(hb : b ≠ 0)`,
+since when `a = b = 1` we have `(wronskian a b).natDegree = a.natDegree = b.natDegree = 0`.
 -/
 theorem natDegree_wronskian_lt_add {a b : R[X]} (hw : wronskian a b ≠ 0) :
     (wronskian a b).natDegree < a.natDegree + b.natDegree := by

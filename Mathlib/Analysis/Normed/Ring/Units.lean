@@ -3,9 +3,11 @@ Copyright (c) 2020 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
 -/
-import Mathlib.Analysis.SpecificLimits.Normed
-import Mathlib.Topology.Algebra.Ring.Ideal
-import Mathlib.RingTheory.Ideal.Nonunits
+module
+
+public import Mathlib.Analysis.SpecificLimits.Normed
+public import Mathlib.Topology.Algebra.Ring.Ideal
+public import Mathlib.RingTheory.Ideal.Nonunits
 
 /-!
 # The group of units of a complete normed ring
@@ -28,9 +30,12 @@ unit and `0` if not.  The other major results of this file (notably `NormedRing.
 properties of `Ring.inverse (x + t)` as `t → 0`.
 -/
 
+@[expose] public section
+
 noncomputable section
 
 open Topology
+open scoped Ring
 
 variable {R : Type*} [NormedRing R] [HasSummableGeomSeries R]
 
@@ -96,7 +101,7 @@ theorem inverse_one_sub (t : R) (h : ‖t‖ < 1) : inverse (1 - t) = ↑(Units.
 /-- The formula `Ring.inverse (x + t) = Ring.inverse (1 + x⁻¹ * t) * x⁻¹` holds for `t` sufficiently
 small. -/
 theorem inverse_add (x : Rˣ) :
-    ∀ᶠ t in 𝓝 0, inverse ((x : R) + t) = inverse (1 + ↑x⁻¹ * t) * ↑x⁻¹ := by
+    ∀ᶠ t in 𝓝 0, ((x : R) + t)⁻¹ʳ = (1 + ↑x⁻¹ * t)⁻¹ʳ * ↑x⁻¹ := by
   nontriviality R
   rw [Metric.eventually_nhds_iff]
   refine ⟨‖(↑x⁻¹ : R)‖⁻¹, by cancel_denoms, fun t ht ↦ ?_⟩
@@ -123,8 +128,8 @@ theorem inverse_one_sub_nth_order (n : ℕ) :
   (∑ i ∈ Finset.range n, (- x⁻¹ * t) ^ i) * x⁻¹ + (- x⁻¹ * t) ^ n * Ring.inverse (x + t)`
 holds for `t` sufficiently small. -/
 theorem inverse_add_nth_order (x : Rˣ) (n : ℕ) :
-    ∀ᶠ t in 𝓝 0, inverse ((x : R) + t) =
-      (∑ i ∈ range n, (-↑x⁻¹ * t) ^ i) * ↑x⁻¹ + (-↑x⁻¹ * t) ^ n * inverse (x + t) := by
+    ∀ᶠ t in 𝓝 0, ((x : R) + t)⁻¹ʳ =
+      (∑ i ∈ range n, (-↑x⁻¹ * t) ^ i) * ↑x⁻¹ + (-↑x⁻¹ * t) ^ n * (x + t)⁻¹ʳ := by
   have hzero : Tendsto (-(↑x⁻¹ : R) * ·) (𝓝 0) (𝓝 0) :=
     (mulLeft_continuous _).tendsto' _ _ <| mul_zero _
   filter_upwards [inverse_add x, hzero.eventually (inverse_one_sub_nth_order n)] with t ht ht'
@@ -155,7 +160,7 @@ theorem inverse_add_norm (x : Rˣ) : (fun t : R => inverse (↑x + t)) =O[𝓝 0
 `fun t ↦ Ring.inverse (x + t) - (∑ i ∈ Finset.range n, (- x⁻¹ * t) ^ i) * x⁻¹`
 is `O(t ^ n)` as `t → 0`. -/
 theorem inverse_add_norm_diff_nth_order (x : Rˣ) (n : ℕ) :
-    (fun t : R => inverse (↑x + t) - (∑ i ∈ range n, (-↑x⁻¹ * t) ^ i) * ↑x⁻¹) =O[𝓝 (0 : R)]
+    (fun t : R => (↑x + t)⁻¹ʳ - (∑ i ∈ range n, (-↑x⁻¹ * t) ^ i) * ↑x⁻¹) =O[𝓝 (0 : R)]
       fun t => ‖t‖ ^ n := by
   refine EventuallyEq.trans_isBigO (.fun_sub (inverse_add_nth_order x n) (.refl _ _)) ?_
   simp only [add_sub_cancel_left]
@@ -165,19 +170,19 @@ theorem inverse_add_norm_diff_nth_order (x : Rˣ) (n : ℕ) :
 
 /-- The function `fun t ↦ Ring.inverse (x + t) - x⁻¹` is `O(t)` as `t → 0`. -/
 theorem inverse_add_norm_diff_first_order (x : Rˣ) :
-    (fun t : R => inverse (↑x + t) - ↑x⁻¹) =O[𝓝 0] fun t => ‖t‖ := by
+    (fun t : R => (↑x + t)⁻¹ʳ - ↑x⁻¹) =O[𝓝 0] fun t => ‖t‖ := by
   simpa using inverse_add_norm_diff_nth_order x 1
 
 /-- The function `fun t ↦ Ring.inverse (x + t) - x⁻¹ + x⁻¹ * t * x⁻¹` is `O(t ^ 2)` as `t → 0`. -/
 theorem inverse_add_norm_diff_second_order (x : Rˣ) :
-    (fun t : R => inverse (↑x + t) - ↑x⁻¹ + ↑x⁻¹ * t * ↑x⁻¹) =O[𝓝 0] fun t => ‖t‖ ^ 2 := by
+    (fun t : R => (↑x + t)⁻¹ʳ - ↑x⁻¹ + ↑x⁻¹ * t * ↑x⁻¹) =O[𝓝 0] fun t => ‖t‖ ^ 2 := by
   convert inverse_add_norm_diff_nth_order x 2 using 2
   simp only [sum_range_succ, sum_range_zero, zero_add, pow_zero, pow_one, add_mul, one_mul,
     ← sub_sub, neg_mul, sub_neg_eq_add]
 
 /-- The function `Ring.inverse` is continuous at each unit of `R`. -/
 theorem inverse_continuousAt (x : Rˣ) : ContinuousAt inverse (x : R) := by
-  have h_is_o : (fun t : R => inverse (↑x + t) - ↑x⁻¹) =o[𝓝 0] (fun _ => 1 : R → ℝ) :=
+  have h_is_o : (fun t : R => (↑x + t)⁻¹ʳ - ↑x⁻¹) =o[𝓝 0] (fun _ => 1 : R → ℝ) :=
     (inverse_add_norm_diff_first_order x).trans_isLittleO (isLittleO_id_const one_ne_zero).norm_left
   have h_lim : Tendsto (fun y : R => y - x) (𝓝 x) (𝓝 0) := by
     refine tendsto_zero_iff_norm_tendsto_zero.mpr ?_

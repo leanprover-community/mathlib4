@@ -3,10 +3,12 @@ Copyright (c) 2022 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.CategoryTheory.Preadditive.Opposite
-import Mathlib.Algebra.Category.ModuleCat.Basic
-import Mathlib.Algebra.Category.Grp.Preadditive
-import Mathlib.Algebra.Category.Grp.Yoneda
+module
+
+public import Mathlib.CategoryTheory.Preadditive.Opposite
+public import Mathlib.Algebra.Category.ModuleCat.Basic
+public import Mathlib.Algebra.Category.Grp.Preadditive
+public import Mathlib.Algebra.Category.Grp.Yoneda
 
 /-!
 # The Yoneda embedding for preadditive categories
@@ -22,6 +24,8 @@ embedding in the expected way and deduce that the preadditive Yoneda embedding i
 * The Yoneda embedding is additive itself
 
 -/
+
+@[expose] public section
 
 
 universe v u u₁
@@ -45,6 +49,8 @@ def preadditiveYonedaObj (Y : C) : Cᵒᵖ ⥤ ModuleCat.{v} (End Y) where
       map_add' := fun _ _ => comp_add _ _ _ _ _ _
       map_smul' := fun _ _ => Eq.symm <| Category.assoc _ _ _ }
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 /-- The Yoneda embedding for preadditive categories sends an object `Y` to the presheaf sending an
 object `X` to the group of morphisms `X ⟶ Y`. At each point, we get an additional `End Y`-module
 structure, see `preadditiveYonedaObj`.
@@ -87,10 +93,12 @@ def preadditiveCoyoneda : Cᵒᵖ ⥤ C ⥤ AddCommGrpCat.{v} where
 
 instance additive_yonedaObj (X : C) : Functor.Additive (preadditiveYonedaObj X) where
 
+set_option backward.defeqAttrib.useBackward true in
 instance additive_yonedaObj' (X : C) : Functor.Additive (preadditiveYoneda.obj X) where
 
 instance additive_coyonedaObj (X : C) : Functor.Additive (preadditiveCoyonedaObj X) where
 
+set_option backward.defeqAttrib.useBackward true in
 instance additive_coyonedaObj' (X : Cᵒᵖ) : Functor.Additive (preadditiveCoyoneda.obj X) where
 
 /-- Composing the preadditive yoneda embedding with the forgetful functor yields the regular
@@ -138,6 +146,8 @@ section
 
 variable {D : Type u₁} [Category.{v} D] [Preadditive D] (F : C ⥤ D) [F.Additive]
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 /-- The natural transformation `preadditiveYoneda.obj X ⟶ F.op ⋙ preadditiveYoneda.obj (F.obj X)`
 when `F : C ⥤ D` is an additive functor between preadditive categories and `X : C`. -/
 @[simps]

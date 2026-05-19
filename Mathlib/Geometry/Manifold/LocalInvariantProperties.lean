@@ -3,7 +3,9 @@ Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Floris van Doorn
 -/
-import Mathlib.Geometry.Manifold.ChartedSpace
+module
+
+public import Mathlib.Geometry.Manifold.HasGroupoid
 
 /-!
 # Local properties invariant under a groupoid
@@ -41,6 +43,8 @@ coincide on `s`, then `LiftPropWithinAt P g' s x` holds. We can't call it
 `LiftPropWithinAt.congr` as it is in the namespace associated to `LocalInvariantProp`, not
 in the one for `LiftPropWithinAt`.
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -179,6 +183,15 @@ theorem liftProp_iff {P : (H → H') → Set H → H → Prop} {f : M → M'} :
     LiftProp P f ↔
       Continuous f ∧ ∀ x, P (chartAt H' (f x) ∘ f ∘ (chartAt H x).symm) univ (chartAt H x x) := by
   simp_rw [LiftProp, liftPropAt_iff, forall_and, continuous_iff_continuousAt]
+
+@[simp]
+lemma liftPropWithinAt_subtypeVal_comp_iff {P : (H → H') → Set H → H → Prop}
+    {U : Opens M'} (f : M → U) (s : Set M) (x : M) :
+    LiftPropWithinAt P (Subtype.val ∘ f) s x ↔ LiftPropWithinAt P f s x := by
+  simp only [ChartedSpace.liftPropWithinAt_iff']
+  congrm ?_ ∧ ?_
+  · exact Topology.IsEmbedding.subtypeVal.isInducing.continuousWithinAt_iff.symm
+  · rfl
 
 end ChartedSpace
 
@@ -655,8 +668,9 @@ theorem HasGroupoid.comp
       intro x hx
       simp only [mfld_simps] at hx
       have hxs : x ∈ f.symm ⁻¹' (e.symm ≫ₕ e').source := by simp only [hx, mfld_simps]
-      have hxs' : x ∈ f.target ∩ f.symm ⁻¹' ((e.symm ≫ₕ e').source ∩ e.symm ≫ₕ e' ⁻¹' f'.source) :=
-        by simp only [hx, mfld_simps]
+      have hxs' : x ∈ f.target ∩
+          f.symm ⁻¹' ((e.symm ≫ₕ e').source ∩ e.symm ≫ₕ e' ⁻¹' f'.source) := by
+        simp only [hx, mfld_simps]
       obtain ⟨φ, hφG₁, hφ, hφ_dom⟩ := LocalInvariantProp.liftPropOn_indep_chart
         (isLocalStructomorphWithinAt_localInvariantProp G₁) (G₁.subset_maximalAtlas hf)
         (G₁.subset_maximalAtlas hf') (H _ (G₂.compatible he he')) hxs' hxs

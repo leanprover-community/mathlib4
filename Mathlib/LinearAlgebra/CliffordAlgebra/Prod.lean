@@ -3,9 +3,11 @@ Copyright (c) 2023 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.LinearAlgebra.CliffordAlgebra.Grading
-import Mathlib.LinearAlgebra.TensorProduct.Graded.Internal
-import Mathlib.LinearAlgebra.QuadraticForm.Prod
+module
+
+public import Mathlib.LinearAlgebra.CliffordAlgebra.Grading
+public import Mathlib.LinearAlgebra.TensorProduct.Graded.Internal
+public import Mathlib.LinearAlgebra.QuadraticForm.Prod
 
 /-!
 # Clifford algebras of a direct sum of two vector spaces
@@ -23,6 +25,8 @@ Introduce morphisms and equivalences of graded algebras, and upgrade `CliffordAl
 to a graded algebra equivalence.
 
 -/
+
+@[expose] public section
 
 suppress_compilation
 
@@ -151,9 +155,9 @@ lemma toProd_one_tmul_ι (m₂ : M₂) : toProd Q₁ Q₂ (1 ᵍ⊗ₜ ι _ m₂
 lemma toProd_comp_ofProd : (toProd Q₁ Q₂).comp (ofProd Q₁ Q₂) = AlgHom.id _ _ := by
   ext m <;> dsimp
   · rw [ofProd_ι_mk, map_add, toProd_one_tmul_ι, toProd_ι_tmul_one, Prod.mk_zero_zero,
-      LinearMap.map_zero, add_zero]
+      map_zero, add_zero]
   · rw [ofProd_ι_mk, map_add, toProd_one_tmul_ι, toProd_ι_tmul_one, Prod.mk_zero_zero,
-      LinearMap.map_zero, zero_add]
+      map_zero, zero_add]
 
 lemma ofProd_comp_toProd : (ofProd Q₁ Q₂).comp (toProd Q₁ Q₂) = AlgHom.id _ _ := by
   ext <;> simp

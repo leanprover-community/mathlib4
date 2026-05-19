@@ -3,12 +3,16 @@ Copyright (c) 2023 Bolton Bailey. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bolton Bailey
 -/
-import Mathlib.Data.Finset.Prod
-import Mathlib.Data.Fintype.Pi
+module
+
+public import Mathlib.Data.Finset.Prod
+public import Mathlib.Data.Fintype.Pi
 
 /-!
 # Fin-indexed tuples of finsets
 -/
+
+public section
 
 open Fin Fintype
 

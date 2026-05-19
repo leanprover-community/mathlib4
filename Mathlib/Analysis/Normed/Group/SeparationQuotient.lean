@@ -3,8 +3,10 @@ Copyright (c) 2024 Yoh Tanimoto. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yoh Tanimoto
 -/
-import Mathlib.Analysis.Normed.Group.Hom
-import Mathlib.Topology.Algebra.SeparationQuotient.Hom
+module
+
+public import Mathlib.Analysis.Normed.Group.Hom
+public import Mathlib.Topology.Algebra.SeparationQuotient.Hom
 
 /-!
 # Lifts of maps to separation quotients of seminormed groups
@@ -28,10 +30,12 @@ All the following definitions are in the `SeparationQuotient` namespace. Hence w
 
 ## Main results
 
-* `norm_normedMk_eq_one : the operator norm of the projection is `1` if the subspace is not `⊤`.
+* `norm_normedMk_eq_one` : the operator norm of the projection is `1` if the subspace is not `⊤`.
 
 * `norm_liftNormedAddGroupHom_le` : `‖liftNormedAddGroupHom f hf‖ ≤ ‖f‖`.
 -/
+
+@[expose] public section
 
 section
 
@@ -114,12 +118,12 @@ theorem liftNormedAddGroupHom_normNoninc {N : Type*} [SeminormedAddCommGroup N]
 
 /-- The operator norm of the projection is `1` if there is an element whose norm is different from
 `0`. -/
-theorem norm_normedMk_eq_one (h : ∃ x : M, ‖x‖ ≠ 0) :
+theorem norm_normedMk_eq_one [NontrivialTopology M] :
     ‖normedMk (M := M)‖ = 1 := by
   apply NormedAddGroupHom.opNorm_eq_of_bounds _ zero_le_one
   · simpa only [normedMk_apply, one_mul] using fun _ ↦ le_rfl
   · intro N _ hle
-    obtain ⟨x, _⟩ := h
+    obtain ⟨x, _⟩ := exists_norm_ne_zero M
     exact one_le_of_le_mul_right₀ (by positivity) (hle x)
 
 /-- The projection is `0` if and only if all the elements have norm `0`. -/

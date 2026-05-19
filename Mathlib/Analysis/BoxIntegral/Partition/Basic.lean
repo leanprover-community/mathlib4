@@ -3,9 +3,11 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.BigOperators.Option
-import Mathlib.Analysis.BoxIntegral.Box.Basic
-import Mathlib.Data.Set.Pairwise.Lattice
+module
+
+public import Mathlib.Algebra.BigOperators.Option
+public import Mathlib.Analysis.BoxIntegral.Box.Basic
+public import Mathlib.Data.Set.Pairwise.Lattice
 
 /-!
 # Partitions of rectangular boxes in `ℝⁿ`
@@ -35,6 +37,8 @@ We also define a `SemilatticeInf` structure on `BoxIntegral.Prepartition I` for 
 
 rectangular box, partition
 -/
+
+@[expose] public section
 
 open Set Finset Function
 open scoped NNReal
@@ -112,7 +116,6 @@ instance : LE (Prepartition I) :=
   ⟨fun π π' => ∀ ⦃I⦄, I ∈ π → ∃ I' ∈ π', I ≤ I'⟩
 
 instance partialOrder : PartialOrder (Prepartition I) where
-  le := (· ≤ ·)
   le_refl _ I hI := ⟨I, hI, le_rfl⟩
   le_trans _ _ _ h₁₂ h₂₃ _ hI₁ :=
     let ⟨_, hI₂, hI₁₂⟩ := h₁₂ hI₁
@@ -151,8 +154,6 @@ theorem top_boxes : (⊤ : Prepartition I).boxes = {I} := rfl
 @[simp]
 theorem notMem_bot : J ∉ (⊥ : Prepartition I) :=
   Finset.notMem_empty _
-
-@[deprecated (since := "2025-05-23")] alias not_mem_bot := notMem_bot
 
 @[simp]
 theorem bot_boxes : (⊥ : Prepartition I).boxes = ∅ := rfl
@@ -220,7 +221,7 @@ theorem subset_iUnion (h : J ∈ π) : ↑J ⊆ π.iUnion :=
 theorem iUnion_subset : π.iUnion ⊆ I :=
   iUnion₂_subset π.le_of_mem'
 
-@[mono]
+@[gcongr, mono]
 theorem iUnion_mono (h : π₁ ≤ π₂) : π₁.iUnion ⊆ π₂.iUnion := fun _ hx =>
   let ⟨_, hJ₁, hx⟩ := π₁.mem_iUnion.1 hx
   let ⟨J₂, hJ₂, hle⟩ := h hJ₁
@@ -437,7 +438,7 @@ theorem mem_restrict : J₁ ∈ π.restrict J ↔ ∃ J' ∈ π, (J₁ : WithBot
 theorem mem_restrict' : J₁ ∈ π.restrict J ↔ ∃ J' ∈ π, (J₁ : Set (ι → ℝ)) = ↑J ∩ ↑J' := by
   simp only [mem_restrict, ← Box.withBotCoe_inj, Box.coe_inf, Box.coe_coe]
 
-@[mono]
+@[gcongr, mono]
 theorem restrict_mono {π₁ π₂ : Prepartition I} (Hle : π₁ ≤ π₂) : π₁.restrict J ≤ π₂.restrict J := by
   classical
   refine ofWithBot_mono fun J₁ hJ₁ hne => ?_

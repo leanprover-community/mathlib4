@@ -3,11 +3,12 @@ Copyright (c) 2020 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
 -/
-import Mathlib.Data.Part
-import Mathlib.Data.Nat.Find
-import Mathlib.Data.Nat.Upto
-import Mathlib.Data.Stream.Defs
-import Mathlib.Tactic.Common
+module
+
+public import Mathlib.Data.Part
+public import Mathlib.Data.Nat.Find
+public import Mathlib.Data.Nat.Upto
+public import Mathlib.Data.Stream.Defs
 
 /-!
 # Fixed point
@@ -21,6 +22,8 @@ An instance is defined for `Part`.
 * class `Fix`
 * `Part.fix`
 -/
+
+@[expose] public section
 
 
 universe u v
@@ -95,7 +98,7 @@ protected theorem fix_def {x : α} (h' : ∃ i, (Fix.approx f i x).Dom) :
     ext : 1
     have hh : ¬(Fix.approx f z.val x).Dom := by
       apply Nat.find_min h'
-      omega
+      lia
     rw [succ_add_eq_add_succ] at _this hk
     rw [assert_pos hh, n_ih (Upto.succ z hh) _this hk]
 

@@ -3,14 +3,18 @@ Copyright (c) 2020 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-import Mathlib.MeasureTheory.MeasurableSpace.Embedding
-import Mathlib.MeasureTheory.PiSystem
+module
+
+public import Mathlib.MeasureTheory.MeasurableSpace.Embedding
+public import Mathlib.MeasureTheory.PiSystem
 
 /-!
 # The product sigma algebra
 
 This file talks about the measurability of operations on binary functions.
 -/
+
+public section
 
 assert_not_exists MeasureTheory.Measure
 

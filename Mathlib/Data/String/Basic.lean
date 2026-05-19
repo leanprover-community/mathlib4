@@ -3,10 +3,13 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Batteries.Data.String.Lemmas
-import Mathlib.Data.List.Lex
-import Mathlib.Data.Char
-import Mathlib.Algebra.Order.Group.Nat
+module
+
+public import Batteries.Data.String.Lemmas
+public import Mathlib.Data.List.Lex
+public import Mathlib.Data.Char
+public import Mathlib.Algebra.Order.Group.Nat
+import all Init.Data.String.Iterator  -- for unfolding `Iterator.curr`
 
 /-!
 # Strings
@@ -14,10 +17,12 @@ import Mathlib.Algebra.Order.Group.Nat
 Supplementary theorems about the `String` type.
 -/
 
+@[expose] public section
+
 namespace String
 
 /-- `<` on string iterators. This coincides with `<` on strings as lists. -/
-def ltb (s₁ s₂ : Iterator) : Bool :=
+def ltb (s₁ s₂ : Legacy.Iterator) : Bool :=
   if s₂.hasNext then
     if s₁.hasNext then
       if s₁.curr = s₂.curr then
@@ -28,23 +33,25 @@ def ltb (s₁ s₂ : Iterator) : Bool :=
 
 /-- This overrides an instance in core Lean. -/
 instance LT' : LT String :=
-  ⟨fun s₁ s₂ ↦ ltb s₁.iter s₂.iter⟩
+  ⟨fun s₁ s₂ ↦ ltb (String.Legacy.iter s₁) (String.Legacy.iter s₂)⟩
 
 /-- This instance has a prime to avoid the name of the corresponding instance in core Lean. -/
 instance decidableLT' : DecidableLT String := by
-  simp only [DecidableLT, LT']
+  simp +instances only [DecidableLT, LT']
   infer_instance -- short-circuit type class inference
 
 /-- Induction on `String.ltb`. -/
-def ltb.inductionOn.{u} {motive : Iterator → Iterator → Sort u} (it₁ it₂ : Iterator)
-    (ind : ∀ s₁ s₂ i₁ i₂, Iterator.hasNext ⟨s₂, i₂⟩ → Iterator.hasNext ⟨s₁, i₁⟩ →
-      i₁.get s₁ = i₂.get s₂ → motive (Iterator.next ⟨s₁, i₁⟩) (Iterator.next ⟨s₂, i₂⟩) →
-      motive ⟨s₁, i₁⟩ ⟨s₂, i₂⟩)
-    (eq : ∀ s₁ s₂ i₁ i₂, Iterator.hasNext ⟨s₂, i₂⟩ → Iterator.hasNext ⟨s₁, i₁⟩ →
+@[no_expose] def ltb.inductionOn.{u} {motive : Legacy.Iterator → Legacy.Iterator → Sort u}
+    (it₁ it₂ : Legacy.Iterator)
+    (ind : ∀ s₁ s₂ i₁ i₂, Legacy.Iterator.hasNext ⟨s₂, i₂⟩ → Legacy.Iterator.hasNext ⟨s₁, i₁⟩ →
+      i₁.get s₁ = i₂.get s₂ →
+        motive (Legacy.Iterator.next ⟨s₁, i₁⟩) (Legacy.Iterator.next ⟨s₂, i₂⟩) →
+          motive ⟨s₁, i₁⟩ ⟨s₂, i₂⟩)
+    (eq : ∀ s₁ s₂ i₁ i₂, Legacy.Iterator.hasNext ⟨s₂, i₂⟩ → Legacy.Iterator.hasNext ⟨s₁, i₁⟩ →
       ¬ i₁.get s₁ = i₂.get s₂ → motive ⟨s₁, i₁⟩ ⟨s₂, i₂⟩)
-    (base₁ : ∀ s₁ s₂ i₁ i₂, Iterator.hasNext ⟨s₂, i₂⟩ → ¬ Iterator.hasNext ⟨s₁, i₁⟩ →
+    (base₁ : ∀ s₁ s₂ i₁ i₂, Legacy.Iterator.hasNext ⟨s₂, i₂⟩ → ¬ Legacy.Iterator.hasNext ⟨s₁, i₁⟩ →
       motive ⟨s₁, i₁⟩ ⟨s₂, i₂⟩)
-    (base₂ : ∀ s₁ s₂ i₁ i₂, ¬ Iterator.hasNext ⟨s₂, i₂⟩ → motive ⟨s₁, i₁⟩ ⟨s₂, i₂⟩) :
+    (base₂ : ∀ s₁ s₂ i₁ i₂, ¬ Legacy.Iterator.hasNext ⟨s₂, i₂⟩ → motive ⟨s₁, i₁⟩ ⟨s₂, i₂⟩) :
     motive it₁ it₂ :=
   if h₂ : it₂.hasNext then
     if h₁ : it₁.hasNext then
@@ -54,26 +61,26 @@ def ltb.inductionOn.{u} {motive : Iterator → Iterator → Sort u} (it₁ it₂
     else base₁ it₁.s it₂.s it₁.i it₂.i h₂ h₁
   else base₂ it₁.s it₂.s it₁.i it₂.i h₂
 
-theorem ltb_cons_addChar' (c : Char) (s₁ s₂ : Iterator) :
+theorem ltb_cons_addChar' (c : Char) (s₁ s₂ : Legacy.Iterator) :
     ltb ⟨ofList (c :: s₁.s.toList), s₁.i + c⟩ ⟨ofList (c :: s₂.s.toList), s₂.i + c⟩ =
       ltb s₁ s₂ := by
   fun_induction ltb s₁ s₂ with
   | case1 s₁ s₂ h₁ h₂ h ih =>
-    rw [ltb, Iterator.hasNext_cons_addChar, Iterator.hasNext_cons_addChar,
+    rw [ltb, Legacy.Iterator.hasNext_cons_addChar, Legacy.Iterator.hasNext_cons_addChar,
       if_pos (by simpa using h₁), if_pos (by simpa using h₂), if_pos, ← ih]
-    · simp [Iterator.next, String.Pos.Raw.next, get_cons_addChar]
+    · simp only [Legacy.Iterator.next, Pos.Raw.next, get_cons_addChar, ofList_toList]
       congr 2 <;> apply Pos.Raw.add_char_right_comm
-    · simpa [Iterator.curr, get_cons_addChar] using h
+    · simpa only [Legacy.Iterator.curr, get_cons_addChar, ofList_toList] using h
   | case2 s₁ s₂ h₁ h₂ h =>
-    rw [ltb, Iterator.hasNext_cons_addChar, Iterator.hasNext_cons_addChar,
+    rw [ltb, Legacy.Iterator.hasNext_cons_addChar, Legacy.Iterator.hasNext_cons_addChar,
       if_pos (by simpa using h₁), if_pos (by simpa using h₂), if_neg]
-    · simp [Iterator.curr, get_cons_addChar]
-    · simpa [Iterator.curr, get_cons_addChar] using h
+    · simp only [Legacy.Iterator.curr, get_cons_addChar, ofList_toList, decide_eq_decide]
+    · simpa only [Legacy.Iterator.curr, get_cons_addChar, ofList_toList] using h
   | case3 s₁ s₂ h₁ h₂ =>
-    rw [ltb, Iterator.hasNext_cons_addChar, Iterator.hasNext_cons_addChar,
+    rw [ltb, Legacy.Iterator.hasNext_cons_addChar, Legacy.Iterator.hasNext_cons_addChar,
       if_pos (by simpa using h₁), if_neg (by simpa using h₂)]
   | case4 s₁ s₂ h₁ =>
-    rw [ltb, Iterator.hasNext_cons_addChar, if_neg (by simpa using h₁)]
+    rw [ltb, Legacy.Iterator.hasNext_cons_addChar, if_neg (by simpa using h₁)]
 
 theorem ltb_cons_addChar (c : Char) (cs₁ cs₂ : List Char) (i₁ i₂ : Pos.Raw) :
     ltb ⟨ofList (c :: cs₁), i₁ + c⟩ ⟨ofList (c :: cs₂), i₂ + c⟩ =
@@ -91,16 +98,16 @@ theorem lt_iff_toList_lt : ∀ {s₁ s₂ : String}, s₁ < s₂ ↔ s₁.toList
     · unfold ltb; decide
     · rename_i c₂ cs₂; apply iff_of_true
       · unfold ltb
-        simp [Iterator.hasNext, Char.utf8Size_pos]
+        simp [Legacy.Iterator.hasNext, Char.utf8Size_pos]
       · apply List.nil_lt_cons
     · rename_i c₁ cs₁ ih; apply iff_of_false
       · unfold ltb
-        simp [Iterator.hasNext]
+        simp [Legacy.Iterator.hasNext]
       · apply not_lt_of_gt; apply List.nil_lt_cons
     · rename_i c₁ cs₁ ih c₂ cs₂; unfold ltb
-      simp only [Iterator.hasNext, Pos.Raw.byteIdx_zero, rawEndPos_ofList, utf8Len_cons,
-        add_pos_iff, Char.utf8Size_pos, or_true, decide_true, ↓reduceIte, Iterator.curr,
-        Pos.Raw.get, String.toList_ofList, Pos.Raw.utf8GetAux, Iterator.next, Pos.Raw.next,
+      simp only [Legacy.Iterator.hasNext, Pos.Raw.byteIdx_zero, rawEndPos_ofList, utf8Len_cons,
+        add_pos_iff, Char.utf8Size_pos, or_true, decide_true, ↓reduceIte, Legacy.Iterator.curr,
+        Pos.Raw.get, String.toList_ofList, Pos.Raw.utf8GetAux, Legacy.Iterator.next, Pos.Raw.next,
         Bool.ite_eq_true_distrib, decide_eq_true_eq]
       split_ifs with h
       · subst c₂
@@ -118,7 +125,7 @@ instance LE : LE String :=
   ⟨fun s₁ s₂ ↦ ¬s₂ < s₁⟩
 
 instance decidableLE : DecidableLE String := by
-  simp only [DecidableLE, LE]
+  simp +instances only [DecidableLE, LE]
   infer_instance -- short-circuit type class inference
 
 @[simp]
@@ -133,13 +140,15 @@ theorem asString_nil : ofList [] = "" :=
 theorem asString_toList (s : String) : ofList s.toList = s :=
   ofList_toList
 
-theorem toList_nonempty : ∀ {s : String}, s ≠ "" → s.toList = s.head :: (s.drop 1).toList
+set_option linter.deprecated false in
+@[deprecated "Use the new String API" (since := "2026-04-01")]
+theorem toList_nonempty :
+    ∀ {s : String}, s ≠ "" → s.toList = String.Legacy.front s :: (String.Legacy.drop s 1).toList
   | s, h => by
     obtain ⟨l, rfl⟩ := s.exists_eq_ofList
     match l with
     | [] => simp at h
-    | c::cs => simp [head, mkIterator, Iterator.curr, Pos.Raw.get,
-        Pos.Raw.utf8GetAux]
+    | c::cs => simp [Legacy.front, Pos.Raw.get, Pos.Raw.utf8GetAux]
 
 @[simp]
 theorem head_empty : "".toList.head! = default :=
@@ -162,7 +171,7 @@ instance : LinearOrder String where
   toDecidableEq := inferInstance
   toDecidableLT := String.decidableLT'
   compare_eq_compareOfLessAndEq a b := by
-    simp only [compare, compareOfLessAndEq, instLT, List.instLT, lt_iff_toList_lt]
+    simp +instances only [compare, compareOfLessAndEq, instLT, List.instLT, lt_iff_toList_lt]
     split_ifs <;>
     simp only [List.lt_iff_lex_lt] at *
 

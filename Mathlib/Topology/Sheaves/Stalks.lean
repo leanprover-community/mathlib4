@@ -3,8 +3,11 @@ Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Justus Springer
 -/
-import Mathlib.Topology.Category.TopCat.OpenNhds
-import Mathlib.Topology.Sheaves.SheafCondition.UniqueGluing
+module
+
+public import Mathlib.Topology.Category.TopCat.OpenNhds
+public import Mathlib.Topology.Sheaves.SheafCondition.UniqueGluing
+public import Mathlib.CategoryTheory.Limits.ConcreteCategory.Filtered
 
 /-!
 # Stalks
@@ -36,7 +39,13 @@ isomorphisms.
 See also the definition of "algebraic structures" in the stacks project:
 https://stacks.math.columbia.edu/tag/007L
 
+TODO(@joelriou): refactor the definitions in this file so as to make them
+particular cases of general constructions for points of sites from
+`Mathlib/CategoryTheory/Sites/Point/Basic.lean`.
+
 -/
+
+@[expose] public section
 
 assert_not_exists IsOrderedMonoid
 
@@ -132,11 +141,13 @@ theorem stalk_hom_ext (F : X.Presheaf C) {x} {Y : C} {f₁ f₂ : F.stalk x ⟶ 
   colimit.hom_ext fun U => by
     induction U with | op U => obtain ⟨U, hxU⟩ := U; exact ih U hxU
 
+set_option backward.isDefEq.respectTransparency false in -- This is needed in Geometry/RingedSpace/Stalks.lean
 @[reassoc (attr := simp)]
 theorem stalkFunctor_map_germ {F G : X.Presheaf C} (U : Opens X) (x : X) (hx : x ∈ U) (f : F ⟶ G) :
     F.germ U x hx ≫ (stalkFunctor C x).map f = f.app (op U) ≫ G.germ U x hx :=
   colimit.ι_map (whiskerLeft (OpenNhds.inclusion x).op f) (op ⟨U, hx⟩)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem stalkFunctor_map_germ_apply [ConcreteCategory C FC]
     {F G : X.Presheaf C} (U : Opens X) (x : X) (hx : x ∈ U) (f : F ⟶ G) (s) :
     (stalkFunctor C x).map f (F.germ U x hx s) = G.germ U x hx (f.app (op U) s) := by
@@ -162,6 +173,8 @@ def stalkPushforward (f : X ⟶ Y) (F : X.Presheaf C) (x : X) : (f _* F).stalk (
   refine ?_ ≫ colimit.pre _ (OpenNhds.map f x).op
   exact colim.map (whiskerRight (NatTrans.op (OpenNhds.inclusionMapIso f x).inv) F)
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp), elementwise (attr := simp)]
 theorem stalkPushforward_germ (f : X ⟶ Y) (F : X.Presheaf C) (U : Opens Y)
     (x : X) (hx : f x ∈ U) :
@@ -184,6 +197,8 @@ theorem stalkPushforward_germ (f : X ⟶ Y) (F : X.Presheaf C) (U : Opens Y)
 
 namespace stalkPushforward
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem id (ℱ : X.Presheaf C) (x : X) :
     ℱ.stalkPushforward C (𝟙 X) x = (stalkFunctor C x).map (Pushforward.id ℱ).hom := by
@@ -192,6 +207,8 @@ theorem id (ℱ : X.Presheaf C) (x : X) :
   erw [CategoryTheory.Functor.map_id]
   simp [stalkFunctor]
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem comp (ℱ : X.Presheaf C) (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) :
     ℱ.stalkPushforward C (f ≫ g) x =
@@ -214,17 +231,20 @@ section stalkPullback
 /-- The morphism `ℱ_{f x} ⟶ (f⁻¹ℱ)ₓ` that factors through `(f_*f⁻¹ℱ)_{f x}`. -/
 def stalkPullbackHom (f : X ⟶ Y) (F : Y.Presheaf C) (x : X) :
     F.stalk (f x) ⟶ ((pullback C f).obj F).stalk x :=
-  (stalkFunctor _ (f x)).map ((pushforwardPullbackAdjunction C f).unit.app F) ≫
+  (stalkFunctor _ (f x)).map ((pullbackPushforwardAdjunction C f).unit.app F) ≫
     stalkPushforward _ _ _ x
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma germ_stalkPullbackHom
     (f : X ⟶ Y) (F : Y.Presheaf C) (x : X) (U : Opens Y) (hU : f x ∈ U) :
     F.germ U (f x) hU ≫ stalkPullbackHom C f F x =
-      ((pushforwardPullbackAdjunction C f).unit.app F).app _ ≫
+      ((pullbackPushforwardAdjunction C f).unit.app F).app _ ≫
         ((pullback C f).obj F).germ ((Opens.map f).obj U) x hU := by
   simp [stalkPullbackHom, germ, stalkFunctor, stalkPushforward]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The morphism `(f⁻¹ℱ)(U) ⟶ ℱ_{f(x)}` for some `U ∋ x`. -/
 def germToPullbackStalk (f : X ⟶ Y) (F : Y.Presheaf C) (U : Opens X) (x : X) (hx : x ∈ U) :
     ((pullback C f).obj F).obj (op U) ⟶ F.stalk (f x) :=
@@ -234,32 +254,34 @@ def germToPullbackStalk (f : X ⟶ Y) (F : Y.Presheaf C) (U : Opens X) (x : X) (
         { app := fun V => F.germ _ (f x) (V.hom.unop.le hx)
           naturality := fun _ _ i => by simp } }
 
+set_option backward.defeqAttrib.useBackward true in
 variable {C} in
 @[ext]
 lemma pullback_obj_obj_ext {Z : C} {f : X ⟶ Y} {F : Y.Presheaf C} (U : (Opens X)ᵒᵖ)
     {φ ψ : ((pullback C f).obj F).obj U ⟶ Z}
     (h : ∀ (V : Opens Y) (hV : U.unop ≤ (Opens.map f).obj V),
-      ((pushforwardPullbackAdjunction C f).unit.app F).app (op V) ≫
+      ((pullbackPushforwardAdjunction C f).unit.app F).app (op V) ≫
         ((pullback C f).obj F).map (homOfLE hV).op ≫ φ =
-      ((pushforwardPullbackAdjunction C f).unit.app F).app (op V) ≫
+      ((pullbackPushforwardAdjunction C f).unit.app F).app (op V) ≫
         ((pullback C f).obj F).map (homOfLE hV).op ≫ ψ) : φ = ψ := by
-  obtain ⟨U⟩ := U
   apply ((Opens.map f).op.isPointwiseLeftKanExtensionLeftKanExtensionUnit F _).hom_ext
   rintro ⟨⟨V⟩, ⟨⟩, ⟨b⟩⟩
-  simpa [pushforwardPullbackAdjunction, Functor.lanAdjunction_unit]
+  simpa [pullbackPushforwardAdjunction, Functor.lanAdjunction_unit]
     using h V (leOfHom b)
 
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
-lemma pushforwardPullbackAdjunction_unit_pullback_map_germToPullbackStalk
+lemma pullbackPushforwardAdjunction_unit_pullback_map_germToPullbackStalk
     (f : X ⟶ Y) (F : Y.Presheaf C) (U : Opens X) (x : X) (hx : x ∈ U) (V : Opens Y)
     (hV : U ≤ (Opens.map f).obj V) :
-    ((pushforwardPullbackAdjunction C f).unit.app F).app (op V) ≫
-      ((pullback C f).obj F).map (homOfLE hV).op ≫ germToPullbackStalk C f F U x hx  =
+    ((pullbackPushforwardAdjunction C f).unit.app F).app (op V) ≫
+      ((pullback C f).obj F).map (homOfLE hV).op ≫ germToPullbackStalk C f F U x hx =
         F.germ _ (f x) (hV hx) := by
-  simpa [pushforwardPullbackAdjunction] using
+  simpa [pullbackPushforwardAdjunction] using
     ((Opens.map f).op.isPointwiseLeftKanExtensionLeftKanExtensionUnit F (op U)).fac _
       (CostructuredArrow.mk (homOfLE hV).op)
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma germToPullbackStalk_stalkPullbackHom
     (f : X ⟶ Y) (F : Y.Presheaf C) (U : Opens X) (x : X) (hx : x ∈ U) :
@@ -267,17 +289,20 @@ lemma germToPullbackStalk_stalkPullbackHom
       ((pullback C f).obj F).germ _ x hx := by
   ext V hV
   dsimp
-  simp only [pushforwardPullbackAdjunction_unit_pullback_map_germToPullbackStalk_assoc,
+  simp only [pullbackPushforwardAdjunction_unit_pullback_map_germToPullbackStalk_assoc,
     germ_stalkPullbackHom, germ_res]
 
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
-lemma pushforwardPullbackAdjunction_unit_app_app_germToPullbackStalk
+lemma pullbackPushforwardAdjunction_unit_app_app_germToPullbackStalk
     (f : X ⟶ Y) (F : Y.Presheaf C) (V : (Opens Y)ᵒᵖ) (x : X) (hx : f x ∈ V.unop) :
-    ((pushforwardPullbackAdjunction C f).unit.app F).app V ≫ germToPullbackStalk C f F _ x hx =
+    ((pullbackPushforwardAdjunction C f).unit.app F).app V ≫ germToPullbackStalk C f F _ x hx =
       F.germ _ (f x) hx := by
-  simpa using pushforwardPullbackAdjunction_unit_pullback_map_germToPullbackStalk
+  simpa using pullbackPushforwardAdjunction_unit_pullback_map_germToPullbackStalk
     C f F ((Opens.map f).obj V.unop) x hx V.unop (by rfl)
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 /-- The morphism `(f⁻¹ℱ)ₓ ⟶ ℱ_{f(x)}`. -/
 def stalkPullbackInv (f : X ⟶ Y) (F : Y.Presheaf C) (x : X) :
     ((pullback C f).obj F).stalk x ⟶ F.stalk (f x) :=
@@ -290,8 +315,8 @@ def stalkPullbackInv (f : X ⟶ Y) (F : Y.Presheaf C) (x : X) :
             ext W hW
             dsimp [OpenNhds.inclusion]
             rw [Category.comp_id, ← Functor.map_comp_assoc,
-              pushforwardPullbackAdjunction_unit_pullback_map_germToPullbackStalk]
-            erw [pushforwardPullbackAdjunction_unit_pullback_map_germToPullbackStalk] } }
+              pullbackPushforwardAdjunction_unit_pullback_map_germToPullbackStalk]
+            erw [pullbackPushforwardAdjunction_unit_pullback_map_germToPullbackStalk] } }
 
 @[reassoc (attr := simp)]
 lemma germ_stalkPullbackInv (f : X ⟶ Y) (F : Y.Presheaf C) (x : X) (V : Opens X) (hV : x ∈ V) :
@@ -299,6 +324,7 @@ lemma germ_stalkPullbackInv (f : X ⟶ Y) (F : Y.Presheaf C) (x : X) (V : Opens 
     F.germToPullbackStalk _ f V x hV := by
   apply colimit.ι_desc
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The isomorphism `ℱ_{f(x)} ≅ (f⁻¹ℱ)ₓ`. -/
 def stalkPullbackIso (f : X ⟶ Y) (F : Y.Presheaf C) (x : X) :
     F.stalk (f x) ≅ ((pullback C f).obj F).stalk x where
@@ -308,7 +334,7 @@ def stalkPullbackIso (f : X ⟶ Y) (F : Y.Presheaf C) (x : X) :
     ext U hU
     dsimp
     rw [germ_stalkPullbackHom_assoc, germ_stalkPullbackInv, Category.comp_id,
-      pushforwardPullbackAdjunction_unit_app_app_germToPullbackStalk]
+      pullbackPushforwardAdjunction_unit_app_app_germToPullbackStalk]
   inv_hom_id := by
     ext V hV
     dsimp
@@ -320,6 +346,7 @@ section stalkSpecializes
 
 variable {C}
 
+set_option backward.defeqAttrib.useBackward true in
 /-- If `x` specializes to `y`, then there is a natural map `F.stalk y ⟶ F.stalk x`. -/
 noncomputable def stalkSpecializes (F : X.Presheaf C) {x y : X} (h : x ⤳ y) :
     F.stalk y ⟶ F.stalk x := by
@@ -341,18 +368,18 @@ theorem germ_stalkSpecializes (F : X.Presheaf C)
   colimit.ι_desc _ _
 
 @[simp]
-theorem stalkSpecializes_refl {C : Type*} [Category C] [Limits.HasColimits C] {X : TopCat}
-    (F : X.Presheaf C) (x : X) : F.stalkSpecializes (specializes_refl x) = 𝟙 _ := by
+theorem stalkSpecializes_refl (F : X.Presheaf C) (x : X) :
+    F.stalkSpecializes (specializes_refl x) = 𝟙 _ := by
   ext
   simp
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
-theorem stalkSpecializes_comp {C : Type*} [Category C] [Limits.HasColimits C] {X : TopCat}
-    (F : X.Presheaf C) {x y z : X} (h : x ⤳ y) (h' : y ⤳ z) :
+theorem stalkSpecializes_comp (F : X.Presheaf C) {x y z : X} (h : x ⤳ y) (h' : y ⤳ z) :
     F.stalkSpecializes h' ≫ F.stalkSpecializes h = F.stalkSpecializes (h.trans h') := by
   ext
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp), elementwise (attr := simp)]
 theorem stalkSpecializes_stalkFunctor_map {F G : X.Presheaf C} (f : F ⟶ G) {x y : X} (h : x ⤳ y) :
     F.stalkSpecializes h ≫ (stalkFunctor C x).map f =
@@ -360,6 +387,7 @@ theorem stalkSpecializes_stalkFunctor_map {F G : X.Presheaf C} (f : F ⟶ G) {x 
   ext
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp), elementwise (attr := simp)]
 theorem stalkSpecializes_stalkPushforward (f : X ⟶ Y) (F : X.Presheaf C) {x y : X} (h : x ⤳ y) :
     (f _* F).stalkSpecializes (f.hom.map_specializes h) ≫ F.stalkPushforward _ f x =
@@ -369,7 +397,7 @@ theorem stalkSpecializes_stalkPushforward (f : X ⟶ Y) (F : X.Presheaf C) {x y 
 
 /-- The stalks are isomorphic on inseparable points -/
 @[simps]
-def stalkCongr {X : TopCat} {C : Type*} [Category C] [HasColimits C] (F : X.Presheaf C) {x y : X}
+def stalkCongr (F : X.Presheaf C) {x y : X}
     (e : Inseparable x y) : F.stalk x ≅ F.stalk y :=
   ⟨F.stalkSpecializes e.ge, F.stalkSpecializes e.le, by simp, by simp⟩
 
@@ -408,10 +436,7 @@ theorem germ_eq (F : X.Presheaf C) {U V : Opens X} (x : X) (mU : x ∈ U) (mV : 
     (s : ToType (F.obj (op U))) (t : ToType (F.obj (op V)))
     (h : F.germ U x mU s = F.germ V x mV t) :
     ∃ (W : Opens X) (_m : x ∈ W) (iU : W ⟶ U) (iV : W ⟶ V), F.map iU.op s = F.map iV.op t := by
-  obtain ⟨W, iU, iV, e⟩ :=
-    (Types.FilteredColimit.isColimit_eq_iff.{v, v} _
-          (isColimitOfPreserves (forget C) (colimit.isColimit ((OpenNhds.inclusion x).op ⋙ F)))).mp
-        h
+  obtain ⟨W, iU, iV, e⟩ := (colimit.isColimit ((OpenNhds.inclusion x).op ⋙ F)).eq_iff.mp h
   exact ⟨(unop W).1, (unop W).2, iU.unop, iV.unop, e⟩
 
 theorem stalkFunctor_map_injective_of_app_injective {F G : Presheaf C X} {f : F ⟶ G}
@@ -477,7 +502,7 @@ theorem section_ext (F : Sheaf C X) (U : Opens X) (s t : ToType (F.1.obj (op U))
   -- neighborhoods form a cover of `U`.
   apply F.eq_of_locally_eq' V U i₁
   · intro x hxU
-    simp only [Opens.coe_iSup, Set.mem_iUnion, SetLike.mem_coe]
+    simp only [Opens.mem_iSup]
     exact ⟨⟨x, hxU⟩, m ⟨x, hxU⟩⟩
   · intro x
     rw [heq, Subsingleton.elim (i₁ x) (i₂ x)]
@@ -500,6 +525,7 @@ theorem app_injective_iff_stalkFunctor_map_injective {F : Sheaf C X} {G : Preshe
   ⟨fun h U => app_injective_of_stalkFunctor_map_injective f U fun x _ => h x,
     stalkFunctor_map_injective_of_app_injective⟩
 
+set_option backward.isDefEq.respectTransparency false in
 instance stalkFunctor_preserves_mono (x : X) :
     Functor.PreservesMonomorphisms (Sheaf.forget.{v} C X ⋙ stalkFunctor C x) :=
   ⟨@fun _𝓐 _𝓑 f _ =>
@@ -525,7 +551,7 @@ theorem mono_of_stalk_mono {F G : Sheaf C X} (f : F ⟶ G) [∀ x, Mono <| (stal
       (ConcreteCategory.mono_iff_injective_of_preservesPullback _).mpr <|
         app_injective_of_stalkFunctor_map_injective f.1 U.unop fun _x _hx =>
           (ConcreteCategory.mono_iff_injective_of_preservesPullback
-            ((stalkFunctor C _).map f.val)).mp <| inferInstance
+            ((stalkFunctor C _).map f.hom)).mp <| inferInstance
 
 include instCC in
 theorem mono_iff_stalk_mono {F G : Sheaf C X} (f : F ⟶ G) :
@@ -551,9 +577,9 @@ theorem app_surjective_of_injective_of_locally_surjective {F G : Sheaf C X} (f :
   -- These neighborhoods clearly cover all of `U`.
   have V_cover : U ≤ iSup V := by
     intro x hxU
-    simp only [Opens.coe_iSup, Set.mem_iUnion, SetLike.mem_coe]
+    simp only [Opens.mem_iSup]
     exact ⟨⟨x, hxU⟩, mV ⟨x, hxU⟩⟩
-  suffices IsCompatible F.val V sf by
+  suffices IsCompatible F.obj V sf by
     -- Since `F` is a sheaf, we can glue all the local preimages together to get a global preimage.
     obtain ⟨s, s_spec, -⟩ := F.existsUnique_gluing' V U iVU V_cover sf this
     · use s
@@ -567,7 +593,6 @@ theorem app_surjective_of_injective_of_locally_surjective {F G : Sheaf C X} (f :
   intro z hz
   -- Here, we need to use injectivity of the stalk maps.
   apply hinj z ((iVU x).le ((inf_le_left : V x ⊓ V y ≤ V x) hz))
-  dsimp only
   rw [stalkFunctor_map_germ_apply, stalkFunctor_map_germ_apply]
   simp_rw [← ConcreteCategory.comp_apply, f.1.naturality, ConcreteCategory.comp_apply, heq,
     ← ConcreteCategory.comp_apply, ← G.1.map_comp]
@@ -581,8 +606,8 @@ theorem app_surjective_of_stalkFunctor_map_bijective {F G : Sheaf C X} (f : F �
   -- Since `f` is surjective on stalks, we can find a preimage `s₀` of the germ of `t` at `x`
   obtain ⟨s₀, hs₀⟩ := (h x hx).2 (G.presheaf.germ U x hx t)
   -- ... and this preimage must come from some section `s₁` defined on some open neighborhood `V₁`
-  obtain ⟨V₁, hxV₁, s₁, hs₁⟩ := F.presheaf.germ_exist x s₀
-  subst hs₁; rename' hs₀ => hs₁
+  obtain ⟨V₁, hxV₁, s₁, rfl⟩ := F.presheaf.germ_exist x s₀
+  rename' hs₀ => hs₁
   rw [stalkFunctor_map_germ_apply V₁ x hxV₁ f.1 s₁] at hs₁
   -- Now, the germ of `f.app (op V₁) s₁` equals the germ of `t`, hence they must coincide on
   -- some open neighborhood `V₂`.
@@ -607,7 +632,7 @@ theorem app_isIso_of_stalkFunctor_map_iso {F G : Sheaf C X} (f : F ⟶ G) (U : O
   rw [isIso_iff_bijective]
   apply app_bijective_of_stalkFunctor_map_bijective
   intro x hx
-  apply (isIso_iff_bijective _).mp
+  apply (bijective_iff_isIso_ofHom _).mpr
   exact Functor.map_isIso (forget C) ((stalkFunctor C (⟨x, hx⟩ : U).1).map f.1)
 
 include instCC in

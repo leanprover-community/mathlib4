@@ -3,9 +3,11 @@ Copyright (c) 2024 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.Analysis.Normed.Field.Basic
-import Mathlib.Analysis.Normed.Ring.Ultra
-import Mathlib.Data.Nat.Choose.Sum
+module
+
+public import Mathlib.Analysis.Normed.Field.Basic
+public import Mathlib.Analysis.Normed.Ring.Ultra
+public import Mathlib.Data.Nat.Choose.Sum
 
 /-!
 ## Conditions to have an ultrametric norm on a division ring
@@ -30,6 +32,8 @@ to be able to be applied in noncommutative division rings.
 
 ultrametric, nonarchimedean
 -/
+
+public section
 open Metric NNReal
 
 namespace IsUltrametricDist
@@ -50,7 +54,7 @@ lemma isUltrametricDist_of_forall_norm_add_one_le_max_norm_one
 lemma isUltrametricDist_of_forall_norm_add_one_of_norm_le_one
     (h : ∀ x : R, ‖x‖ ≤ 1 → ‖x + 1‖ ≤ 1) : IsUltrametricDist R := by
   refine isUltrametricDist_of_forall_norm_add_one_le_max_norm_one fun x ↦ ?_
-  rcases le_or_gt ‖x‖ 1 with H|H
+  rcases le_or_gt ‖x‖ 1 with H | H
   · exact (h _ H).trans (le_max_right _ _)
   · suffices ‖x + 1‖ ≤ ‖x‖ from this.trans (le_max_left _ _)
     rw [← div_le_one (by positivity), ← norm_div, add_div,
@@ -117,7 +121,7 @@ lemma isUltrametricDist_of_forall_norm_natCast_le_one
   -- other terms in the binomial expansion are bounded by the max of these, and the number of terms
   -- in the sum is precisely `m + 1`
   rw [← Finset.card_range (m + 1), ← Finset.sum_const, Finset.card_range]
-  rcases max_cases 1 (‖x‖ ^ m) with (⟨hm, hx⟩|⟨hm, hx⟩) <;> rw [hm] <;>
+  rcases max_cases 1 (‖x‖ ^ m) with (⟨hm, hx⟩ | ⟨hm, hx⟩) <;> rw [hm] <;>
   -- which we show by comparing the terms in the sum one by one
   gcongr with i hi
   · rcases eq_or_ne m 0 with rfl | hm

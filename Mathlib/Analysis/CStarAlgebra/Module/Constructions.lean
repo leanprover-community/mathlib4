@@ -3,9 +3,13 @@ Copyright (c) 2024 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Analysis.CStarAlgebra.Module.Defs
-import Mathlib.Analysis.CStarAlgebra.Module.Synonym
-import Mathlib.Topology.MetricSpace.Bilipschitz
+module
+
+public import Mathlib.Analysis.CStarAlgebra.Module.Defs
+public import Mathlib.Analysis.CStarAlgebra.Module.Synonym
+public import Mathlib.Analysis.InnerProductSpace.Basic
+public import Mathlib.Topology.MetricSpace.Bilipschitz
+import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Order
 
 /-! # Constructions of Hilbert C⋆-modules
 
@@ -55,6 +59,8 @@ the above cases, it is necessary to temporarily instantiate `C⋆ᵐᵒᵈ(A, E)
 and then replace the uniformity and bornology with the correct ones.
 
 -/
+
+@[expose] public section
 
 open CStarModule CStarRing
 
@@ -156,6 +162,7 @@ attribute [-instance] WithCStarModule.instUniformSpace WithCStarModule.instBorno
 /-- A normed additive commutative group structure on `C⋆ᵐᵒᵈ(A, E × F)` with the wrong topology,
 uniformity and bornology. This is only used to build the instance with the correct forgetful
 inheritance data. -/
+@[instance_reducible]
 noncomputable def normedAddCommGroupProdAux : NormedAddCommGroup C⋆ᵐᵒᵈ(A, E × F) :=
   NormedAddCommGroup.ofCore (CStarModule.normedSpaceCore A)
 
@@ -187,7 +194,9 @@ private lemma isBounded_prod_iff_aux (s : Set C⋆ᵐᵒᵈ(A, E × F)) :
 end Aux
 
 noncomputable instance : NormedAddCommGroup C⋆ᵐᵒᵈ(A, E × F) :=
-  .ofCoreReplaceAll (normedSpaceCore A) uniformity_prod_eq_aux isBounded_prod_iff_aux
+  fast_instance% .ofCoreReplaceAll (normedSpaceCore A) ?_ ?_
+where finally
+  exacts [uniformity_prod_eq_aux, isBounded_prod_iff_aux]
 
 noncomputable instance : NormedSpace ℂ C⋆ᵐᵒᵈ(A, E × F) := .ofCore (normedSpaceCore A)
 
@@ -281,6 +290,7 @@ attribute [-instance] WithCStarModule.instUniformSpace WithCStarModule.instBorno
 /-- A normed additive commutative group structure on `C⋆ᵐᵒᵈ(A, Π i, E i)` with the wrong topology,
 uniformity and bornology. This is only used to build the instance with the correct forgetful
 inheritance data. -/
+@[instance_reducible]
 noncomputable def normedAddCommGroupPiAux : NormedAddCommGroup C⋆ᵐᵒᵈ(A, Π i, E i) :=
   NormedAddCommGroup.ofCore (CStarModule.normedSpaceCore A)
 
@@ -311,7 +321,9 @@ private lemma isBounded_pi_iff_aux (s : Set C⋆ᵐᵒᵈ(A, Π i, E i)) :
 end Aux
 
 noncomputable instance : NormedAddCommGroup C⋆ᵐᵒᵈ(A, Π i, E i) :=
-  .ofCoreReplaceAll (normedSpaceCore A) uniformity_pi_eq_aux isBounded_pi_iff_aux
+  fast_instance% .ofCoreReplaceAll (normedSpaceCore A) ?_ ?_
+where finally
+  exacts [uniformity_pi_eq_aux, isBounded_pi_iff_aux]
 
 noncomputable instance : NormedSpace ℂ C⋆ᵐᵒᵈ(A, Π i, E i) := .ofCore (normedSpaceCore A)
 
@@ -333,7 +345,7 @@ Note: this instance requires `SMul ℂᵐᵒᵖ E` and `IsCentralScalar ℂ E` i
 which is unlikely to occur in practice. However, in practice one could either add those instances
 to the type `E` in question, or else supply them to this instance manually, which is reason behind
 the naming of these two instance arguments. -/
-instance instCStarModuleComplex : CStarModule ℂ E where
+noncomputable instance instCStarModuleComplex : CStarModule ℂ E where
   inner x y := ⟪x, y⟫_ℂ
   inner_add_right := by simp [_root_.inner_add_right]
   inner_self_nonneg {x} := by

@@ -3,8 +3,10 @@ Copyright (c) 2017 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Batteries.Data.DList.Basic
-import Mathlib.Data.WSeq.Basic
+module
+
+public import Batteries.Data.DList.Basic
+public import Mathlib.Data.WSeq.Basic
 
 /-!
 # Miscellaneous definitions concerning weak sequences
@@ -12,6 +14,8 @@ import Mathlib.Data.WSeq.Basic
 These definitions, as well as those in `Mathlib/Data/WSeq/Productive.lean`, are not needed for the
 development of `Mathlib/Data/Seq/Parallel.lean`.
 -/
+
+@[expose] public section
 
 universe u v w
 

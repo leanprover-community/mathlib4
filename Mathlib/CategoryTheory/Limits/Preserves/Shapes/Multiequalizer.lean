@@ -3,7 +3,9 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.Multiequalizer
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.Multiequalizer
 
 /-!
 # Preservation of multicoequalizers
@@ -20,11 +22,13 @@ then `c.map F` also is (see `Multicofork.isColimitMapOfPreserves`).
 
 -/
 
+@[expose] public section
+
 universe w w' v u
 
 namespace CategoryTheory
 
-variable {C D : Type*} [Category C] [Category D]
+variable {C D : Type*} [Category* C] [Category* D]
 
 namespace Limits
 
@@ -39,6 +43,7 @@ def MultispanIndex.map : MultispanIndex J D where
   fst i := F.map (d.fst i)
   snd i := F.map (d.snd i)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- If `d : MultispanIndex J C` and `F : C ⥤ D`, this is the obvious isomorphism
 `(d.map F).multispan ≅ d.multispan ⋙ F`. -/
 @[simps!]
@@ -51,6 +56,7 @@ def MultispanIndex.multispanMapIso : (d.map F).multispan ≅ d.multispan ⋙ F :
 
 variable {d}
 
+set_option backward.defeqAttrib.useBackward true in
 /-- If `d : MultispanIndex J C`, `c : Multicofork d` and `F : C ⥤ D`,
 this is the induced multicofork of `d.map F`. -/
 @[simps!]
@@ -59,6 +65,7 @@ def Multicofork.map : Multicofork (d.map F) :=
     dsimp
     rw [← F.map_comp, ← F.map_comp, condition])
 
+set_option backward.defeqAttrib.useBackward true in
 /-- If `d : MultispanIndex J C`, `c : Multicofork d` and `F : C ⥤ D`,
 the cocone `F.mapCocone c` is colimit iff the multicofork `c.map F` is. -/
 def Multicofork.isColimitMapEquiv :

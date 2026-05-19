@@ -3,9 +3,11 @@ Copyright (c) 2022 Moritz Doll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll
 -/
-import Mathlib.Analysis.LocallyConvex.AbsConvex
-import Mathlib.Analysis.LocallyConvex.WithSeminorms
-import Mathlib.Analysis.Convex.Gauge
+module
+
+public import Mathlib.Analysis.LocallyConvex.AbsConvex
+public import Mathlib.Analysis.LocallyConvex.WithSeminorms
+public import Mathlib.Analysis.Convex.Gauge
 
 /-!
 # Absolutely convex open sets
@@ -25,8 +27,11 @@ convex open neighborhoods of zero.
 
 * `with_gaugeSeminormFamily`: the topology of a locally convex space is induced by the family
   `gaugeSeminormFamily`.
+* `LocallyConvexSpace.toPolynormableSpace`: a locally convex space is polynormable
 
 -/
+
+@[expose] public section
 
 open NormedField Set
 
@@ -36,7 +41,7 @@ variable {𝕜 E : Type*}
 
 section AbsolutelyConvexSets
 
-variable [TopologicalSpace E] [AddCommMonoid E] [Zero E] [SeminormedRing 𝕜]
+variable [TopologicalSpace E] [AddCommMonoid E] [SeminormedRing 𝕜]
 variable [SMul 𝕜 E]
 variable (𝕜 E) [PartialOrder 𝕜]
 
@@ -123,3 +128,7 @@ theorem with_gaugeSeminormFamily : WithSeminorms (gaugeSeminormFamily 𝕜 E) :=
   have hr'' : (r : 𝕜) ≠ 0 := by simp [hr.ne']
   rw [hr', ← Seminorm.smul_ball_zero hr'', gaugeSeminormFamily_ball]
   exact S.coe_isOpen.smul₀ hr''
+
+/-- Any locally convex real or complex vector space is polynormable. -/
+instance LocallyConvexSpace.toPolynormableSpace : PolynormableSpace 𝕜 E :=
+  with_gaugeSeminormFamily.toPolynormableSpace

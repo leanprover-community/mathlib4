@@ -3,7 +3,9 @@ Copyright (c) 2014 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Yaël Dillies, Patrick Stevens
 -/
-import Mathlib.Algebra.Order.Field.Basic
+module
+
+public import Mathlib.Algebra.Order.Field.Basic
 
 /-!
 # Cast of naturals into ordered fields
@@ -14,6 +16,8 @@ This file concerns the canonical homomorphism `ℕ → F`, where `F` is a `Linea
 
 * `Nat.cast_div_le`: in all cases, `↑(m / n) ≤ ↑m / ↑ n`
 -/
+
+public section
 
 
 namespace Nat

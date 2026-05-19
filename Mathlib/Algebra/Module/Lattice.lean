@@ -3,9 +3,11 @@ Copyright (c) 2024 Judith Ludwig, Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Judith Ludwig, Christian Merten
 -/
-import Mathlib.LinearAlgebra.Dimension.Localization
-import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
-import Mathlib.LinearAlgebra.FreeModule.PID
+module
+
+public import Mathlib.LinearAlgebra.Dimension.Localization
+public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
+public import Mathlib.LinearAlgebra.FreeModule.PID
 
 /-!
 # Lattices
@@ -42,6 +44,8 @@ generated condition is replaced by having the discrete topology. This is for exa
 for complex tori.
 -/
 
+@[expose] public section
+
 open Module
 open scoped Pointwise
 
@@ -62,7 +66,7 @@ Note 2: In the case `R = ℤ` and `A = K` a field, there is also `IsZLattice` wh
 generated condition is replaced by having the discrete topology. -/
 class IsLattice (A : outParam Type*) [CommRing A] [Algebra R A]
     {V : Type*} [AddCommMonoid V] [Module R V] [Module A V] [IsScalarTower R A V]
-    [Algebra R A] [IsScalarTower R A V] (M : Submodule R V) : Prop where
+    [IsScalarTower R A V] (M : Submodule R V) : Prop where
   fg : M.FG
   span_eq_top : Submodule.span A (M : Set V) = ⊤
 
@@ -79,6 +83,7 @@ instance finite [IsLattice A M] : Module.Finite R M := by
   rw [Module.Finite.iff_fg]
   exact IsLattice.fg
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The action of `Aˣ` on `R`-submodules of `V` preserves `IsLattice`. -/
 instance smul [IsLattice A M] (a : Aˣ) : IsLattice A (a • M : Submodule R V) where
   fg := by
@@ -162,10 +167,10 @@ lemma of_rank_le [Module.Finite K V] [IsFractionRing R K] {M : Submodule R V}
 variable [IsPrincipalIdealRing R]
 
 /-- Any lattice over a PID is a free `R`-module.
-Note that under our conditions, `NoZeroSMulDivisors R K` simply says that `algebraMap R K` is
+Note that under our conditions, `Module.IsTorsionFree R K` simply says that `algebraMap R K` is
 injective. -/
-instance free [NoZeroSMulDivisors R K] (M : Submodule R V) [IsLattice K M] : Module.Free R M := by
-  have := NoZeroSMulDivisors.trans_faithfulSMul R K V
+instance free [Module.IsTorsionFree R K] (M : Submodule R V) [IsLattice K M] : Module.Free R M := by
+  have := Module.IsTorsionFree.trans_faithfulSMul R K V
   -- any torsion free finite module over a PID is free
   infer_instance
 

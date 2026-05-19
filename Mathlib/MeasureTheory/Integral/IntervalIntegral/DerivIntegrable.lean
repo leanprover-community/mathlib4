@@ -3,26 +3,31 @@ Copyright (c) 2025 Yizheng Zhu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yizheng Zhu
 -/
-import Mathlib.Analysis.BoundedVariation
-import Mathlib.MeasureTheory.Function.AbsolutelyContinuous
-import Mathlib.MeasureTheory.Integral.IntervalIntegral.Slope
+module
+
+public import Mathlib.Analysis.BoundedVariation
+public import Mathlib.MeasureTheory.Function.AbsolutelyContinuous
+public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Slope
+import Mathlib.Algebra.Order.Interval.Set.Group
 
 /-!
 # `f'` is interval integrable for certain classes of functions `f`
 
 This file proves that:
 * `MonotoneOn.intervalIntegrable_deriv`: If `f` is monotone on `a..b`, then `f'` is interval
-integrable on `a..b`.
+  integrable on `a..b`.
 * `MonotoneOn.intervalIntegral_deriv_mem_uIcc`: If `f` is monotone on `a..b`, then the integral of
-`f'` on `a..b` is in `uIcc 0 (f b - f a)`.
+  `f'` on `a..b` is in `uIcc 0 (f b - f a)`.
 * `BoundedVariationOn.intervalIntegrable_deriv`: If `f` has bounded variation on `a..b`,
-then `f'` is interval integrable on `a..b`.
+  then `f'` is interval integrable on `a..b`.
 * `AbsolutelyContinuousOnInterval.intervalIntegrable_deriv`: If `f` is absolutely continuous on
-`a..b`, then `f'` is interval integrable on `a..b`.
+  `a..b`, then `f'` is interval integrable on `a..b`.
 
 ## Tags
 interval integrable, monotone, bounded variation, absolutely continuous
 -/
+
+public section
 
 open MeasureTheory Set Filter
 
@@ -114,7 +119,7 @@ theorem MonotoneOn.intervalIntegral_deriv_mem_uIcc {f : ℝ → ℝ} {a b : ℝ}
   rw [← uIcc_of_le hab] at hGf hG hG'
   have : f a ≤ f b := hf (by simp [hab]) (by simp [hab]) hab
   rw [uIcc_of_le (by linarith), mem_Icc]
-  have f_deriv_nonneg {x : ℝ} (hx : x ∈ Ioo a b): 0 ≤ deriv f x := by
+  have f_deriv_nonneg {x : ℝ} (hx : x ∈ Ioo a b) : 0 ≤ deriv f x := by
     rw [← derivWithin_of_mem_nhds (Icc_mem_nhds (a := a) (b := b) (by grind) (by grind))]
     exact hf.derivWithin_nonneg
   constructor
@@ -135,7 +140,7 @@ theorem MonotoneOn.intervalIntegral_deriv_mem_uIcc {f : ℝ → ℝ} {a b : ℝ}
     refine intervalIntegral.integral_congr_ae ?_
     rw [uIoc_of_le hab]
     filter_upwards [h₂] with x _ _
-    exact abs_eq_self.mpr (f_deriv_nonneg (by rw [← Ioc_diff_right]; grind)) |>.symm
+    exact abs_eq_self.mpr (f_deriv_nonneg (by grind)) |>.symm
 
 /-- If `f` has bounded variation on `uIcc a b`, then `f'` is interval integrable on `a..b`. -/
 theorem BoundedVariationOn.intervalIntegrable_deriv {f : ℝ → ℝ} {a b : ℝ}

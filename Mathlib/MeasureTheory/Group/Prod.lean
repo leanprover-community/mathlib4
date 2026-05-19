@@ -3,8 +3,10 @@ Copyright (c) 2021 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-import Mathlib.MeasureTheory.Group.Measure
-import Mathlib.MeasureTheory.Measure.Prod
+module
+
+public import Mathlib.MeasureTheory.Group.Measure
+public import Mathlib.MeasureTheory.Measure.Prod
 
 /-!
 # Measure theory in the product of groups
@@ -37,6 +39,8 @@ continuous functions instead of measurable sets and working in the general local
 setting, see the file `Mathlib/MeasureTheory/Measure/Haar/Unique.lean`.
 -/
 
+@[expose] public section
+
 
 noncomputable section
 
@@ -54,18 +58,14 @@ variable (μ ν : Measure G) [SFinite ν] [SFinite μ] {s : Set G}
 
 /-- The map `(x, y) ↦ (x, xy)` as a `MeasurableEquiv`. -/
 @[to_additive /-- The map `(x, y) ↦ (x, x + y)` as a `MeasurableEquiv`. -/]
-protected def MeasurableEquiv.shearMulRight [MeasurableInv G] : G × G ≃ᵐ G × G :=
-  { Equiv.prodShear (Equiv.refl _) Equiv.mulLeft with
-    measurable_toFun := measurable_fst.prodMk measurable_mul
-    measurable_invFun := measurable_fst.prodMk <| measurable_fst.inv.mul measurable_snd }
+protected def MeasurableEquiv.shearMulRight [MeasurableInv G] : G × G ≃ᵐ G × G where
+  toEquiv := .prodShear (.refl _) .mulLeft
 
-/-- The map `(x, y) ↦ (x, y / x)` as a `MeasurableEquiv` with as inverse `(x, y) ↦ (x, yx)` -/
+/-- The map `(x, y) ↦ (x, y / x)` as a `MeasurableEquiv` with inverse `(x, y) ↦ (x, yx)` -/
 @[to_additive
-/-- The map `(x, y) ↦ (x, y - x)` as a `MeasurableEquiv` with as inverse `(x, y) ↦ (x, y + x)`. -/]
-protected def MeasurableEquiv.shearDivRight [MeasurableInv G] : G × G ≃ᵐ G × G :=
-  { Equiv.prodShear (Equiv.refl _) Equiv.divRight with
-    measurable_toFun := measurable_fst.prodMk <| measurable_snd.div measurable_fst
-    measurable_invFun := measurable_fst.prodMk <| measurable_snd.mul measurable_fst }
+/-- The map `(x, y) ↦ (x, y - x)` as a `MeasurableEquiv` with inverse `(x, y) ↦ (x, y + x)`. -/]
+protected def MeasurableEquiv.shearDivRight [MeasurableInv G] : G × G ≃ᵐ G × G where
+  toEquiv := .prodShear (.refl _) .divRight
 
 variable {G}
 

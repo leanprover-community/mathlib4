@@ -3,8 +3,10 @@ Copyright (c) 2024 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.MeasureTheory.Group.Action
-import Mathlib.Order.Filter.EventuallyConst
+module
+
+public import Mathlib.MeasureTheory.Group.Action
+public import Mathlib.Order.Filter.EventuallyConst
 
 /-!
 # A.e. stabilizer of a set
@@ -26,6 +28,8 @@ thus we do not deal with monoid actions.
 Also, many lemmas in this file are true for a *quasi-measure-preserving* action,
 but we don't have the corresponding typeclass.
 -/
+
+@[expose] public section
 
 open Filter Set MeasureTheory
 open scoped Pointwise

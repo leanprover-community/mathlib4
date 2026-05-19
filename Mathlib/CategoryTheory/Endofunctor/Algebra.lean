@@ -3,8 +3,10 @@ Copyright (c) 2022 Joseph Hua. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Bhavik Mehta, Johan Commelin, Reid Barton, Robert Y. Lewis, Joseph Hua
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.IsTerminal
-import Mathlib.CategoryTheory.Functor.EpiMono
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.IsTerminal
+public import Mathlib.CategoryTheory.Functor.EpiMono
 
 /-!
 
@@ -21,6 +23,8 @@ coalgebras over `G`.
 * Prove that if the countable infinite product over the powers of the endofunctor exists, then
   algebras over the endofunctor coincide with algebras over the free monad on the endofunctor.
 -/
+
+@[expose] public section
 
 
 universe v u
@@ -155,11 +159,13 @@ def functorOfNatTrans {F G : C ⥤ C} (α : G ⟶ F) : Algebra F ⥤ Algebra G w
       str := α.app _ ≫ A.str }
   map f := { f := f.1 }
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The identity transformation induces the identity endofunctor on the category of algebras. -/
 @[simps!]
 def functorOfNatTransId : functorOfNatTrans (𝟙 F) ≅ 𝟭 _ :=
   NatIso.ofComponents fun X => isoMk (Iso.refl _)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- A composition of natural transformations gives the composition of corresponding functors. -/
 @[simps!]
 def functorOfNatTransComp {F₀ F₁ F₂ : C ⥤ C} (α : F₀ ⟶ F₁) (β : F₁ ⟶ F₂) :
@@ -177,6 +183,7 @@ def functorOfNatTransEq {F G : C ⥤ C} {α β : F ⟶ G} (h : α = β) :
     functorOfNatTrans α ≅ functorOfNatTrans β :=
   NatIso.ofComponents fun X => isoMk (Iso.refl _)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Naturally isomorphic endofunctors give equivalent categories of algebras.
 Furthermore, they are equivalent as categories over `C`, that is,
 we have `equiv_of_nat_iso h ⋙ forget = forget`.
@@ -347,11 +354,13 @@ def functorOfNatTrans {F G : C ⥤ C} (α : F ⟶ G) : Coalgebra F ⥤ Coalgebra
     { f := f.1
       h := by rw [Category.assoc, ← α.naturality, ← Category.assoc, f.h, Category.assoc] }
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The identity transformation induces the identity endofunctor on the category of coalgebras. -/
 @[simps!]
 def functorOfNatTransId : functorOfNatTrans (𝟙 F) ≅ 𝟭 _ :=
   NatIso.ofComponents fun X => isoMk (Iso.refl _)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- A composition of natural transformations gives the composition of corresponding functors. -/
 @[simps!]
 def functorOfNatTransComp {F₀ F₁ F₂ : C ⥤ C} (α : F₀ ⟶ F₁) (β : F₁ ⟶ F₂) :
@@ -368,6 +377,7 @@ def functorOfNatTransEq {F G : C ⥤ C} {α β : F ⟶ G} (h : α = β) :
     functorOfNatTrans α ≅ functorOfNatTrans β :=
   NatIso.ofComponents fun X => isoMk (Iso.refl _)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Naturally isomorphic endofunctors give equivalent categories of coalgebras.
 Furthermore, they are equivalent as categories over `C`, that is,
 we have `equiv_of_nat_iso h ⋙ forget = forget`.
@@ -384,7 +394,7 @@ namespace Terminal
 
 variable {A : Coalgebra F} (h : Limits.IsTerminal A)
 
-/-- The inverse of the structure map of an terminal coalgebra -/
+/-- The inverse of the structure map of a terminal coalgebra -/
 @[simp]
 def strInv : F.obj A.1 ⟶ A.1 :=
   (h.from ⟨F.obj A.V, F.map A.str⟩).f
@@ -447,6 +457,8 @@ def Coalgebra.toAlgebraOf (adj : F ⊣ G) : Coalgebra G ⥤ Algebra F where
     { f := f.1
       h := Coalgebra.homEquiv_naturality_str_symm adj _ _ f }
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 /-- Given an adjunction, assigning to an algebra over the left adjoint a coalgebra over its right
 adjoint and going back is isomorphic to the identity functor. -/
 @[simps!]
@@ -454,6 +466,8 @@ def AlgCoalgEquiv.unitIso (adj : F ⊣ G) :
     𝟭 (Algebra F) ≅ Algebra.toCoalgebraOf adj ⋙ Coalgebra.toAlgebraOf adj :=
   NatIso.ofComponents (fun _ ↦ Algebra.isoMk <| Iso.refl _)
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 /-- Given an adjunction, assigning to a coalgebra over the right adjoint an algebra over the left
 adjoint and going back is isomorphic to the identity functor. -/
 @[simps!]
@@ -461,6 +475,7 @@ def AlgCoalgEquiv.counitIso (adj : F ⊣ G) :
     Coalgebra.toAlgebraOf adj ⋙ Algebra.toCoalgebraOf adj ≅ 𝟭 (Coalgebra G) :=
   NatIso.ofComponents (fun _ ↦ Coalgebra.isoMk <| Iso.refl _)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- If `F` is left adjoint to `G`, then the category of algebras over `F` is equivalent to the
 category of coalgebras over `G`. -/
 @[simps!]

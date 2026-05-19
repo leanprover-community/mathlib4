@@ -3,16 +3,20 @@ Copyright (c) 2022 Yuyang Zhao. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuyang Zhao
 -/
-import Mathlib.Algebra.Polynomial.SumIteratedDerivative
-import Mathlib.Analysis.Calculus.Deriv.Polynomial
-import Mathlib.Analysis.SpecialFunctions.ExpDeriv
-import Mathlib.MeasureTheory.Integral.IntervalIntegral.FundThmCalculus
-import Mathlib.RingTheory.Int.Basic
-import Mathlib.Topology.Algebra.Polynomial
+module
+
+public import Mathlib.Algebra.Polynomial.SumIteratedDerivative
+public import Mathlib.Analysis.Calculus.Deriv.Polynomial
+public import Mathlib.Analysis.SpecialFunctions.ExpDeriv
+public import Mathlib.MeasureTheory.Integral.IntervalIntegral.FundThmCalculus
+public import Mathlib.RingTheory.Int.Basic
+public import Mathlib.Topology.Algebra.Polynomial
 
 /-!
 # Analytic part of the Lindemann-Weierstrass theorem
 -/
+
+public section
 
 namespace LindemannWeierstrass
 
@@ -132,7 +136,7 @@ private theorem exp_polynomial_approx_aux (f : ℤ[X]) (s : ℂ) :
   split_ifs with hx1
   · rw [one_pow]
     exact pow_le_one₀ (mul_nonneg hx.1.le (norm_nonneg _)) hx1
-  · push_neg at hx1
+  · push Not at hx1
     exact pow_le_pow_right₀ hx1.le (Nat.sub_le _ _)
 
 /--

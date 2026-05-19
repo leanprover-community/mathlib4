@@ -3,8 +3,10 @@ Copyright (c) 2024 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
-import Mathlib.NumberTheory.LSeries.RiemannZeta
-import Mathlib.NumberTheory.Harmonic.GammaDeriv
+module
+
+public import Mathlib.NumberTheory.LSeries.RiemannZeta
+public import Mathlib.NumberTheory.Harmonic.GammaDeriv
 
 /-!
 # Asymptotics of `ζ s` as `s → 1`
@@ -28,6 +30,8 @@ By combining these formulae, one deduces that the limit of `ζ s - 1 / (s - 1)` 
 exists and is equal to `γ`. Finally, using this and the Riemann removable singularity criterion
 we obtain the limit along punctured neighbourhoods of 1 in `ℂ`.
 -/
+
+@[expose] public section
 
 open Real Set MeasureTheory Filter Topology
 
@@ -210,8 +214,8 @@ lemma term_tsum_of_lt {s : ℝ} (hs : 1 < s) :
     apply (((Summable.hasSum ?_).tendsto_sum_nat).sub ?_).const_mul
     · exact_mod_cast (summable_nat_add_iff 1).mpr (summable_one_div_nat_rpow.mpr hs)
     · apply tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds
-      · change Tendsto (fun n : ℕ ↦ (1 / ↑(n + 1) : ℝ) ^ (s - 1)) ..
-        rw [show 𝓝 (0 : ℝ) = 𝓝 (0 ^ (s - 1)) by rw [zero_rpow]; linarith]
+              (h := fun n : ℕ ↦ (1 / ↑(n + 1) : ℝ) ^ (s - 1))
+      · rw [show 𝓝 (0 : ℝ) = 𝓝 (0 ^ (s - 1)) by rw [zero_rpow]; linarith]
         refine Tendsto.rpow_const ?_ (Or.inr <| by linarith)
         exact (tendsto_const_div_atTop_nhds_zero_nat _).comp (tendsto_add_atTop_nat _)
       · intro n
@@ -259,7 +263,7 @@ lemma continuousOn_term (n : ℕ) :
     · exact this.le
     · linarith
   · rw [← IntegrableOn, ← intervalIntegrable_iff_integrableOn_Ioc_of_le (by linarith)]
-    exact_mod_cast term_welldef (by cutsat : 0 < (n + 1)) zero_lt_one
+    exact_mod_cast term_welldef (by lia : 0 < (n + 1)) zero_lt_one
   · rw [ae_restrict_iff' measurableSet_Ioc]
     filter_upwards with x hx
     refine continuousOn_of_forall_continuousAt (fun s (hs : 1 ≤ s) ↦ continuousAt_const.div ?_ ?_)
@@ -278,7 +282,6 @@ lemma continuousOn_term_tsum : ContinuousOn term_tsum (Ici 1) := by
     · have : 1 ≤ x := le_trans (by simp) hx.1.le
       gcongr
       · exact sub_nonneg.mpr hx.1.le
-      · assumption
       · exact hs
   · rw [intervalIntegral.integral_of_le (by linarith)]
     refine setIntegral_nonneg measurableSet_Ioc (fun x hx ↦ div_nonneg ?_ (rpow_nonneg ?_ _))
@@ -307,7 +310,7 @@ lemma tendsto_riemannZeta_sub_one_div_nhds_right :
   · apply tendsto_const_nhds.sub
     rw [← one_mul (term_tsum 1)]
     apply (tendsto_id.mono_left nhdsWithin_le_nhds).mul
-    have := continuousOn_term_tsum.continuousWithinAt left_mem_Ici
+    have := continuousOn_term_tsum.continuousWithinAt self_mem_Ici
     exact Tendsto.mono_left this (nhdsWithin_mono _ Ioi_subset_Ici_self)
 
 /-- The function `ζ s - 1 / (s - 1)` tends to `γ` as `s → 1`. -/
@@ -415,6 +418,10 @@ lemma _root_.riemannZeta_one_ne_zero : riemannZeta 1 ≠ 0 := by
   · rw [lt_log_iff_exp_lt (by positivity)]
     exact (lt_trans Real.exp_one_lt_d9 (by norm_num)).trans_le
       <| mul_le_mul_of_nonneg_left two_le_pi (by simp)
+
+lemma _root_.riemannZeta_eventually_ne_zero_nhds_one : ∀ᶠ s in 𝓝 1, riemannZeta s ≠ 0 := by
+  filter_upwards [eventually_nhdsWithin_iff.1 <| riemannZeta_residue_one.eventually_ne one_ne_zero]
+  grind [riemannZeta_one_ne_zero]
 
 end val_at_one
 

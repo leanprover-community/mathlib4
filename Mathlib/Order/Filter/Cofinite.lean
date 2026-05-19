@@ -3,15 +3,18 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jeremy Avigad, Yury Kudryashov
 -/
-import Mathlib.Data.Finite.Prod
-import Mathlib.Data.Fintype.Pi
-import Mathlib.Data.Set.Finite.Lemmas
-import Mathlib.Order.ConditionallyCompleteLattice.Basic
-import Mathlib.Order.Filter.CountablyGenerated
-import Mathlib.Order.Filter.Ker
-import Mathlib.Order.Filter.Pi
-import Mathlib.Order.Filter.Prod
-import Mathlib.Order.Filter.AtTopBot.Basic
+module
+
+public import Mathlib.Data.Finite.Prod
+public import Mathlib.Data.Fintype.Pi
+public import Mathlib.Data.Set.Finite.Lemmas
+public import Mathlib.Order.ConditionallyCompleteLattice.Basic
+public import Mathlib.Order.Filter.CountablyGenerated
+public import Mathlib.Order.Filter.Ker
+public import Mathlib.Order.Filter.Pi
+public import Mathlib.Order.Filter.Prod
+public import Mathlib.Order.Filter.AtTopBot.Basic
+public import Mathlib.Order.Heyting.Boundary
 
 /-!
 # The cofinite filter
@@ -26,6 +29,8 @@ and prove its basic properties. In particular, we prove that for `ℕ` it is equ
 
 Define filters for other cardinalities of the complement.
 -/
+
+@[expose] public section
 
 open Set Function
 
@@ -82,14 +87,8 @@ theorem _root_.Set.Finite.eventually_cofinite_notMem {s : Set α} (hs : s.Finite
     ∀ᶠ x in cofinite, x ∉ s :=
   hs.compl_mem_cofinite
 
-@[deprecated (since := "2025-05-24")]
-alias _root_.Set.Finite.eventually_cofinite_nmem := _root_.Set.Finite.eventually_cofinite_notMem
-
 theorem _root_.Finset.eventually_cofinite_notMem (s : Finset α) : ∀ᶠ x in cofinite, x ∉ s :=
   s.finite_toSet.eventually_cofinite_notMem
-
-@[deprecated (since := "2025-05-24")]
-alias _root_.Finset.eventually_cofinite_nmem := _root_.Finset.eventually_cofinite_notMem
 
 theorem _root_.Set.infinite_iff_frequently_cofinite {s : Set α} :
     Set.Infinite s ↔ ∃ᶠ x in cofinite, x ∈ s :=
@@ -276,3 +275,56 @@ lemma Function.update_eventuallyEq [DecidableEq α] (f : α → β) (a : α) (b 
 lemma Function.update_eventuallyEq_cofinite [DecidableEq α] (f : α → β) (a : α) (b : β) :
     Function.update f a b =ᶠ[cofinite] f :=
   (Function.update_eventuallyEq f a b).filter_mono (by simp)
+
+variable {f : Filter α}
+
+/-- A filter is free iff it is smaller than the cofinite filter. -/
+theorem le_cofinite_iff_ker : f ≤ cofinite ↔ f.ker = ∅ := by
+  rw [le_cofinite_iff_compl_singleton_mem, ker_def, iInter₂_eq_empty_iff]
+  exact forall_congr' fun x => ⟨fun h => ⟨{x}ᶜ, h, by simp⟩,
+    fun ⟨s, hs, hx⟩ => mem_of_superset hs (by simpa using hx)⟩
+
+theorem le_cofinite_iff_boundary : f ≤ cofinite ↔ Coheyting.boundary f = f := by
+  rw [← Coheyting.inf_hnot_self, inf_eq_left, le_cofinite_iff_ker,
+    Filter.hnot_def, le_principal_iff]
+  constructor
+  · intro h
+    simp [h]
+  · intro h
+    rw [eq_empty_iff_forall_notMem]
+    intro x hx
+    exact hx f.kerᶜ h hx
+
+variable (f)
+
+theorem boundary_le_cofinite : Coheyting.boundary f ≤ cofinite :=
+  le_cofinite_iff_boundary.2 (Coheyting.boundary_boundary f)
+
+@[simp]
+theorem boundary_principal (s : Set α) : Coheyting.boundary (𝓟 s) = ⊥ := by
+  simp [← Coheyting.inf_hnot_self]
+
+/-- Every filter is the disjoint supremum of
+a principal filter and a free filter in a unique way. -/
+theorem existsUnique_eq_principal_sup_free :
+    ∃! p : Set α × Filter α, p.2 ≤ cofinite ∧ Disjoint (𝓟 p.1) p.2 ∧ f = 𝓟 p.1 ⊔ p.2 := by
+  refine ⟨(f.ker, Coheyting.boundary f), ⟨?_, ?_, ?_⟩, fun q hq => ?_⟩
+  · exact boundary_le_cofinite f
+  · rw [disjoint_principal_left]
+    exact mem_inf_of_right (mem_principal_self f.kerᶜ)
+  · rw [← compl_compl f.ker, ← hnot_principal, ← Filter.hnot_def,
+      Coheyting.hnot_hnot_sup_boundary]
+  · have hqk := congrArg Filter.ker hq.2.2
+    rw [ker_sup, ker_principal, le_cofinite_iff_ker.mp hq.1, union_empty] at hqk
+    refine congrArg₂ Prod.mk hqk.symm (le_antisymm (le_inf ?_ ?_) ?_)
+    · rw [hq.2.2]
+      exact le_sup_right
+    · rw [Filter.hnot_def, le_principal_iff, ← disjoint_principal_left, hqk]
+      exact hq.2.1
+    · grw [hq.2.2, Coheyting.boundary_sup_le, boundary_principal, bot_sup_eq]
+      exact Coheyting.boundary_le
+
+/-- Every filter is the disjoint supremum of a principal filter and a free filter. -/
+theorem exists_eq_principal_sup_free :
+    ∃ s g, g ≤ cofinite ∧ Disjoint (𝓟 s) g ∧ f = 𝓟 s ⊔ g :=
+  Prod.exists.mp (existsUnique_eq_principal_sup_free f).exists

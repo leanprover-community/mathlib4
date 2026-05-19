@@ -3,12 +3,15 @@ Copyright (c) 2021 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Eric Wieser
 -/
-import Mathlib.LinearAlgebra.Determinant
-import Mathlib.LinearAlgebra.Dual.Lemmas
-import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
-import Mathlib.LinearAlgebra.Matrix.Diagonal
-import Mathlib.LinearAlgebra.Matrix.DotProduct
-import Mathlib.LinearAlgebra.Matrix.Dual
+module
+
+public import Mathlib.LinearAlgebra.Determinant
+public import Mathlib.LinearAlgebra.Dimension.OrzechProperty
+public import Mathlib.LinearAlgebra.Dual.Lemmas
+public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
+public import Mathlib.LinearAlgebra.Matrix.Diagonal
+public import Mathlib.LinearAlgebra.Matrix.DotProduct
+public import Mathlib.LinearAlgebra.Matrix.Dual
 
 /-!
 # Rank of matrices
@@ -23,6 +26,8 @@ This definition does not depend on the choice of basis, see `Matrix.rank_eq_finr
 * `Matrix.eRank`: the rank of a matrix as a term in `ℕ∞`.
 
 -/
+
+@[expose] public section
 
 open Matrix
 
@@ -94,7 +99,7 @@ lemma eRank_le_card_width [StrongRankCondition R] (A : Matrix m n R) : A.eRank �
   wlog hfin : Finite n
   · simp [ENat.card_eq_top.2 (by simpa using hfin)]
   have _ := Fintype.ofFinite n
-  rw [ENat.card_eq_coe_fintype_card, eRank, toENat_le_nat]
+  rw [ENat.card_eq_coe_fintype_card, eRank, toENat_le_natCast]
   exact A.cRank_le_card_width
 
 lemma eRank_le_card_height [StrongRankCondition R] (A : Matrix m n R) : A.eRank ≤ ENat.card m := by
@@ -102,7 +107,7 @@ lemma eRank_le_card_height [StrongRankCondition R] (A : Matrix m n R) : A.eRank 
   wlog hfin : Finite m
   · simp [ENat.card_eq_top.2 (by simpa using hfin)]
   have _ := Fintype.ofFinite m
-  rw [ENat.card_eq_coe_fintype_card, eRank, toENat_le_nat]
+  rw [ENat.card_eq_coe_fintype_card, eRank, toENat_le_natCast]
   exact A.cRank_le_card_height
 
 end Infinite
@@ -142,6 +147,7 @@ theorem rank_one [Nontrivial R] [DecidableEq n] :
 theorem rank_zero [Nontrivial R] : rank (0 : Matrix m n R) = 0 := by
   rw [rank, mulVecLin_zero, LinearMap.range_zero, finrank_bot]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem cRank_zero {m n : Type*} [Nontrivial R] : cRank (0 : Matrix m n R) = 0 := by
   obtain hn | hn := isEmpty_or_nonempty n
@@ -154,8 +160,6 @@ theorem eRank_zero {m n : Type*} [Nontrivial R] : eRank (0 : Matrix m n R) = 0 :
 
 theorem rank_le_card_width [Nontrivial R] (A : Matrix m n R) :
     A.rank ≤ Fintype.card n := by
-  haveI : Module.Finite R (n → R) := Module.Finite.pi
-  haveI : Module.Free R (n → R) := Module.Free.pi _ _
   exact A.mulVecLin.finrank_range_le.trans_eq (finrank_pi _)
 
 theorem rank_le_width [Nontrivial R] {m n : ℕ} (A : Matrix (Fin m) (Fin n) R) :
@@ -218,13 +222,24 @@ lemma rank_mul_eq_right_of_isUnit_det [Fintype m] [DecidableEq m]
   have hAB : mulVecLin (A * B) = (LinearEquiv.ofIsUnitDet hA).comp (mulVecLin B) := by ext; simp
   rw [rank, rank, hAB, LinearMap.range_comp, LinearEquiv.finrank_map_eq]
 
-omit [Fintype n] in
-/-- Taking a subset of the rows and permuting the columns reduces the rank. -/
-theorem rank_submatrix_le [Nontrivial R] [Fintype m] [Fintype m₀] (f : n₀ → n) (e : m₀ ≃ m)
-    (A : Matrix n m R) : rank (A.submatrix f e) ≤ rank A := by
+/-- Taking a subset of the rows and columns reduces the rank. -/
+theorem rank_submatrix_le [Fintype n₀] (A : Matrix m n R) (r : m₀ → m) (c : n₀ → n) :
+    (A.submatrix r c).rank ≤ A.rank := by
+  nontriviality R
+  have := Module.Finite.span_of_finite R (Set.finite_range (A.submatrix r id).col)
+  calc
+    _ = (((A.submatrix r id)ᵀᵀ.submatrix id c)ᵀᵀ).rank := by simp
+    _ ≤ finrank R (span R (range (A.submatrix r id).col)) := by
+      rw [rank, Matrix.mulVecLin_transpose, Matrix.transpose_submatrix, transpose_transpose,
+        range_vecMulLinear, ← Matrix.transpose_submatrix, row_transpose]
+      exact Submodule.finrank_mono (Submodule.span_mono (fun v ⟨j, hj⟩ => ⟨c j, hj⟩))
+    _ = (A.submatrix r id)ᵀᵀ.rank := by
+      rw [rank, Matrix.mulVecLin_transpose, range_vecMulLinear]
+      rfl
+    _ = (A.submatrix r (Equiv.refl n)).rank := by simp
   rw [rank, rank, mulVecLin_submatrix, LinearMap.range_comp, LinearMap.range_comp,
-    show LinearMap.funLeft R R e.symm = LinearEquiv.funCongrLeft R R e.symm from rfl,
-    LinearEquiv.range, Submodule.map_top]
+    show LinearMap.funLeft R R (Equiv.refl n).symm = LinearEquiv.funCongrLeft R R
+      (Equiv.refl n).symm from rfl, LinearEquiv.range, Submodule.map_top]
   exact Submodule.finrank_map_le _ _
 
 theorem rank_reindex [Fintype n₀] (em : m ≃ m₀) (en : n ≃ n₀) (A : Matrix m n R) :
@@ -273,11 +288,8 @@ theorem rank_eq_finrank_range_toLin [Finite m] [DecidableEq n] {M₁ M₂ : Type
   cases nonempty_fintype m
   let e₁ := (Pi.basisFun R m).equiv v₁ (Equiv.refl _)
   let e₂ := (Pi.basisFun R n).equiv v₂ (Equiv.refl _)
-  have range_e₂ : LinearMap.range e₂ = ⊤ := by
-    rw [LinearMap.range_eq_top]
-    exact e₂.surjective
   refine LinearEquiv.finrank_eq (e₁.ofSubmodules _ _ ?_)
-  rw [← LinearMap.range_comp, ← LinearMap.range_comp_of_range_eq_top (toLin v₂ v₁ A) range_e₂]
+  rw [← LinearMap.range_comp, ← LinearMap.range_comp_of_range_eq_top (toLin v₂ v₁ A) e₂.range]
   congr 1
   apply LinearMap.pi_ext'
   rintro i
@@ -287,12 +299,10 @@ theorem rank_eq_finrank_range_toLin [Finite m] [DecidableEq n] {M₁ M₂ : Type
   rw [toLin_eq_toLin', toLin'_apply'] at aux₁
   rw [Pi.basisFun_apply] at aux₁ aux₂
   simp only [e₁, e₂, LinearMap.comp_apply, LinearEquiv.coe_coe, Equiv.refl_apply,
-    aux₁, aux₂, LinearMap.coe_single, toLin_self, map_sum, LinearEquiv.map_smul, Basis.equiv_apply]
+    aux₁, aux₂, LinearMap.coe_single, toLin_self, map_sum, map_smul, Basis.equiv_apply]
 
 theorem rank_le_card_height [Fintype m] [Nontrivial R] (A : Matrix m n R) :
     A.rank ≤ Fintype.card m := by
-  haveI : Module.Finite R (m → R) := Module.Finite.pi
-  haveI : Module.Free R (m → R) := Module.Free.pi _ _
   exact (Submodule.finrank_le _).trans (finrank_pi R).le
 
 theorem rank_le_height [Nontrivial R] {m n : ℕ} (A : Matrix (Fin m) (Fin n) R) :
@@ -461,6 +471,7 @@ lemma rank_add_rank_le_card_of_mul_eq_zero [Field R] [Finite l] [Fintype m]
 
 end Matrix
 
+set_option backward.isDefEq.respectTransparency false in
 -- TODO: generalize to `cRank` then deprecate
 theorem Matrix.rank_vecMulVec.{u} {K m n : Type u} [CommRing K] [Fintype n]
     [DecidableEq n] (w : m → K) (v : n → K) : (Matrix.vecMulVec w v).toLin'.rank ≤ 1 := by

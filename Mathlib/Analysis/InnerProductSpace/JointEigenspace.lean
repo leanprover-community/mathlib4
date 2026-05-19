@@ -3,11 +3,12 @@ Copyright (c) 2024 Jon Bannon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jon Bannon, Jack Cheverton, Samyak Dhar Tuladhar
 -/
+module
 
-import Mathlib.Analysis.InnerProductSpace.Spectrum
-import Mathlib.LinearAlgebra.Eigenspace.Pi
-import Mathlib.LinearAlgebra.Eigenspace.Semisimple
-import Mathlib.Analysis.InnerProductSpace.Semisimple
+public import Mathlib.Analysis.InnerProductSpace.Spectrum
+public import Mathlib.LinearAlgebra.Eigenspace.Pi
+public import Mathlib.LinearAlgebra.Eigenspace.Semisimple
+public import Mathlib.Analysis.InnerProductSpace.Semisimple
 
 /-! # Joint eigenspaces of commuting symmetric operators
 
@@ -37,6 +38,8 @@ and a proof obligation that the basis vectors are eigenvectors.
 symmetric operator, simultaneous eigenspaces, joint eigenspaces
 
 -/
+
+public section
 
 open Module.End
 
@@ -106,7 +109,7 @@ space, the space decomposes as an internal direct sum of simultaneous eigenspace
 operators. -/
 theorem directSum_isInternal_of_commute (hA : A.IsSymmetric) (hB : B.IsSymmetric)
     (hAB : Commute A B) :
-    DirectSum.IsInternal (fun (i : 𝕜 × 𝕜) ↦ (eigenspace A i.2 ⊓ eigenspace B i.1)):= by
+    DirectSum.IsInternal (fun (i : 𝕜 × 𝕜) ↦ (eigenspace A i.2 ⊓ eigenspace B i.1)) := by
   apply (orthogonalFamily_eigenspace_inf_eigenspace hA hB).isInternal_iff.mpr
   rw [Submodule.orthogonal_eq_bot_iff, iSup_prod, iSup_comm]
   exact iSup_iSup_eigenspace_inf_eigenspace_eq_top_of_commute hA hB hAB

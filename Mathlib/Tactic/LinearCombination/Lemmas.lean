@@ -3,15 +3,21 @@ Copyright (c) 2022 Abby J. Goldberg. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Abby J. Goldberg, Mario Carneiro, Heather Macbeth
 -/
-import Mathlib.Algebra.Field.Defs
-import Mathlib.Algebra.Order.Module.Defs
-import Mathlib.Data.Ineq
+module
+
+public meta import Mathlib.Data.Ineq
+public import Mathlib.Algebra.Field.Defs
+public import Mathlib.Algebra.Order.Module.Defs
+public import Mathlib.Data.Ineq
+public meta import Mathlib.Tactic.ToAdditive
 
 /-!
-# Lemmas for the linear_combination tactic
+# Lemmas for the `linear_combination` tactic
 
 These should not be used directly in user code.
 -/
+
+public meta section
 
 open Lean
 
@@ -26,19 +32,19 @@ theorem add_eq_eq [Add α] (p₁ : (a₁ : α) = b₁) (p₂ : a₂ = b₂) : a�
 
 theorem add_le_eq [AddCommMonoid α] [PartialOrder α] [IsOrderedAddMonoid α]
     (p₁ : (a₁ : α) ≤ b₁) (p₂ : a₂ = b₂) : a₁ + a₂ ≤ b₁ + b₂ :=
-  p₂ ▸ add_le_add_right p₁ b₂
+  p₂ ▸ add_le_add_left p₁ b₂
 
 theorem add_eq_le [AddCommMonoid α] [PartialOrder α] [IsOrderedAddMonoid α]
     (p₁ : (a₁ : α) = b₁) (p₂ : a₂ ≤ b₂) : a₁ + a₂ ≤ b₁ + b₂ :=
-  p₁ ▸ add_le_add_left p₂ b₁
+  p₁ ▸ add_le_add_right p₂ b₁
 
 theorem add_lt_eq [AddCommMonoid α] [PartialOrder α] [IsOrderedCancelAddMonoid α]
     (p₁ : (a₁ : α) < b₁) (p₂ : a₂ = b₂) : a₁ + a₂ < b₁ + b₂ :=
-  p₂ ▸ add_lt_add_right p₁ b₂
+  p₂ ▸ add_lt_add_left p₁ b₂
 
 theorem add_eq_lt [AddCommMonoid α] [PartialOrder α] [IsOrderedCancelAddMonoid α] {a₁ b₁ a₂ b₂ : α}
     (p₁ : a₁ = b₁) (p₂ : a₂ < b₂) : a₁ + a₂ < b₁ + b₂ :=
-  p₁ ▸ add_lt_add_left p₂ b₁
+  p₁ ▸ add_lt_add_right p₂ b₁
 
 /-! ### Multiplication -/
 

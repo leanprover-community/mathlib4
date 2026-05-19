@@ -3,12 +3,14 @@ Copyright (c) 2023 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Topology.MetricSpace.Dilation
+module
+
+public import Mathlib.Topology.MetricSpace.Dilation
 
 /-!
 # Dilation equivalence
 
-In this file we define `DilationEquiv X Y`, a type of bundled equivalences between `X` and Y` such
+In this file we define `DilationEquiv X Y`, a type of bundled equivalences between `X` and `Y` such
 that `edist (f x) (f y) = r * edist x y` for some `r : ℝ≥0`, `r ≠ 0`.
 
 We also develop basic API about these equivalences.
@@ -18,6 +20,8 @@ We also develop basic API about these equivalences.
 - Add missing lemmas (compare to other `*Equiv` structures).
 - [after-port] Add `DilationEquivInstance` for `IsometryEquiv`.
 -/
+
+@[expose] public section
 
 open scoped NNReal ENNReal
 open Function Set Filter Bornology
@@ -33,7 +37,7 @@ class DilationEquivClass [EquivLike F X Y] : Prop where
   edist_eq' : ∀ f : F, ∃ r : ℝ≥0, r ≠ 0 ∧ ∀ x y : X, edist (f x) (f y) = r * edist x y
 
 instance (priority := 100) [EquivLike F X Y] [DilationEquivClass F X Y] : DilationClass F X Y :=
-  { inferInstanceAs (FunLike F X Y), ‹DilationEquivClass F X Y› with }
+  { (inferInstance : FunLike F X Y), ‹DilationEquivClass F X Y› with }
 
 end Class
 

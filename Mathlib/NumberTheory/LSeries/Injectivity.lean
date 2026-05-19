@@ -3,9 +3,11 @@ Copyright (c) 2024 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
 -/
-import Mathlib.Analysis.Normed.Group.Tannery
-import Mathlib.NumberTheory.LSeries.Convergence
-import Mathlib.NumberTheory.LSeries.Linearity
+module
+
+public import Mathlib.Analysis.Normed.Group.Tannery
+public import Mathlib.NumberTheory.LSeries.Convergence
+public import Mathlib.NumberTheory.LSeries.Linearity
 
 /-!
 # A converging L-series determines its coefficients
@@ -14,6 +16,8 @@ We show that two functions `f` and `g : ℕ → ℂ` whose L-series agree and bo
 must agree on all nonzero arguments. See `LSeries_eq_iff_of_abscissaOfAbsConv_lt_top`
 and `LSeries_injOn`.
 -/
+
+public section
 
 open LSeries Complex
 
@@ -111,7 +115,6 @@ lemma LSeries.tendsto_cpow_mul_atTop {f : ℕ → ℂ} {n : ℕ} (h : ∀ m ≤ 
     have hkn : 1 ≤ (k / (n + 1 :) : ℝ) :=
       (one_le_div (by positivity)).mpr <| mod_cast Nat.le_of_succ_le H
     gcongr
-    assumption
   · simp [hF₀ _ H]
 
 open Filter in
@@ -235,7 +238,7 @@ lemma LSeries_eq_iff_of_abscissaOfAbsConv_lt_top {f g : ℕ → ℂ} (hf : absci
 of `f` converges somewhere. -/
 lemma LSeries_injOn : Set.InjOn LSeries {f | f 0 = 0 ∧ abscissaOfAbsConv f < ⊤} := by
   intro f hf g hg h
-  simp only [Set.mem_setOf] at hf hg
+  push _ ∈ _ at hf hg
   replace h := (LSeries_eq_iff_of_abscissaOfAbsConv_lt_top hf.2 hg.2).mp h
   ext1 n
   cases n with

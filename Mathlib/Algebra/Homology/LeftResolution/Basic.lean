@@ -3,9 +3,11 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.Additive
-import Mathlib.Algebra.Homology.ShortComplex.Abelian
-import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
+module
+
+public import Mathlib.Algebra.Homology.Additive
+public import Mathlib.Algebra.Homology.ShortComplex.Abelian
+public import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
 
 /-!
 # Left resolutions
@@ -21,11 +23,13 @@ This shall be used in order to construct functorial flat resolutions.
 
 -/
 
+@[expose] public section
+
 namespace CategoryTheory.Abelian
 
 open Category Limits Preadditive ZeroObject
 
-variable {A C : Type*} [Category C] [Category A] (ι : C ⥤ A)
+variable {A C : Type*} [Category* C] [Category* A] (ι : C ⥤ A)
 
 /-- Given a fully faithful functor `ι : C ⥤ A`, this structure contains the data
 of a functor `F : A ⥤ C` and a functorial epimorphism
@@ -68,6 +72,7 @@ identifies in degree `1` to `Λ.F.obj (kernel (Λ.π.app X))`. -/
 noncomputable def chainComplexXOneIso :
     (Λ.chainComplex X).X 1 ≅ Λ.F.obj (kernel (Λ.π.app X)) := Iso.refl _
 
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 lemma map_chainComplex_d_1_0 :
     ι.map ((Λ.chainComplex X).d 1 0) =
@@ -80,6 +85,7 @@ noncomputable def chainComplexXIso (n : ℕ) :
     (Λ.chainComplex X).X (n + 2) ≅ Λ.F.obj (kernel (ι.map ((Λ.chainComplex X).d (n + 1) n))) := by
   apply ChainComplex.mk'XIso
 
+set_option backward.isDefEq.respectTransparency false in
 lemma map_chainComplex_d (n : ℕ) :
     ι.map ((Λ.chainComplex X).d (n + 2) (n + 1)) =
     ι.map (Λ.chainComplexXIso X n).hom ≫ Λ.π.app (kernel (ι.map ((Λ.chainComplex X).d (n + 1) n))) ≫
@@ -92,10 +98,12 @@ lemma map_chainComplex_d (n : ℕ) :
 
 attribute [irreducible] chainComplex
 
+set_option backward.defeqAttrib.useBackward true in
+set_option backward.isDefEq.respectTransparency false in
 lemma exactAt_map_chainComplex_succ (n : ℕ) :
     ((ι.mapHomologicalComplex _).obj (Λ.chainComplex X)).ExactAt (n + 1) := by
   rw [HomologicalComplex.exactAt_iff' _ (n + 2) (n + 1) n
-    (ComplexShape.prev_eq' _ (by dsimp; omega)) (by simp),
+    (ComplexShape.prev_eq' _ (by dsimp; lia)) (by simp),
     ShortComplex.exact_iff_epi_kernel_lift]
   convert epi_comp (ι.map (Λ.chainComplexXIso X n).hom) (Λ.π.app _)
   rw [← cancel_mono (kernel.ι _), kernel.lift_ι]
@@ -103,6 +111,7 @@ lemma exactAt_map_chainComplex_succ (n : ℕ) :
 
 variable {X Y Z}
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The morphism `Λ.chainComplex X ⟶ Λ.chainComplex Y` of chain complexes
 induced by `f : X ⟶ Y`. -/
 noncomputable def chainComplexMap : Λ.chainComplex X ⟶ Λ.chainComplex Y :=
@@ -114,8 +123,7 @@ noncomputable def chainComplexMap : Λ.chainComplex X ⟶ Λ.chainComplex Y :=
     (ι.map_injective (by
         dsimp
         simp only [Category.assoc, Functor.map_comp, map_chainComplex_d_1_0]
-        simp only [← ι.map_comp, ← ι.map_comp_assoc, Iso.inv_hom_id_assoc,
-          Iso.inv_hom_id, comp_id]
+        simp only [← ι.map_comp, ← ι.map_comp_assoc]
         simp))
     (fun n p ↦
       ⟨(Λ.chainComplexXIso X n).hom ≫ (Λ.F.map
@@ -145,6 +153,7 @@ lemma chainComplexMap_f_succ_succ (n : ℕ) :
           (Λ.chainComplexXIso Y n).inv := by
   apply ChainComplex.mkHom_f_succ_succ
 
+set_option backward.defeqAttrib.useBackward true in
 variable (X) in
 @[simp]
 lemma chainComplexMap_id : Λ.chainComplexMap (𝟙 X) = 𝟙 _ := by
@@ -153,6 +162,7 @@ lemma chainComplexMap_id : Λ.chainComplexMap (𝟙 X) = 𝟙 _ := by
   | zero => simp
   | succ n hn => obtain _ | n := n <;> simp [hn]
 
+set_option backward.defeqAttrib.useBackward true in
 variable (X Y) in
 @[simp]
 lemma chainComplexMap_zero [Λ.F.PreservesZeroMorphisms] :
@@ -160,8 +170,9 @@ lemma chainComplexMap_zero [Λ.F.PreservesZeroMorphisms] :
   ext n
   induction n with
   | zero => simp
-  | succ n hn => obtain _|n := n <;> simp [hn]
+  | succ n hn => obtain _ | n := n <;> simp [hn]
 
+set_option backward.defeqAttrib.useBackward true in
 @[reassoc, simp]
 lemma chainComplexMap_comp :
     Λ.chainComplexMap (f ≫ g) = Λ.chainComplexMap f ≫ Λ.chainComplexMap g := by

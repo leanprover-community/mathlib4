@@ -3,13 +3,24 @@ Copyright (c) 2019 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Keeley Hoek, Floris van Doorn, Chris Bailey
 -/
+module
 
-import Mathlib.Init
+public import Mathlib.Init
 /-!
 # Definitions for `String`
 
 This file defines a bunch of functions for the `String` datatype.
 -/
+
+@[expose] public section
+
+/-- Determine if a unicode character is part of the ASCII subset.
+
+ASCII characters have code points in the range U+0000-U+007F.
+(Note: [the Unicode standard](https://www.unicode.org/Public/draft/charts/CodeCharts.pdf)) does
+not mention ASCII and instead calls this subset "C0 Controls and Basic Latin".)
+-/
+def Char.isAscii (c : Char) : Bool := c.toNat < 0x80
 
 namespace String
 
@@ -45,6 +56,6 @@ def mapTokens (c : Char) (f : String → String) : String → String :=
 
 /-- Produce the head character from the string `s`, if `s` is not empty, otherwise `'A'`. -/
 def head (s : String) : Char :=
-  s.iter.curr
+  s.front
 
 end String

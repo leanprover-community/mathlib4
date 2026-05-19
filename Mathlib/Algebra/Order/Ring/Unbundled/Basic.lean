@@ -3,15 +3,17 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Yaël Dillies
 -/
-import Mathlib.Algebra.Group.Units.Basic
-import Mathlib.Algebra.GroupWithZero.NeZero
-import Mathlib.Algebra.Order.Group.Unbundled.Basic
-import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic
-import Mathlib.Algebra.Order.Monoid.Unbundled.ExistsOfLE
-import Mathlib.Algebra.Order.Monoid.NatCast
-import Mathlib.Algebra.Order.Monoid.Unbundled.MinMax
-import Mathlib.Algebra.Ring.Defs
-import Mathlib.Tactic.Tauto
+module
+
+public import Mathlib.Algebra.Group.Units.Basic
+public import Mathlib.Algebra.GroupWithZero.NeZero
+public import Mathlib.Algebra.Order.Group.Unbundled.Basic
+public import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic
+public import Mathlib.Algebra.Order.Monoid.Unbundled.ExistsOfLE
+public import Mathlib.Algebra.Order.Monoid.NatCast
+public import Mathlib.Algebra.Order.Monoid.Unbundled.MinMax
+public import Mathlib.Algebra.Ring.Defs
+public import Mathlib.Tactic.Tauto
 
 /-!
 # Basic facts for ordered rings and semirings
@@ -111,6 +113,8 @@ relating the order structures and ring structures are added as needed.
 TODO: the mixin assumptions can be relaxed in most cases
 
 -/
+
+public section
 
 assert_not_exists IsOrderedMonoid MonoidHom
 
@@ -707,6 +711,10 @@ alias pow_two_nonneg := sq_nonneg
 lemma mul_self_nonneg [ExistsAddOfLE R] [PosMulMono R] [AddLeftMono R]
     (a : R) : 0 ≤ a * a := by simpa only [sq] using sq_nonneg a
 
+instance (priority := 100) [ExistsAddOfLE R] [PosMulMono R] [AddLeftMono R] :
+    ZeroLEOneClass R where
+  zero_le_one := by simpa only [one_mul] using mul_self_nonneg (1 : R)
+
 /-- The sum of two squares is zero iff both elements are zero. -/
 lemma mul_self_add_mul_self_eq_zero [NoZeroDivisors R]
     [ExistsAddOfLE R] [PosMulMono R] [AddLeftMono R] :
@@ -718,6 +726,22 @@ lemma eq_zero_of_mul_self_add_mul_self_eq_zero [NoZeroDivisors R]
     [ExistsAddOfLE R] [PosMulMono R] [AddLeftMono R]
     (h : a * a + b * b = 0) : a = 0 :=
   (mul_self_add_mul_self_eq_zero.mp h).left
+
+theorem pos_of_right_mul_lt_le [ExistsAddOfLE R] [PosMulMono R]
+    [AddRightMono R] [AddRightReflectLE R]
+    (h : a * b < a * c) (hbc : b ≤ c) :
+    0 < a := by
+  by_cases! ha : 0 < a
+  · exact ha
+  · grind [mul_le_mul_of_nonpos_left hbc ha]
+
+theorem pos_of_left_mul_lt_le [ExistsAddOfLE R] [MulPosMono R]
+    [AddLeftMono R] [AddRightReflectLE R]
+    (h : b * a < c * a) (hbc : b ≤ c) :
+    0 < a := by
+  by_cases! ha : 0 < a
+  · exact ha
+  · grind [mul_le_mul_of_nonpos_right hbc ha]
 
 end LinearOrderedSemiring
 
@@ -759,13 +783,18 @@ alias four_mul_le_pow_two_add := four_mul_le_sq_add
 
 /-- Binary and division-free **arithmetic mean-geometric mean inequality**
 (aka AM-GM inequality) for linearly ordered commutative semirings. -/
+lemma two_mul_le_add_of_sq_le_mul [ExistsAddOfLE R] [MulPosStrictMono R] [PosMulStrictMono R]
+    [AddLeftReflectLE R] [AddLeftMono R] {a b r : R}
+    (ha : 0 ≤ a) (hb : 0 ≤ b) (ht : r ^ 2 ≤ a * b) : 2 * r ≤ a + b := by
+  apply nonneg_le_nonneg_of_sq_le_sq (Left.add_nonneg ha hb)
+  rw [mul_mul_mul_comm, ← pow_two r, two_mul, two_add_two_eq_four]
+  grw [mul_le_mul_of_nonneg_left ht zero_le_four, ← mul_assoc, four_mul_le_sq_add a b, sq]
+
+@[deprecated two_mul_le_add_of_sq_le_mul (since := "2026-04-20")]
 lemma two_mul_le_add_of_sq_eq_mul [ExistsAddOfLE R] [MulPosStrictMono R] [PosMulStrictMono R]
     [AddLeftReflectLE R] [AddLeftMono R] {a b r : R}
-    (ha : 0 ≤ a) (hb : 0 ≤ b) (ht : r ^ 2 = a * b) : 2 * r ≤ a + b := by
-  apply nonneg_le_nonneg_of_sq_le_sq (Left.add_nonneg ha hb)
-  conv_rhs => rw [← pow_two]
-  convert four_mul_le_sq_add a b using 1
-  rw [mul_mul_mul_comm, two_mul, two_add_two_eq_four, ← pow_two, ht, mul_assoc]
+    (ha : 0 ≤ a) (hb : 0 ≤ b) (ht : r ^ 2 = a * b) : 2 * r ≤ a + b :=
+  two_mul_le_add_of_sq_le_mul ha hb ht.le
 
 end LinearOrderedCommSemiring
 

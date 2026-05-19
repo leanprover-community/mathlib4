@@ -3,11 +3,12 @@ Copyright (c) 2020 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
-import Mathlib.Algebra.BigOperators.Group.Finset.Indicator
-import Mathlib.Algebra.Module.BigOperators
-import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Basic
-import Mathlib.LinearAlgebra.Finsupp.LinearCombination
-import Mathlib.Tactic.FinCases
+module
+
+public import Mathlib.Algebra.BigOperators.Group.Finset.Indicator
+public import Mathlib.Algebra.Module.BigOperators
+public import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Basic
+public import Mathlib.LinearAlgebra.Finsupp.LinearCombination
 
 /-!
 # Affine combinations of points
@@ -38,14 +39,14 @@ These definitions are for sums over a `Finset`; versions for a
 
 -/
 
+@[expose] public section
+
 
 noncomputable section
 
 open Affine
 
 namespace Finset
-
-theorem univ_fin2 : (univ : Finset (Fin 2)) = {0, 1} := rfl
 
 variable {k : Type*} {V : Type*} {P : Type*} [Ring k] [AddCommGroup V] [Module k V]
 variable [S : AffineSpace V P]
@@ -347,7 +348,7 @@ hypothesis on those lemmas that require it. -/
 def affineCombination (p : ι → P) : (ι → k) →ᵃ[k] P where
   toFun w := s.weightedVSubOfPoint p (Classical.choice S.nonempty) w +ᵥ Classical.choice S.nonempty
   linear := s.weightedVSub p
-  map_vadd' w₁ w₂ := by simp_rw [vadd_vadd, weightedVSub, vadd_eq_add, LinearMap.map_add]
+  map_vadd' w₁ w₂ := by simp_rw [vadd_vadd, weightedVSub, vadd_eq_add, map_add]
 
 /-- The linear map corresponding to `affineCombination` is
 `weightedVSub`. -/
@@ -402,17 +403,7 @@ theorem affineCombination_vsub (w₁ w₂ : ι → k) (p : ι → P) :
 theorem attach_affineCombination_of_injective [DecidableEq P] (s : Finset P) (w : P → k) (f : s → P)
     (hf : Function.Injective f) :
     s.attach.affineCombination k f (w ∘ f) = (image f univ).affineCombination k id w := by
-  simp only [affineCombination, weightedVSubOfPoint_apply, id, vadd_right_cancel_iff,
-    Function.comp_apply, AffineMap.coe_mk]
-  let g₁ : s → V := fun i => w (f i) • (f i -ᵥ Classical.choice S.nonempty)
-  let g₂ : P → V := fun i => w i • (i -ᵥ Classical.choice S.nonempty)
-  change univ.sum g₁ = (image f univ).sum g₂
-  have hgf : g₁ = g₂ ∘ f := by
-    ext
-    simp [g₁, g₂]
-  rw [hgf, sum_image]
-  · simp only [g₂,Function.comp_apply]
-  · exact fun _ _ _ _ hxy => hf hxy
+  simp [affineCombination, hf]
 
 theorem attach_affineCombination_coe (s : Finset P) (w : P → k) :
     s.attach.affineCombination k ((↑) : s → P) (w ∘ (↑)) = s.affineCombination k id w := by
@@ -536,12 +527,11 @@ theorem eq_weightedVSubOfPoint_subset_iff_eq_weightedVSubOfPoint_subtype {v : V}
     simp_rw [weightedVSubOfPoint_apply]
     constructor
     · rintro ⟨fs, hfs, w, rfl, rfl⟩
-      exact ⟨fs.subtype s, fun i => w i, sum_subtype_of_mem _ hfs, (sum_subtype_of_mem _ hfs).symm⟩
+      exact ⟨fs.subtype (· ∈ s), fun i => w i, sum_subtype_of_mem _ hfs,
+        (sum_subtype_of_mem _ hfs).symm⟩
     · rintro ⟨fs, w, rfl, rfl⟩
-      refine
-          ⟨fs.map (Function.Embedding.subtype _), map_subtype_subset _, fun i =>
-            if h : i ∈ s then w ⟨i, h⟩ else 0, ?_, ?_⟩ <;>
-        simp
+      refine ⟨fs.map (Function.Embedding.subtype _), map_subtype_subset _, fun i =>
+        if h : i ∈ s then w ⟨i, h⟩ else 0, ?_, ?_⟩ <;> simp
 
 variable (k)
 
@@ -587,8 +577,8 @@ theorem map_affineCombination {V₂ P₂ : Type*} [AddCommGroup V₂] [Module k 
   rw [s.affineCombination_eq_weightedVSubOfPoint_vadd_of_sum_eq_one w p hw b,
     s.affineCombination_eq_weightedVSubOfPoint_vadd_of_sum_eq_one w (f ∘ p) hw b₂, ←
     s.weightedVSubOfPoint_vadd_eq_of_sum_eq_one w (f ∘ p) hw (f b) b₂]
-  simp only [weightedVSubOfPoint_apply, RingHom.id_apply, AffineMap.map_vadd,
-    LinearMap.map_smulₛₗ, AffineMap.linearMap_vsub, map_sum, Function.comp_apply]
+  simp only [weightedVSubOfPoint_apply, RingHom.id_apply, AffineMap.map_vadd, map_smulₛₗ,
+    AffineMap.linearMap_vsub, map_sum, Function.comp_apply]
 
 /-- The value of `affineCombination`, where the given points take only two values. -/
 lemma affineCombination_apply_eq_lineMap_sum [DecidableEq ι] (w : ι → k) (p : ι → P)
@@ -603,29 +593,40 @@ lemma affineCombination_apply_eq_lineMap_sum [DecidableEq ι] (w : ι → k) (p 
     simp [hp₁ i hi]
   · exact (hp₂ i hi).symm
 
+/-- Applying `AffineMap.lineMap` on two `Finset.affineCombination` over the same set of points
+is equivalent to applying `AffineMap.lineMap` to the weights. -/
+theorem lineMap_affineCombination (w₁ : ι → k) (w₂ : ι → k) (r : k) (p : ι → P) :
+    AffineMap.lineMap (s.affineCombination k p w₁) (s.affineCombination k p w₂) r =
+    s.affineCombination k p (AffineMap.lineMap w₁ w₂ r) := by
+  simp_rw [Finset.affineCombination_apply, ← AffineMap.lineMap_vadd, AffineMap.lineMap_apply_module,
+    map_add, map_smul]
+
 variable (k)
 
 /-- Weights for expressing a single point as an affine combination. -/
+@[deprecated Pi.single (since := "2026-04-16")]
 def affineCombinationSingleWeights [DecidableEq ι] (i : ι) : ι → k :=
   Pi.single i 1
 
-@[simp]
+set_option linter.deprecated false in
+@[deprecated Pi.single_eq_same (since := "2026-04-16")]
 theorem affineCombinationSingleWeights_apply_self [DecidableEq ι] (i : ι) :
     affineCombinationSingleWeights k i i = 1 := Pi.single_eq_same _ _
 
-@[simp]
+set_option linter.deprecated false in
+@[deprecated Pi.single_eq_of_ne (since := "2026-04-16")]
 theorem affineCombinationSingleWeights_apply_of_ne [DecidableEq ι] {i j : ι} (h : j ≠ i) :
     affineCombinationSingleWeights k i j = 0 := Pi.single_eq_of_ne h _
 
-@[simp]
+set_option linter.deprecated false in
+@[deprecated Finset.sum_pi_single' (since := "2026-04-16")]
 theorem sum_affineCombinationSingleWeights [DecidableEq ι] {i : ι} (h : i ∈ s) :
     ∑ j ∈ s, affineCombinationSingleWeights k i j = 1 := by
-  rw [← affineCombinationSingleWeights_apply_self k i]
-  exact sum_eq_single_of_mem i h fun j _ hj => affineCombinationSingleWeights_apply_of_ne k hj
+  rw [affineCombinationSingleWeights, s.sum_pi_single', if_pos h]
 
 /-- Weights for expressing the subtraction of two points as a `weightedVSub`. -/
 def weightedVSubVSubWeights [DecidableEq ι] (i j : ι) : ι → k :=
-  affineCombinationSingleWeights k i - affineCombinationSingleWeights k j
+  Pi.single i 1 - Pi.single j 1
 
 @[simp]
 theorem weightedVSubVSubWeights_self [DecidableEq ι] (i : ι) :
@@ -653,11 +654,11 @@ variable {k}
 
 /-- Weights for expressing `lineMap` as an affine combination. -/
 def affineCombinationLineMapWeights [DecidableEq ι] (i j : ι) (c : k) : ι → k :=
-  c • weightedVSubVSubWeights k j i + affineCombinationSingleWeights k i
+  c • weightedVSubVSubWeights k j i + Pi.single i 1
 
 @[simp]
 theorem affineCombinationLineMapWeights_self [DecidableEq ι] (i : ι) (c : k) :
-    affineCombinationLineMapWeights i i c = affineCombinationSingleWeights k i := by
+    affineCombinationLineMapWeights i i c = Pi.single i 1 := by
   simp [affineCombinationLineMapWeights]
 
 @[simp]
@@ -685,11 +686,18 @@ variable (k)
 
 /-- An affine combination with `affineCombinationSingleWeights` gives the specified point. -/
 @[simp]
-theorem affineCombination_affineCombinationSingleWeights [DecidableEq ι] (p : ι → P) {i : ι}
-    (hi : i ∈ s) : s.affineCombination k p (affineCombinationSingleWeights k i) = p i := by
+theorem affineCombination_piSingle [DecidableEq ι] (p : ι → P) {i : ι}
+    (hi : i ∈ s) : s.affineCombination k p (Pi.single i 1) = p i := by
   refine s.affineCombination_of_eq_one_of_eq_zero _ _ hi (by simp) ?_
   rintro j - hj
   simp [hj]
+
+set_option linter.deprecated false in
+/-- An affine combination with `affineCombinationSingleWeights` gives the specified point. -/
+@[deprecated affineCombination_piSingle (since := "2026-04-16")]
+theorem affineCombination_affineCombinationSingleWeights [DecidableEq ι] (p : ι → P) {i : ι}
+    (hi : i ∈ s) : s.affineCombination k p (affineCombinationSingleWeights k i) = p i :=
+  affineCombination_piSingle _ _ _ hi
 
 /-- A weighted subtraction with `weightedVSubVSubWeights` gives the result of subtracting the
 specified points. -/
@@ -697,8 +705,7 @@ specified points. -/
 theorem weightedVSub_weightedVSubVSubWeights [DecidableEq ι] (p : ι → P) {i j : ι} (hi : i ∈ s)
     (hj : j ∈ s) : s.weightedVSub p (weightedVSubVSubWeights k i j) = p i -ᵥ p j := by
   rw [weightedVSubVSubWeights, ← affineCombination_vsub,
-    s.affineCombination_affineCombinationSingleWeights k p hi,
-    s.affineCombination_affineCombinationSingleWeights k p hj]
+    s.affineCombination_piSingle k p hi, s.affineCombination_piSingle k p hj]
 
 variable {k}
 
@@ -710,8 +717,19 @@ theorem affineCombination_affineCombinationLineMapWeights [DecidableEq ι] (p : 
     s.affineCombination k p (affineCombinationLineMapWeights i j c) =
       AffineMap.lineMap (p i) (p j) c := by
   rw [affineCombinationLineMapWeights, ← weightedVSub_vadd_affineCombination,
-    weightedVSub_const_smul, s.affineCombination_affineCombinationSingleWeights k p hi,
+    weightedVSub_const_smul, s.affineCombination_piSingle k p hi,
     s.weightedVSub_weightedVSubVSubWeights k p hj hi, AffineMap.lineMap_apply]
+
+/-- Applying `AffineMap.homothety` on `Finset.affineCombination` towards one of the weighted points
+  is equivalent to moving the weights towards `Finset.affineCombinationSingleWeights`. -/
+-- Redeclaring all variables because `AffineMap.homothety` requires `[CommRing k]`
+theorem homothety_affineCombination {k V P : Type*} [CommRing k] [AddCommGroup V] [Module k V]
+    [AffineSpace V P] {ι : Type*} [DecidableEq ι] (s : Finset ι) (p : ι → P) (w : ι → k) {i : ι}
+    (hi : i ∈ s) (r : k) :
+    AffineMap.homothety (p i) r (s.affineCombination k p w) = s.affineCombination k p
+      (AffineMap.lineMap (Pi.single i 1) w r) := by
+  rw [AffineMap.homothety_eq_lineMap, ← Finset.lineMap_affineCombination,
+    Finset.affineCombination_piSingle _ _ _ hi]
 
 end Finset
 
@@ -875,6 +893,25 @@ lemma eq_affineCombination_of_mem_affineSpan_image {p₁ : P} {p : ι → P} {s 
   simp only [Finset.affineCombination_map, Function.Embedding.coe_subtype]
   exact fs'.affineCombination_congr (by simp) (by simp)
 
+lemma affineCombination_mem_affineSpan_image [Nontrivial k] {s : Finset ι} {w : ι → k}
+    (h : ∑ i ∈ s, w i = 1) {s' : Set ι} (hs' : ∀ i ∈ s, i ∉ s' → w i = 0) (p : ι → P) :
+    s.affineCombination k p w ∈ affineSpan k (p '' s') := by
+  classical
+  rw [Set.image_eq_range]
+  let w' : s' → k := fun i ↦ w i
+  have h' : ∑ i ∈ s with i ∈ s', w i = 1 := by
+    rw [← h, ← Finset.sum_sdiff (s₁ := {x ∈ s | x ∈ s'}) (s₂ := s) (by simp), right_eq_add]
+    refine Finset.sum_eq_zero ?_
+    intro i hi
+    simp only [Finset.mem_sdiff, Finset.mem_filter, not_and] at hi
+    exact hs' i hi.1 (hi.2 hi.1)
+  rw [← Finset.sum_subtype_eq_sum_filter] at h'
+  convert affineCombination_mem_affineSpan h' (fun x ↦ p x)
+  rw [Finset.affineCombination_subtype_eq_filter, Finset.affineCombination_indicator_subset w p
+    (Finset.filter_subset _ _)]
+  refine Finset.affineCombination_congr _ (fun i hi ↦ ?_) (fun _ _ ↦ rfl)
+  simp_all [Set.indicator_apply]
+
 variable (k V)
 
 /-- A point is in the `affineSpan` of an indexed family if and only
@@ -927,7 +964,7 @@ theorem affineSpan_eq_affineSpan_lineMap_units [Nontrivial k] {s : Set P} {p : P
     rw [this]
   apply le_antisymm
     <;> intro q hq
-    <;> erw [mem_affineSpan_iff_eq_weightedVSubOfPoint_vadd k V _ (⟨p, hp⟩ : s) q] at hq ⊢
+    <;> rw [mem_affineSpan_iff_eq_weightedVSubOfPoint_vadd k V _ (⟨p, hp⟩ : s) q] at hq ⊢
     <;> obtain ⟨t, μ, rfl⟩ := hq
     <;> use t
     <;> [use fun x => μ x * ↑(w x); use fun x => μ x * ↑(w x)⁻¹]

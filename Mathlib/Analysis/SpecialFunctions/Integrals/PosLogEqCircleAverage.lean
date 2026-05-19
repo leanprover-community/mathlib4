@@ -3,11 +3,13 @@ Copyright (c) 2025 Stefan Kebekus. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stefan Kebekus
 -/
-import Mathlib.Analysis.Complex.Harmonic.MeanValue
-import Mathlib.Analysis.InnerProductSpace.Harmonic.Constructions
-import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
-import Mathlib.Analysis.SpecialFunctions.Integrals.LogTrigonometric
-import Mathlib.MeasureTheory.Integral.CircleAverage
+module
+
+public import Mathlib.Analysis.Complex.Harmonic.MeanValue
+public import Mathlib.Analysis.InnerProductSpace.Harmonic.Constructions
+public import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
+public import Mathlib.Analysis.SpecialFunctions.Integrals.LogTrigonometric
+public import Mathlib.MeasureTheory.Integral.CircleAverage
 
 /-!
 # Representation of `log⁺` as a Circle Average
@@ -15,6 +17,8 @@ import Mathlib.MeasureTheory.Integral.CircleAverage
 If `a` is any complex number, `circleAverage_log_norm_sub_const_eq_posLog` represents `log⁺ a` as
 the circle average of `log ‖· - a‖` over the unit circle.
 -/
+
+public section
 
 open Filter Interval intervalIntegral MeasureTheory Metric Real
 
@@ -28,7 +32,7 @@ variable {a c : ℂ} {R : ℝ}
 If `a` is any complex number, the function `(log ‖· - a‖)` is circle integrable over every circle.
 -/
 lemma circleIntegrable_log_norm_sub_const (r : ℝ) : CircleIntegrable (log ‖· - a‖) c r :=
-  circleIntegrable_log_norm_meromorphicOn (fun z hz ↦ by fun_prop)
+  MeromorphicOn.circleIntegrable_log_norm (fun z hz ↦ by fun_prop)
 
 /-!
 ## Computing `circleAverage (log ‖· - a‖) 0 1` in case where `‖a‖ < 1`.
@@ -79,7 +83,7 @@ private lemma circleAverage_log_norm_sub_const₁_integral :
     simp
   _ = ∫ (x : ℝ) in 0..π, log 4 + 2 * log (sin x) := by
     apply integral_congr_codiscreteWithin
-    apply codiscreteWithin.mono (by tauto : Ι 0 π ⊆ Set.univ)
+    apply codiscreteWithin_mono (by tauto : Ι 0 π ⊆ Set.univ)
     have : AnalyticOnNhd ℝ (4 * sin · ^ 2) Set.univ := fun _ _ ↦ by fun_prop
     have := this.preimage_zero_mem_codiscrete (x := π / 2)
     simp only [sin_pi_div_two, one_pow, mul_one, ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true,
@@ -223,7 +227,7 @@ theorem circleAverage_log_norm_sub_const_eq_log_radius_add_posLog (hR : R ≠ 0)
     simp
   _ = log R + log⁺ (|R|⁻¹ * ‖c - a‖) := by
     rw [← Pi.add_def, circleAverage_add (circleIntegrable_const (log ‖R‖) 0 1)
-      (circleIntegrable_log_norm_meromorphicOn (fun _ _ ↦ by fun_prop)), circleAverage_const]
+      (MeromorphicOn.circleIntegrable_log_norm (fun _ _ ↦ by fun_prop)), circleAverage_const]
     simp
   _ = log R + log⁺ (R⁻¹ * ‖c - a‖) := by
     congr 1

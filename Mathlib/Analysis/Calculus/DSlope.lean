@@ -3,10 +3,12 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.Calculus.Deriv.Slope
-import Mathlib.Analysis.Calculus.Deriv.Comp
-import Mathlib.Analysis.Calculus.FDeriv.Add
-import Mathlib.Analysis.Calculus.FDeriv.Mul
+module
+
+public import Mathlib.Analysis.Calculus.Deriv.Slope
+public import Mathlib.Analysis.Calculus.Deriv.Comp
+public import Mathlib.Analysis.Calculus.FDeriv.Add
+public import Mathlib.Analysis.Calculus.FDeriv.Mul
 
 /-!
 # Slope of a differentiable function
@@ -18,6 +20,8 @@ for `a = b`.
 In this file we define `dslope` and prove some basic lemmas about its continuity and
 differentiability.
 -/
+
+@[expose] public section
 
 open scoped Topology Filter
 
@@ -134,9 +138,19 @@ theorem differentiableOn_dslope_of_notMem (h : a ∉ s) :
   forall_congr' fun _ =>
     forall_congr' fun hx => differentiableWithinAt_dslope_of_ne <| ne_of_mem_of_not_mem hx h
 
-@[deprecated (since := "2025-05-24")]
-alias differentiableOn_dslope_of_nmem := differentiableOn_dslope_of_notMem
-
 theorem differentiableAt_dslope_of_ne (h : b ≠ a) :
     DifferentiableAt 𝕜 (dslope f a) b ↔ DifferentiableAt 𝕜 f b := by
   simp only [← differentiableWithinAt_univ, differentiableWithinAt_dslope_of_ne h]
+
+lemma sub_smul_dslope_of_zero {f : 𝕜 → E} {a : 𝕜} (hf : f a = 0) (b : 𝕜) :
+    (b - a) • dslope f a b = f b := by
+  simp [hf]
+
+lemma pow_sub_smul_iterate_dslope_of_zero {f : 𝕜 → E} {a : 𝕜} (n : ℕ)
+    (hf : ∀ k < n, (Function.swap dslope a)^[k] f a = 0) (b : 𝕜) :
+    (b - a) ^ n • (Function.swap dslope a)^[n] f b = f b := by
+  induction n generalizing f with
+  | zero => simp
+  | succ n ih =>
+    rw [Function.iterate_succ_apply', pow_succ, mul_smul,
+      sub_smul_dslope_of_zero (hf n n.lt_succ_self), ih (by grind)]

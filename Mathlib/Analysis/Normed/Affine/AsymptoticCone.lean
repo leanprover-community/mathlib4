@@ -3,8 +3,10 @@ Copyright (c) 2025 Attila Gáspár. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Attila Gáspár
 -/
-import Mathlib.Analysis.Normed.Module.FiniteDimension
-import Mathlib.Topology.Algebra.AsymptoticCone
+module
+
+public import Mathlib.Analysis.Normed.Module.FiniteDimension
+public import Mathlib.Topology.Algebra.AsymptoticCone
 
 /-!
 # Asymptotic cones in normed spaces
@@ -12,6 +14,8 @@ import Mathlib.Topology.Algebra.AsymptoticCone
 In this file, we prove that the asymptotic cone of a set is non-trivial if and only if the set is
 unbounded.
 -/
+
+public section
 
 open AffineSpace Bornology Filter Topology
 

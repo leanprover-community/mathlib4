@@ -3,7 +3,9 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Andrew Zipperer, Haitao Zhang, Minchao Wu, Yury Kudryashov
 -/
-import Mathlib.Data.Set.Image
+module
+
+public import Mathlib.Data.Set.Image
 
 /-!
 # Restrict the domain of a function to a set
@@ -13,6 +15,8 @@ import Mathlib.Data.Set.Image
 * `Set.restrict f s` : restrict the domain of `f` to the set `s`;
 * `Set.codRestrict f s h` : given `h : ∀ x, f x ∈ s`, restrict the codomain of `f` to the set `s`;
 -/
+
+@[expose] public section
 
 variable {α β γ δ : Type*} {ι : Sort*} {π : α → Type*}
 
@@ -51,7 +55,7 @@ theorem range_restrict (f : α → β) (s : Set α) : Set.range (s.restrict f) =
   (range_comp _ _).trans <| congr_arg (f '' ·) Subtype.range_coe
 
 theorem image_restrict (f : α → β) (s t : Set α) :
-    s.restrict f '' (Subtype.val ⁻¹' t) = f '' (t ∩ s) := by
+    s.restrict f '' Subtype.val ⁻¹' t = f '' (t ∩ s) := by
   rw [restrict_eq, image_comp, image_preimage_eq_inter_range, Subtype.range_coe]
 
 @[simp]
@@ -146,6 +150,14 @@ theorem injective_codRestrict {f : ι → α} {s : Set α} (h : ∀ x, f x ∈ s
 
 alias ⟨_, _root_.Function.Injective.codRestrict⟩ := injective_codRestrict
 
+@[simp] theorem range_codRestrict {f : ι → α} {s : Set α} (h : ∀ x, f x ∈ s) :
+    range (s.codRestrict f h) = (↑) ⁻¹' range f := by
+  ext; simp [Subtype.ext_iff]
+
+theorem surjective_codRestrict {f : ι → α} {s : Set α} (h : ∀ x, f x ∈ s) :
+    (s.codRestrict f h).Surjective ↔ range f = s := by
+  simp [← range_eq_univ, Subset.antisymm_iff (a := range f), range_subset_iff, h]
+
 theorem codRestrict_range_surjective (f : ι → α) :
     ((range f).codRestrict f mem_range_self).Surjective := by
   rintro ⟨b, ⟨a, rfl⟩⟩
@@ -194,7 +206,7 @@ theorem MapsTo.coe_restrict (h : Set.MapsTo f s t) :
   rfl
 
 theorem MapsTo.range_restrict (f : α → β) (s : Set α) (t : Set β) (h : MapsTo f s t) :
-    range (h.restrict f s t) = Subtype.val ⁻¹' (f '' s) :=
+    range (h.restrict f s t) = Subtype.val ⁻¹' f '' s :=
   Set.range_subtype_map f h
 
 theorem mapsTo_iff_exists_map_subtype : MapsTo f s t ↔ ∃ g : s → t, ∀ x : s, f x = g x :=
@@ -215,7 +227,7 @@ variable (t)
 
 variable (f s) in
 theorem image_restrictPreimage :
-    t.restrictPreimage f '' (Subtype.val ⁻¹' s) = Subtype.val ⁻¹' (f '' s) := by
+    t.restrictPreimage f '' Subtype.val ⁻¹' s = Subtype.val ⁻¹' f '' s := by
   delta Set.restrictPreimage
   rw [← (Subtype.coe_injective).image_injective.eq_iff, ← image_comp, MapsTo.restrict_commutes,
     image_comp, Subtype.image_preimage_coe, Subtype.image_preimage_coe, image_preimage_inter]
@@ -228,12 +240,12 @@ theorem range_restrictPreimage : range (t.restrictPreimage f) = Subtype.val ⁻�
 theorem restrictPreimage_mk (h : a ∈ f ⁻¹' t) : t.restrictPreimage f ⟨a, h⟩ = ⟨f a, h⟩ := rfl
 
 theorem image_val_preimage_restrictPreimage {u : Set t} :
-    Subtype.val '' (t.restrictPreimage f ⁻¹' u) = f ⁻¹' (Subtype.val '' u) := by
+    Subtype.val '' t.restrictPreimage f ⁻¹' u = f ⁻¹' Subtype.val '' u := by
   ext
   simp
 
 theorem preimage_restrictPreimage {u : Set t} :
-    t.restrictPreimage f ⁻¹' u = (fun a : f ⁻¹' t ↦ f a) ⁻¹' (Subtype.val '' u) := by
+    t.restrictPreimage f ⁻¹' u = (fun a : f ⁻¹' t ↦ f a) ⁻¹' Subtype.val '' u := by
   rw [← preimage_preimage (g := f) (f := Subtype.val), ← image_val_preimage_restrictPreimage,
     preimage_image_eq _ Subtype.val_injective]
 

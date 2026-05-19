@@ -3,8 +3,10 @@ Copyright (c) 2025 Yaël Dillies, Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Andrew Yang
 -/
-import Mathlib.LinearAlgebra.BilinearMap
-import Mathlib.Topology.Algebra.Module.LinearMap
+module
+
+public import Mathlib.LinearAlgebra.BilinearMap
+public import Mathlib.Topology.Algebra.Module.LinearMap
 
 /-!
 # Continuous perfect pairings
@@ -15,7 +17,7 @@ For a topological ring `R` and two topological modules `M` and `N`, a continuous
 a continuous bilinear map `M × N → R` that is bijective in both arguments.
 
 We require continuity in the forward direction only so that we can put several different topologies
-on the continuous dual (e.g., strong, weak, weak-*). For example, if `M` is weakly reflexive then
+on the continuous dual (e.g., strong, weak, weak-\*). For example, if `M` is weakly reflexive then
 there is a continuous perfect pairing between `M` and `WeakDual R M`, even though the map
 `WeakDual R M ≃ₗ[R] StrongDual R M` (where `StrongDual R M` is equipped with its strong topology) is
 not in general a homeomorphism.
@@ -24,6 +26,8 @@ not in general a homeomorphism.
 
 Adapt `PerfectPairing` to this Prop-valued typeclass paradigm
 -/
+
+@[expose] public section
 
 open Function
 
@@ -36,7 +40,7 @@ variable {R M N : Type*}
 is a continuous bilinear map `M × N → R` that is bijective in both arguments.
 
 We require continuity in the forward direction only so that we can put several different topologies
-on the continuous dual: strong, weak, weak-* topology... -/
+on the continuous dual: strong, weak, weak-\* topology... -/
 @[ext]
 class IsContPerfPair (p : M →ₗ[R] N →ₗ[R] R) where
   continuous_uncurry (p) : Continuous fun (x, y) ↦ p x y
@@ -50,7 +54,7 @@ variable [p.IsContPerfPair]
 alias continuous_uncurry_of_isContPerfPair :=
   IsContPerfPair.continuous_uncurry
 
-/-- Given a perfect pairing between `M`and `N`, we may interchange the roles of `M` and `N`. -/
+/-- Given a perfect pairing between `M` and `N`, we may interchange the roles of `M` and `N`. -/
 instance flip.instIsContPerfPair : p.flip.IsContPerfPair where
   continuous_uncurry := p.continuous_uncurry_of_isContPerfPair.comp continuous_swap
   bijective_left := IsContPerfPair.bijective_right p

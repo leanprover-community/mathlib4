@@ -3,8 +3,10 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Chris Hughes, Mario Carneiro
 -/
-import Mathlib.RingTheory.Ideal.Quotient.Basic
-import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
+module
+
+public import Mathlib.RingTheory.Ideal.Quotient.Basic
+public import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
 
 /-!
 
@@ -16,6 +18,8 @@ import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
 * `IsLocalRing.residue`: The quotient map from a local ring to its residue field.
 -/
 
+@[expose] public section
+
 namespace IsLocalRing
 
 variable (R : Type*) [CommRing R] [IsLocalRing R]
@@ -26,7 +30,7 @@ def ResidueField :=
 deriving CommRing, Inhabited
 
 noncomputable instance ResidueField.field : Field (ResidueField R) :=
-  Ideal.Quotient.field (maximalIdeal R)
+  fast_instance% Ideal.Quotient.field (maximalIdeal R)
 
 /-- The quotient map from a local ring to its residue field. -/
 def residue : R →+* ResidueField R :=

@@ -3,9 +3,11 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.Calculus.FDeriv.Prod
-import Mathlib.Analysis.Calculus.InverseFunctionTheorem.FDeriv
-import Mathlib.LinearAlgebra.Dual.Defs
+module
+
+public import Mathlib.Analysis.Calculus.FDeriv.Prod
+public import Mathlib.Analysis.Calculus.InverseFunctionTheorem.FDeriv
+public import Mathlib.LinearAlgebra.Dual.Defs
 
 /-!
 # Lagrange multipliers
@@ -27,6 +29,8 @@ lagrange multiplier, local extremum
 
 -/
 
+public section
+
 
 open Filter Set
 
@@ -41,7 +45,7 @@ at `x₀`, both `f : E → F` and `φ` are strictly differentiable at `x₀`, an
 a complete space, then the linear map `x ↦ (f' x, φ' x)` is not surjective. -/
 theorem IsLocalExtrOn.range_ne_top_of_hasStrictFDerivAt
     (hextr : IsLocalExtrOn φ {x | f x = f x₀} x₀) (hf' : HasStrictFDerivAt f f' x₀)
-    (hφ' : HasStrictFDerivAt φ φ' x₀) : LinearMap.range (f'.prod φ') ≠ ⊤ := by
+    (hφ' : HasStrictFDerivAt φ φ' x₀) : (f'.prod φ').range ≠ ⊤ := by
   intro htop
   set fφ := fun x => (f x, φ x)
   have A : map φ (𝓝[f ⁻¹' {f x₀}] x₀) = 𝓝 (φ x₀) := by
@@ -83,14 +87,14 @@ theorem IsLocalExtrOn.exists_multipliers_of_hasStrictFDerivAt_1d {f : E → ℝ}
     (hφ' : HasStrictFDerivAt φ φ' x₀) : ∃ a b : ℝ, (a, b) ≠ 0 ∧ a • f' + b • φ' = 0 := by
   obtain ⟨Λ, Λ₀, hΛ, hfΛ⟩ := hextr.exists_linear_map_of_hasStrictFDerivAt hf' hφ'
   refine ⟨Λ 1, Λ₀, ?_, ?_⟩
-  · contrapose! hΛ
+  · contrapose hΛ
     simp only [Prod.mk_eq_zero] at hΛ ⊢
     refine ⟨LinearMap.ext fun x => ?_, hΛ.2⟩
     simpa [hΛ.1] using Λ.map_smul x 1
   · ext x
     have H₁ : Λ (f' x) = f' x * Λ 1 := by
-      simpa only [mul_one, Algebra.id.smul_eq_mul] using Λ.map_smul (f' x) 1
-    have H₂ : f' x * Λ 1 + Λ₀ * φ' x = 0 := by simpa only [Algebra.id.smul_eq_mul, H₁] using hfΛ x
+      simpa only [mul_one, smul_eq_mul] using Λ.map_smul (f' x) 1
+    have H₂ : f' x * Λ 1 + Λ₀ * φ' x = 0 := by simpa only [smul_eq_mul, H₁] using hfΛ x
     simpa [mul_comm] using H₂
 
 /-- Lagrange multipliers theorem, 1d version. Let `f : ι → E → ℝ` be a finite family of functions.
@@ -129,7 +133,7 @@ theorem IsLocalExtrOn.linear_dependent_of_hasStrictFDerivAt {ι : Type*} [Finite
     (hf' : ∀ i, HasStrictFDerivAt (f i) (f' i) x₀) (hφ' : HasStrictFDerivAt φ φ' x₀) :
     ¬LinearIndependent ℝ (Option.elim' φ' f' : Option ι → StrongDual ℝ E) := by
   cases nonempty_fintype ι
-  rw [Fintype.linearIndependent_iff]; push_neg
+  rw [Fintype.linearIndependent_iff]; push Not
   rcases hextr.exists_multipliers_of_hasStrictFDerivAt hf' hφ' with ⟨Λ, Λ₀, hΛ, hΛf⟩
   refine ⟨Option.elim' Λ₀ Λ, ?_, ?_⟩
   · simpa [add_comm] using hΛf

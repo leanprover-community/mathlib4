@@ -3,10 +3,12 @@ Copyright (c) 2021 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.Combinatorics.Matroid.IndepAxioms
-import Mathlib.Combinatorics.Matroid.Rank.Cardinal
-import Mathlib.FieldTheory.IntermediateField.Adjoin.Algebra
-import Mathlib.RingTheory.AlgebraicIndependent.Transcendental
+module
+
+public import Mathlib.Combinatorics.Matroid.IndepAxioms
+public import Mathlib.Combinatorics.Matroid.Rank.Cardinal
+public import Mathlib.FieldTheory.IntermediateField.Adjoin.Algebra
+public import Mathlib.RingTheory.AlgebraicIndependent.Transcendental
 
 /-!
 # Transcendence basis
@@ -16,6 +18,8 @@ This file defines the transcendence basis as a maximal algebraically independent
 ## Main results
 
 * `exists_isTranscendenceBasis`: a ring extension has a transcendence basis
+* `IsTranscendenceBasis.lift_cardinalMk_eq_trdeg`: any transcendence basis of a domain has
+  cardinality equal to transcendental degree.
 * `IsTranscendenceBasis.lift_cardinalMk_eq`: any two transcendence bases of a domain have the
   same cardinality.
 
@@ -23,14 +27,12 @@ This file defines the transcendence basis as a maximal algebraically independent
 
 * [Stacks: Transcendence](https://stacks.math.columbia.edu/tag/030D)
 
-## TODO
-Define the transcendence degree and show it is independent of the choice of a
-transcendence basis.
-
 ## Tags
 transcendence basis, transcendence degree, transcendence
 
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -70,9 +72,9 @@ open Cardinal in
 theorem trdeg_eq_iSup_cardinalMk_isTranscendenceBasis :
     trdeg R A = ⨆ ι : { s : Set A // IsTranscendenceBasis R ((↑) : s → A) }, #ι.1 := by
   refine (ciSup_le' fun s ↦ ?_).antisymm
-    (ciSup_le' fun s ↦ le_ciSup_of_le (bddAbove_range _) ⟨s, s.2.1⟩ le_rfl)
+    (ciSup_le' fun s ↦ le_ciSup_of_le bddAbove_of_small ⟨s, s.2.1⟩ le_rfl)
   choose t ht using exists_isTranscendenceBasis_superset s.2
-  exact le_ciSup_of_le (bddAbove_range _) ⟨t, ht.2⟩ (mk_le_mk_of_subset ht.1)
+  exact le_ciSup_of_le bddAbove_of_small ⟨t, ht.2⟩ (mk_le_mk_of_subset ht.1)
 
 variable {R}
 
@@ -182,7 +184,7 @@ theorem IsTranscendenceBasis.polynomial [Nonempty ι] [Subsingleton ι] :
   nontriviality R
   have := (nonempty_unique ι).some
   refine (isTranscendenceBasis_equiv (Equiv.equivPUnit.{_, 1} _).symm).mp <|
-    (MvPolynomial.pUnitAlgEquiv R).symm.isTranscendenceBasis_iff.mp ?_
+    (MvPolynomial.uniqueAlgEquiv R PUnit).symm.isTranscendenceBasis_iff.mp ?_
   convert IsTranscendenceBasis.mvPolynomial PUnit R
   ext; simp
 
@@ -252,6 +254,7 @@ section
 
 variable [NoZeroDivisors A]
 
+set_option backward.privateInPublic true in
 private def indepMatroid : IndepMatroid A where
   E := univ
   Indep := AlgebraicIndepOn R id
@@ -267,7 +270,7 @@ private def indepMatroid : IndepMatroid A where
       exact h b ⟨hb, fun hbI ↦ this ⟨b, hbI⟩⟩ .of_subsingleton
     apply I_ind.isTranscendenceBasis_iff_isAlgebraic.mpr
     replace B_base := B_base.isAlgebraic
-    simp_rw [id_eq]
+    simp_rw +instances [id_eq]
     rw [Subtype.range_val] at B_base ⊢
     refine ⟨fun a ↦ (B_base.1 a).adjoin_of_forall_isAlgebraic fun x hx ↦ ?_⟩
     contrapose! h
@@ -275,6 +278,8 @@ private def indepMatroid : IndepMatroid A where
   indep_maximal X _ I ind hIX := exists_maximal_algebraicIndependent I X hIX ind
   subset_ground _ _ := subset_univ _
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- If `R` is a commutative ring and `A` is a commutative `R`-algebra with injective algebra map
 and no zero-divisors, then the `R`-algebraic independent subsets of `A` form a matroid. -/
 def matroid : Matroid A := (indepMatroid R A).matroid.copyBase univ
@@ -335,6 +340,7 @@ theorem matroid_closure_eq [IsDomain A] {s : Set A} :
     forall_mem_insert]
   exact fun _ ↦ and_iff_left fun x hx ↦ isAlgebraic_algebraMap (⟨x, subset_adjoin hx⟩ : adjoin R B)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem matroid_isFlat_iff [IsDomain A] {s : Set A} :
     (matroid R A).IsFlat s ↔ ∃ S : Subalgebra R A, S = s ∧ ∀ a : A, IsAlgebraic S a → a ∈ s := by
   rw [Matroid.isFlat_iff_closure_eq, matroid_closure_eq]
@@ -408,10 +414,11 @@ namespace IsTranscendenceBasis
 
 variable [Nontrivial R] [NoZeroDivisors A]
 
+/-- Any transcendence basis of a domain has cardinality equal to transcendental degree. -/
 theorem lift_cardinalMk_eq_trdeg (hx : IsTranscendenceBasis R x) :
     lift.{w} #ι = lift.{u} (trdeg R A) := by
   have := (faithfulSMul_iff_algebraMap_injective R A).mpr hx.1.algebraMap_injective
-  rw [← matroid_cRank_eq, ← ((matroid_isBase_iff).mpr hx.to_subtype_range).cardinalMk_eq_cRank,
+  rw [← matroid_cRank_eq, ← (matroid_isBase_iff.mpr hx.to_subtype_range).cardinalMk_eq_cRank,
     lift_mk_eq'.mpr ⟨.ofInjective _ hx.1.injective⟩]
 
 theorem cardinalMk_eq_trdeg {ι : Type w} {x : ι → A} (hx : IsTranscendenceBasis R x) :
@@ -447,8 +454,7 @@ theorem Polynomial.trdeg_of_isDomain [IsDomain R] : trdeg R (Polynomial R) = 1 :
 -- TODO: generalize to Nontrivial S
 theorem trdeg_lt_aleph0 [IsDomain R] [fin : FiniteType R S] : trdeg R S < ℵ₀ :=
   have ⟨n, f, surj⟩ := FiniteType.iff_quotient_mvPolynomial''.mp fin
-  lift_lt.mp <| (lift_trdeg_le_of_surjective f surj).trans_lt <| by
-    simpa using Cardinal.nat_lt_aleph0 _
+  lift_lt.mp <| (lift_trdeg_le_of_surjective f surj).trans_lt <| by simp
 
 namespace Algebra.IsAlgebraic
 
@@ -543,3 +549,56 @@ variable (R S A)
     trdeg R S + trdeg S A = trdeg R A := by
   rw [← (trdeg R S).lift_id, ← (trdeg S A).lift_id, ← (trdeg R A).lift_id]
   exact lift_trdeg_add_eq R S A
+
+namespace IsTranscendenceBasis
+
+variable {R S} [FaithfulSMul R S] [NoZeroDivisors S] (s : Set ι) (i j : ι) (v : ι → S)
+
+/-- If `s` is a transcendence basis and `j` is algebraic over `s ∪ {i} \ {j}`,
+then `s ∪ {i} \ {j}` is also a transcendence basis. -/
+lemma of_isAlgebraic_adjoin_insert_diff (hj : j ∈ insert i s)
+    (H₁ : IsTranscendenceBasis R fun x : s ↦ v x)
+    (H₂ : IsAlgebraic (Algebra.adjoin R (v '' (insert i s \ {j}))) (v j)) :
+    IsTranscendenceBasis R fun x : ↥(insert i s \ {j}) ↦ v x := by
+  have := H₂.nontrivial
+  have := (adjoin R (v '' (insert i s \ {j}))).subtype_injective.nontrivial
+  have := (isDomain_iff_noZeroDivisors_and_nontrivial S).mpr ⟨‹_›, ‹_›⟩
+  have := Module.nontrivial R S
+  rw [← mem_algebraicClosure, ← SetLike.mem_coe, ← matroid_closure_eq] at H₂
+  have inj := injOn_iff_injective.mpr H₁.1.injective
+  have H' := image_eq_range .. ▸ matroid_isBase_iff.mpr H₁.to_subtype_range
+  obtain hj' | hj := (em (j ∈ s)).symm
+  · cases hj.resolve_right hj'; rwa [insert_diff_self_of_notMem hj']
+  have Hj := H'.indep.notMem_closure_diff_of_mem ⟨j, hj, rfl⟩
+  have hi : i ∉ s := fun hi ↦ Hj <| by
+    rw [← image_singleton, ← inj.image_diff_subset (singleton_subset_iff.mpr hj)]
+    rwa [insert_eq_of_mem hi] at H₂
+  obtain eq | ne := eq_or_ne (v i) (v j)
+  · classical
+    convert H₁.comp_equiv <| .symm <| ((Equiv.swap j i).image s).trans <|
+      .setCongr <| Equiv.image_swap_of_mem_of_notMem hj hi with ⟨x, rfl | hxi, hxj⟩
+    · simp [eq]
+    · simp [Equiv.swap_apply_of_ne_of_ne hxj (ne_of_mem_of_not_mem hxi hi)]
+  have hi' : v i ∉ v '' s := fun his ↦ Hj <| by
+    refine Matroid.closure_subset_closure _ ?_ H₂
+    rintro x ⟨k, ⟨rfl | hks, hkj⟩, rfl⟩
+    · exact ⟨his, ne⟩
+    · exact ⟨⟨k, hks, rfl⟩, inj.ne hks hj hkj⟩
+  have : (insert i s).InjOn v := (injOn_insert hi).mpr ⟨inj, hi'⟩
+  rw [← isTranscendenceBasis_subtype_range (by exact injOn_iff_injective.1 (this.mono diff_subset)),
+    ← matroid_isBase_iff, ← image_eq_range]
+  rw [this.image_diff_subset (singleton_subset_iff.mpr (.inr hj)), image_singleton,
+    image_insert_eq] at H₂ ⊢
+  exact H'.isBase_insert_diff_of_mem_closure H₂ (.inr ⟨j, hj, rfl⟩)
+
+lemma of_isAlgebraic_adjoin_image_compl
+    (H₁ : IsTranscendenceBasis R fun x : {x // x ≠ i} ↦ v x)
+    (H₂ : IsAlgebraic (Algebra.adjoin R (v '' {j}ᶜ)) (v j)) :
+    IsTranscendenceBasis R fun x : {x // x ≠ j} ↦ v x := by
+  obtain rfl | ne := eq_or_ne j i
+  · exact H₁
+  have := H₁.of_isAlgebraic_adjoin_insert_diff {i}ᶜ i j v (.inr ne)
+  rw [compl_eq_univ_diff, insert_diff_self_of_mem (mem_univ _), ← compl_eq_univ_diff] at this
+  exact this H₂
+
+end IsTranscendenceBasis

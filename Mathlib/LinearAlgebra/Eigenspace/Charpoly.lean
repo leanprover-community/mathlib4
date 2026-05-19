@@ -3,9 +3,13 @@ Copyright (c) 2025 Lawrence Wu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Lawrence Wu
 -/
-import Mathlib.LinearAlgebra.Charpoly.BaseChange
-import Mathlib.LinearAlgebra.Charpoly.ToMatrix
-import Mathlib.LinearAlgebra.Eigenspace.Basic
+module
+
+public import Mathlib.LinearAlgebra.Charpoly.BaseChange
+public import Mathlib.LinearAlgebra.Charpoly.ToMatrix
+public import Mathlib.LinearAlgebra.Eigenspace.Basic
+public import Mathlib.LinearAlgebra.Trace
+import Mathlib.LinearAlgebra.Matrix.Charpoly.Eigs
 
 /-!
 # Eigenvalues are the roots of the characteristic polynomial.
@@ -14,6 +18,8 @@ import Mathlib.LinearAlgebra.Eigenspace.Basic
 
 eigenvalue, characteristic polynomial
 -/
+
+public section
 
 namespace Module
 
@@ -39,6 +45,17 @@ lemma hasEigenvalue_iff_isRoot_charpoly (f : End R M) (μ : R) :
 lemma mem_spectrum_iff_isRoot_charpoly (f : End K V) (μ : K) :
     μ ∈ spectrum K f ↔ f.charpoly.IsRoot μ := by
   rw [← hasEigenvalue_iff_mem_spectrum, hasEigenvalue_iff_isRoot_charpoly]
+
+lemma det_eq_prod_roots_charpoly_of_splits {f : End K V} (h : f.charpoly.Splits) :
+    f.det = f.charpoly.roots.prod := by
+  rw [← det_toMatrix (Module.Free.chooseBasis K V),
+    Matrix.det_eq_prod_roots_charpoly_of_splits (by simpa using h), charpoly_toMatrix]
+
+lemma trace_eq_sum_roots_charpoly_of_splits {f : End K V} (h : f.charpoly.Splits) :
+    f.trace K V = f.charpoly.roots.sum := by
+  let b := Module.Free.chooseBasis K V
+  rw [trace_eq_matrix_trace K (Module.Free.chooseBasis K V),
+    Matrix.trace_eq_sum_roots_charpoly_of_splits (by simpa using h), charpoly_toMatrix]
 
 end End
 

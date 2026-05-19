@@ -3,8 +3,10 @@ Copyright (c) 2022 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Analysis.CStarAlgebra.Classes
-import Mathlib.Analysis.Normed.Algebra.Unitization
+module
+
+public import Mathlib.Analysis.CStarAlgebra.Classes
+public import Mathlib.Analysis.Normed.Algebra.Unitization
 /-! # The minimal unitization of a C⋆-algebra
 
 This file shows that when `E` is a C⋆-algebra (over a densely normed field `𝕜`), that the minimal
@@ -15,6 +17,8 @@ In addition, we show that in a `RegularNormedAlgebra` which is a `StarRing` for 
 involution is isometric, that multiplication on the right is also an isometry (i.e.,
 `Isometry (ContinuousLinearMap.mul 𝕜 E).flip`).
 -/
+
+public section
 
 open ContinuousLinearMap
 

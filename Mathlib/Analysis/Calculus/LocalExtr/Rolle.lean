@@ -3,8 +3,10 @@ Copyright (c) 2019 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Anatole Dedecker
 -/
-import Mathlib.Analysis.Calculus.LocalExtr.Basic
-import Mathlib.Topology.Order.Rolle
+module
+
+public import Mathlib.Analysis.Calculus.LocalExtr.Basic
+public import Mathlib.Topology.Order.Rolle
 
 /-!
 # Rolle's Theorem
@@ -29,7 +31,7 @@ We prove four versions of this theorem.
   continuity on the closed interval $[a, b]$ it assumes that $f$ tends to the same limit as $x$
   tends to $a$ from the right and as $x$ tends to $b$ from the left.
 * `exists_deriv_eq_zero'` relates to `exists_deriv_eq_zero` as `exists_hasDerivAt_eq_zero'`
-  relates to ``exists_hasDerivAt_eq_zero`.
+  relates to `exists_hasDerivAt_eq_zero`.
 
 ## References
 
@@ -39,6 +41,8 @@ We prove four versions of this theorem.
 
 local extremum, Rolle's Theorem
 -/
+
+public section
 
 open Set Filter Topology
 

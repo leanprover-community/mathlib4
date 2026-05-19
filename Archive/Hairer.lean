@@ -6,9 +6,8 @@ Junyan Xu
 -/
 import Mathlib.Algebra.MvPolynomial.Funext
 import Mathlib.Analysis.Analytic.Polynomial
-import Mathlib.Analysis.Analytic.Uniqueness
 import Mathlib.Analysis.Distribution.AEEqOfIntegralContDiff
-import Mathlib.LinearAlgebra.Dual.Lemmas
+import Mathlib.RingTheory.Algebraic.Integral
 import Mathlib.RingTheory.MvPolynomial.Basic
 import Mathlib.Topology.Algebra.MvPolynomial
 
@@ -38,7 +37,7 @@ variable (𝕜 E F) in
 /-- The set of `C^n` functions supported in a set `s`, as a submodule of the space of functions. -/
 def ContDiffSupportedOn (n : ℕ∞) (s : Set E) : Submodule 𝕜 (E → F) where
   carrier := { f : E → F | tsupport f ⊆ s ∧ ContDiff 𝕜 n f }
-  add_mem' hf hg := ⟨tsupport_add.trans <| union_subset hf.1 hg.1, hf.2.add hg.2⟩
+  add_mem' hf hg := ⟨(tsupport_add _ _).trans <| union_subset hf.1 hg.1, hf.2.add hg.2⟩
   zero_mem' :=
     ⟨(tsupport_eq_empty_iff.mpr rfl).subset.trans (empty_subset _), contDiff_const (c := 0)⟩
   smul_mem' r f hf :=

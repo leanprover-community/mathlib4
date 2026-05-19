@@ -3,9 +3,11 @@ Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.Lie.Abelian
-import Mathlib.Algebra.Lie.Solvable
-import Mathlib.LinearAlgebra.Dual.Defs
+module
+
+public import Mathlib.Algebra.Lie.Abelian
+public import Mathlib.Algebra.Lie.Solvable
+public import Mathlib.LinearAlgebra.Dual.Defs
 
 /-!
 # Characters of Lie algebras
@@ -23,6 +25,8 @@ algebra (e.g., a Cartan subalgebra of a semisimple Lie algebra) a character is j
 
 lie algebra, lie character
 -/
+
+@[expose] public section
 
 
 universe u v w w₁
@@ -65,6 +69,6 @@ def lieCharacterEquivLinearDual [IsLieAbelian L] : LieCharacter R L ≃ Module.D
     { ψ with
       map_lie' := fun {x y} => by
         rw [LieModule.IsTrivial.trivial, LieRing.of_associative_ring_bracket, mul_comm, sub_self,
-          LinearMap.toFun_eq_coe, LinearMap.map_zero] }
+          LinearMap.toFun_eq_coe, map_zero] }
 
 end LieAlgebra

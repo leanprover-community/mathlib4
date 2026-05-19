@@ -3,11 +3,13 @@ Copyright (c) 2022 Xavier Roblot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Roblot
 -/
-import Mathlib.Algebra.Module.ZLattice.Basic
-import Mathlib.Analysis.InnerProductSpace.ProdL2
-import Mathlib.MeasureTheory.Measure.Haar.Unique
-import Mathlib.NumberTheory.NumberField.FractionalIdeal
-import Mathlib.NumberTheory.NumberField.Units.Basic
+module
+
+public import Mathlib.Algebra.Module.ZLattice.Basic
+public import Mathlib.Analysis.InnerProductSpace.ProdL2
+public import Mathlib.MeasureTheory.Measure.Haar.Unique
+public import Mathlib.NumberTheory.NumberField.FractionalIdeal
+public import Mathlib.NumberTheory.NumberField.Units.Basic
 
 /-!
 # Canonical embedding of a number field
@@ -37,6 +39,8 @@ into the type `(K →+* ℂ) → ℂ` of `ℂ`-vectors indexed by the complex em
 number field, infinite places
 -/
 
+@[expose] public section
+
 open Module
 
 variable (K : Type*) [Field K]
@@ -57,7 +61,7 @@ theorem apply_at (φ : K →+* ℂ) (x : K) : (NumberField.canonicalEmbedding K 
 open scoped ComplexConjugate
 
 /-- The image of `canonicalEmbedding` lives in the `ℝ`-submodule of the `x ∈ ((K →+* ℂ) → ℂ)` such
-that `conj x_φ = x_(conj φ)` for all `∀ φ : K →+* ℂ`. -/
+that `conj x_φ = x_(conj φ)` for all `φ : K →+* ℂ`. -/
 theorem conj_apply {x : ((K →+* ℂ) → ℂ)} (φ : K →+* ℂ)
     (hx : x ∈ Submodule.span ℝ (Set.range (canonicalEmbedding K))) :
     conj (x φ) = x (ComplexEmbedding.conjugate φ) := by
@@ -207,7 +211,7 @@ instance [NumberField K] : Nontrivial (mixedSpace K) := by
 protected theorem finrank [NumberField K] : finrank ℝ (mixedSpace K) = finrank ℚ K := by
   classical
   rw [finrank_prod, finrank_pi, finrank_pi_fintype, Complex.finrank_real_complex, sum_const,
-    card_univ, ← nrRealPlaces, ← nrComplexPlaces, ← card_real_embeddings, Algebra.id.smul_eq_mul,
+    card_univ, ← nrRealPlaces, ← nrComplexPlaces, ← card_real_embeddings, smul_eq_mul,
     mul_comm, ← card_complex_embeddings, ← NumberField.Embeddings.card K ℂ,
     Fintype.card_subtype_compl, Nat.add_sub_of_le (Fintype.card_subtype_le _)]
 
@@ -380,7 +384,7 @@ variable [NumberField K]
 
 open scoped Classical in
 theorem nnnorm_eq_sup_normAtPlace (x : mixedSpace K) :
-    ‖x‖₊ = univ.sup fun w ↦ ⟨normAtPlace w x, normAtPlace_nonneg w x⟩ := by
+    ‖x‖₊ = univ.sup fun w ↦ .mk (normAtPlace w x) (normAtPlace_nonneg w x) := by
   have :
       (univ : Finset (InfinitePlace K)) =
       (univ.image (fun w : {w : InfinitePlace K // IsReal w} ↦ w.1)) ∪
@@ -394,12 +398,13 @@ theorem nnnorm_eq_sup_normAtPlace (x : mixedSpace K) :
   · ext w
     simp [normAtPlace_apply_of_isComplex w.prop]
 
+set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 theorem norm_eq_sup'_normAtPlace (x : mixedSpace K) :
     ‖x‖ = univ.sup' univ_nonempty fun w ↦ normAtPlace w x := by
   rw [← coe_nnnorm, nnnorm_eq_sup_normAtPlace, ← sup'_eq_sup univ_nonempty, ← NNReal.val_eq_coe,
     ← OrderHom.Subtype.val_coe, map_finset_sup', OrderHom.Subtype.val_coe]
-  simp only [Function.comp_apply]
+  simp
 
 /-- The norm of `x` is `∏ w, (normAtPlace x) ^ mult w`. It is defined such that the norm of
 `mixedEmbedding K a` for `a : K` is equal to the absolute value of the norm of `a` over `ℚ`,
@@ -459,7 +464,7 @@ theorem norm_eq_zero_iff' {x : mixedSpace K} (hx : x ∈ Set.range (mixedEmbeddi
 variable (K) in
 @[fun_prop]
 protected theorem continuous_norm : Continuous (mixedEmbedding.norm : (mixedSpace K) → ℝ) := by
-  refine continuous_finset_prod Finset.univ fun _ _ ↦ ?_
+  refine continuous_finsetProd Finset.univ fun _ _ ↦ ?_
   simp_rw [normAtPlace, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk, dite_pow]
   split_ifs <;> fun_prop
 
@@ -638,7 +643,7 @@ def latticeBasis :
     refine basisOfLinearIndependentOfCardEqFinrank this ?_
     rw [← finrank_eq_card_chooseBasisIndex, RingOfIntegers.rank, finrank_prod, finrank_pi,
       finrank_pi_fintype, Complex.finrank_real_complex, sum_const, card_univ, ← nrRealPlaces,
-      ← nrComplexPlaces, ← card_real_embeddings, Algebra.id.smul_eq_mul, mul_comm,
+      ← nrComplexPlaces, ← card_real_embeddings, smul_eq_mul, mul_comm,
       ← card_complex_embeddings, ← NumberField.Embeddings.card K ℂ, Fintype.card_subtype_compl,
       Nat.add_sub_of_le (Fintype.card_subtype_le _)]
 
@@ -799,7 +804,7 @@ namespace euclidean
 
 open MeasureTheory NumberField Submodule
 
-/-- The mixed space `ℝ^r₁ × ℂ^r₂`, with `(r₁, r₂)` the signature of `K`, as an Euclidean space. -/
+/-- The mixed space `ℝ^r₁ × ℂ^r₂`, with `(r₁, r₂)` the signature of `K`, as a Euclidean space. -/
 protected abbrev mixedSpace :=
     (WithLp 2 ((EuclideanSpace ℝ {w : InfinitePlace K // IsReal w}) ×
       (EuclideanSpace ℂ {w : InfinitePlace K // IsComplex w})))
@@ -898,9 +903,6 @@ theorem negAt_apply_isReal_and_notMem (x : mixedSpace K) {w : {w // IsReal w}} (
   simp_rw [negAt, prodCongr_apply, piCongrRight_apply, if_neg hw,
     ContinuousLinearEquiv.refl_apply]
 
-@[deprecated (since := "2025-05-23")]
-alias negAt_apply_isReal_and_not_mem := negAt_apply_isReal_and_notMem
-
 @[simp]
 theorem negAt_apply_isComplex (x : mixedSpace K) (w : {w // IsComplex w}) :
     (negAt s x).2 w = x.2 w := rfl
@@ -991,9 +993,6 @@ theorem pos_of_notMem_negAt_plusPart (hx : x ∈ negAt s '' (plusPart A)) {w : {
   rw [negAt_apply_isReal_and_notMem _ hw]
   exact hy.2 w
 
-@[deprecated (since := "2025-05-23")]
-alias pos_of_not_mem_negAt_plusPart := pos_of_notMem_negAt_plusPart
-
 open scoped Function in -- required for scoped `on` notation
 /-- The images of `plusPart` by `negAt` are pairwise disjoint. -/
 theorem disjoint_negAt_plusPart : Pairwise (Disjoint on (fun s ↦ negAt s '' (plusPart A))) := by
@@ -1060,7 +1059,7 @@ theorem measurableSet_plusPart (hm : MeasurableSet A) :
   convert_to MeasurableSet (A ∩ (⋂ w, {x | 0 < x.1 w}))
   · ext; simp
   · refine hm.inter (MeasurableSet.iInter fun _ ↦ ?_)
-    exact measurableSet_lt measurable_const ((measurable_pi_apply _).comp' measurable_fst)
+    exact measurableSet_lt measurable_const (by fun_prop)
 
 variable (s) in
 theorem measurableSet_negAt_plusPart (hm : MeasurableSet A) :
@@ -1217,7 +1216,7 @@ theorem normAtAllPlaces_eq_of_normAtComplexPlaces_eq {x y : mixedSpace K}
 
 theorem normAtAllPlaces_image_preimage_of_nonneg {s : Set (realSpace K)}
     (hs : ∀ x ∈ s, ∀ w, 0 ≤ x w) :
-    normAtAllPlaces '' (normAtAllPlaces ⁻¹' s) = s := by
+    normAtAllPlaces '' normAtAllPlaces ⁻¹' s = s := by
   rw [Set.image_preimage_eq_iff]
   rintro x hx
   refine ⟨mixedSpaceOfRealSpace x, funext fun w ↦ ?_⟩

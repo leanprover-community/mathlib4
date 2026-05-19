@@ -3,9 +3,11 @@ Copyright (c) 2024 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Topology.CompactOpen
-import Mathlib.Dynamics.Ergodic.MeasurePreserving
-import Mathlib.MeasureTheory.Measure.Regular
+module
+
+public import Mathlib.Topology.CompactOpen
+public import Mathlib.Dynamics.Ergodic.MeasurePreserving
+public import Mathlib.MeasureTheory.Measure.Regular
 
 /-!
 # Continuity of the preimage of a set under a measure-preserving continuous function
@@ -19,6 +21,8 @@ for a continuous family of continuous maps `f z : C(X, Y)`,
 a null measurable set `s`, and a null measurable set `t` of finite measure,
 the set of parameters `z` such that `f z ⁻¹' t` is a.e. equal to `s` is a closed set.
 -/
+
+public section
 
 open Filter Set
 open scoped ENNReal symmDiff Topology

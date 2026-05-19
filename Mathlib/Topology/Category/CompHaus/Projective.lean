@@ -3,10 +3,12 @@ Copyright (c) 2021 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Topology.Category.CompHaus.Basic
-import Mathlib.Topology.Compactification.StoneCech
-import Mathlib.CategoryTheory.Preadditive.Projective.Basic
-import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
+module
+
+public import Mathlib.Topology.Category.CompHaus.Basic
+public import Mathlib.Topology.Compactification.StoneCech
+public import Mathlib.CategoryTheory.Preadditive.Projective.Basic
+public import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
 
 /-!
 # CompHaus has enough projectives
@@ -27,6 +29,8 @@ See [miraglia2006introduction] Chapter 21 for a proof that `CompHaus` has enough
 
 -/
 
+@[expose] public section
+
 
 noncomputable section
 
@@ -44,7 +48,7 @@ instance projective_ultrafilter (X : Type*) : Projective (of <| Ultrafilter X) w
     use CompHausLike.ofHom _ ⟨h, hh⟩
     apply ConcreteCategory.coe_ext
     have : g.hom ∘ g' = id := hg'.comp_eq_id
-    convert denseRange_pure.equalizer (g.hom.continuous.comp hh) f.hom.continuous _
+    convert denseRange_pure.equalizer (g.hom.hom.continuous.comp hh) f.hom.hom.continuous _
     -- This used to be `rw`, but we need `rw; rfl` after https://github.com/leanprover/lean4/pull/2644
     rw [comp_assoc, ultrafilter_extend_extends, ← comp_assoc, this, id_comp]
     rfl

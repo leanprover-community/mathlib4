@@ -3,9 +3,11 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
 -/
-import Mathlib.Data.Int.Bitwise
-import Mathlib.Data.Int.Order.Lemmas
-import Mathlib.Order.Interval.Set.Defs
+module
+
+public import Mathlib.Data.Int.Bitwise
+public import Mathlib.Data.Int.Order.Lemmas
+public import Mathlib.Order.Interval.Set.Defs
 
 /-!
 # Miscellaneous lemmas about the integers
@@ -15,13 +17,15 @@ This file contains lemmas about integers, which require further imports than
 
 -/
 
+public section
+
 
 open Nat
 
 namespace Int
 
 theorem le_natCast_sub (m n : ℕ) : (m - n : ℤ) ≤ ↑(m - n : ℕ) := by
-  cutsat
+  lia
 
 /-! ### `succ` and `pred` -/
 

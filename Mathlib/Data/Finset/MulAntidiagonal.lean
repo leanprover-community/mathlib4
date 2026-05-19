@@ -3,9 +3,11 @@ Copyright (c) 2020 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Yaël Dillies
 -/
-import Mathlib.Algebra.Order.Monoid.Defs
-import Mathlib.Data.Set.MulAntidiagonal
-import Mathlib.Algebra.Group.Pointwise.Set.Basic
+module
+
+public import Mathlib.Algebra.Order.Monoid.Defs
+public import Mathlib.Data.Set.MulAntidiagonal
+public import Mathlib.Algebra.Group.Pointwise.Set.Basic
 
 /-! # Multiplication antidiagonal as a `Finset`.
 
@@ -13,10 +15,12 @@ We construct the `Finset` of all pairs
 of an element in `s` and an element in `t` that multiply to `a`,
 given that `s` and `t` are well-ordered. -/
 
+@[expose] public section
+
 
 namespace Set
 
-open Pointwise
+open scoped Pointwise
 
 variable {α : Type*} {s t : Set α}
 
@@ -44,7 +48,7 @@ end Set
 
 namespace Finset
 
-open Pointwise
+open scoped Pointwise
 
 variable {α : Type*}
 variable [CommMonoid α] [PartialOrder α] [IsOrderedCancelMonoid α]

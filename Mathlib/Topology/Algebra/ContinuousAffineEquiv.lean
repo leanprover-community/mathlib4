@@ -3,9 +3,11 @@ Copyright (c) 2024 Michael Rothgang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Rothgang
 -/
-import Mathlib.LinearAlgebra.AffineSpace.AffineEquiv
-import Mathlib.Topology.Algebra.Module.Equiv
-import Mathlib.Topology.Algebra.ContinuousAffineMap
+module
+
+public import Mathlib.LinearAlgebra.AffineSpace.AffineEquiv
+public import Mathlib.Topology.Algebra.Module.Equiv
+public import Mathlib.Topology.Algebra.ContinuousAffineMap
 
 /-!
 # Continuous affine equivalences
@@ -28,9 +30,11 @@ which are continuous with continuous inverse.
 
 ## TODO
 - equip `ContinuousAffineEquiv k P P` with a `Group` structure,
-with multiplication corresponding to composition in `AffineEquiv.group`.
+  with multiplication corresponding to composition in `AffineEquiv.group`.
 
 -/
+
+@[expose] public section
 
 open Function
 
@@ -81,8 +85,6 @@ attribute [coe] ContinuousAffineEquiv.toAffineEquiv
 /-- Coerce continuous affine equivalences to affine equivalences. -/
 instance coe : Coe (P₁ ≃ᴬ[k] P₂) (P₁ ≃ᵃ[k] P₂) := ⟨toAffineEquiv⟩
 
-@[deprecated (since := "2025-08-15")] alias coe_injective := toAffineEquiv_injective
-
 instance instFunLike : FunLike (P₁ ≃ᴬ[k] P₂) P₁ P₂ where
   coe f := f.toAffineEquiv
   coe_injective' _ _ h := toAffineEquiv_injective (DFunLike.coe_injective h)
@@ -119,6 +121,10 @@ protected theorem continuous (e : P₁ ≃ᴬ[k] P₂) : Continuous e :=
 def toContinuousAffineMap (e : P₁ ≃ᴬ[k] P₂) : P₁ →ᴬ[k] P₂ where
   __ := e
   cont := e.continuous_toFun
+
+/-- Coerce continuous linear equivs to continuous linear maps. -/
+instance ContinuousAffineMap.coe : Coe (P₁ ≃ᴬ[k] P₂) (P₁ →ᴬ[k] P₂) :=
+  ⟨toContinuousAffineMap⟩
 
 @[simp]
 lemma coe_toContinuousAffineMap (e : P₁ ≃ᴬ[k] P₂) : ⇑e.toContinuousAffineMap = e :=
@@ -176,18 +182,11 @@ def symm (e : P₁ ≃ᴬ[k] P₂) : P₂ ≃ᴬ[k] P₁ where
 theorem toAffineEquiv_symm (e : P₁ ≃ᴬ[k] P₂) : e.symm.toAffineEquiv = e.toAffineEquiv.symm :=
   rfl
 
-@[deprecated "use instead `toAffineEquiv_symm`, in the reverse direction" (since := "2025-06-08")]
-theorem symm_toAffineEquiv (e : P₁ ≃ᴬ[k] P₂) : e.toAffineEquiv.symm = e.symm.toAffineEquiv :=
-  rfl
-
 @[simp]
 theorem coe_symm_toAffineEquiv (e : P₁ ≃ᴬ[k] P₂) : ⇑e.toAffineEquiv.symm = e.symm := rfl
 
 @[simp]
 theorem toEquiv_symm (e : P₁ ≃ᴬ[k] P₂) : e.symm.toEquiv = e.toEquiv.symm := rfl
-
-@[deprecated "use instead `symm_toEquiv`, in the reverse direction" (since := "2025-06-08")]
-theorem symm_toEquiv (e : P₁ ≃ᴬ[k] P₂) : e.toEquiv.symm = e.symm.toEquiv := rfl
 
 @[simp]
 theorem coe_symm_toEquiv (e : P₁ ≃ᴬ[k] P₂) : ⇑e.toEquiv.symm = e.symm := rfl
@@ -246,17 +245,17 @@ protected theorem image_symm_eq_preimage (e : P₁ ≃ᴬ[k] P₂) (s : Set P₂
   rw [e.symm.image_eq_preimage_symm, e.symm_symm]
 
 @[simp]
-theorem image_preimage (e : P₁ ≃ᴬ[k] P₂) (s : Set P₂) : e '' (e ⁻¹' s) = s :=
+theorem image_preimage (e : P₁ ≃ᴬ[k] P₂) (s : Set P₂) : e '' e ⁻¹' s = s :=
   e.surjective.image_preimage s
 
 @[simp]
-theorem preimage_image (e : P₁ ≃ᴬ[k] P₂) (s : Set P₁) : e ⁻¹' (e '' s) = s :=
+theorem preimage_image (e : P₁ ≃ᴬ[k] P₂) (s : Set P₁) : e ⁻¹' e '' s = s :=
   e.injective.preimage_image s
 
-theorem symm_image_image (e : P₁ ≃ᴬ[k] P₂) (s : Set P₁) : e.symm '' (e '' s) = s :=
+theorem symm_image_image (e : P₁ ≃ᴬ[k] P₂) (s : Set P₁) : e.symm '' e '' s = s :=
   e.toEquiv.symm_image_image s
 
-theorem image_symm_image (e : P₁ ≃ᴬ[k] P₂) (s : Set P₂) : e '' (e.symm '' s) = s :=
+theorem image_symm_image (e : P₁ ≃ᴬ[k] P₂) (s : Set P₂) : e '' e.symm '' s = s :=
   e.symm.symm_image_image s
 
 @[simp]
@@ -374,7 +373,7 @@ section
 variable (k P₁ P₂ P₃)
 
 /-- Product of affine spaces is commutative up to continuous affine isomorphism. -/
-@[simps! apply symm_apply toAffineEquiv]
+@[simps! apply toAffineEquiv]
 def prodComm : P₁ × P₂ ≃ᴬ[k] P₂ × P₁ where
   __ := AffineEquiv.prodComm k P₁ P₂
   continuous_toFun := continuous_swap
@@ -384,8 +383,9 @@ def prodComm : P₁ × P₂ ≃ᴬ[k] P₂ × P₁ where
 theorem prodComm_symm : (prodComm k P₁ P₂).symm = prodComm k P₂ P₁ :=
   rfl
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Product of affine spaces is associative up to continuous affine isomorphism. -/
-@[simps! apply symm_apply toAffineEquiv]
+@[simps! apply toAffineEquiv]
 def prodAssoc : (P₁ × P₂) × P₃ ≃ᴬ[k] P₁ × (P₂ × P₃) where
   __ := AffineEquiv.prodAssoc k P₁ P₂ P₃
   continuous_toFun := by eta_expand; dsimp; fun_prop

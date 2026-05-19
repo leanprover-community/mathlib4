@@ -3,8 +3,10 @@ Copyright (c) 2022 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers, Heather Macbeth
 -/
-import Mathlib.Analysis.InnerProductSpace.TwoDim
-import Mathlib.Geometry.Euclidean.Angle.Unoriented.Basic
+module
+
+public import Mathlib.Analysis.InnerProductSpace.TwoDim
+public import Mathlib.Geometry.Euclidean.Angle.Unoriented.Basic
 
 /-!
 # Oriented angles.
@@ -17,7 +19,7 @@ This file defines oriented angles in real inner product spaces.
 
 ## Implementation notes
 
-The definitions here use the `Real.angle` type, angles modulo `2 * π`. For some purposes,
+The definitions here use the `Real.Angle` type, angles modulo `2 * π`. For some purposes,
 angles modulo `π` are more convenient, because results are true for such angles with less
 configuration dependence. Results that are only equalities modulo `π` can be represented
 modulo `2 * π` as equalities of `(2 : ℤ) • θ`.
@@ -27,6 +29,8 @@ modulo `2 * π` as equalities of `(2 : ℤ) • θ`.
 * Evan Chen, Euclidean Geometry in Mathematical Olympiads.
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -68,6 +72,7 @@ theorem oangle_zero_left (x : V) : o.oangle 0 x = 0 := by simp [oangle]
 @[simp]
 theorem oangle_zero_right (x : V) : o.oangle x 0 = 0 := by simp [oangle]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If the two vectors passed to `oangle` are the same, the result is 0. -/
 @[simp]
 theorem oangle_self (x : V) : o.oangle x x = 0 := by
@@ -322,7 +327,7 @@ theorem two_zsmul_oangle_smul_smul_self (x : V) {r₁ r₂ : ℝ} :
 
 /-- If the spans of two vectors are equal, twice angles with those vectors on the left are
 equal. -/
-theorem two_zsmul_oangle_left_of_span_eq {x y : V} (z : V) (h : (ℝ ∙ x) = ℝ ∙ y) :
+theorem two_zsmul_oangle_left_of_span_eq {x y : V} (z : V) (h : ℝ ∙ x = ℝ ∙ y) :
     (2 : ℤ) • o.oangle x z = (2 : ℤ) • o.oangle y z := by
   rw [Submodule.span_singleton_eq_span_singleton] at h
   rcases h with ⟨r, rfl⟩
@@ -330,7 +335,7 @@ theorem two_zsmul_oangle_left_of_span_eq {x y : V} (z : V) (h : (ℝ ∙ x) = �
 
 /-- If the spans of two vectors are equal, twice angles with those vectors on the right are
 equal. -/
-theorem two_zsmul_oangle_right_of_span_eq (x : V) {y z : V} (h : (ℝ ∙ y) = ℝ ∙ z) :
+theorem two_zsmul_oangle_right_of_span_eq (x : V) {y z : V} (h : ℝ ∙ y = ℝ ∙ z) :
     (2 : ℤ) • o.oangle x y = (2 : ℤ) • o.oangle x z := by
   rw [Submodule.span_singleton_eq_span_singleton] at h
   rcases h with ⟨r, rfl⟩
@@ -338,8 +343,8 @@ theorem two_zsmul_oangle_right_of_span_eq (x : V) {y z : V} (h : (ℝ ∙ y) = �
 
 /-- If the spans of two pairs of vectors are equal, twice angles between those vectors are
 equal. -/
-theorem two_zsmul_oangle_of_span_eq_of_span_eq {w x y z : V} (hwx : (ℝ ∙ w) = ℝ ∙ x)
-    (hyz : (ℝ ∙ y) = ℝ ∙ z) : (2 : ℤ) • o.oangle w y = (2 : ℤ) • o.oangle x z := by
+theorem two_zsmul_oangle_of_span_eq_of_span_eq {w x y z : V} (hwx : ℝ ∙ w = ℝ ∙ x)
+    (hyz : ℝ ∙ y = ℝ ∙ z) : (2 : ℤ) • o.oangle w y = (2 : ℤ) • o.oangle x z := by
   rw [o.two_zsmul_oangle_left_of_span_eq y hwx, o.two_zsmul_oangle_right_of_span_eq x hyz]
 
 /-- The oriented angle between two vectors is zero if and only if the angle with the vectors
@@ -358,7 +363,7 @@ swapped is `π`. -/
 theorem oangle_eq_pi_iff_oangle_rev_eq_pi {x y : V} : o.oangle x y = π ↔ o.oangle y x = π := by
   rw [oangle_rev, neg_eq_iff_eq_neg, Real.Angle.neg_coe_pi]
 
-/-- The oriented angle between two vectors is `π` if and only they are nonzero and the first is
+/-- The oriented angle between two vectors is `π` if and only if they are nonzero and the first is
 on the same ray as the negation of the second. -/
 theorem oangle_eq_pi_iff_sameRay_neg {x y : V} :
     o.oangle x y = π ↔ x ≠ 0 ∧ y ≠ 0 ∧ SameRay ℝ x (-y) := by
@@ -406,8 +411,7 @@ theorem oangle_eq_zero_or_eq_pi_iff_right_eq_smul {x y : V} :
 are linearly independent. -/
 theorem oangle_ne_zero_and_ne_pi_iff_linearIndependent {x y : V} :
     o.oangle x y ≠ 0 ∧ o.oangle x y ≠ π ↔ LinearIndependent ℝ ![x, y] := by
-  rw [← not_or, ← not_iff_not, Classical.not_not,
-    oangle_eq_zero_or_eq_pi_iff_not_linearIndependent]
+  contrapose! +distrib; exact oangle_eq_zero_or_eq_pi_iff_not_linearIndependent o
 
 /-- Two vectors are equal if and only if they have equal norms and zero angle between them. -/
 theorem eq_iff_norm_eq_and_oangle_eq_zero (x y : V) : x = y ↔ ‖x‖ = ‖y‖ ∧ o.oangle x y = 0 := by

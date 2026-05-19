@@ -3,7 +3,9 @@ Copyright (c) 2025 Christopher Hoskin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christopher Hoskin
 -/
-import Mathlib.Order.ScottContinuity.Prod
+module
+
+public import Mathlib.Order.ScottContinuity.Prod
 
 /-!
 
@@ -15,6 +17,8 @@ import Mathlib.Order.ScottContinuity.Prod
   `sSup` on directed sets.
 
 -/
+
+public section
 
 variable {α β : Type*}
 

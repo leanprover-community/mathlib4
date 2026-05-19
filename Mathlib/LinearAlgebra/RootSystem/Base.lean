@@ -3,9 +3,11 @@ Copyright (c) 2025 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.LinearAlgebra.RootSystem.Chain
-import Mathlib.LinearAlgebra.RootSystem.Finite.Lemmas
-import Mathlib.LinearAlgebra.RootSystem.IsValuedIn
+module
+
+public import Mathlib.LinearAlgebra.RootSystem.Chain
+public import Mathlib.LinearAlgebra.RootSystem.Finite.Lemmas
+public import Mathlib.LinearAlgebra.RootSystem.IsValuedIn
 
 /-!
 # Bases for root pairings / systems
@@ -45,6 +47,8 @@ is too strong.
 
 -/
 
+@[expose] public section
+
 noncomputable section
 
 open Function Set Submodule
@@ -60,7 +64,9 @@ namespace RootPairing
 
 For reduced root pairings this definition is equivalent to the usual definition appearing in the
 informal literature but not for non-reduced root pairings it is more restrictive. See the module
-doc string for further remarks. -/
+doc string for further remarks.
+
+See also `RootPairing.Base.mk'`. -/
 structure Base (P : RootPairing ι R M N) where
   /-- The indices of the simple roots / coroots. -/
   support : Finset ι
@@ -79,7 +85,6 @@ variable {P : RootPairing ι R M N} (b : P.Base)
 
 lemma support_nonempty [Nonempty ι] [NeZero (2 : R)] : b.support.Nonempty := by
   by_contra! contra
-  rw [Finset.not_nonempty_iff_eq_empty] at contra
   inhabit ι
   simpa [P.ne_zero default, contra] using b.root_mem_or_neg_mem default
 
@@ -105,7 +110,7 @@ lemma root_ne_neg_of_ne [Nontrivial R] {i j : ι}
 lemma linearIndependent_pair_of_ne {i j : b.support} (hij : i ≠ j) :
     LinearIndependent R ![P.root i, P.root j] := by
   have : ({(j : ι), (i : ι)} : Set ι) ⊆ b.support := by simp [pair_subset_iff]
-  rw [← linearIndepOn_id_range_iff (by aesop)]
+  rw [← linearIndepOn_id_range_iff (by simp_all)]
   simpa [image_pair] using LinearIndepOn.id_image <| b.linearIndepOn_root.mono this
 
 lemma root_mem_span_int (i : ι) :
@@ -177,13 +182,12 @@ lemma eq_one_or_neg_one_of_mem_support_of_smul_mem [Finite ι]
     (i : ι) (h : i ∈ b.support) (t : R) (ht : t • P.root i ∈ range P.root) :
     t = 1 ∨ t = -1 := by
   obtain ⟨z, hz⟩ := b.eq_one_or_neg_one_of_mem_support_of_smul_mem_aux i h t ht
-  obtain ⟨s, hs⟩ := IsUnit.exists_left_inv <| isUnit_of_mul_eq_one_right _ t hz
-  replace ht : s • P.coroot i ∈ range P.coroot := by
+  replace ht : (z : R) • P.coroot i ∈ range P.coroot := by
     obtain ⟨j, hj⟩ := ht
-    simpa only [coroot_eq_smul_coroot_iff.mpr hj, smul_smul, hs, one_smul] using mem_range_self j
-  obtain ⟨w, hw⟩ := b.flip.eq_one_or_neg_one_of_mem_support_of_smul_mem_aux i h s ht
+    simpa only [coroot_eq_smul_coroot_iff.mpr hj, smul_smul, hz, one_smul] using mem_range_self j
+  obtain ⟨w, hw⟩ := b.flip.eq_one_or_neg_one_of_mem_support_of_smul_mem_aux i h _ ht
   have : (z : R) * w = 1 := by
-    simpa [mul_mul_mul_comm _ t _ s, mul_comm t s, hs] using congr_arg₂ (· * ·) hz hw
+    simpa [mul_mul_mul_comm _ t, mul_comm t, mul_comm _ (z : R), hz] using congr_arg₂ (· * ·) hz hw
   suffices z = 1 ∨ z = -1 by
     rcases this with rfl | rfl
     · left; simpa using hz
@@ -218,7 +222,7 @@ lemma pos_or_neg_of_sum_smul_root_mem (f : ι → ℤ)
     by_cases hi : i ∈ b.support
     · change 0 ≤ f' ⟨i, hi⟩
       simp [← hc]
-    · replace hi : i ∉ f.support := by contrapose! hi; exact hf₀ hi
+    · replace hi : i ∉ f.support := by contrapose hi; exact hf₀ hi
       simp_all
   refine Pi.lt_def.mpr ⟨aux, ?_⟩
   by_contra! contra
@@ -253,22 +257,18 @@ lemma sub_notMem_range_root
   let f : ι → ℤ := fun k ↦ if k = i then 1 else if k = j then -1 else 0
   have hf : ∑ k ∈ b.support, f k • P.root k = P.root i - P.root j := by
     have : {i, j} ⊆ b.support := by aesop (add simp Finset.insert_subset_iff)
-    rw [← Finset.sum_subset (s₁ := {i, j}) (s₂ := b.support) (by aesop) (by aesop),
-      Finset.sum_insert (by aesop), Finset.sum_singleton]
+    rw [← Finset.sum_subset (s₁ := {i, j}) (s₂ := b.support) (by lia) (by aesop),
+      Finset.sum_insert (by grind), Finset.sum_singleton]
     simp [f, hij, sub_eq_add_neg]
   intro contra
   rcases b.pos_or_neg_of_sum_smul_root_mem f (by rwa [hf]) (by aesop) with pos | neg
   · simpa [hij, f] using le_of_lt pos j
   · simpa [hij, f] using le_of_lt neg i
 
-@[deprecated (since := "2025-05-24")] alias sub_nmem_range_root := sub_notMem_range_root
-
 lemma sub_notMem_range_coroot
     {i j : ι} (hi : i ∈ b.support) (hj : j ∈ b.support) :
     P.coroot i - P.coroot j ∉ range P.coroot :=
   b.flip.sub_notMem_range_root hi hj
-
-@[deprecated (since := "2025-05-24")] alias sub_nmem_range_coroot := sub_notMem_range_coroot
 
 lemma pairingIn_le_zero_of_ne [IsDomain R] [P.IsCrystallographic] [Finite ι]
     {i j} (hij : i ≠ j) (hi : i ∈ b.support) (hj : j ∈ b.support) :
@@ -292,7 +292,7 @@ end RootPairing
 
 section RootSystem
 
-variable {P : RootSystem ι R M N} (b : P.Base)
+variable {P : RootPairing ι R M N} (b : P.Base) [P.IsRootSystem]
 
 /-- A base of a root system yields a basis of the root space. -/
 def toWeightBasis :
@@ -330,6 +330,7 @@ variable {P : RootPairing ι R M N} (b : P.Base)
 
 include b
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 lemma exists_root_eq_sum_nat_or_neg (i : ι) :
     ∃ f : ι → ℕ, f.support ⊆ b.support ∧
       (P.root i =   ∑ j ∈ b.support, f j • P.root j ∨
@@ -457,21 +458,21 @@ lemma isPos_iff {i : ι} : b.IsPos i ↔ 0 < b.height i := Iff.rfl
 lemma isPos_iff' {i : ι} : b.IsPos i ↔ 0 ≤ b.height i := by
   rw [isPos_iff]
   have := b.height_ne_zero i
-  cutsat
+  lia
 
 lemma IsPos.or_neg (i : ι) :
     letI := P.indexNeg
     b.IsPos i ∨ b.IsPos (-i) := by
   rw [isPos_iff, isPos_iff, height_reflectionPerm_self]
   have := b.height_ne_zero i
-  cutsat
+  lia
 
 lemma IsPos.neg_iff_not (i : ι) :
     letI := P.indexNeg
     b.IsPos (-i) ↔ ¬ b.IsPos i := by
   rw [isPos_iff, isPos_iff, height_reflectionPerm_self]
   have := b.height_ne_zero i
-  cutsat
+  lia
 
 variable {b}
 
@@ -485,14 +486,14 @@ lemma IsPos.add {i j k : ι}
     b.IsPos k := by
   rw [isPos_iff] at hi hj ⊢
   rw [b.height_add hk]
-  cutsat
+  lia
 
 lemma IsPos.sub {i j k : ι}
     (hi : b.IsPos i) (hj : j ∈ b.support) (hk : P.root k = P.root i - P.root j) :
     b.IsPos k := by
   rw [isPos_iff] at hi
   rw [isPos_iff', b.height_sub hk, height_one_of_mem_support hj]
-  cutsat
+  lia
 
 lemma IsPos.exists_mem_support_pos_pairingIn [P.IsCrystallographic] {i : ι} (h₀ : b.IsPos i) :
     ∃ j ∈ b.support, 0 < P.pairingIn ℤ j i := by
@@ -507,7 +508,7 @@ lemma IsPos.exists_mem_support_pos_pairingIn [P.IsCrystallographic] {i : ι} (h�
   have : P.pairingIn ℤ i i = ∑ j ∈ b.support, f j • P.pairingIn ℤ j i :=
     algebraMap_injective ℤ R <| by
       simp_rw [algebraMap_pairingIn, map_sum, ← root_coroot_eq_pairing, hf₂, map_sum, map_zsmul,
-        LinearMap.coeFn_sum, Finset.sum_apply, LinearMap.smul_apply, root_coroot_eq_pairing,
+        LinearMap.coe_sum, Finset.sum_apply, LinearMap.smul_apply, root_coroot_eq_pairing,
         zsmul_eq_mul, algebraMap_pairingIn]
   rw [this]
   refine Finset.sum_nonpos fun j _ ↦ ?_
@@ -533,14 +534,14 @@ lemma IsPos.add_zsmul {i j k : ι} {z : ℤ} (hij : i ≠ j)
     letI := P.indexNeg
     replace contra : i = -j := by rw [eq_comm, neg_eq_iff_eq_neg]; simpa using contra
     rw [contra, isPos_iff, height_reflectionPerm_self, height_one_of_mem_support hj] at hi
-    omega
+    lia
   induction z generalizing i k with
   | zero => simp_all
   | succ w hw =>
     obtain ⟨l, hl⟩ : P.root i + (w : ℤ) • P.root j ∈ range P.root := by
       replace hk : P.root i + (w + 1) • P.root j ∈ range P.root := ⟨k, by rw [hk]; module⟩
       simp only [natCast_zsmul, root_add_nsmul_mem_range_iff_le_chainTopCoeff hij] at hk ⊢
-      cutsat
+      lia
     replace hk : P.root k = P.root l + P.root j := by rw [hk, hl]; module
     exact (hw hi hl hij).add (b.isPos_of_mem_support hj) hk
   | pred w hw =>
@@ -548,7 +549,7 @@ lemma IsPos.add_zsmul {i j k : ι} {z : ℤ} (hij : i ≠ j)
       replace hk : P.root i - (w + 1) • P.root j ∈ range P.root := ⟨k, by rw [hk]; module⟩
       rw [neg_smul, ← sub_eq_add_neg, natCast_zsmul]
       simp only [root_sub_nsmul_mem_range_iff_le_chainBotCoeff hij] at hk ⊢
-      cutsat
+      lia
     replace hk : P.root k = P.root l - P.root j := by rw [hk, hl]; module
     exact (hw hi hl hij).sub hj hk
 
@@ -573,12 +574,12 @@ lemma IsPos.induction_on_add
     rw [P.zero_lt_pairingIn_iff'] at hj'
     rcases eq_or_ne i j with rfl | hij; · exact h₁ i hj
     obtain ⟨k, hk⟩ := P.root_sub_root_mem_of_pairingIn_pos hj' hij
-    have hkn : b.height k = n := by rw [b.height_sub hk, height_one_of_mem_support hj]; omega
-    have hkpos : b.IsPos k := by rw [isPos_iff']; omega
+    have hkn : b.height k = n := by rw [b.height_sub hk, height_one_of_mem_support hj]; lia
+    have hkpos : b.IsPos k := by rw [isPos_iff']; lia
     exact h₂ k j i (by rw [hk]; module) (ih hkpos hkn) hj
   | pred n ih =>
     rw [isPos_iff] at h₀
-    cutsat
+    lia
 
 omit [P.IsReduced] in
 /-- This lemma is included mostly for comparison with the informal literature. Usually
@@ -597,7 +598,7 @@ lemma exists_eq_sum_and_forall_sum_mem_of_isPos {i : ι} (hi : b.IsPos i) :
     · have : m = (⟨m, hm⟩ : Fin n).castSucc := rfl
       rw [this, Fin.sum_Iic_castSucc]
       simp only [Fin.snoc_castSucc, h₄]
-    · replace hm : m = n := by omega
+    · replace hm : m = n := by lia
       replace hm : Finset.Iic m = Finset.univ := by ext; simp [hm, Fin.le_def, Fin.is_le]
       simp [hm, Fin.sum_univ_castSucc, ← h₃, ← h₁]
 
@@ -630,7 +631,7 @@ lemma IsPos.induction_on_reflect
       suffices b.height (P.reflectionPerm j i) < b.height i by
         have : (b.height (P.reflectionPerm j i)).natAbs = b.height (P.reflectionPerm j i) :=
           Int.natAbs_of_nonneg <| (isPos_iff' _).mp hk
-        cutsat
+        lia
       have := P.reflection_apply_root' ℤ (i := j) (j := i)
       rw [← root_reflectionPerm, sub_eq_add_neg, ← neg_smul] at this
       rw [b.height_add_zsmul this]

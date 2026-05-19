@@ -3,9 +3,11 @@ Copyright (c) 2023 Scott Carnahan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Carnahan
 -/
-import Mathlib.Algebra.Group.NatPowAssoc
-import Mathlib.Algebra.Polynomial.AlgebraMap
-import Mathlib.Algebra.Polynomial.Eval.SMul
+module
+
+public import Mathlib.Algebra.Group.NatPowAssoc
+public import Mathlib.Algebra.Polynomial.AlgebraMap
+public import Mathlib.Algebra.Polynomial.Eval.SMul
 
 /-!
 # Scalar-multiple polynomial evaluation
@@ -36,6 +38,8 @@ is a generalization of `Algebra.Polynomial.Eval`.
 * Nonunital evaluation for polynomials with vanishing constant term for `Pow S ℕ+` (different file?)
 
 -/
+
+@[expose] public section
 
 namespace Polynomial
 
@@ -130,10 +134,8 @@ theorem smeval.linearMap_apply : smeval.linearMap R x p = p.smeval x := rfl
 
 theorem leval_coe_eq_smeval {R : Type*} [Semiring R] (r : R) :
     ⇑(leval r) = fun p => p.smeval r := by
-  rw [funext_iff]
-  intro
-  rw [leval_apply, smeval_def, eval_eq_sum]
-  rfl
+  ext
+  simpa using eval_eq_smeval _ _
 
 theorem leval_eq_smeval.linearMap {R : Type*} [Semiring R] (r : R) :
     leval r = smeval.linearMap R r := by
@@ -288,16 +290,7 @@ variable (R : Type*) [Semiring R] (p q : R[X]) {S : Type*} [Semiring S]
 theorem smeval_commute_left (hc : Commute x y) : Commute (p.smeval x) y := by
   induction p using Polynomial.induction_on' with
   | add r s hr hs => exact (smeval_add R r s x) ▸ Commute.add_left hr hs
-  | monomial n a =>
-    simp only [smeval_monomial]
-    refine Commute.smul_left ?_ a
-    induction n with
-    | zero => simp only [npow_zero, Commute.one_left]
-    | succ n ih =>
-      refine (commute_iff_eq (x ^ (n + 1)) y).mpr ?_
-      rw [commute_iff_eq (x ^ n) y] at ih
-      rw [pow_succ, ← mul_assoc, ← ih]
-      exact Commute.right_comm hc (x ^ n)
+  | monomial n a => simpa [smeval_monomial] using Commute.smul_left (Commute.pow_left hc _) _
 
 theorem smeval_commute (hc : Commute x y) : Commute (p.smeval x) (q.smeval y) := by
   induction p using Polynomial.induction_on' with

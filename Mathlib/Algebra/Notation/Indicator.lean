@@ -3,8 +3,10 @@ Copyright (c) 2020 Zhouhang Zhou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou
 -/
-import Mathlib.Algebra.Notation.Support
-import Mathlib.Data.Set.Piecewise
+module
+
+public import Mathlib.Algebra.Notation.Support
+public import Mathlib.Data.Set.Piecewise
 
 /-!
 # Indicator function
@@ -33,6 +35,8 @@ arguments. This is in contrast with the design of `Pi.single` or `Set.piecewise`
 
 indicator, characteristic
 -/
+
+@[expose] public section
 
 assert_not_exists Monoid
 
@@ -64,12 +68,6 @@ lemma mulIndicator_of_mem (h : a ∈ s) (f : α → M) : mulIndicator s f a = f 
 
 @[to_additive (attr := simp)]
 lemma mulIndicator_of_notMem (h : a ∉ s) (f : α → M) : mulIndicator s f a = 1 := if_neg h
-
-@[deprecated (since := "2025-05-23")]
-alias indicator_of_not_mem := indicator_of_notMem
-
-@[to_additive existing, deprecated (since := "2025-05-23")]
-alias mulIndicator_of_not_mem := mulIndicator_of_notMem
 
 @[to_additive]
 lemma mulIndicator_eq_one_or_self (s : Set α) (f : α → M) (a : α) :
@@ -261,12 +259,6 @@ lemma mulIndicator_const_preimage (U : Set α) (s : Set M) (a : M) :
 lemma mulIndicator_preimage_of_notMem (s : Set α) (f : α → M) {t : Set M} (ht : (1 : M) ∉ t) :
     mulIndicator s f ⁻¹' t = f ⁻¹' t ∩ s := by
   simp [mulIndicator_preimage, Pi.one_def, Set.preimage_const_of_notMem ht]
-
-@[deprecated (since := "2025-05-23")]
-alias indicator_preimage_of_not_mem := indicator_preimage_of_notMem
-
-@[to_additive existing, deprecated (since := "2025-05-23")]
-alias mulIndicator_preimage_of_not_mem := mulIndicator_preimage_of_notMem
 
 @[to_additive]
 lemma mem_range_mulIndicator {r : M} {s : Set α} {f : α → M} :

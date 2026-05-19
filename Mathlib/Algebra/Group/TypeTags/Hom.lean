@@ -3,13 +3,17 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Algebra.Group.Equiv.Defs
-import Mathlib.Algebra.Group.Hom.Basic
-import Mathlib.Algebra.Group.TypeTags.Basic
+module
+
+public import Mathlib.Algebra.Group.Equiv.Defs
+public import Mathlib.Algebra.Group.Hom.Basic
+public import Mathlib.Algebra.Group.TypeTags.Basic
 
 /-!
 # Transport algebra morphisms between additive and multiplicative types.
 -/
+
+@[expose] public section
 
 open Additive (ofMul toMul)
 open Multiplicative (ofAdd toAdd)
@@ -77,15 +81,9 @@ def AddMonoidHom.toMultiplicativeRight [MulOneClass α] [AddZeroClass β] :
     map_zero' := f.map_one
   }
 
-@[deprecated (since := "2025-09-19")]
-alias AddMonoidHom.toMultiplicative' := AddMonoidHom.toMultiplicativeRight
-
 @[simp, norm_cast]
 lemma AddMonoidHom.coe_toMultiplicativeRight [MulOneClass α] [AddZeroClass β]
     (f : Additive α →+ β) : ⇑(toMultiplicativeRight f) = ofAdd ∘ f ∘ ofMul := rfl
-
-@[deprecated (since := "2025-09-19")]
-alias AddMonoidHom.coe_toMultiplicative' := AddMonoidHom.coe_toMultiplicativeRight
 
 /-- Reinterpret `α →* Multiplicative β` as `Additive α →+ β`. -/
 @[simps!]
@@ -93,14 +91,9 @@ def MonoidHom.toAdditiveLeft [MulOneClass α] [AddZeroClass β] :
     (α →* Multiplicative β) ≃ (Additive α →+ β) :=
   AddMonoidHom.toMultiplicativeRight.symm
 
-@[deprecated (since := "2025-09-19")] alias MonoidHom.toAdditive' := MonoidHom.toAdditiveLeft
-
 @[simp, norm_cast]
 lemma MonoidHom.coe_toAdditiveLeft [MulOneClass α] [AddZeroClass β] (f : α →* Multiplicative β) :
     ⇑(toAdditiveLeft f) = toAdd ∘ f ∘ toMul := rfl
-
-@[deprecated (since := "2025-09-19")]
-alias MonoidHom.coe_toAdditive' := MonoidHom.coe_toAdditiveLeft
 
 /-- Reinterpret `α →+ Additive β` as `Multiplicative α →* β`. -/
 @[simps]
@@ -117,15 +110,9 @@ def AddMonoidHom.toMultiplicativeLeft [AddZeroClass α] [MulOneClass β] :
     map_zero' := f.map_one
   }
 
-@[deprecated (since := "2025-09-19")]
-alias AddMonoidHom.toMultiplicative'' := AddMonoidHom.toMultiplicativeLeft
-
 @[simp, norm_cast]
 lemma AddMonoidHom.coe_toMultiplicativeLeft [AddZeroClass α] [MulOneClass β] (f : α →+ Additive β) :
     ⇑(toMultiplicativeLeft f) = toMul ∘ f ∘ toAdd := rfl
-
-@[deprecated (since := "2025-09-19")]
-alias AddMonoidHom.coe_toMultiplicative'' := AddMonoidHom.coe_toMultiplicativeLeft
 
 /-- Reinterpret `Multiplicative α →* β` as `α →+ Additive β`. -/
 @[simps!]
@@ -133,14 +120,9 @@ def MonoidHom.toAdditiveRight [AddZeroClass α] [MulOneClass β] :
     (Multiplicative α →* β) ≃ (α →+ Additive β) :=
   AddMonoidHom.toMultiplicativeLeft.symm
 
-@[deprecated (since := "2025-09-19")] alias MonoidHom.toAdditive'' := MonoidHom.toAdditiveRight
-
 @[simp, norm_cast]
 lemma MonoidHom.coe_toAdditiveRight [AddZeroClass α] [MulOneClass β] (f : Multiplicative α →* β) :
     ⇑(toAdditiveRight f) = ofMul ∘ f ∘ ofAdd := rfl
-
-@[deprecated (since := "2025-09-19")]
-alias MonoidHom.coe_toAdditive'' := MonoidHom.coe_toAdditiveRight
 
 /-- This ext lemma moves the type tag to the codomain, since most ext lemmas act on the domain.
 

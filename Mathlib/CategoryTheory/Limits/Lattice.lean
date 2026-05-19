@@ -3,14 +3,18 @@ Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Justus Springer
 -/
-import Mathlib.CategoryTheory.Category.Preorder
-import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
-import Mathlib.CategoryTheory.Limits.Shapes.Products
-import Mathlib.Data.Finset.Lattice.Fold
+module
+
+public import Mathlib.CategoryTheory.Category.Preorder
+public import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
+public import Mathlib.CategoryTheory.Limits.Shapes.Products
+public import Mathlib.Data.Finset.Lattice.Fold
 
 /-!
 # Limits in lattice categories are given by infimums and supremums.
 -/
+
+@[expose] public section
 
 
 universe w w' u
@@ -166,10 +170,10 @@ variable {α : Type u} [CompleteLattice α] {J : Type w} [Category.{w'} J]
 def limitCone (F : J ⥤ α) : LimitCone F where
   cone :=
     { pt := iInf F.obj
-      π := { app := fun _ => homOfLE (CompleteLattice.sInf_le _ _ (Set.mem_range_self _)) } }
+      π := { app := fun _ => homOfLE (sInf_le (Set.mem_range_self _)) } }
   isLimit :=
     { lift := fun s =>
-        homOfLE (CompleteLattice.le_sInf _ _ (by rintro _ ⟨j, rfl⟩; exact (s.π.app j).le)) }
+        homOfLE (le_sInf (by rintro _ ⟨j, rfl⟩; exact (s.π.app j).le)) }
 
 /-- The colimit cocone over any functor into a complete lattice.
 -/
@@ -177,10 +181,10 @@ def limitCone (F : J ⥤ α) : LimitCone F where
 def colimitCocone (F : J ⥤ α) : ColimitCocone F where
   cocone :=
     { pt := iSup F.obj
-      ι := { app := fun _ => homOfLE (CompleteLattice.le_sSup _ _ (Set.mem_range_self _)) } }
+      ι := { app := fun _ => homOfLE (le_sSup (Set.mem_range_self _)) } }
   isColimit :=
     { desc := fun s =>
-        homOfLE (CompleteLattice.sSup_le _ _ (by rintro _ ⟨j, rfl⟩; exact (s.ι.app j).le)) }
+        homOfLE (sSup_le (by rintro _ ⟨j, rfl⟩; exact (s.ι.app j).le)) }
 
 -- see Note [lower instance priority]
 instance (priority := 100) hasLimits_of_completeLattice : HasLimitsOfSize.{w, w'} α where

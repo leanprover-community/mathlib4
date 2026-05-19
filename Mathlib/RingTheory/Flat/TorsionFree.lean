@@ -3,12 +3,13 @@ Copyright (c) 2025 Matthew Jasper. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Matthew Jasper, Kevin Buzzard
 -/
+module
 
-import Mathlib.Algebra.Module.Torsion.Basic
-import Mathlib.RingTheory.DedekindDomain.Dvr
-import Mathlib.RingTheory.Flat.Localization
-import Mathlib.RingTheory.Flat.Tensor
-import Mathlib.RingTheory.Ideal.IsPrincipal
+public import Mathlib.Algebra.Module.Torsion.Basic
+public import Mathlib.RingTheory.DedekindDomain.Dvr
+public import Mathlib.RingTheory.Flat.Localization
+public import Mathlib.RingTheory.Flat.Tensor
+public import Mathlib.RingTheory.Ideal.IsPrincipal
 
 /-!
 # Relationships between flatness and torsionfreeness.
@@ -22,10 +23,12 @@ domains and valuation rings.
 * `Module.Flat.isSMulRegular_of_nonZeroDivisors`: Scalar multiplication by a nonzerodivisor of `R`
   is injective on a flat `R`-module.
 * `Module.Flat.torsion_eq_bot`: `Torsion R M = ⊥` if `M` is a flat `R`-module.
-* `Module.Flat.flat_iff_torsion_eq_bot_of_valuationRing_localized_maximal`: if localizing `R` at
-  the complement of any maximal ideal is a valuation ring then `Torsion R M = ⊥` iff `M` is a
+* `Module.Flat.flat_iff_torsion_eq_bot_of_valuationRing_localization_isMaximal`: if localizing `R`
+  at the complement of any maximal ideal is a valuation ring then `Torsion R M = ⊥` iff `M` is a
   flat `R`-module.
 -/
+
+public section
 -- TODO: Add definition and properties of Prüfer domains.
 -- TODO: Use `IsTorsionFree`.
 
@@ -60,6 +63,9 @@ lemma isSMulRegular_of_isRegular {r : R} (hr : IsRegular r) [Flat R M] :
   rw [IsSMulRegular, h2]
   simp [h, LinearEquiv.injective]
 
+instance isTorsionFree [Flat R M] : IsTorsionFree R M :=
+  ⟨fun _ hr ↦ isSMulRegular_of_isRegular hr⟩
+
 end Semiring
 
 section Ring
@@ -69,7 +75,6 @@ variable {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M]
 open scoped nonZeroDivisors
 
 open LinearMap in
-
 /-- Scalar multiplication `m ↦ r • m` by a nonzerodivisor `r` is injective on a flat module. -/
 lemma isSMulRegular_of_nonZeroDivisors {r : R} (hr : r ∈ R⁰) [Flat R M] : IsSMulRegular M r := by
   apply isSMulRegular_of_isRegular
@@ -78,7 +83,7 @@ lemma isSMulRegular_of_nonZeroDivisors {r : R} (hr : r ∈ R⁰) [Flat R M] : Is
 /-- Flat modules have no torsion. -/
 theorem torsion_eq_bot [Flat R M] : torsion R M = ⊥ := by
   rw [eq_bot_iff]
-  -- indeed the definition of torsion means "annihiliated by a nonzerodivisor"
+  -- indeed the definition of torsion means "annihilated by a nonzerodivisor"
   rintro m ⟨⟨r, hr⟩, h⟩
   -- and we just showed that 0 is the only element with this property
   exact isSMulRegular_of_nonZeroDivisors hr (by simpa using h)
@@ -108,7 +113,7 @@ theorem flat_iff_torsion_eq_bot_of_isBezout [IsBezout R] [IsDomain R] :
       lift_comp_map, LinearMap.compl₂_id, LinearMap.comp_assoc,
       Ideal.subtype_isoBaseOfIsPrincipal_eq_mul, LinearMap.lift_lsmul_mul_eq_lsmul_lift_lsmul,
       LinearMap.coe_comp]
-    rw [← Submodule.noZeroSMulDivisors_iff_torsion_eq_bot] at htors
+    rw [← Submodule.isTorsionFree_iff_torsion_eq_bot] at htors
     refine Function.Injective.comp (LinearMap.lsmul_injective this) ?_
     rw [← Equiv.injective_comp (TensorProduct.lid R M).symm.toEquiv]
     convert Function.injective_id
@@ -123,9 +128,9 @@ theorem flat_iff_torsion_eq_bot_of_valuationRing_localization_isMaximal [IsDomai
   refine ⟨fun _ ↦ Flat.torsion_eq_bot, fun h ↦ ?_⟩
   apply flat_of_localized_maximal
   intro P hP
-  rw [← Submodule.noZeroSMulDivisors_iff_torsion_eq_bot] at h
+  rw [← Submodule.isTorsionFree_iff_torsion_eq_bot] at h
   rw [← flat_iff_of_isLocalization (Localization P.primeCompl) P.primeCompl,
-    Flat.flat_iff_torsion_eq_bot_of_isBezout, ← Submodule.noZeroSMulDivisors_iff_torsion_eq_bot]
+    Flat.flat_iff_torsion_eq_bot_of_isBezout, ← Submodule.isTorsionFree_iff_torsion_eq_bot]
   infer_instance
 
 /-- If `R` is a Dedekind domain then an `R`-module is flat iff it has no torsion. -/
@@ -135,9 +140,8 @@ theorem _root_.IsDedekindDomain.flat_iff_torsion_eq_bot [IsDedekindDomain R] :
   apply flat_iff_torsion_eq_bot_of_valuationRing_localization_isMaximal
   exact fun P ↦ inferInstance
 
-instance [IsDedekindDomain R] [NoZeroSMulDivisors R M] : Flat R M := by
-  rw [IsDedekindDomain.flat_iff_torsion_eq_bot,
-    ← Submodule.noZeroSMulDivisors_iff_torsion_eq_bot]
+instance [IsDedekindDomain R] [IsTorsionFree R M] : Flat R M := by
+  rw [IsDedekindDomain.flat_iff_torsion_eq_bot, ← Submodule.isTorsionFree_iff_torsion_eq_bot]
   infer_instance
 
 end Ring

@@ -3,7 +3,9 @@ Copyright (c) 2021 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
-import Mathlib.Analysis.Convex.Hull
+module
+
+public import Mathlib.Analysis.Convex.Hull
 
 /-!
 # Extreme sets
@@ -38,8 +40,10 @@ See chapter 8 of [Barry Simon, *Convexity*][simon2011]
 Prove lemmas relating extreme sets and points to the intrinsic frontier.
 -/
 
+@[expose] public section
 
-open Function Set Affine
+
+open Function Module Set Affine
 
 variable {𝕜 E F ι : Type*} {M : ι → Type*}
 
@@ -85,13 +89,13 @@ protected theorem IsExtreme.trans (hAB : IsExtreme 𝕜 A B) (hBC : IsExtreme �
     (hAB.left_mem_of_mem_openSegment hx₁A hx₂A (hBC.subset hxC) hx)
     (hAB.right_mem_of_mem_openSegment hx₁A hx₂A (hBC.subset hxC) hx) hxC hx
 
-protected theorem IsExtreme.antisymm : AntiSymmetric (IsExtreme 𝕜 : Set E → Set E → Prop) :=
-  fun _ _ hAB hBA ↦ Subset.antisymm hBA.1 hAB.1
+protected theorem IsExtreme.antisymm : Std.Antisymm (IsExtreme 𝕜 : Set E → Set E → Prop) :=
+  ⟨fun _ _ hAB hBA ↦ Subset.antisymm hBA.1 hAB.1⟩
 
 instance : IsPartialOrder (Set E) (IsExtreme 𝕜) where
   refl := IsExtreme.refl 𝕜
   trans _ _ _ := IsExtreme.trans
-  antisymm := IsExtreme.antisymm
+  __ := IsExtreme.antisymm
 
 theorem IsExtreme.inter (hAB : IsExtreme 𝕜 A B) (hAC : IsExtreme 𝕜 A C) :
     IsExtreme 𝕜 A (B ∩ C) := by
@@ -140,7 +144,7 @@ theorem mem_extremePoints_iff_left : x ∈ A.extremePoints 𝕜 ↔
     x ∈ A ∧ ∀ x₁ ∈ A, ∀ x₂ ∈ A, x ∈ openSegment 𝕜 x₁ x₂ → x₁ = x :=
   .rfl
 
-/-- x is an extreme point to A iff {x} is an extreme set of A. -/
+/-- `x` is an extreme point to `A` iff `{x}` is an extreme set of `A`. -/
 @[simp] lemma isExtreme_singleton : IsExtreme 𝕜 A {x} ↔ x ∈ A.extremePoints 𝕜 := by
   simp [isExtreme_iff, extremePoints]
 
@@ -169,6 +173,10 @@ theorem IsExtreme.extremePoints_eq (hAB : IsExtreme 𝕜 A B) :
     B.extremePoints 𝕜 = B ∩ A.extremePoints 𝕜 :=
   Subset.antisymm (fun _ hx ↦ ⟨hx.1, hAB.extremePoints_subset_extremePoints hx⟩)
     (inter_extremePoints_subset_extremePoints_of_subset hAB.1)
+
+@[nontriviality]
+lemma Set.extremePoints_eq_self [Subsingleton E] (A : Set E) : Set.extremePoints 𝕜 A = A :=
+  subset_antisymm extremePoints_subset fun _ h ↦ ⟨h, fun _ _ _ _ _ ↦ Subsingleton.elim ..⟩
 
 end SMul
 
@@ -240,7 +248,7 @@ end OrderedRing
 section LinearOrderedRing
 
 variable [Ring 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [AddCommGroup E] [Module 𝕜 E]
-variable [DenselyOrdered 𝕜] [NoZeroSMulDivisors 𝕜 E] {A : Set E} {x : E}
+variable [DenselyOrdered 𝕜] [IsTorsionFree 𝕜 E] {A : Set E} {x : E}
 
 /-- A useful restatement using `segment`: `x` is an extreme point iff the only (closed) segments
 that contain it are those with `x` as one of their endpoints. -/
