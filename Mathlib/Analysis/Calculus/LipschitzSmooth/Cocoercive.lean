@@ -36,6 +36,5 @@ theorem CocoerciveWith.lipschitzWith_gradient {K : NNReal} {f : F → ℝ}
     (h : CocoerciveWith K f) : LipschitzWith K (∇ f) :=
   lipschitzWith_iff_dist_le_mul.mpr fun x y => by
     simp only [dist_eq_norm']
-    have hcs : ⟪∇ f y - ∇ f x, y - x⟫ ≤ ‖∇ f y - ∇ f x‖ * ‖y - x‖ := real_inner_le_norm _ _
     nlinarith [h x y, mul_nonneg K.coe_nonneg (norm_nonneg (y - x)),
-              mul_le_mul_of_nonneg_left hcs K.coe_nonneg]
+              mul_le_mul_of_nonneg_left (real_inner_le_norm (∇ f y - ∇ f x) (y - x)) K.coe_nonneg]
