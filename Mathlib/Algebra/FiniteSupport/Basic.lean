@@ -192,4 +192,9 @@ lemma HasFiniteSupport.hasFiniteMulSupport_fun_pow {M S : Type*} [Monoid M] (f :
 
 end Function
 
+@[fun_prop]
+lemma Multiset.hasFiniteSupport_count {α : Type*} [DecidableEq α] (s : Multiset α) :
+    (count · s).HasFiniteSupport :=
+    s.toFinset.finite_toSet.subset <| by simp
+
 end
