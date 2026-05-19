@@ -114,9 +114,9 @@ lemma ncard_oddComponents_mono [Finite V] {G' : SimpleGraph V} (h : G ≤ G') :
      G'.oddComponents.ncard ≤ G.oddComponents.ncard := by
   have aux (c : G'.ConnectedComponent) (hc : Odd c.supp.ncard) :
       {c' : G.ConnectedComponent | Odd c'.supp.ncard ∧ c'.supp ⊆ c.supp}.Nonempty := by
-    refine Set.nonempty_of_ncard_ne_zero fun h' ↦ ?_
-    simpa [-Nat.card_eq_fintype_card, -Set.coe_setOf, h']
-      using (c.odd_oddComponents_ncard_subset_supp _ h).2 hc
+    refine Set.nonempty_of_ncard_ne_zero fun h' ↦ Nat.not_odd_zero ?_
+    rw [← h']
+    exact (c.odd_oddComponents_ncard_subset_supp _ h).2 hc
   let f : G'.oddComponents → G.oddComponents :=
     fun ⟨c, hc⟩ ↦ ⟨(aux c hc).choose, (aux c hc).choose_spec.1⟩
   refine Nat.card_le_card_of_injective f fun c c' fcc' ↦ ?_
