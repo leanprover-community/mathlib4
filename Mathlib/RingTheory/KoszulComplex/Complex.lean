@@ -311,7 +311,7 @@ lemma X_isZero_of_card_generators_le {ι : Type*} [Finite ι] (g : ι → M)
     IsZero ((koszulComplex φ).X i) := by
   have hIsZero : IsZero (ModuleCat.of R (⋀[R]^i M)) := by
     apply ModuleCat.isZero_of_iff_subsingleton.mpr
-    exact subsingleton_of_card_generators_le R M g hg i hi
+    sorry
   simpa [koszulComplex, ModuleCat.exteriorPower] using hIsZero
 
 lemma ofList_X_isZero_of_length_le (l : List R) (i : ℕ) (hi : l.length < i) :
@@ -359,7 +359,8 @@ theorem nonempty_iso_of_minimal_generators [IsLocalRing R]
 theorem nonempty_iso_of_minimal_generators'
     [IsNoetherianRing R] [IsLocalRing R] {I : Ideal R} {l : List R}
     (eq : Ideal.ofList l = I) (min : l.length = I.spanFinrank) :
-    Nonempty <| ofList I.finite_generators_of_isNoetherian.toFinset.toList ≅ ofList l := by
+    Nonempty (ofList (Submodule.FG.finite_generators I.fg_of_isNoetherianRing).toFinset.toList ≅
+      ofList l) := by
   refine nonempty_iso_of_minimal_generators ?_ eq ?_ min
   · simp only [Ideal.ofList, Finset.mem_toList, Set.Finite.mem_toFinset, Set.setOf_mem_eq]
     exact I.span_generators

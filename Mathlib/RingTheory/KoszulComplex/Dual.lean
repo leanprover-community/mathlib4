@@ -16,12 +16,7 @@ public import Mathlib.CategoryTheory.Abelian.Ext
 In this file, we prove the dual relation between Koszul complex and cocomplex.
 -/
 
-#check ComplexShape.Embedding.extendFunctor
-set_option pp.universes true in
-#check ChainComplex.linearYonedaObj
--- #loogle ComplexShape.Embedding
-
-@[expose] public section
+public section
 
 universe u v
 
@@ -29,7 +24,3 @@ open CategoryTheory Functor
 
 /- `M`is set to be `Type u` to make universe problems easier. -/
 variable (R : Type u) [CommRing R] (M : Type u) [AddCommGroup M] [Module R M] (x : M)
-
-
-
--- #check (koszulCocomplex R x).linearYonedaObj R (ModuleCat.of R R)
