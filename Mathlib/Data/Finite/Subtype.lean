@@ -11,7 +11,7 @@ public import Mathlib.Data.Finite.Option
 # `Finite`ness conditions on subtypes
 -/
 
-@[expose] public section
+public section
 
 /-- The subtype of terms not equal to a given term is finite if and only if the type is finite. -/
 @[simp]
