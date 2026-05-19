@@ -898,7 +898,7 @@ lemma Limits.preservesLimitsOfShape_walkingCospan_of_forall_isPullback
   rwa [h.preservesLimit_cospan_iff]
 
 variable {F} in
-lemma Colimits.preservesColimitsOfShape_walkingCospan_of_forall_isPushout
+lemma Limits.preservesColimitsOfShape_walkingCospan_of_forall_isPushout
     (H : ∀ ⦃X Y Z : C⦄ (f : Z ⟶ X) (g : Z ⟶ Y) [HasPushout f g],
       ∃ (P : C) (inl : X ⟶ P) (inr : Y ⟶ P),
         IsPushout f g inl inr ∧ IsPushout (F.map f) (F.map g) (F.map inl) (F.map inr)) :
