@@ -70,8 +70,8 @@ open Monoid
 /-- Torsion additive monoids are really additive groups -/]
 noncomputable def IsTorsion.group [Monoid G] (tG : IsTorsion G) : Group G :=
   { ‹Monoid G› with
-    inv := fun g ↦ g ^ (orderOf g - 1)
-    inv_mul_cancel := fun g ↦ by
+    inv g := g ^ (orderOf g - 1)
+    inv_mul_cancel g := by
       rw [← pow_succ, tsub_add_cancel_of_le, pow_orderOf_eq_one]
       exact (tG g).orderOf_pos }
 
