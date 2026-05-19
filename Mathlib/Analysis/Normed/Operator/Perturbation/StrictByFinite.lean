@@ -222,7 +222,7 @@ theorem step2 [T2Space F] (u : E →L[𝕜] F) (A : Submodule 𝕜 E)
     step1 u' A A_closed (ker_u' ▸ h_ker) range_u'
   -- On the other hand:
   -- * since `i` is an embedding, `u = i ∘ u'` is strict if and only if `u'` is strict
-  --   (hence a quotient map, by surjectivity);
+  --   (i.e a quotient map, by surjectivity);
   -- * since `i` is a closed embedding, `u.domRestrict A = i ∘ u'.domRestrict A` is a closed
   --   embedding if and only if `u'.domRestrict A` is a closed embedding.
   -- Hence, we have proven our statement.
