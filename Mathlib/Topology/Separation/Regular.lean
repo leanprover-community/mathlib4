@@ -641,10 +641,8 @@ class T5Space (X : Type u) [TopologicalSpace X] : Prop extends T1Space X, Comple
 
 theorem Topology.IsEmbedding.t5Space [TopologicalSpace Y] [T5Space Y] {e : X → Y}
     (he : IsEmbedding e) : T5Space X where
-  __ := he.t1Space
-  completely_normal := by
-    have := he.completelyNormalSpace
-    exact completely_normal
+  toCompletelyNormalSpace := he.completelyNormalSpace
+  toT1Space := he.t1Space
 
 protected theorem Homeomorph.t5Space [TopologicalSpace Y] [T5Space X] (h : X ≃ₜ Y) : T5Space Y :=
   h.symm.isClosedEmbedding.t5Space
