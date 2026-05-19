@@ -5,7 +5,7 @@ Authors: Jun Kwon, Thomas Waring
 -/
 module
 
-public import Mathlib.Data.PFun
+public import Mathlib.Combinatorics.Quiver.Basic
 public import Mathlib.Combinatorics.Graph.Subgraph
 public import Mathlib.Combinatorics.SimpleGraph.Dart
 public import Mathlib.Combinatorics.Digraph.Basic
@@ -28,9 +28,11 @@ variable {V E Gr : Type*} {G : Gr} {e : E} {x y : V}
 /-- The type `Gr` consists of graph-like objects on vertices `V` and edges `E`. Note that we
 *cannot* require the converse of `isSource_left_of_isLink` and `isTarget_right_of_isLink` taken
 together, as might be tempting: in an undirected graph we want, for instance `IsLink G e x y` and
-`IsLink G e y x` to both be true, and this converse would then imply `IsLink G e x x`, which we
-don't necessarily want. We also can't take `is{Source / Target}_{left / right}_of_isLink` as a
-definition, to account for edges which have inputs but no outputs. -/
+`IsLink G e y x` to both be true (you can cross bridge `e` in both directions),
+and this converse would then imply `IsLink G e x x` (you can walk halfway across and turn back),
+which we don't necessarily want (it would in particular break the bridges of Königsberg problem).
+We also can't take `is{Source / Target}_{left / right}_of_isLink` as a definition, to account for
+edges which have inputs but no outputs. -/
 class HyperGraphLike (V E : outParam Type*) (Gr : Type*) where
   /-- The set of vertices of a graph. -/
   verts : Gr → Set V
@@ -485,3 +487,8 @@ instance : HyperGraphLike V (Finset V) (AbstractSimplicialComplex V) := by
   refine ofIsSourceIsTarget (fun _ => Set.univ) (fun K => K.faces) (fun K e x => e ∈ K ∧ x ∈ e)
       (fun K e x => e ∈ K ∧ x ∈ e) (fun _ _ _ h => h.1) (fun _ _ _ h => h.1)
       (fun _ _ _ _ => trivial) (fun _ _ _ _ => trivial)
+
+@[implicit_reducible]
+def instQuiver (Q : Type*) [Quiver Q] : GraphLike Q (Σ x y : Q, x ⟶ y) Unit := by
+  refine ofIsLink (fun _ => Set.univ) (fun _ ⟨x, y, f⟩ x' y' => x = x' ∧ y = y') ?_ ?_ ?_
+  all_goals grind
