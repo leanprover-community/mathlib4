@@ -38,46 +38,15 @@ protected theorem comulAlgHom_ι (x : M) :
       ι R M x ⊗ₜ[R] 1 + 1 ⊗ₜ[R] ι R M x := by
   simp [SymmetricAlgebra.comulAlgHom, lift_ι_apply]
 
-protected theorem comulAlgHom_coassoc :
-    (Algebra.TensorProduct.assoc R R R
-        (SymmetricAlgebra R M) (SymmetricAlgebra R M)
-        (SymmetricAlgebra R M)).toAlgHom.comp
-      ((Algebra.TensorProduct.map (SymmetricAlgebra.comulAlgHom R M)
-          (.id R (SymmetricAlgebra R M))).comp (SymmetricAlgebra.comulAlgHom R M)) =
-    (Algebra.TensorProduct.map (.id R (SymmetricAlgebra R M))
-        (SymmetricAlgebra.comulAlgHom R M)).comp (SymmetricAlgebra.comulAlgHom R M) := by
-  ext x
-  simp only [LinearMap.coe_comp, Function.comp_apply, LinearMap.coe_coe, AlgHom.comp_apply,
-    SymmetricAlgebra.comulAlgHom_ι, map_add, Algebra.TensorProduct.map_tmul,
-    AlgHom.coe_id, id_eq, map_one, TensorProduct.add_tmul, TensorProduct.tmul_add,
-    Algebra.TensorProduct.one_def]
-  abel
-
-protected theorem comulAlgHom_rTensor_counit_comp :
-    (Algebra.TensorProduct.map (algebraMapInv (R := R) (M := M))
-        (.id R (SymmetricAlgebra R M))).comp (SymmetricAlgebra.comulAlgHom R M) =
-      (Algebra.TensorProduct.lid R (SymmetricAlgebra R M)).symm.toAlgHom := by
-  ext x
-  simp only [LinearMap.coe_comp, Function.comp_apply, LinearMap.coe_coe, AlgHom.comp_apply,
-    AlgEquiv.coe_algHom, SymmetricAlgebra.comulAlgHom_ι, map_add,
-    Algebra.TensorProduct.map_tmul, AlgHom.coe_id, id_eq, algebraMapInv_ι, map_one,
-    Algebra.TensorProduct.lid_symm_apply, TensorProduct.zero_tmul, zero_add]
-
-protected theorem comulAlgHom_lTensor_counit_comp :
-    (Algebra.TensorProduct.map (.id R (SymmetricAlgebra R M))
-        (algebraMapInv (R := R) (M := M))).comp (SymmetricAlgebra.comulAlgHom R M) =
-      (Algebra.TensorProduct.rid R R (SymmetricAlgebra R M)).symm.toAlgHom := by
-  ext x
-  simp only [LinearMap.coe_comp, Function.comp_apply, LinearMap.coe_coe, AlgHom.comp_apply,
-    AlgEquiv.coe_algHom, SymmetricAlgebra.comulAlgHom_ι, map_add,
-    Algebra.TensorProduct.map_tmul, AlgHom.coe_id, id_eq, algebraMapInv_ι, map_one,
-    Algebra.TensorProduct.rid_symm_apply, TensorProduct.tmul_zero, add_zero]
-
 instance instBialgebra : Bialgebra R (SymmetricAlgebra R M) :=
   .ofAlgHom (SymmetricAlgebra.comulAlgHom R M) (algebraMapInv (R := R) (M := M))
-    (SymmetricAlgebra.comulAlgHom_coassoc R M)
-    (SymmetricAlgebra.comulAlgHom_rTensor_counit_comp R M)
-    (SymmetricAlgebra.comulAlgHom_lTensor_counit_comp R M)
+    (by
+      ext x
+      simp [SymmetricAlgebra.comulAlgHom_ι, Algebra.TensorProduct.one_def,
+        TensorProduct.add_tmul, TensorProduct.tmul_add]
+      abel)
+    (by ext x; simp [SymmetricAlgebra.comulAlgHom_ι, algebraMapInv_ι])
+    (by ext x; simp [SymmetricAlgebra.comulAlgHom_ι, algebraMapInv_ι])
 
 @[simp]
 theorem comul_ι (x : M) :
