@@ -510,8 +510,7 @@ lemma half_integral_log_div_mul_pred_le : (1 / 2 : ℝ) * ∫ u in Set.Ioi 5, lo
     have hu5 : 5 < u := hu
     have hlog : 0 ≤ log u := log_nonneg (by linarith)
     calc
-      log u / (u * (u - 1)) = log u * (1 / (u * (u - 1))) := by
-        rw [div_eq_mul_one_div]
+      log u / (u * (u - 1)) = log u * (1 / (u * (u - 1))) := by rw [div_eq_mul_one_div]
       _ ≤ log u * (5 / (4 * u ^ 2)) := by
         refine mul_le_mul_of_nonneg_left ?_ hlog
         rw [div_le_div_iff₀ (by nlinarith) (mul_pos (by norm_num) (sq_pos_of_pos (by positivity)))]
@@ -535,8 +534,7 @@ lemma half_integral_log_div_mul_pred_le : (1 / 2 : ℝ) * ∫ u in Set.Ioi 5, lo
   rw [integral_const_mul]
   ring
 
-lemma integral_log_div_sq_Ioi_five :
-    (∫ u in Set.Ioi 5, log u / u ^ 2) = (log 5 + 1) / 5 := by
+lemma integral_log_div_sq_Ioi_five : ∫ u in Set.Ioi 5, log u / u ^ 2 = (log 5 + 1) / 5 := by
   let F := fun u ↦ -((log u + 1) / u)
   have hderiv : ∀ u ∈ Set.Ici 5, HasDerivAt F (log u / u ^ 2) u := by
     intro u hu
@@ -566,17 +564,15 @@ lemma integral_log_div_sq_Ioi_five :
   simpa [F] using hFTC
 
 lemma integral_oddLogDivMulPredReal_le_log_five_add_one_div_eight :
-    (∫ x in Set.Ioi 2, oddLogDivMulPredReal x) ≤ (log 5 + 1) / 8 := by
+    ∫ x in Set.Ioi 2, oddLogDivMulPredReal x ≤ (log 5 + 1) / 8 := by
   rw [integral_oddLogDivMulPredReal_eq_half_integral]
   convert half_integral_log_div_mul_pred_le using 1
   rw [integral_log_div_sq_Ioi_five]
   ring
 
-lemma odd_tail_lt_seven_log_five_add_five_div_forty :
-    (∑' k : {k : ℕ // 2 ≤ k}, oddLogDivMulPred k)
-      < (7 * log 5 + 5) / 40 := by
-  have hterm : oddLogDivMulPred 2 = log 5 / 20 := by
-    norm_num [oddLogDivMulPred]
+lemma odd_tail_lt_seven_log_five_add_five_div_forty : ∑' k : {k : ℕ // 2 ≤ k}, oddLogDivMulPred k <
+    (7 * log 5 + 5) / 40 := by
+  have hterm : oddLogDivMulPred 2 = log 5 / 20 := by norm_num [oddLogDivMulPred]
   have htail := odd_tail_lt_first_term_add_integral
   rw [hterm] at htail
   linarith [integral_oddLogDivMulPredReal_le_log_five_add_one_div_eight]
@@ -588,8 +584,7 @@ lemma log_factorial_eq_sum_prime_factorization {n : ℕ} : log (n.factorial) =
   · intro p hp
     rw [mem_filter, mem_Ioc]
     have hpPrime : Nat.Prime p := Nat.prime_of_mem_primeFactors hp
-    have hpDvd : p ∣ n.factorial :=
-      Nat.dvd_of_factorization_pos (Finsupp.mem_support_iff.mp hp)
+    have hpDvd : p ∣ n.factorial := Nat.dvd_of_factorization_pos (Finsupp.mem_support_iff.mp hp)
     exact ⟨⟨hpPrime.pos, (Nat.Prime.dvd_factorial hpPrime).mp hpDvd⟩, hpPrime⟩
   · simp
 
