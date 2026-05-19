@@ -35,7 +35,7 @@ The analogue of `Polynomial.notMem_nonZeroDivisors_iff`
 but not in general. See [Fields1971]
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 

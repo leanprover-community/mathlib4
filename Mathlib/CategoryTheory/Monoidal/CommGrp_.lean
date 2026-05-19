@@ -5,7 +5,7 @@ Authors: Markus Himmel
 -/
 module
 
-public import Mathlib.CategoryTheory.Monoidal.Grp_
+public import Mathlib.CategoryTheory.Monoidal.Grp
 public import Mathlib.CategoryTheory.Monoidal.CommMon_
 
 /-!

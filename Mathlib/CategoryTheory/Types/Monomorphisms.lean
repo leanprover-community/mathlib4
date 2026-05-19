@@ -25,7 +25,7 @@ in the file `Mathlib/CategoryTheory/MorphismProperty/Retract.lean`.)
 
 -/
 
-@[expose] public section
+public section
 
 universe v' u' u
 

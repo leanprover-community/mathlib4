@@ -11,6 +11,7 @@ public import Mathlib.RingTheory.Ideal.AssociatedPrime.Finiteness
 public import Mathlib.RingTheory.Ideal.AssociatedPrime.Localization
 public import Mathlib.RingTheory.LocalRing.ResidueField.Ideal
 public import Mathlib.RingTheory.Regular.IsSMulRegular
+public import Mathlib.RingTheory.Support
 
 /-!
 
@@ -102,7 +103,7 @@ lemma subsingleton_linearMap_iff [IsNoetherianRing R] [Module.Finite R M] [Modul
       have : f np = i 0 := by simp [eq0]
       exact inj1 this
     absurd hom0
-    have := Module.finitePresentation_of_finite R N
+    let _ := Module.finitePresentation_of_finite R N
     contrapose f_ne0
     exact (Module.FinitePresentation.linearEquivMapExtendScalars
       p'.asIdeal.primeCompl).symm.map_eq_zero_iff.mp (Subsingleton.eq_zero _)

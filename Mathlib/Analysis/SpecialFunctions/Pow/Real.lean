@@ -522,7 +522,7 @@ lemma rpow_intCast_mul (hx : 0 ≤ x) (n : ℤ) (z : ℝ) : x ^ (n * z) = (x ^ n
 lemma rpow_mul_intCast (hx : 0 ≤ x) (y : ℝ) (n : ℤ) : x ^ (y * n) = (x ^ y) ^ n := by
   rw [rpow_mul hx, rpow_intCast]
 
-/-! Note: lemmas about `(∏ i ∈ s, f i ^ r)` such as `Real.finset_prod_rpow` are proved
+/-! Note: lemmas about `(∏ i ∈ s, f i ^ r)` such as `Real.finsetProd_rpow` are proved
 in `Mathlib/Analysis/SpecialFunctions/Pow/NNReal.lean` instead. -/
 
 /-!

@@ -40,7 +40,7 @@ In this file, we prove results about ideals in cyclotomic extensions of `ℚ`.
 
 -/
 
-@[expose] public section
+public section
 
 namespace IsCyclotomicExtension.Rat
 
@@ -72,7 +72,6 @@ theorem associated_norm_zeta_sub_one : Associated (Algebra.norm ℤ (hζ.toInteg
       rw [hζ.norm_toInteger_sub_one_of_eq_two_pow, h, Int.ofNat_two]
   · rw [hζ.norm_toInteger_sub_one_of_prime_ne_two h]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem absNorm_span_zeta_sub_one : absNorm (span {hζ.toInteger - 1}) = p := by
   simpa using congr_arg absNorm <|
     span_singleton_eq_span_singleton.mpr <| associated_norm_zeta_sub_one p k hζ

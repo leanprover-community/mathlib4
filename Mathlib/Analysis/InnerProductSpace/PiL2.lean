@@ -807,7 +807,6 @@ theorem basisFun_repr (x : EuclideanSpace 𝕜 ι) (i : ι) : (basisFun ι 𝕜)
 theorem basisFun_inner (x : EuclideanSpace 𝕜 ι) (i : ι) : ⟪basisFun ι 𝕜 i, x⟫ = x i := by
   simp [← OrthonormalBasis.repr_apply_apply]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem inner_basisFun_real (x : EuclideanSpace ℝ ι) (i : ι) :
     inner ℝ x (basisFun ι ℝ i) = x i := by
@@ -864,7 +863,6 @@ end OrthonormalBasis
 
 section Complex
 
-set_option backward.isDefEq.respectTransparency false in
 /-- `![1, I]` is an orthonormal basis for `ℂ` considered as a real inner product space. -/
 def Complex.orthonormalBasisOneI : OrthonormalBasis (Fin 2) ℝ ℂ :=
   Complex.basisOneI.toOrthonormalBasis
@@ -887,7 +885,6 @@ theorem Complex.toBasis_orthonormalBasisOneI :
     Complex.orthonormalBasisOneI.toBasis = Complex.basisOneI :=
   Basis.toBasis_toOrthonormalBasis _ _
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem Complex.coe_orthonormalBasisOneI :
     (Complex.orthonormalBasisOneI : Fin 2 → ℂ) = ![1, I] := by

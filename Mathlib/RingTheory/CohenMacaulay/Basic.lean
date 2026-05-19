@@ -98,46 +98,31 @@ lemma depth_eq_dim_quotient_associated_prime_of_isCohenMacaulay (M : ModuleCat.{
 lemma associated_prime_minimal_of_isCohenMacaulay (M : ModuleCat.{v} R)
     [M.IsCohenMacaulay] [Module.Finite R M] [Nontrivial M]
     (mem : p ∈ associatedPrimes R M) : p ∈ (Module.annihilator R M).minimalPrimes := by
-  have eq := Eq.trans M.depth_eq_supportDim_unbot_of_cohenMacaulay
-    (depth_eq_dim_quotient_associated_prime_of_isCohenMacaulay p M mem)
-  rw [← WithBot.coe_inj, WithBot.coe_unbot, WithBot.coe_unbot, ringKrullDim_quotient,
-    Module.supportDim_eq_ringKrullDim_quotient_annihilator, ringKrullDim_quotient] at eq
   have : p.IsPrime := mem.1
   have ann_le : Module.annihilator R M ≤ p := (le_of_eq_of_le Submodule.annihilator_top.symm
     (AssociatedPrimes.mem_iff.mp mem).annihilator_le)
   rcases Ideal.exists_minimalPrimes_le ann_le with ⟨p', hp', le⟩
   rcases lt_or_eq_of_le le with lt|eq
-  · classical
-    let f : WithBot (PrimeSpectrum.zeroLocus (p : Set R)) →
-        (PrimeSpectrum.zeroLocus ((Module.annihilator R M) : Set R)) := fun I ↦ by
-        by_cases eqbot : I = ⊥
-        · exact ⟨⟨p', Ideal.minimalPrimes_isPrime hp'⟩, hp'.1.2⟩
-        · exact ⟨(I.unbot eqbot).1, PrimeSpectrum.zeroLocus_anti_mono ann_le (I.unbot eqbot).2⟩
-    have f_mono : StrictMono f := by
-      intro a b alt
-      by_cases eqbot : a = ⊥
-      · simp only [eqbot, ↓reduceDIte, alt.ne_bot, Subtype.mk_lt_mk, f]
-        apply lt_of_lt_of_le lt (b.unbot alt.ne_bot).2
-      · simp only [eqbot, ↓reduceDIte, alt.ne_bot, Subtype.mk_lt_mk, Subtype.coe_lt_coe, f]
-        rw [← WithBot.coe_lt_coe, WithBot.coe_unbot, WithBot.coe_unbot]
-        exact alt
-    have dim_le := Order.krullDim_le_of_strictMono f f_mono
-    have : Nonempty (PrimeSpectrum.zeroLocus (p : Set R)) := Nonempty.intro ⟨⟨p, mem.1⟩, le_refl p⟩
-    rw [Order.krullDim_withBot, eq, ← ringKrullDim_quotient] at dim_le
-    have nebot : ringKrullDim (R ⧸ p) ≠ ⊥ := quotient_prime_ringKrullDim_ne_bot mem.1
-    have netop : (ringKrullDim (R ⧸ p)).unbot nebot ≠ ⊤ := by
-      have : FiniteRingKrullDim R := inferInstance
-      have : ringKrullDim (R ⧸ p) ≠ ⊤ :=
-        ne_top_of_le_ne_top ringKrullDim_ne_top
-         (ringKrullDim_le_of_surjective (Ideal.Quotient.mk p) (Ideal.Quotient.mk_surjective))
-      simpa [← WithBot.coe_inj.not]
+  · have eq := M.depth_eq_supportDim_unbot_of_cohenMacaulay.trans
+      (depth_eq_dim_quotient_associated_prime_of_isCohenMacaulay p M mem)
+    rw [← WithBot.coe_inj, WithBot.coe_unbot, WithBot.coe_unbot,
+      Module.supportDim_eq_ringKrullDim_quotient_annihilator] at eq
+    have le := ringKrullDim_le_of_surjective _ (Ideal.Quotient.factor_surjective hp'.1.2)
+    rcases Set.exists_of_ssubset lt with ⟨x, mem, nmem⟩
+    have := hp'.isPrime
+    have nz : Ideal.Quotient.mk p' x ∈ nonZeroDivisors (R ⧸ p') := by
+      simpa [Ideal.Quotient.eq_zero_iff_mem] using nmem
+    have succ_le := ringKrullDim_succ_le_of_surjective _ (Ideal.Quotient.factor_surjective lt.le)
+      nz (by simpa [Ideal.Quotient.eq_zero_iff_mem] using mem)
+    have : ringKrullDim (R ⧸ p) ≠ ⊤ := ne_top_of_le_ne_top ringKrullDim_ne_top
+      (ringKrullDim_le_of_surjective (Ideal.Quotient.mk p) Ideal.Quotient.mk_surjective)
+    have nebot : ringKrullDim (R ⧸ p) ≠ ⊥ := quotient_prime_ringKrullDim_ne_bot ‹_›
+    have netop : (ringKrullDim (R ⧸ p)).unbot nebot ≠ ⊤ := by simpa [← WithBot.coe_inj.not]
     rcases ENat.ne_top_iff_exists.mp netop with ⟨m, hm⟩
-    have : (ringKrullDim (R ⧸ p)).unbot nebot + 1 ≤ (ringKrullDim (R ⧸ p)).unbot nebot := by
-      rw [← WithBot.coe_le_coe]
-      simpa using dim_le
-    absurd this
-    rw [← hm, not_le, ← ENat.coe_one, ← ENat.coe_add, ENat.coe_lt_coe]
-    exact lt_add_one m
+    rw [← WithBot.coe_inj, WithBot.coe_unbot, ENat.WithBot.coe_eq_natCast] at hm
+    absurd (succ_le.trans le).trans_eq eq
+    rw [← hm, ← Nat.cast_one, ← Nat.cast_add, Nat.cast_le]
+    exact Nat.not_succ_le_self m
   · simpa [← eq] using hp'
 
 lemma associated_prime_eq_minimalPrimes_isCohenMacaulay (M : ModuleCat.{v} R)
@@ -209,7 +194,6 @@ abbrev quotSMulTop_isLocalizedModule_map (x : R) (M : Type*) [AddCommGroup M] [M
         algebra_compatible_smul Rₚ x (r' • f m)]
         using Submodule.smul_mem_pointwise_smul (r' • f m) ((algebraMap R Rₚ) x) ⊤ hm))
 
-set_option backward.isDefEq.respectTransparency false in
 variable (Rₚ) in
 omit [IsLocalRing R] [IsNoetherianRing R] [Small.{v, u} R] in
 lemma isLocalizedModule_quotSMulTop_isLocalizedModule_map (x : R)
@@ -277,7 +261,6 @@ lemma isLocalization_at_prime_prime_depth_le_depth [IsLocalRing Rₚ] [Module.Fi
   rcases List.mem_map.mp hr with ⟨r, hr, eq⟩
   simpa only [← eq, IsLocalization.AtPrime.to_map_mem_maximal_iff Rₚ p] using mem r hr
 
-set_option backward.isDefEq.respectTransparency false in
 omit [Small.{v', u'} Rₚ] in
 lemma isLocalize_at_prime_dim_eq_prime_depth_of_isCohenMacaulay
     [Module.Finite R M] [M.IsCohenMacaulay] [ntr : Nontrivial Mₚ] :
@@ -341,7 +324,7 @@ lemma isLocalize_at_prime_dim_eq_prime_depth_of_isCohenMacaulay
         have : maximalIdeal Rₚ ∈
           ((Module.annihilator R M).map (algebraMap R Rₚ)).minimalPrimes := by
           simpa [IsLocalization.minimalPrimes_map p.primeCompl,
-            IsLocalization.AtPrime.comap_maximalIdeal Rₚ p] using min
+            IsLocalization.AtPrime.under_maximalIdeal Rₚ p] using min
         simp only [Ideal.minimalPrimes, Set.mem_setOf_eq] at this
         exact PrimeSpectrum.ext (this.eq_of_le ⟨I.2, le.trans hI⟩ (le_maximalIdeal_of_isPrime I.1))
       · simpa using IsLocalRing.closedPoint_mem_support Rₚ Mₚ
@@ -482,14 +465,14 @@ lemma isCohenMacaulayRing_iff [IsNoetherianRing R] : IsCohenMacaulayRing R ↔
   have disj := (Set.disjoint_compl_left_iff_subset.mpr le)
   have : (p.map (algebraMap R Rₘ)).IsPrime := by
     simpa [IsLocalization.isPrime_iff_isPrime_disjoint m.primeCompl Rₘ, hp,
-      IsLocalization.comap_map_of_isPrime_disjoint m.primeCompl Rₘ hp disj] using disj
+      IsLocalization.under_map_of_isPrime_disjoint m.primeCompl Rₘ hp disj] using disj
   have le' : m.primeCompl ≤ p.primeCompl := by simpa [Ideal.primeCompl] using le
   let : Algebra Rₘ Rₚ := IsLocalization.localizationAlgebraOfSubmonoidLe Rₘ Rₚ _ _ le'
   have := IsLocalization.localization_isScalarTower_of_submonoid_le Rₘ Rₚ _ _ le'
   have : IsLocalization.AtPrime (Localization.AtPrime (Ideal.map (algebraMap R Rₘ) p)) p := by
     convert IsLocalization.isLocalization_atPrime_localization_atPrime m.primeCompl
       (p.map (algebraMap R Rₘ))
-    rw [IsLocalization.comap_map_of_isPrime_disjoint m.primeCompl Rₘ hp disj]
+    rw [← Ideal.under_def, IsLocalization.under_map_of_isPrime_disjoint m.primeCompl Rₘ hp disj]
   let e' := (IsLocalization.algEquiv p.primeCompl Rₚ
       (Localization.AtPrime (Ideal.map (algebraMap R Rₘ) p)))
   let e : Rₚ ≃ₐ[Rₘ] Localization.AtPrime (Ideal.map (algebraMap R Rₘ) p) :=
@@ -534,7 +517,6 @@ lemma IsCohenMacaulayLocalRing.of_isLocalRing_of_isCohenMacaulayRing [IsLocalRin
 
 open Ideal
 
-set_option backward.isDefEq.respectTransparency false in
 open Pointwise in
 lemma quotient_regular_smul_top_isCohenMacaulay_iff_isCohenMacaulay [IsLocalRing R]
     [IsNoetherianRing R] (x : R) (reg : IsSMulRegular R x) (mem : x ∈ maximalIdeal R) :
@@ -542,25 +524,20 @@ lemma quotient_regular_smul_top_isCohenMacaulay_iff_isCohenMacaulay [IsLocalRing
   have : IsLocalRing (R ⧸ x • (⊤ : Ideal R)) :=
     have : Nontrivial (R ⧸ x • (⊤ : Ideal R)) :=
       Quotient.nontrivial_iff.mpr (by simpa [← Submodule.ideal_span_singleton_smul])
-    have : IsLocalHom (Ideal.Quotient.mk (x • (⊤ : Ideal R))) :=
-      IsLocalHom.of_surjective _ Ideal.Quotient.mk_surjective
-    IsLocalRing.of_surjective (Ideal.Quotient.mk (x • (⊤ : Ideal R))) Ideal.Quotient.mk_surjective
+    IsLocalRing.of_surjective' (Ideal.Quotient.mk (x • (⊤ : Ideal R))) Ideal.Quotient.mk_surjective
   have : ringKrullDim R = ringKrullDim (R ⧸ x • (⊤ : Ideal R)) + 1 := by
     rw [← Module.supportDim_quotient_eq_ringKrullDim, ← Module.supportDim_self_eq_ringKrullDim]
     exact (Module.supportDim_quotSMulTop_succ_eq_supportDim reg mem).symm
   simp [isCohenMacaulayLocalRing_def, this, ← depth_quotient_regular_succ_eq_depth x reg mem,
     ENat.WithBot.add_one_cancel]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma quotient_span_regular_isCohenMacaulay_iff_isCohenMacaulay [IsLocalRing R] [IsNoetherianRing R]
     (x : R) (reg : IsSMulRegular R x) (mem : x ∈ maximalIdeal R) :
     IsCohenMacaulayLocalRing R ↔ IsCohenMacaulayLocalRing (R ⧸ Ideal.span {x}) := by
   have : IsLocalRing (R ⧸ Ideal.span {x}) :=
     have : Nontrivial (R ⧸ Ideal.span {x}) :=
       Quotient.nontrivial_iff.mpr (by simpa [← Submodule.ideal_span_singleton_smul])
-    have : IsLocalHom (Ideal.Quotient.mk (Ideal.span {x})) :=
-      IsLocalHom.of_surjective _ Ideal.Quotient.mk_surjective
-    IsLocalRing.of_surjective (Ideal.Quotient.mk (Ideal.span {x})) Ideal.Quotient.mk_surjective
+    IsLocalRing.of_surjective' (Ideal.Quotient.mk (Ideal.span {x})) Ideal.Quotient.mk_surjective
   simp [isCohenMacaulayLocalRing_def,
     ← ringKrullDim_quotient_span_singleton_succ_eq_ringKrullDim reg mem,
     ← depth_quotient_span_regular_succ_eq_depth x reg mem, ENat.WithBot.add_one_cancel]
@@ -572,9 +549,7 @@ lemma quotient_regular_sequence_isCohenMacaulay_iff_isCohenMacaulay [IsLocalRing
   have : IsLocalRing (R ⧸ Ideal.ofList rs) :=
     have : Nontrivial (R ⧸ Ideal.ofList rs) := Submodule.Quotient.nontrivial_iff.mpr
       (ne_top_of_le_ne_top IsPrime.ne_top' (span_le.mpr mem))
-    have : IsLocalHom (Ideal.Quotient.mk (Ideal.ofList rs)) :=
-      IsLocalHom.of_surjective _ Ideal.Quotient.mk_surjective
-    IsLocalRing.of_surjective (Ideal.Quotient.mk _) Ideal.Quotient.mk_surjective
+    IsLocalRing.of_surjective' (Ideal.Quotient.mk _) Ideal.Quotient.mk_surjective
   have reg' : IsRegular R rs :=
     ⟨reg, by simpa using ((span_le.mpr mem).trans_lt IsPrime.ne_top'.lt_top).ne_top.symm⟩
   simp only [isCohenMacaulayLocalRing_def,

@@ -400,7 +400,7 @@ theorem mem_roots_iff [IsDomain R] (h0 : P.toPoly ≠ 0) (x : R) :
 theorem card_roots_le [IsDomain R] [DecidableEq R] : P.roots.toFinset.card ≤ 3 := by
   apply (toFinset_card_le P.toPoly.roots).trans
   by_cases hP : P.toPoly = 0
-  · exact (card_roots' P.toPoly).trans (by rw [hP, natDegree_zero]; exact zero_le 3)
+  · simp [hP]
   · exact WithBot.coe_le_coe.1 ((card_roots hP).trans degree_cubic_le)
 
 end Extension

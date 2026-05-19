@@ -26,7 +26,7 @@ reducing the statement to the `ℝ`-version of the theorem.
 
 -/
 
-@[expose] public section
+public section
 
 open scoped NNReal
 

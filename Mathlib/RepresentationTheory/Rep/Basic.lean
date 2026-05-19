@@ -593,7 +593,6 @@ end CommSemiring
 
 variable {k : Type u} {G : Type v} [CommRing k] [Monoid G]
 
-set_option backward.isDefEq.respectTransparency false in
 instance : Functor.Linear k (forget₂ (Rep.{w} k G) (ModuleCat.{w} k)) where
   map_smul {X Y} f r := by
     ext

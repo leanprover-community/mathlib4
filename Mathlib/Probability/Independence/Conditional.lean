@@ -255,7 +255,7 @@ theorem condIndepSets_singleton_iff {μ : Measure Ω} [IsFiniteMeasure μ]
     {s t : Set Ω} (hs : MeasurableSet s) (ht : MeasurableSet t) :
     CondIndepSets m' hm' {s} {t} μ ↔ (μ⟦s ∩ t | m'⟧) =ᵐ[μ] (μ⟦s | m'⟧) * (μ⟦t | m'⟧) := by
   rw [condIndepSets_iff _ _ _ _ ?_ ?_]
-  · simp only [Set.mem_singleton_iff, forall_eq_apply_imp_iff, forall_eq]
+  · simp
   · intro s' hs'
     rw [Set.mem_singleton_iff] at hs'
     rwa [hs']
@@ -995,11 +995,19 @@ section CommMonoid
 variable {m : MeasurableSpace β} [CommMonoid β] [MeasurableMul₂ β] {f : ι → Ω → β}
 
 @[to_additive]
-theorem iCondIndepFun.condIndepFun_finset_prod_of_notMem
+theorem iCondIndepFun.condIndepFun_finsetProd_of_notMem
     (hf_Indep : iCondIndepFun m' hm' f μ) (hf_meas : ∀ i, Measurable (f i))
     {s : Finset ι} {i : ι} (hi : i ∉ s) :
     CondIndepFun m' hm' (∏ j ∈ s, f j) (f i) μ :=
-  Kernel.iIndepFun.indepFun_finset_prod_of_notMem hf_Indep hf_meas hi
+  Kernel.iIndepFun.indepFun_finsetProd_of_notMem hf_Indep hf_meas hi
+
+@[deprecated (since := "2026-04-08")]
+alias iCondIndepFun.condIndepFun_finset_sum_of_notMem :=
+  iCondIndepFun.condIndepFun_finsetSum_of_notMem
+
+@[to_additive existing, deprecated (since := "2026-04-08")]
+alias iCondIndepFun.condIndepFun_finset_prod_of_notMem :=
+  iCondIndepFun.condIndepFun_finsetProd_of_notMem
 
 @[to_additive]
 theorem iCondIndepFun.condIndepFun_prod_range_succ {f : ℕ → Ω → β}

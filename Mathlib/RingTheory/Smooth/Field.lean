@@ -18,7 +18,7 @@ In particular finitely generated field extensions over perfect fields are smooth
 
 -/
 
-@[expose] public section
+public section
 
 section
 

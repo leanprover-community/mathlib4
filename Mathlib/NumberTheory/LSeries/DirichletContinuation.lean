@@ -136,7 +136,7 @@ private lemma LFunction_changeLevel_aux {M N : ℕ} [NeZero M] [NeZero N] (hMN :
     exact (differentiableAt_LFunction _ _ (.inl hs)).differentiableWithinAt
   · refine DifferentiableOn.analyticOnNhd (fun s hs ↦ ?_) isOpen_compl_singleton
     refine ((differentiableAt_LFunction _ _ (.inl hs)).mul ?_).differentiableWithinAt
-    refine .fun_finset_prod fun i h ↦ ?_
+    refine .fun_finsetProd fun i h ↦ ?_
     have : NeZero i := ⟨(Nat.pos_of_mem_primeFactors h).ne'⟩
     fun_prop
   · refine eventually_of_mem ?_ (fun t (ht : 1 < t.re) ↦ ?_)
@@ -154,7 +154,7 @@ lemma LFunction_changeLevel {M N : ℕ} [NeZero M] [NeZero N] (hMN : M ∣ N)
   rcases h with h | h
   · have hχ : changeLevel hMN χ ≠ 1 := h ∘ (changeLevel_eq_one_iff hMN).mp
     have h' : Continuous fun s ↦ LFunction χ s * ∏ p ∈ N.primeFactors, (1 - χ p * ↑p ^ (-s)) :=
-      (differentiable_LFunction h).continuous.mul <| continuous_finset_prod _ fun p hp ↦ by
+      (differentiable_LFunction h).continuous.mul <| continuous_finsetProd _ fun p hp ↦ by
         have : NeZero p := ⟨(Nat.prime_of_mem_primeFactors hp).ne_zero⟩
         fun_prop
     exact congrFun ((differentiable_LFunction hχ).continuous.ext_on
@@ -190,7 +190,7 @@ lemma LFunctionTrivChar_residue_one :
   conv => enter [3, 1]; rw [← mul_one <| Finset.prod ..]; enter [1, 2, p]; rw [← cpow_neg_one]
   refine .mul (f := fun s ↦ ∏ p ∈ N.primeFactors, _) ?_ riemannZeta_residue_one
   refine tendsto_nhdsWithin_of_tendsto_nhds <| Continuous.tendsto ?_ 1
-  exact continuous_finset_prod _ fun p hp ↦ by
+  exact continuous_finsetProd _ fun p hp ↦ by
     have : NeZero p := ⟨(Nat.prime_of_mem_primeFactors hp).ne_zero⟩
     fun_prop
 

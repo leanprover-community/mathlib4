@@ -1027,7 +1027,6 @@ equivalence: it goes from `K⸨X⸩` to `RatFuncAdicCompl K` -/
 abbrev LaurentSeriesRingEquiv : K⸨X⸩ ≃+* RatFuncAdicCompl K :=
   (ratfuncAdicComplRingEquiv K).symm
 
-@[simp]
 lemma LaurentSeriesRingEquiv_def (f : K⟦X⟧) :
     (LaurentSeriesRingEquiv K) f = (LaurentSeriesPkg K).compare ratfuncAdicComplPkg (f : K⸨X⸩) :=
   rfl

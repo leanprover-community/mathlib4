@@ -100,7 +100,6 @@ equivalence between the space and the Euclidean space of the same dimension. -/
 noncomputable def OrthonormalBasis.measurableEquiv (b : OrthonormalBasis ι ℝ F) :
     F ≃ᵐ EuclideanSpace ℝ ι := b.repr.toHomeomorph.toMeasurableEquiv
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The measurable equivalence defined by an orthonormal basis is volume preserving. -/
 theorem OrthonormalBasis.measurePreserving_measurableEquiv (b : OrthonormalBasis ι ℝ F) :
     MeasurePreserving b.measurableEquiv volume volume := by

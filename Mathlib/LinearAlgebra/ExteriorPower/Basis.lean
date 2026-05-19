@@ -20,8 +20,6 @@ public import Mathlib.Data.Fin.Tuple.Sort
 variable {R K M E : Type*} {n : ℕ}
   [CommRing R] [Field K] [AddCommGroup M] [Module R M] [AddCommGroup E] [Module K E]
 
-open BigOperators
-
 namespace exteriorPower
 
 /-! Finiteness of the exterior power. -/
