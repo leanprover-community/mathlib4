@@ -362,22 +362,22 @@ theorem offDiag_filter_lt_eq_filter_le {ι} [PartialOrder ι] [DecidableLE ι] [
 /-- The number of strictly ordered pairs `(a, b)` with `a, b ∈ s` is `(#s).choose 2`. -/
 lemma card_product_filter_lt [LinearOrder α] :
     #{x ∈ s ×ˢ s | x.1 < x.2} = (#s).choose 2 := by
-  have hswap : #{x ∈ s ×ˢ s | x.1 < x.2} = #{x ∈ s ×ˢ s | x.2 < x.1} := by
-    refine card_nbij' Prod.swap Prod.swap ?_ ?_ ?_ ?_ <;>
-      rintro ⟨a, b⟩ h <;> simp_all
-  have hunion : {x ∈ s ×ˢ s | x.1 < x.2} ∪ {x ∈ s ×ˢ s | x.2 < x.1} = s.offDiag := by
-    ext ⟨a, b⟩
-    simp only [mem_union, mem_filter, mem_product, mem_offDiag]
-    refine ⟨fun h => h.elim (fun ⟨⟨ha, hb⟩, hab⟩ => ⟨ha, hb, hab.ne⟩)
-        (fun ⟨⟨ha, hb⟩, hab⟩ => ⟨ha, hb, hab.ne'⟩), ?_⟩
-    rintro ⟨ha, hb, hab⟩
-    exact (lt_or_gt_of_ne hab).imp (⟨⟨ha, hb⟩, ·⟩) (⟨⟨ha, hb⟩, ·⟩)
-  have hdisj : Disjoint {x ∈ s ×ˢ s | x.1 < x.2} {x ∈ s ×ˢ s | x.2 < x.1} := by
-    simp +contextual [disjoint_left, le_of_lt]
-  have hcard := congr_arg Finset.card hunion
-  rw [card_union_of_disjoint hdisj, ← hswap, offDiag_card] at hcard
-  rw [Nat.choose_two_right, Nat.mul_sub, mul_one, ← hcard, ← Nat.two_mul,
-    Nat.mul_div_cancel_left _ (by simp)]
+  set u : Finset (α × α) := {x ∈ s ×ˢ s | x.1 < x.2}
+  set v : Finset (α × α) := {x ∈ s ×ˢ s | x.2 < x.1}
+  have disj : Disjoint u v := by
+    simp +contextual [disjoint_left, u, v, lt_asymm]
+  have union : u.disjUnion v disj = s.offDiag := by
+    ext x
+    rcases lt_trichotomy x.1 x.2 with h | h | h <;>
+      simp [u, v, h, lt_asymm, ne_of_lt, ne_of_gt]
+  have swap : #u = #v := by
+    convert Finset.card_map (Equiv.prodComm α α).toEmbedding
+    ext; simp [u, v, and_comm]
+  rw [Nat.choose_two_right]
+  apply Nat.eq_div_of_mul_eq_left two_ne_zero
+  rw [Nat.mul_two, Nat.mul_sub_one, ← offDiag_card, ← union,
+    Finset.card_disjUnion, swap]
+
 
 end Diag
 
