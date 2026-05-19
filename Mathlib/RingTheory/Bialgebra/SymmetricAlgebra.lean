@@ -58,18 +58,15 @@ theorem counit_ι (x : M) :
     Coalgebra.counit (R := R) (ι R M x) = 0 :=
   algebraMapInv_ι x
 
-protected theorem comulAlgHom_comm :
-    (Algebra.TensorProduct.comm R (SymmetricAlgebra R M)
-        (SymmetricAlgebra R M)).toAlgHom.comp (SymmetricAlgebra.comulAlgHom R M) =
-      SymmetricAlgebra.comulAlgHom R M := by
-  ext x
-  simp only [LinearMap.coe_comp, Function.comp_apply, LinearMap.coe_coe, AlgHom.comp_apply,
-    AlgEquiv.coe_algHom, SymmetricAlgebra.comulAlgHom_ι, map_add,
-    Algebra.TensorProduct.comm_tmul]
-  abel
-
 instance instIsCocomm : Coalgebra.IsCocomm R (SymmetricAlgebra R M) where
-  comm_comp_comul := congr(($(SymmetricAlgebra.comulAlgHom_comm R M)).toLinearMap)
+  comm_comp_comul := by
+    have h : (Algebra.TensorProduct.comm R (SymmetricAlgebra R M)
+          (SymmetricAlgebra R M)).toAlgHom.comp (SymmetricAlgebra.comulAlgHom R M) =
+        SymmetricAlgebra.comulAlgHom R M := by
+      ext x
+      simp [SymmetricAlgebra.comulAlgHom_ι]
+      abel
+    exact congr(($h).toLinearMap)
 
 @[simp]
 theorem counitAlgHom_eq :
