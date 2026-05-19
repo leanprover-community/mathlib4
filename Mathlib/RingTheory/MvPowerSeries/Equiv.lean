@@ -25,8 +25,6 @@ This file establishes a number of equivalences related to power series rings.
 
 @[expose] public section
 
-universe u v w
-
 noncomputable section
 
 namespace MvPowerSeries
@@ -164,8 +162,7 @@ end MvPowerSeries
 
 section toMvPowerSeries
 
-variable {R : Type u} {S : Type v} [CommSemiring R] [CommSemiring S]
-variable {σ τ : Type*} {f : PowerSeries R} (i : σ) (r : R)
+variable {R S σ τ : Type*} [CommSemiring R] [CommSemiring S] {f : PowerSeries R} (i : σ) (r : R)
 
 open Function PowerSeries Filter Finsupp
 namespace PowerSeries
