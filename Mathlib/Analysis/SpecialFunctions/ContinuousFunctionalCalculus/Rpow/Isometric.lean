@@ -60,8 +60,6 @@ lemma continuousOn_nnrpow (r : ℝ≥0) : ContinuousOn (· ^ r) {a : A | 0 ≤ a
   · simpa using continuousOn_const
   · exact continuousOn_id.cfcₙ_nnreal_of_mem_nhdsSet _ Filter.univ_mem
 
-attribute [fun_prop] ContinuousWithinAt.prodMap NNReal.continuousAt_rpow
-
 open UniformOnFun Set in
 lemma continuousOn_nnrpow_setProd :
     ContinuousOn (fun x : A × ℝ≥0 => x.1 ^ x.2) (Ici 0 ×ˢ Ioi 0) := by
@@ -95,8 +93,7 @@ lemma continuousOn_nnrpow_setProd :
     change ContinuousAt ((fun a => a.1 ^ a.2) ∘ (Prod.map id NNReal.toReal) ∘ Prod.swap) x
     refine ContinuousAt.comp ?_ (by fun_prop)
     apply NNReal.continuousAt_rpow
-    simp only [Function.comp_apply, Prod.map_fst, Prod.fst_swap, id_eq, ne_eq, Prod.map_snd,
-      Prod.snd_swap, NNReal.coe_pos]
+    simp only [id_eq, ne_eq, NNReal.coe_pos]
     grind only [= mem_prod, = mem_Ioi]
   have h₁' : ∀ q ∈ Ioi 0, f₁ q 0 = 0 := by
     intro q hq

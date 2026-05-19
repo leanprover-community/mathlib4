@@ -378,8 +378,8 @@ end CpowLimits2
 
 namespace NNReal
 
-theorem continuousAt_rpow {x : ℝ≥0 × ℝ} (h : x.1 ≠ 0 ∨ 0 < x.2) :
-    ContinuousAt (fun p : ℝ≥0 × ℝ => p.1 ^ p.2) x := by
+theorem continuousAt_rpow {x : ℝ≥0} {y : ℝ} (h : x ≠ 0 ∨ 0 < y) :
+    ContinuousAt (fun p : ℝ≥0 × ℝ => p.1 ^ p.2) (x, y) := by
   have :
     (fun p : ℝ≥0 × ℝ => p.1 ^ p.2) =
       Real.toNNReal ∘ (fun p : ℝ × ℝ => p.1 ^ p.2) ∘ fun p : ℝ≥0 × ℝ => (p.1.1, p.2) := by
