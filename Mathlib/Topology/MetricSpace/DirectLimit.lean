@@ -53,8 +53,7 @@ noncomputable instance : MetricSpace (DirectLimit G f) where
 
 lemma dist_def (i : ι) (x y : G i) :
     dist (α := DirectLimit G f) ⟦⟨i,x⟩⟧ ⟦⟨i,y⟩⟧ = dist x y := by
-  change DirectLimit.lift₂ f f
-    (fun i ↦ dist (α := G i))
+  change DirectLimit.lift₂ f f _
     (fun i j h x y ↦ (IsometryClass.dist_eq (f i j h) x y).symm)
     ⟦⟨i, x⟩⟧ ⟦⟨i, y⟩⟧ = dist x y
   rw [lift₂_def]
