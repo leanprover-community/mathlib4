@@ -93,6 +93,13 @@ theorem ker_nhds_eq_specializes : (𝓝 x).ker = {y | y ⤳ x} := by
 theorem specializes_iff_forall_open : x ⤳ y ↔ ∀ s : Set X, IsOpen s → y ∈ s → x ∈ s :=
   (specializes_TFAE x y).out 0 2
 
+omit [TopologicalSpace X] in
+theorem Tendsto.specializes {l : Filter X} {y : Y} (h : Tendsto g l (𝓝 y)) (hl : ∀ x, f x ⤳ g x) :
+    Tendsto f l (𝓝 y) := by
+  simp_all only [specializes_iff_forall_open, tendsto_nhds]
+  refine fun s ho hy => mem_of_superset (h s ho hy) fun x hx => ?_
+  exact mem_preimage.2 (hl x s ho (mem_preimage.1 hx))
+
 theorem Specializes.mem_open (h : x ⤳ y) (hs : IsOpen s) (hy : y ∈ s) : x ∈ s :=
   specializes_iff_forall_open.1 h s hs hy
 
@@ -725,9 +732,12 @@ theorem continuousOn_lift {hf : ∀ x y, (x ~ᵢ y) → f x = f y} {s : Set (Sep
   simp only [ContinuousOn, surjective_mk.forall, continuousWithinAt_lift, mem_preimage]
 
 @[simp]
-theorem continuous_lift {hf : ∀ x y, (x ~ᵢ y) → f x = f y} :
+theorem continuous_lift_iff {hf : ∀ x y, (x ~ᵢ y) → f x = f y} :
     Continuous (lift f hf) ↔ Continuous f := by
   simp only [← continuousOn_univ, continuousOn_lift, preimage_univ]
+
+alias ⟨_, continuous_lift⟩ := continuous_lift_iff
+attribute [fun_prop] continuous_lift
 
 /-- Lift a map `f : X → Y → α` such that `Inseparable a b → Inseparable c d → f a c = f b d` to a
 map `SeparationQuotient X → SeparationQuotient Y → α`. -/
