@@ -306,10 +306,28 @@ variable {κ : Type*}
 def equivCongrLeft (h : ι ≃ κ) : (⨁ i, β i) ≃+ ⨁ k, β (h.symm k) :=
   { DFinsupp.equivCongrLeft h with map_add' := DFinsupp.comapDomain'_add _ h.right_inv }
 
+def equivCongrLeft' (h : κ ≃ ι) : (⨁ i, β i) ≃+ ⨁ i, β (h i) :=
+  { DFinsupp.equivCongrLeft h.symm with map_add' := DFinsupp.comapDomain'_add _ h.left_inv }
+
 @[simp]
 theorem equivCongrLeft_apply (h : ι ≃ κ) (f : ⨁ i, β i) (k : κ) :
     equivCongrLeft h f k = f (h.symm k) := by
   exact DFinsupp.comapDomain'_apply _ h.right_inv _ _
+
+@[simp]
+theorem equivCongrLeft'_apply (h : κ ≃ ι) (f : ⨁ i, β i) (k : κ) :
+    equivCongrLeft' h f k = f (h k) := by
+  exact DFinsupp.comapDomain'_apply _ h.left_inv _ _
+
+@[simp]
+theorem equivCongrLeft_of [DecidableEq ι] [DecidableEq κ] (h : ι ≃ κ) (k : κ) (x : β (h.symm k)) :
+    equivCongrLeft h (of β (h.symm k) x) = of (fun k ↦ β (h.symm k)) k x := by
+  exact DFinsupp.comapDomain'_single (⇑h.symm) h.right_inv _ _
+
+@[simp]
+theorem equivCongrLeft'_of [DecidableEq ι] [DecidableEq κ] (h : κ ≃ ι) (k : κ) (m : β (h k)) :
+    equivCongrLeft' h (of β (h k) m) = of (fun k ↦ β (h k)) k m := by
+  exact DFinsupp.comapDomain'_single _ h.left_inv' _ _
 
 end CongrLeft
 
