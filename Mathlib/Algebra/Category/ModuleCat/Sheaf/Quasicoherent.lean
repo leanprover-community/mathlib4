@@ -285,6 +285,7 @@ instance (M : SheafOfModules.{u} R) [M.IsFinitePresentation] :
 /-- A choice of local presentations when `M` is a sheaf of modules of finite presentation. -/
 @[deprecated "Use the lemma `IsFinitePresentation.exists_quasicoherentData` instead."
   (since := "2025-10-28")]
+
 noncomputable def quasicoherentDataOfIsFinitePresentation
     (M : SheafOfModules.{u} R) [M.IsFinitePresentation] : M.QuasicoherentData :=
   (IsFinitePresentation.exists_quasicoherentData M).choose

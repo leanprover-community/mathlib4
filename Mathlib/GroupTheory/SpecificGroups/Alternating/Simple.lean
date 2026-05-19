@@ -52,11 +52,8 @@ for `n = 3` or `n = 4`, this gives an Iwasawa structure of `alternatingGroup α`
 
 ## TODO
 
-This file contains two uncomfortable uses of `convert`:
-
-* on line 81, to identify `MulAut.conj` and `ConjAct.toConjAct`.
-
-* on line 148, to match the subtype coercions for `Finset` and `Set`.
+This file contains one uncomfortable use of `convert`: on line 78, to identify `MulAut.conj`
+and `ConjAct.toConjAct`.
 
 -/
 
@@ -142,10 +139,7 @@ theorem mem_map_kleinFour_ofSubtype {s : Finset α} (hs : s.card = 4) (k : alter
   · obtain ⟨σ, rfl⟩ := (mem_range_ofSubtype_iff s k).mpr hk
     simp_rw [and_iff_right hk, Subgroup.mem_map, ofSubtype_inj, existsAndEq, and_true,
       ← SetLike.mem_coe, coe_kleinFour_of_card_eq_four hs]
-    simp only [Set.singleton_union, Set.mem_insert_iff, Set.mem_setOf_eq, OneMemClass.coe_eq_one,
-      cycleType_ofSubtype, coe_ofSubtype, map_eq_one_iff _ Perm.ofSubtype_injective]
-    apply or_congr_right
-    convert Iff.rfl
+    simp [cycleType_ofSubtype, coe_ofSubtype, map_eq_one_iff _ Perm.ofSubtype_injective]
   · simp_rw [hk, false_and, iff_false]
     contrapose! hk
     exact (mem_range_ofSubtype_iff s k).mp (Subgroup.map_le_range _ _ hk)
