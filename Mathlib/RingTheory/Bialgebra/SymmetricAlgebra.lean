@@ -31,17 +31,15 @@ instance instBialgebra : Bialgebra R (SymmetricAlgebra R M) :=
     algebraMapInv
     (by
       ext x
-      simp [lift_ι_apply, Algebra.TensorProduct.one_def,
-        TensorProduct.add_tmul, TensorProduct.tmul_add]
+      simp [Algebra.TensorProduct.one_def, TensorProduct.add_tmul, TensorProduct.tmul_add]
       abel)
-    (by ext x; simp [lift_ι_apply, algebraMapInv_ι])
-    (by ext x; simp [lift_ι_apply, algebraMapInv_ι])
+    (by ext x; simp [algebraMapInv_ι])
+    (by ext x; simp [algebraMapInv_ι])
 
 @[simp]
 theorem comul_ι (x : M) :
-    Coalgebra.comul (R := R) (ι R M x) = ι R M x ⊗ₜ[R] 1 + 1 ⊗ₜ[R] ι R M x := by
-  change (lift _) (ι R M x) = _
-  simp [lift_ι_apply]
+    Coalgebra.comul (R := R) (ι R M x) = ι R M x ⊗ₜ[R] 1 + 1 ⊗ₜ[R] ι R M x :=
+  lift_ι_apply _ x
 
 @[simp]
 theorem counit_ι (x : M) :
@@ -50,13 +48,12 @@ theorem counit_ι (x : M) :
 
 instance instIsCocomm : Coalgebra.IsCocomm R (SymmetricAlgebra R M) where
   comm_comp_comul := by
-    have h : (Algebra.TensorProduct.comm R (SymmetricAlgebra R M)
+    suffices h : (Algebra.TensorProduct.comm R (SymmetricAlgebra R M)
           (SymmetricAlgebra R M)).toAlgHom.comp (Bialgebra.comulAlgHom R _) =
-        Bialgebra.comulAlgHom R (SymmetricAlgebra R M) := by
-      ext x
-      simp
-      abel
-    exact congr(($h).toLinearMap)
+        Bialgebra.comulAlgHom R (SymmetricAlgebra R M) from congr(($h).toLinearMap)
+    ext x
+    simp
+    abel
 
 @[simp]
 theorem counitAlgHom_eq :
