@@ -542,6 +542,9 @@ instance (priority := 100) Subsingleton.discreteTopology [t : TopologicalSpace �
 instance [TopologicalSpace α] [Subsingleton α] : IndiscreteTopology α where
   eq_top := Subsingleton.elim _ _
 
+variable (α) in
+lemma Nontrivial.of_nontrivialTopology [TopologicalSpace α] [h : NontrivialTopology α] :
+    Nontrivial α := by contrapose! h; infer_instance
 
 instance : TopologicalSpace Empty := ⊥
 instance : DiscreteTopology Empty := ⟨rfl⟩
