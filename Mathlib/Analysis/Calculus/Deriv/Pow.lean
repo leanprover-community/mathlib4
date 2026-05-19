@@ -105,7 +105,7 @@ theorem HasDerivWithinAt.fun_pow (h : HasDerivWithinAt f f' s x) (n : ℕ) :
 theorem HasDerivWithinAt.pow (h : HasDerivWithinAt f f' s x) (n : ℕ) :
     HasDerivWithinAt (f ^ n) (n * f x ^ (n - 1) * f') s x := h.fun_pow n
 
-@[to_fun HasDerivAt.fun_pow]
+@[to_fun]
 theorem HasDerivAt.pow (h : HasDerivAt f f' x) (n : ℕ) :
     HasDerivAt (f ^ n) (n * f x ^ (n - 1) * f') x := by
   simpa using h.hasFDerivAt.pow n |>.hasDerivAt
