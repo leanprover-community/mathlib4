@@ -181,6 +181,15 @@ lemma HasFiniteMulSupport.of_comp [One β] (hfg : (f ∘ g).HasFiniteMulSupport)
   refine Set.Finite.subset hfg fun _ ha ↦ Set.mem_setOf.mpr fun H ↦ Set.mem_setOf.mp ha ?_
   grind
 
+@[fun_prop]
+lemma HasFiniteSupport.hasFiniteMulSupport_fun_pow {M S : Type*} [Monoid M] (f : S → M)
+    {g : S → ℕ} (hg : g.HasFiniteSupport) :
+    (fun s : S ↦ f s ^ g s).HasFiniteMulSupport := by
+  refine Set.Finite.subset hg fun s hs ↦ ?_
+  simp only [Function.mem_mulSupport, Function.mem_support] at hs ⊢
+  contrapose! hs
+  simp [hs]
+
 end Function
 
 end
