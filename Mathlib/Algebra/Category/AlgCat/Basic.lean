@@ -251,9 +251,3 @@ instance AlgCat.forget_reflects_isos : (forget (AlgCat.{v} R)).ReflectsIsomorphi
     let i := asIso ((forget (AlgCat.{v} R)).map f)
     let e : X ≃ₐ[R] Y := { f.hom, i.toEquiv with }
     exact e.toAlgebraIso.isIso_hom
-
-instance : (forget₂ (AlgCat.{v} R) RingCat.{v}).ReflectsIsomorphisms :=
-  reflectsIsomorphisms_forget₂ _ _
-
-instance : (forget₂ (AlgCat.{v} R) (ModuleCat.{v} R)).ReflectsIsomorphisms :=
-  reflectsIsomorphisms_forget₂ _ _
