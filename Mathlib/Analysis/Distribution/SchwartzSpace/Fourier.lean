@@ -139,12 +139,6 @@ instance instFourierInvPair : FourierInvPair 𝓢(V, E) 𝓢(V, E) where
     rw [fourier_coe, fourierInv_coe, f.continuous.fourier_fourierInv_eq f.integrable
       (𝓕 f).integrable]
 
-@[deprecated (since := "2025-11-13")]
-alias fourier_inversion := FourierTransform.fourierInv_fourier_eq
-
-@[deprecated (since := "2025-11-13")]
-alias fourier_inversion_inv := FourierTransform.fourier_fourierInv_eq
-
 @[deprecated (since := "2026-01-06")]
 alias fourierTransformCLE := FourierTransform.fourierCLE
 
@@ -337,15 +331,9 @@ theorem inner_fourier_toL2_eq (f g : 𝓢(V, H)) :
     ⟪(𝓕 f).toLp two_ne_zero, (𝓕 g).toLp two_ne_zero⟫
       = ⟪f.toLp two_ne_zero, g.toLp two_ne_zero⟫ := by simp
 
-@[deprecated (since := "2025-11-13")]
-alias inner_fourierTransformCLM_toL2_eq := inner_fourier_toL2_eq
-
 @[simp] theorem norm_fourier_toL2_eq (f : 𝓢(V, H)) :
     ‖(𝓕 f).toLp two_ne_zero‖ = ‖f.toLp two_ne_zero‖ := by
   simp_rw [norm_eq_sqrt_re_inner (𝕜 := ℂ), inner_fourier_toL2_eq]
-
-@[deprecated (since := "2025-11-13")]
-alias norm_fourierTransformCLM_toL2_eq := norm_fourier_toL2_eq
 
 end L2
 

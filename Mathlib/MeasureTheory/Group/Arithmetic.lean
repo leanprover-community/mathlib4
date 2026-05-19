@@ -317,12 +317,6 @@ instance {β : Type*} [AddCommMonoid β] [PartialOrder β]
   simp_rw [Set.diagonal, le_antisymm_iff, ← tsub_eq_zero_iff_le]
   measurability
 
-@[deprecated (since := "2025-11-11")]
-alias measurableSet_eq_fun' := measurableSet_eq_fun
-
-@[deprecated (since := "2025-11-11")]
-alias measurableSet_eq_fun_of_countable := measurableSet_eq_fun
-
 end Div
 
 /-- We say that a type has `MeasurableNeg` if `x ↦ -x` is a measurable function. -/
