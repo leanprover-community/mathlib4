@@ -26,6 +26,7 @@ public section
 variable {F : Type*} [NormedAddCommGroup F] [InnerProductSpace ℝ F] [CompleteSpace F]
 variable {K : NNReal} {f : F → ℝ}
 
+open InnerProductSpace
 open scoped Gradient RealInnerProductSpace
 
 theorem lipschitzSmoothWith_iff_inner_gradient (hf : Differentiable ℝ f) :
@@ -78,3 +79,20 @@ theorem CocoerciveWith.lipschitzWith_gradient (h : CocoerciveWith K f) : Lipschi
     simp only [dist_eq_norm']
     nlinarith [h x y, mul_nonneg K.coe_nonneg (norm_nonneg (y - x)),
               mul_le_mul_of_nonneg_left (real_inner_le_norm (∇ f y - ∇ f x) (y - x)) K.coe_nonneg]
+
+/-! ### Riesz isomorphism for Lipschitz constants -/
+
+/-- The Riesz isomorphism identifies the Lipschitz constant of the Fréchet derivative with
+that of the gradient: `LipschitzWith K (fderiv ℝ f) ↔ LipschitzWith K (∇ f)`. Unconditional —
+the gradient is *defined* via Riesz from the fderiv, and Riesz is an isometry. -/
+theorem lipschitzWith_fderiv_iff_lipschitzWith_gradient :
+    LipschitzWith K (fderiv ℝ f) ↔ LipschitzWith K (∇ f) :=
+  toDual_comp_gradient (𝕜 := ℝ) (f := f) ▸ (toDual ℝ F).isometry.lipschitzWith_iff K
+
+/-! ### Descent lemma (Hilbert form) -/
+
+/-- **Descent lemma (Hilbert form).** If `f : F → ℝ` is differentiable on a Hilbert space
+and its gradient `∇ f` is `K`-Lipschitz, then `f` is `K`-smooth. -/
+theorem Differentiable.lipschitzSmoothWith_of_lipschitzWith_gradient
+    (hf : Differentiable ℝ f) (hL : LipschitzWith K (∇ f)) : LipschitzSmoothWith K f :=
+  hf.lipschitzSmoothWith_of_lipschitzWith (lipschitzWith_fderiv_iff_lipschitzWith_gradient.mpr hL)
