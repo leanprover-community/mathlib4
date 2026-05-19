@@ -16,6 +16,3 @@ theorem Option.finite_iff {α : Type*} : Finite (Option α) ↔ Finite α where
   mp
   | @Finite.intro _ 0 e => (e none).elim0
   | @Finite.intro _ (n + 1) e => ⟨(e.trans (finSuccEquiv n)).removeNone⟩
-
-
-#min_imports
