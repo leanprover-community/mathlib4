@@ -462,6 +462,8 @@ lemma mulVecSL {v : Fin 2 → R} (hab : IsCoprime (v 0) (v 1)) (A : SL(2, R)) :
 
 end IsCoprime
 
+namespace Matrix
+
 section Action
 
 variable {F : Type*} [CommRing F] {ι : Type*} [DecidableEq ι] [Fintype ι]
@@ -476,11 +478,13 @@ instance : DistribMulAction (Matrix.SpecialLinearGroup ι F) (ι → F) where
 instance : SMulCommClass (Matrix.SpecialLinearGroup ι F) F (ι → F) where
   smul_comm m k v := show m.1 • k • v = k • m.1 • v from smul_comm _ _ _
 
-lemma Matrix.SpecialLinearGroup.smulVec_def
+lemma SpecialLinearGroup.smulVec_def
     (m : Matrix.SpecialLinearGroup ι F) (v : ι → F) :
     m • v = m.1 • v := rfl
 
 end Action
+
+end Matrix
 
 namespace ModularGroup
 
