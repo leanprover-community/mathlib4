@@ -53,7 +53,7 @@ lemma Algebra.isSeparablyGenerated_of_equiv {K' : Type w} [Field K'] [Algebra k 
   let g := (e ∘ f) ∘ (equivShrink ι).symm
   use Shrink.{w} ι, g, (e.isTranscendenceBasis isT).comp_equiv (equivShrink ι).symm
   have eq : (IntermediateField.adjoin k (Set.range f)).map e =
-    (IntermediateField.adjoin k (Set.range g)) := by
+      (IntermediateField.adjoin k (Set.range g)) := by
     simp [IntermediateField.adjoin_map, g, Set.range_comp e f]
   let e' := ((IntermediateField.adjoin k (Set.range f)).equivMap e.toAlgHom).trans
     (IntermediateField.equivOfEq eq)
@@ -65,17 +65,11 @@ lemma Algebra.isSeparable_iff_isSeparablyGenerated_and_isAlgebraic :
   · use (∅ : Set K), fun x ↦ 0
     have eqbot : IntermediateField.adjoin k (Set.range fun (x : (∅ : Set K)) ↦ (0 : K)) = ⊥ :=
       IntermediateField.adjoin_eq_bot_iff.mpr (fun _ ↦ by simp)
-    have sep : Algebra.IsSeparable (⊥ : IntermediateField k K) K := by
-      apply IsSeparable.of_equiv_equiv (IntermediateField.botEquiv k K).symm.toRingEquiv
-        (RingEquiv.refl K)
-      ext
-      simp [-AlgEquiv.symm_toRingEquiv]
     refine ⟨isTranscendenceBasis_iff_algebraicIndependent_isAlgebraic.mpr ⟨?_, ?_⟩, ?_⟩
     · simpa using RingHom.injective _
-    · rw [← IntermediateField.isAlgebraic_adjoin_iff_top, eqbot]
-      exact sep.isAlgebraic
-    · rw [eqbot]
-      exact sep
+    · simpa [← IntermediateField.isAlgebraic_adjoin_iff_top, eqbot]
+        using (Algebra.isSeparable_tower_top_of_isSeparable k _  K).isAlgebraic
+    · simpa [eqbot] using Algebra.isSeparable_tower_top_of_isSeparable k _  K
   · have := isT.isEmpty_iff_isAlgebraic.mpr alg
     have : IntermediateField.adjoin k (Set.range T) = ⊥ :=
       IntermediateField.adjoin_eq_bot_iff.mpr (fun _ ↦ by simp)
