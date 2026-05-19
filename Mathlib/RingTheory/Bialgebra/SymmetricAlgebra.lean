@@ -31,7 +31,7 @@ theorem algebraMapInv_ι (x : M) : algebraMapInv (R := R) (M := M) (ι R M x) = 
 /-- The comultiplication on `SymmetricAlgebra R M` as an algebra
 homomorphism, lifted from `x ↦ ι x ⊗ 1 + 1 ⊗ ι x`. -/
 protected def comulAlgHom : SymmetricAlgebra R M →ₐ[R]
-    (SymmetricAlgebra R M ⊗[R] SymmetricAlgebra R M) :=
+    SymmetricAlgebra R M ⊗[R] SymmetricAlgebra R M :=
   lift <|
     (TensorProduct.mk R _ _).flip 1 ∘ₗ ι R M +
     TensorProduct.mk R _ _ 1 ∘ₗ ι R M
