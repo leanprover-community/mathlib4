@@ -1570,6 +1570,7 @@ public import Mathlib.AlgebraicTopology.SimplicialSet.NerveNondegenerate
 public import Mathlib.AlgebraicTopology.SimplicialSet.NonDegenerateSimplices
 public import Mathlib.AlgebraicTopology.SimplicialSet.NonDegenerateSimplicesSubcomplex
 public import Mathlib.AlgebraicTopology.SimplicialSet.Nonempty
+public import Mathlib.AlgebraicTopology.SimplicialSet.Nonsingular
 public import Mathlib.AlgebraicTopology.SimplicialSet.Op
 public import Mathlib.AlgebraicTopology.SimplicialSet.Path
 public import Mathlib.AlgebraicTopology.SimplicialSet.PiZero
@@ -1591,7 +1592,6 @@ public import Mathlib.AlgebraicTopology.SimplicialSet.SubcomplexEvaluation
 public import Mathlib.AlgebraicTopology.SimplicialSet.SubcomplexOp
 public import Mathlib.AlgebraicTopology.SimplicialSet.Subdivision
 public import Mathlib.AlgebraicTopology.SimplicialSet.TopAdj
-public import Mathlib.AlgebraicTopology.SimplicialSet.WeaklyPolyhedralLike
 public import Mathlib.AlgebraicTopology.SingularHomology.Basic
 public import Mathlib.AlgebraicTopology.SingularHomology.HomologyZero
 public import Mathlib.AlgebraicTopology.SingularHomology.HomotopyInvariance
