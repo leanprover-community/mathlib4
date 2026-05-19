@@ -39,7 +39,7 @@ protected theorem comulAlgHom_ι (x : M) :
   simp [SymmetricAlgebra.comulAlgHom, lift_ι_apply]
 
 instance instBialgebra : Bialgebra R (SymmetricAlgebra R M) :=
-  .ofAlgHom (SymmetricAlgebra.comulAlgHom R M) (algebraMapInv (R := R) (M := M))
+  .ofAlgHom (SymmetricAlgebra.comulAlgHom R M) algebraMapInv
     (by
       ext x
       simp [SymmetricAlgebra.comulAlgHom_ι, Algebra.TensorProduct.one_def,
