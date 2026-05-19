@@ -6,9 +6,11 @@ Authors: Yi Yuan
 module
 
 public import Mathlib.Analysis.Complex.ExponentialBounds
+public import Mathlib.Analysis.Real.Pi.Bounds
 public import Mathlib.Analysis.SpecialFunctions.Integrability.Basic
 public import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
 public import Mathlib.Analysis.SpecialFunctions.Log.Monotone
+public import Mathlib.Analysis.SpecialFunctions.Stirling
 public import Mathlib.Analysis.SumIntegralComparisons
 public import Mathlib.Data.Nat.Choose.Factorization
 public import Mathlib.Data.Nat.Prime.Factorial
@@ -38,8 +40,7 @@ The proof splits off `p = 2, 3`, dominates the remaining primes by all odd integ
 odd tail by an integral, and finally inserts explicit logarithmic estimates.
 -/
 /-- The term `log n / (n * (n - 1))`, used for the prime error sum. -/
-noncomputable def primeLogDivMulPred (n : ℕ) : ℝ :=
-  log (n : ℝ) / ((n : ℝ) * ((n : ℝ) - 1))
+noncomputable def primeLogDivMulPred (x : ℝ) : ℝ := log x / (x * (x - 1))
 
 /-- The term `log (2 * k + 1) / ((2 * k + 1) * (2 * k))` from the odd tail. -/
 noncomputable def oddLogDivMulPred (k : ℕ) : ℝ :=
@@ -83,7 +84,7 @@ lemma summable_primeLogDivMulPred :
 lemma summable_primeLogDivMulPred_tail :
     Summable fun p : {p : ℕ // Nat.Prime p ∧ 5 ≤ p} ↦ primeLogDivMulPred p := by
   let e := (Equiv.subtypeSubtypeEquivSubtypeInter (fun p : ℕ ↦ p.Prime) (fun p ↦ 5 ≤ p)).symm
-  exact (e.summable_iff).mpr (summable_primeLogDivMulPred.subtype
+  exact e.summable_iff.mpr (summable_primeLogDivMulPred.subtype
     (fun q : {p : ℕ // p.Prime} ↦ 5 ≤ (q : ℕ)))
 
 lemma summable_oddLogDivMulPred_tail :
@@ -121,17 +122,12 @@ lemma summable_oddLogDivMulPred_tail :
       dsimp [a]
       norm_num
     have hden_pos : 0 < a * b := mul_pos ha_pos hb_pos
-    have hnonneg : 0 ≤ oddLogDivMulPred n := by
-      exact div_nonneg (log_nonneg ha_one) hden_pos.le
+    have hnonneg : 0 ≤ oddLogDivMulPred n := div_nonneg (log_nonneg ha_one) hden_pos.le
     rw [norm_of_nonneg hnonneg]
     have hlog_le : log a ≤ 2 * sqrt a := by
       have h := log_le_rpow_div ha_pos.le (by norm_num : (0 : ℝ) < 1 / 2)
       rw [sqrt_eq_rpow]
       linarith
-    have hden_nonneg : 0 ≤ a * b := hden_pos.le
-    have hcancel : 2 * sqrt a / (a * b) = 2 / (sqrt a * b) := by
-      rw [show a * b = sqrt a ^ 2 * b by rw [sq_sqrt ha_pos.le]]
-      field_simp [(sqrt_ne_zero'.mpr ha_pos), ne_of_gt hb_pos]
     have hx_le_a : (n : ℝ) ≤ a := by
       dsimp [a]
       norm_num
@@ -140,18 +136,17 @@ lemma summable_oddLogDivMulPred_tail :
       dsimp [b]
       norm_num
       nlinarith
-    have hden_le : sqrt (n : ℝ) * (n : ℝ) ≤ sqrt a * b := by
-      exact mul_le_mul (sqrt_le_sqrt hx_le_a) hx_le_b hnpos.le (sqrt_nonneg a)
-    have hden_small_pos : 0 < sqrt (n : ℝ) * (n : ℝ) := by
-      exact mul_pos (sqrt_pos.mpr hnpos) hnpos
+    have hden_le : sqrt (n : ℝ) * (n : ℝ) ≤ sqrt a * b :=
+      mul_le_mul (sqrt_le_sqrt hx_le_a) hx_le_b hnpos.le (sqrt_nonneg a)
     calc
       oddLogDivMulPred n = log a / (a * b) := by
         simp [oddLogDivMulPred, a, b]
-      _ ≤ (2 * sqrt a) / (a * b) :=
-        div_le_div_of_nonneg_right hlog_le hden_nonneg
-      _ = 2 / (sqrt a * b) := hcancel
+      _ ≤ (2 * sqrt a) / (a * b) := div_le_div_of_nonneg_right hlog_le hden_pos.le
+      _ = 2 / (sqrt a * b) := by
+        rw [show a * b = sqrt a ^ 2 * b by rw [sq_sqrt ha_pos.le]]
+        field_simp [(sqrt_ne_zero'.mpr ha_pos), ne_of_gt hb_pos]
       _ ≤ 2 / (sqrt (n : ℝ) * (n : ℝ)) :=
-        div_le_div_of_nonneg_left (by norm_num : (0 : ℝ) ≤ 2) hden_small_pos hden_le
+        div_le_div_of_nonneg_left (by norm_num) (by positivity) hden_le
   exact hfull.subtype {k : ℕ | 2 ≤ k}
 
 lemma integral_oddLogDivMulPredReal_converges :
@@ -261,9 +256,10 @@ lemma tsum_primeLogDivMulPred_split_two_three :
         have hnot3' : (q : ℕ) ≠ 3 := fun h ↦ hnot3 (Subtype.ext h)
         have hnot4 : (q : ℕ) ≠ 4 := by
           intro h4
-          exact (by decide : ¬ Nat.Prime 4) (by simpa [h4] using q.property)
+          have hq4 : Nat.Prime 4 := by simpa [h4] using q.property
+          exact (by decide : ¬ Nat.Prime 4) hq4
         have h2le : 2 ≤ (q : ℕ) := q.property.two_le
-        exact by omega
+        omega
       · intro h5
         constructor
         · intro hq
@@ -277,9 +273,7 @@ lemma tsum_primeLogDivMulPred_split_two_three :
         Equiv.subtypeSubtypeEquivSubtypeInter (fun p : ℕ ↦ Nat.Prime p) fun p ↦ 5 ≤ p
     exact e.tsum_eq (fun p : {p : ℕ // Nat.Prime p ∧ 5 ≤ p} ↦ primeLogDivMulPred p)
   calc
-    (∑' p : P, primeLogDivMulPred p)
-        = (∑ x ∈ s, primeLogDivMulPred x) +
-            ∑' q : {q : P // q ∉ s}, primeLogDivMulPred q.1 := by
+    _ = (∑ x ∈ s, primeLogDivMulPred x) + ∑' q : {q : P // q ∉ s}, primeLogDivMulPred q.1 := by
           simpa [P, s] using (summable_primeLogDivMulPred.sum_add_tsum_subtype_compl s).symm
     _ = log 2 / 2 + log 3 / 6 +
           ∑' p : {p : ℕ // Nat.Prime p ∧ 5 ≤ p}, primeLogDivMulPred p := by
@@ -351,7 +345,8 @@ lemma prime_tail_lt_odd_tail :
       summable_primeLogDivMulPred_tail hrest_summable
   have hk4_pos : 0 < oddLogDivMulPred k4 := by
     change 0 < oddLogDivMulPred (4 : ℕ)
-    simpa [oddLogDivMulPred] using log_pos (by norm_num : (1 : ℝ) < 9)
+    have hlog : 0 < log 9 := log_pos (by norm_num : (1 : ℝ) < 9)
+    simpa [oddLogDivMulPred] using hlog
   rw [summable_oddLogDivMulPred_tail.tsum_eq_add_tsum_ite k4]
   exact lt_of_le_of_lt hleRest (by linarith)
 
@@ -491,8 +486,7 @@ lemma tsum_oddLogDivMulPred_nat_tail_lt_integral :
         ring_nf
       have hanti_interval :
           AntitoneOn oddLogDivMulPredReal (Set.Icc (3 : ℝ) ((m + 3 : ℕ) : ℝ)) := by
-        exact oddLogDivMulPredReal_antitoneOn.mono fun x hx ↦ by
-          exact le_trans (by norm_num : (2 : ℝ) ≤ 3) hx.1
+        exact oddLogDivMulPredReal_antitoneOn.mono fun x hx ↦ le_trans (by norm_num) hx.1
       have hrest_le :
           (∑ i ∈ range m, oddLogDivMulPred (i + 4))
             ≤ ∫ x in (3 : ℝ)..((m + 3 : ℕ) : ℝ), oddLogDivMulPredReal x := by
@@ -702,7 +696,7 @@ lemma integral_log_div_sq_Ioi_five :
         ring
       · norm_num
     simpa [F] using h.neg
-  have hFTC := integral_Ioi_of_hasDerivAt_of_nonneg' (a := (5 : ℝ)) (g := F) hderiv hpos hlim
+  have hFTC := integral_Ioi_of_hasDerivAt_of_nonneg' hderiv hpos hlim
   simpa [F] using hFTC
 
 lemma integral_oddLogDivMulPredReal_le_log_five_add_one_div_eight :
@@ -732,25 +726,6 @@ theorem tsum_primeLogDivMulPred_lt_one :
   rw [tsum_primeLogDivMulPred_split_two_three]
   linarith [log_two_lt_d9, log_three_lt_d9, prime_tail_lt_407_div_1000]
 
-lemma sum_log_ge_add_one {x : ℕ} (hx : 1 ≤ x) :
-    ∑ n ∈ Ioc 0 x, log n ≥ x * log x - x + 1 := by
-  have hmono : MonotoneOn (fun t : ℝ ↦ log t) (Set.Icc ((1 : ℕ) : ℝ) (x : ℝ)) := by
-    intro a ha b hb hab
-    have ha0 : 0 < a := by
-      norm_num at ha ⊢
-      exact lt_of_lt_of_le zero_lt_one ha.1
-    exact log_le_log ha0 hab
-  have hint : (∫ t in (1 : ℝ)..(x : ℝ), log t) ≤ ∑ n ∈ Ico 1 x, log (n + 1 : ℕ) := by
-    simpa using hmono.integral_le_sum_Ico hx
-  rw [sum_Ico_add' (fun n : ℕ ↦ log n) 1 x (c := 1), Ico_add_one_add_one_eq_Ioc] at hint
-  replace hint : (∫ t in (1 : ℝ)..(x : ℝ), log t) ≤ ∑ n ∈ Ioc 0 x, log n := by
-    convert hint using 1
-    rw [(by rfl : Ioc 0 x = Icc 1 x), ← add_sum_Ioc_eq_sum_Icc hx]
-    simp
-  rw [integral_log] at hint
-  norm_num at hint
-  linarith
-
 lemma log_factorial_eq_sum_prime_factorization {n : ℕ} : log (n.factorial) =
     ∑ p ∈ Ioc 0 n with Nat.Prime p, (Nat.factorization n.factorial p) * log p := by
   rw [log_nat_eq_sum_factorization n.factorial,
@@ -763,38 +738,11 @@ lemma log_factorial_eq_sum_prime_factorization {n : ℕ} : log (n.factorial) =
     exact ⟨⟨hpPrime.pos, (Nat.Prime.dvd_factorial hpPrime).mp hpDvd⟩, hpPrime⟩
   · simp
 
-lemma log_factorial_le_mul_log {n : ℕ} :
-    log (n.factorial : ℝ) ≤ (n : ℝ) * log (n : ℝ) := by
-  have hfact : (n.factorial : ℝ) ≤ (n : ℝ) ^ n := by
-    exact_mod_cast Nat.factorial_le_pow n
-  calc
-    log (n.factorial : ℝ) ≤ log ((n : ℝ) ^ n) := by
-      exact log_le_log (by positivity) hfact
-    _ = (n : ℝ) * log (n : ℝ) := by
-      rw [log_pow]
-
-lemma log_factorial_gt_mul_log_sub_self {n : ℕ} (hn : 1 ≤ n) :
-    (n : ℝ) * log (n : ℝ) - n < log (n.factorial : ℝ) := by
-  have hlog : log (n.factorial : ℝ) = ∑ k ∈ Ioc 0 n, log (k : ℝ) := by
-    rw [Nat.factorial_eq_prod_range_add_one, Nat.cast_prod, log_prod]
-    · refine sum_bij (fun k _ ↦ k.succ) ?_ ?_ ?_ ?_
-      · intro k hk
-        rw [mem_Ioc]
-        rw [mem_range] at hk
-        exact ⟨Nat.succ_pos k, Nat.succ_le_iff.mpr hk⟩
-      · intro k _ l _ hkl
-        exact Nat.succ.inj hkl
-      · intro k hk
-        rw [mem_Ioc] at hk
-        refine ⟨k.pred, ?_, ?_⟩
-        · rw [mem_range]
-          exact lt_of_lt_of_le (Nat.pred_lt_self hk.1) hk.2
-        · exact Nat.succ_pred_eq_of_pos hk.1
-      · simp [Nat.cast_add]
-    · intro k hk
-      positivity
-  rw [hlog]
-  linarith [sum_log_ge_add_one hn]
+lemma log_factorial_le_mul_log {n : ℕ} : log (n.factorial) ≤ n * log n := by calc
+  log (n.factorial) ≤ log (n ^ n) :=
+    log_le_log (by positivity) (by exact_mod_cast Nat.factorial_le_pow n)
+  _ = n * log n := by
+    rw [log_pow]
 
 lemma factorial_prime_exponent_lower {n p : ℕ} (hp : Nat.Prime p) (hpn : p ≤ n) :
     (n : ℝ) / p - 1 < Nat.factorization n.factorial p := by
@@ -807,7 +755,7 @@ lemma factorial_prime_exponent_lower {n p : ℕ} (hp : Nat.Prime p) (hpn : p ≤
   have hdiv_lt : (n : ℝ) / p < ((n / p : ℕ) : ℝ) + 1 := by
     simpa [Nat.floor_div_natCast] using Nat.lt_floor_add_one ((n : ℝ) / p)
   have hlt : (n : ℝ) / p - 1 < ((n / p : ℕ) : ℝ) := by
-    linarith [Nat.lt_floor_add_one ((n : ℝ) / p)]
+    linarith
   exact lt_of_lt_of_le hlt (by exact_mod_cast hleNat)
 
 lemma mul_primeLogSum_sub_theta_lt_log_factorial {n : ℕ} (hn : 2 ≤ n) :
@@ -855,14 +803,15 @@ lemma primeLogSum_sub_log_lt_theta_div {n : ℕ} (hn : 2 ≤ n) :
   nlinarith
 
 lemma primeLogSum_sub_log_lt_two {n : ℕ} (hn : 2 ≤ n) :
-    (∑ p ∈ Ioc 0 n with Nat.Prime p, log (p : ℝ) / p) - log (n : ℝ) < 2 := by
-  have hnpos : (0 : ℝ) < n := by
-    exact_mod_cast lt_of_lt_of_le (by norm_num : 0 < 2) hn
-  have htheta_div : Chebyshev.theta n / n ≤ log 4 := by
+    ∑ p ∈ Ioc 0 n with Nat.Prime p, log p / p - log n < 2 := by calc
+  _ < Chebyshev.theta n / n := primeLogSum_sub_log_lt_theta_div hn
+  _ ≤ log 4 := by
+    have hnpos : (0 : ℝ) < n := by
+      exact_mod_cast lt_of_lt_of_le (by norm_num : 0 < 2) hn
     simpa [div_le_iff₀ hnpos, mul_comm] using Chebyshev.theta_le_log4_mul_x (by positivity)
-  refine (lt_of_lt_of_le (primeLogSum_sub_log_lt_theta_div hn) htheta_div).trans ?_
-  rw [show (4 : ℝ) = 2 * 2 by norm_num, log_mul (by norm_num) (by norm_num)]
-  linarith [log_two_lt_d9]
+  _ < _ := by
+    rw [show (4 : ℝ) = 2 * 2 by norm_num, log_mul (by norm_num) (by norm_num)]
+    linarith [log_two_lt_d9]
 
 lemma factorial_prime_exponent_upper_split {n p : ℕ} (hp : Nat.Prime p) :
     (Nat.factorization n.factorial p : ℝ) ≤
@@ -870,7 +819,7 @@ lemma factorial_prime_exponent_upper_split {n p : ℕ} (hp : Nat.Prime p) :
   calc
     (Nat.factorization n.factorial p : ℝ) ≤ (n / (p - 1) : ℕ) := by
       exact_mod_cast Nat.factorization_factorial_le_div_pred hp n
-    _ ≤ (n : ℝ) / (p - 1 : ℕ) := Nat.cast_div_le (α := ℝ) (m := n) (n := p - 1)
+    _ ≤ (n : ℝ) / (p - 1 : ℕ) := Nat.cast_div_le
     _ = (n : ℝ) / (p - 1) := by norm_num [Nat.cast_sub hp.one_le]
     _ = (n : ℝ) / p + (n : ℝ) / (p * (p - 1)) := by
       have hp0 : (p : ℝ) ≠ 0 := by
@@ -887,9 +836,7 @@ lemma log_factorial_le_mul_primeLogSum_add_error {n : ℕ} :
       n * ∑ p ∈ Ioc 0 n with Nat.Prime p, primeLogDivMulPred p := by
   rw [log_factorial_eq_sum_prime_factorization]
   calc
-    ∑ p ∈ Ioc 0 n with Nat.Prime p,
-        (Nat.factorization n.factorial p : ℝ) * log (p : ℝ)
-        ≤ ∑ p ∈ Ioc 0 n with Nat.Prime p,
+    _ ≤ ∑ p ∈ Ioc 0 n with Nat.Prime p,
             ((n : ℝ) / p + (n : ℝ) / (p * (p - 1))) * log (p : ℝ) := by
           refine sum_le_sum ?_
           intro p hp
@@ -916,9 +863,9 @@ lemma log_factorial_le_mul_primeLogSum_add_error {n : ℕ} :
 lemma finite_primeLogDivMulPred_lt_one {n : ℕ} :
     ∑ p ∈ Ioc 0 n with Nat.Prime p, primeLogDivMulPred p < 1 := by
   rw [← sum_subtype_eq_sum_filter]
-  exact (summable_primeLogDivMulPred.sum_le_tsum ((Ioc 0 n).subtype Nat.Prime) (fun ⟨m, hp⟩ _ ↦ by
+  exact (summable_primeLogDivMulPred.sum_le_tsum ((Ioc 0 n).subtype Nat.Prime) (fun ⟨m, hp⟩ _ ↦
     have hm1 : 1 < (m : ℝ) := by exact_mod_cast hp.one_lt
-    exact div_nonneg (log_natCast_nonneg m) (by positivity))).trans_lt
+    div_nonneg (log_natCast_nonneg m) (by positivity))).trans_lt
       tsum_primeLogDivMulPred_lt_one
 
 lemma log_factorial_lt_mul_primeLogSum_add_self {n : ℕ} (hn : 1 ≤ n) :
@@ -930,7 +877,13 @@ lemma log_factorial_lt_mul_primeLogSum_add_self {n : ℕ} (hn : 1 ≤ n) :
 
 lemma neg_two_lt_primeLogSum_sub_log {n : ℕ} (hn : 1 ≤ n) :
     -2 < ∑ p ∈ Ioc 0 n with Nat.Prime p, log p / p - log n := by
-  nlinarith [log_factorial_gt_mul_log_sub_self hn, log_factorial_lt_mul_primeLogSum_add_self hn]
+  have hn0 : n ≠ 0 := by omega
+  have hfactorial_lower : n * log n - n < log (n.factorial) := by
+    have hstirling := Stirling.le_log_factorial_stirling hn0
+    have hlogn : 0 ≤ log (n : ℝ) := log_natCast_nonneg n
+    have hlogpi : 0 < log (2 * π) := log_pos (by nlinarith [Real.pi_gt_three])
+    nlinarith
+  nlinarith [hfactorial_lower, log_factorial_lt_mul_primeLogSum_add_self hn]
 
 /-- **Mertens' first theorem**: for every natural number `n ≥ 2`, the sum of `log p / p` over
 primes `p ≤ n` differs from `log n` by at most `2`. -/
