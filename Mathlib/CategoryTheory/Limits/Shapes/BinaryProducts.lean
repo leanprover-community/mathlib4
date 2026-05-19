@@ -361,12 +361,51 @@ def BinaryCofan.isColimitMk {W : C} {inl : X ⟶ W} {inr : Y ⟶ W}
 /-- If `s` is a limit binary fan over `X` and `Y`, then every pair of morphisms `f : W ⟶ X` and
 `g : W ⟶ Y` induces a morphism `l : W ⟶ s.pt` satisfying `l ≫ s.fst = f` and `l ≫ s.snd = g`.
 -/
+def BinaryFan.IsLimit.lift {W : C} {s : BinaryFan X Y} (h : IsLimit s) (f : W ⟶ X) (g : W ⟶ Y) :
+    W ⟶ s.pt :=
+  h.lift (BinaryFan.mk f g)
+
+@[reassoc (attr := simp)]
+lemma BinaryFan.IsLimit.lift_fst {W : C} {s : BinaryFan X Y} (h : IsLimit s)
+    (f : W ⟶ X) (g : W ⟶ Y) :
+    lift h f g ≫ s.fst = f :=
+  h.fac (BinaryFan.mk f g) _
+
+@[reassoc (attr := simp)]
+lemma BinaryFan.IsLimit.lift_snd {W : C} {s : BinaryFan X Y} (h : IsLimit s)
+    (f : W ⟶ X) (g : W ⟶ Y) :
+    lift h f g ≫ s.snd = g :=
+  h.fac (BinaryFan.mk f g) _
+
+/-- If `s` is a limit binary fan over `X` and `Y`, then every pair of morphisms `f : W ⟶ X` and
+`g : W ⟶ Y` induces a morphism `l : W ⟶ s.pt` satisfying `l ≫ s.fst = f` and `l ≫ s.snd = g`.
+-/
 @[simps]
 def BinaryFan.IsLimit.lift' {W X Y : C} {s : BinaryFan X Y} (h : IsLimit s) (f : W ⟶ X)
     (g : W ⟶ Y) : { l : W ⟶ s.pt // l ≫ s.fst = f ∧ l ≫ s.snd = g } :=
   ⟨h.lift <| BinaryFan.mk f g, h.fac _ _, h.fac _ _⟩
 
-/-- If `s` is a colimit binary cofan over `X` and `Y`,, then every pair of morphisms `f : X ⟶ W` and
+/-- If `s` is a colimit binary cofan over `X` and `Y`, then every pair of morphisms `f : X ⟶ W` and
+`g : Y ⟶ W` induces a morphism `l : s.pt ⟶ W` satisfying `s.inl ≫ l = f` and `s.inr ≫ l = g`.
+-/
+def BinaryCofan.IsColimit.desc {W : C} {s : BinaryCofan X Y} (h : IsColimit s)
+    (f : X ⟶ W) (g : Y ⟶ W) :
+    s.pt ⟶ W :=
+  h.desc (BinaryCofan.mk f g)
+
+@[reassoc (attr := simp)]
+lemma BinaryCofan.IsColimit.desc_fst {W : C} {s : BinaryCofan X Y} (h : IsColimit s)
+    (f : X ⟶ W) (g : Y ⟶ W) :
+    s.inl ≫ desc h f g = f :=
+  h.fac (BinaryCofan.mk f g) _
+
+@[reassoc (attr := simp)]
+lemma BinaryCofan.IsColimit.desc_snd {W : C} {s : BinaryCofan X Y} (h : IsColimit s)
+    (f : X ⟶ W) (g : Y ⟶ W) :
+    s.inr ≫ desc h f g = g :=
+  h.fac (BinaryCofan.mk f g) _
+
+/-- If `s` is a colimit binary cofan over `X` and `Y`, then every pair of morphisms `f : X ⟶ W` and
 `g : Y ⟶ W` induces a morphism `l : s.pt ⟶ W` satisfying `s.inl ≫ l = f` and `s.inr ≫ l = g`.
 -/
 @[simps]
@@ -1070,6 +1109,24 @@ def coprod.functorLeftComp (X Y : C) :
   NatIso.ofComponents (coprod.associator _ _)
 
 end CoprodFunctor
+
+section
+
+variable {C} {D : Type*} [Category* D] {F : C ⥤ D}
+
+/-- `F.mapCone s` being limiting is the same as the induced binary fan being limiting. -/
+def BinaryFan.isLimitMapConeEquiv {X Y : C} {s : BinaryFan X Y} :
+    IsLimit (F.mapCone s) ≃ IsLimit (BinaryFan.mk (F.map s.fst) (F.map s.snd)) :=
+  IsLimit.equivOfNatIsoOfIso (diagramIsoPair _) _ _ <| BinaryFan.ext (Iso.refl _)
+    (by simp [BinaryFan.fst]) (by simp [BinaryFan.snd])
+
+/-- `F.mapCocone s` being colimiting is the same as the induced binary cofan being colimiting. -/
+def BinaryCofan.isColimitMapConeEquiv {X Y : C} {s : BinaryCofan X Y} :
+    IsColimit (F.mapCocone s) ≃ IsColimit (BinaryCofan.mk (F.map s.inl) (F.map s.inr)) :=
+  IsColimit.equivOfNatIsoOfIso (diagramIsoPair _) _ _ <| BinaryCofan.ext (Iso.refl _)
+    (by simp [BinaryCofan.inl]) (by simp [BinaryCofan.inr])
+
+end
 
 noncomputable section ProdComparison
 
