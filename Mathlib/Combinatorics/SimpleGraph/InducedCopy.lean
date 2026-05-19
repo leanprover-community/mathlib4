@@ -67,8 +67,42 @@ characterisations needed downstream.
 
 namespace Embedding
 
+/-- `Embedding.toCopy` commutes with composition. -/
+@[simp] lemma toCopy_comp (g : Embedding H I) (f : Embedding G H) :
+    (g.comp f).toCopy = g.toCopy.comp f.toCopy := by
+  ext v; simp
+
 /-- The induced subgraph corresponding to an embedding. -/
 abbrev toSubgraph (f : Embedding G H) : H.Subgraph := f.toCopy.toSubgraph
+
+/-- `Embedding.toSubgraph` commutes with composition. Mirrors `Copy.toSubgraph_comp`. -/
+@[simp] lemma toSubgraph_comp (g : Embedding H I) (f : Embedding G H) :
+    (g.comp f).toSubgraph = f.toSubgraph.map g.toHom := by
+  simp [toSubgraph]
+
+@[simp] lemma verts_toSubgraph (f : Embedding G H) : f.toSubgraph.verts = Set.range f :=
+  f.toCopy.verts_toSubgraph
+
+lemma apply_mem_verts_toSubgraph (f : Embedding G H) (v : V) : f v ∈ f.toSubgraph.verts :=
+  f.toCopy.apply_mem_verts_toSubgraph v
+
+@[simp] lemma toSubgraph_adj_iff (f : Embedding G H) {a b : V} :
+    f.toSubgraph.Adj (f a) (f b) ↔ G.Adj a b :=
+  f.toCopy.toSubgraph_adj_iff
+
+lemma mem_range_of_toSubgraph_eq {f f' : Embedding G H} (h : f.toSubgraph = f'.toSubgraph)
+    (v : V) : f v ∈ Set.range (f' : V → W) :=
+  Copy.mem_range_of_toSubgraph_eq h v
+
+/-- The vertex bijection `V ≃ V` between two embeddings sharing an image subgraph. Mirrors
+`Copy.equivOfToSubgraphEq` via `Embedding.toCopy`. -/
+noncomputable def equivOfToSubgraphEq {f f' : Embedding G H}
+    (h : f.toSubgraph = f'.toSubgraph) : V ≃ V :=
+  Copy.equivOfToSubgraphEq h
+
+@[simp] lemma equivOfToSubgraphEq_apply {f f' : Embedding G H}
+    (h : f.toSubgraph = f'.toSubgraph) (v : V) : f' (equivOfToSubgraphEq h v) = f v :=
+  Copy.equivOfToSubgraphEq_apply h v
 
 @[simp] lemma toSubgraph_isInduced (f : Embedding G H) : (toSubgraph f).IsInduced := by
   simp [toSubgraph, Copy.toSubgraph, Subgraph.IsInduced, Relation.map_apply_apply, f.injective]
@@ -88,6 +122,22 @@ abbrev toSubgraph (f : Embedding G H) : H.Subgraph := f.toCopy.toSubgraph
     simp [toSubgraph, Copy.toSubgraph, h, Subgraph.map_comp]
 
 end Embedding
+
+/-! ### Promoting a copy with induced image to an embedding -/
+
+/-- A copy whose image subgraph is induced canonically promotes to an embedding,
+providing the converse direction to `Embedding.toSubgraph` / `Embedding.toSubgraph_isInduced`. -/
+@[expose] def Copy.toEmbeddingOfIsInduced (f : Copy G H) (hInd : f.toSubgraph.IsInduced) :
+    Embedding G H where
+  toFun := f
+  inj' := f.injective
+  map_rel_iff' {a b} :=
+    ⟨fun hAdj ↦ f.toSubgraph_adj_iff.mp <|
+      hInd (f.apply_mem_verts_toSubgraph a) (f.apply_mem_verts_toSubgraph b) hAdj,
+     fun hAdj ↦ f.toHom.map_adj hAdj⟩
+
+@[simp] lemma Copy.toEmbeddingOfIsInduced_apply (f : Copy G H) (hInd : f.toSubgraph.IsInduced)
+    (v : V) : f.toEmbeddingOfIsInduced hInd v = f v := rfl
 
 /-!
 ### Induced containment

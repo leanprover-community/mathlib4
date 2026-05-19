@@ -101,6 +101,9 @@ instance : FunLike (Copy G H) V W where
 
 lemma injective (f : Copy G H) : Injective f.toHom := f.injective'
 
+@[simp] lemma apply_eq_iff_eq (f : Copy G H) {a b : V} : f a = f b ↔ a = b :=
+  f.injective.eq_iff
+
 @[ext] lemma ext {f g : Copy G H} : (∀ a, f a = g a) → f = g := DFunLike.ext _ _
 
 @[simp] lemma coe_toHom (f : Copy G H) : ⇑f.toHom = f := rfl
@@ -140,6 +143,10 @@ def comp (g : Copy H I) (f : Copy G H) : Copy G I := by
 @[simp]
 theorem comp_apply (g : Copy H I) (f : Copy G H) (a : V) : g.comp f a = g (f a) :=
   RelHom.comp_apply g.toHom f.toHom a
+
+@[simp] lemma toHom_comp (g : Copy H I) (f : Copy G H) :
+    (g.comp f).toHom = g.toHom.comp f.toHom := by
+  ext v; exact comp_apply _ _ v
 
 /-- The copy from a subgraph to the supergraph. -/
 @[expose] def ofLE (G₁ G₂ : SimpleGraph V) (h : G₁ ≤ G₂) : Copy G₁ G₂ :=
@@ -192,6 +199,50 @@ lemma toSubgraph_surjOn :
     Set.SurjOn (toSubgraph (G := G)) .univ {H' : H.Subgraph | Nonempty (G ≃g H'.coe)} :=
   fun H' hH' ↦ by simpa
 
+@[simp] lemma verts_toSubgraph (f : Copy G H) : f.toSubgraph.verts = Set.range f := by
+  simp [toSubgraph, Subgraph.map_verts, Set.image_univ]
+
+lemma apply_mem_verts_toSubgraph (f : Copy G H) (v : V) : f v ∈ f.toSubgraph.verts :=
+  f.verts_toSubgraph ▸ Set.mem_range_self v
+
+@[simp] lemma toSubgraph_adj_iff (f : Copy G H) {a b : V} :
+    f.toSubgraph.Adj (f a) (f b) ↔ G.Adj a b := by
+  simp only [toSubgraph, Subgraph.map_adj, Subgraph.top_adj, Relation.map_apply]
+  refine ⟨?_, fun hab ↦ ⟨a, b, hab, rfl, rfl⟩⟩
+  rintro ⟨c, d, hcd, hc, hd⟩
+  rwa [f.injective hc, f.injective hd] at hcd
+
+/-- Functoriality of `Copy.toSubgraph`: composing two copies and taking the image subgraph is the
+same as taking the image subgraph of the inner copy and mapping it through the outer. -/
+@[simp] lemma toSubgraph_comp (g : Copy H I) (f : Copy G H) :
+    (g.comp f).toSubgraph = f.toSubgraph.map g.toHom := by
+  simp [toSubgraph, Subgraph.map_comp]
+
+lemma mem_range_of_toSubgraph_eq {f f' : Copy G H} (h : f.toSubgraph = f'.toSubgraph) (v : V) :
+    f v ∈ Set.range (f' : V → W) := by
+  rw [← f'.verts_toSubgraph, ← congrArg Subgraph.verts h, f.verts_toSubgraph]
+  exact ⟨v, rfl⟩
+
+/-- For two copies of `G` in `H` sharing an image subgraph, the unique vertex bijection
+`σ : V ≃ V` such that the inner copy `f` factors as `f' ∘ σ`. Built from
+`mem_range_of_toSubgraph_eq` via classical choice; bijectivity follows from injectivity of
+both copies. The graph-isomorphism upgrade — proving `σ` preserves adjacency — is
+`Copy.fiberAut` in `Mathlib/Combinatorics/SimpleGraph/Automorphism.lean`. -/
+noncomputable def equivOfToSubgraphEq {f f' : Copy G H} (h : f.toSubgraph = f'.toSubgraph) :
+    V ≃ V :=
+  let σ : V → V := fun v ↦ (mem_range_of_toSubgraph_eq h v).choose
+  have σ_spec : ∀ v, f' (σ v) = f v := fun v ↦ (mem_range_of_toSubgraph_eq h v).choose_spec
+  have σ_inj : Injective σ := fun v₁ v₂ hσ ↦
+    f.injective <| by simp [← σ_spec, hσ]
+  have σ_surj : Surjective σ := fun v' ↦
+    have ⟨v, hv⟩ := mem_range_of_toSubgraph_eq h.symm v'
+    ⟨v, f'.injective <| by simp [σ_spec, hv]⟩
+  .ofBijective σ ⟨σ_inj, σ_surj⟩
+
+@[simp] lemma equivOfToSubgraphEq_apply {f f' : Copy G H} (h : f.toSubgraph = f'.toSubgraph)
+    (v : V) : f' (equivOfToSubgraphEq h v) = f v :=
+  (mem_range_of_toSubgraph_eq h v).choose_spec
+
 instance [Subsingleton (V → W)] : Subsingleton (G.Copy H) := DFunLike.coe_injective.subsingleton
 
 instance [Fintype {f : G →g H // Injective f}] : Fintype (G.Copy H) :=
@@ -212,6 +263,10 @@ instance [Finite V] [Finite W] : Finite (G.Copy H) :=
     f.topEmbedding v = f v := rfl
 
 end Copy
+
+@[simp] lemma Iso.toCopy_toSubgraph (e : G ≃g H) :
+    e.toCopy.toSubgraph = (⊤ : H.Subgraph) :=
+  Subgraph.map_iso_top e
 
 /-- A `G.Subgraph` gives rise to a copy from its coercion to `G`. -/
 def Subgraph.coeCopy (G' : G.Subgraph) : Copy G'.coe G := G'.hom.toCopy hom_injective
