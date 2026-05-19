@@ -5,11 +5,11 @@ Authors: William Coram
 -/
 module
 
+public import Mathlib.Algebra.Order.Antidiag.Tendsto
+public import Mathlib.Algebra.Order.GroupWithZero.Finset
+public import Mathlib.Analysis.Normed.Field.Basic
 public import Mathlib.Analysis.Normed.Group.Ultra
-public import Mathlib.Analysis.Normed.Order.Lattice
-public import Mathlib.Analysis.RCLike.Basic
 public import Mathlib.RingTheory.MvPowerSeries.Basic
-public import Mathlib.Algebra.Order.Antidiag.Prod
 
 /-!
 # Multivariate restricted power series
@@ -68,20 +68,6 @@ lemma isRestricted.neg (c : σ → ℝ) {f : MvPowerSeries σ R} (hf : IsRestric
 
 open IsUltrametricDist
 
-/- TODO: Find a home for this lemma. -/
-lemma tendsto_sup'_antidiagonal_cofinite
-    {M R : Type*} [AddMonoid M] [Finset.HasAntidiagonal M] {f : M × M → R}
-    [LinearOrder R] {F : Filter R} (hf : Tendsto f cofinite F) :
-    Tendsto (fun a ↦ (Finset.antidiagonal a).sup' (Finset.nonempty_antidiagonal _) f)
-      cofinite F := by
-  intro U hU
-  refine ((((hf hU).image Prod.fst)).add ((hf hU).image Prod.snd)).subset ?_
-  simp only [Set.subset_def, Set.mem_compl_iff, Set.mem_preimage]
-  intro x hx
-  obtain ⟨i, hi, e⟩ := Finset.exists_mem_eq_sup' (Finset.nonempty_antidiagonal x) f
-  obtain rfl : i.1 + i.2 = x := by simpa using hi
-  exact Set.add_mem_add (by simpa using ⟨i.2, e ▸ hx⟩) (by simpa using ⟨i.1, e ▸ hx⟩)
-
 lemma tendsto_antidiagonal {M S : Type*} [AddMonoid M] [Finset.HasAntidiagonal M] [NormedRing S]
     [IsUltrametricDist S] {C : M → ℝ} (hC : ∀ a b, C (a + b) = C a * C b) {f g : M → S}
     (hf : Tendsto (fun i ↦ ‖f i‖ * C i) cofinite (𝓝 0))
@@ -105,8 +91,8 @@ lemma isRestricted.mul [IsUltrametricDist R] (c : σ → ℝ) {f g : MvPowerSeri
   rw [← isRestricted_abs_iff, IsRestricted] at *
   exact tendsto_antidiagonal (by simp [Finsupp.prod_add_index', pow_add]) hf hg
 
-/-- Additive subgroup structure on `MvPowerSeries σ R`. -/
-def isAddSubgroup (c : σ → ℝ) : AddSubgroup (MvPowerSeries σ R) where
+/-- Restricted power series as an additive subgroup of `MvPowerSeries σ R`. -/
+protected def IsRestricted.addSubgroup (c : σ → ℝ) : AddSubgroup (MvPowerSeries σ R) where
   carrier := IsRestricted c
   zero_mem' := isRestricted_zero c
   add_mem' := isRestricted.add c
@@ -114,19 +100,19 @@ def isAddSubgroup (c : σ → ℝ) : AddSubgroup (MvPowerSeries σ R) where
 
 variable [IsUltrametricDist R]
 
-/-- Ring structure on `MvPowerSeries σ R`. -/
-def isSubring (c : σ → ℝ) :  Subring (MvPowerSeries σ R) where
-  __ := isAddSubgroup c
+/-- Restricted power series as a subring of `MvPowerSeries σ R`. -/
+protected def IsRestricted.subring (c : σ → ℝ) :  Subring (MvPowerSeries σ R) where
+  __ := IsRestricted.addSubgroup c
   one_mem' := isRestricted_one c
   mul_mem' := isRestricted.mul c
 
 variable (R) in
 /-- The type of restricted `MvPowerSeries σ R`. -/
-def Restricted (c : σ → ℝ) : Type _ := isSubring (R := R) c
+def Restricted (c : σ → ℝ) : Type _ := IsRestricted.subring (R := R) c
 
 /-- Ring structure on `Restricted R c`. -/
 noncomputable
 instance (c : σ → ℝ) : Ring (Restricted R c) :=
-  Subring.toRing (isSubring c)
+  Subring.toRing (IsRestricted.subring c)
 
 end MvPowerSeries
