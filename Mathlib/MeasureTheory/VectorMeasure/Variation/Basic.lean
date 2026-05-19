@@ -6,6 +6,8 @@ Authors: Oliver Butterley, Yoh Tanimoto
 module
 
 public import Mathlib.MeasureTheory.VectorMeasure.Variation.Defs
+public import Mathlib.Analysis.Normed.Ring.Basic
+public import Mathlib.Analysis.Normed.MulAction
 
 /-!
 # Properties of variation
@@ -90,11 +92,73 @@ lemma variation_zero : (0 : VectorMeasure X V).variation = 0 := by
 lemma variation_neg {V : Type*} [NormedAddCommGroup V] (μ : MeasureTheory.VectorMeasure X V) :
     (-μ).variation = μ.variation := by simp [variation]
 
+@[simp]
+lemma variation_smul {V : Type*} [NormedAddCommGroup V]
+    {R : Type*} [SeminormedRing R] [DistribMulAction R V] [ContinuousConstSMul R V]
+    [NormSMulClass R V]
+    (μ : MeasureTheory.VectorMeasure X V) (r : R) :
+    (r • μ).variation = ENNReal.ofReal (‖r‖) • μ.variation := by
+  simp only [variation, coe_smul, Pi.smul_apply]
+  ext E hE
+  simp [preVariation, ennrealToMeasure_apply hE, ennrealPreVariation_apply, preVariationFun,
+    ENNReal.mul_iSup, Finset.mul_sum, enorm_smul]
+
 lemma absolutelyContinuous (μ : VectorMeasure X V) : μ ≪ᵥ μ.ennrealVariation := by
   intro s hs
   by_cases hsm : MeasurableSet s
   · suffices ‖μ s‖ₑ ≤ 0 by simp_all
     grw [enorm_measure_le_variation, ← ennrealVariation_apply _ hsm, hs]
   · exact μ.not_measurable' hsm
+
+lemma variation_le_of_forall_enorm_le (μ : VectorMeasure X V) (ν : Measure X)
+    (h : ∀ E, MeasurableSet E → ‖μ E‖ₑ ≤ ν E) :
+    μ.variation ≤ ν := by
+  apply Measure.le_intro
+  intro s hs _
+  simp only [variation_apply, preVariation, ennrealToMeasure_apply hs, ennrealPreVariation_apply,
+    preVariationFun, hs, dite_true, iSup_le_iff]
+  intro i
+  calc
+    ∑ x ∈ i.parts, ‖μ x‖ₑ ≤ ∑ x ∈ i.parts, ν x := by
+      exact Finset.sum_le_sum (by intro s hs; exact h s s.property)
+    _ = ν (i.parts.sup Subtype.val) := by
+      rw [sup_set_eq_biUnion]
+      symm
+      apply MeasureTheory.measure_biUnion_finset
+      · have := i.supIndep
+        rw [Finset.supIndep_iff_pairwiseDisjoint] at this
+        intro a ha b hb hab
+        have h := i.disjoint ha hb hab
+        simp only [Function.onFun, id] at h ⊢
+        simp only [Set.disjoint_iff_inter_eq_empty]
+        exact congr_arg Subtype.val (le_bot_iff.mp (disjoint_iff_inf_le.mp h))
+      · intro b hb; exact b.property
+    _ ≤ ν s := by
+      apply measure_mono
+      rw [sup_set_eq_biUnion]
+      exact Set.iUnion₂_subset (by intro _ hp; exact Subtype.coe_le_coe.mpr (i.le hp))
+
+lemma variation_eq_of_forall_enorm_eq (μ ν : VectorMeasure X V)
+    (h : ∀ E, MeasurableSet E → ‖μ E‖ₑ = ‖ν E‖ₑ) :
+    μ.variation = ν.variation := by
+    apply le_antisymm
+    · apply variation_le_of_forall_enorm_le
+      intro E hE
+      rw [h E hE]
+      exact enorm_measure_le_variation ν E
+    · apply variation_le_of_forall_enorm_le
+      intro E hE
+      rw [← h E hE]
+      exact enorm_measure_le_variation μ E
+
+lemma variation_add_le [ContinuousAdd V] (μ ν : VectorMeasure X V) :
+    variation (μ + ν) ≤ variation μ + variation ν := by
+  apply variation_le_of_forall_enorm_le
+  intro E _
+  simp only [coe_add, Pi.add_apply, Measure.coe_add]
+  calc
+    ‖μ E + ν E‖ₑ ≤ ‖μ E‖ₑ + ‖ν E‖ₑ := (enorm_add_le _ _)
+    _ ≤ μ.variation E + ν.variation E := by
+      apply add_le_add <;> exact enorm_measure_le_variation _ E
 
 end MeasureTheory.VectorMeasure

@@ -643,6 +643,10 @@ def mapRangeₗ (f : M →ₗ[R] N) (hf : Continuous f) : VectorMeasure α M →
     ext
     simp
 
+@[simp]
+lemma mapRangeₗ_apply {f : M →ₗ[R] N} (hf : Continuous f) {s : Set α} :
+    v.mapRangeₗ f hf s = f (v s) := rfl
+
 end Module
 
 end
