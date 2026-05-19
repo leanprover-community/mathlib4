@@ -144,10 +144,6 @@ theorem Set.coe_eq_subtype (s : Set α) : ↥s = { x // x ∈ s } :=
 theorem Set.coe_setOf (p : α → Prop) : ↥{ x | p x } = { x // p x } :=
   rfl
 
-@[simp]
-theorem SetCoe.mk_eq_mk {s : Set α} {a : α} {h : a ∈ s} {a' : α} {h' : a' ∈ s} :
-    @Eq s ⟨a, h⟩ ⟨a', h'⟩ ↔ a = a' := Subtype.mk_eq_mk
-
 theorem SetCoe.forall {s : Set α} {p : s → Prop} : (∀ x : s, p x) ↔ ∀ (x) (h : x ∈ s), p ⟨x, h⟩ :=
   Subtype.forall
 
