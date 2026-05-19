@@ -13,5 +13,3 @@ public import Mathlib.Data.Finite.Option
 theorem Subtype.finite_ne_iff {α : Type*} (a₀ : α) : Finite {a // a ≠ a₀} ↔ Finite α := by
   classical
   rw [← (Equiv.optionSubtypeNe a₀).finite_iff, Option.finite_iff]
-
-#min_imports
