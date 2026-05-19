@@ -88,12 +88,28 @@ theorem lineDeriv_sub_apply_le (h : LipschitzSmoothWith K f) (x y : F) :
   Pi.sub_apply (lineDeriv ℝ f _) _ _ ▸ h.lineDeriv_apply_sub_le x y
 
 /-- `K`-smoothness implies line-differentiability: the actual line derivative
-exists at every `x, v` and equals `lineDeriv ℝ f x v`. Proof: the predicate
-bound `|f(x + tv) - f x - t · L| ≤ K/2 · t² ‖v‖²` (via `lineDeriv_smul` to
-factor `t`) is `o(t)`. -/
+exists at every `x, v` and equals `lineDeriv ℝ f x v`. The predicate bound
+`|f(x + tv) - f x - t · L| ≤ K/2 · t² ‖v‖²` (via `lineDeriv_smul` to factor `t`)
+is `o(t)`. -/
 theorem hasLineDerivAt (h : LipschitzSmoothWith K f) (x v : F) :
-    HasLineDerivAt ℝ f (lineDeriv ℝ f x v) x v :=
-  sorry
+    HasLineDerivAt ℝ f (lineDeriv ℝ f x v) x v := by
+  set L := lineDeriv ℝ f x v
+  change HasDerivAt (fun t : ℝ => f (x + t • v)) L 0
+  rw [hasDerivAt_iff_isLittleO_nhds_zero, Asymptotics.isLittleO_iff]
+  intro ε hε
+  have hsum_pos : (0:ℝ) < ↑K * ‖v‖^2 / 2 + 1 := by positivity
+  filter_upwards [Metric.ball_mem_nhds (0 : ℝ) (div_pos hε hsum_pos)] with t ht
+  simp only [Metric.mem_ball, Real.dist_eq, sub_zero] at ht
+  simp only [zero_add, zero_smul, add_zero, smul_eq_mul, Real.norm_eq_abs]
+  have hpred := h x (x + t • v)
+  rw [show (x + t • v) - x = t • v from by abel, lineDeriv_smul, smul_eq_mul,
+      dist_self_add_right, norm_smul, Real.norm_eq_abs, mul_pow, sq_abs] at hpred
+  refine hpred.trans ?_
+  have ht' : |t| * (↑K * ‖v‖^2 / 2 + 1) < ε := (lt_div_iff₀ hsum_pos).mp ht
+  have ht'' : ↑K * ‖v‖^2 / 2 * |t| ≤ ε := by nlinarith [abs_nonneg t]
+  calc ↑K / 2 * (t ^ 2 * ‖v‖ ^ 2)
+      = ↑K * ‖v‖^2 / 2 * |t| * |t| := by rw [← sq_abs t]; ring
+    _ ≤ ε * |t| := mul_le_mul_of_nonneg_right ht'' (abs_nonneg t)
 
 /-- A `K`-smooth function is line-differentiable everywhere. -/
 theorem lineDifferentiableAt (h : LipschitzSmoothWith K f) (x v : F) :
