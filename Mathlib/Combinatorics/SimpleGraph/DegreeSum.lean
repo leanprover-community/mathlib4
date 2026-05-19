@@ -171,8 +171,7 @@ theorem exists_ne_odd_degree_of_exists_odd_degree [Fintype V] [DecidableRel G.Ad
 
 /-- The number of vertices of odd degree is not equal to one. -/
 theorem card_odd_degree_vertices_ne_one [Fintype V] [DecidableRel G.Adj] :
-    #{v | Odd (G.degree v)} ≠ 1 := by
-  intro h
-  exact Nat.not_even_one (h ▸ G.even_card_odd_degree_vertices)
+    #{v | Odd (G.degree v)} ≠ 1 :=
+  (Nat.not_even_one <| · ▸ G.even_card_odd_degree_vertices)
 
 end SimpleGraph
