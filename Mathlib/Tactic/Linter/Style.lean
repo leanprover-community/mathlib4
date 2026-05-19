@@ -482,7 +482,11 @@ initialize addLinter longLineLinter
 end Style.longLine
 
 /-- The `nameCheck` linter emits a warning on declarations whose name is non-standard style.
-(Currently, this only includes declarations whose name includes a double underscore.)
+Currently, this checks:
+- Declarations whose name includes a double underscore.
+- (When `linter.style.nameCheck.capitalization` is enabled) declarations whose case does not match
+  the mathlib naming conventions: `theorem`/`lemma` should be `snake_case`,
+  `structure`/`class`/`inductive` should be `UpperCamelCase`.
 
 **Why is this bad?** Double underscores in theorem names can be considered non-standard style and
 probably have been introduced by accident.
@@ -492,6 +496,31 @@ conventions.
 public register_option linter.style.nameCheck : Bool := {
   defValue := true
   descr := "enable the `nameCheck` linter"
+}
+
+/--
+The `nameCheck.capitalization` linter checks that declaration names follow the mathlib
+capitalization conventions described at
+<https://leanprover-community.github.io/contribute/naming.html#capitalization>:
+
+- `theorem` and `lemma` names should be `snake_case`: the last name component, and each
+  underscore-separated chunk thereof, should not start with an uppercase letter.
+- `structure`, `class`, `inductive` and `class inductive` names should be `UpperCamelCase`:
+  the last name component should start with an uppercase letter and contain no underscores.
+
+`def`, `abbrev`, `instance` and `opaque` are not checked because the appropriate convention
+depends on whether the elaborated declaration is a `Prop`, a `Type`, or another term — which
+cannot be determined from syntax alone.
+
+**Why is this bad?** Consistent capitalization makes names easier to read and search for.
+
+**How to fix this?** Rename the declaration to follow the convention above. Rare exceptions
+exist (e.g. `Ne`, `outParam`, interval notation like `Set.Icc`); locally disable the linter
+with `set_option linter.style.nameCheck.capitalization false in` for those.
+-/
+public register_option linter.style.nameCheck.capitalization : Bool := {
+  defValue := false
+  descr := "enable capitalization checks (snake_case vs UpperCamelCase) in the `nameCheck` linter"
 }
 
 namespace Style.nameCheck
@@ -517,6 +546,136 @@ def doubleUnderscore : Linter where run := withSetOptionIn fun stx => do
               conventions. Consider using single underscores instead."
 
 initialize addLinter doubleUnderscore
+
+/-- The capitalization convention expected for a declaration's last name component. -/
+private inductive ExpectedCase
+  /-- `snake_case`: each underscore-separated chunk starts with a non-uppercase character. -/
+  | snakeCase
+  /-- `UpperCamelCase`: the component starts with an uppercase letter and has no underscores. -/
+  | upperCamelCase
+  /-- `lowerCamelCase`: the component starts with a lowercase letter and has no underscores. -/
+  | lowerCamelCase
+
+/-- The classification of a declaration for the capitalization linter. For most kinds the expected
+case is fixed by the keyword; for `def`/`abbrev`/`opaque`/`instance` it depends on the
+elaborated return type. -/
+private inductive DeclClass
+  /-- The expected case is fixed by the keyword. -/
+  | byKeyword (case : ExpectedCase) (kindStr : String)
+  /-- The expected case depends on the elaborated return type. -/
+  | byType (kindStr : String)
+
+/-- Given a top-level declaration `Syntax`, classify it for the capitalization linter, or return
+`none` if this linter does not check the kind. -/
+private def classifyDecl (stx : Syntax) : Option DeclClass :=
+  -- `lemma` is registered as a separate top-level command (later expanded to `theorem`).
+  if stx.getKind == `Mathlib.Tactic.lemma || stx.getKind == `lemma then
+    some (.byKeyword .snakeCase "lemma")
+  else if stx.isOfKind ``Lean.Parser.Command.declaration then
+    let inner := stx[1]
+    if inner.isOfKind ``Lean.Parser.Command.theorem then
+      some (.byKeyword .snakeCase "theorem")
+    else if inner.isOfKind ``Lean.Parser.Command.structure then
+      -- `structure` and `class` share this kind; both require `UpperCamelCase`.
+      some (.byKeyword .upperCamelCase "structure or class")
+    else if inner.isOfKind ``Lean.Parser.Command.inductive then
+      some (.byKeyword .upperCamelCase "inductive type")
+    else if inner.isOfKind ``Lean.Parser.Command.classInductive then
+      some (.byKeyword .upperCamelCase "class inductive")
+    else if inner.isOfKind ``Lean.Parser.Command.definition then
+      some (.byType "def")
+    else if inner.isOfKind ``Lean.Parser.Command.abbrev then
+      some (.byType "abbrev")
+    else if inner.isOfKind ``Lean.Parser.Command.opaque then
+      some (.byType "opaque")
+    else if inner.isOfKind ``Lean.Parser.Command.instance then
+      some (.byType "instance")
+    else
+      none
+  else
+    none
+
+/-- A `String` is considered to start with an uppercase letter for the purposes of these checks. -/
+private def startsUpper (s : String) : Bool :=
+  !s.isEmpty && s.front.isUpper
+
+/-- A `String` contains only "ordinary" identifier characters: ASCII letters, digits and `_`.
+Names with other characters are likely intentional (e.g. notation, `«…»`-quoted names) and are
+skipped to avoid false positives. -/
+private def isOrdinaryIdent (s : String) : Bool :=
+  s.all fun c => c.isAlphanum || c == '_'
+
+/-- Given the type of a `def`/`abbrev`/`opaque`/`instance`, determine the expected case based on
+the ultimate return type (stripping all `Π` binders).
+
+- If the return type is itself a sort (`Prop`, `Type _`), the declaration introduces a `Prop`
+  or `Type`, so the name should be `UpperCamelCase` (rule 2).
+- Otherwise, if the return type *has* type `Prop`, the declaration produces a proof, so the
+  name should be `snake_case` (rule 1).
+- Otherwise, the declaration produces a term of some `Type`, so the name should be
+  `lowerCamelCase` (rule 4). -/
+private def caseFromType (typ : Expr) : MetaM ExpectedCase :=
+  Meta.forallTelescopeReducing typ fun _ ret => do
+    if ret.isSort then
+      return .upperCamelCase
+    else if (← Meta.isProp ret) then
+      return .snakeCase
+    else
+      return .lowerCamelCase
+
+@[inherit_doc linter.style.nameCheck.capitalization]
+def capitalization : Linter where run := withSetOptionIn fun stx => do
+    unless getLinterValue linter.style.nameCheck.capitalization (← getLinterOptions) do
+      return
+    if (← get).messages.hasErrors then
+      return
+    let some declClass := classifyDecl stx | return
+    let some declIdStx := stx.find? (·.isOfKind ``declId) | return
+    let id := declIdStx[0]
+    if id.getPos? == some default then return
+    if id.getKind != `ident then return
+    let parsedName := id.getId
+    if parsedName.hasMacroScopes then return
+    -- Resolve `_root_.foo` to `foo`, and otherwise prepend the current namespace.
+    let fullName : Name :=
+      if let `_root_ :: rest := parsedName.components then
+        rest.foldl (· ++ ·) default
+      else (← getCurrNamespace) ++ parsedName
+    -- Only check the last component of the name (the part after the final namespace `.`).
+    let last := fullName.getString!
+    -- Skip names that include underscored prefixes or non-letter characters; these are usually
+    -- auto-generated (e.g. `_aux_…`) or intentionally quoted with `«…»`.
+    if last.startsWith "_" then return
+    unless isOrdinaryIdent last do return
+    let (expected, kindStr) ← match declClass with
+      | .byKeyword case kind => pure (case, kind)
+      | .byType kind =>
+        let some info := (← getEnv).find? fullName | return
+        let case ← try liftTermElabM <| caseFromType info.type catch _ => return
+        pure (case, kind)
+    match expected with
+    | .snakeCase =>
+      if last.splitOn "_" |>.any startsUpper then
+        Linter.logLint linter.style.nameCheck.capitalization id m!"\
+          The {kindStr} name '{last}' does not follow the mathlib snake_case convention. \
+          Each underscore-separated chunk should start with a lowercase letter.\n\
+          See https://leanprover-community.github.io/contribute/naming.html#capitalization."
+    | .upperCamelCase =>
+      if !startsUpper last || last.contains '_' then
+        Linter.logLint linter.style.nameCheck.capitalization id m!"\
+          The {kindStr} name '{last}' does not follow the mathlib UpperCamelCase convention. \
+          Names of types, structures, classes and inductives should start with an uppercase \
+          letter and contain no underscores.\n\
+          See https://leanprover-community.github.io/contribute/naming.html#capitalization."
+    | .lowerCamelCase =>
+      if startsUpper last || last.contains '_' then
+        Linter.logLint linter.style.nameCheck.capitalization id m!"\
+          The {kindStr} name '{last}' does not follow the mathlib lowerCamelCase convention. \
+          Definitions whose return value is a term of a `Type` should start with a lowercase \
+          letter and contain no underscores.\n\
+          See https://leanprover-community.github.io/contribute/naming.html#capitalization."
+
+initialize addLinter capitalization
 
 end Style.nameCheck
 
