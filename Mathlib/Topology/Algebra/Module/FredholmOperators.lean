@@ -25,6 +25,8 @@ section FindHome
 -- rolling on this. I'd be delighted to be proven wrong by splitting of the zero case
 -- and then starting the induction at 1, though. (Also feel free to work on this if I
 -- don't circle back around to it soon enough!)
+-- Note : The ring theory import suggests this might be best proved by induction for
+-- Krull dimension for lengths and then this will be a special case...
 open Function Module in
 lemma Module.sum_neg_one_pow_finrank_eq_zero_of_exact {n : ℕ} {k : Type*}
     (V : Fin (n + 3) → Type*) [Field k] [∀ i, AddCommGroup (V i)] [∀ i, Module k (V i)]
@@ -37,19 +39,52 @@ lemma Module.sum_neg_one_pow_finrank_eq_zero_of_exact {n : ℕ} {k : Type*}
     rw [this]
     simp only [Int.reduceNeg, Fin.isValue, Fin.coe_ofNat_eq_mod, Nat.zero_mod, pow_zero, one_mul,
       Nat.one_mod, pow_one, neg_mul, Nat.mod_succ, even_two, Even.neg_pow, one_pow]
-    have B := Module.length_eq_add_of_exact (f 0) (f 1) inj surj (h_exact 1)
-    rw [Module.length_eq_finrank, Module.length_eq_finrank , Module.length_eq_finrank] at B
-    simp only [Nat.reduceAdd, Fin.isValue, Fin.succ_zero_eq_one, Fin.castSucc_zero,
-      Fin.succ_one_eq_two] at B
-    norm_cast at B
-    zify at B
+    have := Module.length_eq_add_of_exact (f 0) (f 1) inj surj (h_exact 1)
+    rw [Module.length_eq_finrank, Module.length_eq_finrank , Module.length_eq_finrank] at this
+    norm_cast at this
+    zify at this
     rw [add_comm, ← add_assoc, add_comm, add_eq_zero_iff_eq_neg', neg_neg, add_comm]
-    exact Int.neg_inj.mp (congrArg Neg.neg (id (Eq.symm B)))
-  · sorry
+    exact Int.neg_inj.mp (congrArg Neg.neg (id (Eq.symm this)))
+  · rw [Fin.sum_univ_castSucc]
+    simp only [Int.reduceNeg, Fin.val_castSucc, Int.zsmul_eq_mul, Fin.val_last]
+    expose_names
+    let V' := V ∘ Fin.castSucc
+    have inst_1'' (i : Fin (n + 3)) := inst_1 i.castSucc
+    have inst_2'' (i : Fin (n + 3)) := inst_2 i.castSucc
+    have inst_3'' (i : Fin (n + 3)) := inst_3 i.castSucc
+    have inst_1' : (i : Fin (n + 3)) → AddCommGroup ((V ∘ Fin.castSucc) i) := by
+       intro i
+       conv =>
+        rhs
+        rw [comp_apply]
+       exact inst_1'' i
+    have inst_2' : (i : Fin (n + 3)) → Module k ((V ∘ Fin.castSucc) i) := by
+       intro i
+       simp_all only [Fin.castSucc_zero, Fin.succ_zero_eq_one, Fin.castSucc_succ, Fin.succ_last, Nat.succ_eq_add_one,
+         Int.reduceNeg, Int.zsmul_eq_mul, implies_true, comp_apply]
+       exact inst_2'' i
+    have := by refine h (V ∘ Fin.castSucc)
 
--- Module.length_eq_finrank
---
 
+
+
+
+
+
+    --have := by refine h V' (sorry) (sorry) (sorry) (sorry)
+    --have (i : Fin (n + 3)) : V' i = V i.castSucc := comp_apply
+    rw [this]
+
+
+    let φ := (Fin.snocEquiv V).symm
+    --let V' (i : Fin (n + 3)) := φ (fun x ↦ V x.castPred)
+    -- Fin.castPred (casts Fin n+1 to Fin n so long as not the last element.)
+    -- How to create a new V?
+    -- Fin.succFunEquiv
+    -- Must just add and subtract range and then the sum will cancel.
+    sorry
+
+#exit
 -- Can we have a simproc write this using `Module.sum_neg_one_pow_finrank_eq_zero_of_exact`
 -- Note the key point that the universes of the `Vᵢ` are allowed be different here.
 open Function Module in
