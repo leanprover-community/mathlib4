@@ -5,6 +5,7 @@ Authors: Jeremy Avigad, Leonardo de Moura
 -/
 module
 
+public import Mathlib.Lean.Meta.Simp
 public import Batteries.Logic
 public import Batteries.Util.LibraryNote
 
@@ -26,6 +27,75 @@ Classical versions are in the namespace `Classical`.
 open Function
 
 section Miscellany
+
+section CommSimproc
+
+open Lean Meta Simp
+
+theorem eq_comm_eq {α : Sort*} (a b : α) : (a = b) = (b = a) := by rw [@eq_comm _ a b]
+theorem iff_comm_eq (a b : Prop) : (a ↔ b) = (b ↔ a) := by rw [@iff_comm a b]
+
+/-- On a goal of the form of `x = y`, also try to simplify `y = x`.
+
+If simplifying `y = x` gives `y' = x'` then this simproc returns `x' = y'` (so that the use of
+commutativity is transparent), otherwise it returns the result of simplifying `y = x` unmodified.
+-/
+simproc_decl eqComm (_ = _) := fun e => do
+  let_expr Eq _ x y := e | return .continue
+  let symmExpr ← mkEq y x
+  let r ← withoutTheorems #[`eqComm,
+    -- These theorems would cause an infinite loop:
+    ``eq_comm, ``Bool.not_eq_eq_eq_not, `inv_eq_iff_eq_inv, `eq_inv_mul_iff_mul_eq,
+    `eq_mul_inv_iff_mul_eq, `neg_eq_iff_eq_neg, `Function.Involutive.eq_iff,
+    `vadd_eq_iff_eq_neg_vadd, `Equiv.apply_eq_iff_eq_symm_apply,
+    -- These theorems aren't commute-resistant (they turn an equality into a non-equality in a
+    -- non-commutative way.)
+    ``beq_iff_eq, ``funext_iff, ``eq_iff_iff, `Prod.swap_eq_iff_eq_swap, ``left_eq_dite_iff,
+    ``right_eq_dite_iff] do
+    withTraceNode `Meta.Tactic.simp (fun _ => return m!"commuting equality: {e}") <| simp symmExpr
+  -- If no actual progress happened (modulo commutativity), return early.
+  match_expr r.expr with
+  | Eq _ y' x' =>
+    if (y' == y && x' == x) || (y' == x && x' == y) then do
+      return .continue none
+  | _ => pure ()
+  let symmR ← Result.mkEqTrans { expr := symmExpr, proof? := ← mkAppM ``eq_comm_eq #[x, y] } r
+  -- If we started with `x = y`, and the result of simplifying `y = x` was `y' = x'`, then we want
+  -- to end up with `x' = y'`.
+  match_expr r.expr with
+  | Eq _ y' x' =>
+    return .visit (← symmR.mkEqTrans
+      { expr := ← mkEq x' y', proof? := ← mkAppM ``eq_comm_eq #[y', x'] })
+  | _ => return .done symmR
+
+/-- On a goal of the form of `x ↔ y`, also try to simplify `y ↔ x`.
+
+If simplifying `y ↔ x` gives `y' ↔ x'` then this simproc returns `x' ↔ y'` (so that the use of
+commutativity is transparent), otherwise it returns the result of simplifying `y ↔ x` unmodified.
+-/
+simproc_decl iffComm (_ ↔ _) := fun e => do
+  let_expr Iff x y := e | return .continue
+  let symmExpr := .app (.app (.const ``Iff []) y) x
+  let r ← withoutTheorems #[`iffComm,
+      -- These theorems would cause an infinite loop:
+      ``Iff.comm,
+      -- These theorems aren't commute-resistant (they turn an iff into a non-iff in a
+      -- non-commutative way).
+      ``and_congr_left_iff, ``and_congr_right_iff,  ``iff_def, ``iff_def',
+      ``iff_iff_implies_and_implies, ``Bool.coe_iff_coe] do
+    withTraceNode `Meta.Tactic.simp (fun _ => return m!"commuting iff: {e}") <| simp symmExpr
+  -- If no actual progress happened (modulo commutativity), return early.
+  if r.expr == symmExpr || r.expr == e then return .continue
+  let symmR ← Result.mkEqTrans { expr := symmExpr, proof? := ← mkAppM ``iff_comm_eq #[x, y] } r
+  -- If we started with `x ↔ y`, and the result of simplifying `y ↔ x` was `y' ↔ x'`, then we want
+  -- to end up with `x' ↔ y'`.
+  match_expr r.expr with
+  | Iff y' x' =>
+    return .visit (← symmR.mkEqTrans
+      { expr := .app (.app (.const ``Iff []) x') y', proof? := ← mkAppM ``iff_comm_eq #[y', x'] })
+  | _ => return .done symmR
+
+end CommSimproc
 
 -- attribute [refl] HEq.refl -- FIXME This is still rejected after https://github.com/leanprover-community/mathlib4/pull/857
 

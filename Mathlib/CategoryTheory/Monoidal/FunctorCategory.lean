@@ -220,15 +220,6 @@ instance {C D E : Type*} [Category* C] [Category* D] [Category* E] [MonoidalCate
     [MonoidalCategory E] (L : D ⥤ E) [L.Monoidal] :
     ((Functor.whiskeringRight C D E).obj L).Monoidal where
 
-@[deprecated (since := "2025-11-06")] alias instLaxMonoidalFunctorObjWhiskeringRight :=
-  Functor.LaxMonoidal.whiskeringRight
-@[deprecated (since := "2025-11-06")] alias instOplaxMonoidalFunctorObjWhiskeringRight :=
-  Functor.OplaxMonoidal.whiskeringRight
-@[deprecated (since := "2025-11-06")] alias ε_app := Functor.LaxMonoidal.whiskeringRight_ε_app
-@[deprecated (since := "2025-11-06")] alias μ_app := Functor.LaxMonoidal.whiskeringRight_μ_app
-@[deprecated (since := "2025-11-06")] alias η_app := Functor.OplaxMonoidal.whiskeringRight_η_app
-@[deprecated (since := "2025-11-06")] alias δ_app := Functor.OplaxMonoidal.whiskeringRight_δ_app
-
 @[simps!]
 instance Functor.Monoidal.whiskeringLeft
     (E : Type*) [Category* E] [MonoidalCategory E] (F : C ⥤ D) :
