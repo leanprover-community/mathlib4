@@ -3,8 +3,6 @@ module
 import Mathlib.Data.Set.Basic
 import Mathlib.Tactic.SetNotationForOrder
 
-attribute [use_set_notation_for_order] Set
-
 section Delab
 
 -- `LE.le` is printed as `≤` or `⊆` depending on the type.
