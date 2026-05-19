@@ -223,9 +223,9 @@ theorem mdifferentiableWithinAt_iff_target :
         ContinuousWithinAt f s x :=
       and_iff_left_of_imp <| (continuousAt_extChartAt _).comp_continuousWithinAt
   simp_rw [cont, DifferentiableWithinAtProp, extChartAt, OpenPartialHomeomorph.extend,
-    PartialEquiv.coe_trans,
-    ModelWithCorners.toPartialEquiv_coe, OpenPartialHomeomorph.coe_coe, modelWithCornersSelf_coe,
-    chartAt_self_eq, OpenPartialHomeomorph.refl_apply]
+    PartialEquiv.coe_trans, ModelWithCorners.toPartialEquiv_coe,
+    OpenPartialHomeomorph.coe_toPartialEquiv, modelWithCornersSelf_coe, chartAt_self_eq,
+    OpenPartialHomeomorph.refl_apply]
   rfl
 
 theorem mdifferentiableAt_iff_target {x : M} :

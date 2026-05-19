@@ -98,9 +98,8 @@ protected theorem continuousOn : ContinuousOn e e.source :=
 theorem continuousOn_symm : ContinuousOn e.symm e.target :=
   e.continuousOn_invFun
 
-@[simp, mfld_simps]
-theorem mk_coe (e : PartialEquiv X Y) (a b c d) :
-    (OpenPartialHomeomorph.mk e a b c d : X → Y) = e :=
+theorem mk_coe (e : PartialEquiv X Y) (h1 h2 h3 h4) :
+    (OpenPartialHomeomorph.mk e h1 h2 h3 h4 : X → Y) = e :=
   rfl
 
 @[simp, mfld_simps]
@@ -123,12 +122,16 @@ theorem invFun_eq_coe (e : OpenPartialHomeomorph X Y) : e.invFun = e.symm :=
   rfl
 
 @[simp, mfld_simps]
-theorem coe_coe : (e.toPartialEquiv : X → Y) = e :=
+theorem coe_toPartialEquiv : (e.toPartialEquiv : X → Y) = e :=
   rfl
 
+@[deprecated (since := "2026-05-18")] alias coe_coe := coe_toPartialEquiv
+
 @[simp, mfld_simps]
-theorem coe_coe_symm : (e.toPartialEquiv.symm : Y → X) = e.symm :=
+theorem coe_toPartialEquiv_symm : (e.toPartialEquiv.symm : Y → X) = e.symm :=
   rfl
+
+@[deprecated (since := "2026-05-18")] alias coe_coe_symm := coe_toPartialEquiv_symm
 
 @[simp, mfld_simps]
 theorem map_source {x : X} (h : x ∈ e.source) : e x ∈ e.target :=
@@ -156,7 +159,7 @@ theorem eq_symm_apply {x : X} {y : Y} (hx : x ∈ e.source) (hy : y ∈ e.target
 
 protected theorem mapsTo : MapsTo e e.source e.target := fun _ => e.map_source
 
-protected theorem symm_mapsTo : MapsTo e.symm e.target e.source :=
+protected theorem mapsTo_symm : MapsTo e.symm e.target e.source :=
   e.symm.mapsTo
 
 protected theorem leftInvOn : LeftInvOn e.symm e e.source := fun _ => e.left_inv
@@ -170,7 +173,7 @@ protected theorem injOn : InjOn e e.source :=
   e.leftInvOn.injOn
 
 protected theorem bijOn : BijOn e e.source e.target :=
-  e.invOn.bijOn e.mapsTo e.symm_mapsTo
+  e.invOn.bijOn e.mapsTo e.mapsTo_symm
 
 protected theorem surjOn : SurjOn e e.source e.target :=
   e.bijOn.surjOn
@@ -196,7 +199,7 @@ def _root_.Homeomorph.toOpenPartialHomeomorph (e : X ≃ₜ Y) : OpenPartialHome
     by rw [image_univ, e.surjective.range_eq]
 
 /-- Replace `toPartialEquiv` field to provide better definitional equalities. -/
-def replaceEquiv (e : OpenPartialHomeomorph X Y) (e' : PartialEquiv X Y)
+def replacePartialEquiv (e : OpenPartialHomeomorph X Y) (e' : PartialEquiv X Y)
     (h : e.toPartialEquiv = e') : OpenPartialHomeomorph X Y where
   toPartialEquiv := e'
   open_source := h ▸ e.open_source
@@ -204,8 +207,10 @@ def replaceEquiv (e : OpenPartialHomeomorph X Y) (e' : PartialEquiv X Y)
   continuousOn_toFun := h ▸ e.continuousOn_toFun
   continuousOn_invFun := h ▸ e.continuousOn_invFun
 
+@[deprecated (since := "2026-05-19")] alias replaceEquiv := replacePartialEquiv
+
 theorem replaceEquiv_eq_self (e' : PartialEquiv X Y)
-    (h : e.toPartialEquiv = e') : e.replaceEquiv e' h = e := by
+    (h : e.toPartialEquiv = e') : e.replacePartialEquiv e' h = e := by
   cases e
   subst e'
   rfl
