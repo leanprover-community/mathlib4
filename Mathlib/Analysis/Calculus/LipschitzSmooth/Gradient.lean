@@ -16,6 +16,10 @@ characterisation. For differentiable `f`, `fderiv ℝ f x (y - x) = ⟪∇ f x, 
 via Riesz representation (`inner_gradient_left`), and the descent inequality becomes
 `f y ≤ f x + ⟪∇ f x, y - x⟫ + K/2 · ‖y - x‖²`. The descent lemma (converse direction)
 and the Baillon-Haddad equivalence with cocoercivity are deferred to follow-ups.
+
+This file also defines the **`CocoerciveWith K f`** predicate (the conclusion of the
+Baillon-Haddad theorem) and the elementary direction `K`-cocoercive ⟹ `K`-Lipschitz
+gradient.
 -/
 
 public section
@@ -46,3 +50,20 @@ theorem inner_gradient_sub_le (h : LipschitzSmoothWith K f) (x y : F)
   exact h.fderiv_sub_apply_le x y hfx hfy
 
 end LipschitzSmoothWith
+
+/-! ### Cocoercivity -/
+
+/-- A function `f : F → ℝ` on a Hilbert space is **`K`-cocoercive** if its gradient satisfies
+`‖∇ f y - ∇ f x‖² ≤ K · ⟪∇ f y - ∇ f x, y - x⟫` for all `x, y`. Equivalent to the standard
+`(1/K)·‖·‖² ≤ ⟪·,·⟫` form when `0 < K`, but well-defined and meaningful even at `K = 0`
+(then forces `∇ f` constant). The conclusion of the Baillon-Haddad theorem. -/
+abbrev CocoerciveWith (K : NNReal) (f : F → ℝ) : Prop :=
+  ∀ x y : F, ‖∇ f y - ∇ f x‖ ^ 2 ≤ ↑K * ⟪∇ f y - ∇ f x, y - x⟫
+
+/-- A `K`-cocoercive gradient is `K`-Lipschitz. (One direction of the Baillon-Haddad
+characterisation; the reverse requires convexity.) -/
+theorem CocoerciveWith.lipschitzWith_gradient (h : CocoerciveWith K f) : LipschitzWith K (∇ f) :=
+  lipschitzWith_iff_dist_le_mul.mpr fun x y => by
+    simp only [dist_eq_norm']
+    nlinarith [h x y, mul_nonneg K.coe_nonneg (norm_nonneg (y - x)),
+              mul_le_mul_of_nonneg_left (real_inner_le_norm (∇ f y - ∇ f x) (y - x)) K.coe_nonneg]
