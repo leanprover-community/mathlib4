@@ -188,8 +188,8 @@ lemma Path.exists_mem_fst_eq (p : Path N) (r : Fin (N + 2)) : ∃ c ∈ p.cells,
   have hig : r ≤ (p.cells[i]).1 := of_decide_eq_true (List.findIdx_getElem (w := hi))
   refine ⟨p.cells[i], List.getElem_mem _, ?_⟩
   refine (hig.lt_or_eq.resolve_left fun h => ?_).symm
-  rcases Nat.eq_zero_or_pos i with hi | hi
-  · simp [hi, List.getElem_zero, p.head_first_row] at h
+  rcases Nat.eq_zero_or_pos i with rfl | hi
+  · simp [List.getElem_zero, p.head_first_row] at h
   · suffices r ≤ p.cells[i - 1].1 by
       have hi' : i - 1 < i := by lia
       exact of_decide_eq_false (List.not_of_lt_findIdx hi') this

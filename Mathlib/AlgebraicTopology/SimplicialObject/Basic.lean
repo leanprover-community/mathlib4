@@ -653,8 +653,7 @@ theorem δ_comp_σ_of_gt {n} {i : Fin (n + 2)} {j : Fin (n + 1)} (H : Fin.castSu
 theorem δ_comp_σ_of_gt' {n} {i : Fin (n + 3)} {j : Fin (n + 2)} (H : j.succ < i) :
     X.δ i ≫ X.σ j =
       X.σ (j.castLT ((add_lt_add_iff_right 1).mp (lt_of_lt_of_le H i.is_le))) ≫
-        X.δ (i.pred <|
-          fun (hi : i = 0) => by simp [hi] at H) := by
+        X.δ (i.pred H.ne_zero) := by
   dsimp [δ, σ]
   simp only [← X.map_comp, SimplexCategory.δ_comp_σ_of_gt' H]
 
