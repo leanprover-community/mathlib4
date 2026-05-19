@@ -148,12 +148,10 @@ theorem mulHeight_linearMap_apply_le [Nonempty ι] (A : ι' × ι → K) (x : ι
     rw [mul_comm (iSup _), ← mul_assoc]
     exact v.iSup_abv_linearMap_apply_le A x
   · -- nonarchimedean part: reduce to "local" statement `linearMap_apply_bound_of_isNonarchimedean`
-    rw [← finprod_mul_distrib (by fun_prop (disch := assumption))
-      (by fun_prop (disch := assumption))]
-    refine finprod_le_finprod (by fun_prop (disch := assumption))
-      (fun v ↦ Real.iSup_nonneg_of_nonnegHomClass v.val _) ?_ fun v ↦ ?_
-    · fun_prop (disch := assumption)
-    · exact (isNonarchimedean _ v.prop).iSup_abv_linearMap_apply_le A x
+    rw [← finprod_mul_distrib (by fun_prop) (by fun_prop)]
+    refine finprod_le_finprod (by fun_prop)
+      (fun v ↦ Real.iSup_nonneg_of_nonnegHomClass v.val _) (by fun_prop) fun v ↦ ?_
+    exact (isNonarchimedean _ v.prop).iSup_abv_linearMap_apply_le A x
 
 open Real in
 /-- Let `A : ι' × ι → K`, which we can interpret as a linear map from `ι → K` to `ι' → K`.
@@ -281,7 +279,7 @@ private lemma mulHeight_constantCoeff_le_mulHeightBound {p : ι' → MvPolynomia
     exact prod_map_le_prod_map₀ _ _ (fun v _ ↦ Real.iSup_nonneg_of_nonnegHomClass ..)
       fun v _ ↦ Finite.ciSup_mono (H v)
   · have := (Function.ne_iff.mp h).nonempty
-    refine finprod_le_finprod (by fun_prop (disch := assumption))
+    refine finprod_le_finprod (by fun_prop)
       (fun v ↦ Real.iSup_nonneg_of_nonnegHomClass ..) (by fun_prop) ?_
     refine fun v ↦ Finite.ciSup_mono fun j ↦ ?_
     rw [show constantCoeff (p j) = coeff 0 (p j) from rfl]
@@ -339,7 +337,7 @@ theorem mulHeight_eval_le {N : ℕ} {p : ι' → MvPolynomial ι K} (hp : ∀ i,
     have := (Function.ne_iff.mp h₀).nonempty
     have F := hasFiniteMulSupport_iSup_nonarchAbsVal hx
     rw [finprod_pow F, ← finprod_mul_distrib (by fun_prop) (by fun_prop)]
-    refine finprod_le_finprod (by fun_prop (disch := assumption))
+    refine finprod_le_finprod (by fun_prop)
       (fun _ ↦ Real.iSup_nonneg_of_nonnegHomClass ..) (by fun_prop) fun v ↦ Real.iSup_le
       (fun j ↦ ?_) ?_
     · grw [(isNonarchimedean _ v.prop).eval_mvPolynomial_le (hp j) x]

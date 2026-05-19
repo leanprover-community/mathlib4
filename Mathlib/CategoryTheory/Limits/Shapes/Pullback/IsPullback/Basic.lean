@@ -910,4 +910,51 @@ lemma IsPushout.iff_app [HasPushouts D] {F₁ F₂ F₃ F₄ : C ⥤ D}
 
 end Functor
 
+section IsPullbackOverPullback
+
+open Limits
+
+variable {X Y Z : C} {f : X ⟶ Z} {g : Y ⟶ Z} [HasPullbacksAlong g]
+
+namespace IsPullback
+
+/-- An `IsPullback` square yields an isomorphism `Over.mk fst ≅ Over.mk (pullback.fst f g)`
+in `Over X`. -/
+noncomputable def isoOverPullback {P : C} {fst : P ⟶ X} {snd : P ⟶ Y}
+    (h : IsPullback fst snd f g) :
+    Over.mk fst ≅ Over.mk (pullback.fst f g) :=
+  Over.isoMk (h.isoIsPullback _ _ (IsPullback.of_hasPullback f g)) (by simp)
+
+@[reassoc (attr := simp)]
+lemma isoOverPullback_hom_left_comp_snd {P : C} {fst : P ⟶ X} {snd : P ⟶ Y}
+    (h : IsPullback fst snd f g) :
+    dsimp% h.isoOverPullback.hom.left ≫ pullback.snd f g = snd :=
+  h.isoIsPullback_hom_snd _ _ (IsPullback.of_hasPullback f g)
+
+/-- An isomorphism `Over.mk p ≅ Over.mk (pullback.fst f g)` in `Over X` yields
+an `IsPullback` square. -/
+lemma of_over_iso {P : C} {p : P ⟶ X}
+    (e : Over.mk p ≅ Over.mk (pullback.fst f g)) :
+    IsPullback p (e.hom.left ≫ pullback.snd f g) f g :=
+  (IsPullback.of_hasPullback f g).of_iso'
+    ((Over.forget X).mapIso e) (Iso.refl _) (Iso.refl _) (Iso.refl _)
+    (by simpa using Over.w e.hom) (by simp) (by simp) (by simp)
+
+/-- An `IsPullback` square over a cospan `(f, g)` is equivalent to an isomorphism
+`Over.mk fst ≅ Over.mk (pullback.fst f g)` in `Over X`, together with the
+second projection being determined by the isomorphism. -/
+lemma iff_exists_over_iso {P : C} {p : P ⟶ X} {q : P ⟶ Y} :
+    IsPullback p q f g ↔
+    ∃ e : Over.mk p ≅ Over.mk (pullback.fst f g),
+      q = e.hom.left ≫ pullback.snd f g := by
+  constructor
+  · intro h
+    exact ⟨h.isoOverPullback, by simp⟩
+  · rintro ⟨e, rfl⟩
+    exact of_over_iso e
+
+end IsPullback
+
+end IsPullbackOverPullback
+
 end CategoryTheory
