@@ -12,22 +12,18 @@ public import Mathlib.Data.Finite.Subtype
 # `Finite`ness conditions for `Units` of `GroupWithZero`
 -/
 
-@[expose] public section
+public section
 
-/-- `Units` of a `GroupWithZero` are finite if and only if the `GroupWithZero` is finite -/
+/-- `Units` of a `GroupWithZero` are finite if and only if the `GroupWithZero` is finite. -/
 @[simp]
 theorem Units.finite_iff₀ {G : Type*} [GroupWithZero G] : Finite Gˣ ↔ Finite G := by
   rw [unitsEquivNeZero.finite_iff, Subtype.finite_ne_iff]
 
-/-- `Units` of a `GroupWithZero` are infinite if and only if the `GroupWithZero` is infinite -/
+/-- `Units` of a `GroupWithZero` are infinite if and only if the `GroupWithZero` is infinite. -/
 @[simp]
 theorem Units.infinite_iff₀ {G : Type*} [GroupWithZero G] : Infinite Gˣ ↔ Infinite G := by
   simpa only [not_finite_iff_infinite] using Units.finite_iff₀ (G := G).not
 
-/-- If a `GroupWithZero` is finite then its `Units` are finite -/
-instance {G : Type*} [GroupWithZero G] [hG : Finite G] : Finite Gˣ :=
-  Units.finite_iff₀.2 ‹_›
-
-/-- If a `GroupWithZero` is finite then its `Units` are finite -/
+/-- If a `GroupWithZero` is finite then its `Units` are finite. -/
 instance {G : Type*} [GroupWithZero G] [hG : Infinite G] : Infinite Gˣ :=
   Units.infinite_iff₀.2 ‹_›
