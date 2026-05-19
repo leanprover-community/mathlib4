@@ -13,9 +13,7 @@ public import Mathlib.Analysis.Calculus.LipschitzSmooth.Basic
 
 Fréchet-derivative restatements of the `LipschitzSmoothWith` predicate. For differentiable
 `f`, `lineDeriv ℝ f x v = fderiv ℝ f x v` pointwise, and the predicate is equivalent to
-the corresponding descent inequality stated in `fderiv` form. The full descent lemma —
-the converse direction `LipschitzWith K (fderiv ℝ f) → LipschitzSmoothWith K f` — is
-deferred to a follow-up.
+the corresponding descent inequality stated in `fderiv` form.
 -/
 
 public section

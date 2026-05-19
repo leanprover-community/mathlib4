@@ -14,8 +14,7 @@ public import Mathlib.Analysis.Calculus.LipschitzSmooth.FDeriv
 On a Hilbert space `F`, the `LipschitzSmoothWith` predicate admits a gradient-form
 characterisation. For differentiable `f`, `fderiv ℝ f x (y - x) = ⟪∇ f x, y - x⟫`
 via Riesz representation (`inner_gradient_left`), and the descent inequality becomes
-`f y ≤ f x + ⟪∇ f x, y - x⟫ + K/2 · ‖y - x‖²`. The descent lemma (converse direction)
-and the Baillon-Haddad equivalence with cocoercivity are deferred to follow-ups.
+`f y ≤ f x + ⟪∇ f x, y - x⟫ + K/2 · ‖y - x‖²`.
 
 This file also defines the **`CocoerciveWith K f`** predicate (the conclusion of the
 Baillon-Haddad theorem) and the elementary direction `K`-cocoercive ⟹ `K`-Lipschitz
