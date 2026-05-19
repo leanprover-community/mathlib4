@@ -53,12 +53,11 @@ open Function (Injective Surjective)
 
 variable {M N G H α β γ δ : Type*}
 
-attribute [to_additive Add.toVAdd /-- See also `AddMonoid.toAddAction` -/] instSMulOfMul
-
--- see Note [lower instance priority]
-/-- See also `Monoid.toMulAction` and `MulZeroClass.toSMulWithZero`. -/
-@[deprecated instSMulOfMul (since := "2025-10-18"), implicit_reducible]
-def Mul.toSMul (α : Type*) [Mul α] : SMul α α := ⟨(· * ·)⟩
+-- Note that https://github.com/leanprover/lean4/pull/13554
+-- also makes the instance priority change, so if that is merged then `instance 1100` can
+-- be removed here (we still want `to_additive` though).
+/- See also `Monoid.toMulAction` and `MulZeroClass.toSMulWithZero`. -/
+attribute [instance 1100, to_additive /-- See also `AddMonoid.toAddAction` -/] instSMulOfMul
 
 /-- Like `Mul.toSMul`, but multiplies on the right.
 
@@ -128,7 +127,7 @@ More precisely this means that the action satisfies the two axioms `1 • p = p`
 acts on `P`.
 
 For example, if `G` is a group and `X` is a type, if a mathematician says
-say "let `G` act on the set `X`" they will probably mean  `[AddAction G X]`.
+say "let `G` act on the set `X`" they will probably mean `[MulAction G X]`.
 -/
 @[to_additive (attr := ext)]
 class MulAction (α : Type*) (β : Type*) [Monoid α] extends SemigroupAction α β where
@@ -459,12 +458,11 @@ variable (M)
 /-- The regular action of a monoid on itself by left multiplication.
 
 This is promoted to a module by `Semiring.toModule`. -/
--- see Note [lower instance priority]
 @[to_additive
 /-- The regular action of a monoid on itself by left addition.
 
 This is promoted to an `AddTorsor` by `addGroup_is_addTorsor`. -/]
-instance (priority := 910) Monoid.toMulAction : MulAction M M where
+instance (priority := 1100) Monoid.toMulAction : MulAction M M where
   smul := (· * ·)
   one_smul := one_mul
   mul_smul := mul_assoc
@@ -472,6 +470,11 @@ instance (priority := 910) Monoid.toMulAction : MulAction M M where
 @[to_additive]
 instance IsScalarTower.left : IsScalarTower M M α where
   smul_assoc x y z := mul_smul x y z
+
+@[to_additive]
+instance {R M : Type*} [CommMonoid M] [SMul R M] [IsScalarTower R M M] : SMulCommClass R M M where
+  smul_comm r s x := by
+    rw [← one_smul M (s • x), ← smul_assoc, smul_comm, smul_assoc, one_smul]
 
 variable {M}
 
@@ -619,10 +622,10 @@ but here you can use the even stronger class `MulSemiringAction`, which captures
 how the action plays with both multiplication and addition. -/
 @[ext]
 class MulDistribMulAction (M N : Type*) [Monoid M] [Monoid N] extends MulAction M N where
-  /-- Distributivity of `•` across `*` -/
-  smul_mul : ∀ (r : M) (x y : N), r • (x * y) = r • x * r • y
   /-- Multiplying `1` by a scalar gives `1` -/
   smul_one : ∀ r : M, r • (1 : N) = 1
+  /-- Distributivity of `•` across `*` -/
+  smul_mul : ∀ (r : M) (x y : N), r • (x * y) = r • x * r • y
 
 export MulDistribMulAction (smul_one)
 

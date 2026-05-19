@@ -6,6 +6,7 @@ Authors: Kenny Lau
 module
 
 public import Mathlib.Algebra.Polynomial.Roots
+public import Mathlib.Algebra.Ring.Int.Field
 public import Mathlib.RingTheory.FiniteType
 public import Mathlib.RingTheory.IntegralClosure.Algebra.Basic
 public import Mathlib.RingTheory.IntegralClosure.IsIntegralClosure.Defs
@@ -598,8 +599,6 @@ theorem isIntegral_quotientMap_iff {I : Ideal S} :
   refine this ▸ RingHom.IsIntegral.trans g (Ideal.quotientMap I f le_rfl) ?_ h
   exact g.isIntegral_of_surjective Ideal.Quotient.mk_surjective
 
-variable {R S : Type*} [CommRing R] [CommRing S]
-
 theorem RingHom.IsIntegral.isLocalHom {f : R →+* S} (hf : f.IsIntegral)
     (inj : Function.Injective f) : IsLocalHom f where
   map_nonunit a ha := by
@@ -630,7 +629,12 @@ theorem Algebra.IsIntegral.isField_iff_isField [IsDomain S]
     (hRS : Function.Injective (algebraMap R S)) : IsField R ↔ IsField S :=
   ⟨isField_of_isIntegral_of_isField', isField_of_isIntegral_of_isField hRS⟩
 
-variable (R)
+theorem Ideal.IsMaximal.ne_bot_of_isIntegral_int
+    [CharZero R] [Algebra.IsIntegral ℤ R] (I : Ideal R) [I.IsMaximal] : I ≠ ⊥ :=
+  Ring.ne_bot_of_isMaximal_of_not_isField ‹_› fun h ↦ Int.not_isField
+    (isField_of_isIntegral_of_isField (FaithfulSMul.algebraMap_injective ℤ R) h)
+
+variable (R) in
 theorem Algebra.ker_algebraMap_isMaximal_of_isIntegral (k : Type*) [Field k] [Algebra R k]
     [Algebra.IsIntegral R k] : (RingHom.ker (algebraMap R k)).IsMaximal := by
   have := Ideal.bot_isMaximal (K := k)

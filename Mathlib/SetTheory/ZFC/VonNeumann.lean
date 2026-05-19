@@ -158,7 +158,7 @@ theorem card_vonNeumann (o : Ordinal.{u}) : card (V_ o) = preBeth o := by
       refine (⨆ i : Set.Iio o, (V_ ↑i).card).card_ord.not_lt <|
         (Ordinal.card_le_card_vonNeumann _).trans_lt <| (cantor _).trans_le ?_
       rw [← card_powerset, ← vonNeumann_succ]
-      refine le_ciSup (bddAbove_of_small _) (⟨_, ho.succ_lt ?_⟩ : Set.Iio o)
+      refine le_ciSup bddAbove_of_small (⟨_, ho.succ_lt ?_⟩ : Set.Iio o)
       exact (ord_card_le _).trans_lt' (ord_strictMono h)
 
 end ZFSet

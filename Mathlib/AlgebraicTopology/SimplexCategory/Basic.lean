@@ -24,7 +24,7 @@ properties of its epimorphisms and monomorphisms.
 
 @[expose] public section
 
-universe v
+universe u
 
 open Simplicial CategoryTheory Limits
 
@@ -856,6 +856,20 @@ theorem factorThruImage_eq {Δ Δ'' : SimplexCategory} {φ : Δ ⟶ Δ''} {e : �
   rw [← cancel_mono i, fac, ← image_ι_eq fac, image.fac]
 
 end EpiMono
+
+/-- The functor which sends `⦋n⦌ : SimplexCategory` to the partially ordered
+type `{0, 1, ..., n}` (ulifted to `Type u`). -/
+def toPartOrd : SimplexCategory ⥤ PartOrd.{u} :=
+  skeletalFunctor ⋙ forget₂ NonemptyFinLinOrd FinPartOrd ⋙
+    forget₂ FinPartOrd PartOrd ⋙ PartOrd.uliftFunctor
+
+@[simp]
+lemma toPartOrd_obj (n : SimplexCategory) :
+    toPartOrd.{u}.obj n = .of (ULift.{u} (Fin (n.len + 1))) := rfl
+
+@[simp]
+lemma toPartOrd_map_apply {n m : SimplexCategory} (f : n ⟶ m) (i : (Fin (n.len + 1))) :
+    dsimp% toPartOrd.{u}.map f (ULift.up i) = ULift.up (f i) := rfl
 
 /-- This functor `SimplexCategory ⥤ Cat` sends `⦋n⦌` (for `n : ℕ`)
 to the category attached to the ordered set `{0, 1, ..., n}` -/

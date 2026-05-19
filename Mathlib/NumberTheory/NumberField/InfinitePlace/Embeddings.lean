@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.Algebra.Hom.Rat
 public import Mathlib.Analysis.Complex.Polynomial.Basic
 public import Mathlib.NumberTheory.NumberField.Basic
-public import Mathlib.LinearAlgebra.Charpoly.Basic
 
 /-!
 # Embeddings of number fields

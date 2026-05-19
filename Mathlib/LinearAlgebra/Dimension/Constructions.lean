@@ -89,7 +89,7 @@ theorem LinearIndepOn.quotient_iff_union {s t : Set ι} {f : ι → M} (hs : Lin
 theorem rank_quotient_add_rank_le [Nontrivial R] (M' : Submodule R M) :
     Module.rank R (M ⧸ M') + Module.rank R M' ≤ Module.rank R M := by
   conv_lhs => simp only [Module.rank_def]
-  rw [Cardinal.ciSup_add_ciSup _ (bddAbove_range _) _ (bddAbove_range _)]
+  rw [Cardinal.ciSup_add_ciSup _ bddAbove_of_small _ bddAbove_of_small]
   refine ciSup_le fun ⟨s, hs⟩ ↦ ciSup_le fun ⟨t, ht⟩ ↦ ?_
   choose f hf using Submodule.Quotient.mk_surjective M'
   simpa [add_comm] using (LinearIndependent.sumElim_of_quotient ht (fun (i : s) ↦ f i)
@@ -103,12 +103,6 @@ theorem Submodule.finrank_quotient_le [StrongRankCondition R] [Module.Finite R M
     (s : Submodule R M) : finrank R (M ⧸ s) ≤ finrank R M :=
   toNat_le_toNat ((Submodule.mkQ s).rank_le_of_surjective Quot.mk_surjective)
     (rank_lt_aleph0 _ _)
-
-theorem LinearMap.finrank_le_finrank_of_surjective
-    [Module R M'] [StrongRankCondition R] [Module.Finite R M]
-    {f : M →ₗ[R] M'} (h : Function.Surjective f) : Module.finrank R M' ≤ Module.finrank R M := by
-  rw [← f.quotKerEquivOfSurjective h |>.finrank_eq]
-  exact Submodule.finrank_quotient_le _
 
 end Quotient
 
@@ -135,7 +129,7 @@ variable [Module R M₁] [Module R M']
 theorem rank_add_rank_le_rank_prod [Nontrivial R] :
     Module.rank R M + Module.rank R M₁ ≤ Module.rank R (M × M₁) := by
   conv_lhs => simp only [Module.rank_def]
-  rw [Cardinal.ciSup_add_ciSup _ (bddAbove_range _) _ (bddAbove_range _)]
+  rw [Cardinal.ciSup_add_ciSup _ bddAbove_of_small _ bddAbove_of_small]
   exact ciSup_le fun ⟨s, hs⟩ ↦ ciSup_le fun ⟨t, ht⟩ ↦
     (linearIndependent_inl_union_inr' hs ht).cardinal_le_rank
 

@@ -216,7 +216,6 @@ theorem pullback_snd {X Y S : C} (f : X ⟶ S) (g : Y ⟶ S) [HasPullback f g]
     [P.IsStableUnderBaseChangeAlong g] (H : P f) : P (pullback.snd f g) :=
   IsStableUnderBaseChangeAlong.of_isPullback (IsPullback.of_hasPullback f g) H
 
-set_option backward.isDefEq.respectTransparency false in
 theorem baseChange_obj {S S' : C} (f : S' ⟶ S)
     [HasPullbacksAlong f] [P.IsStableUnderBaseChangeAlong f] (X : Over S) (H : P X.hom) :
     P ((Over.pullback f).obj X).hom :=
@@ -741,6 +740,12 @@ lemma IsStableUnderCoproductsOfShape.mk (J : Type*) [W.RespectsIso]
     apply colimit.hom_ext
     rintro ⟨j⟩
     simp [φ, hα]
+
+instance (J : Type*) [(monomorphisms C).IsStableUnderCoproductsOfShape J]
+    {X₁ X₂ : J → C} (f : ∀ j, X₁ j ⟶ X₂ j) [HasCoproduct X₁] [HasCoproduct X₂]
+    [∀ j, Mono (f j)] :
+    Mono (Limits.Sigma.map f) :=
+  MorphismProperty.colimMap _ (fun ⟨j⟩ ↦ by dsimp; infer_instance)
 
 /-- The condition that a property of morphisms is stable by finite products. -/
 class IsStableUnderFiniteProducts : Prop where

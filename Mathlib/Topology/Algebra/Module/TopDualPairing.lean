@@ -22,7 +22,7 @@ finite-dimensional Hausdorff space over a complete nontrivially normed field.
   finite-dimensional Hausdorff spaces over complete nontrivially normed fields.
 -/
 
-@[expose] public section
+public section
 
 open Module
 

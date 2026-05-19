@@ -248,9 +248,11 @@ def linearEquiv : DirectLimit G f ≃ₗ[R] _root_.DirectLimit G f :=
     (by ext; simp)
     (by ext; simp)
 
+@[simp]
 theorem linearEquiv_of {i g} : linearEquiv _ _ (of _ _ G f i g) = ⟦⟨i, g⟩⟧ := by
-  simp [linearEquiv]; rfl
+  simp [linearEquiv]
 
+@[simp]
 theorem linearEquiv_symm_mk {g} : (linearEquiv _ _).symm ⟦g⟧ = of _ _ G f g.1 g.2 := rfl
 
 end equiv
