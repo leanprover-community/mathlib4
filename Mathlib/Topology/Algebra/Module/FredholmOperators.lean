@@ -37,10 +37,11 @@ lemma Fin.sum_even_odd {n : ℕ} [NeZero n] {f : Fin n → ℤ} :
            ext
            aesop
 
+/- Name is still terrible. -/
 lemma alt_sum_eq_zero_of_sum_even_eq_sum_odd {n : ℕ} [NeZero n] {f : Fin n → ℤ}
   (hf : ∑ i ∈ Finset.filter (fun i : Fin n => i.val % 2 = 1) Finset.univ, f i
       = ∑ i ∈ Finset.filter (fun i : Fin n => i.val % 2 = 0) Finset.univ, f i) :
-        ∑ i, (-1) ^ (i.val) * f i = 0 := by
+          ∑ i, (-1) ^ (i.val) * f i = 0 := by
   rw [Fin.sum_even_odd]
   have h_odd (i : Fin n) (hi : i.val % 2 = 1) : (-1) ^ (i : ℕ) = -1 := by
     rw [← Nat.mod_add_div i 2, hi]
@@ -51,13 +52,14 @@ lemma alt_sum_eq_zero_of_sum_even_eq_sum_odd {n : ℕ} [NeZero n] {f : Fin n →
   have : ∑ i ∈ Finset.filter (fun i : Fin n => i.val % 2 = 1) Finset.univ, (-1) ^ i.val * f i =
       - ∑ i ∈ Finset.filter (fun i : Fin n => i.val % 2 = 1) Finset.univ, f i := by
     rw [← Finset.sum_neg_distrib, Finset.sum_congr rfl fun x hx =>
-      by rw [ h_odd x ( Finset.mem_filter.mp hx |>.2)]]
+      by rw [h_odd x (Finset.mem_filter.mp hx |>.2)]]
     norm_num
   have : ∑ i ∈ Finset.filter (fun i : Fin n => i.val % 2 = 0) Finset.univ, (-1) ^ i.val * f i =
       ∑ i ∈ Finset.filter (fun i : Fin n => i.val % 2 = 0) Finset.univ, f i := by
     exact Finset.sum_congr rfl fun x hx => by aesop
   grind
 
+/- The following should now reduce to the Bourbaki proof. -/
 open Function Module in
 lemma Module.sum_neg_one_pow_finrank_eq_zero_of_exact' {n : ℕ} {k : Type*}
     (V : Fin (n + 3) → Type*) [Field k] [∀ i, AddCommGroup (V i)] [∀ i, Module k (V i)]
@@ -71,8 +73,6 @@ lemma Module.sum_neg_one_pow_finrank_eq_zero_of_exact' {n : ℕ} {k : Type*}
   -- It may be necessary to prove an exactness statment for vector spaces particularly so
   -- as to avoid this inj and surj?
   sorry
-
-#exit
 
 -- I do think we need to begin with a three term exact sequence for this, since even
 -- Bourbaki derives the result as a corollary of Rank-Nullity. I've started the ball
