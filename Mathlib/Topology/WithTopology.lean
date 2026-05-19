@@ -103,13 +103,7 @@ instance [Infinite X] : Infinite (WithTopology X t) := .of_injective _ <| toTopo
 instance [Fintype X] : Fintype (WithTopology X t) :=
   .ofBijective (.toTopology t) (toTopology_bijective t)
 
-deriving instance BEq, DecidableEq for WithTopology
-
-instance [BEq X] [ReflBEq X] : ReflBEq (WithTopology X t) where
-  rfl {x} := BEq.refl x.ofTopology
-
-instance [BEq X] [LawfulBEq X] : LawfulBEq (WithTopology X t) where
-  eq_of_beq h := ofTopology_injective _ <| eq_of_beq h
+deriving instance DecidableEq for WithTopology
 
 instance [LE X] : LE (WithTopology X t) where
   le x y := ofTopology x ≤ ofTopology y
