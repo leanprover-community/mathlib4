@@ -142,7 +142,7 @@ instance (priority := low) _root_.instFiniteOfWellFoundedLTOfWellFoundedGT {α :
   IsWellOrder.finite_of_isWellOrder_of_isWellOrder_swap LT.lt
 
 theorem infinite_iff_nonempty_relEmbedding_lt_or_nonempty_relEmbedding_gt
-    [Std.Trichotomous r] [IsStrictOrder α r] :
+    [IsStrictTotalOrder α r] :
     Infinite α ↔
       Nonempty (((· < ·) : ℕ → ℕ → Prop) ↪r r) ∨
       Nonempty (((· > ·) : ℕ → ℕ → Prop) ↪r r) := by
@@ -155,7 +155,7 @@ theorem infinite_iff_nonempty_relEmbedding_lt_or_nonempty_relEmbedding_gt
   exact IsWellOrder.finite_of_isWellOrder_of_isWellOrder_swap r
 
 theorem finite_iff_isEmpty_relEmbedding_lt_and_isEmpty_relEmbedding_gt
-    [Std.Trichotomous r] [IsStrictOrder α r] :
+    [IsStrictTotalOrder α r] :
     Finite α ↔
       IsEmpty (((· < ·) : ℕ → ℕ → Prop) ↪r r) ∧
       IsEmpty (((· > ·) : ℕ → ℕ → Prop) ↪r r) := by
