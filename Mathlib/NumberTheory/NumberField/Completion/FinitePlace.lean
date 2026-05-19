@@ -397,7 +397,7 @@ theorem hasFiniteMulSupport {x : K} (h_x_nezero : x ≠ 0) :
 lemma hasFiniteMulSupport_fun_pow_multiplicity {M : Type*} [CommMonoid M] {I : Ideal (𝓞 K)}
     (hI : I ≠ ⊥) (f : Ideal (𝓞 K) → M) :
     (fun v : FinitePlace K ↦
-      (f v.maximalIdeal.asIdeal) ^ multiplicity v.maximalIdeal.asIdeal I).HasFiniteMulSupport := by
+      f v.maximalIdeal.asIdeal ^ multiplicity v.maximalIdeal.asIdeal I).HasFiniteMulSupport := by
   have (v : FinitePlace K) :=  irreducible v.maximalIdeal
   have := asIdeal_injective (R := 𝓞 K) |>.comp maximalIdeal_injective
   fun_prop (disch := assumption) -- `disch` is necessary, assumptions are not "equal enough"
