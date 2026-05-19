@@ -17,9 +17,7 @@ in which each generator `ι x` is primitive: `Δ(ι x) = ι x ⊗ 1 + 1 ⊗ ι x
 `ε(ι x) = 0`.
 -/
 
-public section
-
-noncomputable section
+public noncomputable section
 
 namespace SymmetricAlgebra
 
