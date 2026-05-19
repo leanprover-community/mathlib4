@@ -511,7 +511,7 @@ instance : Coe (HeightOneSpectrum R) (Ideal R) where
   coe P := P.asIdeal
 
 omit [IsDedekindDomain R] in
-lemma asIdeal_injective : (fun v : HeightOneSpectrum R ↦ v.asIdeal).Injective :=
+lemma asIdeal_injective : (HeightOneSpectrum.asIdeal (R := R)).Injective :=
   fun ⦃_ _⦄ h ↦ HeightOneSpectrum.ext h
 
 alias asIdeal_inj := HeightOneSpectrum.ext
