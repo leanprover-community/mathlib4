@@ -105,16 +105,3 @@ theorem perfectlyNormalSpace_iff_forall_isClosed_preimage_zero :
               exact ge_of_tendsto' tendsto_one_div_add_atTop_nhds_zero_nat (fun n => (h n).2.le)
             · rcases (mem_iInter.1 h 0).1 with ⟨x, rfl⟩
               exact (hfr x).1 }
-
-theorem Topology.IsEmbedding.perfectlyNormalSpace {e : X → Y} (he : IsEmbedding e)
-    [PerfectlyNormalSpace Y] : PerfectlyNormalSpace X := by
-  rw [perfectlyNormalSpace_iff_forall_isClosed_preimage_zero]
-  intro t ht
-  obtain ⟨c, hc⟩ : ∃ c, IsClosed c ∧ e '' t = c ∩ range e := he.image_eq_isClosed_inter_range ht
-  obtain ⟨f, rfl, hf⟩ :=
-    perfectlyNormalSpace_iff_forall_isClosed_preimage_zero.1 inferInstance c hc.1
-  refine ⟨⟨f ∘ e, f.continuous.comp he.continuous⟩, ?_, fun x => hf (e x)⟩
-  simpa [Set.ext_iff, he.injective.preimage_image] using congr(e ⁻¹' $(hc.2))
-
-instance {s : Set X} [PerfectlyNormalSpace X] : PerfectlyNormalSpace s :=
-  IsEmbedding.subtypeVal.perfectlyNormalSpace

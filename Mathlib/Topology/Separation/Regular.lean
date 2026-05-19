@@ -571,10 +571,10 @@ instance (priority := 100) CompletelyNormalSpace.toNormalSpace
   normal s t hs ht hd := separatedNhds_iff_disjoint.2 <|
     completely_normal (by rwa [hs.closure_eq]) (by rwa [ht.closure_eq])
 
-theorem Topology.IsEmbedding.completelyNormalSpace [TopologicalSpace Y] [CompletelyNormalSpace Y]
-    {e : X → Y} (he : IsEmbedding e) : CompletelyNormalSpace X := by
+theorem Topology.IsInducing.completelyNormalSpace [TopologicalSpace Y] [CompletelyNormalSpace Y]
+    {e : X → Y} (he : IsInducing e) : CompletelyNormalSpace X := by
   refine ⟨fun s t hd₁ hd₂ => ?_⟩
-  simp only [he.isInducing.nhdsSet_eq_comap]
+  simp only [he.nhdsSet_eq_comap]
   refine disjoint_comap (completely_normal ?_ ?_)
   · rwa [← subset_compl_iff_disjoint_left, image_subset_iff, preimage_compl,
       ← he.closure_eq_preimage_closure_image, subset_compl_iff_disjoint_left]
