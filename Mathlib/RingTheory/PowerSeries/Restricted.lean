@@ -5,159 +5,98 @@ Authors: William Coram
 -/
 module
 
-public import Mathlib.Analysis.Normed.Group.Ultra
-public import Mathlib.Analysis.RCLike.Basic
+public import Mathlib.RingTheory.MvPowerSeries.Restricted
 public import Mathlib.RingTheory.PowerSeries.Basic
-public import Mathlib.Tactic.Bound
+public import Mathlib.Order.Filter.Cofinite
 
 /-!
-# Restricted power series
+# Univariate restricted power series
 
-`IsRestricted` : We say a power series over a normed ring `R` is restricted for a parameter `c` if
-`‖coeff R i f‖ * c ^ i → 0`.
+`IsRestricted` : We say a multivariate power series over a normed ring `R` is restricted for a
+real number `c` if `‖coeff t f‖ * c i ^ t i → 0` under the cofinite filter.
 
 -/
 
 @[expose] public section
-
 namespace PowerSeries
 
-variable {R : Type*} [NormedRing R] (c : ℝ)
+open Filter
+open scoped Topology Pointwise
 
-open PowerSeries Filter
-open scoped Topology
+variable {R : Type*} [NormedRing R]
 
-/-- A power series over `R` is restricted of parameter `c` if we have
-`‖coeff R i f‖ * c ^ i → 0`. -/
-def IsRestricted (f : PowerSeries R) :=
-  Tendsto (fun (i : ℕ) ↦ (norm (coeff i f)) * c ^ i) atTop (𝓝 0)
+abbrev IsRestricted (c : ℝ) (f : PowerSeries R) :=
+  MvPowerSeries.IsRestricted (σ := Unit) (fun _ ↦ c) f
 
-namespace IsRestricted
+lemma isRestricted_foo (c : ℝ) (f : PowerSeries R) :
+    (fun (t : Unit →₀ ℕ) ↦ ‖MvPowerSeries.coeff t f‖ * t.prod (fun _ x ↦ c ^ x)) =
+    (fun (n : ℕ) ↦ ‖coeff n f‖ * c ^ n) ∘ Equiv.finsuppUnique := by
+  funext t
+  simp only [Function.comp_apply, Equiv.finsuppUnique_apply, PUnit.default_eq_unit,
+    Finsupp.prod_pow, Finset.univ_unique, Finset.prod_singleton, coeff,
+    show (Finsupp.single () (t ())) = t by grind]
 
-lemma isRestricted_iff {f : PowerSeries R} : IsRestricted c f ↔
-    ∀ ε, 0 < ε → ∃ N, ∀ n, N ≤ n → ‖‖(coeff n) f‖ * c ^ n‖ < ε := by
-  simp [IsRestricted, NormedAddCommGroup.tendsto_atTop]
+lemma isRestricted_iff (c : ℝ) (f : PowerSeries R) :
+    IsRestricted c f ↔ Tendsto (fun (t : ℕ) ↦ ‖coeff t f‖ * c ^ t) cofinite (𝓝 0) := by
+  rw [IsRestricted, MvPowerSeries.IsRestricted, isRestricted_foo]
+  exact ⟨fun H => (H.comp Equiv.finsuppUnique.symm.injective.tendsto_cofinite).congr fun n =>
+    by simp, fun H => H.comp Equiv.finsuppUnique.injective.tendsto_cofinite⟩
 
-lemma isRestricted_iff_abs (f : PowerSeries R) : IsRestricted c f ↔ IsRestricted |c| f := by
-  simp [isRestricted_iff]
+lemma isRestricted_iff' (c : ℝ) (f : PowerSeries R) :
+    IsRestricted c f ↔ Tendsto (fun (t : ℕ) ↦ ‖coeff t f‖ * c ^ t) atTop (𝓝 0) := by
+  simp_rw [isRestricted_iff, Nat.cofinite_eq_atTop]
 
-lemma zero : IsRestricted c (0 : PowerSeries R) := by
-  simp [IsRestricted]
+@[simp]
+lemma isRestricted_abs_iff (c : ℝ) (f : PowerSeries R) :
+    IsRestricted |c| f ↔ IsRestricted c f :=
+  MvPowerSeries.isRestricted_abs_iff (fun _ ↦ c) f
 
-lemma one : IsRestricted c (1 : PowerSeries R) := by
-  simp only [isRestricted_iff, coeff_one, norm_mul, norm_pow, Real.norm_eq_abs]
-  refine fun _ _ ↦ ⟨1, fun n hn ↦ ?_ ⟩
-  split
-  · lia
-  · simpa
+lemma isRestricted_zero (c : ℝ) : IsRestricted c (0 : PowerSeries R) :=
+ MvPowerSeries.isRestricted_zero (fun _ ↦ c)
 
-lemma monomial (n : ℕ) (a : R) : IsRestricted c (monomial n a) := by
-  simp only [monomial_eq_mk, isRestricted_iff, coeff_mk, norm_mul, norm_pow,
-    Real.norm_eq_abs, abs_norm]
-  refine fun _ _ ↦ ⟨n + 1, fun _ _ ↦ ?_⟩
-  split
-  · lia
-  · simpa
+lemma isRestricted_monomial (c : ℝ) (n : ℕ) (a : R) : IsRestricted c (monomial n a) :=
+  MvPowerSeries.isRestricted_monomial (fun _ ↦ c) ((Finsupp.single () n)) a
 
-lemma C (a : R) : IsRestricted c (C a) := by
-  simpa [monomial_zero_eq_C_apply] using monomial c 0 a
+lemma isRestricted_one (c : ℝ) : IsRestricted c (1 : PowerSeries R) :=
+  MvPowerSeries.isRestricted_monomial (fun _ ↦ c) 0 1
 
-lemma add {f g : PowerSeries R} (hf : IsRestricted c f) (hg : IsRestricted c g) :
-    IsRestricted c (f + g) := by
-  simp only [isRestricted_iff, map_add, norm_mul, norm_pow, Real.norm_eq_abs] at ⊢ hf hg
-  intro ε hε
-  obtain ⟨fN, hfN⟩ := hf (ε / 2) (by positivity)
-  obtain ⟨gN, hgN⟩ := hg (ε / 2) (by positivity)
-  simp only [abs_norm] at hfN hgN ⊢
-  refine ⟨max fN gN, fun n hn ↦ ?_ ⟩
-  calc _ ≤ ‖(coeff n) f‖ * |c| ^ n + ‖(coeff n) g‖ * |c| ^ n := by grw [norm_add_le, add_mul]
-       _ < ε / 2 + ε / 2 := by gcongr <;> grind
-       _ = ε := by ring
+lemma isRestricted_C (c : ℝ) (a : R) : IsRestricted c (C a) :=
+  MvPowerSeries.isRestricted_C (fun _ ↦ c) a
 
-lemma neg {f : PowerSeries R} (hf : IsRestricted c f) : IsRestricted c (-f) := by
-  simpa [isRestricted_iff] using hf
+lemma isRestricted.add (c : ℝ) {f g : PowerSeries R} (hf : IsRestricted c f) (hg : IsRestricted c g)
+    : IsRestricted c (f + g) :=
+  MvPowerSeries.isRestricted.add (fun _ ↦ c) hf hg
 
-lemma smul {f : PowerSeries R} (hf : IsRestricted c f) (r : R) : IsRestricted c (r • f) := by
-  if h : r = 0 then simpa [h] using zero c else
-  simp_rw [isRestricted_iff, norm_mul, norm_pow, Real.norm_eq_abs, abs_norm] at ⊢ hf
-  intro ε _
-  obtain ⟨n, hn⟩ := hf (ε / ‖r‖) (by positivity)
-  refine ⟨n, fun N hN ↦ ?_⟩
-  calc _ ≤ ‖r‖ * ‖(coeff N) f‖ * |c| ^ N :=
-        mul_le_mul_of_nonneg (norm_mul_le _ _) (by simp) (by simp) (by simp)
-       _ < ‖r‖ * (ε / ‖r‖) := by
-        rw [mul_assoc]; aesop
-       _ = ε := mul_div_cancel₀ _ (by aesop)
+lemma isRestricted.neg (c : ℝ) {f : PowerSeries R} (hf : IsRestricted c f) :
+    IsRestricted c (-f) :=
+  MvPowerSeries.isRestricted.neg (fun _ ↦ c) hf
 
+lemma isRestricted.mul [IsUltrametricDist R] (c : ℝ) {f g : PowerSeries R}
+    (hf : IsRestricted c f) (hg : IsRestricted c g) : IsRestricted c (f * g) :=
+  MvPowerSeries.isRestricted.mul (fun _ ↦ c) hf hg
 
-/-- The set of `‖coeff R i f‖ * c ^ i` for a given power series `f` and parameter `c`. -/
-def convergenceSet (f : PowerSeries R) : Set ℝ := {‖coeff i f‖ * c^i | i : ℕ}
-
-open Finset in
-lemma convergenceSet_BddAbove {f : PowerSeries R} (hf : IsRestricted c f) :
-    BddAbove (convergenceSet c f) := by
-  simp_rw [isRestricted_iff] at hf
-  obtain ⟨N, hf⟩ := by simpa using (hf 1)
-  rw [bddAbove_def, convergenceSet]
-  use max 1 (max' (image (fun i ↦ ‖coeff i f‖ * c ^ i) (range (N + 1))) (by simp))
-  simp only [Set.mem_setOf_eq, le_sup_iff, forall_exists_index, forall_apply_eq_imp_iff]
-  intro i
-  rcases le_total i N with h | h
-  · right
-    apply le_max'
-    simp only [mem_image, mem_range]
-    exact ⟨i, by lia, rfl⟩
-  · left
-    calc _ ≤ ‖(coeff i) f‖ * |c ^ i| := by bound
-         _ ≤ 1 := by simpa using (hf i h).le
+/-- Restricted power series as an additive subgroup of `PowerSeries R`. -/
+def IsRestricted.addSubgroup (c : ℝ) : AddSubgroup (PowerSeries R) where
+  carrier := IsRestricted c
+  zero_mem' := isRestricted_zero c
+  add_mem' := isRestricted.add c
+  neg_mem' := isRestricted.neg c
 
 variable [IsUltrametricDist R]
 
-open IsUltrametricDist
+/-- Restricted power series as an subring of `PowerSeries R`. -/
+def IsRestricted.subring (c : ℝ) :  Subring (PowerSeries R) where
+  __ := IsRestricted.addSubgroup c
+  one_mem' := isRestricted_one c
+  mul_mem' := isRestricted.mul c
 
-lemma mul {f g : PowerSeries R} (hf : IsRestricted c f) (hg : IsRestricted c g) :
-    IsRestricted c (f * g) := by
-  obtain ⟨a, ha, fBound1⟩ := (bddAbove_iff_exists_ge 1).mp (convergenceSet_BddAbove _
-    ((isRestricted_iff_abs c f).mp hf))
-  obtain ⟨b, hb, gBound1⟩ := (bddAbove_iff_exists_ge 1).mp (convergenceSet_BddAbove _
-    ((isRestricted_iff_abs c g).mp hg))
-  simp only [convergenceSet, Set.mem_setOf_eq, forall_exists_index, forall_apply_eq_imp_iff]
-    at fBound1 gBound1
-  simp only [isRestricted_iff, norm_mul, norm_pow, Real.norm_eq_abs, abs_norm,
-    PowerSeries.coeff_mul] at ⊢ hf hg
-  intro ε hε
-  obtain ⟨Nf, fBound2⟩ := (hf (ε / (max a b))) (by positivity)
-  obtain ⟨Ng, gBound2⟩ := (hg (ε / (max a b))) (by positivity)
-  refine ⟨2 * max Nf Ng, fun n hn ↦ ?_⟩
-  obtain ⟨⟨fst, snd⟩, hi, ultrametric⟩ := exists_norm_finsetSum_le (Finset.antidiagonal n)
-    (fun a ↦ (coeff a.1) f * (coeff a.2) g)
-  obtain ⟨rfl⟩ := by simpa using hi (⟨(0, n), by simp⟩)
-  calc _ ≤ ‖(coeff fst) f * (coeff snd) g‖ * |c| ^ (fst + snd) := by bound
-       _ ≤ ‖(coeff fst) f‖ * |c| ^ fst * (‖(coeff snd) g‖ * |c| ^ snd) := by
-        grw [norm_mul_le]
-        #adaptation_note
-        /--
-        Broken in `nightly-2025-10-26`: this was by `grind`, but is now no longer supported.
-        See https://github.com/leanprover/lean4/pull/10970.
-        -/
-        rw [pow_add]
-        grind
-  have : max Nf Ng ≤ fst ∨ max Nf Ng ≤ snd := by lia
-  rcases this with this | this
-  · calc _ < ε / max a b * b := by
-          grw [gBound1 snd]
-          gcongr
-          exact fBound2 fst (by omega)
-         _ ≤ ε := by
-          rw [div_mul_comm, mul_le_iff_le_one_left ‹_›]
-          bound
-  · calc _ < a * (ε / max a b) := by
-          grw [fBound1 fst]
-          gcongr
-          exact gBound2 snd (by omega)
-         _ ≤ ε := by
-          rw [mul_div_left_comm, mul_le_iff_le_one_right ‹_›]
-          bound
+variable (R) in
+/-- The type of restricted `MvPowerSeries σ R`. -/
+def Restricted (c : ℝ) : Type _ := IsRestricted.subring (R := R) c
 
-end IsRestricted
+/-- Ring structure on `Restricted R c`. -/
+noncomputable
+instance (c : ℝ) : Ring (Restricted R c) :=
+  Subring.toRing (IsRestricted.subring c)
+
 end PowerSeries
