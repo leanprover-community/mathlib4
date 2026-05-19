@@ -95,9 +95,8 @@ lemma eHolderNorm_zero [Zero Y] (r : ℝ≥0) : eHolderNorm r (0 : X → Y) = 0 
 variable (X) in
 @[simp]
 lemma nnHolderNorm_const (r : ℝ≥0) (c : Y) : nnHolderNorm r (Function.const X c) = 0 := by
-  refine le_antisymm (ENNReal.coe_le_coe.1 <|
-    le_trans coe_nnHolderNorm_le_eHolderNorm ?_) (zero_le _)
-  rw [eHolderNorm_const, ENNReal.coe_zero]
+  rw [← nonpos_iff_eq_zero, ← ENNReal.coe_le_coe, ENNReal.coe_zero, ← eHolderNorm_const X r c]
+  exact coe_nnHolderNorm_le_eHolderNorm
 
 variable (X) in
 @[simp]

@@ -503,9 +503,14 @@ theorem mem_map_of_equiv {E : Type*} [EquivLike E R S] [RingEquivClass E R S] (e
   · rintro ⟨x, hx, rfl⟩
     exact mem_map_of_mem e hx
 
+lemma map_primeCompl_comap_of_surjective (hf : Function.Surjective f) (p : Ideal S) [p.IsPrime] :
+    Submonoid.map f (p.comap f).primeCompl = p.primeCompl := by
+  rw [SetLike.ext_iff, hf.forall]
+  grind [Submonoid.mem_map, mem_primeCompl_iff, mem_comap]
+
 lemma _root_.RingEquiv.map_primeCompl_comap_eq (e : R ≃+* S) (p : Ideal S) [p.IsPrime] :
-    (p.comap e).primeCompl.map e = p.primeCompl := by
-  simp [SetLike.ext_iff, e.surjective.forall]
+    (p.comap e).primeCompl.map e = p.primeCompl :=
+  p.map_primeCompl_comap_of_surjective e e.surjective
 
 section Bijective
 
@@ -937,6 +942,10 @@ theorem annihilator_iSup (ι : Sort w) (f : ι → Submodule R M) :
     mem_annihilator.2 fun n hn ↦ iSup_induction f (motive := (r • · = 0)) hn
       (fun i ↦ mem_annihilator.1 <| (mem_iInf _).mp H i) (smul_zero _)
       fun m₁ m₂ h₁ h₂ ↦ by simp_rw [smul_add, h₁, h₂, add_zero]
+
+theorem annihilator_sup (N P : Submodule R M) :
+    (N ⊔ P).annihilator = N.annihilator ⊓ P.annihilator := by
+  rw [← sSup_pair, sSup_eq_iSup, iSup_subtype', annihilator_iSup, ← iInf_pair, iInf_subtype']
 
 theorem le_annihilator_iff {N : Submodule R M} {I : Ideal R} : I ≤ annihilator N ↔ I • N = ⊥ := by
   simp_rw [← le_bot_iff, smul_le, SetLike.le_def, mem_annihilator]; rfl

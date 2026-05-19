@@ -700,7 +700,7 @@ theorem norm_iteratedFDeriv_apply_le_seminorm_top {i : ℕ}
 theorem norm_apply_le_seminorm {f : 𝓓^{n}_{K}(E, F)} {x : E} :
     ‖f x‖ ≤ N[𝕜]_{K, n, 0} f := by
   rw [← norm_iteratedFDeriv_zero (𝕜 := ℝ) (f := f) (x := x)]
-  exact norm_iteratedFDeriv_apply_le_seminorm 𝕜 (zero_le _)
+  exact norm_iteratedFDeriv_apply_le_seminorm 𝕜 zero_le
 
 theorem norm_toBoundedContinuousFunction (f : 𝓓^{n}_{K}(E, F)) :
     ‖(f : E →ᵇ F)‖ = N[𝕜]_{K, n, 0} f := by

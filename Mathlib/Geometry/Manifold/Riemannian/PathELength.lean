@@ -300,7 +300,6 @@ lemma exists_lt_locally_constant_of_riemannianEDist_lt
       intro t u htu
       dsimp only
       gcongr
-      simpa only [inv_nonneg, sub_nonneg] using ha'b'.le
     · simp only [η]
       apply (ContDiff.contDiffOn _).differentiableOn one_ne_zero
       fun_prop

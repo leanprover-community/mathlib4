@@ -614,6 +614,14 @@ def coeFnLinearMap : C(α, M) →ₗ[R] α → M :=
   { (coeFnAddMonoidHom : C(α, M) →+ _) with
     map_smul' := coe_smul }
 
+variable (M) in
+/-- Composition on the right by a continuous map, as a `ContinuousLinearMap`. -/
+@[simps]
+def compCLM (f : C(α, β)) : C(β, M) →L[R] C(α, M) where
+  toFun g := g.comp f
+  map_add' _ _ := add_comp _ _ f
+  map_smul' _ _ := smul_comp _ _ f
+
 /-- Evaluation at a point, as a continuous linear map. -/
 @[simps apply]
 def evalCLM (x : α) : C(α, M) →L[R] M where

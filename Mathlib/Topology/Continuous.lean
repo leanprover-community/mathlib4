@@ -292,7 +292,7 @@ theorem DenseRange.dense_image {f : X → Y} (hf' : DenseRange f) (hf : Continuo
 /-- If `f` has dense range and `s` is an open set in the codomain of `f`, then the image of the
 preimage of `s` under `f` is dense in `s`. -/
 theorem DenseRange.subset_closure_image_preimage_of_isOpen (hf : DenseRange f) (hs : IsOpen s) :
-    s ⊆ closure (f '' (f ⁻¹' s)) := by
+    s ⊆ closure (f '' f ⁻¹' s) := by
   rw [image_preimage_eq_inter_range]
   exact hf.open_subset_closure_inter hs
 

@@ -308,7 +308,7 @@ theorem le_leftLim (h : x < y) : f x ≤ leftLim f y := by
   intro z hz
   exact hf hz.le
 
-@[mono]
+@[gcongr, mono]
 protected theorem leftLim : Monotone (leftLim f) := by
   intro x y h
   rcases eq_or_lt_of_le h with (rfl | hxy)
@@ -321,7 +321,7 @@ theorem le_rightLim (h : x ≤ y) : f x ≤ rightLim f y :=
 theorem rightLim_le (h : x < y) : rightLim f x ≤ f y :=
   hf.dual.le_leftLim h
 
-@[mono]
+@[gcongr, mono]
 protected theorem rightLim : Monotone (rightLim f) := fun _ _ h => hf.dual.leftLim h
 
 theorem leftLim_le_rightLim (h : x ≤ y) : leftLim f x ≤ rightLim f y :=
@@ -401,7 +401,7 @@ theorem le_leftLim (h : x ≤ y) : f y ≤ leftLim f x :=
 theorem leftLim_le (h : x < y) : leftLim f y ≤ f x :=
   hf.dual_right.le_leftLim h
 
-@[mono]
+@[gcongr, mono]
 protected theorem leftLim : Antitone (leftLim f) :=
   hf.dual_right.leftLim
 
@@ -411,7 +411,7 @@ theorem rightLim_le (h : x ≤ y) : rightLim f y ≤ f x :=
 theorem le_rightLim (h : x < y) : f y ≤ rightLim f x :=
   hf.dual_right.rightLim_le h
 
-@[mono]
+@[gcongr, mono]
 protected theorem rightLim : Antitone (rightLim f) :=
   hf.dual_right.rightLim
 

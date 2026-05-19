@@ -61,7 +61,7 @@ variable {R}
 theorem mem_degreeLE {n : WithBot ℕ} {f : R[X]} : f ∈ degreeLE R n ↔ degree f ≤ n := by
   simp only [degreeLE, Submodule.mem_iInf, degree_le_iff_coeff_zero, LinearMap.mem_ker]; rfl
 
-@[mono]
+@[gcongr, mono]
 theorem degreeLE_mono {m n : WithBot ℕ} (H : m ≤ n) : degreeLE R m ≤ degreeLE R n := fun _ hf =>
   mem_degreeLE.2 (le_trans (mem_degreeLE.1 hf) H)
 
@@ -88,7 +88,7 @@ theorem degreeLE_eq_span_X_pow [DecidableEq R] {n : ℕ} :
 theorem mem_degreeLT {n : ℕ} {f : R[X]} : f ∈ degreeLT R n ↔ degree f < n := by
   simpa [degreeLT, Submodule.mem_iInf] using (degree_lt_iff_coeff_zero _ _).symm
 
-@[mono]
+@[gcongr, mono]
 theorem degreeLT_mono {m n : ℕ} (H : m ≤ n) : degreeLT R m ≤ degreeLT R n := fun _ hf =>
   mem_degreeLT.2 (lt_of_lt_of_le (mem_degreeLT.1 hf) <| WithBot.coe_le_coe.2 H)
 
@@ -764,18 +764,18 @@ theorem prime_rename_iff (s : Set σ) {p : MvPolynomial s R} :
       apply ringHom_ext
       · intro
         simp only [eqv, AlgHom.toRingHom_eq_coe, RingHom.coe_coe, rename_C,
-          AlgEquiv.toAlgHom_eq_coe, AlgEquiv.toAlgHom_toRingHom, RingHom.coe_comp,
-          AlgEquiv.coe_trans, Function.comp_apply, MvPolynomial.sumAlgEquiv_symm_apply,
-          iterToSum_C_C, renameEquiv_apply, Equiv.coe_trans, Equiv.sumComm_apply]
+          AlgEquiv.toAlgHom_toRingHom, RingHom.coe_comp, AlgEquiv.coe_trans,
+          Function.comp_apply, MvPolynomial.sumAlgEquiv_symm_apply, iterToSum_C_C,
+          renameEquiv_apply, Equiv.coe_trans, Equiv.sumComm_apply]
       · intro
         simp only [eqv, AlgHom.toRingHom_eq_coe, RingHom.coe_coe, rename_X,
-          AlgEquiv.toAlgHom_eq_coe, AlgEquiv.toAlgHom_toRingHom, RingHom.coe_comp,
-          AlgEquiv.coe_trans, Function.comp_apply, MvPolynomial.sumAlgEquiv_symm_apply,
-          iterToSum_C_X, renameEquiv_apply, Equiv.coe_trans, Equiv.sumComm_apply, Sum.swap_inr,
+          AlgEquiv.toAlgHom_toRingHom, RingHom.coe_comp, AlgEquiv.coe_trans,
+          Function.comp_apply, MvPolynomial.sumAlgEquiv_symm_apply, iterToSum_C_X,
+          renameEquiv_apply, Equiv.coe_trans, Equiv.sumComm_apply, Sum.swap_inr,
           Equiv.Set.sumCompl_apply_inl]
     apply_fun (· p) at this
-    simp only [AlgHom.toRingHom_eq_coe, RingHom.coe_coe, AlgEquiv.toAlgHom_eq_coe,
-      AlgEquiv.toAlgHom_toRingHom, RingHom.coe_comp, Function.comp_apply] at this
+    simp only [AlgHom.toRingHom_eq_coe, RingHom.coe_coe, AlgEquiv.toAlgHom_toRingHom,
+      RingHom.coe_comp, Function.comp_apply] at this
     rw [this, MulEquiv.prime_iff, prime_C_iff]
 
 end MvPolynomial

@@ -142,7 +142,7 @@ lemma esymmAlgHom_apply (p : MvPolynomial (Fin n) R) :
 lemma rename_esymmAlgHom (e : σ ≃ τ) :
     (renameSymmetricSubalgebra e).toAlgHom.comp (esymmAlgHom σ R n) = esymmAlgHom τ R n := by
   ext i : 2
-  simp_rw [AlgHom.comp_apply, esymmAlgHom, aeval_X, AlgEquiv.toAlgHom_eq_coe, AlgHom.coe_coe,
+  simp_rw [AlgHom.comp_apply, esymmAlgHom, aeval_X, AlgEquiv.coe_algHom,
     renameSymmetricSubalgebra_apply_coe, rename_esymm]
 
 variable (σ) in
@@ -240,12 +240,11 @@ lemma supDegree_esymmAlgHomMonomial (hr : r ≠ 0) (t : Fin n →₀ ℕ) (hnm :
     · exact (monic_esymm this).pow toLex_add toLex.injective
     · rwa [Ne, ← leadingCoeff_eq_zero toLex.injective, leadingCoeff_esymmAlgHomMonomial _ hnm]
 
-set_option backward.isDefEq.respectTransparency false in
 omit [Fintype σ] in
 lemma IsSymmetric.antitone_supDegree [LinearOrder σ] {p : MvPolynomial σ R} (hp : p.IsSymmetric) :
     Antitone ↑(ofLex <| p.supDegree toLex) := by
   obtain rfl | h0 := eq_or_ne p 0
-  · rw [supDegree_zero, Finsupp.bot_eq_zero]
+  · rw [supDegree_zero, bot_eq_zero (α := Lex (σ →₀ ℕ))]
     exact Pi.zero_mono
   rw [Antitone]
   by_contra! ⟨i, j, hle, hlt⟩

@@ -14,6 +14,7 @@ public import Mathlib.RingTheory.LocalRing.Basic
 public import Mathlib.Topology.Algebra.Module.Determinant
 public import Mathlib.Topology.Algebra.Module.ModuleTopology
 public import Mathlib.Topology.Algebra.Module.Simple
+public import Mathlib.Topology.Algebra.Module.Complement
 public import Mathlib.Topology.Algebra.SeparationQuotient.FiniteDimensional
 public import Mathlib.Topology.Maps.Strict.Basic
 
@@ -704,3 +705,45 @@ theorem HasCompactMulSupport.eq_one_or_finiteDimensional {X : Type*} [Topologica
   HasCompactSupport.eq_zero_or_finiteDimensional 𝕜 (X := Additive X) hf h'f
 
 end Riesz
+
+section Compl
+
+open Submodule
+
+/-- If `p` is a closed subspace with finite codimension, then any algebraic complement `q` to `p`
+is a topological complement. -/
+theorem Submodule.IsCompl.isTopCompl_of_finiteDimensional_quotient {p q : Submodule 𝕜 E}
+    (h : IsCompl p q) (hp : IsClosed (p : Set E)) [FiniteDimensional 𝕜 (E ⧸ p)] :
+    IsTopCompl p q := by
+  let φ : E ⧸ p →L[𝕜] q := (p.quotientEquivOfIsCompl q h).toLinearMap.toContinuousLinearMap
+  have := (φ ∘L p.mkQL).isTopCompl_of_proj fun x ↦ by simp [φ]
+  simpa [φ] using this.symm
+
+/-- Assume that `p q : Submodule 𝕜 E` are algebraic complements. If `p` is closed and `q`
+has finite dimension, then they are in fact topological complements.
+
+Note that this theorem does not help you to build a closed complement to a finite dimensional
+subspace. That requires the Hahn-Banach theorem, and you don't get much control over what the
+complement is. See `Submodule.ClosedComplemented.of_finiteDimensional`. -/
+theorem Submodule.IsCompl.isTopCompl_of_isClosed_of_finiteDimensional {p q : Submodule 𝕜 E}
+    (h : IsCompl p q) (hp : IsClosed (p : Set E)) [hq : FiniteDimensional 𝕜 q] :
+    IsTopCompl p q := by
+  suffices FiniteDimensional 𝕜 (E ⧸ p) from h.isTopCompl_of_finiteDimensional_quotient hp
+  exact (p.quotientEquivOfIsCompl q h).symm.finiteDimensional
+
+theorem Submodule.ClosedComplemented.of_finiteDimensional_quotient {p : Submodule 𝕜 E}
+    (hp : IsClosed (p : Set E)) [hq : FiniteDimensional 𝕜 (E ⧸ p)] : p.ClosedComplemented := by
+  obtain ⟨q, hq⟩ : ∃ q, IsCompl p q := p.exists_isCompl
+  exact hq.isTopCompl_of_finiteDimensional_quotient hp |>.closedComplemented
+
+@[deprecated (since := "2026-05-09")]
+alias Submodule.ClosedComplemented.of_quotient_finiteDimensional :=
+  Submodule.ClosedComplemented.of_finiteDimensional_quotient
+
+omit [IsTopologicalAddGroup F] [ContinuousSMul 𝕜 F] in
+theorem ContinuousLinearMap.ker_closedComplemented_of_finiteDimensional_range [T2Space F]
+    (f : E →L[𝕜] F) [FiniteDimensional 𝕜 f.range] : f.ker.ClosedComplemented := by
+  suffices FiniteDimensional 𝕜 (E ⧸ f.ker) from .of_finiteDimensional_quotient f.isClosed_ker
+  exact f.toLinearMap.quotKerEquivRange.symm.finiteDimensional
+
+end Compl
