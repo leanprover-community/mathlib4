@@ -71,10 +71,6 @@ lemma continuousOn_nnrpow_setProd :
   obtain ⟨K, hK₁, hK₂⟩ := (quasispectrum.isCompact_nnreal a).nhdsSet_basis_isCompact.ex_mem
   let s : Set ℝ≥0 := K ∩ Ici 0
   have hs_compact : IsCompact s := hK₂.inter_right (ClosedIciTopology.isClosed_Ici 0)
-  have hs_contains_spec : quasispectrum ℝ≥0 a ⊆ s := by
-    refine Set.subset_inter ?_ ?_
-    · exact subset_of_mem_nhdsSet hK₁
-    · grind [zero_le]
   let s' := {f : ℝ≥0 →ᵤ[{s}] ℝ≥0 | ContinuousOn (toFun {s} f) s ∧ f 0 = 0}
                 ×ˢ {a : A | 0 ≤ a ∧ quasispectrum ℝ≥0 a ⊆ s}
   let ssw := {b : A | 0 ≤ b ∧ quasispectrum ℝ≥0 b ⊆ s} ×ˢ Ioi (0 : ℝ≥0)
@@ -115,7 +111,7 @@ lemma continuousOn_nnrpow_setProd :
   · apply continuousOn_cfcₙ_nnreal_setProd hs_compact
     simp only [Function.comp_apply, Prod.swap_prod_mk, Prod.map_apply, id_eq, mem_prod,
       mem_setOf_eq]
-    refine ⟨⟨?_, h₁' _ hp⟩, ha, by grind⟩
+    refine ⟨⟨?_, h₁' _ hp⟩, ha, Set.subset_inter (subset_of_mem_nhdsSet hK₁) (by grind [zero_le])⟩
     simp only [toFun, NNReal.nnrpow_def, Equiv.symm_apply_apply, f₁]
     fun_prop
   · refine ContinuousWithinAt.comp (t := ssws) ?_ (by fun_prop) (by grind [MapsTo])
