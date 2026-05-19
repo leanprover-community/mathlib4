@@ -116,31 +116,12 @@ lemma Module.sum_neg_one_pow_finrank_eq_zero_of_exact {n : ℕ} {k : Type*}
        exact inst_1'' i
     have inst_2' : (i : Fin (n + 3)) → Module k ((V ∘ Fin.castSucc) i) := by
        intro i
-       simp_all only [Fin.castSucc_zero, Fin.succ_zero_eq_one, Fin.castSucc_succ, Fin.succ_last, Nat.succ_eq_add_one,
+       simp_all only [Fin.castSucc_zero, Fin.succ_zero_eq_one, Fin.castSucc_succ,
+         Fin.succ_last, Nat.succ_eq_add_one,
          Int.reduceNeg, Int.zsmul_eq_mul, implies_true, comp_apply]
-       exact inst_2'' i
-    have := by refine h (V ∘ Fin.castSucc)
-
-
-
-
-
-
-
-    --have := by refine h V' (sorry) (sorry) (sorry) (sorry)
-    --have (i : Fin (n + 3)) : V' i = V i.castSucc := comp_apply
-    rw [this]
-
-
-    let φ := (Fin.snocEquiv V).symm
-    --let V' (i : Fin (n + 3)) := φ (fun x ↦ V x.castPred)
-    -- Fin.castPred (casts Fin n+1 to Fin n so long as not the last element.)
-    -- How to create a new V?
-    -- Fin.succFunEquiv
-    -- Must just add and subtract range and then the sum will cancel.
+       sorry
     sorry
 
-#exit
 -- Can we have a simproc write this using `Module.sum_neg_one_pow_finrank_eq_zero_of_exact`
 -- Note the key point that the universes of the `Vᵢ` are allowed be different here.
 open Function Module in
