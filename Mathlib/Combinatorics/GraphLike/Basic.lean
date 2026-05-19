@@ -6,7 +6,7 @@ Authors: Jun Kwon, Thomas Waring
 module
 
 public import Mathlib.Data.PFun
-public import Mathlib.Combinatorics.Graph.Basic
+public import Mathlib.Combinatorics.Graph.Subgraph
 public import Mathlib.Combinatorics.SimpleGraph.Dart
 public import Mathlib.Combinatorics.Digraph.Basic
 public import Mathlib.AlgebraicTopology.SimplicialComplex.Basic
@@ -28,7 +28,7 @@ variable {V E Gr : Type*} {G : Gr} {e : E} {x y : V}
 /-- The type `Gr` consists of graph-like objects on vertices `V` and edges `E`. Note that we
 *cannot* require the converse of `isSource_left_of_isLink` and `isTarget_right_of_isLink` taken
 together, as might be tempting: in an undirected graph we want, for instance `IsLink G e x y` and
-`IsLink G e y x` to both be true, and this converse would then imply `IsLink H e x x`, which we
+`IsLink G e y x` to both be true, and this converse would then imply `IsLink G e x x`, which we
 don't necessarily want. We also can't take `is{Source / Target}_{left / right}_of_isLink` as a
 definition, to account for edges which have inputs but no outputs. -/
 class HyperGraphLike (V E : outParam Type*) (Gr : Type*) where
@@ -131,6 +131,15 @@ def AdjDart (d d' : Dart G) : Prop := d.tgt = d'.src
 
 end Dart
 
+/-- This is weaker than requiring that the clauses listed *determine* the order relation,
+but it ought to be enough to define eg lifting walks from a subgraph. -/
+class HyperGraphLikeLE (Gr : Type*) [HyperGraphLike V E Gr] [LE Gr] where
+  verts_mono {H G : Gr} : H ≤ G → verts H ⊆ verts G
+  edges_mono {H G : Gr} : H ≤ G → edges H ⊆ edges G
+  isSource_mono {H G : Gr} : H ≤ G → ∀ ⦃e x⦄, IsSource H e x → IsSource G e x
+  isTarget_mono {H G : Gr} : H ≤ G → ∀ ⦃e y⦄, IsTarget H e y → IsTarget G e y
+  isLink_mono {H G : Gr} : H ≤ G → ∀ ⦃e x y⦄, IsLink H e x y → IsLink G e x y
+
 end HyperGraphLike
 
 open HyperGraphLike
@@ -149,7 +158,7 @@ lemma adj_symm : Symmetric (Adj G) := by
   intro x y ⟨e, h⟩
   exact ⟨e, isLink_symm h⟩
 
--- -- etc API lemmas as for `Graph`
+-- etc API lemmas as for `Graph`
 
 end HyperGraphLike.Symm
 
@@ -203,6 +212,18 @@ noncomputable def endpoints (he : e ∈ edges G) : Sym2 V :=
 lemma eq_endpoints_of_isLink (h : IsLink G e x y) : s(x, y) = endpoints h.mem_edges := by
   simpa [endpoints] using eq_and_eq_or_eq_and_eq_of_isLink_of_isLink (G := G) (e := e) h <|
     Classical.choose_spec <| Classical.choose_spec (mem_edges_iff_exists_isLink.mp h.mem_edges)
+
+/-- A convenient constructor for `HyperGraphLikeLE` in the case of graphlike types. -/
+@[implicit_reducible]
+def hyperGraphLikeLE [LE Gr] (hverts : ∀ {H G : Gr}, H ≤ G → verts H ⊆ verts G)
+    (hedges : ∀ {H G : Gr}, H ≤ G → edges H ⊆ edges G)
+    (hlink : ∀ {H G : Gr}, H ≤ G → ∀ ⦃e x y⦄, IsLink H e x y → IsLink G e x y) :
+    HyperGraphLikeLE Gr where
+  verts_mono := hverts
+  edges_mono := hedges
+  isSource_mono h e x := by grind [isSource_iff_exists_isLink]
+  isTarget_mono h e x := by grind [isTarget_iff_exists_isLink]
+  isLink_mono := hlink
 
 end GraphLike
 
@@ -295,7 +316,7 @@ instance : GraphLike.Simple V (V × V) (Digraph V) where
     cases e; cases e'
     simp_all [IsLink]
 
-/-- `Graph` is `GraphLike`. -/
+/-- `Graph` is `GraphLike` ... -/
 instance : GraphLike V E (Graph V E) := by
   refine ofIsLink Graph.vertexSet Graph.IsLink ?_ ?_ ?_
   · intro G e x y h
@@ -305,12 +326,7 @@ instance : GraphLike V E (Graph V E) := by
   · intro G e x y x' y' h h'
     exact h.eq_and_eq_or_eq_and_eq h'
 
--- sanity check
-lemma Graph.edges_eq_edgeSet (G : Graph V E) : edges G = G.edgeSet := by
-  ext x
-  simp [edges, G.edge_mem_iff_exists_isLink]
-
-/-- `Graph` is symmetric. -/
+/-- ... and symmetric. -/
 instance : HyperGraphLike.Symm V E (Graph V E) where
   isSource_iff_isTarget G e x := by
     simp [IsSource, IsTarget]
@@ -318,6 +334,17 @@ instance : HyperGraphLike.Symm V E (Graph V E) where
   isLink_symm G e := by
     intro x y h
     exact h.symm
+
+-- sanity check
+lemma Graph.edges_eq_edgeSet (G : Graph V E) : edges G = G.edgeSet := by
+  ext x
+  simp [edges, G.edge_mem_iff_exists_isLink]
+
+instance : HyperGraphLikeLE (Graph V E) := by
+  refine GraphLike.hyperGraphLikeLE ?_ ?_ ?_
+  · intro _ _ h; exact h.vertexSet_mono
+  · intro _ _ h; simpa [Graph.edges_eq_edgeSet] using h.edgeSet_mono
+  · intro _ _ h; exact h.isLink_mono
 
 /-- `SimpleGraph` is `Graphlike`, ... -/
 instance : GraphLike V (Sym2 V) (SimpleGraph V) := by
