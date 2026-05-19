@@ -13,8 +13,8 @@ public import Mathlib.Analysis.Calculus.LipschitzSmooth.FDeriv
 
 On a Hilbert space `F`, the `LipschitzSmoothWith` predicate admits a gradient-form
 characterisation. For differentiable `f`, `fderiv ℝ f x (y - x) = ⟪∇ f x, y - x⟫`
-via Riesz representation (`inner_gradient_left`), and the descent inequality becomes
-`f y ≤ f x + ⟪∇ f x, y - x⟫ + K/2 · ‖y - x‖²`.
+via Riesz representation (`inner_gradient_left`), and the two-sided Taylor bound becomes
+`|f y - f x - ⟪∇ f x, y - x⟫| ≤ K/2 · ‖y - x‖²`.
 
 This file also defines the **`CocoerciveWith K f`** predicate (the conclusion of the
 Baillon-Haddad theorem) and the elementary direction `K`-cocoercive ⟹ `K`-Lipschitz
@@ -29,18 +29,31 @@ variable {K : NNReal} {f : F → ℝ}
 open scoped Gradient RealInnerProductSpace
 
 theorem lipschitzSmoothWith_iff_inner_gradient (hf : Differentiable ℝ f) :
-    LipschitzSmoothWith K f ↔ ∀ x y : F, f y ≤ f x + ⟪∇ f x, y - x⟫ + ↑K / 2 * ‖y - x‖ ^ 2 := by
+    LipschitzSmoothWith K f ↔
+      ∀ x y : F, |f y - f x - ⟪∇ f x, y - x⟫| ≤ ↑K / 2 * ‖y - x‖ ^ 2 := by
   rw [lipschitzSmoothWith_iff_fderiv hf]
   refine forall_congr' fun x => forall_congr' fun y => ?_
   rw [inner_gradient_left, dist_eq_norm']
 
 namespace LipschitzSmoothWith
 
+theorem inner_gradient_abs_le (h : LipschitzSmoothWith K f) (x y : F)
+    (hf : DifferentiableAt ℝ f x) :
+    |f y - f x - ⟪∇ f x, y - x⟫| ≤ ↑K / 2 * ‖y - x‖ ^ 2 := by
+  rw [inner_gradient_left, ← dist_eq_norm']
+  exact h.fderiv_abs_le x y hf
+
 theorem inner_gradient_descent_le (h : LipschitzSmoothWith K f) (x y : F)
     (hf : DifferentiableAt ℝ f x) :
     f y ≤ f x + ⟪∇ f x, y - x⟫ + ↑K / 2 * ‖y - x‖ ^ 2 := by
   rw [inner_gradient_left, ← dist_eq_norm']
   exact h.fderiv_descent_le x y hf
+
+theorem inner_gradient_descent_ge (h : LipschitzSmoothWith K f) (x y : F)
+    (hf : DifferentiableAt ℝ f x) :
+    f x + ⟪∇ f x, y - x⟫ - ↑K / 2 * ‖y - x‖ ^ 2 ≤ f y := by
+  rw [inner_gradient_left, ← dist_eq_norm']
+  exact h.fderiv_descent_ge x y hf
 
 theorem inner_gradient_sub_le (h : LipschitzSmoothWith K f) (x y : F)
     (hfx : DifferentiableAt ℝ f x) (hfy : DifferentiableAt ℝ f y) :
