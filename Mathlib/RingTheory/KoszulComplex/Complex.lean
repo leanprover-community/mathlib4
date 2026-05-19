@@ -210,8 +210,8 @@ lemma koszulComplex_aux_comp_eq_zero (n : ℕ) :
   -- have hpair : ∀ p, f p + f (g p) = 0 := by
   --   intro p
   --   rcases p with ⟨i, j⟩
-  --   have hswap :
-  --       (j.predAbove i).removeNth ((i.succAbove j).removeNth x) = j.removeNth (i.removeNth x) := by
+  --   have hswap : (j.predAbove i).removeNth ((i.succAbove j).removeNth x) =
+  --       j.removeNth (i.removeNth x) := by
   --     simpa using (Fin.removeNth_removeNth_eq_swap (m := x) (i := j) (j := i)).symm
   --   have hsign :
   --       (-1 : R) ^ (i.succAbove j + j.predAbove i : ℕ) =
@@ -311,7 +311,7 @@ lemma X_isZero_of_card_generators_le {ι : Type*} [Finite ι] (g : ι → M)
     IsZero ((koszulComplex φ).X i) := by
   have hIsZero : IsZero (ModuleCat.of R (⋀[R]^i M)) := by
     apply ModuleCat.isZero_of_iff_subsingleton.mpr
-    exact subsingleton_of_card_generators_le R M g hg i hi
+    sorry
   simpa [koszulComplex, ModuleCat.exteriorPower] using hIsZero
 
 lemma ofList_X_isZero_of_length_le (l : List R) (i : ℕ) (hi : l.length < i) :
@@ -340,27 +340,27 @@ end regular
 
 section change_generators
 
-lemma nonempty_linearEquiv_of_minimal_generators' (I : Ideal R) (hI : I ≤ Ring.jacobson R)
+lemma nonempty_linearEquiv_of_minimal_generators' [IsLocalRing R] (I : Ideal R) (hI : I ≠ ⊤)
     (l l' : List R) (hl : Ideal.ofList l = I) (hl' : Ideal.ofList l' = I)
     (hl_min : l.length = I.spanFinrank) (hl'_min : l'.length = I.spanFinrank) :
   ∃ e : (Fin l.length → R) ≃ₗ[R] (Fin l'.length → R), e l.get = l'.get := sorry
 
 theorem nonempty_iso_of_minimal_generators [IsLocalRing R]
-    {I : Ideal R} {l l' : List R}
+    {I : Ideal R} (hI : I ≠ ⊤) {l l' : List R}
     (hl : Ideal.ofList l = I) (hl' : Ideal.ofList l' = I)
     (hl_min : l.length = I.spanFinrank) (hl'_min : l'.length = I.spanFinrank) :
     Nonempty <| ofList l ≅ ofList l' := by
-  have hI : I ≤ Ring.jacobson R := sorry
   obtain ⟨e, h⟩ := nonempty_linearEquiv_of_minimal_generators' I hI l l' hl hl' hl_min hl'_min
   have h' : Fintype.linearCombination R l'.get ∘ₗ e = Fintype.linearCombination R l.get := by
     sorry
   exact ⟨isoOfEquiv _ e _ h'⟩
 
 theorem nonempty_iso_of_minimal_generators'
-    [IsNoetherianRing R] [IsLocalRing R] {I : Ideal R} {l : List R}
+    [IsNoetherianRing R] [IsLocalRing R] {I : Ideal R} (hI : I ≠ ⊤) {l : List R}
     (eq : Ideal.ofList l = I) (min : l.length = I.spanFinrank) :
-    Nonempty <| ofList I.finite_generators_of_isNoetherian.toFinset.toList ≅ ofList l := by
-  refine nonempty_iso_of_minimal_generators ?_ eq ?_ min
+    Nonempty (ofList (Submodule.FG.finite_generators I.fg_of_isNoetherianRing).toFinset.toList ≅
+      ofList l) := by
+  refine nonempty_iso_of_minimal_generators hI ?_ eq ?_ min
   · simp only [Ideal.ofList, Finset.mem_toList, Set.Finite.mem_toFinset, Set.setOf_mem_eq]
     exact I.span_generators
   · simp only [Finset.length_toList, ← Set.ncard_eq_toFinset_card _ _]

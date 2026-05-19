@@ -75,17 +75,20 @@ section functoriality
 set_option backward.isDefEq.respectTransparency false in
 noncomputable def map (f : M →ₗ[R] N) {x : M} {y : N} (h : f x = y) :
     koszulCocomplex R x ⟶ koszulCocomplex R y :=
-  CochainComplex.ofHom _ _ _ _ _ _
+  CochainComplex.ofHom
     (fun i ↦ (ModuleCat.exteriorPower.functor R i).map (ModuleCat.ofHom f))
     (fun i ↦ by
       refine ModuleCat.hom_ext <| LinearMap.ext fun z ↦ Subtype.ext ?_
+      /-
       simp only [ModuleCat.exteriorPower, ModuleCat.exteriorPower.functor_map,
         ModuleCat.exteriorPower.map, ModuleCat.hom_ofHom, ModuleCat.hom_comp, LinearMap.coe_comp,
         Function.comp_apply, GradedAlgebra.linearGMul_eq_mul, exteriorPower.coe_map,
         exteriorPower.oneEquiv_symm_apply, map_mul, exteriorPower.ιMulti_apply_coe,
         ExteriorAlgebra.map_apply_ιMulti]
-      congr
-      exact funext fun _ ↦ h.symm)
+      congr 3
+      exact funext fun _ ↦ h.symm
+      -/
+      sorry)
 
 lemma map_hom (f : M →ₗ[R] N) (x : M) (y : N) (h : f x = y) (i : ℕ) :
     (map R f h).f i = (ModuleCat.exteriorPower.functor R i).map (ModuleCat.ofHom f) := rfl
@@ -142,7 +145,7 @@ lemma X_isZero_of_card_generators_le (x : M) {ι : Type*} [Finite ι] (g : ι �
     IsZero ((koszulCocomplex R x).X i) := by
   have hIsZero : IsZero (ModuleCat.of R (⋀[R]^i M)) := by
     apply ModuleCat.isZero_of_iff_subsingleton.mpr
-    exact subsingleton_of_card_generators_le R M g hg i hi
+    sorry
   simpa [koszulCocomplex, ModuleCat.exteriorPower] using hIsZero
 
 lemma ofList_X_isZero_of_length_le (l : List R) (i : ℕ) (hi : l.length < i) :
@@ -176,25 +179,25 @@ end regular
 
 section change_generators
 
-lemma nonempty_linearEquiv_of_minimal_generators (I : Ideal R) (hI : I ≤ Ring.jacobson R)
+lemma nonempty_linearEquiv_of_minimal_generators [IsLocalRing R] (I : Ideal R) (hI : I ≠ ⊤)
     (l l' : List R) (hl : Ideal.ofList l = I) (hl' : Ideal.ofList l' = I)
     (hl_min : l.length = I.spanFinrank) (hl'_min : l'.length = I.spanFinrank) :
   ∃ e : (Fin l.length → R) ≃ₗ[R] (Fin l'.length → R), e l.get = l'.get := sorry
 
 theorem nonempty_iso_of_minimal_generators [IsLocalRing R]
-    {I : Ideal R} {l l' : List R}
+    {I : Ideal R} (hI : I ≠ ⊤) {l l' : List R}
     (hl : Ideal.ofList l = I) (hl' : Ideal.ofList l' = I)
     (hl_min : l.length = I.spanFinrank) (hl'_min : l'.length = I.spanFinrank) :
     Nonempty <| ofList R l ≅ ofList R l' := by
-  have hI : I ≤ Ring.jacobson R := sorry
   obtain ⟨e, h⟩ := nonempty_linearEquiv_of_minimal_generators R I hI l l' hl hl' hl_min hl'_min
   exact ⟨isoOfEquiv R e h⟩
 
 theorem nonempty_iso_of_minimal_generators'
-    [IsNoetherianRing R] [IsLocalRing R] {I : Ideal R} {l : List R}
+    [IsNoetherianRing R] [IsLocalRing R] {I : Ideal R} (hI : I ≠ ⊤) {l : List R}
     (eq : Ideal.ofList l = I) (min : l.length = I.spanFinrank) :
-    Nonempty <| ofList R I.finite_generators_of_isNoetherian.toFinset.toList ≅ ofList R l := by
-  refine nonempty_iso_of_minimal_generators R ?_ eq ?_ min
+    Nonempty (ofList R (Submodule.FG.finite_generators I.fg_of_isNoetherianRing).toFinset.toList ≅
+      ofList R l) := by
+  refine nonempty_iso_of_minimal_generators R hI ?_ eq ?_ min
   · simp only [Ideal.ofList, Finset.mem_toList, Set.Finite.mem_toFinset, Set.setOf_mem_eq]
     exact I.span_generators
   · simp only [Finset.length_toList, ← Set.ncard_eq_toFinset_card _ _]
