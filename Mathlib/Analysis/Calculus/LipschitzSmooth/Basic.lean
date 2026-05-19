@@ -43,21 +43,18 @@ The choice of `lineDeriv` here is an implementation detail: it is the weakest fo
 that makes the predicate well-defined for non-differentiable functions. Equivalent
 characterisations in `fderiv`, `gradient`, and `deriv` form are provided in the
 sibling files, predicated on the appropriate differentiability hypothesis. -/
-def LipschitzSmoothWith (K : NNReal) (f : F → ℝ) : Prop :=
+def LipschitzSmoothWith (K : NNReal) (f : F → ℝ) :=
   ∀ (x y : F), f y ≤ f x + lineDeriv ℝ f x (y - x) + ↑K / 2 * (dist x y) ^ 2
 
-theorem lipschitzSmoothWith_iff_lineDeriv {K : NNReal} {f : F → ℝ} :
-    LipschitzSmoothWith K f ↔
-      ∀ x y : F, f y ≤ f x + lineDeriv ℝ f x (y - x) + ↑K / 2 * (dist x y) ^ 2 :=
-  Iff.rfl
+theorem lipschitzSmoothWith_iff_lineDeriv {K : NNReal} {f : F → ℝ} : LipschitzSmoothWith K f ↔
+    ∀ x y : F, f y ≤ f x + lineDeriv ℝ f x (y - x) + ↑K / 2 * (dist x y) ^ 2 := Iff.rfl
 
 namespace LipschitzSmoothWith
 
 variable {K : NNReal} {f : F → ℝ}
 
 theorem lineDeriv_descent_le (h : LipschitzSmoothWith K f) (x y : F) :
-    f y ≤ f x + lineDeriv ℝ f x (y - x) + ↑K / 2 * (dist x y) ^ 2 :=
-  h x y
+    f y ≤ f x + lineDeriv ℝ f x (y - x) + ↑K / 2 * (dist x y) ^ 2 := h x y
 
 theorem lineDeriv_apply_sub_le (h : LipschitzSmoothWith K f) (x y : F) :
     lineDeriv ℝ f y (y - x) - lineDeriv ℝ f x (y - x) ≤ ↑K * (dist x y) ^ 2 := by

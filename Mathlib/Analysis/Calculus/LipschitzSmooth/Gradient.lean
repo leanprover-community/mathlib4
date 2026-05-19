@@ -37,8 +37,7 @@ variable {K : NNReal} {f : F → ℝ}
 open scoped Gradient RealInnerProductSpace
 
 theorem lipschitzSmoothWith_iff_inner_gradient (hf : Differentiable ℝ f) :
-    LipschitzSmoothWith K f ↔
-      ∀ x y : F, f y ≤ f x + ⟪∇ f x, y - x⟫ + ↑K / 2 * ‖y - x‖ ^ 2 := by
+    LipschitzSmoothWith K f ↔ ∀ x y : F, f y ≤ f x + ⟪∇ f x, y - x⟫ + ↑K / 2 * ‖y - x‖ ^ 2 := by
   rw [lipschitzSmoothWith_iff_fderiv hf]
   refine forall_congr' fun x => forall_congr' fun y => ?_
   rw [inner_gradient_left, dist_eq_norm']

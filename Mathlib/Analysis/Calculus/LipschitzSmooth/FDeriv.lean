@@ -33,17 +33,15 @@ public section
 variable {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
 variable {K : NNReal} {f : F → ℝ}
 
-theorem lipschitzSmoothWith_iff_fderiv (hf : Differentiable ℝ f) :
-    LipschitzSmoothWith K f ↔
-      ∀ x y : F, f y ≤ f x + fderiv ℝ f x (y - x) + ↑K / 2 * (dist x y) ^ 2 := by
+theorem lipschitzSmoothWith_iff_fderiv (hf : Differentiable ℝ f) : LipschitzSmoothWith K f ↔
+    ∀ x y : F, f y ≤ f x + fderiv ℝ f x (y - x) + ↑K / 2 * (dist x y) ^ 2 := by
   rw [lipschitzSmoothWith_iff_lineDeriv]
   refine forall_congr' fun x => forall_congr' fun y => ?_
   rw [(hf x).lineDeriv_eq_fderiv]
 
 namespace LipschitzSmoothWith
 
-theorem fderiv_descent_le (h : LipschitzSmoothWith K f) (x y : F)
-    (hf : DifferentiableAt ℝ f x) :
+theorem fderiv_descent_le (h : LipschitzSmoothWith K f) (x y : F) (hf : DifferentiableAt ℝ f x) :
     f y ≤ f x + fderiv ℝ f x (y - x) + ↑K / 2 * (dist x y) ^ 2 := by
   rw [← hf.lineDeriv_eq_fderiv]
   exact h.lineDeriv_descent_le x y
