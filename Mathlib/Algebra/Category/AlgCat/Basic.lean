@@ -5,6 +5,7 @@ Authors: Kim Morrison
 -/
 module
 
+public import Mathlib.CategoryTheory.ConcreteCategory.ReflectsIso
 public import Mathlib.Algebra.Algebra.Subalgebra.Basic
 public import Mathlib.Algebra.FreeAlgebra
 public import Mathlib.Algebra.Category.Ring.Basic
@@ -251,12 +252,8 @@ instance AlgCat.forget_reflects_isos : (forget (AlgCat.{v} R)).ReflectsIsomorphi
     let e : X ≃ₐ[R] Y := { f.hom, i.toEquiv with }
     exact e.toAlgebraIso.isIso_hom
 
-instance : (forget₂ (AlgCat.{v} R) RingCat.{v}).ReflectsIsomorphisms := by
-  suffices (forget₂ (AlgCat R) RingCat ⋙ forget RingCat).ReflectsIsomorphisms from
-    reflectsIsomorphisms_of_comp _ (forget _)
-  exact inferInstanceAs <| Functor.ReflectsIsomorphisms (forget <| AlgCat R)
+instance : (forget₂ (AlgCat.{v} R) RingCat.{v}).ReflectsIsomorphisms :=
+  reflectsIsomorphisms_forget₂ _ _
 
-instance : (forget₂ (AlgCat.{v} R) (ModuleCat.{v} R)).ReflectsIsomorphisms := by
-  suffices (forget₂ (AlgCat R) _ ⋙ forget (ModuleCat.{v} R)).ReflectsIsomorphisms from
-    reflectsIsomorphisms_of_comp _ (forget _)
-  exact inferInstanceAs <| Functor.ReflectsIsomorphisms (forget <| AlgCat R)
+instance : (forget₂ (AlgCat.{v} R) (ModuleCat.{v} R)).ReflectsIsomorphisms :=
+  reflectsIsomorphisms_forget₂ _ _
