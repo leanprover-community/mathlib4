@@ -362,6 +362,9 @@ theorem LindelofSpace.compactSpace {X : Type*} [TopologicalSpace X]
     [LindelofSpace X] [h : CountablyCompactSpace X] : CompactSpace X where
   isCompact_univ := isLindelof_univ.isCompact h.isCountablyCompact_univ
 
+@[deprecated (since := "2026-05-19")]
+alias LindelofSpace.CompactSpace := LindelofSpace.compactSpace
+
 /-- In a Hereditarily Lindelöf space, a countably compact set is compact. -/
 theorem IsCountablyCompact.isCompact [HereditarilyLindelofSpace E]
     (hA : IsCountablyCompact A) : IsCompact A :=
