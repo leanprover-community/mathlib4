@@ -20,7 +20,7 @@ transcendental separable field extensions.
 # Main definitions and results
 
 * `Algebra.IsSeparablyGenerated` : A field extension is separably generated if there exists
-  an transcendental basis such that the extension above it is separable.
+  a transcendence basis such that the extension above it is separable.
 
 * `Algebra.IsTranscendentalSeparable` : A field extension is transcendental separable if
   every finitely generated subextension is separably generated.
@@ -37,7 +37,7 @@ section
 
 variable (k : Type u) (K : Type v) [Field k] [Field K] [Algebra k K]
 
-/-- A field extension is separably generated if there exists an transcendental basis such that
+/-- A field extension is separably generated if there exists a transcendence basis such that
 the extension above it is separable. -/
 @[mk_iff, stacks 030O "Part 1"]
 class Algebra.IsSeparablyGenerated : Prop where
