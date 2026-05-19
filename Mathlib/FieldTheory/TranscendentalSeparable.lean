@@ -6,7 +6,7 @@ Authors: Nailin Guan
 module
 
 public import Mathlib.FieldTheory.IntermediateField.Adjoin.Defs
-public import Mathlib.FieldTheory.Separable
+public import Mathlib.FieldTheory.SeparableDegree
 public import Mathlib.RingTheory.AlgebraicIndependent.AlgebraicClosure
 public import Mathlib.RingTheory.AlgebraicIndependent.TranscendenceBasis
 public import Mathlib.RingTheory.EssentialFiniteness
@@ -74,11 +74,9 @@ lemma Algebra.isSeparable_iff_isSeparablyGenerated_and_isAlgebraic :
     have : IntermediateField.adjoin k (Set.range T) = ⊥ :=
       IntermediateField.adjoin_eq_bot_iff.mpr (fun _ ↦ by simp)
     rw [this] at sep
-    apply IsSeparable.of_equiv_equiv (IntermediateField.botEquiv k K).toRingEquiv
-      (RingEquiv.refl K)
-    ext x
-    rcases (IntermediateField.botEquiv k K).symm.surjective x with ⟨y, rfl⟩
-    simp
+    have : Algebra.IsSeparable k (⊥ : IntermediateField k K) :=
+      AlgEquiv.Algebra.isSeparable (IntermediateField.botEquiv k K).symm
+    exact Algebra.IsSeparable.trans k (⊥ : IntermediateField k K) K
 
 /-- A field extension is transcendental separable if every finitely generated subextension is
 separably generated. -/
