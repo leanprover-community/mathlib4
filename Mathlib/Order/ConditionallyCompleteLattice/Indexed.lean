@@ -136,8 +136,7 @@ theorem IsGLB.ciInf_set_eq {s : Set β} {f : β → α} (H : IsGLB (f '' s) a) (
   IsGLB.csInf_eq (image_eq_range f s ▸ H) (image_eq_range f s ▸ Hne.image f)
 
 /-- The indexed supremum of a function is bounded above by a uniform bound -/
-@[to_dual le_ciInf /-- The indexed minimum of a function is bounded below by a uniform
-lower bound -/]
+@[to_dual le_ciInf /-- The indexed infimum of a function is bounded below by a uniform bound -/]
 theorem ciSup_le [Nonempty ι] {f : ι → α} {c : α} (H : ∀ x, f x ≤ c) : iSup f ≤ c :=
   csSup_le (range_nonempty f) (by rwa [forall_mem_range])
 
@@ -195,10 +194,6 @@ theorem ciInf_mono {f g : ι → α} (B : BddBelow (range f)) (H : ∀ x, f x �
 theorem ciInf_inf_eq {f g : ι → α} (Hf : BddBelow <| range f) (Hg : BddBelow <| range g) :
     ⨅ x, f x ⊓ g x = (⨅ x, f x) ⊓ (⨅ x, g x) :=
   ciSup_sup_eq (α := αᵒᵈ) Hf Hg
-
-/-- The indexed minimum of a function is bounded below by a uniform lower bound -/
-theorem le_ciInf [Nonempty ι] {f : ι → α} {c : α} (H : ∀ x, c ≤ f x) : c ≤ iInf f :=
-  ciSup_le (α := αᵒᵈ) H
 
 /-- The indexed infimum of a function is bounded above by the value taken at one point -/
 theorem ciInf_le {f : ι → α} (H : BddBelow (range f)) (c : ι) : iInf f ≤ f c :=
