@@ -78,6 +78,6 @@ instance isOneHypercoverDense_toOver_Spec :
       fun i ↦ CostructuredArrow.homMk (𝒰.f i) (by simp), ?_⟩
     rw [Scheme.mem_smallGrothendieckTopology]
     exact ⟨𝒱, inferInstance, fun i ↦ P.comp_mem _ _ (𝒱.map_prop i) X.prop,
-      fun _ _ ⟨i⟩ ↦ (Sieve.mem_ofArrows_iff ..).2 ⟨i, 𝟙 _, by cat_disch⟩⟩
+      fun _ _ ⟨i⟩ ↦ (Sieve.mem_ofArrows_iff ..).mpr ⟨i, 𝟙 _, by cat_disch⟩⟩
 
 end AlgebraicGeometry.Scheme
