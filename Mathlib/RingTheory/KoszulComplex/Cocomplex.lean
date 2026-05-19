@@ -46,7 +46,7 @@ section
 
 variable (R : Type u) [CommRing R] (M : Type v) [AddCommGroup M] [Module R M]
 
-noncomputable abbrev koszulCocomplex_d (x : M) (n : ℕ) :
+noncomputable abbrev koszulCocomplexAux (x : M) (n : ℕ) :
     ⋀[R]^n M →ₗ[R] ⋀[R]^(n + 1) M :=
   GradedAlgebra.linearGMul (fun i : ℕ ↦ ⋀[R]^i M) (add_comm n 1)
     ((exteriorPower.oneEquiv R M).symm x)
@@ -56,7 +56,7 @@ variable {M} in
 noncomputable def koszulCocomplex (x : M) : CochainComplex (ModuleCat.{max u v} R) ℕ :=
   CochainComplex.of
     (ModuleCat.of R M).exteriorPower
-    (fun n ↦ ModuleCat.ofHom (koszulCocomplex_d R M x n))
+    (fun n ↦ ModuleCat.ofHom (koszulCocomplexAux R M x n))
     (fun n ↦ by
       simp only [← ModuleCat.ofHom_comp]
       congr
@@ -70,8 +70,8 @@ noncomputable def koszulCocomplex (x : M) : CochainComplex (ModuleCat.{max u v} 
 namespace koszulCocomplex
 
 /-- The differential of `koszulCocomplex R x` is exterior multiplication by `x` in each degree. -/
-theorem d_eq_d (x : M) (i : ℕ) :
-    (koszulCocomplex R x).d i (i + 1) = ModuleCat.ofHom (koszulCocomplex_d R M x i) := by
+theorem d_eq_aux (x : M) (i : ℕ) :
+    (koszulCocomplex R x).d i (i + 1) = ModuleCat.ofHom (koszulCocomplexAux R M x i) := by
   simp [koszulCocomplex]
 
 noncomputable abbrev ofList (l : List R) :=
@@ -91,7 +91,7 @@ noncomputable def map (f : M →ₗ[R] N) {x : M} {y : N} (h : f x = y) :
     (fun i ↦ (ModuleCat.exteriorPower.functor R i).map (ModuleCat.ofHom f))
     (fun i ↦ ModuleCat.hom_ext <| LinearMap.ext fun z ↦ Subtype.ext
       (by simp [koszulCocomplex, ModuleCat.exteriorPower, ModuleCat.exteriorPower.map,
-        koszulCocomplex_d, exteriorPower.oneEquiv_symm_apply, h]))
+        koszulCocomplexAux, exteriorPower.oneEquiv_symm_apply, h]))
 
 lemma map_hom (f : M →ₗ[R] N) (x : M) (y : N) (h : f x = y) (i : ℕ) :
     (map R f h).f i = (ModuleCat.exteriorPower.functor R i).map (ModuleCat.ofHom f) := rfl
