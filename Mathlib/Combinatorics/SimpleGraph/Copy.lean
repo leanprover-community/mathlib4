@@ -199,13 +199,13 @@ lemma toSubgraph_surjOn :
     Set.SurjOn (toSubgraph (G := G)) .univ {H' : H.Subgraph | Nonempty (G ≃g H'.coe)} :=
   fun H' hH' ↦ by simpa
 
-@[simp] lemma verts_toSubgraph (f : Copy G H) : f.toSubgraph.verts = Set.range f := by
+lemma verts_toSubgraph (f : Copy G H) : f.toSubgraph.verts = Set.range f := by
   simp [toSubgraph, Subgraph.map_verts, Set.image_univ]
 
 lemma apply_mem_verts_toSubgraph (f : Copy G H) (v : V) : f v ∈ f.toSubgraph.verts :=
   f.verts_toSubgraph ▸ Set.mem_range_self v
 
-@[simp] lemma toSubgraph_adj_iff (f : Copy G H) {a b : V} :
+lemma toSubgraph_adj_iff (f : Copy G H) {a b : V} :
     f.toSubgraph.Adj (f a) (f b) ↔ G.Adj a b := by
   simp only [toSubgraph, Subgraph.map_adj, Subgraph.top_adj, Relation.map_apply]
   refine ⟨?_, fun hab ↦ ⟨a, b, hab, rfl, rfl⟩⟩

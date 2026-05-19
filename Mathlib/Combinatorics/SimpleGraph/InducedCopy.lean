@@ -80,13 +80,13 @@ abbrev toSubgraph (f : Embedding G H) : H.Subgraph := f.toCopy.toSubgraph
     (g.comp f).toSubgraph = f.toSubgraph.map g.toHom := by
   simp [toSubgraph]
 
-@[simp] lemma verts_toSubgraph (f : Embedding G H) : f.toSubgraph.verts = Set.range f :=
+lemma verts_toSubgraph (f : Embedding G H) : f.toSubgraph.verts = Set.range f :=
   f.toCopy.verts_toSubgraph
 
 lemma apply_mem_verts_toSubgraph (f : Embedding G H) (v : V) : f v ∈ f.toSubgraph.verts :=
   f.toCopy.apply_mem_verts_toSubgraph v
 
-@[simp] lemma toSubgraph_adj_iff (f : Embedding G H) {a b : V} :
+lemma toSubgraph_adj_iff (f : Embedding G H) {a b : V} :
     f.toSubgraph.Adj (f a) (f b) ↔ G.Adj a b :=
   f.toCopy.toSubgraph_adj_iff
 
