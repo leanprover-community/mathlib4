@@ -5,7 +5,8 @@ Authors: Alex Brodbelt, Eric Wieser
 -/
 module
 
-public import Mathlib.Data.Fintype.Option
+public import Mathlib.Data.Finite.Defs
+import Mathlib.Data.Fintype.Option
 import Mathlib.Logic.Equiv.Fin.Basic
 
 /-!
