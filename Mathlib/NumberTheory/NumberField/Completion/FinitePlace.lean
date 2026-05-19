@@ -394,13 +394,14 @@ theorem hasFiniteMulSupport {x : K} (h_x_nezero : x ≠ 0) :
 
 @[deprecated (since := "2026-03-03")] alias mulSupport_finite := hasFiniteMulSupport
 
+@[fun_prop]
 lemma hasFiniteMulSupport_fun_pow_multiplicity {M : Type*} [CommMonoid M] {I : Ideal (𝓞 K)}
     (hI : I ≠ ⊥) (f : Ideal (𝓞 K) → M) :
     (fun v : FinitePlace K ↦
       (f v.maximalIdeal.asIdeal) ^ multiplicity v.maximalIdeal.asIdeal I).HasFiniteMulSupport := by
-  simp only [← count_normalizedFactors_eq_multiplicity hI]
-  exact Multiset.hasFiniteMulSupport_fun_pow_count (UniqueFactorizationMonoid.normalizedFactors I) f
-    |>.fun_comp_of_injective <| asIdeal_injective.comp maximalIdeal_injective
+  have (v : FinitePlace K) :=  irreducible v.maximalIdeal
+  have := asIdeal_injective (R := 𝓞 K) |>.comp maximalIdeal_injective
+  fun_prop (disch := assumption)
 
 protected
 lemma add_le (v : FinitePlace K) (x y : K) :
