@@ -183,31 +183,32 @@ def runLinter (ctx : ContextInfo) (lctx : LocalContext) (expectedType? : Option 
       let fvarTypes := .andList <| fvarTypes.toList.map (m!"`{.sbracket ·}`")
       let overlaps := .andList <| overlaps.toList.map (m!"`{.sbracket ·}`")
       let mut msg :=
-        m!"{fvarTypes} {ite propOverlap "each imply" "give conflicting instances of"} {overlaps}."
+        m!"{fvarTypes} {ite propOverlap "each imply"
+          "can be used to infer conflicting versions of"} {overlaps}."
       if redundant.isEmpty then
         needsDiamondMsg := true
       else
         let redundant' := .andList <| redundant.toList.map (m!"`{.sbracket ·}`")
-        msg := m!"{msg}\nOf these, {redundant'} may be removed."
+        msg := m!"{msg}\n💡 Of these, {redundant'} may be removed."
       msgs := msgs.push msg
   if msgs.isEmpty then
     return none
-  let declDescr ←
+  let mut msg := ← do
     if let some decl := ctx.parentDecl? then
       -- Use `addMessageContextPartial` to clear the local context,
       -- so as to avoid a name clash with the recursive auxiliary hypothesis of the same name.
-      pure m!"Declaration `{← addMessageContextPartial (.ofConstName decl)}`"
+      pure m!"Overlapping instances in `{← addMessageContextPartial (.ofConstName decl)}`:\n"
     else
-      pure "The current declaration"
-  let mut msg := m!"{declDescr} has overlapping instances:"
-  -- Create a bulleted list if there are multiple messages, otherwise just a single line
-  msg := if h : msgs.size = 1 then m!"{msg}\n\n{msgs[0]}" else
-    msgs.foldl (init := msg ++ "\n") (m!"{·}\n• {.nestD ·}")
+      pure m!"Overlapping instances:"
+  for overlapMsg in msgs do
+    msg := msg ++ m!"\n⚠️ {overlapMsg}"
   if needsDiamondMsg then
     msg := msg ++ m!"\n\n\
-      When two instances of a type class are not definitionally equal to each other, \
-      they form an \"instance diamond\", which can lead to unexpected unification failures.\n\
-      Consider assuming different instances."
+      When a data-carrying type class can be inferred from two different type classes in the local
+      context, there are two incompatible instances of that type class. These form an \"instance
+      diamond\", which leads to unexpected unification failures.\
+      \n\n\
+      Restructure your type class arguments to avoid this."
   addMessageContextFull msg
 
 initialize registerTraceClass `overlappingInstances
