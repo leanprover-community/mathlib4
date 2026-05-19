@@ -185,7 +185,7 @@ theorem Module.projective_of_localization_maximal'
 
 /-- A finitely presented module over a noetherian ring is projective if and only if all of its
 localizations at maximal ideals are free. -/
-theorem Module.projective_iff_localization_maximal_free [IsNoetherianRing R]
+theorem Module.projective_iff_localization_maximal_free
     [Module.FinitePresentation R M] :
     Module.Projective R M ↔
       ∀ (I : Ideal R) (_ : I.IsMaximal),
@@ -197,7 +197,6 @@ theorem Module.projective_iff_localization_maximal_free [IsNoetherianRing R]
         (LocalizedModule.mkLinearMap I.primeCompl M)
     exact Module.free_of_flat_of_isLocalRing
   · intro h
-    have : Module.FinitePresentation R M := Module.finitePresentation_of_finite R M
     apply Module.projective_of_localization_maximal
     intro I hI
     have hFree : Module.Free (Localization.AtPrime I) (LocalizedModule.AtPrime I M) :=
