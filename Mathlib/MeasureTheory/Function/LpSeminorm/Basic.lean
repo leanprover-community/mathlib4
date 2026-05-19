@@ -81,6 +81,10 @@ theorem eLpNorm_exponent_zero {f : α → ε} :
     eLpNorm f 0 μ = μ (Function.support (fun x ↦ ‖f x‖ₑ)) := by
   simp [eLpNorm]
 
+theorem IsFiniteMeasure.memLp_exponent_zero [TopologicalSpace ε] [IsFiniteMeasure μ] {f : α → ε}
+    (hf : AEStronglyMeasurable f μ) : MemLp f 0 μ := by
+  simp [MemLp, hf]
+
 @[simp]
 theorem memLp_zero_iff_aestronglyMeasurable_and_volume_support_lt_top [TopologicalSpace ε]
     {f : α → ε} : MemLp f 0 μ ↔
@@ -142,7 +146,6 @@ theorem eLpNorm'_measure_zero_of_neg {f : α → ε} (hq_neg : q < 0) :
     eLpNorm' f q (0 : Measure α) = ∞ := by simp [eLpNorm', hq_neg]
 
 end ESeminormedAddMonoid
-
 
 @[simp]
 theorem eLpNormEssSup_measure_zero {f : α → ε} : eLpNormEssSup f (0 : Measure α) = 0 := by
