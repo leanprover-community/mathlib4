@@ -44,8 +44,6 @@ protected theorem comulAlgHom_ι (x : M) :
       ι R M x ⊗ₜ[R] 1 + 1 ⊗ₜ[R] ι R M x := by
   simp [SymmetricAlgebra.comulAlgHom, lift_ι_apply]
 
--- `Algebra.TensorProduct.assoc R R R A A A` is the form for `R = S = T`; see
--- `AlgebraTensorModule.assoc` for the general typeclass shape.
 protected theorem comulAlgHom_coassoc :
     (Algebra.TensorProduct.assoc R R R
         (SymmetricAlgebra R M) (SymmetricAlgebra R M)
