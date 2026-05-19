@@ -12,16 +12,17 @@ public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.E2.Transform
 # Derivatives of modular forms
 
 This file defines normalized derivative $D = \frac{1}{2\pi i} \frac{d}{dz}$
-and serre dervative $\partial_k := D - \frac{k}{12} E_2$ of modular forms.
+and Ramanujan-Serre derivative $\partial_k := D - \frac{k}{12} E_2$ of modular forms.
 
 ## Main Definitions and Theorems
 
 - `normalizedDerivOfComplex`: $D = \frac{1}{2\pi i} \frac{d}{dz}$
 - `ramanujanSerreDerivative`: $\partial_k F := D F - \frac{k}{12} E_2 F$
-- `ramanujanSerreDerivative_slash_equivariant`: Serre derivative is equivariant under slash action.
+- `ramanujanSerreDerivative_slash_equivariant`: Ramanujan-Serre derivative is equivariant
+  under the slash action.
 
 TODO:
-- Serre derivative preserves modularity, i.e. $\partial_k (M_k) \subseteq M_{k+2}$.
+- Ramanujan-Serre derivative preserves modularity, i.e. $\partial_k (M_k) \subseteq M_{k+2}$.
 - Use above, prove Ramanujan's identities. See [here](https://github.com/thefundamentaltheor3m/Sphere-Packing-Lean/blob/main/SpherePacking/ModularForms/RamanujanIdentities.lean)
   for `sorry`-free proofs.
 -/
