@@ -2056,6 +2056,7 @@ public import Mathlib.Analysis.Matrix.LDL
 public import Mathlib.Analysis.Matrix.Normed
 public import Mathlib.Analysis.Matrix.Order
 public import Mathlib.Analysis.Matrix.PosDef
+public import Mathlib.Analysis.Matrix.SkewAdjoint
 public import Mathlib.Analysis.Matrix.Spectrum
 public import Mathlib.Analysis.MeanInequalities
 public import Mathlib.Analysis.MeanInequalitiesPow
@@ -5065,6 +5066,7 @@ public import Mathlib.LinearAlgebra.Matrix.ToLinearEquiv
 public import Mathlib.LinearAlgebra.Matrix.Trace
 public import Mathlib.LinearAlgebra.Matrix.Transvection
 public import Mathlib.LinearAlgebra.Matrix.Unique
+public import Mathlib.LinearAlgebra.Matrix.Unitary
 public import Mathlib.LinearAlgebra.Matrix.Vec
 public import Mathlib.LinearAlgebra.Matrix.WithConv
 public import Mathlib.LinearAlgebra.Matrix.ZPow
