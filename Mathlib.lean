@@ -3827,6 +3827,7 @@ public import Mathlib.Data.Finite.Set
 public import Mathlib.Data.Finite.Sigma
 public import Mathlib.Data.Finite.Subtype
 public import Mathlib.Data.Finite.Sum
+public import Mathlib.Data.Finite.Units
 public import Mathlib.Data.Finite.Vector
 public import Mathlib.Data.Finmap
 public import Mathlib.Data.Finset.Attach
