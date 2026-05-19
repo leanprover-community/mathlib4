@@ -189,7 +189,7 @@ theorem lift_rank_le_of_injective_injectiveₛ (i : R' → R) (j : M →+ M')
     (hc : ∀ (r : R') (m : M), j (i r • m) = r • j m) :
     lift.{v'} (Module.rank R M) ≤ lift.{v} (Module.rank R' M') := by
   simp_rw [Module.rank, lift_iSup bddAbove_of_small]
-  exact ciSup_mono' bddAbove_of_small fun ⟨s, h⟩ ↦ ⟨⟨j '' s,
+  exact ciSup_mono_of_forall_exists' bddAbove_of_small fun ⟨s, h⟩ ↦ ⟨⟨j '' s,
     LinearIndepOn.id_image (h.linearIndependent.map_of_injective_injectiveₛ i j hi hj hc)⟩,
     lift_mk_le'.mpr ⟨(Equiv.Set.image j s hj).toEmbedding⟩⟩
 
@@ -273,7 +273,7 @@ theorem lift_rank_le_of_injective_injective [AddCommGroup M'] [Module R' M']
     (hc : ∀ (r : R') (m : M), j (i r • m) = r • j m) :
     lift.{v'} (Module.rank R M) ≤ lift.{v} (Module.rank R' M') := by
   simp_rw [Module.rank, lift_iSup bddAbove_of_small]
-  exact ciSup_mono' bddAbove_of_small fun ⟨s, h⟩ ↦
+  exact ciSup_mono_of_forall_exists' bddAbove_of_small fun ⟨s, h⟩ ↦
     ⟨⟨j '' s, LinearIndepOn.id_image <| h.linearIndependent.map_of_injective_injective i j hi
       (fun _ _ ↦ hj <| by rwa [j.map_zero]) hc⟩,
     lift_mk_le'.mpr ⟨(Equiv.Set.image j s hj).toEmbedding⟩⟩

@@ -92,7 +92,7 @@ lemma Filter.Germ.Continuous.tendsto {x : X} {f : Germ (𝓝 x) Y} (hf : f.Conti
 lemma Filter.Germ.Continuous.map {x : X} {f : Germ (𝓝 x) Y} (hf : f.Continuous) {g : Y → Z}
     (hg : ∀ᶠ y in 𝓝 f.value, ContinuousAt g y) : (f.map g).Continuous := by
   revert hf hg; refine f.inductionOn fun f hf hg ↦ ?_
-  simp only [continuous_coe_iff, value_coe, map_coe] at hf hg ⊢
+  simp only [continuous_coe_iff, value_ofFun, map_coe] at hf hg ⊢
   exact (hf.and (hf.self_of_nhds.eventually hg)).mp <| .of_forall fun x h ↦ h.2.comp h.1
 
 /-- `ContinuousGerm x Y` is the type of all continuous germs of functions `f : X → Y` at `x : X`. -/
