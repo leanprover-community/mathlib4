@@ -189,7 +189,7 @@ def runLinter (ctx : ContextInfo) (lctx : LocalContext) (expectedType? : Option 
         needsDiamondMsg := true
       else
         let redundant' := .andList <| redundant.toList.map (m!"`{.sbracket ·}`")
-        msg := m!"{msg}\n💡 Of these, {redundant'} may be removed."
+        msg := m!"{msg}\n💡️ Of these, {redundant'} may be removed."
       msgs := msgs.push msg
   if msgs.isEmpty then
     return none
