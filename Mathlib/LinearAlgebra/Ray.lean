@@ -50,6 +50,7 @@ set_option linter.unusedVariables false in
 def RayVector (R M : Type*) [Zero M] :=
   { v : M // v ≠ 0 }
 
+/-- Equivalence between `RayVector` and non-zero vectors. -/
 def RayVector.equiv (R : Type*) {M : Type*} [Zero M] : RayVector R M ≃ { v : M // v ≠ 0 } :=
   Equiv.refl _
 
