@@ -318,7 +318,7 @@ theorem eventually_analyticAt [CompleteSpace E] {f : 𝕜 → E}
     apply Filter.Eventually.of_forall
     intro y hy hf
     rw [Set.mem_compl_iff, Set.mem_singleton_iff] at hy
-    have := ((analyticAt_id (𝕜 := 𝕜).sub analyticAt_const).pow n).inv
+    have := ((analyticAt_id (𝕜 := 𝕜).sub analyticAt_const).pow n).inv (E := 𝕜)
       (pow_ne_zero _ (sub_ne_zero_of_ne hy))
     apply (this.smul hf).congr ∘ (eventually_ne_nhds hy).mono
     intro z hz

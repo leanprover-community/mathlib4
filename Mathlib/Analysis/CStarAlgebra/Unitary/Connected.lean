@@ -182,7 +182,7 @@ lemma argSelfAdjoint_expUnitary {x : selfAdjoint A} (hx : ‖x‖ < π) :
   rw [← Circle.coe_exp, Circle.arg_exp hy.1 hy.2.le]
 
 lemma expUnitary_argSelfAdjoint {u : unitary A} (hu : ‖(u - 1 : A)‖ < 2) :
-    expUnitary (argSelfAdjoint u) = u := by
+    expUnitary (argSelfAdjoint (A := A) u) = u := by
   ext
   have : ContinuousOn arg (spectrum ℂ (u : A)) :=
     continuousOn_arg.mono <| (spectrum_subset_slitPlane_iff_norm_lt_two u.2).mpr hu
@@ -313,7 +313,7 @@ lemma Unitary.norm_sub_eq (u v : unitary A) :
 @[deprecated (since := "2025-10-29")] alias unitary.norm_sub_eq := Unitary.norm_sub_eq
 
 lemma Unitary.expUnitary_eq_mul_inv (u v : unitary A) (huv : ‖(u - v : A)‖ < 2) :
-    expUnitary (argSelfAdjoint (u * star v)) = u * star v :=
+    expUnitary (argSelfAdjoint (A := A) (u * star v)) = u * star v :=
   expUnitary_argSelfAdjoint <| norm_sub_eq u v ▸ huv
 
 @[deprecated (since := "2025-10-29")] alias unitary.expUnitary_eq_mul_inv :=

@@ -70,7 +70,7 @@ instance instFunLike : FunLike H X V where
 lemma ext {f g : H} (h : ∀ x, f x = g x) : f = g := DFunLike.ext _ _ h
 
 @[simp]
-lemma coeCLM_apply (f : H) : coeCLM 𝕜 f = f := rfl
+lemma coeCLM_apply (f : H) : coeCLM 𝕜 (H := H) f = f := rfl
 
 @[simp]
 lemma coe_zero : ⇑(0 : H) = 0 := (coeCLM 𝕜).map_zero ..
