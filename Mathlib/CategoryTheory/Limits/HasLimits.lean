@@ -6,10 +6,8 @@ Authors: Reid Barton, Mario Carneiro, Kim Morrison, Floris van Doorn
 module
 
 public import Mathlib.CategoryTheory.Limits.IsLimit
-public import Mathlib.CategoryTheory.Category.ULift
 public import Mathlib.CategoryTheory.EssentiallySmall
 public import Mathlib.CategoryTheory.Functor.EpiMono
-public import Mathlib.Logic.Equiv.Basic
 
 /-!
 # Existence of limits and colimits
@@ -486,6 +484,11 @@ def lim : (J ⥤ C) ⥤ C where
   map_comp α β := by
     apply Limits.limit.hom_ext; intro j
     simp [assoc]
+
+/-- The natural transformation induced by `limit.π`. -/
+@[simps]
+def lim.π (j : J) : lim ⟶ (evaluation J C).obj j where
+  app F := limit.π F j
 
 end
 
@@ -1061,6 +1064,11 @@ section
 def colim : (J ⥤ C) ⥤ C where
   obj F := colimit F
   map α := colimMap α
+
+/-- The natural transformation induced by `colimit.ι`. -/
+@[simps]
+def colim.ι (j : J) : (evaluation J C).obj j ⟶ colim where
+  app F := colimit.ι F j
 
 end
 

@@ -55,8 +55,7 @@ About `toZ`:
 
 -/
 
-@[expose] public section
-
+public section
 
 open Order
 
@@ -292,7 +291,9 @@ theorem toZ_iterate_pred_of_not_isMin (n : ℕ) (hn : ¬IsMin (pred^[n] i0)) :
   · suffices IsMin (pred^[n.succ] i0) from absurd this hn
     exact isMin_iterate_pred_of_eq_of_ne h_eq.symm (Ne.symm hmn)
 
-theorem le_of_toZ_le {j : ι} (h_le : toZ i0 i ≤ toZ i0 j) : i ≤ j := by
+theorem toZ_strictMono : StrictMono (toZ i0) := by
+  intro j i h_le
+  contrapose! h_le
   rcases le_or_gt i0 i with hi | hi <;> rcases le_or_gt i0 j with hj | hj
   · rw [← iterate_succ_toZ i hi, ← iterate_succ_toZ j hj]
     exact Monotone.monotone_iterate_of_le_map succ_mono (le_succ _) (Int.toNat_le_toNat h_le)
@@ -302,63 +303,35 @@ theorem le_of_toZ_le {j : ι} (h_le : toZ i0 i ≤ toZ i0 j) : i ≤ j := by
     refine Monotone.antitone_iterate_of_map_le pred_mono (pred_le _) (Int.toNat_le_toNat ?_)
     exact Int.neg_le_neg h_le
 
-theorem toZ_mono {i j : ι} (h_le : i ≤ j) : toZ i0 i ≤ toZ i0 j := by
-  by_cases hi_max : IsMax i
-  · rw [le_antisymm h_le (hi_max h_le)]
-  by_cases hj_min : IsMin j
-  · rw [le_antisymm h_le (hj_min h_le)]
-  rcases le_or_gt i0 i with hi | hi <;> rcases le_or_gt i0 j with hj | hj
-  · let m := Nat.find (exists_succ_iterate_of_le h_le)
-    have hm : succ^[m] i = j := Nat.find_spec (exists_succ_iterate_of_le h_le)
-    have hj_eq : j = succ^[(toZ i0 i).toNat + m] i0 := by
-      rw [← hm, add_comm]
-      nth_rw 1 [← iterate_succ_toZ i hi]
-      rw [Function.iterate_add]
-      rfl
-    by_contra h
-    obtain hm0 | hm0 : m = 0 ∨ 1 ≤ m := by lia
-    · rw [hm0, Function.iterate_zero, id] at hm
-      rw [hm] at h
-      exact h (le_of_eq rfl)
-    refine hi_max (max_of_succ_le (le_trans ?_ (@le_of_toZ_le _ _ _ _ _ i0 j i ?_)))
-    · have h_succ_le : succ^[(toZ i0 i).toNat + 1] i0 ≤ j := by
-        rw [hj_eq]
-        exact Monotone.monotone_iterate_of_le_map succ_mono (le_succ i0) (by gcongr)
-      rwa [Function.iterate_succ', Function.comp_apply, iterate_succ_toZ i hi] at h_succ_le
-    · exact le_of_not_ge h
-  · exact absurd h_le (not_le.mpr (hj.trans_le hi))
-  · exact (toZ_neg hi).le.trans (toZ_nonneg hj)
-  · let m := Nat.find (exists_pred_iterate_of_le (α := ι) h_le)
-    have hm : pred^[m] j = i := Nat.find_spec (exists_pred_iterate_of_le (α := ι) h_le)
-    have hj_eq : i = pred^[(-toZ i0 j).toNat + m] i0 := by
-      rw [← hm, add_comm]
-      nth_rw 1 [← iterate_pred_toZ j hj]
-      rw [Function.iterate_add]
-      rfl
-    by_contra h
-    obtain hm0 | hm0 : m = 0 ∨ 1 ≤ m := by lia
-    · rw [hm0, Function.iterate_zero, id] at hm
-      rw [hm] at h
-      exact h (le_of_eq rfl)
-    refine hj_min (min_of_le_pred ?_)
-    refine (@le_of_toZ_le _ _ _ _ _ i0 j i ?_).trans ?_
-    · exact le_of_not_ge h
-    · have h_le_pred : i ≤ pred^[(-toZ i0 j).toNat + 1] i0 := by
-        rw [hj_eq]
-        exact Monotone.antitone_iterate_of_map_le pred_mono (pred_le i0) (by gcongr)
-      rwa [Function.iterate_succ', Function.comp_apply, iterate_pred_toZ j hj] at h_le_pred
+theorem injective_toZ : Function.Injective (toZ i0) :=
+  toZ_strictMono.injective
 
-theorem toZ_le_iff (i j : ι) : toZ i0 i ≤ toZ i0 j ↔ i ≤ j :=
-  ⟨le_of_toZ_le, toZ_mono⟩
+@[simp]
+theorem toZ_le_toZ {i j : ι} : toZ i0 i ≤ toZ i0 j ↔ i ≤ j :=
+  toZ_strictMono.le_iff_le
+
+@[deprecated (since := "2026-05-07")]
+alias toZ_le_iff := toZ_le_toZ
+
+@[deprecated toZ_le_toZ (since := "2026-05-06")]
+alias ⟨le_of_toZ_le, toZ_mono⟩ := toZ_le_toZ
+
+@[simp]
+theorem toZ_lt_toZ {i j : ι} : toZ i0 i < toZ i0 j ↔ i < j :=
+  toZ_strictMono.lt_iff_lt
+
+@[deprecated (since := "2026-05-07")]
+alias toZ_lt_iff := toZ_lt_toZ
+
+@[simp]
+theorem toZ_inj {i j : ι} : toZ i0 i = toZ i0 j ↔ i = j :=
+  injective_toZ.eq_iff
 
 theorem toZ_iterate_succ [NoMaxOrder ι] (n : ℕ) : toZ i0 (succ^[n] i0) = n :=
   toZ_iterate_succ_of_not_isMax n (not_isMax _)
 
 theorem toZ_iterate_pred [NoMinOrder ι] (n : ℕ) : toZ i0 (pred^[n] i0) = -n :=
   toZ_iterate_pred_of_not_isMin n (not_isMin _)
-
-theorem injective_toZ : Function.Injective (toZ i0) :=
-  fun _ _ h ↦ le_antisymm (le_of_toZ_le h.le) (le_of_toZ_le h.symm.le)
 
 end toZ
 
@@ -370,7 +343,7 @@ variable [SuccOrder ι] [PredOrder ι] [IsSuccArchimedean ι]
 noncomputable def orderIsoRangeToZOfLinearSuccPredArch [hι : Nonempty ι] :
     ι ≃o Set.range (toZ hι.some) where
   toEquiv := Equiv.ofInjective _ injective_toZ
-  map_rel_iff' := by intro i j; exact toZ_le_iff i j
+  map_rel_iff' := by simp
 
 instance (priority := 100) countable_of_linear_succ_pred_arch : Countable ι := by
   rcases isEmpty_or_nonempty ι with _ | hι
@@ -398,7 +371,7 @@ noncomputable def orderIsoIntOfLinearSuccPredArch [NoMaxOrder ι] [NoMinOrder ι
     · simp_rw [if_neg (not_le.mpr hn)]
       rw [toZ_iterate_pred]
       simp only [hn.le, Int.toNat_of_nonneg, Int.neg_nonneg_of_nonpos, Int.neg_neg]
-  map_rel_iff' := by intro i j; exact toZ_le_iff i j
+  map_rel_iff' := by simp
 
 /-- If the order has a bot but no top, `toZ` defines an `OrderIso` between `ι` and `ℕ`. -/
 def orderIsoNatOfLinearSuccPredArch [NoMaxOrder ι] [OrderBot ι] : ι ≃o ℕ where
@@ -414,7 +387,7 @@ def orderIsoNatOfLinearSuccPredArch [NoMaxOrder ι] [OrderBot ι] : ι ≃o ℕ 
   map_rel_iff' := by
     intro i j
     simp only [Equiv.coe_fn_mk, Int.toNat_le]
-    rw [← @toZ_le_iff ι _ _ _ _ ⊥, Int.toNat_of_nonneg (toZ_nonneg bot_le)]
+    rw [← toZ_le_toZ (i0 := (⊥ : ι)), Int.toNat_of_nonneg (toZ_nonneg bot_le)]
 
 /-- If the order has both a bot and a top, `toZ` gives an `OrderIso` between `ι` and
 `Finset.range n` for some `n`. -/
@@ -422,7 +395,7 @@ def orderIsoRangeOfLinearSuccPredArch [OrderBot ι] [OrderTop ι] :
     ι ≃o Finset.range ((toZ ⊥ (⊤ : ι)).toNat + 1) where
   toFun i :=
     ⟨(toZ ⊥ i).toNat,
-      Finset.mem_range_succ_iff.mpr (Int.toNat_le_toNat ((toZ_le_iff _ _).mpr le_top))⟩
+      Finset.mem_range_succ_iff.mpr (Int.toNat_le_toNat (toZ_le_toZ.mpr le_top))⟩
   invFun n := succ^[n] ⊥
   left_inv i := iterate_succ_toZ i bot_le
   right_inv n := by
@@ -440,7 +413,7 @@ def orderIsoRangeOfLinearSuccPredArch [OrderBot ι] [OrderTop ι] :
   map_rel_iff' := by
     intro i j
     simp only [Equiv.coe_fn_mk, Subtype.mk_le_mk, Int.toNat_le]
-    rw [← @toZ_le_iff ι _ _ _ _ ⊥, Int.toNat_of_nonneg (toZ_nonneg bot_le)]
+    rw [← toZ_le_toZ (i0 := (⊥ : ι)), Int.toNat_of_nonneg (toZ_nonneg bot_le)]
 
 end OrderIso
 

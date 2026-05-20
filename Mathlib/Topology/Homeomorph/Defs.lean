@@ -163,6 +163,25 @@ theorem symm_trans_self (h : X ≃ₜ Y) : h.symm.trans h = Homeomorph.refl Y :=
   ext
   apply apply_symm_apply
 
+@[simps -isSimp]
+instance : Group (X ≃ₜ X) where
+  mul f g := g.trans f
+  mul_assoc f g h := rfl
+  one := .refl X
+  one_mul f := rfl
+  mul_one f := rfl
+  inv := .symm
+  inv_mul_cancel := self_trans_symm
+
+@[simp]
+theorem one_apply (x : X) : (1 : X ≃ₜ X) x = x := rfl
+
+@[simp]
+theorem inv_apply (f : X ≃ₜ X) (x : X) : f⁻¹ x = f.symm x := rfl
+
+@[simp]
+theorem mul_apply (f g : X ≃ₜ X) (x : X) : (f * g) x = f (g x) := rfl
+
 protected theorem bijective (h : X ≃ₜ Y) : Function.Bijective h :=
   h.toEquiv.bijective
 
