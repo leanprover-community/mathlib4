@@ -1114,17 +1114,39 @@ section
 
 variable {C} {D : Type*} [Category* D] {F : C ⥤ D}
 
+variable (F) in
+/-- The image of a binary fan by a functor. -/
+abbrev BinaryFan.map {X Y : C} (s : BinaryFan X Y) : BinaryFan (F.obj X) (F.obj Y) :=
+  mk (F.map s.fst) (F.map s.snd)
+
+@[simp]
+lemma BinaryFan.map_fst {X Y : C} (s : BinaryFan X Y) : (s.map F).fst = F.map s.fst := rfl
+
+@[simp]
+lemma BinaryFan.map_snd {X Y : C} (s : BinaryFan X Y) : (s.map F).snd = F.map s.snd := rfl
+
+variable (F) in
+/-- The image of a binary cofan by a functor. -/
+abbrev BinaryCofan.map {X Y : C} (s : BinaryCofan X Y) : BinaryCofan (F.obj X) (F.obj Y) :=
+  mk (F.map s.inl) (F.map s.inr)
+
+@[simp]
+lemma BinaryCofan.map_inl {X Y : C} (s : BinaryCofan X Y) : (s.map F).inl = F.map s.inl := rfl
+
+@[simp]
+lemma BinaryCofan.map_inr {X Y : C} (s : BinaryCofan X Y) : (s.map F).inr = F.map s.inr := rfl
+
 /-- `F.mapCone s` being limiting is the same as the induced binary fan being limiting. -/
 def BinaryFan.isLimitMapConeEquiv {X Y : C} {s : BinaryFan X Y} :
-    IsLimit (F.mapCone s) ≃ IsLimit (BinaryFan.mk (F.map s.fst) (F.map s.snd)) :=
-  IsLimit.equivOfNatIsoOfIso (diagramIsoPair _) _ _ <| BinaryFan.ext (Iso.refl _)
-    (by simp [BinaryFan.fst]) (by simp [BinaryFan.snd])
+    IsLimit (F.mapCone s) ≃ IsLimit (s.map F) :=
+  IsLimit.equivOfNatIsoOfIso (diagramIsoPair _) _ _ <| ext (Iso.refl _)
+    (by simp [fst]) (by simp [snd])
 
 /-- `F.mapCocone s` being colimiting is the same as the induced binary cofan being colimiting. -/
 def BinaryCofan.isColimitMapConeEquiv {X Y : C} {s : BinaryCofan X Y} :
-    IsColimit (F.mapCocone s) ≃ IsColimit (BinaryCofan.mk (F.map s.inl) (F.map s.inr)) :=
-  IsColimit.equivOfNatIsoOfIso (diagramIsoPair _) _ _ <| BinaryCofan.ext (Iso.refl _)
-    (by simp [BinaryCofan.inl]) (by simp [BinaryCofan.inr])
+    IsColimit (F.mapCocone s) ≃ IsColimit (s.map F) :=
+  IsColimit.equivOfNatIsoOfIso (diagramIsoPair _) _ _ <| ext (Iso.refl _)
+    (by simp [inl]) (by simp [inr])
 
 end
 
