@@ -201,7 +201,6 @@ theorem blockTriangular_algebraMap {A : Type*} [CommSemiring R] [Semiring A] [Al
     [DecidableEq m] [Fintype m] (r : R) : (algebraMap R (Matrix m m A) r).BlockTriangular b :=
   blockTriangular_diagonal _
 
-
 variable (b) in
 /-- `BlockTriangular` matrices form a subalgebra. -/
 def blockTriangularSubalgebra {A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
