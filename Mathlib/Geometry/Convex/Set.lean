@@ -16,8 +16,8 @@ This file defines convex sets in a convex space.
 
 ## Implementation notes
 
-To allow full generality on the coefficients, for `s` to be convex we require that all finitary
-convex combinations of points of `s` lie in `s`, instead of merely binary ones as is customary.
+To support non-field coefficients, for `s` to be convex we require that all finitary convex
+combinations of points of `s` lie in `s`, instead of merely binary ones as is customary.
 
 Since its body is an implementation detail, the predicate `IsConvexSet` is unexposed.
 -/
