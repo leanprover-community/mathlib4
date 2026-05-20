@@ -273,7 +273,7 @@ lemma mem_completeOn : e ∈ E(completeOn f) ↔ e ⊆ f := by simp
 
 lemma IsComplete.mem_iff (h : H.IsComplete) : e ∈ E(H) ↔ e ⊆ V(H) := by
   grind [IsComplete, subset_vertexSet_of_mem_edgeSet]
-  
+
 lemma IsComplete.completeOn (f : Set α) : (completeOn f).IsComplete := fun _ a ↦ a
 
 lemma IsComplete.isNonempty (h : H.IsComplete) : H.IsNonempty :=
