@@ -43,7 +43,7 @@ suppress_compilation
 open Coalgebra TensorProduct WithConv
 open scoped RingTheory.LinearMap
 
-variable {R A B C : Type*} [CommSemiring R]
+variable {R A B C β : Type*} [CommSemiring R]
 
 namespace LinearMap
 section NonUnitalNonAssocSemiring
@@ -73,6 +73,26 @@ instance convNonUnitalNonAssocSemiring : NonUnitalNonAssocSemiring (WithConv (C 
   right_distrib f g h := by ext; simp [map_add_left]
   zero_mul f := by ext; simp
   mul_zero f := by ext; simp
+
+instance [Monoid β] [DistribMulAction β A] [SMulCommClass R β A] [IsScalarTower β A A] :
+    IsScalarTower β (WithConv (C →ₗ[R] A)) (WithConv (C →ₗ[R] A)) where
+  smul_assoc b f g := by
+    ext c
+    simp only [smul_eq_mul, convMul_apply, ofConv_smul, LinearMap.smul_apply]
+    induction (δ : C →ₗ[R] _) c with
+    | zero => simp
+    | tmul x y => simp [smul_mul_assoc]
+    | add x y hx hy => simp [hx, hy]
+
+instance [Monoid β] [DistribMulAction β A] [SMulCommClass R β A] [SMulCommClass β A A] :
+    SMulCommClass β (WithConv (C →ₗ[R] A)) (WithConv (C →ₗ[R] A)) where
+  smul_comm b f g := by
+    ext c
+    simp only [smul_eq_mul, convMul_apply, ofConv_smul, LinearMap.smul_apply]
+    induction (δ : C →ₗ[R] _) c with
+    | zero => simp
+    | tmul x y => simp [mul_smul_comm]
+    | add x y hx hy => simp [hx, hy]
 
 @[simp] lemma toSpanSingleton_convMul_toSpanSingleton (x y : A) :
     toConv (toSpanSingleton R A x) * toConv (toSpanSingleton R A y) =
@@ -174,18 +194,13 @@ instance convSemiring : Semiring (WithConv (C →ₗ[R] A)) where
   one_mul f := by ext; simp [convOne_def, ← map_comp_rTensor]
   mul_one f := by ext; simp [convOne_def, ← map_comp_lTensor]
 
-instance : IsScalarTower R (WithConv (C →ₗ[R] A)) (WithConv (C →ₗ[R] A)) :=
-  ⟨fun _ _ _ => by ext; simp [map_smul_left]⟩
-
-instance : SMulCommClass R (WithConv (C →ₗ[R] A)) (WithConv (C →ₗ[R] A)) :=
-  ⟨fun _ _ _ => by ext; simp [map_smul_right]⟩
-
-instance convAlgebra : Algebra R (WithConv (C →ₗ[R] A)) :=
+instance [CommSemiring β] [Algebra β A] [SMulCommClass R β A] :
+    Algebra β (WithConv (C →ₗ[R] A)) :=
   .ofModule smul_mul_assoc mul_smul_comm
 
 @[simp]
-lemma algebraMap_apply (r : R) (c : C) :
-    algebraMap R (WithConv (C →ₗ[R] A)) r c = r • algebraMap R A (counit (R := R) c) := by
+lemma algebraMap_apply [CommSemiring β] [Algebra β A] [SMulCommClass R β A] (b : β) (c : C) :
+    algebraMap β (WithConv (C →ₗ[R] A)) b c = b • algebraMap R A (counit c) := by
   simp [Algebra.algebraMap_eq_smul_one, convOne_def, Algebra.linearMap]
 
 end Semiring
