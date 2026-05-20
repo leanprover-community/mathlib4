@@ -85,6 +85,7 @@ instance (n m : SimplexCategory) :
     (stdSimplex.{u}.obj n ⊗ stdSimplex.obj m).Nonsingular :=
   Nonsingular.of_iso (prodStdSimplex.isoNerve _ _).symm
 
+@[kerodon 02MH]
 lemma nonDegenerate_δ [X.Nonsingular]
     {n : ℕ} {x : X _⦋n + 1⦌} (hx : x ∈ X.nonDegenerate _) (i : Fin (n + 2)) :
     X.δ i x ∈ X.nonDegenerate _ := by
