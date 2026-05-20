@@ -11,8 +11,13 @@ public import Mathlib.Topology.MetricSpace.Isometry
 @[expose] public section
 
 /-!
-Gives an instance of `MetricSpace` on the `DirectLimit` of a directed system of metric spaces,
-where all the maps in the directed system are from types satisfying the class `IsometryClass`.
+# Metrics on direct limits
+
+This file defines a `MetricSpace` instance on `DirectLimit G f` when `G` and `f` form a directed
+system of metric spaces and the transition maps `f` are isometries (using `IsometryClass`).
+
+See also `Metric.InductiveLimit` in `Mathlib/Topology/MetricSpace/Gluing.lean`, which
+handles sequential inductive limits of metric spaces.
 -/
 
 namespace DirectLimit
