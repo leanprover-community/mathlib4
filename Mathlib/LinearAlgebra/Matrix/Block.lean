@@ -197,6 +197,12 @@ def blockTriangularSubsemiring [DecidableEq m] [Fintype m] [Semiring R] :
   mul_mem' := .mul
   add_mem' := .add
 
+@[simp]
+theorem mem_blockTriangularSubsemiring [DecidableEq m] [Fintype m] [Semiring R]
+    {M : Matrix m m R} :
+    M ∈ blockTriangularSubsemiring b ↔ BlockTriangular M b :=
+  Iff.rfl
+
 theorem blockTriangular_algebraMap {A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
     [DecidableEq m] [Fintype m] (r : R) : (algebraMap R (Matrix m m A) r).BlockTriangular b :=
   blockTriangular_diagonal _
@@ -207,12 +213,6 @@ def blockTriangularSubalgebra {A : Type*} [CommSemiring R] [Semiring A] [Algebra
     [DecidableEq m] [Fintype m] : Subalgebra R (Matrix m m A) where
   __ := blockTriangularSubsemiring b
   algebraMap_mem' r := blockTriangular_algebraMap r
-
-@[simp]
-theorem mem_blockTriangularSubsemiring [DecidableEq m] [Fintype m] [Semiring R]
-    {M : Matrix m m R} :
-    M ∈ blockTriangularSubsemiring b ↔ BlockTriangular M b :=
-  Iff.rfl
 
 @[simp]
 theorem mem_blockTriangularSubalgebra {A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
