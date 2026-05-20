@@ -188,8 +188,8 @@ theorem HasFDerivAt.continuousAlternatingMap_apply (hf : HasFDerivAt f f' x)
     HasFDerivAt
       (fun x ↦ f x (g · x))
       (apply 𝕜 F G (g · x) ∘L f' + ∑ i, (f x).toContinuousLinearMap (g · x) i ∘L g' i)
-      x :=
-  (toContinuousMultilinearMapCLM 𝕜).hasFDerivAt.comp x hf
+      x := by
+  exact (toContinuousMultilinearMapCLM 𝕜).hasFDerivAt.comp x hf
     |>.continuousMultilinearMap_apply hg
 
 theorem HasFDerivWithinAt.continuousAlternatingMap_apply (hf : HasFDerivWithinAt f f' s x)
@@ -197,8 +197,8 @@ theorem HasFDerivWithinAt.continuousAlternatingMap_apply (hf : HasFDerivWithinAt
     HasFDerivWithinAt
       (fun x ↦ f x (g · x))
       (apply 𝕜 F G (g · x) ∘L f' + ∑ i, (f x).toContinuousLinearMap (g · x) i ∘L g' i)
-      s x :=
-  (toContinuousMultilinearMapCLM 𝕜).hasFDerivAt.comp_hasFDerivWithinAt x hf
+      s x := by
+  exact (toContinuousMultilinearMapCLM 𝕜).hasFDerivAt.comp_hasFDerivWithinAt x hf
     |>.continuousMultilinearMap_apply hg
 
 theorem fderivWithin_continuousAlternatingMap_apply (hf : DifferentiableWithinAt 𝕜 f s x)

@@ -15,7 +15,8 @@ public import Mathlib.Analysis.Calculus.FDeriv.Const
 public section
 
 variable {𝕜 ι : Type*} [DecidableEq ι] [NontriviallyNormedField 𝕜]
-variable {E : ι → Type*} [∀ i, NormedAddCommGroup (E i)] [∀ i, NormedSpace 𝕜 (E i)]
+variable {E : ι → Type*} [∀ i, AddCommGroup (E i)] [∀ i, Module 𝕜 (E i)]
+  [∀ i, TopologicalSpace (E i)] [∀ i, ContinuousSMul 𝕜 (E i)]
 
 @[fun_prop]
 theorem hasFDerivAt_update (x : ∀ i, E i) {i : ι} (y : E i) :
@@ -30,6 +31,8 @@ theorem hasFDerivAt_update (x : ∀ i, E i) {i : ι} (y : E i) :
 theorem hasFDerivAt_single {i : ι} (y : E i) :
     HasFDerivAt (Pi.single i) (.pi (Pi.single i (.id 𝕜 (E i)))) y :=
   hasFDerivAt_update 0 y
+
+variable [∀ i, ContinuousAdd (E i)] [∀ i, T2Space (E i)]
 
 theorem fderiv_update (x : ∀ i, E i) {i : ι} (y : E i) :
     fderiv 𝕜 (Function.update x i) y = .pi (Pi.single i (.id 𝕜 (E i))) :=
