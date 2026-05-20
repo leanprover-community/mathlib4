@@ -482,17 +482,15 @@ lemma mvfderiv_neg {g : M → F} {x : M} :
 
 @[simp, to_fun mvfderiv_fun_smul]
 lemma mvfderiv_smul {x : M} {a : M → 𝕜} (ha : MDiffAt a x) {g : M → F} (hg : MDiffAt g x) :
-    d% (a • g) x =
-      a x • d% g x + (d% a x).smulRight (g x) := by
+    d% (a • g) x = a x • d% g x + (d% a x).smulRight (g x) := by
   ext v
-  simp [mvfderiv, -Pi.smul_apply', -Pi.smul_apply, fromTangentSpace_mfderiv_smul_apply ha hg]
-  rfl
+  simp [mvfderiv, -Pi.smul_apply', fromTangentSpace_mfderiv_smul_apply ha hg]
 
 @[simp, to_fun mvfderiv_fun_mul]
 lemma mvfderiv_mul {f g : M → 𝕜} {x : M} (hf : MDiffAt f x) (hg : MDiffAt g x) :
     d% (f * g) x = f x • d% g x + (g x) • (d% f x) := by
   ext v
-  simp [mvfderiv, -Pi.smul_apply', -Pi.smul_apply, ← smul_eq_mul, mfderiv_smul hf hg]
+  simp only [mvfderiv, ← smul_eq_mul, mfderiv_smul hf hg]
   simp [mul_comm _ (g x)]
 
 @[simp]
