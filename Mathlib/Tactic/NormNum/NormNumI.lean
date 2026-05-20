@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2025 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Heather Macbeth, Yunzhou Xie, Sidharth Hariharan
+Authors: Heather Macbeth, Yunzhou Xie, Sidharth Hariharan, Eric Wieser
 -/
 module
 
@@ -29,17 +29,6 @@ structure ResultI (a : Q(ℂ)) where
   re : NormNum.Result q(RCLike.re $a)
   /-- The result of `norm_num` running on the imaginary part of `a`. -/
   im : NormNum.Result q(RCLike.im $a)
-
--- TODO : get rid of cast in `$a = $x + Complex.I * $y`.
--- also try replace `getD` with `get!`
-/-- when obtained a result `a` in `ResultI`, one could get `x y : ℝ` such that `a = x + yi`. -/
-def ResultI.eqeq {a : Q(ℂ)} (r : ResultI a) :
-    MetaM (Σ x y : Q(ℝ), Q($a = $x + Complex.I * $y)) := do
-  let ⟨(x : Q(ℝ)), pf1, _⟩ ← r.re.toSimpResult
-  let ⟨(y : Q(ℝ)), pf2, _⟩ ← r.im.toSimpResult
-  let pf1' : Q(Complex.re $a = $x) := pf1.getD q(rfl : $x = _)
-  let pf2' : Q(Complex.im $a = $y) := pf2.getD q(rfl : $y = _)
-  return ⟨x, y, q(Complex.ext (by simpa using $pf1') (by simpa using $pf2'))⟩
 
 /-- ResultI made from two Results on real and imaginary parts. -/
 def ResultI.mk' {z : Q(ℂ)} {p1 p2 : Q(ℝ)} (h1 : NormNum.Result q($p1))
@@ -98,7 +87,7 @@ def ResultI.inv {z : Q(ℂ)} (hz : ResultI q($z)) :
     q(by rw [RCLike.inv_re, div_eq_mul_inv, mul_comm, RCLike.normSq_apply])
     q(by rw [RCLike.inv_im, div_eq_mul_inv, mul_comm, RCLike.normSq_apply, mul_neg])
 
-theorem eq_of_eq_of_eq_of_eq {z w : ℂ}
+theorem eq_of_eq_of_eq {z w : ℂ}
     (ha : (RCLike.re z = RCLike.re w))
     (hb : (RCLike.im z = RCLike.im w)) : z = w := by
   apply RCLike.ext <;> simp_all
@@ -242,6 +231,17 @@ partial def parse (z : Q(ℂ)) : MetaM (ResultI q($z)) := do
     return ResultI.mk (← NormNum.ResultOfScientific m x exp) (← NormNum.Resultn 0)
   | _ => throwError "found the atom {z} which is not a numeral"
 
+-- TODO : get rid of cast in `$a = $x + Complex.I * $y`.
+-- also try replace `getD` with `get!`
+/-- when obtained a result `a` in `ResultI`, one could get `x y : ℝ` such that `a = x + yi`. -/
+def ResultI.eqeq {a : Q(ℂ)} (r : ResultI a) :
+    MetaM (Σ x y : Q(ℝ), Q($a = $x + Complex.I * $y)) := do
+  let ⟨(x : Q(ℝ)), pf1, _⟩ ← r.re.toSimpResult
+  let ⟨(y : Q(ℝ)), pf2, _⟩ ← r.im.toSimpResult
+  let pf1' : Q(Complex.re $a = $x) := pf1.getD q(rfl : $x = _)
+  let pf2' : Q(Complex.im $a = $y) := pf2.getD q(rfl : $y = _)
+  return ⟨x, y, q(Complex.ext (by simpa using $pf1') (by simpa using $pf2'))⟩
+
 /-- Create the `NormNumI` tactic in `conv` mode. -/
 elab "norm_numI" : conv => do
   let z ← Conv.getLhs
@@ -251,20 +251,14 @@ elab "norm_numI" : conv => do
   let r : Simp.ResultQ q($z) := .mk _ <| .some q(($pf))
   Conv.applySimpResult r
 
-
-def _root_.Mathlib.Meta.NormNum.Result.toBool {p : Q(Prop)} (r : NormNum.Result q($p)) :
-    MetaM ((b : Bool) × NormNum.BoolResult q($p) b) := do
-  let .isBool b prf := r | failure
-  pure ⟨b, prf⟩
-
 def ResultI.eq {a b : Q(ℂ)} (ha : ResultI q($a)) (hb : ResultI q($b)) :
-    MetaM ((eq : Bool) × NormNum.BoolResult q($a = $b) eq) := do
-  let ⟨eq1, h1⟩ := ← (← ha.re.eq hb.re).toBool
-  let ⟨eq2, h2⟩ := ← (← ha.im.eq hb.im).toBool
+    MetaM (NormNum.Result q($a = $b)) := do
+  let some ⟨eq1, h1⟩ := (← ha.re.eq hb.re).toBool | failure
+  let some ⟨eq2, h2⟩ := (← ha.im.eq hb.im).toBool | failure
   match eq1, eq2 with
-  | true, true => return ⟨true, q(NormNumI.eq_of_eq_of_eq_of_eq $h1 $h2)⟩
-  | true, false => return ⟨false, q(NormNumI.ne_of_im_ne $h2)⟩
-  | false, _ => return ⟨false, q(NormNumI.ne_of_re_ne $h1)⟩
+  | true, true => return .isTrue q(NormNumI.eq_of_eq_of_eq $h1 $h2)
+  | true, false => return .isFalse q(NormNumI.ne_of_im_ne $h2)
+  | false, _ => return .isFalse q(NormNumI.ne_of_re_ne $h1)
 
 end NormNumI
 
@@ -280,8 +274,7 @@ such that `norm_num` successfully recognises both the real and imaginary parts o
   haveI' : $e =Q ($z = $w) := ⟨⟩
   let hz ← NormNumI.parse z
   let hw ← NormNumI.parse w
-  let ⟨_, eq⟩ ← hz.eq hw
-  return .ofBoolResult eq
+  hz.eq hw
 
 /-- The `norm_num` extension which identifies expressions of the form `Complex.re (z : ℂ)`,
 such that `norm_num` successfully recognises the real part of `z`.

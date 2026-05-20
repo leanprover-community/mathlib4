@@ -556,6 +556,12 @@ def Result.toSimpResult {α : Q(Type u)} {e : Q($α)} : Result e → MetaM Simp.
 abbrev BoolResult (p : Q(Prop)) (b : Bool) : Type :=
   Q(Bool.rec (¬ $p) ($p) $b)
 
+/-- Returns the boolean that is the result of `norm_num` evaluation. -/
+def Result.toBool {p : Q(Prop)} (r : NormNum.Result q($p)) :
+    Option ((b : Bool) × BoolResult q($p) b) := do
+  let .isBool b prf := r | failure
+  pure ⟨b, prf⟩
+
 /-- Obtain a `Result` from a `BoolResult`. -/
 def Result.ofBoolResult {p : Q(Prop)} {b : Bool} (prf : BoolResult p b) : Result q(Prop) :=
   Result'.isBool b prf

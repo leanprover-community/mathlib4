@@ -142,8 +142,8 @@ def deriveRat {α : Q(Type u)} (e : Q($α))
 /-- Run each registered `norm_num` extension on a typed expression `p : Prop`,
 and returning the truth or falsity of `p' : Prop` from an equivalence `p ↔ p'`. -/
 def deriveBool (p : Q(Prop)) : MetaM ((b : Bool) × BoolResult p b) := do
-  let .isBool b prf ← derive q($p) | failure
-  pure ⟨b, prf⟩
+  let some res := (← derive q($p)).toBool | failure
+  pure res
 
 /-- Run each registered `norm_num` extension on a typed expression `p : Prop`,
 and returning the truth or falsity of `p' : Prop` from an equivalence `p ↔ p'`. -/
