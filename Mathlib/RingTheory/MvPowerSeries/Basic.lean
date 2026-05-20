@@ -351,6 +351,14 @@ theorem coeff_C [DecidableEq σ] (n : σ →₀ ℕ) (a : R) :
 theorem coeff_zero_C (a : R) : coeff (0 : σ →₀ ℕ) (C a) = a :=
   coeff_monomial_same 0 a
 
+theorem coeff_ne_zero_C {n : σ →₀ ℕ} (h : n ≠ 0) {a : R} : coeff n (C a) = 0 := by
+  classical rw [coeff_C, if_neg h]
+
+@[simp]
+theorem coeff_add_single_C {n : σ →₀ ℕ} {a : R} {i : σ} :
+    coeff (n + single i 1) (C a) = 0 :=
+  coeff_ne_zero_C <| fun H ↦ by simpa using congr($(H) i)
+
 @[grind inj]
 theorem C_injective : Function.Injective (C : R → MvPowerSeries σ R) := by
   intro a b h
