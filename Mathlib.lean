@@ -3512,6 +3512,7 @@ public import Mathlib.Combinatorics.Enumerative.Catalan.Tree
 public import Mathlib.Combinatorics.Enumerative.Composition
 public import Mathlib.Combinatorics.Enumerative.DoubleCounting
 public import Mathlib.Combinatorics.Enumerative.DyckWord
+public import Mathlib.Combinatorics.Enumerative.GeneratingFunction.Defs
 public import Mathlib.Combinatorics.Enumerative.IncidenceAlgebra
 public import Mathlib.Combinatorics.Enumerative.InclusionExclusion
 public import Mathlib.Combinatorics.Enumerative.Partition
