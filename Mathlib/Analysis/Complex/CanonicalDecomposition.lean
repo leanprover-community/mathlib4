@@ -37,8 +37,9 @@ variable {R : ℝ} {w : ℂ}
 /-!
 ## Canonical Factors
 
-Given `R : ℝ` and `w : ℂ`, the Blaschke factor `Blaschke R w : ℂ → ℂ` is meromorphic in normal form,
-has a single pole at `w`, no zeros, and takes values of norm one on the circle of radius `R`.
+Given `R : ℝ` and `w : ℂ`, the canonical factor `canonical R w : ℂ → ℂ` is meromorphic function in
+normal form that has a single pole at `w`, no zeros, and takes values of norm one on the circle of
+radius `R`.
 -/
 
 /--
@@ -277,9 +278,12 @@ private lemma canonicalDecomposition_aux₃ {z : ℂ} (hR : 0 < R) :
   simp [← WithTop.coe_mul]
 
 /--
-**Canonical decomposition:** A meromorphic function on a disk is equal, up to modification over a
-discrete set, to a product of canonical factors and a meromorphic function without zeros or poles in
-the interior of the disk.
+**Canonical decomposition:** A meromorphic function `f` on a disk is equal, up to modification over
+a discrete set, to a product of canonical factors and a meromorphic function `g` without zeros or
+poles in the interior of the disk.
+
+The condition "`g` is without zeros or poles" is formulated by saying that `g` is meromorphic in
+normal form and `g ≠ 0`.
 -/
 theorem _root_.MeromorphicOn.congr_codiscreteWitin_closedBall_prod_canonicalFactor
     (h₁f : MeromorphicOn f (closedBall 0 R))
