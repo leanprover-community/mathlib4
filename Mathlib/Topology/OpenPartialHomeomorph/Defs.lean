@@ -106,8 +106,8 @@ theorem coe_mk (e : PartialEquiv X Y) (h₁ h₂ h₃ h₄) :
 @[deprecated (since := "2026-05-20")] alias mk_coe := coe_mk
 
 @[simp, mfld_simps]
-theorem coe_mk_symm (e : PartialEquiv X Y) (a b c d) :
-    ((OpenPartialHomeomorph.mk e a b c d).symm : Y → X) = e.symm :=
+theorem coe_mk_symm (e : PartialEquiv X Y) (h₁ h₂ h₃ h₄) :
+    ((OpenPartialHomeomorph.mk e h₁ h₂ h₃ h₄).symm : Y → X) = e.symm :=
   rfl
 
 @[deprecated (since := "2026-05-20")] alias mk_coe_symm := coe_mk_symm
