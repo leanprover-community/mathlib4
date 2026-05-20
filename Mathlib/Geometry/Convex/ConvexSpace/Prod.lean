@@ -25,7 +25,7 @@ variable {X Y : Type*} [ConvexSpace R X] [ConvexSpace R Y]
 instance : ConvexSpace R (X × Y) := .mk
   (fun w ↦ (w.iConvexComb fst, w.iConvexComb snd))
   (by simp)
-  (by simp [Function.comp_def, iConvexComb_assoc])
+  (by simp [iConvexComb_assoc])
 
 @[simp]
 lemma fst_sConvexComb (w : StdSimplex R (X × Y)) : w.sConvexComb.fst = w.iConvexComb fst := rfl
