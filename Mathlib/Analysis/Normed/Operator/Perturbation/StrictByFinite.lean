@@ -98,24 +98,31 @@ theorem step0 (u : E →L[𝕜] F) (A : Submodule 𝕜 E)
   replace uS_compl_uA : IsTopCompl (map u.toLinearMap S) (map u.toLinearMap A) :=
       uS_compl_uA.symm.isTopCompl_of_isClosed_of_finiteDimensional uA_closed |>.symm
   -- Thus, we have decomposed both the comain and the codomain into topopological complements,
-  -- and `u` preserves this decomposition, inducing maps `u₁ : S → map u S` and `u₂ : A → map u A`.
-  set u₁ : S →L[𝕜] map u.toLinearMap S := u.restrict (fun _ ↦ mem_map_of_mem)
-  set u₂ : A →L[𝕜] map u.toLinearMap A := u.restrict (fun _ ↦ mem_map_of_mem)
+  -- and `u` preserves this decomposition, inducing maps `uₛ : S → map u S` and `uₐ : A → map u A`.
+  set uₛ : S →L[𝕜] map u.toLinearMap S := u.restrict (fun _ ↦ mem_map_of_mem)
+  set uₐ : A →L[𝕜] map u.toLinearMap A := u.restrict (fun _ ↦ mem_map_of_mem)
   -- Using the corresponding isomorphisms `(S × A) ≃L[𝕜] E` and `(map u S × map u A) ≃L[𝕜] F`,
-  -- we have to show that the map `u₁.prodMap u₂ : S × A → map u S × map u A` is strict
-  -- if and only if `u₂ : A → map u A` is strict.
+  -- we have to show that the map `uₛ.prodMap uₐ : S × A → map u S × map u A` is strict
+  -- if and only if `uₐ : A → map u A` is strict.
   set Φ : (S × A) ≃L[𝕜] E := prodEquivOfIsTopCompl S A S_compl_A
   set Ψ : (map u.toLinearMap S × map u.toLinearMap A) ≃L[𝕜] F :=
     prodEquivOfIsTopCompl _ _ uS_compl_uA
-  have u₁_surj : Surjective u₁ := surjective_mapsTo_image_restrict _ _
-  have u₂_surj : Surjective u₂ := surjective_mapsTo_image_restrict _ _
-  have u_eq : u = Ψ ∘ (u₁.prodMap u₂) ∘ Φ.symm := by
+  have uₛ_surj : Surjective uₛ := surjective_mapsTo_image_restrict _ _
+  have uₐ_surj : Surjective uₐ := surjective_mapsTo_image_restrict _ _
+  have u_eq : u = Ψ ∘ (uₛ.prodMap uₐ) ∘ Φ.symm := by
     ext x
-    simp [Φ, Ψ, u₁, u₂, ← map_add, projectionL_add_projectionL_eq_self]
-  have u_restr_eq : u.domRestrict A = (map u.toLinearMap A).subtypeL ∘ u₂ := rfl
-  suffices IsStrictMap (Prod.map u₁ u₂) ↔ IsStrictMap u₂ by
-    rw [u_restr_eq, u_eq]
+    simp [Φ, Ψ, uₛ, uₐ, ← map_add, projectionL_add_projectionL_eq_self]
+  have u_restr_eq : u.domRestrict A = (map u.toLinearMap A).subtypeL ∘ uₐ := rfl
+  suffices IsStrictMap (Prod.map uₛ uₐ) ↔ IsStrictMap uₐ by
+    rw [u_restr_eq, u_eq, ← (isEmbedding_subtypeL _).isStrictMap_iff]
     sorry
+  -- Note that these two maps are surjective, so they are strict if and only if
+  sorry
+
+theorem step1_of_step0 [T2Space F] (u : E →L[𝕜] F) (A : Submodule 𝕜 E)
+    (A_closed : IsClosed (A : Set E)) [codim_A : FiniteDimensional 𝕜 (E ⧸ A)]
+    (h_ker : Disjoint u.ker A) (h_range : u.range = ⊤) :
+    IsStrictMap u ↔ IsStrictMap (u.domRestrict A) ∧ IsClosed (map u.toLinearMap A : Set F) := by
   sorry
 
 /-!
