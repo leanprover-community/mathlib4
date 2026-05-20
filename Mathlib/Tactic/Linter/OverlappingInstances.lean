@@ -204,8 +204,8 @@ def runLinter (ctx : ContextInfo) (lctx : LocalContext) (expectedType? : Option 
     msg := msg ++ m!"\n⚠️ {overlapMsg}"
   if needsDiamondMsg then
     msg := msg ++ m!"\n\n\
-      When a data-carrying type class can be inferred from two different type classes in the local
-      context, there are two incompatible instances of that type class. These form an \"instance
+      When a data-carrying type class can be inferred from two different type classes in the local \
+      context, there are two incompatible instances of that type class. These form an \"instance \
       diamond\", which leads to unexpected unification failures.\
       \n\n\
       Restructure your type class arguments to avoid this."
