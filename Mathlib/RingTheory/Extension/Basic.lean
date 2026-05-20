@@ -509,6 +509,10 @@ lemma Cotangent.map_comp (f : Hom P P') (g : Hom P' P'') :
   simp only [map_mk, Hom.toAlgHom_apply, Hom.comp_toRingHom, RingHom.coe_comp, Function.comp_apply,
     val_mk, LinearMap.coe_comp, LinearMap.coe_restrictScalars]
 
+lemma Cotangent.map_comp_apply (f : Hom P P') (g : Hom P' P'') (x : P.Cotangent) :
+    Cotangent.map (g.comp f) x = (map g) (map f x) :=
+  DFunLike.congr_fun (Cotangent.map_comp P'' f g) x
+
 lemma Cotangent.finite (hP : P.ker.FG) :
     Module.Finite S P.Cotangent := by
   refine ⟨.of_restrictScalars (R := P.Ring) ?_⟩

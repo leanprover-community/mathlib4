@@ -61,12 +61,6 @@ theorem restrictScalars_inj (f g : M ≃ₗ[S] M₂) :
     f.restrictScalars R = g.restrictScalars R ↔ f = g :=
   (restrictScalars_injective R).eq_iff
 
-theorem restrictScalars_toLinearMap (f : M ≃ₗ[S] M₂) :
-    (f.restrictScalars R).toLinearMap = f.toLinearMap.restrictScalars R := rfl
-
-theorem restrictScalars_symm [LinearMap.CompatibleSMul M₂ M R S] (f : M ≃ₗ[S] M₂) :
-    (f.restrictScalars R).symm = f.symm.restrictScalars R := rfl
-
 end RestrictScalars
 
 theorem _root_.Module.End.isUnit_iff [Module R M] (f : Module.End R M) :
