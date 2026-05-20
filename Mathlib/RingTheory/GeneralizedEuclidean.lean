@@ -27,9 +27,9 @@ variable (R : Type u) [Semiring R]
 
 /-- The natural euclidean filtration on a semiring -/
 def Nat.EuclideanFiltration (n : ℕ) : Set R :=
-  Nat.recOn (motive := fun _ ↦ Set R) n
-    {0}
-    (fun _ s ↦ {0} ∪ {a | ∀ x : R, ∃ q r, r ∈ s ∧ x = q * a + r})
+  match n with
+  | 0 => {0}
+  | n + 1 => {0} ∪ {a | ∀ x : R, ∃ q r, r ∈ n.EuclideanFiltration ∧ x = q * a + r}
 
 variable {R}
 
@@ -160,18 +160,14 @@ end ENat
 
 variable (R) in
 /-- A semiring is Nat-euclidean in the sense of Samuel if `Nat.EuclideanFiltration` is exhaustive -/
+@[mk_iff]
 class IsNatEuclidean : Prop where
   iUnion_eq_univ : ⋃ n, Nat.EuclideanFiltration R n = Set.univ
 
-theorem _root_.isNatEuclidean_iff_iUnion_euclideanFiltration_eq_univ :
-    IsNatEuclidean R ↔ ⋃ n, Nat.EuclideanFiltration R n = Set.univ :=
-  ⟨fun h ↦ h.iUnion_eq_univ, fun h ↦ ⟨h⟩⟩
-
 theorem _root_.isNatEuclidean_iff_forall_euclideanLevel_ne_top :
     IsNatEuclidean R ↔ ∀ r : R, ENat.EuclideanLevel r < ⊤ := by
-  simp [isNatEuclidean_iff_iUnion_euclideanFiltration_eq_univ,
-    lt_top_iff_ne_top, ne_eq, ENat.euclideanLevel_eq_top_iff,
-    Set.eq_univ_iff_forall]
+  simp [isNatEuclidean_iff, lt_top_iff_ne_top, ne_eq,
+    ENat.euclideanLevel_eq_top_iff, Set.eq_univ_iff_forall]
 
 namespace Nat
 
@@ -253,13 +249,13 @@ open WithTop Order
 variable (R) in
 /-- The `Ordinal`-euclidean filtration of a semiring -/
 def EuclideanFiltration (o : Ordinal.{u}) : Set R :=
-  limitRecOn (motive := fun _ ↦ Set R) o
+  limitRecOn o
     {0}
     (fun _ s ↦ {0} ∪ {a | ∀ x : R, ∃ q r, r ∈ s ∧ x = q * a + r})
     (fun o _ f ↦ ⋃ (o') (h : o' < o), f o' h)
 
 theorem euclideanFiltration_def (o : Ordinal.{u}) :
-  EuclideanFiltration R o = limitRecOn (motive := fun _ ↦ Set R) o
+  EuclideanFiltration R o = limitRecOn o
     {0}
     (fun _ s ↦ {0} ∪ {a | ∀ x : R, ∃ q r, r ∈ s ∧ x = q * a + r})
     (fun o _ f ↦ ⋃ (o') (h : o' < o), f o' h) :=
@@ -457,22 +453,18 @@ open Order WithTop.Ordinal
 variable (R) in
 /-- A semiring is Ordinal-euclidean in the sense of Samuel
 if `Ordinal.EuclideanFiltration` is exhaustive -/
+@[mk_iff]
 class _root_.IsOrdinalEuclidean : Prop where
   iUnion_eq_univ : ⋃ n, EuclideanFiltration R n = Set.univ
 
-theorem _root_.isOrdinalEuclidean_iff_iUnion_euclideanFiltration_eq_univ :
-    IsOrdinalEuclidean R ↔ ⋃ n, Ordinal.EuclideanFiltration R n = Set.univ :=
-  ⟨fun h ↦ h.iUnion_eq_univ, fun h ↦ ⟨h⟩⟩
-
 theorem _root_.isOrdinalEuclidean_iff_forall_euclideanLevel_ne_top :
     IsOrdinalEuclidean R ↔ ∀ r : R, EuclideanLevel r ≠ ⊤ := by
-  simp [isOrdinalEuclidean_iff_iUnion_euclideanFiltration_eq_univ,
-    ne_eq, WithTop.Ordinal.euclideanLevel_eq_top_iff, Set.eq_univ_iff_forall]
+  simp [isOrdinalEuclidean_iff, ne_eq,
+    WithTop.Ordinal.euclideanLevel_eq_top_iff, Set.eq_univ_iff_forall]
 
 theorem _root_.isNatEuclidean_iff_euclideanFiltration_omega :
     IsNatEuclidean R ↔ EuclideanFiltration R ω = Set.univ := by
-  rw [isNatEuclidean_iff_iUnion_euclideanFiltration_eq_univ,
-    euclideanFiltration_limit isSuccLimit_omega0]
+  rw [isNatEuclidean_iff, euclideanFiltration_limit isSuccLimit_omega0]
   suffices ⋃ n, Nat.EuclideanFiltration R n = ⋃ n' < ω, EuclideanFiltration R n' by
     simp [this]
   have := Set.BijOn.iUnion_congr (s := Set.univ) (t := {n' | n' < ω})
