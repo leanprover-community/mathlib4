@@ -467,7 +467,7 @@ theorem isIso_fromTildeΓ_iff_isLocalizing (M : (Spec R).Modules) :
       Scheme.Modules.toOpen_fromTildeΓ_app]
     simpa using IsIso.id _
 
-/-- `sheafCompose` commutes with `pushforward` -/
+/-- `sheafCompose` commutes with `pushforward`. -/
 def sheafComposePushforwardComp :
     sheafCompose (Opens.grothendieckTopology (Spec S))
       (ModuleCat.restrictScalars (Spec.map φ).appTop.hom) ⋙
