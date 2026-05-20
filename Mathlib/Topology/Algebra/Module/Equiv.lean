@@ -682,6 +682,11 @@ instance automorphismGroup : Group (M₁ ≃L[R₁] M₁) where
   one_mul f := rfl
   inv_mul_cancel f := ext <| funext fun _ ↦ f.left_inv _
 
+@[simp] lemma toContinuousLinearMap_one : toContinuousLinearMap (1 : M₁ ≃L[R₁] M₁) = 1 := rfl
+
+@[simp] lemma toContinuousLinearMap_mul (e e' : M₁ ≃L[R₁] M₁) :
+    toContinuousLinearMap (e * e') = e.toContinuousLinearMap * e'.toContinuousLinearMap := rfl
+
 variable {M₁} {R₄ : Type*} [Semiring R₄] [Module R₄ M₄] {σ₃₄ : R₃ →+* R₄} {σ₄₃ : R₄ →+* R₃}
   [RingHomInvPair σ₃₄ σ₄₃] [RingHomInvPair σ₄₃ σ₃₄] {σ₂₄ : R₂ →+* R₄} {σ₁₄ : R₁ →+* R₄}
   [RingHomCompTriple σ₂₁ σ₁₄ σ₂₄] [RingHomCompTriple σ₂₄ σ₄₃ σ₂₃] [RingHomCompTriple σ₁₃ σ₃₄ σ₁₄]
@@ -1386,6 +1391,12 @@ theorem ofSubmodule'_symm_apply (f : M ≃SL[σ₁₂] M₂) (U : Submodule R₂
     ((f.ofSubmodule' U).symm x : M) = f.symm (x : M₂) := rfl
 
 end ContinuousLinearEquiv
+
+/-- The top submodule is continuous linearly equivalent to the module.
+This is the continuous version of `Submodule.topEquiv`. -/
+abbrev _root_.Submodule.topContEquiv {R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
+    [TopologicalSpace M] : (⊤ : Submodule R M) ≃L[R] M where
+  __ := Submodule.topEquiv
 
 end map
 

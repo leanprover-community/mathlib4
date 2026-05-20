@@ -63,6 +63,10 @@ instance (priority := 900) [IsOpenImmersion f] : Flat f :=
 instance : MorphismProperty.IsStableUnderComposition @Flat :=
   HasRingHomProperty.stableUnderComposition RingHom.Flat.stableUnderComposition
 
+@[simp]
+lemma SpecMap_iff {R S : CommRingCat.{u}} {f : R ⟶ S} : Flat (Spec.map f) ↔ f.hom.Flat :=
+  HasRingHomProperty.Spec_iff
+
 instance comp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z)
     [hf : Flat f] [hg : Flat g] : Flat (f ≫ g) :=
   MorphismProperty.comp_mem _ f g hf hg
@@ -165,6 +169,10 @@ lemma flat_and_surjective_iff_faithfullyFlat_of_isAffine [IsAffine X] [IsAffine 
   rfl
 
 end Flat
+
+lemma Scheme.Hom.flat_appTop [IsAffine X] [IsAffine Y] [Flat f] :
+    f.appTop.hom.Flat :=
+  HasRingHomProperty.appTop (P := @Flat) _ inferInstance
 
 lemma flat_and_surjective_SpecMap_iff {R S : CommRingCat.{u}} (f : R ⟶ S) :
     Flat (Spec.map f) ∧ Surjective (Spec.map f) ↔ f.hom.FaithfullyFlat := by
