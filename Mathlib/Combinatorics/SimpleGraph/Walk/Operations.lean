@@ -602,7 +602,7 @@ lemma support_take {u v} (p : G.Walk u v) (n : ℕ) :
     (p.take n).support = p.support.take (n + 1) := by
   induction p generalizing n <;> cases n <;> simp [*, take]
 
-@[deprecated (since := "2026-04-04")] alias take_support_eq_support_take_succ := support_take
+@[deprecated (since := "2026-05-20")] alias take_support_eq_support_take_succ := support_take
 
 lemma take_take (p : G.Walk u v) (n m : ℕ) :
     (p.take n).take m = (p.take (min n m)).copy rfl (p.take_getVert n m).symm := by

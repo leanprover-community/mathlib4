@@ -123,7 +123,7 @@ theorem isSubwalk_iff_support_infix {v w v' w' : V} {p₁ : G.Walk v w} {p₂ : 
       List.drop_eq_nil_of_le (by lia), List.drop_eq_nil_of_le (by grind), ← p₁.cons_tail_support]
     simp +arith [-cons_tail_support]
 
-@[deprecated (since := "2026-04-04")]
+@[deprecated (since := "2026-05-20")]
 alias isSubwalk_iff_support_isInfix := isSubwalk_iff_support_infix
 
 theorem isSubwalk_iff_darts_infix {p₁ : G.Walk u v} {p₂ : G.Walk u' v'} (hnil : ¬p₁.Nil) :
@@ -140,7 +140,7 @@ theorem isSubwalk_iff_darts_infix {p₁ : G.Walk u v} {p₂ : G.Walk u' v'} (hni
     have := h i
     grind [fst_darts_getElem]
 
-@[deprecated (since := "2026-04-04")] alias isSubwalk_iff_darts_isInfix := isSubwalk_iff_darts_infix
+@[deprecated (since := "2026-05-20")] alias isSubwalk_iff_darts_isInfix := isSubwalk_iff_darts_infix
 
 @[simp]
 theorem isSubwalk_nil_iff_mem_support (p : G.Walk u v) :
@@ -187,7 +187,7 @@ theorem IsSubwalk.edges_infix {u v u' v' : V} {p₁ : G.Walk u v} {p₂ : G.Walk
     (h : p₁.IsSubwalk p₂) : p₁.edges <:+: p₂.edges := by
   grind [edges_append, IsSubwalk]
 
-@[deprecated (since := "2026-04-04")] alias IsSubwalk.edges_isInfix := IsSubwalk.edges_infix
+@[deprecated (since := "2026-05-20")] alias IsSubwalk.edges_isInfix := IsSubwalk.edges_infix
 
 @[simp]
 theorem IsSubwalk.edges_subset {u v u' v' : V} {p₁ : G.Walk u v} {p₂ : G.Walk u' v'}
@@ -198,7 +198,7 @@ theorem IsSubwalk.darts_infix {u v u' v' : V} {p₁ : G.Walk u v} {p₂ : G.Walk
     (h : p₁.IsSubwalk p₂) : p₁.darts <:+: p₂.darts := by
   grind [darts_append, IsSubwalk]
 
-@[deprecated (since := "2026-04-04")] alias IsSubwalk.darts_isInfix := IsSubwalk.darts_infix
+@[deprecated (since := "2026-05-20")] alias IsSubwalk.darts_isInfix := IsSubwalk.darts_infix
 
 @[simp]
 theorem IsSubwalk.darts_subset {u v u' v' : V} {p₁ : G.Walk u v} {p₂ : G.Walk u' v'}

@@ -322,14 +322,14 @@ theorem Copy.maxDegree_le [Fintype V] [Fintype W] [DecidableRel G.Adj] [Decidabl
   obtain ⟨v, h⟩ := exists_maximal_degree_vertex G
   grind [degree_le_maxDegree H (f v), f.degree_le v]
 
-@[deprecated (since := "2026-04-04")] alias Copy.max_degree_le := Copy.maxDegree_le
+@[deprecated (since := "2026-05-20")] alias Copy.max_degree_le := Copy.maxDegree_le
 
 theorem IsContained.maxDegree_le [Fintype V] [Fintype W] [DecidableRel G.Adj] [DecidableRel H.Adj]
     (h : G ⊑ H) : G.maxDegree ≤ H.maxDegree := by
   have ⟨f⟩ := h
   exact f.maxDegree_le
 
-@[deprecated (since := "2026-04-04")] alias IsContained.max_degree_le := IsContained.maxDegree_le
+@[deprecated (since := "2026-05-20")] alias IsContained.max_degree_le := IsContained.maxDegree_le
 
 @[gcongr]
 lemma maxDegree_mono {H : SimpleGraph V} [Fintype V] [DecidableRel G.Adj] [DecidableRel H.Adj]
