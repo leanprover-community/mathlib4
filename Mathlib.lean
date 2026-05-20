@@ -3415,6 +3415,7 @@ public import Mathlib.CategoryTheory.Subobject.Classifier.Defs
 public import Mathlib.CategoryTheory.Subobject.Comma
 public import Mathlib.CategoryTheory.Subobject.FactorThru
 public import Mathlib.CategoryTheory.Subobject.HasCardinalLT
+public import Mathlib.CategoryTheory.Subobject.Heyting
 public import Mathlib.CategoryTheory.Subobject.Lattice
 public import Mathlib.CategoryTheory.Subobject.Limits
 public import Mathlib.CategoryTheory.Subobject.MonoOver
