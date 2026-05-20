@@ -44,35 +44,6 @@ Later files endow it with a topological structure, see the docstring of
 
 -/
 
-/-!
-# Basic
-
-## Main definitions
-
-* `FooBar`
-
-## Main statements
-
-* `fooBar_unique`
-
-## Notation
-
-
-
-## Implementation details
-
-
-
-## References
-
-* [F. Bar, *Quuxes*][bibkey]
-
-## Tags
-
-Foobars, barfoos
--/
-
-
 @[expose] public section
 
 assert_not_exists TrivialStar
