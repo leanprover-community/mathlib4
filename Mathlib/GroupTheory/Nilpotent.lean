@@ -63,7 +63,6 @@ subgroup `G` of `G`, and `⊥` denotes the trivial subgroup `{1}`.
   is derived from that.
 * `IsNilpotent.to_isSolvable`: If `G` is nilpotent, it is solvable.
 
-
 ## Warning
 
 A "central series" is usually defined to be a finite sequence of normal subgroups going

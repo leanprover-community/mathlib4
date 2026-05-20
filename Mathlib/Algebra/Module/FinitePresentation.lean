@@ -36,7 +36,6 @@ Suppose `0 → K → M → N → 0` is an exact sequence of `R`-modules.
 - `Module.FinitePresentation.isLocalizedModule_map`: If `M` and `N` are `R`-modules and `M` is f.p.,
   and `S` is a submonoid of `R`, then `Hom(Mₛ, Nₛ)` is the localization of `Hom(M, N)`.
 
-
 Also the instances finite + free => f.p. => finite are also provided
 
 ## TODO
@@ -48,7 +47,6 @@ Suppose `S` is an `R`-algebra, `M` is an `S`-module. Then
 
 In particular,
 4. `S` is f.p. as an `R`-module iff it is f.p. as an algebra and is finite as a module.
-
 
 For finitely presented algebras, see `Algebra.FinitePresentation`
 in file `Mathlib/RingTheory/FinitePresentation.lean`.

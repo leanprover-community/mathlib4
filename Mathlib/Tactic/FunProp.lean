@@ -264,7 +264,6 @@ There are four types of theorems that are used a bit differently.
     arguments, we do not need to add new theorems that addition is also continuous only in the first
     or only in the second argument. This is automatically inferred using lambda theorems.
 
-
 - Morphism Theorems:
     The `fun_prop` tactic can also deal with bundled morphisms. For example, we can state that every
     continuous linear function is indeed continuous:

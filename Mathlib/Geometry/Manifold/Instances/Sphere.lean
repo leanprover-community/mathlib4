@@ -50,7 +50,6 @@ centred at `0` of radius `1`) with the following structure:
 We furthermore show that `Circle.exp` (defined in `Analysis.Complex.Circle` to be the natural
 map `fun t ↦ exp (t * I)` from `ℝ` to `Circle`) is analytic.
 
-
 ## Implementation notes
 
 The model space for the charted space instance is `EuclideanSpace ℝ (Fin n)`, where `n` is a

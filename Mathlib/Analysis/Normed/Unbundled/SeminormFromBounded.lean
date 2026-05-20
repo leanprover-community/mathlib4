@@ -17,7 +17,6 @@ the inequality `f (x * y) ≤ c * f x * f y)` is satisfied, we create a ring sem
 In the file comments, we will use the expression `f is multiplicatively bounded` to indicate that
 this condition holds.
 
-
 ## Main Definitions
 
 * `seminormFromBounded'` : the real-valued function sending `x ∈ R` to the supremum of
@@ -26,7 +25,6 @@ this condition holds.
 * `normFromBounded` :`seminormFromBounded' f` as a `RingNorm` on `R`, provided that `f` is
   nonnegative, multiplicatively bounded and subadditive, that it preserves `0` and negation, and
   that `f` has trivial kernel.
-
 
 ## Main Results
 

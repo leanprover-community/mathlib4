@@ -48,7 +48,6 @@ We provide the natural inclusion from multivariate polynomials to multivariate f
 
 - `MvPolynomial.toMvPowerSeries`: the canonical coercion from `MvPolynomial` to `MvPowerSeries`
 
-
 ## Note
 
 This file sets up the (semi)ring structure on multivariate power series:

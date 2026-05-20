@@ -24,7 +24,6 @@ The following are in the `AlgebraicGeometry.Scheme` namespace:
 - `AlgebraicGeometry.Scheme.SpecToEquivOfField`: morphisms `Spec K ⟶ X` for a field `K` correspond
   to pairs of `x : X` with embedding `κ(x) ⟶ K`.
 
-
 -/
 
 @[expose] public section

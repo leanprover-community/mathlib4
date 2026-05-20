@@ -28,7 +28,6 @@ a denominator `s : S`.
 * <https://ncatlab.org/nlab/show/Ore+localization>
 * [Zoran Škoda, *Noncommutative localization in noncommutative geometry*][skoda2006]
 
-
 ## Tags
 localization, Ore, non-commutative
 

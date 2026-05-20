@@ -37,7 +37,6 @@ this instance in `Submodule.Quotient.completeSpace` so that it applies to these 
 
 ## Main definitions
 
-
 We use `M` and `N` to denote seminormed groups and `S : AddSubgroup M`.
 All the following definitions are in the `AddSubgroup` namespace. Hence we can access
 `AddSubgroup.normedMk S` as `S.normedMk`.
@@ -64,7 +63,6 @@ All the following definitions are in the `AddSubgroup` namespace. Hence we can a
 
 * `IsQuotient.norm_lift`: Provided `f : normed_hom M N` satisfies `IsQuotient f`, for every
      `n : N` and positive `ε`, there exists `m` such that `f m = n ∧ ‖m‖ < ‖n‖ + ε`.
-
 
 ## Implementation details
 

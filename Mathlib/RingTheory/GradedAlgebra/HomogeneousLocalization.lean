@@ -69,7 +69,6 @@ circumvent this, we quotient `NumDenSameDeg 𝒜 x` by the kernel of `c ↦ c.nu
 
 * [Robin Hartshorne, *Algebraic Geometry*][Har77]
 
-
 -/
 
 @[expose] public section

@@ -29,7 +29,6 @@ is essentially small.
 By requiring `P.limitsOfShape J ≤ P`, we introduce a typeclass
 `P.IsClosedUnderLimitsOfShape J`.
 
-
 ## TODO
 
 * formalize the closure of `P` under finite limits (which require

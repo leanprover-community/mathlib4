@@ -29,7 +29,6 @@ This file defines operations on two-sided ideals of a ring `R`.
   element  `x` is in the two-sided ideal spanned by `s` if and only if `x` is in the closure of
   `{a*y*b | a, b ∈ R, y ∈ s}` as an additive subgroup.
 
-
 - `TwoSidedIdeal.comap`: pullback of a two-sided ideal; defined as the preimage of a
   two-sided ideal.
 - `TwoSidedIdeal.map`: pushforward of a two-sided ideal; defined as the span of the image of a

@@ -37,7 +37,6 @@ public import Mathlib.RingTheory.MvPowerSeries.Order
 
   Here, `m` and `n`  have types `σ →₀ ℕ` so that `m ≤ n` means that `m s ≤ n s` for all `s : σ`.
 
-
 * `MvPowerSeries.coeff_mul_eq_coeff_trunc'_mul_trunc'` : compares the coefficients
   of a product with those of the product of truncations.
 

@@ -17,7 +17,6 @@ This file contains results on the behavior of ultrametrics in products of ultram
 
 * `Pi.instIsUltrametricDist`: a product of ultrametric spaces is ultrametric.
 
-
 ultrametric, nonarchimedean
 -/
 

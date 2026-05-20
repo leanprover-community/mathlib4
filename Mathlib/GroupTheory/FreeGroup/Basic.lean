@@ -47,7 +47,6 @@ over `FreeGroup.Red.Step`.
 For the additive version we introduce the same relation under a different name so that we can
 distinguish the quotient types more easily.
 
-
 ## Tags
 
 free group, Newman's diamond lemma, Church-Rosser theorem

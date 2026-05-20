@@ -11,7 +11,6 @@ public import Mathlib.Topology.Sets.Opens
 /-!
 # Partial homeomorphisms: basic theory
 
-
 ## Main definitions
 
 * `OpenPartialHomeomorph.refl`: the identity open partial homeomorphism

@@ -19,7 +19,6 @@ isomorphism between a commutative C⋆-algebra and continuous functions on the c
 of the algebra. This, in turn, is used to construct the continuous functional calculus on
 C⋆-algebras.
 
-
 ## Implementation notes
 
 We define `WeakDual.characterSpace 𝕜 A` as a subset of the weak dual, which automatically puts the

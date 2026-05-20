@@ -62,7 +62,6 @@ divided powers (`DividedPowerAlgebra.lift`).
 
 * Show in upcoming files that `DividedPowerAlgebra R M` has divided powers.
 
-
 -/
 
 @[expose] public section

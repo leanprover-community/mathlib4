@@ -36,7 +36,6 @@ saying that `R` is endowed with an equivalence class of valuations.
   `[ValuativeExtension A B]` ensures that the algebra map `A → B` is compatible with the valuations
   on `A` and `B`. For example, this can be used to talk about extensions of valued fields.
 
-
 ## Remark
 
 The last two axioms in `ValuativeRel`, namely `vle_mul_cancel` and `not_vle_one_zero`, are
