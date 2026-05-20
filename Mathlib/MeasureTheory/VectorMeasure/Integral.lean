@@ -5,6 +5,7 @@ Authors: Yoh Tanimoto
 -/
 module
 
+public import Mathlib.MeasureTheory.Integral.IntegrableOn
 public import Mathlib.MeasureTheory.Integral.SetToL1
 public import Mathlib.MeasureTheory.VectorMeasure.Variation.Basic
 
@@ -119,7 +120,7 @@ end cbmApplyMeasure
 
 namespace VectorMeasure
 
-variable (μ ν : VectorMeasure X F) (B : E →L[ℝ] F →L[ℝ] G) {φ : X → Y}
+variable (μ ν : VectorMeasure X F) (B : E →L[ℝ] F →L[ℝ] G) {f g : X → E} {φ : X → Y}
 
 @[simp] lemma transpose_zero : (0 : VectorMeasure X F).transpose B = 0 := by
   simp [transpose]
@@ -172,6 +173,13 @@ respect to `(μ.transpose B).variation`. -/
 protected abbrev Integrable (μ : VectorMeasure X F) (f : X → E) (B : E →L[ℝ] F →L[ℝ] G) : Prop :=
   MeasureTheory.Integrable f (μ.transpose B).variation
 
+/-- `f : X → E` is said to be integrable with respect to `μ` and `B` on `s` if it is integrable with
+respect to the vector measure `μ.restrict s`. When `s` is measurable, this is equivalent to
+integrability with respect to `(μ.transpose B).variation.restrict s`. -/
+protected abbrev IntegrableOn
+    (μ : VectorMeasure X F) (f : X → E) (B : E →L[ℝ] F →L[ℝ] G) (s : Set X) : Prop :=
+  (μ.restrict s).Integrable f B
+
 open Classical in
 /-- The `G`-valued integral of `E`-valued function and the `F`-valued vector measure `μ` with linear
 paring `B : E →L[ℝ] F →L[ℝ] G` . This is set to be `0` if `G` is not complete or if `f` is not
@@ -196,7 +204,7 @@ multiplication by `ℝ` on `F` and `f` is real-valued. The resulting integral is
 notation3 "∫ᵛ "(...)" in "s", "r:60:(scoped f => f)" ∂•"μ:70 =>
   integral (VectorMeasure.restrict μ s) r (lsmul ℝ ℝ)
 
-variable {μ ν : VectorMeasure X F} {B : E →L[ℝ] F →L[ℝ] G} {f g : X → E}
+variable {μ ν B}
 
 @[simp] lemma integrable_zero_vectorMeasure : (0 : VectorMeasure X F).Integrable f B := by
   simp [VectorMeasure.Integrable, transpose]
