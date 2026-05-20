@@ -292,11 +292,11 @@ lemma sConvexComb_map (w : StdSimplex R I) (f : I → M) :
 @[simp] lemma iConvexComb_single (i : I) (f : I → M) :
     (single (R := R) i).iConvexComb f = f i := by simp [iConvexComb]
 
-@[simp] lemma iConvexComb_id (s : StdSimplex R M) :
-    s.iConvexComb id = s.sConvexComb := by simp [iConvexComb]
+lemma iConvexComb_id (w : StdSimplex R M) : w.iConvexComb id = w.sConvexComb := by
+  simp [iConvexComb]
 
-@[simp] lemma iConvexComb_id' (s : StdSimplex R M) :
-    s.iConvexComb (fun x ↦ x) = s.sConvexComb := iConvexComb_id s
+@[simp] lemma iConvexComb_id' (w : StdSimplex R M) :
+    w.iConvexComb (fun x ↦ x) = w.sConvexComb := iConvexComb_id _
 
 @[simp] lemma iConvexComb_map (s : StdSimplex R I) (f : I → J) (g : J → M) :
     (s.map f).iConvexComb g = s.iConvexComb (g ∘ f) := by
