@@ -686,7 +686,7 @@ theorem isPullback_of_cofan_isVanKampen [HasInitial C] {ι : Type*} {X : ι → 
     split
     · subst ‹k = i›; rfl
     · simp
-  · refine mkCofanColimit _ (fun t ↦ (eqToHom (if_pos rfl).symm) ≫ t.inj i) ?_ ?_
+  · refine Cofan.IsColimit.mk _ (fun t ↦ (eqToHom (if_pos rfl).symm) ≫ t.inj i) ?_ ?_
     · intro t j
       simp only [Cofan.mk_pt, cofan_mk_inj]
       split
