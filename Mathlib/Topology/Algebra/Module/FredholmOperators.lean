@@ -27,7 +27,7 @@ section FindHome
 -- provide the argument from Bourbaki, which may be a simple substitution without induction.
 -- Maybe the following will help...
 
-lemma Fin.sum_odd_even {n : ℕ} [NeZero n] {f : Fin n → ℤ} :
+lemma Fin.sum_odd_even {n : ℕ} {f : Fin n → ℤ} :
     ∑ i : Fin n, f i =
       ∑ i ∈ Finset.filter (fun i : Fin n ↦ i.val % 2 = 1) Finset.univ, f i
         + ∑ i ∈ Finset.filter (fun i : Fin n ↦ i.val % 2 = 0) Finset.univ, f i := by
@@ -38,7 +38,7 @@ lemma Fin.sum_odd_even {n : ℕ} [NeZero n] {f : Fin n → ℤ} :
            aesop
 
 /- Name is still terrible. -/
-lemma alt_sum_eq_zero_of_sum_odd_eq_sum_even {n : ℕ} [NeZero n] {f : Fin n → ℤ}
+lemma alt_sum_eq_zero_of_sum_odd_eq_sum_even {n : ℕ} {f : Fin n → ℤ}
   (hf : ∑ i ∈ Finset.filter (fun i : Fin n ↦ i.val % 2 = 1) Finset.univ, f i
       = ∑ i ∈ Finset.filter (fun i : Fin n ↦ i.val % 2 = 0) Finset.univ, f i) :
           ∑ i, (-1) ^ (i.val) * f i = 0 := by
