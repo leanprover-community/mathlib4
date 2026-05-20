@@ -223,9 +223,9 @@ theorem symm_coe_proj {x : B} {y : F} (e' : Pretrivialization F (π F E)) (h : x
     (e'.toPartialEquiv.symm (x, y)).1 = x :=
   e'.proj_symm_apply' h
 
-section Zero
+section Nonempty
 
-variable [∀ x, Zero (E x)]
+variable [∀ x, Nonempty (E x)]
 
 open Classical in
 /-- A fiberwise inverse to `e`. This is the function `F → E b` that induces a local inverse
@@ -233,19 +233,11 @@ open Classical in
 protected noncomputable def symm (e : Pretrivialization F (π F E)) (b : B) (y : F) : E b :=
   if hb : b ∈ e.baseSet then
     cast (congr_arg E (e.proj_symm_apply' hb)) (e.toPartialEquiv.symm (b, y)).2
-  else 0
+  else Classical.arbitrary _
 
 theorem symm_apply (e : Pretrivialization F (π F E)) {b : B} (hb : b ∈ e.baseSet) (y : F) :
     e.symm b y = cast (congr_arg E (e.symm_coe_proj hb)) (e.toPartialEquiv.symm (b, y)).2 :=
   dif_pos hb
-
-theorem symm_apply_of_notMem (e : Pretrivialization F (π F E)) {b : B} (hb : b ∉ e.baseSet)
-    (y : F) : e.symm b y = 0 :=
-  dif_neg hb
-
-theorem coe_symm_of_notMem (e : Pretrivialization F (π F E)) {b : B} (hb : b ∉ e.baseSet) :
-    (e.symm b : F → E b) = 0 :=
-  funext fun _ => dif_neg hb
 
 theorem mk_symm (e : Pretrivialization F (π F E)) {b : B} (hb : b ∈ e.baseSet) (y : F) :
     TotalSpace.mk b (e.symm b y) = e.toPartialEquiv.symm (b, y) := by
@@ -266,7 +258,7 @@ theorem apply_mk_symm (e : Pretrivialization F (π F E)) {b : B} (hb : b ∈ e.b
     e ⟨b, e.symm b y⟩ = (b, y) := by
   rw [e.mk_symm hb, e.apply_symm_apply (e.mk_mem_target.mpr hb)]
 
-end Zero
+end Nonempty
 
 /-- The restriction of a pretrivialization to a subset of the base. -/
 @[simps toFun source target baseSet]
@@ -673,7 +665,8 @@ section Zero
 variable [∀ x, Zero (E x)]
 
 /-- A fiberwise inverse to `e'`. The function `F → E x` that induces a local inverse
-`B × F → TotalSpace F E` of `e'` on `e'.baseSet`. It is defined to be `0` outside `e'.baseSet`. -/
+`B × F → TotalSpace F E` of `e'` on `e'.baseSet`. It takes on junk values chosen using
+`Classical.arbitrary` outside `e'.baseSet`. -/
 protected noncomputable def symm (e : Trivialization F (π F E)) (b : B) (y : F) : E b :=
   e.toPretrivialization.symm b y
 
@@ -681,10 +674,6 @@ theorem symm_apply (e : Trivialization F (π F E)) {b : B} (hb : b ∈ e.baseSet
     e.symm b y =
       cast (congr_arg E (e.symm_coe_proj hb)) (e.toOpenPartialHomeomorph.symm (b, y)).2 :=
   dif_pos hb
-
-theorem symm_apply_of_notMem (e : Trivialization F (π F E)) {b : B} (hb : b ∉ e.baseSet) (y : F) :
-    e.symm b y = 0 :=
-  dif_neg hb
 
 theorem mk_symm (e : Trivialization F (π F E)) {b : B} (hb : b ∈ e.baseSet) (y : F) :
     TotalSpace.mk b (e.symm b y) = e.toOpenPartialHomeomorph.symm (b, y) :=
