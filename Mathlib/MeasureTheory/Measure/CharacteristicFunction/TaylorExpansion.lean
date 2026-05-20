@@ -47,7 +47,7 @@ See `contDiff_charFun'` for the version proving `C^∞` by assuming all moments 
 theorem contDiff_charFun {n : ℕ} (hint : MemLp id n μ) :
     ContDiff ℝ n (charFun μ) := by
   simp_rw [funext charFun_eq_fourierIntegral']
-  refine (contDiff_fourierIntegral (L := innerSL ℝ) fun k hk ↦ ?_).comp (by fun_prop)
+  refine (contDiff_fourierIntegral (V := E) (L := innerSL ℝ) fun k hk ↦ ?_).comp (by fun_prop)
   simp only [Pi.one_apply, one_mem, CStarRing.norm_of_mem_unitary, mul_one]
   refine MemLp.integrable_norm_pow' (hint.mono_exponent (by simp_all))
 
@@ -57,7 +57,7 @@ for the version proving only `C^n` by only assuming that the moment of order `n`
 theorem contDiff_charFun' {n : ℕ∞} (hint : ∀ (k : ℕ), MemLp id k μ) :
     ContDiff ℝ n (charFun μ) := by
   simp_rw [funext charFun_eq_fourierIntegral']
-  refine (contDiff_fourierIntegral (L := innerSL ℝ) fun k hk ↦ ?_).comp (by fun_prop)
+  refine (contDiff_fourierIntegral (V := E) (L := innerSL ℝ) fun k hk ↦ ?_).comp (by fun_prop)
   simp only [Pi.one_apply, one_mem, CStarRing.norm_of_mem_unitary, mul_one]
   refine MemLp.integrable_norm_pow' ((hint k).mono_exponent (by simp_all))
 
