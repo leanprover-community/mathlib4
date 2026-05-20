@@ -187,7 +187,7 @@ theorem BlockTriangular.mul [Fintype m] [NonUnitalNonAssocSemiring R]
   · simp_rw [hN (lt_of_lt_of_le hij hki), mul_zero]
 
 variable (R b) in
-/-- `BlockTriangular` matrices form a semiring. -/
+/-- `BlockTriangular` matrices form a subsemiring. -/
 @[simps]
 def blockTriangularSubsemiring [DecidableEq m] [Fintype m] [Semiring R] :
     Subsemiring (Matrix m m R) where
