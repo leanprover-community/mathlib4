@@ -136,7 +136,7 @@ noncomputable def sigmaConstObjCompIso : sigmaConst.obj X ⋙ F ≅ sigmaConst.o
 
 @[reassoc (attr := simp)]
 lemma map_ι_sigmaConstObjCompIso_hom_app {T : Type w} (t : T) :
-    F.map (Sigma.ι (fun (_ : T) ↦ X) t) ≫ (sigmaConstObjCompIso F X).hom.app T =
+    dsimp% F.map (Sigma.ι (fun (_ : T) ↦ X) t) ≫ (sigmaConstObjCompIso F X).hom.app T =
       Sigma.ι (fun (_ : T) ↦ F.obj X) t := by
   dsimp [sigmaConstObjCompIso]
   rw [← cancel_mono (PreservesCoproduct.iso F (fun (_ : T) ↦ X)).inv,
