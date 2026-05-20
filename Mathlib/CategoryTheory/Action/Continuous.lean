@@ -11,7 +11,6 @@ public import Mathlib.Topology.Category.TopCat.Basic
 public import Mathlib.Topology.Algebra.ContinuousMonoidHom
 
 /-!
-
 # Topological subcategories of `Action V G`
 
 For a concrete category `V`, where the forgetful functor factors via `TopCat`,

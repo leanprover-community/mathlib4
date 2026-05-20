@@ -9,7 +9,6 @@ public import Mathlib.Algebra.CharP.Lemmas
 public import Mathlib.FieldTheory.Perfect
 
 /-!
-
 # The perfect closure of a characteristic `p` ring
 
 ## Main definitions

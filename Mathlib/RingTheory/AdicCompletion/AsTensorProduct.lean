@@ -12,7 +12,6 @@ public import Mathlib.RingTheory.AdicCompletion.Exactness
 public import Mathlib.RingTheory.Flat.Tensor
 
 /-!
-
 # Adic completion as tensor product
 
 In this file we examine properties of the natural map
@@ -219,7 +218,6 @@ variable {R : Type u} [CommRing R] (I : Ideal R)
 variable (M : Type u) [AddCommGroup M] [Module R M]
 
 /-!
-
 ### Noetherian case
 
 Suppose `R` is Noetherian. Then we show that the canonical map

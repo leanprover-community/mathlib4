@@ -8,7 +8,6 @@ module
 public import Mathlib.AlgebraicTopology.DoldKan.Normalized
 
 /-!
-
 # The normalized Moore complex and the alternating face map complex are homotopy equivalent
 
 In this file, when the category `A` is abelian, we obtain the homotopy equivalence

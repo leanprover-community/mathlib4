@@ -13,7 +13,6 @@ public import Mathlib.AlgebraicTopology.SimplicialObject.Homotopy
 public import Mathlib.AlgebraicTopology.SimplicialSet.StdSimplex
 
 /-!
-
 # Augmented simplicial objects with an extra degeneracy
 
 In simplicial homotopy theory, in order to prove that the connected components

@@ -8,7 +8,6 @@ module
 public import Mathlib.RingTheory.Unramified.Basic
 
 /-!
-
 # Formal-unramification of finite products of rings
 
 ## Main result

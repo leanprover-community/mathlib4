@@ -15,7 +15,6 @@ public import Mathlib.RingTheory.Smooth.Flat
 public import Mathlib.RingTheory.Smooth.Field
 
 /-!
-
 # Smooth morphisms
 
 In this file we define smooth morphisms. The main definitions are:

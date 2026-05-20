@@ -10,7 +10,6 @@ public import Mathlib.LinearAlgebra.Span.Defs
 public import Mathlib.Algebra.Module.Equiv.Basic
 
 /-!
-
 # Additional results about finite spanning sets in linear algebra
 
 -/

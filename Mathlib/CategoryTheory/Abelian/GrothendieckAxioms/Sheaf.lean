@@ -12,7 +12,6 @@ public import Mathlib.CategoryTheory.Sites.Abelian
 public import Mathlib.CategoryTheory.Sites.Equivalence
 
 /-!
-
 # AB axioms in sheaf categories
 
 If `J` is a Grothendieck topology on a small category `C : Type v`,

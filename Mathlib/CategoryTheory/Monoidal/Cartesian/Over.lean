@@ -13,7 +13,6 @@ public import Mathlib.CategoryTheory.Monoidal.Grp
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Basic
 
 /-!
-
 # `CartesianMonoidalCategory` for `Over X`
 
 We provide a `CartesianMonoidalCategory (Over X)` instance via pullbacks, and provide simp lemmas

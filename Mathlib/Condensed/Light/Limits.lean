@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Condensed.Light.Module
 /-!
-
 # Limits in categories of light condensed objects
 
 This file adds some instances for limits in light condensed sets and modules.

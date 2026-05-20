@@ -8,7 +8,6 @@ module
 public import Mathlib.CategoryTheory.Localization.Construction
 
 /-!
-
 # Predicate for localized categories
 
 In this file, a predicate `L.IsLocalization W` is introduced for a functor `L : C ⥤ D`

@@ -13,7 +13,6 @@ public import Mathlib.Algebra.MvPolynomial.Degrees
 public import Mathlib.RingTheory.MvPowerSeries.Order
 
 /-!
-
 # Formal (multivariate) power series - Truncation
 
 * `MvPowerSeries.truncFinset s p` restricts the support of a multivariate power series `p`

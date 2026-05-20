@@ -9,7 +9,6 @@ public import Mathlib.CategoryTheory.Sites.Whiskering
 public import Mathlib.CategoryTheory.Sites.Plus
 
 /-!
-
 In this file, we prove that the plus functor is compatible with functors which
 preserve the correct limits and colimits.
 

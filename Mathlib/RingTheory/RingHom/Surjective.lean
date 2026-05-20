@@ -8,7 +8,6 @@ module
 public import Mathlib.RingTheory.LocalProperties.Basic
 
 /-!
-
 # The meta properties of surjective ring homomorphisms.
 
 ## Main results

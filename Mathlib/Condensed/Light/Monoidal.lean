@@ -17,7 +17,6 @@ public import Mathlib.Condensed.Light.Instances
 public import Mathlib.Condensed.Light.Module
 
 /-!
-
 # Closed symmetric monoidal structure on light condensed modules
 
 We define a symmetric monoidal structure on light condensed modules by localizing the symmetric

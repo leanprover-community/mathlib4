@@ -9,7 +9,6 @@ public import Mathlib.Topology.Compactification.OnePoint.Basic
 public import Mathlib.Geometry.Manifold.Instances.Sphere
 
 /-!
-
 # One-point compactification of Euclidean space is homeomorphic to the sphere.
 
 -/

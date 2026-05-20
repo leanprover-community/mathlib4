@@ -11,7 +11,6 @@ public import Mathlib.Topology.Defs.Filter
 public import Mathlib.Order.Filter.Bases.Basic
 
 /-!
-
 # Valuative Relations
 
 In this file we introduce a class called `ValuativeRel R` for a ring `R`.

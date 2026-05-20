@@ -15,7 +15,6 @@ public import Mathlib.RingTheory.PowerBasis
 public import Mathlib.Data.ENat.Lattice
 
 /-!
-
 # Separable polynomials
 
 We define a polynomial to be separable if it is coprime with its derivative. We prove basic

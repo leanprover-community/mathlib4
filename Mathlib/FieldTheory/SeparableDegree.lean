@@ -16,7 +16,6 @@ public import Mathlib.RingTheory.Polynomial.UniqueFactorization
 
 
 /-!
-
 # Separable degree
 
 This file contains basics about the separable degree of a field extension.

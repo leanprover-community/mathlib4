@@ -11,7 +11,6 @@ public import Mathlib.RingTheory.Polynomial.RationalRoot
 public import Mathlib.RingTheory.IntegralClosure.IsIntegral.AlmostIntegral
 
 /-!
-
 # Results about coefficients of polynomials being integral
 
 ## Main results

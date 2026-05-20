@@ -8,7 +8,6 @@ module
 public import Mathlib.AlgebraicTopology.AlternatingFaceMapComplex
 
 /-!
-
 # Notations for the Dold-Kan equivalence
 
 This file defines the notation `K[X] : ChainComplex C ℕ` for the alternating face

@@ -11,7 +11,6 @@ public import Lean.Meta.ExprLens
 public import Lean.Meta.Check
 
 /-!
-
 # Find the positions of a pattern in an expression
 
 This file defines some tools for dealing with subexpressions and occurrence numbers.

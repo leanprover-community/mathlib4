@@ -10,7 +10,6 @@ public import Mathlib.CategoryTheory.Adjunction.Reflective
 public import Mathlib.CategoryTheory.Sites.Sheaf
 public import Mathlib.CategoryTheory.Limits.Preserves.Finite
 /-!
-
 # Sheafification
 
 Given a site `(C, J)` we define a typeclass `HasSheafify J A` saying that the inclusion functor from

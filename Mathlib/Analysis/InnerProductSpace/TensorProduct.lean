@@ -12,7 +12,6 @@ import Mathlib.Analysis.InnerProductSpace.GramMatrix
 import Mathlib.Analysis.InnerProductSpace.Positive
 
 /-!
-
 # Inner product space structure on tensor product spaces
 
 This file provides the inner product space structure on tensor product spaces.

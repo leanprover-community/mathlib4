@@ -9,7 +9,6 @@ public import Mathlib.Data.Nat.ModEq
 import Mathlib.Data.Int.Cast.Lemmas
 
 /-!
-
 # Congruences modulo an integer
 
 This file defines the equivalence relation `a ≡ b [ZMOD n]` on the integers, similarly to how

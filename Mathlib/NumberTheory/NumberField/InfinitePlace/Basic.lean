@@ -526,7 +526,6 @@ end IsPrimitiveRoot
 end NumberField.InfinitePlace
 
 /-!
-
 ## The infinite place of the rationals.
 
 -/

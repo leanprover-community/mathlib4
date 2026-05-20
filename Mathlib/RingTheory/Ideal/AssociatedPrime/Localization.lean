@@ -10,7 +10,6 @@ public import Mathlib.RingTheory.Ideal.AssociatedPrime.Basic
 public import Mathlib.RingTheory.Support
 
 /-!
-
 # Associated primes of localized module
 
 This file mainly proves the relation between `Ass(S⁻¹M)` and `Ass(M)`

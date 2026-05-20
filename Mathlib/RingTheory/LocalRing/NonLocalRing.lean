@@ -11,7 +11,6 @@ public import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
 public import Mathlib.RingTheory.Spectrum.Maximal.Basic
 
 /-!
-
 # Non-local rings
 
 This file gathers some results about non-local rings.

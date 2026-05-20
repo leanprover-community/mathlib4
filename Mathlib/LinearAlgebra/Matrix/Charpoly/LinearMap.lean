@@ -10,7 +10,6 @@ public import Mathlib.LinearAlgebra.Matrix.ToLin
 public import Mathlib.Algebra.Module.SpanRank
 
 /-!
-
 # Cayley-Hamilton theorem for f.g. modules.
 
 Given a fixed finite spanning set `b : ι → M` of an `R`-module `M`, we say that a matrix `M`

@@ -494,7 +494,6 @@ instance : (MorphismProperty.isomorphisms Scheme).IsLocalAtTarget zariskiPrecove
     simp, Cover.hom_ext (𝒰.pullback₁ f) _ _ fun i ↦ by simp, Cover.hom_ext 𝒰 _ _ fun i ↦ by simp⟩
 
 /-!
-
 ## Locally directed gluing
 
 We say that a diagram of open immersions is "locally directed" if for any `V, W ⊆ U` in the diagram,

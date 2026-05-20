@@ -12,7 +12,6 @@ public import Mathlib.RingTheory.Ideal.MinimalPrime.Noetherian
 public import Mathlib.RingTheory.Noetherian.Basic
 
 /-!
-
 # Associated primes of a module
 
 We provide the definition and related lemmas about associated primes of modules.

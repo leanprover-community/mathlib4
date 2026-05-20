@@ -14,7 +14,6 @@ public import Mathlib.RingTheory.Noetherian.Basic
 public import Mathlib.RingTheory.TensorProduct.Finite
 
 /-!
-
 # Finitely Presented Modules
 
 ## Main definition

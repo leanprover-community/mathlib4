@@ -9,7 +9,6 @@ public import Mathlib.FieldTheory.KrullTopology
 public import Mathlib.FieldTheory.Galois.GaloisClosure
 public import Mathlib.Topology.Algebra.Group.ClosedSubgroup
 /-!
-
 # The Fundamental Theorem of Infinite Galois Theory
 
 In this file, we prove the fundamental theorem of infinite Galois theory and the special case for

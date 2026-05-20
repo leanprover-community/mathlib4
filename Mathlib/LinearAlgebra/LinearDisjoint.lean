@@ -12,7 +12,6 @@ public import Mathlib.LinearAlgebra.Dimension.Finite
 public import Mathlib.RingTheory.Flat.Basic
 
 /-!
-
 # Linearly disjoint submodules
 
 This file contains basics about linearly disjoint submodules.

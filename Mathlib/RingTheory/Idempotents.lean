@@ -11,7 +11,6 @@ public import Mathlib.RingTheory.Ideal.Quotient.Operations
 public import Mathlib.Tactic.LinearCombination
 
 /-!
-
 # Idempotents in rings
 
 The predicate `IsIdempotentElem` is defined for general monoids in

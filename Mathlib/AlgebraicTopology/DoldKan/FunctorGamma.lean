@@ -9,7 +9,6 @@ public import Mathlib.AlgebraicTopology.SimplicialObject.Split
 public import Mathlib.AlgebraicTopology.DoldKan.PInfty
 
 /-!
-
 # Construction of the inverse functor of the Dold-Kan equivalence
 
 

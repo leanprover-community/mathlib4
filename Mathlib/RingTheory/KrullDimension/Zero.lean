@@ -9,7 +9,6 @@ public import Mathlib.RingTheory.Jacobson.Ring
 public import Mathlib.RingTheory.Spectrum.Prime.Topology
 
 /-!
-
 # Zero-dimensional rings
 
 We provide further API for zero-dimensional rings.

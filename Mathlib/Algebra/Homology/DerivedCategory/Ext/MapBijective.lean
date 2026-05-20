@@ -14,7 +14,6 @@ public import Mathlib.CategoryTheory.Preadditive.Injective.Preserves
 public import Mathlib.CategoryTheory.Preadditive.Projective.Preserves
 
 /-!
-
 # Bijections Between Ext
 
 In this file, we show that the maps between `Ext` induced

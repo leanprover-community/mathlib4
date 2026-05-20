@@ -10,7 +10,6 @@ public import Mathlib.Topology.Category.Profinite.AsLimit
 public import Mathlib.Topology.Category.Profinite.CofilteredLimit
 public import Mathlib.Topology.ClopenBox
 /-!
-
 # Light profinite spaces
 
 We construct the category `LightProfinite` of light profinite topological spaces. These are

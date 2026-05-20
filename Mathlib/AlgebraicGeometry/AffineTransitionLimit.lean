@@ -15,7 +15,6 @@ public import Mathlib.CategoryTheory.Limits.Types.ColimitTypeFiltered
 public import Mathlib.CategoryTheory.Monad.Limits
 
 /-!
-
 # Inverse limits of schemes with affine transition maps
 
 In this file, we develop API for inverse limits of schemes with affine transition maps,
@@ -372,7 +371,6 @@ lemma Scheme.compactSpace_of_isLimit [IsCofiltered I]
   exact QuasiCompact.compactSpace_of_compactSpace (c.π.app i)
 
 /-!
-
 ## Cofiltered Limits and Schemes of Finite Type
 
 Given a cofiltered diagram `D` of quasi-compact `S`-schemes with affine transition maps,

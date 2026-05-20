@@ -7,7 +7,6 @@ module
 
 public import Mathlib.CategoryTheory.EffectiveEpi.Basic
 /-!
-
 # Effectively enough objects in the image of a functor
 
 We define the class `F.EffectivelyEnough` on a functor `F : C ⥤ D` which says that for every object

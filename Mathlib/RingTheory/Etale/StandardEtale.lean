@@ -12,7 +12,6 @@ public import Mathlib.RingTheory.Extension.Presentation.Submersive
 public import Mathlib.RingTheory.Ideal.IdempotentFG
 
 /-!
-
 # Standard etale maps
 
 ## Main definitions

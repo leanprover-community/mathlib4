@@ -10,7 +10,6 @@ public import Mathlib.RingTheory.LocalProperties.Basic
 public import Mathlib.RingTheory.RingHom.Locally
 
 /-!
-
 # Properties of morphisms from properties of ring homs.
 
 We provide the basic framework for talking about properties of morphisms that come from properties

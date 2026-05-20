@@ -10,7 +10,6 @@ public import Mathlib.Condensed.Light.InternallyProjective
 import Mathlib.Condensed.Light.EffectiveEpi
 import Mathlib.Topology.Category.LightProfinite.Injective
 /-!
-
 # The free light condensed `R`-module `R[ℕ∪∞]` is internally projective
 -/
 

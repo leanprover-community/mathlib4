@@ -10,7 +10,6 @@ public import Mathlib.RingTheory.OreLocalization.Ring
 public import Mathlib.Topology.Algebra.Ring.Basic
 
 /-!
-
 # Localization of topological rings
 
 The topological localization of a topological commutative ring `R` at a submonoid `M` is the ring

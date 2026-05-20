@@ -10,7 +10,6 @@ public import Mathlib.Probability.Independence.Basic
 public import Mathlib.MeasureTheory.Function.ConditionalExpectation.Basic
 
 /-!
-
 # Probabilistic properties of the conditional expectation
 
 This file contains some properties about the conditional expectation which does not belong in

@@ -8,7 +8,6 @@ module
 public import Mathlib.CategoryTheory.Monoidal.Category
 
 /-!
-
 # Actions from a monoidal category on a category
 
 Given a monoidal category `C`, and a category `D`, we define a left action of

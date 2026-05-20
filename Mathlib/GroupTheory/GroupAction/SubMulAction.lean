@@ -13,7 +13,6 @@ public import Mathlib.GroupTheory.GroupAction.Defs
 public import Mathlib.GroupTheory.GroupAction.Hom
 
 /-!
-
 # Sets invariant to a `MulAction`
 
 In this file we define `SubMulAction R M`; a subset of a `MulAction R M` which is closed with

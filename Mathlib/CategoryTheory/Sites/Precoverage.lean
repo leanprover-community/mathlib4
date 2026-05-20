@@ -11,7 +11,6 @@ public import Mathlib.Order.ConditionallyCompleteLattice.Basic
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Basic
 
 /-!
-
 # Precoverages
 
 A precoverage `K` on a category `C` is a set of presieves associated to every object `X : C`,

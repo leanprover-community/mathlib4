@@ -218,7 +218,6 @@ variable [AddCommMonoid F] [Module R F]
 variable [AddCommMonoid G] [Module R G]
 
 /-!
-
 ## Maps between pointed cones
 
 There is already a definition of maps between submodules, `Submodule.map`. In our case, these maps

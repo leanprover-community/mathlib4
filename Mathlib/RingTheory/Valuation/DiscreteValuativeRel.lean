@@ -10,7 +10,6 @@ public import Mathlib.GroupTheory.ArchimedeanDensely
 public import Mathlib.RingTheory.Valuation.RankOne
 
 /-!
-
 # Discrete Valuative Relations
 
 Discrete valuative relations have a maximal element less than one in the value group.

@@ -11,7 +11,6 @@ public import Mathlib.FieldTheory.KummerPolynomial
 public import Mathlib.FieldTheory.Separable
 
 /-!
-
 # Perfect fields and rings
 
 In this file we define perfect fields, together with a generalisation to (commutative) rings in

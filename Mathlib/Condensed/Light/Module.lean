@@ -15,7 +15,6 @@ public import Mathlib.CategoryTheory.Sites.Equivalence
 public import Mathlib.Condensed.Light.Basic
 public import Mathlib.Condensed.Light.Instances
 /-!
-
 # Light condensed `R`-modules
 
 This file defines light condensed modules over a ring `R`.

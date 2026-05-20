@@ -10,7 +10,6 @@ public import Mathlib.CategoryTheory.Galois.Topology
 public import Mathlib.Topology.Algebra.OpenSubgroup
 
 /-!
-
 # Essential surjectivity of fiber functors
 
 Let `F : C ⥤ FintypeCat` be a fiber functor of a Galois category `C` and denote by

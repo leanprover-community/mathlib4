@@ -15,7 +15,6 @@ public import Mathlib.RingTheory.KrullDimension.Basic
 public import Mathlib.RingTheory.Spectrum.Prime.Topology
 
 /-!
-
 # Valuation subrings of a field
 
 ## Projects

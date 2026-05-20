@@ -11,7 +11,6 @@ public import Mathlib.Data.Set.Basic
 public import Mathlib.Tactic.Contrapose
 
 /-!
-
 # Partial Equivalences
 
 In this file, we define partial equivalences `PEquiv`, which are a bijection between a subset of `α`

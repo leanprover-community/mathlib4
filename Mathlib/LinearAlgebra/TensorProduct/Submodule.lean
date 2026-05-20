@@ -10,7 +10,6 @@ public import Mathlib.Algebra.Algebra.Subalgebra.Lattice
 public import Mathlib.LinearAlgebra.DirectSum.Finsupp
 
 /-!
-
 # Some results on tensor product of submodules
 
 ## Linear maps induced by multiplication for submodules

@@ -11,7 +11,6 @@ public import Mathlib.Algebra.Homology.ShortComplex.Abelian
 public import Mathlib.Algebra.Homology.ShortComplex.PreservesHomology
 
 /-!
-
 # `TopModuleCat` is a `CategoryWithHomology`
 
 `TopModuleCat R`, the category of topological `R`-modules, is not an abelian category.

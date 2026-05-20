@@ -9,7 +9,6 @@ public import Mathlib.CategoryTheory.Sites.Plus
 public import Mathlib.CategoryTheory.Limits.Shapes.ConcreteCategory
 
 /-!
-
 # Sheafification
 
 We construct the sheafification of a presheaf over a site `C` with values in `D` whenever

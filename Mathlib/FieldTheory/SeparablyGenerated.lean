@@ -14,7 +14,6 @@ public import Mathlib.RingTheory.AlgebraicIndependent.AlgebraicClosure
 public import Mathlib.RingTheory.Polynomial.GaussLemma
 
 /-!
-
 # Separably generated extensions
 
 We aim to formalize the following result:

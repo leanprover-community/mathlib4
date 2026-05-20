@@ -180,7 +180,6 @@ end PPrime
 end
 
 /-!
-
 ## Witt polynomials as a basis of the polynomial algebra
 
 If `p` is invertible in `R`, then the Witt polynomials form a basis

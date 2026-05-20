@@ -10,7 +10,6 @@ public import Mathlib.RingTheory.Ideal.Cotangent
 public import Mathlib.RingTheory.Localization.Defs
 
 /-!
-
 # Extension of algebras
 
 ## Main definitions

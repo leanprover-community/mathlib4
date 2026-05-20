@@ -10,7 +10,6 @@ public import Mathlib.Data.List.TakeWhile
 public import Mathlib.Data.List.Basic
 
 /-!
-
 # Dropping or taking from lists on the right
 
 Taking or removing element from the tail end of a list

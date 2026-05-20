@@ -11,7 +11,6 @@ public import Mathlib.GroupTheory.Coprod.Basic
 public import Mathlib.GroupTheory.Complement
 
 /-!
-
 ## HNN Extensions of Groups
 
 This file defines the HNN extension of a group `G`, `HNNExtension G A B φ`. Given a group `G`,

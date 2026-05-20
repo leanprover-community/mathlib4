@@ -9,7 +9,6 @@ public import Mathlib.RingTheory.FiniteType
 public import Mathlib.RingTheory.GradedAlgebra.Basic
 
 /-!
-
 # Graded rings of finite type
 
 We show that graded rings of finite type (over the 0-th component) are

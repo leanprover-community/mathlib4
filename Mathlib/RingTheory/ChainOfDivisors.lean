@@ -11,7 +11,6 @@ public import Mathlib.RingTheory.UniqueFactorizationDomain.Multiplicity
 public import Mathlib.Order.Atoms
 public import Mathlib.Order.Hom.Bounded
 /-!
-
 # Chains of divisors
 
 The results in this file show that in the monoid `Associates M` of a `UniqueFactorizationMonoid`

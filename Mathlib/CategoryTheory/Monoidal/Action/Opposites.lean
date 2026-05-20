@@ -9,7 +9,6 @@ public import Mathlib.CategoryTheory.Monoidal.Action.Basic
 public import Mathlib.CategoryTheory.Monoidal.Opposite
 
 /-!
-
 # Actions from the monoidal opposite of a category.
 
 In this file, given a monoidal category `C` and a category `D`,

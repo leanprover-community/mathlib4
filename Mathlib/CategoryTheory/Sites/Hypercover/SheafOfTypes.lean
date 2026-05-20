@@ -9,7 +9,6 @@ public import Mathlib.CategoryTheory.Sites.Hypercover.One
 public import Mathlib.CategoryTheory.Limits.Types.Multiequalizer
 
 /-!
-
 # `1`-hypercovers and (pre)sheaves of types
 
 In this file we provide some API for working with `1`-hypercovers for sheaves of types.

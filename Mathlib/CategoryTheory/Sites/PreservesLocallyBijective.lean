@@ -8,7 +8,6 @@ module
 public import Mathlib.CategoryTheory.Sites.DenseSubsite.Basic
 public import Mathlib.CategoryTheory.Sites.LocallySurjective
 /-!
-
 # Preserving and reflecting local injectivity and surjectivity
 
 This file proves that precomposition with a cocontinuous functor preserves local injectivity and

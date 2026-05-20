@@ -10,7 +10,6 @@ public import Mathlib.RingTheory.Smooth.Basic
 public import Mathlib.RingTheory.Unramified.Basic
 
 /-!
-
 # Étale morphisms
 
 An `R`-algebra `A` is formally etale if `Ω[A⁄R]` and `H¹(L_{A/R})` both vanish.
@@ -159,7 +158,6 @@ end BaseChange
 section Localization
 
 /-!
-
 We now consider a commutative square of commutative rings
 
 ```

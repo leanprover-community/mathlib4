@@ -10,7 +10,6 @@ public import Mathlib.CategoryTheory.Sites.Coherent.LocallySurjective
 public import Mathlib.CategoryTheory.Sites.EpiMono
 public import Mathlib.CategoryTheory.Sites.Subcanonical
 /-!
-
 # Limits of epimorphisms in coherent topoi
 
 This file proves that a sequential limit of epimorphisms is epimorphic in the category of sheaves

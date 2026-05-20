@@ -11,7 +11,6 @@ public import Mathlib.Combinatorics.SimpleGraph.Walk.Subwalks
 public import Mathlib.Order.Preorder.Finite
 
 /-!
-
 # Trail, Path, and Cycle
 
 In a simple graph,

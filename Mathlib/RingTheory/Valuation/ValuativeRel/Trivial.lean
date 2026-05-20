@@ -8,7 +8,6 @@ module
 public import Mathlib.RingTheory.Valuation.ValuativeRel.Basic
 
 /-!
-
 # Trivial Valuative Relations
 
 Trivial valuative relations relate all non-zero elements to each other. Equivalently,

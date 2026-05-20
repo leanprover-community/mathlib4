@@ -11,7 +11,6 @@ public import Mathlib.RingTheory.Regular.RegularSequence
 public import Mathlib.RingTheory.Spectrum.Prime.LTSeries
 
 /-!
-
 # Krull Dimension of quotient regular sequence
 
 ## Main results

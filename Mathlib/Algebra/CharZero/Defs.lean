@@ -9,7 +9,6 @@ public import Mathlib.Data.Int.Cast.Defs
 public import Mathlib.Logic.Basic
 
 /-!
-
 # Characteristic zero
 
 A ring `R` is called of characteristic zero if every natural number `n` is non-zero when considered

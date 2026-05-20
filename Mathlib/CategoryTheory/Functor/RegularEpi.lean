@@ -10,7 +10,6 @@ public import Mathlib.CategoryTheory.Limits.FunctorCategory.Shapes.Pullbacks
 public import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
 
 /-!
-
 # The category of type-valued sheaves is a regular epi category
 
 This file proves that when the target category `D` is a regular epi category (i.e. every epimorphism

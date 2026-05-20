@@ -12,7 +12,6 @@ public import Mathlib.Topology.Algebra.Module.Equiv
 public import Mathlib.Topology.Algebra.Module.LinearPMap
 
 /-!
-
 # Partially defined linear operators on Hilbert spaces
 
 We will develop the basics of the theory of unbounded operators on Hilbert spaces.

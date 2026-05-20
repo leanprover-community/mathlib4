@@ -16,7 +16,6 @@ public import Mathlib.Topology.Algebra.InfiniteSum.UniformOn
 public import Mathlib.Topology.MetricSpace.ProperSpace.Lemmas
 
 /-!
-
 # Weierstrass `℘` functions
 
 ## Main definitions and results
