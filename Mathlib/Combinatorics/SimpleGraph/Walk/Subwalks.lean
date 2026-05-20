@@ -178,27 +178,23 @@ theorem IsSubwalk.support_subset {u v u' v' : V} {p₁ : G.Walk u v} {p₂ : G.W
     (h : p₂.IsSubwalk p₁) : p₂.support ⊆ p₁.support :=
   (isSubwalk_iff_support_isInfix.mp h).subset
 
-theorem IsSubwalk.edges_infix {u v u' v' : V} {p₁ : G.Walk u v} {p₂ : G.Walk u' v'}
+theorem IsSubwalk.edges_isInfix {u v u' v' : V} {p₁ : G.Walk u v} {p₂ : G.Walk u' v'}
     (h : p₁.IsSubwalk p₂) : p₁.edges <:+: p₂.edges := by
   grind [edges_append, IsSubwalk]
-
-@[deprecated (since := "2026-05-20")] alias IsSubwalk.edges_isInfix := IsSubwalk.edges_infix
 
 @[simp]
 theorem IsSubwalk.edges_subset {u v u' v' : V} {p₁ : G.Walk u v} {p₂ : G.Walk u' v'}
     (h : p₂.IsSubwalk p₁) : p₂.edges ⊆ p₁.edges :=
-  h.edges_infix.subset
+  h.edges_isInfix.subset
 
-theorem IsSubwalk.darts_infix {u v u' v' : V} {p₁ : G.Walk u v} {p₂ : G.Walk u' v'}
+theorem IsSubwalk.darts_isInfix {u v u' v' : V} {p₁ : G.Walk u v} {p₂ : G.Walk u' v'}
     (h : p₁.IsSubwalk p₂) : p₁.darts <:+: p₂.darts := by
   grind [darts_append, IsSubwalk]
-
-@[deprecated (since := "2026-05-20")] alias IsSubwalk.darts_isInfix := IsSubwalk.darts_infix
 
 @[simp]
 theorem IsSubwalk.darts_subset {u v u' v' : V} {p₁ : G.Walk u v} {p₂ : G.Walk u' v'}
     (h : p₂.IsSubwalk p₁) : p₂.darts ⊆ p₁.darts :=
-  h.darts_infix.subset
+  h.darts_isInfix.subset
 
 protected lemma IsSubwalk.map {u v u' v' : V} {p₁ : G.Walk u v} {p₂ : G.Walk u' v'}
     (h : p₂.IsSubwalk p₁) (f : G →g G') : (p₂.map f).IsSubwalk (p₁.map f) := by
