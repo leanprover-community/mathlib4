@@ -30,6 +30,11 @@ structure ResultI (a : Q(ℂ)) where
   /-- The result of `norm_num` running on the imaginary part of `a`. -/
   im : NormNum.Result q(RCLike.im $a)
 
+instance (a : Q(ℂ)) : ToMessageData (ResultI a) where
+  toMessageData r := MessageData.group <|
+    m!"\{ re := " ++ MessageData.nest 7 m!"{r.re}" ++ Format.line
+    ++ "  im := " ++ MessageData.nest 7 m!"{r.im}" ++ " }"
+
 /-- ResultI made from two Results on real and imaginary parts. -/
 def ResultI.mk' {z : Q(ℂ)} {p1 p2 : Q(ℝ)} (h1 : NormNum.Result q($p1))
     (h2 : NormNum.Result q($p2)) (pf₁ : Q(RCLike.re $z = $p1)) (pf₂ : Q(RCLike.im $z = $p2)) :
@@ -126,8 +131,8 @@ partial def ResultI.pow (n' : ℕ) :
   n'.binaryRec'
     (fun z n _ _ => do
       have : $n =Q 0 := ⟨⟩
-      return ⟨.isNat q(inferInstance) q(1) q(re_pow_zero $z),
-        .isNat q(inferInstance) q(0) q(im_pow_zero $z)⟩)
+      return ⟨.isNat q(inferInstance) q(nat_lit 1) q(re_pow_zero $z),
+        .isNat q(inferInstance) q(nat_lit 0) q(im_pow_zero $z)⟩)
     (fun bit (m : ℕ) _ rec z n _ hz => do
       let rm ← rec q($z) q($m) q(⟨rfl⟩) hz
       let rm2 ← rm.mul rm
@@ -174,7 +179,9 @@ def _root_.Lean.Expr.rawBoolLit? (e : Expr) : Option Bool :=
 
 /-- Parsing all the basic calculation in complex. -/
 partial def parse (z : Q(ℂ)) : MetaM (ResultI q($z)) := do
-  trace[debug] "NormNumI.parse: parsing {z}"
+  withTraceNode `Tactic.norm_num
+    (fun e : Except Exception _ =>
+      return m!"NormNumI.parse: parsing {z}" ++ match e with | .ok v => m!" => {v}" | _ => m!"") do
   match z with
   | ~q($z₁ + $z₂) =>
     let r1 ← parse z₁
