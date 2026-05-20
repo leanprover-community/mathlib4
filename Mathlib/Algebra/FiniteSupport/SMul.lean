@@ -14,7 +14,7 @@ public import Mathlib.Algebra.Module.Basic
 This module contains lemmas showing that `f • g` has finite support when `f` or `g` has finite
 support (under appropriate assumptions on `•`).
 
-Thy live in their own file because they need to import `Mathlib.Algebra.Module.Basic`
+They live in their own file because they need to import `Mathlib.Algebra.Module.Basic`
 (for `Function.support_smul_subset_left` and `..._right`), which is not allowed to be imported
 by some modules downstream of `Mathlib.Algebra.FiniteSupport.Basic`.
 -/
