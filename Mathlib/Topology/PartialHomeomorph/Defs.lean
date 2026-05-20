@@ -95,12 +95,16 @@ theorem continuousOn_symm : ContinuousOn e.symm e.target :=
   e.continuousOn_invFun
 
 @[simp]
-theorem mk_coe (e : PartialEquiv X Y) (h₁ h₂) : (PartialHomeomorph.mk e h₁ h₂ : X → Y) = e := rfl
+theorem coe_mk (e : PartialEquiv X Y) (h₁ h₂) : (PartialHomeomorph.mk e h₁ h₂ : X → Y) = e := rfl
+
+@[deprecated (since := "2026-05-20")] alias mk_coe := coe_mk
 
 @[simp]
-theorem mk_coe_symm (e : PartialEquiv X Y) (a b) :
-    ((PartialHomeomorph.mk e a b).symm : Y → X) = e.symm :=
+theorem coe_mk_symm (e : PartialEquiv X Y) (h₁ h₂) :
+    ((PartialHomeomorph.mk e h₁ h₂).symm : Y → X) = e.symm :=
   rfl
+
+@[deprecated (since := "2026-05-20")] alias mk_coe_symm := coe_mk_symm
 
 theorem toPartialEquiv_injective :
     Injective (toPartialEquiv : PartialHomeomorph X Y → PartialEquiv X Y)
