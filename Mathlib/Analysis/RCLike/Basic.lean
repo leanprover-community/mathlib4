@@ -577,9 +577,6 @@ instance : StarModule ℝ K where
 theorem ofReal_natCast (n : ℕ) : ((n : ℝ) : K) = n :=
   map_natCast (algebraMap ℝ K) n
 
-@[rclike_simps, norm_cast]
-lemma ofReal_nnratCast (q : ℚ≥0) : ((q : ℝ) : K) = q := map_nnratCast (algebraMap ℝ K) _
-
 @[simp, rclike_simps]
 theorem natCast_re (n : ℕ) : re (n : K) = n := by rw [← ofReal_natCast, ofReal_re]
 
