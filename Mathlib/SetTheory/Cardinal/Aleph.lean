@@ -82,7 +82,7 @@ theorem isInitial_ord (c : Cardinal) : IsInitial c.ord := by
 
 @[simp]
 theorem isInitial_natCast (n : ℕ) : IsInitial n := by
-  rw [IsInitial, card_nat, ord_nat]
+  rw [IsInitial, card_nat, ord_natCast]
 
 theorem isInitial_zero : IsInitial 0 := by
   exact_mod_cast isInitial_natCast 0
