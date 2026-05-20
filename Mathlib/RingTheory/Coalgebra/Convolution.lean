@@ -176,9 +176,8 @@ instance convSemiring : Semiring (WithConv (C →ₗ[R] A)) where
 
 /-- Convolution `R`-algebra structure on `WithConv (C →ₗ[R] A)`. -/
 instance convAlgebra : Algebra R (WithConv (C →ₗ[R] A)) :=
-  .ofModule
-    (fun _ _ _ => ofConv_injective <| by simp [convMul_def, map_smul_left, smul_comp, comp_smul])
-    (fun _ _ _ => ofConv_injective <| by simp [convMul_def, map_smul_right, smul_comp, comp_smul])
+  .ofModule (fun _ _ _ => by ext; simp [map_smul_left])
+    fun _ _ _ => by ext; simp [map_smul_right]
 
 @[simp]
 lemma algebraMap_apply (r : R) (c : C) :
