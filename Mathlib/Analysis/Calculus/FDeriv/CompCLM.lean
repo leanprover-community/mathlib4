@@ -7,6 +7,8 @@ module
 
 public import Mathlib.Analysis.Calculus.FDeriv.Bilinear
 public import Mathlib.Analysis.Normed.Module.Alternating.Basic
+import Mathlib.Analysis.Calculus.FDeriv.Comp
+import Mathlib.Analysis.Calculus.FDeriv.Linear
 
 /-!
 # Multiplicative operations on derivatives
