@@ -353,6 +353,7 @@ end
 instance one : One (M₁ →L[R₁] M₁) :=
   ⟨.id R₁ M₁⟩
 
+@[pull_end, push_end← ]
 theorem one_def : (1 : M₁ →L[R₁] M₁) = .id R₁ M₁ := rfl
 
 theorem id_apply (x : M₁) : ContinuousLinearMap.id R₁ M₁ x = x := rfl
@@ -564,6 +565,7 @@ lemma cancel_left' {g : M₂ →SL[σ₂₃] M₃} {f₁ f₂ : M₁ →SL[σ₁
 instance instMul : Mul (M₁ →L[R₁] M₁) :=
   ⟨comp⟩
 
+@[pull_end, push_end← ]
 theorem mul_def (f g : M₁ →L[R₁] M₁) : f * g = f ∘L g :=
   rfl
 
