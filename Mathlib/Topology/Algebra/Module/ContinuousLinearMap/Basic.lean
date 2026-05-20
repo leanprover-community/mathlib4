@@ -1095,6 +1095,18 @@ theorem coe_smulRightₗ (c : M →L[R] S) : ⇑(smulRightₗ c : M₂ →ₗ[T]
 
 end SMulRightₗ
 
+section Semiring
+variable {R S M : Type*} [Semiring R] [TopologicalSpace M] [AddCommGroup M] [Module R M]
+  [CommSemiring S] [Module S M] [SMulCommClass R S M] [SMul S R] [IsScalarTower S R M]
+  [ContinuousConstSMul S M] [IsTopologicalAddGroup M]
+
+instance algebra : Algebra S (M →L[R] M) :=
+  Algebra.ofModule smul_comp fun _ _ _ => comp_smul _ _ _
+
+@[simp] theorem algebraMap_apply (r : S) (m : M) : algebraMap S (M →L[R] M) r m = r • m := rfl
+
+end Semiring
+
 end ContinuousLinearMap
 
 section topDualPairing
