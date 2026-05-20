@@ -19,11 +19,17 @@ example : (1 + 3.5 + I) * (1 + I) = 7 / 2 + 11 / 2 * I := by norm_num1
 example : (3 + 4.5 * I)⁻¹ * (3 + 4.5 * I) = 1 := by norm_num1
 example : -1 / (1 + I) = (I - 1) / 2 := by norm_num1
 example : (I:ℂ) = 0 + 1 * I := by norm_num1
-example : (1.5:ℂ) = ofReal (3 / 2) := by norm_num1; exact test_sorry
 example : 0 + (1:ℂ) = 1 := by norm_num1
 example : (1.0:ℂ) + 0 = 1 := by norm_num1
 example : (1.0:ℂ) + 0.5 = 3/2 := by norm_num1
 example : I + (3/2:ℂ) = 3/2 + I := by norm_num1
+
+-- casts
+example : (Nat.cast 3 : ℂ) = 3 := by norm_num1
+example : (Int.cast (-2) : ℂ) = -2 := by norm_num1
+example : (Rat.cast 1.5 : ℂ) = 3 / 2 := by norm_num1
+example : (1.5 : ℂ) = 3 / 2 := by norm_num1
+example : ofReal (1.5:ℝ) = 3 / 2 := by norm_num1
 
 example : I + (3/2:ℂ) = 3/2 + I := by
   conv_lhs => norm_numI

@@ -144,32 +144,6 @@ partial def ResultI.pow (n' : ℕ) :
         have : $n =Q Nat.bit false $m := ⟨⟩
         return rm2.eqTrans q(pow_bit_false $z $m))
 
-/-- Result of `norm_num` running on lift of natural numbers in real -/
-def NormNum.Result.mkOfNatReal (n0 : ℕ) : MetaM (NormNum.Result q(OfNat.ofNat (α := ℝ) $n0)) := do
-  have n : Q(ℕ) := .lit (.natVal n0)
-  let ⟨_, (pa)⟩ ← NormNum.mkOfNat q(ℝ) q(inferInstance) n
-  return NormNum.Result.isNat (α := q(ℝ)) q(inferInstance) n q(NormNum.isNat_ofNat ℝ $pa)
-
-/-- Result of `norm_num` on scientific expressions in real -/
-def NormNum.Result.mkOfScientificReal (mantissa : ℕ) (exponentSign : Bool) (decimalExponent : ℕ) :
-    MetaM (NormNum.Result
-      q(OfScientific.ofScientific $mantissa $exponentSign $decimalExponent : ℝ)) := do
-  let x : Q(ℝ) := q(OfScientific.ofScientific $mantissa $exponentSign $decimalExponent)
-  match exponentSign with
-  | true =>
-    let rme ← NormNum.derive (q(mkRat $mantissa (10 ^ $decimalExponent)) : Q(ℝ))
-    let some ⟨q, n, d, p⟩ := rme.toNNRat' q(inferInstance) | failure
-    assumeInstancesCommute
-    return .isNNRat (x := x) q(inferInstance) q n d (q(NormNum.isNNRat_ofScientific_of_true $p):)
-  | false =>
-    let n' := Nat.mul mantissa (Nat.pow (10 : ℕ) decimalExponent)
-    have n : Q(ℕ) := mkRawNatLit n'
-    have pm : Q(NormNum.IsNat $mantissa $mantissa) := q(.mk rfl)
-    have pe : Q(NormNum.IsNat $decimalExponent $decimalExponent) := q(.mk rfl)
-    haveI : $n =Q Nat.mul $mantissa (Nat.pow (10 : ℕ) $decimalExponent) := ⟨⟩
-    return .isNat (x := x) q(inferInstance) n
-      (q(NormNum.isNat_ofScientific_of_false (α := ℝ) $pm $pe (.refl $n)):)
-
 /-- Parsing all the basic calculation in complex. -/
 partial def parse (z : Q(ℂ)) : MetaM (ResultI q($z)) := do
   withTraceNode `Tactic.norm_num
@@ -216,17 +190,40 @@ partial def parse (z : Q(ℂ)) : MetaM (ResultI q($z)) := do
       let _i : $k' =Q Int.negSucc $n := ⟨⟩
       return r.eqTrans q(of_pow_negSucc $w $hm)
   | ~q(Complex.I) =>
-    return ResultI.mk (← NormNum.Result.mkOfNatReal 0) (← NormNum.Result.mkOfNatReal 1)
+    let re ← NormNum.derive q(0 : ℝ)
+    let im ← NormNum.derive q(1 : ℝ)
+    return ResultI.mk
+      (re.eqTrans q(Complex.I_re))
+      (im.eqTrans q(Complex.I_im))
   | ~q(0) =>
-    return ResultI.mk (← NormNum.Result.mkOfNatReal 0) (← NormNum.Result.mkOfNatReal 0)
+    let z ← NormNum.derive q(0 : ℝ)
+    return ResultI.mk
+      (z.eqTrans q(Complex.zero_re))
+      (z.eqTrans q(Complex.zero_im))
   | ~q(1) =>
-    return ResultI.mk (← NormNum.Result.mkOfNatReal 1) (← NormNum.Result.mkOfNatReal 0)
+    let re ← NormNum.derive q(1 : ℝ)
+    let im ← NormNum.derive q(0 : ℝ)
+    return ResultI.mk
+      (re.eqTrans q(Complex.one_re))
+      (im.eqTrans q(Complex.one_im))
+  | ~q(.ofReal $r) =>
+    let re ← NormNum.derive r
+    let im ← NormNum.derive q(0 : ℝ)
+    return ResultI.mk
+      (re.eqTrans q(Complex.ofReal_re $r))
+      (im.eqTrans q(Complex.ofReal_im $r))
   | ~q(OfNat.ofNat $en (self := @instOfNatAtLeastTwo ℂ _ _ $inst)) =>
-    let some n := en.rawNatLit? | failure
-    return ResultI.mk (← NormNum.Result.mkOfNatReal n) (← NormNum.Result.mkOfNatReal 0)
+    let re ← NormNum.derive q(OfNat.ofNat $en : ℝ)
+    let im ← NormNum.derive q(0 : ℝ)
+    return ResultI.mk
+      (re.eqTrans q(Complex.re_ofNat $en))
+      (im.eqTrans q(Complex.im_ofNat $en))
   | ~q(OfScientific.ofScientific $em $ex $eexp) =>
-    let r ← NormNum.derive q(OfScientific.ofScientific $em $ex $eexp : ℝ)
-    return ResultI.mk r (← NormNum.Result.mkOfNatReal 0)
+    let re ← NormNum.derive q(OfScientific.ofScientific $em $ex $eexp : ℝ)
+    let im ← NormNum.derive q(0 : ℝ)
+    return ResultI.mk
+      (re.eqTrans q(Complex.re_ofScientific _ _ _))
+      (im.eqTrans q(Complex.im_ofScientific $em $ex $eexp))
   | _ => throwError "found the atom {z} which is not a numeral"
 
 -- TODO : get rid of cast in `$a = $x + Complex.I * $y`.
