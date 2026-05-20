@@ -471,11 +471,11 @@ theorem isIso_fromTildeΓ_iff_isLocalizing (M : (Spec R).Modules) :
 def sheafComposePushforwardComp :
     sheafCompose (Opens.grothendieckTopology (Spec S))
       (ModuleCat.restrictScalars (Spec.map φ).appTop.hom) ⋙
-    TopCat.Sheaf.pushforward _ (Spec.map φ).base ⋙
-    sheafCompose _ (ModuleCat.restrictScalars (Scheme.ΓSpecIso R).inv.hom) ≅
+      TopCat.Sheaf.pushforward _ (Spec.map φ).base ⋙
+      sheafCompose _ (ModuleCat.restrictScalars (Scheme.ΓSpecIso R).inv.hom) ≅
     sheafCompose _ (ModuleCat.restrictScalars (Scheme.ΓSpecIso S).inv.hom) ⋙
-    TopCat.Sheaf.pushforward _ (Spec.map φ).base ⋙
-    sheafCompose _ (ModuleCat.restrictScalars φ.hom) := by
+      TopCat.Sheaf.pushforward _ (Spec.map φ).base ⋙
+      sheafCompose _ (ModuleCat.restrictScalars φ.hom) := by
   refine NatIso.ofComponents (fun M ↦ ObjectProperty.isoMk _ ?_) ?_
   · refine NatIso.ofComponents (fun U ↦ ?_) ?_
     · refine (ModuleCat.restrictScalarsComp'App _ _ _ ?_ _).symm ≪≫
