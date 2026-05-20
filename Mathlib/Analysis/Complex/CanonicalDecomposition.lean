@@ -288,6 +288,7 @@ theorem _root_.MeromorphicOn.congr_codiscreteWitin_closedBall_prod_canonicalFact
       ∧ (∀ u ∈ (ball 0 R), g u ≠ 0)
       ∧ f =ᶠ[codiscreteWithin (closedBall 0 R)]
           (∏ᶠ u, (canonicalFactor R u) ^ (-divisor f (ball 0 R) u)) • g := by
+  -- Trivial case: If `R` is non-positive, then the ball is empty.
   by_cases hR : R ≤ 0
   · refine ⟨fun z ↦ f 0, fun z hz ↦ AnalyticAt.meromorphicNFAt analyticAt_const,
       by simp [ball_eq_empty.2 hR], ?_⟩
@@ -295,8 +296,9 @@ theorem _root_.MeromorphicOn.congr_codiscreteWitin_closedBall_prod_canonicalFact
     have : R = 0 := by grind [nonneg_of_mem_closedBall ha]
     aesop
   rw [not_le] at hR
-  have η₀ : (-divisor f (ball 0 R)).support.Finite := by simp [h₁f.divisor_ball_finiteSupport]
-  rw [finprod_eq_prod_of_mulSupport_subset_of_finite _ (by aesop) η₀]
+  -- General case: The requirement that `f =ᶠ[…] (something) • g` implies that `g` must equal
+  -- `(something)⁻¹ • g`, converted to a meromorphic function in normal form. The next lines define
+  -- `g` in this way and establish basic properties.
   let φ := (∏ᶠ c, canonicalFactor R c ^ (divisor f (ball 0 R)) c) • f
   have hφ : MeromorphicOn φ (closedBall 0 R) := by
     apply smul (MeromorphicOn.finprod _) h₁f
@@ -315,41 +317,36 @@ theorem _root_.MeromorphicOn.congr_codiscreteWitin_closedBall_prod_canonicalFact
     apply (canonicalDecomposition_aux₁ _).meromorphicOn
   have h₂g : MeromorphicNFOn g (closedBall 0 R) :=
     meromorphicNFOn_toMeromorphicNFOn φ (closedBall 0 R)
-  have h₄g : ∀ z ∈ closedBall 0 R, meromorphicOrderAt g z ≠ ⊤ := by
-    intro z hz
+  have h₄g {z : ℂ} (hz : z ∈ closedBall 0 R) : meromorphicOrderAt g z ≠ ⊤ := by
     rw [meromorphicOrderAt_toMeromorphicNFOn hφ hz, meromorphicOrderAt_smul _ (h₁f z hz)]
-    · simp only [ne_eq, LinearOrderedAddCommGroupWithTop.add_eq_top, h₂f ⟨z, hz⟩, or_false]
-      apply canonicalDecomposition_aux₃ hR
+    · simpa [h₂f ⟨z, hz⟩] using canonicalDecomposition_aux₃ hR
     · apply MeromorphicAt.finprod (fun x ↦ (meromorphic_canonicalFactor R x z).zpow _)
+  -- Use the function `g` defined above and establish the required properties
   use g, h₁g
+  have η₀ : (-divisor f (ball 0 R)).support.Finite := by simp [h₁f.divisor_ball_finiteSupport]
   constructor
   · intro z hz
     rw [← MeromorphicNFAt.meromorphicOrderAt_eq_zero_iff (h₂g (ball_subset_closedBall hz))]
     have : divisor g (ball 0 R) z = 0 := by simp [h₃g]
     rw [divisor_apply (fun x hx ↦ (h₂g (ball_subset_closedBall hx)).meromorphicAt) hz] at this
-    simpa [h₄g z (ball_subset_closedBall hz)] using this
+    simpa [h₄g (ball_subset_closedBall hz)] using this
   · trans (∏ i ∈ η₀.toFinset, canonicalFactor R i ^ (-(divisor f (ball 0 R)) i)) • φ
     · unfold φ
-      rw [finprod_eq_prod_of_mulSupport_subset_of_finite _ _ η₀]
+      rw [finprod_eq_prod_of_mulSupport_subset_of_finite _ (by aesop) η₀]
       · filter_upwards [codiscreteWithin_mono (by tauto) η₀.compl_mem_codiscrete,
           self_mem_codiscreteWithin (closedBall 0 R)] with a ha h₂a
         simp only [Pi.smul_apply', Finset.prod_apply, Pi.pow_apply]
         rw [← smul_assoc, ← Finset.prod_smul, Finset.prod_eq_one, one_smul]
-        · intro x hx
-          rw [smul_eq_mul, ← zpow_add', neg_add_cancel, zpow_zero]
-          simp_all only [ne_eq, Subtype.forall, mem_closedBall, dist_zero_right,
-            locallyFinsuppWithin.support_neg, mem_compl_iff, mem_support, Decidable.not_not,
-            Finite.mem_toFinset, neg_add_cancel, not_true_eq_false, neg_eq_zero, and_self, or_self,
-            or_false]
-          apply canonicalFactor_ne_zero
-          · by_contra h
-            simp_all
-          · simp_all
-          grind
-      · intro
-        contrapose
+        intro x hx
+        rw [smul_eq_mul, ← zpow_add', neg_add_cancel, zpow_zero]
+        simp_all only [ne_eq, Subtype.forall, mem_closedBall, dist_zero_right,
+          locallyFinsuppWithin.support_neg, mem_compl_iff, mem_support, Decidable.not_not,
+          Finite.mem_toFinset, neg_add_cancel, not_true_eq_false, neg_eq_zero, and_self, or_self,
+          or_false]
+        apply canonicalFactor_ne_zero _ (by simp_all) (by grind)
+        by_contra h
         simp_all
-    · filter_upwards [toMeromorphicNFOn_eqOn_codiscrete hφ]
-      simp_all [g]
+    · rw [finprod_eq_prod_of_mulSupport_subset_of_finite _ (by aesop) η₀]
+      filter_upwards [toMeromorphicNFOn_eqOn_codiscrete hφ] using by simp_all [g]
 
 end Complex
