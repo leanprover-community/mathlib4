@@ -185,12 +185,14 @@ theorem coeff_C (n : ℕ) (a : R) : coeff n (C a : R⟦X⟧) = if n = 0 then a e
 theorem coeff_zero_C (a : R) : coeff 0 (C a) = a := by
   rw [coeff_C, if_pos rfl]
 
-theorem coeff_ne_zero_C {a : R} {n : ℕ} (h : n ≠ 0) : coeff n (C a) = 0 := by
+theorem coeff_C_of_ne_zero {a : R} {n : ℕ} (h : n ≠ 0) : coeff n (C a) = 0 := by
   rw [coeff_C, if_neg h]
+
+@[deprecated (since := "2026-05-20")] alias coeff_C_ne_zero := coeff_C_of_ne_zero
 
 @[simp]
 theorem coeff_succ_C {a : R} {n : ℕ} : coeff (n + 1) (C a) = 0 :=
-  coeff_ne_zero_C n.succ_ne_zero
+  coeff_C_of_ne_zero n.succ_ne_zero
 
 @[grind inj]
 theorem C_injective : Function.Injective (C (R := R)) := MvPowerSeries.C_injective
