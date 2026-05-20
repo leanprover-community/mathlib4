@@ -379,8 +379,8 @@ theorem equalizer_same (φ : A →ₐ[R] B) : equalizer φ φ = ⊤ := equalizer
 
 variable {F : Type*} [FunLike F A B] [AlgHomClass F R A B]
 
-theorem eqOn_sup {φ ψ : F} {S T : Subalgebra R A} (hS : Set.EqOn φ ψ S)
-    (hT : Set.EqOn φ ψ T) : Set.EqOn φ ψ ↑(S ⊔ T) := by
+theorem eqOn_sup {φ ψ : F} {S T : Subalgebra R A} (hS : Set.EqOn φ ψ S) (hT : Set.EqOn φ ψ T) :
+    Set.EqOn φ ψ ↑(S ⊔ T) := by
   rw [← AlgHom.coe_coe φ, ← AlgHom.coe_coe ψ, ← le_equalizer] at hS hT ⊢
   exact sup_le hS hT
 
