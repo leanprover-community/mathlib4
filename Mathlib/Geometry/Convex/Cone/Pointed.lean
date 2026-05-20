@@ -6,7 +6,6 @@ Authors: Apurva Nakade
 module
 
 public import Mathlib.Algebra.Group.Submonoid.Support
-public import Mathlib.Algebra.Module.Submodule.Pointwise
 public import Mathlib.Algebra.Order.Nonneg.Module
 public import Mathlib.Geometry.Convex.Cone.Basic
 
@@ -38,12 +37,13 @@ namespace PointedCone
 
 open Function Submodule
 
+open scoped Pointwise
+
 section Submodule
 
 variable [Semiring R] [PartialOrder R] [IsOrderedRing R] [AddCommMonoid E] [Module R E]
 variable {C : PointedCone R E}
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A submodule is a pointed cone. -/
 @[coe] abbrev ofSubmodule (S : Submodule R E) : PointedCone R E := S.restrictScalars _
 
@@ -53,25 +53,20 @@ instance : Coe (Submodule R E) (PointedCone R E) := ⟨ofSubmodule⟩
 
 lemma mem_ofSubmodule_iff {S : Submodule R E} {x : E} : x ∈ (S : PointedCone R E) ↔ x ∈ S := by rfl
 
-set_option backward.isDefEq.respectTransparency false in
 lemma ofSubmodule_inj {S T : Submodule R E} : ofSubmodule S = ofSubmodule T ↔ S = T :=
   restrictScalars_inj ..
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Coercion from submodules to pointed cones as an order embedding. -/
 abbrev ofSubmoduleEmbedding : Submodule R E ↪o PointedCone R E :=
   restrictScalarsEmbedding ..
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Coercion from submodules to pointed cones as a lattice homomorphism. -/
 abbrev ofSubmoduleLatticeHom : CompleteLatticeHom (Submodule R E) (PointedCone R E) :=
   restrictScalarsLatticeHom ..
 
-set_option backward.isDefEq.respectTransparency false in
 lemma ofSubmodule_inf (S T : Submodule R E) : S ⊓ T = (S ⊓ T : PointedCone R E) :=
   restrictScalars_inf _ _ _
 
-set_option backward.isDefEq.respectTransparency false in
 lemma ofSubmodule_sup (S T : Submodule R E) : S ⊔ T = (S ⊔ T : PointedCone R E) :=
   restrictScalars_sup _ _ _
 
@@ -86,6 +81,12 @@ lemma ofSubmodule_sSup (s : Set (Submodule R E)) : sSup s = sSup (ofSubmodule ''
 
 lemma ofSubmodule_iSup (s : Set (Submodule R E)) : ⨆ S ∈ s, S = ⨆ S ∈ s, (S : PointedCone R E) := by
   rw [← sSup_eq_iSup, ofSubmodule_sSup, sSup_eq_iSup, iSup_image]
+
+variable {R E : Type*}
+variable [Semiring R] [PartialOrder R] [IsOrderedRing R] [AddCommGroup E] [Module R E]
+
+lemma neg_ofSubmodule (S : Submodule R E) :  -(ofSubmodule S) = ofSubmodule (-S) :=
+  neg_restrictScalars S
 
 end Submodule
 
@@ -121,7 +122,6 @@ lemma convex (C : PointedCone R E) : Convex R (C : Set E) := C.toConvexCone.conv
 nonrec lemma smul_mem (C : PointedCone R E) (hr : 0 ≤ r) (hx : x ∈ C) : r • x ∈ C :=
   C.smul_mem ⟨r, hr⟩ hx
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The `PointedCone` constructed from a pointed `ConvexCone`. -/
 def _root_.ConvexCone.toPointedCone (C : ConvexCone R E) (hC : C.Pointed) : PointedCone R E where
   carrier := C
@@ -214,7 +214,6 @@ between pointed cones induced from linear maps between the ambient modules that 
 
 -/
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The image of a pointed cone under an `R`-linear map is a pointed cone. -/
 def map (f : E →ₗ[R] F) (C : PointedCone R E) : PointedCone R F :=
   Submodule.map (f : E →ₗ[R≥0] F) C
@@ -240,7 +239,6 @@ theorem map_map (g : F →ₗ[R] G) (f : E →ₗ[R] F) (C : PointedCone R E) :
 theorem map_id (C : PointedCone R E) : C.map LinearMap.id = C :=
   SetLike.coe_injective <| Set.image_id _
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The preimage of a pointed cone under an `R`-linear map is a pointed cone. -/
 def comap (f : E →ₗ[R] F) (C : PointedCone R F) : PointedCone R E :=
   Submodule.comap (f : E →ₗ[R≥0] F) C
@@ -284,7 +282,22 @@ theorem toConvexCone_positive : ↑(positive R E) = ConvexCone.positive R E :=
 
 end PositiveCone
 
+section AddCommGroup
+
+variable {R M : Type*} [Ring R] [PartialOrder R] [IsOrderedRing R] [AddCommGroup E] [Module R E]
+
+lemma sup_inf_assoc_of_le_submodule {C : PointedCone R E} (D : PointedCone R E)
+    {S : Submodule R E} (hCS : C ≤ S) : (C ⊔ D) ⊓ S = C ⊔ (D ⊓ S) :=
+  sup_inf_assoc_of_le_of_neg_le _ hCS (by simpa [Submodule.neg_le])
+
+lemma inf_sup_assoc_of_le_of_submodule_le {C : PointedCone R E} (D : PointedCone R E)
+    {S : Submodule R E} (hSC : S ≤ C) : (C ⊓ D) ⊔ S = C ⊓ (D ⊔ S) :=
+  inf_sup_assoc_of_le_of_neg_le _ hSC (by simpa [Submodule.neg_le])
+
+end AddCommGroup
+
 section OrderedAddCommGroup
+
 variable [Ring R] [PartialOrder R] [IsOrderedRing R] [AddCommGroup E] [PartialOrder E]
   [IsOrderedAddMonoid E] [Module R E]
 
@@ -296,8 +309,6 @@ lemma to_isOrderedModule (C : PointedCone R E) (h : ∀ x y : E, x ≤ y ↔ y -
 end OrderedAddCommGroup
 
 section Lineal
-
-open Pointwise
 
 variable [Ring R] [LinearOrder R] [IsOrderedRing R] [AddCommGroup E] [Module R E]
 

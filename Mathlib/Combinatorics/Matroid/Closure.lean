@@ -930,7 +930,8 @@ variable {R S : Set α}
   rw [← hI.closure_eq_closure, ← hI'.closure_eq_closure, hI.indep.mem_closure_iff', mem_union,
     mem_inter_iff, hI'.indep.mem_closure_iff', restrict_ground_eq, restrict_indep_iff, mem_diff]
   by_cases he : M.Indep (insert e I)
-  · simp [he, and_comm, insert_subset_iff, hIR, (he.subset_ground (mem_insert ..)), imp_or]
+  · simp [he, and_comm, insert_subset_iff, hIR, (he.subset_ground (mem_insert ..)),
+      imp_or_left_iff_true]
   tauto
 
 lemma restrict_closure_eq (M : Matroid α) (hXR : X ⊆ R) (hR : R ⊆ M.E := by aesop_mat) :

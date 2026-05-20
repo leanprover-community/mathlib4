@@ -8,7 +8,7 @@ module
 public import Mathlib.AlgebraicGeometry.AlgClosed.Basic
 public import Mathlib.AlgebraicGeometry.Geometrically.Integral
 public import Mathlib.AlgebraicGeometry.ZariskisMainTheorem
-public import Mathlib.CategoryTheory.Monoidal.Cartesian.Grp_
+public import Mathlib.CategoryTheory.Monoidal.Cartesian.Grp
 
 /-!
 # Abelian varieties
@@ -19,7 +19,7 @@ public import Mathlib.CategoryTheory.Monoidal.Cartesian.Grp_
 
 -/
 
-@[expose] public section
+public section
 
 open CategoryTheory Limits
 
@@ -125,7 +125,6 @@ theorem isCommMonObj_of_isProper_of_isIntegral_tensorObj_of_isAlgClosed [IsAlgCl
     · simp [xe, ← Scheme.Hom.comp_apply, -Scheme.Hom.comp_base]
   · simp
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A proper geometrically integral group scheme over a field is commutative. -/
 @[stacks 0BFD]
 theorem isCommMonObj_of_isProper_of_geometricallyIntegral

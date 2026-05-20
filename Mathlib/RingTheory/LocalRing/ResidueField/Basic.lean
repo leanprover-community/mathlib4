@@ -34,7 +34,6 @@ lemma residue_def (x) : residue R x = Ideal.Quotient.mk (maximalIdeal R) x := rf
 lemma ker_residue : RingHom.ker (residue R) = maximalIdeal R :=
   Ideal.mk_ker
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma residue_eq_zero_iff (x : R) : residue R x = 0 ↔ x ∈ maximalIdeal R := by
   rw [← RingHom.mem_ker, ker_residue]
@@ -50,12 +49,12 @@ variable (R)
 
 instance ResidueField.algebra {R₀} [CommRing R₀] [Algebra R₀ R] :
     Algebra R₀ (ResidueField R) :=
-  Ideal.Quotient.algebra _
+  inferInstanceAs <| Algebra R₀ (_ ⧸ _)
 
 instance {R₁ R₂} [CommRing R₁] [CommRing R₂]
     [Algebra R₁ R₂] [Algebra R₁ R] [Algebra R₂ R] [IsScalarTower R₁ R₂ R] :
-    IsScalarTower R₁ R₂ (IsLocalRing.ResidueField R) := by
-  delta IsLocalRing.ResidueField; infer_instance
+    IsScalarTower R₁ R₂ (ResidueField R) :=
+  inferInstanceAs <| IsScalarTower R₁ R₂ (_ ⧸ _)
 
 @[simp]
 theorem ResidueField.algebraMap_eq : algebraMap R (ResidueField R) = residue R :=
@@ -64,9 +63,6 @@ theorem ResidueField.algebraMap_eq : algebraMap R (ResidueField R) = residue R :
 instance : IsLocalHom (IsLocalRing.residue R) :=
   ⟨fun _ ha =>
     Classical.not_not.mp (Ideal.Quotient.eq_zero_iff_mem.not.mp (isUnit_iff_ne_zero.mp ha))⟩
-
-noncomputable instance {R₀} [CommRing R₀] [Algebra R₀ R] : Module R₀ (ResidueField R) :=
-  inferInstanceAs <| Module R₀ (R ⧸ maximalIdeal R)
 
 instance {R₀} [CommRing R₀] [Algebra R₀ R] [Module.Finite R₀ R] :
     Module.Finite R₀ (ResidueField R) :=
@@ -165,7 +161,6 @@ section MulSemiringAction
 
 variable (G : Type*) [Group G] [MulSemiringAction G R]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `G` acts on `R` as a `MulSemiringAction`, then it also acts on `IsLocalRing.ResidueField R`.
 -/
 noncomputable instance : MulSemiringAction G (IsLocalRing.ResidueField R) :=
@@ -202,9 +197,6 @@ instance {R₀ : Type*} [CommRing R₀] [Algebra R₀ R] [Algebra R₀ S] [IsSca
   obtain ⟨x, rfl⟩ := residue_surjective x
   simp [← IsScalarTower.algebraMap_apply]
 
-noncomputable instance : Module (ResidueField R) (ResidueField S) :=
-  inferInstanceAs <| Module (R ⧸ maximalIdeal R) (S ⧸ maximalIdeal S)
-
 instance finite_of_module_finite [Module.Finite R S] :
     Module.Finite (ResidueField R) (ResidueField S) :=
   .of_restrictScalars_finite R _ _
@@ -215,9 +207,6 @@ lemma finite_of_finite [Module.Finite R S] (hfin : Finite (ResidueField R)) :
 end FiniteDimensional
 
 end ResidueField
-
-@[deprecated (since := "2025-10-06")]
-  alias isLocalHom_residue := instIsLocalHomResidueFieldRingHomResidue
 
 end
 

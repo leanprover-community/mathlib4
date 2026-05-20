@@ -59,7 +59,6 @@ inductive Rel : TensorAlgebra R L → TensorAlgebra R L → Prop
 
 end UniversalEnvelopingAlgebra
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The universal enveloping algebra of a Lie algebra. -/
 def UniversalEnvelopingAlgebra :=
   RingQuot (UniversalEnvelopingAlgebra.Rel R L)

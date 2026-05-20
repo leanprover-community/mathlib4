@@ -8,7 +8,7 @@ module
 public import Mathlib.Algebra.Algebra.Tower
 public import Mathlib.Analysis.LocallyConvex.WithSeminorms
 public import Mathlib.Analysis.Normed.Module.Convex
-public import Mathlib.Topology.Algebra.Module.StrongTopology
+public import Mathlib.Topology.Algebra.Module.Spaces.ContinuousLinearMap
 public import Mathlib.Analysis.Normed.Operator.LinearIsometry
 public import Mathlib.Analysis.Normed.Operator.ContinuousLinearMap
 public import Mathlib.Tactic.SuppressCompilation
@@ -95,8 +95,6 @@ theorem norm_image_of_norm_eq_zero [SemilinearMapClass 𝓕 σ₁₂ E F] (f : �
     {x : E} (hx : ‖x‖ = 0) : ‖f x‖ = 0 := by
   rw [← mem_closure_zero_iff_norm, ← specializes_iff_mem_closure, ← map_zero f] at *
   exact hx.map hf
-
-@[deprecated (since := "2025-11-15")] alias norm_image_of_norm_zero := norm_image_of_norm_eq_zero
 
 section
 
@@ -321,6 +319,7 @@ theorem opNorm_add_le : ‖f + g‖ ≤ ‖f‖ + ‖g‖ :=
     (norm_add_le_of_le (f.le_opNorm x) (g.le_opNorm x)).trans_eq (add_mul _ _ _).symm
 
 /-- If a normed space is (topologically) non-trivial, then the norm of the identity equals `1`. -/
+@[simp]
 theorem norm_id [NontrivialTopology E] : ‖ContinuousLinearMap.id 𝕜 E‖ = 1 :=
   le_antisymm norm_id_le <| by
     let ⟨x, hx⟩ := exists_norm_ne_zero E
@@ -501,7 +500,6 @@ end LinearIsometry
 
 namespace Submodule
 
-set_option backward.isDefEq.respectTransparency false in
 theorem norm_subtypeL_le (K : Submodule 𝕜 E) : ‖K.subtypeL‖ ≤ 1 :=
   K.subtypeₗᵢ.norm_toContinuousLinearMap_le
 

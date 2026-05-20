@@ -628,7 +628,7 @@ theorem card_nthRoots {n : ℕ} {ζ : R} (hζ : IsPrimitiveRoot ζ n) (a : R) :
   · obtain ⟨α, hα⟩ := h
     rw [nthRoots_eq hζ hα, Multiset.card_map, Multiset.card_range]
   · obtain (rfl | hn) := n.eq_zero_or_pos; · simp
-    push_neg at h
+    push Not at h
     simpa only [Multiset.card_eq_zero, Multiset.eq_zero_iff_forall_notMem, mem_nthRoots hn]
 
 /-- A variant of `IsPrimitiveRoot.card_rootsOfUnity` for `ζ : Rˣ`. -/
@@ -680,7 +680,6 @@ theorem nthRoots_one_nodup {ζ : R} {n : ℕ} (h : IsPrimitiveRoot ζ n) :
     (nthRoots n (1 : R)).Nodup :=
   h.nthRoots_nodup one_ne_zero
 
-set_option backward.isDefEq.respectTransparency false in
 -- Cannot be @[simp] because `ζ` cannot be inferred by `simp`.
 theorem card_nthRootsFinset {ζ : R} {n : ℕ} (h : IsPrimitiveRoot ζ n) :
     #(nthRootsFinset n (1 : R)) = n := by
@@ -848,7 +847,7 @@ lemma IsCyclic.exists_apply_ne_one {G G' : Type*} [Group G] [IsCyclic G] [Finite
   have hφg : IsPrimitiveRoot (φ g) (Nat.card G) := by
     rwa [monoidHomOfForallMemZpowers_apply_gen hg hζg]
   use φ
-  contrapose! ha
+  contrapose ha
   specialize hg a
   rw [← mem_powers_iff_mem_zpowers, Submonoid.mem_powers_iff] at hg
   obtain ⟨k, hk⟩ := hg

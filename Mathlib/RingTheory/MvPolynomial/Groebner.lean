@@ -123,7 +123,6 @@ theorem degree_reduce_lt {f b : MvPolynomial σ R} (hb : IsUnit (m.leadingCoeff 
     rw [H', degree_zero] at K
     exact hf K.symm
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Division by a family of multivariate polynomials
 whose leading coefficients are invertible with respect to a monomial order -/
 theorem div {ι : Type*} {b : ι → MvPolynomial σ R}
@@ -228,7 +227,6 @@ after a `decreasing_by` block with focus dots.
 See https://github.com/leanprover/lean4/issues/12573
 -/
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Division by a *set* of multivariate polynomials
 whose leading coefficients are invertible with respect to a monomial order -/
 theorem div_set {B : Set (MvPolynomial σ R)}

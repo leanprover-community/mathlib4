@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Analysis.Normed.Algebra.Spectrum
 public import Mathlib.Analysis.Calculus.Deriv.Basic
-import Mathlib.Analysis.Complex.Liouville
+public import Mathlib.Analysis.Normed.Operator.Mul
 import Mathlib.Analysis.Complex.Polynomial.Basic
 import Mathlib.Analysis.Analytic.RadiusLiminf
 
@@ -20,7 +20,8 @@ complex Banach algebra has nonempty spectrum.
 
 ## Main results
 
-* `spectrum.hasDerivAt_resolvent`: the resolvent function is differentiable on the resolvent set.
+* `spectrum.hasDerivAt_resolvent_const_left`: the resolvent function is differentiable on the
+  resolvent set.
 * `spectrum.pow_nnnorm_pow_one_div_tendsto_nhds_spectralRadius`: Gelfand's formula for the
   spectral radius in Banach algebras over `ℂ`.
 * `spectrum.nonempty`: the spectrum of any element in a complex Banach algebra is nonempty.
@@ -45,14 +46,37 @@ open Filter ENNReal
 
 namespace spectrum
 
-theorem hasDerivAt_resolvent [NontriviallyNormedField 𝕜] [NormedRing A] [NormedAlgebra 𝕜 A]
-    [CompleteSpace A] {a : A} {k : 𝕜} (hk : k ∈ resolventSet 𝕜 a) :
+section NonTriviallyNormedField
+
+variable [NontriviallyNormedField 𝕜] [NormedRing A] [NormedAlgebra 𝕜 A] [CompleteSpace A]
+
+theorem hasDerivAt_resolvent_const_left {a : A} {k : 𝕜} (hk : k ∈ resolventSet 𝕜 a) :
     HasDerivAt (resolvent a) (-resolvent a k ^ 2) k := by
   have H₁ : HasFDerivAt Ring.inverse _ (algebraMap 𝕜 A k - a) :=
     hasFDerivAt_ringInverse (𝕜 := 𝕜) hk.unit
   have H₂ : HasDerivAt (fun k => algebraMap 𝕜 A k - a) 1 k := by
     simpa using (Algebra.linearMap 𝕜 A).hasDerivAt.sub_const a
   simpa [resolvent, sq, hk.unit_spec, ← Ring.inverse_unit hk.unit] using H₁.comp_hasDerivAt k H₂
+
+@[deprecated (since := "2026-03-26")]
+alias hasDerivAt_resolvent := hasDerivAt_resolvent_const_left
+
+theorem hasFDerivAt_resolvent {a : A} {k : 𝕜} (hk : k ∈ resolventSet 𝕜 a) :
+    HasFDerivAt (resolvent · k)
+      (((ContinuousLinearMap.mulLeftRight 𝕜 A) (resolvent a k)) (resolvent a k)) a := by
+  have H₁ : HasFDerivAt Ring.inverse _ (algebraMap 𝕜 A k - a) :=
+    hasFDerivAt_ringInverse (𝕜 := 𝕜) hk.unit
+  have H₂ : HasFDerivAt (fun a => algebraMap 𝕜 A k - a) (- .id 𝕜 A) a := by
+    simpa using (hasFDerivAt_const _ a).sub (hasFDerivAt_id a)
+  simpa [resolvent_eq hk] using H₁.comp a H₂
+
+end NonTriviallyNormedField
+
+theorem hasDerivAt_resolvent_const_right [NontriviallyNormedField 𝕜] [NontriviallyNormedField A]
+    [NormedAlgebra 𝕜 A] [CompleteSpace A] {a : A} {k : 𝕜} (hk : k ∈ resolventSet 𝕜 a) :
+    HasDerivAt (resolvent · k) (resolvent a k ^ 2) a := by
+  convert hasFDerivAt_resolvent (𝕜 := A) hk |>.hasDerivAt
+  simp [resolvent, pow_two]
 
 open ENNReal in
 /-- In a Banach algebra `A` over `𝕜`, for `a : A` the function `fun z ↦ (1 - z • a)⁻¹` is
@@ -112,7 +136,7 @@ theorem pow_norm_pow_one_div_tendsto_nhds_spectralRadius (a : A) :
   convert pow_nnnorm_pow_one_div_tendsto_nhds_spectralRadius a using 1
   ext1
   rw [← ofReal_rpow_of_nonneg (norm_nonneg _) _, ← coe_nnnorm, coe_nnreal_eq]
-  exact one_div_nonneg.mpr (mod_cast zero_le _)
+  simp
 
 section Nontrivial
 
@@ -125,7 +149,8 @@ protected theorem nonempty (a : A) : (spectrum ℂ a).Nonempty := by
   by_contra! h
   have H₀ : resolventSet ℂ a = Set.univ := by rwa [spectrum, Set.compl_empty_iff] at h
   have H₁ : Differentiable ℂ fun z : ℂ => resolvent a z := fun z =>
-    (hasDerivAt_resolvent (H₀.symm ▸ Set.mem_univ z : z ∈ resolventSet ℂ a)).differentiableAt
+    hasDerivAt_resolvent_const_left (H₀.symm ▸ Set.mem_univ z : z ∈ resolventSet ℂ a)
+      |>.differentiableAt
   /- Since `resolvent a` tends to zero at infinity, by Liouville's theorem `resolvent a = 0`,
   which contradicts that `resolvent a z` is invertible. -/
   have H₃ := H₁.apply_eq_of_tendsto_cocompact 0 <| by
@@ -175,8 +200,8 @@ precisely the units. This allows for the application of this isomorphism in broa
 to the quotient of a complex Banach algebra by a maximal ideal. In the case when `A` is actually a
 `NormedDivisionRing`, one may fill in the argument `hA` with the lemma `isUnit_iff_ne_zero`. -/
 @[simps]
-noncomputable def _root_.NormedRing.algEquivComplexOfComplete (hA : ∀ {a : A}, IsUnit a ↔ a ≠ 0)
-    [CompleteSpace A] : ℂ ≃ₐ[ℂ] A :=
+noncomputable def _root_.NormedRing.algEquivComplexOfComplete (hA : ∀ {a : A}, IsUnit a ↔ a ≠ 0) :
+    ℂ ≃ₐ[ℂ] A :=
   let nt : Nontrivial A := ⟨⟨1, 0, hA.mp ⟨⟨1, 1, mul_one _, mul_one _⟩, rfl⟩⟩⟩
   { Algebra.ofId ℂ A with
     toFun := algebraMap ℂ A

@@ -846,7 +846,7 @@ theorem partiallyWellOrderedOn_sublistForall₂ (r : α → α → Prop) [IsPreo
     rw [List.length_tail, ← Nat.pred_eq_sub_one]
     exact Nat.pred_lt fun con => hnil _ (List.length_eq_zero_iff.1 con)
   rw [IsBadSeq] at hf'
-  push_neg at hf'
+  push Not at hf'
   obtain ⟨m, n, mn, hmn⟩ := hf' fun n x hx => by
     split_ifs at hx with hn
     exacts [hf1.1 _ _ hx, hf1.1 _ _ (List.tail_subset _ hx)]
@@ -918,11 +918,6 @@ theorem ProdLex_iff [PartialOrder α] [Preorder β] {s : Set (α ×ₗ β)} :
   ⟨fun h ↦ ⟨imageProdLex h, fiberProdLex h⟩, fun h ↦ subsetProdLex h.1 h.2⟩
 
 end Set.PartiallyWellOrderedOn
-
-@[deprecated isPWO_of_wellQuasiOrderedLE (since := "2025-11-11")]
-theorem Pi.isPWO {α : ι → Type*} [∀ i, Preorder (α i)] [∀ i, WellQuasiOrderedLE (α i)] [Finite ι]
-    (s : Set (∀ i, α i)) : s.IsPWO :=
-  isPWO_of_wellQuasiOrderedLE s
 
 section ProdLex
 variable {rα : α → α → Prop} {rβ : β → β → Prop} {f : γ → α} {g : γ → β} {s : Set γ}

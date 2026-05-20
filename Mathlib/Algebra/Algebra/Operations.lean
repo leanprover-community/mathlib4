@@ -9,7 +9,7 @@ public import Mathlib.Algebra.Algebra.Bilinear
 public import Mathlib.Algebra.Algebra.Opposite
 public import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 public import Mathlib.Algebra.Group.Pointwise.Set.BigOperators
-public import Mathlib.Algebra.Module.Submodule.Pointwise
+public import Mathlib.Algebra.Module.Submodule.Finsupp
 public import Mathlib.Algebra.Ring.NonZeroDivisors
 public import Mathlib.Algebra.Ring.Submonoid.Pointwise
 public import Mathlib.Data.Set.Semiring
@@ -52,7 +52,7 @@ universe uι u v
 
 open Algebra Set MulOpposite
 
-open Pointwise
+open scoped Pointwise
 
 namespace SubMulAction
 
@@ -247,6 +247,19 @@ theorem mul_bot : M * ⊥ = ⊥ :=
 @[simp]
 theorem bot_mul : ⊥ * M = ⊥ :=
   bot_smul _
+
+@[simp]
+theorem mul_eq_bot [NoZeroDivisors A] {M N : Submodule R A} :
+    M * N = ⊥ ↔ M = ⊥ ∨ N = ⊥ :=
+  ⟨fun hmn =>
+    or_iff_not_imp_left.mpr fun M_ne_bot =>
+      N.eq_bot_iff.mpr fun n hn =>
+        let ⟨m, hm, ne0⟩ := M.ne_bot_iff.mp M_ne_bot
+        Or.resolve_left (mul_eq_zero.mp ((M * N).eq_bot_iff.mp hmn _ (mul_mem_mul hm hn))) ne0,
+    fun h => by obtain rfl | rfl := h; exacts [bot_mul _, mul_bot _]⟩
+
+instance [NoZeroDivisors A] : NoZeroDivisors (Submodule R A) where
+  eq_zero_or_eq_zero_of_mul_eq_zero := mul_eq_bot.1
 
 protected theorem one_mul : (1 : Submodule R A) * M = M :=
   Submodule.one_smul _
@@ -505,7 +518,7 @@ end
 
 section
 
-open Pointwise
+open scoped Pointwise
 
 /-- `Submodule.pointwiseNeg` distributes over multiplication.
 
@@ -570,10 +583,8 @@ theorem mul_smul_mul_eq_smul_mul_smul (x y : R) : (x * y) • (M * N) = (x • M
 
 /-- Sub-R-modules of an R-algebra form an idempotent semiring. -/
 instance idemSemiring : IdemSemiring (Submodule R A) where
-  __ := instNonUnitalSemiring
   one_mul := Submodule.one_mul
   mul_one := Submodule.mul_one
-  bot_le _ := bot_le
 
 instance : IsOrderedRing (Submodule R A) where
 
@@ -793,11 +804,10 @@ theorem prod_span {ι : Type*} (s : Finset ι) (M : ι → Set A) :
 
 theorem prod_span_singleton {ι : Type*} (s : Finset ι) (x : ι → A) :
     (∏ i ∈ s, span R ({x i} : Set A)) = span R {∏ i ∈ s, x i} := by
-  rw [prod_span, Set.finset_prod_singleton]
+  rw [prod_span, Set.finsetProd_singleton]
 
 variable (R A)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- R-submodules of the R-algebra A are a module over `Set A`. -/
 noncomputable instance moduleSet : Module (SetSemiring A) (Submodule R A) where
   smul s P := span R (SetSemiring.down s) * P
@@ -907,13 +917,13 @@ theorem restrictScalars_image_smul_eq {S M : Type*}
     (algebraMap S R '' s • N).restrictScalars S = s • N.restrictScalars S := by
   refine le_antisymm (fun x x_in ↦ ?_) (set_smul_le _ _ _ fun r x r_in x_in ↦ ?_)
   · rw [restrictScalars_mem] at x_in
-    refine set_smul_inductionOn x x_in ?_ ?_ (fun _ _ _ _ h h' ↦  add_mem h h') (zero_mem _)
+    refine set_smul_inductionOn x x_in ?_ ?_ (fun _ _ _ _ h h' ↦ add_mem h h') (zero_mem _)
     · rintro _ x ⟨r, r_in, rfl⟩ x_in
       rw [algebraMap_smul]
       exact mem_set_smul_of_mem_mem r_in x_in
     · intro r y h h'
       obtain ⟨c, c_supp, hc⟩ := (mem_set_smul ..).mp <| smul_mem _ r h
-      simp only [hc, Finsupp.sum, AddSubmonoidClass.coe_finset_sum, SetLike.val_smul]
+      simp only [hc, Finsupp.sum, AddSubmonoidClass.coe_finsetSum, SetLike.val_smul]
       refine sum_mem fun u u_in ↦ ?_
       obtain ⟨u, u_in', rfl⟩ := c_supp (Finset.mem_coe.mpr u_in)
       rw [algebraMap_smul]

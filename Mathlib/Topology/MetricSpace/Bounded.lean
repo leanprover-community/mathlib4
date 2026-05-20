@@ -79,6 +79,16 @@ theorem isBounded_closedBall : IsBounded (closedBall x r) :=
 theorem isBounded_ball : IsBounded (ball x r) :=
   isBounded_closedBall.subset ball_subset_closedBall
 
+/-- Every open set in a metric space is a countable union of bounded open sets. -/
+theorem eq_countable_union_of_isBounded_of_isOpen {U : Set α} (hU : IsOpen U) :
+    ∃ f : ℕ → Set α, Monotone f ∧ ⋃ i, f i = U ∧ ∀ i, IsBounded (f i) ∧ IsOpen (f i) := by
+  obtain rfl | ⟨x, -⟩ := U.eq_empty_or_nonempty
+  · exact ⟨fun i ↦ ∅, monotone_const, by simp_all⟩
+  refine ⟨fun i ↦ U ∩ ball x i, fun i j hij ↦ ?_, ?_, fun i ↦ ⟨?_, hU.inter isOpen_ball⟩⟩
+  · exact inter_subset_inter_right _ (ball_subset_ball (Nat.cast_le.2 hij))
+  · simp [← inter_iUnion]
+  · exact isBounded_ball.subset inter_subset_right
+
 /-- Spheres are bounded -/
 theorem isBounded_sphere : IsBounded (sphere x r) :=
   isBounded_closedBall.subset sphere_subset_closedBall
@@ -120,6 +130,14 @@ protected theorem _root_.Bornology.IsBounded.closure (h : IsBounded s) : IsBound
 @[simp]
 theorem isBounded_closure_iff : IsBounded (closure s) ↔ IsBounded s :=
   ⟨fun h => h.subset subset_closure, fun h => h.closure⟩
+
+theorem hasBasis_nhds_isOpen_isBounded (x : α) :
+    (𝓝 x).HasBasis (fun a ↦ x ∈ a ∧ IsOpen a ∧ Bornology.IsBounded a) id := by
+  simp_rw [← and_assoc]
+  apply (nhds_basis_opens x).restrict fun s hs ↦ ?_
+  exact ⟨s ∩ Metric.ball x 1,
+    by aesop (add safe apply IsOpen.inter),
+    by simpa using Metric.isBounded_ball.subset Set.inter_subset_right⟩
 
 theorem hasBasis_cobounded_compl_closedBall (c : α) :
     (cobounded α).HasBasis (fun _ ↦ True) (fun r ↦ (closedBall c r)ᶜ) :=
@@ -537,7 +555,7 @@ theorem _root_.IsComplete.nonempty_iInter_of_nonempty_biInter {s : ℕ → Set �
     intro m n N hm hn
     exact dist_le_diam_of_mem (h's N) (I _ _ hm) (I _ _ hn)
   obtain ⟨x, -, xlim⟩ : ∃ x ∈ s 0, Tendsto (fun n : ℕ => u n) atTop (𝓝 x) :=
-    cauchySeq_tendsto_of_isComplete h0 (fun n => I 0 n (zero_le _)) this
+    cauchySeq_tendsto_of_isComplete h0 (fun n => I 0 n zero_le) this
   refine ⟨x, mem_iInter.2 fun n => ?_⟩
   apply (hs n).mem_of_tendsto xlim
   filter_upwards [Ici_mem_atTop n] with p hp

@@ -9,7 +9,7 @@ public import Mathlib.Algebra.Central.Basic
 public import Mathlib.Analysis.LocallyConvex.Separation
 public import Mathlib.Analysis.LocallyConvex.WithSeminorms
 public import Mathlib.LinearAlgebra.Dual.Lemmas
-public import Mathlib.Topology.Algebra.Module.StrongTopology
+public import Mathlib.Topology.Algebra.Module.Spaces.ContinuousLinearMap
 
 /-!
 # Spaces with separating dual
@@ -35,7 +35,7 @@ Under the assumption `SeparatingDual R V`, we show in
 equivalences acts transitively on the set of nonzero vectors.
 -/
 
-@[expose] public section
+public section
 /-- When `E` is a topological module over a topological ring `R`, the class `SeparatingDual R E`
 registers that continuous linear forms on `E` separate points of `E`. -/
 @[mk_iff separatingDual_def]
@@ -85,6 +85,19 @@ protected theorem t2Space [T2Space R] : T2Space V := by
   rcases exists_separating_of_ne (R := R) hxy with ⟨f, hf⟩
   exact separated_by_continuous f.continuous hf
 
+theorem eq_zero_of_forall_dual_eq_zero {x : V} (h : ∀ f : StrongDual R V, f x = 0) : x = 0 := by
+  by_contra hx
+  rcases exists_ne_zero (R := R) hx with ⟨f, hf⟩
+  exact hf (h f)
+
+theorem eq_zero_iff_forall_dual_eq_zero (x : V) : x = 0 ↔ ∀ g : StrongDual R V, g x = 0 :=
+  ⟨by simp +contextual, fun h => eq_zero_of_forall_dual_eq_zero (R := R) h⟩
+
+/-- See also `geometric_hahn_banach_point_point`. -/
+theorem eq_iff_forall_dual_eq {x y : V} : x = y ↔ ∀ g : StrongDual R V, g x = g y := by
+  rw [← sub_eq_zero, eq_zero_iff_forall_dual_eq_zero (R := R) (x - y)]
+  simp [sub_eq_zero]
+
 end Ring
 
 section Field
@@ -98,7 +111,7 @@ theorem _root_.separatingDual_iff_injective : SeparatingDual R V ↔
   simp_rw [separatingDual_def, Ne, injective_iff_map_eq_zero]
   congrm ∀ v, ?_
   rw [not_imp_comm, LinearMap.ext_iff]
-  push_neg; rfl
+  push Not; rfl
 
 variable [SeparatingDual R V]
 

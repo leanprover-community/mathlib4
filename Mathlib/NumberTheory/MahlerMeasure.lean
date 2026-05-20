@@ -41,7 +41,7 @@ open Int
 
 lemma one_le_mahlerMeasure_of_ne_zero {p : ℤ[X]} (hp : p ≠ 0) :
     1 ≤ (p.map (castRingHom ℂ)).mahlerMeasure := by
-  apply le_trans _ (p.map (castRingHom ℂ)).leading_coeff_le_mahlerMeasure
+  apply le_trans _ (p.map (castRingHom ℂ)).leadingCoeff_le_mahlerMeasure
   rw [leadingCoeff_map_of_injective (castRingHom ℂ).injective_int, eq_intCast]
   norm_cast
   exact one_le_abs <| leadingCoeff_ne_zero.mpr hp
@@ -141,7 +141,7 @@ lemma norm_leadingCoeff_eq_one_of_mahlerMeasure_eq_one :
     ‖(p.map (castRingHom ℂ)).leadingCoeff‖ = 1 := by
   rcases eq_or_ne p 0 with _ | hp
   · simp_all
-  have h_ineq := h ▸ (leading_coeff_le_mahlerMeasure <| p.map (castRingHom ℂ))
+  have h_ineq := h ▸ (leadingCoeff_le_mahlerMeasure <| p.map (castRingHom ℂ))
   rw [leadingCoeff_map_of_injective (castRingHom ℂ).injective_int, eq_intCast] at ⊢ h_ineq
   norm_cast at ⊢ h_ineq
   grind [leadingCoeff_eq_zero]
@@ -224,7 +224,7 @@ theorem cyclotomic_dvd_of_mahlerMeasure_eq_one (hX : ¬ X ∣ p) (hpdeg : p.degr
   obtain ⟨z, _⟩ := Splits.exists_eval_eq_zero (IsAlgClosed.splits <| p.map (castRingHom ℂ))
     hpdegC
   have hz₀ : z ≠ 0 := by
-    contrapose! hX
+    contrapose hX
     simp_all [X_dvd_iff, coeff_zero_eq_aeval_zero]
   have h_z_root : z ∈ p.aroots ℂ := by aesop
   obtain ⟨m, h_m_pos, h_prim⟩ := isPrimitiveRoot_of_mahlerMeasure_eq_one h hz₀ h_z_root

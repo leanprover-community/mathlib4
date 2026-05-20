@@ -180,6 +180,10 @@ instance {E : Type*} [NormedAddCommGroup E] : NormedAddCommGroup C(α, E) where
   __ : SeminormedAddCommGroup C(α, E) := inferInstance
   __ : MetricSpace C(α, E) := inferInstance
 
+instance [Nonempty α] {E : Type*} [NormedAddCommGroup E] [Nontrivial E] :
+    NontrivialTopology C(α, E) := by
+  simpa [nontrivialTopology_iff_exists_norm_ne_zero] using exists_ne (0 : C(α, E))
+
 instance [Nonempty α] [One E] [NormOneClass E] : NormOneClass C(α, E) where
   norm_one := by simp only [← norm_mkOfCompact, mkOfCompact_one, norm_one]
 
@@ -371,7 +375,7 @@ lemma nnnorm_sub_eq_max {f g : C(α, R)} (h : f * g = 0) :
     ‖f - g‖₊ = max ‖f‖₊ ‖g‖₊ :=
   NNReal.eq <| norm_sub_eq_max h
 
-open scoped Function
+open scoped Function in
 /-- If the pairwise products of continuous functions on a compact space are all zero, then the norm
 of their sum is the maximum of their norms. -/
 lemma nnnorm_sum_eq_sup {ι : Type*} {f : ι → C(α, R)} (s : Finset ι)

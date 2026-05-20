@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2026 Mathlib contributors. All rights reserved.
+Copyright (c) 2026 Yuma Mizuno. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Mathlib contributors
+Authors: Yuma Mizuno, Ralf Stephan
 -/
 module
 
@@ -149,7 +149,6 @@ theorem exp_mul_exp_eq_exp_add [Algebra ℚ A] (a b : A) :
 theorem exp_mul_exp_neg_eq_one [Algebra ℚ A] : exp A * evalNegHom (exp A) = 1 := by
   convert exp_mul_exp_eq_exp_add (1 : A) (-1) <;> simp
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Shows that $(e^{X})^k = e^{kX}$. -/
 theorem exp_pow_eq_rescale_exp [Algebra ℚ A] (k : ℕ) : exp A ^ k = rescale (k : A) (exp A) := by
   induction k with

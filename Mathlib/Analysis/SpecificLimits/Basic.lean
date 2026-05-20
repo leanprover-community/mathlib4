@@ -297,7 +297,7 @@ protected theorem ENNReal.tendsto_pow_atTop_nhds_top_iff {r : ℝ≥0∞} :
     specialize h_tends (Ioi_mem_nhds one_lt_top)
     simp only [Filter.mem_map, mem_atTop_sets, ge_iff_le, Set.mem_preimage, Set.mem_Ioi] at h_tends
     obtain ⟨n, hn⟩ := h_tends
-    exact lt_irrefl _ <| lt_of_lt_of_le (hn n le_rfl) <| pow_le_one₀ (zero_le _) r_le_one
+    exact lt_irrefl _ <| lt_of_lt_of_le (hn n le_rfl) <| pow_le_one₀ zero_le r_le_one
   · intro r_gt_one
     have obs := @Tendsto.inv ℝ≥0∞ ℕ _ _ _ (fun n ↦ (r⁻¹) ^ n) atTop 0
     simp only [ENNReal.tendsto_pow_atTop_nhds_zero_iff, inv_zero] at obs
@@ -650,7 +650,6 @@ theorem exists_pos_sum_of_countable' {ε : ℝ≥0∞} (hε : ε ≠ 0) (ι) [Co
   let ⟨δ, δpos, hδ⟩ := exists_pos_sum_of_countable hε ι
   ⟨fun i ↦ δ i, fun i ↦ ENNReal.coe_pos.2 (δpos i), hδ⟩
 
-set_option backward.isDefEq.respectTransparency false in
 theorem exists_pos_tsum_mul_lt_of_countable {ε : ℝ≥0∞} (hε : ε ≠ 0) {ι} [Countable ι] (w : ι → ℝ≥0∞)
     (hw : ∀ i, w i ≠ ∞) : ∃ δ : ι → ℝ≥0, (∀ i, 0 < δ i) ∧ (∑' i, (w i * δ i : ℝ≥0∞)) < ε := by
   lift w to ι → ℝ≥0 using hw
@@ -760,23 +759,3 @@ lemma Nat.tendsto_div_const_atTop {n : ℕ} (hn : n ≠ 0) : Tendsto (· / n) at
   rw [Tendsto, map_div_atTop_eq_nat n hn.bot_lt]
 
 end
-
-@[deprecated (since := "2025-10-27")]
-alias tendsto_inverse_atTop_nhds_zero_nat := tendsto_inv_atTop_nhds_zero_nat
-
-@[deprecated (since := "2025-10-27")]
-alias NNReal.tendsto_inverse_atTop_nhds_zero_nat := tendsto_inv_atTop_nhds_zero_nat
-
-@[deprecated (since := "2025-10-27")]
-alias NNReal.tendsto_const_div_atTop_nhds_zero_nat := tendsto_const_div_atTop_nhds_zero_nat
-
-@[deprecated (since := "2025-10-27")]
-alias NNReal.tendsto_algebraMap_inverse_atTop_nhds_zero_nat :=
-  tendsto_algebraMap_inv_atTop_nhds_zero_nat
-
-@[deprecated (since := "2025-10-27")]
-alias tendsto_algebraMap_inverse_atTop_nhds_zero_nat :=
-  tendsto_algebraMap_inv_atTop_nhds_zero_nat
-
-@[deprecated (since := "2025-10-27")]
-protected alias Nat.tendsto_pow_atTop_atTop_of_one_lt := tendsto_pow_atTop_atTop_of_one_lt

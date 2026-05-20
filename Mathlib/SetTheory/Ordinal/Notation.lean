@@ -225,7 +225,7 @@ theorem NFBelow.lt {e n a b} (h : NFBelow (ONote.oadd e n a) b) : repr e < b := 
 theorem NFBelow_zero : ∀ {o}, NFBelow o 0 ↔ o = 0
   | 0 => ⟨fun _ => rfl, fun _ => NFBelow.zero⟩
   | oadd _ _ _ =>
-    ⟨fun h => (not_le_of_gt h.lt).elim (zero_le _), fun e => e.symm ▸ NFBelow.zero⟩
+    ⟨fun h => (not_le_of_gt h.lt).elim zero_le, fun e => e.symm ▸ NFBelow.zero⟩
 
 theorem NF.zero_of_zero {e n a} (h : NF (ONote.oadd e n a)) (e0 : e = 0) : a = 0 := by
   simpa [e0, NFBelow_zero] using h.snd'
@@ -435,7 +435,7 @@ theorem repr_add : ∀ (o₁ o₂) [NF o₁] [NF o₂], repr (o₁ + o₂) = rep
     have := h₁.fst; haveI := nf.fst; have ee := cmp_compares e e'
     cases he : cmp e e' <;> simp only [he, Ordering.compares_gt, Ordering.compares_lt,
         Ordering.compares_eq, repr, gt_iff_lt, PNat.add_coe, Nat.cast_add] at ee ⊢
-    · rw [← add_assoc, @add_absorp _ (repr e') (ω ^ repr e' * (n' : ℕ))]
+    · rw [← add_assoc, @add_of_omega0_opow_le _ (repr e') (ω ^ repr e' * (n' : ℕ))]
       · have := (h₁.below_of_lt ee).repr_lt
         unfold repr at this
         cases he' : e' <;> simp only [he', zero_def, opow_zero, repr, gt_iff_lt] at this ⊢ <;>
@@ -496,11 +496,11 @@ theorem repr_sub : ∀ (o₁ o₂) [NF o₁] [NF o₂], repr (o₁ - o₂) = rep
           Nat.cast_add, mul_add, add_assoc, add_sub_add_cancel]
         refine
           (Ordinal.sub_eq_of_add_eq <|
-              add_absorp h₂.snd'.repr_lt <| le_trans ?_ le_self_add).symm
+              add_of_omega0_opow_le h₂.snd'.repr_lt <| le_trans ?_ le_self_add).symm
         exact Ordinal.le_mul_left _ (Nat.cast_lt.2 <| Nat.succ_pos _)
     · exact
         (Ordinal.sub_eq_of_add_eq <|
-            add_absorp (h₂.below_of_lt ee).repr_lt <| omega0_le_oadd _ _ _).symm
+            add_of_omega0_opow_le (h₂.below_of_lt ee).repr_lt <| omega0_le_oadd _ _ _).symm
 
 /-- Multiplication of ordinal notations (correct only for normal input) -/
 def mul : ONote → ONote → ONote
@@ -528,7 +528,7 @@ theorem oadd_mul_nfBelow {e₁ n₁ a₁ b₁} (h₁ : NFBelow (oadd e₁ n₁ a
     have IH := oadd_mul_nfBelow h₁ h₂.snd
     by_cases e0 : e₂ = 0 <;> simp only [e0, oadd_mul, ↓reduceIte]
     · apply NFBelow.oadd h₁.fst h₁.snd
-      simpa using (add_lt_add_iff_left (repr e₁)).2 (lt_of_le_of_lt (zero_le _) h₂.lt)
+      simpa using (add_lt_add_iff_left (repr e₁)).2 h₂.lt.pos
     · haveI := h₁.fst
       haveI := h₂.fst
       apply NFBelow.oadd
@@ -551,7 +551,7 @@ theorem repr_mul : ∀ (o₁ o₂) [NF o₁] [NF o₂], repr (o₁ * o₂) = rep
       lhs
       simp [(· * ·)]
     have ao : repr a₁ + ω ^ repr e₁ * (n₁ : ℕ) = ω ^ repr e₁ * (n₁ : ℕ) := by
-      apply add_absorp h₁.snd'.repr_lt
+      apply add_of_omega0_opow_le h₁.snd'.repr_lt
       simpa using (mul_le_mul_iff_right₀ <| opow_pos _ omega0_pos).2 (Nat.cast_le.2 n₁.2)
     by_cases e0 : e₂ = 0
     · obtain ⟨x, xe⟩ := Nat.exists_eq_succ_of_ne_zero n₂.ne_zero
@@ -679,7 +679,6 @@ theorem nf_repr_split' : ∀ {o o' m} [NF o], split' o = (o', m) → NF o' ∧ r
       · rw [this]
         simp [mul_add, mul_assoc, add_assoc]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem scale_eq_mul (x) [NF x] : ∀ (o) [NF o], scale x o = oadd x 1 0 * o
   | 0, _ => rfl
   | oadd e n a, h => by
@@ -855,7 +854,7 @@ theorem repr_opow_aux₂ {a0 a'} [N0 : NF a0] [Na' : NF a'] (m : ℕ) (d : ω �
     rw [mul_add (ω0 ^ (k : Ordinal)), add_assoc, ← mul_assoc, ← opow_succ,
       add_mul_of_isSuccLimit _ ⟨α0, isSuccPrelimit_iff_omega0_dvd.2 αd⟩, mul_assoc,
       @mul_omega0_dvd n (Nat.cast_pos'.2 n.pos) (natCast_lt_omega0 _) _ αd]
-    apply @add_absorp _ (repr a0 * succ ↑k)
+    apply @add_of_omega0_opow_le _ (repr a0 * succ ↑k)
     · refine isPrincipal_add_omega0_opow _ ?_ Rl
       rw [opow_mul, opow_succ]
       gcongr
@@ -867,7 +866,7 @@ theorem repr_opow_aux₂ {a0 a'} [N0 : NF a0] [Na' : NF a'] (m : ℕ) (d : ω �
     · have : R = 0 := by cases k <;> simp [R, opowAux]
       simp [this]
     · rw [natCast_succ, add_mul_succ]
-      apply add_absorp Rl
+      apply add_of_omega0_opow_le Rl
       rw [opow_mul, opow_succ]
       gcongr
       simpa [repr] using omega0_le_oadd a0 n a'
@@ -880,9 +879,9 @@ theorem repr_opow (o₁ o₂) [NF o₁] [NF o₂] : repr (o₁ ^ o₂) = repr o�
   obtain ⟨N₁, r₁⟩ := nf_repr_split e₁
   obtain - | ⟨a0, n, a'⟩ := a
   · rcases m with - | m
-    · by_cases h : o₂ = 0 <;> simp [opow_def, opowAux2, e₁, h, r₁]
-      have := mt repr_inj.1 h
-      rw [zero_opow this]
+    · by_cases h : o₂ = 0
+      · simp [opow_def, opowAux2, e₁, h, r₁]
+      · simpa [opow_def, opowAux2, e₁, h, r₁, eqComm] using mt repr_inj.1 h
     · rcases e₂ : split' o₂ with ⟨b', k⟩
       obtain ⟨_, r₂⟩ := nf_repr_split' e₂
       by_cases h : m = 0
@@ -1102,8 +1101,7 @@ theorem fastGrowing_zero : fastGrowing 0 = Nat.succ :=
 @[simp]
 theorem fastGrowing_one : fastGrowing 1 = fun n => 2 * n := by
   rw [@fastGrowing_succ 1 0 rfl]; funext i; rw [two_mul, fastGrowing_zero]
-  suffices ∀ a b, Nat.succ^[a] b = b + a from this _ _
-  intro a b; induction a <;> simp [*, Function.iterate_succ', Nat.add_assoc, -Function.iterate_succ]
+  exact Nat.succ_iterate _ _
 
 @[simp]
 theorem fastGrowing_two : fastGrowing 2 = fun n => (2 ^ n) * n := by

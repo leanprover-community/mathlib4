@@ -12,7 +12,6 @@ public import Mathlib.LinearAlgebra.Matrix.Charpoly.Basic
 public import Mathlib.LinearAlgebra.Matrix.Reindex
 public import Mathlib.LinearAlgebra.Matrix.SchurComplement
 public import Mathlib.RingTheory.Polynomial.Nilpotent
-public import Mathlib.Data.Matrix.DMatrix
 
 /-!
 # Characteristic polynomials
@@ -145,7 +144,6 @@ theorem trace_eq_neg_charpoly_nextCoeff (M : Matrix n n R) : M.trace = -M.charpo
   nontriviality
   simp [trace_eq_neg_charpoly_coeff, nextCoeff]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem det_eq_sign_charpoly_coeff (M : Matrix n n R) :
     M.det = (-1) ^ Fintype.card n * M.charpoly.coeff 0 := by
   rw [coeff_zero_eq_eval_zero, charpoly, eval_det, matPolyEquiv_charmatrix, ← det_smul]
@@ -156,7 +154,7 @@ lemma derivative_det_one_add_X_smul_aux {n} (M : Matrix (Fin n) (Fin n) R) :
   induction n with
   | zero => simp
   | succ n IH =>
-    rw [det_succ_row_zero, map_sum, eval_finset_sum]
+    rw [det_succ_row_zero, map_sum, eval_finsetSum]
     simp only [add_apply, smul_apply, map_apply, smul_eq_mul, X_mul_C, submatrix_add,
       submatrix_smul, Pi.add_apply, Pi.smul_apply, submatrix_map, derivative_mul, map_add,
       derivative_C, zero_mul, derivative_X, mul_one, zero_add, eval_add, eval_mul, eval_C, eval_X,
@@ -230,13 +228,12 @@ lemma charpoly_fin_two [Nontrivial R] (M : Matrix (Fin 2) (Fin 2) R) :
 
 end Matrix
 
-set_option backward.isDefEq.respectTransparency false in
 theorem matPolyEquiv_eq_X_pow_sub_C {K : Type*} (k : ℕ) [CommRing K] (M : Matrix n n K) :
     matPolyEquiv ((expand K k : K[X] →+* K[X]).mapMatrix (charmatrix (M ^ k))) =
       X ^ k - C (M ^ k) := by
   ext m i j
   rw [coeff_sub, coeff_C, matPolyEquiv_coeff_apply, RingHom.mapMatrix_apply, Matrix.map_apply,
-    AlgHom.coe_toRingHom, DMatrix.sub_apply, coeff_X_pow]
+    AlgHom.coe_toRingHom, coeff_X_pow]
   by_cases hij : i = j
   · rw [hij, charmatrix_apply_eq, map_sub, expand_C, expand_X, coeff_sub, coeff_X_pow, coeff_C]
     split_ifs with mp m0 <;> simp
@@ -263,7 +260,7 @@ set_option backward.isDefEq.respectTransparency false in
 theorem coeff_charpoly_mem_ideal_pow {I : Ideal R} (h : ∀ i j, M i j ∈ I) (k : ℕ) :
     M.charpoly.coeff k ∈ I ^ (Fintype.card n - k) := by
   delta charpoly
-  rw [Matrix.det_apply, finset_sum_coeff]
+  rw [Matrix.det_apply, finsetSum_coeff]
   apply sum_mem
   rintro c -
   rw [coeff_smul, Submodule.smul_mem_iff']

@@ -873,7 +873,7 @@ theorem norm_eq_zero {d : ℤ} (h_nonsquare : ∀ n : ℤ, d ≠ n * n) (a : ℤ
     rw [ha, mul_assoc]
     exact mul_nonpos_of_nonpos_of_nonneg h.le (mul_self_nonneg _)
 
-variable {R : Type}
+variable {R : Type*}
 
 @[ext]
 theorem hom_ext [NonAssocRing R] {d : ℤ} (f g : ℤ√d →+* R) (h : f sqrtd = g sqrtd) : f = g := by

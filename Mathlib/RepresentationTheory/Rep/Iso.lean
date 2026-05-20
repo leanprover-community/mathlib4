@@ -57,8 +57,6 @@ abbrev diagonalHomEquiv :
   Linear.homCongr k (diagonalSuccIsoFree k G n) (Iso.refl _) ≪≫ₗ
     freeLiftLEquiv k G (Fin n → G) A
 
-variable {n A}
-
 end Group
 
 /-!

@@ -209,7 +209,6 @@ theorem qsmul_mk (a : ℚ) (m : M) (s : ℕ+) :
       simpa using h
     simp [nnqsmul_mk, this, ← neg_mk]
 
-set_option backward.isDefEq.respectTransparency false in
 noncomputable
 instance : Module ℚ (DivisibleHull M) where
   one_smul x := by
@@ -240,7 +239,6 @@ instance : Module ℚ (DivisibleHull M) where
       ring_nf
     rw [Rat.mul_num_den']
 
-set_option backward.isDefEq.respectTransparency false in
 theorem zsmul_mk (a : ℤ) (m : M) (s : ℕ+) : a • mk m s = mk (a • m) s := by
   simp [← Int.cast_smul_eq_zsmul ℚ a, qsmul_mk]
 

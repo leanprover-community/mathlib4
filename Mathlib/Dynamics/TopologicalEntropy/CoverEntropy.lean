@@ -239,12 +239,11 @@ lemma coverMincard_finite_iff (T : X → X) (F : Set X) (U : SetRel X X) (n : �
   simp only [ENat.some_eq_coe, Nat.cast_inj, exists_prop] at key
   exact key
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
-lemma coverMincard_empty : coverMincard T ∅ U n = 0 :=
-  (sInf_le (by simp [IsDynCoverOf])).antisymm (zero_le (coverMincard T ∅ U n))
+lemma coverMincard_empty : coverMincard T ∅ U n = 0 := by
+  rw [← nonpos_iff_eq_zero]
+  exact sInf_le (by simp [IsDynCoverOf])
 
-set_option backward.isDefEq.respectTransparency false in
 lemma coverMincard_eq_zero_iff (T : X → X) (F : Set X) (U : SetRel X X) (n : ℕ) :
     coverMincard T F U n = 0 ↔ F = ∅ := by
   simp [coverMincard, ENat.iInf_eq_zero]
@@ -274,7 +273,7 @@ lemma coverMincard_univ (T : X → X) (h : F.Nonempty) (n : ℕ) : coverMincard 
 lemma coverMincard_mul_le_pow (F_inv : MapsTo T F F) [U.IsSymm] (m n : ℕ) :
     coverMincard T F (U ○ U) (m * n) ≤ coverMincard T F U m ^ n := by
   rcases F.eq_empty_or_nonempty with rfl | F_nonempty
-  · rw [coverMincard_empty]; exact zero_le _
+  · simp
   obtain rfl | hn := eq_or_ne n 0
   · rw [mul_zero, coverMincard_zero T F_nonempty (U ○ U), pow_zero]
   rcases eq_top_or_lt_top (coverMincard T F U m) with h | h
@@ -301,7 +300,6 @@ lemma coverMincard_finite_of_isCompact_invariant [UniformSpace X] (F_comp : IsCo
   obtain ⟨s, s_cover⟩ := exists_isDynCoverOf_of_isCompact_invariant F_comp F_inv U_uni n
   exact s_cover.coverMincard_le_card.trans_lt (WithTop.coe_lt_top s.card)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- All dynamical balls of a minimal dynamical cover of `F` intersect `F`. This lemma is the key
   to relate Bowen-Dinaburg's definition of topological entropy with covers and their definition
   of topological entropy with nets. -/

@@ -167,7 +167,7 @@ lemma _root_.IocProdIoc_preimage {a b c : ι} (hab : a ≤ b) (hbc : b ≤ c)
       (Set.univ.pi <| restrict₂ (π := (fun n ↦ Set (X n))) (Ioc_subset_Ioc_right hbc) s) ×ˢ
         (Set.univ.pi <| restrict₂ (π := (fun n ↦ Set (X n))) (Ioc_subset_Ioc_left hab) s) := by
   ext x
-  simp only [Set.mem_preimage, Set.mem_pi, Subtype.forall, mem_Ioc]
+  simp
   grind [IocProdIoc]
 
 variable [LocallyFiniteOrderBot ι]

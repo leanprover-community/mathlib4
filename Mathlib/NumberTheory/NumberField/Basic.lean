@@ -47,11 +47,6 @@ open Function Module
 
 open scoped nonZeroDivisors
 
-/-- `ℤ` with its usual ring structure is not a field. -/
-theorem Int.not_isField : ¬IsField ℤ := fun h =>
-  Int.not_even_one <|
-    (h.mul_inv_cancel two_ne_zero).imp fun a => by rw [← two_mul]; exact Eq.symm
-
 namespace NumberField
 
 variable (K L : Type*) [Field K] [Field L]
@@ -222,13 +217,14 @@ namespace RingOfIntegers
 def mapAlgHom {k K L F : Type*} [Field k] [Field K] [Field L] [Algebra k K]
     [Algebra k L] [FunLike F K L] [AlgHomClass F k K L] (f : F) : (𝓞 K) →ₐ[𝓞 k] (𝓞 L) where
   toRingHom := mapRingHom f
-  commutes' x := SetCoe.ext (AlgHomClass.commutes ((f : K →ₐ[k] L).restrictScalars (𝓞 k)) x)
+  commutes' x := SetCoe.ext (AlgHomClass.commutes
+    ((AlgHomClass.toAlgHom f).restrictScalars (𝓞 k)) x)
 
 /-- The isomorphism of algebras `(𝓞 K) ≃ₐ[𝓞 k] (𝓞 L)` given by restricting
   an isomorphism of algebras `e : K ≃ₐ[k] L` to `𝓞 K`. -/
 def mapAlgEquiv {k K L E : Type*} [Field k] [Field K] [Field L] [Algebra k K]
     [Algebra k L] [EquivLike E K L] [AlgEquivClass E k K L] (e : E) : (𝓞 K) ≃ₐ[𝓞 k] (𝓞 L) :=
-  AlgEquiv.ofAlgHom (mapAlgHom e) (mapAlgHom (e : K ≃ₐ[k] L).symm)
+  AlgEquiv.ofAlgHom (mapAlgHom e) (mapAlgHom (AlgEquivClass.toAlgEquiv e : K ≃ₐ[k] L).symm)
     (AlgHom.ext fun x => ext (EquivLike.right_inv e x.1))
       (AlgHom.ext fun x => ext (EquivLike.left_inv e x.1))
 
@@ -309,6 +305,9 @@ theorem not_isField : ¬IsField (𝓞 K) := by
   intro hf
   exact Int.not_isField
     (((IsIntegralClosure.isIntegral_algebra ℤ K).isField_iff_isField h_inj).mpr hf)
+
+instance {I : Ideal (𝓞 K)} [hI : I.IsMaximal] : NeZero I :=
+  ⟨Ring.ne_bot_of_isMaximal_of_not_isField hI <| RingOfIntegers.not_isField K⟩
 
 instance : IsDedekindDomain (𝓞 K) :=
   IsIntegralClosure.isDedekindDomain ℤ ℚ K _
