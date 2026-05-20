@@ -51,7 +51,7 @@ lemma alt_sum_eq_zero_of_sum_even_eq_sum_odd {n : ℕ} [NeZero n] {f : Fin n →
      norm_num
   have : ∑ i ∈ Finset.filter (fun i : Fin n ↦ i.val % 2 = 1) Finset.univ, (-1) ^ i.val * f i =
       - ∑ i ∈ Finset.filter (fun i : Fin n ↦ i.val % 2 = 1) Finset.univ, f i := by
-    rw [← Finset.sum_neg_distrib, Finset.sum_congr rfl fun x hx =>
+    rw [← Finset.sum_neg_distrib, Finset.sum_congr rfl fun x hx ↦
       by rw [h_odd x (Finset.mem_filter.mp hx |>.2)]]
     norm_num
   have : ∑ i ∈ Finset.filter (fun i : Fin n ↦ i.val % 2 = 0) Finset.univ, (-1) ^ i.val * f i =
