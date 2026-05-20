@@ -6,7 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.AlgebraicTopology.SimplicialSet.AnodyneExtensions.Pairing
-public import Mathlib.AlgebraicTopology.SimplicialSet.WeaklyPolyhedralLike
+public import Mathlib.AlgebraicTopology.SimplicialSet.Nonsingular
 
 /-!
 # Helper structure in order to construct pairings
@@ -182,11 +182,11 @@ lemma isUniquelyCodimOneFace [h.IsProper] (s : h.ι) :
     S.IsUniquelyCodimOneFace (h.type₂ s).toS (h.type₁ s).toS :=
   IsProper.isUniquelyCodimOneFace _
 
-instance [X.IsWeaklyPolyhedralLike] : h.IsProper where
+instance [X.Nonsingular] : h.IsProper where
   isUniquelyCodimOneFace s :=
     (S.IsUniquelyCodimOneFace.iff _ _).2
       (existsUnique_of_exists_of_unique ⟨_, rfl⟩
-        (fun _ _ hi hj ↦ IsWeaklyPolyhedralLike.δ_injective _
+        (fun _ _ hi hj ↦ Nonsingular.δ_injective _
           (h.nonDegenerate₁ s) _ _ (hi.trans hj.symm)))
 
 set_option backward.isDefEq.respectTransparency false in
