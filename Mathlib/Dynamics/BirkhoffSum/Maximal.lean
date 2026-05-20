@@ -13,6 +13,8 @@ import Mathlib.Analysis.InnerProductSpace.Basic
 import Mathlib.Analysis.RCLike.Lemmas
 import Mathlib.Data.Real.StarOrdered
 public import Mathlib.Dynamics.BirkhoffSum.Average
+import Mathlib.Dynamics.BirkhoffSum.Measurable
+import Mathlib.Dynamics.BirkhoffSum.Integrable
 
 /-!
 # Maximal ergodic theorem.
@@ -77,13 +79,6 @@ end BirkhoffMax
 
 variable {g : α → ℝ}
 
--- TODO: move elsewhere
-@[fun_prop]
-public lemma birkhoffSum_measurable [MeasurableSpace α] (hf : Measurable f) (hg : Measurable g) :
-    Measurable (birkhoffSum f g n) := by
-  apply Finset.measurable_sum
-  measurability
-
 @[fun_prop]
 public lemma birkhoffMax_measurable [MeasurableSpace α] (hf : Measurable f) (hg : Measurable g) :
     Measurable (birkhoffMax f g n) := by
@@ -97,13 +92,6 @@ variable [MeasurableSpace α] (μ : Measure α := by volume_tac) (hf : MeasurePr
 
 include hf
 
--- todo: move elsewhere
-@[fun_prop]
-lemma birkhoffSum_aestronglyMeasurable (hg : AEStronglyMeasurable g μ) :
-    AEStronglyMeasurable (birkhoffSum f g n) μ := by
-  apply Finset.aestronglyMeasurable_fun_sum
-  exact fun i _ ↦ hg.comp_measurePreserving (hf.iterate i)
-
 @[fun_prop]
 lemma birkhoffMax_aestronglyMeasurable (hg : AEStronglyMeasurable g μ) :
     AEStronglyMeasurable (birkhoffMax f g n) μ := by
@@ -112,15 +100,11 @@ lemma birkhoffMax_aestronglyMeasurable (hg : AEStronglyMeasurable g μ) :
 
 include hg
 
--- todo: move elsewhere
-lemma birkhoffSum_integrable : Integrable (birkhoffSum f g n) μ :=
-  integrable_finsetSum _ fun _ _ ↦ (hf.iterate _).integrable_comp_of_integrable hg
-
 lemma birkhoffMax_integrable : Integrable (birkhoffMax f g n) μ := by
   unfold birkhoffMax
   induction n with
   | zero => exact integrable_zero ..
-  | succ n hn => simpa using Integrable.sup hn (birkhoffSum_integrable μ hf hg)
+  | succ n hn => simpa using Integrable.sup hn (birkhoffSum_integrable hf hg)
 
 lemma birkhoffMax_integral_le :
     ∫ x, birkhoffMax f g n x ∂μ ≤
