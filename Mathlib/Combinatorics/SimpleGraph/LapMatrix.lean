@@ -102,8 +102,7 @@ theorem lapMatrix_mulVec_apply' [NonAssocRing R] (v : V) (vec : V → R) :
   simp [lapMatrix_mulVec_apply]
 
 variable (R) in
-theorem lapMatrix_mulVec_const_eq_zero [NonAssocRing R] :
-    mulVec (G.lapMatrix R) (fun _ ↦ 1) = 0 := by
+theorem lapMatrix_mulVec_const_eq_zero [NonAssocRing R] : G.lapMatrix R *ᵥ 1 = 0 := by
   ext1 i
   simp [lapMatrix_mulVec_apply]
 
