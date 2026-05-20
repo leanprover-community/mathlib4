@@ -7,6 +7,7 @@ module
 
 public import Mathlib.AlgebraicTopology.ModelCategory.IsCofibrant
 public import Mathlib.AlgebraicTopology.SimplicialSet.AnodyneExtensions.Basic
+public import Mathlib.AlgebraicTopology.SimplicialSet.AnodyneExtensions.UnionProd
 public import Mathlib.AlgebraicTopology.SimplicialSet.PushoutProduct
 public import Mathlib.CategoryTheory.LiftingProperties.ParametrizedAdjunction
 public import Mathlib.CategoryTheory.Monoidal.Closed.Braided
@@ -53,15 +54,6 @@ open modelCategoryQuillen
 
 namespace prodStdSimplex
 
--- this will be done in #39298
-noncomputable def pairing {m : ℕ} (k : Fin (m + 2)) (n : ℕ) :
-    (Subcomplex.unionProd.{u} Λ[m + 1, k] ∂Δ[n]).Pairing :=
-  sorry
-
-instance {m : ℕ} (k : Fin (m + 2)) (n : ℕ) :
-    (pairing.{u} k n).IsRegular :=
-  sorry
-
 lemma strongAnodyneExtensions_unionProd_ι {m : ℕ} (k : Fin (m + 2)) (n : ℕ) :
     strongAnodyneExtensions (Subcomplex.unionProd.{u} Λ[m + 1, k] ∂Δ[n]).ι :=
   (pairing k n).strongAnodyneExtensions
@@ -97,7 +89,8 @@ lemma fibration_pullbackObjObjπ [Mono i] [Fibration p]
   suffices (MorphismProperty.monomorphisms _).rlp sq₁₃'.π from this _ inferInstance
   rw [rlp_monomorphisms]
   rintro _ _ _ ⟨n⟩
-  rw [← internalHomAdjunction₂.hasLiftingProperty_iff (Subcomplex.unionProd.pushoutObjObj _ _),
+  rw [← internalHomAdjunction₂.hasLiftingProperty_iff
+    (Subcomplex.unionProd.pushoutObjObj.{u} _ _),
     Subcomplex.unionProd.pushoutObjObj_ι]
   exact prodStdSimplex.anodyneExtensions_unionProd_ι _ _ _ hp
 
