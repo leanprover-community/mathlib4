@@ -99,13 +99,6 @@ section Semiring
 
 variable [Semiring R] {p q : SkewPolynomial R}
 
-instance : Inhabited (SkewPolynomial R) := SkewMonoidAlgebra.instInhabited
-
-instance : AddCommMonoid (SkewPolynomial R) := SkewMonoidAlgebra.instAddCommMonoid
-
-instance instSemiring [MulSemiringAction (Multiplicative ℕ) R] : Semiring (SkewPolynomial R) :=
-  SkewMonoidAlgebra.instSemiring
-
 lemma zero_def : (0 : SkewPolynomial R) = (0 : SkewMonoidAlgebra R (Multiplicative ℕ)) := rfl
 
 variable {S S₁ S₂ : Type*}
@@ -147,7 +140,7 @@ def sum {S : Type*} [AddCommMonoid S] (p : SkewPolynomial R) (f : ℕ → R → 
 
 /-- For a skew polynomial `p`, `p.sum f` can be written in terms of `SkewMonoidAlgebra.sum p`. -/
 lemma sum_def' {S : Type*} [AddCommMonoid S] (p : SkewPolynomial R) (f : ℕ → R → S) :
-    p.sum f = SkewMonoidAlgebra.sum p (fun n r ↦ f (toAdd n : ℕ) r) :=
+    p.sum f = SkewMonoidAlgebra.sum p (fun n r ↦ f (toAdd n : ℕ) r) := by
   rfl
 
 lemma sum_def {S : Type*} [AddCommMonoid S] (p : SkewPolynomial R) (f : ℕ → R → S) :
@@ -161,9 +154,8 @@ lemma sum_sum_index {R' P : Type*} [AddCommMonoid P] [Semiring R']
     (h_zero : ∀ (a : ℕ), h a 0 = 0)
     (h_add : ∀ (a : ℕ) (b₁ b₂ : R'), h a (b₁ + b₂) = h a b₁ + h a b₂) :
     sum (sum f g) h = sum f fun (a : ℕ) (b : R) => sum (g a b) h := by
-  simp only [sum_def', SkewMonoidAlgebra.sum_def]
-  erw [SkewMonoidAlgebra.toFinsupp_sum']
-  rw [Finsupp.sum_sum_index (fun a ↦ h_zero (toAdd a)) (fun n ↦ h_add (toAdd n))]
+  simp only [sum_def', SkewMonoidAlgebra.sum_sum_index (fun a ↦ h_zero (toAdd a))
+    (fun a ↦ h_add (toAdd a))]
 
 @[simp]
 lemma sum_zero {N : Type*} [AddCommMonoid N] {f : SkewPolynomial R} :
@@ -244,8 +236,7 @@ lemma monomial_mul_monomial [MulSemiringAction (Multiplicative ℕ) R] (n m : �
 lemma mul_def {f g : SkewPolynomial R} [MulSemiringAction (Multiplicative ℕ) R] : f * g =
     f.sum fun (a₁ : ℕ) b₁ => g.sum fun (a₂ : ℕ) b₂ => monomial (a₁ + a₂) (b₁ * (φ^[a₁] b₂)) := by
   ext
-  simp_rw [φ_iterate_apply]
-  erw [coeff_sum]
+  simp [φ_iterate_apply, sum_def', coeff_mul, monomial, lsingle_apply, coeff_single_apply]
 
 section Constant
 

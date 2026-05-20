@@ -1190,6 +1190,9 @@ def lsingle {α : Type*} (a : α) [Module R M] : M →ₗ[R] (SkewMonoidAlgebra 
   __ := singleAddHom a
   map_smul' _ _ := (smul_single _ _ _).symm
 
+lemma lsingle_apply {α : Type*} (a : α) [Module R M] (m : M) :
+  lsingle (R := R) a m = single a m := rfl
+
 /-- Two `R`-linear maps from `SkewMonoidAlgebra M α` which agree on each `single x y`
   agree everywhere. -/
 theorem lhom_ext {α : Type*} [Module R M] [Module R N] ⦃φ ψ : SkewMonoidAlgebra M α →ₗ[R] N⦄
