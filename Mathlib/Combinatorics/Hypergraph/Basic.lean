@@ -54,7 +54,7 @@ all hypergraphs are *without repeated edge*.
 
 -/
 
-@[expose] public section
+public section
 
 open Set
 
@@ -118,6 +118,7 @@ where `x` and `y` are both incident to `e`.
 Note that we do not need to explicitly check that `x, y ∈ V(H)` here because a vertex that is not in
 the vertex set cannot be incident to any edge.
 -/
+@[expose]
 def Adj (H : Hypergraph α) (x : α) (y : α) : Prop :=
   ∃ e ∈ E(H), x ∈ e ∧ y ∈ e
 
@@ -129,6 +130,7 @@ lemma adj_comm (x y : α) : H.Adj x y ↔ H.Adj y x := ⟨.symm, .symm⟩
 Predicate for edge adjacency. Analogous to `Hypergraph.Adj`, edges `e` and `f` are
 adjacent if there is some vertex `x ∈ V(H)` where `x` is incident to both `e` and `f`.
 -/
+@[expose]
 def EAdj (H : Hypergraph α) (e : Set α) (f : Set α) : Prop :=
   e ∈ E(H) ∧ f ∈ E(H) ∧ ∃ x, x ∈ e ∧ x ∈ f
 
@@ -148,7 +150,7 @@ lemma eAdj_comm (e f) : H.EAdj e f ↔ H.EAdj f e := ⟨.symm, .symm⟩
 /-- The *image* of a hypergraph `H : Hypergraph α` under a function `f : α → β` is the hypergraph
 `Hᶠ : Hypergraph β` where the vertex set of `Hᶠ` is the image of `V(H)` under `f` and the edge set
 of `Hᶠ` is the set of images of the edges (subsets of vertices) in `E(H)`. -/
-@[simps]
+@[simps, expose]
 protected def image (H : Hypergraph α) (f : α → β) : Hypergraph β where
   vertexSet := V(H).image f
   edgeSet := E(H).image (Set.image f)
@@ -167,6 +169,7 @@ lemma image_image {f : α → β} {g : β → γ} (H : Hypergraph α) :
   ext <;> simp [Set.image_image]
 
 /-- A vertex is isolated if it is not incident to any edges (including loops). -/
+@[expose]
 def IsIsolated (H : Hypergraph α) (x : α) : Prop := ∀ e ∈ E(H), x ∉ e
 
 lemma sUnion_edgeSet_eq_vertexSet_iff_all_vertex_not_isolated :
@@ -174,6 +177,7 @@ lemma sUnion_edgeSet_eq_vertexSet_iff_all_vertex_not_isolated :
   grind [IsIsolated, mem_vertexSet_of_mem_edgeSet]
 
 /-- A loop is an edge whose associated vertex subset consists of a single vertex. -/
+@[expose]
 def IsLoop (H : Hypergraph α) (e : Set α) : Prop := e ∈ E(H) ∧ ∃ x, e = {x}
 
 lemma isLoop_iff_mem_edgeSet_and_singleton : H.IsLoop e ↔ (e ∈ E(H) ∧ ∃ x, e = {x}) := .rfl
@@ -184,9 +188,11 @@ lemma isLoop_iff_mem_and_ncard_one : H.IsLoop e ↔ (e ∈ E(H) ∧ Set.ncard e 
 lemma IsLoop.ncard_one (h : H.IsLoop e) : Set.ncard e = 1 := (isLoop_iff_mem_and_ncard_one.mp h).2
 
 /-- A hypergraph is empty if it has no vertices and no edges. -/
+@[expose]
 def IsEmpty (H : Hypergraph α) : Prop := V(H) = ∅ ∧ E(H) = ∅
 
 /-- A hypergraph is nonempty if it has at least one vertex or at least one edge. -/
+@[expose]
 def IsNonempty (H : Hypergraph α) : Prop := V(H).Nonempty ∨ E(H).Nonempty
 
 /-- The empty hypergraph (bottom) on a type. -/
@@ -236,11 +242,12 @@ lemma isEmpty_or_isNonempty : H.IsEmpty ∨ H.IsNonempty := by
   grind [IsEmpty, IsNonempty, Set.Nonempty]
 
 /-- A hypergraph is trivial if it has at least one vertex but no edges. -/
+@[expose]
 def IsTrivial (H : Hypergraph α) : Prop := Set.Nonempty V(H) ∧ E(H) = ∅
 
 /-- The trivial hypergraph with a given vertex set is defined by having no edges on that vertex
 set. -/
-@[simps]
+@[simps, expose]
 def trivialOn (f : Set α) : Hypergraph α where
   vertexSet := f
   edgeSet := ∅
@@ -256,11 +263,12 @@ lemma IsTrivial.isNonempty (h : IsTrivial H) : IsNonempty H := by
 lemma IsTrivial.not_mem_edgeSet (h : H.IsTrivial) : e ∉ E(H) := by grind [IsTrivial]
 
 /-- A hypergraph is complete if every subset of the vertex set is in the edge set. -/
+@[expose]
 def IsComplete (H : Hypergraph α) : Prop := ∀ e ⊆ V(H), e ∈ E(H)
 
 /-- The complete hypergraph with a given vertex set, which has each subset of the vertex set as an
 edge. -/
-@[simps]
+@[simps, expose]
 def completeOn (f : Set α) : Hypergraph α where
   vertexSet := f
   edgeSet := 𝒫 f
