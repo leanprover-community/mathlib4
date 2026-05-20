@@ -23,7 +23,7 @@ Here is a list of type aliases for `E →L[𝕜] F` endowed with various topolog
 * `ContinuousLinearMap`: topology of bounded convergence
 * `UniformConvergenceCLM`: topology of `𝔖`-convergence, for a general `𝔖 : Set (Set E)`
 * `CompactConvergenceCLM`: topology of compact convergence
-* `PointwiseConvergenceCLM`: topology of pointwise convergence, also called "weak-* topology"
+* `PointwiseConvergenceCLM`: topology of pointwise convergence, also called "weak-\* topology"
   or "strong-operator topology" depending on the context
 * `ContinuousLinearMapWOT`: topology of weak pointwise convergence, also called "weak-operator
   topology"
@@ -250,6 +250,24 @@ theorem continuous_of_continuous_uncurry
   UniformConvergenceCLM.continuous_of_continuous_uncurry (fun _ ↦ id) B hB
 
 end BoundedConvergence
+
+section Pi
+
+variable (𝕜 : Type*) [NormedField 𝕜] (E : Type*) {ι : Type*} (F : ι → Type*)
+  [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
+  [∀ i, AddCommGroup (F i)] [∀ i, Module 𝕜 (F i)] [∀ i, TopologicalSpace (F i)]
+  [∀ i, IsTopologicalAddGroup (F i)] [∀ i, ContinuousConstSMul 𝕜 (F i)]
+
+/-- `ContinuousLinearMap.pi`, upgraded to a continuous linear equivalence between
+`Π i, E →L[𝕜] F i` and `E →L[𝕜] Π i, F i`. -/
+@[simps]
+def piEquivL :
+    (Π i, E →L[𝕜] F i) ≃L[𝕜] (E →L[𝕜] Π i, F i) where
+  toFun F := ContinuousLinearMap.pi F
+  invFun f i := (ContinuousLinearMap.proj i).comp f
+  __ := UniformConvergenceCLM.piEquivL _ _ _
+
+end Pi
 
 section BilinearMaps
 variable {R 𝕜 𝕜₂ 𝕜₃ : Type*}
@@ -483,13 +501,11 @@ spaces of continuous (semi)linear maps. -/
 @[simps apply symm_apply toLinearEquiv_apply toLinearEquiv_symm_apply]
 def arrowCongrSL (e₁₂ : E ≃SL[σ₁₂] F) (e₄₃ : H ≃SL[σ₄₃] G) :
     (E →SL[σ₁₄] H) ≃SL[σ₄₃] F →SL[σ₂₃] G :=
-{ e₁₂.arrowCongrEquiv e₄₃ with
+{ e₁₂.arrowCongrEquivₛₗ e₄₃ with
     -- given explicitly to help `simps`
     toFun := fun L => (e₄₃ : H →SL[σ₄₃] G).comp (L.comp (e₁₂.symm : F →SL[σ₂₁] E))
     -- given explicitly to help `simps`
     invFun := fun L => (e₄₃.symm : G →SL[σ₃₄] H).comp (L.comp (e₁₂ : E →SL[σ₁₂] F))
-    map_add' := fun f g => by simp only [add_comp, comp_add]
-    map_smul' := fun t f => by simp only [smul_comp, comp_smulₛₗ]
     continuous_toFun := ((postcomp F e₄₃.toContinuousLinearMap).comp
       (precomp H e₁₂.symm.toContinuousLinearMap)).continuous
     continuous_invFun := ((precomp H e₁₂.toContinuousLinearMap).comp

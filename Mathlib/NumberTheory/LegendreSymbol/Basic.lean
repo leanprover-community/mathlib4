@@ -275,6 +275,10 @@ theorem legendreSym.at_neg_one (hp : p ≠ 2) : legendreSym p (-1) = χ₄ p := 
   simp only [legendreSym, card p, quadraticChar_neg_one ((ringChar_zmod_n p).substr hp),
     Int.cast_neg, Int.cast_one]
 
+/-- The value of the Legendre symbol at `-a` is `χ₄ p` times the value at `a`. -/
+theorem legendreSym.at_neg (hp : p ≠ 2) (a : ℤ) : legendreSym p (-a) = χ₄ p * legendreSym p a := by
+  rw [neg_eq_neg_one_mul, legendreSym.mul p (-1) a, legendreSym.at_neg_one hp]
+
 namespace ZMod
 
 /-- `-1` is a square in `ZMod p` iff `p` is not congruent to `3` mod `4`. -/

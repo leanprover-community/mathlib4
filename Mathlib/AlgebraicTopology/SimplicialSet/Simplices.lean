@@ -6,6 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Elements
+public import Mathlib.AlgebraicTopology.SimplicialSet.Op
 public import Mathlib.AlgebraicTopology.SimplicialSet.Subcomplex
 
 /-!
@@ -151,10 +152,7 @@ see `S.le_iff_nonempty_hom`.) -/
 @[simps!]
 def equivElements : X.S ≃ X.Elements where
   toFun s := X.elementsMk _ s.simplex
-  invFun := by
-    rintro ⟨⟨n⟩, x⟩
-    induction n using SimplexCategory.rec
-    exact S.mk x
+  invFun := by rintro ⟨⟨⟨n⟩⟩, x⟩; exact S.mk x
   left_inv _ := rfl
   right_inv _ := rfl
 
@@ -166,6 +164,21 @@ lemma le_iff_nonempty_hom (x y : X.S) :
     exact ⟨⟨f.op, hf⟩⟩
   · rintro ⟨f, hf⟩
     exact ⟨f.unop, hf⟩
+
+/-- The bijection `X.op.S ≃ X.S`. -/
+@[simps -isSimp apply symm_apply]
+def opEquiv : X.op.S ≃ X.S where
+  toFun x := S.mk (opObjEquiv x.simplex)
+  invFun y := S.mk (opObjEquiv.symm y.simplex)
+
+/-- The bijection `X.S ≃ Y.S` on simplices of simplicial sets that
+is induced by an isomorphism `X ≅ Y`. -/
+@[simps -isSimp apply symm_apply]
+def equivOfIso {Y : SSet.{u}} (e : X ≅ Y) : X.S ≃ Y.S where
+  toFun s := S.mk (e.hom.app _ s.simplex)
+  invFun s := S.mk (e.inv.app _ s.simplex)
+  left_inv _ := by simp
+  right_inv _ := by simp
 
 end S
 

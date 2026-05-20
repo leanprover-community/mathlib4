@@ -162,10 +162,6 @@ theorem isBigO_characteristic_sub_characteristic_shift (h : Meromorphic f) :
   isBigO_of_le' (c := log⁺ ‖a₀‖ + log 2) _
     (fun R ↦ by simpa using abs_characteristic_sub_characteristic_shift_le h)
 
-@[deprecated (since := "2025-10-06")]
-alias abs_characteristic_sub_characteristic_shift_eqO :=
-  isBigO_characteristic_sub_characteristic_shift
-
 end SecondPart
 
 end ValueDistribution

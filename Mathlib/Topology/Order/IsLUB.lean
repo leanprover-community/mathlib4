@@ -402,7 +402,7 @@ theorem exists_seq_strictAnti_strictMono_tendsto [DenselyOrdered α] [FirstCount
   rcases exists_seq_strictMono_tendsto' (hu_mem 0).2 with ⟨v, hv_mono, hv_mem, hvy⟩
   exact
     ⟨u, v, hu_anti, hv_mono, hu_mem, fun l => ⟨(hu_mem 0).1.trans (hv_mem l).1, (hv_mem l).2⟩,
-      fun k l => (hu_anti.antitone (zero_le k)).trans_lt (hv_mem l).1, hux, hvy⟩
+      fun k l => (hu_anti.antitone zero_le).trans_lt (hv_mem l).1, hux, hvy⟩
 
 theorem exists_seq_tendsto_sInf {α : Type*} [ConditionallyCompleteLinearOrder α]
     [TopologicalSpace α] [OrderTopology α] [FirstCountableTopology α] {S : Set α} (hS : S.Nonempty)
@@ -431,5 +431,29 @@ theorem DenseRange.exists_seq_strictAnti_tendsto {β : Type*} [LinearOrder β] [
     (x : α) :
     ∃ u : ℕ → β, StrictAnti u ∧ (∀ n, f (u n) ∈ Ioi x) ∧ Tendsto (f ∘ u) atTop (𝓝 x) :=
   hf.exists_seq_strictMono_tendsto (α := αᵒᵈ) (β := βᵒᵈ) hmono.dual x
+
+theorem eventually_le_const_iff_forall_gt_eventually_lt_const [FirstCountableTopology α]
+    {l : Filter γ} [CountableInterFilter l] {f : γ → α} {a : α} :
+    (∀ᶠ x in l, f x ≤ a) ↔ ∀ b, a < b → ∀ᶠ x in l, f x < b where
+  mp h c hbc := h.mono <| fun x hx ↦ lt_of_le_of_lt hx hbc
+  mpr h := by
+    rcases exists_glb_Ioi a with ⟨d, hd⟩
+    obtain rfl | H0 := glb_Ioi_eq_self_or_Ioi_eq_Ici _ hd
+    · obtain h | _ := isTop_or_exists_gt d
+      · exact .of_forall (fun _ ↦ h _)
+      obtain ⟨u, -, -, hu_tt, hu_gt⟩ := hd.exists_seq_antitone_tendsto (by simpa)
+      replace h := fun n ↦ h (u n) (by grind)
+      rw [← eventually_countable_forall] at h
+      filter_upwards [h] with x hx
+      exact ge_of_tendsto hu_tt <| .of_forall <| fun n ↦ le_of_lt <| hx n
+    · specialize h d <| by simp [← Set.mem_Ioi, H0]
+      filter_upwards [h] with x hx
+      rw [← Set.compl_Iic, ← Set.compl_Iio, compl_inj_iff] at H0
+      simpa [← Set.mem_Iic, ← Set.mem_Iio, H0] using hx
+
+theorem eventually_const_le_iff_forall_lt_eventually_const_lt [FirstCountableTopology α]
+    {l : Filter γ} [CountableInterFilter l] {f : γ → α} {a : α} :
+    (∀ᶠ x in l, a ≤ f x) ↔ ∀ b, b < a → ∀ᶠ x in l, b < f x :=
+  eventually_le_const_iff_forall_gt_eventually_lt_const (α := αᵒᵈ)
 
 end OrderTopology

@@ -64,7 +64,7 @@ theorem smoothSheafCommRing.isUnit_stalk_iff {x : M}
     rintro (hf : _ ≠ 0)
     -- Represent `f` as the germ of some function (also called `f`) on an open neighbourhood `U` of
     -- `x`, which is nonzero at `x`
-    obtain ⟨U : Opens M, hxU, f : C^∞⟮IM, U; 𝓘(𝕜), 𝕜⟯, rfl⟩ := S.germ_exist x f
+    obtain ⟨U : Opens M, hxU, f : C^∞⟮IM, U; 𝓘(𝕜), 𝕜⟯, rfl⟩ := S.exists_germ_eq f
     have hf' : f ⟨x, hxU⟩ ≠ 0 := by
       convert hf
       exact (smoothSheafCommRing.eval_germ U x hxU f).symm
@@ -77,7 +77,7 @@ theorem smoothSheafCommRing.isUnit_stalk_iff {x : M}
     have hV : V₀ = Set.range (Set.inclusion hUV) := by
       convert (Set.range_inclusion hUV).symm
       ext y
-      change _ ↔ y ∈ Subtype.val ⁻¹' (Subtype.val '' V₀)
+      change _ ↔ y ∈ Subtype.val ⁻¹' Subtype.val '' V₀
       rw [Set.preimage_image_eq _ Subtype.coe_injective]
     clear_value V
     subst hV

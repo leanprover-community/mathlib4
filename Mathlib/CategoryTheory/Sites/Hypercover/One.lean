@@ -76,8 +76,7 @@ section
 variable {i₁ i₂ : E.I₀} [HasPullback (E.f i₁) (E.f i₂)]
 
 /-- The obvious morphism `E.Y j ⟶ pullback (E.f i₁) (E.f i₂)` given by `E : PreOneHypercover S`. -/
-noncomputable abbrev toPullback (j : E.I₁ i₁ i₂) [HasPullback (E.f i₁) (E.f i₂)] :
-    E.Y j ⟶ pullback (E.f i₁) (E.f i₂) :=
+noncomputable abbrev toPullback (j : E.I₁ i₁ i₂) : E.Y j ⟶ pullback (E.f i₁) (E.f i₂) :=
   pullback.lift (E.p₁ j) (E.p₂ j) (E.w j)
 
 variable (i₁ i₂) in

@@ -205,7 +205,7 @@ section Map
 theorem support_map_subset [Semiring R] [Semiring S] (f : R →+* S) (p : R[X]) :
     (map f p).support ⊆ p.support := by
   intro x
-  contrapose!
+  contrapose
   simp +contextual
 
 theorem support_map_of_injective [Semiring R] [Semiring S] (p : R[X]) {f : R →+* S}

@@ -73,21 +73,19 @@ lemma ihom_map_val_app (A B P : LightCondMod.{u} R) (S : LightProfinite) (e : A 
     (x : (P ⟶[LightCondMod R] A).obj.obj ⟨S⟩) :
     (((ihom P).map e).hom.app ⟨S⟩) x = (ihomPoints R P B S).symm (ihomPoints R P A S x ≫ e) := by
   apply (ihomPoints R P B S).injective
-  simp only [ihomPoints_apply, Equiv.apply_symm_apply, ← MonoidalClosed.uncurry_natural_right,
-    ← Adjunction.homEquiv_naturality_right_symm]
+  simp only [ihomPoints_apply, ← MonoidalClosed.uncurry_natural_right,
+    ← Adjunction.homEquiv_naturality_right_symm, Equiv.apply_symm_apply]
   congr
-  cat_disch
+  apply (coherentTopology LightProfinite.{u}).yonedaEquiv.injective
+  simp [dsimp% GrothendieckTopology.yonedaEquiv_comp]
 
 set_option backward.isDefEq.respectTransparency false in
 lemma ihomPoints_symm_comp (B P : LightCondMod.{u} R) (S S' : LightProfinite) (π : S ⟶ S')
     (f : P ⊗ (free R).obj S'.toCondensed ⟶ B) :
     (ihomPoints R P B S).symm (P ◁ (free R).map (lightProfiniteToLightCondSet.map π) ≫ f) =
       ((P ⟶[LightCondMod R] B).obj.map π.op) ((ihomPoints R P B S').symm f) := by
-  have : (lightProfiniteToLightCondSet.map π).hom.app (Opposite.op S) (𝟙 S) =
-      S'.toCondensed.obj.map π.op (𝟙 S') := rfl
-  simp [ihomPoints_symm_apply, MonoidalClosed.curry_natural_left, Adjunction.homEquiv_apply,
-    GrothendieckTopology.yonedaEquiv_apply, this]
-  rfl
+  simpa [ihomPoints_symm_apply, MonoidalClosed.curry_natural_left, Adjunction.homEquiv_apply] using
+    (GrothendieckTopology.yonedaEquiv_naturality _ _ _).symm
 
 /--
 `P : LightCondMod R` is internally projective if and
@@ -230,6 +228,8 @@ lemma free_internallyProjective_iff_tensor_condition' (P : LightCondSet.{u}) :
     -- Leaving it unsqueezed is too slow.
     simp only [comp_obj, Functor.comp_map, μIso_hom, ← μ_natural_left, μIso_inv, assoc, μ_δ,
       comp_id]
+
+attribute [-simp] ObjectProperty.whiskerLeft_def ObjectProperty.whiskerRight_def
 
 /--
 Given a `P : LightProfinite`, the light free light condensed module `R[P]` is internally projective

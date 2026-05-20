@@ -304,7 +304,7 @@ instance [PreservesLimits (forget D)] [HasFiniteLimits D]
     HasSheafify J D :=
   HasSheafify.mk' J D (plusPlusAdjunction J D)
 
-instance : HasSheafify J (Type max u v) := by
+instance : HasSheafify J (Type (max u v)) := by
   infer_instance
 
 end
