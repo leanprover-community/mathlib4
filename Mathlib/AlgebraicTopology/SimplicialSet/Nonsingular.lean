@@ -68,6 +68,7 @@ lemma Nonsingular.of_iso (e : X ≅ Y) [X.Nonsingular] : Y.Nonsingular :=
 instance (A : X.Subcomplex) [X.Nonsingular] : (A : SSet).Nonsingular :=
   .of_mono A.ι
 
+@[kerodon 02MT]
 instance (T : Type*) [PartialOrder T] : (nerve T).Nonsingular where
   mono := by
     intro n ⟨x, hx⟩
