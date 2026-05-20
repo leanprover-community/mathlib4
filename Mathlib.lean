@@ -1425,10 +1425,13 @@ public import Mathlib.AlgebraicGeometry.Properties
 public import Mathlib.AlgebraicGeometry.PullbackCarrier
 public import Mathlib.AlgebraicGeometry.Pullbacks
 public import Mathlib.AlgebraicGeometry.QuasiAffine
+public import Mathlib.AlgebraicGeometry.RationalMap
 public import Mathlib.AlgebraicGeometry.RelativeGluing
 public import Mathlib.AlgebraicGeometry.ResidueField
 public import Mathlib.AlgebraicGeometry.Restrict
 public import Mathlib.AlgebraicGeometry.Scheme
+public import Mathlib.AlgebraicGeometry.Sites.Affine
+public import Mathlib.AlgebraicGeometry.Sites.AffineEtale
 public import Mathlib.AlgebraicGeometry.Sites.BigZariski
 public import Mathlib.AlgebraicGeometry.Sites.ConstantSheaf
 public import Mathlib.AlgebraicGeometry.Sites.ElladicCohomology
@@ -1759,6 +1762,7 @@ public import Mathlib.Analysis.Calculus.FDeriv.Linear
 public import Mathlib.Analysis.Calculus.FDeriv.Measurable
 public import Mathlib.Analysis.Calculus.FDeriv.Mul
 public import Mathlib.Analysis.Calculus.FDeriv.Norm
+public import Mathlib.Analysis.Calculus.FDeriv.OfCompLeft
 public import Mathlib.Analysis.Calculus.FDeriv.Partial
 public import Mathlib.Analysis.Calculus.FDeriv.Pi
 public import Mathlib.Analysis.Calculus.FDeriv.Pow
@@ -1859,6 +1863,7 @@ public import Mathlib.Analysis.Complex.Positivity
 public import Mathlib.Analysis.Complex.ReImTopology
 public import Mathlib.Analysis.Complex.RealDeriv
 public import Mathlib.Analysis.Complex.RemovableSingularity
+public import Mathlib.Analysis.Complex.RiemannMapping
 public import Mathlib.Analysis.Complex.Schwarz
 public import Mathlib.Analysis.Complex.Spectrum
 public import Mathlib.Analysis.Complex.SqrtDeriv
@@ -2571,6 +2576,7 @@ public import Mathlib.CategoryTheory.CommSq
 public import Mathlib.CategoryTheory.Comma.Arrow
 public import Mathlib.CategoryTheory.Comma.Basic
 public import Mathlib.CategoryTheory.Comma.CardinalArrow
+public import Mathlib.CategoryTheory.Comma.CatCommSq
 public import Mathlib.CategoryTheory.Comma.Final
 public import Mathlib.CategoryTheory.Comma.LocallySmall
 public import Mathlib.CategoryTheory.Comma.Over.Basic
@@ -4513,6 +4519,8 @@ public import Mathlib.Geometry.Convex.Cone.Simplicial
 public import Mathlib.Geometry.Convex.Cone.TensorProduct
 public import Mathlib.Geometry.Convex.ConvexSpace.AffineSpace
 public import Mathlib.Geometry.Convex.ConvexSpace.Defs
+public import Mathlib.Geometry.Convex.ConvexSpace.Module
+public import Mathlib.Geometry.Convex.ConvexSpace.Prod
 public import Mathlib.Geometry.Diffeology.Basic
 public import Mathlib.Geometry.Euclidean.Altitude
 public import Mathlib.Geometry.Euclidean.Angle.Bisector
@@ -5648,6 +5656,7 @@ public import Mathlib.NumberTheory.Harmonic.Int
 public import Mathlib.NumberTheory.Harmonic.ZetaAsymp
 public import Mathlib.NumberTheory.Height.Basic
 public import Mathlib.NumberTheory.Height.MvPolynomial
+public import Mathlib.NumberTheory.Height.Northcott
 public import Mathlib.NumberTheory.Height.NumberField
 public import Mathlib.NumberTheory.Height.Projectivization
 public import Mathlib.NumberTheory.JacobiSum.Basic
@@ -6612,6 +6621,7 @@ public import Mathlib.RingTheory.LocalProperties.Semilocal
 public import Mathlib.RingTheory.LocalProperties.Submodule
 public import Mathlib.RingTheory.LocalRing.Basic
 public import Mathlib.RingTheory.LocalRing.Defs
+public import Mathlib.RingTheory.LocalRing.Etale
 public import Mathlib.RingTheory.LocalRing.Length
 public import Mathlib.RingTheory.LocalRing.LocalSubring
 public import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
@@ -7451,12 +7461,16 @@ public import Mathlib.Topology.Algebra.Module.Cardinality
 public import Mathlib.Topology.Algebra.Module.ClosedSubmodule
 public import Mathlib.Topology.Algebra.Module.Compact
 public import Mathlib.Topology.Algebra.Module.Complement
+public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Basic
+public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Idempotent
+public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.PiProd
+public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Quotient
+public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Restrict
+public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.RestrictScalars
 public import Mathlib.Topology.Algebra.Module.Determinant
 public import Mathlib.Topology.Algebra.Module.Equiv
 public import Mathlib.Topology.Algebra.Module.FiniteDimension
 public import Mathlib.Topology.Algebra.Module.FiniteDimensionBilinear
-public import Mathlib.Topology.Algebra.Module.LinearMap
-public import Mathlib.Topology.Algebra.Module.LinearMapPiProd
 public import Mathlib.Topology.Algebra.Module.LinearPMap
 public import Mathlib.Topology.Algebra.Module.LocallyConvex
 public import Mathlib.Topology.Algebra.Module.ModuleTopology
@@ -7939,6 +7953,7 @@ public import Mathlib.Topology.Separation.Hausdorff
 public import Mathlib.Topology.Separation.Lemmas
 public import Mathlib.Topology.Separation.LinearUpperLowerSetTopology
 public import Mathlib.Topology.Separation.NotNormal
+public import Mathlib.Topology.Separation.PerfectlyNormal
 public import Mathlib.Topology.Separation.Profinite
 public import Mathlib.Topology.Separation.Regular
 public import Mathlib.Topology.Separation.SeparatedNhds
@@ -8032,6 +8047,7 @@ public import Mathlib.Topology.VectorBundle.ContinuousAlternatingMap
 public import Mathlib.Topology.VectorBundle.FiniteDimensional
 public import Mathlib.Topology.VectorBundle.Hom
 public import Mathlib.Topology.VectorBundle.Riemannian
+public import Mathlib.Topology.WithTopology
 public import Mathlib.Util.AddRelatedDecl
 public import Mathlib.Util.AliasIn
 public import Mathlib.Util.AssertNoSorry
