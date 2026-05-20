@@ -31,6 +31,9 @@ namespace SSet
 
 variable (C : Type u) [Category.{v} C] [HasCoproducts.{w} C] [Preadditive C]
 
+-- Note: We could consider making `chainComplexFunctor` an abbrev in order to
+-- improve automation downstream. Instead, we make it a definition
+-- and provide suitable API, like `SSet.ιChainComplex`
 /--
 The chain complex associated to a simplicial set, with coefficients in `R : C`.
 It computes the simplicial homology of a simplicial sets with coefficients

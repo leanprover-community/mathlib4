@@ -770,6 +770,8 @@ def piConstAdj [Limits.HasProducts.{v} C] (X : C) :
     naturality _ _ _ := by apply Quiver.Hom.unop_inj; cat_disch }
   left_triangle_components _ := by apply Quiver.Hom.unop_inj; cat_disch
 
+-- Note: We may consider making `sigmaConst` an abbrev in order to
+-- improve automation downstream
 /-- The functor sending `(X, n)` to the coproduct of copies of `X` indexed by `n`. -/
 @[simps]
 def sigmaConst [Limits.HasCoproducts.{w} C] : C ⥤ Type w ⥤ C where
