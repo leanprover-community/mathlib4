@@ -8,6 +8,7 @@ module
 public import Mathlib.CategoryTheory.ObjectProperty.ColimitsCardinalClosure
 public import Mathlib.CategoryTheory.Presentable.CardinalDirectedPoset
 public import Mathlib.CategoryTheory.Presentable.Dense
+public import Mathlib.CategoryTheory.Presentable.Directed
 
 /-!
 # Sharply smaller regular cardinals
@@ -138,6 +139,9 @@ noncomputable def cocone : Cocone (functor h p) where
 variable (h) in
 def isColimit [IsCardinalFiltered J κ₁] : IsColimit (cocone h p) := sorry
 
+instance [IsCardinalFiltered J κ₁] : IsCardinalFiltered (Subtype (prop h J)) κ₂ := by
+  sorry
+
 end isCardinalFilteredGenerator
 
 open isCardinalFilteredGenerator in
@@ -146,25 +150,21 @@ lemma isCardinalFilteredGenerator :
   le_isCardinalPresentable := h.generator_le_isCardinalPresentable C
   exists_colimitsOfShape X := by
     have hκ₁ := isCardinalFilteredGenerator_isCardinalPresentable C κ₁
-    --obtain ⟨J, _, _, ⟨p⟩⟩ := hκ₁.exists_colimitsOfShape X
-    -- use `Directed.lean`
-    have J : Type w := sorry
-    have : PartialOrder J := sorry
-    have : IsCardinalFiltered J κ₁ := sorry
-    have p : (isCardinalPresentable C κ₁).ColimitOfShape J X := sorry
-    refine ⟨Subtype (prop h J), inferInstance, sorry, ⟨{
-      diag := _
-      ι := _
-      isColimit := isColimit h p
-      prop_diag_obj A := by
-        have : (h.generator C).IsClosedUnderColimitsOfShape (Subtype A.val) := by
-          apply ObjectProperty.isClosedUnderColimitsOfShape_colimitsCardinalClosure
-          have := A.prop.2
-          sorry
-        exact ObjectProperty.prop_colimit _ _
-          (fun ⟨a, ha⟩ ↦ ObjectProperty.le_colimitsCardinalClosure _ _ _
-            (p.prop_diag_obj a))
-    }⟩⟩
+    obtain ⟨J, _, _, ⟨p⟩⟩ :
+        ∃ (J : Type w) (_ : PartialOrder J) (_ : IsCardinalFiltered J κ₁),
+      Nonempty ((isCardinalPresentable C κ₁).ColimitOfShape J X) := by
+        obtain ⟨J₀, _, _, ⟨p₀⟩⟩ := hκ₁.exists_colimitsOfShape X
+        obtain ⟨J, _, _, F, _⟩ := IsCardinalFiltered.exists_cardinal_directed J₀ κ₁
+        exact ⟨_, _, inferInstance, ⟨p₀.reindex F⟩⟩
+    refine ⟨Subtype (prop h J), inferInstance, inferInstance,
+      ⟨{ diag := _, ι := _, isColimit := isColimit h p, prop_diag_obj A := ?_ }⟩⟩
+    have : (h.generator C).IsClosedUnderColimitsOfShape (Subtype A.val) := by
+      apply ObjectProperty.isClosedUnderColimitsOfShape_colimitsCardinalClosure
+      have := A.prop.2
+      sorry
+    exact ObjectProperty.prop_colimit _ _
+      (fun ⟨a, ha⟩ ↦ ObjectProperty.le_colimitsCardinalClosure _ _ _
+        (p.prop_diag_obj a))
 
 end
 
