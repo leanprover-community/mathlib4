@@ -449,7 +449,7 @@ theorem prodEquivOfIsTopCompl_symm_apply (h : IsTopCompl p q) (x : M) :
 `Submodule.quotientEquivOfIsCompl` is continuous. -/
 theorem IsCompl.isTopCompl_iff_continuous_quotientEquivOfIsCompl (h : IsCompl p q) :
     IsTopCompl p q ↔ Continuous (p.quotientEquivOfIsCompl q h) := by
-  rw [p.isQuotientMap_mkQL.continuous_iff, coe_mkQL]
+  rw [p.isQuotientMap_mkQL.continuous_iff]
   exact isTopCompl_comm.trans h.symm.isTopCompl_iff_projectionOnto
 
 variable (p q) in
