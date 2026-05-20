@@ -27,10 +27,6 @@ commits to a single canonical representative per fresh composition
 avoids the blowup: the normalized form is a fixed point of itself, so
 the propagator only does work once per user-visible composition.
 
-We hand-write the normalizer (rather than using `Meta.Simp`) because
-`Simp.main` has no IR body, and crashes the interpreter when invoked
-from a `module`-mode downstream file.
-
 ## Caveats
 
 - "Identity factors" are detected *syntactically* by head symbol

@@ -394,6 +394,13 @@ variable [Category.{v} C]
 
 universe u'
 
+-- The propagator in `Mathlib/CategoryTheory/Tactic/GrindCatNorm.lean` is loaded
+-- only *after* this file, so the `cat_disch` autoparam in `uliftCategory` below
+-- cannot rely on it. We make the relevant equational lemmas available to
+-- `grind` locally for the rest of this file.
+attribute [local grind =] Category.id_comp Category.comp_id
+attribute [local grind _=_] Category.assoc
+
 /-- The category structure on `ULift C` that is induced from the category
 structure on `C`. This is not made a global instance because of a diamond
 when `C` is a preordered type. -/
@@ -402,9 +409,6 @@ def uliftCategory : Category.{v} (ULift.{u'} C) where
   Hom X Y := X.down ⟶ Y.down
   id X := 𝟙 X.down
   comp f g := f ≫ g
-  id_comp _ := Category.id_comp _
-  comp_id _ := Category.comp_id _
-  assoc _ _ _ := Category.assoc _ _ _
 
 attribute [local instance] uliftCategory in
 -- We verify that this previous instance can lift small categories to large categories.
