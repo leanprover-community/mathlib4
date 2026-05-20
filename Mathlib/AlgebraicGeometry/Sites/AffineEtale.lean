@@ -52,13 +52,17 @@ namespace AffineEtale
 protected def mk {R : CommRingCat.{u}} (f : Spec R ⟶ S) [Etale f] : AffineEtale S :=
   MorphismProperty.CostructuredArrow.mk ⊤ f ‹_›
 
+set_option trace.Elab.Deriving true
 /-- The `Spec` functor from the small affine étale site of `S` to the small étale site of `S`. -/
 @[simps! obj_left obj_hom map_left]
 protected def Spec (S : Scheme.{u}) : S.AffineEtale ⥤ S.Etale :=
   MorphismProperty.CostructuredArrow.toOver _ _ _
+deriving Functor.Full, Functor.Faithful
 
-instance : (AffineEtale.Spec S).Faithful :=
-  inferInstanceAs <| (MorphismProperty.CostructuredArrow.toOver _ _ _).Faithful
+#check instFaithfulCostructuredArrowOppositeCommRingCatEtaleTopMorphismPropertySpecOverSpec
+set_option trace.Meta.synthInstance true in
+instance : (AffineEtale.Spec S).Faithful := inferInstance
+  -- inferInstanceAs <| (MorphismProperty.CostructuredArrow.toOver _ _ _).Faithful
 
 instance : (AffineEtale.Spec S).Full :=
   inferInstanceAs <| (MorphismProperty.CostructuredArrow.toOver _ _ _).Full
