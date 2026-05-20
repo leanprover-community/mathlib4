@@ -92,7 +92,7 @@ theorem degMatrix_mulVec_apply [NonAssocSemiring R] (v : V) (vec : V → R) :
     (G.degMatrix R *ᵥ vec) v = G.degree v * vec v := by
   rw [degMatrix, mulVec_diagonal]
 
-theorem IsRegularOfDegree.degMatrix_mulVec_const [AddMonoidWithOne R] {d : ℕ}
+theorem IsRegularOfDegree.degMatrix_eq [AddMonoidWithOne R] {d : ℕ}
     (hd : G.IsRegularOfDegree d) : G.degMatrix R = d := by
   simp [degMatrix, diagonal_natCast, hd.degree_eq]
 
@@ -110,7 +110,7 @@ theorem lapMatrix_mulVec_apply' [NonAssocRing R] (v : V) (vec : V → R) :
   simp [lapMatrix_mulVec_apply]
 
 variable (R) in
-theorem lapMatrix_mulVec_const_eq_zero [NonAssocRing R] : G.lapMatrix R *ᵥ 1 = 0 := by
+theorem lapMatrix_mulVec_one_eq_zero [NonAssocRing R] : G.lapMatrix R *ᵥ 1 = 0 := by
   ext1 i
   simp [lapMatrix_mulVec_apply]
 
@@ -118,7 +118,7 @@ variable (R) in
 theorem not_isUnit_lapMatrix [Nonempty V] [Nontrivial R] [CommRing R] :
     ¬IsUnit (G.lapMatrix R) := by
   have ⟨v⟩ := ‹Nonempty V›
-  have := G.lapMatrix R |>.mulVec_zero.trans <| .symm <| G.lapMatrix_mulVec_const_eq_zero R
+  have := G.lapMatrix R |>.mulVec_zero.trans <| .symm <| G.lapMatrix_mulVec_one_eq_zero R
   exact (zero_ne_one congr($(mulVec_injective_of_isUnit · this) v))
 
 variable (R) in
