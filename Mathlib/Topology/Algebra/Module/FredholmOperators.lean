@@ -639,7 +639,7 @@ variable (𝕜 E) in
 structure preFredholmDecomposition where
   X₁ : Submodule 𝕜 E
   X₂ : Submodule 𝕜 E
-  compl : IsTopCompl X₁ X₂
+  topCompl : IsTopCompl X₁ X₂
   fin_dim : FiniteDimensional 𝕜 X₂
 
 open Submodule.ClosedComplemented in
@@ -709,15 +709,56 @@ theorem FredholmDecomposition_mapsTo₂ (huF : IsFredholmStruct u) :
 theorem FredholmDecomposition_ZeroOn₂ (huF : IsFredholmStruct u) :
     (u.domRestrict (FredholmDecomposition huF).1.X₂) = 0 := by sorry
 
+section IsCompl
+
+variable {R : Type u_1} [Ring R] {M : Type u_2} [AddCommGroup M] [Module R M] {N : Type u_3}
+  [AddCommGroup N] [Module R N]
+
+lemma Submodule.isCompl_projection_sub_mem {p q : Submodule R M} (h : IsCompl p q) (x : M) :
+    (p.projection q h) x - x ∈ q := by
+  simp [Submodule.projection_eq_self_sub_projection h.symm x]
+
+@[simp]
+lemma LinearMap.domRestrict_range_eq {f : M →ₗ[R] N} {p : Submodule R M} (h : IsCompl p f.ker) :
+    (f.domRestrict p).range = f.range := by
+  let π := p.projectionOnto _ h
+  ext x
+  refine ⟨fun ⟨⟨a, _⟩, _⟩ ↦ ⟨a, by simpa⟩, fun ⟨a, hxa⟩ ↦ ?_⟩
+  simp only [LinearMap.range_domRestrict, mem_map]
+  refine ⟨π a, coe_mem _, ?_⟩
+  rw [← hxa, eq_of_sub_eq_zero (a := f (π a)) (b := f a)] --improve
+  rw [← f.map_sub, Submodule.coe_projectionOnto_apply, ← LinearMap.mem_ker]
+  apply Submodule.isCompl_projection_sub_mem
+
+@[simp]
+lemma LinearMap.subtype_codRestrict_range {f : M →ₗ[R] N} {p : Submodule R N}
+    (h : ∀ x : M, f x ∈ p) : (map p.subtype (f.codRestrict p h).range) = f.range := by
+  ext x
+  refine ⟨fun hx ↦ ?_, fun ⟨y, hxy⟩ ↦ ?_⟩
+  · simp only [mem_map, LinearMap.mem_range, subtype_apply, exists_exists_eq_and,
+    LinearMap.codRestrict_apply] at hx
+    exact LinearMap.mem_range.mpr hx
+  · simp only [mem_map, LinearMap.mem_range, subtype_apply, exists_exists_eq_and,
+    LinearMap.codRestrict_apply]
+    use y
+
+@[simp]
+lemma LinearMap.codRestrict_range_subtype {f : M →ₗ[R] N} {p : Submodule R N}
+    (h : ∀ x : M, f x ∈ p) : (f.codRestrict p h).range = comap p.subtype f.range := by
+  rw [← comap_map_eq_of_injective (injective_subtype p) (codRestrict p f h).range,
+    LinearMap.subtype_codRestrict_range]
+
+end IsCompl
+
 theorem FredholmDecomposition_SurjectiveOn₁ :
     Surjective (u.restrict (FredholmDecomposition_mapsTo₁ huF)).toLinearMap := by
-  intro ⟨x, hx⟩
-  simp only [FredholmDecomposition_codom₁, LinearMap.mem_range, ContinuousLinearMap.coe_coe] at hx
-  obtain ⟨y, hy⟩ := hx
-  have h_compl := ((FredholmDecomposition huF).1.3).isCompl
-  have y_dec := Submodule.projection_add_projection_eq_self h_compl y
-  simp_rw [FredholmDecomposition_dom₂ huF] at y_dec
-  sorry
+  simp only [FredholmDecomposition_codom₁, LinearMap.mem_range, ContinuousLinearMap.coe_coe,
+    exists_apply_eq_apply, implies_true, ContinuousLinearMap.restrict_eq_domRestrict_codRestrict,
+    ContinuousLinearMap.toLinearMap_domRestrict, ContinuousLinearMap.toLinearMap_codRestrict]
+  rw [← LinearMap.range_eq_top, LinearMap.domRestrict_range_eq]
+  · simp
+  simpa only [LinearMap.ker_codRestrict] using ((FredholmDecomposition huF).1.topCompl).isCompl
+
 
 namespace ContinuousLinearEquiv
 variable {R S M M₂ : Type*} [Semiring R] [Semiring S] {σ : R →+* S} {σ' : S →+* R}
