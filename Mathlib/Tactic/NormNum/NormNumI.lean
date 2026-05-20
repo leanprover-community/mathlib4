@@ -190,27 +190,27 @@ partial def parse (z : Q(ℂ)) : MetaM (ResultI q($z)) := do
   | ~q($z₁ + $z₂) =>
     let r1 ← parse z₁
     let r2 ← parse z₂
-    return ((← r1.add r2).eqTrans q(rfl))
+    return (← r1.add r2).eqTrans q(rfl)
   | ~q($z₁ * $z₂) =>
     let r1 ← parse z₁
     let r2 ← parse z₂
-    return ((← r1.mul r2).eqTrans q(rfl))
+    return (← r1.mul r2).eqTrans q(rfl)
   | ~q($z⁻¹) =>
     let r ← parse z
-    return ((← r.inv).eqTrans q(rfl))
+    return (← r.inv).eqTrans q(rfl)
   | ~q($z₁ / $z₂) => do
     let r ← parse q($z₁ * $z₂⁻¹)
     return r.eqTrans q(rfl)
   | ~q(-$w) => do
     let r ← parse w
-    return ((← r.neg).eqTrans q(rfl))
+    return (← r.neg).eqTrans q(rfl)
   | ~q($z₁ - $z₂) =>
     let r1 ← parse z₁
     let r2 ← parse z₂
-    return ((← r1.sub r2).eqTrans q(rfl))
+    return (← r1.sub r2).eqTrans q(rfl)
   | ~q(conj $w) =>
     let r ← parse w
-    return ((← r.conj).eqTrans q(rfl))
+    return (← r.conj).eqTrans q(rfl)
   | ~q($w ^ ($n' : ℕ)) =>
     let rw ← parse w
     let ⟨n, hn⟩ ← NormNum.deriveNat q($n') q(inferInstance)
