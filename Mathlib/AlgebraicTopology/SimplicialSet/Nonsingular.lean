@@ -42,6 +42,7 @@ variable (X) in
 /-- A simplicial set `X` is nonsingular like if for any
 nondegenerate simplex `x` (of dimension `n`), the corresponding
 morphism `Δ[n] ⟶ X` is a monomorphism. -/
+@[kerodon 02MG]
 class Nonsingular where
   mono {n : ℕ} (x : X.nonDegenerate n) : Mono (yonedaEquiv.symm x.val)
 
