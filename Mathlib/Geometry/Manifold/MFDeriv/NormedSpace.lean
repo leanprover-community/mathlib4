@@ -411,6 +411,7 @@ Future: this could be generalised to functions into additive torsors over abelia
 noncomputable def mvfderiv (g : M → F) :
     Π x : M, TangentSpace I x →L[𝕜] F :=
   fun x ↦ (NormedSpace.fromTangentSpace <| g x).toContinuousLinearMap ∘L (mfderiv% g x)
+@[deprecated (since := "2026-05-17")] alias extDerivFun := mvfderiv
 
 namespace Manifold
 open scoped Bundle Manifold ContDiff
@@ -467,6 +468,7 @@ lemma mvfderiv_add {g g' : M → F} {x : M} (hg : MDiffAt g x) (hg' : MDiffAt g'
     d% (g + g') x = d% g x + d% g' x := by
   simp [mvfderiv, mfderiv_add hg hg']
   rfl
+@[deprecated (since := "2026-05-17")] alias extDerivFun_add := mvfderiv_add
 
 @[simp, to_fun mvfderiv_fun_sub]
 lemma mvfderiv_sub {g g' : M → F} {x : M} (hg : MDiffAt g x) (hg' : MDiffAt g' x) :
@@ -499,3 +501,4 @@ lemma mvfderiv_zero {x : M} : d% (0 : M → F) x = 0 := by
     rw [← mvfderiv_add (by exact mdifferentiable_const ..) (by exact mdifferentiable_const ..)]
     simp
   simpa using this
+@[deprecated (since := "2026-05-17")] alias extDerivFun_zero := mvfderiv_zero
