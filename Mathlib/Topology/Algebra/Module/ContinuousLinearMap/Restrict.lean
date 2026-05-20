@@ -9,7 +9,7 @@ module
 public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Basic
 
 /-!
-# Restriction operations on continuous linear maps
+# Restrictions of continuous linear maps to submodules
 -/
 
 @[expose] public section
