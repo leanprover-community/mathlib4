@@ -9,7 +9,6 @@ public import Mathlib.CategoryTheory.Limits.Types.End
 public import Mathlib.CategoryTheory.Profunctor.Basic
 
 /-!
-
 # Composition of Profunctors
 
 This file defines composition of profunctors. Given profunctors `P : C ⥤ Dᵒᵖ ⥤ Type` and

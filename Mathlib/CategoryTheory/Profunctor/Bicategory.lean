@@ -8,7 +8,6 @@ module
 public import Mathlib.CategoryTheory.Profunctor.Comp
 
 /-!
-
 # The Profunctor Bicategory
 
 This file defines the bicategory `ProfCat` whose objects are categories and whose 1-morphisms are
@@ -29,6 +28,8 @@ structure ProfCat where
   obj : Type u
   /-- ... bundled with a category instance. -/
   [str : Category.{v} obj]
+
+initialize_simps_projections ProfCat (-str)
 
 instance : CoeSort ProfCat (Type u) :=
   ⟨ProfCat.obj⟩
@@ -69,7 +70,6 @@ end
 
 end Profunctor
 
-set_option backward.isDefEq.respectTransparency false in
 instance : Bicategory ProfCat.{u, u} where
   Hom X Y := Profunctor.{u} X Y
   id X := .id
