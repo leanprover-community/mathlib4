@@ -61,6 +61,45 @@ theorem coe_mkFinCons {n : ℕ} {N : Submodule R M} (y : M) (b : Basis (Fin n) R
   unfold mkFinCons
   exact coe_mk (v := Fin.cons y (N.subtype ∘ b)) _ _
 
+section DivisionRing
+
+variable {K V : Type*} [DivisionRing K] [AddCommGroup V] [Module K V]
+
+/-- Let `b` be a basis for a submodule `N` of `V`. If `y` is nonzero and `K ∙ y` is
+complementary to `N`, then `y` followed by `b` is a basis of `V`. -/
+noncomputable def mkFinConsOfIsCompl {n : ℕ} {N : Submodule K V} (y : V)
+    (b : Basis (Fin n) K N) (hy : y ≠ 0) (hN : IsCompl (K ∙ y) N) :
+    Basis (Fin (n + 1)) K V :=
+  mkFinCons y b
+    (fun c x hx hcx => by
+      have hcy_eq : c • y = -x := add_eq_zero_iff_eq_neg.mp hcx
+      have hcyN : c • y ∈ N := by
+        rw [hcy_eq]
+        exact N.neg_mem hx
+      have hcyL : c • y ∈ K ∙ y :=
+        Submodule.smul_mem _ _ (Submodule.mem_span_singleton_self y)
+      have hcy0 : c • y = 0 := by
+        exact hN.disjoint.le_bot ⟨hcyL, hcyN⟩
+      by_contra hc
+      exact hy <| by simpa [hcy0] using (inv_smul_smul₀ hc y).symm)
+    (fun z => by
+      have hz : z ∈ K ∙ y ⊔ N := by
+        rw [hN.sup_eq_top]
+        exact Submodule.mem_top
+      obtain ⟨_, hu, w, hw, huz⟩ := Submodule.mem_sup.mp hz
+      obtain ⟨a, rfl⟩ := Submodule.mem_span_singleton.mp hu
+      refine ⟨-a, ?_⟩
+      rw [← huz]
+      simpa [add_assoc, add_comm, add_left_comm] using hw)
+
+@[simp]
+theorem coe_mkFinConsOfIsCompl {n : ℕ} {N : Submodule K V} (y : V)
+    (b : Basis (Fin n) K N) (hy : y ≠ 0) (hN : IsCompl (K ∙ y) N) :
+    (mkFinConsOfIsCompl y b hy hN : Fin (n + 1) → V) = Fin.cons y ((↑) ∘ b) :=
+  coe_mkFinCons _ _ _ _
+
+end DivisionRing
+
 /-- Let `b` be a basis for a submodule `N ≤ O`. If `y ∈ O` is linear independent of `N`
 and `y` and `N` together span the whole of `O`, then there is a basis for `O`
 whose basis vectors are given by `Fin.cons y b`. -/

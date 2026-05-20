@@ -97,6 +97,28 @@ lemma mem_genEigenspace_nat {f : End R M} {μ : R} {k : ℕ} {x : M} :
   · intro hx
     exact ⟨k, le_rfl, hx⟩
 
+/-- An intertwining linear map sends generalized eigenspaces into generalized eigenspaces with the
+same eigenvalue and exponent. -/
+theorem map_genEigenspace_le {N : Type*} [AddCommGroup N] [Module R N]
+    {f : End R M} {g : End R N} (φ : M →ₗ[R] N) (hφ : g.comp φ = φ.comp f)
+    (μ : R) (k : ℕ∞) :
+    (f.genEigenspace μ k).map φ ≤ g.genEigenspace μ k := by
+  rintro y ⟨x, hx, rfl⟩
+  obtain ⟨l, hl, hx⟩ := (mem_genEigenspace (f := f) (μ := μ) (k := k) (x := x)).mp hx
+  apply (mem_genEigenspace (f := g) (μ := μ) (k := k) (x := φ x)).mpr
+  refine ⟨l, hl, ?_⟩
+  rw [LinearMap.mem_ker] at hx ⊢
+  have hsub (x : M) : (g - μ • 1) (φ x) = φ ((f - μ • 1) x) := by
+    have hfg : g (φ x) = φ (f x) := LinearMap.congr_fun hφ x
+    simp [LinearMap.sub_apply, hfg]
+  have hpow (l : ℕ) (x : M) :
+      ((g - μ • 1) ^ l) (φ x) = φ (((f - μ • 1) ^ l) x) := by
+    induction l with
+    | zero => simp
+    | succ l ih =>
+        rw [pow_succ', pow_succ', Module.End.mul_apply, Module.End.mul_apply, ih, hsub]
+  rw [hpow, hx, map_zero]
+
 lemma mem_genEigenspace_top {f : End R M} {μ : R} {x : M} :
     x ∈ f.genEigenspace μ ⊤ ↔ ∃ k : ℕ, x ∈ LinearMap.ker ((f - μ • 1) ^ k) := by
   simp [mem_genEigenspace]
