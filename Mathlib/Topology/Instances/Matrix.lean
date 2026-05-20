@@ -301,8 +301,8 @@ theorem Continuous.matrix_blockDiag'
     Continuous fun x => blockDiag' (A x) :=
   continuous_pi fun _i => continuous_matrix fun _j _k => hA.matrix_elem _ _
 
-theorem isClosed_setOf_blockTriangular {α : Type*} {b : m → α} [LinearOrder α] [Zero R] [T2Space R]
-    : IsClosed {M : Matrix m m R | M.BlockTriangular b} := by
+theorem isClosed_setOf_blockTriangular {α : Type*} {b : m → α} [LinearOrder α] [Zero R]
+    [T2Space R] : IsClosed {M : Matrix m m R | M.BlockTriangular b} := by
   simp only [BlockTriangular, Set.setOf_forall]
   refine isClosed_iInter fun i => isClosed_iInter fun j => isClosed_iInter fun _ => ?_
   exact isClosed_eq (continuous_id.matrix_elem i j) continuous_const

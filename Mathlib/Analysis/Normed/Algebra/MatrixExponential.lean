@@ -13,6 +13,7 @@ public import Mathlib.LinearAlgebra.Matrix.Symmetric
 public import Mathlib.LinearAlgebra.Matrix.Block
 public import Mathlib.Topology.UniformSpace.Matrix
 public import Mathlib.Topology.Instances.Matrix
+
 /-!
 # Lemmas about the matrix exponential
 
