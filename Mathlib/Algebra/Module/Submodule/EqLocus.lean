@@ -68,15 +68,17 @@ theorem le_eqLocus {f g : M →ₛₗ[τ₁₂] M₂} {S : Submodule R M} :
     S ≤ eqLocus f g ↔ Set.EqOn f g S :=
   Iff.rfl
 
+variable {F : Type*} [FunLike F M M₂] [SemilinearMapClass F τ₁₂ M M₂]
+
 include τ₁₂ in
-theorem eqOn_sup {f g : M →ₛₗ[τ₁₂] M₂} {S T : Submodule R M}
+theorem eqOn_sup {f g : F} {S T : Submodule R M}
     (hS : Set.EqOn f g S) (hT : Set.EqOn f g T) :
     Set.EqOn f g ↑(S ⊔ T) := by
-  rw [← le_eqLocus] at hS hT ⊢
+  rw [← LinearMap.coe_coe (f := f), ← LinearMap.coe_coe (f := g), ← le_eqLocus] at hS hT ⊢
   exact sup_le hS hT
 
 include τ₁₂ in
-theorem ext_on_codisjoint {f g : M →ₛₗ[τ₁₂] M₂} {S T : Submodule R M} (hST : Codisjoint S T)
+theorem ext_on_codisjoint {f g : F} {S T : Submodule R M} (hST : Codisjoint S T)
     (hS : Set.EqOn f g S) (hT : Set.EqOn f g T) : f = g :=
   DFunLike.ext _ _ fun _ ↦ eqOn_sup hS hT <| hST.eq_top.symm ▸ trivial
 
