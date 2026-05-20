@@ -6,6 +6,7 @@ Authors: Jingting Wang, Nailin Guan
 module
 
 public import Mathlib.Algebra.Homology.Homotopy
+public import Mathlib.Algebra.Homology.ShortComplex.Linear
 public import Mathlib.RingTheory.KoszulComplex.Complex
 public import Mathlib.RingTheory.KoszulComplex.Cocomplex
 
@@ -161,9 +162,16 @@ end homotopy
 
 section homology_annihilator
 
+set_option backward.isDefEq.respectTransparency false in
 lemma koszulComplex.mem_annihilator_homology (i : ℕ) :
     φ x ∈ Module.annihilator R ((koszulComplex φ).homology i) := by
-  sorry
+  rw [Module.mem_annihilator]
+  intro z
+  have ofht : (HomologicalComplex.homologyMap (φ x • 𝟙 (koszulComplex φ)) i).hom z = 0 := by
+    simp [(smul_id_homotopicToZero x φ).homologyMap_eq i]
+  have : (ShortComplex.homologyMap (φ x • ((HomologicalComplex.shortComplexFunctor _ _ i).map
+      (𝟙 (koszulComplex φ))))).hom z = φ x • z := by simp
+  exact this.symm.trans ofht
 
 lemma koszulComplex.range_le_annihilator_homology (i : ℕ) :
     φ.range ≤ Module.annihilator R ((koszulComplex φ).homology i) := by
@@ -174,9 +182,16 @@ lemma koszulComplex.ofList_ideal_annihilator_homology (l : List R) (i : ℕ) :
     Ideal.ofList l ≤ Module.annihilator R ((ofList l).homology i) :=
   le_of_eq_of_le (by simp) (range_le_annihilator_homology (Fintype.linearCombination R l.get) i)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma koszulCocomplex.mem_annihilator_homology (i : ℕ) :
     φ x ∈ Module.annihilator R ((koszulCocomplex R x).homology i) := by
-  sorry
+  rw [Module.mem_annihilator]
+  intro z
+  have ofht : (HomologicalComplex.homologyMap (φ x • 𝟙 (koszulCocomplex R x)) i).hom z = 0 := by
+    simp [(smul_id_homotopicToZero x φ).homologyMap_eq i]
+  have : (ShortComplex.homologyMap (φ x • ((HomologicalComplex.shortComplexFunctor _ _ i).map
+      (𝟙 (koszulCocomplex R x))))).hom z = φ x • z := by simp
+  exact this.symm.trans ofht
 
 lemma koszulCocomplex.ofList_ideal_le_mem_annihilator_homology (l : List R) (i : ℕ) :
     Ideal.ofList l ≤ Module.annihilator R ((koszulCocomplex.ofList R l).homology i) := by
