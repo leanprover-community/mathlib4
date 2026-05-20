@@ -244,39 +244,21 @@ variable
 If `g` is continuous on the circle `sphere c |R|` and `f` is circle integrable, then `g • f` is
 circle integrable.
 -/
-theorem smul_of_continuousOn {f : ℂ → F} {g : ℂ → 𝕜} (hf : CircleIntegrable f c R)
+@[to_fun] theorem smul_of_continuousOn {f : ℂ → F} {g : ℂ → 𝕜} (hf : CircleIntegrable f c R)
     (hg : ContinuousOn g (sphere c |R|)) :
     CircleIntegrable (g • f) c R :=
   IntervalIntegrable.continuousOn_smul hf
     (hg.comp (by fun_prop) (fun x hx ↦ circleMap_mem_sphere' c R x))
 
 /--
-If `g` is continuous on the circle `sphere c |R|` and `f` is circle integrable, then `g • f` is
-circle integrable.
--/
-theorem continuousOn_fun_smul {f : ℂ → F} {g : ℂ → 𝕜} (hf : CircleIntegrable f c R)
-    (hg : ContinuousOn g (sphere c |R|)) :
-    CircleIntegrable (fun z ↦ g z • f z) c R :=
-  hf.continuousOn_smul hg
-
-/--
 If `g` is continuous on the circle `sphere c |R|` and `f` is circle integrable, then `g * f` is
 circle integrable.
 -/
-theorem continuousOn_mul {f g : ℂ → 𝕜} (hf : CircleIntegrable f c R)
+@[to_fun] theorem mul_of_continuousOn {f g : ℂ → 𝕜} (hf : CircleIntegrable f c R)
     (hg : ContinuousOn g (sphere c |R|)) :
     CircleIntegrable (g * f) c R :=
   IntervalIntegrable.continuousOn_mul hf
     (hg.comp (by fun_prop) (fun x hx ↦ circleMap_mem_sphere' c R x))
-
-/--
-If `g` is continuous on the circle `sphere c |R|` and `f` is circle integrable, then `g * f` is
-circle integrable.
--/
-theorem continuousOn_fun_mul {f g : ℂ → 𝕜} (hf : CircleIntegrable f c R)
-    (hg : ContinuousOn g (sphere c |R|)) :
-    CircleIntegrable (fun z ↦ g z * f z) c R :=
-  hf.continuousOn_mul hg
 
 /-- The function we actually integrate over `[0, 2π]` in the definition of `circleIntegral` is
 integrable. -/
