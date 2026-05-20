@@ -1451,22 +1451,14 @@ variable {S₁ M M₁ : Type*} [Semiring S₁] {σ : S →+* S₁} {σ' : S₁ �
   [RingHomInvPair σ σ'] [RingHomInvPair σ' σ] [TopologicalSpace M] [AddCommMonoid M] [Module S M]
   [TopologicalSpace M₁] [AddCommMonoid M₁] [Module S₁ M₁]
 
-set_option pp.proofs true
-
 /-- A linear equivalence that is a homeomorphism is a continuous linear equivalence. -/
 def ofIsHomeomorph (f : M ≃ₛₗ[σ] M₁) (hf : IsHomeomorph f) : M ≃SL[σ] M₁ where
   __ := f
   continuous_toFun := hf.continuous
-  continuous_invFun := by sorry
-    -- have := hf.homeomorph.continuous_invFun
-    -- simp only [IsHomeomorph.toEquiv_homeomorph, Equiv.invFun_as_coe] at this
-    -- -- have a := Equiv.coe_ofBijective (f := f) hf.bijective
-    -- have b := Equiv.ofBijective_coe (f := f)
-    -- -- with_reducible_and_instances
-    -- rw [b] at this
-    -- -- have := Homeomorph.continuous_invFun
-    -- -- erw [Equiv.isHomeomorph_iff, f.coe_symm_toEquiv, ← f.invFun_eq_symm] at hf
-    -- -- exact hf.2
+  continuous_invFun := by
+    replace hf : IsHomeomorph f.toEquiv.toFun := hf
+    simpa only [IsHomeomorph.toEquiv_homeomorph, Equiv.ofBijective_coe] using
+      hf.homeomorph.continuous_invFun
 
 theorem isHomeomorph (f : M ≃SL[σ] M₁) : IsHomeomorph f := ⟨f.continuous, isOpenMap f, f.bijective⟩
 
