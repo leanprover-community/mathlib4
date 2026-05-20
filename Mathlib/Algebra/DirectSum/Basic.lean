@@ -381,6 +381,44 @@ def sigmaCurryEquiv : (⨁ i : Σ _i, _, δ i.1 i.2) ≃+ ⨁ (i) (j), δ i j :=
 
 end Sigma
 
+section SigmaFiber
+
+variable {ι₁ ι₂ : Type v} [DecidableEq ι₂] (f : ι₁ → ι₂)
+variable {β : ι₁ → Type w} [∀ i : ι₁, AddCommMonoid (β i)]
+
+/-- The equivalence between a direct sum indexed by a type `ι₁` and the
+    double sum indexed by a type `ι₂` and the fibres of a map `f : ι₁ → ι₂`. -/
+def sigmaFiberAddEquiv [DecidableEq ι₂] :
+    (⨁ i, β i) ≃+ ⨁ (j : ι₂) (i : { i : ι₁ // f i = j}), β ↑i :=
+  (equivCongrLeft' (Equiv.sigmaFiberEquiv f)).trans
+    (sigmaCurryEquiv (δ := fun j ↦ (fun (i : { i : ι₁ // f i = j}) ↦ β i)))
+
+theorem sigmaFiberAddEquiv_apply' (x : ⨁ i, β i) :
+    sigmaFiberAddEquiv f x = sigmaCurry (equivCongrLeft' (Equiv.sigmaFiberEquiv f) x) := by
+  simp only [DirectSum.sigmaFiberAddEquiv,AddEquiv.trans_apply]
+  rfl
+
+@[simp]
+theorem sigmaFiberAddEquiv_apply (x : ⨁ i, β i) (j : ι₂) (i' : { i : ι₁ // f i = j}) :
+    sigmaFiberAddEquiv f x j i'=  x i' := by
+  rw [DirectSum.sigmaFiberAddEquiv_apply']
+  rfl
+
+@[simp]
+theorem sigmaFiberAddEquiv_of [DecidableEq ι₁] (i : ι₁) (x : β i) :
+  sigmaFiberAddEquiv f (of _ i x) = of _ (f i) (of _ ⟨i, rfl⟩ x) := by
+  let h := Equiv.sigmaFiberEquiv f
+  let k : (j : ι₂) × {i₁ : ι₁ // f i₁ = j} := ⟨f i, ⟨i, rfl⟩⟩
+  calc sigmaFiberAddEquiv f (of β (h k) x)
+  _ = sigmaCurry (of (fun k : (j' : ι₂) × {i // f i = j'} ↦ β (h k)) k x) := by
+      simp only [sigmaFiberAddEquiv_apply',h,equivCongrLeft'_of]
+  _ = sigmaCurry (of (fun k : (j' : ι₂) × {i // f i = j'} ↦ β k.2) k x) := by
+      rfl
+  _ = of _ k.1 (of _ k.2 x) := by
+      simp only [sigmaCurry_of]
+
+end SigmaFiber
+
 /-- The canonical embedding from `⨁ i, A i` to `M` where `A` is a collection of `AddSubmonoid M`
 indexed by `ι`.
 
