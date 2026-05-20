@@ -185,7 +185,8 @@ theorem meromorphicOrderAt_canonicalFactor_ne_top {z : ℂ} {R : ℝ} (w : ℂ) 
     grind
 
 /--
-The divisor of `CanonicalFactor R w` is `-w`.
+The divisor of `CanonicalFactor R w` is `-w`.  In other words, the divisor function takes the value
+-1 at `w` and is zero elsewhere.
 -/
 theorem divisor_canonicalFactor (hw : w ∈ ball 0 R) :
     MeromorphicOn.divisor (canonicalFactor R w) (ball 0 R)
@@ -212,30 +213,21 @@ variable
   {R : ℝ} {c w : ℂ}
   {f : ℂ → E}
 
--- Auxiliary lemma for the proof of the canonical decomposition theorem
+-- Auxiliary lemma for the proof of the canonical decomposition theorem: The factor in the canonical
+-- decomposition is meromorphic in normal form.
 private lemma canonicalDecomposition_aux₁ (F : locallyFinsuppWithin (ball (0 : ℂ) R) ℤ) :
     MeromorphicNFOn (∏ᶠ u, (canonicalFactor R u) ^ (F u)) (ball (0 : ℂ) R) := by
   classical
-  apply meromorphicNFOn_finprod
-  · intro w
-    by_cases hw : w ∈ ball 0 R
-    · apply MeromorphicNFOn.zpow (fun z _ ↦ (meromorphicNFOn_canonicalFactor hw) (mem_univ z))
-    · simp only [hw, not_false_eq_true, locallyFinsuppWithin.apply_eq_zero_of_notMem,
-        zpow_zero]
-      apply AnalyticOnNhd.meromorphicNFOn
-      apply analyticOnNhd_const
-  · intro z hz a ha b hb
-    simp_rw [Pi.pow_apply, mem_setOf_eq] at *
-    have h₂a : a ∈ ball 0 R := by
-      by_contra
-      aesop
-    have h₂b : b ∈ ball 0 R := by
-      by_contra
-      aesop
+  refine meromorphicNFOn_finprod (fun w ↦ ?_) fun z hz a ha b hb ↦ ?_
+  · by_cases hw : w ∈ ball 0 R
+    · exact fun _ _ ↦ (meromorphicNFOn_canonicalFactor hw).zpow (by trivial)
+    · simpa [hw] using analyticOnNhd_const.meromorphicNFOn
+  · have ⟨h₂a, h₂b⟩ : a ∈ ball 0 R ∧ b ∈ ball 0 R := by constructor <;> (by_contra; aesop)
     grind [eq_zero_of_zpow_eq_zero hb, eq_zero_of_zpow_eq_zero ha,
       zero_canonicalFactor_iff h₂b hz, zero_canonicalFactor_iff h₂a hz]
 
--- Auxiliary lemma for the proof of the canonical decomposition theorem
+-- Auxiliary lemma for the proof of the canonical decomposition theorem: Write a function with
+-- finite support as a linear combination of singleton indicator functions.
 open Function.locallyFinsuppWithin in
 private lemma sum_apply_smul_single_eq_self
     {X : Type*} [TopologicalSpace X] [DecidableEq X] {U : Set X}
@@ -251,7 +243,8 @@ private lemma sum_apply_smul_single_eq_self
     aesop
   · aesop
 
--- Auxiliary lemma for the proof of the canonical decomposition theorem
+-- Auxiliary lemma for the proof of the canonical decomposition theorem: Exhibit the divisor of the
+-- factor in the canonical decomposition as the negative of the divisor of `f`.
 private lemma canonicalDecomposition_aux₂ (h₁f : MeromorphicOn f (closedBall 0 R)) :
     divisor (∏ᶠ u, (canonicalFactor R u) ^ (divisor f (ball 0 R) u)) (ball 0 R)
       = -(divisor f (ball 0 R)) := by
@@ -278,7 +271,8 @@ private lemma canonicalDecomposition_aux₂ (h₁f : MeromorphicOn f (closedBall
       (meromorphicOrderAt_canonicalFactor_ne_top z (pos_of_mem_ball hx)) with ℓ
     simp [← WithTop.coe_mul]
 
--- Auxiliary lemma for the proof of the canonical decomposition theorem
+-- Auxiliary lemma for the proof of the canonical decomposition theorem: The (inverse of the) factor
+-- in the canonical decomposition does not vanish identically.
 private lemma canonicalDecomposition_aux₃ {z : ℂ} (hR : 0 < R) :
     meromorphicOrderAt
       (∏ᶠ (c : ℂ), canonicalFactor R c ^ (divisor f (ball 0 R)) c) z ≠ ⊤ := by
@@ -305,7 +299,7 @@ theorem _root_.MeromorphicOn.congr_codiscreteWitin_closedBall_prod_canonicalFact
   by_cases hR : R ≤ 0
   · refine ⟨fun z ↦ f 0, fun z hz ↦ AnalyticAt.meromorphicNFAt analyticAt_const,
       by simp [ball_eq_empty.2 hR], ?_⟩
-    filter_upwards [Filter.self_mem_codiscreteWithin (closedBall 0 R)] with a ha
+    filter_upwards [self_mem_codiscreteWithin (closedBall 0 R)] with a ha
     have : R = 0 := by grind [nonneg_of_mem_closedBall ha]
     aesop
   rw [not_le] at hR
@@ -329,7 +323,7 @@ theorem _root_.MeromorphicOn.congr_codiscreteWitin_closedBall_prod_canonicalFact
   have h₃g : divisor g (ball 0 R) = 0 := by
     rw [divisor_congr_codiscreteWithin
         ((toMeromorphicNFOn_eqOn_codiscrete hφ).symm.filter_mono
-        (codiscreteWithin.mono ball_subset_closedBall)) isOpen_ball,
+        (codiscreteWithin_mono ball_subset_closedBall)) isOpen_ball,
       divisor_smul _ (fun x hx ↦ h₁f x (ball_subset_closedBall hx))
         (fun z _ ↦ canonicalDecomposition_aux₃ hR)
         (fun z hz ↦ h₂f ⟨z, ball_subset_closedBall hz⟩),
@@ -353,8 +347,8 @@ theorem _root_.MeromorphicOn.congr_codiscreteWitin_closedBall_prod_canonicalFact
   · trans (∏ i ∈ η₀.toFinset, canonicalFactor R i ^ (-(divisor f (ball 0 R)) i)) • φ
     · unfold φ
       rw [finprod_eq_prod_of_mulSupport_subset_of_finite _ _ η₀]
-      · filter_upwards [Filter.codiscreteWithin.mono (by tauto) η₀.compl_mem_codiscrete,
-          Filter.self_mem_codiscreteWithin (closedBall 0 R)] with a ha h₂a
+      · filter_upwards [codiscreteWithin_mono (by tauto) η₀.compl_mem_codiscrete,
+          self_mem_codiscreteWithin (closedBall 0 R)] with a ha h₂a
         simp only [Pi.smul_apply', Finset.prod_apply, Pi.pow_apply]
         rw [← smul_assoc, ← Finset.prod_smul, Finset.prod_eq_one, one_smul]
         · intro x hx
@@ -369,9 +363,8 @@ theorem _root_.MeromorphicOn.congr_codiscreteWitin_closedBall_prod_canonicalFact
           grind
       · intro
         contrapose
-        intro
         simp_all
-    · filter_upwards [toMeromorphicNFOn_eqOn_codiscrete hφ] with z hz
+    · filter_upwards [toMeromorphicNFOn_eqOn_codiscrete hφ]
       simp_all [g]
 
 end Complex
