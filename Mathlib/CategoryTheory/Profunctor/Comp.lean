@@ -331,7 +331,7 @@ def associatorComponents (X : C) (Y : Fᵒᵖ) :
       rw [coendRel_iff]
       use f
       simp
-    · rintro ⟨d, p, e, q, r⟩ ⟨d', p', e', q', r'⟩ h-- ⟨e', ⟨d', p', q'⟩, r'⟩ h
+    · rintro ⟨d, p, e, q, r⟩ ⟨d', p', e', q', r'⟩ h
       dsimp
       rw [coendRel_iff] at h
       obtain ⟨f, ⟨p, x⟩, h₁, h₂⟩ := h
