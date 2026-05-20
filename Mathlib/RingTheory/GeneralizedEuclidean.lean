@@ -291,7 +291,7 @@ theorem euclideanFiltration_limit {n : Ordinal} (hn : IsSuccLimit n) :
 theorem euclideanFiltration_coe_nat (n : ℕ) :
     Ordinal.EuclideanFiltration R n = Nat.EuclideanFiltration R n := by
   induction n with
-  | zero => ext ; simp [mem_euclideanFiltration_zero_iff]
+  | zero => ext; simp [mem_euclideanFiltration_zero_iff]
   | succ n hn =>
     ext r
     have : (succ n : Ordinal) = Order.succ n := by simp
