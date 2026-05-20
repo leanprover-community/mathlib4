@@ -157,11 +157,11 @@ lemma prodMk {m𝓨 : MeasurableSpace 𝓨} [TopologicalSpace 𝓨] [OpensMeasur
   refine ⟨K₁ ×ˢ K₂, hK₁_compact.prod hK₂_compact, fun κ hκ_mem ↦ ?_⟩
   grw [compl_prod_eq_union, measure_union_le, ← ENNReal.add_halves (a := ε)]
   apply add_le_add
-  · specialize hK₁_le _ <| mem_image_of_mem _ (hκ_mem)
-    rw [Measure.fst_apply <| hK₁_compact.measurableSet.compl] at hK₁_le
+  · specialize hK₁_le _ <| mem_image_of_mem _ hκ_mem
+    rw [Measure.fst_apply hK₁_compact.measurableSet.compl] at hK₁_le
     simpa [prod_univ] using hK₁_le
-  · specialize hK₂_le _ <| Set.mem_image_of_mem _ (hκ_mem)
-    rw [Measure.snd_apply <| hK₂_compact.measurableSet.compl] at hK₂_le
+  · specialize hK₂_le _ <| Set.mem_image_of_mem _ hκ_mem
+    rw [Measure.snd_apply hK₂_compact.measurableSet.compl] at hK₂_le
     simpa [univ_prod] using hK₂_le
 
 end IsTightMeasureSet
