@@ -33,9 +33,9 @@ noncomputable instance : MetricSpace (DirectLimit G f) where
   dist_self := DirectLimit.induction f (fun i x ↦ by rw [← dist_self x, lift₂_def])
   dist_comm := DirectLimit.induction₂ f (fun i x y ↦ by simp_rw [lift₂_def, dist_comm x y])
   dist_triangle := DirectLimit.induction₃ f (fun i x y z ↦ by simp_rw [lift₂_def, dist_triangle])
-  eq_of_dist_eq_zero {x' y'} h:= DirectLimit.induction₂ f (fun i x y h ↦ by
-    rw [lift₂_def] at h
-    simp [eq_of_dist_eq_zero h]) x' y' h
+  eq_of_dist_eq_zero {x y} h := DirectLimit.induction₂ f (fun i x' y' h' ↦ by
+    rw [lift₂_def] at h'
+    simp [eq_of_dist_eq_zero h']) x y h
 
 lemma dist_def (i : ι) (x y : G i) :
     dist (α := DirectLimit G f) ⟦⟨i,x⟩⟧ ⟦⟨i,y⟩⟧ = dist x y := by
