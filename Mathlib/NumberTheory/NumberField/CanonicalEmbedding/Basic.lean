@@ -712,10 +712,12 @@ theorem latticeBasis_repr_apply (x : K) (i : ChooseBasisIndex ℤ (𝓞 K)) :
 variable (I : (FractionalIdeal (𝓞 K)⁰ K)ˣ)
 
 /-- The image of the fractional ideal `I` in the mixed space. -/
-abbrev idealLattice : Submodule ℤ (mixedSpace K) := LinearMap.range <|
+abbrev idealLattice (K : Type*) [Field K] (I : (FractionalIdeal (𝓞 K)⁰ K)ˣ) :
+    Submodule ℤ (mixedSpace K) := LinearMap.range <|
   (mixedEmbedding K).toIntAlgHom.toLinearMap ∘ₗ ((I : Submodule (𝓞 K) K).subtype.restrictScalars ℤ)
 
-theorem mem_idealLattice {x : mixedSpace K} :
+theorem mem_idealLattice (K : Type*) [Field K]
+    (I : (FractionalIdeal (𝓞 K)⁰ K)ˣ) {x : mixedSpace K} :
     x ∈ idealLattice K I ↔ ∃ y, y ∈ (I : Set K) ∧ mixedEmbedding K y = x := by
   simp [idealLattice]
 
