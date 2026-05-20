@@ -204,7 +204,7 @@ lemma HasFiniteSupport.mul_left {f : α → M} (hf : f.HasFiniteSupport) (g : α
   exact left_ne_zero_of_mul ha
 
 @[to_fun (attr := fun_prop)]
-lemma HasFiniteSupport.fun_mul_right (f : α → M) {g : α → M} (hg : g.HasFiniteSupport) :
+lemma HasFiniteSupport.mul_right (f : α → M) {g : α → M} (hg : g.HasFiniteSupport) :
     (f * g).HasFiniteSupport := by
   refine Set.Finite.subset hg fun a ha ↦ ?_
   simp only [Function.mem_support] at ha ⊢
