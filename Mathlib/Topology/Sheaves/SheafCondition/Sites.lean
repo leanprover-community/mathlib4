@@ -255,7 +255,6 @@ theorem isIso_iff_isIso_basis {F G : Sheaf C X} (h : Opens.IsBasis (Set.range B)
   rw [NatTrans.isIso_iff_isIso_app]
   exact fun _ ↦ hi _
 
-
 end TopCat.Sheaf
 
 namespace TopologicalSpace.Opens
