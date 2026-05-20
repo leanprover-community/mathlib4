@@ -1198,7 +1198,7 @@ The determinant of the matrix is the discriminant of the quadratic form.
 variable {n : Type w} [Fintype n] [DecidableEq n]
 variable [CommRing R] [AddCommMonoid M] [Module R M]
 
-/-- `M.toQuadraticMap'` is the map `fun x ↦ row x * M * col x` as a quadratic form. -/
+/-- `M.toQuadraticForm'` is the map `fun x ↦ row x * M * col x` as a quadratic form on `n → R`. -/
 def Matrix.toQuadraticForm' (M : Matrix n n R) : QuadraticForm R (n → R) :=
   LinearMap.BilinMap.toQuadraticMap (Matrix.toLinearMap₂' R M)
 
@@ -1210,7 +1210,9 @@ namespace QuadraticForm
 
 section Rn
 
-/-- A matrix representation of a quadratic form `Q : QuadraticForm R (n → R)`. -/
+/-- A matrix representation of a quadratic form `Q : QuadraticForm R (n → R)`.
+  See also `QuadraticForm.toMatrix` which gives the matrix in a given basis of a quadratic form on
+  an abstract vector space. -/
 def toMatrix' (Q : QuadraticForm R (n → R)) : Matrix n n R :=
   LinearMap.toMatrix₂' R Q.associated
 
@@ -1249,7 +1251,8 @@ open Module QuadraticMap
 variable [AddCommGroup N] [Module R N] (b : Basis n R N) (Q : QuadraticForm R N)
 
 /-- A matrix representation of the quadratic form `Q : QuadraticForm R N` with respect to a
-  given basis. -/
+  given basis. See also `QuadraticForm.toMatrix'` for the special case of `N = n → R` with
+  the standard basis. -/
 noncomputable def toMatrix : Matrix n n R :=
   LinearMap.toMatrix₂ b b (Q.associated)
 
@@ -1324,6 +1327,10 @@ theorem discr_comp [AddCommGroup P] [Module R P] (b' : Basis n R P) (Q : Quadrat
     QuadraticForm.discr b (Q.comp f) =
       (f.toMatrix b b').det * (f.toMatrix b b').det * (Q.discr b') := by
   simp [mul_left_comm, toMatrix_comp b b', mul_comm, discr]
+
+lemma discr_eq_discr' (Q : QuadraticForm R (n → R)) :
+    Q.discr (Pi.basisFun R n)  = Q.discr' := by
+  rw [discr, discr', toMatrix_eq_toMatrix']
 
 end Basis
 
