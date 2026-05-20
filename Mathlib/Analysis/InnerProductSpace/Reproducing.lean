@@ -232,8 +232,12 @@ instance instPreInnerProductSpaceCoreH₀ : PreInnerProductSpace.Core 𝕜 (H₀
     have := (posSemidef_tfae.out 0 1).mp (Fact.out : K.PosSemidef)
     exact this.2
 
-instance instSeminormedAddCommGroupH₀ : SeminormedAddCommGroup (H₀ K) :=
-  InnerProductSpace.Core.toSeminormedAddCommGroup (𝕜 := 𝕜)
+instance instNormPseudoMetricH₀ : NormPseudoMetric (H₀ K) :=
+  InnerProductSpace.Core.toNormPseudoMetric (𝕜 := 𝕜)
+
+instance instIsNormedAddGroupH₀ : IsNormedAddGroup (H₀ K) where
+
+example : SeminormedAddCommGroup (H₀ K) where
 
 instance instInnerProductSpaceH₀ : InnerProductSpace 𝕜 (H₀ K) := .ofCore _
 
