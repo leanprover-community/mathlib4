@@ -2,6 +2,7 @@ module
 
 public import Mathlib.Analysis.SpecialFunctions.Exp
 public import Mathlib.Order.CompletePartialOrder
+public import Mathlib.Tactic.Asymptotics.Init
 public import Mathlib.Tactic.Positivity
 public import Mathlib
 
@@ -236,7 +237,7 @@ lemma exp_at_one'' {l : Filter α} {f : α → ℝ} (hf : Filter.Tendsto f l (�
     exact h
   · apply Set.monotone_image
 
-lemma exp_at_one_set {l : Filter ℝ} {s : Set (ℝ → ℝ)}
+lemma exp_at_one_set {l : Filter α} {s : Set (α → ℝ)}
     (hs : ∀ f ∈ s, Filter.Tendsto f l (𝓝 0)) :
     map {fun _ ↦ exp} s ⊆ map (map {fun _ ↦ HAdd.hAdd} {fun _ ↦ 1}) (bigO l s) := by
   /- Written partly using Claude, but I want to see if we can do this more systematically? -/
@@ -505,12 +506,14 @@ meta def elabBigO : Elab.Term.TermElab := fun stx expectedType? ↦ do
 meta partial def mappify (fvar : Expr) (e : Expr) : MetaM Expr := do
   match_expr e with
   | dummyBigO α E instNormE l e' =>
+    trace[Elab.asymp] m!"Mappifying dummyBigO {α} {E} {l} {e'}"
     unless ← isDefEq α (← inferType fvar) do
       throwError
         "Filter `{l}` lives in type `{α}`, but is expected to live in type `{← inferType fvar}"
     return mkApp5 (.const ``bigO [← getDecLevel α, ← getDecLevel E])
       α E instNormE l (← mappify fvar e')
   | _ =>
+    trace[Elab.asymp] m!"Mappifying {e}"
     if let .app f a := e then
       let fType ← inferType f
       if let .forallE _ _ _ .default := fType then
@@ -550,6 +553,19 @@ macro a:term:55 " ~[" l:term "] " b:term:55 : asymp_rel => `(asymp_rel| $a:term;
 
 syntax (name := asympPercent) "asymp% " ident (" : " term)? " => " asymp_rel : term
 
+/-
+TLDR: The fix was to assert `E : Sort (?v + 1)` instead of `E : Sort ?v`. This way the level of
+`α → E` is `max u ?v + 1` instead of `imax (u+1) ?v`, so that we can decrement the level for
+the constructor of `Set`.
+-/
+
+section
+variable {a b : Sort*} (c : Prop)
+#check (α → c)
+end
+
+
+#check mkFreshTypeMVar
 @[term_elab asympPercent]
 meta def elabAsympPercent : Elab.Term.TermElab := fun stx _ ↦ do
   match stx with
@@ -561,12 +577,17 @@ meta def elabAsympPercent : Elab.Term.TermElab := fun stx _ ↦ do
           Elab.Term.elabType t
         else
           Meta.mkFreshTypeMVar
-      let type ← mkFreshTypeMVar
+      let typeLvl ← mkFreshLevelMVar
+      let type ← mkFreshExprMVar (Expr.sort (.succ typeLvl))
       let fnType := Expr.forallE x.getId fvarType type .default
+      trace[Elab.asymp] m!"Elaborated fnType: {fnType}"
       let r ← Elab.Term.elabTermEnsuringType r
         (Expr.forallE `a fnType (.forallE `a fnType (.sort 0) .default) .default)
+      trace[Elab.asymp] m!"Elaborated relation {r}"
+      trace[Elab.asymp] m!"Ensured type {(Expr.forallE `a fnType (.forallE `a fnType (.sort 0) .default) .default)}"
       Meta.withLocalDeclD x.getId fvarType fun fvar ↦ do
         let u ← getDecLevel fnType
+        trace[Elab.asymp] m!"fnType has type Sort {u}"
         let elabSide (stx : Syntax) : Elab.Term.TermElabM Expr := do
           if let `(_) := stx then
             mkFreshExprMVar (some <| .app (.const ``Set [u]) fnType)
@@ -669,6 +690,29 @@ lemma Real.log_add_one_isBigO_atTop : asymp% x : ℝ => log (x + 1) = log x + O[
 --     asymp% x : α => exp (f x) = 1 + O[l](f x) := by
 --   sorry
 --     -- map {fun _ ↦ exp} {f} ⊆ map (map {fun _ ↦ HAdd.hAdd} {fun _ ↦ 1}) (bigO l {f}) := by
+
+set_option trace.Elab.asymp true in
+-- same as exp_at_one' but deduced directly from exp_at_one
+example {l : Filter α} {f : α → ℝ} (hf : Filter.Tendsto f l (𝓝 0)) :
+    asymp% x : α => f x = 0 := by
+  sorry
+
+set_option trace.Elab.asymp true in
+-- same as exp_at_one' but deduced directly from exp_at_one
+example {l : Filter ℕ} {f : ℕ → ℝ} (hf : Filter.Tendsto f l (𝓝 0)) :
+    asymp% x : ℕ => f x = 0 := by
+  sorry
+
+  -- have h := exp_at_one
+  -- let : Set (ℝ → ℝ) → Set (α → ℝ) := (Set.image (· ∘ f))
+  -- -- Take `h` and compose on the right with `f`, then push into expressions until you
+  -- -- reach bigO.
+  -- rw [← Set.le_iff_subset] at h
+  -- apply_fun this at h
+  -- · simp only [Set.le_eq_subset, this, Set.image_comp_map, Set.image_singleton] at h
+  --   grw [Set.image_comp_isBigO _ hf] at h
+  --   exact h
+  -- · apply Set.monotone_image
 
 /-
   (n+1)^(e^(1/n))
