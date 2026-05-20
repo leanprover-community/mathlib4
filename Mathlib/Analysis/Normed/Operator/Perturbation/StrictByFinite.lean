@@ -66,6 +66,64 @@ We do the proof in four steps.
 We prove the theorem under the assumptions that
 - `u` is surjective
 - `u.ker` is disjoint from `A` (i.e. `u` is injective on `A`)
+- `map u A` is closed
+-/
+
+theorem step0 (u : E →L[𝕜] F) (A : Submodule 𝕜 E)
+    (A_closed : IsClosed (A : Set E)) [codim_A : FiniteDimensional 𝕜 (E ⧸ A)]
+    (h_ker : Disjoint u.ker A) (h_range : u.range = ⊤)
+    (uA_closed : IsClosed (map u.toLinearMap A : Set F)) :
+    IsStrictMap u ↔ IsStrictMap (u.domRestrict A) := by
+  -- Fix `S` an algebraic complement of `A` containing `u.ker`. It has finite dimension.
+  rcases h_ker.exists_isCompl with ⟨S, ker_le_S, S_compl_A⟩
+  have : FiniteDimensional 𝕜 S :=
+    quotientEquivOfIsCompl A S S_compl_A.symm |>.finiteDimensional
+  -- Because `A` is closed with finite codimension, `S` is in fact a topological complement
+  -- of `A`.
+  replace S_compl_A : IsTopCompl S A :=
+    S_compl_A.symm.isTopCompl_of_finiteDimensional_quotient A_closed |>.symm
+  -- Because `u` is assumed surjective and `S ⊔ A = ⊤`, we have `map u S ⊔ map u A = ⊤`.
+  -- Furthermore, because the kernel of `u` is fully contained in `S`, we can show that
+  -- `map u S ⊓ map u A = ⊥`, so that `map u S` and `map u A` are in fact algebraic complements
+  -- of each other.
+  have uS_compl_uA : IsCompl (map u.toLinearMap S) (map u.toLinearMap A) := by
+    constructor
+    · rw [disjoint_iff, inf_comm, map_inf_eq_map_inf_comap, comap_map_eq, sup_eq_left.mpr ker_le_S,
+        S_compl_A.isCompl.symm.inf_eq_bot, Submodule.map_bot]
+    · rw [codisjoint_iff, ← Submodule.map_sup, S_compl_A.isCompl.sup_eq_top, Submodule.map_top,
+        h_range]
+  -- Since `map u S` has finite dimension, `map u A` has finite codimension. But we also know that
+  -- `map u A` is closed so, once again, `map u S` and `map u A` are in fact *topological*
+  -- complements of each other.
+  replace uS_compl_uA : IsTopCompl (map u.toLinearMap S) (map u.toLinearMap A) :=
+      uS_compl_uA.symm.isTopCompl_of_isClosed_of_finiteDimensional uA_closed |>.symm
+  -- Thus, we have decomposed both the comain and the codomain into topopological complements,
+  -- and `u` preserves this decomposition, inducing maps `u₁ : S → map u S` and `u₂ : A → map u A`.
+  set u₁ : S →L[𝕜] map u.toLinearMap S := u.restrict (fun _ ↦ mem_map_of_mem)
+  set u₂ : A →L[𝕜] map u.toLinearMap A := u.restrict (fun _ ↦ mem_map_of_mem)
+  -- Using the corresponding isomorphisms `(S × A) ≃L[𝕜] E` and `(map u S × map u A) ≃L[𝕜] F`,
+  -- we have to show that the map `u₁.prodMap u₂ : S × A → map u S × map u A` is strict
+  -- if and only if `u₂ : A → map u A` is strict.
+  set Φ : (S × A) ≃L[𝕜] E := prodEquivOfIsTopCompl S A S_compl_A
+  set Ψ : (map u.toLinearMap S × map u.toLinearMap A) ≃L[𝕜] F :=
+    prodEquivOfIsTopCompl _ _ uS_compl_uA
+  have u₁_surj : Surjective u₁ := surjective_mapsTo_image_restrict _ _
+  have u₂_surj : Surjective u₂ := surjective_mapsTo_image_restrict _ _
+  have u_eq : u = Ψ ∘ (u₁.prodMap u₂) ∘ Φ.symm := by
+    ext x
+    simp [Φ, Ψ, u₁, u₂, ← map_add, projectionL_add_projectionL_eq_self]
+  have u_restr_eq : u.domRestrict A = (map u.toLinearMap A).subtypeL ∘ u₂ := rfl
+  suffices IsStrictMap (Prod.map u₁ u₂) ↔ IsStrictMap u₂ by
+    rw [u_restr_eq, u_eq]
+    sorry
+  sorry
+
+/-!
+### Step 1
+
+We prove the theorem under the assumptions that
+- `u` is surjective
+- `u.ker` is disjoint from `A` (i.e. `u` is injective on `A`)
 
 The statement becomes: `u` is a quotient map if and only if `u.domRestrict A` is
 a closed embedding.
