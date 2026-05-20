@@ -52,6 +52,14 @@ omit [Fintype V] in
 theorem isHermitian_adjMatrix [NonAssocSemiring R] [StarRing R] : (G.adjMatrix R).IsHermitian :=
   G.isAdjMatrix_adjMatrix R |>.isHermitian
 
+theorem IsRegularOfDegree.mem_spectrum_adjMatrix [DecidableEq V] [Nonempty V] [Nontrivial R]
+    [CommRing R] {d : ℕ} (hd : G.IsRegularOfDegree d) : (d : R) ∈ spectrum R (G.adjMatrix R) := by
+  rw [← Matrix.spectrum_toLin']
+  apply End.HasEigenvalue.mem_spectrum
+  refine End.hasEigenvalue_of_hasEigenvector (x := 1) ⟨End.mem_genEigenspace_one.mpr ?_, by simp⟩
+  ext v
+  simp [hd.degree_eq v]
+
 theorem degree_eq_sum_if_adj {R : Type*} [AddCommMonoidWithOne R] (i : V) :
     (G.degree i : R) = ∑ j : V, if G.Adj i j then 1 else 0 := by
   unfold degree neighborFinset neighborSet
