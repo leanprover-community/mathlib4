@@ -145,17 +145,16 @@ partial def ResultI.pow (n' : ℕ) :
         return rm2.eqTrans q(pow_bit_false $z $m))
 
 /-- Result of `norm_num` running on lift of natural numbers in real -/
-def NormNum.Resultn (n0 : ℕ) : MetaM (NormNum.Result q(OfNat.ofNat (α := ℝ) $n0)) := do
+def NormNum.Result.mkOfNatReal (n0 : ℕ) : MetaM (NormNum.Result q(OfNat.ofNat (α := ℝ) $n0)) := do
   have n : Q(ℕ) := .lit (.natVal n0)
   let ⟨_, (pa)⟩ ← NormNum.mkOfNat q(ℝ) q(inferInstance) n
   return NormNum.Result.isNat (α := q(ℝ)) q(inferInstance) n q(NormNum.isNat_ofNat ℝ $pa)
 
 /-- Result of `norm_num` on scientific expressions in real -/
-def NormNum.ResultOfScientific (mantissa : ℕ) (exponentSign : Bool) (decimalExponent : ℕ) :
-    MetaM (NormNum.Result q(OfScientific.ofScientific (α := ℝ) $mantissa
-    $exponentSign $decimalExponent )) := do
-  let x : Q(ℝ) := q(OfScientific.ofScientific (α := ℝ) $mantissa
-    $exponentSign $decimalExponent )
+def NormNum.Result.mkOfScientificReal (mantissa : ℕ) (exponentSign : Bool) (decimalExponent : ℕ) :
+    MetaM (NormNum.Result
+      q(OfScientific.ofScientific $mantissa $exponentSign $decimalExponent : ℝ)) := do
+  let x : Q(ℝ) := q(OfScientific.ofScientific $mantissa $exponentSign $decimalExponent)
   match exponentSign with
   | true =>
     let rme ← NormNum.derive (q(mkRat $mantissa (10 ^ $decimalExponent)) : Q(ℝ))
@@ -163,13 +162,13 @@ def NormNum.ResultOfScientific (mantissa : ℕ) (exponentSign : Bool) (decimalEx
     assumeInstancesCommute
     return .isNNRat (x := x) q(inferInstance) q n d (q(NormNum.isNNRat_ofScientific_of_true $p):)
   | false =>
-  let n' := Nat.mul mantissa (Nat.pow (10 : ℕ) decimalExponent)
-  have n : Q(ℕ) := mkRawNatLit n'
-  have pm : Q(NormNum.IsNat $mantissa $mantissa) := q(.mk rfl)
-  have pe : Q(NormNum.IsNat $decimalExponent $decimalExponent) := q(.mk rfl)
-  haveI : $n =Q Nat.mul $mantissa (Nat.pow (10 : ℕ) $decimalExponent) := ⟨⟩
-  return .isNat (x := x) q(inferInstance) n
-    (q(NormNum.isNat_ofScientific_of_false (α := ℝ) $pm $pe (.refl $n)):)
+    let n' := Nat.mul mantissa (Nat.pow (10 : ℕ) decimalExponent)
+    have n : Q(ℕ) := mkRawNatLit n'
+    have pm : Q(NormNum.IsNat $mantissa $mantissa) := q(.mk rfl)
+    have pe : Q(NormNum.IsNat $decimalExponent $decimalExponent) := q(.mk rfl)
+    haveI : $n =Q Nat.mul $mantissa (Nat.pow (10 : ℕ) $decimalExponent) := ⟨⟩
+    return .isNat (x := x) q(inferInstance) n
+      (q(NormNum.isNat_ofScientific_of_false (α := ℝ) $pm $pe (.refl $n)):)
 
 /-- Determine if an expression is a boolean literal. -/
 def _root_.Lean.Expr.rawBoolLit? (e : Expr) : Option Bool :=
@@ -223,19 +222,19 @@ partial def parse (z : Q(ℂ)) : MetaM (ResultI q($z)) := do
       let _i : $k' =Q Int.negSucc $n := ⟨⟩
       return r.eqTrans q(of_pow_negSucc $w $hm)
   | ~q(Complex.I) =>
-    return ResultI.mk (← NormNum.Resultn 0) (← NormNum.Resultn 1)
+    return ResultI.mk (← NormNum.Result.mkOfNatReal 0) (← NormNum.Result.mkOfNatReal 1)
   | ~q(0) =>
-    return ResultI.mk (← NormNum.Resultn 0) (← NormNum.Resultn 0)
+    return ResultI.mk (← NormNum.Result.mkOfNatReal 0) (← NormNum.Result.mkOfNatReal 0)
   | ~q(1) =>
-    return ResultI.mk (← NormNum.Resultn 1) (← NormNum.Resultn 0)
+    return ResultI.mk (← NormNum.Result.mkOfNatReal 1) (← NormNum.Result.mkOfNatReal 0)
   | ~q(OfNat.ofNat $en (self := @instOfNatAtLeastTwo ℂ _ _ $inst)) =>
     let some n := en.rawNatLit? | failure
-    return ResultI.mk (← NormNum.Resultn n) (← NormNum.Resultn 0)
+    return ResultI.mk (← NormNum.Result.mkOfNatReal n) (← NormNum.Result.mkOfNatReal 0)
   | ~q(OfScientific.ofScientific $em $ex $eexp) =>
     let some m := em.rawNatLit? | failure
     let some x := ex.rawBoolLit? | failure
     let some exp := eexp.rawNatLit? | failure
-    return ResultI.mk (← NormNum.ResultOfScientific m x exp) (← NormNum.Resultn 0)
+    return ResultI.mk (← NormNum.Result.mkOfScientificReal m x exp) (← NormNum.Result.mkOfNatReal 0)
   | _ => throwError "found the atom {z} which is not a numeral"
 
 -- TODO : get rid of cast in `$a = $x + Complex.I * $y`.
