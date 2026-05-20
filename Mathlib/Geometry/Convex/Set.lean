@@ -24,10 +24,10 @@ Since its body is an implementation detail, the predicate `IsConvexSet` is unexp
 
 open Finsupp Set
 
-public section
+public noncomputable section
 
 namespace Convexity
-variable {ι R K X Y : Type*}
+variable {ι I R K X Y : Type*}
 
 section Semiring
 variable [Semiring R] [PartialOrder R] [IsStrictOrderedRing R] [ConvexSpace R X] [ConvexSpace R Y]
@@ -129,6 +129,38 @@ protected lemma IsConvexSet.image (hf : IsAffineMap R f) (hs : IsConvexSet R s) 
     exact (if_pos hx).symm
   · rw [mapDomain_of_not_mem_image_support (by simp [← huw] at ⊢ hy; tauto)]
     simp_all
+
+/-- A convex subset of a convex space is a convex space. -/
+@[expose, implicit_reducible]
+def ConvexSpace.subtype (s : Set X) (hs : IsConvexSet R s) : ConvexSpace R s := .mk
+  (fun w ↦ ⟨w.iConvexComb (↑), hs.iConvexComb_mem <| by simp⟩)
+  (fun x ↦ by simp)
+  (fun w ↦ by ext; simp [iConvexComb_assoc])
+
+lemma isAffineMap_subtypeVal (s : Set X) (hs : IsConvexSet R s) :
+    letI : ConvexSpace R s := .subtype s hs
+    IsAffineMap R ((↑) : s → X) :=
+  letI : ConvexSpace R s := .subtype s hs
+  ⟨fun _ ↦ rfl⟩
+
+@[simp]
+lemma subtypeVal_sConvexComb (s : Set X) (hs : IsConvexSet R s) (w : StdSimplex R s) :
+    letI : ConvexSpace R s := .subtype s hs
+    (w.sConvexComb : X) = w.iConvexComb (↑) := rfl
+
+@[simp]
+lemma subtypeVal_iConvexComb (s : Set X) (hs : IsConvexSet R s) (w : StdSimplex R I) (f : I → s) :
+    letI : ConvexSpace R s := .subtype s hs
+    (↑(w.iConvexComb f) : X) = w.iConvexComb (fun i ↦ (f i).val) :=
+  letI : ConvexSpace R s := .subtype s hs
+  (isAffineMap_subtypeVal ..).map_iConvexComb ..
+
+@[simp]
+lemma subtypeVal_convexCombPair (s : Set X) (hs : IsConvexSet R s) (a b : R) (ha hb hab) (x y : s) :
+    letI : ConvexSpace R s := .subtype s hs
+    (↑(convexCombPair a b ha hb hab x y) : X) = convexCombPair a b ha hb hab x.val y.val :=
+  letI : ConvexSpace R s := .subtype s hs
+  (isAffineMap_subtypeVal ..).map_convexCombPair ..
 
 protected lemma IsConvexSet.prod {Y : Type*} [ConvexSpace R Y] {t : Set Y}
     (hs : IsConvexSet R s) (ht : IsConvexSet R t) : IsConvexSet R (s ×ˢ t) := by
