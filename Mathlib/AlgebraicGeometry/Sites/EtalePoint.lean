@@ -18,7 +18,7 @@ public import Mathlib.FieldTheory.SeparableClosure
 # Points of the étale site
 
 In this file, we show that a morphism `Spec (.of Ω) ⟶ S` where `Ω` is
-a separably closed field defined a point on the small étale site of `S`.
+a separably closed field defines a point on the small étale site of `S`.
 We show that these points form a conservative family.
 
 -/
@@ -147,7 +147,7 @@ lemma isConservative_pointSmallEtale
     obtain ⟨W, g, ⟨Z, p, _, ⟨a⟩, rfl⟩, y, rfl⟩ := hR ⟨_, ⟨i⟩⟩ x'
     exact ⟨a, (pointSmallEtaleFiberObjToPreimage (s i) hi (y ≫ p.hom)).1, rfl⟩)
 
-lemma isConservative_pointSmallEtale' (S : Scheme.{u}) :
+lemma isConservativeFamilyOfPoints_pointSmallEtale' (S : Scheme.{u}) :
     (ObjectProperty.ofObj (fun (s : S) ↦ pointSmallEtale
       ((SpecToEquivOfField (SeparableClosure (S.residueField s)) _).2
         ⟨s, CommRingCat.ofHom
@@ -159,6 +159,6 @@ lemma isConservative_pointSmallEtale' (S : Scheme.{u}) :
 
 instance : GrothendieckTopology.HasEnoughPoints.{u} (smallEtaleTopology S) where
   exists_objectProperty :=
-    ⟨_, inferInstance, isConservative_pointSmallEtale' S⟩
+    ⟨_, inferInstance, isConservativeFamilyOfPoints_pointSmallEtale' S⟩
 
 end AlgebraicGeometry.Scheme
