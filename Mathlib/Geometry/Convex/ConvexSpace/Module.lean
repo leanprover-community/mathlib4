@@ -44,6 +44,7 @@ def ConvexSpace.ofModule : ConvexSpace R M where
 instance convexSpaceSelf : ConvexSpace R R := .ofModule
 
 variable (R M) [ConvexSpace R M] in
+/-- Typeclass for a convex space structure on a module to be given by weighted sums. -/
 class IsModuleConvexSpace : Prop where
   sConvexComb_eq_sum (w : StdSimplex R M) : w.sConvexComb = w.weights.sum fun m r ↦ r • m
 
