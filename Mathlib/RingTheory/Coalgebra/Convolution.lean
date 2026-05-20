@@ -181,9 +181,9 @@ instance convAlgebra : Algebra R (WithConv (C →ₗ[R] A)) :=
     (fun _ _ _ => ofConv_injective <| by simp [convMul_def, map_smul_right, smul_comp, comp_smul])
 
 @[simp]
-lemma convAlgebraMap_apply (r : R) (c : C) :
+lemma algebraMap_apply (r : R) (c : C) :
     algebraMap R (WithConv (C →ₗ[R] A)) r c = r • algebraMap R A (counit (R := R) c) := by
-  rw [Algebra.algebraMap_eq_smul_one]; simp [convOne_def, Algebra.linearMap]
+  simp [Algebra.algebraMap_eq_smul_one, convOne_def, Algebra.linearMap]
 
 end Semiring
 
