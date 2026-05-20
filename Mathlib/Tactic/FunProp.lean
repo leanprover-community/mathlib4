@@ -356,7 +356,7 @@ There are four types of theorems that are used a bit differently.
 public section
 
 /-!
-### fun_prop attributes for injectivity
+### fun_prop attributes for injectivity and surhjectivity
 
 We add these here as injectivity and the associated basic results are defined in Init.
 -/
@@ -364,5 +364,7 @@ We add these here as injectivity and the associated basic results are defined in
 open Function
 
 attribute [fun_prop] Injective injective_id Injective.comp Option.map_injective
+
+attribute [fun_prop] Surjective surjective_id Surjective.comp
 
 end
