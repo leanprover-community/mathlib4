@@ -2,7 +2,7 @@
 Copyright (c) 2024 Weihong Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Johan Commelin, Amelia Livingston, Sophie Morel, Jujian Zhang, Weihong Xu,
-  Andrew Yang
+  Andrew Yang, Brian Nugent
 -/
 module
 
@@ -467,23 +467,6 @@ theorem isIso_fromTildeΓ_iff_isLocalizing (M : (Spec R).Modules) :
       Scheme.Modules.toOpen_fromTildeΓ_app]
     simpa using IsIso.id _
 
-/-- `sheafCompose` commutes with `pushforward`. -/
-def sheafComposePushforwardComp :
-    sheafCompose (Opens.grothendieckTopology (Spec S))
-      (ModuleCat.restrictScalars (Spec.map φ).appTop.hom) ⋙
-      TopCat.Sheaf.pushforward _ (Spec.map φ).base ⋙
-      sheafCompose _ (ModuleCat.restrictScalars (Scheme.ΓSpecIso R).inv.hom) ≅
-    sheafCompose _ (ModuleCat.restrictScalars (Scheme.ΓSpecIso S).inv.hom) ⋙
-      TopCat.Sheaf.pushforward _ (Spec.map φ).base ⋙
-      sheafCompose _ (ModuleCat.restrictScalars φ.hom) := by
-  refine NatIso.ofComponents (fun M ↦ ObjectProperty.isoMk _ ?_) ?_
-  · refine NatIso.ofComponents (fun U ↦ ?_) ?_
-    · refine (ModuleCat.restrictScalarsComp'App _ _ _ ?_ _).symm ≪≫
-        (ModuleCat.restrictScalarsComp φ.hom ((Scheme.ΓSpecIso S).inv).hom).app _
-      rw [← CommRingCat.hom_comp, Scheme.ΓSpecIso_inv_naturality, CommRingCat.hom_comp]
-    · cat_disch
-  · cat_disch
-
 /-- `Scheme.Modules.pushforward` and `modulesSpecToSheaf` commute -/
 def pushforwardCompModulesSpecToSheafIso :
     Scheme.Modules.pushforward (Spec.map φ) ⋙ modulesSpecToSheaf ≅
@@ -493,7 +476,8 @@ def pushforwardCompModulesSpecToSheafIso :
     Functor.isoWhiskerRight (SheafOfModules.pushforwardCompForgetToSheafModuleCat _ _ _
     (initialOpOfTerminal isTerminalTop)) _ ≪≫ Functor.associator _ _ _ ≪≫
     (Functor.isoWhiskerLeft _ (Functor.associator _ _ _)) ≪≫
-    Functor.isoWhiskerLeft _ (sheafComposePushforwardComp φ) ≪≫ (Functor.associator _ _ _).symm
+    Functor.isoWhiskerLeft _ (Scheme.Modules.sheafComposePushforwardComp φ) ≪≫
+    (Functor.associator _ _ _).symm
 
 open scoped ModuleCat.Algebra in
 theorem isLocalizing_pushforward_of_isLocalizing {M : (Spec S).Modules}
