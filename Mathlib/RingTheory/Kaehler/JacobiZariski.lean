@@ -466,6 +466,8 @@ lemma H1Cotangent.exact_δ_mapBaseChange : Function.Exact (δ R S T) (mapBaseCha
 
 namespace Extension
 
+variable {R S}
+
 /-- The linear equivalence between the cotangent space of an extension `P : Extension R S`
 and the first homology of the naive cotangent complex of `S` over `P.Ring`. -/
 noncomputable def cotangentEquivH1Cotangent (P : Extension.{u₃} R S) :
@@ -517,7 +519,7 @@ theorem h1Cotangentδ_comp_coe_cotangentEquivH1Cotangent (P : Extension.{u₃} R
   have comap_ker : G.toExtension.ker.comap (algebraMap P.Ring G.toExtension.Ring) = P.ker := by
     simp_rw [Extension.ker, RingHom.ker, Ideal.comap_comap, ← IsScalarTower.algebraMap_eq]
   rw [← comap_ker, Ideal.mem_comap] at x_in
-  let u : G.toExtension.ker := ⟨(algebraMap P.Ring G.toExtension.Ring) x, x_in⟩
+  let u : G.toExtension.ker := ⟨algebraMap P.Ring G.toExtension.Ring x, x_in⟩
   have hu : u.1 = MvPolynomial.C x := rfl
   rw [← Generators.H1Cotangent.δAux_C G, ← hu, ← Generators.H1Cotangent.δ_eq_δAux _
     (Generators.self R P.Ring) u (by simp [u, -Generators.toExtension_Ring])]
