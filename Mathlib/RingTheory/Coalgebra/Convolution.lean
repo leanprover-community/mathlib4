@@ -174,10 +174,15 @@ instance convSemiring : Semiring (WithConv (C →ₗ[R] A)) where
   one_mul f := by ext; simp [convOne_def, ← map_comp_rTensor]
   mul_one f := by ext; simp [convOne_def, ← map_comp_lTensor]
 
+instance : IsScalarTower R (WithConv (C →ₗ[R] A)) (WithConv (C →ₗ[R] A)) :=
+  ⟨fun _ _ _ => by ext; simp [map_smul_left]⟩
+
+instance : SMulCommClass R (WithConv (C →ₗ[R] A)) (WithConv (C →ₗ[R] A)) :=
+  ⟨fun _ _ _ => by ext; simp [map_smul_right]⟩
+
 /-- Convolution `R`-algebra structure on `WithConv (C →ₗ[R] A)`. -/
 instance convAlgebra : Algebra R (WithConv (C →ₗ[R] A)) :=
-  .ofModule (fun _ _ _ => by ext; simp [map_smul_left])
-    fun _ _ _ => by ext; simp [map_smul_right]
+  .ofModule smul_mul_assoc mul_smul_comm
 
 @[simp]
 lemma algebraMap_apply (r : R) (c : C) :
