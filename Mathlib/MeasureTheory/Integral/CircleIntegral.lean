@@ -244,7 +244,7 @@ variable
 If `g` is continuous on the circle `sphere c |R|` and `f` is circle integrable, then `g • f` is
 circle integrable.
 -/
-theorem continuousOn_smul {f : ℂ → F} {g : ℂ → 𝕜} (hf : CircleIntegrable f c R)
+theorem smul_of_continuousOn {f : ℂ → F} {g : ℂ → 𝕜} (hf : CircleIntegrable f c R)
     (hg : ContinuousOn g (sphere c |R|)) :
     CircleIntegrable (g • f) c R :=
   IntervalIntegrable.continuousOn_smul hf
