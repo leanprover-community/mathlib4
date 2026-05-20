@@ -180,7 +180,6 @@ instance : IsScalarTower R (WithConv (C →ₗ[R] A)) (WithConv (C →ₗ[R] A))
 instance : SMulCommClass R (WithConv (C →ₗ[R] A)) (WithConv (C →ₗ[R] A)) :=
   ⟨fun _ _ _ => by ext; simp [map_smul_right]⟩
 
-/-- Convolution `R`-algebra structure on `WithConv (C →ₗ[R] A)`. -/
 instance convAlgebra : Algebra R (WithConv (C →ₗ[R] A)) :=
   .ofModule smul_mul_assoc mul_smul_comm
 
