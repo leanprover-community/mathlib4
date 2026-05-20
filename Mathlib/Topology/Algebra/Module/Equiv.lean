@@ -1466,11 +1466,11 @@ theorem isHomeomorph (f : M ≃SL[σ] M₁) : IsHomeomorph f := ⟨f.continuous,
 variable {f : M ≃ₛₗ[σ] M₁} (hf : IsHomeomorph f)
 
 @[simp]
-lemma ofIsHomeomorph_coe : (ofIsHomeomorph f hf).toLinearEquiv = f := by
+lemma toLinearquiv_ofIsHomeomorph : (ofIsHomeomorph f hf).toLinearEquiv = f := by
   dsimp only [ofIsHomeomorph]
 
 @[simp]
-lemma ofIsHomeomorph_apply (x : M) : (ofIsHomeomorph f hf) x = f x := by dsimp [ofIsHomeomorph]
+lemma coe_ofIsHomeomorph : (ofIsHomeomorph f hf : M → M₁) = f := by dsimp [ofIsHomeomorph]
 
 /-- A linear equivalence between topological modules is a homeomorphism if and only if it is
 continuous in both directions. -/
