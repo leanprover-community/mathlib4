@@ -23,12 +23,14 @@ A complete proof is available at https://github.com/leanprover-community/mathlib
 though it may fail to compile with the latest Mathlib.
 
 It is being brought up to Mathlib code standards and merged in a series of smaller PRs.
+For now, all lemmas in this file are strictly weaker than the final theorem,
+so they're private.
 -/
+
+set_option linter.privateModule false -- TODO: remove when we add the main theorem
 
 open Function Filter Metric Set
 open scoped Pointwise Topology
-
-public section
 
 namespace Complex
 
@@ -43,7 +45,7 @@ then there exists a function `f : ℂ → ℂ` such that
 
 E.g., one can choose `a ∉ U`, then take `f z` to be the square root of `z - a`.
 -/
-private theorem exists_injective_not_dense_image_deriv_ne_zero {U : Set ℂ} (hUo : IsOpen U)
+theorem exists_injective_not_dense_image_deriv_ne_zero {U : Set ℂ} (hUo : IsOpen U)
     (hUc : IsSimplyConnected U) (hU : U ≠ univ) :
     ∃ f : ℂ → ℂ, Injective f ∧ ¬Dense (f '' U) ∧ ∀ z ∈ U, deriv f z ≠ 0 := by
   -- WLOG, `0 ∉ U`, otherwise we choose `a ∉ U` and replace `U` with `-a +ᵥ U`
