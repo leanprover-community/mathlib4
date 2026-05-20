@@ -70,9 +70,8 @@ end WithHypotheses
 
 section ReducibleAliases
 
-/-- A reducible alias for the morphism type, even with object arguments
-swapped, should still be handled. The propagator reduces the inferred
-type until it hits `Quiver.Hom` and extracts the endpoints from there. -/
+/-- A reducible alias for the morphism type should not hide the
+underlying composition head from the propagator. -/
 private def MorAlias (Y X : C) := X ⟶ Y
 
 example {X Y Z W : C} (f : MorAlias Y X) (g : MorAlias Z Y) (h : MorAlias W Z) :

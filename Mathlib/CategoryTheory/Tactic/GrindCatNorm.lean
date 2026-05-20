@@ -44,28 +44,29 @@ initialize registerTraceClass `grind.catNorm
 /-- Cheap syntactic check: `e` is `f ≫ g` already in right-associated
 form with no `𝟙 _` factors. Used to short-circuit before invoking simp. -/
 partial def isNormal (e : Expr) : Bool :=
-  if e.isAppOfArity ``CategoryTheory.CategoryStruct.comp 7 then
-    let l := e.appFn!.appArg!
-    let r := e.appArg!
+  match_expr e with
+  | CategoryTheory.CategoryStruct.comp _ _ _ _ _ l r =>
     !l.isAppOf ``CategoryTheory.CategoryStruct.comp &&
     !l.isAppOf ``CategoryTheory.CategoryStruct.id &&
     !r.isAppOf ``CategoryTheory.CategoryStruct.id &&
     (!r.isAppOf ``CategoryTheory.CategoryStruct.comp || isNormal r)
-  else
-    true
+  | _ => true
 
 /-- The propagator body. -/
 def catCompPropagatorImpl (e : Expr) : Grind.GoalM Unit := do
   unless e.isAppOfArity ``CategoryTheory.CategoryStruct.comp 7 do return ()
   if isNormal e then return ()
   -- `simp` may throw if no `Category` instance is available for the
-  -- composition's `CategoryStruct`; we silently skip in that case.
+  -- composition's `CategoryStruct`; we silently skip in that case but
+  -- trace the exception so future regressions aren't invisible.
   let r ← try
     simpOnlyNames
       [``CategoryTheory.Category.id_comp,
        ``CategoryTheory.Category.comp_id,
        ``CategoryTheory.Category.assoc] e (config := { decide := false })
-  catch _ => return ()
+  catch ex =>
+    trace[grind.catNorm] "skipped: {ex.toMessageData}"
+    return ()
   if Lean.Meta.Sym.isSameExpr e r.expr then return ()
   trace[grind.catNorm] "{e} ↦ {r.expr}"
   let e' ← Grind.shareCommon r.expr
