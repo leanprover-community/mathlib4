@@ -44,7 +44,7 @@ open Matrix
 universe v
 
 variable {α β m n o : Type*} {m' n' : α → Type*}
-variable {R : Type v} {M N : Matrix m m R} {b : m → α}
+variable {R : Type v} {A : Type*} {M N : Matrix m m R} {b : m → α}
 
 namespace Matrix
 
@@ -185,6 +185,44 @@ theorem BlockTriangular.mul [Fintype m] [NonUnitalNonAssocSemiring R]
   by_cases! hki : b k < b i
   · simp_rw [hM hki, zero_mul]
   · simp_rw [hN (lt_of_lt_of_le hij hki), mul_zero]
+
+variable (R b) in
+/-- `BlockTriangular` matrices form a subsemiring. -/
+@[simps]
+def blockTriangularSubsemiring [DecidableEq m] [Fintype m] [Semiring R] :
+    Subsemiring (Matrix m m R) where
+  carrier := {M | BlockTriangular M b}
+  zero_mem' := blockTriangular_zero
+  one_mem' := blockTriangular_one
+  mul_mem' := .mul
+  add_mem' := .add
+
+@[simp]
+theorem mem_blockTriangularSubsemiring [DecidableEq m] [Fintype m] [Semiring R]
+    {M : Matrix m m R} :
+    M ∈ blockTriangularSubsemiring R b ↔ BlockTriangular M b :=
+  Iff.rfl
+
+theorem BlockTriangular.pow [DecidableEq m] [Fintype m] [Semiring R] (hM : BlockTriangular M b)
+    (n : ℕ) : BlockTriangular (M ^ n) b :=
+  pow_mem (S := blockTriangularSubsemiring R b) hM n
+
+theorem blockTriangular_algebraMap [CommSemiring R] [Semiring A] [Algebra R A]
+    [DecidableEq m] [Fintype m] (r : R) : (algebraMap R (Matrix m m A) r).BlockTriangular b :=
+  blockTriangular_diagonal _
+
+variable (R A b) in
+/-- `BlockTriangular` matrices form a subalgebra. -/
+def blockTriangularSubalgebra [CommSemiring R] [Semiring A] [Algebra R A]
+    [DecidableEq m] [Fintype m] : Subalgebra R (Matrix m m A) where
+  __ := blockTriangularSubsemiring A b
+  algebraMap_mem' r := blockTriangular_algebraMap r
+
+@[simp]
+theorem mem_blockTriangularSubalgebra [CommSemiring R] [Semiring A] [Algebra R A]
+    [DecidableEq m] [Fintype m] {M : Matrix m m A} :
+    M ∈ blockTriangularSubalgebra R A b ↔ BlockTriangular M b :=
+  Iff.rfl
 
 end LinearOrder
 
