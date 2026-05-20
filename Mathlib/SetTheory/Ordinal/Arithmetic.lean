@@ -813,7 +813,7 @@ theorem div_eq_one_iff {a b : Ordinal} : a / b = 1 ↔ b ≤ a ∧ a < b * 2 := 
 
 @[simp]
 theorem div_one (a : Ordinal) : a / 1 = a := by
-  simpa only [one_mul] using mul_div_cancel a Ordinal.one_ne_zero
+  simpa only [one_mul] using mul_div_cancel a one_ne_zero
 
 @[simp]
 theorem div_self {a : Ordinal} (h : a ≠ 0) : a / a = 1 := by
@@ -961,7 +961,7 @@ theorem exists_lt_mul {b c : Ordinal} {P : Ordinal → Prop} :
 
 instance instCharZero : CharZero Ordinal := by
   refine ⟨fun a b h ↦ ?_⟩
-  rwa [← Cardinal.ord_nat, ← Cardinal.ord_nat, Cardinal.ord_inj, Nat.cast_inj] at h
+  rwa [← Cardinal.ord_natCast, ← Cardinal.ord_natCast, Cardinal.ord_inj, Nat.cast_inj] at h
 
 @[simp]
 theorem one_add_natCast (m : ℕ) : 1 + (m : Ordinal) = succ m := by

@@ -130,13 +130,7 @@ Note that for general (neither symmetric nor antisymmetric) bilinear forms this 
 chirality; in addition to this "right" orthogonal complement one could define a "left" orthogonal
 complement for which, for all `y` in `N`, `B x y = 0`.  This variant definition is not currently
 provided in mathlib. -/
-def orthogonal (B : BilinForm R M) (N : Submodule R M) : Submodule R M where
-  carrier := { m | ∀ n ∈ N, IsOrtho B n m }
-  zero_mem' x _ := isOrtho_zero_right x
-  add_mem' {x y} hx hy n hn := by
-    rw [IsOrtho, add_right, show B n x = 0 from hx n hn, show B n y = 0 from hy n hn, zero_add]
-  smul_mem' c x hx n hn := by
-    rw [IsOrtho, smul_right, show B n x = 0 from hx n hn, mul_zero]
+def orthogonal (B : BilinForm R M) (N : Submodule R M) : Submodule R M := N.orthogonalBilin B
 
 variable {N L : Submodule R M}
 
