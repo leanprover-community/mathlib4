@@ -50,7 +50,7 @@ lemma nontrivial_Lp_real_of_nontrivial_Lp [Nontrivial (Lp E p μ)] : Nontrivial 
   have hfne : ¬ (f =ᵐ[μ] 0) := by
     contrapose! hf
     ext
-    grw [hf, (Lp.coeFn_zero E p μ)]
+    grw [hf, Lp.coeFn_zero E p μ]
   rcases eq_top_or_lt_top p with rfl | h'p
   · apply nontrivial_of_ne ((memLp_top_const (1 : ℝ)).toLp _) 0
     contrapose! hfne
