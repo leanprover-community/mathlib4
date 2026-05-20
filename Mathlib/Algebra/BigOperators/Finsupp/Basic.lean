@@ -190,10 +190,8 @@ theorem prod_congr_of_eq_on_union [DecidableEq α] {f1 f2 : α →₀ M} {g1 g2 
     (h1 : ∀ x ∈ f1.support ∪ f2.support, g1 x 0 = 1)
     (h2 : ∀ x ∈ f1.support ∪ f2.support, g2 x 0 = 1) :
     f1.prod g1 = f2.prod g2 := by
-  rw [Finsupp.prod_of_support_subset f1
-      (Finset.subset_union_left (s₁ := f1.support) (s₂ := f2.support)) _ h1,
-    Finsupp.prod_of_support_subset f2
-      (Finset.subset_union_right (s₁ := f1.support) (s₂ := f2.support)) _ h2]
+  rw [Finsupp.prod_of_support_subset f1 Finset.subset_union_left _ h1,
+    Finsupp.prod_of_support_subset f2 Finset.subset_union_right _ h2]
   exact Finset.prod_congr rfl h
 
 @[to_additive]

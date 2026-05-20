@@ -87,7 +87,7 @@ def prod [∀ i, Zero (β i)] [∀ (i) (x : β i), Decidable (x ≠ 0)] [CommMon
 theorem prod_of_support_subset [∀ i, Zero (β i)]
     [∀ (i) (x : β i), Decidable (x ≠ 0)] [CommMonoid γ]
     {f : Π₀ i, β i} {g : (i : ι) → β i → γ} {s : Finset ι}
-    (map_zero : ∀ i ∈ s, g i 0 = 1) (hs : f.support ⊆ s) :
+    (hs : f.support ⊆ s) (map_zero : ∀ i ∈ s, g i 0 = 1) :
     f.prod g = ∏ i ∈ s, g i (f i) := by
   simp only [DFinsupp.prod]
   apply Finset.prod_subset hs
@@ -108,10 +108,8 @@ theorem prod_congr_of_eq_on_union
     (h1 : ∀ x ∈ f1.support ∪ f2.support, g1 x 0 = 1)
     (h2 : ∀ x ∈ f1.support ∪ f2.support, g2 x 0 = 1) :
     f1.prod g1 = f2.prod g2 := by
-  rw [DFinsupp.prod_of_support_subset h1
-      (Finset.subset_union_left (s₁ := f1.support) (s₂ := f2.support)),
-    DFinsupp.prod_of_support_subset h2
-      (Finset.subset_union_right (s₁ := f1.support) (s₂ := f2.support))]
+  rw [prod_of_support_subset Finset.subset_union_left h1,
+    prod_of_support_subset Finset.subset_union_right h2]
   exact Finset.prod_congr rfl h
 
 @[to_additive (attr := simp)]
