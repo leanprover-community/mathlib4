@@ -325,7 +325,6 @@ public import Mathlib.Algebra.Field.ULift
 public import Mathlib.Algebra.Field.ZMod
 public import Mathlib.Algebra.FiniteSupport.Basic
 public import Mathlib.Algebra.FiniteSupport.Defs
-public import Mathlib.Algebra.FiniteSupport.SMul
 public import Mathlib.Algebra.FiveLemma
 public import Mathlib.Algebra.Free
 public import Mathlib.Algebra.FreeAbelianGroup.Finsupp
