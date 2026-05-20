@@ -146,22 +146,39 @@ theorem isCompact_iff_ultrafilter_le_nhds' :
 
 alias ⟨IsCompact.ultrafilter_le_nhds', _⟩ := isCompact_iff_ultrafilter_le_nhds'
 
+/-- If a compact set belongs to a filter and all cluster points in this set and in the filter
+lie in a set `s'` then the filter is less than or equal to `𝓝ˢ s'`. -/
+lemma IsCompact.le_nhdsSet_of_clusterPt (hs : IsCompact s) {l : Filter X} {s' : Set X}
+    (hmem : s ∈ l) (h : ∀ x ∈ s, ClusterPt x l → x ∈ s') : l ≤ 𝓝ˢ s' := by
+  refine le_iff_ultrafilter.2 fun f hf ↦ ?_
+  rcases hs.ultrafilter_le_nhds' f (hf hmem) with ⟨x, hxs, hx⟩
+  grw [hx]
+  refine nhds_le_nhdsSet ?_
+  exact h x hxs (.mono (.of_le_nhds hx) hf)
+
 /-- If a compact set belongs to a filter and this filter has a unique cluster point `y` in this set,
 then the filter is less than or equal to `𝓝 y`. -/
 lemma IsCompact.le_nhds_of_unique_clusterPt (hs : IsCompact s) {l : Filter X} {y : X}
     (hmem : s ∈ l) (h : ∀ x ∈ s, ClusterPt x l → x = y) : l ≤ 𝓝 y := by
-  refine le_iff_ultrafilter.2 fun f hf ↦ ?_
-  rcases hs.ultrafilter_le_nhds' f (hf hmem) with ⟨x, hxs, hx⟩
-  convert ← hx
-  exact h x hxs (.mono (.of_le_nhds hx) hf)
+  rw [← nhdsSet_singleton]
+  exact hs.le_nhdsSet_of_clusterPt hmem h
+
+/-- If values of `f : Y → X` belong to a compact set `s` eventually along a filter `l`
+and `s'` is the set of `MapClusterPt` for `f` along `l` in `s`,
+then `f` tends to `𝓝ˢ s'` along `l`. -/
+lemma IsCompact.tendsto_nhdsSet_of_mapClusterPt {Y} {l : Filter Y} {s' : Set X} {f : Y → X}
+    (hs : IsCompact s) (hmem : ∀ᶠ x in l, f x ∈ s) (h : ∀ x ∈ s, MapClusterPt x l f → x ∈ s') :
+    Tendsto f l (𝓝ˢ s') :=
+  hs.le_nhdsSet_of_clusterPt (mem_map.2 hmem) h
 
 /-- If values of `f : Y → X` belong to a compact set `s` eventually along a filter `l`
 and `y` is a unique `MapClusterPt` for `f` along `l` in `s`,
 then `f` tends to `𝓝 y` along `l`. -/
 lemma IsCompact.tendsto_nhds_of_unique_mapClusterPt {Y} {l : Filter Y} {y : X} {f : Y → X}
     (hs : IsCompact s) (hmem : ∀ᶠ x in l, f x ∈ s) (h : ∀ x ∈ s, MapClusterPt x l f → x = y) :
-    Tendsto f l (𝓝 y) :=
-  hs.le_nhds_of_unique_clusterPt (mem_map.2 hmem) h
+    Tendsto f l (𝓝 y) := by
+  rw [← nhdsSet_singleton]
+  exact hs.tendsto_nhdsSet_of_mapClusterPt hmem h
 
 /-- For every open directed cover of a compact set, there exists a single element of the
 cover which itself includes the set. -/

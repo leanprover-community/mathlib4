@@ -235,4 +235,13 @@ theorem deriv_div (hc : DifferentiableAt 𝕜 c x) (hd : DifferentiableAt 𝕜 d
     deriv (c / d) x = (deriv c x * d x - c x * deriv d x) / d x ^ 2 :=
   (hc.hasDerivAt.div hd.hasDerivAt hx).deriv
 
+theorem deriv_const_div (c : 𝕜') (hd : DifferentiableAt 𝕜 d x) (hx : d x ≠ 0) :
+    deriv (fun x => c / d x) x = - c * deriv d x / d x ^ 2 := by
+  simp [deriv_fun_div (differentiableAt_const c) hd hx]
+
+@[simp]
+theorem deriv_const_div_id (c : 𝕜) :
+    deriv (fun x => c / x) x = - c / x ^ 2 := by
+  simp [div_eq_mul_inv]
+
 end Division
