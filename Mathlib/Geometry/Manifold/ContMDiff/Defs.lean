@@ -273,7 +273,7 @@ theorem contMDiffWithinAt_iff_target :
       and_iff_left_of_imp <| (continuousAt_extChartAt _).comp_continuousWithinAt
   simp_rw [cont, ContDiffWithinAtProp, extChartAt, OpenPartialHomeomorph.extend,
     PartialEquiv.coe_trans, ModelWithCorners.toPartialEquiv_coe,
-  OpenPartialHomeomorph.coe_toPartialEquiv, modelWithCornersSelf_coe, chartAt_self_eq,
+    OpenPartialHomeomorph.coe_toPartialEquiv, modelWithCornersSelf_coe, chartAt_self_eq,
     OpenPartialHomeomorph.refl_apply, id_comp]
   rfl
 

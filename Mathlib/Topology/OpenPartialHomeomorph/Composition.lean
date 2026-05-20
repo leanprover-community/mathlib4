@@ -178,8 +178,8 @@ theorem symm_trans_restr (e' : OpenPartialHomeomorph X Y) (hs : IsOpen s) :
     exact isOpen_image_source_inter e' hs
   refine ⟨?_, ?_⟩
   · simp only [trans_toPartialEquiv, symm_toPartialEquiv, restr_toPartialEquiv,
-    PartialEquiv.trans_source, PartialEquiv.symm_source, coe_toPartialEquiv_symm,
-    PartialEquiv.restr_source, preimage_inter]
+      PartialEquiv.trans_source, PartialEquiv.symm_source, coe_toPartialEquiv_symm,
+      PartialEquiv.restr_source, preimage_inter]
     -- Shuffle the intersections, pull e'.target into the interior and use interior_inter.
     rw [interior_eq_iff_isOpen.mpr hs,
       ← inter_assoc, inter_comm e'.target, inter_assoc, inter_assoc]
