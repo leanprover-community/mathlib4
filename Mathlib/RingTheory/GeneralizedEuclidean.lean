@@ -78,6 +78,8 @@ namespace ENat
 
 open Nat
 
+/-- The `ℕ∞`-euclidean level of an element of a semiring ---
+this is the smallest step of `EuclideanFiltration` to which it belongs, or `⊤` otherwise -/
 noncomputable def EuclideanLevel (r : R) : ℕ∞ :=
   sInf { n : ℕ∞ | ∃ h : n < ⊤, r ∈ EuclideanFiltration R (n.lift h) }
 
@@ -249,6 +251,7 @@ namespace Ordinal
 open WithTop Order
 
 variable (R) in
+/-- The `Ordinal`-euclidean filtration of a semiring -/
 def EuclideanFiltration (o : Ordinal.{u}) : Set R :=
   limitRecOn (motive := fun _ ↦ Set R) o
     {0}
@@ -279,7 +282,6 @@ theorem zero_mem_euclideanFiltration {n : Ordinal} :
     simp only [Set.mem_iUnion, exists_prop]
     exact ⟨0, IsSuccLimit.pos hn, hn' _ hn.pos⟩
 
-@[simp]
 theorem mem_euclideanFiltration_succ_iff {r : R} {n : Ordinal} :
     r ∈ EuclideanFiltration R (succ n) ↔ r = 0 ∨
       ∀ x, ∃ q, ∃ s ∈ EuclideanFiltration R n, x = q * r + s := by
@@ -362,6 +364,8 @@ namespace WithTop.Ordinal
 
 open Ordinal WithTop
 
+/-- The `WithTop Ordinal`-euclidean level of an element of a semiring ---
+this is the smallest step of `EuclideanFiltration` to which it belongs, or `⊤` otherwise -/
 noncomputable def EuclideanLevel (r : R) : WithTop Ordinal :=
   sInf { n : WithTop Ordinal.{u} | ∃ h : n ≠ ⊤, r ∈ Ordinal.EuclideanFiltration R (n.untop h) }
 
