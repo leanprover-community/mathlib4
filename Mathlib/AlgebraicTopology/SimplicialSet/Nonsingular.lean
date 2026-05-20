@@ -52,6 +52,7 @@ lemma Nonsingular.mono' [X.Nonsingular]
     {n : ℕ} (x : X _⦋n⦌) (hx : x ∈ X.nonDegenerate n) :
     Mono (yonedaEquiv.symm x) := mono ⟨x, hx⟩
 
+@[kerodon 02MK]
 lemma Nonsingular.of_mono (f : X ⟶ Y) [Mono f] [Y.Nonsingular] :
     X.Nonsingular where
   mono := by
