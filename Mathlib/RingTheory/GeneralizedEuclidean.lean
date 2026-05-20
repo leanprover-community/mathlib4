@@ -570,4 +570,3 @@ theorem _root_.IsOrdinalEuclidean.isPrincipalIdealRing
       exact I.sub_mem hb (Ideal.mul_mem_left I q haI))
 
 end Ordinal
-
