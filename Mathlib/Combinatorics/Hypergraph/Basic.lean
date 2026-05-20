@@ -190,20 +190,22 @@ def IsEmpty (H : Hypergraph α) : Prop := V(H) = ∅ ∧ E(H) = ∅
 /-- A hypergraph is nonempty if it has at least one vertex or at least one edge. -/
 def IsNonempty (H : Hypergraph α) : Prop := V(H).Nonempty ∨ E(H).Nonempty
 
-/-- The empty hypergraph on a type. -/
+/-- The empty hypergraph (bottom) on a type. -/
 @[simps]
-def empty (α : Type*) : Hypergraph α where
-  vertexSet := ∅
-  edgeSet := ∅
-  subset_vertexSet_of_mem_edgeSet' := by simp
+instance (α : Type*) : Bot (Hypergraph α) where
+  bot.vertexSet := ∅
+  bot.edgeSet := ∅
+  bot.subset_vertexSet_of_mem_edgeSet' := by simp
+
+def empty (α : Type*) := (⊥ : Hypergraph α)
 
 @[simp]
 lemma IsNonempty.of_nonempty_vertexSet (hV : V(H).Nonempty) : H.IsNonempty :=
   .inl hV
 
-lemma IsEmpty.emptyHypergraph : IsEmpty (empty α) := ⟨rfl, rfl⟩
+lemma IsEmpty.bot : IsEmpty (⊥ : Hypergraph α) := ⟨rfl, rfl⟩
 
-lemma IsEmpty.eq_empty (h : H.IsEmpty) : H = empty α := Hypergraph.ext_iff.mpr h
+lemma IsEmpty.eq_bot (h : H.IsEmpty) : H = ⊥ := Hypergraph.ext_iff.mpr h
 
 lemma IsEmpty.vertexSet_eq (hH : H.IsEmpty) : V(H) = ∅ := hH.1
 
@@ -215,17 +217,17 @@ lemma isEmpty_iff_forall_not_mem : H.IsEmpty ↔ (∀ x, x ∉ V(H)) ∧ (∀ e,
 lemma IsEmpty.not_mem_edgeSet (hH : H.IsEmpty) {e : Set α} : e ∉ E(H) := by
   grind [IsEmpty]
 
-lemma notMem_edgeSet_empty : e ∉ E(empty α) :=
-  IsEmpty.not_mem_edgeSet IsEmpty.emptyHypergraph
+lemma notMem_edgeSet_bot : e ∉ E(empty α) :=
+  IsEmpty.not_mem_edgeSet IsEmpty.bot
 
 @[simp]
 lemma not_isEmpty_iff : ¬H.IsEmpty ↔ H.IsNonempty := by
   grind [IsEmpty, IsNonempty, Set.Nonempty]
 
 @[simp]
-lemma not_isNonempty : ¬H.IsNonempty ↔ H.IsEmpty := not_iff_comm.mp not_isEmpty_iff
+lemma not_isNonempty_iff : ¬H.IsNonempty ↔ H.IsEmpty := not_iff_comm.mp not_isEmpty_iff
 
-alias ⟨_, IsEmpty.not_isNonempty⟩ := not_isNonempty
+alias ⟨_, IsEmpty.not_isNonempty⟩ := not_isNonempty_iff
 alias ⟨_, IsNonempty.not_isEmpty⟩ := not_isEmpty_iff
 
 variable (H) in
@@ -243,7 +245,7 @@ def trivialOn (f : Set α) : Hypergraph α where
   edgeSet := ∅
   subset_vertexSet_of_mem_edgeSet' := by simp
 
-lemma isTrivial_trivialOn (hf : Set.Nonempty f) :
+lemma IsTrivial.trivialOn (hf : Set.Nonempty f) :
     IsTrivial (trivialOn f) := by
   grind [trivialOn, IsTrivial]
 
