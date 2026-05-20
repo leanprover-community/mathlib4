@@ -170,12 +170,6 @@ def NormNum.Result.mkOfScientificReal (mantissa : ℕ) (exponentSign : Bool) (de
     return .isNat (x := x) q(inferInstance) n
       (q(NormNum.isNat_ofScientific_of_false (α := ℝ) $pm $pe (.refl $n)):)
 
-/-- Determine if an expression is a boolean literal. -/
-def _root_.Lean.Expr.rawBoolLit? (e : Expr) : Option Bool :=
-  if e.isConstOf ``true then true else
-  if e.isConstOf ``false then false else
-  none
-
 /-- Parsing all the basic calculation in complex. -/
 partial def parse (z : Q(ℂ)) : MetaM (ResultI q($z)) := do
   withTraceNode `Tactic.norm_num
@@ -231,10 +225,8 @@ partial def parse (z : Q(ℂ)) : MetaM (ResultI q($z)) := do
     let some n := en.rawNatLit? | failure
     return ResultI.mk (← NormNum.Result.mkOfNatReal n) (← NormNum.Result.mkOfNatReal 0)
   | ~q(OfScientific.ofScientific $em $ex $eexp) =>
-    let some m := em.rawNatLit? | failure
-    let some x := ex.rawBoolLit? | failure
-    let some exp := eexp.rawNatLit? | failure
-    return ResultI.mk (← NormNum.Result.mkOfScientificReal m x exp) (← NormNum.Result.mkOfNatReal 0)
+    let r ← NormNum.derive q(OfScientific.ofScientific $em $ex $eexp : ℝ)
+    return ResultI.mk r (← NormNum.Result.mkOfNatReal 0)
   | _ => throwError "found the atom {z} which is not a numeral"
 
 -- TODO : get rid of cast in `$a = $x + Complex.I * $y`.

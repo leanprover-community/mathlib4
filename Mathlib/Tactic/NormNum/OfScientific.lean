@@ -65,6 +65,7 @@ to rat casts if the scientific notation is inherited from the one for rationals.
     have n : Q(ℕ) := mkRawNatLit n'
     haveI : $n =Q Nat.mul $nm ((10 : ℕ) ^ $ne) := ⟨⟩
     return .isNat _ n q(isNat_ofScientific_of_false $pm $pe (.refl $n))
+  | _ => failure
 
 end NormNum
 
