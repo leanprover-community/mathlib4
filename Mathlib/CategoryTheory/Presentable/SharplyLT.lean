@@ -7,6 +7,7 @@ module
 
 public import Mathlib.CategoryTheory.ObjectProperty.ColimitsCardinalClosure
 public import Mathlib.CategoryTheory.Presentable.CardinalDirectedPoset
+public import Mathlib.CategoryTheory.Presentable.Dense
 
 /-!
 # Sharply smaller regular cardinals
@@ -45,7 +46,7 @@ def generator (_ : SharplyLT κ₁ κ₂) (C : Type u) [Category.{v} C] :
 
 variable (h : SharplyLT κ₁ κ₂) (C : Type u) [Category.{v} C]
 
-lemma generator_le_sCardinalPresentable [LocallySmall.{w} C] :
+lemma generator_le_isCardinalPresentable [LocallySmall.{w} C] :
     h.generator C ≤ isCardinalPresentable C κ₂ :=
   ObjectProperty.colimitsCardinalClosure_le _ _
     (fun _ _ hJ ↦ isClosedUnderColimitsOfShape_isCardinalPresentable C hJ)
@@ -63,7 +64,7 @@ namespace isCardinalFilteredGenerator
 def prop (_ : SharplyLT κ₁ κ₂) (J : Type w) [PartialOrder J] (A : Set J) : Prop :=
   IsCardinalFiltered (Subtype A) κ₁ ∧ HasCardinalLT (Subtype A) κ₂
 
-variable {C} {X : C} {J : Type w} [PartialOrder J] [IsCardinalFiltered J κ₁]
+variable {h} {C} {X : C} {J : Type w} [PartialOrder J]
   (p : (isCardinalPresentable C κ₁).ColimitOfShape J X)
 
 instance (A : Subtype (prop h J)) :
@@ -71,24 +72,99 @@ instance (A : Subtype (prop h J)) :
   have := A.prop.1
   infer_instance
 
-variable {h} in
-noncomputable def colimit (A : Subtype (prop h J)) : C :=
+noncomputable abbrev colimit (A : Subtype (prop h J)) : C :=
     Limits.colimit ((Subtype.mono_coe A.val).functor ⋙ p.diag)
 
+noncomputable abbrev colimit.ι (A : Subtype (prop h J)) (a : J) (ha : a ∈ A.val) :
+    p.diag.obj a ⟶ colimit p A :=
+  Limits.colimit.ι ((Subtype.mono_coe A.val).functor ⋙ p.diag) ⟨a, ha⟩
+
+@[reassoc (attr := simp)]
+lemma colimit.w (A : Subtype (prop h J)) {a b : J} (hab : a ≤ b) (ha : a ∈ A.val)
+    (hb : b ∈ A.val) :
+    p.diag.map (homOfLE hab) ≫ colimit.ι p A b hb = colimit.ι p A a ha :=
+  Limits.colimit.w ((Subtype.mono_coe A.val).functor ⋙ p.diag)
+    (j := ⟨a, ha⟩) (j' := ⟨b, hb⟩) (homOfLE hab)
+
+noncomputable def colimit.map {A₁ A₂ : Subtype (prop h J)} (hA : A₁ ≤ A₂) :
+    colimit p A₁ ⟶ colimit p A₂ :=
+  colimit.desc _ (Cocone.mk _
+    { app j := colimit.ι p A₂ j.val (hA j.prop)
+      naturality j₁ j₂ f := by
+        simpa using colimit.w p A₂ (leOfHom f) (hA j₁.prop) (hA j₂.prop) })
+
+@[reassoc (attr := simp)]
+lemma colimit.ι_map {A₁ A₂ : Subtype (prop h J)} (hA : A₁ ≤ A₂) (j : J) (hj : j ∈ A₁.val) :
+    colimit.ι p A₁ j hj ≫ colimit.map p hA = colimit.ι p A₂ j (hA hj) :=
+  colimit.ι_desc ..
+
+@[ext high]
+lemma colimit.hom_ext {A : Subtype (prop h J)} {T : C} {φ₁ φ₂ : colimit p A ⟶ T}
+    (h : ∀ (j : J) (hj : j ∈ A.val), colimit.ι p A j hj ≫ φ₁ = colimit.ι p A j hj ≫ φ₂) :
+    φ₁ = φ₂ := by
+  ext
+  apply h
+
+noncomputable def colimit.π (A : Subtype (prop h J)) : colimit p A ⟶ X :=
+  colimit.desc _ (Cocone.mk _
+    { app a := by exact p.ι.app a
+      naturality _ _ _ := by simpa using p.ι.naturality _ })
+
+@[reassoc (attr := simp)]
+lemma colimit.ι_π (A : Subtype (prop h J)) (a : J) (ha : a ∈ A.val) :
+    colimit.ι p A a ha ≫ colimit.π p A = p.ι.app a :=
+  colimit.ι_desc ..
+
+@[reassoc (attr := simp)]
+lemma colimit.map_π {A₁ A₂ : Subtype (prop h J)} (hA : A₁ ≤ A₂) :
+    colimit.map p hA ≫ colimit.π p A₂ = colimit.π p A₁ := by
+  ext
+  simp
+
+variable (h) in
+@[simps]
 noncomputable def functor : Subtype (prop h J) ⥤ C where
   obj A := colimit p A
-  map {A₁ A₂} f := by
-    sorry
-  map_id := sorry
-  map_comp := sorry
+  map f := colimit.map p f.le
+  map_id _ := by ext; simp
+  map_comp f g := by ext; simp
+
+variable (h) in
+@[simps]
+noncomputable def cocone : Cocone (functor h p) where
+  pt := X
+  ι.app j := colimit.π p j
+
+variable (h) in
+def isColimit [IsCardinalFiltered J κ₁] : IsColimit (cocone h p) := sorry
 
 end isCardinalFilteredGenerator
 
+open isCardinalFilteredGenerator in
 lemma isCardinalFilteredGenerator :
     (h.generator C).IsCardinalFilteredGenerator κ₂ where
-  le_isCardinalPresentable := h.generator_le_sCardinalPresentable C
+  le_isCardinalPresentable := h.generator_le_isCardinalPresentable C
   exists_colimitsOfShape X := by
-    sorry
+    have hκ₁ := isCardinalFilteredGenerator_isCardinalPresentable C κ₁
+    --obtain ⟨J, _, _, ⟨p⟩⟩ := hκ₁.exists_colimitsOfShape X
+    -- use `Directed.lean`
+    have J : Type w := sorry
+    have : PartialOrder J := sorry
+    have : IsCardinalFiltered J κ₁ := sorry
+    have p : (isCardinalPresentable C κ₁).ColimitOfShape J X := sorry
+    refine ⟨Subtype (prop h J), inferInstance, sorry, ⟨{
+      diag := _
+      ι := _
+      isColimit := isColimit h p
+      prop_diag_obj A := by
+        have : (h.generator C).IsClosedUnderColimitsOfShape (Subtype A.val) := by
+          apply ObjectProperty.isClosedUnderColimitsOfShape_colimitsCardinalClosure
+          have := A.prop.2
+          sorry
+        exact ObjectProperty.prop_colimit _ _
+          (fun ⟨a, ha⟩ ↦ ObjectProperty.le_colimitsCardinalClosure _ _ _
+            (p.prop_diag_obj a))
+    }⟩⟩
 
 end
 

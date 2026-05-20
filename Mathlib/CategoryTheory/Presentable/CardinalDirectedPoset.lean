@@ -56,7 +56,7 @@ lemma isCardinalFiltered_pt (hF : ∀ j, IsCardinalFiltered (F.obj j) κ) :
   let j := IsCardinalFiltered.max j₀ hK
   let x₁ (k : K) : F.obj j := F.map (IsCardinalFiltered.toMax j₀ hK k) (x₀ k)
   have hx₁ (k : K) : c.ι.app j (x₁ k) = c.ι.app (j₀ k) (x₀ k) :=
-    congr_fun (c.w (IsCardinalFiltered.toMax j₀ hK k))  _
+    ConcreteCategory.congr_hom (c.w (IsCardinalFiltered.toMax j₀ hK k)) _
   refine ⟨(cocone hc).ι.app j (IsCardinalFiltered.max x₁ hK),
     fun k ↦ ?_⟩
   rw [← hx₀, ← hx₁]
@@ -222,6 +222,7 @@ noncomputable def isColimitCocone (J : CardinalFilteredPoset κ) :
     · obtain rfl : x = y := by simpa using h
       exact ⟨j, 𝟙 _, rfl⟩)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isCardinalPresentable_of_hasCardinalLT_of_le (J : CardinalFilteredPoset κ)
     {κ' : Cardinal.{u}} [Fact κ'.IsRegular] (hJ : HasCardinalLT J.obj κ') (h : κ ≤ κ') :
     IsCardinalPresentable J κ' where
@@ -271,9 +272,13 @@ protected lemma isCardinalPresentable_iff (J : CardinalFilteredPoset κ) :
   refine ⟨fun _ ↦ ?_, fun hJ ↦ isCardinalPresentable_of_hasCardinalLT_of_le _ hJ (le_refl _)⟩
   have : IsCardinalPresentable J.cocone.pt κ := by assumption
   obtain ⟨X, f, hf⟩ := IsCardinalPresentable.exists_hom_of_isColimit κ (isColimitCocone J) (𝟙 _)
+  dsimp at f
   have : IsSplitMono f := ⟨_, hf⟩
+  have : IsSplitMono ((forget _).map f) := by
+    -- `infer_instance` fails
+    apply CategoryTheory.instIsSplitMonoMap
   exact X.2.1.of_injective f
-    ((mono_iff_injective _).1 (inferInstanceAs (Mono ((forget _).map f))))
+    ((mono_iff_injective ((forget _).map f)).1 inferInstance)
 
 variable (κ) in
 lemma isCardinalFilteredGenerator_hasCardinalLTWithTerminal :
