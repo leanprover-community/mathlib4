@@ -4,7 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
 
-import Mathlib
+module
+
+public import Mathlib.Algebra.CharP.Defs
+public import Mathlib.Data.ENat.Lattice
+public import Mathlib.RingTheory.Ideal.Span
+public import Mathlib.SetTheory.Ordinal.Arithmetic
 
 /-! # Generalized Euclidean Domains
 
@@ -13,6 +18,8 @@ suggested by [Pierre Samuel, *On Euclidean Rings*][Samuel-1970],
 using the *minimal* ordinal-valued Euclidean algorithm.
 
 -/
+
+@[expose] public section
 
 universe u
 
@@ -563,3 +570,4 @@ theorem _root_.IsOrdinalEuclidean.isPrincipalIdealRing
       exact I.sub_mem hb (Ideal.mul_mem_left I q haI))
 
 end Ordinal
+
