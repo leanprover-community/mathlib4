@@ -159,4 +159,3 @@ instance : CommMonoid (WithConv <| C →ₐc[R] A) := fast_instance%
     toLinearMap_convOne toLinearMap_convMul toLinearMap_convPow
 
 end BialgHom
-#lint
