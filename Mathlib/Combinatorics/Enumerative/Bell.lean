@@ -110,8 +110,7 @@ theorem map_factorial_prod_pos (m : Multiset ℕ) : 0 < (m.map (fun j ↦ j !)).
     forall_apply_eq_imp_iff₂] using fun _ _ ↦ Nat.factorial_pos _
 
 theorem bell_eq (m : Multiset ℕ) :
-    m.bell = m.sum ! / ((m.map (fun j ↦ j !)).prod *
-      ∏ j ∈ (m.toFinset.erase 0), (m.count j)!) := by
+    m.bell = m.sum ! / ((m.map (fun j ↦ j !)).prod * ∏ j ∈ (m.toFinset.erase 0), (m.count j)!) := by
   rw [← Nat.mul_left_inj, Nat.div_mul_cancel _]
   · rw [← mul_assoc]
     exact bell_mul_eq m
@@ -127,9 +126,8 @@ theorem prod_count_factorial_eq_count_factorial_mul_prod_erase
   · rw [← Finset.mul_prod_erase _ _ hmem]
   · rw [Finset.erase_eq_of_notMem hmem]
     have hcount : m.count a = 0 := by
-      apply Multiset.count_eq_zero_of_notMem
-      intro hm
-      exact hmem <| by simpa [ha] using hm
+      refine Multiset.count_eq_zero_of_notMem fun hm ↦ hmem ?_
+      simpa [ha] using hm
     simp [hcount]
 
 theorem prod_count_factorial_cons_erase {m : Multiset ℕ} {a : ℕ} :
@@ -144,16 +142,16 @@ theorem prod_count_factorial_cons_erase {m : Multiset ℕ} {a : ℕ} :
 theorem bell_cons_mul_count {m : Multiset ℕ} {a : ℕ} (ha : a ≠ 0) :
     (a ::ₘ m).bell * (a ::ₘ m).count a = Nat.choose (m.sum + a) a * m.bell := by
   let rest := ∏ j ∈ (m.toFinset.erase 0).erase a, (m.count j)!
-  let c := a ! * ((m.map (fun j ↦ j !)).prod * ((m.count a)! * rest))
-  have hm0 : m.bell * ((m.map (fun j ↦ j !)).prod * ((m.count a)! * rest)) = m.sum ! := by
+  let c := a ! * ((m.map (· !)).prod * ((m.count a)! * rest))
+  have hm0 : m.bell * ((m.map (· !)).prod * ((m.count a)! * rest)) = m.sum ! := by
     have hm := Multiset.bell_mul_eq m
     rw [prod_count_factorial_eq_count_factorial_mul_prod_erase ha] at hm
     simpa [rest, mul_assoc, mul_comm, mul_left_comm] using hm
   have hm : m.bell * c = m.sum ! * a ! := by
-    simpa [c, mul_assoc, mul_comm, mul_left_comm] using congrArg (fun t => a ! * t) hm0
+    simpa [c, mul_assoc, mul_comm, mul_left_comm] using congrArg (a ! * ·) hm0
   have ha_mem : a ∈ (a ::ₘ m).toFinset.erase 0 := by simp [ha]
-  have hc : 0 < c := Nat.mul_pos (Nat.factorial_pos _) <|
-      Nat.mul_pos (map_factorial_prod_pos m) <| by positivity
+  have hc : 0 < c := Nat.mul_pos (by positivity) <|
+    Nat.mul_pos (map_factorial_prod_pos m) <| by positivity
   apply Nat.eq_of_mul_eq_mul_right hc
   calc
     _ = (a ::ₘ m).bell * ((m.count a + 1) * c) := by
@@ -166,9 +164,7 @@ theorem bell_cons_mul_count {m : Multiset ℕ} {a : ℕ} (ha : a ≠ 0) :
     _ = Nat.choose (m.sum + a) a * (m.sum ! * a !) := by
       rw [← Nat.add_choose_mul_factorial_mul_factorial]
       ring
-    _ = Nat.choose (m.sum + a) a * (m.bell * c) := by rw [hm]
-    _ = (Nat.choose (m.sum + a) a * m.bell) * c := by
-      simp [mul_assoc, mul_comm, mul_left_comm]
+    _ = (Nat.choose (m.sum + a) a * m.bell) * c := by simp [← hm, mul_assoc, mul_left_comm]
 
 end Multiset
 
@@ -262,11 +258,10 @@ theorem bell_eq_sum_erase {n : ℕ} (p : Nat.Partition (n + 1)) :
       Multiset.bell p.parts := by
   apply Nat.eq_of_mul_eq_mul_left (Nat.succ_pos n)
   calc
-  _ = ∑ a ∈ p.parts.toFinset,
-      (n + 1) * (choose n (a - 1) * Multiset.bell (p.parts.erase a)) := by
+  _ = ∑ a ∈ p.parts.toFinset, (n + 1) * (choose n (a - 1) * Multiset.bell (p.parts.erase a)) := by
     rw [Finset.mul_sum]
   _ = ∑ a ∈ p.parts.toFinset, a * (p.parts.count a * Multiset.bell p.parts) := by
-    refine Finset.sum_congr rfl fun a ha => ?_
+    congr! 1 with a ha
     have ha_mem : a ∈ p.parts := mem_dedup.mp ha
     have ha0 : a ≠ 0 := fun h ↦ LT.lt.ne' (p.parts_pos ha_mem) h
     have hsum : (p.parts.erase a).sum + a = n + 1 := by
@@ -275,8 +270,8 @@ theorem bell_eq_sum_erase {n : ℕ} (p : Nat.Partition (n + 1)) :
       simpa [hsum, Multiset.cons_erase ha_mem, mul_comm, mul_left_comm, mul_assoc] using
         (bell_cons_mul_count (m := p.parts.erase a) ha0).symm
     calc
-      _ = ((n + 1) * choose n (a - 1)) * Multiset.bell (p.parts.erase a) := by ring
-      _ = (choose (n + 1) a * a) * Multiset.bell (p.parts.erase a) := by
+      _ = (n + 1) * choose n (a - 1) * Multiset.bell (p.parts.erase a) := by ring
+      _ = choose (n + 1) a * a * Multiset.bell (p.parts.erase a) := by
         rw [Nat.add_one_mul_choose_eq, Nat.sub_add_cancel (by omega)]
       _ = _ := by grind
   _ = (∑ a ∈ p.parts.toFinset, p.parts.count a * a) * Multiset.bell p.parts := by
@@ -319,33 +314,34 @@ theorem bell_eq_sum_partition (n : ℕ) :
     rw [Nat.bell_succ]
     calc
     _ = ∑ i : Fin n.succ, ∑ q : Nat.Partition (n - i), choose n i * Multiset.bell q.parts := by
-      refine Fintype.sum_congr _ _ fun i => ?_
+      congr! with i
       simpa [ih (n - i) _] using Finset.mul_sum (⊤ : Finset (Nat.Partition (n - i)))
-        (fun q => Multiset.bell q.parts) (choose n i)
+        (fun q ↦ Multiset.bell q.parts) (choose n i)
     _ = ∑ i : Fin n.succ, ∑ p : {p : Nat.Partition (n + 1) // (i + 1 : ℕ) ∈ p.parts},
         choose n i * Multiset.bell (p.1.parts.erase (i + 1)) := by
-      refine Fintype.sum_congr _ _ fun i => ?_
+      congr! with i
       have h1 : 1 ≤ (i + 1 : ℕ) := by omega
       have h2 : (i + 1 : ℕ) ≤ n + 1 := by omega
       have hsub : n + 1 - (i + 1 : ℕ) = n - i := by omega
       exact hsub ▸ Eq.symm (Fintype.sum_equiv (partitionWithPartEquiv h1 h2)
-        (fun p => choose n i * Multiset.bell ((partitionWithPartEquiv h1 h2 p).parts))
-        (fun q => choose n i * Multiset.bell q.parts) (fun _ => rfl))
-    _ = ∑ x : Σ p : Nat.Partition (n + 1), {a : ℕ // a ∈ p.parts.toFinset},
+        (fun p ↦ choose n i * Multiset.bell ((partitionWithPartEquiv h1 h2 p).parts))
+        (fun q ↦ choose n i * Multiset.bell q.parts) (fun _ => rfl))
+    _ = ∑ x : Σ p : Nat.Partition (n + 1), p.parts.toFinset,
         choose n (x.2.1 - 1) * Multiset.bell (x.1.parts.erase x.2.1) := by
       rw [← Fintype.sum_sigma']
       refine Fintype.sum_equiv (sigmaPartitionWithPartEquiv n) _ _ ?_
       simp [sigmaPartitionWithPartEquiv]
-    _ = ∑ p : Nat.Partition (n + 1), ∑ a : {a : ℕ // a ∈ p.parts.toFinset},
-        choose n (a.1 - 1) * Multiset.bell (p.parts.erase a.1) := by
-      simpa using (Fintype.sum_sigma' fun (p : Nat.Partition (n + 1))
-        (a : {a : ℕ // a ∈ p.parts.toFinset}) =>
-        choose n (a.1 - 1) * Multiset.bell (p.parts.erase a.1))
+    _ = ∑ p : Nat.Partition (n + 1), ∑ a : p.parts.toFinset,
+        choose n (a.1 - 1) * Multiset.bell (p.parts.erase a.1) :=
+      Fintype.sum_sigma' fun (p : Nat.Partition (n + 1)) (a : p.parts.toFinset) ↦
+        choose n (a.1 - 1) * Multiset.bell (p.parts.erase a.1)
     _ = ∑ p : Nat.Partition (n + 1),
         ∑ a ∈ p.parts.toFinset, choose n (a - 1) * Multiset.bell (p.parts.erase a) := by
-      refine Fintype.sum_congr _ _ fun p => ?_
-      simpa using Finset.sum_coe_sort p.parts.toFinset
-        (f := fun a => choose n (a - 1) * Multiset.bell (p.parts.erase a))
-    _ = _ := Fintype.sum_congr _ _ fun p => bell_eq_sum_erase p
+      congr! with p
+      exact p.parts.toFinset.sum_coe_sort
+        (fun a ↦ choose n (a - 1) * Multiset.bell (p.parts.erase a))
+    _ = _ := by
+      congr! with p
+      exact bell_eq_sum_erase p
 
 end Nat
