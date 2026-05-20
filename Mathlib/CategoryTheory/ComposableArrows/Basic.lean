@@ -7,11 +7,11 @@ module
 
 public import Mathlib.Algebra.Group.Nat.Defs
 public import Mathlib.CategoryTheory.Category.Preorder
-public import Mathlib.CategoryTheory.Comma.Arrow
-public import Mathlib.CategoryTheory.EpiMono
+public import Mathlib.CategoryTheory.Groupoid
 public import Mathlib.Data.Fintype.Basic
 public import Mathlib.Tactic.FinCases
 public import Mathlib.Tactic.SuppressCompilation
+
 /-!
 # Composable arrows
 
