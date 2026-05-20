@@ -629,7 +629,7 @@ open OfScientific (ofScientific)
 @[rclike_simps, norm_cast]
 theorem ofReal_ofScientific (m : ℕ) (s : Bool) (e : ℕ) :
     ((ofScientific m s e : ℝ) : K) = ofScientific m s e := by
-  rw [← NNRat.cast_ofScientific]
+  rw [← NNRat.cast_ofScientific, ofReal_nnratCast, NNRat.cast_ofScientific]
 
 @[simp, rclike_simps]
 theorem ofScientific_re (m : ℕ) (s : Bool) (e : ℕ) :
