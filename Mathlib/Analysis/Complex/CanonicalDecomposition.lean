@@ -147,10 +147,8 @@ The function `CanonicalFactor R w` vanishes only at `w`.
 theorem zero_canonicalFactor_iff {z : ℂ} (hw : w ∈ ball 0 R) (hz : z ∈ ball 0 R) :
     canonicalFactor R w z = 0 ↔ z = w := by
   constructor
-  · intro h
-    by_contra h₁
-    have := Complex.canonicalFactor_ne_zero hw (ball_subset_closedBall hz) h₁
-    tauto
+  · contrapose
+    exact canonicalFactor_ne_zero hw (ball_subset_closedBall hz)
   · simp_all
 
 open scoped ComplexOrder in
@@ -196,10 +194,8 @@ theorem divisor_canonicalFactor (hw : w ∈ ball 0 R) :
   by_cases hz : z ∈ ball 0 R
   · rw [MeromorphicOn.divisor_apply
       (fun z hz ↦ meromorphic_canonicalFactor R w z) hz]
-    by_cases h₂z : z = w
-    · subst h₂z
-      rw [meromorphicOrderAt_canonicalFactor hz]
-      have : (-1 : WithTop ℤ).untop₀ = (-1 : ℤ) := by rfl
+    obtain (rfl | h₂z) := eq_or_ne z w
+    · rw [meromorphicOrderAt_canonicalFactor hz]
       simp_all [Function.locallyFinsuppWithin.restrict_apply]
     · have : meromorphicOrderAt (canonicalFactor R w) z = 0 := by
         rw [(meromorphicNFOn_canonicalFactor hw (Set.mem_univ z)).meromorphicOrderAt_eq_zero_iff]
@@ -269,11 +265,8 @@ private lemma canonicalDecomposition_aux₂ (h₁f : MeromorphicOn f (closedBall
     rwa [divisor_apply (h₁f.mono_set ball_subset_closedBall) (by aesop)] at hz
   rw [finprod_eq_prod_of_mulSupport_subset_of_finite _ (by aesop) η₀, divisor_prod]
   · simp_rw [divisor_zpow (fun z hz ↦ meromorphic_canonicalFactor R _ z)]
-    conv =>
-      right
-      rw [← sum_apply_smul_single_eq_self η₀]
-    apply Finset.sum_congr rfl
-    intro x hx
+    conv_rhs => rw [← sum_apply_smul_single_eq_self η₀]
+    apply Finset.sum_congr rfl fun x hx ↦ ?_
     rw [divisor_canonicalFactor, smul_neg, locallyFinsuppWithin.coe_neg, Pi.neg_apply, neg_smul]
     by_contra
     simp_all
@@ -310,11 +303,8 @@ theorem _root_.MeromorphicOn.congr_codiscreteWitin_closedBall_prod_canonicalFact
       ∧ f =ᶠ[codiscreteWithin (closedBall 0 R)]
           (∏ᶠ u, (canonicalFactor R u) ^ (-divisor f (ball 0 R) u)) • g := by
   by_cases hR : R ≤ 0
-  · simp_all only [ne_eq, Subtype.forall, mem_closedBall, dist_zero_right, ball_eq_empty.2 hR,
-      mem_empty_iff_false, IsEmpty.forall_iff, implies_true, not_false_eq_true,
-      locallyFinsuppWithin.apply_eq_zero_of_notMem, neg_zero, zpow_zero, finprod_one, one_smul,
-      true_and]
-    use fun z ↦ f 0, fun z hz ↦ AnalyticAt.meromorphicNFAt analyticAt_const
+  · refine ⟨fun z ↦ f 0, fun z hz ↦ AnalyticAt.meromorphicNFAt analyticAt_const,
+      by simp [ball_eq_empty.2 hR], ?_⟩
     filter_upwards [Filter.self_mem_codiscreteWithin (closedBall 0 R)] with a ha
     have : R = 0 := by grind [nonneg_of_mem_closedBall ha]
     aesop
