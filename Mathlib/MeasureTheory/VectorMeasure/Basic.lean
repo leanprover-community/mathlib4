@@ -123,6 +123,14 @@ theorem ext_iff (v w : VectorMeasure α M) : v = w ↔ ∀ i : Set α, Measurabl
 theorem ext {s t : VectorMeasure α M} (h : ∀ i : Set α, MeasurableSet i → s i = t i) : s = t :=
   (ext_iff s t).2 h
 
+@[nontriviality]
+lemma apply_eq_zero_of_isEmpty [IsEmpty α] (v : VectorMeasure α M) (s : Set α) :
+    v s = 0 := by
+  rw [eq_empty_of_isEmpty s, empty]
+
+instance instSubsingleton [IsEmpty α] : Subsingleton (VectorMeasure α M) :=
+  ⟨fun μ ν => by ext1 s _; rw [apply_eq_zero_of_isEmpty, apply_eq_zero_of_isEmpty]⟩
+
 variable [Countable β] {v : VectorMeasure α M} {f : β → Set α}
 
 theorem hasSum_of_disjoint_iUnion (hm : ∀ i, MeasurableSet (f i)) (hd : Pairwise (Disjoint on f)) :
@@ -287,6 +295,9 @@ theorem coe_zero : ⇑(0 : VectorMeasure α M) = 0 := rfl
 
 theorem zero_apply (i : Set α) : (0 : VectorMeasure α M) i = 0 := rfl
 
+theorem eq_zero_of_isEmpty [IsEmpty α] (v : VectorMeasure α M) : v = 0 :=
+  Subsingleton.elim v 0
+
 variable [ContinuousAdd M]
 
 /-- The sum of two vector measure is a vector measure. -/
@@ -407,6 +418,10 @@ def dirac (x : β) (v : M) : VectorMeasure β M where
 
 @[simp] lemma dirac_apply_of_notMem (hx : x ∉ s) : dirac x v s = 0 := by
   simp [dirac, hx]
+
+@[simp] lemma dirac_zero : dirac x (0 : M) = 0 := by
+  ext s hs
+  simp [dirac]
 
 end Dirac
 
@@ -631,17 +646,21 @@ end ContinuousAdd
 section Module
 
 variable {R : Type*} [Semiring R] [Module R M] [Module R N]
-variable [ContinuousAdd M] [ContinuousAdd N] [ContinuousConstSMul R M] [ContinuousConstSMul R N]
+
+variable [ContinuousConstSMul R M] [ContinuousConstSMul R N]
+
+theorem mapRange_smul {v : VectorMeasure α M} {f : M →ₗ[R] N} (hf : Continuous f) {c : R} :
+    (c • v).mapRange f.toAddMonoidHom hf = c • (v.mapRange f.toAddMonoidHom hf) := by
+  ext; simp
+
+variable [ContinuousAdd M] [ContinuousAdd N]
 
 /-- Given a continuous linear map `f : M → N`, `mapRangeₗ` is the linear map mapping the
 vector measure `v` on `M` to the vector measure `f ∘ v` on `N`. -/
 def mapRangeₗ (f : M →ₗ[R] N) (hf : Continuous f) : VectorMeasure α M →ₗ[R] VectorMeasure α N where
   toFun v := v.mapRange f.toAddMonoidHom hf
   map_add' _ _ := mapRange_add hf
-  map_smul' := by
-    intros
-    ext
-    simp
+  map_smul' _ _ := mapRange_smul hf
 
 end Module
 
@@ -649,7 +668,7 @@ end
 
 open Classical in
 /-- The restriction of a vector measure on some set. -/
-def restrict (v : VectorMeasure α M) (i : Set α) : VectorMeasure α M :=
+@[no_expose] def restrict (v : VectorMeasure α M) (i : Set α) : VectorMeasure α M :=
   if hi : MeasurableSet i then
     { measureOf' := fun s => if MeasurableSet s then v (s ∩ i) else 0
       empty' := by simp
@@ -689,6 +708,20 @@ theorem restrict_zero {i : Set α} : (0 : VectorMeasure α M).restrict i = 0 := 
   · ext j hj
     rw [restrict_apply 0 hi hj, zero_apply, zero_apply]
   · exact dif_neg hi
+
+theorem restrict_dirac {s : Set α} {x : α} {m : M} (hs : MeasurableSet s) [Decidable (x ∈ s)] :
+    (VectorMeasure.dirac x m).restrict s = if x ∈ s then VectorMeasure.dirac x m else 0 := by
+  classical
+  ext t ht
+  simp only [hs, ht, restrict_apply]
+  split_ifs with has <;> simp [dirac, ht, ht.inter hs, has]
+
+@[simp]
+theorem restrict_singleton {a : α} : v.restrict {a} = VectorMeasure.dirac a (v {a}) := by
+  by_cases h : MeasurableSet {a}
+  · ext1 s hs
+    by_cases ha : a ∈ s <;> simp [*, restrict_apply]
+  · simp [restrict, h]
 
 section ContinuousAdd
 
