@@ -151,6 +151,7 @@ lemma birkhoffSumSup_eq_iSup_birkhoffMax :
     birkhoffSumSup f g x = ⨆ n, ↑(birkhoffMax f g n x) := by
   simp [birkhoffMax, Pi.partialSups_apply, ←map_partialSups' EReal.coe_max, birkhoffSumSup]
 
+/-- The maximal ergodic operator: the supremum of the Birkhoff averages of `g`. -/
 @[expose]
 public def birkhoffAverageSup (f : α → α) (g : α → ℝ) (x : α) : EReal :=
   ⨆ n, ↑(birkhoffAverage ℝ f g n x)
