@@ -184,6 +184,6 @@ lemma hasFiniteMulSupport_fun_pow_multiplicity {α M : Type*} [CommMonoid M] [Su
     (fun s : α ↦ f s ^ multiplicity (g s) r).HasFiniteMulSupport := by
   classical
   simp only [multiplicity_eq_count_normalizedFactors (hg _) hr, normalize_eq]
-  fun_prop (disch := assumption)
+  fun_prop
 
 end UniqueFactorizationMonoid
