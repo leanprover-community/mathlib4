@@ -174,6 +174,17 @@ instance convSemiring : Semiring (WithConv (C →ₗ[R] A)) where
   one_mul f := by ext; simp [convOne_def, ← map_comp_rTensor]
   mul_one f := by ext; simp [convOne_def, ← map_comp_lTensor]
 
+/-- Convolution `R`-algebra structure on `WithConv (C →ₗ[R] A)`. -/
+instance convAlgebra : Algebra R (WithConv (C →ₗ[R] A)) :=
+  .ofModule
+    (fun _ _ _ => ofConv_injective <| by simp [convMul_def, map_smul_left, smul_comp, comp_smul])
+    (fun _ _ _ => ofConv_injective <| by simp [convMul_def, map_smul_right, smul_comp, comp_smul])
+
+@[simp]
+lemma convAlgebraMap_apply (r : R) (c : C) :
+    algebraMap R (WithConv (C →ₗ[R] A)) r c = r • algebraMap R A (counit (R := R) c) := by
+  rw [Algebra.algebraMap_eq_smul_one]; simp [convOne_def, Algebra.linearMap]
+
 end Semiring
 
 section CommSemiring
