@@ -6,7 +6,10 @@ Authors: Michael Stoll
 module
 
 public import Mathlib.Algebra.FiniteSupport.Defs
-public import Mathlib.Algebra.Module.Basic
+public import Mathlib.Algebra.Group.Action.Pi
+public import Mathlib.Algebra.GroupWithZero.Action.Defs
+
+import Mathlib.Algebra.Module.Basic
 
 /-!
 ### Finite support for f • g

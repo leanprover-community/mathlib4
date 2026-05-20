@@ -7,11 +7,13 @@ module
 
 public import Mathlib.Algebra.BigOperators.Group.Finset.Lemmas
 public import Mathlib.Algebra.FiniteSupport.Defs
-public import Mathlib.Algebra.GroupWithZero.Defs
+public import Mathlib.Algebra.Group.Action.Pi
+public import Mathlib.Algebra.GroupWithZero.Action.Defs
 public import Mathlib.Algebra.Order.Group.Indicator
 public import Mathlib.Data.Set.Finite.Lattice
 
 import Mathlib.Algebra.GroupWithZero.Indicator
+import Mathlib.Algebra.Module.Basic
 
 /-!
 # Make `fun_prop` work for finite (multiplicative) support
@@ -217,3 +219,27 @@ lemma Multiset.hasFiniteSupport_count {α : Type*} [DecidableEq α] (s : Multise
   s.toFinset.finite_toSet.subset <| by simp
 
 end
+
+namespace Function
+
+public section SMul
+
+variable {α R M : Type*} [Zero M]
+
+@[to_fun (attr := fun_prop)]
+lemma HasFiniteSupport.smul_left [Zero R] [SMulWithZero R M] {f : α → R} (hf : f.HasFiniteSupport)
+    (g : α → M) :
+    (f • g).HasFiniteSupport :=
+  Set.Finite.subset hf fun _ ha ↦ support_smul_subset_left f g ha
+
+@[to_fun (attr := fun_prop)]
+lemma HasFiniteSupport.smul_right [SMulZeroClass R M] (f : α → R) {g : α → M}
+    (hg : g.HasFiniteSupport) :
+    (f • g).HasFiniteSupport :=
+  Set.Finite.subset hg fun _ ha ↦ support_smul_subset_right f g ha
+
+end SMul
+
+end Function
+
+#min_imports
