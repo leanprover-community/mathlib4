@@ -673,6 +673,12 @@ protected theorem denseRange (hp_ne_top : p ≠ ∞) :
 protected theorem dense (hp_ne_top : p ≠ ∞) : Dense (Lp.simpleFunc E p μ : Set (Lp E p μ)) := by
   simpa only [denseRange_subtype_val] using! simpleFunc.denseRange (E := E) (μ := μ) hp_ne_top
 
+protected theorem topologicalClosure_eq_top (hp_ne_top : p ≠ ∞) :
+    (Lp.simpleFunc E p μ).topologicalClosure = ⊤ := by
+  ext x
+  simp only [AddSubgroup.mem_top, iff_true]
+  exact Lp.simpleFunc.dense hp_ne_top x
+
 variable [NormedRing 𝕜] [Module 𝕜 E] [IsBoundedSMul 𝕜 E]
 variable (α E 𝕜)
 

@@ -694,6 +694,14 @@ theorem coe_ennreal_mul : ∀ x y : ℝ≥0∞, ((x * y : ℝ≥0∞) : EReal) =
 theorem coe_ennreal_nsmul (n : ℕ) (x : ℝ≥0∞) : (↑(n • x) : EReal) = n • (x : EReal) :=
   map_nsmul (⟨⟨(↑), coe_ennreal_zero⟩, coe_ennreal_add⟩ : ℝ≥0∞ →+ EReal) _ _
 
+@[simp, norm_cast]
+theorem coe_ennreal_iSup {ι : Sort*} [hι : Nonempty ι] (f : ι → ℝ≥0∞) :
+    ((⨆ i, f i : ℝ≥0∞) : EReal) = ⨆ i, (f i : EReal) := by
+  refine le_antisymm ?_ (iSup_le fun i ↦ mod_cast le_iSup f i)
+  refine le_iSup_iff.mpr fun b hb ↦ ?_
+  lift b to ℝ≥0∞ using hι.elim fun i ↦ (EReal.coe_ennreal_nonneg _).trans (hb i)
+  exact mod_cast iSup_le fun i ↦ mod_cast hb i
+
 /-! ### toENNReal -/
 
 /-- `x.toENNReal` returns `x` if it is nonnegative, `0` otherwise. -/

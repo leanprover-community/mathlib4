@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Dynamics.BirkhoffSum.Basic
 public import Mathlib.Algebra.Module.Basic
+public import Mathlib.Analysis.Normed.Group.Defs
 
 /-!
 # Birkhoff average

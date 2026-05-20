@@ -272,6 +272,26 @@ theorem seqTendstoAeSeq_strictMono (hfg : TendstoInMeasure μ f atTop g) :
 
 end ExistsSeqTendstoAe
 
+/-- Complete convergence implies almost-everywhere convergence: if for every `ε > 0` the sequence
+`n ↦ μ {x | ε ≤ dist (f n x) (g x)}` is summable in `n` , then `f n` converges to `g` `μ`-almost
+everywhere. -/
+theorem ae_tendsto_of_forall_summable_measure_edist
+    (h : ∀ k : ℕ, ∑' n, μ {x | (↑k)⁻¹ ≤ edist (f n x) (g x)} ≠ ∞) :
+    ∀ᵐ x ∂μ, Tendsto (fun n => f n x) atTop (𝓝 (g x)) := by
+  let S ε n := {x | ε ≤ edist (f n x) (g x)}
+  let (eq := hs) s := ⋃ k : ℕ, Filter.atTop.limsup (S k⁻¹)
+  have hμs : μ s = 0 := measure_iUnion_null fun k ↦ measure_limsup_atTop_eq_zero (h k)
+  have h_tendsto : ∀ x ∈ sᶜ, Tendsto (fun i => f i x) atTop (𝓝 (g x)) := by
+    refine fun x hx => EMetric.tendsto_atTop.mpr fun ε hε => ?_
+    simp_rw [hs, limsup_eq_iInf_iSup_of_nat] at hx
+    simp only [S, Set.iSup_eq_iUnion, Set.iInf_eq_iInter, Set.compl_iInter, Set.compl_iUnion,
+      Set.mem_iUnion, Set.mem_iInter, Set.mem_compl_iff, Set.mem_setOf_eq, not_le] at hx
+    obtain ⟨k, hk⟩ := ENNReal.exists_inv_nat_lt hε.ne.symm
+    obtain ⟨N, hN⟩ := hx k
+    use N, fun n hn ↦ hN n hn |>.trans hk
+  apply measure_mono_null _ hμs
+  rwa [Set.compl_subset_comm]
+
 /-- If `f` is a sequence of functions which converges in measure to `g`, then there exists a
 subsequence of `f` which converges a.e. to `g`. -/
 theorem TendstoInMeasure.exists_seq_tendsto_ae (hfg : TendstoInMeasure μ f atTop g) :

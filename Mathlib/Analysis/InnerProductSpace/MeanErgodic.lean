@@ -122,20 +122,18 @@ theorem ContinuousLinearMap.topologicalClosure_map_simpFunc_eq_topologicalClosur
       simpa [Submodule.mem_orthogonal, inner_sub_left, sub_eq_zero] using hx
     simp [this]
 
-theorem ContinuousLinearMap.fixedPoints_sum_topologicalClosure_coboundary_eq_top
-    (f : E →L[𝕜] E) (hf : ‖f‖ ≤ 1) : f.fixedPoints + f.coboundaries.topologicalClosure = ⊤ := by
+theorem ContinuousLinearMap.fixedPoints_sup_topologicalClosure_coboundary_eq_top
+    (f : E →L[𝕜] E) (hf : ‖f‖ ≤ 1) : f.fixedPoints ⊔ f.coboundaries.topologicalClosure = ⊤ := by
   have h := sup_orthogonal_of_hasOrthogonalProjection (K := f.fixedPoints)
   rw [eq_top_iff] at *
   grw [f.fixedPoints_orthogonal_le_topologicalClosure_coboundary hf] at h
   assumption
 
-theorem ContinuousLinearMap.topologicalClosure_eqLocus_sum_coboundary_eq_top
-    (f : E →L[𝕜] E) (hf : ‖f‖ ≤ 1) : (f.fixedPoints + f.coboundaries).topologicalClosure = ⊤ := by
-  have h := sup_orthogonal_of_hasOrthogonalProjection (K := f.fixedPoints)
-  rw [eq_top_iff] at *
-  grw [f.fixedPoints_orthogonal_le_topologicalClosure_coboundary hf,
-    ClosureOperator.sup_closure_le _ f.fixedPoints] at h
-  assumption
+theorem ContinuousLinearMap.topologicalClosure_fixedPoints_sup_coboundary_eq_top
+    (f : E →L[𝕜] E) (hf : ‖f‖ ≤ 1) : (f.fixedPoints ⊔ f.coboundaries).topologicalClosure = ⊤ := by
+  rw [eq_top_iff]
+  apply (f.fixedPoints_sup_topologicalClosure_coboundary_eq_top hf).ge.trans
+  exact ClosureOperator.sup_closure_le ..
 
 set_option backward.isDefEq.respectTransparency false in
 /-- **Von Neumann Mean Ergodic Theorem** for an operator in a Hilbert space.
