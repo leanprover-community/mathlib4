@@ -26,7 +26,7 @@ coefficients.
 
 ## Notation
 
-- `‖_‖ ` : Matrix.seminormedAddCommGroup is the sup norm, the maximum of the absolute values of
+- `‖_‖ ` : Matrix.normMetric is the sup norm, the maximum of the absolute values of
   the entries of the matrix
 
 ## References
@@ -36,8 +36,8 @@ See [M. Hindry and J. Silverman, Diophantine Geometry: an Introduction][hindrysi
 
 public section
 
-/- We set ‖⬝‖ to be Matrix.seminormedAddCommGroup  -/
-attribute [local instance] Matrix.seminormedAddCommGroup
+/- We set ‖⬝‖ to be Matrix.normMetric  -/
+attribute [local instance] Matrix.normMetric Matrix.isNormedAddGroup
 
 open Matrix Finset
 

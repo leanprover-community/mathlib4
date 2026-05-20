@@ -88,7 +88,8 @@ lemma AnalyticAt.analyticOrderAt_eq_natCast (hf : AnalyticAt 𝕜 f z₀) :
     analyticOrderAt f z₀ = n ↔
       ∃ (g : 𝕜 → E), AnalyticAt 𝕜 g z₀ ∧ g z₀ ≠ 0 ∧ ∀ᶠ z in 𝓝 z₀, f z = (z - z₀) ^ n • g z := by
   unfold analyticOrderAt
-  split_ifs with h
+  -- bug with split_ifs and Jovan's bundled classes
+  split_ifs with h' h
   · simp only [ENat.top_ne_coe, false_iff]
     contrapose h
     rw [← hf.exists_eventuallyEq_pow_smul_nonzero_iff]
@@ -96,6 +97,8 @@ lemma AnalyticAt.analyticOrderAt_eq_natCast (hf : AnalyticAt 𝕜 f z₀) :
   · rw [← hf.exists_eventuallyEq_pow_smul_nonzero_iff] at h
     refine ⟨fun hn ↦ (WithTop.coe_inj.mp hn : h.choose = n) ▸ h.choose_spec, fun h' ↦ ?_⟩
     rw [AnalyticAt.unique_eventuallyEq_pow_smul_nonzero h.choose_spec h']
+  · exact absurd hf h'
+  · exact absurd hf h'
 
 /-- The order of an analytic function `f` at `z₀` equals a natural number `n` iff `f` can locally
 be written as `f z = (z - z₀) ^ n • g z`, where `g` is analytic and does not vanish at `z₀`. -/
@@ -154,7 +157,8 @@ lemma natCast_le_analyticOrderAt (hf : AnalyticAt 𝕜 f z₀) {n : ℕ} :
     n ≤ analyticOrderAt f z₀ ↔
       ∃ g, AnalyticAt 𝕜 g z₀ ∧ ∀ᶠ z in 𝓝 z₀, f z = (z - z₀) ^ n • g z := by
   unfold analyticOrderAt
-  split_ifs with h
+  -- bug with split_ifs and Jovan's bundled classes
+  split_ifs with h' h
   · simpa using ⟨0, analyticAt_const .., by simpa⟩
   · let m := (hf.exists_eventuallyEq_pow_smul_nonzero_iff.mpr h).choose
     obtain ⟨g, hg, hg_ne, hm⟩ := (hf.exists_eventuallyEq_pow_smul_nonzero_iff.mpr h).choose_spec
@@ -171,6 +175,8 @@ lemma natCast_le_analyticOrderAt (hf : AnalyticAt 𝕜 f z₀) {n : ℕ} :
         rw [← inv_smul_eq_iff₀ (pow_ne_zero _ <| sub_ne_zero_of_ne hz), hf'', smul_comm,
           ← mul_smul] at hf'
         rw [pow_sub₀ _ (sub_ne_zero_of_ne hz) (by lia), ← hf']
+  · exact absurd hf h'
+  · exact absurd hf h'
 
 /-- If two functions agree in a neighborhood of `z₀`, then their orders at `z₀` agree. -/
 lemma analyticOrderAt_congr (hfg : f =ᶠ[𝓝 z₀] g) :

@@ -80,8 +80,13 @@ noncomputable abbrev preGNSpreInnerProdSpace : PreInnerProductSpace.Core ℂ f.P
   add_left _ _ _ := by rw [map_add, star_add, add_mul, map_add]
   smul_left := by simp [smul_mul_assoc]
 
-noncomputable instance : SeminormedAddCommGroup f.PreGNS :=
-  InnerProductSpace.Core.toSeminormedAddCommGroup (c := f.preGNSpreInnerProdSpace)
+noncomputable instance : NormPseudoMetric f.PreGNS :=
+  InnerProductSpace.Core.toNormPseudoMetric (c := f.preGNSpreInnerProdSpace)
+
+instance : IsNormedAddGroup f.PreGNS where
+
+noncomputable example : SeminormedAddCommGroup f.PreGNS where
+
 noncomputable instance : InnerProductSpace ℂ f.PreGNS :=
   InnerProductSpace.ofCore f.preGNSpreInnerProdSpace
 

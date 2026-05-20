@@ -159,14 +159,24 @@ section Aux
 -- that those induced by the new norm are equal to the old ones.
 attribute [-instance] WithCStarModule.instUniformSpace WithCStarModule.instBornology
 
+/-- A `NormMetric` structure on `C⋆ᵐᵒᵈ(A, E × F)` with the wrong topology,
+uniformity and bornology. This is only used to build the instance with the correct forgetful
+inheritance data. -/
+@[instance_reducible]
+noncomputable def normMetricProdAux : NormMetric C⋆ᵐᵒᵈ(A, E × F) :=
+  .ofCore (CStarModule.normedSpaceCore A)
+
+attribute [local instance] normMetricProdAux
+
+lemma isNormedAddGroupProdAux : IsNormedAddGroup C⋆ᵐᵒᵈ(A, E × F) where
+
+attribute [local instance] isNormedAddGroupProdAux
+
 /-- A normed additive commutative group structure on `C⋆ᵐᵒᵈ(A, E × F)` with the wrong topology,
 uniformity and bornology. This is only used to build the instance with the correct forgetful
 inheritance data. -/
 @[instance_reducible]
-noncomputable def normedAddCommGroupProdAux : NormedAddCommGroup C⋆ᵐᵒᵈ(A, E × F) :=
-  NormedAddCommGroup.ofCore (CStarModule.normedSpaceCore A)
-
-attribute [local instance] normedAddCommGroupProdAux
+noncomputable def normedAddCommGroupProdAux : NormedAddCommGroup C⋆ᵐᵒᵈ(A, E × F) where
 
 open Filter Uniformity Bornology
 
@@ -193,10 +203,14 @@ private lemma isBounded_prod_iff_aux (s : Set C⋆ᵐᵒᵈ(A, E × F)) :
 
 end Aux
 
-noncomputable instance : NormedAddCommGroup C⋆ᵐᵒᵈ(A, E × F) :=
+noncomputable instance : NormMetric C⋆ᵐᵒᵈ(A, E × F) :=
   fast_instance% .ofCoreReplaceAll (normedSpaceCore A) ?_ ?_
 where finally
   exacts [uniformity_prod_eq_aux, isBounded_prod_iff_aux]
+
+instance : IsNormedAddGroup C⋆ᵐᵒᵈ(A, E × F) where
+
+noncomputable example : NormedAddCommGroup C⋆ᵐᵒᵈ(A, E × F) where
 
 noncomputable instance : NormedSpace ℂ C⋆ᵐᵒᵈ(A, E × F) := .ofCore (normedSpaceCore A)
 
@@ -287,14 +301,24 @@ section Aux
 -- that those induced by the new norm are equal to the old ones.
 attribute [-instance] WithCStarModule.instUniformSpace WithCStarModule.instBornology
 
+/-- A `NormMetric` structure on `C⋆ᵐᵒᵈ(A, Π i, E i)` with the wrong topology,
+uniformity and bornology. This is only used to build the instance with the correct forgetful
+inheritance data. -/
+@[instance_reducible]
+noncomputable def normMetricPiAux : NormMetric C⋆ᵐᵒᵈ(A, Π i, E i) :=
+  .ofCore (CStarModule.normedSpaceCore A)
+
+attribute [local instance] normMetricPiAux
+
+lemma isNormedAddGroupPiAux : IsNormedAddGroup C⋆ᵐᵒᵈ(A, Π i, E i) where
+
+attribute [local instance] isNormedAddGroupPiAux
+
 /-- A normed additive commutative group structure on `C⋆ᵐᵒᵈ(A, Π i, E i)` with the wrong topology,
 uniformity and bornology. This is only used to build the instance with the correct forgetful
 inheritance data. -/
 @[instance_reducible]
-noncomputable def normedAddCommGroupPiAux : NormedAddCommGroup C⋆ᵐᵒᵈ(A, Π i, E i) :=
-  NormedAddCommGroup.ofCore (CStarModule.normedSpaceCore A)
-
-attribute [local instance] normedAddCommGroupPiAux
+noncomputable def normedAddCommGroupPiAux : NormedAddCommGroup C⋆ᵐᵒᵈ(A, Π i, E i) where
 
 open Uniformity Bornology
 
@@ -320,10 +344,14 @@ private lemma isBounded_pi_iff_aux (s : Set C⋆ᵐᵒᵈ(A, Π i, E i)) :
 
 end Aux
 
-noncomputable instance : NormedAddCommGroup C⋆ᵐᵒᵈ(A, Π i, E i) :=
+noncomputable instance : NormMetric C⋆ᵐᵒᵈ(A, Π i, E i) :=
   fast_instance% .ofCoreReplaceAll (normedSpaceCore A) ?_ ?_
 where finally
   exacts [uniformity_pi_eq_aux, isBounded_pi_iff_aux]
+
+instance : IsNormedAddGroup C⋆ᵐᵒᵈ(A, Π i, E i) where
+
+noncomputable example : NormedAddCommGroup C⋆ᵐᵒᵈ(A, Π i, E i) where
 
 noncomputable instance : NormedSpace ℂ C⋆ᵐᵒᵈ(A, Π i, E i) := .ofCore (normedSpaceCore A)
 
