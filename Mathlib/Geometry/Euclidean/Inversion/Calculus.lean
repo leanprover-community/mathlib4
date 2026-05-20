@@ -99,10 +99,9 @@ theorem hasFDerivAt_inversion (hx : x ≠ c) :
     have B := ((hasDerivAt_inv <| by simpa using hx).comp_hasFDerivAt _ A.norm_sq).const_mul
       (R ^ 2)
     exact (B.smul A).add_const c
-  refine this.congr_fderiv <| ContinuousLinearMap.coe_injective <|
-    LinearMap.ext_on_codisjoint
-      (Submodule.isCompl_orthogonal_of_hasOrthogonalProjection (K := ℝ ∙ x)).codisjoint
-      (LinearMap.eqOn_span' ?_) fun y hy ↦ ?_
+  refine this.congr_fderiv (LinearMap.ext_on_codisjoint
+    (Submodule.isCompl_orthogonal_of_hasOrthogonalProjection (K := ℝ ∙ x)).codisjoint
+    (LinearMap.eqOn_span' ?_) fun y hy ↦ ?_)
   · have : ((‖x‖ ^ 2) ^ 2)⁻¹ * (‖x‖ ^ 2) = (‖x‖ ^ 2)⁻¹ := by
       rw [← div_eq_inv_mul, sq (‖x‖ ^ 2), div_self_mul_self']
     simp [Submodule.reflection_orthogonalComplement_singleton_eq_neg,
