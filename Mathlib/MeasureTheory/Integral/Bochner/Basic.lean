@@ -962,23 +962,10 @@ variable {ν : Measure α}
 
 theorem integral_add_measure {f : α → G} (hμ : Integrable f μ) (hν : Integrable f ν) :
     ∫ x, f x ∂(μ + ν) = ∫ x, f x ∂μ + ∫ x, f x ∂ν := by
-  by_cases hG : CompleteSpace G; swap
-  · simp [integral, hG]
-  have hfi := hμ.add_measure hν
-  simp_rw [integral_eq_setToFun]
-  have hμ_dfma : DominatedFinMeasAdditive (μ + ν) (weightedSMul μ : Set α → G →L[ℝ] G) 1 :=
-    DominatedFinMeasAdditive.add_measure_right μ ν (dominatedFinMeasAdditive_weightedSMul μ)
-      zero_le_one
-  have hν_dfma : DominatedFinMeasAdditive (μ + ν) (weightedSMul ν : Set α → G →L[ℝ] G) 1 :=
-    DominatedFinMeasAdditive.add_measure_left μ ν (dominatedFinMeasAdditive_weightedSMul ν)
-      zero_le_one
-  rw [← setToFun_congr_measure_of_add_right hμ_dfma
-        (dominatedFinMeasAdditive_weightedSMul μ) f hfi,
-    ← setToFun_congr_measure_of_add_left hν_dfma (dominatedFinMeasAdditive_weightedSMul ν) f hfi]
-  refine setToFun_add_left' _ _ _ (fun s _ hμνs => ?_) f
-  rw [Measure.coe_add, Pi.add_apply, add_lt_top] at hμνs
-  rw [weightedSMul, weightedSMul, weightedSMul, ← add_smul,
-    measureReal_add_apply hμνs.1.ne hμνs.2.ne]
+  simp only [integral_eq_setToFun]
+  apply setToFun_add_left'' (fun s hs h's ↦ ?_) hμ hν le_rfl zero_le_one zero_le_one zero_le_one
+  simp only [Measure.coe_add, Pi.add_apply, add_lt_top] at h's
+  simp [weightedSMul, Measure.real, toReal_add, h's.1.ne, h's.2.ne, add_smul]
 
 @[simp]
 theorem integral_zero_measure {m : MeasurableSpace α} (f : α → G) :

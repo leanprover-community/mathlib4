@@ -419,6 +419,10 @@ def dirac (x : β) (v : M) : VectorMeasure β M where
 @[simp] lemma dirac_apply_of_notMem (hx : x ∉ s) : dirac x v s = 0 := by
   simp [dirac, hx]
 
+@[simp] lemma dirac_zero : dirac x (0 : M) = 0 := by
+  ext s hs
+  simp [dirac]
+
 end Dirac
 
 end VectorMeasure
@@ -704,6 +708,20 @@ theorem restrict_zero {i : Set α} : (0 : VectorMeasure α M).restrict i = 0 := 
   · ext j hj
     rw [restrict_apply 0 hi hj, zero_apply, zero_apply]
   · exact dif_neg hi
+
+theorem restrict_dirac {s : Set α} {x : α} {m : M} (hs : MeasurableSet s) [Decidable (x ∈ s)] :
+    (VectorMeasure.dirac x m).restrict s = if x ∈ s then VectorMeasure.dirac x m else 0 := by
+  classical
+  ext t ht
+  simp only [hs, ht, restrict_apply]
+  split_ifs with has <;> simp [dirac, ht, ht.inter hs, has]
+
+@[simp]
+theorem restrict_singleton {a : α} : v.restrict {a} = VectorMeasure.dirac a (v {a}) := by
+  by_cases h : MeasurableSet {a}
+  · ext1 s hs
+    by_cases ha : a ∈ s <;> simp [*, restrict_apply]
+  · simp [restrict, h]
 
 section ContinuousAdd
 

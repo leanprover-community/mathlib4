@@ -74,7 +74,7 @@ namespace MeasureTheory
 
 variable {α E F F' G 𝕜 : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
   [NormedAddCommGroup F] [NormedSpace ℝ F] [NormedAddCommGroup F'] [NormedSpace ℝ F']
-  [NormedAddCommGroup G] {m : MeasurableSpace α} {μ : Measure α}
+  [NormedAddCommGroup G] {m : MeasurableSpace α} {μ μ' μ'' : Measure α}
 
 namespace L1
 
@@ -678,6 +678,8 @@ theorem setToFun_add_left (hT : DominatedFinMeasAdditive μ T C)
   · simp_rw [setToFun_eq _ hf, L1.setToL1_add_left hT hT']
   · simp_rw [setToFun_undef _ hf, add_zero]
 
+/-- `setToFun` applied to the sum `T + T'` of two operators is the sum of the corresponding
+`setToFun`. See also `setToFun_add_left'` for a version varying the reference measures. -/
 theorem setToFun_add_left' (hT : DominatedFinMeasAdditive μ T C)
     (hT' : DominatedFinMeasAdditive μ T' C') (hT'' : DominatedFinMeasAdditive μ T'' C'')
     (h_add : ∀ s, MeasurableSet s → μ s < ∞ → T'' s = T s + T' s) (f : α → E) :
@@ -1111,6 +1113,27 @@ theorem setToFun_congr_smul_measure' (c : ℝ≥0)
     (f : α → E) : setToFun μ T hT f = setToFun (c • μ) T hT_smul f := by
   rw! [ENNReal.smul_def]
   apply setToFun_congr_smul_measure _ (by simp)
+
+/-- `setToFun` applied to the sum `T + T'` of two operators is the sum of the corresponding
+`setToFun`. -/
+theorem setToFun_add_left'' {hT : DominatedFinMeasAdditive μ T C}
+    {hT' : DominatedFinMeasAdditive μ' T' C'} {hT'' : DominatedFinMeasAdditive μ'' T'' C''}
+    (h : ∀ s, MeasurableSet s → (μ + μ') s < ∞ → T'' s = T s + T' s)
+    (hf : Integrable f μ) (hf' : Integrable f μ') (hμ : μ'' ≤ μ + μ')
+    (hC : 0 ≤ C) (hC' : 0 ≤ C') (hC'' : 0 ≤ C'') :
+    setToFun μ'' T'' hT'' f = setToFun μ T hT f + setToFun μ' T' hT' f := by
+  have I : DominatedFinMeasAdditive (μ + μ') T C := .add_measure_right _ _ hT hC
+  have A : setToFun (μ + μ') T I f = setToFun μ T hT f :=
+    setToFun_congr_measure_of_add_right _ _ _ (hf.add_measure hf')
+  have I' : DominatedFinMeasAdditive (μ + μ') T' C' := .add_measure_left _ _ hT' hC'
+  have A' : setToFun (μ + μ') T' I' f = setToFun μ' T' hT' f :=
+    setToFun_congr_measure_of_add_left _ _ _ (hf.add_measure hf')
+  have I'' : DominatedFinMeasAdditive (μ + μ') T'' C'' := .of_measure_le hμ hT'' hC''
+  have A'' : setToFun (μ + μ') T'' I'' f = setToFun μ'' T'' hT'' f := by
+    apply setToFun_congr_measure_of_integrable (c' := 1) (by simp) (by simpa using hμ)
+    apply hf.add_measure hf'
+  rw [← A, ← A', ← A'']
+  apply setToFun_add_left' _ _ _ h
 
 theorem norm_setToFun_le_mul_norm (hT : DominatedFinMeasAdditive μ T C) (f : α →₁[μ] E)
     (hC : 0 ≤ C) : ‖setToFun μ T hT f‖ ≤ C * ‖f‖ := by
