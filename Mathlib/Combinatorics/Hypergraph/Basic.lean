@@ -197,6 +197,7 @@ instance (α : Type*) : Bot (Hypergraph α) where
   bot.edgeSet := ∅
   bot.subset_vertexSet_of_mem_edgeSet' := by simp
 
+/-- An alias for the empty hypergraph / ⊥ -/
 def empty (α : Type*) := (⊥ : Hypergraph α)
 
 @[simp]
