@@ -91,6 +91,9 @@ noncomputable def pointSmallEtale : (smallEtaleTopology S).Point where
 
 variable {s₀ : S} (hs₀ : s default = s₀)
 
+/-- Given a morphism `s : Spec (.of Ω) ⟶ S` with image `s₀ : S` where `Ω` is a
+separably closed field, this is the canonical map
+`(pointSmallEtale s).fiber.obj X ⟶ X.hom ⁻¹' {s₀}` for `X : S.Etale`. -/
 @[simps]
 noncomputable def pointSmallEtaleFiberObjToPreimage {X : S.Etale}
     (t : (pointSmallEtale s).fiber.obj X) :
