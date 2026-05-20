@@ -514,11 +514,11 @@ theorem map_apply (f : V ↪ W) (G : SimpleGraph V) (v : V) : Embedding.map f G 
 Note that if `G.induce s = ⊤` (i.e., if `s` is a clique) then this gives the embedding of a
 complete graph. -/
 protected abbrev induce (s : Set V) : G.induce s ↪g G :=
-  Embedding.comap (.subtype _) G
+  .comap (.subtype _) G
 
 /-- Graphs on a set of vertices embed in their `spanningCoe`. -/
 protected abbrev spanningCoe {s : Set V} (G : SimpleGraph s) : G ↪g G.spanningCoe :=
-  Embedding.map (.subtype _) G
+  .map (.subtype _) G
 
 /-- Embeddings of types induce embeddings of complete graphs on those types. -/
 protected def completeGraph {α β : Type*} (f : α ↪ β) : completeGraph α ↪g completeGraph β where
