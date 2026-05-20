@@ -148,7 +148,7 @@ section SeparatelyContinuousMul
 variable [TopologicalSpace G] [Group G] [SeparatelyContinuousMul G]
 
 @[to_additive]
-theorem closure_subset_mem_nhds_one_symm_mul {s : Set G} (s' : Set G)
+theorem closure_subset_mul_of_mem_nhds_one_of_inv {s : Set G} (s' : Set G)
     (hs₀ : s ∈ 𝓝 1) (h_symm : ∀ x ∈ s, x⁻¹ ∈ s) :
     closure s' ⊆ s * s' := by
   intro y hy
