@@ -897,8 +897,7 @@ noncomputable def sheafifyAdjunctionOfIsOneHypercoverDense :
     { homEquiv := fun P Q ↦ sheafifyHomEquivOfIsOneHypercoverDense.{w} F J₀ J
       homEquiv_naturality_left_symm := fun {P₁ P₂ Q} f g ↦
         (F.sheafifyHomEquivOfIsOneHypercoverDense J₀ J).injective (by
-          simp [sheafifyHomEquivOfIsOneHypercoverDense_naturality_left _ _ _ f]
-          )
+          simp [sheafifyHomEquivOfIsOneHypercoverDense_naturality_left _ _ _ f])
       homEquiv_naturality_right :=
         sheafifyHomEquivOfIsOneHypercoverDense_naturality_right F J₀ J }
 
