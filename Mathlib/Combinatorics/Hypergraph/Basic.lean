@@ -174,10 +174,9 @@ lemma sUnion_edgeSet_eq_vertexSet_iff_all_vertex_not_isolated :
   grind [IsIsolated, mem_vertexSet_of_mem_edgeSet]
 
 /-- A loop is an edge whose associated vertex subset consists of a single vertex. -/
-def IsLoop (H : Hypergraph α) (e : Set α) : Prop := e ∈ E(H) ∧ ∃ x ∈ V(H), e = {x}
+def IsLoop (H : Hypergraph α) (e : Set α) : Prop := e ∈ E(H) ∧ ∃ x, e = {x}
 
-lemma isLoop_iff_mem_edgeSet_and_singleton : H.IsLoop e ↔ (e ∈ E(H) ∧ ∃ x, e = {x}) := by
-  grind [IsLoop, mem_vertexSet_of_mem_edgeSet]
+lemma isLoop_iff_mem_edgeSet_and_singleton : H.IsLoop e ↔ (e ∈ E(H) ∧ ∃ x, e = {x}) := .rfl
 
 lemma isLoop_iff_mem_and_ncard_one : H.IsLoop e ↔ (e ∈ E(H) ∧ Set.ncard e = 1) := by
   grind [IsLoop, ncard_eq_one, mem_vertexSet_of_mem_edgeSet]
@@ -196,9 +195,6 @@ instance (α : Type*) : Bot (Hypergraph α) where
   bot.vertexSet := ∅
   bot.edgeSet := ∅
   bot.subset_vertexSet_of_mem_edgeSet' := by simp
-
-/-- An alias for the empty hypergraph / ⊥ -/
-def empty (α : Type*) := (⊥ : Hypergraph α)
 
 @[simp]
 lemma IsNonempty.of_nonempty_vertexSet (hV : V(H).Nonempty) : H.IsNonempty :=
@@ -222,7 +218,7 @@ lemma isEmpty_iff_forall_not_mem : H.IsEmpty ↔ (∀ x, x ∉ V(H)) ∧ (∀ e,
 lemma IsEmpty.not_mem_edgeSet (hH : H.IsEmpty) {e : Set α} : e ∉ E(H) := by
   grind [IsEmpty]
 
-lemma notMem_edgeSet_bot : e ∉ E(empty α) :=
+lemma notMem_edgeSet_bot : e ∉ E(⊥) :=
   IsEmpty.not_mem_edgeSet IsEmpty.bot
 
 @[simp]
