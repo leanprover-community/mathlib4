@@ -912,7 +912,7 @@ theorem coe_toNNReal_le (x : ℝ) : (toNNReal x : ℝ) ≤ |x| :=
 
 @[simp] lemma toNNReal_abs (x : ℝ) : |x|.toNNReal = nnabs x := NNReal.coe_injective <| by simp
 
-@[simp]
+@[simp high]
 lemma nnabs_natCast (n : ℕ) : nnabs n = n := by rw [nnabs_of_nonneg n.cast_nonneg, toNNReal_natCast]
 
 theorem cast_natAbs_eq_nnabs_cast (n : ℤ) : (n.natAbs : ℝ≥0) = nnabs n := by
