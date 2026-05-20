@@ -25,7 +25,7 @@ on the category of schemes.
 
 universe v u
 
-open CategoryTheory MorphismProperty Limits Opposite
+open CategoryTheory MorphismProperty Limits
 
 namespace AlgebraicGeometry.Scheme
 
