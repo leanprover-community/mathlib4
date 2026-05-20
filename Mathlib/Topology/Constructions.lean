@@ -13,6 +13,7 @@ public import Mathlib.Order.Filter.Cofinite
 public import Mathlib.Order.Filter.Curry
 public import Mathlib.Topology.Constructions.SumProd
 public import Mathlib.Topology.NhdsSet
+import Mathlib.Topology.WithTopology
 
 /-!
 # Constructions of new topological spaces from old ones
@@ -272,19 +273,9 @@ lemma DiscreteTopology.isDiscrete [DiscreteTopology s] : IsDiscrete s := ⟨infe
 
 end IsDiscrete
 
-/-- A type synonym equipped with the topology whose open sets are the empty set and the sets with
-finite complements. -/
-def CofiniteTopology (X : Type*) := X
-
-namespace CofiniteTopology
-
-/-- The identity equivalence between `X` and `CofiniteTopology X`. -/
-def of : X ≃ CofiniteTopology X :=
-  Equiv.refl X
-
-instance [Inhabited X] : Inhabited (CofiniteTopology X) where default := of default
-
-instance : TopologicalSpace (CofiniteTopology X) where
+/-- Cofinite topology. A set is open if it's empty or cofinite. -/
+@[implicit_reducible]
+protected def TopologicalSpace.cofinite {X : Type*} : TopologicalSpace X where
   IsOpen s := s.Nonempty → Set.Finite sᶜ
   isOpen_univ := by simp
   isOpen_inter s t := by
@@ -296,8 +287,22 @@ instance : TopologicalSpace (CofiniteTopology X) where
     rw [compl_sUnion]
     exact Finite.sInter (mem_image_of_mem _ hts) (h t hts ⟨x, hzt⟩)
 
-theorem isOpen_iff {s : Set (CofiniteTopology X)} : IsOpen s ↔ s.Nonempty → sᶜ.Finite :=
-  Iff.rfl
+/-- A type synonym equipped with the topology whose open sets are the empty set and the sets with
+finite complements. -/
+abbrev CofiniteTopology (X : Type*) :=
+  WithTopology X .cofinite
+
+namespace CofiniteTopology
+
+/-- The identity equivalence between `X` and `CofiniteTopology X`. -/
+def of : X ≃ CofiniteTopology X := (WithTopology.equiv _ _).symm
+
+instance [Inhabited X] : Inhabited (CofiniteTopology X) where default := of default
+
+theorem isOpen_iff {s : Set (CofiniteTopology X)} : IsOpen s ↔ s.Nonempty → sᶜ.Finite := by
+  simp_rw [isOpen_coinduced, TopologicalSpace.cofinite, isOpen_mk, ← Set.preimage_compl,
+    WithTopology.preimage_toTopology, image_nonempty,
+    finite_image_iff (WithTopology.ofTopology_injective _).injOn]
 
 theorem isOpen_iff' {s : Set (CofiniteTopology X)} : IsOpen s ↔ s = ∅ ∨ sᶜ.Finite := by
   simp only [isOpen_iff, nonempty_iff_ne_empty, or_iff_not_imp_left]
@@ -307,7 +312,7 @@ theorem isClosed_iff {s : Set (CofiniteTopology X)} : IsClosed s ↔ s = univ �
 
 theorem nhds_eq (x : CofiniteTopology X) : 𝓝 x = pure x ⊔ cofinite := by
   ext U
-  rw [mem_nhds_iff]
+  simp_rw [mem_nhds_iff, isOpen_iff]
   constructor
   · rintro ⟨V, hVU, V_op, haV⟩
     exact mem_sup.mpr ⟨hVU haV, mem_of_superset (V_op ⟨_, haV⟩) hVU⟩
@@ -923,7 +928,7 @@ theorem continuous_update [DecidableEq ι] (i : ι) :
   continuous_fst.update i continuous_snd
 
 /-- `Pi.mulSingle i x` is continuous in `x`. -/
-@[to_additive (attr := continuity) /-- `Pi.single i x` is continuous in `x`. -/]
+@[to_additive (attr := continuity, fun_prop) /-- `Pi.single i x` is continuous in `x`. -/]
 theorem continuous_mulSingle [∀ i, One (A i)] [DecidableEq ι] (i : ι) :
     Continuous fun x => (Pi.mulSingle i x : ∀ i, A i) :=
   continuous_const.update _ continuous_id
@@ -1260,8 +1265,10 @@ theorem continuous_sigma_iff {f : Sigma σ → X} :
   rw [continuous_iSup_dom]
   exact forall_congr' fun _ => continuous_coinduced_dom
 
+-- NB. This is a bad `fun_prop` theorem: because of its hypotheses, this would be classified as a
+-- transition theorem, and most likely never fire.
 /-- A map out of a sum type is continuous if its restriction to each summand is. -/
-@[continuity, fun_prop]
+@[continuity]
 theorem continuous_sigma {f : Sigma σ → X} (hf : ∀ i, Continuous fun a => f ⟨i, a⟩) :
     Continuous f :=
   continuous_sigma_iff.2 hf
