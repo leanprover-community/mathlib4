@@ -99,16 +99,16 @@ def ResultI.inv {z : Q(ℂ)} (hz : ResultI q($z)) :
     q(by rw [RCLike.inv_im, div_eq_mul_inv, mul_comm, RCLike.normSq_apply, mul_neg])
 
 theorem eq_of_eq_of_eq_of_eq {z w : ℂ}
-    (ha : (RCLike.re z = RCLike.re w) = True)
-    (hb : (RCLike.im z = RCLike.im w) = True) : z = w := by
+    (ha : (RCLike.re z = RCLike.re w))
+    (hb : (RCLike.im z = RCLike.im w)) : z = w := by
   apply RCLike.ext <;> simp_all
 
-theorem ne_of_re_ne {z w : ℂ} (h : (RCLike.re z = RCLike.re w) = False) :
+theorem ne_of_re_ne {z w : ℂ} (h : (RCLike.re z ≠ RCLike.re w)) :
     z ≠ w := by
   rintro rfl
   simp_all
 
-theorem ne_of_im_ne {z w : ℂ} (h : (RCLike.im z = RCLike.im w) = False) :
+theorem ne_of_im_ne {z w : ℂ} (h : (RCLike.im z ≠ RCLike.im w)) :
     z ≠ w := by
   rintro rfl
   simp_all
@@ -251,6 +251,21 @@ elab "norm_numI" : conv => do
   let r : Simp.ResultQ q($z) := .mk _ <| .some q(($pf))
   Conv.applySimpResult r
 
+
+def _root_.Mathlib.Meta.NormNum.Result.toBool {p : Q(Prop)} (r : NormNum.Result q($p)) :
+    MetaM ((b : Bool) × NormNum.BoolResult q($p) b) := do
+  let .isBool b prf := r | failure
+  pure ⟨b, prf⟩
+
+def ResultI.eq {a b : Q(ℂ)} (ha : ResultI q($a)) (hb : ResultI q($b)) :
+    MetaM ((eq : Bool) × NormNum.BoolResult q($a = $b) eq) := do
+  let ⟨eq1, h1⟩ := ← (← ha.re.eq hb.re).toBool
+  let ⟨eq2, h2⟩ := ← (← ha.im.eq hb.im).toBool
+  match eq1, eq2 with
+  | true, true => return ⟨true, q(NormNumI.eq_of_eq_of_eq_of_eq $h1 $h2)⟩
+  | true, false => return ⟨false, q(NormNumI.ne_of_im_ne $h2)⟩
+  | false, _ => return ⟨false, q(NormNumI.ne_of_re_ne $h1)⟩
+
 end NormNumI
 
 namespace NormNum
@@ -263,20 +278,10 @@ such that `norm_num` successfully recognises both the real and imaginary parts o
   haveI' : v =QL 0 := ⟨⟩; haveI' : $β =Q Prop := ⟨⟩
   let ~q(($z : ℂ) = $w) := e | failure
   haveI' : $e =Q ($z = $w) := ⟨⟩
-  let ⟨z1, z2⟩ ← NormNumI.parse z
-  let ⟨w1, w2⟩ ← NormNumI.parse w
-  let ⟨e, some pf, _⟩ := ← (← Result.eq z1 w1).toSimpResult | failure
-  if ← isDefEq e q(True) then
-    let ⟨e', some pf', _⟩ := ← (← Result.eq z2 w2).toSimpResult | failure
-    if ← isDefEq e' q(True) then
-      let pfn ← mkAppM ``NormNumI.eq_of_eq_of_eq_of_eq #[pf, pf']
-      return Result'.isBool true pfn
-    else
-      let pfn ← mkAppM ``NormNumI.ne_of_im_ne #[pf']
-      return Result'.isBool false pfn
-  else
-    let pfn ← mkAppM ``NormNumI.ne_of_re_ne #[pf]
-    return Result'.isBool false pfn
+  let hz ← NormNumI.parse z
+  let hw ← NormNumI.parse w
+  let ⟨_, eq⟩ ← hz.eq hw
+  return .ofBoolResult eq
 
 /-- The `norm_num` extension which identifies expressions of the form `Complex.re (z : ℂ)`,
 such that `norm_num` successfully recognises the real part of `z`.
