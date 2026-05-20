@@ -680,7 +680,7 @@ variable {V : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [FiniteDim
 theorem hasFDerivAt_fourier
     (hf_int : Integrable f) (hvf_int : Integrable (fun v ↦ ‖v‖ * ‖f v‖)) (x : V) :
     HasFDerivAt (𝓕 f) (𝓕 (fourierSMulRight (innerSL ℝ) f) x) x :=
-  VectorFourier.hasFDerivAt_fourierIntegral (innerSL ℝ) hf_int hvf_int x
+  VectorFourier.hasFDerivAt_fourierIntegral (V := V) (innerSL ℝ) hf_int hvf_int x
 
 @[deprecated (since := "2025-11-16")]
 alias hasFDerivAt_fourierIntegral := hasFDerivAt_fourier
@@ -690,7 +690,7 @@ alias hasFDerivAt_fourierIntegral := hasFDerivAt_fourier
 theorem fderiv_fourier
     (hf_int : Integrable f) (hvf_int : Integrable (fun v ↦ ‖v‖ * ‖f v‖)) :
     fderiv ℝ (𝓕 f) = 𝓕 (fourierSMulRight (innerSL ℝ) f) :=
-  VectorFourier.fderiv_fourierIntegral (innerSL ℝ) hf_int hvf_int
+  VectorFourier.fderiv_fourierIntegral (V := V) (innerSL ℝ) hf_int hvf_int
 
 @[deprecated (since := "2025-11-16")]
 alias fderiv_fourierIntegral := fderiv_fourier
@@ -698,7 +698,7 @@ alias fderiv_fourierIntegral := fderiv_fourier
 theorem differentiable_fourier
     (hf_int : Integrable f) (hvf_int : Integrable (fun v ↦ ‖v‖ * ‖f v‖)) :
     Differentiable ℝ (𝓕 f) :=
-  VectorFourier.differentiable_fourierIntegral (innerSL ℝ) hf_int hvf_int
+  VectorFourier.differentiable_fourierIntegral (V := V) (innerSL ℝ) hf_int hvf_int
 
 @[deprecated (since := "2025-11-16")]
 alias differentiable_fourierIntegral := differentiable_fourier
@@ -709,7 +709,7 @@ theorem fourier_fderiv
     (hf : Integrable f) (h'f : Differentiable ℝ f) (hf' : Integrable (fderiv ℝ f)) :
     𝓕 (fderiv ℝ f) = fourierSMulRight (-innerSL ℝ) (𝓕 f) := by
   rw [← flip_innerSL_real V]
-  exact VectorFourier.fourierIntegral_fderiv (innerSL ℝ) hf h'f hf'
+  exact VectorFourier.fourierIntegral_fderiv (V := V) (innerSL ℝ) hf h'f hf'
 
 @[deprecated (since := "2025-11-16")]
 alias fourierIntegral_fderiv := fourier_fderiv
@@ -718,7 +718,7 @@ alias fourierIntegral_fderiv := fourier_fderiv
 theorem contDiff_fourier {N : ℕ∞}
     (hf : ∀ (n : ℕ), n ≤ N → Integrable (fun v ↦ ‖v‖ ^ n * ‖f v‖)) :
     ContDiff ℝ N (𝓕 f) :=
-  VectorFourier.contDiff_fourierIntegral (innerSL ℝ) hf
+  VectorFourier.contDiff_fourierIntegral (V := V) (innerSL ℝ) hf
 
 @[deprecated (since := "2025-11-16")]
 alias contDiff_fourierIntegral := contDiff_fourier
@@ -728,8 +728,8 @@ alias contDiff_fourierIntegral := contDiff_fourier
 theorem iteratedFDeriv_fourier {N : ℕ∞}
     (hf : ∀ (n : ℕ), n ≤ N → Integrable (fun v ↦ ‖v‖ ^ n * ‖f v‖))
     (h'f : AEStronglyMeasurable f) {n : ℕ} (hn : n ≤ N) :
-    iteratedFDeriv ℝ n (𝓕 f) = 𝓕 (fun v ↦ fourierPowSMulRight (innerSL ℝ) f v n) :=
-  VectorFourier.iteratedFDeriv_fourierIntegral (innerSL ℝ) hf h'f hn
+    iteratedFDeriv ℝ n (𝓕 f) = 𝓕 (fun v ↦ fourierPowSMulRight (V := V) (innerSL ℝ) f v n) :=
+  VectorFourier.iteratedFDeriv_fourierIntegral (V := V) (innerSL ℝ) hf h'f hn
 
 @[deprecated (since := "2025-11-16")]
 alias iteratedFDeriv_fourierIntegral := iteratedFDeriv_fourier
@@ -741,7 +741,7 @@ theorem fourier_iteratedFDeriv {N : ℕ∞} (hf : ContDiff ℝ N f)
     𝓕 (iteratedFDeriv ℝ n f)
       = (fun w ↦ fourierPowSMulRight (-innerSL ℝ) (𝓕 f) w n) := by
   rw [← flip_innerSL_real V]
-  exact VectorFourier.fourierIntegral_iteratedFDeriv (innerSL ℝ) hf h'f hn
+  exact VectorFourier.fourierIntegral_iteratedFDeriv (V := V) (innerSL ℝ) hf h'f hn
 
 @[deprecated (since := "2025-11-16")]
 alias fourierIntegral_iteratedFDeriv := fourier_iteratedFDeriv
