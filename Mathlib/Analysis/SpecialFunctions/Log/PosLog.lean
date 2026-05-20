@@ -157,8 +157,6 @@ theorem posLog_prod {α : Type*} (s : Finset α) (f : α → ℝ) :
 ## Estimates for Sums
 -/
 
--- TODO: non-terminal simp followed by positivity
-set_option linter.flexible false in
 /-- Estimate for `log⁺` of a sum. See `Real.posLog_add` for a variant involving
 just two summands. -/
 theorem posLog_sum {α : Type*} (s : Finset α) (f : α → ℝ) :
@@ -176,7 +174,7 @@ theorem posLog_sum {α : Type*} (s : Finset α) (f : α → ℝ) :
     apply monotoneOn_posLog (by simp) (by simp [Finset.sum_nonneg])
     simp [Finset.abs_sum_le_sum_abs]
   _ ≤ log⁺ (∑ t ∈ s, |f t_max|) := by
-    apply monotoneOn_posLog (by simp [Finset.sum_nonneg]) (by simp; positivity)
+    apply monotoneOn_posLog (by simp [Finset.sum_nonneg]) (by simp [mul_nonneg])
     apply Finset.sum_le_sum (fun i ih ↦ ht_max.2 i ih)
   _ = log⁺ (s.card * |f t_max|) := by
     simp [Finset.sum_const]

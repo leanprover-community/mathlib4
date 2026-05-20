@@ -20,11 +20,67 @@ public import Mathlib.RingTheory.Length
 
 section FindHome
 
+-- Ok. What Bourbaki does suggests an interesting alternative approach. If we can show
+-- that the sum of absolute values of even terms equals the sum of absolute value of odd terms
+--  then the
+-- alternating sum of the terms is zero (of course for finite sums), then it will be enough to
+-- provide the argument from Bourbaki, which may be a simple substitution without induction.
+-- Maybe the following will help...
+
+lemma Fin.sum_odd_even {n : ℕ} {f : Fin n → ℤ} :
+    ∑ i : Fin n, f i =
+      ∑ i ∈ Finset.filter (fun i : Fin n ↦ i.val % 2 = 1) Finset.univ, f i
+        + ∑ i ∈ Finset.filter (fun i : Fin n ↦ i.val % 2 = 0) Finset.univ, f i := by
+   simpa only [add_comm, Finset.sum_filter] using
+        by rw [← Finset.sum_add_distrib]
+           congr
+           ext
+           aesop
+
+/- Name is still terrible. -/
+lemma alt_sum_eq_zero_of_sum_odd_eq_sum_even {n : ℕ} {f : Fin n → ℤ}
+  (hf : ∑ i ∈ Finset.filter (fun i : Fin n ↦ i.val % 2 = 1) Finset.univ, f i
+      = ∑ i ∈ Finset.filter (fun i : Fin n ↦ i.val % 2 = 0) Finset.univ, f i) :
+          ∑ i, (-1) ^ (i.val) * f i = 0 := by
+  rw [Fin.sum_odd_even]
+  have h_odd (i : Fin n) (hi : i.val % 2 = 1) : (-1) ^ (i : ℕ) = -1 := by
+    rw [← Nat.mod_add_div i 2, hi]
+    norm_num [pow_add, pow_mul]
+  have h_even (i : Fin n) (hi : i.val % 2 = 0) : (-1) ^ (i : ℕ) = 1 := by
+     rw [← Nat.mod_add_div i 2, hi]
+     norm_num
+  have : ∑ i ∈ Finset.filter (fun i : Fin n ↦ i.val % 2 = 1) Finset.univ, (-1) ^ i.val * f i =
+      - ∑ i ∈ Finset.filter (fun i : Fin n ↦ i.val % 2 = 1) Finset.univ, f i := by
+    rw [← Finset.sum_neg_distrib, Finset.sum_congr rfl fun x hx ↦
+      by rw [h_odd x (Finset.mem_filter.mp hx |>.2)]]
+    norm_num
+  have : ∑ i ∈ Finset.filter (fun i : Fin n ↦ i.val % 2 = 0) Finset.univ, (-1) ^ i.val * f i =
+      ∑ i ∈ Finset.filter (fun i : Fin n ↦ i.val % 2 = 0) Finset.univ, f i := by
+    exact Finset.sum_congr rfl fun x hx ↦ by aesop
+  grind
+
+/- The following should now reduce to the Bourbaki proof. -/
+open Function Module in
+lemma Module.sum_neg_one_pow_finrank_eq_zero_of_exact' {n : ℕ} {k : Type*}
+    (V : Fin (n + 3) → Type*) [Field k] [∀ i, AddCommGroup (V i)] [∀ i, Module k (V i)]
+    [∀ i, FiniteDimensional k (V i)] (f : (i : Fin (n + 2)) → V i.castSucc →ₗ[k] V i.succ)
+    (inj : Injective (f 0)) (h_exact : ∀ i : Fin (n + 1), Exact (f i.castSucc) (f i.succ))
+    (surj : Surjective (f (Fin.last _))) :
+    ∑ i, (-1) ^ i.val • (finrank k (V i) : ℤ) = 0 := by
+  apply alt_sum_eq_zero_of_sum_odd_eq_sum_even
+  -- Module.length_eq_add_of_exact (f 0) (f 1) inj surj (h_exact 1) --need to use this move to
+  -- replace the terms in the sum with sums. Not sure how to deal with inj and surj here.
+  -- It may be necessary to prove an exactness statment for vector spaces particularly so
+  -- as to avoid this inj and surj?
+  sorry
+
 -- I do think we need to begin with a three term exact sequence for this, since even
 -- Bourbaki derives the result as a corollary of Rank-Nullity. I've started the ball
 -- rolling on this. I'd be delighted to be proven wrong by splitting of the zero case
 -- and then starting the induction at 1, though. (Also feel free to work on this if I
 -- don't circle back around to it soon enough!)
+-- Note : The ring theory import suggests this might be best proved by induction for
+-- Krull dimension for lengths and then this will be a special case...
 open Function Module in
 lemma Module.sum_neg_one_pow_finrank_eq_zero_of_exact {n : ℕ} {k : Type*}
     (V : Fin (n + 3) → Type*) [Field k] [∀ i, AddCommGroup (V i)] [∀ i, Module k (V i)]
@@ -37,18 +93,32 @@ lemma Module.sum_neg_one_pow_finrank_eq_zero_of_exact {n : ℕ} {k : Type*}
     rw [this]
     simp only [Int.reduceNeg, Fin.isValue, Fin.coe_ofNat_eq_mod, Nat.zero_mod, pow_zero, one_mul,
       Nat.one_mod, pow_one, neg_mul, Nat.mod_succ, even_two, Even.neg_pow, one_pow]
-    have B := Module.length_eq_add_of_exact (f 0) (f 1) inj surj (h_exact 1)
-    rw [Module.length_eq_finrank, Module.length_eq_finrank , Module.length_eq_finrank] at B
-    simp only [Nat.reduceAdd, Fin.isValue, Fin.succ_zero_eq_one, Fin.castSucc_zero,
-      Fin.succ_one_eq_two] at B
-    norm_cast at B
-    zify at B
+    have := Module.length_eq_add_of_exact (f 0) (f 1) inj surj (h_exact 1)
+    rw [Module.length_eq_finrank, Module.length_eq_finrank , Module.length_eq_finrank] at this
+    norm_cast at this
+    zify at this
     rw [add_comm, ← add_assoc, add_comm, add_eq_zero_iff_eq_neg', neg_neg, add_comm]
-    exact Int.neg_inj.mp (congrArg Neg.neg (id (Eq.symm B)))
-  · sorry
-
--- Module.length_eq_finrank
---
+    exact Int.neg_inj.mp (congrArg Neg.neg (id (Eq.symm this)))
+  · rw [Fin.sum_univ_castSucc]
+    simp only [Int.reduceNeg, Fin.val_castSucc, Int.zsmul_eq_mul, Fin.val_last]
+    expose_names
+    let V' := V ∘ Fin.castSucc
+    have inst_1'' (i : Fin (n + 3)) := inst_1 i.castSucc
+    have inst_2'' (i : Fin (n + 3)) := inst_2 i.castSucc
+    have inst_3'' (i : Fin (n + 3)) := inst_3 i.castSucc
+    have inst_1' : (i : Fin (n + 3)) → AddCommGroup ((V ∘ Fin.castSucc) i) := by
+       intro i
+       conv =>
+        rhs
+        rw [comp_apply]
+       exact inst_1'' i
+    have inst_2' : (i : Fin (n + 3)) → Module k ((V ∘ Fin.castSucc) i) := by
+       intro i
+       simp_all only [Fin.castSucc_zero, Fin.succ_zero_eq_one, Fin.castSucc_succ,
+         Fin.succ_last, Nat.succ_eq_add_one,
+         Int.reduceNeg, Int.zsmul_eq_mul, implies_true, comp_apply]
+       sorry
+    sorry
 
 -- Can we have a simproc write this using `Module.sum_neg_one_pow_finrank_eq_zero_of_exact`
 -- Note the key point that the universes of the `Vᵢ` are allowed be different here.
