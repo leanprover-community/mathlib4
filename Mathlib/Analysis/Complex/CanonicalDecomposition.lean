@@ -248,14 +248,7 @@ private lemma sum_apply_smul_single_eq_self
 private lemma canonicalDecomposition_aux₂ (h₁f : MeromorphicOn f (closedBall 0 R)) :
     divisor (∏ᶠ u, (canonicalFactor R u) ^ (divisor f (ball 0 R) u)) (ball 0 R)
       = -(divisor f (ball 0 R)) := by
-  have η₀ : (-divisor f (ball 0 R)).support.Finite := by
-    apply ((-divisor f (closedBall 0 R)).finiteSupport (isCompact_closedBall 0 R)).subset
-    intro z hz
-    have := (divisor f (ball 0 R)).supportWithinDomain
-    rw [mem_support, locallyFinsuppWithin.coe_neg, Pi.neg_apply, ne_eq,
-      neg_eq_zero] at ⊢ hz
-    rw [divisor_apply h₁f (ball_subset_closedBall (by aesop))]
-    rwa [divisor_apply (h₁f.mono_set ball_subset_closedBall) (by aesop)] at hz
+  have η₀ : (-divisor f (ball 0 R)).support.Finite := by simp [h₁f.divisor_ball_finiteSupport]
   rw [finprod_eq_prod_of_mulSupport_subset_of_finite _ (by aesop) η₀, divisor_prod]
   · simp_rw [divisor_zpow (fun z hz ↦ meromorphic_canonicalFactor R _ z)]
     conv_rhs => rw [← sum_apply_smul_single_eq_self η₀]
@@ -274,8 +267,7 @@ private lemma canonicalDecomposition_aux₂ (h₁f : MeromorphicOn f (closedBall
 -- Auxiliary lemma for the proof of the canonical decomposition theorem: The (inverse of the) factor
 -- in the canonical decomposition does not vanish identically.
 private lemma canonicalDecomposition_aux₃ {z : ℂ} (hR : 0 < R) :
-    meromorphicOrderAt
-      (∏ᶠ (c : ℂ), canonicalFactor R c ^ (divisor f (ball 0 R)) c) z ≠ ⊤ := by
+    meromorphicOrderAt (∏ᶠ (c : ℂ), canonicalFactor R c ^ (divisor f (ball 0 R)) c) z ≠ ⊤ := by
   apply meromorphicOrderAt_finprod_ne_top
     (fun _ ↦ MeromorphicAt.zpow (meromorphic_canonicalFactor _ _ _) _)
   intro c
@@ -303,15 +295,7 @@ theorem _root_.MeromorphicOn.congr_codiscreteWitin_closedBall_prod_canonicalFact
     have : R = 0 := by grind [nonneg_of_mem_closedBall ha]
     aesop
   rw [not_le] at hR
-  have η₀ : (-divisor f (ball 0 R)).support.Finite := by
-    have := (divisor f (ball 0 R)).supportWithinDomain
-    apply ((-divisor f (closedBall 0 R)).finiteSupport (isCompact_closedBall 0 R)).subset
-    intro z hz
-    simp only [mem_support, locallyFinsuppWithin.coe_neg, Pi.neg_apply, ne_eq,
-      neg_eq_zero] at ⊢ hz
-    rw [divisor_apply h₁f (ball_subset_closedBall (by aesop))]
-    rwa [divisor_apply (h₁f.mono_set ball_subset_closedBall) (by aesop)] at hz
-  have η₁ : (-divisor f (ball 0 R)).support = (divisor f (ball 0 R)).support := by aesop
+  have η₀ : (-divisor f (ball 0 R)).support.Finite := by simp [h₁f.divisor_ball_finiteSupport]
   rw [finprod_eq_prod_of_mulSupport_subset_of_finite _ (by aesop) η₀]
   let φ := (∏ᶠ c, canonicalFactor R c ^ (divisor f (ball 0 R)) c) • f
   have hφ : MeromorphicOn φ (closedBall 0 R) := by
@@ -353,9 +337,10 @@ theorem _root_.MeromorphicOn.congr_codiscreteWitin_closedBall_prod_canonicalFact
         rw [← smul_assoc, ← Finset.prod_smul, Finset.prod_eq_one, one_smul]
         · intro x hx
           rw [smul_eq_mul, ← zpow_add', neg_add_cancel, zpow_zero]
-          simp_all only [ne_eq, Subtype.forall, mem_closedBall, dist_zero_right, mem_compl_iff,
-            mem_support, Decidable.not_not, Finite.mem_toFinset, neg_add_cancel,
-            not_true_eq_false, neg_eq_zero, and_self, or_self, or_false]
+          simp_all only [ne_eq, Subtype.forall, mem_closedBall, dist_zero_right,
+            locallyFinsuppWithin.support_neg, mem_compl_iff, mem_support, Decidable.not_not,
+            Finite.mem_toFinset, neg_add_cancel, not_true_eq_false, neg_eq_zero, and_self, or_self,
+            or_false]
           apply canonicalFactor_ne_zero
           · by_contra h
             simp_all

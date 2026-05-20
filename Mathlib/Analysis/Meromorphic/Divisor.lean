@@ -73,6 +73,40 @@ lemma AnalyticOnNhd.divisor_apply {f : 𝕜 → E} (hf : AnalyticOnNhd 𝕜 f U)
   rw [hf.meromorphicOn.divisor_apply hz, (hf z hz).meromorphicOrderAt_eq]
 
 /-!
+## Support Properties
+-/
+
+/--
+Special case of `Function.locallyFinsuppWithin.finiteSupport` that frequently shows in complex
+analysis: Divisors on spheres have finite support.
+-/
+lemma _root_.divisor_sphere_finiteSupport [ProperSpace 𝕜] {f : 𝕜 → E} {R : ℝ} {c : 𝕜} :
+    (divisor f (Metric.sphere c R)).support.Finite :=
+    (divisor f (Metric.sphere c R)).finiteSupport (isCompact_sphere c R)
+
+/--
+If `f` is meromorphic on a compact set `U` and `V ⊆ U`, then the divisor of `f` on `V` has finite
+support.
+-/
+lemma divisor_subset_finiteSupport {f : 𝕜 → E} {V : Set 𝕜} (hf : MeromorphicOn f U)
+    (hU : IsCompact U) (hV : V ⊆ U) :
+    (divisor f V).support.Finite := by
+  apply ((divisor f U).finiteSupport hU).subset
+  intro b hb
+  rw [Function.mem_support, ne_eq, divisor_apply hf (hV ((divisor f V).supportWithinDomain hb))]
+  rwa [Function.mem_support, ne_eq, divisor_apply (fun x hx ↦ hf x (hV hx))
+    ((divisor f V).supportWithinDomain hb)] at hb
+
+/--
+Special case of `MeromorphicOn.divisor_subset_finiteSupport` that frequently shows in complex
+analysis, where  `U` is a closed ball and `V` is its interior.
+-/
+lemma divisor_ball_finiteSupport [ProperSpace 𝕜] {f : 𝕜 → E} {R : ℝ} {c : 𝕜}
+    (hf : MeromorphicOn f (Metric.closedBall c R)) :
+    (divisor f (Metric.ball c R)).support.Finite :=
+  hf.divisor_subset_finiteSupport (isCompact_closedBall c R) Metric.ball_subset_closedBall
+
+/-!
 ## Congruence Lemmas
 -/
 
