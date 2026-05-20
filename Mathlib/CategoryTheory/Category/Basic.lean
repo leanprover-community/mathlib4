@@ -240,8 +240,8 @@ class Category (obj : Type u) : Type max u (v + 1) extends CategoryStruct.{v} ob
   assoc : ∀ {W X Y Z : obj} (f : W ⟶ X) (g : X ⟶ Y) (h : Y ⟶ Z), (f ≫ g) ≫ h = f ≫ g ≫ h := by
     cat_disch
 
-attribute [to_dual existing (attr := simp, grind =) id_comp] Category.comp_id
-attribute [simp, grind _=_] Category.assoc
+attribute [to_dual existing (attr := simp) id_comp] Category.comp_id
+attribute [simp] Category.assoc
 
 initialize_simps_projections Category (-Hom)
 
@@ -402,6 +402,9 @@ def uliftCategory : Category.{v} (ULift.{u'} C) where
   Hom X Y := X.down ⟶ Y.down
   id X := 𝟙 X.down
   comp f g := f ≫ g
+  id_comp _ := Category.id_comp _
+  comp_id _ := Category.comp_id _
+  assoc _ _ _ := Category.assoc _ _ _
 
 attribute [local instance] uliftCategory in
 -- We verify that this previous instance can lift small categories to large categories.

@@ -3433,6 +3433,7 @@ public import Mathlib.CategoryTheory.Subterminal
 public import Mathlib.CategoryTheory.Sums.Associator
 public import Mathlib.CategoryTheory.Sums.Basic
 public import Mathlib.CategoryTheory.Sums.Products
+public import Mathlib.CategoryTheory.Tactic.GrindCatNorm
 public import Mathlib.CategoryTheory.Thin
 public import Mathlib.CategoryTheory.Topos.Classifier
 public import Mathlib.CategoryTheory.Topos.Sheaf
