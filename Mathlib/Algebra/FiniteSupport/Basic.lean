@@ -8,11 +8,9 @@ module
 public import Mathlib.Algebra.BigOperators.Group.Finset.Lemmas
 public import Mathlib.Algebra.FiniteSupport.Defs
 public import Mathlib.Algebra.GroupWithZero.Defs
-public import Mathlib.Algebra.Module.Basic
 public import Mathlib.Algebra.Order.Group.Indicator
 public import Mathlib.Data.Set.Finite.Lattice
 
-import Mathlib.Algebra.Group.Support
 import Mathlib.Algebra.GroupWithZero.Indicator
 
 /-!
@@ -184,7 +182,9 @@ lemma HasFiniteMulSupport.of_comp [One β] (hfg : (f ∘ g).HasFiniteMulSupport)
   refine Set.Finite.subset hfg fun _ ha ↦ Set.mem_setOf.mpr fun H ↦ Set.mem_setOf.mp ha ?_
   grind
 
-@[fun_prop]
+-- The additive version is a special case of `Function.HasFiniteSupport.smul_left`,
+-- which, however, needs additional imports.
+@[to_additive (attr := fun_prop)]
 lemma HasFiniteSupport.hasFiniteMulSupport_fun_pow {M : Type*} [Monoid M] (f : α → M) {g : α → ℕ}
     (hg : g.HasFiniteSupport) :
     (fun a : α ↦ f a ^ g a).HasFiniteMulSupport := by
@@ -208,24 +208,6 @@ lemma HasFiniteSupport.mul_right (f : α → M) {g : α → M} (hg : g.HasFinite
   Set.Finite.subset hg fun _ ha ↦ support_mul_subset_right f g ha
 
 end MulZeroClass
-
-section SMul
-
-variable {R M : Type*} [Zero M]
-
-@[to_fun (attr := fun_prop)]
-lemma HasFiniteSupport.smul_left [Zero R] [SMulWithZero R M] {f : α → R} (hf : f.HasFiniteSupport)
-    (g : α → M) :
-    (f • g).HasFiniteSupport :=
-  Set.Finite.subset hf fun _ ha ↦ support_smul_subset_left f g ha
-
-@[to_fun (attr := fun_prop)]
-lemma HasFiniteSupport.smul_right [SMulZeroClass R M] (f : α → R) {g : α → M}
-    (hg : g.HasFiniteSupport) :
-    (f • g).HasFiniteSupport :=
-  Set.Finite.subset hg fun _ ha ↦ support_smul_subset_right f g ha
-
-end SMul
 
 end Function
 
