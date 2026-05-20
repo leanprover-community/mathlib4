@@ -99,14 +99,18 @@ theorem continuousOn_symm : ContinuousOn e.symm e.target :=
   e.continuousOn_invFun
 
 @[simp, mfld_simps]
-theorem mk_coe (e : PartialEquiv X Y) (h1 h2 h3 h4) :
-    (OpenPartialHomeomorph.mk e h1 h2 h3 h4 : X → Y) = e :=
+theorem coe_mk (e : PartialEquiv X Y) (h₁ h₂ h₃ h₄) :
+    (OpenPartialHomeomorph.mk e h₁ h₂ h₃ h₄ : X → Y) = e :=
   rfl
 
+@[deprecated (since := "2026-05-20")] alias mk_coe := coe_mk
+
 @[simp, mfld_simps]
-theorem mk_coe_symm (e : PartialEquiv X Y) (a b c d) :
+theorem coe_mk_symm (e : PartialEquiv X Y) (a b c d) :
     ((OpenPartialHomeomorph.mk e a b c d).symm : Y → X) = e.symm :=
   rfl
+
+@[deprecated (since := "2026-05-20")] alias mk_coe_symm := coe_mk_symm
 
 theorem toPartialEquiv_injective :
     Injective (toPartialEquiv : OpenPartialHomeomorph X Y → PartialEquiv X Y)
@@ -210,11 +214,13 @@ def replacePartialEquiv (e : OpenPartialHomeomorph X Y) (e' : PartialEquiv X Y)
 
 @[deprecated (since := "2026-05-19")] alias replaceEquiv := replacePartialEquiv
 
-theorem replaceEquiv_eq_self (e' : PartialEquiv X Y)
+theorem replacePartialEquiv_eq_self (e' : PartialEquiv X Y)
     (h : e.toPartialEquiv = e') : e.replacePartialEquiv e' h = e := by
   cases e
   subst e'
   rfl
+
+@[deprecated (since := "2026-05-20")] alias replaceEquiv_eq_self := replacePartialEquiv_eq_self
 
 /-- Two open partial homeomorphisms are equal when they have equal `toFun`, `invFun` and `source`.
 It is not sufficient to have equal `toFun` and `source`, as this only determines `invFun` on
