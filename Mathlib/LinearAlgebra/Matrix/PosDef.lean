@@ -590,8 +590,8 @@ theorem posDef_of_toMatrix' [DecidableEq n] {Q : QuadraticForm ℝ (n → ℝ)}
 
 theorem posDef_toMatrix' [DecidableEq n] {Q : QuadraticForm ℝ (n → ℝ)} (hQ : Q.PosDef) :
     Q.toMatrix'.PosDef := by
-  rw [← Q.toQuadraticMap_associated ℝ, ←
-    (LinearMap.toMatrix₂' ℝ).left_inv ((Q.associatedHom (R := ℝ) ℝ))] at hQ
+  rw [← Q.toQuadraticMap_associated ℝ,
+    ← (LinearMap.toMatrix₂' ℝ).left_inv (Q.associatedHom ℝ)] at hQ
   exact .of_toQuadraticForm' (isSymm_toMatrix' Q) hQ
 
 end QuadraticForm
