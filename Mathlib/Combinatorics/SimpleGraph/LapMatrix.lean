@@ -127,6 +127,11 @@ theorem lapMatrix_mulVec_one_eq_zero [NonAssocRing R] : G.lapMatrix R *ᵥ 1 = 0
   simp [lapMatrix_mulVec_apply]
 
 variable (R) in
+@[simp]
+theorem det_lapMatrix_eq_zero [Nonempty V] [CommRing R] [IsDomain R] : (G.lapMatrix R).det = 0 :=
+  exists_mulVec_eq_zero_iff.mp ⟨1, by simp, G.lapMatrix_mulVec_one_eq_zero R⟩
+
+variable (R) in
 theorem not_isUnit_lapMatrix [Nonempty V] [Nontrivial R] [CommRing R] :
     ¬IsUnit (G.lapMatrix R) := by
   have ⟨v⟩ := ‹Nonempty V›
@@ -195,9 +200,9 @@ theorem lapMatrix_mulVec_eq_zero_iff_forall_adj {x : V → ℝ} :
   rw [← (posSemidef_lapMatrix ℝ G).toLinearMap₂'_zero_iff, star_trivial,
       lapMatrix_toLinearMap₂'_apply'_eq_zero_iff_forall_adj]
 
-theorem lapMatrix_toLinearMap₂'_apply'_eq_zero_iff_forall_reachable (x : V → ℝ) :
-    Matrix.toLinearMap₂' ℝ (G.lapMatrix ℝ) x x = 0 ↔
-      ∀ i j : V, G.Reachable i j → x i = x j := by
+theorem lapMatrix_toLinearMap₂'_apply'_eq_zero_iff_forall_reachable [Field R] [LinearOrder R]
+    [IsStrictOrderedRing R] (x : V → R) :
+    (G.lapMatrix R).toLinearMap₂' R x x = 0 ↔ ∀ i j, G.Reachable i j → x i = x j := by
   rw [lapMatrix_toLinearMap₂'_apply'_eq_zero_iff_forall_adj]
   refine ⟨?_, fun h i j hA ↦ h i j hA.reachable⟩
   intro h i j ⟨w⟩
@@ -209,15 +214,6 @@ theorem lapMatrix_mulVec_eq_zero_iff_forall_reachable {x : V → ℝ} :
     G.lapMatrix ℝ *ᵥ x = 0 ↔ ∀ i j : V, G.Reachable i j → x i = x j := by
   rw [← (posSemidef_lapMatrix ℝ G).toLinearMap₂'_zero_iff, star_trivial,
       lapMatrix_toLinearMap₂'_apply'_eq_zero_iff_forall_reachable]
-
-@[simp]
-theorem det_lapMatrix_eq_zero [h : Nonempty V] : (G.lapMatrix ℝ).det = 0 := by
-  rw [← Matrix.exists_mulVec_eq_zero_iff]
-  use fun _ ↦ 1
-  refine ⟨?_, (lapMatrix_mulVec_eq_zero_iff_forall_adj G).mpr fun _ _ _ ↦ rfl⟩
-  rw [← Function.support_nonempty_iff]
-  use Classical.choice h
-  simp
 
 section
 
