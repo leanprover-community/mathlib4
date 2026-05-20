@@ -9,8 +9,10 @@ public import Mathlib.Algebra.BigOperators.Group.Finset.Lemmas
 public import Mathlib.Algebra.FiniteSupport.Defs
 public import Mathlib.Algebra.Order.Group.Indicator
 public import Mathlib.Data.Set.Finite.Lattice
+public import Mathlib.Algebra.GroupWithZero.Defs
 
 import Mathlib.Algebra.Group.Support
+import Mathlib.Algebra.GroupWithZero.Basic
 
 /-!
 # Make `fun_prop` work for finite (multiplicative) support
@@ -189,6 +191,26 @@ lemma HasFiniteSupport.hasFiniteMulSupport_fun_pow {M : Type*} [Monoid M] (f : �
   simp only [Function.mem_mulSupport, Function.mem_support] at ha ⊢
   contrapose! ha
   simp [ha]
+
+section MulZeroClass
+
+variable {M : Type*} [MulZeroClass M]
+
+@[to_fun (attr := fun_prop)]
+lemma HasFiniteSupport.mul_left {f : α → M} (hf : f.HasFiniteSupport) (g : α → M) :
+    (f * g).HasFiniteSupport := by
+  refine Set.Finite.subset hf fun a ha ↦ ?_
+  simp only [Function.mem_support] at ha ⊢
+  exact left_ne_zero_of_mul ha
+
+@[to_fun (attr := fun_prop)]
+lemma HasFiniteSupport.fun_mul_right (f : α → M) {g : α → M} (hg : g.HasFiniteSupport) :
+    (f * g).HasFiniteSupport := by
+  refine Set.Finite.subset hg fun a ha ↦ ?_
+  simp only [Function.mem_support] at ha ⊢
+  exact right_ne_zero_of_mul ha
+
+end MulZeroClass
 
 end Function
 
