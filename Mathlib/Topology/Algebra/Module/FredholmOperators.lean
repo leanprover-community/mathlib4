@@ -67,7 +67,7 @@ lemma Module.sum_neg_one_pow_finrank_eq_zero_of_exact' {n : ℕ} {k : Type*}
     (inj : Injective (f 0)) (h_exact : ∀ i : Fin (n + 1), Exact (f i.castSucc) (f i.succ))
     (surj : Surjective (f (Fin.last _))) :
     ∑ i, (-1) ^ i.val • (finrank k (V i) : ℤ) = 0 := by
-  apply alt_sum_eq_zero_of_sum_even_eq_sum_odd
+  apply alt_sum_eq_zero_of_sum_odd_eq_sum_even
   -- Module.length_eq_add_of_exact (f 0) (f 1) inj surj (h_exact 1) --need to use this move to
   -- replace the terms in the sum with sums. Not sure how to deal with inj and surj here.
   -- It may be necessary to prove an exactness statment for vector spaces particularly so
