@@ -29,7 +29,6 @@ we show that idempotent elements of `M →L[R] M` are precisely the projections 
 topological complement submodules.
 -/
 
-
 @[expose] public section
 
 namespace ContinuousLinearMap

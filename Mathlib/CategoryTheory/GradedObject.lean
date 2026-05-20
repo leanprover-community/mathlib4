@@ -450,7 +450,7 @@ the point of this latter cofan computes the coproduct of the `X i` such that `r 
 @[simp]
 def isColimitCofanMapObjComp :
     IsColimit (cofanMapObjComp X p q r hpqr k c c') :=
-  mkCofanColimit _
+  Cofan.IsColimit.mk _
     (fun s => Cofan.IsColimit.desc hc'
       (fun ⟨j, (hj : q j = k)⟩ => Cofan.IsColimit.desc (hc j hj)
         (fun ⟨i, (hi : p i = j)⟩ => s.inj ⟨i, by
