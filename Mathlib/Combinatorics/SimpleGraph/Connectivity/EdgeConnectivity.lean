@@ -6,6 +6,7 @@ Authors: Youheng Luo
 module
 
 public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
+public import Mathlib.Combinatorics.SimpleGraph.DegreeSum
 public import Mathlib.Data.Set.Card
 
 /-!
@@ -22,6 +23,8 @@ This file defines k-edge-connectivity for simple graphs.
 -/
 
 @[expose] public section
+
+open Finset
 
 namespace SimpleGraph
 
@@ -135,6 +138,125 @@ lemma isBridge_iff_adj_and_not_isEdgeConnected_two {u v : V} :
     by_cases hx : s(u, v) = x
     · exact hx ▸ hr
     exact deleteEdges_adj.mpr ⟨hadj, hx⟩ |>.reachable
+
+/-- A finite graph in which every vertex has even degree has no bridge. -/
+theorem not_isBridge_of_even_degree [Fintype V] [DecidableRel G.Adj]
+    (hG : ∀ v, Even (G.degree v)) {e : Sym2 V} : ¬ G.IsBridge e := by
+  classical
+  cases e with
+  | h u v =>
+    rw [isBridge_iff]
+    rintro ⟨huv, hb⟩
+    let H := G.deleteEdges {s(u, v)}
+    let C : H.ConnectedComponent := H.connectedComponentMk u
+    have huC : u ∈ C := by rfl
+    have hvC : v ∉ C := by
+      intro hv
+      exact hb <| C.reachable_of_mem_supp huC hv
+    let uC : C := ⟨u, huC⟩
+    have degree_toSimpleGraph (D : H.ConnectedComponent) (x : D) :
+        D.toSimpleGraph.degree x = H.degree (x : V) := by
+      rw [← card_neighborSet_eq_degree, ← card_neighborSet_eq_degree]
+      exact Fintype.card_congr
+        { toFun := fun y ↦ ⟨(y : D), y.prop⟩
+          invFun := fun y ↦ ⟨⟨y, (D.mem_supp_congr_adj y.prop).mp x.prop⟩, y.prop⟩
+          left_inv := by
+            intro y
+            ext
+            rfl
+          right_inv := by
+            intro y
+            ext
+            rfl }
+    have hH_degree_u : H.degree u = G.degree u - 1 := by
+      rw [← card_neighborSet_eq_degree]
+      calc
+        Fintype.card (H.neighborSet u) = Fintype.card {w // G.Adj u w ∧ w ≠ v} := by
+          exact Fintype.card_congr
+            { toFun := fun w ↦
+                ⟨w, by
+                  have hwH : H.Adj u (w : V) := w.prop
+                  have hw : G.Adj u w ∧ s(u, (w : V)) ∉ ({s(u, v)} : Set (Sym2 V)) := by
+                    simpa [H] using hwH
+                  refine ⟨hw.1, ?_⟩
+                  intro hwv
+                  exact hw.2 (by simp [hwv])⟩
+              invFun := fun w ↦
+                ⟨w, by
+                  have hnot : s(u, (w : V)) ∉ ({s(u, v)} : Set (Sym2 V)) := by
+                    rw [Set.mem_singleton_iff, Sym2.eq_iff]
+                    rintro (h | h)
+                    · exact w.2.2 h.2
+                    · exact huv.ne h.1
+                  change H.Adj u (w : V)
+                  simpa [H] using
+                    (show G.Adj u (w : V) ∧
+                        s(u, (w : V)) ∉ ({s(u, v)} : Set (Sym2 V)) from ⟨w.2.1, hnot⟩)
+                ⟩
+              left_inv := by
+                intro w
+                ext
+                rfl
+              right_inv := by
+                intro w
+                ext
+                rfl }
+        _ = #(G.neighborFinset u \ {v}) := by
+          rw [Fintype.card_of_subtype (G.neighborFinset u \ {v})]
+          intro w
+          simp
+        _ = G.degree u - 1 := by
+          rw [card_sdiff_of_subset]
+          · simp
+          · simp [huv]
+    have hdegree_u : C.toSimpleGraph.degree uC = G.degree u - 1 := by
+      rw [degree_toSimpleGraph C uC, hH_degree_u]
+    have hodd_u : Odd (C.toSimpleGraph.degree uC) := by
+      rw [hdegree_u]
+      exact Nat.Even.sub_odd (by simpa using huv.degree_pos_left) (hG u) odd_one
+    have hdegree_ne (x : C) (hx : x ≠ uC) : C.toSimpleGraph.degree x = G.degree (x : V) := by
+      rw [degree_toSimpleGraph C x]
+      rw [← card_neighborSet_eq_degree, ← card_neighborSet_eq_degree]
+      exact Fintype.card_congr
+        { toFun := fun w ↦
+            ⟨w, by
+              have hwH : H.Adj (x : V) (w : V) := w.prop
+              have hw : G.Adj (x : V) w ∧
+                  s((x : V), (w : V)) ∉ ({s(u, v)} : Set (Sym2 V)) := by
+                simpa [H] using hwH
+              exact hw.1⟩
+          invFun := fun w ↦
+            ⟨w, by
+              have hx_ne_u : (x : V) ≠ u := by
+                intro hxu
+                exact hx <| Subtype.ext hxu
+              have hx_ne_v : (x : V) ≠ v := by
+                intro hxv
+                exact hvC (hxv ▸ x.prop)
+              have hnot : s((x : V), (w : V)) ∉ ({s(u, v)} : Set (Sym2 V)) := by
+                rw [Set.mem_singleton_iff, Sym2.eq_iff]
+                rintro (h | h)
+                · exact hx_ne_u h.1
+                · exact hx_ne_v h.1
+              change H.Adj (x : V) (w : V)
+              simpa [H] using
+                (show G.Adj (x : V) (w : V) ∧
+                    s((x : V), (w : V)) ∉ ({s(u, v)} : Set (Sym2 V)) from ⟨w.2, hnot⟩)
+            ⟩
+          left_inv := by
+            intro w
+            ext
+            rfl
+          right_inv := by
+            intro w
+            ext
+            rfl }
+    rcases C.toSimpleGraph.exists_ne_odd_degree_of_exists_odd_degree uC hodd_u with
+      ⟨x, hx_ne, hx_odd⟩
+    have hx_even : Even (C.toSimpleGraph.degree x) := by
+      rw [hdegree_ne x hx_ne]
+      exact hG x
+    exact (Nat.not_even_iff_odd.mpr hx_odd) hx_even
 
 lemma isEdgeReachable_two : G.IsEdgeReachable 2 u v ↔ ∀ e, (G.deleteEdges {e}).Reachable u v := by
   simp [isEdgeReachable_add_one]
