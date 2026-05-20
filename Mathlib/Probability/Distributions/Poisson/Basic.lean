@@ -8,14 +8,15 @@ module
 public import Mathlib.MeasureTheory.Measure.CharacteristicFunction.Basic
 public import Mathlib.Probability.HasLaw
 public import Mathlib.Probability.ProbabilityMassFunction.Basic
-public import Mathlib.LinearAlgebra.Complex.FiniteDimensional
+
+import Mathlib.LinearAlgebra.Complex.FiniteDimensional
 
 /-! # Poisson distributions over ℕ
 
 Define the Poisson measure over the natural numbers. For `r : ℝ≥0`, `poissonMeasure r` is the
 measure which to `{n}` associates `exp (-r) * r ^ n / (n)!`.
 
-## Main definitions
+## Main definition
 
 * `poissonMeasure r`: a Poisson measure on `ℕ`, parametrized by its rate `r : ℝ≥0`.
 
@@ -65,14 +66,14 @@ lemma hasSum_one_poissonMeasure (r : ℝ≥0) : HasSum (fun n ↦ exp (-r) * r ^
 instance (r : ℝ≥0) : IsProbabilityMeasure Po(r) :=
   (hasSum_one_poissonMeasure r).isProbabilityMeasure_sum_dirac (fun _ ↦ by positivity)
 
-instance (r : ℝ≥0) {R : Type*} [AddMonoidWithOne R] [MeasurableSpace R] :
+instance (r : ℝ≥0) {R : Type*} [NatCast R] [MeasurableSpace R] :
     IsProbabilityMeasure Po(R, r) :=
-  Measure.isProbabilityMeasure_map (measurable_of_countable _).aemeasurable
+  Measure.isProbabilityMeasure_map .of_discrete
 
 section Integral
 
 variable {E : Type*} [NormedAddCommGroup E]
-variable {R : Type*} [AddMonoidWithOne R] [MeasurableSpace R]
+variable {R : Type*} [NatCast R] [MeasurableSpace R]
 
 lemma integrable_poissonMeasure_iff {r : ℝ≥0} {f : ℕ → E} :
     Integrable f Po(r) ↔ Summable (fun n ↦ exp (-r) * r ^ n / (n)! * ‖f n‖) := by
@@ -109,7 +110,7 @@ lemma integral_poissonMeasure' [CompleteSpace E] {r : ℝ≥0} {f : ℕ → E}
 
 lemma integral_map_cast_poissonMeasure' [CompleteSpace E] [Countable R] [MeasurableSingletonClass R]
     {r : ℝ≥0} {f : R → E} (hf : Integrable f Po(R, r)) :
-    ∫ x, f x ∂Po(R, r) = ∑' n, (exp (-r) * r ^ n / (n)!) • f (n : R) := by
+    ∫ x, f x ∂Po(R, r) = ∑' n, (exp (-r) * r ^ n / (n)!) • f n := by
   rw [integral_map (measurable_of_countable _).aemeasurable AEStronglyMeasurable.of_discrete]
   rw [integrable_map_cast_poissonMeasure_iff] at hf
   exact integral_poissonMeasure' hf
@@ -197,8 +198,8 @@ theorem IndepFun.hasLaw_add_poissonMeasure {Ω : Type*} {mΩ : MeasurableSpace �
 /-- The sum of two independent Poisson random variables with rates `r₁, r₂` taking values in `R`
 is a Poisson random variable with rate `r₁ + r₂`. -/
 theorem IndepFun.hasLaw_add_map_cast_poissonMeasure {Ω : Type*} {mΩ : MeasurableSpace Ω}
-    {P : Measure Ω} [MeasurableAdd₂ R] {r₁ r₂ : ℝ≥0} {X Y : Ω → R} (hXY : IndepFun X Y P)
-    (hX : HasLaw X Po(R, r₁) P) (hY : HasLaw Y Po(R, r₂) P) :
+    {P : Measure Ω} [MeasurableAdd₂ R] {r₁ r₂ : ℝ≥0} {X Y : Ω → R}
+    (hXY : IndepFun X Y P) (hX : HasLaw X Po(R, r₁) P) (hY : HasLaw Y Po(R, r₂) P) :
     HasLaw (X + Y) Po(R, r₁ + r₂) P := by
   rw [← map_cast_poissonMeasure_conv]
   exact hXY.hasLaw_add hX hY
