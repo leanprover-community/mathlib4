@@ -160,6 +160,11 @@ theorem intervalIntegrable_cpow' {r : ℂ} (h : -1 < r.re) :
     have m := (this (-c) (by linarith)).const_mul (Complex.exp (π * Complex.I * r))
     rw [intervalIntegrable_iff, uIoc_of_le (by linarith : 0 ≤ -c)] at m ⊢
     refine m.congr_fun (fun x hx => ?_) measurableSet_Ioc
+    #adaptation_note /-- 2026-05-17(kmill) added `dsimp only` because a slightly different
+    instantiation order leads to a term with a beta redex.
+    https://github.com/leanprover/lean4/pull/13762
+    This will be removed once app elaboration itself does beta reduction. -/
+    dsimp only
     have : -x ≤ 0 := by linarith [hx.1]
     rw [Complex.ofReal_cpow_of_nonpos this, mul_comm]
     simp

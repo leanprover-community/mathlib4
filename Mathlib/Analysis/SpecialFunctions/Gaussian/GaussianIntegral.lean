@@ -94,6 +94,11 @@ theorem integrableOn_rpow_mul_exp_neg_mul_rpow {p s b : ℝ} (hs : -1 < s) (hp :
   suffices IntegrableOn (fun x ↦ (b ^ (-p⁻¹)) ^ s * (x ^ s * exp (-x ^ p))) (Ioi 0) by
     rw [show 0 = b ^ (-p⁻¹) * 0 by rw [mul_zero], ← integrableOn_Ioi_comp_mul_left_iff _ _ hib]
     refine this.congr_fun (fun _ hx => ?_) measurableSet_Ioi
+    #adaptation_note /-- 2026-05-17(kmill) added `dsimp only` because a slightly different
+    instantiation order leads to a term with a beta redex.
+    https://github.com/leanprover/lean4/pull/13762
+    This will be removed once app elaboration itself does beta reduction. -/
+    dsimp only
     rw [← mul_assoc, mul_rpow, mul_rpow, ← rpow_mul (z := p), neg_mul, neg_mul, inv_mul_cancel₀,
       rpow_neg_one, mul_inv_cancel_left₀]
     all_goals linarith [mem_Ioi.mp hx]
