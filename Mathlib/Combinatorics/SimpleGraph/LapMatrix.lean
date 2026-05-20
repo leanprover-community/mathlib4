@@ -84,15 +84,37 @@ theorem degMatrix_mulVec_apply [NonAssocSemiring R] (v : V) (vec : V → R) :
     (G.degMatrix R *ᵥ vec) v = G.degree v * vec v := by
   rw [degMatrix, mulVec_diagonal]
 
+variable (R) in
+theorem IsIsolated.not_isUnit_degMatrix [Nontrivial R] [CommRing R] {v : V} (h : G.IsIsolated v) :
+    ¬IsUnit (G.degMatrix R) :=
+  (isUnit_diagonal.mp · |>.apply v |>.ne_zero <| by simp [h])
+
 theorem lapMatrix_mulVec_apply [NonAssocRing R] (v : V) (vec : V → R) :
     (G.lapMatrix R *ᵥ vec) v = G.degree v * vec v - ∑ u ∈ G.neighborFinset v, vec u := by
   simp_rw [lapMatrix, sub_mulVec, Pi.sub_apply, degMatrix_mulVec_apply, adjMatrix_mulVec_apply]
 
+theorem lapMatrix_mulVec_apply' [NonAssocRing R] (v : V) (vec : V → R) :
+    (G.lapMatrix R *ᵥ vec) v = ∑ u ∈ G.neighborFinset v, (vec v - vec u) := by
+  simp [lapMatrix_mulVec_apply]
+
+variable (R) in
 theorem lapMatrix_mulVec_const_eq_zero [NonAssocRing R] :
     mulVec (G.lapMatrix R) (fun _ ↦ 1) = 0 := by
   ext1 i
-  rw [lapMatrix_mulVec_apply]
-  simp
+  simp [lapMatrix_mulVec_apply]
+
+variable (R) in
+theorem not_isUnit_lapMatrix [Nonempty V] [Nontrivial R] [CommRing R] :
+    ¬IsUnit (G.lapMatrix R) := by
+  have ⟨v⟩ := ‹Nonempty V›
+  have := G.lapMatrix R |>.mulVec_zero.trans <| .symm <| G.lapMatrix_mulVec_const_eq_zero R
+  exact (zero_ne_one congr($(mulVec_injective_of_isUnit · this) v))
+
+variable (R) in
+/-- `0` is an eigenvalue of the Laplacian matrix of any graph. -/
+theorem zero_mem_spectrum_lapMatrix [Nonempty V] [Nontrivial R] [CommRing R] :
+    0 ∈ spectrum R (G.lapMatrix R) :=
+  spectrum.zero_mem R <| G.not_isUnit_lapMatrix R
 
 theorem dotProduct_mulVec_degMatrix [CommSemiring R] (x : V → R) :
     x ⬝ᵥ (G.degMatrix R *ᵥ x) = ∑ i : V, G.degree i * x i * x i := by
