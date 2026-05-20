@@ -75,13 +75,6 @@ namespace Matrix
 
 section Topological
 
-set_option backward.isDefEq.respectTransparency false in
-theorem BlockTriangular.exp1 {α : Type*} {M : Matrix m m 𝔸} {b : m → α} [LinearOrder α] [Ring 𝔸]
-    [TopologicalSpace 𝔸] [Algebra ℚ 𝔸] [Fintype m] [DecidableEq m] [IsTopologicalRing 𝔸] [T2Space 𝔸]
-    (hM : BlockTriangular M b) : (NormedSpace.exp M).BlockTriangular b :=
-  NormedSpace.exp_mem
-    (s := blockTriangularSubalgebra ℚ _ b) isClosed_setOf_blockTriangular hM
-
 section Ring
 
 variable [Fintype m] [DecidableEq m] [Fintype n] [DecidableEq n] [∀ i, Fintype (n' i)]
