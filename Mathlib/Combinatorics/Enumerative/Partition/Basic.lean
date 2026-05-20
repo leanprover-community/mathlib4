@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Order.Antidiag.Finsupp
 public import Mathlib.Combinatorics.Enumerative.Composition
+public import Mathlib.Combinatorics.Young.YoungDiagram
 public import Mathlib.Tactic.ApplyFun
 
 /-!
@@ -30,10 +31,6 @@ related results.
 
 The representation of a partition as a multiset is very handy as multisets are very flexible and
 already have a well-developed API.
-
-## TODO
-
-Link this to Young diagrams.
 
 ## Tags
 
@@ -228,6 +225,30 @@ theorem countRestricted_two (n : ℕ) : countRestricted n 2 = distincts n := by
 /-- The finset of those partitions in which every part is odd and used at most once. -/
 def oddDistincts (n : ℕ) : Finset n.Partition :=
   odds n ∩ distincts n
+
+/-- Convert a Young diagram to a partition. -/
+def ofYoungDiagram (μ : YoungDiagram) : Partition (μ.card) where
+  parts := μ.rowLens
+  parts_pos := μ.pos_of_mem_rowLens _
+  parts_sum := by
+    have hf : ∀ c ∈ μ.cells, c.fst ∈ Finset.range (μ.colLen 0) := by
+      intro c hc
+      rw [Finset.mem_range, ← YoungDiagram.mem_iff_lt_colLen]
+      exact μ.up_left_mem (le_refl _) (Nat.zero_le _) hc
+    have hr : ∀ i ∈ Finset.range (μ.colLen 0), ({c ∈ μ.cells | c.fst = i}).card = μ.rowLen i := by
+      intro i _hi
+      rw [YoungDiagram.rowLen_eq_card]
+      rfl
+    simp only [sum_coe]
+    rw [YoungDiagram.card, Finset.card_eq_sum_card_fiberwise hf, Finset.sum_congr rfl hr,
+      YoungDiagram.rowLens, ← List.sum_toFinset, List.toFinset_range]
+    exact List.nodup_range
+
+/-- Convert a partition to a Young diagram. -/
+def toYoungDiagram (p : Partition n) : YoungDiagram :=
+  YoungDiagram.ofRowLens
+    (p.parts.sort (· ≥ ·))
+    (Multiset.pairwise_sort p.parts (· ≥ ·)).sortedGE
 
 end Partition
 
