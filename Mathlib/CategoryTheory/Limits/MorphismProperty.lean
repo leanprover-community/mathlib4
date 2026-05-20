@@ -294,8 +294,7 @@ instance (priority := 900) hasPullbacks [HasPullbacks T] [P.IsStableUnderComposi
 variable [HasPullbacks T] [P.IsMultiplicative]
   [P.IsStableUnderBaseChange] [P.HasOfPostcompProperty P]
 
-instance hasFiniteLimits :
-    HasFiniteLimits (P.Over ⊤ X) :=
+instance hasFiniteLimits : HasFiniteLimits (P.Over ⊤ X) :=
   hasFiniteLimits_of_hasTerminal_and_pullbacks
 
 noncomputable instance : CreatesFiniteLimits (Over.forget P ⊤ X) :=
