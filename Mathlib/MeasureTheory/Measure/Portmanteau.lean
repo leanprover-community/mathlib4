@@ -82,7 +82,7 @@ probability measure
 
 -/
 
-@[expose] public section
+public section
 
 
 noncomputable section
@@ -530,7 +530,7 @@ lemma integral_le_liminf_integral_of_forall_isOpen_measure_le_liminf_measure
     simp only [measure_univ, mul_one] at obs
     apply lt_of_le_of_lt _ (show (‖f‖₊ : ℝ≥0∞) < ∞ from ENNReal.coe_lt_top)
     apply liminf_le_of_le
-    · refine ⟨0, .of_forall (by simp only [ge_iff_le, zero_le, forall_const])⟩
+    · refine ⟨0, .of_forall (by simp)⟩
     · intro x hx
       obtain ⟨i, hi⟩ := hx.exists
       apply le_trans hi
@@ -731,7 +731,7 @@ lemma _root_.IsPiSystem.tendsto_measureReal_biUnion
       (fun s hs ↦ hμ _ (ht _ hs) i)
   simp_rw [A, measureReal_biUnion_eq_sum_powerset (fun s hs ↦ hmeas _ (ht _ hs))
     (fun s hs ↦ hν _ (ht _ hs))]
-  refine tendsto_finset_sum _ (fun u hu ↦ ?_)
+  refine tendsto_finsetSum _ (fun u hu ↦ ?_)
   simp only [Finset.mem_filter, Finset.mem_powerset] at hu
   apply Filter.Tendsto.const_mul
   rcases eq_empty_or_nonempty (⋂ s ∈ u, s) with h'u | h'u
@@ -792,7 +792,6 @@ lemma ProbabilityMeasure.exists_lt_measure_biUnion_of_isOpen
   refine ⟨(Finset.range (n + 1)).image f, by grind, ?_, ?_⟩
   · convert hn
     simp [accumulate_def]
-    grind
   · simpa [G_eq] using fun i _ ↦ subset_iUnion f i
 
 /-- Assume that, applied to all the elements of a π-system, a sequence of probability measures

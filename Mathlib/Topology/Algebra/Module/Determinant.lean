@@ -13,7 +13,7 @@ public import Mathlib.LinearAlgebra.Determinant
 # The determinant of a continuous linear map.
 -/
 
-@[expose] public section
+public section
 
 
 namespace ContinuousLinearMap

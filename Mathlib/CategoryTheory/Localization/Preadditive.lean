@@ -13,7 +13,7 @@ public import Mathlib.CategoryTheory.Preadditive.FunctorCategory
 
 -/
 
-@[expose] public section
+public section
 
 namespace CategoryTheory
 

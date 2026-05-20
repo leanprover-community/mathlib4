@@ -213,7 +213,7 @@ theorem fib_le_of_contsAux_b :
       intro n IH hyp
       rcases n with (_ | _ | n)
       · simp [contsAux] -- case n = 0
-      · simp [contsAux] -- case n = 1
+      · simp -- case n = 1
       · let g := of v -- case 2 ≤ n
         have : ¬n + 2 ≤ 1 := by lia
         have not_terminatedAt_n : ¬g.TerminatedAt n := Or.resolve_left hyp this
@@ -379,7 +379,7 @@ theorem sub_convs_eq {ifp : IntFractPair K}
     have B_ineq : (fib (n + 1) : K) ≤ B :=
       haveI : n + 1 ≤ 1 ∨ ¬g.TerminatedAt (n + 1 - 2) := by
         rcases n_eq_zero_or_not_terminatedAt_pred_n with n_eq_zero | not_terminatedAt_pred_n
-        · simp [n_eq_zero, le_refl]
+        · simp [n_eq_zero]
         · exact Or.inr not_terminatedAt_pred_n
       fib_le_of_contsAux_b this
     have zero_lt_B : 0 < B := B_ineq.trans_lt' <| cast_pos.2 <| fib_pos.2 n.succ_pos

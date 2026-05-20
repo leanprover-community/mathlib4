@@ -1,4 +1,7 @@
+module
 import Mathlib.Tactic.Group
+
+open scoped commutatorElement
 
 variable {G : Type} [Group G]
 
@@ -49,7 +52,14 @@ example (n : ℤ) (a b : G) : a^n*b^n*a^n*a^n*a^(-n)*a^(-n)*b^(-n)*a^(-n) = 1 :=
 
 example (x y : G) : (x⁻¹ * (x * y) * y⁻¹)⁻¹ = 1 := by group
 
-set_option linter.unusedTactic false in
+/--
+error: `group` made no progress
+G : Type
+inst✝ : Group G
+x : G
+h : x = 1
+⊢ x = 1
+-/
+#guard_msgs in
 example (x : G) (h : x = 1) : x = 1 := by
   group
-  exact h

@@ -6,8 +6,10 @@ Authors: Anne Baanen
 module
 
 public import Mathlib.Algebra.Regular.Basic
+public import Mathlib.LinearAlgebra.Matrix.Symmetric
 public import Mathlib.LinearAlgebra.Matrix.MvPolynomial
 public import Mathlib.LinearAlgebra.Matrix.Polynomial
+public import Mathlib.GroupTheory.GroupAction.Ring
 
 /-!
 # Cramer's rule and adjugate matrices
@@ -17,7 +19,7 @@ It is calculated with Cramer's rule, which we introduce first.
 The vectors returned by Cramer's rule are given by the linear map `cramer`,
 which sends a matrix `A` and vector `b` to the vector consisting of the
 determinant of replacing the `i`th column of `A` with `b` at index `i`
-(written as `(A.update_column i b).det`).
+(written as `(A.updateCol i b).det`).
 Using Cramer's rule, we can compute for each matrix `A` the matrix `adjugate A`.
 The entries of the adjugate are the minors of `A`.
 Instead of defining a minor by deleting row `i` and column `j` of `A`, we
@@ -135,7 +137,6 @@ theorem cramer_zero [Nontrivial n] : cramer (0 : Matrix n n α) = 0 := by
   ext i j
   obtain ⟨j', hj'⟩ : ∃ j', j' ≠ j := exists_ne j
   apply det_eq_zero_of_column_eq_zero j'
-  intro j''
   simp [updateCol_ne hj']
 
 /-- Use linearity of `cramer` to take it out of a summation. -/
@@ -223,6 +224,9 @@ theorem adjugate_transpose (A : Matrix n n α) : (adjugate A)ᵀ = adjugate Aᵀ
     intro h'
     exact h ((symm_apply_eq σ).mp h')
 
+theorem IsSymm.adjugate {A : Matrix n n α} (hA : A.IsSymm) : A.adjugate.IsSymm := by
+  rw [IsSymm, Matrix.adjugate_transpose, hA.eq]
+
 @[simp]
 theorem adjugate_submatrix_equiv_self (e : n ≃ m) (A : Matrix m m α) :
     adjugate (A.submatrix e e) = (adjugate A).submatrix e e := by
@@ -256,6 +260,7 @@ theorem mul_adjugate_apply (A : Matrix n n α) (i j k) :
   rw [← smul_eq_mul, adjugate, of_apply, ← Pi.smul_apply, ← map_smul, ← Pi.single_smul',
     smul_eq_mul, mul_one]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem mul_adjugate (A : Matrix n n α) : A * adjugate A = A.det • (1 : Matrix n n α) := by
   ext i j
   rw [mul_apply, Pi.smul_apply, Pi.smul_apply, one_apply, smul_eq_mul, mul_boole]
@@ -293,7 +298,6 @@ theorem adjugate_zero [Nontrivial n] : adjugate (0 : Matrix n n α) = 0 := by
   ext i j
   obtain ⟨j', hj'⟩ : ∃ j', j' ≠ j := exists_ne j
   apply det_eq_zero_of_column_eq_zero j'
-  intro j''
   simp [updateCol_ne hj']
 
 @[simp]
@@ -344,7 +348,7 @@ theorem det_adjugate (A : Matrix n n α) : (adjugate A).det = A.det ^ (Fintype.c
   apply mul_left_cancel₀ (show A'.det ≠ 0 from det_mvPolynomialX_ne_zero n ℤ)
   calc
     A'.det * A'.adjugate.det = (A' * adjugate A').det := (det_mul _ _).symm
-    _ = A'.det ^ Fintype.card n := by rw [mul_adjugate, det_smul, det_one, mul_one]
+    _ = A'.det ^ Fintype.card n := by rw [mul_adjugate A', det_smul, det_one, mul_one]
     _ = A'.det * A'.det ^ (Fintype.card n - 1) := by rw [← pow_succ', h_card]
 
 @[simp]
@@ -386,7 +390,7 @@ theorem adjugate_fin_three (A : Matrix (Fin 3) (Fin 3) α) :
   rw [adjugate_fin_succ_eq_det_submatrix, det_fin_two]
   fin_cases i <;> fin_cases j <;> simp [Fin.succAbove, Fin.lt_def] <;> ring
 
-set_option linter.style.commandStart false in -- Use spaces to format a matrix.
+set_option linter.style.whitespace false in -- Use spaces to format a matrix.
 @[simp]
 theorem adjugate_fin_three_of (a b c d e f g h i : α) :
     adjugate !![a, b, c; d, e, f; g, h, i] =
@@ -439,7 +443,7 @@ theorem adjugate_mul_distrib_aux (A B : Matrix n n α) (hA : IsLeftRegular A.det
   refine (isRegular_of_isLeftRegular_det hAB).left ?_
   simp only
   rw [mul_adjugate, Matrix.mul_assoc, ← Matrix.mul_assoc B, mul_adjugate,
-    smul_mul, Matrix.one_mul, mul_smul, mul_adjugate, smul_smul, mul_comm, ← det_mul]
+    smul_mul, Matrix.one_mul, Matrix.mul_smul, mul_adjugate, smul_smul, mul_comm, ← det_mul]
 
 /-- Proof follows from "The trace Cayley-Hamilton theorem" by Darij Grinberg, Section 5.3
 -/

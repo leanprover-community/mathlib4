@@ -74,6 +74,8 @@ instance : SetLike (PFilter P) P where
   coe F := toDual ⁻¹' F.dual.carrier
   coe_injective' := fun ⟨_⟩ ⟨_⟩ h => congr_arg mk <| Ideal.ext h
 
+instance : PartialOrder (PFilter P) := .ofSetLike (PFilter P) P
+
 theorem isPFilter : IsPFilter (F : Set P) := F.dual.isIdeal
 
 protected theorem nonempty : (F : Set P).Nonempty := F.dual.nonempty

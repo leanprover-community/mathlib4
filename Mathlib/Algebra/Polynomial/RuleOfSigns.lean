@@ -64,7 +64,7 @@ theorem signVariations_monomial (d : ℕ) (c : R) : signVariations (monomial d c
   · simp [hcz]
   · simp [hcz, signVariations, coeffList_eraseLead (mt (monomial_eq_zero_iff c d).mp hcz)]
 
-/-- If the first two signs are the same, then sign_variations is unchanged by eraseLead -/
+/-- If the first two signs are the same, then `signVariations` is unchanged by `eraseLead` -/
 theorem signVariations_eraseLead (h : SignType.sign P.leadingCoeff = SignType.sign P.nextCoeff) :
     signVariations P.eraseLead = signVariations P := by
   by_cases hpz : P = 0
@@ -257,9 +257,7 @@ private lemma exists_cons_of_leadingCoeff_pos (η) (h₁ : 0 < leadingCoeff P) (
         grind [leadingCoeff_mul, leadingCoeff_X_sub_C]
       suffices C η * monomial P.natDegree P.leadingCoeff = monomial P.natDegree P.nextCoeff by
         grind [X_mul_monomial, sub_mul, mul_sub, self_sub_monomial_natDegree_leadingCoeff]
-      rw [nextCoeff_of_natDegree_pos (h₇ ▸ P.natDegree.succ_pos), h₇] at h₉
-      grind [leadingCoeff, nextCoeff_of_natDegree_pos, eq_of_sub_eq_zero,
-        coeff_X_sub_C_mul]
+      grind [leadingCoeff, nextCoeff_of_natDegree_pos, eq_of_sub_eq_zero, coeff_X_sub_C_mul]
     · suffices ((X - C η) * P).eraseLead.eraseLead = ((X - C η) * P.eraseLead).eraseLead by
         have := leadingCoeff_cons_eraseLead h₉
         have := coeffList_eraseLead (mt nextCoeff_eq_zero_of_eraseLead_eq_zero h₉)
@@ -380,8 +378,8 @@ variable {R : Type*} [CommRing R] [LinearOrder R] [IsStrictOrderedRing R] (P : P
 variations. -/
 theorem roots_countP_pos_le_signVariations : P.roots.countP (0 < ·) ≤ signVariations P := by
   generalize h : P.roots.countP (0 < ·) = num_pos_roots
-  induction num_pos_roots generalizing P --Induct on number of roots.
-  · exact zero_le _
+  induction num_pos_roots generalizing P -- Induct on number of roots.
+  · exact zero_le
   rename_i ih
   have hp : P ≠ 0 := by grind [roots_zero, Multiset.countP_zero]
   -- we can take a positive root, η, because the number of roots is positive

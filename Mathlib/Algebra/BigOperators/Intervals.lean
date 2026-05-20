@@ -8,7 +8,7 @@ module
 public import Mathlib.Algebra.Order.BigOperators.Group.LocallyFinite
 public import Mathlib.Algebra.Order.Interval.Finset.Basic
 public import Mathlib.Algebra.Order.Sub.Basic
-public import Mathlib.Data.Nat.Factorial.Basic
+public import Mathlib.Data.Fintype.BigOperators
 
 /-!
 # Results about big operators over intervals
@@ -16,9 +16,9 @@ public import Mathlib.Data.Nat.Factorial.Basic
 We prove results about big operators over intervals.
 -/
 
-@[expose] public section
+public section
 
-open Nat
+open Nat Finset
 
 variable {α G M : Type*}
 
@@ -78,12 +78,12 @@ theorem prod_Icc_succ_top {a b : ℕ} (hab : a ≤ b + 1) (f : ℕ → M) :
 @[to_additive]
 theorem prod_range_mul_prod_Ico (f : ℕ → M) {m n : ℕ} (h : m ≤ n) :
     ((∏ k ∈ range m, f k) * ∏ k ∈ Ico m n, f k) = ∏ k ∈ range n, f k :=
-  Nat.Ico_zero_eq_range ▸ Nat.Ico_zero_eq_range ▸ prod_Ico_consecutive f m.zero_le h
+  Nat.Ico_zero_eq_range m ▸ Nat.Ico_zero_eq_range n ▸ prod_Ico_consecutive f m.zero_le h
 
 @[to_additive]
 theorem prod_range_eq_mul_Ico (f : ℕ → M) {n : ℕ} (hn : 0 < n) :
     ∏ x ∈ Finset.range n, f x = f 0 * ∏ x ∈ Ico 1 n, f x :=
-  Finset.range_eq_Ico ▸ Finset.prod_eq_prod_Ico_succ_bot hn f
+  Finset.range_eq_Ico n ▸ Finset.prod_eq_prod_Ico_succ_bot hn f
 
 @[to_additive]
 theorem prod_Ico_eq_mul_inv {δ : Type*} [CommGroup δ] (f : ℕ → δ) {m n : ℕ} (h : m ≤ n) :
@@ -232,7 +232,46 @@ theorem prod_Ico_succ_div_top (hmn : m ≤ n) :
 theorem prod_Ico_div (hmn : m ≤ n) : ∏ i ∈ Ico m n, f (i + 1) / f i = f n / f m := by
   rw [prod_Ico_eq_div _ hmn, prod_range_div, prod_range_div, div_div_div_cancel_right]
 
+@[to_additive]
+theorem prod_Icc_div (hmn : m ≤ n) (f : ℕ → M) :
+    ∏ i ∈ Icc m n, f (i + 1) / f i = f (n + 1) / f m := by
+  rw [← Finset.Ico_add_one_right_eq_Icc, prod_Ico_div]
+  omega
+
 end Group
 
 end Nat
 end Finset
+
+section Fin
+
+@[to_additive]
+lemma Finset.prod_fin_Icc_eq_prod_nat_Icc [CommMonoid α] {n : ℕ} (a b : Fin n) (f : Fin n → α) :
+    ∏ i ∈ Icc a b, f i = ∏ i ∈ Icc (a : ℕ) b, if h : i < n then f ⟨i, h⟩ else 1 := by
+  rw [← prod_ite_mem_eq, prod_fin_eq_prod_range]
+  apply prod_congr_of_eq_on_inter <;> grind
+
+/-- Telescopic product over `Fin`. -/
+@[to_additive /-- Telescopic sum over `Fin`. -/]
+lemma Fin.prod_Iic_div [CommGroup M] {n : ℕ} (a : Fin n) (f : Fin (n + 1) → M) :
+    ∏ i ∈ Iic a, (f i.succ / f i.castSucc) = f a.succ / f 0 := by
+  rw [← prod_ite_mem_eq, prod_fin_eq_prod_range]
+  convert prod_range_div (fun i ↦ if hi : i < n + 1 then f ⟨i, hi⟩ else 1) (a + 1)
+    using 1 with k hk
+  · exact prod_congr_of_eq_on_inter (by grind) (by grind) (by simp_all; grind)
+  · grind
+
+/-- Telescopic product over `Fin`. -/
+@[to_additive /-- Telescopic sum over `Fin`. -/]
+lemma Fin.prod_Icc_div [CommGroup M] {n : ℕ} {a b : Fin n} (hab : a ≤ b)
+    (f : Fin (n + 1) → M) :
+    ∏ i ∈ Icc a b, (f i.succ / f i.castSucc) = f b.succ / f a.castSucc := by
+  rw [prod_fin_Icc_eq_prod_nat_Icc]
+  convert Finset.prod_Icc_div (Fin.le_def.1 hab) (fun i ↦ if hi : i < n + 1 then f ⟨i, hi⟩ else 1)
+  · simp_all
+    grind
+  · grind
+  · simp only [Order.lt_add_one_iff, is_le', ↓reduceDIte]
+    rfl
+
+end Fin

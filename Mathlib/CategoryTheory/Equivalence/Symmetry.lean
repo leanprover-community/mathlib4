@@ -51,6 +51,7 @@ def symmEquivInverse : (D ≌ C)ᵒᵖ ⥤ (C ≌ D) :=
         conjugateEquiv e.symm.toAdjunction f.symm.toAdjunction |>.invFun <| asNatTrans α
       map_comp _ _ := Quiver.Hom.unop_inj (by cat_disch) }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Taking the symmetric of an equivalence induces an equivalence of categories
 `(C ≌ D) ≌ (D ≌ C)ᵒᵖ`. -/
 @[simps]

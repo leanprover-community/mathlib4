@@ -16,7 +16,7 @@ continuity and taking values in a compact set forms a compact subset for the top
 uniform convergence. This file proves the theorem and several useful variations around it.
 -/
 
-@[expose] public section
+public section
 
 open Set Metric
 

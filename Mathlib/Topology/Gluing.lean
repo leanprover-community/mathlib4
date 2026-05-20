@@ -8,7 +8,6 @@ module
 public import Mathlib.CategoryTheory.GlueData
 public import Mathlib.Topology.Category.TopCat.Limits.Pullbacks
 public import Mathlib.Topology.Category.TopCat.Opens
-public import Mathlib.Tactic.Generalize
 public import Mathlib.CategoryTheory.Elementwise
 public import Mathlib.CategoryTheory.Limits.Types.Coequalizers
 public import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
@@ -73,6 +72,7 @@ namespace TopCat
   limits library easier.)
 4. An open embedding `f i j : V i j ⟶ U i` for each `i j : ι`.
 5. A transition map `t i j : V i j ⟶ V j i` for each `i j : ι`.
+
 such that
 6. `f i i` is an isomorphism.
 7. `t i i` is the identity.
@@ -100,6 +100,7 @@ local notation "𝖣" => D.toGlueData
 theorem π_surjective : Function.Surjective 𝖣.π :=
   (TopCat.epi_iff_surjective 𝖣.π).mp inferInstance
 
+set_option backward.isDefEq.respectTransparency false in
 theorem isOpen_iff (U : Set 𝖣.glued) : IsOpen U ↔ ∀ i, IsOpen (𝖣.ι i ⁻¹' U) := by
   delta CategoryTheory.GlueData.ι
   simp_rw [← Multicoequalizer.ι_sigmaπ 𝖣.diagram]
@@ -118,9 +119,7 @@ def Rel (a b : Σ i, ((D.U i : TopCat) : Type _)) : Prop :=
 
 theorem rel_equiv : Equivalence D.Rel :=
   ⟨fun x => ⟨inv (D.f _ _) x.2, IsIso.inv_hom_id_apply (D.f x.fst x.fst) _,
-    -- Use `elementwise_of%` elaborator instead of `IsIso.inv_hom_id_apply` to work around
-    -- `ConcreteCategory`/`HasForget` mismatch:
-    by simp [elementwise_of% IsIso.inv_hom_id (D.f x.fst x.fst)]⟩, by
+    by simp [IsIso.inv_hom_id_apply (D.f x.fst x.fst)]⟩, by
     rintro a b ⟨x, e₁, e₂⟩
     exact ⟨D.t _ _ x, e₂, by rw [← e₁, D.t_inv_apply]⟩, by
     rintro ⟨i, a⟩ ⟨j, b⟩ ⟨k, c⟩ ⟨x, e₁, e₂⟩
@@ -132,7 +131,7 @@ theorem rel_equiv : Equivalence D.Rel :=
     have eq₂ : (pullback.snd _ _ : _ ⟶ D.V _) z = y := pullbackIsoProdSubtype_inv_snd_apply _ _ _
     clear_value z
     use (pullback.fst _ _ : _ ⟶ D.V (i, k)) (D.t' _ _ _ z)
-    dsimp only at *
+    dsimp +instances only at *
     substs eq₁ eq₂ e₁ e₃ e₄
     have h₁ : D.t' j i k ≫ pullback.fst _ _ ≫ D.f i k = pullback.fst _ _ ≫ D.t j i ≫ D.f i j := by
       rw [← 𝖣.t_fac_assoc]; congr 1; exact pullback.condition
@@ -146,6 +145,7 @@ theorem rel_equiv : Equivalence D.Rel :=
 
 open CategoryTheory.Limits.WalkingParallelPair
 
+set_option backward.isDefEq.respectTransparency false in
 theorem eqvGen_of_π_eq
     {x y : ↑(∐ D.U)} (h : 𝖣.π x = 𝖣.π y) :
     Relation.EqvGen
@@ -158,7 +158,7 @@ theorem eqvGen_of_π_eq
   let diagram := parallelPair 𝖣.diagram.fstSigmaMap 𝖣.diagram.sndSigmaMap ⋙ forget _
   have : colimit.ι diagram one x = colimit.ι diagram one y := by
     dsimp only [coequalizer.π] at h
-    rw [← ι_preservesColimitIso_hom, ConcreteCategory.forget_map_eq_coe, types_comp_apply]
+    rw [← ι_preservesColimitIso_hom, ConcreteCategory.forget_map_eq_ofHom, types_comp_apply]
     simp_all
   have :
     (colimit.ι diagram _ ≫ colim.map _ ≫ (colimit.isoColimitCocone _).hom) _ =
@@ -232,8 +232,8 @@ theorem preimage_range (i j : D.J) : 𝖣.ι j ⁻¹' Set.range (𝖣.ι i) = Se
     Set.preimage_range_inter]
 
 theorem preimage_image_eq_image (i j : D.J) (U : Set (𝖣.U i)) :
-    𝖣.ι j ⁻¹' (𝖣.ι i '' U) = D.f _ _ '' ((D.t j i ≫ D.f _ _) ⁻¹' U) := by
-  have : D.f _ _ ⁻¹' (𝖣.ι j ⁻¹' (𝖣.ι i '' U)) = (D.t j i ≫ D.f _ _) ⁻¹' U := by
+    𝖣.ι j ⁻¹' 𝖣.ι i '' U = D.f _ _ '' (D.t j i ≫ D.f _ _) ⁻¹' U := by
+  have : D.f _ _ ⁻¹' 𝖣.ι j ⁻¹' 𝖣.ι i '' U = (D.t j i ≫ D.f _ _) ⁻¹' U := by
     ext x
     conv_rhs => rw [← Set.preimage_image_eq U (D.ι_injective _)]
     simp
@@ -244,14 +244,14 @@ theorem preimage_image_eq_image (i j : D.J) (U : Set (𝖣.U i)) :
   exact Set.preimage_mono (Set.image_subset_range _ _)
 
 theorem preimage_image_eq_image' (i j : D.J) (U : Set (𝖣.U i)) :
-    𝖣.ι j ⁻¹' (𝖣.ι i '' U) = (D.t i j ≫ D.f _ _) '' (D.f _ _ ⁻¹' U) := by
+    𝖣.ι j ⁻¹' 𝖣.ι i '' U = (D.t i j ≫ D.f _ _) '' D.f _ _ ⁻¹' U := by
   convert D.preimage_image_eq_image i j U using 1
   rw [coe_comp, coe_comp, Set.image_comp]
   congr! 1
   rw [← Set.eq_preimage_iff_image_eq, Set.preimage_preimage]
   · change _ = (D.t i j ≫ D.t j i ≫ _) ⁻¹' _
     rw [𝖣.t_inv_assoc]
-  rw [← isIso_iff_bijective]
+  rw [bijective_iff_isIso_ofHom]
   apply (forget TopCat).map_isIso
 
 theorem open_image_open (i : D.J) (U : Opens (𝖣.U i)) : IsOpen (𝖣.ι i '' U) := by
@@ -271,6 +271,7 @@ theorem ι_isOpenEmbedding (i : D.J) : IsOpenEmbedding (𝖣.ι i) :=
 2. A bundled topological space `U i` for each `i : J`.
 3. An open set `V i j ⊆ U i` for each `i j : J`.
 4. A transition map `t i j : V i j ⟶ V j i` for each `i j : ι`.
+
 such that
 6. `V i i = U i`.
 7. `t i i` is the identity.
@@ -316,6 +317,7 @@ def MkCore.t' (h : MkCore.{u}) (i j k : h.J) :
     exact h.t_inter _ ⟨x, hx⟩ hx'
   fun_prop
 
+set_option backward.isDefEq.respectTransparency false in
 /-- This is a constructor of `TopCat.GlueData` whose arguments are in terms of elements and
 intersections rather than subobjects and pullbacks. Please refer to `TopCat.GlueData.MkCore` for
 details. -/
@@ -386,6 +388,7 @@ theorem fromOpenSubsetsGlue_injective : Function.Injective (fromOpenSubsetsGlue 
   rw [(ofOpenSubsets U).ι_eq_iff_rel]
   exact ⟨⟨⟨x, hx⟩, hy⟩, rfl, rfl⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem fromOpenSubsetsGlue_isOpenMap : IsOpenMap (fromOpenSubsetsGlue U) := by
   intro s hs
   rw [(ofOpenSubsets U).isOpen_iff] at hs

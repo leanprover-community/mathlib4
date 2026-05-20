@@ -27,26 +27,26 @@ The essence of the (mathematical) proof is Fubini's theorem.
 
 We also give the most common application of the layer cake formula -
 a representation of the integral of a nonnegative function f:
-∫ f(ω) ∂μ(ω) = ∫ μ {ω | f(ω) ≥ t} dt
+$$∫ f(ω) ∂μ(ω) = ∫ μ {ω | f(ω) ≥ t} dt$$
 
-Variants of the formulas with measures of sets of the form {ω | f(ω) > t} instead of {ω | f(ω) ≥ t}
-are also included.
+Variants of the formulas with measures of sets of the form `{ω | f(ω) > t}` instead of
+`{ω | f(ω) ≥ t}` are also included.
 
 ## Main results
 
 * `MeasureTheory.lintegral_comp_eq_lintegral_meas_le_mul`
   and `MeasureTheory.lintegral_comp_eq_lintegral_meas_lt_mul`:
   The general layer cake formulas with Lebesgue integrals, written in terms of measures of
-  sets of the forms {ω | t ≤ f(ω)} and {ω | t < f(ω)}, respectively.
+  sets of the forms `{ω | t ≤ f(ω)}` and `{ω | t < f(ω)}`, respectively.
 * `MeasureTheory.lintegral_eq_lintegral_meas_le` and
   `MeasureTheory.lintegral_eq_lintegral_meas_lt`:
   The most common special cases of the layer cake formulas, stating that for a nonnegative
-  function f we have ∫ f(ω) ∂μ(ω) = ∫ μ {ω | f(ω) ≥ t} dt and
-  ∫ f(ω) ∂μ(ω) = ∫ μ {ω | f(ω) > t} dt, respectively.
+  function f we have $∫ f(ω) ∂μ(ω) = ∫ μ {ω | f(ω) ≥ t} dt$ and
+  $∫ f(ω) ∂μ(ω) = ∫ μ {ω | f(ω) > t} dt$, respectively.
 * `Integrable.integral_eq_integral_meas_lt`:
   A Bochner integral version of the most common special case of the layer cake formulas, stating
   that for an integrable and a.e.-nonnegative function f we have
-  ∫ f(ω) ∂μ(ω) = ∫ μ {ω | f(ω) > t} dt.
+  $∫ f(ω) ∂μ(ω) = ∫ μ {ω | f(ω) > t} dt$.
 
 ## See also
 
@@ -58,7 +58,7 @@ function, is given in `Mathlib/Analysis/SpecialFunctions/Pow/Integral.lean`.
 layer cake representation, Cavalieri's principle, tail probability formula
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -268,7 +268,7 @@ theorem lintegral_comp_eq_lintegral_meas_le_mul_of_measurable (μ : Measure α)
   sets `{ω | f ω > uₙ}` for `uₙ` a sequence decreasing to `M`. Therefore,
   this case follows from the case where the measure is sigma-finite, applied to `ν`. -/
   have M_bdd : BddAbove {s : ℝ | g =ᵐ[volume.restrict (Ioc (0 : ℝ) s)] 0} := by
-    contrapose! H1
+    contrapose H1
     have : ∀ (n : ℕ), g =ᵐ[volume.restrict (Ioc (0 : ℝ) n)] 0 := by
       intro n
       rcases not_bddAbove_iff.1 H1 n with ⟨s, hs, ns⟩
@@ -333,7 +333,7 @@ theorem lintegral_comp_eq_lintegral_meas_le_mul_of_measurable (μ : Measure α)
         exact restrict_le_self _
       spanning := by
         apply eq_univ_iff_forall.2 (fun a ↦ ?_)
-        rcases le_or_gt (f a) M with ha|ha
+        rcases le_or_gt (f a) M with ha | ha
         · exact mem_iUnion.2 ⟨0, Or.inl ha⟩
         · obtain ⟨n, hn⟩ : ∃ n, u n < f a := ((tendsto_order.1 ulim).2 _ ha).exists
           exact mem_iUnion.2 ⟨n, Or.inr hn⟩ }
@@ -343,7 +343,7 @@ theorem lintegral_comp_eq_lintegral_meas_le_mul_of_measurable (μ : Measure α)
   have A : ∫⁻ ω, ENNReal.ofReal (∫ t in 0..f ω, g t) ∂μ
          = ∫⁻ ω, ENNReal.ofReal (∫ t in 0..f ω, g t) ∂ν := by
     have meas : MeasurableSet {a | M < f a} := measurableSet_lt measurable_const f_mble
-    have I : ∫⁻ ω in {a | M < f a}ᶜ, ENNReal.ofReal (∫ t in 0.. f ω, g t) ∂μ
+    have I : ∫⁻ ω in {a | M < f a}ᶜ, ENNReal.ofReal (∫ t in 0..f ω, g t) ∂μ
              = ∫⁻ _ in {a | M < f a}ᶜ, 0 ∂μ := by
       apply setLIntegral_congr_fun meas.compl (fun s hs ↦ ?_)
       have : ∫ (t : ℝ) in 0..f s, g t = ∫ (t : ℝ) in 0..f s, 0 := by

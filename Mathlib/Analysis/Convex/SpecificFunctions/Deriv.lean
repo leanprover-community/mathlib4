@@ -32,7 +32,7 @@ of these could also be switched to elementary proofs, like in
 
 -/
 
-@[expose] public section
+public section
 
 
 open Real Set

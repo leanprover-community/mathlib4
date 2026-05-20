@@ -32,7 +32,8 @@ open scoped NNReal ENNReal Uniformity
 variable {α β γ : Type*}
 
 /-- We say that `f : α → β` is `AntilipschitzWith K` if for any two points `x`, `y` we have
-`edist x y ≤ K * edist (f x) (f y)`. -/
+`edist x y ≤ K * edist (f x) (f y)`. This can also be used as a predicate for bounded below
+linear operators, see `antilipschitzWith_iff_exists_mul_le_norm`. -/
 def AntilipschitzWith [PseudoEMetricSpace α] [PseudoEMetricSpace β] (K : ℝ≥0) (f : α → β) :=
   ∀ x y, edist x y ≤ K * edist (f x) (f y)
 
@@ -82,7 +83,7 @@ namespace AntilipschitzWith
 variable [PseudoEMetricSpace α] [PseudoEMetricSpace β] [PseudoEMetricSpace γ]
 variable {K : ℝ≥0} {f : α → β}
 
-open EMetric
+open Metric
 
 -- uses neither `f` nor `hf`
 /-- Extract the constant from `hf : AntilipschitzWith K f`. This is useful, e.g.,
@@ -99,11 +100,13 @@ theorem mul_le_edist (hf : AntilipschitzWith K f) (x y : α) :
   rw [mul_comm, ← div_eq_mul_inv]
   exact ENNReal.div_le_of_le_mul' (hf x y)
 
-theorem ediam_preimage_le (hf : AntilipschitzWith K f) (s : Set β) : diam (f ⁻¹' s) ≤ K * diam s :=
-  diam_le fun x hx y hy => by grw [hf x y, edist_le_diam_of_mem (mem_preimage.1 hx) hy]
+theorem ediam_preimage_le (hf : AntilipschitzWith K f) (s : Set β) :
+    ediam (f ⁻¹' s) ≤ K * ediam s :=
+  ediam_le fun x hx y hy => by grw [hf x y, edist_le_ediam_of_mem (mem_preimage.1 hx) hy]
 
-theorem le_mul_ediam_image (hf : AntilipschitzWith K f) (s : Set α) : diam s ≤ K * diam (f '' s) :=
-  (diam_mono (subset_preimage_image _ _)).trans (hf.ediam_preimage_le (f '' s))
+theorem le_mul_ediam_image (hf : AntilipschitzWith K f) (s : Set α) :
+    ediam s ≤ K * ediam (f '' s) :=
+  (ediam_mono (subset_preimage_image _ _)).trans (hf.ediam_preimage_le (f '' s))
 
 protected theorem id : AntilipschitzWith 1 (id : α → α) := fun x y => by
   simp only [ENNReal.coe_one, one_mul, id, le_refl]
@@ -153,6 +156,18 @@ lemma isUniformEmbedding {α β : Type*} [EMetricSpace α] [PseudoEMetricSpace �
     (hf : AntilipschitzWith K f) (hfc : UniformContinuous f) : IsUniformEmbedding f :=
   ⟨hf.isUniformInducing hfc, hf.injective⟩
 
+theorem comap_nhds_le (hf : AntilipschitzWith K f) (x : α) : (𝓝 (f x)).comap f ≤ 𝓝 x := by
+  simp only [nhds_eq_comap_uniformity]
+  grw [← hf.comap_uniformity_le]
+  simp [comap_comap, Function.comp_def]
+
+theorem isInducing (hf : AntilipschitzWith K f) (hfc : Continuous f) : IsInducing f :=
+  isInducing_iff_nhds.mpr fun x ↦ le_antisymm (hfc.tendsto x).le_comap <| hf.comap_nhds_le _
+
+lemma isEmbedding {α β : Type*} [EMetricSpace α] [PseudoEMetricSpace β] {K : ℝ≥0} {f : α → β}
+    (hf : AntilipschitzWith K f) (hfc : Continuous f) : IsEmbedding f :=
+  hf.isInducing hfc |>.isEmbedding
+
 theorem isComplete_range [CompleteSpace α] (hf : AntilipschitzWith K f)
     (hfc : UniformContinuous f) : IsComplete (range f) :=
   (hf.isUniformInducing hfc).isComplete_range
@@ -178,6 +193,13 @@ theorem of_subsingleton [Subsingleton α] {K : ℝ≥0} : AntilipschitzWith K f 
 protected theorem subsingleton {α β} [EMetricSpace α] [PseudoEMetricSpace β] {f : α → β}
     (h : AntilipschitzWith 0 f) : Subsingleton α :=
   ⟨fun x y => edist_le_zero.1 <| (h x y).trans_eq <| zero_mul _⟩
+
+/-- If `f : α → β` is `K`-antilipschitz and `α` is nontrivial, `K` is positive. -/
+protected theorem pos {α} [EMetricSpace α] [Nontrivial α] {f : α → β}
+    (hf : AntilipschitzWith K f) : 0 < K := by
+  by_contra! h₀
+  obtain rfl : K = 0 := by rwa [le_zero_iff] at h₀
+  exact not_subsingleton α hf.subsingleton
 
 end AntilipschitzWith
 

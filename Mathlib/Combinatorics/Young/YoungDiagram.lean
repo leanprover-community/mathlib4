@@ -75,6 +75,8 @@ instance : SetLike YoungDiagram (ℕ × ℕ) where
   coe y := y.cells
   coe_injective' μ ν h := by rwa [YoungDiagram.ext_iff, ← Finset.coe_inj]
 
+instance : PartialOrder YoungDiagram := .ofSetLike YoungDiagram (ℕ × ℕ)
+
 @[simp]
 theorem mem_cells {μ : YoungDiagram} (c : ℕ × ℕ) : c ∈ μ.cells ↔ c ∈ μ :=
   Iff.rfl
@@ -141,7 +143,7 @@ theorem coe_inf (μ ν : YoungDiagram) : ↑(μ ⊓ ν) = (μ ∩ ν : Set (ℕ 
 theorem mem_inf {μ ν : YoungDiagram} {x : ℕ × ℕ} : x ∈ μ ⊓ ν ↔ x ∈ μ ∧ x ∈ ν :=
   Finset.mem_inter
 
-/-- The empty Young diagram is (⊥ : young_diagram). -/
+/-- The empty Young diagram is `(⊥ : YoungDiagram)`. -/
 instance : OrderBot YoungDiagram where
   bot :=
     { cells := ∅
@@ -169,8 +171,8 @@ instance : Inhabited YoungDiagram :=
   ⟨⊥⟩
 
 instance : DistribLattice YoungDiagram :=
-  Function.Injective.distribLattice YoungDiagram.cells (fun μ ν h => by rwa [YoungDiagram.ext_iff])
-    (fun _ _ => rfl) fun _ _ => rfl
+  Function.Injective.distribLattice YoungDiagram.cells (fun μ ν h ↦ by rwa [YoungDiagram.ext_iff])
+    .rfl .rfl (fun _ _ ↦ rfl) fun _ _ ↦ rfl
 
 end DistribLattice
 
@@ -211,7 +213,7 @@ theorem transpose_eq_iff {μ ν : YoungDiagram} : μ.transpose = ν.transpose �
 -- This is effectively both directions of `transpose_le_iff` below.
 protected theorem le_of_transpose_le {μ ν : YoungDiagram} (h_le : μ.transpose ≤ ν) :
     μ ≤ ν.transpose := fun c hc => by
-  simp only [mem_cells, mem_transpose]
+  simp only [mem_transpose]
   apply h_le
   simpa
 
@@ -223,7 +225,7 @@ theorem transpose_le_iff {μ ν : YoungDiagram} : μ.transpose ≤ ν.transpose 
     rw [← transpose_transpose μ] at h
     exact YoungDiagram.le_of_transpose_le h ⟩
 
-@[mono]
+@[gcongr, mono]
 protected theorem transpose_mono {μ ν : YoungDiagram} (h_le : μ ≤ ν) : μ.transpose ≤ ν.transpose :=
   transpose_le_iff.mpr h_le
 
@@ -272,7 +274,7 @@ def rowLen (μ : YoungDiagram) (i : ℕ) : ℕ :=
 
 theorem mem_iff_lt_rowLen {μ : YoungDiagram} {i j : ℕ} : (i, j) ∈ μ ↔ j < μ.rowLen i := by
   rw [rowLen, Nat.lt_find_iff]
-  push_neg
+  push Not
   exact ⟨fun h _ hmj => μ.up_left_mem (by rfl) hmj h, fun h => h _ (by rfl)⟩
 
 theorem row_eq_prod {μ : YoungDiagram} {i : ℕ} : μ.row i = {i} ×ˢ Finset.range (μ.rowLen i) := by
@@ -285,7 +287,7 @@ theorem row_eq_prod {μ : YoungDiagram} {i : ℕ} : μ.row i = {i} ×ˢ Finset.r
 theorem rowLen_eq_card (μ : YoungDiagram) {i : ℕ} : μ.rowLen i = (μ.row i).card := by
   simp [row_eq_prod]
 
-@[mono]
+@[gcongr, mono]
 theorem rowLen_anti (μ : YoungDiagram) (i1 i2 : ℕ) (hi : i1 ≤ i2) : μ.rowLen i2 ≤ μ.rowLen i1 := by
   by_contra! h_lt
   rw [← lt_self_iff_false (μ.rowLen i1)]
@@ -340,7 +342,7 @@ theorem col_eq_prod {μ : YoungDiagram} {j : ℕ} : μ.col j = Finset.range (μ.
 theorem colLen_eq_card (μ : YoungDiagram) {j : ℕ} : μ.colLen j = (μ.col j).card := by
   simp [col_eq_prod]
 
-@[mono]
+@[gcongr, mono]
 theorem colLen_anti (μ : YoungDiagram) (j1 j2 : ℕ) (hj : j1 ≤ j2) : μ.colLen j2 ≤ μ.colLen j1 := by
   convert μ.transpose.rowLen_anti j1 j2 hj using 1 <;> simp
 
@@ -417,7 +419,7 @@ def ofRowLens (w : List ℕ) (hw : w.SortedGE) : YoungDiagram where
     refine ⟨hi.trans_lt h1, ?_⟩
     calc
       j1 ≤ j2 := hj
-      _ < w[i2]  := h2
+      _ < w[i2] := h2
       _ ≤ w[i1] := by
         obtain rfl | h := eq_or_lt_of_le hi
         · rfl
@@ -439,13 +441,13 @@ theorem rowLen_ofRowLens {w : List ℕ} {hw : w.SortedGE} (i : Fin w.length) :
     (ofRowLens w hw).rowLen i = w[i] := by
   simp [rowLen, Nat.find_eq_iff, mem_ofRowLens]
 
-/-- The left_inv direction of the equivalence -/
+/-- The `leftInv` direction of the equivalence -/
 theorem ofRowLens_to_rowLens_eq_self {μ : YoungDiagram} : ofRowLens _ (rowLens_sorted μ) = μ := by
   ext ⟨i, j⟩
   simp only [mem_cells, mem_ofRowLens, length_rowLens, get_rowLens]
   simpa [← mem_iff_lt_colLen, mem_iff_lt_rowLen] using j.zero_le.trans_lt
 
-/-- The right_inv direction of the equivalence -/
+/-- The `rightInv` direction of the equivalence -/
 theorem rowLens_ofRowLens_eq_self {w : List ℕ} {hw : w.SortedGE} (hpos : ∀ x ∈ w, 0 < x) :
     (ofRowLens w hw).rowLens = w :=
   List.ext_get (rowLens_length_ofRowLens hpos) fun i h₁ h₂ =>

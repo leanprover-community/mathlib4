@@ -11,7 +11,7 @@ public import Mathlib.Topology.Order.LeftRightNhds
 # Properties of LUB and GLB in an order topology
 -/
 
-@[expose] public section
+public section
 
 open Set Filter TopologicalSpace Topology Function
 
@@ -73,6 +73,7 @@ theorem isLUB_of_mem_closure {s : Set α} {a : α} (hsa : a ∈ upperBounds s) (
   rw [mem_closure_iff_clusterPt, ClusterPt, inf_comm] at hsf
   exact isLUB_of_mem_nhds hsa (mem_principal_self s)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem isGLB_of_mem_nhds {s : Set α} {a : α} {f : Filter α} (hsa : a ∈ lowerBounds s) (hsf : s ∈ f)
     [NeBot (f ⊓ 𝓝 a)] :
     IsGLB s a :=
@@ -218,7 +219,7 @@ theorem Dense.ciSup' {α : Type*} [TopologicalSpace α]
     simpa [← Function.comp_def, range_comp] using hf.range_subset_closure_image_dense hS
   · suffices ¬ BddAbove (range f) by simp [ciSup_of_not_bddAbove, this, h]
     contrapose h
-    exact h.mono fun _ ↦ by aesop
+    grind [h.mono]
 
 /-- This is an analogue of `Dense.continuous_inf` for functions taking values in a conditionally
 complete linear order. The assumption of `BddBelow (range f)` is not needed in this theorem. -/
@@ -228,10 +229,13 @@ theorem Dense.ciInf' {α : Type*} [TopologicalSpace α]
     ⨅ s : S, f s = ⨅ i, f i :=
   hS.ciSup' (α := αᵒᵈ) hf
 
+section ConditionallyCompleteLinearOrder
+
+variable {α : Type*} [ConditionallyCompleteLinearOrder α] [TopologicalSpace α] [OrderTopology α]
+
 /-- A closed interval in a conditionally complete linear order is compact.
 Also see general API on `CompactIccSpace`. -/
-protected lemma ConditionallyCompleteLinearOrder.isCompact_Icc {α : Type*}
-    [ConditionallyCompleteLinearOrder α] [TopologicalSpace α] [OrderTopology α] (a b : α) :
+protected lemma ConditionallyCompleteLinearOrder.isCompact_Icc (a b : α) :
     IsCompact (Icc a b) := by
   simp only [isCompact_iff_ultrafilter_le_nhds, le_principal_iff]
   refine (le_or_gt a b).elim (fun _ f hfab ↦ ?_) (by simp [·])
@@ -251,6 +255,29 @@ protected lemma ConditionallyCompleteLinearOrder.isCompact_Icc {α : Type*}
   have : x ∈ Icc a b := ⟨by grind, le_of_not_gt fun h ↦ hxf (mem_of_superset hfab (by grind))⟩
   have : Icc a x ∈ f := by simpa [s, this.1, this.2] using notMem_of_csSup_lt hx ⟨b, hsb⟩
   exact hpt _ ‹_› (by filter_upwards [f.compl_mem_iff_notMem.mpr hxf, this]; grind)
+
+lemma upperClosure_eq_Ici_csInf {s : Set α} (h₁ : s.Nonempty) (h₂ : BddBelow s) (hs : IsClosed s) :
+    upperClosure s = Ici (sInf s) :=
+  Set.ext fun _ ↦ ⟨fun ⟨_, h, h'⟩ ↦ csInf_le_of_le h₂ h h',
+    (⟨_, (isGLB_csInf h₁ h₂).mem_of_isClosed h₁ hs, ·⟩)⟩
+
+lemma lowerClosure_eq_Iic_csSup {s : Set α} (h₁ : s.Nonempty) (h₂ : BddAbove s) (hs : IsClosed s) :
+    lowerClosure s = Iic (sSup s) :=
+  upperClosure_eq_Ici_csInf (α := αᵒᵈ) h₁ h₂ hs
+
+protected lemma IsClosed.upperClosure {s : Set α} (hs : IsClosed s) :
+    IsClosed (upperClosure s : Set α) := by
+  obtain rfl | h₁ := s.eq_empty_or_nonempty
+  · simp
+  by_cases h₂ : BddBelow s
+  · exact upperClosure_eq_Ici_csInf h₁ h₂ hs ▸ isClosed_Ici
+  · exact upperClosure_eq_bot h₂ ▸ isClosed_univ
+
+protected lemma IsClosed.lowerClosure {s : Set α} (hs : IsClosed s) :
+    IsClosed (lowerClosure s).1 :=
+  IsClosed.upperClosure (α := αᵒᵈ) hs
+
+end ConditionallyCompleteLinearOrder
 
 /-!
 ### Existence of sequences tending to `sInf` or `sSup` of a given set
@@ -342,11 +369,13 @@ theorem DenseRange.exists_seq_strictMono_tendsto {β : Type*} [LinearOrder β] [
   obtain rfl : f ∘ v = u := funext hv
   exact ⟨v, fun a b hlt ↦ hmono.reflect_lt <| hu hlt, hux, hlim⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem IsGLB.exists_seq_strictAnti_tendsto_of_notMem {t : Set α} {x : α}
     [IsCountablyGenerated (𝓝 x)] (htx : IsGLB t x) (notMem : x ∉ t) (ht : t.Nonempty) :
     ∃ u : ℕ → α, StrictAnti u ∧ (∀ n, x < u n) ∧ Tendsto u atTop (𝓝 x) ∧ ∀ n, u n ∈ t :=
   IsLUB.exists_seq_strictMono_tendsto_of_notMem (α := αᵒᵈ) htx notMem ht
 
+set_option backward.isDefEq.respectTransparency false in
 theorem IsGLB.exists_seq_antitone_tendsto {t : Set α} {x : α} [IsCountablyGenerated (𝓝 x)]
     (htx : IsGLB t x) (ht : t.Nonempty) :
     ∃ u : ℕ → α, Antitone u ∧ (∀ n, x ≤ u n) ∧ Tendsto u atTop (𝓝 x) ∧ ∀ n, u n ∈ t :=
@@ -373,7 +402,7 @@ theorem exists_seq_strictAnti_strictMono_tendsto [DenselyOrdered α] [FirstCount
   rcases exists_seq_strictMono_tendsto' (hu_mem 0).2 with ⟨v, hv_mono, hv_mem, hvy⟩
   exact
     ⟨u, v, hu_anti, hv_mono, hu_mem, fun l => ⟨(hu_mem 0).1.trans (hv_mem l).1, (hv_mem l).2⟩,
-      fun k l => (hu_anti.antitone (zero_le k)).trans_lt (hv_mem l).1, hux, hvy⟩
+      fun k l => (hu_anti.antitone zero_le).trans_lt (hv_mem l).1, hux, hvy⟩
 
 theorem exists_seq_tendsto_sInf {α : Type*} [ConditionallyCompleteLinearOrder α]
     [TopologicalSpace α] [OrderTopology α] [FirstCountableTopology α] {S : Set α} (hS : S.Nonempty)
@@ -402,5 +431,29 @@ theorem DenseRange.exists_seq_strictAnti_tendsto {β : Type*} [LinearOrder β] [
     (x : α) :
     ∃ u : ℕ → β, StrictAnti u ∧ (∀ n, f (u n) ∈ Ioi x) ∧ Tendsto (f ∘ u) atTop (𝓝 x) :=
   hf.exists_seq_strictMono_tendsto (α := αᵒᵈ) (β := βᵒᵈ) hmono.dual x
+
+theorem eventually_le_const_iff_forall_gt_eventually_lt_const [FirstCountableTopology α]
+    {l : Filter γ} [CountableInterFilter l] {f : γ → α} {a : α} :
+    (∀ᶠ x in l, f x ≤ a) ↔ ∀ b, a < b → ∀ᶠ x in l, f x < b where
+  mp h c hbc := h.mono <| fun x hx ↦ lt_of_le_of_lt hx hbc
+  mpr h := by
+    rcases exists_glb_Ioi a with ⟨d, hd⟩
+    obtain rfl | H0 := glb_Ioi_eq_self_or_Ioi_eq_Ici _ hd
+    · obtain h | _ := isTop_or_exists_gt d
+      · exact .of_forall (fun _ ↦ h _)
+      obtain ⟨u, -, -, hu_tt, hu_gt⟩ := hd.exists_seq_antitone_tendsto (by simpa)
+      replace h := fun n ↦ h (u n) (by grind)
+      rw [← eventually_countable_forall] at h
+      filter_upwards [h] with x hx
+      exact ge_of_tendsto hu_tt <| .of_forall <| fun n ↦ le_of_lt <| hx n
+    · specialize h d <| by simp [← Set.mem_Ioi, H0]
+      filter_upwards [h] with x hx
+      rw [← Set.compl_Iic, ← Set.compl_Iio, compl_inj_iff] at H0
+      simpa [← Set.mem_Iic, ← Set.mem_Iio, H0] using hx
+
+theorem eventually_const_le_iff_forall_lt_eventually_const_lt [FirstCountableTopology α]
+    {l : Filter γ} [CountableInterFilter l] {f : γ → α} {a : α} :
+    (∀ᶠ x in l, a ≤ f x) ↔ ∀ b, b < a → ∀ᶠ x in l, b < f x :=
+  eventually_le_const_iff_forall_gt_eventually_lt_const (α := αᵒᵈ)
 
 end OrderTopology

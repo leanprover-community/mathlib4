@@ -8,6 +8,7 @@ module
 
 public import Mathlib.Algebra.Group.Subgroup.Ker
 public import Mathlib.Algebra.Module.Submodule.Map
+public import Mathlib.Algebra.Module.Submodule.RestrictScalars
 
 /-!
 # Kernel of a linear map
@@ -31,8 +32,7 @@ linear algebra, vector space, module
 @[expose] public section
 
 open Function
-
-open Pointwise
+open scoped Pointwise
 
 variable {R : Type*} {R₂ : Type*} {R₃ : Type*}
 variable {K : Type*}
@@ -114,6 +114,7 @@ theorem ker_eq_bot_of_inverse {τ₂₁ : R₂ →+* R} [RingHomInvPair τ₁₂
 theorem le_ker_iff_map [RingHomSurjective τ₁₂] {f : M →ₛₗ[τ₁₂] M₂} {p : Submodule R M} :
     p ≤ ker f ↔ map f p = ⊥ := by rw [ker, eq_bot_iff, map_le_iff_le_comap]
 
+@[simp]
 theorem ker_codRestrict {τ₂₁ : R₂ →+* R} (p : Submodule R M) (f : M₂ →ₛₗ[τ₂₁] M) (hf) :
     ker (codRestrict p f hf) = ker f := by rw [ker, comap_codRestrict, Submodule.map_bot]; rfl
 
@@ -170,6 +171,8 @@ variable {f : M →ₛₗ[τ₁₂] M₂}
 
 open Submodule
 
+@[simp] theorem ker_neg (f : M →ₛₗ[τ₁₂] M₂) : (-f).ker = f.ker := by ext; simp
+
 theorem ker_toAddSubgroup (f : M →ₛₗ[τ₁₂] M₂) : (ker f).toAddSubgroup = f.toAddMonoidHom.ker :=
   rfl
 
@@ -178,11 +181,6 @@ theorem sub_mem_ker_iff {x y} : x - y ∈ ker f ↔ f x = f y := by rw [mem_ker,
 theorem disjoint_ker_iff_injOn {p : Submodule R M} :
     Disjoint p (LinearMap.ker f) ↔ Set.InjOn f p := by
   rw [disjoint_ker, Set.injOn_iff_map_eq_zero]
-
-@[deprecated disjoint_ker_iff_injOn (since := "2025-11-07")]
-theorem disjoint_ker' {p : Submodule R M} :
-    Disjoint p (ker f) ↔ ∀ x ∈ p, ∀ y ∈ p, f x = f y → x = y := by
-  simp [disjoint_ker_iff_injOn, Set.InjOn]
 
 theorem injOn_of_disjoint_ker {p : Submodule R M} {s : Set M} (h : s ⊆ p)
     (hd : Disjoint p (ker f)) : Set.InjOn f s :=
@@ -272,6 +270,19 @@ theorem ker_comp_of_ker_eq_bot (f : M →ₛₗ[τ₁₂] M₂) {g : M₂ →ₛ
     ker (g.comp f : M →ₛₗ[τ₁₃] M₃) = ker f := by rw [ker_comp, hg, Submodule.comap_bot]
 
 end Semiring
+
+section RestrictScalars
+
+variable (R : Type*) {S M N : Type*} [Semiring R] [Semiring S] [SMul R S]
+variable [AddCommMonoid M] [Module R M] [Module S M] [IsScalarTower R S M]
+variable [AddCommMonoid N] [Module R N] [Module S N] [IsScalarTower R S N]
+
+@[simp]
+theorem ker_restrictScalars (f : M →ₗ[S] N) :
+    ker (f.restrictScalars R) = (ker f).restrictScalars R :=
+  rfl
+
+end RestrictScalars
 
 end LinearMap
 

@@ -82,7 +82,7 @@ theorem succNthDefiningPoly_degree [IsDomain k] (n : ℕ) (a₁ a₂ : 𝕎 k) (
     (succNthDefiningPoly p n a₁ a₂ bs).degree = p := by
   have : (X ^ p * C (a₁.coeff 0 ^ p ^ (n + 1))).degree = (p : WithBot ℕ) := by
     rw [degree_mul, degree_C]
-    · simp only [Nat.cast_withBot, add_zero, degree_X, degree_pow, Nat.smul_one_eq_cast]
+    · simp
     · exact pow_ne_zero _ ha₁
   have : (X ^ p * C (a₁.coeff 0 ^ p ^ (n + 1)) - X * C (a₂.coeff 0 ^ p ^ (n + 1))).degree =
       (p : WithBot ℕ) := by
@@ -163,15 +163,8 @@ theorem solution_nonzero {a₁ a₂ : 𝕎 k} (ha₁ : a₁.coeff 0 ≠ 0) (ha�
 theorem solution_spec' {a₁ : 𝕎 k} (ha₁ : a₁.coeff 0 ≠ 0) (a₂ : 𝕎 k) :
     solution p a₁ a₂ ^ p * a₁.coeff 0 = solution p a₁ a₂ * a₂.coeff 0 := by
   have := solution_spec p a₁ a₂
-  obtain ⟨q, hq⟩ := Nat.exists_eq_succ_of_ne_zero hp.out.ne_zero
-  have hq' : q = p - 1 := by simp only [hq, tsub_zero, Nat.succ_sub_succ_eq_sub]
-  conv_lhs =>
-    congr
-    congr
-    · skip
-    · rw [hq]
-  rw [pow_succ', hq', this]
-  field
+  have := Nat.exists_eq_succ_of_ne_zero hp.out.ne_zero
+  grind
 
 end RecursionBase
 

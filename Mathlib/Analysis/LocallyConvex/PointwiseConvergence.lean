@@ -5,7 +5,7 @@ Authors: Moritz Doll
 -/
 module
 
-public import Mathlib.Topology.Algebra.Module.PointwiseConvergence
+public import Mathlib.Topology.Algebra.Module.Spaces.PointwiseConvergenceCLM
 public import Mathlib.Analysis.LocallyConvex.WithSeminorms
 public import Mathlib.Analysis.LocallyConvex.StrongTopology
 
@@ -16,7 +16,7 @@ We prove that the topology of pointwise convergence is induced by a family of se
 that it is locally convex in the topological sense
 
 * `PointwiseConvergenceCLM.seminorm`: the seminorms on `E →SLₚₜ[σ] F` given by `A ↦ ‖A x‖` for fixed
-`x : E`.
+  `x : E`.
 * `PointwiseConvergenceCLM.withSeminorm`: the topology is induced by the seminorms.
 * `PointwiseConvergenceCLM.instLocallyConvexSpace`: `E →SLₚₜ[σ] F` is locally convex.
 
@@ -87,7 +87,7 @@ end Tendsto
 section ContinuousLinearMap
 
 variable [AddCommGroup D] [TopologicalSpace D] [Module 𝕜₃ D]
-  [NormedAddCommGroup F] [NormedSpace 𝕜₂ F] [NormedAddCommGroup G] [NormedSpace 𝕜₂ G]
+  [NormedAddCommGroup G] [NormedSpace 𝕜₂ G]
 
 open NNReal ContinuousLinearMap
 
@@ -101,7 +101,7 @@ def mkCLM (A : (E →SL[σ] F) →ₗ[𝕜₂] D →SL[τ] G) (hbound : ∀ (f :
   __ := (toUniformConvergenceCLM _ _ _).toLinearMap.comp
     (A.comp (toUniformConvergenceCLM _ _ _).symm.toLinearMap)
   cont := by
-    apply Seminorm.continuous_from_bounded PointwiseConvergenceCLM.withSeminorms
+    apply PointwiseConvergenceCLM.withSeminorms.continuous_of_isBounded
       PointwiseConvergenceCLM.withSeminorms A
     intro f
     obtain ⟨s, C, h⟩ := hbound f

@@ -26,7 +26,7 @@ with respect to the neighbourhood filter `𝓝 x`.
 * `RestrictGermPredicate`: given a predicate on germs `P : Π x : X, germ (𝓝 x) Y → Prop` and
   `A : set X`, build a new predicate on germs `restrictGermPredicate P A` such that
   `(∀ x, RestrictGermPredicate P A x f) ↔ ∀ᶠ x near A, P x f`;
-  `forall_restrictRermPredicate_iff` is this equivalence.
+  `forall_restrictGermPredicate_iff` is this equivalence.
 
 * `Filter.Germ.sliceLeft, sliceRight`: map the germ of functions `X × Y → Z` at `p = (x,y) ∈ X × Y`
   to the corresponding germ of functions `X → Z` at `x ∈ X` resp. `Y → Z` at `y ∈ Y`.
@@ -48,6 +48,12 @@ namespace Filter.Germ
 shared by all representatives at the given point. -/
 def value {X α : Type*} [TopologicalSpace X] {x : X} (φ : Germ (𝓝 x) α) : α :=
   Quotient.liftOn' φ (fun f ↦ f x) fun f g h ↦ by dsimp only; rw [Eventually.self_of_nhds h]
+
+@[simp]
+theorem value_ofFun (f : X → Y) (x : X) : value (f : Germ (𝓝 x) Y) = f x := rfl
+
+@[simp]
+theorem value_const (c : Y) (x : X) : value (c : Germ (𝓝 x) Y) = c := rfl
 
 theorem value_smul {α β : Type*} [SMul α β] (φ : Germ (𝓝 x) α)
     (ψ : Germ (𝓝 x) β) : (φ • ψ).value = φ.value • ψ.value :=

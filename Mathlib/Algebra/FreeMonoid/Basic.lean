@@ -7,8 +7,12 @@ module
 
 public import Mathlib.Algebra.Group.Action.Defs
 public import Mathlib.Algebra.Group.Units.Defs
-public import Mathlib.Algebra.BigOperators.Group.List.Basic
 public import Mathlib.Algebra.Group.Equiv.Defs
+public import Mathlib.Algebra.BigOperators.Group.List.Defs
+public import Mathlib.Algebra.Group.Basic
+public import Mathlib.Algebra.Group.Nat.Defs
+public import Mathlib.Data.List.Basic
+public import Mathlib.Tactic.ToDual
 
 /-!
 # Free monoid over a given alphabet
@@ -110,18 +114,14 @@ theorem toList_one : toList (1 : FreeMonoid α) = [] := rfl
 @[to_additive (attr := simp)]
 theorem ofList_nil : ofList ([] : List α) = 1 := rfl
 
--- TODO: this statement uses defeq abuse, but so does much of the downstream use of `FreeMonoid`.
--- This should be removed from the simp set and deprecated once those defeq abuses are cleaned up.
-@[to_additive (attr := simp)]
+@[to_additive (attr := deprecated toList_one (since := "2026-03-26"))]
 theorem toList_nil : toList ([] : FreeMonoid α) = [] := rfl
-
--- TODO: this statement uses defeq abuse, but so does much of the downstream use of `FreeMonoid`.
--- This should be removed from the simp set and deprecated once those defeq abuses are cleaned up.
-@[to_additive (attr := simp)]
-theorem toList_cons (x : α) (xs : FreeMonoid α) : toList (x :: xs) = x :: toList xs := rfl
 
 @[to_additive (attr := simp)]
 theorem toList_mul (xs ys : FreeMonoid α) : toList (xs * ys) = toList xs ++ toList ys := rfl
+
+@[to_additive (attr := deprecated toList_mul (since := "2026-03-26"))]
+theorem toList_cons (x : α) (xs : FreeMonoid α) : toList (x :: xs) = x :: toList xs := rfl
 
 @[to_additive (attr := simp)]
 theorem ofList_append (xs ys : List α) : ofList (xs ++ ys) = ofList xs * ofList ys := rfl
@@ -340,7 +340,8 @@ theorem hom_map_lift (g : M →* N) (f : α → M) (x : FreeMonoid α) : g (lift
   DFunLike.ext_iff.1 (comp_lift g f) x
 
 /-- Define a multiplicative action of `FreeMonoid α` on `β`. -/
-@[to_additive /-- Define an additive action of `FreeAddMonoid α` on `β`. -/]
+@[to_additive (attr := implicit_reducible)
+  /-- Define an additive action of `FreeAddMonoid α` on `β`. -/]
 def mkMulAction (f : α → β → β) : MulAction (FreeMonoid α) β where
   smul l b := l.toList.foldr f b
   one_smul _ := rfl

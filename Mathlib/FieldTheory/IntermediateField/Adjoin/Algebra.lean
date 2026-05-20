@@ -8,6 +8,8 @@ module
 public import Mathlib.FieldTheory.Finiteness
 public import Mathlib.FieldTheory.IntermediateField.Adjoin.Defs
 public import Mathlib.FieldTheory.IntermediateField.Algebraic
+public import Mathlib.RingTheory.Adjoin.Singleton
+public import Mathlib.RingTheory.EssentialFiniteness
 
 /-!
 # Adjoining Elements to Fields
@@ -15,7 +17,7 @@ public import Mathlib.FieldTheory.IntermediateField.Algebraic
 This file relates `IntermediateField.adjoin` to `Algebra.adjoin`.
 -/
 
-@[expose] public section
+public section
 
 open Module Polynomial
 
@@ -33,6 +35,15 @@ namespace algebraAdjoinAdjoin
 /-- `IntermediateField.adjoin` as an algebra over `Algebra.adjoin`. -/
 scoped instance : Algebra (Algebra.adjoin F S) (adjoin F S) :=
   (Subalgebra.inclusion <| algebra_adjoin_le_adjoin F S).toAlgebra
+
+@[simp]
+theorem coe_algebraMap (x : Algebra.adjoin F S) :
+    (algebraMap (Algebra.adjoin F S) (adjoin F S) x : E) = x := rfl
+
+@[simp]
+theorem algebraMap_eq_gen_self {x : E} :
+    algebraMap (Algebra.adjoin F {x}) F⟮x⟯ ⟨x, Algebra.self_mem_adjoin_singleton F x⟩ =
+    AdjoinSimple.gen F x := rfl
 
 scoped instance (X) [SMul X F] [SMul X E] [IsScalarTower X F E] :
     IsScalarTower X (Algebra.adjoin F S) (adjoin F S) :=
@@ -73,7 +84,51 @@ theorem eq_adjoin_of_eq_algebra_adjoin (K : IntermediateField F E)
 theorem adjoin_eq_top_of_algebra (hS : Algebra.adjoin F S = ⊤) : adjoin F S = ⊤ :=
   top_le_iff.mp (hS.symm.trans_le <| algebra_adjoin_le_adjoin F S)
 
+section FG
+
+variable {F}
+
+open scoped algebraAdjoinAdjoin in
+lemma fg_top_iff :
+    (⊤ : IntermediateField F E).FG ↔ Algebra.EssFiniteType F E := by
+  constructor
+  · intro ⟨s, hs⟩
+    have : Algebra.FiniteType F (Algebra.adjoin F (s : Set E)) := .adjoin_of_finite s.finite_toSet
+    have : Algebra.EssFiniteType (Algebra.adjoin F (s : Set E)) (adjoin F (s : Set E)) :=
+      .of_isLocalization _ (nonZeroDivisors _)
+    have : Algebra.EssFiniteType F (adjoin F (s : Set E)) :=
+      .comp _ (Algebra.adjoin F (s : Set E)) _
+    rw [hs] at this
+    exact .of_surjective IntermediateField.topEquiv.toAlgHom IntermediateField.topEquiv.surjective
+  · intro _
+    use Algebra.EssFiniteType.finset F E
+    refine top_le_iff.mp fun x _ ↦ ?_
+    obtain ⟨x, s, rfl⟩ := IsLocalization.exists_mk'_eq (Algebra.EssFiniteType.submonoid F E) x
+    have hs : s.1.1 ≠ 0 := (IsLocalization.map_units E s).ne_zero
+    have H : IsLocalization.mk' E x s = x / s := by
+      simp [IsLocalization.mk'_eq_iff_eq_mul, hs]
+    rw [H]
+    exact div_mem (IntermediateField.algebra_adjoin_le_adjoin _ _ x.2)
+      (IntermediateField.algebra_adjoin_le_adjoin _ _ s.1.2)
+
+variable (F E) in
+lemma fg_top [Algebra.EssFiniteType F E] : (⊤ : IntermediateField F E).FG := by
+  rwa [fg_top_iff]
+
+lemma essFiniteType_iff {K : IntermediateField F E} :
+    Algebra.EssFiniteType F K ↔ K.FG := by
+  suffices (∃ s : Finset E, (s : Set E) ⊆ K ∧ adjoin F ↑s = K) ↔
+      ∃ t : Finset E, adjoin F ↑t = K by
+    simpa [IntermediateField.FG, (Equiv.finsetSubtypeComm _).exists_congr_left,
+      ← (IntermediateField.map_injective K.val).eq_iff, ← IntermediateField.fg_top_iff,
+      adjoin_map, ← Set.range_comp, Function.comp_def, ← AlgHom.fieldRange_eq_map] using this
+  exact ⟨fun ⟨s, _, hs⟩ ↦ ⟨s, hs⟩, fun ⟨s, hs⟩ ↦ ⟨s, hs ▸ subset_adjoin _ _, hs⟩⟩
+
+end FG
+
 section AdjoinSimple
+
+open Algebra
 
 variable (α : E)
 
@@ -93,12 +148,12 @@ theorem adjoin_toSubalgebra_of_isAlgebraic {S : Set E} (hS : ∀ x ∈ S, IsAlge
   adjoin_toSubalgebra_of_isAlgebraic
 
 theorem adjoin_simple_toSubalgebra_of_isAlgebraic (hα : IsAlgebraic F α) :
-    F⟮α⟯.toSubalgebra = Algebra.adjoin F {α} :=
+    F⟮α⟯.toSubalgebra = F[α] :=
   adjoin_toSubalgebra_of_isAlgebraic <| by simpa
 
 @[deprecated "Use `adjoin_simple_toSubalgebra_of_isAlgebraic` instead" (since := "2025-11-24")]
 theorem adjoin_simple_toSubalgebra_of_integral (hα : IsIntegral F α) :
-    F⟮α⟯.toSubalgebra = Algebra.adjoin F {α} :=
+    F⟮α⟯.toSubalgebra = F[α] :=
   adjoin_toSubalgebra_of_isAlgebraic <| by simpa [isAlgebraic_iff_isIntegral]
 
 @[simp]
@@ -115,7 +170,7 @@ theorem adjoin_eq_top_iff_of_isAlgebraic {S : Set E} (hS : ∀ x ∈ S, IsAlgebr
 alias ⟨_root_.Algebra.adjoin_eq_top_of_intermediateField, _⟩ := adjoin_eq_top_iff_of_isAlgebraic
 
 theorem adjoin_simple_eq_top_iff_of_isAlgebraic {x : E} (hx : IsAlgebraic F x) :
-    F⟮x⟯ = ⊤ ↔ Algebra.adjoin F {x} = ⊤ := adjoin_eq_top_iff_of_isAlgebraic (by simp [hx])
+    F⟮x⟯ = ⊤ ↔ F[x] = ⊤ := adjoin_eq_top_iff_of_isAlgebraic (by simp [hx])
 
 alias ⟨_root_.Algebra.adjoin_eq_top_of_primitive_element, _⟩ :=
   adjoin_simple_eq_top_iff_of_isAlgebraic
@@ -125,16 +180,38 @@ theorem adjoin_eq_top_iff [Algebra.IsAlgebraic F E] {S : Set E} :
     adjoin F S = ⊤ ↔ Algebra.adjoin F S = ⊤ :=
   adjoin_eq_top_iff_of_isAlgebraic (fun x _ ↦ Algebra.IsAlgebraic.isAlgebraic x)
 
-lemma finite_of_fg_of_isAlgebraic
-    (h : FG (⊤ : IntermediateField F E)) [Algebra.IsAlgebraic F E] :
+lemma _root_.Algebra.finite_of_essFiniteType_of_isAlgebraic
+    [Algebra.EssFiniteType F E] [Algebra.IsAlgebraic F E] :
     Module.Finite F E := by
-  obtain ⟨s, hs⟩ := h
+  obtain ⟨s, hs⟩ := fg_top F E
   have : Algebra.FiniteType F E := by
     use s
-    rw [← adjoin_toSubalgebra_of_isAlgebraic
-      (fun x hx ↦ Algebra.IsAlgebraic.isAlgebraic x)]
+    rw [← adjoin_toSubalgebra_of_isAlgebraic fun x hx ↦ Algebra.IsAlgebraic.isAlgebraic x]
     simpa [← toSubalgebra_inj] using hs
   exact Algebra.IsIntegral.finite
+
+@[deprecated (since := "2025-12-08")]
+alias finite_of_fg_of_isAlgebraic := Algebra.finite_of_essFiniteType_of_isAlgebraic
+
+section RingHom
+
+variable {A B C : Type*} [Field A] [CommSemiring B] [Field C] [Algebra A B]
+  [Algebra B C] [Algebra A C] [IsScalarTower A B C] (b : B)
+
+/-- Ring homomorphism between `A[b]` and `A⟮↑b⟯`. -/
+noncomputable def RingHom.adjoinAlgebraMapOfAlgebra :
+    A[b] →+* A⟮((algebraMap B C) b)⟯ :=
+  RingHom.comp (Subalgebra.inclusion <|
+    algebra_adjoin_le_adjoin A {((algebraMap B C) b)}).toRingHom
+    (Algebra.RingHom.adjoinAlgebraMap b)
+
+noncomputable instance : Algebra (A[b]) A⟮(algebraMap B C) b⟯ :=
+  RingHom.toAlgebra (RingHom.adjoinAlgebraMapOfAlgebra _)
+
+instance : IsScalarTower (A[b]) A⟮(algebraMap B C) b⟯ C :=
+  IsScalarTower.of_algebraMap_eq' rfl
+
+end RingHom
 
 section Supremum
 
@@ -149,7 +226,7 @@ theorem sup_toSubalgebra_of_isAlgebraic_right [Algebra.IsAlgebraic K E2] :
     IsAlgebraic.tower_top _ (isAlgebraic_iff.mp (Algebra.IsAlgebraic.isAlgebraic (⟨x, h⟩ : E2)))
   apply_fun Subalgebra.restrictScalars K at this
   rw [← restrictScalars_toSubalgebra, restrictScalars_adjoin] at this
-  -- TODO: rather than using `← coe_type_toSubalgera` here, perhaps we should restate another
+  -- TODO: rather than using `← coe_type_toSubalgebra` here, perhaps we should restate another
   -- version of `Algebra.restrictScalars_adjoin` for intermediate fields?
   simp only [← coe_type_toSubalgebra] at this
   rw [Algebra.restrictScalars_adjoin] at this

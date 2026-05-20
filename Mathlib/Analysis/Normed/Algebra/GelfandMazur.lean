@@ -58,8 +58,8 @@ when `|z|` is sufficiently large.
 ### The real case
 
 The usual proof for the real case is "either `F` contains a square root of `-1`;
-then `F` is in fact a normed `ℂ`-agebra and we can use the result above, or else
-we adjoin a square root of `-1` to `F` to obtain a normed `ℂ`-agebra `F'` and
+then `F` is in fact a normed `ℂ`-algebra and we can use the result above, or else
+we adjoin a square root of `-1` to `F` to obtain a normed `ℂ`-algebra `F'` and
 apply the result to `F'`". The difficulty with formalizing this is that (as of October 2025)
 Mathlib does not provide a normed `ℂ`-algebra instance for `F'` (neither for
 `F' := AdjoinRoot (X ^ 2 + 1 : F[X])` nor for `F' := TensorProduct ℝ ℂ F`),
@@ -262,7 +262,7 @@ variable {F : Type*} [NormedRing F] [NormedAlgebra ℝ F]
 
 /- A (private) abbreviation introduced for conciseness below.
 We will show that for every `x : F`, `φ x` takes the value zero. -/
-private abbrev φ (x : F) (u : ℝ × ℝ) : F := x ^ 2 - u.1 • x + algebraMap ℝ F u.2
+private noncomputable abbrev φ (x : F) (u : ℝ × ℝ) : F := x ^ 2 - u.1 • x + algebraMap ℝ F u.2
 
 private lemma continuous_φ (x : F) : Continuous (φ x) := by fun_prop
 
@@ -325,6 +325,7 @@ private lemma norm_φ_eq_norm_φ_of_isMinOn {x : F} {z : ℝ × ℝ} (h : IsMinO
   exact (norm_sub_le ..).trans <| by simp [q, aeval_eq_φ, hw]
 
 open Filter Topology Bornology in
+omit [NormMulClass F] in
 /- Assuming that `‖x - algebraMap ℝ F ·‖` is bounded below by a positive constant, we show that
 `φ x w` grows unboundedly as `w : ℝ × ℝ` does. We will use this to obtain a contradiction
 when `φ x` does not attain the value zero. -/
@@ -362,6 +363,7 @@ private lemma tendsto_φ_cobounded {x : F} {c : ℝ} (hc₀ : 0 < c)
     exact tendsto_fst
 
 open Bornology Filter Set in
+omit [NormMulClass F] in
 /- The norm of `‖φ x ·‖` attains a minimum on `ℝ × ℝ`. -/
 private lemma exists_isMinOn_norm_φ (x : F) : ∃ z : ℝ × ℝ, IsMinOn (‖φ x ·‖) univ z := by
   -- use that `‖x - algebraMap ℝ F ·‖` has a minimum.

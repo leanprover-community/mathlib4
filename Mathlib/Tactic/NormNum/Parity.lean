@@ -5,8 +5,8 @@ Authors: Yury Kudryashov
 -/
 module
 
-public meta import Mathlib.Algebra.Ring.Int.Parity
-public meta import Mathlib.Tactic.NormNum.Core
+public import Mathlib.Algebra.Ring.Int.Parity  -- shake: keep (Qq dependency)
+public import Mathlib.Tactic.NormNum.Core
 
 /-!
 # `norm_num` extensions for `Even` and `Odd`

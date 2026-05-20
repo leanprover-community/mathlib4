@@ -17,7 +17,7 @@ Therefore, as any finitely generated torsion module is `I`-torsion for some `I`,
 direct sum of its `p i ^ e i`-torsion submodules for some prime ideals `p i` and numbers `e i`.
 -/
 
-@[expose] public section
+public section
 
 
 universe u v
@@ -34,7 +34,7 @@ open UniqueFactorizationMonoid
 
 /-- Over a Dedekind domain, an `I`-torsion module is the internal direct sum of its `p i ^ e i`-
 torsion submodules, where `I = ∏ i, p i ^ e i` is its unique decomposition in prime ideals. -/
-theorem isInternal_prime_power_torsion_of_is_torsion_by_ideal [DecidableEq (Ideal R)]
+theorem isInternal_prime_power_torsion_of_is_torsion_by_ideal
     {I : Ideal R} (hI : I ≠ ⊥) (hM : Module.IsTorsionBySet R M I) :
     DirectSum.IsInternal fun p : (factors I).toFinset =>
       torsionBySet R M (p ^ (factors I).count ↑p : Ideal R) := by
@@ -43,13 +43,13 @@ theorem isInternal_prime_power_torsion_of_is_torsion_by_ideal [DecidableEq (Idea
     prime_of_factor p (Multiset.mem_toFinset.mp hp)
   apply torsionBySet_isInternal (p := fun p => p ^ P.count p) _
   · convert hM
-    rw [← Finset.inf_eq_iInf, IsDedekindDomain.inf_prime_pow_eq_prod, ← Finset.prod_multiset_count,
-      ← associated_iff_eq]
+    rw [← Finset.inf_eq_iInf, IsDedekindDomain.inf_pow_eq_prod_of_prime,
+      ← Finset.prod_multiset_count, ← associated_iff_eq]
     · exact factors_prod hI
     · exact prime_of_mem
     · exact fun _ _ _ _ ij => ij
   · intro p hp q hq pq; dsimp
-    rw [irreducible_pow_sup]
+    rw [Ideal.irreducible_pow_sup]
     · suffices (normalizedFactors _).count p = 0 by rw [this, zero_min, pow_zero, Ideal.one_eq_top]
       rw [Multiset.count_eq_zero,
         normalizedFactors_of_irreducible_pow (prime_of_mem q hq).irreducible,
@@ -61,7 +61,7 @@ theorem isInternal_prime_power_torsion_of_is_torsion_by_ideal [DecidableEq (Idea
 /-- A finitely generated torsion module over a Dedekind domain is an internal direct sum of its
 `p i ^ e i`-torsion submodules where `p i` are factors of `(⊤ : Submodule R M).annihilator` and
 `e i` are their multiplicities. -/
-theorem isInternal_prime_power_torsion [DecidableEq (Ideal R)] [Module.Finite R M]
+theorem isInternal_prime_power_torsion [Module.Finite R M]
     (hM : Module.IsTorsion R M) :
     DirectSum.IsInternal fun p : (factors (⊤ : Submodule R M).annihilator).toFinset =>
       torsionBySet R M (p ^ (factors (⊤ : Submodule R M).annihilator).count ↑p : Ideal R) := by

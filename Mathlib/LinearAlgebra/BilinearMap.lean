@@ -6,7 +6,7 @@ Authors: Kenny Lau, Mario Carneiro
 module
 
 public import Mathlib.Algebra.Module.Submodule.Equiv
-public import Mathlib.Algebra.NoZeroSMulDivisors.Basic
+public import Mathlib.Algebra.Module.Torsion.Free
 
 /-!
 # Basics on bilinear maps
@@ -40,31 +40,26 @@ bilinear
 
 @[expose] public section
 
-open Function
+open Function Module
 
 namespace LinearMap
 
 section Semiring
 
 -- the `ₗ` subscript variables are for special cases about linear (as opposed to semilinear) maps
-variable {R : Type*} [Semiring R] {S : Type*} [Semiring S]
-variable {R₂ : Type*} [Semiring R₂] {S₂ : Type*} [Semiring S₂]
-variable {M : Type*} {N : Type*} {P : Type*}
-variable {M₂ : Type*} {N₂ : Type*} {P₂ : Type*}
-variable {Pₗ : Type*}
-variable {M' : Type*} {P' : Type*}
-variable [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid P]
-variable [AddCommMonoid M₂] [AddCommMonoid N₂] [AddCommMonoid P₂] [AddCommMonoid Pₗ]
-variable [AddCommGroup M'] [AddCommGroup P']
-variable [Module R M] [Module S N] [Module R₂ P] [Module S₂ P]
-variable [Module R M₂] [Module S N₂] [Module R P₂] [Module S₂ P₂]
-variable [Module R Pₗ] [Module S Pₗ]
+variable {R R₂ S S₂ : Type*} [Semiring R] [Semiring R₂] [Semiring S] [Semiring S₂]
+variable {M M₂ N N₂ P P₂ Pₗ : Type*} [AddCommMonoid M] [AddCommMonoid M₂] [AddCommMonoid N]
+variable [AddCommMonoid N₂] [AddCommMonoid P] [AddCommMonoid P₂] [AddCommMonoid Pₗ]
+variable [Module R M] [Module R M₂] [Module S N] [Module S N₂] [Module R₂ P] [Module S₂ P]
+variable [Module R P₂] [Module S₂ P₂] [Module R Pₗ] [Module S Pₗ]
+variable {M' P' : Type*} [AddCommGroup M'] [AddCommGroup P']
 variable [Module R M'] [Module R₂ P'] [Module S₂ P']
 variable [SMulCommClass S₂ R₂ P] [SMulCommClass S R Pₗ] [SMulCommClass S₂ R₂ P']
 variable [SMulCommClass S₂ R P₂]
 variable {ρ₁₂ : R →+* R₂} {σ₁₂ : S →+* S₂}
 variable (ρ₁₂ σ₁₂)
 
+-- TODO: refactor to use a structure holding the assumptions, as in `IsBilinearMap` below.
 /-- Create a bilinear map from a function that is semilinear in each component.
 See `mk₂'` and `mk₂` for the linear case. -/
 def mk₂'ₛₗ (f : M → N → P) (H1 : ∀ m₁ m₂ n, f (m₁ + m₂) n = f m₁ n + f m₂ n)
@@ -171,6 +166,12 @@ theorem compl₂_apply (h : M →ₛₗ[σ₁₅] N →ₛₗ[σ₂₃] P) (g : 
 theorem compl₂_id (h : M →ₛₗ[σ₁₅] N →ₛₗ[σ₂₃] P) : h.compl₂ LinearMap.id = h := by
   ext
   rw [compl₂_apply, id_coe, _root_.id]
+
+theorem compl₂_comp {R₆ Q' : Type*} [Semiring R₆] [AddCommMonoid Q'] [Module R₆ Q']
+    {σ₆₂ : R₆ →+* R₂} {σ₆₃ : R₆ →+* R₃} {σ₆₄ : R₆ →+* R₄}
+    [RingHomCompTriple σ₆₂ σ₂₃ σ₆₃] [RingHomCompTriple σ₆₄ σ₄₂ σ₆₂] [RingHomCompTriple σ₆₄ σ₄₃ σ₆₃]
+    (h : M →ₛₗ[σ₁₅] N →ₛₗ[σ₂₃] P) (g : Q →ₛₗ[σ₄₂] N) (f : Q' →ₛₗ[σ₆₄] Q) :
+    h.compl₂ (g ∘ₛₗ f) = (h.compl₂ g).compl₂ f := rfl
 
 end Semiring
 
@@ -301,17 +302,14 @@ end Semiring
 
 section CommSemiring
 
-variable {R R₁ R₂ : Type*} [CommSemiring R] [Semiring R₁] [Semiring R₂]
-variable {A : Type*} [Semiring A] {B : Type*} [Semiring B]
-variable {M : Type*} {N : Type*} {P : Type*} {Q : Type*}
-variable {Mₗ : Type*} {Nₗ : Type*} {Pₗ : Type*} {Qₗ Qₗ' : Type*}
-variable [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid P] [AddCommMonoid Q]
-variable [AddCommMonoid Mₗ] [AddCommMonoid Nₗ] [AddCommMonoid Pₗ]
-variable [AddCommMonoid Qₗ] [AddCommMonoid Qₗ']
-variable [Module R M]
-variable [Module R Mₗ] [Module R Nₗ] [Module R Pₗ] [Module R Qₗ] [Module R Qₗ']
-variable [Module R₁ Mₗ] [Module R₂ N] [Module R₁ Pₗ] [Module R₁ Qₗ]
-variable [Module R₂ Pₗ] [Module R₂ Qₗ']
+-- the `ₗ` subscript variables are for special cases about linear (as opposed to semilinear) maps
+variable {A R R₁ R₂ : Type*} [Semiring A] [CommSemiring R] [Semiring R₁] [Semiring R₂]
+variable {M Mₗ N Nₗ Pₗ Qₗ Qₗ' : Type*} [AddCommMonoid M] [AddCommMonoid Mₗ] [AddCommMonoid N]
+variable [AddCommMonoid Nₗ] [AddCommMonoid Pₗ] [AddCommMonoid Qₗ] [AddCommMonoid Qₗ']
+variable [Module R M] [Module R Mₗ] [Module R₁ Mₗ] [Module R₂ N] [Module R Nₗ] [Module R Pₗ]
+variable [Module R₂ Pₗ] [Module R₁ Pₗ] [Module R Qₗ] [Module R₁ Qₗ] [Module R Qₗ'] [Module R₂ Qₗ']
+variable {Tₗ Tₗ' : Type*} [AddCommMonoid Tₗ] [AddCommMonoid Tₗ'] [Module R₁ Tₗ] [Module R₂ Tₗ']
+
 variable (R)
 
 /-- Create a bilinear map from a function that is linear in each component.
@@ -347,6 +345,17 @@ theorem compl₁₂_id_id [SMulCommClass R₂ R₁ Pₗ] (f : Mₗ →ₗ[R₁] 
   ext
   simp_rw [compl₁₂_apply, id_coe, _root_.id]
 
+theorem compl₁₂_comp_left [SMulCommClass R₂ R₁ Pₗ] (f : Mₗ →ₗ[R₁] N →ₗ[R₂] Pₗ) (g : Qₗ →ₗ[R₁] Mₗ)
+    (g' : Qₗ' →ₗ[R₂] N) (h : Tₗ →ₗ[R₁] Qₗ) : f.compl₁₂ (g ∘ₗ h) g' = (f.compl₁₂ g g') ∘ₗ h := rfl
+
+theorem compl₁₂_comp_right [SMulCommClass R₂ R₁ Pₗ] (f : Mₗ →ₗ[R₁] N →ₗ[R₂] Pₗ) (g : Qₗ →ₗ[R₁] Mₗ)
+    (g' : Qₗ' →ₗ[R₂] N) (h' : Tₗ' →ₗ[R₂] Qₗ') :
+    f.compl₁₂ g (g' ∘ₗ h') = (f.compl₁₂ g g').compl₂ h' := rfl
+
+theorem compl₁₂_comp_comp [SMulCommClass R₂ R₁ Pₗ] (f : Mₗ →ₗ[R₁] N →ₗ[R₂] Pₗ) (g : Qₗ →ₗ[R₁] Mₗ)
+    (g' : Qₗ' →ₗ[R₂] N) (h : Tₗ →ₗ[R₁] Qₗ) (h' : Tₗ' →ₗ[R₂] Qₗ') :
+    f.compl₁₂ (g ∘ₗ h) (g' ∘ₗ h') = (f.compl₁₂ g g').compl₁₂ h h' := rfl
+
 theorem compl₁₂_inj [SMulCommClass R₂ R₁ Pₗ]
     {f₁ f₂ : Mₗ →ₗ[R₁] N →ₗ[R₂] Pₗ} {g : Qₗ →ₗ[R₁] Mₗ} {g' : Qₗ' →ₗ[R₂] N}
     (hₗ : Function.Surjective g) (hᵣ : Function.Surjective g') :
@@ -354,10 +363,8 @@ theorem compl₁₂_inj [SMulCommClass R₂ R₁ Pₗ]
   constructor <;> intro h
   · -- B₁.comp l r = B₂.comp l r → B₁ = B₂
     ext x y
-    obtain ⟨x', hx⟩ := hₗ x
-    subst hx
-    obtain ⟨y', hy⟩ := hᵣ y
-    subst hy
+    obtain ⟨x', rfl⟩ := hₗ x
+    obtain ⟨y', rfl⟩ := hᵣ y
     convert LinearMap.congr_fun₂ h x' y' using 0
   · -- B₁ = B₂ → B₁.comp l r = B₂.comp l r
     subst h; rfl
@@ -381,6 +388,18 @@ theorem compr₂_apply [Module R A] [Module A M] [Module A Qₗ]
     [SMulCommClass R A Qₗ] [IsScalarTower R A Qₗ] [IsScalarTower R A Pₗ]
     (f : M →ₗ[A] Nₗ →ₗ[R] Pₗ) (g : Pₗ →ₗ[A] Qₗ) (m : M) (n : Nₗ) :
     f.compr₂ g m n = g (f m n) := rfl
+
+omit [Module R M] in
+@[simp]
+theorem compr₂_id [Module R A] [Module A M] [IsScalarTower R A Pₗ] (f : M →ₗ[A] Nₗ →ₗ[R] Pₗ) :
+    f.compr₂ LinearMap.id = f := rfl
+
+omit [Module R M] in
+theorem compr₂_comp {Tₗ : Type*} [AddCommMonoid Tₗ] [Module R Tₗ] [Module A Tₗ] [Module R A]
+    [Module A M] [Module A Qₗ] [SMulCommClass R A Qₗ] [SMulCommClass R A Tₗ]
+    [IsScalarTower R A Qₗ] [IsScalarTower R A Pₗ] [IsScalarTower R A Tₗ]
+    (f : M →ₗ[A] Nₗ →ₗ[R] Pₗ) (g : Pₗ →ₗ[A] Qₗ) (h : Qₗ →ₗ[A] Tₗ) :
+    f.compr₂ (h ∘ₗ g) = (f.compr₂ g).compr₂ h := rfl
 
 /-- A version of `Function.Injective.comp` for composition of a bilinear map with a linear map. -/
 theorem injective_compr₂_of_injective (f : M →ₗ[R] Nₗ →ₗ[R] Pₗ) (g : Pₗ →ₗ[R] Qₗ) (hf : Injective f)
@@ -447,6 +466,15 @@ def compr₂ₛₗ (f : M →ₛₗ[σ₁₃] N →ₛₗ[σ₂₃] P) (g : P �
 theorem compr₂ₛₗ_apply (f : M →ₛₗ[σ₁₃] N →ₛₗ[σ₂₃] P) (g : P →ₛₗ[σ₃₄] Q) (m : M) (n : N) :
     f.compr₂ₛₗ g m n = g (f m n) := rfl
 
+@[simp]
+theorem compr₂ₛₗ_id (f : M →ₛₗ[σ₁₃] N →ₛₗ[σ₂₃] P) : f.compr₂ₛₗ LinearMap.id = f := rfl
+
+theorem compr₂ₛₗ_comp {Q' R₅ : Type*} [CommSemiring R₅] [AddCommMonoid Q'] [Module R₅ Q']
+    {σ₁₅ : R →+* R₅} {σ₂₅ : R₂ →+* R₅} {σ₃₅ : R₃ →+* R₅} {σ₄₅ : R₄ →+* R₅}
+    [RingHomCompTriple σ₁₃ σ₃₅ σ₁₅] [RingHomCompTriple σ₁₄ σ₄₅ σ₁₅] [RingHomCompTriple σ₂₃ σ₃₅ σ₂₅]
+    [RingHomCompTriple σ₂₄ σ₄₅ σ₂₅] [RingHomCompTriple σ₃₄ σ₄₅ σ₃₅] (f : M →ₛₗ[σ₁₃] N →ₛₗ[σ₂₃] P)
+    (g : P →ₛₗ[σ₃₄] Q) (h : Q →ₛₗ[σ₄₅] Q') : f.compr₂ₛₗ (h ∘ₛₗ g) = (f.compr₂ₛₗ g).compr₂ₛₗ h := rfl
+
 /-- A version of `Function.Injective.comp` for composition of a bilinear map with a linear map. -/
 theorem injective_compr₂ₛₗ_of_injective (f : M →ₛₗ[σ₁₃] N →ₛₗ[σ₂₃] P) (g : P →ₛₗ[σ₃₄] Q)
     (hf : Injective f) (hg : Injective g) : Injective (f.compr₂ₛₗ g) :=
@@ -482,8 +510,11 @@ def lsmul : R →ₗ[R] M →ₗ[R] M :=
 
 variable {R}
 
-lemma lsmul_eq_DistribMulAction_toLinearMap (r : R) :
-    lsmul R M r = DistribMulAction.toLinearMap R M r := rfl
+lemma lsmul_eq_distribSMultoLinearMap (r : R) :
+    lsmul R M r = DistribSMul.toLinearMap R M r := rfl
+
+@[deprecated (since := "2026-01-07")]
+alias lsmul_eq_DistribMulAction_toLinearMap := lsmul_eq_distribSMultoLinearMap
 
 variable {M}
 
@@ -502,17 +533,17 @@ end CommSemiring
 
 section CommRing
 
-variable {R M : Type*} [CommRing R]
+variable {R M : Type*} [CommRing R] [IsDomain R]
 
 section AddCommGroup
 
 variable [AddCommGroup M] [Module R M]
 
-theorem lsmul_injective [NoZeroSMulDivisors R M] {x : R} (hx : x ≠ 0) :
+theorem lsmul_injective [IsTorsionFree R M] {x : R} (hx : x ≠ 0) :
     Function.Injective (lsmul R M x) :=
   smul_right_injective _ hx
 
-theorem ker_lsmul [NoZeroSMulDivisors R M] {a : R} (ha : a ≠ 0) :
+theorem ker_lsmul [IsTorsionFree R M] {a : R} (ha : a ≠ 0) :
     LinearMap.ker (LinearMap.lsmul R M a) = ⊥ :=
   LinearMap.ker_eq_bot_of_injective (LinearMap.lsmul_injective ha)
 
@@ -595,3 +626,31 @@ lemma restrictScalarsRange₂_apply_eq_zero_iff (m : M') (n : N') :
 end restrictScalarsRange₂
 
 end LinearMap
+
+section IsBilinearMap
+
+variable
+  (R : Type*) [CommSemiring R]
+  {E : Type*} [AddCommMonoid E] [Module R E]
+  {F : Type*} [AddCommMonoid F] [Module R F]
+  {G : Type*} [AddCommMonoid G] [Module R G]
+
+-- TODO Also make a semi-linear version.
+/-- Bundled statement of bilinearity for a function.
+
+The bundled type `E →ₗ[R] F →ₗ[R] G` should be preferred in cases where that can be used.
+`IsBilinearMap` can be useful to have `IsBilinearMap (myFunction ..)` as a hypothesis to a
+declaration. -/
+structure IsBilinearMap (f : E → F → G) : Prop where
+  add_left : ∀ (x₁ x₂ : E) (y : F), f (x₁ + x₂) y = f x₁ y + f x₂ y
+  smul_left : ∀ (c : R) (x : E) (y : F), f (c • x) y = c • f x y
+  add_right : ∀ (x : E) (y₁ y₂ : F), f x (y₁ + y₂) = f x y₁ + f x y₂
+  smul_right : ∀ (c : R) (x : E) (y : F), f x (c • y) = c • f x y
+
+variable {R} in
+/-- Make a bilinear map from a function and a bundled statement of bilinearity. -/
+def IsBilinearMap.toLinearMap {f : E → F → G} (hf : IsBilinearMap R f) :
+    E →ₗ[R] F →ₗ[R] G :=
+  LinearMap.mk₂ _ f hf.add_left hf.smul_left hf.add_right hf.smul_right
+
+end IsBilinearMap

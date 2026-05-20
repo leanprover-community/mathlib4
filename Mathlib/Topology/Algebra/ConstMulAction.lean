@@ -9,6 +9,7 @@ public import Mathlib.Algebra.Group.Pointwise.Set.Lattice
 public import Mathlib.Algebra.GroupWithZero.Action.Pointwise.Set
 public import Mathlib.Algebra.Module.ULift
 public import Mathlib.GroupTheory.GroupAction.Defs
+public import Mathlib.Order.Filter.Pointwise
 public import Mathlib.Topology.Algebra.Constructions
 public import Mathlib.Topology.Algebra.Support
 
@@ -27,7 +28,7 @@ In this file we define class `ContinuousConstSMul`. We say `ContinuousConstSMul 
   many `γ:Γ` move `K` to have nontrivial intersection with `L`.
 * `Homeomorph.smul`: scalar multiplication by an element of a group `Γ` acting on `T`
   is a homeomorphism of `T`.
-*`Homeomorph.smulOfNeZero`: if a group with zero `G₀` (e.g., a field) acts on `X` and `c : G₀`
+* `Homeomorph.smulOfNeZero`: if a group with zero `G₀` (e.g., a field) acts on `X` and `c : G₀`
   is a nonzero element of `G₀`, then scalar multiplication by `c` is a homeomorphism of `X`;
 * `Homeomorph.smul`: scalar multiplication by an element of a group `G` acting on `X`
   is a homeomorphism of `X`.
@@ -228,8 +229,6 @@ theorem continuous_const_smul_iff (c : G) : (Continuous fun x => c • f x) ↔ 
 @[to_additive (attr := simps!)]
 def Homeomorph.smul (γ : G) : α ≃ₜ α where
   toEquiv := MulAction.toPerm γ
-  continuous_toFun := continuous_const_smul γ
-  continuous_invFun := continuous_const_smul γ⁻¹
 
 /-- The homeomorphism given by affine-addition by an element of an additive group `Γ` acting on
   `T` is a homeomorphism from `T` to itself. -/
@@ -266,6 +265,16 @@ theorem Dense.smul (c : G) {s : Set α} (hs : Dense s) : Dense (c • s) := by
 @[to_additive]
 theorem interior_smul (c : G) (s : Set α) : interior (c • s) = c • interior s :=
   ((Homeomorph.smul c).image_interior s).symm
+
+open scoped Pointwise in
+@[to_additive]
+lemma nhds_smul (c : G) (x : α) : 𝓝 (c • x) = c • 𝓝 x :=
+  (Homeomorph.smul c).map_nhds_eq x |>.symm
+
+open scoped Pointwise in
+@[to_additive]
+lemma punctured_nhds_smul (c : G) (x : α) : 𝓝[≠] (c • x) = c • 𝓝[≠] x :=
+  (Homeomorph.smul c).map_punctured_nhds_eq x |>.symm
 
 @[to_additive]
 theorem IsOpen.smul_left {s : Set G} {t : Set α} (ht : IsOpen t) : IsOpen (s • t) := by
@@ -373,6 +382,14 @@ theorem closure_smul₀ {E} [Zero E] [MulActionWithZero G₀ E] [TopologicalSpac
     · rw [zero_smul_set hs, zero_smul_set hs.closure]
       exact closure_singleton
   · exact closure_smul₀' hc s
+
+open scoped Pointwise in
+lemma nhds_smul₀ {c : G₀} (hc : c ≠ 0) (x : α) : 𝓝 (c • x) = c • 𝓝 x :=
+  nhds_smul (Units.mk0 c hc) x
+
+open scoped Pointwise in
+lemma punctured_nhds_smul₀ {c : G₀} (hc : c ≠ 0) (x : α) : 𝓝[≠] (c • x) = c • 𝓝[≠] x :=
+  punctured_nhds_smul (Units.mk0 c hc) x
 
 /-- `smul` is a closed map in the second argument.
 
@@ -491,6 +508,12 @@ attribute [to_additive] ProperlyDiscontinuousSMul
 
 export ProperlyDiscontinuousSMul (finite_disjoint_inter_image)
 export ProperlyDiscontinuousVAdd (finite_disjoint_inter_image)
+
+@[to_additive]
+lemma properlyDiscontinuousSMul_iff [TopologicalSpace α] [SMul M α] :
+    ProperlyDiscontinuousSMul M α ↔
+      ∀ {K L : Set α}, IsCompact K → IsCompact L → {m : M | (m • K ∩ L).Nonempty}.Finite :=
+  ⟨fun _ _ _ ↦ ProperlyDiscontinuousSMul.finite_disjoint_inter_image, .mk⟩
 
 section
 

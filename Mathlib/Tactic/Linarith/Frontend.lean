@@ -6,11 +6,11 @@ Authors: Robert Y. Lewis
 module
 
 public meta import Mathlib.Control.Basic
-public meta import Mathlib.Tactic.Linarith.Verification
-public meta import Mathlib.Tactic.Linarith.Preprocessing
-public meta import Mathlib.Tactic.Linarith.Oracle.SimplexAlgorithm
-public meta import Mathlib.Tactic.Ring.Basic
-public meta import Mathlib.Util.ElabWithoutMVars
+public import Mathlib.Tactic.Linarith.Oracle.SimplexAlgorithm
+public import Mathlib.Tactic.Linarith.Preprocessing
+public import Mathlib.Tactic.Linarith.Verification
+public import Mathlib.Tactic.Ring.Basic
+public import Mathlib.Util.ElabWithoutMVars
 
 /-!
 # `linarith`: solving linear arithmetic goals
@@ -265,7 +265,7 @@ def findLinarithContradiction (cfg : LinarithConfig) (g : MVarId)
     (ls : List (Expr × List (Expr × Nat))) : MetaM (Expr × List Nat) :=
   try
     ls.firstM (fun ⟨α, L⟩ =>
-      withTraceNode `linarith (return m!"{exceptEmoji ·} running on type {α}") do
+      withTraceNode `linarith (fun _ => return m!" running on type {α}") do
         let (pf, idxs) ←
           proveFalseByLinarith cfg.transparency cfg.oracle cfg.discharger g (L.map Prod.fst)
         let idxs := idxs.map fun i => L[i]!.2
@@ -300,7 +300,7 @@ def runLinarith (cfg : LinarithConfig) (prefType : Option Expr) (g : MVarId)
           let (i, vs) ← hyp_set.find t
           hyp_set := hyp_set.eraseIdxIfInBounds i
           pure <|
-            withTraceNode `linarith (return m!"{exceptEmoji ·} running on preferred type {t}") do
+            withTraceNode `linarith (fun _ => return m!" running on preferred type {t}") do
               let (pf, idxs) ←
                 proveFalseByLinarith cfg.transparency cfg.oracle cfg.discharger g (vs.map Prod.fst)
               let idxs := idxs.map fun j => vs[j]!.2
@@ -352,9 +352,9 @@ partial def linarithUsedHyps (only_on : Bool) (hyps : List Expr)
   if (← whnfR (← instantiateMVars (← g.getType))).isEq then
     trace[linarith] "target is an equality: splitting"
     if let some [g₁, g₂] ← try? (g.apply (← mkConst' ``eq_of_not_lt_of_not_gt)) then
-      let h₁ ← withTraceNode `linarith (return m!"{exceptEmoji ·} proving ≥") <|
+      let h₁ ← withTraceNode `linarith (fun _ => return m!" proving ≥") <|
         linarithUsedHyps only_on hyps cfg g₁
-      let h₂ ← withTraceNode `linarith (return m!"{exceptEmoji ·} proving ≤") <|
+      let h₂ ← withTraceNode `linarith (fun _ => return m!" proving ≤") <|
         linarithUsedHyps only_on hyps cfg g₂
       return h₁ ++ h₂
 
@@ -483,9 +483,9 @@ performed.
 -/
 syntax (name := linarith?) "linarith?" "!"? linarithArgsRest : tactic
 
-@[inherit_doc linarith] macro "linarith!" rest:linarithArgsRest : tactic =>
+@[tactic_alt linarith] macro "linarith!" rest:linarithArgsRest : tactic =>
   `(tactic| linarith ! $rest:linarithArgsRest)
-@[inherit_doc linarith?] macro "linarith?!" rest:linarithArgsRest : tactic =>
+@[tactic_alt linarith?] macro "linarith?!" rest:linarithArgsRest : tactic =>
   `(tactic| linarith? ! $rest:linarithArgsRest)
 
 /--
@@ -501,7 +501,7 @@ in `linarith`. The preprocessing is as follows:
   where `R ∈ {<, ≤, =}` is the appropriate comparison derived from `R1, R2`.
 -/
 syntax (name := nlinarith) "nlinarith" "!"? linarithArgsRest : tactic
-@[inherit_doc nlinarith] macro "nlinarith!" rest:linarithArgsRest : tactic =>
+@[tactic_alt nlinarith] macro "nlinarith!" rest:linarithArgsRest : tactic =>
   `(tactic| nlinarith ! $rest:linarithArgsRest)
 
 /--

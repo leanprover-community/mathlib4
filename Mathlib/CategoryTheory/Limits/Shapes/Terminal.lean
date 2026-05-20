@@ -306,6 +306,7 @@ abbrev colimitOfInitial (F : J ⥤ C) [HasInitial J] [∀ (i j : J) (f : i ⟶ j
   IsColimit.coconePointUniqueUpToIso (colimit.isColimit _)
     (colimitOfDiagramInitial initialIsInitial _)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `j` is initial in the index category, then the map `limit.π F j` is an isomorphism.
 -/
 theorem isIso_π_of_isInitial {j : J} (I : IsInitial j) (F : J ⥤ C) [HasLimit F] :
@@ -315,6 +316,7 @@ theorem isIso_π_of_isInitial {j : J} (I : IsInitial j) (F : J ⥤ C) [HasLimit 
 instance isIso_π_initial [HasInitial J] (F : J ⥤ C) : IsIso (limit.π F (⊥_ J)) :=
   isIso_π_of_isInitial initialIsInitial F
 
+set_option backward.isDefEq.respectTransparency false in
 theorem isIso_π_of_isTerminal {j : J} (I : IsTerminal j) (F : J ⥤ C) [HasLimit F]
     [∀ (i j : J) (f : i ⟶ j), IsIso (F.map f)] : IsIso (limit.π F j) :=
   ⟨⟨limit.lift _ (coneOfDiagramTerminal I F), by ext; simp, by simp⟩⟩
@@ -323,6 +325,7 @@ instance isIso_π_terminal [HasTerminal J] (F : J ⥤ C) [∀ (i j : J) (f : i �
     IsIso (limit.π F (⊤_ J)) :=
   isIso_π_of_isTerminal terminalIsTerminal F
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `j` is terminal in the index category, then the map `colimit.ι F j` is an isomorphism.
 -/
 theorem isIso_ι_of_isTerminal {j : J} (I : IsTerminal j) (F : J ⥤ C) [HasColimit F] :
@@ -332,14 +335,14 @@ theorem isIso_ι_of_isTerminal {j : J} (I : IsTerminal j) (F : J ⥤ C) [HasColi
 instance isIso_ι_terminal [HasTerminal J] (F : J ⥤ C) : IsIso (colimit.ι F (⊤_ J)) :=
   isIso_ι_of_isTerminal terminalIsTerminal F
 
+set_option backward.isDefEq.respectTransparency false in
 theorem isIso_ι_of_isInitial {j : J} (I : IsInitial j) (F : J ⥤ C) [HasColimit F]
     [∀ (i j : J) (f : i ⟶ j), IsIso (F.map f)] : IsIso (colimit.ι F j) :=
   ⟨⟨colimit.desc _ (coconeOfDiagramInitial I F), by
     refine ⟨?_, by ext; simp⟩
-    dsimp; simp only [colimit.ι_desc, coconeOfDiagramInitial_pt, coconeOfDiagramInitial_ι_app,
-      Functor.const_obj_obj, IsInitial.to_self, Functor.map_id]
-    dsimp [inv]; simp only [Category.id_comp, Category.comp_id, and_self]
-    apply @Classical.choose_spec _ (fun x => x = 𝟙 F.obj j) _
+    simp only [colimit.ι_desc, coconeOfDiagramInitial_pt, coconeOfDiagramInitial_ι_app,
+      Functor.const_obj_obj, IsInitial.to_self]
+    grind
   ⟩⟩
 
 instance isIso_ι_initial [HasInitial J] (F : J ⥤ C) [∀ (i j : J) (f : i ⟶ j), IsIso (F.map f)] :

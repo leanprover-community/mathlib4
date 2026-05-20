@@ -30,30 +30,30 @@ If we further assume that `C` and `D` are abelian categories, then we have:
 
 - `Functor.preservesFiniteLimits_tfae`: the following are equivalent:
   1. for every short exact sequence `0 ⟶ A ⟶ B ⟶ C ⟶ 0`,
-    `0 ⟶ F(A) ⟶ F(B) ⟶ F(C) ⟶ 0` is exact.
+     `0 ⟶ F(A) ⟶ F(B) ⟶ F(C) ⟶ 0` is exact.
   2. for every exact sequence `A ⟶ B ⟶ C` where `A ⟶ B` is mono,
-    `F(A) ⟶ F(B) ⟶ F(C)` is exact and `F(A) ⟶ F(B)` is mono.
+     `F(A) ⟶ F(B) ⟶ F(C)` is exact and `F(A) ⟶ F(B)` is mono.
   3. `F` preserves kernels.
   4. `F` preserves finite limits.
 
 - `Functor.preservesFiniteColimits_tfae`: the following are equivalent:
   1. for every short exact sequence `0 ⟶ A ⟶ B ⟶ C ⟶ 0`,
-    `F(A) ⟶ F(B) ⟶ F(C) ⟶ 0` is exact.
+     `F(A) ⟶ F(B) ⟶ F(C) ⟶ 0` is exact.
   2. for every exact sequence `A ⟶ B ⟶ C` where `B ⟶ C` is epi,
-    `F(A) ⟶ F(B) ⟶ F(C)` is exact and `F(B) ⟶ F(C)` is epi.
+     `F(A) ⟶ F(B) ⟶ F(C)` is exact and `F(B) ⟶ F(C)` is epi.
   3. `F` preserves cokernels.
   4. `F` preserves finite colimits.
 
 - `Functor.exact_tfae`: the following are equivalent:
   1. for every short exact sequence `0 ⟶ A ⟶ B ⟶ C ⟶ 0`,
-    `0 ⟶ F(A) ⟶ F(B) ⟶ F(C) ⟶ 0` is exact.
+     `0 ⟶ F(A) ⟶ F(B) ⟶ F(C) ⟶ 0` is exact.
   2. for every exact sequence `A ⟶ B ⟶ C`, `F(A) ⟶ F(B) ⟶ F(C)` is exact.
   3. `F` preserves homology.
   4. `F` preserves both finite limits and finite colimits.
 
 -/
 
-@[expose] public section
+public section
 
 namespace CategoryTheory
 
@@ -103,6 +103,7 @@ lemma preservesMonomorphisms_of_preserves_shortExact_left
     F.PreservesMonomorphisms where
   preserves f := h _ { exact := exact_cokernel f } |>.2
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 For an additive functor `F : C ⥤ D` between abelian categories, the following are equivalent:
 - `F` preserves short exact sequences on the left-hand side, i.e. if `0 ⟶ A ⟶ B ⟶ C ⟶ 0` is exact
@@ -147,6 +148,11 @@ lemma preservesFiniteLimits_tfae : List.TFAE
     (S.map F).exact_and_mono_f_iff_f_is_kernel |>.2 ⟨KernelFork.mapIsLimit _ hS.fIsKernel F⟩
   tfae_finish
 
+lemma preservesFiniteLimits_iff_forall_exact_map_and_mono :
+    PreservesFiniteLimits F ↔
+      ∀ (S : ShortComplex C), S.ShortExact → (S.map F).Exact ∧ Mono (F.map S.f) :=
+  (Functor.preservesFiniteLimits_tfae F).out 3 0
+
 /--
 If a functor `F : C ⥤ D` preserves exact sequences on the right-hand side (i.e.
 if `0 ⟶ A ⟶ B ⟶ C ⟶ 0` is exact then `F(A) ⟶ F(B) ⟶ F(C) ⟶ 0` is exact),
@@ -157,6 +163,7 @@ lemma preservesEpimorphisms_of_preserves_shortExact_right
     F.PreservesEpimorphisms where
   preserves f := h _ { exact := exact_kernel f } |>.2
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 For an additive functor `F : C ⥤ D` between abelian categories, the following are equivalent:
 - `F` preserves short exact sequences on the right-hand side, i.e. if `0 ⟶ A ⟶ B ⟶ C ⟶ 0` is
@@ -201,6 +208,7 @@ lemma preservesFiniteColimits_tfae : List.TFAE
     ⟨CokernelCofork.mapIsColimit _ hS.gIsCokernel F⟩
   tfae_finish
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 For an additive functor `F : C ⥤ D` between abelian categories, the following are equivalent:
 - `F` preserves short exact sequences, i.e. if `0 ⟶ A ⟶ B ⟶ C ⟶ 0` is exact then
@@ -238,6 +246,11 @@ lemma exact_tfae : List.TFAE
   tfae_have 4 → 2
   | ⟨h1, h2⟩, _, h => h.map F
   tfae_finish
+
+lemma preservesFiniteColimits_iff_forall_exact_map_and_epi :
+    PreservesFiniteColimits F ↔
+      ∀ (S : ShortComplex C), S.ShortExact → (S.map F).Exact ∧ Epi (F.map S.g) :=
+  (Functor.preservesFiniteColimits_tfae F).out 3 0
 
 end
 

@@ -5,8 +5,8 @@ Authors: Kevin Buzzard
 -/
 module
 
-public meta import Batteries.Tactic.Init
-public meta import Mathlib.Tactic.Push
+public import Batteries.Tactic.Init
+public import Mathlib.Tactic.Push
 
 /-!
 # The `by_contra` tactic
@@ -23,7 +23,7 @@ open Lean Parser.Tactic
 If the target of the main goal is a proposition `p`,
 `by_contra!` reduces the goal to proving `False` using the additional hypothesis `this : ¬ p`.
 `by_contra! h` can be used to name the hypothesis `h : ¬ p`.
-The hypothesis `¬ p` will be normalized using `push_neg`.
+The hypothesis `¬ p` will be normalized using `push Not`.
 For instance, `¬ a < b` will be changed to `b ≤ a`.
 `by_contra!` can be used with `rcases` patterns.
 For instance, `by_contra! rfl` on `⊢ s.Nonempty` will substitute the equality `s = ∅`,
@@ -50,11 +50,11 @@ syntax (name := byContra!)
 
 local elab "try_push_neg_at" cfg:optConfig h:ident : tactic => do
   Push.push (← Push.elabPushConfig cfg) none (.const ``Not) (.targets #[h] false)
-    (failIfUnchanged := false)
+    (ifUnchanged := .silent)
 
 local elab "try_push_neg" cfg:optConfig : tactic => do
   Push.push (← Push.elabPushConfig cfg) none (.const ``Not) (.targets #[] true)
-    (failIfUnchanged := false)
+    (ifUnchanged := .silent)
 
 macro_rules
 | `(tactic| by_contra! $cfg $[$pat?]? $[: $ty?]?) => do

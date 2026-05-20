@@ -21,7 +21,7 @@ public import Mathlib.RingTheory.OreLocalization.OreSet
 - `rank_quotient_add_rank_of_isDomain`: The **rank-nullity theorem** for commutative domains.
 -/
 
-@[expose] public section
+public section
 
 open Cardinal Module nonZeroDivisors
 
@@ -46,7 +46,7 @@ lemma IsLocalizedModule.lift_rank_eq :
   cases subsingleton_or_nontrivial R
   · simp only [rank_subsingleton, lift_one]
   apply le_antisymm <;>
-    rw [Module.rank_def, lift_iSup (bddAbove_range _)] <;>
+    rw [Module.rank_def, lift_iSup bddAbove_of_small] <;>
     apply ciSup_le' <;>
     intro ⟨s, hs⟩
   exacts [(IsLocalizedModule.linearIndependent_lift p f hs).choose_spec.cardinal_lift_le_rank,
@@ -150,6 +150,7 @@ variable {p} {T : Type uT} [CommRing T] [NoZeroDivisors T] [Algebra R T] [Faithf
   {g : M →ₗ[R] P} (bc : IsBaseChange T g)
 
 include bc
+
 theorem lift_rank_eq :
     Cardinal.lift.{uM} (Module.rank T P) = Cardinal.lift.{uP} (Module.rank R M) := by
   have inj := FaithfulSMul.algebraMap_injective R T
@@ -195,7 +196,7 @@ lemma aleph0_le_rank_of_isEmpty_oreSet (hS : IsEmpty (OreLocalization.OreSet R�
     ℵ₀ ≤ Module.rank R R := by
   classical
   rw [← not_nonempty_iff, OreLocalization.nonempty_oreSet_iff_of_noZeroDivisors] at hS
-  push_neg at hS
+  push Not at hS
   obtain ⟨r, s, h⟩ := hS
   refine Cardinal.aleph0_le.mpr fun n ↦ ?_
   suffices LinearIndependent R (fun (i : Fin n) ↦ r * s ^ (i : ℕ)) by
@@ -207,7 +208,7 @@ lemma aleph0_le_rank_of_isEmpty_oreSet (hS : IsEmpty (OreLocalization.OreSet R�
       (by simp [← Fin.sum_univ_eq_sum_range, ← hg]) i i.prop
   intro g x hg i hin
   induction n generalizing g x i with
-  | zero => exact (hin.not_ge (zero_le i)).elim
+  | zero => contradiction
   | succ n IH =>
     rw [Finset.sum_range_succ'] at hg
     by_cases hg0 : g 0 = 0

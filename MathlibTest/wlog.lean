@@ -3,6 +3,7 @@ Copyright (c) 2018 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Johan Commelin
 -/
+module
 import Mathlib.Tactic.WLOG
 import Mathlib.Algebra.Ring.Nat
 
@@ -149,6 +150,20 @@ example (x y : ℕ) : True := by
 example (x y : ℕ) : True := by
   let z := 0
   wlog! hxy' : z ≤ y with H
+  · trivial
+  · trivial
+
+-- Handle ldecls properly:
+example (x y : ℕ) : True := by
+  let z := 0
+  wlog hxy' : x ≤ y with H
+  · trivial
+  · trivial
+
+-- Handle ldecls properly:
+example (x y : ℕ) : True := by
+  let z := 0
+  wlog! hxy' : x ≤ y with H
   · trivial
   · trivial
 

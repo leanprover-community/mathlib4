@@ -29,13 +29,13 @@ universe v u w v'
 namespace Quiver
 
 /-- A type synonym for the symmetrized quiver (with an arrow both ways for each original arrow).
-    NB: this does not work for `Prop`-valued quivers. It requires `[Quiver.{v+1} V]`. -/
+-/
 def Symmetrify (V : Type*) := V
 
 instance symmetrifyQuiver (V : Type u) [Quiver V] : Quiver (Symmetrify V) :=
   ⟨fun a b : V ↦ (a ⟶ b) ⊕ (b ⟶ a)⟩
 
-variable (U V W : Type*) [Quiver.{u + 1} U] [Quiver.{v + 1} V] [Quiver.{w + 1} W]
+variable (U V W : Type*) [Quiver.{u} U] [Quiver.{v} V] [Quiver.{w} W]
 
 /-- A quiver `HasReverse` if we can reverse an arrow `p` from `a` to `b` to get an arrow
     `p.reverse` from `b` to `a`. -/
@@ -44,7 +44,7 @@ class HasReverse where
   reverse' : ∀ {a b : V}, (a ⟶ b) → (b ⟶ a)
 
 /-- Reverse the direction of an arrow. -/
-def reverse {V} [Quiver.{v + 1} V] [HasReverse V] {a b : V} : (a ⟶ b) → (b ⟶ a) :=
+def reverse {V} [Quiver.{v} V] [HasReverse V] {a b : V} : (a ⟶ b) → (b ⟶ a) :=
   HasReverse.reverse'
 
 /-- A quiver `HasInvolutiveReverse` if reversing twice is the identity. -/
@@ -85,6 +85,7 @@ theorem _root_.Prefunctor.map_reverse (φ : U ⥤q V) [φ.MapReverse]
     {u v : U} (e : u ⟶ v) : φ.map (reverse e) = reverse (φ.map e) :=
   Prefunctor.MapReverse.map_reverse' e
 
+set_option backward.isDefEq.respectTransparency false in
 instance _root_.Prefunctor.mapReverseComp
     (φ : U ⥤q V) (ψ : V ⥤q W) [φ.MapReverse] [ψ.MapReverse] :
     (φ ⋙q ψ).MapReverse where
@@ -157,7 +158,7 @@ def of : Prefunctor V (Symmetrify V) where
   obj := id
   map := Sum.inl
 
-variable {V' : Type*} [Quiver.{v' + 1} V']
+variable {V' : Type*} [Quiver.{v'} V']
 
 /-- Given a quiver `V'` with reversible arrows, a prefunctor to `V'` can be lifted to one from
     `Symmetrify V` to `V'` -/
@@ -230,6 +231,7 @@ theorem of_reverse [HasInvolutiveReverse V] (X Y : V) (f : X ⟶ Y) :
     (reverse <| (Push.of σ).map f) = (Push.of σ).map (reverse f) :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 instance ofMapReverse [h : HasInvolutiveReverse V] : (Push.of σ).MapReverse :=
   ⟨by simp [of_reverse]⟩
 

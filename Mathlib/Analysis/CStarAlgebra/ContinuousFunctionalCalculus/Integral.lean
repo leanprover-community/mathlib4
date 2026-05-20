@@ -39,7 +39,7 @@ with the API developed in `Mathlib.MeasureTheory.SpecificCodomains.ContinuousMap
 + Use this to prove operator monotonicity and concavity/convexity of `rpow` and `log`
 -/
 
-@[expose] public section
+public section
 
 open MeasureTheory Topology
 open scoped ContinuousMapZero

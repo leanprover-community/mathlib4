@@ -12,7 +12,7 @@ public import Mathlib.Analysis.Normed.Ring.Lemmas
 /-! # Multiplying two infinite sums in a normed ring
 
 In this file, we prove various results about `(∑' x : ι, f x) * (∑' y : ι', g y)` in a normed
-ring. There are similar results proven in `Mathlib/Topology/Algebra/InfiniteSum.lean` (e.g.
+ring. There are similar results proven in `Mathlib/Topology/Algebra/InfiniteSum/Ring.lean` (e.g.
 `tsum_mul_tsum`), but in a normed ring we get summability results which aren't true in general.
 
 We first establish results about arbitrary index types, `ι` and `ι'`, and then we specialize to
@@ -20,7 +20,7 @@ We first establish results about arbitrary index types, `ι` and `ι'`, and then
 (see `tsum_mul_tsum_eq_tsum_sum_antidiagonal_of_summable_norm`).
 -/
 
-@[expose] public section
+public section
 
 
 variable {R : Type*} {ι : Type*} {ι' : Type*} [NormedRing R]
@@ -54,7 +54,7 @@ theorem summable_mul_of_summable_norm' {f : ι → R} {g : ι' → R}
   classical
   suffices HasSum (fun x : ι × ι' => f x.1 * g x.2) ((∑' i, f i) * (∑' j, g j)) from this.summable
   let s : Finset ι × Finset ι' → Finset (ι × ι') := fun p ↦ p.1 ×ˢ p.2
-  apply hasSum_of_subseq_of_summable (hf.mul_norm hg) tendsto_finset_prod_atTop
+  apply hasSum_of_subseq_of_summable (hf.mul_norm hg) tendsto_finsetProd_atTop
   rw [← prod_atTop_atTop_eq]
   have := Tendsto.prodMap h'f.hasSum h'g.hasSum
   rw [← nhds_prod_eq] at this

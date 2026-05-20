@@ -26,7 +26,7 @@ Prove the corresponding results for oriented angles.
 arc-length, arc-distance
 -/
 
-@[expose] public section
+public section
 
 open InnerProductGeometry Set
 open scoped Real

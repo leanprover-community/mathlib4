@@ -7,11 +7,11 @@ module
 
 public import Mathlib.Algebra.Algebra.Subalgebra.Directed
 public import Mathlib.Algebra.Algebra.Subalgebra.IsSimpleOrder
-public import Mathlib.FieldTheory.Separable
+public import Mathlib.FieldTheory.Fixed
 public import Mathlib.FieldTheory.SplittingField.IsSplittingField
-public import Mathlib.LinearAlgebra.Dual.Lemmas
 public import Mathlib.RingTheory.Adjoin.Dimension
 public import Mathlib.RingTheory.TensorProduct.Finite
+
 
 /-!
 # Adjoining Elements to Fields
@@ -62,6 +62,12 @@ theorem mem_adjoin_simple_iff {α : E} (x : E) :
     x ∈ adjoin F {α} ↔ ∃ r s : F[X], x = aeval α r / aeval α s := by
   simp only [mem_adjoin_iff_div, Algebra.adjoin_singleton_eq_range_aeval,
     AlgHom.mem_range, exists_exists_eq_and]
+
+theorem forall_mem_adjoin_smul_eq_self_iff {M : Type*} [Monoid M] [MulSemiringAction M E]
+    [SMulCommClass M F E] (m : M) :
+    (∀ x ∈ adjoin F S, m • x = x) ↔ ∀ x ∈ S, m • x = x := by
+  simpa [-adjoin_le_iff, Set.subset_def, SetLike.le_def, FixedBy.intermediateField_mem_iff] using
+    adjoin_le_iff (T := FixedBy.intermediateField F E m)
 
 variable {F}
 
@@ -281,13 +287,15 @@ protected theorem finrank_bot : finrank F (⊥ : IntermediateField F E) = 1 := b
 @[simp] theorem rank_bot' : Module.rank (⊥ : IntermediateField F E) E = Module.rank F E := by
   rw [← rank_mul_rank F (⊥ : IntermediateField F E) E, IntermediateField.rank_bot, one_mul]
 
-@[simp] theorem finrank_bot' : finrank (⊥ : IntermediateField F E) E = finrank F E :=
+@[simp, nolint simpNF] -- `simpNF` hits a (deterministic) timeout at `typeclass`
+theorem finrank_bot' : finrank (⊥ : IntermediateField F E) E = finrank F E :=
   congr(Cardinal.toNat $(rank_bot'))
 
 @[simp] protected theorem rank_top : Module.rank (⊤ : IntermediateField F E) E = 1 :=
   Subalgebra.bot_eq_top_iff_rank_eq_one.mp <| top_le_iff.mp fun x _ ↦ ⟨⟨x, trivial⟩, rfl⟩
 
-@[simp] protected theorem finrank_top : finrank (⊤ : IntermediateField F E) E = 1 :=
+@[simp, nolint simpNF] -- `simpNF` hits a (deterministic) timeout at `typeclass`
+protected theorem finrank_top : finrank (⊤ : IntermediateField F E) E = 1 :=
   rank_eq_one_iff_finrank_eq_one.mp IntermediateField.rank_top
 
 @[simp] theorem rank_top' : Module.rank F (⊤ : IntermediateField F E) = Module.rank F E :=
@@ -435,6 +443,7 @@ noncomputable def powerBasisAux {x : L} (hx : IsIntegral K x) :
     |>.map (adjoinRootEquivAdjoin K hx).toLinearEquiv
     |>.reindex (finCongr rfl)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The power basis `1, x, ..., x ^ (d - 1)` for `K⟮x⟯`,
 where `d` is the degree of the minimal polynomial of `x`. -/
 @[simps]
@@ -522,15 +531,6 @@ theorem exists_lt_finrank_of_infinite_dimensional
     have h2 : F⟮x⟯ ≤ L' := le_sup_right
     exact hx <| (h1.symm ▸ h2) <| mem_adjoin_simple_self F x
 
-theorem _root_.minpoly.natDegree_le (x : L) [FiniteDimensional K L] :
-    (minpoly K x).natDegree ≤ finrank K L :=
-  le_of_eq_of_le (IntermediateField.adjoin.finrank (.of_finite _ _)).symm
-    K⟮x⟯.toSubmodule.finrank_le
-
-theorem _root_.minpoly.degree_le (x : L) [FiniteDimensional K L] :
-    (minpoly K x).degree ≤ finrank K L :=
-  degree_le_of_natDegree_le (minpoly.natDegree_le x)
-
 /-- If `x : L` is an integral element in a field extension `L` over `K`, then the degree of the
   minimal polynomial of `x` over `K` divides `[L : K]`. -/
 theorem _root_.minpoly.degree_dvd {x : L} (hx : IsIntegral K x) :
@@ -538,6 +538,20 @@ theorem _root_.minpoly.degree_dvd {x : L} (hx : IsIntegral K x) :
   rw [dvd_iff_exists_eq_mul_left, ← IntermediateField.adjoin.finrank hx]
   use finrank K⟮x⟯ L
   rw [mul_comm, finrank_mul_finrank]
+
+theorem _root_.Polynomial.Irreducible.natDegree_dvd_finrank {f : K[X]} (hi : Irreducible f)
+    (hs : (f.map (algebraMap K L)).Splits) : f.natDegree ∣ finrank K L := by
+  have := hi.degree_pos.ne'
+  rw [← f.degree_map (algebraMap K L)] at this
+  obtain ⟨x, hx⟩ := hs.exists_eval_eq_zero this
+  rw [eval_map_algebraMap] at hx
+  have key := minpoly.Irreducible.eq_minpoly hi hx
+  replace hi := hi.ne_zero
+  rw [key, natDegree_C_mul (leadingCoeff_ne_zero.mpr hi)]
+  apply minpoly.degree_dvd
+  rw [← minpoly.ne_zero_iff]
+  contrapose hi
+  rwa [hi, mul_zero] at key
 
 -- TODO: generalize to `Sort`
 /-- A compositum of algebraic extensions is algebraic -/
@@ -583,6 +597,7 @@ lemma algHomAdjoinIntegralEquiv_symm_apply_gen (h : IsIntegral F α)
     rw [adjoin.powerBasis_gen, minpoly_gen]; exact (mem_aroots.mp x.2).2
 
 /-- Fintype of algebra homomorphism `F⟮α⟯ →ₐ[F] K` -/
+@[implicit_reducible]
 noncomputable def fintypeOfAlgHomAdjoinIntegral (h : IsIntegral F α) : Fintype (F⟮α⟯ →ₐ[F] K) :=
   PowerBasis.AlgHom.fintype (adjoin.powerBasis h)
 

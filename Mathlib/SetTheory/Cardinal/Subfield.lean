@@ -21,7 +21,7 @@ explicit universal objects.
 
 -/
 
-@[expose] public section
+public section
 
 universe u
 

@@ -19,7 +19,7 @@ This used to be the only lemma in `Mathlib/Analysis/Calculus/Inverse`
 depending on `FiniteDimensional`, so it was moved to a new file when the original file got split.
 -/
 
-@[expose] public section
+public section
 
 open Set
 open scoped NNReal

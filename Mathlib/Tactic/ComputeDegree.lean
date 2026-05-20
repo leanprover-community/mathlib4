@@ -5,7 +5,7 @@ Authors: Damiano Testa
 -/
 module
 
-public meta import Mathlib.Algebra.Polynomial.Degree.Lemmas
+public import Mathlib.Algebra.Polynomial.Degree.Lemmas
 
 /-!
 
@@ -19,6 +19,7 @@ Using `compute_degree` when the goal is of one of the seven forms
 *  `natDegree f = d`,
 *  `degree f = d`,
 *  `coeff f d = r`, if `d` is the degree of `f`,
+
 tries to solve the goal.
 It may leave side-goals, in case it is not entirely successful.
 
@@ -53,6 +54,7 @@ Assume that `f : R[X]` is a polynomial with coefficients in a semiring `R` and
 If the goal has the form `natDegree f < d`, then we convert it to two separate goals:
 * `natDegree f ≤ ?_`, on which we apply the following steps;
 * `?_ < d`;
+
 where `?_` is a metavariable that `compute_degree` computes in its process.
 We proceed similarly for `degree f < d`.
 
@@ -464,7 +466,7 @@ syntax (name := computeDegree) "compute_degree" "!"? : tactic
 
 initialize registerTraceClass `Tactic.compute_degree
 
-@[inherit_doc computeDegree]
+@[tactic_alt computeDegree]
 macro "compute_degree!" : tactic => `(tactic| compute_degree !)
 
 elab_rules : tactic | `(tactic| compute_degree $[!%$bang]?) => focus <| withMainContext do
@@ -517,7 +519,7 @@ The variant `monicity!` starts like `monicity`, but calls `compute_degree!` on t
 macro (name := monicityMacro) "monicity" : tactic =>
   `(tactic| (apply monic_of_natDegree_le_of_coeff_eq_one <;> compute_degree))
 
-@[inherit_doc monicityMacro]
+@[tactic_alt monicityMacro]
 macro "monicity!" : tactic =>
   `(tactic| (apply monic_of_natDegree_le_of_coeff_eq_one <;> compute_degree!))
 

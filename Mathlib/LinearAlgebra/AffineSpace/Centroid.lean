@@ -102,8 +102,7 @@ theorem centroid_pair [DecidableEq ι] [Invertible (2 : k)] (p : ι → P) (i₁
   · simp [h]
   · have hc : (#{i₁, i₂} : k) ≠ 0 := by
       rw [card_insert_of_notMem (notMem_singleton.2 h), card_singleton]
-      norm_num
-      exact Invertible.ne_zero _
+      simpa using Invertible.ne_zero _
     rw [centroid_def,
       affineCombination_eq_weightedVSubOfPoint_vadd_of_sum_eq_one _ _ _
         (sum_centroidWeights_eq_one_of_cast_card_ne_zero _ hc) (p i₁)]
@@ -208,6 +207,15 @@ theorem centroid_eq_of_inj_on_of_image_eq {p : ι → P}
     s.centroid k p = s₂.centroid k p₂ := by
   classical rw [s.centroid_eq_centroid_image_of_inj_on k hi rfl,
       s₂.centroid_eq_centroid_image_of_inj_on k hi₂ he]
+
+/-- The centroid commutes with translation by a constant point.
+Subtracting a fixed point `p₀` from the centroid is the same as taking the centroid of
+the family translated by `-ᵥ p₀` -/
+theorem centroid_vsub_const [CharZero k] {p : ι → P} {p₀ : P} (hs : s.Nonempty) :
+    Finset.centroid k s p -ᵥ p₀ = Finset.centroid k s (fun i => p i -ᵥ p₀) := by
+  have h := s.sum_centroidWeights_eq_one_of_nonempty k hs
+  simp only [centroid_def]
+  grind [sum_smul_vsub_const_eq_affineCombination_vsub, affineCombination_eq_linear_combination]
 
 end Finset
 

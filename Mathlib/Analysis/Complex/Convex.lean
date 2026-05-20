@@ -17,7 +17,7 @@ imaginary part are all convex over ℝ. We also prove some results on star-conve
 slit plane.
 -/
 
-@[expose] public section
+public section
 
 open Set
 open scoped ComplexOrder

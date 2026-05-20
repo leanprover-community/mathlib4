@@ -92,7 +92,7 @@ theorem binomialSeries_radius_ge_one {𝕂 : Type*} [RCLike 𝕂] {𝔸 : Type*}
     1 ≤ (binomialSeries 𝔸 a).radius := by
   by_cases ha : ∀ (k : ℕ), a ≠ k
   · rw [binomialSeries_radius_eq_one ha]
-  · push_neg at ha
+  · push Not at ha
     rcases ha with ⟨k, rfl⟩
     simp [binomialSeries_radius_eq_top_of_nat]
 
@@ -108,7 +108,7 @@ theorem one_add_cpow_hasFPowerSeriesOnBall_zero {a : ℂ} :
       apply AnalyticOn.cpow (analyticOn_const.add analyticOn_id) analyticOn_const
       intro z hz
       apply Complex.mem_slitPlane_of_norm_lt_one
-      rw [← ENNReal.ofReal_one, Metric.emetric_ball] at hz
+      rw [← ENNReal.ofReal_one, Metric.eball_ofReal] at hz
       simpa using hz
     · rw [← this]
       exact binomialSeries_radius_ge_one
@@ -139,7 +139,7 @@ theorem one_add_cpow_hasFPowerSeriesOnBall_zero {a : ℂ} :
     intro z hz
     simp only [Nat.cast_add, Nat.cast_one, B, derivWithin_of_isOpen Metric.isOpen_ball hz,
       deriv_const_mul_field']
-    rw [_root_.deriv_cpow_const (by fun_prop), deriv_const_add', deriv_id'', mul_one,
+    rw [_root_.deriv_cpow_const (by fun_prop), deriv_const_add_id, mul_one,
       show a - (n + 1) = a - n - 1 by ring, ← mul_assoc]
     · congr
       simp [descPochhammer_succ_right, Polynomial.smeval_mul, Polynomial.smeval_natCast]
@@ -162,7 +162,7 @@ theorem one_div_one_sub_cpow_hasFPowerSeriesOnBall_zero (a : ℂ) :
   have H : ((binomialSeries ℂ (-a)).compContinuousLinearMap (-1)) =
       .ofScalars ℂ fun n ↦ Ring.choose (a + n - 1) n := by
     ext n; simp [FormalMultilinearSeries.compContinuousLinearMap, binomialSeries, Ring.choose_neg,
-      Units.smul_def, Int.coe_negOnePow_natCast, ← pow_add, ← mul_assoc]
+      Units.smul_def, ← pow_add, ← mul_assoc]
   have : HasFPowerSeriesOnBall (fun x ↦ (1 + x) ^ (-a)) (binomialSeries ℂ (-a : ℂ)) (-0) 1 := by
     simpa using one_add_cpow_hasFPowerSeriesOnBall_zero
   simpa [cpow_neg, Function.comp_def, ← sub_eq_add_neg, H] using
@@ -220,14 +220,14 @@ theorem hasFPowerSeriesOnBall_ofScalars_mul_add_zero (a b : ℂ) :
 
 lemma one_div_sub_sq_sub_one_div_sq_hasFPowerSeriesOnBall_zero (w x : ℂ) (hw : w ≠ x) :
     HasFPowerSeriesOnBall (fun z ↦ 1 / (z - w) ^ 2 - 1 / w ^ 2) (.ofScalars ℂ
-      fun i ↦ (i + 1) * (w - x) ^ (- ↑(i + 2) : ℤ) - i.casesOn (w ^ (-2 : ℤ)) 0) x ‖w - x‖ₑ := by
+      fun i ↦ (i + 1) * (w - x) ^ (-↑(i + 2) : ℤ) - i.casesOn (w ^ (-2 : ℤ)) 0) x ‖w - x‖ₑ := by
   rw [← Pi.sub_def, ← Pi.sub_def, FormalMultilinearSeries.ofScalars_sub]
   refine .sub ?_ ?_
   · simpa only [sub_sub_sub_cancel_right, zero_add, sub_sq_comm w, zpow_neg, zpow_natCast, mul_comm]
       using (one_div_sub_sq_hasFPowerSeriesOnBall_zero
         (z := w - x) (by simp [sub_eq_zero, hw])).comp_sub x
   · convert hasFPowerSeriesOnBall_const.mono _ le_top
-    · ext (_|_) <;> simp [zpow_ofNat]
+    · ext (_ | _) <;> simp [zpow_ofNat]
     · simpa [sub_eq_zero]
 
 end Complex
@@ -307,12 +307,15 @@ theorem one_div_one_sub_sq_hasFPowerSeriesOnBall_zero :
   simpa using one_div_sub_sq_hasFPowerSeriesOnBall_zero (r := 1)
 
 /-- `∑ (ai + b) zⁱ = (b - a) / (1 - z) + a / (1 - z)²` -/
-theorem hasFPowerSeriesOnBall_linear_zero (a b : ℝ) :
+theorem hasFPowerSeriesOnBall_ofScalars_mul_add_zero (a b : ℝ) :
     HasFPowerSeriesOnBall (fun x ↦ (b - a) / (1 - x) + a / (1 - x) ^ 2)
       (.ofScalars ℝ (a * · + b)) 0 1 := by
   convert (one_div_one_sub_hasFPowerSeriesOnBall_zero.const_smul (c := b - a)).add
     (one_div_one_sub_sq_hasFPowerSeriesOnBall_zero.const_smul (c := a)) using 2
   · simp [div_eq_mul_inv]
   · ext; simp; ring
+
+@[deprecated (since := "2025-12-28")]
+alias hasFPowerSeriesOnBall_linear_zero := hasFPowerSeriesOnBall_ofScalars_mul_add_zero
 
 end Real

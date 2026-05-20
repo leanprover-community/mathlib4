@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2022 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kyle Miller, Vincent Beffara, Rida Hamadani
+Authors: Kyle Miller, Vincent Beffara, Rida Hamadani, Nelson Spence
 -/
 module
 
@@ -13,12 +13,14 @@ public import Mathlib.Data.ENat.Lattice
 
 This module defines the `SimpleGraph.edist` function, which takes pairs of vertices to the length of
 the shortest walk between them, or `⊤` if they are disconnected. It also defines `SimpleGraph.dist`
-which is the `ℕ`-valued version of `SimpleGraph.edist`.
+which is the `ℕ`-valued version of `SimpleGraph.edist`, and `SimpleGraph.ball` which is the open
+ball in the graph extended metric.
 
 ## Main definitions
 
 - `SimpleGraph.edist` is the graph extended metric.
 - `SimpleGraph.dist` is the graph metric.
+- `SimpleGraph.ball` is the open ball of a given radius around a vertex.
 
 ## TODO
 
@@ -30,7 +32,7 @@ which is the `ℕ`-valued version of `SimpleGraph.edist`.
 
 ## Tags
 
-graph metric, distance
+graph metric, distance, ball
 
 -/
 
@@ -133,6 +135,44 @@ theorem edist_eq_one_iff_adj : G.edist u v = 1 ↔ G.Adj u v := by
   · obtain ⟨w, hw⟩ := exists_walk_of_edist_ne_top <| by rw [h]; simp
     exact w.adj_of_length_eq_one <| Nat.cast_eq_one.mp <| h ▸ hw
   · exact le_antisymm (edist_le h.toWalk) (Order.one_le_iff_pos.mpr <| edist_pos_of_ne h.ne)
+
+lemma edist_le_one_iff_adj_or_eq : G.edist u v ≤ 1 ↔ G.Adj u v ∨ u = v := by
+  by_cases huv : u = v
+  · simp [huv]
+  · simp only [huv, or_false]
+    have h : 0 < G.edist u v := edist_pos_of_ne huv
+    rw [(Order.one_le_iff_pos.mpr h).ge_iff_eq']
+    exact edist_eq_one_iff_adj
+
+lemma edist_eq_two_iff {u v : V} :
+    G.edist u v = 2 ↔ u ≠ v ∧ ¬ G.Adj u v ∧ (G.commonNeighbors u v).Nonempty := by
+  refine ⟨fun h ↦ ⟨?_, ?_, ?_⟩, fun h ↦ le_antisymm ?_ ?_⟩
+  · simp +decide [← G.edist_eq_zero_iff.not (b := u = v), h]
+  · simp +decide [← edist_eq_one_iff_adj, h]
+  · obtain ⟨w, hw⟩ := exists_walk_of_edist_eq_coe h
+    use w.getVert 1
+    suffices w.getVert 1 ∈ G.commonNeighbors (w.getVert 0) (w.getVert w.length) by simpa
+    refine hw ▸ G.mem_commonNeighbors.mp ?_
+    exact ⟨w.adj_getVert_succ (by simp [hw]), (w.adj_getVert_succ (by simp [hw])).symm⟩
+  · obtain ⟨w, hw⟩ := h.2.2
+    rw [mem_commonNeighbors] at hw
+    have := (Walk.cons hw.1 <| .cons hw.2.symm .nil).edist_le
+    simp_all
+  · by_contra! hc
+    cases ENat.le_one_iff_eq_zero_or_eq_one.mp (Order.le_of_lt_succ hc) <;> simp_all
+
+lemma two_lt_edist_iff {u v : V} :
+    2 < G.edist u v ↔ u ≠ v ∧ ¬ G.Adj u v ∧ (G.commonNeighbors u v) = ∅ := by
+  refine ⟨fun h ↦ ?_, fun h ↦ lt_of_le_of_ne ?_ (Ne.symm ?_)⟩
+  · have hn : u ≠ v := fun hc ↦ by simp [hc] at h
+    have : ¬ G.Adj u v := fun hc ↦ by simp +decide [edist_eq_one_iff_adj.mpr hc] at h
+    use hn, this
+    by_contra! hc
+    simp [edist_eq_two_iff.mpr ⟨hn, this, hc⟩] at h
+  · rw [← one_add_one_eq_two]
+    refine Order.add_one_le_of_lt <| lt_of_le_of_ne ?_ ?_
+    <;> grind [Order.one_le_iff_pos, pos_iff_ne_zero, edist_eq_zero_iff, edist_eq_one_iff_adj]
+  · simp_all [edist_eq_two_iff]
 
 lemma edist_bot_of_ne (h : u ≠ v) : (⊥ : SimpleGraph V).edist u v = ⊤ := by
   rwa [ne_eq, ← reachable_bot.not, ← edist_ne_top_iff_reachable.not, not_not] at h
@@ -280,6 +320,11 @@ theorem Adj.diff_dist_adj (hadj : G.Adj v w) :
   have : G.dist u v ≤ G.dist u w + G.dist w v := huw.dist_triangle_left v
   lia
 
+@[deprecated Adj.diff_dist_adj (since := "2025-12-11"), nolint unusedArguments]
+theorem Connected.diff_dist_adj (_ : G.Connected) (hadj : G.Adj v w) :
+    G.dist u w = G.dist u v ∨ G.dist u w = G.dist u v + 1 ∨ G.dist u w = G.dist u v - 1 := by
+  apply Adj.diff_dist_adj hadj
+
 theorem Walk.isPath_of_length_eq_dist (p : G.Walk u v) (hp : p.length = G.dist u v) :
     p.IsPath := by
   classical
@@ -353,5 +398,58 @@ lemma Walk.exists_adj_adj_not_adj_ne {p : G.Walk v w} (hp : p.length = G.dist v 
   exact ⟨p.adj_snd hnp, p.adj_getVert_succ (hp ▸ hl), hadj, hv⟩
 
 end dist
+
+/-! ## Ball -/
+
+section ball
+
+/-- The open ball of radius `r` centered at the vertex `c` in the graph extended metric. -/
+def ball (c : V) (r : ℕ∞) : Set V :=
+  {v | G.edist v c < r}
+
+variable {G} {c v : V} {r r₁ r₂ : ℕ∞}
+
+@[simp]
+theorem mem_ball : v ∈ G.ball c r ↔ G.edist v c < r := .rfl
+
+/-- The ball of radius zero is empty. -/
+@[simp]
+theorem ball_zero : G.ball c 0 = ∅ := by simp [ball]
+
+/-- The ball of radius one consists of just the center. -/
+@[simp]
+theorem ball_one : G.ball c 1 = {c} := by
+  simp [ball, ENat.lt_one_iff_eq_zero]
+
+/-- The ball of radius two consists of the center and its neighbors. -/
+@[simp]
+theorem ball_two : G.ball c 2 = insert c (G.neighborSet c) := by
+  ext v
+  simp [one_add_one_eq_two.symm, ENat.lt_add_one_iff ENat.one_ne_top,
+    edist_le_one_iff_adj_or_eq, adj_comm, or_comm]
+
+/-- The ball of radius `⊤` is the connected component of the center. -/
+theorem ball_top :
+    G.ball c ⊤ = (G.connectedComponentMk c).supp := by
+  simp [Set.ext_iff, lt_top_iff_ne_top, edist_ne_top_iff_reachable]
+
+/-- A vertex is in the ball of radius `⊤` iff it is reachable from the center. -/
+theorem mem_ball_top : v ∈ G.ball c ⊤ ↔ G.Reachable v c := by
+  simp [lt_top_iff_ne_top, edist_ne_top_iff_reachable]
+
+/-- Balls are monotone in the radius. -/
+@[gcongr]
+theorem ball_mono (h : r₁ ≤ r₂) : G.ball c r₁ ⊆ G.ball c r₂ :=
+  fun _ hv ↦ lt_of_lt_of_le hv h
+
+/-- The center vertex belongs to any ball of positive radius. -/
+theorem mem_ball_self (hr : 0 < r) : c ∈ G.ball c r := by
+  simp [ball, hr]
+
+/-- Ball membership is symmetric in center and point. -/
+theorem mem_ball_comm : v ∈ G.ball c r ↔ c ∈ G.ball v r := by
+  simp [ball, edist_comm]
+
+end ball
 
 end SimpleGraph

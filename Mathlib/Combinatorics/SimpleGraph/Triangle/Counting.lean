@@ -20,7 +20,7 @@ In this file, we prove the triangle counting lemma.
 [Yaël Dillies, Bhavik Mehta, *Formalising Szemerédi’s Regularity Lemma in Lean*][srl_itp]
 -/
 
-@[expose] public section
+public section
 
 -- TODO: This instance is bad because it creates data out of a Prop
 attribute [-instance] decidableEq_of_subsingleton

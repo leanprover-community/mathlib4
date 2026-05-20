@@ -25,7 +25,7 @@ In addition, this file gives characterizations of monotone and strictly monotone
 out of `Finset α` in terms of `Finset.insert`
 -/
 
-@[expose] public section
+public section
 
 
 variable {α β : Type*}

@@ -124,6 +124,21 @@ instance CompatibleSMul.pi (R S M N ι : Type*) [Semiring S]
     [LinearMap.CompatibleSMul M N R S] : LinearMap.CompatibleSMul M (ι → N) R S where
   map_smul f r m := by ext i; apply ((LinearMap.proj i).comp f).map_smul_of_tower
 
+/-- Construct a linear map between two (dependent) function spaces
+by applying index-dependent linear maps to the coordinates.
+A bundled version of `Pi.map`.
+
+If the index type is finite, then this map can be seen as a “block diagonal” map
+between indexed products of modules. -/
+def piMap {ψ : ι → Type*} [∀ i, AddCommMonoid (ψ i)] [∀ i, Module R (ψ i)]
+    (f : ∀ i, φ i →ₗ[R] ψ i) : (∀ i, φ i) →ₗ[R] (∀ i, ψ i) :=
+  .pi fun i ↦ f i ∘ₗ proj i
+
+@[simp]
+theorem coe_piMap {ψ : ι → Type*} [∀ i, AddCommMonoid (ψ i)] [∀ i, Module R (ψ i)]
+    (f : ∀ i, φ i →ₗ[R] ψ i) : ⇑(piMap f) = Pi.map fun i ↦ f i :=
+  rfl
+
 /-- Linear map between the function spaces `I → M₂` and `I → M₃`, induced by a linear map `f`
 between `M₂` and `M₃`. -/
 @[simps]
@@ -354,8 +369,8 @@ variable [Semiring R] {φ : ι → Type*} [(i : ι) → AddCommMonoid (φ i)] [(
 open LinearMap
 
 /-- A version of `Set.pi` for submodules. Given an index set `I` and a family of submodules
-`p : (i : ι) → Submodule R (φ i)`, `pi I s` is the submodule of dependent functions
-`f : (i : ι) → φ i` such that `f i` belongs to `p a` whenever `i ∈ I`. -/
+`p : (i : ι) → Submodule R (φ i)`, `pi I p` is the submodule of dependent functions
+`f : (i : ι) → φ i` such that `f i` belongs to `p i` whenever `i ∈ I`. -/
 @[simps]
 def pi (I : Set ι) (p : (i : ι) → Submodule R (φ i)) : Submodule R ((i : ι) → φ i) where
   carrier := Set.pi I fun i => p i
@@ -578,10 +593,9 @@ theorem sumArrowLequivProdArrow_symm_apply_inr {α β} (f : α → M) (g : β �
 /-- If `ι` has a unique element, then `ι → M` is linearly equivalent to `M`. -/
 @[simps +simpRhs -fullyApplied symm_apply]
 def funUnique (ι R M : Type*) [Unique ι] [Semiring R] [AddCommMonoid M] [Module R M] :
-    (ι → M) ≃ₗ[R] M :=
-  { Equiv.funUnique ι M with
-    map_add' := fun _ _ => rfl
-    map_smul' := fun _ _ => rfl }
+    (ι → M) ≃ₗ[R] M where
+  toAddEquiv := .funUnique ι M
+  map_smul' _ _ := rfl
 
 @[simp]
 theorem funUnique_apply (ι R M : Type*) [Unique ι] [Semiring R] [AddCommMonoid M] [Module R M] :
@@ -629,7 +643,7 @@ lemma Pi.mem_span_range_single_inl_iff
 
 section Extend
 
-variable (R) {η : Type x} [Semiring R] (s : ι → η)
+variable (R) {η : Type*} [Semiring R] (s : ι → η)
 
 /-- `Function.extend s f 0` as a bundled linear map. -/
 @[simps]

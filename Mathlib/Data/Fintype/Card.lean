@@ -143,6 +143,14 @@ theorem Finset.card_compl_add_card [DecidableEq α] [Fintype α] (s : Finset α)
     #sᶜ + #s = Fintype.card α := by
   rw [Nat.add_comm, card_add_card_compl]
 
+theorem Finset.compl_eq_of_disjoint_of_card_add_eq
+    {ι : Type*} [DecidableEq ι] [Fintype ι] {S₁ S₂ : Finset ι} (h : Disjoint S₁ S₂)
+    (h' : S₁.card + S₂.card = Finset.card (.univ : Finset ι)) :
+    S₁ᶜ = S₂ :=
+  (Finset.eq_of_subset_of_card_le
+    (by rwa [Finset.subset_compl_iff_disjoint_left])
+    (by simp [← Nat.add_le_add_iff_left (n := S₁.card), h'])).symm
+
 theorem Fintype.card_compl_set [Fintype α] (s : Set α) [Fintype s] [Fintype (↥sᶜ : Sort _)] :
     Fintype.card (↥sᶜ : Sort _) = Fintype.card α - Fintype.card s := by
   classical rw [← Set.toFinset_card, ← Set.toFinset_card, ← Finset.card_compl, Set.toFinset_compl]
@@ -204,11 +212,13 @@ theorem Fintype.card_subtype_true [Fintype α] {h : Fintype {_a : α // True}} :
 
 /-- Given that `α ⊕ β` is a fintype, `α` is also a fintype. This is non-computable as it uses
 that `Sum.inl` is an injection, but there's no clear inverse if `α` is empty. -/
+@[implicit_reducible]
 noncomputable def Fintype.sumLeft {α β} [Fintype (α ⊕ β)] : Fintype α :=
   Fintype.ofInjective (Sum.inl : α → α ⊕ β) Sum.inl_injective
 
 /-- Given that `α ⊕ β` is a fintype, `β` is also a fintype. This is non-computable as it uses
 that `Sum.inr` is an injection, but there's no clear inverse if `β` is empty. -/
+@[implicit_reducible]
 noncomputable def Fintype.sumRight {α β} [Fintype (α ⊕ β)] : Fintype β :=
   Fintype.ofInjective (Sum.inr : β → α ⊕ β) Sum.inr_injective
 
@@ -228,6 +238,10 @@ variable [Fintype α] [Fintype β]
 
 theorem card_le_of_injective (f : α → β) (hf : Function.Injective f) : card α ≤ card β :=
   Finset.card_le_card_of_injOn f (fun _ _ => Finset.mem_univ _) fun _ _ _ _ h => hf h
+
+theorem not_injective_of_card_lt (f : α → β) (h : card β < card α) :
+    ¬Function.Injective f :=
+  Nat.not_le_of_lt h ∘ card_le_of_injective f
 
 theorem card_le_of_embedding (f : α ↪ β) : card α ≤ card β :=
   card_le_of_injective f f.2
@@ -360,7 +374,7 @@ theorem Fintype.card_prop : Fintype.card Prop = 2 :=
 
 theorem set_fintype_card_le_univ [Fintype α] (s : Set α) [Fintype s] :
     Fintype.card s ≤ Fintype.card α :=
-  Fintype.card_le_of_embedding (Function.Embedding.subtype s)
+  Fintype.card_le_of_embedding (Function.Embedding.subtype (· ∈ s))
 
 theorem set_fintype_card_eq_univ_iff [Fintype α] (s : Set α) [Fintype s] :
     Fintype.card s = Fintype.card α ↔ s = Set.univ := by
@@ -410,14 +424,13 @@ theorem univ_eq_singleton_of_card_one {α} [Fintype α] (x : α) (h : Fintype.ca
     (univ : Finset α) = {x} := by
   symm
   apply eq_of_subset_of_card_le (subset_univ {x})
-  apply le_of_eq
-  simp [h, Finset.card_univ]
+  simp [h]
 
 namespace Finite
 
 variable [Finite α]
 
-theorem wellFounded_of_trans_of_irrefl (r : α → α → Prop) [IsTrans α r] [IsIrrefl α r] :
+theorem wellFounded_of_trans_of_irrefl (r : α → α → Prop) [IsTrans α r] [Std.Irrefl r] :
     WellFounded r := by
   classical
   cases nonempty_fintype α
@@ -431,11 +444,8 @@ theorem wellFounded_of_trans_of_irrefl (r : α → α → Prop) [IsTrans α r] [
   exact Subrelation.wf (this _ _) (measure _).wf
 
 -- See note [lower instance priority]
+@[to_dual]
 instance (priority := 100) to_wellFoundedLT [Preorder α] : WellFoundedLT α :=
-  ⟨wellFounded_of_trans_of_irrefl _⟩
-
--- See note [lower instance priority]
-instance (priority := 100) to_wellFoundedGT [Preorder α] : WellFoundedGT α :=
   ⟨wellFounded_of_trans_of_irrefl _⟩
 
 end Finite

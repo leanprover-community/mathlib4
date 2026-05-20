@@ -22,7 +22,7 @@ This file contains some results on cardinality of Ore localizations.
 
 -/
 
-@[expose] public section
+public section
 
 universe u v
 

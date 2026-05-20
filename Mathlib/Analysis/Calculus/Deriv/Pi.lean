@@ -12,13 +12,12 @@ public import Mathlib.Analysis.Calculus.Deriv.Basic
 # One-dimensional derivatives on pi-types.
 -/
 
-@[expose] public section
+public section
 
-variable {𝕜 ι : Type*} [DecidableEq ι] [Finite ι] [NontriviallyNormedField 𝕜]
+variable {𝕜 ι : Type*} [DecidableEq ι] [NontriviallyNormedField 𝕜]
 
 theorem hasDerivAt_update (x : ι → 𝕜) (i : ι) (y : 𝕜) :
     HasDerivAt (Function.update x i) (Pi.single i (1 : 𝕜)) y := by
-  have := Fintype.ofFinite ι
   convert (hasFDerivAt_update x y).hasDerivAt
   ext z j
   rw [Pi.single, Function.update_apply]
@@ -29,6 +28,8 @@ theorem hasDerivAt_update (x : ι → 𝕜) (i : ι) (y : 𝕜) :
 theorem hasDerivAt_single (i : ι) (y : 𝕜) :
     HasDerivAt (Pi.single (M := fun _ ↦ 𝕜) i) (Pi.single i (1 : 𝕜)) y :=
   hasDerivAt_update 0 i y
+
+variable [Finite ι]
 
 theorem deriv_update (x : ι → 𝕜) (i : ι) (y : 𝕜) :
     deriv (Function.update x i) y = Pi.single i (1 : 𝕜) :=
