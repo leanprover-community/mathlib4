@@ -353,4 +353,16 @@ There are four types of theorems that are used a bit differently.
 
 -/
 
-public meta section
+public section
+
+/-!
+### fun_prop attributes for injectivity
+
+We add these here as injectivity and the associated basic results are defined in Init.
+-/
+
+open Function
+
+attribute [fun_prop] Injective injective_id Injective.comp Option.map_injective
+
+end
