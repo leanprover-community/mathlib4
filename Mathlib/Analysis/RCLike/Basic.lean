@@ -624,6 +624,21 @@ theorem ratCast_re (q : ℚ) : re (q : K) = q := by rw [← ofReal_ratCast, ofRe
 @[simp, rclike_simps, norm_cast]
 theorem ratCast_im (q : ℚ) : im (q : K) = 0 := by rw [← ofReal_ratCast, ofReal_im]
 
+open OfScientific (ofScientific)
+
+@[rclike_simps, norm_cast]
+theorem ofReal_ofScientific (m : ℕ) (s : Bool) (e : ℕ) :
+    ((ofScientific m s e : ℝ) : K) = ofScientific m s e := by
+  rw [← NNRat.cast_ofScientific]
+
+@[simp, rclike_simps]
+theorem ofScientific_re (m : ℕ) (s : Bool) (e : ℕ) :
+    re (ofScientific m s e : K) = ofScientific m s e := by rw [← ofReal_ofScientific, ofReal_re]
+
+@[simp, rclike_simps, norm_cast]
+theorem ofScientific_im (m : ℕ) (s : Bool) (e : ℕ) :
+    im (ofScientific m s e : K) = 0 := by rw [← ofReal_ofScientific, ofReal_im]
+
 /-! ### Norm -/
 
 theorem norm_of_nonneg {r : ℝ} (h : 0 ≤ r) : ‖(r : K)‖ = r :=
