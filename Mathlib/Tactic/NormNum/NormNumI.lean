@@ -177,6 +177,12 @@ def NormNum.ResultOfScientific (mantissa : ℕ) (exponentSign : Bool) (decimalEx
   return .isNat (x := x) q(inferInstance) n
     (q(NormNum.isNat_ofScientific_of_false (α := ℝ) $pm $pe (.refl $n)):)
 
+/-- Determine if an expression is a boolean literal. -/
+def _root_.Lean.Expr.rawBoolLit? (e : Expr) : Option Bool :=
+  if e.isConstOf ``true then true else
+  if e.isConstOf ``false then false else
+  none
+
 /-- Parsing all the basic calculation in complex. -/
 partial def parse (z : Q(ℂ)) : MetaM (ResultI q($z)) := do
   trace[debug] "NormNumI.parse: parsing {z}"
@@ -221,19 +227,19 @@ partial def parse (z : Q(ℂ)) : MetaM (ResultI q($z)) := do
       let _i : $k' =Q Int.negSucc $n := ⟨⟩
       return r.eqTrans q(of_pow_negSucc $w $hm)
   | ~q(Complex.I) =>
-  return ResultI.mk (← NormNum.Resultn 0) (← NormNum.Resultn 1)
+    return ResultI.mk (← NormNum.Resultn 0) (← NormNum.Resultn 1)
   | ~q(0) =>
-  return ResultI.mk (← NormNum.Resultn 0) (← NormNum.Resultn 0)
+    return ResultI.mk (← NormNum.Resultn 0) (← NormNum.Resultn 0)
   | ~q(1) =>
-  return ResultI.mk (← NormNum.Resultn 1) (← NormNum.Resultn 0)
+    return ResultI.mk (← NormNum.Resultn 1) (← NormNum.Resultn 0)
   | ~q(OfNat.ofNat $en (self := @instOfNatAtLeastTwo ℂ _ _ $inst)) =>
-  let some n := en.rawNatLit? | failure
-  return ResultI.mk (← NormNum.Resultn n) (← NormNum.Resultn 0)
+    let some n := en.rawNatLit? | failure
+    return ResultI.mk (← NormNum.Resultn n) (← NormNum.Resultn 0)
   | ~q(OfScientific.ofScientific $em $ex $eexp) =>
-  let some m := em.rawNatLit? | failure
-  let x : Bool := ex.isConstOf ``true
-  let some exp := eexp.rawNatLit? | failure
-  return ResultI.mk (← NormNum.ResultOfScientific m x exp) (← NormNum.Resultn 0)
+    let some m := em.rawNatLit? | failure
+    let some x := ex.rawBoolLit? | failure
+    let some exp := eexp.rawNatLit? | failure
+    return ResultI.mk (← NormNum.ResultOfScientific m x exp) (← NormNum.Resultn 0)
   | _ => throwError "found the atom {z} which is not a numeral"
 
 /-- Create the `NormNumI` tactic in `conv` mode. -/
