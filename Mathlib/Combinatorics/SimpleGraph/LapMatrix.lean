@@ -84,6 +84,10 @@ theorem degMatrix_mulVec_apply [NonAssocSemiring R] (v : V) (vec : V → R) :
     (G.degMatrix R *ᵥ vec) v = G.degree v * vec v := by
   rw [degMatrix, mulVec_diagonal]
 
+theorem IsRegularOfDegree.degMatrix_mulVec_const [AddMonoidWithOne R] {d : ℕ}
+    (hd : G.IsRegularOfDegree d) : G.degMatrix R = d := by
+  simp [degMatrix, diagonal_natCast, hd.degree_eq]
+
 variable (R) in
 theorem IsIsolated.not_isUnit_degMatrix [Nontrivial R] [CommRing R] {v : V} (h : G.IsIsolated v) :
     ¬IsUnit (G.degMatrix R) :=
