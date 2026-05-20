@@ -89,13 +89,12 @@ def ResultI.conj {z : Q(ℂ)} (hz : ResultI q($z)) :
 /-- ResultI induced by taking inverse -/
 def ResultI.inv {z : Q(ℂ)} (hz : ResultI q($z)) :
     MetaM (ResultI q($z⁻¹)) := do
+  let den ←
+      (← (← hz.re.mul hz.re q(inferInstance)).add (← hz.im.mul hz.im q(inferInstance))
+      q(inferInstance)).inv q(inferInstance) (Option.some q(inferInstance))
   return .mk'
-    (← (← (← (← hz.re.mul hz.re q(inferInstance)).add (← hz.im.mul hz.im q(inferInstance))
-      q(inferInstance)).inv q(inferInstance) (Option.some q(inferInstance))).mul hz.re
-      q(inferInstance))
-    (← ((← (← (← (← hz.re.mul hz.re q(inferInstance)).add (← hz.im.mul hz.im q(inferInstance))
-      q(inferInstance)).inv q(inferInstance) (Option.some q(inferInstance))).mul hz.im
-      q(inferInstance))).neg q(inferInstance))
+    (← den.mul hz.re q(inferInstance))
+    (← (← den.mul hz.im q(inferInstance)).neg q(inferInstance))
     q(by rw [RCLike.inv_re, div_eq_mul_inv, mul_comm, RCLike.normSq_apply])
     q(by rw [RCLike.inv_im, div_eq_mul_inv, mul_comm, RCLike.normSq_apply, mul_neg])
 
