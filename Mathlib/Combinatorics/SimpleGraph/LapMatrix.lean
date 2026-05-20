@@ -92,9 +92,21 @@ theorem degMatrix_mulVec_apply [NonAssocSemiring R] (v : V) (vec : V → R) :
     (G.degMatrix R *ᵥ vec) v = G.degree v * vec v := by
   rw [degMatrix, mulVec_diagonal]
 
+variable (R) in
 theorem IsRegularOfDegree.degMatrix_eq [AddMonoidWithOne R] {d : ℕ}
     (hd : G.IsRegularOfDegree d) : G.degMatrix R = d := by
   simp [degMatrix, diagonal_natCast, hd.degree_eq]
+
+variable (R) in
+@[simp]
+theorem degMatrix_bot [AddMonoidWithOne R] : (⊥ : SimpleGraph V).degMatrix R = 0 := by
+  simp [degMatrix]
+
+variable (R) in
+@[simp]
+theorem degMatrix_top [AddMonoidWithOne R] :
+    (⊤ : SimpleGraph V).degMatrix R = (Fintype.card V - 1 : ℕ) :=
+  IsRegularOfDegree.top.degMatrix_eq R
 
 variable (R) in
 theorem IsIsolated.not_isUnit_degMatrix [Nontrivial R] [CommRing R] {v : V} (h : G.IsIsolated v) :
@@ -126,6 +138,20 @@ variable (R) in
 theorem zero_mem_spectrum_lapMatrix [Nonempty V] [Nontrivial R] [CommRing R] :
     0 ∈ spectrum R (G.lapMatrix R) :=
   spectrum.zero_mem R <| G.not_isUnit_lapMatrix R
+
+variable (R) in
+@[simp]
+theorem lapMatrix_bot [AddGroupWithOne R] : (⊥ : SimpleGraph V).lapMatrix R = 0 := by
+  simp [lapMatrix]
+
+variable (R) in
+@[simp]
+theorem lapMatrix_top [AddGroupWithOne R] :
+    (⊤ : SimpleGraph V).lapMatrix R = Fintype.card V + .of (fun _ _ ↦ -1) := by
+  ext i j
+  rcases eq_or_ne i j with (rfl | h)
+  · simp [lapMatrix, Nat.cast_pred <| Fintype.card_pos_iff.mpr ⟨i⟩, sub_eq_add_neg]
+  · simp [lapMatrix, natCast_apply, h]
 
 theorem dotProduct_mulVec_degMatrix [CommSemiring R] (x : V → R) :
     x ⬝ᵥ (G.degMatrix R *ᵥ x) = ∑ i : V, G.degree i * x i * x i := by
