@@ -399,8 +399,6 @@ theorem IndepSets.biUnion {s : ι → Set (Set Ω)} {s' : Set (Set Ω)}
     IndepSets (⋃ n ∈ u, s n) s' μ :=
   Kernel.IndepSets.biUnion hyp
 
-@[deprecated (since := "2025-10-28")] alias IndepSets.bUnion := IndepSets.biUnion
-
 theorem IndepSets.inter {s₁ s' : Set (Set Ω)} (s₂ : Set (Set Ω)) (h₁ : IndepSets s₁ s' μ) :
     IndepSets (s₁ ∩ s₂) s' μ :=
   Kernel.IndepSets.inter s₂ h₁
@@ -978,6 +976,9 @@ lemma iIndepFun.indepFun_finsetProd_of_notMem (hf_Indep : iIndepFun f μ)
   Kernel.iIndepFun.indepFun_finsetProd_of_notMem hf_Indep hf_meas hi
 
 @[deprecated (since := "2026-04-08")]
+alias iIndepFun.indepFun_finset_sum_of_notMem := iIndepFun.indepFun_finsetSum_of_notMem
+
+@[to_additive existing, deprecated (since := "2026-04-08")]
 alias iIndepFun.indepFun_finset_prod_of_notMem := iIndepFun.indepFun_finsetProd_of_notMem
 
 @[to_additive]
@@ -987,6 +988,9 @@ lemma iIndepFun.indepFun_finsetProd_of_notMem₀ (hf_Indep : iIndepFun f μ)
   Kernel.iIndepFun.indepFun_finsetProd_of_notMem₀ hf_Indep (by simp [hf_meas]) hi
 
 @[deprecated (since := "2026-04-08")]
+alias iIndepFun.indepFun_finset_sum_of_notMem₀ := iIndepFun.indepFun_finsetSum_of_notMem₀
+
+@[to_additive existing, deprecated (since := "2026-04-08")]
 alias iIndepFun.indepFun_finset_prod_of_notMem₀ := iIndepFun.indepFun_finsetProd_of_notMem₀
 
 @[to_additive]

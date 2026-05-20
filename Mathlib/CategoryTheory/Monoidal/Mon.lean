@@ -103,10 +103,7 @@ variable {M X Y : C} [MonObj M]
 @[inherit_doc] scoped notation "η" => MonObj.one
 @[inherit_doc] scoped notation "η[" M "]" => MonObj.one (X := M)
 
-attribute [reassoc (attr := simp)] one_mul mul_one mul_assoc
-attribute [reassoc (attr := simp)] AddMonObj.zero_add AddMonObj.add_zero AddMonObj.add_assoc
-set_option linter.existingAttributeWarning false in
-attribute [to_additive existing] one_mul_assoc mul_one_assoc mul_assoc_assoc
+attribute [to_additive existing (attr := reassoc (attr := simp))] one_mul mul_one mul_assoc
 
 /-- Transfer `MonObj` along an isomorphism. -/
 -- Note: The simps lemmas are not tagged simp because their `#discr_tree_simp_key` are too generic.
@@ -558,6 +555,14 @@ instance : Category (Mon C) where
   Hom M N := Hom M N
   id := id
   comp f g := comp f g
+
+/-- Construct a morphism `Mon.mk G ⟶ Mon.mk H` from a  map `f : G ⟶ H` and a `IsMonHom f`
+instance. -/
+@[to_additive (attr := simps!)
+/-- Construct a morphism `AddMon.mk G ⟶ AddMon.mk H` from a  map `f : G ⟶ H` and a `IsAddMonHom f`
+instance. -/]
+def ofHom {A B : C} [MonObj A] [MonObj B] (f : A ⟶ B) [IsMonHom f] : Mon.mk A ⟶ Mon.mk B :=
+  .mk f
 
 @[to_additive]
 instance {M N : Mon C} (f : M ⟶ N) : IsMonHom f.hom := f.isMonHom_hom

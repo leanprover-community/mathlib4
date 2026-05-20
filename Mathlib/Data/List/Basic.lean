@@ -186,6 +186,8 @@ theorem map_subset_iff {l₁ l₂ : List α} (f : α → β) (h : Injective f) :
   rcases mem_map.1 (h2 (mem_map_of_mem hx)) with ⟨x', hx', hxx'⟩
   cases h hxx'; exact hx'
 
+lemma notMem_of_subset (h : l ⊆ l₁) {a : α} (ha : a ∉ l₁) : a ∉ l := (ha <| h ·)
+
 /-! ### append -/
 
 theorem append_eq_has_append {L₁ L₂ : List α} : List.append L₁ L₂ = L₁ ++ L₂ :=
@@ -929,17 +931,16 @@ theorem filter_eq_foldr (p : α → Bool) (l : List α) :
     filter p l = foldr (fun a out => bif p a then a :: out else out) [] l := by
   induction l <;> simp [*, filter]; rfl
 
-#adaptation_note /-- nightly-2024-07-27
-This has to be temporarily renamed to avoid an unintentional collision.
-The prime should be removed at nightly-2024-07-27. -/
 @[simp]
-theorem filter_subset' (l : List α) : filter p l ⊆ l :=
+theorem filter_subset_self (l : List α) : filter p l ⊆ l :=
   filter_sublist.subset
+
+@[deprecated (since := "2026-04-24")] alias filter_subset' := filter_subset_self
 
 theorem of_mem_filter {a : α} {l} (h : a ∈ filter p l) : p a := (mem_filter.1 h).2
 
 theorem mem_of_mem_filter {a : α} {l} (h : a ∈ filter p l) : a ∈ l :=
-  filter_subset' l h
+  filter_subset_self l h
 
 theorem mem_filter_of_mem {a : α} {l} (h₁ : a ∈ l) (h₂ : p a) : a ∈ filter p l :=
   mem_filter.2 ⟨h₁, h₂⟩

@@ -30,7 +30,6 @@ with continuous addition/multiplication. See also `Submonoid.top_closure_mul_sel
 `Topology.Algebra.Monoid`.
 -/
 
-
 section ContinuousConstSMul
 
 variable [TopologicalSpace β] [Group α] [MulAction α β] [ContinuousConstSMul α β] {s : Set α}
@@ -68,7 +67,7 @@ theorem IsClosed.smul_left_of_isCompact (ht : IsClosed t) (hs : IsCompact s) :
     invFun := fun gx ↦ (gx.1, (gx.1 : α)⁻¹ • gx.2)
     left_inv := fun _ ↦ by simp
     right_inv := fun _ ↦ by simp }
-  have : s • t = (snd ∘ Φ) '' (snd ⁻¹' t) :=
+  have : s • t = (snd ∘ Φ) '' snd ⁻¹' t :=
     subset_antisymm
       (smul_subset_iff.mpr fun g hg x hx ↦ mem_image_of_mem (snd ∘ Φ) (x := ⟨⟨g, hg⟩, x⟩) hx)
       (image_subset_iff.mpr fun ⟨⟨g, hg⟩, x⟩ hx ↦ smul_mem_smul hg hx)
@@ -252,6 +251,16 @@ lemma compl_mul_closure_one_eq_iff {t : Set G} :
 lemma IsOpen.mul_closure_one_eq {U : Set G} (hU : IsOpen U) :
     U * (closure {1} : Set G) = U :=
   compl_mul_closure_one_eq_iff.1 (hU.isClosed_compl.mul_closure_one_eq)
+
+@[to_additive]
+theorem closure_subset_mul_self_of_mem_nhds_one {U : Set G} (hU : U ∈ 𝓝 1) :
+    closure U ⊆ U * U := by
+  intro x hx
+  rw [mem_closure_iff_nhds] at hx
+  have hkey : (fun y => x / y) ⁻¹' U ∈ 𝓝 x :=
+    ContinuousAt.preimage_mem_nhds (by fun_prop) (by simpa)
+  obtain ⟨a, ha_mem, ha_s⟩ := hx _ hkey
+  exact Set.mem_mul.mpr ⟨x / a, ha_mem, a, ha_s, div_mul_cancel x a⟩
 
 end IsTopologicalGroup
 

@@ -71,7 +71,7 @@ instance category : LargeCategory.{max v u} Grpd.{v, u} where
 called `forget`, because it is not a faithful functor. -/
 def objects : Grpd.{v, u} ⥤ Type u where
   obj C := Bundled.α C
-  map F := TypeCat.ofHom F.obj
+  map F := ↾F.obj
 
 /-- Forgetting functor to `Cat` -/
 def forgetToCat : Grpd.{v, u} ⥤ Cat.{v, u} where

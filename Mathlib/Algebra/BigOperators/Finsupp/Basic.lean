@@ -475,7 +475,10 @@ theorem prod_finsetSum_index [AddCommMonoid M] [CommMonoid N] {s : Finset ι} {g
   Finset.cons_induction_on s rfl fun a s has ih => by
     rw [prod_cons, ih, sum_cons, prod_add_index' h_zero h_add]
 
-@[deprecated (since := "2026-04-08")] alias prod_finset_sum_index := prod_finsetSum_index
+@[deprecated (since := "2026-04-08")] alias sum_finset_sum_index := sum_finsetSum_index
+
+@[to_additive existing, deprecated (since := "2026-04-08")]
+alias prod_finset_sum_index := prod_finsetSum_index
 
 @[to_additive]
 theorem prod_sum_index [Zero M] [AddCommMonoid N] [CommMonoid P] {f : α →₀ M}
@@ -603,10 +606,6 @@ theorem Finsupp.sum_apply'' {A F : Type*} [AddZeroClass A] [AddCommMonoid F] [Fu
   induction g.support using Finset.induction with
   | empty => simp [h0]
   | insert i s hi ih => simp [sum_insert hi, hadd, ih]
-
-@[deprecated "use instead `sum_finsetSum_index` (with equality reversed)" (since := "2025-11-07")]
-theorem Finsupp.sum_sum_index' (h0 : ∀ i, t i 0 = 0) (h1 : ∀ i x y, t i (x + y) = t i x + t i y) :
-    (∑ x ∈ s, f x).sum t = ∑ x ∈ s, (f x).sum t := (sum_finsetSum_index h0 h1).symm
 
 section
 

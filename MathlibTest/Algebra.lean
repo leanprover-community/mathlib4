@@ -1,3 +1,5 @@
+module
+
 import Mathlib.Tactic.Algebra.Basic
 
 axiom sorryAlgebraTest {P : Prop} : P

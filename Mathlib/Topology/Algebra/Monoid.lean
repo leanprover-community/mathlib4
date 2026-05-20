@@ -11,7 +11,7 @@ public import Mathlib.Algebra.Group.Submonoid.Basic
 public import Mathlib.Algebra.Group.ULift
 public import Mathlib.Order.Filter.Pointwise
 public import Mathlib.Topology.Algebra.MulAction
-public import Mathlib.Topology.ContinuousMap.Defs
+public import Mathlib.Topology.ContinuousMap.Basic
 public import Mathlib.Topology.Algebra.Monoid.Defs
 
 /-!
@@ -919,7 +919,10 @@ theorem tendsto_finsetProd {f : ι → α → M} {x : Filter α} {a : ι → M} 
       Tendsto (fun b => ∏ c ∈ s, f c b) x (𝓝 (∏ c ∈ s, a c)) :=
   tendsto_multiset_prod _
 
-@[deprecated (since := "2026-04-08")] alias tendsto_finset_prod := tendsto_finsetProd
+@[deprecated (since := "2026-04-08")] alias tendsto_finset_sum := tendsto_finsetSum
+
+@[to_additive existing, deprecated (since := "2026-04-08")]
+alias tendsto_finset_prod := tendsto_finsetProd
 
 @[to_additive (attr := continuity, fun_prop)]
 theorem continuous_multiset_prod {f : ι → X → M} (s : Multiset ι) :
@@ -938,14 +941,20 @@ theorem continuous_finsetProd {f : ι → X → M} (s : Finset ι) :
     (∀ i ∈ s, Continuous (f i)) → Continuous fun a => ∏ i ∈ s, f i a :=
   continuous_multiset_prod _
 
-@[deprecated (since := "2026-04-08")] alias continuous_finset_prod := continuous_finsetProd
+@[deprecated (since := "2026-04-08")] alias continuous_finset_sum := continuous_finsetSum
+
+@[to_additive existing, deprecated (since := "2026-04-08")]
+alias continuous_finset_prod := continuous_finsetProd
 
 @[to_additive]
 theorem continuousOn_finsetProd {f : ι → X → M} (s : Finset ι) {t : Set X} :
     (∀ i ∈ s, ContinuousOn (f i) t) → ContinuousOn (fun a => ∏ i ∈ s, f i a) t :=
   continuousOn_multiset_prod _
 
-@[deprecated (since := "2026-04-08")] alias continuousOn_finset_prod := continuousOn_finsetProd
+@[deprecated (since := "2026-04-08")] alias continuousOn_finset_sum := continuousOn_finsetSum
+
+@[to_additive existing, deprecated (since := "2026-04-08")]
+alias continuousOn_finset_prod := continuousOn_finsetProd
 
 @[to_additive]
 theorem eventuallyEq_prod {X M : Type*} [CommMonoid M] {s : Finset ι} {l : Filter X}
@@ -1045,6 +1054,12 @@ protected def mulRight (x : X) : C(X, X) :=
 theorem coe_mulRight (x : X) : ⇑(ContinuousMap.mulRight x) = fun y => y * x :=
   rfl
 
+@[to_additive]
+lemma mulRight_mul {X : Type*} [Semigroup X] [TopologicalSpace X] [SeparatelyContinuousMul X]
+    (x y : X) : ContinuousMap.mulRight (x * y) =
+    (ContinuousMap.mulRight y).comp (ContinuousMap.mulRight x) := by
+  ext; simp [mul_assoc]
+
 /-- The continuous map `fun y => x * y` -/
 @[to_additive /-- The continuous map `fun y => x + y` -/]
 protected def mulLeft (x : X) : C(X, X) :=
@@ -1053,5 +1068,11 @@ protected def mulLeft (x : X) : C(X, X) :=
 @[to_additive (attr := simp)]
 theorem coe_mulLeft (x : X) : ⇑(ContinuousMap.mulLeft x) = fun y => x * y :=
   rfl
+
+@[to_additive]
+lemma mulLeft_mul {X : Type*} [Semigroup X] [TopologicalSpace X] [SeparatelyContinuousMul X]
+    (x y : X) : ContinuousMap.mulLeft (x * y) =
+    (ContinuousMap.mulLeft x).comp (ContinuousMap.mulLeft y) := by
+  ext; simp [mul_assoc]
 
 end ContinuousMap
