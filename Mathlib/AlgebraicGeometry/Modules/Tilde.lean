@@ -487,14 +487,13 @@ def sheafComposePushforwardComp :
 /-- `Scheme.Modules.pushforward` and `modulesSpecToSheaf` commute -/
 def pushforwardCompModulesSpecToSheafIso :
     Scheme.Modules.pushforward (Spec.map φ) ⋙ modulesSpecToSheaf ≅
-    modulesSpecToSheaf ⋙ TopCat.Sheaf.pushforward (ModuleCat S) (Spec.map φ).base ⋙
-    sheafCompose _ (ModuleCat.restrictScalars φ.hom) := by
-  refine (Functor.associator _ _ _).symm ≪≫ ?_
-  refine Functor.isoWhiskerRight (SheafOfModules.pushforwardCompForgetToSheafModuleCat
-    (Spec.map φ).toRingCatSheafHom (op ⊤) _ (initialOpOfTerminal isTerminalTop)) _ ≪≫ ?_
-  refine Functor.associator _ _ _ ≪≫ ?_
-  refine (Functor.isoWhiskerLeft _ (Functor.associator _ _ _)) ≪≫ ?_
-  exact (Functor.isoWhiskerLeft _ (sheafComposePushforwardComp φ))
+      modulesSpecToSheaf ⋙ TopCat.Sheaf.pushforward (ModuleCat S) (Spec.map φ).base ⋙
+      sheafCompose _ (ModuleCat.restrictScalars φ.hom) :=
+  (Functor.associator _ _ _).symm ≪≫
+    Functor.isoWhiskerRight (SheafOfModules.pushforwardCompForgetToSheafModuleCat _ _ _
+    (initialOpOfTerminal isTerminalTop)) _ ≪≫ Functor.associator _ _ _ ≪≫
+    (Functor.isoWhiskerLeft _ (Functor.associator _ _ _)) ≪≫
+    Functor.isoWhiskerLeft _ (sheafComposePushforwardComp φ) ≪≫ (Functor.associator _ _ _).symm
 
 open scoped ModuleCat.Algebra in
 theorem isLocalizing_pushforward_of_isLocalizing {M : (Spec S).Modules}
