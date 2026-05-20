@@ -189,8 +189,7 @@ theorem map_cast_poissonMeasure_conv [MeasurableAdd₂ R] (r₁ r₂ : ℝ≥0) 
 random variable with rate `r₁ + r₂`. -/
 theorem IndepFun.hasLaw_add_poissonMeasure {Ω : Type*} {mΩ : MeasurableSpace Ω}
     {P : Measure Ω} {r₁ r₂ : ℝ≥0} {X Y : Ω → ℕ}
-    (hXY : IndepFun X Y P) (hX : HasLaw X Po(r₁) P)
-    (hY : HasLaw Y Po(r₂) P) :
+    (hXY : IndepFun X Y P) (hX : HasLaw X Po(r₁) P) (hY : HasLaw Y Po(r₂) P) :
     HasLaw (X + Y) Po(r₁ + r₂) P := by
   rw [← poissonMeasure_conv_poissonMeasure]
   exact hXY.hasLaw_add hX hY
