@@ -192,38 +192,45 @@ partial def parse (z : Q(ℂ)) : MetaM (ResultI q($z)) := do
   | ~q(Complex.I) =>
     let re ← NormNum.derive q(0 : ℝ)
     let im ← NormNum.derive q(1 : ℝ)
-    return ResultI.mk
-      (re.eqTrans q(Complex.I_re))
-      (im.eqTrans q(Complex.I_im))
+    return ResultI.mk (re.eqTrans q(I_re)) (im.eqTrans q(I_im))
+  -- real values
   | ~q(0) =>
     let z ← NormNum.derive q(0 : ℝ)
-    return ResultI.mk
-      (z.eqTrans q(Complex.zero_re))
-      (z.eqTrans q(Complex.zero_im))
+    return ResultI.mk (z.eqTrans q(zero_re)) (z.eqTrans q(zero_im))
   | ~q(1) =>
     let re ← NormNum.derive q(1 : ℝ)
     let im ← NormNum.derive q(0 : ℝ)
-    return ResultI.mk
-      (re.eqTrans q(Complex.one_re))
-      (im.eqTrans q(Complex.one_im))
+    return ResultI.mk (re.eqTrans q(one_re)) (im.eqTrans q(one_im))
   | ~q(.ofReal $r) =>
-    let re ← NormNum.derive r
+    let re ← NormNum.derive q($r : ℝ)
     let im ← NormNum.derive q(0 : ℝ)
-    return ResultI.mk
-      (re.eqTrans q(Complex.ofReal_re $r))
-      (im.eqTrans q(Complex.ofReal_im $r))
+    return ResultI.mk (re.eqTrans q(ofReal_re $r)) (im.eqTrans q(ofReal_im $r))
+  | ~q(Nat.cast $n) =>
+    let re ← NormNum.derive q(Nat.cast $n : ℝ)
+    let im ← NormNum.derive q(0 : ℝ)
+    return ResultI.mk (re.eqTrans q(natCast_re $n)) (im.eqTrans q(natCast_im $n))
+  | ~q(Int.cast $n) =>
+    let re ← NormNum.derive q(Int.cast $n : ℝ)
+    let im ← NormNum.derive q(0 : ℝ)
+    return ResultI.mk (re.eqTrans q(intCast_re $n)) (im.eqTrans q(intCast_im $n))
+  | ~q(NNRat.cast $q) =>
+    let re ← NormNum.derive q(NNRat.cast $q : ℝ)
+    let im ← NormNum.derive q(0 : ℝ)
+    return ResultI.mk (re.eqTrans q(re_nnratCast $q)) (im.eqTrans q(im_nnratCast $q))
+  | ~q(Rat.cast $q) =>
+    let re ← NormNum.derive q(Rat.cast $q : ℝ)
+    let im ← NormNum.derive q(0 : ℝ)
+    return ResultI.mk (re.eqTrans q(ratCast_re $q)) (im.eqTrans q(ratCast_im $q))
   | ~q(OfNat.ofNat $en (self := @instOfNatAtLeastTwo ℂ _ _ $inst)) =>
     let re ← NormNum.derive q(OfNat.ofNat $en : ℝ)
     let im ← NormNum.derive q(0 : ℝ)
-    return ResultI.mk
-      (re.eqTrans q(Complex.re_ofNat $en))
-      (im.eqTrans q(Complex.im_ofNat $en))
+    return ResultI.mk (re.eqTrans q(re_ofNat $en)) (im.eqTrans q(im_ofNat $en))
   | ~q(OfScientific.ofScientific $em $ex $eexp) =>
     let re ← NormNum.derive q(OfScientific.ofScientific $em $ex $eexp : ℝ)
     let im ← NormNum.derive q(0 : ℝ)
     return ResultI.mk
-      (re.eqTrans q(Complex.re_ofScientific _ _ _))
-      (im.eqTrans q(Complex.im_ofScientific $em $ex $eexp))
+      (re.eqTrans q(re_ofScientific _ _ _))
+      (im.eqTrans q(im_ofScientific $em $ex $eexp))
   | _ => throwError "found the atom {z} which is not a numeral"
 
 -- TODO : get rid of cast in `$a = $x + Complex.I * $y`.
