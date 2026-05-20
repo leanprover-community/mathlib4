@@ -342,6 +342,62 @@ lemma bigO_add_bigO (s₁ s₂ : Set (α → E)) :
     ext i
     by_cases h : g₁ i < g₂ i <;> simp [h]
 
+section AsympRel
+
+def AsympRel (l : Filter α) (r : β → β → Prop) (a b : Set (α → β)) : Prop :=
+  ∀ f ∈ a, ∃ g ∈ b, ∀ᶠ x in l, r (f x) (g x)
+
+end AsympRel
+
+notation x " AR[" l ", " r "] " y => AsympRel l r x y
+
+instance (r : β → β → Prop) (s : β → β → Prop) (t : β → β → Prop) (l : Filter α) [Trans r s t] :
+  Trans (AsympRel l r) (AsympRel l s) (AsympRel l t) where
+  trans hab hbc := by
+    simp only [AsympRel] at ⊢ hab hbc
+    have := @Trans.trans (r := r) (s := s) (t := t) _ _ _ _
+    intro f hf
+    obtain ⟨g, hg, hg'⟩ := hab f hf
+    obtain ⟨h, hh, hh'⟩ := hbc g hg
+    use h, hh
+    filter_upwards [hg', hh'] with a hafg hagh
+    exact this hafg hagh
+
+lemma asympRel_of_subset {r : β → β → Prop} {a b : Set (α → β)} {l : Filter α}
+    (r_refl : ∀ x, r x x) (h : a ⊆ b) :
+    a AR[l, r] b := by
+  intro x hx
+  refine ⟨_, h hx, ?_⟩
+  filter_upwards with y
+  exact r_refl _
+
+
+@[refl]
+lemma asympRel_rfl {r : β → β → Prop} [Std.Refl r] {a : Set (α → β)} {l : Filter α} :
+    a AR[l, r] a := by
+  apply asympRel_of_subset (Std.Refl.refl) subset_rfl
+
+class AsympMapClass {α β : Type*} (r : β → β → Prop)
+    (r₁ : outParam ((α → β) → (α → β) → Prop))
+    (r₂ : outParam (α → α → Prop)) where
+  imp {f₁ f₂ f₁' f₂'} : r₁ f₁ f₁' → r₂ f₂ f₂' → r (f₁ f₂) (f₁' f₂')
+
+@[gcongr]
+lemma map_asympRel_map {s₁ s₁' : Set (α → β → γ)} {s₂ s₂' : Set (α → β)}
+    {l : Filter α} {r r₁ r₂} [AsympMapClass r r₁ r₂]
+    (h₁ : s₁ AR[l, r₁] s₁') (h₂ : s₂ AR[l, r₂] s₂') :
+    map s₁ s₂ AR[l, r] map s₁' s₂' := by
+  rintro g ⟨f₁, hf₁, f₂, hf₂, rfl⟩
+  obtain ⟨f₁', hf₁', hff₁⟩ := h₁ f₁ hf₁
+  obtain ⟨f₂', hf₂', hff₂⟩ := h₂ f₂ hf₂
+  refine ⟨fun x ↦ f₁' x (f₂' x), ⟨f₁', hf₁', f₂', hf₂', rfl⟩, ?_⟩
+  filter_upwards [hff₁, hff₂] with a h h'
+  apply AsympMapClass.imp h h'
+
+instance : AsympMapClass (α := α) (β := β) Eq Eq Eq where
+  imp r₁ r₂ := by grind
+
+
 section RightSerial
 
 def RightSerial (r : α → β → Prop) (s₁ : Set α) (s₂ : Set β) : Prop :=
@@ -503,6 +559,8 @@ meta def elabBigO : Elab.Term.TermElab := fun stx expectedType? ↦ do
   | `(O[$l]($e)) => Elab.Term.elabTerm (← `(dummyBigO $l $e)) expectedType?
   | _ => Elab.throwUnsupportedSyntax
 
+-- Perhaps mappify should turn metavariables into metavariables?
+-- That way _ effectively gets elaborated to _ anywhere in an expression.
 meta partial def mappify (fvar : Expr) (e : Expr) : MetaM Expr := do
   match_expr e with
   | dummyBigO α E instNormE l e' =>
@@ -539,19 +597,7 @@ meta partial def unmappify (e : Expr) : OptionT MetaM Expr := do
     return mkApp5 (.const ``dummyBigO f.constLevels!) α E instE l (← unmappify a)
   | _ => failure
 
-declare_syntax_cat asymp_rel
-
-syntax term "; " term "; " term : asymp_rel
-
-macro a:term:55 " = " b:term:55 : asymp_rel => `(asymp_rel| $a:term; Eq; $b)
-macro a:term:55 " ≤ " b:term:55 : asymp_rel => `(asymp_rel| $a:term; LE.le; $b)
-macro a:term:55 " =ᶠ[" l:term "] " b:term:55 : asymp_rel => `(asymp_rel| $a:term; Filter.EventuallyEq $l; $b)
-macro a:term:55 " ≤ᶠ[" l:term "] " b:term:55 : asymp_rel => `(asymp_rel| $a:term; Filter.EventuallyLE $l; $b)
-macro a:term:55 " =O[" l:term "] " b:term:55 : asymp_rel => `(asymp_rel| $a:term; IsBigO $l; $b)
-macro a:term:55 " =o[" l:term "] " b:term:55 : asymp_rel => `(asymp_rel| $a:term; IsLittleO $l; $b)
-macro a:term:55 " ~[" l:term "] " b:term:55 : asymp_rel => `(asymp_rel| $a:term; IsEquivalent $l; $b)
-
-syntax (name := asympPercent) "asymp% " ident (" : " term)? " => " asymp_rel : term
+syntax (name := asympPercent) "asymp% " ident (" : " term)? " in " term " => " term : term
 
 /-
 TLDR: The fix was to assert `E : Sort (?v + 1)` instead of `E : Sort ?v`. This way the level of
@@ -559,67 +605,59 @@ TLDR: The fix was to assert `E : Sort (?v + 1)` instead of `E : Sort ?v`. This w
 the constructor of `Set`.
 -/
 
-section
-variable {a b : Sort*} (c : Prop)
-#check (α → c)
-end
-
-
-#check mkFreshTypeMVar
 @[term_elab asympPercent]
 meta def elabAsympPercent : Elab.Term.TermElab := fun stx _ ↦ do
   match stx with
-  | `(asymp% $x $[: $t?]? => $e) =>
-    match ← Elab.liftMacroM <| expandMacros e with
-    | `(asymp_rel| $lhs:term; $r; $rhs) =>
-      let fvarType ←
-        if let some t := t? then
-          Elab.Term.elabType t
-        else
-          Meta.mkFreshTypeMVar
+  | `(asymp% $x $[: $t?]? in $l => $e) =>
+    let fvarType ←
+      if let some t := t? then
+        Elab.Term.elabType t
+      else
+        Meta.mkFreshTypeMVar
+    Meta.withLocalDeclD x.getId fvarType fun fvar ↦ do
+      let e' ← Elab.Term.elabTermEnsuringType e (Expr.sort 0)
+      let mkApp2 r lhs rhs := e'
+        | throwError "asymp% requires a binary relation"
       let typeLvl ← mkFreshLevelMVar
       let type ← mkFreshExprMVar (Expr.sort (.succ typeLvl))
+      guard <| ← isDefEq type (← inferType lhs)
+      guard <| ← isDefEq type (← inferType rhs)
       let fnType := Expr.forallE x.getId fvarType type .default
-      trace[Elab.asymp] m!"Elaborated fnType: {fnType}"
-      let r ← Elab.Term.elabTermEnsuringType r
-        (Expr.forallE `a fnType (.forallE `a fnType (.sort 0) .default) .default)
-      trace[Elab.asymp] m!"Elaborated relation {r}"
-      trace[Elab.asymp] m!"Ensured type {(Expr.forallE `a fnType (.forallE `a fnType (.sort 0) .default) .default)}"
-      Meta.withLocalDeclD x.getId fvarType fun fvar ↦ do
-        let u ← getDecLevel fnType
-        trace[Elab.asymp] m!"fnType has type Sort {u}"
-        let elabSide (stx : Syntax) : Elab.Term.TermElabM Expr := do
-          if let `(_) := stx then
-            mkFreshExprMVar (some <| .app (.const ``Set [u]) fnType)
-          else
-            mappify fvar <| ← Elab.Term.elabTermEnsuringType stx type
-        return mkApp5 (.const ``RightSerial [u, u]) fnType fnType r (← elabSide lhs) (← elabSide rhs)
-    | _ => Elab.throwUnsupportedSyntax
+      let u ← getDecLevel fnType
+      let v ← getDecLevel fvarType
+      let mappifySide (e : Expr) : MetaM Expr := do
+        if e.isMVar then
+          -- TODO: we're discarding the mvar kind. Does that matter?
+          return ← mkFreshExprMVar (← mkAppM ``Set #[fnType])
+        mappify fvar e
+      let filter ← Elab.Term.elabTermEnsuringType l (← mkAppM ``Filter #[fvarType])
+      return mkApp6 (.const ``AsympRel [v, typeLvl]) fvarType type filter r
+        (← mappifySide lhs) (← mappifySide rhs)
   | _ => Elab.throwUnsupportedSyntax
 
-open PrettyPrinter Delaborator SubExpr in
-@[app_delab RightSerial]
-meta def delabAsympPercent : Delab := do
-  let_expr RightSerial fnType _ r lhs rhs := ← SubExpr.getExpr | failure
-  let .forallE name d _ _ := fnType | failure
-  let some lhs ← (unmappify lhs).run | failure
-  let some rhs ← (unmappify rhs).run | failure
-  let (lhs, rhs) ← withLocalDeclD name d fun fvar ↦ do
-    let lhs ← withAppFn <| withAppArg <| delab <| lhs.instantiate1 fvar
-    let rhs ← withAppArg <| delab <| rhs.instantiate1 fvar
-    return (lhs, rhs)
-  let d ← withAppFn <| withAppFn <| withAppFn <| delab d
-  let rel ← withAppFn <| withAppFn <| withAppArg do
-    match_expr r with
-    | Eq _ => `(asymp_rel| $lhs:term = $rhs)
-    | LE.le _ _=> `(asymp_rel| $lhs:term ≤ $rhs)
-    | Filter.EventuallyEq _ _ l' => `(asymp_rel| $lhs:term =ᶠ[$(← delab l')] $rhs)
-    | Filter.EventuallyLE _ _ _ l' => `(asymp_rel| $lhs:term ≤ᶠ[$(← delab l')] $rhs)
-    -- | IsBigO _  l' => `(asymp_rel| $lhs:term =O[$l':term] $rhs:term)
-    -- | IsLittleO _  l' => `(asymp_rel| $lhs:term =o[$l'] $rhs)
-    | IsEquivalent _ _ _ l' => `(asymp_rel| $lhs:term ~[$(← delab l')] $rhs)
-    | _ =>`(asymp_rel| $lhs:term; $(← delab r); $rhs)
-  `(asymp% $(mkIdent name) : $d => $rel)
+-- open PrettyPrinter Delaborator SubExpr in
+-- @[app_delab RightSerial]
+-- meta def delabAsympPercent : Delab := do
+--   let_expr RightSerial fnType _ r lhs rhs := ← SubExpr.getExpr | failure
+--   let .forallE name d _ _ := fnType | failure
+--   let some lhs ← (unmappify lhs).run | failure
+--   let some rhs ← (unmappify rhs).run | failure
+--   let (lhs, rhs) ← withLocalDeclD name d fun fvar ↦ do
+--     let lhs ← withAppFn <| withAppArg <| delab <| lhs.instantiate1 fvar
+--     let rhs ← withAppArg <| delab <| rhs.instantiate1 fvar
+--     return (lhs, rhs)
+--   let d ← withAppFn <| withAppFn <| withAppFn <| delab d
+--   let rel ← withAppFn <| withAppFn <| withAppArg do
+--     match_expr r with
+--     | Eq _ => `(asymp_rel| $lhs:term = $rhs)
+--     | LE.le _ _=> `(asymp_rel| $lhs:term ≤ $rhs)
+--     | Filter.EventuallyEq _ _ l' => `(asymp_rel| $lhs:term =ᶠ[$(← delab l')] $rhs)
+--     | Filter.EventuallyLE _ _ _ l' => `(asymp_rel| $lhs:term ≤ᶠ[$(← delab l')] $rhs)
+--     -- | IsBigO _  l' => `(asymp_rel| $lhs:term =O[$l':term] $rhs:term)
+--     -- | IsLittleO _  l' => `(asymp_rel| $lhs:term =o[$l'] $rhs)
+--     | IsEquivalent _ _ _ l' => `(asymp_rel| $lhs:term ~[$(← delab l')] $rhs)
+--     | _ =>`(asymp_rel| $lhs:term; $(← delab r); $rhs)
+--   `(asymp% $(mkIdent name) : $d => $rel)
 
 @[app_unexpander dummyBigO]
 meta def dummyBigOUnexpander : Lean.PrettyPrinter.Unexpander
@@ -677,31 +715,27 @@ theorem Real.log_add_sub_log_isBigO_inv : (fun x ↦ log (x+1) - log x) =O[atTop
 end StandardAsymptotics
 
 
+-- TODO: Improve this. Here it can't figure out the type of 0, and the metavariables are messing
+-- with it.
+/-- warning: declaration uses `sorry` -/
+#guard_msgs in
+example : asymp% x : ℝ in atTop => 0 = 0 := by
+  sorry
 -- see: Real.tendsto_mul_log_one_add_of_tendsto with g x = x⁻¹
 
-lemma Real.log_add_one_isBigO_atTop : asymp% x : ℝ => log (x + 1) = log x + O[atTop](x⁻¹) := by
-  magic_tac
-  simp only [mem_bigO_singleton, rightSerial_eq, Set.singleton_subset_iff, Set.mem_iUnion,
-    Set.mem_singleton_iff, exists_prop]
-  use (fun x ↦ log (x + 1) - log x), Real.log_add_sub_log_isBigO_inv
-  ring_nf
+lemma Real.log_add_one_isBigO_atTop :
+    asymp% x : ℝ in atTop => log (x + 1) = log x + O[atTop](x⁻¹) := by
+  sorry
+  -- magic_tac
+  -- simp only [mem_bigO_singleton, rightSerial_eq, Set.singleton_subset_iff, Set.mem_iUnion,
+  --   Set.mem_singleton_iff, exists_prop]
+  -- use (fun x ↦ log (x + 1) - log x), Real.log_add_sub_log_isBigO_inv
+  -- ring_nf
 
 -- lemma exp_at_one''' {l : Filter α} {f : α → ℝ} (hf : Filter.Tendsto f l (𝓝 0)) :
 --     asymp% x : α => exp (f x) = 1 + O[l](f x) := by
 --   sorry
 --     -- map {fun _ ↦ exp} {f} ⊆ map (map {fun _ ↦ HAdd.hAdd} {fun _ ↦ 1}) (bigO l {f}) := by
-
-set_option trace.Elab.asymp true in
--- same as exp_at_one' but deduced directly from exp_at_one
-example {l : Filter α} {f : α → ℝ} (hf : Filter.Tendsto f l (𝓝 0)) :
-    asymp% x : α => f x = 0 := by
-  sorry
-
-set_option trace.Elab.asymp true in
--- same as exp_at_one' but deduced directly from exp_at_one
-example {l : Filter ℕ} {f : ℕ → ℝ} (hf : Filter.Tendsto f l (𝓝 0)) :
-    asymp% x : ℕ => f x = 0 := by
-  sorry
 
   -- have h := exp_at_one
   -- let : Set (ℝ → ℝ) → Set (α → ℝ) := (Set.image (· ∘ f))
@@ -723,26 +757,36 @@ example {l : Filter ℕ} {f : ℕ → ℝ} (hf : Filter.Tendsto f l (𝓝 0)) :
   = n + O(log n) := _
 -/
 theorem terry :
-      asymp% x : ℝ => (x + 1) ^ (exp x⁻¹) =ᶠ[atTop] x + O[atTop](log x) := by
+      asymp% x : ℝ in atTop => (x + 1) ^ (exp x⁻¹) = x + O[atTop](log x) := by
   calc
     -- asymp% n => (n+1)^(exp(1/n)) =ᶠ[atTop] (n+1)^(1 + O(1/n))
-    asymp% x : ℝ => (x + 1) ^ (exp x⁻¹) = (x + 1) ^ (1 + O[atTop](x⁻¹)) := by
+    asymp% x : ℝ in atTop => (x + 1) ^ (exp x⁻¹) = (x + 1) ^ (1 + O[atTop](x⁻¹)) := by
       -- Can't use exp_at_one_set'' - {f} doesn't match map {fun _ ↦ Inv.inv} {fun x ↦ x}
       grw [exp_at_one_set]
       -- The state here is ugly; I think it's a consequene of how we chose to state exp_at_one_set
       simp only [mem_map, Set.mem_singleton_iff, exists_eq_left, forall_eq]
       exact tendsto_inv_atTop_zero
-    asymp% x : ℝ => _ =ᶠ[atTop] exp (Real.log (x + 1) * (1 + O[atTop](x⁻¹))) := by
+
+
+    /- Weird bug, replacing the lhs with an _ gives:
+   invalid 'calc' step, left-hand side is
+  ?m.96 : Set (ℝ → ℝ)
+but previous right-hand side is
+  map (map {fun x ↦ HPow.hPow} (map (map {fun x ↦ HAdd.hAdd} {fun x ↦ x}) {fun x ↦ 1}))
+    (map (map {fun x ↦ HAdd.hAdd} {fun x ↦ 1}) (bigO atTop (map {fun x ↦ Inv.inv} {fun x ↦ x}))) : Set (ℝ → ℝ)
+
+    -/
+    asymp% x : ℝ in atTop => (x + 1) ^ (1 + O[atTop](x⁻¹)) = exp (Real.log (x + 1) * (1 + O[atTop](x⁻¹))) := by
       magic_tac
       gcongr with f hf
       filter_upwards [eventually_gt_atTop 0] with x hx
       rw [exp_mul, exp_log]
       linarith
     -- (n+1)^(1 + O(1/n)) ⊆ exp ( (log n + O(1/n)) * (1 + O(1/n)) )
-    asymp% x : ℝ => _ = exp ((log x + O[atTop](x⁻¹)) * (1 + O[atTop](x⁻¹))) := by
+    asymp% x : ℝ in atTop => _ = exp ((log x + O[atTop](x⁻¹)) * (1 + O[atTop](x⁻¹))) := by
       grw [Real.log_add_one_isBigO_atTop]
     -- exp ( (log n + O(1/n)) * (1 + O(1/n)) ) ⊆ exp (log n + O(log n / n))
-    asymp% x : ℝ => _ = exp (log x + O[atTop](log x / x)) := by
+    asymp% x : ℝ in atTop => _ = exp (log x + O[atTop](log x / x)) := by
       -- Pain point: I have to do more rewriting thatn I'd like, and I had to
       -- manually translate some existing lemmas into the language of asymptotics.
       grw [asymp_mul_add, asymp_add_mul, asymp_add_mul, mul_bigO, bigO_mul_bigO, bigO_mul,
@@ -758,13 +802,13 @@ theorem terry :
         simp only [bigO_singleton_subset_bigO_singleton]
         exact (Real.inv_isBigO_one_atTop.trans (const_isBigO_log_atTop 1)).mul (isBigO_refl _ _)
     -- exp (log n + O(log n / n)) ⊆ n * (1 + O(log n / n))
-    asymp% x : ℝ =>_ =ᶠ[atTop] x * exp O[atTop](log x / x) := by
+    asymp% x : ℝ in atTop => _ = x * exp O[atTop](log x / x) := by
       magic_tac
       gcongr with f
       filter_upwards [eventually_gt_atTop 0]
       intro x hx
       rw [exp_add, exp_log hx]
-    asymp% x : ℝ => _ =  x * (1 + O[atTop](log x / x)) := by
+    asymp% x : ℝ in atTop => _ =  x * (1 + O[atTop](log x / x)) := by
       grw [exp_at_one_set (l := atTop), bigO_bigO]
       · pull singleton
         simp only [mem_bigO_singleton]
@@ -773,11 +817,11 @@ theorem terry :
         have := tendsto_pow_log_div_mul_add_atTop 1 0 1
         simpa [ne_eq, one_ne_zero, not_false_eq_true, pow_one, one_mul, add_zero,
           forall_const] using this
-    asymp% x : ℝ => _ = x + x * O[atTop](log x / x) := by
+    asymp% x : ℝ in atTop => _ = x + x * O[atTop](log x / x) := by
       magic_tac
       ring_nf
       rfl
-    asymp% x : ℝ => _ = x + O[atTop](log x) := by
+    asymp% x : ℝ in atTop => _ = x + O[atTop](log x) := by
       grw [mul_bigO]
       gcongr
       simp only [RightSerial, mem_map, Set.mem_singleton_iff, exists_eq_left, forall_eq]
@@ -789,3 +833,21 @@ theorem terry :
 #print axioms terry
 
 end Asymptotics
+
+
+section Test
+
+set_option trace.Elab.asymp true in
+-- same as exp_at_one' but deduced directly from exp_at_one
+example {α : Type*} {l : Filter α} {f : α → ℝ} (hf : Filter.Tendsto f l (𝓝 0)) :
+    asymp% x : α in l=> f x = 0 := by
+  sorry
+
+set_option trace.Elab.asymp true in
+-- same as exp_at_one' but deduced directly from exp_at_one
+example {l : Filter ℕ} {f : ℕ → ℝ} (hf : Filter.Tendsto f l (𝓝 0)) :
+    asymp% x : ℕ in l => f x = 0 := by
+  sorry
+
+
+end Test
