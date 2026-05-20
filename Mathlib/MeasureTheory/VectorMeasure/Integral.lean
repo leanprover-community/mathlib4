@@ -516,7 +516,9 @@ theorem integral_smul_nnreal_measure (f : X → E) (c : ℝ≥0) :
 
 open TopologicalSpace
 
-lemma variation_transpose_map_le {β : Type*} [MeasurableSpace β] {φ : X → β} :
+variable {β : Type*} [MeasurableSpace β] {φ : X → β}
+
+lemma variation_transpose_map_le :
    ((μ.map φ).transpose B).variation ≤ Measure.map φ (μ.transpose B).variation := by
   by_cases hφ : Measurable φ; swap
   · simp [VectorMeasure.map, hφ, transpose, Measure.zero_le]
@@ -545,22 +547,17 @@ theorem integral_map {β : Type*} [MeasurableSpace β]
   intro s x hs
   simp [hs, VectorMeasure.map, transpose, hφ]
 
-#check MeasurableEmbedding.comap_apply
-
-theorem _root_.MeasurableEmbedding.integral_map_vectorMeasure
-    {β : Type*} [MeasurableSpace β] {φ : X → β}
-    (hφ : MeasurableEmbedding φ) (f : β → E) :
-    μ.Integrable (f ∘ φ) B ↔ (μ.map φ).Integrable f B := by
-  simp_rw [VectorMeasure.Integrable,
-    ← hφ.integrable_map_iff (g := f) (μ := (μ.transpose B).variation)]
-  congr!
+theorem _root_.MeasurableEmbedding.map_variation (hφ : MeasurableEmbedding φ) :
+    (μ.transpose B).variation.map φ = ((μ.map φ).transpose B).variation := by
   apply le_antisymm ?_ variation_transpose_map_le
   apply Measure.le_iff.2 (fun s hs ↦ ?_)
   simp only [hφ.measurable, hs, Measure.map_apply]
   have : ((μ.map φ).transpose B).variation s = ((μ.map φ).transpose B).variation (s ∩ range φ) := by
     nth_rw 1 [← inter_union_diff s (range φ)]
     have : ((μ.map φ).transpose B).variation (s \ range φ) = 0 := by
-
+      apply (variation_apply_eq_zero (hs.diff hφ.measurableSet_range)).2 (fun t ht t_meas ↦ ?_)
+      have : φ ⁻¹' t = ∅ := by grind
+      simp [transpose, map_apply, t_meas, hφ.measurable, this]
     rw [measure_union (by grind) (hs.diff hφ.measurableSet_range), this, add_zero]
   rw [this, ← hφ.comap_preimage]
   apply variation_le_of_forall_enorm_le (fun t ht ↦ ?_)
@@ -569,18 +566,13 @@ theorem _root_.MeasurableEmbedding.integral_map_vectorMeasure
   simp only [transpose, mapRange_apply, LinearMap.toAddMonoidHom_coe, coe_coe]
   rw [map_apply _ hφ.measurable (hφ.measurableSet_image.2 ht), preimage_image_eq _ hφ.injective]
 
-
-
-
-
-
-
-
-#exit
+theorem _root_.MeasurableEmbedding.integrable_map (hφ : MeasurableEmbedding φ) {f : β → E} :
+    (μ.map φ).Integrable f B ↔ μ.Integrable (f ∘ φ) B := by
+  simp_rw [VectorMeasure.Integrable,
+    ← hφ.integrable_map_iff (g := f) (μ := (μ.transpose B).variation), hφ.map_variation]
 
 theorem _root_.MeasurableEmbedding.integral_map_vectorMeasure
-    {β : Type*} [MeasurableSpace β] {φ : X → β}
-    (hφ : MeasurableEmbedding φ) (f : β → E) :
+    (hφ : MeasurableEmbedding φ) {f : β → E} :
     ∫ᵛ y, f y ∂[B; μ.map φ] = ∫ᵛ x, f (φ x) ∂[B; μ] := by
   by_cases hfm : AEStronglyMeasurable f ((μ.transpose B).variation.map φ)
   · by_cases h'fm : μ.Integrable (f ∘ φ) B
