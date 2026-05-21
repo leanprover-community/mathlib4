@@ -117,7 +117,7 @@ def tateComplex.map {X Y : Rep R G} (φ : X ⟶ Y) : tateComplex X ⟶ tateCompl
   simp [Rep.tateNorm_eq, Representation.norm, Rep.hom_comm_apply]
 
 @[simp]
-lemma tateComplex.map_zero {X Y : Rep R G} : tateComplex.map (X := X) (Y := Y) 0 = 0 := by aesop_cat
+lemma tateComplex.map_zero {X Y : Rep R G} : tateComplex.map (X := X) (Y := Y) 0 = 0 := by cat_disch
 
 variable (R G) in
 /-- The functor taking a representation of `G` to its Tate complex. -/
