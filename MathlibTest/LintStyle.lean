@@ -2,7 +2,7 @@ module
 
 import all Batteries.Data.List.Basic
 import Mathlib.Data.Nat.Basic
-import all Mathlib.Tactic.Linter.Style
+import Mathlib.Tactic.Linter.Style
 import Mathlib.Order.SetNotation
 import Mathlib.Tactic.Basic
 import Mathlib.Tactic.Contrapose
@@ -449,6 +449,8 @@ info: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
 
 /-! Tests for the `nameCheck` linter -/
 section
+
+open Mathlib.Linter.Style.nameCheck
 
 /- Unit tests for the `defsWithUnderscore` linter. -/
 #guard isBadNameWithUnderscore `Foo == false
