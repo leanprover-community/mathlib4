@@ -765,7 +765,7 @@ end ContinuousAdd
 section Partition
 
 variable {M : Type*} [TopologicalSpace M] [AddCommMonoid M] [T2Space M] [ContinuousAdd M]
-variable (v : VectorMeasure α M) {i s t : Set α}
+variable {v : VectorMeasure α M} {i s t : Set α}
 
 @[simp]
 theorem restrict_add_restrict_compl (hi : MeasurableSet i) :
