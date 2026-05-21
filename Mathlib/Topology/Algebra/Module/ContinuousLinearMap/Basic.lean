@@ -728,6 +728,7 @@ section ToSpanSingleton
 variable (R₁)
 variable [ContinuousSMul R₁ M₁]
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Given an element `x` of a topological space `M` over a semiring `R`, the natural continuous
 linear map from `R` to `M` by taking multiples of `x`. -/
 def toSpanSingleton (x : M₁) : R₁ →L[R₁] M₁ where

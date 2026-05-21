@@ -5,6 +5,7 @@ Authors: Kim Morrison, Simon Hudon
 -/
 module
 
+public import Mathlib.CategoryTheory.Monoidal.Cartesian.Basic
 public import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
 public import Mathlib.CategoryTheory.Monoidal.Braided.Basic
 
@@ -150,8 +151,6 @@ variable {D : Type*} [Category* D] (F : C ⥤ D)
   [HasTerminal C] [HasBinaryProducts C]
   [HasTerminal D] [HasBinaryProducts D]
 
-set_option linter.deprecated false in
-attribute [local simp] associator_hom_fst
 @[deprecated Functor.OplaxMonoidal.ofChosenFiniteProducts (since := "2025-10-19")]
 instance :
     have : HasFiniteProducts C := hasFiniteProducts_of_has_binary_and_terminal
@@ -189,7 +188,7 @@ instance :
     have : HasFiniteProducts D := hasFiniteProducts_of_has_binary_and_terminal
     let : CartesianMonoidalCategory C := .ofHasFiniteProducts
     let : CartesianMonoidalCategory D := .ofHasFiniteProducts
-    IsIso (η F) := by dsimp [η_eq]; infer_instance
+    IsIso (η F) := by dsimp [η_eq]; apply instIsIsoTerminalComparison
 
 set_option backward.defeqAttrib.useBackward true in
 set_option linter.deprecated false in
@@ -199,7 +198,7 @@ instance (X Y : C) :
     have : HasFiniteProducts D := hasFiniteProducts_of_has_binary_and_terminal
     let : CartesianMonoidalCategory C := .ofHasFiniteProducts
     let : CartesianMonoidalCategory D := .ofHasFiniteProducts
-    IsIso (δ F X Y) := by dsimp [δ_eq]; infer_instance
+    IsIso (δ F X Y) := by dsimp [δ_eq]; apply instIsIsoProdComparison
 
 /-- Promote a functor that preserves finite products to a monoidal functor between
 categories equipped with the monoidal category structure given by finite products. -/

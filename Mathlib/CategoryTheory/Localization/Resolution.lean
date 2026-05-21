@@ -313,6 +313,7 @@ section
 variable {T : LocalizerMorphism W₁ W₂} {L : LocalizerMorphism W₁ W₁'}
   {R : LocalizerMorphism W₂ W₂'} {B : LocalizerMorphism W₁' W₂'}
 
+set_option backward.defeqAttrib.useBackward true in
 lemma hasRightResolutions_of_iso_of_essSurj
     [R.functor.EssSurj] [W₂'.RespectsIso]
     (iso : T.functor ⋙ R.functor ≅ L.functor ⋙ B.functor) [T.HasRightResolutions] :
@@ -354,6 +355,7 @@ lemma hasRightResolutions_of_iso_of_essSurj_of_full
       refine (W₂'.arrow_mk_iso_iff ?_).2 ρ.hw
       exact Arrow.isoMk (Iso.refl _) (iso.app _ ≪≫ B.functor.mapIso e)}⟩
 
+set_option backward.defeqAttrib.useBackward true in
 lemma hasLeftResolutions_of_iso_of_essSurj_of_full
     [L.functor.EssSurj] [R.functor.Full] [R.IsInduced] [W₂'.RespectsIso]
     (iso : T.functor ⋙ R.functor ≅ L.functor ⋙ B.functor) [B.HasLeftResolutions] :
