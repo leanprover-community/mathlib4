@@ -71,7 +71,7 @@ theorem integrableOn_iUnion_finite [Finite ι] {t : ι → Set X}
 @[simp] theorem integrableOn_univ : μ.IntegrableOn f B univ ↔ μ.Integrable f B := by
   simp [VectorMeasure.IntegrableOn]
 
-theorem Integrable.IntegrableOn (h : μ.Integrable f B) : μ.IntegrableOn f B s := by
+theorem Integrable.integrableOn (h : μ.Integrable f B) : μ.IntegrableOn f B s := by
   rw [← integrableOn_univ] at h
   exact h.mono MeasurableSet.univ (subset_univ _)
 
@@ -80,7 +80,7 @@ theorem setIntegral_congr_ae (h : ∀ᵐ x ∂(μ.transpose B).variation, x ∈ 
   by_cases hs : MeasurableSet s; swap
   · simp [restrict_not_measurable _ hs]
   apply integral_congr_ae
-  rw [transpose_restrict, variation_restrict _ hs]
+  rw [transpose_restrict, variation_restrict hs]
   exact (ae_restrict_iff' hs).2 h
 
 theorem setIntegral_congr_fun (h : EqOn f g s) :
@@ -135,60 +135,52 @@ theorem setIntegral_empty : ∫ᵛ x in ∅, f x ∂[B; μ] = 0 := by simp
 
 theorem setIntegral_univ : ∫ᵛ x in univ, f x ∂[B; μ] = ∫ᵛ x, f x ∂[B; μ] := by simp
 
-lemma integral_eq_setIntegral (hs : ∀ᵐ x ∂(μ.transpose B).variation, x ∈ s) (f : X → E) :
-    ∫ᵛ x, f x ∂[B; μ] = ∫ᵛ x in s, f x ∂[B; μ] := by
-  rw [← setIntegral_univ, ← setIntegral_congr_set]; rwa [ae_eq_univ]
-
-theorem integral_add_compl₀ (hs : NullMeasurableSet s μ) (hfi : Integrable f μ) :
+theorem setIntegral_add_compl (hs : MeasurableSet s) (hfi : μ.Integrable f B) :
     ∫ᵛ x in s, f x ∂[B; μ] + ∫ᵛ x in sᶜ, f x ∂[B; μ] = ∫ᵛ x, f x ∂[B; μ] := by
-  have := setIntegral_union₀ disjoint_compl_right.aedisjoint
-    hs.compl hfi.integrableOn hfi.integrableOn
+  have := setIntegral_union disjoint_compl_right
+    hs hs.compl hfi.integrableOn hfi.integrableOn
   rw [← this, union_compl_self, setIntegral_univ]
 
-theorem integral_add_compl (hs : MeasurableSet s) (hfi : Integrable f μ) :
-    ∫ᵛ x in s, f x ∂[B; μ] + ∫ᵛ x in sᶜ, f x ∂[B; μ] = ∫ᵛ x, f x ∂[B; μ] :=
-  integral_add_compl₀ hs.nullMeasurableSet hfi
-
-theorem setIntegral_compl₀ (hs : NullMeasurableSet s μ) (hfi : Integrable f μ) :
+theorem setIntegral_compl (hs : MeasurableSet s) (hfi : μ.Integrable f B) :
     ∫ᵛ x in sᶜ, f x ∂[B; μ] = ∫ᵛ x, f x ∂[B; μ] - ∫ᵛ x in s, f x ∂[B; μ] := by
-  rw [← integral_add_compl₀ (μ := μ) hs hfi, add_sub_cancel_left]
+  rw [← setIntegral_add_compl (μ := μ) hs hfi, add_sub_cancel_left]
 
-theorem setIntegral_compl (hs : MeasurableSet s) (hfi : Integrable f μ) :
-    ∫ᵛ x in sᶜ, f x ∂[B; μ] = ∫ᵛ x, f x ∂[B; μ] - ∫ᵛ x in s, f x ∂[B; μ] :=
-  setIntegral_compl₀ hs.nullMeasurableSet hfi
+theorem integrable_indicator_iff (hs : MeasurableSet s) :
+    μ.Integrable (indicator s f) B ↔ μ.IntegrableOn f B s := by
+  simp [VectorMeasure.Integrable, VectorMeasure.IntegrableOn, MeasureTheory.IntegrableOn,
+    MeasureTheory.integrable_indicator_iff hs, transpose_restrict, variation_restrict hs]
 
-
-#exit
+theorem IntegrableOn.integrable_indicator (h : μ.IntegrableOn f B s) (hs : MeasurableSet s) :
+    μ.Integrable (indicator s f) B :=
+  (integrable_indicator_iff hs).2 h
 
 /-- For a function `f` and a measurable set `s`, the integral of `indicator s f`
-over the whole space is equal to `∫ᵛ x in s, f x ∂[B; μ]` defined as `∫ᵛ x, f x ∂(μ.restrict s)`. -/
+over the whole space is equal to `∫ᵛ x in s, f x ∂[B; μ]`
+defined as `∫ᵛ x, f x ∂[B; μ.restrict s]`. -/
 theorem integral_indicator (hs : MeasurableSet s) :
     ∫ᵛ x, indicator s f x ∂[B; μ] = ∫ᵛ x in s, f x ∂[B; μ] := by
-  by_cases hfi : IntegrableOn f s μ; swap
+  by_cases hfi : μ.IntegrableOn f B s; swap
   · rw [integral_undef hfi, integral_undef]
-    rwa [integrable_indicator_iff hs]
+    rw [integrable_indicator_iff hs]
+    simpa [transpose_restrict, variation_restrict hs] using hfi
   calc
-    ∫ᵛ x, indicator s f x ∂[B; μ] = ∫ᵛ x in s, indicator s f x ∂[B; μ] + ∫ᵛ x in sᶜ, indicator s f x ∂[B; μ] :=
-      (integral_add_compl hs (hfi.integrable_indicator hs)).symm
-    _ = ∫ᵛ x in s, f x ∂[B; μ] + ∫ᵛ x in sᶜ, 0 ∂[B; μ] :=
-      (congr_arg₂ (· + ·) (integral_congr_ae (indicator_ae_eq_restrict hs))
-        (integral_congr_ae (indicator_ae_eq_restrict_compl hs)))
+    ∫ᵛ x, indicator s f x ∂[B; μ]
+    _ = ∫ᵛ x in s, indicator s f x ∂[B; μ] + ∫ᵛ x in sᶜ, indicator s f x ∂[B; μ] :=
+      (setIntegral_add_compl hs (hfi.integrable_indicator hs)).symm
+    _ = ∫ᵛ x in s, f x ∂[B; μ] + ∫ᵛ x in sᶜ, 0 ∂[B; μ] := by
+      apply congr_arg₂ (· + ·) (integral_congr_ae ?_) (integral_congr_ae ?_)
+      · rw [transpose_restrict, variation_restrict hs]
+        exact indicator_ae_eq_restrict hs
+      · rw [transpose_restrict, variation_restrict hs.compl]
+        exact indicator_ae_eq_restrict_compl hs
     _ = ∫ᵛ x in s, f x ∂[B; μ] := by simp
-
-theorem integral_indicator₀ (hs : NullMeasurableSet s μ) :
-    ∫ᵛ x, indicator s f x ∂[B; μ] = ∫ᵛ x in s, f x ∂[B; μ] := by
-  rw [← integral_congr_ae (indicator_ae_eq_of_ae_eq_set hs.toMeasurable_ae_eq),
-    integral_indicator (measurableSet_toMeasurable _ _),
-    Measure.restrict_congr_set hs.toMeasurable_ae_eq]
-
-lemma integral_integral_indicator {mY : MeasurableSpace Y} {ν : Measure Y} (f : X → Y → E)
-    {s : Set X} (hs : MeasurableSet s) :
-    ∫ᵛ x, ∫ᵛ y, s.indicator (f · y) x ∂ν ∂[B; μ] = ∫ᵛ x in s, ∫ᵛ y, f x y ∂ν ∂[B; μ] := by
-  simp_rw [← integral_indicator hs, integral_indicator₂]
 
 theorem setIntegral_indicator (ht : MeasurableSet t) :
     ∫ᵛ x in s, t.indicator f x ∂[B; μ] = ∫ᵛ x in s ∩ t, f x ∂[B; μ] := by
   rw [integral_indicator ht, Measure.restrict_restrict ht, Set.inter_comm]
+
+
+#exit
 
 /-- **Inclusion-exclusion principle** for the integral of a function over a union.
 

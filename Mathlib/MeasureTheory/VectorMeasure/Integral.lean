@@ -228,7 +228,7 @@ lemma integrable_finsetSum_vectorMeasure {ι : Type*} {μ : ι → VectorMeasure
 lemma Integrable.restrict (hf : μ.Integrable f B) {s : Set X} :
     (μ.restrict s).Integrable f B := by
   by_cases hs : MeasurableSet s
-  · simp only [VectorMeasure.Integrable, transpose_restrict, variation_restrict _ hs]
+  · simp only [VectorMeasure.Integrable, transpose_restrict, variation_restrict hs]
     exact MeasureTheory.Integrable.restrict hf
   · simp [restrict_not_measurable _ hs]
 
@@ -468,7 +468,7 @@ theorem setIntegral_vectorMeasure_zero (f : X → E) {s : Set X}
   by_cases h's : MeasurableSet s; swap
   · simp [restrict_not_measurable μ h's]
   have : ((μ.restrict s).transpose B).variation = 0 := by
-    rw [transpose_restrict, variation_restrict _ h's]
+    rw [transpose_restrict, variation_restrict h's]
     apply Measure.restrict_eq_zero.2 hs
   have : (μ.restrict s).transpose B = 0 := variation_eq_zero.1 this
   simp [integral, this]
