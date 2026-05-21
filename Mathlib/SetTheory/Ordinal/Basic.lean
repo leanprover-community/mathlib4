@@ -953,8 +953,9 @@ protected theorem le_one_iff {a : Ordinal} : a ≤ 1 ↔ a = 0 ∨ a = 1 :=
 theorem card_succ (o : Ordinal) : card (succ o) = card o + 1 := by
   simp
 
+@[deprecated Nat.cast_add_one (since := "2026-05-21")]
 theorem natCast_succ (n : ℕ) : ↑n.succ = succ (n : Ordinal) :=
-  rfl
+  n.cast_add_one
 
 instance uniqueIioOne : Unique (Iio (1 : Ordinal)) where
   default := ⟨0, zero_lt_one' Ordinal⟩
