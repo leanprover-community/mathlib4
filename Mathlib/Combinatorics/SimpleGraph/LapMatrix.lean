@@ -137,9 +137,7 @@ theorem det_lapMatrix_eq_zero [Nonempty V] [CommRing R] : (G.lapMatrix R).det = 
 variable (R) in
 theorem not_isUnit_lapMatrix [Nonempty V] [Nontrivial R] [CommRing R] :
     ¬IsUnit (G.lapMatrix R) := by
-  have ⟨v⟩ := ‹Nonempty V›
-  have := G.lapMatrix R |>.mulVec_zero.trans <| .symm <| G.lapMatrix_mulVec_one_eq_zero R
-  exact (zero_ne_one congr($(mulVec_injective_of_isUnit · this) v))
+  simp [isUnit_iff_isUnit_det]
 
 variable (R) in
 /-- `0` is an eigenvalue of the Laplacian matrix of any graph. -/
