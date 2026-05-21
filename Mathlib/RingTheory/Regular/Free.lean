@@ -66,11 +66,8 @@ lemma free_iff_quotSMulTop_free [IsNoetherianRing R] (M : Type*) [AddCommGroup M
       simpa [f] using Finsupp.mapRange_surjective _ rfl (Submodule.mkQ_surjective (Ideal.span {x}))
     have lejac : Ideal.span {x} ≤ (⊥ :Ideal R).jacobson := by simpa
     have surjg : Function.Surjective g := by
-      rw [← LinearMap.range_eq_top, ← top_le_iff]
-      apply Submodule.le_of_le_smul_of_le_jacobson_bot (Module.finite_def.mp ‹_›) lejac
-      rw [top_le_iff, sup_comm, ← Submodule.map_mkQ_eq_top, ← LinearMap.range_comp,
-        Submodule.ideal_span_singleton_smul x ⊤, hg]
-      exact LinearMap.range_eq_top_of_surjective f surjf
+      apply g.surjective_of_surjective_comp_mkQ (Ideal.span {x}) lejac
+      rwa [Submodule.ideal_span_singleton_smul x ⊤, hg]
     have kerf : LinearMap.ker f = x • (⊤ : Submodule R (I →₀ R)) := by
       simp [f, LinearMap.ker_mapRange_mkQ_eq_smul_top, Submodule.ideal_span_singleton_smul]
     have injg : Function.Injective g := by
