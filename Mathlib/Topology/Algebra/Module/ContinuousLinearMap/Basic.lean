@@ -27,8 +27,8 @@ Later files endow it with a topological structure, see the docstring of
 * `ContinuousLinearMap` is the type of (semi)linear maps between two topological modules which are
   continuous. It is denoted by `M →L[R] N` in the `R`-linear case, `M →SL[σ] N` in the
   `σ`-semilinear case, and `M →L⋆[R] N` in the star-linear case.
-* `StrongDual R M` is an abbrev for `M →L[R] R`, the type of continuous `R`-linear forms on `M`.
-  As a vector space, it is often called the "topological dual of `M`". We use the name "strong
+* `StrongDual R M` is an abbreviation for `M →L[R] R`, the type of continuous `R`-linear forms on
+  `M`. As a vector space, it is often called the "topological dual of `M`". We use the name "strong
   dual" because it will (in later files) be endowed with the strong-dual topology, namely the
   topology of uniform convergence on bounded subsets.
 * `ContinuousLinearMap.addCommMonoid`, `ContinuousLinearMap.module`,... : algebraic structure
