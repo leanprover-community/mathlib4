@@ -183,6 +183,11 @@ lemma variation_restrict_le (μ : VectorMeasure X V) (s : Set X) :
   · simp [variation_restrict μ hs]
   · simp only [restrict_not_measurable _ hs, variation_zero, Measure.zero_le]
 
+instance {s : Set X} [IsFiniteMeasure μ.variation] : IsFiniteMeasure (μ.restrict s).variation := by
+  constructor
+  grw [variation_restrict_le]
+  exact IsFiniteMeasure.measure_univ_lt_top
+
 lemma variation_map_le {Y : Type*} [MeasurableSpace Y] {φ : X → Y} :
    (μ.map φ).variation ≤ Measure.map φ μ.variation := by
   by_cases hφ : Measurable φ; swap
@@ -191,6 +196,12 @@ lemma variation_map_le {Y : Type*} [MeasurableSpace Y] {φ : X → Y} :
   simp only [Measure.map_apply hφ hs]
   apply le_trans ?_ (enorm_measure_le_variation _ _)
   simp [VectorMeasure.map_apply _ hφ hs]
+
+instance {Y : Type*} [MeasurableSpace Y] {φ : X → Y} [IsFiniteMeasure μ.variation] :
+    IsFiniteMeasure (μ.map φ).variation := by
+  constructor
+  grw [variation_map_le]
+  exact IsFiniteMeasure.measure_univ_lt_top
 
 theorem _root_.MeasurableEmbedding.variation_map {Y : Type*} [MeasurableSpace Y] {φ : X → Y}
     (hφ : MeasurableEmbedding φ) :
@@ -258,6 +269,11 @@ lemma variation_smul {𝕜 : Type*} [NormedField 𝕜] [NormedSpace 𝕜 V] {c :
   _ = (c • μ).variation := by
     simp [smul_smul, mul_inv_cancel₀ (nnnorm_ne_zero_iff.mpr hc)]
 
+instance {𝕜 : Type*} [NormedField 𝕜] [NormedSpace 𝕜 V] {c : 𝕜} [IsFiniteMeasure μ.variation] :
+    IsFiniteMeasure (c • μ).variation := by
+  simp only [variation_smul]
+  infer_instance
+
 instance [Finite X] : IsFiniteMeasure μ.variation := by
   classical
   let : Fintype X := Fintype.ofFinite X
@@ -265,6 +281,10 @@ instance [Finite X] : IsFiniteMeasure μ.variation := by
   simp only [variation_apply, preVariation_apply, MeasurableSet.univ, ennrealToMeasure_apply,
     ennrealPreVariation_apply, preVariationFun, ↓reduceDIte, ← sup_univ_eq_ciSup]
   exact (Finset.sup_lt_iff (by simp)).2 (fun b hb ↦ by simp [ENNReal.sum_lt_top, enorm_lt_top])
+
+instance {x : X} {v : V} : IsFiniteMeasure (VectorMeasure.dirac x v).variation := by
+  simp only [variation_dirac, enorm_eq_nnnorm, Measure.coe_nnreal_smul]
+  infer_instance
 
 end NormedAddCommGroup
 

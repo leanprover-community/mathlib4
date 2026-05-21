@@ -51,7 +51,19 @@ variable {X E F G : Type*} {mX : MeasurableSpace X}
 
 namespace MeasureTheory.VectorMeasure
 
-section NormedAddCommGroup
+theorem IntegrableOn.mono (hs : MeasurableSet s) (hts : t ⊆ s) (h : μ.IntegrableOn f B s) :
+    μ.IntegrableOn f B t := by
+  by_cases ht : MeasurableSet t; swap
+  · simp [VectorMeasure.IntegrableOn, restrict_not_measurable _ ht]
+  apply Integrable.mono_measure h
+  simp [transpose_restrict, variation_restrict, hs, ht, Measure.restrict_mono hts le_rfl]
+
+@[simp] theorem integrableOn_univ : μ.IntegrableOn f B univ ↔ μ.Integrable f B := by
+  simp [VectorMeasure.IntegrableOn]
+
+theorem Integrable.IntegrableOn (h : μ.Integrable f B) : μ.IntegrableOn f B s := by
+  rw [← integrableOn_univ] at h
+  exact h.mono MeasurableSet.univ (subset_univ _)
 
 theorem setIntegral_congr_ae (hs : MeasurableSet s)
     (h : ∀ᵐ x ∂(μ.transpose B).variation, x ∈ s → f x = g x) :
