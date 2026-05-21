@@ -98,6 +98,10 @@ lemma mono_iff [HasLimitsOfShape WalkingCospan C] {X Y : Plus C} (f : X ⟶ Y) :
   ⟨fun _ ↦ inferInstanceAs (Mono ((ι C).map f)),
     fun _ ↦ Functor.mono_of_mono_map (ι C) (by assumption)⟩
 
+instance [HasLimitsOfShape WalkingCospan C] {X Y : Plus C} (f : X ⟶ Y) [Mono f] :
+    Mono f.hom := by
+  rwa [← mono_iff]
+
 /-- The class of quasi-isomorphisms in the category of bounded
 below cochain complexes. -/
 def quasiIso [CategoryWithHomology C] : MorphismProperty (Plus C) :=

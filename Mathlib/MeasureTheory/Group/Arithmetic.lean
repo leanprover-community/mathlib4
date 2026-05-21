@@ -847,7 +847,7 @@ theorem Finset.measurable_prod (s : Finset ι) (hf : ∀ i ∈ s, Measurable (f 
 lemma Finset.measurable_prod_apply {f : ι → α → β → M} {g : α → β} {s : Finset ι}
     (hf : ∀ i ∈ s, Measurable ↿(f i)) (hg : Measurable g) :
     Measurable fun a ↦ (∏ i ∈ s, f i a) (g a) := by
-  simp only [prod_apply]; fun_prop (discharger := assumption)
+  simp only [prod_apply]; fun_prop
 
 @[to_additive (attr := fun_prop)]
 theorem Finset.aemeasurable_prod (s : Finset ι) (hf : ∀ i ∈ s, AEMeasurable (f i) μ) :
