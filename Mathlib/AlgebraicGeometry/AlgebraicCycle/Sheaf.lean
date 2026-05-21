@@ -591,4 +591,54 @@ def sheaf {X : Scheme} [IsIntegral X] [IsLocallyNoetherian X]
   val := D.presheaf
   isSheaf := AlgebraicCycle.Sheaf.isSheaf D
 
+
+variable (D : AlgebraicCycle X ℤ) (x : X) [IsIntegral X] [IsLocallyNoetherian X]
+  [IsRegularInCodimensionOne X]
+
+
+noncomputable
+instance : Module (X.presheaf.stalk x) ↑(TopCat.Presheaf.stalk D.sheaf.val.presheaf x) := --inferInstance
+  PresheafOfModules.instModuleCarrierStalkCommRingCatCarrierAbPresheafOpensCarrier D.sheaf.val x
+
+#check (D.sheaf.presheaf.stalk x)
+
+#check X.sheaf
+
+open CategoryTheory
+open Functor
+open Limits
+open TopologicalSpace OpenNhds
+noncomputable
+def thth {X : Scheme} [IsIntegral X] [IsLocallyNoetherian X]
+    [IsRegularInCodimensionOne X] (D : AlgebraicCycle X ℤ) :
+    (TopCat.Presheaf.stalk D.sheaf.val.presheaf (genericPoint X)) ⟶ ((forget₂ CommRingCat RingCat ⋙
+    forget₂ RingCat Ab).obj X.functionField) := by
+  let c : Cocone <| ((inclusion (genericPoint ↥X)).op ⋙ D.sheaf.val.presheaf) := {
+    pt := (forget₂ RingCat Ab).obj ((forget₂ CommRingCat RingCat).obj X.functionField)
+    ι := {
+      app U :=
+        AddCommGrpCat.ofHom {
+          toFun f := f.1
+          map_zero' := rfl
+          map_add' := fun _ _ ↦ rfl
+        }
+      naturality U V f := by
+        apply AddCommGrpCat.hom_ext
+        simp
+        by_cases t : Nonempty (V.unop.1)
+        · sorry
+        · sorry
+    }
+  }
+  apply colimit.desc _ c
+
+/-
+Next: Show that this is an iso (the proof should be that (f) + D ≥ 0 on any set where
+(f) has no poles)
+
+This gives us a map 𝒪ₓ(D)ₐ → K(X) for any a : X.
+
+If a is codimension one, we want to argue that the range of this map is precisely the
+valuation subring of 𝒪ₓ,ₐ in the function field.
+-/
 end AlgebraicCycle
