@@ -261,7 +261,7 @@ variable (𝕜) in
 /-- The canonical continuous multilinear map from `E = Πᵢ Eᵢ` to `⨂[𝕜] i, Eᵢ`. -/
 @[simps!]
 noncomputable def tprodL : ContinuousMultilinearMap 𝕜 E (⨂[𝕜] i, E i) :=
-  (liftIsometry 𝕜 E _).symm (ContinuousLinearMap.id 𝕜 _)
+  (liftIsometry 𝕜 E (⨂[𝕜] i, E i)).symm (ContinuousLinearMap.id 𝕜 _)
 
 @[simp]
 theorem tprodL_coe : (tprodL 𝕜).toMultilinearMap = tprod 𝕜 (s := E) := by
@@ -274,7 +274,7 @@ theorem liftIsometry_symm_apply (l : (⨂[𝕜] i, E i) →L[𝕜] F) :
 
 @[simp]
 theorem liftIsometry_tprodL :
-    liftIsometry 𝕜 E _ (tprodL 𝕜) = ContinuousLinearMap.id 𝕜 (⨂[𝕜] i, E i) := by
+    liftIsometry 𝕜 E (⨂[𝕜] i, E i) (tprodL 𝕜) = ContinuousLinearMap.id 𝕜 (⨂[𝕜] i, E i) := by
   ext; simp
 
 end seminorm
@@ -291,7 +291,7 @@ Let `f` be a family of continuous `𝕜`-linear maps between `Eᵢ` and `E'ᵢ`,
 `f : Πᵢ Eᵢ →L[𝕜] E'ᵢ`, then there is an induced continuous linear map
 `⨂ᵢ Eᵢ → ⨂ᵢ E'ᵢ` by `⨂ aᵢ ↦ ⨂ fᵢ aᵢ`. -/
 noncomputable def mapL : (⨂[𝕜] i, E i) →L[𝕜] ⨂[𝕜] i, E' i :=
-  liftIsometry 𝕜 E _ <| (tprodL 𝕜).compContinuousLinearMap f
+  liftIsometry 𝕜 E (⨂[𝕜] i, E' i) <| (tprodL 𝕜).compContinuousLinearMap f
 
 @[simp]
 theorem mapL_coe : (mapL f).toLinearMap = map (fun i ↦ (f i).toLinearMap) := by

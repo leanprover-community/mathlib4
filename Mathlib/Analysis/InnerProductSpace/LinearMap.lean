@@ -203,10 +203,12 @@ noncomputable def toSesqForm : (E →L[𝕜] E') →L[𝕜] E' →L⋆[𝕜] E �
     ContinuousLinearMap.compSL E E' (E' →L⋆[𝕜] 𝕜) (RingHom.id 𝕜) (RingHom.id 𝕜) (innerSLFlip 𝕜)
 
 @[simp]
-theorem toSesqForm_apply_coe (f : E →L[𝕜] E') (x : E') : toSesqForm f x = (innerSL 𝕜 x).comp f :=
+theorem toSesqForm_apply_coe (f : E →L[𝕜] E') (x : E') :
+    toSesqForm (𝕜 := 𝕜) f x = (innerSL 𝕜 x).comp f :=
   rfl
 
-theorem toSesqForm_apply_norm_le {f : E →L[𝕜] E'} {v : E'} : ‖toSesqForm f v‖ ≤ ‖f‖ * ‖v‖ := by
+theorem toSesqForm_apply_norm_le {f : E →L[𝕜] E'} {v : E'} :
+    ‖toSesqForm (𝕜 := 𝕜) f v‖ ≤ ‖f‖ * ‖v‖ := by
   refine opNorm_le_bound _ (by positivity) fun x ↦ ?_
   have h₁ : ‖f x‖ ≤ ‖f‖ * ‖x‖ := le_opNorm _ _
   have h₂ := @norm_inner_le_norm 𝕜 E' _ _ _ v (f x)
@@ -303,71 +305,76 @@ This corresponds to the matrix outer product `Matrix.vecMulVec`, see
 noncomputable def rankOne : E →L[𝕜] F →L⋆[𝕜] F →L[𝕜] E :=
   .flip <| .comp (.smulRightL 𝕜 _ _) (innerSL 𝕜)
 
-lemma rankOne_def (x : E) (y : F) : rankOne 𝕜 x y = (innerSL 𝕜 y).smulRight x := rfl
+lemma rankOne_def (x : E) (y : F) : rankOne 𝕜 (E := E) x y = (innerSL 𝕜 y).smulRight x := rfl
 
-lemma rankOne_def' (x : E) (y : F) : rankOne 𝕜 x y = .toSpanSingleton 𝕜 x ∘L innerSL 𝕜 y := rfl
+lemma rankOne_def' (x : E) (y : F) : rankOne 𝕜 (E := E) x y = .toSpanSingleton 𝕜 x ∘L innerSL 𝕜 y :=
+  rfl
 
 lemma toLinearMap_rankOne (x : E) (y : F) :
-    (rankOne 𝕜 x y).toLinearMap = (innerₛₗ 𝕜 y).smulRight x := rfl
+    (rankOne 𝕜 (E := E) x y).toLinearMap = (innerₛₗ 𝕜 y).smulRight x := rfl
 
-@[simp] theorem norm_rankOne (x : E) (y : F) : ‖rankOne 𝕜 x y‖ = ‖x‖ * ‖y‖ := by
+@[simp] theorem norm_rankOne (x : E) (y : F) : ‖rankOne 𝕜 (E := E) x y‖ = ‖x‖ * ‖y‖ := by
   rw [rankOne_def, norm_smulRight_apply, innerSL_apply_norm, mul_comm]
 
-@[simp] theorem nnnorm_rankOne (x : E) (y : F) : ‖rankOne 𝕜 x y‖₊ = ‖x‖₊ * ‖y‖₊ :=
+@[simp] theorem nnnorm_rankOne (x : E) (y : F) : ‖rankOne 𝕜 (E := E) x y‖₊ = ‖x‖₊ * ‖y‖₊ :=
   NNReal.eq <| norm_rankOne _ _
 
-@[simp] theorem enorm_rankOne (x : E) (y : F) : ‖rankOne 𝕜 x y‖ₑ = ‖x‖ₑ * ‖y‖ₑ :=
+@[simp] theorem enorm_rankOne (x : E) (y : F) : ‖rankOne 𝕜 (E := E) x y‖ₑ = ‖x‖ₑ * ‖y‖ₑ :=
   ENNReal.coe_inj.mpr <| nnnorm_rankOne _ _
 
-@[simp] lemma rankOne_apply (x : E) (y z : F) : rankOne 𝕜 x y z = inner 𝕜 y z • x := rfl
+@[simp] lemma rankOne_apply (x : E) (y z : F) : rankOne 𝕜 (E := E) x y z = inner 𝕜 y z • x := rfl
 
 lemma comp_rankOne {G : Type*} [SeminormedAddCommGroup G] [NormedSpace 𝕜 G]
-    (x : E) (y : F) (f : E →L[𝕜] G) : f ∘L rankOne 𝕜 x y = rankOne 𝕜 (f x) y := by
+    (x : E) (y : F) (f : E →L[𝕜] G) : f ∘L rankOne 𝕜 (E := E) x y = rankOne 𝕜 (E := G) (f x) y := by
   simp_rw [rankOne_def', ← comp_assoc, comp_toSpanSingleton]
 
 theorem isIdempotentElem_rankOne_self {x : F} (hx : ‖x‖ = 1) :
-    IsIdempotentElem (rankOne 𝕜 x x) := by simp [IsIdempotentElem, mul_def, comp_rankOne, hx]
+    IsIdempotentElem (rankOne 𝕜 (E := F) x x) := by
+  simp [IsIdempotentElem, mul_def, comp_rankOne, hx]
 
 @[simp] theorem rankOne_one_right_eq_toSpanSingleton (x : F) :
-    rankOne 𝕜 x 1 = toSpanSingleton 𝕜 x := by ext; simp
+    rankOne 𝕜 (E := F) x 1 = toSpanSingleton 𝕜 x := by ext; simp
 
-@[simp] theorem rankOne_one_left_eq_innerSL (x : F) : rankOne 𝕜 1 x = innerSL 𝕜 x := by ext; simp
+@[simp] theorem rankOne_one_left_eq_innerSL (x : F) : rankOne 𝕜 (E := 𝕜) 1 x = innerSL 𝕜 x := by
+  ext; simp
 
 lemma rankOne_comp_rankOne (x : E) (y z : F) (w : G) :
-    rankOne 𝕜 x y ∘L rankOne 𝕜 z w = inner 𝕜 y z • rankOne 𝕜 x w := by simp [comp_rankOne]
+    rankOne 𝕜 (E := E) x y ∘L rankOne 𝕜 (E := F) z w = inner 𝕜 y z • rankOne 𝕜 (E := E) x w := by
+  simp [comp_rankOne]
 
 lemma inner_left_rankOne_apply (x : F) (y z : G) (w : F) :
-    inner 𝕜 (rankOne 𝕜 x y z) w = inner 𝕜 z y * inner 𝕜 x w := by
+    inner 𝕜 (rankOne 𝕜 (E := F) x y z) w = inner 𝕜 z y * inner 𝕜 x w := by
   simp [inner_smul_left, inner_conj_symm]
 
 lemma inner_right_rankOne_apply (x y : F) (z w : G) :
-    inner 𝕜 x (rankOne 𝕜 y z w) = inner 𝕜 x y * inner 𝕜 z w := by
+    inner 𝕜 x (rankOne 𝕜 (E := F) y z w) = inner 𝕜 x y * inner 𝕜 z w := by
   simp [inner_smul_right, mul_comm]
 
 section Normed
 variable {F H : Type*} [NormedAddCommGroup F] [InnerProductSpace 𝕜 F]
   [NormedAddCommGroup H] [InnerProductSpace 𝕜 H]
 
-@[simp] theorem rankOne_eq_zero {x : E} {y : F} : rankOne 𝕜 x y = 0 ↔ x = 0 ∨ y = 0 := by
+@[simp] theorem rankOne_eq_zero {x : E} {y : F} : rankOne 𝕜 (E := E) x y = 0 ↔ x = 0 ∨ y = 0 := by
   simp [ContinuousLinearMap.ext_iff, rankOne_apply, forall_or_right, or_comm,
     ext_iff_inner_right 𝕜 (E := F)]
 
-lemma rankOne_ne_zero {x : E} {y : F} (hx : x ≠ 0) (hy : y ≠ 0) : rankOne 𝕜 x y ≠ 0 := by
+lemma rankOne_ne_zero {x : E} {y : F} (hx : x ≠ 0) (hy : y ≠ 0) : rankOne 𝕜 (E := E) x y ≠ 0 := by
   grind [rankOne_eq_zero]
 
 theorem isIdempotentElem_rankOne_self_iff {x : F} (hx : x ≠ 0) :
-    IsIdempotentElem (rankOne 𝕜 x x) ↔ ‖x‖ = 1 := by
+    IsIdempotentElem (rankOne 𝕜 (E := F) x x) ↔ ‖x‖ = 1 := by
   refine ⟨?_, isIdempotentElem_rankOne_self⟩
   simp only [IsIdempotentElem, mul_def, comp_rankOne, rankOne_apply, inner_self_eq_norm_sq_to_K,
-    map_smul, coe_smul', Pi.smul_apply]
-  nth_rw 2 [← one_smul 𝕜 (rankOne 𝕜 x x)]
+    map_smul, _root_.smul_apply]
+  nth_rw 2 [← one_smul 𝕜 (rankOne 𝕜 (E := F) x x)]
   rw [← sub_eq_zero, ← sub_smul]
   simp only [smul_eq_zero, rankOne_eq_zero, hx, or_self, or_false, sub_eq_zero, sq_eq_one_iff,
     FaithfulSMul.algebraMap_eq_one_iff, ← show ((-(1 : ℝ) : ℝ) : 𝕜) = -1 by grind, ofReal_inj]
   grind [norm_nonneg]
 
 theorem rankOne_eq_rankOne_iff_comm {a c : F} {b d : H} :
-    rankOne 𝕜 a b = rankOne 𝕜 c d ↔ rankOne 𝕜 b a = rankOne 𝕜 d c := by
+    rankOne 𝕜 (E := F) a b = rankOne 𝕜 (E := F) c d ↔
+      rankOne 𝕜 (E := H) b a = rankOne 𝕜 (E := H) d c := by
   simp_rw [ContinuousLinearMap.ext_iff, ext_iff_inner_left 𝕜 (E := F),
     ext_iff_inner_right 𝕜 (E := H)]
   rw [forall_comm]
@@ -375,7 +382,7 @@ theorem rankOne_eq_rankOne_iff_comm {a c : F} {b d : H} :
 
 open ComplexOrder in
 theorem exists_of_rankOne_eq_rankOne {a c : F} {b d : H}
-    (ha : a ≠ 0) (hb : b ≠ 0) (h : rankOne 𝕜 a b = rankOne 𝕜 c d) :
+    (ha : a ≠ 0) (hb : b ≠ 0) (h : rankOne 𝕜 (E := F) a b = rankOne 𝕜 (E := F) c d) :
     ∃ (α β : 𝕜) (_ : α ≠ 0) (_ : 0 < β), a = α • c ∧ b = (α * β) • d := by
   have h₂ := rankOne_eq_rankOne_iff_comm.mp h
   simp only [ContinuousLinearMap.ext_iff, rankOne_apply] at h h₂
