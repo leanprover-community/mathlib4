@@ -5,6 +5,7 @@ Authors: Nailin Guan
 -/
 module
 
+public import Mathlib.Algebra.Module.FinitePresentation
 public import Mathlib.Algebra.Module.Projective
 public import Mathlib.Algebra.Module.Torsion.Basic
 public import Mathlib.GroupTheory.GroupAction.Ring
@@ -50,7 +51,8 @@ lemma LinearMap.ker_mapRange_mkQ_eq_smul_top (ι : Type*) (I : Ideal R) :
 
 open Pointwise in
 lemma free_iff_quotSMulTop_free [IsNoetherianRing R] (M : Type*) [AddCommGroup M] [Module R M]
-    [Module.Finite R M] {x : R} (mem : x ∈ (⊥ : Ideal R).jacobson) (reg : IsSMulRegular M x) :
+    [Module.FinitePresentation R M] {x : R} (mem : x ∈ (⊥ : Ideal R).jacobson)
+    (reg : IsSMulRegular M x) :
     Module.Free (R ⧸ Ideal.span {x}) (QuotSMulTop x M) ↔ Module.Free R M := by
   refine ⟨fun free ↦ ?_, fun free ↦ ?_⟩
   · have := Module.Finite.of_restrictScalars_finite R (R ⧸ Ideal.span {x}) (QuotSMulTop x M)
@@ -70,7 +72,7 @@ lemma free_iff_quotSMulTop_free [IsNoetherianRing R] (M : Type*) [AddCommGroup M
       simp [f, LinearMap.ker_mapRange_mkQ_eq_smul_top, Submodule.ideal_span_singleton_smul]
     have injg : Function.Injective g := by
       rw [← LinearMap.ker_eq_bot]
-      have fg : (LinearMap.ker g).FG := IsNoetherian.noetherian (LinearMap.ker g)
+      have fg : (LinearMap.ker g).FG := Module.FinitePresentation.fg_ker g surjg
       apply Submodule.eq_bot_of_le_smul_of_le_jacobson_bot (Ideal.span {x}) _ fg _ lejac
       rw [Submodule.ideal_span_singleton_smul]
       intro y hy
