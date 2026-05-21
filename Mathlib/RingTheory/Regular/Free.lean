@@ -50,7 +50,7 @@ lemma LinearMap.ker_mapRange_mkQ_eq_smul_top (ι : Type*) (I : Ideal R) :
     | add x _ y _ xmem ymem => simpa using add_mem xmem ymem
 
 open Pointwise in
-lemma free_iff_quotSMulTop_free [IsNoetherianRing R] (M : Type*) [AddCommGroup M] [Module R M]
+lemma free_iff_quotSMulTop_free (M : Type*) [AddCommGroup M] [Module R M]
     [Module.FinitePresentation R M] {x : R} (mem : x ∈ (⊥ : Ideal R).jacobson)
     (reg : IsSMulRegular M x) :
     Module.Free (R ⧸ Ideal.span {x}) (QuotSMulTop x M) ↔ Module.Free R M := by
