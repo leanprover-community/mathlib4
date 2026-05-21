@@ -623,7 +623,7 @@ variable (μ T)
 
 open Classical in
 /-- Extend `T : Set α → E →L[ℝ] F` to `(α → E) → F` (for integrable functions `α → E`). We set it to
-0 if the function is not integrable. -/
+0 if the function is not integrable or if the target space is not complete. -/
 def setToFun (hT : DominatedFinMeasAdditive μ T C) (f : α → E) : F :=
   if _hF : CompleteSpace F then
     if hf : Integrable f μ then L1.setToL1 hT (hf.toL1 f) else 0
