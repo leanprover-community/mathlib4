@@ -233,8 +233,8 @@ theorem hasFDerivAt_integral_of_dominated_of_fderiv_le {F' : H → α → H →L
 open scoped Interval in
 /-- Differentiation under integral of `x ↦ ∫ x in a..b, F x a` at a given point `x₀`, assuming
 `F x₀` is integrable on `(a,b)`, `x ↦ F x a` is differentiable on a neighborhood of `x₀` for ae `a`
- with derivative norm uniformly bounded by an integrable function (the neighborhood is independent
- of `a`), and `F x` is ae-measurable for `x` in a possibly smaller neighborhood of `x₀`. -/
+with derivative norm uniformly bounded by an integrable function (the neighborhood is independent
+of `a`), and `F x` is ae-measurable for `x` in a possibly smaller neighborhood of `x₀`. -/
 theorem hasFDerivAt_integral_of_dominated_of_fderiv_le'' [NormedSpace ℝ H] {μ : Measure ℝ}
     {F : H → ℝ → E} {F' : H → ℝ → H →L[ℝ] E} {a b : ℝ} {bound : ℝ → ℝ} (hs : s ∈ 𝓝 x₀)
     (hF_meas : ∀ᶠ x in 𝓝 x₀, AEStronglyMeasurable (F x) <| μ.restrict (Ι a b))

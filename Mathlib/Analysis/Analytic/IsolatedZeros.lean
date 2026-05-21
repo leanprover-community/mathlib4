@@ -99,23 +99,18 @@ theorem iterate_dslope_fslope_ne_zero (hp : HasFPowerSeriesAt f p z₀) (h : p �
   rw [← coeff_zero (has_fpower_series_iterate_dslope_fslope p.order hp) 1]
   simpa [coeff_eq_zero] using apply_order_ne_zero h
 
-theorem eq_pow_order_mul_iterate_dslope (hp : HasFPowerSeriesAt f p z₀) :
-    ∀ᶠ z in 𝓝 z₀, f z = (z - z₀) ^ p.order • (swap dslope z₀)^[p.order] f z := by
-  have hq := hasFPowerSeriesAt_iff'.mp (has_fpower_series_iterate_dslope_fslope p.order hp)
-  filter_upwards [hq, hasFPowerSeriesAt_iff'.mp hp] with x hx1 hx2
-  have : ∀ k < p.order, p.coeff k = 0 := fun k hk => by
-    simpa [coeff_eq_zero] using apply_eq_zero_of_lt_order hk
-  obtain ⟨s, hs1, hs2⟩ := HasSum.exists_hasSum_smul_of_apply_eq_zero hx2 this
-  convert hs1.symm
-  simp only [coeff_iterate_fslope] at hx1
-  exact hx1.unique hs2
+theorem eq_pow_order_mul_iterate_dslope (hp : HasFPowerSeriesAt f p z₀) (z : 𝕜) :
+    f z = (z - z₀) ^ p.order • (swap dslope z₀)^[p.order] f z := by
+  refine (pow_sub_smul_iterate_dslope_of_zero _ (fun k hk ↦ ?_) z).symm
+  rw [← (has_fpower_series_iterate_dslope_fslope k hp).coeff_zero 1, ← coeff, coeff_iterate_fslope,
+    zero_add, coeff, p.apply_eq_zero_of_lt_order hk, ContinuousMultilinearMap.zero_apply]
 
 theorem locally_ne_zero (hp : HasFPowerSeriesAt f p z₀) (h : p ≠ 0) : ∀ᶠ z in 𝓝[≠] z₀, f z ≠ 0 := by
   rw [eventually_nhdsWithin_iff]
   have h2 := (has_fpower_series_iterate_dslope_fslope p.order hp).continuousAt
   have h3 := h2.eventually_ne (iterate_dslope_fslope_ne_zero hp h)
-  filter_upwards [eq_pow_order_mul_iterate_dslope hp, h3] with z e1 e2 e3
-  simpa [e1, e2, e3] using pow_ne_zero p.order (sub_ne_zero.mpr e3)
+  filter_upwards [h3] with z e1 e2
+  simpa [eq_pow_order_mul_iterate_dslope hp, e1, e2] using pow_ne_zero p.order (sub_ne_zero.mpr e2)
 
 theorem locally_zero_iff (hp : HasFPowerSeriesAt f p z₀) : (∀ᶠ z in 𝓝 z₀, f z = 0) ↔ p = 0 :=
   ⟨fun hf => hp.eq_zero_of_eventually hf, fun h => eventually_eq_zero (𝕜 := 𝕜) (by rwa [h] at hp)⟩
@@ -203,7 +198,7 @@ theorem exists_eventuallyEq_pow_smul_nonzero_iff (hf : AnalyticAt 𝕜 f z₀) :
     rcases hf with ⟨p, hp⟩
     exact ⟨p.order, _, ⟨_, hp.has_fpower_series_iterate_dslope_fslope p.order⟩,
       hp.iterate_dslope_fslope_ne_zero (hf_ne.imp hp.locally_zero_iff.mpr),
-      hp.eq_pow_order_mul_iterate_dslope⟩
+      .of_forall hp.eq_pow_order_mul_iterate_dslope⟩
 
 end AnalyticAt
 
@@ -346,7 +341,7 @@ Preimages of codiscrete sets: if `f` is analytic on a neighbourhood of `U` and n
 then the preimage of any subset codiscrete within `f '' U` is codiscrete within `U`.
 
 See `AnalyticOnNhd.preimage_zero_mem_codiscreteWithin` for the special case that `s` is the
-complement of zero. Applications might want to use the theorem `Filter.codiscreteWithin.mono`.
+complement of zero. Applications might want to use the theorem `Filter.codiscreteWithin_mono`.
 -/
 theorem AnalyticOnNhd.preimage_mem_codiscreteWithin {U : Set 𝕜} {s : Set E} {f : 𝕜 → E}
     (hfU : AnalyticOnNhd 𝕜 f U) (h₂f : ∀ x ∈ U, ¬EventuallyConst f (𝓝 x))
@@ -366,7 +361,7 @@ theorem AnalyticOnNhd.preimage_mem_codiscreteWithin {U : Set 𝕜} {s : Set E} {
 not locally constant, then the push-forward of the filter of sets codiscrete within `U` is less
 than or equal to the filter of sets codiscrete within `f '' U`.
 
-Applications might want to use the theorem `Filter.codiscreteWithin.mono`.
+Applications might want to use the theorem `Filter.codiscreteWithin_mono`.
 -/
 theorem AnalyticOnNhd.map_codiscreteWithin {U : Set 𝕜} {f : 𝕜 → E}
     (hfU : AnalyticOnNhd 𝕜 f U) (h₂f : ∀ x ∈ U, ¬EventuallyConst f (𝓝 x)) :

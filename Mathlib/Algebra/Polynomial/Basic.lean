@@ -400,10 +400,6 @@ theorem monomial_zero_right (n : ℕ) : monomial n (0 : R) = 0 :=
 theorem monomial_zero_one : monomial 0 (1 : R) = 1 :=
   rfl
 
-@[deprecated map_add (since := "2025-11-15")]
-theorem monomial_add (n : ℕ) (r s : R) : monomial n (r + s) = monomial n r + monomial n s :=
-  (monomial n).map_add _ _
-
 theorem monomial_mul_monomial (n m : ℕ) (r s : R) :
     monomial n r * monomial m s = monomial (n + m) (r * s) :=
   toFinsupp_injective <| by
@@ -644,7 +640,9 @@ theorem coeff_C : coeff (C a) n = ite (n = 0) a 0 := by
 theorem coeff_C_zero : coeff (C a) 0 = a :=
   coeff_monomial
 
-theorem coeff_C_ne_zero (h : n ≠ 0) : (C a).coeff n = 0 := by rw [coeff_C, if_neg h]
+theorem coeff_C_of_ne_zero (h : n ≠ 0) : (C a).coeff n = 0 := by rw [coeff_C, if_neg h]
+
+@[deprecated (since := "2026-05-20")] alias coeff_C_ne_zero := coeff_C_of_ne_zero
 
 @[simp]
 lemma coeff_C_succ {r : R} {n : ℕ} : coeff (C r) (n + 1) = 0 := by simp [coeff_C]
@@ -748,7 +746,7 @@ theorem eq_zero_of_eq_zero (h : (0 : R) = (1 : R)) (p : R[X]) : p = 0 := by
 section Fewnomials
 
 theorem support_monomial (n) {a : R} (H : a ≠ 0) : (monomial n a).support = singleton n := by
-  rw [← ofFinsupp_single, support]; exact Finsupp.support_single_ne_zero _ H
+  rw [← ofFinsupp_single, support]; exact Finsupp.support_single _ H
 
 theorem support_monomial' (n) (a : R) : (monomial n a).support ⊆ singleton n := by
   rw [← ofFinsupp_single, support]
