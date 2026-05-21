@@ -53,8 +53,8 @@ lemma LinearMap.ker_mapRange_mkQ_eq_smul_top (ι : Type*) (I : Ideal R) :
     | add x _ y _ xmem ymem => simpa using add_mem xmem ymem
 
 open Pointwise in
-lemma free_iff_quotSMulTop_free [IsLocalRing R] [IsNoetherianRing R] (M : Type*) [AddCommGroup M]
-    [Module R M] [Module.Finite R M] {x : R} (mem : x ∈ maximalIdeal R) (reg : IsSMulRegular M x) :
+lemma free_iff_quotSMulTop_free [IsNoetherianRing R] (M : Type*) [AddCommGroup M] [Module R M]
+    [Module.Finite R M] {x : R} (mem : x ∈ (⊥ : Ideal R).jacobson) (reg : IsSMulRegular M x) :
     Module.Free (R ⧸ Ideal.span {x}) (QuotSMulTop x M) ↔ Module.Free R M := by
   refine ⟨fun free ↦ ?_, fun free ↦ ?_⟩
   · let I := Module.Free.ChooseBasisIndex (R ⧸ Ideal.span {x}) (QuotSMulTop x M)
@@ -67,8 +67,7 @@ lemma free_iff_quotSMulTop_free [IsLocalRing R] [IsNoetherianRing R] (M : Type*)
       (Submodule.mkQ_surjective _) with ⟨g, hg⟩
     have surjf : Function.Surjective f := by
       simpa [f] using Finsupp.mapRange_surjective _ rfl (Submodule.mkQ_surjective (Ideal.span {x}))
-    have lejac : Ideal.span {x} ≤ (⊥ :Ideal R).jacobson :=
-      ((Ideal.span_singleton_le_iff_mem _).mpr mem).trans (maximalIdeal_le_jacobson _)
+    have lejac : Ideal.span {x} ≤ (⊥ :Ideal R).jacobson := by simpa
     have surjg : Function.Surjective g := by
       rw [← LinearMap.range_eq_top, ← top_le_iff]
       apply Submodule.le_of_le_smul_of_le_jacobson_bot (Module.finite_def.mp ‹_›) lejac
