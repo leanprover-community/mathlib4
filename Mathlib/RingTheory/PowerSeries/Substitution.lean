@@ -596,12 +596,12 @@ variable {x : ℕ → PowerSeries R} {a : MvPowerSeries τ S}
 lemma subst_tsum (hx : Summable x) (ha : HasSubst a) :
     (∑' i, x i).subst a = ∑' i, ((x i).subst a) := by
   rw [← coe_substAlgHom ha, substAlgHom_eq_aeval ha, hx.map_tsum _]
-  exact continuous_aeval (ha.hasEval)
+  exact continuous_aeval _
 
 lemma summable_subst (hx : Summable x) (ha : HasSubst a) :
     Summable fun i ↦ (x i).subst a := by
   rw [← coe_substAlgHom ha, substAlgHom_eq_aeval ha]
-  exact hx.map _ <| continuous_aeval (ha.hasEval)
+  exact hx.map _ (continuous_aeval _)
 
 end
 
