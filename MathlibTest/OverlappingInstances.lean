@@ -44,9 +44,9 @@ warning: Overlapping instances in `foo₁`:
 
 ⚠️ `[FooBarBaz Nat]` and `[FooBarBaq Nat]` can be used to infer conflicting versions of `[SubBar Nat]`.
 
-When a data-carrying type class can be inferred from two different type classes in the local context, there are two incompatible instances of that type class. These form an "instance diamond", which leads to unexpected unification failures.
+When a data-carrying type class has multiple potential instances coming from different instances parameters, then these instances are incompatible. This is an example of "instance diamond", which leads to unexpected unification failures.
 
-Restructure your type class arguments to avoid this.
+Restructure your instance parameters to avoid this.
 
 Note: This linter can be disabled with `set_option linter.overlappingInstances false`
 -/
@@ -62,7 +62,7 @@ warning: Overlapping instances in `foo₂`:
 ⚠️ There are 2 `[FooBarBaz Nat]` instances; one is sufficient.
 ⚠️ `[FooBarBaz
    Nat]`, `[FooBarBaz Nat]`, and `[FooBarBaq Nat]` can be used to infer conflicting versions of `[SubBar Nat]`.
-💡 Of these, `[FooBarBaz Nat]` and `[FooBarBaz Nat]` may be removed.
+💡️ Of these, `[FooBarBaz Nat]` and `[FooBarBaz Nat]` may be removed.
 
 Note: This linter can be disabled with `set_option linter.overlappingInstances false`
 -/
@@ -84,7 +84,7 @@ warning: Overlapping instances in `foo₄`:
 
 ⚠️ There are 2 `[FooBarBaz Nat]` instances; one is sufficient.
 ⚠️ `[FooBarBaz Nat]`, `[FooBarBaz Nat]`, and `[Bar Nat]` can be used to infer conflicting versions of `[SubBar Nat]`.
-💡 Of these, `[FooBarBaz Nat]`, `[FooBarBaz Nat]`, and `[Bar Nat]` may be removed.
+💡️ Of these, `[FooBarBaz Nat]`, `[FooBarBaz Nat]`, and `[Bar Nat]` may be removed.
 
 Note: This linter can be disabled with `set_option linter.overlappingInstances false`
 -/
@@ -96,9 +96,9 @@ warning: Overlapping instances in `foo₅`:
 
 ⚠️ `[FooBarBaz Nat]` and `[FooBarBaz' Nat]` can be used to infer conflicting versions of `[Baz Nat]` and `[SubBar Nat]`.
 
-When a data-carrying type class can be inferred from two different type classes in the local context, there are two incompatible instances of that type class. These form an "instance diamond", which leads to unexpected unification failures.
+When a data-carrying type class has multiple potential instances coming from different instances parameters, then these instances are incompatible. This is an example of "instance diamond", which leads to unexpected unification failures.
 
-Restructure your type class arguments to avoid this.
+Restructure your instance parameters to avoid this.
 
 Note: This linter can be disabled with `set_option linter.overlappingInstances false`
 -/
@@ -112,9 +112,9 @@ warning: Overlapping instances in `foo₆`:
 ⚠️ `[FooBarBaz
    Nat]`, `[FooBarBaz' Nat]`, and `[FooBarBaq Nat]` can be used to infer conflicting versions of `[SubBar Nat]`.
 
-When a data-carrying type class can be inferred from two different type classes in the local context, there are two incompatible instances of that type class. These form an "instance diamond", which leads to unexpected unification failures.
+When a data-carrying type class has multiple potential instances coming from different instances parameters, then these instances are incompatible. This is an example of "instance diamond", which leads to unexpected unification failures.
 
-Restructure your type class arguments to avoid this.
+Restructure your instance parameters to avoid this.
 
 Note: This linter can be disabled with `set_option linter.overlappingInstances false`
 -/
@@ -149,7 +149,7 @@ class IsBaz : Prop extends IsBar
 warning: Overlapping instances in `_example`:
 
 ⚠️ `[IsBar]` and `[IsBaz]` each imply `[IsFoo]`.
-💡 Of these, `[IsBar]` may be removed.
+💡️ Of these, `[IsBar]` may be removed.
 
 Note: This linter can be disabled with `set_option linter.overlappingInstances false`
 -/
@@ -165,7 +165,7 @@ class Baz2 : Type extends Baz
 warning: Overlapping instances in `_example`:
 
 ⚠️ `[IsFoo]` and `[Bar]` each imply `[IsFoo]`.
-💡 Of these, `[IsFoo]` may be removed.
+💡️ Of these, `[IsFoo]` may be removed.
 
 Note: This linter can be disabled with `set_option linter.overlappingInstances false`
 -/
@@ -190,7 +190,7 @@ example [Baz] [Baz] : True := trivial
 warning: Overlapping instances in `_example`:
 
 ⚠️ `[Baz]` and `[Baz1]` can be used to infer conflicting versions of `[Baz]`.
-💡 Of these, `[Baz]` may be removed.
+💡️ Of these, `[Baz]` may be removed.
 
 Note: This linter can be disabled with `set_option linter.overlappingInstances false`
 -/
@@ -202,9 +202,9 @@ warning: Overlapping instances in `_example`:
 
 ⚠️ `[Baz1]` and `[Baz2]` can be used to infer conflicting versions of `[Baz]`.
 
-When a data-carrying type class can be inferred from two different type classes in the local context, there are two incompatible instances of that type class. These form an "instance diamond", which leads to unexpected unification failures.
+When a data-carrying type class has multiple potential instances coming from different instances parameters, then these instances are incompatible. This is an example of "instance diamond", which leads to unexpected unification failures.
 
-Restructure your type class arguments to avoid this.
+Restructure your instance parameters to avoid this.
 
 Note: This linter can be disabled with `set_option linter.overlappingInstances false`
 -/
@@ -293,7 +293,7 @@ class B (α : Type u) extends A α
 warning: Overlapping instances in `_example`:
 
 ⚠️ `[B α]` and `[A α]` can be used to infer conflicting versions of `[A α]`.
-💡 Of these, `[A α]` may be removed.
+💡️ Of these, `[A α]` may be removed.
 
 Note: This linter can be disabled with `set_option linter.overlappingInstances false`
 -/
@@ -318,7 +318,7 @@ instance {α} : A α where
 warning: Overlapping instances in `_example`:
 
 ⚠️ `[B α β]` and `[B' α β]` can be used to infer conflicting versions of `[B α β]`.
-💡 Of these, `[B α β]` may be removed.
+💡️ Of these, `[B α β]` may be removed.
 
 Note: This linter can be disabled with `set_option linter.overlappingInstances false`
 -/
@@ -359,7 +359,7 @@ example [IsAClass1] [IsAClass1'] : True := trivial
 warning: Overlapping instances in `_example`:
 
 ⚠️ `[IsAClass1]` and `[IsAClass2]` can be used to infer conflicting versions of `[IsAClass1]`.
-💡 Of these, `[IsAClass1]` may be removed.
+💡️ Of these, `[IsAClass1]` may be removed.
 
 Note: This linter can be disabled with `set_option linter.overlappingInstances false`
 -/
