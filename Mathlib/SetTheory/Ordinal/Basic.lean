@@ -1185,7 +1185,7 @@ theorem card_typein_lt {r : α → α → Prop} [IsWellOrder α r] (x : α) (h :
   rw [← lt_ord, h]
   apply typein_lt_type
 
-/-- See `Cardinal.mk_Iio_lt'` for a weaker version which infers a proof of `h`. -/
+@[simp]
 theorem mk_Iio_lt [LinearOrder α] [WellFoundedLT α] (i : α) (h : ord #α = typeLT α) :
     #(Iio i) < #α :=
   card_typein_lt (r := LT.lt) i h

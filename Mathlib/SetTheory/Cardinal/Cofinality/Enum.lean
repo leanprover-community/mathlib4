@@ -88,11 +88,6 @@ theorem ordinalType_eq_of_isCofinal {s : Set α} (hs : IsCofinal s) : typeLT s =
   rw [← ord_cardinalMk, ord_le, card_type, ← cof_eq_cardinalMk]
   exact cof_le hs
 
-/-- See `Cardinal.mk_Iio_lt` for a more general version. -/
-@[simp]
-theorem _root_.Cardinal.mk_Iio_lt' (i : α) : #(Iio i) < #α :=
-  mk_Iio_lt i (by simp)
-
 /-- Enumerate the elements of a cofinal subset of `α` by `α` itself. This is a generalization of
 `Nat.nth`. -/
 noncomputable def enum (s : Set α) (hs : IsCofinal s) : α ≃o s :=
