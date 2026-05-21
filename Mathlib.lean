@@ -7718,6 +7718,7 @@ public import Mathlib.Topology.LocallyConstant.Algebra
 public import Mathlib.Topology.LocallyConstant.Basic
 public import Mathlib.Topology.LocallyFinite
 public import Mathlib.Topology.LocallyFinsupp
+public import Mathlib.Topology.LocallyFinsupp.Pushforward
 public import Mathlib.Topology.Maps.Basic
 public import Mathlib.Topology.Maps.OpenQuotient
 public import Mathlib.Topology.Maps.Proper.Basic
