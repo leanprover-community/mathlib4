@@ -87,3 +87,4 @@ import Archive.Wiedijk100Theorems.PerfectNumbers
 import Archive.Wiedijk100Theorems.SolutionOfCubicQuartic
 import Archive.Wiedijk100Theorems.SumOfPrimeReciprocalsDiverges
 import Archive.ZagierTwoSquares
+import Archive.ZhouGraph
