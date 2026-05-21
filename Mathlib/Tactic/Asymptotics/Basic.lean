@@ -549,32 +549,47 @@ section Meta
 
 open Lean Meta
 
-syntax (name := bigONotation) "O[" term "](" term ")" : term
+syntax (name := bigONotation) "O(" term ")" : term
+syntax (name := bigONotationFilter) "O[" term "](" term ")" : term
 
-opaque dummyBigO [SeminormedAddCommGroup E] (l : Filter α) (a : E) : E := a
+opaque dummyBigO [SeminormedAddCommGroup E] (a : E) : E := a
+opaque dummyBigOFilter [SeminormedAddCommGroup E] (l : Filter α) (a : E) : E := a
+
+@[term_elab bigONotationFilter]
+meta def elabBigOFilter : Elab.Term.TermElab := fun stx expectedType? ↦ do
+  match stx with
+  | `(O[$l]($e)) => Elab.Term.elabTerm (← `(dummyBigOFilter $l $e)) expectedType?
+  | _ => Elab.throwUnsupportedSyntax
 
 @[term_elab bigONotation]
 meta def elabBigO : Elab.Term.TermElab := fun stx expectedType? ↦ do
   match stx with
-  | `(O[$l]($e)) => Elab.Term.elabTerm (← `(dummyBigO $l $e)) expectedType?
+  | `(O($e)) => Elab.Term.elabTerm (← `(dummyBigO $e)) expectedType?
   | _ => Elab.throwUnsupportedSyntax
 
-meta partial def mappify (fvar : Expr) (e : Expr) : MetaM Expr := do
+meta partial def mappify (filter : Expr) (fvar : Expr) (e : Expr) : MetaM Expr := do
   match_expr e with
-  | dummyBigO α E instNormE l e' =>
+  | dummyBigOFilter α E instNormE l e' =>
     trace[Elab.asymp] m!"Mappifying dummyBigO {α} {E} {l} {e'}"
     unless ← isDefEq α (← inferType fvar) do
       throwError
         "Filter `{l}` lives in type `{α}`, but is expected to live in type `{← inferType fvar}"
     return mkApp5 (.const ``bigO [← getDecLevel α, ← getDecLevel E])
-      α E instNormE l (← mappify fvar e')
+      α E instNormE l (← mappify filter fvar e')
+  | dummyBigO α E instNormE e' =>
+    trace[Elab.asymp] m!"Mappifying dummyBigO {α} {E} {filter} {e'}"
+    -- unless ← isDefEq α (← inferType fvar) do
+    --   throwError
+    --     "Filter `{filter}` lives in type `{α}`, but is expected to live in type `{← inferType fvar}"
+    return mkApp5 (.const ``bigO [← getDecLevel α, ← getDecLevel E])
+      α E instNormE filter (← mappify filter fvar e')
   | _ =>
     trace[Elab.asymp] m!"Mappifying {e}"
     if let .app f a := e then
       let fType ← inferType f
       if let .forallE _ _ _ .default := fType then
-        let f ← mappify fvar f
-        let a ← mappify fvar a
+        let f ← mappify filter fvar f
+        let a ← mappify filter fvar a
         return ← mkAppM ``map #[f, a]
     let e ← mkLambdaFVars #[fvar] e
     let α ← inferType e
@@ -628,7 +643,7 @@ meta def elabAsympPercent : Elab.Term.TermElab := fun stx _ ↦ do
       let mappifySide (e : Expr) : MetaM Expr := do
         if e.isMVar then
           return ← mkFreshExprMVar (mkApp (.const ``Set [u]) fnType)
-        mappify fvar e
+        mappify filter fvar e
       -- Metavariables created in this block contain `x` in the local context, and break unification
       -- with other metavariables. Hence we try to synthesize as many of them as possible.
       Elab.Term.synthesizeSyntheticMVars
@@ -760,26 +775,26 @@ lemma Real.log_add_one_isBigO_atTop :
 
 
 theorem terry :
-      asymp% x : ℝ in atTop => (x + 1) ^ (exp x⁻¹) = x + O[atTop](log x) := by
+      asymp% x : ℝ in atTop => (x + 1) ^ (exp x⁻¹) = x + O(log x) := by
   calc
     -- asymp% n => (n+1)^(exp(1/n)) =ᶠ[atTop] (n+1)^(1 + O(1/n))
-    asymp% x : ℝ in atTop => (x + 1) ^ (exp x⁻¹) = (x + 1) ^ (1 + O[atTop](x⁻¹)) := by
+    asymp% x : ℝ in atTop => (x + 1) ^ (exp x⁻¹) = (x + 1) ^ (1 + O(x⁻¹)) := by
       -- Can't use exp_at_one_set'' - {f} doesn't match map {fun _ ↦ Inv.inv} {fun x ↦ x}
       grw [exp_at_one_set]
       -- The state here is ugly; I think it's a consequene of how we chose to state exp_at_one_set
       simp only [mem_map, Set.mem_singleton_iff, exists_eq_left, forall_eq]
       exact tendsto_inv_atTop_zero
-    asymp% x : ℝ in atTop => _ = exp (Real.log (x + 1) * (1 + O[atTop](x⁻¹))) := by
+    asymp% x : ℝ in atTop => _ = exp (Real.log (x + 1) * (1 + O(x⁻¹))) := by
       magic_tac
       gcongr with f hf
       filter_upwards [eventually_gt_atTop 0] with x hx
       rw [exp_mul, exp_log]
       linarith
     -- (n+1)^(1 + O(1/n)) ⊆ exp ( (log n + O(1/n)) * (1 + O(1/n)) )
-    asymp% x : ℝ in atTop => _ = exp ((log x + O[atTop](x⁻¹)) * (1 + O[atTop](x⁻¹))) := by
+    asymp% x : ℝ in atTop => _ = exp ((log x + O(x⁻¹)) * (1 + O(x⁻¹))) := by
       grw [Real.log_add_one_isBigO_atTop]
     -- exp ( (log n + O(1/n)) * (1 + O(1/n)) ) ⊆ exp (log n + O(log n / n))
-    asymp% x : ℝ in atTop => _ = exp (log x + O[atTop](log x / x)) := by
+    asymp% x : ℝ in atTop => _ = exp (log x + O(log x / x)) := by
       -- Pain point: I have to do more rewriting thatn I'd like, and I had to
       -- manually translate some existing lemmas into the language of asymptotics.
       grw [asymp_mul_add, asymp_add_mul, asymp_add_mul, mul_bigO, bigO_mul_bigO, bigO_mul,
@@ -801,7 +816,7 @@ theorem terry :
       filter_upwards [eventually_gt_atTop 0]
       intro x hx
       rw [exp_add, exp_log hx]
-    asymp% x : ℝ in atTop => _ =  x * (1 + O[atTop](log x / x)) := by
+    asymp% x : ℝ in atTop => _ =  x * (1 + O(log x / x)) := by
       grw [exp_at_one_set (l := atTop), bigO_bigO]
       · pull singleton
         simp only [mem_bigO_singleton]
@@ -810,11 +825,11 @@ theorem terry :
         have := tendsto_pow_log_div_mul_add_atTop 1 0 1
         simpa [ne_eq, one_ne_zero, not_false_eq_true, pow_one, one_mul, add_zero,
           forall_const] using this
-    asymp% x : ℝ in atTop => _ = x + x * O[atTop](log x / x) := by
+    asymp% x : ℝ in atTop => _ = x + x * O(log x / x) := by
       magic_tac
       ring_nf
       rfl
-    asymp% x : ℝ in atTop => _ = x + O[atTop](log x) := by
+    asymp% x : ℝ in atTop => _ = x + O(log x) := by
       grw [mul_bigO]
       gcongr
       simp only [RightSerial, mem_map, Set.mem_singleton_iff, exists_eq_left, forall_eq]
@@ -847,7 +862,7 @@ example {l : Filter ℕ} {f : ℕ → ℝ} (hf : Filter.Tendsto f l (𝓝 0)) :
 example :
       asymp% x : ℝ in atTop => x = x := by
   calc
-    asymp% x : ℝ in atTop => _ = O[atTop](x⁻¹) := by
+    asymp% x : ℝ in atTop => _ = O[principal .univ](x⁻¹) := by
       sorry
     asymp% x : ℝ in atTop => _ = _ := by
       sorry
