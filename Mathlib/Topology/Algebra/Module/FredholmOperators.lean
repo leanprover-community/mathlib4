@@ -48,13 +48,13 @@ lemma alternating_sum_eq_zero_of_telescope {n : ℕ} (d : Fin (n + 3) → ℤ) (
 
 open Function Module
 
-lemma finrank_eq_sum_ranges_of_exact {k V₀ V₁ V₂ : Type*} [Field k] [AddCommGroup V₀] [Module k V₀]
-    [AddCommGroup V₁] [Module k V₁] [FiniteDimensional k V₁] [AddCommGroup V₂] [Module k V₂]
-    (f : V₀ →ₗ[k] V₁) (g : V₁ →ₗ[k] V₂) (h : Function.Exact f g) :
-    (finrank k V₁ : ℤ) = finrank k (LinearMap.range f) + finrank k (LinearMap.range g) := by
+lemma Function.Exact.finrank_range_add_finrank_range {k V₀ V₁ V₂ : Type*} [Field k]
+    [AddCommGroup V₀] [Module k V₀] [AddCommGroup V₁] [Module k V₁] [FiniteDimensional k V₁]
+    [AddCommGroup V₂] [Module k V₂] {f : V₀ →ₗ[k] V₁} {g : V₁ →ₗ[k] V₂} (h : Function.Exact f g) :
+    finrank k (LinearMap.range f) + finrank k (LinearMap.range g) = (finrank k V₁ : ℤ) := by
   have h_ker_eq_range : LinearMap.ker g = LinearMap.range f := by
     simp_all [SetLike.ext_iff, LinearMap.mem_ker, LinearMap.mem_range, LinearMap.exact_iff]
-  convert congr_arg Nat.cast (LinearMap.finrank_range_add_finrank_ker g).symm
+  convert congr_arg Nat.cast (LinearMap.finrank_range_add_finrank_ker g)
   rw [Nat.cast_add, h_ker_eq_range]
   ring
 
@@ -67,7 +67,7 @@ lemma Module.sum_neg_one_pow_finrank_eq_zero_of_exact {n : ℕ} {k : Type*}
   apply alternating_sum_eq_zero_of_telescope _ _ _ _ _
   · use fun i ↦ finrank k <| LinearMap.range (f i)
   · exact ((fun {m n} ↦ Int.ofNat_inj.mpr) <| LinearMap.finrank_range_of_inj inj).symm
-  · exact fun i ↦ finrank_eq_sum_ranges_of_exact (f i.castSucc) (f i.succ) (h_exact i)
+  · exact fun i ↦ (Function.Exact.finrank_range_add_finrank_range (h_exact i)).symm
   · rw [LinearMap.range_eq_top.mpr surj, finrank_top]
     rfl
 
