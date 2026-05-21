@@ -76,7 +76,7 @@ instance (T : Type*) [PartialOrder T] : (nerve T).Nonsingular where
     simp only [NatTrans.mono_iff_mono_app, mono_iff_injective]
     intro ⟨⟨k⟩⟩ i j hij
     ext l : 1
-    exact hx (congr_fun (congr_arg Functor.obj hij) l)
+    exact hx (Functor.congr_obj hij l)
 
 instance (n : SimplexCategory) : (stdSimplex.{u}.obj n).Nonsingular :=
   Nonsingular.of_iso (stdSimplex.isoNerve _).symm
