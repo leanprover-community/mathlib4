@@ -758,6 +758,68 @@ theorem continuousOn_cfcₙ_setProd {s : Set 𝕜} (hs : IsCompact s) :
     (fun f hf ↦ continuousOn_cfcₙ A hs ((toFun {s}) f) hf.1 hf.2)
     (fun a ⟨_, ha'⟩ ↦ lipschitzOnWith_cfcₙ_fun_of_subset a ha')
 
+open UniformOnFun Set in
+theorem continuousOn_cfcₙ_setProd_of_uncurry {X : Type*} [TopologicalSpace X] [CompleteSpace A]
+    {s𝕜 : Set 𝕜} {sX : Set X} {sA : Set A} {f : X → 𝕜 → 𝕜} (hf : ContinuousOn f.uncurry (sX ×ˢ s𝕜))
+    (hs : ∀ a ∈ sA, quasispectrum 𝕜 a ⊆ s𝕜) (hs₂ : IsClosed s𝕜) (hs₂ : ∀ a ∈ sA, p a)
+    (hf₂ : ∀ x ∈ sX, f x 0 = 0) :
+    ContinuousOn (fun x : X × A => cfcₙ (f x.1) x.2) (sX ×ˢ sA) := by
+  intro (x, a) hxa
+  obtain ⟨K, hK₁, hK₂⟩ := (quasispectrum.isCompact (𝕜 := 𝕜) a).nhdsSet_basis_isCompact.ex_mem
+  let s : Set 𝕜 := K ∩ s𝕜
+  have ha_spectrum : quasispectrum 𝕜 a ⊆ s := by grind [subset_of_mem_nhdsSet hK₁]
+  have hs_compact : IsCompact s := by
+
+    sorry
+  let s' := {f : 𝕜 →ᵤ[{s}] 𝕜 | ContinuousOn (toFun {s} f) s ∧ f 0 = 0}
+                ×ˢ {b : A | p b ∧ quasispectrum 𝕜 b ⊆ s}
+  let ssw := sX ×ˢ {b : A | b ∈ sA ∧ quasispectrum 𝕜 b ⊆ s}
+  let ssws := {b : A | p b ∧ quasispectrum 𝕜 b ⊆ s} ×ˢ sX
+  refine ContinuousWithinAt.mono_of_mem_nhdsWithin (t := ssw) ?_ <| by
+    rw [nhdsWithin_prod_eq, Filter.mem_prod_iff]
+    refine ⟨sX, self_mem_nhdsWithin, {b : A | b ∈ sA ∧ quasispectrum 𝕜 b ⊆ s}, ?_, ?_⟩
+    · rw [nhdsWithin]
+      refine Filter.mem_inf_of_inter
+          (s := {x | (fun x ↦ quasispectrum 𝕜 x ⊆ K) x}) (t := sA) ?_ ?_ ?_
+      · refine (upperHemicontinuous_quasispectrum 𝕜 A |>.upperHemicontinuousAt a K hK₁ |>.mono
+            fun b hb => subset_of_mem_nhdsSet ?_)
+        exact hb
+      · exact Filter.mem_principal_self _
+      · exact fun b ⟨hbK, hb_nonneg⟩ => by grind
+    · refine prod_subset_prod_iff.mpr ?_
+      refine Or.inl ⟨Subset.rfl, Subset.rfl⟩
+  let f₁ : X → 𝕜 →ᵤ[{s}] 𝕜 := fun x => ofFun {s} (f x)
+  let f₂ : (𝕜 →ᵤ[{s}] 𝕜) × A → A := fun x => cfcₙ (toFun {s} x.1) x.2
+  have hf₁_zero : ∀ y ∈ sX, f₁ y 0 = 0 := by simp only [ofFun, Equiv.coe_fn_mk, f₁]; grind
+  have h₁ : ContinuousWithinAt f₁ sX x := by
+    have : CompactSpace s := isCompact_iff_compactSpace.mp hs_compact
+    refine ContinuousOn.continuousOn_uniformOnFun_of_uncurry (hf.mono ?_) _ (by grind)
+    grind
+  have hcomp : (fun z : X × A => cfcₙ (f z.1) z.2) = f₂ ∘ (Prod.map f₁ id) := by
+    ext z
+    simp [Prod.map, f₁, f₂]
+  rw [hcomp]
+  refine ContinuousWithinAt.comp (t := s') ?_ ?_ ?_
+  · apply continuousOn_cfcₙ_setProd hs_compact
+    simp only [Prod.map_apply, id_eq, mem_prod, mem_setOf_eq]
+    refine ⟨⟨?_, ?_⟩, ?_, ha_spectrum⟩
+    · simp only [toFun_ofFun, f₁]
+      exact ContinuousOn.mono (s := s𝕜) (hf.uncurry_left _ <| by grind) (by grind)
+    · grind
+    · grind
+  · refine ContinuousWithinAt.prodMap h₁ continuousWithinAt_id
+  · intro (y, b) hyb
+    rw [Set.mem_prod]
+    simp only [f₁, Prod.map, id_eq, mem_setOf_eq, toFun_ofFun]
+    refine ⟨⟨?_, ?_⟩, ?_, ?_⟩
+    · refine ContinuousOn.mono (s := s𝕜) ?_ ?_
+      · refine hf.uncurry_left _ ?_
+        grind
+      · grind
+    · grind
+    · grind
+    · grind only [= mem_prod, usr mem_setOf_eq]
+
 /-- If `f : 𝕜 → 𝕜` is continuous on a compact set `s` and `f 0 = 0` and `a : X → A` tends to
 `a₀ : A` along a filter `l` (such that eventually `a x` satisfies the predicate `p` associated to
 `𝕜` and has quasispectrum contained in `s`, as does `a₀`), then `fun x ↦ cfcₙ f (a x)` tends to

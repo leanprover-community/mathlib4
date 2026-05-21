@@ -61,6 +61,13 @@ lemma continuousOn_nnrpow (r : ℝ≥0) : ContinuousOn (· ^ r) {a : A | 0 ≤ a
   · exact continuousOn_id.cfcₙ_nnreal_of_mem_nhdsSet _ Filter.univ_mem
 
 open UniformOnFun Set in
+lemma continuousOn_setProd' {X : Type*} [TopologicalSpace X] {f : X → ℝ → ℝ}
+    {s : Set X} {t : Set ℝ} {tA : Set A} (hf : ContinuousOn f.uncurry (s ×ˢ t))
+    (ht : ∀ a ∈ tA, quasispectrum ℝ a ⊆ t) :
+    ContinuousOn (fun x : X × A => cfcₙ (f x.1) x.2) (s ×ˢ tA) := by
+  sorry
+
+open UniformOnFun Set in
 lemma continuousOn_nnrpow_setProd :
     ContinuousOn (fun x : A × ℝ≥0 => x.1 ^ x.2) (Ici 0 ×ˢ Ioi 0) := by
   intro (a, p) hap
