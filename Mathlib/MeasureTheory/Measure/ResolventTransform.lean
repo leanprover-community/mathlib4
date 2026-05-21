@@ -170,7 +170,7 @@ theorem hasDerivAt_resolventTransform [RCLike A] [NormedAlgebra 𝕜 A] {μ : Me
   exact hasDerivAt_integral_of_dominated_loc_of_deriv_le hs_z resolvent_meas
     (integrable_resolvent (by simp [ha])) (by fun_prop) resolvent'_bound (by fun_prop) h_deriv |>.2
 
-theorem analyticOn_resolventTransform [NormedAlgebra 𝕜 ℂ] (μ : Measure 𝕜) [IsFiniteMeasure μ] :
+theorem analyticOn_resolventTransform [NormedAlgebra 𝕜 ℂ] {μ : Measure 𝕜} [IsFiniteMeasure μ] :
     AnalyticOn ℂ (resolventTransform μ) (algebraMap 𝕜 ℂ '' μ.support)ᶜ := by
   rw [analyticOn_iff_differentiableOn]
   · intro z hz
