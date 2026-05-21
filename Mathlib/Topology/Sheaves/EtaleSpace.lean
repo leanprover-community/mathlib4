@@ -10,6 +10,29 @@ public import Mathlib.Topology.Sheaves.Stalks
 
 /-!
 # Etale space of a presheaf
+
+Given a presheaf `F` on a topological space `X`,
+its *etale space* is the space of pairs `(base, germ)`,
+where `base` is a point of `X`, and `germ` is an element of the stalk of `F` at `base`.
+
+This space is equipped with the following topology.
+For each open set `U` and a section `s` of `F` over `U`,
+the set of germs of `s` at points `x ∈ U` is an open set in the etale space.
+
+## Main results
+
+- `TopCat.Presheaf.EtaleSpace.eventually_nhds`. If `s` is a section of `F` over `U`
+  with germ at `g.base` equal to `g.germ`,
+  then a neighborhood of `g` consists of germs of `s` at points `x ∈ U`.
+
+- `TopCat.Presheaf.EtaleSpace.isCoveringMap_base`.
+  Let `F` be a presheaf with the following property.
+
+  For each `x`, there exists an open neighborhood `U ∋ x` such that for each `y ∈ U`,
+  the map `Presheaf.germ F U y hyU` from sections of `F` over `U` to the stalk at `y`
+  is bijective.
+
+  Then the projection from the etale space of `F` to the base is a covering map.
 -/
 
 public section
@@ -25,8 +48,12 @@ variable {X : TopCat.{v}} {C : Type u} [Category.{v} C] {CC : C → Type v} {FC 
 
 /-- Etale space of a presheaf. -/
 structure EtaleSpace (F : Presheaf C X) where
+  /-- The base point. -/
   base : X
+  /-- A germ at `base` (formally, an element of the stalk of `F` at `base`). -/
   germ : ToType (F.stalk base)
+
+namespace EtaleSpace
 
 instance (F : Presheaf C X) : TopologicalSpace F.EtaleSpace :=
   .generateFrom {s | ∃ U, ∃ f : ToType (F.obj (op U)),
@@ -34,11 +61,13 @@ instance (F : Presheaf C X) : TopologicalSpace F.EtaleSpace :=
 
 variable {F : Presheaf C X}
 
-theorem EtaleSpace.eventually_nhds (g : EtaleSpace F) {U : Opens X} (h : g.base ∈ U)
-    (f : ToType (F.obj (op U))) (hf : F.germ U g.base h f = g.germ) :
-    ∀ᶠ g' : EtaleSpace F in 𝓝 g, ∃ hgU : g'.base ∈ U, g'.germ = F.germ U g'.base hgU f := by
+/-- If `s` is a section of a presheaf `F` over `U` with germ at `g.base` equal to `g.germ`,
+then a neighborhood of `g` consists of germs of `s` at points `x ∈ U`. -/
+protected theorem eventually_nhds (g : EtaleSpace F) {U : Opens X} (h : g.base ∈ U)
+    (s : ToType (F.obj (op U))) (hs : F.germ U g.base h s = g.germ) :
+    ∀ᶠ g' : EtaleSpace F in 𝓝 g, ∃ hgU : g'.base ∈ U, g'.germ = F.germ U g'.base hgU s := by
   simp only [nhds_generateFrom, Filter.Eventually, mem_setOf_eq, iInf_and, iInf_exists]
-  refine mem_iInf_of_mem _ <| mem_iInf_of_mem ?_ <| mem_iInf_of_mem U <| mem_iInf_of_mem f <|
+  refine mem_iInf_of_mem _ <| mem_iInf_of_mem ?_ <| mem_iInf_of_mem U <| mem_iInf_of_mem s <|
     mem_iInf_of_mem rfl <| mem_principal_self _
   simp [*]
 
@@ -46,7 +75,7 @@ variable [Limits.PreservesFilteredColimits (forget C)]
 
 variable (F) in
 @[fun_prop]
-theorem EtaleSpace.continuous_base : Continuous (base (F := F)) := by
+theorem continuous_base : Continuous (base (F := F)) := by
   rw [continuous_iff_continuousAt]
   intro x
   rw [ContinuousAt, (nhds_basis_opens _).tendsto_right_iff]
@@ -56,8 +85,23 @@ theorem EtaleSpace.continuous_base : Continuous (base (F := F)) := by
   refine x.eventually_nhds hxV f hf |>.mono ?_
   simp +contextual [@hVU _]
 
+theorem exists_section_of_tendsto {α : Type*} {l : Filter α} {g : α → F.EtaleSpace}
+    {g₀ : F.EtaleSpace} (h : Tendsto g l (𝓝 g₀)) :
+    ∃ (U : Opens X), g₀.base ∈ U ∧ ∃ (f : ToType (F.obj (op U))),
+      ∀ᶠ a in l, ∃ ha : (g a).base ∈ U, (g a).germ = F.germ U (g a).base ha f := by
+  rcases F.exists_germ_eq g₀.germ with ⟨U, hU, s, hs⟩
+  use U, hU, s
+  exact h.eventually <| g₀.eventually_nhds hU s hs
+
+/-- Let `F` be a `C`-valued presheaf on `X`.
+Let `U` be an open set on `X` such that for each `x ∈ U`, the `germ` map is bijective, i.e.,
+every germ can be extended to a unique section over `U`.
+
+Then for each `x ∈ U`, the preimage of `U` under `EtaleSpace.base`
+is homeomorphic to the product of `U` and the stalk of `F` at `x` with discrete topology.
+-/
 @[expose, simps apply_fst]
-noncomputable def EtaleSpace.homeomorph (U : Opens X)
+noncomputable def homeomorph (U : Opens X)
     (hF_bij : ∀ (x : X) (hx : x ∈ U), Bijective (F.germ U x hx))
     (x : X) (hx : x ∈ U) :
     (base (F := F) ⁻¹' U) ≃ₜ U × WithTopology (ToType (F.stalk x)) ⊥ where
@@ -98,7 +142,14 @@ noncomputable def EtaleSpace.homeomorph (U : Opens X)
     use ιWV.le hz
     rw [← F.germ_res_apply ιWU z hz, hW, F.germ_res_apply]
 
-theorem EtaleSpace.isCoveringMap_base
+/-- Let `F` be a presheaf with the following property.
+
+For each `x`, there exists an open neighborhood `U ∋ x` such that for each `y ∈ U`,
+the map `Presheaf.germ F U y hyU` from sections of `F` over `U` to the stalk at `y`
+is bijective.
+
+Then the projection from the etale space of `F` to the base is a covering map. -/
+theorem isCoveringMap_base
     (hF_bij : ∀ x, ∃ (U : Opens X), x ∈ U ∧ ∀ y (hyU : y ∈ U), Bijective (F.germ U y hyU)) :
     IsCoveringMap (base (F := F)) := by
   refine fun x ↦ .to_isEvenlyCovered_preimage (I := WithTopology (ToType (F.stalk x)) ⊥) ?_
@@ -107,12 +158,6 @@ theorem EtaleSpace.isCoveringMap_base
   use U, hxU, U.isOpen, U.isOpen.preimage (continuous_base F), homeomorph U hU_bij x hxU
   simp
 
-theorem EtaleSpace.exists_section_of_tendsto {α : Type*} {l : Filter α} {g : α → F.EtaleSpace}
-    {g₀ : F.EtaleSpace} (h : Tendsto g l (𝓝 g₀)) :
-    ∃ (U : Opens X), g₀.base ∈ U ∧ ∃ (f : ToType (F.obj (op U))),
-      ∀ᶠ a in l, ∃ ha : (g a).base ∈ U, (g a).germ = F.germ U (g a).base ha f := by
-  rcases F.exists_germ_eq g₀.germ with ⟨U, hU, s, hs⟩
-  use U, hU, s
-  exact h.eventually <| g₀.eventually_nhds hU s hs
+end EtaleSpace
 
 end TopCat.Presheaf
