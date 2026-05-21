@@ -187,6 +187,7 @@ theorem of_shortExact_of_isFlasque₁₂ {S : ShortComplex (Sheaf AddCommGrpCat 
 
 end TopCat.Sheaf.IsFlasque
 
+set_option backward.defeqAttrib.useBackward true in
 /--
 If the unique map from `A` to the terminal object is an epimorphism, then the skyscraper sheaf
 valued in `A` supported at an arbitrary point is a flasque sheaf.
