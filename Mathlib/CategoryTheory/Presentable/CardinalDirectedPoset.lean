@@ -132,31 +132,6 @@ a partially ordered `κ`-filtered type `J` to `WithTop J`. -/
 abbrev withTop (J : CardinalFilteredPoset κ) : CardinalFilteredPoset κ :=
   .of (.of (WithTop J.obj))
 
-variable (κ) in
-/-- The property of posets in `CardinalFilteredPoset κ` that are
-of cardinality `< κ` and have terminal object. -/
-def hasCardinalLTWithTerminal : ObjectProperty (CardinalFilteredPoset κ) :=
-  fun J ↦ HasCardinalLT J.obj κ ∧ HasTerminal J.obj
-
-instance : ObjectProperty.EssentiallySmall.{u} (hasCardinalLTWithTerminal κ) where
-  exists_small_le' := by
-    obtain ⟨X, hX⟩ : ∃ (X : Type u), Cardinal.mk X = κ := ⟨κ.ord.ToType, by simp⟩
-    let α : Type u := Σ (S : Set X) (_ : PartialOrder S),
-      ULift.{u} (PLift (IsCardinalFiltered S κ))
-    let (a : α) : PartialOrder a.1 := a.2.1
-    let ι (a : α) : CardinalFilteredPoset κ :=
-      { obj := .of a.1
-        property := a.2.2.down.down }
-    refine ⟨.ofObj ι, inferInstance, fun J ⟨hJ, _⟩ ↦ ?_⟩
-    obtain ⟨f⟩ : Cardinal.mk J.obj ≤ Cardinal.mk X := by
-      simpa [hX] using ((hasCardinalLT_iff_cardinal_mk_lt _ _).1 hJ).le
-    let e := Equiv.ofInjective _ f.injective
-    letI : PartialOrder (Set.range f) := PartialOrder.lift e.symm e.symm.injective
-    let e' : Set.range f ≃o J.obj := { toEquiv := e.symm, map_rel_iff' := by rfl }
-    exact ⟨_, ⟨⟨Set.range f, inferInstance,
-      ⟨⟨IsCardinalFiltered.of_equivalence κ e'.symm.equivalence⟩⟩⟩⟩,
-        ⟨CardinalFilteredPoset.ι.preimageIso (PartOrdEmb.Iso.mk (by exact e'.symm))⟩⟩
-
 namespace coconeWithTop
 
 variable (J : CardinalFilteredPoset κ)
