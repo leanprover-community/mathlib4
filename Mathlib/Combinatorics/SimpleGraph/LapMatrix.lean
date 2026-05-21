@@ -128,8 +128,11 @@ theorem lapMatrix_mulVec_one_eq_zero [NonAssocRing R] : G.lapMatrix R *ᵥ 1 = 0
 
 variable (R) in
 @[simp]
-theorem det_lapMatrix_eq_zero [Nonempty V] [CommRing R] [IsDomain R] : (G.lapMatrix R).det = 0 :=
-  exists_mulVec_eq_zero_iff.mp ⟨1, by simp, G.lapMatrix_mulVec_one_eq_zero R⟩
+theorem det_lapMatrix_eq_zero [Nonempty V] [CommRing R] : (G.lapMatrix R).det = 0 := by
+  have ⟨v⟩ := ‹Nonempty V›
+  apply det_eq_zero_of_mulVec_eq_zero_of_mem_nonZeroDivisors (i := v) <|
+    G.lapMatrix_mulVec_one_eq_zero R
+  simp
 
 variable (R) in
 theorem not_isUnit_lapMatrix [Nonempty V] [Nontrivial R] [CommRing R] :
