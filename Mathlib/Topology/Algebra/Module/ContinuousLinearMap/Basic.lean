@@ -32,7 +32,7 @@ Later files endow it with a topological structure, see the docstring of
   dual" because it will (in later files) be endowed with the strong-dual topology, namely the
   topology of uniform convergence on bounded subsets.
 * `ContinuousLinearMap.addCommMonoid`, `ContinuousLinearMap.module`,... : the algebraic structures
-  on `M →SL[σ] N`
+  on `M →SL[σ] N`.
 
 ## Notation
 
