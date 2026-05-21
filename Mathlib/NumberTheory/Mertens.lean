@@ -157,34 +157,25 @@ lemma integral_oddLogDivMulPred_converges : IntegrableOn oddLogDivMulPred (Set.I
     let b := 2 * x
     have ha_pos : 0 < a := by nlinarith
     have hb_pos : 0 < b := by nlinarith
-    have hden_pos : 0 < a * b := by positivity
     have hlog_le : log a ≤ 2 * sqrt a := by
       have h := log_le_rpow_div ha_pos.le (by norm_num : (0 : ℝ) < 1 / 2)
       rw [sqrt_eq_rpow]
       linarith
-    have hden_nonneg : 0 ≤ a * b := hden_pos.le
     have hx_le_a : x ≤ a := by nlinarith
     have hx_le_b : x ≤ b := by nlinarith
-    have hden_le : sqrt x * x ≤ sqrt a * b :=
-      mul_le_mul (sqrt_le_sqrt hx_le_a) hx_le_b hxpos.le (sqrt_nonneg a)
     have hden_small_pos : 0 < sqrt x * x := mul_pos (sqrt_pos.mpr hxpos) hxpos
     calc
       _ = log a / (a * b) := by simp [oddLogDivMulPred, a, b]
-      _ ≤ (2 * sqrt a) / (a * b) := div_le_div_of_nonneg_right hlog_le hden_nonneg
+      _ ≤ (2 * sqrt a) / (a * b) := div_le_div_of_nonneg_right hlog_le (by positivity)
       _ = 2 / (sqrt a * b) := by
         rw [show a * b = sqrt a ^ 2 * b by rw [sq_sqrt ha_pos.le]]
         field_simp [(sqrt_ne_zero'.mpr ha_pos), ne_of_gt hb_pos]
-      _ ≤ 2 / (sqrt x * x) := div_le_div_of_nonneg_left (by norm_num) hden_small_pos hden_le
+      _ ≤ 2 / (sqrt x * x) := div_le_div_of_nonneg_left (by norm_num) hden_small_pos (by gcongr)
       _ = 2 * x ^ (-(3 / 2 : ℝ)) := by
-        have hsqrt_mul : sqrt x * x = x ^ ((3 : ℝ) / 2) := by
-          rw [sqrt_eq_rpow]
-          conv_lhs =>
-            arg 2
-            rw [← rpow_one x]
-          rw [← rpow_add hxpos]
-          norm_num
-        rw [hsqrt_mul, rpow_neg hxpos.le]
-        ring
+        rw [sqrt_eq_rpow]
+        nth_rw 2 [← rpow_one x]
+        rw [← rpow_add hxpos, rpow_neg hxpos.le]
+        ring_nf
 
 lemma tsum_primeLogDivMulPred_split_two_three : ∑' p : Nat.Primes, log p / (p * (p - 1))
     = log 2 / 2 + log 3 / 6 + ∑' p : {p : Nat.Primes // 5 ≤ (p : ℕ)}, log p / (p * (p - 1)) := by
