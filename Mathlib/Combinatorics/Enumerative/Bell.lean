@@ -105,10 +105,6 @@ theorem bell_mul_eq (m : Multiset ℕ) :
     rw [Finset.sum_multiset_count]
     simp only [smul_eq_mul, mul_comm]
 
-theorem map_factorial_prod_pos (m : Multiset ℕ) : 0 < (m.map (fun j ↦ j !)).prod := by
-  simpa only [CanonicallyOrderedAdd.multiset_prod_pos, mem_map, forall_exists_index, and_imp,
-    forall_apply_eq_imp_iff₂] using fun _ _ ↦ Nat.factorial_pos _
-
 theorem bell_eq (m : Multiset ℕ) :
     m.bell = m.sum ! / ((m.map fun j ↦ j !).prod * ∏ j ∈ m.toFinset.erase 0, (m.count j)!) := by
   rw [← Nat.mul_left_inj, Nat.div_mul_cancel _]
@@ -117,7 +113,7 @@ theorem bell_eq (m : Multiset ℕ) :
   · rw [← bell_mul_eq, mul_assoc]
     apply Nat.dvd_mul_left
   · rw [← Nat.pos_iff_ne_zero]
-    exact Nat.mul_pos (map_factorial_prod_pos m) <| Finset.prod_pos fun _ _ ↦ Nat.factorial_pos _
+    exact Nat.mul_pos (by simp [Nat.factorial_pos]) (by positivity)
 
 theorem prod_count_factorial_eq_count_factorial_mul_prod_erase
     {m : Multiset ℕ} {a : ℕ} (ha : a ≠ 0) : ∏ j ∈ m.toFinset.erase 0, (m.count j)! =
@@ -142,8 +138,8 @@ theorem prod_count_factorial_cons_erase {m : Multiset ℕ} {a : ℕ} :
 theorem bell_cons_mul_count {m : Multiset ℕ} {a : ℕ} (ha : a ≠ 0) :
     (a ::ₘ m).bell * (a ::ₘ m).count a = Nat.choose (m.sum + a) a * m.bell := by
   let rest := ∏ j ∈ (m.toFinset.erase 0).erase a, (m.count j)!
-  let c := a ! * ((m.map (· !)).prod * ((m.count a)! * rest))
-  have hm0 : m.bell * ((m.map (· !)).prod * ((m.count a)! * rest)) = m.sum ! := by
+  let c := a ! * ((m.map (· !)).prod * (m.count a)! * rest)
+  have hm0 : m.bell * ((m.map (· !)).prod * (m.count a)! * rest) = m.sum ! := by
     have hm := Multiset.bell_mul_eq m
     rw [prod_count_factorial_eq_count_factorial_mul_prod_erase ha] at hm
     simpa [rest, mul_assoc, mul_comm, mul_left_comm] using hm
@@ -151,20 +147,16 @@ theorem bell_cons_mul_count {m : Multiset ℕ} {a : ℕ} (ha : a ≠ 0) :
     simpa [c, mul_assoc, mul_comm, mul_left_comm] using congrArg (a ! * ·) hm0
   have ha_mem : a ∈ (a ::ₘ m).toFinset.erase 0 := by simp [ha]
   have hc : 0 < c := Nat.mul_pos (by positivity) <|
-    Nat.mul_pos (map_factorial_prod_pos m) <| by positivity
+    Nat.mul_pos (by simp [Nat.factorial_pos]) (by positivity)
   apply Nat.eq_of_mul_eq_mul_right hc
   calc
-    _ = (a ::ₘ m).bell * ((m.count a + 1) * c) := by
-      simp [mul_assoc]
+    _ = (a ::ₘ m).bell * (m.count a + 1) * c := by simp [mul_assoc]
     _ = (m.sum + a)! := by
       have hq := Multiset.bell_mul_eq (a ::ₘ m)
       rw [← Finset.mul_prod_erase _ _ ha_mem, prod_count_factorial_cons_erase] at hq
-      simpa [c, rest, Nat.factorial_succ, Multiset.map_cons, Multiset.prod_cons, Multiset.sum_cons,
-        add_comm, mul_assoc, mul_comm, mul_left_comm] using hq
-    _ = Nat.choose (m.sum + a) a * (m.sum ! * a !) := by
-      rw [← Nat.add_choose_mul_factorial_mul_factorial]
-      ring
-    _ = (Nat.choose (m.sum + a) a * m.bell) * c := by simp [← hm, mul_assoc, mul_left_comm]
+      simpa [c, Nat.factorial_succ, add_comm, mul_assoc, mul_left_comm] using hq
+    _ = (Nat.choose (m.sum + a) a * m.bell) * c := by
+      simp [← Nat.add_choose_mul_factorial_mul_factorial, mul_assoc, ← hm]
 
 end Multiset
 
