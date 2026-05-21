@@ -66,11 +66,11 @@ variable {m : ℕ} {k : Fin (m + 1)} {n : ℕ}
   (x : (Subcomplex.unionProd.{u} Λ[m + 1, k.castSucc] ∂Δ[n]).N) {d : ℕ}
 
 @[simp]
-lemma objEquiv_apply_fst' (hd : x.dim = d) (i : Fin ((x.cast hd).dim + 1)) :
+lemma objEquiv_apply_fst' (hd : x.dim = d) (i : Fin (d + 1)) :
     dsimp% ((objEquiv (x.cast hd).simplex) i).1 = (x.cast hd).simplex.1 i := rfl
 
 @[simp]
-lemma objEquiv_apply_snd' (hd : x.dim = d) (i : Fin ((x.cast hd).dim + 1)) :
+lemma objEquiv_apply_snd' (hd : x.dim = d) (i : Fin (d + 1)) :
     dsimp% ((objEquiv (x.cast hd).simplex) i).2 = (x.cast hd).simplex.2 i := rfl
 
 namespace pairingCore
@@ -218,8 +218,8 @@ noncomputable def δ :
   nonDegenerate := nonDegenerate_δ (x.cast hd).nonDegenerate _
   notMem := by
     dsimp
-    -- `simp? [Subcomplex.mem_unionProd_iff, mem_boundary_iff_notMem_range, mem_horn_iff_notMem_range,
-    --  stdSimplex.δ_apply]` says:
+    -- `simp? [Subcomplex.mem_unionProd_iff, mem_boundary_iff_notMem_range,
+    --   mem_horn_iff_notMem_range,stdSimplex.δ_apply]` says:
     simp only [Subcomplex.mem_unionProd_iff, prod_δ_snd, mem_boundary_iff_notMem_range,
       Set.mem_range, stdSimplex.δ_apply, not_exists, prod_δ_fst, mem_horn_iff_notMem_range,
       ne_eq, exists_prop, not_or, not_forall, Decidable.not_not, not_and]
