@@ -53,7 +53,7 @@ variable [∀ i j h, IsometryClass (T h) (G i) (G j)]
 
 noncomputable instance instNormedAddCommGroup : NormedAddCommGroup (DirectLimit G f) where
   __ := NormedAddGroup.instNormedAddGroup
-  __ : AddCommGroup (DirectLimit G f) := _
+  __ := (inferInstance : AddCommGroup (DirectLimit G f))
 
 example (i : ι) (x : G i) : ‖(⟦⟨i, x⟩⟧ : DirectLimit G f)‖ = ‖(x : G i)‖ := by
   apply DirectLimit.NormedAddGroup.norm_def
