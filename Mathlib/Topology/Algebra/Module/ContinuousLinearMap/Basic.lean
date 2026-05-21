@@ -810,9 +810,9 @@ instance : IsNegApply (M →SL[σ₁₂] M₂) M M₂ where
 theorem toLinearMap_neg (f : M →SL[σ₁₂] M₂) : (↑(-f) : M →ₛₗ[σ₁₂] M₂) = -f :=
   rfl
 
-@[deprecated (since := "2026-05-20")] alias neg_apply := _root_.neg_apply
+@[deprecated (since := "2026-05-20")] protected alias neg_apply := _root_.neg_apply
 
-@[deprecated (since := "2026-05-20")] alias coe_neg := toLinearMap_neg
+@[deprecated (since := "2026-05-20")] protected alias coe_neg := toLinearMap_neg
 
 @[deprecated (since := "2026-05-20")] alias coe_neg' := FunLike.coe_neg
 
