@@ -755,6 +755,25 @@ def restrictGm (i : Set α) : VectorMeasure α M →+ VectorMeasure α M where
   map_zero' := restrict_zero
   map_add' _ _ := restrict_add _ _ i
 
+variable [T2Space M] {s t : Set α}
+
+theorem restrict_inter_add_diff (hs : MeasurableSet s) (ht : MeasurableSet t) :
+    v.restrict (s ∩ t) + v.restrict (s \ t) = v.restrict s := by
+  ext1 u hu
+  simp only [add_apply, restrict_apply, hs, hu, hs.inter ht, hs.diff ht]
+  rw [← of_union (by grind) (hu.inter (hs.inter ht)) (hu.inter (hs.diff ht))]
+  congr
+  grind
+
+theorem restrict_union_add_inter (hs : MeasurableSet s) (ht : MeasurableSet t) :
+    v.restrict (s ∪ t) + v.restrict (s ∩ t) = v.restrict s + v.restrict t := by
+  rw [← v.restrict_inter_add_diff (hs.union ht) ht, union_inter_cancel_right, union_diff_right,
+    ← v.restrict_inter_add_diff hs ht, add_comm, ← add_assoc, add_right_comm]
+
+theorem restrict_union (h : Disjoint s t) (hs : MeasurableSet s) (ht : MeasurableSet t) :
+    v.restrict (s ∪ t) = v.restrict s + v.restrict t := by
+  simp [← v.restrict_union_add_inter hs ht, disjoint_iff_inter_eq_empty.mp h]
+
 end ContinuousAdd
 
 section Partition
