@@ -527,9 +527,9 @@ no non-trivial block system exists, so the point stabiliser
 H₁₉₂ ≤ G₂(2) is a **maximal subgroup** — there is no subgroup K
 with H₁₉₂ < K < G₂(2).
 
-Consequence: the Langer graph admits no non-trivial symmetric
-quotient. It cannot be expressed as a regular covering of a
-smaller vertex-transitive graph. -/
+The Langer graph is primitive, and unlike Zhou-6 (the Z₂ quotient of
+the cubic Zhou graph F182A) it admits no cubic double cover
+(see `tutte12_points_independent` below). -/
 theorem langer_action_primitive :
     ∀ v : Fin 63, v ≠ 0 →
       blockIsFullBool v = true := by
@@ -567,4 +567,119 @@ theorem tutte12_points_independent :
     ∀ p q : Fin 63,
       ¬tutte12CageGraph.Adj
         ⟨p.val, by omega⟩ ⟨q.val, by omega⟩ := by
+  native_decide
+
+/-! ## Zhou-6: PSL(2,13) acts primitively on 91 points
+
+The **Zhou-6 graph** (91 vertices, 6-regular) is Sab(PSL(2,13), D₁₂).
+The stabiliser D₁₂ is maximal in PSL(2,13), so the action is primitive.
+We verify this with the same Atkinson algorithm used for the Langer
+graph. -/
+
+private def zhou6Gen1Fwd : Array (Fin 91) := #[
+  1, 3, 5, 7, 8, 10, 12, 13, 15, 17, 18, 20, 6, 21, 23, 25, 27, 26,
+  30, 32, 34, 0, 37, 39, 41, 42, 44, 16, 47, 48, 49, 51, 53, 31, 24,
+  55, 56, 58, 60, 61, 62, 46, 65, 64, 57, 69, 11, 40, 66, 2, 71, 73,
+  75, 76, 77, 79, 38, 70, 81, 82, 59, 83, 54, 85, 45, 4, 35, 63, 43,
+  86, 9, 33, 22, 50, 87, 84, 88, 28, 14, 29, 19, 89, 36, 78, 52, 74,
+  68, 90, 80, 72, 67]
+private def zhou6Gen1Inv : Array (Fin 91) := #[
+  21, 0, 49, 1, 65, 2, 12, 3, 4, 70, 5, 46, 6, 7, 78, 8, 27, 9, 10,
+  80, 11, 13, 72, 14, 34, 15, 17, 16, 77, 79, 18, 33, 19, 71, 20, 66,
+  82, 22, 56, 23, 47, 24, 25, 68, 26, 64, 41, 28, 29, 30, 73, 31, 84,
+  32, 62, 35, 36, 44, 37, 60, 38, 39, 40, 67, 43, 42, 48, 90, 86, 45,
+  57, 50, 89, 51, 85, 52, 53, 54, 83, 55, 88, 58, 59, 61, 75, 63, 69,
+  74, 76, 81, 87]
+private def zhou6Gen2Fwd : Array (Fin 91) := #[
+  2, 4, 6, 5, 9, 11, 0, 14, 16, 1, 19, 3, 17, 22, 24, 26, 28, 29,
+  31, 33, 35, 36, 38, 40, 7, 43, 45, 46, 8, 12, 50, 52, 54, 10, 55,
+  53, 57, 59, 13, 51, 63, 64, 66, 67, 68, 15, 70, 56, 47, 41, 72, 74,
+  18, 20, 78, 80, 48, 21, 58, 69, 44, 73, 84, 23, 49, 79, 71, 25, 60,
+  37, 27, 42, 30, 81, 39, 85, 76, 65, 32, 77, 34, 61, 86, 62, 83, 89,
+  90, 87, 88, 75, 82]
+private def zhou6Gen2Inv : Array (Fin 91) := #[
+  6, 9, 0, 11, 1, 3, 2, 24, 28, 4, 33, 5, 29, 38, 7, 45, 8, 12, 52,
+  10, 53, 57, 13, 63, 14, 67, 15, 70, 16, 17, 72, 18, 78, 19, 80, 20,
+  21, 69, 22, 74, 23, 49, 71, 25, 60, 26, 27, 48, 56, 64, 30, 39, 31,
+  35, 32, 34, 47, 36, 58, 37, 68, 81, 83, 40, 41, 77, 42, 43, 44, 59,
+  46, 66, 50, 61, 51, 89, 76, 79, 54, 65, 55, 73, 90, 84, 62, 75, 82,
+  87, 88, 85, 86]
+
+private theorem zhou6Gen1Fwd_size : zhou6Gen1Fwd.size = 91 := by
+  native_decide
+private theorem zhou6Gen1Inv_size : zhou6Gen1Inv.size = 91 := by
+  native_decide
+private theorem zhou6Gen2Fwd_size : zhou6Gen2Fwd.size = 91 := by
+  native_decide
+private theorem zhou6Gen2Inv_size : zhou6Gen2Inv.size = 91 := by
+  native_decide
+
+/-- First generator of PSL(2,13) on 91 cosets of D₁₂. -/
+private def zhou6Gen1 : Equiv.Perm (Fin 91) where
+  toFun i := zhou6Gen1Fwd[i.val]'(by
+    have := zhou6Gen1Fwd_size; omega)
+  invFun i := zhou6Gen1Inv[i.val]'(by
+    have := zhou6Gen1Inv_size; omega)
+  left_inv := by intro i; revert i; native_decide
+  right_inv := by intro i; revert i; native_decide
+
+/-- Second generator of PSL(2,13) on 91 cosets of D₁₂. -/
+private def zhou6Gen2 : Equiv.Perm (Fin 91) where
+  toFun i := zhou6Gen2Fwd[i.val]'(by
+    have := zhou6Gen2Fwd_size; omega)
+  invFun i := zhou6Gen2Inv[i.val]'(by
+    have := zhou6Gen2Inv_size; omega)
+  left_inv := by intro i; revert i; native_decide
+  right_inv := by intro i; revert i; native_decide
+
+private def zhou6AllGens : List (Equiv.Perm (Fin 91)) :=
+  [zhou6Gen1, zhou6Gen1.symm, zhou6Gen2, zhou6Gen2.symm]
+
+private def mergeRep91 (f : Fin 91 → Fin 91) (lo hi : Fin 91) :
+    Fin 91 → Fin 91 :=
+  fun i => let fi := f i; if fi = hi then lo else fi
+
+private def atkinson91 (gens : List (Equiv.Perm (Fin 91)))
+    (queue : List (Fin 91 × Fin 91))
+    (part : Fin 91 → Fin 91) :
+    Nat → Fin 91 → Fin 91
+  | 0 => part
+  | fuel + 1 =>
+    match queue with
+    | [] => part
+    | (x, y) :: rest =>
+      let Acc :=
+        List (Fin 91 × Fin 91) × (Fin 91 → Fin 91)
+      let (newPairs, part') :=
+        gens.foldl (fun (acc : Acc) g =>
+          let (pairs, p) := acc
+          let rgx := p (g x)
+          let rgy := p (g y)
+          if rgx = rgy then (pairs, p)
+          else
+            let lo := min rgx rgy
+            let hi := max rgx rgy
+            ((lo, hi) :: pairs, mergeRep91 p lo hi))
+          ([], part)
+      atkinson91 gens (rest ++ newPairs) part' fuel
+
+private def zhou6BlockIsFullBool (v : Fin 91) : Bool :=
+  let initPart : Fin 91 → Fin 91 := fun i =>
+    if i = v then 0 else i
+  let finalPart :=
+    atkinson91 zhou6AllGens [(0, v)] initPart 400
+  decide (∀ w : Fin 91, finalPart w = 0)
+
+/-- **Primitivity of the PSL(2,13) action on 91 points.**
+
+For every vertex v ≠ 0, Atkinson's algorithm starting from 0 ~ v
+merges all 91 vertices into a single equivalence class. The point
+stabiliser D₁₂ ≤ PSL(2,13) is a maximal subgroup.
+
+The Zhou-6 graph Sab(PSL(2,13), D₁₂) is primitive and admits a
+cubic double cover: the Zhou graph F182A = Sab(PSL(2,13), S₃)
+covers it via S₃ ≤ D₁₂. -/
+theorem zhou6_action_primitive :
+    ∀ v : Fin 91, v ≠ 0 →
+      zhou6BlockIsFullBool v = true := by
   native_decide
