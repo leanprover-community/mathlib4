@@ -252,8 +252,8 @@ def forget₂ToModuleCatHomotopyEquiv :
           (extraDegeneracyCompForgetAugmentedToModule k G)).trans
       (HomotopyEquiv.ofIso <|
         (ChainComplex.single₀ (ModuleCat.{u} k)).mapIso
-          (@Finsupp.LinearEquiv.finsuppUnique k k _ _ _ (⊤_ Type u)
-              Types.terminalIso.toEquiv.unique).toModuleIso)
+          (@Finsupp.uniqueLinearEquiv k (⊤_ Type u) k _ _ _ _
+            Types.terminalIso.toEquiv.unique.default).toModuleIso)
 
 /-- The hom of `k`-linear `G`-representations `k[G¹] → k` sending `∑ nᵢgᵢ ↦ ∑ nᵢ`. -/
 def ε : Rep.ofMulAction k G (Fin 1 → G) ⟶ Rep.trivial k G k := ofHom
@@ -381,7 +381,7 @@ lemma d_comp_diagonalSuccIsoFree_inv_eq :
     have eq3 : single (i 0 • Fin.partialProd fun i_1 ↦ i i_1.succ) (1 : k) =
       single (Fin.partialProd i ∘ Fin.succ) 1 := by
       congr; exact funext fun j ↦ Fin.partialProd_succ' i j |>.symm
-    simp [μ_hom, d_single (k := k), Rep.mkIso_inv_hom_apply _,
+    simp [μ_hom, d_single (k := k),
       Representation.linearizeOfMulActionIso_symm_apply,
       Representation.linearizeTrivialIso_symm_apply _, d_apply (k := k),
       Representation.μ_apply_single_single_leftRegular _,
@@ -407,8 +407,7 @@ noncomputable abbrev barComplex : ChainComplex (Rep k G) ℕ :=
 
 namespace barComplex
 
-@[simp]
-theorem d_def : (barComplex k G).d (n + 1) n = d k G n := ChainComplex.of_d _ _ _ _
+theorem d_def : (barComplex k G).d (n + 1) n = d k G n := by simp
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Isomorphism between the bar resolution and standard resolution, with `n`th map
@@ -416,7 +415,7 @@ set_option backward.isDefEq.respectTransparency false in
 def isoStandardComplex : barComplex k G ≅ standardComplex k G :=
   HomologicalComplex.Hom.isoOfComponents (fun i => (diagonalSuccIsoFree k G i).symm) fun i j => by
     rintro (rfl : j + 1 = i)
-    simp only [ChainComplex.of_X, Iso.symm_hom, d_def, d_comp_diagonalSuccIsoFree_inv_eq]
+    rw [d_def, Iso.symm_hom, Iso.symm_hom, d_comp_diagonalSuccIsoFree_inv_eq]
 
 end barComplex
 

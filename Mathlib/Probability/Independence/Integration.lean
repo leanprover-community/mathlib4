@@ -182,7 +182,7 @@ theorem IndepFun.integrable_bilin {𝕜 : Type*} [NontriviallyNormedField 𝕜]
     {X : Ω → E} {Y : Ω → F} (hXY : X ⟂ᵢ[μ] Y) (hX : Integrable X μ) (hY : Integrable Y μ)
     (B : E →L[𝕜] F →L[𝕜] G) :
     Integrable (fun ω ↦ B (X ω) (Y ω)) μ := by
-  refine hXY.integrable_op hX hY (B · ·) (by fun_prop) ‖B‖.toNNReal (fun x y ↦ ?_)
+  refine hXY.integrable_op hX hY (B · ·) (by fun_prop) ‖B‖₊ (fun x y ↦ ?_)
   rw [← toReal_le_toReal (by finiteness) (by finiteness)]
   simp [B.le_opNorm₂]
 
@@ -268,7 +268,7 @@ theorem IndepFun.integral_bilin_comp_comp
 such that `∀ x y, c * ‖x‖ * ‖y‖ ≤ ‖B x y‖`, then
 `∫ ω, B (f (X ω)) (g (Y ω)) ∂μ = B (∫ ω, f (X ω) ∂μ) (∫ ω, g (Y ω) ∂μ).`
 
-The assumtion on `B` allows to drop the integrability condition in
+The assumption on `B` allows to drop the integrability condition in
 `IndepFun.integral_bilin_comp_comp`, which is useful for the versions where `B` is the scalar
 multiplication or the multiplication. -/
 theorem IndepFun.integral_bilin_comp_comp'
@@ -313,16 +313,18 @@ theorem IndepFun.integral_bilin_comp_comp'
 is a continuous bilinear map, then `∫ ω, B (X ω) (Y ω) ∂μ = B μ[X] μ[Y].` -/
 theorem IndepFun.integral_bilin
     [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedSpace 𝕜 E] [CompleteSpace E]
-    [SecondCountableTopology E] [MeasurableSpace E] [BorelSpace E]
+    [MeasurableSpace E] [BorelSpace E]
     [NormedAddCommGroup F] [NormedSpace ℝ F] [NormedSpace 𝕜 F] [CompleteSpace F]
-    [SecondCountableTopology F] [MeasurableSpace F] [BorelSpace F]
+    [MeasurableSpace F] [BorelSpace F]
     [NormedAddCommGroup G] [NormedSpace ℝ G] [NormedSpace 𝕜 G] [CompleteSpace G]
     {X : Ω → E} {Y : Ω → F} (hXY : X ⟂ᵢ[μ] Y) (hX : Integrable X μ) (hY : Integrable Y μ)
     (B : E →L[ℝ] F →L[ℝ] G) :
     ∫ ω, B (X ω) (Y ω) ∂μ = B μ[X] μ[Y] :=
   hXY.integral_bilin_comp_comp hX.aemeasurable hY.aemeasurable
-    ((integrable_map_measure aestronglyMeasurable_id hX.aemeasurable).2 hX)
-    ((integrable_map_measure aestronglyMeasurable_id hY.aemeasurable).2 hY) B
+    ((integrable_map_measure hX.aestronglyMeasurable.aestronglyMeasurable_id_map hX.aemeasurable).2
+      hX)
+    ((integrable_map_measure hY.aestronglyMeasurable.aestronglyMeasurable_id_map hY.aemeasurable).2
+      hY) B
 
 /-- The scalar product of two independent and integrable random variables is integrable. -/
 theorem IndepFun.integrable_smul

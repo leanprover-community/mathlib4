@@ -54,7 +54,7 @@ variable {mE} in
 lemma IsGaussian.hasGaussianLaw_id {μ : Measure E} [IsGaussian μ] : HasGaussianLaw id μ where
   isGaussian_map := by rwa [Measure.map_id]
 
-@[fun_prop, measurability]
+@[fun_prop]
 lemma HasGaussianLaw.aemeasurable (hX : HasGaussianLaw X P) : AEMeasurable X P :=
   AEMeasurable.of_map_ne_zero hX.isGaussian_map.toIsProbabilityMeasure.ne_zero
 
