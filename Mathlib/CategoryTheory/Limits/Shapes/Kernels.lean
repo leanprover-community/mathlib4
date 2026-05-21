@@ -525,7 +525,7 @@ def zeroKernelOfCancelZero {X Y : C} (f : X ⟶ Y)
     (hf : ∀ (Z : C) (g : Z ⟶ X) (_ : g ≫ f = 0), g = 0) :
     IsLimit (KernelFork.ofι (0 : 0 ⟶ X) (show 0 ≫ f = 0 by simp)) :=
   Fork.IsLimit.mk _ (fun _ => 0) (fun s => by rw [hf _ _ (KernelFork.condition s), zero_comp])
-    fun s m _ => by dsimp; apply HasZeroObject.to_zero_ext
+    fun s m _ => by apply HasZeroObject.to_zero_ext
 
 end HasZeroObject
 

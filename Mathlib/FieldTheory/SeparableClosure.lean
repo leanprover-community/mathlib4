@@ -267,7 +267,7 @@ theorem le_restrictScalars_separableClosure (L : IntermediateField F E) :
 /-- `separableClosure` as a `ClosureOperator`. -/
 abbrev separableClosureOperator : ClosureOperator (IntermediateField F E) := by
   refine .mk' (fun K ↦ (separableClosure K E).restrictScalars F) (fun K L le x hx ↦ ?_)
-    le_restrictScalars_separableClosure fun K x hx ↦ ?_ <;> dsimp only at hx ⊢
+    le_restrictScalars_separableClosure fun K x hx ↦ ?_
   · let _ := (inclusion le).toAlgebra
     have : IsScalarTower K L E := .of_algebraMap_eq' rfl
     exact hx.tower_top _

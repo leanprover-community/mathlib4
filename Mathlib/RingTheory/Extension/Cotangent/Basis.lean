@@ -105,7 +105,7 @@ We make sure the section `T → R[X₁, ..., Xₙ]` maps `-1` to `-1` and `0` to
 def presLeft : Presentation R D.T ι σ :=
   .naive (fun x ↦ if x = 0 then 0 else if x = -1 then -1 else
       Function.surjInv Ideal.Quotient.mk_surjective x) fun x ↦ by
-    dsimp only; split_ifs
+    split_ifs
     · next h => subst h; rfl
     · next h => subst h; rfl
     · simp [Function.surjInv_eq]
