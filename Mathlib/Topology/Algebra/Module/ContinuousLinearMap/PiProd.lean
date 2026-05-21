@@ -19,7 +19,7 @@ arbitrary) products.
 Binary products (viewed as categorical products):
 
 * `ContinuousLinearMap.fst R M₁ M₂ : M₁ × M₂ →L[R] M₁` and
-  `ContinuousLinearMap.snd R M₁ M₂ : M₁ × M₂ →L[R] M₂` are the two canonical projections, given
+  `ContinuousLinearMap.snd R M₁ M₂ : M₁ × M₂ →L[R] M₂` are the two projections, given
   respectively by `fst (x, y) = x` and `snd (x, y) = y`. These are the continuous versions
   of `LinearMap.fst` and `LinearMap.snd`.
 * `ContinuousLinearMap.prod f₁ f₂` is the continuous linear map `M →L[R] N₁ × N₂` given by two
@@ -35,7 +35,7 @@ Binary products (viewed as categorical products):
 Binary products (viewed as categorical coproducts):
 
 * `ContinuousLinearMap.inl R M₁ M₂ : M₁ →L[R] M₁ × M₂` and
-  `ContinuousLinearMap.inr R M₁ M₂ : M₂ →L[R] M₁ × M₂` are the two canonical inclusions, given
+  `ContinuousLinearMap.inr R M₁ M₂ : M₂ →L[R] M₁ × M₂` are the two inclusions, given
   respectively by `inl x = (x, 0)` and `inr x = (0, x)`. These are the continuous versions
   of `LinearMap.inl` and `LinearMap.inr`.
 * `ContinuousLinearMap.coprod f₁ f₂` is the continuous linear map ` M₁ × M₂ →L[R] N` given by
@@ -53,7 +53,7 @@ Indexed products:
 * `ContinuousLinearMap.piMap f` is the continuous linear map `(Π i, M i) →L[R] (Π i, N i)` given by
   a family `f : Π i, M i →L[R] N i` of continuous linear maps. This is the continuous
   version of `LinearMap.piMap`.
-* `ContinuousLinearMap.proj j : (Π i, M i) → L[R] M j` is the canonical projection given by
+* `ContinuousLinearMap.proj j : (Π i, M i) → L[R] M j` is the projection given by
   `proj i f = f i`. This is the continuous version of `LinearMap.proj`.
 -/
 

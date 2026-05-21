@@ -16,14 +16,14 @@ to subspaces of the domain/codomain.
 
 ## Main definitions
 
-* `Submodule.subtypeL S` is the canonical inclusion `S →L[R] M` when `S : Submodule R M`.
+* `Submodule.subtypeL S` is the inclusion map `S →L[R] M` when `S : Submodule R M`.
   In other words, it is `Submodule.subtype S` bundled as a `ContinuousLinearMap`.
 * `ContinuousLinearMap.domRestrict f S` is the map `S →SL[σ] N` obtained by restricting
   `f : M →SL[σ] N` to a subspace `S` of the *domain*.
 * `ContinuousLinearMap.codRestrict f S h` is the map `M →SL[σ] S` obtained by co-restricting
   `f : M →SL[σ] N` to a subspace `S` of the *codomain*; this requires a proof `h` that all values
   of `f` indeed belong to `S`.
-* `ContinuousLinearMap.rangeRestrict f` is an abbrev for
+* `ContinuousLinearMap.rangeRestrict f` is an abbreviation for
   `f.codRestrict f.range ⋯ : M →SL[σ] f.range`.
 * `ContinuousLinearMap.restrict f h` is the map `S →SL[σ] T` obtained by restricting from
   `f : M →SL[σ] N` and a proof `h` that `f` maps `S` inside `T`.
