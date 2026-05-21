@@ -296,7 +296,7 @@ section SMulMonoid
 variable {S₂ : Type*} [Monoid S₂]
 variable [DistribMulAction S₂ M₂] [SMulCommClass R₂ S₂ M₂] [ContinuousConstSMul S₂ M₂]
 
-instance mulAction : MulAction S₂ (M₁ →SL[σ₁₂] M₂) := FunLike.mulAction
+instance mulAction : MulAction S₂ (M₁ →SL[σ₁₂] M₂) := fast_instance% FunLike.mulAction
 
 end SMulMonoid
 
@@ -416,8 +416,25 @@ theorem toContinuousAddMonoidHom_add (f g : M₁ →SL[σ₁₂] M₂) :
 
 -- The `AddMonoid` instance exists to help speedup unification
 instance : AddMonoid (M₁ →SL[σ₁₂] M₂) where
+  zero_add := by
+    intros
+    ext
+    apply_rules [zero_add, add_assoc, add_zero, neg_add_cancel, add_comm]
+  add_zero := by
+    intros
+    ext
+    apply_rules [zero_add, add_assoc, add_zero, neg_add_cancel, add_comm]
+  add_assoc := by
+    intros
+    ext
+    apply_rules [zero_add, add_assoc, add_zero, neg_add_cancel, add_comm]
   nsmul := (· • ·)
-  __ := FunLike.addMonoid
+  nsmul_zero f := by
+    ext
+    simp
+  nsmul_succ n f := by
+    ext
+    simp [add_smul]
 
 instance addCommMonoid : AddCommMonoid (M₁ →SL[σ₁₂] M₂) := fast_instance% FunLike.addCommMonoid
 
@@ -829,9 +846,14 @@ instance sub : Sub (M →SL[σ₁₂] M₂) :=
 instance : IsSubApply (M →SL[σ₁₂] M₂) M M₂ where
   sub_apply _ _ _ := rfl
 
+-- Todo: figure out how to use `FunLike.addCommGroup` here
 instance addCommGroup : AddCommGroup (M →SL[σ₁₂] M₂) where
+  sub_eq_add_neg _ _ := by ext; apply sub_eq_add_neg
   zsmul := (· • ·)
-  __ := FunLike.addCommGroup
+  zsmul_zero' f := by ext; simp
+  zsmul_succ' n f := by ext; simp [add_smul, add_comm]
+  zsmul_neg' n f := by ext; simp [add_smul]
+  neg_add_cancel _ := by ext; apply neg_add_cancel
 
 @[simp, norm_cast]
 theorem toLinearMap_sub (f g : M →SL[σ₁₂] M₂) : (↑(f - g) : M →ₛₗ[σ₁₂] M₂) = f - g :=
