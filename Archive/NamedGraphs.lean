@@ -231,7 +231,7 @@ private noncomputable instance : GraphAction dGroup (Fin 20) dodecahedronGraph w
 private noncomputable instance : MulAction.IsPretransitive dGroup (Fin 20) where
   exists_smul_eq x y := ⟨⟨_, dGroup.mul_mem (applyWord'_mem dGens _)
     (dGroup.inv_mem (applyWord'_mem dGens _))⟩, by
-    show ((applyWord' dGens (dWit x)).symm.trans (applyWord' dGens (dWit y))) x = y
+    change ((applyWord' dGens (dWit x)).symm.trans (applyWord' dGens (dWit y))) x = y
     simp only [Equiv.trans_apply]
     rw [show (applyWord' dGens (dWit x)).symm x = 0 from by
       rw [Equiv.symm_apply_eq]; exact (dWit_ok x).symm]; exact dWit_ok y⟩
@@ -276,7 +276,7 @@ private noncomputable instance : GraphAction cGroup (Fin 8) cubeGraph where
 private noncomputable instance : MulAction.IsPretransitive cGroup (Fin 8) where
   exists_smul_eq x y := ⟨⟨_, cGroup.mul_mem (applyWord'_mem cGens _)
     (cGroup.inv_mem (applyWord'_mem cGens _))⟩, by
-    show ((applyWord' cGens (cWit x)).symm.trans (applyWord' cGens (cWit y))) x = y
+    change ((applyWord' cGens (cWit x)).symm.trans (applyWord' cGens (cWit y))) x = y
     simp only [Equiv.trans_apply]
     rw [show (applyWord' cGens (cWit x)).symm x = 0 from by
       rw [Equiv.symm_apply_eq]; exact (cWit_ok x).symm]; exact cWit_ok y⟩
