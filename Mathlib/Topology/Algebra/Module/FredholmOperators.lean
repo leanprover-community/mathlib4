@@ -48,11 +48,6 @@ lemma alternating_sum_eq_zero_of_telescope {n : ℕ} (d : Fin (n + 3) → ℤ) (
 
 open Function Module
 
-lemma finrank_eq_range_of_injective {k V₀ V₁ : Type*} [Field k] [AddCommGroup V₀] [Module k V₀]
-    [FiniteDimensional k V₀] [AddCommGroup V₁] [Module k V₁] (f : V₀ →ₗ[k] V₁)
-    (hf : Function.Injective f) : (finrank k V₀ : ℤ) = finrank k (LinearMap.range f) :=
-  (congr_arg Nat.cast (LinearEquiv.finrank_eq (LinearEquiv.ofInjective f hf)))
-
 lemma finrank_eq_range_of_surjective {k V₀ V₁ : Type*} [Field k] [AddCommGroup V₀] [Module k V₀]
     [AddCommGroup V₁] [Module k V₁] [FiniteDimensional k V₁] (f : V₀ →ₗ[k] V₁)
     (hf : Function.Surjective f) : (finrank k V₁ : ℤ) = finrank k (LinearMap.range f) := by
@@ -75,8 +70,8 @@ lemma Module.sum_neg_one_pow_finrank_eq_zero_of_exact {n : ℕ} {k : Type*}
     (surj : Function.Surjective (f (Fin.last _))) : ∑ i, (-1) ^ i.val * (finrank k (V i) : ℤ) = 0
       := by
   apply alternating_sum_eq_zero_of_telescope _ _ _ _ _
-  · use fun i ↦ finrank k (LinearMap.range (f i))
-  · exact finrank_eq_range_of_injective (f 0) inj
+  · use fun i ↦ finrank k <| LinearMap.range (f i)
+  · exact ((fun {m n} ↦ Int.ofNat_inj.mpr) <| LinearMap.finrank_range_of_inj inj).symm
   · exact fun i ↦ finrank_eq_sum_ranges_of_exact (f i.castSucc) (f i.succ) (h_exact i)
   · rw [LinearMap.range_eq_top.mpr surj, finrank_top]
     rfl
