@@ -238,7 +238,7 @@ variable {F α β : Type*} [FunLike F α β] [CommMonoid β] [CommMonoid F]
   [IsOneApply F α β] [IsMulApply F α β]
 
 open Classical in
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp, grind =)]
 theorem prod_apply {ι : Type*} (s : Finset ι) (f : ι → F) (x : α) :
     (∏ i ∈ s, f i) x = ∏ i ∈ s, f i x := by
   apply Finset.induction_on (motive := fun s ↦ (∏ i ∈ s, f i) x = ∏ i ∈ s, f i x)
