@@ -503,8 +503,7 @@ theorem smulDistribClass_smulOfNormal [N.Normal] [IsGaloisGroup N B C] :
 variable [FaithfulSMul B C]
 
 /-- If `N` is a normal subgroup of `G` and `IsGaloisGroup N B C`, then the quotient group `G ⧸ N`
-acts on `B` by `(g : G ⧸ N) • x = g • x`. Well-definedness follows from `FaithfulSMul B C` and
-the fact that elements of `N` fix `algebraMap B C` pointwise. -/
+acts on `B` by `(g : G ⧸ N) • x = g • x`. -/
 @[implicit_reducible]
 noncomputable def mulSemiringActionQuotient [MulSemiringAction G B] [SMulDistribClass G B C]
     [IsGaloisGroup N B C] [N.Normal] :
