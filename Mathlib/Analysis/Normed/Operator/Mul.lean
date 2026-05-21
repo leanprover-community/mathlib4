@@ -170,10 +170,10 @@ lemma toSpanSingletonLIE_apply (x : E) : toSpanSingletonLIE 𝕜 E x = toSpanSin
 @[simp] lemma toContinuousLinearEquiv_toSpanSingletonLIE :
     (toSpanSingletonLIE 𝕜 E).toContinuousLinearEquiv = toSpanSingletonCLE := rfl
 
-@[deprecated (since := "2026-04-23")]
+@[deprecated "Use the reverse of `toSpanSingletonLE`." (since := "2026-05-21")]
 alias ring_lmap_equiv_selfₗ := toSpanSingletonLE
 
-@[deprecated (since := "2026-04-23")]
+@[deprecated "Use the reverse of `toSpanSingletonLIE`." (since := "2026-05-21")]
 alias ring_lmap_equiv_self := toSpanSingletonLIE
 
 end RingEquiv
