@@ -13,10 +13,9 @@ public import Mathlib.NumberTheory.GaussSum
 -/
 
 public section
+variable {N : ℕ} [NeZero N] {R : Type*} [CommRing R] (e : AddChar (ZMod N) R)
 
 open AddChar DirichletCharacter
-
-variable {N : ℕ} [NeZero N] {R : Type*} [CommRing R] (e : AddChar (ZMod N) R)
 
 lemma gaussSum_aux_of_mulShift (χ : DirichletCharacter R N) {d : ℕ}
     (hd : d ∣ N) (he : e.mulShift d = 1) {u : (ZMod N)ˣ} (hu : ZMod.unitsMap hd u = 1) :
