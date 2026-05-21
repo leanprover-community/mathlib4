@@ -242,6 +242,18 @@ to module `Foo.Bar` (no `srcDir` indirection).
   top-level command (including preceding attributes and doc comments). It is copied to
   cloned repos at runtime and executed via `lake env lean --run`.
 
+**Cross-reference tag review**
+- `crossref.lean` is a single standalone tool for `@[stacks ...]`,
+  `@[kerodon ...]`, and `@[wikidata ...]` attributes. It has two subcommands:
+  - `lake env lean --run scripts/crossref.lean snippet <db> <tag>...` fetches
+    a one-line label/description for each tag from the upstream database.
+    Honours `CROSSREF_CACHE_DIR` for offline-friendly repeat lookups.
+  - `lake env lean --run scripts/crossref.lean extract --file <path>...` (or
+    `--diff <range>`) walks the Lean source and emits TSV with one row per
+    cross-reference attribute, paired with the declaration it decorates. A
+    byte-level scanner skips strings, comments, and modifier keywords correctly.
+  Used by the cross-reference review CI bot.
+
 **Managing downstream repos**
 - `downstream_repos.yml` contains basic information about significant downstream repositories.
 - `downstream-tags.py` is a script to check whether a given tag exists on the downstream
