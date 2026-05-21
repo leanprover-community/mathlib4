@@ -1128,6 +1128,7 @@ lemma integrable_pow_mul (f : 𝓢(D, V))
   convert integrable_pow_mul_iteratedFDeriv μ f k 0 with x
   simp
 
+@[fun_prop]
 lemma integrable (f : 𝓢(D, V)) : Integrable f μ :=
   (f.integrable_pow_mul μ 0).mono f.continuous.aestronglyMeasurable
     (Eventually.of_forall (fun _ ↦ by simp))

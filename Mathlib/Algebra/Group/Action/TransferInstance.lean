@@ -17,7 +17,7 @@ public import Mathlib.Data.Fintype.Basic
 This continues the pattern set in `Mathlib/Algebra/Group/TransferInstance.lean`.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists MonoidWithZero
 

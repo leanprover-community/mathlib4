@@ -150,7 +150,7 @@ variable (R) in
 @[simps]
 def sectionsFunctor : SheafOfModules.{v} R ⥤ Type _ where
   obj M := M.sections
-  map f := TypeCat.ofHom (sectionsMap f)
+  map f := ↾(sectionsMap f)
 
 variable [J.HasSheafCompose (forget₂ RingCat.{u} AddCommGrpCat.{u})]
 

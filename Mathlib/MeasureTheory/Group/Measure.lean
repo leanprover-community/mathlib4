@@ -442,7 +442,7 @@ protected theorem IsMulLeftInvariant.comap {H} [Group H] {mH : MeasurableSpace H
     ext s hs
     rw [map_apply (by fun_prop) hs]
     repeat rw [hf.comap_apply]
-    have : f '' ((g * ·) ⁻¹' s) = (f g * ·) ⁻¹' (f '' s) := by
+    have : f '' (g * ·) ⁻¹' s = (f g * ·) ⁻¹' f '' s := by
       ext
       constructor
       · rintro ⟨y, hy, rfl⟩
@@ -460,7 +460,7 @@ protected theorem IsMulRightInvariant.comap {H} [Group H] {mH : MeasurableSpace 
     ext s hs
     rw [map_apply (by fun_prop) hs]
     repeat rw [hf.comap_apply]
-    have : f '' ((· * g) ⁻¹' s) = (· * f g) ⁻¹' (f '' s) := by
+    have : f '' (· * g) ⁻¹' s = (· * f g) ⁻¹' f '' s := by
       ext
       constructor
       · rintro ⟨y, hy, rfl⟩

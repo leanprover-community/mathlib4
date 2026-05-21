@@ -26,7 +26,7 @@ The same lemmas are true in `ℝ`, `ℝ × ℝ`, `ι → ℝ`, `EuclideanSpace �
 duplication, we provide an ad hoc axiomatisation of the properties we need.
 -/
 
-@[expose] public section
+public section
 
 open Filter TopologicalSpace
 open scoped Topology

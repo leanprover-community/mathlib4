@@ -114,7 +114,6 @@ theorem besselPotential_neg_one_lineDerivOp_eq {m : E} (f : 𝓢'(E, F)) :
   ext x
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 theorem besselPotential_neg_two_laplacian_eq (f : 𝓢'(E, F)) :
     (besselPotential E F (-2)) (Δ f) = -(2 * π) ^ 2 •
       fourierMultiplierCLM F (fun x ↦ Complex.ofReal <| ‖x‖ ^ 2 * (1 + ‖x‖ ^ 2) ^ (-1 : ℝ)) f := by
@@ -198,7 +197,6 @@ theorem memSobolev_besselPotential_iff {s r : ℝ} {p : ℝ≥0∞} [hp : Fact (
     MemSobolev s p (besselPotential E F r f) ↔ MemSobolev (r + s) p f := by
   simp [MemSobolev]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Schwartz functions are in every Sobolev space. -/
 theorem _root_.SchwartzMap.memSobolev {s : ℝ} {p : ℝ≥0∞} [hp : Fact (1 ≤ p)] (f : 𝓢(E, F)) :
     MemSobolev s p (f : 𝓢'(E, F)) := by

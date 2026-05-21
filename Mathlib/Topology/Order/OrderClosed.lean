@@ -57,7 +57,7 @@ see their statements.
   `min`/`max` tend to `min a b` and `max a b`, respectively.
 -/
 
-@[expose] public section
+public section
 
 open Set Filter TopologicalSpace
 open OrderDual (toDual)

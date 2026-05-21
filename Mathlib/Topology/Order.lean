@@ -489,6 +489,8 @@ theorem induced_id [t : TopologicalSpace α] : t.induced id = t :=
   TopologicalSpace.ext <|
     funext fun s => propext <| ⟨fun ⟨_, hs, h⟩ => h ▸ hs, fun hs => ⟨s, hs, rfl⟩⟩
 
+theorem induced_fun_id {t : TopologicalSpace α} : t.induced (·) = t := induced_id
+
 theorem induced_compose {tγ : TopologicalSpace γ} {f : α → β} {g : β → γ} :
     (tγ.induced g).induced f = tγ.induced (g ∘ f) :=
   TopologicalSpace.ext <|
@@ -516,6 +518,10 @@ theorem Equiv.coinduced_symm {α β : Type*} (e : α ≃ β) :
     TopologicalSpace.coinduced e.symm = TopologicalSpace.induced e :=
   e.symm.induced_symm.symm
 
+lemma WithTopology.topology_eq_induced {X : Type*} (t : TopologicalSpace X) :
+    instTopologicalSpace X t = .induced ofTopology t :=
+  congrFun (WithTopology.equiv X t).coinduced_symm t
+
 end GaloisConnection
 
 -- constructions using the complete lattice structure
@@ -542,6 +548,9 @@ instance (priority := 100) Subsingleton.discreteTopology [t : TopologicalSpace �
 instance [TopologicalSpace α] [Subsingleton α] : IndiscreteTopology α where
   eq_top := Subsingleton.elim _ _
 
+variable (α) in
+lemma Nontrivial.of_nontrivialTopology [TopologicalSpace α] [h : NontrivialTopology α] :
+    Nontrivial α := by contrapose! h; infer_instance
 
 instance : TopologicalSpace Empty := ⊥
 instance : DiscreteTopology Empty := ⟨rfl⟩
@@ -566,6 +575,20 @@ instance : DiscreteTopology ℤ := ⟨rfl⟩
 
 instance {n} : TopologicalSpace (Fin n) := ⊥
 instance {n} : DiscreteTopology (Fin n) := ⟨rfl⟩
+
+instance : DiscreteTopology (WithTopology α ⊥) where
+  eq_bot := coinduced_bot
+
+instance : IndiscreteTopology (WithTopology α ⊤) where
+  eq_top := by rw [WithTopology.topology_eq_induced, induced_top]
+
+protected theorem WithTopology.nontrivialTopology_iff {t : TopologicalSpace α} :
+    NontrivialTopology (WithTopology α t) ↔ t ≠ ⊤ := by
+  simp_rw [nontrivialTopology_iff, topology_eq_induced, ne_eq, not_iff_not]
+  constructor
+  · intro h
+    simpa [induced_compose, comp_def, induced_fun_id] using congr(induced (toTopology t) $h)
+  · simp +contextual
 
 lemma Nat.cast_continuous {R : Type*} [NatCast R] [TopologicalSpace R] :
     Continuous (Nat.cast (R := R)) :=
