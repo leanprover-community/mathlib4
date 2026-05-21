@@ -44,7 +44,7 @@ lemma Ext.postcomp_smul_id_eq_zero_of_mem_annihilator {r : R} (mem_ann : r ∈ M
 is faithful on `Ext M N n`. -/
 lemma Ext.postcomp_smul_id_mono_iff (r : R) (i : ℕ) :
     Mono (AddCommGrpCat.ofHom ((Ext.mk₀ (r • 𝟙 M)).postcomp N (add_zero i))) ↔
-    IsSMulRegular (Ext N M i) r := by
+      IsSMulRegular (Ext N M i) r := by
   simp only [IsSMulRegular, AddCommGrpCat.mono_iff_injective]
   congr!
   ext
