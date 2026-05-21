@@ -24,7 +24,7 @@ section FindHome
 but to telescope. Live and learn. -/
 
 /- Should certainly be generalized. In fact I'm surprised it's not already in Mathlib. -/
-lemma alternating_sum_eq_zero_of_telescope {n : ℕ} (d : Fin (n + 3) → ℤ) (r : Fin (n + 2) → ℤ)
+lemma sum_neg_one_pow_eq_zero_of_telescope {n : ℕ} (d : Fin (n + 3) → ℤ) (r : Fin (n + 2) → ℤ)
     (h_first : d 0 = r 0) (h_mid : ∀ i : Fin (n + 1), d i.succ.castSucc = r i.castSucc + r i.succ)
     (h_last : d (Fin.last _) = r (Fin.last _)) : ∑ i, (-1) ^ i.val * d i = 0 := by
   have h_spl1 : ∑ i : Fin (n + 3), (-1 : ℤ) ^ (i.val) * (d i) = (-1 : ℤ) ^ 0 * (d 0) +
@@ -58,13 +58,13 @@ lemma Function.Exact.finrank_range_add_finrank_range {k V₀ V₁ V₂ : Type*} 
   rw [Nat.cast_add, h_ker_eq_range]
   ring
 
-lemma Module.sum_neg_one_pow_finrank_eq_zero_of_exact {n : ℕ} {k : Type*}
+lemma Function.Exact.sum_neg_one_pow_finrank_eq_zero {n : ℕ} {k : Type*}
     (V : Fin (n + 3) → Type*) [Field k] [∀ i, AddCommGroup (V i)] [∀ i, Module k (V i)]
     [∀ i, FiniteDimensional k (V i)] (f : (i : Fin (n + 2)) → V i.castSucc →ₗ[k] V i.succ)
     (inj : Function.Injective (f 0)) (h_exact : ∀ i : Fin (n + 1), Exact (f i.castSucc) (f i.succ))
     (surj : Function.Surjective (f (Fin.last _))) : ∑ i, (-1) ^ i.val * (finrank k (V i) : ℤ) = 0
       := by
-  apply alternating_sum_eq_zero_of_telescope _ _ _ _ _
+  apply sum_neg_one_pow_eq_zero_of_telescope _ _ _ _ _
   · use fun i ↦ finrank k <| LinearMap.range (f i)
   · exact ((fun {m n} ↦ Int.ofNat_inj.mpr) <| LinearMap.finrank_range_of_inj inj).symm
   · exact fun i ↦ (Function.Exact.finrank_range_add_finrank_range (h_exact i)).symm
