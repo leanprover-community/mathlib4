@@ -38,8 +38,8 @@ theorem HarmonicAt.differentiableAt_complex_partial (hf : HarmonicAt f x) :
   refine differentiableAt_complex_iff_differentiableAt_real.2 ⟨by fun_prop, ?_⟩
   rw [fderiv_sub (by fun_prop) (by fun_prop), fderiv_const_smul (by fun_prop)]
   repeat rw [fderiv_comp]; all_goals try fun_prop
-  simp only [ContinuousLinearMap.fderiv, ContinuousLinearMap.coe_sub',
-    ContinuousLinearMap.coe_comp', ContinuousLinearMap.coe_smul', Pi.sub_apply,
+  simp only [ContinuousLinearMap.fderiv, FunLike.coe_sub,
+    ContinuousLinearMap.coe_comp', FunLike.coe_smul, Pi.sub_apply,
     Function.comp_apply, ofRealCLM_apply, Pi.smul_apply, smul_eq_mul, mul_sub]
   ring_nf
   rw [fderiv_clm_apply (by fun_prop) (by fun_prop), fderiv_clm_apply (by fun_prop) (by fun_prop)]

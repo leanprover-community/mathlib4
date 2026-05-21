@@ -78,12 +78,12 @@ lemma map_rotation_eq_self_of_forall_strongDual_eq_zero
     ext x
     simp only [ContinuousLinearMap.coe_comp', Function.comp_apply, ContinuousLinearMap.inr_apply,
       ContinuousLinearMap.rotation_apply, smul_zero, zero_add, add_apply,
-      ContinuousLinearMap.coe_smul', Pi.smul_apply, ContinuousLinearMap.inl_apply, smul_eq_mul]
+      smul_apply, ContinuousLinearMap.inl_apply, smul_eq_mul]
     rw [← L.comp_inl_add_comp_inr]
     simp
   rw [h1, h2]
-  simp only [ContinuousLinearMap.coe_sub', ContinuousLinearMap.coe_smul',
-    ContinuousLinearMap.coe_add']
+  simp only [FunLike.coe_sub, FunLike.coe_smul,
+    FunLike.coe_add]
   rw [variance_sub, variance_smul, variance_add, variance_smul, variance_smul, covariance_smul_left,
     covariance_smul_right, variance_smul, covariance_smul_left, covariance_smul_right]
   · have h := Real.cos_sq_add_sin_sq θ

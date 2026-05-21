@@ -422,16 +422,14 @@ theorem Convex.second_derivative_within_at_symmetric {s : Set E} (s_conv : Conve
     intro m
     have : f'' (z + t m • m) (z + t 0 • (0 : E)) = f'' (z + t 0 • (0 : E)) (z + t m • m) :=
       s_conv.second_derivative_within_at_symmetric_of_mem_interior hf xs hx (ts 0) (ts m)
-    simp only [map_add, map_smul, add_right_inj, add_apply, Pi.smul_apply,
-      ContinuousLinearMap.coe_smul', add_zero, smul_zero] at this
+    simp only [map_add, map_smul, add_right_inj, add_apply, smul_apply, add_zero, smul_zero] at this
     exact smul_right_injective F (tpos m).ne' this
   -- applying `second_derivative_within_at_symmetric_of_mem_interior` to the vectors `z + (t v) v`
   -- and `z + (t w) w`, we deduce that `f'' v w = f'' w v`. Cross terms involving `z` can be
   -- eliminated thanks to the fact proved above that `f'' m z = f'' z m`.
   have : f'' (z + t v • v) (z + t w • w) = f'' (z + t w • w) (z + t v • v) :=
     s_conv.second_derivative_within_at_symmetric_of_mem_interior hf xs hx (ts w) (ts v)
-  simp only [map_add, map_smul, add_apply, Pi.smul_apply,
-    ContinuousLinearMap.coe_smul', C] at this
+  simp only [map_add, map_smul, add_apply, smul_apply, C] at this
   have : (t v * t w) • (f'' v) w = (t v * t w) • (f'' w) v := by
     linear_combination (norm := module) this
   apply smul_right_injective F _ this

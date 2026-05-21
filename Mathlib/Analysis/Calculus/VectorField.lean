@@ -434,7 +434,7 @@ lemma leibniz_identity_lieBracketWithin_of_isSymmSndFDerivWithinAt
   rw [fderivWithin_fun_sub (hs x hx) (aux₁ hU hV) (aux₁ hV hU)]
   rw [fderivWithin_fun_sub (hs x hx) (aux₁ hU hW) (aux₁ hW hU)]
   rw [aux₂ hW hV, aux₂ hV hW, aux₂ hV hU, aux₂ hU hV, aux₂ hW hU, aux₂ hU hW]
-  simp only [ContinuousLinearMap.coe_sub', Pi.sub_apply, add_apply,
+  simp only [FunLike.coe_sub, Pi.sub_apply, add_apply,
     ContinuousLinearMap.coe_comp', Function.comp_apply, ContinuousLinearMap.flip_apply, h'V.eq,
     h'U.eq, h'W.eq]
   abel

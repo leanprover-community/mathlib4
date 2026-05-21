@@ -182,8 +182,8 @@ lemma norm_jacobiTheta₂_term_fderiv_ge (n : ℤ) (z τ : ℂ) :
     refine (ContinuousLinearMap.le_opNorm _ _).trans ?_
     simp_rw [Prod.norm_def, norm_one, norm_zero, max_eq_right zero_le_one, mul_one, le_refl]
   refine le_trans ?_ this
-  simp_rw [jacobiTheta₂_term_fderiv, jacobiTheta₂_term, ContinuousLinearMap.coe_smul',
-    Pi.smul_apply, add_apply, ContinuousLinearMap.coe_smul',
+  simp_rw [jacobiTheta₂_term_fderiv, jacobiTheta₂_term, FunLike.coe_smul',
+    Pi.smul_apply, add_apply, FunLike.coe_smul',
     ContinuousLinearMap.coe_fst', ContinuousLinearMap.coe_snd', Pi.smul_apply, smul_zero, zero_add,
     smul_eq_mul, mul_one, mul_comm _ ‖cexp _‖, norm_mul]
   refine mul_le_mul_of_nonneg_left (le_of_eq ?_) (norm_nonneg _)
@@ -347,7 +347,7 @@ lemma hasDerivAt_jacobiTheta₂_fst (z : ℂ) {τ : ℂ} (hτ : 0 < im τ) :
     apply eval_fst_CLM.hasSum (hasSum_jacobiTheta₂_term_fderiv z hτ)
   have step2 (n : ℤ) : (jacobiTheta₂_term_fderiv n z τ) (1, 0) = jacobiTheta₂'_term n z τ := by
     simp only [jacobiTheta₂_term_fderiv, smul_add, add_apply,
-      ContinuousLinearMap.coe_smul', ContinuousLinearMap.coe_fst', Pi.smul_apply, smul_eq_mul,
+      FunLike.coe_smul', ContinuousLinearMap.coe_fst', Pi.smul_apply, smul_eq_mul,
       mul_one, ContinuousLinearMap.coe_snd', mul_zero, add_zero, jacobiTheta₂'_term,
       jacobiTheta₂_term, mul_comm _ (cexp _)]
   rw [funext step2] at step1
