@@ -159,6 +159,10 @@ theorem convexCombPair_eq_lineMap (s t : R) (hs : 0 ≤ s) (ht : 0 ≤ t)
 
 end AddTorsor
 
+section
+
+local instance : ConvexSpace R P := AddTorsor.toConvexSpace
+
 open Finset AddTorsor in
 lemma AffineMap.isAffineMap {V2 P2 : Type*} [AddCommGroup V2] [Module R V2] [AffineSpace V2 P2]
     (f : P →ᵃ[R] P2) : IsAffineMap R f where
@@ -181,5 +185,7 @@ lemma AffineMap.isAffineMap {V2 P2 : Type*} [AddCommGroup V2] [Module R V2] [Aff
           contradiction
         · split_ifs <;> simp
       simp [hwi]
+
+end
 
 end
