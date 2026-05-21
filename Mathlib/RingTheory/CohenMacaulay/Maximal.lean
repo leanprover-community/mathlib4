@@ -82,10 +82,6 @@ lemma isField_of_isRegularLocalRing_of_dimension_zero [IsRegularLocalRing R]
     Submodule.FG.spanRank_eq_spanFinrank (maximalIdeal R).fg_of_isNoetherianRing, h] using
     (isRegularLocalRing_iff R).mp ‹_›
 
-private instance (M : Type*) [AddCommGroup M] [Module R M] [Module.Finite R M] (x : R) :
-    Module.Finite (R ⧸ Ideal.span {x}) (QuotSMulTop x M) :=
-  Module.Finite.of_restrictScalars_finite R _ _
-
 theorem free_of_isMaximalCohenMacaulay_of_isRegularLocalRing [IsRegularLocalRing R] [Small.{v} R]
     (M : ModuleCat.{v} R) [Module.Finite R M] [M.IsMaximalCohenMacaulay] : Module.Free R M := by
   rcases FiniteRingKrullDim.ringKrullDim_eq_nat R with ⟨n, hn⟩
@@ -95,12 +91,10 @@ theorem free_of_isMaximalCohenMacaulay_of_isRegularLocalRing [IsRegularLocalRing
     infer_instance
   | succ n ih =>
     obtain ⟨x, xmem, xnmem⟩ : ∃ x ∈ maximalIdeal R, x ∉ (maximalIdeal R) ^ 2 := by
-      by_contra! ge
-      have : IsField R := by
-        simpa only [← subsingleton_cotangentSpace_iff, Ideal.cotangent_subsingleton_iff,
-          IsIdempotentElem] using le_antisymm Ideal.mul_le_right (le_of_le_of_eq ge (pow_two _))
-      rw [ringKrullDim_eq_zero_of_isField this, ← Nat.cast_zero, Nat.cast_inj] at hn
-      exact Nat.zero_ne_add_one n hn
+      refine Set.exists_of_ssubset ((maximalIdeal_sq_lt_maximalIdeal R).mpr ?_)
+      apply ringKrullDim_eq_zero_of_isField.mt
+      rw [← Nat.cast_zero, hn, Nat.cast_inj]
+      exact (Nat.zero_ne_add_one n).symm
     have := (quotient_span_singleton R xmem xnmem).1
     have dim : ringKrullDim (R ⧸ Ideal.span {x}) = n := by
       simpa [hn, ENat.WithBot.add_one_cancel] using (quotient_span_singleton R xmem xnmem).2
@@ -125,5 +119,7 @@ theorem free_of_isMaximalCohenMacaulay_of_isRegularLocalRing [IsRegularLocalRing
       have := nontrivial_quotSMulTop_of_mem_maximalIdeal M xmem
       apply (depth_eq_of_algebraMap_surjective _ _).symm
       simpa only [Ideal.Quotient.algebraMap_eq] using Ideal.Quotient.mk_surjective
+    have := Module.Finite.of_restrictScalars_finite R (R ⧸ Ideal.span {x}) (QuotSMulTop x M)
     have free := ih (ModuleCat.of (R ⧸ Ideal.span {x}) (QuotSMulTop x M)) dim
-    exact (free_iff_quotSMulTop_free R M xmem reg).mp free
+    have := Module.finitePresentation_of_finite R M
+    exact (free_iff_quotSMulTop_free R M (maximalIdeal_le_jacobson _ xmem) reg).mp free
