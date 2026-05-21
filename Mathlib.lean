@@ -1860,6 +1860,7 @@ public import Mathlib.Analysis.Complex.Positivity
 public import Mathlib.Analysis.Complex.ReImTopology
 public import Mathlib.Analysis.Complex.RealDeriv
 public import Mathlib.Analysis.Complex.RemovableSingularity
+public import Mathlib.Analysis.Complex.RiemannMapping
 public import Mathlib.Analysis.Complex.Schwarz
 public import Mathlib.Analysis.Complex.Spectrum
 public import Mathlib.Analysis.Complex.SqrtDeriv
@@ -3951,6 +3952,10 @@ public import Mathlib.Data.FunLike.Embedding
 public import Mathlib.Data.FunLike.Equiv
 public import Mathlib.Data.FunLike.Fintype
 public import Mathlib.Data.FunLike.Graded
+public import Mathlib.Data.FunLike.Group
+public import Mathlib.Data.FunLike.IsApply
+public import Mathlib.Data.FunLike.Module
+public import Mathlib.Data.FunLike.Ring
 public import Mathlib.Data.Holor
 public import Mathlib.Data.Ineq
 public import Mathlib.Data.Int.AbsoluteValue
@@ -4515,7 +4520,9 @@ public import Mathlib.Geometry.Convex.Cone.Simplicial
 public import Mathlib.Geometry.Convex.Cone.TensorProduct
 public import Mathlib.Geometry.Convex.ConvexSpace.AffineSpace
 public import Mathlib.Geometry.Convex.ConvexSpace.Defs
+public import Mathlib.Geometry.Convex.ConvexSpace.Module
 public import Mathlib.Geometry.Convex.ConvexSpace.Prod
+public import Mathlib.Geometry.Convex.Set
 public import Mathlib.Geometry.Diffeology.Basic
 public import Mathlib.Geometry.Euclidean.Altitude
 public import Mathlib.Geometry.Euclidean.Angle.Bisector
@@ -6996,6 +7003,7 @@ public import Mathlib.SetTheory.Cardinal.Aleph
 public import Mathlib.SetTheory.Cardinal.Arithmetic
 public import Mathlib.SetTheory.Cardinal.Basic
 public import Mathlib.SetTheory.Cardinal.Cofinality.Basic
+public import Mathlib.SetTheory.Cardinal.Cofinality.Club
 public import Mathlib.SetTheory.Cardinal.Cofinality.Ordinal
 public import Mathlib.SetTheory.Cardinal.Continuum
 public import Mathlib.SetTheory.Cardinal.CountableCover
@@ -7456,12 +7464,16 @@ public import Mathlib.Topology.Algebra.Module.Cardinality
 public import Mathlib.Topology.Algebra.Module.ClosedSubmodule
 public import Mathlib.Topology.Algebra.Module.Compact
 public import Mathlib.Topology.Algebra.Module.Complement
+public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Basic
+public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Idempotent
+public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.PiProd
+public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Quotient
+public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Restrict
+public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.RestrictScalars
 public import Mathlib.Topology.Algebra.Module.Determinant
 public import Mathlib.Topology.Algebra.Module.Equiv
 public import Mathlib.Topology.Algebra.Module.FiniteDimension
 public import Mathlib.Topology.Algebra.Module.FiniteDimensionBilinear
-public import Mathlib.Topology.Algebra.Module.LinearMap
-public import Mathlib.Topology.Algebra.Module.LinearMapPiProd
 public import Mathlib.Topology.Algebra.Module.LinearPMap
 public import Mathlib.Topology.Algebra.Module.LocallyConvex
 public import Mathlib.Topology.Algebra.Module.ModuleTopology
