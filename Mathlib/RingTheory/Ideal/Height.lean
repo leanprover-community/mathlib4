@@ -41,9 +41,9 @@ noncomputable def Ideal.height : ℕ∞ :=
 private lemma Ideal.height_eq_primeHeight [I.IsPrime] : I.height = I.primeHeight := by
   simp [height, primeHeight, Ideal.minimalPrimes_eq_subsingleton_self]
 
-lemma PrimeSpectrum.height_eq_order_height_of_isPrime (p : PrimeSpectrum R) :
-    p.1.height = Order.height p :=
-  p.1.height_eq_primeHeight
+lemma PrimeSpectrum.height_eq_orderHeight (p : PrimeSpectrum R) :
+    p.asIdeal.height = Order.height p :=
+  p.asIdeal.height_eq_primeHeight
 
 lemma Ideal.height_eq_inf_minimalPrimes : I.height = ⨅ J ∈ I.minimalPrimes, J.height := by
   apply iInf_congr (fun p ↦ iInf_congr fun hp ↦ ?_)
