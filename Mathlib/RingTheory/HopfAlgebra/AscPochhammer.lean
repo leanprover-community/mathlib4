@@ -54,11 +54,9 @@ theorem backwardDiff_apply (p : R[X]) :
     backwardDiff p = p - taylor (-1 : R) p := by
   simp [backwardDiff]
 
-@[simp]
 theorem backwardDiff_X : backwardDiff (X : R[X]) = (1 : R[X]) := by
   simp [taylor_X]
 
-@[simp]
 theorem backwardDiff_C (r : R) : backwardDiff (C r : R[X]) = 0 := by
   simp [taylor_C]
 
