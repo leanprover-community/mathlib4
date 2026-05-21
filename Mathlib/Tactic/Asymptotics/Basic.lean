@@ -559,8 +559,6 @@ meta def elabBigO : Elab.Term.TermElab := fun stx expectedType? ↦ do
   | `(O[$l]($e)) => Elab.Term.elabTerm (← `(dummyBigO $l $e)) expectedType?
   | _ => Elab.throwUnsupportedSyntax
 
--- Perhaps mappify should turn metavariables into metavariables?
--- That way _ effectively gets elaborated to _ anywhere in an expression.
 meta partial def mappify (fvar : Expr) (e : Expr) : MetaM Expr := do
   match_expr e with
   | dummyBigO α E instNormE l e' =>
@@ -614,23 +612,26 @@ meta def elabAsympPercent : Elab.Term.TermElab := fun stx _ ↦ do
         Elab.Term.elabType t
       else
         Meta.mkFreshTypeMVar
+    let filter ← Elab.Term.elabTermEnsuringType l (← mkAppM ``Filter #[fvarType])
     Meta.withLocalDeclD x.getId fvarType fun fvar ↦ do
       let e' ← Elab.Term.elabTermEnsuringType e (Expr.sort 0)
       let mkApp2 r lhs rhs := e'
         | throwError "asymp% requires a binary relation"
       let typeLvl ← mkFreshLevelMVar
       let type ← mkFreshExprMVar (Expr.sort (.succ typeLvl))
+      -- Question: Do we want to support relations where both sides have different types?
       guard <| ← isDefEq type (← inferType lhs)
       guard <| ← isDefEq type (← inferType rhs)
-      let fnType := Expr.forallE x.getId fvarType type .default
+      let fnType := Expr.forallE .anonymous fvarType type .default
       let u ← getDecLevel fnType
       let v ← getDecLevel fvarType
       let mappifySide (e : Expr) : MetaM Expr := do
         if e.isMVar then
-          -- TODO: we're discarding the mvar kind. Does that matter?
-          return ← mkFreshExprMVar (← mkAppM ``Set #[fnType])
+          return ← mkFreshExprMVar (mkApp (.const ``Set [u]) fnType)
         mappify fvar e
-      let filter ← Elab.Term.elabTermEnsuringType l (← mkAppM ``Filter #[fvarType])
+      -- Metavariables created in this block contain `x` in the local context, and break unification
+      -- with other metavariables. Hence we try to synthesize as many of them as possible.
+      Elab.Term.synthesizeSyntheticMVars
       return mkApp6 (.const ``AsympRel [v, typeLvl]) fvarType type filter r
         (← mappifySide lhs) (← mappifySide rhs)
   | _ => Elab.throwUnsupportedSyntax
@@ -719,7 +720,7 @@ end StandardAsymptotics
 -- with it.
 /-- warning: declaration uses `sorry` -/
 #guard_msgs in
-example : asymp% x : ℝ in atTop => 0 = 0 := by
+example : asymp% x : ℝ in atTop => (0 : ℝ) = 0 := by
   sorry
 -- see: Real.tendsto_mul_log_one_add_of_tendsto with g x = x⁻¹
 
@@ -756,6 +757,8 @@ lemma Real.log_add_one_isBigO_atTop :
   = n * (1 + O(log n/n)) := _
   = n + O(log n) := _
 -/
+
+
 theorem terry :
       asymp% x : ℝ in atTop => (x + 1) ^ (exp x⁻¹) = x + O[atTop](log x) := by
   calc
@@ -766,17 +769,7 @@ theorem terry :
       -- The state here is ugly; I think it's a consequene of how we chose to state exp_at_one_set
       simp only [mem_map, Set.mem_singleton_iff, exists_eq_left, forall_eq]
       exact tendsto_inv_atTop_zero
-
-
-    /- Weird bug, replacing the lhs with an _ gives:
-   invalid 'calc' step, left-hand side is
-  ?m.96 : Set (ℝ → ℝ)
-but previous right-hand side is
-  map (map {fun x ↦ HPow.hPow} (map (map {fun x ↦ HAdd.hAdd} {fun x ↦ x}) {fun x ↦ 1}))
-    (map (map {fun x ↦ HAdd.hAdd} {fun x ↦ 1}) (bigO atTop (map {fun x ↦ Inv.inv} {fun x ↦ x}))) : Set (ℝ → ℝ)
-
-    -/
-    asymp% x : ℝ in atTop => (x + 1) ^ (1 + O[atTop](x⁻¹)) = exp (Real.log (x + 1) * (1 + O[atTop](x⁻¹))) := by
+    asymp% x : ℝ in atTop => _ = exp (Real.log (x + 1) * (1 + O[atTop](x⁻¹))) := by
       magic_tac
       gcongr with f hf
       filter_upwards [eventually_gt_atTop 0] with x hx
@@ -837,17 +830,27 @@ end Asymptotics
 
 section Test
 
-set_option trace.Elab.asymp true in
+-- set_option trace.Elab.asymp true in
 -- same as exp_at_one' but deduced directly from exp_at_one
 example {α : Type*} {l : Filter α} {f : α → ℝ} (hf : Filter.Tendsto f l (𝓝 0)) :
     asymp% x : α in l=> f x = 0 := by
   sorry
 
-set_option trace.Elab.asymp true in
+-- set_option trace.Elab.asymp true in
 -- same as exp_at_one' but deduced directly from exp_at_one
 example {l : Filter ℕ} {f : ℕ → ℝ} (hf : Filter.Tendsto f l (𝓝 0)) :
     asymp% x : ℕ in l => f x = 0 := by
   sorry
+
+-- Regression test: a calc step that uses `_` on the LHS of an `asymp%` equation must
+-- defeq-match the previous step's RHS.
+example :
+      asymp% x : ℝ in atTop => x = x := by
+  calc
+    asymp% x : ℝ in atTop => _ = O[atTop](x⁻¹) := by
+      sorry
+    asymp% x : ℝ in atTop => _ = _ := by
+      sorry
 
 
 end Test
