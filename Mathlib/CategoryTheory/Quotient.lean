@@ -5,8 +5,6 @@ Authors: David Wärn
 -/
 module
 
-public import Mathlib.CategoryTheory.NatIso
-public import Mathlib.CategoryTheory.EqToHom
 public import Mathlib.CategoryTheory.Groupoid
 
 /-!
@@ -357,5 +355,28 @@ instance faithful_whiskeringLeft_functor :
     ((whiskeringLeft C _ D).obj (functor r)).Faithful := ⟨by apply natTrans_ext⟩
 
 end Quotient
+
+namespace Functor
+
+variable {D : Type*} [Category* D] (L : C ⥤ D)
+
+instance [L.Full] : (Quotient.lift L.homRel L (by simp)).Full where
+  map_surjective := by
+    rintro ⟨X⟩ ⟨Y⟩ (f : L.obj X ⟶ L.obj Y)
+    obtain ⟨f, rfl⟩ := L.map_surjective f
+    exact ⟨(Quotient.functor _).map f, rfl⟩
+
+instance : (Quotient.lift L.homRel L (by simp)).Faithful where
+  map_injective := by
+    rintro ⟨_⟩ ⟨_⟩ ⟨_⟩ ⟨_⟩ h
+    exact Quotient.sound _ h
+
+instance [L.EssSurj] : (Quotient.lift L.homRel L (by simp)).EssSurj where
+  mem_essImage X :=
+    ⟨(Quotient.functor _).obj (L.objPreimage X), ⟨L.objObjPreimageIso X⟩⟩
+
+instance [L.Full] [L.EssSurj] : (Quotient.lift L.homRel L (by simp)).IsEquivalence where
+
+end Functor
 
 end CategoryTheory

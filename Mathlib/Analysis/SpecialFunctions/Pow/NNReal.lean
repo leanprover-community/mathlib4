@@ -1136,7 +1136,7 @@ meta def evalNNRealRpow : PositivityExt where eval {u α} _ _ e := do
     match ra with
     | .positive pa =>
         pure (.positive q(NNReal.rpow_pos $pa))
-    | _ => pure (.nonnegative q(zero_le $e))
+    | _ => pure (.nonnegative q(zero_le (a := $e)))
   | _, _, _ => throwError "not NNReal.rpow"
 
 private meta def isFiniteM? (x : Q(ℝ≥0∞)) : MetaM (Option Q($x ≠ (⊤ : ℝ≥0∞))) := do
@@ -1168,9 +1168,9 @@ meta def evalENNRealRpow : PositivityExt where eval {u α} _ _ e := do
     | .positive pa, .nonnegative pb =>
         pure (.positive q(ENNReal.rpow_pos_of_nonneg $pa $pb))
     | .positive pa, _ =>
-        let some ha ← isFiniteM? a | pure <| .nonnegative q(zero_le $e)
+        let some ha ← isFiniteM? a | pure <| .nonnegative q(zero_le (a := $e))
         pure <| .positive q(ENNReal.rpow_pos $pa $ha)
-    | _, _ => pure <| .nonnegative q(zero_le $e)
+    | _, _ => pure <| .nonnegative q(zero_le (a := $e))
   | _, _, _ => throwError "not ENNReal.rpow"
 
 end Mathlib.Meta.Positivity

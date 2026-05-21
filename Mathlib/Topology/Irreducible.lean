@@ -8,8 +8,9 @@ module
 public import Mathlib.Order.Minimal
 public import Mathlib.Order.Zorn
 public import Mathlib.Topology.ContinuousOn
-public import Mathlib.Tactic.StacksAttribute
 public import Mathlib.Topology.DiscreteSubset
+public import Mathlib.Tactic.CrossRefAttribute
+import Mathlib.Topology.WithTopology
 
 /-!
 # Irreducibility in topological spaces
@@ -264,11 +265,10 @@ instance (priority := 100) [IndiscreteTopology X] : PreirreducibleSpace X where
 /-- An infinite type with cofinite topology is an irreducible topological space. -/
 instance (priority := 100) {X} [Infinite X] : IrreducibleSpace (CofiniteTopology X) where
   isPreirreducible_univ u v := by
-    haveI : Infinite (CofiniteTopology X) := ‹_›
     simp only [CofiniteTopology.isOpen_iff, univ_inter]
     intro hu hv hu' hv'
     simpa only [compl_union, compl_compl] using ((hu hu').union (hv hv')).infinite_compl.nonempty
-  toNonempty := (inferInstance : Nonempty X)
+  toNonempty := inferInstance
 
 theorem irreducibleComponents_eq_singleton [IrreducibleSpace X] :
     irreducibleComponents X = {univ} :=
@@ -466,7 +466,7 @@ lemma preimage_mem_irreducibleComponents_of_isPreirreducible_fiber
     f ⁻¹' t ∈ irreducibleComponents Y := by
   refine ⟨ht.1.preimage_of_isPreirreducible_fiber f hf₂ hf₃ h, fun u hu htu ↦ image_subset_iff.mp
     (subset_closure.trans (ht.2 (hu.image f hf₁.continuousOn).closure ?_))⟩
-  suffices t ≤ closure (f '' (f ⁻¹' t)) from this.trans (closure_mono (image_mono htu))
+  suffices t ≤ closure (f '' f ⁻¹' t) from this.trans (closure_mono (image_mono htu))
   rw [image_preimage_eq_inter_range]
   exact subset_closure_inter_of_isPreirreducible_of_isOpen ht.1.2 hf₂.isOpen_range h
 
@@ -478,7 +478,7 @@ lemma preimage_mem_irreducibleComponents (ht : t ∈ irreducibleComponents X) {f
 
 lemma closure_image_preimage_of_isPreirreducible (f : Y → X) (h : IsOpenMap f) (s : Set X)
     (hne : (f ⁻¹' s).Nonempty) (hs : IsPreirreducible s) (hs' : IsClosed s) :
-    closure (f '' (f ⁻¹' s)) = s := by
+    closure (f '' f ⁻¹' s) = s := by
   refine subset_antisymm (closure_minimal (by simp) hs') ?_
   refine subset_trans (subset_closure_inter_of_isPreirreducible_of_isOpen hs h.isOpen_range ?_) ?_
   · exact Set.nonempty_of_nonempty_preimage (f := f) (by simpa)

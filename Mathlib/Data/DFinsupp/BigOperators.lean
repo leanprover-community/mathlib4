@@ -116,7 +116,7 @@ theorem prod_zero_index [∀ i, AddCommMonoid (β i)] [∀ (i) (x : β i), Decid
 theorem prod_single_index [∀ i, Zero (β i)] [∀ (i) (x : β i), Decidable (x ≠ 0)] [CommMonoid γ]
     {i : ι} {b : β i} {h : ∀ i, β i → γ} (h_zero : h i 0 = 1) : (single i b).prod h = h i b := by
   by_cases h : b ≠ 0
-  · simp [DFinsupp.prod, support_single_ne_zero h]
+  · simp [DFinsupp.prod, support_single h]
   · rw [not_not] at h
     simp [h, h_zero]
     rfl
@@ -409,7 +409,10 @@ theorem prod_finsetSum_index {γ : Type w} {α : Type x} [∀ i, AddCommMonoid (
   exact Finset.induction_on s (by simp [prod_zero_index])
         (by simp +contextual [prod_add_index, h_zero, h_add])
 
-@[deprecated (since := "2026-04-08")] alias prod_finset_sum_index := prod_finsetSum_index
+@[deprecated (since := "2026-04-08")] alias sum_finset_sum_index := sum_finsetSum_index
+
+@[to_additive existing, deprecated (since := "2026-04-08")]
+alias prod_finset_sum_index := prod_finsetSum_index
 
 @[to_additive]
 theorem prod_sum_index {ι₁ : Type u₁} [DecidableEq ι₁] {β₁ : ι₁ → Type v₁} [∀ i₁, Zero (β₁ i₁)]

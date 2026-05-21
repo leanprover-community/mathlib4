@@ -341,7 +341,7 @@ theorem mem_adjoin_of_smul_prime_smul_of_minpoly_isEisensteinAt {B : PowerBasis 
       refine adjoin_le_integralClosure hBint (hf _ ?_).1
       rw [(minpoly.monic hBint).natDegree_map (algebraMap R L)]
       rw [add_comm, Nat.add_sub_assoc, le_add_iff_nonneg_right]
-      · exact _root_.zero_le _
+      · exact zero_le
       · refine one_le_iff_ne_zero.2 fun h => ?_
         rw [h] at hk
         simp at hk
