@@ -313,16 +313,18 @@ theorem IndepFun.integral_bilin_comp_comp'
 is a continuous bilinear map, then `∫ ω, B (X ω) (Y ω) ∂μ = B μ[X] μ[Y].` -/
 theorem IndepFun.integral_bilin
     [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedSpace 𝕜 E] [CompleteSpace E]
-    [SecondCountableTopology E] [MeasurableSpace E] [BorelSpace E]
+    [MeasurableSpace E] [BorelSpace E]
     [NormedAddCommGroup F] [NormedSpace ℝ F] [NormedSpace 𝕜 F] [CompleteSpace F]
-    [SecondCountableTopology F] [MeasurableSpace F] [BorelSpace F]
+    [MeasurableSpace F] [BorelSpace F]
     [NormedAddCommGroup G] [NormedSpace ℝ G] [NormedSpace 𝕜 G] [CompleteSpace G]
     {X : Ω → E} {Y : Ω → F} (hXY : X ⟂ᵢ[μ] Y) (hX : Integrable X μ) (hY : Integrable Y μ)
     (B : E →L[ℝ] F →L[ℝ] G) :
     ∫ ω, B (X ω) (Y ω) ∂μ = B μ[X] μ[Y] :=
   hXY.integral_bilin_comp_comp hX.aemeasurable hY.aemeasurable
-    ((integrable_map_measure aestronglyMeasurable_id hX.aemeasurable).2 hX)
-    ((integrable_map_measure aestronglyMeasurable_id hY.aemeasurable).2 hY) B
+    ((integrable_map_measure hX.aestronglyMeasurable.aestronglyMeasurable_id_map hX.aemeasurable).2
+      hX)
+    ((integrable_map_measure hY.aestronglyMeasurable.aestronglyMeasurable_id_map hY.aemeasurable).2
+      hY) B
 
 /-- The scalar product of two independent and integrable random variables is integrable. -/
 theorem IndepFun.integrable_smul
