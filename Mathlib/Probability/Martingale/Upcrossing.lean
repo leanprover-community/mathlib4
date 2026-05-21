@@ -190,6 +190,23 @@ theorem upperCrossingTime_succ_eq (ω : Ω) : upperCrossingTime a b f N (n + 1) 
 @[simp]
 theorem upcrossingsBefore_bot : upcrossingsBefore a b f ⊥ ω = ⊥ := by simp [upcrossingsBefore]
 
+theorem upcrossings_lt_top_iff :
+    upcrossings a b f ω < ∞ ↔ ∃ k, ∀ N, upcrossingsBefore a b f N ω ≤ k := by
+  have : upcrossings a b f ω < ∞ ↔ ∃ k : ℝ≥0, upcrossings a b f ω ≤ k := by
+    constructor
+    · intro h
+      lift upcrossings a b f ω to ℝ≥0 using h.ne with r hr
+      exact ⟨r, le_rfl⟩
+    · rintro ⟨k, hk⟩
+      exact lt_of_le_of_lt hk ENNReal.coe_lt_top
+  simp_rw [this, upcrossings, iSup_le_iff]
+  constructor <;> rintro ⟨k, hk⟩
+  · obtain ⟨m, hm⟩ := exists_nat_ge k
+    refine ⟨m, fun N => Nat.cast_le.1 ((hk N).trans ?_)⟩
+    rwa [← ENNReal.coe_natCast, ENNReal.coe_le_coe]
+  · refine ⟨k, fun N => ?_⟩
+    simp only [ENNReal.coe_natCast, Nat.cast_le, hk N]
+
 end
 
 section ConditionallyCompleteLinearOrderBot
@@ -816,23 +833,6 @@ theorem StronglyAdapted.integrable_upcrossingsBefore [IsFiniteMeasure μ]
 theorem StronglyAdapted.measurable_upcrossings (hf : StronglyAdapted ℱ f) (hab : a < b) :
     Measurable (upcrossings a b f) :=
   .iSup fun _ => measurable_from_top.comp (hf.measurable_upcrossingsBefore hab)
-
-theorem upcrossings_lt_top_iff :
-    upcrossings a b f ω < ∞ ↔ ∃ k, ∀ N, upcrossingsBefore a b f N ω ≤ k := by
-  have : upcrossings a b f ω < ∞ ↔ ∃ k : ℝ≥0, upcrossings a b f ω ≤ k := by
-    constructor
-    · intro h
-      lift upcrossings a b f ω to ℝ≥0 using h.ne with r hr
-      exact ⟨r, le_rfl⟩
-    · rintro ⟨k, hk⟩
-      exact lt_of_le_of_lt hk ENNReal.coe_lt_top
-  simp_rw [this, upcrossings, iSup_le_iff]
-  constructor <;> rintro ⟨k, hk⟩
-  · obtain ⟨m, hm⟩ := exists_nat_ge k
-    refine ⟨m, fun N => Nat.cast_le.1 ((hk N).trans ?_)⟩
-    rwa [← ENNReal.coe_natCast, ENNReal.coe_le_coe]
-  · refine ⟨k, fun N => ?_⟩
-    simp only [ENNReal.coe_natCast, Nat.cast_le, hk N]
 
 /-- A variant of Doob's upcrossing estimate obtained by taking the supremum on both sides. -/
 theorem Submartingale.mul_lintegral_upcrossings_le_lintegral_pos_part [IsFiniteMeasure μ] (a b : ℝ)
