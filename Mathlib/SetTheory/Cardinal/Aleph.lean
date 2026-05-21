@@ -600,9 +600,7 @@ theorem isNormal_preBeth : Order.IsNormal preBeth := by
 
 theorem preBeth_nat : ∀ n : ℕ, preBeth n = (2 ^ ·)^[n] (0 : ℕ)
   | 0 => by simp
-  | n + 1 => by
-    rw [natCast_succ, preBeth_succ, Function.iterate_succ_apply', preBeth_nat]
-    simp
+  | n + 1 => by simp [Function.iterate_succ_apply', preBeth_nat]
 
 @[simp]
 theorem preBeth_one : preBeth 1 = 1 := by
