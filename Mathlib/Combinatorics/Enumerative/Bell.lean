@@ -76,12 +76,10 @@ private theorem bell_mul_eq_lemma {x : ℕ} (hx : x ≠ 0) :
         ring_nf
 
 theorem bell_mul_eq (m : Multiset ℕ) :
-    m.bell * (m.map (fun j ↦ j !)).prod * ∏ j ∈ (m.toFinset.erase 0), (m.count j)!
-      = m.sum ! := by
+    m.bell * (m.map (fun j ↦ j !)).prod * ∏ j ∈ (m.toFinset.erase 0), (m.count j)! = m.sum ! := by
   unfold bell
   rw [← Nat.mul_right_inj (a := ∏ i ∈ m.toFinset, (i * count i m)!) (by positivity)]
-  simp only [← mul_assoc]
-  rw [Nat.multinomial_spec]
+  simp only [← mul_assoc, Nat.multinomial_spec]
   simp only [mul_assoc]
   rw [mul_comm]
   apply congr_arg₂
@@ -253,7 +251,7 @@ theorem bell_eq_sum_erase {n : ℕ} (p : Nat.Partition (n + 1)) :
   _ = ∑ a ∈ p.parts.toFinset, a * (p.parts.count a * p.parts.bell) := by
     congr! 1 with a ha
     have ha_mem : a ∈ p.parts := mem_dedup.mp ha
-    have ha0 : a ≠ 0 := fun h ↦ LT.lt.ne' (p.parts_pos ha_mem) h
+    have ha0 : a ≠ 0 := by grind
     have hsum : (p.parts.erase a).sum + a = n + 1 := by
       simpa [p.parts_sum, add_comm] using congrArg Multiset.sum (Multiset.cons_erase ha_mem)
     have hbell : choose (n + 1) a * (p.parts.erase a).bell = p.parts.count a * p.parts.bell := by
@@ -323,12 +321,9 @@ theorem bell_eq_sum_partition (n : ℕ) : Nat.bell n = ∑ p : Nat.Partition n, 
         choose n (a - 1) * (p.parts.erase a).bell :=
       Fintype.sum_sigma' fun (p : Nat.Partition (n + 1)) (a : p.parts.toFinset) ↦
         choose n (a - 1) * (p.parts.erase a.1).bell
-    _ = ∑ p : Nat.Partition (n + 1), ∑ a ∈ p.parts.toFinset,
-        choose n (a - 1) * (p.parts.erase a).bell := by
-      congr! with p
-      exact p.parts.toFinset.sum_coe_sort (fun a ↦ choose n (a - 1) * (p.parts.erase a).bell)
     _ = _ := by
       congr! with p
-      exact bell_eq_sum_erase p
+      rw [← bell_eq_sum_erase p]
+      exact p.parts.toFinset.sum_coe_sort (fun a ↦ choose n (a - 1) * (p.parts.erase a).bell)
 
 end Nat
