@@ -266,7 +266,7 @@ theorem bell_eq_sum_erase {n : ℕ} (p : (n + 1).Partition) :
   _ = _ := by
     rw [succ_eq_add_one, mul_eq_mul_right_iff]
     left
-    simpa [smul_eq_mul, p.parts_sum, mul_comm] using (Finset.sum_multiset_count p.parts).symm
+    simpa [smul_eq_mul, p.parts_sum] using (Finset.sum_multiset_count p.parts).symm
 
 private def partitionWithPartEquiv {n a : ℕ} (ha1 : 1 ≤ a) (ha : a ≤ n + 1) :
     {p : (n + 1).Partition // a ∈ p.parts} ≃ (n + 1 - a).Partition where
@@ -301,17 +301,14 @@ theorem bell_eq_sum_partition (n : ℕ) : n.bell = ∑ p : n.Partition, p.parts.
     calc
     _ = ∑ i : Fin n.succ, ∑ q : (n - i).Partition, choose n i * q.parts.bell := by
       congr! with i
-      simpa [ih (n - i) _] using Finset.mul_sum (⊤ : Finset (n - i).Partition)
-        (fun q ↦ q.parts.bell) (choose n i)
+      simp [ih (n - i) _, Finset.mul_sum]
     _ = ∑ i : Fin n.succ, ∑ p : {p : (n + 1).Partition // (i + 1 : ℕ) ∈ p.parts},
         choose n i * (p.1.parts.erase (i + 1)).bell := by
       congr! with i
       have h1 : 1 ≤ (i + 1 : ℕ) := by omega
       have h2 : (i + 1 : ℕ) ≤ n + 1 := by omega
       have hsub : n + 1 - (i + 1 : ℕ) = n - i := by omega
-      exact hsub ▸ Eq.symm (Fintype.sum_equiv (partitionWithPartEquiv h1 h2)
-        (fun p ↦ choose n i * (partitionWithPartEquiv h1 h2 p).parts.bell)
-        (fun q ↦ choose n i * q.parts.bell) (fun _ => rfl))
+      exact hsub ▸ (Fintype.sum_equiv (partitionWithPartEquiv h1 h2) _ _ (fun _ ↦ rfl)).symm
     _ = ∑ x : Σ p : (n + 1).Partition, p.parts.toFinset,
         choose n (x.2.1 - 1) * (x.1.parts.erase x.2.1).bell := by
       rw [← Fintype.sum_sigma']
