@@ -55,8 +55,6 @@ lemma free_iff_quotSMulTop_free [IsNoetherianRing R] (M : Type*) [AddCommGroup M
   refine ⟨fun free ↦ ?_, fun free ↦ ?_⟩
   · have := Module.Finite.of_restrictScalars_finite R (R ⧸ Ideal.span {x}) (QuotSMulTop x M)
     let I := Module.Free.ChooseBasisIndex (R ⧸ Ideal.span {x}) (QuotSMulTop x M)
-    let fin : Fintype I := Module.Free.ChooseBasisIndex.fintype _ _
-    have : Module.Finite R (I →₀ R) := by simp [Fintype.finite fin]
     let b := Module.Free.chooseBasis (R ⧸ Ideal.span {x}) (QuotSMulTop x M)
     let b' : QuotSMulTop x M ≃ₗ[R] I →₀ R ⧸ Ideal.span {x} := b.1.restrictScalars R
     let f := b'.symm.toLinearMap.comp (Finsupp.mapRange.linearMap (Submodule.mkQ (Ideal.span {x})))
