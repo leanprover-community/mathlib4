@@ -569,10 +569,9 @@ theorem truncTotal_subst_eq_sum_subst (ha : HasSubst a) (ha₁ : ∀ i, (a i).co
   rw [truncTotal_subst_eq_subst_sum ha ha₁, ← substAlgHom_apply ha, map_sum]
   simp
 
-theorem truncTotal_subst_eq_truncTotal_left [Finite σ] (ha : HasSubst a)
-    (ha₁ : ∀ i, (a i).constantCoeff = 0) :
+theorem truncTotal_subst_eq_truncTotal_left [Finite σ] (h : ∀ i, (a i).constantCoeff = 0) :
     truncTotal k (f.subst a) = ((f.truncTotal k).toMvPowerSeries.subst a).truncTotal k := by
-  rw [truncTotal_subst_eq_subst_sum ha ha₁, truncTotal_eq_sum]
+  rw [truncTotal_subst_eq_subst_sum (hasSubst_of_constantCoeff_zero h) h, truncTotal_eq_sum]
 
 theorem truncTotal_subst_eq_sum_subst_of_le (ha : HasSubst a) (h : ∀ i, (a i).constantCoeff = 0)
     (hx : ∀ i, k ≤ x i) :
@@ -583,18 +582,18 @@ theorem truncTotal_subst_eq_sum_subst_of_le (ha : HasSubst a) (h : ∀ i, (a i).
     rw [← coeff_zero_eq_constantCoeff_apply, MvPolynomial.coeff_coe,
       ← MvPolynomial.constantCoeff_eq, constantCoeff_truncTotal_eq_ite, h i, ite_self]
 
-theorem truncTotal_subst_of_le [Finite σ] (ha : HasSubst a) (h : ∀ i, (a i).constantCoeff = 0)
-    (hx : ∀ i, k ≤ x i) :
+theorem truncTotal_subst_of_le [Finite σ] (h : ∀ i, (a i).constantCoeff = 0) (hx : ∀ i, k ≤ x i) :
     truncTotal k (f.subst a) = ((f.truncTotal k).toMvPowerSeries.subst
       (fun i ↦ ((a i).truncTotal (x i)).toMvPowerSeries)).truncTotal k := by
-  rw [truncTotal_subst_eq_sum_subst_of_le ha h hx,
-    truncTotal_eq_sum, ← substAlgHom_apply ha.truncTotal_toMvPowerSeries, map_sum]
+  rw [truncTotal_subst_eq_sum_subst_of_le (hasSubst_of_constantCoeff_zero h) h hx,
+    truncTotal_eq_sum, ← substAlgHom_apply
+      (hasSubst_of_constantCoeff_zero h).truncTotal_toMvPowerSeries, map_sum]
   simp
 
-theorem truncTotal_subst [Finite σ] (ha : HasSubst a) (h : ∀ i, (a i).constantCoeff = 0) :
+theorem truncTotal_subst [Finite σ] (h : ∀ i, (a i).constantCoeff = 0) :
     truncTotal k (f.subst a) = ((f.truncTotal k).toMvPowerSeries.subst
       (fun i ↦ ((a i).truncTotal k).toMvPowerSeries)).truncTotal k :=
-  truncTotal_subst_of_le ha h fun _ ↦ le_refl k
+  truncTotal_subst_of_le h fun _ ↦ le_refl k
 
 theorem truncTotal_subst_eq_sum (ha : HasSubst a) (h : ∀ i, (a i).constantCoeff = 0) :
     truncTotal k (f.subst a) = (∑ i ∈ range k, (f.homogeneousComponent i).subst
