@@ -19,7 +19,8 @@ The Zhou graph (Foster census F182A) is a cubic arc-transitive graph on 182 vert
 
 ## Visualizations
 
-* [The Zhou graph](https://raw.githubusercontent.com/RaggedR/symmetric-graphs/main/lean/named_graphs/zhou-F182A.jpg) — symmetry-aware drawing with imprimitive block structure
+* [The Zhou graph (Zhou-3)](https://raw.githubusercontent.com/RaggedR/symmetric-graphs/main/lean/named_graphs/zhou3-F182A.jpg) — 182 vertices, imprimitive block structure
+* [Zhou-6 quotient](https://raw.githubusercontent.com/RaggedR/symmetric-graphs/main/lean/named_graphs/zhou6-91v.jpg) — 91-vertex quotient by the Z₂ block system
 
 ## References
 
