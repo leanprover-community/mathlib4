@@ -277,9 +277,9 @@ theorem toLinearMap_smul (c : S₂) (f : M₁ →SL[σ₁₂] M₂) :
     ↑(c • f) = c • (f : M₁ →ₛₗ[σ₁₂] M₂) :=
   rfl
 
-@[deprecated (since := "2026-05-20")] alias smul_apply := _root_.smul_apply
+@[deprecated (since := "2026-05-20")] protected alias smul_apply := _root_.smul_apply
 
-@[deprecated (since := "2026-05-20")] alias coe_smul := toLinearMap_smul
+@[deprecated (since := "2026-05-20")] protected alias coe_smul := toLinearMap_smul
 
 @[deprecated (since := "2026-05-20")] alias coe_smul' := FunLike.coe_smul
 
@@ -318,9 +318,9 @@ theorem default_def : (default : M₁ →SL[σ₁₂] M₂) = 0 :=
 theorem toLinearMap_zero : ((0 : M₁ →SL[σ₁₂] M₂) : M₁ →ₛₗ[σ₁₂] M₂) = 0 :=
   rfl
 
-@[deprecated (since := "2026-05-20")] alias zero_apply := _root_.zero_apply
+@[deprecated (since := "2026-05-20")] protected alias zero_apply := _root_.zero_apply
 
-@[deprecated (since := "2026-05-20")] alias coe_zero := toLinearMap_zero
+@[deprecated (since := "2026-05-20")] protected alias coe_zero := toLinearMap_zero
 
 @[deprecated (since := "2026-05-20")] alias coe_zero' := FunLike.coe_zero
 
@@ -371,7 +371,7 @@ theorem coe_id' : ⇑(ContinuousLinearMap.id R₁ M₁) = id :=
 theorem toLinearMap_one : ((1 : M₁ →L[R₁] M₁) : M₁ →ₗ[R₁] M₁) = 1 :=
   rfl
 
-@[deprecated (since := "2026-05-20")] alias coe_one := toLinearMap_one
+@[deprecated (since := "2026-05-20")] protected alias coe_one := toLinearMap_one
 
 @[simp] lemma mk_id : mk (.id : M₁ →ₗ[R₁] M₁) continuous_id = .id _ _ := rfl
 @[simp] lemma mk_one : mk (1 : M₁ →ₗ[R₁] M₁) continuous_id = 1 := rfl
@@ -384,7 +384,7 @@ theorem toContinuousAddMonoidHom_id :
 theorem coe_eq_id {f : M₁ →L[R₁] M₁} : (f : M₁ →ₗ[R₁] M₁) = LinearMap.id ↔ f = .id _ _ := by
   rw [← coe_id, coe_inj]
 
-@[deprecated (since := "2026-05-20")] alias one_apply := one_apply_eq_self
+@[deprecated (since := "2026-05-20")] protected alias one_apply := one_apply_eq_self
 
 instance [Nontrivial M₁] : Nontrivial (M₁ →L[R₁] M₁) :=
   ⟨0, 1, fun e ↦
@@ -400,15 +400,13 @@ instance add : Add (M₁ →SL[σ₁₂] M₂) :=
 instance instIsAddApply : IsAddApply (M₁ →SL[σ₁₂] M₂) M₁ M₂ where
   add_apply _ _ _ := rfl
 
-@[deprecated _root_.add_apply (since := "2026-05-20")]
-theorem add_apply (f g : M₁ →SL[σ₁₂] M₂) (x : M₁) : (f + g) x = f x + g x :=
-  rfl
-
 @[simp, norm_cast]
 theorem toLinearMap_add (f g : M₁ →SL[σ₁₂] M₂) : (↑(f + g) : M₁ →ₛₗ[σ₁₂] M₂) = f + g :=
   rfl
 
-@[deprecated (since := "2026-05-20")] alias coe_add := toLinearMap_add
+@[deprecated (since := "2026-05-20")] protected alias add_apply := _root_.add_apply
+
+@[deprecated (since := "2026-05-20")] protected alias coe_add := toLinearMap_add
 
 @[deprecated (since := "2026-05-20")] alias coe_add' := FunLike.coe_add
 
@@ -560,9 +558,9 @@ theorem toLinearMap_mul (f g : M₁ →L[R₁] M₁) : (↑(f * g) : M₁ →ₗ
 
 @[deprecated (since := "2026-05-20")] alias coe_mul := toLinearMap_mul
 
-@[deprecated (since := "2026-05-20")] alias coe_mul' := FunLike.coe_mul
+@[deprecated (since := "2026-05-20")] protected alias coe_mul' := FunLike.coe_mul
 
-@[deprecated (since := "2026-05-20")] alias mul_apply := mul_apply_eq_comp
+@[deprecated (since := "2026-05-20")] protected alias mul_apply := mul_apply_eq_comp
 
 instance monoidWithZero : MonoidWithZero (M₁ →L[R₁] M₁) := FunLike.monoidWithZero
 
@@ -834,9 +832,9 @@ instance addCommGroup : AddCommGroup (M →SL[σ₁₂] M₂) := FunLike.addComm
 theorem toLinearMap_sub (f g : M →SL[σ₁₂] M₂) : (↑(f - g) : M →ₛₗ[σ₁₂] M₂) = f - g :=
   rfl
 
-@[deprecated (since := "2026-05-20")] alias sub_apply := _root_.sub_apply
+@[deprecated (since := "2026-05-20")] protected alias sub_apply := _root_.sub_apply
 
-@[deprecated (since := "2026-05-20")] alias coe_sub := toLinearMap_sub
+@[deprecated (since := "2026-05-20")] protected alias coe_sub := toLinearMap_sub
 
 @[deprecated (since := "2026-05-20")] alias coe_sub' := FunLike.coe_sub
 
