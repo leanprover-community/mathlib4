@@ -509,7 +509,7 @@ TODO: This heuristic is not correct and leads to plenty of false-negatives like 
 should indeed be lower-cased as `_le` and `_tfae` following the style convention.
 See #34440 for more details.
 -/
-def isAcronymLike (s : String) : Bool :=
+def isAcronymLike (s : String.Slice) : Bool :=
   s.chars.all (fun c ↦ c.isDigit || (c.isAlpha && c.isUpper) || "'₀₁₂₃₄₅₆₇₈₉".contains c)
 
 /-- Explicit allow-list of naming components which are allowed to be in uppercase. -/
@@ -519,12 +519,17 @@ def allowed : Array String.Slice := #[
   "Lp", "Lq", -- TODO: should Lp and Lq be used in names?
 ]
 
-/-- Whether a string `s` is uppercased and not an exception to mathlib's naming rules. -/
-def isWronglyCased (s : String) : Bool :=
+/-- Whether a string `s` is uppercased and not an exception to mathlib's naming rules ---
+assuming `s` does not contain any underscores. -/
+def isWronglyCased (s : String.Slice) : Bool :=
   -- The string starts with an uppercase character, is not like an acronym
   -- and (after removing any trailing primes and subscript 0) is not an allowed exception.
  s.front.isUpper && !(isAcronymLike s) &&
  (!allowed.contains (s.dropEndWhile (fun c : Char ↦ "'₀".contains c)))
+
+/-- Whether a string `s` is uppercased and not an exception to mathlib's naming rules. -/
+def isWronglyCasedName (s : String) : Bool :=
+  (s.split "_").toList.all (fun t ↦ isWronglyCased t)
 
 @[inherit_doc linter.style.nameCheck]
 def doubleUnderscore : Linter where run := withSetOptionIn fun stx => do
@@ -568,7 +573,7 @@ rule 5 of mathlib's naming convention. -/
   test declName := do
     if (← isAutoDecl declName) then return none
     let parts := declName.toString.splitOn "_" |>.drop 1
-    let bad := parts.filter (isWronglyCased ·)
+    let bad := parts.filter (isWronglyCasedName ·)
     if bad.isEmpty then return none
     let aux := ", ".intercalate bad
     return m!"The component(s) `{aux}` of `{declName}` start(s) in uppercase, but is not an acronym. \
