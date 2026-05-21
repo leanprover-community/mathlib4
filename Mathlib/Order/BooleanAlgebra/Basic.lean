@@ -477,7 +477,7 @@ theorem compl_eq_comm : xᶜ = y ↔ yᶜ = x := by
 theorem eq_compl_comm : x = yᶜ ↔ y = xᶜ := by
   rw [eq_comm, compl_eq_iff_isCompl, eq_compl_iff_isCompl]
 
-@[simp]
+@[simp, push]
 theorem compl_compl (x : α) : xᶜᶜ = x :=
   (@isCompl_compl _ x _).symm.compl_eq
 

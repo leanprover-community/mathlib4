@@ -57,6 +57,28 @@ info: DiscrTree branch for Or:
 
 end logic
 
+section set
+
+variable (α : Type) (p q r s : Set α)
+
+example : (p ∩ (r ∪ s)) = p ∩ r ∪ p ∩ s := by
+  push _ ∩ _
+  rfl
+
+example : (p ∪ q ∪ r)ᶜ = pᶜ ∩ qᶜ ∩ rᶜ := by
+  push _ᶜ
+  rfl
+
+example : (p ∩ q ∩ r)ᶜ = pᶜ ∪ qᶜ ∪ rᶜ := by
+  push _ᶜ
+  rfl
+
+example : (pᶜ ∪ (q ∩ r))ᶜ = p ∩ (qᶜ ∪ rᶜ) := by
+  push _ᶜ
+  rfl
+
+end set
+
 section lambda
 
 example : (fun x : ℕ ↦ x ^ 2 + 1 * 0 - 5 • 6) = id ^ 2 + 1 * 0 - 5 • 6 := by
