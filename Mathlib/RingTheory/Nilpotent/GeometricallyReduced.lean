@@ -49,7 +49,7 @@ variable {k A : Type*} [Field k] [Ring A] [Algebra k A]
 @[mk_iff]
 class IsGeometricallyReduced (R A : Type*) [CommRing R] [Ring A] [Algebra R A] : Prop where
   isReduced_algebraicClosure_tensorProduct (p : Ideal R) [p.IsPrime] :
-  IsReduced (AlgebraicClosure p.ResidueField ⊗[R] A)
+    IsReduced (AlgebraicClosure p.ResidueField ⊗[R] A)
 
 attribute [instance] IsGeometricallyReduced.isReduced_algebraicClosure_tensorProduct
 
