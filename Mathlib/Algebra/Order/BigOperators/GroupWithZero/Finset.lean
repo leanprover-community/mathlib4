@@ -67,27 +67,41 @@ lemma le_prod_max_one {M : Type*} [CommMonoidWithZero M] [LinearOrder M] [ZeroLE
   exact this ▸ prod_le_prod (fun _ _ ↦ by grind [zero_le_one]) fun _ _ ↦ by grind
 
 @[gcongr]
-theorem prod_le_prod_of_subset_of_one_le (h : s ⊆ t)
-    (hf0 : ∀ i ∈ s, 0 ≤ f i)
-    (hf : ∀ i ∈ t, i ∉ s → 1 ≤ f i) : ∏ i ∈ s, f i ≤ ∏ i ∈ t, f i := by
+lemma prod_mono_of_subset_of_one_le₀ (h : s ⊆ t) (hf₀ : ∀ i ∈ s, 0 ≤ f i) (hfg : ∀ i ∈ s, f i ≤ g i)
+    (hf : ∀ i ∈ t, i ∉ s → 1 ≤ g i) : ∏ i ∈ s, f i ≤ ∏ i ∈ t, g i := by
   have := posMulMono_iff_mulPosMono.1 ‹PosMulMono R›
   classical
   calc
-      ∏ i ∈ s, f i ≤ (∏ i ∈ t \ s, f i) * ∏ i ∈ s, f i :=
-        le_mul_of_one_le_left (prod_nonneg hf0) <| one_le_prod <| by simpa only [mem_sdiff, and_imp]
-      _ = ∏ i ∈ t \ s ∪ s, f i := (prod_union sdiff_disjoint).symm
-      _ = ∏ i ∈ t, f i := by rw [sdiff_union_of_subset h]
+      ∏ i ∈ s, f i
+    _ ≤ ∏ i ∈ s, g i := by gcongr with i hi; exacts [hf₀, hfg i hi]
+    _ ≤ (∏ i ∈ t \ s, g i) * ∏ i ∈ s, g i :=
+      le_mul_of_one_le_left (prod_nonneg fun i hi ↦ (hf₀ i hi).trans (hfg i hi)) <|
+        one_le_prod <| by simpa only [mem_sdiff, and_imp]
+    _ = ∏ i ∈ t \ s ∪ s, g i := (prod_union sdiff_disjoint).symm
+    _ = ∏ i ∈ t, g i := by rw [sdiff_union_of_subset h]
 
-theorem prod_le_prod_of_subset_of_le_one (h : s ⊆ t) (hf0 : ∀ i ∈ t, 0 ≤ f i)
-    (hf : ∀ i ∈ t, i ∉ s → f i ≤ 1) :
-    ∏ i ∈ t, f i ≤ ∏ i ∈ s, f i := by
+lemma prod_mono_of_subset_of_le_one₀ (h : s ⊆ t) (hg₀ : ∀ i ∈ t, 0 ≤ g i) (hgf : ∀ i ∈ s, g i ≤ f i)
+    (hf : ∀ i ∈ t, i ∉ s → g i ≤ 1) :
+    ∏ i ∈ t, g i ≤ ∏ i ∈ s, f i := by
   have := posMulMono_iff_mulPosMono.1 ‹PosMulMono R›
   classical
   calc
-    ∏ i ∈ t, f i = ∏ i ∈ t \ s ∪ s, f i := by rw [sdiff_union_of_subset h]
-    _ = (∏ i ∈ t \ s, f i) * ∏ i ∈ s, f i := prod_union sdiff_disjoint
-    _ ≤ ∏ i ∈ s, f i :=
+    ∏ i ∈ t, g i
+    _ = ∏ i ∈ t \ s ∪ s, g i := by rw [sdiff_union_of_subset h]
+    _ = (∏ i ∈ t \ s, g i) * ∏ i ∈ s, g i := prod_union sdiff_disjoint
+    _ ≤ ∏ i ∈ s, g i :=
       mul_le_of_le_one_left (prod_nonneg (by grind)) (prod_le_one (by grind) (by grind))
+    _ ≤ ∏ i ∈ s, f i := by gcongr with i hi; exacts [fun i hi ↦ hg₀ _ <| h hi, hgf i hi]
+
+@[gcongr]
+lemma prod_le_prod_of_subset_of_one_le (h : s ⊆ t) (hf₀ : ∀ i ∈ s, 0 ≤ f i)
+    (hf : ∀ i ∈ t, i ∉ s → 1 ≤ f i) : ∏ i ∈ s, f i ≤ ∏ i ∈ t, f i :=
+  prod_mono_of_subset_of_one_le₀ h hf₀ (by simp) hf
+
+lemma prod_le_prod_of_subset_of_le_one (h : s ⊆ t) (hf₀ : ∀ i ∈ t, 0 ≤ f i)
+    (hf : ∀ i ∈ t, i ∉ s → f i ≤ 1) :
+    ∏ i ∈ t, f i ≤ ∏ i ∈ s, f i :=
+  prod_mono_of_subset_of_le_one₀ h hf₀ (by simp) hf
 
 theorem prod_mono_set_of_one_le (hf : ∀ x, 1 ≤ f x) :
     Monotone fun s ↦ ∏ x ∈ s, f x :=

@@ -128,14 +128,26 @@ theorem one_le_prod'' [MulLeftMono N] (h : ∀ i : ι, 1 ≤ f i) : 1 ≤ ∏ i 
 theorem prod_le_one' [MulLeftMono N] (h : ∀ i ∈ s, f i ≤ 1) : ∏ i ∈ s, f i ≤ 1 :=
   (prod_le_prod' h).trans_eq (by rw [prod_const_one])
 
-@[to_additive (attr := gcongr) sum_le_sum_of_subset_of_nonneg]
-theorem prod_le_prod_of_subset_of_one_le' [MulLeftMono N] (h : s ⊆ t)
-    (hf : ∀ i ∈ t, i ∉ s → 1 ≤ f i) : ∏ i ∈ s, f i ≤ ∏ i ∈ t, f i := by
+@[to_additive (attr := gcongr)]
+lemma prod_mono_of_subset_of_one_le [MulLeftMono N] (h : s ⊆ t) (hfg : ∀ i ∈ s, f i ≤ g i)
+    (hg : ∀ i ∈ t, i ∉ s → 1 ≤ g i) : ∏ i ∈ s, f i ≤ ∏ i ∈ t, g i := by
   classical calc
-      ∏ i ∈ s, f i ≤ (∏ i ∈ t \ s, f i) * ∏ i ∈ s, f i :=
-        le_mul_of_one_le_left' <| one_le_prod' <| by simpa only [mem_sdiff, and_imp]
-      _ = ∏ i ∈ t \ s ∪ s, f i := (prod_union sdiff_disjoint).symm
-      _ = ∏ i ∈ t, f i := by rw [sdiff_union_of_subset h]
+    ∏ i ∈ s, f i
+    _ ≤ ∏ i ∈ s, g i := by gcongr with i hi; exact hfg i hi
+    _ ≤ (∏ i ∈ t \ s, g i) * ∏ i ∈ s, g i :=
+      le_mul_of_one_le_left' <| one_le_prod' <| by simpa only [mem_sdiff, and_imp]
+    _ = ∏ i ∈ t \ s ∪ s, g i := (prod_union sdiff_disjoint).symm
+    _ = ∏ i ∈ t, g i := by rw [sdiff_union_of_subset h]
+
+@[to_additive]
+lemma prod_mono_of_subset_of_le_one [MulLeftMono N] (h : s ⊆ t) (hfg : ∀ i ∈ s, f i ≤ g i)
+    (hf : ∀ i ∈ t, i ∉ s → f i ≤ 1) : ∏ i ∈ t, f i ≤ ∏ i ∈ s, g i :=
+  prod_mono_of_subset_of_one_le (N := Nᵒᵈ) h hfg hf
+
+@[to_additive sum_le_sum_of_subset_of_nonneg]
+theorem prod_le_prod_of_subset_of_one_le' [MulLeftMono N] (h : s ⊆ t)
+    (hf : ∀ i ∈ t, i ∉ s → 1 ≤ f i) : ∏ i ∈ s, f i ≤ ∏ i ∈ t, f i :=
+  prod_mono_of_subset_of_one_le h (by simp) hf
 
 @[to_additive]
 theorem prod_le_prod_of_subset_of_le_one'
