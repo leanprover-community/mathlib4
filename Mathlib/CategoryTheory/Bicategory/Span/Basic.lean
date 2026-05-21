@@ -13,7 +13,7 @@ public import Mathlib.CategoryTheory.LocallyCartesianClosed.ChosenPullbacksAlong
 In this file, given a category `C` and two morphism properties
 Wₗ Wᵣ in C satisfying suitable assumptions regarding identities and base changes,
 we construct the bicategory of spans in C with left morphism in Wₗ and right morphism
-in Wᵣ.
+in Wᵣ (TODO @robin-carlier).
 
 -/
 
@@ -42,7 +42,7 @@ namespace Span
 
 variable {Wₗ Wᵣ} {c c' : C}
 
-/-- A morphism of span is a morphism between the apices compatible
+/-- A morphism of spans is a morphism between the apices compatible
 with the projections. -/
 structure Hom (S₁ S₂ : Span Wₗ Wᵣ c c') : Type _ where
   /-- the map between the apices -/
@@ -69,7 +69,7 @@ lemma hom_ext {S S' : Span Wₗ Wᵣ c c'} {f g : S ⟶ S'} (h : f.hom = g.hom) 
 
 set_option mathlib.tactic.category.grind true in
 /-- Construct an isomorphism of spans from an isomorphism between the
-apices that is compatible with the projections -/
+apices that is compatible with the projections. -/
 @[simps (attr := grind =)]
 def mkIso {S S' : Span Wₗ Wᵣ c c'} (e : S.apex ≅ S'.apex)
     (hₗ : e.hom ≫ S'.l = S.l := by cat_disch)
