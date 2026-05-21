@@ -112,7 +112,7 @@ lemma resolventTransform_apply (μ : Measure 𝕜) (a : A) :
 @[simp]
 lemma resolventTransform_zero_measure : resolventTransform (0 : Measure 𝕜) = (0 : A → A) := by
   ext
-  simp [resolventTransform]
+  simp [resolventTransform_def]
 
 @[simp]
 lemma resolventTransform_dirac [OpensMeasurableSpace 𝕜] [CompleteSpace A]
