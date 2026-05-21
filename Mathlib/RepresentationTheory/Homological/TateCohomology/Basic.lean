@@ -163,7 +163,7 @@ instance : (tateComplexFunctor R G).PreservesZeroMorphisms where
   map_zero X Y := by
     ext
     dsimp [tateComplexFunctor]
-    aesop_cat
+    cat_disch
 
 lemma map_tateComplexFunctor_shortExact {S : ShortComplex (Rep R G)} (hS : S.ShortExact) :
     (S.map (tateComplexFunctor R G)).ShortExact := by
