@@ -175,8 +175,7 @@ def symm (e : A ≃ₗc[R] B) : B ≃ₗc[R] A :=
       rw [LinearEquiv.toLinearMap_symm_comp_eq]
       simp only [TensorProduct.congr, toCoalgHom_eq_coe, CoalgHom.toLinearMap_eq_coe,
         LinearEquiv.ofLinear_toLinearMap, ← LinearMap.comp_assoc, CoalgHomClass.map_comp_comul]
-      rw [← toLinearEquiv_toLinearMap, LinearEquiv.comp_symm_cancel_right]
-       }
+      rw [← toLinearEquiv_toLinearMap, LinearEquiv.comp_symm_cancel_right] }
 
 /-- See Note [custom simps projection] -/
 def Simps.apply {R : Type*} [CommSemiring R] {α β : Type*}
