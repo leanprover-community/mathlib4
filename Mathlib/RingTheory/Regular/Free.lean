@@ -94,20 +94,5 @@ lemma free_iff_quotSMulTop_free [IsLocalRing R] [IsNoetherianRing R] (M : Type*)
       have := LinearMap.mem_ker.mpr (IsSMulRegular.right_eq_zero_of_smul reg hy)
       simpa [hz] using Submodule.smul_mem_pointwise_smul z x _ this
     exact Module.Free.of_equiv (LinearEquiv.ofBijective g ⟨injg, surjg⟩)
-  · let I := Module.Free.ChooseBasisIndex R M
-    let fin : Fintype I := Module.Free.ChooseBasisIndex.fintype _ _
-    have : Module.Finite R (I →₀ R) := by simp [Fintype.finite fin]
-    let b := Module.Free.chooseBasis R M
-    let f : M →ₗ[R] I →₀ (R ⧸ Ideal.span {x}) :=
-      (Finsupp.mapRange.linearMap (Submodule.mkQ (Ideal.span {x}))).comp b.1.toLinearMap
-    have surjf : Function.Surjective f := by
-      simpa [f] using Finsupp.mapRange_surjective _ rfl (Submodule.mkQ_surjective _)
-    have kerf : LinearMap.ker f = x • (⊤ : Submodule R M) := by
-      simp only [f, LinearMap.ker_comp, LinearMap.ker_mapRange_eq_smul_top R I x,
-        Submodule.map_top, Submodule.comap_equiv_eq_map_symm, Submodule.map_pointwise_smul,
-        LinearMap.range_eq_top.mpr b.repr.symm.surjective]
-    let e' := (Submodule.quotEquivOfEq _ _ kerf.symm).trans
-      (LinearMap.quotKerEquivOfSurjective f surjf)
-    let e : QuotSMulTop x M ≃ₗ[R ⧸ Ideal.span {x}] I →₀ R ⧸ Ideal.span {x} :=
-      e'.extendScalarsOfSurjective (Ideal.Quotient.mk_surjective (I := Ideal.span {x}))
-    exact Module.Free.of_equiv e.symm
+  · exact Module.Free.of_equiv ((QuotSMulTop.equivQuotTensor x M).extendScalarsOfSurjective
+      Ideal.Quotient.mk_surjective).symm
