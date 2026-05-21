@@ -34,7 +34,7 @@ namespace Scheme
 
 namespace PartialMap
 
-/-- Restricting a dominant partial map yields a dominant partial map. -/
+/-- Restricting a dominant partial map to a dense open yields a dominant partial map. -/
 lemma isDominant_restrict_hom (f : X.PartialMap Y) [IsDominant f.hom] (U : X.Opens)
     (hU : Dense (U : Set X)) (hU' : U ≤ f.domain) : IsDominant (f.restrict U hU hU').hom := by
   dsimp only [restrict_domain, restrict_hom]
