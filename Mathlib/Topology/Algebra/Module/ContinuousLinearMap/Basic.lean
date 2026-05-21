@@ -945,7 +945,7 @@ theorem comp_smulₛₗ [SMulCommClass R₂ R₂ M₂] [SMulCommClass R₃ R₃ 
   simp
 
 instance distribMulAction [ContinuousAdd M₂] : DistribMulAction S₃ (M →SL[σ₁₂] M₂) :=
-  FunLike.distribMulAction
+  fast_instance% FunLike.distribMulAction
 
 end SMulMonoid
 
@@ -964,7 +964,7 @@ variable {R R₂ R₃ S S₃ : Type*} [Semiring R] [Semiring R₂] [Semiring R�
 
 variable [ContinuousAdd M₂] [ContinuousAdd M₃] [ContinuousAdd N₂]
 
-instance module : Module S₃ (M →SL[σ₁₃] M₃) := FunLike.module
+instance module : Module S₃ (M →SL[σ₁₃] M₃) := fast_instance% FunLike.module
 
 instance isCentralScalar [Module S₃ᵐᵒᵖ M₃] [IsCentralScalar S₃ M₃] :
     IsCentralScalar S₃ (M →SL[σ₁₃] M₃) := FunLike.isCentralScalar
