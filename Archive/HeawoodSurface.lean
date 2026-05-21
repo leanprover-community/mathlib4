@@ -12,6 +12,8 @@ the Fano plane PG(2,2). It is a cubic arc-transitive graph on 14 vertices.
   - **Tiling**: {6,3} — 7 hexagonal faces on the torus (genus 1)
   - **CSS code**: [[21, 2, ≥ 3]]
 
+  - [Visualization](https://raw.githubusercontent.com/RaggedR/symmetric-graphs/main/lean/named_graphs/heawood-F014A.jpg) — the Heawood graph (F014A)
+
 Vertices 0–6 are the 7 points of the Fano plane.
 Vertices 7–13 are the 7 lines.
 Edge i connects a point to the line containing it.

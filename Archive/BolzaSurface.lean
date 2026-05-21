@@ -13,6 +13,8 @@ GP(8,3). It is a cubic arc-transitive graph on 16 vertices.
   - **Tiling**: {8,3} — 6 octagonal faces on the Bolza surface (genus 2)
   - **CSS code**: [[24, 4, ≥ 6]]
 
+  - [Visualization](https://raw.githubusercontent.com/RaggedR/symmetric-graphs/main/lean/named_graphs/mobius-kantor-F016A.jpg) — the Möbius-Kantor graph (F016A)
+
 All axioms verified by the Lean kernel (`decide`). No sorry.
 -/
 
