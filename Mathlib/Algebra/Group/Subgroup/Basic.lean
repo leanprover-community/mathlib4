@@ -559,6 +559,10 @@ theorem normalClosure_le_normal {N : Subgroup G} [N.Normal] (h : s ⊆ N) : norm
 theorem normalClosure_subset_iff {N : Subgroup G} [N.Normal] : s ⊆ N ↔ normalClosure s ≤ N :=
   ⟨normalClosure_le_normal, Set.Subset.trans subset_normalClosure⟩
 
+@[simp]
+theorem normalClosure_eq_bot_iff : normalClosure s = ⊥ ↔ s ⊆ {1} := by
+  rw [eq_bot_iff, ← normalClosure_subset_iff, coe_bot]
+
 @[to_additive (attr := gcongr)]
 theorem normalClosure_mono {s t : Set G} (h : s ⊆ t) : normalClosure s ≤ normalClosure t :=
   normalClosure_le_normal (Set.Subset.trans h subset_normalClosure)
