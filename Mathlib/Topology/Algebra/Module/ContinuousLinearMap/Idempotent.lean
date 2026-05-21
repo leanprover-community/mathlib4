@@ -16,7 +16,7 @@ continuous endomorphisms of a topological `R`-module `M`.
 ## Main statements
 
 * `ContinuousLinearMap.isIdempotentElem_toLinearMap_iff`: `T` is idempotent as an element of
-  `M →L[R] M` if and only if it is as an element of `M →ₗ[R] M`;
+  `M →L[R] M` if and only if it is such as an element of `M →ₗ[R] M`;
 * `ContinuousLinearMap.IsIdempotentElem.ext_iff`: idempotent elements of `M →L[R] M` are determined
   by their range and kernel;
 * `ContinuousLinearMap.IsIdempotentElem.commute_iff`: a continuous linear map `S` commutes with
