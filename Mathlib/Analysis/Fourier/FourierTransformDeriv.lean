@@ -486,7 +486,8 @@ lemma hasFTaylorSeriesUpTo_fourierIntegral {N : ℕ∞ω}
         fourierIntegral_continuousMultilinearMap_apply' (I₄.apply_continuousLinearMap _)]
       congr with v
       simp only [fourierPowSMulRight_apply, mul_comm, pow_succ, neg_mul, Fin.prod_univ_succ,
-        Fin.cons_zero, Fin.cons_succ, neg_smul, fourierSMulRight_apply, neg_apply, smul_apply,
+        Fin.cons_zero, Fin.cons_succ, neg_smul, fourierSMulRight_apply,
+        ContinuousMultilinearMap.neg_apply, ContinuousMultilinearMap.smul_apply,
         smul_comm (M := ℝ) (N := ℂ) (α := E), smul_smul]
     exact E ▸ hasFDerivAt_fourierIntegral L I₁ I₂ w
   · intro n hn
@@ -538,7 +539,7 @@ theorem fourierIntegral_iteratedFDeriv [FiniteDimensional ℝ V]
   | zero =>
     ext w m
     simp only [iteratedFDeriv_zero_apply, fourierPowSMulRight_apply, pow_zero,
-      Finset.univ_eq_empty, neg_apply, ContinuousLinearMap.flip_apply,
+      Finset.univ_eq_empty, _root_.neg_apply, ContinuousLinearMap.flip_apply,
       Finset.prod_empty, one_smul, fourierIntegral_continuousMultilinearMap_apply' ((h'f 0 bot_le))]
   | succ n ih =>
     ext w m
@@ -552,16 +553,17 @@ theorem fourierIntegral_iteratedFDeriv [FiniteDimensional ℝ V]
         (-(2 * π * I)) ^ (n + 1) • (∏ x : Fin (n + 1), -L (m x) w) • ∫ v, 𝐞 (-L v w) • f v ∂μ by
       rw [fourierIntegral_continuousMultilinearMap_apply' (h'f _ hn)]
       simp only [iteratedFDeriv_succ_apply_left, fourierPowSMulRight_apply,
-        neg_apply, ContinuousLinearMap.flip_apply]
+        _root_.neg_apply, ContinuousLinearMap.flip_apply]
       rw [← fourierIntegral_continuousMultilinearMap_apply' ((J.apply_continuousLinearMap _)),
           ← fourierIntegral_continuousLinearMap_apply' J]
       exact H
     have h'n : n < N := (Nat.cast_lt.mpr n.lt_succ_self).trans_le hn
     rw [fourierIntegral_fderiv _ (h'f n h'n.le)
       (hf.differentiable_iteratedFDeriv (mod_cast h'n)) J]
-    simp only [ih h'n.le, fourierSMulRight_apply, neg_apply,
-      ContinuousLinearMap.flip_apply, neg_smul, smul_neg, neg_neg, smul_apply,
-      fourierPowSMulRight_apply, ← coe_smul (E := E), smul_smul]
+    simp only [ih h'n.le, fourierSMulRight_apply, _root_.neg_apply,
+      ContinuousLinearMap.flip_apply, neg_smul, smul_neg, neg_neg,
+      ContinuousMultilinearMap.smul_apply, fourierPowSMulRight_apply,
+      ← coe_smul (E := E), smul_smul]
     congr 1
     simp only [ofReal_prod, ofReal_neg, pow_succ, mul_neg, Fin.prod_univ_succ, neg_mul,
       ofReal_mul, neg_neg, Fin.tail_def]
@@ -829,7 +831,7 @@ theorem fourier_deriv
   have : 𝓕 (deriv f) x = 𝓕 (fderiv ℝ f) x 1 := by
     simp only [fourier_continuousLinearMap_apply I, fderiv_apply_one_eq_deriv]
   rw [this, fourier_fderiv hf h'f I]
-  simp only [fourierSMulRight_apply, neg_apply, innerSL_apply_apply, smul_smul,
+  simp only [fourierSMulRight_apply, neg_apply, innerSL_apply_apply ℝ, smul_smul,
     RCLike.inner_apply', conj_trivial, mul_one, neg_smul, smul_neg, neg_neg, neg_mul, ← coe_smul]
 
 @[deprecated (since := "2025-11-16")]
@@ -867,7 +869,7 @@ theorem fourier_iteratedDeriv {f : ℝ → E} {N : ℕ∞} {n : ℕ} (hf : ContD
   change 𝓕 (fun x ↦ iteratedDeriv n f x) x = _
   simp_rw [iteratedDeriv, ← fourier_continuousMultilinearMap_apply (A n hn),
     fourier_iteratedFDeriv hf A hn]
-  simp [← coe_smul, smul_smul, ← mul_pow]
+  simp [← coe_smul, smul_smul, ← mul_pow, innerSL_apply_apply ℝ]
 
 @[deprecated (since := "2025-11-16")]
 alias fourierIntegral_iteratedDeriv := fourier_iteratedDeriv
