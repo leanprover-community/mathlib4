@@ -213,7 +213,7 @@ theorem not_lt_enum_ord_greedyColorsBefore (v : V) (h : G.greedyColorsBefore r v
 
 theorem not_lt_enum_degree_greedyColoring (v : V) [Fintype <| G.neighborSet v] :
     ¬r (enum r ⟨G.degree v, by
-      rw [Set.mem_Iio, ← card_neighborFinset_eq_degree, ← ord_nat, ← Cardinal.mk_coe_finset]
+      rw [Set.mem_Iio, ← card_neighborFinset_eq_degree, ← ord_natCast, ← Cardinal.mk_coe_finset]
       exact ord_mk_lt_type r (Finset.finite_toSet _) ⟨v, G.notMem_neighborFinset_self v⟩
     ⟩) (G.greedyColoring r v) := by
   grw [← typein_le_typein, typein_enum, typein_greedyColoring_le_coe_degree]
