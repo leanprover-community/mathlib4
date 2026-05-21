@@ -187,7 +187,6 @@ lemma Scheme.Hom.exists_mem_and_isIso_morphismRestrict_toNormalization
     (Q := @Surjective ⊓ @Flat ⊓ @LocallyOfFinitePresentation) this
     ⟨⟨‹_›, inferInstance⟩, inferInstance⟩ ‹_›
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 **Zariski's main theorem**
 
@@ -326,7 +325,6 @@ instance [LocallyOfFiniteType f] [IsSeparated f] [QuasiCompact f] :
     (SetLike.coe_injective e.symm)).hom ≫ f.toNormalization ∣_ U ≫ U.ι)) using 1
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 lemma Scheme.Hom.quasiFiniteLocus_eq_top [LocallyQuasiFinite f] [LocallyOfFiniteType f] :
     f.quasiFiniteLocus = ⊤ :=
   top_le_iff.mp fun x _ ↦ f.quasiFiniteAt x

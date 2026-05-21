@@ -222,7 +222,7 @@ lemma rpow_abs_le_mul_max_exp_of_pos (x : ℝ) {t p : ℝ} (hp : 0 ≤ p) (ht : 
       exact le_max_left _ _
   calc |x| ^ p
   _ ≤ ((t / p)⁻¹ * max (exp (t / p * x)) (exp (-t / p * x))) ^ p := by
-    refine rpow_le_rpow (abs_nonneg _) ?_ hp
+    gcongr
     convert h_abs_le (t / p) (div_pos ht (hp.lt_of_ne' hp_zero)) using 5
     rw [neg_div]
   _ = (p / t) ^ p * max (exp (t * x)) (exp (-t * x)) := by

@@ -37,7 +37,7 @@ infinitely many times.
 conservative dynamical system, Poincare recurrence theorem
 -/
 
-@[expose] public section
+public section
 
 
 noncomputable section

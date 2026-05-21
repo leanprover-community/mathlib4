@@ -1247,7 +1247,6 @@ namespace CategoryTheory
 
 variable {C : Type u} [Category.{v} C]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary definition for `Over.coprod`. -/
 @[simps]
 noncomputable def Over.coprodObj [HasBinaryCoproducts C] {A : C} :
@@ -1256,7 +1255,6 @@ noncomputable def Over.coprodObj [HasBinaryCoproducts C] {A : C} :
   { obj := fun g => Over.mk (coprod.desc f.hom g.hom)
     map := fun k => Over.homMk (coprod.map (𝟙 _) k.left) }
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A category with binary coproducts has a functorial `sup` operation on over categories. -/
 @[simps]
 noncomputable def Over.coprod [HasBinaryCoproducts C] {A : C} : Over A ⥤ Over A ⥤ Over A where

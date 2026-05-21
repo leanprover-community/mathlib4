@@ -50,7 +50,7 @@ all points in `s` are fixed by `g`, whereas the former only requires that `g •
 public section
 
 namespace MulAction
-open Pointwise
+open scoped Pointwise
 
 variable {α : Type*}
 variable {G : Type*} [Group G] [MulAction G α]
@@ -118,6 +118,14 @@ theorem smul_fixedBy (g h : G) :
     h • fixedBy α g = fixedBy α (h * g * h⁻¹) := by
   ext a
   simp_rw [Set.mem_smul_set_iff_inv_smul_mem, mem_fixedBy, mul_smul, smul_eq_iff_eq_inv_smul h]
+
+lemma fixedBy_mul_eq_empty_iff [IsRightCancelMul M] {m : M} :
+    fixedBy M m = ∅ ↔ m ≠ 1 := by
+  simp [MulAction.fixedBy, Set.eq_empty_iff_forall_notMem]
+
+lemma fixedBy_mul_op_eq_empty_iff [IsLeftCancelMul M] {m : M} :
+    fixedBy M (MulOpposite.op m) = ∅ ↔ m ≠ 1 := by
+  simp [MulAction.fixedBy, Set.eq_empty_iff_forall_notMem]
 
 end FixedPoints
 
@@ -262,7 +270,7 @@ is disjoint from `(fixedBy α g)ᶜ`, then `g` and `h` cannot commute.
 is disjoint from `(fixedBy α g)ᶜ`, then `g` and `h` cannot commute. -/]
 theorem not_commute_of_disjoint_movedBy_preimage {g h : G} (ne_one : g ≠ 1)
     (disjoint : Disjoint (fixedBy α g)ᶜ (h • (fixedBy α g)ᶜ)) : ¬Commute g h := by
-  contrapose! ne_one with comm
+  contrapose ne_one with comm
   rwa [movedBy_mem_fixedBy_of_commute comm, disjoint_self, Set.bot_eq_empty, ← Set.compl_univ,
     compl_inj_iff, fixedBy_eq_univ_iff_eq_one] at disjoint
 

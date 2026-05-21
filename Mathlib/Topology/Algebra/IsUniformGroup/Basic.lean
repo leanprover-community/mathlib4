@@ -267,10 +267,6 @@ variable (G : Type*) [Group G] [TopologicalSpace G] [IsTopologicalGroup G]
 
 attribute [local instance] IsTopologicalGroup.rightUniformSpace
 
-@[to_additive (attr := deprecated IsUniformGroup.of_compactSpace (since := "2025-09-27"))]
-theorem topologicalGroup_is_uniform_of_compactSpace [CompactSpace G] : IsUniformGroup G :=
-  inferInstance
-
 variable {G}
 
 @[to_additive]
@@ -282,7 +278,7 @@ instance Subgroup.isClosed_of_discrete [T2Space G] {H : Subgroup G} [DiscreteTop
   have : (fun p : G × G => p.2 * p.1⁻¹) ⁻¹' V ∈ 𝓤 G := preimage_mem_comap V_in
   apply isClosed_of_spaced_out this
   intro h h_in h' h'_in
-  contrapose!
+  contrapose
   simp only [Set.mem_preimage]
   rintro (hyp : h' * h⁻¹ ∈ V)
   have : h' * h⁻¹ ∈ ({1} : Set G) := VH ▸ Set.mem_inter hyp (H.mul_mem h'_in (H.inv_mem h_in))
@@ -407,6 +403,14 @@ end Inv
 namespace IsTopologicalGroup
 
 variable {ι α G : Type*} [Group G] [u : UniformSpace G] [IsTopologicalGroup G]
+
+@[to_additive]
+theorem uniformCauchySeqOn_iff (F : ι → α → G) (p : Filter ι) (s : Set α)
+    (hu : IsTopologicalGroup.rightUniformSpace G = u) :
+    UniformCauchySeqOn F p s ↔ ∀ u ∈ 𝓝 (1 : G), ∀ᶠ m in p ×ˢ p, ∀ a ∈ s, F m.2 a / F m.1 a ∈ u := by
+  simp only [div_eq_mul_inv]
+  exact hu ▸ ⟨fun h u hu ↦ h _ ⟨u, hu, fun _ ↦ id⟩,
+    fun h _ ⟨u, hu, hv⟩ => mem_of_superset (h u hu) fun _ hi a ha => hv (hi a ha)⟩
 
 @[to_additive]
 theorem tendstoUniformly_iff (F : ι → α → G) (f : α → G) (p : Filter ι)

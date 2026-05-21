@@ -231,6 +231,21 @@ theorem isAcyclic_of_path_unique (h : ∀ (v w : V) (p q : G.Path v w), p = q) :
 theorem isAcyclic_iff_path_unique : G.IsAcyclic ↔ ∀ ⦃v w : V⦄ (p q : G.Path v w), p = q :=
   ⟨IsAcyclic.path_unique, isAcyclic_of_path_unique⟩
 
+theorem isAcyclic_iff_subsingleton_path : G.IsAcyclic ↔ ∀ ⦃u v⦄, Subsingleton (G.Path u v) := by
+  simp [isAcyclic_iff_path_unique, subsingleton_iff]
+
+theorem IsAcyclic.eq_snd_of_adj_start (h : G.IsAcyclic) {u v w : V} {p : G.Walk u v} (hp : p.IsPath)
+    (hadj : G.Adj u w) (hsupp : w ∈ p.support) : w = p.snd := by
+  classical
+  have := isAcyclic_iff_path_unique.mp h ⟨_, hp.takeUntil hsupp⟩ <| .singleton hadj
+  grind [p.getVert_length_takeUntil hsupp, Path.singleton_coe, length]
+
+theorem IsAcyclic.eq_penultimate_of_adj_end (h : G.IsAcyclic) {u v w : V} {p : G.Walk u v}
+    (hp : p.IsPath) (hadj : G.Adj v w) (hsupp : w ∈ p.support) : w = p.penultimate := by
+  rw [← snd_reverse]
+  apply h.eq_snd_of_adj_start hp.reverse hadj
+  simpa
+
 lemma IsAcyclic.mem_support_of_ne_mem_support_of_adj_of_isPath (hG : G.IsAcyclic) {u v w : V}
     {p : G.Walk u v} {q : G.Walk u w} (hp : p.IsPath) (hq : q.IsPath) (hadj : G.Adj v w)
     (hv : v ∉ q.support) : w ∈ p.support := by
@@ -491,7 +506,6 @@ lemma Connected.card_vert_le_card_edgeSet_add_one (h : G.Connected) :
     Nat.card_eq_fintype_card, ← edgeFinset_card]
   exact Finset.card_mono <| by simpa
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isTree_iff_connected_and_card [Finite V] :
     G.IsTree ↔ G.Connected ∧ Nat.card G.edgeSet + 1 = Nat.card V := by
   have := Fintype.ofFinite V

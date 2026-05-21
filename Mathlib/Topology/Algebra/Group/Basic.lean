@@ -901,7 +901,7 @@ lemma MonoidHom.isOpenQuotientMap_of_isQuotientMap {A : Type*} [Group A]
       -- as `U * k⁻¹` is open because `x ↦ x * k` is continuous.
       -- Remark: here is where we use that we have groups not monoids (you cannot avoid
       -- using both `k` and `k⁻¹` at this point).
-      suffices ⇑φ ⁻¹' (⇑φ '' U) = ⋃ k ∈ ker (φ : A →* B), (fun x ↦ x * k) ⁻¹' U by
+      suffices ⇑φ ⁻¹' ⇑φ '' U = ⋃ k ∈ ker (φ : A →* B), (fun x ↦ x * k) ⁻¹' U by
         exact this ▸ isOpen_biUnion (fun k _ ↦ Continuous.isOpen_preimage (by fun_prop) _ hU)
       ext x
       -- But this is an elementary calculation.
@@ -1334,6 +1334,12 @@ theorem isClosedEmbedding_embedProduct [T1Space α] [ContinuousMul α] :
     rw [range_embedProduct]
     refine .inter (isClosed_singleton.preimage ?_) (isClosed_singleton.preimage ?_) <;>
     fun_prop
+
+lemma _root_.Topology.IsClosedEmbedding.units_map [ContinuousMul α] [T1Space α] {f : α →* β}
+    (hf : IsClosedEmbedding f) : IsClosedEmbedding (map f) := by
+  refine .of_comp isEmbedding_embedProduct ?_
+  exact (hf.prodMap (opHomeomorph.isClosedEmbedding.comp
+    <| hf.comp opHomeomorph.symm.isClosedEmbedding)).comp isClosedEmbedding_embedProduct
 
 @[to_additive]
 instance [T1Space α] [ContinuousMul α] [CompactSpace α] : CompactSpace αˣ :=

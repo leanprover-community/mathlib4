@@ -32,7 +32,7 @@ epimorphism, see the file `Mathlib.AlgebraicGeometry.Sites.Fpqc`.
 
 -/
 
-@[expose] public section
+public section
 
 universe v u
 

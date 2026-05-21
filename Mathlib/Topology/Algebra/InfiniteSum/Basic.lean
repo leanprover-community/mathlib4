@@ -85,7 +85,7 @@ theorem HasProd.hasProd_of_prod_eq {g : γ → α}
     (h_eq : ∀ u : Finset γ, ∃ v : Finset β, ∀ v', v ⊆ v' →
       ∃ u', u ⊆ u' ∧ ∏ x ∈ u', g x = ∏ b ∈ v', f b)
     (hf : HasProd g a) : HasProd f a :=
-  le_trans (map_atTop_finset_prod_le_of_prod_eq h_eq) hf
+  le_trans (map_atTop_finsetProd_le_of_prod_eq h_eq) hf
 
 @[to_additive]
 theorem hasProd_iff_hasProd {g : γ → α}
@@ -221,7 +221,7 @@ protected theorem HasProd.map [CommMonoid γ] [TopologicalSpace γ] (hf : HasPro
 protected theorem Topology.IsInducing.hasProd_iff [CommMonoid γ] [TopologicalSpace γ] {G}
     [FunLike G α γ] [MonoidHomClass G α γ] {g : G} (hg : IsInducing g) (f : β → α) (a : α) :
     HasProd (g ∘ f) (g a) L ↔ HasProd f a L := by
-  simp_rw [HasProd, comp_apply, ← map_prod]
+  simp_rw [HasProd, comp_apply, ← _root_.map_prod]
   exact hg.tendsto_nhds_iff.symm
 
 @[to_additive]
@@ -256,12 +256,12 @@ lemma Topology.IsClosedEmbedding.map_tprod {ι α α' G : Type*}
   · by_cases h : Multipliable f L
     · exact h.map_tprod g hge.continuous
     · rw [tprod_eq_one_of_not_multipliable h, tprod_eq_one_of_not_multipliable, map_one]
-      contrapose! h
+      contrapose h
       -- need to show `g ∘ f` multipliable implies `g` multipliable
       simp only [Multipliable, HasProd] at h ⊢
       obtain ⟨b, hb⟩ := h
       obtain ⟨a, ha⟩ : b ∈ Set.range g :=
-        hge.isClosed_range.mem_of_tendsto hb (.of_forall <| by simp [← map_prod])
+        hge.isClosed_range.mem_of_tendsto hb (.of_forall <| by simp [← _root_.map_prod])
       use a
       simp [hge.tendsto_nhds_iff, Function.comp_def, ha, hb]
   · simpa [tprod_bot hL] using
@@ -288,7 +288,7 @@ lemma Topology.IsInducing.multipliable_iff_tprod_comp_mem_range [CommMonoid γ] 
     · by_cases hL : L.NeBot
       · exact ⟨_, hf.map_tprod g hg.continuous⟩
       · by_cases hfs : (mulSupport fun x ↦ g (f x)).Finite
-        · simp [tprod_bot hL, finprod_eq_prod _ hfs, ← map_prod]
+        · simp [tprod_bot hL, finprod_eq_prod _ hfs, ← _root_.map_prod]
         · exact ⟨1, by simp [tprod_bot hL, finprod_of_infinite_mulSupport hfs]⟩
   · rintro ⟨hgf, a, ha⟩
     use a
@@ -338,7 +338,7 @@ lemma Multipliable.pow (hf : Multipliable f L) (n : ℕ) : Multipliable (f · ^ 
 theorem hasProd_prod {f : γ → β → α} {a : γ → α} {s : Finset γ} :
     (∀ i ∈ s, HasProd (f i) (a i) L) → HasProd (fun b ↦ ∏ i ∈ s, f i b) (∏ i ∈ s, a i) L := by
   classical
-  exact Finset.induction_on s (by simp only [hasProd_one, prod_empty, forall_true_iff]) <| by
+  exact Finset.induction_on s (by simp) <| by
     simp +contextual only [mem_insert, forall_eq_or_imp, not_false_iff,
       prod_insert, and_imp]
     exact fun x s _ IH hx h ↦ hx.mul (IH h)
@@ -636,6 +636,42 @@ lemma tprod_extend_one {γ : Type*} {g : γ → β} (hg : Injective g) (f : γ �
     ∏' y, extend g f 1 y = ∏' x, f x := by
   have : mulSupport (extend g f 1) ⊆ Set.range g := mulSupport_subset_iff'.2 <| extend_apply' _ _
   simp_rw [← hg.tprod_eq this, hg.extend_apply]
+
+@[to_additive]
+lemma tprod_mulIndicator_of_disjoint_on_mulSupport_of_mem (s : γ → Set β) (f : β → α)
+    (i : β) (hi : i ∈ ⋃ d, s d) (hs : Pairwise (Disjoint on (fun j ↦ s j ∩ f.mulSupport))) :
+    ∏' d, (s d).mulIndicator f i = f i := by
+  obtain ⟨j, hj⟩ := Set.mem_iUnion.mp hi
+  rw [← tprod_subtype_eq_of_mulSupport_subset (s := {j})]
+  · aesop
+  · exact Set.mulSupport_subset_subsingleton_of_disjoint_on_mulSupport f hs i j hj
+
+@[to_additive]
+lemma tprod_mulIndicator_of_mem_union_disjoint (s : γ → Set β) (f : β → α)
+    (hs : Pairwise (Disjoint on s)) (i : β) (hi : i ∈ ⋃ d, s d) :
+    ∏' d, (s d).mulIndicator f i = f i :=
+  tprod_mulIndicator_of_disjoint_on_mulSupport_of_mem s f i hi (pairwise_disjoint_mono hs
+    <| fun _ _ hi ↦ hi.1)
+
+@[to_additive]
+lemma tprod_mulIndicator_of_notMem (s : γ → Set β) (f : β → α) (i : β) (hi : ∀ d, i ∉ s d) :
+    ∏' d, (s d).mulIndicator f i = 1 := by
+  aesop
+
+@[to_additive]
+lemma mulIndicator_iUnion_of_pairwise_disjoint_on_mulSupport (s : γ → Set β) (f : β → α)
+    (hs : Pairwise (Disjoint on (fun j ↦ s j ∩ f.mulSupport))) (i : β) :
+    (⋃ d, s d).mulIndicator f i = ∏' d, (s d).mulIndicator f i := by
+  by_cases h₀ : i ∈ ⋃ d, s d
+  · simp only [h₀, hs, Set.mulIndicator_of_mem, tprod_mulIndicator_of_disjoint_on_mulSupport_of_mem]
+  · aesop
+
+@[to_additive]
+lemma mulIndicator_iUnion_of_pairwise_disjoint (s : γ → Set β) (hs : Pairwise (Disjoint on s))
+    (f : β → α) : (⋃ d, s d).mulIndicator f = fun i ↦ ∏' d, (s d).mulIndicator f i := by
+  ext i
+  exact mulIndicator_iUnion_of_pairwise_disjoint_on_mulSupport s f (pairwise_disjoint_mono hs
+    <| fun _ _ hi ↦ hi.1) i
 
 variable [T2Space α]
 

@@ -310,7 +310,7 @@ theorem colorable_set_nonempty_of_colorable {n : ℕ} (hc : G.Colorable n) :
   ⟨n, hc⟩
 
 theorem chromaticNumber_bddBelow : BddBelow { n : ℕ | G.Colorable n } :=
-  ⟨0, fun _ _ => zero_le _⟩
+  ⟨0, fun _ _ => zero_le⟩
 
 theorem Colorable.chromaticNumber_le {n : ℕ} (hc : G.Colorable n) : G.chromaticNumber ≤ n := by
   rw [hc.chromaticNumber_eq_sInf]
@@ -602,7 +602,7 @@ end completeMultipartiteGraph
 /-- If `H` is not `n`-colorable and `G` is `n`-colorable, then `G` is `H.Free`. -/
 theorem free_of_colorable {W : Type*} {H : SimpleGraph W}
     (nhc : ¬H.Colorable n) (hc : G.Colorable n) : H.Free G := by
-  contrapose! nhc with hc'
+  contrapose nhc with hc'
   exact ⟨hc.some.comp hc'.some.toHom⟩
 
 end SimpleGraph

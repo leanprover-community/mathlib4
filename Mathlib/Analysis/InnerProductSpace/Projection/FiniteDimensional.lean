@@ -248,7 +248,6 @@ theorem OrthogonalFamily.isInternal_iff_of_isComplete [DecidableEq ι] {V : ι �
   simp only [DirectSum.isInternal_submodule_iff_iSupIndep_and_iSup_eq_top, hV.independent,
     true_and, orthogonal_eq_bot_iff]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- An orthogonal family of subspaces of `E` satisfies `DirectSum.IsInternal` (that is,
 they provide an internal direct sum decomposition of `E`) if and only if their span has trivial
 orthogonal complement. -/

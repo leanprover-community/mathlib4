@@ -327,6 +327,23 @@ theorem IsContained.max_degree_le [Fintype V] [Fintype W] [DecidableRel G.Adj] [
   have ⟨f⟩ := h
   exact f.max_degree_le
 
+@[gcongr]
+lemma maxDegree_mono {H : SimpleGraph V} [Fintype V] [DecidableRel G.Adj] [DecidableRel H.Adj]
+    (hle : G ≤ H) : G.maxDegree ≤ H.maxDegree :=
+  IsContained.of_le hle |>.max_degree_le
+
+theorem Copy.minDegree_le [Fintype V] [Fintype W] [DecidableRel G.Adj] [DecidableRel H.Adj]
+    {f : Copy G H} (hf : Function.Surjective f) : G.minDegree ≤ H.minDegree := by
+  cases isEmpty_or_nonempty W
+  · simp [Function.isEmpty f]
+  refine H.le_minDegree_of_forall_le_degree _ fun w ↦ ?_
+  obtain ⟨v, rfl⟩ := hf w
+  grw [← f.degree_le, ← minDegree_le_degree]
+
+theorem Hom.minDegree_le [Fintype V] [Fintype W] [DecidableRel G.Adj] [DecidableRel H.Adj]
+    {f : G →g H} (hf : Function.Bijective f) : G.minDegree ≤ H.minDegree :=
+  Copy.minDegree_le (f := ⟨f, hf.injective⟩) hf.surjective
+
 end IsContained
 
 section Free
@@ -372,16 +389,25 @@ def IsIndContained (G : SimpleGraph V) (H : SimpleGraph W) : Prop := Nonempty (G
 
 @[inherit_doc] scoped infixl:50 " ⊴ " => SimpleGraph.IsIndContained
 
-protected lemma IsIndContained.isContained : G ⊴ H → G ⊑ H := fun ⟨f⟩ ↦ ⟨f.toCopy⟩
+protected lemma Copy.isContained (f : Copy G H) : G ⊑ H := ⟨f⟩
+
+protected lemma Embedding.isIndContained (f : G ↪g H) : G ⊴ H := ⟨f⟩
+
+protected lemma Embedding.isContained (f : G ↪g H) : G ⊑ H := f.toCopy.isContained
+
+protected lemma IsIndContained.isContained : G ⊴ H → G ⊑ H := fun ⟨f⟩ ↦ f.isContained
+
+/-- If `G` is isomorphic to `H`, then `G` is contained in `H`. -/
+protected lemma Iso.isContained (e : G ≃g H) : G ⊑ H := e.toCopy.isContained
+
+/-- If `G` is isomorphic to `H`, then `H` is contained in `G`. -/
+protected lemma Iso.isContained' (e : G ≃g H) : H ⊑ G := e.symm.isContained
 
 /-- If `G` is isomorphic to `H`, then `G` is inducingly contained in `H`. -/
-protected lemma Iso.isIndContained (e : G ≃g H) : G ⊴ H := ⟨e⟩
+protected lemma Iso.isIndContained (e : G ≃g H) : G ⊴ H := e.toEmbedding.isIndContained
 
 /-- If `G` is isomorphic to `H`, then `H` is inducingly contained in `G`. -/
 protected lemma Iso.isIndContained' (e : G ≃g H) : H ⊴ G := e.symm.isIndContained
-
-/-- If `G` is isomorphic to `H`, then `G` is contained in `H`. -/
-protected lemma Iso.isContained (e : G ≃g H) : G ⊑ H := ⟨e.toCopy⟩
 
 protected lemma Subgraph.IsInduced.isIndContained {G' : G.Subgraph} (hG' : G'.IsInduced) :
     G'.coe ⊴ G :=
@@ -418,6 +444,9 @@ lemma isIndContained_iff_exists_iso_subgraph :
 
 alias ⟨IsIndContained.exists_iso_subgraph, IsIndContained.of_exists_iso_subgraph⟩ :=
   isIndContained_iff_exists_iso_subgraph
+
+theorem isIndContained_iff_exists_iso_induce : G ⊴ H ↔ ∃ s, Nonempty (G ≃g H.induce s) :=
+  ⟨fun ⟨f⟩ ↦ ⟨Set.range f, ⟨f.isoInduceRange⟩⟩, fun ⟨s, ⟨f⟩⟩ ↦ ⟨.comp (.induce s) f⟩⟩
 
 @[simp] lemma top_isIndContained_iff_top_isContained :
     (⊤ : SimpleGraph V) ⊴ H ↔ (⊤ : SimpleGraph V) ⊑ H :=

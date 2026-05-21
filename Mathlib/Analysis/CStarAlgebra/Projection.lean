@@ -97,19 +97,7 @@ lemma le_tfae (hp : IsStarProjection p) (hq : IsStarProjection q) :
     p * q = p,
     IsStarProjection (q - p),
     IsIdempotentElem (q - p)] := by
-  tfae_have 1 → 2 := fun h ↦ by
-    have key : p * (q - p) * p = 0 := by
-      simp only [sub_mul, mul_sub, hp.isIdempotentElem.eq, sub_eq_zero]
-      refine le_antisymm ?_ <| by
-        simpa [hp.isIdempotentElem.eq] using conjugate_le_conjugate_of_nonneg h hp.nonneg
-      have := by simpa [hp.inr.isIdempotentElem.eq, ← Unitization.inr_mul]
-        using conjugate_le_conjugate_of_nonneg hq.inr.le_one (hp.inr (R := ℂ)).nonneg
-      rwa [← Unitization.inr_le_iff (p * q * p) p ?_ hp.isSelfAdjoint]
-      exact hp.isSelfAdjoint.conjugate_nonneg hq.nonneg |>.isSelfAdjoint
-    rw [← norm_eq_zero, hp.isSelfAdjoint.norm_mul_mul_self_of_nonneg _ (by simpa),
-      sq_eq_zero_iff, norm_eq_zero] at key
-    simpa [← mul_assoc, CFC.sqrt_mul_sqrt_self (q - p) (by simpa),
-      sub_mul, sub_eq_zero, hp.isIdempotentElem.eq] using congr(CFC.sqrt (q - p) * $key)
+  tfae_have 1 → 2 := fun h ↦ (hq.mul_right_and_mul_left_of_nonneg_of_le hp.nonneg h).2
   tfae_have 2 → 3 := fun h ↦ by
     simpa [hp.isSelfAdjoint.star_eq, hq.isSelfAdjoint.star_eq] using congr(star $h)
   tfae_have 3 → 4 := hp.sub_of_mul_eq_left hq

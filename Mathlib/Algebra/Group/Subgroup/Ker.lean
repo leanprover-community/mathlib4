@@ -79,7 +79,8 @@ theorem mem_range {f : G →* N} {y : N} : y ∈ f.range ↔ ∃ x, f x = y :=
 theorem range_eq_map (f : G →* N) : f.range = (⊤ : Subgroup G).map f := by ext; simp
 
 @[to_additive]
-instance range_isMulCommutative {G : Type*} [CommGroup G] {N : Type*} [Group N] (f : G →* N) :
+instance _root_.Subgroup.range_isMulCommutative {G : Type*} [Group G] [IsMulCommutative G]
+    {N : Type*} [Group N] (f : G →* N) :
     IsMulCommutative f.range :=
   range_eq_map f ▸ Subgroup.map_isMulCommutative ⊤ f
 
@@ -557,9 +558,6 @@ theorem subgroupOf_sup {A A' B : Subgroup G} (hA : A ≤ B) (hA' : A' ≤ B) :
       (le_trans (ker_le_comap B.subtype _) le_sup_left) ?_
   simp only [subgroupOf, map_comap_eq, map_sup, range_subtype]
   rw [inf_of_le_right (sup_le hA hA'), inf_of_le_right hA', inf_of_le_right hA]
-
-@[deprecated "Use in reverse direction." (since := "2025-11-03")] alias sup_subgroupOf_eq :=
-  subgroupOf_sup
 
 @[to_additive]
 theorem codisjoint_subgroupOf_sup (H K : Subgroup G) :

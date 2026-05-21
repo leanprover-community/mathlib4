@@ -452,7 +452,6 @@ protected theorem isBoundedSMul [Fact (1 ≤ p)] : IsBoundedSMul 𝕜 (Lp.simple
 
 attribute [local instance] simpleFunc.isBoundedSMul
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `E` is a normed space, `Lp.simpleFunc E p μ` is a normed space. Not declared as an
 instance as it is (as of writing) used only in the construction of the Bochner integral. -/
 @[instance_reducible]
@@ -692,8 +691,7 @@ variable (α E 𝕜)
 /-- The embedding of Lp simple functions into Lp functions, as a continuous linear map. -/
 def coeToLp : Lp.simpleFunc E p μ →L[𝕜] Lp E p μ :=
   { AddSubgroup.subtype (Lp.simpleFunc E p μ) with
-    map_smul' := fun _ _ => rfl
-    cont := Lp.simpleFunc.uniformContinuous.continuous }
+    map_smul' _ _ := rfl }
 
 end CoeToLp
 

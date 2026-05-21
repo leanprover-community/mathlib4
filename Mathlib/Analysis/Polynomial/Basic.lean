@@ -374,7 +374,7 @@ end Cobounded
 lemma finite_abs_eval_le_of_degree_lt {P Q : ℤ[X]} (h : Q.degree < P.degree) :
     {x | |P.eval x| ≤ |Q.eval x|}.Finite := by
   have o := isLittleO_cobounded_of_degree_lt h
-  rw [Int.cobounded_eq, ← Int.cofinite_eq] at o
+  rw [IsOrderBornology.cobounded_eq, ← Int.cofinite_eq] at o
   have nr := eventually_cofinite_not_isRoot (ne_zero_of_degree_gt h)
   have key := o.eventuallyLT_norm_of_eventually_pos (nr.congr (.of_forall (by simp)))
   simp_rw [eventually_cofinite, not_lt, Int.norm_eq_abs] at key
