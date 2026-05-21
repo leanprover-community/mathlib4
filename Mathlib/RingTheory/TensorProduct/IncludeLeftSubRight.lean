@@ -136,6 +136,9 @@ lemma of_isEffective_tensorProduct_of_faithfullyFlat
       ((TensorProduct.AlgebraTensorModule.distribBaseChange R T S S).injective) |>.mpr ‹_›
   · ext
     simp [← Algebra.TensorProduct.linearMap_comp_rid]
+    -- The goal is TensorProduct.rid .. = TensorProduct.AlgebraTensorModule.rid ..
+    -- TODO: merge both into one definition, and remove the rfl.
+    rfl
   · ext
     simp
 

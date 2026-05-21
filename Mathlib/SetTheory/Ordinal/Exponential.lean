@@ -490,8 +490,8 @@ theorem lt_omega0_opow {a b : Ordinal} (hb : b ≠ 0) :
   refine ⟨fun ha ↦ ⟨_, lt_log_of_lt_opow hb ha, ?_⟩,
     fun ⟨c, hc, n, hn⟩ ↦ hn.trans (omega0_opow_mul_nat_lt hc n)⟩
   obtain ⟨n, hn⟩ := lt_omega0.1 (div_opow_log_lt a one_lt_omega0)
-  use n.succ
-  rw [natCast_succ, ← hn]
+  use n + 1
+  rw [Nat.cast_add_one, ← hn]
   exact lt_mul_succ_div a (opow_ne_zero _ omega0_ne_zero)
 
 theorem lt_omega0_opow_succ {a b : Ordinal} : a < ω ^ succ b ↔ ∃ n : ℕ, a < ω ^ b * n := by

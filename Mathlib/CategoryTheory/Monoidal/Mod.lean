@@ -66,6 +66,7 @@ class ModObj (X : D) where
 
 attribute [to_additive existing (attr := reassoc (attr := simp))] ModObj.mul_smul ModObj.one_smul
 
+
 namespace AddModObj
 
 @[inherit_doc] scoped[CategoryTheory.AddMonObj] notation "δ" => AddModObj.vadd
@@ -117,6 +118,51 @@ theorem ext {X : C} (h₁ h₂ : ModObj M X) (H : h₁.smul = h₂.smul) :
   cases h₂
   subst H
   rfl
+
+open MonoidalLeftAction in
+/-- Transfer a `MulActionObj` along isomorphisms. -/
+@[to_additive (attr := simps! -isSimp, implicit_reducible)
+/-- Transfer an `AddActionObj` along isomorphisms. -/]
+def ofIso {X : D} {N : C} [MonObj N] (e₁ : M ≅ N) [IsMonHom e₁.hom]
+      {Y : D} (e₂ : X ≅ Y) [ModObj M X] :
+    ModObj N Y where
+  smul := (e₁.inv ⊙ₗₘ e₂.inv) ≫ γ ≫ e₂.hom
+  one_smul := by
+    have : η ⊵ₗ Y ≫ (e₁.inv ⊙ₗₘ e₂.inv) = _ ⊴ₗ e₂.inv ≫ (η ≫ e₁.inv) ⊵ₗ X := by
+      rw [actionHom_def', comp_actionHomLeft, action_exchange_assoc]
+    simp [reassoc_of% this]
+  mul_smul := by
+    have : μ[N] ⊵ₗ Y ≫ (e₁.inv ⊙ₗₘ e₂.inv) =
+        ((e₁.inv ⊗ₘ e₁.inv) ⊙ₗₘ e₂.inv) ≫ μ[M] ⊵ₗ X := by
+      rw [actionHom_def', action_exchange, ← comp_actionHomLeft_assoc, IsMonHom.mul_hom,
+        comp_actionHomLeft, Category.assoc, ← action_exchange, actionHom_def']
+      nth_rw 2 [action_exchange]
+      rw [Category.assoc]
+    rw [reassoc_of% this]
+    have : (αₗ N M X).inv ≫ (e₁.inv ▷ M) ⊵ₗ X ≫ (αₗ M M X).hom ≫ M ⊴ₗ smul =
+        N ⊴ₗ γ ≫ e₁.inv ⊵ₗ X := by
+      rw [← actionHomLeft_action_assoc, action_exchange]
+    simp [tensorHom_def', actionHom_def', mul_smul_assoc, reassoc_of% this]
+
+section SelfAction
+
+variable (X : C) [ModObj M X]
+
+@[to_additive (attr := reassoc (attr := simp))]
+lemma one_smul_self (M : C) [MonObj M] (X : C) [ModObj M X] :
+    η ▷ X ≫ γ[M, X] = (λ_ X).hom :=
+  ModObj.one_smul (M := M) X
+
+@[to_additive (attr := reassoc (attr := simp))]
+lemma mul_smul_self (M : C) [MonObj M] (X : C) [ModObj M X] :
+    (μ ▷ X) ≫ γ[M, X] = (α_ _ _ _).hom ≫ (M ◁ γ[M, X]) ≫ γ[M, X] :=
+  ModObj.mul_smul (M := M) X
+
+@[to_additive (attr := reassoc)]
+theorem mul_smul_self_flip : M ◁ γ[M, X] ≫ γ[M, X] = (α_ M M X).inv ≫ (μ ▷ X) ≫ γ[M, X] := by
+  simp
+
+end SelfAction
 
 end ModObj
 
