@@ -38,7 +38,7 @@ but at present we are a long way off.
 
 @[expose] public section
 
-open scoped Real BigOperators
+open scoped Real
 open Nat
 
 /-- The numerator of the nth term in Chudnovsky's series -/

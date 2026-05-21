@@ -32,7 +32,7 @@ As product filter we want to have `F` as result.
 
 -/
 
-@[expose] public section
+public section
 
 open Set
 
@@ -239,7 +239,7 @@ theorem mem_prod_iff_left {s : Set (α × β)} :
     s ∈ f ×ˢ g ↔ ∃ t ∈ f, ∀ᶠ y in g, ∀ x ∈ t, (x, y) ∈ s := by
   simp only [mem_prod_iff, prod_subset_iff]
   refine exists_congr fun _ => Iff.rfl.and <| Iff.trans ?_ exists_mem_subset_iff
-  exact exists_congr fun _ => Iff.rfl.and forall₂_swap
+  exact exists_congr fun _ => Iff.rfl.and forall₂_comm
 
 theorem mem_prod_iff_right {s : Set (α × β)} :
     s ∈ f ×ˢ g ↔ ∃ t ∈ g, ∀ᶠ x in f, ∀ y ∈ t, (x, y) ∈ s := by
@@ -462,7 +462,7 @@ theorem compl_mem_coprod {s : Set (α × β)} {la : Filter α} {lb : Filter β} 
     sᶜ ∈ la.coprod lb ↔ (Prod.fst '' s)ᶜ ∈ la ∧ (Prod.snd '' s)ᶜ ∈ lb := by
   simp only [Filter.coprod, mem_sup, compl_mem_comap]
 
-@[mono]
+@[gcongr, mono]
 theorem coprod_mono {f₁ f₂ : Filter α} {g₁ g₂ : Filter β} (hf : f₁ ≤ f₂) (hg : g₁ ≤ g₂) :
     f₁.coprod g₁ ≤ f₂.coprod g₂ :=
   sup_le_sup (comap_mono hf) (comap_mono hg)

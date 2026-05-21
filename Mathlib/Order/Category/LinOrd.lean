@@ -70,7 +70,7 @@ lemma coe_comp {X Y Z : LinOrd} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z
 
 @[simp]
 lemma forget_map {X Y : LinOrd} (f : X ⟶ Y) :
-    (forget LinOrd).map f = f := rfl
+    (forget LinOrd).map f = (f : _ → _) := rfl
 
 @[ext]
 lemma ext {X Y : LinOrd} {f g : X ⟶ Y} (w : ∀ x : X, f x = g x) : f = g :=

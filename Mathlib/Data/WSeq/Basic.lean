@@ -578,7 +578,6 @@ theorem toList'_think (l : List α) (s : WSeq α) :
         | some (some a, s') => Sum.inr (a::l, s')) (l, s)).think :=
   destruct_eq_think <| by simp [think]
 
-set_option linter.flexible false in -- TODO: fix non-terminal simp
 theorem toList'_map (l : List α) (s : WSeq α) :
     Computation.corec (fun ⟨l, s⟩ =>
       match Seq.destruct s with
@@ -601,7 +600,8 @@ theorem toList'_map (l : List α) (s : WSeq α) :
               | some (some a, s') => Sum.inr (a::l, s')) (l', s)))
       ?_ ⟨[], s, rfl, rfl⟩
   intro s1 s2 h; rcases h with ⟨l', s, h⟩; rw [h.left, h.right]
-  induction s using WSeq.recOn <;> simp [nil, cons, think]
+  induction s using WSeq.recOn
+  case nil => simp
   case cons a s => refine ⟨a :: l', s, ?_, ?_⟩ <;> simp
   case think s => refine ⟨l', s, ?_, ?_⟩ <;> simp
 
@@ -687,6 +687,7 @@ theorem map_comp (f : α → β) (g : β → γ) (s : WSeq α) : map (g ∘ f) s
 theorem mem_map (f : α → β) {a : α} {s : WSeq α} : a ∈ s → f a ∈ map f s :=
   Seq.mem_map (Option.map f)
 
+set_option backward.isDefEq.respectTransparency false in
 set_option linter.flexible false in -- TODO: fix non-terminal simp
 -- The converse is not true without additional assumptions
 theorem exists_of_mem_join {a : α} : ∀ {S : WSeq (WSeq α)}, a ∈ join S → ∃ s, s ∈ S ∧ a ∈ s := by
@@ -729,7 +730,6 @@ theorem exists_of_mem_bind {s : WSeq α} {f : α → WSeq β} {b} (h : b ∈ bin
   let ⟨a, as, e⟩ := exists_of_mem_map tm
   ⟨a, as, by rwa [e]⟩
 
-set_option linter.flexible false in -- TODO: fix non-terminal simp
 theorem destruct_map (f : α → β) (s : WSeq α) :
     destruct (map f s) = Computation.map (Option.map (Prod.map f (map f))) (destruct s) := by
   apply
@@ -740,8 +740,9 @@ theorem destruct_map (f : α → β) (s : WSeq α) :
   · intro c1 c2 h
     obtain ⟨s, h⟩ := h
     rw [h.left, h.right]
-    induction s using WSeq.recOn <;> simp
-    case think s => exact ⟨s, rfl, rfl⟩
+    induction s using WSeq.recOn
+    case nil | cons => simp
+    case think s => exact ⟨s, by simp⟩
   · exact ⟨s, rfl, rfl⟩
 
 /-- auxiliary definition of `destruct_append` over weak sequences -/
@@ -750,7 +751,6 @@ def destruct_append.aux (t : WSeq α) : Option (α × WSeq α) → Computation (
   | none => destruct t
   | some (a, s) => Computation.pure (some (a, append s t))
 
-set_option linter.flexible false in -- TODO: fix non-terminal simp
 theorem destruct_append (s t : WSeq α) :
     destruct (append s t) = (destruct s).bind (destruct_append.aux t) := by
   apply
@@ -759,11 +759,13 @@ theorem destruct_append (s t : WSeq α) :
         ∃ s t, c1 = destruct (append s t) ∧ c2 = (destruct s).bind (destruct_append.aux t))
       _ ⟨s, t, rfl, rfl⟩
   intro c1 c2 h; rcases h with ⟨s, t, h⟩; rw [h.left, h.right]
-  induction s using WSeq.recOn <;> simp
+  induction s using WSeq.recOn
   case nil =>
-    induction t using WSeq.recOn <;> simp
-    case think t => refine ⟨nil, t, ?_, ?_⟩ <;> simp
-  case think s => exact ⟨s, t, rfl, rfl⟩
+    induction t using WSeq.recOn
+    case nil | cons => simp
+    case think t => exact ⟨nil, t, by simp⟩
+  case cons => simp
+  case think s => exact ⟨s, t, by simp⟩
 
 /-- auxiliary definition of `destruct_join` over weak sequences -/
 @[simp]
@@ -771,7 +773,6 @@ def destruct_join.aux : Option (WSeq α × WSeq (WSeq α)) → Computation (Opti
   | none => Computation.pure none
   | some (s, S) => (destruct (append s (join S))).think
 
-set_option linter.flexible false in -- TODO: fix non-terminal simp
 theorem destruct_join (S : WSeq (WSeq α)) :
     destruct (join S) = (destruct S).bind destruct_join.aux := by
   apply
@@ -784,8 +785,9 @@ theorem destruct_join (S : WSeq (WSeq α)) :
     match c1, c2, h with
     | c, _, Or.inl <| rfl => by cases c.destruct <;> simp
     | _, _, Or.inr ⟨S, rfl, rfl⟩ => by
-      induction S using WSeq.recOn <;> simp
-      case think S => refine Or.inr ⟨S, rfl, rfl⟩
+      induction S using WSeq.recOn
+      case nil | cons => simp
+      case think S => exact Or.inr ⟨S, by simp⟩
 
 set_option linter.flexible false in -- TODO: fix non-terminal simp
 @[simp]

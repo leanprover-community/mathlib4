@@ -144,7 +144,7 @@ theorem lintegral_prod_eq_prod_lintegral_of_indepFun {ι : Type*}
     apply lintegral_mul_eq_lintegral_mul_lintegral_of_indepFun'
     · exact (x_mea j).aemeasurable
     · exact s.aemeasurable_prod (fun i _ ↦ (x_mea i).aemeasurable)
-    · exact (iIndepFun.indepFun_finset_prod_of_notMem hX x_mea hj).symm
+    · exact (iIndepFun.indepFun_finsetProd_of_notMem hX x_mea hj).symm
 
 /-- The product of two independent, integrable, real-valued random variables is integrable. -/
 theorem IndepFun.integrable_mul {β : Type*} [MeasurableSpace β] {X Y : Ω → β}
@@ -254,18 +254,6 @@ lemma IndepFun.integral_fun_mul_eq_mul_integral
     (hXY : X ⟂ᵢ[μ] Y) (hX : AEStronglyMeasurable X μ) (hY : AEStronglyMeasurable Y μ) :
     ∫ ω, X ω * Y ω ∂μ = μ[X] * μ[Y] :=
   hXY.integral_mul_eq_mul_integral hX hY
-
-@[deprecated (since := "2025-07-30")] alias IndepFun.integral_mul_of_nonneg :=
-  IndepFun.integral_mul_eq_mul_integral
-
-@[deprecated (since := "2025-07-30")] alias IndepFun.integral_mul_of_integrable :=
-  IndepFun.integral_mul_eq_mul_integral
-
-@[deprecated (since := "2025-07-30")] alias IndepFun.integral_mul :=
-  IndepFun.integral_mul_eq_mul_integral
-
-@[deprecated (since := "2025-07-30")] alias IndepFun.integral_mul' :=
-  IndepFun.integral_fun_mul_eq_mul_integral
 
 /-- Independence of functions `f` and `g` into arbitrary types is characterized by the relation
   `E[(φ ∘ f) * (ψ ∘ g)] = E[φ ∘ f] * E[ψ ∘ g]` for all measurable `φ` and `ψ` with values in `ℝ`

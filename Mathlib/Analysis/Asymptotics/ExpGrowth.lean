@@ -18,7 +18,7 @@ versions, using a `liminf` and a `limsup` respectively.
 
 - `expGrowthInf`, `expGrowthSup`: respectively, `liminf` and `limsup` of `log (u n) / n`.
 - `expGrowthInfTopHom`, `expGrowthSupBotHom`: the functions `expGrowthInf`, `expGrowthSup`
-as homomorphisms preserving finitary `Inf`/`Sup` respectively.
+  as homomorphisms preserving finitary `Inf`/`Sup` respectively.
 
 ## Tags
 

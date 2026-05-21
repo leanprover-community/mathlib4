@@ -6,6 +6,7 @@ Authors: Jovan Gerbscheid
 module
 
 public import Mathlib.Tactic.Translate.Core
+public meta import Mathlib.Tactic.Translate.Core
 
 /-!
 # Tagging of unfold boundaries for translation attributes
@@ -50,34 +51,39 @@ def elabInsertCastAux (declName : Name) (castKind : CastKind) (stx : Term) (t : 
     CommandElabM (Name × Name) :=
   Command.liftTermElabM do withDeclNameForAuxNaming declName do withExporting do
   let info ← getConstInfoDefn declName
+  let addDecl (name : Name) (type value : Expr) : MetaM Unit := do
+    addDecl <| ←
+      if castKind matches .eq then
+        mkThmOrUnsafeDef { name, type, value, levelParams := info.levelParams }
+      else
+        .defnDecl <$> mkDefinitionValInferringUnsafe name info.levelParams type value .opaque
+  let name ← mkAuxDeclName ((t.attrName.appendBefore "_").appendAfter "_cast")
   -- To obtain the unfolded form of `declName`, we telescope into its value.
-  lambdaTelescope (cleanupAnnotations := true) info.value fun xs body => do
-    let addDecl (name : Name) (type value : Expr) : MetaM Unit := do
-      let type ← mkForallFVars xs type
-      let value ← mkLambdaFVars xs value
-      addDecl <| ←
-        if castKind matches .eq then
-          mkThmOrUnsafeDef { name, type, value, levelParams := info.levelParams }
-        else
-          .defnDecl <$> mkDefinitionValInferringUnsafe name info.levelParams type value .opaque
+  let (type, numFVars) ← lambdaTelescope (cleanupAnnotations := true) info.value fun xs body => do
     -- First, create the casting theorem/def that is proved by rfl/id respectively.
     let lhs := mkAppN (.const info.name <| info.levelParams.map mkLevelParam) xs
-    let name ← mkAuxDeclName ((t.attrName.appendBefore "_").appendAfter "_cast")
-    addDecl name (← castKind.mkRel lhs body) (← castKind.mkProof lhs)
-    -- Then, create the translated version, using `stx` to construct the value.
-    let newLhs ← applyReplacementFun t lhs
-    let newBody ← applyReplacementFun t body
-    let newType ← castKind.mkRel newLhs newBody
+    let type ← mkForallFVars xs (← castKind.mkRel lhs body)
+    let value ← mkLambdaFVars xs (← castKind.mkProof lhs)
+    addDecl name type value
+    return (type, xs.size)
+  -- Then, create the translated version, using `stx` to construct the value.
+  let (newType, _) ← (applyReplacementFun t type).run #[] #[]
+  let newValue ← forallBoundedTelescope newType numFVars fun xs goalType ↦ do
     -- Make the goal easier to prove by unfolding the new lhs
-    let newType' ← castKind.mkRel ((← unfoldDefinition? newLhs).getD newLhs) newBody
-    let newValue ← elabTermEnsuringType stx newType' <* synthesizeSyntheticMVarsNoPostponing
-    let newName ← mkAuxDeclName ((t.attrName.appendBefore "_").appendAfter "_cast")
-    addDecl newName newType (← instantiateMVars newValue)
-    -- Now add the translation attribute to relate the two new declarations
-    let relevantArg? := (t.translations.find? (← getEnv) declName).map (·.relevantArg)
-    _ ← addTranslationAttr t name
-      { tgt := newName, existing := true, ref := .missing, relevantArg? }
-    return (name, newName)
+    let goalType := (← unfoldLHS? castKind goalType).getD goalType
+    let newValue ← elabTermEnsuringType stx goalType <* synthesizeSyntheticMVarsNoPostponing
+    mkLambdaFVars xs (← instantiateMVars newValue)
+  let newName ← mkAuxDeclName ((t.attrName.appendBefore "_").appendAfter "_cast")
+  addDecl newName newType newValue
+  -- Now add the translation attribute to relate the two new declarations
+  _ ← addTranslationAttr t name { tgt := newName, existing := true, ref := .missing }
+  return (name, newName)
+where
+  unfoldLHS? : CastKind → Expr → OptionT TermElabM Expr
+  | .eq, mkApp2 eq lhs body => return mkApp2 eq (← .mk <| unfoldDefinition? lhs) body
+  | .unfoldFun, .forallE n lhs body bi => return .forallE n (← .mk <| unfoldDefinition? lhs) body bi
+  | .refoldFun, .forallE n body lhs bi => return .forallE n body (← .mk <| unfoldDefinition? lhs) bi
+  | _, _ => .fail
 
 /-- The `insert_cast foo := ...` command should be used when the translation of some
 definition `foo` is not definitionally equal to the translation of its value.

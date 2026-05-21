@@ -24,9 +24,10 @@ elab "#check_title " title:str : command => do
 
 /--
 info: Message: 'error: the PR title should be of the form
-  abbrev: main title
+  kind: main title
 or
-  abbrev(scope): main title'
+  kind(scope): main title
+Allowed values for `kind` are [feat, chore, perf, refactor, style, fix, doc, test, ci]'
 -/
 #guard_msgs in
 #check_title "fsdfs: bad title"

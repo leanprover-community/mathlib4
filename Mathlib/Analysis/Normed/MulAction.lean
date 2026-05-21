@@ -20,7 +20,7 @@ multiplication. This allows downstream files to write general results about `IsB
 then deduce `const_mul` and `mul_const` results as an immediate corollary.
 -/
 
-@[expose] public section
+public section
 
 
 variable {α β : Type*}
@@ -43,7 +43,7 @@ lemma enorm_smul_le : ‖r • x‖ₑ ≤ ‖r‖ₑ * ‖x‖ₑ := by
   simpa [enorm, ← ENNReal.coe_mul] using nnnorm_smul_le ..
 
 theorem dist_smul_le (s : α) (x y : β) : dist (s • x) (s • y) ≤ ‖s‖ * dist x y := by
-  simpa only [dist_eq_norm, sub_zero] using dist_smul_pair s x y
+  simpa only [dist_eq_norm_neg_add, add_zero, norm_neg] using dist_smul_pair s x y
 
 theorem nndist_smul_le (s : α) (x y : β) : nndist (s • x) (s • y) ≤ ‖s‖₊ * nndist x y :=
   dist_smul_le s x y
@@ -131,8 +131,8 @@ instance (priority := 100) : ENormSMulClass α β where
   enorm_smul r x := by simp [enorm, nnnorm_smul]
 
 instance Pi.instNormSMulClass {ι : Type*} {β : ι → Type*} [Fintype ι]
-    [SeminormedRing α] [∀ i, SeminormedAddGroup (β i)] [∀ i, SMul α (β i)]
-    [∀ i, NormSMulClass α (β i)] : NormSMulClass α (Π i, β i) where
+    [∀ i, SeminormedAddGroup (β i)] [∀ i, SMul α (β i)] [∀ i, NormSMulClass α (β i)] :
+    NormSMulClass α (Π i, β i) where
   norm_smul r x := by
     simp [nnnorm_def, ← coe_nnnorm, nnnorm_smul, ← NNReal.coe_mul, NNReal.mul_finset_sup]
 

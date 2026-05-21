@@ -25,7 +25,7 @@ We show that the following are analytic:
 
 noncomputable section
 
-open scoped Topology
+open scoped Topology Ring
 open Filter Asymptotics ENNReal NNReal
 
 variable {α : Type*}
@@ -804,7 +804,7 @@ lemma formalMultilinearSeries_geometric_radius [NormOneClass A] :
     FormalMultilinearSeries.ofScalars_radius_eq_of_tendsto A _ one_ne_zero (by simp)
 
 lemma hasFPowerSeriesOnBall_inverse_one_sub [HasSummableGeomSeries A] :
-    HasFPowerSeriesOnBall (fun x : A ↦ Ring.inverse (1 - x))
+    HasFPowerSeriesOnBall (fun x : A ↦ (1 - x)⁻¹ʳ)
       (formalMultilinearSeries_geometric 𝕜 A) 0 1 := by
   constructor
   · exact one_le_formalMultilinearSeries_geometric_radius 𝕜 A
@@ -818,7 +818,7 @@ lemma hasFPowerSeriesOnBall_inverse_one_sub [HasSummableGeomSeries A] :
 
 @[fun_prop]
 lemma analyticAt_inverse_one_sub [HasSummableGeomSeries A] :
-    AnalyticAt 𝕜 (fun x : A ↦ Ring.inverse (1 - x)) 0 :=
+    AnalyticAt 𝕜 (fun x : A ↦ (1 - x)⁻¹ʳ) 0 :=
   ⟨_, ⟨_, hasFPowerSeriesOnBall_inverse_one_sub 𝕜 A⟩⟩
 
 end Geometric
@@ -831,9 +831,9 @@ lemma analyticAt_inverse [HasSummableGeomSeries A] (z : Aˣ) :
   rcases subsingleton_or_nontrivial A with hA | hA
   · convert analyticAt_const (v := (0 : A))
   · let f1 : A → A := fun a ↦ a * z.inv
-    let f2 : A → A := fun b ↦ Ring.inverse (1 - b)
+    let f2 : A → A := fun b ↦ (1 - b)⁻¹ʳ
     let f3 : A → A := fun c ↦ 1 - z.inv * c
-    have feq : ∀ᶠ y in 𝓝 (z : A), (f1 ∘ f2 ∘ f3) y = Ring.inverse y := by
+    have feq : ∀ᶠ y in 𝓝 (z : A), (f1 ∘ f2 ∘ f3) y = y⁻¹ʳ := by
       have : Metric.ball (z : A) (‖(↑z⁻¹ : A)‖⁻¹) ∈ 𝓝 (z : A) := by
         apply Metric.ball_mem_nhds
         simp
@@ -972,19 +972,13 @@ theorem analyticAt_iff_analytic_smul [Module 𝕝 F] [IsBoundedSMul 𝕝 F] [IsS
   analyticAt_iff_analytic_fun_smul h₁f h₂f
 
 /- A function is analytic at a point iff it is analytic after multiplication
-  with a non-vanishing analytic function. -/
-theorem analyticAt_iff_analytic_fun_mul {f g : E → 𝕝} {z : E} (h₁f : AnalyticAt 𝕜 f z)
-    (h₂f : f z ≠ 0) :
-    AnalyticAt 𝕜 g z ↔ AnalyticAt 𝕜 (fun z ↦ f z * g z) z := by
-  simp_rw [← smul_eq_mul]
-  exact analyticAt_iff_analytic_smul h₁f h₂f
-
-/- A function is analytic at a point iff it is analytic after multiplication
-  with a non-vanishing analytic function. -/
+with a non-vanishing analytic function. -/
+@[to_fun analyticAt_iff_analytic_fun_mul]
 theorem analyticAt_iff_analytic_mul {f g : E → 𝕝} {z : E} (h₁f : AnalyticAt 𝕜 f z)
     (h₂f : f z ≠ 0) :
-    AnalyticAt 𝕜 g z ↔ AnalyticAt 𝕜 (f * g) z :=
-  analyticAt_iff_analytic_fun_mul h₁f h₂f
+    AnalyticAt 𝕜 g z ↔ AnalyticAt 𝕜 (f * g) z := by
+  simp_rw [← smul_eq_mul]
+  exact analyticAt_iff_analytic_smul h₁f h₂f
 
 /-- `f x / g x` is analytic away from `g x = 0` -/
 theorem AnalyticWithinAt.div {f g : E → 𝕝} {s : Set E} {x : E}
@@ -1016,9 +1010,10 @@ theorem AnalyticOnNhd.div {f g : E → 𝕝} {s : Set E}
 -/
 
 /-- Finite sums of analytic functions are analytic -/
-theorem Finset.analyticWithinAt_fun_sum {f : α → E → F} {c : E} {s : Set E}
+@[to_fun Finset.analyticWithinAt_fun_sum]
+theorem Finset.analyticWithinAt_sum {f : α → E → F} {c : E} {s : Set E}
     (N : Finset α) (h : ∀ n ∈ N, AnalyticWithinAt 𝕜 (f n) s c) :
-    AnalyticWithinAt 𝕜 (fun z ↦ ∑ n ∈ N, f n z) s c := by
+    AnalyticWithinAt 𝕜 (∑ n ∈ N, f n) s c := by
   classical
   induction N using Finset.induction with
   | empty =>
@@ -1030,47 +1025,22 @@ theorem Finset.analyticWithinAt_fun_sum {f : α → E → F} {c : E} {s : Set E}
     exact (h a (Or.inl rfl)).add (hB fun b m ↦ h b (Or.inr m))
 
 /-- Finite sums of analytic functions are analytic -/
-theorem Finset.analyticWithinAt_sum {f : α → E → F} {c : E} {s : Set E}
-    (N : Finset α) (h : ∀ n ∈ N, AnalyticWithinAt 𝕜 (f n) s c) :
-    AnalyticWithinAt 𝕜 (∑ n ∈ N, f n) s c := by
-  convert N.analyticWithinAt_fun_sum h
-  simp
-
-/-- Finite sums of analytic functions are analytic -/
-@[fun_prop]
-theorem Finset.analyticAt_fun_sum {f : α → E → F} {c : E}
-    (N : Finset α) (h : ∀ n ∈ N, AnalyticAt 𝕜 (f n) c) :
-    AnalyticAt 𝕜 (fun z ↦ ∑ n ∈ N, f n z) c := by
-  simp_rw [← analyticWithinAt_univ] at h ⊢
-  exact N.analyticWithinAt_fun_sum h
-
-/-- Finite sums of analytic functions are analytic -/
-@[fun_prop]
+@[to_fun (attr := fun_prop) Finset.analyticAt_fun_sum]
 theorem Finset.analyticAt_sum {f : α → E → F} {c : E}
     (N : Finset α) (h : ∀ n ∈ N, AnalyticAt 𝕜 (f n) c) :
     AnalyticAt 𝕜 (∑ n ∈ N, f n) c := by
-  convert N.analyticAt_fun_sum h
-  simp
+  simp_rw [← analyticWithinAt_univ] at h ⊢
+  exact N.analyticWithinAt_sum h
 
 /-- Finite sums of analytic functions are analytic -/
-theorem Finset.analyticOn_fun_sum {f : α → E → F} {s : Set E}
-    (N : Finset α) (h : ∀ n ∈ N, AnalyticOn 𝕜 (f n) s) :
-    AnalyticOn 𝕜 (fun z ↦ ∑ n ∈ N, f n z) s :=
-  fun z zs ↦ N.analyticWithinAt_fun_sum (fun n m ↦ h n m z zs)
-
-/-- Finite sums of analytic functions are analytic -/
+@[to_fun Finset.analyticOn_fun_sum]
 theorem Finset.analyticOn_sum {f : α → E → F} {s : Set E}
     (N : Finset α) (h : ∀ n ∈ N, AnalyticOn 𝕜 (f n) s) :
     AnalyticOn 𝕜 (∑ n ∈ N, f n) s :=
   fun z zs ↦ N.analyticWithinAt_sum (fun n m ↦ h n m z zs)
 
 /-- Finite sums of analytic functions are analytic -/
-theorem Finset.analyticOnNhd_fun_sum {f : α → E → F} {s : Set E}
-    (N : Finset α) (h : ∀ n ∈ N, AnalyticOnNhd 𝕜 (f n) s) :
-    AnalyticOnNhd 𝕜 (fun z ↦ ∑ n ∈ N, f n z) s :=
-  fun z zs ↦ N.analyticAt_fun_sum (fun n m ↦ h n m z zs)
-
-/-- Finite sums of analytic functions are analytic -/
+@[to_fun Finset.analyticOnNhd_fun_sum]
 theorem Finset.analyticOnNhd_sum {f : α → E → F} {s : Set E}
     (N : Finset α) (h : ∀ n ∈ N, AnalyticOnNhd 𝕜 (f n) s) :
     AnalyticOnNhd 𝕜 (∑ n ∈ N, f n) s :=

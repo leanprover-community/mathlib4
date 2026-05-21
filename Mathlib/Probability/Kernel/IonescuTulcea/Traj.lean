@@ -118,7 +118,7 @@ given `(y_₀, ...,y_ₙ)` outputs `x_{n+1} : X (n + 1)`, and it builds an eleme
 by starting with `(x_₀, ..., x_ₐ)` and then iterating `ind`. -/
 def iterateInduction {a : ℕ} (x : Π i : Iic a, X i)
     (ind : (n : ℕ) → (Π i : Iic n, X i) → X (n + 1)) : Π n, X n
-  | 0 => x ⟨0, mem_Iic.2 <| zero_le a⟩
+  | 0 => x ⟨0, mem_Iic.2 zero_le⟩
   | k + 1 => if h : k + 1 ≤ a
       then x ⟨k + 1, mem_Iic.2 h⟩
       else ind k (fun i ↦ iterateInduction x ind i)
@@ -277,7 +277,7 @@ theorem le_lmarginalPartialTraj_succ {f : ℕ → (Π n, X n) → ℝ≥0∞} {a
       (update (updateFinset x (Iic k) y) (k + 1) z) := by
   have _ n : Nonempty (X n) := by
     induction n using Nat.case_strong_induction_on with
-    | hz => exact ⟨y ⟨0, mem_Iic.2 (zero_le _)⟩⟩
+    | hz => exact ⟨y ⟨0, mem_Iic.2 zero_le⟩⟩
     | hi m hm =>
       have : Nonempty (Π i : Iic m, X i) :=
         ⟨fun i ↦ @Classical.ofNonempty _ (hm i.1 (mem_Iic.1 i.2))⟩
@@ -349,7 +349,7 @@ theorem trajContent_tendsto_zero {A : ℕ → Set (Π n, X n)}
     Tendsto (fun n ↦ trajContent κ x₀ (A n)) atTop (𝓝 0) := by
   have _ n : Nonempty (X n) := by
     induction n using Nat.case_strong_induction_on with
-    | hz => exact ⟨x₀ ⟨0, mem_Iic.2 (zero_le _)⟩⟩
+    | hz => exact ⟨x₀ ⟨0, mem_Iic.2 zero_le⟩⟩
     | hi m hm =>
       have : Nonempty (Π i : Iic m, X i) :=
         ⟨fun i ↦ @Classical.ofNonempty _ (hm i.1 (mem_Iic.1 i.2))⟩
@@ -505,7 +505,7 @@ theorem measurable_trajFun (a : ℕ) : Measurable (trajFun κ a) := by
     exact (Measure.measurable_map _ (measurable_restrict₂ _)).comp (measurable _)
   · have := isProbabilityMeasure_trajFun κ a
     simpa [measure_compl mt (measure_ne_top _ _)] using Measurable.const_sub ht _
-  · simpa [measure_iUnion disf mf] using Measurable.ennreal_tsum hf
+  · simpa [measure_iUnion disf mf] using Measurable.tsum hf
 
 /-- *Ionescu-Tulcea Theorem* : Given a family of kernels `κ n` taking variables in `Iic n` with
 value in `X (n + 1)`, the kernel `traj κ a` takes a variable `x` depending on the
@@ -766,6 +766,7 @@ def trajMeasure (μ₀ : Measure (X 0)) (κ : (n : ℕ) → Kernel (Π i : Iic n
 
 variable {μ₀ : Measure (X 0)} [IsProbabilityMeasure μ₀]
 
+set_option backward.isDefEq.respectTransparency false in
 instance : IsProbabilityMeasure (trajMeasure μ₀ κ) := by
   rw [trajMeasure]
   have : IsProbabilityMeasure (μ₀.map (MeasurableEquiv.piUnique ((fun i : Iic 0 ↦ X i))).symm) :=

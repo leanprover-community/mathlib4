@@ -10,7 +10,10 @@ public import Mathlib.Combinatorics.Enumerative.DoubleCounting
 public import Mathlib.Combinatorics.SimpleGraph.DeleteEdges
 public import Mathlib.Combinatorics.SimpleGraph.Extremal.Basic
 public import Mathlib.Data.Nat.Choose.Cast
-import Mathlib.Analysis.Asymptotics.Lemmas
+
+import Mathlib.Tactic.Bound
+import Mathlib.Topology.Algebra.InfiniteSum.Order
+import Mathlib.Topology.Instances.Real.Lemmas
 
 /-!
 # Turán density
@@ -26,6 +29,9 @@ This file defines the **Turán density** of a simple graph.
 
 * `SimpleGraph.isEquivalent_extremalNumber` is the proof that `extremalNumber n H` is
   asymptotically equivalent to `turanDensity H * n.choose 2` as `n` approaches `∞`.
+
+* `SimpleGraph.isContained_of_card_edgeFinset`: simple graphs on `n` vertices with at least
+  `(turanDensity H + o(1)) * n ^ 2` edges contain `H`, for all sufficiently large `n`.
 -/
 
 @[expose] public section
@@ -35,7 +41,7 @@ open Asymptotics Filter Finset Fintype Topology
 
 namespace SimpleGraph
 
-variable {V W : Type*} {G : SimpleGraph V} {H : SimpleGraph W}
+variable {W : Type*}
 
 lemma antitoneOn_extremalNumber_div_choose_two (H : SimpleGraph W) :
     AntitoneOn (fun n ↦ (extremalNumber n H / n.choose 2 : ℝ)) (Set.Ici 2) := by
@@ -74,34 +80,89 @@ See `SimpleGraph.tendsto_turanDensity` for proof of existence. -/
 noncomputable def turanDensity (H : SimpleGraph W) :=
   limUnder atTop fun n ↦ (extremalNumber n H / n.choose 2 : ℝ)
 
+theorem isGLB_turanDensity (H : SimpleGraph W) :
+    IsGLB { (extremalNumber n H / n.choose 2 : ℝ) | n ∈ Set.Ici 2 } (turanDensity H) := by
+  have h_bdd : BddBelow { (extremalNumber n H / n.choose 2 : ℝ) | n ∈ Set.Ici 2 } := by
+    refine ⟨0, fun x ⟨_, _, hx⟩ ↦ ?_⟩
+    rw [← hx]
+    positivity
+  refine Real.isGLB_of_tendsto_antitoneOn_bddBelow_nat_Ici ?_
+    (antitoneOn_extremalNumber_div_choose_two H) h_bdd
+  have h_tto := Real.tendsto_atTop_csInf_of_antitoneOn_bddBelow_nat_Ici
+    (antitoneOn_extremalNumber_div_choose_two H) h_bdd
+  rwa [← h_tto.limUnder_eq] at h_tto
+
+theorem turanDensity_eq_csInf (H : SimpleGraph W) :
+    turanDensity H = sInf { (extremalNumber n H / n.choose 2 : ℝ) | n ∈ Set.Ici 2 } :=
+  have h := isGLB_turanDensity H
+  (h.csInf_eq h.nonempty).symm
+
 /-- The **Turán density** of a simple graph `H` is well-defined. -/
 theorem tendsto_turanDensity (H : SimpleGraph W) :
     Tendsto (fun n ↦ (extremalNumber n H / n.choose 2 : ℝ)) atTop (𝓝 (turanDensity H)) := by
-  let f := fun n ↦ (extremalNumber n H / n.choose 2 : ℝ)
-  suffices h : ∃ x, Tendsto (fun n ↦ f (n + 2)) atTop (𝓝 x) by
-    obtain ⟨_, h⟩ := by simpa [tendsto_add_atTop_iff_nat 2] using h
-    simpa [← Tendsto.limUnder_eq h] using h
-  use ⨅ n, f (n + 2)
-  apply tendsto_atTop_ciInf
-  · rw [antitone_add_nat_iff_antitoneOn_nat_Ici]
-    exact antitoneOn_extremalNumber_div_choose_two H
-  · use 0
-    intro n ⟨_, hn⟩
-    rw [← hn]
-    positivity
+  have h_tendsto := Real.tendsto_atTop_csInf_of_antitoneOn_bddBelow_nat_Ici
+    (antitoneOn_extremalNumber_div_choose_two H) (isGLB_turanDensity H).bddBelow
+  rwa [turanDensity, h_tendsto.limUnder_eq]
 
 /-- `extremalNumber n H` is asymptotically equivalent to `turanDensity H * n.choose 2` as `n`
 approaches `∞`. -/
-theorem isEquivalent_extremalNumber (h : turanDensity H ≠ 0) :
+theorem isEquivalent_extremalNumber {H : SimpleGraph W} (h : turanDensity H ≠ 0) :
     (fun n ↦ (extremalNumber n H : ℝ)) ~[atTop] (fun n ↦ (turanDensity H * n.choose 2 : ℝ)) := by
   have hπ := tendsto_turanDensity H
   apply Tendsto.const_mul (1 / turanDensity H : ℝ) at hπ
   simp_rw [one_div_mul_cancel h, div_mul_div_comm, one_mul] at hπ
   have hz : ∀ᶠ (x : ℕ) in atTop, turanDensity H * x.choose 2 ≠ 0 := by
     rw [eventually_atTop]
-    use 2
-    intro n hn
-    simp [h, Nat.choose_eq_zero_iff, hn]
+    refine ⟨2, fun n hn ↦ ?_⟩
+    simpa [h, Nat.choose_eq_zero_iff]
   simpa [isEquivalent_iff_tendsto_one hz] using hπ
+
+/-- Simple graphs on `n` vertices having at least `(turanDensity H + o(1)) * n ^ 2` edges contain
+`H`, for sufficiently large `n`. -/
+theorem eventually_isContained_of_card_edgeFinset (H : SimpleGraph W) {ε : ℝ} (hε_pos : 0 < ε) :
+    ∀ᶠ n in atTop, ∀ {G : SimpleGraph (Fin n)} [DecidableRel G.Adj],
+      #G.edgeFinset ≥ (turanDensity H + ε) * n.choose 2 → H ⊑ G := by
+  have hπ := (turanDensity_eq_csInf H).ge
+  rw [eventually_atTop]
+  contrapose! hπ with h
+  apply lt_of_lt_of_le <| lt_add_of_pos_right (turanDensity H) hε_pos
+  refine le_csInf ?_ (fun x ⟨m, hm, hx⟩ ↦ ?_)
+  · rw [← Set.image, Set.image_nonempty]
+    exact Set.nonempty_Ici
+  rw [← hx]
+  have ⟨n, hn, G, _, hcard_edges, h_free⟩ := h m
+  replace h_free : H.Free G := not_nonempty_iff.mpr h_free
+  trans (extremalNumber n H / n.choose 2)
+  · rw [le_div_iff₀ <| mod_cast Nat.choose_pos (hm.trans hn)]
+    conv =>
+      enter [2, 1, 1]
+      rw [← Fintype.card_fin n]
+    exact hcard_edges.trans (mod_cast card_edgeFinset_le_extremalNumber h_free)
+  · exact antitoneOn_extremalNumber_div_choose_two H hm (hm.trans hn) hn
+
+open Classical in
+/-- The edge density of `H`-free simple graphs on `turanDensityConst H ε` vertices
+is at most `turanDensity H + ε`.
+
+Contrapositively, `turanDensity H + ε` is the density at which `H` is always contained in simple
+graphs on `turanDensityConst H ε` vertices.
+
+Note that this value is only defined for positive `ε` and `turanDensityConst H ε = 0` for non
+positive `ε`. -/
+noncomputable abbrev turanDensityConst (H : SimpleGraph W) (ε : ℝ) :=
+  if h : ε > 0 then
+    Nat.find <| eventually_atTop.mp <| eventually_isContained_of_card_edgeFinset H h
+  else 0
+
+open Classical in
+/-- Simple graphs on `card V` vertices having at least `(turanDensity H + o(1)) * (card V) ^ 2`
+edges contain `H`, for sufficiently large `card V`. -/
+theorem isContained_of_card_edgeFinset (H : SimpleGraph W) {ε : ℝ} (hε_pos : 0 < ε)
+    {V : Type*} [Fintype V] (h_verts : card V ≥ turanDensityConst H ε)
+    (G : SimpleGraph V) [DecidableRel G.Adj] :
+    #G.edgeFinset ≥ (turanDensity H + ε) * (card V).choose 2 → H ⊑ G := by
+  rw [(G.overFinIso rfl).card_edgeFinset_eq, isContained_congr Iso.refl (G.overFinIso rfl)]
+  apply Nat.find_spec <| eventually_atTop.mp <| eventually_isContained_of_card_edgeFinset H hε_pos
+  simpa only [turanDensityConst, hε_pos, ↓reduceDIte] using h_verts
 
 end SimpleGraph

@@ -31,7 +31,7 @@ See `Mathlib/RingTheory/Localization/Defs.lean` for a design overview.
 localization, commutative ring
 -/
 
-@[expose] public section
+public section
 
 namespace IsLocalization
 

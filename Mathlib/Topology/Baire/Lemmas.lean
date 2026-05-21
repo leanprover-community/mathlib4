@@ -250,7 +250,7 @@ theorem nonempty_interior_of_iUnion_of_closed [Countable ι] {f : ι → Set X}
 theorem not_isMeagre_of_isGδ_of_dense {s : Set X} (hs : IsGδ s) (hd : Dense s) :
     ¬ IsMeagre s := by
   intro h
-  rcases (mem_residual).1 h with ⟨t, hts, htG, hd'⟩
+  rcases mem_residual.1 h with ⟨t, hts, htG, hd'⟩
   rcases (hd.inter_of_Gδ hs htG hd').nonempty with ⟨x, hx₁, hx₂⟩
   exact hts hx₂ hx₁
 

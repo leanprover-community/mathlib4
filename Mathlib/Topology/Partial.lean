@@ -66,7 +66,7 @@ theorem pcontinuous_iff' {f : X →. Y} :
   rintro x ⟨y, ys, fxy⟩ t
   rw [mem_principal]
   intro (h : f.preimage s ⊆ t)
-  apply mem_of_superset _ h
+  grw [← h]
   have h' : ∀ s ∈ 𝓝 y, f.preimage s ∈ 𝓝 x := by
     intro s hs
     have : PTendsto' f (𝓝 x) (𝓝 y) := hf fxy

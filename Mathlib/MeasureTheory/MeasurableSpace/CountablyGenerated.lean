@@ -303,7 +303,7 @@ theorem measurableEquiv_nat_bool_of_countablyGenerated [MeasurableSpace α]
   use range (mapNatBool α), Equiv.ofInjective _ <|
     injective_mapNatBool _,
     Measurable.subtype_mk <| measurable_mapNatBool _
-  simp_rw [← generateFrom_natGeneratingSequence α]
+  simp_rw +instances [← generateFrom_natGeneratingSequence α]
   apply measurable_generateFrom
   rintro _ ⟨n, rfl⟩
   rw [← Equiv.image_eq_preimage_symm _ _]

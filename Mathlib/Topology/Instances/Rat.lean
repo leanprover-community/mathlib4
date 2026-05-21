@@ -18,14 +18,14 @@ public import Mathlib.Topology.Instances.Nat
 The structure of a metric space on `ℚ` is introduced in this file, induced from `ℝ`.
 -/
 
-@[expose] public section
+public section
 
 open Filter Metric Set Topology
 
 namespace Rat
 
 instance : MetricSpace ℚ :=
-  MetricSpace.induced (↑) Rat.cast_injective Real.metricSpace
+  fast_instance% MetricSpace.induced (↑) Rat.cast_injective Real.metricSpace
 
 theorem dist_eq (x y : ℚ) : dist x y = |(x : ℝ) - y| := rfl
 
@@ -82,7 +82,8 @@ theorem uniformContinuous_add : UniformContinuous fun p : ℚ × ℚ => p.1 + p.
 
 theorem uniformContinuous_neg : UniformContinuous (@Neg.neg ℚ _) :=
   Metric.uniformContinuous_iff.2 fun ε ε0 =>
-    ⟨_, ε0, fun _ _ h => by simpa only [abs_sub_comm, dist_eq, cast_neg, neg_sub_neg] using h⟩
+    ⟨_, ε0, fun _ _ h => by
+      simpa only [abs_sub_comm, dist_eq, cast_neg, neg_sub_neg] using h⟩
 
 instance : IsUniformAddGroup ℚ :=
   IsUniformAddGroup.mk' Rat.uniformContinuous_add Rat.uniformContinuous_neg
@@ -108,13 +109,13 @@ end Rat
 namespace NNRat
 
 instance : MetricSpace ℚ≥0 :=
-  Subtype.metricSpace
+  inferInstanceAs <| MetricSpace (Subtype _)
 
-set_option linter.style.whitespace false in
+set_option linter.style.whitespace false in -- linter false positive
 @[simp ←, push_cast]
 lemma dist_eq (p q : ℚ≥0) : dist p q = dist (p : ℚ) (q : ℚ) := rfl
 
-set_option linter.style.whitespace false in
+set_option linter.style.whitespace false in -- linter false positive
 @[simp ←, push_cast]
 lemma nndist_eq (p q : ℚ≥0) : nndist p q = nndist (p : ℚ) (q : ℚ) := rfl
 

@@ -295,8 +295,8 @@ theorem ofSet_symm : (ofSet s hs).symm = ofSet s hs :=
   rfl
 
 @[simp, mfld_simps]
-theorem ofSet_univ_eq_refl : ofSet univ isOpen_univ = OpenPartialHomeomorph.refl X :=
-  by ext <;> simp
+theorem ofSet_univ_eq_refl : ofSet univ isOpen_univ = OpenPartialHomeomorph.refl X := by
+  ext <;> simp
 
 end ofSet
 
@@ -388,15 +388,9 @@ theorem refl_toOpenPartialHomeomorph :
     (Homeomorph.refl X).toOpenPartialHomeomorph = OpenPartialHomeomorph.refl X :=
   rfl
 
-@[deprecated (since := "2025-08-29")] alias
-  refl_toPartialHomeomorph := refl_toOpenPartialHomeomorph
-
 @[simp, mfld_simps]
 theorem symm_toOpenPartialHomeomorph :
     e.symm.toOpenPartialHomeomorph = e.toOpenPartialHomeomorph.symm :=
   rfl
-
-@[deprecated (since := "2025-08-29")] alias
-  symm_toPartialHomeomorph := symm_toOpenPartialHomeomorph
 
 end Homeomorph

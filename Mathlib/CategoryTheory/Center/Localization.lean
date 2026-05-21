@@ -61,6 +61,7 @@ section Preadditive
 
 variable [Preadditive C] [Preadditive D] [L.Additive]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma localization_zero :
     (0 : CatCenter C).localization L W = 0 :=
   ext_of_localization L W _ _ (fun X => by simp)

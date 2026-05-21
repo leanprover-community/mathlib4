@@ -50,6 +50,7 @@ noncomputable def IsColimit.pullbackOfHasExactColimitsOfShape [HasPullbacks C]
   have := hc.isIso_colimMap_ι
   apply hpull.isIso_snd_of_isIso
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Detecting equality of morphisms factoring through a connected colimit by pulling back along
 the inclusions of the colimit. -/
 theorem IsColimit.pullback_hom_ext [HasPullbacks C] [HasColimitsOfShape J C]
@@ -86,6 +87,7 @@ noncomputable def IsLimit.pushoutOfHasExactLimitsOfShape [HasPushouts C]
   have := hc.isIso_limMap_π
   apply hpush.isIso_inr_of_isIso
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Detecting equality of morphisms factoring through a connected limit by pushing out along
 the projections of the limit. -/
 theorem IsLimit.pushout_hom_ext [HasPushouts C] [HasLimitsOfShape J C]

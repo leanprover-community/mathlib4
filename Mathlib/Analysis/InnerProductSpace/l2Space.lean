@@ -84,7 +84,7 @@ Hilbert space, Hilbert sum, l2, Hilbert basis, unitary equivalence, isometric is
 @[expose] public section
 
 open RCLike Submodule Filter
-open scoped NNReal ENNReal ComplexConjugate Topology
+open scoped NNReal ENNReal ComplexConjugate Topology lp
 
 noncomputable section
 
@@ -93,10 +93,6 @@ variable [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 variable {G : ι → Type*} [∀ i, NormedAddCommGroup (G i)] [∀ i, InnerProductSpace 𝕜 (G i)]
 
 local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
-
-/-- `ℓ²(ι, 𝕜)` is the Hilbert space of square-summable functions `ι → 𝕜`, herein implemented
-as `lp (fun i : ι => 𝕜) 2`. -/
-notation "ℓ²(" ι ", " 𝕜 ")" => lp (fun i : ι => 𝕜) 2
 
 /-! ### Inner product space structure on `lp G 2` -/
 
@@ -328,6 +324,7 @@ protected theorem IsHilbertSum.linearIsometryEquiv_symm_apply_dfinsupp_sum_singl
     hV.linearIsometryEquiv.symm (W₀.sum (lp.single 2)) = W₀.sum fun i => V i := by
   simp only [map_dfinsuppSum, IsHilbertSum.linearIsometryEquiv_symm_apply_single]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- In the canonical isometric isomorphism between a Hilbert sum `E` of `G : ι → Type*` and
 `lp G 2`, a finitely-supported vector in `lp G 2` is the image of the associated finite sum of
 elements of `E`. -/
@@ -400,7 +397,7 @@ instance instFunLike : FunLike (HilbertBasis ι 𝕜 E) ι E where
 @[simp]
 protected theorem repr_symm_single [DecidableEq ι] (b : HilbertBasis ι 𝕜 E) (i : ι) :
     b.repr.symm (lp.single 2 i (1 : 𝕜)) = b i := by
-  dsimp [instFunLike]
+  dsimp +instances [instFunLike]
   convert rfl
 
 

@@ -69,7 +69,7 @@ namespace ContinuousMap
 
 /-- `ContinuousMap.Homotopy f₀ f₁` is the type of homotopies from `f₀` to `f₁`.
 
-When possible, instead of parametrizing results over `(f : Homotopy f₀ f₁)`,
+When possible, instead of parametrizing results over `(f : ContinuousMap.Homotopy f₀ f₁)`,
 you should parametrize over `{F : Type*} [HomotopyLike F f₀ f₁] (f : F)`.
 
 When you extend this structure, make sure to extend `ContinuousMap.HomotopyLike`. -/
@@ -190,7 +190,8 @@ protected theorem congr_arg (F : Homotopy f₀ f₁) {x y : I × X} (h : x = y) 
 
 end
 
-/-- Given a continuous function `f`, we can define a `Homotopy f f` by `F (t, x) = f x`
+/-- Given a continuous function `f`, we can define a `ContinuousMap.Homotopy f f` by
+`F (t, x) = f x`
 -/
 @[simps]
 def refl (f : C(X, Y)) : Homotopy f f where
@@ -201,7 +202,8 @@ def refl (f : C(X, Y)) : Homotopy f f where
 instance : Inhabited (Homotopy (ContinuousMap.id X) (ContinuousMap.id X)) :=
   ⟨Homotopy.refl _⟩
 
-/-- Given a `Homotopy f₀ f₁`, we can define a `Homotopy f₁ f₀` by reversing the homotopy.
+/-- Given a `ContinuousMap.Homotopy f₀ f₁`, we can define a `ContinuousMap.Homotopy f₁ f₀` by
+reversing the homotopy.
 -/
 @[simps]
 def symm {f₀ f₁ : C(X, Y)} (F : Homotopy f₀ f₁) : Homotopy f₁ f₀ where
@@ -219,8 +221,9 @@ theorem symm_bijective {f₀ f₁ : C(X, Y)} :
   Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
 
 /--
-Given `Homotopy f₀ f₁` and `Homotopy f₁ f₂`, we can define a `Homotopy f₀ f₂` by putting the first
-homotopy on `[0, 1/2]` and the second on `[1/2, 1]`.
+Given `ContinuousMap.Homotopy f₀ f₁` and `ContinuousMap.Homotopy f₁ f₂`, we can define a
+`ContinuousMap.Homotopy f₀ f₂` by putting the first homotopy on `[0, 1/2]` and the second
+on `[1/2, 1]`.
 -/
 def trans {f₀ f₁ f₂ : C(X, Y)} (F : Homotopy f₀ f₁) (G : Homotopy f₁ f₂) : Homotopy f₀ f₂ where
   toFun x := if (x.1 : ℝ) ≤ 1 / 2 then F.extend (2 * x.1) x.2 else G.extend (2 * x.1 - 1) x.2
@@ -261,7 +264,8 @@ theorem symm_trans {f₀ f₁ f₂ : C(X, Y)} (F : Homotopy f₀ f₁) (G : Homo
   · exfalso
     linarith
 
-/-- Casting a `Homotopy f₀ f₁` to a `Homotopy g₀ g₁` where `f₀ = g₀` and `f₁ = g₁`.
+/-- Casting a `ContinuousMap.Homotopy f₀ f₁` to a `ContinuousMap.Homotopy g₀ g₁` where `f₀ = g₀`
+and `f₁ = g₁`.
 -/
 @[simps]
 def cast {f₀ f₁ g₀ g₁ : C(X, Y)} (F : Homotopy f₀ f₁) (h₀ : f₀ = g₀) (h₁ : f₁ = g₁) :
@@ -270,8 +274,8 @@ def cast {f₀ f₁ g₀ g₁ : C(X, Y)} (F : Homotopy f₀ f₁) (h₀ : f₀ =
   map_zero_left := by simp [← h₀]
   map_one_left := by simp [← h₁]
 
-/-- If we have a `Homotopy g₀ g₁` and a `Homotopy f₀ f₁`, then we can compose them and get a
-`Homotopy (g₀.comp f₀) (g₁.comp f₁)`.
+/-- If we have a `ContinuousMap.Homotopy g₀ g₁` and a `ContinuousMap.Homotopy f₀ f₁`, then we can
+compose them and get a `ContinuousMap.Homotopy (g₀.comp f₀) (g₁.comp f₁)`.
 -/
 @[simps]
 def comp {f₀ f₁ : C(X, Y)} {g₀ g₁ : C(Y, Z)} (G : Homotopy g₀ g₁) (F : Homotopy f₀ f₁) :
@@ -280,8 +284,8 @@ def comp {f₀ f₁ : C(X, Y)} {g₀ g₁ : C(Y, Z)} (G : Homotopy g₀ g₁) (F
   map_zero_left := by simp
   map_one_left := by simp
 
-/-- Composition of a `Homotopy g₀ g₁` and `f : C(X, Y)` as a homotopy between `g₀.comp f` and
-`g₁.comp f`. -/
+/-- Composition of a `ContinuousMap.Homotopy g₀ g₁` and `f : C(X, Y)` as a homotopy between
+`g₀.comp f` and `g₁.comp f`. -/
 @[simps!]
 def compContinuousMap {g₀ g₁ : C(Y, Z)} (G : Homotopy g₀ g₁) (f : C(X, Y)) :
     Homotopy (g₀.comp f) (g₁.comp f) :=
@@ -322,7 +326,7 @@ protected def piMap {X Y : ι → Type*} [∀ i, TopologicalSpace (X i)] [∀ i,
 end Homotopy
 
 /-- Given continuous maps `f₀` and `f₁`, we say `f₀` and `f₁` are homotopic if there exists a
-`Homotopy f₀ f₁`.
+`ContinuousMap.Homotopy f₀ f₁`.
 -/
 def Homotopic (f₀ f₁ : C(X, Y)) : Prop :=
   Nonempty (Homotopy f₀ f₁)
@@ -629,6 +633,11 @@ variable {S : Set X}
 /-- If two maps are homotopic relative to a set, then they are homotopic. -/
 protected theorem homotopic {f₀ f₁ : C(X, Y)} (h : HomotopicRel f₀ f₁ S) : Homotopic f₀ f₁ :=
   h.map fun F ↦ F.1
+
+/-- If two maps are homotopic relative to a set, then they agree on it. -/
+theorem fst_eq_snd ⦃f₀ f₁ : C(X, Y)⦄ (h : HomotopicRel f₀ f₁ S) {x : X} (hx : x ∈ S) :
+    f₀ x = f₁ x :=
+  Nonempty.elim h (HomotopyRel.fst_eq_snd · hx)
 
 theorem refl (f : C(X, Y)) : HomotopicRel f f S :=
   ⟨HomotopyRel.refl f S⟩

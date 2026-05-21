@@ -20,7 +20,7 @@ In this file, we show that `Complex.exp` and `(· ^ n)` (for `n ≠ 0`) are a co
 We also show that any complex polynomial is a covering map on the set of regular values.
 -/
 
-@[expose] public section
+public section
 
 open Topology
 
@@ -70,9 +70,9 @@ theorem isCoveringMapOn_npow (n : ℕ) (hn : (n : 𝕜) ≠ 0) :
 /-- `(· ^ n) : 𝕜 \ {0} → 𝕜 \ {0}` is a covering map (if `n ≠ 0` in `𝕜`). -/
 theorem isCoveringMap_npow (n : ℕ) (hn : (n : 𝕜) ≠ 0) :
     IsCoveringMap fun x : {x : 𝕜 // x ≠ 0} ↦ (⟨x ^ n, pow_ne_zero n x.2⟩ : {x : 𝕜 // x ≠ 0}) := by
-  convert (isCoveringMapOn_npow n hn).isCoveringMap_restrictPreimage.comp_homeomorph (.setCongr _)
-    using 1
-  ext; simp [show n ≠ 0 by aesop]; rfl
+  convert (isCoveringMapOn_npow n hn).isCoveringMap_restrictPreimage.comp_homeomorph
+    (.setCongr (s := {x | x ≠ 0}) _) using 1
+  ext; simp [show n ≠ 0 by aesop]
 
 /-- `(· ^ n) : 𝕜 \ {0} → 𝕜 \ {0}` is a covering map (if `n ≠ 0` in `𝕜`). -/
 theorem isCoveringMap_zpow (n : ℤ) (hn : (n : 𝕜) ≠ 0) :
@@ -89,7 +89,7 @@ theorem isCoveringMapOn_zpow (n : ℤ) (hn : (n : 𝕜) ≠ 0) :
   refine .of_isCoveringMap_restrictPreimage _ (by simp) ?_ ?_
   · convert isClosed_singleton (x := (0 : 𝕜)).isOpen_compl using 1
     ext; simp [this]
-  · convert (isCoveringMap_zpow n hn).comp_homeomorph (.setCongr _) using 1
+  · convert (isCoveringMap_zpow n hn).comp_homeomorph (.ofEqSubtypes _) using 1
     ext; simpa using (this _).not
 
 attribute [-instance] Units.mulAction'
@@ -103,9 +103,9 @@ theorem isQuotientCoveringMap_npow (n : ℕ) (hn : (n : 𝕜) ≠ 0)
     (by fun_prop) (.restrictPreimage _ surj)
   have : IsQuotientMap fun x : 𝕜ˣ ↦ x ^ n := by
     let e := unitsHomeomorphNeZero (G₀ := 𝕜)
-    convert (e.symm.isQuotientMap.comp this).comp (e.trans (.setCongr _)).isQuotientMap
+    convert (e.symm.isQuotientMap.comp this).comp (e.trans (.ofEqSubtypes _)).isQuotientMap
     · exact (e.left_inv _).symm
-    · ext; simp [NeZero.ne]; rfl
+    · ext; simp [NeZero.ne]
   refine this.isQuotientCoveringMap_of_subgroup _
     (Set.Finite.isDiscrete <| inferInstanceAs (Finite (rootsOfUnity ..))) ?_
   simp [mul_pow, mul_inv_eq_one, eq_comm]

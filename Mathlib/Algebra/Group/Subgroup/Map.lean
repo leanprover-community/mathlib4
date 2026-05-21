@@ -297,6 +297,11 @@ def subgroupOfEquivOfLe {G : Type*} [Group G] {H K : Subgroup G} (h : H ≤ K) :
   invFun g := ⟨⟨g.1, h g.2⟩, g.2⟩
   map_mul' _g _h := rfl
 
+@[to_additive]
+lemma subgroupOf_mono {H₁ H₂ : Subgroup G} (H₃ : Subgroup G) (h : H₁ ≤ H₂) :
+    H₁.subgroupOf H₃ ≤ H₂.subgroupOf H₃ :=
+  comap_mono h
+
 @[to_additive (attr := simp)]
 theorem comap_subtype (H K : Subgroup G) : H.comap K.subtype = H.subgroupOf K :=
   rfl
@@ -368,21 +373,20 @@ theorem subgroupOf_eq_top {H K : Subgroup G} : H.subgroupOf K = ⊤ ↔ K ≤ H 
 variable (H : Subgroup G)
 
 @[to_additive]
-instance map_isMulCommutative (f : G →* G') [IsMulCommutative H] : IsMulCommutative (H.map f) :=
-  ⟨⟨by
-      rintro ⟨-, a, ha, rfl⟩ ⟨-, b, hb, rfl⟩
-      rw [Subtype.ext_iff, coe_mul, coe_mul, Subtype.coe_mk, Subtype.coe_mk, ← map_mul, ← map_mul]
-      exact congr_arg f (Subtype.ext_iff.mp (mul_comm (⟨a, ha⟩ : H) ⟨b, hb⟩))⟩⟩
+instance [IsMulCommutative G] : IsMulCommutative H :=
+  IsMulCommutative.of_setLike_mul_comm fun a _ b _ ↦ mul_comm' a b
+
+@[to_additive]
+instance map_isMulCommutative (f : G →* G') [IsMulCommutative H] : IsMulCommutative (H.map f) := by
+  refine .of_setLike_mul_comm ?_
+  rintro - ⟨a, ha, rfl⟩ - ⟨b, hb, rfl⟩
+  simpa [map_mul] using congr(f $(setLike_mul_comm ha hb))
 
 @[to_additive]
 theorem comap_injective_isMulCommutative {f : G' →* G} (hf : Injective f) [IsMulCommutative H] :
     IsMulCommutative (H.comap f) :=
-  ⟨⟨fun a b =>
-      Subtype.ext
-        (by
-          have := mul_comm (⟨f a, a.2⟩ : H) (⟨f b, b.2⟩ : H)
-          rwa [Subtype.ext_iff, coe_mul, coe_mul, coe_mk, coe_mk, ← map_mul, ← map_mul,
-            hf.eq_iff] at this)⟩⟩
+  .of_setLike_mul_comm fun a (ha : f a ∈ H) b (hb : f b ∈ H) ↦ hf <| by
+    simpa using setLike_mul_comm ha hb
 
 @[to_additive]
 instance subgroupOf_isMulCommutative [IsMulCommutative H] : IsMulCommutative (H.subgroupOf K) :=

@@ -82,6 +82,7 @@ theorem not_summable_one_div_on_primes :
   refine (indicator_of_mem ?_ fun n : ℕ ↦ (1 / n : ℝ)).symm
   exact ⟨hpp, by simpa [primesBelow, hpp] using hp₂⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The sum over the reciprocals of the primes diverges. -/
 theorem Nat.Primes.not_summable_one_div : ¬ Summable (fun p : Nat.Primes ↦ (1 / p : ℝ)) := by
   convert summable_subtype_iff_indicator.mp.mt not_summable_one_div_on_primes

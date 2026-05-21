@@ -93,7 +93,7 @@ theorem AntitoneOn.integral_le_sum (hf : AntitoneOn f (Icc x₀ (x₀ + a))) :
       convert (intervalIntegral.sum_integral_adjacent_intervals hint).symm
       simp only [Nat.cast_zero, add_zero]
     _ ≤ ∑ i ∈ Finset.range a, ∫ _ in x₀ + i..x₀ + (i + 1 : ℕ), f (x₀ + i) := by
-      apply Finset.sum_le_sum fun i hi => ?_
+      gcongr with i hi
       have ia : i < a := Finset.mem_range.1 hi
       refine intervalIntegral.integral_mono_on (by simp) (hint _ ia) (by simp) fun x hx => ?_
       apply hf _ _ hx.1

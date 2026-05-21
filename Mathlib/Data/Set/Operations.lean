@@ -6,7 +6,6 @@ Minchao Wu, Yury Kudryashov, Floris van Doorn
 -/
 module
 
-public import Aesop
 public import Mathlib.Data.Set.CoeSort
 public import Mathlib.Data.SProd
 public import Mathlib.Data.Subtype
@@ -14,6 +13,9 @@ public import Mathlib.Order.Notation
 public import Mathlib.Tactic.Push.Attr
 
 import Mathlib.Tactic.Attr.Register
+import Aesop.BuiltinRules
+import Aesop.Frontend.Tactic
+import Aesop.Main
 
 /-!
 # Basic definitions about sets
@@ -38,7 +40,7 @@ More advanced theorems about these definitions are located in other files in `Ma
 - `Set.MapsTo.restrict`: restrict `f : α → β` to `f' : s → t` provided that `Set.MapsTo f s t`;
 - `Set.restrictPreimage`: restrict `f : α → β` to `f' : (f ⁻¹' t) → t`;
 - `Set.InjOn`: the predicate saying that `f` is injective on a set;
-- `Set.SurjOn f s t`: the prediate saying that `t ⊆ f '' s`;
+- `Set.SurjOn f s t`: the predicate saying that `t ⊆ f '' s`;
 - `Set.BijOn f s t`: the predicate saying that `f` is injective on `s` and `f '' s = t`;
 - `Set.graphOn`: the graph of a function on a set;
 - `Set.LeftInvOn`, `Set.RightInvOn`, `Set.InvOn`:
@@ -64,8 +66,6 @@ set, image, preimage
 -/
 
 @[expose] public section
-
-attribute [ext] Set.ext
 
 universe u v w
 
@@ -118,13 +118,13 @@ theorem mem_diff_of_mem {s t : Set α} {x : α} (h1 : x ∈ s) (h2 : x ∉ t) : 
 def preimage (f : α → β) (s : Set β) : Set α := {x | f x ∈ s}
 
 /-- `f ⁻¹' t` denotes the preimage of `t : Set β` under the function `f : α → β`. -/
-infixl:80 " ⁻¹' " => preimage
+infixr:80 " ⁻¹' " => preimage
 
 @[simp, mfld_simps, grind =, push]
 theorem mem_preimage {f : α → β} {s : Set β} {a : α} : a ∈ f ⁻¹' s ↔ f a ∈ s := Iff.rfl
 
 /-- `f '' s` denotes the image of `s : Set α` under the function `f : α → β`. -/
-infixl:80 " '' " => image
+infixr:80 " '' " => image
 
 @[simp, grind =, push]
 theorem mem_image (f : α → β) (s : Set α) (y : β) : y ∈ f '' s ↔ ∃ x ∈ s, f x = y :=

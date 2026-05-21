@@ -106,6 +106,7 @@ theorem ofPowerSeries_apply (x : PowerSeries R) :
         (toPowerSeries.symm x) :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem ofPowerSeries_apply_coeff (x : PowerSeries R) (n : ℕ) :
     (ofPowerSeries Γ R x).coeff n = PowerSeries.coeff n x := by simp [ofPowerSeries_apply]
 
@@ -140,6 +141,7 @@ theorem ofPowerSeries_X_pow {R} [Semiring R] (n : ℕ) :
     ofPowerSeries Γ R (PowerSeries.X ^ n) = single (n : Γ) 1 := by
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 -- Lemmas about converting hahn_series over fintype to and from mv_power_series
 /-- The ring `R⟦σ →₀ ℕ⟧` is isomorphic to `MvPowerSeries σ R` for a `Finite` `σ`.
 We take the index set of the hahn series to be `Finsupp` rather than `pi`,
