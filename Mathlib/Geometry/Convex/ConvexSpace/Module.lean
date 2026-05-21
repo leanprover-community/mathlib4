@@ -87,11 +87,9 @@ instance (S : F) : ConvexSpace R S := .subtype _ <| isConvexSet_coe _
 lemma subtypeVal_submodule_sConvexComb (S : F) (w : StdSimplex R S) :
     (w.sConvexComb : M) = w.iConvexComb (↑) := rfl
 
-@[simp]
 lemma subtypeVal_submodule_iConvexComb (S : F) (w : StdSimplex R I) (f : I → S) :
     (↑(w.iConvexComb f) : M) = w.iConvexComb (fun i ↦ (f i).val) := subtypeVal_iConvexComb ..
 
-@[simp]
 lemma subtypeVal_submodule_convexCombPair (S : F) (a b : R) (ha hb hab) (x y : S) :
     (↑(convexCombPair a b ha hb hab x y) : M) = convexCombPair a b ha hb hab x.val y.val :=
   subtypeVal_convexCombPair ..
