@@ -91,12 +91,10 @@ theorem free_of_isMaximalCohenMacaulay_of_isRegularLocalRing [IsRegularLocalRing
     infer_instance
   | succ n ih =>
     obtain ⟨x, xmem, xnmem⟩ : ∃ x ∈ maximalIdeal R, x ∉ (maximalIdeal R) ^ 2 := by
-      by_contra! ge
-      have : IsField R := by
-        simpa only [← subsingleton_cotangentSpace_iff, Ideal.cotangent_subsingleton_iff,
-          IsIdempotentElem] using le_antisymm Ideal.mul_le_right (le_of_le_of_eq ge (pow_two _))
-      rw [ringKrullDim_eq_zero_of_isField this, ← Nat.cast_zero, Nat.cast_inj] at hn
-      exact Nat.zero_ne_add_one n hn
+      refine Set.exists_of_ssubset ((maximalIdeal_sq_lt_maximalIdeal R).mpr ?_)
+      apply ringKrullDim_eq_zero_of_isField.mt
+      rw [← Nat.cast_zero, hn, Nat.cast_inj]
+      exact (Nat.zero_ne_add_one n).symm
     have := (quotient_span_singleton R xmem xnmem).1
     have dim : ringKrullDim (R ⧸ Ideal.span {x}) = n := by
       simpa [hn, ENat.WithBot.add_one_cancel] using (quotient_span_singleton R xmem xnmem).2
