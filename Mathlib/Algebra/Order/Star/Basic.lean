@@ -220,15 +220,9 @@ theorem star_left_conjugate_nonneg {a : R} (ha : 0 ≤ a) (c : R) : 0 ≤ star c
       _ ≤ star c * x * c + star c * y * c := by gcongr
       _ ≤ _ := by rw [mul_add, add_mul]
 
-@[deprecated (since := "2025-10-20")] alias conjugate_nonneg :=
-  star_left_conjugate_nonneg
-
 @[aesop safe apply]
 theorem star_right_conjugate_nonneg {a : R} (ha : 0 ≤ a) (c : R) : 0 ≤ c * a * star c := by
   simpa only [star_star] using star_left_conjugate_nonneg ha (star c)
-
-@[deprecated (since := "2025-10-20")] alias conjugate_nonneg' :=
-  star_right_conjugate_nonneg
 
 @[aesop 90% apply (rule_sets := [CStarAlgebra])]
 protected theorem IsSelfAdjoint.conjugate_nonneg {a : R} (ha : 0 ≤ a) {c : R}
@@ -246,15 +240,9 @@ theorem star_left_conjugate_le_conjugate {a b : R} (hab : a ≤ b) (c : R) :
   simp_rw [← StarOrderedRing.nonneg_iff] at hp ⊢
   exact ⟨star c * p * c, star_left_conjugate_nonneg hp c, by simp only [add_mul, mul_add]⟩
 
-@[deprecated (since := "2025-10-20")] alias conjugate_le_conjugate :=
-  star_left_conjugate_le_conjugate
-
 theorem star_right_conjugate_le_conjugate {a b : R} (hab : a ≤ b) (c : R) :
     c * a * star c ≤ c * b * star c := by
   simpa only [star_star] using star_left_conjugate_le_conjugate hab (star c)
-
-@[deprecated (since := "2025-10-20")] alias conjugate_le_conjugate' :=
-  star_right_conjugate_le_conjugate
 
 protected theorem IsSelfAdjoint.conjugate_le_conjugate {a b : R} (hab : a ≤ b) {c : R}
     (hc : IsSelfAdjoint c) : c * a * c ≤ c * b * c := by
@@ -307,27 +295,17 @@ theorem star_left_conjugate_lt_conjugate {a b : R} (hab : a < b) {c : R} (hc : I
   rw [(star_left_conjugate_le_conjugate hab.le _).lt_iff_ne, hc.right.ne_iff, hc.star.left.ne_iff]
   exact hab.ne
 
-@[deprecated (since := "2025-10-20")] alias conjugate_lt_conjugate :=
-  star_left_conjugate_lt_conjugate
-
 theorem star_right_conjugate_lt_conjugate {a b : R} (hab : a < b) {c : R} (hc : IsRegular c) :
     c * a * star c < c * b * star c := by
   simpa only [star_star] using star_left_conjugate_lt_conjugate hab hc.star
-
-@[deprecated (since := "2025-10-20")] alias conjugate_lt_conjugate' :=
-  star_right_conjugate_lt_conjugate
 
 theorem star_left_conjugate_pos {a : R} (ha : 0 < a) {c : R} (hc : IsRegular c) :
     0 < star c * a * c := by
   simpa only [mul_zero, zero_mul] using star_left_conjugate_lt_conjugate ha hc
 
-@[deprecated (since := "2025-10-20")] alias conjugate_pos := star_left_conjugate_pos
-
 theorem star_right_conjugate_pos {a : R} (ha : 0 < a) {c : R} (hc : IsRegular c) :
     0 < c * a * star c := by
   simpa only [star_star] using star_left_conjugate_pos ha hc.star
-
-@[deprecated (since := "2025-10-20")] alias conjugate_pos' := star_right_conjugate_pos
 
 theorem star_mul_self_pos [Nontrivial R] {x : R} (hx : IsRegular x) : 0 < star x * x := by
   rw [(star_mul_self_nonneg _).lt_iff_ne, ← mul_zero (star x), hx.star.left.ne_iff]
