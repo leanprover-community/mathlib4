@@ -1027,7 +1027,7 @@ lemma _root_.CategoryTheory.Limits.hasPullback_ofHasPullbacksAgainst
   MorphismProperty.HasPullbacksAlong.hasPullback f hf
 
 /-- `P.IsStableUnderCobaseChangeAgainst P'` states that for any morphism `f` satisfying `P` and
-any morphism `g` with the same codomain as `f` satisfying `P'`, any pushout of `f` along `g`
+any morphism `g` with the same domain as `f` satisfying `P'`, any pushout of `f` along `g`
 also satisfies `P`. -/
 class IsStableUnderCobaseChangeAgainst
     (P P' : MorphismProperty C) : Prop where
