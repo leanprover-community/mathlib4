@@ -206,12 +206,15 @@ The reason is that types are usually implicit arguments. For example
     This gets extra points for matching `1`
   - `Nat.succ.inj (n m : ℕ) (h : n.succ = m.succ) : n = m`.
     This gets extra points for matching `ℕ`
+
   Clearly, `rfl` is better.
+
 - If we rewrite `|(0 : ℝ)|`, we could find
   - `abs_zero : |(0 : α)| = 0`
     This gets extra points for matching `0`
   - `Real.norm_eq_abs : ∀ (r : ℝ), ‖r‖ = |r|`
     This gets extra points for matching `ℝ`
+
   Clearly, `abs_zero` is better
 
 In both examples, matching the type (`ℕ` or `ℝ`) was not very important for how good
