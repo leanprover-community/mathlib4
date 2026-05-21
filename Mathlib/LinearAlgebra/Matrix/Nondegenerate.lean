@@ -64,7 +64,7 @@ lemma nondegenerate_def : M.Nondegenerate ↔
 
 variable [Finite n] in
 omit [Fintype n] in
-theorem separatingLeft_iff_forall_vecMul_eq_zero {M : Matrix m n R} :
+theorem separatingLeft_iff_forall_vecMul_eq_zero :
     M.SeparatingLeft ↔ ∀ v, v ᵥ* M = 0 → v = 0 := by
   classical
   have := Fintype.ofFinite n
@@ -75,7 +75,7 @@ theorem separatingLeft_iff_forall_vecMul_eq_zero {M : Matrix m n R} :
 
 variable [Finite m] in
 omit [Fintype m] in
-theorem separatingRight_iff_forall_mulVec_eq_zero {M : Matrix m n R} :
+theorem separatingRight_iff_forall_mulVec_eq_zero :
     M.SeparatingRight ↔ ∀ v, M *ᵥ v = 0 → v = 0 := by
   classical
   have := Fintype.ofFinite m
@@ -84,7 +84,19 @@ theorem separatingRight_iff_forall_mulVec_eq_zero {M : Matrix m n R} :
   · simp [hv]
   · simpa using hw <| Pi.single i 1
 
-theorem nondegenerate_iff_forall_eq_zero {M : Matrix m n R} :
+variable [Finite n] in
+omit [Fintype n] in
+theorem SeparatingLeft.eq_zero_of_vecMul_eq_zero (hM : M.SeparatingLeft) {v : m → R}
+    (hv : v ᵥ* M = 0) : v = 0 :=
+  separatingLeft_iff_forall_vecMul_eq_zero.mp hM v hv
+
+variable [Finite m] in
+omit [Fintype m] in
+theorem SeparatingRight.eq_zero_of_mulVec_eq_zero (hM : M.SeparatingRight) {v : n → R}
+    (hv : M *ᵥ v = 0) : v = 0 :=
+  separatingRight_iff_forall_mulVec_eq_zero.mp hM v hv
+
+theorem nondegenerate_iff_forall_eq_zero :
     M.Nondegenerate ↔ (∀ v, v ᵥ* M = 0 → v = 0) ∧ (∀ v, M *ᵥ v = 0 → v = 0) := by
   rw [nondegenerate_iff, separatingLeft_iff_forall_vecMul_eq_zero,
     separatingRight_iff_forall_mulVec_eq_zero]
@@ -126,26 +138,14 @@ theorem Nondegenerate.exists_not_ortho_of_ne_zero (hM : Nondegenerate M)
   not_forall.mp (mt hM.eq_zero_of_ortho hv)
 
 /-- If `M` is nondegenerate and `w * M * v = 0` for all `v`, then `w = 0`. -/
-theorem Nondegenerate.eq_zero_of_ortho' {M : Matrix m n R} (hM : Nondegenerate M) {w : n → R}
+theorem Nondegenerate.eq_zero_of_ortho' (hM : Nondegenerate M) {w : n → R}
     (hw : ∀ v, v ⬝ᵥ M *ᵥ w = 0) : w = 0 :=
   (nondegenerate_def.mp hM).2 w hw
 
 /-- If `M` is nondegenerate and `w ≠ 0`, then there is some `v` such that `v * M * w ≠ 0`. -/
-theorem Nondegenerate.exists_not_ortho_of_ne_zero' {M : Matrix m n R} (hM : Nondegenerate M)
-    {w : n → R} (hw : w ≠ 0) : ∃ v, v ⬝ᵥ M *ᵥ w ≠ 0 :=
+theorem Nondegenerate.exists_not_ortho_of_ne_zero' (hM : Nondegenerate M) {w : n → R} (hw : w ≠ 0) :
+    ∃ v, v ⬝ᵥ M *ᵥ w ≠ 0 :=
   not_forall.mp (mt hM.eq_zero_of_ortho' hw)
-
-variable [Finite n] in
-omit [Fintype n] in
-theorem SeparatingLeft.eq_zero_of_vecMul_eq_zero (hM : M.SeparatingLeft) {v : m → R}
-    (hv : v ᵥ* M = 0) : v = 0 :=
-  separatingLeft_iff_forall_vecMul_eq_zero.mp hM v hv
-
-variable [Finite m] in
-omit [Fintype m] in
-theorem SeparatingRight.eq_zero_of_mulVec_eq_zero (hM : M.SeparatingRight) {v : n → R}
-    (hv : M *ᵥ v = 0) : v = 0 :=
-  separatingRight_iff_forall_mulVec_eq_zero.mp hM v hv
 
 section Determinant
 open scoped nonZeroDivisors
