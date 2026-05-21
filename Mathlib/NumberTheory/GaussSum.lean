@@ -9,6 +9,8 @@ public import Mathlib.NumberTheory.LegendreSymbol.AddCharacter
 public import Mathlib.NumberTheory.LegendreSymbol.ZModChar
 public import Mathlib.Algebra.CharP.CharAndCard
 
+import Mathlib.NumberTheory.MulChar.Lemmas
+
 /-!
 # Gauss sums
 
@@ -79,9 +81,17 @@ theorem gaussSum_mulShift (χ : MulChar R R') (ψ : AddChar R R') (a : Rˣ) :
 
 /-- Replacing `ψ` by `mulShift ψ a` multiplies the Gauss sum by `χ⁻¹ a`. -/
 theorem gaussSum_mulShift_eq (χ : MulChar R R') (ψ : AddChar R R') (a : Rˣ) :
-    gaussSum χ (mulShift ψ a) = χ⁻¹ a * gaussSum χ ψ := by
+    gaussSum χ (ψ.mulShift a) = χ⁻¹ a * gaussSum χ ψ := by
   rw [← gaussSum_mulShift χ ψ a, inv_apply_eq_inv,
     Ring.inverse_mul_cancel_left _ _ (a.isUnit.map χ)]
+
+/-- Taking complex conjugates of a Gauss sum inverts both characters. -/
+lemma star_gaussSum_eq (χ : MulChar R ℂ) (ψ : AddChar R ℂ) :
+    star (gaussSum χ ψ) = gaussSum χ⁻¹ ψ⁻¹ :=
+  calc
+    _ = ∑ x, star (ψ x) * χ⁻¹ x := by simp [gaussSum, star_mul, MulChar.star_apply']
+    _ = ∑ x, ψ⁻¹ x * χ⁻¹ x := by simp [← starRingEnd_apply, map_neg_eq_conj]
+    _ = _ := by simp [mul_comm, gaussSum]
 
 end GaussSumDef
 
