@@ -110,7 +110,7 @@ theorem map_factorial_prod_pos (m : Multiset ℕ) : 0 < (m.map (fun j ↦ j !)).
     forall_apply_eq_imp_iff₂] using fun _ _ ↦ Nat.factorial_pos _
 
 theorem bell_eq (m : Multiset ℕ) :
-    m.bell = m.sum ! / ((m.map (fun j ↦ j !)).prod * ∏ j ∈ (m.toFinset.erase 0), (m.count j)!) := by
+    m.bell = m.sum ! / ((m.map fun j ↦ j !).prod * ∏ j ∈ m.toFinset.erase 0, (m.count j)!) := by
   rw [← Nat.mul_left_inj, Nat.div_mul_cancel _]
   · rw [← mul_assoc]
     exact bell_mul_eq m
@@ -240,7 +240,6 @@ theorem bell_succ' (n : ℕ) :
     Finset.Nat.sum_antidiagonal_eq_sum_range_succ (fun x y => choose n x * Nat.bell y) n,
     Finset.sum_range]
 
-
 @[simp]
 theorem bell_zero : Nat.bell 0 = 1 := by
   simp [Nat.bell]
@@ -266,8 +265,8 @@ theorem bell_eq_sum_erase {n : ℕ} (p : Nat.Partition (n + 1)) :
     have hsum : (p.parts.erase a).sum + a = n + 1 := by
       simpa [p.parts_sum, add_comm] using congrArg Multiset.sum (Multiset.cons_erase ha_mem)
     have hbell : choose (n + 1) a * (p.parts.erase a).bell = p.parts.count a * p.parts.bell := by
-      simpa [hsum, Multiset.cons_erase ha_mem, mul_comm, mul_left_comm, mul_assoc] using
-        (bell_cons_mul_count (m := p.parts.erase a) ha0).symm
+      simpa [hsum, cons_erase ha_mem, mul_comm] using
+        ((p.parts.erase a).bell_cons_mul_count ha0).symm
     calc
       _ = (n + 1) * choose n (a - 1) * (p.parts.erase a).bell := by ring
       _ = choose (n + 1) a * a * (p.parts.erase a).bell := by
@@ -275,9 +274,9 @@ theorem bell_eq_sum_erase {n : ℕ} (p : Nat.Partition (n + 1)) :
       _ = _ := by grind
   _ = (∑ a ∈ p.parts.toFinset, p.parts.count a * a) * p.parts.bell := by grind [Finset.sum_mul]
   _ = _ := by
-    have hsum : ∑ a ∈ p.parts.toFinset, p.parts.count a * a = n + 1 := by
-      simpa [smul_eq_mul, p.parts_sum, mul_comm] using (Finset.sum_multiset_count p.parts).symm
-    rw [hsum]
+    rw [succ_eq_add_one, mul_eq_mul_right_iff]
+    left
+    simpa [smul_eq_mul, p.parts_sum, mul_comm] using (Finset.sum_multiset_count p.parts).symm
 
 private def partitionWithPartEquiv {n a : ℕ} (ha1 : 1 ≤ a) (ha : a ≤ n + 1) :
     {p : Nat.Partition (n + 1) // a ∈ p.parts} ≃ Nat.Partition (n + 1 - a) where
