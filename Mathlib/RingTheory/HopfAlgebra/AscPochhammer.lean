@@ -63,7 +63,7 @@ theorem backwardDiff_C (r : R) : backwardDiff (C r : R[X]) = 0 := by
 /-- The backward difference is shift-equivariant. -/
 theorem backwardDiff_isShiftEquivariant :
     IsShiftEquivariant (backwardDiff : R[X] →ₗ[R] R[X]) := by
-  unfold IsShiftEquivariant; intro a
+  delta IsShiftEquivariant; intro a
   apply LinearMap.ext; intro f
   simp only [LinearMap.comp_apply, backwardDiff_apply]
   rw [map_sub]
