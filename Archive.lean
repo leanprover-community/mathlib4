@@ -62,10 +62,10 @@ import Archive.Imo.Imo2024Q6
 import Archive.Imo.Imo2025Q3
 import Archive.Kuratowski
 import Archive.MinimalSheffer
-import Archive.NamedGraphs
 import Archive.MiuLanguage.Basic
 import Archive.MiuLanguage.DecisionNec
 import Archive.MiuLanguage.DecisionSuf
+import Archive.NamedGraphs
 import Archive.OxfordInvariants.Summer2021.Week3P1
 import Archive.Sensitivity
 import Archive.Wiedijk100Theorems.AbelRuffini
