@@ -150,6 +150,21 @@ theorem tendstoInDistribution_of_ae_tendsto [NeBot l] [l.IsCountablyGenerated]
 
 end TendstoInDistribution
 
+/-- Convergence in measure implies convergence in distribution. -/
+theorem TendstoInMeasure.tendstoInDistribution'
+    [PseudoEMetricSpace E] [OpensMeasurableSpace E]
+    [l.IsCountablyGenerated] [l.NeBot]
+    {X : ι → Ω' → E} {Z : Ω' → E}
+    (h : TendstoInMeasure μ' X l Z)
+    (hX : ∀ i, Measurable (X i)) (hZ : AEMeasurable Z μ') :
+    TendstoInDistribution X l Z (fun _ ↦ μ') μ' := by
+  refine ⟨by fun_prop, by fun_prop, ?_⟩
+  refine Filter.tendsto_of_subseq_tendsto (fun ns hns ↦ ?_)
+  obtain ⟨ms, hms1, hms2⟩ := h.comp hns |>.exists_seq_tendsto_ae'
+  refine ⟨ms, TendstoInDistribution.tendsto ?_⟩
+  apply tendstoInDistribution_of_ae_tendsto (by fun_prop) (by fun_prop)
+  simpa using hms2
+
 variable [SeminormedAddCommGroup E] [SecondCountableTopology E] [BorelSpace E]
 
 /-- Let `X, Y` be two sequences of measurable functions such that `X n` converges in distribution
