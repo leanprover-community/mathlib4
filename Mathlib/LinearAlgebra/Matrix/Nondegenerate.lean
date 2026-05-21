@@ -126,29 +126,25 @@ section Determinant
 open scoped nonZeroDivisors
 variable [DecidableEq m] {M : Matrix m m R}
 
-theorem nondegenerate_of_det_mem_nonZeroDivisors (hM : M.det ∈ R⁰) :
-    Nondegenerate M := by
-  refine nondegenerate_def.mpr ⟨fun v h ↦ ?_, fun w h ↦ ?_⟩
-  · ext i
-    apply mem_nonZeroDivisors_iff_left.mp hM
-    simpa using h <| M.cramer <| Pi.single i 1
-  · ext i
-    apply mem_nonZeroDivisors_iff_left.mp hM
-    have h := h <| Pi.single i 1 ᵥ* M.adjugate
-    rw [dotProduct_mulVec, vecMul_vecMul, adjugate_mul, dotProduct] at h
-    simpa [one_apply] using h
+private theorem SeparatingLeft.of_det_mem_nonZeroDivisors (hM : M.det ∈ R⁰) : M.SeparatingLeft := by
+  refine separatingLeft_def.mpr fun v h ↦ funext fun i ↦ mem_nonZeroDivisors_iff_left.mp hM _ ?_
+  simpa using h <| M.cramer <| Pi.single i 1
+
+theorem Nondegenerate.of_det_mem_nonZeroDivisors (hM : M.det ∈ R⁰) : M.Nondegenerate where
+  separatingLeft := .of_det_mem_nonZeroDivisors hM
+  separatingRight := separatingLeft_transpose_iff.mp <| .of_det_mem_nonZeroDivisors <| by simpa
 
 /-- If `M` is square and has nonzero determinant, then `M` as a bilinear form on `n → R` is
 nondegenerate. The "iff" implication, `nondegenerate_iff_det_ne_zero`, is proved in a later file.
 
 See also `BilinForm.nondegenerateOfDetNeZero'` and `BilinForm.nondegenerateOfDetNeZero`.
 -/
-theorem nondegenerate_of_det_ne_zero [NoZeroDivisors R] (hM : M.det ≠ 0) : Nondegenerate M :=
-  nondegenerate_of_det_mem_nonZeroDivisors <| mem_nonZeroDivisors_of_ne_zero hM
+theorem nondegenerate_of_det_ne_zero [NoZeroDivisors R] (hM : M.det ≠ 0) : M.Nondegenerate :=
+  .of_det_mem_nonZeroDivisors <| mem_nonZeroDivisors_of_ne_zero hM
 
 theorem eq_zero_of_vecMul_eq_zero_of_det_mem_nonZeroDivisors (hM : M.det ∈ R⁰)
     {v : m → R} (hv : v ᵥ* M = 0) : v = 0 :=
-  nondegenerate_of_det_mem_nonZeroDivisors hM |>.eq_zero_of_vecMul_eq_zero hv
+  Nondegenerate.of_det_mem_nonZeroDivisors hM |>.eq_zero_of_vecMul_eq_zero hv
 
 theorem eq_zero_of_vecMul_eq_zero [NoZeroDivisors R] (hM : M.det ≠ 0) {v : m → R}
     (hv : v ᵥ* M = 0) : v = 0 :=
@@ -156,7 +152,7 @@ theorem eq_zero_of_vecMul_eq_zero [NoZeroDivisors R] (hM : M.det ≠ 0) {v : m �
 
 theorem eq_zero_of_mulVec_eq_zero_of_det_mem_nonZeroDivisors (hM : M.det ∈ R⁰)
     {v : m → R} (hv : M *ᵥ v = 0) : v = 0 :=
-  nondegenerate_of_det_mem_nonZeroDivisors hM |>.eq_zero_of_mulVec_eq_zero hv
+  Nondegenerate.of_det_mem_nonZeroDivisors hM |>.eq_zero_of_mulVec_eq_zero hv
 
 theorem eq_zero_of_mulVec_eq_zero [NoZeroDivisors R] (hM : M.det ≠ 0) {v : m → R}
     (hv : M *ᵥ v = 0) : v = 0 :=
