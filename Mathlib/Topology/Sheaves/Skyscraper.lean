@@ -423,6 +423,7 @@ noncomputable def skyscraperSheafForgetAdjunction [HasColimits C] :
     Presheaf.stalkFunctor C p₀ ⊣ skyscraperSheafFunctor p₀ ⋙ Sheaf.forget C X :=
   skyscraperPresheafStalkAdjunction p₀
 
+set_option backward.defeqAttrib.useBackward true in
 variable {A p₀} in
 /--
 On an open set not containing `p₀`, the value of skyscraper sheaf supported at `p₀` is a terminal
