@@ -66,4 +66,5 @@ def ContinuousLinearMap.evalL : E →L[𝕜] (E →L[𝕜] F) →L[𝕜] F :=
   LinearMap.toContinuousLinearMap.symm.toLinearMap |>.flip |>.toContinuousBilinearMap
 
 @[simp]
-lemma ContinuousLinearMap.evalL_apply (x : E) (φ : E →L[𝕜] F) : φ.evalL 𝕜 E F x = φ x := rfl
+lemma ContinuousLinearMap.evalL_apply (x : E) (φ : E →L[𝕜] F) :
+  ContinuousLinearMap.evalL 𝕜 E F x φ = φ x := rfl
