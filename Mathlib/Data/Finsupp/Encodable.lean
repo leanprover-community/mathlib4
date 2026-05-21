@@ -13,7 +13,7 @@ public import Mathlib.Data.DFinsupp.Encodable
 In this file we provide instances for `Encodable (α →₀ β)` and `Countable (α →₀ β)`.
 -/
 
-@[expose] public section
+public section
 
 instance {α β : Type*} [Encodable α] [Encodable β] [Zero β] [∀ x : β, Decidable (x ≠ 0)] :
     Encodable (α →₀ β) :=

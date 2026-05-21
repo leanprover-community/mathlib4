@@ -80,7 +80,7 @@ theorem lift_card_range_le {α} [Small.{v, u} α] {f : α → ZFSet.{v}} :
 
 theorem iSup_card_le_card_iUnion {α} [Small.{v, u} α] {f : α → ZFSet.{v}} :
     ⨆ i, card (f i) ≤ card (⋃ i, f i) := by
-  simpa [cardinalMk_coe_sort, ← coe_iUnion, ← lift_iSup (bddAbove_of_small _), -mem_iUnion] using
+  simpa [cardinalMk_coe_sort, ← coe_iUnion, ← lift_iSup bddAbove_of_small, -mem_iUnion] using
     iSup_mk_le_mk_iUnion (f := SetLike.coe ∘ f)
 
 theorem lift_card_iUnion_le_sum_card {α} [Small.{v, u} α] {f : α → ZFSet.{v}} :

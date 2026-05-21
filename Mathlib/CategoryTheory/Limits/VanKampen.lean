@@ -9,9 +9,7 @@ public import Mathlib.CategoryTheory.Adjunction.FullyFaithful
 public import Mathlib.CategoryTheory.Adjunction.Limits
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Equifibered
 public import Mathlib.CategoryTheory.Limits.Shapes.StrictInitial
-public import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
 public import Mathlib.CategoryTheory.Limits.Constructions.FiniteProductsOfBinaryProducts
-public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Basic
 
 /-!
 
@@ -313,9 +311,8 @@ theorem IsUniversalColimit.map_reflective
       all_goals simp only [c'', PreservesPullback.iso_hom_fst, PreservesPullback.iso_hom_snd,
           pullback.lift_fst, pullback.lift_snd, Category.assoc,
           Functor.mapCocone_ι_app, ← Gl.map_comp]
-      · rw [IsIso.comp_inv_eq, adj.counit_naturality]
-        dsimp [β]
-        rw [Category.comp_id]
+      · dsimp [β]
+        simp only [IsIso.comp_inv_eq, adj.counit_naturality, Category.comp_id]
       · rw [Gl.map_comp, hα'', Category.assoc, hc'']
         dsimp [β]
         rw [Category.comp_id, Category.assoc]
@@ -687,7 +684,7 @@ theorem isPullback_of_cofan_isVanKampen [HasInitial C] {ι : Type*} {X : ι → 
     split
     · subst ‹k = i›; rfl
     · simp
-  · refine mkCofanColimit _ (fun t ↦ (eqToHom (if_pos rfl).symm) ≫ t.inj i) ?_ ?_
+  · refine Cofan.IsColimit.mk _ (fun t ↦ (eqToHom (if_pos rfl).symm) ≫ t.inj i) ?_ ?_
     · intro t j
       simp only [Cofan.mk_pt, cofan_mk_inj]
       split

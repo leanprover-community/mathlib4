@@ -288,7 +288,7 @@ theorem continuous_extension : Continuous (Valued.extension : hat K → ValueGro
     rw [WithZeroTopology.tendsto_of_ne_zero vz₀_ne, eventually_comap]
     filter_upwards [nhds_right] with x x_in a ha
     rcases x_in with ⟨y, y_in, rfl⟩
-    have : (v.restrict (a * z₀⁻¹) ) = 1 := by
+    have : (v.restrict (a * z₀⁻¹)) = 1 := by
       rw [v.restrict_def, ValueGroup₀.restrict₀_eq_one_iff]
       apply hV
       have : (z₀⁻¹ : K) = (z₀ : hat K)⁻¹ := map_inv₀ (Completion.coeRingHom : K →+* hat K) z₀
@@ -506,7 +506,7 @@ noncomputable def valueGroup₀_equiv_extensionValuation :
         simp only [ne_eq, extension_eq_zero_iff, map_eq_zero]
         rw [← hy_def] at hy
         simpa [← hy] using hb0
-      simp only [h0, ↓reduceDIte,  h0', WithZero.coe_inj, Subtype.mk.injEq, Units.mk0_inj] at this
+      simp only [h0, ↓reduceDIte, h0', WithZero.coe_inj, Subtype.mk.injEq, Units.mk0_inj] at this
       erw [embedding_strictMono.injective.eq_iff, extension_extends, extension_extends] at this
       simp only [Valuation.restrict_def, Algebra.algebraMap_self, RingHom.id_apply] at this
       rw [hx, hy] at this

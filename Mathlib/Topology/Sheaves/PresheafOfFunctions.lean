@@ -36,11 +36,7 @@ There is no requirement that the functions are continuous, here.
 -/
 def presheafToTypes (T : X → Type*) : X.Presheaf (Type _) where
   obj U := ∀ x : U.unop, T x
-  map {_ V} i g := fun x : V.unop => g (i.unop x)
-  map_id U := by
-    ext g
-    rfl
-  map_comp {_ _ _} _ _ := rfl
+  map {_ V} i := ↾fun (g) (x : V.unop) => g (i.unop x)
 
 @[simp]
 theorem presheafToTypes_obj {T : X → Type*} {U : (Opens X)ᵒᵖ} :
@@ -49,7 +45,7 @@ theorem presheafToTypes_obj {T : X → Type*} {U : (Opens X)ᵒᵖ} :
 
 @[simp]
 theorem presheafToTypes_map {T : X → Type*} {U V : (Opens X)ᵒᵖ} {i : U ⟶ V} {f} :
-    (presheafToTypes X T).map i f = fun x => f (i.unop x) :=
+    dsimp% (presheafToTypes X T).map i f = fun x => f (i.unop x) :=
   rfl
 
 -- We don't just define this in terms of `presheafToTypes`,
@@ -63,11 +59,7 @@ There is no requirement that the functions are continuous, here.
 -/
 def presheafToType (T : Type*) : X.Presheaf (Type _) where
   obj U := U.unop → T
-  map {_ _} i g := g ∘ i.unop
-  map_id U := by
-    ext g
-    rfl
-  map_comp {_ _ _} _ _ := rfl
+  map {_ _} i := ↾fun g ↦ g ∘ i.unop
 
 @[simp]
 theorem presheafToType_obj {T : Type*} {U : (Opens X)ᵒᵖ} :
@@ -76,7 +68,7 @@ theorem presheafToType_obj {T : Type*} {U : (Opens X)ᵒᵖ} :
 
 @[simp]
 theorem presheafToType_map {T : Type*} {U V : (Opens X)ᵒᵖ} {i : U ⟶ V} {f} :
-    (presheafToType X T).map i f = f ∘ i.unop :=
+    dsimp% (presheafToType X T).map i f = f ∘ i.unop :=
   rfl
 
 /-- The presheaf of continuous functions on `X` with values in fixed target topological space

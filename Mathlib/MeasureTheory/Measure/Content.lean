@@ -135,8 +135,7 @@ theorem innerContent_of_isCompact {K : Set G} (h1K : IsCompact K) (h2K : IsOpen 
   le_antisymm (iSup₂_le fun _ hK' => μ.mono _ ⟨K, h1K⟩ hK') (μ.le_innerContent _ _ Subset.rfl)
 
 theorem innerContent_bot : μ.innerContent ⊥ = 0 := by
-  refine le_antisymm ?_ (zero_le _)
-  rw [← μ.empty]
+  rw [← nonpos_iff_eq_zero, ← μ.empty]
   refine iSup₂_le fun K hK => ?_
   have : K = ⊥ := by
     ext1

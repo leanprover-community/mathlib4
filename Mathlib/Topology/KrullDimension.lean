@@ -9,6 +9,7 @@ public import Mathlib.Order.KrullDimension
 public import Mathlib.Topology.Irreducible
 public import Mathlib.Topology.Homeomorph.Lemmas
 public import Mathlib.Topology.Sets.Closeds
+public import Mathlib.Topology.Sober
 
 /-!
 # The Krull dimension of a topological space
@@ -48,9 +49,6 @@ theorem IsInducing.topologicalKrullDim_le {f : Y → X} (hf : IsInducing f) :
     topologicalKrullDim Y ≤ topologicalKrullDim X :=
   krullDim_le_of_strictMono _ (map_strictMono_of_isInducing hf)
 
-@[deprecated (since := "2025-10-19")]
-alias IsClosedEmbedding.topologicalKrullDim_le := IsInducing.topologicalKrullDim_le
-
 /-- The topological Krull dimension is invariant under homeomorphisms -/
 theorem IsHomeomorph.topologicalKrullDim_eq (f : X → Y) (h : IsHomeomorph f) :
     topologicalKrullDim X = topologicalKrullDim Y :=
@@ -72,3 +70,21 @@ theorem topologicalKrullDim_zero_of_discreteTopology
   refine krullDim_nonpos_iff_forall_isMax.mpr fun Z Y h ↦ (h.antisymm' fun x hx ↦ ?_).le
   obtain ⟨z, hz⟩ := Z.2.nonempty
   rwa [DiscreteTopology.isDiscrete.subsingleton_of_isPreirreducible Y.2.isPreirreducible hx (h hz)]
+
+lemma Topology.IsOpenEmbedding.coheight_map {f : X → Y} (hf : IsOpenEmbedding f)
+    (Z : TopologicalSpace.IrreducibleCloseds X) :
+    Order.coheight (map f hf.continuous Z) = Order.coheight Z := by
+  rw [← coheight_orderIso (orderIsoOfIsOpenEmbedding f hf) Z]
+  refine .symm (coheight_eq_of_strictMono Subtype.val (Subtype.strictMono_coe _) ?_ _)
+  intro a b hlt
+  exact ⟨⟨b, a.2.mono (Set.preimage_mono hlt.le)⟩, hlt, rfl⟩
+
+attribute [local instance] specializationOrder in
+lemma Topology.IsOpenEmbedding.coheight_eq [QuasiSober Y] [T0Space Y] [QuasiSober X] [T0Space X]
+    {x : X} (f : X → Y) (hf : IsOpenEmbedding f) : coheight (f x) = coheight x := by
+  rw [← coheight_orderIso (irreducibleSetEquivPoints (α := Y)).symm (f x),
+    ← coheight_orderIso (irreducibleSetEquivPoints (α := X)).symm x,
+    ← Topology.IsOpenEmbedding.coheight_map hf]
+  congr
+  ext : 1
+  simp [closure_image_closure hf.continuous]

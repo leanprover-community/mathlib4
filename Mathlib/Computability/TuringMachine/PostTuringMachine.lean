@@ -1008,16 +1008,7 @@ theorem tr_respects : Respects (TM0.step M) (TM1.step (tr M)) fun a b ↦ trCfg 
         | TM0.Stmt.write a => T.write a⟩ := by
       cases s <;> rfl
     intro e
-    refine TransGen.head ?_ (TransGen.head' this ?_)
-    · simp only [TM1.step, TM1.stepAux, tr]
-      rw [e]
-      rfl
-    cases e' : M q' _
-    · apply ReflTransGen.single
-      simp only [TM1.step, TM1.stepAux, tr]
-      rw [e']
-      rfl
-    · rfl
+    refine TransGen.head ?_ (TransGen.head' this ?_) <;> grind [TM1.step, TM1.stepAux, tr]
 
 end TM0to1
 

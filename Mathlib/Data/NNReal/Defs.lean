@@ -59,10 +59,27 @@ def NNReal := { r : ℝ // 0 ≤ r }
 
 namespace NNReal
 
+@[inherit_doc] scoped notation "ℝ≥0" => NNReal
+
+/-- Coercion `ℝ≥0 → ℝ`. -/
+@[coe] def toReal : ℝ≥0 → ℝ := Subtype.val
+
+instance : Coe ℝ≥0 ℝ := ⟨toReal⟩
+
+/-- Constructor of ℝ≥0 from a nonnegative real number.
+
+Important: You should use `NNReal.mk` instead of the anonymous constructor `⟨_, _⟩` to avoid abuse
+of the definitional equality between `ℝ≥0` and `{ r : ℝ // 0 ≤ r }`. -/
+protected def mk (x : ℝ) (hx : 0 ≤ x) : ℝ≥0 := ⟨x, hx⟩
+
+instance : Zero ℝ≥0 := ⟨.mk 0 le_rfl⟩
+instance : One ℝ≥0 := ⟨.mk 1 zero_le_one⟩
+instance : Bot ℝ≥0 := ⟨0⟩
+
 deriving instance
   Nontrivial, Inhabited,
   PartialOrder, SemilatticeSup, SemilatticeInf, DistribLattice,
-  Zero, One, Semiring, CommMonoidWithZero, CommSemiring, AddCancelCommMonoid,
+  Semiring, CommMonoidWithZero, CommSemiring, AddCancelCommMonoid,
   Sub, OrderedSub, OrderBot,
   CanonicallyOrderedAdd, NoZeroDivisors, DenselyOrdered,
   Archimedean, MulArchimedean, IsOrderedRing, IsStrictOrderedRing
@@ -72,16 +89,7 @@ noncomputable section
 deriving instance LinearOrder for NNReal
 end
 
-
-@[inherit_doc] scoped notation "ℝ≥0" => NNReal
-
-/-- Coercion `ℝ≥0 → ℝ`. -/
-@[coe] def toReal : ℝ≥0 → ℝ := Subtype.val
-
-instance : Coe ℝ≥0 ℝ := ⟨toReal⟩
-
-/-- Constructor of ℝ≥0 from a nonnegative real number -/
-protected def mk (x : ℝ) (hx : 0 ≤ x) : ℝ≥0 := ⟨x, hx⟩
+example : (0 : ℝ≥0) = ⊥ := by with_reducible_and_instances rfl
 
 -- a computable copy of `Nonneg.instNNRatCast`
 instance : NNRatCast ℝ≥0 where nnratCast r := ⟨r, r.cast_nonneg⟩
@@ -329,7 +337,7 @@ set_option backward.privateInPublic true in
 @[simp, norm_cast] lemma coe_le_one : (r : ℝ) ≤ 1 ↔ r ≤ 1 := by rw [← coe_le_coe, coe_one]
 @[simp, norm_cast] lemma coe_lt_one : (r : ℝ) < 1 ↔ r < 1 := by rw [← coe_lt_coe, coe_one]
 
-@[mono] lemma coe_mono : Monotone ((↑) : ℝ≥0 → ℝ) := fun _ _ => NNReal.coe_le_coe.2
+@[gcongr, mono] lemma coe_mono : Monotone ((↑) : ℝ≥0 → ℝ) := fun _ _ => NNReal.coe_le_coe.2
 
 protected theorem _root_.Real.toNNReal_monotone : Monotone Real.toNNReal := fun _ _ h =>
   max_le_max_right _ h
@@ -347,13 +355,15 @@ theorem mk_natCast (n : ℕ) : NNReal.mk (n : ℝ) (n.cast_nonneg) = n :=
   NNReal.eq (NNReal.coe_natCast n).symm
 
 @[simp]
-theorem _root_.Real.toNNReal_coe_nat (n : ℕ) : Real.toNNReal n = n :=
+theorem _root_.Real.toNNReal_natCast (n : ℕ) : Real.toNNReal n = n :=
   NNReal.eq <| by simp [Real.coe_toNNReal]
+
+@[deprecated (since := "2026-05-19")] alias _root_.Real.toNNReal_coe_nat := Real.toNNReal_natCast
 
 @[simp]
 theorem _root_.Real.toNNReal_ofNat (n : ℕ) [n.AtLeastTwo] :
     Real.toNNReal ofNat(n) = OfNat.ofNat n :=
-  Real.toNNReal_coe_nat n
+  Real.toNNReal_natCast n
 
 /-- `Real.toNNReal` and `NNReal.toReal : ℝ≥0 → ℝ` form a Galois insertion. -/
 def gi : GaloisInsertion Real.toNNReal (↑) :=
@@ -445,7 +455,7 @@ theorem coe_sSup (s : Set ℝ≥0) : (↑(sSup s) : ℝ) = sSup (((↑) : ℝ≥
     exact (@subset_sSup_of_within ℝ (Set.Ici (0 : ℝ)) _ _ (_) s hs H A).symm
   · simp only [csSup_of_not_bddAbove H, csSup_empty, bot_eq_zero', NNReal.coe_zero]
     apply (Real.sSup_of_not_bddAbove ?_).symm
-    contrapose! H
+    contrapose H
     exact bddAbove_coe.1 H
 
 @[simp, norm_cast]
@@ -489,10 +499,10 @@ theorem lt_iff_exists_rat_btwn (a b : ℝ≥0) :
 theorem bot_eq_zero : (⊥ : ℝ≥0) = 0 := rfl
 
 theorem mul_sup (a b c : ℝ≥0) : a * (b ⊔ c) = a * b ⊔ a * c :=
-  mul_max_of_nonneg _ _ <| zero_le a
+  mul_max_of_nonneg _ _ zero_le
 
 theorem sup_mul (a b c : ℝ≥0) : (a ⊔ b) * c = a * c ⊔ b * c :=
-  max_mul_of_nonneg _ _ <| zero_le c
+  max_mul_of_nonneg _ _ zero_le
 
 @[simp, norm_cast]
 theorem coe_max (x y : ℝ≥0) : ((max x y : ℝ≥0) : ℝ) = max (x : ℝ) (y : ℝ) :=
@@ -699,7 +709,7 @@ end Mul
 section Pow
 
 theorem pow_antitone_exp {a : ℝ≥0} (m n : ℕ) (mn : m ≤ n) (a1 : a ≤ 1) : a ^ n ≤ a ^ m :=
-  pow_le_pow_of_le_one (zero_le a) a1 mn
+  pow_le_pow_of_le_one zero_le a1 mn
 
 nonrec theorem exists_pow_lt_of_lt_one {a b : ℝ≥0} (ha : 0 < a) (hb : b < 1) :
     ∃ n : ℕ, b ^ n < a := by
@@ -739,7 +749,7 @@ end Sub
 section Inv
 
 @[simp]
-theorem inv_mk {r : ℝ} (hr : 0 ≤ r) : (NNReal.mk r hr)⁻¹  = .mk (r⁻¹) (inv_nonneg.2 hr) := rfl
+theorem inv_mk {r : ℝ} (hr : 0 ≤ r) : (NNReal.mk r hr)⁻¹ = .mk (r⁻¹) (inv_nonneg.2 hr) := rfl
 
 @[simp]
 theorem inv_le {r p : ℝ≥0} (h : r ≠ 0) : r⁻¹ ≤ p ↔ 1 ≤ r * p := by
@@ -767,7 +777,7 @@ theorem mul_lt_of_lt_div {a b r : ℝ≥0} (h : a < b / r) : a * r < b :=
 
 theorem le_of_forall_lt_one_mul_le {x y : ℝ≥0} (h : ∀ a < 1, a * x ≤ y) : x ≤ y :=
   le_of_forall_lt_imp_le_of_dense fun a ha => by
-    have hx : x ≠ 0 := pos_iff_ne_zero.1 (lt_of_le_of_lt (zero_le _) ha)
+    have hx : x ≠ 0 := ha.ne_zero
     have hx' : x⁻¹ ≠ 0 := by rwa [Ne, inv_eq_zero]
     have : a * x⁻¹ < 1 := by rwa [← lt_inv_iff_mul_lt hx', inv_inv]
     have : a * x⁻¹ * x ≤ y := h _ this
@@ -901,6 +911,9 @@ theorem coe_toNNReal_le (x : ℝ) : (toNNReal x : ℝ) ≤ |x| :=
   max_le (le_abs_self _) (abs_nonneg _)
 
 @[simp] lemma toNNReal_abs (x : ℝ) : |x|.toNNReal = nnabs x := NNReal.coe_injective <| by simp
+
+@[simp high] lemma nnabs_natCast (n : ℕ) : nnabs n = n := by simp
+@[simp high] lemma nnabs_ofNat (n : ℕ) [n.AtLeastTwo] : nnabs ofNat(n) = ofNat(n) := by simp
 
 theorem cast_natAbs_eq_nnabs_cast (n : ℤ) : (n.natAbs : ℝ≥0) = nnabs n := by
   ext

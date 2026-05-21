@@ -22,7 +22,7 @@ We show that this property is local, and are stable under compositions and base 
 
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -62,6 +62,10 @@ instance (priority := 900) [IsOpenImmersion f] : Flat f :=
 
 instance : MorphismProperty.IsStableUnderComposition @Flat :=
   HasRingHomProperty.stableUnderComposition RingHom.Flat.stableUnderComposition
+
+@[simp]
+lemma SpecMap_iff {R S : CommRingCat.{u}} {f : R ⟶ S} : Flat (Spec.map f) ↔ f.hom.Flat :=
+  HasRingHomProperty.Spec_iff
 
 instance comp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z)
     [hf : Flat f] [hg : Flat g] : Flat (f ≫ g) :=
@@ -166,6 +170,10 @@ lemma flat_and_surjective_iff_faithfullyFlat_of_isAffine [IsAffine X] [IsAffine 
 
 end Flat
 
+lemma Scheme.Hom.flat_appTop [IsAffine X] [IsAffine Y] [Flat f] :
+    f.appTop.hom.Flat :=
+  HasRingHomProperty.appTop (P := @Flat) _ inferInstance
+
 lemma flat_and_surjective_SpecMap_iff {R S : CommRingCat.{u}} (f : R ⟶ S) :
     Flat (Spec.map f) ∧ Surjective (Spec.map f) ↔ f.hom.FaithfullyFlat := by
   rw [HasRingHomProperty.Spec_iff (P := @Flat),
@@ -210,7 +218,6 @@ variable {X Y S T : Scheme.{u}} {f : T ⟶ S} {g : Y ⟶ X} {iX : X ⟶ S} {iY :
   {UX : X.Opens} (hUST : UT ≤ f ⁻¹ᵁ US) (hUSX : UX ≤ iX ⁻¹ᵁ US)
   {UY : Y.Opens} (hUY : UY = g ⁻¹ᵁ UX ⊓ iY ⁻¹ᵁ UT)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The canonical map `Γ(X, Uₓ) ⊗[Γ(S, Uₛ)] Γ(T, Uₜ) ⟶ Γ(X ×ₛ T, pr₁ ⁻¹ Uₓ ∩ pr₂ ⁻¹ Uₜ)`.
 This is an isomorphism under various circumstances. -/
 abbrev pushoutSection : pushout (iX.appLE US UX hUSX) (f.appLE US UT hUST) ⟶ Γ(Y, UY) :=

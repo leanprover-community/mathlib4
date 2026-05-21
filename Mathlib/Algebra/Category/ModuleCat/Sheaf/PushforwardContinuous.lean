@@ -53,6 +53,12 @@ over the sheaf of rings `R.over X` on the category `Over X`. -/
 noncomputable abbrev over (M : SheafOfModules.{v} R) (X : D) : SheafOfModules.{v} (R.over X) :=
   (pushforward.{v} (𝟙 _)).obj M
 
+/-- Given a map `f : M ⟶ N` between sheaves of modules over `R`, this is the restriction
+to the map `M.over X ⟶ N.over X` between sheaves of modules over `R.over X`. -/
+noncomputable abbrev Hom.over {M N : SheafOfModules.{v} R} (f : M ⟶ N) (X : D) :
+    M.over X ⟶ N.over X :=
+  (pushforward.{v} (𝟙 _)).map f
+
 section
 
 variable (R) in
@@ -89,7 +95,6 @@ variable {K' : GrothendieckTopology D'} {K'' : GrothendieckTopology D''}
   [Functor.IsContinuous G K K'] [Functor.IsContinuous (F ⋙ G) J K']
   (ψ : R ⟶ (G.sheafPushforwardContinuous RingCat.{u} K K').obj R')
 
-#adaptation_note /-- After nightly-2026-02-23 we need this to avoid timeouts. -/
 /-- The composition of two pushforward functors on categories of sheaves of modules
 identify to the pushforward for the composition. -/
 noncomputable def pushforwardComp :

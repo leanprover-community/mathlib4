@@ -39,7 +39,7 @@ open Complex (exp I)
 
 private lemma exp_sub_one_ne_zero {n : ℕ} {k : ℤ} (hn : n ≠ 0) (hk : ¬ (2 * n : ℤ) ∣ k) :
     exp (k / n * π * I) ≠ 1 := by
-  contrapose! hk
+  contrapose hk
   obtain ⟨m, hx⟩ := Complex.exp_eq_one_iff.mp hk
   have h : k = 2 * n * m := by
     apply (@Int.cast_inj ℂ _ _).mp
@@ -72,7 +72,7 @@ noncomputable def sumZeroes (n : ℕ) (P : ℝ[X]) : ℝ :=
 @[simp]
 theorem sumZeroes_sum (n : ℕ) {ι : Type*} (s : Finset ι) (P : ι → ℝ[X]) :
     sumZeroes n (∑ i ∈ s, P i) = ∑ i ∈ s, sumZeroes n (P i) := by
-  simp_rw [sumZeroes, eval_finset_sum]
+  simp_rw [sumZeroes, eval_finsetSum]
   rw [sum_comm, mul_sum]
 
 @[simp]
@@ -114,8 +114,8 @@ theorem integral_eq_sumZeroes {n : ℕ} {P : ℝ[X]} (hn : n ≠ 0) (hP : P.degr
     show Set.Iio (2 * n) = Finset.range (2 * n) by simp,
     Submodule.mem_span_image_finset_iff_exists_fun'] at hmem
   obtain ⟨c, rfl⟩ := hmem
-  simp_rw [eval_finset_sum, eval_smul]
-  rw [MeasureTheory.integral_finset_sum, sumZeroes_sum]
+  simp_rw [eval_finsetSum, eval_smul]
+  rw [MeasureTheory.integral_finsetSum, sumZeroes_sum]
   · simp_rw [sumZeroes_smul, smul_eq_mul, MeasureTheory.integral_const_mul]
     congr! with i hrange
     simp_rw [chebyshevTsequence]
