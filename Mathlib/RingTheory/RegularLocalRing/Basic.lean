@@ -6,12 +6,9 @@ Authors: Nailin Guan
 module
 
 public import Mathlib.LinearAlgebra.Dimension.OrzechProperty
-public import Mathlib.RingTheory.DiscreteValuationRing.TFAE
 public import Mathlib.RingTheory.LocalRing.MaximalIdeal.Square
-public import Mathlib.RingTheory.RegularLocalRing.Defs
-public import Mathlib.RingTheory.Ideal.KrullsHeightTheorem
-public import Mathlib.RingTheory.KrullDimension.Field
 public import Mathlib.RingTheory.Regular.RegularSequence
+public import Mathlib.RingTheory.RegularLocalRing.Defs
 
 /-!
 
