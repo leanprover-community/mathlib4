@@ -239,7 +239,7 @@ structure Type₁ where
   /-- the dimension of the 1-codimensional face -/
   d : ℕ
   hd : x.dim = d + 1
-  /-- the index attached to the type (II) simplex -/
+  /-- the index attached to the corresponding type (II) simplex -/
   index : Fin (d + 1)
   isIndex : IsIndex x hd index.succ
 
@@ -392,7 +392,6 @@ lemma δ_simplex :
   ext i : 2
   dsimp only [simplex]
   rw [objEquiv_δ_apply, Equiv.apply_symm_apply, OrderHom.coe_mk, φ_succAbove]
-  dsimp
   rfl
 
 lemma notMem_simplex :
@@ -423,7 +422,7 @@ variable {hd : x.dim = d + 1} {l : Fin (d + 1)} (hl : IsIndex x hd l.succ)
 include hl
 
 set_option backward.isDefEq.respectTransparency false in
-lemma min_δ : min hl.δ (show _ = d from rfl) = l := by
+lemma min_δ : min (d := d) hl.δ rfl = l := by
   refine le_antisymm (Finset.min'_le _ _ ?_)
     (Finset.le_min' _ _ _ (fun y hy ↦ ?_))
   · simp only [mem_finset_iff]
@@ -488,7 +487,6 @@ lemma IsType₂.type₁_eq_of_δ_eq
   refine ⟨rfl, objEquiv.injective ?_⟩
   ext i : 2
   change φ s.δ rfl i = _
-  let X : SSet.{u} := Δ[m + 1] ⊗ Δ[n]
   by_cases! hi : i = s.index.castSucc
   · subst hi
     conv_lhs => rw [← s.isIndex.min_δ]
@@ -562,17 +560,11 @@ noncomputable def pairingCore {m : ℕ} (k : Fin (m + 1)) (n : ℕ) :
       rw [S.ext_iff']
       exact ⟨hd, (hx.δ_simplex hd).symm⟩
     · simp only [IsType₂, not_forall, not_not] at hx
-      obtain ⟨d, hd, i, hx⟩ := hx
-      obtain _ | d := d
+      obtain ⟨_ | d, hd, i, hx⟩ := hx
       · fin_cases i
         simp at hx
       · obtain ⟨i, rfl⟩ := Fin.eq_succ_of_ne_zero (i := i) (by rintro rfl; simp at hx)
-        refine ⟨{
-          x := x
-          d := d
-          hd := hd
-          index := i
-          isIndex := hx }, Or.inl ?_⟩
+        refine ⟨{ x := x, d := d, hd := hd, index := i, isIndex := hx }, Or.inl ?_⟩
         dsimp
         rw [S.ext_iff']
         exact ⟨hd, rfl⟩
@@ -596,7 +588,6 @@ noncomputable def weakRankFunction {m : ℕ} (k : Fin (m + 1)) (n : ℕ) :
     obtain rfl : ds = d + 1 := hds
     obtain rfl : dt = d + 1 := hdt
     simp only [ne_eq, pairingCore_ι, Type₁.ext_iff] at h₁
-    change N.mk ((Δ[m + 1] ⊗ Δ[n]).δ is.castSucc s) _ < N.mk t _ at h₂
     obtain ⟨f, hf, hδ⟩ := N.le_iff_exists_mono.1 h₂.le
     dsimp at f hf
     obtain ⟨i, rfl⟩ := SimplexCategory.eq_δ_of_mono f
@@ -626,9 +617,7 @@ noncomputable def weakRankFunction {m : ℕ} (k : Fin (m + 1)) (n : ℕ) :
         · have : is.castSucc ∉ Ss := fun h ↦ by
             have : s.1 is.castSucc ≤ k.castSucc := by
               simpa using (hs.simplex_fst_le_castSucc_iff is.castSucc).2 (by simp)
-            simp only [Subcomplex.N.mk_dim, mem_finset_iff, S.cast_simplex_rfl,
-              Subcomplex.N.mk_simplex, Ss] at h
-            simp [h] at this
+            simp_all [Ss]
           simpa
         · simp [hSs]
       · suffices St = Finset.image it.succ.succAbove Sδ ∪ {it.succ} by
