@@ -292,19 +292,30 @@ lemma sConvexComb_map (w : StdSimplex R I) (f : I → M) :
 @[simp] lemma iConvexComb_single (i : I) (f : I → M) :
     (single (R := R) i).iConvexComb f = f i := by simp [iConvexComb]
 
-@[simp] lemma iConvexComb_id (s : StdSimplex R M) :
-    s.iConvexComb id = s.sConvexComb := by simp [iConvexComb]
+lemma iConvexComb_id (w : StdSimplex R M) : w.iConvexComb id = w.sConvexComb := by
+  simp [iConvexComb]
 
-@[simp] lemma iConvexComb_id' (s : StdSimplex R M) :
-    s.iConvexComb (fun x ↦ x) = s.sConvexComb := iConvexComb_id s
+@[simp] lemma iConvexComb_id' (w : StdSimplex R M) :
+    w.iConvexComb (fun x ↦ x) = w.sConvexComb := iConvexComb_id _
 
 @[simp] lemma iConvexComb_map (s : StdSimplex R I) (f : I → J) (g : J → M) :
     (s.map f).iConvexComb g = s.iConvexComb (g ∘ f) := by
   simp only [iConvexComb, map_comp]
 
-lemma iConvexComb_congr (s : StdSimplex R I) (f : I ≃ J) (g : I → M) :
+@[congr] lemma iConvexComb_congr {w : StdSimplex R I} {f g : I → M}
+    (hfg : ∀ i, w.weights i ≠ 0 → f i = g i) :
+    w.iConvexComb f = w.iConvexComb g := by
+  refine congr(sConvexComb $(?_))
+  ext i
+  simp only [weights_map]
+  -- TODO: This should just be `congr! 2 with i hi`.
+  congr 1
+  refine Finsupp.mapDomain_congr fun i hi ↦ ?_
+  exact hfg i (by simpa using hi)
+
+lemma iConvexComb_reindex (s : StdSimplex R I) (f : I ≃ J) (g : I → M) :
     s.iConvexComb g = (s.map f).iConvexComb (g ∘ f.symm) := by
-  simp [iConvexComb_map, Function.comp_def]
+  simp [iConvexComb_map]
 
 /-- Flattening nested `iConvexComb`s.
 
@@ -347,7 +358,7 @@ lemma iConvexComb_comm (f : StdSimplex R I) (g : StdSimplex R J)
     (e : I → J → M) :
     f.iConvexComb (fun i ↦ g.iConvexComb (e i)) =
       g.iConvexComb fun j ↦ f.iConvexComb fun i ↦ e i j := by
-  rw [iConvexComb_assoc', iConvexComb_assoc', iConvexComb_congr _ (.prodComm ..)]
+  rw [iConvexComb_assoc', iConvexComb_assoc', iConvexComb_reindex _ (.prodComm ..)]
   congr
   suffices (f.map fun x ↦ g.map (Prod.mk · x)).sConvexComb =
       (g.map (f.map ∘ Prod.mk)).sConvexComb by
@@ -494,7 +505,7 @@ lemma iConvexComb_convexCombPair_comm (f : StdSimplex R I) (e₁ e₂ : I → M)
     f.iConvexComb (fun x ↦ convexCombPair s t hs ht h (e₁ x) (e₂ x)) =
       convexCombPair s t hs ht h (f.iConvexComb e₁) (f.iConvexComb e₂) := by
   simp only [convexCombPair_def]
-  convert (iConvexComb_comm (.duple 0 1 hs ht h) f ![e₁, e₂]).symm with i j j
+  convert (iConvexComb_comm (.duple 0 1 hs ht h) f ![e₁, e₂]).symm with i _ j _ j
   · fin_cases j <;> simp
   · fin_cases j <;> simp
 

@@ -6,7 +6,7 @@ Authors: Kim Morrison
 module
 
 public import Mathlib.CategoryTheory.Comma.StructuredArrow.Basic
-public import Mathlib.CategoryTheory.Category.Cat
+public import Mathlib.CategoryTheory.EssentiallySmall
 public import Mathlib.CategoryTheory.ObjectProperty.Small
 
 /-!
