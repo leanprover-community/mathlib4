@@ -184,7 +184,7 @@ lemma NormedDivisionRing.toNormSMulClass : NormSMulClass α β where
 
 end NormedDivisionRing
 
-section NormdDivisionRingModule
+section NormedDivisionRingModule
 variable [NormedDivisionRing α] [SeminormedAddCommGroup β] [Module α β] [NormSMulClass α β]
 
 theorem Metric.smul_image_ball {s : α} (hs : s ≠ 0) (x : β) (ε : ℝ) :
@@ -216,4 +216,4 @@ theorem Metric.smul_image_sphere {s : α} (hs : s ≠ 0) (x : β) (ε : ℝ) :
   simp_rw [← Metric.closedBall_diff_ball, Set.image_diff (smul_right_injective β hs),
     smul_image_ball hs, smul_image_closedBall hs]
 
-end NormdDivisionRingModule
+end NormedDivisionRingModule
