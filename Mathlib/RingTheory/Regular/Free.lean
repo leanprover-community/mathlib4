@@ -39,23 +39,18 @@ private instance finite_QuotSMulTop (M : Type*) [AddCommGroup M] [Module R M] [M
     (x : R) : Module.Finite (R ⧸ Ideal.span {x}) (QuotSMulTop x M) :=
   Module.Finite.of_restrictScalars_finite R _ _
 
-open Pointwise in
-lemma LinearMap.ker_mapRange_eq_smul_top (I : Type*) [Finite I] (x : R) :
-    LinearMap.ker (Finsupp.mapRange.linearMap (Submodule.mkQ (Ideal.span {x}))) =
-    x • (⊤ : Submodule R (I →₀ R)) := by
+lemma LinearMap.ker_mapRange_mkQ_eq_smul_top (ι : Type*) (I : Ideal R) :
+    LinearMap.ker (Finsupp.mapRange.linearMap I.mkQ) = I • (⊤ : Submodule R (ι →₀ R)) := by
   ext y
   simp only [Finsupp.ker_mapRange, Submodule.ker_mkQ, Finsupp.mem_submodule_iff]
   refine ⟨fun h ↦ ?_, fun h i ↦ ?_⟩
-  · let : Fintype I := Fintype.ofFinite I
-    simp only [Ideal.mem_span_singleton', mul_comm] at h
-    rw [← Finsupp.univ_sum_single y]
+  · rw [← Finsupp.sum_single y]
     refine Submodule.sum_mem _ (fun i _ ↦ ?_)
-    rcases h i with ⟨z, hz⟩
-    simpa only [← hz, ← Finsupp.smul_single'] using
-      Submodule.smul_mem_pointwise_smul (Finsupp.single i z) x ⊤ trivial
-  · rcases (Submodule.mem_smul_pointwise_iff_exists _ _ _).mp h with ⟨z, _, eq⟩
-    simpa [← eq] using
-      Ideal.IsTwoSided.mul_mem_of_left (z i) (Ideal.mem_span_singleton_self x)
+    rw [← mul_one (y i), ← smul_eq_mul _ 1, ← Finsupp.smul_single]
+    exact Submodule.smul_mem_smul (h i) trivial
+  · induction h using Submodule.smul_induction_on' with
+    | smul r hr m _ => simpa using I.mul_mem_right (m i) hr
+    | add x _ y _ xmem ymem => simpa using add_mem xmem ymem
 
 open Pointwise in
 lemma free_iff_quotSMulTop_free [IsLocalRing R] [IsNoetherianRing R] (M : Type*) [AddCommGroup M]
@@ -81,7 +76,7 @@ lemma free_iff_quotSMulTop_free [IsLocalRing R] [IsNoetherianRing R] (M : Type*)
         Submodule.ideal_span_singleton_smul x ⊤, hg]
       exact LinearMap.range_eq_top_of_surjective f surjf
     have kerf : LinearMap.ker f = x • (⊤ : Submodule R (I →₀ R)) := by
-      simpa only [LinearEquiv.ker_comp, f] using LinearMap.ker_mapRange_eq_smul_top R I x
+      simp [f, LinearMap.ker_mapRange_mkQ_eq_smul_top, Submodule.ideal_span_singleton_smul]
     have injg : Function.Injective g := by
       rw [← LinearMap.ker_eq_bot]
       have fg : (LinearMap.ker g).FG := IsNoetherian.noetherian (LinearMap.ker g)
