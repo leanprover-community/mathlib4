@@ -58,7 +58,7 @@ section Field
 lemma isGeometricallyReduced_field_iff (k A : Type*) [Field k] [Ring A] [Algebra k A] :
     IsGeometricallyReduced k A ↔ IsReduced (AlgebraicClosure k ⊗[k] A) := by
   let e (p : Ideal k) [p.IsPrime] : AlgebraicClosure k ≃ₐ[k] AlgebraicClosure p.ResidueField :=
-    have := p.AlgEquivResidueFieldOfField.isAlgebraic
+    have := p.algEquivResidueFieldOfField.isAlgebraic
     IsAlgClosure.equiv k _ _
   refine ⟨fun ⟨h⟩ ↦ ?_, fun h ↦ ⟨fun p hp ↦ ?_⟩⟩
   · exact isReduced_of_injective _ (Algebra.TensorProduct.congr (e ⊥) AlgEquiv.refl).injective
