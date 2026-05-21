@@ -26,7 +26,7 @@ namespace Matrix
 
 section Finite
 
-variable {m n R A : Type*} [CommRing R] [Finite m] [Finite n] (M : Matrix m n R)
+variable {m n R A : Type*} [NonUnitalNonAssocSemiring R] [Finite m] [Finite n] (M : Matrix m n R)
 
 attribute [local instance] Fintype.ofFinite
 
