@@ -88,7 +88,7 @@ theorem vars_C : (C r : MvPolynomial σ R).vars = ∅ := by
 
 @[simp]
 theorem vars_X [Nontrivial R] : (X n : MvPolynomial σ R).vars = {n} := by
-  rw [X, vars_monomial (one_ne_zero' R), Finsupp.support_single_ne_zero _ (one_ne_zero' ℕ)]
+  rw [X, vars_monomial (one_ne_zero' R), Finsupp.support_single _ (one_ne_zero' ℕ)]
 
 theorem mem_vars_iff_mem_support (i : σ) : i ∈ p.vars ↔ ∃ d ∈ p.support, i ∈ d.support := by
   classical simp only [vars_def, Multiset.mem_toFinset, mem_degrees, mem_support_iff]
@@ -218,7 +218,7 @@ theorem vars_map_of_injective (hf : Injective f) : (map f p).vars = p.vars := by
 
 theorem vars_monomial_single (i : σ) {e : ℕ} {r : R} (he : e ≠ 0) (hr : r ≠ 0) :
     (monomial (Finsupp.single i e) r).vars = {i} := by
-  rw [vars_monomial hr, Finsupp.support_single_ne_zero _ he]
+  rw [vars_monomial hr, Finsupp.support_single _ he]
 
 theorem vars_eq_support_biUnion_support [DecidableEq σ] :
     p.vars = p.support.biUnion Finsupp.support := by

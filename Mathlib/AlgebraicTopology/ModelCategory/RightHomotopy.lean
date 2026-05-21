@@ -85,6 +85,24 @@ def precomp {f g : X ⟶ Y} (h : P.RightHomotopy f g) {Z : C} (i : Z ⟶ X) :
     P.RightHomotopy (i ≫ f) (i ≫ g) where
   h := i ≫ h.h
 
+/-- Right homotopies in a full subcategory identify to right homotopies in the
+ambient category. -/
+noncomputable def fullSubcategoryEquiv {P : ObjectProperty C} {X Y : P.FullSubcategory}
+    {Q : PrepathObject Y} {f g : X ⟶ Y} :
+    Q.RightHomotopy f g ≃ (Q.map P.ι).RightHomotopy f.hom g.hom where
+  toFun h :=
+    { h := h.h.hom
+      h₀ := by
+        dsimp
+        simp only [← h.h₀, ObjectProperty.FullSubcategory.comp_hom]
+      h₁ := by
+        dsimp
+        simp only [← h.h₁, ObjectProperty.FullSubcategory.comp_hom] }
+  invFun h :=
+    { h := P.homMk h.h
+      h₀ := by ext; exact h.h₀
+      h₁ := by ext; exact h.h₁ }
+
 end RightHomotopy
 
 end PrepathObject

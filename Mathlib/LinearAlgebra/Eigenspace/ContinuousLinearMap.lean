@@ -6,7 +6,7 @@ Authors: Thomas Browning
 module
 
 public import Mathlib.LinearAlgebra.Eigenspace.Basic
-public import Mathlib.Topology.Algebra.Module.LinearMap
+public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Basic
 
 /-!
 # Eigenspaces of continuous linear maps
