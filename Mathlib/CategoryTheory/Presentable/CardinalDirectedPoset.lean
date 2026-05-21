@@ -135,6 +135,15 @@ instance (A : Type u) [SmallCategory A] [IsCardinalFiltered A κ] :
   change PreservesColimitsOfShape A (CardinalFilteredPoset.ι ⋙ forget _)
   infer_instance
 
+instance (J : CardinalFilteredPoset κ) (κ' : Cardinal.{u}) [Fact κ'.IsRegular] :
+    IsCardinalFiltered (WithTop (J.obj)) κ' :=
+  isCardinalFiltered_of_hasTerminal _ _
+
+/-- The map `CardinalFilteredPoset κ → CardinalFilteredPoset κ` which sends
+a partially ordered `κ`-filtered type `J` to `WithTop J`. -/
+abbrev withTop (J : CardinalFilteredPoset κ) : CardinalFilteredPoset κ :=
+  .of (.of (WithTop J.obj))
+
 variable (κ) in
 /-- The property of posets in `CardinalFilteredPoset κ` that are
 of cardinality `< κ` and have terminal object. -/
@@ -209,21 +218,20 @@ namespace coconeWithTop
 
 variable (J : CardinalFilteredPoset κ)
 
-instance (κ' : Cardinal.{u}) [Fact κ'.IsRegular] :
-    IsCardinalFiltered (WithTop (J.obj)) κ' :=
-  isCardinalFiltered_of_hasTerminal _ _
-
-abbrev withTop : CardinalFilteredPoset κ := .of (.of (WithTop J.obj))
-
+/-- Given two regular cardinals `κ ≤ κ'` and `J : CardinalFilteredPoset κ`,
+this is the partially ordered set consisting of subsets `S` of `J.withTop`
+that are of cardinality `< κ'` and contain `⊤`.
+See `CardinalFilteredPoset.isColimitCoconeWithTop` for the fact that `withTop J`
+identifies to the colimit of such `S`. -/
 @[nolint unusedArguments]
 def indexSet {κ' : Cardinal.{u}} [Fact κ'.IsRegular] (_ : κ ≤ κ') :
-    Set (Set (withTop J).obj) :=
+    Set (Set J.withTop.obj) :=
   setOf (fun S ↦ HasCardinalLT S κ' ∧ ⊤ ∈ S)
 
 variable {κ' : Cardinal.{u}} [Fact κ'.IsRegular] {h : κ ≤ κ'}
 
 variable {J} (h) in
-lemma pair_mem_indexSet (j : J.obj) : {WithBot.some j, ⊤} ∈ indexSet J h :=
+lemma pair_mem_indexSet (j : J.obj) : {WithTop.some j, ⊤} ∈ indexSet J h :=
   ⟨hasCardinalLT_of_finite _ _ (Cardinal.IsRegular.aleph0_le Fact.out),
     Set.mem_insert_of_mem _ (by simp)⟩
 
@@ -247,7 +255,11 @@ instance : IsCardinalFiltered (indexSet J h) κ' :=
 
 instance : IsFiltered (indexSet J h) := isFiltered_of_isCardinalFiltered _ κ'
 
-variable (h)
+variable (h) in
+/-- Given `J : CardinalFilteredPoset κ` and an inequality `κ ≤ κ'`
+where `κ'` is a regular cardinal, this is the functor which sends
+a subset `S` of `J.obj` of cardinality `< κ'` and containing `⊤` to `S`
+as an object in `CardinalFilteredPoset κ`. -/
 @[simps]
 def functor : indexSet J h ⥤ CardinalFilteredPoset κ where
   obj S := of (.of S.val)
@@ -262,14 +274,20 @@ section
 
 variable (J : CardinalFilteredPoset κ) {κ' : Cardinal.{u}} [Fact κ'.IsRegular] (h : κ ≤ κ')
 
+/-- If `κ ≤ κ'` is an inequality between regular cardinals, and
+`J : CardinalFilteredPoset κ`, this is the (colimit) cocone which
+expresses `J.withTop` as a colimit of its subsets that are of
+cardinality `< κ'` and contain `⊤`. -/
 @[simps]
 def coconeWithTop : Cocone (coconeWithTop.functor J h) where
-  pt := .of (.of (WithTop J.obj))
+  pt := J.withTop
   ι.app _ := ObjectProperty.homMk (PartOrdEmb.ofHom (OrderEmbedding.subtype _))
 
 open coconeWithTop in
-noncomputable def isColimitCoconeWithTop :
-    IsColimit (coconeWithTop J h) :=
+/-- If `κ ≤ κ'` is an inequality between regular cardinals, and
+`J : CardinalFilteredPoset κ`, then `J.withTop` is the colimit of
+its subsets that are of cardinality `< κ'` and contain `⊤`. -/
+noncomputable def isColimitCoconeWithTop : IsColimit (coconeWithTop J h) :=
   isColimitOfReflects (CardinalFilteredPoset.ι ⋙ forget PartOrdEmb) (by
     refine Types.FilteredColimit.isColimitOf' _ _ (fun x ↦ ?_) (fun j ⟨x, _⟩ ⟨y, _⟩ h ↦ ?_)
     · induction x with
@@ -278,7 +296,7 @@ noncomputable def isColimitCoconeWithTop :
       | none =>
         exact ⟨⟨_, pair_mem_indexSet _ (Classical.arbitrary _)⟩,
           ⟨⊤, Set.mem_insert_of_mem _ rfl⟩, rfl⟩
-    · obtain rfl : x = y := by simpa using h
+    · obtain rfl : x = y := h
       exact ⟨j, 𝟙 _, rfl⟩)
 
 include h in
@@ -307,7 +325,7 @@ namespace cocone
 
 variable (J : CardinalFilteredPoset κ)
 
-/-- Given `J : CardinalFilteredPoset κ`, this is hte partially ordered set consisting
+/-- Given `J : CardinalFilteredPoset κ`, this is the partially ordered set consisting
 of subsets of `J.obj` that are of cardinality `< κ` and have a terminal object. -/
 def indexSet : Set (Set J.obj) := setOf (fun S ↦ HasCardinalLT S κ ∧ HasTerminal S)
 
@@ -351,7 +369,7 @@ a subset `S` of `J.obj` of cardinality `< κ` with a terminal object to `S`
 as an object in `CardinalFilteredPoset κ`. -/
 @[simps]
 def functor : indexSet J ⥤ CardinalFilteredPoset κ where
-  obj S := of (PartOrdEmb.of S.val)
+  obj S := of (.of S.val)
   map f := ObjectProperty.homMk (PartOrdEmb.ofHom
     { toFun x := ⟨x, leOfHom f x.2⟩
       inj' := by rintro ⟨x, _⟩ ⟨y, _⟩ h; simpa using h
@@ -388,7 +406,7 @@ lemma isCardinalFilteredGenerator_hasCardinalLTWithTerminal :
       diag := _
       ι := _
       isColimit := isColimitCocone J
-      prop_diag_obj j := j.2 }⟩⟩
+      prop_diag_obj j := j.prop }⟩⟩
 
 instance : IsCardinalAccessibleCategory (CardinalFilteredPoset κ) κ where
   exists_generator :=
