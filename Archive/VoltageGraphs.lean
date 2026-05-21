@@ -25,6 +25,11 @@ Both quotient to K₂ under the fibre projection `Prod.fst`.
 * `heawoodVoltage` — the Heawood graph (Levi graph of the Fano plane)
 * `mobiusKantorVoltage` — the Möbius-Kantor graph (GP(8,3))
 
+## Visualizations
+
+* [The Heawood graph](https://raw.githubusercontent.com/RaggedR/symmetric-graphs/main/lean/named_graphs/heawood-F014A.jpg) — F014A, the Levi graph of the Fano plane
+* [The Möbius-Kantor graph](https://raw.githubusercontent.com/RaggedR/symmetric-graphs/main/lean/named_graphs/mobius-kantor-F016A.jpg) — F016A, the generalized Petersen graph GP(8,3)
+
 ## References
 
 * Gross & Tucker, *Topological Graph Theory*, 1987
