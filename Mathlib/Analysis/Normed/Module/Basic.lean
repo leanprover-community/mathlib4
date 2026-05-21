@@ -336,9 +336,6 @@ theorem tendsto_algebraMap_cobounded (𝕜 𝕜' : Type*) [NormedField 𝕜] [Se
   obtain ⟨s, hs⟩ := hc
   exact ⟨s, fun x hx ↦ by simpa using hs (algebraMap 𝕜 𝕜' x) hx⟩
 
-@[deprecated (since := "2025-11-04")] alias
-  algebraMap_cobounded_le_cobounded := tendsto_algebraMap_cobounded
-
 /-- In a normed algebra, the inclusion of the base field in the extended field is an isometry. -/
 theorem algebraMap_isometry [NormOneClass 𝕜'] : Isometry (algebraMap 𝕜 𝕜') := by
   refine Isometry.of_dist_eq fun x y => ?_
@@ -593,7 +590,7 @@ abbrev PseudoEMetricSpace.ofSeminormedSpaceCore {𝕜 E : Type*} [NormedField �
     (core : SeminormedSpace.Core 𝕜 E) : PseudoEMetricSpace E :=
   (PseudoMetricSpace.ofSeminormedSpaceCore core).toPseudoEMetricSpace
 
-/-- Produces a `PseudoEMetricSpace E` instance from a `SeminormedSpace.Core` on a type that
+/-- Produces a `PseudoMetricSpace E` instance from a `SeminormedSpace.Core` on a type that
 already has an existing uniform space structure. This requires a proof that the uniformity induced
 by the norm is equal to the preexisting uniformity. See note [reducible non-instances]. -/
 abbrev PseudoMetricSpace.ofSeminormedSpaceCoreReplaceUniformity {𝕜 E : Type*} [NormedField 𝕜]
@@ -604,7 +601,7 @@ abbrev PseudoMetricSpace.ofSeminormedSpaceCoreReplaceUniformity {𝕜 E : Type*}
     PseudoMetricSpace E :=
   .replaceUniformity (.ofSeminormedSpaceCore core) H
 
-/-- Produces a `PseudoEMetricSpace E` instance from a `SeminormedSpace.Core` on a type that
+/-- Produces a `PseudoMetricSpace E` instance from a `SeminormedSpace.Core` on a type that
 already has an existing topology. This requires a proof that the topology induced
 by the norm is equal to the preexisting topology. See note [reducible non-instances]. -/
 abbrev PseudoMetricSpace.ofSeminormedSpaceCoreReplaceTopology {𝕜 E : Type*} [NormedField 𝕜]
@@ -616,7 +613,7 @@ abbrev PseudoMetricSpace.ofSeminormedSpaceCoreReplaceTopology {𝕜 E : Type*} [
   .replaceTopology (.ofSeminormedSpaceCore core) H
 
 open Bornology in
-/-- Produces a `PseudoEMetricSpace E` instance from a `SeminormedSpace.Core` on a type that
+/-- Produces a `PseudoMetricSpace E` instance from a `SeminormedSpace.Core` on a type that
 already has a preexisting uniform space structure and a preexisting bornology. This requires proofs
 that the uniformity induced by the norm is equal to the preexisting uniformity, and likewise for
 the bornology. See note [reducible non-instances]. -/
