@@ -62,9 +62,8 @@ lemma nondegenerate_def : M.Nondegenerate ↔
   · exact fun h ↦ ⟨separatingLeft_def.mp h.1, separatingRight_def.mp h.2⟩
   · exact fun h ↦ ⟨separatingLeft_def.mpr h.1, separatingRight_def.mpr h.2⟩
 
-variable [Finite n] in
 omit [Fintype n] in
-theorem separatingLeft_iff_forall_vecMul_eq_zero :
+theorem separatingLeft_iff_forall_vecMul_eq_zero [Finite n] :
     M.SeparatingLeft ↔ ∀ v, v ᵥ* M = 0 → v = 0 := by
   have := Fintype.ofFinite n
   rw [separatingLeft_def]
@@ -72,9 +71,8 @@ theorem separatingLeft_iff_forall_vecMul_eq_zero :
   · simp [dotProduct_mulVec, hv]
   · classical simpa using hw <| Pi.single i 1
 
-variable [Finite m] in
 omit [Fintype m] in
-theorem separatingRight_iff_forall_mulVec_eq_zero :
+theorem separatingRight_iff_forall_mulVec_eq_zero [Finite m] :
     M.SeparatingRight ↔ ∀ v, M *ᵥ v = 0 → v = 0 := by
   have := Fintype.ofFinite m
   rw [separatingRight_def]
@@ -82,15 +80,13 @@ theorem separatingRight_iff_forall_mulVec_eq_zero :
   · simp [hv]
   · classical simpa using hw <| Pi.single i 1
 
-variable [Finite n] in
 omit [Fintype n] in
-theorem SeparatingLeft.eq_zero_of_vecMul_eq_zero (hM : M.SeparatingLeft) {v : m → R}
+theorem SeparatingLeft.eq_zero_of_vecMul_eq_zero [Finite n] (hM : M.SeparatingLeft) {v : m → R}
     (hv : v ᵥ* M = 0) : v = 0 :=
   separatingLeft_iff_forall_vecMul_eq_zero.mp hM v hv
 
-variable [Finite m] in
 omit [Fintype m] in
-theorem SeparatingRight.eq_zero_of_mulVec_eq_zero (hM : M.SeparatingRight) {v : n → R}
+theorem SeparatingRight.eq_zero_of_mulVec_eq_zero [Finite m] (hM : M.SeparatingRight) {v : n → R}
     (hv : M *ᵥ v = 0) : v = 0 :=
   separatingRight_iff_forall_mulVec_eq_zero.mp hM v hv
 
@@ -99,27 +95,26 @@ theorem nondegenerate_iff_forall_eq_zero :
   rw [nondegenerate_iff, separatingLeft_iff_forall_vecMul_eq_zero,
     separatingRight_iff_forall_mulVec_eq_zero]
 
-variable [Finite m] [Finite n] in
 omit [Fintype m] [Fintype n] in
-theorem separatingLeft_transpose_iff : Mᵀ.SeparatingLeft ↔ M.SeparatingRight := by
+theorem separatingLeft_transpose_iff [Finite m] [Finite n] :
+    Mᵀ.SeparatingLeft ↔ M.SeparatingRight := by
   have := Fintype.ofFinite m
   have := Fintype.ofFinite n
   simp_rw [separatingLeft_def, separatingRight_def, dotProduct_transpose_mulVec]
 
 alias ⟨_, SeparatingRight.transpose⟩ := separatingLeft_transpose_iff
 
-variable [Finite m] [Finite n] in
 omit [Fintype m] [Fintype n] in
-theorem separatingRight_transpose_iff : Mᵀ.SeparatingRight ↔ M.SeparatingLeft := by
+theorem separatingRight_transpose_iff [Finite m] [Finite n] :
+    Mᵀ.SeparatingRight ↔ M.SeparatingLeft := by
   have := Fintype.ofFinite m
   have := Fintype.ofFinite n
   simp_rw [separatingRight_def, separatingLeft_def, dotProduct_transpose_mulVec]
 
 alias ⟨_, SeparatingLeft.transpose⟩ := separatingRight_transpose_iff
 
-variable [Finite m] [Finite n] in
 omit [Fintype m] [Fintype n] in
-theorem nondegenerate_transpose_iff : Mᵀ.Nondegenerate ↔ M.Nondegenerate := by
+theorem nondegenerate_transpose_iff [Finite m] [Finite n] : Mᵀ.Nondegenerate ↔ M.Nondegenerate := by
   rw [nondegenerate_iff, nondegenerate_iff, separatingLeft_transpose_iff,
     separatingRight_transpose_iff, and_comm]
 
