@@ -6,69 +6,8 @@ public import Mathlib.RingTheory.GradedAlgebra.Map.AddSubmonoidSSup
 
 @[expose] public section
 
+
 open DirectSum
-
-section DirectSum.sigmaFiberAddEquiv
-/-
-1. Definition of `sigmaFiberAddEquiv`< :
-   as composition of two isos:
-     iso₁ :=  lequivCongrLeft
-     iso₂ := sigmaLcurryEquiv
-   Each of (iso₁) and (iso₂) are defined in Mathlib,
-   and we prove an …_of lemma for each of these.
-2. `sigmaFiberLinearAdd_of` lemma, proved from the …_of lemmas for iso₁ and iso₂.
-   This is all still very messy and probably not done the correct way.
--/
-universe u
-variable {ι₁ ι₂ : Type u} [DecidableEq ι₁] [DecidableEq ι₂]
-         (f : ι₁ → ι₂)
-
-def DirectSum.sigmaFiberAddEquiv
-    (β : ι₁ → Type*) [∀ i : ι₁, AddCommMonoid (β i)] :
-    (DirectSum ι₁ fun i ↦ β i)
-    ≃+ DirectSum ι₂ fun j ↦ (DirectSum { i : ι₁ // f i = j} fun i ↦ β i)
-  := (equivCongrLeft (Equiv.sigmaFiberEquiv f).symm).trans
-     (sigmaCurryEquiv (δ := fun (j : ι₂) ↦ (fun (i : { i : ι₁ // f i = j}) ↦ β i)))
-     /-
-     by
-     let iso' : (⨁ (k : (y : ι₂) × { x // f x = y }), β ((Equiv.sigmaFiberEquiv f).symm.symm k))
-                ≃+ (⨁ (i : (x : ι₂) × { i // f i = x }), β ↑i.snd)
-                := by exact AddEquiv.refl (⨁ (k : (y : ι₂) × { x // f x = y }), β
-                    ((Equiv.sigmaFiberEquiv f).symm.symm k))
-     let iso₁ := equivCongrLeft (Equiv.sigmaFiberEquiv f).symm (β := β)
-     let iso₂ := sigmaCurryEquiv (δ := fun (j : ι₂) ↦ (fun (i : { i : ι₁ // f i = j}) ↦ β i))
-     --let iso' : (⨁ (k : (y : ι₂) × { x // f x = y }), M ((Equiv.sigmaFiberEquiv f).symm.symm k))
-     --        ≃+ (⨁ (k : (y : ι₂) × { x // f x = y }), M k.snd) := by exact?
-     --exact iso₁.trans (iso'.trans iso₂)
-     exact iso₁.trans iso₂
-     -/
-
-lemma DirectSum.sigmaFiberAddEquiv_of'
-  (β : ι₁ → Type*) [∀ i : ι₁, AddCommMonoid (β i)]
-  (k : (i₂ : ι₂) × {i₁ : ι₁ // f i₁ = i₂}) (m : β ↑k.snd) :
-  (sigmaFiberAddEquiv f β) ((of (fun i ↦ β i) (k.snd)) m)
-  = (of _ (k.fst)) ((of (fun (i': { i : ι₁ // f i = k.fst})  ↦ β ↑i') k.snd) m)
-  := by
-  let h := Equiv.sigmaFiberEquiv f
-  have : h.symm.symm k = ↑k.snd := by rfl
-  calc (sigmaFiberAddEquiv f β) ((of β (k.snd)) m)
-     _ = (sigmaCurryEquiv) ((equivCongrLeft h.symm) ((of β (k.snd)) m))
-         := by unfold sigmaFiberAddEquiv h; rw [AddEquiv.trans_apply]; rfl
-     _ = (sigmaCurryEquiv) ((equivCongrLeft h.symm) ((of β (h.symm.symm k)) (this ▸ m)))
-        := rfl
-     _ = (sigmaCurryEquiv) ((of (fun (k : ((y : ι₂) × { x // f x = y })) ↦ β (k.snd)) k) m) := by
-         rw [equivCongrLeft_of] ; rfl
-     _ = (of _ (k.fst)) ((of (fun (i': { i : ι₁ // f i = k.fst})  ↦ β ↑i') k.snd) m) := by
-         rw [sigmaCurry_of]
-
-@[simp] lemma DirectSum.sigmaFiberAddEquiv_of
-  (β : ι₁ → Type*) [∀ i : ι₁, AddCommMonoid (β i)]
-  (i : ι₁) (m : β i) :
-  (sigmaFiberAddEquiv f β) ((of _ i) m)
-  = (of _ (f i)) ((of _ ⟨i, rfl⟩) m)
-  := by
-  rw [sigmaFiberAddEquiv_of' f β (k := ⟨f i, ⟨i, rfl⟩⟩)]
-end DirectSum.sigmaFiberAddEquiv
 
 section toIsup
 open DirectSum
@@ -138,7 +77,7 @@ variable [AddSubmonoidClass σ M] [AddSubmonoidSSup σ M]
 variable [DirectSum.Decomposition ℳ]
 
 abbrev Dec' := ⨁ j, (Decomposition.map f ℳ) j
-abbrev sigma := (DirectSum.sigmaFiberAddEquiv f (fun i ↦ ↥(ℳ i))).toAddMonoidHom
+abbrev sigma := (DirectSum.sigmaFiberAddEquiv f (β := fun i ↦ ↥(ℳ i))).toAddMonoidHom
 abbrev decomp := (decomposeAddEquiv ℳ).toAddMonoidHom
 abbrev decomp' : M →+ (⨁ j, (Decomposition.map f ℳ) j) :=
     (map (fun (j : ι₂)
