@@ -48,11 +48,6 @@ lemma alternating_sum_eq_zero_of_telescope {n : ℕ} (d : Fin (n + 3) → ℤ) (
 
 open Function Module
 
-lemma finrank_eq_range_of_surjective {k V₀ V₁ : Type*} [Field k] [AddCommGroup V₀] [Module k V₀]
-    [AddCommGroup V₁] [Module k V₁] [FiniteDimensional k V₁] (f : V₀ →ₗ[k] V₁)
-    (hf : Function.Surjective f) : (finrank k V₁ : ℤ) = finrank k (LinearMap.range f) := by
-  rw [LinearMap.range_eq_top.mpr hf, finrank_top]
-
 lemma finrank_eq_sum_ranges_of_exact {k V₀ V₁ V₂ : Type*} [Field k] [AddCommGroup V₀] [Module k V₀]
     [AddCommGroup V₁] [Module k V₁] [FiniteDimensional k V₁] [AddCommGroup V₂] [Module k V₂]
     (f : V₀ →ₗ[k] V₁) (g : V₁ →ₗ[k] V₂) (h : Function.Exact f g) :
