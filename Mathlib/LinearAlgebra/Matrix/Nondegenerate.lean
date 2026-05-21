@@ -39,6 +39,7 @@ def SeparatingLeft : Prop :=
   (∀ v, (∀ w, v ⬝ᵥ M *ᵥ w = 0) → v = 0)
 
 /-- A matrix `M` is nondegenerate if it is both left-separating and right-separating. -/
+@[mk_iff]
 structure Nondegenerate (M : Matrix m n R) : Prop where
   separatingLeft : SeparatingLeft M
   separatingRight : SeparatingRight M
@@ -61,6 +62,32 @@ lemma nondegenerate_def : M.Nondegenerate ↔
   · exact fun h ↦ ⟨separatingLeft_def.mp h.1, separatingRight_def.mp h.2⟩
   · exact fun h ↦ ⟨separatingLeft_def.mpr h.1, separatingRight_def.mpr h.2⟩
 
+variable [Finite m] [Finite n] in
+omit [Fintype m] [Fintype n] in
+theorem separatingLeft_transpose_iff : Mᵀ.SeparatingLeft ↔ M.SeparatingRight := by
+  have := Fintype.ofFinite m
+  have := Fintype.ofFinite n
+  simp_rw [separatingLeft_def, separatingRight_def, dotProduct_transpose_mulVec]
+
+alias ⟨_, SeparatingRight.transpose⟩ := separatingLeft_transpose_iff
+
+variable [Finite m] [Finite n] in
+omit [Fintype m] [Fintype n] in
+theorem separatingRight_transpose_iff : Mᵀ.SeparatingRight ↔ M.SeparatingLeft := by
+  have := Fintype.ofFinite m
+  have := Fintype.ofFinite n
+  simp_rw [separatingRight_def, separatingLeft_def, dotProduct_transpose_mulVec]
+
+alias ⟨_, SeparatingLeft.transpose⟩ := separatingRight_transpose_iff
+
+variable [Finite m] [Finite n] in
+omit [Fintype m] [Fintype n] in
+theorem nondegenerate_transpose_iff : Mᵀ.Nondegenerate ↔ M.Nondegenerate := by
+  rw [nondegenerate_iff, nondegenerate_iff, separatingLeft_transpose_iff,
+    separatingRight_transpose_iff, and_comm]
+
+alias ⟨_, Nondegenerate.transpose⟩ := nondegenerate_transpose_iff
+
 /-- If `M` is nondegenerate and `w * M * v = 0` for all `w`, then `v = 0`. -/
 theorem Nondegenerate.eq_zero_of_ortho (hM : Nondegenerate M) {v : m → R}
     (hv : ∀ w, v ⬝ᵥ M *ᵥ w = 0) : v = 0 :=
@@ -81,12 +108,19 @@ theorem Nondegenerate.exists_not_ortho_of_ne_zero' {M : Matrix m n R} (hM : Nond
     {w : n → R} (hw : w ≠ 0) : ∃ v, v ⬝ᵥ M *ᵥ w ≠ 0 :=
   not_forall.mp (mt hM.eq_zero_of_ortho' hw)
 
-omit [Fintype n] in
 variable [Finite n] in
+omit [Fintype n] in
 theorem Nondegenerate.eq_zero_of_vecMul_eq_zero (hM : M.Nondegenerate) {v : m → R}
     (hv : v ᵥ* M = 0) : v = 0 :=
   have := Fintype.ofFinite n
   hM.eq_zero_of_ortho fun w ↦ by rw [dotProduct_mulVec, hv, zero_dotProduct]
+
+variable [Finite m] in
+omit [Fintype m] in
+theorem Nondegenerate.eq_zero_of_mulVec_eq_zero (hM : M.Nondegenerate) {v : n → R}
+    (hv : M *ᵥ v = 0) : v = 0 :=
+  have := Fintype.ofFinite m
+  hM.transpose.eq_zero_of_vecMul_eq_zero <| M.vecMul_transpose v |>.trans hv
 
 section Determinant
 open scoped nonZeroDivisors
@@ -122,12 +156,11 @@ theorem eq_zero_of_vecMul_eq_zero [NoZeroDivisors R] (hM : M.det ≠ 0) {v : m �
 
 theorem eq_zero_of_mulVec_eq_zero_of_det_mem_nonZeroDivisors (hM : M.det ∈ R⁰)
     {v : m → R} (hv : M *ᵥ v = 0) : v = 0 :=
-  eq_zero_of_vecMul_eq_zero_of_det_mem_nonZeroDivisors (by rwa [det_transpose]) <|
-    vecMul_transpose M v |>.trans hv
+  nondegenerate_of_det_mem_nonZeroDivisors hM |>.eq_zero_of_mulVec_eq_zero hv
 
 theorem eq_zero_of_mulVec_eq_zero [NoZeroDivisors R] (hM : M.det ≠ 0) {v : m → R}
     (hv : M *ᵥ v = 0) : v = 0 :=
-  eq_zero_of_mulVec_eq_zero_of_det_mem_nonZeroDivisors (mem_nonZeroDivisors_of_ne_zero hM) hv
+  nondegenerate_of_det_ne_zero hM |>.eq_zero_of_mulVec_eq_zero hv
 
 end Determinant
 
