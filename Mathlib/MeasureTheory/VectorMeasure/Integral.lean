@@ -236,6 +236,10 @@ lemma Integrable.restrict (hf : μ.Integrable f B) {s : Set X} :
   apply setToFun_zero_left'
   simp [transpose]
 
+theorem integral_of_not_completeSpace (hG : ¬CompleteSpace G) :
+    ∫ᵛ x, f x ∂[B; μ] = 0 := by
+  simp [integral, setToFun, hG]
+
 theorem integral_fun_add (hf : μ.Integrable f B) (hg : μ.Integrable g B) :
     ∫ᵛ x, f x + g x ∂[B; μ] = ∫ᵛ x, f x ∂[B; μ] + ∫ᵛ x, g x ∂[B; μ] :=
   setToFun_add (dominatedFinMeasAdditive_cbmApplyMeasure μ B) hf hg

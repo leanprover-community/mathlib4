@@ -189,7 +189,13 @@ theorem integral_piecewise [DecidablePred (· ∈ s)]
 theorem hasSum_setIntegral_iUnion {ι : Type*} [Countable ι] {s : ι → Set X}
     (hm : ∀ i, MeasurableSet (s i)) (hd : Pairwise (Disjoint on s))
     (hfi : μ.IntegrableOn f B (⋃ i, s i)) :
-    HasSum (fun n => ∫ᵛ x in s n, f x ∂[B; μ]) (∫ᵛ x in ⋃ n, s n, f x ∂[B; μ]) := by
+    HasSum (fun n ↦ ∫ᵛ x in s n, f x ∂[B; μ]) (∫ᵛ x in ⋃ n, s n, f x ∂[B; μ]) := by
+  by_cases hG : CompleteSpace G; swap
+  · simp [integral_of_not_completeSpace hG]
+  have : Summable (fun n ↦ ∫ᵛ x in s n, f x ∂[B; μ]) := by
+    apply Summable.of_enorm
+
+
   simp only [IntegrableOn, Measure.restrict_iUnion_ae hd hm] at hfi ⊢
   exact hasSum_integral_measure hfi
 

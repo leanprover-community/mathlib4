@@ -188,3 +188,6 @@ theorem Summable.of_norm {f : ι → E} (hf : Summable fun a => ‖f a‖) : Sum
 
 theorem Summable.of_nnnorm {f : ι → E} (hf : Summable fun a => ‖f a‖₊) : Summable f :=
   .of_nnnorm_bounded hf fun _i => le_rfl
+
+theorem Summable.of_enorm {f : ι → E} (hf : ∑' a, ‖f a‖ₑ ≠ ∞) : Summable f :=
+  Summable.of_nnnorm_bounded (tsum_coe_ne_top_iff_summable.1 hf) fun _i => le_rfl
