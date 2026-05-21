@@ -144,6 +144,7 @@ theorem nextIdx_injective (f : Fin S.nF) : Function.Injective (S.nextIdx f) := b
 theorem nextIdx_bijective (f : Fin S.nF) : Function.Bijective (S.nextIdx f) :=
   Finite.injective_iff_bijective.mp (S.nextIdx_injective f)
 
+/-- `nextIdx` as a permutation (equivalence) on face boundary indices. -/
 noncomputable def nextPerm (f : Fin S.nF) : Equiv.Perm (Fin (S.face_len f)) :=
   Equiv.ofBijective _ (S.nextIdx_bijective f)
 
@@ -260,7 +261,7 @@ theorem ker_d1T_le_span_one (hconn : S.toSimpleGraph.Connected) :
   have hconst : ∀ u v : Fin S.nV, x u = x v := fun u v =>
     S.walk_preserves_ker hx (hconn.preconnected u v).some
   exact ⟨x ⟨0, hV⟩, funext fun v => by
-    simp [Pi.smul_apply, Pi.one_apply, smul_eq_mul, mul_one, hconst ⟨0, hV⟩ v]⟩
+    simp [Pi.smul_apply, smul_eq_mul, mul_one, hconst ⟨0, hV⟩ v]⟩
 
 theorem ker_d1T_finrank_eq_one (hconn : S.toSimpleGraph.Connected) (hV : 0 < S.nV) :
     Module.finrank (ZMod 2) (LinearMap.ker S.d1ᵀ.mulVecLin) = 1 := by
@@ -383,7 +384,7 @@ theorem d2_rank_eq (hconn_dual : S.toDualSimpleGraph.Connected) (hF : 1 < S.nF)
                | nil => rfl
                | cons hadj _ ih => exact (S.ker_d2_dual_adj_eq hy htwo hadj).trans ih
           exact ⟨y ⟨0, hF_pos⟩, funext fun v => by
-            simp [Pi.smul_apply, Pi.one_apply, smul_eq_mul, mul_one, hconst ⟨0, hF_pos⟩ v]⟩)
+            simp [Pi.smul_apply, smul_eq_mul, mul_one, hconst ⟨0, hF_pos⟩ v]⟩)
       ((Submodule.span_singleton_le_iff_mem _ _).mpr hmem)
   have hle := S.d2_rank_le hF_pos (S.d2_mulVec_one_of_two_sides htwo)
   have hge : S.nF - 1 ≤ S.d2.rank := by
@@ -474,6 +475,6 @@ theorem CellularSurface.css_k_eq_2g_from_surface (S : CellularSurface) (g : ℕ)
   intro T css
   apply css_k_eq_2g
   · exact S.d1_rank_eq hconn hV
-  · show (S.d2ᵀ.rank : ℤ) = S.nF - 1
+  · change (S.d2ᵀ.rank : ℤ) = S.nF - 1
     rw [rank_transpose]
     exact S.d2_rank_eq hconn_dual hF htwo
