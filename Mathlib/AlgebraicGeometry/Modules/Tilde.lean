@@ -482,7 +482,7 @@ def pushforwardCompModulesSpecToSheafIso :
 open scoped ModuleCat.Algebra in
 theorem isLocalizing_pushforward_of_isLocalizing {M : (Spec S).Modules}
     (h : IsLocalizing (modulesSpecToSheaf.obj M)) :
-  IsLocalizing (modulesSpecToSheaf.obj ((Scheme.Modules.pushforward (Spec.map φ)).obj M)) := by
+    IsLocalizing (modulesSpecToSheaf.obj ((Scheme.Modules.pushforward (Spec.map φ)).obj M)) := by
   rw [← Functor.comp_obj,
   isLocalizing_iff_of_iso ((pushforwardCompModulesSpecToSheafIso φ).app M)]
   have : CommRing ((Spec S).ringCatSheaf.obj.obj ((Opens.map (Spec.map φ).base).op.obj (op ⊤))) :=
@@ -492,7 +492,7 @@ theorem isLocalizing_pushforward_of_isLocalizing {M : (Spec S).Modules}
 
 /- TODO: Once `IsIso M.fromTildeΓ` is shown to be equivalent to `M` being quasicoherent, use
 this to show that quasicoherent sheaves pushforward to quasicoherent sheaves for affine morphisms -/
-theorem pushforward_isIso_fromTildeΓ (M : (Spec S).Modules) [h : IsIso M.fromTildeΓ] :
+theorem isIso_fromTildeΓ_pushforward (M : (Spec S).Modules) [h : IsIso M.fromTildeΓ] :
     IsIso ((Scheme.Modules.pushforward (Spec.map φ)).obj M).fromTildeΓ := by
   simp_all only [isIso_fromTildeΓ_iff_isLocalizing]
   exact isLocalizing_pushforward_of_isLocalizing φ h
