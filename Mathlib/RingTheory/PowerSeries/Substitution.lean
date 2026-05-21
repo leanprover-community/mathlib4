@@ -594,12 +594,14 @@ variable {x : ℕ → PowerSeries R} {a : MvPowerSeries τ S}
 lemma subst_tsum (hx : Summable x) (ha : HasSubst a) :
     (∑' i, x i).subst a = ∑' i, ((x i).subst a) := by
   rw [← coe_substAlgHom ha, substAlgHom_eq_aeval ha, hx.map_tsum _]
-  convert continuous_aeval _
+  haveI := DiscreteTopology.instContinuousSMul R S
+  exact continuous_aeval (ha.hasEval)
 
 lemma summable_subst (hx : Summable x) (ha : HasSubst a) :
     Summable fun i ↦ (x i).subst a := by
   rw [← coe_substAlgHom ha, substAlgHom_eq_aeval ha]
-  exact hx.map _ <| by convert continuous_aeval (ha.hasEval)
+  haveI := DiscreteTopology.instContinuousSMul R S
+  exact hx.map _ <| continuous_aeval (ha.hasEval)
 
 end
 
