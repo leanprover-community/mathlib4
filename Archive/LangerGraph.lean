@@ -41,6 +41,11 @@ of G₂(2), so they agree everywhere if they agree at vertex 0.
 * `langer_eq_tutte12_distance2'` — algebraic Langer = geometric distance-2
   (structural proof via G₂(2) transitivity)
 
+## Visualizations
+
+* [The Langer graph](https://raw.githubusercontent.com/RaggedR/symmetric-graphs/main/lean/named_graphs/langer-63v.jpg) — symmetry-aware drawing with 6-fold rotational layout
+* [The Tutte 12-cage](https://raw.githubusercontent.com/RaggedR/symmetric-graphs/main/lean/named_graphs/tutte-12cage.jpg) — incidence graph of GH(2,2)
+
 ## References
 
 * Robin Langer, *Symmetric Graphs and their Quotients*, arXiv:1306.4798
