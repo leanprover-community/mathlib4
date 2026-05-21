@@ -372,6 +372,20 @@ lemma PartialMap.toRationalMap_eq_iff {f g : X.PartialMap Y} :
     f.toRationalMap = g.toRationalMap ↔ f.equiv g :=
   Quotient.eq
 
+/-- An arbitrarily chosen partial map representing `f`. Use `RationalMap.toPartialMap` instead
+if `X` is reduced and `Y` is separated. -/
+noncomputable def RationalMap.representative (f : X ⤏ Y) : X.PartialMap Y :=
+  f.exists_rep.choose
+
+@[simp]
+lemma RationalMap.toRationalMap_representative (f : X ⤏ Y) :
+    f.representative.toRationalMap = f :=
+  f.exists_rep.choose_spec
+
+lemma PartialMap.representative_toRationalMap_equiv (f : X.PartialMap Y) :
+    f.toRationalMap.representative.equiv f := by
+  rw [← PartialMap.toRationalMap_eq_iff, f.toRationalMap.toRationalMap_representative]
+
 @[simp]
 lemma PartialMap.restrict_toRationalMap (f : X.PartialMap Y) (U : X.Opens)
     (hU : Dense (U : Set X)) (hU' : U ≤ f.domain) :
