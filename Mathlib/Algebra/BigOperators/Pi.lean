@@ -234,20 +234,18 @@ end EqOn
 
 section FunLike
 
-variable {F α β : Type*} [FunLike F α β] [CommMonoid β] [CommMonoid F]
+variable {F α β ι : Type*} [FunLike F α β] [CommMonoid β] [CommMonoid F]
   [IsOneApply F α β] [IsMulApply F α β]
 
 open Classical in
 @[to_additive (attr := simp, grind =)]
-theorem prod_apply {ι : Type*} (s : Finset ι) (f : ι → F) (x : α) :
-    (∏ i ∈ s, f i) x = ∏ i ∈ s, f i x := by
+theorem prod_apply (s : Finset ι) (f : ι → F) (x : α) : (∏ i ∈ s, f i) x = ∏ i ∈ s, f i x := by
   induction s using Finset.induction_on with
   | empty => simp
   | insert i s his h => simp [his, h]
 
 @[to_additive (attr := norm_cast)]
-theorem FunLike.coe_prod {ι : Type*} (s : Finset ι) (f : ι → F) :
-    ↑(∏ i ∈ s, f i) = ∏ i ∈ s, (f i : α → β) := by
+theorem FunLike.coe_prod (s : Finset ι) (f : ι → F) : ↑(∏ i ∈ s, f i) = ∏ i ∈ s, (f i : α → β) := by
   ext; simp
 
 end FunLike
