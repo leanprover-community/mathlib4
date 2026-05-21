@@ -217,7 +217,7 @@ protected def bell : ℕ → ℕ
   | n + 1 => ∑ i : Fin n.succ, choose n i * (n - i).bell
 
 theorem bell_succ (n : ℕ) :
-    (n + 1).bell  = ∑ i : Fin n.succ, choose n i * (n - i).bell := by
+    (n + 1).bell = ∑ i : Fin n.succ, choose n i * (n - i).bell := by
   rw [Nat.bell]
 
 theorem bell_succ' (n : ℕ) :
