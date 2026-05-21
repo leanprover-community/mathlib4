@@ -53,7 +53,7 @@ Indexed products:
 * `ContinuousLinearMap.piMap f` is the continuous linear map `(Π i, M i) →L[R] (Π i, N i)` given by
   a family `f : Π i, M i →L[R] N i` of continuous linear maps. This is the continuous
   version of `LinearMap.piMap`.
-* `ContinuousLinearMap.proj j : (Π i, M i) → L[R] M j` is the projection given by
+* `ContinuousLinearMap.proj j : (Π i, M i) →L[R] M j` is the projection given by
   `proj i f = f i`. This is the continuous version of `LinearMap.proj`.
 -/
 
