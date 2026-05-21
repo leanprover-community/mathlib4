@@ -55,9 +55,6 @@ noncomputable instance instNormedAddCommGroup : NormedAddCommGroup (DirectLimit 
   __ := NormedAddGroup.instNormedAddGroup
   __ := (inferInstance : AddCommGroup (DirectLimit G f))
 
-example (i : ι) (x : G i) : ‖(⟦⟨i, x⟩⟧ : DirectLimit G f)‖ = ‖x‖ := by
-  apply DirectLimit.NormedAddGroup.norm_def
-
 end NormedAddCommGroup
 
 end DirectLimit
