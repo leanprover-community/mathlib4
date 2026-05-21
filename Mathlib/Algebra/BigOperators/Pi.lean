@@ -12,6 +12,7 @@ public import Mathlib.Algebra.Group.Action.Pi
 public import Mathlib.Algebra.Notation.Indicator
 public import Mathlib.Algebra.Ring.Pi
 public import Mathlib.Data.Fintype.Basic
+public import Mathlib.Data.FunLike.IsApply
 
 /-!
 # Big operators for Pi Types
@@ -230,3 +231,24 @@ theorem eqOn_fun_finsetProd {ι α β : Type*} [CommMonoid α]
   convert eqOn_finsetProd h v <;> simp
 
 end EqOn
+
+section FunLike
+
+variable {F α β : Type*} [FunLike F α β] [CommMonoid β] [CommMonoid F]
+  [IsOneApply F α β] [IsMulApply F α β]
+
+open Classical in
+@[to_additive (attr := simp)]
+theorem prod_apply {ι : Type*} (s : Finset ι) (f : ι → F) (x : α) :
+    (∏ i ∈ s, f i) x = ∏ i ∈ s, f i x := by
+  apply Finset.induction_on (motive := fun s ↦ (∏ i ∈ s, f i) x = ∏ i ∈ s, f i x)
+  · simp
+  · intro i s his h
+    simp [his, h]
+
+@[to_additive (attr := norm_cast)]
+theorem FunLike.coe_prod {ι : Type*} (s : Finset ι) (f : ι → F) :
+    ↑(∏ i ∈ s, f i) = ∏ i ∈ s, (f i : α → β) := by
+  ext; simp
+
+end FunLike
