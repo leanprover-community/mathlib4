@@ -116,6 +116,7 @@ namespace Differential
 
 variable {A : Type*} [CommRing A] [Differential A]
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 A specialization of `Derivation.mapCoeffs` for the case of a differential ring.
 -/

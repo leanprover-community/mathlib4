@@ -280,11 +280,7 @@ theorem measure_preimage_lt_top_of_memLp (hp_pos : p ≠ 0) (hp_ne_top : p ≠ �
   swap
   · suffices h_empty : f ⁻¹' {y} = ∅ by
       rw [h_empty, measure_empty]; exact ENNReal.coe_lt_top
-    ext1 x
-    rw [Set.mem_preimage, Set.mem_singleton_iff, mem_empty_iff_false, iff_false]
-    refine fun hxy => hyf ?_
-    rw [mem_range, Set.mem_range]
-    exact ⟨x, hxy⟩
+    exact (preimage_eq_empty_iff _ _).mpr hyf
   specialize hf_eLpNorm y hyf
   rw [ENNReal.mul_lt_top_iff] at hf_eLpNorm
   cases hf_eLpNorm with
@@ -367,6 +363,8 @@ theorem measure_lt_top_of_memLp_indicator (hp_pos : p ≠ 0) (hp_ne_top : p ≠ 
 end SimpleFuncProperties
 
 end SimpleFunc
+
+open SimpleFunc
 
 /-! Construction of the space of `Lp` simple functions, and its dense embedding into `Lp`. -/
 
@@ -456,7 +454,6 @@ protected theorem isBoundedSMul [Fact (1 ≤ p)] : IsBoundedSMul 𝕜 (Lp.simple
 
 attribute [local instance] simpleFunc.isBoundedSMul
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `E` is a normed space, `Lp.simpleFunc E p μ` is a normed space. Not declared as an
 instance as it is (as of writing) used only in the construction of the Bochner integral. -/
 @[instance_reducible]
@@ -471,7 +468,7 @@ attribute [local instance] simpleFunc.module simpleFunc.normedSpace simpleFunc.i
 section ToLp
 
 /-- Construct the equivalence class `[f]` of a simple function `f` satisfying `MemLp`. -/
-abbrev toLp (f : α →ₛ E) (hf : MemLp f p μ) : Lp.simpleFunc E p μ :=
+abbrev _root_.MeasureTheory.SimpleFunc.toLp (f : α →ₛ E) (hf : MemLp f p μ) : Lp.simpleFunc E p μ :=
   ⟨hf.toLp f, ⟨f, rfl⟩⟩
 
 theorem toLp_eq_toLp (f : α →ₛ E) (hf : MemLp f p μ) : (toLp f hf : Lp E p μ) = hf.toLp f :=
@@ -626,8 +623,8 @@ protected theorem induction (hp_pos : p ≠ 0) (hp_ne_top : p ≠ ∞) {P : Lp.s
         ∀ hf : MemLp f p μ,
           ∀ hg : MemLp g p μ,
             Disjoint (support f) (support g) →
-              P (Lp.simpleFunc.toLp f hf) →
-                P (Lp.simpleFunc.toLp g hg) → P (Lp.simpleFunc.toLp f hf + Lp.simpleFunc.toLp g hg))
+              P (toLp f hf) →
+                P (toLp g hg) → P (toLp f hf + toLp g hg))
     (f : Lp.simpleFunc E p μ) : P f := by
   suffices ∀ f : α →ₛ E, ∀ hf : MemLp f p μ, P (toLp f hf) by
     rw [← toLp_toSimpleFunc f]
@@ -696,8 +693,7 @@ variable (α E 𝕜)
 /-- The embedding of Lp simple functions into Lp functions, as a continuous linear map. -/
 def coeToLp : Lp.simpleFunc E p μ →L[𝕜] Lp E p μ :=
   { AddSubgroup.subtype (Lp.simpleFunc E p μ) with
-    map_smul' := fun _ _ => rfl
-    cont := Lp.simpleFunc.uniformContinuous.continuous }
+    map_smul' := fun _ _ => rfl }
 
 end CoeToLp
 
@@ -913,7 +909,7 @@ section Integrable
 notation:25 α " →₁ₛ[" μ "] " E => @MeasureTheory.Lp.simpleFunc α E _ _ 1 μ
 
 theorem L1.SimpleFunc.toLp_one_eq_toL1 (f : α →ₛ E) (hf : Integrable f μ) :
-    (Lp.simpleFunc.toLp f (memLp_one_iff_integrable.2 hf) : α →₁[μ] E) = hf.toL1 f :=
+    (toLp f (memLp_one_iff_integrable.2 hf) : α →₁[μ] E) = hf.toL1 f :=
   rfl
 
 @[fun_prop]

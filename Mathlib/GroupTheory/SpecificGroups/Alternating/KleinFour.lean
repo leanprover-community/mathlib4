@@ -199,7 +199,7 @@ theorem kleinFour_eq_commutator (hα4 : Nat.card α = 4) :
     rw [kleinFour_card_of_card_eq_four hα4]; simp
   have comm_le : commutator (alternatingGroup α) ≤ kleinFour α := by
     rw [← Subgroup.Normal.quotient_commutative_iff_commutator_le]
-    exact (isCyclic_of_prime_card this).commutative
+    exact (isCyclic_of_prime_card this).isMulCommutative
   have comm_ne_bot : commutator (alternatingGroup α) ≠ ⊥ := by
     rw [ne_eq, commutator_eq_bot_iff_center_eq_top,
       center_eq_bot (le_of_eq hα4.symm)]

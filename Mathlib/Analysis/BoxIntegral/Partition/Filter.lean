@@ -335,7 +335,7 @@ theorem MemBaseSet.mono' (h : l₁ ≤ l₂) (hc : c₁ ≤ c₂)
     fun hD => (hπ.4 (le_iff_imp.1 h.2.2 hD)).imp fun _ hπ => ⟨hπ.1, hπ.2.trans hc⟩⟩
 
 variable (I) in
-@[mono]
+@[gcongr, mono]
 theorem MemBaseSet.mono (h : l₁ ≤ l₂) (hc : c₁ ≤ c₂)
     (hr : ∀ x ∈ Box.Icc I, r₁ x ≤ r₂ x) (hπ : l₁.MemBaseSet I c₁ r₁ π) : l₂.MemBaseSet I c₂ r₂ π :=
   hπ.mono' I h hc fun J _ => hr _ <| π.tag_mem_Icc J
@@ -365,7 +365,6 @@ protected theorem MemBaseSet.unionComplToSubordinate (hπ₁ : l.MemBaseSet I c 
 
 variable {r : (ι → ℝ) → Ioi (0 : ℝ)}
 
-set_option backward.isDefEq.respectTransparency false in
 protected theorem MemBaseSet.filter (hπ : l.MemBaseSet I c r π) (p : Box ι → Prop) :
     l.MemBaseSet I c r (π.filter p) := by
   classical
@@ -390,7 +389,6 @@ protected theorem MemBaseSet.filter (hπ : l.MemBaseSet I c r π) (p : Box ι �
   · have : (π.filter fun J => ¬p J).distortion ≤ c := (distortion_filter_le _ _).trans (hπ.3 hD)
     simpa [hc]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem biUnionTagged_memBaseSet {π : Prepartition I} {πi : ∀ J, TaggedPrepartition J}
     (h : ∀ J ∈ π, l.MemBaseSet J c r (πi J)) (hp : ∀ J ∈ π, (πi J).IsPartition)
     (hc : l.bDistortion → π.compl.distortion ≤ c) : l.MemBaseSet I c r (π.biUnionTagged πi) := by
@@ -403,7 +401,7 @@ theorem biUnionTagged_memBaseSet {π : Prepartition I} {πi : ∀ J, TaggedPrepa
     rw [π.iUnion_compl, ← π.iUnion_biUnion_partition hp]
     rfl
 
-@[mono]
+@[gcongr, mono]
 theorem RCond.mono {ι : Type*} {r : (ι → ℝ) → Ioi (0 : ℝ)} (h : l₁ ≤ l₂) (hr : l₂.RCond r) :
     l₁.RCond r :=
   fun hR => hr (le_iff_imp.1 h.1 hR)
@@ -503,7 +501,6 @@ instance toFilterDistortioniUnion_neBot' (l : IntegrationParams) (I : Box ι) (�
     (l.toFilterDistortioniUnion I (max π₀.distortion π₀.compl.distortion) π₀).NeBot :=
   l.toFilterDistortioniUnion_neBot I π₀ (le_max_left _ _) (le_max_right _ _)
 
-set_option backward.isDefEq.respectTransparency false in
 instance toFilterDistortion_neBot (l : IntegrationParams) (I : Box ι) :
     (l.toFilterDistortion I I.distortion).NeBot := by
   simpa using (l.toFilterDistortioniUnion_neBot' I ⊤).mono inf_le_left

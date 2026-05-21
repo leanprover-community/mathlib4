@@ -85,6 +85,11 @@ Non-defeq error
 instance : Mul Nat := ⟨(· * · )⟩
 
 /--
+warning: An instance of `Mul Nat` already exists.
+Please use `inferInstance` instead of `fast_instance%`
+
+Note: This linter can be disabled with `set_option linter.fast_instance_existing false`
+---
 error: Provided instance
   { mul := fun x y => y * x }
 is not defeq to inferred instance
@@ -117,8 +122,8 @@ abbrev dec1 : Decidable It := isTrue sorry
 #guard_msgs in
 def dec2 : Decidable It := isTrue sorry
 
-/-- info: @Dec.mk It (@isTrue It dec2._proof_1) : Dec It -/
-#guard_msgs in
+/-- info: @Dec.mk It (@isTrue It _check._proof_1) : Dec It -/
+#guard_msgs (info, drop warning) in
 set_option pp.explicit true in
 #check fast_instance% { dec := dec1 : Dec It }
 
@@ -138,3 +143,18 @@ info: @Dec.mk It dec2 : Dec It
 #guard_msgs in
 set_option pp.explicit true in
 #check fast_instance% { dec := dec2 : Dec It }
+
+/-!
+Checking that proof fields whose types already match at instances transparency
+are used directly, without wrapping in an auxiliary theorem.
+-/
+
+class Pointed (α : Type) where
+  val : α
+  h : True
+
+abbrev myPointed : Pointed Nat := ⟨0, trivial⟩
+
+/-- info: { val := 0, h := _check._proof_1 } : Pointed Nat -/
+#guard_msgs in
+#check fast_instance% (myPointed : Pointed Nat)

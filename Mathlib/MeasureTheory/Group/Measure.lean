@@ -442,7 +442,7 @@ protected theorem IsMulLeftInvariant.comap {H} [Group H] {mH : MeasurableSpace H
     ext s hs
     rw [map_apply (by fun_prop) hs]
     repeat rw [hf.comap_apply]
-    have : f '' ((g * ·) ⁻¹' s) = (f g * ·) ⁻¹' (f '' s) := by
+    have : f '' (g * ·) ⁻¹' s = (f g * ·) ⁻¹' f '' s := by
       ext
       constructor
       · rintro ⟨y, hy, rfl⟩
@@ -460,7 +460,7 @@ protected theorem IsMulRightInvariant.comap {H} [Group H] {mH : MeasurableSpace 
     ext s hs
     rw [map_apply (by fun_prop) hs]
     repeat rw [hf.comap_apply]
-    have : f '' ((· * g) ⁻¹' s) = (· * f g) ⁻¹' (f '' s) := by
+    have : f '' (· * g) ⁻¹' s = (· * f g) ⁻¹' f '' s := by
       ext
       constructor
       · rintro ⟨y, hy, rfl⟩
@@ -580,7 +580,7 @@ any open set. -/]
 theorem isOpenPosMeasure_of_mulLeftInvariant_of_compact (K : Set G) (hK : IsCompact K)
     (h : μ K ≠ 0) : IsOpenPosMeasure μ := by
   refine ⟨fun U hU hne => ?_⟩
-  contrapose! h
+  contrapose h
   rw [← nonpos_iff_eq_zero]
   rw [← hU.interior_eq] at hne
   obtain ⟨t, hKt⟩ : ∃ t : Finset G, K ⊆ ⋃ (g : G) (_ : g ∈ t), (fun h : G => g * h) ⁻¹' U :=
@@ -873,9 +873,9 @@ nonrec theorem _root_.MulEquiv.isHaarMeasure_map [BorelSpace G] [ContinuousMul G
   isHaarMeasure_map μ e.toMonoidHom he e.surjective f.isClosedEmbedding.tendsto_cocompact
 
 /--
-A convenience wrapper for MeasureTheory.Measure.isHaarMeasure_map.
+A convenience wrapper for `MeasureTheory.Measure.isHaarMeasure_map`.
 -/
-@[to_additive /-- A convenience wrapper for MeasureTheory.Measure.isAddHaarMeasure_map. -/]
+@[to_additive /-- A convenience wrapper for `MeasureTheory.Measure.isAddHaarMeasure_map`. -/]
 instance _root_.ContinuousMulEquiv.isHaarMeasure_map [BorelSpace G] [IsTopologicalGroup G]
     {H : Type*} [Group H] [TopologicalSpace H] [MeasurableSpace H] [BorelSpace H]
     [IsTopologicalGroup H] (e : G ≃ₜ* H) : (μ.map e).IsHaarMeasure :=

@@ -244,7 +244,7 @@ theorem free_iff_linearEquiv : Free R M ↔ Nonempty (M ≃ₗ[R] R) := by
       e.symm ≪≫ₗ linearEquiv R M ≪≫ₗ (.symm <| .funUnique Unit R R)
   have : Unique (Free.ChooseBasisIndex R M) :=
     (Fintype.card_eq_one_iff_nonempty_unique.mp (by simpa using this)).some
-  exact ⟨e ≪≫ₗ LinearEquiv.finsuppUnique R R _⟩
+  exact ⟨e ≪≫ₗ uniqueLinearEquiv R R default⟩
 
 /- TODO: The ≤ direction holds for arbitrary invertible modules over any commutative **ring** by
 considering the localization at a prime (which is free of rank 1) using the strong rank condition.
@@ -409,7 +409,7 @@ def CommRing.Pic (R : Type u) [CommSemiring R] : Type u :=
 
 open CommRing (Pic)
 
-noncomputable instance : CommGroup (Pic R) := (equivShrink _).symm.commGroup
+noncomputable instance : CommGroup (Pic R) := fast_instance% (equivShrink _).symm.commGroup
 
 variable (M N : Type*) [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R N]
   [Module.Invertible R M] [Module.Invertible R N]
@@ -568,7 +568,6 @@ theorem mapRingHom_mapRingHom {M : Pic R} :
     mapRingHom g (mapRingHom f M) = mapRingHom (g.comp f) M :=
   congr($mapRingHom_comp_mapRingHom M)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem mapRingHom_id : mapRingHom (.id R) = .id _ := by
   rw [mapRingHom, mapAlgebra_self]
 
@@ -848,7 +847,6 @@ the group of the invertible `R`-submodules in `A` modulo the principal submodule
   (QuotientGroup.congr _ _ (.refl _) ((Subgroup.map_id _).trans (ker_unitsToPic R A).symm)).trans <|
   (quotientKerEquivRange _).trans <| .subgroupCongr (range_unitsToPic R A)
 
-#adaptation_note /-- After nightly-2026-02-23 we need this to avoid timeouts. -/
 /-- The class group of a domain is isomorphic to the Picard group. -/
 @[simps!] noncomputable def ClassGroup.equivPic (R) [CommRing R] [IsDomain R] :
     ClassGroup R ≃* Pic R :=

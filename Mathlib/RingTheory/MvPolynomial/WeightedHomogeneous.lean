@@ -190,7 +190,7 @@ theorem isWeightedHomogeneous_monomial (w : σ → M) (d : σ →₀ ℕ) (r : R
     exact hm
   · contradiction
 
-/-- A polynomial of weightedTotalDegree `⊥` is weighted_homogeneous of degree `⊥`. -/
+/-- A polynomial of weightedTotalDegree `⊥` is weighted homogeneous of degree `⊥`. -/
 theorem isWeightedHomogeneous_of_total_degree_zero [SemilatticeSup M] [OrderBot M] (w : σ → M)
     {p : MvPolynomial σ R} (hp : weightedTotalDegree w p = (⊥ : M)) :
     IsWeightedHomogeneous w p (⊥ : M) := by
@@ -472,13 +472,10 @@ theorem weightedHomogeneousComponent_of_mem [DecidableEq M] {m n : M}
     · rfl
     · simp only [coeff_zero]
 
-@[deprecated (since := "2025-10-06")]
-alias weightedHomogeneousComponent_of_isWeightedHomogeneous_same :=
-  IsWeightedHomogeneous.weightedHomogeneousComponent_same
-
-@[deprecated (since := "2025-10-06")]
-alias weightedHomogeneousComponent_of_isWeightedHomogeneous_ne :=
-  IsWeightedHomogeneous.weightedHomogeneousComponent_ne
+lemma support_weightedHomogeneousComponent [DecidableEq M] (n : M) (p : MvPolynomial σ R) :
+    (weightedHomogeneousComponent w n p).support = {c ∈ p.support | (weight w) c = n} := by
+  ext c
+  simp [coeff_weightedHomogeneousComponent, And.comm]
 
 variable (R w)
 

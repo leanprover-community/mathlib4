@@ -265,7 +265,7 @@ theorem card_filter_le (s : Finset α) (p : α → Prop) [DecidablePred p] :
 grind_pattern card_filter_le => #(s.filter p)
 grind_pattern card_filter_le => s.filter p, #s
 
-theorem eq_of_subset_of_card_le {s t : Finset α} (h : s ⊆ t) (h₂ : #t ≤ #s) : s = t :=
+theorem eq_of_subset_of_card_le (h : s ⊆ t) (h₂ : #t ≤ #s) : s = t :=
   eq_of_veq <| Multiset.eq_of_le_of_card_le (val_le_iff.mpr h) h₂
 
 theorem eq_iff_card_le_of_subset (hst : s ⊆ t) : #t ≤ #s ↔ s = t :=
@@ -476,8 +476,8 @@ See `Finset.surj_on_of_inj_on_of_card_le` for the version where `f` is a depende
 lemma surjOn_of_injOn_of_card_le (f : α → β) (hf : Set.MapsTo f s t) (hinj : Set.InjOn f s)
     (hst : #t ≤ #s) : Set.SurjOn f s t := by
   classical
-  suffices s.image f = t by simp [← this, Set.SurjOn]
-  have : s.image f ⊆ t := by aesop (add simp Finset.subset_iff)
+  suffices s.image f = t by rw [Finset.surjOn_iff_subset_image, this]
+  have : s.image f ⊆ t := hf.finsetImage_subset
   exact eq_of_subset_of_card_le this (hst.trans_eq (card_image_of_injOn hinj).symm)
 
 /--
@@ -521,6 +521,10 @@ theorem inj_on_of_surj_on_of_card_le (f : ∀ a ∈ s, β) (hf : ∀ a ha, f a h
   have hsurj' : Set.SurjOn f' s.attach t := fun x hx ↦ by simpa [f'] using hsurj x hx
   have hinj' := injOn_of_surjOn_of_card_le f' (fun x hx ↦ hf _ _) hsurj' (by simpa)
   exact congrArg Subtype.val (@hinj' ⟨a₁, ha₁⟩ (by simp) ⟨a₂, ha₂⟩ (by simp) ha₁a₂)
+
+lemma image_eq_iff_bijOn_of_card [DecidableEq β] (h : #s ≤ #t) :
+    s.image f = t ↔ Set.BijOn f s t := by
+  grind [injOn_of_surjOn_of_card_le, Set.BijOn, image_eq_iff_surjOn_mapsTo]
 
 end bij
 
@@ -572,7 +576,7 @@ theorem card_sdiff_of_subset (h : s ⊆ t) : #(t \ s) = #t - #s := by
 theorem card_sdiff : #(t \ s) = #t - #(s ∩ t) := by
   rw [← card_sdiff_of_subset] <;> grind
 
-theorem card_sdiff_add_card_eq_card {s t : Finset α} (h : s ⊆ t) : #(t \ s) + #s = #t := by grind
+theorem card_sdiff_add_card_eq_card (h : s ⊆ t) : #(t \ s) + #s = #t := by grind
 
 lemma card_sub_card_eq (s t : Finset α) : #t - #s = #(t \ s) - #(s \ t) :=
   calc
@@ -667,7 +671,7 @@ theorem card_eq_one : #s = 1 ↔ ∃ a, s = {a} := by
   cases s
   simp only [Multiset.card_eq_one, Finset.card, ← val_inj, singleton_val]
 
-theorem exists_eq_insert_iff [DecidableEq α] {s t : Finset α} :
+theorem exists_eq_insert_iff [DecidableEq α] :
     (∃ a ∉ s, insert a s = t) ↔ s ⊆ t ∧ #s + 1 = #t := by
   constructor
   · grind

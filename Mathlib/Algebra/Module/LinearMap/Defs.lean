@@ -264,8 +264,9 @@ theorem toLinearMap_injective {F : Type*} [FunLike F M M₃] [SemilinearMapClass
   exact DFunLike.congr_fun h m
 
 /-- Identity map as a `LinearMap` -/
+@[implicit_reducible]
 def id : M →ₗ[R] M :=
-  { DistribMulActionHom.id R with toFun := _root_.id }
+  { DistribMulActionHom.id R with toFun x := x }
 
 theorem id_apply (x : M) : @id R M _ _ _ x = x :=
   rfl
@@ -481,12 +482,13 @@ variable {module_M₁ : Module R₁ M₁} {module_M₂ : Module R₂ M₂} {modu
 variable {σ₁₂ : R₁ →+* R₂} {σ₂₃ : R₂ →+* R₃} {σ₁₃ : R₁ →+* R₃}
 
 /-- Composition of two linear maps is a linear map -/
+@[implicit_reducible]
 def comp [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃] (f : M₂ →ₛₗ[σ₂₃] M₃) (g : M₁ →ₛₗ[σ₁₂] M₂) :
     M₁ →ₛₗ[σ₁₃] M₃ where
-  toFun := f ∘ g
-  map_add' := by simp only [map_add, forall_const, Function.comp_apply]
+  toFun x := f (g x)
+  map_add' := by simp only [map_add, forall_const]
   -- Note that https://github.com/leanprover-community/mathlib4/pull/8386 changed `map_smulₛₗ` to `map_smulₛₗ _`
-  map_smul' r x := by simp only [Function.comp_apply, map_smulₛₗ _, RingHomCompTriple.comp_apply]
+  map_smul' r x := by simp only [map_smulₛₗ _, RingHomCompTriple.comp_apply]
 
 variable [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃]
 variable (f : M₂ →ₛₗ[σ₂₃] M₃) (g : M₁ →ₛₗ[σ₁₂] M₂)
@@ -806,7 +808,7 @@ theorem default_def : (default : M →ₛₗ[σ₁₂] M₂) = 0 :=
   rfl
 
 instance uniqueOfLeft [Subsingleton M] : Unique (M →ₛₗ[σ₁₂] M₂) :=
-  { inferInstanceAs (Inhabited (M →ₛₗ[σ₁₂] M₂)) with
+  { (inferInstance : Inhabited (M →ₛₗ[σ₁₂] M₂)) with
     uniq := fun f => ext fun x => by rw [Subsingleton.elim x 0, map_zero, map_zero] }
 
 instance uniqueOfRight [Subsingleton M₂] : Unique (M →ₛₗ[σ₁₂] M₂) :=
@@ -840,8 +842,12 @@ theorem comp_add (f g : M →ₛₗ[σ₁₂] M₂) (h : M₂ →ₛₗ[σ₂₃
     (h.comp (f + g) : M →ₛₗ[σ₁₃] M₃) = h.comp f + h.comp g :=
   ext fun _ ↦ h.map_add _ _
 
+-- The `AddMonoid` instance exists to help speedup unification
+instance addMonoid : AddMonoid (M →ₛₗ[σ₁₂] M₂) := fast_instance%
+  DFunLike.coe_injective.addMonoid _ rfl (fun _ _ ↦ rfl) fun _ _ ↦ rfl
+
 /-- The type of linear maps is an additive monoid. -/
-instance addCommMonoid : AddCommMonoid (M →ₛₗ[σ₁₂] M₂) :=
+instance addCommMonoid : AddCommMonoid (M →ₛₗ[σ₁₂] M₂) := fast_instance%
   DFunLike.coe_injective.addCommMonoid _ rfl (fun _ _ ↦ rfl) fun _ _ ↦ rfl
 
 /-- The negation of a linear map is linear. -/
@@ -885,7 +891,7 @@ theorem comp_sub (f g : M →ₛₗ[σ₁₂] N₂) (h : N₂ →ₛₗ[σ₂₃
   ext fun _ ↦ h.map_sub _ _
 
 /-- The type of linear maps is an additive group. -/
-instance addCommGroup : AddCommGroup (M →ₛₗ[σ₁₂] N₂) :=
+instance addCommGroup : AddCommGroup (M →ₛₗ[σ₁₂] N₂) := fast_instance%
   DFunLike.coe_injective.addCommGroup _ rfl (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ _ ↦ rfl)
     (fun _ _ ↦ rfl) fun _ _ ↦ rfl
 

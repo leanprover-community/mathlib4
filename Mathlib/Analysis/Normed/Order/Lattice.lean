@@ -30,7 +30,7 @@ topology.
 normed, lattice, ordered, group
 -/
 
-@[expose] public section
+public section
 
 
 /-!

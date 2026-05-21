@@ -30,7 +30,7 @@ We also use lemmas from other files:
 * `isEquivalent_of_tendsto_one` for `f ∼ g`
 -/
 
-@[expose] public section
+public section
 
 open Filter Topology Asymptotics
 

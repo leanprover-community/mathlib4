@@ -5,9 +5,6 @@ Authors: Reid Barton, Kim Morrison, David Wärn
 -/
 module
 
-public import Mathlib.CategoryTheory.ObjectProperty.FullSubcategory
-public import Mathlib.CategoryTheory.Products.Basic
-public import Mathlib.CategoryTheory.Pi.Basic
 public import Mathlib.Combinatorics.Quiver.Symmetric
 public import Mathlib.CategoryTheory.Functor.ReflectsIso.Basic
 public import Mathlib.CategoryTheory.MorphismProperty.Basic
@@ -213,5 +210,7 @@ lemma isGroupoid_iff_isomorphisms_eq_top (C : Type*) [Category* C] :
     infer_instance
   · intro h
     exact ⟨of_eq_top h⟩
+
+instance {I : Type*} : IsGroupoid (Discrete I) where
 
 end CategoryTheory

@@ -32,7 +32,6 @@ section Embeddings
 
 variable (F : Type*) [Field F]
 
-set_option backward.isDefEq.respectTransparency false in
 open AdjoinRoot in
 /-- If `p` is the minimal polynomial of `a` over `F` then `F[a] ≃ₐ[F] F[x]/(p)` -/
 def AlgEquiv.adjoinSingletonEquivAdjoinRootMinpoly {R : Type*} [CommRing R] [Algebra F R] (x : R) :

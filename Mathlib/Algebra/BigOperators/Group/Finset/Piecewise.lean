@@ -246,7 +246,7 @@ theorem prod_ite_one (s : Finset ι) (p : ι → Prop) [DecidablePred p]
   · obtain ⟨i, hi, hpi⟩ := h
     rw [prod_eq_single_of_mem _ hi, if_pos hpi]
     exact fun j hj hji ↦ if_neg fun hpj ↦ hji <| h _ hj _ hi hpj hpi
-  · push_neg at h
+  · push Not at h
     rw [prod_eq_one]
     exact fun i hi => if_neg (h i hi)
 

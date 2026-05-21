@@ -135,7 +135,6 @@ noncomputable def CommSq.shortComplex' (sq : CommSq fst snd f g) : ShortComplex 
   g := biprod.desc f (-g)
   zero := by simp [sq.w]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A commutative square in a preadditive category is a pullback square iff
 the corresponding diagram `0 ⟶ X₁ ⟶ X₂ ⊞ X₃ ⟶ X₄ ⟶ 0` makes `X₁` a kernel. -/
 noncomputable def CommSq.isLimitEquivIsLimitKernelFork (sq : CommSq fst snd f g) :

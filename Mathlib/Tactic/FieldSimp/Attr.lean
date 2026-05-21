@@ -13,7 +13,7 @@ public meta section
 
 open Lean Meta
 
-/-- Initialize the attribute `field` grouping the simprocs associated to the field_simp tactic. -/
+/-- Initialize the attribute `field` grouping the simprocs associated to the `field_simp` tactic. -/
 initialize fieldSimpExt : Simp.SimprocExtension
  ← Simp.registerSimprocAttr `field
       "Attribute grouping the simprocs associated to the field_simp tactic" none

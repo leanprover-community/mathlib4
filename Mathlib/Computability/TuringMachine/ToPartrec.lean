@@ -53,16 +53,20 @@ positions, or labels `Λ`, each of which executes a finite sequence of basic sta
 
 For this program we will need four stacks, each on an alphabet `Γ'` like so:
 
+```
     inductive Γ'  | consₗ | cons | bit0 | bit1
+```
 
 We represent a number as a bit sequence, lists of numbers by putting `cons` after each element, and
 lists of lists of natural numbers by putting `consₗ` after each list. For example:
 
+```
     0 ~> []
     1 ~> [bit1]
     6 ~> [bit0, bit1, bit1]
     [1, 2] ~> [bit1, cons, bit0, bit1, cons]
     [[], [1, 2]] ~> [consₗ, bit1, cons, bit0, bit1, cons, consₗ]
+```
 
 The four stacks are `main`, `rev`, `aux`, `stack`. In normal mode, `main` contains the input to the
 current program (a `List ℕ`) and `stack` contains data (a `List (List ℕ)`) associated to the
@@ -211,11 +215,18 @@ compile_inductive% Λ'
 instance Λ'.instInhabited : Inhabited Λ' :=
   ⟨Λ'.ret Cont'.halt⟩
 
-set_option backward.proofsInPublic true in
 instance Λ'.instDecidableEq : DecidableEq Λ' := fun a b => by
-  induction a generalizing b <;> cases b <;> first
-    | apply Decidable.isFalse; rintro ⟨⟨⟩⟩; done
-    | exact decidable_of_iff' _ (by simp [funext_iff]; rfl)
+  induction a generalizing b <;> cases b
+  case move.move p k₁ k₂ q _ p' k₁' k₂' q' =>
+    exact decidable_of_iff' (p = p' ∧ k₁ = k₁' ∧ k₂ = k₂' ∧ q = q') (by simp)
+  case clear.clear p k q _ p' k' q' => exact decidable_of_iff' (p = p' ∧ k = k' ∧ q = q') (by simp)
+  case copy.copy q _ q' => exact decidable_of_iff' (q = q') (by simp)
+  case push.push k s q _ k' s' q' => exact decidable_of_iff' (k = k' ∧ s = s' ∧ q = q') (by simp)
+  case read.read f _ f' => exact decidable_of_iff' (∀ a, f a = f' a) (by simp [funext_iff])
+  case succ.succ q _ q' => exact decidable_of_iff' (q = q') (by simp)
+  case pred.pred q₁ q₂ _ _ q₁' q₂' => exact decidable_of_iff' (q₁ = q₁' ∧ q₂ = q₂') (by simp)
+  case ret.ret k k' => exact decidable_of_iff' (k = k') (by simp)
+  all_goals exact .isFalse (by rintro ⟨⟨⟩⟩)
 
 /-- The type of TM2 statements used by this machine. -/
 def Stmt' :=
@@ -398,10 +409,12 @@ def trCont : Cont → Cont'
 /-- We use `PosNum` to define the translation of binary natural numbers. A natural number is
 represented as a little-endian list of `bit0` and `bit1` elements:
 
+```
     1 = [bit1]
     2 = [bit0, bit1]
     3 = [bit1, bit1]
     4 = [bit0, bit0, bit1]
+```
 
 In particular, this representation guarantees no trailing `bit0`'s at the end of the list. -/
 def trPosNum : PosNum → List Γ'
@@ -413,11 +426,13 @@ def trPosNum : PosNum → List Γ'
 translated using `trPosNum`, and `trNum 0 = []`. So there are never any trailing `bit0`'s in
 a translated `Num`.
 
+```
     0 = []
     1 = [bit1]
     2 = [bit0, bit1]
     3 = [bit1, bit1]
     4 = [bit0, bit0, bit1]
+```
 -/
 def trNum : Num → List Γ'
   | Num.zero => []
@@ -438,10 +453,12 @@ theorem trNat_default : trNat default = [] :=
 /-- Lists are translated with a `cons` after each encoded number.
 For example:
 
+```
     [] = []
     [0] = [cons]
     [1] = [bit1, cons]
     [6, 0] = [bit0, bit1, bit1, cons, cons]
+```
 -/
 @[simp]
 def trList : List ℕ → List Γ'
@@ -451,11 +468,13 @@ def trList : List ℕ → List Γ'
 /-- Lists of lists are translated with a `consₗ` after each encoded list.
 For example:
 
+```
     [] = []
     [[]] = [consₗ]
     [[], []] = [consₗ, consₗ]
     [[0]] = [cons, consₗ]
     [[1, 2], [0]] = [bit1, cons, bit0, bit1, cons, consₗ, cons, consₗ]
+```
 -/
 @[simp]
 def trLList : List (List ℕ) → List Γ'
@@ -1122,7 +1141,7 @@ theorem supports_union {K₁ K₂ S} : Supports (K₁ ∪ K₂) S ↔ Supports K
 
 theorem supports_biUnion {K : Option Γ' → Finset Λ'} {S} :
     Supports (Finset.univ.biUnion K) S ↔ ∀ a, Supports (K a) S := by
-  simpa [Supports] using forall_swap
+  simpa [Supports] using forall_comm
 
 theorem head_supports {S k q} (H : (q : Λ').Supports S) : (head k q).Supports S := fun _ => by
   dsimp only; split_ifs <;> exact H

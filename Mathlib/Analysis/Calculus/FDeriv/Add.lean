@@ -111,7 +111,7 @@ theorem fderivWithin_const_smul_of_invertible (c : R) [Invertible c]
   by_cases h : DifferentiableWithinAt 𝕜 f s x
   · exact (h.hasFDerivWithinAt.const_smul c).fderivWithin hs
   · have : ¬DifferentiableWithinAt 𝕜 (c • f) s x := by
-      contrapose! h
+      contrapose h
       exact (differentiableWithinAt_smul_iff c).mp h
     simp [fderivWithin_zero_of_not_differentiableWithinAt h,
       fderivWithin_zero_of_not_differentiableWithinAt this]
@@ -152,8 +152,20 @@ lemma fderivWithin_const_smul_field (c : R) (hs : UniqueDiffWithinAt 𝕜 s x) :
   obtain (rfl | ha) := eq_or_ne c 0
   · simp
   · have : Invertible c := invertibleOfNonzero ha
-    ext x
-    simp [fderivWithin_const_smul_of_invertible c (f := f) hs]
+    simp [fderivWithin_const_smul_of_invertible c hs]
+
+lemma fderivWithin_const_smul_field' {s : Set 𝕜} {f : 𝕜 → F} {x : 𝕜} (c : R) :
+    fderivWithin 𝕜 (c • f) s x = c • fderivWithin 𝕜 f s x := by
+  by_cases hsx : UniqueDiffWithinAt 𝕜 s x
+  · exact fderivWithin_const_smul_field c hsx
+  · simp [fderivWithin_zero_of_not_uniqueDiffWithinAt hsx]
+
+omit [DivisionSemiring R] [Module R F] [SMulCommClass 𝕜 R F] [ContinuousConstSMul R F] in
+/-- Special case of `fderivWithin_neg` for functions `𝕜 → F`, i.e. when the domain `E` is the scalar
+field `𝕜` itself. In this case no `UniqueDiffWithinAt 𝕜 s x` hypothesis is needed. -/
+lemma fderivWithin_neg' {s : Set 𝕜} {f : 𝕜 → F} {x : 𝕜} :
+    fderivWithin 𝕜 (-f) s x = -fderivWithin 𝕜 f s x := by
+  simpa only [neg_smul, one_smul] using fderivWithin_const_smul_field' (f := f) (-1 : 𝕜)
 
 @[deprecated (since := "2026-01-11")] alias fderivWithin_const_smul_of_field :=
   fderivWithin_const_smul_field
@@ -568,13 +580,15 @@ theorem differentiable_neg_iff : Differentiable 𝕜 (-f) ↔ Differentiable �
 
 theorem fderivWithin_fun_neg (hxs : UniqueDiffWithinAt 𝕜 s x) :
     fderivWithin 𝕜 (fun y => -f y) s x = -fderivWithin 𝕜 f s x := by
-  classical
   by_cases h : DifferentiableWithinAt 𝕜 f s x
   · exact h.hasFDerivWithinAt.neg.fderivWithin hxs
   · rw [fderivWithin_zero_of_not_differentiableWithinAt h,
       fderivWithin_zero_of_not_differentiableWithinAt, neg_zero]
     simpa
 
+/-- Version of `fderivWithin_fun_neg` where the function is written `-f` instead of `fun y ↦ -f y`.
+For the special case `E = 𝕜` without a `UniqueDiffWithinAt 𝕜 s x` hypothesis, see
+`fderivWithin_neg'`. -/
 theorem fderivWithin_neg (hxs : UniqueDiffWithinAt 𝕜 s x) :
     fderivWithin 𝕜 (-f) s x = -fderivWithin 𝕜 f s x :=
   fderivWithin_fun_neg hxs

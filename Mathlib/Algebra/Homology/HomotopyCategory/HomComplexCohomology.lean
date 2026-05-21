@@ -56,8 +56,7 @@ def coboundaries : AddSubgroup (Cocycle K L n) where
 variable {K L n} in
 lemma mem_coboundaries_iff (α : Cocycle K L n) (m : ℤ) (hm : m + 1 = n) :
     α ∈ coboundaries K L n ↔ ∃ (β : Cochain K L m), δ m n β = α := by
-  simp only [coboundaries, exists_prop, AddSubgroup.mem_mk, AddSubmonoid.mem_mk,
-    AddSubsemigroup.mem_mk, Set.mem_setOf_eq]
+  simp only [coboundaries, AddSubgroup.mem_mk, AddSubmonoid.mem_mk, AddSubsemigroup.mem_mk]
   grind
 
 /-- The type of cohomology classes of degree `n` in the complex of morphisms

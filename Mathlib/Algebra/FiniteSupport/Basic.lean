@@ -13,14 +13,14 @@ public import Mathlib.Data.Set.Finite.Lattice
 import Mathlib.Algebra.Group.Support
 
 /-!
-# Make fun_prop work for finite (mulitplicative) support
+# Make `fun_prop` work for finite (multiplicative) support
 
 We provide API lemmas for the predicate `HasFiniteMulSupport` (and its additivized version
 `HasFiniteSupport`) on functions so that `fun_prop` can prove it for functions that are
 built from other functions with finite multiplicative support.
 -/
 
-@[expose] public section
+public section
 
 namespace Function
 
@@ -167,7 +167,7 @@ variable {β : Type*} {f : β → M} {g : α → β}
 lemma HasFiniteMulSupport.comp_of_injective (hg : Injective g) (hf : f.HasFiniteMulSupport) :
     (f ∘ g).HasFiniteMulSupport := by
   refine Set.Finite.of_injOn ?_ (Set.injOn_of_injective hg) hf
-  grind [Set.mapsTo_iff_subset_preimage]
+  grind [Set.mapsTo_iff_subset_preimage, Function.mulSupport]
 
 @[to_additive (attr := fun_prop)]
 lemma HasFiniteMulSupport.fun_comp_of_injective (hg : Injective g) (hf : f.HasFiniteMulSupport) :

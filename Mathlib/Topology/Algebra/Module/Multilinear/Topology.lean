@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Topology.Algebra.Module.Equiv
 public import Mathlib.Topology.Algebra.Module.Multilinear.Bounded
-public import Mathlib.Topology.Algebra.Module.StrongTopology
+public import Mathlib.Topology.Algebra.Module.Spaces.ContinuousLinearMap
 public import Mathlib.Topology.Algebra.Module.UniformConvergence
 public import Mathlib.Topology.Algebra.SeparationQuotient.Section
 public import Mathlib.Topology.Hom.ContinuousEvalConst
@@ -311,7 +311,6 @@ def apply [ContinuousConstSMul 𝕜 F] (m : Π i, E i) : ContinuousMultilinearMa
   toFun c := c m
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
-  cont := continuous_eval_const m
 
 variable {𝕜 E F}
 

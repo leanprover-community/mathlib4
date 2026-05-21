@@ -28,6 +28,7 @@ open Finsupp
 
 variable {R σ M : Type*} [CommSemiring R] {φ : MvPolynomial σ R}
 
+set_option backward.isDefEq.respectTransparency false in
 protected lemma IsWeightedHomogeneous.pderiv [AddCancelCommMonoid M] {w : σ → M} {n n' : M} {i : σ}
     (h : φ.IsWeightedHomogeneous w n) (h' : n' + w i = n) :
     (pderiv i φ).IsWeightedHomogeneous w n' := by

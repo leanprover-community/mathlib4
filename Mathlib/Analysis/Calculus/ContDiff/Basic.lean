@@ -29,7 +29,7 @@ attribute [local instance 1001] NormedAddCommGroup.toAddCommGroup AddCommGroup.t
 
 variable {𝕜 E F G : Type*} [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
   [NormedAddCommGroup F] [NormedSpace 𝕜 F] [NormedAddCommGroup G] [NormedSpace 𝕜 G]
-  {s t : Set E} {f : E → F} {x : E} {b : E × F → G} {m n : WithTop ℕ∞}
+  {s t : Set E} {f : E → F} {x : E} {b : E × F → G} {m n : ℕ∞ω}
   {p : E → FormalMultilinearSeries 𝕜 E F}
 
 /-! ### Constants -/
@@ -46,15 +46,54 @@ theorem iteratedFDerivWithin_succ_const (n : ℕ) (c : F) :
     simp only [Pi.zero_def, comp_def, fderivWithin_fun_const, map_zero]
 
 @[simp]
-theorem iteratedFDerivWithin_zero_fun {i : ℕ} :
-    iteratedFDerivWithin 𝕜 i (fun _ : E ↦ (0 : F)) s = 0 := by
+theorem iteratedFDerivWithin_zero {i : ℕ} :
+    iteratedFDerivWithin 𝕜 i (0 : E → F) s = 0 := by
   cases i with
   | zero => ext; simp
   | succ i => apply iteratedFDerivWithin_succ_const
 
 @[simp]
-theorem iteratedFDeriv_zero_fun {n : ℕ} : (iteratedFDeriv 𝕜 n fun _ : E ↦ (0 : F)) = 0 :=
-  funext fun x ↦ by simp only [← iteratedFDerivWithin_univ, iteratedFDerivWithin_zero_fun]
+theorem iteratedFDerivWithin_fun_zero {i : ℕ} :
+    iteratedFDerivWithin 𝕜 i (fun (_ : E) ↦ (0 : F)) s = 0 := by
+  apply iteratedFDerivWithin_zero
+
+@[deprecated (since := "2026-03-18")]
+alias iteratedFDerivWithin_zero_fun := iteratedFDerivWithin_fun_zero
+
+@[simp]
+theorem ftaylorSeriesWithin_zero :
+    ftaylorSeriesWithin 𝕜 (0 : E → F) = 0 := by
+  ext
+  simp [ftaylorSeriesWithin]
+
+@[simp]
+theorem ftaylorSeriesWithin_fun_zero :
+    ftaylorSeriesWithin 𝕜 (fun (_ : E) ↦ (0 : F)) = 0 := by
+  apply ftaylorSeriesWithin_zero
+
+@[simp]
+theorem iteratedFDeriv_zero {n : ℕ} :
+    iteratedFDeriv 𝕜 n (0 : E → F) = 0 :=
+  funext fun x ↦ by simp only [← iteratedFDerivWithin_univ, iteratedFDerivWithin_zero]
+
+@[simp]
+theorem iteratedFDeriv_fun_zero {n : ℕ} :
+    iteratedFDeriv 𝕜 n (fun (_ : E) ↦ (0 : F)) = 0 := by
+  apply iteratedFDeriv_zero
+
+@[deprecated (since := "2026-03-18")] alias iteratedFDeriv_zero_fun := iteratedFDeriv_fun_zero
+
+@[simp]
+theorem ftaylorSeries_zero :
+    ftaylorSeries 𝕜 (0 : E → F) = 0 := by
+  ext
+  simp [ftaylorSeries]
+
+@[simp]
+theorem ftaylorSeries_fun_zero :
+    ftaylorSeries 𝕜 (fun (_ : E) ↦ (0 : F)) = 0 := by
+  ext
+  simp [ftaylorSeries]
 
 theorem contDiff_zero_fun : ContDiff 𝕜 n fun _ : E => (0 : F) :=
   analyticOnNhd_const.contDiff
@@ -135,32 +174,20 @@ theorem LinearIsometryEquiv.contDiff (f : E ≃ₗᵢ[𝕜] F) : ContDiff 𝕜 n
   (f : E →L[𝕜] F).contDiff
 
 /-- The identity is `C^n`. -/
+@[to_fun (attr := fun_prop) contDiff_fun_id]
 theorem contDiff_id : ContDiff 𝕜 n (id : E → E) :=
   IsBoundedLinearMap.id.contDiff
 
-@[fun_prop]
-theorem contDiff_fun_id : ContDiff 𝕜 n (fun x : E => x) :=
-  IsBoundedLinearMap.id.contDiff
-
+@[to_fun (attr := fun_prop) contDiffWithinAt_fun_id]
 theorem contDiffWithinAt_id {s x} : ContDiffWithinAt 𝕜 n (id : E → E) s x :=
   contDiff_id.contDiffWithinAt
 
-@[fun_prop]
-theorem contDiffWithinAt_fun_id {s x} : ContDiffWithinAt 𝕜 n (fun x : E => x) s x :=
-  contDiff_id.contDiffWithinAt
-
+@[to_fun (attr := fun_prop) contDiffAt_fun_id]
 theorem contDiffAt_id {x} : ContDiffAt 𝕜 n (id : E → E) x :=
   contDiff_id.contDiffAt
 
-@[fun_prop]
-theorem contDiffAt_fun_id {x} : ContDiffAt 𝕜 n (fun x : E => x) x :=
-  contDiff_id.contDiffAt
-
+@[to_fun (attr := fun_prop) contDiffOn_fun_id]
 theorem contDiffOn_id {s} : ContDiffOn 𝕜 n (id : E → E) s :=
-  contDiff_id.contDiffOn
-
-@[fun_prop]
-theorem contDiffOn_fun_id {s} : ContDiffOn 𝕜 n (fun x : E => x) s :=
   contDiff_id.contDiffOn
 
 /-- Bilinear functions are `C^n`. -/
@@ -169,7 +196,7 @@ theorem IsBoundedBilinearMap.contDiff (hb : IsBoundedBilinearMap 𝕜 b) : ContD
 
 /-- If `f` admits a Taylor series `p` in a set `s`, and `g` is linear, then `g ∘ f` admits a Taylor
 series whose `k`-th term is given by `g ∘ (p k)`. -/
-theorem HasFTaylorSeriesUpToOn.continuousLinearMap_comp {n : WithTop ℕ∞} (g : F →L[𝕜] G)
+theorem HasFTaylorSeriesUpToOn.continuousLinearMap_comp {n : ℕ∞ω} (g : F →L[𝕜] G)
     (hf : HasFTaylorSeriesUpToOn n f p s) :
     HasFTaylorSeriesUpToOn n (g ∘ f) (fun x k => g.compContinuousMultilinearMap (p x k)) s where
   zero_eq x hx := congr_arg g (hf.zero_eq x hx)
@@ -495,7 +522,7 @@ section prod
 
 /-- If two functions `f` and `g` admit Taylor series `p` and `q` in a set `s`, then the Cartesian
 product of `f` and `g` admits the Cartesian product of `p` and `q` as a Taylor series. -/
-theorem HasFTaylorSeriesUpToOn.prodMk {n : WithTop ℕ∞}
+theorem HasFTaylorSeriesUpToOn.prodMk {n : ℕ∞ω}
     (hf : HasFTaylorSeriesUpToOn n f p s) {g : E → G}
     {q : E → FormalMultilinearSeries 𝕜 E G} (hg : HasFTaylorSeriesUpToOn n g q s) :
     HasFTaylorSeriesUpToOn n (fun y => (f y, g y)) (fun y k => (p y k).prod (q y k)) s := by
@@ -616,12 +643,12 @@ Warning: if you think you need this lemma, it is likely that you can simplify yo
 reformulating the lemma that you're applying next using the tips in
 Note [continuity lemma statement]
 -/
-theorem contDiff_prodAssoc {n : WithTop ℕ∞} : ContDiff 𝕜 n <| Equiv.prodAssoc E F G :=
+theorem contDiff_prodAssoc {n : ℕ∞ω} : ContDiff 𝕜 n <| Equiv.prodAssoc E F G :=
   (LinearIsometryEquiv.prodAssoc 𝕜 E F G).contDiff
 
 /-- The natural equivalence `E × (F × G) ≃ (E × F) × G` is smooth.
 
 Warning: see remarks attached to `contDiff_prodAssoc`
 -/
-theorem contDiff_prodAssoc_symm {n : WithTop ℕ∞} : ContDiff 𝕜 n <| (Equiv.prodAssoc E F G).symm :=
+theorem contDiff_prodAssoc_symm {n : ℕ∞ω} : ContDiff 𝕜 n <| (Equiv.prodAssoc E F G).symm :=
   (LinearIsometryEquiv.prodAssoc 𝕜 E F G).symm.contDiff

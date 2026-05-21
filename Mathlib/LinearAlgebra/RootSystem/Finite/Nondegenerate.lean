@@ -332,7 +332,7 @@ lemma orthogonal_rootSpan_eq :
   obtain ⟨u, hu, v, hv, rfl⟩ : ∃ᵉ (u ∈ P.rootSpan R) (v ∈ LinearMap.ker P.RootForm), u + v = y := by
     rw [← Submodule.mem_sup, P.isCompl_rootSpan_ker_rootForm.sup_eq_top]; exact Submodule.mem_top
   simp only [LinearMap.mem_ker] at hv
-  simp [hx _ hu, hv]
+  simp [LinearMap.IsOrtho, hx _ hu, hv]
 
 @[simp]
 lemma orthogonal_corootSpan_eq :
@@ -436,7 +436,7 @@ lemma eq_zero_of_mem_rootSpan_of_rootForm_self_eq_zero {x : M}
 lemma rootForm_pos_of_ne_zero {x : M} (hx : x ∈ P.rootSpan R) (h : x ≠ 0) :
     0 < P.RootForm x x := by
   apply (P.zero_le_rootForm x).lt_of_ne
-  contrapose! h
+  contrapose h
   exact P.eq_zero_of_mem_rootSpan_of_rootForm_self_eq_zero hx h.symm
 
 lemma rootForm_anisotropic [P.IsRootSystem] :

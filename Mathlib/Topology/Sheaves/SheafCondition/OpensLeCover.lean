@@ -56,7 +56,6 @@ def OpensLeCover : Type w :=
   ObjectProperty.FullSubcategory fun V : Opens X ↦ ∃ i, V ≤ U i
 deriving Category
 
-set_option backward.isDefEq.respectTransparency false in
 instance [h : Nonempty ι] : Inhabited (OpensLeCover U) :=
   ⟨⟨⊥, let ⟨i⟩ := h; ⟨i, bot_le⟩⟩⟩
 
@@ -160,14 +159,14 @@ def whiskerIsoMapGenerateCocone (hY : Y = iSup U) :
   hom :=
     { hom := F.map (eqToHom (congr_arg op hY.symm))
       w := fun j => by
-        erw [← F.map_comp]
         dsimp
+        rw [← F.map_comp]
         congr 1 }
   inv :=
     { hom := F.map (eqToHom (congr_arg op hY))
       w := fun j => by
-        erw [← F.map_comp]
         dsimp
+        rw [← F.map_comp]
         congr 1 }
   hom_inv_id := by
     ext

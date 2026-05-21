@@ -131,6 +131,13 @@ theorem unop {X : Cᵒᵖ} (h : IsZero X) : IsZero (Opposite.unop X) :=
   ⟨fun Y => ⟨⟨⟨(h.from_ (Opposite.op Y)).unop⟩, fun _ => Quiver.Hom.op_inj (h.eq_of_tgt _ _)⟩⟩,
     fun Y => ⟨⟨⟨(h.to_ (Opposite.op Y)).unop⟩, fun _ => Quiver.Hom.op_inj (h.eq_of_src _ _)⟩⟩⟩
 
+variable (Y) in
+/-- A zero object is a retract of every object. -/
+def retract (h : IsZero X) : Retract X Y where
+  i := h.to_ Y
+  r := h.from_ Y
+  retract := h.isInitial.hom_ext _ _
+
 end IsZero
 
 end Limits
@@ -308,5 +315,8 @@ open ZeroObject
 
 theorem Functor.isZero_iff [HasZeroObject D] (F : C ⥤ D) : IsZero F ↔ ∀ X, IsZero (F.obj X) :=
   ⟨fun hF X => hF.obj X, Functor.isZero _⟩
+
+instance {C : Type*} [Category* C] (A : C) [HasZeroObject C] : Epi (terminalIsTerminal.from A) :=
+  (((isZero_zero C).of_iso HasZeroObject.zeroIsoTerminal.symm).epi _)
 
 end CategoryTheory

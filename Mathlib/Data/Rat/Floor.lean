@@ -36,17 +36,6 @@ namespace Rat
 variable {α : Type*} [Field α] [LinearOrder α] [IsStrictOrderedRing α] [FloorRing α]
 variable {R : Type*} [Ring R] [LinearOrder R] [IsStrictOrderedRing R] [FloorRing R]
 
-@[deprecated Rat.le_floor_iff (since := "2025-09-02")]
-protected theorem le_floor {z : ℤ} : ∀ {r : ℚ}, z ≤ Rat.floor r ↔ (z : ℚ) ≤ r
-  | ⟨n, d, h, c⟩ => by
-    simp only [Rat.floor_def]
-    rw [mk_eq_divInt]
-    have h' := Int.ofNat_lt.2 (Nat.pos_of_ne_zero h)
-    conv =>
-      rhs
-      rw [intCast_eq_divInt, Rat.divInt_le_divInt zero_lt_one h', mul_one]
-    exact Int.le_ediv_iff_mul_le h'
-
 instance : FloorRing ℚ :=
   (FloorRing.ofFloor ℚ Rat.floor) fun _ _ => Rat.le_floor_iff.symm
 
@@ -405,8 +394,7 @@ theorem fract_inv_num_lt_num_of_pos {q : ℚ} (q_pos : 0 < q) : (fract q⁻¹).n
       suffices ((q.den : ℤ) - q.num * ⌊q_inv⌋).natAbs.Coprime q.num.natAbs from
         mod_cast Rat.num_div_eq_of_coprime q_num_pos this
       have tmp := Nat.coprime_sub_mul_floor_rat_div_of_coprime q.reduced.symm
-      #adaptation_note /-- We can remove `_root_.` after https://github.com/leanprover/lean4/pull/12504 -/
-      simpa only [Nat.cast_natAbs, _root_.abs_of_nonneg q_num_pos.le] using tmp
+      simpa only [Nat.cast_natAbs, abs_of_nonneg q_num_pos.le] using tmp
     rwa [this]
   -- to show the claim, start with the following inequality
   have q_inv_num_denom_ineq : q⁻¹.num - ⌊q⁻¹⌋ * q⁻¹.den < q⁻¹.den := by

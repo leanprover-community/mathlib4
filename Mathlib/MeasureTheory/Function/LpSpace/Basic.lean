@@ -206,7 +206,7 @@ instance instNorm : Norm (Lp E p μ) where norm f := ENNReal.toReal (eLpNorm f p
 
 -- note: we need this to be defeq to the instance from `SeminormedAddGroup.toNNNorm`, so
 -- can't use `ENNReal.toNNReal (eLpNorm f p μ)`
-instance instNNNorm : NNNorm (Lp E p μ) where nnnorm f := ⟨‖f‖, ENNReal.toReal_nonneg⟩
+instance instNNNorm : NNNorm (Lp E p μ) where nnnorm f := .mk ‖f‖ ENNReal.toReal_nonneg
 
 instance instDist : Dist (Lp E p μ) where dist f g := ‖-f + g‖
 
@@ -416,7 +416,7 @@ theorem coe_LpSubmodule : (LpSubmodule 𝕜 E p μ).toAddSubgroup = Lp E p μ :=
   rfl
 
 instance instModule : Module 𝕜 (Lp E p μ) :=
-  { (LpSubmodule 𝕜 E p μ).module with }
+  fast_instance% (LpSubmodule 𝕜 E p μ).module
 
 theorem coeFn_smul (c : 𝕜) (f : Lp E p μ) : ⇑(c • f) =ᵐ[μ] c • ⇑f :=
   AEEqFun.coeFn_smul _ _
@@ -570,6 +570,39 @@ theorem isometry_compMeasurePreserving [Fact (1 ≤ p)] (hf : MeasurePreserving 
 theorem toLp_compMeasurePreserving {g : β → E} (hg : MemLp g p μb) (hf : MeasurePreserving f μ μb) :
     compMeasurePreserving f hf (hg.toLp g) = (hg.comp_measurePreserving hf).toLp _ := rfl
 
+@[simp]
+theorem compMeasurePreserving_id :
+    compMeasurePreserving (E := E) (p := p) id (.id μb) = AddMonoidHom.id _ := by
+  ext
+  simp
+
+theorem compMeasurePreserving_id_apply (g : Lp E p μb) :
+    compMeasurePreserving id (MeasurePreserving.id μb) g = g := by simp
+
+theorem compMeasurePreserving_comp {γ : Type*} {mγ : MeasurableSpace γ} {μc : Measure γ}
+    {f : β → γ} (hf : MeasurePreserving f μb μc) {f' : α → β} (hf' : MeasurePreserving f' μ μb) :
+    compMeasurePreserving (E := E) (p := p) (f ∘ f') (hf.comp hf') =
+    (compMeasurePreserving f' hf').comp (compMeasurePreserving f hf) := by
+  ext g
+  simp [AEEqFun.compMeasurePreserving_comp _ hf hf']
+
+theorem compMeasurePreserving_comp_apply {γ : Type*} {mγ : MeasurableSpace γ} {μc : Measure γ}
+    (g : Lp E p μc) {f : β → γ} (hf : MeasurePreserving f μb μc) {f' : α → β}
+    (hf' : MeasurePreserving f' μ μb) :
+    (compMeasurePreserving (f ∘ f') (hf.comp hf')) g =
+    (compMeasurePreserving f' hf') ((compMeasurePreserving f hf) g) := by
+  simp [compMeasurePreserving_comp hf hf']
+
+theorem compMeasurePreserving_iterate {f : α → α} (hf : MeasurePreserving f μ μ) (n : ℕ) :
+    (compMeasurePreserving (E := E) (p := p) f hf)^[n] =
+    compMeasurePreserving f^[n] (MeasurePreserving.iterate hf n) := by
+  funext
+  induction n with
+  | zero => simp
+  | succ n h =>
+    nth_rewrite 1 [add_comm n 1]
+    simp [Function.iterate_add, h, compMeasurePreserving_comp (hf.iterate n) hf]
+
 variable (𝕜 : Type*) [NormedRing 𝕜] [Module 𝕜 E] [IsBoundedSMul 𝕜 E]
 
 /-- `MeasureTheory.Lp.compMeasurePreserving` as a linear map. -/
@@ -643,12 +676,8 @@ theorem memLp_comp_iff_of_antilipschitz {α E F} {K K'} [MeasurableSpace α] {μ
 defined as an element of `Lp`. -/
 def compLp (hg : LipschitzWith c g) (g0 : g 0 = 0) (f : Lp E p μ) : Lp F p μ :=
   ⟨AEEqFun.comp g hg.continuous (f : α →ₘ[μ] E), by
-    suffices ∀ᵐ x ∂μ, ‖AEEqFun.comp g hg.continuous (f : α →ₘ[μ] E) x‖ ≤ c * ‖f x‖ from
-      Lp.mem_Lp_of_ae_le_mul this
-    filter_upwards [AEEqFun.coeFn_comp g hg.continuous (f : α →ₘ[μ] E)] with a ha
-    simp only [ha]
-    rw [← dist_zero_right, ← dist_zero_right, ← g0]
-    exact hg.dist_le_mul (f a) 0⟩
+    rw [Lp.mem_Lp_iff_memLp]
+    exact (hg.comp_memLp g0 (Lp.memLp f)).ae_eq (AEEqFun.coeFn_comp _ hg.continuous _).symm⟩
 
 theorem coeFn_compLp (hg : LipschitzWith c g) (g0 : g 0 = 0) (f : Lp E p μ) :
     hg.compLp g0 f =ᵐ[μ] g ∘ f :=
@@ -729,19 +758,15 @@ end RCLike
 theorem add_compLp (L L' : E →SL[σ] F) (f : Lp E p μ) :
     (L + L').compLp f = L.compLp f + L'.compLp f := by
   ext1
-  grw [Lp.coeFn_add, coeFn_compLp']
-  refine
-    EventuallyEq.trans ?_ (EventuallyEq.fun_add (L.coeFn_compLp' f).symm (L'.coeFn_compLp' f).symm)
-  filter_upwards with x
-  rw [coe_add', Pi.add_def]
+  grw [Lp.coeFn_add, coeFn_compLp', coeFn_compLp', coeFn_compLp']
+  rfl
 
 theorem smul_compLp {𝕜''} [NormedRing 𝕜''] [Module 𝕜'' F] [IsBoundedSMul 𝕜'' F]
     [SMulCommClass 𝕜' 𝕜'' F] (c : 𝕜'') (L : E →SL[σ] F) (f : Lp E p μ) :
     (c • L).compLp f = c • L.compLp f := by
   ext1
-  grw [Lp.coeFn_smul, coeFn_compLp']
-  refine (L.coeFn_compLp' f).mono fun x hx => ?_
-  rw [Pi.smul_apply, hx, coe_smul', Pi.smul_def]
+  grw [Lp.coeFn_smul, coeFn_compLp', coeFn_compLp']
+  rfl
 
 theorem norm_compLp_le (L : E →SL[σ] F) (f : Lp E p μ) : ‖L.compLp f‖ ≤ ‖L‖ * ‖f‖ :=
   LipschitzWith.norm_compLp_le _ _ _

@@ -309,13 +309,13 @@ lemma dep_iff_superset_isCircuit (hX : X ⊆ M.E := by aesop_mat) :
     M.Dep X ↔ ∃ C, C ⊆ X ∧ M.IsCircuit C :=
   ⟨Dep.exists_isCircuit_subset, fun ⟨C, hCX, hC⟩ ↦ hC.dep.superset hCX⟩
 
-/-- A version of `Matroid.dep_iff_superset_isCircuit` that has the supportedness hypothesis
+/-- A version of `Matroid.dep_iff_superset_isCircuit` that has the ground-set hypothesis
 as part of the equivalence, rather than a hypothesis. -/
 lemma dep_iff_superset_isCircuit' : M.Dep X ↔ (∃ C, C ⊆ X ∧ M.IsCircuit C) ∧ X ⊆ M.E :=
   ⟨fun h ↦ ⟨h.exists_isCircuit_subset, h.subset_ground⟩,
     fun ⟨⟨C, hCX, hC⟩, h⟩ ↦ hC.dep.superset hCX⟩
 
-/-- A version of `Matroid.indep_iff_forall_subset_not_isCircuit` that has the supportedness
+/-- A version of `Matroid.indep_iff_forall_subset_not_isCircuit` that has the ground-set
 hypothesis as part of the equivalence, rather than a hypothesis. -/
 lemma indep_iff_forall_subset_not_isCircuit' :
     M.Indep I ↔ (∀ C, C ⊆ I → ¬M.IsCircuit C) ∧ I ⊆ M.E := by
@@ -497,7 +497,7 @@ section Finitary
 
 lemma IsCircuit.finite [Finitary M] (hC : M.IsCircuit C) : C.Finite := by
   have hi := hC.dep.not_indep
-  rw [indep_iff_forall_finite_subset_indep] at hi; push_neg at hi
+  rw [indep_iff_forall_finite_subset_indep] at hi; push Not at hi
   obtain ⟨J, hJC, hJfin, hJ⟩ := hi
   rwa [← hC.eq_of_not_indep_subset hJ hJC]
 

@@ -101,17 +101,17 @@ variable [Group G] (A : Rep k G) (n : ℕ)
 set_option backward.isDefEq.respectTransparency false in
 theorem d_eq :
     d A n =
-      (freeLiftLEquiv (Fin n → G) A).toModuleIso.inv ≫
+      (freeLiftLEquiv k G (Fin n → G) A).toModuleIso.inv ≫
         ((barComplex k G).linearYonedaObj k A).d n (n + 1) ≫
-          (freeLiftLEquiv (Fin (n + 1) → G) A).toModuleIso.hom := by
+          (freeLiftLEquiv k G (Fin (n + 1) → G) A).toModuleIso.hom := by
   ext
-  simp [d_hom_apply, map_add, barComplex.d_single (k := k)]
+  simp [d_hom_apply, map_add, barComplex.d_single (k := k), homEquiv]
 
 end inhomogeneousCochains
 
 namespace groupCohomology
 
-variable [Group G] (n) (A : Rep k G)
+variable [Group G] (n) (A : Rep.{u} k G)
 
 open inhomogeneousCochains Rep
 
@@ -123,9 +123,10 @@ noncomputable abbrev inhomogeneousCochains : CochainComplex (ModuleCat k) ℕ :=
   CochainComplex.of (fun n => ModuleCat.of k ((Fin n → G) → A))
     (fun n => inhomogeneousCochains.d A n) fun n => by
     classical
-    simp only [d_eq]
-    slice_lhs 3 4 => {rw [Iso.hom_inv_id]}
-    slice_lhs 2 4 => {rw [Category.id_comp, ((barComplex k G).linearYonedaObj k A).d_comp_d]}
+    simp only
+    rw [d_eq, d_eq]
+    slice_lhs 3 4 => rw [Iso.hom_inv_id]
+    slice_lhs 2 4 => rw [Category.id_comp, ((barComplex k G).linearYonedaObj k A).d_comp_d]
     simp
 
 variable {A n} in
@@ -139,7 +140,7 @@ theorem inhomogeneousCochains.d_def (n : ℕ) :
 
 theorem inhomogeneousCochains.d_comp_d :
     d A n ≫ d A (n + 1) = 0 := by
-  simpa [CochainComplex.of] using (inhomogeneousCochains A).d_comp_d n (n + 1) (n + 2)
+  simpa [CochainComplex.of.d] using (inhomogeneousCochains A).d_comp_d n (n + 1) (n + 2)
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Given a `k`-linear `G`-representation `A`, the complex of inhomogeneous cochains is isomorphic
@@ -147,7 +148,7 @@ to `Hom(P, A)`, where `P` is the bar resolution of `k` as a trivial `G`-represen
 def inhomogeneousCochainsIso :
     inhomogeneousCochains A ≅ (barComplex k G).linearYonedaObj k A := by
   refine HomologicalComplex.Hom.isoOfComponents
-    (fun i => (Rep.freeLiftLEquiv (Fin i → G) A).toModuleIso.symm) ?_
+    (fun i ↦ (Rep.freeLiftLEquiv k G (Fin i → G) A).toModuleIso.symm) ?_
   rintro i j (h : i + 1 = j)
   subst h
   simp [d_eq, -LinearEquiv.toModuleIso_hom, -LinearEquiv.toModuleIso_inv]
@@ -156,7 +157,6 @@ def inhomogeneousCochainsIso :
 `n`th differential in the complex of inhomogeneous cochains. -/
 abbrev cocycles (n : ℕ) : ModuleCat k := (inhomogeneousCochains A).cycles n
 
-set_option backward.isDefEq.respectTransparency false in
 variable {A} in
 /-- Make an `n`-cocycle out of an element of the kernel of the `n`th differential. -/
 abbrev cocyclesMk {n : ℕ} (f : (Fin n → G) → A) (h : inhomogeneousCochains.d A n f = 0) :
@@ -172,7 +172,6 @@ inhomogeneous cochains. -/
 abbrev toCocycles (i j : ℕ) : (inhomogeneousCochains A).X i ⟶ cocycles A j :=
   (inhomogeneousCochains A).toCycles i j
 
-set_option backward.isDefEq.respectTransparency false in
 variable {A} in
 theorem iCocycles_mk {n : ℕ} (f : (Fin n → G) → A) (h : inhomogeneousCochains.d A n f = 0) :
     iCocycles A n (cocyclesMk f h) = f := by
