@@ -147,6 +147,7 @@ noncomputable def Ideal.algEquivResidueFieldOfField {k : Type*} [Field k]
     haveI : p.IsMaximal := by simpa [p.eq_bot_of_prime] using Ideal.bot_isMaximal
     p.algebraMap_residueField_surjective⟩
 
+@[simp]
 lemma Ideal.algEquivResidueFieldOfField_apply {k : Type*} [Field k] (p : Ideal k) [p.IsPrime]
     (x : k) : p.algEquivResidueFieldOfField x = algebraMap k p.ResidueField x :=
   rfl
