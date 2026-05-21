@@ -98,7 +98,7 @@ lemma absolutelyContinuous (μ : VectorMeasure X V) : μ ≪ᵥ μ.ennrealVariat
     grw [enorm_measure_le_variation, ← ennrealVariation_apply _ hsm, hs]
   · exact μ.not_measurable' hsm
 
-lemma variation_apply_le_of_forall_enorm_le {m : Measure X} {s : Set X} (hs : MeasurableSet s)
+lemma variation_apply_le_of_forall_enorm_le {m : Measure X} (hs : MeasurableSet s)
     (h : ∀ E, MeasurableSet E → E ⊆ s → ‖μ E‖ₑ ≤ m E) :
     μ.variation s ≤ m s := by
   simp only [variation_apply, preVariation, ennrealToMeasure_apply hs, ennrealPreVariation_apply,
@@ -178,10 +178,9 @@ lemma variation_restrict (hs : MeasurableSet s) :
       gcongr
       exact Set.inter_subset_left
 
-lemma variation_restrict_le :
-    (μ.restrict s).variation ≤ μ.variation.restrict s := by
+lemma variation_restrict_le : (μ.restrict s).variation ≤ μ.variation.restrict s := by
   by_cases hs : MeasurableSet s
-  · simp [variation_restrict μ hs]
+  · simp [variation_restrict hs]
   · simp only [restrict_not_measurable _ hs, variation_zero, Measure.zero_le]
 
 instance [IsFiniteMeasure μ.variation] : IsFiniteMeasure (μ.restrict s).variation := by
@@ -191,8 +190,7 @@ instance [IsFiniteMeasure μ.variation] : IsFiniteMeasure (μ.restrict s).variat
 
 variable {Y : Type*} [MeasurableSpace Y] {φ : X → Y}
 
-lemma variation_map_le :
-    (μ.map φ).variation ≤ Measure.map φ μ.variation := by
+lemma variation_map_le : (μ.map φ).variation ≤ Measure.map φ μ.variation := by
   by_cases hφ : Measurable φ; swap
   · simp [VectorMeasure.map, hφ, Measure.zero_le]
   apply variation_le_of_forall_enorm_le (fun s hs ↦ ?_)
