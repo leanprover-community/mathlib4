@@ -11,6 +11,14 @@ public import Mathlib.Topology.MetricSpace.DirectLimit
 
 @[expose] public section
 
+/-!
+# Direct Limit of normed additive groups
+
+We introduct instances on `DirectLimit` for `NormedAddGroup` and `NormedAddCommGroup`,
+under the assumption that the types `T h` that the maps in the directed system come from,
+all have instances of `IsometryClass`.
+-/
+
 namespace DirectLimit
 
 variable {ι : Type*} [Preorder ι] {G : ι → Type*}
