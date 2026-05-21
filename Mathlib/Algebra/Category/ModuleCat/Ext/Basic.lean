@@ -13,7 +13,7 @@ public import Mathlib.RingTheory.Ideal.Maps
 
 /-!
 
-# Some basic lemmas for manipulating Ext over ModuleCat
+# Some basic lemmas for manipulating `Ext` over `ModuleCat`
 
 -/
 
@@ -31,6 +31,7 @@ namespace CategoryTheory.Abelian
 
 variable [Small.{v} R] {M N : ModuleCat.{v} R}
 
+/-- If `r • N = 0`, `r • 𝟙 M` induce zero hom between `Ext M N n`. -/
 lemma Ext.postcomp_smul_id_eq_zero_of_mem_annihilator {r : R} (mem_ann : r ∈ Module.annihilator R N)
     (n : ℕ) : AddCommGrpCat.ofHom ((Ext.mk₀ (r • 𝟙 M)).postcomp N (add_zero n)) = 0 := by
   ext h
@@ -39,7 +40,8 @@ lemma Ext.postcomp_smul_id_eq_zero_of_mem_annihilator {r : R} (mem_ann : r ∈ M
   have smul_eq : r • h = (Ext.mk₀ (r • 𝟙 N)).comp h (zero_add n) := by simp [Ext.mk₀_smul]
   simp [Ext.mk₀_smul, this, smul_eq]
 
-/-- If `r • N = 0`, `r • 𝟙 M` induce zero hom between `Ext M N n`. -/
+/-- `r • 𝟙 M` induces a monomorphism in `Ext M N n` if and only if scalar multiplication by `r`
+is faithful on `Ext M N n`. -/
 lemma Ext.postcomp_smul_id_mono_iff (r : R) (i : ℕ) :
     Mono (AddCommGrpCat.ofHom ((Ext.mk₀ (r • 𝟙 M)).postcomp N (add_zero i))) ↔
     IsSMulRegular (Ext N M i) r := by
