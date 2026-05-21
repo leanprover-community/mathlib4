@@ -7,9 +7,9 @@ import Mathlib.Combinatorics.SimpleGraph.Basic
 import Mathlib.Combinatorics.SimpleGraph.QuotientGraph
 
 /-!
-# The Zhou graph (F182A) and its Z₂ quotient
+# The Zhou-3 graph (F182A) and its Z₂ quotient (Zhou-6)
 
-The Zhou graph (Foster census F182A) is a cubic arc-transitive graph on 182 vertices.
+The **Zhou-3 graph** (Foster census F182A) is a cubic arc-transitive graph on 182 vertices.
 
   - **Sabidussi**: Sab(PSL(2,13), S₃), |PSL(2,13)| = 1092
   - **Imprimitive**: S₃ is NOT maximal — sits inside D₁₂ (dihedral order 12, index 91)
@@ -18,9 +18,14 @@ The Zhou graph (Foster census F182A) is a cubic arc-transitive graph on 182 vert
 The **Zhou-6 graph** is the Z₂ quotient: Sab(PSL(2,13), D₁₂), a 6-regular graph on
 91 vertices. D₁₂ IS maximal in PSL(2,13), so the quotient is **primitive**.
 
+## Visualizations
+
+* [The Zhou-3 graph](https://raw.githubusercontent.com/RaggedR/symmetric-graphs/main/lean/named_graphs/zhou3-F182A.jpg) — 182 vertices, imprimitive block structure
+* [The Zhou-6 quotient](https://raw.githubusercontent.com/RaggedR/symmetric-graphs/main/lean/named_graphs/zhou6-91v.jpg) — 91-vertex quotient by the Z₂ block system
+
 ## Main results
 
-* `zhouGraph_regular` — the Zhou graph is 3-regular
+* `zhouGraph_regular` — the Zhou-3 graph is 3-regular
 * `zhou6Graph_regular` — the Zhou-6 graph is 6-regular
 * `zhou6_eq_quotient` — the Zhou-6 graph equals `zhouGraph.quotientGraph zhouBlockMap`
 
@@ -31,7 +36,7 @@ The **Zhou-6 graph** is the Z₂ quotient: Sab(PSL(2,13), D₁₂), a 6-regular 
 
 set_option linter.style.nativeDecide false
 
-/-! ### The Zhou graph (3-regular, 182 vertices) -/
+/-! ### The Zhou-3 graph (3-regular, 182 vertices) -/
 
 private def zhouEdges : List (Fin 182 × Fin 182) := [
 (0,3),(0,37),(0,68),(1,4),(1,38),(1,71),
@@ -84,7 +89,7 @@ private def zhouEdges : List (Fin 182 × Fin 182) := [
 private def zhouAdjBool (u v : Fin 182) : Bool :=
   zhouEdges.any fun (a, b) => (u == a && v == b) || (u == b && v == a)
 
-/-- The **Zhou graph** (F182A): Sab(PSL(2,13), S₃), cubic, 182 vertices. Imprimitive. -/
+/-- The **Zhou-3 graph** (F182A): Sab(PSL(2,13), S₃), cubic, 182 vertices. Imprimitive. -/
 def zhouGraph : SimpleGraph (Fin 182) where
   Adj u v := zhouAdjBool u v
   symm u v := by simp only [zhouAdjBool]; revert u v; native_decide
@@ -93,12 +98,12 @@ def zhouGraph : SimpleGraph (Fin 182) where
 instance : DecidableRel zhouGraph.Adj :=
   fun u v => inferInstanceAs (Decidable (zhouAdjBool u v))
 
-/-- The Zhou graph is 3-regular. -/
+/-- The Zhou-3 graph is 3-regular. -/
 theorem zhouGraph_regular :
     ∀ v : Fin 182, (Finset.univ.filter fun w => zhouGraph.Adj v w).card = 3 := by
   native_decide
 
-/-- The Zhou graph has 273 edges. -/
+/-- The Zhou-3 graph has 273 edges. -/
 theorem zhouGraph_edgeCount :
     (Finset.univ.filter fun p : Fin 182 × Fin 182 =>
       p.1 < p.2 ∧ zhouGraph.Adj p.1 p.2).card = 273 := by
@@ -120,7 +125,7 @@ private def zhouBlockData : List (Fin 91) := [
 
 private theorem zhouBlockData_length : zhouBlockData.length = 182 := by native_decide
 
-/-- The Z₂ block map: `Fin 182 → Fin 91`. -/
+/-- The Z₂ block map on the Zhou-3 graph: `Fin 182 → Fin 91`. -/
 def zhouBlockMap (v : Fin 182) : Fin 91 :=
   zhouBlockData.get (v.cast zhouBlockData_length.symm)
 
@@ -198,12 +203,12 @@ theorem zhou6Graph_edgeCount :
 
 /-! ### Quotient relationship
 
-The Zhou-6 graph is the Z₂ quotient of the Zhou graph via `zhouBlockMap`.
+The Zhou-6 graph is the Z₂ quotient of the Zhou-3 graph via `zhouBlockMap`.
 The brute-force `native_decide` proof of `zhou6_eq_quotient` is too expensive
 (existential over Fin 182² for each of 91² pairs). A structural proof via
 PSL(2,13) generators (analogous to `G2Action.langer_eq_tutte12_distance2'`)
 would scale better. -/
 
-/-- The Z₂ quotient of the Zhou graph (defined abstractly via quotientGraph). -/
+/-- The Z₂ quotient of the Zhou-3 graph (defined abstractly via quotientGraph). -/
 def zhouQuotientGraph : SimpleGraph (Fin 91) :=
   zhouGraph.quotientGraph zhouBlockMap
