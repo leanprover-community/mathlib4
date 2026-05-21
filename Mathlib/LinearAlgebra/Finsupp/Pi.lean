@@ -31,35 +31,46 @@ open Set LinearMap Submodule
 
 namespace Finsupp
 
-section LinearEquiv.finsuppUnique
+section uniqueLinearEquiv
 
-variable (R : Type*) {S : Type*} (M : Type*)
+variable (R : Type*) {S α : Type*} (M : Type*)
 variable [AddCommMonoid M] [Semiring R] [Module R M]
-variable (α : Type*) [Unique α]
 
 /-- If `α` has a unique term, then the type of finitely supported functions `α →₀ M` is
 `R`-linearly equivalent to `M`. -/
-noncomputable def LinearEquiv.finsuppUnique : (α →₀ M) ≃ₗ[R] M :=
+@[simps! apply symm_apply]
+noncomputable def uniqueLinearEquiv [Subsingleton α] (a : α) : (α →₀ M) ≃ₗ[R] M where
+  toAddEquiv := uniqueAddEquiv a
+  map_smul' _ _ := rfl
+
+-- We want this lemma to fire before `uniqueRingEquiv_symm_apply`.
+@[simp↓ high] lemma uniqueLinearEquiv_symm_apply_apply (a : α) [Subsingleton α] (m : M) (b : α) :
+    (uniqueLinearEquiv R M a).symm m b = m := by simp [Subsingleton.elim b a]
+
+/-- If `α` has a unique term, then the type of finitely supported functions `α →₀ M` is
+`R`-linearly equivalent to `M`. -/
+@[deprecated uniqueLinearEquiv (since := "2026-05-06")]
+noncomputable def LinearEquiv.finsuppUnique (α : Type*) [Unique α] : (α →₀ M) ≃ₗ[R] M :=
   { Finsupp.equivFunOnFinite.trans (Equiv.funUnique α M) with
     map_add' := fun _ _ => rfl
     map_smul' := fun _ _ => rfl }
 
 variable {R M}
 
-@[simp]
-theorem LinearEquiv.finsuppUnique_apply (f : α →₀ M) :
+set_option linter.deprecated false in
+@[deprecated uniqueLinearEquiv_apply (since := "2026-05-06")]
+theorem LinearEquiv.finsuppUnique_apply (α : Type*) [Unique α] (f : α →₀ M) :
     LinearEquiv.finsuppUnique R M α f = f default :=
   rfl
 
-variable {α}
-
-@[simp]
-theorem LinearEquiv.finsuppUnique_symm_apply (m : M) :
+set_option linter.deprecated false in
+@[deprecated uniqueLinearEquiv_symm_apply (since := "2026-05-06")]
+theorem LinearEquiv.finsuppUnique_symm_apply (α : Type*) [Unique α] (m : M) :
     (LinearEquiv.finsuppUnique R M α).symm m = Finsupp.single default m := by
   ext; simp [LinearEquiv.finsuppUnique, Equiv.funUnique, single, Pi.single,
     equivFunOnFinite, Function.update]
 
-end LinearEquiv.finsuppUnique
+end uniqueLinearEquiv
 
 variable {α : Type*} {M : Type*} {N : Type*} {P : Type*} {R : Type*} {S : Type*}
 variable [Semiring R] [Semiring S] [AddCommMonoid M] [Module R M]
