@@ -55,7 +55,7 @@ that these are exactly the sequences of binomial type.
   JMAA 42 (1973)
 -/
 
-public section
+@[expose] public section
 
 noncomputable section
 
@@ -141,7 +141,7 @@ end -- end CommSemiring noncomputable section
 
 /-! ### Forward difference operator (requires subtraction) -/
 
-public section
+@[expose] public section
 
 noncomputable section
 

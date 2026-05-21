@@ -34,6 +34,8 @@ of the backward difference operator `∇f(x) = f(x) - f(x-1)`.
 * Langer, R., *Determinantal bases and the symmetric group*, arXiv:0907.3950, §1.2.2
 -/
 
+@[expose] public section
+
 noncomputable section
 
 open Polynomial Finset
