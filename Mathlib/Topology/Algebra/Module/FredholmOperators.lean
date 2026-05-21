@@ -333,6 +333,7 @@ open Topology ContinuousLinearMap Submodule Set
 
 variable (f)
 
+-- **FAE** I'd rather call this `Prop`-like structure `HasFredholmStructure` rather than `Is...`
 structure IsFredholmStruct : Prop where
   isStrict : IsStrictMap f
   isClosed_range : IsClosed (f.range : Set F)
@@ -659,7 +660,7 @@ end FredholmOperators
 public noncomputable section Filippo
 
 variable {𝕜 E F : Type*} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜] [AddCommGroup E]
-   [TopologicalSpace E] [Module 𝕜 E] -- [T2Space E] [ContinuousSMul 𝕜 E]
+   [TopologicalSpace E] [Module 𝕜 E]
 variable [AddCommGroup F] [TopologicalSpace F] [IsTopologicalAddGroup F]
     [Module 𝕜 F] [ContinuousSMul 𝕜 F]
 variable {u : E →L[𝕜] F}
@@ -703,6 +704,14 @@ def FredholmDecomposition (huF : IsFredholmStruct u) :
       (hq := huF.cokerFG)).isTopCompl_complement,
       huF.cokerFG.of_injective _ (injectiveOn_complement huF)⟩⟩
 
+variable (𝕜 u) in
+structure FredholmDecomposition' where
+  dec_left : preFredholmDecomposition 𝕜 E
+  dec_right : preFredholmDecomposition 𝕜 F
+  ker : u.domRestrict (dec_left).X₂ = 0
+  mapsto : ∀ a ∈ (dec_left).X₁, u a ∈ (dec_right).X₁
+  invertible₁ : (u.restrict mapsto).IsInvertible
+
 variable (huF : IsFredholmStruct u)
 
 @[simp]
@@ -740,6 +749,7 @@ theorem FredholmDecomposition_mapsTo₂ (huF : IsFredholmStruct u) :
 theorem FredholmDecomposition_ZeroOn₂ (huF : IsFredholmStruct u) :
     (u.domRestrict (FredholmDecomposition huF).1.X₂) = 0 := by sorry
 
+namespace LinearMap
 section IsCompl
 
 variable {R : Type u_1} [Ring R] {M : Type u_2} [AddCommGroup M] [Module R M] {N : Type u_3}
@@ -750,7 +760,7 @@ lemma Submodule.isCompl_projection_sub_mem {p q : Submodule R M} (h : IsCompl p 
   simp [Submodule.projection_eq_self_sub_projection h.symm x]
 
 @[simp]
-lemma LinearMap.domRestrict_range_eq {f : M →ₗ[R] N} {p : Submodule R M} (h : IsCompl p f.ker) :
+lemma domRestrict_range_eq {f : M →ₗ[R] N} {p : Submodule R M} (h : IsCompl p f.ker) :
     (f.domRestrict p).range = f.range := by
   let π := p.projectionOnto _ h
   ext x
@@ -762,7 +772,7 @@ lemma LinearMap.domRestrict_range_eq {f : M →ₗ[R] N} {p : Submodule R M} (h 
   apply Submodule.isCompl_projection_sub_mem
 
 @[simp]
-lemma LinearMap.subtype_codRestrict_range {f : M →ₗ[R] N} {p : Submodule R N}
+lemma subtype_codRestrict_range {f : M →ₗ[R] N} {p : Submodule R N}
     (h : ∀ x : M, f x ∈ p) : (map p.subtype (f.codRestrict p h).range) = f.range := by
   ext x
   refine ⟨fun hx ↦ ?_, fun ⟨y, hxy⟩ ↦ ?_⟩
@@ -774,12 +784,28 @@ lemma LinearMap.subtype_codRestrict_range {f : M →ₗ[R] N} {p : Submodule R N
     use y
 
 @[simp]
-lemma LinearMap.codRestrict_range_subtype {f : M →ₗ[R] N} {p : Submodule R N}
+lemma codRestrict_range_subtype {f : M →ₗ[R] N} {p : Submodule R N}
     (h : ∀ x : M, f x ∈ p) : (f.codRestrict p h).range = comap p.subtype f.range := by
   rw [← comap_map_eq_of_injective (injective_subtype p) (codRestrict p f h).range,
     LinearMap.subtype_codRestrict_range]
 
 end IsCompl
+section domRestrict
+--
+-- variable {R R₂ M M₂ : Type*} [Semiring R] [Semiring R₂] [AddCommMonoid M] [AddCommMonoid M₂]
+--   [Module R M] [Module R₂ M₂] {σ₁₂ : R →+* R₂} (f : M →ₛₗ[σ₁₂] M₂) (p : Submodule R M)
+--
+-- lemma subtype_domRestrict_ker : map p.subtype (f.domRestrict p).ker ≤ f.ker := fun _ ↦ by simp_all
+--
+-- lemma domRestrict_ker_subtype : (f.domRestrict p).ker ≤ comap p.subtype f.ker := by
+--   rw [← comap_map_eq_of_injective (injective_subtype p) (f.domRestrict p).ker]
+--   exact comap_mono <| subtype_domRestrict_ker ..
+--
+-- lemma domRestrict_ker_eq_zero {x : f.ker} : f.domRestrict f.ker = 0 := by
+--   sorry
+
+end domRestrict
+end LinearMap
 
 theorem FredholmDecomposition_SurjectiveOn₁ :
     Surjective (u.restrict (FredholmDecomposition_mapsTo₁ huF)).toLinearMap := by
@@ -845,6 +871,18 @@ theorem FredholmDecomposition_isInvertibleOn₁ :
     (u.restrict (FredholmDecomposition_mapsTo₁ huF)).IsInvertible :=
   ⟨FredholmDecomposition_ContinuousLinearEquiv₁ huF, by rfl⟩
 
+open Submodule.ClosedComplemented in
+def NiceFD : FredholmDecomposition' 𝕜 u where
+  dec_left := ⟨(exists_isTopCompl huF.5).choose, u.ker, (exists_isTopCompl huF.5).choose_spec.symm,
+      huF.3⟩
+  dec_right := ⟨u.range, (of_finiteDimensional_quotient huF.isClosed_range
+      (hq := huF.cokerFG)).complement, (of_finiteDimensional_quotient huF.isClosed_range
+      (hq := huF.cokerFG)).isTopCompl_complement,
+      huF.cokerFG.of_injective _ (injectiveOn_complement huF)⟩
+  ker := by -- u.domRestrict_ker_zero
+    ext; simp
+  mapsto := by simp
+  invertible₁ := FredholmDecomposition_isInvertibleOn₁ huF
 
 end Filippo
 
@@ -966,6 +1004,7 @@ lemma bar [ContinuousSMul 𝕜 F] {u : E →L[𝕜] F} (E₁ : Submodule 𝕜 E)
 
 open Set
 
+open ContinuousLinearMap in
 theorem isFredholmTFAE (u : E →L[𝕜] F) : List.TFAE
     [
       IsFredholmQuot u,
@@ -974,7 +1013,7 @@ theorem isFredholmTFAE (u : E →L[𝕜] F) : List.TFAE
         IsClosed F₁.carrier ∧ F₁.CoFG ∧ ∃ h : MapsTo u E₁ F₁,
           (u.restrict h).IsInvertible,
       -- TODO: Filippo, quel est l'énoncé ci-dessous ?
-      Nonempty (preFredholmDecomposition 𝕜 E × preFredholmDecomposition 𝕜 F)] := by
+      Nonempty (FredholmDecomposition' 𝕜 u)] := by
       -- ∃ (E₁ E₂ : Submodule 𝕜 E) (F₁ F₂ : Submodule 𝕜 F), E₂.FG ∧ F₂.FG ∧
       --   ∃ E_compl : IsTopCompl E₁ E₂, ∃ F_compl : IsTopCompl F₁ F₂,
       --   ∃ u' : E₁ ≃L[𝕜] F₁, u = F₁.subtypeL ∘L u' ∘L E₁.projectionOntoL E₂ E_compl
@@ -983,10 +1022,34 @@ theorem isFredholmTFAE (u : E →L[𝕜] F) : List.TFAE
   tfae_have 3 → 2 := by
     rintro ⟨E₁, F₁, E₁_closed, E₁_coFG, F₁_closed, F₁_coFG, u_mapsto, u_invertible⟩
     exact bar E₁ F₁ E₁_closed F₁_closed E₁_coFG F₁_coFG u_mapsto u_invertible
-  tfae_have 2 → 4 := by
-    sorry -- Filippo
+  tfae_have 2 → 4 := fun huF ↦ ⟨NiceFD huF⟩
   tfae_have 4 → 1 := by
+    rintro ⟨FD⟩
+    have hcompl_left := FD.1.topCompl
+    have hcompl_right := FD.2.topCompl
+    set φ := FD.5.choose.symm
+    /- **FAE** Now I see two options:
+    `1.` either use `ContinuousLinearMap.ofIsTopCompl` but at the price of composing it
+      with the embedding `FD.dec_left.X₁ ↪ E`; or
+    `2.` define everything in terms of the product and use that under `hcompl` the product
+      identifies with the whole space.
+    -/
+    -- Let's try `1`.
+    -- set v := subtypeL _ ∘L ContinuousLinearMap.ofIsTopCompl hcompl_right φ.toContinuousLinearMap 0
+    -- refine ⟨v, ?_, ?_⟩
+    -- · sorry
+    -- · sorry
+    --
+    -- and now `2`:
+    let w₀ := prodMap φ.toContinuousLinearMap (0 : FD.dec_right.X₂ →L[𝕜] FD.dec_left.X₂)
+    let e := (Submodule.prodEquivOfIsTopCompl _ _ hcompl_left)
+    let e' := (Submodule.prodEquivOfIsTopCompl _ _ hcompl_right).symm
+    let w := e.toContinuousLinearMap ∘L w₀ ∘L e'.toContinuousLinearMap
+    refine ⟨w, ?_, ?_⟩
     sorry
+    sorry
+
+    -- let v := ContinuousLinearMap.ofIsTopCompl
     -- intro H
     -- obtain ⟨⟨E₁, E₂, E_compl, E₂_FG⟩, ⟨F₁, F₂, F_compl, F₂_FG⟩⟩ := H.some--u', h⟩
     -- -- rintro ⟨E₁, E₂, F₁, F₂, E₂_FG, F₂_FG, E_compl, F_compl, u', h⟩
