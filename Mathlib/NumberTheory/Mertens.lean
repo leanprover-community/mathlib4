@@ -18,8 +18,8 @@ import Mathlib.Data.Nat.Prime.Factorial
 /-!
 # Mertens' first theorem
 
-This file proves an explicit form of Mertens' first theorem: for every natural number `n ≥ 2`,
-the sum of `log p / p` over primes `p ≤ n` differs from `log n` by at most `2`.
+This file proves an explicit form of Mertens' first theorem: for every natural number `n`, the
+sum of `log p / p` over primes `p ≤ n` differs from `log n` by at most `2`.
 -/
 
 public section
@@ -578,17 +578,17 @@ lemma odd_tail_lt_seven_log_five_add_five_div_forty : ∑' k : Set.Ici 2, oddLog
   linarith [integral_oddLogDivMulPredReal_le_log_five_add_one_div_eight]
 
 lemma log_factorial_eq_sum_prime_factorization {n : ℕ} : log (n.factorial) =
-    ∑ p ∈ Ioc 0 n with Nat.Prime p, (Nat.factorization n.factorial p) * log p := by
+    ∑ p ∈ Ioc 0 n with p.Prime, (Nat.factorization n.factorial p) * log p := by
   rw [log_nat_eq_sum_factorization n.factorial,
     Finsupp.sum_of_support_subset (Nat.factorization n.factorial)]
   · intro p hp
     rw [mem_filter, mem_Ioc]
-    have hpPrime : Nat.Prime p := Nat.prime_of_mem_primeFactors hp
+    have hpPrime : p.Prime := Nat.prime_of_mem_primeFactors hp
     have hpDvd : p ∣ n.factorial := Nat.dvd_of_factorization_pos (Finsupp.mem_support_iff.mp hp)
     exact ⟨⟨hpPrime.pos, (Nat.Prime.dvd_factorial hpPrime).mp hpDvd⟩, hpPrime⟩
   · simp
 
-lemma factorial_prime_exponent_lower {n p : ℕ} (hp : Nat.Prime p) (hpn : p ≤ n) :
+lemma factorial_prime_exponent_lower {n p : ℕ} (hp : p.Prime) (hpn : p ≤ n) :
     (n : ℝ) / p - 1 < Nat.factorization n.factorial p := by
   have hleNat : n / p ≤ Nat.factorization n.factorial p := by
     rw [Nat.factorization_factorial hp (Nat.lt_succ_of_le (Nat.log_le_self p n))]
@@ -601,49 +601,45 @@ lemma factorial_prime_exponent_lower {n p : ℕ} (hp : Nat.Prime p) (hpn : p ≤
   have hlt : (n : ℝ) / p - 1 < ((n / p : ℕ) : ℝ) := by linarith
   exact lt_of_lt_of_le hlt (by exact_mod_cast hleNat)
 
-lemma mul_primeLogSum_sub_theta_lt_log_factorial {n : ℕ} (hn : 2 ≤ n) :
-    n * (∑ p ∈ Ioc 0 n with Nat.Prime p, log p / p) - Chebyshev.theta n
-    < log (n.factorial) := by
-  have hnonempty : ((Ioc 0 n).filter Nat.Prime).Nonempty := by
-    use 2
-    rw [mem_filter, mem_Ioc]
-    exact ⟨⟨by norm_num, hn⟩, Nat.prime_two⟩
+lemma mul_primeLogSum_sub_theta_le_log_factorial {n : ℕ} :
+    n * (∑ p ∈ Ioc 0 n with p.Prime, log p / p) - Chebyshev.theta n ≤ log (n.factorial) := by
   calc
-    _ = ∑ p ∈ Ioc 0 n with Nat.Prime p, (n / p - 1) * log p := by
+    _ = ∑ p ∈ Ioc 0 n with p.Prime, (n / p - 1) * log p := by
       simp only [Chebyshev.theta, Nat.floor_natCast, mul_sum, ← sum_sub_distrib]
       refine sum_congr rfl fun p hp ↦ ?_
-      rw [mem_filter] at hp
       field_simp
-    _ < ∑ p ∈ Ioc 0 n with Nat.Prime p, (Nat.factorization n.factorial p) * log p := by
-      refine sum_lt_sum_of_nonempty hnonempty fun p hp ↦ ?_
+    _ ≤ ∑ p ∈ Ioc 0 n with p.Prime, (Nat.factorization n.factorial p) * log p := by
+      refine sum_le_sum fun p hp ↦ ?_
       rw [mem_filter, mem_Ioc] at hp
-      have hlog_pos : 0 < log (p : ℝ) := log_pos (by exact_mod_cast hp.2.one_lt)
-      exact mul_lt_mul_of_pos_right (factorial_prime_exponent_lower hp.2 hp.1.2) hlog_pos
+      exact mul_le_mul_of_nonneg_right (le_of_lt (factorial_prime_exponent_lower hp.2 hp.1.2))
+        (log_natCast_nonneg p)
     _ = _ := by rw [log_factorial_eq_sum_prime_factorization]
 
-lemma primeLogSum_sub_log_lt_theta_div {n : ℕ} (hn : 2 ≤ n) :
-    ∑ p ∈ Ioc 0 n with Nat.Prime p, log p / p - log n < Chebyshev.theta n / n := by
-  have hnpos : (0 : ℝ) < n := by exact_mod_cast lt_of_lt_of_le (by norm_num : 0 < 2) hn
-  have hlt : n * (∑ p ∈ Ioc 0 n with Nat.Prime p, log p / p) - Chebyshev.theta n < n * log n := by
+lemma primeLogSum_sub_log_lt_theta_div {n : ℕ} (hn : 0 < n) :
+    ∑ p ∈ Ioc 0 n with p.Prime, log p / p - log n ≤ Chebyshev.theta n / n := by
+  have hnpos : (0 : ℝ) < n := by exact_mod_cast Nat.pos_of_ne_zero (by omega : n ≠ 0)
+  have hlt : n * (∑ p ∈ Ioc 0 n with p.Prime, log p / p) - Chebyshev.theta n ≤ n * log n := by
     calc
-    _ < log (n.factorial) := mul_primeLogSum_sub_theta_lt_log_factorial hn
-    _ ≤ log (n ^ n) := log_le_log (by positivity) (by exact_mod_cast Nat.factorial_le_pow n)
-    _ = n * log n := by rw [log_pow]
-  rw [lt_div_iff₀ hnpos]
+      _ ≤ log (n.factorial) := mul_primeLogSum_sub_theta_le_log_factorial
+      _ ≤ log (n ^ n) := log_le_log (by positivity) (by exact_mod_cast n.factorial_le_pow)
+      _ = n * log n := by rw [log_pow]
+  rw [le_div_iff₀ hnpos]
   nlinarith
 
-lemma primeLogSum_sub_log_lt_two {n : ℕ} (hn : 2 ≤ n) :
-    ∑ p ∈ Ioc 0 n with Nat.Prime p, log p / p - log n < 2 := by calc
-  _ < Chebyshev.theta n / n := primeLogSum_sub_log_lt_theta_div hn
-  _ ≤ log 4 := by
-    have hnpos : (0 : ℝ) < n := by
-      exact_mod_cast lt_of_lt_of_le (by norm_num : 0 < 2) hn
-    simpa [div_le_iff₀ hnpos, mul_comm] using Chebyshev.theta_le_log4_mul_x (by positivity)
-  _ < _ := by
-    rw [show (4 : ℝ) = 2 * 2 by norm_num, log_mul (by norm_num) (by norm_num)]
-    linarith [log_two_lt_d9]
+lemma primeLogSum_sub_log_lt_two {n : ℕ} :
+    ∑ p ∈ Ioc 0 n with p.Prime, log p / p - log n < 2 := by
+  by_cases hn : 0 < n
+  · calc
+      _ ≤ Chebyshev.theta n / n := primeLogSum_sub_log_lt_theta_div hn
+      _ ≤ log 4 := by
+        have hnpos : (0 : ℝ) < n := by exact_mod_cast (by omega)
+        simpa [div_le_iff₀ hnpos, mul_comm] using Chebyshev.theta_le_log4_mul_x (by positivity)
+      _ < _ := by
+        rw [show (4 : ℝ) = 2 * 2 by norm_num, log_mul (by norm_num) (by norm_num)]
+        linarith [log_two_lt_d9]
+  · simp_all
 
-lemma factorial_prime_exponent_upper_split {n p : ℕ} (hp : Nat.Prime p) :
+lemma factorial_prime_exponent_upper_split {n p : ℕ} (hp : p.Prime) :
     (Nat.factorization n.factorial p : ℝ) ≤ n / p + n / (p * (p - 1)) := by
   calc
     (Nat.factorization n.factorial p : ℝ) ≤ (n / (p - 1) : ℕ) := by
@@ -656,17 +652,17 @@ lemma factorial_prime_exponent_upper_split {n p : ℕ} (hp : Nat.Prime p) :
       simp [field]
 
 lemma log_factorial_le_mul_primeLogSum_add_error {n : ℕ} : log (n.factorial) ≤
-    n * ∑ p ∈ Ioc 0 n with Nat.Prime p, log p / p +
-    n * ∑ p ∈ Ioc 0 n with Nat.Prime p, log p / (p * (p - 1)) := by
+    n * ∑ p ∈ Ioc 0 n with p.Prime, log p / p +
+    n * ∑ p ∈ Ioc 0 n with p.Prime, log p / (p * (p - 1)) := by
   rw [log_factorial_eq_sum_prime_factorization]
   calc
-    _ ≤ ∑ p ∈ Ioc 0 n with Nat.Prime p, (n / p + n / (p * (p - 1))) * log p := by
+    _ ≤ ∑ p ∈ Ioc 0 n with p.Prime, (n / p + n / (p * (p - 1))) * log p := by
       refine sum_le_sum fun p hp ↦ ?_
       rw [mem_filter] at hp
       gcongr
       exact factorial_prime_exponent_upper_split hp.2
-    _ = (n : ℝ) * (∑ p ∈ Iic n with Nat.Prime p, log p / p) +
-        (n : ℝ) * ∑ p ∈ Iic n with Nat.Prime p, log p / (p * (p - 1)) := by
+    _ = (n : ℝ) * (∑ p ∈ Iic n with p.Prime, log p / p) +
+        (n : ℝ) * ∑ p ∈ Iic n with p.Prime, log p / (p * (p - 1)) := by
       rw [mul_sum, mul_sum, ← sum_add_distrib]
       refine sum_congr rfl ?_
       intro p hp
@@ -674,7 +670,7 @@ lemma log_factorial_le_mul_primeLogSum_add_error {n : ℕ} : log (n.factorial) �
       field_simp
 
 lemma finite_primeLogDivMulPred_lt_one {n : ℕ} :
-    ∑ p ∈ Ioc 0 n with Nat.Prime p, log p / (p * (p - 1)) < 1 := by
+    ∑ p ∈ Ioc 0 n with p.Prime, log p / (p * (p - 1)) < 1 := by
   let s : Finset Nat.Primes := ((Ioc 0 n).filter Nat.Prime).attach.map
     ⟨fun p ↦ ⟨p.1, (mem_filter.mp p.2).2⟩, by
       exact fun p q hpq ↦ Subtype.ext (congrArg (fun p : Nat.Primes ↦ (p : ℕ)) hpq)⟩
@@ -692,25 +688,28 @@ lemma finite_primeLogDivMulPred_lt_one {n : ℕ} :
         odd_tail_lt_seven_log_five_add_five_div_forty, log_five_lt_d9]
 
 lemma log_factorial_lt_mul_primeLogSum_add_self {n : ℕ} (hn : 1 ≤ n) :
-    log (n.factorial) < n * (∑ p ∈ Ioc 0 n with Nat.Prime p, log p / p) + n := by
+    log (n.factorial) < n * (∑ p ∈ Ioc 0 n with p.Prime, log p / p) + n := by
   have hnpos : (0 : ℝ) < n := by
     exact_mod_cast lt_of_lt_of_le (by norm_num : 0 < 1) hn
   nlinarith [mul_lt_mul_of_pos_left (finite_primeLogDivMulPred_lt_one (n := n)) hnpos,
     log_factorial_le_mul_primeLogSum_add_error (n := n)]
 
-lemma neg_two_lt_primeLogSum_sub_log {n : ℕ} (hn : 1 ≤ n) :
-    -2 < ∑ p ∈ Ioc 0 n with Nat.Prime p, log p / p - log n := by
-  have hfactorial_lower : n * log n - n < log (n.factorial) := by
-    have hn0 : n ≠ 0 := by lia
-    have : 0 < log (2 * π) := log_pos (by nlinarith [pi_gt_three])
-    nlinarith [log_natCast_nonneg n, Stirling.le_log_factorial_stirling hn0]
-  nlinarith [hfactorial_lower, log_factorial_lt_mul_primeLogSum_add_self hn]
+lemma neg_two_lt_primeLogSum_sub_log {n : ℕ} :
+    -2 < ∑ p ∈ Ioc 0 n with p.Prime, log p / p - log n := by
+  by_cases hn : 1 ≤ n
+  · have hfactorial_lower : n * log n - n < log (n.factorial) := by
+      have hn0 : n ≠ 0 := by lia
+      have : 0 < log (2 * π) := log_pos (by nlinarith [pi_gt_three])
+      nlinarith [log_natCast_nonneg n, Stirling.le_log_factorial_stirling hn0]
+    nlinarith [hfactorial_lower, log_factorial_lt_mul_primeLogSum_add_self hn]
+  · interval_cases n
+    norm_num [Finset.sum_filter]
 
-/-- **Mertens' first theorem**: for every natural number `n ≥ 2`, the sum of `log p / p` over
+/-- **Mertens' first theorem**: for every natural number `n`, the sum of `log p / p` over
 primes `p ≤ n` differs from `log n` by at most `2`. -/
-theorem mertens_first_theorem_nat {n : ℕ} (hn : 2 ≤ n) :
-    |∑ p ∈ Ioc 0 n with Nat.Prime p, log p / p - log n| < 2 := by
+theorem mertens_first_theorem_nat {n : ℕ} :
+    |∑ p ∈ Ioc 0 n with p.Prime, log p / p - log n| < 2 := by
   rw [abs_lt]
-  exact ⟨neg_two_lt_primeLogSum_sub_log (by linarith), primeLogSum_sub_log_lt_two hn⟩
+  exact ⟨neg_two_lt_primeLogSum_sub_log, primeLogSum_sub_log_lt_two⟩
 
 end Mertens
