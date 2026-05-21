@@ -125,10 +125,6 @@ lemma Nodup.head_eq_getLast_iff (hne : l ≠ []) (hnd : l.Nodup) :
     l.head hne = l.getLast hne ↔ ∃ x, l = [x] := by
   cases l <;> grind
 
-@[deprecated Nodup.idxOf_getElem (since := "2025-11-10")]
-theorem idxOf_getElem [DecidableEq α] {l : List α} : Nodup l → (i : Nat) → (h : i < l.length) →
-    idxOf l[i] l = i := Nodup.idxOf_getElem
-
 -- This is incorrectly named and should be `idxOf_get`;
 -- this already exists, so will require a deprecation dance.
 theorem get_idxOf [BEq α] [LawfulBEq α] {l : List α} (H : Nodup l) (i : Fin l.length) :
@@ -158,8 +154,6 @@ theorem getElem_bijective_iff [BEq α] [LawfulBEq α] :
 theorem count_eq_one_of_mem [BEq α] [LawfulBEq α] {a : α} {l : List α} (d : Nodup l) (h : a ∈ l) :
     count a l = 1 :=
   nodup_iff_count_eq_one.mp d a h
-
-@[deprecated (since := "2025-11-07")] alias count_eq_of_nodup := Nodup.count
 
 theorem Nodup.of_append_left : Nodup (l₁ ++ l₂) → Nodup l₁ :=
   Nodup.sublist (sublist_append_left l₁ l₂)

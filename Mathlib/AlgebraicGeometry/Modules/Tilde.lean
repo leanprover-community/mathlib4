@@ -112,7 +112,7 @@ theorem toOpen_res (U V : Opens (PrimeSpectrum.Top R)) (i : V ⟶ U) :
     toOpen M U ≫ (modulesSpecToSheaf.obj (tilde M)).presheaf.map i.op = toOpen M V :=
   rfl
 
-instance (f : R) : IsLocalizedModule (.powers f) (toOpen M (basicOpen f)).hom :=
+instance (f : R) : IsLocalizedModule.Away f (toOpen M (basicOpen f)).hom :=
   .of_linearEquiv (.powers f) (StructureSheaf.toOpenₗ R M (basicOpen f))
     ((modulesSpecToSheafIso M).app _).toLinearEquiv.symm
 

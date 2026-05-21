@@ -98,7 +98,6 @@ section map
 variable {S₁ S₂ : ShortComplex (CochainComplex C ℤ)} (h₁ : S₁.ShortExact) (h₂ : S₂.ShortExact)
   (f : S₁ ⟶ S₂)
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 The morphism `triangleOfSES h₁ ⟶ triangleOfSES h₂` that is induced by a morphism of short
 exact sequences of cochain complexes.
