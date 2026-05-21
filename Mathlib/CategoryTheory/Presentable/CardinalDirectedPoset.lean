@@ -214,7 +214,7 @@ noncomputable def isColimitCoconeWithTop : IsColimit (coconeWithTop J h) :=
       | none =>
         exact ⟨⟨_, pair_mem_indexSet _ (Classical.arbitrary _)⟩,
           ⟨⊤, Set.mem_insert_of_mem _ rfl⟩, rfl⟩
-    · obtain rfl : x = y := h
+    · subst h
       exact ⟨j, 𝟙 _, rfl⟩)
 
 end
