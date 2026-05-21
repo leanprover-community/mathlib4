@@ -70,8 +70,7 @@ lemma summable_primeLogDivMulPred : Summable fun p : Nat.Primes ↦ log p / (p *
       _ = 4 * n ^ ((1 / 2 : ℝ) - 2) := by rw [rpow_sub hn0]
       _ = 4 * n ^ (-(3 / 2 : ℝ)) := by norm_num
 
-lemma summable_oddLogDivMulPred_tail : Summable fun k : {k : ℕ // 2 ≤ k} ↦ oddLogDivMulPred k := by
-  -- #check Set.Ici 2
+lemma summable_oddLogDivMulPred_tail : Summable fun k : Set.Ici 2 ↦ oddLogDivMulPred k := by
   have hpow : Summable fun n : ℕ ↦ 2 * (1 / (n : ℝ) ^ ((3 : ℝ) / 2)) :=
     (summable_one_div_nat_rpow.mpr (by norm_num)).mul_left 2
   have hsqrt : Summable fun n : ℕ ↦ 2 / (sqrt (n : ℝ) * (n : ℝ)) := by
@@ -127,7 +126,7 @@ lemma summable_oddLogDivMulPred_tail : Summable fun k : {k : ℕ // 2 ≤ k} ↦
         field_simp [(sqrt_ne_zero'.mpr ha_pos), ne_of_gt hb_pos]
       _ ≤ 2 / (sqrt (n : ℝ) * (n : ℝ)) :=
         div_le_div_of_nonneg_left (by norm_num) (by positivity) (by gcongr)
-  exact hfull.subtype {k : ℕ | 2 ≤ k}
+  exact hfull.subtype (Set.Ici 2)
 
 lemma integral_oddLogDivMulPredReal_converges : IntegrableOn oddLogDivMulPredReal (Set.Ioi 2) := by
   have hmajor : IntegrableOn (fun x : ℝ ↦ 2 * x ^ (-(3 / 2 : ℝ))) (Set.Ioi 2) := by
@@ -197,7 +196,7 @@ lemma integral_oddLogDivMulPredReal_converges : IntegrableOn oddLogDivMulPredRea
         rw [hsqrt_mul, rpow_neg hxpos.le]
         ring
 
-lemma tsum_primeLogDivMulPred_split_two_three : (∑' p : Nat.Primes, log p / (p * (p - 1)))
+lemma tsum_primeLogDivMulPred_split_two_three : ∑' p : Nat.Primes, log p / (p * (p - 1))
     = log 2 / 2 + log 3 / 6 + ∑' p : {p : Nat.Primes // 5 ≤ (p : ℕ)}, log p / (p * (p - 1)) := by
   let p2 : Nat.Primes := ⟨2, by decide⟩
   let p3 : Nat.Primes := ⟨3, by decide⟩
@@ -237,13 +236,14 @@ lemma tsum_primeLogDivMulPred_split_two_three : (∑' p : Nat.Primes, log p / (p
   rw [← summable_primeLogDivMulPred.sum_add_tsum_subtype_compl s, hsum, htail]
 
 lemma prime_tail_lt_odd_tail : ∑' p : {p : Nat.Primes // 5 ≤ p.1}, log p / (p * (p - 1))
-      < ∑' k : {k : ℕ // 2 ≤ k}, oddLogDivMulPred k := by
+      < ∑' k : Set.Ici (2 : ℕ), oddLogDivMulPred k := by
   let P := {p : Nat.Primes // 5 ≤ (p : ℕ)}
-  let K := {k : ℕ // 2 ≤ k}
+  let K := Set.Ici (2 : ℕ)
   let e : P → K := fun p ↦ ⟨(p : ℕ) / 2, by
-    have hp5 : 5 ≤ (p : ℕ) := p.property
+    change 2 ≤ (p.1 : ℕ) / 2
+    have hp5 : 5 ≤ (p.1 : ℕ) := p.property
     omega⟩
-  let k4 : K := ⟨4, by norm_num⟩
+  let k4 : K := ⟨4, by change 2 ≤ (4 : ℕ); norm_num⟩
   have heinj : Function.Injective e := by
     intro p q hpq
     apply Subtype.ext
@@ -421,11 +421,11 @@ lemma tsum_oddLogDivMulPred_nat_tail_lt_integral :
     tsum_le_of_sum_range_le (fun n ↦ oddLogDivMulPred_nonneg (n + 3)) hpartial
   linarith
 
-lemma odd_tail_lt_first_term_add_integral : ∑' k : {k : ℕ // 2 ≤ k}, oddLogDivMulPred k
+lemma odd_tail_lt_first_term_add_integral : ∑' k : Set.Ici 2, oddLogDivMulPred k
     < oddLogDivMulPred 2 + ∫ x in Set.Ioi 2, oddLogDivMulPredReal x := by
-  let K := {k : ℕ // 2 ≤ k}
+  let K := Set.Ici 2
   let e : ℕ ≃ K :=
-    { toFun := fun n ↦ ⟨n + 2, by omega⟩
+    { toFun := fun n ↦ ⟨n + 2, by change 2 ≤ n + 2; omega⟩
       invFun := fun k ↦ k.1 - 2
       left_inv := by
         intro n
@@ -570,7 +570,7 @@ lemma integral_oddLogDivMulPredReal_le_log_five_add_one_div_eight :
   rw [integral_log_div_sq_Ioi_five]
   ring
 
-lemma odd_tail_lt_seven_log_five_add_five_div_forty : ∑' k : {k : ℕ // 2 ≤ k}, oddLogDivMulPred k <
+lemma odd_tail_lt_seven_log_five_add_five_div_forty : ∑' k : Set.Ici 2, oddLogDivMulPred k <
     (7 * log 5 + 5) / 40 := by
   have hterm : oddLogDivMulPred 2 = log 5 / 20 := by norm_num [oddLogDivMulPred]
   have htail := odd_tail_lt_first_term_add_integral
@@ -665,8 +665,8 @@ lemma log_factorial_le_mul_primeLogSum_add_error {n : ℕ} : log (n.factorial) �
       rw [mem_filter] at hp
       gcongr
       exact factorial_prime_exponent_upper_split hp.2
-    _ = (n : ℝ) * (∑ p ∈ Ioc 0 n with Nat.Prime p, log p / p) +
-        (n : ℝ) * ∑ p ∈ Ioc 0 n with Nat.Prime p, log p / (p * (p - 1)) := by
+    _ = (n : ℝ) * (∑ p ∈ Iic n with Nat.Prime p, log p / p) +
+        (n : ℝ) * ∑ p ∈ Iic n with Nat.Prime p, log p / (p * (p - 1)) := by
       rw [mul_sum, mul_sum, ← sum_add_distrib]
       refine sum_congr rfl ?_
       intro p hp
