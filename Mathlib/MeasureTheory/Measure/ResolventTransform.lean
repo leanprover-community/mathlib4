@@ -112,7 +112,7 @@ lemma resolventTransform_apply (μ : Measure 𝕜) (a : A) :
 @[simp]
 lemma resolventTransform_zero_measure : resolventTransform (0 : Measure 𝕜) = (0 : A → A) := by
   ext
-  simp [resolventTransform]
+  simp [resolventTransform_def]
 
 @[simp]
 lemma resolventTransform_dirac [OpensMeasurableSpace 𝕜] [CompleteSpace A]
@@ -126,7 +126,7 @@ section Deriv
 variable [NontriviallyNormedField 𝕜] [HereditarilyLindelofSpace 𝕜] [CompleteSpace 𝕜]
   [MeasurableSpace 𝕜] [BorelSpace 𝕜]
 
-theorem hasDerivAt_resolventTransform [RCLike A] [NormedAlgebra 𝕜 A] (μ : Measure 𝕜)
+theorem hasDerivAt_resolventTransform [RCLike A] [NormedAlgebra 𝕜 A] {μ : Measure 𝕜}
     [IsFiniteMeasure μ] (a : A) (ha : a ∉ algebraMap 𝕜 A '' μ.support) :
     HasDerivAt (resolventTransform μ) (∫ x, resolvent a x ^ 2 ∂μ) a := by
   by_cases! h : μ.support.Nonempty; swap
@@ -176,7 +176,7 @@ theorem analyticOn_resolventTransform [NormedAlgebra 𝕜 ℂ] (μ : Measure �
   · intro z hz
     apply DifferentiableAt.differentiableWithinAt
     apply HasDerivAt.differentiableAt
-    exact hasDerivAt_resolventTransform μ z hz
+    exact hasDerivAt_resolventTransform z hz
   apply isOpen_compl_iff.mpr
   refine (Topology.IsClosedEmbedding.isClosed_iff_image_isClosed ?_).mp isClosed_support
   exact (algebraMap_isometry 𝕜 ℂ).isClosedEmbedding
