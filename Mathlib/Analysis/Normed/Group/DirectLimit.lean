@@ -34,12 +34,12 @@ variable [∀ i j h, AddMonoidHomClass (T h) (G i) (G j)]
 variable [∀ i j h, IsometryClass (T h) (G i) (G j)]
 
 noncomputable instance instNormedAddGroup : NormedAddGroup (DirectLimit G f) where
-  norm := DirectLimit.lift f (ih := fun i x ↦ ‖(x : G i)‖) (fun i j h x ↦ by
+  norm := DirectLimit.lift f (ih := fun i x ↦ ‖x‖) (fun i j h x ↦ by
     simpa [NormedAddGroup.dist_eq] using (IsometryClass.dist_eq (f i j h) 0 x).symm)
   dist_eq := DirectLimit.induction₂ f (fun i x y ↦ by
-    rw [MetricSpace.dist_def, NormedAddGroup.dist_eq x y, neg_def, add_def, DirectLimit.lift_def])
+    rw [MetricSpace.dist_def, NormedAddGroup.dist_eq, neg_def, add_def, DirectLimit.lift_def])
 
-lemma norm_def (i : ι) (x : G i) : ‖(⟦⟨i, x⟩⟧ : DirectLimit G f)‖ = ‖(x : G i)‖ := by
+lemma norm_def (i : ι) (x : G i) : ‖(⟦⟨i, x⟩⟧ : DirectLimit G f)‖ = ‖x‖ := by
   change DirectLimit.lift f (ih := fun i x ↦ ‖(x : G i)‖) _ ⟦⟨i, x⟩⟧ = ‖x‖
   apply DirectLimit.lift_def
 
