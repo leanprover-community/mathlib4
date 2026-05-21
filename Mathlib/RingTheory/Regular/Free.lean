@@ -35,10 +35,6 @@ variable (R : Type u) [CommRing R]
 
 open IsLocalRing
 
-private instance finite_QuotSMulTop (M : Type*) [AddCommGroup M] [Module R M] [Module.Finite R M]
-    (x : R) : Module.Finite (R ⧸ Ideal.span {x}) (QuotSMulTop x M) :=
-  Module.Finite.of_restrictScalars_finite R _ _
-
 lemma LinearMap.ker_mapRange_mkQ_eq_smul_top (ι : Type*) (I : Ideal R) :
     LinearMap.ker (Finsupp.mapRange.linearMap I.mkQ) = I • (⊤ : Submodule R (ι →₀ R)) := by
   ext y
@@ -57,7 +53,8 @@ lemma free_iff_quotSMulTop_free [IsNoetherianRing R] (M : Type*) [AddCommGroup M
     [Module.Finite R M] {x : R} (mem : x ∈ (⊥ : Ideal R).jacobson) (reg : IsSMulRegular M x) :
     Module.Free (R ⧸ Ideal.span {x}) (QuotSMulTop x M) ↔ Module.Free R M := by
   refine ⟨fun free ↦ ?_, fun free ↦ ?_⟩
-  · let I := Module.Free.ChooseBasisIndex (R ⧸ Ideal.span {x}) (QuotSMulTop x M)
+  · have := Module.Finite.of_restrictScalars_finite R (R ⧸ Ideal.span {x}) (QuotSMulTop x M)
+    let I := Module.Free.ChooseBasisIndex (R ⧸ Ideal.span {x}) (QuotSMulTop x M)
     let fin : Fintype I := Module.Free.ChooseBasisIndex.fintype _ _
     have : Module.Finite R (I →₀ R) := by simp [Fintype.finite fin]
     let b := Module.Free.chooseBasis (R ⧸ Ideal.span {x}) (QuotSMulTop x M)
