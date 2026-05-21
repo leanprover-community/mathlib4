@@ -477,7 +477,9 @@ theorem tendsto_condExp_unique (fs gs : ℕ → α → E) (f g : α → E)
       hgs_bound hgs
   exact tendsto_nhds_unique_of_eventuallyEq hcond_gs hcond_fs (Eventually.of_forall hn_eq)
 
-variable [PartialOrder E] [ClosedIciTopology E] [IsOrderedAddMonoid E] [IsOrderedModule ℝ E]
+-- NB: `ClosedIciTopology E` suffices here, but `OrderClosedTopology E` is equivalent
+-- and works better with `to_dual`.
+variable [PartialOrder E] [OrderClosedTopology E] [IsOrderedAddMonoid E] [IsOrderedModule ℝ E]
 
 lemma condExp_mono (hf : Integrable f μ) (hg : Integrable g μ) (hfg : f ≤ᵐ[μ] g) :
     μ[f | m] ≤ᵐ[μ] μ[g | m] := by

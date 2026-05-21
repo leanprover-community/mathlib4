@@ -229,6 +229,8 @@ def nameDict : Std.HashMap String (List String) := .ofList [
   ("comonadic", ["Monadic"]),
   ("section", ["Retraction"]),
   ("retraction", ["Section"]),
+  ("submartingale", ["Supermartingale"]),
+  ("supermartingale", ["Submartingale"]),
 ]
 
 @[inherit_doc GuessName.GuessNameData.abbreviationDict]

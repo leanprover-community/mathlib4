@@ -18,6 +18,9 @@ lattice with a covariant normed group addition satisfying the solid axiom.
 
 ## Main statements
 
+We show that in an ordered additive commutative group with continuous subtraction,
+`ClosedIciTopology`, `ClosedIicTopology`, and `OrderClosedTopology` are all equivalent.
+
 We show that a normed lattice ordered group is a topological lattice with respect to the norm
 topology.
 
@@ -38,6 +41,28 @@ public section
 
 Motivated by the theory of Banach Lattices, this section introduces normed lattice ordered groups.
 -/
+
+section
+
+variable {G} [AddCommGroup G] [PartialOrder G] [IsOrderedAddMonoid G] [TopologicalSpace G]
+  [ContinuousSub G]
+
+-- @[to_dual isClosed_le_of_isClosed_nonpos] -- TODO
+theorem isClosed_le_of_isClosed_nonneg (h : IsClosed { x : G | 0 ≤ x }) :
+    IsClosed { p : G × G | p.fst ≤ p.snd } := by
+  have : { p : G × G | p.fst ≤ p.snd } = (fun p : G × G ↦ p.snd - p.fst) ⁻¹' { x : G | 0 ≤ x } := by
+    ext1 p; simp only [sub_nonneg, Set.preimage_setOf_eq]
+  rw [this]
+  exact IsClosed.preimage (continuous_snd.sub continuous_fst) h
+
+-- @[to_dual] -- TODO
+instance (priority := 100) [ClosedIciTopology G] : OrderClosedTopology G :=
+  ⟨isClosed_le_of_isClosed_nonneg isClosed_Ici⟩
+
+instance (priority := 100) [ClosedIicTopology G] : OrderClosedTopology G :=
+  ⟨isClosed_le_of_isClosed_nonneg sorry⟩
+
+end
 
 section SolidNorm
 
@@ -174,22 +199,12 @@ lemma continuous_posPart : Continuous (posPart : α → α) := lipschitzWith_pos
 @[fun_prop]
 lemma continuous_negPart : Continuous (negPart : α → α) := lipschitzWith_negPart.continuous
 
-lemma isClosed_nonneg : IsClosed {x : α | 0 ≤ x} := by
-  have : {x : α | 0 ≤ x} = negPart ⁻¹' {0} := by ext; simp [negPart_eq_zero]
+instance (priority := 100) : ClosedIciTopology α := by
+  refine ⟨fun a ↦ ?_⟩
+  rw [← (Homeomorph.subRight a).isClosed_image]
+  simp only [Homeomorph.subRight_apply, Set.image_sub_const_Ici, sub_self]
+  have : Set.Ici (0 : α) = negPart ⁻¹' {0} := by ext; simp [negPart_eq_zero]
   rw [this]
   exact isClosed_singleton.preimage continuous_negPart
 
-theorem isClosed_le_of_isClosed_nonneg {G}
-    [AddCommGroup G] [PartialOrder G] [IsOrderedAddMonoid G] [TopologicalSpace G]
-    [ContinuousSub G] (h : IsClosed { x : G | 0 ≤ x }) :
-    IsClosed { p : G × G | p.fst ≤ p.snd } := by
-  have : { p : G × G | p.fst ≤ p.snd } = (fun p : G × G ↦ p.snd - p.fst) ⁻¹' { x : G | 0 ≤ x } := by
-    ext1 p; simp only [sub_nonneg, Set.preimage_setOf_eq]
-  rw [this]
-  exact IsClosed.preimage (continuous_snd.sub continuous_fst) h
-
--- See note [lower instance priority]
-instance (priority := 100) HasSolidNorm.orderClosedTopology {E}
-    [NormedAddCommGroup E] [Lattice E] [HasSolidNorm E] [IsOrderedAddMonoid E] :
-    OrderClosedTopology E :=
-  ⟨isClosed_le_of_isClosed_nonneg isClosed_nonneg⟩
+example : OrderClosedTopology α := inferInstance

@@ -596,10 +596,10 @@ end Basic
 
 section Order
 
-variable [PartialOrder E] [IsOrderedAddMonoid E] [IsOrderedModule ℝ E]
+variable [PartialOrder E] [IsOrderedAddMonoid E] [IsOrderedModule ℝ E] [OrderClosedTopology E]
 
 @[gcongr]
-lemma integral_mono_measure [OrderClosedTopology E] {f : α → E} {ν : Measure α} (hle : μ ≤ ν)
+lemma integral_mono_measure {f : α → E} {ν : Measure α} (hle : μ ≤ ν)
     (hf : 0 ≤ᵐ[ν] f) (hfi : Integrable f ν) : ∫ (a : α), f a ∂μ ≤ ∫ (a : α), f a ∂ν := by
   by_cases hE : CompleteSpace E
   swap; · simp [integral, hE]
@@ -616,8 +616,6 @@ lemma integral_mono_measure [OrderClosedTopology E] {f : α → E} {ν : Measure
   exact fun n ↦ SimpleFunc.integral_mono_measure
     (Eventually.of_forall <| SimpleFunc.approxOn_range_nonneg hg_nonneg n) hle
     (SimpleFunc.integrable_approxOn_range _ hfi n)
-
-variable [ClosedIciTopology E]
 
 /-- The integral of a function which is nonnegative almost everywhere is nonnegative. -/
 lemma integral_nonneg_of_ae {f : α → E} (hf : 0 ≤ᵐ[μ] f) :
