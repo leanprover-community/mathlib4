@@ -22,7 +22,6 @@ open Set Metric CFC CStarAlgebra Unitization
 
 variable {A : Type*} [NonUnitalCStarAlgebra A]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The star projections in a non-unital C⋆-algebra are exactly the extreme points of
 the nonnegative closed unit ball. -/
 theorem isStarProjection_iff_mem_extremePoints_setOf_nonneg_inter_unitClosedBall

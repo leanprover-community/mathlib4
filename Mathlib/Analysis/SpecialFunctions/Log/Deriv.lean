@@ -243,7 +243,6 @@ theorem abs_log_sub_add_sum_range_le {x : ℝ} (h : |x| < 1) (n : ℕ) :
         have : |y| ≤ |x| := abs_le.2 hy
         have : 1 - |x| ≤ |1 - y| := le_trans (by linarith [hy.2]) (le_abs_self _)
         gcongr
-        exact sub_pos.2 h
   -- third step: apply the mean value inequality
   have C : ‖F x - F 0‖ ≤ |x| ^ n / (1 - |x|) * ‖x - 0‖ := by
     refine Convex.norm_image_sub_le_of_norm_hasDerivWithin_le
