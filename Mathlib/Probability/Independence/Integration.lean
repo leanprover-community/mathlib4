@@ -182,7 +182,7 @@ theorem IndepFun.integrable_bilin {𝕜 : Type*} [NontriviallyNormedField 𝕜]
     {X : Ω → E} {Y : Ω → F} (hXY : X ⟂ᵢ[μ] Y) (hX : Integrable X μ) (hY : Integrable Y μ)
     (B : E →L[𝕜] F →L[𝕜] G) :
     Integrable (fun ω ↦ B (X ω) (Y ω)) μ := by
-  refine hXY.integrable_op hX hY (B · ·) (by fun_prop) ‖B‖.toNNReal (fun x y ↦ ?_)
+  refine hXY.integrable_op hX hY (B · ·) (by fun_prop) ‖B‖₊ (fun x y ↦ ?_)
   rw [← toReal_le_toReal (by finiteness) (by finiteness)]
   simp [B.le_opNorm₂]
 
@@ -268,7 +268,7 @@ theorem IndepFun.integral_bilin_comp_comp
 such that `∀ x y, c * ‖x‖ * ‖y‖ ≤ ‖B x y‖`, then
 `∫ ω, B (f (X ω)) (g (Y ω)) ∂μ = B (∫ ω, f (X ω) ∂μ) (∫ ω, g (Y ω) ∂μ).`
 
-The assumtion on `B` allows to drop the integrability condition in
+The assumption on `B` allows to drop the integrability condition in
 `IndepFun.integral_bilin_comp_comp`, which is useful for the versions where `B` is the scalar
 multiplication or the multiplication. -/
 theorem IndepFun.integral_bilin_comp_comp'
