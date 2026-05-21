@@ -25,10 +25,6 @@ variable (R : Type u) [CommRing R]
 
 open IsLocalRing CategoryTheory RingTheory.Sequence
 
-private instance finite_QuotSMulTop (M : Type*) [AddCommGroup M] [Module R M] [Module.Finite R M]
-    (x : R) : Module.Finite (R ⧸ Ideal.span {x}) (QuotSMulTop x M) :=
-  Module.Finite.of_restrictScalars_finite R _ _
-
 section
 
 variable {R} (x : R) {M N L : Type*} [AddCommGroup M] [AddCommGroup N] [AddCommGroup L]
@@ -78,14 +74,18 @@ lemma projectiveDimension_eq_quotient [Small.{v} R] [IsLocalRing R] [IsNoetheria
     | zero =>
       simp only [HasProjectiveDimensionLE, zero_add, ← projective_iff_hasProjectiveDimensionLT_one]
       rw [← IsProjective.iff_projective, ← IsProjective.iff_projective]
+      have := Module.finitePresentation_of_finite R M
+      have := Module.Finite.of_restrictScalars_finite R (R ⧸ Ideal.span {x}) (QuotSMulTop x M)
       refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-      · have := (free_iff_quotSMulTop_free R M mem reg2).mpr Module.free_of_flat_of_isLocalRing
+      · have := (free_iff_quotSMulTop_free R M (maximalIdeal_le_jacobson _ mem) reg2).mpr
+          Module.free_of_flat_of_isLocalRing
         exact Module.Projective.of_free
       · have : IsLocalRing (R ⧸ Ideal.span {x}) :=
           have : Nontrivial (R ⧸ Ideal.span {x}) :=
             Quotient.nontrivial_iff.mpr (by simpa [← Submodule.ideal_span_singleton_smul])
           IsLocalRing.of_surjective' _ Ideal.Quotient.mk_surjective
-        have := (free_iff_quotSMulTop_free R M mem reg2).mp Module.free_of_flat_of_isLocalRing
+        have := (free_iff_quotSMulTop_free R M (maximalIdeal_le_jacobson _ mem) reg2).mp
+          Module.free_of_flat_of_isLocalRing
         exact Module.Projective.of_free
     | succ n ih =>
       obtain ⟨N, _, _, _, _, f, surjf⟩ := Module.exists_finite_presentation R M
@@ -113,7 +113,9 @@ lemma projectiveDimension_eq_quotient [Small.{v} R] [IsLocalRing R] [IsNoetheria
         exact Subtype.val_inj.mp hz
       have Sx_exact := ModuleCat.shortComplex_shortExact Sx Sx_exact' inj
         (QuotSMulTop_map_surjective x surjf)
-      have := (free_iff_quotSMulTop_free R N mem reg2'').mpr inferInstance
+      have := Module.finitePresentation_of_finite R N
+      have := (free_iff_quotSMulTop_free R N (maximalIdeal_le_jacobson _ mem) reg2'').mpr
+        inferInstance
       exact ((S_exact.hasProjectiveDimensionLT_X₃_iff n proj).trans (ih S.X₁ reg2')).trans
         (Sx_exact.hasProjectiveDimensionLT_X₃_iff n inferInstance).symm
   refine eq_of_forall_ge_iff (fun N ↦ ?_)
@@ -131,7 +133,6 @@ lemma projectiveDimension_eq_quotient [Small.{v} R] [IsLocalRing R] [IsNoetheria
 
 variable {R}
 
-set_option backward.isDefEq.respectTransparency false in
 lemma exist_isSMulRegular_of_exist_hasProjectiveDimensionLE_aux [IsLocalRing R] [IsNoetherianRing R]
     [Small.{v} R] (nebot : maximalIdeal R ≠ ⊥)
     (h : ∃ n, HasProjectiveDimensionLE (ModuleCat.of R (Shrink.{v} (maximalIdeal R))) n) :
@@ -180,7 +181,6 @@ lemma exist_isSMulRegular_of_exist_hasProjectiveDimensionLE_aux [IsLocalRing R] 
   absurd nebot
   rw [this, Module.annihilator_eq_bot.mpr inferInstance]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma exist_isSMulRegular_of_exist_hasProjectiveDimensionLE [IsLocalRing R] [IsNoetherianRing R]
     [Small.{v} R] (nebot : maximalIdeal R ≠ ⊥)
     (h : ∃ n, HasProjectiveDimensionLE (ModuleCat.of R (Shrink.{v} (maximalIdeal R))) n) :
