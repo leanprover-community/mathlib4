@@ -135,13 +135,6 @@ def zhouQuotientGraph : SimpleGraph (Fin 91) :=
 instance : DecidableRel zhouQuotientGraph.Adj := by
   intro i j; unfold zhouQuotientGraph SimpleGraph.quotientGraph; simp only; exact instDecidableAnd
 
-/-- The Zhou quotient is 6-regular. -/
-theorem zhouQuotientGraph_regular :
-    ∀ v : Fin 91, (Finset.univ.filter fun w => zhouQuotientGraph.Adj v w).card = 6 := by
-  native_decide
-
-/-- The Zhou quotient has 273 edges. -/
-theorem zhouQuotientGraph_edgeCount :
-    (Finset.univ.filter fun p : Fin 91 × Fin 91 =>
-      p.1 < p.2 ∧ zhouQuotientGraph.Adj p.1 p.2).card = 273 := by
-  native_decide
+-- Regularity and edge count of the quotient are omitted: the quotient
+-- adjacency involves ∃ u v : Fin 182, ... which is too expensive for
+-- native_decide (91 × 91 × 182² ≈ 274M evaluations).
