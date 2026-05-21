@@ -175,6 +175,16 @@ instance [HasLimit K] {F : C ⥤ D} [PreservesLimit K F] : HasLimit (K ⋙ F) wh
 instance [HasColimit K] {F : C ⥤ D} [PreservesColimit K F] : HasColimit (K ⋙ F) where
   exists_colimit := ⟨_, isColimitOfPreserves F (colimit.isColimit K)⟩
 
+/-- To show that `F` preserves the limit of `K`, we may assume that `K` has a limit. -/
+lemma PreservesLimit.mk' {F : C ⥤ D} (h : HasLimit K → PreservesLimit K F) :
+    PreservesLimit K F where
+  preserves hc := (h ⟨_, hc⟩).preserves hc
+
+/-- To show that `F` preserves the colimit of `K`, we may assume that `K` has a colimit. -/
+lemma PreservesColimit.mk' {F : C ⥤ D} (h : HasColimit K → PreservesColimit K F) :
+    PreservesColimit K F where
+  preserves hc := (h ⟨_, hc⟩).preserves hc
+
 section
 
 variable {E : Type u₃} [ℰ : Category.{v₃} E]
