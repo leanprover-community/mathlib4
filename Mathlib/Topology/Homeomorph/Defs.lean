@@ -293,24 +293,6 @@ theorem preimage_frontier (h : X ≃ₜ Y) (s : Set Y) : h ⁻¹' frontier s = f
 theorem image_frontier (h : X ≃ₜ Y) (s : Set X) : h '' frontier s = frontier (h '' s) := by
   rw [← preimage_symm, preimage_frontier]
 
-omit [TopologicalSpace Z] in
-/-- Precomposing by a homeomorphism does not change the image of the interior of a preimage. -/
-theorem image_interior_preimage_comp (e : X ≃ₜ Y) (f : Y → Z) (s : Set Z) :
-    (f ∘ e) '' interior ((f ∘ e) ⁻¹' s) = f '' interior (f ⁻¹' s) := by
-  simp only [preimage_comp, image_comp, e.image_interior, image_preimage]
-
-omit [TopologicalSpace Z] in
-/-- Precomposing by a homeomorphism does not change the image of the frontier of a preimage. -/
-theorem image_frontier_preimage_comp (e : X ≃ₜ Y) (f : Y → Z) (s : Set Z) :
-    (f ∘ e) '' frontier ((f ∘ e) ⁻¹' s) = f '' frontier (f ⁻¹' s) := by
-  simp only [preimage_comp, image_comp, e.image_frontier, image_preimage]
-
-omit [TopologicalSpace Z] in
-/-- Precomposing by a homeomorphism does not change the image of the closure of a preimage. -/
-theorem image_closure_preimage_comp (e : X ≃ₜ Y) (f : Y → Z) (s : Set Z) :
-    (f ∘ e) '' closure ((f ∘ e) ⁻¹' s) = f '' closure (f ⁻¹' s) := by
-  simp only [preimage_comp, image_comp, e.image_closure, image_preimage]
-
 @[simp]
 theorem comp_continuous_iff (h : X ≃ₜ Y) {f : Z → X} : Continuous (h ∘ f) ↔ Continuous f :=
   h.isInducing.continuous_iff.symm
@@ -503,9 +485,48 @@ protected lemma surjective (hf : IsHomeomorph f) : Function.Surjective f := hf.b
 
 protected lemma id : IsHomeomorph (@id X) := ⟨continuous_id, .id, Function.bijective_id⟩
 
+theorem image_interior (hf : IsHomeomorph f) (s : Set X) :
+    f '' interior s = interior (f '' s) := by
+  have h := hf.isOpenMap.preimage_interior_eq_interior_preimage hf.1 (f '' s)
+  rw [Set.preimage_image_eq _ hf.injective] at h
+  rw [← h, Set.image_preimage_eq _ hf.surjective]
+
+theorem image_closure (hf : IsHomeomorph f) (s : Set X) :
+    f '' closure s = closure (f '' s) := by
+  have h := hf.isOpenMap.preimage_closure_eq_closure_preimage hf.continuous (f '' s)
+  rw [Set.preimage_image_eq _ hf.injective] at h
+  rw [← h, Set.image_preimage_eq _ hf.surjective]
+
+theorem image_frontier (hf : IsHomeomorph f) (s : Set X) :
+    f '' frontier s = frontier (f '' s) := by
+  have h := hf.isOpenMap.preimage_frontier_eq_frontier_preimage hf.continuous (f '' s)
+  rw [Set.preimage_image_eq _ hf.injective] at h
+  rw [← h, Set.image_preimage_eq _ hf.surjective]
+
 lemma comp {g : Y → Z} (hg : IsHomeomorph g) (hf : IsHomeomorph f) : IsHomeomorph (g ∘ f) :=
   ⟨hg.1.comp hf.1, hg.2.comp hf.2, hg.3.comp hf.3⟩
 
 end IsHomeomorph
 
 end IsHomeomorph
+
+variable {X Y Z : Type*} [TopologicalSpace X] [TopologicalSpace Y] in
+/-- Precomposing by a homeomorphism does not change the image of the interior of a preimage. -/
+theorem image_interior_preimage_comp (e : X → Y) (he : IsHomeomorph e) (f : Y → Z) (s : Set Z) :
+    (f ∘ e) '' interior ((f ∘ e) ⁻¹' s) = f '' interior (f ⁻¹' s) := by
+  simp only [Set.preimage_comp, Set.image_comp, he.image_interior,
+    Set.image_preimage_eq _ he.surjective]
+
+variable {X Y Z : Type*} [TopologicalSpace X] [TopologicalSpace Y] in
+/-- Precomposing by a homeomorphism does not change the image of the frontier of a preimage. -/
+theorem image_frontier_preimage_comp (e : X → Y) (he : IsHomeomorph e) (f : Y → Z) (s : Set Z) :
+    (f ∘ e) '' frontier ((f ∘ e) ⁻¹' s) = f '' frontier (f ⁻¹' s) := by
+  simp only [Set.preimage_comp, Set.image_comp, he.image_frontier,
+    Set.image_preimage_eq _ he.surjective]
+
+variable {X Y Z : Type*} [TopologicalSpace X] [TopologicalSpace Y] in
+/-- Precomposing by a homeomorphism does not change the image of the closure of a preimage. -/
+theorem image_closure_preimage_comp (e : X → Y) (he : IsHomeomorph e) (f : Y → Z) (s : Set Z) :
+    (f ∘ e) '' closure ((f ∘ e) ⁻¹' s) = f '' closure (f ⁻¹' s) := by
+  simp only [Set.preimage_comp, Set.image_comp, he.image_closure,
+    Set.image_preimage_eq _ he.surjective]

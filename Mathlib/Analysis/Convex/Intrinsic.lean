@@ -240,7 +240,8 @@ private theorem intrinsicInterior_image_of_homeomorph_affineSpan :
   rcases s.eq_empty_or_nonempty with rfl | hs
   · simp
   · haveI : Nonempty s := hs.to_subtype
-    rw [intrinsicInterior, ← e.image_interior_preimage_comp, show (↑) ∘ e = f ∘ (↑) from funext he,
+    have : (↑) ∘ e = f ∘ (↑) := funext he
+    rw [intrinsicInterior, ← image_interior_preimage_comp e e.isHomeomorph, this,
       preimage_image_eq_of_homeomorph_affineSpan e he, image_comp]; rfl
 
 /-- Naturality of intrinsic frontier under a map whose induced map on affine spans is a
@@ -251,8 +252,9 @@ private theorem intrinsicFrontier_image_of_homeomorph_affineSpan :
   rcases s.eq_empty_or_nonempty with rfl | hs
   · simp
   · haveI : Nonempty s := hs.to_subtype
-    rw [intrinsicFrontier, ← e.image_frontier_preimage_comp, show (↑) ∘ e = f ∘ (↑) from funext he,
-      preimage_image_eq_of_homeomorph_affineSpan e he, image_comp]; rfl
+    have : (↑) ∘ e = f ∘ (↑) := funext he
+    rw [intrinsicFrontier, ← image_frontier_preimage_comp e e.isHomeomorph,
+      this, preimage_image_eq_of_homeomorph_affineSpan e he, image_comp]; rfl
 
 /-- Naturality of intrinsic closure under a map whose induced map on affine spans is a
 homeomorphism. It is introduced here to share the proof of the affine equivalence and affine
@@ -262,8 +264,9 @@ private theorem intrinsicClosure_image_of_homeomorph_affineSpan :
   rcases s.eq_empty_or_nonempty with rfl | hs
   · simp
   · haveI : Nonempty s := hs.to_subtype
-    rw [intrinsicClosure, ← e.image_closure_preimage_comp, show (↑) ∘ e = f ∘ (↑) from funext he,
-      preimage_image_eq_of_homeomorph_affineSpan e he, image_comp]; rfl
+    have : (↑) ∘ e = f ∘ (↑) := funext he
+    rw [intrinsicClosure, ← image_closure_preimage_comp e e.isHomeomorph,
+      this, preimage_image_eq_of_homeomorph_affineSpan e he, image_comp]; rfl
 
 end ImageOfHomeomorphAffineSpan
 
