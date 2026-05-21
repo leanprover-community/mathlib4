@@ -182,7 +182,7 @@ expected by lemmas like `HasDerivAt.cpow`. -/
 private theorem aux : ((g x * f x ^ (g x - 1)) • (1 : ℂ →L[ℂ] ℂ).smulRight f' +
     (f x ^ g x * log (f x)) • (1 : ℂ →L[ℂ] ℂ).smulRight g') 1 =
       g x * f x ^ (g x - 1) * f' + f x ^ g x * log (f x) * g' := by
-  simp only [smul_eq_mul, one_mul, ContinuousLinearMap.one_apply,
+  simp only [smul_eq_mul, one_mul, one_apply_eq_self,
     ContinuousLinearMap.smulRight_apply, add_apply, Pi.smul_apply,
     FunLike.coe_smul']
 
@@ -669,7 +669,7 @@ theorem HasDerivWithinAt.rpow (hf : HasDerivWithinAt f f' s x) (hg : HasDerivWit
     (h : 0 < f x) : HasDerivWithinAt (fun x => f x ^ g x)
       (f' * g x * f x ^ (g x - 1) + g' * f x ^ g x * Real.log (f x)) s x := by
   convert (hf.hasFDerivWithinAt.rpow hg.hasFDerivWithinAt h).hasDerivWithinAt using 1
-  dsimp; ring
+  simp; ring
 
 theorem HasDerivAt.rpow (hf : HasDerivAt f f' x) (hg : HasDerivAt g g' x) (h : 0 < f x) :
     HasDerivAt (fun x => f x ^ g x)

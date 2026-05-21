@@ -303,7 +303,7 @@ This corresponds to the matrix outer product `Matrix.vecMulVec`, see
 `InnerProductSpace.toMatrix_rankOne` and `InnerProductSpace.symm_toEuclideanLin_rankOne` in
 `Mathlib/Analysis/InnerProductSpace/PiL2.lean`. -/
 noncomputable def rankOne : E →L[𝕜] F →L⋆[𝕜] F →L[𝕜] E :=
-  .flip <| .comp (.smulRightL 𝕜 _ _) (innerSL 𝕜)
+  .flip <| .comp (.smulRightL 𝕜 F E) (innerSL 𝕜)
 
 lemma rankOne_def (x : E) (y : F) : rankOne 𝕜 (E := E) x y = (innerSL 𝕜 y).smulRight x := rfl
 

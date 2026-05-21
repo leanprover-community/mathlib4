@@ -102,11 +102,15 @@ end Translation
 
 section Scaling
 
+open Manifold
+
 lemma IsMIntegralCurveOn.comp_mul (hγ : IsMIntegralCurveOn γ v s) (a : ℝ) :
     IsMIntegralCurveOn (γ ∘ (· * a)) (a • v) { t | t * a ∈ s } := by
   intro t ht
-  rw [comp_apply, Pi.smul_apply, ← ContinuousLinearMap.one_apply (R₁ := ℝ) a,
-    ← ContinuousLinearMap.smulRight_comp_smulRight]
+  have : (ContinuousLinearMap.smulRight (1 : ℝ →L[ℝ] ℝ) ((a • v) ((γ ∘ fun x ↦ x * a) t))) =
+      (ContinuousLinearMap.smulRight (1 : ℝ →L[ℝ] ℝ) ((1 : ℝ →L[ℝ] ℝ) a • v (γ (t * a)))) := by
+    simp
+  rw [this, ← ContinuousLinearMap.smulRight_comp_smulRight 1 1 (y := a) (x := v (γ (t * a)))]
   refine HasMFDerivWithinAt.comp t (hγ (t * a) ht)
     ⟨(continuous_mul_const _).continuousWithinAt, ?_⟩ subset_rfl
   simp only [mfld_simps]
