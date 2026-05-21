@@ -282,26 +282,10 @@ theorem ae_tendsto_of_cauchy_eLpNorm' [CompleteSpace E] {f : ℕ → α → E} {
     have h4 : ∀ᵐ x ∂μ, ∑' i, ‖f (i + 1) x - f i x‖ₑ < ∞ :=
       tsum_enorm_sub_ae_lt_top hf hp1 hB h3
     exact h4.mono fun x hx => .of_nnnorm <| ENNReal.tsum_coe_ne_top_iff_summable.mp hx.ne
-  have h :
-    ∀ᵐ x ∂μ, ∃ l : E,
-      atTop.Tendsto (fun n => ∑ i ∈ Finset.range n, (f (i + 1) x - f i x)) (𝓝 l) := by
-    refine h_summable.mono fun x hx => ?_
-    let hx_sum := hx.hasSum.tendsto_sum_nat
-    exact ⟨∑' i, (f (i + 1) x - f i x), hx_sum⟩
-  refine h.mono fun x hx => ?_
-  obtain ⟨l, hx⟩ := hx
-  have h_rw_sum :
-      (fun n => ∑ i ∈ Finset.range n, (f (i + 1) x - f i x)) = fun n => f n x - f 0 x := by
-    ext1 n
-    change
-      (∑ i ∈ Finset.range n, ((fun m => f m x) (i + 1) - (fun m => f m x) i)) = f n x - f 0 x
-    rw [Finset.sum_range_sub (fun m => f m x)]
-  rw [h_rw_sum] at hx
-  have hf_rw : (fun n => f n x) = fun n => f n x - f 0 x + f 0 x := by
-    ext1 n
-    abel
-  rw [hf_rw]
-  exact ⟨l + f 0 x, Tendsto.add_const _ hx⟩
+  refine h_summable.mono fun x hx ↦ ?_
+  have hx_sum := hx.hasSum.tendsto_sum_nat
+  rw [funext fun n ↦ Finset.sum_range_sub (fun m ↦ f m x) n] at hx_sum
+  exact ⟨∑' i, (f (i + 1) x - f i x) + f 0 x, by simpa using hx_sum.add_const (f 0 x)⟩
 
 theorem ae_tendsto_of_cauchy_eLpNorm [CompleteSpace E] {f : ℕ → α → E}
     (hf : ∀ n, AEStronglyMeasurable (f n) μ) (hp : 1 ≤ p) {B : ℕ → ℝ≥0∞} (hB : ∑' i, B i ≠ ∞)

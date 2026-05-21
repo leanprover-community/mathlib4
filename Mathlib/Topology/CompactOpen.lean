@@ -130,6 +130,7 @@ lemma _root_.Filter.HasBasis.nhds_continuousMapConst {ι : Type*} {c : Y} {p : �
 section Functorial
 
 /-- `C(X, ·)` is a functor. -/
+@[fun_prop]
 theorem continuous_postcomp (g : C(Y, Z)) : Continuous (ContinuousMap.comp g : C(X, Y) → C(X, Z)) :=
   continuous_compactOpen.2 fun _K hK _U hU ↦ isOpen_setOf_mapsTo hK (hU.preimage g.2)
 
@@ -470,6 +471,7 @@ def const' : C(Y, C(X, Y)) :=
 theorem coe_const' : (const' : Y → C(X, Y)) = const X :=
   rfl
 
+@[fun_prop]
 theorem continuous_const' : Continuous (const X : Y → C(X, Y)) :=
   const'.continuous
 

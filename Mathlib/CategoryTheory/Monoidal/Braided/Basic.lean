@@ -6,10 +6,9 @@ Authors: Kim Morrison
 module
 
 public import Mathlib.CategoryTheory.Monoidal.Discrete
-public import Mathlib.CategoryTheory.Monoidal.NaturalTransformation
 public import Mathlib.CategoryTheory.Monoidal.Opposite
-public import Mathlib.Tactic.CategoryTheory.Monoidal.Basic
 public import Mathlib.CategoryTheory.CommSq
+public import Mathlib.Tactic.CategoryTheory.Monoidal.Basic
 
 /-!
 # Braided and symmetric monoidal categories
@@ -547,12 +546,6 @@ noncomputable def SymmetricCategory.ofFullyFaithful {C D : Type*} [Category* C] 
     braided X Y := by
       simp +instances [h, BraidedCategory.ofFullyFaithful, BraidedCategory.ofFaithful] }
   .ofFaithful F
-
-@[deprecated (since := "2025-10-17")]
-alias symmetricCategoryOfFaithful := SymmetricCategory.ofFaithful
-
-@[deprecated (since := "2025-10-17")]
-alias symmetricCategoryOfFullyFaithful := SymmetricCategory.ofFullyFaithful
 
 namespace Functor.Braided
 
