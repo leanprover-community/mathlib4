@@ -2117,6 +2117,7 @@ public import Mathlib.Analysis.Normed.Group.Constructions
 public import Mathlib.Analysis.Normed.Group.Continuity
 public import Mathlib.Analysis.Normed.Group.ControlledClosure
 public import Mathlib.Analysis.Normed.Group.Defs
+public import Mathlib.Analysis.Normed.Group.DirectLimit
 public import Mathlib.Analysis.Normed.Group.FunctionSeries
 public import Mathlib.Analysis.Normed.Group.Hom
 public import Mathlib.Analysis.Normed.Group.HomCompletion
@@ -7817,6 +7818,7 @@ public import Mathlib.Topology.MetricSpace.CoveringNumbers
 public import Mathlib.Topology.MetricSpace.Defs
 public import Mathlib.Topology.MetricSpace.Dilation
 public import Mathlib.Topology.MetricSpace.DilationEquiv
+public import Mathlib.Topology.MetricSpace.DirectLimit
 public import Mathlib.Topology.MetricSpace.Equicontinuity
 public import Mathlib.Topology.MetricSpace.Gluing
 public import Mathlib.Topology.MetricSpace.GromovHausdorff
