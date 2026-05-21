@@ -413,6 +413,20 @@ instance : IsCardinalAccessibleCategory (CardinalFilteredPoset κ) κ where
     ⟨hasCardinalLTWithTerminal κ, inferInstance,
       isCardinalFilteredGenerator_hasCardinalLTWithTerminal κ⟩
 
+variable (κ) (X : Type u)
+
+abbrev SetCardinalLT := Subtype (fun (S : Set X) ↦ HasCardinalLT S κ)
+
+instance : IsCardinalFiltered (SetCardinalLT κ X) κ :=
+  isCardinalFiltered_preorder _ _
+    (fun K f hK ↦
+      ⟨⟨⋃ (k : K), (f k).val, hasCardinalLT_iUnion _
+        (by rwa [hasCardinalLT_iff_cardinal_mk_lt]) (fun k ↦ (f k).prop)⟩,
+      Set.subset_iUnion (fun k ↦ (f k).val)⟩)
+
+abbrev setCardinalLT : CardinalFilteredPoset κ :=
+  .of (PartOrdEmb.of (SetCardinalLT κ X))
+
 end CardinalFilteredPoset
 
 end CategoryTheory
