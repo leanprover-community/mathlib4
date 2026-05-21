@@ -7,6 +7,8 @@ module
 
 public meta import Lean.Elab.Command
 public import Mathlib.Init
+public meta import Mathlib.Tactic.CrossRef.Fetch
+public meta import Mathlib.Tactic.Widget.CrossRefHover
 
 /-!
 # Cross-reference attributes
@@ -18,38 +20,25 @@ to entries in external mathematical databases:
 * `@[kerodon TAG]` — [Kerodon](https://kerodon.net/tag/)
 * `@[wikidata QID]` — [Wikidata](https://www.wikidata.org)
 
-Each attribute records the cross-reference in an environment extension and appends
-a link to the declaration's docstring.
+Each attribute records the cross-reference in an environment extension, appends
+a link to the declaration's docstring, and attaches the `CrossRefHoverPanel`
+widget to the attribute syntax so the info view shows the upstream label /
+description when the cursor sits on the tag.
 
-The shared infrastructure (`Database`, `Tag`, `tagExt`, `addCrossRefDoc`,
+The `Database` enum and the `databaseURL` / `databaseLabel` projections live in
+`Mathlib.Tactic.CrossRef.Fetch`; the widget itself in
+`Mathlib.Tactic.Widget.CrossRefHover`.
+
+The remaining shared infrastructure (`Tag`, `tagExt`, `addCrossRefDoc`,
 `traceCrossRefs`) is database-agnostic; per-database code defines a parser, the
 attribute syntax, and the trace command.
 -/
 
 public meta section
 
-open Lean Elab
+open Lean Elab Server
 
 namespace Mathlib.CrossRef
-
-/-- The supported external databases -/
-inductive Database where
-  | kerodon
-  | stacks
-  | wikidata
-  deriving BEq, Hashable
-
-/-- The base URL for an external database's tag pages. Always ends with `/`. -/
-def databaseURL : Database → String
-  | .kerodon => "https://kerodon.net/tag/"
-  | .stacks => "https://stacks.math.columbia.edu/tag/"
-  | .wikidata => "https://www.wikidata.org/wiki/"
-
-/-- The display label used in docstring links and trace output. -/
-def databaseLabel : Database → String
-  | .kerodon => "Kerodon Tag"
-  | .stacks => "Stacks Tag"
-  | .wikidata => "Wikidata"
 
 /-- A cross-reference from a Mathlib declaration to an entry in an external database. -/
 structure Tag where
@@ -85,6 +74,16 @@ def addCrossRefDoc (db : Database) (decl : Name) (idStr comment : String) : Core
   let link := s!"[{databaseLabel db} {idStr}]({databaseURL db}{idStr}){commentInDoc}"
   addDocStringCore decl <| "\n\n".intercalate ([oldDoc, link].filter (· != ""))
   addTagEntry decl db idStr comment
+
+/-- Attach the `CrossRefHoverPanel` info-view widget to the attribute syntax
+`attrStx`. This is what makes the info view show the upstream snippet when the
+cursor lands on a cross-reference tag. -/
+def attachCrossRefWidget (db : Database) (tag comment : String) (attrStx : Syntax) :
+    CoreM Unit :=
+  Widget.savePanelWidgetInfo
+    CrossRefHoverPanel.javascriptHash
+    (rpcEncode { database := db.name, tag := tag, comment := comment : CrossRefHoverProps })
+    attrStx
 
 open Parser
 
@@ -228,7 +227,10 @@ initialize Lean.registerBuiltinAttribute {
       | `(attr| stacks $tag $[$comment]?) => return (Database.stacks, tag, comment)
       | `(attr| kerodon $tag $[$comment]?) => return (Database.kerodon, tag, comment)
       | _ => throwUnsupportedSyntax
-    addCrossRefDoc db decl (← tag.getStacksTag) ((comment.map (·.getString)).getD "")
+    let tagStr ← tag.getStacksTag
+    let commentStr := (comment.map (·.getString)).getD ""
+    addCrossRefDoc db decl tagStr commentStr
+    attachCrossRefWidget db tagStr commentStr stx
   -- docstrings are immutable once an asynchronous elaboration task has been started
   applicationTime := .beforeElaboration
 }
@@ -250,7 +252,10 @@ initialize Lean.registerBuiltinAttribute {
     let (id, comment) := ← match stx with
       | `(attr| wikidata $id $[$comment]?) => return (id, comment)
       | _ => throwUnsupportedSyntax
-    addCrossRefDoc .wikidata decl (← id.getWikidataId) ((comment.map (·.getString)).getD "")
+    let tagStr ← id.getWikidataId
+    let commentStr := (comment.map (·.getString)).getD ""
+    addCrossRefDoc .wikidata decl tagStr commentStr
+    attachCrossRefWidget .wikidata tagStr commentStr stx
   -- docstrings are immutable once an asynchronous elaboration task has been started
   applicationTime := .beforeElaboration
 }

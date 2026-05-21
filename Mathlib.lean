@@ -7124,6 +7124,7 @@ public import Mathlib.Tactic.Contrapose
 public import Mathlib.Tactic.Conv
 public import Mathlib.Tactic.Convert
 public import Mathlib.Tactic.Core
+public import Mathlib.Tactic.CrossRef.Fetch
 public import Mathlib.Tactic.CrossRefAttribute
 public import Mathlib.Tactic.DSimpPercent
 public import Mathlib.Tactic.DeclarationNames
@@ -7378,6 +7379,7 @@ public import Mathlib.Tactic.Widget.Calc
 public import Mathlib.Tactic.Widget.CommDiag
 public import Mathlib.Tactic.Widget.CongrM
 public import Mathlib.Tactic.Widget.Conv
+public import Mathlib.Tactic.Widget.CrossRefHover
 public import Mathlib.Tactic.Widget.GCongr
 public import Mathlib.Tactic.Widget.InteractiveUnfold
 public import Mathlib.Tactic.Widget.LibraryRewrite
