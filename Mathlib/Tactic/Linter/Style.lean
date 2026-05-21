@@ -541,13 +541,13 @@ public def isBadNameWithUnderscore (name : Name) : Bool := Id.run do
   let declName := name
   let last := declName.components.getLast?.getD `Default |>.toString
   if last.endsWith '_' ||
-      s.contains '«' || declName.components.any (fun c ↦ c.toString.startsWith "term") ||
+      s.contains '«' || declName.components.any (·.toString.startsWith "term") ||
       (`LibraryNote).isPrefixOf declName ||
       (`Mathlib.Tactic).isPrefixOf declName || (`Mathlib.Parser).isPrefixOf declName ||
-      declName.components.any (fun c ↦ c == `Simps) ||
+      declName.components.any (· == `Simps) ||
       last.endsWith "_1" || last.endsWith "_2" || last.endsWith "_mathlib" then
     return false
-  if declName.components.any (fun c ↦ c.toString.endsWith '_') then return false
+  if declName.components.any (·.toString.endsWith '_') then return false
   if declName.toString.contains "_" then return true
   else return false
 
