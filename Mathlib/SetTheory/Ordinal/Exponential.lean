@@ -91,7 +91,7 @@ theorem one_opow (a : Ordinal) : (1 : Ordinal) ^ a = 1 := by
     simp only [opow_succ, ih, mul_one]
   | limit b l IH =>
     refine eq_of_forall_ge_iff fun c => ?_
-    rw [opow_le_of_isSuccLimit Ordinal.one_ne_zero l]
+    rw [opow_le_of_isSuccLimit one_ne_zero l]
     exact ⟨fun H => by simpa only [opow_zero] using H 0 l.bot_lt, fun H b' h => by rwa [IH _ h]⟩
 
 theorem opow_pos {a : Ordinal} (b : Ordinal) (a0 : 0 < a) : 0 < a ^ b := by
@@ -198,7 +198,7 @@ theorem left_le_opow (a : Ordinal) {b : Ordinal} (b1 : 0 < b) : a ≤ a ^ b := b
   rcases le_or_gt a 1 with a1 | a1
   · rcases lt_or_eq_of_le a1 with a0 | a1
     · rw [lt_one_iff] at a0
-      rw [a0, zero_opow Ordinal.one_ne_zero]
+      rw [a0, zero_opow one_ne_zero]
       exact zero_le
     rw [a1, one_opow, one_opow]
   rwa [opow_le_opow_iff_right a1, one_le_iff_pos]
@@ -490,8 +490,8 @@ theorem lt_omega0_opow {a b : Ordinal} (hb : b ≠ 0) :
   refine ⟨fun ha ↦ ⟨_, lt_log_of_lt_opow hb ha, ?_⟩,
     fun ⟨c, hc, n, hn⟩ ↦ hn.trans (omega0_opow_mul_nat_lt hc n)⟩
   obtain ⟨n, hn⟩ := lt_omega0.1 (div_opow_log_lt a one_lt_omega0)
-  use n.succ
-  rw [natCast_succ, ← hn]
+  use n + 1
+  rw [Nat.cast_add_one, ← hn]
   exact lt_mul_succ_div a (opow_ne_zero _ omega0_ne_zero)
 
 theorem lt_omega0_opow_succ {a b : Ordinal} : a < ω ^ succ b ↔ ∃ n : ℕ, a < ω ^ b * n := by
