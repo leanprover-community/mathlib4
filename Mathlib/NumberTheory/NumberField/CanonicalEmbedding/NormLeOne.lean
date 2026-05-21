@@ -590,7 +590,8 @@ theorem abs_det_fderiv_expMapBasis (x : realSpace K) :
         (Module.finrank ℚ K) * regulator K := by
   simp_rw [fderiv_expMapBasis, det, coe_comp, LinearMap.det_comp, fderiv_expMap, coe_pi, coe_comp,
     coe_proj, LinearMap.det_pi, LinearMap.det_ring, ContinuousLinearMap.coe_coe, smulRight_apply,
-    one_apply, one_smul, abs_mul, abs_det_completeBasis_equivFunL_symm, prod_deriv_expMap_single]
+    one_apply_eq_self, one_smul, abs_mul, abs_det_completeBasis_equivFunL_symm,
+    prod_deriv_expMap_single]
   simp_rw [abs_mul, Real.exp_mul, abs_pow, Real.rpow_natCast, abs_of_nonneg (Real.exp_nonneg _),
     abs_inv, abs_prod, abs_of_nonneg (expMapBasis_nonneg _ _), Nat.abs_ofNat]
   ring
