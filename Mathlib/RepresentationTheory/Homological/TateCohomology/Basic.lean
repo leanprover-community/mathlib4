@@ -62,7 +62,8 @@ lemma Rep.tateNorm_eq (M : Rep R G) :
 
 @[reassoc (attr := simp), elementwise]
 lemma Rep.norm_comp_d_eq_zero (M : Rep R G) : M.norm.toModuleCatHom ≫ d₀₁ M = 0 := by
-  ext; simp [Pi.zero_apply _]
+  ext
+  simp [Pi.zero_apply _]
 
 lemma Rep.tateNorm_comp_d (M : Rep R G) : tateNorm M ≫ (inhomogeneousCochains M).d 0 1 = 0 := by
   simp [tateNorm, eq_d₀₁_comp_inv M]
