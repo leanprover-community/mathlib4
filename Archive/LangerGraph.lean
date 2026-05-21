@@ -534,3 +534,37 @@ theorem langer_action_primitive :
     ∀ v : Fin 63, v ≠ 0 →
       blockIsFullBool v = true := by
   native_decide
+
+/-! ## No cubic double cover of the Langer graph
+
+The Zhou graph (F182A, 182 vertices, cubic) is a Z₂ double cover of its
+quotient Zhou-6 (91 vertices, 6-regular) via the block system S₃ < D₁₂.
+One might ask: does the same hold for the Langer graph? That is, does
+there exist a 126-vertex cubic graph covering the Langer graph via a
+2:1 map?
+
+The natural candidate is the Tutte 12-cage (126 vertices, cubic, same
+G₂(2) symmetry). However, it **cannot** cover the Langer graph:
+
+1. The Tutte 12-cage is semisymmetric (not vertex-transitive), while
+   any covering of the vertex-transitive Langer graph must be
+   vertex-transitive.
+
+2. More fundamentally, the point stabiliser H₁₉₂ in G₂(2) has three
+   index-2 subgroups of order 96, but **none** yield a size-3
+   suborbit in the coset action on 126 points. The smallest suborbits
+   are size 6 and 12 — no cubic Sabidussi graph exists.
+
+Verification: the Tutte 12-cage point subgraph (induced on vertices
+0–62) has no edges, so no point-point edge can cover a Langer edge.
+-/
+
+/-- The Tutte 12-cage has no edges between points: the induced
+    subgraph on vertices 0–62 is edgeless. This obstructs any
+    covering map to the Langer graph, which has 189 edges between
+    its 63 vertices. -/
+theorem tutte12_points_independent :
+    ∀ p q : Fin 63,
+      ¬tutte12CageGraph.Adj
+        ⟨p.val, by omega⟩ ⟨q.val, by omega⟩ := by
+  native_decide
