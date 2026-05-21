@@ -31,19 +31,16 @@ single non-identity morphism is named `arrow : zero ⟶ one`.
 
 * `CategoryTheory.Limits.walkingArrowHom_id` rewrites the bundled identity
   constructor to the categorical identity.
-
-## Future work
-
-* The equivalence of categories `(WalkingArrow ⥤ C) ≌ Arrow C` identifying functors
-  out of the walking arrow with objects of the arrow category, deferred to a
-  follow-up PR.
-* The opposite/symmetry functor `WalkingArrow ⥤ WalkingArrowᵒᵖ`.
+* `CategoryTheory.Limits.walkingArrowHom_comp_arrow_id` simplifies composition of
+  `arrow` with the identity on its codomain.
 
 ## References
 
 * Cf. `Mathlib.CategoryTheory.Limits.Shapes.Equalizers` for the parallel-pair
   analog (`WalkingParallelPair`) from which the object naming `zero`/`one` is
   taken.
+* The equivalence `(WalkingArrow ⥤ C) ≌ Arrow C` and the opposite functor
+  `WalkingArrow ⥤ WalkingArrowᵒᵖ` are left to follow-up PRs.
 
 ## Tags
 
@@ -65,6 +62,7 @@ open WalkingArrow
 
 -- Don't generate unnecessary `sizeOf_spec` lemma which the `simpNF` linter will
 -- complain about.
+-- TODO: remove once leanprover/lean4 stops generating `sizeOf_spec` for indexed inductives.
 set_option genSizeOfSpec false in
 /-- The type family of morphisms for the walking arrow diagram: identities together
 with a single non-identity arrow `arrow : zero ⟶ one`. -/
@@ -114,6 +112,13 @@ instance walkingArrowHomCategory : SmallCategory WalkingArrow where
 /-- The bundled identity constructor agrees with the categorical identity. -/
 @[simp]
 theorem walkingArrowHom_id (X : WalkingArrow) : WalkingArrowHom.id X = 𝟙 X :=
+  rfl
+
+/-- The arrow composed with the identity on its codomain is the arrow. -/
+@[simp]
+theorem walkingArrowHom_comp_arrow_id :
+    WalkingArrowHom.comp WalkingArrowHom.arrow (WalkingArrowHom.id WalkingArrow.one) =
+    WalkingArrowHom.arrow :=
   rfl
 
 end CategoryTheory.Limits
