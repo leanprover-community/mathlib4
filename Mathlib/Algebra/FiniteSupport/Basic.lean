@@ -188,11 +188,8 @@ lemma HasFiniteMulSupport.of_comp [One β] (hfg : (f ∘ g).HasFiniteMulSupport)
 @[fun_prop]
 lemma HasFiniteSupport.hasFiniteMulSupport_fun_pow {M : Type*} [Monoid M] (f : α → M) {g : α → ℕ}
     (hg : g.HasFiniteSupport) :
-    (fun a : α ↦ f a ^ g a).HasFiniteMulSupport := by
-  refine Set.Finite.subset hg fun a ha ↦ ?_
-  simp only [Function.mem_mulSupport, Function.mem_support] at ha ⊢
-  contrapose! ha
-  simp [ha]
+    (fun a : α ↦ f a ^ g a).HasFiniteMulSupport :=
+  Set.Finite.subset hg fun a ha ↦ by contrapose! ha; simp_all
 
 section MulZeroClass
 
