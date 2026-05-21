@@ -186,6 +186,11 @@ theorem integral_piecewise [DecidablePred (· ∈ s)]
     integral_add (hf.integrable_indicator hs) (hg.integrable_indicator hs.compl),
     integral_indicator hs, integral_indicator hs.compl]
 
+theorem enorm_setIntegral_le_lintegral_enorm :
+    ‖∫ᵛ x in s, f x ∂[B; μ]‖ₑ ≤ ∫⁻ x in s, ‖f x‖ₑ ∂(μ.transpose B).variation := by
+  grw [enorm_integral_le_lintegral_enorm, transpose_restrict]
+  exact lintegral_mono' variation_restrict_le le_rfl
+
 theorem hasSum_setIntegral_iUnion {ι : Type*} [Countable ι] {s : ι → Set X}
     (hm : ∀ i, MeasurableSet (s i)) (hd : Pairwise (Disjoint on s))
     (hfi : μ.IntegrableOn f B (⋃ i, s i)) :
@@ -194,6 +199,16 @@ theorem hasSum_setIntegral_iUnion {ι : Type*} [Countable ι] {s : ι → Set X}
   · simp [integral_of_not_completeSpace hG]
   have : Summable (fun n ↦ ∫ᵛ x in s n, f x ∂[B; μ]) := by
     apply Summable.of_enorm
+    apply ne_of_lt
+    calc ∑' i, ‖∫ᵛ x in s i, f x ∂[B; μ]‖ₑ
+    _ ≤ ∑' i, ∫⁻ x in s i, ‖f x‖ₑ ∂(μ.transpose B).variation := by
+      gcongr
+      apply enorm_setIntegral_le_lintegral_enorm
+    _ = ∫⁻ x in (⋃ i, s i), ‖f x‖ₑ ∂(μ.transpose B).variation := (lintegral_iUnion hm hd _).symm
+    _ < ∞ := by
+      simp only [VectorMeasure.IntegrableOn, VectorMeasure.Integrable, transpose_restrict,
+        variation_restrict (MeasurableSet.iUnion hm)] at hfi
+      exact hfi.2
 
 
   simp only [IntegrableOn, Measure.restrict_iUnion_ae hd hm] at hfi ⊢
