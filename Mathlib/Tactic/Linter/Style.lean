@@ -545,7 +545,7 @@ def doubleUnderscore : Linter where run := withSetOptionIn fun stx => do
           Linter.logLint linter.style.nameCheck id
             m!"The declaration `{id}` contains '__', which does not follow the mathlib naming \
               conventions. Consider using single underscores instead."
-        -- TODO: once the above environment linter is free of exceptions, enable this check instead.
+        -- TODO: once the `badNamingUppercaseComponent` linter is free of exceptions, enable this check and remove `badNamingUppercaseComponent`.
         -- -- Also check if a name is capitalized after an underscore: this is often wrong.
         -- let parts := declName.toString.splitOn "_" |>.drop 1
         -- let bad := parts.filter (isWronglyCased ·)
