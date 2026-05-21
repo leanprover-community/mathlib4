@@ -21,8 +21,6 @@ set_option linter.style.longLine false
 theorem SimpleGraph.isClique_univ_iff {V : Type*} (G : SimpleGraph V) : G.IsClique .univ ↔ G = ⊤ := sorry
 -- #36626
 theorem IsLowerSet.eqOn_id_of_injOn_of_forall_not_lt {α : Type*} {r : α → α → Prop} [IsWellOrder α r] {s : Set α} (hs : @IsLowerSet α ⟨r⟩ s) {f : α → α} (hf : s.InjOn f) (h : ∀ x ∈ s, ¬r x (f x)) : s.EqOn f id := sorry
-/-- #38422 -/
-@[simps] abbrev SimpleGraph.Coloring.homMap {V α : Type*} {G : SimpleGraph V} (f : G.Coloring α) : G →g G.map f := ⟨f, sorry⟩
 
 end Dependencies
 
