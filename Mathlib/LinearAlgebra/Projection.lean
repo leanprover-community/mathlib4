@@ -360,11 +360,11 @@ def ofIsCompl {p q : Submodule R E} (h : IsCompl p q) (φ : p →ₗ[R] F) (ψ :
 variable {p q}
 
 @[simp]
-theorem ofIsCompl_left_apply (h : IsCompl p q) {φ : p →ₗ[R] F} {ψ : q →ₗ[R] F} (u : p) :
+theorem ofIsCompl_apply_left (h : IsCompl p q) {φ : p →ₗ[R] F} {ψ : q →ₗ[R] F} (u : p) :
     ofIsCompl h φ ψ (u : E) = φ u := by simp [ofIsCompl]
 
 @[simp]
-theorem ofIsCompl_right_apply (h : IsCompl p q) {φ : p →ₗ[R] F} {ψ : q →ₗ[R] F} (v : q) :
+theorem ofIsCompl_apply_right (h : IsCompl p q) {φ : p →ₗ[R] F} {ψ : q →ₗ[R] F} (v : q) :
     ofIsCompl h φ ψ (v : E) = ψ v := by simp [ofIsCompl]
 
 theorem ofIsCompl_eq (h : IsCompl p q) {φ : p →ₗ[R] F} {ψ : q →ₗ[R] F} {χ : E →ₗ[R] F}
@@ -448,8 +448,8 @@ def ofIsComplProdEquiv {p q : Submodule R₁ E} (h : IsCompl p q) :
     invFun := fun φ => ⟨φ.domRestrict p, φ.domRestrict q⟩
     left_inv := fun φ ↦ by
       ext x
-      · exact ofIsCompl_left_apply h x
-      · exact ofIsCompl_right_apply h x
+      · exact ofIsCompl_apply_left h x
+      · exact ofIsCompl_apply_right h x
     right_inv := fun φ ↦ by
       ext x
       obtain ⟨a, b, hab, _⟩ := existsUnique_add_of_isCompl h x
@@ -829,5 +829,7 @@ namespace LinearMap
   surjective_comp_projectionOnto
 @[deprecated (since := "2026-05-04")] alias isIdempotentElem_iff_eq_isCompl_projection_range_ker :=
   isIdempotentElem_iff_eq_projection_range_ker
+@[deprecated (since := "2026-05-16")] alias ofIsCompl_left_apply := ofIsCompl_apply_left
+@[deprecated (since := "2026-05-16")] alias ofIsCompl_right_apply := ofIsCompl_apply_right
 
 end LinearMap
