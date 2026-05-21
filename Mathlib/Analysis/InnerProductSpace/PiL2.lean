@@ -561,16 +561,16 @@ protected theorem orthogonalProjection_apply_eq_sum {U : Submodule 𝕜 E} [U.Ha
 
 protected theorem orthogonalProjection_eq_sum_rankOne {U : Submodule 𝕜 E}
     [U.HasOrthogonalProjection] (b : OrthonormalBasis ι 𝕜 U) :
-    U.orthogonalProjection = ∑ i, InnerProductSpace.rankOne 𝕜 (b i) (b i : E) := by
+    U.orthogonalProjection = ∑ i, InnerProductSpace.rankOne 𝕜 (E := U) (b i) (b i : E) := by
   ext; simp [b.orthogonalProjection_apply_eq_sum]
 
 protected theorem starProjection_eq_sum_rankOne {U : Submodule 𝕜 E} [U.HasOrthogonalProjection]
     (b : OrthonormalBasis ι 𝕜 U) :
-    U.starProjection = ∑ i, InnerProductSpace.rankOne 𝕜 (b i : E) (b i : E) := by
+    U.starProjection = ∑ i, InnerProductSpace.rankOne 𝕜 (E := E) (b i) (b i : E) := by
   ext; simp [starProjection, b.orthogonalProjection_eq_sum_rankOne]
 
 lemma sum_rankOne_eq_id (b : OrthonormalBasis ι 𝕜 E) :
-    ∑ i, InnerProductSpace.rankOne 𝕜 (b i) (b i) = .id 𝕜 E := by ext; simp [b.sum_repr']
+    ∑ i, InnerProductSpace.rankOne 𝕜 (E := E) (b i) (b i) = .id 𝕜 E := by ext; simp [b.sum_repr']
 
 /-- Mapping an orthonormal basis along a `LinearIsometryEquiv`. -/
 protected def map {G : Type*} [NormedAddCommGroup G] [InnerProductSpace 𝕜 G]
@@ -1298,7 +1298,7 @@ theorem InnerProductSpace.toMatrix_rankOne {𝕜 E F ι ι' : Type*} [RCLike �
     [SeminormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedAddCommGroup F] [InnerProductSpace 𝕜 F]
     [Finite ι] [Fintype ι'] [DecidableEq ι'] (x : E) (y : F) (b : Module.Basis ι 𝕜 E)
     (b' : OrthonormalBasis ι' 𝕜 F) :
-    (rankOne 𝕜 x y).toMatrix b'.toBasis b = .vecMulVec (b.repr x) (star (b'.repr y)) := by
+    (rankOne 𝕜 (E := E) x y).toMatrix b'.toBasis b = .vecMulVec (b.repr x) (star (b'.repr y)) := by
   have := Fintype.ofFinite ι
   rw [rankOne_def', ContinuousLinearMap.coe_comp, toLinearMap_toSpanSingleton,
     toMatrix_comp _ (OrthonormalBasis.singleton Unit 𝕜).toBasis, toMatrix_toSpanSingleton,
@@ -1309,7 +1309,7 @@ theorem InnerProductSpace.toMatrix_rankOne {𝕜 E F ι ι' : Type*} [RCLike �
 open Matrix LinearMap EuclideanSpace in
 theorem InnerProductSpace.symm_toEuclideanLin_rankOne {𝕜 m n : Type*} [RCLike 𝕜] [Fintype m]
     [Fintype n] [DecidableEq n] (x : EuclideanSpace 𝕜 m) (y : EuclideanSpace 𝕜 n) :
-    toEuclideanLin.symm (rankOne 𝕜 x y) = .vecMulVec x (star y) := by
+    toEuclideanLin.symm (rankOne 𝕜 (E := EuclideanSpace 𝕜 m) x y) = .vecMulVec x (star y) := by
   simp [toLpLin, toMatrix', ← ext_iff, vecMulVec_apply, inner_single_right, mul_comm]
 
 namespace FiniteDimensional

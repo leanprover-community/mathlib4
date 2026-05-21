@@ -140,9 +140,7 @@ def toDual : E ≃ₗᵢ⋆[𝕜] StrongDual 𝕜 E :=
       by_cases htriv : Y = ⊤
       · have hℓ : ℓ = 0 := by
           have h' := LinearMap.ker_eq_top.mp htriv
-          rw [← coe_zero] at h'
-          apply coe_injective
-          exact h'
+          norm_cast at h'
         exact ⟨0, by simp [hℓ]⟩
       · rw [← Submodule.orthogonal_eq_bot_iff] at htriv
         change Yᗮ ≠ ⊥ at htriv
@@ -228,7 +226,7 @@ instance [NormedAddCommGroup E] [CompleteSpace E] [InnerProductSpace ℝ E] :
 /-- A nonzero rank-one operator has rank one. -/
 lemma rank_rankOne {𝕜 E F : Type*} [RCLike 𝕜] [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
     [NormedAddCommGroup F] [InnerProductSpace 𝕜 F] {x : E} {y : F} (hx : x ≠ 0) (hy : y ≠ 0) :
-    (rankOne 𝕜 x y).rank = 1 := by
+    (rankOne 𝕜 (E := E) x y).rank = 1 := by
   rw [LinearMap.rank, rankOne_def, range_smulRight_apply, Module.rank_eq_one_iff_finrank_eq_one]
   · exact finrank_span_singleton hx
   · exact map_eq_zero_iff _ (toDualMap 𝕜 F).injective |>.not.mpr hy

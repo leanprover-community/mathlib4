@@ -105,7 +105,7 @@ lemma mulEquivHaarChar_smul_preimage
     (μ : Measure G) [IsHaarMeasure μ] [Regular μ] {X : Set G} (φ : G ≃ₜ* G) :
     mulEquivHaarChar φ • μ (φ ⁻¹' X) = μ X := by
   nth_rw 2 [← mulEquivHaarChar_smul_map μ φ]
-  simp only [smul_apply, nnreal_smul_coe_apply]
+  simp only [Measure.smul_apply, nnreal_smul_coe_apply]
   exact congr_arg _ <| (MeasurableEquiv.map_apply φ.toMeasurableEquiv X).symm
 
 @[to_additive (attr := simp)]
