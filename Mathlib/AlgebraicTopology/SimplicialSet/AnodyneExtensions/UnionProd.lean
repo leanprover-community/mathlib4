@@ -5,13 +5,10 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.AlgebraicTopology.SimplicialSet.AnodyneExtensions.RankNat
 public import Mathlib.AlgebraicTopology.SimplicialSet.AnodyneExtensions.Op
+public import Mathlib.AlgebraicTopology.SimplicialSet.AnodyneExtensions.Rank
 public import Mathlib.AlgebraicTopology.SimplicialSet.Boundary
 public import Mathlib.AlgebraicTopology.SimplicialSet.Horn
-public import Mathlib.AlgebraicTopology.SimplicialSet.Monoidal
-public import Mathlib.AlgebraicTopology.SimplicialSet.Nonsingular
-public import Mathlib.AlgebraicTopology.SimplicialSet.ProdStdSimplex
 
 /-!
 # A pairing for the pushout-product of a horn inclusion and a boundary inclusion
