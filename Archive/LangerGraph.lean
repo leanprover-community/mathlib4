@@ -444,3 +444,93 @@ theorem langer_eq_tutte12_distance2' :
   rw [← witnessWord_correct p]
   rw [transport_langer, transport_dist2]
   exact graphs_agree_at_zero _
+
+/-! ## Primitivity of the G₂(2) action
+
+The action of G₂(2) on the 63 points of GH(2,2) is **primitive**: the point
+stabiliser H₁₉₂ (order 192 = 12096/63) is a maximal subgroup of G₂(2).
+
+We verify this directly using Atkinson's algorithm (1975): for each v ≠ 0,
+compute the smallest block containing {0, v} by propagating equivalences
+through generators. A block B satisfies: ∀ g ∈ G, gB = B ∨ gB ∩ B = ∅.
+Equivalently: if i ~ j (same block) then g(i) ~ g(j). Starting from
+0 ~ v, we propagate via a queue of newly-merged pairs until stable. If
+the block is always all of Ω, no non-trivial block system exists.
+
+The queue-based approach processes only the O(n) actual merges rather
+than scanning all elements at each round, keeping the computation
+small. -/
+
+/-- All four generator permutations: σ₁, σ₁⁻¹, σ₂, σ₂⁻¹. -/
+private def g2AllGens : List (Equiv.Perm (Fin 63)) :=
+  [g2gen1, g2gen1.symm, g2gen2, g2gen2.symm]
+
+/-- Merge two equivalence classes: replace all occurrences of `hi`
+    with `lo`. -/
+private def mergeRep (f : Fin 63 → Fin 63) (lo hi : Fin 63) :
+    Fin 63 → Fin 63 :=
+  fun i => let fi := f i; if fi = hi then lo else fi
+
+/-- Atkinson's algorithm: compute the smallest block containing
+    {0, v}.
+
+    State: `(queue, partition)` where `queue` is a list of
+    newly-merged pairs and `partition : Fin 63 → Fin 63` maps each
+    element to its class representative.
+
+    At each step, pop a pair (x, y) from the queue. For each
+    generator g, check if g(x) and g(y) have the same
+    representative. If not, merge their classes and enqueue the
+    new pair. Terminate when the queue is empty.
+
+    `fuel` bounds the number of steps (at most 62 merges ×
+    4 generators = 248 enqueued pairs, so fuel = 300 is
+    generous). -/
+private def atkinson (gens : List (Equiv.Perm (Fin 63)))
+    (queue : List (Fin 63 × Fin 63))
+    (part : Fin 63 → Fin 63) :
+    Nat → Fin 63 → Fin 63
+  | 0 => part
+  | fuel + 1 =>
+    match queue with
+    | [] => part
+    | (x, y) :: rest =>
+      let Acc :=
+        List (Fin 63 × Fin 63) × (Fin 63 → Fin 63)
+      let (newPairs, part') :=
+        gens.foldl (fun (acc : Acc) g =>
+          let (pairs, p) := acc
+          let rgx := p (g x)
+          let rgy := p (g y)
+          if rgx = rgy then (pairs, p)
+          else
+            let lo := min rgx rgy
+            let hi := max rgx rgy
+            ((lo, hi) :: pairs, mergeRep p lo hi))
+          ([], part)
+      atkinson gens (rest ++ newPairs) part' fuel
+
+/-- Check that Atkinson's algorithm starting from {0, v} merges
+    all vertices into a single class (representative 0). -/
+private def blockIsFullBool (v : Fin 63) : Bool :=
+  let initPart : Fin 63 → Fin 63 := fun i =>
+    if i = v then 0 else i
+  let finalPart :=
+    atkinson g2AllGens [(0, v)] initPart 300
+  decide (∀ w : Fin 63, finalPart w = 0)
+
+/-- **Primitivity of the G₂(2) action on the 63 points of GH(2,2).**
+
+For every vertex v ≠ 0, Atkinson's algorithm starting from 0 ~ v
+merges all 63 vertices into a single equivalence class. This means
+no non-trivial block system exists, so the point stabiliser
+H₁₉₂ ≤ G₂(2) is a **maximal subgroup** — there is no subgroup K
+with H₁₉₂ < K < G₂(2).
+
+Consequence: the Langer graph admits no non-trivial symmetric
+quotient. It cannot be expressed as a regular covering of a
+smaller vertex-transitive graph. -/
+theorem langer_action_primitive :
+    ∀ v : Fin 63, v ≠ 0 →
+      blockIsFullBool v = true := by
+  native_decide
