@@ -8,14 +8,27 @@ module
 public import Mathlib.NumberTheory.DirichletCharacter.Basic
 public import Mathlib.NumberTheory.GaussSum
 
+import Mathlib.NumberTheory.MulChar.Lemmas
+
 /-!
 # Gauss sums for Dirichlet characters
 -/
 
 public section
-variable {N : ℕ} [NeZero N] {R : Type*} [CommRing R] (e : AddChar (ZMod N) R)
 
 open AddChar DirichletCharacter
+
+variable {N : ℕ} [NeZero N] {R : Type*} [CommRing R]
+
+/-- Taking complex conjugates of a Gauss sum inverts both characters. -/
+lemma star_gaussSum_eq [Fintype R] (χ : MulChar R ℂ) (ψ : AddChar R ℂ) :
+    star (gaussSum χ ψ) = gaussSum χ⁻¹ ψ⁻¹ :=
+  calc
+    _ = ∑ x, star (ψ x) * χ⁻¹ x := by simp [gaussSum, star_mul, MulChar.star_apply']
+    _ = ∑ x, ψ⁻¹ x * χ⁻¹ x := by simp [← starRingEnd_apply, map_neg_eq_conj]
+    _ = _ := by simp [mul_comm, gaussSum]
+
+variable (e : AddChar (ZMod N) R)
 
 lemma gaussSum_aux_of_mulShift (χ : DirichletCharacter R N) {d : ℕ}
     (hd : d ∣ N) (he : e.mulShift d = 1) {u : (ZMod N)ˣ} (hu : ZMod.unitsMap hd u = 1) :
@@ -60,7 +73,6 @@ lemma gaussSum_mulShift_of_isPrimitive [IsDomain R] {χ : DirichletCharacter R N
     (hχ : IsPrimitive χ) (a : ZMod N) :
     gaussSum χ (e.mulShift a) = χ⁻¹ a * gaussSum χ e := by
   by_cases ha : IsUnit a
-  · conv_rhs => rw [← gaussSum_mulShift χ e ha.unit]
-    rw [IsUnit.unit_spec, MulChar.inv_apply_eq_inv, Ring.inverse_mul_cancel_left _ _ (ha.map χ)]
+  · simpa [ha.unit_spec] using gaussSum_mulShift_eq χ e ha.unit
   · rw [MulChar.map_nonunit _ ha, zero_mul]
     exact gaussSum_eq_zero_of_isPrimitive_of_not_isPrimitive _ hχ (not_isPrimitive_mulShift e ha)
