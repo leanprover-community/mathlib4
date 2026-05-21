@@ -175,138 +175,25 @@ theorem integral_indicator (hs : MeasurableSet s) :
         exact indicator_ae_eq_restrict_compl hs
     _ = ∫ᵛ x in s, f x ∂[B; μ] := by simp
 
-theorem setIntegral_indicator (ht : MeasurableSet t) :
+theorem setIntegral_indicator (hs : MeasurableSet s) (ht : MeasurableSet t) :
     ∫ᵛ x in s, t.indicator f x ∂[B; μ] = ∫ᵛ x in s ∩ t, f x ∂[B; μ] := by
-  rw [integral_indicator ht, Measure.restrict_restrict ht, Set.inter_comm]
+  rw [integral_indicator ht, μ.restrict_restrict ht hs, Set.inter_comm]
 
-
-#exit
-
-/-- **Inclusion-exclusion principle** for the integral of a function over a union.
-
-The integral of a function `f` over the union of the `s i` over `i ∈ t` is the alternating sum of
-the integrals of `f` over the intersections of the `s i`. -/
-theorem integral_biUnion_eq_sum_powerset {ι : Type*} {t : Finset ι} {s : ι → Set X}
-    (hs : ∀ i ∈ t, MeasurableSet (s i)) (hf : ∀ i ∈ t, IntegrableOn f (s i) μ) :
-    ∫ᵛ x in ⋃ i ∈ t, s i, f x ∂[B; μ] = ∑ u ∈ t.powerset with u.Nonempty,
-      (-1 : ℝ) ^ (#u + 1) • ∫ᵛ x in ⋂ i ∈ u, s i, f x ∂[B; μ] := by
-  simp_rw [← integral_smul, ← integral_indicator (Finset.measurableSet_biUnion _ hs)]
-  have A (u) (hu : u ∈ t.powerset.filter (·.Nonempty)) : MeasurableSet (⋂ i ∈ u, s i) := by
-    refine u.measurableSet_biInter fun i hi ↦ hs i ?_
-    grind
-  have : ∑ x ∈ t.powerset with x.Nonempty, ∫ᵛ (a : X) in ⋂ i ∈ x, s i, (-1 : ℝ) ^ (#x + 1) • f a ∂[B; μ]
-      = ∑ x ∈ t.powerset with x.Nonempty, ∫ᵛ a, indicator (⋂ i ∈ x, s i)
-        (fun a ↦ (-1 : ℝ) ^ (#x + 1) • f a) a ∂[B; μ] := by
-    apply Finset.sum_congr rfl (fun x hx ↦ ?_)
-    rw [← integral_indicator (A x hx)]
-  rw [this, ← integral_finsetSum]; swap
-  · intro u hu
-    rw [integrable_indicator_iff (A u hu)]
-    apply Integrable.smul
-    simp only [Finset.mem_filter, Finset.mem_powerset] at hu
-    rcases hu.2 with ⟨i, hi⟩
-    exact (hf i (hu.1 hi)).mono (biInter_subset_of_mem hi) le_rfl
-  congr with x
-  convert Finset.indicator_biUnion_eq_sum_powerset t s f x with u hu
-  rw [indicator_smul_apply]
-  norm_cast
-
-theorem ofReal_setIntegral_one_of_measure_ne_top {X : Type*} {m : MeasurableSpace X}
-    {μ : Measure X} {s : Set X} (hs : μ s ≠ ∞ := by finiteness) :
-    ENNReal.ofReal (∫ᵛ _ in s, (1 : ℝ) ∂[B; μ]) = μ s :=
-  calc
-    ENNReal.ofReal (∫ᵛ _ in s, (1 : ℝ) ∂[B; μ]) = ENNReal.ofReal (∫ᵛ _ in s, ‖(1 : ℝ)‖ ∂[B; μ]) := by
-      simp only [norm_one]
-    _ = ∫⁻ _ in s, 1 ∂[B; μ] := by simp [measureReal_def, hs]
-    _ = μ s := setLIntegral_one _
-
-theorem ofReal_setIntegral_one {X : Type*} {_ : MeasurableSpace X} (μ : Measure X)
-    [IsFiniteMeasure μ] (s : Set X) : ENNReal.ofReal (∫ᵛ _ in s, (1 : ℝ) ∂[B; μ]) = μ s :=
-  ofReal_setIntegral_one_of_measure_ne_top
-
-theorem setIntegral_one_eq_measureReal {X : Type*} {m : MeasurableSpace X}
-    {μ : Measure X} {s : Set X} :
-    ∫ᵛ _ in s, (1 : ℝ) ∂[B; μ] = μ.real s := by simp
-
-/-- **Inclusion-exclusion principle** for the measure of a union of sets of finite measure.
-
-The measure of the union of the `s i` over `i ∈ t` is the alternating sum of the measures of the
-intersections of the `s i`. -/
-theorem measureReal_biUnion_eq_sum_powerset {ι : Type*} {t : Finset ι} {s : ι → Set X}
-    (hs : ∀ i ∈ t, MeasurableSet (s i)) (hf : ∀ i ∈ t, μ (s i) ≠ ∞ := by finiteness) :
-    μ.real (⋃ i ∈ t, s i) = ∑ u ∈ t.powerset with u.Nonempty,
-      (-1 : ℝ) ^ (#u + 1) * μ.real (⋂ i ∈ u, s i) := by
-  simp_rw [← setIntegral_one_eq_measureReal]
-  apply integral_biUnion_eq_sum_powerset hs
-  intro i hi
-  simpa using (hf i hi).lt_top
-
-theorem integral_piecewise [DecidablePred (· ∈ s)] (hs : MeasurableSet s) (hf : IntegrableOn f s μ)
-    (hg : IntegrableOn g sᶜ μ) :
+theorem integral_piecewise [DecidablePred (· ∈ s)]
+    (hs : MeasurableSet s) (hf : μ.IntegrableOn f B s) (hg : μ.IntegrableOn g B sᶜ) :
     ∫ᵛ x, s.piecewise f g x ∂[B; μ] = ∫ᵛ x in s, f x ∂[B; μ] + ∫ᵛ x in sᶜ, g x ∂[B; μ] := by
   rw [← Set.indicator_add_compl_eq_piecewise,
-    integral_add' (hf.integrable_indicator hs) (hg.integrable_indicator hs.compl),
+    integral_add (hf.integrable_indicator hs) (hg.integrable_indicator hs.compl),
     integral_indicator hs, integral_indicator hs.compl]
 
-theorem tendsto_setIntegral_of_monotone₀
-    {ι : Type*} [Preorder ι] [(atTop : Filter ι).IsCountablyGenerated]
-    {s : ι → Set X} (hsm : ∀ i, NullMeasurableSet (s i) μ) (h_mono : Monotone s)
-    (hfi : IntegrableOn f (⋃ n, s n) μ) :
-    Tendsto (fun i => ∫ᵛ x in s i, f x ∂[B; μ]) atTop (𝓝 (∫ᵛ x in ⋃ n, s n, f x ∂[B; μ])) := by
-  refine .of_neBot_imp fun hne ↦ ?_
-  have := (atTop_neBot_iff.mp hne).2
-  have hfi' : ∫⁻ x in ⋃ n, s n, ‖f x‖₊ ∂[B; μ] < ∞ := hfi.2
-  set S := ⋃ i, s i
-  have hSm : NullMeasurableSet S μ := MeasurableSet.iUnion_of_monotone h_mono hsm
-  have hsub {i} : s i ⊆ S := subset_iUnion s i
-  rw [← withDensity_apply₀ _ hSm] at hfi'
-  set ν := μ.withDensity (‖f ·‖ₑ) with hν
-  refine Metric.nhds_basis_closedBall.tendsto_right_iff.2 fun ε ε0 => ?_
-  lift ε to ℝ≥0 using ε0.le
-  have : ∀ᶠ i in atTop, ν (s i) ∈ Icc (ν S - ε) (ν S + ε) :=
-    tendsto_measure_iUnion_atTop h_mono (ENNReal.Icc_mem_nhds hfi'.ne (ENNReal.coe_pos.2 ε0).ne')
-  filter_upwards [this] with i hi
-  rw [mem_closedBall_iff_norm', ← setIntegral_diff₀ (hsm i) hfi hsub, ← coe_nnnorm,
-    NNReal.coe_le_coe, ← ENNReal.coe_le_coe]
-  refine (enorm_integral_le_lintegral_enorm _).trans ?_
-  have hsm' : NullMeasurableSet (s i) ν := (hsm i).mono_ac (withDensity_absolutelyContinuous ..)
-  rw [← withDensity_apply₀ _ (hSm.diff (hsm _)), ← hν, measure_diff hsub hsm']
-  exacts [tsub_le_iff_tsub_le.mp hi.1,
-    (hi.2.trans_lt <| ENNReal.add_lt_top.2 ⟨hfi', ENNReal.coe_lt_top⟩).ne]
-
-theorem tendsto_setIntegral_of_monotone
-    {ι : Type*} [Preorder ι] [(atTop : Filter ι).IsCountablyGenerated]
-    {s : ι → Set X} (hsm : ∀ i, MeasurableSet (s i)) (h_mono : Monotone s)
-    (hfi : IntegrableOn f (⋃ n, s n) μ) :
-    Tendsto (fun i => ∫ᵛ x in s i, f x ∂[B; μ]) atTop (𝓝 (∫ᵛ x in ⋃ n, s n, f x ∂[B; μ])) :=
-  tendsto_setIntegral_of_monotone₀ (hsm · |>.nullMeasurableSet) h_mono hfi
-
-theorem tendsto_setIntegral_of_antitone
-    {ι : Type*} [Preorder ι] [(atTop : Filter ι).IsCountablyGenerated]
-    {s : ι → Set X} (hsm : ∀ i, MeasurableSet (s i)) (h_anti : Antitone s)
-    (hfi : ∃ i, IntegrableOn f (s i) μ) :
-    Tendsto (fun i ↦ ∫ᵛ x in s i, f x ∂[B; μ]) atTop (𝓝 (∫ᵛ x in ⋂ n, s n, f x ∂[B; μ])) := by
-  refine .of_neBot_imp fun hne ↦ ?_
-  have := (atTop_neBot_iff.mp hne).2
-  rcases hfi with ⟨i₀, hi₀⟩
-  suffices Tendsto (∫ᵛ x in s i₀, f x ∂[B; μ] - ∫ᵛ x in s i₀ \ s ·, f x ∂[B; μ]) atTop
-      (𝓝 (∫ᵛ x in s i₀, f x ∂[B; μ] - ∫ᵛ x in ⋃ i, s i₀ \ s i, f x ∂[B; μ])) by
-    convert this.congr' <| (eventually_ge_atTop i₀).mono fun i hi ↦ ?_
-    · rw [← diff_iInter, setIntegral_diff _ hi₀ (iInter_subset _ _), sub_sub_cancel]
-      exact .iInter_of_antitone h_anti hsm
-    · rw [setIntegral_diff (hsm i) hi₀ (h_anti hi), sub_sub_cancel]
-  apply tendsto_const_nhds.sub
-  refine tendsto_setIntegral_of_monotone (by measurability) ?_ ?_
-  · exact fun i j h ↦ diff_subset_diff_right (h_anti h)
-  · rw [← diff_iInter]
-    exact hi₀.mono_set diff_subset
-
-theorem hasSum_integral_iUnion_ae {ι : Type*} [Countable ι] {s : ι → Set X}
-    (hm : ∀ i, NullMeasurableSet (s i) μ) (hd : Pairwise (AEDisjoint μ on s))
-    (hfi : IntegrableOn f (⋃ i, s i) μ) :
+theorem hasSum_setIntegral_iUnion {ι : Type*} [Countable ι] {s : ι → Set X}
+    (hm : ∀ i, MeasurableSet (s i)) (hd : Pairwise (Disjoint on s))
+    (hfi : μ.IntegrableOn f B (⋃ i, s i)) :
     HasSum (fun n => ∫ᵛ x in s n, f x ∂[B; μ]) (∫ᵛ x in ⋃ n, s n, f x ∂[B; μ]) := by
   simp only [IntegrableOn, Measure.restrict_iUnion_ae hd hm] at hfi ⊢
   exact hasSum_integral_measure hfi
+
+#exit
 
 theorem hasSum_integral_iUnion {ι : Type*} [Countable ι] {s : ι → Set X}
     (hm : ∀ i, MeasurableSet (s i)) (hd : Pairwise (Disjoint on s))
