@@ -20,10 +20,6 @@ public import Mathlib.RingTheory.Length
 
 section FindHome
 
-/-Ok. In the end the idea for this exact sequence was neither to do Bourbaki or induction,
-but to telescope. Live and learn. -/
-
-/- Should certainly be generalized. In fact I'm surprised it's not already in Mathlib. -/
 lemma sum_neg_one_pow_eq_zero_of_telescope {n : ℕ} (d : Fin (n + 3) → ℤ) (r : Fin (n + 2) → ℤ)
     (h_first : d 0 = r 0) (h_mid : ∀ i : Fin (n + 1), d i.succ.castSucc = r i.castSucc + r i.succ)
     (h_last : d (Fin.last _) = r (Fin.last _)) : ∑ i, (-1) ^ i.val * d i = 0 := by
