@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2025 Joël Riou. All rights reserved.
+Copyright (c) 2026 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
@@ -92,8 +92,7 @@ variable {κ}
 /-- The embedding of the category of `κ`-filtered
 partially ordered types in the category of partially
 ordered types. -/
-abbrev CardinalFilteredPoset.ι :
-    CardinalFilteredPoset κ ⥤ PartOrdEmb :=
+abbrev CardinalFilteredPoset.ι : CardinalFilteredPoset κ ⥤ PartOrdEmb :=
   ObjectProperty.ι _
 
 namespace CardinalFilteredPoset
@@ -272,11 +271,10 @@ protected lemma isCardinalPresentable_iff (J : CardinalFilteredPoset κ) :
   refine ⟨fun _ ↦ ?_, fun hJ ↦ isCardinalPresentable_of_hasCardinalLT_of_le _ hJ (le_refl _)⟩
   have : IsCardinalPresentable J.cocone.pt κ := by assumption
   obtain ⟨X, f, hf⟩ := IsCardinalPresentable.exists_hom_of_isColimit κ (isColimitCocone J) (𝟙 _)
-  dsimp at f
   have : IsSplitMono f := ⟨_, hf⟩
   have : IsSplitMono ((forget _).map f) := by
     -- `infer_instance` fails
-    apply CategoryTheory.instIsSplitMonoMap
+    exact instIsSplitMonoMap _ _
   exact X.2.1.of_injective f
     ((mono_iff_injective ((forget _).map f)).1 inferInstance)
 
