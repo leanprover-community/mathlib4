@@ -3,11 +3,10 @@ Copyright (c) 2024 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Floris van Doorn
 -/
-module
 
-public import Mathlib.Geometry.Manifold.Algebra.SMul
-public import Mathlib.Geometry.Manifold.ContMDiff.NormedSpace
-public import Mathlib.Geometry.Manifold.MFDeriv.SpecificFunctions
+import Mathlib.Geometry.Manifold.Algebra.SMul
+import Mathlib.Geometry.Manifold.ContMDiff.NormedSpace
+import Mathlib.Geometry.Manifold.MFDeriv.SpecificFunctions
 
 /-! ## Equivalence of manifold differentiability with the basic definition for functions between
 vector spaces
@@ -287,7 +286,7 @@ lemma HasMFDerivAt.smul
     HasMFDerivAt% (f • g) x (f x • g'_ + gx ∘L f') := by
   constructor
   · exact hs.1.smul hg.1
-  · simpa using! hs.2.smul hg.2
+  · simpa using hs.2.smul hg.2
 
 theorem MDifferentiableWithinAt.smul
     (hf : MDiffAt[s] f x) (hg : MDiffAt[s] g x) :
@@ -423,97 +422,26 @@ open Doc
   let doc ← realizeGlobalConstNoOverloadWithInfo n
   let some docStr ← findDocString? (← getEnv) doc
     | throwError "No doc-string for `{.ofConstName doc}`"
-  -- Future: once there is a better auto-converter between markdown and verso doc-strings,
-  -- rewrite this code accordingly!
-  -- Perhaps, it could be nice to write .verso here.
+  -- FIXME: pass this as markdown, so inline code is highlighted properly here.
+  -- Once there is a better auto-converter between markdown and verso doc-strings,
+  -- this will be easy. (Also, it could be nice to be able to write .verso here.)
   return .para #[.text docStr]
+
+-- XXX: this only works in non-modules, because of a core bug whose fix landed on May 21, 2026
 
 set_option doc.verso true in
 set_option doc.verso.suggestions false in
 /-- `d% f x` (scoped to the `Manifold` namespace) elaborates to `mvfderiv I J f x`,
 trying to determine `I` and `J` from the local context.
 
-{foobar} -/
+{foobar mvfderiv} -/
 -- goal: now insert the doc-string of mvfderiv
 scoped elab:max "d%" ppSpace t:term:arg : term => do
   let e ← ensureIsFunction <| ← Term.elabTerm t none
   let (srcI, _tgtI) ← findModels e none
   mkAppM ``mvfderiv #[srcI, e]
 
-open Bundle PrettyPrinter Delaborator SubExpr
-
-/-- Delaborator for `mvfderiv`. -/
--- There is no need to special-case any arguments which could use the T% s elaborator:
--- the argument to `mvfderiv` is a vector-valued function, which a map to a total space
--- can never be.
-@[app_delab mvfderiv] meta def delabMVFDeriv : Delab := do
-  whenPPOption getPPNotation do
-  withOverApp 15 do
-  let fs ← withAppArg delab
-  `(d% $fs) >>= annotateGoToSyntaxDef
-
-section tests
-
-variable {f : M → 𝕜}
-
-/-- info: d% f : (x : M) → TangentSpace I x →L[𝕜] 𝕜 -/
-#guard_msgs in
-#check mvfderiv I f
-/-- info: d% f : (x : M) → TangentSpace I x →L[𝕜] 𝕜 -/
-#guard_msgs in
-#check d% f
-
-/-- info: d% f x : TangentSpace I x →L[𝕜] 𝕜 -/
-#guard_msgs in
-#check mvfderiv I f x
-
-/-- info: d% f x : TangentSpace I x →L[𝕜] 𝕜 -/
-#guard_msgs in
-#check d% f x
-
-end tests
+variable {f' : M → 𝕜}
+#check d% f'
 
 end Manifold
-
-lemma mvfderiv_const (c : F) {x : M} : d% (fun _ : M ↦ c) x = 0 := by
-  simp [mvfderiv, mfderiv_const]
-
-@[simp, to_fun mvfderiv_fun_add]
-lemma mvfderiv_add {g g' : M → F} {x : M} (hg : MDiffAt g x) (hg' : MDiffAt g' x) :
-    d% (g + g') x = d% g x + d% g' x := by
-  simp [mvfderiv, mfderiv_add hg hg']
-  rfl
-@[deprecated (since := "2026-05-17")] alias extDerivFun_add := mvfderiv_add
-
-@[simp, to_fun mvfderiv_fun_sub]
-lemma mvfderiv_sub {g g' : M → F} {x : M} (hg : MDiffAt g x) (hg' : MDiffAt g' x) :
-    d% (g - g') x = d% g x - d% g' x := by
-  simp [mvfderiv, mfderiv_sub hg hg']
-  rfl
-
-@[simp, to_fun mvfderiv_fun_neg]
-lemma mvfderiv_neg {g : M → F} {x : M} :
-    d% (-g) x = -d% g x := by
-  simp [mvfderiv, mfderiv_neg]
-  rfl
-
-@[simp, to_fun mvfderiv_fun_smul]
-lemma mvfderiv_smul {x : M} {a : M → 𝕜} (ha : MDiffAt a x) {g : M → F} (hg : MDiffAt g x) :
-    d% (a • g) x = a x • d% g x + (d% a x).smulRight (g x) := by
-  ext v
-  simp [mvfderiv, -Pi.smul_apply', fromTangentSpace_mfderiv_smul_apply ha hg]
-
-@[simp, to_fun mvfderiv_fun_mul]
-lemma mvfderiv_mul {f g : M → 𝕜} {x : M} (hf : MDiffAt f x) (hg : MDiffAt g x) :
-    d% (f * g) x = f x • d% g x + (g x) • (d% f x) := by
-  ext v
-  simp only [mvfderiv, ← smul_eq_mul, mfderiv_smul hf hg]
-  simp [mul_comm _ (g x)]
-
-@[simp]
-lemma mvfderiv_zero {x : M} : d% (0 : M → F) x = 0 := by
-  have : d% (0 : M → F) x + d% (0 : M → F) x = d% (0 : M → F) x := by
-    rw [← mvfderiv_add (by exact mdifferentiable_const ..) (by exact mdifferentiable_const ..)]
-    simp
-  simpa using this
-@[deprecated (since := "2026-05-17")] alias extDerivFun_zero := mvfderiv_zero
