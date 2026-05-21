@@ -58,6 +58,19 @@ lemma inter_preimageSupport_nonempty_finite (hf : IsSpectralMap f) (hW : IsOpen 
 
 variable [PrespectralSpace Y]
 
+-- move to an earlier file
+@[simp]
+lemma Function.locallyFinsuppWithin_toFun_eq_coe {X : Type*} [TopologicalSpace X] {U : Set X}
+    (c : locallyFinsuppWithin U R) : c.toFun = ⇑c := by
+  rfl
+
+-- move to an earlier file
+@[simp]
+lemma Function.locallyFinsuppWithin_coe_mk {X Y : Type*} [TopologicalSpace X] [Zero Y] {U : Set X}
+    (f : X → Y) (h : f.support ⊆ U) (h' : ∀ z ∈ U, ∃ t ∈ 𝓝 z, Set.Finite (t ∩ f.support)) :
+    ⇑(Function.locallyFinsuppWithin.mk f h h') = f := by
+  rfl
+
 variable (f) in
 /--
 The pushforward of a function `c` of locally finite support
@@ -67,44 +80,42 @@ functions as algebraic cycles (in this case the weight function would be as desc
 02R4, where the weight function is the degree of the corresponding extension of residue fields
 if the dimensions of the points correspond, and is zero otherwise).
 -/
-@[simps]
 noncomputable
-def map (hf : IsSpectralMap f) (hf' : HasCompactFibers f) (c : locallyFinsupp X R) :
-    Function.locallyFinsupp Y R where
-  toFun z := ∑ x ∈ (c.locallyFiniteSupport.finite_inter_support_of_isCompact <| hf' z).toFinset,
-    (c x) * w x
+def map (hf : IsSpectralMap f) (c : locallyFinsupp X R) : Function.locallyFinsupp Y R where
+  toFun z := ∑ᶠ x ∈ f ⁻¹' {z}, c x * w x
   supportWithinDomain' := by simp
   supportLocallyFiniteWithinDomain' y _ := by
-    obtain ⟨W, hW⟩ : ∃ W : TopologicalSpace.Opens Y, IsCompact W.1 ∧ y ∈ W := by
-      obtain ⟨U, hU⟩ := (PrespectralSpace.isTopologicalBasis (X := Y)).exists_subset_of_mem_open
-          (by simp : y ∈ ⊤) (by simp)
-      use ⟨U, hU.1.1⟩
-      exact ⟨hU.1.2, hU.2.1⟩
-    use W
-    refine ⟨IsOpen.mem_nhds (Opens.isOpen W) hW.2, ?_⟩
-    suffices (W.carrier ∩ {z : Y | (f ⁻¹' {z} ∩ support c.toFun).Nonempty}).Finite by
-      apply Finite.subset this
-      apply inter_subset_inter_right
-      intro x
-      contrapose!
-      simp +contextual only [mem_setOf_eq, not_nonempty_iff_eq_empty, mem_support,
-        toFinite_toFinset, toFinset_empty, Finset.sum_empty, ne_eq, not_true_eq_false,
-        not_false_eq_true, implies_true]
-    exact inter_preimageSupport_nonempty_finite c hf W.2 hW.1
+    obtain ⟨U, hU⟩ := (PrespectralSpace.isTopologicalBasis (X := Y)).exists_subset_of_mem_open
+      (by simp : y ∈ ⊤) (by simp)
+    refine ⟨U, IsOpen.mem_nhds hU.1.1 hU.2.1, ?_⟩
+    refine (inter_preimageSupport_nonempty_finite c (hf.2 hU.1.1 hU.1.2)).subset
+      (inter_subset_inter_right _ fun y hy ↦ ?_)
+    obtain ⟨x, (hx : f x = y), h'⟩ := exists_ne_zero_of_finsum_mem_ne_zero hy
+    use x
+    grind [mem_support]
+
+@[simp]
+lemma map_apply (hf : IsSpectralMap f) (c : locallyFinsupp X R) (y : Y) :
+    map f w hf c y = ∑ᶠ x ∈ f ⁻¹' {y}, c x * w x :=
+  rfl
+
+lemma eq_finsetSum_of_hasCompactFibers (hf' : HasCompactFibers f) (y : Y) :
+    map f w hf c y =
+      ∑ x ∈ (c.locallyFiniteSupport.finite_inter_support_of_isCompact (hf' y)).toFinset,
+        c x * w x := by
+  simp only [map_apply, mem_preimage, mem_singleton_iff, Function.locallyFinsuppWithin_toFun_eq_coe]
+  apply finsum_cond_eq_sum_of_cond_iff
+  grind [Finite.mem_toFinset, mem_support]
 
 /--
 Pushforward preserves cycles of pure dimension `d` in the dimension grading.
 -/
-lemma map_homogeneous (s : Set X) (t : Set Y) (hc : c.support ⊆ s) (hf' : HasCompactFibers f)
+lemma map_homogeneous (s : Set X) (t : Set Y) (hc : c.support ⊆ s)
     (h : ∀ x : X, x ∈ s → w x ≠ 0 → f x ∈ t) :
-    (map f w hf hf' c).support ⊆ t := by
+    (map f w hf c).support ⊆ t := by
   intro y hy
-  simp only [map, Function.mem_support, ne_eq] at hy
-  obtain ⟨x, hx⟩ := Finset.exists_ne_zero_of_sum_ne_zero hy
-  simp only [Finite.mem_toFinset, mem_inter_iff, mem_preimage, mem_singleton_iff,
-    Function.mem_support, ne_eq] at hx
-  specialize h x (hc hx.1.2)
-  grind
+  obtain ⟨x, (rfl : f x = y), h'⟩ := exists_ne_zero_of_finsum_mem_ne_zero hy
+  grind [mem_support]
 
 /--
 The pushforward of `c` along the identity morphism is `c` as long as the weight function is `1`
@@ -113,13 +124,9 @@ condition that the weight function must be trivial here is less strange than it 
 -/
 @[simp]
 lemma map_id [PrespectralSpace X] (hw : ∀ z : X, w z = 1) :
-    map id w isSpectralMap_id (by simp [HasCompactFibers]) c = c := by
-  classical
-  ext z
-  change ∑ x ∈ _, c x * w x = c z
-  rw [show (Set.Finite.toFinset _ : Finset X) = if c z = 0 then ∅ else {z} from by
-    ext; split_ifs <;> aesop]
-  split_ifs with h <;> simp [hw, h]
+    map id w isSpectralMap_id c = c := by
+  ext
+  simp [map, hw]
 
 end map
 end Function.locallyFinsupp
