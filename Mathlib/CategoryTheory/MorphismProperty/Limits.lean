@@ -1012,10 +1012,10 @@ instance (P : MorphismProperty C) [P.HasPullbacks] (P' : MorphismProperty C) :
 
 lemma hasPullbacksAgainst_top_iff
     (P : MorphismProperty C) :
-    P.IsStableUnderBaseChangeAgainst ⊤ ↔ P.IsStableUnderBaseChange where
+    P.HasPullbacksAgainst ⊤ ↔ P.HasPullbacks where
   mp h :=
-    ⟨fun {_ _ _ _} _ _ _ _ h' h'' ↦
-      (h.isStableUnderBaseChangeAlong _ (by tauto)).of_isPullback h' h''⟩
+    ⟨fun _ h' ↦
+      (h.hasPullbacksAlong _ (by tauto)).hasPullback _ h'⟩
   mpr _ := inferInstance
 
 lemma _root_.CategoryTheory.Limits.hasPullback_ofHasPullbacksAgainst
@@ -1060,10 +1060,10 @@ instance (P : MorphismProperty C) [P.HasPushouts] (P' : MorphismProperty C) :
 
 lemma hasPushoutsAgainst_top_iff
     (P : MorphismProperty C) :
-    P.IsStableUnderCobaseChangeAgainst ⊤ ↔ P.IsStableUnderCobaseChange where
+    P.HasPushoutsAgainst ⊤ ↔ P.HasPushouts where
   mp h :=
-    ⟨fun {_ _ _ _} _ _ _ _ h' h'' ↦
-      (h.isStableUnderCobaseChangeAlong _ (by tauto)).of_isPushout h' h''⟩
+    ⟨fun _ h' ↦
+      (h.hasPushoutsAlong _ (by tauto)).hasPushout _ h'⟩
   mpr _ := inferInstance
 
 lemma _root_.CategoryTheory.Limits.hasPushout_ofHasPushoutsAgainst
