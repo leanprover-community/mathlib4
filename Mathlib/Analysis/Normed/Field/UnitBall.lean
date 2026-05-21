@@ -35,6 +35,10 @@ def Subsemigroup.unitBall (𝕜 : Type*) [NonUnitalSeminormedRing 𝕜] : Subsem
     rw [mem_ball_zero_iff] at *
     exact (norm_mul_le _ _).trans_lt (mul_lt_one_of_nonneg_of_lt_one_left (norm_nonneg _) hx hy.le)
 
+@[simp] lemma Subsemigroup.mem_unitBall (𝕜 : Type*) [NonUnitalSeminormedRing 𝕜] {x : 𝕜} :
+    x ∈ Subsemigroup.unitBall 𝕜 ↔ ‖x‖ < 1 := by
+  simp [Subsemigroup.unitBall]
+
 instance Metric.unitBall.instSemigroup [NonUnitalSeminormedRing 𝕜] : Semigroup (ball (0 : 𝕜) 1) :=
   inferInstanceAs <| Semigroup (Subsemigroup.unitBall 𝕜)
 
