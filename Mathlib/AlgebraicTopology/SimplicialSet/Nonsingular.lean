@@ -8,9 +8,9 @@ module
 public import Mathlib.AlgebraicTopology.SimplicialSet.ProdStdSimplex
 
 /-!
-# Nonsinguler simplicial sets
+# Nonsingular simplicial sets
 
-In this file, we introduce a typeclass `SSet.Nonsinguler` for a
+In this file, we introduce a typeclass `SSet.Nonsingular` for a
 simplicial set `X : SSet`: it says that for any non-degenerate simplex
 `x : X _⦋n⦌`, the corresponding morphism `Δ[n] ⟶ X` is a monomorphism.
 This notion is useful in the context of the study of the subdivision
