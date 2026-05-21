@@ -39,7 +39,7 @@ namespace SSet
 variable {X Y : SSet.{u}}
 
 variable (X) in
-/-- A simplicial set `X` is nonsingular like if for any
+/-- A simplicial set `X` is nonsingular if for any
 nondegenerate simplex `x` (of dimension `n`), the corresponding
 morphism `Δ[n] ⟶ X` is a monomorphism. -/
 @[kerodon 02MG]
