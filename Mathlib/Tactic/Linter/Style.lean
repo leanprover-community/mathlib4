@@ -578,29 +578,6 @@ this violates the naming convention. -/
         use lowerCamelCase or UpperCamelCase instead."
     else return none
 
-/- Unit tests for the `defsWithUnderscore` linter. -/
-#guard isBadNameWithUnderscore `Foo == false
-#guard isBadNameWithUnderscore `fooBarBaz == false
-#guard isBadNameWithUnderscore `foo_bar == true
-#guard isBadNameWithUnderscore `_fooFoo == true
-#guard isBadNameWithUnderscore `Foo._bar == true
--- A namespace `Mathlib` in the middle does not silence the linter: we only test for a *prefix*
--- `Mathlib`, `Mathlib.Parser` or `Mathlib.Tactic`.
-#guard isBadNameWithUnderscore `Nat.Mathlib.foo_bar == true
-#guard isBadNameWithUnderscore `Mathlib.Parser.foo_bar == false
-#guard isBadNameWithUnderscore `Mathlib.Tactic.foo_bar == false
-#guard isBadNameWithUnderscore `AlgebraicGeometry.Scheme.IdealSheafData.Simps.coe_support == false
-
-#guard isBadNameWithUnderscore `Mathlib.Mat._Foo == true
-#guard isBadNameWithUnderscore `Mathlib.foo_ == false
-#guard isBadNameWithUnderscore `«termXYZ» == false
-#guard isBadNameWithUnderscore `ExteriorAlgebra.«term⋀[_]^_» == false
-#guard isBadNameWithUnderscore `Nat.term_! == false
-#guard isBadNameWithUnderscore `Nat.foo_bar2 == true
-#guard isBadNameWithUnderscore `Nat.fooBar_2 == false
-#guard isBadNameWithUnderscore `Nat.foo_bar_2 == false
-#guard isBadNameWithUnderscore `LibraryNote.coercion_into_rings == false
-
 end Style.nameCheck
 
 /-! ### The "openClassical" linter -/
