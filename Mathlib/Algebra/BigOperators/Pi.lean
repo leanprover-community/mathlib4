@@ -241,10 +241,9 @@ open Classical in
 @[to_additive (attr := simp, grind =)]
 theorem prod_apply {ι : Type*} (s : Finset ι) (f : ι → F) (x : α) :
     (∏ i ∈ s, f i) x = ∏ i ∈ s, f i x := by
-  apply Finset.induction_on (motive := fun s ↦ (∏ i ∈ s, f i) x = ∏ i ∈ s, f i x)
-  · simp
-  · intro i s his h
-    simp [his, h]
+  induction s using Finset.induction_on with
+  | empty => simp
+  | insert i s his h => simp [his, h]
 
 @[to_additive (attr := norm_cast)]
 theorem FunLike.coe_prod {ι : Type*} (s : Finset ι) (f : ι → F) :
