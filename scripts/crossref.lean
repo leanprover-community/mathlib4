@@ -3,18 +3,19 @@ Copyright (c) 2026 Lean FRO, LLC. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Lean.Data.Json
+import Lean
 import Std.Data.HashMap
+import Mathlib.Tactic.CrossRefAttribute
 
 /-!
 # Cross-reference tag tooling
 
-A single standalone script supporting review of PRs that add `@[stacks ...]`,
-`@[kerodon ...]`, or `@[wikidata ...]` attributes. It exposes two subcommands:
+Supports review of PRs that add `@[stacks ...]`, `@[kerodon ...]`, or
+`@[wikidata ...]` attributes. Two subcommands:
 
 ```sh
 lake env lean --run scripts/crossref.lean snippet <db> <tag>...
-lake env lean --run scripts/crossref.lean extract [--file <path>...] [--diff <range>] [--db <db>]
+lake env lean --run scripts/crossref.lean check --diff <range> --tsv <path>
 ```
 
 * `snippet` fetches a one-line `(title, description)` for each given tag from
@@ -26,19 +27,23 @@ lake env lean --run scripts/crossref.lean extract [--file <path>...] [--diff <ra
   When `CROSSREF_CACHE_DIR` is set, responses are memoised per
   `(database, tag)` so repeat lookups are instant.
 
-* `extract` walks a `.lean` file (or the added lines of a git diff range) and
-  emits TSV of every cross-reference attribute it finds, paired with the
-  declaration it decorates. A byte-level scanner correctly skips string
-  literals and line/block comments, handles multi-attribute blocks
-  (`@[simp, stacks 01AB]`), multi-line attribute blocks, doc comments between
-  attribute and declaration, and modifier keywords (`private`,
-  `noncomputable`, …). Signatures are collapsed to one line for downstream
-  consumption.
+* `check` runs after a Mathlib build (the CI lint phase), loads the
+  elaborated environment via `withImportModules`, walks
+  `Mathlib.CrossRef.tagExt`, and emits a TSV of every cross-reference tag
+  whose source file is touched by the given git diff range. The privileged
+  companion workflow consumes the TSV, fetches snippets, and constructs
+  the bot comment in trusted code, so `check` never makes network calls.
 
-The script imports only Lean core (plus `Std.Data.HashMap` for batching), so
-it can be invoked directly with `lake env lean --run` without any Mathlib
-build. The CI workflow `crossref_review.yml` and the LSP widget in
-`Mathlib/Tactic/Widget/CrossRefHover.lean` drive it.
+`check` depends on Mathlib being built (the post-build CI runner already
+satisfies this). It uses `importModules (loadExts := true)` rather than the
+`withImportModules` wrapper, because the latter passes `loadExts := false`
+and would leave `tagExt` empty for imported modules. The state we read
+lives in regular `.olean` files (the `tagExt` persistent extension is
+serialised there, not in `.olean.server`).
+
+The LSP widget in `Mathlib/Tactic/Widget/CrossRefHover.lean` does not use
+this script; it calls the fetch logic in
+`Mathlib/Tactic/CrossRef/Fetch.lean` directly.
 -/
 
 open Lean
@@ -419,530 +424,121 @@ def snippetMain (args : List String) : IO UInt32 := do
     return 0
   | _ => snippetUsage; return 64
 
-/-! ## `extract` subcommand: find cross-reference attributes
 
-For one or more Lean source files (or for the added lines of a git diff range),
-emit one TSV record per `@[stacks ...]`, `@[kerodon ...]`, or `@[wikidata ...]`
-attribute found:
+/-! ## `check` subcommand: enumerate cross-reference tags in a built Mathlib
+
+Loads the elaborated Mathlib environment, walks `Mathlib.CrossRef.tagExt`, and
+emits a TSV of every `@[stacks ...]` / `@[kerodon ...]` / `@[wikidata ...]`
+tag whose declaration lives in a file touched by the given git diff range.
+
+Unlike the old text-based `extract` subcommand, this one **requires Mathlib
+to be built** (`.olean.server` files included) — it is meant to run in CI's
+post-build lint phase, where the build is already complete. The privileged
+companion workflow consumes the TSV, fetches snippets server-side, and
+constructs the bot comment in trusted code, so this subcommand never makes
+network calls and never decides whether a tag is "missing".
+
+Output (one row per match, tab-separated):
 
 ```
-<database>\t<file>\t<line>\t<tag>\t<comment>\t<decl_kind>\t<decl_name>\t<sig_first_line>
+<database>\t<tag>\t<declName>\t<file>\t<comment>
 ```
 
-Implementation: we scan each file character-by-character, tracking whether we
-are inside a string literal or a line/block comment so that an `@[` inside
-those contexts is correctly ignored. When we exit a real `@[...]` block, we
-inspect its contents for `wikidata`/`stacks`/`kerodon` clauses, then scan
-forward past doc comments, further attribute blocks, and modifier keywords
-(`private`, `noncomputable`, …) to find the declaration the attribute decorates
-and capture its signature.
+Exit codes:
+* `0` — extraction succeeded (TSV may be empty).
+* `1` — extraction error (e.g. couldn't load Mathlib, git diff failed).
 
-This is deliberately a text-only tool: no Lean elaboration runs, no Mathlib
-build is required. That's what lets the companion CI workflow operate on PR
-files as data, without executing PR code under a privileged GitHub token.
+Usage:
+```sh
+lake env lean --run scripts/crossref.lean check \
+  --diff origin/master...HEAD \
+  --tsv crossref-added.tsv
+```
 -/
 
-/-! ### Tokenisation -/
-
-/-- Reader state. We don't try to fully tokenise the file — we only need to
-distinguish "outside everything" from "inside a context that can hide an `@[`",
-so that `@[wikidata Q42]` appearing in a string literal or a comment is
-correctly ignored. -/
-inductive Mode where
-  /-- Outside strings/comments. -/
-  | normal
-  /-- Inside a string literal `"…"`; the `Bool` is "previous char was `\`". -/
-  | str (escaping : Bool)
-  /-- Inside a `-- …` line comment. -/
-  | lineComment
-  /-- Inside a `/- … -/` block comment of the given nesting depth. -/
-  | blockComment (depth : Nat)
-  deriving BEq
-
-/-- Source span by 1-based `(line, column)` offsets. -/
-structure SrcPos where
-  line : Nat
-  col : Nat
-  deriving Inhabited
-
-/-- One `@[...]` block found in a source file. -/
-structure AttrBlock where
-  /-- Position of the `@` that opens the block. -/
-  start : SrcPos
-  /-- Byte offset where the closing `]` ends. Used as the starting point for
-  the "find the following declaration" pass. -/
-  endIdx : Nat
-  /-- The text between `@[` and `]` (not including the brackets themselves). -/
-  body : String
-  deriving Inhabited
-
-/-- Convert a byte slice of `src` back into a `String`, returning `""` on
-malformed UTF-8 (which should not happen for our inputs). -/
-def byteSlice (src : String) (lo hi : Nat) : String :=
-  let bs := src.toUTF8
-  let lo := min lo bs.size
-  let hi := min hi bs.size
-  String.fromUTF8? (bs.extract lo hi) |>.getD ""
-
-/-- Scan the source text and return every top-level `@[...]` attribute block,
-correctly skipping ones that appear inside strings or comments. We work over
-UTF-8 bytes: every interesting lexeme (`@`, `[`, `]`, `"`, `-`, `/`, `\n`) is
-ASCII, so byte-level scanning is correct for Unicode-rich Mathlib files. -/
-partial def collectAttrBlocks (src : String) : Array AttrBlock := Id.run do
-  let bs := src.toUTF8
-  let stepPosByte (p : SrcPos) (b : UInt8) : SrcPos :=
-    if b == 0x0a then { line := p.line + 1, col := 1 } else { p with col := p.col + 1 }
-  let mut out : Array AttrBlock := #[]
-  let mut i : Nat := 0
-  let mut pos : SrcPos := { line := 1, col := 1 }
-  let mut mode : Mode := .normal
-  while i < bs.size do
-    let b := bs.get! i
-    let nextB? : Option UInt8 := if i + 1 < bs.size then some (bs.get! (i + 1)) else none
-    match mode with
-    | .normal =>
-      if b == 0x22 then
-        mode := .str false; i := i + 1; pos := stepPosByte pos b
-      else if b == 0x2d && nextB? == some 0x2d then
-        mode := .lineComment; i := i + 2; pos := { pos with col := pos.col + 2 }
-      else if b == 0x2f && nextB? == some 0x2d then
-        mode := .blockComment 1; i := i + 2; pos := { pos with col := pos.col + 2 }
-      else if b == 0x40 && nextB? == some 0x5b then
-        let openPos := pos
-        let bodyStart := i + 2
-        let mut j := bodyStart
-        let mut innerPos : SrcPos := { pos with col := pos.col + 2 }
-        let mut depth : Nat := 1
-        let mut innerMode : Mode := .normal
-        while depth > 0 && j < bs.size do
-          let bb := bs.get! j
-          let nb? : Option UInt8 := if j + 1 < bs.size then some (bs.get! (j + 1)) else none
-          match innerMode with
-          | .normal =>
-            if bb == 0x22 then
-              innerMode := .str false; j := j + 1; innerPos := stepPosByte innerPos bb
-            else if bb == 0x2d && nb? == some 0x2d then
-              innerMode := .lineComment; j := j + 2
-              innerPos := { innerPos with col := innerPos.col + 2 }
-            else if bb == 0x2f && nb? == some 0x2d then
-              innerMode := .blockComment 1; j := j + 2
-              innerPos := { innerPos with col := innerPos.col + 2 }
-            else if bb == 0x5b then
-              depth := depth + 1; j := j + 1; innerPos := stepPosByte innerPos bb
-            else if bb == 0x5d then
-              depth := depth - 1; j := j + 1; innerPos := stepPosByte innerPos bb
-            else
-              j := j + 1; innerPos := stepPosByte innerPos bb
-          | .str esc =>
-            if esc then
-              innerMode := .str false; j := j + 1; innerPos := stepPosByte innerPos bb
-            else if bb == 0x5c then
-              innerMode := .str true; j := j + 1; innerPos := stepPosByte innerPos bb
-            else if bb == 0x22 then
-              innerMode := .normal; j := j + 1; innerPos := stepPosByte innerPos bb
-            else
-              j := j + 1; innerPos := stepPosByte innerPos bb
-          | .lineComment =>
-            if bb == 0x0a then innerMode := .normal
-            j := j + 1; innerPos := stepPosByte innerPos bb
-          | .blockComment d =>
-            if bb == 0x2d && nb? == some 0x2f then
-              innerMode := if d == 1 then .normal else .blockComment (d - 1)
-              j := j + 2; innerPos := { innerPos with col := innerPos.col + 2 }
-            else if bb == 0x2f && nb? == some 0x2d then
-              innerMode := .blockComment (d + 1)
-              j := j + 2; innerPos := { innerPos with col := innerPos.col + 2 }
-            else
-              j := j + 1; innerPos := stepPosByte innerPos bb
-        if depth == 0 then
-          let body := byteSlice src bodyStart (j - 1)
-          out := out.push { start := openPos, endIdx := j, body }
-          i := j; pos := innerPos; mode := .normal
-        else
-          i := bs.size
-      else
-        i := i + 1; pos := stepPosByte pos b
-    | .str esc =>
-      if esc then mode := .str false
-      else if b == 0x5c then mode := .str true
-      else if b == 0x22 then mode := .normal
-      i := i + 1; pos := stepPosByte pos b
-    | .lineComment =>
-      if b == 0x0a then mode := .normal
-      i := i + 1; pos := stepPosByte pos b
-    | .blockComment d =>
-      if b == 0x2d && nextB? == some 0x2f then
-        mode := if d == 1 then .normal else .blockComment (d - 1)
-        i := i + 2; pos := { pos with col := pos.col + 2 }
-      else if b == 0x2f && nextB? == some 0x2d then
-        mode := .blockComment (d + 1)
-        i := i + 2; pos := { pos with col := pos.col + 2 }
-      else
-        i := i + 1; pos := stepPosByte pos b
-  return out
-
-/-! ### Parsing the contents of an `@[...]` block -/
-
-/-- A cross-reference clause found inside an `@[...]` block. -/
-structure Clause where
-  database : Database
-  tag : String
-  comment : String
-  deriving Inhabited
-
-/-- Split the body of an `@[...]` block on top-level commas. We don't track
-balanced brackets inside the body because Lean attribute syntax doesn't allow
-unbalanced `[`/`]` within an attribute instance; commas inside string literals
-are handled. -/
-def splitAttrInstances (body : String) : List String :=
-  let chars := body.toList
-  let rec go (cs : List Char) (mode : Mode) (acc : String) (out : List String) : List String :=
-    match cs with
-    | [] => (acc :: out).reverse
-    | c :: rest =>
-      match mode with
-      | .normal =>
-        match c, rest with
-        | ',', _ => go rest .normal "" (acc :: out)
-        | '"', _ => go rest (.str false) (acc.push c) out
-        | _, _ => go rest .normal (acc.push c) out
-      | .str esc =>
-        if esc then go rest (.str false) (acc.push c) out
-        else if c == '\\' then go rest (.str true) (acc.push c) out
-        else if c == '"' then go rest .normal (acc.push c) out
-        else go rest (.str false) (acc.push c) out
-      | _ => go rest mode (acc.push c) out
-  go chars .normal "" []
-
-/-- Strip a leading run of letters from `s`, returning `(word, rest)`. -/
-def takeIdent (s : String) : String × String :=
-  let cs := s.toList
-  let ident := String.ofList (cs.takeWhile (·.isAlpha))
-  let rest := String.ofList (cs.dropWhile (·.isAlpha))
-  (ident, rest)
-
-/-- Strip a leading run of `Char.isAlphanum` from `s`. -/
-def takeTag (s : String) : String × String :=
-  let cs := s.toList
-  let tag := String.ofList (cs.takeWhile (·.isAlphanum))
-  let rest := String.ofList (cs.dropWhile (·.isAlphanum))
-  (tag, rest)
-
-/-- If a leading `"…"` is present in `s`, return its contents and the remainder
-of the string. We honour `\"` and `\\` escapes. -/
-def takeString (s : String) : Option (String × String) :=
-  let cs := s.toList
-  match cs with
-  | '"' :: rest =>
-    let rec go : List Char → String → Option (String × List Char)
-      | [], _ => none
-      | '\\' :: c :: rest, acc => go rest (acc.push c)
-      | '"' :: rest, acc => some (acc, rest)
-      | c :: rest, acc => go rest (acc.push c)
-    match go rest "" with
-    | none => none
-    | some (contents, rest') => some (contents, String.ofList rest')
-  | _ => none
-
-/-- Try to parse one attribute instance as a cross-reference clause. The leading
-keyword is matched against `Database.ofString?`, so adding a new database to
-the `Database` enum automatically picks it up here. -/
-def parseClause (attrText : String) : Option Clause :=
-  let trimmed := attrText.trimAscii.toString
-  let (kw, rest) := takeIdent trimmed
-  match Database.ofString? kw with
-  | none => none
-  | some db =>
-    let rest := rest.trimAsciiStart.toString
-    let (tag, rest) := takeTag rest
-    if tag.isEmpty then none
-    else
-      let rest := rest.trimAsciiStart.toString
-      let comment := (takeString rest).map (·.1) |>.getD ""
-      some { database := db, tag, comment }
-
-/-! ### Finding the declaration that follows an attribute block -/
-
-/-- Lean declaration kinds we care about. -/
-def declKeywords : List String :=
-  ["theorem", "lemma", "def", "instance", "abbrev", "structure", "class", "opaque"]
-
-/-- Modifier keywords that may precede the declaration keyword. -/
-def modifierKeywords : List String :=
-  ["private", "protected", "noncomputable", "public", "scoped", "local",
-   "partial", "nonrec", "unsafe", "axiom"]
-
-/-- Convert a substring of `src` (by byte range) back into a string. -/
-def utf8Slice (src : String) (lo hi : Nat) : String :=
-  let bs := src.toUTF8
-  let lo := min lo bs.size
-  let hi := min hi bs.size
-  match String.fromUTF8? (bs.extract lo hi) with
-  | some s => s
-  | none => ""
-
-/-- Skip whitespace, line comments, block comments, doc comments, and other
-`@[...]` attribute blocks. Returns the byte index in `src` of the next
-non-trivial token, or `none` if EOF. -/
-partial def skipTrivia (src : String) (start : Nat) : Nat :=
-  let bs := src.toUTF8
-  let rec go (i : Nat) : Nat :=
-    if i ≥ bs.size then i
-    else
-      let c := bs.get! i
-      if c == 0x20 || c == 0x09 || c == 0x0a || c == 0x0d then go (i + 1)
-      else if c == 0x2d && i + 1 < bs.size && bs.get! (i + 1) == 0x2d then
-        let rec skipLine (j : Nat) :=
-          if j ≥ bs.size then j
-          else if bs.get! j == 0x0a then j + 1
-          else skipLine (j + 1)
-        go (skipLine (i + 2))
-      else if c == 0x2f && i + 1 < bs.size && bs.get! (i + 1) == 0x2d then
-        let rec skipBlock (j : Nat) (depth : Nat) : Nat :=
-          if j ≥ bs.size then j
-          else if j + 1 < bs.size && bs.get! j == 0x2d && bs.get! (j + 1) == 0x2f then
-            if depth == 1 then j + 2
-            else skipBlock (j + 2) (depth - 1)
-          else if j + 1 < bs.size && bs.get! j == 0x2f && bs.get! (j + 1) == 0x2d then
-            skipBlock (j + 2) (depth + 1)
-          else skipBlock (j + 1) depth
-        go (skipBlock (i + 2) 1)
-      else if c == 0x40 && i + 1 < bs.size && bs.get! (i + 1) == 0x5b then
-        let rec skipAttr (j : Nat) (depth : Nat) (inStr : Bool) (esc : Bool) : Nat :=
-          if j ≥ bs.size then j
-          else
-            let d := bs.get! j
-            if inStr then
-              if esc then skipAttr (j + 1) depth inStr false
-              else if d == 0x5c then skipAttr (j + 1) depth inStr true
-              else if d == 0x22 then skipAttr (j + 1) depth false false
-              else skipAttr (j + 1) depth true false
-            else if d == 0x22 then skipAttr (j + 1) depth true false
-            else if d == 0x5b then skipAttr (j + 1) (depth + 1) false false
-            else if d == 0x5d then
-              if depth == 1 then j + 1 else skipAttr (j + 1) (depth - 1) false false
-            else skipAttr (j + 1) depth false false
-        go (skipAttr (i + 2) 1 false false)
-      else i
-  go start
-
-/-- Read a leading identifier-like word (letters / digits / `_` / `'`). -/
-def readWord (src : String) (start : Nat) : String × Nat :=
-  let bs := src.toUTF8
-  let rec go (i : Nat) (acc : Array UInt8) : String × Nat :=
-    if i ≥ bs.size then
-      (String.fromUTF8? (.mk acc) |>.getD "", i)
-    else
-      let c := bs.get! i
-      if (c ≥ 0x41 && c ≤ 0x5a) || (c ≥ 0x61 && c ≤ 0x7a) ||
-         (c ≥ 0x30 && c ≤ 0x39) || c == 0x5f || c == 0x27 then
-        go (i + 1) (acc.push c)
-      else
-        (String.fromUTF8? (.mk acc) |>.getD "", i)
-  go start #[]
-
-/-- A located declaration header that an attribute block decorates. -/
-structure DeclHeader where
-  kind : String
-  name : String
-  sigFirstLine : String
-  deriving Inhabited
-
-/-- Read a Lean identifier (letters / digits / `_` / `'` / namespace `.`). -/
-def readIdent (src : String) (start : Nat) : String × Nat :=
-  let bs := src.toUTF8
-  let rec go (i : Nat) (acc : Array UInt8) : String × Nat :=
-    if i ≥ bs.size then
-      (String.fromUTF8? (.mk acc) |>.getD "", i)
-    else
-      let c := bs.get! i
-      if (c ≥ 0x41 && c ≤ 0x5a) || (c ≥ 0x61 && c ≤ 0x7a) ||
-         (c ≥ 0x30 && c ≤ 0x39) || c == 0x5f || c == 0x27 || c == 0x2e then
-        go (i + 1) (acc.push c)
-      else
-        (String.fromUTF8? (.mk acc) |>.getD "", i)
-  go start #[]
-
-/-- Skip past modifier keywords starting at `start`. -/
-partial def skipModifiers (src : String) (start : Nat) : Nat :=
-  let i := skipTrivia src start
-  let (w, j) := readWord src i
-  if modifierKeywords.contains w then skipModifiers src j else i
-
-/-- Collapse a multi-line signature into a single line for the TSV output. -/
-def collapseSignature (s : String) : String :=
-  let cs := s.toList
-  let collapse : Char → (String × Bool) → (String × Bool) := fun c (acc, prevWs) =>
-    let isWs := c == ' ' || c == '\t' || c == '\n' || c == '\r'
-    if isWs then
-      if prevWs || acc.isEmpty then (acc, true)
-      else (acc.push ' ', true)
-    else (acc.push c, false)
-  let (out, _) := cs.foldl (fun s c => collapse c s) ("", false)
-  out.trimAscii.toString
-
-/-- Locate the declaration that an attribute block at `startIdx` decorates. -/
-def findDecl (src : String) (startIdx : Nat) : Option DeclHeader := Id.run do
-  let i := skipModifiers src startIdx
-  let (kw, j) := readWord src i
-  if !declKeywords.contains kw then return none
-  let k := skipTrivia src j
-  let (name, _) := readIdent src k
-  if name.isEmpty then return none
-  let bs := src.toUTF8
-  let rec findEnd (p : Nat) : Nat :=
-    if p ≥ bs.size then p
-    else if p + 1 < bs.size && bs.get! p == 0x3a && bs.get! (p + 1) == 0x3d then p
-    else if p + 4 < bs.size
-        && bs.get! p == 0x77 && bs.get! (p + 1) == 0x68 && bs.get! (p + 2) == 0x65
-        && bs.get! (p + 3) == 0x72 && bs.get! (p + 4) == 0x65 then p
-    else if p + 1 < bs.size && bs.get! p == 0x0a && bs.get! (p + 1) == 0x0a then p
-    else findEnd (p + 1)
-  let endIdx := findEnd i
-  let sig := utf8Slice src i endIdx
-  some { kind := kw, name, sigFirstLine := collapseSignature sig }
-
-/-! ### Driving the extraction -/
-
-/-- One emitted record. -/
-structure Record where
-  database : Database
-  file : String
-  line : Nat
-  tag : String
-  comment : String
-  declKind : String
-  declName : String
-  sigFirstLine : String
-
-/-- TSV-friendly escape: replace tabs / newlines / carriage returns with a
-single space. -/
-def tsvEscape (s : String) : String :=
-  collapseSignature s
-
-def Record.emit (r : Record) : IO Unit := do
-  IO.println <| "\t".intercalate [
-    r.database.name, r.file, toString r.line, r.tag, tsvEscape r.comment,
-    r.declKind, r.declName, tsvEscape r.sigFirstLine]
-
-/-- Extract all records from a single file. -/
-def extractFromFile (path : String) : IO (Array Record) := do
-  let src ← IO.FS.readFile path
-  let blocks := collectAttrBlocks src
-  let mut out : Array Record := #[]
-  for block in blocks do
-    let clauses := (splitAttrInstances block.body).filterMap parseClause
-    if clauses.isEmpty then continue
-    let header := (findDecl src block.endIdx).getD
-      { kind := "?", name := "?", sigFirstLine := "?" }
-    for cl in clauses do
-      out := out.push {
-        database := cl.database
-        file := path
-        line := block.start.line
-        tag := cl.tag
-        comment := cl.comment
-        declKind := header.kind
-        declName := header.name
-        sigFirstLine := header.sigFirstLine
-      }
-  return out
-
-/-! ### Diff mode -/
-
-/-- One `(file, addedLines)` group parsed from `git diff --unified=0` output. -/
-structure DiffHunks where
-  file : String
-  addedLines : Array (Nat × Nat)
-
-/-- Parse `git diff --unified=0` output. -/
-def parseDiff (out : String) : Array DiffHunks := Id.run do
-  let mut result : Array DiffHunks := #[]
-  let mut current : Option DiffHunks := none
-  for line in out.splitOn "\n" do
-    if line.startsWith "+++ b/" then
-      if let some d := current then result := result.push d
-      current := some { file := (line.drop 6).toString, addedLines := #[] }
-    else if line.startsWith "@@" then
-      let after :=
-        line.splitOn "+" |>.tail? |>.getD [] |>.headD ""
-      let spec := after.splitOn " " |>.headD ""
-      let parts := spec.splitOn ","
-      let firstLine := (parts.headD "0").toNat?.getD 0
-      let count := (parts.tail?.getD [] |>.headD "1").toNat?.getD 1
-      if let some d := current then
-        current := some { d with addedLines := d.addedLines.push (firstLine, count) }
-    else continue
-  if let some d := current then result := result.push d
-  return result
-
-/-- Run `git diff --unified=0 <range> -- '*.lean'` and parse the result. -/
-def gitDiffLeanFiles (range : String) : IO (Array DiffHunks) := do
+open Lean Mathlib.CrossRef in
+/-- Run `git diff --name-only <range>` and return the set of changed paths.
+A failed `git diff` is a hard error: we deliberately do **not** turn it into
+an empty change set, because that would silently pass CI on PRs whose base
+hasn't been fetched. -/
+def gitChangedFiles (range : String) : IO (Std.HashSet String) := do
   let output ← IO.Process.output {
     cmd := "git"
-    args := #["diff", "--unified=0", range, "--", "*.lean"]
+    args := #["diff", "--name-only", range]
   }
   if output.exitCode != 0 then
-    IO.eprintln s!"git diff failed:\n{output.stderr}"
-    return #[]
-  return parseDiff output.stdout
+    throw <| .userError s!"`git diff --name-only {range}` failed (exit \
+      {output.exitCode}). Make sure the base ref is fetched.\n\
+      Stderr:\n{output.stderr}"
+  let mut s : Std.HashSet String := ∅
+  for line in output.stdout.splitOn "\n" do
+    let trimmed := line.trimAscii.toString
+    if !trimmed.isEmpty then s := s.insert trimmed
+  return s
 
-def recordInHunks (hunks : Array (Nat × Nat)) (line : Nat) : Bool :=
-  hunks.any fun (start, count) =>
-    line ≥ start && line < start + (max count 1)
+/-- Convert a module name like `` `Mathlib.Algebra.Foo `` to its source file
+path (e.g. `"Mathlib/Algebra/Foo.lean"`). Mathlib's layout is `Foo.Bar.Baz`
+→ `Foo/Bar/Baz.lean`. -/
+def moduleToFilePath (m : Name) : String :=
+  m.toString.replace "." "/" ++ ".lean"
 
-/-! ### CLI for `extract` -/
+open Lean Mathlib.CrossRef in
+/-- Emit one TSV record per tagged declaration whose source file is in the
+diff. We use `importModules (loadExts := true)` rather than the
+`withImportModules` wrapper because the latter bypasses env-extension
+loading and would leave `tagExt` empty for imported modules. -/
+unsafe def runCheck (diffRange : String) (tsvOut : System.FilePath) : IO UInt32 := do
+  initSearchPath (← findSysroot)
+  enableInitializersExecution
+  let changedFiles ← gitChangedFiles diffRange
+  let env ← importModules (loadExts := true) #[`Mathlib] {} 1024
+  let tagsPair : List Tag × Array (Array Tag) := PersistentEnvExtension.getState tagExt env
+  let allTags := tagsPair.2.flatten.appendList tagsPair.1
+  let mut rows : Array String := #[]
+  for tag in allTags do
+    let some mod := env.getModuleFor? tag.declName | continue
+    let file := moduleToFilePath mod
+    if changedFiles.contains file then
+      let escapedComment := tag.comment.replace "\t" " " |>.replace "\n" " "
+      rows := rows.push s!"{tag.database.name}\t{tag.tag}\t{tag.declName}\t{file}\t{escapedComment}"
+  IO.FS.writeFile tsvOut (String.intercalate "\n" rows.toList ++ if rows.isEmpty then "" else "\n")
+  IO.eprintln s!"Loaded {allTags.size} cross-reference tag(s) from Mathlib; \
+    {rows.size} fall within the diff."
+  return 0
 
-def extractUsage : IO Unit := do
+def checkUsage : IO Unit := do
   IO.eprintln "Usage:"
-  IO.eprintln "  lake env lean --run scripts/crossref.lean extract --file <path>..."
-  IO.eprintln "  lake env lean --run scripts/crossref.lean extract --diff <range> [--db <database>]"
+  IO.eprintln "  lake env lean --run scripts/crossref.lean check --diff <range> --tsv <path>"
 
-def parseExtractArgs (args : List String) :
-    IO (Option (Array (String × Option (Array (Nat × Nat))) × Option String)) := do
-  let mut files : Array (String × Option (Array (Nat × Nat))) := #[]
-  let mut dbFilter : Option String := none
+structure CheckArgs where
+  diff : Option String := none
+  tsv  : Option System.FilePath := none
+
+def parseCheckArgs (args : List String) : IO (Option CheckArgs) := do
+  let mut out : CheckArgs := {}
   let mut i := 0
   let argv := args.toArray
   while i < argv.size do
     let a := argv[i]!
-    if a == "--file" then
+    if a == "--diff" then
       if i + 1 ≥ argv.size then
-        IO.eprintln "--file expects a path"; return none
-      files := files.push (argv[i + 1]!, none)
+        IO.eprintln "--diff expects a value"; return none
+      out := { out with diff := some argv[i + 1]! }
       i := i + 2
-    else if a == "--diff" then
+    else if a == "--tsv" then
       if i + 1 ≥ argv.size then
-        IO.eprintln "--diff expects a range"; return none
-      let hunks ← gitDiffLeanFiles argv[i + 1]!
-      for h in hunks do files := files.push (h.file, some h.addedLines)
-      i := i + 2
-    else if a == "--db" then
-      if i + 1 ≥ argv.size then
-        IO.eprintln "--db expects a value"; return none
-      dbFilter := some argv[i + 1]!
+        IO.eprintln "--tsv expects a value"; return none
+      out := { out with tsv := some argv[i + 1]! }
       i := i + 2
     else
       IO.eprintln s!"unknown argument: {a}"; return none
-  return some (files, dbFilter)
+  return some out
 
-def extractMain (args : List String) : IO UInt32 := do
-  match ← parseExtractArgs args with
-  | none => extractUsage; return 64
-  | some (files, dbFilter) =>
-    if files.isEmpty then extractUsage; return 64
-    for (path, lineFilter) in files do
-      let exists? ← System.FilePath.pathExists path
-      if !exists? then
-        IO.eprintln s!"skipping non-existent file: {path}"
-        continue
-      let records ← extractFromFile path
-      for r in records do
-        if let some db := dbFilter then if r.database.name != db then continue
-        match lineFilter with
-        | none => r.emit
-        | some hunks => if recordInHunks hunks r.line then r.emit
-    return 0
+unsafe def checkMain (args : List String) : IO UInt32 := do
+  match ← parseCheckArgs args with
+  | none => checkUsage; return 64
+  | some { diff := some range, tsv := some path } => runCheck range path
+  | _ => checkUsage; return 64
 
 /-! ## Top-level dispatch -/
 
@@ -950,10 +546,10 @@ def usage : IO Unit := do
   IO.eprintln "Usage: lake env lean --run scripts/crossref.lean <subcommand> <args...>"
   IO.eprintln "Subcommands:"
   IO.eprintln "  snippet <database> <tag> [<tag>...]"
-  IO.eprintln "  extract [--file <path>...] [--diff <range>] [--db <database>]"
+  IO.eprintln "  check --diff <range> --tsv <path>"
 
-def main (args : List String) : IO UInt32 := do
+unsafe def main (args : List String) : IO UInt32 := do
   match args with
   | "snippet" :: rest => snippetMain rest
-  | "extract" :: rest => extractMain rest
+  | "check"   :: rest => checkMain rest
   | _ => usage; return 64

@@ -1,0 +1,158 @@
+name: Cross-reference tag review
+
+# Runs after a `build` / `build_fork` workflow finishes. The build's
+# `post_steps` job has already produced the `crossref-context` artifact
+# (a TSV of cross-reference tags whose declarations live in files the
+# PR touched, plus a small JSON with the PR number and head SHA). This
+# workflow downloads that artifact in a privileged `workflow_run`
+# context, fetches snippets, posts/updates/deletes the bot comment,
+# and exits non-zero on any tag that's missing upstream so the
+# resulting check status can gate merges.
+#
+# Privilege model: the post_steps job runs in the PR's permission
+# scope and writes only a machine-readable TSV. The TSV is parsed by
+# the orchestrator from a trusted mathlib-ci checkout; we never blindly
+# post Markdown that originated from PR code.
+
+on:
+  workflow_run:
+    workflows:
+      - "continuous integration"
+      - "continuous integration (mathlib forks)"
+    types:
+      - completed
+
+permissions:
+  contents: read
+  pull-requests: write
+  actions: read
+
+jobs:
+  crossref-review:
+    name: post-or-update-crossref-comment
+    if: github.repository == 'leanprover-community/mathlib4'
+    runs-on: ubuntu-latest
+    env:
+      # Until mathlib-ci#39's successor lands in mathlib-ci master, pin to
+      # the branch tip containing the new TSV-driven orchestrator.
+      MATHLIB_CI_REF: 78c7a682cd63d37135ec6a772c83d728819da874
+
+    steps:
+      - name: Download crossref artifact
+        id: download
+        uses: dawidd6/action-download-artifact@bf251b5aa9c2f7eeb574a96ee720e24f801b7c11 # v6
+        with:
+          name: crossref-context
+          run_id: ${{ github.event.workflow_run.id }}
+          path: artifact
+          if_no_artifact_found: warn
+
+      - name: Resolve PR number
+        id: pr
+        env:
+          HEAD_BRANCH: ${{ github.event.workflow_run.head_branch }}
+          HEAD_REPO: ${{ github.event.workflow_run.head_repository.full_name }}
+          HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          PR=""
+          # Preferred: the JSON embedded by post_steps.
+          if [ -f artifact/crossref-context.json ]; then
+            PR=$(jq -r '.pr_number // empty' artifact/crossref-context.json)
+            ART_SHA=$(jq -r '.head_sha // empty' artifact/crossref-context.json)
+            if [ -n "$ART_SHA" ] && [ "$ART_SHA" != "$HEAD_SHA" ]; then
+              echo "::warning::Artifact head_sha ($ART_SHA) differs from workflow_run head_sha ($HEAD_SHA)."
+            fi
+          fi
+          # Fallback: workflow_run.pull_requests[0].number (often unreliable).
+          if [ -z "$PR" ]; then
+            PR=$(jq -r '.workflow_run.pull_requests[0].number // empty' \
+              "$GITHUB_EVENT_PATH")
+          fi
+          # Last-resort fallback: gh pr list with head sha matching.
+          if [ -z "$PR" ] && [ -n "$HEAD_REPO" ] && [ -n "$HEAD_BRANCH" ]; then
+            PR=$(gh pr list --repo "${{ github.repository }}" \
+              --head "${HEAD_REPO%%/*}:${HEAD_BRANCH}" \
+              --state open --json number,headRefOid \
+              --jq "map(select(.headRefOid == \"$HEAD_SHA\")) | first | .number // empty")
+          fi
+          echo "number=$PR" >> "$GITHUB_OUTPUT"
+          if [ -z "$PR" ]; then
+            echo "Could not resolve PR number. Skipping."
+          else
+            echo "Resolved PR number: $PR"
+          fi
+
+      - name: Checkout workflow actions
+        if: steps.pr.outputs.number != ''
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.workflow_sha }}
+          fetch-depth: 1
+          sparse-checkout: .github/actions
+          path: workflow-actions
+
+      - name: Get mathlib-ci
+        if: steps.pr.outputs.number != ''
+        uses: ./workflow-actions/.github/actions/get-mathlib-ci
+        with:
+          ref: ${{ env.MATHLIB_CI_REF }}
+
+      - name: Compose comment body
+        if: steps.pr.outputs.number != ''
+        id: compose
+        run: |
+          set +e
+          python3 "${CI_SCRIPTS_DIR}/crossref_review/crossref-pr-comment.py" \
+            --tsv "$(pwd)/artifact/crossref-added.tsv" \
+            --output "$(pwd)/comment.md"
+          ec=$?
+          if [ ! -f comment.md ]; then : > comment.md; fi
+          echo "exit_code=$ec" >> "$GITHUB_OUTPUT"
+          echo "---- comment.md ----"
+          cat comment.md
+          echo "---- end ----"
+
+      - name: Post / update / delete bot comment
+        if: steps.pr.outputs.number != ''
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          PR="${{ steps.pr.outputs.number }}"
+          EXIT="${{ steps.compose.outputs.exit_code }}"
+          TITLE='### Cross-reference tags added by this PR'
+          if [ "$EXIT" = "0" ] || [ ! -s comment.md ]; then
+            existing=$(gh api "repos/${{ github.repository }}/issues/$PR/comments" --paginate \
+              --jq 'map(select(.body | startswith("### Cross-reference tags added by this PR"))) | first | .id // empty')
+            if [ -n "${existing:-}" ]; then
+              echo "Removing stale bot comment $existing."
+              gh api -X DELETE "repos/${{ github.repository }}/issues/comments/$existing"
+            fi
+          else
+            "${CI_SCRIPTS_DIR}/pr_summary/update_PR_comment.sh" \
+              comment.md "$TITLE" "$PR"
+          fi
+
+      - name: Fail on missing tags
+        if: steps.pr.outputs.number != ''
+        env:
+          EXIT: ${{ steps.compose.outputs.exit_code }}
+        run: |
+          set -euo pipefail
+          # Exit codes from crossref-pr-comment.py:
+          #   0 = no tags reported (no comment posted; not a failure)
+          #   1 = tags reported, all resolved
+          #   2 = some tag missing upstream  → fail this check
+          #   3 = transient network failure  → warn but pass
+          case "$EXIT" in
+            0|1) echo "OK." ;;
+            2)   echo "::error::One or more cross-reference tags are missing upstream."
+                 exit 1 ;;
+            3)   echo "::warning::Some cross-reference tags could not be resolved due to a network error."
+                 exit 0 ;;
+            *)   echo "::error::Unexpected exit code $EXIT from crossref-pr-comment.py"
+                 exit 1 ;;
+          esac

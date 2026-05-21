@@ -745,6 +745,64 @@ jobs:
       - name: clean up the import graph file
         run: rm import_graph.dot
 
+      - name: cross-reference tag review (extract added tags)
+        id: crossref
+        env:
+          # `build_fork.yml` is `pull_request_target`-triggered so the PR
+          # context is populated; `build.yml` is `push`-triggered (typically
+          # from Bors/staging), in which case `github.event.before` is the
+          # base commit. We try both. If neither is present, the step exits
+          # without producing an artifact (the workflow_run companion will
+          # see no artifact and skip).
+          PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          PR_BASE_REF: ${{ github.event.pull_request.base.ref }}
+          PUSH_BEFORE_SHA: ${{ github.event.before }}
+        run: |
+          set -euo pipefail
+          BASE_SHA=""
+          if [ -n "$PR_BASE_SHA" ]; then
+            BASE_SHA="$PR_BASE_SHA"
+            # post_steps checks out with default fetch-depth=1; fetch enough
+            # history to diff against base. Hard-fail on fetch errors so we
+            # don't silently turn "unknown base" into "no tags added".
+            git fetch --no-tags --depth=200 origin "$PR_BASE_REF"
+          elif [ -n "$PUSH_BEFORE_SHA" ] \
+               && [[ ! "$PUSH_BEFORE_SHA" =~ ^0{40}$ ]]; then
+            BASE_SHA="$PUSH_BEFORE_SHA"
+            git fetch --no-tags --depth=200 origin "$PUSH_BEFORE_SHA"
+          else
+            echo "No PR base or push.before available; skipping cross-reference check."
+            echo "head_sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+            echo "skipped=yes" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          : > crossref-added.tsv
+          lake env lean --run scripts/crossref.lean check \
+            --diff "${BASE_SHA}..HEAD" \
+            --tsv crossref-added.tsv
+          echo "head_sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+          echo "skipped=no" >> "$GITHUB_OUTPUT"
+
+      - name: cross-reference tag review (artifact context)
+        if: steps.crossref.outputs.skipped != 'yes' && always()
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          HEAD_SHA: ${{ steps.crossref.outputs.head_sha }}
+        run: |
+          jq -n --arg pr "$PR_NUMBER" --arg sha "$HEAD_SHA" \
+            '{pr_number: $pr, head_sha: $sha}' > crossref-context.json
+
+      - name: upload the cross-reference artifact
+        if: steps.crossref.outputs.skipped != 'yes' && always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: crossref-context
+          path: |
+            crossref-added.tsv
+            crossref-context.json
+          retention-days: 1
+          if-no-files-found: warn
+
       - name: check all scripts build successfully
         run: |
           lake env lean scripts/create_deprecated_modules.lean

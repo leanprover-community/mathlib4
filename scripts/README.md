@@ -252,7 +252,13 @@ to module `Foo.Bar` (no `srcDir` indirection).
     `--diff <range>`) walks the Lean source and emits TSV with one row per
     cross-reference attribute, paired with the declaration it decorates. A
     byte-level scanner skips strings, comments, and modifier keywords correctly.
-  Used by the cross-reference review CI bot.
+
+  The orchestration script driven by `.github/workflows/crossref_review.yml`
+  lives in the [`mathlib-ci`](https://github.com/leanprover-community/mathlib-ci)
+  repository at `scripts/crossref_review/crossref-pr-comment.py` — it is kept
+  there (rather than in this repo) so the workflow can execute it from a
+  trusted external checkout in the privileged `pull_request_target` context
+  without running any PR-modified code.
 
 **Managing downstream repos**
 - `downstream_repos.yml` contains basic information about significant downstream repositories.
