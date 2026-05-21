@@ -10,7 +10,7 @@ public import Mathlib.Analysis.Normed.Ring.InfiniteProd
 public import Mathlib.NumberTheory.ModularForms.DedekindEta
 public import Mathlib.NumberTheory.ModularForms.Basic
 public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.E2.Transform
-public import Mathlib.NumberTheory.ModularForms.LevelOne
+public import Mathlib.NumberTheory.ModularForms.LevelOne.Basic
 public import Mathlib.NumberTheory.ModularForms.QExpansion
 
 /-!
@@ -191,6 +191,33 @@ lemma exp_isBigO_discriminant : (fun τ ↦ Real.exp (-2 * π * τ.im)) =O[atImI
     have h1 := norm_sub_norm_le 1 (∏' n, (1 - eta_q n τ) ^ 24)
     grind [norm_one, norm_sub_rev]
   linarith [norm_nonneg (𝕢 1 τ), mul_le_mul_of_nonneg_left hprod_bound (norm_nonneg (𝕢 1 τ))]
+
+/-- The cusp function of the discriminant equals `q * ∏' n, (1 - q^(n+1))^24`
+on the open unit disc. -/
+lemma discriminant_cuspFunction_eqOn : Set.EqOn (cuspFunction 1 Δ)
+    (fun q ↦ q * ∏' i, (1 - q ^ (i + 1)) ^ 24) (Metric.ball 0 1) := by
+  intro q hq
+  by_cases hq0 : q = 0
+  · simpa [hq0] using Periodic.cuspFunction_zero_of_zero_at_inf one_pos
+      discriminant_isZeroAtImInfty.zero_at_infty_comp_ofComplex
+  · have him := Periodic.im_invQParam_pos_of_norm_lt_one one_pos
+      (by simpa [dist_zero_right] using hq) hq0
+    simp [cuspFunction, Periodic.cuspFunction_eq_of_nonzero 1 _ hq0,
+      ofComplex_apply_of_im_pos him, discriminant_eq_q_prod ⟨_, him⟩,
+      Periodic.qParam_right_inv one_ne_zero hq0, eta_q]
+
+/-- The first q-expansion coefficient of the modular discriminant is 1. -/
+lemma discriminant_qExpansion_coeff_one : (qExpansion 1 Δ).coeff 1 = 1 := by
+  have hmem : (0 : ℂ) ∈ Metric.ball (0 : ℂ) 1 := Metric.mem_ball_self one_pos
+  calc (qExpansion 1 Δ).coeff 1
+      = derivWithin (cuspFunction 1 Δ) (Metric.ball 0 1) 0 := by
+        simp [qExpansion_coeff, ← derivWithin_of_isOpen Metric.isOpen_ball hmem]
+    _ = derivWithin (fun q ↦ q * ∏' i, (1 - q ^ (i + 1)) ^ 24) (Metric.ball 0 1) 0 :=
+        derivWithin_congr discriminant_cuspFunction_eqOn (discriminant_cuspFunction_eqOn hmem)
+    _ = 1 := by
+        simp [derivWithin_fun_mul differentiableWithinAt_id'
+          (differentiableOn_tprod_one_sub_pow_pow 24 _ hmem),
+          derivWithin_id' _ _ (Metric.isOpen_ball.uniqueDiffWithinAt hmem)]
 
 end
 

@@ -653,6 +653,11 @@ theorem BijOn.subset_range (h : BijOn f s t) : t ⊆ range f :=
 theorem InjOn.bijOn_image (h : InjOn f s) : BijOn f s (f '' s) :=
   BijOn.mk (mapsTo_image f s) h (Subset.refl _)
 
+theorem SurjOn.preimage (h : SurjOn f s t) : SurjOn f (f ⁻¹' t) t := by
+  intro u hu
+  rw [image_preimage_eq_inter_range]
+  exact ⟨hu, mem_range.mpr (subset_range h hu)⟩
+
 theorem BijOn.congr (h₁ : BijOn f₁ s t) (h : EqOn f₁ f₂ s) : BijOn f₂ s t :=
   BijOn.mk (h₁.mapsTo.congr h) (h₁.injOn.congr h) (h₁.surjOn.congr h)
 
@@ -729,6 +734,15 @@ theorem BijOn.bijective (h : BijOn f s t) : Bijective (h.mapsTo.restrict f s t) 
 @[simp] lemma bijOn_univ : BijOn f univ univ ↔ Bijective f := by simp [Bijective, BijOn]
 
 protected alias ⟨_, _root_.Function.Bijective.bijOn_univ⟩ := bijOn_univ
+
+lemma _root_.Function.Injective.bijOn_image (hf : f.Injective) : BijOn f s (f '' s) :=
+  hf.injOn.bijOn_image
+
+lemma _root_.Function.Surjective.surjOn_preimage (hf : f.Surjective) : SurjOn f (f ⁻¹' t) t :=
+  hf.surjOn.preimage
+
+lemma _root_.Function.Bijective.bijOn_preimage (hf : f.Bijective) : BijOn f (f ⁻¹' t) t :=
+  ⟨fun _ ↦ id, hf.injective.injOn, hf.surjective.surjOn_preimage⟩
 
 @[deprecated bijOn_univ (since := "2025-10-31")]
 theorem bijective_iff_bijOn_univ : Bijective f ↔ BijOn f univ univ := bijOn_univ.symm

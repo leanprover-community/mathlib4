@@ -741,6 +741,21 @@ lemma unop_associator {E E' : Type*} [Category* E] [Category* E']
 
 end NatIso
 
+section
+
+variable {D : Type*} [Category* D] {F G : C ⥤ D}
+
+instance (α : F ⟶ G) [IsIso α] :
+    IsIso (NatTrans.op α) :=
+  (NatIso.op (asIso α)).isIso_hom
+
+@[push]
+lemma inv_op (α : F ⟶ G) [IsIso α] :
+    inv (NatTrans.op α) = NatTrans.op (inv α) :=
+  IsIso.inv_eq_of_hom_inv_id (by simp [← NatTrans.op_comp])
+
+end
+
 namespace Equivalence
 
 variable {D : Type u₂} [Category.{v₂} D]

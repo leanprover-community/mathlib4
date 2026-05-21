@@ -147,9 +147,6 @@ alias IsMod_Hom.smul_hom := IsModHom.smul_hom
 
 attribute [to_additive existing (attr := reassoc (attr := simp))] IsModHom.smul_hom
 
-set_option linter.existingAttributeWarning false in
-attribute [to_additive existing] IsModHom.smul_hom_assoc
-
 variable {M N O : D} [ModObj A M] [ModObj A N] [ModObj A O]
 
 @[to_additive]
