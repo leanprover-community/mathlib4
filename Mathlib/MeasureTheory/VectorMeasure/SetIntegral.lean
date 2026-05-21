@@ -11,29 +11,7 @@ public import Mathlib.MeasureTheory.VectorMeasure.Integral
 # Set integral
 
 In this file we prove some properties of `∫ᵛ x in s, f x ∂[B; μ]`. Recall that this notation
-is defined as `∫ᵛ x, f x ∂(μ.restrict s)`. In `integral_indicator` we prove that for a measurable
-function `f` and a measurable set `s` this definition coincides with another natural definition:
-`∫ᵛ x, indicator s f x ∂[B; μ] = ∫ᵛ x in s, f x ∂[B; μ]`, where `indicator s f x` is equal to `f x` for `x ∈ s`
-and is zero otherwise.
-
-Since `∫ᵛ x in s, f x ∂[B; μ]` is a notation, one can rewrite or apply any theorem about `∫ᵛ x, f x ∂[B; μ]`
-directly. In this file we prove some theorems about dependence of `∫ᵛ x in s, f x ∂[B; μ]` on `s`, e.g.
-`setIntegral_union`, `setIntegral_empty`, `setIntegral_univ`.
-
-We use the property `IntegrableOn f s μ := Integrable f (μ.restrict s)`, defined in
-`MeasureTheory.IntegrableOn`. We also defined in that same file a predicate
-`IntegrableAtFilter (f : X → E) (l : Filter X) (μ : Measure X)` saying that `f` is integrable at
-some set `s ∈ l`.
-
-## Notation
-
-We provide the following notations for expressing the integral of a function on a set :
-* `∫ᵛ x in s, f x ∂[B; μ]` is `MeasureTheory.integral (μ.restrict s) f`
-* `∫ᵛ x in s, f x` is `∫ᵛ x in s, f x ∂volume`
-
-Note that the set notations are defined in the file
-`Mathlib/MeasureTheory/Integral/Bochner/Basic.lean`,
-but we reference them here because all theorems about set integrals are in this file.
+is defined as `∫ᵛ x, f x ∂[B; μ.restrict s]`.
 -/
 
 @[expose] public section
@@ -43,7 +21,7 @@ assert_not_exists InnerProductSpace
 open Filter Function MeasureTheory RCLike Set TopologicalSpace Topology
 open scoped ENNReal NNReal Finset
 
-variable {X E F G : Type*} {mX : MeasurableSpace X}
+variable {ι X E F G : Type*} {mX : MeasurableSpace X}
   [NormedAddCommGroup E] [NormedSpace ℝ E]
   [NormedAddCommGroup F] [NormedSpace ℝ F]
   [NormedAddCommGroup G] [NormedSpace ℝ G]
@@ -58,6 +36,38 @@ theorem IntegrableOn.mono (hs : MeasurableSet s) (hts : t ⊆ s) (h : μ.Integra
   apply Integrable.mono_measure h
   simp [transpose_restrict, variation_restrict, hs, ht, Measure.restrict_mono hts le_rfl]
 
+theorem IntegrableOn.union (hs : MeasurableSet s) (ht : MeasurableSet t)
+    (hf : μ.IntegrableOn f B s) (h'f : μ.IntegrableOn f B t) :
+    μ.IntegrableOn f B (s ∪ t) := by
+  apply Integrable.mono_measure (hf.add_measure h'f)
+  grw [transpose_restrict, variation_restrict_le, Measure.restrict_union_le]
+  simp [transpose_restrict, variation_restrict, hs, ht]
+
+@[simp] theorem IntegrableOn.empty : μ.IntegrableOn f B ∅ := by
+  simp [VectorMeasure.IntegrableOn]
+
+theorem integrableOn_biUnion_finite
+    {s : Set ι} (hs : s.Finite) {t : ι → Set X} (ht : ∀ i ∈ s, MeasurableSet (t i))
+    (h't : ∀ i ∈ s, μ.IntegrableOn f B (t i)) :
+    μ.IntegrableOn f B (⋃ i ∈ s, t i) := by
+  induction s, hs using Set.Finite.induction_on with
+  | empty => simp
+  | insert _ h's hf =>
+    simp only [mem_insert_iff, forall_eq_or_imp, iUnion_iUnion_eq_or_left] at ht h't ⊢
+    exact IntegrableOn.union ht.1 (h's.measurableSet_biUnion ht.2)  h't.1 (hf ht.2 h't.2)
+
+theorem integrableOn_biUnion_finset {s : Finset ι} {t : ι → Set X}
+    (ht : ∀ i ∈ s, MeasurableSet (t i)) (h't : ∀ i ∈ s, μ.IntegrableOn f B (t i)) :
+    μ.IntegrableOn f B (⋃ i ∈ s, t i) :=
+  integrableOn_biUnion_finite s.finite_toSet ht h't
+
+theorem integrableOn_iUnion_finite [Finite ι] {t : ι → Set X}
+    (ht : ∀ i, MeasurableSet (t i)) (h't : ∀ i, μ.IntegrableOn f B (t i)) :
+    μ.IntegrableOn f B (⋃ i, t i) := by
+  cases nonempty_fintype ι
+  simpa using integrableOn_biUnion_finset (f := f) (μ := μ) (s := Finset.univ) (t := t)
+    (fun i hi ↦ ht i) (fun i hi ↦ h't i)
+
 @[simp] theorem integrableOn_univ : μ.IntegrableOn f B univ ↔ μ.Integrable f B := by
   simp [VectorMeasure.IntegrableOn]
 
@@ -65,54 +75,38 @@ theorem Integrable.IntegrableOn (h : μ.Integrable f B) : μ.IntegrableOn f B s 
   rw [← integrableOn_univ] at h
   exact h.mono MeasurableSet.univ (subset_univ _)
 
-theorem setIntegral_congr_ae (hs : MeasurableSet s)
-    (h : ∀ᵐ x ∂(μ.transpose B).variation, x ∈ s → f x = g x) :
+theorem setIntegral_congr_ae (h : ∀ᵐ x ∂(μ.transpose B).variation, x ∈ s → f x = g x) :
     ∫ᵛ x in s, f x ∂[B; μ] = ∫ᵛ x in s, g x ∂[B; μ] := by
+  by_cases hs : MeasurableSet s; swap
+  · simp [restrict_not_measurable _ hs]
   apply integral_congr_ae
   rw [transpose_restrict, variation_restrict _ hs]
   exact (ae_restrict_iff' hs).2 h
 
-theorem setIntegral_congr_fun (hs : MeasurableSet s) (h : EqOn f g s) :
+theorem setIntegral_congr_fun (h : EqOn f g s) :
     ∫ᵛ x in s, f x ∂[B; μ] = ∫ᵛ x in s, g x ∂[B; μ] :=
-  setIntegral_congr_ae hs <| Eventually.of_forall h
+  setIntegral_congr_ae <| Eventually.of_forall h
 
 theorem setIntegral_union (hst : Disjoint s t) (hs : MeasurableSet s) (ht : MeasurableSet t)
-    (hfs : IntegrableOn f s μ) (hft : IntegrableOn f t μ) :
+    (hfs : μ.IntegrableOn f B s) (hft : μ.IntegrableOn f B t) :
     ∫ᵛ x in s ∪ t, f x ∂[B; μ] = ∫ᵛ x in s, f x ∂[B; μ] + ∫ᵛ x in t, f x ∂[B; μ] := by
-  simp only [Measure.restrict_union₀ hst ht, integral_add_measure hfs hft]
+  rw [← integral_add_vectorMeasure hfs hft, μ.restrict_union hst hs ht]
 
-#exit
-
-@[deprecated (since := "2026-03-04")] alias integral_union_ae := setIntegral_union₀
-
-theorem setIntegral_union (hst : Disjoint s t) (ht : MeasurableSet t) (hfs : IntegrableOn f s μ)
-    (hft : IntegrableOn f t μ) : ∫ᵛ x in s ∪ t, f x ∂[B; μ] = ∫ᵛ x in s, f x ∂[B; μ] + ∫ᵛ x in t, f x ∂[B; μ] :=
-  setIntegral_union₀ hst.aedisjoint ht.nullMeasurableSet hfs hft
-
-theorem setIntegral_diff₀ (ht : NullMeasurableSet t μ) (hfs : IntegrableOn f s μ) (hts : t ⊆ s) :
+theorem setIntegral_diff (hs : MeasurableSet s) (ht : MeasurableSet t)
+    (hfs : μ.IntegrableOn f B s) (hts : t ⊆ s) :
     ∫ᵛ x in s \ t, f x ∂[B; μ] = ∫ᵛ x in s, f x ∂[B; μ] - ∫ᵛ x in t, f x ∂[B; μ] := by
-  rw [eq_sub_iff_add_eq, ← setIntegral_union₀, diff_union_of_subset hts]
-  exacts [disjoint_sdiff_self_left.aedisjoint, ht, hfs.mono_set diff_subset, hfs.mono_set hts]
+  rw [eq_sub_iff_add_eq, ← setIntegral_union (by grind) (hs.diff ht) ht (hfs.mono hs diff_subset)
+    (hfs.mono hs hts), diff_union_of_subset hts]
 
-theorem setIntegral_diff (ht : MeasurableSet t) (hfs : IntegrableOn f s μ) (hts : t ⊆ s) :
-    ∫ᵛ x in s \ t, f x ∂[B; μ] = ∫ᵛ x in s, f x ∂[B; μ] - ∫ᵛ x in t, f x ∂[B; μ] :=
-  setIntegral_diff₀ ht.nullMeasurableSet hfs hts
-
-@[deprecated (since := "2026-03-04")] alias integral_diff := setIntegral_diff
-
-theorem integral_inter_add_diff₀ (ht : NullMeasurableSet t μ) (hfs : IntegrableOn f s μ) :
+theorem setIntegral_inter_add_diff (hs : MeasurableSet s) (ht : MeasurableSet t)
+    (hfs : μ.IntegrableOn f B s) :
     ∫ᵛ x in s ∩ t, f x ∂[B; μ] + ∫ᵛ x in s \ t, f x ∂[B; μ] = ∫ᵛ x in s, f x ∂[B; μ] := by
-  rw [← Measure.restrict_inter_add_diff₀ s ht, integral_add_measure]
-  · exact Integrable.mono_measure hfs (Measure.restrict_mono inter_subset_left le_rfl)
-  · exact Integrable.mono_measure hfs (Measure.restrict_mono diff_subset le_rfl)
+  rw [← μ.restrict_inter_add_diff hs ht,
+    integral_add_vectorMeasure (hfs.mono hs inter_subset_left) (hfs.mono hs diff_subset)]
 
-theorem integral_inter_add_diff (ht : MeasurableSet t) (hfs : IntegrableOn f s μ) :
-    ∫ᵛ x in s ∩ t, f x ∂[B; μ] + ∫ᵛ x in s \ t, f x ∂[B; μ] = ∫ᵛ x in s, f x ∂[B; μ] :=
-  integral_inter_add_diff₀ ht.nullMeasurableSet hfs
-
-theorem integral_biUnion_finset {ι : Type*} (t : Finset ι) {s : ι → Set X}
+theorem setIntegral_biUnion_finset {ι : Type*} (t : Finset ι) {s : ι → Set X}
     (hs : ∀ i ∈ t, MeasurableSet (s i)) (h's : Set.Pairwise (↑t) (Disjoint on s))
-    (hf : ∀ i ∈ t, IntegrableOn f (s i) μ) :
+    (hf : ∀ i ∈ t, μ.IntegrableOn f B (s i)) :
     ∫ᵛ x in ⋃ i ∈ t, s i, f x ∂[B; μ] = ∑ i ∈ t, ∫ᵛ x in s i, f x ∂[B; μ] := by
   classical
   induction t using Finset.induction_on with
@@ -120,25 +114,28 @@ theorem integral_biUnion_finset {ι : Type*} (t : Finset ι) {s : ι → Set X}
   | insert _ _ hat IH =>
     simp only [Finset.coe_insert, Finset.forall_mem_insert, Set.pairwise_insert,
       Finset.set_biUnion_insert] at hs hf h's ⊢
-    rw [setIntegral_union _ _ hf.1 (integrableOn_finset_iUnion.2 hf.2)]
+    rw [setIntegral_union]
     · rw [Finset.sum_insert hat, IH hs.2 h's.1 hf.2]
     · simp only [disjoint_iUnion_right]
       exact fun i hi => (h's.2 i hi (ne_of_mem_of_not_mem hi hat).symm).1
+    · exact hs.1
     · exact Finset.measurableSet_biUnion _ hs.2
+    · exact hf.1
+    · apply integrableOn_biUnion_finset hs.2 hf.2
 
-theorem integral_iUnion_fintype {ι : Type*} [Fintype ι] {s : ι → Set X}
+theorem setIntegral_iUnion_fintype {ι : Type*} [Fintype ι] {s : ι → Set X}
     (hs : ∀ i, MeasurableSet (s i)) (h's : Pairwise (Disjoint on s))
-    (hf : ∀ i, IntegrableOn f (s i) μ) : ∫ᵛ x in ⋃ i, s i, f x ∂[B; μ] = ∑ i, ∫ᵛ x in s i, f x ∂[B; μ] := by
-  convert integral_biUnion_finset Finset.univ (fun i _ => hs i) _ fun i _ => hf i
+    (hf : ∀ i, μ.IntegrableOn f B (s i)) :
+    ∫ᵛ x in ⋃ i, s i, f x ∂[B; μ] = ∑ i, ∫ᵛ x in s i, f x ∂[B; μ] := by
+  convert setIntegral_biUnion_finset Finset.univ (fun i _ => hs i) _ fun i _ => hf i
   · simp
   · simp [pairwise_univ, h's]
 
-theorem setIntegral_empty : ∫ᵛ x in ∅, f x ∂[B; μ] = 0 := by
-  rw [Measure.restrict_empty, integral_zero_measure]
+theorem setIntegral_empty : ∫ᵛ x in ∅, f x ∂[B; μ] = 0 := by simp
 
-theorem setIntegral_univ : ∫ᵛ x in univ, f x ∂[B; μ] = ∫ᵛ x, f x ∂[B; μ] := by rw [Measure.restrict_univ]
+theorem setIntegral_univ : ∫ᵛ x in univ, f x ∂[B; μ] = ∫ᵛ x, f x ∂[B; μ] := by simp
 
-lemma integral_eq_setIntegral (hs : ∀ᵐ x ∂[B; μ], x ∈ s) (f : X → E) :
+lemma integral_eq_setIntegral (hs : ∀ᵐ x ∂(μ.transpose B).variation, x ∈ s) (f : X → E) :
     ∫ᵛ x, f x ∂[B; μ] = ∫ᵛ x in s, f x ∂[B; μ] := by
   rw [← setIntegral_univ, ← setIntegral_congr_set]; rwa [ae_eq_univ]
 
@@ -159,6 +156,9 @@ theorem setIntegral_compl₀ (hs : NullMeasurableSet s μ) (hfi : Integrable f �
 theorem setIntegral_compl (hs : MeasurableSet s) (hfi : Integrable f μ) :
     ∫ᵛ x in sᶜ, f x ∂[B; μ] = ∫ᵛ x, f x ∂[B; μ] - ∫ᵛ x in s, f x ∂[B; μ] :=
   setIntegral_compl₀ hs.nullMeasurableSet hfi
+
+
+#exit
 
 /-- For a function `f` and a measurable set `s`, the integral of `indicator s f`
 over the whole space is equal to `∫ᵛ x in s, f x ∂[B; μ]` defined as `∫ᵛ x, f x ∂(μ.restrict s)`. -/
