@@ -74,7 +74,7 @@ lemma mapDomainBialgHom_id : mapDomainBialgHom R (.id M) = .id R R[M] := by ext;
 @[to_additive (attr := simp)]
 lemma mapDomainBialgHom_comp (f : N →* O) (g : M →* N) :
     mapDomainBialgHom R (f.comp g) = (mapDomainBialgHom R f).comp (mapDomainBialgHom R g) := by
-  ext; simp [Finsupp.mapDomain_comp]
+  ext; simp [Finsupp.mapDomain_fun_comp]
 
 @[to_additive]
 lemma mapDomainBialgHom_mapDomainBialgHom (f : N →* O) (g : M →* N) (x : R[M]) :

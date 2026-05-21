@@ -139,7 +139,7 @@ lemma map_id (f : StdSimplex R M) : f.map id = f := by
 
 lemma map_comp (f : StdSimplex R M) (g₁ : M → N) (g₂ : N → P) :
     f.map (g₂ ∘ g₁) = (f.map g₁).map g₂ := by
-  ext; simp [mapDomain_comp]
+  ext; simp [← mapDomain_comp]
 
 lemma map_map (f : StdSimplex R M) (g₁ : M → N) (g₂ : N → P) :
     (f.map g₁).map g₂ = f.map (fun x ↦ g₂ (g₁ x)) :=
