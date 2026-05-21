@@ -122,7 +122,7 @@ lemma integral_id_projectiveFamily (I : Finset ℝ≥0) :
     ContinuousLinearEquiv.integral_comp_id_comm, integral_id_multivariateGaussian, map_zero]
 
 lemma integral_id_projectiveFamily' (I : Finset ℝ≥0) :
-    ∫ x, id x ∂(projectiveFamily I) = 0 := integral_id_projectiveFamily I
+    (projectiveFamily I)[id] = 0 := integral_id_projectiveFamily I
 
 @[simp]
 lemma integral_eval_projectiveFamily (I : Finset ℝ≥0) (s : I) :
