@@ -200,8 +200,8 @@ instance applyModule : Module (Module.End R M) M where
   smul := (· <| ·)
   smul_zero := map_zero
   smul_add := map_add
-  add_smul := LinearMap.add_apply
-  zero_smul := (LinearMap.zero_apply : ∀ m, (0 : M →ₗ[R] M) m = 0)
+  add_smul := add_apply
+  zero_smul := (zero_apply : ∀ m, (0 : M →ₗ[R] M) m = 0)
   one_smul _ := rfl
   mul_smul _ _ _ := rfl
 
@@ -353,8 +353,8 @@ See `LinearMap.applyₗ` for a version where `S = R`. -/
 def applyₗ' : M →+ (M →ₗ[R] M₂) →ₗ[S] M₂ where
   toFun v :=
     { toFun := fun f => f v
-      map_add' := fun f g => f.add_apply g v
-      map_smul' := fun x f => f.smul_apply x v }
+      map_add' := fun f g => add_apply f g v
+      map_smul' := fun x f => smul_apply f x v }
   map_zero' := LinearMap.ext fun f => f.map_zero
   map_add' _ _ := LinearMap.ext fun f => f.map_add _ _
 
