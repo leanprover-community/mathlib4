@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robin Langer
 -/
 import Mathlib.Combinatorics.SimpleGraph.Basic
+import Mathlib.Combinatorics.SimpleGraph.QuotientGraph
 
 /-!
 # The Zhou graph (F182A)
@@ -15,6 +16,10 @@ The Zhou graph (Foster census F182A) is a cubic arc-transitive graph on 182 vert
     S₃ is NOT maximal in PSL(2,13) — the maximal subgroups are D₁₄, D₁₂, A₄,
     Z₁₃ ⋊ Z₆, and Z₇ ⋊ Z₃ (none of order 6).
   - 273 edges, 3-regular
+
+## Visualizations
+
+* [The Zhou graph](https://raw.githubusercontent.com/RaggedR/symmetric-graphs/main/lean/named_graphs/zhou-F182A.jpg) — symmetry-aware drawing with imprimitive block structure
 
 ## References
 
@@ -93,4 +98,49 @@ theorem zhouGraph_regular :
 theorem zhouGraph_edgeCount :
     (Finset.univ.filter fun p : Fin 182 × Fin 182 =>
       p.1 < p.2 ∧ zhouGraph.Adj p.1 p.2).card = 273 := by
+  native_decide
+
+/-! ### The Z₂ quotient: Sab(PSL(2,13), D₁₂)
+
+S₃ is not maximal in PSL(2,13) — it sits inside D₁₂ (dihedral of order 12,
+index 91). The Z₂ block system pairs each of the 182 vertices with one partner,
+giving 91 blocks of size 2. The quotient is a 6-regular primitive graph on 91
+vertices. D₁₂ IS maximal in PSL(2,13), so this quotient is primitive. -/
+
+private def zhouBlockData : List (Fin 91) := [
+  0, 27, 14, 7, 3, 1, 15, 5, 77, 70, 21, 75, 52, 56, 87, 68, 42, 49, 59, 2,
+  45, 11, 31, 89, 85, 29, 36, 64, 24, 67, 48, 90, 72, 39, 41, 66, 80, 44, 22, 65,
+  71, 46, 25, 13, 6, 15, 50, 33, 43, 68, 42, 8, 9, 49, 23, 30, 18, 85, 88, 4,
+  29, 12, 16, 74, 40, 67, 28, 41, 53, 73, 22, 69, 65, 20, 60, 37, 0, 62, 38, 83,
+  9, 8, 54, 59, 23, 19, 34, 82, 31, 64, 74, 58, 48, 72, 28, 76, 73, 80, 81, 44,
+  46, 17, 61, 10, 1, 83, 27, 26, 62, 5, 35, 57, 11, 19, 4, 89, 16, 40, 79, 90,
+  63, 76, 71, 20, 10, 47, 77, 50, 57, 51, 87, 56, 82, 88, 36, 12, 84, 58, 39, 66,
+  69, 25, 60, 61, 32, 38, 14, 86, 75, 51, 55, 2, 84, 53, 32, 26, 43, 70, 21, 35,
+  52, 30, 78, 17, 13, 37, 7, 47, 33, 34, 78, 63, 86, 54, 45, 6, 3, 18, 79, 81,
+  24, 55]
+
+private theorem zhouBlockData_length : zhouBlockData.length = 182 := by native_decide
+
+/-- The Z₂ block map on the Zhou graph: `Fin 182 → Fin 91`. -/
+def zhouBlockMap (v : Fin 182) : Fin 91 :=
+  zhouBlockData.get (v.cast zhouBlockData_length.symm)
+
+/-- The **Zhou quotient graph**: Sab(PSL(2,13), D₁₂), a 6-regular primitive graph
+on 91 vertices. This is the Z₂ quotient of the Zhou graph by the unique
+non-trivial block system. -/
+def zhouQuotientGraph : SimpleGraph (Fin 91) :=
+  zhouGraph.quotientGraph zhouBlockMap
+
+instance : DecidableRel zhouQuotientGraph.Adj := by
+  intro i j; unfold zhouQuotientGraph SimpleGraph.quotientGraph; simp only; exact instDecidableAnd
+
+/-- The Zhou quotient is 6-regular. -/
+theorem zhouQuotientGraph_regular :
+    ∀ v : Fin 91, (Finset.univ.filter fun w => zhouQuotientGraph.Adj v w).card = 6 := by
+  native_decide
+
+/-- The Zhou quotient has 273 edges. -/
+theorem zhouQuotientGraph_edgeCount :
+    (Finset.univ.filter fun p : Fin 91 × Fin 91 =>
+      p.1 < p.2 ∧ zhouQuotientGraph.Adj p.1 p.2).card = 273 := by
   native_decide
