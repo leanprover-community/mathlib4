@@ -2,17 +2,20 @@
 Copyright (c) 2026 Robin Langer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robin Langer
+-/
+import Mathlib.Combinatorics.CellularSurface
+import Archive.VoltageGraphs
 
+/-!
 # The Heawood Graph (F014A): A Concrete CellularSurface
 
 The Heawood graph (Foster census F014A) is the Levi graph (incidence graph) of
 the Fano plane PG(2,2). It is a cubic arc-transitive graph on 14 vertices.
 
-  - **Sabidussi**: Sab(G₄₂, C₃) where G₄₂ = Z₇ ⋊ Z₆ (order 42)
-  - **Tiling**: {6,3} — 7 hexagonal faces on the torus (genus 1)
-  - **CSS code**: [[21, 2, ≥ 3]]
-
-  - [Visualization](https://raw.githubusercontent.com/RaggedR/symmetric-graphs/main/lean/named_graphs/heawood-F014A.jpg) — the Heawood graph (F014A)
+* **Sabidussi**: Sab(G₄₂, C₃) where G₄₂ = Z₇ ⋊ Z₆ (order 42)
+* **Tiling**: {6,3} — 7 hexagonal faces on the torus (genus 1)
+* **CSS code**: [[21, 2, ≥ 3]]
+* [Visualization](https://raw.githubusercontent.com/RaggedR/symmetric-graphs/main/lean/named_graphs/heawood-F014A.jpg)
 
 Vertices 0–6 are the 7 points of the Fano plane.
 Vertices 7–13 are the 7 lines.
@@ -20,9 +23,6 @@ Edge i connects a point to the line containing it.
 
 All axioms verified by the Lean kernel (`decide`). No sorry.
 -/
-
-import Mathlib.Combinatorics.CellularSurface
-import Archive.VoltageGraphs
 
 set_option linter.style.nativeDecide false
 

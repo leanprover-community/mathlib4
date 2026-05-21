@@ -2,23 +2,23 @@
 Copyright (c) 2026 Robin Langer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robin Langer
+-/
+import Mathlib.Combinatorics.CellularSurface
 
+/-!
 # The Bolza Surface: Möbius-Kantor Graph (F016A) on Genus 2
 
 The Möbius-Kantor graph (Foster census F016A) = generalized Petersen graph
 GP(8,3). It is a cubic arc-transitive graph on 16 vertices.
 
-  - **Sabidussi**: Sab(GL(2,3), C₃), |GL(2,3)| = 48
-  - **Voltage graph**: `voltageGraphK2 8 0 1 3` on K₂ with Z₈
-  - **Tiling**: {8,3} — 6 octagonal faces on the Bolza surface (genus 2)
-  - **CSS code**: [[24, 4, ≥ 6]]
-
-  - [Visualization](https://raw.githubusercontent.com/RaggedR/symmetric-graphs/main/lean/named_graphs/mobius-kantor-F016A.jpg) — the Möbius-Kantor graph (F016A)
+* **Sabidussi**: Sab(GL(2,3), C₃), |GL(2,3)| = 48
+* **Voltage graph**: `voltageGraphK2 8 0 1 3` on K₂ with Z₈
+* **Tiling**: {8,3} — 6 octagonal faces on the Bolza surface (genus 2)
+* **CSS code**: [[24, 4, ≥ 6]]
+* [Visualization](https://raw.githubusercontent.com/RaggedR/symmetric-graphs/main/lean/named_graphs/mobius-kantor-F016A.jpg)
 
 All axioms verified by the Lean kernel (`decide`). No sorry.
 -/
-
-import Mathlib.Combinatorics.CellularSurface
 
 open CellularSurface
 
@@ -40,7 +40,7 @@ def bolzaSurface : CellularSurface where
     ![16, 8, 19, 3, 20, 12, 23, 7],   -- 0→8→11→3→4→12→15→7→0
     ![1, 18, 10, 21, 5, 22, 14, 17],  -- 1→2→10→13→5→6→14→9→1
     ![2, 19, 11, 22, 6, 23, 15, 18],  -- 2→3→11→14→6→7→15→10→2
-    ![13, 10, 15, 12, 9, 14, 11, 8]   -- 8→13→10→15→12→9→14→11→8 (inner star reversed)
+    ![13, 10, 15, 12, 9, 14, 11, 8]   -- inner star reversed
   ]
   face_dir := ![
     ![true, true, true, false, true, true, true, false],
