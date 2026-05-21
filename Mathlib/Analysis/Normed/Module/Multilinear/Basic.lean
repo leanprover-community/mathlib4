@@ -941,11 +941,11 @@ def flipMultilinear (f : G →L[𝕜] ContinuousMultilinearMap 𝕜 E G') :
           exact (f x).le_of_opNorm_le (f.le_opNorm x) _
       map_update_add' := fun m i x y => by
         ext1
-        simp only [add_apply, ContinuousMultilinearMap.map_update_add, LinearMap.coe_mk,
+        simp only [_root_.add_apply, ContinuousMultilinearMap.map_update_add, LinearMap.coe_mk,
           LinearMap.mkContinuous_apply, AddHom.coe_mk]
       map_update_smul' := fun m i c x => by
         ext1
-        simp only [coe_smul', ContinuousMultilinearMap.map_update_smul, LinearMap.coe_mk,
+        simp only [FunLike.coe_smul, ContinuousMultilinearMap.map_update_smul, LinearMap.coe_mk,
           LinearMap.mkContinuous_apply, Pi.smul_apply, AddHom.coe_mk] }
     ‖f‖ fun m => by
       dsimp only [MultilinearMap.coe_mk]
@@ -1136,7 +1136,7 @@ The derivative with respect to `f` is given by `compContinuousLinearMapL`. -/
 noncomputable def fderivCompContinuousLinearMap [DecidableEq ι]
     (f : ContinuousMultilinearMap 𝕜 E₁ G) (g : ∀ i, E i →L[𝕜] E₁ i) :
     (∀ i, E i →L[𝕜] E₁ i) →L[𝕜] ContinuousMultilinearMap 𝕜 E G :=
-  ContinuousLinearMap.apply _ _ f
+  ContinuousLinearMap.apply 𝕜 (ContinuousMultilinearMap 𝕜 E G) f
     |>.compContinuousMultilinearMap (compContinuousLinearMapContinuousMultilinear 𝕜 _ _ _)
     |>.linearDeriv g
 

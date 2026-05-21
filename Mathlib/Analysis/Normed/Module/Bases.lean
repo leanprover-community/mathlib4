@@ -371,7 +371,7 @@ lemma sum_succSub (P : ℕ → X →L[𝕜] X) (h0 : P 0 = 0) (n : ℕ) :
 /-- The operators `succSub P i` satisfy a biorthogonality relation. -/
 lemma succSub_ortho {P : ℕ → X →L[𝕜] X} (hcomp : ∀ n m, ∀ x : X, P n (P m x) = P (min n m) x)
     (i j : ℕ) (x : X) : succSub P i (succSub P j x) = if i = j then succSub P j x else 0 := by
-  simp only [succSub, sub_apply, map_sub, hcomp,
+  simp only [succSub, _root_.sub_apply, map_sub, hcomp,
     Nat.add_min_add_right]
   split_ifs with h
   · rw [h, min_self, min_eq_right (Nat.le_succ j), Nat.min_eq_left (Nat.le_succ j)]
