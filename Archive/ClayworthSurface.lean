@@ -31,6 +31,7 @@ rather than `![...]` vectors (nested `Fin.cons`, O(n) elaboration).
 A helper converts `Array` + size proof → `Fin n → α`.
 -/
 
+set_option linter.style.longFile 4200
 set_option linter.style.nativeDecide false
 
 /-- Convert an Array to a function on Fin, given a proof that the array has
