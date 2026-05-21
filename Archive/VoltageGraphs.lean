@@ -170,7 +170,7 @@ private noncomputable instance : MulAction heawoodG (Fin 2 × ZMod 7) :=
 private noncomputable instance : GraphAction heawoodG (Fin 2 × ZMod 7) heawoodVoltage where
   adj_smul := by
     intro ⟨σ, hσ⟩ u v hadj
-    show heawoodVoltage.Adj (σ u) (σ v)
+    change heawoodVoltage.Adj (σ u) (σ v)
     revert u v; change ∀ u v, heawoodVoltage.Adj u v → heawoodVoltage.Adj (σ u) (σ v)
     refine Subgroup.closure_induction
       (p := fun σ _ => ∀ u v, heawoodVoltage.Adj u v → heawoodVoltage.Adj (σ u) (σ v))
@@ -281,7 +281,7 @@ private noncomputable instance : MulAction mkG (Fin 2 × ZMod 8) :=
 private noncomputable instance : GraphAction mkG (Fin 2 × ZMod 8) mobiusKantorVoltage where
   adj_smul := by
     intro ⟨σ, hσ⟩ u v hadj
-    show mobiusKantorVoltage.Adj (σ u) (σ v)
+    change mobiusKantorVoltage.Adj (σ u) (σ v)
     revert u v
     change ∀ u v, mobiusKantorVoltage.Adj u v → mobiusKantorVoltage.Adj (σ u) (σ v)
     refine Subgroup.closure_induction
