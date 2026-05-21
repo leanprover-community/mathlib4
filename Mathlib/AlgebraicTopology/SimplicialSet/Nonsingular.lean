@@ -99,14 +99,9 @@ lemma nonDegenerate_δ [X.Nonsingular]
 lemma Nonsingular.δ_injective [X.Nonsingular]
     {n : ℕ} (x : X _⦋n + 1⦌) (hx : x ∈ X.nonDegenerate _)
     (i j : Fin (n + 2)) (hij : X.δ i x = X.δ j x) : i = j := by
+  apply SimplexCategory.δ_injective
+  apply stdSimplex.objEquiv.symm.injective
   have := mono' x hx
-  change
-    (yonedaEquiv.symm x).app _
-      (stdSimplex.objEquiv.symm (SimplexCategory.δ i)) =
-    (yonedaEquiv.symm x).app _
-      (stdSimplex.objEquiv.symm (SimplexCategory.δ j)) at hij
-  replace hij := injective_of_mono ((yonedaEquiv.symm x).app _) hij
-  simp only [EmbeddingLike.apply_eq_iff_eq] at hij
-  exact SimplexCategory.δ_injective hij
+  exact injective_of_mono ((yonedaEquiv.symm x).app _) hij
 
 end SSet
