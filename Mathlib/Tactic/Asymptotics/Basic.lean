@@ -567,29 +567,26 @@ meta def elabBigO : Elab.Term.TermElab := fun stx expectedType? ↦ do
   | `(O($e)) => Elab.Term.elabTerm (← `(dummyBigO $e)) expectedType?
   | _ => Elab.throwUnsupportedSyntax
 
-meta partial def mappify (filter : Expr) (fvar : Expr) (e : Expr) : MetaM Expr := do
+meta partial def mappify (filter : Expr) (fvar fvarType : Expr) (e : Expr) : MetaM Expr := do
   match_expr e with
   | dummyBigOFilter α E instNormE l e' =>
-    trace[Elab.asymp] m!"Mappifying dummyBigO {α} {E} {l} {e'}"
-    unless ← isDefEq α (← inferType fvar) do
+    trace[Elab.asymp] m!"Mappifying dummyBigOFilter {α} {E} {l} {e'}"
+    unless ← isDefEq α fvarType do
       throwError
         "Filter `{l}` lives in type `{α}`, but is expected to live in type `{← inferType fvar}"
     return mkApp5 (.const ``bigO [← getDecLevel α, ← getDecLevel E])
-      α E instNormE l (← mappify filter fvar e')
-  | dummyBigO α E instNormE e' =>
-    trace[Elab.asymp] m!"Mappifying dummyBigO {α} {E} {filter} {e'}"
-    -- unless ← isDefEq α (← inferType fvar) do
-    --   throwError
-    --     "Filter `{filter}` lives in type `{α}`, but is expected to live in type `{← inferType fvar}"
-    return mkApp5 (.const ``bigO [← getDecLevel α, ← getDecLevel E])
-      α E instNormE filter (← mappify filter fvar e')
+      α E instNormE l (← mappify filter fvar fvarType e')
+  | dummyBigO E instNormE e' =>
+    trace[Elab.asymp] m!"Mappifying dummyBigO {fvarType} {E} {filter} {e'}"
+    return mkApp5 (.const ``bigO [← getDecLevel fvarType, ← getDecLevel E])
+      fvarType E instNormE filter (← mappify filter fvar fvarType e')
   | _ =>
     trace[Elab.asymp] m!"Mappifying {e}"
     if let .app f a := e then
       let fType ← inferType f
       if let .forallE _ _ _ .default := fType then
-        let f ← mappify filter fvar f
-        let a ← mappify filter fvar a
+        let f ← mappify filter fvar fvarType f
+        let a ← mappify filter fvar fvarType a
         return ← mkAppM ``map #[f, a]
     let e ← mkLambdaFVars #[fvar] e
     let α ← inferType e
@@ -607,7 +604,7 @@ meta partial def unmappify (e : Expr) : OptionT MetaM Expr := do
       return b
     failure
   | f@bigO α E instE l a =>
-    return mkApp5 (.const ``dummyBigO f.constLevels!) α E instE l (← unmappify a)
+    return mkApp5 (.const ``dummyBigOFilter f.constLevels!) α E instE l (← unmappify a)
   | _ => failure
 
 syntax (name := asympPercent) "asymp% " ident (" : " term)? " in " term " => " term : term
@@ -637,13 +634,13 @@ meta def elabAsympPercent : Elab.Term.TermElab := fun stx _ ↦ do
       -- Question: Do we want to support relations where both sides have different types?
       guard <| ← isDefEq type (← inferType lhs)
       guard <| ← isDefEq type (← inferType rhs)
-      let fnType := Expr.forallE .anonymous fvarType type .default
+      let fnType := Expr.forallE x.getId fvarType type .default
       let u ← getDecLevel fnType
       let v ← getDecLevel fvarType
       let mappifySide (e : Expr) : MetaM Expr := do
         if e.isMVar then
           return ← mkFreshExprMVar (mkApp (.const ``Set [u]) fnType)
-        mappify filter fvar e
+        mappify filter fvar fvarType e
       -- Metavariables created in this block contain `x` in the local context, and break unification
       -- with other metavariables. Hence we try to synthesize as many of them as possible.
       Elab.Term.synthesizeSyntheticMVars
@@ -651,31 +648,22 @@ meta def elabAsympPercent : Elab.Term.TermElab := fun stx _ ↦ do
         (← mappifySide lhs) (← mappifySide rhs)
   | _ => Elab.throwUnsupportedSyntax
 
--- open PrettyPrinter Delaborator SubExpr in
--- @[app_delab RightSerial]
--- meta def delabAsympPercent : Delab := do
---   let_expr RightSerial fnType _ r lhs rhs := ← SubExpr.getExpr | failure
---   let .forallE name d _ _ := fnType | failure
---   let some lhs ← (unmappify lhs).run | failure
---   let some rhs ← (unmappify rhs).run | failure
---   let (lhs, rhs) ← withLocalDeclD name d fun fvar ↦ do
---     let lhs ← withAppFn <| withAppArg <| delab <| lhs.instantiate1 fvar
---     let rhs ← withAppArg <| delab <| rhs.instantiate1 fvar
---     return (lhs, rhs)
---   let d ← withAppFn <| withAppFn <| withAppFn <| delab d
---   let rel ← withAppFn <| withAppFn <| withAppArg do
---     match_expr r with
---     | Eq _ => `(asymp_rel| $lhs:term = $rhs)
---     | LE.le _ _=> `(asymp_rel| $lhs:term ≤ $rhs)
---     | Filter.EventuallyEq _ _ l' => `(asymp_rel| $lhs:term =ᶠ[$(← delab l')] $rhs)
---     | Filter.EventuallyLE _ _ _ l' => `(asymp_rel| $lhs:term ≤ᶠ[$(← delab l')] $rhs)
---     -- | IsBigO _  l' => `(asymp_rel| $lhs:term =O[$l':term] $rhs:term)
---     -- | IsLittleO _  l' => `(asymp_rel| $lhs:term =o[$l'] $rhs)
---     | IsEquivalent _ _ _ l' => `(asymp_rel| $lhs:term ~[$(← delab l')] $rhs)
---     | _ =>`(asymp_rel| $lhs:term; $(← delab r); $rhs)
---   `(asymp% $(mkIdent name) : $d => $rel)
-
-@[app_unexpander dummyBigO]
+open PrettyPrinter Delaborator SubExpr in
+@[app_delab AsympRel]
+meta def delabAsympPercent : Delab := do
+  let_expr AsympRel d _ l r lhs rhs := ← SubExpr.getExpr | failure
+  -- Issue: We're no longer storing the type of the function itself, so we lose the binder name!
+  let name := `fixMe
+  let some lhs ← (unmappify lhs).run | failure
+  let some rhs ← (unmappify rhs).run | failure
+  let e := mkApp2 r lhs rhs
+  /- Confession: I removed all `withAppFn` and `withAppArg` because I don't understand what they
+  do here, and the code appears to work fine without them? -/
+  let r ← withLocalDeclD name d fun fvar ↦ delab <| e.instantiate1 fvar
+  let d ← delab d
+  let l ← delab l
+  `(term|asymp% $(mkIdent name) : $d in $l => $r)
+@[app_unexpander dummyBigOFilter]
 meta def dummyBigOUnexpander : Lean.PrettyPrinter.Unexpander
   | `($_ $l $a) => `(O[$l]($a))
   | _ => throw ()
@@ -774,6 +762,7 @@ lemma Real.log_add_one_isBigO_atTop :
 -/
 
 
+-- set_option trace.Elab.asymp true in
 theorem terry :
       asymp% x : ℝ in atTop => (x + 1) ^ (exp x⁻¹) = x + O(log x) := by
   calc
