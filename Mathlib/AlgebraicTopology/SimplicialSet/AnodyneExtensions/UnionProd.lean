@@ -210,6 +210,8 @@ noncomputable def δ :
   nonDegenerate := nonDegenerate_δ (x.cast hd).nonDegenerate _
   notMem := by
     dsimp
+    -- `simp? [Subcomplex.mem_unionProd_iff, mem_boundary_iff_notMem_range, mem_horn_iff_notMem_range,
+    --  stdSimplex.δ_apply]` says:
     simp only [Subcomplex.mem_unionProd_iff, prod_δ_snd, mem_boundary_iff_notMem_range,
       Set.mem_range, stdSimplex.δ_apply, not_exists, prod_δ_fst, mem_horn_iff_notMem_range,
       ne_eq, exists_prop, not_or, not_forall, Decidable.not_not, not_and]
