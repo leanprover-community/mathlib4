@@ -21,7 +21,7 @@ For any type equipped with the Scott-Hausdorff topology (which includes well-ord
 topology), `DirSupClosed s` and `IsClosed s` are equivalent predicates.
 -/
 
-@[expose] public section
+public section
 
 universe u v
 
@@ -36,46 +36,48 @@ structure IsClub {α : Type*} [LinearOrder α] (s : Set α) where
   See `not_bddAbove_iff_isCofinal`. -/
   isCofinal : IsCofinal s
 
+namespace IsClub
+
 variable {α : Type v} {s t : Set α} {x : α} [LinearOrder α]
 
 @[simp]
-theorem IsClub.of_isEmpty [IsEmpty α] (s : Set α) : IsClub s :=
-  ⟨.of_isEmpty s, .of_isEmpty s⟩
+theorem of_isEmpty [IsEmpty α] {s : Set α} : IsClub s :=
+  ⟨.of_isEmpty, .of_isEmpty⟩
 
 @[simp]
-theorem IsClub.univ : IsClub (α := α) .univ :=
+protected theorem univ : IsClub (α := α) .univ :=
   ⟨.univ, .univ⟩
 
-theorem IsClub.union (hs : IsClub s) (ht : IsClub t) : IsClub (s ∪ t) :=
+protected theorem union (hs : IsClub s) (ht : IsClub t) : IsClub (s ∪ t) :=
   ⟨hs.dirSupClosed.union ht.dirSupClosed, hs.isCofinal.mono Set.subset_union_left⟩
 
-theorem IsClub.isLUB_mem (hs : IsClub s) (ht : t ⊆ s) (ht₀ : t.Nonempty) (hx : IsLUB t x) : x ∈ s :=
-  hs.dirSupClosed ht ht₀ (Std.Total.directedOn _) hx
+theorem isLUB_mem (hs : IsClub s) (ht : t ⊆ s) (ht₀ : t.Nonempty) (hx : IsLUB t x) : x ∈ s :=
+  hs.dirSupClosed ht ht₀ (.of_linearOrder _) hx
 
-theorem IsClub.csSup_mem {α} [ConditionallyCompleteLinearOrder α] {s t : Set α}
+theorem csSup_mem {α} [ConditionallyCompleteLinearOrder α] {s t : Set α}
     (hs : IsClub s) (ht : t ⊆ s) (ht₀ : t.Nonempty) (ht₁ : BddAbove t) : sSup t ∈ s :=
   hs.isLUB_mem ht ht₀ (isLUB_csSup ht₀ ht₁)
 
-theorem IsClub.sInter_of_orderTop {s : Set (Set α)} [OrderTop α]
-    (hs : ∀ x ∈ s, IsClub x) : IsClub (⋂₀ s) := by
+theorem sInter_of_orderTop {s : Set (Set α)} [OrderTop α] (hs : ∀ x ∈ s, IsClub x) :
+    IsClub (⋂₀ s) := by
   refine ⟨.sInter fun x hx ↦ (hs x hx).dirSupClosed, ?_⟩
   rw [isCofinal_iff_top_mem, Set.mem_sInter]
   exact fun x hx ↦ (hs x hx).isCofinal.top_mem
 
-theorem IsClub.iInter_of_orderTop {ι : Type*} {f : ι → Set α} [OrderTop α]
-    (hs : ∀ i, IsClub (f i)) : IsClub (⋂ i, f i) := by
+theorem iInter_of_orderTop {ι : Type*} {f : ι → Set α} [OrderTop α] (hs : ∀ i, IsClub (f i)) :
+    IsClub (⋂ i, f i) := by
   rw [← Set.sInter_range]
   exact .sInter_of_orderTop (by simpa)
 
-theorem IsClub.sInter_of_cof_le_one {s : Set (Set α)} (hα : cof α ≤ 1)
-    (hs : ∀ x ∈ s, IsClub x) : IsClub (⋂₀ s) := by
+theorem sInter_of_cof_le_one {s : Set (Set α)} (hα : cof α ≤ 1) (hs : ∀ x ∈ s, IsClub x) :
+    IsClub (⋂₀ s) := by
   cases isEmpty_or_nonempty α; · simp
   cases topOrderOrNoTopOrder α
   · exact .sInter_of_orderTop hs
   · cases one_lt_cof.not_ge hα
 
-theorem IsClub.iInter_of_cof_le_one {ι : Type*} {f : ι → Set α} (hα : cof α ≤ 1)
-    (hs : ∀ i, IsClub (f i)) : IsClub (⋂ i, f i) := by
+theorem iInter_of_cof_le_one {ι : Type*} {f : ι → Set α} (hα : cof α ≤ 1) (hs : ∀ i, IsClub (f i)) :
+    IsClub (⋂ i, f i) := by
   rw [← Set.sInter_range]
   exact .sInter_of_cof_le_one hα (by simpa)
 
@@ -86,7 +88,7 @@ variable [WellFoundedLT α]
 attribute [local instance]
   WellFoundedLT.toOrderBot WellFoundedLT.conditionallyCompleteLinearOrderBot
 
-theorem IsClub.sInter {s : Set (Set α)} (hα : cof α ≠ ℵ₀) (hsα : #s < cof α)
+protected theorem sInter {s : Set (Set α)} (hα : cof α ≠ ℵ₀) (hsα : #s < cof α)
     (hs : ∀ x ∈ s, IsClub x) : IsClub (⋂₀ s) := by
   cases isEmpty_or_nonempty α; · simp
   obtain hα | hα := hα.lt_or_gt
@@ -106,7 +108,7 @@ theorem IsClub.sInter {s : Set (Set α)} (hα : cof α ≠ ℵ₀) (hsα : #s < 
     · exact (hf ⟨t, ht⟩ _).2.trans <| hb ⟨_, rfl⟩
   · grind
 
-theorem IsClub.iInter {ι : Type u} {f : ι → Set α} (hα : cof α ≠ ℵ₀)
+protected theorem iInter {ι : Type u} {f : ι → Set α} (hα : cof α ≠ ℵ₀)
     (hι : Cardinal.lift.{v} #ι < Cardinal.lift.{u} (cof α)) (hf : ∀ i, IsClub (f i)) :
     IsClub (⋂ i, f i) := by
   rw [← Set.sInter_range]
@@ -114,7 +116,7 @@ theorem IsClub.iInter {ι : Type u} {f : ι → Set α} (hα : cof α ≠ ℵ₀
   rw [← Cardinal.lift_lt]
   exact mk_range_le_lift.trans_lt hι
 
-theorem IsClub.inter {s t : Set α} (hα : cof α ≠ ℵ₀) (hs : IsClub s) (ht : IsClub t) :
+protected theorem inter {s t : Set α} (hα : cof α ≠ ℵ₀) (hs : IsClub s) (ht : IsClub t) :
     IsClub (s ∩ t) := by
   rw [← Set.sInter_pair]
   have H : ∀ x ∈ ({s, t} : Set _), IsClub x := by simpa [hs]
@@ -123,7 +125,10 @@ theorem IsClub.inter {s t : Set α} (hα : cof α ≠ ℵ₀) (hs : IsClub s) (h
     exact .sInter_of_cof_le_one hα H
   · exact .sInter hα (hα'.trans_le' <| by simp) H
 
-theorem Order.IsNormal.isClub_fixedPoints {f : α → α} (hα : cof α ≠ ℵ₀) (hf : IsNormal f) :
+theorem _root_.Order.IsNormal.isClub_range {f : α → α} (hf : IsNormal f) : IsClub (.range f) :=
+  ⟨hf.dirSupClosed_range, fun x ↦ ⟨_, ⟨x, rfl⟩, hf.strictMono.le_apply⟩⟩
+
+theorem _root_.Order.IsNormal.isClub_fixedPoints {f : α → α} (hα : cof α ≠ ℵ₀) (hf : IsNormal f) :
     IsClub f.fixedPoints := by
   cases isEmpty_or_nonempty α; · simp
   refine ⟨fun s hs hs₀ _ a ha ↦ (hf.map_isLUB ha hs₀).unique ?_, fun a ↦ ?_⟩
@@ -143,3 +148,4 @@ theorem IsClub.isNormal_enum [IsRegularCardinalOrder α] {s : Set α} (hs : IsCl
   isNormal_enum_iff.2 hs.dirSupClosed
 
 end WellFoundedLT
+end IsClub
