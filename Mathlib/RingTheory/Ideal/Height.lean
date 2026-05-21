@@ -487,7 +487,7 @@ lemma Ideal.sup_height_eq_ringKrullDim [Nontrivial R] :
 
 /-- In a nontrivial commutative ring `R`, the supremum of heights of all prime ideals is
 equal to the Krull dimension of `R`. -/
-lemma Ideal.sup_height_isPrime_eq_ringKrullDim [Nontrivial R] :
+lemma Ideal.sup_isPrime_height_eq_ringKrullDim [Nontrivial R] :
     ↑(⨆ (I : Ideal R) (_ : I.IsPrime), I.height) = ringKrullDim R := by
   rw [← sup_height_eq_ringKrullDim, WithBot.coe_inj]
   apply le_antisymm
@@ -503,11 +503,11 @@ lemma Ideal.sup_height_isPrime_eq_ringKrullDim [Nontrivial R] :
 @[deprecated "Use `Ideal.sup_height_isPrime_eq_ringKrullDim` instead." (since := "2026-04-02")]
 private lemma Ideal.sup_primeHeight_eq_ringKrullDim [Nontrivial R] :
     ↑(⨆ (I : Ideal R) (_ : I.IsPrime), I.primeHeight) = ringKrullDim R := by
-  simp [← Ideal.height_eq_primeHeight, Ideal.sup_height_isPrime_eq_ringKrullDim]
+  simp [← Ideal.height_eq_primeHeight, Ideal.sup_isPrime_height_eq_ringKrullDim]
 
 /-- In a nontrivial commutative ring `R`, the supremum of heights of all maximal ideals is
 equal to the Krull dimension of `R`. -/
-lemma Ideal.sup_height_of_maximal_eq_ringKrullDim [Nontrivial R] :
+lemma Ideal.sup_isMaximal_height_eq_ringKrullDim [Nontrivial R] :
     ↑(⨆ (I : Ideal R) (_ : I.IsMaximal), I.height) = ringKrullDim R := by
   rw [← Ideal.sup_height_eq_ringKrullDim, WithBot.coe_inj]
   apply le_antisymm
@@ -521,7 +521,7 @@ lemma Ideal.sup_height_of_maximal_eq_ringKrullDim [Nontrivial R] :
 @[deprecated "Use `Ideal.sup_height_of_maximal_eq_ringKrullDim` instead." (since := "2026-04-02")]
 private lemma Ideal.sup_primeHeight_of_maximal_eq_ringKrullDim [Nontrivial R] :
     ↑(⨆ (I : Ideal R) (_ : I.IsMaximal), I.primeHeight) = ringKrullDim R := by
-  simp_rw [← Ideal.height_eq_primeHeight, Ideal.sup_height_of_maximal_eq_ringKrullDim]
+  simp_rw [← Ideal.height_eq_primeHeight, Ideal.sup_isMaximal_height_eq_ringKrullDim]
 
 section isLocalization
 
@@ -536,7 +536,7 @@ lemma Ring.krullDimLE_of_isLocalization_maximal {n : ℕ}
     Ring.KrullDimLE n R := by
   simp_rw [Ring.krullDimLE_iff] at h ⊢
   nontriviality R
-  rw [← Ideal.sup_height_of_maximal_eq_ringKrullDim]
+  rw [← Ideal.sup_isMaximal_height_eq_ringKrullDim]
   refine (WithBot.coe_le_coe).mpr (iSup₂_le_iff.mpr fun P hP ↦ ?_)
   rw [← WithBot.coe_le_coe, ← IsLocalization.AtPrime.ringKrullDim_eq_height P (Rₚ P)]
   exact h P
