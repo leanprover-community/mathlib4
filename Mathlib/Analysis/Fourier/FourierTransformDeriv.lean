@@ -173,7 +173,7 @@ lemma hasFDerivAt_fourierChar_smul (v : V) (w : W) :
   have ha : HasFDerivAt (fun w' : W ↦ L v w') (L v) w := ContinuousLinearMap.hasFDerivAt (L v)
   convert ((hasDerivAt_fourierChar (-L v w)).hasFDerivAt.comp w ha.neg).smul_const (f v)
   ext w' : 1
-  simp_rw [fourierSMulRight, ContinuousLinearMap.smul_apply, ContinuousLinearMap.smulRight_apply]
+  simp_rw [fourierSMulRight, smul_apply, ContinuousLinearMap.smulRight_apply]
   rw [ContinuousLinearMap.comp_apply, ContinuousLinearMap.neg_apply,
     ContinuousLinearMap.toSpanSingleton_apply, ← smul_assoc, smul_comm,
     ← smul_assoc, real_smul, real_smul, Submonoid.smul_def, smul_eq_mul]
@@ -801,7 +801,7 @@ lemma hasDerivAt_fourier
   convert (VectorFourier.hasFDerivAt_fourierIntegral L hf hf'' w).hasDerivAt using 1
   rw [fourierIntegral_continuousLinearMap_apply' h_int, VectorFourier.fourierIntegral,
     fourier_real_eq]
-  simp [fourierSMulRight, L, ContinuousLinearMap.smul_apply,
+  simp [fourierSMulRight, L, smul_apply,
     ContinuousLinearMap.smulRight_apply, ContinuousLinearMap.mul_apply', ← neg_mul, mul_smul]
 
 @[deprecated (since := "2025-11-16")]

@@ -462,7 +462,7 @@ theorem starProjection_comp_starProjection_eq_zero_iff {U V : Submodule 𝕜 E}
   refine ⟨fun h => ?_, fun h => h.starProjection_comp_starProjection⟩
   rw [← orthogonalProjection_comp_subtypeL_eq_zero_iff]
   simp only [ContinuousLinearMap.ext_iff, ContinuousLinearMap.comp_apply, subtypeL_apply,
-    starProjection_apply, ContinuousLinearMap.zero_apply, coe_eq_zero] at h ⊢
+    starProjection_apply, zero_apply, coe_eq_zero] at h ⊢
   intro x
   simpa using h (x : E)
 

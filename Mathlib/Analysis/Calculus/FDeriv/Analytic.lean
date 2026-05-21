@@ -827,7 +827,7 @@ private theorem factorial_smul' {n : ℕ} : ∀ {F : Type max u v} [NormedAddCom
   induction n with | zero => _ | succ n ih => _ <;> intro F _ _ _ p f h
   · rw [factorial_zero, one_smul, h.iteratedFDeriv_zero_apply_diag]
   · rw [factorial_succ, mul_comm, mul_smul, ← derivSeries_apply_diag,
-      ← ContinuousLinearMap.smul_apply, ih h.fderiv, iteratedFDeriv_succ_apply_right]
+      ← smul_apply, ih h.fderiv, iteratedFDeriv_succ_apply_right]
     rfl
 
 variable [CompleteSpace F]
@@ -842,7 +842,7 @@ theorem factorial_smul (n : ℕ) :
   cases n
   · rw [factorial_zero, one_smul, h.iteratedFDeriv_zero_apply_diag]
   · rw [factorial_succ, mul_comm, mul_smul, ← derivSeries_apply_diag,
-      ← ContinuousLinearMap.smul_apply, factorial_smul' _ h.fderiv, iteratedFDeriv_succ_apply_right]
+      ← smul_apply, factorial_smul' _ h.fderiv, iteratedFDeriv_succ_apply_right]
     rfl
 
 theorem hasSum_iteratedFDeriv [CharZero 𝕜] {y : E} (hy : y ∈ Metric.eball 0 r) :
