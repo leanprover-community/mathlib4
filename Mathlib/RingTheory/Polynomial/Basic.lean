@@ -599,7 +599,7 @@ theorem isPrime_map_C_iff_isPrime (P : Ideal R) :
     constructor
     · rintro h (- | n)
       · rwa [coeff_C_zero]
-      · simp only [coeff_C_ne_zero (Nat.succ_ne_zero _), Submodule.zero_mem]
+      · simp only [coeff_C_of_ne_zero (Nat.succ_ne_zero _), Submodule.zero_mem]
     · intro h
       simpa only [coeff_C_zero] using h 0
   · intro h
