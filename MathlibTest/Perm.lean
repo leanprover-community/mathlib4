@@ -1,6 +1,6 @@
-
+module
 import Mathlib.GroupTheory.Perm.Cycle.Concrete
-import Mathlib.Tactic.DeriveFintype
+meta import Mathlib.GroupTheory.Perm.Cycle.Concrete
 
 open Equiv
 

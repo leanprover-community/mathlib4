@@ -1,3 +1,4 @@
+module
 import Mathlib.Tactic.CategoryTheory.Elementwise
 import Mathlib.Algebra.Category.MonCat.Basic
 
@@ -8,7 +9,7 @@ open CategoryTheory
 
 namespace HasForget
 
-attribute [simp] Iso.hom_inv_id Iso.inv_hom_id IsIso.hom_inv_id IsIso.inv_hom_id
+attribute [local simp] Iso.hom_inv_id Iso.inv_hom_id IsIso.hom_inv_id IsIso.inv_hom_id
 
 @[elementwise]
 theorem ex1 {C : Type*} [Category* C] {FC : C → C → Type*} {CC : C → Type*}
@@ -150,9 +151,9 @@ end HasForget
 
 namespace ConcreteCategory
 
-attribute [simp] Iso.hom_inv_id Iso.inv_hom_id IsIso.hom_inv_id IsIso.inv_hom_id
+attribute [local simp] Iso.hom_inv_id Iso.inv_hom_id IsIso.hom_inv_id IsIso.inv_hom_id
 
-attribute [simp] Iso.hom_inv_id Iso.inv_hom_id IsIso.hom_inv_id IsIso.inv_hom_id
+attribute [local simp] Iso.hom_inv_id Iso.inv_hom_id IsIso.hom_inv_id IsIso.inv_hom_id
 
 variable {C : Type*} {FC : C → C → Type*} {CC : C → Type*}
 variable [∀ X Y, FunLike (FC X Y) (CC X) (CC Y)]

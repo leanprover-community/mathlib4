@@ -1,3 +1,4 @@
+module
 import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Algebra.Field.Defs
 
@@ -10,10 +11,10 @@ using Mathlib's `CommRing` typeclass.
 
 -- We mock ℝ here so that we don't have to import the dependencies.
 axiom Real : Type
-notation "ℝ" => Real
-@[instance] axiom Real.field : Field ℝ
-@[instance] axiom Real.linearOrder : LinearOrder ℝ
-@[instance] axiom Real.isStrictOrderedRing : IsStrictOrderedRing ℝ
+local notation "ℝ" => Real
+@[local instance] axiom Real.field : Field ℝ
+@[local instance] axiom Real.linearOrder : LinearOrder ℝ
+@[local instance] axiom Real.isStrictOrderedRing : IsStrictOrderedRing ℝ
 
 example (R : Type) [I : Ring R] :
   @AddCommGroup.toGrindIntModule R (@Ring.toAddCommGroup R I) =

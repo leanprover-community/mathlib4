@@ -1,4 +1,5 @@
-import Mathlib.Data.Nat.Log
+module
+meta import Mathlib.Data.Nat.Log
 
 /-!
 These used to fail (ran out of heartbeats) but with a new faster `Nat.log`/`Nat.clog`, they succeed.

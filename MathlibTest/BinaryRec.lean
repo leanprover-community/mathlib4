@@ -1,3 +1,4 @@
+module
 import Mathlib.Data.Nat.Bits
 
 def Nat.popcountTR (n : Nat) : Nat :=

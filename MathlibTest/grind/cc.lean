@@ -1,3 +1,5 @@
+module
+
 example (a₁ a₂ b₁ b₂ c d : Nat) :
         a₁ = c → a₂ = c →
         b₁ = d → d = b₂ →

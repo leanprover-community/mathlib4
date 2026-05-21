@@ -1,4 +1,5 @@
-import Mathlib
+module
+public import Mathlib
 
 /-
 This file checks that every declaration and import that have been flagged with

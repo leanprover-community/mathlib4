@@ -1,4 +1,5 @@
-import Mathlib
+module
+public import Mathlib
 
 -- These each instantiate 24 further lemmas (pretty much the same ones), but they seem reasonable.
 -- We'll make an exception for this one,

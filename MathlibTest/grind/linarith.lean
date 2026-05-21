@@ -1,3 +1,4 @@
+module
 import Mathlib
 
 example {α : Type*} [LinearOrder α] [CommRing α] [IsStrictOrderedRing α]

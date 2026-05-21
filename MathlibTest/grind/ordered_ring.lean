@@ -1,3 +1,4 @@
+module
 import Mathlib.Algebra.Order.Ring.Defs
 
 example {K : Type _} [CommRing K] [PartialOrder K] [IsStrictOrderedRing K]

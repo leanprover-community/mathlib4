@@ -1,9 +1,10 @@
+module
 import Mathlib
 
 open Real
 
-grind_pattern cos_sq_add_sin_sq => cos x
-grind_pattern cos_sq_add_sin_sq => sin x
+local grind_pattern cos_sq_add_sin_sq => cos x
+local grind_pattern cos_sq_add_sin_sq => sin x
 
 -- Whenever `grind` sees `cos` or `sin`, it adds `(cos x)^2 + (sin x)^2 = 1` to the blackboard.
 -- That's a polynomial, so it is sent to the Grobner basis module.

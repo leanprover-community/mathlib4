@@ -4,7 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Geoffrey Irving
 -/
 
+module
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
+import all Mathlib.Analysis.Complex.Exponential
 import Mathlib.Tactic.Bound
 
 /-!

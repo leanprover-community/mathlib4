@@ -1,3 +1,4 @@
+module
 import Mathlib.Tactic.Clean
 
 namespace Tests
@@ -6,13 +7,13 @@ def x : Id Nat := by dsimp [Id]; exact 1
 def x' : Id Nat := clean% by dsimp [Id]; exact 1
 
 /--
-info: def Tests.x : Id Nat :=
+info: private def Tests.x : Id Nat :=
 id 1
 -/
 #guard_msgs in #print x
 
 /--
-info: def Tests.x' : Id Nat :=
+info: private def Tests.x' : Id Nat :=
 1
 -/
 #guard_msgs in #print x'
@@ -22,14 +23,14 @@ theorem withClean : 2 + 2 = 4 := clean% by exact id rfl
 theorem withoutClean : 2 + 2 = 4 := by exact id rfl
 
 /--
-info: theorem Tests.withClean : 2 + 2 = 4 :=
+info: private theorem Tests.withClean : 2 + 2 = 4 :=
 rfl
 -/
 #guard_msgs in
 #print Tests.withClean
 
 /--
-info: theorem Tests.withoutClean : 2 + 2 = 4 :=
+info: private theorem Tests.withoutClean : 2 + 2 = 4 :=
 id rfl
 -/
 #guard_msgs in
