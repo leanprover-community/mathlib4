@@ -483,7 +483,7 @@ noncomputable instance langerGraphAction :
     GraphAction langerG (Fin 63) langerSimpleGraph where
   adj_smul := by
     intro ⟨σ, hσ⟩ u v hadj
-    show langerSimpleGraph.Adj (σ u) (σ v)
+    change langerSimpleGraph.Adj (σ u) (σ v)
     revert u v; change ∀ u v, langerSimpleGraph.Adj u v → langerSimpleGraph.Adj (σ u) (σ v)
     refine Subgroup.closure_induction
       (p := fun σ _ => ∀ u v, langerSimpleGraph.Adj u v → langerSimpleGraph.Adj (σ u) (σ v))
@@ -518,7 +518,7 @@ noncomputable instance langerPretransitive :
     have hmem : σ_x.symm.trans σ_y ∈ langerG :=
       langerG.mul_mem (applyWord_mem _) (langerG.inv_mem (applyWord_mem _))
     exact ⟨⟨σ_x.symm.trans σ_y, hmem⟩, by
-      show (σ_x.symm.trans σ_y) x = y
+      change (σ_x.symm.trans σ_y) x = y
       simp only [Equiv.trans_apply]
       rw [show σ_x.symm x = 0 from by
         rw [Equiv.symm_apply_eq]; exact (witnessWord_correct x).symm]

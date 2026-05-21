@@ -126,3 +126,48 @@ instance isVertexTransitive : IsVertexTransitive G (G ⧸ H) (cosetGraph H D hD)
   pretransitive := MulAction.isPretransitive_quotient G H
 
 end SimpleGraph.cosetGraph
+
+/-! ## Coset projection
+
+When `H ≤ K`, the natural projection `G ⧸ H → G ⧸ K` sends `gH ↦ gK`.
+If `D` is a connection set for both `H` and `K`, this projection is a
+graph homomorphism: adjacency in `Sab(G, H, D)` implies adjacency in
+`Sab(G, K, D)`.
+
+This is the Sabidussi analogue of quotient by a block system: the orbits
+of `K` on `G ⧸ H` form a system of blocks of size `[K : H]`, and the
+quotient graph is `Sab(G, K, D)`. -/
+
+/-- The natural projection `G ⧸ H → G ⧸ K` when `H ≤ K`. -/
+def cosetProjection (H K : Subgroup G) (hle : H ≤ K) :
+    G ⧸ H → G ⧸ K :=
+  Quotient.map id fun _ _ hab => by
+    change (QuotientGroup.leftRel K).r _ _
+    have hab' : (QuotientGroup.leftRel H).r _ _ := hab
+    rw [QuotientGroup.leftRel_apply] at hab' ⊢
+    exact hle hab'
+
+@[simp]
+theorem cosetProjection_mk (H K : Subgroup G) (hle : H ≤ K)
+    (g : G) : cosetProjection H K hle ⟦g⟧ = ⟦g⟧ :=
+  rfl
+
+/-- **Coset projection is a graph homomorphism**: if `H ≤ K` and `D` is a
+    connection set for both, then adjacency in `Sab(G, H, D)` implies
+    adjacency in `Sab(G, K, D)`.
+
+    The proof is trivial: adjacency is `x⁻¹y ∈ D` in both graphs.
+    The subgroup only determines the coset equivalence, not the adjacency test. -/
+theorem SimpleGraph.cosetGraph.proj_adj
+    {H K : Subgroup G} (hle : H ≤ K) {D : Set G}
+    (hDH : IsConnectionSet H D) (hDK : IsConnectionSet K D)
+    (q₁ q₂ : G ⧸ H) :
+    (cosetGraph H D hDH).Adj q₁ q₂ →
+    (cosetGraph K D hDK).Adj (cosetProjection H K hle q₁)
+                              (cosetProjection H K hle q₂) :=
+  Quotient.inductionOn₂ q₁ q₂ fun _ _ h => h
+
+/-- The coset projection is surjective. -/
+theorem cosetProjection_surjective (H K : Subgroup G) (hle : H ≤ K) :
+    Function.Surjective (cosetProjection H K hle) :=
+  fun q => Quotient.inductionOn q fun g => ⟨⟦g⟧, rfl⟩
