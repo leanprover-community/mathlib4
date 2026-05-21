@@ -10,6 +10,7 @@ public import Mathlib.Algebra.Lie.InvariantForm
 public import Mathlib.Algebra.Lie.Weights.Cartan
 public import Mathlib.Algebra.Lie.Weights.Linear
 public import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
+public import Mathlib.LinearAlgebra.BilinearForm.TensorProduct
 public import Mathlib.LinearAlgebra.PID
 
 /-!
@@ -105,6 +106,12 @@ lemma traceForm_lieInvariant : (traceForm R L M).lieInvariant L := by
   apply LinearMap.isNilpotent_trace_of_isNilpotent
   exact isNilpotent_toEnd_of_isNilpotent₂ R L M x y
 
+open scoped TensorProduct in
+@[simp] lemma traceForm_baseChange [Module.Free R M] [Module.Finite R M]
+    (A : Type*) [CommRing A] [Algebra R A] :
+    traceForm A (A ⊗[R] L) (A ⊗[R] M) = (traceForm R L M).baseChange A := by
+  ext; simp [traceForm_apply_apply, ← LinearMap.baseChange_comp, Algebra.algebraMap_eq_smul_one]
+
 variable {R L M} in
 lemma trace_toEnd_mul_eq_zero_of_traceForm_eq_zero (h : traceForm R L M = 0)
     (y : End R M) (hy : ∀ z ∈ LieHom.range φ, ⁅y, z⁆ ∈ LieHom.range φ)
@@ -174,12 +181,12 @@ lemma traceForm_apply_eq_zero_of_mem_lcs_of_mem_center {x y : L}
   · simpa using hy
 
 -- This is barely worth having: it usually follows from `LieModule.traceForm_eq_zero_of_isNilpotent`
-@[simp] lemma traceForm_eq_zero_of_isTrivial [IsTrivial L M] :
+lemma traceForm_eq_zero_of_isTrivial [IsTrivial L M] :
     traceForm R L M = 0 := by
   ext x y
   suffices φ x ∘ₗ φ y = 0 by simp [traceForm_apply_apply, this]
   ext m
-  simp
+  simp [trivial_lie_zero]
 
 /-- Given a bilinear form `B` on a representation `M` of a nilpotent Lie algebra `L`, if `B` is
 invariant (in the sense that the action of `L` is skew-adjoint w.r.t. `B`) then components of the

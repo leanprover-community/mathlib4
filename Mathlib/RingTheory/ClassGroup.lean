@@ -414,3 +414,43 @@ theorem card_classGroup_eq_one_iff [IsDedekindDomain R] [Fintype (ClassGroup R)]
   by_cases hI : I = ⊥
   · rw [hI]; exact bot_isPrincipal
   · exact (ClassGroup.mk0_eq_one_iff (mem_nonZeroDivisors_iff_ne_zero.mpr hI)).mp (eq_one _)
+
+section MulEquiv
+
+theorem FractionalIdeal.map_ringEquivOfRingEquiv_toPrincipalIdeal {S L : Type*} [CommRing S]
+    [IsDomain S] [Field L] [Algebra S L] [IsFractionRing S L] (f : R ≃+* S) :
+  Subgroup.map ((Units.mapEquiv (ringEquivOfRingEquiv K L f))).toMonoidHom
+    (toPrincipalIdeal R K).range = (toPrincipalIdeal S L).range := by
+  ext I
+  simp only [MulEquiv.toMonoidHom_eq_coe, Subgroup.mem_map, MonoidHom.mem_range,
+    toPrincipalIdeal_eq_iff, MonoidHom.coe_coe]
+  refine ⟨fun ⟨u, ⟨v, huv⟩, hu⟩ ↦ ?_, fun ⟨u, hu⟩ ↦ ?_⟩
+  · use Units.map (IsFractionRing.ringEquivOfRingEquiv f (K := K)
+      (L := L)).toRingHom v
+    rw [← hu]
+    simp only [RingEquiv.toRingHom_eq_coe, Units.coe_map, MonoidHom.coe_coe, RingHom.coe_coe,
+      Units.coe_mapEquiv, ← huv, RingEquiv.coe_toMulEquiv]
+    rw [FractionalIdeal.ringEquivOfRingEquiv_spanSingleton]
+  · use Units.mapEquiv (FractionalIdeal.ringEquivOfRingEquiv _ _ f).symm.toMulEquiv I
+    refine ⟨?_, by simp [← Units.val_inj]⟩
+    · use Units.map (IsFractionRing.ringEquivOfRingEquiv f (K := K)
+        (L := L)).symm.toRingHom u
+      simp only [IsFractionRing.ringEquivOfRingEquiv_symm, RingEquiv.toRingHom_eq_coe,
+        Units.coe_map, MonoidHom.coe_coe, RingHom.coe_coe, RingEquiv.toMulEquiv_eq_coe,
+        RingEquiv.coe_toMulEquiv_symm, Units.coe_mapEquiv]
+      rw [← FractionalIdeal.ringEquivOfRingEquiv_spanSingleton,
+        ← FractionalIdeal.ringEquivOfRingEquiv_symm_eq, hu]
+      rfl
+
+/-- A ring isomorphism `R ≃+* R'` induces an isomorphism on their class groups. -/
+@[simps!]
+noncomputable def ClassGroup.mulEquiv {R' : Type*} [CommRing R'] [IsDomain R'] (g : R ≃+* R') :
+    ClassGroup R ≃* ClassGroup R' :=
+  (ClassGroup.equiv (R := R) (FractionRing R)).trans
+    ((QuotientGroup.congr (toPrincipalIdeal R (FractionRing R)).range
+        (toPrincipalIdeal R' (FractionRing R')).range
+        (Units.mapEquiv (FractionalIdeal.ringEquivOfRingEquiv (FractionRing R) (FractionRing R') g))
+        (FractionalIdeal.map_ringEquivOfRingEquiv_toPrincipalIdeal g)).trans
+      (ClassGroup.equiv (FractionRing R')).symm)
+
+end MulEquiv

@@ -49,12 +49,7 @@ local cohomology, local cohomology modules
 
 @[expose] public section
 
-
-open Opposite
-
-open CategoryTheory
-
-open CategoryTheory.Limits
+open Opposite CategoryTheory Limits
 
 noncomputable section
 

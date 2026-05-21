@@ -243,7 +243,6 @@ theorem abs_log_sub_add_sum_range_le {x : ℝ} (h : |x| < 1) (n : ℕ) :
         have : |y| ≤ |x| := abs_le.2 hy
         have : 1 - |x| ≤ |1 - y| := le_trans (by linarith [hy.2]) (le_abs_self _)
         gcongr
-        exact sub_pos.2 h
   -- third step: apply the mean value inequality
   have C : ‖F x - F 0‖ ≤ |x| ^ n / (1 - |x|) * ‖x - 0‖ := by
     refine Convex.norm_image_sub_le_of_norm_hasDerivWithin_le
@@ -370,9 +369,9 @@ theorem hasSum_pow_div_log_of_abs_lt_one {x : ℝ} (h : |x| < 1) :
       rw [norm_eq_abs, abs_div, ← pow_abs, abs_of_nonneg this]
     _ ≤ |x| ^ (i + 1) / (0 + 1) := by
       gcongr
-      exact i.cast_nonneg
+      positivity
     _ ≤ |x| ^ i := by
-      simpa [pow_succ] using mul_le_of_le_one_right (pow_nonneg (abs_nonneg x) i) (le_of_lt h)
+      simpa [pow_succ] using mul_le_of_le_one_right (by positivity) h.le
 
 /-- Power series expansion of `log(1 + x) - log(1 - x)` for `|x| < 1`. -/
 theorem hasSum_log_sub_log_of_abs_lt_one {x : ℝ} (h : |x| < 1) :

@@ -126,6 +126,9 @@ def valueGroupWithZeroIsoInt : ValueGroupWithZero K ≃*o ℤᵐ⁰ := by
     (Units.map_injective (f := e.symm.toMonoidHom) e.symm.injective).nontrivial
   exact ⟨e.symm.trans (LocallyFiniteOrder.orderMonoidWithZeroEquiv _)⟩
 
+instance : IsCyclic (ValueGroupWithZero K)ˣ :=
+  (Units.mapEquiv (valueGroupWithZeroIsoInt K).toMulEquiv).isCyclic.mpr inferInstance
+
 instance : ValuativeRel.IsDiscrete K :=
   (ValuativeRel.nonempty_orderIso_withZeroMul_int_iff.mp ⟨valueGroupWithZeroIsoInt K⟩).1
 
@@ -177,7 +180,7 @@ instance : IsAdicComplete 𝓂[K] 𝒪[K] where
       simpa [S] using (hf n.le_succ).symm
     have h n : IsClosed (S n) := (IsNoetherianRing.isClosed_ideal (𝓂[K] ^ n)).vadd (f n)
     obtain ⟨L, hL⟩ := (h 0).isCompact.nonempty_iInter_of_sequence_nonempty_isCompact_isClosed S hS
-      (by simp [S, Submodule.nonempty]) h
+      (by simp [S]) h
     refine ⟨L, fun n ↦ ?_⟩
     obtain ⟨y, hy, rfl⟩ := Set.mem_iInter.mp hL n
     simpa [SModEq.sub_mem] using hy

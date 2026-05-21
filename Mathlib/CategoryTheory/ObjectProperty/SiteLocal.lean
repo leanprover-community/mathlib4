@@ -24,7 +24,7 @@ We say that
 The covers appearing in the definitions have index type in the morphism universe of `C`.
 -/
 
-@[expose] public section
+public section
 
 universe v u
 

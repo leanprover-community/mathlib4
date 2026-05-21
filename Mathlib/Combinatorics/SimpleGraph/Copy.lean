@@ -327,6 +327,23 @@ theorem IsContained.max_degree_le [Fintype V] [Fintype W] [DecidableRel G.Adj] [
   have ⟨f⟩ := h
   exact f.max_degree_le
 
+@[gcongr]
+lemma maxDegree_mono {H : SimpleGraph V} [Fintype V] [DecidableRel G.Adj] [DecidableRel H.Adj]
+    (hle : G ≤ H) : G.maxDegree ≤ H.maxDegree :=
+  IsContained.of_le hle |>.max_degree_le
+
+theorem Copy.minDegree_le [Fintype V] [Fintype W] [DecidableRel G.Adj] [DecidableRel H.Adj]
+    {f : Copy G H} (hf : Function.Surjective f) : G.minDegree ≤ H.minDegree := by
+  cases isEmpty_or_nonempty W
+  · simp [Function.isEmpty f]
+  refine H.le_minDegree_of_forall_le_degree _ fun w ↦ ?_
+  obtain ⟨v, rfl⟩ := hf w
+  grw [← f.degree_le, ← minDegree_le_degree]
+
+theorem Hom.minDegree_le [Fintype V] [Fintype W] [DecidableRel G.Adj] [DecidableRel H.Adj]
+    {f : G →g H} (hf : Function.Bijective f) : G.minDegree ≤ H.minDegree :=
+  Copy.minDegree_le (f := ⟨f, hf.injective⟩) hf.surjective
+
 end IsContained
 
 section Free
@@ -427,6 +444,9 @@ lemma isIndContained_iff_exists_iso_subgraph :
 
 alias ⟨IsIndContained.exists_iso_subgraph, IsIndContained.of_exists_iso_subgraph⟩ :=
   isIndContained_iff_exists_iso_subgraph
+
+theorem isIndContained_iff_exists_iso_induce : G ⊴ H ↔ ∃ s, Nonempty (G ≃g H.induce s) :=
+  ⟨fun ⟨f⟩ ↦ ⟨Set.range f, ⟨f.isoInduceRange⟩⟩, fun ⟨s, ⟨f⟩⟩ ↦ ⟨.comp (.induce s) f⟩⟩
 
 @[simp] lemma top_isIndContained_iff_top_isContained :
     (⊤ : SimpleGraph V) ⊴ H ↔ (⊤ : SimpleGraph V) ⊑ H :=

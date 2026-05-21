@@ -25,7 +25,7 @@ Criteria for a convolution of functions to be differentiable.
 
 -/
 
-@[expose] public section
+public section
 open Set Function Filter MeasureTheory MeasureTheory.Measure TopologicalSpace
 
 open Bornology ContinuousLinearMap Metric Topology

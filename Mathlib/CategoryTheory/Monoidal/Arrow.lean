@@ -21,7 +21,7 @@ If `C` also has pullbacks, then `Arrow C` has a monoidal closed structure given 
 
 -/
 
-@[expose] public section
+public section
 
 universe v u
 

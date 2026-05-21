@@ -18,7 +18,7 @@ This file proves that the category of condensed modules over a ring satisfies Gr
 AB5, AB4, and AB4`*`.
 -/
 
-@[expose] public section
+public section
 
 universe u
 
