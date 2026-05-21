@@ -6495,6 +6495,7 @@ public import Mathlib.RingTheory.HahnSeries.PowerSeries
 public import Mathlib.RingTheory.HahnSeries.Summable
 public import Mathlib.RingTheory.HahnSeries.Valuation
 public import Mathlib.RingTheory.Henselian
+public import Mathlib.RingTheory.HopfAlgebra.AscPochhammer
 public import Mathlib.RingTheory.HopfAlgebra.Basic
 public import Mathlib.RingTheory.HopfAlgebra.BinomialType
 public import Mathlib.RingTheory.HopfAlgebra.DeltaOperator
