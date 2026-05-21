@@ -146,39 +146,37 @@ namespace RationalMap
 /-- Composition of rational maps. Requires `f` to be dominant, so that we may choose
 a dominant representative. -/
 noncomputable def comp (f : X ⤏ Y) [f.IsDominant] (g : Y ⤏ Z) : X ⤏ Z :=
-  Quotient.liftOn g (PartialMap.toRationalMap ∘ f.dominantRep.comp) <| fun _ _ h ↦ by
+  Quotient.liftOn g (PartialMap.toRationalMap ∘ f.representative.comp) <| fun _ _ h ↦ by
     rw [Function.comp_apply, Function.comp_apply, PartialMap.toRationalMap_eq_iff]
     exact PartialMap.comp_equiv_of_equiv_right _ h
 
 lemma comp_def (f : X ⤏ Y) [f.IsDominant] (g : Y.PartialMap Z) :
-    f.comp g.toRationalMap = (f.dominantRep.comp g).toRationalMap :=
+    f.comp g.toRationalMap = (f.representative.comp g).toRationalMap :=
   rfl
 
 lemma toRationalMap_comp (f : X.PartialMap Y) [IsDominant f.hom] (g : Y.PartialMap Z) :
     f.toRationalMap.comp g.toRationalMap = (f.comp g).toRationalMap := by
   rw [RationalMap.comp_def, PartialMap.toRationalMap_eq_iff]
-  exact PartialMap.comp_equiv_of_equiv_left f.toRationalMap_dominantRep_equiv _
+  exact PartialMap.comp_equiv_of_equiv_left f.representative_toRationalMap_equiv _
 
 @[simp]
 lemma comp_id (f : X ⤏ Y) [f.IsDominant] : f.comp (RationalMap.id Y) = f := by
   simp [RationalMap.comp_def]
 
 instance (f : X ⤏ Y) [f.IsDominant] (g : Y ⤏ Z) [g.IsDominant] : (f.comp g).IsDominant := by
-  rw [← g.toRationalMap_dominantRep, RationalMap.comp_def]
-  haveI := f.dominantRep.isDominant_comp_hom g.dominantRep
-  apply PartialMap.isDominant_toRationalMap
+  rw [← g.toRationalMap_representative, RationalMap.comp_def]
+  infer_instance
 
 lemma comp_assoc {X₁ X₂ X₃ Y : Scheme.{u}} [PreirreducibleSpace X₁] [IrreducibleSpace X₂]
     [Nonempty X₃] (f₁ : X₁ ⤏ X₂) [f₁.IsDominant] (f₂ : X₂ ⤏ X₃) [f₂.IsDominant] (f₃ : X₃ ⤏ Y) :
     (f₁.comp f₂).comp f₃ = f₁.comp (f₂.comp f₃) := by
-  obtain ⟨f₃', rfl⟩ := f₃.exists_rep
-  obtain ⟨f₂', rfl⟩ := f₂.exists_rep
+  rw [← f₃.toRationalMap_representative]
   simp_rw [comp_def, ← PartialMap.comp_assoc, PartialMap.toRationalMap_eq_iff]
   apply PartialMap.comp_equiv_of_equiv_left
-  have := f₂'.isDominant_hom_of_isDominant_toRationalMap
-  apply (f₁.dominantRep.comp f₂').toRationalMap_dominantRep_equiv.trans
+  rw [← f₂.toRationalMap_representative]
+  apply (f₁.representative.comp f₂.representative).representative_toRationalMap_equiv.trans
   apply PartialMap.comp_equiv_of_equiv_right
-  exact f₂'.toRationalMap_dominantRep_equiv.symm
+  rw [toRationalMap_representative]
 
 end RationalMap
 
@@ -199,6 +197,6 @@ lemma PartialMap.id_comp {X Y : Scheme.{u}} [IrreducibleSpace X] (f : X.PartialM
 @[simp]
 lemma RationalMap.id_comp {X Y : Scheme.{u}} [IrreducibleSpace X] (f : X ⤏ Y) [f.IsDominant] :
     (RationalMap.id X).comp f = f := by
-  rw [← f.toRationalMap_dominantRep, toRationalMap_comp, PartialMap.id_comp]
+  rw [← f.toRationalMap_representative, toRationalMap_comp, PartialMap.id_comp]
 
 end AlgebraicGeometry.Scheme
