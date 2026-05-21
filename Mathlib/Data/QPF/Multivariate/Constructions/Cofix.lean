@@ -310,7 +310,6 @@ theorem Cofix.bisim' {α : TypeVec n} {β : Type*} (Q : β → Prop) (u v : β �
 
 theorem Cofix.mk_dest {α : TypeVec n} (x : Cofix F α) : Cofix.mk (Cofix.dest x) = x := by
   apply Cofix.bisim_rel (fun x y : Cofix F α => x = Cofix.mk (Cofix.dest y)) _ _ _ rfl
-  dsimp
   intro x y h
   rw [h]
   conv =>

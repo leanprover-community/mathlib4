@@ -191,7 +191,6 @@ lemma exists_mul_galRestrict_of_norm_eq_one (hg : ∀ x, x ∈ Subgroup.zpowers 
   · replace hε := hε.symm
     rw [← h, eq_div_iff_mul_eq] at hε
     · replace hε := congr_arg (t • ·) hε
-      simp only at hε
       rw [Algebra.smul_def, mul_left_comm, ← Algebra.smul_def t, ← g.toAlgHom_apply,
         ← AlgHom.map_smul_of_tower, this] at hε
       apply IsIntegralClosure.algebraMap_injective B A L

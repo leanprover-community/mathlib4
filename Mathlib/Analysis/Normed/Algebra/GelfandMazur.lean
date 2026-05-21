@@ -191,7 +191,6 @@ private lemma norm_sub_eq_norm_sub_of_isMinOn {x : F} {z : ℂ}
   have hM₀ : 0 < M := by have := H z; positivity
   refine norm_eq_of_isMinOn_of_forall_le (f := (x - algebraMap ℂ F ·)) hM₀ hMdef.symm hz
     (by fun_prop) (fun {y} w hy n hn ↦ ?_) c
-  dsimp only at hy ⊢
   -- show
   --  `‖x - algebraMap ℂ F w‖ ≤ M * (1 + (‖x - algebraMap ℂ F w - (x - algebraMap ℂ F y)‖ / M) ^ n)`
   rw [sub_sub_sub_cancel_left, ← map_sub, norm_algebraMap, norm_sub_rev y w, norm_one, mul_one,

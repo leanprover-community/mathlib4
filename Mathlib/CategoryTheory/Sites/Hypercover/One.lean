@@ -939,7 +939,6 @@ noncomputable def isLimitMultifork : IsLimit (E.multifork F.1) :=
     intro c m hm
     apply F.property.hom_ext_ofArrows _ E.mem₀
     intro i₀
-    dsimp only
     rw [multiforkLift_map]
     exact hm i₀)
 

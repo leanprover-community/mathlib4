@@ -729,7 +729,6 @@ theorem finSepDegree_dvd_finrank : finSepDegree F E ∣ finrank F E := by
   · rw [← finSepDegree_top F, ← finrank_top F E]
     refine induction_on_adjoin (fun K : IntermediateField F E ↦ finSepDegree F K ∣ finrank F K)
       (by simp_rw [finSepDegree_bot, IntermediateField.finrank_bot, one_dvd]) (fun L x h ↦ ?_) ⊤
-    simp only at h ⊢
     have hdvd := mul_dvd_mul h <| finSepDegree_adjoin_simple_dvd_finrank L E x
     set M := L⟮x⟯
     rwa [finSepDegree_mul_finSepDegree_of_isAlgebraic F L M,
@@ -758,7 +757,6 @@ theorem finSepDegree_eq_finrank_of_isSeparable [Algebra.IsSeparable F E] :
   rw [← finSepDegree_top F, ← finrank_top F E]
   refine induction_on_adjoin (fun K : IntermediateField F E ↦ finSepDegree F K = finrank F K)
     (by simp_rw [finSepDegree_bot, IntermediateField.finrank_bot]) (fun L x h ↦ ?_) ⊤
-  simp only at h ⊢
   have heq : _ * _ = _ * _ := congr_arg₂ (· * ·) h <|
     (finSepDegree_adjoin_simple_eq_finrank_iff L E x (IsAlgebraic.of_finite L x)).2 <|
       IsSeparable.tower_top L (Algebra.IsSeparable.isSeparable F x)

@@ -683,11 +683,9 @@ theorem selfZPow_pow_sub (a : R) (b : B) (m d : ℤ) :
   constructor
   · intro h
     have := congr_arg (fun s : B => s * selfZPow x B d) h
-    simp only at this
     rwa [mul_assoc, mul_assoc, selfZPow_neg_mul, mul_one, mul_comm b _] at this
   · intro h
     have := congr_arg (fun s : B => s * selfZPow x B (-d)) h
-    simp only at this
     rwa [mul_comm _ b, mul_assoc b _ _, selfZPow_mul_neg, mul_one] at this
 
 variable {R : Type*} [CommRing R] (x : R) (B : Type*) [CommRing B]

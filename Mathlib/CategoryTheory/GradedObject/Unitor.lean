@@ -202,13 +202,11 @@ noncomputable def mapBifunctorRightUnitorCofanIsColimit (j : J) :
       · subst hi
         simp only [Set.mem_preimage, hp, Set.mem_singleton_iff] at h
         subst h
-        dsimp
         rw [mapBifunctorRightUnitorCofan_inj, assoc, Iso.hom_inv_id_app_assoc,
           ← Functor.map_comp_assoc, Iso.hom_inv_id, Functor.map_id, id_comp]
       · apply IsInitial.hom_ext
         exact mapBifunctorObjObjSingle₀IsInitial _ _ _ _ hi)
     (fun s m hm => by
-      dsimp
       rw [← hm ⟨⟨j, 0⟩, hp j⟩, mapBifunctorRightUnitorCofan_inj, assoc, ← Functor.map_comp_assoc,
         Iso.inv_hom_id, Functor.map_id, id_comp, Iso.inv_hom_id_app_assoc])
 
