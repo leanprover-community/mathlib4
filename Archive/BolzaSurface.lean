@@ -8,7 +8,8 @@ Authors: Robin Langer
 The Möbius-Kantor graph (Foster census F016A) = generalized Petersen graph
 GP(8,3). It is a cubic arc-transitive graph on 16 vertices.
 
-  - **Sabidussi**: Sab(GL(2,3), C₃, a), |GL(2,3)| = 48, from Δ(2,3,8)
+  - **Sabidussi**: Sab(GL(2,3), C₃), |GL(2,3)| = 48
+  - **Voltage graph**: `voltageGraphK2 8 0 1 3` on K₂ with Z₈
   - **Tiling**: {8,3} — 6 octagonal faces on the Bolza surface (genus 2)
   - **CSS code**: [[24, 4, ≥ 6]]
 

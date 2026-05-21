@@ -8,7 +8,7 @@ Authors: Robin Langer
 The Heawood graph (Foster census F014A) is the Levi graph (incidence graph) of
 the Fano plane PG(2,2). It is a cubic arc-transitive graph on 14 vertices.
 
-  - **Sabidussi**: Sab(G, C₃, a) where |G| = 42, from Δ(2,3,6)
+  - **Sabidussi**: Sab(G₄₂, C₃) where G₄₂ = Z₇ ⋊ Z₆ (order 42)
   - **Tiling**: {6,3} — 7 hexagonal faces on the torus (genus 1)
   - **CSS code**: [[21, 2, ≥ 3]]
 
@@ -20,6 +20,9 @@ All axioms verified by the Lean kernel (`decide`). No sorry.
 -/
 
 import Mathlib.Combinatorics.CellularSurface
+import Archive.VoltageGraphs
+
+set_option linter.style.nativeDecide false
 
 open CellularSurface
 
@@ -64,3 +67,26 @@ example : ∀ e, ∑ v, heawoodSurface.d1 v e = 0 := heawoodSurface.d1_col_sum_e
 
 /-- The Heawood code: Euler characteristic confirms genus 1, so k = 2. -/
 theorem heawood_euler : (14 : ℤ) - 21 + 7 = 2 - 2 * 1 := by norm_num
+
+/-! ### Bridge to voltage graph description
+
+The Heawood graph has two descriptions:
+1. **Combinatorial** (above): a `CellularSurface` with explicit edge_src/edge_tgt
+2. **Algebraic** (`VoltageGraphs.lean`): `voltageGraphK2 7 0 4 6`, a voltage graph on K₂
+
+We prove these define the same graph via the bijection v ↦ (v/7, v mod 7),
+mapping Fano points 0–6 to fibre 0 and Fano lines 7–13 to fibre 1. -/
+
+/-- The bijection Fin 14 → Fin 2 × ZMod 7 mapping vertex v to (v/7, v mod 7). -/
+def heawoodBij (v : Fin 14) : Fin 2 × ZMod 7 :=
+  (⟨v.val / 7, by omega⟩, (v.val : ZMod 7))
+
+/-- **Bridge theorem**: the Heawood `CellularSurface` graph equals the Heawood
+voltage graph under the bijection v ↦ (v/7, v mod 7). -/
+theorem heawood_surface_eq_voltage :
+    ∀ u v : Fin 14,
+      (∃ e : Fin 21,
+        (heawoodSurface.edge_src e = u ∧ heawoodSurface.edge_tgt e = v) ∨
+        (heawoodSurface.edge_src e = v ∧ heawoodSurface.edge_tgt e = u)) ↔
+      heawoodVoltage.Adj (heawoodBij u) (heawoodBij v) := by
+  native_decide
