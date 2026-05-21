@@ -82,9 +82,10 @@ theorem Nondegenerate.exists_not_ortho_of_ne_zero' {M : Matrix m n R} (hM : Nond
   not_forall.mp (mt hM.eq_zero_of_ortho' hw)
 
 section Determinant
+open scoped nonZeroDivisors
 variable [DecidableEq m] {M : Matrix m m R}
 
-theorem nondegenerate_of_det_mem_nonZeroDivisors (hM : M.det ∈ nonZeroDivisors R) :
+theorem nondegenerate_of_det_mem_nonZeroDivisors (hM : M.det ∈ R⁰) :
     Nondegenerate M := by
   refine nondegenerate_def.mpr ⟨fun v h ↦ ?_, fun w h ↦ ?_⟩
   · ext i
@@ -104,7 +105,7 @@ See also `BilinForm.nondegenerateOfDetNeZero'` and `BilinForm.nondegenerateOfDet
 theorem nondegenerate_of_det_ne_zero [NoZeroDivisors R] (hM : M.det ≠ 0) : Nondegenerate M :=
   nondegenerate_of_det_mem_nonZeroDivisors <| mem_nonZeroDivisors_of_ne_zero hM
 
-theorem eq_zero_of_vecMul_eq_zero_of_det_mem_nonZeroDivisors (hM : M.det ∈ nonZeroDivisors R)
+theorem eq_zero_of_vecMul_eq_zero_of_det_mem_nonZeroDivisors (hM : M.det ∈ R⁰)
     {v : m → R} (hv : v ᵥ* M = 0) : v = 0 :=
   nondegenerate_of_det_mem_nonZeroDivisors hM |>.eq_zero_of_ortho fun w ↦ by
     rw [dotProduct_mulVec, hv, zero_dotProduct]
@@ -113,7 +114,7 @@ theorem eq_zero_of_vecMul_eq_zero [NoZeroDivisors R] (hM : M.det ≠ 0) {v : m �
     (hv : v ᵥ* M = 0) : v = 0 :=
   eq_zero_of_vecMul_eq_zero_of_det_mem_nonZeroDivisors (mem_nonZeroDivisors_of_ne_zero hM) hv
 
-theorem eq_zero_of_mulVec_eq_zero_of_det_mem_nonZeroDivisors (hM : M.det ∈ nonZeroDivisors R)
+theorem eq_zero_of_mulVec_eq_zero_of_det_mem_nonZeroDivisors (hM : M.det ∈ R⁰)
     {v : m → R} (hv : M *ᵥ v = 0) : v = 0 :=
   eq_zero_of_vecMul_eq_zero_of_det_mem_nonZeroDivisors (by rwa [det_transpose]) <|
     vecMul_transpose M v |>.trans hv
