@@ -207,14 +207,104 @@ lemma shapley_folkman_exists_choice
       ∀ i : ι, AffineIndependent ℝ (fun p : T i => (p : E)) := by
     intro i
     exact (Classical.choose_spec (hcar i)).2.2
+  have hcombo_raw := fun i =>
+    eq_pos_convex_span_of_mem_convexHull (hy₀_mem_T i)
+  let α := fun i => Classical.choose (hcombo_raw i)
 
+  have hcombo_spec := fun i =>
+    Classical.choose_spec (hcombo_raw i)
+
+  let hα : ∀ i : ι, Fintype (α i) := fun i =>
+    Classical.choose (hcombo_spec i)
+
+  let z : ∀ i : ι, α i → E := fun i =>
+    Classical.choose (Classical.choose_spec (hcombo_spec i))
+
+  let w : ∀ i : ι, α i → ℝ := fun i =>
+    Classical.choose (Classical.choose_spec (Classical.choose_spec (hcombo_spec i)))
+
+  have hcombo_props :
+      ∀ i : ι,
+        Set.range (z i) ⊆ (T i : Set E) ∧
+        AffineIndependent ℝ (z i) ∧
+        (∀ a : α i, 0 < w i a) ∧
+        ∑ a, w i a = 1 ∧
+        ∑ a, w i a • z i a = y₀ i := by
+    intro i
+    dsimp [z, w]
+    exact Classical.choose_spec
+      (Classical.choose_spec (Classical.choose_spec (hcombo_spec i)))
+  have hz_mem_S : ∀ i : ι, ∀ a : α i, z i a ∈ S i := by
+    intro i a
+    have hz_mem_T : z i a ∈ (T i : Set E) := by
+      exact (hcombo_props i).1 ⟨a, rfl⟩
+    exact hT_subset i hz_mem_T
+
+  let active : (i : ι) → Finset (α i) := fun i =>
+    @Finset.univ (α i) (hα i)
+
+  let bad : Finset ι :=
+    Finset.univ.filter fun i => (active i).card ≠ 1
+
+  have hbad_iff : ∀ i : ι, i ∈ bad ↔ (active i).card ≠ 1 := by
+    intro i
+    simp [bad]
+
+  have hgood_card :
+      ∀ i ∈ (Finset.univ \ bad), (active i).card = 1 := by
+    intro i hi
+    have hi_not_bad : i ∉ bad := (Finset.mem_sdiff.mp hi).2
+    by_contra hcard
+    exact hi_not_bad ((hbad_iff i).2 hcard)
+  have hy_good_test :
+      ∀ i ∈ (Finset.univ \ bad), y₀ i ∈ S i := by
+    intro i hi
+    classical
+    letI := hα i
+
+    have hcard_univ : (Finset.univ : Finset (α i)).card = 1 := by
+      simpa [active] using hgood_card i hi
+
+    rcases Finset.card_eq_one.mp hcard_univ with ⟨a, ha⟩
+
+    have huniv_eq : (Finset.univ : Finset (α i)) = {a} := ha
+
+    have hw_sum_single : w i a = 1 := by
+      have hw_sum := (hcombo_props i).2.2.2.1
+      simpa [huniv_eq] using hw_sum
+
+    have hw_eq_single : w i a • z i a = y₀ i := by
+      have hw_eq := (hcombo_props i).2.2.2.2
+      simpa [huniv_eq] using hw_eq
+
+    have hy_eq : y₀ i = z i a := by
+      calc
+        y₀ i = w i a • z i a := by
+          exact hw_eq_single.symm
+        _ = (1 : ℝ) • z i a := by
+          rw [hw_sum_single]
+        _ = z i a := by
+          simp
+
+    rw [hy_eq]
+    exact hz_mem_S i a
+
+  have hy_bad :
+      ∀ i ∈ bad, y₀ i ∈ convexHull ℝ (S i) := by
+    intro i hi
+    exact hy₀_all i
+
+  have hbad_card : bad.card ≤ Module.finrank ℝ E := by
+    sorry
+
+  refine ⟨y₀, bad, hbad_card, hy_bad, hy_good_test, ?_⟩
+  exact hy₀sum
   -- Checkpoint:
   -- For every index `i`, we now have a finite Carathéodory set `T i`.
   --
   -- Next mathematical step:
   -- convert `hy₀_mem_T i` into positive convex coefficients over `T i`,
   -- then set up the minimization / perturbation argument.
-  sorry
 
 theorem shapley_folkman
     {ι E : Type*}
