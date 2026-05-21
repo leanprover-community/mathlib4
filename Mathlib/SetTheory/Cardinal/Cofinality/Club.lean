@@ -143,7 +143,7 @@ theorem _root_.Order.IsNormal.isClub_fixedPoints {f : α → α} (hα : cof α �
         ((aleph0_le_cof.lt_of_ne' hα).trans_le' ?_)
       simpa using mk_range_le_lift (f := fun n : ℕ ↦ f^[n] a)
 
-theorem IsClub.isNormal_enum [IsRegularCardinalOrder α] {s : Set α} (hs : IsClub s) :
+theorem isNormal_enum [IsRegularCardinalOrder α] {s : Set α} (hs : IsClub s) :
     IsNormal (Subtype.val ∘ enum s hs.isCofinal) :=
   isNormal_enum_iff.2 hs.dirSupClosed
 
