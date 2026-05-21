@@ -40,7 +40,7 @@ noncomputable instance instNormedAddGroup : NormedAddGroup (DirectLimit G f) whe
     rw [MetricSpace.dist_def, NormedAddGroup.dist_eq, neg_def, add_def, DirectLimit.lift_def])
 
 lemma norm_def (i : ι) (x : G i) : ‖(⟦⟨i, x⟩⟧ : DirectLimit G f)‖ = ‖x‖ := by
-  change DirectLimit.lift f (ih := fun i x ↦ ‖(x : G i)‖) _ ⟦⟨i, x⟩⟧ = ‖x‖
+  change DirectLimit.lift f (ih := fun i x ↦ ‖x‖) _ ⟦⟨i, x⟩⟧ = ‖x‖
   apply DirectLimit.lift_def
 
 end NormedAddGroup
@@ -55,7 +55,7 @@ noncomputable instance instNormedAddCommGroup : NormedAddCommGroup (DirectLimit 
   __ := NormedAddGroup.instNormedAddGroup
   __ := (inferInstance : AddCommGroup (DirectLimit G f))
 
-example (i : ι) (x : G i) : ‖(⟦⟨i, x⟩⟧ : DirectLimit G f)‖ = ‖(x : G i)‖ := by
+example (i : ι) (x : G i) : ‖(⟦⟨i, x⟩⟧ : DirectLimit G f)‖ = ‖x‖ := by
   apply DirectLimit.NormedAddGroup.norm_def
 
 end NormedAddCommGroup
