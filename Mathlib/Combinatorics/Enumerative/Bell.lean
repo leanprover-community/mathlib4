@@ -124,18 +124,14 @@ theorem prod_count_factorial_eq_count_factorial_mul_prod_erase
       simpa [ha] using hm
     simp [hcount]
 
-theorem prod_count_factorial_cons_erase {m : Multiset ℕ} {a : ℕ} :
-    ∏ j ∈ ((a ::ₘ m).toFinset.erase 0).erase a, ((a ::ₘ m).count j)! =
-    ∏ j ∈ (m.toFinset.erase 0).erase a, (m.count j)! := by
-  refine Finset.prod_congr ?_ ?_
-  · ext x
-    by_cases hx : x = a <;> simp [Multiset.toFinset_cons, hx]
-  · intro j hj
-    simp [(Finset.mem_erase.mp hj).1]
-
 theorem bell_cons_mul_count {m : Multiset ℕ} {a : ℕ} (ha : a ≠ 0) :
     (a ::ₘ m).bell * (a ::ₘ m).count a = Nat.choose (m.sum + a) a * m.bell := by
   let rest := ∏ j ∈ (m.toFinset.erase 0).erase a, (m.count j)!
+  have hrest : rest = ∏ j ∈ ((a ::ₘ m).toFinset.erase 0).erase a, ((a ::ₘ m).count j)! := by
+    refine Finset.prod_congr ?_ ?_
+    · grind [Multiset.toFinset_cons]
+    · intro _ hj
+      simp [Finset.mem_erase.mp hj]
   let c := a ! * ((m.map (· !)).prod * (m.count a)! * rest)
   have hm0 : m.bell * ((m.map (· !)).prod * (m.count a)! * rest) = m.sum ! := by
     have hm := Multiset.bell_mul_eq m
@@ -151,7 +147,7 @@ theorem bell_cons_mul_count {m : Multiset ℕ} {a : ℕ} (ha : a ≠ 0) :
     _ = (a ::ₘ m).bell * (m.count a + 1) * c := by simp [mul_assoc]
     _ = (m.sum + a)! := by
       have hq := Multiset.bell_mul_eq (a ::ₘ m)
-      rw [← Finset.mul_prod_erase _ _ ha_mem, prod_count_factorial_cons_erase] at hq
+      rw [← Finset.mul_prod_erase _ _ ha_mem, ← hrest] at hq
       simpa [c, Nat.factorial_succ, add_comm, mul_assoc, mul_left_comm] using hq
     _ = ((m.sum + a).choose a * m.bell) * c := by
       simp [← Nat.add_choose_mul_factorial_mul_factorial, mul_assoc, ← hm]
