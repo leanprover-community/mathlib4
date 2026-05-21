@@ -49,10 +49,8 @@ theorem mul_apply' (x y : R) : mul 𝕜 R x y = x * y :=
 theorem opNorm_mul_apply_le (x : R) : ‖mul 𝕜 R x‖ ≤ ‖x‖ :=
   opNorm_le_bound _ (norm_nonneg x) (norm_mul_le x)
 
-
 theorem opNorm_mul_le : ‖mul 𝕜 R‖ ≤ 1 :=
   LinearMap.mkContinuous₂_norm_le _ zero_le_one _
-
 
 /-- Multiplication on the left in a non-unital normed algebra `R` as a non-unital algebra
 homomorphism into the algebra of *continuous* linear maps. This is the left regular representation
@@ -126,11 +124,9 @@ lemma isometry_mul : Isometry (mul 𝕜 R) :=
 lemma opNorm_mul_apply (x : R) : ‖mul 𝕜 R x‖ = ‖x‖ :=
   (AddMonoidHomClass.isometry_iff_norm (mul 𝕜 R)).mp (isometry_mul 𝕜 R) x
 
-
 @[simp]
 lemma opNNNorm_mul_apply (x : R) : ‖mul 𝕜 R x‖₊ = ‖x‖₊ :=
   Subtype.ext <| opNorm_mul_apply 𝕜 R x
-
 
 /-- Multiplication in a normed algebra as a linear isometry to the space of
 continuous linear maps. -/
@@ -163,22 +159,22 @@ def toSpanSingletonLIE : E ≃ₗᵢ[𝕜] (𝕜 →L[𝕜] E) where
   norm_map' _ := by simp
 
 @[simp]
-lemma toSpanSingletonₗᵢ_apply (x : E) : toSpanSingletonₗᵢ 𝕜 E x = toSpanSingleton 𝕜 x := rfl
+lemma toSpanSingletonLIE_apply (x : E) : toSpanSingletonLIE 𝕜 E x = toSpanSingleton 𝕜 x := rfl
 
-@[simp] lemma toSpanSingletonₗᵢ_symm_apply (f : 𝕜 →L[𝕜] E) :
-    (toSpanSingletonₗᵢ 𝕜 E).symm f = f 1 := rfl
+@[simp] lemma toSpanSingletonLIE_symm_apply (f : 𝕜 →L[𝕜] E) :
+    (toSpanSingletonLIE 𝕜 E).symm f = f 1 := rfl
 
-@[simp] lemma toLinearEquiv_toSpanSingletonₗᵢ :
-    (toSpanSingletonₗᵢ 𝕜 E).toLinearEquiv = toSpanSingletonLE 𝕜 𝕜 E := rfl
+@[simp] lemma toLinearEquiv_toSpanSingletonLIE :
+    (toSpanSingletonLIE 𝕜 E).toLinearEquiv = toSpanSingletonLE 𝕜 𝕜 E := rfl
 
-@[simp] lemma toContinuousLinearEquiv_toSpanSingletonₗᵢ :
-    (toSpanSingletonₗᵢ 𝕜 E).toContinuousLinearEquiv = toSpanSingletonCLE := rfl
+@[simp] lemma toContinuousLinearEquiv_toSpanSingletonLIE :
+    (toSpanSingletonLIE 𝕜 E).toContinuousLinearEquiv = toSpanSingletonCLE := rfl
 
 @[deprecated (since := "2026-04-23")]
 alias ring_lmap_equiv_selfₗ := toSpanSingletonLE
 
 @[deprecated (since := "2026-04-23")]
-alias ring_lmap_equiv_self := toSpanSingletonₗᵢ
+alias ring_lmap_equiv_self := toSpanSingletonLIE
 
 end RingEquiv
 
