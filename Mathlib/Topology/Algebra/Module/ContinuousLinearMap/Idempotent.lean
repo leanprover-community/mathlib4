@@ -24,7 +24,7 @@ continuous endomorphisms of a topological `R`-module `M`.
 * `ContinuousLinearMap.IsIdempotentElem.isCLosed_range`: an idempotent continuous linear map
   has closed range.
 
-Further results can be found in the `Mathlib.Topology.Algebra.Module.Complement` module, where
+Further results can be found in the `Mathlib/Topology/Algebra/Module/Complement.lean` module, where
 we show that idempotent elements of `M →L[R] M` are precisely the projections associated to
 topological complement submodules.
 -/
