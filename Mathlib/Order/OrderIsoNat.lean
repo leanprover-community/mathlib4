@@ -45,7 +45,6 @@ theorem coe_natLT {f : ℕ → α} {H : ∀ n : ℕ, r (f n) (f (n + 1))} : ⇑(
 
 /-- If `f` is a strictly `r`-decreasing sequence, then this returns `f` as an order embedding. -/
 def natGT (f : ℕ → α) (H : ∀ n : ℕ, r (f (n + 1)) (f n)) : ((· > ·) : ℕ → ℕ → Prop) ↪r r :=
-  haveI := IsStrictOrder.swap r
   RelEmbedding.swap (natLT f H)
 
 @[simp]

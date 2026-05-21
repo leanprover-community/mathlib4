@@ -36,7 +36,7 @@ In lemma names,
 * `⨅ i, f i` : `iInf f`, the infimum of the range of `f`.
 -/
 
-@[expose] public section
+public section
 
 open Function OrderDual Set
 
@@ -303,10 +303,6 @@ theorem iSup_le_iff : iSup f ≤ a ↔ ∀ i, f i ≤ a :=
 @[to_dual le_iInf₂_iff]
 theorem iSup₂_le_iff {f : ∀ i, κ i → α} : ⨆ (i) (j), f i j ≤ a ↔ ∀ i j, f i j ≤ a := by
   simp_rw [iSup_le_iff]
-
-@[to_dual lt_iInf_iff]
-theorem iSup_lt_iff : iSup f < a ↔ ∃ b, b < a ∧ ∀ i, f i ≤ b :=
-  ⟨fun h => ⟨iSup f, h, le_iSup f⟩, fun ⟨_, h, hb⟩ => (iSup_le hb).trans_lt h⟩
 
 @[to_dual]
 theorem sSup_eq_iSup {s : Set α} : sSup s = ⨆ a ∈ s, a :=
@@ -818,10 +814,6 @@ end
 section CompleteLinearOrder
 
 variable [CompleteLinearOrder α]
-
-@[to_dual]
-theorem iSup_eq_top (f : ι → α) : iSup f = ⊤ ↔ ∀ b < ⊤, ∃ i, b < f i := by
-  simp only [← sSup_range, sSup_eq_top, Set.exists_range_iff]
 
 @[to_dual]
 lemma iSup₂_eq_top (f : ∀ i, κ i → α) : ⨆ i, ⨆ j, f i j = ⊤ ↔ ∀ b < ⊤, ∃ i j, b < f i j := by

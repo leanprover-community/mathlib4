@@ -63,7 +63,7 @@ theorem mem_span_image {m : M} {s : Set ι} : m ∈ span R (b '' s) ↔ ↑(b.re
 @[simp]
 theorem self_mem_span_image [Nontrivial R] {i : ι} {s : Set ι} :
     b i ∈ span R (b '' s) ↔ i ∈ s := by
-  simp [mem_span_image, Finsupp.support_single_ne_zero]
+  simp [mem_span_image, Finsupp.support_single]
 
 protected theorem mem_span (x : M) : x ∈ span R (range b) :=
   span_mono (image_subset_range _ _) (mem_span_repr_support b x)

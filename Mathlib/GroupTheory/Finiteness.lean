@@ -36,7 +36,7 @@ assert_not_exists MonoidWithZero
 /-! ### Monoids and submonoids -/
 
 
-open Pointwise
+open scoped Pointwise
 
 variable {M N : Type*} [Monoid M]
 

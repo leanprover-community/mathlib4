@@ -185,12 +185,14 @@ theorem coeff_C (n : ℕ) (a : R) : coeff n (C a : R⟦X⟧) = if n = 0 then a e
 theorem coeff_zero_C (a : R) : coeff 0 (C a) = a := by
   rw [coeff_C, if_pos rfl]
 
-theorem coeff_ne_zero_C {a : R} {n : ℕ} (h : n ≠ 0) : coeff n (C a) = 0 := by
+theorem coeff_C_of_ne_zero {a : R} {n : ℕ} (h : n ≠ 0) : coeff n (C a) = 0 := by
   rw [coeff_C, if_neg h]
+
+@[deprecated (since := "2026-05-20")] alias coeff_ne_zero_C := coeff_C_of_ne_zero
 
 @[simp]
 theorem coeff_succ_C {a : R} {n : ℕ} : coeff (n + 1) (C a) = 0 :=
-  coeff_ne_zero_C n.succ_ne_zero
+  coeff_C_of_ne_zero n.succ_ne_zero
 
 @[grind inj]
 theorem C_injective : Function.Injective (C (R := R)) := MvPowerSeries.C_injective
@@ -504,8 +506,8 @@ section toSubring
 variable [Ring R] (p : PowerSeries R) (T : Subring R) (hp : ∀ n, p.coeff n ∈ T)
 
 /-- Given a formal power series `p` and a subring `T` that contains the
- coefficients of `p`, return the corresponding formal power series
- whose coefficients are in `T`. -/
+coefficients of `p`, return the corresponding formal power series
+whose coefficients are in `T`. -/
 def toSubring : PowerSeries T := mk fun n => ⟨p.coeff n, hp n⟩
 
 @[simp]
@@ -608,19 +610,13 @@ variable {R : Type*} [CommSemiring R] {ι : Type*}
 theorem coeff_prod [DecidableEq ι] (f : ι → PowerSeries R) (d : ℕ) (s : Finset ι) :
     coeff d (∏ j ∈ s, f j) = ∑ l ∈ finsuppAntidiag s d, ∏ i ∈ s, coeff (l i) (f i) := by
   simp only [coeff]
-  rw [MvPowerSeries.coeff_prod, ← AddEquiv.finsuppUnique_symm d, ← mapRange_finsuppAntidiag_eq,
-    sum_map, sum_congr rfl]
-  intro x _
-  apply prod_congr rfl
-  intro i _
-  congr 2
-  simp only [AddEquiv.toEquiv_eq_coe, Finsupp.mapRange.addEquiv_toEquiv, AddEquiv.toEquiv_symm,
-    Equiv.coe_toEmbedding, Finsupp.mapRange.equiv_apply, AddEquiv.coe_toEquiv_symm,
-    Finsupp.mapRange_apply, AddEquiv.finsuppUnique_symm]
+  rw [MvPowerSeries.coeff_prod, ← Finsupp.uniqueAddEquiv_symm_apply _ d,
+    ← mapRange_finsuppAntidiag_eq, sum_map]
+  rfl
 
 theorem prod_monomial (f : ι → ℕ) (g : ι → R) (s : Finset ι) :
     ∏ i ∈ s, monomial (f i) (g i) = monomial (∑ i ∈ s, f i) (∏ i ∈ s, g i) := by
-  simpa [monomial, Finsupp.single_finset_sum] using
+  simpa [monomial, Finsupp.single_finsetSum] using
     MvPowerSeries.prod_monomial (fun i ↦ Finsupp.single () (f i)) g s
 
 theorem monomial_pow (m : ℕ) (a : R) (n : ℕ) : (monomial m a) ^ n = monomial (n * m) (a ^ n) := by
@@ -858,21 +854,22 @@ section CommSemiring
 variable {R : Type*} [CommSemiring R] (φ ψ : R[X])
 
 theorem _root_.MvPolynomial.toMvPowerSeries_pUnitAlgEquiv {f : MvPolynomial PUnit R} :
-    (f.toMvPowerSeries : PowerSeries R) = (f.pUnitAlgEquiv R).toPowerSeries := by
+    (f.toMvPowerSeries : PowerSeries R) =
+      (MvPolynomial.uniqueAlgEquiv R PUnit f).toPowerSeries := by
   induction f using MvPolynomial.induction_on' with
   | monomial d r =>
     --Note: this `have` should be a generic `simp` lemma for a `Unique` type with `()` replaced
     --by any element.
     have : single () (d ()) = d := by ext; simp
-    simp only [MvPolynomial.coe_monomial, MvPolynomial.pUnitAlgEquiv_monomial,
+    simp only [MvPolynomial.coe_monomial, MvPolynomial.uniqueAlgEquiv_monomial,
       Polynomial.coe_monomial, PowerSeries.monomial, this]
   | add f g hf hg => simp [hf, hg]
 
 theorem pUnitAlgEquiv_symm_toPowerSeries {f : Polynomial R} :
     ((f.toPowerSeries) : MvPowerSeries PUnit R)
-      = ((MvPolynomial.pUnitAlgEquiv R).symm f).toMvPowerSeries := by
-  set g := (MvPolynomial.pUnitAlgEquiv R).symm f
-  have : f = MvPolynomial.pUnitAlgEquiv R g := by simp only [g, AlgEquiv.apply_symm_apply]
+      = ((MvPolynomial.uniqueAlgEquiv R PUnit).symm f).toMvPowerSeries := by
+  set g := (MvPolynomial.uniqueAlgEquiv R PUnit).symm f
+  have : f = MvPolynomial.uniqueAlgEquiv R PUnit g := by simp only [g, AlgEquiv.apply_symm_apply]
   rw [this, MvPolynomial.toMvPowerSeries_pUnitAlgEquiv]
 
 variable (A : Type*) [Semiring A] [Algebra R A]

@@ -81,7 +81,7 @@ private lemma IsCondKernel.apply_of_ne_zero_of_measurableSet [MeasurableSingleto
       congr with y
       simp
     · simp only [singleton_prod, mem_singleton_iff, hax, not_false_eq_true, indicator_of_notMem]
-      have : Prod.mk a ⁻¹' (Prod.mk x '' s) = ∅ := by ext y; simp [Ne.symm hax]
+      have : Prod.mk a ⁻¹' Prod.mk x '' s = ∅ := by ext y; simp [Ne.symm hax]
       simp only [this, measure_empty]
   simp_rw [this]
   rw [MeasureTheory.lintegral_indicator (measurableSet_singleton x)]

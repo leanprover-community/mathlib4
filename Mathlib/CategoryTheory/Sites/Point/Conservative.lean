@@ -30,7 +30,7 @@ using a condition involving covering sieves (SGA 4 IV 6.5 (a)).
 
 -/
 
-@[expose] public section
+public section
 
 universe w w' v v' u u'
 

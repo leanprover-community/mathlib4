@@ -45,6 +45,9 @@ lemma natCast_card_filter (p) [DecidablePred p] (s : Finset ι) :
     (∑ x ∈ s, if p x then 1 else 0 : R) = #{x ∈ s | p x} :=
   (natCast_card_filter _ _).symm
 
+lemma card_eq_sum_ite {s t : Finset ι} [DecidablePred (· ∈ s)] (hst : s ⊆ t) :
+    s.card = ∑ i ∈ t, if i ∈ s then 1 else 0 := by simp [hst]
+
 end AddCommMonoidWithOne
 
 section NonUnitalNonAssocSemiring
@@ -163,7 +166,6 @@ lemma sum_pow' (s : Finset κ) (f : κ → R) (n : ℕ) :
     (∑ a ∈ s, f a) ^ n = ∑ p ∈ piFinset fun _i : Fin n ↦ s, ∏ i, f (p i) := by
   convert @prod_univ_sum (Fin n) _ _ _ _ _ (fun _i ↦ s) fun _i d ↦ f d; simp
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The product of `f a + g a` over all of `s` is the sum over the powerset of `s` of the product of
 `f` over a subset `t` times the product of `g` over the complement of `t` -/
 theorem prod_add (f g : ι → R) (s : Finset ι) :
@@ -181,7 +183,7 @@ theorem prod_add (f g : ι → R) (s : Finset ι) :
         (by simp)
         (by simp [Classical.em])
         (by simp_rw [mem_filter, funext_iff, eq_iff_iff, mem_pi, mem_insert]; tauto)
-        (by simp_rw [Finset.ext_iff, @mem_filter _ _ (id _), mem_powerset]; tauto)
+        (by simp_rw [Finset.ext_iff, mem_filter, mem_powerset]; tauto)
         (fun a _ ↦ by
           simp only [prod_ite, filter_attach', prod_map, Function.Embedding.coeFn_mk,
             Subtype.map_coe, id_eq, prod_attach]

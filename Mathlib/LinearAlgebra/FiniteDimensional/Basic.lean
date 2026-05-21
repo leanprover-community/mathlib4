@@ -116,7 +116,7 @@ theorem exists_relation_sum_zero_pos_coefficient_of_finrank_succ_lt_card [Finite
 
 end
 
-/-- In a vector space with dimension 1, each set {v} is a basis for `v ≠ 0`. -/
+/-- In a vector space with dimension 1, each set `{v}` is a basis for `v ≠ 0`. -/
 @[simps repr_apply]
 noncomputable def basisSingleton (ι : Type*) [Unique ι] (h : finrank K V = 1) (v : V)
     (hv : v ≠ 0) : Basis ι K V :=
@@ -129,9 +129,9 @@ noncomputable def basisSingleton (ι : Type*) [Unique ι] (h : finrank K V = 1) 
       map_smul' := by simp [mul_div]
       left_inv := fun w => by
         apply_fun b.repr using b.repr.toEquiv.injective
-        apply_fun Equiv.finsuppUnique
+        apply_fun Finsupp.uniqueEquiv default
         simp only [map_smulₛₗ, Finsupp.coe_smul, Finsupp.single_eq_same,
-          smul_eq_mul, Pi.smul_apply, Equiv.finsuppUnique_apply]
+          smul_eq_mul, Pi.smul_apply, Finsupp.uniqueEquiv_apply]
         exact div_mul_cancel₀ _ h
       right_inv := fun f => by
         ext

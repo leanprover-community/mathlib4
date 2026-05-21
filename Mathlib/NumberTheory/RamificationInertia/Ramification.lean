@@ -61,6 +61,8 @@ In particular, if `p` is not contained in `P^n`, then the ramification index is 
 
 If there is no largest such `n` (e.g. because `p = ⊥`), then `ramificationIdx` is
 defined to be 0.
+
+Note: This definition of ramification index will eventually be replaced by `Ideal.ramificationIdx'`.
 -/
 noncomputable def ramificationIdx : ℕ := sSup {n | map f p ≤ P ^ n}
 

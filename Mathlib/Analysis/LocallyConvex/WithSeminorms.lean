@@ -681,7 +681,7 @@ theorem continuous_of_isBounded {p : SeminormFamily 𝕝 E ι} {q : SeminormFami
   refine Seminorm.continuous_of_le ?_ (hC.trans <| Seminorm.finset_sup_le_sum _ _)
   change Continuous (fun x ↦ Seminorm.coeFnAddMonoidHom _ _ (∑ i ∈ s, C • p i) x)
   simp_rw [map_sum, Finset.sum_apply]
-  exact (continuous_finset_sum _ fun i _ ↦ (hp.continuous_seminorm i).const_smul (C : ℝ))
+  exact (continuous_finsetSum _ fun i _ ↦ (hp.continuous_seminorm i).const_smul (C : ℝ))
 
 @[deprecated (since := "2026-03-09")]
 alias _root_.Seminorm.continuous_from_bounded := continuous_of_isBounded
@@ -854,8 +854,6 @@ lemma map_eq_zero_of_norm_eq_zero (q : Seminorm 𝕜 F)
     (hq : Continuous q) {x : F} (hx : ‖x‖ = 0) : q x = 0 :=
   (map_zero q) ▸
     ((specializes_iff_mem_closure.mpr <| mem_closure_zero_iff_norm.mpr hx).map hq).eq.symm
-
-@[deprecated (since := "2025-11-15")] alias map_eq_zero_of_norm_zero := map_eq_zero_of_norm_eq_zero
 
 /-- Let `F` be a semi-`NormedSpace` over a `NontriviallyNormedField`, and let `q` be a
 seminorm on `F`. If `q` is continuous, then it is uniformly controlled by the norm, that is there

@@ -131,7 +131,6 @@ end Hom
 
 variable [LieRinehartRing A₁ L₁] [LieRinehartAlgebra R A₁ L₁]
 
-set_option backward.isDefEq.respectTransparency false in
 variable (R A₁ L₁) in
 /-- The anchor of a given Lie-Rinehart algebra `L` over `A` interpreted as a Lie-Rinehart morphism
 to the module of derivations of `A`. -/

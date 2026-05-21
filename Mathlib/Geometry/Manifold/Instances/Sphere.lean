@@ -370,7 +370,6 @@ open scoped InnerProductSpace
 theorem sphere_ext_iff (u v : sphere (0 : E) 1) : u = v ↔ ⟪(u : E), v⟫_ℝ = 1 := by
   simp [Subtype.ext_iff, inner_eq_one_iff_of_norm_eq_one]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem stereographic'_symm_apply {n : ℕ} [Fact (finrank ℝ E = n + 1)] (v : sphere (0 : E) 1)
     (x : EuclideanSpace ℝ (Fin n)) :
     ((stereographic' n v).symm x : E) =
@@ -573,7 +572,6 @@ instance : LieGroup (𝓡 1) ω Circle where
     simp only [← Circle.coe_inv, Circle.coe_inv_eq_conj]
     exact Complex.conjCLE.contDiff.contMDiff.comp contMDiff_coe_sphere
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The map `fun t ↦ exp (t * I)` from `ℝ` to the unit circle in `ℂ` is analytic. -/
 theorem contMDiff_circleExp {m : ℕ∞ω} : CMDiff m Circle.exp :=
   (contDiff_exp.comp (contDiff_id.smul contDiff_const)).contMDiff.codRestrict_sphere _
