@@ -591,9 +591,8 @@ this violates the naming convention. -/
 #guard isBadNameWithUnderscore `Mathlib.Tactic.foo_bar == false
 #guard isBadNameWithUnderscore `AlgebraicGeometry.Scheme.IdealSheafData.Simps.coe_support == false
 
-#guard isBadNameWithUnderscore `Mathlib.Mat._Foo == false -- TODO!
+#guard isBadNameWithUnderscore `Mathlib.Mat._Foo == true
 #guard isBadNameWithUnderscore `Mathlib.foo_ == false
-#guard isBadNameWithUnderscore `Mat._bar == false -- TODO!
 #guard isBadNameWithUnderscore `«termXYZ» == false
 #guard isBadNameWithUnderscore `ExteriorAlgebra.«term⋀[_]^_» == false
 #guard isBadNameWithUnderscore `Nat.term_! == false
