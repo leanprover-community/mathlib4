@@ -33,6 +33,9 @@ noncomputable instance instNormedAddGroup : NormedAddGroup (DirectLimit G f) whe
   dist_eq := DirectLimit.induction₂ f (fun i x y ↦ by
     rw [MetricSpace.dist_def, NormedAddGroup.dist_eq x y, neg_def, add_def, DirectLimit.lift_def])
 
+lemma norm_def (i : ι) (x : G i) : ‖(⟦⟨i, x⟩⟧ : DirectLimit G f)‖ = ‖(x : G i)‖ := by
+  change DirectLimit.lift f (ih := fun i x => ‖ (x : G i)‖) _ ⟦⟨i, x⟩⟧ = ‖x‖
+  apply DirectLimit.lift_def
 
 end NormedAddGroup
 
