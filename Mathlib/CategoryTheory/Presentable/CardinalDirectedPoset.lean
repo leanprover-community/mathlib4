@@ -35,7 +35,7 @@ variable (κ : Cardinal.{u}) [Fact κ.IsRegular]
 /-- The property of objects in `PartOrdEmb` that are
 satisfied by partially ordered types of cardinality `< κ`. -/
 abbrev isCardinalFiltered : ObjectProperty PartOrdEmb.{u} :=
-    fun X ↦ IsCardinalFiltered X κ
+  fun X ↦ IsCardinalFiltered X κ
 
 @[simp]
 lemma isCardinalFiltered_iff (X : PartOrdEmb.{u}) :
