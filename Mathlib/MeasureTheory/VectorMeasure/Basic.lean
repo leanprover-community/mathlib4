@@ -723,6 +723,11 @@ theorem restrict_singleton {a : α} : v.restrict {a} = VectorMeasure.dirac a (v 
     by_cases ha : a ∈ s <;> simp [*, restrict_apply]
   · simp [restrict, h]
 
+theorem restrict_restrict {s t : Set α} (hs : MeasurableSet s) (ht : MeasurableSet t) :
+    (v.restrict t).restrict s = v.restrict (s ∩ t) := by
+  ext u hu
+  simp [restrict_apply, hs, hu, ht, Set.inter_assoc]
+
 section ContinuousAdd
 
 variable [ContinuousAdd M]
@@ -755,7 +760,21 @@ def restrictGm (i : Set α) : VectorMeasure α M →+ VectorMeasure α M where
   map_zero' := restrict_zero
   map_add' _ _ := restrict_add _ _ i
 
-variable [T2Space M] {s t : Set α}
+end ContinuousAdd
+
+section Partition
+
+variable {M : Type*} [TopologicalSpace M] [AddCommMonoid M] [T2Space M] [ContinuousAdd M]
+variable (v : VectorMeasure α M) {i s t : Set α}
+
+@[simp]
+theorem restrict_add_restrict_compl (hi : MeasurableSet i) :
+    v.restrict i + v.restrict iᶜ = v := by
+  ext A hA
+  rw [add_apply, restrict_apply _ hi hA, restrict_apply _ hi.compl hA,
+    ← of_union _ (hA.inter hi) (hA.inter hi.compl)]
+  · simp
+  · exact disjoint_compl_right.inter_right' A |>.inter_left' A
 
 theorem restrict_inter_add_diff (hs : MeasurableSet s) (ht : MeasurableSet t) :
     v.restrict (s ∩ t) + v.restrict (s \ t) = v.restrict s := by
@@ -773,22 +792,6 @@ theorem restrict_union_add_inter (hs : MeasurableSet s) (ht : MeasurableSet t) :
 theorem restrict_union (h : Disjoint s t) (hs : MeasurableSet s) (ht : MeasurableSet t) :
     v.restrict (s ∪ t) = v.restrict s + v.restrict t := by
   simp [← v.restrict_union_add_inter hs ht, disjoint_iff_inter_eq_empty.mp h]
-
-end ContinuousAdd
-
-section Partition
-
-variable {M : Type*} [TopologicalSpace M] [AddCommMonoid M] [T2Space M] [ContinuousAdd M]
-variable (v : VectorMeasure α M) {i : Set α}
-
-@[simp]
-theorem restrict_add_restrict_compl (hi : MeasurableSet i) :
-    v.restrict i + v.restrict iᶜ = v := by
-  ext A hA
-  rw [add_apply, restrict_apply _ hi hA, restrict_apply _ hi.compl hA,
-    ← of_union _ (hA.inter hi) (hA.inter hi.compl)]
-  · simp
-  · exact disjoint_compl_right.inter_right' A |>.inter_left' A
 
 end Partition
 
