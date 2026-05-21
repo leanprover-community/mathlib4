@@ -184,3 +184,26 @@ example (a : ℤ) (ha : 0 ≤ a) : ⌊a + 1⌋₊ = ⌊a⌋₊ + 1 := by
   rfl
 
 end floor
+
+section cexp
+
+example : Complex.exp (2 * Real.pi * Complex.I / 3) ^ 3 = 1 := by
+  push (_ ^ _)
+  ring_nf
+  rw [← Complex.exp_two_pi_mul_I]
+  congr 1
+  ring
+
+example : Complex.exp (2 * Real.pi * Complex.I / 3) ^ 3 = 1 := by
+  pull Complex.exp
+  ring_nf
+  rw [← Complex.exp_two_pi_mul_I]
+  congr 1
+  ring
+
+example : Complex.exp ((2 : ℕ) * (Real.pi * Complex.I)) = 1 := by
+  push Complex.exp
+  rw [Complex.exp_pi_mul_I]
+  norm_num
+
+end cexp
