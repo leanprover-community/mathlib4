@@ -8,8 +8,6 @@ module
 public import Mathlib.Order.DirectedInverseSystem
 public import Mathlib.Topology.MetricSpace.Isometry
 
-@[expose] public section
-
 /-!
 # Metrics on direct limits
 
@@ -19,6 +17,7 @@ system of metric spaces and the transition maps `f` are isometries (using `Isome
 See also `Metric.InductiveLimit` in `Mathlib/Topology/MetricSpace/Gluing.lean`, which
 handles sequential inductive limits of metric spaces.
 -/
+@[expose] public section
 
 namespace DirectLimit
 

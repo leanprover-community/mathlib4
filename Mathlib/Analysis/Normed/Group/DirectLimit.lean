@@ -9,8 +9,6 @@ public import Mathlib.Analysis.Normed.Group.Defs
 public import Mathlib.Algebra.Colimit.DirectLimit
 public import Mathlib.Topology.MetricSpace.DirectLimit
 
-@[expose] public section
-
 /-!
 # Direct Limit of normed additive groups
 
@@ -18,6 +16,8 @@ We introduct instances of `NormedAddGroup` and `NormedAddCommGroup` on `DirectLi
 under the assumption that the types `T h` that the maps in the directed system come from,
 all have instances of `IsometryClass`.
 -/
+
+@[expose] public section
 
 namespace DirectLimit
 
