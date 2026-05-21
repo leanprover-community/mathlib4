@@ -62,10 +62,18 @@ namespace SSet
 
 namespace prodStdSimplex
 
-namespace pairingCore
-
 variable {m : ℕ} {k : Fin (m + 1)} {n : ℕ}
   (x : (Subcomplex.unionProd.{u} Λ[m + 1, k.castSucc] ∂Δ[n]).N) {d : ℕ}
+
+@[simp]
+lemma objEquiv_apply_fst' (hd : x.dim = d) (i : Fin ((x.cast hd).dim + 1)) :
+    dsimp% ((objEquiv (x.cast hd).simplex) i).1 = (x.cast hd).simplex.1 i := rfl
+
+@[simp]
+lemma objEquiv_apply_snd' (hd : x.dim = d) (i : Fin ((x.cast hd).dim + 1)) :
+    dsimp% ((objEquiv (x.cast hd).simplex) i).2 = (x.cast hd).simplex.2 i := rfl
+
+namespace pairingCore
 
 section
 
@@ -266,7 +274,7 @@ lemma ext_iff {s t : Type₁.{u} k n} :
   subst h
   obtain rfl : d = d' := by grind
   obtain rfl : l = l' := by grind
-  rfl
+  dsimp
 
 /-- The type (II) simplex obtained as a face of a type (I) simplex. -/
 noncomputable abbrev δ (s : Type₁.{u} k n) :
@@ -319,16 +327,12 @@ lemma φ_of_gt (i : Fin (d + 2)) (hi : (min x hd).castSucc < i) :
 @[simp]
 lemma φ_succ_snd : (φ x hd (min x hd).succ).2 = (φ x hd (min x hd).castSucc).2 := by
   have := φ_succAbove x hd (min x hd)
-  rw [Fin.succAbove_castSucc_self] at this
-  rw [this, φ_castSucc]
-  rfl
+  simp_all [φ_castSucc]
 
 @[simp]
 lemma φ_succ_fst : (φ x hd (min x hd).succ).1 = k.succ := by
   have := φ_succAbove x hd (min x hd)
-  rw [Fin.succAbove_castSucc_self] at this
-  rw [this]
-  exact simplex_fst_min x hd
+  simp_all [simplex_fst_min x hd]
 
 variable {x}
 
@@ -348,15 +352,12 @@ lemma strictMono_φ : StrictMono (φ x hd) := by
     · rw [← Fin.castSucc_succ, hi, φ_castSucc]
       refine lt_of_le_of_ne ⟨?_, ?_⟩ ?_
       · dsimp
-        rw [dsimp% objEquiv_apply_fst (x.cast hd).simplex,
-          simplex_fst_le_castSucc_iff]
+        rw [simplex_fst_le_castSucc_iff]
         grind
       · exact stdSimplex.monotone_apply _ (by dsimp; grind)
       · intro h
         rw [Prod.ext_iff] at h
         dsimp at h
-        rw [dsimp% objEquiv_apply_fst (x.cast hd).simplex,
-          dsimp% objEquiv_apply_snd (x.cast hd).simplex] at h
         obtain ⟨h₁, h₂⟩ := h
         apply hx _ hd i.succ
         rw [isIndex_succ]
@@ -364,7 +365,7 @@ lemma strictMono_φ : StrictMono (φ x hd) := by
         have := φ_succAbove x hd (min x hd)
         rw [Fin.succAbove_castSucc_self] at this
         rw [← φ_succ_fst x hd, this, hi]
-        rfl
+        dsimp
   · exact Prod.lt_of_lt_of_le (by simp) (by simp)
   · rw [φ_of_gt _ _ _ (by grind), φ_of_gt _ _ _ (by grind)]
     exact hx' (by grind)
@@ -457,14 +458,9 @@ lemma eq_of_isType₂_δ {u : (Subcomplex.unionProd.{u} Λ[m + 1, k.castSucc] �
   obtain hi | rfl | hi := lt_trichotomy i l.castSucc
   · obtain ⟨l, rfl⟩ := Fin.eq_succ_of_ne_zero (i := l) (by grind)
     refine (hu _ rfl l.succ ?_).elim
-    rw [isIndex_succ]
-    refine ⟨?_, ?_, ?_⟩ <;> dsimp <;>
-      simp only [hu', Monoidal.tensorObj_obj, prod_δ_fst, prod_δ_snd,
-        stdSimplex.δ_apply, Fin.succAbove_of_lt_succ i l.castSucc hi,
-        Fin.succAbove_of_lt_succ i l.succ (by grind),
-        hl.simplex_fst_succ]
-    · exact hl.simplex_fst_castSucc
-    · exact hl.simplex_snd_succ
+    simp [isIndex_succ, hu', stdSimplex.δ_apply, Fin.succAbove_of_lt_succ i l.castSucc hi,
+      Fin.succAbove_of_lt_succ i l.succ (by grind), hl.simplex_fst_succ,
+      dsimp% hl.simplex_fst_castSucc, hl.simplex_snd_succ]
   · exact Or.inl rfl
   · obtain rfl | hi := (Fin.castSucc_lt_iff_succ_le.1 hi).eq_or_lt
     · exact Or.inr rfl
@@ -493,18 +489,19 @@ lemma IsType₂.type₁_eq_of_δ_eq
     dsimp
     rw [φ_castSucc]
     ext : 1
-    · exact s.isIndex.simplex_fst_castSucc.symm
+    · simp [← s.isIndex.simplex_fst_castSucc]
+      rfl
     · change (s.x.cast s.hd).simplex.2
         (s.index.castSucc.succAbove (min s.δ rfl)) = _
       rw [s.isIndex.min_δ, Fin.succAbove_castSucc_self]
-      exact s.isIndex.simplex_snd_succ
+      exact s.isIndex.simplex_snd_succ -- defeq abuse
   · rw [← s.isIndex.min_δ] at hi
     rw [φ_of_ne _ rfl _ hi]
     change objEquiv (s.x.cast s.hd).simplex
       (s.index.castSucc.succAbove ((min s.δ rfl).predAbove i)) = _
     congr 1
     rw [← s.isIndex.min_δ]
-    exact Fin.succAbove_predAbove hi
+    exact Fin.succAbove_predAbove hi -- `simp [hi]` should work but doesn't
 
 lemma Type₁.isType₂_δ (s : Type₁.{u} k n) : IsType₂ s.δ :=
   s.isIndex.isType₂_δ
