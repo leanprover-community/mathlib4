@@ -133,14 +133,13 @@ for the intended applications, and this avoids requiring a `DecidableEq` instanc
 /-- If `L` has well-defined support, then so does its map along an embedding. -/
 instance (L : SummationFilter β) [HasSupport L] (f : β ↪ γ) : HasSupport (L.map f) := by
   constructor
-  by_cases h : L.NeBot
+  obtain (h | h) := L.neBot_or_eq_bot
   · simp only [map_filter, eventually_map, Finset.coe_map, image_subset_iff, support_map]
     filter_upwards [L.eventually_le_support] with a using by grind
-  · have : L.filter = ⊥ := by contrapose! h; exact ⟨⟨h⟩⟩
-    simp [this]
+  · simp [h]
 
 /-- Pullback of a summation filter along an embedding. -/
-@[simps] def comap (L : SummationFilter β) (f : γ ↪ β) : SummationFilter γ where
+@[simps] noncomputable def comap (L : SummationFilter β) (f : γ ↪ β) : SummationFilter γ where
   filter := L.filter.map (fun s ↦ s.preimage f f.injective.injOn)
 
 @[simp] lemma support_comap (L : SummationFilter β) (f : γ ↪ β) :
@@ -234,14 +233,14 @@ instance [IsCountablyGenerated (atTop : Filter β)] [IsCountablyGenerated (atBot
 @[simp high] -- want this to be prioritized over `conditional_filter` when they both apply
 lemma conditional_filter_eq_map_Iic {γ} [PartialOrder γ] [LocallyFiniteOrder γ] [OrderBot γ] :
     (conditional γ).filter = atTop.map Finset.Iic := by
-  simp [(isBot_bot).atBot_eq, comp_def, Finset.Icc_bot]
+  simp [isBot_bot.atBot_eq, comp_def, Finset.Icc_bot]
 
 /-- When `β` has a top element, `conditional β` is given by limits over finite intervals
 `{y | x ≤ y}` as `x → atBot`. -/
 @[simp high] -- want this to be prioritized over `conditional_filter` when they both apply
 lemma conditional_filter_eq_map_Ici {γ} [PartialOrder γ] [LocallyFiniteOrder γ] [OrderTop γ] :
     (conditional γ).filter = atBot.map Finset.Ici := by
-  simp [(isTop_top).atTop_eq, comp_def, Finset.Icc_top]
+  simp [isTop_top.atTop_eq, comp_def, Finset.Icc_top]
 
 /-- Conditional summation over `ℕ` is given by limits of sums over `Finset.range n` as `n → ∞`. -/
 @[simp high + 1] -- want this to be prioritized over `conditional_filter_eq_map_Ici`

@@ -6,7 +6,7 @@ Authors: Christian Merten
 module
 
 public import Mathlib.CategoryTheory.Sites.Canonical
-public import Mathlib.CategoryTheory.Sites.Hypercover.One
+public import Mathlib.CategoryTheory.Sites.Hypercover.SheafOfTypes
 public import Mathlib.CategoryTheory.MorphismProperty.Local
 
 /-!
@@ -33,14 +33,16 @@ variable {J : GrothendieckTopology C} [J.Subcanonical]
 noncomputable def glueMorphisms {S T : C} (E : J.OneHypercover S) (f : ∀ i, E.X i ⟶ T)
     (h : ∀ ⦃i j : E.I₀⦄ (k : E.I₁ i j), E.p₁ k ≫ f i = E.p₂ k ≫ f j) :
     S ⟶ T :=
-  E.amalgamate (Subcanonical.isSheaf_of_isRepresentable (CategoryTheory.yoneda.obj T)) f h
+  (E.isStronglySheafFor
+    (Subcanonical.isSheaf_of_isRepresentable (CategoryTheory.yoneda.obj T))).amalgamate f h
 
 variable {S T : C} (E : J.OneHypercover S) (f : ∀ i, E.X i ⟶ T)
   (h : ∀ ⦃i j : E.I₀⦄ (k : E.I₁ i j), E.p₁ k ≫ f i = E.p₂ k ≫ f j)
 
 @[reassoc (attr := simp)]
 lemma f_glueMorphisms (i : E.I₀) : E.f i ≫ E.glueMorphisms f h = f i :=
-  E.map_amalgamate (Subcanonical.isSheaf_of_isRepresentable (CategoryTheory.yoneda.obj T)) _ _ i
+  (E.isStronglySheafFor
+    (Subcanonical.isSheaf_of_isRepresentable (CategoryTheory.yoneda.obj T))).map_amalgamate _ _ i
 
 end GrothendieckTopology.OneHypercover
 
@@ -74,6 +76,7 @@ open MorphismProperty
 
 variable [Limits.HasPullbacks C] [J.IsStableUnderBaseChange]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `J` is a subcanonical precoverage, isomorphisms are local on the target for `J`. -/
 instance : (isomorphisms C).IsLocalAtTarget J := by
   refine .mk_of_isStableUnderBaseChange fun {X Y} f 𝒰 (H : ∀ i, IsIso _) ↦ ⟨?_, ?_, ?_⟩
@@ -85,6 +88,7 @@ instance : (isomorphisms C).IsLocalAtTarget J := by
   · exact (𝒰.pullback₁ f).hom_ext fun i ↦ by simp [pullback.condition_assoc]
   · exact 𝒰.hom_ext fun i ↦ by simp [pullback.condition]
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 To show that
 ```

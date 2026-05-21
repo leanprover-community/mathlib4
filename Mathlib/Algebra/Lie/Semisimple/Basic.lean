@@ -31,7 +31,7 @@ about simple and semisimple Lie algebras.
 lie algebra, radical, simple, semisimple
 -/
 
-@[expose] public section
+public section
 
 section Irreducible
 
@@ -84,7 +84,7 @@ instance : LieModule.IsIrreducible R L L := by
   suffices Nontrivial (LieIdeal R L) from ⟨IsSimple.eq_bot_or_eq_top⟩
   rw [LieSubmodule.nontrivial_iff, ← not_subsingleton_iff_nontrivial]
   have _i : ¬ IsLieAbelian L := IsSimple.non_abelian R
-  contrapose! _i
+  contrapose _i
   infer_instance
 
 protected lemma isAtom_top : IsAtom (⊤ : LieIdeal R L) := isAtom_top
@@ -104,6 +104,15 @@ instance : HasTrivialRadical R L := by
   exact IsSimple.non_abelian R (L := L) hI
 
 end IsSimple
+
+lemma isSimple_iff_of_not_isLieAbelian (hL : ¬ IsLieAbelian L) :
+    IsSimpleOrder (LieIdeal R L) ↔ IsSimple R L :=
+  ⟨fun _ ↦ ⟨IsSimpleOrder.eq_bot_or_eq_top, hL⟩, fun _ ↦ inferInstance⟩
+
+@[nontriviality]
+lemma not_isSimple_of_subsingleton [Subsingleton L] :
+    ¬ IsSimple R L :=
+  fun contra ↦ contra.non_abelian inferInstance
 
 namespace IsSemisimple
 
@@ -173,13 +182,14 @@ lemma isSimple_of_isAtom (I : LieIdeal R L) (hI : IsAtom I) : IsSimple R I where
       exact x.2
     -- So we need to show `J ≠ I` as ideals of `L`.
     -- This follows from our assumption that `J ≠ ⊤` as ideals of `I`.
-    contrapose! hJ
+    contrapose hJ
     rw [eq_top_iff]
     rintro ⟨x, hx⟩ -
     rw [← hJ] at hx
     rcases hx with ⟨y, hy, rfl⟩
     exact hy
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 In a semisimple Lie algebra,
 Lie ideals that are contained in the supremum of a finite collection of atoms
@@ -247,7 +257,7 @@ lemma finitelyAtomistic : ∀ s : Finset (LieIdeal R L), ↑s ⊆ {I : LieIdeal 
     exact LieSubmodule.lie_mem_lie j.2 hx
   -- Indeed `J ⊓ I = ⊥`, since `J` is an atom that is not contained in `I`.
   apply ((hs hJs).le_iff.mp _).resolve_right
-  · contrapose! hJI
+  · contrapose hJI
     rw [← hJI]
     exact inf_le_right
   exact inf_le_left

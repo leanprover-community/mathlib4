@@ -1,4 +1,4 @@
-module
+module -- shake: keep-all
 
 public import Mathlib.Analysis.SpecialFunctions.Log.Basic
 public import Mathlib.NumberTheory.ArithmeticFunction.Misc

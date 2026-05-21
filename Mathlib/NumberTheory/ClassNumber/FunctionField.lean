@@ -18,7 +18,7 @@ on the class number.
 
 ## Main definitions
 - `FunctionField.classNumber`: the class number of a function field is the (finite)
-cardinality of the class group of its ring of integers
+  cardinality of the class group of its ring of integers
 -/
 
 @[expose] public section

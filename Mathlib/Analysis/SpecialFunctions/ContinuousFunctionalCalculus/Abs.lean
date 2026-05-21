@@ -224,9 +224,12 @@ lemma abs_eq_cfc_norm (a : A) (ha : IsSelfAdjoint a := by cfc_tac) :
     abs a = cfc (‖·‖) a := by
   rw [abs_eq_cfcₙ_norm _, cfcₙ_eq_cfc]
 
-@[simp]
-lemma abs_one : abs (1 : A) = 1 := by
-  simp [abs]
+theorem abs_coe_unitary (U : unitary A) : abs (U : A) = 1 := by simp [abs]
+
+@[simp] theorem abs_of_mem_unitary {U : A} (hU : U ∈ unitary A) : abs U = 1 :=
+  abs_coe_unitary ⟨U, hU⟩
+
+lemma abs_one : abs (1 : A) = 1 := by simp
 
 variable [StarModule ℝ A]
 

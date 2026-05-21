@@ -25,7 +25,7 @@ This file develops the API for positive linear maps over C⋆-algebras.
   https://math.stackexchange.com/questions/426487/why-is-every-positive-linear-map-between-c-algebras-bounded
 -/
 
-@[expose] public section
+public section
 
 open scoped NNReal
 

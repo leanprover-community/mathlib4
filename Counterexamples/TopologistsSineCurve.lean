@@ -55,6 +55,7 @@ lemma xSeq_tendsto (y : ℝ) : Tendsto (xSeq y) atTop (𝓝 0) := by
 /-!
 ## `T` is closed
 -/
+
 /-- The closure of the topologist's sine curve `S` is the set `T`. -/
 lemma closure_S : closure S = T := by
   ext ⟨x, y⟩
@@ -100,6 +101,7 @@ lemma isClosed_T : IsClosed T := by simpa only [← closure_S] using isClosed_cl
 /-!
 ## `T` is connected
 -/
+
 /-- `T` is connected, being the closure of the set `S` (which is obviously connected since it
 is a continuous image of the positive real line). -/
 theorem isConnected_T : IsConnected T := by
@@ -170,7 +172,7 @@ theorem not_isPathConnected_T : ¬ IsPathConnected T := by
   -- connected subset of `ℝ` is an interval, we have `[0, a] ⊂ x(p([t0, t1]))`.
   obtain ⟨t₁, ht₁⟩ : ∃ t₁, t₀ < t₁ ∧ dist t₀ t₁ < δ := by
     refine exists_unitInterval_gt (lt_of_le_of_ne (unitInterval.le_one t₀) fun ht₀' ↦ ?_) hδ
-    have w_x_path : (p 1).1 = 1 := by simp [w]
+    have w_x_path : (p 1).1 = 1 := by rw [Path.target p, w]
     have x_eq_zero : (p 1).1 = 0 := by rwa [ht₀'] at h_pt₀_x
     linarith
   let a := (p t₁).1

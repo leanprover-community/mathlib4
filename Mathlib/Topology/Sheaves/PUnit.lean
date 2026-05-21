@@ -26,6 +26,7 @@ variable {C : Type u} [Category.{v} C]
 
 theorem isSheaf_of_isTerminal_of_indiscrete {X : TopCat.{w}} (hind : X.str = ⊤) (F : Presheaf C X)
     (it : IsTerminal <| F.obj <| op ⊥) : F.IsSheaf := fun c U s hs => by
+  have : IndiscreteTopology X := ⟨hind⟩
   obtain rfl | hne := eq_or_ne U ⊥
   · intro _ _
     rw [@existsUnique_iff_exists _ ⟨fun _ _ => _⟩]
@@ -34,12 +35,12 @@ theorem isSheaf_of_isTerminal_of_indiscrete {X : TopCat.{w}} (hind : X.str = ⊤
     · apply it.hom_ext
   · convert Presieve.isSheafFor_top (F ⋙ coyoneda.obj (@op C c))
     rw [Sieve.arrows_eq_top_iff, ← Sieve.id_mem_iff_eq_top]
-    have := (U.eq_bot_or_top hind).resolve_left hne
+    have := U.eq_bot_or_top.resolve_left hne
     subst this
     obtain he | ⟨⟨x⟩⟩ := isEmpty_or_nonempty X
     · exact (hne <| SetLike.ext'_iff.2 <| Set.univ_eq_empty_iff.2 he).elim
     obtain ⟨U, f, hf, hm⟩ := hs x _root_.trivial
-    obtain rfl | rfl := U.eq_bot_or_top hind
+    obtain rfl | rfl := U.eq_bot_or_top
     · cases hm
     · convert hf
 

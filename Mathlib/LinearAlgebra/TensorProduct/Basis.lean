@@ -194,10 +194,7 @@ lemma TensorProduct.sum_tmul_basis_left_eq_zero
 
 end
 
-variable [CommSemiring R] [Semiring S] [Algebra R S] [AddCommMonoid M] [Module R M]
-  [Module S M] [IsScalarTower R S M] [Module.Free S M]
-  [AddCommMonoid N] [Module R N] [Module.Free R N]
-instance Module.Free.tensor : Module.Free S (M ⊗[R] N) :=
+instance Module.Free.tensor [Module.Free S M] [Module.Free R N] : Module.Free S (M ⊗[R] N) :=
   let ⟨bM⟩ := exists_basis (R := S) (M := M)
   let ⟨bN⟩ := exists_basis (R := R) (M := N)
   of_basis (bM.2.tensorProduct bN.2)

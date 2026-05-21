@@ -86,4 +86,32 @@ lemma continuousOn_rpow [ContinuousStar A] [CompleteSpace A] (r : ℝ) :
 
 end unital
 
+section cstar
+
+variable {A : Type*} [PartialOrder A] [NonUnitalNormedRing A] [StarRing A] [CStarRing A]
+    [NormedSpace ℝ A] [SMulCommClass ℝ A A] [IsScalarTower ℝ A A] [StarOrderedRing A]
+    [NonUnitalContinuousFunctionalCalculus ℝ A IsSelfAdjoint] [NonnegSpectrumClass ℝ A]
+
+lemma norm_star_mul_mul_self_of_nonneg {a : A} (b : A) (ha : 0 ≤ a := by cfc_tac) :
+    ‖star b * a * b‖ = ‖CFC.sqrt a * b‖ ^ 2 := by
+  rw [sq, ← CStarRing.norm_star_mul_self, star_mul, (CFC.sqrt_nonneg a).star_eq,
+    ← mul_assoc _ (CFC.sqrt a), mul_assoc _ _ (CFC.sqrt a), CFC.sqrt_mul_sqrt_self a]
+
+lemma IsSelfAdjoint.norm_mul_mul_self_of_nonneg {a : A} (b : A)
+    (hb : IsSelfAdjoint b := by cfc_tac) (ha : 0 ≤ a := by cfc_tac) :
+    ‖b * a * b‖ = ‖CFC.sqrt a * b‖ ^ 2 := by
+  simpa [hb.star_eq] using norm_star_mul_mul_self_of_nonneg b ha
+
+lemma norm_mul_mul_star_self_of_nonneg {a : A} (b : A) (ha : 0 ≤ a := by cfc_tac) :
+    ‖b * a * star b‖ = ‖b * CFC.sqrt a‖ ^ 2 := by
+  conv_rhs => rw [← (CFC.sqrt_nonneg a).star_eq, ← star_star b, ← star_mul, norm_star,
+    ← norm_star_mul_mul_self_of_nonneg _ ha, star_star]
+
+lemma IsSelfAdjoint.norm_mul_mul_self_of_nonneg' {a : A} (b : A)
+    (hb : IsSelfAdjoint b := by cfc_tac) (ha : 0 ≤ a := by cfc_tac) :
+    ‖b * a * b‖ = ‖b * CFC.sqrt a‖ ^ 2 := by
+  simpa [hb.star_eq] using norm_mul_mul_star_self_of_nonneg b ha
+
+end cstar
+
 end CFC

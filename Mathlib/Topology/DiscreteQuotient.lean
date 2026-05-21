@@ -142,8 +142,11 @@ theorem isClopen_setOf_rel (x : X) : IsClopen (setOf (S.toSetoid x)) := by
 instance : Min (DiscreteQuotient X) :=
   ⟨fun S₁ S₂ => ⟨S₁.1 ⊓ S₂.1, fun x => (S₁.2 x).inter (S₂.2 x)⟩⟩
 
+instance : PartialOrder (DiscreteQuotient X) :=
+  PartialOrder.lift _ toSetoid_injective
+
 instance : SemilatticeInf (DiscreteQuotient X) :=
-  Injective.semilatticeInf toSetoid toSetoid_injective fun _ _ => rfl
+  toSetoid_injective.semilatticeInf _ .rfl .rfl fun _ _ ↦ rfl
 
 instance : OrderTop (DiscreteQuotient X) where
   top := ⟨⊤, fun _ => isOpen_univ⟩
@@ -176,7 +179,7 @@ theorem comap_id : S.comap (ContinuousMap.id X) = S := rfl
 theorem comap_comp (S : DiscreteQuotient Z) : S.comap (g.comp f) = (S.comap g).comap f :=
   rfl
 
-@[mono]
+@[gcongr, mono]
 theorem comap_mono {A B : DiscreteQuotient Y} (h : A ≤ B) : A.comap f ≤ B.comap f := by tauto
 
 end Comap
@@ -264,7 +267,7 @@ theorem leComap_id_iff : LEComap (ContinuousMap.id X) A A' ↔ A ≤ A' :=
 
 theorem LEComap.comp : LEComap g B C → LEComap f A B → LEComap (g.comp f) A C := by tauto
 
-@[mono]
+@[gcongr, mono]
 theorem LEComap.mono (h : LEComap f A B) (hA : A' ≤ A) (hB : B ≤ B') : LEComap f A' B' :=
   hA.trans <| h.trans <| comap_mono _ hB
 

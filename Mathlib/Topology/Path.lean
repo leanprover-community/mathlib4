@@ -215,9 +215,6 @@ theorem extend_apply {a b : X} (γ : Path a b) {t : ℝ}
     (ht : t ∈ (Icc 0 1 : Set ℝ)) : γ.extend t = γ ⟨t, ht⟩ :=
   IccExtend_of_mem _ γ ht
 
-@[deprecated (since := "2025-11-05")]
-alias extend_extends := extend_apply
-
 theorem extend_zero : γ.extend 0 = x := by simp
 
 theorem extend_one : γ.extend 1 = y := by simp
@@ -389,21 +386,10 @@ theorem cast_symm {a₁ a₂ b₁ b₂ : X} (γ : Path a₂ b₂) (ha : a₁ = a
     (γ.symm).cast hb ha = (γ.cast ha hb).symm :=
   rfl
 
-@[deprecated cast_symm (since := "2025-11-13")]
-theorem symm_cast {a₁ a₂ b₁ b₂ : X} (γ : Path a₂ b₂) (ha : a₁ = a₂) (hb : b₁ = b₂) :
-    (γ.cast ha hb).symm = γ.symm.cast hb ha :=
-  rfl
-
 @[simp]
 theorem cast_trans {a₁ a₂ b₁ b₂ c₁ c₂ : X} (γ : Path a₂ b₂)
     (γ' : Path b₂ c₂) (ha : a₁ = a₂) (hb : b₁ = b₂) (hc : c₁ = c₂) :
     (γ.trans γ').cast ha hc = (γ.cast ha hb).trans (γ'.cast hb hc) :=
-  rfl
-
-@[deprecated cast_trans (since := "2025-11-13")]
-theorem trans_cast {a₁ a₂ b₁ b₂ c₁ c₂ : X} (γ : Path a₂ b₂)
-    (γ' : Path b₂ c₂) (ha : a₁ = a₂) (hb : b₁ = b₂) (hc : c₁ = c₂) :
-    (γ.cast ha hb).trans (γ'.cast hb hc) = (γ.trans γ').cast ha hc :=
   rfl
 
 @[simp]
@@ -451,13 +437,10 @@ theorem trans_continuous_family {ι : Type*} [TopologicalSpace ι]
   refine Continuous.if_le ?_ ?_ (continuous_subtype_val.comp continuous_snd) continuous_const ?_
   · change
       Continuous ((fun p : ι × ℝ => (γ₁ p.1).extend p.2) ∘ Prod.map id (fun x => 2 * x : I → ℝ))
-    exact h₁'.comp (continuous_id.prodMap <| continuous_const.mul continuous_subtype_val)
+    exact h₁'.comp (by fun_prop)
   · change
       Continuous ((fun p : ι × ℝ => (γ₂ p.1).extend p.2) ∘ Prod.map id (fun x => 2 * x - 1 : I → ℝ))
-    exact
-      h₂'.comp
-        (continuous_id.prodMap <|
-          (continuous_const.mul continuous_subtype_val).sub continuous_const)
+    exact h₂'.comp (by fun_prop)
   · rintro st hst
     simp [hst]
 
@@ -547,8 +530,7 @@ and stays still otherwise. -/
 def truncate {X : Type*} [TopologicalSpace X] {a b : X} (γ : Path a b) (t₀ t₁ : ℝ) :
     Path (γ.extend <| min t₀ t₁) (γ.extend t₁) where
   toFun s := γ.extend (min (max s t₀) t₁)
-  continuous_toFun :=
-    γ.continuous_extend.comp ((continuous_subtype_val.max continuous_const).min continuous_const)
+  continuous_toFun := γ.continuous_extend.comp (by fun_prop)
   source' := by
     simp only [min_def, max_def']
     split_ifs with h₁ h₂ h₃ h₄

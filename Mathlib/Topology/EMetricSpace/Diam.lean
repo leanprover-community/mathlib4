@@ -79,11 +79,10 @@ theorem ediam_iUnion_mem_option {ι : Type*} (o : Option ι) (s : ι → Set X) 
 theorem ediam_insert : ediam (insert x s) = max (⨆ y ∈ s, edist x y) (ediam s) :=
   eq_of_forall_ge_iff fun d => by simp +contextual [ediam_le_iff, edist_comm]
 
-theorem ediam_pair : ediam ({x, y} : Set X) = edist x y := by simp [ediam_insert]
+theorem ediam_pair : ediam {x, y} = edist x y := by simp [ediam_insert]
 
-theorem ediam_triple :
-    ediam ({x, y, z} : Set X) = max (max (edist x y) (edist x z)) (edist y z) := by
-  simp only [ediam_insert, iSup_insert, iSup_singleton, ediam_singleton, ENNReal.max_zero_right]
+theorem ediam_triple : ediam {x, y, z} = max (max (edist x y) (edist x z)) (edist y z) := by
+  simp only [ediam_insert, iSup_insert, iSup_singleton, ediam_singleton, max_zero]
 
 /-- The extended diameter is monotonous with respect to inclusion -/
 @[gcongr]
@@ -120,15 +119,15 @@ theorem ediam_union_le (h : (s ∩ t).Nonempty) : ediam (s ∪ t) ≤ ediam s + 
   let ⟨x, ⟨xs, xt⟩⟩ := h
   simpa using ediam_union_le_add_edist xs xt
 
-theorem ediam_closedEBall_le {r : ℝ≥0∞} : ediam (EMetric.closedBall x r) ≤ 2 * r :=
+theorem ediam_closedEBall_le {r : ℝ≥0∞} : ediam (closedEBall x r) ≤ 2 * r :=
   ediam_le fun a ha b hb =>
     calc
       edist a b ≤ edist a x + edist b x := edist_triangle_right _ _ _
       _ ≤ r + r := add_le_add ha hb
       _ = 2 * r := (two_mul r).symm
 
-theorem ediam_eball_le {r : ℝ≥0∞} : ediam (EMetric.ball x r) ≤ 2 * r :=
-  le_trans (ediam_mono EMetric.ball_subset_closedBall) ediam_closedEBall_le
+theorem ediam_eball_le {r : ℝ≥0∞} : ediam (eball x r) ≤ 2 * r :=
+  le_trans (ediam_mono eball_subset_closedEBall) ediam_closedEBall_le
 
 theorem ediam_pi_le_of_le {ι : Type*} {X : ι → Type*} [Fintype ι] [∀ i, PseudoEMetricSpace (X i)]
     {s : ∀ i : ι, Set (X i)} {c : ℝ≥0∞} (h : ∀ b, ediam (s b) ≤ c) : ediam (Set.pi univ s) ≤ c := by

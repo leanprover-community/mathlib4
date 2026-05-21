@@ -275,7 +275,7 @@ theorem formPerm_ext_iff {x y x' y' : α} {l l' : List α} (hd : Nodup (x :: y :
     have : x' ∈ { z | formPerm (x :: y :: l) z ≠ z } := by
       rw [Set.mem_setOf_eq, h x', formPerm_apply_head _ _ _ hd']
       simp only [mem_cons, nodup_cons] at hd'
-      push_neg at hd'
+      push Not at hd'
       exact hd'.left.left.symm
     simpa using support_formPerm_le' _ this
   obtain ⟨⟨n, hn⟩, hx'⟩ := get_of_mem hx
@@ -319,12 +319,6 @@ theorem formPerm_apply_mem_ne_self_iff (hl : Nodup l) (x : α) (hx : x ∈ l) :
     formPerm l x ≠ x ↔ 2 ≤ l.length := by
   rw [Ne, formPerm_apply_mem_eq_self_iff _ hl x hx, not_le]
   exact ⟨Nat.succ_le_of_lt, Nat.lt_of_succ_le⟩
-
-@[deprecated (since := "2025-10-06")]
-alias mem_of_formPerm_ne_self := mem_of_formPerm_apply_ne
-
-@[deprecated (since := "2025-10-06")]
-alias formPerm_eq_self_of_notMem := List.formPerm_apply_of_notMem
 
 theorem formPerm_eq_one_iff (hl : Nodup l) : formPerm l = 1 ↔ l.length ≤ 1 := by
   rcases l with - | ⟨hd, tl⟩

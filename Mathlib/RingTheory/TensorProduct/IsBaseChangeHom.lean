@@ -51,7 +51,7 @@ def linearMapRightBaseChangeHom (ε : N →ₗ[R] P) :
   toAddHom := (TensorProduct.lift {
     toFun s := s • (LinearMap.compRight R ε (M := M))
     map_add' x y := by ext; simp [add_smul]
-    map_smul' r s := by aesop }).toAddHom
+    map_smul' r s := by simp }).toAddHom
   map_smul' s x := by
     simp only [AddHom.toFun_eq_coe, coe_toAddHom, RingHom.id_apply]
     induction x using TensorProduct.induction_on with
@@ -63,7 +63,7 @@ variable [Free R M] [Module.Finite R M]
 
 variable {S}
 
-/-- The base change isomorphism funderlying `IsBaseChange.linearMapRight` -/
+/-- The base change isomorphism underlying `IsBaseChange.linearMapRight` -/
 noncomputable def linearMapRightBaseChangeEquiv
     {ε : N →ₗ[R] P} (ibc : IsBaseChange S ε) :
     S ⊗[R] (M →ₗ[R] N) ≃ₗ[S] (M →ₗ[R] P) := by
@@ -198,7 +198,7 @@ variable {Q : Type*} [AddCommMonoid Q] [Module R Q] [Module S P] [IsScalarTower 
   [Module S Q] [IsScalarTower R S Q]
   {α : M →ₗ[R] P} {β : N →ₗ[R] Q}
   (ibcM : IsBaseChange S α) (ibcN : IsBaseChange S β)
-  {ι θ : Type*} [DecidableEq ι] [Fintype ι] [Fintype θ]
+  {ι θ : Type*} [DecidableEq ι] [Fintype ι] [Finite θ]
   (b : Module.Basis ι R M) (c : Module.Basis θ R N)
 
 theorem linearMapLeftRightHom_toMatrix (f : M →ₗ[R] N) :

@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Group.ULift
 public import Mathlib.Algebra.Ring.Equiv
 public import Mathlib.Data.Int.Cast.Basic
+public import Mathlib.Tactic.PPWithUniv
 
 /-!
 # `ULift` instances for ring
@@ -22,7 +23,7 @@ We also provide `ULift.ringEquiv : ULift R ≃+* R`.
 @[expose] public section
 
 
-universe u
+universe u u₁ u₂
 
 variable {R : Type u}
 namespace ULift
@@ -111,3 +112,26 @@ instance nonUnitalCommRing [NonUnitalCommRing R] : NonUnitalCommRing (ULift R) w
 instance commRing [CommRing R] : CommRing (ULift R) where
 
 end ULift
+
+section RingHom
+
+variable {R S : Type*} [CommRing R] [CommRing S]
+
+/-- `ULift` is functorial for ring homomorphisms. -/
+@[pp_with_univ]
+def RingHom.ulift (f : R →+* S) : ULift.{u₁} R →+* ULift.{u₂} S :=
+  RingHom.comp ULift.ringEquiv.symm.toRingHom (f.comp ULift.ringEquiv.toRingHom)
+
+lemma RingHom.ulift_apply (f : R →+* S) (x : ULift.{u₁} R) : f.ulift x = ⟨f x.down⟩ :=
+  rfl
+
+@[simp]
+lemma RingHom.down_ulift_apply (f : R →+* S) (x : ULift.{u₁} R) :
+    (f.ulift x).down = f x.down :=
+  rfl
+
+lemma RingHom.comp_ulift_eq (f : R →+* S) :
+    ULift.ringEquiv.toRingHom.comp ((ulift.{u₁, u₂} f).comp ULift.ringEquiv.symm.toRingHom) = f :=
+  rfl
+
+end RingHom

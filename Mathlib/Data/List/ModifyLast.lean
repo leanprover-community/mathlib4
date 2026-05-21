@@ -7,7 +7,7 @@ module
 
 public import Batteries.Data.List.Basic
 public import Batteries.Tactic.Alias
-public import Mathlib.Tactic.TypeStar
+public import Mathlib.Init
 import all Init.Data.Array.Basic
 
 /-! ### List.modifyLast -/

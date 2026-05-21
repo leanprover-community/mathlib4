@@ -11,6 +11,9 @@ public import Mathlib.Order.Atoms
 public import Mathlib.Order.Cofinal
 public import Mathlib.Order.UpperLower.Principal
 
+import Mathlib.Data.Set.Finite.Basic
+import Mathlib.Order.ZornAtoms
+
 /-!
 # Order ideals, cofinal sets, and the Rasiowa–Sikorski lemma
 
@@ -107,6 +110,11 @@ instance : SetLike (Ideal P) P where
   coe s := s.carrier
   coe_injective' _ _ h := toLowerSet_injective <| SetLike.coe_injective h
 
+/-- The partial ordering by subset inclusion, inherited from `Set P`. -/
+instance : PartialOrder (Ideal P) := .ofSetLike (Ideal P) P
+
+@[deprecated (since := "2026-04-01")] alias instPartialOrderIdeal := Order.Ideal.instPartialOrder
+
 @[ext]
 theorem ext {s t : Ideal P} : (s : Set P) = t → s = t :=
   SetLike.ext'
@@ -134,10 +142,6 @@ protected theorem isIdeal (s : Ideal P) : IsIdeal (s : Set P) :=
 theorem mem_compl_of_ge {x y : P} : x ≤ y → x ∈ (I : Set P)ᶜ → y ∈ (I : Set P)ᶜ := fun h ↦
   mt <| I.lower h
 
-/-- The partial ordering by subset inclusion, inherited from `Set P`. -/
-instance instPartialOrderIdeal : PartialOrder (Ideal P) :=
-  PartialOrder.lift SetLike.coe SetLike.coe_injective
-
 theorem coe_subset_coe : (s : Set P) ⊆ t ↔ s ≤ t :=
   Iff.rfl
 
@@ -147,6 +151,22 @@ theorem coe_ssubset_coe : (s : Set P) ⊂ t ↔ s < t :=
 @[trans]
 theorem mem_of_mem_of_le {x : P} {I J : Ideal P} : x ∈ I → I ≤ J → x ∈ J :=
   @Set.mem_of_mem_of_subset P x I J
+
+@[simp]
+theorem mem_toIdeal {I : Set P} (h : IsIdeal I) {a : P} : a ∈ h.toIdeal ↔ a ∈ I :=
+  Iff.rfl
+
+@[simp]
+theorem coe_toIdeal {I : Set P} (h : IsIdeal I) : (h.toIdeal : Set P) = I :=
+  rfl
+
+@[simp]
+theorem toIdeal_le {I : Set P} (h : IsIdeal I) {J : Ideal P} : h.toIdeal ≤ J ↔ I ⊆ J :=
+  Iff.rfl
+
+@[simp]
+theorem le_toIdeal {I : Set P} (h : IsIdeal I) {J : Ideal P} : J ≤ h.toIdeal ↔ (J : Set P) ⊆ I :=
+  Iff.rfl
 
 /-- A proper ideal is one that is not the whole set.
 Note that the whole set might not be an ideal. -/
@@ -235,11 +255,17 @@ section OrderTop
 
 variable [OrderTop P] {I : Ideal P}
 
-theorem top_of_top_mem (h : ⊤ ∈ I) : I = ⊤ := by
-  ext
-  exact iff_of_true (I.lower le_top h) trivial
+theorem top_mem_iff_eq_top : ⊤ ∈ I ↔ I = ⊤ :=
+  ⟨fun h => SetLike.ext fun _ => iff_of_true (I.lower le_top h) ⟨⟩, fun h => h ▸ mem_univ _⟩
 
-theorem IsProper.top_notMem (hI : IsProper I) : ⊤ ∉ I := fun h ↦ hI.ne_top <| top_of_top_mem h
+theorem top_notMem_iff_ne_top : ⊤ ∉ I ↔ I ≠ ⊤ :=
+  top_mem_iff_eq_top.not
+
+theorem isProper_iff_top_notMem : I.IsProper ↔ ⊤ ∉ I := by
+  rw [isProper_iff_ne_top, ne_eq, top_mem_iff_eq_top]
+
+alias ⟨top_of_top_mem, _⟩ := top_mem_iff_eq_top
+alias ⟨IsProper.top_notMem, _⟩ := isProper_iff_top_notMem
 
 end OrderTop
 
@@ -303,6 +329,11 @@ end OrderTop
 
 end Preorder
 
+@[simp]
+theorem isProper_principal_iff [PartialOrder P] [OrderTop P] {a : P} :
+    (principal a).IsProper ↔ a ≠ ⊤ := by
+  rw [isProper_iff_top_notMem, mem_principal, top_le_iff]
+
 section SemilatticeSup
 
 variable [SemilatticeSup P] {x y : P} {I s : Ideal P}
@@ -356,21 +387,20 @@ instance : Max (Ideal P) :=
           le_sup_left, le_sup_right⟩
       lower' := fun _ _ h ⟨yi, hi, yj, hj, hxy⟩ ↦ ⟨yi, hi, yj, hj, h.trans hxy⟩ }⟩
 
-instance : Lattice (Ideal P) :=
-  { Ideal.instPartialOrderIdeal with
-    sup := (· ⊔ ·)
-    le_sup_left := fun _ J i hi ↦
-      let ⟨w, hw⟩ := J.nonempty
-      ⟨i, hi, w, hw, le_sup_left⟩
-    le_sup_right := fun I _ j hj ↦
-      let ⟨w, hw⟩ := I.nonempty
-      ⟨w, hw, j, hj, le_sup_right⟩
-    sup_le := fun _ _ K hIK hJK _ ⟨_, hi, _, hj, ha⟩ ↦
-      K.lower ha <| sup_mem (mem_of_mem_of_le hi hIK) (mem_of_mem_of_le hj hJK)
-    inf := (· ⊓ ·)
-    inf_le_left := fun _ _ ↦ inter_subset_left
-    inf_le_right := fun _ _ ↦ inter_subset_right
-    le_inf := fun _ _ _ ↦ subset_inter }
+instance : Lattice (Ideal P) where
+  sup := (· ⊔ ·)
+  le_sup_left := fun _ J i hi ↦
+    let ⟨w, hw⟩ := J.nonempty
+    ⟨i, hi, w, hw, le_sup_left⟩
+  le_sup_right := fun I _ j hj ↦
+    let ⟨w, hw⟩ := I.nonempty
+    ⟨w, hw, j, hj, le_sup_right⟩
+  sup_le := fun _ _ K hIK hJK _ ⟨_, hi, _, hj, ha⟩ ↦
+    K.lower ha <| sup_mem (mem_of_mem_of_le hi hIK) (mem_of_mem_of_le hj hJK)
+  inf := (· ⊓ ·)
+  inf_le_left := fun _ _ ↦ inter_subset_left
+  inf_le_right := fun _ _ ↦ inter_subset_right
+  le_inf := fun _ _ _ ↦ subset_inter
 
 @[simp]
 theorem coe_sup : ↑(s ⊔ t) = { x | ∃ a ∈ s, ∃ b ∈ t, x ≤ a ⊔ b } :=
@@ -420,12 +450,14 @@ theorem coe_sInf : (↑(sInf S) : Set P) = ⋂ s ∈ S, ↑s :=
 theorem mem_sInf : x ∈ sInf S ↔ ∀ s ∈ S, x ∈ s := by
   simp_rw [← SetLike.mem_coe, coe_sInf, mem_iInter₂]
 
-instance : CompleteLattice (Ideal P) :=
-  { (inferInstance : Lattice (Ideal P)),
-    completeLatticeOfInf (Ideal P) fun S ↦ by
+instance : CompleteLattice (Ideal P) where
+  __ := (inferInstance : Lattice (Ideal P))
+  __ := (inferInstance : OrderTop (Ideal P))
+  __ := (inferInstance : OrderBot (Ideal P))
+  __ := completeLatticeOfInf (Ideal P) fun S ↦ by
       refine ⟨fun s hs ↦ ?_, fun s hs ↦ by rwa [← coe_subset_coe, coe_sInf, subset_iInter₂_iff]⟩
       rw [← coe_subset_coe, coe_sInf]
-      exact biInter_subset_of_mem hs with }
+      exact biInter_subset_of_mem hs
 
 end SemilatticeSupOrderBot
 
@@ -463,6 +495,31 @@ theorem IsProper.notMem_or_compl_notMem (hI : IsProper I) : x ∉ I ∨ xᶜ ∉
   tauto
 
 end BooleanAlgebra
+
+section CompleteLattice
+
+variable [CompleteLattice P] {I : Ideal P}
+
+@[simp]
+theorem biSup_mem_iff {α : Type*} {f : α → P} {s : Set α} (hs : s.Finite) :
+    ⨆ i ∈ s, f i ∈ I ↔ ∀ i ∈ s, f i ∈ I := by
+  induction s, hs using Finite.induction_on with simp [↓iSup_insert, sup_mem_iff, *]
+
+@[simp]
+theorem biSup_finset_mem_iff {α : Type*} {f : α → P} {s : Finset α} :
+    ⨆ i ∈ s, f i ∈ I ↔ ∀ i ∈ s, f i ∈ I :=
+  biSup_mem_iff s.finite_toSet
+
+@[simp]
+theorem iSup_mem_iff {α : Sort*} [Finite α] {f : α → P} : ⨆ i, f i ∈ I ↔ ∀ i, f i ∈ I := by
+  simpa [← Equiv.plift.symm.iSup_comp, Equiv.plift.forall_congr_left]
+    using biSup_mem_iff (f := f ∘ PLift.down) Set.finite_univ
+
+alias ⟨_, biSup_mem⟩ := biSup_mem_iff
+alias ⟨_, biSup_finset_mem⟩ := biSup_finset_mem_iff
+alias ⟨_, iSup_mem⟩ := iSup_mem_iff
+
+end CompleteLattice
 
 end Ideal
 
@@ -551,7 +608,7 @@ end IdealOfCofinals
 
 section sUnion
 
-variable [Preorder P]
+variable [LE P]
 
 /-- A non-empty directed union of ideals of sets in a preorder is an ideal. -/
 lemma isIdeal_sUnion_of_directedOn {C : Set (Set P)} (hidl : ∀ I ∈ C, IsIdeal I)
@@ -567,4 +624,34 @@ lemma isIdeal_sUnion_of_isChain {C : Set (Set P)} (hidl : ∀ I ∈ C, IsIdeal I
   isIdeal_sUnion_of_directedOn hidl hC.directedOn hNe
 
 end sUnion
+
+namespace Ideal
+
+instance [LE P] [OrderTop P] : IsCoatomic (Ideal P) := by
+  apply IsCoatomic.of_isChain_bounded
+  intro S hS₁ hS₂ hS₃
+  refine ⟨IsIdeal.toIdeal <| isIdeal_sUnion_of_isChain (C := SetLike.coe '' S) ?_
+    (hS₁.image_of_map_rel _ _ _ ?_) (hS₂.image _), ?_, ?_⟩
+  · simp [Ideal.isIdeal]
+  · simp
+  · simpa [top_notMem_iff, lt_top_iff_ne_top, ← top_mem_iff_eq_top] using hS₃
+  · intro J hJ
+    simpa [le_toIdeal] using Set.subset_biUnion_of_mem hJ
+
+/-- Every proper ideal is contained in some maximal ideal. -/
+theorem IsProper.exists_le_maximal [LE P] [OrderTop P] {I : Ideal P} (hI : I.IsProper) :
+    ∃ J, I ≤ J ∧ J.IsMaximal := by
+  rcases IsCoatomic.eq_top_or_exists_le_coatom I with rfl | ⟨J, hJ, hJ'⟩
+  · simp [isProper_iff_ne_top] at hI
+  · exact ⟨J, hJ', isMaximal_iff_isCoatom.2 hJ⟩
+
+theorem exists_maximal [PartialOrder P] [OrderTop P] [Nontrivial P] :
+    ∃ (I : Ideal P), I.IsMaximal := by
+  rcases exists_ne (⊤ : P) with ⟨a, ha⟩
+  rw [← isProper_principal_iff] at ha
+  rcases ha.exists_le_maximal with ⟨I, -, hI⟩
+  exact ⟨I, hI⟩
+
+end Ideal
+
 end Order

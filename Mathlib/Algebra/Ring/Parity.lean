@@ -270,14 +270,14 @@ lemma not_odd_iff : ¬Odd n ↔ n % 2 = 0 := by grind
 
 lemma _root_.Odd.not_two_dvd_nat (h : Odd n) : ¬(2 ∣ n) := by grind
 
-lemma even_xor_odd (n : ℕ) : Xor' (Even n) (Odd n) := by grind
+lemma even_xor_odd (n : ℕ) : Xor (Even n) (Odd n) := by grind
 
 lemma even_or_odd (n : ℕ) : Even n ∨ Odd n := (even_xor_odd n).or
 
 lemma even_or_odd' (n : ℕ) : ∃ k, n = 2 * k ∨ n = 2 * k + 1 := by
   simpa only [← two_mul, exists_or, Odd, Even] using even_or_odd n
 
-lemma even_xor_odd' (n : ℕ) : ∃ k, Xor' (n = 2 * k) (n = 2 * k + 1) := by
+lemma even_xor_odd' (n : ℕ) : ∃ k, Xor (n = 2 * k) (n = 2 * k + 1) := by
   obtain ⟨k, rfl⟩ | ⟨k, rfl⟩ := even_or_odd n <;>
   · use k
     grind
@@ -361,12 +361,8 @@ variable {α : Type*} {f : α → α} {n : ℕ}
 lemma iterate_two_mul (hf : Involutive f) (n : ℕ) : f^[2 * n] = id := by
   rw [iterate_mul, involutive_iff_iter_2_eq_id.1 hf, iterate_id]
 
-@[deprecated (since := "2025-10-28")] alias iterate_bit0 := iterate_two_mul
-
 lemma iterate_two_mul_add_one (hf : Involutive f) (n : ℕ) : f^[2 * n + 1] = f := by
   rw [iterate_succ, hf.iterate_two_mul, id_comp]
-
-@[deprecated (since := "2025-10-28")] alias iterate_bit1 := iterate_two_mul_add_one
 
 lemma iterate_even (hf : Involutive f) (hn : Even n) : f^[n] = id := by
   obtain ⟨m, rfl⟩ := hn

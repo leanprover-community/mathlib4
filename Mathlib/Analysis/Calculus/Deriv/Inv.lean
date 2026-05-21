@@ -65,7 +65,8 @@ theorem differentiableAt_inv_iff : DifferentiableAt 𝕜 (fun x => x⁻¹) x ↔
 
 theorem deriv_inv : deriv (fun x => x⁻¹) x = -(x ^ 2)⁻¹ := by
   rcases eq_or_ne x 0 with (rfl | hne)
-  · simp [deriv_zero_of_not_differentiableAt (mt differentiableAt_inv_iff.1 (not_not.2 rfl))]
+  · rw [deriv_zero_of_not_differentiableAt (mt differentiableAt_inv_iff.1 (not_not.2 rfl))]
+    simp
   · exact (hasDerivAt_inv hne).deriv
 
 @[simp]
@@ -233,5 +234,14 @@ theorem deriv_fun_div (hc : DifferentiableAt 𝕜 c x) (hd : DifferentiableAt �
 theorem deriv_div (hc : DifferentiableAt 𝕜 c x) (hd : DifferentiableAt 𝕜 d x) (hx : d x ≠ 0) :
     deriv (c / d) x = (deriv c x * d x - c x * deriv d x) / d x ^ 2 :=
   (hc.hasDerivAt.div hd.hasDerivAt hx).deriv
+
+theorem deriv_const_div (c : 𝕜') (hd : DifferentiableAt 𝕜 d x) (hx : d x ≠ 0) :
+    deriv (fun x => c / d x) x = - c * deriv d x / d x ^ 2 := by
+  simp [deriv_fun_div (differentiableAt_const c) hd hx]
+
+@[simp]
+theorem deriv_const_div_id (c : 𝕜) :
+    deriv (fun x => c / x) x = - c / x ^ 2 := by
+  simp [div_eq_mul_inv]
 
 end Division

@@ -1,4 +1,4 @@
-module
+module -- shake: keep-all
 
 import Mathlib.Data.Finset.Attr
 import Mathlib.Data.Sym.Sym2.Init

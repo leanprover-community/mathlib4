@@ -1,4 +1,4 @@
-## The `open-mathlib` benchmark
+# The `open-mathlib` benchmark
 
 This benchmark approximates `import Mathlib` in the editor by running `lake lean Mathlib.lean`.
 It measures the following metrics:

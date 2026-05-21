@@ -1,3 +1,4 @@
+module
 import Mathlib.Algebra.Category.ModuleCat.Colimits
 import Mathlib.Algebra.Category.ModuleCat.Limits
 import Mathlib.Algebra.Category.ModuleCat.FilteredColimits
@@ -6,8 +7,6 @@ import Mathlib.CategoryTheory.Sites.Equivalence
 universe u
 
 open CategoryTheory
-
-attribute [local instance] Types.instFunLike Types.instConcreteCategory
 
 section Small
 

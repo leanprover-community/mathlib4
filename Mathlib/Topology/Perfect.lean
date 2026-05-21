@@ -125,6 +125,20 @@ theorem Preperfect.perfect_closure (hC : Preperfect C) : Perfect (closure C) := 
   rw [closure_eq_cluster_pts] at hx
   exact hx
 
+/-
+Open subsects in perfect spaces are preperfect.
+-/
+theorem IsOpen.preperfect [PerfectSpace α] {U : Set α} (hU : IsOpen U) :
+    Preperfect U := by
+  simpa using PerfectSpace.univ_preperfect.open_inter hU
+
+/-
+Closures of open subsects in perfect spaces are preperfect, hence perfect.
+-/
+theorem IsOpen.perfect_closure [PerfectSpace α] {U : Set α} (hU : IsOpen U) :
+    Perfect (closure U) :=
+  hU.preperfect.perfect_closure
+
 /-- In a T1 space, being preperfect is equivalent to having perfect closure. -/
 theorem preperfect_iff_perfect_closure [T1Space α] : Preperfect C ↔ Perfect (closure C) := by
   constructor <;> intro h
@@ -212,8 +226,8 @@ theorem exists_countable_union_perfect_of_isClosed [SecondCountableTopology α]
   have Vct : (V ∩ C).Countable := by
     simp only [V, iUnion_inter]
     apply Countable.biUnion
-    · exact Countable.mono inter_subset_left bct
-    · exact inter_subset_right
+    · exact bct.mono (sep_subset _ _)
+    · exact sep_subset_setOf _ _
   refine ⟨V ∩ C, D, Vct, ⟨?_, ?_⟩, ?_⟩
   · refine hclosed.sdiff (isOpen_biUnion fun _ ↦ ?_)
     exact fun ⟨Ub, _⟩ ↦ IsTopologicalBasis.isOpen bbasis Ub
