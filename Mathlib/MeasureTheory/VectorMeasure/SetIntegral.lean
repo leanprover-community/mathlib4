@@ -75,10 +75,14 @@ theorem Integrable.integrableOn (h : μ.Integrable f B) : μ.IntegrableOn f B s 
   rw [← integrableOn_univ] at h
   exact h.mono MeasurableSet.univ (subset_univ _)
 
+theorem setIntegral_eq_zero_of_not_measurableSet (hs : ¬MeasurableSet s) :
+    ∫ᵛ x in s, f x ∂[B; μ] = 0 := by
+  simp [restrict_not_measurable _ hs]
+
 theorem setIntegral_congr_ae (h : ∀ᵐ x ∂(μ.transpose B).variation, x ∈ s → f x = g x) :
     ∫ᵛ x in s, f x ∂[B; μ] = ∫ᵛ x in s, g x ∂[B; μ] := by
   by_cases hs : MeasurableSet s; swap
-  · simp [restrict_not_measurable _ hs]
+  · simp [setIntegral_eq_zero_of_not_measurableSet hs]
   apply integral_congr_ae
   rw [transpose_restrict, variation_restrict hs]
   exact (ae_restrict_iff' hs).2 h
@@ -191,63 +195,97 @@ theorem enorm_setIntegral_le_lintegral_enorm :
   grw [enorm_integral_le_lintegral_enorm, transpose_restrict]
   exact lintegral_mono' variation_restrict_le le_rfl
 
-theorem hasSum_setIntegral_iUnion {ι : Type*} [Countable ι] {s : ι → Set X}
+private theorem hasSum_setIntegral_iUnion_nat {s : ℕ → Set X}
     (hm : ∀ i, MeasurableSet (s i)) (hd : Pairwise (Disjoint on s))
     (hfi : μ.IntegrableOn f B (⋃ i, s i)) :
     HasSum (fun n ↦ ∫ᵛ x in s n, f x ∂[B; μ]) (∫ᵛ x in ⋃ n, s n, f x ∂[B; μ]) := by
   by_cases hG : CompleteSpace G; swap
   · simp [integral_of_not_completeSpace hG]
-  have : Summable (fun n ↦ ∫ᵛ x in s n, f x ∂[B; μ]) := by
-    apply Summable.of_enorm
-    apply ne_of_lt
-    calc ∑' i, ‖∫ᵛ x in s i, f x ∂[B; μ]‖ₑ
-    _ ≤ ∑' i, ∫⁻ x in s i, ‖f x‖ₑ ∂(μ.transpose B).variation := by
-      gcongr
-      apply enorm_setIntegral_le_lintegral_enorm
+  have I : ∑' i, ∫⁻ x in s i, ‖f x‖ₑ ∂(μ.transpose B).variation < ∞ := calc
     _ = ∫⁻ x in (⋃ i, s i), ‖f x‖ₑ ∂(μ.transpose B).variation := (lintegral_iUnion hm hd _).symm
     _ < ∞ := by
       simp only [VectorMeasure.IntegrableOn, VectorMeasure.Integrable, transpose_restrict,
         variation_restrict (MeasurableSet.iUnion hm)] at hfi
       exact hfi.2
+  have : Summable (fun n ↦ ∫ᵛ x in s n, f x ∂[B; μ]) := by
+    apply Summable.of_enorm (lt_of_le_of_lt _ I).ne
+    gcongr
+    exact enorm_setIntegral_le_lintegral_enorm
+  apply (Summable.hasSum_iff_tendsto_nat this).2
+  simp_rw [tendsto_iff_edist_tendsto_0, edist_eq_enorm_sub, enorm_sub_rev]
+  apply tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds
+    (ENNReal.tendsto_sum_nat_add _ I.ne) (by positivity) (fun N ↦ ?_)
+  have : ⋃ n, s n = (⋃ n ∈ Finset.range N, s n) ∪ (⋃ n, s (n + N)) := by
+    ext x
+    have : (∃ i, x ∈ s (i + N)) ↔ (∃ i ≥ N, x ∈ s i) :=
+      ⟨fun ⟨i, hi⟩ ↦ ⟨i + N, by grind⟩, fun ⟨i, hi, h'i⟩ ↦ ⟨i - N, by grind⟩⟩
+    simp only [mem_iUnion, Finset.mem_range, mem_union, exists_prop, this, ge_iff_le]
+    grind
+  rw [this, setIntegral_union]; rotate_left
+  · simp only [Finset.mem_range, disjoint_iUnion_right, disjoint_iUnion_left]
+    intro i j hi
+    apply hd (by grind)
+  · apply MeasurableSet.biUnion (Finset.countable_toSet _) (fun i hi ↦ hm i)
+  · apply MeasurableSet.iUnion (fun i ↦ hm _)
+  · apply hfi.mono (MeasurableSet.iUnion hm) (by simp [subset_iUnion s])
+  · apply hfi.mono (MeasurableSet.iUnion hm) (by simp [subset_iUnion s])
+  rw [setIntegral_biUnion_finset]; rotate_left
+  · exact fun i hi ↦ hm i
+  · exact fun i hi j hj hij ↦ hd hij
+  · exact fun i hi ↦ hfi.mono (MeasurableSet.iUnion hm) (by simp [subset_iUnion s])
+  simp only [add_sub_cancel_left]
+  apply enorm_setIntegral_le_lintegral_enorm.trans_eq
+  rw [lintegral_iUnion (fun i ↦ hm _)]
+  exact fun i j hij ↦ hd (by grind)
 
-
-  simp only [IntegrableOn, Measure.restrict_iUnion_ae hd hm] at hfi ⊢
-  exact hasSum_integral_measure hfi
-
-#exit
-
-theorem hasSum_integral_iUnion {ι : Type*} [Countable ι] {s : ι → Set X}
+theorem hasSum_setIntegral_iUnion {ι : Type*} [Countable ι] {s : ι → Set X}
     (hm : ∀ i, MeasurableSet (s i)) (hd : Pairwise (Disjoint on s))
-    (hfi : IntegrableOn f (⋃ i, s i) μ) :
-    HasSum (fun n => ∫ᵛ x in s n, f x ∂[B; μ]) (∫ᵛ x in ⋃ n, s n, f x ∂[B; μ]) :=
-  hasSum_integral_iUnion_ae (fun i => (hm i).nullMeasurableSet) (hd.mono fun _ _ h => h.aedisjoint)
-    hfi
+    (hfi : μ.IntegrableOn f B (⋃ i, s i)) :
+    HasSum (fun n ↦ ∫ᵛ x in s n, f x ∂[B; μ]) (∫ᵛ x in ⋃ n, s n, f x ∂[B; μ]) := by
+  classical
+  rcases finite_or_infinite ι with hι | hι
+  · letI : Fintype ι := Fintype.ofFinite ι
+    have : ∫ᵛ x in ⋃ n, s n, f x ∂[B; μ] = ∑ i, ∫ᵛ x in s i, f x ∂[B; μ] := by
+      rw [setIntegral_iUnion_fintype hm hd (fun i ↦ ?_)]
+      exact hfi.mono (MeasurableSet.iUnion hm) (by simp [subset_iUnion s])
+    rw [this]
+    apply hasSum_fintype
+  obtain ⟨e⟩ : Nonempty (ι ≃ ℕ) := nonempty_equiv_of_countable
+  rw [← e.symm.surjective.iUnion_comp, ← e.symm.hasSum_iff]
+  apply hasSum_setIntegral_iUnion_nat (fun i ↦ hm _) (fun i j hij ↦ hd (by simp [hij]))
+  rwa [e.symm.surjective.iUnion_comp]
 
 theorem integral_iUnion {ι : Type*} [Countable ι] {s : ι → Set X} (hm : ∀ i, MeasurableSet (s i))
-    (hd : Pairwise (Disjoint on s)) (hfi : IntegrableOn f (⋃ i, s i) μ) :
+    (hd : Pairwise (Disjoint on s)) (hfi : μ.IntegrableOn f B (⋃ i, s i)) :
     ∫ᵛ x in ⋃ n, s n, f x ∂[B; μ] = ∑' n, ∫ᵛ x in s n, f x ∂[B; μ] :=
-  (HasSum.tsum_eq (hasSum_integral_iUnion hm hd hfi)).symm
+  (HasSum.tsum_eq (hasSum_setIntegral_iUnion hm hd hfi)).symm
 
-theorem integral_iUnion_ae {ι : Type*} [Countable ι] {s : ι → Set X}
-    (hm : ∀ i, NullMeasurableSet (s i) μ) (hd : Pairwise (AEDisjoint μ on s))
-    (hfi : IntegrableOn f (⋃ i, s i) μ) : ∫ᵛ x in ⋃ n, s n, f x ∂[B; μ] = ∑' n, ∫ᵛ x in s n, f x ∂[B; μ] :=
-  (HasSum.tsum_eq (hasSum_integral_iUnion_ae hm hd hfi)).symm
-
-theorem setIntegral_eq_zero_of_ae_eq_zero (ht_eq : ∀ᵐ x ∂[B; μ], x ∈ t → f x = 0) :
+theorem setIntegral_eq_zero_of_ae_eq_zero
+    (ht_eq : ∀ᵐ x ∂(μ.transpose B).variation, x ∈ t → f x = 0) :
     ∫ᵛ x in t, f x ∂[B; μ] = 0 := by
-  by_cases hf : AEStronglyMeasurable f (μ.restrict t); swap
+  by_cases ht : MeasurableSet t; swap
+  · simp [setIntegral_eq_zero_of_not_measurableSet ht]
+  by_cases hf : AEStronglyMeasurable f ((μ.restrict t).transpose B).variation; swap
   · rw [integral_undef]
     contrapose hf
     exact hf.1
   have : ∫ᵛ x in t, hf.mk f x ∂[B; μ] = 0 := by
     refine integral_eq_zero_of_ae ?_
-    rw [EventuallyEq,
-      ae_restrict_iff (hf.stronglyMeasurable_mk.measurableSet_eq_fun stronglyMeasurable_zero)]
+    simp only [transpose_restrict, variation_restrict ht]
+    sorry
+  sorry
+--      ae_restrict_iff (hf.stronglyMeasurable_mk.measurableSet_eq_fun stronglyMeasurable_zero)]
+
+
+#exit
+
     filter_upwards [ae_imp_of_ae_restrict hf.ae_eq_mk, ht_eq] with x hx h'x h''x
     rw [← hx h''x]
     exact h'x h''x
   rw [← this]
   exact integral_congr_ae hf.ae_eq_mk
+
+#exit
 
 theorem setIntegral_eq_zero_of_forall_eq_zero (ht_eq : ∀ x ∈ t, f x = 0) :
     ∫ᵛ x in t, f x ∂[B; μ] = 0 :=
