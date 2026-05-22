@@ -217,7 +217,7 @@ lemma mono_inj (c : Cofan X) (h : IsColimit c) (i : I)
   let ι : Unit → I := fun _ ↦ i
   have hι : Function.Injective ι := fun _ _ _ ↦ rfl
   exact mono_of_injective X ι hι c (Cofan.mk (X i) (fun _ ↦ 𝟙 _)) h
-    (mkCofanColimit _ (fun s => s.inj ()))
+    (Cofan.IsColimit.mk _ (fun s => s.inj ()))
 
 instance mono_ι [HasCoproduct X] (i : I)
     [HasCoproduct (fun (k : ((Set.range (fun _ : Unit ↦ i))ᶜ : Set I)) => X k.1)] :

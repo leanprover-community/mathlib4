@@ -34,7 +34,7 @@ variable [TopologicalSpace S]
 @[simps apply]
 def sigmaIsoHom : C((x : Fiber f) × x.val, S) where
   toFun | ⟨a, x⟩ => x.val
-  continuous_toFun := by continuity
+  continuous_toFun := continuous_sigma (by fun_prop)
 
 lemma sigmaIsoHom_inj : Function.Injective (sigmaIsoHom f) := by
   rintro ⟨⟨_, _, rfl⟩, ⟨_, hx⟩⟩ ⟨⟨_, _, rfl⟩, ⟨_, hy⟩⟩ h
