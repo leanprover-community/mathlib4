@@ -228,11 +228,25 @@ theorem isStationary_univ_iff : IsStationary (.univ (α := α)) ↔ Nonempty α 
 theorem IsStationary.univ [Nonempty α] : IsStationary (.univ (α := α)) :=
   isStationary_univ_iff.2 ‹_›
 
+@[simp]
+theorem not_isStationary_empty : ¬ IsStationary (∅ : Set α) := by
+  intro h
+  simpa using h .univ
+
 theorem IsClub.isStationary [WellFoundedLT α] (hα : ℵ₀ < cof α) (hs : IsClub s) :
     IsStationary s := by
   have := hα.ne_zero
   rw [cof_ne_zero_iff] at this
   exact fun t ht ↦ (hs.inter hα.ne' ht).nonempty
+
+/-- Non-stationary sets form an ideal. -/
+theorem not_isStationary_union [WellFoundedLT α] (hα : cof α ≠ ℵ₀)
+    (hs : ¬ IsStationary s) (ht : ¬ IsStationary t) : ¬ IsStationary (s ∪ t) := by
+  simp_rw [IsStationary, not_forall, Set.not_nonempty_iff_eq_empty] at *
+  obtain ⟨u, hu, hsu⟩ := hs
+  obtain ⟨v, hv, htv⟩ := ht
+  refine ⟨_, hu.inter hα hv, ?_⟩
+  grind
 
 theorem IsStationary.of_not_isCofinal_compl (hs : ¬ IsCofinal (sᶜ)) : IsStationary s := by
   intro t ht
