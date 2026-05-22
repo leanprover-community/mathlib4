@@ -144,3 +144,54 @@ theorem Order.IsNormal.isClub_fixedPoints {f : α → α} (hα : cof α ≠ ℵ�
       simpa using mk_range_le_lift (f := fun n : ℕ ↦ f^[n] a)
 
 end WellFoundedLT
+
+/-! ### Stationary sets -/
+
+/-- A set is called stationary when it intersects all club sets. -/
+@[expose]
+def IsStationary (s : Set α) : Prop :=
+  ∀ ⦃t⦄, IsClub t → (s ∩ t).Nonempty
+
+@[gcongr]
+theorem IsStationary.mono (hs : IsStationary s) (h : s ⊆ t) : IsStationary t :=
+  fun _u hu ↦ (hs hu).mono (Set.inter_subset_inter_left _ h)
+
+theorem IsStationary.nonempty (hs : IsStationary s) : s.Nonempty := by
+  simpa using hs .univ
+
+theorem isStationary_univ_iff : IsStationary (.univ (α := α)) ↔ Nonempty α := by
+  simp [IsStationary, ← not_imp_not (b := IsClub _), Set.not_nonempty_iff_eq_empty,
+    isClub_empty_iff]
+
+@[simp]
+theorem IsStationary.univ [Nonempty α] : IsStationary (.univ (α := α)) :=
+  isStationary_univ_iff.2 ‹_›
+
+@[simp]
+theorem not_isStationary_empty : ¬ IsStationary (∅ : Set α) := by
+  intro h
+  simpa using h .univ
+
+theorem IsClub.isStationary [Nonempty α] [WellFoundedLT α] (hα : cof α ≠ ℵ₀) (hs : IsClub s) :
+    IsStationary s :=
+  fun t ht ↦ (hs.inter hα ht).nonempty
+
+/-- Non-stationary sets form an ideal. -/
+theorem not_isStationary_union [WellFoundedLT α] (hα : cof α ≠ ℵ₀)
+    (hs : ¬ IsStationary s) (ht : ¬ IsStationary t) : ¬ IsStationary (s ∪ t) := by
+  simp_rw [IsStationary, not_forall, Set.not_nonempty_iff_eq_empty] at hs ht ⊢
+  obtain ⟨u, hu, hsu⟩ := hs
+  obtain ⟨v, hv, htv⟩ := ht
+  refine ⟨_, hu.inter hα hv, ?_⟩
+  grind
+
+theorem IsStationary.of_not_isCofinal_compl (hs : ¬ IsCofinal (sᶜ)) : IsStationary s := by
+  intro t ht
+  obtain ⟨a, ha⟩ := not_isCofinal_iff.1 hs
+  obtain ⟨b, hb, hb'⟩ := ht.isCofinal a
+  refine ⟨b, ?_, hb⟩
+  contrapose! ha
+  exact ⟨b, ha, hb'⟩
+
+proof_wanted isStationary_iff_not_isCofinal_compl (hα : cof α ≤ ℵ₀) :
+    IsStationary s ↔ ¬ IsCofinal (sᶜ)
