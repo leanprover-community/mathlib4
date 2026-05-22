@@ -38,14 +38,14 @@ description: 输入一些 PR 编号, 将 PR 整理的符合 Mathlib 规范
   ContinuousAt.comp_of_eq (Or.inl hc) (Or.inl hc) (Or.inr hx0) (Or.inr hx0))
     (continuousAt_const.prodMk continuousAt_id) rfl
   ```
-  
+
 6. 检查有没有 `rw` , `simp` 或者 `simp_rw` 链, 可以尝试把相邻的 `rw` 和 `simp` 合并到一起, 确保通过编译.
 
   例子 :
   ```
   - simp only [equiv_symm_apply, Units.val_mk0, Set.mem_setOf_eq, lt_div_iff₀ hs0'] at hx
   - rw [← map_mul, restrict_lt_iff] at hx
-  + simp only [equiv_symm_apply, Units.val_mk0, Set.mem_setOf_eq, lt_div_iff₀ hs0', ← map_mul, 
+  + simp only [equiv_symm_apply, Units.val_mk0, Set.mem_setOf_eq, lt_div_iff₀ hs0', ← map_mul,
   +   restrict_lt_iff] at hx
   ```
 
@@ -79,7 +79,7 @@ description: 输入一些 PR 编号, 将 PR 整理的符合 Mathlib 规范
    ```
    - simpa [...] using by foo (by simp) boo
    + have : statement := foo (by simp) boo
-   + simpa 
+   + simpa
    ```
 
 9. 如果当前证明已经是清晰的 `calc` 链, 不要为了压成一条 `simpa` 而改写整体结构; 优先保留 `calc`, 只精简链上的局部步骤.

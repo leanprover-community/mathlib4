@@ -3,10 +3,10 @@ diff --git a/Mathlib/Analysis/BoxIntegral/Box/SubboxInduction.lean b/Mathlib/Ana
 +++ b/Mathlib/Analysis/BoxIntegral/Box/SubboxInduction.lean
 @@ -6,7 +6,7 @@
  module
- 
+
  public import Mathlib.Analysis.BoxIntegral.Box.Basic
 -public import Mathlib.Analysis.SpecificLimits.Basic
 +import Mathlib.Analysis.SpecificLimits.Basic
- 
+
  /-!
  # Induction on subboxes

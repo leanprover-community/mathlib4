@@ -4,7 +4,7 @@ diff --git a/Mathlib/Analysis/BoxIntegral/Box/Basic.lean b/Mathlib/Analysis/BoxI
 @@ -5,13 +5,13 @@
  -/
  module
- 
+
 -public import Mathlib.Data.NNReal.Basic
 -public import Mathlib.Order.Fin.Tuple
 -public import Mathlib.Order.Interval.Set.Monotone
@@ -20,4 +20,3 @@ diff --git a/Mathlib/Analysis/BoxIntegral/Box/Basic.lean b/Mathlib/Analysis/BoxI
 +import Mathlib.Topology.Order.MonotoneConvergence
  /-!
  # Rectangular boxes in `ℝⁿ`
- 

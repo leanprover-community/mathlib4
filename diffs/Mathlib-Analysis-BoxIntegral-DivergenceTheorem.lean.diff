@@ -3,9 +3,9 @@ diff --git a/Mathlib/Analysis/BoxIntegral/DivergenceTheorem.lean b/Mathlib/Analy
 +++ b/Mathlib/Analysis/BoxIntegral/DivergenceTheorem.lean
 @@ -6,7 +6,6 @@
  module
- 
+
  public import Mathlib.Analysis.BoxIntegral.Basic
 -public import Mathlib.Analysis.BoxIntegral.Partition.Additive
  public import Mathlib.Analysis.Calculus.FDeriv.Prod
- 
+
  /-!
