@@ -12,7 +12,7 @@ import Mathlib.Combinatorics.SimpleGraph.SabidussiWitness
 The Klein graph (Foster census F056A) is a cubic arc-transitive graph
 on 56 vertices embedded on the Klein quartic surface of genus 3.
 
-* **Sabidussi**: Sab(PSL(2,7), C₃), |PSL(2,7)| = 168. Primitive.
+* **Sabidussi**: Sab(PSL(2,7), C₃), |PSL(2,7)| = 168. Imprimitive (C₃ not maximal).
 * **Tiling**: {7,3} — 24 heptagonal faces
 * V = 56, E = 84, F = 24, genus = 3, χ = -4
 * **CSS code**: [[84, 6, ≥ 4]]
@@ -27,6 +27,7 @@ rather than `![...]` vectors (nested `Fin.cons`, O(n) elaboration).
 A helper converts `Array` + size proof → `Fin n → α`.
 -/
 
+set_option linter.style.longLine false
 set_option linter.style.nativeDecide false
 
 /-- Convert an Array to a function on Fin, given a proof that the array has
