@@ -239,7 +239,7 @@ theorem cofWithin_bot [OrderBot α] : cofWithin (⊥ : α) = 0 :=
 end Preorder
 
 section LinearOrder
-variable [LinearOrder α]
+variable [LinearOrder α] [LinearOrder β]
 
 @[simp]
 theorem cofWithin_lt_aleph0_iff : cofWithin x < ℵ₀ ↔ cofWithin x ≤ 1 :=
