@@ -561,9 +561,11 @@ theorem isBigO_of_le (hfg : ∀ x, ‖f x‖ ≤ ‖g x‖) : f =O[l] g :=
 
 end
 
+@[refl]
 theorem isBigOWith_refl (f : α → E) (l : Filter α) : IsBigOWith 1 l f f :=
   isBigOWith_of_le l fun _ => le_rfl
 
+@[refl]
 theorem isBigO_refl (f : α → E) (l : Filter α) : f =O[l] f :=
   (isBigOWith_refl f l).isBigO
 

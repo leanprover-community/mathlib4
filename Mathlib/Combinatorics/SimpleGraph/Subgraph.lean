@@ -608,6 +608,9 @@ def botIso : (⊥ : Subgraph G).coe ≃g emptyGraph Empty where
 theorem edgeSet_mono {H₁ H₂ : Subgraph G} (h : H₁ ≤ H₂) : H₁.edgeSet ≤ H₂.edgeSet :=
   Sym2.ind h.2
 
+theorem edgeSet_monotone : Monotone (edgeSet (G := G)) :=
+  fun _ _ ↦ edgeSet_mono
+
 theorem _root_.Disjoint.edgeSet {H₁ H₂ : Subgraph G} (h : Disjoint H₁ H₂) :
     Disjoint H₁.edgeSet H₂.edgeSet :=
   disjoint_iff_inf_le.mpr <| by simpa using edgeSet_mono h.le_bot
@@ -844,9 +847,6 @@ theorem degree_eq_one_iff_existsUnique_adj {G' : Subgraph G} {v : V} [Fintype (G
   rw [← finset_card_neighborSet_eq_degree, Finset.card_eq_one, Finset.singleton_iff_unique_mem]
   simp only [Set.mem_toFinset, mem_neighborSet]
 
-@[deprecated (since := "2025-10-31")]
-alias degree_eq_one_iff_unique_adj := degree_eq_one_iff_existsUnique_adj
-
 theorem nontrivial_verts_of_degree_ne_zero {G' : Subgraph G} {v : V} [Fintype (G'.neighborSet v)]
     (h : G'.degree v ≠ 0) : Nontrivial G'.verts := by
   by_contra
@@ -888,10 +888,6 @@ section MkProperties
 
 
 variable {G : SimpleGraph V} {G' : SimpleGraph W}
-
-@[deprecated "Use the `Unique` instance instead." (since := "2025-10-21")]
-instance nonempty_singletonSubgraph_verts (v : V) : Nonempty (G.singletonSubgraph v).verts :=
-  ⟨⟨v, Set.mem_singleton v⟩⟩
 
 instance (v : V) : Unique (G.singletonSubgraph v).verts :=
   Set.uniqueSingleton _
