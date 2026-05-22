@@ -29,6 +29,7 @@ whose quotient is K₄.
 ## Visualizations
 
 * [Dodecahedron → Petersen quotient](https://raw.githubusercontent.com/RaggedR/symmetric-graphs/main/lean/named_graphs/dodecahedron-quotient-petersen.jpeg) — the Z₂ antipodal quotient, with fibers color-coded
+* [3-Cube → K₄ quotient](https://raw.githubusercontent.com/RaggedR/symmetric-graphs/main/lean/named_graphs/cube-quotient-k4.jpeg) — the Z₂ antipodal quotient (bitwise complement)
 
 ## References
 
