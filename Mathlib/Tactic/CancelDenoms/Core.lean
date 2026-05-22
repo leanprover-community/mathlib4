@@ -105,7 +105,7 @@ theorem cancel_factors_ne {α} [Field α] {a b ad bd a' b' gcd : α} (ha : ad * 
 be able to cancel all the numeric denominators in `e`. The returned `Tree` describes how to
 distribute the value `n` over products inside `e`.
 -/
-partial def findCancelFactor (e : Expr) : ℕ × Tree ℕ :=
+partial def findCancelFactor (e : Expr) : ℕ × BinaryTree ℕ :=
   match e.getAppFnArgs with
   | (``HAdd.hAdd, #[_, _, _, _, e1, e2]) | (``HSub.hSub, #[_, _, _, _, e1, e2]) =>
     let (v1, t1) := findCancelFactor e1
@@ -162,7 +162,7 @@ The `v'` argument is a numeral expression corresponding to `v`, which we need in
 the return type accurately.
 -/
 partial def mkProdPrf {u : Level} (α : Q(Type u)) (sα : Q(Field $α)) (v : ℕ) (v' : Q($α))
-    (t : Tree ℕ) (e : Q($α)) : MetaM (CancelResult q(inferInstance) e v') := do
+    (t : BinaryTree ℕ) (e : Q($α)) : MetaM (CancelResult q(inferInstance) e v') := do
   let amwo : Q(AddMonoidWithOne $α) := q(inferInstance)
   trace[CancelDenoms] "mkProdPrf {e} {v}"
   match t, e with
