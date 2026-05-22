@@ -67,7 +67,7 @@ private def AlgCat.isColimitCoconeOfIsFiltered (hc : IsColimit c) (j : J) :
     simp [RingHom.algebraMap_toAlgebra', ← ConcreteCategory.comp_apply]
   fac s k := by
     ext
-    apply congr($(hc.fac _ _) _)
+    apply elementwise_of% hc.fac
   uniq s m hm := by
     ext
     refine congr($(hc.uniq (Functor.mapCocone _ s) ((forget₂ _ _).map m) fun j ↦ ?_) _)
