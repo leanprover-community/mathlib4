@@ -42,7 +42,7 @@ from the odd tail. -/
 noncomputable def oddLogDivMulPred (x : ℝ) : ℝ :=
   log (2 * x + 1) / ((2 * x + 1) * (2 * x))
 
-lemma oddLogDivMulPred_nonneg {x : ℝ} (hx : 2 ≤ x) : 0 ≤ oddLogDivMulPred x :=
+lemma oddLogDivMulPred_nonneg {x : ℝ} (hx : 1 ≤ x) : 0 ≤ oddLogDivMulPred x :=
   div_nonneg (log_nonneg (by nlinarith)) (by positivity)
 
 lemma summable_primeLogDivMulPred : Summable fun p : Nat.Primes ↦ log p / (p * (p - 1)) := by
@@ -78,11 +78,7 @@ lemma summable_full : Summable fun n : ℕ ↦ oddLogDivMulPred (n : ℝ) := by
   let a := 2 * (n : ℝ) + 1
   let b := 2 * (n : ℝ)
   have ha_pos : 0 < a := by nlinarith
-  have hb_pos : 0 < b := by nlinarith
-  have ha_one : 1 ≤ a := by nlinarith
-  have hden_pos : 0 < a * b := mul_pos ha_pos hb_pos
-  have hnonneg : 0 ≤ oddLogDivMulPred (n : ℝ) :=
-    div_nonneg (log_nonneg ha_one) hden_pos.le
+  have hnonneg : 0 ≤ oddLogDivMulPred n := oddLogDivMulPred_nonneg (by norm_cast)
   rw [norm_of_nonneg hnonneg]
   have hlog_le : log a ≤ 2 * sqrt a := by
     have h := log_le_rpow_div ha_pos.le (by norm_num : (0 : ℝ) < 1 / 2)
@@ -99,7 +95,7 @@ lemma summable_full : Summable fun n : ℕ ↦ oddLogDivMulPred (n : ℝ) := by
     _ ≤ (2 * sqrt a) / (a * b) := by gcongr
     _ = 2 / (sqrt a * b) := by
       rw [show a * b = sqrt a ^ 2 * b by rw [sq_sqrt ha_pos.le]]
-      field_simp [(sqrt_ne_zero'.mpr ha_pos), ne_of_gt hb_pos]
+      field_simp [sqrt_ne_zero'.mpr ha_pos]
     _ ≤ _ := by
       have : 2 * (1 / (n : ℝ) ^ (3 / 2 : ℝ)) = 2 / n ^ (3/2 : ℝ) := by grind
       rw [this, show (3 / 2 : ℝ) = (1 / 2 : ℝ) + 1 by norm_num, rpow_add hnpos, sqrt_eq_rpow,
@@ -240,7 +236,7 @@ lemma prime_tail_lt_odd_tail : ∑' p : {p : Nat.Primes // 5 ≤ p.1}, log p / (
     rw [hpeq_real, hppred_real]
   have hodd_nonneg : ∀ k : Set.Ici 2, 0 ≤ oddLogDivMulPred k := by
     intro k
-    exact oddLogDivMulPred_nonneg (by exact_mod_cast k.property)
+    exact oddLogDivMulPred_nonneg (by sorry)
   let rest := fun k ↦ if k = k4 then 0 else oddLogDivMulPred k
   have hrest_nonneg : ∀ k : Set.Ici 2, 0 ≤ rest k := by
     intro k
