@@ -62,6 +62,7 @@ theorem cof_type (α : Type*) [LinearOrder α] [WellFoundedLT α] :
 theorem cof_toType (o : Ordinal) : Order.cof o.ToType = o.cof := by
   conv_rhs => rw [← type_toType o, cof_type]
 
+@[simp]
 theorem cof_typein [LinearOrder α] [WellFoundedLT α] (x : α) :
     cof (typein (α := α) (· < ·) x) = cofWithin x :=
   cof_type _
