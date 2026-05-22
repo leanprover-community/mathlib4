@@ -95,12 +95,14 @@ def ClassGroup.mulEquivUnitsSubmoduleQuotRange :
   QuotientGroup.congr _ _ unitsMulEquivSubmodule <| by
     simp_rw [MonoidHom.range_eq_map, Subgroup.map_map]; congr; ext; simp [unitsMulEquivSubmodule]
 
-variable {R}
+variable {R} (K)
 
 /-- Send a nonzero fractional ideal to the corresponding class in the class group. -/
 def ClassGroup.mk : (FractionalIdeal R⁰ K)ˣ →* ClassGroup R :=
   (QuotientGroup.mk' (toPrincipalIdeal R (FractionRing R)).range).comp
     (Units.map (FractionalIdeal.canonicalEquiv R⁰ K (FractionRing R)))
+
+variable {K}
 
 lemma ClassGroup.mk_def (I : (FractionalIdeal R⁰ K)ˣ) :
     ClassGroup.mk I =
