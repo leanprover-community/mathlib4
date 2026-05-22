@@ -464,4 +464,104 @@ lemma H1Cotangent.exact_map_δ : Function.Exact (map R S T T) (δ R S T) :=
 lemma H1Cotangent.exact_δ_mapBaseChange : Function.Exact (δ R S T) (mapBaseChange R S T) :=
   Generators.H1Cotangent.exact_δ_map (Generators.self S T) (Generators.self R S)
 
+namespace Extension
+
+variable {R S}
+
+/-- The linear equivalence between the cotangent space of an extension `P : Extension R S`
+and the first homology of the naive cotangent complex of `S` over `P.Ring`. -/
+noncomputable def cotangentEquivH1Cotangent (P : Extension.{u₃} R S) :
+    P.Cotangent ≃ₗ[S] H1Cotangent P.Ring S := by
+  let G := Generators.ofSurjectiveAlgebraMap.{0} P.algebraMap_surjective
+  let P_to_G : P.Hom G.toExtension := .ofAlgHom
+    (IsScalarTower.toAlgHom R P.Ring G.toExtension.Ring)
+    (by ext; simpa using (IsScalarTower.algebraMap_apply P.Ring G.toExtension.Ring S _).symm)
+  have comap_ker : G.toExtension.ker.comap (algebraMap P.Ring G.toExtension.Ring) = P.ker := by
+    simp_rw [Extension.ker, RingHom.ker, Ideal.comap_comap, ← IsScalarTower.algebraMap_eq]
+  have mem_range (x : P.Cotangent) : Cotangent.map P_to_G x ∈ h1Cotangentι.range := by
+    obtain ⟨x, rfl⟩ := Cotangent.mk_surjective x
+    simp [-Generators.toExtension_Ring, ← exact_hCotangentι_cotangentComplex.linearMap_ker_eq,
+      P_to_G]
+  have inj : Function.Injective (Cotangent.map P_to_G) := by
+    refine (injective_iff_map_eq_zero _).mpr fun x hx ↦ ?_
+    obtain ⟨⟨x, x_in⟩, rfl⟩ := Cotangent.mk_surjective x
+    simp only [Cotangent.map_mk, Cotangent.mk_eq_zero_iff, Hom.toAlgHom_ofAlgHom, P_to_G] at hx
+    rw [IsScalarTower.toAlgHom_apply, ← Ideal.mem_comap] at hx
+    simp only [Cotangent.mk_eq_zero_iff, ← comap_ker]
+    convert hx
+    change Ideal.comap (MvPolynomial.isEmptyAlgEquiv P.Ring PEmpty).toRingEquiv.symm
+      (RingHom.ker (MvPolynomial.aeval PEmpty.elim)) ^ 2 =
+        Ideal.comap (MvPolynomial.isEmptyAlgEquiv P.Ring PEmpty).toRingEquiv.symm
+      (RingHom.ker (MvPolynomial.aeval PEmpty.elim) ^ 2)
+    simpa only [Ideal.comap_symm] using (Ideal.map_pow ..).symm
+  refine .ofBijective (.codRestrictOfInjective (Cotangent.map P_to_G) h1Cotangentι
+    h1Cotangentι_injective mem_range) ⟨?_, ?_⟩ ≪≫ₗ G.equivH1Cotangent
+  · intro x y hxy
+    simpa [← h1Cotangentι_injective.eq_iff, inj.eq_iff] using hxy
+  · rintro ⟨x, hx⟩
+    obtain ⟨⟨x, y_in⟩, rfl⟩ := Cotangent.mk_surjective x
+    obtain ⟨y, rfl⟩ : ∃ y : P.Ring, algebraMap P.Ring G.toExtension.Ring y = x :=
+      (MvPolynomial.isEmptyAlgEquiv P.Ring PEmpty).symm.surjective x
+    rw [← Ideal.mem_comap, comap_ker] at y_in
+    use Cotangent.mk ⟨y, y_in⟩
+    simp [-Generators.toExtension_Ring, ← h1Cotangentι_injective.eq_iff, P_to_G]
+
+theorem h1Cotangentδ_comp_coe_cotangentEquivH1Cotangent (P : Extension.{u₃} R S) :
+    (H1Cotangent.δ R P.Ring S).comp P.cotangentEquivH1Cotangent.toLinearMap =
+      P.cotangentComplex := by
+  rw [cotangentEquivH1Cotangent, LinearEquiv.coe_trans, ← LinearMap.comp_assoc, H1Cotangent.δ,
+    Generators.H1Cotangent.δ_comp_equiv _ _ _ (Generators.self R P.Ring)]
+  ext x
+  obtain ⟨⟨x, x_in⟩, rfl⟩ := Cotangent.mk_surjective x
+  simp only [LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply,
+    LinearEquiv.ofBijective_apply, cotangentComplex_mk]
+  let G := Generators.ofSurjectiveAlgebraMap.{0} P.algebraMap_surjective
+  have comap_ker : G.toExtension.ker.comap (algebraMap P.Ring G.toExtension.Ring) = P.ker := by
+    simp_rw [Extension.ker, RingHom.ker, Ideal.comap_comap, ← IsScalarTower.algebraMap_eq]
+  rw [← comap_ker, Ideal.mem_comap] at x_in
+  let u : G.toExtension.ker := ⟨algebraMap P.Ring G.toExtension.Ring x, x_in⟩
+  have hu : u.1 = MvPolynomial.C x := rfl
+  rw [← Generators.H1Cotangent.δAux_C G, ← hu, ← Generators.H1Cotangent.δ_eq_δAux _
+    (Generators.self R P.Ring) u (by simp [u, -Generators.toExtension_Ring])]
+  congr
+  simp [-Generators.toExtension_Ring, ← h1Cotangentι_injective.eq_iff, u, G]
+
+/-- The linear map from `H¹(L_{S/R})` to `P.H1Cotangent` induced by
+the default extension homomorphism. -/
+noncomputable def fromH1Cotangent (P : Extension.{u₃} R S) :
+    H1Cotangent R S →ₗ[S] P.H1Cotangent :=
+  letI : Algebra (MvPolynomial S R) S := inferInstanceAs <|
+    Algebra (Generators.self R S).toExtension.Ring S
+  haveI : IsScalarTower R (MvPolynomial S R) S := inferInstanceAs <|
+    IsScalarTower R (Generators.self R S).toExtension.Ring S
+  H1Cotangent.map <| .ofAlgHom (MvPolynomial.aeval P.σ) (by
+    change (IsScalarTower.toAlgHom R P.Ring S).comp (MvPolynomial.aeval P.σ) =
+      (IsScalarTower.toAlgHom R S S).comp (IsScalarTower.toAlgHom R (MvPolynomial S R) S)
+    ext i; suffices i = algebraMap (MvPolynomial S R) S (MvPolynomial.X i) by simpa
+    exact (MvPolynomial.aeval_X _root_.id i).symm)
+
+theorem coe_cotangentEquivH1Cotangent_comp_fromH1Cotangent (P : Extension.{u₃} R S) :
+    P.cotangentEquivH1Cotangent.toLinearMap.comp (h1Cotangentι.comp P.fromH1Cotangent) =
+      Algebra.H1Cotangent.map R P.Ring S S := by
+  rw [fromH1Cotangent, cotangentEquivH1Cotangent, Algebra.H1Cotangent.map]
+  ext ⟨x, x_in⟩
+  simp [-Generators.toExtension_Ring, ← h1Cotangentι_apply]
+  simp [-Generators.toExtension_Ring, ← Cotangent.map_comp_apply, ← sub_eq_zero,
+    ← Cotangent.val_sub, ← LinearMap.sub_apply, Cotangent.map_sub_map,
+    LinearMap.mem_ker.mp x_in]
+
+theorem fromH1Cotangent_surjective (P : Extension.{u₃} R S) :
+    Function.Surjective P.fromH1Cotangent := by
+  have inj : Function.Injective (P.cotangentEquivH1Cotangent.toLinearMap ∘ₗ h1Cotangentι) :=
+    P.cotangentEquivH1Cotangent.injective.comp h1Cotangentι_injective
+  rw [← LinearMap.range_eq_top, ← (Submodule.map_injective_of_injective inj).eq_iff,
+    ← LinearMap.range_comp, LinearMap.comp_assoc,
+    P.coe_cotangentEquivH1Cotangent_comp_fromH1Cotangent, Submodule.map_top,
+    LinearMap.range_comp, ← exact_hCotangentι_cotangentComplex.linearMap_ker_eq,
+    ← (Algebra.H1Cotangent.exact_map_δ R P.Ring S).linearMap_ker_eq, eq_comm,
+    ← Submodule.map_symm_eq_iff, Submodule.map_equiv_eq_comap_symm, LinearEquiv.symm_symm,
+    ← LinearMap.ker_comp, P.h1Cotangentδ_comp_coe_cotangentEquivH1Cotangent]
+
+end Extension
+
 end Algebra
