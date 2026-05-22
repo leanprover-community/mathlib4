@@ -170,7 +170,7 @@ private def tutte12Edges : Array (Fin 126 × Fin 126) := #[
   (60,89), (60,113), (60,118), (61,88), (61,104), (61,115),
   (62,92), (62,107), (62,114)]
 
-private def tutte12AdjBool (u v : Fin 126) : Bool :=
+def tutte12AdjBool (u v : Fin 126) : Bool :=
   tutte12Edges.any fun (a, b) => (u == a && v == b) || (u == b && v == a)
 
 /-- The **Tutte 12-cage**: incidence graph of GH(2,2) on 126 vertices.
