@@ -240,6 +240,18 @@ theorem _root_.Commute.exp [T2Space 𝔸] {x y : 𝔸} (h : Commute x y) :
     Commute (exp x) (exp y) :=
   h.exp_left.exp_right
 
+theorem _root_.Commute.exp_smul_right [T2Space 𝔸] {x y : 𝔸} (h : Commute x y) (r : 𝕂) :
+    Commute x (exp (r • y)) :=
+  (h.smul_right r).exp_right
+
+theorem _root_.Commute.exp_smul_left [T2Space 𝔸] {x y : 𝔸} (h : Commute x y) (r : 𝕂) :
+    Commute (exp (r • x)) y :=
+  (h.smul_left r).exp_left
+
+theorem _root_.Commute.exp_smul [T2Space 𝔸] {x y : 𝔸} (h : Commute x y) (r s : 𝕂) :
+    Commute (exp (r • x)) (exp (s • y)) :=
+  ((h.smul_left r).smul_right s).exp
+
 end TopologicalAlgebra
 
 section TopologicalDivisionAlgebra
