@@ -7,6 +7,7 @@ module
 
 public import Mathlib.NumberTheory.RamificationInertia.Basic
 public import Mathlib.Order.Filter.Cofinite
+public import Mathlib.RingTheory.UniqueFactorizationDomain.Finsupp
 
 /-!
 # Factorization of ideals and fractional ideals of Dedekind domains
@@ -265,8 +266,7 @@ theorem finprod_heightOneSpectrum_factorization {I : FractionalIdeal R⁰ K} (hI
   rw [haJ, ← div_spanSingleton, div_eq_mul_inv, ← coeIdeal_span_singleton, ← hJ, ← ha,
     ← finprod_inv_distrib]
   simp_rw [← zpow_neg]
-  rw [← finprod_mul_distrib (by fun_prop (disch := assumption))
-    (by fun_prop (disch := assumption))]
+  rw [← finprod_mul_distrib (by fun_prop) (by fun_prop)]
   apply finprod_congr
   intro v
   rw [← zpow_add₀ ((@coeIdeal_ne_zero R _ K _ _ _ _).mpr v.ne_bot), sub_eq_add_neg]
@@ -842,3 +842,137 @@ theorem Ideal.map_algebraMap_eq_finsetProd_pow {p : Ideal S} [p.IsMaximal] (hp :
 alias Ideal.map_algebraMap_eq_finset_prod_pow := Ideal.map_algebraMap_eq_finsetProd_pow
 
 end primesOver
+
+/-!
+### Conversion between various multiplicities
+
+We provide some lemmas that convert various ways of expressing the multiplicity of
+a prime ideal `p` in the factorization of some ideal `I` into `multiplicity p.asIdeal I`.
+-/
+
+section conversion
+
+variable {R : Type*} [CommRing R] [IsDedekindDomain R]
+
+namespace IsDedekindDomain.HeightOneSpectrum
+
+variable {I : Ideal R} (hI : I ≠ ⊥) (p : HeightOneSpectrum R)
+include hI
+
+open UniqueFactorizationMonoid in
+/-- Normalize the multiplicity of a prime ideal `p` in the factorization of `I`
+as `multiplicity p.asIdeal I`. -/
+@[simp]
+lemma count_normalizedFactors_eq_multiplicity :
+    Multiset.count p.asIdeal (normalizedFactors I) = multiplicity p.asIdeal I := by
+  have := emultiplicity_eq_count_normalizedFactors (irreducible p) hI
+  rw [normalize_eq p.asIdeal] at this
+  apply_fun ((↑) : ℕ → ℕ∞) using CharZero.cast_injective
+  rw [← this]
+  exact (finiteMultiplicity_of_emultiplicity_eq_natCast this).emultiplicity_eq_multiplicity
+
+/-- Normalize the multiplicity of a prime ideal `p` in the factorization of `I`
+as `multiplicity p.asIdeal I`. -/
+lemma maxPowDividing_eq_pow_multiplicity :
+    p.maxPowDividing I = p.asIdeal ^ multiplicity p.asIdeal I := by
+  classical
+  rw [maxPowDividing_eq_pow_multiset_count _ hI, count_normalizedFactors_eq_multiplicity hI]
+
+/-- Normalize the multiplicity of a prime ideal `p` in the factorization of `I`
+as `multiplicity p.asIdeal I`. -/
+@[simp]
+lemma factorization_eq_multiplicity :
+    factorization I p.asIdeal = multiplicity p.asIdeal I := by
+  rw [factorization_eq_count, count_normalizedFactors_eq_multiplicity hI]
+
+end IsDedekindDomain.HeightOneSpectrum
+
+end conversion
+
+/-!
+### Lemmas about multiplicities
+
+We collect here lemmas about the multiplicity of a prime ideal `p` in the factorization
+of some ideal `I`.
+These are phrased in terms of `multiplicity p.asIdeal I`.
+-/
+
+section multiplicity
+
+@[simp]
+lemma Ideal.emultiplicity_bot {R : Type*} [CommSemiring R] (I : Ideal R) : emultiplicity I ⊥ = ⊤ :=
+  Submodule.zero_eq_bot (R := R) (M := R) ▸ emultiplicity_zero I
+
+variable {R : Type*} [CommRing R] [IsDedekindDomain R]
+
+lemma Ideal.finprod_heightOneSpectrum_pow_multiplicity {I : Ideal R} (hI : I ≠ ⊥) :
+    ∏ᶠ p : HeightOneSpectrum R, p.asIdeal ^ multiplicity p.asIdeal I = I := by
+  simpa only [maxPowDividing_eq_pow_multiplicity hI]
+    using finprod_heightOneSpectrum_factorization hI
+
+namespace IsDedekindDomain.HeightOneSpectrum
+
+variable (p : HeightOneSpectrum R) {I J : Ideal R}
+
+lemma multiplicity_le_of_ideal_ge (h : J ≤ I) (hJ : J ≠ ⊥) :
+    multiplicity p.asIdeal I ≤ multiplicity p.asIdeal J := by
+  rw [← count_normalizedFactors_eq_multiplicity hJ,
+    ← count_normalizedFactors_eq_multiplicity <| ne_bot_of_le_ne_bot hJ h]
+  exact Ideal.count_le_of_ideal_ge h hJ _
+
+open UniqueFactorizationMonoid Multiset in
+lemma multiplicity_sup (hI : I ≠ ⊥) (hJ : J ≠ ⊥) :
+    multiplicity p.asIdeal (I ⊔ J) = multiplicity p.asIdeal I ⊓ multiplicity p.asIdeal J := by
+  rw [Ideal.sup_eq_prod_inf_factors hI hJ, ← count_normalizedFactors_eq_multiplicity ?h,
+    ← count_normalizedFactors_eq_multiplicity hI, ← count_normalizedFactors_eq_multiplicity hJ]
+  case h => exact prod_inter_normalizedFactors_ne_zero I J
+  rw [normalizedFactors_prod_inter_eq_inter]
+  exact count_inter ..
+
+variable (I J) in
+lemma emultiplicity_sup :
+    emultiplicity p.asIdeal (I ⊔ J) = emultiplicity p.asIdeal I ⊓ emultiplicity p.asIdeal J := by
+  rcases eq_or_ne I ⊥ with rfl | hI
+  · simp
+  rcases eq_or_ne J ⊥ with rfl | hJ
+  · simp
+  have : I ⊔ J ≠ ⊥ := by grind
+  have H {I' : Ideal R} (h : I' ≠ ⊥) : FiniteMultiplicity p.asIdeal I' :=
+    FiniteMultiplicity.of_prime_left (prime p) h
+  rw [(H this).emultiplicity_eq_multiplicity, (H hI).emultiplicity_eq_multiplicity,
+    (H hJ).emultiplicity_eq_multiplicity, multiplicity_sup _ hI hJ]
+  norm_cast
+
+variable {ι : Type*} [Finite ι]
+
+lemma emultiplicity_iSup (I : ι → Ideal R) :
+    emultiplicity p.asIdeal (⨆ i, I i) = ⨅ i, emultiplicity p.asIdeal (I i) := by
+  induction ι using Finite.induction_empty_option with
+  | h_empty =>
+    rw [iSup_of_empty, iInf_of_empty]
+    exact emultiplicity_zero _
+  | of_equiv e ih =>
+    specialize ih (I ∘ e)
+    rw [← sSup_range, ← sInf_range] at ih ⊢
+    rw [EquivLike.range_comp I e] at ih
+    rw [ih]
+    exact congrArg _ <| EquivLike.range_comp (emultiplicity p.asIdeal <| I ·) e
+  | h_option ih =>
+    rw [iSup_option, emultiplicity_sup p .., ih, iInf_option]
+
+lemma multiplicity_iSup [Nonempty ι] {I : ι → Ideal R} (hI : ∀ i, I i ≠ ⊥) :
+    multiplicity p.asIdeal (⨆ i, I i) = ⨅ i, multiplicity p.asIdeal (I i) := by
+  have H i : FiniteMultiplicity p.asIdeal (I i) :=
+    FiniteMultiplicity.of_prime_left (prime p) <| hI i
+  have H' : FiniteMultiplicity p.asIdeal (⨆ i, I i) := by
+    refine FiniteMultiplicity.of_prime_left (prime p) ?_
+    contrapose! hI
+    rw [← bot_eq_zero, iSup_eq_bot] at hI
+    exact ⟨Classical.ofNonempty, hI _⟩
+  have := emultiplicity_iSup p I
+  simp only [H'.emultiplicity_eq_multiplicity, (H _).emultiplicity_eq_multiplicity] at this
+  exact_mod_cast this
+
+end IsDedekindDomain.HeightOneSpectrum
+
+end multiplicity

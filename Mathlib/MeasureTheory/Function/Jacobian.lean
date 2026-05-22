@@ -456,7 +456,7 @@ theorem mul_le_addHaar_image_of_lt_det (A : E →L[ℝ] E) {m : ℝ≥0}
       mul_comm, ← ENNReal.coe_inv mpos.ne']
     · apply Or.inl
       simpa only [ENNReal.coe_eq_zero, Ne] using mpos.ne'
-    · simp only [ENNReal.coe_ne_top, true_or, Ne, not_false_iff]
+    · simp
   -- as `f⁻¹` is well approximated by `B⁻¹`, the conclusion follows from `hδ₀`
   -- and our choice of `δ`.
   exact hδ₀ _ _ ((hf'.to_inv h1δ).mono_num h2δ.le)
