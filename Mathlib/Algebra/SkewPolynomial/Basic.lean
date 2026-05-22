@@ -140,8 +140,7 @@ def sum {S : Type*} [AddCommMonoid S] (p : SkewPolynomial R) (f : ℕ → R → 
 
 /-- For a skew polynomial `p`, `p.sum f` can be written in terms of `SkewMonoidAlgebra.sum p`. -/
 lemma sum_def' {S : Type*} [AddCommMonoid S] (p : SkewPolynomial R) (f : ℕ → R → S) :
-    p.sum f = SkewMonoidAlgebra.sum p (fun n r ↦ f (toAdd n : ℕ) r) := by
-  rfl
+    p.sum f = SkewMonoidAlgebra.sum p (fun n r ↦ f (toAdd n : ℕ) r) := rfl
 
 lemma sum_def {S : Type*} [AddCommMonoid S] (p : SkewPolynomial R) (f : ℕ → R → S) :
     p.sum f = ∑ n ∈ p.support, f n (p.coeff n) := by
@@ -153,13 +152,13 @@ lemma sum_sum_index {R' P : Type*} [AddCommMonoid P] [Semiring R']
     {f : SkewPolynomial R} {g : ℕ → R → SkewPolynomial R'} {h : ℕ → R' → P}
     (h_zero : ∀ (a : ℕ), h a 0 = 0)
     (h_add : ∀ (a : ℕ) (b₁ b₂ : R'), h a (b₁ + b₂) = h a b₁ + h a b₂) :
-    sum (sum f g) h = sum f fun (a : ℕ) (b : R) => sum (g a b) h := by
+    sum (sum f g) h = sum f fun (a : ℕ) (b : R) ↦ sum (g a b) h := by
   simp only [sum_def', SkewMonoidAlgebra.sum_sum_index (fun a ↦ h_zero (toAdd a))
     (fun a ↦ h_add (toAdd a))]
 
 @[simp]
 lemma sum_zero {N : Type*} [AddCommMonoid N] {f : SkewPolynomial R} :
-    (f.sum fun (_ : ℕ) _ => (0 : N)) = 0 :=
+    (f.sum fun (_ : ℕ) _ ↦ (0 : N)) = 0 :=
   SkewMonoidAlgebra.sum_zero
 
 section Monomial
@@ -193,9 +192,7 @@ lemma sum_monomial_index {N} [AddCommMonoid N] {n : ℕ} {b : R} {h : ℕ → R 
   SkewMonoidAlgebra.sum_single_index h_zero
 
 lemma monomial_injective : Function.Injective (monomial n : R → SkewPolynomial R) := by
-  intro a b h
-  simp only [monomial_def] at h
-  exact single_injective (ofAdd n) h
+  simpa only [monomial_def] using single_injective (ofAdd n)
 
 @[simp]
 lemma monomial_eq_zero_iff (t : R) : monomial n t = 0 ↔ t = 0 :=
@@ -234,16 +231,16 @@ lemma monomial_mul_monomial [MulSemiringAction (Multiplicative ℕ) R] (n m : �
   exact SkewMonoidAlgebra.single_mul_single
 
 lemma mul_def {f g : SkewPolynomial R} [MulSemiringAction (Multiplicative ℕ) R] : f * g =
-    f.sum fun (a₁ : ℕ) b₁ => g.sum fun (a₂ : ℕ) b₂ => monomial (a₁ + a₂) (b₁ * (φ^[a₁] b₂)) := by
+    f.sum fun (a₁ : ℕ) b₁ ↦ g.sum fun (a₂ : ℕ) b₂ ↦ monomial (a₁ + a₂) (b₁ * φ^[a₁] b₂) := by
   ext
   simp [φ_iterate_apply, sum_def', coeff_mul, monomial, lsingle_apply, coeff_single_apply]
 
 section Constant
 
-variable {a b : R}
-
 /-- `C a` is the constant SkewPolynomial `a`. `C` is provided as an additive homomorphism. -/
 def C : R →+ SkewPolynomial R := SkewMonoidAlgebra.singleAddHom 1
+
+variable {a b : R}
 
 @[simp] lemma monomial_zero_left (a : R) : monomial 0 a = C a := rfl
 
@@ -254,7 +251,7 @@ lemma C_add : C (a + b) = C a + C b := C.map_add a b
 lemma C_1 : C (1 : R) = 1 := rfl
 
 @[simp]
-lemma sum_C_index {a} {β} [AddCommMonoid β] {f : ℕ → R → β} (h : f 0 0 = 0) :
+lemma sum_C_index {β} [AddCommMonoid β] {f : ℕ → R → β} (h : f 0 0 = 0) :
   (C a).sum f = f 0 a := sum_single_index h
 
 section RingHom
@@ -278,7 +275,7 @@ lemma C_mul_monomial : C a * monomial n b = monomial n (a * b) := by
   simp [← monomial_zero_left, monomial_mul_monomial, zero_add]
 
 @[simp]
-lemma monomial_mul_C : monomial n a * C b = monomial n (a * (⇑φ)^[n] b) := by
+lemma monomial_mul_C : monomial n a * C b = monomial n (a * φ^[n] b) := by
   simp [← monomial_zero_left, monomial_mul_monomial, add_zero]
 
 end RingHom
@@ -388,7 +385,7 @@ lemma coeff_ofNat_succ [MulSemiringAction (Multiplicative ℕ) R] (a n : ℕ) [h
   simp [-Nat.cast_ofNat]
 
 lemma C_mul_X_pow_eq_monomial [MulSemiringAction (Multiplicative ℕ) R] :
-    ∀ {n : ℕ}, C a * X ^ n = monomial n a
+    ∀ ⦃n : ℕ⦄, C a * X ^ n = monomial n a
   | 0 => mul_one _
   | n + 1 => by
     rw [pow_succ, ← mul_assoc, C_mul_X_pow_eq_monomial, X, monomial_mul_monomial,
@@ -400,7 +397,7 @@ lemma C_mul_X_eq_monomial [MulSemiringAction (Multiplicative ℕ) R] : C a * X =
 lemma C_injective : Injective (C : R → SkewPolynomial R) := monomial_injective 0
 
 @[simp] lemma C_inj : C a = C b ↔ a = b :=
-  ⟨fun h => coeff_C_zero.symm.trans (h.symm ▸ coeff_C_zero), congr_arg C⟩
+  ⟨fun h ↦ coeff_C_zero.symm.trans (h.symm ▸ coeff_C_zero), congr_arg C⟩
 
 @[simp] lemma C_eq_zero : C a = 0 ↔ a = 0 :=
   calc C a = 0 ↔ C a = C 0 := by rw [C_0]
