@@ -11,13 +11,14 @@ public import Mathlib.Util.CompileInductive
 /-!
 # BinaryTree
 
-Provides binary BinaryTree storage for values of any type, with O(lg n) retrieval.
+Provides binary tree storage for values of any type.
 See also `Lean.Data.RBBinaryTree` for red-black BinaryTrees - this version allows more operations
 to be defined and is better suited for in-kernel computation.
 
 We also specialize for `BinaryTree Unit`, which is a binary BinaryTree without any
 additional data. We provide the notation `a △ b` for making a `BinaryTree Unit` with children
-`a` and `b`.
+`a` and `b`, and the notation `l △[a] r` for a binary tree with root node
+containing value `a` and two children `l` and `r`.
 
 ## References
 
@@ -125,13 +126,13 @@ def right : BinaryTree α → BinaryTree α
 /-- A node with `Unit` data -/
 scoped infixr:65 " △ " => BinaryTree.node ()
 
-/-- A tree node -/
+/-- A notation for a tree node -/
 scoped notation:65 l:66 " △[" v "] " r:66 => BinaryTree.node v l r
 
 /--
 BinaryTree membership, typically accessed via the `∈` operator.
 
-`a ∈ T` means that `a` is an element of the binary tree `T`.
+`a ∈ t` means that `a` is an element of the binary tree `t`.
 Elements are compared according to Lean's logical equality.
 
 Examples:
@@ -154,6 +155,7 @@ theorem mem_singleton_iff (a x : ℕ) : a ∈ ((nil △[x] nil)) ↔ a = x := by
     subst h
     apply Mem.node
 
+/-- In a binary tree, `contains` operation traverses over the tree and make equality check. -/
 def contains [BEq α] (t : BinaryTree α) (a : α) :  Bool := match t with
   | .nil        => false
   | l △[b] r => a == b || l.contains a  || r.contains a
