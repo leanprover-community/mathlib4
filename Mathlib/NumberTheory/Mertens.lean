@@ -54,17 +54,15 @@ lemma summable_primeLogDivMulPred : Summable fun p : Nat.Primes ↦ log p / (p *
     exact div_nonneg (log_natCast_nonneg n) (by positivity)
   · intro ⟨n, hp⟩
     have hn0 : 0 < (n : ℝ) := by exact_mod_cast hp.pos
-    have hn1 : 1 < (n : ℝ) := by exact_mod_cast hp.one_lt
-    have hlog : log (n : ℝ) ≤ 2 * (n : ℝ) ^ (1 / 2 : ℝ) := by
-      have h := log_natCast_le_rpow_div n (by norm_num : (0 : ℝ) < 1 / 2)
-      norm_num at h
-      linarith
     have hden_lower : (n ^ 2) / 2 ≤ n * ((n : ℝ) - 1) := by
       have hn2r : (2 : ℝ) ≤ n := by exact_mod_cast hp.two_le
       nlinarith [sq_nonneg (n - 2)]
     calc
       _ = log n / (n * (n - 1)) := by simp
-      _ ≤ (2 * n ^ (1 / 2 : ℝ)) / (n ^ 2 / 2) := by gcongr
+      _ ≤ (2 * n ^ (1 / 2 : ℝ)) / (n ^ 2 / 2) := by
+        gcongr
+        have hn2r : (2 : ℝ) ≤ n := by exact_mod_cast hp.two_le
+        linarith [log_natCast_le_rpow_div n (ε := 1 / 2) (by norm_num)]
       _ = 4 * (n ^ (1 / 2 : ℝ) / n ^ 2) := by ring
       _ = 4 * (n ^ (1 / 2 : ℝ) / n ^ (2 : ℝ)) := by norm_num [rpow_natCast]
       _ = 4 * n ^ ((1 / 2 : ℝ) - 2) := by rw [rpow_sub hn0]
@@ -73,18 +71,7 @@ lemma summable_primeLogDivMulPred : Summable fun p : Nat.Primes ↦ log p / (p *
 lemma summable_full : Summable fun n : ℕ ↦ oddLogDivMulPred (n : ℝ) := by
   have hpow : Summable fun n : ℕ ↦ 2 * (1 / (n : ℝ) ^ ((3 : ℝ) / 2)) :=
     (summable_one_div_nat_rpow.mpr (by norm_num)).mul_left 2
-  have hsqrt : Summable fun n : ℕ ↦ 2 / (sqrt (n : ℝ) * (n : ℝ)) := by
-    refine hpow.congr ?_
-    intro n
-    by_cases hn : n = 0
-    · simp [hn]
-    have hnpos : 0 < (n : ℝ) := by exact_mod_cast Nat.pos_of_ne_zero hn
-    rw [sqrt_eq_rpow,]
-    nth_rw 3 [← rpow_one (n : ℝ)]
-    rw [← rpow_add hnpos]
-    norm_num
-    field_simp
-  refine Summable.of_norm_bounded_eventually_nat hsqrt ?_
+  refine Summable.of_norm_bounded_eventually_nat hpow ?_
   filter_upwards [Filter.eventually_ge_atTop 2] with n hn
   have hnpos_nat : 0 < n := by omega
   have hnpos : 0 < (n : ℝ) := by exact_mod_cast hnpos_nat
@@ -113,8 +100,11 @@ lemma summable_full : Summable fun n : ℕ ↦ oddLogDivMulPred (n : ℝ) := by
     _ = 2 / (sqrt a * b) := by
       rw [show a * b = sqrt a ^ 2 * b by rw [sq_sqrt ha_pos.le]]
       field_simp [(sqrt_ne_zero'.mpr ha_pos), ne_of_gt hb_pos]
-    _ ≤ 2 / (sqrt (n : ℝ) * (n : ℝ)) :=
-      div_le_div_of_nonneg_left (by norm_num) (by positivity) (by gcongr)
+    _ ≤ _ := by
+      have : 2 * (1 / (n : ℝ) ^ (3 / 2 : ℝ)) = 2 / n ^ (3/2 : ℝ) := by grind
+      rw [this, show (3 / 2 : ℝ) = (1 / 2 : ℝ) + 1 by norm_num, rpow_add hnpos, sqrt_eq_rpow,
+        rpow_one]
+      gcongr
 
 lemma summable_oddLogDivMulPred_nat_tail : Summable fun k : Set.Ici 2 ↦ oddLogDivMulPred k :=
   summable_full.subtype (Set.Ici 2)
@@ -215,25 +205,19 @@ lemma tsum_primeLogDivMulPred_split_two_three : ∑' p : Nat.Primes, log p / (p 
   rw [← summable_primeLogDivMulPred.sum_add_tsum_subtype_compl s, hsum, htail]
 
 lemma prime_tail_lt_odd_tail : ∑' p : {p : Nat.Primes // 5 ≤ p.1}, log p / (p * (p - 1))
-    < ∑' k : Set.Ici (2 : ℕ), oddLogDivMulPred k := by
+    < ∑' k : Set.Ici 2, oddLogDivMulPred k := by
   let P := {p : Nat.Primes // 5 ≤ (p : ℕ)}
-  let K := Set.Ici (2 : ℕ)
-  let e : P → K := fun p ↦ ⟨(p : ℕ) / 2, by grind⟩
-  let k4 : K := ⟨4, by change 2 ≤ (4 : ℕ); norm_num⟩
+  let e : P → Set.Ici 2 := fun p ↦ ⟨(p : ℕ) / 2, by grind⟩
+  let k4 : Set.Ici 2 := ⟨4, by change 2 ≤ (4 : ℕ); norm_num⟩
   have heinj : Function.Injective e := by
     intro p q hpq
-    apply Subtype.ext
-    have hdiv : (p : ℕ) / 2 = (q : ℕ) / 2 := congrArg (fun k : K ↦ (k : ℕ)) hpq
+    ext
     have hpodd : Odd (p : ℕ) := p.1.property.odd_of_ne_two (by omega)
     have hqodd : Odd (q : ℕ) := q.1.property.odd_of_ne_two (by omega)
-    have hp_eq : 2 * ((p : ℕ) / 2) + 1 = (p : ℕ) :=
-      Nat.two_mul_div_two_add_one_of_odd hpodd
-    have hq_eq : 2 * ((q : ℕ) / 2) + 1 = (q : ℕ) :=
-      Nat.two_mul_div_two_add_one_of_odd hqodd
-    exact Subtype.ext (by omega)
+    exact Subtype.ext (by grind)
   have hek4 : ∀ p : P, e p ≠ k4 := by
     intro p hp
-    have hdiv : (p : ℕ) / 2 = 4 := congrArg (fun k : K ↦ (k : ℕ)) hp
+    have hdiv : (p : ℕ) / 2 = 4 := congrArg (fun k : Set.Ici 2 ↦ (k : ℕ)) hp
     have hpodd : Odd (p : ℕ) := p.1.property.odd_of_ne_two (by omega)
     have hp_eq : 2 * ((p : ℕ) / 2) + 1 = (p : ℕ) :=
       Nat.two_mul_div_two_add_one_of_odd hpodd
@@ -242,9 +226,8 @@ lemma prime_tail_lt_odd_tail : ∑' p : {p : Nat.Primes // 5 ≤ p.1}, log p / (
       rw [hp9]
       decide
     exact hnot p.1.property
-  have hterm : ∀ p : P, log p / (p * (p - 1))
-      ≤ oddLogDivMulPred (((e p : K) : ℕ) : ℝ) := by
-    intro p
+  have hterm (p : P) : log p / (p * (p - 1)) = oddLogDivMulPred ((e p : Set.Ici 2) : ℕ) := by
+    unfold oddLogDivMulPred e
     have hpodd : Odd (p : ℕ) := p.1.property.odd_of_ne_two (by omega)
     have hp_eq : 2 * ((p : ℕ) / 2) + 1 = (p : ℕ) :=
       Nat.two_mul_div_two_add_one_of_odd hpodd
@@ -254,17 +237,17 @@ lemma prime_tail_lt_odd_tail : ∑' p : {p : Nat.Primes // 5 ≤ p.1}, log p / (
       calc
         _ = (((p : ℕ) - 1 : ℕ) : ℝ) := by norm_cast; omega
         _ = (p : ℝ) - 1 := by norm_num [Nat.cast_sub (by omega : 1 ≤ (p : ℕ))]
-    rw [oddLogDivMulPred,hpeq_real, hppred_real]
-  have hodd_nonneg : ∀ k : K, 0 ≤ oddLogDivMulPred k := by
+    rw [hpeq_real, hppred_real]
+  have hodd_nonneg : ∀ k : Set.Ici 2, 0 ≤ oddLogDivMulPred k := by
     intro k
     exact oddLogDivMulPred_nonneg (by exact_mod_cast k.property)
   let rest := fun k ↦ if k = k4 then 0 else oddLogDivMulPred k
-  have hrest_nonneg : ∀ k : K, 0 ≤ rest k := by
+  have hrest_nonneg : ∀ k : Set.Ici 2, 0 ≤ rest k := by
     intro k
     by_cases h : k = k4
     · simp [rest, h]
     · simpa [rest, h] using hodd_nonneg k
-  have hrest_le : ∀ k : K, rest k ≤ oddLogDivMulPred k := by
+  have hrest_le : ∀ k : Set.Ici 2, rest k ≤ oddLogDivMulPred k := by
     intro k
     by_cases h : k = k4
     · subst k
@@ -272,9 +255,9 @@ lemma prime_tail_lt_odd_tail : ∑' p : {p : Nat.Primes // 5 ≤ p.1}, log p / (
     · simp [rest, h]
   have hrest_summable : Summable rest :=
     Summable.of_nonneg_of_le hrest_nonneg hrest_le summable_oddLogDivMulPred_nat_tail
-  have hleRest : ∑' p : P, log p / (p * (p - 1)) ≤ ∑' k : K, rest k :=
+  have hleRest : ∑' p : P, log p / (p * (p - 1)) ≤ ∑' k : Set.Ici 2, rest k :=
     Summable.tsum_le_tsum_of_inj e heinj (fun c _hc ↦ hrest_nonneg c)
-      (fun p ↦ by simpa [rest, hek4 p] using hterm p)
+      (fun p ↦ by simpa [rest, hek4 p] using Std.le_of_eq (hterm p))
       (summable_primeLogDivMulPred.subtype fun q ↦ 5 ≤ (q : ℕ)) hrest_summable
   have hk4_pos : 0 < oddLogDivMulPred ((k4 : ℕ) : ℝ) := by
     have hlog : 0 < log 9 := log_pos (by norm_num)
