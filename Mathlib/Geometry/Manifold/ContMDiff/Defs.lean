@@ -160,18 +160,22 @@ theorem contDiffWithinAtProp_id (x : H) : ContDiffWithinAtProp I I n id univ x :
   · simp only [mfld_simps]
 
 variable (I I') in
-/-- A function is `n` times continuously differentiable within a set at a point in a manifold if
-it is continuous and it is `n` times continuously differentiable in this set around this point, when
-read in the preferred chart at this point.
+/-- `ContMDiffWithinAt I I' n f x` indicates that the function `f : M → M'` between manifolds
+is `n` times continuously differentiable at `x : M` within the set `s`.
+
+`f` is `n` times continuously differentiable within `s` at `x` if it is continuous and it is `n`
+times continuously differentiable in this set around `x`, when read in the preferred chart at `x`.
 The parameter `n` belongs to `ℕ∞ω` (accessible in the `ContDiff` scope), i.e. it can be a natural
 number, `∞`, or `ω`, where `C^ω` corresponds to analytic functions. -/
 def ContMDiffWithinAt (n : ℕ∞ω) (f : M → M') (s : Set M) (x : M) :=
   LiftPropWithinAt (ContDiffWithinAtProp I I' n) f s x
 
 variable (I I') in
-/-- A function is `n` times continuously differentiable at a point in a manifold if
-it is continuous and it is `n` times continuously differentiable around this point, when
-read in the preferred chart at this point.
+/-- `ContMDiffAt I I' n f x` indicates that the function `f : M → M'` between manifolds
+is `n` times continuously differentiable at `x : M`.
+
+`f` is `n` times continuously differentiable at `x` if it is continuous and it is `n` times
+continuously differentiable around `x`, when read in the preferred chart at `x`.
 The parameter `n` belongs to `ℕ∞ω` (accessible in the `ContDiff` scope), i.e. it can be a natural
 number, `∞`, or `ω`, where `C^ω` corresponds to analytic functions. -/
 def ContMDiffAt (n : ℕ∞ω) (f : M → M') (x : M) :=
@@ -185,8 +189,11 @@ theorem contMDiffAt_iff {n : ℕ∞ω} {f : M → M'} {x : M} :
   liftPropAt_iff.trans <| by rw [ContDiffWithinAtProp, preimage_univ, univ_inter]; rfl
 
 variable (I I') in
-/-- A function is `n` times continuously differentiable in a set of a manifold if it is continuous
-and, for any pair of points, it is `n` times continuously differentiable on this set in the charts
+/-- `ContMDiffOn I I' n f s` indicates that the function `f : M → M'` between manifolds
+is `n` times continuously differentiable in a set `s : Set M`.
+
+`f` is `n` times continuously differentiable on `s` if it is continuous on `s` and,
+for any pair of points, it is `n` times continuously differentiable `s` in the charts
 around these points.
 The parameter `n` belongs to `ℕ∞ω` (accessible in the `ContDiff` scope), i.e. it can be a natural
 number, `∞`, or `ω`, where `C^ω` corresponds to analytic functions. -/
@@ -194,9 +201,11 @@ def ContMDiffOn (n : ℕ∞ω) (f : M → M') (s : Set M) :=
   ∀ x ∈ s, ContMDiffWithinAt I I' n f s x
 
 variable (I I') in
-/-- A function is `n` times continuously differentiable in a manifold if it is continuous
-and, for any pair of points, it is `n` times continuously differentiable in the charts
-around these points.
+/-- `ContMDiff I I' n f` indicates that the function `f : M → M'` between manifolds
+is `n` times continuously differentiable.
+
+`f` is `n` times continuously differentiable if it is continuous and, for any pair of points,
+it is `n` times continuously differentiable in the charts around these points.
 The parameter `n` belongs to `ℕ∞ω` (accessible in the `ContDiff` scope), i.e. it can be a natural
 number, `∞`, or `ω`, where `C^ω` corresponds to analytic functions. -/
 def ContMDiff (n : ℕ∞ω) (f : M → M') :=
