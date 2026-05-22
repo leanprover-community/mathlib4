@@ -3952,6 +3952,10 @@ public import Mathlib.Data.FunLike.Embedding
 public import Mathlib.Data.FunLike.Equiv
 public import Mathlib.Data.FunLike.Fintype
 public import Mathlib.Data.FunLike.Graded
+public import Mathlib.Data.FunLike.Group
+public import Mathlib.Data.FunLike.IsApply
+public import Mathlib.Data.FunLike.Module
+public import Mathlib.Data.FunLike.Ring
 public import Mathlib.Data.Holor
 public import Mathlib.Data.Ineq
 public import Mathlib.Data.Int.AbsoluteValue
@@ -4518,6 +4522,7 @@ public import Mathlib.Geometry.Convex.ConvexSpace.AffineSpace
 public import Mathlib.Geometry.Convex.ConvexSpace.Defs
 public import Mathlib.Geometry.Convex.ConvexSpace.Module
 public import Mathlib.Geometry.Convex.ConvexSpace.Prod
+public import Mathlib.Geometry.Convex.Set
 public import Mathlib.Geometry.Diffeology.Basic
 public import Mathlib.Geometry.Euclidean.Altitude
 public import Mathlib.Geometry.Euclidean.Angle.Bisector

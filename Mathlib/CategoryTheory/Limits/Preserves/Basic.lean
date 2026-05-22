@@ -233,10 +233,18 @@ lemma preservesLimit_of_natIso (K : J ⥤ C) {F G : C ⥤ D} (h : F ≅ G) [Pres
     PreservesLimit K G where
   preserves t := ⟨IsLimit.mapConeEquiv h (isLimitOfPreserves F t)⟩
 
+lemma preservesLimit_iff_of_natIso (K : J ⥤ C) {F G : C ⥤ D} (h : F ≅ G) :
+    PreservesLimit K F ↔ PreservesLimit K G :=
+  ⟨fun _ ↦ preservesLimit_of_natIso _ h, fun _ ↦ preservesLimit_of_natIso _ h.symm⟩
+
 /-- Transfer preservation of limits of shape along a natural isomorphism in the functor. -/
 lemma preservesLimitsOfShape_of_natIso {F G : C ⥤ D} (h : F ≅ G) [PreservesLimitsOfShape J F] :
     PreservesLimitsOfShape J G where
   preservesLimit {K} := preservesLimit_of_natIso K h
+
+lemma preservesLimitsOfShape_iff_of_natIso {F G : C ⥤ D} (h : F ≅ G) :
+    PreservesLimitsOfShape J F ↔ PreservesLimitsOfShape J G :=
+  ⟨fun _ ↦ preservesLimitsOfShape_of_natIso h, fun _ ↦ preservesLimitsOfShape_of_natIso h.symm⟩
 
 /-- Transfer preservation of limits along a natural isomorphism in the functor. -/
 lemma preservesLimits_of_natIso {F G : C ⥤ D} (h : F ≅ G) [PreservesLimitsOfSize.{w, w'} F] :
@@ -294,10 +302,18 @@ lemma preservesColimit_of_natIso (K : J ⥤ C) {F G : C ⥤ D} (h : F ≅ G) [Pr
     PreservesColimit K G where
   preserves t := ⟨IsColimit.mapCoconeEquiv h (isColimitOfPreserves F t)⟩
 
+lemma preservesColimit_iff_of_natIso (K : J ⥤ C) {F G : C ⥤ D} (h : F ≅ G) :
+    PreservesColimit K F ↔ PreservesColimit K G :=
+  ⟨fun _ ↦ preservesColimit_of_natIso _ h, fun _ ↦ preservesColimit_of_natIso _ h.symm⟩
+
 /-- Transfer preservation of colimits of shape along a natural isomorphism in the functor. -/
 lemma preservesColimitsOfShape_of_natIso {F G : C ⥤ D} (h : F ≅ G) [PreservesColimitsOfShape J F] :
     PreservesColimitsOfShape J G where
   preservesColimit {K} := preservesColimit_of_natIso K h
+
+lemma preservesColimitsOfShape_iff_of_natIso {F G : C ⥤ D} (h : F ≅ G) :
+    PreservesColimitsOfShape J F ↔ PreservesColimitsOfShape J G :=
+  ⟨fun _ ↦ preservesColimitsOfShape_of_natIso h, fun _ ↦ preservesColimitsOfShape_of_natIso h.symm⟩
 
 /-- Transfer preservation of colimits along a natural isomorphism in the functor. -/
 lemma preservesColimits_of_natIso {F G : C ⥤ D} (h : F ≅ G) [PreservesColimitsOfSize.{w, w'} F] :
