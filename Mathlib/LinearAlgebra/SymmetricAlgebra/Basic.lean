@@ -184,7 +184,7 @@ lemma equiv_symm_apply (a : M) : h.equiv.symm (f a) = SymmetricAlgebra.ι R M a 
   h.equiv.injective (by simp)
 
 @[simp]
-lemma equiv_symm_comp : h.equiv.symm ∘ₗ f = SymmetricAlgebra.ι R M :=
+lemma equiv_symm_comp : h.equiv.toLinearEquiv.symm ∘ₗ f = SymmetricAlgebra.ι R M :=
   LinearMap.ext fun x ↦ equiv_symm_apply h x
 
 lemma of_equiv (e : SymmetricAlgebra R M ≃ₐ[R] A)

@@ -173,7 +173,13 @@ protected theorem coe_coe {F : Type*} [EquivLike F A B] [SemialgEquivClass F φ 
 theorem coe_fun_injective : @Function.Injective (A ≃ₛₐ[φ] B) (A → B) fun e => (e : A → B) :=
   DFunLike.coe_injective
 
-instance : CoeOut (A ≃ₛₐ[φ] B) (A ≃+* B) where coe := AlgEquiv.toRingEquiv
+/-- Forgetting the multiplicative structures, an equivalence of algebras is a linear equivalence. -/
+@[coe, simps! apply] def toLinearEquiv (e : A ≃ₐ[R] B) : A ≃ₗ[R] B where
+  toAddEquiv := e.toAddEquiv
+  map_smul' := map_smulₛₗ e
+
+instance : CoeOut (A ≃ₐ[R] B) (A ≃ₗ[R] B) where coe := toLinearEquiv
+instance : CoeOut (A ≃ₛₐ[φ] B) (A ≃+* B) where coe := toRingEquiv
 
 @[simp]
 theorem coe_toEquiv : ((e : A ≃ B) : A → B) = e :=
@@ -473,18 +479,16 @@ theorem toLinearEquiv_injective : Function.Injective (toLinearEquiv : _ → A �
   fun _ _ h => ext <| LinearEquiv.congr_fun h
 
 /-- Interpret an algebra equivalence as a linear map. -/
-def toLinearMap : A →ₛₗ[φ] B :=
-  e.toAlgHom.toLinearMap
+abbrev toLinearMap : A →ₛₗ[φ] B :=
+  e.toLinearEquiv
 
 @[simp]
-theorem toAlgHom_toLinearMap : e.toAlgHom.toLinearMap = e.toLinearMap :=
-  rfl
+lemma toAlgHom_toLinearMap : e.toAlgHom.toLinearMap = e.toLinearEquiv.toLinearMap := rfl
 
 theorem toLinearMap_ofAlgHom (f : A →ₛₐ[φ] B) (g : B →ₛₐ[ψ] A) (h₁ h₂) :
     (ofAlgHom f g h₁ h₂).toLinearMap = f.toLinearMap :=
   LinearMap.ext fun _ => rfl
 
-@[simp]
 theorem toLinearEquiv_toLinearMap : e.toLinearEquiv.toLinearMap = e.toLinearMap :=
   rfl
 

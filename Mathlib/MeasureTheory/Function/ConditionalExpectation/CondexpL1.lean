@@ -440,7 +440,9 @@ theorem condExpL1CLM_of_aestronglyMeasurable' (f : α →₁[μ] F') (hfm : AESt
 
 /-- Conditional expectation of a function, in L1. Its value is 0 if the function is not
 integrable. The function-valued `condExp` should be used instead in most cases. -/
-def condExpL1 (hm : m ≤ m0) (μ : Measure α) [SigmaFinite (μ.trim hm)] (f : α → F') : α →₁[μ] F' :=
+@[nolint unusedArguments] -- TODO: drop the completeness assumption in the definition, and fix
+def condExpL1 [CompleteSpace F'] (hm : m ≤ m0) (μ : Measure α) [SigmaFinite (μ.trim hm)]
+    (f : α → F') : α →₁[μ] F' :=
   setToFun μ (condExpInd F' hm μ) (dominatedFinMeasAdditive_condExpInd F' hm μ) f
 
 theorem condExpL1_undef (hf : ¬Integrable f μ) : condExpL1 hm μ f = 0 :=
