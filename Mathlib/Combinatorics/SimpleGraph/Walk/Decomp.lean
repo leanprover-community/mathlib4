@@ -321,11 +321,12 @@ theorem rotate_edges (hu : u ∈ c.support) : (c.rotate u).edges ~r c.edges := (
   simpa using (rotate_edges hu).perm.length_eq
 
 @[simp]
-theorem nil_rotate {c : G.Walk v v} (h) : (c.rotate u h).Nil ↔ c.Nil := by
-  simp [← length_eq_zero_iff]
+theorem nil_rotate {c : G.Walk v v} (hu : u ∈ c.support) : (c.rotate u).Nil ↔ c.Nil := by
+  simp [← length_eq_zero_iff, hu]
 
 @[deprecated nil_rotate (since := "2026-05-11")]
-lemma rotate_eq_nil {c : G.Walk v v} (h) : c.rotate u h = nil ↔ c = nil := by simp
+lemma rotate_eq_nil {c : G.Walk v v} (hu : u ∈ c.support) : c.rotate u = nil ↔ c = nil := by
+  simp [hu]
 
 end WalkDecomp
 
