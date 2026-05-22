@@ -11,7 +11,7 @@ public import Mathlib.Util.CompileInductive
 /-!
 # Binary tree
 
-Provides binary tree storage for values of any type.
+Provides binary tree storage for values of any type, with O(lg n) retrieval.
 See also `Lean.Data.RBTree` for red-black trees - this version allows more operations
 to be defined and is better suited for in-kernel computation.
 
