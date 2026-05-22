@@ -45,6 +45,14 @@ lemma dist_def (i : ι) (x y : G i) :
     ⟦⟨i, x⟩⟧ ⟦⟨i, y⟩⟧ = dist x y
   rw [lift₂_def]
 
+lemma nndist_def (i : ι) (x y : G i) :
+    nndist (α := DirectLimit G f) ⟦⟨i,x⟩⟧ ⟦⟨i,y⟩⟧ = nndist x y := by
+  simp_rw [nndist_dist, dist_def]
+
+lemma edist_def (i : ι) (x y : G i) :
+    edist (α := DirectLimit G f) ⟦⟨i,x⟩⟧ ⟦⟨i,y⟩⟧ = edist x y := by
+  simp_rw [edist_dist, dist_def]
+
 end PseudoMetricSpace
 
 namespace MetricSpace
