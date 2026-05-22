@@ -248,3 +248,10 @@ lemma sumArrowEquivProdArrow_symm_apply_inr (x : (α → S) × (β → S)) :
 end
 
 end AlgEquiv
+
+/-- Apply an algebra map component-wise along a vector. -/
+protected def Pi.algebraMap (ι R A : Type*) [CommSemiring R] [Semiring A] [Algebra R A] :
+    (ι → R) →ₗ[R] (ι → A) where
+  toFun v := algebraMap R A ∘ v
+  map_add' v w := by simp
+  map_smul' t v := by ext; simp [Algebra.smul_def]

@@ -18,7 +18,7 @@ We also define predicates `Filter.IsCountableBasis` and `Filter.HasCountableBasi
 saying that a specific family of sets is a countable basis.
 -/
 
-@[expose] public section
+public section
 
 open Set
 

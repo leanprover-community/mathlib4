@@ -208,6 +208,7 @@ def whiskeringLeftFunctor : (D ⥤ E) ⥤ W.FunctorsInverting E :=
   ObjectProperty.lift _ ((whiskeringLeft _ _ E).obj L)
     (MorphismProperty.IsInvertedBy.of_comp W L (inverts L W))
 
+set_option backward.isDefEq.respectTransparency false in
 instance : (whiskeringLeftFunctor L W E).IsEquivalence := by
   let iso : (whiskeringLeft (MorphismProperty.Localization W) D E).obj
     (equivalenceFromModel L W).functor ⋙
@@ -267,6 +268,14 @@ lemma faithful_whiskeringLeft (L : C ⥤ D) (W) [L.IsLocalization W] (E : Type*)
     ((whiskeringLeft C D E).obj L).Faithful :=
   inferInstanceAs (whiskeringLeftFunctor' L W E).Faithful
 
+/-- The precomposition with a localization functor gives fully faithful functors
+between functor categories. -/
+def fullyFaithfulWhiskeringLeft (L : C ⥤ D) (W) [L.IsLocalization W] (E : Type*) [Category* E] :
+    ((whiskeringLeft C D E).obj L).FullyFaithful := by
+  have := full_whiskeringLeft L W E
+  have := faithful_whiskeringLeft L W E
+  exact FullyFaithful.ofFullyFaithful _
+
 variable {E}
 
 theorem natTrans_ext (L : C ⥤ D) (W) [L.IsLocalization W] {F₁ F₂ : D ⥤ E} {τ τ' : F₁ ⟶ F₂}
@@ -281,8 +290,6 @@ is commutative up to an isomorphism. -/
 class Lifting (L : C ⥤ D) (W : MorphismProperty C) (F : C ⥤ E) (F' : D ⥤ E) where
   /-- the isomorphism relating the localization functor and the two other given functors -/
   iso (L W F F') : L ⋙ F' ≅ F
-
-@[deprecated (since := "2025-08-22")] alias Lifting.iso' := Lifting.iso
 
 variable {W}
 
@@ -323,6 +330,7 @@ theorem liftNatTrans_app (F₁ F₂ : C ⥤ E) (F₁' F₂' : D ⥤ E) [Lifting 
       (Lifting.iso L W F₁ F₁').hom.app X ≫ τ.app X ≫ (Lifting.iso L W F₂ F₂').inv.app X :=
   congr_app (Functor.map_preimage (whiskeringLeftFunctor' L W E) _) X
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem comp_liftNatTrans (F₁ F₂ F₃ : C ⥤ E) (F₁' F₂' F₃' : D ⥤ E) [h₁ : Lifting L W F₁ F₁']
     [h₂ : Lifting L W F₂ F₂'] [h₃ : Lifting L W F₃ F₃'] (τ : F₁ ⟶ F₂) (τ' : F₂ ⟶ F₃) :
@@ -364,7 +372,7 @@ instance compLeft (F : D ⥤ E) : Localization.Lifting L W (L ⋙ F) F := ⟨Iso
 /-- Given a localization functor `L : C ⥤ D` for `W : MorphismProperty C`,
 if `F₁' : D ⥤ E` lifts a functor `F₁ : C ⥤ D`, then a functor `F₂'` which
 is isomorphic to `F₁'` also lifts a functor `F₂` that is isomorphic to `F₁`. -/
-@[simps]
+@[simps, implicit_reducible]
 def ofIsos {F₁ F₂ : C ⥤ E} {F₁' F₂' : D ⥤ E} (e : F₁ ≅ F₂) (e' : F₁' ≅ F₂') [Lifting L W F₁ F₁'] :
     Lifting L W F₂ F₂' :=
   ⟨isoWhiskerLeft L e'.symm ≪≫ iso L W F₁ F₁' ≪≫ e⟩
@@ -455,6 +463,7 @@ def isoUniqFunctor (F : D₁ ⥤ D₂) (e : L₁ ⋙ F ≅ L₂) :
   letI : Lifting L₁ W' L₂ F := ⟨e⟩
   liftNatIso L₁ W' L₂ L₂ F (uniq L₁ L₂ W').functor (Iso.refl L₂)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma morphismProperty_eq_top [L.IsLocalization W] (P : MorphismProperty D) [P.RespectsIso]
     [P.IsMultiplicative] (h₁ : ∀ ⦃X Y : C⦄ (f : X ⟶ Y), P (L.map f))
     (h₂ : ∀ ⦃X Y : C⦄ (f : X ⟶ Y) (hf : W f), P (isoOfHom L W f hf).inv) :
@@ -485,6 +494,7 @@ instance : IsGroupoid (⊤ : MorphismProperty C).Localization :=
   isGroupoid <| MorphismProperty.Q ⊤
 
 /-- Localization of a category with respect to all morphisms results in a groupoid. -/
+@[instance_reducible]
 def groupoid : Groupoid (⊤ : MorphismProperty C).Localization :=
   Groupoid.ofIsGroupoid
 

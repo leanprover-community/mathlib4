@@ -169,6 +169,18 @@ theorem mk_le_add_mk_of_archimedean [Archimedean S] (f : S →+*o R) (x : R) (y 
 theorem mk_map_nonneg_of_archimedean [Archimedean S] (f : S →+*o R) (y : S) : 0 ≤ mk (f y) := by
   simpa using mk_le_mk_add_of_archimedean f 1 y
 
+theorem lt_of_pos_of_archimedean [Archimedean S] (f : S →+*o R)
+    {x : R} (hx : 0 < mk x) {y : S} (hy : 0 < y) : x < f y := by
+  apply lt_of_mk_lt_mk_of_nonneg
+  · rwa [mk_map_of_archimedean' f hy.ne']
+  · simpa using f.monotone' hy.le
+
+theorem lt_of_neg_of_archimedean [Archimedean S] (f : S →+*o R)
+    {x : R} (hx : 0 < mk x) {y : S} (hy : y < 0) : f y < x := by
+  apply lt_of_mk_lt_mk_of_nonpos
+  · rwa [mk_map_of_archimedean' f hy.ne]
+  · simpa using f.monotone' hy.le
+
 @[simp]
 theorem mk_intCast {n : ℤ} (h : n ≠ 0) : mk (n : S) = 0 := by
   obtain _ | _ := subsingleton_or_nontrivial S
@@ -231,13 +243,7 @@ variable [IsStrictOrderedRing R]
 
 theorem add_left_cancel_of_ne_top {x y z : ArchimedeanClass R} (hx : x ≠ ⊤) (h : x + y = x + z) :
     y = z := by
-  induction x with | mk x
-  induction y with | mk y
-  induction z with | mk z
-  simp_rw [← mk_mul, mk_eq_mk] at h
-  obtain ⟨⟨m, hm⟩, ⟨n, hn⟩⟩ := h
-  simp_rw [abs_mul, mul_comm |x|, nsmul_eq_mul, ← mul_assoc, ← nsmul_eq_mul] at hm hn
-  refine mk_eq_mk.2 ⟨⟨m, ?_⟩, ⟨n, ?_⟩⟩ <;> exact le_of_mul_le_mul_right ‹_› (by simpa using hx)
+  simp_all
 
 theorem add_right_cancel_of_ne_top {x y z : ArchimedeanClass R} (hx : x ≠ ⊤) (h : y + x = z + x) :
     y = z := by

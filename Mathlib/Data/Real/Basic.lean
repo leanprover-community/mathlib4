@@ -21,7 +21,7 @@ and a conditionally complete linear order,
 have been deferred to the file `Mathlib/Data/Real/Archimedean.lean`,
 in order to keep the imports here simple.
 
-The fact that the real numbers are a (trivial) *-ring has similarly been deferred to
+The fact that the real numbers are a (trivial) \*-ring has similarly been deferred to
 `Mathlib/Data/Real/Star.lean`.
 -/
 
@@ -369,9 +369,6 @@ instance instIsOrderedAddMonoid : IsOrderedAddMonoid ℝ where
       simp only [mk_lt, ← mk_add] at *
       change Pos _ at *
       rwa [add_sub_add_right_eq_sub]
-
-@[deprecated (since := "2025-09-15")]
-protected alias add_lt_add_iff_left := _root_.add_lt_add_iff_left
 
 instance instIsStrictOrderedRing : IsStrictOrderedRing ℝ :=
   .of_mul_pos fun a b ↦ by

@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.BigOperators.Group.List.Defs
 public import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic
+public import Mathlib.Data.FunLike.Basic
 
 /-!
 # Big operators on a list in ordered groups with zeros

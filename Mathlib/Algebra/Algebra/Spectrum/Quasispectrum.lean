@@ -123,8 +123,8 @@ variable (R A) in
 def unitsFstOne : Subgroup (Unitization R A)ˣ where
   carrier := {x | x.val.fst = 1}
   one_mem' := rfl
-  mul_mem' {x} {y} (hx : fst x.val = 1) (hy : fst y.val = 1) := by simp [hx, hy]
-  inv_mem' {x} (hx : fst x.val = 1) := by
+  mul_mem' {x} {y} (hx : x.val.fst = 1) (hy : y.val.fst = 1) := by simp [hx, hy]
+  inv_mem' {x} (hx : x.val.fst = 1) := by
     simpa [-Units.mul_inv, hx] using congr(fstHom R A $(x.mul_inv))
 
 @[simp]
@@ -145,30 +145,32 @@ scalar part is `1 : R` (i.e., `Unitization.unitsFstOne`) is isomorphic to the gr
 @[simps]
 def unitsFstOne_mulEquiv_quasiregular : unitsFstOne R A ≃* (PreQuasiregular A)ˣ where
   toFun x :=
-    { val := equiv x.val.val.snd
-      inv := equiv x⁻¹.val.val.snd
-      val_inv := equiv.symm.injective <| by
-        simpa [-Units.mul_inv] using congr(snd $(x.val.mul_inv))
-      inv_val := equiv.symm.injective <| by
-        simpa [-Units.inv_mul] using congr(snd $(x.val.inv_mul)) }
+    { val := PreQuasiregular.equiv x.val.val.snd
+      inv := PreQuasiregular.equiv x⁻¹.val.val.snd
+      val_inv := PreQuasiregular.equiv.symm.injective <| by
+        simpa [-Units.mul_inv] using congr($(x.val.mul_inv).snd)
+      inv_val := PreQuasiregular.equiv.symm.injective <| by
+        simpa [-Units.inv_mul] using congr($(x.val.inv_mul).snd) }
   invFun x :=
     { val :=
-      { val := 1 + equiv.symm x.val
-        inv := 1 + equiv.symm x⁻¹.val
+      { val := 1 + PreQuasiregular.equiv.symm x.val
+        inv := 1 + PreQuasiregular.equiv.symm x⁻¹.val
         val_inv := by
           convert congr((1 + $(inv_add_add_mul_eq_zero x) : Unitization R A)) using 1
-          · simp only [mul_one, equiv_symm_apply, one_mul, mul_add, add_mul, inr_add, inr_mul]
+          · simp only [mul_one, PreQuasiregular.equiv_symm_apply, one_mul, mul_add,
+              add_mul, inr_add, inr_mul]
             abel
           · simp only [inr_zero, add_zero]
         inv_val := by
           convert congr((1 + $(add_inv_add_mul_eq_zero x) : Unitization R A)) using 1
-          · simp only [mul_one, equiv_symm_apply, one_mul, mul_add, add_mul, inr_add, inr_mul]
+          · simp only [mul_one, PreQuasiregular.equiv_symm_apply, one_mul, mul_add,
+              add_mul, inr_add, inr_mul]
             abel
           · simp only [inr_zero, add_zero] }
       property := by simp }
   left_inv x := Subtype.ext <| Units.ext <| by simpa using x.val.val.inl_fst_add_inr_snd_eq
-  right_inv x := Units.ext <| by simp [-equiv_symm_apply]
-  map_mul' x y := Units.ext <| equiv.symm.injective <| by simp
+  right_inv x := Units.ext <| by simp [-PreQuasiregular.equiv_symm_apply]
+  map_mul' x y := Units.ext <| PreQuasiregular.equiv.symm.injective <| by simp
 
 end Unitization
 

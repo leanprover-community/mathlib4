@@ -82,7 +82,7 @@ lemma sigmoid_lt_one (x : ℝ) : sigmoid x < 1 :=
 @[bound]
 lemma sigmoid_le_one (x : ℝ) : sigmoid x ≤ 1 := (sigmoid_lt_one x).le
 
-@[mono]
+@[gcongr, mono]
 lemma sigmoid_strictMono : StrictMono sigmoid := fun a b hab ↦ by
   simp only [sigmoid]
   gcongr
@@ -118,7 +118,7 @@ open Set in
 lemma range_sigmoid : range Real.sigmoid = Ioo 0 1 := by
   refine subset_antisymm ?_ fun x hx ↦ ?_
   · rintro - ⟨x, rfl⟩
-    simp only [mem_Ioo]
+    push _ ∈ _
     bound
   · replace hx : 0 < x⁻¹ - 1 := by rwa [sub_pos, one_lt_inv_iff₀]
     exact ⟨-(log (x⁻¹ - 1)), by simp [sigmoid_def, exp_log hx]⟩
@@ -204,7 +204,9 @@ lemma DifferentiableAt.sigmoid {x : E} (hf : DifferentiableAt ℝ f x) :
     DifferentiableAt ℝ (sigmoid ∘ f) x := differentiableAt_sigmoid.comp x hf
 
 @[fun_prop]
-lemma continuous_sigmoid : Continuous sigmoid := by fun_prop
+lemma continuous_sigmoid : Continuous sigmoid := by
+  apply Differentiable.continuous (𝕜 := ℝ)  -- fun_prop can't choose `𝕜`
+  fun_prop
 
 omit [NormedSpace ℝ E] in
 @[fun_prop]
@@ -222,7 +224,7 @@ lemma sigmoid_pos (x : ℝ) : 0 < sigmoid x := Real.sigmoid_pos x
 @[bound]
 lemma sigmoid_lt_one (x : ℝ) : sigmoid x < 1 := Real.sigmoid_lt_one x
 
-@[mono]
+@[gcongr, mono]
 lemma sigmoid_strictMono : StrictMono sigmoid := Real.sigmoid_strictMono
 
 lemma sigmoid_le_iff {a b : ℝ} : sigmoid a ≤ sigmoid b ↔ a ≤ b := Real.sigmoid_le_iff

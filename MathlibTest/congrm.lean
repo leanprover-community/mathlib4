@@ -1,3 +1,4 @@
+module
 import Mathlib.Algebra.Ring.Nat
 import Mathlib.Data.Fintype.Card
 import Mathlib.Tactic.CongrM

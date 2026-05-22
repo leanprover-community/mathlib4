@@ -231,6 +231,10 @@ def FunctionData.nontrivialDecomposition (fData : FunctionData) : MetaM (Option 
     if fn.containsFVar xId then
       return ← fData.peeloffArgDecomposition
 
+    -- constant function can't be decomposed
+    if fData.mainArgs.size == 0 then
+      return none
+
     let mut yVals : Array Expr := #[]
     let mut yVars : Array Expr := #[]
 

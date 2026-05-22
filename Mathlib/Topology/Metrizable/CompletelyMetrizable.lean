@@ -74,6 +74,7 @@ instance (priority := 100) IsCompletelyPseudoMetrizableSpace.of_completeSpace_ps
 
 /-- Construct on a completely pseudometrizable space a pseudometric (compatible with the topology)
 which is complete. -/
+@[implicit_reducible]
 noncomputable def completelyPseudoMetrizableMetric (X : Type*) [TopologicalSpace X]
     [h : IsCompletelyPseudoMetrizableSpace X] : PseudoMetricSpace X :=
   h.complete.choose.replaceTopology h.complete.choose_spec.1.symm
@@ -86,6 +87,7 @@ theorem complete_completelyPseudoMetrizableMetric (X : Type*) [ht : TopologicalS
 
 /-- This definition endows a completely pseudometrizable space with a complete pseudometric.
 Use it as: `letI := upgradeIsCompletelyPseudoMetrizable X`. -/
+@[implicit_reducible]
 noncomputable
 def upgradeIsCompletelyPseudoMetrizable (X : Type*) [TopologicalSpace X]
     [IsCompletelyPseudoMetrizableSpace X] :
@@ -185,6 +187,7 @@ instance (priority := 100) IsCompletelyMetrizableSpace.of_completeSpace_metrizab
 
 /-- Construct on a completely metrizable space a metric (compatible with the topology)
 which is complete. -/
+@[implicit_reducible]
 noncomputable def completelyMetrizableMetric (X : Type*) [TopologicalSpace X]
     [h : IsCompletelyMetrizableSpace X] : MetricSpace X :=
   h.complete.choose.replaceTopology h.complete.choose_spec.1.symm
@@ -197,6 +200,7 @@ theorem complete_completelyMetrizableMetric (X : Type*) [ht : TopologicalSpace X
 
 /-- This definition endows a completely metrizable space with a complete metric. Use it as:
 `letI := upgradeIsCompletelyMetrizable X`. -/
+@[implicit_reducible]
 noncomputable
 def upgradeIsCompletelyMetrizable (X : Type*) [TopologicalSpace X] [IsCompletelyMetrizableSpace X] :
     UpgradedIsCompletelyMetrizableSpace X :=

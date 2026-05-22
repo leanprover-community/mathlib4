@@ -130,14 +130,10 @@ lemma volume_needleSpace : ℙ (needleSpace d) = ENNReal.ofReal (d * π) := by
 
 lemma measurable_needleCrossesIndicator : Measurable (needleCrossesIndicator l) := by
   unfold needleCrossesIndicator
-  refine Measurable.indicator measurable_const (IsClosed.measurableSet (IsClosed.and ?l ?r))
-  all_goals simp only [tsub_le_iff_right, zero_add, ← neg_le_iff_add_nonneg']
-  case' l => refine isClosed_le continuous_fst ?_
-  case' r => refine isClosed_le (Continuous.neg continuous_fst) ?_
-  all_goals
-    refine Continuous.mul (Continuous.mul ?_ continuous_const) continuous_const
-    simp_rw [← Function.comp_apply (f := Real.sin) (g := Prod.snd),
-      Continuous.comp Real.continuous_sin continuous_snd]
+  refine Measurable.indicator measurable_const (IsClosed.measurableSet (IsClosed.and ?_ ?_)) <;>
+    simp only [tsub_le_iff_right, zero_add, ← neg_le_iff_add_nonneg']
+  · exact isClosed_le continuous_fst (by fun_prop)
+  · exact isClosed_le continuous_fst.neg (by fun_prop)
 
 lemma stronglyMeasurable_needleCrossesIndicator :
     MeasureTheory.StronglyMeasurable (needleCrossesIndicator l) := by
@@ -274,8 +270,7 @@ the integral lemmas below.
 -/
 lemma intervalIntegrable_min_const_sin_mul (a b : ℝ) :
     IntervalIntegrable (fun (θ : ℝ) => min d (θ.sin * l)) ℙ a b := by
-  apply Continuous.intervalIntegrable
-  exact Continuous.min continuous_const (Continuous.mul Real.continuous_sin continuous_const)
+  apply Continuous.intervalIntegrable (by fun_prop)
 
 /--
 This equality is useful since `θ.sin` is increasing in `0..π / 2` (but not in `0..π`).

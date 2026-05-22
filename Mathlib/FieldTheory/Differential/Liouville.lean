@@ -30,7 +30,7 @@ literature, and we introduce it as part of the formalization of Liouville's theo
 
 -/
 
-@[expose] public section
+public section
 
 open Differential algebraMap IntermediateField Finset Polynomial
 
@@ -140,7 +140,7 @@ private local instance isLiouville_of_finiteDimensional_galois [FiniteDimensiona
       simp only [u₁, map_prod]
       apply Fintype.prod_equiv (Equiv.mulLeft e)
       simp
-    have ffb : fixedField ⊤ = ⊥ := (IsGalois.tfae.out 0 1).mp (inferInstanceAs (IsGalois F K))
+    have ffb : fixedField ⊤ = ⊥ := (IsGalois.tfae.out 0 1).mp (inferInstance : IsGalois F K)
     simp_rw [ffb, IntermediateField.mem_bot, Set.mem_range] at this
     -- Therefore they are all in `F`. We use `choose` to get their values in `F`.
     choose u₀ hu₀ using this

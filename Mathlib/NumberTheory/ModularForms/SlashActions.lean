@@ -60,7 +60,8 @@ attribute [simp] SlashAction.zero_slash SlashAction.slash_one SlashAction.add_sl
   | empty => simp
   | insert i t hi IH => simp [hi, IH]
 
-/-- Slash_action induced by a monoid homomorphism. -/
+/-- `SlashAction` induced by a monoid homomorphism. -/
+@[implicit_reducible]
 def monoidHomSlashAction {β G H α : Type*} [Monoid G] [AddMonoid α] [Monoid H]
     [SlashAction β G α] (h : H →* G) : SlashAction β H α where
   map k g := SlashAction.map k (h g)
@@ -91,10 +92,6 @@ private def privateSlash (k : ℤ) (γ : GL (Fin 2) ℝ) (f : ℍ → ℂ) (x : 
   σ γ (f (γ • x)) * |γ.det.val| ^ (k - 1) * UpperHalfPlane.denom γ x ^ (-k)
 
 -- Why is `noncomputable` flag needed here, when we're in a noncomputable section already?
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
-@[deprecated (since := "2025-09-19")] noncomputable alias slash := privateSlash
-
 -- temporary notation until the instance is built
 local notation:100 f " ∣[" k "] " γ:100 => ModularForm.privateSlash k γ f
 
@@ -215,25 +212,50 @@ theorem mul_slash_SL2 (k1 k2 : ℤ) (A : SL(2, ℤ)) (f g : ℍ → ℂ) :
     (f * g) ∣[k1 + k2] A = f ∣[k1] A * g ∣[k2] A := by
   simp [SL_slash, mul_slash]
 
-open Finset in
-lemma prod_slash {ι : Type*} {k : ℤ} {g : GL (Fin 2) ℝ} {f : ι → ℍ → ℂ}
-    {s : Finset ι} (hs : s.Nonempty) :
-    (∏ i ∈ s, f i) ∣[k * #s] g = |g.det.val| ^ (#s - 1) • (∏ i ∈ s, f i ∣[k] g) := by
+theorem div_slash_SL2 (k1 k2 : ℤ) (A : SL(2, ℤ)) (f g : ℍ → ℂ) :
+    (f / g) ∣[k1 - k2] A = f ∣[k1] A / g ∣[k2] A := by
+  ext τ
+  simp [SL_slash_apply, zpow_sub₀ (denom_ne_zero A τ)]
+  grind
+
+open Finset
+
+lemma prod_slash_sum_weights {ι : Type*} {k : ι → ℤ} {g : GL (Fin 2) ℝ} {f : ι → ℍ → ℂ}
+    {s : Finset ι} :
+    (∏ i ∈ s, f i) ∣[∑ i ∈ s, k i] g = |g.det.val| ^ (#s - 1 : ℤ) • (∏ i ∈ s, f i ∣[k i] g) := by
   classical
   induction s using Finset.induction_on with
-  | empty => simp_all
+  | empty =>
+    simp only [sum_empty, prod_empty, Matrix.GeneralLinearGroup.val_det_apply, card_empty,
+      CharP.cast_eq_zero, zero_sub, Int.reduceNeg, zpow_neg, zpow_one]
+    ext _
+    simp [slash_apply]
   | insert i t hi IH =>
     rcases t.eq_empty_or_nonempty with rfl | ht
     · simp
-    simp only [prod_insert hi, card_insert_of_notMem hi, Nat.cast_succ,
-      mul_add, mul_one, add_comm]
-    simp [IH ht, mul_slash, show t.card + 1 - 1 = t.card - 1 + 1 by grind, pow_succ,
-      ← mul_smul, mul_comm]
+    simp only [prod_insert hi, card_insert_of_notMem hi, Nat.cast_succ, add_sub_cancel_right,
+    show ∑ i ∈ insert i t, k i = (k i) + ∑ i ∈ t, k i by grind, mul_slash, IH, mul_smul_comm,
+      ← mul_smul]
+    congr 1
+    nth_rw 2 [show (#t : ℤ) = 1 + (#t - 1) by grind]
+    rw [zpow_add', zpow_one]
+    left
+    exact abs_ne_zero.mpr (Matrix.GeneralLinearGroup.det_ne_zero g)
 
+lemma prod_slash {ι : Type*} {k : ℤ} {g : GL (Fin 2) ℝ} {f : ι → ℍ → ℂ}
+    {s : Finset ι} :
+    (∏ i ∈ s, f i) ∣[k * #s] g = |g.det.val| ^ (#s - 1 : ℤ) • (∏ i ∈ s, f i ∣[k] g) := by
+  have : k * (#s) = ∑ i ∈ s, k := by
+    rw [Finset.sum_const, nsmul_eq_mul']
+  rw [this]
+  exact prod_slash_sum_weights
+
+@[deprecated prod_slash (since := "2026-01-22")]
 lemma prod_fintype_slash {ι : Type*} [Fintype ι] [Nonempty ι] {k : ℤ} {g : GL (Fin 2) ℝ}
     {f : ι → ℍ → ℂ} : (∏ i, f i) ∣[k * Fintype.card ι] g =
       |g.det.val| ^ (Fintype.card ι - 1) • (∏ i, f i ∣[k] g) := by
-  simpa using ModularForm.prod_slash Finset.univ_nonempty
+  have : 0 < Fintype.card ι := Fintype.card_pos
+  simpa [← zpow_natCast, this] using ModularForm.prod_slash (s := (.univ : Finset ι))
 
 end
 

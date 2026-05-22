@@ -184,7 +184,7 @@ def evalOrdinalMod : NormNumExt where
 
 lemma isNat_ordinalOPow.{u} : ∀ {a b : Ordinal.{u}} {an bn rn : ℕ},
     IsNat a an → IsNat b bn → an ^ bn = rn → IsNat (a ^ b) rn
-  | _, _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, rfl => ⟨Eq.symm <| natCast_opow ..⟩
+  | _, _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, rfl => ⟨(opow_natCast ..).trans (natCast_pow ..).symm⟩
 
 /-- The `norm_num` extension for homogeneous power on ordinals. -/
 @[norm_num (_ : Ordinal) ^ (_ : Ordinal)]
@@ -208,7 +208,7 @@ def evalOrdinalOPow : NormNumExt where
 
 lemma isNat_ordinalNPow.{u} : ∀ {a : Ordinal.{u}} {b an bn rn : ℕ},
     IsNat a an → IsNat b bn → an ^ bn = rn → IsNat (a ^ b) rn
-  | _, _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, rfl => ⟨Eq.symm <| natCast_opow .. |>.trans <| opow_natCast ..⟩
+  | _, _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, rfl => ⟨Eq.symm <| natCast_pow ..⟩
 
 /-- The `norm_num` extension for natural power on ordinals. -/
 @[norm_num (_ : Ordinal) ^ (_ : ℕ)]

@@ -61,11 +61,9 @@ random-like. -/
 def IsUniform (s t : Finset α) : Prop :=
   ∀ ⦃s'⦄, s' ⊆ s → ∀ ⦃t'⦄, t' ⊆ t → (#s : 𝕜) * ε ≤ #s' →
     (#t : 𝕜) * ε ≤ #t' → |(G.edgeDensity s' t' : 𝕜) - (G.edgeDensity s t : 𝕜)| < ε
+deriving Decidable
 
 variable {G ε}
-
-instance IsUniform.instDecidableRel : DecidableRel (G.IsUniform ε) := by
-  unfold IsUniform; infer_instance
 
 theorem IsUniform.mono {ε' : 𝕜} (h : ε ≤ ε') (hε : IsUniform G ε s t) : IsUniform G ε' s t :=
   fun s' hs' t' ht' hs ht => by
@@ -237,7 +235,7 @@ def IsUniform (ε : 𝕜) : Prop :=
 lemma bot_isUniform (hε : 0 < ε) : (⊥ : Finpartition A).IsUniform G ε := by
   rw [Finpartition.IsUniform, Finpartition.card_bot, nonUniforms_bot _ hε, Finset.card_empty,
     Nat.cast_zero]
-  exact mul_nonneg (Nat.cast_nonneg _) hε.le
+  positivity
 
 lemma isUniform_one : P.IsUniform G (1 : 𝕜) := by
   rw [IsUniform, mul_one, Nat.cast_le]
@@ -285,8 +283,7 @@ lemma IsEquipartition.card_interedges_sparsePairs_le' (hP : P.IsEquipartition)
     _ ≤ ∑ UV ∈ P.parts.offDiag, ε * (#UV.1 * #UV.2) := by gcongr; apply filter_subset
     _ = ε * ∑ UV ∈ P.parts.offDiag, (#UV.1 * #UV.2 : 𝕜) := (mul_sum _ _ _).symm
     _ ≤ _ := ?_
-  · gcongr with UV hUV
-    obtain ⟨U, V⟩ := UV
+  · gcongr with ⟨U, V⟩ hUV
     simp only [mk_mem_sparsePairs, ne_eq, ← card_interedges_div_card, Rat.cast_div,
       Rat.cast_natCast, Rat.cast_mul] at hUV
     refine ((div_lt_iff₀ ?_).1 hUV.2.2.2).le
@@ -370,7 +367,7 @@ lemma IsEquipartition.sum_nonUniforms_lt' (hA : A.Nonempty) (hε : 0 < ε) (hP :
     exact Nat.mul_le_mul (hP.card_part_le_average_add_one hU)
       (hP.card_part_le_average_add_one hV)
   · rw [mul_right_comm _ ε, mul_comm ε]
-    apply mul_lt_mul_of_pos_right _ hε
+    gcongr
     norm_cast
     exact aux (P.parts_nonempty hA.ne_empty).card_pos
 
@@ -399,10 +396,10 @@ that have edge density at least `δ`. -/
     rintro ⟨ab, U, UP, V, VP, xU, yV, UV, GUV, εUV⟩
     refine ⟨G.symm ab, V, VP, U, UP, yV, xU, UV.symm, GUV.symm, ?_⟩
     rwa [edgeDensity_comm]
-  loopless a h := G.loopless a h.1
+  loopless := ⟨fun a h ↦ G.loopless.irrefl a h.1⟩
 
-instance regularityReduced.instDecidableRel_adj : DecidableRel (G.regularityReduced P ε δ).Adj := by
-  unfold regularityReduced; infer_instance
+instance regularityReduced.instDecidableRel_adj : DecidableRel (G.regularityReduced P ε δ).Adj :=
+  inferInstanceAs <| DecidableRel (mk _ _).Adj
 
 variable {G P}
 

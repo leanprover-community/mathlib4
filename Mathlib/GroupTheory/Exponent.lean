@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.GCDMonoid.Finset
 public import Mathlib.Algebra.GCDMonoid.Nat
-public import Mathlib.Algebra.Order.BigOperators.Ring.Finset
+public import Mathlib.Algebra.Order.BigOperators.GroupWithZero.Finset
 public import Mathlib.Data.Nat.Factorization.LCM
 public import Mathlib.GroupTheory.OrderOfElement
 public import Mathlib.Tactic.Peel
@@ -141,7 +141,7 @@ theorem exponent_eq_sInf :
 `n • g ≠ 0`. -/]
 theorem exponent_eq_zero_iff_forall : exponent G = 0 ↔ ∀ n > 0, ∃ g : G, g ^ n ≠ 1 := by
   rw [exponent_eq_zero_iff, ExponentExists]
-  push_neg
+  push Not
   rfl
 
 @[to_additive exponent_nsmul_eq_zero]
@@ -363,6 +363,14 @@ theorem exponent_dvd_of_monoidHom (e : G →* H) (e_inj : Function.Injective e) 
     rw [map_pow, pow_exponent_eq_one, map_one])
 
 /--
+The exponent of a submonoid `H ≤ G` divides the exponent of `G`.
+-/
+@[to_additive /-- The exponent of an additive submonoid `H ≤ G` divides the exponent of `G`. -/]
+theorem exponent_submonoid_dvd (H : Submonoid G) :
+    Monoid.exponent H ∣ Monoid.exponent G :=
+  Monoid.exponent_dvd_of_monoidHom H.subtype H.subtype_injective
+
+/--
 If there exists a multiplication-preserving equivalence between `G` and `H`,
 then the exponent of `G` is equal to the exponent of `H`.
 -/
@@ -554,7 +562,7 @@ theorem Monoid.exponent_pi_eq_zero {ι : Type*} {M : ι → Type*} [∀ i, Monoi
     (hj : exponent (M j) = 0) : exponent ((i : ι) → M i) = 0 := by
   classical
   rw [@exponent_eq_zero_iff, ExponentExists] at hj ⊢
-  push_neg at hj ⊢
+  push Not at hj ⊢
   peel hj with n hn _
   obtain ⟨m, hm⟩ := this
   refine ⟨Pi.mulSingle j m, fun h ↦ hm ?_⟩
@@ -644,6 +652,17 @@ end Monoid
 section Group
 
 variable [Group G]
+
+/--
+If `H` is a normal subgroup of `G`, then the exponent of `G ⧸ H` divides the exponent of `G`.
+-/
+@[to_additive
+/-- If `H` is a normal additive subgroup of `G`, then the exponent of `G ⧸ H` divides the
+exponent of `G`. -/]
+theorem Group.exponent_quotient_dvd (H : Subgroup G) [H.Normal] :
+    Monoid.exponent (G ⧸ H) ∣ Monoid.exponent G :=
+  MonoidHom.exponent_dvd (QuotientGroup.mk'_surjective H)
+
 /-- In a group of exponent two, every element is its own inverse. -/
 @[to_additive]
 lemma inv_eq_self_of_exponent_two (hG : Monoid.exponent G = 2) (x : G) :

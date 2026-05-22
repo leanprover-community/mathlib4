@@ -6,8 +6,9 @@ Authors: Simon Hudon, Patrick Massot, Eric Wieser
 module
 
 public import Mathlib.Algebra.Notation.Defs
-public import Mathlib.Util.AssertExists
 public import Mathlib.Tactic.Push.Attr
+public import Mathlib.Logic.Function.Defs
+public import Batteries.Tactic.Alias
 
 /-!
 # Notation for algebraic operators on pi types
@@ -27,13 +28,14 @@ variable {ι α β : Type*} {G M R : ι → Type*}
 
 namespace Pi
 
--- TODO: Do we really need this definition? If so, where to put it?
-/-- The mapping into a product type built from maps into each component. -/
-@[simp]
-protected def prod {α β : ι → Type*} (f : ∀ i, α i) (g : ∀ i, β i) (i : ι) : α i × β i := (f i, g i)
+@[deprecated (since := "2026-04-21")]
+alias prod := Function.prod
 
-lemma prod_fst_snd : Pi.prod (Prod.fst : α × β → α) (Prod.snd : α × β → β) = id := rfl
-lemma prod_snd_fst : Pi.prod (Prod.snd : α × β → β) (Prod.fst : α × β → α) = .swap := rfl
+@[deprecated (since := "2026-04-21")]
+alias prod_fst_snd := Function.prod_fst_snd
+
+@[deprecated (since := "2026-04-21")]
+alias prod_snd_fst := Function.prod_snd_fst
 
 /-! `1`, `0`, `+`, `*`, `+ᵥ`, `•`, `^`, `-`, `⁻¹`, and `/` are defined pointwise. -/
 
@@ -125,12 +127,9 @@ end Div
 
 section Pow
 
-@[to_additive]
-instance instSMul [∀ i, SMul α (M i)] : SMul α (∀ i, M i) where smul a f i := a • f i
-
 variable [∀ i, Pow (M i) α]
 
-@[to_additive existing instSMul]
+@[to_additive (attr := to_additive) instSMul]
 instance instPow : Pow (∀ i, M i) α where pow f a i := f i ^ a
 
 @[to_additive (attr := simp, to_additive) (reorder := 5 6) smul_apply]

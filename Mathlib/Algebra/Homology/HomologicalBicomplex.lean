@@ -110,7 +110,7 @@ end OfGradedObject
 
 /-- Constructor for a morphism `K ⟶ L` in the category `HomologicalComplex₂ C c₁ c₂` which
 takes as inputs a morphism `f : K.toGradedObject ⟶ L.toGradedObject` and
-the compatibilites with both horizontal and vertical differentials. -/
+the compatibilities with both horizontal and vertical differentials. -/
 @[simps!]
 def homMk {K L : HomologicalComplex₂ C c₁ c₂}
     (f : K.toGradedObject ⟶ L.toGradedObject)

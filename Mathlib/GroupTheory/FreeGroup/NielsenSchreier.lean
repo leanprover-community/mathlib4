@@ -75,7 +75,7 @@ A groupoid `G` is free when we have the following data:
 This definition is nonstandard. Normally one would require that functors `G ⥤ X`
 to any _groupoid_ `X` are given by graph homomorphisms from `generators`. -/
 class IsFreeGroupoid (G) [Groupoid.{v} G] where
-  quiverGenerators : Quiver.{v + 1} (IsFreeGroupoid.Generators G)
+  quiverGenerators : Quiver.{v} (IsFreeGroupoid.Generators G)
   of : ∀ {a b : IsFreeGroupoid.Generators G}, (a ⟶ b) → ((show G from a) ⟶ b)
   unique_lift :
     ∀ {X : Type v} [Group X] (f : Labelling (IsFreeGroupoid.Generators G) X),
@@ -85,7 +85,7 @@ attribute [nolint docBlame] IsFreeGroupoid.of IsFreeGroupoid.unique_lift
 
 namespace IsFreeGroupoid
 
-attribute [instance] quiverGenerators
+attribute [instance_reducible, instance] quiverGenerators
 
 /-- Two functors from a free groupoid to a group are equal when they agree on the generating
 quiver. -/
@@ -186,6 +186,7 @@ set_option backward.privateInPublic.warn false in
 def loopOfHom {a b : G} (p : a ⟶ b) : End (root' T) :=
   treeHom T a ≫ p ≫ inv (treeHom T b)
 
+set_option backward.isDefEq.respectTransparency false in
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 /-- Turning an edge in the spanning tree into a loop gives the identity loop. -/
@@ -216,6 +217,7 @@ def functorOfMonoidHom {X} [Monoid X] (f : End (root' T) →* X) :
     rw [comp_as_mul, ← f.map_mul]
     simp only [IsIso.inv_hom_id_assoc, loopOfHom, End.mul_def, Category.assoc]
 
+set_option backward.isDefEq.respectTransparency false in
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 open scoped Classical in
@@ -233,9 +235,7 @@ lemma endIsFree : IsFreeGroup (End (root' T)) :=
       refine ⟨F'.mapEnd _, ?_, ?_⟩
       · suffices ∀ {x y} (q : x ⟶ y), F'.map (loopOfHom T q) = (F'.map q : X) by
           rintro ⟨⟨a, b, e⟩, h⟩
-          -- Work around the defeq `X = End (F'.obj (IsFreeGroupoid.SpanningTree.root' T))`
-          erw [Functor.mapEnd_apply]
-          rw [this, hF']
+          simp only [Functor.mapEnd, DFunLike.coe, this, hF']
           exact dif_neg h
         intro x y q
         suffices ∀ {a} (p : Path (root T) a), F'.map (homOfPath T p) = 1 by
@@ -307,6 +307,7 @@ instance endIsFreeOfConnectedFree
 
 end IsFreeGroupoid
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The Nielsen-Schreier theorem: a subgroup of a free group is free. -/
 instance subgroupIsFreeOfIsFree {G : Type u} [Group G] [IsFreeGroup G] (H : Subgroup G) :
     IsFreeGroup H :=

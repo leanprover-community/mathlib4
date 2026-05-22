@@ -117,14 +117,14 @@ lemma centralizer_coe_image_includeRight_eq_center_tensorProduct
       ⟨fun h b hb ↦ (Algebra.TensorProduct.comm R A B).symm.injective <| by aesop, fun h b hb ↦
         (Algebra.TensorProduct.comm R A B).injective <| by aesop⟩
   · ext x
-    simp only [AlgHom.mem_range, AlgEquiv.toAlgHom_eq_coe, mem_comap, AlgHom.coe_coe]
+    simp only [AlgHom.mem_range, mem_comap, AlgEquiv.coe_algHom]
     constructor
     · rintro ⟨x, rfl⟩
       exact ⟨(Algebra.TensorProduct.comm R _ _) x,
         by rw [Algebra.TensorProduct.comm_comp_map_apply]⟩
     · rintro ⟨y, hy⟩
       refine ⟨(Algebra.TensorProduct.comm R _ _) y, (Algebra.TensorProduct.comm R A B).injective ?_⟩
-      rw [← hy, comm_comp_map_apply, ← comm_symm, AlgEquiv.symm_apply_apply]
+      rw [← hy, comm_comp_map_apply, ← Algebra.TensorProduct.comm_symm, AlgEquiv.symm_apply_apply]
 
 /--
 Let `R` be a commutative ring and `A, B` be `R`-algebras where `B` is free as `R`-module.

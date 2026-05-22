@@ -365,14 +365,6 @@ theorem gcd_a_modEq (a b : ℕ) : (a : ℤ) * Nat.gcdA a b ≡ Nat.gcd a b [ZMOD
   rw [← add_zero ((a : ℤ) * _), Nat.gcd_eq_gcd_ab]
   exact (dvd_mul_right _ _).zero_modEq_int.add_left _
 
-@[deprecated add_modulus_mul_modEq_iff (since := "2025-10-16")]
-theorem modEq_add_fac {a b n : ℤ} (c : ℤ) (ha : a ≡ b [ZMOD n]) : a + n * c ≡ b [ZMOD n] := by
-  simpa
-
-@[deprecated sub_modulus_mul_modEq_iff (since := "2025-10-16")]
-theorem modEq_sub_fac {a b n : ℤ} (c : ℤ) (ha : a ≡ b [ZMOD n]) : a - n * c ≡ b [ZMOD n] := by
-  simpa
-
 theorem modEq_add_fac_self {a t n : ℤ} : a + n * t ≡ a [ZMOD n] := by simp
 
 theorem mod_coprime {a b : ℕ} (hab : Nat.Coprime a b) : ∃ y : ℤ, a * y ≡ 1 [ZMOD b] :=
@@ -400,5 +392,14 @@ theorem mod_mul_right_mod (a b c : ℤ) : a % (b * c) % b = a % b :=
 
 theorem mod_mul_left_mod (a b c : ℤ) : a % (b * c) % c = a % c :=
   (mod_modEq _ _).of_mul_left _
+
+theorem ext_ediv_modEq {n a b : ℤ} (h0 : a / n = b / n) (h1 : a ≡ b [ZMOD n]) : a = b :=
+  ext_ediv_emod h0 h1
+
+theorem ext_ediv_modEq_iff (n a b : ℤ) : a = b ↔ a / n = b / n ∧ a ≡ b [ZMOD n] :=
+  ext_ediv_emod_iff _ _ _
+
+theorem modEq_iff_eq_of_div_eq {n a b : ℤ} (h : a / n = b / n) :
+    a ≡ b [ZMOD n] ↔ a = b := by grind [ext_ediv_modEq_iff]
 
 end Int

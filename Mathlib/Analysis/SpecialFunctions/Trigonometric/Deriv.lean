@@ -738,14 +738,18 @@ theorem Real.logDeriv_cos : logDeriv (Real.cos) = -Real.tan := by
   rw [logDeriv, Real.deriv_cos', Pi.div_apply, Pi.neg_apply, neg_div, Real.tan_eq_sin_div_cos]
 
 @[simp]
-theorem Complex.LogDeriv_exp : logDeriv (Complex.exp) = 1 := by
+theorem Complex.logDeriv_exp : logDeriv (Complex.exp) = 1 := by
   ext
   rw [logDeriv, Complex.deriv_exp, Pi.div_apply, ← exp_sub, sub_self, exp_zero, Pi.one_apply]
 
+@[deprecated (since := "2026-02-05")] alias Complex.LogDeriv_exp := Complex.logDeriv_exp
+
 @[simp]
-theorem Real.LogDeriv_exp : logDeriv (Real.exp) = 1 := by
+theorem Real.logDeriv_exp : logDeriv (Real.exp) = 1 := by
   ext
   rw [logDeriv, Real.deriv_exp, Pi.div_apply, ← exp_sub, sub_self, exp_zero, Pi.one_apply]
+
+@[deprecated (since := "2026-02-05")] alias Real.LogDeriv_exp := Real.logDeriv_exp
 
 end LogDeriv
 

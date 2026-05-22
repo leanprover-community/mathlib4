@@ -8,6 +8,7 @@ module
 public import Mathlib.Analysis.SpecialFunctions.Pow.Complex
 
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
+public import Mathlib.LinearAlgebra.Basis.VectorSpace
 
 /-!
 # Square root on `RCLike`
@@ -34,6 +35,10 @@ theorem Complex.sqrt_eq_real_add_ite {a : ℂ} :
   · simp [← cpow_inv_two_im_eq_sqrt h, h]
   simp only [re_add_im, ↓reduceIte, h.not_ge, neg_one_mul, ← ofReal_neg,
     ← cpow_inv_two_im_eq_neg_sqrt h]
+
+open Complex in
+lemma sqrt_eq_exp {z : ℂ} (hz : z ≠ 0) : sqrt z = exp (log z / 2) := by
+  simp [sqrt, cpow_def, hz, div_eq_mul_inv]
 
 /-- The square root on `RCLike`. -/
 noncomputable def RCLike.sqrt (a : 𝕜) : 𝕜 := map ℂ 𝕜 (map 𝕜 ℂ a).sqrt

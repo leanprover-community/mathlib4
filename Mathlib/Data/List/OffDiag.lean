@@ -9,6 +9,7 @@ import Mathlib.Data.List.Count
 import Mathlib.Data.List.Enum
 import Mathlib.Data.List.Nodup
 import Mathlib.Data.List.Perm.Basic
+public import Mathlib.Data.Nat.Notation
 
 /-!
 # Definition and basic properties of `List.offDiag`
@@ -26,7 +27,7 @@ namespace List
 
 variable {α : Type*} {l : List α}
 
-/-- List.offDiag l` is the product `l.product l` with the diagonal removed. -/
+/-- `List.offDiag l` is the product `l.product l` with the diagonal removed. -/
 def offDiag (l : List α) : List (α × α) :=
   l.zipIdx.flatMap fun (x, n) ↦ map (Prod.mk x) <| l.eraseIdx n
 

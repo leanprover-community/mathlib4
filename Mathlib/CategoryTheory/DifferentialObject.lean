@@ -8,7 +8,7 @@ module
 public import Mathlib.Algebra.Group.Basic
 public import Mathlib.Data.Int.Cast.Defs
 public import Mathlib.CategoryTheory.Shift.Basic
-public import Mathlib.CategoryTheory.ConcreteCategory.Basic
+public import Mathlib.CategoryTheory.ConcreteCategory.Forget
 
 /-!
 # Differential objects in a category.
@@ -161,6 +161,7 @@ universe v' u'
 variable (D : Type u') [Category.{v'} D]
 variable [HasZeroMorphisms D] [HasShift D S]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A functor `F : C ⥤ D` which commutes with shift functors on `C` and `D` and preserves zero
 morphisms can be lifted to a functor `DifferentialObject S C ⥤ DifferentialObject S D`. -/
 @[simps]
@@ -209,20 +210,6 @@ end DifferentialObject
 
 namespace DifferentialObject
 
-section HasForget
-
-variable (S : Type*) [AddMonoidWithOne S]
-variable (C : Type (u + 1)) [LargeCategory C] [HasForget C] [HasZeroMorphisms C]
-variable [HasShift C S]
-
-instance hasForgetOfDifferentialObjects : HasForget (DifferentialObject S C) where
-  forget := forget S C ⋙ CategoryTheory.forget C
-
-instance : HasForget₂ (DifferentialObject S C) C where
-  forget₂ := forget S C
-
-end HasForget
-
 section ConcreteCategory
 
 variable (S : Type*) [AddMonoidWithOne S]
@@ -249,6 +236,9 @@ instance concreteCategoryOfDifferentialObjects :
   ofHom_hom _ := by ext; simp [ConcreteCategory.ofHom_hom]
   id_apply := ConcreteCategory.id_apply (C := C)
   comp_apply _ _ := ConcreteCategory.comp_apply (C := C) _ _
+
+instance : HasForget₂ (DifferentialObject S C) C where
+  forget₂ := forget S C
 
 end ConcreteCategory
 
@@ -284,6 +274,7 @@ def shiftFunctor (n : S) : DifferentialObject S C ⥤ DifferentialObject S C whe
   map_id X := by ext1; dsimp; rw [Functor.map_id]
   map_comp f g := by ext1; dsimp; rw [Functor.map_comp]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The shift functor on `DifferentialObject S C` is additive. -/
 @[simps!]
 nonrec def shiftFunctorAdd (m n : S) :
@@ -301,6 +292,7 @@ nonrec def shiftFunctorAdd (m n : S) :
 
 section
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The shift by zero is naturally isomorphic to the identity. -/
 @[simps!]
 def shiftZero : shiftFunctor C (0 : S) ≅ 𝟭 (DifferentialObject S C) := by

@@ -9,6 +9,8 @@ import Mathlib.Data.Set.Finite.Lemmas
 import Mathlib.Order.Interval.Set.Disjoint
 
 /-!
+# Dissection of Cubes
+
 Proof that a cube (in dimension n ≥ 3) cannot be cubed:
 There does not exist a partition of a cube into finitely many smaller cubes (at least two)
 of different sizes.
@@ -59,7 +61,7 @@ def side (c : Cube n) (j : Fin n) : Set ℝ :=
   Ico (c.b j) (c.b j + c.w)
 
 @[simp]
-theorem b_mem_side (c : Cube n) (j : Fin n) : c.b j ∈ c.side j := by simp [side, Cube.hw, le_refl]
+theorem b_mem_side (c : Cube n) (j : Fin n) : c.b j ∈ c.side j := by simp [side, Cube.hw]
 
 def toSet (c : Cube n) : Set (Fin n → ℝ) :=
   {x | ∀ j, x j ∈ side c j}
@@ -89,7 +91,7 @@ def bottom (c : Cube (n + 1)) : Set (Fin (n + 1) → ℝ) :=
   {x | x 0 = c.b 0 ∧ tail x ∈ c.tail.toSet}
 
 theorem b_mem_bottom (c : Cube (n + 1)) : c.b ∈ c.bottom := by
-  simp [bottom, toSet, side, Cube.hw, le_refl, Cube.tail]
+  simp [bottom, toSet, side, Cube.hw, Cube.tail]
 
 def xm (c : Cube (n + 1)) : ℝ :=
   c.b 0 + c.w

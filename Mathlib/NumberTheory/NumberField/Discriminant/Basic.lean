@@ -51,6 +51,7 @@ theorem discr_eq_basisMatrix_det_sq [DecidableEq (K →+* ℂ)] :
     ← Algebra.discr_eq_det_embeddingsMatrixReindex_pow_two, ← (equivReindex K).symm_symm,
     Algebra.discr_reindex, eq_ratCast]
 
+set_option backward.isDefEq.respectTransparency false in
 open scoped ComplexConjugate ComplexOrder in
 theorem sign_discr :
     (discr K).sign = (-1) ^ nrComplexPlaces K := by
@@ -69,6 +70,20 @@ theorem sign_discr :
   · grind [discr_ne_zero]
   · rw [Int.sign_eq_neg_one_of_neg h, Odd.neg_one_pow]
     rwa [← Nat.not_even_iff_odd, ← this, Int.cast_nonneg_iff, not_le]
+
+section rootDiscr
+
+/-- The root discriminant of a number field `K`. -/
+noncomputable def rootDiscr : ℝ :=
+  |discr K| ^ (finrank ℚ K : ℝ)⁻¹
+
+theorem rootDiscr_def : rootDiscr K = |discr K| ^ (finrank ℚ K : ℝ)⁻¹ := by
+  rw [rootDiscr]
+
+theorem rootDiscr_rat : rootDiscr ℚ = 1 := by
+  simp [rootDiscr_def]
+
+end rootDiscr
 
 open scoped Classical in
 theorem _root_.NumberField.mixedEmbedding.volume_fundamentalDomain_latticeBasis :
@@ -377,6 +392,7 @@ theorem natDegree_le_rankOfDiscrBdd (a : 𝓞 K) (h : ℚ⟮(a : K)⟯ = ⊤) :
 
 variable (N)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem finite_of_discr_bdd_of_isReal :
     {K : { F : IntermediateField ℚ A // FiniteDimensional ℚ F} |
       haveI :  NumberField K := @NumberField.mk _ _ inferInstance K.prop
@@ -425,6 +441,7 @@ theorem finite_of_discr_bdd_of_isReal :
     _ = 1 * B := by rw [one_mul]
     _ ≤ convexBodyLTFactor K * B := by gcongr; exact mod_cast one_le_convexBodyLTFactor K
 
+set_option backward.isDefEq.respectTransparency false in
 theorem finite_of_discr_bdd_of_isComplex :
     {K : { F : IntermediateField ℚ A // FiniteDimensional ℚ F} |
       haveI :  NumberField K := @NumberField.mk _ _ inferInstance K.prop

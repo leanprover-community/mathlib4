@@ -47,7 +47,7 @@ namespace IsReflective
 
 lemma of_dvd_two [IsCancelMulZero R] [NeZero (2 : R)] (hx : B x x ∣ 2) :
     IsReflective B x where
-  regular := isRegular_of_ne_zero <| fun contra ↦ by simp [contra, two_ne_zero (α := R)] at hx
+  regular := .of_ne_zero <| fun contra ↦ by simp [contra, two_ne_zero (α := R)] at hx
   dvd_two_mul y := hx.mul_right (B x y)
 
 variable (hx : IsReflective B x)
@@ -112,6 +112,7 @@ namespace RootPairing
 
 open LinearMap IsReflective
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The root pairing given by all reflective vectors for a bilinear form. -/
 def ofBilinear [IsReflexive R M] (B : M →ₗ[R] M →ₗ[R] R) (hNB : LinearMap.Nondegenerate B)
     (hSB : LinearMap.IsSymm B) (h2 : IsRegular (2 : R)) :

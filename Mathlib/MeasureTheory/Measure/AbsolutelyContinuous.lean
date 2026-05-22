@@ -84,7 +84,7 @@ protected lemma zero (μ : Measure α) : 0 ≪ μ := fun _ _ ↦ by simp
 @[trans]
 protected theorem trans (h1 : μ₁ ≪ μ₂) (h2 : μ₂ ≪ μ₃) : μ₁ ≪ μ₃ := fun _s hs => h1 <| h2 hs
 
-@[mono]
+@[gcongr, mono]
 protected theorem map (h : μ ≪ ν) {f : α → β} (hf : Measurable f) : μ.map f ≪ ν.map f :=
   AbsolutelyContinuous.mk fun s hs => by simpa [hf, hs] using @h _
 
@@ -121,6 +121,9 @@ lemma add_right (h1 : μ ≪ ν) (ν' : Measure α) : μ ≪ ν + ν' := by
   intro s hs
   simp only [coe_add, Pi.add_apply, add_eq_zero] at hs ⊢
   exact h1 hs.1
+
+lemma add_right' (h : μ ≪ ν') (ν : Measure α) : μ ≪ ν + ν' := by
+  simp [add_comm, add_right h]
 
 lemma null_mono {μ ν : Measure α} (hμν : μ ≪ ν) ⦃t : Set α⦄
     (ht : ν t = 0) : μ t = 0 :=
@@ -159,6 +162,9 @@ theorem absolutelyContinuous_of_le_smul {μ' : Measure α} {c : ℝ≥0∞} (hμ
 lemma absolutelyContinuous_smul {c : ℝ≥0∞} (hc : c ≠ 0) : μ ≪ c • μ := by
   simp [AbsolutelyContinuous, hc]
 
+lemma AbsolutelyContinuous.smul_right (hμν : μ ≪ ν) {c : ℝ≥0∞} (hc : c ≠ 0) : μ ≪ c • ν :=
+  (absolutelyContinuous_smul hc).trans (hμν.smul c)
+
 theorem ae_le_iff_absolutelyContinuous : ae μ ≤ ae ν ↔ μ ≪ ν :=
   ⟨fun h s => by
     rw [measure_eq_zero_iff_ae_notMem, measure_eq_zero_iff_ae_notMem]
@@ -183,7 +189,7 @@ protected theorem AEDisjoint.of_le
     AEDisjoint ν s t :=
   h.of_absolutelyContinuous (Measure.absolutelyContinuous_of_le h')
 
-@[mono]
+@[gcongr, mono]
 theorem ae_mono (h : μ ≤ ν) : ae μ ≤ ae ν :=
   h.absolutelyContinuous.ae_le
 

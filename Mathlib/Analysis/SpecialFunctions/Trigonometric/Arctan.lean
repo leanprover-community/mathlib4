@@ -6,6 +6,7 @@ Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne, Benjamin
 module
 
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Complex
+import Mathlib.Topology.Order.AtTopBotIxx
 
 /-!
 # The `arctan` function.
@@ -134,14 +135,17 @@ theorem arctan_tan (hx₁ : -(π / 2) < x) (hx₂ : x < π / 2) : arctan (tan x)
 theorem cos_arctan_pos (x : ℝ) : 0 < cos (arctan x) :=
   cos_pos_of_mem_Ioo <| arctan_mem_Ioo x
 
+theorem sin_sq_arctan (x : ℝ) : sin (arctan x) ^ 2 = x ^ 2 / (1 + x ^ 2) := by
+  rw [← tan_sq_div_one_add_tan_sq (cos_arctan_pos x).ne', tan_arctan]
+
 theorem cos_sq_arctan (x : ℝ) : cos (arctan x) ^ 2 = 1 / (1 + x ^ 2) := by
-  rw_mod_cast [one_div, ← inv_one_add_tan_sq (cos_arctan_pos x).ne', tan_arctan]
+  rw [one_div, ← inv_one_add_tan_sq (cos_arctan_pos x).ne', tan_arctan]
 
 theorem sin_arctan (x : ℝ) : sin (arctan x) = x / √(1 + x ^ 2) := by
-  rw_mod_cast [← tan_div_sqrt_one_add_tan_sq (cos_arctan_pos x), tan_arctan]
+  rw [← tan_div_sqrt_one_add_tan_sq (cos_arctan_pos x), tan_arctan]
 
 theorem cos_arctan (x : ℝ) : cos (arctan x) = 1 / √(1 + x ^ 2) := by
-  rw_mod_cast [one_div, ← inv_sqrt_one_add_tan_sq (cos_arctan_pos x), tan_arctan]
+  rw [one_div, ← inv_sqrt_one_add_tan_sq (cos_arctan_pos x), tan_arctan]
 
 theorem arctan_lt_pi_div_two (x : ℝ) : arctan x < π / 2 :=
   (arctan_mem_Ioo x).2
@@ -166,15 +170,8 @@ theorem arctan_strictMono : StrictMono arctan := tanOrderIso.symm.strictMono
 @[gcongr]
 theorem arctan_mono : Monotone arctan := arctan_strictMono.monotone
 
-@[deprecated arctan_strictMono (since := "2025-10-20")]
-lemma arctan_lt_arctan (hxy : x < y) : arctan x < arctan y := arctan_strictMono hxy
-
 @[simp]
 theorem arctan_lt_arctan_iff : arctan x < arctan y ↔ x < y := arctan_strictMono.lt_iff_lt
-
-@[deprecated arctan_mono (since := "2025-10-20")]
-lemma arctan_le_arctan (hxy : x ≤ y) : arctan x ≤ arctan y :=
-  arctan_strictMono.monotone hxy
 
 @[simp]
 theorem arctan_le_arctan_iff : arctan x ≤ arctan y ↔ x ≤ y := arctan_strictMono.le_iff_le
@@ -189,10 +186,10 @@ theorem arctan_eq_zero_iff : arctan x = 0 ↔ x = 0 :=
   .trans (by rw [arctan_zero]) arctan_injective.eq_iff
 
 theorem tendsto_arctan_atTop : Tendsto arctan atTop (𝓝[<] (π / 2)) :=
-  tendsto_Ioo_atTop.mp tanOrderIso.symm.tendsto_atTop
+  tendsto_Ioo_atTop (by simp) |>.mp tanOrderIso.symm.tendsto_atTop
 
 theorem tendsto_arctan_atBot : Tendsto arctan atBot (𝓝[>] (-(π / 2))) :=
-  tendsto_Ioo_atBot.mp tanOrderIso.symm.tendsto_atBot
+  tendsto_Ioo_atBot (by simp) |>.mp tanOrderIso.symm.tendsto_atBot
 
 theorem arctan_eq_of_tan_eq (h : tan x = y) (hx : x ∈ Ioo (-(π / 2)) (π / 2)) :
     arctan y = x :=
@@ -259,8 +256,7 @@ theorem arccos_eq_arctan (h : 0 < x) : arccos x = arctan (√(1 - x ^ 2) / x) :=
 
 theorem arctan_inv_of_pos (h : 0 < x) : arctan x⁻¹ = π / 2 - arctan x := by
   rw [← arctan_tan (x := _ - _), tan_pi_div_two_sub, tan_arctan]
-  · norm_num
-    exact (arctan_lt_pi_div_two x).trans (half_lt_self_iff.mpr pi_pos)
+  · simpa using (arctan_lt_pi_div_two x).trans (half_lt_self_iff.mpr pi_pos)
   · rw [sub_lt_self_iff, ← arctan_zero]
     exact tanOrderIso.symm.strictMono h
 

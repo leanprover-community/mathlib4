@@ -91,7 +91,7 @@ section Profinite
 -- Without explicit universe annotations here, Lean introduces two universe variables and
 -- unhelpfully defines a function `CompHaus.{max u₁ u₂} → Profinite.{max u₁ u₂}`.
 /--
-(Implementation) The object part of the connected_components functor from compact Hausdorff spaces
+(Implementation) The object part of the `connectedComponents` functor from compact Hausdorff spaces
 to Profinite spaces, given by quotienting a space by its connected components. -/
 @[stacks 0900]
 def CompHaus.toProfiniteObj (X : CompHaus.{u}) : Profinite.{u} where
@@ -100,6 +100,7 @@ def CompHaus.toProfiniteObj (X : CompHaus.{u}) : Profinite.{u} where
   is_hausdorff := ConnectedComponents.t2
   prop := ConnectedComponents.totallyDisconnectedSpace
 
+set_option backward.isDefEq.respectTransparency false in
 /-- (Implementation) The bijection of homsets to establish the reflective adjunction of Profinite
 spaces in compact Hausdorff spaces.
 -/
@@ -114,7 +115,7 @@ def Profinite.toCompHausEquivalence (X : CompHaus.{u}) (Y : Profinite.{u}) :
       obtain ⟨y, rfl⟩ := ConnectedComponents.surjective_coe y
       rfl))
 
-/-- The connected_components functor from compact Hausdorff spaces to profinite spaces,
+/-- The `connectedComponents` functor from compact Hausdorff spaces to profinite spaces,
 left adjoint to the inclusion functor.
 -/
 def CompHaus.toProfinite : CompHaus ⥤ Profinite :=
@@ -125,6 +126,7 @@ theorem CompHaus.toProfinite_obj' (X : CompHaus) :
   rfl
 
 /-- Finite types are given the discrete topology. -/
+@[instance_reducible]
 def FintypeCat.botTopology (A : FintypeCat) : TopologicalSpace A := ⊥
 
 section DiscreteTopology
@@ -138,14 +140,14 @@ attribute [local instance] FintypeCat.discreteTopology
 
 /-- The natural functor from `Fintype` to `Profinite`, endowing a finite type with the
 discrete topology. -/
-@[simps! -isSimp map_hom_hom_apply]
+@[simps! -isSimp map_hom_hom_apply obj]
 def FintypeCat.toProfinite : FintypeCat ⥤ Profinite where
   obj A := Profinite.of A
-  map f := ofHom _ ⟨f, by continuity⟩
+  map f := ofHom _ ⟨f, by fun_prop⟩
 
 /-- `FintypeCat.toLightProfinite` is fully faithful. -/
 def FintypeCat.toProfiniteFullyFaithful : toProfinite.FullyFaithful where
-  preimage f := InducedCategory.homMk (f : _ → _)
+  preimage f := InducedCategory.homMk <| ↾(f : _ → _)
   map_preimage _ := rfl
   preimage_map _ := rfl
 
@@ -153,9 +155,9 @@ instance : FintypeCat.toProfinite.Faithful := FintypeCat.toProfiniteFullyFaithfu
 
 instance : FintypeCat.toProfinite.Full := FintypeCat.toProfiniteFullyFaithful.full
 
-instance (X : FintypeCat) : Fintype (FintypeCat.toProfinite.obj X) := inferInstanceAs (Fintype X)
+instance (X : FintypeCat) : Finite (FintypeCat.toProfinite.obj X) := inferInstanceAs (Finite X)
 
-instance (X : FintypeCat) : Fintype (Profinite.of X) := inferInstanceAs (Fintype X)
+instance (X : FintypeCat) : Finite (Profinite.of X) := inferInstanceAs (Finite X)
 
 end DiscreteTopology
 
@@ -221,6 +223,7 @@ instance hasColimits : Limits.HasColimits Profinite :=
 instance forget_preservesLimits : Limits.PreservesLimits (forget Profinite) := by
   apply Limits.comp_preservesLimits Profinite.toTopCat (forget TopCat)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem epi_iff_surjective {X Y : Profinite.{u}} (f : X ⟶ Y) : Epi f ↔ Function.Surjective f := by
   constructor
   · dsimp [Function.Surjective]
@@ -252,7 +255,7 @@ theorem epi_iff_surjective {X Y : Profinite.{u}} (f : X ⟶ Y) : Epi f ↔ Funct
       dsimp [g, LocallyConstant.ofIsClopen] at H
       rw [ContinuousMap.coe_mk, ContinuousMap.coe_mk, Function.comp_apply, if_pos hyV] at H
       exact top_ne_bot H
-  · rw [← CategoryTheory.epi_iff_surjective]
+  · rw [← CategoryTheory.ofHom_epi_iff_surjective]
     apply (forget Profinite).epi_of_epi_map
 
 /-- The pi-type of profinite spaces is profinite. -/

@@ -60,12 +60,9 @@ theorem toNat_apply_of_aleph0_le {c : Cardinal} (h : ℵ₀ ≤ c) : toNat c = 0
 theorem cast_toNat_of_aleph0_le {c : Cardinal} (h : ℵ₀ ≤ c) : ↑(toNat c) = (0 : Cardinal) := by
   rw [toNat_apply_of_aleph0_le h, Nat.cast_zero]
 
-theorem cast_toNat_eq_iff_lt_aleph0 {c : Cardinal} : (toNat c) = c ↔ c < ℵ₀ := by
-  constructor
-  · intro h; by_contra h'; rw [not_lt] at h'
-    rw [toNat_apply_of_aleph0_le h'] at h; rw [← h] at h'
-    absurd h'; rw [not_le]; exact nat_lt_aleph0 0
-  · exact fun h ↦ (Cardinal.cast_toNat_of_lt_aleph0 h)
+theorem cast_toNat_eq_iff_lt_aleph0 {c : Cardinal} : toNat c = c ↔ c < ℵ₀ where
+  mp h := by rw [← h]; simp
+  mpr := cast_toNat_of_lt_aleph0
 
 theorem toNat_strictMonoOn : StrictMonoOn toNat (Iio ℵ₀) := by
   simp only [← range_natCast, StrictMonoOn, forall_mem_range, toNat_natCast, Nat.cast_lt]
@@ -123,7 +120,7 @@ theorem zero_toNat : toNat 0 = 0 := map_zero _
 theorem one_toNat : toNat 1 = 1 := map_one _
 
 theorem toNat_eq_iff {n : ℕ} (hn : n ≠ 0) : toNat c = n ↔ c = n := by
-  rw [← toNat_toENat, ENat.toNat_eq_iff hn, toENat_eq_nat]
+  rw [← toNat_toENat, ENat.toNat_eq_iff hn, toENat_eq_natCast]
 
 /-- A version of `toNat_eq_iff` for literals -/
 theorem toNat_eq_ofNat {n : ℕ} [Nat.AtLeastTwo n] :
@@ -162,5 +159,15 @@ lemma natCast_toNat_le (a : Cardinal) : (toNat a : Cardinal) ≤ a := by
   obtain h | h := lt_or_ge a ℵ₀
   · simp [cast_toNat_of_lt_aleph0 h]
   · simp [Cardinal.toNat_apply_of_aleph0_le h]
+
+lemma toNat_le_iff_of_lt_aleph0 {a : Cardinal.{u}} (n : ℕ) (lt : a < Cardinal.aleph0) :
+    a.toNat ≤ n ↔ a ≤ n := by
+  nth_rw 1 [← Cardinal.toNat_natCast.{u} n,
+    Cardinal.toNat_le_iff_le_of_lt_aleph0 lt (Cardinal.natCast_lt_aleph0)]
+
+lemma toNat_eq_iff_of_lt_aleph0 {a : Cardinal.{u}} (n : ℕ) (lt : a < Cardinal.aleph0) :
+    a.toNat = n ↔ a = n := by
+  nth_rw 2 [← Cardinal.cast_toNat_of_lt_aleph0 lt]
+  exact Nat.cast_inj.symm
 
 end Cardinal

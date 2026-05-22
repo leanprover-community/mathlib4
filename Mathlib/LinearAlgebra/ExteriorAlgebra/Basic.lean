@@ -7,6 +7,7 @@ module
 
 public import Mathlib.LinearAlgebra.CliffordAlgebra.Basic
 public import Mathlib.LinearAlgebra.Alternating.Curry
+public import Mathlib.Order.Hom.PowersetCard
 
 /-!
 # Exterior Algebras
@@ -73,7 +74,7 @@ section exteriorPower
 -- New variables `n` and `M`, to get the correct order of variables in the notation.
 variable (n : ℕ) (M : Type u2) [AddCommGroup M] [Module R M]
 
-/-- Definition of the `n`th exterior power of an `R`-module `N`. We introduce the notation
+/-- Definition of the `n`th exterior power of an `R`-module `M`. We introduce the notation
 `⋀[R]^n M` for `exteriorPower R n M`. -/
 abbrev exteriorPower : Submodule R (ExteriorAlgebra R M) :=
   LinearMap.range (ι R : M →ₗ[R] ExteriorAlgebra R M) ^ n
@@ -311,6 +312,18 @@ theorem ιMulti_succ_curryLeft {n : ℕ} (m : M) :
       (LinearMap.mulLeft R (ι R m)).compAlternatingMap (ιMulti R n) := by
   ext; simp
 
+lemma ιMulti_eq_zero_of_not_inj {n : ℕ} {v : Fin n → M} (hv : ¬Function.Injective v) :
+    ιMulti R n v = 0 :=
+  (ιMulti R n).map_eq_zero_of_not_injective v hv
+
+lemma ιMulti_mul_ιMulti {m n : ℕ} (a : Fin m → M) (b : Fin n → M) :
+    ιMulti R m a * ιMulti R n b = ιMulti R (m + n) (Fin.append a b) := by
+  simp only [ιMulti_apply]
+  change _ = (List.ofFn ((ι R) ∘ Fin.append a b)).prod
+  rw [← List.map_ofFn, List.ofFn_fin_append, List.map_append, List.prod_append]
+  simp only [List.map_ofFn]
+  congr
+
 variable (R)
 
 /-- The image of `ExteriorAlgebra.ιMulti R n` is contained in the `n`th exterior power. -/
@@ -324,7 +337,8 @@ lemma ιMulti_range (n : ℕ) :
   exact ⟨fun i => ⟨ι R (v i), LinearMap.mem_range_self _ _⟩, rfl⟩
 
 /-- The image of `ExteriorAlgebra.ιMulti R n` spans the `n`th exterior power, as a submodule
-of the exterior algebra. -/
+of the exterior algebra. See `exteriorPower.ιMulti_span_fixedDegree_of_span_eq_top` for a version
+where we restrict to elements of the form `x₁ ∧ ⋯ ∧ xₙ` where the `xᵢ` belong to a spanning set. -/
 lemma ιMulti_span_fixedDegree (n : ℕ) :
     Submodule.span R (Set.range (ιMulti R n)) = ⋀[R]^n M := by
   refine le_antisymm (Submodule.span_le.2 (ιMulti_range R n)) ?_
@@ -340,8 +354,41 @@ lemma ιMulti_span_fixedDegree (n : ℕ) :
 /-- Given a linearly ordered family `v` of vectors of `M` and a natural number `n`, produce the
 family of `n`fold exterior products of elements of `v`, seen as members of the exterior algebra. -/
 abbrev ιMulti_family (n : ℕ) {I : Type*} [LinearOrder I] (v : I → M)
-    (s : {s : Finset I // Finset.card s = n}) : ExteriorAlgebra R M :=
-  ιMulti R n fun i => v (Finset.orderIsoOfFin _ s.prop i)
+    (s : Set.powersetCard I n) : ExteriorAlgebra R M :=
+  ιMulti R n (v ∘ (Set.powersetCard.ofFinEmbEquiv.symm s))
+
+open Set Set.powersetCard
+
+lemma ιMulti_family_mul_of_not_disjoint {m n : ℕ} {I : Type*} [LinearOrder I] (v : I → M)
+    (s : powersetCard I m) (t : powersetCard I n) (h : ¬Disjoint s.val t.val) :
+    ιMulti_family R m v s * ιMulti_family R n v t = 0 := by
+  rw [Finset.not_disjoint_iff] at h
+  obtain ⟨i, his, hit⟩ := h
+  obtain ⟨j, hj⟩ := (mem_range_ofFinEmbEquiv_symm_iff_mem s i).mpr his
+  obtain ⟨k, hk⟩ := (mem_range_ofFinEmbEquiv_symm_iff_mem t i).mpr hit
+  simp only [ιMulti_family, ιMulti_mul_ιMulti]
+  apply AlternatingMap.map_eq_zero_of_eq (i := Fin.castAdd n j) (j := Fin.natAdd m k)
+  · simp [hj, hk]
+  · apply ne_of_lt
+    apply lt_of_lt_of_le (b := m) <;> simp
+
+lemma ιMulti_family_mul_of_disjoint {m n : ℕ} {I : Type*} [LinearOrder I] (v : I → M)
+    (s : powersetCard I m) (t : powersetCard I n) (h : Disjoint s.val t.val) :
+    ιMulti_family R m v s * ιMulti_family R n v t =
+      (permOfDisjoint h).sign • ιMulti_family R (m + n) v (disjUnion h) := by
+  simp only [ιMulti_family, ιMulti_mul_ιMulti]
+  rw [← AlternatingMap.map_perm, permOfDisjoint]
+  congr
+  ext i
+  let e := powersetCard.orderIsoOfFin (powersetCard.disjUnion h)
+  change _ = v (e (e.symm _))
+  by_cases! hi : i < m
+  · rw [← Fin.castAdd_castLT n i hi, Fin.append_left, OrderIso.apply_symm_apply,
+      finSumFinEquiv_symm_apply_castAdd]
+    aesop
+  · rw [← Fin.natAdd_subNat_cast hi, Fin.append_right, OrderIso.apply_symm_apply,
+      finSumFinEquiv_symm_apply_natAdd]
+    aesop
 
 variable {R}
 

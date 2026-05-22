@@ -120,6 +120,21 @@ lemma coeff_homogenize (p : R[X]) (n : ℕ) (m : Fin 2 →₀ ℕ) :
       aesop
     · aesop (add simp homogenize_monomial_of_lt) (add simp coeff_monomial)
 
+lemma eq_zero_of_homogenize_eq_zero {p : R[X]} {n : ℕ} (hn : p.natDegree ≤ n)
+    (h : p.homogenize n = 0) :
+    p = 0 := by
+  ext i
+  simp only [coeff_zero]
+  rcases le_or_gt i p.natDegree with H | H
+  · have : p.coeff i = (p.homogenize n).coeff fun₀ | 0 => i | 1 => n - i := by
+      simp [coeff_homogenize, Nat.add_sub_of_le (H.trans hn)]
+    simp [this, h]
+  · exact coeff_eq_zero_of_natDegree_lt H
+
+lemma homogenize_eq_zero_iff {p : R[X]} {n : ℕ} (hn : p.natDegree ≤ n) :
+    p.homogenize n = 0 ↔ p = 0 :=
+  ⟨eq_zero_of_homogenize_eq_zero hn, by simp +contextual⟩
+
 lemma eval₂_homogenize_of_eq_one {S : Type*} [CommSemiring S] {p : R[X]} {n : ℕ}
     (hn : natDegree p ≤ n) (f : R →+* S) (g : Fin 2 → S) (hg : g 1 = 1) :
     MvPolynomial.eval₂ f g (p.homogenize n) = p.eval₂ f (g 0) := by
@@ -205,6 +220,8 @@ lemma homogenize_sub (p q : R[X]) (n : ℕ) :
 
 end CommRing
 
+section Semifield
+
 variable {K : Type*} [Semifield K]
 
 lemma eval_homogenize {p : K[X]} {n : ℕ} (hn : p.natDegree ≤ n) (x : Fin 2 → K) (hx : x 1 ≠ 0) :
@@ -216,5 +233,70 @@ lemma eval_homogenize {p : K[X]} {n : ℕ} (hn : p.natDegree ≤ n) (x : Fin 2 �
     Finsupp.prod_single_index, Finsupp.prod_single_index, pow_sub₀]
   · ring
   all_goals simp_all [pow_add]
+
+end Semifield
+
+section projectivize
+
+variable {R : Type*} [CommSemiring R]
+
+/-- Given a polynomial `p : R[X]`, this is the vector `![p₀, p₁]` of homogeneous bivariate
+polynomials of degree `p.natDegree` such that `p(x) = p₀(x,1)/p₁(x,1)` and `p₁` is a monomial. -/
+noncomputable
+def toTupleMvPolynomial (p : R[X]) : Fin 2 → MvPolynomial (Fin 2) R :=
+  ![p.homogenize p.natDegree, (MvPolynomial.X 1) ^ p.natDegree]
+
+lemma toTupleMvPolynomial_zero_eq (p : R[X]) :
+    p.toTupleMvPolynomial 0 = p.homogenize p.natDegree :=
+  rfl
+
+lemma toTupleMvPolynomial_one_eq (p : R[X]) :
+    p.toTupleMvPolynomial 1 = (MvPolynomial.X 1) ^ p.natDegree :=
+  rfl
+
+lemma isHomogeneous_toTupleMvPolynomial (p : R[X]) (i : Fin 2) :
+    (p.toTupleMvPolynomial i).IsHomogeneous p.natDegree := by
+  fin_cases i
+  · simp [toTupleMvPolynomial]
+  · simpa [toTupleMvPolynomial] using MvPolynomial.isHomogeneous_X_pow 1 p.natDegree
+
+@[deprecated (since := "2026-04-06")]
+alias isHomogenous_toTupleMvPolynomial := isHomogeneous_toTupleMvPolynomial
+
+lemma eval_X_toTupleMvPolynomial_zero_eq (p : R[X]) :
+    MvPolynomial.aeval ![X, 1] (p.toTupleMvPolynomial 0) =
+      p * MvPolynomial.aeval ![X, 1] (p.toTupleMvPolynomial 1) := by
+  simp [toTupleMvPolynomial]
+
+lemma eval_eq_div_eval_toTupleMvPolynomial {R : Type*} [Field R] (p : R[X]) (x : R) :
+    p.eval x =
+      (p.toTupleMvPolynomial 0).eval ![x, 1] / (p.toTupleMvPolynomial 1).eval ![x, 1] := by
+  simp [toTupleMvPolynomial, eval_homogenize]
+
+lemma sum_eq_natDegree_of_mem_support_homogenize (p : R[X]) {s : Fin 2 →₀ ℕ}
+    (hs : s ∈ (p.homogenize p.natDegree).support) :
+    s 0 + s 1 = p.natDegree := by
+  simp [(isHomogeneous_homogenize p).degree_eq_sum_deg_support hs, ← Finsupp.degree_apply,
+        Finsupp.degree_eq_sum]
+
+/-- Summing a function over the coefficients of the homogenization of a polynomial `p`
+(of degree `p.natDegree`) gives the same result as summing over the coefficients of `p`. -/
+lemma finsuppSum_homogenize_eq {M : Type*} [AddCommMonoid M] (p : R[X]) {f : R → M} :
+    (Finsupp.sum (p.homogenize p.natDegree) fun _ c ↦ f c) = p.sum fun _ c ↦ f c := by
+  rw [MvPolynomial.sum_def, sum_def p]
+  -- We set up a bijection between the sets indexing the terms on both sides
+  -- and show that it maps the terms in the one sum to those in the other.
+  refine Finset.sum_nbij' (fun s ↦ s 0) (fun n ↦ fun₀ | 0 => n | 1 => p.natDegree - n)
+    (fun s hs ↦ ?_) (fun n hn ↦ ?_) (fun s hs ↦ ?_) (fun n hn ↦ by simp)
+    fun s hs ↦ ?_
+  · simpa [coeff_homogenize, sum_eq_natDegree_of_mem_support_homogenize p hs] using hs
+  · simpa [coeff_homogenize, mem_support_iff.mp hn]
+      using Nat.add_sub_of_le <| le_natDegree_of_mem_supp n hn
+  · -- speeds up `grind` quite a bit
+    grind only [= Finsupp.update_apply, = Finsupp.single_apply,
+      sum_eq_natDegree_of_mem_support_homogenize p hs]
+  · simp [coeff_homogenize, sum_eq_natDegree_of_mem_support_homogenize p hs]
+
+end projectivize
 
 end Polynomial

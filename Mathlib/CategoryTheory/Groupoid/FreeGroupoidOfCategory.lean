@@ -97,6 +97,7 @@ section UniversalProperty
 
 variable {G : Type u₁} [Groupoid.{v₁} G]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The lift of a functor from `C` to a groupoid to a functor from
 `FreeGroupoid C` to the groupoid -/
 def lift (φ : C ⥤ G) : FreeGroupoid C ⥤ G :=
@@ -106,6 +107,7 @@ def lift (φ : C ⥤ G) : FreeGroupoid C ⥤ G :=
         Prefunctor.congr_hom (Quiver.FreeGroupoid.lift_spec φ.toPrefunctor) f
       induction r <;> cat_disch)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem lift_spec (φ : C ⥤ G) : of C ⋙ lift φ = φ :=
   Functor.toPrefunctor_injective (by
     change Quiver.FreeGroupoid.of C ⋙q
@@ -255,6 +257,7 @@ namespace Grpd
 
 open FreeGroupoid
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The free groupoid construction on a category as a functor. -/
 def free : Cat.{u, u} ⥤ Grpd.{u, u} where
   obj C := Grpd.of <| FreeGroupoid C

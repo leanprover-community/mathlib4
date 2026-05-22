@@ -76,6 +76,7 @@ lemma locallySmall_of_small_arrow (C : Type u) [Category.{v} C] [Small.{w} (Arro
       change (Arrow.mk f).hom = (Arrow.mk g).hom
       congr)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The bijection `Arrow.{w} (ShrinkHoms C) ≃ Arrow C`. -/
 noncomputable def Arrow.shrinkHomsEquiv (C : Type u) [Category.{v} C] [LocallySmall.{w} C] :
     Arrow.{w} (ShrinkHoms C) ≃ Arrow C where

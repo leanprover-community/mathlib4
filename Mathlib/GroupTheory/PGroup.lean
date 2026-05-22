@@ -22,7 +22,7 @@ open Fintype MulAction
 
 variable (p : ℕ) (G : Type*) [Group G]
 
-/-- A p-group is a group in which every element has prime power order -/
+/-- A p-group is a group in which the order of every element is a power of `p`. -/
 def IsPGroup : Prop :=
   ∀ g : G, ∃ k : ℕ, g ^ p ^ k = 1
 
@@ -196,7 +196,7 @@ theorem nonempty_fixed_point_of_prime_not_dvd_card (α) [MulAction G α] (hpα :
   @Set.Nonempty.of_subtype _ _
     (by
       rw [← Finite.card_pos_iff, pos_iff_ne_zero]
-      contrapose! hpα
+      contrapose hpα
       rw [← Nat.modEq_zero_iff_dvd, ← hpα]
       exact hG.card_modEq_card_fixedPoints α)
 
@@ -278,17 +278,17 @@ theorem to_sup_of_normal_left {H K : Subgroup G} (hH : IsPGroup p H) (hK : IsPGr
     [H.Normal] : IsPGroup p (H ⊔ K : Subgroup G) := sup_comm H K ▸ to_sup_of_normal_right hK hH
 
 theorem to_sup_of_normal_right' {H K : Subgroup G} (hH : IsPGroup p H) (hK : IsPGroup p K)
-    (hHK : H ≤ K.normalizer) : IsPGroup p (H ⊔ K : Subgroup G) :=
+    (hHK : H ≤ Subgroup.normalizer K) : IsPGroup p (H ⊔ K : Subgroup G) :=
   let hHK' :=
     to_sup_of_normal_right (hH.of_equiv (Subgroup.subgroupOfEquivOfLe hHK).symm)
       (hK.of_equiv (Subgroup.subgroupOfEquivOfLe Subgroup.le_normalizer).symm)
-  ((congr_arg (fun H : Subgroup K.normalizer => IsPGroup p H)
+  ((congr_arg (fun H : Subgroup (Subgroup.normalizer K) => IsPGroup p H)
             ((Subgroup.subgroupOf_sup hHK Subgroup.le_normalizer).symm)).mp
         hHK').of_equiv
     (Subgroup.subgroupOfEquivOfLe (sup_le hHK Subgroup.le_normalizer))
 
 theorem to_sup_of_normal_left' {H K : Subgroup G} (hH : IsPGroup p H) (hK : IsPGroup p K)
-    (hHK : K ≤ H.normalizer) : IsPGroup p (H ⊔ K : Subgroup G) :=
+    (hHK : K ≤ Subgroup.normalizer H) : IsPGroup p (H ⊔ K : Subgroup G) :=
   sup_comm H K ▸ to_sup_of_normal_right' hK hH hHK
 
 /-- finite p-groups with different p have coprime orders -/
@@ -366,6 +366,7 @@ theorem cyclic_center_quotient_of_card_eq_prime_sq (hG : Nat.card G = p ^ 2) :
 
 /-- A group of order `p ^ 2` is commutative. See also `IsPGroup.commutative_of_card_eq_prime_sq`
 for just the proof that `∀ a b, a * b = b * a` -/
+@[implicit_reducible]
 def commGroupOfCardEqPrimeSq (hG : Nat.card G = p ^ 2) : CommGroup G :=
   @commGroupOfCyclicCenterQuotient _ _ _ _ (cyclic_center_quotient_of_card_eq_prime_sq hG) _
     (QuotientGroup.ker_mk' (center G)).le

@@ -14,7 +14,7 @@ public import Mathlib.Topology.ContinuousMap.Compact
 # Continuous functions in Lp space
 
 When `α` is a topological space equipped with a finite Borel measure, there is a bounded linear map
-from the normed space of bounded continuous functions (`α →ᵇ E`) to `Lp E p μ`.  We construct this
+from the normed space of bounded continuous functions (`α →ᵇ E`) to `Lp E p μ`. We construct this
 as `BoundedContinuousFunction.toLp`.
 
 -/
@@ -30,7 +30,7 @@ variable {α E : Type*} {m m0 : MeasurableSpace α} {p : ℝ≥0∞} {μ : Measu
 variable (E p μ) in
 /-- An additive subgroup of `Lp E p μ`, consisting of the equivalence classes which contain a
 bounded continuous representative. -/
-def MeasureTheory.Lp.boundedContinuousFunction : AddSubgroup (Lp E p μ) :=
+noncomputable def MeasureTheory.Lp.boundedContinuousFunction : AddSubgroup (Lp E p μ) :=
   AddSubgroup.addSubgroupOf
     ((ContinuousMap.toAEEqFunAddHom μ).comp (toContinuousMapAddMonoidHom α E)).range (Lp E p μ)
 
@@ -206,5 +206,10 @@ theorem toLp_norm_le :
     ‖(toLp p μ 𝕜 : C(α, E) →L[𝕜] Lp E p μ)‖ ≤ measureUnivNNReal μ ^ p.toReal⁻¹ := by
   rw [toLp_norm_eq_toLp_norm_coe]
   exact BoundedContinuousFunction.toLp_norm_le μ
+
+lemma memLp (𝕜' : Type*) [NormedField 𝕜'] [NormedSpace 𝕜' E] (f : C(α, E)) :
+    MemLp f p μ := by
+  have := Lp.mem_Lp_iff_memLp.mp (Subtype.val_prop (f.toLp p μ 𝕜'))
+  rwa [coe_toLp, memLp_congr_ae (coeFn_toAEEqFun _ _)] at this
 
 end ContinuousMap

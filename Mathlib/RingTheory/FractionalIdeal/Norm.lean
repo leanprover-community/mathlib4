@@ -130,6 +130,7 @@ theorem abs_det_basis_change [IsDomain K] {ι : Type*} [Fintype ι]
     rw [ne_eq, abs_eq_zero, IsFractionRing.to_map_eq_zero_iff, Algebra.norm_eq_zero_iff_of_basis b]
     exact nonZeroDivisors.coe_ne_zero _)]
 
+set_option backward.isDefEq.respectTransparency false in
 variable (R) in
 @[simp]
 theorem absNorm_span_singleton [Module.Finite ℚ K] (x : K) :

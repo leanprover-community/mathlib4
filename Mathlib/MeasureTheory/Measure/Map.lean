@@ -203,7 +203,7 @@ theorem map_map {g : β → γ} {f : α → β} (hg : Measurable g) (hf : Measur
     (μ.map f).map g = μ.map (g ∘ f) :=
   ext fun s hs => by simp [hf, hg, hs, hg hs, hg.comp hf, ← preimage_comp]
 
-@[mono]
+@[gcongr, mono]
 theorem map_mono {f : α → β} (h : μ ≤ ν) (hf : Measurable f) : μ.map f ≤ ν.map f :=
   le_iff.2 fun s hs ↦ by simp [hf.aemeasurable, hs, h _]
 
@@ -280,6 +280,12 @@ nonrec theorem map_apply (hf : MeasurableEmbedding f) (μ : Measure α) (s : Set
   calc
     μ.map f s ≤ μ.map f t := by gcongr
     _ = μ (f ⁻¹' s) := by rw [map_apply hf.measurable htm, hft, measure_toMeasurable]
+
+theorem map_injective (hf : MeasurableEmbedding f) : Function.Injective (Measure.map f) := by
+  intro μ ν h
+  ext s hs
+  rw [← Set.preimage_image_eq s hf.injective, ← hf.map_apply, ← hf.map_apply]
+  congr
 
 end MeasurableEmbedding
 

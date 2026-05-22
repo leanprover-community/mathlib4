@@ -73,6 +73,11 @@ theorem _root_.Irreducible.isPrimitive [NoZeroDivisors R]
   obtain ⟨s, hs, rfl⟩ := Polynomial.isUnit_iff.mp H
   simp [hq, Polynomial.natDegree_C_mul hr] at hp'
 
+/-- In a field, the notion of primitive polynomials is degenerate. -/
+@[simp]
+theorem isPrimitive_iff_ne_zero {F : Type*} [Field F] (p : F[X]) : p.IsPrimitive ↔ p ≠ 0 :=
+  ⟨IsPrimitive.ne_zero, fun h _ hrp ↦ .mk0 _ fun hr ↦ ne_zero_of_dvd_ne_zero h hrp <| hr ▸ C_0⟩
+
 end Primitive
 
 variable {R : Type*} [CommRing R]
@@ -122,11 +127,7 @@ theorem content_X_mul {p : R[X]} : content (X * p) = content p := by
       rw [← Nat.succ_injective h2]
       apply h1
   rw [h]
-  simp only [Finset.map_val, Function.comp_apply, Function.Embedding.coeFn_mk, Multiset.map_map]
-  refine congr (congr rfl ?_) rfl
-  ext a
-  rw [mul_comm]
-  simp [coeff_mul_X]
+  simp
 
 @[simp]
 theorem content_X_pow {k : ℕ} : content ((X : R[X]) ^ k) = 1 := by
@@ -150,11 +151,7 @@ theorem content_eq_zero_iff {p : R[X]} : content p = 0 ↔ p = 0 := by
   rw [content, Finset.gcd_eq_zero_iff]
   constructor <;> intro h
   · ext n
-    by_cases h0 : n ∈ p.support
-    · rw [h n h0, coeff_zero]
-    · rw [mem_support_iff] at h0
-      push_neg at h0
-      simp [h0]
+    simp_all
   · intro x
     simp [h]
 
@@ -176,12 +173,7 @@ theorem content_eq_gcd_range_of_lt (p : R[X]) (n : ℕ) (h : p.natDegree < n) :
   · rw [Finset.dvd_gcd_iff]
     intro i _
     apply content_dvd_coeff _
-  · apply Finset.gcd_mono
-    intro i
-    simp only [mem_support_iff, Ne, Finset.mem_range]
-    contrapose!
-    intro h1
-    apply coeff_eq_zero_of_natDegree_lt (lt_of_lt_of_le h h1)
+  · exact Finset.gcd_mono (supp_subset_range h)
 
 theorem content_eq_gcd_range_succ (p : R[X]) :
     p.content = (Finset.range p.natDegree.succ).gcd p.coeff :=
@@ -397,7 +389,7 @@ theorem exists_primitive_lcm_of_isPrimitive {p q : R[X]} (hp : p.IsPrimitive) (h
     by_contra! con
     rcases Nat.find_spec con with ⟨s, sdeg, ⟨ps, qs⟩, rs⟩
     have s0 : s ≠ 0 := by
-      contrapose! rs
+      contrapose rs
       simp [rs]
     have hs :=
       Nat.find_min' h

@@ -15,7 +15,7 @@ public import Mathlib.Topology.Algebra.Module.ClosedSubmodule
 In this file, the `orthogonal` complement of a submodule `K` is defined, and basic API established.
 We make duplicates for `Submodule` and `ClosedSubmodule`.
 Some of the more subtle results about the orthogonal complement are delayed to
-`Analysis.InnerProductSpace.Projection`.
+`Mathlib/Analysis/InnerProductSpace/Projection/`.
 
 See also `BilinForm.orthogonal` for orthogonality with respect to a general bilinear form.
 
@@ -120,11 +120,19 @@ theorem isClosed_orthogonal : IsClosed (Kᗮ : Set E) := by
 instance instOrthogonalCompleteSpace [CompleteSpace E] : CompleteSpace Kᗮ :=
   K.isClosed_orthogonal.completeSpace_coe
 
-lemma map_orthogonal (f : E ≃ₗᵢ[𝕜] F) : Kᗮ.map (f : E →ₗ[𝕜] F) = (K.map (f : E →ₗ[𝕜] F))ᗮ := by
+lemma map_orthogonal (f : E →ₗᵢ[𝕜] F) :
+    Kᗮ.map f.toLinearMap = (K.map f.toLinearMap)ᗮ ⊓ f.range := by
   simp only [Submodule.ext_iff, mem_map, mem_orthogonal, forall_exists_index, and_imp,
-    forall_apply_eq_imp_iff₂, ContinuousLinearMap.coe_coe, ContinuousLinearEquiv.coe_coe,
-    LinearIsometryEquiv.coe_toContinuousLinearEquiv, LinearIsometryEquiv.inner_map_eq_flip]
-  exact fun x ↦ ⟨fun ⟨y, hy⟩ z hz ↦ by simp [← hy.2, hy.1 _ hz], fun h ↦ ⟨_, h, by simp⟩⟩
+    forall_apply_eq_imp_iff₂, mem_inf, mem_map, LinearMap.mem_range,
+    LinearIsometry.coe_toLinearMap]
+  grind [LinearIsometry.inner_map_map]
+
+lemma map_orthogonal_equiv (f : E ≃ₗᵢ[𝕜] F) :
+    Kᗮ.map (f.toLinearEquiv : E →ₗ[𝕜] F) = (K.map (f.toLinearEquiv : E →ₗ[𝕜] F))ᗮ := by
+  refine (map_orthogonal K f.toLinearIsometry).trans ?_
+  have : f.toLinearIsometry.range = ⊤ := f.range
+  rw [this, inf_top_eq]
+  rfl
 
 variable (𝕜 E)
 
@@ -404,9 +412,14 @@ def orthogonal : ClosedSubmodule 𝕜 E where
 notation:1200 K "ᗮ" => orthogonal K
 
 @[simp]
-lemma orthogonal_toSubmodule_eq : K.orthogonal.toSubmodule = K.toSubmodule.orthogonal := rfl
+lemma toSubmodule_orthogonal_eq : K.orthogonal.toSubmodule = K.toSubmodule.orthogonal := rfl
 
-lemma mem_orthogonal_iff (v : E) : v ∈ (K.toSubmodule)ᗮ ↔ v ∈ Kᗮ := Iff.rfl
+@[deprecated (since := "2026-01-18")] alias orthogonal_toSubmodule_eq := toSubmodule_orthogonal_eq
+
+@[simp]
+lemma mem_orthogonal_toSubmodule_iff (v : E) : v ∈ (K.toSubmodule)ᗮ ↔ v ∈ Kᗮ := Iff.rfl
+
+@[deprecated (since := "2026-01-18")] alias mem_orthogonal_iff := mem_orthogonal_toSubmodule_iff
 
 /-- When a vector is in `Kᗮ`. -/
 @[simp]
@@ -431,9 +444,7 @@ variable (K)
 theorem inf_orthogonal_eq_bot : K ⊓ Kᗮ = ⊥ := by
   rw [eq_bot_iff]
   intro x
-  simp only [toSubmodule_inf, orthogonal_toSubmodule_eq, Submodule.mem_inf, toSubmodule_bot,
-    Submodule.mem_bot, and_imp]
-  exact fun hx ho => inner_self_eq_zero.1 (ho x hx)
+  simpa using fun hx ho => inner_self_eq_zero.1 (ho x hx)
 
 /-- `K` and `Kᗮ` have trivial intersection. -/
 theorem orthogonal_disjoint : Disjoint K Kᗮ := by simp [disjoint_iff, K.inf_orthogonal_eq_bot]
@@ -442,7 +453,7 @@ theorem orthogonal_disjoint : Disjoint K Kᗮ := by simp [disjoint_iff, K.inf_or
 inner product with each of the elements of `K`. -/
 theorem orthogonal_eq_inter : Kᗮ = ⨅ v : K, LinearMap.ker (innerSL 𝕜 (v : E)).toLinearMap := by
   ext
-  simpa using mem_orthogonal_iff _ _
+  simp
 
 variable (𝕜 E)
 

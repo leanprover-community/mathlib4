@@ -5,7 +5,6 @@ Authors: Rémy Degenne
 -/
 module
 
-public import Mathlib.LinearAlgebra.FreeModule.Basic
 public import Mathlib.MeasureTheory.Measure.Decomposition.Exhaustion
 public import Mathlib.Probability.ConditionalProbability
 

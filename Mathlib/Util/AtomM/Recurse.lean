@@ -42,6 +42,8 @@ structure Recurse.Config where
   red := TransparencyMode.reducible
   /-- if true, local let variables can be unfolded -/
   zetaDelta := false
+  /-- if true, implication hypotheses are added to the local context of the discharger -/
+  contextual := false
 deriving Inhabited, BEq, Repr
 
 -- See https://github.com/leanprover/lean4/issues/10295
@@ -70,7 +72,8 @@ monad.
 * `root`: true if this is a direct call to the function.
   `AtomM.RecurseM.run` sets this to `false` in recursive mode.
 -/
-def onSubexpressions (eval : Expr → AtomM Simp.Result) (parent : Expr) (root := true) :
+def onSubexpressions (eval : Expr → AtomM Simp.Result) (parent : Expr)
+    (wellBehavedDischarge : Bool) (root := true) :
     RecurseM Simp.Result :=
   fun nctx rctx s ↦ do
     let pre : Simp.Simproc := fun e =>
@@ -82,7 +85,7 @@ def onSubexpressions (eval : Expr → AtomM Simp.Result) (parent : Expr) (root :
         pure (.done r)
       catch _ => pure <| .continue
     let post := Simp.postDefault #[]
-    (·.1) <$> Simp.main parent nctx.ctx (methods := { pre, post })
+    (·.1) <$> Simp.main parent nctx.ctx (methods := { pre, post, wellBehavedDischarge })
 
 /--
 Runs a tactic in the `AtomM.RecurseM` monad, given initial data:
@@ -90,16 +93,20 @@ Runs a tactic in the `AtomM.RecurseM` monad, given initial data:
 * `s`: a reference to the mutable `AtomM` state, for persisting across calls.
   This ensures that atom ordering is used consistently.
 * `cfg`: the configuration options
+* `wellBehavedDischarge` : MUST be set to `false` IF `eval` accesses local declarations with
+  index >= `Context.lctxInitIndices`.
+  Reason: it would cause `simp` to cache results too aggressively.
 * `eval`: a normalization operation which will be run recursively, potentially dependent on a known
   atom ordering
 * `simp`: a cleanup operation which will be used to post-process expressions
 * `x`: the tactic to run
 -/
 partial def RecurseM.run
-    {α : Type} (s : IO.Ref State) (cfg : Recurse.Config) (eval : Expr → AtomM Simp.Result)
-    (simp : Simp.Result → MetaM Simp.Result) (x : RecurseM α) :
+    {α : Type} (s : IO.Ref State) (cfg : Recurse.Config) (wellBehavedDischarge : Bool)
+    (eval : Expr → AtomM Simp.Result) (simp : Simp.Result → MetaM Simp.Result) (x : RecurseM α) :
     MetaM α := do
-  let ctx ← Simp.mkContext { zetaDelta := cfg.zetaDelta, singlePass := true }
+  let ctx ← Simp.mkContext
+    { zetaDelta := cfg.zetaDelta, singlePass := true, contextual := cfg.contextual }
     (simpTheorems := #[← Elab.Tactic.simpOnlyBuiltins.foldlM (·.addConst ·) {}])
     (congrTheorems := ← getSimpCongrTheorems)
   let nctx := { ctx, simp }
@@ -107,7 +114,7 @@ partial def RecurseM.run
     /-- The recursive context. -/
     rctx := { red := cfg.red, evalAtom },
     /-- The atom evaluator calls `AtomM.onSubexpressions` recursively. -/
-    evalAtom e := onSubexpressions eval e false nctx rctx s
+    evalAtom e := onSubexpressions eval e wellBehavedDischarge false nctx rctx s
   withConfig ({ · with zetaDelta := cfg.zetaDelta }) <| x nctx rctx s
 
 /--
@@ -116,15 +123,19 @@ Normalizes an expression, given initial data:
 * `s`: a reference to the mutable `AtomM` state, for persisting across calls.
   This ensures that atom ordering is used consistently.
 * `cfg`: the configuration options
+* `wellBehavedDischarge` : MUST be set to `false` IF `eval` accesses local declarations with
+  index >= `Context.lctxInitIndices`.
+  Reason: it would cause `simp` to cache results too aggressively.
 * `eval`: a normalization operation which will be run recursively, potentially dependent on a known
   atom ordering
 * `simp`: a cleanup operation which will be used to post-process expressions
 * `tgt`: the expression to normalize
 -/
-def recurse (s : IO.Ref State) (cfg : Recurse.Config)
+def recurse (s : IO.Ref State) (cfg : Recurse.Config) (wellBehavedDischarge : Bool)
     (eval : Expr → AtomM Simp.Result)
     (simp : Simp.Result → MetaM Simp.Result) (tgt : Expr) :
     MetaM Simp.Result := do
-  RecurseM.run s cfg eval simp <| onSubexpressions eval tgt
+  RecurseM.run s cfg wellBehavedDischarge eval simp
+    <| onSubexpressions eval tgt wellBehavedDischarge
 
 end Mathlib.Tactic.AtomM

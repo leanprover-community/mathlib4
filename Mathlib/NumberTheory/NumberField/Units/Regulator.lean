@@ -48,6 +48,7 @@ open MeasureTheory NumberField.InfinitePlace Module Submodule
 
 variable [NumberField K]
 
+set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 /--
 An `equiv` between `Fin (rank K)`, used to index the family of units, and `{w // w ≠ w₀}`
@@ -99,6 +100,7 @@ theorem finiteIndex_iff_sup_torsion_finiteIndex (s : Subgroup (𝓞 K)ˣ) :
   rw [Subgroup.relIndex_sup_left]
   exact Subgroup.FiniteIndex.index_ne_zero
 
+set_option backward.isDefEq.respectTransparency false in
 open Subgroup in
 /--
 A family of units is of maximal rank iff the index of the subgroup it generates has finite index.

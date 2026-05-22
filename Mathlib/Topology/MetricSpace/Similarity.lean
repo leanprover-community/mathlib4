@@ -6,6 +6,7 @@ Authors: Jovan Gerbscheid, Newell Jensen
 module
 
 public import Mathlib.Topology.MetricSpace.Congruence
+public import Mathlib.Topology.MetricSpace.Dilation
 public import Mathlib.Tactic.FinCases
 
 /-!
@@ -112,6 +113,58 @@ lemma index_equiv (f : ι' ≃ ι) (v₁ : ι → P₁) (v₂ : ι → P₂) :
   rcases h with ⟨r, hr, h⟩
   refine ⟨r, hr, fun i₁ i₂ => ?_⟩
   simpa [f.right_inv i₁, f.right_inv i₂] using h (f.symm i₁) (f.symm i₂)
+
+/-- Families with at most a single point are always similar. -/
+@[nontriviality, simp]
+lemma of_subsingleton_index [Subsingleton ι] : v₁ ∼ v₂ :=
+  Congruent.of_subsingleton_index.similar
+
+/-! Similarity is preserved under dilations. -/
+
+section Dilation
+variable {F}
+
+lemma comp_left [FunLike F P₁ P₃] [DilationClass F P₁ P₃] (f : F) (h : v₁ ∼ v₂) :
+    f ∘ v₁ ∼ v₂ :=
+  .trans ⟨Dilation.ratio f, Dilation.ratio_ne_zero f, fun _ _ => Dilation.edist_eq f _ _⟩ h
+
+lemma comp_right [FunLike F P₂ P₃] [DilationClass F P₂ P₃] (f : F) (h : v₁ ∼ v₂) : v₁ ∼ f ∘ v₂ :=
+  .symm (h.symm.comp_left f)
+
+@[simp]
+lemma comp_left_iff [FunLike F P₁ P₃] [DilationClass F P₁ P₃] (f : F) : f ∘ v₁ ∼ v₂ ↔ v₁ ∼ v₂ :=
+  ⟨.trans <| .comp_right f (.refl _), .comp_left f⟩
+
+@[simp]
+lemma comp_right_iff [FunLike F P₂ P₃] [DilationClass F P₂ P₃] (f : F) : v₁ ∼ f ∘ v₂ ↔ v₁ ∼ v₂ := by
+  rw [similar_comm, comp_left_iff, similar_comm]
+
+end Dilation
+
+/-! Similarity is preserved under isometries.
+
+While these are trivial consequences of the dilation results, they avoid ending up with a
+`toDilation` in the expression, and so are easier to apply to plain functions.
+If `Dilation` were a predicate like `Isometry` then these would not be needed.
+-/
+
+section Isometry
+
+lemma comp_isometry_left {f : P₁ → P₃} (hf : Isometry f) (h : v₁ ∼ v₂) : f ∘ v₁ ∼ v₂ :=
+  comp_left hf.toDilation h
+
+lemma comp_isometry_right {f : P₂ → P₃} (hf : Isometry f) (h : v₁ ∼ v₂) : v₁ ∼ f ∘ v₂ :=
+  comp_right hf.toDilation h
+
+@[simp]
+lemma comp_isometry_left_iff {f : P₁ → P₃} (hf : Isometry f) : f ∘ v₁ ∼ v₂ ↔ v₁ ∼ v₂ :=
+  comp_left_iff hf.toDilation
+
+@[simp]
+lemma comp_isometry_right_iff {f : P₂ → P₃} (hf : Isometry f) : v₁ ∼ f ∘ v₂ ↔ v₁ ∼ v₂ :=
+  comp_right_iff hf.toDilation
+
+end Isometry
 
 section Triangle
 
