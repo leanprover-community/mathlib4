@@ -57,7 +57,7 @@ instance [Infinite α] : Infinite {a : Sym2 α // ¬a.IsDiag} :=
   .of_injective (fun n => ⟨s(e 0, e (n + 1)), by simp⟩) fun _ _ => by simp
 
 theorem natCard_subtype_diag : Nat.card { a : Sym2 α // a.IsDiag } = Nat.card α :=
-  Nat.card_congr isDiagElemEquiv
+  Nat.card_congr diagElemEquiv
 
 theorem natCard_subtype_not_diag :
     Nat.card { a : Sym2 α // ¬a.IsDiag } = (Nat.card α).choose 2 := by
