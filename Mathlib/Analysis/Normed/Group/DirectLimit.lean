@@ -60,16 +60,17 @@ noncomputable instance : NormedGroup (DirectLimit G f) where
 
 end NormedGroup
 
-namespace NormedAddCommGroup
+section NormedCommGroup
 
-variable [∀ i, NormedAddCommGroup (G i)]
-variable [∀ i j h, AddMonoidHomClass (T h) (G i) (G j)]
+variable [∀ i, NormedCommGroup (G i)]
+variable [∀ i j h, MonoidHomClass (T h) (G i) (G j)]
 variable [∀ i j h, IsometryClass (T h) (G i) (G j)]
 
-noncomputable instance instNormedAddCommGroup : NormedAddCommGroup (DirectLimit G f) where
-  __ := (inferInstance : NormedAddGroup (DirectLimit G f))
-  __ := (inferInstance : AddCommGroup (DirectLimit G f))
+@[to_additive]
+noncomputable instance : NormedCommGroup (DirectLimit G f) where
+  __ := (inferInstance : NormedGroup (DirectLimit G f))
+  __ := (inferInstance : CommGroup (DirectLimit G f))
 
-end NormedAddCommGroup
+end NormedCommGroup
 
 end DirectLimit
