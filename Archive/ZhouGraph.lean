@@ -567,4 +567,85 @@ theorem closureBlockInvariant
     exact ihx _ _ (ihy v w hvw)
   | inv x _ ih => exact blockMap_invariant_inv x ih
 
+/-! ### The overgroup K and Lorimer's hypotheses
+
+We define K directly as a subgroup of zGroup consisting of elements that
+map both 0 and 137 into {0, 137}. This avoids the need for a MulAction
+on Set (Fin 182) and the associated typeclass issues. -/
+
+/-- The overgroup K ≅ D₁₂: elements of PSL(2,13) preserving the block {0, 137}.
+An element g is in K iff g maps 0 to {0, 137} AND g maps 137 to {0, 137}. -/
+private def zhouOvergroup : Subgroup zGroup where
+  carrier := {g | g.1 0 ∈ zhouBlock ∧ g.1 137 ∈ zhouBlock}
+  one_mem' := ⟨Set.mem_insert 0 _, Set.mem_insert_of_mem 0 rfl⟩
+  mul_mem' := by
+    intro a b ⟨ha0, ha137⟩ ⟨hb0, hb137⟩
+    simp only [zhouBlock, Set.mem_insert_iff, Set.mem_singleton_iff,
+      Set.mem_setOf_eq] at ha0 ha137 hb0 hb137 ⊢
+    refine ⟨?_, ?_⟩
+    · -- (a * b) 0 = a(b(0)) ∈ {0, 137}
+      rcases hb0 with hb0 | hb0 <;> simp [hb0] <;> assumption
+    · -- (a * b) 137 = a(b(137)) ∈ {0, 137}
+      rcases hb137 with hb137 | hb137 <;> simp [hb137] <;> assumption
+  inv_mem' := by
+    intro a ⟨ha0, ha137⟩
+    -- a maps {0,137} into {0,137}. Since a.val is a bijection (Equiv.Perm)
+    -- and {0,137} is finite, the restriction is surjective, so a⁻¹ also
+    -- maps {0,137} into {0,137}.
+    -- Concretely: a maps 2 distinct elements into a 2-element set injectively,
+    -- so it's a bijection on that set, and its inverse is too.
+    simp only [zhouBlock, Set.mem_insert_iff, Set.mem_singleton_iff,
+      Set.mem_setOf_eq] at ha0 ha137 ⊢
+    -- Enumerate: a(0), a(137) ∈ {0, 137} and a is injective.
+    -- So (a(0), a(137)) is either (0, 137) or (137, 0).
+    -- In each case, a⁻¹ maps {0,137} to {0,137}.
+    rcases ha0 with ha0 | ha0 <;> rcases ha137 with ha137 | ha137
+    · -- a: 0→0, 137→0: impossible (injective)
+      exfalso; have : (0 : Fin 182) = 137 := a.val.injective (by rw [ha0, ha137])
+      exact absurd this (by native_decide)
+    · -- a: 0→0, 137→137: a fixes both, a⁻¹ fixes both
+      refine ⟨?_, ?_⟩
+      · left; exact (a.val.symm_apply_eq.mpr ha0.symm : a.val.symm 0 = 0)
+      · right; exact (a.val.symm_apply_eq.mpr ha137.symm : a.val.symm 137 = 137)
+    · -- a: 0→137, 137→0: a swaps, a⁻¹ swaps
+      refine ⟨?_, ?_⟩
+      · right; exact (a.val.symm_apply_eq.mpr ha137.symm : a.val.symm 0 = 137)
+      · left; exact (a.val.symm_apply_eq.mpr ha0.symm : a.val.symm 137 = 0)
+    · -- a: 0→137, 137→137: impossible (injective)
+      exfalso; have : (0 : Fin 182) = 137 := a.val.injective (by rw [ha0, ha137])
+      exact absurd this (by native_decide)
+
+/-- **H ≤ K**: the point stabilizer of 0 is contained in the overgroup.
+If g fixes 0 then g maps 0 to 0 ∈ B, and by `closureBlockInvariant`
+g maps 137 into the same block as 0, which is B = {0, 137}. -/
+theorem stabilizer_le_zhouOvergroup :
+    MulAction.stabilizer zGroup (0 : Fin 182) ≤ zhouOvergroup := by
+  intro g hg
+  have hg0 : (↑g : Equiv.Perm (Fin 182)) 0 = 0 := MulAction.mem_stabilizer_iff.mp hg
+  refine ⟨by rw [hg0]; exact Set.mem_insert 0 _, ?_⟩
+  -- g maps 137 into the same block as g maps 0
+  have hblock := closureBlockInvariant (↑g : Equiv.Perm (Fin 182)) g.2 0 137
+    (by native_decide : zhouBlockMap 0 = zhouBlockMap 137)
+  -- blockMap(g 137) = blockMap(g 0) and blockMap(g 0) = blockMap(0) = 0
+  have hbm0 : zhouBlockMap ((↑g : Equiv.Perm (Fin 182)) 0) = (0 : Fin 91) := by
+    rw [hg0]; native_decide
+  have hbm : zhouBlockMap ((↑g : Equiv.Perm (Fin 182)) 137) = (0 : Fin 91) :=
+    hblock.symm.trans hbm0
+  -- The only vertices with blockMap = 0 are 0 and 137
+  simp only [zhouBlock, Set.mem_insert_iff, Set.mem_singleton_iff]
+  -- Check: for all v, blockMap v = 0 → v = 0 ∨ v = 137
+  have fiber_check : ∀ v : Fin 182, zhouBlockMap v = 0 →
+      v = 0 ∨ v = 137 := by native_decide
+  exact fiber_check _ hbm
+
+/-- **D ∩ K = ∅**: the connection set of Zhou-3 is disjoint from the overgroup.
+Any g ∈ K maps 0 into {0, 137}, but neither 0 nor 137 is adjacent to 0. -/
+theorem connectionSet_disjoint_zhouOvergroup :
+    Disjoint (connectionSet zGroup zhouGraph 0) ↑zhouOvergroup := by
+  rw [Set.disjoint_left]
+  intro g hD hK
+  have hadj : zhouGraph.Adj 0 ((↑g : Equiv.Perm (Fin 182)) 0) := hD
+  have hmem : (↑g : Equiv.Perm (Fin 182)) 0 ∈ zhouBlock := hK.1
+  exact block_disjoint_neighbors _ hmem hadj
+
 end ZhouLorimer
