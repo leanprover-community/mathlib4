@@ -146,14 +146,14 @@ end
 namespace AddMonoidAlgebra
 variable {M R S : Type*} [Finite M] [Semiring R] [Semiring S] [Module R S] [Module.Finite R S]
 
-instance moduleFinite : Module.Finite R S[M] := .finsupp
+instance moduleFinite : Module.Finite R S[M] := .equiv <| .symm <| coeffLinearEquiv _
 
 end AddMonoidAlgebra
 
 namespace MonoidAlgebra
 variable {M R S : Type*} [Finite M] [Semiring R] [Semiring S] [Module R S] [Module.Finite R S]
 
-instance moduleFinite : Module.Finite R S[M] := .finsupp
+instance moduleFinite : Module.Finite R S[M] := .equiv <| .symm <| coeffLinearEquiv _
 
 end MonoidAlgebra
 

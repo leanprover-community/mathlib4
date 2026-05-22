@@ -352,7 +352,7 @@ private noncomputable def aux (Q : Presentation S T ι' σ') (P : Presentation R
 /-- A choice of pre-image of `Q.relation r` under the canonical
 map `MvPolynomial (ι' ⊕ ι) R →ₐ[R] MvPolynomial ι' S` given by the evaluation of `P`. -/
 noncomputable def compRelationAux (r : σ') : MvPolynomial (ι' ⊕ ι) R :=
-  Finsupp.sum (Q.relation r)
+  (AddMonoidAlgebra.coeff <| Q.relation r).sum
     (fun x j ↦ (MvPolynomial.rename Sum.inr <| P.σ j) * monomial (x.mapDomain Sum.inl) 1)
 
 @[simp]
@@ -364,10 +364,13 @@ private lemma compRelationAux_map (r : σ') :
     (Q.aux P) (Q.compRelationAux P r) = Q.relation r := by
   simp only [aux, compRelationAux, map_finsuppSum]
   simp only [map_mul, aeval_rename, aeval_monomial, Sum.elim_comp_inr]
-  conv_rhs => rw [← Finsupp.sum_single (Q.relation r)]
+  conv_rhs => rw [← (Q.relation r).ofCoeff_coeff,
+    ← Finsupp.sum_single (AddMonoidAlgebra.coeff <| Q.relation r)]
+  rw [AddMonoidAlgebra.ofCoeff_finsuppSum]
   congr
   ext u s m
-  simp only [MvPolynomial.single_eq_monomial, aeval, AlgHom.coe_mk, coe_eval₂Hom]
+  simp only [aeval, AlgHom.coe_mk, coe_eval₂Hom, map_one, one_mul, AddMonoidAlgebra.ofCoeff_single,
+    single_eq_monomial]
   rw [monomial_eq, IsScalarTower.algebraMap_eq R S, algebraMap_eq, ← eval₂_comp_left, ← aeval_def]
   simp [Finsupp.prod_mapDomain_index_inj (Sum.inl_injective)]
 

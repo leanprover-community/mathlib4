@@ -418,7 +418,7 @@ def basis : Basis (Fin (natDegree f)) R S where
   repr.invFun g := h.map <| ofFinsupp <| .ofCoeff <| g.mapDomain Fin.val
   repr.left_inv x := by
     nontriviality R using Algebra.subsingleton R S
-    simp only [AddMonoidAlgebra.coeff, AddMonoidAlgebra.ofCoeff]
+    dsimp
     rw [Finsupp.mapDomain_comapDomain, Polynomial.eta, h.map_modByMonicHom x]
     · exact Fin.val_injective
     intro i hi
@@ -432,8 +432,7 @@ def basis : Basis (Fin (natDegree f)) R S where
   repr.right_inv g := by
     nontriviality R
     ext i
-    simp only [AddMonoidAlgebra.coeff, AddMonoidAlgebra.ofCoeff, h.modByMonicHom_map,
-      Finsupp.comapDomain_apply, Polynomial.toFinsupp_apply]
+    simp only [h.modByMonicHom_map, Finsupp.comapDomain_apply, Polynomial.toFinsupp_apply]
     rw [(Polynomial.modByMonic_eq_self_iff h.monic).mpr, Polynomial.coeff]
     · rw [Finsupp.mapDomain_apply Fin.val_injective]
     rw [degree_eq_natDegree h.monic.ne_zero, degree_lt_iff_coeff_zero]
@@ -448,8 +447,7 @@ def basis : Basis (Fin (natDegree f)) R S where
 
 @[simp]
 theorem basis_apply (i) : h.basis i = h.root ^ (i : ℕ) :=
-  Basis.apply_eq_iff.mpr <| by
-    simp [AddMonoidAlgebra.coeff, AddMonoidAlgebra.ofCoeff, IsAdjoinRootMonic.basis]
+  Basis.apply_eq_iff.mpr <| by simp [IsAdjoinRootMonic.basis]
 
 include h in
 theorem deg_pos [Nontrivial S] : 0 < natDegree f := by
@@ -470,7 +468,7 @@ def powerBasis : PowerBasis R S where
 @[simp]
 theorem basis_repr (x : S) (i : Fin (natDegree f)) :
     h.basis.repr x i = (h.modByMonicHom x).coeff (i : ℕ) := by
-  simp [IsAdjoinRootMonic.basis, AddMonoidAlgebra.coeff, AddMonoidAlgebra.ofCoeff, toFinsupp_apply]
+  simp [IsAdjoinRootMonic.basis, toFinsupp_apply]
 
 theorem basis_one (hdeg : 1 < natDegree f) : h.basis ⟨1, hdeg⟩ = h.root := by
   rw [h.basis_apply, Fin.val_mk, pow_one]

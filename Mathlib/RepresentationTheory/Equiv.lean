@@ -20,6 +20,8 @@ all the `Iso`s in `Rep` using the equivs in this file.
 
 @[expose] public section
 
+open scoped MonoidAlgebra
+
 universe u u' v v' w w'
 
 variable {k : Type u} [Semiring k] {G : Type v} [Monoid G] {V : Type v'} [AddCommMonoid V]
@@ -34,33 +36,30 @@ variable (k G) in
 /-- If there exists `G`-action on a trivial monoid `H` then the induced representation
   on `k[H]` is equivalent to the trivial representation. -/
 def ofMulActionSubsingletonEquivTrivial : (ofMulAction k G H).Equiv (trivial k G k) :=
-  .mk (Finsupp.uniqueLinearEquiv _ _ 1) fun g ↦ by
-    ext a; simp [Subsingleton.elim (g • a) a]
+  .mk (MonoidAlgebra.uniqueLinearEquiv k H) fun g ↦ by ext a; simp [Subsingleton.elim (g • a) a]
 
 @[simp]
-lemma ofMulActionSubsingletonEquivTrivial_apply (f : H →₀ k) :
-    (ofMulActionSubsingletonEquivTrivial k G H).toIntertwiningMap.toLinearMap f = f 1 := rfl
+lemma ofMulActionSubsingletonEquivTrivial_apply (f : k[H]) :
+    (ofMulActionSubsingletonEquivTrivial k G H).toIntertwiningMap.toLinearMap f = f.coeff 1 := rfl
 
 @[simp]
 lemma ofMulActionSubsingletonEquivTrivial_symm_apply (r : k) :
     (ofMulActionSubsingletonEquivTrivial k G H).symm.toIntertwiningMap.toLinearMap r =
-      Finsupp.single 1 r := rfl
+      .single 1 r := rfl
 
 variable (k G) in
 /-- The equivalence of representations between `(Fin 1 → G) →₀ k` and `G →₀ k`. -/
 def diagonalOneEquivLeftRegular : (diagonal k G 1).Equiv (leftRegular k G) :=
-  .mk (Finsupp.domLCongr (Equiv.funUnique (Fin 1) G)) fun g ↦ by ext; simp
+  .mk (MonoidAlgebra.mapDomainLinearEquiv _ _ <| .funUnique _ _) fun g ↦ by ext; simp
 
 @[simp]
 lemma diagonalOneEquivLeftRegular_apply_single (f : Fin 1 → G) (r : k) :
-    (diagonalOneEquivLeftRegular k G) (Finsupp.single f r) =
-      Finsupp.single (f 0) r := by
+    (diagonalOneEquivLeftRegular k G) (.single f r) = .single (f 0) r := by
   simp [diagonalOneEquivLeftRegular]
 
 @[simp]
 lemma diagonalOneEquivLeftRegular_symm_apply_single (g : G) (r : k) :
-    (diagonalOneEquivLeftRegular k G).symm (Finsupp.single g r) =
-      Finsupp.single (uniqueElim g) r := by
+    (diagonalOneEquivLeftRegular k G).symm (.single g r) = .single (uniqueElim g) r := by
   simp [diagonalOneEquivLeftRegular]
 
 section comm
@@ -72,16 +71,17 @@ section finsupp
 
 open Finsupp
 
-/-- Every `f : α → V` can induce an intertwining map between `(α →₀ G →₀ k)` and `V`. -/
+/-- Every `f : α → V` can induce an intertwining map between `(α →₀ k[G])` and `V`. -/
 @[simps! toLinearMap]
 def freeLift {α : Type w'} (f : α → V) : (free k G α).IntertwiningMap σ where
-  __ := linearCombination k (fun x => σ x.2 (f x.1)) ∘ₗ
-    (curryLinearEquiv k).symm.toLinearMap
+  toLinearMap := linearCombination k (fun x => σ x.2 (f x.1)) ∘ₗ
+    (curryLinearEquiv k).symm.toLinearMap ∘ₗ
+    Finsupp.mapRange.linearMap (MonoidAlgebra.coeffLinearEquiv _).toLinearMap
   isIntertwining' g := by ext; simp
 
 @[simp]
 lemma freeLift_single_single {α : Type w'} (i : α) (g : G) (r : k) (f : α → V) :
-    freeLift σ f (Finsupp.single i (Finsupp.single g r)) = r • σ g (f i) := by
+    freeLift σ f (Finsupp.single i (.single g r)) = r • σ g (f i) := by
   simp [freeLift]
 
 open IntertwiningMap
@@ -89,7 +89,7 @@ open IntertwiningMap
 /-- Equiv between the intertwining map module `(α →₀ G →₀ k) → V` and the function space `α → V`. -/
 @[simps]
 def freeLiftLEquiv (α : Type w') : ((free k G α).IntertwiningMap σ) ≃ₗ[k] (α → V) where
-  toFun f i := f (single i (single 1 1))
+  toFun f i := f (single i (.single 1 1))
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
   invFun := freeLift σ
@@ -141,36 +141,40 @@ lemma finsuppTensorRight_symm_apply_single {α : Type w'} [DecidableEq α] (i : 
 /-- Equiv between representations induced by linear equiv between `(G →₀ k) ⊗[k] (α →₀ k)` and
   `α →₀ G →₀ k`. -/
 def leftRegularTensorTrivialIsoFree (α : Type w') :
-    ((leftRegular k G).tprod (trivial k G (α →₀ k))).Equiv (free k G α) :=
-  .mk (finsuppTensorFinsupp' k G α ≪≫ₗ Finsupp.domLCongr (Equiv.prodComm G α) ≪≫ₗ
-    curryLinearEquiv k) <| fun g ↦ by ext; simp
+    ((leftRegular k G).tprod (trivial k G k[α])).Equiv (free k G α) :=
+  .mk (TensorProduct.congr (MonoidAlgebra.coeffLinearEquiv _) (.refl _ _) ≪≫ₗ
+    finsuppTensorFinsupp' k G α ≪≫ₗ Finsupp.domLCongr (Equiv.prodComm G α) ≪≫ₗ curryLinearEquiv k
+      ≪≫ₗ Finsupp.mapRange.linearEquiv (MonoidAlgebra.coeffLinearEquiv _).symm) fun g ↦ by ext; simp
 
 @[simp]
 lemma leftRegularTensorTrivialIsoFree_apply_single_tmul_single {α : Type w'} (g : G) (i : α)
-    (r s : k) : leftRegularTensorTrivialIsoFree α (Finsupp.single g r ⊗ₜ Finsupp.single i s) =
-      Finsupp.single i (Finsupp.single g (r * s)) := by
+    (r s : k) : leftRegularTensorTrivialIsoFree α (.single g r ⊗ₜ .single i s) =
+      .single i (.single g (r * s)) := by
   simp [leftRegularTensorTrivialIsoFree]
 
 @[simp]
 lemma leftRegularTensorTrivialIsoFree_symm_apply_single_single {α : Type w'} (i : α) (g : G)
-    (r : k) : (leftRegularTensorTrivialIsoFree α).symm (Finsupp.single i (Finsupp.single g r)) =
-      Finsupp.single g 1 ⊗ₜ Finsupp.single i r := by
+    (r : k) :
+    (leftRegularTensorTrivialIsoFree α).symm (.single i (.single g r)) =
+      .single g 1 ⊗ₜ .single i r := by
   simp [leftRegularTensorTrivialIsoFree, finsuppTensorFinsupp'_symm_single_eq_single_one_tmul]
 
 end finsupp
 
 /-- The linear equiv between the hom module `k[G] ⟶ᵍ V` and `V` itself. -/
 @[simps!]
-def leftRegularMapEquiv : ((leftRegular k G).IntertwiningMap σ) ≃ₗ[k] V where
-  toFun f := (Finsupp.llift V k k G).symm f.toLinearMap (1 : G)
+def leftRegularMapEquiv : (leftRegular k G).IntertwiningMap σ ≃ₗ[k] V where
+  toFun f := (Finsupp.llift V k k G).symm
+    (f.toLinearMap ∘ₗ (MonoidAlgebra.coeffLinearEquiv _).symm.toLinearMap) (1 : G)
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
-  invFun v := ⟨Finsupp.llift _ _ k _ (fun g ↦ σ g v), fun g ↦ by ext g'; simp⟩
+  invFun v := ⟨Finsupp.llift _ _ k _ (fun g ↦ σ g v) ∘ₗ
+    (MonoidAlgebra.coeffLinearEquiv _).toLinearMap, fun g ↦ by ext g'; simp⟩
   left_inv x := by ext; simp [← x.isIntertwining]
   right_inv v := by simp
 
 lemma leftRegularMapEquiv_symm_single (g : G) (v : V) :
-    ((leftRegularMapEquiv σ).symm v) (Finsupp.single g 1) = σ g v := by
+    ((leftRegularMapEquiv σ).symm v) (.single g 1) = σ g v := by
   simp
 
 end comm

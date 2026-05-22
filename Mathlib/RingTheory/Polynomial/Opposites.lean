@@ -42,7 +42,7 @@ set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem opRingEquiv_op_monomial (n : ℕ) (r : R) :
     opRingEquiv R (op (monomial n r : R[X])) = monomial n (op r) := by
-  simp [opRingEquiv]
+  ext; simp [opRingEquiv, ← ofFinsupp_single]
 
 @[simp]
 theorem opRingEquiv_op_C (a : R) : opRingEquiv R (op (C a)) = C (op a) :=

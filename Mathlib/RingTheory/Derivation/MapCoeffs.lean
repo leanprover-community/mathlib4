@@ -39,7 +39,7 @@ of the coefficients.
 def mapCoeffs : Derivation R A[X] (PolynomialModule A M) where
   __ := (PolynomialModule.map A d.toLinearMap).comp
     PolynomialModule.equivPolynomial.symm.toLinearMap
-  map_one_eq_zero' := show (Finsupp.single 0 1).mapRange (d : A → M) d.map_zero = 0 by simp
+  map_one_eq_zero' := by simp
   leibniz' p q := by
     dsimp
     induction p using Polynomial.induction_on' with
@@ -47,34 +47,19 @@ def mapCoeffs : Derivation R A[X] (PolynomialModule A M) where
     | monomial n a =>
       induction q using Polynomial.induction_on' with
       | add => simp only [mul_add, map_add, add_smul, smul_add, add_add_add_comm, *]
-      | monomial m b =>
-        refine Finsupp.ext fun i ↦ ?_
-        dsimp [PolynomialModule.equivPolynomial, PolynomialModule.map]
-        simp only [toFinsupp_mul, toFinsupp_monomial, AddMonoidAlgebra.single_mul_single]
-        change d _ = _ + _
-        -- TODO: copy more `Finsupp` API to `PolynomialModule`.
-        -- We have to do a bit of work to go through the identification
-        -- `PolynomialModule A M = ℕ →₀ M`...
-        dsimp only [PolynomialModule, Finsupp.mapRange.linearMap_apply, coeFn_coe]
-        rw [Finsupp.mapRange_single, Finsupp.mapRange_single]
-        -- ... and here we go back through the identification.
-        change _ = (_ • PolynomialModule.single A _ _) _ + (_ • PolynomialModule.single A _ _) i
-        simp only [PolynomialModule.monomial_smul_single, AddMonoidAlgebra.single_apply,
-          apply_ite d, leibniz, map_zero, PolynomialModule.single_apply, ite_add_zero,
-          add_comm m n]
+      | monomial m b => ext; simp [Polynomial.monomial_mul_monomial, add_comm]
 
 @[simp]
-lemma mapCoeffs_apply (p : A[X]) (i) :
-    d.mapCoeffs p i = d (coeff p i) := rfl
+lemma mapCoeffs_apply (p : A[X]) (i) : (d.mapCoeffs p).coeff i = d (coeff p i) := rfl
 
 @[simp]
 lemma mapCoeffs_monomial (n : ℕ) (x : A) :
-    d.mapCoeffs (monomial n x) = .single A n (d x) := Finsupp.ext fun _ ↦ by
-  simp [coeff_monomial, apply_ite d, PolynomialModule.single_apply]
+    d.mapCoeffs (monomial n x) = .single A n (d x) := by
+  ext; simp [coeff_monomial, apply_ite d, Finsupp.single_apply]
 
 @[simp]
-lemma mapCoeffs_X :
-    d.mapCoeffs (X : A[X]) = 0 := by simp [← monomial_one_one_eq_X]
+lemma mapCoeffs_X : d.mapCoeffs (X : A[X]) = 0 := by
+  simp [← monomial_one_one_eq_X, PolynomialModule.single]
 
 @[simp]
 lemma mapCoeffs_C (x : A) :
@@ -95,21 +80,17 @@ theorem apply_aeval_eq' (d' : Derivation R B M') (f : M →ₗ[A] M')
       _root_.map_natCast, h]
     rw [add_comm, ← smul_smul, ← smul_smul, Nat.cast_smul_eq_nsmul]
 
-
 theorem apply_aeval_eq [IsScalarTower R A B] [IsScalarTower A B M'] (d : Derivation R B M')
     (x : B) (p : A[X]) :
-    d (aeval x p) = PolynomialModule.eval x ((d.compAlgebraMap A).mapCoeffs p) +
-      aeval x (derivative p) • d x := by
-  convert! apply_aeval_eq' (d.compAlgebraMap A) d LinearMap.id _ x p
-  · apply Finsupp.ext
-    intro x
-    rfl
-  · intro a
-    rfl
+    d (aeval x p) =
+      (((d.compAlgebraMap A).mapCoeffs p).map B .id).eval x + aeval x (derivative p) • d x :=
+  apply_aeval_eq' (d.compAlgebraMap A) d LinearMap.id (fun _a ↦ rfl) x p
 
 theorem apply_eval_eq (x : A) (p : A[X]) :
-    d (eval x p) = PolynomialModule.eval x (d.mapCoeffs p) + eval x (derivative p) • d x :=
-  apply_aeval_eq d x p
+    d (eval x p) = PolynomialModule.eval x (d.mapCoeffs p) + eval x (derivative p) • d x := by
+  convert! apply_aeval_eq d x p
+  ext
+  rfl
 
 end Derivation
 

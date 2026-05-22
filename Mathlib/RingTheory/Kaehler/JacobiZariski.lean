@@ -217,12 +217,12 @@ restriction to `ker(I/I² → ⊕ S dyᵢ)` is the connecting homomorphism in th
 noncomputable
 def δAux :
     Q.Ring →ₗ[R] T ⊗[S] Ω[S⁄R] :=
-  Finsupp.lsum R (R := R) fun f ↦
-    (TensorProduct.mk S T _ (f.prod (Q.val · ^ ·))).restrictScalars R ∘ₗ (D R S).toLinearMap
+  Finsupp.lsum R (R := R) (fun f ↦
+    (TensorProduct.mk S T _ (f.prod (Q.val · ^ ·))).restrictScalars R ∘ₗ (D R S).toLinearMap)
+    ∘ₗ (AddMonoidAlgebra.coeffLinearEquiv _).toLinearMap
 
 lemma δAux_monomial (n r) :
-    δAux R Q (monomial n r) = (n.prod (Q.val · ^ ·)) ⊗ₜ D R S r :=
-  Finsupp.lsum_single _ _ _ _
+    δAux R Q (monomial n r) = (n.prod (Q.val · ^ ·)) ⊗ₜ D R S r := by simp [δAux]
 
 @[simp]
 lemma δAux_X (i) :

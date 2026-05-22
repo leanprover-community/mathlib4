@@ -238,7 +238,7 @@ variable (F F')
 
 /-- The `R[IX]`-submodule of `M[X]` associated with an `I`-filtration. -/
 protected noncomputable def submodule : Submodule (reesAlgebra I) (PolynomialModule R M) where
-  carrier := { f | ∀ i, f i ∈ F.N i }
+  carrier := { f | ∀ i, f.coeff i ∈ F.N i }
   add_mem' hf hg i := Submodule.add_mem _ (hf i) (hg i)
   zero_mem' _ := Submodule.zero_mem _
   smul_mem' r f hf i := by
@@ -250,7 +250,7 @@ protected noncomputable def submodule : Submodule (reesAlgebra I) (PolynomialMod
     exact F.pow_smul_le j k (Submodule.smul_mem_smul (r.2 j) (hf k))
 
 @[simp]
-theorem mem_submodule (f : PolynomialModule R M) : f ∈ F.submodule ↔ ∀ i, f i ∈ F.N i :=
+theorem mem_submodule (f : PolynomialModule R M) : f ∈ F.submodule ↔ ∀ i, f.coeff i ∈ F.N i :=
   Iff.rfl
 
 theorem inf_submodule : (F ⊓ F').submodule = F.submodule ⊓ F'.submodule := by
@@ -272,12 +272,12 @@ theorem submodule_closure_single :
   apply le_antisymm
   · rw [AddSubmonoid.closure_le, Set.iUnion_subset_iff]
     rintro i _ ⟨m, hm, rfl⟩ j
-    rw [single_apply]
+    rw [coeff_single, Finsupp.single_apply]
     split_ifs with h
     · rwa [← h]
     · exact (F.N j).zero_mem
   · intro f hf
-    rw [← f.sum_single]
+    rw [← f.ofCoeff_coeff, ← f.coeff.sum_single, ofCoeff_finsuppSum]
     apply AddSubmonoid.sum_mem _ _
     rintro c -
     exact AddSubmonoid.subset_closure (Set.subset_iUnion _ c <| Set.mem_image_of_mem _ (hf c))
@@ -299,9 +299,10 @@ theorem submodule_eq_span_le_iff_stable_ge (n₀ : ℕ) :
     refine (F.smul_le n).antisymm ?_
     intro x hx
     obtain ⟨l, hl⟩ := (Finsupp.mem_span_iff_linearCombination _ _ _).mp (H _ ⟨x, hx, rfl⟩)
-    replace hl := congr_arg (fun f : ℕ →₀ M => f (n + 1)) hl
-    rw [PolynomialModule.single_apply, if_pos rfl] at hl
-    rw [← hl, Finsupp.linearCombination_apply, Finsupp.sum_apply]
+    replace hl := congr_arg (fun f : PolynomialModule R M => f.coeff (n + 1)) hl
+    dsimp only at hl
+    rw [PolynomialModule.coeff_single, Finsupp.single_apply, if_pos rfl] at hl
+    rw [← hl, Finsupp.linearCombination_apply, PolynomialModule.coeff_finsuppSum, Finsupp.sum_apply]
     apply Submodule.sum_mem _ _
     rintro ⟨_, _, ⟨n', rfl⟩, _, ⟨hn', rfl⟩, m, hm, rfl⟩ -
     dsimp only [Subtype.coe_mk]
@@ -328,7 +329,7 @@ theorem submodule_eq_span_le_iff_stable_ge (n₀ : ℕ) :
     · rw [add_comm, ← monomial_smul_single]
       exact F'.smul_mem
         ⟨_, reesAlgebra.monomial_mem.mpr (by rwa [pow_one])⟩ (hj <| Set.mem_image_of_mem _ hm')
-    · rw [map_add]
+    · rw [PolynomialModule.single_add]
       exact F'.add_mem hx hy
 
 /-- If the components of a filtration are finitely generated, then the filtration is stable iff
