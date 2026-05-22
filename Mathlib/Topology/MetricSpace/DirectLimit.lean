@@ -26,6 +26,40 @@ variable {T : ∀ ⦃i j : ι⦄, i ≤ j → Type*} {f : ∀ _ _ h, T h}
 variable [∀ i j (h : i ≤ j), FunLike (T h) (G i) (G j)] [DirectedSystem G (f · · ·)]
 variable [IsDirectedOrder ι]
 
+section PseudoEMetricSpace
+
+variable [∀ i, PseudoEMetricSpace (G i)]
+variable [∀ i j h, IsometryClass (T h) (G i) (G j)]
+
+noncomputable instance : PseudoEMetricSpace (DirectLimit G f) where
+  edist := DirectLimit.lift₂ f f (fun i ↦ edist (α := G i))
+    (fun i j h x y ↦ (IsometryClass.edist_eq (f i j h) x y).symm)
+  edist_self := DirectLimit.induction f fun i x ↦ by rw [← edist_self x, lift₂_def]
+  edist_comm := DirectLimit.induction₂ f fun i x y ↦ by simp_rw [lift₂_def, edist_comm x y]
+  edist_triangle := DirectLimit.induction₃ f fun i x y z ↦ by simp_rw [lift₂_def, edist_triangle]
+
+lemma edist_def (i : ι) (x y : G i) :
+    edist (α := DirectLimit G f) ⟦⟨i,x⟩⟧ ⟦⟨i,y⟩⟧ = edist x y := by
+  change DirectLimit.lift₂ f f _
+    (fun i j h x y ↦ (IsometryClass.edist_eq (f i j h) x y).symm)
+    ⟦⟨i, x⟩⟧ ⟦⟨i, y⟩⟧ = edist x y
+  rw [lift₂_def]
+
+end PseudoEMetricSpace
+
+section EMetricSpace
+
+variable [∀ i, EMetricSpace (G i)]
+variable [∀ i j h, IsometryClass (T h) (G i) (G j)]
+
+noncomputable instance : EMetricSpace (DirectLimit G f) where
+  __ := (inferInstance : PseudoEMetricSpace (DirectLimit G f))
+  eq_of_edist_eq_zero {x y} h := DirectLimit.induction₂ f (fun i x' y' h' ↦ by
+    rw [edist_def] at h'
+    simp [eq_of_edist_eq_zero h']) x y h
+
+end EMetricSpace
+
 section PseudoMetricSpace
 
 variable [∀ i, PseudoMetricSpace (G i)]
@@ -48,10 +82,6 @@ lemma dist_def (i : ι) (x y : G i) :
 lemma nndist_def (i : ι) (x y : G i) :
     nndist (α := DirectLimit G f) ⟦⟨i,x⟩⟧ ⟦⟨i,y⟩⟧ = nndist x y := by
   simp_rw [nndist_dist, dist_def]
-
-lemma edist_def (i : ι) (x y : G i) :
-    edist (α := DirectLimit G f) ⟦⟨i,x⟩⟧ ⟦⟨i,y⟩⟧ = edist x y := by
-  simp_rw [edist_dist, dist_def]
 
 end PseudoMetricSpace
 
