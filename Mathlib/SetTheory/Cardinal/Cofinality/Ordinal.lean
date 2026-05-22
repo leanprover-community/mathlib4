@@ -62,6 +62,10 @@ theorem cof_type (α : Type*) [LinearOrder α] [WellFoundedLT α] :
 theorem cof_toType (o : Ordinal) : Order.cof o.ToType = o.cof := by
   conv_rhs => rw [← type_toType o, cof_type]
 
+theorem cof_typein [LinearOrder α] [WellFoundedLT α] (x : α) :
+    cof (typein (α := α) (· < ·) x) = cofWithin x :=
+  cof_type _
+
 @[deprecated (since := "2026-02-18")] alias cof_eq_cof_toType := cof_toType
 @[deprecated (since := "2026-02-18")] alias le_cof_type := le_cof_iff
 @[deprecated (since := "2026-02-18")] alias cof_type_le := cof_le
@@ -73,10 +77,6 @@ theorem lift_cof (o : Ordinal.{u}) : Cardinal.lift.{v} (cof o) = cof (Ordinal.li
   cases o using inductionOnWellOrder with | type α
   rw [cof_type, ← type_lt_ulift, cof_type, ← Cardinal.lift_id'.{u, v} (Order.cof (ULift _)),
     ← Cardinal.lift_umax, ← ULift.orderIso.lift_cof_congr]
-
-theorem cof_typein [LinearOrder α] [WellFoundedLT α] (x : α) :
-    cof (typein (α := α) (· < ·) x) = cofWithin x :=
-  (cof_type _)
 
 @[simp]
 theorem _root_.Order.cofWithin_ordinal (o : Ordinal.{u}) : cofWithin o = cof (lift.{u + 1} o) := by
