@@ -5,10 +5,9 @@ Authors: Scott Wesley
 -/
 module
 
+public import Mathlib.Data.Complex.Basic
 public import Mathlib.LinearAlgebra.Matrix.Hermitian
 public import Mathlib.LinearAlgebra.UnitaryGroup
-
-public import Mathlib.Data.Complex.Basic
 
 /-!
 # Hermitian unitary matrices
