@@ -142,13 +142,10 @@ inductive Mem (a : α) : BinaryTree α → Prop
 | left  (b : α) {l r} : Mem a l → Mem a (l △[b] r)
 | right (b : α) {l r} : Mem a r → Mem a (l △[b] r)
 
-/-- Defines the `∈` notation for `BinaryTree`.
-    `a ∈ t` unfolds to `Mem a t`, flipping argument order to match
-    Lean's `Membership` typeclass convention. -/
+/-- Defines the `∈` notation for `BinaryTree`. -/
 instance : Membership α (BinaryTree α) where
   mem l a := Mem a l
 
-/-- A singleton tree `nil △[x] nil` contains exactly `x`. -/
 theorem mem_singleton_iff (a x : ℕ) : a ∈ ((nil △[x] nil)) ↔ a = x := by
   constructor
   · intro h
@@ -184,9 +181,6 @@ theorem contains_iff {α : Type u} [inst : BEq α] [inst_1 : LawfulBEq α]
         assumption
       · right; assumption
 
-/-- Lifts `contains` to a `Decidable` instance for `a ∈ t`.
-    Enables `if a ∈ t then ...` and `decide (a ∈ t)` without any extra proof work.
-    Requires `LawfulBEq` to connect `BEq` to propositional equality. -/
 instance [BEq α] [LawfulBEq α] (a : α) (t : BinaryTree α) : Decidable (a ∈ t)  :=
   decidable_of_iff (t.contains a = true) (t.contains_iff a)
 
@@ -196,7 +190,6 @@ def all (p : α → Bool) : BinaryTree α → Bool
   | nil        => true
   | l △[b] r => p b && all p l && all p r
 
-/-- `all` is sound and complete with respect to `∀ x ∈ t, p x`. -/
 theorem all_iff (p : α → Prop) [inst : DecidablePred p]
   (t : BinaryTree α) : t.all (fun x ↦ p x) = true ↔ ∀ x ∈ t, p x := by
   fun_induction all
@@ -236,17 +229,17 @@ theorem left_node_right_eq_self : ∀ {x : BinaryTree Unit} (_hx : x ≠ nil), x
 
 /-- Inorder traversal into a list: left → node → right. -/
 def toListInOrder : BinaryTree α → List α
-  | .nil          => []
-  | .node v l r   => l.toListInOrder ++ [v] ++ r.toListInOrder
+  | nil          => []
+  | l △[v] r  => l.toListInOrder ++ [v] ++ r.toListInOrder
 
 /-- Preorder traversal  into a list: node → left → right. -/
 def toListPreOrder : BinaryTree α → List α
-  | .nil          => []
-  | .node v l r   => [v] ++ l.toListPreOrder ++ r.toListPreOrder
+  | nil          => []
+  | l △[v] r  => [v] ++ l.toListPreOrder ++ r.toListPreOrder
 
 /-- Postorder traversal  into a list: left → right → node. -/
 def toListPostOrder : BinaryTree α → List α
-  | .nil          => []
-  | .node v l r   => l.toListPostOrder ++ r.toListPostOrder ++ [v]
+  | nil          => []
+  | l △[v] r  => l.toListPostOrder ++ r.toListPostOrder ++ [v]
 
 end BinaryTree
