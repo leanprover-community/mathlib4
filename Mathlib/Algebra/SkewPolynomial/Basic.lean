@@ -166,7 +166,7 @@ section Monomial
 variable (n)
 
 /-- `monomial s a` is the monomial `a * X ^ s`. -/
-def monomial : R →ₗ[R] SkewPolynomial R := lsingle (ofAdd n)
+def monomial : R →ₗ[R] SkewPolynomial R := lsingle R (ofAdd n)
 
 lemma monomial_zero_right : monomial n (0 : R) = 0 := single_zero _
 
