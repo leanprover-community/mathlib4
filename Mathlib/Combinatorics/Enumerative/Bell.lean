@@ -113,15 +113,6 @@ theorem bell_eq (m : Multiset ℕ) :
   · rw [← Nat.pos_iff_ne_zero]
     exact Nat.mul_pos (by simp [Nat.factorial_pos]) (by positivity)
 
-private theorem prod_count_factorial_eq_count_factorial_mul_prod_erase
-    (m : Multiset ℕ) {a : ℕ} (ha : a ≠ 0) : ∏ j ∈ m.toFinset.erase 0, (m.count j)! =
-    (m.count a)! * ∏ j ∈ (m.toFinset.erase 0).erase a, (m.count j)! := by
-  by_cases hmem : a ∈ m.toFinset.erase 0
-  · rw [← Finset.mul_prod_erase _ _ hmem]
-  · rw [Finset.erase_eq_of_notMem hmem]
-    have hcount : m.count a = 0 := by grind [Multiset.count_eq_zero_of_notMem]
-    simp [hcount]
-
 private theorem bell_cons_mul_count (m : Multiset ℕ) {a : ℕ} (ha : a ≠ 0) :
     (a ::ₘ m).bell * (a ::ₘ m).count a = (m.sum + a).choose a * m.bell := by
   let rest := ∏ j ∈ (m.toFinset.erase 0).erase a, (m.count j)!
@@ -132,9 +123,12 @@ private theorem bell_cons_mul_count (m : Multiset ℕ) {a : ℕ} (ha : a ≠ 0) 
       simp [Finset.mem_erase.mp hj]
   let c := (m.map (· !)).prod * (m.count a)! * rest
   have hm0 : m.bell * c = m.sum ! := by
-    have hm := Multiset.bell_mul_eq m
-    rw [prod_count_factorial_eq_count_factorial_mul_prod_erase m ha] at hm
-    simpa [c, rest, mul_assoc, mul_comm, mul_left_comm] using hm
+    have hsplit : (m.count a)! * rest = ∏ j ∈ m.toFinset.erase 0, (m.count j)! := by
+      by_cases hmem : a ∈ m.toFinset.erase 0
+      · rw [← Finset.mul_prod_erase _ _ hmem]
+      · have hcount : m.count a = 0 := by grind [Multiset.count_eq_zero_of_notMem]
+        simp [rest, Finset.erase_eq_of_notMem hmem, hcount]
+    simpa [c, hsplit, mul_assoc] using Multiset.bell_mul_eq m
   have hm : m.sum ! * a ! = m.bell * a ! * c := by grind
   have ha_mem : a ∈ (a ::ₘ m).toFinset.erase 0 := by simp [ha]
   have hc : 0 < a ! * c := Nat.mul_pos (by positivity) <|
