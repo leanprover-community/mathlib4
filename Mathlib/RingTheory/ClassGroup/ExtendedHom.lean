@@ -11,10 +11,9 @@ public import Mathlib.RingTheory.ClassGroup.Basic
 /-!
 # Class group map induced by an extension of domains
 
-For an extension `A → B` of commutative domains with injective algebra map (equivalently
-`Module.IsTorsionFree A B`), we construct the monoid homomorphism
-`ClassGroup.extendedHom : ClassGroup A →* ClassGroup B` given by pushing fractional ideals forward
-along the algebra map.
+For an injective extension `A → B` of commutative domains (equivalently `Module.IsTorsionFree A B`),
+we construct the monoid homomorphism `ClassGroup.extendedHom : ClassGroup A →* ClassGroup B` given
+by pushing fractional ideals forward along the algebra map.
 
 ## Main definitions
 
