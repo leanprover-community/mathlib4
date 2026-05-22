@@ -922,13 +922,10 @@ private lemma W_lee_neg_time
 
     TODO: formalise the gluing argument. -/
 private lemma piecewise_flow_subset_flowSet
-    {p₀ : M} {t₁ δ₀ ε : ℝ}
-    (hδ₀_pos : δ₀ > 0) (hε_pos : ε > 0) (ht₁_pos : t₁ > 0)
+    {t₁ δ₀ ε : ℝ}
     {J₁ J₀ : Set ℝ} {U₁ U₀ : Set M}
     (hδ₀_sub : Metric.ball (0 : ℝ) δ₀ ⊆ J₁)
-    (hJ₁_o : IsOpen J₁) (hJ₁_c : IsConnected J₁) (h0J₁ : (0 : ℝ) ∈ J₁) (ht₁J₁ : t₁ ∈ J₁)
-    (hJ₀_o : IsOpen J₀) (h0J₀ : (0 : ℝ) ∈ J₀)
-    (hU₁_o : IsOpen U₁) (hU₀_o : IsOpen U₀) (hp₀U₁ : p₀ ∈ U₁)
+    (hJ₁_c : IsConnected J₁) (h0J₁ : (0 : ℝ) ∈ J₁) (ht₁J₁ : t₁ ∈ J₁)
     (hJ₁U₁ : J₁ ×ˢ U₁ ⊆ flowSet V)
     (hJ₀U₀ : J₀ ×ˢ U₀ ⊆ flowSet V)
     (hε_sub : Metric.ball (0 : ℝ) ε ⊆ J₀) :
@@ -1087,12 +1084,10 @@ private lemma maximalFlowAt'_extend (p : M) (t₁ : ℝ)
     TODO: formalise the gluing via `ContinuousOn.congr` and `IsOpen.continuousOn_iff`. -/
 private lemma piecewise_flow_continuous
     {t₁ δ₀ ε : ℝ}
-    (hδ₀_pos : δ₀ > 0) (hε_pos : ε > 0) (ht₁_pos : t₁ > 0)
     {J₁ J₀ : Set ℝ} {U₁ U₀ : Set M}
     (hδ₀_sub : Metric.ball (0 : ℝ) δ₀ ⊆ J₁)
     (hJ₁_o : IsOpen J₁) (hJ₁_c : IsConnected J₁) (h0J₁ : (0 : ℝ) ∈ J₁) (ht₁J₁ : t₁ ∈ J₁)
     (hJ₀_o : IsOpen J₀) (hJ₀_c : IsConnected J₀) (h0J₀ : (0 : ℝ) ∈ J₀)
-    (hU₁_o : IsOpen U₁) (hU₀_o : IsOpen U₀)
     (hε_sub : Metric.ball (0 : ℝ) ε ⊆ J₀)
     (hJ₁U₁ : J₁ ×ˢ U₁ ⊆ flowSet V)
     (hJ₀U₀ : J₀ ×ˢ U₀ ⊆ flowSet V)
@@ -1263,18 +1258,13 @@ theorem W_lee_eq_flowSet_lee : W_lee V hV = flowSet V := by
     -- inside the anonymous ⟨…⟩ constructor.
     have hsubset : Ioo (-δ₀) (t₁ + ε) ×ˢ U₁' ⊆ flowSet V :=
       piecewise_flow_subset_flowSet V hV
-        hδ₀_pos hε_pos ht₁_pos
-        hδ₀_sub hJ₁_o hJ₁_c h0J₁ ht₁J₁
-        hJ₀_o h0J₀
-        hU₁_o hU₀_o hp₀U₁
+        hδ₀_sub hJ₁_c h0J₁ ht₁J₁
         hJ₁U₁ hJ₀U₀ hε_sub
     have hcont_pw : ContinuousOn (fun q : ℝ × M => maximalFlowAt' V q.2 q.1)
         (Ioo (-δ₀) (t₁ + ε) ×ˢ U₁') :=
       piecewise_flow_continuous V hV
-        hδ₀_pos hε_pos ht₁_pos
         hδ₀_sub hJ₁_o hJ₁_c h0J₁ ht₁J₁
         hJ₀_o hJ₀_c h0J₀
-        hU₁_o hU₀_o
         hε_sub hJ₁U₁ hJ₀U₀ hcont₁ hcont₀ hcont_p_t₁
     have ht₀_W : (t₀, p₀) ∈ W_lee V hV :=
       ⟨Ioo (-δ₀) (t₁ + ε), U₁',
