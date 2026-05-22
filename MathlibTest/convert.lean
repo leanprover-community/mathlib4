@@ -8,36 +8,36 @@ set_option autoImplicit true
 
 namespace Tests
 
-example (P : Prop) (h : P) : P := by convert h
+example (P : Prop) (h : P) : P := by convert! h
 
 example (α β : Type) (h : α = β) (b : β) : α := by
-  convert b
+  convert! b
 
 example (α β : Type) (h : ∀ α β : Type, α = β) (b : β) : α := by
-  convert b
+  convert! b
   apply h
 
 example (m n : Nat) (h : m = n) (b : Fin n) : Nat × Nat × Nat × Fin m := by
-  convert (37, 57, 2, b)
+  convert! (37, 57, 2, b)
 
 example (α β : Type) (h : α = β) (b : β) : Nat × α := by
   -- type eq ok since arguments to `Prod` are explicit
-  convert (37, b)
+  convert! (37, b)
 
 example (α β : Type) (h : β = α) (b : β) : Nat × α := by
-  convert ← (37, b)
+  convert! ← (37, b)
 
 example (α β : Type) (h : α = β) (b : β) : Nat × Nat × Nat × α := by
-  convert (37, 57, 2, b)
+  convert! (37, 57, 2, b)
 
 example (α β : Type) (h : α = β) (b : β) : Nat × Nat × Nat × α := by
-  convert (37, 57, 2, b) using 2
+  convert! (37, 57, 2, b) using 2
   guard_target = (Nat × α) = (Nat × β)
   congr!
 
 example {f : β → α} {x y : α} (h : x ≠ y) : f ⁻¹' {x} ∩ f ⁻¹' {y} = ∅ := by
   have : {x} ∩ {y} = (∅ : Set α) := by simpa [ne_comm] using h
-  convert Set.preimage_empty
+  convert! Set.preimage_empty
   rw [← Set.preimage_inter, this]
 
 section convert_to
@@ -61,7 +61,7 @@ end convert_to
 
 example (prime : Nat → Prop) (n : Nat) (h : prime (2 * n + 1)) :
     prime (n + n + 1) := by
-  convert h
+  convert! h
   · guard_target = (HAdd.hAdd : Nat → Nat → Nat) = HMul.hMul
     exact test_sorry
   · guard_target = n = 2
@@ -69,13 +69,13 @@ example (prime : Nat → Prop) (n : Nat) (h : prime (2 * n + 1)) :
 
 example (prime : Nat → Prop) (n : Nat) (h : prime (2 * n + 1)) :
     prime (n + n + 1) := by
-  convert (config := .unfoldSameFun) h
+  convert! (config := .unfoldSameFun) h
   guard_target = n + n = 2 * n
   exact test_sorry
 
 example (p q : Nat → Prop) (h : ∀ ε > 0, p ε) :
     ∀ ε > 0, q ε := by
-  convert h using 2 with ε hε
+  convert! h using 2 with ε hε
   guard_hyp hε : ε > 0
   guard_target = q ε ↔ p ε
   exact test_sorry
@@ -91,10 +91,10 @@ axiom instFintypeBool : Fintype Bool
 
 /- Would be "failed to synthesize instance Fintype ?m" without allowing TC failure. -/
 example : @Fintype.card Bool instFintypeBool = 2 := by
-  convert Fintype.foo _
+  convert! Fintype.foo _
 
 example : @Fintype.card Bool instFintypeBool = 2 := by
-  convert Fintype.foo' _ using 1
+  convert! Fintype.foo' _ using 1
   guard_target = Fintype (Option Bool)
   exact test_sorry
 
