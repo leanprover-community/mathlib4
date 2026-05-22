@@ -48,6 +48,12 @@ theorem IsClub.of_isEmpty [IsEmpty α] {s : Set α} : IsClub s :=
 theorem IsClub.univ : IsClub (α := α) .univ :=
   ⟨.univ, .univ⟩
 
+protected theorem IsClub.nonempty [Nonempty α] (hs : IsClub s) : s.Nonempty :=
+  hs.isCofinal.nonempty
+
+theorem _root_.isClub_empty_iff : IsClub (α := α) ∅ ↔ IsEmpty α :=
+  ⟨fun h ↦ isCofinal_empty_iff.1 h.isCofinal, fun _ ↦ .of_isEmpty⟩
+
 theorem IsClub.union (hs : IsClub s) (ht : IsClub t) : IsClub (s ∪ t) :=
   ⟨hs.dirSupClosed.union ht.dirSupClosed, hs.isCofinal.mono Set.subset_union_left⟩
 
