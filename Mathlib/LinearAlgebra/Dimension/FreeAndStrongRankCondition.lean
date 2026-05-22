@@ -247,7 +247,7 @@ theorem eq_bot_of_rank_le_one (h : Module.rank F S ≤ 1) [Module.Free F S] : S 
     rw [← b.mk_eq_rank'', eq_one_iff_unique, ← unique_iff_subsingleton_and_nonempty] at h1
     obtain ⟨h1⟩ := h1
     obtain ⟨y, hy⟩ := (bijective_algebraMap_of_linearEquiv (b.repr ≪≫ₗ
-      Finsupp.LinearEquiv.finsuppUnique _ _ _).symm).surjective ⟨x, hx⟩
+      Finsupp.uniqueLinearEquiv _ _ default).symm).surjective ⟨x, hx⟩
     exact ⟨y, congr(Subtype.val $(hy))⟩
   haveI := mk_eq_zero_iff.1 (b.mk_eq_rank''.symm ▸ Cardinal.lt_one_iff.1 (h.lt_of_ne h1))
   haveI := b.repr.toEquiv.subsingleton

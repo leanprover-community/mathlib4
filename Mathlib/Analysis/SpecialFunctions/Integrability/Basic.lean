@@ -7,7 +7,8 @@ module
 
 public import Mathlib.Analysis.SpecialFunctions.Log.NegMulLog
 public import Mathlib.Analysis.SpecialFunctions.NonIntegrable
-public import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
+
+import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
 
 /-!
 # Integrability of Special Functions
