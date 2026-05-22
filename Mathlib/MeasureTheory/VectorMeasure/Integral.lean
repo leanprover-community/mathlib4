@@ -304,11 +304,11 @@ theorem integral_congr_ae (h : f =ᵐ[(μ.transpose B).variation] g) :
     ∫ᵛ a, f a ∂[B; μ] = ∫ᵛ a, g a ∂[B; μ] :=
   setToFun_congr_ae _ h
 
-theorem norm_integral_le_lintegral_norm (f : X → E) :
+theorem norm_integral_le_lintegral_norm :
     ‖∫ᵛ a, f a ∂[B; μ]‖ ≤ ENNReal.toReal (∫⁻ a, ENNReal.ofReal ‖f a‖ ∂(μ.transpose B).variation) :=
   (norm_setToFun_le_toReal _ (by simp)).trans (by simp)
 
-theorem enorm_integral_le_lintegral_enorm (f : X → E) :
+theorem enorm_integral_le_lintegral_enorm :
     ‖∫ᵛ a, f a ∂[B; μ]‖ₑ ≤ ∫⁻ a, ‖f a‖ₑ ∂(μ.transpose B).variation :=
   (enorm_setToFun_le _ (by simp)).trans (by simp)
 
@@ -348,7 +348,7 @@ theorem Integrable.tendsto_setIntegral_nhds_zero {ι : Type*}
   apply tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds
     (tendsto_setLIntegral_zero (ne_of_lt hf.2) hs) (fun i => zero_le)
   intro i
-  apply (enorm_integral_le_lintegral_enorm _).trans
+  apply enorm_integral_le_lintegral_enorm.trans
   apply lintegral_mono' _ le_rfl
   rw [transpose_restrict]
   apply variation_restrict_le
@@ -444,7 +444,7 @@ theorem norm_integral_le_of_norm_le_const [IsFiniteMeasure (μ.transpose B).vari
     ‖∫ᵛ x, f x ∂[B; μ]‖ ≤ C * (μ.transpose B).variation.real univ := calc
   ‖∫ᵛ x, f x ∂[B; μ]‖
   _ ≤ (∫⁻ a, ENNReal.ofReal ‖f a‖ ∂(μ.transpose B).variation).toReal :=
-    norm_integral_le_lintegral_norm _
+    norm_integral_le_lintegral_norm
   _ ≤ (∫⁻ a, ENNReal.ofReal C ∂(μ.transpose B).variation).toReal := by
     apply ENNReal.toReal_mono
     · simp only [lintegral_const, ne_eq]
@@ -459,6 +459,11 @@ theorem norm_integral_le_of_norm_le_const [IsFiniteMeasure (μ.transpose B).vari
       obtain ⟨x, hx⟩ := h.exists
       exact (norm_nonneg _).trans hx
     simp [ENNReal.toReal_ofReal hC, Measure.real]
+
+theorem enorm_integral_le_of_enorm_le_const
+    {C : ℝ≥0∞} (h : ∀ᵐ x ∂(μ.transpose B).variation, ‖f x‖ₑ ≤ C) :
+    ‖∫ᵛ x, f x ∂[B; μ]‖ₑ ≤ C * (μ.transpose B).variation univ :=
+  enorm_integral_le_lintegral_enorm.trans ((lintegral_mono_ae h).trans (by simp))
 
 theorem integral_add_vectorMeasure {ν : VectorMeasure X F}
     (hμ : μ.Integrable f B) (hν : ν.Integrable f B) :
@@ -496,7 +501,7 @@ theorem nndist_integral_add_vectorMeasure_le_lintegral
     (nndist (∫ᵛ x, f x ∂[B; μ]) (∫ᵛ x, f x ∂[B; (μ + ν)]) : ℝ≥0∞) ≤
       ∫⁻ x, ‖f x‖ₑ ∂(ν.transpose B).variation := by
   rw [integral_add_vectorMeasure h₁ h₂, nndist_comm, nndist_eq_nnnorm, add_sub_cancel_left]
-  exact enorm_integral_le_lintegral_enorm _
+  exact enorm_integral_le_lintegral_enorm
 
 @[simp]
 theorem integral_smul_vectorMeasure (f : X → E) (c : ℝ) :
