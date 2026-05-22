@@ -648,4 +648,45 @@ theorem connectionSet_disjoint_zhouOvergroup :
   have hmem : (↑g : Equiv.Perm (Fin 182)) 0 ∈ zhouBlock := hK.1
   exact block_disjoint_neighbors _ hmem hadj
 
+/-! ### Lorimer's quotient theorem applied to Zhou-3
+
+The quotient of Sab(PSL(2,13), S₃, D) by the overgroup D₁₂ is isomorphic to
+Sab(PSL(2,13), D₁₂, D₁₂·D·D₁₂). This is the Zhou-6 graph — a 6-regular
+primitive graph on 91 = 1092/12 vertices. -/
+
+/-- **Lorimer's quotient theorem for Zhou-3 → Zhou-6**: the quotient of the
+Zhou-3 coset graph by the overgroup K ≅ D₁₂ is isomorphic to a coset graph
+Sab(PSL(2,13), D₁₂, D₁₂·D·D₁₂).
+
+This is the first concrete instantiation of `quotient_cosetGraph_iso` in the
+library: a brute-force quotient (Zhou-6 = quotientGraph zhouGraph zhouBlockMap)
+is now connected to the algebraic quotient theory via the Sabidussi
+representation and Lorimer's theorem. -/
+noncomputable def zhouLorimerQuotientIso :
+    SimpleGraph.quotientGraph
+      (SimpleGraph.cosetGraph
+        (MulAction.stabilizer zGroup (0 : Fin 182))
+        (connectionSet zGroup zhouGraph 0)
+        (connectionSet.isConnectionSet 0))
+      (cosetQuotientMap
+        (MulAction.stabilizer zGroup (0 : Fin 182))
+        zhouOvergroup
+        stabilizer_le_zhouOvergroup) ≃g
+    SimpleGraph.cosetGraph
+      zhouOvergroup
+      (expandConnectionSet zhouOvergroup (connectionSet zGroup zhouGraph 0))
+      (expandConnectionSet_isConnectionSet
+        (MulAction.stabilizer zGroup (0 : Fin 182))
+        zhouOvergroup
+        (connectionSet zGroup zhouGraph 0)
+        (connectionSet.isConnectionSet 0)
+        connectionSet_disjoint_zhouOvergroup) :=
+  quotient_cosetGraph_iso
+    (MulAction.stabilizer zGroup (0 : Fin 182))
+    zhouOvergroup
+    (connectionSet zGroup zhouGraph 0)
+    (connectionSet.isConnectionSet 0)
+    stabilizer_le_zhouOvergroup
+    connectionSet_disjoint_zhouOvergroup
+
 end ZhouLorimer
