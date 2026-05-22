@@ -31,8 +31,6 @@ single non-identity morphism is named `arrow : zero ⟶ one`.
 
 * `CategoryTheory.Limits.walkingArrowHom_id` rewrites the bundled identity
   constructor to the categorical identity.
-* `CategoryTheory.Limits.walkingArrowHom_comp_arrow_id` simplifies composition of
-  `arrow` with the identity on its codomain.
 
 ## References
 
@@ -112,13 +110,6 @@ instance walkingArrowHomCategory : SmallCategory WalkingArrow where
 /-- The bundled identity constructor agrees with the categorical identity. -/
 @[simp]
 theorem walkingArrowHom_id (X : WalkingArrow) : WalkingArrowHom.id X = 𝟙 X :=
-  rfl
-
-/-- The arrow composed with the identity on its codomain is the arrow. -/
-@[simp]
-theorem walkingArrowHom_comp_arrow_id :
-    WalkingArrowHom.comp WalkingArrowHom.arrow (WalkingArrowHom.id WalkingArrow.one) =
-    WalkingArrowHom.arrow :=
   rfl
 
 end CategoryTheory.Limits
