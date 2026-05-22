@@ -1,0 +1,13 @@
+approval_policy = "never"
+
+[mcp_servers.lean_lsp]
+command = "uvx"
+args = ["lean-lsp-mcp"]
+cwd = "/home/yuanyi/Documents/Lean/yuanyi_mathlib4/"
+startup_timeout_sec = 120
+tool_timeout_sec = 180
+required = true
+
+[mcp_servers.lean_lsp.env]
+LEAN_PROJECT_PATH = "/home/yuanyi/Documents/Lean/yuanyi_mathlib4/"
+LEAN_LOG_LEVEL = "NONE"

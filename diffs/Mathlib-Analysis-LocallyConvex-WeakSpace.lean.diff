@@ -1,0 +1,13 @@
+diff --git a/Mathlib/Analysis/LocallyConvex/WeakSpace.lean b/Mathlib/Analysis/LocallyConvex/WeakSpace.lean
+--- a/Mathlib/Analysis/LocallyConvex/WeakSpace.lean
++++ b/Mathlib/Analysis/LocallyConvex/WeakSpace.lean
+@@ -5,9 +5,7 @@
+ -/
+ module
+ 
+-public import Mathlib.Analysis.LocallyConvex.Separation
+ public import Mathlib.Analysis.LocallyConvex.SeparatingDual
+-public import Mathlib.LinearAlgebra.Dual.Defs
+ public import Mathlib.Topology.Algebra.Module.Spaces.WeakDual
+ 
+ /-! # Closures of convex sets in locally convex spaces

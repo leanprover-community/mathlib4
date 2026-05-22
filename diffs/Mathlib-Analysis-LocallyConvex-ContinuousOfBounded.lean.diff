@@ -1,0 +1,12 @@
+diff --git a/Mathlib/Analysis/LocallyConvex/ContinuousOfBounded.lean b/Mathlib/Analysis/LocallyConvex/ContinuousOfBounded.lean
+--- a/Mathlib/Analysis/LocallyConvex/ContinuousOfBounded.lean
++++ b/Mathlib/Analysis/LocallyConvex/ContinuousOfBounded.lean
+@@ -6,7 +6,7 @@
+ module
+ 
+ public import Mathlib.Analysis.LocallyConvex.Bounded
+-public import Mathlib.Analysis.SpecificLimits.Normed
++import Mathlib.Analysis.SpecificLimits.Normed
+ 
+ /-!
+ # Continuity and Von Neumann boundedness

@@ -1,0 +1,11 @@
+diff --git a/Mathlib/Analysis/LocallyConvex/Montel.lean b/Mathlib/Analysis/LocallyConvex/Montel.lean
+--- a/Mathlib/Analysis/LocallyConvex/Montel.lean
++++ b/Mathlib/Analysis/LocallyConvex/Montel.lean
+@@ -5,7 +5,6 @@
+ -/
+ module
+ 
+-public import Mathlib.Topology.Algebra.Module.Spaces.ContinuousLinearMap
+ public import Mathlib.Topology.Algebra.Module.Spaces.CompactConvergenceCLM
+ public import Mathlib.Analysis.Normed.Module.FiniteDimension
+ /-!

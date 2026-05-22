@@ -1,0 +1,13 @@
+diff --git a/Mathlib/Analysis/BoxIntegral/Partition/Basic.lean b/Mathlib/Analysis/BoxIntegral/Partition/Basic.lean
+--- a/Mathlib/Analysis/BoxIntegral/Partition/Basic.lean
++++ b/Mathlib/Analysis/BoxIntegral/Partition/Basic.lean
+@@ -5,9 +5,7 @@
+ -/
+ module
+ 
+-public import Mathlib.Algebra.BigOperators.Option
+ public import Mathlib.Analysis.BoxIntegral.Box.Basic
+-public import Mathlib.Data.Set.Pairwise.Lattice
+ 
+ /-!
+ # Partitions of rectangular boxes in `ℝⁿ`

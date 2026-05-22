@@ -1,0 +1,11 @@
+diff --git a/Mathlib/Analysis/LocallyConvex/WeakOperatorTopology.lean b/Mathlib/Analysis/LocallyConvex/WeakOperatorTopology.lean
+--- a/Mathlib/Analysis/LocallyConvex/WeakOperatorTopology.lean
++++ b/Mathlib/Analysis/LocallyConvex/WeakOperatorTopology.lean
+@@ -8,7 +8,6 @@
+ public import Mathlib.Algebra.Algebra.TransferInstance
+ public import Mathlib.Analysis.LocallyConvex.WithSeminorms
+ public import Mathlib.Analysis.LocallyConvex.SeparatingDual
+-public import Mathlib.Topology.Algebra.Module.Spaces.ContinuousLinearMap
+ 
+ /-!
+ # The weak operator topology
