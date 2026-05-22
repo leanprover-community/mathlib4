@@ -34,7 +34,7 @@ open Bicategory Functor
 -- intended to be used with explicit universe parameters
 /-- Category of categories. -/
 @[nolint checkUnivs]
-def Cat :=
+def Cat : Type (max (u + 1) (v + 1)) :=
   Bundled Category.{v, u}
 
 namespace Cat
