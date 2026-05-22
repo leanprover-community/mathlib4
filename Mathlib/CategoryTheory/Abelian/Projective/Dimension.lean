@@ -379,18 +379,17 @@ lemma projectiveDimension_X₃_eq_succ_of_not_projective (p : Projective S.X₂)
   refine le_antisymm (hS.projectiveDimension_X₃_le_sup.trans ?_)
     (hS.hasProjectiveDimension_X₁_succ_le_sup.trans ?_)
   · simp only [sup_le_iff, le_refl, and_true]
-    apply p.projectiveDimension_le_zero.trans
-    have : (0 : ℕ) ≤ projectiveDimension S.X₁ := by
-      rw [projectiveDimension_ge_iff, hasProjectiveDimensionLT_zero_iff_isZero]
-      by_contra isz
-      have := (isIso_iff_mono_and_epi S.g).mpr ⟨hS.1.mono_g (isz.eq_zero_of_src _), hS.3⟩
-      exact np (Projective.of_iso (asIso S.g) p)
-    exact zero_le_one.trans (ENat.WithBot.add_le_add_one_right_iff.mpr this)
-  · simp only [sup_le_iff, Std.le_refl, and_true]
-    apply (ENat.WithBot.add_le_add_one_right_iff.mpr p.projectiveDimension_le_zero).trans
-    rw [zero_add, ← Nat.cast_one, projectiveDimension_ge_iff,
+    trans (0 : ℕ) + 1
+    · grw [p.projectiveDimension_le_zero, Nat.cast_zero, zero_add, zero_le_one]
+    rw [ENat.WithBot.add_le_add_one_right_iff, projectiveDimension_ge_iff,
+      hasProjectiveDimensionLT_zero_iff_isZero, ← hS.isIso_g_iff]
+    contrapose np
+    exact Projective.of_iso (asIso S.g) p
+  · simp only [sup_le_iff, le_refl, and_true]
+    trans 0 + 1
+    · grw [p.projectiveDimension_le_zero]
+    rwa [zero_add, ← Nat.cast_one, projectiveDimension_ge_iff,
       ← projective_iff_hasProjectiveDimensionLT_one]
-    exact np
 
 end ShortExact
 

@@ -374,18 +374,17 @@ lemma injectiveDimension_X₃_eq_succ_of_not_projective (i : Injective S.X₂)
   refine le_antisymm (hS.injectiveDimension_X₁_le_sup.trans ?_)
     (hS.hasinjectiveDimension_X₃_succ_le_sup.trans ?_)
   · simp only [sup_le_iff, le_refl, and_true]
-    apply i.injectiveDimension_le_zero.trans
-    have : (0 : ℕ) ≤ injectiveDimension S.X₃ := by
-      rw [injectiveDimension_ge_iff, hasInjectiveDimensionLT_zero_iff_isZero]
-      by_contra isz
-      have := (isIso_iff_mono_and_epi S.f).mpr ⟨hS.2, hS.1.epi_f (isz.eq_zero_of_tgt _)⟩
-      exact ni (Injective.of_iso (asIso S.f).symm i)
-    exact zero_le_one.trans (ENat.WithBot.add_le_add_one_right_iff.mpr this)
-  · simp only [sup_le_iff, Std.le_refl, and_true]
-    apply (ENat.WithBot.add_le_add_one_right_iff.mpr i.injectiveDimension_le_zero).trans
-    rw [zero_add, ← Nat.cast_one, injectiveDimension_ge_iff,
+    trans (0 : ℕ) + 1
+    · grw [i.injectiveDimension_le_zero, Nat.cast_zero, zero_add, zero_le_one]
+    rw [ENat.WithBot.add_le_add_one_right_iff, injectiveDimension_ge_iff,
+      hasInjectiveDimensionLT_zero_iff_isZero, ← hS.isIso_f_iff]
+    contrapose ni
+    exact Injective.of_iso (asIso S.f).symm i
+  · simp only [sup_le_iff, le_refl, and_true]
+    trans 0 + 1
+    · grw [i.injectiveDimension_le_zero]
+    rwa [zero_add, ← Nat.cast_one, injectiveDimension_ge_iff,
       ← injective_iff_hasInjectiveDimensionLT_one]
-    exact ni
 
 end ShortExact
 
