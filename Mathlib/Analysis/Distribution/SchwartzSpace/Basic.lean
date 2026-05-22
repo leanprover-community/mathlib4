@@ -5,18 +5,18 @@ Authors: Moritz Doll
 -/
 module
 
+public import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
+public import Mathlib.Analysis.Distribution.TemperateGrowth
 public import Mathlib.Analysis.Normed.Group.ZeroAtInfty
 public import Mathlib.Analysis.SpecialFunctions.Pow.Real
-public import Mathlib.Analysis.Distribution.TemperateGrowth
-public import Mathlib.Topology.Algebra.UniformFilterBasis
 public import Mathlib.MeasureTheory.Function.L2Space
-public import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
 public import Mathlib.Tactic.FunProp
+public import Mathlib.Topology.Algebra.UniformFilterBasis
 
-import Mathlib.Tactic.MoveAdd
-import Mathlib.Analysis.Normed.Lp.SmoothApprox
 import Mathlib.Analysis.Calculus.ContDiff.Bounds
 import Mathlib.Analysis.Calculus.ContDiff.Operations
+import Mathlib.Analysis.Normed.Lp.SmoothApprox
+import Mathlib.Tactic.MoveAdd
 
 
 /-!

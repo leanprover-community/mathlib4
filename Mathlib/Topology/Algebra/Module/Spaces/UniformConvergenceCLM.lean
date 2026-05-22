@@ -5,11 +5,11 @@ Authors: Anatole Dedecker, Yury Kudryashov
 -/
 module
 
-public import Mathlib.Topology.Algebra.Algebra.Equiv
-public import Mathlib.Analysis.Normed.Field.Basic
 public import Mathlib.Analysis.LocallyConvex.Bounded
-public import Mathlib.Topology.UniformSpace.UniformConvergenceTopology
+public import Mathlib.Analysis.Normed.Field.Basic
+public import Mathlib.Topology.Algebra.Algebra.Equiv
 public import Mathlib.Topology.Hom.ContinuousEvalConst
+public import Mathlib.Topology.UniformSpace.UniformConvergenceTopology
 
 import Mathlib.Topology.Algebra.Module.Equiv
 import Mathlib.Topology.Algebra.SeparationQuotient.Section
