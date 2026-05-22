@@ -652,10 +652,6 @@ lemma integral_continuousLinearMap_prod (hμ : Integrable id μ) (hν : Integrab
   integral_continuousLinearMap_prod' (ContinuousLinearMap.integrable_comp _ hμ)
     (ContinuousLinearMap.integrable_comp _ hν)
 
-variable {μ : Measure α} {ν : Measure β}
-  [SFinite ν] [SFinite μ]
-  [CompleteSpace F] [CompleteSpace E]
-
 end ContinuousLinearMap
 
 section
