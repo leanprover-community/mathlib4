@@ -385,57 +385,61 @@ theorem setIntegral_map_equiv {β : Type*} [MeasurableSpace β] {e : X ≃ᵐ β
     ∫ᵛ y in s, f y ∂[B; μ.map e] = ∫ᵛ x in e ⁻¹' s, f (e x) ∂[B; μ] :=
   e.measurableEmbedding.setIntegral_map_vectorMeasure hs
 
-#exit
+theorem enorm_setIntegral_le_of_enorm_le_const_ae {C : ℝ≥0∞}
+    (hC : ∀ᵐ x ∂(μ.transpose B).variation.restrict s, ‖f x‖ₑ ≤ C) :
+    ‖∫ᵛ x in s, f x ∂[B; μ]‖ₑ ≤ C * (μ.transpose B).variation s := by
+  by_cases hs : MeasurableSet s; swap
+  · simp [setIntegral_eq_zero_of_not_measurableSet hs]
+  rw [← variation_restrict hs, ← transpose_restrict] at hC
+  apply (enorm_integral_le_of_enorm_le_const hC).trans
+  rw [transpose_restrict, variation_restrict hs, Measure.restrict_apply MeasurableSet.univ]
+  simp
 
-theorem norm_setIntegral_le_of_norm_le_const_ae {C : ℝ} (hs : μ s < ∞)
-    (hC : ∀ᵐ x ∂[B; μ].restrict s, ‖f x‖ ≤ C) : ‖∫ᵛ x in s, f x ∂[B; μ]‖ ≤ C * μ.real s := by
-  rw [← Measure.restrict_apply_univ] at *
-  haveI : IsFiniteMeasure (μ.restrict s) := ⟨hs⟩
-  simpa using norm_integral_le_of_norm_le_const hC
+theorem enorm_setIntegral_le_of_enorm_le_const {C : ℝ≥0∞}
+    (hC : ∀ x ∈ s, ‖f x‖ₑ ≤ C) :
+    ‖∫ᵛ x in s, f x ∂[B; μ]‖ₑ ≤ C * (μ.transpose B).variation s := by
+  by_cases hs : MeasurableSet s; swap
+  · simp [setIntegral_eq_zero_of_not_measurableSet hs]
+  apply enorm_setIntegral_le_of_enorm_le_const_ae
+  apply (ae_restrict_iff' hs).2
+  filter_upwards with x using hC x
 
-theorem norm_setIntegral_le_of_norm_le_const_ae' {C : ℝ} (hs : μ s < ∞)
-    (hC : ∀ᵐ x ∂[B; μ], x ∈ s → ‖f x‖ ≤ C) : ‖∫ᵛ x in s, f x ∂[B; μ]‖ ≤ C * μ.real s := by
-  by_cases hfm : AEStronglyMeasurable f (μ.restrict s)
-  · apply norm_setIntegral_le_of_norm_le_const_ae hs
-    have A : ∀ᵐ x : X ∂[B; μ], x ∈ s → ‖AEStronglyMeasurable.mk f hfm x‖ ≤ C := by
-      filter_upwards [hC, hfm.ae_mem_imp_eq_mk] with _ h1 h2 h3
-      rw [← h2 h3]
-      exact h1 h3
-    have B : MeasurableSet {x | ‖hfm.mk f x‖ ≤ C} :=
-      hfm.stronglyMeasurable_mk.norm.measurable measurableSet_Iic
-    filter_upwards [hfm.ae_eq_mk, (ae_restrict_iff B).2 A] with _ h1 _
-    rwa [h1]
-  · rw [integral_non_aestronglyMeasurable hfm]
-    have : ∃ᵐ (x : X) ∂[B; μ], x ∈ s := by
-      apply frequently_ae_mem_iff.mpr
-      contrapose hfm
-      simp [Measure.restrict_eq_zero.mpr hfm]
-    rcases (this.and_eventually hC).exists with ⟨x, hx, h'x⟩
-    have : 0 ≤ C := (norm_nonneg _).trans (h'x hx)
-    simp only [norm_zero, ge_iff_le]
+theorem norm_setIntegral_le_of_norm_le_const_ae {C : ℝ}
+    [h : IsFiniteMeasure ((μ.transpose B).variation.restrict s)]
+    (hC : ∀ᵐ x ∂(μ.transpose B).variation.restrict s, ‖f x‖ ≤ C) :
+    ‖∫ᵛ x in s, f x ∂[B; μ]‖ ≤ C * (μ.transpose B).variation.real s := by
+  by_cases hs : MeasurableSet s; swap
+  · simp only [setIntegral_eq_zero_of_not_measurableSet hs, norm_zero]
+    by_cases h's : (μ.transpose B).variation s = 0
+    · simp [Measure.real, h's]
+    · have : NeBot (ae ((μ.transpose B).variation.restrict s)) := by simpa using h's
+      obtain ⟨x, hx⟩ : ∃ x, ‖f x‖ ≤ C := hC.exists
+      have : 0 ≤ C := le_trans (norm_nonneg _) hx
+      positivity
+  rw [← variation_restrict hs, ← transpose_restrict] at hC h
+  apply (norm_integral_le_of_norm_le_const hC).trans_eq
+  simp [transpose_restrict, variation_restrict hs]
+
+theorem norm_setIntegral_le_of_norm_le_const {C : ℝ}
+    [h : IsFiniteMeasure ((μ.transpose B).variation.restrict s)]
+    (hC : ∀ x ∈ s, ‖f x‖ ≤ C) :
+    ‖∫ᵛ x in s, f x ∂[B; μ]‖ ≤ C * (μ.transpose B).variation.real s := by
+  rcases eq_empty_or_nonempty s with rfl | ⟨x, hx⟩
+  · simp
+  by_cases hs : MeasurableSet s; swap
+  · simp only [setIntegral_eq_zero_of_not_measurableSet hs, norm_zero]
+    have : 0 ≤ C := le_trans (norm_nonneg _) (hC x hx)
     positivity
-
-theorem norm_setIntegral_le_of_norm_le_const {C : ℝ} (hs : μ s < ∞) (hC : ∀ x ∈ s, ‖f x‖ ≤ C) :
-    ‖∫ᵛ x in s, f x ∂[B; μ]‖ ≤ C * μ.real s :=
-  norm_setIntegral_le_of_norm_le_const_ae' hs (Eventually.of_forall hC)
-
-theorem norm_integral_sub_setIntegral_le [IsFiniteMeasure μ] {C : ℝ}
-    (hf : ∀ᵐ (x : X) ∂[B; μ], ‖f x‖ ≤ C) {s : Set X} (hs : MeasurableSet s) (hf1 : Integrable f μ) :
-    ‖∫ᵛ (x : X), f x ∂[B; μ] - ∫ᵛ x in s, f x ∂[B; μ]‖ ≤ μ.real sᶜ * C := by
-  have h0 : ∫ᵛ (x : X), f x ∂[B; μ] - ∫ᵛ x in s, f x ∂[B; μ] = ∫ᵛ x in sᶜ, f x ∂[B; μ] := by
-    rw [sub_eq_iff_eq_add, add_comm, integral_add_compl hs hf1]
-  have h1 : ∫ᵛ x in sᶜ, ‖f x‖ ∂[B; μ] ≤ ∫ᵛ _ in sᶜ, C ∂[B; μ] :=
-    integral_mono_ae hf1.norm.restrict (integrable_const C) (ae_restrict_of_ae hf)
-  have h2 : ∫ᵛ _ in sᶜ, C ∂[B; μ] = μ.real sᶜ * C := by
-    rw [setIntegral_const C, smul_eq_mul]
-  rw [h0, ← h2]
-  exact le_trans (norm_integral_le_integral_norm f) h1
+  apply norm_setIntegral_le_of_norm_le_const_ae
+  filter_upwards [ae_restrict_mem hs] with x hx using hC x hx
 
 /-! ### Lemmas about adding and removing interval boundaries
 
 The primed lemmas take explicit arguments about the endpoint having zero measure, while the
 unprimed ones use `[NoAtoms μ]`.
 -/
+
+#exit
 
 section PartialOrder
 
