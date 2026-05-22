@@ -2,6 +2,7 @@ import Archive.Arithcc
 import Archive.BolzaSurface
 import Archive.ClayworthSabidussi
 import Archive.ClayworthSurface
+import Archive.MeinholdGraphs
 import Archive.Examples.Eisenstein
 import Archive.Examples.IfNormalization.Result
 import Archive.Examples.IfNormalization.Statement
