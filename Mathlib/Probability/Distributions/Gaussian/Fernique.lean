@@ -209,7 +209,7 @@ lemma integrable_id : Integrable id μ :=
   memLp_one_iff_integrable.1 <| memLp_id μ 1 one_ne_zero (by norm_num)
 
 @[to_fun memLp_two_fun_id]
-lemma memLp_two_id : MemLp id 2 μ := memLp_id μ 2 (by norm_num)
+lemma memLp_two_id : MemLp id 2 μ := memLp_id μ 2 (by norm_num) (by norm_num)
 
 lemma integral_dual (L : StrongDual ℝ E) : μ[L] = L (∫ x, x ∂μ) :=
   L.integral_comp_comm ((memLp_id μ 1 one_ne_zero (by simp)).integrable le_rfl)
