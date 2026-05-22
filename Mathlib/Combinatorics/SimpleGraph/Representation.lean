@@ -12,10 +12,14 @@ public import Mathlib.Tactic.Group
 /-!
 # The Sabidussi representation theorem
 
-Every vertex-transitive graph is isomorphic to a coset graph. More precisely,
-if `G` acts vertex-transitively on a graph `Γ`, then for any basepoint `v`,
-the orbit-stabilizer equivalence `V ≃ G ⧸ stabilizer G v` is a graph
-isomorphism from `Γ` to `Sab(G, Gᵥ, D)`, where `D = {g ∈ G : Γ.Adj v (g • v)}`.
+If a group `G` acts transitively on the vertices of a graph `Γ` while preserving
+adjacency, then the orbit-stabilizer equivalence gives a graph isomorphism
+`Γ ≃g Sab(G, Gᵥ, D)`, where `Gᵥ` is the stabilizer of a basepoint `v` and
+`D = {g ∈ G : Γ.Adj v (g • v)}` is the connection set.
+
+For **arc-transitive** (symmetric) graphs, the connection set `D` is a single
+double coset `HaH`, giving the classical Sabidussi coset graph `Sab(G, H, HaH)`.
+For merely vertex-transitive graphs, `D` may be a union of several double cosets.
 
 ## Main definitions
 
@@ -133,8 +137,8 @@ theorem sabidussiEquiv_symm_mk (g : G) :
     (sabidussiEquiv v).symm (QuotientGroup.mk g) = g • v := by
   rfl
 
-/-- **Sabidussi's Representation Theorem**: Every vertex-transitive graph is
-isomorphic to a coset graph.
+/-- **Sabidussi's Representation Theorem**: A graph with a transitive group action
+preserving adjacency is isomorphic to a coset graph.
 
 The orbit-stabilizer equivalence `V ≃ G ⧸ stabilizer G v` is a graph isomorphism
 from `Γ` to `cosetGraph (stabilizer G v) (connectionSet G Γ v)`. -/
