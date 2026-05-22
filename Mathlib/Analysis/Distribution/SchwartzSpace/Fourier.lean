@@ -265,7 +265,7 @@ theorem integral_fourier_mul_eq (f : 𝓢(V, ℂ)) (g : 𝓢(V, ℂ)) :
 Version where the multiplication is replaced by a general bilinear form `M`. -/
 theorem integral_bilin_fourierInv_eq (f : 𝓢(V, E)) (g : 𝓢(V, F)) (M : E →L[ℂ] F →L[ℂ] G) :
     ∫ ξ, M (𝓕⁻ f ξ) (g ξ) = ∫ x, M (f x) (𝓕⁻ g x) := by
-  convert (integral_bilin_fourier_eq (𝓕⁻ f) (𝓕⁻ g) M).symm
+  convert! (integral_bilin_fourier_eq (𝓕⁻ f) (𝓕⁻ g) M).symm
   · exact (FourierTransform.fourier_fourierInv_eq g).symm
   · exact (FourierTransform.fourier_fourierInv_eq f).symm
 

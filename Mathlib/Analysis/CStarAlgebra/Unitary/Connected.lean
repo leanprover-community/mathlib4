@@ -67,7 +67,7 @@ lemma Unitary.two_mul_one_sub_le_norm_sub_one_sq {u : A} (hu : u ∈ unitary A)
   have := spectrum.subset_circle_of_unitary hu hz
   simp only [mem_sphere_iff_norm, sub_zero] at this
   rw [← cfc_id' ℂ u, ← cfc_one ℂ u, ← cfc_sub ..]
-  convert norm_apply_le_norm_cfc (fun z ↦ z - 1) u hz
+  convert! norm_apply_le_norm_cfc (fun z ↦ z - 1) u hz
   simpa using congr(Real.sqrt $(norm_sub_one_sq_eq_of_norm_eq_one this)).symm
 
 @[deprecated (since := "2025-10-29")] alias unitary.two_mul_one_sub_le_norm_sub_one_sq :=
@@ -356,7 +356,7 @@ lemma Unitary.joined (u v : unitary A) (huv : ‖(v - u : A)‖ < 2) :
 lemma Unitary.isPathConnected_ball (u : unitary A) (δ : ℝ) (hδ₀ : 0 < δ) (hδ₂ : δ < 2) :
     IsPathConnected (ball (u : unitary A) δ) := by
   suffices IsPathConnected (ball (1 : unitary A) δ) by
-    convert this |>.image (f := (u * ·)) (by fun_prop)
+    convert! this |>.image (f := (u * ·)) (by fun_prop)
     ext v
     rw [← inv_mul_cancel u]
     simp [-inv_mul_cancel, Subtype.dist_eq, dist_eq_norm, ← mul_sub]

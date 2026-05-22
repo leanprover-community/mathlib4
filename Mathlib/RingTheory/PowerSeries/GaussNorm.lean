@@ -74,7 +74,7 @@ lemma HasGaussNorm.HasMvGaussNorm (h : HasGaussNorm v c f) :
     obtain ⟨y, hy⟩ := h
     use Equiv.finsuppUnique.invFun y
     rw [coeff] at hy
-    convert hy
+    convert! hy
     ext
     simp
   · intro h

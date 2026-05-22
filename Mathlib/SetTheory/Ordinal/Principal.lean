@@ -378,7 +378,7 @@ theorem isPrincipal_mul_iff_mul_left_eq :
     IsPrincipal (· * ·) o ↔ ∀ a, 0 < a → a < o → a * o = o := by
   refine ⟨fun h a ha₀ hao => ?_, fun h a b hao hbo => ?_⟩
   · rcases le_or_gt o 2 with ho | ho
-    · convert one_mul o
+    · convert! one_mul o
       apply le_antisymm
       · rw [← lt_add_one_iff, one_add_one_eq_two]
         exact hao.trans_le ho

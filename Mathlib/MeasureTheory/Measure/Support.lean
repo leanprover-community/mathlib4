@@ -202,7 +202,7 @@ lemma support_restrict_subset {s : Set X} :
   refine Set.subset_inter (support_subset_of_isClosed isClosed_closure ?_)
     (support_mono restrict_le_self)
   rw [mem_ae_iff, μ.restrict_apply isClosed_closure.isOpen_compl.measurableSet]
-  convert μ.empty
+  convert! μ.empty
   exact subset_closure.disjoint_compl_left.eq_bot
 
 end Restrict

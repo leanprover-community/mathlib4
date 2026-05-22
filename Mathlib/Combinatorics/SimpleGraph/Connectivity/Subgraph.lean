@@ -262,7 +262,7 @@ theorem finite_neighborSet_toSubgraph (p : G.Walk u v) : (p.toSubgraph.neighborS
 
 lemma toSubgraph_le_induce_support (p : G.Walk u v) :
     p.toSubgraph ≤ (⊤ : G.Subgraph).induce {v | v ∈ p.support} := by
-  convert Subgraph.le_induce_top_verts
+  convert! Subgraph.le_induce_top_verts
   exact p.verts_toSubgraph.symm
 
 theorem toSubgraph_adj_getVert {u v} (w : G.Walk u v) {i : ℕ} (hi : i < w.length) :

@@ -411,7 +411,7 @@ abbrev UniformSpace.toCore (u : UniformSpace α) : UniformSpace.Core α where
     have : Prod.mk x ⁻¹' U ∈ 𝓝 x := by
       rw [UniformSpace.nhds_eq_comap_uniformity]
       exact preimage_mem_comap hU
-    convert mem_of_mem_nhds this
+    convert! mem_of_mem_nhds this
 
 theorem UniformSpace.toCore_toTopologicalSpace (u : UniformSpace α) :
     u.toCore.toTopologicalSpace = u.toTopologicalSpace :=

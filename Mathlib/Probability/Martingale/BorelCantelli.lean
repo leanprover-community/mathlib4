@@ -166,7 +166,7 @@ theorem Submartingale.bddAbove_iff_exists_tendsto [IsFiniteMeasure μ] (hf : Sub
   have hgbdd : ∀ᵐ ω ∂μ, ∀ i : ℕ, |g (i + 1) ω - g i ω| ≤ ↑R := by
     simpa only [g, sub_sub_sub_cancel_right]
   filter_upwards [hg.bddAbove_iff_exists_tendsto_aux hg0 hgbdd] with ω hω
-  convert hω using 1
+  convert! hω using 1
   · refine ⟨fun h => ?_, fun h => ?_⟩ <;> obtain ⟨b, hb⟩ := h <;>
     refine ⟨b + |f 0 ω|, fun y hy => ?_⟩ <;> obtain ⟨n, rfl⟩ := hy
     · simp_rw [g, sub_eq_add_neg]
@@ -216,7 +216,7 @@ theorem Martingale.bddAbove_range_iff_bddBelow_range [IsFiniteMeasure μ] (hf : 
     constructor <;> rintro ⟨c, hc⟩
     · exact ⟨-c, hc.neg⟩
     · refine ⟨-c, ?_⟩
-      convert hc.neg
+      convert! hc.neg
       simp only [neg_neg, Pi.neg_apply]
   rw [hω₁, this, ← hω₂]
   constructor <;> rintro ⟨c, hc⟩ <;> refine ⟨-c, fun ω hω => ?_⟩

@@ -130,9 +130,10 @@ instance instCoalgebra : Coalgebra S (A ⊗[R] B) where
   coassoc := coassoc (R := R)
   rTensor_counit_comp_comul := by
     ext x y
-    convert congr((TensorProduct.lid S _).symm
-      (TensorProduct.lid _ _ $(rTensor_counit_comul (R := S) x) ⊗ₜ[R]
-        TensorProduct.lid _ _ $(rTensor_counit_comul (R := R) y)))
+    convert!
+      congr((TensorProduct.lid S _).symm
+        (TensorProduct.lid _ _ $(rTensor_counit_comul (R := S) x) ⊗ₜ[R]
+          TensorProduct.lid _ _ $(rTensor_counit_comul (R := R) y)))
     · dsimp
       hopf_tensor_induction comul (R := S) x with x₁ x₂
       hopf_tensor_induction comul (R := R) y with y₁ y₂
@@ -143,9 +144,10 @@ instance instCoalgebra : Coalgebra S (A ⊗[R] B) where
       simp only [one_smul]
   lTensor_counit_comp_comul := by
     ext x y
-    convert congr((TensorProduct.rid S _).symm
-      (TensorProduct.rid _ _ $(lTensor_counit_comul (R := S) x) ⊗ₜ[R]
-        TensorProduct.rid _ _ $(lTensor_counit_comul (R := R) y)))
+    convert!
+      congr((TensorProduct.rid S _).symm
+        (TensorProduct.rid _ _ $(lTensor_counit_comul (R := S) x) ⊗ₜ[R]
+          TensorProduct.rid _ _ $(lTensor_counit_comul (R := R) y)))
     · dsimp
       hopf_tensor_induction comul (R := S) x with x₁ x₂
       hopf_tensor_induction comul (R := R) y with y₁ y₂

@@ -382,7 +382,7 @@ def lift : V.HomotopyCategory ⥤ D :=
     (Cat.FreeRefl.lift' obj (fun f ↦ map f) map_id) (by
       rintro _ _ _ _ ⟨h⟩
       simp only [Functor.map_comp]
-      convert map_comp h <;> apply Cat.FreeRefl.lift'_map)
+      convert! map_comp h <;> apply Cat.FreeRefl.lift'_map)
 
 @[simp]
 lemma lift_obj_mk (x : V _⦋0⦌₂) : (lift obj map map_id map_comp).obj (mk x) = obj x := rfl

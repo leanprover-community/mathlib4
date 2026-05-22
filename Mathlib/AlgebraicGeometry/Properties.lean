@@ -161,7 +161,7 @@ theorem reduce_to_affine_nbhd (P : ∀ (X : Scheme) (_ : X), Prop)
     ∀ (X : Scheme) (x : X), P X x := by
   intro X x
   obtain ⟨y, e⟩ := X.affineCover.covers x
-  convert h₂ (X.affineCover.f (X.affineCover.idx x)) y _
+  convert! h₂ (X.affineCover.f (X.affineCover.idx x)) y _
   · rw [e]
   apply h₁
 
@@ -289,7 +289,7 @@ theorem isIntegral_of_irreducibleSpace_of_isReduced [IsReduced X] [H : Irreducib
     replace e := congr_arg (X.presheaf.germ U x hxU) e
     rw [map_mul, map_zero] at e
     refine zero_ne_one' (X.presheaf.stalk x) (isUnit_zero_iff.1 ?_)
-    convert hx₁.mul hx₂
+    convert! hx₁.mul hx₂
     exact e.symm
   exact NoZeroDivisors.to_isDomain _
 
@@ -315,7 +315,7 @@ lemma IsIntegral.of_isIso {X Y : Scheme.{u}} [h : IsIntegral X] (f : X ⟶ Y) [I
   exact Nonempty.map f inferInstance
 
 instance {R : CommRingCat} [IsDomain R] : IrreducibleSpace (Spec R) := by
-  convert PrimeSpectrum.irreducibleSpace (R := R)
+  convert! PrimeSpectrum.irreducibleSpace (R := R)
 
 instance {R : CommRingCat} [IsDomain R] : IsIntegral (Spec R) :=
   isIntegral_of_irreducibleSpace_of_isReduced _

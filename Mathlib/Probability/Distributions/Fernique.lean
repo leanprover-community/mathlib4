@@ -181,7 +181,7 @@ lemma measure_le_mul_measure_gt_normThreshold_le_of_map_rotation_eq_self [SFinit
     (h_rot : (μ.prod μ).map (ContinuousLinearMap.rotation (-(π / 4))) = μ.prod μ) (a : ℝ) (n : ℕ) :
     μ {x | ‖x‖ ≤ a} * μ {x | normThreshold a (n + 1) < ‖x‖}
       ≤ μ {x | normThreshold a n < ‖x‖} ^ 2 := by
-  convert measure_le_mul_measure_gt_le_of_map_rotation_eq_self h_rot _ _
+  convert! measure_le_mul_measure_gt_le_of_map_rotation_eq_self h_rot _ _
   simp [normThreshold_add_one]
 
 lemma lt_normThreshold_zero (ha_pos : 0 < a) : a / (1 - √2) < normThreshold a 0 := by
@@ -365,7 +365,7 @@ lemma lintegral_closedBall_diff_exp_logRatio_mul_sq_le [IsProbabilityMeasure μ]
   _ ≤ .ofReal (rexp (2⁻¹ * Real.log (c.toReal / (1 - c).toReal) * 2 ^ n))
       * c * .ofReal (rexp (-Real.log (c / (1 - c)).toReal * 2 ^ n)) := by
     gcongr ENNReal.ofReal (rexp ?_) * _ * _
-    convert logRatio_mul_normThreshold_add_one_le ha_gt ha_lt n (a := a) using 1
+    convert! logRatio_mul_normThreshold_add_one_le ha_gt ha_lt n (a := a) using 1
     ring
   _ = c * .ofReal (rexp (-2⁻¹ * Real.log (c / (1 - c)).toReal * 2 ^ n)) := by
     rw [mul_comm _ c, mul_assoc, ← ENNReal.ofReal_mul (by positivity), ← Real.exp_add]

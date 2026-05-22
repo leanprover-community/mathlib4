@@ -244,7 +244,7 @@ theorem unitSphereToUnits_apply_coe [NormedDivisionRing 𝕜] (x : sphere (0 : �
 
 theorem unitSphereToUnits_injective [NormedDivisionRing 𝕜] :
     Function.Injective (unitSphereToUnits 𝕜) := fun x y h =>
-  Subtype.ext <| by convert congr_arg Units.val h
+  Subtype.ext <| by convert! congr_arg Units.val h
 
 instance Metric.unitSphere.instGroup [NormedDivisionRing 𝕜] : Group (sphere (0 : 𝕜) 1) :=
   fast_instance% unitSphereToUnits_injective.group (unitSphereToUnits 𝕜) (Units.ext rfl)

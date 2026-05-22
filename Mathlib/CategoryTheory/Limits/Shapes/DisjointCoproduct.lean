@@ -241,7 +241,7 @@ attribute [instance 999] CoproductsOfShapeDisjoint.coproductDisjoint
 lemma BinaryCoproductsDisjoint.mk (H : ∀ (X Y : C), BinaryCoproductDisjoint X Y) :
     BinaryCoproductsDisjoint C where
   coproductDisjoint X := by
-    convert H (X .left) (X .right) using 2
+    convert! H (X .left) (X .right) using 2
     casesm WalkingPair <;> simp
 
 /-- If `C` has disjoint coproducts, any morphism out of initial is mono. Note it isn't true in

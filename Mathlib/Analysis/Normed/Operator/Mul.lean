@@ -114,7 +114,7 @@ instance _root_.NormedAlgebra.instRegularNormedAlgebra {𝕜 R : Type*} [Nontriv
     [SeminormedRing R] [NormedAlgebra 𝕜 R] [NormOneClass R] : RegularNormedAlgebra 𝕜 R where
   isometry_mul' := AddMonoidHomClass.isometry_of_norm (mul 𝕜 R) <|
     fun x => le_antisymm (opNorm_mul_apply_le _ _ _) <| by
-      convert ratio_le_opNorm ((mul 𝕜 R) x) (1 : R)
+      convert! ratio_le_opNorm ((mul 𝕜 R) x) (1 : R)
       simp [norm_one]
 
 variable [RegularNormedAlgebra 𝕜 R]

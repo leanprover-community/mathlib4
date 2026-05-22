@@ -1231,7 +1231,7 @@ lemma norm_le_im_iff_eq_I_mul_norm {z : K} :
   · simp [h, im_eq_zero]
   · have : (I : K) ≠ 0 := fun _ ↦ by simp_all
     rw [← mul_right_inj' (neg_ne_zero.mpr this)]
-    convert norm_le_re_iff_eq_norm (z := -I * z) using 2
+    convert! norm_le_re_iff_eq_norm (z := -I * z) using 2
     all_goals simp [neg_mul, ← mul_assoc, I_mul_I_of_nonzero this, norm_I_of_ne_zero this]
 
 lemma im_le_neg_norm_iff_eq_neg_I_mul_norm {z : K} :

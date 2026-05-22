@@ -416,8 +416,8 @@ end Quotient
 -- Porting note: we didn't previously need the `α := ...` and `β := ...` hints.
 theorem hpath_hext {p₁ : Path x₀ x₁} {p₂ : Path x₂ x₃} (hp : ∀ t, p₁ t = p₂ t) :
     HEq (α := Path.Homotopic.Quotient _ _) ⟦p₁⟧ (β := Path.Homotopic.Quotient _ _) ⟦p₂⟧ := by
-  obtain rfl : x₀ = x₂ := by convert hp 0 <;> simp
-  obtain rfl : x₁ = x₃ := by convert hp 1 <;> simp
+  obtain rfl : x₀ = x₂ := by convert! hp 0 <;> simp
+  obtain rfl : x₁ = x₃ := by convert! hp 1 <;> simp
   rw [heq_iff_eq]; congr; ext t; exact hp t
 
 end Homotopic

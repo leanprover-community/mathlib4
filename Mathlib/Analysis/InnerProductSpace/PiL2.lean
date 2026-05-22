@@ -198,7 +198,7 @@ variable [Fintype ι]
 @[simp]
 theorem finrank_euclideanSpace :
     Module.finrank 𝕜 (EuclideanSpace 𝕜 ι) = Fintype.card ι := by
-  convert (WithLp.linearEquiv 2 𝕜 (ι → 𝕜)).finrank_eq
+  convert! (WithLp.linearEquiv 2 𝕜 (ι → 𝕜)).finrank_eq
   simp
 
 theorem finrank_euclideanSpace_fin {n : ℕ} :
@@ -249,7 +249,7 @@ def DirectSum.IsInternal.isometryL2OfOrthogonalFamily [DecidableEq ι] {V : ι �
   suffices ∀ (v w : PiLp 2 fun i => V i), ⟪v, w⟫ = ⟪e₂ (e₁.symm v), e₂ (e₁.symm w)⟫ by
     intro v₀ w₀
     simp only [LinearEquiv.trans_apply]
-    convert this (toLp 2 (e₁ (e₂.symm v₀))) (toLp 2 (e₁ (e₂.symm w₀))) <;> simp
+    convert! this (toLp 2 (e₁ (e₂.symm v₀))) (toLp 2 (e₁ (e₂.symm w₀))) <;> simp
   intro v w
   trans ⟪∑ i, (V i).subtypeₗᵢ (v i), ∑ i, (V i).subtypeₗᵢ (w i)⟫
   · simp only [sum_inner, hV'.inner_right_fintype, PiLp.inner_apply]
@@ -506,7 +506,7 @@ protected theorem sum_inner_mul_inner (b : OrthonormalBasis ι 𝕜 E) (x y : E)
     ∑ i, ⟪x, b i⟫ * ⟪b i, y⟫ = ⟪x, y⟫ := by
   have := congr_arg (innerSL 𝕜 x) (b.sum_repr y)
   rw [map_sum] at this
-  convert this
+  convert! this
   rw [map_smul, b.repr_apply_apply, mul_comm]
   simp
 
@@ -520,7 +520,7 @@ lemma sum_sq_norm_inner_right (b : OrthonormalBasis ι 𝕜 E) (x : E) :
 
 lemma sum_sq_norm_inner_left (b : OrthonormalBasis ι 𝕜 E) (x : E) :
     ∑ i, ‖⟪x, b i⟫‖ ^ 2 = ‖x‖ ^ 2 := by
-  convert sum_sq_norm_inner_right b x using 2 with i -
+  convert! sum_sq_norm_inner_right b x using 2 with i -
   rw [← inner_conj_symm, RCLike.norm_conj]
 
 open scoped RealInnerProductSpace in
@@ -600,7 +600,7 @@ def _root_.Module.Basis.toOrthonormalBasis (v : Basis ι 𝕜 E) (hv : Orthonorm
         let q : EuclideanSpace 𝕜 ι := toLp 2 (v.equivFun y)
         have key : ⟪p, q⟫ = ⟪∑ i, p i • v i, ∑ i, q i • v i⟫ := by
           simp [inner_sum, inner_smul_right, hv.inner_left_fintype, PiLp.inner_apply]
-        convert key
+        convert! key
         · rw [← v.equivFun.symm_apply_apply x, v.equivFun_symm_apply]
         · rw [← v.equivFun.symm_apply_apply y, v.equivFun_symm_apply])
 
@@ -719,7 +719,7 @@ protected def span [DecidableEq E] {v' : ι' → E} (h : Orthonormal 𝕜 v') (s
   let e₀ : OrthonormalBasis s 𝕜 _ :=
     OrthonormalBasis.mk
       (by
-        convert orthonormal_span (h.comp ((↑) : s → ι') Subtype.val_injective)
+        convert! orthonormal_span (h.comp ((↑) : s → ι') Subtype.val_injective)
         simp [e₀', Basis.span_apply])
       e₀'.span_eq.ge
   let φ : span 𝕜 (s.image v' : Set E) ≃ₗᵢ[𝕜] span 𝕜 (range (v' ∘ ((↑) : s → ι'))) :=
@@ -932,7 +932,7 @@ theorem OrthonormalBasis.toMatrix_orthonormalBasis_conjTranspose_mul_self [Finty
     (a : OrthonormalBasis ι' 𝕜 E) (b : OrthonormalBasis ι 𝕜 E) :
     (a.toBasis.toMatrix b)ᴴ * a.toBasis.toMatrix b = 1 := by
   ext i j
-  convert a.repr.inner_map_map (b i) (b j)
+  convert! a.repr.inner_map_map (b i) (b j)
   · simp only [Matrix.mul_apply, Matrix.conjTranspose_apply, star_def, PiLp.inner_apply,
       inner_apply']
     congr

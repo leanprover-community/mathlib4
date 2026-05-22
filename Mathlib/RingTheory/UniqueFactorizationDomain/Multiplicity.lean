@@ -118,7 +118,7 @@ theorem count_normalizedFactors_eq {p x : R} (hp : Irreducible p) (hnorm : norma
   by_cases hx0 : x = 0
   · simp [hx0] at hlt
   apply Nat.cast_injective (R := ℕ∞)
-  convert (emultiplicity_eq_count_normalizedFactors hp hx0).symm
+  convert! (emultiplicity_eq_count_normalizedFactors hp hx0).symm
   · exact hnorm.symm
   exact (emultiplicity_eq_coe.mpr ⟨hle, hlt⟩).symm
 

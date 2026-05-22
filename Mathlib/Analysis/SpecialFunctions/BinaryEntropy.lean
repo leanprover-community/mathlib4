@@ -282,7 +282,7 @@ private lemma tendsto_log_one_sub_sub_log_nhdsLT_one_atBot :
     have : MapsTo ((1 : ℝ) - ·) (Iio 1) (Ioi 0) := by
       intro p hx
       simp_all only [mem_Iio, mem_Ioi, sub_pos]
-    convert ContinuousWithinAt.tendsto_nhdsWithin (x := (1 : ℝ)) contF.continuousWithinAt this
+    convert! ContinuousWithinAt.tendsto_nhdsWithin (x := (1 : ℝ)) contF.continuousWithinAt this
     exact Eq.symm (sub_eq_zero_of_eq rfl)
   · have h₁ : (1 : ℝ) - (2 : ℝ)⁻¹ < 1 := by norm_num
     filter_upwards [Ico_mem_nhdsLT h₁] with p hx
@@ -386,7 +386,7 @@ lemma qaryEntropy_strictMonoOn (qLe2 : 2 ≤ q) :
       · simp_all only [mem_Ioi, mul_pos_iff_of_pos_left, show 0 < (q : ℝ) - 1 by linarith]
       · have qpos : 0 < (q : ℝ) := by positivity
         have : q * p < q - 1 := by
-          convert mul_lt_mul_of_pos_left hp.2 qpos using 1
+          convert! mul_lt_mul_of_pos_left hp.2 qpos using 1
           simp only [mul_sub, mul_one, isUnit_iff_ne_zero, ne_eq, ne_of_gt qpos, not_false_eq_true,
             IsUnit.mul_inv_cancel]
         linarith
@@ -428,7 +428,7 @@ lemma binEntropy_strictMonoOn : StrictMonoOn binEntropy (Icc 0 2⁻¹) := by
 /-- Binary entropy is strictly decreasing in interval [1/2, 1]. -/
 lemma binEntropy_strictAntiOn : StrictAntiOn binEntropy (Icc 2⁻¹ 1) := by
   rw [show (Icc (2⁻¹ : ℝ) 1) = Icc (1 / 2) 1 by norm_num, ← qaryEntropy_two]
-  convert qaryEntropy_strictAntiOn (by rfl) using 1
+  convert! qaryEntropy_strictAntiOn (by rfl) using 1
   norm_num
 
 /-! ### Strict concavity of entropy -/
