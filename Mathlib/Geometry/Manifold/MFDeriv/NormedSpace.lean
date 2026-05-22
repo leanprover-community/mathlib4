@@ -402,7 +402,7 @@ end smul
 /-! ### Exterior derivative of a vector-valued function -/
 
 variable (I) in
-/-- The exterior derivative of a vector-valued function on `M`,
+/-- `mvfderiv I J f x` is the exterior derivative of a vector-valued function `g` on `M`,
 as a section of the cotangent bundle.
 
 Future: this could be generalised to functions into additive torsors over abelian Lie groups.
