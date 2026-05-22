@@ -502,26 +502,35 @@ theorem smulDistribClass_smulOfNormal [N.Normal] [IsGaloisGroup N B C] :
 
 variable [FaithfulSMul B C]
 
+@[implicit_reducible]
+noncomputable def mulSemiringActionOfNormal [IsGaloisGroup N B C] [N.Normal] :
+    MulSemiringAction G B := by
+  let : SMul G B := smulOfNormal G B C N
+  have : SMulDistribClass G B C := smulDistribClass_smulOfNormal G B C N
+  exact mulSemiringAction_of_smulDistribClass B C G
+
 /-- If `N` is a normal subgroup of `G` and `IsGaloisGroup N B C`, then the quotient group `G ⧸ N`
 acts on `B` by `(g : G ⧸ N) • x = g • x`. -/
 @[implicit_reducible]
-noncomputable def mulSemiringActionQuotient [MulSemiringAction G B] [SMulDistribClass G B C]
-    [IsGaloisGroup N B C] [N.Normal] :
-    MulSemiringAction (G ⧸ N) B where
-  smul q x := Quotient.liftOn' q (· • x) fun g₁ g₂ h ↦ by
-    apply FaithfulSMul.algebraMap_injective B C
-    rw [algebraMap.smul', algebraMap.smul', smul_eq_iff_eq_inv_smul, ← smul_assoc, smul_eq_mul,
-      Subgroup.smul_algebraMap C (by rwa [← QuotientGroup.leftRel_apply])]
-  one_smul x := one_smul G x
-  mul_smul q₁ q₂ x := Quotient.inductionOn₂' q₁ q₂ fun g h ↦ mul_smul g h x
-  smul_add q x y := Quotient.inductionOn' q fun g ↦ smul_add g x y
-  smul_zero q := Quotient.inductionOn' q fun g ↦ smul_zero g
-  smul_one q := Quotient.inductionOn' q fun g ↦ smul_one g
-  smul_mul q x y := Quotient.inductionOn' q fun g ↦ smul_mul' g x y
+noncomputable def mulSemiringActionQuotient [IsGaloisGroup N B C] [N.Normal] :
+    MulSemiringAction (G ⧸ N) B := by
+  let : MulSemiringAction G B := mulSemiringActionOfNormal G B C N
+  have : SMulDistribClass G B C := smulDistribClass_smulOfNormal G B C N
+  exact
+  { smul q x := Quotient.liftOn' q (· • x) fun g₁ g₂ h ↦ by
+      apply FaithfulSMul.algebraMap_injective B C
+      rw [algebraMap.smul', algebraMap.smul', smul_eq_iff_eq_inv_smul, ← smul_assoc, smul_eq_mul,
+        Subgroup.smul_algebraMap C (by rwa [← QuotientGroup.leftRel_apply])]
+    one_smul x := one_smul G x
+    mul_smul q₁ q₂ x := Quotient.inductionOn₂' q₁ q₂ fun g h ↦ mul_smul g h x
+    smul_add q x y := Quotient.inductionOn' q fun g ↦ smul_add g x y
+    smul_zero q := Quotient.inductionOn' q fun g ↦ smul_zero g
+    smul_one q := Quotient.inductionOn' q fun g ↦ smul_one g
+    smul_mul q x y := Quotient.inductionOn' q fun g ↦ smul_mul' g x y }
 
 theorem isScalarTower_mulSemiringActionQuotient [MulSemiringAction G B] [SMulDistribClass G B C]
     [IsGaloisGroup N B C] [N.Normal] :
-    letI := mulSemiringActionQuotient G B C N
+    letI : MulSemiringAction (G ⧸ N) B := mulSemiringActionQuotient G B C N
     IsScalarTower G (G ⧸ N) B :=
   let := mulSemiringActionQuotient G B C N
   ⟨fun g q b ↦ Quotient.inductionOn' q fun h ↦ mul_smul g h b⟩
@@ -594,8 +603,7 @@ instance [SMulCommClass G K L] [MulSemiringAction G F] [SMulDistribClass G F L]
 
 /-- If `G` is a finite Galois group for `L/K` and `N` is a normal subgroup of `G` that is a
 Galois group for `L/F`, then the quotient group `G ⧸ N` is a Galois group for `F/K`. -/
-instance instIsGaloisGroupQuotient [Finite G] [IsGaloisGroup G K L] :
-    IsGaloisGroup (G ⧸ N) K F :=
+instance [Finite G] [IsGaloisGroup G K L] : IsGaloisGroup (G ⧸ N) K F :=
   let := smulOfNormal G F L N
   have := smulDistribClass_smulOfNormal G F L N
   let := mulSemiringAction_of_smulDistribClass F L G
