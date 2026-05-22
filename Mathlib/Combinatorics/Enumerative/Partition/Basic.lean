@@ -231,11 +231,11 @@ end Partition
 /-! ### Conversion between Young diagrams -/
 
 private lemma youngDiagram_rowLens_sum_eq_card (μ : YoungDiagram) : μ.rowLens.sum = μ.card := by
-  have hf : ∀ c ∈ μ.cells, c.fst ∈ Finset.range (μ.colLen 0) := by
+  have hf : ∀ c ∈ μ.cells, c.1 ∈ Finset.range (μ.colLen 0) := by
     intro c hc
     rw [Finset.mem_range, ← YoungDiagram.mem_iff_lt_colLen]
     exact μ.up_left_mem (le_refl _) (Nat.zero_le _) hc
-  have hr : ∀ i ∈ Finset.range (μ.colLen 0), ({c ∈ μ.cells | c.fst = i}).card = μ.rowLen i := by
+  have hr : ∀ i ∈ Finset.range (μ.colLen 0), ({c ∈ μ.cells | c.1 = i}).card = μ.rowLen i := by
     intro i _hi
     rw [YoungDiagram.rowLen_eq_card]
     rfl
@@ -274,10 +274,11 @@ theorem youngDiagram_rowLens_eq_parts {n : ℕ} (p : Partition n) :
 theorem youngDiagram_card_eq_parts_sum {n : ℕ} (p : Partition n) :
     p.toYoungDiagram.card = n := by
   rw [← youngDiagram_rowLens_sum_eq_card, youngDiagram_rowLens_eq_sorted_parts]
-  calc (p.parts.sort (· ≥ ·)).sum
-        = (↑(p.parts.sort (· ≥ ·)) : Multiset ℕ).sum := Multiset.sum_coe _
-      _ = p.parts.sum := by rw [Multiset.sort_eq]
-      _ = n := p.parts_sum
+  calc
+    (p.parts.sort (· ≥ ·)).sum
+      = (↑(p.parts.sort (· ≥ ·)) : Multiset ℕ).sum := Multiset.sum_coe _
+    _ = p.parts.sum := by rw [Multiset.sort_eq]
+    _ = n := p.parts_sum
 
 theorem ofYoungDiagram_toYoungDiagram_eq_self {n : ℕ} {μ : YoungDiagram} (h : μ.card = n) :
     (ofYoungDiagram μ h).toYoungDiagram = μ := by
@@ -298,7 +299,7 @@ theorem toYoungDiagram_ofYoungDiagram_eq_self {n : ℕ} {p : Partition n} :
   rw [youngDiagram_rowLens_eq_parts]
 
 /-- Equivalence between partitions and Young diagrams of appropriate size. -/
-def equivPartitionYoungDiagram {n : ℕ} : Partition n ≃ { μ : YoungDiagram // μ.card = n } where
+def equivPartitionYoungDiagram {n : ℕ} : Partition n ≃ { μ : YoungDiagram | μ.card = n } where
   toFun p := ⟨p.toYoungDiagram, youngDiagram_card_eq_parts_sum p⟩
   invFun μ := ofYoungDiagram μ μ.2
   left_inv := fun _ => toYoungDiagram_ofYoungDiagram_eq_self
