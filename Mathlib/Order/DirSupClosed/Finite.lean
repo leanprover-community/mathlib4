@@ -19,7 +19,7 @@ public section
 variable {α : Type*} [PartialOrder α]
 
 theorem Set.Finite.dirSupClosed {s : Set α} (hs : s.Finite) : DirSupClosed s := by
-  induction s, hs using Set.Finite.induction_on with
+  induction s, hs using induction_on with
   | empty => exact .empty
   | insert has _ hs₁ =>
     rw [Set.insert_eq]
