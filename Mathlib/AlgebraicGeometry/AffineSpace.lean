@@ -5,12 +5,8 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.Algebra.MvPolynomial.Monad
 public import Mathlib.AlgebraicGeometry.Morphisms.Finite
 public import Mathlib.AlgebraicGeometry.Morphisms.Smooth
-public import Mathlib.AlgebraicGeometry.Morphisms.FinitePresentation
-public import Mathlib.RingTheory.Spectrum.Prime.Polynomial
-public import Mathlib.AlgebraicGeometry.PullbackCarrier
 
 /-!
 # Affine space
