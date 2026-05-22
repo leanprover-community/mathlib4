@@ -401,7 +401,7 @@ theorem preAleph_le_of_strictMono {f : Ordinal → Cardinal} (hf : StrictMono f)
 
 For a version including finite cardinals, see `Cardinal.preAleph`. -/
 def aleph : Ordinal ↪o Cardinal :=
-  (OrderEmbedding.addLeft ω).trans preAleph.toOrderEmbedding
+  (OrderEmbedding.addLeft ω).trans preAleph
 
 @[inherit_doc] scoped notation "ℵ_ " => aleph
 recommended_spelling "aleph" for "ℵ_" in [aleph, «termℵ_»]
