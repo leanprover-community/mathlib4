@@ -290,7 +290,7 @@ theorem ofYoungDiagram_toYoungDiagram_eq_self {n : ℕ} {μ : YoungDiagram} (h :
     exact List.mergeSort_eq_self (· ≥ ·) μ.rowLens_sorted.pairwise
   exact YoungDiagram.ofRowLens_to_rowLens_eq_self
 
-theorem toYoungDiagram_ofYoungDiagram_eq_self {n : ℕ} (p : Partition n) :
+theorem toYoungDiagram_ofYoungDiagram_eq_self {n : ℕ} {p : Partition n} :
     ofYoungDiagram p.toYoungDiagram (youngDiagram_card_eq_parts_sum p) = p := by
   rw [ofYoungDiagram]
   apply Nat.Partition.ext
@@ -301,7 +301,7 @@ theorem toYoungDiagram_ofYoungDiagram_eq_self {n : ℕ} (p : Partition n) :
 def equivPartitionYoungDiagram {n : ℕ} : Partition n ≃ { μ : YoungDiagram // μ.card = n } where
   toFun p := ⟨p.toYoungDiagram, youngDiagram_card_eq_parts_sum p⟩
   invFun μ := ofYoungDiagram μ μ.2
-  left_inv := toYoungDiagram_ofYoungDiagram_eq_self
+  left_inv := fun _ => toYoungDiagram_ofYoungDiagram_eq_self
   right_inv := fun ⟨_, h⟩ => Subtype.mk_eq_mk.mpr (ofYoungDiagram_toYoungDiagram_eq_self h)
 
 /-- Conjugate a partition (equivalent to transposing its Young diagram). -/
