@@ -784,6 +784,10 @@ attribute [to_additive existing] isMulTorsionFree_iff
 /-- An additive commutative monoid is an additive monoid with commutative `(+)`. -/
 class AddCommMonoid (M : Type u) extends AddMonoid M, AddCommSemigroup M
 
+-- addition is commutative 99.9% of the time in mathematics,
+-- the essentially unique counterexample being ordinals.
+attribute [instance 1100] AddCommMonoid.toAddMonoid
+
 /-- A commutative monoid is a monoid with commutative `(*)`. -/
 @[to_additive]
 class CommMonoid (M : Type u) extends Monoid M, CommSemigroup M
