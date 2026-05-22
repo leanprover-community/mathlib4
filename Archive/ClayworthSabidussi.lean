@@ -1795,6 +1795,8 @@ private noncomputable instance : GraphAction cGroup (Fin 4032) clayworthGraph wh
     (fun i => by match i with | 0 => exact clayworthGen1_adj | 1 => exact clayworthGen2_adj)
     g.1 g.2 u v h
 
+set_option maxRecDepth 8192 in
+set_option maxHeartbeats 800000 in
 private noncomputable instance : MulAction.IsPretransitive cGroup (Fin 4032) where
   exists_smul_eq x y :=
     ⟨⟨_, cGroup.mul_mem (applyWord'_mem clayworthGens _)
@@ -1810,6 +1812,8 @@ private noncomputable instance : MulAction.IsPretransitive cGroup (Fin 4032) whe
 
 G₂(2) acts vertex-transitively on the 4032 cosets of C₃.
 `Clayworth ≃g Sab(G₂(2), C₃, D)` with `4032 = 12096/3` vertices, genus 505. -/
+set_option maxRecDepth 8192 in
+set_option maxHeartbeats 800000 in
 noncomputable def clayworthSabidussiIso :
     clayworthGraph ≃g SimpleGraph.cosetGraph (MulAction.stabilizer cGroup (0 : Fin 4032))
       (connectionSet cGroup clayworthGraph 0) (connectionSet.isConnectionSet 0) :=
