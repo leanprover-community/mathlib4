@@ -54,7 +54,6 @@ variable {α : Type u}
 instance : Inhabited (BinaryTree α) :=
   ⟨nil⟩
 
-
 /--
 Do an action for every node of the tree.
 Actions are taken in node -> left subtree -> right subtree recursive order.
