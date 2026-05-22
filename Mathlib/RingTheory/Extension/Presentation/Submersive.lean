@@ -223,6 +223,20 @@ lemma ofBijectiveAlgebraMap_jacobian (h : Function.Bijective (algebraMap R S)) :
     contradiction
   rw [jacobian_eq_jacobiMatrix_det, RingHom.map_det, this, Matrix.det_one]
 
+variable (R ι) in
+/-- The canonical pre-submersive `R`-presentation of the polynomial algebra `MvPolynomial ι R`,
+with generators `X` indexed by `ι` and no relations. -/
+@[simps -fullyApplied map]
+noncomputable def mvPolynomial :
+    PreSubmersivePresentation R (MvPolynomial ι R) ι PEmpty.{t + 1} where
+  map := PEmpty.elim
+  map_inj := PEmpty.elim.injective_of_subsingleton
+  __ := Presentation.mvPolynomial R ι
+
+@[simp]
+lemma jacobian_mvPolynomial : (mvPolynomial R ι).jacobian = 1 := by
+  rw [jacobian_eq_jacobiMatrix_det, Matrix.det_isEmpty, map_one]
+
 section Localization
 
 variable (r : R) [IsLocalization.Away r S]
@@ -528,6 +542,11 @@ noncomputable def ofBijectiveAlgebraMap (h : Function.Bijective (algebraMap R S)
 /-- The canonical submersive `R`-presentation of `R` with no generators and no relations. -/
 noncomputable def id : SubmersivePresentation R R PEmpty.{w + 1} PEmpty.{t + 1} :=
   ofBijectiveAlgebraMap Function.bijective_id
+
+/-- The canonical submersive `R`-presentation of the polynomial algebra `MvPolynomial ι R`. -/
+noncomputable def mvPolynomial : SubmersivePresentation R (MvPolynomial ι R) ι PEmpty.{t + 1} where
+  __ := PreSubmersivePresentation.mvPolynomial R ι
+  jacobian_isUnit := by simp
 
 section Composition
 variable {R S ι σ}

@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.MvPolynomial.Monad
 public import Mathlib.AlgebraicGeometry.Morphisms.Finite
+public import Mathlib.AlgebraicGeometry.Morphisms.Smooth
 public import Mathlib.AlgebraicGeometry.Morphisms.FinitePresentation
 public import Mathlib.RingTheory.Spectrum.Prime.Polynomial
 public import Mathlib.AlgebraicGeometry.PullbackCarrier
@@ -368,14 +369,26 @@ instance : Surjective (𝔸(n; S) ↘ S) := MorphismProperty.pullback_fst _ _ <|
     MorphismProperty.cancel_right_of_respectsIso (P := @Surjective)]
   exact ⟨MvPolynomial.comap_C_surjective⟩
 
-instance [Finite n] : LocallyOfFinitePresentation (𝔸(n; S) ↘ S) :=
+variable (n) in
+/-- The affine `n`-space over `S` is smooth of relative dimension `Nat.card n`. -/
+instance smoothOfRelativeDimension [Finite n] :
+    SmoothOfRelativeDimension (Nat.card n) (𝔸(n; S) ↘ S) :=
   MorphismProperty.pullback_fst _ _ <| by
   have := isIso_of_isTerminal specULiftZIsTerminal.{max u v} terminalIsTerminal (terminal.from _)
   rw [← terminal.comp_from (Spec.map (CommRingCat.ofHom C)),
-    MorphismProperty.cancel_right_of_respectsIso (P := @LocallyOfFinitePresentation),
-    HasRingHomProperty.Spec_iff (P := @LocallyOfFinitePresentation), RingHom.FinitePresentation]
-  convert (inferInstance : Algebra.FinitePresentation (ULift ℤ) ℤ[n])
-  exact Algebra.algebra_ext _ _ fun _ ↦ rfl
+    MorphismProperty.cancel_right_of_respectsIso (P := @SmoothOfRelativeDimension _),
+    HasRingHomProperty.Spec_iff (P := @SmoothOfRelativeDimension _)]
+  apply RingHom.locally_of RingHom.isStandardSmoothOfRelativeDimension_respectsIso
+  simp_rw [ConcreteCategory.hom_ofHom, ← MvPolynomial.algebraMap_eq,
+    RingHom.isStandardSmoothOfRelativeDimension_algebraMap]
+  exact Algebra.IsStandardSmoothOfRelativeDimension.mvPolynomial _ _
+
+/-- The affine `n`-space (indexed by `Fin n`) over `S` is smooth of relative dimension `n`. -/
+instance smoothOfRelativeDimension_fin {S : Scheme.{u}} (n : ℕ) :
+    SmoothOfRelativeDimension n (𝔸(Fin n; S) ↘ S) := by
+  simpa using smoothOfRelativeDimension (Fin n) S
+
+instance [Finite n] : Smooth (𝔸(n; S) ↘ S) := (smoothOfRelativeDimension n S).smooth
 
 lemma isOpenMap_over : IsOpenMap (𝔸(n; S) ↘ S) := by
   change topologically @IsOpenMap _

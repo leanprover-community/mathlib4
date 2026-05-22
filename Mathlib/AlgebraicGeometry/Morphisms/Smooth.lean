@@ -163,7 +163,7 @@ instance : HasRingHomProperty (@SmoothOfRelativeDimension n)
     grind [Scheme.affineOpens]
 
 /-- Smooth of relative dimension `n` is stable under base change. -/
-lemma smoothOfRelativeDimension_isStableUnderBaseChange :
+instance smoothOfRelativeDimension_isStableUnderBaseChange :
     MorphismProperty.IsStableUnderBaseChange (@SmoothOfRelativeDimension n) :=
   HasRingHomProperty.isStableUnderBaseChange <| locally_isStableUnderBaseChange
     isStandardSmoothOfRelativeDimension_respectsIso
