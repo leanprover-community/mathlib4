@@ -20,23 +20,23 @@ verify whether the title or body are written in present imperative tense.
 open Std.Internal.Parsec String
 
 /-- Basic parser for PR titles: given a title `kind(scope): main title` or `kind: title`,
-extracts the `kind` and `scope` components. In the future, this will be extended to also parse
-the main PR title. -/
--- TODO: also parse and return the main PR title
-def prTitle : Parser (String × Option String) :=
-  Prod.mk
-    <$> (["feat", "chore", "perf", "refactor", "style", "fix", "doc", "test", "ci"].firstM pstring)
-    <*> (
+extracts the `kind`, `scope` and `main title` components. -/
+def prTitle : Parser (String × Option String × String) := do
+  let kind ←
+    ["feat", "chore", "perf", "refactor", "style", "fix", "doc", "test", "ci"].firstM pstring
+  let scope ← (
       (skipString "(" *> some <$> manyChars (notFollowedBy (skipString "):") *> any)
         <* skipString "): ")
       <|> (skipString ": " *> pure none)
     )
+  let mainTitle ← manyChars any
+  return (kind, scope, mainTitle)
 
 -- Some self-tests for the parser.
-/-- info: Except.ok ("feat", some "x") -/
+/-- info: Except.ok ("feat", some "x", "foo") -/
 #guard_msgs in
 #eval Parser.run prTitle "feat(x): foo"
-/-- info: Except.ok ("feat", none) -/
+/-- info: Except.ok ("feat", none, "foo") -/
 #guard_msgs in
 #eval Parser.run prTitle "feat: foo"
 /-- info: Except.error "offset 10: expected: ): " -/
@@ -51,13 +51,13 @@ def prTitle : Parser (String × Option String) :=
 /-- info: Except.error "offset 4: expected: : " -/
 #guard_msgs in
 #eval Parser.run prTitle "feat)(sdf): foo"
-/-- info: Except.ok ("feat", some "sdf") -/
+/-- info: Except.ok ("feat", some "sdf", "foo:") -/
 #guard_msgs in
 #eval Parser.run prTitle "feat(sdf): foo:"
 /-- info: Except.error "offset 4: expected: : " -/
 #guard_msgs in
 #eval Parser.run prTitle "feat foo"
-/-- info: Except.ok ("chore", none) -/
+/-- info: Except.ok ("chore", none, "test") -/
 #guard_msgs in
 #eval Parser.run prTitle "chore: test"
 
