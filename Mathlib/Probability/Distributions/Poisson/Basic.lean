@@ -83,7 +83,7 @@ lemma integrable_poissonMeasure_iff {r : ℝ≥0} {f : ℕ → E} :
 
 lemma integrable_map_cast_poissonMeasure_iff {r : ℝ≥0} [Countable R] [MeasurableSingletonClass R]
   {f : R → E} : Integrable f Po(R, r) ↔ Integrable (f ∘ Nat.cast) Po(r) :=
-  integrable_map_measure AEStronglyMeasurable.of_discrete .of_discrete
+  integrable_map_measure .of_discrete .of_discrete
 
 variable [NormedSpace ℝ E]
 
@@ -111,7 +111,7 @@ lemma integral_poissonMeasure' [CompleteSpace E] {r : ℝ≥0} {f : ℕ → E}
 lemma integral_map_cast_poissonMeasure' [CompleteSpace E] [Countable R] [MeasurableSingletonClass R]
     {r : ℝ≥0} {f : R → E} (hf : Integrable f Po(R, r)) :
     ∫ x, f x ∂Po(R, r) = ∑' n, (exp (-r) * r ^ n / (n)!) • f n := by
-  rw [integral_map .of_discrete AEStronglyMeasurable.of_discrete]
+  rw [integral_map .of_discrete .of_discrete]
   rw [integrable_map_cast_poissonMeasure_iff] at hf
   exact integral_poissonMeasure' hf
 
@@ -130,8 +130,7 @@ lemma integral_poissonMeasure [FiniteDimensional ℝ E] (r : ℝ≥0) (f : ℕ �
 lemma integral_map_cast_poissonMeasure [FiniteDimensional ℝ E] (r : ℝ≥0) [Countable R]
   [MeasurableSingletonClass R] (f : R → E) :
     ∫ x, f x ∂Po(R, r) = ∑' n, (exp (-r) * r ^ n / (n)!) • f n := by
-  rw [integral_map .of_discrete AEStronglyMeasurable.of_discrete,
-    integral_poissonMeasure]
+  rw [integral_map .of_discrete .of_discrete, integral_poissonMeasure]
 
 end Integral
 
