@@ -161,10 +161,12 @@ end AddTorsor
 
 section
 
-local instance : ConvexSpace R P := AddTorsor.toConvexSpace
+namespace AffineMap
+
+attribute [local instance] AddTorsor.toConvexSpace
 
 open Finset AddTorsor in
-lemma AffineMap.isAffineMap {V2 P2 : Type*} [AddCommGroup V2] [Module R V2] [AffineSpace V2 P2]
+lemma isAffineMap {V2 P2 : Type*} [AddCommGroup V2] [Module R V2] [AffineSpace V2 P2]
     (f : P →ᵃ[R] P2) : IsAffineMap R f where
   map_sConvexComb s:= by
     classical
@@ -186,6 +188,6 @@ lemma AffineMap.isAffineMap {V2 P2 : Type*} [AddCommGroup V2] [Module R V2] [Aff
         · split_ifs <;> simp
       simp [hwi]
 
-end
+end AffineMap
 
 end
