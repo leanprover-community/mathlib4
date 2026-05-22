@@ -38,7 +38,7 @@ compile_inductive% BinaryTree
 abbrev Tree.{u} (α : Type u) : Type u := BinaryTree α
 
 @[deprecated BinaryTree.nil (since := "2026-05-22")]
-abbrev Tree.leaf.{u} {α : Type u} : Tree α := BinaryTree.nil
+abbrev Tree.nil.{u} {α : Type u} : Tree α := BinaryTree.nil
 
 @[deprecated BinaryTree.node (since := "2026-05-22")]
 abbrev Tree.node.{u} {α : Type u} (value : α) (left : Tree α) (right : Tree α)
@@ -78,7 +78,7 @@ def map {β} (f : α → β) : BinaryTree α → BinaryTree β
   | node a l r => node (f a) (map f l) (map f r)
 
 @[deprecated BinaryTree.map (since := "2026-05-22")]
-abbrev Tree.map {α β} (f : α → β) (t : BinaryTree α) : BinaryTree β := BinaryTree.map f t
+abbrev Tree.map {α β} (f : α → β) (t : Tree α) : Tree β := BinaryTree.map f t
 
 theorem id_map (t : BinaryTree α) : t.map id = t := by
   induction t with
@@ -105,7 +105,7 @@ def numNodes : BinaryTree α → ℕ
   | node _ a b => a.numNodes + b.numNodes + 1
 
 @[deprecated BinaryTree.numNodes (since := "2026-05-22")]
-abbrev Tree.numNodes {α} (t : BinaryTree α) : ℕ := BinaryTree.numNodes t
+abbrev Tree.numNodes {α} (t : Tree α) : ℕ := BinaryTree.numNodes t
 
 /-- The number of leaves of a binary tree -/
 @[simp]
@@ -114,7 +114,7 @@ def numLeaves : BinaryTree α → ℕ
   | node _ a b => a.numLeaves + b.numLeaves
 
 @[deprecated BinaryTree.numLeaves (since := "2026-05-22")]
-abbrev Tree.numLeaves {α} (t : BinaryTree α) : ℕ := BinaryTree.numLeaves t
+abbrev Tree.numLeaves {α} (t : Tree α) : ℕ := BinaryTree.numLeaves t
 
 
 /-- The height - length of the longest path from the root - of a binary tree -/
@@ -124,7 +124,7 @@ def height : BinaryTree α → ℕ
   | node _ a b => max a.height b.height + 1
 
 @[deprecated BinaryTree.height (since := "2026-05-22")]
-abbrev Tree.height {α} (t : BinaryTree α) : ℕ := BinaryTree.height t
+abbrev Tree.height {α} (t : Tree α) : ℕ := BinaryTree.height t
 
 theorem numLeaves_eq_numNodes_succ (x : BinaryTree α) : x.numLeaves = x.numNodes + 1 := by
   induction x <;> simp [*, Nat.add_comm, Nat.add_assoc, Nat.add_left_comm]
@@ -146,7 +146,7 @@ def left : BinaryTree α → BinaryTree α
   | node _ l _r => l
 
 @[deprecated BinaryTree.left (since := "2026-05-22")]
-abbrev Tree.left {α} (t : BinaryTree α) : BinaryTree α := BinaryTree.left t
+abbrev Tree.left {α} (t : Tree α) : Tree α := BinaryTree.left t
 
 /-- The right child of the tree, or `nil` if the tree is `nil` -/
 @[simp]
@@ -155,7 +155,7 @@ def right : BinaryTree α → BinaryTree α
   | node _ _l r => r
 
 @[deprecated BinaryTree.right (since := "2026-05-22")]
-abbrev Tree.right {α} (t : BinaryTree α) : BinaryTree α := BinaryTree.right t
+abbrev Tree.right {α} (t : Tree α) : Tree α := BinaryTree.right t
 
 /-- A node with `Unit` data -/
 scoped infixr:65 " △ " => BinaryTree.node ()
@@ -167,7 +167,7 @@ def unitRecOn {motive : BinaryTree Unit → Sort*} (t : BinaryTree Unit) (base :
   t.recOn base fun _u ↦ ind
 
 @[deprecated BinaryTree.unitRecOn (since := "2026-05-22")]
-abbrev Tree.unitRecOn {motive : BinaryTree Unit → Sort*} (t : BinaryTree Unit) (base : motive nil)
+abbrev Tree.unitRecOn {motive : Tree Unit → Sort*} (t : Tree Unit) (base : motive nil)
     (ind : ∀ x y, motive x → motive y → motive (x △ y)) : motive t :=
   BinaryTree.unitRecOn t base ind
 
