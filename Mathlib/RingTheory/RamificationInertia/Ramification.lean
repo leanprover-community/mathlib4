@@ -118,6 +118,28 @@ theorem ramificationIdx'_tower [r.LiesOver q] [Module.Flat S T] :
     apply ramificationIdx'_tower'
   · rw [ramificationIdx'_of_not_isPrime r R hr, ramificationIdx'_of_not_isPrime r S hr, mul_zero]
 
+variable (R) in
+open Pointwise in
+theorem ramificationIdx'_smul {G : Type*} [Group G] [MulSemiringAction G S] [SMulCommClass G R S]
+    (g : G) : (g • q).ramificationIdx' R = q.ramificationIdx' R := by
+  by_cases hq : q.IsPrime; swap
+  · rw [ramificationIdx'_of_not_isPrime, ramificationIdx'_of_not_isPrime] <;> simpa
+  · let p := q.under R
+    let f₀ := MulSemiringAction.toAlgAut G R S g
+    have hg : g • q = q.map f₀ := q.pointwise_smul_def
+    let Sq := Localization.AtPrime q
+    let Sq' := Localization.AtPrime (q.map f₀)
+    let f : Sq ≃ₐ[R] Sq' :=
+      Localization.localAlgEquiv q (q.map f₀) f₀ (comap_map_of_bijective f₀ f₀.bijective).symm
+    let : Algebra Sq Sq' := f.toRingHom.toAlgebra
+    have : IsScalarTower R Sq Sq' := IsScalarTower.of_algHom f.toAlgHom
+    let e : (Sq ⧸ p.map (algebraMap R Sq)) ≃ₐ[Sq] Sq' ⧸ p.map (algebraMap R Sq') :=
+      Ideal.quotientEquivAlg _ _ (AlgEquiv.ofBijective (Algebra.ofId Sq Sq') f.bijective)
+        (by rw [IsScalarTower.algebraMap_eq R Sq Sq', Ideal.map_map,
+          ← AlgEquiv.toAlgHom_toRingHom, AlgEquiv.toAlgHom_ofBijective, Algebra.toRingHom_ofId])
+    rw [hg, ramificationIdx'_eq p q, ramificationIdx'_eq p (q.map f₀),
+      e.toLinearEquiv.length_eq, Module.length_eq_of_surjective f.surjective]
+
 end
 
 end Ideal
