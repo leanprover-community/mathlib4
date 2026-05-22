@@ -5,12 +5,11 @@ Authors: Christopher Hoskin, Violeta Hernández Palacios
 -/
 module
 
-public import Mathlib.Data.Fintype.Order
 public import Mathlib.Order.Antisymmetrization
 public import Mathlib.Order.CompleteLattice.Defs
 public import Mathlib.Order.UpperLower.Basic
 
-import Mathlib.Data.Nat.Lattice
+import Mathlib.Data.Set.Lattice
 
 /-!
 # Sets closed under directed suprema
@@ -292,37 +291,18 @@ end Preorder
 section PartialOrder
 variable [PartialOrder α]
 
-theorem dirSupClosed_singleton (a : α) : DirSupClosed {a} := by
+theorem DirSupClosed.singleton (a : α) : DirSupClosed {a} := by
   intro d hda hdn _ b hb
   rw [hdn.subset_singleton_iff] at hda
   subst hda
   exact mem_singleton_of_eq (hb.unique isLUB_singleton)
 
-theorem dirSupClosedOn_singleton (a : α) : DirSupClosedOn D {a} :=
-  (dirSupClosed_singleton a).dirSupClosedOn
+@[deprecated (since := "2026-05-22")] alias dirSupClosed_singleton := DirSupClosed.singleton
 
-theorem Set.Finite.dirSupClosed (hs : s.Finite) : DirSupClosed s := by
-  intro t ht ht₀ ht₁ a ha
-  obtain ⟨b, hbt, hb⟩ := ht₁.finite_le ht₀ (hs.subset ht)
-  exact ht <| ha.unique ⟨hb, fun x hx ↦ hx hbt⟩ ▸ hbt
+theorem DirSupClosedOn.singleton (a : α) : DirSupClosedOn D {a} :=
+  (DirSupClosed.singleton a).dirSupClosedOn
 
-theorem dirSupClosed_range_nat {f : ℕ → α} (hf : Monotone f) (hf' : IsCofinal (.range f)) :
-    DirSupClosed (range f) := by
-  intro s hs hs₀ hs₁ a ha
-  obtain ⟨_, ⟨n, rfl⟩, han⟩ := hf' a
-  obtain rfl | han := han.eq_or_lt
-  · simp
-  have hfb : BddAbove (f ⁻¹' s) := by
-    refine ⟨n, fun m hm ↦ ?_⟩
-    by_contra! hnm
-    exact (ha.1 hm).not_gt (han.trans_le (hf hnm.le))
-  refine ⟨sSup (f ⁻¹' s), IsLUB.unique ⟨?_, ?_⟩ ha⟩ <;> intro x hx
-  · obtain ⟨m, rfl⟩ := hs hx
-    exact hf (le_csSup hfb hx)
-  · apply hx (Nat.sSup_mem _ hfb)
-    obtain ⟨x, hx⟩ := hs₀
-    obtain ⟨m, rfl⟩ := hs hx
-    exact ⟨m, hx⟩
+@[deprecated (since := "2026-05-22")] alias dirSupClosedOn_singleton := DirSupClosedOn.singleton
 
 end PartialOrder
 
