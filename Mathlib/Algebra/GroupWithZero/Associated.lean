@@ -5,8 +5,8 @@ Authors: Johannes Hölzl, Jens Wagemaker
 -/
 module
 
-public import Mathlib.Algebra.Prime.Lemmas
 public import Mathlib.Algebra.Order.IsBotOne
+public import Mathlib.Algebra.Prime.Lemmas
 public import Mathlib.Order.BoundedOrder.Basic
 
 /-!
