@@ -1225,21 +1225,84 @@ def clayworthGens : Fin 2 → Equiv.Perm (Fin 4032)
   | 0 => clayworthGen1
   | 1 => clayworthGen2
 
+/-! ### O(n) adjacency preservation
+
+Instead of checking `∀ u v : Fin 4032, Adj u v → Adj (g u) (g v)` directly
+(which iterates 4032² = 16M pairs), we check only the 12096 actual directed
+edges: for each vertex `u`, verify that `g` maps each of `u`'s 3 neighbors
+to a neighbor of `g(u)`. This is 1300× faster. -/
+
+private theorem clayworthGen1_adj_edges : ∀ u : Fin 4032,
+    have h := clayworthNeighborData_size
+    let b := 3 * u.val
+    clayworthAdjBool (clayworthGen1 u)
+        (clayworthGen1 (clayworthNeighborData[b]'(by omega))) ∧
+    clayworthAdjBool (clayworthGen1 u)
+        (clayworthGen1 (clayworthNeighborData[b + 1]'(by omega))) ∧
+    clayworthAdjBool (clayworthGen1 u)
+        (clayworthGen1 (clayworthNeighborData[b + 2]'(by omega))) := by
+  native_decide
+
 theorem clayworthGen1_adj : ∀ u v : Fin 4032,
     clayworthGraph.Adj u v → clayworthGraph.Adj (clayworthGen1 u) (clayworthGen1 v) := by
+  intro u v h
+  have ⟨h1, h2, h3⟩ := clayworthGen1_adj_edges u
+  simp only [clayworthGraph, clayworthAdjBool] at h ⊢
+  rcases h with h | h | h <;> (subst h; assumption)
+
+private theorem clayworthGen1_inv_adj_edges : ∀ u : Fin 4032,
+    have h := clayworthNeighborData_size
+    let b := 3 * u.val
+    clayworthAdjBool (clayworthGen1.symm u)
+        (clayworthGen1.symm (clayworthNeighborData[b]'(by omega))) ∧
+    clayworthAdjBool (clayworthGen1.symm u)
+        (clayworthGen1.symm (clayworthNeighborData[b + 1]'(by omega))) ∧
+    clayworthAdjBool (clayworthGen1.symm u)
+        (clayworthGen1.symm (clayworthNeighborData[b + 2]'(by omega))) := by
   native_decide
 
 theorem clayworthGen1_inv_adj : ∀ u v : Fin 4032,
     clayworthGraph.Adj u v → clayworthGraph.Adj (clayworthGen1.symm u) (clayworthGen1.symm v) := by
+  intro u v h
+  have ⟨h1, h2, h3⟩ := clayworthGen1_inv_adj_edges u
+  simp only [clayworthGraph, clayworthAdjBool] at h ⊢
+  rcases h with h | h | h <;> (subst h; assumption)
+
+private theorem clayworthGen2_adj_edges : ∀ u : Fin 4032,
+    have h := clayworthNeighborData_size
+    let b := 3 * u.val
+    clayworthAdjBool (clayworthGen2 u)
+        (clayworthGen2 (clayworthNeighborData[b]'(by omega))) ∧
+    clayworthAdjBool (clayworthGen2 u)
+        (clayworthGen2 (clayworthNeighborData[b + 1]'(by omega))) ∧
+    clayworthAdjBool (clayworthGen2 u)
+        (clayworthGen2 (clayworthNeighborData[b + 2]'(by omega))) := by
   native_decide
 
 theorem clayworthGen2_adj : ∀ u v : Fin 4032,
     clayworthGraph.Adj u v → clayworthGraph.Adj (clayworthGen2 u) (clayworthGen2 v) := by
+  intro u v h
+  have ⟨h1, h2, h3⟩ := clayworthGen2_adj_edges u
+  simp only [clayworthGraph, clayworthAdjBool] at h ⊢
+  rcases h with h | h | h <;> (subst h; assumption)
+
+private theorem clayworthGen2_inv_adj_edges : ∀ u : Fin 4032,
+    have h := clayworthNeighborData_size
+    let b := 3 * u.val
+    clayworthAdjBool (clayworthGen2.symm u)
+        (clayworthGen2.symm (clayworthNeighborData[b]'(by omega))) ∧
+    clayworthAdjBool (clayworthGen2.symm u)
+        (clayworthGen2.symm (clayworthNeighborData[b + 1]'(by omega))) ∧
+    clayworthAdjBool (clayworthGen2.symm u)
+        (clayworthGen2.symm (clayworthNeighborData[b + 2]'(by omega))) := by
   native_decide
 
 theorem clayworthGen2_inv_adj : ∀ u v : Fin 4032,
     clayworthGraph.Adj u v → clayworthGraph.Adj (clayworthGen2.symm u) (clayworthGen2.symm v) := by
-  native_decide
+  intro u v h
+  have ⟨h1, h2, h3⟩ := clayworthGen2_inv_adj_edges u
+  simp only [clayworthGraph, clayworthAdjBool] at h ⊢
+  rcases h with h | h | h <;> (subst h; assumption)
 
 /-! ## BFS witness words -/
 
