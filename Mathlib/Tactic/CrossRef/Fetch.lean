@@ -106,7 +106,7 @@ private def userAgent : String :=
 
 /-- Make a GET request and return `(http-status, body)`. Status is `0` if curl
 itself failed. We append the HTTP status to the body via `-w '\n%{http_code}'`
-and recover it from the final line — that avoids juggling a temp file. -/
+and peel it off the end — that avoids juggling a temp file. -/
 private def fetchUrl (url : String) : IO (Nat × String) := do
   let output ← IO.Process.output {
     cmd := "curl"
@@ -114,13 +114,10 @@ private def fetchUrl (url : String) : IO (Nat × String) := do
               "-w", "\n%{http_code}", url]
   }
   if output.exitCode != 0 then return (0, "")
-  let parts := output.stdout.splitOn "\n"
-  match parts.reverse with
-  | last :: rest =>
-    let body := "\n".intercalate rest.reverse
-    let status := last.trimAscii.toString.toNat?.getD 0
-    return (status, body)
-  | [] => return (0, "")
+  let s := output.stdout.toRawSubstring
+  let status := (s.takeRightWhile Char.isDigit).toNat?.getD 0
+  let body := ((s.dropRightWhile Char.isDigit).dropRightWhile (· == '\n')).toString
+  return (status, body)
 
 /-- Replace runs of whitespace by a single space and strip leading/trailing ws. -/
 private def flattenWhitespace (s : String) : String :=
