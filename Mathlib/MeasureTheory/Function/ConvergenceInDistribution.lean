@@ -271,25 +271,9 @@ theorem TendstoInDistribution.prodMk_of_tendstoInMeasure_const
     (hY_meas : ∀ i, AEMeasurable (Y i) μ'') :
     TendstoInDistribution (fun n ω ↦ (X n ω, Y n ω)) l (fun ω ↦ (Z ω, c)) (fun _ ↦ μ'') μ' := by
   have hX : ∀ i, AEMeasurable (X i) μ'' := hXZ.forall_aemeasurable
-  have hZ : AEMeasurable Z μ' := hXZ.aemeasurable_limit
   refine tendstoInDistribution_of_tendstoInMeasure_sub (X := fun n ω ↦ (X n ω, c))
-    (Y := fun n ω ↦ (X n ω, Y n ω)) (Z := fun ω ↦ (Z ω, c)) (μ'' := μ'') (l := l) ?_ ?_
-    (by fun_prop)
-  · replace hXZ := hXZ.tendsto
-    refine ⟨by fun_prop, by fun_prop, ?_⟩
-    rw [ProbabilityMeasure.tendsto_iff_forall_integral_tendsto] at hXZ ⊢
-    intro F
-    let Fc : BoundedContinuousFunction E ℝ := ⟨⟨fun x ↦ F (x, c), by fun_prop⟩, by
-      obtain ⟨C, hC⟩ := F.map_bounded'
-      exact ⟨C, fun x y ↦ hC (x, c) (y, c)⟩⟩
-    have h_eq (f : Ω' → E) (hf : AEMeasurable f μ') :
-        ∫ ω, F ω ∂μ'.map (fun ω ↦ (f ω, c)) = ∫ ω, F (ω, c) ∂(μ'.map f) := by
-      rw [integral_map (by fun_prop) (by fun_prop), integral_map (by fun_prop) (by fun_prop)]
-    have h_eq' (f : Ω'' → E) (hf : AEMeasurable f μ'') :
-        ∫ ω, F ω ∂μ''.map (fun ω ↦ (f ω, c)) = ∫ ω, F (ω, c) ∂(μ''.map f) := by
-      rw [integral_map (by fun_prop) (by fun_prop), integral_map (by fun_prop) (by fun_prop)]
-    simp_rw [ProbabilityMeasure.coe_mk, h_eq' (X _) (hX _), h_eq Z hZ]
-    simpa using hXZ Fc
+    (fun n ω ↦ (X n ω, Y n ω)) (fun ω ↦ (Z ω, c)) ?_ ?_ (fun i ↦ (hX i).prodMk (hY_meas i))
+  · exact hXZ.continuous_comp (g := fun x ↦ (x, c)) (by fun_prop)
   · suffices TendstoInMeasure μ'' (fun n ω ↦ ((0 : E), Y n ω - c)) l 0 by
       convert this with n ω
       simp
