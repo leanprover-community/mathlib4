@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robin Langer
 -/
 import Mathlib.Combinatorics.CellularSurface
+import Archive.VoltageGraphs
 
 /-!
 # The Bolza Surface: Möbius-Kantor Graph (F016A) on Genus 2
@@ -59,3 +60,29 @@ theorem bolza_d1_mul_d2_eq_zero : bolzaSurface.d1 * bolzaSurface.d2 = 0 :=
 
 /-- Euler characteristic confirms genus 2. -/
 theorem bolza_euler : (16 : ℤ) - 24 + 6 = 2 - 2 * 2 := by norm_num
+
+/-! ### Bridge to voltage graph description
+
+The Bolza surface 1-skeleton is the Möbius-Kantor graph, which also has a
+voltage graph description: `voltageGraphK2 8 0 1 3` (see `VoltageGraphs.lean`).
+We prove these define the same graph via a GAP-computed bijection. -/
+
+private def bolzaBijData : Array (Fin 2 × ZMod 8) := #[
+  (0,0),(1,1),(0,1),(1,4),(0,4),(1,5),(0,5),(1,0),
+  (1,3),(0,6),(1,2),(0,3),(1,7),(0,2),(1,6),(0,7)]
+private theorem bolzaBijData_size : bolzaBijData.size = 16 := by native_decide
+
+/-- The bijection `Fin 16 → Fin 2 × ZMod 8` making the Bolza surface graph
+isomorphic to the Möbius-Kantor voltage graph. -/
+def bolzaBij (v : Fin 16) : Fin 2 × ZMod 8 :=
+  bolzaBijData[v.val]'(by have := bolzaBijData_size; omega)
+
+/-- **Bridge theorem**: the Bolza `CellularSurface` graph equals the
+Möbius-Kantor voltage graph under `bolzaBij`. -/
+theorem bolza_surface_eq_voltage :
+    ∀ u v : Fin 16,
+      (∃ e : Fin 24,
+        (bolzaSurface.edge_src e = u ∧ bolzaSurface.edge_tgt e = v) ∨
+        (bolzaSurface.edge_src e = v ∧ bolzaSurface.edge_tgt e = u)) ↔
+      mobiusKantorVoltage.Adj (bolzaBij u) (bolzaBij v) := by
+  native_decide
