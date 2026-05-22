@@ -1315,7 +1315,7 @@ theorem memLp_top (f : 𝓢(E, F)) (μ : Measure E := by volume_tac) : MemLp f �
 /-- Schwartz functions are in `L^p` for any `p`. -/
 theorem memLp (f : 𝓢(E, F)) (p : ℝ≥0∞) (μ : Measure E := by volume_tac)
     [hμ : μ.HasTemperateGrowth] : MemLp f p μ :=
-  ⟨f.continuous.aestronglyMeasurable, f.eLpNorm_lt_top p μ⟩
+  ⟨by fun_prop, f.eLpNorm_lt_top p μ⟩
 
 /-- Map a Schwartz function to an `Lp` function for any `p`. -/
 def toLp (f : 𝓢(E, F)) (p : ℝ≥0∞) (μ : Measure E := by volume_tac) [hμ : μ.HasTemperateGrowth] :
