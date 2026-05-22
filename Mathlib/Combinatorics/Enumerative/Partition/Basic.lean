@@ -226,24 +226,7 @@ theorem countRestricted_two (n : ℕ) : countRestricted n 2 = distincts n := by
 def oddDistincts (n : ℕ) : Finset n.Partition :=
   odds n ∩ distincts n
 
-end Partition
-
 /-! ### Conversion between Young diagrams -/
-
-private lemma youngDiagram_rowLens_sum_eq_card (μ : YoungDiagram) : μ.rowLens.sum = μ.card := by
-  have hf : ∀ c ∈ μ.cells, c.1 ∈ Finset.range (μ.colLen 0) := by
-    intro c hc
-    rw [Finset.mem_range, ← YoungDiagram.mem_iff_lt_colLen]
-    exact μ.up_left_mem (le_refl _) (Nat.zero_le _) hc
-  have hr : ∀ i ∈ Finset.range (μ.colLen 0), ({c ∈ μ.cells | c.1 = i}).card = μ.rowLen i := by
-    intro i _hi
-    rw [YoungDiagram.rowLen_eq_card]
-    rfl
-  rw [YoungDiagram.card, Finset.card_eq_sum_card_fiberwise hf, Finset.sum_congr rfl hr,
-    YoungDiagram.rowLens, ← List.sum_toFinset, List.toFinset_range]
-  exact List.nodup_range
-
-namespace Partition
 
 /-- Convert a Young diagram to a partition. -/
 def ofYoungDiagram {n : ℕ} (μ : YoungDiagram) (h : μ.card = n) : Partition n where
@@ -251,7 +234,7 @@ def ofYoungDiagram {n : ℕ} (μ : YoungDiagram) (h : μ.card = n) : Partition n
   parts_pos := μ.pos_of_mem_rowLens _
   parts_sum := by
     simp only [sum_coe]
-    rw [youngDiagram_rowLens_sum_eq_card]
+    rw [YoungDiagram.sum_rowLens_eq_card]
     exact h
 
 /-- Convert a partition to a Young diagram. -/
@@ -273,7 +256,7 @@ theorem rowLens_toYoungDiagram_eq_parts {n : ℕ} (p : Partition n) :
 
 theorem card_toYoungDiagram {n : ℕ} (p : Partition n) :
     p.toYoungDiagram.card = n := by
-  rw [← youngDiagram_rowLens_sum_eq_card, rowLens_toYoungDiagram_eq_sort_parts]
+  rw [← YoungDiagram.sum_rowLens_eq_card, rowLens_toYoungDiagram_eq_sort_parts]
   calc
     (p.parts.sort (· ≥ ·)).sum
       = (↑(p.parts.sort (· ≥ ·)) : Multiset ℕ).sum := Multiset.sum_coe _
