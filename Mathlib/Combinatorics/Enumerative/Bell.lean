@@ -119,9 +119,7 @@ private theorem prod_count_factorial_eq_count_factorial_mul_prod_erase
   by_cases hmem : a ∈ m.toFinset.erase 0
   · rw [← Finset.mul_prod_erase _ _ hmem]
   · rw [Finset.erase_eq_of_notMem hmem]
-    have hcount : m.count a = 0 := by
-      refine Multiset.count_eq_zero_of_notMem fun hm ↦ hmem ?_
-      simpa [ha] using hm
+    have hcount : m.count a = 0 := by grind [Multiset.count_eq_zero_of_notMem]
     simp [hcount]
 
 private theorem bell_cons_mul_count (m : Multiset ℕ) {a : ℕ} (ha : a ≠ 0) :
@@ -133,12 +131,11 @@ private theorem bell_cons_mul_count (m : Multiset ℕ) {a : ℕ} (ha : a ≠ 0) 
     · intro _ hj
       simp [Finset.mem_erase.mp hj]
   let c := (m.map (· !)).prod * (m.count a)! * rest
-  have hm0 : m.bell * ((m.map (· !)).prod * (m.count a)! * rest) = m.sum ! := by
+  have hm0 : m.bell * c = m.sum ! := by
     have hm := Multiset.bell_mul_eq m
     rw [prod_count_factorial_eq_count_factorial_mul_prod_erase m ha] at hm
-    simpa [rest, mul_assoc, mul_comm, mul_left_comm] using hm
-  have hm : m.bell * a ! * c = m.sum ! * a ! := by
-    simpa [c, mul_assoc, mul_comm, mul_left_comm] using congrArg (a ! * ·) hm0
+    simpa [c, rest, mul_assoc, mul_comm, mul_left_comm] using hm
+  have hm : m.sum ! * a ! = m.bell * a ! * c := by grind
   have ha_mem : a ∈ (a ::ₘ m).toFinset.erase 0 := by simp [ha]
   have hc : 0 < a ! * c := Nat.mul_pos (by positivity) <|
     Nat.mul_pos (by simp [Nat.factorial_pos]) (by positivity)
@@ -149,7 +146,7 @@ private theorem bell_cons_mul_count (m : Multiset ℕ) {a : ℕ} (ha : a ≠ 0) 
       rw [← Finset.mul_prod_erase _ _ ha_mem, ← hrest] at hq
       simpa [c, Nat.factorial_succ, add_comm, mul_assoc, mul_left_comm] using hq
     _ = ((m.sum + a).choose a * m.bell) * (a ! * c) := by
-      simp [← Nat.add_choose_mul_factorial_mul_factorial, mul_assoc, ← hm]
+      simp [← Nat.add_choose_mul_factorial_mul_factorial, mul_assoc, hm]
 
 end Multiset
 
@@ -254,9 +251,7 @@ theorem bell_eq_sum_erase {n : ℕ} (p : (n + 1).Partition) :
         ((p.parts.erase a).bell_cons_mul_count ha0).symm
     calc
       _ = (n + 1) * n.choose (a - 1) * (p.parts.erase a).bell := by ring
-      _ = (n + 1).choose a * a * (p.parts.erase a).bell := by
-        rw [Nat.add_one_mul_choose_eq, Nat.sub_add_cancel (by omega)]
-      _ = _ := by grind
+      _ = _ := by grind [Nat.add_one_mul_choose_eq]
   _ = (∑ a ∈ p.parts.toFinset, p.parts.count a * a) * p.parts.bell := by grind [Finset.sum_mul]
   _ = _ := by
     rw [succ_eq_add_one, mul_eq_mul_right_iff]
