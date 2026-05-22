@@ -79,6 +79,11 @@ theorem prod_mapRange_index {f : M → M'} {hf : f 0 = 0} {g : α →₀ M} {h :
   Finset.prod_subset support_mapRange fun _ _ H => by rw [notMem_support_iff.1 H, h0]
 
 @[to_additive (attr := simp)]
+lemma prod_onFinset (s : Finset α) (f : α → M) (hf) (g : α → M → N) (hg : ∀ i ∈ s, g i 0 = 1) :
+    (onFinset s f hf).prod g = ∏ a ∈ s, g a (f a) :=
+  prod_of_support_subset _ support_onFinset_subset _ hg
+
+@[to_additive (attr := simp)]
 theorem prod_zero_index {h : α → M → N} : (0 : α →₀ M).prod h = 1 :=
   rfl
 
