@@ -152,6 +152,27 @@ theorem extended_mul : (I * J).extended L hf = (I.extended L hf) * (J.extended L
   · rcases Set.mem_mul.mp h with ⟨y, ⟨i, hi, rfl⟩, z, ⟨j, hj, rfl⟩, rfl⟩
     exact Submodule.subset_span ⟨i * j, mul_mem_mul hi hj, by simp⟩
 
+theorem extended_extended {C W : Type*} [CommRing C] [CommRing W] [Algebra C W]
+    {P : Submonoid C} [IsLocalization P W] {g : B →+* C} (hg : N ≤ Submonoid.comap g P) :
+      (I.extended L hf).extended W hg =
+        I.extended W (f := g.comp f) (hf.trans (Submonoid.monotone_comap hg)) := by
+  rw [← coeToSubmodule_inj, coe_extended_eq_span, coe_extended_eq_span]
+  refine Submodule.span_eq_span ?_ ?_
+  · rintro _ ⟨x, hx, rfl⟩
+    have hx' : x ∈ span B (IsLocalization.map L f hf '' (I : Set K)) :=
+      (mem_extended_iff L hf I x).1 hx
+    refine span_induction (fun y hy ↦ ?_) (by simp) (fun y z _ _ hy hz ↦ ?_) (fun b y _ hy ↦ ?_) hx'
+    · rcases hy with ⟨z, hz, rfl⟩
+      exact Submodule.subset_span ⟨z, hz, by rw [IsLocalization.map_map]⟩
+    · rw [map_add]
+      exact add_mem hy hz
+    · rw [IsLocalization.map_smul]
+      exact smul_mem _ (g b) hy
+  · rintro _ ⟨x, hx, rfl⟩
+    refine Submodule.subset_span ⟨IsLocalization.map L f hf x, ?_, ?_⟩
+    · exact (mem_extended_iff L hf I _).2 <| Submodule.subset_span ⟨x, hx, rfl⟩
+    · rw [IsLocalization.map_map]
+
 @[simp]
 theorem extended_coeIdeal_eq_map (I₀ : Ideal A) :
     (I₀ : FractionalIdeal M K).extended L hf = (I₀.map f : FractionalIdeal N L) := by
