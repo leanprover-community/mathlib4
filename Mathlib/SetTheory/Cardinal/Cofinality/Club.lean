@@ -5,9 +5,7 @@ Authors: Violeta Hernández Palacios
 -/
 module
 
-public import Mathlib.Order.DirSupClosed
-public import Mathlib.Order.IsNormal
-public import Mathlib.SetTheory.Cardinal.Cofinality.Basic
+public import Mathlib.SetTheory.Cardinal.Cofinality.Ordinal
 
 /-!
 # Club sets
@@ -27,7 +25,7 @@ public section
 
 universe u v
 
-open Cardinal Order
+open Cardinal Order Ordinal
 
 /-- A club set is closed under suprema and cofinal. -/
 structure IsClub {α : Type*} [LinearOrder α] (s : Set α) where
@@ -47,6 +45,12 @@ theorem IsClub.of_isEmpty [IsEmpty α] {s : Set α} : IsClub s :=
 @[simp]
 theorem IsClub.univ : IsClub (α := α) .univ :=
   ⟨.univ, .univ⟩
+
+protected theorem IsClub.nonempty [Nonempty α] (hs : IsClub s) : s.Nonempty :=
+  hs.isCofinal.nonempty
+
+theorem isClub_empty_iff : IsClub (α := α) ∅ ↔ IsEmpty α :=
+  ⟨fun h ↦ isCofinal_empty_iff.1 h.isCofinal, fun _ ↦ .of_isEmpty⟩
 
 theorem IsClub.union (hs : IsClub s) (ht : IsClub t) : IsClub (s ∪ t) :=
   ⟨hs.dirSupClosed.union ht.dirSupClosed, hs.isCofinal.mono Set.subset_union_left⟩
@@ -121,7 +125,7 @@ theorem IsClub.inter {s t : Set α} (hα : cof α ≠ ℵ₀) (hs : IsClub s) (h
   rw [← Set.sInter_pair]
   have H : ∀ x ∈ ({s, t} : Set _), IsClub x := by simpa [hs]
   obtain hα | hα' := hα.lt_or_gt
-  · rw [cof_lt_aleph0_iff] at hα
+  · rw [Order.cof_lt_aleph0_iff] at hα
     exact .sInter_of_cof_le_one hα H
   · exact .sInter hα (hα'.trans_le' <| by simp) H
 
@@ -144,3 +148,61 @@ theorem Order.IsNormal.isClub_fixedPoints {f : α → α} (hα : cof α ≠ ℵ�
       simpa using mk_range_le_lift (f := fun n : ℕ ↦ f^[n] a)
 
 end WellFoundedLT
+
+/-! ### Stationary sets -/
+
+/-- A set is called stationary when it intersects all club sets. -/
+@[expose]
+def IsStationary (s : Set α) : Prop :=
+  ∀ ⦃t⦄, IsClub t → (s ∩ t).Nonempty
+
+@[gcongr]
+theorem IsStationary.mono (hs : IsStationary s) (h : s ⊆ t) : IsStationary t :=
+  fun _u hu ↦ (hs hu).mono (Set.inter_subset_inter_left _ h)
+
+theorem IsStationary.nonempty (hs : IsStationary s) : s.Nonempty := by
+  simpa using hs .univ
+
+theorem isStationary_univ_iff : IsStationary (.univ (α := α)) ↔ Nonempty α := by
+  simp [IsStationary, ← not_imp_not (b := IsClub _), Set.not_nonempty_iff_eq_empty,
+    isClub_empty_iff]
+
+@[simp]
+theorem IsStationary.univ [Nonempty α] : IsStationary (.univ (α := α)) :=
+  isStationary_univ_iff.2 ‹_›
+
+@[simp]
+theorem not_isStationary_empty : ¬ IsStationary (∅ : Set α) := by
+  intro h
+  simpa using h .univ
+
+theorem IsClub.isStationary [Nonempty α] [WellFoundedLT α] (hα : cof α ≠ ℵ₀) (hs : IsClub s) :
+    IsStationary s :=
+  fun _ ht ↦ (hs.inter hα ht).nonempty
+
+/-- Non-stationary sets form an ideal. -/
+theorem not_isStationary_union [WellFoundedLT α] (hα : cof α ≠ ℵ₀)
+    (hs : ¬ IsStationary s) (ht : ¬ IsStationary t) : ¬ IsStationary (s ∪ t) := by
+  simp_rw [IsStationary, not_forall, Set.not_nonempty_iff_eq_empty] at hs ht ⊢
+  obtain ⟨u, hu, hsu⟩ := hs
+  obtain ⟨v, hv, htv⟩ := ht
+  refine ⟨_, hu.inter hα hv, ?_⟩
+  grind
+
+theorem IsStationary.of_not_isCofinal_compl (hs : ¬ IsCofinal (sᶜ)) : IsStationary s := by
+  intro t ht
+  obtain ⟨a, ha⟩ := not_isCofinal_iff.1 hs
+  obtain ⟨b, hb, hb'⟩ := ht.isCofinal a
+  refine ⟨b, ?_, hb⟩
+  contrapose! ha
+  exact ⟨b, ha, hb'⟩
+
+theorem isStationary_iff_not_isCofinal_compl [WellFoundedLT α] (hα : cof α ≤ ℵ₀) :
+    IsStationary s ↔ ¬ IsCofinal (sᶜ) where
+  mp hs h := by
+    obtain ⟨t, hts, ht, htα⟩ := ord_cof_eq_of_isCofinal h
+    have ht' := dirSupClosed_of_type_le_omega0 ht (htα.trans_le ?_)
+    · cases hs ⟨ht', ht⟩
+      grind
+    · simpa using ord_mono hα
+  mpr := .of_not_isCofinal_compl
