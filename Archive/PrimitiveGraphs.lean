@@ -34,57 +34,39 @@ for cubic arc-transitive graphs in the Foster census:
 -/
 
 set_option linter.style.nativeDecide false
-set_option linter.style.longFile 3000
 
 /-! ## Section 1: Atkinson's algorithm (generic) and Langer primitivity -/
 
-/-- Merge two equivalence classes in a partition represented as `Fin n → Fin n`:
-replace all occurrences of `hi` with `lo`. -/
-private def mergeRep {n : Nat} (f : Fin n → Fin n) (lo hi : Fin n) : Fin n → Fin n :=
+/-! ### Atkinson's algorithm for Fin 63 (Langer / G₂(2)) -/
+
+private def mergeRep63 (f : Fin 63 → Fin 63) (lo hi : Fin 63) : Fin 63 → Fin 63 :=
   fun i => let fi := f i; if fi = hi then lo else fi
 
-/-- Atkinson's algorithm: compute the smallest block containing the initial
-merged pair, by propagating equivalences through generators.
-
-State: `(queue, partition)` where `queue` is a list of newly-merged pairs
-and `partition : Fin n → Fin n` maps each element to its class representative.
-
-At each step, pop a pair `(x, y)` from the queue. For each generator `g`,
-check if `g(x)` and `g(y)` have the same representative. If not, merge their
-classes and enqueue the new pair. Terminate when the queue is empty.
-
-`fuel` bounds the number of queue-pop steps. -/
-private def atkinson {n : Nat} (gens : List (Equiv.Perm (Fin n)))
-    (queue : List (Fin n × Fin n)) (part : Fin n → Fin n) :
-    Nat → Fin n → Fin n
+private def atkinson63 (gens : List (Equiv.Perm (Fin 63)))
+    (queue : List (Fin 63 × Fin 63)) (part : Fin 63 → Fin 63) :
+    Nat → Fin 63 → Fin 63
   | 0 => part
   | fuel + 1 =>
     match queue with
     | [] => part
     | (x, y) :: rest =>
-      let Acc := List (Fin n × Fin n) × (Fin n → Fin n)
-      let (newPairs, part') := gens.foldl (fun (acc : Acc) g =>
-        let (pairs, p) := acc
-        let rgx := p (g x)
-        let rgy := p (g y)
-        if rgx = rgy then (pairs, p)
-        else
-          let lo := min rgx rgy
-          let hi := max rgx rgy
-          ((lo, hi) :: pairs, mergeRep p lo hi)) ([], part)
-      atkinson gens (rest ++ newPairs) part' fuel
+      let (newPairs, part') := gens.foldl
+        (fun (acc : List (Fin 63 × Fin 63) × (Fin 63 → Fin 63)) g =>
+          let (pairs, p) := acc
+          let rgx := p (g x)
+          let rgy := p (g y)
+          if rgx = rgy then (pairs, p)
+          else
+            let lo := min rgx rgy
+            let hi := max rgx rgy
+            ((lo, hi) :: pairs, mergeRep63 p lo hi)) ([], part)
+      atkinson63 gens (rest ++ newPairs) part' fuel
 
-/-- Check whether Atkinson's algorithm starting from `{0, v}` merges all
-vertices into a single class (i.e., the block is all of Ω). -/
-private def blockIsFullGeneric {n : Nat} (gens : List (Equiv.Perm (Fin n)))
-    (v : Fin n) (fuel : Nat) : Bool :=
-  let initPart : Fin n → Fin n := fun i => if i = v then 0 else i
-  let finalPart := atkinson gens [(0, v)] initPart fuel
-  decide (∀ w : Fin n, finalPart w = 0)
-
-/-- All four G₂(2) generator permutations on Fin 63: σ₁, σ₁⁻¹, σ₂, σ₂⁻¹. -/
-private def langerAllGens : List (Equiv.Perm (Fin 63)) :=
-  [g2gen1, g2gen1.symm, g2gen2, g2gen2.symm]
+private def blockIsFull63 (v : Fin 63) : Bool :=
+  let gens := [g2gen1, g2gen1.symm, g2gen2, g2gen2.symm]
+  let initPart : Fin 63 → Fin 63 := fun i => if i = v then 0 else i
+  let finalPart := atkinson63 gens [(0, v)] initPart 300
+  decide (∀ w : Fin 63, finalPart w = 0)
 
 /-- **Primitivity of the G₂(2) action on the 63 points of GH(2,2).**
 
@@ -93,7 +75,7 @@ merges all 63 vertices into a single equivalence class. This means
 no non-trivial block system exists, so the point stabiliser H₁₉₂ ≤ G₂(2)
 is a **maximal subgroup** — there is no subgroup K with H₁₉₂ < K < G₂(2). -/
 theorem langer_action_primitive :
-    ∀ v : Fin 63, v ≠ 0 → blockIsFullGeneric langerAllGens v 300 = true := by
+    ∀ v : Fin 63, v ≠ 0 → blockIsFull63 v = true := by
   native_decide
 
 /-! ## Section 2: The Zhou-6 graph and its primitivity -/
@@ -264,9 +246,36 @@ theorem zhou6Gen2_adj :
       zhou6Graph.Adj u v ↔ zhou6Graph.Adj (zhou6Gen2 u) (zhou6Gen2 v) := by
   native_decide
 
-/-- All four PSL(2,13) generator permutations on Fin 91. -/
-private def zhou6AllGens : List (Equiv.Perm (Fin 91)) :=
-  [zhou6Gen1, zhou6Gen1.symm, zhou6Gen2, zhou6Gen2.symm]
+/-! ### Atkinson's algorithm for Fin 91 (Zhou-6 / PSL(2,13)) -/
+
+private def mergeRep91 (f : Fin 91 → Fin 91) (lo hi : Fin 91) : Fin 91 → Fin 91 :=
+  fun i => let fi := f i; if fi = hi then lo else fi
+
+private def atkinson91 (gens : List (Equiv.Perm (Fin 91)))
+    (queue : List (Fin 91 × Fin 91)) (part : Fin 91 → Fin 91) :
+    Nat → Fin 91 → Fin 91
+  | 0 => part
+  | fuel + 1 =>
+    match queue with
+    | [] => part
+    | (x, y) :: rest =>
+      let (newPairs, part') := gens.foldl
+        (fun (acc : List (Fin 91 × Fin 91) × (Fin 91 → Fin 91)) g =>
+          let (pairs, p) := acc
+          let rgx := p (g x)
+          let rgy := p (g y)
+          if rgx = rgy then (pairs, p)
+          else
+            let lo := min rgx rgy
+            let hi := max rgx rgy
+            ((lo, hi) :: pairs, mergeRep91 p lo hi)) ([], part)
+      atkinson91 gens (rest ++ newPairs) part' fuel
+
+private def blockIsFull91 (v : Fin 91) : Bool :=
+  let gens := [zhou6Gen1, zhou6Gen1.symm, zhou6Gen2, zhou6Gen2.symm]
+  let initPart : Fin 91 → Fin 91 := fun i => if i = v then 0 else i
+  let finalPart := atkinson91 gens [(0, v)] initPart 400
+  decide (∀ w : Fin 91, finalPart w = 0)
 
 /-- **Primitivity of the PSL(2,13) action on 91 points.**
 
@@ -274,7 +283,7 @@ For every vertex `v ≠ 0`, Atkinson's algorithm starting from `0 ~ v`
 merges all 91 vertices into a single equivalence class. The stabiliser
 D₁₂ (order 12) is a **maximal subgroup** of PSL(2,13) (order 1092). -/
 theorem zhou6_action_primitive :
-    ∀ v : Fin 91, v ≠ 0 → blockIsFullGeneric zhou6AllGens v 400 = true := by
+    ∀ v : Fin 91, v ≠ 0 → blockIsFull91 v = true := by
   native_decide
 
 /-! ## Section 3: Zhou-3 → Zhou-6 covering -/
