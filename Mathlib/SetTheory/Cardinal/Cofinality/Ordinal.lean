@@ -195,13 +195,20 @@ theorem cof_ord_cof (o : Ordinal) : o.cof.ord.cof = o.cof := by
 @[deprecated (since := "2026-03-21")] alias cof_cof := cof_ord_cof
 
 theorem dirSupClosed_of_type_le_omega0 [LinearOrder α] [WellFoundedLT α]
-    {s : Set α} (hs : IsCofinal s) (hs' : typeLT s ≤ ω) : DirSupClosed s := by
-  obtain rfl | hs₀ := s.eq_empty_or_nonempty
-  · simp
-  let f (n : ℕ) : α := if hn : n < typeLT s then enum (· < · : s → _) ⟨n, hn⟩
-  sorry
+    {s : Set α} (hs : IsCofinal s) (hω : typeLT s ≤ ω) : DirSupClosed s := by
+  obtain hω | hω := hω.lt_or_eq
+  · obtain ⟨n, hn⟩ := lt_omega0.1 hω
+    apply_fun card at hn
+    apply Finite.dirSupClosed
+    rw [Set.Finite, ← mk_lt_aleph0_iff]
+    simp_all
+  · let e : ℕ ≃o s := by
+      rw [omega0, ← lift_id (type _), lift_type_eq] at hω
+      exact OrderIso.ofRelIsoLT hω.some.symm
+    have hfs : .range (Subtype.val ∘ e) = s := by simp
+    rw [← hfs] at hs ⊢
+    exact dirSupClosed_range_nat ((Subtype.mono_coe _).comp e.monotone) hs
 
-#exit
 /-! ### Cofinalities and suprema -/
 
 section LinearOrder

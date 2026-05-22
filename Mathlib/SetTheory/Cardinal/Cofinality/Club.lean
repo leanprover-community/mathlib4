@@ -189,11 +189,6 @@ theorem not_isStationary_union [WellFoundedLT α] (hα : cof α ≠ ℵ₀)
   refine ⟨_, hu.inter hα hv, ?_⟩
   grind
 
-theorem dirSupClosed_of_type_le_omega0 [WellFoundedLT α] {s : Set α} (hs : typeLT s ≤ ω) :
-    DirSupClosed s := by
-  
-  sorry
-
 theorem IsStationary.of_not_isCofinal_compl (hs : ¬ IsCofinal (sᶜ)) : IsStationary s := by
   intro t ht
   obtain ⟨a, ha⟩ := not_isCofinal_iff.1 hs
@@ -205,6 +200,9 @@ theorem IsStationary.of_not_isCofinal_compl (hs : ¬ IsCofinal (sᶜ)) : IsStati
 theorem isStationary_iff_not_isCofinal_compl [WellFoundedLT α] (hα : cof α ≤ ℵ₀) :
     IsStationary s ↔ ¬ IsCofinal (sᶜ) where
   mp hs h := by
-    obtain ⟨t, ht, ht', htα⟩ := Ordinal.ord_cof_eq_of_isCofinal h
-    sorry
+    obtain ⟨t, hts, ht, htα⟩ := ord_cof_eq_of_isCofinal h
+    have ht' := dirSupClosed_of_type_le_omega0 ht (htα.trans_le ?_)
+    · cases hs ⟨ht', ht⟩
+      grind
+    · simpa using ord_mono hα
   mpr := .of_not_isCofinal_compl
