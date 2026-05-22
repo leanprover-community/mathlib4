@@ -252,3 +252,38 @@ theorem meinholdBlockMap_adj {v w : Fin 4032}
     (h : clayworthGraph.Adj v w) :
     meinholdBlockMap v = meinholdBlockMap w ∨ meinhold72Graph.Adj (meinholdBlockMap v) (meinholdBlockMap w) := by
   native_decide
+
+/-- Meinhold-72 is 7-regular: every vertex has exactly 7 neighbors. -/
+theorem meinhold72_degree (v : Fin 72) :
+    (meinhold72Graph.neighborFinset v).card = 7 := by
+  native_decide
+
+/-- Meinhold-72 has no triangles (girth ≥ 4). -/
+theorem meinhold72_triangleFree :
+    ∀ u v w : Fin 72, meinhold72Graph.Adj u v → meinhold72Graph.Adj v w →
+      meinhold72Graph.Adj u w → False := by
+  native_decide
+
+/-- Meinhold-72 has a 4-cycle (girth ≤ 4, hence girth = 4). -/
+theorem meinhold72_has_4cycle :
+    ∃ a b c d : Fin 72,
+      a ≠ c ∧ b ≠ d ∧
+      meinhold72Graph.Adj a b ∧ meinhold72Graph.Adj b c ∧
+      meinhold72Graph.Adj c d ∧ meinhold72Graph.Adj d a := by
+  exact ⟨0, 3, 17, 23, by native_decide, by native_decide,
+    by native_decide, by native_decide, by native_decide, by native_decide⟩
+
+/-- Every Meinhold-72 edge lifts to a Clayworth edge: for adjacent blocks a, b
+    there exist vertices in those fibers that are adjacent in Clayworth.
+    Together with `meinholdBlockMap_adj`, this makes the block map a full
+    graph-theoretic quotient map. -/
+theorem meinholdBlockMap_lifts {a b : Fin 72}
+    (h : meinhold72Graph.Adj a b) :
+    ∃ v w : Fin 4032, meinholdBlockMap v = a ∧ meinholdBlockMap w = b ∧
+      clayworthGraph.Adj v w := by
+  native_decide
+
+/-- Each fiber of the block map has exactly 56 vertices. -/
+theorem meinholdBlockMap_fiber_card (b : Fin 72) :
+    (Finset.univ.filter fun v : Fin 4032 => meinholdBlockMap v = b).card = 56 := by
+  native_decide
