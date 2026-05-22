@@ -431,6 +431,9 @@ theorem IsInaccessible.preAleph_ord (hc : IsInaccessible c) : preAleph c.ord = c
   ((preAleph_le_preBeth _).trans hc.preBeth_ord.le).antisymm
     (preAleph.strictMono.comp ord_strictMono).le_apply
 
+theorem IsInaccessible.preAleph_symm (hc : IsInaccessible c) : preAleph.symm c = c.ord := by
+  rw [OrderIso.symm_apply_eq, hc.preAleph_ord]
+
 theorem IsInaccessible.aleph_ord (hc : IsInaccessible c) : ℵ_ c.ord = c :=
   ((aleph_le_beth _).trans hc.beth_ord.le).antisymm (aleph.strictMono.comp ord_strictMono).le_apply
 
@@ -451,6 +454,10 @@ theorem beth_univ : ℶ_ Ordinal.univ.{u, v} = univ.{u, v} := by
 @[simp]
 theorem preAleph_univ : preAleph Ordinal.univ.{u, v} = univ.{u, v} := by
   simpa using IsInaccessible.univ.preAleph_ord
+
+@[simp]
+theorem preAleph_symm_univ : preAleph.symm univ.{u, v} = Ordinal.univ.{u, v} := by
+  simp [OrderIso.symm_apply_eq]
 
 @[simp]
 theorem aleph_univ : ℵ_ Ordinal.univ.{u, v} = univ.{u, v} := by
