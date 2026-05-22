@@ -180,6 +180,7 @@ lemma isHamiltonianCycle_iff_isCycle_and_support_count_tail_eq_one :
     IsHamiltonian, support_tail_of_not_nil, IsCycle.not_nil]
 
 /-- A Hamiltonian cycle visits every vertex. -/
+@[simp]
 lemma IsHamiltonianCycle.mem_support (hp : p.IsHamiltonianCycle) (b : α) :
     b ∈ p.support :=
   List.mem_of_mem_tail <|
@@ -209,11 +210,11 @@ lemma isHamiltonianCycle_iff_isCycle_and_length_eq [Fintype α] :
 
 @[simp]
 lemma isHamiltonianCycle_rotate (hv : v ∈ p.support) :
-    (p.rotate v hv).IsHamiltonianCycle ↔ p.IsHamiltonianCycle := by
+    (p.rotate v).IsHamiltonianCycle ↔ p.IsHamiltonianCycle := by
   cases (finite_or_infinite α).symm
   · simp
   cases nonempty_fintype α
-  simp [isHamiltonianCycle_iff_isCycle_and_length_eq]
+  simp [isHamiltonianCycle_iff_isCycle_and_length_eq, hv]
 
 protected alias ⟨IsHamiltonianCycle.of_rotate, IsHamiltonianCycle.rotate⟩ :=
   isHamiltonianCycle_rotate
@@ -233,7 +234,7 @@ def IsHamiltonian (G : SimpleGraph α) : Prop :=
 
 lemma IsHamiltonian.exists_isHamiltonianCycle [Nontrivial α] (hG : G.IsHamiltonian) (v : α) :
     ∃ p : G.Walk v v, p.IsHamiltonianCycle := by
-  obtain ⟨u, p, hp⟩ := hG Fintype.one_lt_card.ne'; exact ⟨p.rotate v <| hp.mem_support _, by simpa⟩
+  obtain ⟨u, p, hp⟩ := hG Fintype.one_lt_card.ne'; exact ⟨p.rotate v, by simp [hp]⟩
 
 lemma IsHamiltonian.mono {H : SimpleGraph α} (hGH : G ≤ H) (hG : G.IsHamiltonian) :
     H.IsHamiltonian :=
