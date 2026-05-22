@@ -68,6 +68,19 @@ noncomputable instance : NormedGroup (DirectLimit G f) where
 
 end NormedGroup
 
+section SeminormedCommGroup
+
+variable [∀ i, SeminormedCommGroup (G i)]
+variable [∀ i j h, MonoidHomClass (T h) (G i) (G j)]
+variable [∀ i j h, IsometryClass (T h) (G i) (G j)]
+
+@[to_additive]
+noncomputable instance : SeminormedCommGroup (DirectLimit G f) where
+  __ := (inferInstance : SeminormedGroup (DirectLimit G f))
+  __ := (inferInstance : CommGroup (DirectLimit G f))
+
+end SeminormedCommGroup
+
 section NormedCommGroup
 
 variable [∀ i, NormedCommGroup (G i)]
