@@ -198,6 +198,20 @@ noncomputable def id : Presentation R R PEmpty.{w + 1} PEmpty.{t + 1} :=
 lemma id_dimension : (Presentation.id R).dimension = 0 :=
   ofBijectiveAlgebraMap_dimension (R := R) Function.bijective_id
 
+variable (R ι) in
+/-- The canonical `R`-presentation of the polynomial algebra `MvPolynomial ι R`,
+with generators `X` indexed by `ι` and no relations. -/
+@[simps -fullyApplied relation]
+noncomputable def mvPolynomial : Presentation R (MvPolynomial ι R) ι PEmpty.{t + 1} where
+  relation := PEmpty.elim
+  span_range_relation_eq_ker := by
+    simpa only [Generators.ker_mvPolynomial, Set.range_eq_empty] using Ideal.span_empty
+  __ := Generators.mvPolynomial R ι
+
+@[simp]
+lemma dimension_mvPolynomial : (mvPolynomial R ι).dimension = Nat.card ι := by
+  simp [dimension]
+
 section Localization
 
 variable (r : R) [IsLocalization.Away r S]

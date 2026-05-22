@@ -139,6 +139,15 @@ noncomputable def id : Generators R R PEmpty.{w + 1} := ofSurjectiveAlgebraMap <
   rw [algebraMap_self]
   exact RingHomSurjective.is_surjective
 
+variable (R ι) in
+/-- The canonical `R`-generators of the polynomial algebra `MvPolynomial ι R`,
+indexed by `ι` via the variables `X`. -/
+@[simps σ, simps -fullyApplied val]
+noncomputable def mvPolynomial : Generators R (MvPolynomial ι R) ι where
+  val := X
+  σ' f := f
+  aeval_val_σ' := aeval_X_left_apply
+
 /-- Construct `Generators` from an assignment `I → S` such that `R[X] → S` is surjective. -/
 noncomputable
 def ofAlgHom {I : Type*} (f : MvPolynomial I R →ₐ[R] S) (h : Function.Surjective f) :
@@ -605,6 +614,9 @@ set_option backward.isDefEq.respectTransparency false in
 lemma ker_eq_ker_aeval_val : P.ker = RingHom.ker (aeval P.val) := by
   simp only [ker, Extension.ker, toExtension_Ring, algebraMap_eq]
   rfl
+
+lemma ker_mvPolynomial : (mvPolynomial R ι).ker = ⊥ := by
+  simp [ker_eq_ker_aeval_val, SetLike.ext_iff, aeval_X_left]
 
 variable {P} in
 lemma aeval_val_eq_zero {x} (hx : x ∈ P.ker) : aeval P.val x = 0 := by rwa [← algebraMap_apply]
