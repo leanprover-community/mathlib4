@@ -106,6 +106,28 @@ end
 @[simp, reassoc]
 lemma symm_i [HasBinaryCoproducts C] : P.symm.i = (coprod.braiding A A).hom ≫ P.i := by cat_disch
 
+/-- The precylinder in a full subcategory of `C` induced by a precylinder
+in the category `C`. -/
+@[simps]
+def toFullSubcategory {P : ObjectProperty C} {X : P.FullSubcategory} (Q : Precylinder X.obj)
+    (hQ : P Q.I) :
+    Precylinder X where
+  I := ⟨Q.I, hQ⟩
+  i₀ := P.homMk Q.i₀
+  i₁ := P.homMk Q.i₁
+  π := P.homMk Q.π
+
+/-- The image of a precylinder by a functor. -/
+@[simps]
+def map {X : C} (P : Precylinder X) {D : Type*} [Category* D] (F : C ⥤ D) :
+    Precylinder (F.obj X) where
+  I := F.obj P.I
+  i₀ := F.map P.i₀
+  i₁ := F.map P.i₁
+  π := F.map P.π
+  i₀_π := by simp [← F.map_comp]
+  i₁_π := by simp [← F.map_comp]
+
 end Precylinder
 
 /-- In a category with weak equivalences, a cylinder is the

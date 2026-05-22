@@ -374,8 +374,7 @@ private lemma not_isStronglyTranscendental_of_weaklyQuasiFiniteAt_of_isDomain_au
   have hf₄ : f.IsIntegral := by
     have : f = (g.restrictScalars R).comp ((Algebra.TensorProduct.comm _ _ _).toAlgHom.comp
         (IsScalarTower.toAlgHom _ _ _)) := by ext; simp [g]
-    simp only [this, AlgEquiv.toAlgHom_eq_coe, AlgHom.toRingHom_eq_coe,
-      AlgHom.comp_toRingHom, ← RingHom.comp_assoc]
+    simp only [this, AlgHom.toRingHom_eq_coe, AlgHom.comp_toRingHom, ← RingHom.comp_assoc]
     refine .trans _ _ (algebraMap_isIntegral_iff.mpr inferInstance) ?_
     exact RingHom.isIntegral_of_surjective _
       (hf₁.comp (Algebra.TensorProduct.comm _ _ _).surjective)

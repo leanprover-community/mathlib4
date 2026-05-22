@@ -635,7 +635,7 @@ theorem starClosure_le_iff {S₁ : NonUnitalSubalgebra R A} {S₂ : NonUnitalSta
     S₁.starClosure ≤ S₂ ↔ S₁ ≤ S₂.toNonUnitalSubalgebra :=
   ⟨fun h => le_sup_left.trans h, starClosure_le⟩
 
-@[mono]
+@[gcongr, mono]
 theorem starClosure_mono : Monotone (starClosure (R := R) (A := A)) :=
   fun _ _ h => starClosure_le <| h.trans le_sup_left
 
@@ -1036,6 +1036,17 @@ theorem coe_iSup_of_directed [Nonempty ι] {S : ι → NonUnitalStarSubalgebra R
   have : iSup S = K := le_antisymm (iSup_le fun i ↦ le_iSup (fun i ↦ (S i : Set A)) i)
     (Set.iUnion_subset fun _ ↦ le_iSup S _)
   this.symm ▸ rfl
+
+theorem isMulCommutative_iSup [Nonempty ι] {S : ι → NonUnitalStarSubalgebra R A}
+    [hS : ∀ i, IsMulCommutative (S i)] (dir : Directed (· ≤ ·) S) :
+    IsMulCommutative (⨆ i, S i : NonUnitalStarSubalgebra R A) := by
+  simpa [isMulCommutative_iff, ← SetLike.mem_coe, NonUnitalSubsemiring.coe_iSup_of_directed dir,
+    coe_iSup_of_directed dir] using NonUnitalSubsemiring.isMulCommutative_iSup dir
+
+instance instIsMulCommutative_iSup [Nonempty ι] [Preorder ι] [IsDirectedOrder ι]
+    {S : ι →o NonUnitalStarSubalgebra R A} [hS : ∀ i, IsMulCommutative (S i)] :
+    IsMulCommutative (⨆ i, S i : NonUnitalStarSubalgebra R A) :=
+  isMulCommutative_iSup S.monotone.directed_le
 
 /-- Define a non-unital star algebra homomorphism on a directed supremum of non-unital star
 subalgebras by defining it on each non-unital star subalgebra, and proving that it agrees on the
