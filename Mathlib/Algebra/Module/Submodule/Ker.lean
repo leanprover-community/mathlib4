@@ -171,6 +171,8 @@ variable {f : M →ₛₗ[τ₁₂] M₂}
 
 open Submodule
 
+@[simp] theorem ker_neg (f : M →ₛₗ[τ₁₂] M₂) : (-f).ker = f.ker := by ext; simp
+
 theorem ker_toAddSubgroup (f : M →ₛₗ[τ₁₂] M₂) : (ker f).toAddSubgroup = f.toAddMonoidHom.ker :=
   rfl
 
@@ -179,11 +181,6 @@ theorem sub_mem_ker_iff {x y} : x - y ∈ ker f ↔ f x = f y := by rw [mem_ker,
 theorem disjoint_ker_iff_injOn {p : Submodule R M} :
     Disjoint p (LinearMap.ker f) ↔ Set.InjOn f p := by
   rw [disjoint_ker, Set.injOn_iff_map_eq_zero]
-
-@[deprecated disjoint_ker_iff_injOn (since := "2025-11-07")]
-theorem disjoint_ker' {p : Submodule R M} :
-    Disjoint p (ker f) ↔ ∀ x ∈ p, ∀ y ∈ p, f x = f y → x = y := by
-  simp [disjoint_ker_iff_injOn, Set.InjOn]
 
 theorem injOn_of_disjoint_ker {p : Submodule R M} {s : Set M} (h : s ⊆ p)
     (hd : Disjoint p (ker f)) : Set.InjOn f s :=

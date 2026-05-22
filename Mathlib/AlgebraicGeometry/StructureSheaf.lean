@@ -600,7 +600,7 @@ def modulePresheafStalkIso (x : PrimeSpectrum.Top R) :
       Limits.colimit.isoColimitCocone ⟨_, Limits.isColimitOfPreserves (forget₂ (ModuleCat R) Ab)
       (Limits.colimit.isColimit ((OpenNhds.inclusion x).op ⋙
         structurePresheafInModuleCat R M))⟩
-    obtain ⟨U, hxU, s, rfl⟩ := TopCat.Presheaf.germ_exist _ _ m
+    obtain ⟨U, hxU, s, rfl⟩ := TopCat.Presheaf.exists_germ_eq _ m
     have : TopCat.Presheaf.germ (moduleStructurePresheaf R M).presheaf U x hxU ≫ α.hom =
         (forget₂ _ _).map ((structurePresheafInModuleCat R M).germ U x hxU) :=
       Limits.colimit.isoColimitCocone_ι_hom (C := Ab) ..
@@ -828,7 +828,7 @@ def commRingCatStalkEquivModuleStalk (x : PrimeSpectrum.Top R) :
       (forget₂ CommRingCat RingCat ⋙ forget₂ RingCat AddCommGrpCat)
       (Limits.colimit.isColimit ((OpenNhds.inclusion x).op ⋙
         structurePresheafInCommRingCat R))⟩)
-    obtain ⟨U, hxU, s, rfl⟩ := TopCat.Presheaf.germ_exist _ _ m
+    obtain ⟨U, hxU, s, rfl⟩ := TopCat.Presheaf.exists_germ_eq _ m
     have : (TopCat.Presheaf.germ (moduleStructurePresheaf R R).presheaf U x hxU) ≫ α.hom =
         (forget₂ CommRingCat RingCat ⋙ forget₂ RingCat AddCommGrpCat).map
           ((structurePresheafInCommRingCat R).germ U x hxU) :=
