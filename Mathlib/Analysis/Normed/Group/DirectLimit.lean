@@ -5,7 +5,7 @@ Authors: Matthew Corbelli
 -/
 module
 
-public import Mathlib.Analysis.Normed.Group.Defs
+public import Mathlib.Analysis.Normed.Group.Basic
 public import Mathlib.Algebra.Colimit.DirectLimit
 public import Mathlib.Topology.MetricSpace.DirectLimit
 
@@ -44,6 +44,14 @@ noncomputable instance : SeminormedGroup (DirectLimit G f) where
 lemma mul_norm_def (i : ι) (x : G i) : ‖(⟦⟨i, x⟩⟧ : DirectLimit G f)‖ = ‖x‖ := by
   change DirectLimit.lift f (ih := fun i x ↦ ‖x‖) _ ⟦⟨i, x⟩⟧ = ‖x‖
   apply DirectLimit.lift_def
+
+@[to_additive nnnorm_def]
+lemma mul_nnnorm_def (i : ι) (x : G i) : ‖(⟦⟨i, x⟩⟧ : DirectLimit G f)‖₊ = ‖x‖₊ := by
+  simp_rw [← @norm_toNNReal', mul_norm_def]
+
+@[to_additive enorm_def]
+lemma mul_enorm_def (i : ι) (x : G i) : ‖(⟦⟨i, x⟩⟧ : DirectLimit G f)‖ₑ = ‖x‖ₑ := by
+  rw [@enorm'_eq_iff_norm_eq,  mul_norm_def]
 
 end SeminormedGroup
 
