@@ -683,11 +683,6 @@ lemma maximalFlowAt_isMIntegralCurveOn (p : M)
     exact maximalFlowAt_eq_of_isMIntegralCurveOn V p s hsD hJ_open hJ_conn h0J hsJ hγ_init hγ_int hV
   · simp [maximalFlowAt', dif_pos ht, heq2]
 
-def W (_hV : ContMDiff I I.tangent 1 (fun x => (⟨x, V x⟩ : TangentBundle I M))) : Set (ℝ × M) :=
-  {tp | ∃ J : Set ℝ, ∃ U : Set M, IsOpen J ∧ IsOpen U ∧ tp.1 ∈ J ∧ tp.2 ∈ U ∧
-    (0 : ℝ) ∈ J ∧ J ×ˢ U ⊆ flowSet V ∧
-    ContinuousOn (fun q : ℝ × M => maximalFlowAt' V q.2 q.1) (J ×ˢ U)}
-
 omit [CompleteSpace E] [IsManifold I 1 M] [BoundarylessManifold I M] [T2Space M] in
 lemma isPreconnected_flowDomain (p : M) : IsPreconnected (flowDomain V p) := by
   have : flowDomain V p = ⋃₀ {J | IsOpen J ∧ IsConnected J ∧ (0 : ℝ) ∈ J ∧
@@ -705,14 +700,6 @@ lemma isPreconnected_flowDomain (p : M) : IsPreconnected (flowDomain V p) := by
     exact hs.2.2.1
   · intro s hs
     exact hs.2.1.isPreconnected
-
-lemma isOpen_W : IsOpen (W V hV) := by
-  apply isOpen_iff_mem_nhds.mpr
-  intro ⟨t, p⟩ ht
-  obtain ⟨J, U, hJ_open, hU_open, htJ, hpU, h0J, hJU, hcont⟩ := ht
-  apply Filter.mem_of_superset (by rw [nhds_prod_eq]; exact Filter.prod_mem_prod (hJ_open.mem_nhds htJ) (hU_open.mem_nhds hpU))
-  intro ⟨t', p'⟩ ⟨ht', hp'⟩
-  exact ⟨J, U, hJ_open, hU_open, ht', hp', h0J, hJU, hcont⟩
 
 end Lee912
 
