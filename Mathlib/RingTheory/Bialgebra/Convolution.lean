@@ -21,6 +21,7 @@ Both multiplications are given by
 f * g = f g
 |   |   \ /
          δ
+         |
 ```
 diagrammatically, where `μ` stands for multiplication and `δ` for comultiplication.
 -/
