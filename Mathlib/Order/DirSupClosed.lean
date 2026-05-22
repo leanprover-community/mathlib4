@@ -5,7 +5,7 @@ Authors: Christopher Hoskin, Violeta Hernández Palacios
 -/
 module
 
-public import Mathlib.Data.Fintype.Order
+public import Mathlib.Data.Set.Finite.Basic
 public import Mathlib.Order.Antisymmetrization
 public import Mathlib.Order.CompleteLattice.Defs
 public import Mathlib.Order.UpperLower.Basic
@@ -292,19 +292,25 @@ end Preorder
 section PartialOrder
 variable [PartialOrder α]
 
-theorem dirSupClosed_singleton (a : α) : DirSupClosed {a} := by
+theorem DirSupClosed.singleton (a : α) : DirSupClosed {a} := by
   intro d hda hdn _ b hb
   rw [hdn.subset_singleton_iff] at hda
   subst hda
   exact mem_singleton_of_eq (hb.unique isLUB_singleton)
 
-theorem dirSupClosedOn_singleton (a : α) : DirSupClosedOn D {a} :=
-  (dirSupClosed_singleton a).dirSupClosedOn
+@[deprecated (since := "2026-05-22")] alias dirSupClosed_singleton := DirSupClosed.singleton
+
+theorem DirSupClosedOn.singleton (a : α) : DirSupClosedOn D {a} :=
+  (DirSupClosed.singleton a).dirSupClosedOn
+
+@[deprecated (since := "2026-05-22")] alias dirSupClosedOn_singleton := DirSupClosedOn.singleton
 
 theorem Set.Finite.dirSupClosed (hs : s.Finite) : DirSupClosed s := by
-  intro t ht ht₀ ht₁ a ha
-  obtain ⟨b, hbt, hb⟩ := ht₁.finite_le ht₀ (hs.subset ht)
-  exact ht <| ha.unique ⟨hb, fun x hx ↦ hx hbt⟩ ▸ hbt
+  induction s, hs using Set.Finite.induction_on with
+  | empty => exact .empty
+  | insert has _ hs₁ =>
+    rw [Set.insert_eq]
+    exact (DirSupClosed.singleton _).union hs₁
 
 theorem dirSupClosed_range_nat {f : ℕ → α} (hf : Monotone f) (hf' : IsCofinal (.range f)) :
     DirSupClosed (range f) := by
