@@ -12,15 +12,16 @@ public import Mathlib.Init
 # Fetching cross-reference snippets
 
 The Mathlib counterpart of `scripts/crossref-snippet.lean`: given a database
-(`stacks`, `kerodon`, or `wikidata`) and a tag, fetch a one-line
-`(title, description)` snippet from the upstream site.
+(`stacks`, `kerodon`, or `wikidata`) and a tag, fetch a fragment of HTML markup
+ready to render inline in the Lean info view.
 
 This module is used by `Mathlib/Tactic/Widget/CrossRefHover.lean` so that the
 LSP widget on a cross-reference attribute can call back into the server to
 resolve a snippet on demand. The script in PR 1 of this stack reimplements
-roughly the same logic; we keep that script self-contained (no Mathlib import,
-runs via `lake env lean --run`) and this module isolated from `IO.Process`
-dependency-wise, so the two evolve in parallel.
+roughly the same logic but emits plain text (since it feeds tab-separated
+output to other tooling like PR comments); we keep that script self-contained
+(no Mathlib import, runs via `lake env lean --run`) and this module isolated
+from `IO.Process` dependency-wise, so the two evolve in parallel.
 
 The `Database` enum and its `URL` / `label` projections also live here; they
 are re-exported through `Mathlib.Tactic.CrossRefAttribute` for the attribute
@@ -78,12 +79,14 @@ any drift between the two when a new case is added to `Database`. -/
 public theorem Database.ofName?_name (d : Database) : Database.ofName? d.name = some d := by
   cases d <;> rfl
 
-/-- A successfully fetched snippet from an upstream database. -/
+/-- A successfully fetched snippet from an upstream database, given as a
+fragment of HTML markup ready to render inline in the info view. For Wikidata
+this is the (label, description) pair styled with `<strong>`; for Stacks and
+Kerodon it is the upstream `<article>` element with site-relative `href`s
+rewritten to absolute URLs. -/
 public structure Snippet where
-  /-- The display title (e.g. `"Lemma 14.32.3"`). May be empty. -/
-  title : String
-  /-- The natural-language description. May be empty. -/
-  description : String
+  /-- HTML markup ready for inline rendering. -/
+  html : String
   deriving Repr
 
 /-- A problem encountered while fetching a snippet. -/
@@ -131,30 +134,13 @@ private def flattenWhitespace (s : String) : String :=
   let (out, _) := s.toList.foldl (fun st c => go c st) ("", false)
   out.trimAscii.toString
 
-/-- Best-effort HTML→text. We treat `<x…>` as a tag only when `x` is a letter,
-`/`, or `!`, so a literal `<` inside LaTeX (`0 < 1`) is preserved. -/
-private def stripHtml (html : String) : String :=
-  let chars := html.toList
-  let rec go : List Char → Bool → String → String
-    | [], _, acc => acc
-    | '<' :: rest, false, acc =>
-      match rest with
-      | c :: _ =>
-        if c.isAlpha || c == '/' || c == '!' then go rest true acc
-        else go rest false (acc.push '<')
-      | [] => acc.push '<'
-    | '>' :: rest, true, acc => go rest false acc
-    | _ :: rest, true,  acc => go rest true  acc
-    | c :: rest, false, acc => go rest false (acc.push c)
-  let raw := go chars false ""
-  let decoded := raw
-    |>.replace "&nbsp;" " "
-    |>.replace "&amp;" "&"
-    |>.replace "&lt;" "<"
-    |>.replace "&gt;" ">"
-    |>.replace "&quot;" "\""
-    |>.replace "&#39;" "'"
-  flattenWhitespace decoded
+/-- HTML-escape a plain text string so it can safely appear inside HTML markup. -/
+private def htmlEscape (s : String) : String :=
+  s.replace "&" "&amp;"
+   |>.replace "<" "&lt;"
+   |>.replace ">" "&gt;"
+   |>.replace "\"" "&quot;"
+   |>.replace "'" "&#39;"
 
 open Lean in
 /-- Walk a path of object keys in a `Json` value, returning the leaf as a
@@ -195,10 +181,16 @@ private def fetchWikidata (qid : String) : IO SnippetOutcome := do
           match ent.getObjVal? "missing" with
           | .ok _ => return .ok none
           | _ =>
-            let label := jsonStrPath? ent ["labels", "en", "value"] |>.getD ""
-            let desc  := jsonStrPath? ent ["descriptions", "en", "value"] |>.getD ""
-            return .ok (some { title := flattenWhitespace label
-                               description := flattenWhitespace desc })
+            let labelRaw := jsonStrPath? ent ["labels", "en", "value"] |>.getD ""
+            let descRaw  := jsonStrPath? ent ["descriptions", "en", "value"] |>.getD ""
+            let label := flattenWhitespace labelRaw
+            let desc  := flattenWhitespace descRaw
+            let html := match label.isEmpty, desc.isEmpty with
+              | true,  true  => ""
+              | false, true  => s!"<strong>{htmlEscape label}</strong>"
+              | true,  false => htmlEscape desc
+              | false, false => s!"<strong>{htmlEscape label}</strong> — {htmlEscape desc}"
+            return .ok (some { html })
 
 /-! ### Stacks / Kerodon (Gerby) -/
 
@@ -208,36 +200,22 @@ private def gerbyBase? : Database → Option String
   | .kerodon  => some "https://kerodon.net"
   | .wikidata => none
 
-/-- Return the substring of `s` after the first occurrence of `needle`,
-or `none` if `needle` is absent. -/
-private def afterFirst? (s needle : String) : Option String :=
-  let parts := s.splitOn needle
-  match parts with
-  | _ :: rest@(_ :: _) => some (needle.intercalate rest)
-  | _ => none
-
-/-- Take everything up to (but not including) the first occurrence of `c`. -/
-private def takeUntilChar (s : String) (c : Char) : String :=
-  String.ofList (s.toList.takeWhile (· != c))
-
-/-- Pull the environment type (`Lemma`, `Proposition`, …) and reference number
-from the `/content/statement` HTML. Both Stacks and Kerodon wrap each tag in
-`<article class="env-{TYPE}" id="{TAG}">` and lead with
-`<a ...>Lemma <span data-tag="...">14.32.3</span>.</a>`. -/
-private def parseGerbyTitle (html : String) : String :=
-  let envType :=
-    match afterFirst? html "class=\"env-" with
-    | none => ""
-    | some rest => takeUntilChar rest '"'
-  let reference :=
-    match afterFirst? html "data-tag=\"" with
-    | none => ""
-    | some afterAttr =>
-      match afterFirst? afterAttr ">" with
-      | none => ""
-      | some inside => takeUntilChar inside '<'
-  let cap := envType.capitalize
-  flattenWhitespace (if reference.isEmpty then cap else s!"{cap} {reference}")
+/-- Rewrite site-relative `href="/..."` attributes in `html` to be absolute by
+prepending `base`. Stacks and Kerodon emit relative URLs that don't resolve
+when the markup is rendered inside the Lean info view; absolutizing them lets
+the embedded "see tag XYZ" links in a statement work. Protocol-relative URLs
+(`href="//host/..."`) are left alone. Assumes upstream uses lowercase
+`href="..."` with no spaces around `=` — true for current Gerby output. -/
+private def absolutizeRelativeHrefs (base : String) (html : String) : String :=
+  match html.splitOn "href=\"/" with
+  | [] => ""
+  | first :: rest =>
+    let glued := rest.map fun part =>
+      -- If `part` starts with `/`, the original was `href="//...` (protocol-
+      -- relative); preserve it. Otherwise it was site-relative.
+      if part.startsWith "/" then "href=\"/" ++ part
+      else s!"href=\"{base}/" ++ part
+    first ++ String.join glued
 
 private def fetchGerby (db : Database) (tag : String) : IO SnippetOutcome := do
   let some base := gerbyBase? db | return .error (.network s!"{db.name}: no Gerby base")
@@ -246,11 +224,10 @@ private def fetchGerby (db : Database) (tag : String) : IO SnippetOutcome := do
   if status != 200 then return .error (.network s!"{db.name} HTTP {status}")
   -- Gerby returns HTTP 200 even for missing tags; detect via body text.
   if body.trimAscii.toString == "This tag does not exist." then return .ok none
-  let title := parseGerbyTitle body
-  let snippet := stripHtml body
-  if title.isEmpty && snippet.isEmpty then
+  -- Sanity check: real statements are wrapped in `<article class="env-...">`.
+  if (body.splitOn "<article class=\"env-").length ≤ 1 then
     return .error (.network s!"{db.name}: could not parse statement")
-  return .ok (some { title, description := snippet })
+  return .ok (some { html := absolutizeRelativeHrefs base body })
 
 /-- Fetch one snippet from the appropriate upstream database. -/
 public def fetchSnippet (db : Database) (tag : String) : IO SnippetOutcome :=

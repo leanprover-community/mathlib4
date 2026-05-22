@@ -47,23 +47,27 @@ structure CrossRefHoverProps where
   deriving RpcEncodable
 
 open scoped ProofWidgets.Jsx in
-/-- Render the result of a snippet fetch as HTML for the info view. -/
+/-- Render the result of a snippet fetch as HTML for the info view.
+
+The snippet from `fetchSnippet` is itself HTML markup, so we inject it via
+React's `dangerouslySetInnerHTML`. We trust Stacks, Kerodon, and Wikidata
+as upstream sources and do not sanitize the markup here. -/
 private def renderOutcome (db : Database) (tag : String) (comment : String) :
     SnippetOutcome → Html
-  | .ok (some { title, description }) =>
-    let titleHtml : Html :=
-      if title.isEmpty then <span/>
-      else <span className="b mr1">{.text title}</span>
-    let descHtml : Html :=
-      if description.isEmpty then <span/>
-      else <span>{.text description}</span>
+  | .ok (some { html }) =>
+    let bodyHtml : Html :=
+      if html.isEmpty then <span/>
+      else
+        Html.element "div"
+          #[("dangerouslySetInnerHTML", Lean.Json.mkObj [("__html", .str html)])]
+          #[]
     let commentHtml : Html :=
       if comment.isEmpty then <span/>
       else <div className="i mt1 gray">"author note: " {.text comment}</div>
     let url : String := databaseURL db ++ tag
     let linkText : String := s!"{databaseLabel db} {tag} ↗"
     Html.element "div" #[("className", "pa2")] #[
-      <div>{titleHtml} {descHtml}</div>,
+      bodyHtml,
       <div className="mt1">
         <a href={url} target="_blank">{.text linkText}</a>
       </div>,
