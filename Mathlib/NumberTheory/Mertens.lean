@@ -236,7 +236,7 @@ lemma prime_tail_lt_odd_tail : ∑' p : {p : Nat.Primes // 5 ≤ p.1}, log p / (
     rw [hpeq_real, hppred_real]
   have hodd_nonneg : ∀ k : Set.Ici 2, 0 ≤ oddLogDivMulPred k := by
     intro k
-    exact oddLogDivMulPred_nonneg (by sorry)
+    exact oddLogDivMulPred_nonneg (by simp; grind)
   let rest := fun k ↦ if k = k4 then 0 else oddLogDivMulPred k
   have hrest_nonneg : ∀ k : Set.Ici 2, 0 ≤ rest k := by
     intro k
