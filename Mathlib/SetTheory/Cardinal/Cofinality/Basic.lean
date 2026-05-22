@@ -8,8 +8,6 @@ module
 public import Mathlib.Order.Cofinal
 public import Mathlib.SetTheory.Cardinal.Basic
 
-import Mathlib.Order.LatticeIntervals
-
 /-!
 # Cofinality of an order
 
