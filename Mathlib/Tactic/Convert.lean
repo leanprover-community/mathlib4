@@ -296,6 +296,7 @@ example (a b c d e f g N : ℕ) : (a + b) + (c + d) + (e + f) + g ≤ N := by
 ```
 -/
 syntax (name := acChange) "ac_change " term (" using " num)? : tactic
+@[tactic_alt acChange]
 syntax (name := acChange!) "ac_change! " term (" using " num)? : tactic
 
 macro_rules
