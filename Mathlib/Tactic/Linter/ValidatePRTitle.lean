@@ -92,11 +92,24 @@ public def validateTitle (title : String) : Array String := Id.run do
   | Except.error _ =>
     return errors.push s!"error: the PR title should be of the form\n  kind: main title\n\
       or\n  kind(scope): main title\nAllowed values for `kind` are {knownKinds}"
-  | Except.ok (_kind, _scope?) =>
-    -- Future: also check scope (and the main PR title)
+  | Except.ok (_kind, scope?, mainTitle) =>
+    if let some scope := scope? then
+      if scope.startsWith "Mathlib/" then
+        errors := errors.push s!"error: the PR scope must not start with 'Mathlib/'"
+      if scope.endsWith ".lean" then
+        errors := errors.push s!"error: a PR's scope must not end with '.lean'"
+      -- Disabling this for now, to reduce warning fatigue. Might enable this in the future.
+      -- if scope.contains '.' then
+      --  errors := errors.push s!"error: a PR's scope should be a directory, not a module"
+      -- Future: we could check if `scope` describes a directory that actually exist.
+    -- Titles should be lower-cased: we don't enforce this for now.
+    if mainTitle.front.toLower != mainTitle.front then
+      errors := errors.push "error: the main PR title should be lowercased"
+    if mainTitle.endsWith "." then
+      errors := errors.push "error: the PR title should not end with a full stop"
     if title.contains "  " then
       errors := errors.push
         "error: the PR title contains multiple consecutive spaces; please add just one"
-    if title.endsWith "." then
-      errors := errors.push "error: the PR title should not end with a full stop"
+    -- Future: add more checks!
+
     return errors

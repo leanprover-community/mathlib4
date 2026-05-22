@@ -36,19 +36,20 @@ Allowed values for `kind` are [feat, chore, perf, refactor, style, fix, doc, tes
 #guard_msgs in
 #check_title "feat: bad title."
 
--- Enable if/when we decide to enforce lower-cased titles.
--- /-- info: Message: 'error: the main PR title should be lowercased' -/
--- #guard_msgs in
--- #check_title "feat: My Bad Title"
+/-- info: Message: 'error: the main PR title should be lowercased' -/
+#guard_msgs in
+#check_title "feat: My Bad Title"
 
 -- Acronyms are valid PR titles, in any case.
+-- TODO: fix this false positive!
+/-- info: Message: 'error: the main PR title should be lowercased' -/
 #guard_msgs in
 #check_title "feat: RPC acronyms are fine"
 
 /--
-info: Message: 'error: the PR title contains multiple consecutive spaces; please add just one'
----
 info: Message: 'error: the PR title should not end with a full stop'
+---
+info: Message: 'error: the PR title contains multiple consecutive spaces; please add just one'
 -/
 #guard_msgs in
 #check_title "chore: bad   Title."
