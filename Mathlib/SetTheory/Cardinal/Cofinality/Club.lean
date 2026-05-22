@@ -225,6 +225,12 @@ theorem isStationary_univ_iff : IsStationary (.univ (α := α)) ↔ Nonempty α 
 theorem IsStationary.univ [Nonempty α] : IsStationary (.univ (α := α)) :=
   isStationary_univ_iff.2 ‹_›
 
+theorem IsClub.isStationary [WellFoundedLT α] (hα : ℵ₀ < cof α) (hs : IsClub s) :
+    IsStationary s := by
+  have := hα.ne_zero
+  rw [cof_ne_zero_iff] at this
+  exact fun t ht ↦ (hs.inter hα.ne' ht).nonempty
+
 theorem IsStationary.of_not_isCofinal_compl (hs : ¬ IsCofinal (sᶜ)) : IsStationary s := by
   intro t ht
   obtain ⟨a, ha⟩ := not_isCofinal_iff.1 hs
