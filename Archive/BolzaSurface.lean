@@ -86,3 +86,11 @@ theorem bolza_surface_eq_voltage :
         (bolzaSurface.edge_src e = v ∧ bolzaSurface.edge_tgt e = u)) ↔
       mobiusKantorVoltage.Adj (bolzaBij u) (bolzaBij v) := by
   native_decide
+
+/-! ### Dual graph: 6 octagonal faces, degree 8 -/
+
+/-- The dual of the Bolza surface is 8-regular. -/
+theorem bolzaSurface_dual_regular :
+    ∀ v : Fin 6,
+      (Finset.univ.filter fun w => bolzaSurface.toDualSimpleGraph.Adj v w).card = 8 := by
+  sorry

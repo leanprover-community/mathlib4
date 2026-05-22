@@ -243,3 +243,11 @@ noncomputable def kleinSabidussiIso :
       (connectionSet kGroup kleinGraph 0) (connectionSet.isConnectionSet 0) :=
   sabidussiIso 0
 end KleinSabidussi
+
+/-! ### Dual graph: 24 heptagonal faces, degree 7 -/
+
+/-- The dual of the Klein quartic surface is 7-regular. -/
+theorem kleinSurface_dual_regular :
+    ∀ v : Fin 24,
+      (Finset.univ.filter fun w => kleinSurface.toDualSimpleGraph.Adj v w).card = 7 := by
+  sorry

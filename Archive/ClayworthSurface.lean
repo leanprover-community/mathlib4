@@ -321,3 +321,11 @@ set_option maxHeartbeats 1600000 in
 /-- The Clayworth surface as a CellularSurface, constructed via Δ(2,3,12). -/
 def clayworthSurface : CellularSurface :=
   clayworthTriangleData.toCellularSurface (by norm_num) (by native_decide)
+
+/-! ### Dual graph: 1008 dodecagonal faces, degree 12 -/
+
+/-- The dual of the Clayworth surface is 12-regular. -/
+theorem clayworthSurface_dual_regular :
+    ∀ v : Fin 1008,
+      (Finset.univ.filter fun w => clayworthSurface.toDualSimpleGraph.Adj v w).card = 12 := by
+  sorry

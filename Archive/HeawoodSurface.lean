@@ -92,3 +92,11 @@ theorem heawood_surface_eq_voltage :
         (heawoodSurface.edge_src e = v ∧ heawoodSurface.edge_tgt e = u)) ↔
       heawoodVoltage.Adj (heawoodBij u) (heawoodBij v) := by
   native_decide
+
+/-! ### Dual graph: 7 hexagonal faces, degree 6 -/
+
+/-- The dual of the Heawood surface is 6-regular. -/
+theorem heawoodSurface_dual_regular :
+    ∀ v : Fin 7,
+      (Finset.univ.filter fun w => heawoodSurface.toDualSimpleGraph.Adj v w).card = 6 := by
+  sorry
