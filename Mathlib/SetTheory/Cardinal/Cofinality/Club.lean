@@ -148,7 +148,7 @@ protected theorem diag [IsRegularCardinalOrder α] {f : α → Set α} (hα : co
     apply (hf b).isLUB_mem _ ⟨c, _⟩ (ha.inter_Ici_of_mem hc) <;> grind
   isCofinal a := by
     obtain hα | hα := hα.lt_or_gt
-    · rw [cof_lt_aleph0_iff, cof_eq_cardinalMk, le_one_iff_subsingleton] at hα
+    · rw [Order.cof_lt_aleph0_iff, cof_eq_cardinalMk, le_one_iff_subsingleton] at hα
       use a
       simp
     have : Nonempty α := ⟨a⟩
