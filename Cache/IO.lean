@@ -595,7 +595,7 @@ where
   This assumes the `folder` exists.
   -/
   walkDir (sp : SearchPath) (folder : FilePath) (mod : Name) : IO <| Array (Name × FilePath) := do
-    -- The source direcory where `mod` is located
+    -- The source directory where `mod` is located
     let srcDir ← getSrcDir sp mod
     -- find all Lean files in the folder only skipping special entries such as `.` and `..`
     let files ← folder.walkDir (pure ·.fileName.isSome)

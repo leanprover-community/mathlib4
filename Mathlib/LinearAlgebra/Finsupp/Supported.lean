@@ -83,7 +83,7 @@ lemma single_mem_span_single [Nontrivial R] {a : α} {s : Set α} :
     single a 1 ∈ Submodule.span R ((single · (1 : R)) '' s) ↔ a ∈ s := by
   refine ⟨fun h => ?_, fun h => Submodule.subset_span <| Set.mem_image_of_mem _ h⟩
   rw [← Finsupp.supported_eq_span_single, Finsupp.mem_supported,
-    Finsupp.support_single_ne_zero _ (one_ne_zero' R)] at h
+    Finsupp.support_single _ (one_ne_zero' R)] at h
   simpa using h
 
 theorem span_le_supported_biUnion_support (s : Set (α →₀ M)) :
@@ -188,7 +188,7 @@ lemma codisjoint_supported_supported_iff [Nontrivial M] {s t : Set α} :
   refine ⟨fun h ↦ codisjoint_iff.mpr (eq_top_iff.mpr fun a ↦ ?_), codisjoint_supported_supported⟩
   obtain ⟨x, hx⟩ := exists_ne (0 : M)
   rw [codisjoint_iff, ← supported_union, eq_top_iff'] at h
-  simpa [Finsupp.mem_supported, Finsupp.support_single_ne_zero _ hx] using h (Finsupp.single a x)
+  simpa [Finsupp.mem_supported, Finsupp.support_single _ hx] using h (Finsupp.single a x)
 
 /-- Interpret `Finsupp.restrictSupportEquiv` as a linear equivalence between
 `supported M R s` and `s →₀ M`. -/
