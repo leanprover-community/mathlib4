@@ -640,7 +640,9 @@ theorem coeff_C : coeff (C a) n = ite (n = 0) a 0 := by
 theorem coeff_C_zero : coeff (C a) 0 = a :=
   coeff_monomial
 
-theorem coeff_C_ne_zero (h : n ≠ 0) : (C a).coeff n = 0 := by rw [coeff_C, if_neg h]
+theorem coeff_C_of_ne_zero (h : n ≠ 0) : (C a).coeff n = 0 := by rw [coeff_C, if_neg h]
+
+@[deprecated (since := "2026-05-20")] alias coeff_C_ne_zero := coeff_C_of_ne_zero
 
 @[simp]
 lemma coeff_C_succ {r : R} {n : ℕ} : coeff (C r) (n + 1) = 0 := by simp [coeff_C]
