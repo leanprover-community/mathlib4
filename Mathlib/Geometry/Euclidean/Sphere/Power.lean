@@ -160,6 +160,7 @@ private lemma cospherical_of_mul_dist_eq_mul_dist_of_angle_eq_pi_aux
   apply similar_of_side_angle_side h_notcol_p₁pp₄ h_notcol_p₃pp₂ h_angle_eq ?_
   grind [dist_comm]
 
+open scoped Affine.Simplex Module.Oriented.Arbitrary in
 /-- If `p` lies strictly between `p₁` and `p₂` on one line and strictly between `p₃` and `p₄`
 on another line, and if `dist p₁ p * dist p₂ p = dist p₃ p * dist p₄ p`,
 then the points `p₁`, `p₂`, `p₃`, and `p₄` are cospherical. -/
@@ -171,7 +172,7 @@ theorem cospherical_of_mul_dist_eq_mul_dist_of_angle_eq_pi {p₁ p₂ p₃ p₄ 
   have hp₃p₄_sbtw : Sbtw ℝ p₃ p p₄ := angle_eq_pi_iff_sbtw.mp hp₃p₄
   have hindep : AffineIndependent ℝ ![p₁, p, p₃] := affineIndependent_iff_not_collinear_set.mpr hn
   set t : Affine.Triangle ℝ P := ⟨_, hindep⟩ with ht
-  set S : AffineSubspace ℝ P := affineSpan ℝ (Set.range t.points) with hS
+  let S : AffineSubspace ℝ P := affineSpan ℝ (Set.range t.points)
   have hp₂ : p₂ ∈ S := by
     suffices hmem : p₂ ∈ affineSpan ℝ {p₁, p} by exact affineSpan_mono ℝ (by simp [ht]; grind) hmem
     simp [hp₁p₂_sbtw.wbtw.collinear.mem_affineSpan_of_mem_of_ne _ _ _ hp₁p₂_sbtw.left_ne]
@@ -195,16 +196,12 @@ theorem cospherical_of_mul_dist_eq_mul_dist_of_angle_eq_pi {p₁ p₂ p₃ p₄ 
     canonicalizer; a minimization would help. The original proof was:
     `grind [Set.image_insert_eq, Set.image_singleton]` -/
     simpa [Set.image_insert_eq, Set.image_singleton] using Cospherical.subtype_val h_cospherical'
-  have hf2 : Fact (finrank ℝ S.direction = 2) := ⟨by
-    rw [hS, direction_affineSpan, t.independent.finrank_vectorSpan]
-    simp⟩
-  letI : Module.Oriented ℝ S.direction (Fin 2) :=
-    ⟨Basis.orientation (finBasisOfFinrankEq _ _ hf2.out)⟩
   have hncol : ¬ Collinear ℝ {p₁', p', p₃'} := by
     rw [← affineIndependent_iff_not_collinear_set,
       ← s_isom.toAffineMap.affineIndependent_iff s_isom.injective]
     convert hindep
     ext i; fin_cases i <;> rfl
+  have : Fact (finrank ℝ S.direction = 2) := Affine.Simplex.fact_finrank_direction_affineSpan_eq
   exact cospherical_of_mul_dist_eq_mul_dist_of_angle_eq_pi_aux h_dist' hp₁'p₂' hp₃'p₄' hncol
 
 /-- **Intersecting Secants Theorem**. -/

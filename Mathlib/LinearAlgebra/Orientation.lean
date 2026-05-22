@@ -191,6 +191,15 @@ theorem orientation_isEmpty [IsEmpty ι] (b : Basis ι R M) :
 
 end Module.Basis
 
+namespace Module.Oriented.Arbitrary
+
+/-- An arbitrary choice of orientation. -/
+scoped instance (priority := 100) {n : ℕ} [Module.Finite R M] [Module.Free R M]
+    [Fact (finrank R M = n)] : Module.Oriented R M (Fin n) :=
+  ⟨Basis.orientation (finBasisOfFinrankEq _ _ Fact.out)⟩
+
+end Module.Oriented.Arbitrary
+
 end OrderedCommRing
 
 section LinearOrderedCommRing

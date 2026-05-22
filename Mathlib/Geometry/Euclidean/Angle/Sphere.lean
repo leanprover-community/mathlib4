@@ -425,19 +425,15 @@ theorem mem_circumsphere_of_two_zsmul_oangle_eq {t : Triangle ℝ P} {p : P} {i�
 
 end Oriented
 
+open scoped Affine.Simplex Module.Oriented.Arbitrary in
 /-- The circumradius of a triangle may be expressed explicitly as half the length of a side
 divided by the sine of the angle at the third point (a version of the law of sines or sine rule). -/
 theorem dist_div_sin_angle_div_two_eq_circumradius (t : Triangle ℝ P) {i₁ i₂ i₃ : Fin 3}
     (h₁₂ : i₁ ≠ i₂) (h₁₃ : i₁ ≠ i₃) (h₂₃ : i₂ ≠ i₃) :
     dist (t.points i₁) (t.points i₃) / Real.sin (∠ (t.points i₁) (t.points i₂) (t.points i₃)) / 2 =
       t.circumradius := by
-  set S : AffineSubspace ℝ P := affineSpan ℝ (Set.range t.points) with hS
+  let S : AffineSubspace ℝ P := affineSpan ℝ (Set.range t.points)
   let t' : Triangle ℝ S := t.restrict S le_rfl
-  have hf2 : Fact (finrank ℝ S.direction = 2) := ⟨by
-    rw [hS, direction_affineSpan, t.independent.finrank_vectorSpan]
-    simp⟩
-  have : Module.Oriented ℝ S.direction (Fin 2) :=
-    ⟨Basis.orientation (finBasisOfFinrankEq _ _ hf2.out)⟩
   convert t'.dist_div_sin_oangle_div_two_eq_circumradius h₁₂ h₁₃ h₂₃ using 3
   · rw [← Real.Angle.sin_toReal,
       Real.abs_sin_eq_sin_abs_of_abs_le_pi (Real.Angle.abs_toReal_le_pi _),
