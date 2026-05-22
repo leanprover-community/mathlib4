@@ -545,7 +545,7 @@ public def isBadNameWithUnderscore (name : Name) : Bool := Id.run do
       (`LibraryNote).isPrefixOf declName ||
       (`Mathlib.Tactic).isPrefixOf declName || (`Mathlib.Parser).isPrefixOf declName ||
       declName.components.any (· == `Simps) ||
-      last.endsWith "_1" || last.endsWith "_2" || last.endsWith "_mathlib" then
+      last.endsWith "_1" || last.endsWith "_2" || last.endsWith "_mathlib" ||
       declName.components.any (·.toString.endsWith '_') then
     return false
   if declName.toString.contains "_" then return true
@@ -558,11 +558,10 @@ such names violate the naming convention. -/
   noErrorsFound := "no definitions with an underscore in their name found."
   errorsFound := "FOUND definitions with an underscore in their name."
   test declName := do
-    unless (((← getEnv).find? declName).get!).isDefinition && !(← isAutoDecl declName) do return none
+    unless ((← getEnv).find? declName).get!.isDefinition && !(← isAutoDecl declName) do return none
     -- We also exclude simprocs: these should be named like normal lemmas.
     -- check if their type is `Lean.Meta.Simp.Simproc`.
-    if (((← getEnv).find? declName).get!).type.isConstOf `Lean.Meta.Simp.Simproc then
-      return none
+    if ((← getEnv).find? declName).get!.type.isConstOf `Lean.Meta.Simp.Simproc then return none
     if isBadNameWithUnderscore declName then
       return m!"The definition `{declName}` contains an underscore. \
         This almost surely violates mathlib's naming convention; \
