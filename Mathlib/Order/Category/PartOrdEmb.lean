@@ -171,6 +171,13 @@ def orderIsoOfIso {α β : PartOrdEmb.{u}} (e : α ≅ β) :
   right_inv := ConcreteCategory.congr_hom e.inv_hom_id
   map_rel_iff' := Hom.le_iff_le _ _ _
 
+/-- Isomorphisms in `PartOrdEmb` correspond to order isomorphisms. -/
+@[simps]
+def orderIsoEquivIso {α β : PartOrdEmb.{u}} :
+    (α ≅ β) ≃ (α ≃o β) where
+  toFun := orderIsoOfIso
+  invFun := Iso.mk
+
 instance : (forget PartOrdEmb.{u}).ReflectsIsomorphisms where
   reflects {α β} f hf := by
     rw [CategoryTheory.isIso_iff_bijective] at hf

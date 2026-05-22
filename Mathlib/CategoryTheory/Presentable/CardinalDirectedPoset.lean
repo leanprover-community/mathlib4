@@ -136,6 +136,9 @@ namespace coconeWithTop
 
 variable (J : CardinalFilteredPoset κ)
 
+-- The `@[nolint unusedArguments]` facilitates the definitions below towards
+-- `isColimitCoconeWithTop`: in particlar, it allows to setup `IsCardinalFiltered`
+-- instances on `indexSet J h` assuming `h : κ ≤ κ'`.
 /-- Given two regular cardinals `κ ≤ κ'` and `J : CardinalFilteredPoset κ`,
 this is the partially ordered set consisting of subsets `S` of `J.withTop`
 that are of cardinality `< κ'` and contain `⊤`.
