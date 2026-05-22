@@ -289,7 +289,7 @@ lemma dirSupInaccOn_Iic (a : α) : DirSupInaccOn D (Iic a) :=
 
 end Preorder
 
-namespace PartialOrder
+section PartialOrder
 variable [PartialOrder α]
 
 theorem dirSupClosed_singleton (a : α) : DirSupClosed {a} := by
@@ -301,7 +301,7 @@ theorem dirSupClosed_singleton (a : α) : DirSupClosed {a} := by
 theorem dirSupClosedOn_singleton (a : α) : DirSupClosedOn D {a} :=
   (dirSupClosed_singleton a).dirSupClosedOn
 
-theorem DirSupClosed.of_finite (hs : s.Finite) : DirSupClosed s := by
+theorem Set.Finite.dirSupClosed (hs : s.Finite) : DirSupClosed s := by
   intro t ht ht₀ ht₁ a ha
   obtain ⟨b, hbt, hb⟩ := ht₁.finite_le ht₀ (hs.subset ht)
   exact ht <| ha.unique ⟨hb, fun x hx ↦ hx hbt⟩ ▸ hbt
