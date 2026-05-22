@@ -5,6 +5,7 @@ Authors: Robin Langer
 -/
 import Mathlib.Combinatorics.SimpleGraph.Basic
 import Mathlib.Combinatorics.SimpleGraph.QuotientGraph
+import Mathlib.Combinatorics.SimpleGraph.SabidussiWitness
 
 /-!
 # The Zhou-3 graph (F182A) and its Z₂ quotient (Zhou-6)
@@ -204,11 +205,206 @@ theorem zhou6Graph_edgeCount :
 /-! ### Quotient relationship
 
 The Zhou-6 graph is the Z₂ quotient of the Zhou-3 graph via `zhouBlockMap`.
-The brute-force `native_decide` proof of `zhou6_eq_quotient` is too expensive
-(existential over Fin 182² for each of 91² pairs). A structural proof via
-PSL(2,13) generators (analogous to `G2Action.langer_eq_tutte12_distance2'`)
-would scale better. -/
+Each block has size 2; we precompute both representatives per block and
+reduce the existential to checking 4 pairs. -/
 
 /-- The Z₂ quotient of the Zhou-3 graph (defined abstractly via quotientGraph). -/
 def zhouQuotientGraph : SimpleGraph (Fin 91) :=
   zhouGraph.quotientGraph zhouBlockMap
+
+/-- For each block `b ∈ Fin 91`, the two vertices `u₁, u₂ ∈ Fin 182` with
+`zhouBlockMap u = b`. Precomputed to make the quotient proof decidable. -/
+private def zhouBlockReps : Array (Fin 182 × Fin 182) := #[
+  (0,137),(5,92),(65,73),(4,147),(59,179),(32,103),(3,106),(51,169),(26,83),(2,116),
+  (64,138),(43,150),(117,157),(17,120),(1,162),(18,61),(58,96),(13,180),(40,112),
+  (7,166),(128,164),(15,80),(10,176),(60,102),(66,105),(8,56),(33,71),(50,156),
+  (28,87),(25,172),(70,123),(36,144),(12,62),(79,142),(20,89),(16,95),(63,84),
+  (52,99),(110,125),(24,129),(38,47),(27,68),(39,126),(19,155),(153,173),(69,85),
+  (30,53),(82,104),(109,167),(11,136),(6,161),(55,114),(115,170),(41,178),(94,108),
+  (76,127),(37,42),(54,133),(45,77),(159,165),(9,124),(44,90),(22,121),(148,154),
+  (21,49),(93,118),(78,171),(139,145),(23,91),(34,134),(46,160),(57,168),(75,163),
+  (107,158),(48,146),(14,149),(29,132),(135,143),(35,111),(31,74),(67,130),(88,101),
+  (97,152),(113,151),(98,174),(141,181),(119,131),(86,122),(81,177),(100,175),(72,140)]
+private theorem zhouBlockReps_size : zhouBlockReps.size = 91 := by native_decide
+
+/-- The precomputed representatives are correct: both map to the given block. -/
+private theorem zhouBlockReps_correct :
+    ∀ b : Fin 91,
+      let r := zhouBlockReps[b.val]'(by have := zhouBlockReps_size; omega)
+      zhouBlockMap r.1 = b ∧ zhouBlockMap r.2 = b := by
+  native_decide
+
+/-- Every vertex maps to one of the two representatives for its block. -/
+private theorem zhouBlockMap_exhaustive :
+    ∀ v : Fin 182,
+      let r := zhouBlockReps[(zhouBlockMap v).val]'(by have := zhouBlockReps_size; omega)
+      v = r.1 ∨ v = r.2 := by
+  native_decide
+
+/-- **The Zhou-6 graph equals the Z₂ quotient of the Zhou-3 graph.**
+
+`zhou6Graph.Adj a b ↔ zhouGraph.quotientGraph(zhouBlockMap).Adj a b` for all `a b`. -/
+theorem zhou6_eq_quotient : zhou6Graph = zhouQuotientGraph := by
+  ext a b
+  simp only [zhouQuotientGraph, SimpleGraph.quotientGraph]
+  constructor
+  · intro h
+    refine ⟨by rintro rfl; exact (zhou6Graph.loopless.irrefl a) h, ?_⟩
+    let ra := zhouBlockReps[a.val]'(by have := zhouBlockReps_size; omega)
+    let rb := zhouBlockReps[b.val]'(by have := zhouBlockReps_size; omega)
+    -- At least one of the 4 cross-block pairs must be adjacent in zhouGraph.
+    -- We prove this by native_decide on a Bool reformulation.
+    have : ∀ a b : Fin 91, zhou6Graph.Adj a b →
+        let ra := zhouBlockReps[a.val]'(by have := zhouBlockReps_size; omega)
+        let rb := zhouBlockReps[b.val]'(by have := zhouBlockReps_size; omega)
+        zhouGraph.Adj ra.1 rb.1 ∨ zhouGraph.Adj ra.1 rb.2 ∨
+        zhouGraph.Adj ra.2 rb.1 ∨ zhouGraph.Adj ra.2 rb.2 := by native_decide
+    obtain h4 := this a b h
+    rcases h4 with h1 | h2 | h3 | h4
+    · exact ⟨ra.1, rb.1, (zhouBlockReps_correct a).1, (zhouBlockReps_correct b).1, h1⟩
+    · exact ⟨ra.1, rb.2, (zhouBlockReps_correct a).1, (zhouBlockReps_correct b).2, h2⟩
+    · exact ⟨ra.2, rb.1, (zhouBlockReps_correct a).2, (zhouBlockReps_correct b).1, h3⟩
+    · exact ⟨ra.2, rb.2, (zhouBlockReps_correct a).2, (zhouBlockReps_correct b).2, h4⟩
+  · rintro ⟨hne, u, v, hu, hv, hadj⟩
+    have key : ∀ u v : Fin 182, zhouGraph.Adj u v →
+        zhou6Graph.Adj (zhouBlockMap u) (zhouBlockMap v) := by native_decide
+    rw [← hu, ← hv]; exact key u v hadj
+
+/-! ## Sabidussi coset graph representations -/
+
+section ZhouSabidussi
+
+/-! ### Zhou-3: Sab(PSL(2,13), S₃) -/
+
+private def zG1F : Array (Fin 182) := #[120,121,114,109,118,45,13,116,115,101,110,76,104,49,12,117,105,111,112,15,103,11,113,108,46,106,48,72,73,8,74,75,44,47,102,100,119,14,107,165,174,95,149,156,34,179,97,158,178,136,85,161,129,31,147,130,170,171,138,70,36,40,82,7,1,71,57,122,140,153,181,38,172,33,163,150,135,59,26,87,157,61,164,146,166,173,148,65,96,32,134,94,77,81,5,66,64,132,133,24,155,58,144,90,128,168,167,145,92,176,68,175,98,9,67,52,55,137,177,20,35,151,154,141,88,27,159,143,126,160,86,89,56,4,60,51,127,17,162,142,25,91,28,169,131,79,41,93,63,62,50,124,29,30,84,80,69,0,139,37,152,180,22,43,39,42,2,10,78,6,99,83,3,53,54,19,125,18,16,123,21,23]
+private def zG1I : Array (Fin 182) := #[157,64,166,172,133,94,169,63,29,113,167,21,14,6,37,19,178,137,177,175,119,180,162,181,99,140,78,125,142,152,153,53,89,73,44,120,60,159,71,164,61,146,165,163,32,5,24,33,26,13,150,135,115,173,174,116,132,66,101,77,134,81,149,148,96,87,95,114,110,156,59,65,27,28,30,31,11,92,168,145,155,93,62,171,154,50,130,79,124,131,103,141,108,147,91,41,88,46,112,170,35,9,34,20,12,16,25,38,23,3,10,17,18,22,2,8,7,15,4,36,0,1,67,179,151,176,128,136,104,52,55,144,97,98,90,76,49,117,58,158,68,123,139,127,102,107,83,54,86,42,75,121,160,69,122,100,43,80,47,126,129,51,138,74,82,39,84,106,105,143,56,57,72,85,40,111,109,118,48,45,161,70]
+private def zG2F : Array (Fin 182) := #[150,163,172,135,115,33,94,166,157,64,133,156,59,26,87,110,132,101,134,77,65,96,148,173,32,116,13,114,149,95,174,165,24,5,61,66,146,81,164,175,167,178,177,137,90,155,158,128,144,58,136,104,52,98,176,68,117,168,49,12,76,34,179,97,9,20,35,67,55,151,145,92,142,89,159,162,60,19,78,140,125,37,169,180,152,113,119,14,120,73,44,153,71,181,6,29,21,63,53,99,126,17,127,129,51,111,143,160,161,112,15,105,109,85,27,4,25,56,141,86,88,154,131,139,138,80,100,102,47,103,130,122,16,10,18,3,50,43,124,123,79,118,72,106,48,70,36,170,22,28,0,69,84,91,121,45,11,8,46,74,107,108,75,1,38,31,7,40,57,82,147,171,2,23,30,39,54,42,41,62,83,93]
+private def zG2I : Array (Fin 182) := #[150,163,172,135,115,33,94,166,157,64,133,156,59,26,87,110,132,101,134,77,65,96,148,173,32,116,13,114,149,95,174,165,24,5,61,66,146,81,164,175,167,178,177,137,90,155,158,128,144,58,136,104,52,98,176,68,117,168,49,12,76,34,179,97,9,20,35,67,55,151,145,92,142,89,159,162,60,19,78,140,125,37,169,180,152,113,119,14,120,73,44,153,71,181,6,29,21,63,53,99,126,17,127,129,51,111,143,160,161,112,15,105,109,85,27,4,25,56,141,86,88,154,131,139,138,80,100,102,47,103,130,122,16,10,18,3,50,43,124,123,79,118,72,106,48,70,36,170,22,28,0,69,84,91,121,45,11,8,46,74,107,108,75,1,38,31,7,40,57,82,147,171,2,23,30,39,54,42,41,62,83,93]
+private theorem zG1F_s : zG1F.size = 182 := by native_decide
+private theorem zG1I_s : zG1I.size = 182 := by native_decide
+private theorem zG2F_s : zG2F.size = 182 := by native_decide
+private theorem zG2I_s : zG2I.size = 182 := by native_decide
+private def zG1 : Equiv.Perm (Fin 182) where
+  toFun i := zG1F[i.val]'(by have := zG1F_s; omega)
+  invFun i := zG1I[i.val]'(by have := zG1I_s; omega)
+  left_inv := by native_decide
+  right_inv := by native_decide
+private def zG2 : Equiv.Perm (Fin 182) where
+  toFun i := zG2F[i.val]'(by have := zG2F_s; omega)
+  invFun i := zG2I[i.val]'(by have := zG2I_s; omega)
+  left_inv := by native_decide
+  right_inv := by native_decide
+private def zGens : Fin 2 → Equiv.Perm (Fin 182) | 0 => zG1 | 1 => zG2
+private def zGroup : Subgroup (Equiv.Perm (Fin 182)) := Subgroup.closure (Set.range zGens)
+
+private def zWD : Array (List (Fin 4)) := #[
+  [],[0,1,0,0,0],[2,2,1,0,1,2],[2,2,1,2,2,2],[2,1,0,1],[2,2,2,1,2],[1,0,1,2,2,2],[1,2,1,0,1,0,0],
+  [2,1],[0,1,0,0,1],[2,1,0,1,2,1],[0,1,0,1,0],[0,0,0,1,2,2,2],[1,0,1,2,2],[0,0,0,1,0,0,0],[1,2,2,1,2,1,0,0],
+  [0,0,1,0,1,2,2],[0,1,0,0,1,0,1],[1,2,2,1,0,1,0],[1,2,2,1,2,1,0],[2,1,0,0,0,1,2],[0,1,0,1],[1,2,1,0],[1,0,0,0,1],
+  [0,0,0,1,2,1,0,1,2],[1,0,1,0,0,1,2],[1,0,1,2,2,1],[2,2,1,0],[1,2,2,1,0,0,1],[2,1,2],[0,0,0,1,0,1,2],[1,2,2],
+  [1,0,1,0,1,2,2,2],[2,2,2,1,2,1],[1,0,1,0,1,2],[0,0],[0,0,1,2,2,2,1],[0,0,0,1,0,0],[1,2,2,1,2,2,1],[1,2,2,1,2],
+  [2,2,1,2,1,2,2],[0,0,1,2,2],[1,2,2,1,0],[0,1,0,0,0,1,0],[1,0,1,0,1,2,2],[2,2,2,1],[0,0,0,1,2,1,0,1],[0,0,0,1,2,1],
+  [0,0,1,2,2,1,2],[1,0,1,2],[1,0],[0,0,0,1,2,2,1],[2,1,0,0],[1,2,2,2],[2,2,1,2,1],[1,2,1,0,1,2,2,2],
+  [2,2,1,2,1,0,1,2],[0,0,1,0],[0,1,2,1,2],[0,0,0,1,2,2,2,1],[0,1,0,1,0,0,1],[1,0,1,0,1,2,1],[2,2,2,1,0,1],[1,2,1,0,1,0],
+  [0,1,0,0],[2,1,0,0,0,1,2,1],[0,0,1],[2,2,1,0,1,0],[2,1,0,1,2,1,0,0],[0,1,2,2,1],[1,0,0,0,1,2,2],[1,0,0,0,1,0,0,1],
+  [2,2,1,0,0],[2,2,2,1,2,1,2],[0,0,0,1,0,1],[1,2],[0,1,0,1,0,0],[1,0,0,0,1,0,0,0],[0,0,1,0,1,0],[2,1,2,2,2,1,0,0],
+  [2,2],[0,0,0,1,0,0,1],[1,0,1,0,0,0,1],[0,0,1,0,0,0],[2,1,2,2,1],[1,0,0],[1,2,1,0,1,2],[0,0,0,1,0,0,0,1],
+  [0,1],[1,0,1,0,1,0,0,0],[2,1,0,0,0,1,0],[0,1,2,2,1,0,1],[1,0,0,0,1,0,0],[1,0,0,0,1,2,1],[2,2,2,1,2,2],[0,0,1,2],
+  [0,1,0],[1,2,1,0,1,0,1],[1,2,2,2,1],[2,2,1,2,1,0,1,0],[0,0,0],[0,1,0,0,1,0],[1,0,1,0,1],[2,1,0,0,0,1],
+  [0,0,0,1,2,2],[0,0,1,0,1,2],[1,0,1,0,0,1],[2,1,2,2,2,1],[1,0,0,0,1,0],[2,2,1,2,2],[2,1,0,1,2,1,0],[0,0,1,0,1,2,1],
+  [1,2,2,2,1,2],[1,0,0,1],[2,2,1,0,1],[2,1,0],[1,0,1,0,0,1,2,1],[0,1,0,0,0,1,0,1,2],[2,1,0,1,0],[1,2,1,0,1,2,1],
+  [0],[0,1,2,2,2],[0,1,2,2,2,1,2],[2,2,2,1,0,0],[0,1,2],[2,2,1],[0,0,0,1],[1,0,1,0],
+  [0,0,0,1,2],[2,1,0,0,0],[1,2,1,0,1,2,2],[1,0,1,0,1,0,0],[0,0,1,0,1,2,2,1],[2,1,0,1,2],[0,1,0,1,0,0,1,2],[0,1,0,1,0,0,0],
+  [1,0,1],[0,1,0,0,0,1,0,1],[0,1,2,1],[2,2,1,0,0,1,2],[1,0,1,0,0,1,2,2],[2,1,0,1,0,1],[2,2,1,0,0,1],[1,0,1,0,0],
+  [1,0,1,0,1,0],[2,1,2,2,2,1,0],[0,0,1,2,2,2],[2,2,1,2,1,0],[1,2,1,0,1],[1,2,2,1,0,0],[1],[0,1,2,2],
+  [2,1,2,2],[0,1,2,2,1,0],[0,1,2,2,2,1],[2,2,2],[0,1,0,1,0,1],[2],[0,0,0,1,2,1,0],[0,0,0,1,0],
+  [2,1,2,2,2],[0,1,0,1,2,2],[1,2,1],[0,1,0,0,0,1],[1,2,2,1,2,2],[1,2,2,1],[2,1,2,2,1,0],[1,0,1,0,0,1,0],
+  [0,0,1,0,1],[1,0,1,0,0,0],[2,2,1,2,1,0,1],[0,0,1,0,0],[2,2,1,0,0,0],[1,0,0,0],[2,2,1,2,1,2],[1,2,2,1,2,1],
+  [2,2,1,2],[1,2,2,1,0,1],[0,0,1,2,2,1],[2,2,2,1,0],[0,1,0,1,2],[1,0,0,0,1,2]]
+private theorem zWD_s : zWD.size = 182 := by native_decide
+private def zWit (v : Fin 182) : List (Fin 4) := zWD[v.val]'(by have := zWD_s; omega)
+private theorem zWit_ok : ∀ v : Fin 182, applyWord' zGens (zWit v) 0 = v := by native_decide
+private noncomputable instance : MulAction zGroup (Fin 182) := MulAction.compHom _ zGroup.subtype
+private noncomputable instance : GraphAction zGroup (Fin 182) zhouGraph where
+  adj_smul g u v h := closureGraphAction zGens
+    (fun i => by match i with | 0 => exact (by native_decide) | 1 => exact (by native_decide))
+    g.1 g.2 u v h
+private noncomputable instance : MulAction.IsPretransitive zGroup (Fin 182) where
+  exists_smul_eq x y :=
+    ⟨⟨_, zGroup.mul_mem (applyWord'_mem zGens _) (zGroup.inv_mem (applyWord'_mem zGens _))⟩, by
+      change ((applyWord' zGens (zWit x)).symm.trans (applyWord' zGens (zWit y))) x = y
+      simp only [Equiv.trans_apply]
+      rw [show (applyWord' zGens (zWit x)).symm x = 0 from by
+        rw [Equiv.symm_apply_eq]; exact (zWit_ok x).symm]; exact zWit_ok y⟩
+
+/-- **The Zhou-3 graph is a Sabidussi coset graph**: `Sab(PSL(2,13), S₃, D)`.
+
+PSL(2,13) (order 1092) acts vertex-transitively on the 182 vertices.
+The stabilizer of vertex 0 has order 6 (≅ S₃), giving 1092/6 = 182 vertices. -/
+noncomputable def zhouSabidussiIso :
+    zhouGraph ≃g SimpleGraph.cosetGraph (MulAction.stabilizer zGroup (0 : Fin 182))
+      (connectionSet zGroup zhouGraph 0) (connectionSet.isConnectionSet 0) :=
+  sabidussiIso 0
+
+/-! ### Zhou-6: Sab(PSL(2,13), D₁₂) -/
+
+private def z6G1F : Array (Fin 91) := #[89,71,7,84,68,48,12,90,1,41,86,74,33,55,22,52,36,43,45,80,79,61,64,21,28,16,67,65,53,60,17,88,31,58,11,32,10,6,81,72,78,82,2,47,76,56,69,24,87,73,37,63,85,30,27,25,0,5,70,66,51,42,29,19,77,14,40,75,26,83,50,44,3,8,59,20,49,54,34,4,62,18,57,39,46,35,13,9,15,38,23]
+private def z6G1I : Array (Fin 91) := #[56,8,42,72,79,57,37,2,73,87,36,34,6,86,65,88,25,30,81,63,75,23,14,90,47,55,68,54,24,62,53,32,35,12,78,85,16,50,89,83,66,9,61,17,71,18,84,43,5,76,70,60,15,28,77,13,45,82,33,74,29,21,80,51,22,27,59,26,4,46,58,1,39,49,11,67,44,64,40,20,19,38,41,69,3,52,10,48,31,0,7]
+private def z6G2F : Array (Fin 91) := #[32,65,53,63,81,56,46,41,87,66,1,79,61,29,20,68,18,37,59,84,21,14,40,43,33,85,72,28,45,55,15,24,86,31,73,35,71,49,34,8,76,70,3,78,11,27,67,75,12,17,4,54,2,52,82,13,80,60,19,16,62,48,57,42,83,10,69,6,30,9,7,74,90,38,36,88,22,25,23,44,5,50,51,89,58,77,0,39,47,64,26]
+private def z6G2I : Array (Fin 91) := #[86,10,52,42,50,80,67,70,39,69,65,44,48,55,21,30,59,49,16,58,14,20,76,78,31,77,90,45,27,13,68,33,0,24,38,35,74,17,73,87,22,7,63,23,79,28,6,88,61,37,81,82,53,2,51,29,5,62,84,18,57,12,60,3,89,1,9,46,15,66,41,36,26,34,71,47,40,85,43,11,56,4,54,64,19,25,32,8,75,83,72]
+private theorem z6G1F_s : z6G1F.size = 91 := by native_decide
+private theorem z6G1I_s : z6G1I.size = 91 := by native_decide
+private theorem z6G2F_s : z6G2F.size = 91 := by native_decide
+private theorem z6G2I_s : z6G2I.size = 91 := by native_decide
+private def z6G1 : Equiv.Perm (Fin 91) where
+  toFun i := z6G1F[i.val]'(by have := z6G1F_s; omega)
+  invFun i := z6G1I[i.val]'(by have := z6G1I_s; omega)
+  left_inv := by native_decide
+  right_inv := by native_decide
+private def z6G2 : Equiv.Perm (Fin 91) where
+  toFun i := z6G2F[i.val]'(by have := z6G2F_s; omega)
+  invFun i := z6G2I[i.val]'(by have := z6G2I_s; omega)
+  left_inv := by native_decide
+  right_inv := by native_decide
+private def z6Gens : Fin 2 → Equiv.Perm (Fin 91) | 0 => z6G1 | 1 => z6G2
+private def z6Group : Subgroup (Equiv.Perm (Fin 91)) := Subgroup.closure (Set.range z6Gens)
+
+private def z6WD : Array (List (Fin 4)) := #[
+  [],[3,2,1],[1,2,2,2,1],[0,3,0,0,0],[0,0,0,3],[2,3],[0,3,2,2,3],[0,0,0,1,2,1],
+  [0,0,3,0],[0,3,2,1],[3,2],[0,0,1,0],[1,0,3,2],[3,0],[0,1,2,2],[1,0,0,0],[2,2,2,3],
+  [0,0,3,2,1],[2,2,2],[2,1,2],[0,1,2,2,1],[0,1,2,2,3],[0,1,2],[0,0,1,2,1],[1,0,1],
+  [0,1,0,1],[0,3,0,0,3],[2,2,1],[2,2,3],[3,0,1],[1,0,0,0,3],[1,0],[1],[1,0,3],[0,0,1],
+  [1,2],[3,2,2],[0,0,0,1,0],[0,0],[0,3,0],[0,1,2,1],[0,3,2,1,0],[2,1,2,2,1],
+  [0,0,1,2,3],[0,0,1,0,3],[2,2],[0,3,2,2],[1,0,0,1],[2,3,0],[0,0,3,2],[0,0,0,1],
+  [0,1,0,0,3],[1,2,2,2],[2,2,3,0],[0,1,0,0],[3,0,0],[2],[2,3,2],[1,0,3,0],[2,2,2,1],
+  [2,1,0,3],[2,3,0,3],[2,1,0],[2,1,2,2],[0,1],[3,2,3],[0,3,2,3],[0,3,2,2,1],
+  [0,0,0,3,0],[0,3,2],[0,0,0,1,2],[3,2,1,0],[0,3,0,0],[0,0,3],[3,2,2,3],[1,0,0,3],
+  [0,1,2,3],[0,1,0],[0,0,1,2],[0,0,0,3,2],[2,1],[0,0,0],[2,3,2,2],[0,3],[2,1,2,1],
+  [1,2,2],[3],[0,3,0,3],[1,0,0],[0],[0,3,0,0,1]]
+private theorem z6WD_s : z6WD.size = 91 := by native_decide
+private def z6Wit (v : Fin 91) : List (Fin 4) := z6WD[v.val]'(by have := z6WD_s; omega)
+private theorem z6Wit_ok : ∀ v : Fin 91, applyWord' z6Gens (z6Wit v) 0 = v := by native_decide
+private noncomputable instance : MulAction z6Group (Fin 91) := MulAction.compHom _ z6Group.subtype
+private noncomputable instance : GraphAction z6Group (Fin 91) zhou6Graph where
+  adj_smul g u v h := closureGraphAction z6Gens
+    (fun i => by match i with | 0 => exact (by native_decide) | 1 => exact (by native_decide))
+    g.1 g.2 u v h
+private noncomputable instance : MulAction.IsPretransitive z6Group (Fin 91) where
+  exists_smul_eq x y :=
+    ⟨⟨_, z6Group.mul_mem (applyWord'_mem z6Gens _) (z6Group.inv_mem (applyWord'_mem z6Gens _))⟩, by
+      change ((applyWord' z6Gens (z6Wit x)).symm.trans (applyWord' z6Gens (z6Wit y))) x = y
+      simp only [Equiv.trans_apply]
+      rw [show (applyWord' z6Gens (z6Wit x)).symm x = 0 from by
+        rw [Equiv.symm_apply_eq]; exact (z6Wit_ok x).symm]; exact z6Wit_ok y⟩
+
+/-- **The Zhou-6 graph is a Sabidussi coset graph**: `Sab(PSL(2,13), D₁₂, D)`.
+
+PSL(2,13) (order 1092) acts vertex-transitively on the 91 vertices.
+The stabilizer of vertex 0 has order 12 (≅ D₁₂), giving 1092/12 = 91 vertices.
+D₁₂ is maximal in PSL(2,13), so the Zhou-6 graph is **primitive**. -/
+noncomputable def zhou6SabidussiIso :
+    zhou6Graph ≃g SimpleGraph.cosetGraph (MulAction.stabilizer z6Group (0 : Fin 91))
+      (connectionSet z6Group zhou6Graph 0) (connectionSet.isConnectionSet 0) :=
+  sabidussiIso 0
+
+end ZhouSabidussi

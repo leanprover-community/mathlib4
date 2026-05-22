@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robin Langer
 -/
 import Mathlib.Combinatorics.CellularSurface
+import Mathlib.Combinatorics.SimpleGraph.SabidussiWitness
 
 /-!
 # Klein Quartic (F056A): Array-backed CellularSurface
