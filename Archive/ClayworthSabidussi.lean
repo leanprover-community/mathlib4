@@ -25,6 +25,7 @@ and BFS witness words prove transitivity.
 -/
 
 set_option linter.style.longFile 1900
+set_option linter.style.longLine false
 set_option linter.style.nativeDecide false
 
 /-! ## Neighbor data (O(3) adjacency lookup) -/
