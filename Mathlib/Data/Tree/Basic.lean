@@ -66,7 +66,7 @@ def traverse {m : Type* → Type*} [Applicative m] {α β} (f : α → m β)
   | .node a l r => .node <$> f a <*> traverse f l <*> traverse f r
 
 @[deprecated BinaryTree.traverse (since := "2026-05-22")]
-abbrev Tree.traverse {m : Type* → Type*} [Applicative m] {α β} (f : α → m β)
+abbrev _root_.Tree.traverse {m : Type* → Type*} [Applicative m] {α β} (f : α → m β)
 (t : BinaryTree α) : m (BinaryTree β) :=
   BinaryTree.traverse f t
 
