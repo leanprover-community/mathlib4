@@ -376,8 +376,6 @@ def coconeOfPredicateSet : Cocone (functorOfPredicateSet P) where
   pt := α
   ι.app J := ofHom (OrderEmbedding.subtype _)
 
-variable [IsDirectedOrder (Subtype P)] [Nonempty (Subtype P)]
-
 /-- Let `P` be a predicate on `Set α` where `α : PartOrdEmb`. We assume
 that `Subtype P` is directed and nonempty, and that any `a : α` belongs
 to some `J : Set α` satisfying `P`. Then, `α` is the colimit in the
