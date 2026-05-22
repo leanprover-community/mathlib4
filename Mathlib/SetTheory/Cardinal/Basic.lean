@@ -942,6 +942,14 @@ theorem mk_preimage_of_subset_range (f : α → β) (s : Set β) (h : s ⊆ rang
   rw [← lift_id #(↑(f ⁻¹' s)), ← lift_id #(↑s)]
   exact mk_preimage_of_subset_range_lift f s h
 
+open Set.Notation in
+theorem mk_preimage_val_le_right (s t : Set α) : #(s ↓∩ t) ≤ #t :=
+  mk_preimage_of_injective _ _ Subtype.val_injective
+
+open Set.Notation in
+theorem mk_preimage_val_le_left (s t : Set α) : #(s ↓∩ t) ≤ #s :=
+  mk_set_le _
+
 theorem mk_subset_ge_of_subset_image_lift {α : Type u} {β : Type v} (f : α → β) {s : Set α}
     {t : Set β} (h : t ⊆ f '' s) : lift.{u} #t ≤ lift.{v} #({ x ∈ s | f x ∈ t } : Set α) := by
   rw [image_eq_range] at h

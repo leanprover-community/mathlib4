@@ -8,6 +8,8 @@ module
 public import Mathlib.Order.Cofinal
 public import Mathlib.SetTheory.Cardinal.Basic
 
+import Mathlib.Order.LatticeIntervals
+
 /-!
 # Cofinality of an order
 
@@ -17,7 +19,7 @@ cardinality of a cofinal subset.
 
 public noncomputable section
 
-open Function Cardinal Set Order
+open Function Cardinal Set Set.Notation Order
 
 universe u v w
 
@@ -132,9 +134,9 @@ theorem cof_congr_of_strictMono {f : α → γ} (hf : StrictMono f) (hf' : IsCof
   simpa using lift_cof_congr_of_strictMono hf hf'
 
 @[simp]
-theorem cof_lt_aleph0_iff : Order.cof α < ℵ₀ ↔ Order.cof α ≤ 1 := by
+theorem cof_lt_aleph0_iff : cof α < ℵ₀ ↔ cof α ≤ 1 := by
   refine ⟨fun h ↦ ?_, (lt_of_le_of_lt · one_lt_aleph0)⟩
-  obtain ⟨s, hs, hs'⟩ := Order.cof_eq α
+  obtain ⟨s, hs, hs'⟩ := cof_eq α
   have hf : s.Finite := by
     rw [Set.Finite, ← mk_lt_aleph0_iff]
     exact hs'.trans_lt h
@@ -143,7 +145,7 @@ theorem cof_lt_aleph0_iff : Order.cof α < ℵ₀ ↔ Order.cof α ≤ 1 := by
   simpa
 
 @[simp]
-theorem aleph0_le_cof_iff : ℵ₀ ≤ Order.cof α ↔ 1 < Order.cof α := by
+theorem aleph0_le_cof_iff : ℵ₀ ≤ cof α ↔ 1 < cof α := by
   simp [← not_lt]
 
 theorem aleph0_le_cof [Nonempty α] [NoMaxOrder α] : ℵ₀ ≤ cof α := by
@@ -162,21 +164,21 @@ section Congr
 variable [Preorder α] [Preorder β] [Preorder γ]
 
 theorem GaloisConnection.cof_le_lift {f : β → α} {g : α → β} (h : GaloisConnection f g) :
-    Cardinal.lift.{u} (Order.cof β) ≤ Cardinal.lift.{v} (Order.cof α) := by
+    Cardinal.lift.{u} (cof β) ≤ Cardinal.lift.{v} (cof α) := by
   rw [le_lift_cof_iff]
   exact fun s hs ↦ (lift_le.2 <| cof_le (h.map_isCofinal hs)).trans mk_image_le_lift
 
 theorem GaloisConnection.cof_le {f : γ → α} {g : α → γ} (h : GaloisConnection f g) :
-    Order.cof γ ≤ Order.cof α := by
+    cof γ ≤ cof α := by
   simpa using h.cof_le_lift
 
 theorem OrderIso.lift_cof_congr (f : α ≃o β) :
-    Cardinal.lift.{v} (Order.cof α) = Cardinal.lift.{u} (Order.cof β) :=
+    Cardinal.lift.{v} (cof α) = Cardinal.lift.{u} (cof β) :=
   f.to_galoisConnection.cof_le_lift.antisymm (f.symm.to_galoisConnection.cof_le_lift)
 
 @[deprecated (since := "2026-03-20")] alias OrderIso.lift_cof_eq := OrderIso.lift_cof_congr
 
-theorem OrderIso.cof_congr (f : α ≃o γ) : Order.cof α = Order.cof γ := by
+theorem OrderIso.cof_congr (f : α ≃o γ) : cof α = cof γ := by
   simpa using f.lift_cof_congr
 
 @[deprecated (since := "2026-03-20")] alias OrderIso.cof_eq := OrderIso.cof_congr
@@ -189,7 +191,7 @@ end Congr
 /-- If the union of `s` is cofinal and `s` is smaller than the cofinality, then `s` has a cofinal
 member. -/
 theorem isCofinal_of_isCofinal_sUnion {α : Type*} [LinearOrder α] {s : Set (Set α)}
-    (h₁ : IsCofinal (⋃₀ s)) (h₂ : #s < Order.cof α) : ∃ x ∈ s, IsCofinal x := by
+    (h₁ : IsCofinal (⋃₀ s)) (h₂ : #s < cof α) : ∃ x ∈ s, IsCofinal x := by
   contrapose! h₂
   simp_rw [not_isCofinal_iff] at h₂
   choose f hf using h₂
@@ -200,7 +202,84 @@ theorem isCofinal_of_isCofinal_sUnion {α : Type*} [LinearOrder α] {s : Set (Se
 /-- If the union of the `ι`-indexed family `s` is cofinal and `ι` is smaller than the cofinality,
 then `s` has a cofinal member. -/
 theorem isCofinal_of_isCofinal_iUnion {α : Type*} {ι} [LinearOrder α] {s : ι → Set α}
-    (h₁ : IsCofinal (⋃ i, s i)) (h₂ : #ι < Order.cof α) : ∃ i, IsCofinal (s i) := by
+    (h₁ : IsCofinal (⋃ i, s i)) (h₂ : #ι < cof α) : ∃ i, IsCofinal (s i) := by
   rw [← sUnion_range] at h₁
   obtain ⟨_, ⟨i, rfl⟩, h⟩ := isCofinal_of_isCofinal_sUnion h₁ (mk_range_le.trans_lt h₂)
   exact ⟨i, h⟩
+
+/-! ### Cofinality within order -/
+
+namespace Order
+variable {x : α}
+
+section Preorder
+variable [Preorder α]
+
+/-- The cofinality of an element `x` within a preorder is defined as `cof (Iio x)`. -/
+@[expose]
+def cofWithin (x : α) : Cardinal :=
+  cof (Iio x)
+
+@[simp]
+theorem cof_Iio (x : α) : cof (Iio x) = cofWithin x :=
+  rfl
+
+theorem cofWithin_le {s : Set α} (hs : IsCofinalFor (Iio x) s) (hsx : s ⊆ Iio x) :
+    cofWithin x ≤ #s := by
+  trans #(Iio x ↓∩ s)
+  · refine cof_le fun ⟨y, hy⟩ ↦ ?_
+    obtain ⟨z, hz, hyz⟩ := hs hy
+    refine ⟨⟨z, hsx hz⟩, ?_, ?_⟩ <;> simpa
+  · exact mk_preimage_val_le_right ..
+
+@[simp]
+theorem cofWithin_eq_zero_iff : cofWithin x = 0 ↔ IsMin x := by
+  rw [cofWithin, cof_eq_zero_iff, isEmpty_coe_sort, Iio_eq_empty_iff]
+
+@[simp]
+theorem cofWithin_bot [OrderBot α] : cofWithin (⊥ : α) = 0 :=
+  cofWithin_eq_zero_iff.2 isMin_bot
+
+end Preorder
+
+section LinearOrder
+variable [LinearOrder α]
+
+@[simp]
+theorem cofWithin_lt_aleph0_iff : cofWithin x < ℵ₀ ↔ cofWithin x ≤ 1 :=
+  cof_lt_aleph0_iff
+
+@[simp]
+theorem aleph0_le_cofWithin_iff : ℵ₀ ≤ cofWithin x ↔ 1 < cofWithin x :=
+  aleph0_le_cof_iff
+
+theorem cofWithin_eq_one_iff : cofWithin x = 1 ↔ ¬ IsSuccPrelimit x := by
+  rw [cofWithin, cof_eq_one_iff]
+  unfold IsTop IsSuccPrelimit CovBy
+  simp [← not_lt, imp_not_comm]
+
+theorem cofWithin_ne_one_iff : cofWithin x ≠ 1 ↔ IsSuccPrelimit x := by
+  rw [ne_eq, cofWithin_eq_one_iff, not_not]
+
+theorem cofWithin_le_one_iff : cofWithin x ≤ 1 ↔ ¬ IsSuccLimit x := by
+  rw [Cardinal.le_one_iff, cofWithin_eq_zero_iff, cofWithin_eq_one_iff,
+    IsSuccLimit, not_and_or, not_not]
+
+theorem one_lt_cofWithin_iff : 1 < cofWithin x ↔ IsSuccLimit x := by
+  rw [← not_le, cofWithin_le_one_iff, not_not]
+
+alias ⟨_, IsSuccPrelimit.cofWithin_ne_one⟩ := cofWithin_ne_one_iff
+alias ⟨_, IsSuccLimit.one_lt_cofWithin⟩ := one_lt_cofWithin_iff
+
+theorem IsSuccLimit.cofWithin_ne_one (hx : IsSuccLimit x) : cofWithin x ≠ 1 :=
+  hx.one_lt_cofWithin.ne'
+
+theorem cofWithin_succ_of_not_isMax (hx : ¬ IsMax x) [SuccOrder α] : cofWithin (succ x) = 1 :=
+  cofWithin_eq_one_iff.2 (mt IsSuccPrelimit.isMax hx)
+
+@[simp]
+theorem cofWithin_succ (x : α) [SuccOrder α] [NoMaxOrder α] : cofWithin (succ x) = 1 :=
+  cofWithin_succ_of_not_isMax (not_isMax x)
+
+end LinearOrder
+end Order
