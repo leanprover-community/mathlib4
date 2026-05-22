@@ -31,7 +31,7 @@ variable (A B : Type*) [CommRing A] [IsDomain A] [CommRing B] [IsDomain B] [Alge
 namespace ClassGroup
 
 /-- The monoid homomorphism `ClassGroup A → ClassGroup B` induced by an
-extension of domains `A → B`. -/
+injective extension of domains `A → B`. -/
 noncomputable def extendedHom : ClassGroup A →* ClassGroup B :=
   QuotientGroup.map _ _
     (Units.map (FractionalIdeal.extendedHom (FractionRing B) B).toMonoidHom)
