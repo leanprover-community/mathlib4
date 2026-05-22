@@ -557,7 +557,7 @@ theorem repr_mul : ∀ (o₁ o₂) [NF o₁] [NF o₂], repr (o₁ * o₂) = rep
     · obtain ⟨x, xe⟩ := Nat.exists_eq_succ_of_ne_zero n₂.ne_zero
       simp only [Mul.mul, mul, e0, ↓reduceIte, repr, PNat.mul_coe, natCast_mul, opow_zero, one_mul]
       simp only [xe, h₂.zero_of_zero e0, repr, add_zero]
-      rw [natCast_succ x, add_mul_succ _ ao, mul_assoc]
+      rw [Nat.cast_add_one x, ← succ_eq_add_one, add_mul_succ _ ao, mul_assoc]
     · simp only [repr]
       haveI := h₁.fst
       haveI := h₂.fst
@@ -842,9 +842,10 @@ theorem repr_opow_aux₂ {a0 a'} [N0 : NF a0] [Na' : NF a'] (m : ℕ) (d : ω �
   calc
     (ω0 ^ (k.succ : Ordinal)) * α' + R'
     _ = (ω0 ^ succ (k : Ordinal)) * α' + ((ω0 ^ (k : Ordinal)) * α' * m + R) := by
-        rw [natCast_succ, RR, ← mul_assoc]
+        rw [Nat.cast_add_one, RR, ← mul_assoc, succ_eq_add_one]
     _ = ((ω0 ^ (k : Ordinal)) * α' + R) * α' + ((ω0 ^ (k : Ordinal)) * α' + R) * m := ?_
-    _ = (α' + m) ^ succ (k.succ : Ordinal) := by rw [← mul_add, natCast_succ, opow_succ, IH.2]
+    _ = (α' + m) ^ succ (k.succ : Ordinal) := by
+        rw [← mul_add, opow_succ, Nat.cast_add_one, IH.2, succ_eq_add_one]
   congr 1
   · have αd : ω ∣ α' :=
       dvd_add (dvd_mul_of_dvd_left (by simpa using opow_dvd_opow ω (one_le_iff_ne_zero.2 e0)) _) d
@@ -865,7 +866,7 @@ theorem repr_opow_aux₂ {a0 a'} [N0 : NF a0] [Na' : NF a'] (m : ℕ) (d : ω �
   · cases m
     · have : R = 0 := by cases k <;> simp [R, opowAux]
       simp [this]
-    · rw [natCast_succ, add_mul_succ]
+    · rw [Nat.cast_add_one, ← succ_eq_add_one, add_mul_succ]
       apply add_of_omega0_opow_le Rl
       rw [opow_mul, opow_succ]
       gcongr
@@ -879,9 +880,9 @@ theorem repr_opow (o₁ o₂) [NF o₁] [NF o₂] : repr (o₁ ^ o₂) = repr o�
   obtain ⟨N₁, r₁⟩ := nf_repr_split e₁
   obtain - | ⟨a0, n, a'⟩ := a
   · rcases m with - | m
-    · by_cases h : o₂ = 0 <;> simp [opow_def, opowAux2, e₁, h, r₁]
-      have := mt repr_inj.1 h
-      rw [zero_opow this]
+    · by_cases h : o₂ = 0
+      · simp [opow_def, opowAux2, e₁, h, r₁]
+      · simpa [opow_def, opowAux2, e₁, h, r₁, eqComm] using mt repr_inj.1 h
     · rcases e₂ : split' o₂ with ⟨b', k⟩
       obtain ⟨_, r₂⟩ := nf_repr_split' e₂
       by_cases h : m = 0
@@ -1010,14 +1011,14 @@ theorem fundamentalSequence_has_prop (o) : FundamentalSequenceProp o (fundamenta
       refine
         ⟨isSuccLimit_mul_right this isSuccLimit_omega0, fun i =>
           ⟨this, ?_, fun H => @NF.oadd_zero _ _ (iha.2 H.fst)⟩, exists_lt_mul_omega0'⟩
-      rw [← mul_succ, ← natCast_succ]
+      rw [← mul_add_one, ← Nat.cast_add_one]
       gcongr
       apply natCast_lt_omega0
     · have := opow_pos (repr a') omega0_pos
       refine
         ⟨isSuccLimit_add _ (isSuccLimit_mul_right this isSuccLimit_omega0), fun i => ⟨this, ?_, ?_⟩,
           exists_lt_add exists_lt_mul_omega0'⟩
-      · rw [← mul_succ, ← natCast_succ]
+      · rw [← mul_add_one, ← Nat.cast_add_one]
         gcongr
         apply natCast_lt_omega0
       · refine fun H => H.fst.oadd _ (NF.below_of_lt' ?_ (@NF.oadd_zero _ _ (iha.2 H.fst)))
