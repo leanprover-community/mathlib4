@@ -151,7 +151,7 @@ def functorOfPredicateSet : Subtype P ⥤ CardinalFilteredPoset κ :=
 /-- Given a predicate `P : Set J.obj → Prop` on the underlying type
 of `J : CardinalFilteredPoset κ` such that all the subsets satisfying `P`
 are `κ`-filtered, this is the cocone with point `J` given
-by all the inclusions of the substs satisfying `P`. -/
+by all the inclusions of the subsets satisfying `P`. -/
 @[simps]
 def coconeOfPredicateSet : Cocone (functorOfPredicateSet P) where
   pt := J
@@ -165,7 +165,7 @@ noncomputable def isColimitCoconeOfPredicateSet
     [IsDirectedOrder (Subtype P)] [Nonempty (Subtype P)]
     (hP : ∀ (a : J.obj), ∃ (S : Set J.obj), P S ∧ a ∈ S) :
     IsColimit (coconeOfPredicateSet P) :=
-  isColimitOfReflects (CardinalFilteredPoset.ι)
+  isColimitOfReflects CardinalFilteredPoset.ι
     (PartOrdEmb.isColimitOfPredicateSet P hP)
 
 end
