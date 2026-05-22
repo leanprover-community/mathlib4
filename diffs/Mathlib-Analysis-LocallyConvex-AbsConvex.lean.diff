@@ -4,8 +4,7 @@ diff --git a/Mathlib/Analysis/LocallyConvex/AbsConvex.lean b/Mathlib/Analysis/Lo
 @@ -5,7 +5,6 @@
  -/
  module
- 
+
 -public import Mathlib.Analysis.LocallyConvex.BalancedCoreHull
  public import Mathlib.Analysis.Convex.TotallyBounded
  public import Mathlib.Analysis.LocallyConvex.Bounded
- 

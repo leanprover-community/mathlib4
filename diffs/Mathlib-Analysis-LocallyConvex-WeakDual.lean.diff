@@ -4,11 +4,11 @@ diff --git a/Mathlib/Analysis/LocallyConvex/WeakDual.lean b/Mathlib/Analysis/Loc
 @@ -5,10 +5,8 @@
  -/
  module
- 
+
 -public import Mathlib.Analysis.Normed.Field.Lemmas
  public import Mathlib.Analysis.LocallyConvex.WithSeminorms
  public import Mathlib.LinearAlgebra.Dual.Lemmas
 -public import Mathlib.LinearAlgebra.Finsupp.Span
  public import Mathlib.Topology.Algebra.Module.Spaces.WeakBilin
- 
+
  /-!

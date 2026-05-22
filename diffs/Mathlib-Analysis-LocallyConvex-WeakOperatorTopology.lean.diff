@@ -6,6 +6,6 @@ diff --git a/Mathlib/Analysis/LocallyConvex/WeakOperatorTopology.lean b/Mathlib/
  public import Mathlib.Analysis.LocallyConvex.WithSeminorms
  public import Mathlib.Analysis.LocallyConvex.SeparatingDual
 -public import Mathlib.Topology.Algebra.Module.Spaces.ContinuousLinearMap
- 
+
  /-!
  # The weak operator topology
