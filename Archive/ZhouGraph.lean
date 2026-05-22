@@ -458,4 +458,45 @@ private theorem blockSwapper_mem :
     (blockSwapper : Equiv.Perm (Fin 182)) ∈ zGroup :=
   applyWord'_mem zGens [0, 1, 0, 0, 0, 1, 0, 1]
 
+/-! ### The block {0, 137} and its setwise stabilizer
+
+The set B = {0, 137} is a block of imprimitivity for the PSL(2,13) action.
+Its setwise stabilizer K = Stab(B) ≅ D₁₂ contains H = Stab(0) ≅ S₃ as an
+index-2 subgroup. The connection set D of the Zhou-3 graph is disjoint from K
+because any element of K maps 0 into B = {0, 137}, but neither 0 nor 137 is
+a neighbor of 0 in the Zhou-3 graph. -/
+
+/-- The block B = {0, 137}. Vertices 0 and 137 are in the same fiber of the
+block map (both map to block 0). -/
+private def zhouBlock : Set (Fin 182) := {0, 137}
+
+/-- The block map is constant on B: both 0 and 137 map to block 0. -/
+private theorem blockMap_eq_on_block :
+    ∀ v : Fin 182, v ∈ zhouBlock → zhouBlockMap v = 0 := by
+  intro v hv; simp only [zhouBlock, Set.mem_insert_iff, Set.mem_singleton_iff] at hv
+  rcases hv with rfl | rfl <;> native_decide
+
+/-- The blockSwapper preserves B setwise: it maps {0, 137} to {0, 137}. -/
+private theorem blockSwapper_preserves_block :
+    ∀ v : Fin 182, v ∈ zhouBlock → blockSwapper v ∈ zhouBlock := by
+  intro v hv; simp only [zhouBlock, Set.mem_insert_iff, Set.mem_singleton_iff] at hv ⊢
+  rcases hv with rfl | rfl <;> native_decide
+
+/-- Vertex 0 is not adjacent to vertex 137 in the Zhou-3 graph. -/
+private theorem not_adj_zero_partner : ¬ zhouGraph.Adj 0 137 := by native_decide
+
+/-- Vertex 0 is not adjacent to itself. -/
+private theorem not_adj_zero_self : ¬ zhouGraph.Adj 0 0 :=
+  zhouGraph.loopless.irrefl 0
+
+/-- No element of the block B = {0, 137} is a neighbor of 0 in Zhou-3.
+This is the key fact for proving D ∩ K = ∅: any element of K maps 0
+into B, but no element of B is adjacent to 0. -/
+private theorem block_disjoint_neighbors :
+    ∀ v : Fin 182, v ∈ zhouBlock → ¬ zhouGraph.Adj 0 v := by
+  intro v hv; simp only [zhouBlock, Set.mem_insert_iff, Set.mem_singleton_iff] at hv
+  rcases hv with rfl | rfl
+  · exact not_adj_zero_self
+  · exact not_adj_zero_partner
+
 end ZhouLorimer
