@@ -3631,6 +3631,7 @@ public import Mathlib.Combinatorics.SimpleGraph.Regularity.Increment
 public import Mathlib.Combinatorics.SimpleGraph.Regularity.Lemma
 public import Mathlib.Combinatorics.SimpleGraph.Regularity.Uniform
 public import Mathlib.Combinatorics.SimpleGraph.Representation
+public import Mathlib.Combinatorics.SimpleGraph.SabidussiWitness
 public import Mathlib.Combinatorics.SimpleGraph.StronglyRegular
 public import Mathlib.Combinatorics.SimpleGraph.Subgraph
 public import Mathlib.Combinatorics.SimpleGraph.Sum
