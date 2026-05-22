@@ -104,7 +104,7 @@ def numNodes : BinaryTree α → ℕ
   | node _ a b => a.numNodes + b.numNodes + 1
 
 @[deprecated BinaryTree.numNodes (since := "2026-05-22")]
-abbrev Tree.numNodes {α} (t : Tree α) : ℕ := BinaryTree.numNodes t
+abbrev _root_.Tree.numNodes {α} (t : Tree α) : ℕ := BinaryTree.numNodes t
 
 /-- The number of leaves of a binary tree -/
 @[simp]
