@@ -168,7 +168,7 @@ theorem exists_maximal_notMem_range_sigmaToPi_of_infinite :
   refine ⟨I, max, fun ⟨⟨i, p⟩, eq⟩ ↦ ?_⟩
   -- then I is not in the range of `sigmaToPi`
   have : ⇑(DFinsupp.single i 1) ∉ (sigmaToPi R ⟨i, p⟩).asIdeal := by
-    simpa using p.1.ne_top_iff_one.mp p.2.ne_top
+    simpa [← DirectSum.funLike_eq] using p.1.ne_top_iff_one.mp p.2.ne_top
   rw [eq] at this
   exact this (le ⟨.single i 1, rfl⟩)
 

@@ -48,13 +48,14 @@ instance : LieRingModule L (⨁ i, M i) where
   bracket x m := m.mapRange (fun _ m' => ⁅x, m'⁆) fun _ => lie_zero x
   add_lie x y m := by
     ext
-    simp only [mapRange_apply, add_apply, add_lie]
+    simp [← funLike_eq, mapRange_apply, add_apply, add_lie]
   lie_add x m n := by
     ext
-    simp only [mapRange_apply, add_apply, lie_add]
+    simp only [← funLike_eq, mapRange_apply, add_apply]
+    simp [lie_add]
   leibniz_lie x y m := by
     ext
-    simp only [mapRange_apply, lie_lie, add_apply, sub_add_cancel]
+    simp only [← funLike_eq, mapRange_apply, lie_lie, add_apply, sub_add_cancel]
 
 @[simp]
 theorem lie_module_bracket_apply (x : L) (m : ⨁ i, M i) (i : ι) : ⁅x, m⁆ i = ⁅x, m i⁆ :=
@@ -83,7 +84,7 @@ def lieModuleOf [DecidableEq ι] (j : ι) : M j →ₗ⁅R,L⁆ ⨁ i, M i :=
         -- The coercion in the goal is `DFunLike.coe (β := fun x ↦ Π₀ (i : ι), M i)`
         -- but the lemma is expecting `DFunLike.coe (β := fun x ↦ ⨁ (i : ι), M i)`
         erw [AddHom.coe_mk]
-        simp [h] }
+        simp [h, ← funLike_eq] }
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The projection map onto one component, as a morphism of Lie modules. -/
@@ -106,16 +107,18 @@ instance lieRing : LieRing (⨁ i, L i) :=
     bracket := zipWith (fun _ => fun x y => ⁅x, y⁆) fun _ => lie_zero 0
     add_lie := fun x y z => by
       ext
-      simp only [zipWith_apply, add_apply, add_lie]
+      simp only [← funLike_eq, zipWith_apply, add_apply]
+      simp [add_lie]
     lie_add := fun x y z => by
       ext
-      simp only [zipWith_apply, add_apply, lie_add]
+      simp only [← funLike_eq, zipWith_apply, add_apply]
+      simp [lie_add]
     lie_self := fun x => by
       ext
-      simp only [zipWith_apply, lie_self, zero_apply]
+      simp only [← funLike_eq, zipWith_apply, lie_self, zero_apply]
     leibniz_lie := fun x y z => by
       ext
-      simp only [zipWith_apply, add_apply]
+      simp only [← funLike_eq, zipWith_apply, add_apply]
       apply leibniz_lie }
 
 @[simp]

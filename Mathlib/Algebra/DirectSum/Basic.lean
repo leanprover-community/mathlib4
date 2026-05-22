@@ -39,9 +39,6 @@ def DirectSum [∀ i, AddCommMonoid (β i)] : Type _ :=
   Π₀ i, β i
 deriving AddCommMonoid, Inhabited, DFunLike
 
-set_option backward.inferInstanceAs.wrap.data false in
-deriving instance CoeFun for DirectSum
-
 /-- `⨁ i, f i` is notation for `DirectSum _ f` and equals the direct sum of `fun i ↦ f i`.
 Taking the direct sum over multiple arguments is possible, e.g. `⨁ (i) (j), f i j`. -/
 scoped[DirectSum] notation3 "⨁ "(...)", "r:(scoped f => DirectSum _ f) => r
@@ -64,6 +61,12 @@ instance [DecidableEq ι] [∀ i, AddCommMonoid (β i)] [∀ i, DecidableEq (β 
 namespace DirectSum
 
 variable {ι}
+
+/-- Workaround to defeq problems: if we interpret a `DirectSum` as a `DFinsupp`, also transfer the
+`DFunLike` instance. -/
+@[simp]
+theorem funLike_eq [∀ i, AddCommMonoid (β i)] (x : ⨁ i, β i) :
+    DFunLike.coe (self := DFinsupp.instDFunLike) x = x := rfl
 
 /-- Coercion from a `DirectSum` to a pi type is an `AddMonoidHom`. -/
 def coeFnAddMonoidHom [∀ i, AddCommMonoid (β i)] : (⨁ i, β i) →+ (Π i, β i) where
@@ -211,13 +214,10 @@ section ToAddMonoid
 
 variable (φ : ∀ i, β i →+ γ) (ψ : (⨁ i, β i) →+ γ)
 
--- Porting note: The elaborator is struggling with `liftAddHom`. Passing it `β` explicitly helps.
--- This applies to roughly the remainder of the file.
-
 /-- `toAddMonoid φ` is the natural homomorphism from `⨁ i, β i` to `γ`
 induced by a family `φ` of homomorphisms `β i → γ`. -/
 def toAddMonoid : (⨁ i, β i) →+ γ :=
-  DFinsupp.liftAddHom (β := β) φ
+  DFinsupp.liftAddHom φ
 
 @[simp]
 theorem toAddMonoid_of (i) (x : β i) : toAddMonoid φ (of β i x) = φ i x :=
@@ -225,11 +225,8 @@ theorem toAddMonoid_of (i) (x : β i) : toAddMonoid φ (of β i x) = φ i x :=
 
 theorem toAddMonoid.unique (f : ⨁ i, β i) : ψ f = toAddMonoid (fun i => ψ.comp (of β i)) f := by
   congr
-  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): `ext` applies addHom_ext' here, which isn't what we want.
-  apply DFinsupp.addHom_ext'
-  intro
-  simp [toAddMonoid]
-  rfl
+  ext
+  simp
 
 lemma toAddMonoid_injective : Injective (toAddMonoid : (∀ i, β i →+ γ) → (⨁ i, β i) →+ γ) :=
   DFinsupp.liftAddHom.injective
@@ -406,8 +403,7 @@ variable {M S : Type*} [AddCommMonoid M] [SetLike S M] [AddSubmonoidClass S M]
 theorem support_subset [DecidableEq ι] [DecidableEq M] (A : ι → S) (x : DirectSum ι fun i => A i) :
     (Function.support fun i => (x i : M)) ⊆ ↑(DFinsupp.support x) := by
   intro m
-  simp only [Function.mem_support, Finset.mem_coe, DFinsupp.mem_support_toFun, not_imp_not,
-    ZeroMemClass.coe_eq_zero, imp_self]
+  simp
 
 theorem hasFiniteSupport (A : ι → S) (x : DirectSum ι fun i => A i) :
     (fun i => (x i : M)).HasFiniteSupport := by
@@ -458,6 +454,4 @@ set_option backward.isDefEq.respectTransparency false in
 and the corresponding finite product. -/
 def DirectSum.addEquivProd {ι : Type*} [Fintype ι] (G : ι → Type*) [(i : ι) → AddCommMonoid (G i)] :
     DirectSum ι G ≃+ ((i : ι) → G i) :=
-  ⟨DFinsupp.equivFunOnFintype, fun g h ↦ funext fun _ ↦ by
-    simp only [DFinsupp.equivFunOnFintype, Equiv.toFun_as_coe, Equiv.coe_fn_mk, add_apply,
-      Pi.add_apply]⟩
+  ⟨DFinsupp.equivFunOnFintype, fun g h ↦ funext fun _ ↦ by simp [DFinsupp.equivFunOnFintype]⟩

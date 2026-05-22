@@ -498,7 +498,8 @@ theorem DirectSum.coeLinearMap_eq_finsum [DecidableEq M]
     (DirectSum.coeLinearMap fun i : M => weightedHomogeneousSubmodule R w i) x =
       finsum fun m => x m := by
   classical
-  rw [DirectSum.coeLinearMap_eq_dfinsuppSum, DFinsupp.sum, finsum_eq_sum_of_support_subset]
+  rw [DirectSum.coeLinearMap_eq_dfinsuppSum, ← funLike_eq, DFinsupp.sum,
+    finsum_eq_sum_of_support_subset]
   apply DirectSum.support_subset
 
 theorem weightedHomogeneousComponent_directSum [DecidableEq M]
@@ -508,7 +509,7 @@ theorem weightedHomogeneousComponent_directSum [DecidableEq M]
   classical
   rw [DirectSum.coeLinearMap_eq_dfinsuppSum, DFinsupp.sum, map_sum]
   convert @Finset.sum_eq_single M (MvPolynomial σ R) _ (DFinsupp.support x) _ m _ _
-  · rw [IsWeightedHomogeneous.weightedHomogeneousComponent_same (x m).prop]
+  · rw [funLike_eq, IsWeightedHomogeneous.weightedHomogeneousComponent_same (x m).prop]
   · intro n _ hmn
     exact IsWeightedHomogeneous.weightedHomogeneousComponent_ne m (x n).prop hmn.symm
   · rw [DFinsupp.notMem_support_iff]
@@ -643,12 +644,12 @@ def weightedDecomposition [DecidableEq M] :
     simp only [DFinsupp.mem_support_toFun, ne_eq, Set.Finite.mem_toFinset, Function.mem_support,
       not_iff_not]
     conv_lhs => rw [← Subtype.coe_inj]
-    rw [decompose'_apply, Submodule.coe_zero]
+    rw [DirectSum.funLike_eq, decompose'_apply, Submodule.coe_zero]
   right_inv x := by
     classical
     apply DFinsupp.ext
     intro m
-    rw [← Subtype.coe_inj, decompose'_apply]
+    rw [← Subtype.coe_inj, DirectSum.funLike_eq, decompose'_apply]
     exact weightedHomogeneousComponent_directSum R w x m
 
 
