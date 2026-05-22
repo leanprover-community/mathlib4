@@ -111,8 +111,7 @@ lemma TensorProduct.toIntegralClosure_bijective_of_isLocalizationAway
     (fun r ↦ (φ r).toLinearMap) fun r ↦ ?_
   convert!
     show Function.Bijective ((toIntegralClosure R (Sᵣ r) B).toLinearMap.restrictScalars S) from
-      H r using
-    1
+      H r using 1
   congr!
   refine IsLocalizedModule.ext (.powers r.1) (Algebra.TensorProduct.map (Algebra.ofId S (Sᵣ r))
     (AlgHom.id R (integralClosure R B))).toLinearMap

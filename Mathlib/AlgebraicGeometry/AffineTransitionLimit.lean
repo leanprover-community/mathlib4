@@ -318,8 +318,7 @@ lemma isBasis_preimage_isAffineOpen [IsCofiltered I] [∀ {i j} (f : i ⟶ j), I
   have : r = (c.π.app j.left).appLE (D.map j.hom ⁻¹ᵁ V) (c.π.app i ⁻¹ᵁ V) h.ge s := by
     convert!
       show r = ((topIso _).inv ≫ ((opensCone D c i V).π.app j).appTop ≫ (topIso _).hom) s from
-        (c.π.app i ⁻¹ᵁ V).topIso.commRingCatIsoToRingEquiv.symm_apply_eq.mp hs.symm using
-      3
+        (c.π.app i ⁻¹ᵁ V).topIso.commRingCatIsoToRingEquiv.symm_apply_eq.mp hs.symm using 3
     simp [Scheme.Hom.app_eq_appLE, Scheme.Hom.resLE_appLE]
   refine ⟨_, ⟨j.left, _, (hV.preimage _).basicOpen s, rfl⟩, ?_⟩
   simp only [Functor.const_obj_obj, Scheme.preimage_basicOpen] at this ⊢
@@ -910,8 +909,7 @@ lemma exists_appTop_π_eq_of_isLimit [∀ {i j} (f : i ⟶ j), IsAffineHom (D.ma
       exact ⟨fVx.le, fVy.le⟩
     convert!
       congr(((D.map (fk'k ≫ fk (hjS x.2 y.2))).app _ ≫ (D.obj k').presheaf.map (homOfLE H).op)
-        $(hj x y)) using
-      1
+        $(hj x y)) using 1
     · dsimp [TopCat.Presheaf.restrictOpen, TopCat.Presheaf.restrict]
       simp only [← ConcreteCategory.comp_apply]
       congr 2
@@ -988,8 +986,7 @@ lemma Scheme.exists_isQuasiAffine_of_isLimit [IsCofiltered I]
     refine ⟨l, (D.map (flk ≫ fkj)).appTop r, ?_, ?_⟩
     · convert!
       (hU.preimage (D.map (flk ≫ fki))).basicOpen
-        ((D.obj _).presheaf.map (homOfLE le_top).op ((D.map (flk ≫ fkj)).appTop r)) using
-      1
+        ((D.obj _).presheaf.map (homOfLE le_top).op ((D.map (flk ≫ fkj)).appTop r)) using 1
       rwa [Scheme.basicOpen_res, eq_comm, inf_eq_right, Functor.map_comp,
         elementwise_of% Scheme.Hom.comp_appTop, ← Scheme.preimage_basicOpen_top, Functor.map_comp,
         Scheme.Hom.comp_preimage]

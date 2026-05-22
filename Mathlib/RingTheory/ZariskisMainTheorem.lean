@@ -388,8 +388,7 @@ private lemma not_isStronglyTranscendental_of_weaklyQuasiFiniteAt_of_isDomain_au
       ((RingHom.Finite.of_surjective g.toRingHom hf₁).comp
             (RingHom.Finite.tensorProductMap (f := AlgHom.id R R') (RingEquiv.refl _).finite
               hx')).comp
-        (polyEquivTensor R R').toRingEquiv.finite using
-      1
+        (polyEquivTensor R R').toRingEquiv.finite using 1
     ext <;> simp [g]
   obtain ⟨⟨Q, _⟩, hQ⟩ := hf₄.comap_surjective hf₃ ⟨P, ‹_›⟩
   suffices WeaklyQuasiFiniteAt R' Q from
@@ -532,8 +531,8 @@ private lemma ZariskisMainProperty.of_algHom_polynomial
       simpa [← RingHom.ker_eq_comap_bot]
     refine not_isStronglyTranscendental_of_weaklyQuasiFiniteAt ?_ (p.map (Ideal.Quotient.mk J))
       (isStronglyTranscendental_mk_radical_conductor H (f X) (by convert! hf; ext; simp))
-    convert! (RingHom.Finite.of_surjective _ (Ideal.Quotient.mk_surjective (I := J))).comp hf using
-      1
+    convert! (RingHom.Finite.of_surjective _ (Ideal.Quotient.mk_surjective (I := J))).comp hf
+      using 1
     ext <;> simp [show ∀ x, f (C x) = algebraMap _ _ x from f.commutes, J]
   obtain ⟨x, hx, hxp⟩ := SetLike.not_le_iff_exists.mp hf
   replace hx (a : _) : x * a ∈ f.range := by simpa [← AlgHom.map_adjoin_singleton f] using hx a

@@ -544,8 +544,7 @@ lemma apply_sub_two_small_of_apply_small_of_N'_lt {i : ℕ} (h : Small a (a i)) 
     Small a (a (i - 2)) := by
   convert!
     hc.apply_sub_one_small_of_apply_big_of_N'_le
-      (hc.apply_sub_one_big_of_apply_small_of_N'_lt h hN') (by lia) using
-    1
+      (hc.apply_sub_one_big_of_apply_small_of_N'_lt h hN') (by lia) using 1
 
 lemma N_add_one_lt_apply_of_apply_big_of_N'_le {i : ℕ} (h : Big a (a i)) (hN' : N' a N ≤ i) :
     N + 1 < a i := by

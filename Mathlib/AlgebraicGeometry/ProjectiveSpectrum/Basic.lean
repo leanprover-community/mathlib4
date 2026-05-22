@@ -126,8 +126,7 @@ lemma iSup_basicOpen_eq_top' {ι : Type*} (f : ι → A)
   | mul x y hx hy hx' hy' =>
     convert!
       add_mem (Ideal.mul_mem_left _ x hy')
-        (Ideal.mul_mem_right (GradedRing.projZeroRingHom 𝒜 y) _ hx') using
-      1
+        (Ideal.mul_mem_right (GradedRing.projZeroRingHom 𝒜 y) _ hx') using 1
     rw [map_mul]
     ring
 

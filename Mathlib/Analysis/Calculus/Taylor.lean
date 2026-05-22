@@ -194,8 +194,7 @@ theorem hasDerivWithinAt_taylorWithinEval {f : ℝ → E} {x y : ℝ} {n : ℕ} 
     convert!
       hk.add
         (hasDerivWithinAt_taylor_coeff_within hs'_unique (nhdsWithin_mono _ h self_mem_nhdsWithin)
-          hf') using
-      1
+          hf') using 1
     exact (add_sub_cancel _ _).symm
 
 /-- Calculate the derivative of the Taylor polynomial with respect to `x₀`.
@@ -255,8 +254,7 @@ theorem taylor_isLittleO {f : ℝ → E} {x₀ : ℝ} {n : ℕ} {s : Set ℝ}
     simp only [Nat.cast_add, Nat.cast_one] at hf
     convert!
       Convex.isLittleO_pow_succ_real hs hx₀s ?_ (h (hf.derivWithin hs' le_rfl)) (f := fun x ↦
-        f x - taylorWithinEval f (n + 1) s x₀ x) using
-      1
+        f x - taylorWithinEval f (n + 1) s x₀ x) using 1
     · simp
     · intro x hx
       refine HasDerivWithinAt.sub ?_ (hasDerivAt_taylorWithinEval_succ f n).hasDerivWithinAt

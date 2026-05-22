@@ -164,8 +164,7 @@ lemma hasStrictDerivAt_smul {g : GL (Fin 2) ℝ} (hg : 0 < g.val.det) (τ : ℍ)
     simp [Function.comp_def, coe_smul_of_det_pos hg]
   convert!
     ((hasStrictDerivAt_id (τ : ℂ)).const_mul _ |>.add_const _).div
-      ((hasStrictDerivAt_id (τ : ℂ)).const_mul _ |>.add_const _) _ using
-    2
+      ((hasStrictDerivAt_id (τ : ℂ)).const_mul _ |>.add_const _) _ using 2
   · simp [Matrix.det_fin_two]; ring
   · apply denom_ne_zero
 

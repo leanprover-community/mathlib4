@@ -160,8 +160,7 @@ private lemma trapezoidal_error_le_of_lt' {f : ℝ → ℝ} {ζ : ℝ} {a b : �
     have hB (x) : HasDerivAt (fun y ↦ c / (n + 1) * (y - a) ^ (n + 1)) (c * (x - a) ^ n) x := by
       convert!
         (hasDerivAt_const x (c / (n + 1))).mul
-          (((hasDerivAt_id x).sub (hasDerivAt_const x a)).pow (n + 1)) using
-        1
+          (((hasDerivAt_id x).sub (hasDerivAt_const x a)).pow (n + 1)) using 1
       simp [sub_eq_add_neg, field]
     simpa [Real.norm_eq_abs, h0] using image_norm_le_of_norm_deriv_right_le_deriv_boundary
       (fun x hx ↦ (h x hx).continuousWithinAt)

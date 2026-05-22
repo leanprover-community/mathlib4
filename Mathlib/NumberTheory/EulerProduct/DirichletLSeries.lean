@@ -153,8 +153,7 @@ theorem ArithmeticFunction.LSeries_zeta_eulerProduct_exp_log {s : ℂ} (hs : 1 <
     exp (∑' p : Nat.Primes, -Complex.log (1 - p ^ (-s))) = L 1 s := by
   convert!
     modOne_eq_one (R := ℂ) ▸
-      DirichletCharacter.LSeries_eulerProduct_exp_log (1 : DirichletCharacter ℂ 1) hs using
-    7
+      DirichletCharacter.LSeries_eulerProduct_exp_log (1 : DirichletCharacter ℂ 1) hs using 7
   rw [MulChar.one_apply <| isUnit_of_subsingleton _, one_mul]
 
 /-- A variant of the Euler product for the Riemann zeta function. -/

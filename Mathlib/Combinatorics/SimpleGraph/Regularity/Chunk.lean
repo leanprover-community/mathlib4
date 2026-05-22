@@ -370,8 +370,7 @@ private theorem abs_density_star_sub_density_le_eps (hPε : ↑100 ≤ ↑4 ^ #P
       (biUnion_star_subset_nonuniformWitness hP G ε hV U) (by sz_positivity)
       (one_sub_eps_mul_card_nonuniformWitness_le_card_star hV hUV' hUV hPε hε₁)
       (one_sub_eps_mul_card_nonuniformWitness_le_card_star hU hUV'.symm (fun hVU => hUV hVU.symm)
-        hPε hε₁) using
-    1
+        hPε hε₁) using 1
   linarith
 
 private theorem eps_le_card_star_div [Nonempty α] (hPα : #P.parts * 16 ^ #P.parts ≤ card α)

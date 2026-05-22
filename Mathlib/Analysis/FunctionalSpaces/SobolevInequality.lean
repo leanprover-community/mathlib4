@@ -558,8 +558,7 @@ theorem eLpNorm_le_eLpNorm_fderiv_of_eq_inner {u : E → F'}
         gcongr
         convert!
           ENNReal.lintegral_mul_le_Lp_mul_Lq μ (.symm <| .conjExponent <| show 1 < (p : ℝ) from hp)
-            ?_ ?_ using
-          5
+            ?_ ?_ using 5
         · simp [γ, n, q, ← ENNReal.rpow_mul, ← h3γ]
         · borelize F'
           fun_prop

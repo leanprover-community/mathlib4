@@ -160,8 +160,7 @@ theorem arsinh_neg_iff : arsinh x < 0 ↔ x < 0 :=
 theorem hasStrictDerivAt_arsinh (x : ℝ) : HasStrictDerivAt arsinh (√(1 + x ^ 2))⁻¹ x := by
   convert!
     sinhHomeomorph.toOpenPartialHomeomorph.hasStrictDerivAt_symm (mem_univ x) (cosh_pos _).ne'
-      (hasStrictDerivAt_sinh _) using
-    2
+      (hasStrictDerivAt_sinh _) using 2
   exact (cosh_arsinh _).symm
 
 theorem hasDerivAt_arsinh (x : ℝ) : HasDerivAt arsinh (√(1 + x ^ 2))⁻¹ x :=

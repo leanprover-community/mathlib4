@@ -77,8 +77,7 @@ theorem apply_le_of_iteratedDeriv_alternating {f : ℂ → ℂ} {c : ℂ} (hf : 
     f c ≤ f z := by
   convert!
     apply_le_of_iteratedDeriv_nonneg (f := fun z ↦ f (-z)) (hf.comp <| differentiable_neg)
-      (fun n hn ↦ ?_) (neg_le_neg_iff.mpr hz) using
-    1
+      (fun n hn ↦ ?_) (neg_le_neg_iff.mpr hz) using 1
   · simp only [neg_neg]
   · simp only [neg_neg]
   · simpa only [iteratedDeriv_comp_neg, neg_neg, smul_eq_mul] using h n hn

@@ -284,8 +284,7 @@ lemma over_map_compatiblePreserving {X Y : C} (f : X ⟶ Y) :
       (by simpa [W'] using (Over.w f₁).symm)
     convert!
       congr_arg (F.obj.map e.inv.op)
-        (hx g₁' g₂' hg₁ hg₂ (by ext; exact (Over.forget _).congr_map h)) using
-      1
+        (hx g₁' g₂' hg₁ hg₂ (by ext; exact (Over.forget _).congr_map h)) using 1
     all_goals
       dsimp [e, W', g₁', g₂']
       rw [← Functor.map_comp_apply]

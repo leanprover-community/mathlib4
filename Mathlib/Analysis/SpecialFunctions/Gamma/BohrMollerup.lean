@@ -98,8 +98,7 @@ theorem Gamma_mul_add_mul_le_rpow_Gamma_mul_rpow_Gamma {s t a b : ℝ} (hs : 0 <
   rw [Gamma_eq_integral hs, Gamma_eq_integral ht, Gamma_eq_integral hst]
   convert!
     MeasureTheory.integral_mul_le_Lp_mul_Lq_of_nonneg e (posf' a s) (posf' b t) (f_mem_Lp ha hs)
-      (f_mem_Lp hb ht) using
-    1
+      (f_mem_Lp hb ht) using 1
   · refine setIntegral_congr_fun measurableSet_Ioi fun x hx => ?_
     dsimp only
     have A : exp (-x) = exp (-a * x) * exp (-b * x) := by
@@ -426,8 +425,7 @@ theorem doublingGamma_log_convex_Ioi : ConvexOn ℝ (Ioi (0 : ℝ)) (log ∘ dou
     convert!
       convexOn_log_Gamma.comp_affineMap
         ((DistribSMul.toLinearMap ℝ ℝ (1 / 2 : ℝ)).toAffineMap +
-          AffineMap.const ℝ ℝ (1 / 2 : ℝ)) using
-      1
+          AffineMap.const ℝ ℝ (1 / 2 : ℝ)) using 1
     · change Ioi (-1 : ℝ) = ((fun x : ℝ => x + 1 / 2) ∘ fun x : ℝ => (1 / 2 : ℝ) * x) ⁻¹' Ioi 0
       rw [preimage_comp, preimage_add_const_Ioi, zero_sub,
         preimage_const_mul_Ioi₀ (_ : ℝ) one_half_pos, neg_div, div_self (@one_half_pos ℝ _).ne']

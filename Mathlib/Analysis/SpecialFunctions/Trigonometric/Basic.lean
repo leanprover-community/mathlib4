@@ -982,8 +982,7 @@ theorem tendsto_cos_pi_div_two : Tendsto cos (𝓝[<] (π / 2)) (𝓝[>] 0) := b
 theorem tendsto_tan_pi_div_two : Tendsto tan (𝓝[<] (π / 2)) atTop := by
   convert!
     tendsto_cos_pi_div_two.inv_tendsto_nhdsGT_zero.atTop_mul_pos zero_lt_one
-      tendsto_sin_pi_div_two using
-    1
+      tendsto_sin_pi_div_two using 1
   simp only [Pi.inv_apply, ← div_eq_inv_mul, ← tan_eq_sin_div_cos]
 
 theorem tendsto_sin_neg_pi_div_two : Tendsto sin (𝓝[>] (-(π / 2))) (𝓝 (-1)) := by
@@ -1000,8 +999,7 @@ theorem tendsto_cos_neg_pi_div_two : Tendsto cos (𝓝[>] (-(π / 2))) (𝓝[>] 
 theorem tendsto_tan_neg_pi_div_two : Tendsto tan (𝓝[>] (-(π / 2))) atBot := by
   convert!
     tendsto_cos_neg_pi_div_two.inv_tendsto_nhdsGT_zero.atTop_mul_neg (by simp)
-      tendsto_sin_neg_pi_div_two using
-    1
+      tendsto_sin_neg_pi_div_two using 1
   simp only [Pi.inv_apply, ← div_eq_inv_mul, ← tan_eq_sin_div_cos]
 
 end Real

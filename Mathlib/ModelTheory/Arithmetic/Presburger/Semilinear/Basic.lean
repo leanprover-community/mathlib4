@@ -686,8 +686,7 @@ private theorem isSemilinearSet_setOfFloorNeg : IsSemilinearSet hs.setOfFloorNeg
     convert!
       Nat.isSemilinearSet_setOf_mulVec_eq (κ := ((ι ⊕ ι) ⊕ ι) ⊕ ι) i.1 hs.base
         (Matrix.fromCols (Matrix.fromCols (Matrix.fromCols 1 1) 0) 1)
-        (Matrix.fromCols (Matrix.fromCols (Matrix.fromCols 0 0) 1) 0) using
-      4
+        (Matrix.fromCols (Matrix.fromCols (Matrix.fromCols 0 0) 1) 0) using 4
       <;> simp [add_comm _ i.1, add_assoc, fromCols_mulVec]
 
 private noncomputable def setOfFloorPos : Set (ι → ℕ) :=
@@ -748,8 +747,7 @@ private theorem isSemilinearSet_setOfFloorPos : IsSemilinearSet hs.setOfFloorPos
     convert!
       Nat.isSemilinearSet_setOf_mulVec_eq (κ := ((ι ⊕ ι) ⊕ ι) ⊕ ι) 0 (hs.base + i.1)
         (Matrix.fromCols (Matrix.fromCols (Matrix.fromCols 1 0) 0) 1)
-        (Matrix.fromCols (Matrix.fromCols (Matrix.fromCols 0 1) 1) 0) using
-      4
+        (Matrix.fromCols (Matrix.fromCols (Matrix.fromCols 0 1) 1) 0) using 4
       <;> simp [add_assoc, fromCols_mulVec]
 
 end IsProperLinearSet
@@ -758,8 +756,7 @@ private lemma Nat.isSemilinearSet_compl_of_isProperLinearSet [Finite ι] {s : Se
     (hs : IsProperLinearSet s) : IsSemilinearSet sᶜ := by
   convert!
     hs.isSemilinearSet_setOfFractNe.union <|
-      hs.isSemilinearSet_setOfFloorNeg.union <| hs.isSemilinearSet_setOfFloorPos using
-    1
+      hs.isSemilinearSet_setOfFloorNeg.union <| hs.isSemilinearSet_setOfFloorPos using 1
   ext
   simp only [mem_compl_iff, hs.mem_iff_fract_eq_and_floor_nonneg, IsProperLinearSet.setOfFractNe,
     IsProperLinearSet.setOfFloorNeg, IsProperLinearSet.setOfFloorPos, mem_union, mem_setOf_eq]

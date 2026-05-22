@@ -271,8 +271,7 @@ theorem integral_comp_pi_polarCoord_symm {E : Type*} [NormedAddCommGroup E] [Nor
   convert!
     (integral_image_eq_integral_abs_det_fderiv_smul volume measurableSet_pi_polarCoord_target
         (fun p _ ↦ (hasFDerivAt_pi_polarCoord_symm p).hasFDerivWithinAt) injOn_pi_polarCoord_symm
-        f).symm using
-    1
+        f).symm using 1
   refine setIntegral_congr_fun measurableSet_pi_polarCoord_target fun x hx ↦ ?_
   simp_rw [det_fderivPiPolarCoordSymm, Finset.abs_prod, abs_fst_of_mem_pi_polarCoord_target hx]
 
@@ -292,8 +291,7 @@ theorem lintegral_comp_pi_polarCoord_symm (f : (ι → ℝ × ℝ) → ℝ≥0�
   convert!
     (lintegral_image_eq_lintegral_abs_det_fderiv_mul volume measurableSet_pi_polarCoord_target
         (fun p _ ↦ (hasFDerivAt_pi_polarCoord_symm p).hasFDerivWithinAt) injOn_pi_polarCoord_symm
-        f).symm using
-    1
+        f).symm using 1
   refine setLIntegral_congr_fun measurableSet_pi_polarCoord_target (fun x hx ↦ ?_)
   simp_rw [det_fderivPiPolarCoordSymm, Finset.abs_prod, ENNReal.ofReal_prod_of_nonneg (fun _ _ ↦
     abs_nonneg _), abs_fst_of_mem_pi_polarCoord_target hx]

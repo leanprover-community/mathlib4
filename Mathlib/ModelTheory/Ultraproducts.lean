@@ -84,8 +84,7 @@ theorem term_realize_cast {β : Type*} (x : β → ∀ a, M a) (t : L.Term β) :
       (fun a => t.realize fun i => x i a : (u : Filter α).Product M) := by
   convert!
     @Term.realize_quotient_mk' L _ ((u : Filter α).productSetoid M)
-      (Ultraproduct.setoidPrestructure M u) _ t x using
-    2
+      (Ultraproduct.setoidPrestructure M u) _ t x using 2
   ext a
   induction t with
   | var => rfl

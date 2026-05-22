@@ -389,8 +389,7 @@ theorem integral_mul_cpow_one_add_sq {t : ℂ} (ht : t ≠ -1) :
       intro z hz
       convert!
         (HasDerivAt.cpow_const (c := t + 1) (hasDerivAt_id _) (Or.inl hz)).div_const
-          (2 * (t + 1)) using
-        1
+          (2 * (t + 1)) using 1
       simp [field]
     convert! (HasDerivAt.comp (↑x) (g _) f).comp_ofReal using 1
     · ring

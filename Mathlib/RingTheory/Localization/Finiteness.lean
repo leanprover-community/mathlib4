@@ -78,8 +78,7 @@ theorem IsLocalization.smul_mem_finsetIntegerMultiple_span [Algebra R S] [Algebr
     (Submodule.span R
           (IsLocalization.finsetIntegerMultiple (Submonoid.map (algebraMap R S) M) s :
             Set S)).smul_mem
-      a hx' using
-    1
+      a hx' using 1
   convert! ha₂.symm using 1
   · rw [Subtype.coe_mk, Submonoid.smul_def, Submonoid.coe_mul, ← smul_smul]
     exact Algebra.smul_def _ _

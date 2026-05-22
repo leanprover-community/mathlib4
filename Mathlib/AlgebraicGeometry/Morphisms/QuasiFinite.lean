@@ -406,8 +406,7 @@ nonrec lemma Scheme.Hom.quasiFiniteAt_iff_isOpen_singleton_asFiber
     have : Topology.IsOpenEmbedding f' := by
       convert!
         (f ⁻¹' {f (pullback.fst f ι x)}).restrictPreimage_isOpenEmbedding
-          (pullback.fst f ι).isOpenEmbedding using
-        0
+          (pullback.fst f ι).isOpenEmbedding using 0
       dsimp [f', Set.restrictPreimage]
       congr!
     rw [this.isOpen_iff_image_isOpen, Set.image_singleton]; rfl

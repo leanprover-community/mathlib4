@@ -48,8 +48,7 @@ lemma log_eq_integral {z : ℂ} (hz : 1 + z ∈ slitPlane) :
     (integral_unitInterval_deriv_eq_sub (continuousOn_one_add_mul_inv hz)
         (fun _ ht ↦
           hasDerivAt_log <|
-            StarConvex.add_smul_mem starConvex_one_slitPlane hz ht.1 ht.2)).symm using
-    1
+            StarConvex.add_smul_mem starConvex_one_slitPlane hz ht.1 ht.2)).symm using 1
   simp only [log_one, sub_zero]
 
 /-- Represent `log (1 - z)⁻¹` as an integral over the unit interval -/

@@ -298,8 +298,7 @@ theorem eval_iterate_derivative_eq_iff_of_bounded {n : ℕ} {P : ℝ[X]}
     (derivative^[k] P).eval x = (derivative^[k] (T ℝ n)).eval x ↔ P = T ℝ n := by
   convert!
     sumNodes_eq_sumNodes_T_iff (fun i hi => negOnePow_mul_iterateDerivativeC_pos hk₁ hk₂ hi hx)
-      hPdeg hPbnd using
-    2
+      hPdeg hPbnd using 2
   · rw [sumNodes_eq_eval_iterate_derivative hk₂ x hPdeg]
   · rw [sumNodes_eq_eval_iterate_derivative hk₂ x (le_of_eq (degree_T ℝ n))]
 

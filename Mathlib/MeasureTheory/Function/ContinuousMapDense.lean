@@ -179,8 +179,7 @@ theorem MemLp.exists_hasCompactSupport_eLpNorm_sub_le
             (aestronglyMeasurable_const.indicator s_closed.measurableSet))
           ((aestronglyMeasurable_const.indicator s_closed.measurableSet).sub
             (aestronglyMeasurable_const.indicator ht))
-          I2 I1).le using
-      2
+          I2 I1).le using 2
     simp only [sub_add_sub_cancel]
   refine ⟨f, I3, f_cont, f_mem, HasCompactSupport.intro k_compact fun x hx => ?_⟩
   rw [← Function.notMem_support]
@@ -277,8 +276,7 @@ theorem MemLp.exists_boundedContinuous_eLpNorm_sub_le [μ.WeaklyRegular] (hp : p
             (aestronglyMeasurable_const.indicator s_closed.measurableSet))
           ((aestronglyMeasurable_const.indicator s_closed.measurableSet).sub
             (aestronglyMeasurable_const.indicator ht))
-          I2 I1).le using
-      2
+          I2 I1).le using 2
     simp only [sub_add_sub_cancel]
   refine ⟨f, I3, f_cont, f_mem, ?_⟩
   exact (BoundedContinuousFunction.ofNormedAddCommGroup f f_cont _ f_bound).isBounded_range

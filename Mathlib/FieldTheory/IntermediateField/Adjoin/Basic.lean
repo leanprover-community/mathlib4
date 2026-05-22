@@ -506,8 +506,7 @@ theorem adjoin_minpoly_coeff_of_exists_primitive_element
   simp_rw [finrank_eq]
   convert!
     natDegree_le_of_dvd dvd_g
-      ((g.monic_toSubring _ _).mpr <| (minpoly.monic <| .of_finite K α).map _).ne_zero using
-    1
+      ((g.monic_toSubring _ _).mpr <| (minpoly.monic <| .of_finite K α).map _).ne_zero using 1
   rw [natDegree_toSubring, natDegree_map]
 
 instance : Module.Finite F (⊥ : IntermediateField F E) := Subalgebra.finite_bot

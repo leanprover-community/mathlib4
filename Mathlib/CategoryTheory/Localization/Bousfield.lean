@@ -217,8 +217,7 @@ lemma isLocal_adj_unit_app (X : D) : isLocal (· ∈ Set.range F.obj) (adj.unit.
   rintro _ ⟨Y, rfl⟩
   convert!
     ((Functor.FullyFaithful.ofFullyFaithful F).homEquiv.symm.trans
-        (adj.homEquiv X Y)).bijective using
-    1
+        (adj.homEquiv X Y)).bijective using 1
   dsimp [Adjunction.homEquiv]
   aesop
 
@@ -253,8 +252,7 @@ lemma isColocal_adj_counit_app (X : C) : isColocal (· ∈ Set.range G.obj) (adj
   rintro _ ⟨Y, rfl⟩
   convert!
     ((Functor.FullyFaithful.ofFullyFaithful G).homEquiv.symm.trans
-        (adj.homEquiv Y X).symm).bijective using
-    1
+        (adj.homEquiv Y X).symm).bijective using 1
   dsimp [Adjunction.homEquiv]
   cat_disch
 

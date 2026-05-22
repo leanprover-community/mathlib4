@@ -422,8 +422,8 @@ theorem tendstoInMeasure_of_tendsto_eLpNorm_of_stronglyMeasurable [SeminormedAdd
   refine le_trans ?_ hn
   rw [one_div, ← ENNReal.inv_mul_le_iff, inv_inv]
   · convert!
-    mul_meas_ge_le_pow_eLpNorm' μ hp_ne_zero hp_ne_top ((hf n).sub hg).aestronglyMeasurable ε using
-    6
+      mul_meas_ge_le_pow_eLpNorm' μ hp_ne_zero hp_ne_top ((hf n).sub hg).aestronglyMeasurable ε
+      using 6
     simp [edist_eq_enorm_sub]
   · simp [hε_top]
   · simp [hε.ne']

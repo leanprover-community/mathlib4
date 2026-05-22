@@ -585,8 +585,8 @@ theorem exp_approx_succ {n} {x a₁ b₁ : ℝ} (m : ℕ) (e₁ : n + 1 = m) (a�
   grw [abs_sub_le, h]
   subst e₁; rw [expNear_succ, expNear_sub, abs_mul]
   convert!
-    mul_le_mul_of_nonneg_left (a := |x| ^ n / ↑(Nat.factorial n)) (le_sub_iff_add_le'.1 e) ?_ using
-    1
+    mul_le_mul_of_nonneg_left (a := |x| ^ n / ↑(Nat.factorial n)) (le_sub_iff_add_le'.1 e) ?_
+      using 1
   · simp [mul_add, pow_succ', div_eq_mul_inv, abs_mul, abs_inv, Nat.factorial]
     ac_rfl
   · simp [div_nonneg, abs_nonneg]

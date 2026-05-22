@@ -170,8 +170,7 @@ theorem _root_.MeasureTheory.Integrable.condExpKernel_ae (hf_int : Integrable f 
   rw [condExpKernel_eq]
   convert!
     Integrable.condDistrib_ae (aemeasurable_id'' μ (inf_le_right : m ⊓ mΩ ≤ mΩ)) aemeasurable_id
-      hf_int.comp_snd_map_prod_id using
-    1
+      hf_int.comp_snd_map_prod_id using 1
 
 theorem _root_.MeasureTheory.Integrable.integral_norm_condExpKernel (hf_int : Integrable f μ) :
     Integrable (fun ω => ∫ y, ‖f y‖ ∂condExpKernel μ m ω) μ := by
@@ -179,8 +178,7 @@ theorem _root_.MeasureTheory.Integrable.integral_norm_condExpKernel (hf_int : In
   rw [condExpKernel_eq]
   convert!
     Integrable.integral_norm_condDistrib (aemeasurable_id'' μ (inf_le_right : m ⊓ mΩ ≤ mΩ))
-      aemeasurable_id hf_int.comp_snd_map_prod_id using
-    1
+      aemeasurable_id hf_int.comp_snd_map_prod_id using 1
 
 theorem _root_.MeasureTheory.Integrable.norm_integral_condExpKernel [NormedSpace ℝ F]
     (hf_int : Integrable f μ) :
@@ -189,8 +187,7 @@ theorem _root_.MeasureTheory.Integrable.norm_integral_condExpKernel [NormedSpace
   rw [condExpKernel_eq]
   convert!
     Integrable.norm_integral_condDistrib (aemeasurable_id'' μ (inf_le_right : m ⊓ mΩ ≤ mΩ))
-      aemeasurable_id hf_int.comp_snd_map_prod_id using
-    1
+      aemeasurable_id hf_int.comp_snd_map_prod_id using 1
 
 theorem _root_.MeasureTheory.Integrable.integral_condExpKernel [NormedSpace ℝ F]
     (hf_int : Integrable f μ) :
@@ -199,8 +196,7 @@ theorem _root_.MeasureTheory.Integrable.integral_condExpKernel [NormedSpace ℝ 
   rw [condExpKernel_eq]
   convert!
     Integrable.integral_condDistrib (aemeasurable_id'' μ (inf_le_right : m ⊓ mΩ ≤ mΩ))
-      aemeasurable_id hf_int.comp_snd_map_prod_id using
-    1
+      aemeasurable_id hf_int.comp_snd_map_prod_id using 1
 
 theorem integrable_toReal_condExpKernel {s : Set Ω} (hs : MeasurableSet s) :
     Integrable (fun ω => (condExpKernel μ m ω).real s) μ := by

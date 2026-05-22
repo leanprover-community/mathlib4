@@ -172,8 +172,7 @@ lemma IsStable.locally_and_iff (hp : IsStable 𝓕 p) (hq : IsStable 𝓕 q) :
   intro p q hp hq hpX hqX
   convert!
     hp _ (hpX.stoppedProcess_localSeq n) _ <|
-      hqX.isLocalizingSequence_localSeq.isStoppingTime n using
-    1
+      hqX.isLocalizingSequence_localSeq.isStoppingTime n using 1
   ext i ω
   simp_rw [stoppedProcess_indicator_comm, Pi.inf_apply, lt_inf_iff, inf_comm (hpX.localSeq n)]
   rw [← stoppedProcess_stoppedProcess, ← stoppedProcess_indicator_comm, Set.setOf_and,

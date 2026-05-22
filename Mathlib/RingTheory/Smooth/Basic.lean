@@ -296,8 +296,7 @@ theorem iff_split_injection
   convert!
     (((exact_kerCotangentToTensor_mapBaseChange R _ _ hf).split_tfae' (g :=
           (KaehlerDifferential.mapBaseChange R P A).restrictScalars P)).out
-      0 1) using
-    2
+      0 1) using 2
   · rw [← (LinearMap.extendScalarsOfSurjectiveEquiv hf).exists_congr_right]
     simp [LinearMap.ext_iff]
   · rw [and_iff_right (by exact mapBaseChange_surjective R P A hf)]

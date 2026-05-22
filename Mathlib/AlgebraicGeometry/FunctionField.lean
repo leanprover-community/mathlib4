@@ -145,8 +145,8 @@ theorem functionField_isFractionRing_of_isAffineOpen [IsIntegral X] (U : X.Opens
   convert!
     hU.isLocalization_stalk
       ⟨genericPoint X,
-        (((genericPoint_spec X).mem_open_set_iff U.isOpen).mpr (by simpa using ‹Nonempty U›))⟩ using
-    1
+        (((genericPoint_spec X).mem_open_set_iff U.isOpen).mpr (by simpa using ‹Nonempty U›))⟩
+    using 1
   rw [hU.primeIdealOf_genericPoint, genericPoint_eq_bot_of_affine]
   ext; exact mem_nonZeroDivisors_iff_ne_zero
 

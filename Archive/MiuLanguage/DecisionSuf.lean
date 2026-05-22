@@ -195,8 +195,6 @@ theorem der_replicate_I_of_mod3 (c : ℕ) (h : c % 3 = 1 ∨ c % 3 = 2) :
     apply
       der_cons_replicate_I_replicate_U_append_of_der_cons_replicate_I_append c ((2 ^ m - c) / 3) h
     convert! hw₂ using 4
-      -- now we must show `c + 3 * ((2 ^ m - c) / 3) = 2 ^ m`
-
     -- now we must show `c + 3 * ((2 ^ m - c) / 3) = 2 ^ m`
     rw [Nat.mul_div_cancel']
     · exact add_tsub_cancel_of_le hm.1
@@ -223,8 +221,6 @@ example (c : ℕ) (h : c % 3 = 1 ∨ c % 3 = 2) : Derivable (M :: replicate c I)
     apply
       der_cons_replicate_I_replicate_U_append_of_der_cons_replicate_I_append c ((2 ^ m - c) / 3) h
     convert! hw₂ using 4
-      -- now we must show `c + 3 * ((2 ^ m - c) / 3) = 2 ^ m`
-
     -- now we must show `c + 3 * ((2 ^ m - c) / 3) = 2 ^ m`
     rw [Nat.mul_div_cancel']
     · exact add_tsub_cancel_of_le hm.1

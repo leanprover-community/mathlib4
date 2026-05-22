@@ -1079,8 +1079,7 @@ theorem integral_map_of_stronglyMeasurable {β} [MeasurableSpace β] {φ : α �
   convert!
     tendsto_integral_approxOn_of_measurable_of_range_subset (hfm.measurable.comp hφ)
       ((integrable_map_measure hfm.aestronglyMeasurable hφ.aemeasurable).1 hfi) (range f ∪ {0})
-      (union_subset_union_left {0} (range_comp_subset_range φ f)) using
-    1
+      (union_subset_union_left {0} (range_comp_subset_range φ f)) using 1
   ext1 i
   simp only [SimpleFunc.integral_eq, hφ, SimpleFunc.measurableSet_preimage, map_measureReal_apply,
     ← preimage_comp]

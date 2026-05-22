@@ -205,8 +205,7 @@ theorem tendsto_log_nhdsWithin_im_neg_of_re_neg_of_im_zero {z : ℂ} (hre : z.re
           (continuous_norm.continuousWithinAt.log _)).tendsto.add
       (((continuous_ofReal.tendsto _).comp <|
             tendsto_arg_nhdsWithin_im_neg_of_re_neg_of_im_zero hre him).mul
-        tendsto_const_nhds) using
-    1
+        tendsto_const_nhds) using 1
   · simp [sub_eq_add_neg]
   · lift z to ℝ using him
     simpa using hre.ne
@@ -218,8 +217,7 @@ theorem continuousWithinAt_log_of_re_neg_of_im_zero {z : ℂ} (hre : z.re < 0) (
           (continuous_norm.continuousWithinAt.log _)).tendsto.add
       ((continuous_ofReal.continuousAt.comp_continuousWithinAt <|
             continuousWithinAt_arg_of_re_neg_of_im_zero hre him).mul
-        tendsto_const_nhds) using
-    1
+        tendsto_const_nhds) using 1
   lift z to ℝ using him
   simpa using hre.ne
 

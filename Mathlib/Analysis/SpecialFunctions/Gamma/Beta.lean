@@ -309,8 +309,7 @@ theorem approx_Gamma_integral_tendsto_Gamma_integral {s : ℂ} (hs : 0 < re s) :
   convert!
     tendsto_integral_of_dominated_convergence _ (fun n => (f_ible n).1)
       (Real.GammaIntegral_convergent hs) _
-      ((ae_restrict_iff' measurableSet_Ioi).mpr (ae_of_all _ f_tends)) using
-    1
+      ((ae_restrict_iff' measurableSet_Ioi).mpr (ae_of_all _ f_tends)) using 1
     -- limit of f is the integrand we want
 
   -- limit of f is the integrand we want

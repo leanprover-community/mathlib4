@@ -268,8 +268,7 @@ theorem card_torsion_le_of_isSMulRegular_int (n : ℤ) (h0 : n ≠ 0) (hn : IsSM
     {x : AddCircle p | n • x = 0}.encard ≤ n.natAbs := by
   convert!
     card_torsion_le_of_isSMulRegular p _ (Int.natAbs_ne_zero.mpr h0)
-      (IsSMulRegular.natAbs_iff.mpr hn) using
-    1
+      (IsSMulRegular.natAbs_iff.mpr hn) using 1
   simp
 
 theorem finite_torsion_of_isSMulRegular_int (n : ℤ) (hn : IsSMulRegular 𝕜 n) :

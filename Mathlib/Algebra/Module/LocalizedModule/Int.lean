@@ -135,8 +135,8 @@ theorem smul_mem_finsetIntegerMultiple_span [DecidableEq M] (x : M) (s : Finset 
   obtain ⟨a, ha⟩ := (IsLocalizedModule.eq_iff_exists S f).mp hx''
   use a * y
   convert!
-    (Submodule.span R (IsLocalizedModule.finsetIntegerMultiple S f s : Set M)).smul_mem a hx' using
-    1
+    (Submodule.span R (IsLocalizedModule.finsetIntegerMultiple S f s : Set M)).smul_mem a hx'
+      using 1
   convert! ha.symm using 1
   simp only [Submonoid.smul_def, ← smul_smul]
 

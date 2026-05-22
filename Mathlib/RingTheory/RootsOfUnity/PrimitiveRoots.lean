@@ -231,8 +231,7 @@ theorem pow_mul_pow_lcm {ζ' : M} {k' : ℕ} (hζ : IsPrimitiveRoot ζ k) (hζ' 
   convert! IsPrimitiveRoot.orderOf _
   convert!
     ((Commute.all ζ ζ').orderOf_mul_pow_eq_lcm (by simpa [← hζ.eq_orderOf])
-        (by simpa [← hζ'.eq_orderOf])).symm using
-    2
+        (by simpa [← hζ'.eq_orderOf])).symm using 2
   all_goals simp [hζ.eq_orderOf, hζ'.eq_orderOf]
 
 theorem pow_of_dvd (h : IsPrimitiveRoot ζ k) {p : ℕ} (hp : p ≠ 0) (hdiv : p ∣ k) :

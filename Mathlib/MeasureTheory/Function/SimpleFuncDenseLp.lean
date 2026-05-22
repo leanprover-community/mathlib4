@@ -875,8 +875,7 @@ theorem MemLp.induction_dense (hp_ne_top : p ≠ ∞) (P : (α → E) → Prop)
     refine ⟨g, ?_, Pg⟩
     convert!
       (hη _ _ (hf.aestronglyMeasurable.sub f'.aestronglyMeasurable)
-          (f'.aestronglyMeasurable.sub (h2P g Pg)) hf'.le hg).le using
-      2
+          (f'.aestronglyMeasurable.sub (h2P g Pg)) hf'.le hg).le using 2
     simp only [sub_add_sub_cancel]
   apply SimpleFunc.induction
   · intro c s hs ε εpos Hs
@@ -901,8 +900,7 @@ theorem MemLp.induction_dense (hp_ne_top : p ≠ ∞) (P : (α → E) → Prop)
     refine ⟨g + g', ?_, h1P g g' Pg Pg'⟩
     convert!
       (hη _ _ (f.aestronglyMeasurable.sub (h2P g Pg)) (f'.aestronglyMeasurable.sub (h2P g' Pg')) hg
-          hg').le using
-      2
+          hg').le using 2
     rw [SimpleFunc.coe_add]
     abel
 

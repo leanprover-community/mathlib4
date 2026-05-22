@@ -229,8 +229,7 @@ theorem IsEquivalent.smul {α E 𝕜 : Type*} [NormedField 𝕜] [NormedAddCommG
   have : ((fun x ↦ a x • u x) - (fun x ↦ b x • v x)) =ᶠ[l] fun x ↦ b x • (φ x • u x - v x) := by
     convert!
       (habφ.comp₂ (· • ·) <| EventuallyEq.refl _ u).fun_sub
-        (EventuallyEq.refl _ fun x ↦ b x • v x) using
-      1
+        (EventuallyEq.refl _ fun x ↦ b x • v x) using 1
     ext
     rw [Pi.mul_apply, mul_comm, mul_smul, ← smul_sub]
   refine (isLittleO_congr this.symm <| EventuallyEq.rfl).mp ((isBigO_refl b l).smul_isLittleO ?_)

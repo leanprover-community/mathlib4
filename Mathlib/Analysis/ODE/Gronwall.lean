@@ -60,8 +60,7 @@ theorem hasDerivAt_gronwallBound (δ K ε x : ℝ) :
   · simp only [gronwallBound_of_K_ne_0 hK]
     convert!
       (((hasDerivAt_id x).const_mul K).exp.const_mul δ).add
-        ((((hasDerivAt_id x).const_mul K).exp.sub_const 1).const_mul (ε / K)) using
-      1
+        ((((hasDerivAt_id x).const_mul K).exp.sub_const 1).const_mul (ε / K)) using 1
     simp only [id]
     field
 

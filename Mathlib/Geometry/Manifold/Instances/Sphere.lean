@@ -148,8 +148,7 @@ theorem hasFDerivAt_stereoInvFunAux (v : E) :
       ((4 : ℝ) • ContinuousLinearMap.id ℝ E) 0 := by
     convert!
       ((hasFDerivAt_const (4 : ℝ) 0).smul (hasFDerivAt_id 0)).add
-        ((h₀.sub (hasFDerivAt_const (4 : ℝ) 0)).smul (hasFDerivAt_const v 0)) using
-      1
+        ((h₀.sub (hasFDerivAt_const (4 : ℝ) 0)).smul (hasFDerivAt_const v 0)) using 1
     ext w
     simp
   convert! h₁.smul h₂ using 1
@@ -506,8 +505,7 @@ theorem range_mfderiv_coe_sphere {n : ℕ} [Fact (finrank ℝ E = n + 1)] (v : s
   symm
   convert!
     (U.symm : EuclideanSpace ℝ (Fin n) ≃ₗᵢ[ℝ] (ℝ ∙ (↑(-v) : E))ᗮ).range_comp
-      (ℝ ∙ (↑(-v) : E))ᗮ.subtype using
-    1
+      (ℝ ∙ (↑(-v) : E))ᗮ.subtype using 1
   simp only [Submodule.range_subtype, coe_neg_sphere]
   congr 1
   -- we must show `Submodule.span ℝ {v} = Submodule.span ℝ {-v}`

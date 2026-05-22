@@ -664,9 +664,9 @@ lemma isLittleO_pow_succ {x₀ : E} {n : ℕ} (hs : Convex ℝ s) (hx₀s : x₀
   filter_upwards [this] with x ⟨h_segment, h⟩
   convert!
     (convex_segment x₀ x).norm_image_sub_le_of_norm_hasFDerivWithin_le (f := fun x ↦ f x - f x₀)
-      (y := x) (x := x₀) (s := segment ℝ x₀ x) ?_ h (left_mem_segment ℝ x₀ x)
-      (right_mem_segment ℝ x₀ x) using
-    1
+      (y := x) (x := x₀) (s := segment ℝ x₀ x) ?_ h
+      (left_mem_segment ℝ x₀ x)
+      (right_mem_segment ℝ x₀ x) using 1
   · simp
   · simp only [hasFDerivWithinAt_sub_const_iff]
     exact fun x hx ↦ (hff' x (h_segment hx)).mono h_segment

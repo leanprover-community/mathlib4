@@ -142,8 +142,7 @@ theorem deriv2_sqrt_mul_log (x : ℝ) :
   · have h₀ : √x ≠ 0 := sqrt_ne_zero'.2 hx
     convert!
       (((hasDerivAt_log hx.ne').const_add 2).div ((hasDerivAt_sqrt hx.ne').const_mul 2) <|
-          mul_ne_zero two_ne_zero h₀).deriv using
-      1
+          mul_ne_zero two_ne_zero h₀).deriv using 1
     nth_rw 3 [← mul_self_sqrt hx.le]
     field
 

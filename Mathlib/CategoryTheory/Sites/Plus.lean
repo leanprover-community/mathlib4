@@ -245,8 +245,7 @@ theorem plusMap_toPlus : J.plusMap (J.toPlus P) = J.toPlus (J.plusObj P) := by
   refine Multiequalizer.hom_ext _ _ _ (fun II => ?_)
   convert!
     Multiequalizer.condition (S.unop.index P)
-      { fst := I, snd := II.base, r.Z := II.Y, r.g₁ := II.f, r.g₂ := 𝟙 II.Y } using
-    1
+      { fst := I, snd := II.base, r.Z := II.Y, r.g₁ := II.f, r.g₂ := 𝟙 II.Y } using 1
   all_goals simp
 
 set_option backward.isDefEq.respectTransparency false in

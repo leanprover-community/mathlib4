@@ -103,8 +103,7 @@ instance : PathConnectedSpace ℂˣ :=
               ((convex_halfSpace_re_gt 0).isPathConnected ⟨1, by simp⟩) ⟨1 + .I, by simp⟩).union
           (((convex_halfSpace_im_lt 0).isPathConnected ⟨-.I, by simp⟩).union
             ((convex_halfSpace_re_lt 0).isPathConnected ⟨-1, by simp⟩) ⟨-1 - .I, by simp⟩)
-          ⟨1 - .I, by simp⟩ using
-        1
+          ⟨1 - .I, by simp⟩ using 1
       ext x
       refine ⟨?_, by aesop⟩
       simp +contextual [Complex.ext_iff, -not_and, not_and_or, or_imp, ← ne_eq, ← lt_or_lt_iff_ne])

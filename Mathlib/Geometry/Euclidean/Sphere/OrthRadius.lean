@@ -352,8 +352,7 @@ lemma inter_orthRadius_eq_of_dist_le_radius [hf2 : Fact (Module.finrank ℝ V = 
       -(√(s.radius ^ 2 - (dist p s.center) ^ 2) / ‖v‖) • v +ᵥ p} := by
   convert!
     inter_orthRadius_eq_of_dist_le_radius_of_norm_eq_one hp hpc (v := ‖v‖⁻¹ • v)
-      (Submodule.smul_mem _ _ hv) ?_ using
-    2
+      (Submodule.smul_mem _ _ hv) ?_ using 2
   · simp [div_eq_mul_inv, smul_smul]
   · simp [div_eq_mul_inv, smul_smul]
   · simp [norm_smul, norm_ne_zero_iff.2 hv0]

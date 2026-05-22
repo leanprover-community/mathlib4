@@ -103,8 +103,7 @@ instance isSeparated : IsSeparated (toSpecZero 𝒜) := by
   have : Function.Surjective F := lift_awayMapₐ_awayMapₐ_surjective 𝒜 i.2.2 j.2.2 rfl i.1.2
   convert!
     IsClosedImmersion.spec_of_surjective
-      (CommRingCat.ofHom (R := Away 𝒜 i.2.1 ⊗[𝒜 0] Away 𝒜 j.2.1) F) this using
-    1
+      (CommRingCat.ofHom (R := Away 𝒜 i.2.1 ⊗[𝒜 0] Away 𝒜 j.2.1) F) this using 1
   rw [← cancel_mono (pullbackSpecIso ..).inv]
   apply pullback.hom_ext
   · simp only [Iso.trans_hom, congrHom_hom, Category.assoc, Iso.hom_inv_id, Category.comp_id,
@@ -248,8 +247,7 @@ theorem valuativeCriterion_existence_aux
     have H : (∏ i, x i ^ ai i) * x i₀ ^ (a * (d j - 1)) ∈ 𝒜 ((a * d i₀) • d j) := by
       convert!
         SetLike.mul_mem_graded (SetLike.prod_pow_mem_graded 𝒜 d x ai fun _ _ ↦ hxdi _)
-          (SetLike.pow_mem_graded (a * (d j - 1)) (hxdi i₀)) using
-        2
+          (SetLike.pow_mem_graded (a * (d j - 1)) (hxdi i₀)) using 2
       simp only [smul_eq_mul, hai]
       cases h : d j
       · cases (hdi j).ne' h

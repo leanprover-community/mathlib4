@@ -358,8 +358,7 @@ lemma IsLinearSet.isProperSemilinearSet [IsCancelAdd M] (hs : IsLinearSet s) :
       by_cases! hfg : ∀ j ∈ t', f j ≤ g j
       · convert!
         ih' (g i - f i) (Nat.sub_lt_self hfi (hfg i hi))
-          (fun j => if j ∈ t' then g j - f j else g j + f j) (by simp [hi]) using
-        1
+          (fun j => if j ∈ t' then g j - f j else g j + f j) (by simp [hi]) using 1
         conv_lhs => rw [← Finset.union_sdiff_of_subset ht']
         simp_rw [vadd_eq_add, add_left_cancel_iff, Finset.sum_union Finset.sdiff_disjoint.symm,
           ite_smul, Finset.sum_ite, Finset.filter_mem_eq_inter, Finset.inter_eq_right.2 ht',

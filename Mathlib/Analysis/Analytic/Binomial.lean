@@ -215,8 +215,7 @@ theorem hasFPowerSeriesOnBall_ofScalars_mul_add_zero (a b : ℂ) :
       (.ofScalars ℂ fun n ↦ a * n + b) 0 1 := by
   convert!
     (one_div_one_sub_hasFPowerSeriesOnBall_zero.const_smul (c := b - a)).add
-      (one_div_one_sub_sq_hasFPowerSeriesOnBall_zero.const_smul (c := a)) using
-    2
+      (one_div_one_sub_sq_hasFPowerSeriesOnBall_zero.const_smul (c := a)) using 2
   · simp [div_eq_mul_inv]
   · ext; simp; ring
 
@@ -314,8 +313,7 @@ theorem hasFPowerSeriesOnBall_ofScalars_mul_add_zero (a b : ℝ) :
       (.ofScalars ℝ (a * · + b)) 0 1 := by
   convert!
     (one_div_one_sub_hasFPowerSeriesOnBall_zero.const_smul (c := b - a)).add
-      (one_div_one_sub_sq_hasFPowerSeriesOnBall_zero.const_smul (c := a)) using
-    2
+      (one_div_one_sub_sq_hasFPowerSeriesOnBall_zero.const_smul (c := a)) using 2
   · simp [div_eq_mul_inv]
   · ext; simp; ring
 

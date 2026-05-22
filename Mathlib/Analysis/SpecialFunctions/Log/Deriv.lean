@@ -430,8 +430,7 @@ lemma le_log_one_add_of_nonneg {x : ℝ} (hx : 0 ≤ x) : 2 * x / (x + 2) ≤ lo
 lemma lt_log_one_add_of_pos {x : ℝ} (hx : 0 < x) : 2 * x / (x + 2) < log (1 + x) := by
   convert!
     lt_hasSum (hasSum_log_one_add hx.le) 0 (by intros; positivity) 1 (by positivity)
-      (by positivity) using
-    1
+      (by positivity) using 1
   simp [field]
 
 end Real

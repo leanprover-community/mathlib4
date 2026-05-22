@@ -181,8 +181,7 @@ theorem IsUniversalColimit.whiskerEquivalence {K : Type*} [Category* K] (e : J �
   intro F' c' α f e' hα H
   convert!
     hc (c'.whisker e.inverse) (whiskerLeft e.inverse α ≫ (e.invFunIdAssoc F).hom) f ?_
-      ((hα.whiskerLeft _).comp (.of_isIso _)) ?_ using
-    1
+      ((hα.whiskerLeft _).comp (.of_isIso _)) ?_ using 1
   · exact (IsColimit.whiskerEquivalenceEquiv e.symm).nonempty_congr
   · convert! congr_arg (whiskerLeft e.inverse) e'
     ext
@@ -205,8 +204,7 @@ theorem IsVanKampenColimit.whiskerEquivalence {K : Type*} [Category* K] (e : J �
   intro F' c' α f e' hα
   convert!
     hc (c'.whisker e.inverse) (whiskerLeft e.inverse α ≫ (e.invFunIdAssoc F).hom) f ?_
-      ((hα.whiskerLeft _).comp (.of_isIso _)) using
-    1
+      ((hα.whiskerLeft _).comp (.of_isIso _)) using 1
   · exact (IsColimit.whiskerEquivalenceEquiv e.symm).nonempty_congr
   · simp only [Functor.const_obj_obj, Functor.comp_obj, Cocone.whisker_pt, Cocone.whisker_ι,
       whiskerLeft_app, NatTrans.comp_app, Equivalence.invFunIdAssoc_hom_app, Functor.id_obj]
@@ -385,8 +383,7 @@ theorem IsVanKampenColimit.map_reflective [HasColimitsOfShape J C]
     symm
     convert!
       @IsColimit.coconePointUniqueUpToIso_hom_desc _ _ _ _ ((F' ⋙ Gr) ⋙ Gl)
-        (Gl.mapCocone ⟨_, (whiskerRight α' Gr ≫ c.2 :)⟩) _ _ hl hr using
-      2
+        (Gl.mapCocone ⟨_, (whiskerRight α' Gr ≫ c.2 :)⟩) _ _ hl hr using 2
     · apply hr.hom_ext
       intro j
       rw [hr.fac, Functor.mapCocone_ι_app, ← Gl.map_comp, colimit.cocone_ι, colimit.ι_desc]

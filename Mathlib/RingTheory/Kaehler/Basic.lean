@@ -208,8 +208,7 @@ def KaehlerDifferential.D : Derivation R S Ω[S⁄R] :=
         ← map_add (ideal R S).toCotangent, Ideal.toCotangent_eq, pow_two]
       convert!
         Submodule.mul_mem_mul (KaehlerDifferential.one_smul_sub_smul_one_mem_ideal R a :)
-          (KaehlerDifferential.one_smul_sub_smul_one_mem_ideal R b :) using
-        1
+          (KaehlerDifferential.one_smul_sub_smul_one_mem_ideal R b :) using 1
       simp only [Submodule.coe_add,
         TensorProduct.tmul_mul_tmul, mul_sub, sub_mul, mul_comm b, Submodule.coe_smul_of_tower,
         smul_sub, TensorProduct.smul_tmul', smul_eq_mul, mul_one]

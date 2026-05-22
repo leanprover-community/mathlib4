@@ -514,8 +514,7 @@ theorem Lr_le_Lp_mul_Lq (f g : ι → ℝ≥0) {p q r : ℝ} (hpqr : p.HolderTri
       (∑ i ∈ s, f i ^ p) ^ (1 / p) * (∑ i ∈ s, g i ^ q) ^ (1 / q) := by
   convert!
     rpow_le_rpow_iff (inv_eq_one_div r ▸ inv_pos.mpr hpqr.pos' : 0 < 1 / r) |>.mpr <|
-      Lr_rpow_le_Lp_mul_Lq s f g hpqr using
-    1
+      Lr_rpow_le_Lp_mul_Lq s f g hpqr using 1
   have hr := hpqr.pos'.ne'
   simp only [← rpow_mul, mul_rpow]
   field_simp
@@ -867,8 +866,7 @@ theorem Lr_le_Lp_mul_Lq_tsum_of_nonneg (hpqr : p.HolderTriple q r) (hf : ∀ i, 
   convert!
     rpow_le_rpow_iff (tsum_nonneg fun i ↦ by positivity [hf i, hg i]) (by positivity)
           (inv_eq_one_div r ▸ inv_pos.mpr hr) |>.mpr <|
-      Lr_rpow_le_Lp_mul_Lq_tsum_of_nonneg hpqr hf hg hf_sum hg_sum using
-    1
+      Lr_rpow_le_Lp_mul_Lq_tsum_of_nonneg hpqr hf hg hf_sum hg_sum using 1
   rw [mul_rpow (rpow_nonneg hf' _) (rpow_nonneg hg' _), ← Real.rpow_mul hg', ← Real.rpow_mul hf']
   field_simp
 

@@ -573,8 +573,7 @@ theorem integral_sub_zpow_of_ne {n : ℤ} (hn : n ≠ -1) (c w : ℂ) (R : ℝ) 
     intro z hne
     convert!
       ((hasDerivAt_zpow (n + 1) _ (hne.imp _ _)).comp z ((hasDerivAt_id z).sub_const w)).div_const
-        _ using
-      1
+        _ using 1
     · have hn' : (n + 1 : ℂ) ≠ 0 := by
         rwa [Ne, ← eq_neg_iff_add_eq_zero, ← Int.cast_one, ← Int.cast_neg, Int.cast_inj]
       simp [mul_div_cancel_left₀ _ hn']

@@ -368,8 +368,7 @@ theorem tsum_geometric_inv_two_ge (n : ℕ) :
 theorem hasSum_geometric_two' (a : ℝ) : HasSum (fun n : ℕ ↦ a / 2 / 2 ^ n) a := by
   convert!
     HasSum.mul_left (a / 2)
-      (hasSum_geometric_of_lt_one (le_of_lt one_half_pos) one_half_lt_one) using
-    1
+      (hasSum_geometric_of_lt_one (le_of_lt one_half_pos) one_half_lt_one) using 1
   · funext n
     simp only [one_div, inv_pow]
     rfl

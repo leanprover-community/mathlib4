@@ -294,8 +294,8 @@ theorem abs_div_tendsto_atBot_atTop_of_degree_gt (hdeg : Q.degree < P.degree) (h
   replace hQ : Q.comp (-X) ≠ 0 := by
     rw [Ne, comp_eq_zero_iff]
     simp [hQ]
-  convert! (abs_div_tendsto_atTop_atTop_of_degree_gt _ _ hdeg hQ).comp tendsto_neg_atBot_atTop using
-    2
+  convert! (abs_div_tendsto_atTop_atTop_of_degree_gt _ _ hdeg hQ).comp tendsto_neg_atBot_atTop
+    using 2
   simp
 
 end PolynomialDivAtBot

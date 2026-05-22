@@ -325,8 +325,7 @@ instance [LocallyOfFiniteType f] [IsSeparated f] [QuasiCompact f] :
     (inferInstance :
       IsOpenImmersion
         ((X.isoOfEq (U := f.quasiFiniteLocus) (SetLike.coe_injective e.symm)).hom ≫
-          f.toNormalization ∣_ U ≫ U.ι)) using
-    1
+          f.toNormalization ∣_ U ≫ U.ι)) using 1
   simp
 
 lemma Scheme.Hom.quasiFiniteLocus_eq_top [LocallyQuasiFinite f] [LocallyOfFiniteType f] :
@@ -360,8 +359,7 @@ instance [LocallyQuasiFinite f] [LocallyOfFiniteType f] [IsSeparated f] [QuasiCo
       IsOpenImmersion
         (X.topIso.inv ≫
           (X.isoOfEq f.quasiFiniteLocus_eq_top).inv ≫
-            f.quasiFiniteLocus.ι ≫ f.toNormalization)) using
-    1
+            f.quasiFiniteLocus.ι ≫ f.toNormalization)) using 1
   simp
 
 -- In particular it is surjective (by infer_instance), since it is a priori dominant.

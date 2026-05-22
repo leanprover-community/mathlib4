@@ -83,8 +83,8 @@ theorem HasAffineProperty.diagonal_of_openCover (P) {Q} [HasAffineProperty P Q]
           ((pullbackDiagonalMapIso _ _ ((𝒰' i).f j) ((𝒰' i).f k)).inv ≫
             pullback.map _ _ _ _ (𝟙 _) (𝟙 _) (𝟙 _) _ _)
           (pullback.snd _ _)).mp
-      _ using
-    1
+      _
+      using 1
   · simp
   · ext1 <;> simp
   · simp only [Category.assoc, limit.lift_π, PullbackCone.mk_pt, PullbackCone.mk_π_app,

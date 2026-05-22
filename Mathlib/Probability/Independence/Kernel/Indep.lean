@@ -642,8 +642,7 @@ theorem iIndepSet.indep_generateFrom_lt [Preorder ι] {s : ι → Set Ω}
     Indep (generateFrom {s i}) (generateFrom { t | ∃ j < i, s j = t }) κ μ := by
   convert!
     iIndepSet.indep_generateFrom_of_disjoint hsm hs { i } {j | j < i}
-      (Set.disjoint_singleton_left.mpr (lt_irrefl _)) using
-    1
+      (Set.disjoint_singleton_left.mpr (lt_irrefl _)) using 1
   simp only [Set.mem_singleton_iff, exists_eq_left, Set.setOf_eq_eq_singleton']
 
 theorem iIndepSet.indep_generateFrom_le [Preorder ι] {s : ι → Set Ω}
@@ -651,8 +650,7 @@ theorem iIndepSet.indep_generateFrom_le [Preorder ι] {s : ι → Set Ω}
     Indep (generateFrom {s k}) (generateFrom { t | ∃ j ≤ i, s j = t }) κ μ := by
   convert!
     iIndepSet.indep_generateFrom_of_disjoint hsm hs { k } {j | j ≤ i}
-      (Set.disjoint_singleton_left.mpr hk.not_ge) using
-    1
+      (Set.disjoint_singleton_left.mpr hk.not_ge) using 1
   simp only [Set.mem_singleton_iff, exists_eq_left, Set.setOf_eq_eq_singleton']
 
 theorem iIndepSet.indep_generateFrom_le_nat {s : ℕ → Set Ω}
