@@ -173,12 +173,6 @@ protected theorem coe_coe {F : Type*} [EquivLike F A B] [SemialgEquivClass F φ 
 theorem coe_fun_injective : @Function.Injective (A ≃ₛₐ[φ] B) (A → B) fun e => (e : A → B) :=
   DFunLike.coe_injective
 
-/-- Forgetting the multiplicative structures, an equivalence of algebras is a linear equivalence. -/
-@[coe, simps! apply] def toLinearEquiv (e : A ≃ₐ[R] B) : A ≃ₗ[R] B where
-  toAddEquiv := e.toAddEquiv
-  map_smul' := map_smulₛₗ e
-
-instance : CoeOut (A ≃ₐ[R] B) (A ≃ₗ[R] B) where coe := toLinearEquiv
 instance : CoeOut (A ≃ₛₐ[φ] B) (A ≃+* B) where coe := toRingEquiv
 
 @[simp]
@@ -454,12 +448,11 @@ end OfAlgHom
 section ToLinearEquiv
 
 /-- Forgetting the multiplicative structures, an equivalence of algebras is a linear equivalence. -/
-@[simps apply]
-def toLinearEquiv (e : A ≃ₛₐ[φ] B) : A ≃ₛₗ[φ] B :=
-  { e with
-    toFun := e
-    map_smul' := map_smulₛₗ e
-    invFun := e.symm }
+@[coe, simps! apply] def toLinearEquiv (e : A ≃ₛₐ[φ] B) : A ≃ₛₗ[φ] B where
+  toAddEquiv := e.toAddEquiv
+  map_smul' := map_smulₛₗ e
+
+instance : CoeOut (A ≃ₛₐ[φ] B) (A ≃ₛₗ[φ] B) where coe := toLinearEquiv
 
 @[simp]
 theorem toLinearEquiv_refl :
