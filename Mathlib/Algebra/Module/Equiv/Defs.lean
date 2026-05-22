@@ -120,11 +120,6 @@ def semilinearEquiv [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
     [EquivLike F M M₂] [SemilinearEquivClass F σ M M₂] (f : F) : M ≃ₛₗ[σ] M₂ :=
   { (f : M ≃+ M₂), (f : M →ₛₗ[σ] M₂) with }
 
-/-- Reinterpret an element of a type of semilinear equivalences as a semilinear equivalence. -/
-instance instCoeToSemilinearEquiv [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
-    [EquivLike F M M₂] [SemilinearEquivClass F σ M M₂] : CoeHead F (M ≃ₛₗ[σ] M₂) where
-  coe f := semilinearEquiv f
-
 end SemilinearEquivClass
 
 namespace LinearEquiv
