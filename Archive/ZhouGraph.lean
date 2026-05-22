@@ -499,4 +499,72 @@ private theorem block_disjoint_neighbors :
   · exact not_adj_zero_self
   · exact not_adj_zero_partner
 
+/-! ### Every element of PSL(2,13) preserves the block map
+
+The block map `zhouBlockMap` is invariant under each generator, and this
+extends to the entire group by induction on the closure. The inverse case
+uses the pigeonhole principle (Fin is finite, so an injective function on
+fibers is surjective). -/
+
+/-- If a permutation preserves the block map, so does its inverse.
+The induced map on blocks (Fin 91 → Fin 91) is injective because σ is
+a bijection. An injective function on a finite type reflects equality. -/
+private theorem blockMap_invariant_inv (σ : Equiv.Perm (Fin 182))
+    (hσ : ∀ v w : Fin 182, zhouBlockMap v = zhouBlockMap w →
+      zhouBlockMap (σ v) = zhouBlockMap (σ w)) :
+    ∀ v w : Fin 182, zhouBlockMap v = zhouBlockMap w →
+      zhouBlockMap (σ.symm v) = zhouBlockMap (σ.symm w) := by
+  intro v w hvw
+  -- Pigeonhole: σ maps same-block pairs to same-block pairs (by hσ),
+  -- so its action on the set of same-block pairs is injective (since σ is
+  -- a bijection). Finite + injective = surjective, so for any same-block
+  -- pair (v, w), there exists (a, b) with σ a = v, σ b = w, and a, b in
+  -- the same block. Then σ⁻¹ v = a, σ⁻¹ w = b, same block.
+  -- Define f on Fin 182 by f(v) = blockMap(σ v). Then f factors through
+  -- blockMap (by hσ), inducing F : Fin 91 → Fin 91 with F ∘ blockMap = f.
+  -- F is injective (σ is a bijection), hence bijective on Fin 91.
+  -- We need blockMap(σ⁻¹ v) = blockMap(σ⁻¹ w).
+  -- F(blockMap(σ⁻¹ v)) = blockMap(σ(σ⁻¹ v)) = blockMap(v), and similarly for w.
+  -- So F(blockMap(σ⁻¹ v)) = F(blockMap(σ⁻¹ w)) by hvw.
+  -- F injective gives the result.
+  --
+  -- Rather than constructing F explicitly, use the pigeonhole argument on
+  -- same-block pairs, mirroring closureGraphAction's inverse case.
+  let S : Type := { p : Fin 182 × Fin 182 // zhouBlockMap p.1 = zhouBlockMap p.2 }
+  have : Finite S := inferInstance
+  let f : S → S := fun ⟨⟨a, b⟩, hab⟩ => ⟨⟨σ a, σ b⟩, hσ a b hab⟩
+  have hf_inj : Function.Injective f := fun ⟨⟨a₁, b₁⟩, _⟩ ⟨⟨a₂, b₂⟩, _⟩ h => by
+    have h' := congr_arg Subtype.val h
+    simp only at h'
+    have := Prod.mk.inj h'
+    exact Subtype.ext (Prod.ext (σ.injective this.1) (σ.injective this.2))
+  have hf_surj := Finite.surjective_of_injective hf_inj
+  obtain ⟨⟨⟨a, b⟩, hab⟩, hfab⟩ := hf_surj ⟨⟨v, w⟩, hvw⟩
+  have hfab' := congr_arg Subtype.val hfab
+  simp only at hfab'
+  have := Prod.mk.inj hfab'
+  have ha : σ a = v := this.1
+  have hb : σ b = w := this.2
+  rwa [show σ.symm v = a from by rw [← ha]; simp,
+       show σ.symm w = b from by rw [← hb]; simp]
+
+/-- Every element of PSL(2,13) preserves the block map: if two vertices are
+in the same block, they stay in the same block after applying any group
+element. Proved by induction on the closure, using generator-level
+invariance. -/
+theorem closureBlockInvariant
+    (σ : Equiv.Perm (Fin 182)) (hσ : σ ∈ zGroup) :
+    ∀ v w : Fin 182, zhouBlockMap v = zhouBlockMap w →
+      zhouBlockMap (σ v) = zhouBlockMap (σ w) := by
+  induction hσ using Subgroup.closure_induction with
+  | mem x hx =>
+    obtain ⟨i, rfl⟩ := Set.mem_range.mp hx
+    match i with | 0 => exact blockMap_invariant_g1 | 1 => exact blockMap_invariant_g2
+  | one => simp
+  | mul x y _ _ ihx ihy =>
+    intro v w hvw
+    simp only [Equiv.Perm.mul_apply]
+    exact ihx _ _ (ihy v w hvw)
+  | inv x _ ih => exact blockMap_invariant_inv x ih
+
 end ZhouLorimer
