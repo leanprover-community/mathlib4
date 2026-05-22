@@ -9,6 +9,8 @@ public import Mathlib.SetTheory.Cardinal.Arithmetic
 public import Mathlib.SetTheory.Cardinal.Cofinality.Basic
 public import Mathlib.SetTheory.Ordinal.FixedPoint
 
+import Mathlib.Order.DirSupClosed.Finite
+
 /-!
 # Cofinality of an ordinal
 
@@ -151,7 +153,8 @@ theorem cof_omega0 : cof ω = ℵ₀ :=
 
 @[deprecated (since := "2026-02-18")] alias cof_eq_one_iff_is_succ := cof_eq_one_iff
 
-theorem ord_cof_eq (α : Type*) [LinearOrder α] [WellFoundedLT α] :
+variable (α) in
+theorem ord_cof_eq [LinearOrder α] [WellFoundedLT α] :
     ∃ s : Set α, IsCofinal s ∧ typeLT s = (Order.cof α).ord := by
   obtain ⟨s, hs, hs'⟩ := Order.cof_eq α
   obtain ⟨r, hr, hr'⟩ := exists_ord_eq s
@@ -166,8 +169,18 @@ theorem ord_cof_eq (α : Type*) [LinearOrder α] [WellFoundedLT α] :
     · obtain ⟨x, z, hz, rfl⟩ := x
       exact (hz _ hxy').asymm hxy
 
+theorem ord_cof_eq_of_isCofinal [LinearOrder α] [WellFoundedLT α] {s : Set α} (hs : IsCofinal s) :
+    ∃ t ⊆ s, IsCofinal t ∧ typeLT t = (Order.cof α).ord := by
+  obtain ⟨t, ht, ht'⟩ := ord_cof_eq s
+  rw [cof_eq_of_isCofinal hs] at ht'
+  refine ⟨t, ?_, hs.trans ht, ?_⟩
+  · simp
+  · rw [← ht']
+    exact ((Subtype.strictMono_coe _).strictMonoOn _).orderIso.ordinal_type_eq.symm
+
+variable (α) in
 @[simp]
-theorem _root_.Order.cof_ord_cof (α : Type*) [LinearOrder α] [WellFoundedLT α] :
+theorem _root_.Order.cof_ord_cof [LinearOrder α] [WellFoundedLT α] :
     (Order.cof α).ord.cof = Order.cof α := by
   obtain ⟨s, hs, hs'⟩ := ord_cof_eq α
   rw [← hs', cof_type]
@@ -182,6 +195,21 @@ theorem cof_ord_cof (o : Ordinal) : o.cof.ord.cof = o.cof := by
   simpa using Order.cof_ord_cof o.ToType
 
 @[deprecated (since := "2026-03-21")] alias cof_cof := cof_ord_cof
+
+theorem dirSupClosed_of_type_le_omega0 [LinearOrder α] [WellFoundedLT α]
+    {s : Set α} (hs : IsCofinal s) (hω : typeLT s ≤ ω) : DirSupClosed s := by
+  obtain hω | hω := hω.lt_or_eq
+  · obtain ⟨n, hn⟩ := lt_omega0.1 hω
+    apply_fun card at hn
+    apply Finite.dirSupClosed
+    rw [Set.Finite, ← mk_lt_aleph0_iff]
+    simp_all
+  · have e : ℕ ≃o s := by
+      rw [omega0, ← lift_id (type _), lift_type_eq] at hω
+      exact OrderIso.ofRelIsoLT hω.some.symm
+    have hfs : .range (Subtype.val ∘ e) = s := by simp
+    rw [← hfs] at hs ⊢
+    exact dirSupClosed_range_nat ((Subtype.mono_coe _).comp e.monotone) hs
 
 /-! ### Cofinalities and suprema -/
 

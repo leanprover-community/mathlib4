@@ -5,10 +5,8 @@ Authors: Violeta Hernández Palacios
 -/
 module
 
-public import Mathlib.Order.DirSupClosed
-public import Mathlib.Order.IsNormal
 public import Mathlib.SetTheory.Cardinal.Cofinality.Enum
-public import Mathlib.SetTheory.Ordinal.Arithmetic
+public import Mathlib.SetTheory.Cardinal.Cofinality.Ordinal
 
 /-!
 # Club sets and stationary sets
@@ -138,7 +136,7 @@ protected theorem inter {s t : Set α} (hα : cof α ≠ ℵ₀) (hs : IsClub s)
   rw [← Set.sInter_pair]
   have H : ∀ x ∈ ({s, t} : Set _), IsClub x := by simpa [hs]
   obtain hα | hα' := hα.lt_or_gt
-  · rw [cof_lt_aleph0_iff] at hα
+  · rw [Order.cof_lt_aleph0_iff] at hα
     exact .sInter_of_cof_le_one hα H
   · exact .sInter hα (hα'.trans_le' <| by simp) H
 
@@ -233,16 +231,14 @@ theorem not_isStationary_empty : ¬ IsStationary (∅ : Set α) := by
   intro h
   simpa using h .univ
 
-theorem IsClub.isStationary [WellFoundedLT α] (hα : ℵ₀ < cof α) (hs : IsClub s) :
-    IsStationary s := by
-  have := hα.ne_zero
-  rw [cof_ne_zero_iff] at this
-  exact fun t ht ↦ (hs.inter hα.ne' ht).nonempty
+theorem IsClub.isStationary [Nonempty α] [WellFoundedLT α] (hα : cof α ≠ ℵ₀) (hs : IsClub s) :
+    IsStationary s :=
+  fun _ ht ↦ (hs.inter hα ht).nonempty
 
 /-- Non-stationary sets form an ideal. -/
 theorem not_isStationary_union [WellFoundedLT α] (hα : cof α ≠ ℵ₀)
     (hs : ¬ IsStationary s) (ht : ¬ IsStationary t) : ¬ IsStationary (s ∪ t) := by
-  simp_rw [IsStationary, not_forall, Set.not_nonempty_iff_eq_empty] at *
+  simp_rw [IsStationary, not_forall, Set.not_nonempty_iff_eq_empty] at hs ht ⊢
   obtain ⟨u, hu, hsu⟩ := hs
   obtain ⟨v, hv, htv⟩ := ht
   refine ⟨_, hu.inter hα hv, ?_⟩
@@ -256,8 +252,15 @@ theorem IsStationary.of_not_isCofinal_compl (hs : ¬ IsCofinal (sᶜ)) : IsStati
   contrapose! ha
   exact ⟨b, ha, hb'⟩
 
-proof_wanted isStationary_iff_not_isCofinal_compl (hα : cof α ≤ ℵ₀) :
-    IsStationary s ↔ ¬ IsCofinal (sᶜ)
+theorem isStationary_iff_not_isCofinal_compl [WellFoundedLT α] (hα : cof α ≤ ℵ₀) :
+    IsStationary s ↔ ¬ IsCofinal (sᶜ) where
+  mp hs h := by
+    obtain ⟨t, hts, ht, htα⟩ := ord_cof_eq_of_isCofinal h
+    have ht' := dirSupClosed_of_type_le_omega0 ht (htα.trans_le ?_)
+    · cases hs ⟨ht', ht⟩
+      grind
+    · simpa using ord_mono hα
+  mpr := .of_not_isCofinal_compl
 
 /-- **Fodor's lemma**, or the **pressing down lemma**: if `α` has the order type of a regular
 cardinal, `s` is a stationary set, and `f : α → α` is a regressive function on `s`, there exists

@@ -288,17 +288,21 @@ lemma dirSupInaccOn_Iic (a : α) : DirSupInaccOn D (Iic a) :=
 
 end Preorder
 
-namespace PartialOrder
+section PartialOrder
 variable [PartialOrder α]
 
-theorem dirSupClosed_singleton (a : α) : DirSupClosed {a} := by
+theorem DirSupClosed.singleton (a : α) : DirSupClosed {a} := by
   intro d hda hdn _ b hb
   rw [hdn.subset_singleton_iff] at hda
   subst hda
   exact mem_singleton_of_eq (hb.unique isLUB_singleton)
 
-theorem dirSupClosedOn_singleton (a : α) : DirSupClosedOn D {a} :=
-  (dirSupClosed_singleton a).dirSupClosedOn
+@[deprecated (since := "2026-05-22")] alias dirSupClosed_singleton := DirSupClosed.singleton
+
+theorem DirSupClosedOn.singleton (a : α) : DirSupClosedOn D {a} :=
+  (DirSupClosed.singleton a).dirSupClosedOn
+
+@[deprecated (since := "2026-05-22")] alias dirSupClosedOn_singleton := DirSupClosedOn.singleton
 
 end PartialOrder
 
