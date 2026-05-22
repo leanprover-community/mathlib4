@@ -16,7 +16,6 @@ public import Mathlib.Topology.Algebra.Module.FiniteDimension
 public import Mathlib.Topology.Algebra.Module.LinearMap
 public import Mathlib.Topology.Maps.Strict.Basic
 public import Mathlib.Topology.Homeomorph.Defs
-public import Mathlib.RingTheory.Length
 
 section FindHome
 
