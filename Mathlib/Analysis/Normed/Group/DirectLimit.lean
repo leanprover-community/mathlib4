@@ -27,6 +27,49 @@ variable [∀ i j (h : i ≤ j), FunLike (T h) (G i) (G j)] [DirectedSystem G (f
 variable [IsDirectedOrder ι]
 variable [Nonempty ι]
 
+section SeminormedGroup
+
+variable [∀ i, SeminormedGroup (G i)]
+variable [∀ i j h, MonoidHomClass (T h) (G i) (G j)]
+variable [∀ i j h, IsometryClass (T h) (G i) (G j)]
+
+#synth ∀ i, PseudoMetricSpace (G i)
+
+@[to_additive]
+noncomputable instance : SeminormedGroup (DirectLimit G f) where
+  norm := DirectLimit.lift f (ih := fun i x ↦ ‖x‖) (fun i j h x ↦ by
+    simpa [SeminormedGroup.dist_eq] using (IsometryClass.dist_eq (f i j h) 1 x).symm)
+  dist_eq := DirectLimit.induction₂ f (fun i x y ↦ by
+    rw [dist_def, SeminormedGroup.dist_eq, inv_def, mul_def, DirectLimit.lift_def])
+
+@[to_additive norm_def]
+lemma mul_norm_def (i : ι) (x : G i) : ‖(⟦⟨i, x⟩⟧ : DirectLimit G f)‖ = ‖x‖ := by
+  change DirectLimit.lift f (ih := fun i x ↦ ‖x‖) _ ⟦⟨i, x⟩⟧ = ‖x‖
+  apply DirectLimit.lift_def
+
+end SeminormedGroup
+
+section NormedGroup
+
+variable [∀ i, NormedGroup (G i)]
+variable [∀ i j h, MonoidHomClass (T h) (G i) (G j)]
+variable [∀ i j h, IsometryClass (T h) (G i) (G j)]
+
+noncomputable instance : NormedGroup (DirectLimit G f) where
+  __ := (inferInstance : SeminormedGroup (DirectLimit G f))
+  __ := (inferInstance : MetricSpace (DirectLimit G f))
+
+@[to_additive]
+noncomputable instance : NormedGroup (DirectLimit G f) where
+  norm := DirectLimit.lift f (ih := fun i x ↦ ‖x‖) (fun i j h x ↦ by
+    simpa [NormedGroup.dist_eq] using (IsometryClass.dist_eq (f i j h) 1 x).symm)
+  dist_eq := DirectLimit.induction₂ f (fun i x y ↦ by
+    rw [dist_def, NormedGroup.dist_eq, inv_def, mul_def, DirectLimit.lift_def])
+
+
+
+end NormedGroup
+
 namespace NormedAddGroup
 
 variable [∀ i, NormedAddGroup (G i)]
@@ -37,7 +80,7 @@ noncomputable instance instNormedAddGroup : NormedAddGroup (DirectLimit G f) whe
   norm := DirectLimit.lift f (ih := fun i x ↦ ‖x‖) (fun i j h x ↦ by
     simpa [NormedAddGroup.dist_eq] using (IsometryClass.dist_eq (f i j h) 0 x).symm)
   dist_eq := DirectLimit.induction₂ f (fun i x y ↦ by
-    rw [MetricSpace.dist_def, NormedAddGroup.dist_eq, neg_def, add_def, DirectLimit.lift_def])
+    rw [dist_def, NormedAddGroup.dist_eq, neg_def, add_def, DirectLimit.lift_def])
 
 lemma norm_def (i : ι) (x : G i) : ‖(⟦⟨i, x⟩⟧ : DirectLimit G f)‖ = ‖x‖ := by
   change DirectLimit.lift f (ih := fun i x ↦ ‖x‖) _ ⟦⟨i, x⟩⟧ = ‖x‖
