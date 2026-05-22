@@ -34,12 +34,15 @@ inductive BinaryTree.{u} (α : Type u) : Type u
   deriving DecidableEq, Repr
 compile_inductive% BinaryTree
 
+/-- A binary tree with values stored in non-leaf nodes. -/
 @[deprecated BinaryTree (since := "2026-05-22")]
 abbrev Tree.{u} (α : Type u) : Type u := BinaryTree α
 
+/-- Tree.nil -/
 @[deprecated BinaryTree.nil (since := "2026-05-22")]
 abbrev Tree.nil.{u} {α : Type u} : Tree α := BinaryTree.nil
 
+/-- Tree.node -/
 @[deprecated BinaryTree.node (since := "2026-05-22")]
 abbrev Tree.node.{u} {α : Type u} (value : α) (left : Tree α) (right : Tree α)
 : Tree α :=
