@@ -1,5 +1,6 @@
 import Archive.Arithcc
 import Archive.BolzaSurface
+import Archive.ClayworthGraph
 import Archive.ClayworthSurface
 import Archive.Examples.Eisenstein
 import Archive.Examples.IfNormalization.Result
@@ -66,6 +67,11 @@ import Archive.Imo.Imo2025Q3
 import Archive.KleinSurface
 import Archive.Kuratowski
 import Archive.LangerGraph
+import Archive.Meinhold1344
+import Archive.Meinhold2016
+import Archive.Meinhold504
+import Archive.Meinhold576
+import Archive.MeinholdGraphs
 import Archive.PrimitiveGraphs
 import Archive.MinimalSheffer
 import Archive.MiuLanguage.Basic
