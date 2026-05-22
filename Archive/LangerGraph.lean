@@ -534,4 +534,3 @@ noncomputable def langerSabidussiIso :
       (connectionSet langerG langerSimpleGraph 0)
       (connectionSet.isConnectionSet 0) :=
   sabidussiIso 0
-
