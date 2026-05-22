@@ -38,11 +38,11 @@ compile_inductive% BinaryTree
 abbrev Tree.{u} (α : Type u) : Type u := BinaryTree α
 
 @[deprecated BinaryTree.nil (since := "2026-05-22")]
-abbrev Tree.leaf.{u} {α : Type u} : BinaryTree α := BinaryTree.nil
+abbrev Tree.leaf.{u} {α : Type u} : Tree α := BinaryTree.nil
 
 @[deprecated BinaryTree.node (since := "2026-05-22")]
-abbrev Tree.node.{u} {α : Type u} (value : α) (left : BinaryTree α) (right : BinaryTree α)
-: BinaryTree α :=
+abbrev Tree.node.{u} {α : Type u} (value : α) (left : Tree α) (right : Tree α)
+: Tree α :=
   BinaryTree.node value left right
 
 namespace BinaryTree
