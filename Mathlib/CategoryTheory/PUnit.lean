@@ -5,7 +5,6 @@ Authors: Kim Morrison, Bhavik Mehta
 -/
 module
 
-public import Mathlib.CategoryTheory.Functor.Const
 public import Mathlib.CategoryTheory.Discrete.Basic
 public import Mathlib.Data.ULift
 
@@ -61,7 +60,6 @@ def equiv : Discrete PUnit.{w + 1} ⥤ C ≌ C where
 
 end Functor
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A category being equivalent to `PUnit` is equivalent to it having a unique morphism between
   any two objects. (In fact, such a category is also a groupoid;
   see `CategoryTheory.Groupoid.ofHomUnique`) -/

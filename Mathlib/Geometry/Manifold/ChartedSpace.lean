@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Geometry.Manifold.StructureGroupoid
 public import Mathlib.Topology.Connected.LocPathConnected
+public import Mathlib.Topology.IsLocalHomeomorph
 public import Mathlib.Topology.OpenPartialHomeomorph.Constructions
 
 /-!
@@ -403,11 +404,11 @@ def ModelPi {ι : Type*} (H : ι → Type*) :=
 section
 
 instance modelProdInhabited [Inhabited H] [Inhabited H'] : Inhabited (ModelProd H H') :=
-  instInhabitedProd
+  inferInstanceAs <| Inhabited (H × H')
 
 instance (H : Type*) [TopologicalSpace H] (H' : Type*) [TopologicalSpace H'] :
     TopologicalSpace (ModelProd H H') :=
-  instTopologicalSpaceProd
+  inferInstanceAs <| TopologicalSpace (H × H')
 
 -- Next lemma shows up often when dealing with derivatives, so we register it as simp lemma.
 @[simp, mfld_simps]
@@ -423,10 +424,10 @@ section
 variable {ι : Type*} {Hi : ι → Type*}
 
 instance modelPiInhabited [∀ i, Inhabited (Hi i)] : Inhabited (ModelPi Hi) :=
-  Pi.instInhabited
+  inferInstanceAs <| Inhabited (∀ i, Hi i)
 
 instance [∀ i, TopologicalSpace (Hi i)] : TopologicalSpace (ModelPi Hi) :=
-  Pi.topologicalSpace
+  inferInstanceAs <| TopologicalSpace (∀ i, Hi i)
 
 end
 
@@ -565,6 +566,33 @@ lemma ChartedSpace.mem_atlas_sum [h : Nonempty H]
 
 end sum
 
+section IsLocalHomeomorph
+
+variable [TopologicalSpace M] [TopologicalSpace M'] [TopologicalSpace H] [ChartedSpace H M]
+
+/-- Given a right inverse for a local homeomorphism `f : M → M'`, endow `M'` with a `ChartedSpace`
+structure by pushing forward the `ChartedSpace` structure from `M`. -/
+@[implicit_reducible]
+def IsLocalHomeomorph.chartedSpaceOfRightInverse
+    {f : M → M'} (hf : IsLocalHomeomorph f) {g : M' → M} (hg : Function.RightInverse g f) :
+    ChartedSpace H M' where
+  atlas := {(hf.localInverseAt (g q)).trans (chartAt H (g q)) | q : M'}
+  chartAt q := (hf.localInverseAt (g q)).trans (chartAt H (g q))
+  mem_chart_source q := by
+    nth_rw 3 [← hg.eq q]
+    simp
+  chart_mem_atlas := by simp
+
+/-- Given a surjective local homeomorphism `f : M → M'`, endow `M'` with a `ChartedSpace` structure
+by pushing forward the `ChartedSpace` structure from `M`. -/
+@[implicit_reducible]
+def IsLocalHomeomorph.chartedSpace
+    {f : M → M'} (hf : IsLocalHomeomorph f) (hf' : Function.Surjective f) :
+    ChartedSpace H M' :=
+  hf.chartedSpaceOfRightInverse hf'.hasRightInverse.choose_spec
+
+end IsLocalHomeomorph
+
 end Constructions
 
 end ChartedSpace
@@ -643,9 +671,6 @@ protected def openPartialHomeomorph (e : PartialEquiv M H) (he : e ∈ c.atlas) 
         congr 1
         exact inter_comm _ _
       simpa [f, PartialEquiv.trans_source, preimage_inter, preimage_comp.symm, A] using this }
-
-@[deprecated (since := "2025-08-29")] alias
-  partialHomeomorph := ChartedSpaceCore.openPartialHomeomorph
 
 /-- Given a charted space without topology, endow it with a genuine charted space structure with
 respect to the topology constructed from the atlas. -/

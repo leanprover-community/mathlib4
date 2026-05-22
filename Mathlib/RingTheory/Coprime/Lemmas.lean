@@ -22,7 +22,7 @@ lemmas about `Pow` since these are easiest to prove via `Finset.prod`.
 
 -/
 
-@[expose] public section
+public section
 
 universe u v
 
@@ -51,9 +51,6 @@ theorem Nat.isCoprime_iff_coprime {m n : ℕ} : IsCoprime (m : ℤ) n ↔ Nat.Co
   rw [Int.isCoprime_iff_gcd_eq_one, Int.gcd_natCast_natCast]
 
 alias ⟨IsCoprime.natCoprime, Nat.Coprime.isCoprime⟩ := Nat.isCoprime_iff_coprime
-
-@[deprecated (since := "2025-08-25")]
-alias IsCoprime.nat_coprime := IsCoprime.natCoprime
 
 theorem Nat.Coprime.cast {R : Type*} [CommRing R] {a b : ℕ} (h : Nat.Coprime a b) :
     IsCoprime (a : R) (b : R) :=

@@ -59,7 +59,7 @@ instance [Repr α] : Repr (WithOne α) :=
 
 @[to_additive]
 instance instMonad : Monad WithOne :=
-  instMonadOption
+  inferInstanceAs <| Monad Option
 
 @[to_additive]
 instance instOne : One (WithOne α) :=

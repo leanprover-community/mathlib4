@@ -18,13 +18,13 @@ public import Mathlib.RingTheory.PrincipalIdealDomain
 
 ## Main results
 
-* `Ideal.isPrime_nat_iff`: the prime ideals in ℕ are ⟨0⟩, ⟨p⟩ (for prime `p`), and ⟨2, 3⟩ = {1}ᶜ.
+* `Ideal.isPrime_nat_iff`: the prime ideals in ℕ are ⟨0⟩, ⟨p⟩ (for prime `p`), and `⟨2, 3⟩ = {1}ᶜ`.
   The proof follows https://math.stackexchange.com/a/4224486.
 
 * `Ideal.isPrime_int_iff` : the prime ideals in ℤ are ⟨0⟩ and ⟨p⟩ (for prime `p`).
 -/
 
-@[expose] public section
+public section
 
 /-- The natural numbers form a local semiring. -/
 instance : IsLocalRing ℕ where
@@ -47,8 +47,8 @@ theorem Nat.maximalIdeal_eq_span_two_three : maximalIdeal ℕ = span {2, 3} := b
 
 theorem Nat.one_mem_span_iff {s : Set ℕ} : 1 ∈ span s ↔ 1 ∈ s := by
   rw [← SetLike.mem_coe, ← not_iff_not]
-  simp_rw [← Set.mem_compl_iff, ← Set.singleton_subset_iff, Set.subset_compl_comm,
-    ← coe_maximalIdeal, SetLike.coe_subset_coe, span_le]
+  simp_rw [← Set.mem_compl_iff, ← Set.singleton_subset_iff, Set.subset_compl_comm]
+  rw [Set.subset_compl_comm, ← coe_maximalIdeal, SetLike.coe_subset_coe, span_le]
 
 theorem Nat.one_mem_closure_iff {s : Set ℕ} : 1 ∈ AddSubmonoid.closure s ↔ 1 ∈ s := by
   rw [← Submodule.span_nat_eq_addSubmonoidClosure]
@@ -70,7 +70,7 @@ theorem Ideal.isPrime_nat_iff {P : Ideal ℕ} :
   have prime : p.Prime := Nat.prime_iff_not_exists_mul_eq.mpr <| .intro (by lia)
     fun ⟨m, n, hm, hn, eq⟩ ↦ have := mul_ne_zero_iff.mp (eq ▸ hp0)
     (h.mem_or_mem (eq ▸ hp)).elim (Nat.find_min h0 hm ⟨·, this.1⟩) (Nat.find_min h0 hn ⟨·, this.2⟩)
-  push_neg at hsp
+  push Not at hsp
   have ⟨q, hq, hqp⟩ := SetLike.exists_of_lt
     ((P.span_singleton_le_iff_mem.mpr hp).lt_of_ne (hsp p prime).symm)
   obtain rfl | hn1 := eq_or_ne n 0

@@ -218,7 +218,7 @@ variable {p : ℕ} {ζ : K}
 
 /-- For a prime `p`, a ℚ-linear combination `∑_{i < p} αᵢ ζⁱ` vanishes if and only if all
 coefficients `αᵢ` are equal. This follows from the irreducibility of the `p`-th cyclotomic
-polynomial. See Washington, *Introduction to Cyclotomic Fields*, Lemma 2.8.5. -/
+polynomial. See de Launey–Flannery, *Algebraic Design Theory*, Lemma 2.8.5. -/
 lemma sum_eq_zero_iff_forall_eq (hp : p.Prime) (hζ : IsPrimitiveRoot ζ p) (α : Fin p → ℚ) :
     ∑ i, α i * ζ ^ i.val = 0 ↔ ∀ i j, α i = α j := by
   haveI : Fact p.Prime := ⟨hp⟩

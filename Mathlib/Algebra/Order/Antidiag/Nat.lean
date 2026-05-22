@@ -155,7 +155,7 @@ lemma finMulAntidiag_existsUnique_prime_dvd {d n p : ℕ} (hn : Squarefree n)
     (hp : p ∈ n.primeFactorsList) (f : Fin d → ℕ) (hf : f ∈ finMulAntidiag d n) :
     ∃! i, p ∣ f i := by
   rw [mem_finMulAntidiag] at hf
-  rw [mem_primeFactorsList hf.2, ← hf.1, hp.1.prime.dvd_finset_prod_iff] at hp
+  rw [mem_primeFactorsList hf.2, ← hf.1, hp.1.prime.dvd_finsetProd_iff] at hp
   obtain ⟨i, his, hi⟩ := hp.2
   refine ⟨i, hi, ?_⟩
   intro j hj
@@ -195,8 +195,8 @@ private theorem primeFactorsPiBij_inj (d n : ℕ)
     convert Finset.dvd_prod_of_mem _ (mem_attach (n.primeFactors) ⟨p, hp⟩)
     rw [if_pos rfl]
   · rw [mem_primeFactors] at hp
-    rw [Prime.dvd_finset_prod_iff hp.1.prime]
-    push_neg
+    rw [Prime.dvd_finsetProd_iff hp.1.prime]
+    push Not
     intro q hq
     rw [Nat.prime_dvd_prime_iff_eq hp.1 (Nat.prime_of_mem_primeFactorsList
       <| List.mem_toFinset.mp q.2)]

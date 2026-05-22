@@ -132,6 +132,25 @@ produce `empty` and `combine` from `{}` and `(· ++ ·)` or `(· ∪ ·)`, then 
   if arr.isEmpty then return .ascend else
     return .ascend <|← visitWithM arr visitM empty combine
 
+/-- Recursively modify the pp options captured in `MessageData.withContext` nodes.
+Used to re-render `X =?= X` failures with `pp.universes` or `pp.explicit` to show
+the difference between LHS and RHS without re-running the full analysis. -/
+partial def withPPOptions (msg : MessageData) (modify : Options → Options) : MessageData :=
+  match msg with
+  | .withContext ctx d =>
+    .withContext { ctx with opts := modify ctx.opts } (withPPOptions d modify)
+  | .compose a b => .compose (withPPOptions a modify) (withPPOptions b modify)
+  | .nest n m => .nest n (withPPOptions m modify)
+  | .group m => .group (withPPOptions m modify)
+  | .tagged t m => .tagged t (withPPOptions m modify)
+  | .withNamingContext nc m => .withNamingContext nc (withPPOptions m modify)
+  | .trace td header children =>
+    .trace td (withPPOptions header modify) (children.map (withPPOptions · modify))
+  | .ofWidget w m => .ofWidget w (withPPOptions m modify)
+  | other@(.ofLazy _ _)
+  | other@(.ofFormatWithInfos _)
+  | other@(.ofGoal _) => other
+
 end Lean.MessageData
 
 namespace Mathlib.Tactic.DefEqAbuse
@@ -145,27 +164,38 @@ namespace Mathlib.Tactic.DefEqAbuse
     unless (`Meta.isDefEq).isPrefixOf td.cls do return .descend
     f td header children
 
+/-- Strip the leading status emoji that `withTraceNodeBefore` prepends to trace headers.
+`withTraceNodeBefore` stores `m!"{result.toEmoji} {content}"` as the header; this strips the
+emoji prefix using the structured `TraceData.result?` to know exactly what was prepended.
+Needed because the same isDefEq check has different emoji prefixes across trace runs
+(✅️ when it succeeds, ❌️ when it fails), but we need to compare the content.
+See https://github.com/leanprover/lean4/pull/13070 for the upstream fix. -/
+private def stripHeaderEmoji (s : String) (result? : Option Lean.TraceResult) : String :=
+  match result? with
+  | some result =>
+    let emojiPrefix := s!"{result.toEmoji} "
+    if s.startsWith emojiPrefix then (s.drop emojiPrefix.length).toString else s
+  | none => s
+
 /-- Find the deepest failing `Meta.isDefEq` trace nodes (leaf failures).
-Skips `onFailure` retry nodes and ignores ✅ branches (recovered failures aren't root causes).
-Note: status is currently determined by parsing emoji from the rendered header string.
-Once https://github.com/leanprover/lean4/pull/12698 is available, use `td.result?` instead. -/
+Skips `onFailure` retry nodes and ignores ✅️ branches (recovered failures aren't root causes). -/
 partial def findLeafFailures (msg : MessageData) : BaseIO (Array MessageData) :=
   msg.visitTraceNodesM <| onlyOnDefEqNodes fun td header children => do
-    unless traceResultOf (← header.toString) matches some .failure do
+    unless td.result? matches some .failure do
       return .ascend
     let childFailures ← visitWithM children findLeafFailures
-    -- Leaf failure: deepest `❌` node with no deeper `❌` children
+    -- Leaf failure: deepest `❌️` node with no deeper `❌️` children
     return .ascend <| if childFailures.isEmpty then #[header] else childFailures
 
 /-- Collect rendered check strings from `Meta.isDefEq` trace nodes matching a status predicate.
 Returns a `HashSet` of emoji-stripped header strings. -/
-partial def collectIsDefEqChecks (pred : TraceResult → Bool)
+partial def collectIsDefEqChecks (pred : Lean.TraceResult → Bool)
     (msg : MessageData) : BaseIO (Std.HashSet String) :=
   msg.visitTraceNodesM <| onlyOnDefEqNodes fun td header children => do
-    let headerStr ← header.toString
-    if let some status := traceResultOf headerStr then
+    if let some status := td.result? then
       if pred status then
-        return .descend (butFirst := some {stripTraceResultPrefix headerStr})
+        let headerStr := stripHeaderEmoji (← header.toString) td.result?
+        return .descend (butFirst := some {headerStr})
     return .descend
 
 /-- Find the deepest `Meta.isDefEq` transition points: nodes that fail in the strict trace
@@ -179,10 +209,9 @@ partial def findTransitionFailures (permSuccesses : Std.HashSet String)
     (msg : MessageData) : BaseIO (Array MessageData) :=
   if permSuccesses.isEmpty then findLeafFailures msg
   else msg.visitTraceNodesM <| onlyOnDefEqNodes fun td header children => do
-    let headerStr ← header.toString
-    unless traceResultOf headerStr matches some .failure do return .descend
-    let checkStr := stripTraceResultPrefix headerStr
-    if permSuccesses.contains checkStr && !permFailures.contains checkStr then
+    unless td.result? matches some .failure do return .descend
+    let headerStr := stripHeaderEmoji (← header.toString) td.result?
+    if permSuccesses.contains headerStr && !permFailures.contains headerStr then
       -- Transition point: fails strict, succeeds permissive, doesn't also fail permissive.
       -- Look for deeper transition points among children.
       let childTransitions ← visitWithM children <|
@@ -205,7 +234,7 @@ partial def findSynthAppFailures (permSuccesses permFailures : Std.HashSet Strin
     if td.cls == `Meta.isDefEq.onFailure then return .ascend
     if td.cls == `Meta.synthInstance then
       let headerStr ← header.toString
-      if traceResultOf headerStr matches some .failure && headerStr.contains "apply " then
+      if td.result? matches some .failure && headerStr.contains "apply " then
         let failures ← visitWithM children <|
           findTransitionFailures permSuccesses permFailures
         if !failures.isEmpty then
@@ -219,8 +248,7 @@ partial def findSynthFailures (permSuccesses permFailures : Std.HashSet String)
   msg.visitTraceNodesM fun td header children => do
     if td.cls == `Meta.isDefEq.onFailure then return .ascend
     if td.cls == `Meta.synthInstance then
-      let headerStr ← header.toString
-      if traceResultOf headerStr matches some .failure then
+      if td.result? matches some .failure then
         visitWithAndAscendM children <| findSynthAppFailures permSuccesses permFailures
       else return .ascend
     -- Skip isDefEq/synthInstance subtrees that aren't top-level synthesis
@@ -235,7 +263,7 @@ partial def findSynthSuccessApps (msg : MessageData) : BaseIO (Std.HashSet Strin
   msg.visitTraceNodesM fun td header children => do
     if td.cls == `Meta.synthInstance then
       let headerStr ← header.toString
-      if headerStr.contains "apply" && traceResultOf headerStr == some .success then
+      if headerStr.contains "apply" && td.result? == some .success then
         return .descend (butFirst := some {extractInstName headerStr})
     return .descend
 
@@ -273,6 +301,45 @@ def analyzeTraces (strictMsgs permMsgs : Array MessageData) (includeSynth : Bool
   let dedupedResults ← filteredResults.mapM fun (app, failures) => do
     return (app, ← dedupByString failures)
   return (uniqueFailures, dedupedResults)
+
+/-- Check whether a rendered isDefEq check string has syntactically identical LHS and RHS
+(e.g. `"❌️ ⊤ =?= ⊤"` or `"Quiver C =?= Quiver C"`).
+Comparison is whitespace-insensitive to handle cases where LHS and RHS are semantically identical
+but rendered with different line breaks or spacing.
+TODO: once https://github.com/leanprover/lean4/pull/12698 is available, refactor to use
+`TraceData.result?` and compare the LHS/RHS `Expr`s structurally instead of string-matching. -/
+private def isIdenticalSidesStr (raw : String) : Bool :=
+  if let [lhsRaw, rhs] := raw.splitOn " =?= " then
+    -- Strip the leading status emoji/word (first whitespace-delimited token).
+    let lhs := match lhsRaw.splitOn " " with
+      | _ :: rest => " ".intercalate rest
+      | _ => lhsRaw
+    -- Compare up to whitespace so that line-break differences don't cause false negatives.
+    let tokenize (s : String) : List String :=
+      (s.split Char.isWhitespace).toList.map (·.toString) |>.filter (· ≠ "")
+    tokenize lhs == tokenize rhs
+  else false
+
+/-- PP option escalation levels for disambiguating `X =?= X` failures.
+Each level adds more detail to pretty-printed expressions.
+We prefer symmetric options (`pp.universes`, `pp.explicit`) over `pp.analyze`,
+which is context-dependent and can add annotations to only one side. -/
+private def ppEscalations : List (Options → Options) :=
+  [ fun o => o.setBool `pp.universes true
+  , fun o => o.setBool `pp.explicit true
+  ]
+
+/-- For failures with syntactically identical LHS and RHS (e.g. `⊤ =?= ⊤`), re-render with
+progressively more verbose pp settings to disambiguate. This modifies only the rendering
+of the `MessageData` (via `withPPOptions`), not the analysis — the captured `MetavarContext`
+and trace structure are preserved, so transition-point detection remains correct. -/
+def disambiguateFailures (failures : Array MessageData) : BaseIO (Array MessageData) :=
+  failures.mapM fun f => do
+    unless isIdenticalSidesStr (← f.toString) do return f
+    for ppLevel in ppEscalations do
+      let escalated := f.withPPOptions ppLevel
+      unless isIdenticalSidesStr (← escalated.toString) do return escalated
+    return f
 
 /-- Format and log the `#defeq_abuse` diagnostic report.
 `kind` is `"tactic"` or `"command"`. -/
@@ -366,7 +433,8 @@ elab (name := defeqAbuse) "#defeq_abuse " "in " tac:tactic : tactic => withMainC
         let strictMsgs := strictTraces.toArray.map (·.msg)
         let permMsgs := permTraces.toArray.map (·.msg)
         let (uniqueFailures, _) ← analyzeTraces strictMsgs permMsgs
-        reportDefEqAbuse "tactic" uniqueFailures #[]
+        let disambiguated ← disambiguateFailures uniqueFailures
+        reportDefEqAbuse "tactic" disambiguated #[]
         -- Pass 3: run the tactic with permissive setting so it actually succeeds
         withOptions (fun o => o.setBool `backward.isDefEq.respectTransparency false) do
           evalTactic tac
@@ -441,7 +509,10 @@ elab_rules : command
         let permMsgData := permissiveMsgs.map (·.data) |>.toArray
         let (uniqueFailures, synthResults) ←
           analyzeTraces strictMsgData permMsgData (includeSynth := true)
-        reportDefEqAbuse "command" uniqueFailures synthResults
+        let disambiguatedFailures ← disambiguateFailures uniqueFailures
+        let disambiguatedSynth ← synthResults.mapM fun (app, failures) => do
+          return (app, ← disambiguateFailures failures)
+        reportDefEqAbuse "command" disambiguatedFailures disambiguatedSynth
         -- Pass 3: run the command with permissive setting so it actually takes effect
         withScope (fun scope =>
           { scope with opts := scope.opts.setBool `backward.isDefEq.respectTransparency false }) do

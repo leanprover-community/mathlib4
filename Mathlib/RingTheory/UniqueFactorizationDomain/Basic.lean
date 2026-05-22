@@ -27,7 +27,7 @@ public import Mathlib.RingTheory.UniqueFactorizationDomain.Defs
   to get relatively prime elements.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Field
 
@@ -318,7 +318,6 @@ variable [CommMonoidWithZero α] [IsCancelMulZero α]
 variable (pf : ∀ a : α, a ≠ 0 → ∃ f : Multiset α, (∀ b ∈ f, Prime b) ∧ f.prod ~ᵤ a)
 include pf
 
-set_option backward.isDefEq.respectTransparency false in
 theorem WfDvdMonoid.of_exists_prime_factors : WfDvdMonoid α :=
   ⟨by
     classical

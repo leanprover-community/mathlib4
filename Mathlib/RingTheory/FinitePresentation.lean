@@ -154,7 +154,6 @@ theorem iff_quotient_mvPolynomial' :
     refine Ideal.fg_ker_comp (S := MvPolynomial ι R) (A := A) _ f ?_ hf.2 equiv.symm.surjective
     simpa using Submodule.fg_bot
 
-set_option backward.isDefEq.respectTransparency false in
 universe v in
 /-- If `A` is a finitely presented `R`-algebra, then `MvPolynomial (Fin n) A` is finitely presented
 as `R`-algebra. -/
@@ -171,7 +170,7 @@ theorem mvPolynomial_of_finitePresentation [FinitePresentation R A] (ι : Type v
     ⟨ι ⊕ ι', by infer_instance, g,
       (MvPolynomial.map_surjective f.toRingHom hf_surj).comp (AlgEquiv.surjective _),
       Ideal.fg_ker_comp _ _ ?_ ?_ (AlgEquiv.surjective _)⟩
-  · rw [AlgEquiv.toAlgHom_eq_coe, AlgEquiv.toAlgHom_toRingHom, AlgHom.ker_coe_equiv]
+  · rw [AlgEquiv.toAlgHom_toRingHom, AlgHom.ker_coe_equiv]
     exact Submodule.fg_bot
   · rw [AlgHom.toRingHom_eq_coe, MvPolynomial.mapAlgHom_coe_ringHom, MvPolynomial.ker_map]
     exact hf_ker.map MvPolynomial.C
@@ -201,7 +200,7 @@ instance self : FinitePresentation R R :=
 /-- `R[X]` is finitely presented as `R`-algebra. -/
 instance polynomial [FinitePresentation R A] : FinitePresentation R A[X] :=
   letI := FinitePresentation.mvPolynomial R A Unit
-  have := equiv (MvPolynomial.pUnitAlgEquiv.{_, 0} A)
+  have := equiv (MvPolynomial.uniqueAlgEquiv.{_, 0} A PUnit)
   .trans _ A _
 
 open MvPolynomial

@@ -62,6 +62,11 @@ theorem tensor_add {W X Y Z : C} (f : W ⟶ X) (g h : Y ⟶ Z) : f ⊗ₘ (g + h
 theorem add_tensor {W X Y Z : C} (f g : W ⟶ X) (h : Y ⟶ Z) : (f + g) ⊗ₘ h = f ⊗ₘ h + g ⊗ₘ h := by
   simp [tensorHom_def]
 
+instance (X : C) : (tensorLeft X).Additive where
+instance (X : C) : (tensorRight X).Additive where
+instance : (curriedTensor C).Additive where
+instance : (curriedTensor C).flip.Additive where
+
 end MonoidalPreadditive
 
 instance tensorLeft_additive (X : C) : (tensorLeft X).Additive where

@@ -248,7 +248,7 @@ noncomputable def fromSingle₀Equiv (C : ChainComplex V ℕ) (X : V) :
 @[simp]
 lemma fromSingle₀Equiv_symm_apply_f_zero
     {C : ChainComplex V ℕ} {X : V} (f : X ⟶ C.X 0) :
-    ((fromSingle₀Equiv C X).symm f).f 0 = f := by
+    dsimp% ((fromSingle₀Equiv C X).symm f).f 0 = f := by
   simp [fromSingle₀Equiv]
 
 @[simp]

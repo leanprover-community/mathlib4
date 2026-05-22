@@ -5,8 +5,9 @@ Authors: Thomas Browning, Patrick Lutz
 -/
 module
 
-public import Mathlib.GroupTheory.Solvable
+public import Mathlib.FieldTheory.AlgebraicClosure
 public import Mathlib.FieldTheory.PolynomialGaloisGroup
+public import Mathlib.GroupTheory.Solvable
 public import Mathlib.RingTheory.RootsOfUnity.Basic
 
 /-!
@@ -21,19 +22,15 @@ by radicals, then its minimal polynomial has solvable Galois group.
 
 ## Main results
 
-* the Abel-Ruffini Theorem `solvableByRad.isSolvable'` : An irreducible polynomial with a root
+* The Abel-Ruffini Theorem `isSolvable_gal_of_irreducible`: An irreducible polynomial with a root
   that is solvable by radicals has a solvable Galois group.
 -/
 
-@[expose] public section
-
-noncomputable section
+public section
 
 open Polynomial
 
-section AbelRuffini
-
-variable {F : Type*} [Field F] {E : Type*} [Field E] [Algebra F E]
+variable {F E : Type*} [Field F] [Field E] [Algebra F E]
 
 theorem gal_zero_isSolvable : IsSolvable (0 : F[X]).Gal := by infer_instance
 
@@ -193,9 +190,15 @@ theorem gal_X_pow_sub_C_isSolvable (n : ℕ) (x : F) : IsSolvable (X ^ n - C x).
 
 end GalXPowSubC
 
-variable (F)
+variable (F E) in
+/-- The intermediate field of elements solvable by radicals, defined as the smallest subfield which
+is closed under `n`-th roots. -/
+def solvableByRad : IntermediateField F E :=
+  sInf {s | ∀ x, ∀ n ≠ 0, x ^ n ∈ s → x ∈ s}
 
+variable (F) in
 /-- Inductive definition of solvable by radicals -/
+@[deprecated solvableByRad (since := "2026-02-28")]
 inductive IsSolvableByRad : E → Prop
   | base (α : F) : IsSolvableByRad (algebraMap F E α)
   | add (α β : E) : IsSolvableByRad α → IsSolvableByRad β → IsSolvableByRad (α + β)
@@ -204,91 +207,70 @@ inductive IsSolvableByRad : E → Prop
   | inv (α : E) : IsSolvableByRad α → IsSolvableByRad α⁻¹
   | rad (α : E) (n : ℕ) (hn : n ≠ 0) : IsSolvableByRad (α ^ n) → IsSolvableByRad α
 
-variable (E)
+theorem solvableByRad_le {s : IntermediateField F E} (H : ∀ x, ∀ n ≠ 0, x ^ n ∈ s → x ∈ s) :
+    solvableByRad F E ≤ s :=
+  sInf_le H
 
-/-- The intermediate field of solvable-by-radicals elements -/
-def solvableByRad : IntermediateField F E where
-  carrier := IsSolvableByRad F
-  zero_mem' := by
-    change IsSolvableByRad F 0
-    convert IsSolvableByRad.base (E := E) (0 : F); rw [map_zero]
-  add_mem' := by apply IsSolvableByRad.add
-  one_mem' := by
-    change IsSolvableByRad F 1
-    convert IsSolvableByRad.base (E := E) (1 : F); rw [map_one]
-  mul_mem' := by apply IsSolvableByRad.mul
-  inv_mem' := IsSolvableByRad.inv
-  algebraMap_mem' := IsSolvableByRad.base
+theorem solvableByRad.rad_mem {x : E} {n : ℕ} (hn : n ≠ 0) (hx : x ^ n ∈ solvableByRad F E) :
+    x ∈ solvableByRad F E := by
+  grind [solvableByRad]
 
-namespace solvableByRad
-
-variable {F} {E} {α : E}
-
-theorem induction (P : solvableByRad F E → Prop)
-    (base : ∀ α : F, P (algebraMap F (solvableByRad F E) α))
-    (add : ∀ α β : solvableByRad F E, P α → P β → P (α + β))
-    (neg : ∀ α : solvableByRad F E, P α → P (-α))
-    (mul : ∀ α β : solvableByRad F E, P α → P β → P (α * β))
-    (inv : ∀ α : solvableByRad F E, P α → P α⁻¹)
-    (rad : ∀ α : solvableByRad F E, ∀ n : ℕ, n ≠ 0 → P (α ^ n) → P α) (α : solvableByRad F E) :
-    P α := by
-  revert α
-  suffices ∀ α : E, IsSolvableByRad F α → ∃ β : solvableByRad F E, ↑β = α ∧ P β by
-    intro α
-    obtain ⟨α₀, hα₀, Pα⟩ := this α (Subtype.mem α)
-    convert Pα
-    exact Subtype.ext hα₀.symm
-  apply IsSolvableByRad.rec
-  · exact fun α => ⟨algebraMap F (solvableByRad F E) α, rfl, base α⟩
-  · intro α β _ _ Pα Pβ
-    obtain ⟨⟨α₀, hα₀, Pα⟩, β₀, hβ₀, Pβ⟩ := Pα, Pβ
-    exact ⟨α₀ + β₀, by rw [← hα₀, ← hβ₀]; rfl, add α₀ β₀ Pα Pβ⟩
-  · intro α _ Pα
-    obtain ⟨α₀, hα₀, Pα⟩ := Pα
-    exact ⟨-α₀, by rw [← hα₀]; rfl, neg α₀ Pα⟩
-  · intro α β _ _ Pα Pβ
-    obtain ⟨⟨α₀, hα₀, Pα⟩, β₀, hβ₀, Pβ⟩ := Pα, Pβ
-    exact ⟨α₀ * β₀, by rw [← hα₀, ← hβ₀]; rfl, mul α₀ β₀ Pα Pβ⟩
-  · intro α _ Pα
-    obtain ⟨α₀, hα₀, Pα⟩ := Pα
-    exact ⟨α₀⁻¹, by rw [← hα₀]; rfl, inv α₀ Pα⟩
-  · intro α n hn hα Pα
-    obtain ⟨α₀, hα₀, Pα⟩ := Pα
-    refine ⟨⟨α, IsSolvableByRad.rad α n hn hα⟩, rfl, rad _ n hn ?_⟩
-    convert Pα
-    exact Subtype.ext (Eq.trans ((solvableByRad F E).coe_pow _ n) hα₀.symm)
-
-theorem isIntegral (α : solvableByRad F E) : IsIntegral F α := by
-  revert α
-  apply solvableByRad.induction
-  · exact fun _ => isIntegral_algebraMap
-  · exact fun _ _ => IsIntegral.add
-  · exact fun _ => IsIntegral.neg
-  · exact fun _ _ => IsIntegral.mul
-  · intro α hα
-    exact IsIntegral.inv hα
-  · intro α n hn hα
-    obtain ⟨p, h1, h2⟩ := hα.isAlgebraic
-    refine IsAlgebraic.isIntegral ⟨p.comp (X ^ n),
-      ⟨fun h => h1 (leadingCoeff_eq_zero.mp ?_), by rw [aeval_comp, aeval_X_pow, h2]⟩⟩
-    rwa [← leadingCoeff_eq_zero, leadingCoeff_comp, leadingCoeff_X_pow, one_pow, mul_one] at h
+variable (F E) in
+theorem solvableByRad_le_algClosure : solvableByRad F E ≤ algebraicClosure F E := by
+  refine solvableByRad_le fun x n hn hx ↦ ?_
+  rw [mem_algebraicClosure_iff] at hx ⊢
+  obtain ⟨p, h1, h2⟩ := hx
+  refine ⟨p.comp (X ^ n), ⟨fun h ↦ h1 (leadingCoeff_eq_zero.mp ?_), ?_⟩⟩
+  · rwa [← leadingCoeff_eq_zero, leadingCoeff_comp, leadingCoeff_X_pow, one_pow, mul_one] at h
     rwa [natDegree_X_pow]
+  · simpa [aeval_comp]
 
-/-- The statement to be proved inductively -/
-def P (α : solvableByRad F E) : Prop :=
-  IsSolvable (minpoly F α).Gal
+theorem isAlgebraic_solvableByRad : (solvableByRad F E).IsAlgebraic :=
+  fun _ hx ↦ mem_algebraicClosure_iff.1 (solvableByRad_le_algClosure _ _ hx)
 
-/-- An auxiliary induction lemma, which is generalized by `solvableByRad.isSolvable`. -/
-theorem induction3 {α : solvableByRad F E} {n : ℕ} (hn : n ≠ 0) (hα : P (α ^ n)) : P α := by
-  let p := minpoly F (α ^ n)
+theorem isIntegral_of_mem_solvableByRad {x : E} (hx : x ∈ solvableByRad F E) : IsIntegral F x :=
+  (isAlgebraic_solvableByRad _ hx).isIntegral
+
+@[deprecated (since := "2026-02-28")]
+alias solvableByRad.isIntegral := isIntegral_of_mem_solvableByRad
+
+/-- An induction principle for `solvableByRad`. -/
+@[elab_as_elim]
+protected theorem solvableByRad.induction (motive : ∀ x, x ∈ solvableByRad F E → Prop)
+    (mem : ∀ x, motive (algebraMap F E x) (algebraMap_mem _ _))
+    (add : ∀ x y (hx : x ∈ solvableByRad F E) (hy : y ∈ solvableByRad F E),
+      motive x hx → motive y hy → motive (x + y) (add_mem hx hy))
+    (mul : ∀ x y (hx : x ∈ solvableByRad F E) (hy : y ∈ solvableByRad F E),
+      motive x hx → motive y hy → motive (x * y) (mul_mem hx hy))
+    (rad : ∀ n x (hn : n ≠ 0) (hx : x ^ n ∈ solvableByRad F E),
+      motive (x ^ n) hx → motive x (rad_mem hn hx))
+    {x : E} (hx : x ∈ solvableByRad F E) : motive x hx := by
+  let s : Subalgebra F E :=
+  { carrier := {x | ∃ hx : x ∈ solvableByRad F E, motive x hx}
+    algebraMap_mem' a := ⟨algebraMap_mem _ a, mem a⟩
+    add_mem' := fun ⟨ha, ha'⟩ ⟨hb, hb'⟩ ↦ ⟨add_mem ha hb, add _ _ ha hb ha' hb'⟩
+    mul_mem' := fun ⟨ha, ha'⟩ ⟨hb, hb'⟩ ↦ ⟨mul_mem ha hb, mul _ _ ha hb ha' hb'⟩ }
+  let t : IntermediateField F E := Subalgebra.IsAlgebraic.toIntermediateField (S := s) <| by
+    rintro x ⟨hx, hx'⟩
+    apply isAlgebraic_solvableByRad
+    exact hx
+  have ht (x n) (hn : n ≠ 0) : x ^ n ∈ t → x ∈ t := by
+    rintro ⟨hx, hx'⟩
+    exact ⟨rad_mem hn hx, rad _ _ hn hx hx'⟩
+  obtain ⟨_, h⟩ := solvableByRad_le (s := t) ht hx
+  exact h
+
+private theorem induction_rad {x : E} (hx : x ∈ solvableByRad F E) {n : ℕ} (hn : n ≠ 0)
+    (hα : IsSolvable (minpoly F (x ^ n)).Gal) : IsSolvable (minpoly F x).Gal := by
+  let p := minpoly F (x ^ n)
   have hp : p.comp (X ^ n) ≠ 0 := by
     intro h
     rcases comp_eq_zero_iff.mp h with h' | h'
-    · exact minpoly.ne_zero (isIntegral (α ^ n)) h'
+    · exact minpoly.ne_zero (isIntegral_of_mem_solvableByRad (pow_mem hx n)) h'
     · exact hn (by rw [← @natDegree_C F, ← h'.2, natDegree_X_pow])
   apply gal_isSolvable_of_splits
   · exact ⟨(SplittingField.splits (p.comp (X ^ n))).of_dvd (map_ne_zero hp)
-      ((map_dvd_map' _).mpr (minpoly.dvd F α (by rw [aeval_comp, aeval_X_pow, minpoly.aeval])))⟩
+      ((map_dvd_map' _).mpr (minpoly.dvd F x (by rw [aeval_comp, aeval_X_pow, minpoly.aeval])))⟩
   · refine gal_isSolvable_tower p (p.comp (X ^ n)) ?_ hα ?_
     · exact Gal.splits_in_splittingField_of_comp _ _ (by rwa [natDegree_X_pow])
     · obtain ⟨s, hs⟩ := splits_iff_exists_multiset.1 (SplittingField.splits p)
@@ -306,62 +288,54 @@ theorem induction3 {α : solvableByRad F E} {n : ℕ} (hn : n ≠ 0) (hα : P (�
 
 open IntermediateField
 
-set_option backward.isDefEq.respectTransparency false in
-/-- An auxiliary induction lemma, which is generalized by `solvableByRad.isSolvable`. -/
-theorem induction2 {α β γ : solvableByRad F E} (hγ : γ ∈ F⟮α, β⟯) (hα : P α) (hβ : P β) : P γ := by
-  let p := minpoly F α
-  let q := minpoly F β
+private theorem induction_step {x y z : E}
+    (hx : x ∈ solvableByRad F E) (hy : y ∈ solvableByRad F E) (hz : z ∈ solvableByRad F E)
+    (hx' : IsSolvable (minpoly F x).Gal) (hy' : IsSolvable (minpoly F y).Gal) (hz' : z ∈ F⟮x, y⟯) :
+    IsSolvable (minpoly F z).Gal := by
+  let p := minpoly F x
+  let q := minpoly F y
   have hpq := SplittingField.splits (p * q)
-  rw [Polynomial.map_mul, splits_mul_iff (map_ne_zero (minpoly.ne_zero (isIntegral α)))
-    (map_ne_zero (minpoly.ne_zero (isIntegral β)))] at hpq
-  let f : ↥F⟮α, β⟯ →ₐ[F] (p * q).SplittingField :=
+  rw [Polynomial.map_mul,
+    splits_mul_iff (map_ne_zero (minpoly.ne_zero (isIntegral_of_mem_solvableByRad hx)))
+      (map_ne_zero (minpoly.ne_zero (isIntegral_of_mem_solvableByRad hy)))] at hpq
+  have f : ↥F⟮x, y⟯ →ₐ[F] (p * q).SplittingField :=
     Classical.choice <| nonempty_algHom_adjoin_of_splits <| by
-      intro x hx
-      push _ ∈ _ at hx
-      cases hx with rw [hx]
-      | inl hx => exact ⟨isIntegral α, hpq.1⟩
-      | inr hx => exact ⟨isIntegral β, hpq.2⟩
-  have key : minpoly F γ = minpoly F (f ⟨γ, hγ⟩) := by
+      rintro a (rfl | rfl)
+      · exact ⟨isIntegral_of_mem_solvableByRad hx, hpq.1⟩
+      · exact ⟨isIntegral_of_mem_solvableByRad hy, hpq.2⟩
+  have key : minpoly F z = minpoly F (f ⟨z, hz'⟩) := by
     refine minpoly.eq_of_irreducible_of_monic
-      (minpoly.irreducible (isIntegral γ)) ?_ (minpoly.monic (isIntegral γ))
+      (minpoly.irreducible (isIntegral_of_mem_solvableByRad hz)) ?_
+      (minpoly.monic (isIntegral_of_mem_solvableByRad hz))
     rw [aeval_algHom_apply, map_eq_zero]
-    apply (algebraMap (↥F⟮α, β⟯) (solvableByRad F E)).injective
-    simp only [map_zero, ← aeval_algebraMap_apply]
-    exact minpoly.aeval F γ
-  rw [P, key]
-  refine gal_isSolvable_of_splits ⟨Normal.splits ?_ (f ⟨γ, hγ⟩)⟩ (gal_mul_isSolvable hα hβ)
-  apply SplittingField.instNormal
+    apply (algebraMap (↥F⟮x, y⟯) E).injective
+    simp [← aeval_algebraMap_apply]
+  rw [key]
+  refine gal_isSolvable_of_splits ⟨Normal.splits ?_ (f ⟨z, hz'⟩)⟩ (gal_mul_isSolvable hx' hy')
+  infer_instance
 
-/-- An auxiliary induction lemma, which is generalized by `solvableByRad.isSolvable`. -/
-theorem induction1 {α β : solvableByRad F E} (hβ : β ∈ F⟮α⟯) (hα : P α) : P β :=
-  induction2 (adjoin.mono F _ _ (ge_of_eq (Set.pair_eq_singleton α)) hβ) hα hα
+theorem isSolvable_gal_minpoly {x : E} (hx : x ∈ solvableByRad F E) :
+    IsSolvable (minpoly F x).Gal := by
+  induction hx using solvableByRad.induction with
+  | mem y => rw [minpoly.eq_X_sub_C E]; infer_instance
+  | add y z hy hz hy' hz' =>
+    apply induction_step hy hz (add_mem hy hz) hy' hz' (add_mem ..) <;> apply subset_adjoin <;> simp
+  | mul y z hy hz hy' hz' =>
+    apply induction_step hy hz (mul_mem hy hz) hy' hz' (mul_mem ..) <;> apply subset_adjoin <;> simp
+  | rad n y hn hy hy' => exact induction_rad (solvableByRad.rad_mem hn hy) hn hy'
 
-theorem isSolvable (α : solvableByRad F E) : IsSolvable (minpoly F α).Gal := by
-  revert α
-  apply solvableByRad.induction
-  · exact fun α => by rw [minpoly.eq_X_sub_C (solvableByRad F E)]; exact gal_X_sub_C_isSolvable α
-  · exact fun α β => induction2 (add_mem (subset_adjoin F _ (Set.mem_insert α _))
-      (subset_adjoin F _ (Set.mem_insert_of_mem α (Set.mem_singleton β))))
-  · exact fun α => induction1 (neg_mem (mem_adjoin_simple_self F α))
-  · exact fun α β => induction2 (mul_mem (subset_adjoin F _ (Set.mem_insert α _))
-      (subset_adjoin F _ (Set.mem_insert_of_mem α (Set.mem_singleton β))))
-  · exact fun α => induction1 (inv_mem (mem_adjoin_simple_self F α))
-  · exact fun α n => induction3
+@[deprecated (since := "2026-02-28")]
+alias solvableByRad.isSolvable := isSolvable_gal_minpoly
 
-set_option backward.isDefEq.respectTransparency false in
-/-- **Abel-Ruffini Theorem** (one direction): An irreducible polynomial with an
-`IsSolvableByRad` root has solvable Galois group -/
-theorem isSolvable' {α : E} {q : F[X]} (q_irred : Irreducible q) (q_aeval : aeval α q = 0)
-    (hα : IsSolvableByRad F α) : IsSolvable q.Gal := by
-  have : _root_.IsSolvable (q * C q.leadingCoeff⁻¹).Gal := by
-    rw [minpoly.eq_of_irreducible q_irred q_aeval, ←
-      show minpoly F (⟨α, hα⟩ : solvableByRad F E) = minpoly F α from
-        (minpoly.algebraMap_eq (RingHom.injective _) _).symm]
-    exact isSolvable ⟨α, hα⟩
+/-- **Abel-Ruffini Theorem** (one direction): An irreducible polynomial with a `solvableByRad` root
+has a solvable Galois group. -/
+theorem isSolvable_gal_of_irreducible {x : E} (hx : x ∈ solvableByRad F E) {q : F[X]}
+    (q_irred : Irreducible q) (q_aeval : aeval x q = 0) : IsSolvable q.Gal := by
+  have : IsSolvable (q * C q.leadingCoeff⁻¹).Gal := by
+    rw [minpoly.eq_of_irreducible q_irred q_aeval]
+    exact isSolvable_gal_minpoly hx
   refine solvable_of_surjective (Gal.restrictDvd_surjective ⟨C q.leadingCoeff⁻¹, rfl⟩ ?_)
-  rw [mul_ne_zero_iff, Ne, Ne, C_eq_zero, inv_eq_zero]
-  exact ⟨q_irred.ne_zero, leadingCoeff_ne_zero.mpr q_irred.ne_zero⟩
+  aesop
 
-end solvableByRad
-
-end AbelRuffini
+@[deprecated (since := "2026-02-28")]
+alias solvableByRad.isSolvable' := isSolvable_gal_of_irreducible

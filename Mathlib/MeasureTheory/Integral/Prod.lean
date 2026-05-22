@@ -337,12 +337,14 @@ lemma Integrable.comp_snd {f : β → E} (hf : Integrable f ν) (μ : Measure α
   exact hf.comp_snd μ
 
 omit [SFinite ν] in
+@[fun_prop]
 theorem Integrable.smul_prod {R : Type*} [NormedRing R] [Module R E] [IsBoundedSMul R E]
     {f : α → R} {g : β → E} (hf : Integrable f μ) (hg : Integrable g ν) :
     Integrable (fun z : α × β => f z.1 • g z.2) (μ.prod ν) :=
   hf.op_fst_snd continuous_smul ⟨1, by simpa using norm_smul_le⟩ hg
 
 omit [SFinite ν] in
+@[fun_prop]
 theorem Integrable.mul_prod {L : Type*} [NormedRing L] {f : α → L} {g : β → L} (hf : Integrable f μ)
     (hg : Integrable g ν) : Integrable (fun z : α × β => f z.1 * g z.2) (μ.prod ν) :=
   hf.smul_prod hg
@@ -473,7 +475,7 @@ theorem continuous_integral_integral :
     tendsto_integral_of_L1 _ (L1.integrable_coeFn g).integral_prod_left
       (Eventually.of_forall fun h => (L1.integrable_coeFn h).integral_prod_left) ?_
   simp_rw [← lintegral_fn_integral_sub _ (L1.integrable_coeFn _) (L1.integrable_coeFn g)]
-  apply tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds _ (fun i => zero_le _) _
+  apply tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds _ (fun i => zero_le) _
   · exact fun i => ∫⁻ x, ∫⁻ y, ‖i (x, y) - g (x, y)‖ₑ ∂ν ∂μ
   swap; · exact fun i => lintegral_mono fun x => enorm_integral_le_lintegral_enorm _
   change
@@ -502,7 +504,7 @@ theorem integral_prod (f : α × β → E) (hf : Integrable f (μ.prod ν)) :
       measureReal_def,
       integral_toReal (measurable_measure_prodMk_left hs).aemeasurable
         (ae_measure_lt_top hs h2s.ne)]
-    rw [prod_apply hs]
+    rw [Measure.prod_apply hs]
   · rintro f g - i_f i_g hf hg
     simp_rw [integral_add' i_f i_g, integral_integral_add' i_f i_g, hf, hg]
   · exact isClosed_eq continuous_integral continuous_integral_integral

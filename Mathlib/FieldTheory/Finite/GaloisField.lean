@@ -42,7 +42,6 @@ open Polynomial Finset
 
 open scoped Polynomial
 
-set_option backward.isDefEq.respectTransparency false in
 instance FiniteField.isSplittingField_sub (K F : Type*) [Field K] [Fintype K]
     [Field F] [Algebra F K] : IsSplittingField F K (X ^ Fintype.card K - X) where
   splits' := by
@@ -65,7 +64,6 @@ theorem galois_poly_separable {K : Type*} [CommRing K] (p q : ℕ) [CharP K p] (
 
 variable (p : ℕ) [Fact p.Prime] (n : ℕ)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A finite field with `p ^ n` elements.
 Every field with the same cardinality is (non-canonically)
 isomorphic to this field. -/
@@ -130,7 +128,6 @@ theorem finrank {n} (h : n ≠ 0) : Module.finrank (ZMod p) (GaloisField p n) = 
     intro x y _ _ hx hy
     rw [hx, hy]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem card (h : n ≠ 0) : Nat.card (GaloisField p n) = p ^ n := by
   let b := IsNoetherian.finsetBasis (ZMod p) (GaloisField p n)
   haveI : Fintype (GaloisField p n) := Fintype.ofFinite (GaloisField p n)
@@ -188,6 +185,14 @@ theorem _root_.FiniteField.isSplittingField_of_nat_card_eq (h : Nat.card K = p ^
   haveI : Fintype K := Fintype.ofFinite K
   rw [← h, Nat.card_eq_fintype_card]
   exact FiniteField.isSplittingField_sub K (ZMod p)
+
+theorem _root_.Polynomial.splits_X_pow_nat_card_sub_X :
+    Splits (X ^ (Nat.card K) - X : K[X]) := by
+  cases fintypeOrInfinite K
+  · have := (IsSplittingField.splits (L := K) (X ^ (Fintype.card K) - X : K[X]))
+    simpa [Algebra.algebraMap_self, map_sub, map_pow, map_X] using this
+  · rw [← Polynomial.splits_neg_iff]
+    simpa [Nat.card_eq_zero_of_infinite, pow_zero, neg_sub] using Splits.X_sub_C (1 : K)
 
 instance (priority := 100) {K K' : Type*} [Field K] [Field K'] [Finite K'] [Algebra K K'] :
     IsGalois K K' := by

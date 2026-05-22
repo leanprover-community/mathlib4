@@ -168,6 +168,12 @@ theorem isHermitian {M : Matrix n n R} (hM : M.PosDef) : M.IsHermitian :=
 theorem posSemidef {M : Matrix n n R} (hM : M.PosDef) : M.PosSemidef :=
   ⟨hM.1, fun x ↦ by obtain rfl | hx := eq_or_ne x 0 <;> simp [le_of_lt, hM.2, *]⟩
 
+theorem submatrix {M : Matrix n n R} (hM : M.PosDef) {e : m → n}
+    (he : Function.Injective e) : (M.submatrix e e).PosDef := by
+  refine ⟨hM.1.submatrix _, fun x hx ↦ ?_⟩
+  simpa [Finsupp.sum_mapDomain_index, add_mul, mul_add] using
+    hM.2 <| Finsupp.mapDomain_injective he |>.ne_iff' Finsupp.mapDomain_zero |>.2 hx
+
 theorem transpose {M : Matrix n n R'} (hM : M.PosDef) : Mᵀ.PosDef := by
   have (a b c : R') : a * b * c = c * b * a := by ring
   refine ⟨hM.1.transpose, fun x => ?_⟩

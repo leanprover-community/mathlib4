@@ -107,7 +107,6 @@ theorem multiplicity_eq_count_normalizedFactors {a b : R} (ha : Irreducible a) (
   rwa [(finiteMultiplicity_of_emultiplicity_eq_natCast this).emultiplicity_eq_multiplicity,
     ENat.coe_inj] at this
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The number of times an irreducible factor `p` appears in `normalizedFactors x` is defined by
 the number of times it divides `x`.
 
@@ -149,5 +148,32 @@ lemma finprod_pow_count_eq_of_subsingleton_units [Subsingleton Rˣ] {x : R} (hx 
   associated_iff_eq.mp <| associated_finprod_pow_count hx
 
 end multiplicity
+
+lemma dvd_iff_emultiplicity_le {a b : R} (ha : a ≠ 0) :
+    a ∣ b ↔ ∀ p : R, Prime p → emultiplicity p a ≤ emultiplicity p b := by
+  classical
+  refine ⟨fun h _ _ ↦ emultiplicity_le_emultiplicity_of_dvd_right h, fun h ↦ ?_⟩
+  by_cases hb : b = 0
+  · simp_all
+  letI : NormalizationMonoid R := UniqueFactorizationMonoid.normalizationMonoid
+  rw [dvd_iff_normalizedFactors_le_normalizedFactors ha hb, Multiset.le_iff_count]
+  intro q
+  by_cases hq : q ∈ normalizedFactors a
+  · have hqprime : Prime q := prime_of_normalized_factor q hq
+    have h1 := emultiplicity_eq_count_normalizedFactors hqprime.irreducible ha
+    have h2 := emultiplicity_eq_count_normalizedFactors hqprime.irreducible hb
+    rw [normalize_normalized_factor q hq] at h1 h2
+    simpa [h1, h2] using h q hqprime
+  · simp [Multiset.count_eq_zero_of_notMem hq]
+
+lemma pow_dvd_pow_iff_dvd {a b : R} {n : ℕ} (hn : n ≠ 0) : a ^ n ∣ b ^ n ↔ a ∣ b := by
+  by_cases ha : a = 0
+  · simp [ha, hn]
+  refine ⟨?_, fun h ↦ pow_dvd_pow_of_dvd h n⟩
+  rw [dvd_iff_emultiplicity_le (pow_ne_zero n ha), dvd_iff_emultiplicity_le ha]
+  intro H p hp
+  have := H p hp
+  rwa [emultiplicity_pow hp, emultiplicity_pow hp,
+    ENat.mul_le_mul_left_iff (by exact_mod_cast hn) (ENat.coe_ne_top _)] at this
 
 end UniqueFactorizationMonoid

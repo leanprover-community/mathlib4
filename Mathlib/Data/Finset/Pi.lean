@@ -44,7 +44,7 @@ variable {β : α → Type u} {δ : α → Sort v} {s : Finset α} {t : ∀ a, F
 section
 variable [DecidableEq α]
 
-/-- Given a finset `s` of `α` and for all `a : α` a finset `t a` of `δ a`, then one can define the
+/-- Given a finset `s` of `α` and for all `a : α` a finset `t a` of `β a`, then one can define the
 finset `s.pi t` of all functions defined on elements of `s` taking values in `t a` for `a ∈ s`.
 Note that the elements of `s.pi t` are only partially defined, on `s`. -/
 def pi (s : Finset α) (t : ∀ a, Finset (β a)) : Finset (∀ a ∈ s, β a) :=

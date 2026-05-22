@@ -303,7 +303,6 @@ variable {𝕜 ι E F V W : Type*} [Fintype ι] [NontriviallyNormedField 𝕜]
   [NormedAddCommGroup E] [NormedSpace ℂ E]
   {M : ι → Type*} [∀ i, NormedAddCommGroup (M i)] [∀ i, NormedSpace ℝ (M i)]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem fourierIntegral_continuousLinearMap_apply
     {f : V → (F →L[ℝ] E)} {a : F} {w : W} (he : Continuous e) (hf : Integrable f μ) :
     fourierIntegral e μ L.toLinearMap₁₂ f w a =
@@ -313,7 +312,6 @@ theorem fourierIntegral_continuousLinearMap_apply
   · apply (fourierIntegral_convergent_iff he _ _).2 hf
     exact L.continuous₂
 
-set_option backward.isDefEq.respectTransparency false in
 theorem fourierIntegral_continuousMultilinearMap_apply
     {f : V → (ContinuousMultilinearMap ℝ M E)} {m : (i : ι) → M i} {w : W} (he : Continuous e)
     (hf : Integrable f μ) :
@@ -433,12 +431,6 @@ instance instFourierTransform : FourierTransform (V → E) (V → E) where
 
 instance instFourierTransformInv : FourierTransformInv (V → E) (V → E) where
   fourierInv f w := VectorFourier.fourierIntegral 𝐞 volume (-innerₗ V) f w
-
-@[deprecated (since := "2025-11-12")]
-alias fourierIntegral := FourierTransform.fourier
-
-@[deprecated (since := "2025-11-12")]
-alias fourierIntegralInv := FourierTransform.fourierInv
 
 lemma fourier_eq (f : V → E) (w : V) :
     𝓕 f w = ∫ v, 𝐞 (-⟪v, w⟫) • f v := rfl

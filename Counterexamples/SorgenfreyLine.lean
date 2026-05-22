@@ -34,8 +34,7 @@ Prove that the Sorgenfrey line is a paracompact space.
 
 
 open Set Filter TopologicalSpace
-
-open scoped Topology Filter Cardinal
+open scoped Topology Cardinal
 
 namespace Counterexample
 
@@ -87,7 +86,6 @@ theorem nhds_basis_Ico_rat (a : ℝₗ) :
   rcases exists_rat_btwn hb with ⟨r, har, hrb⟩
   exact ⟨r, har, Ico_subset_Ico_right hrb.le⟩
 
-set_option backward.isDefEq.respectTransparency false in
 theorem nhds_basis_Ico_inv_pnat (a : ℝₗ) :
     (𝓝 a).HasBasis (fun _ : ℕ+ => True) fun n => Ico a (a + (n : ℝₗ)⁻¹) := by
   refine (nhds_basis_Ico a).to_hasBasis (fun b hb => ?_) fun n hn =>
@@ -101,7 +99,6 @@ theorem nhds_countable_basis_Ico_inv_pnat (a : ℝₗ) :
     (𝓝 a).HasCountableBasis (fun _ : ℕ+ => True) fun n => Ico a (a + (n : ℝₗ)⁻¹) :=
   ⟨nhds_basis_Ico_inv_pnat a, Set.to_countable _⟩
 
-set_option backward.isDefEq.respectTransparency false in
 theorem nhds_antitone_basis_Ico_inv_pnat (a : ℝₗ) :
     (𝓝 a).HasAntitoneBasis fun n : ℕ+ => Ico a (a + (n : ℝₗ)⁻¹) :=
   ⟨nhds_basis_Ico_inv_pnat a, monotone_const.Ico <| Antitone.const_add
@@ -214,7 +211,6 @@ theorem cardinal_antidiagonal (c : ℝₗ) : #{x : ℝₗ × ℝₗ | x.1 + x.2 
     fun x ↦ ⟨(toReal.symm x, c - toReal.symm x), by simp⟩,
     fun ⟨x, hx⟩ ↦ by ext <;> simp [← hx.out], fun x ↦ rfl⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Any subset of an antidiagonal `{(x, y) : ℝₗ × ℝₗ| x + y = c}` is a closed set. -/
 theorem isClosed_of_subset_antidiagonal {s : Set (ℝₗ × ℝₗ)} {c : ℝₗ} (hs : ∀ x ∈ s, x.1 + x.2 = c) :
     IsClosed s := by

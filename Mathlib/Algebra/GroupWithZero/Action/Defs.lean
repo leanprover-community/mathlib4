@@ -117,7 +117,7 @@ class SMulWithZero [Zero M₀] [Zero A] extends SMulZeroClass M₀ A where
   /-- Scalar multiplication by the scalar `0` is `0`. -/
   zero_smul : ∀ m : A, (0 : M₀) • m = 0
 
-instance MulZeroClass.toSMulWithZero [MulZeroClass M₀] : SMulWithZero M₀ M₀ where
+instance (priority := 1100) MulZeroClass.toSMulWithZero [MulZeroClass M₀] : SMulWithZero M₀ M₀ where
   smul := (· * ·)
   smul_zero := mul_zero
   zero_smul := zero_mul
@@ -194,7 +194,7 @@ instance (priority := 100) MulActionWithZero.toSMulWithZero (M₀ A) {_ : Monoid
   { m with }
 
 /-- See also `Semiring.toModule` -/
-instance MonoidWithZero.toMulActionWithZero : MulActionWithZero M₀ M₀ :=
+instance (priority := 1100) MonoidWithZero.toMulActionWithZero : MulActionWithZero M₀ M₀ :=
   { MulZeroClass.toSMulWithZero M₀, Monoid.toMulAction M₀ with }
 
 /-- Like `MonoidWithZero.toMulActionWithZero`, but multiplies on the right. See also
@@ -320,7 +320,7 @@ def DistribSMul.toAddMonoidHom (x : M) : A →+ A :=
 
 instance AddMonoid.nat_smulCommClass {M A : Type*} [AddMonoid A] [DistribSMul M A] :
     SMulCommClass ℕ M A where
-  smul_comm n x y := ((DistribSMul.toAddMonoidHom A x).map_nsmul y n).symm
+  smul_comm n x y := ((DistribSMul.toAddMonoidHom A x).map_nsmul n y).symm
 
 -- `SMulCommClass.symm` is not registered as an instance, as it would cause a loop
 instance AddMonoid.nat_smulCommClass' {M A : Type*} [AddMonoid A] [DistribSMul M A] :
@@ -346,6 +346,8 @@ class DistribMulAction (M A : Type*) [Monoid M] [AddMonoid A] extends MulAction 
   smul_zero : ∀ a : M, a • (0 : A) = 0
   /-- Scalar multiplication distributes across addition -/
   smul_add : ∀ (a : M) (x y : A), a • (x + y) = a • x + a • y
+
+attribute [to_additive existing (dont_translate := M) DistribMulAction] MulDistribMulAction
 
 section
 
@@ -400,7 +402,7 @@ section
 variable [AddGroup A] [DistribSMul M A]
 
 instance AddGroup.int_smulCommClass : SMulCommClass ℤ M A where
-  smul_comm n x y := ((DistribSMul.toAddMonoidHom A x).map_zsmul y n).symm
+  smul_comm n x y := ((DistribSMul.toAddMonoidHom A x).map_zsmul n y).symm
 
 -- `SMulCommClass.symm` is not registered as an instance, as it would cause a loop
 instance AddGroup.int_smulCommClass' : SMulCommClass M ℤ A :=

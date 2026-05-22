@@ -71,7 +71,7 @@ open TensorProduct
 
 namespace Module
 
-open Function (Surjective)
+open Function (Injective Surjective)
 
 open LinearMap Submodule DirectSum
 
@@ -242,11 +242,34 @@ instance {S} [CommSemiring S] [Algebra R S] [Module S M] [IsScalarTower R S M]
 
 example [Flat R M] [Flat R N] : Flat R (M ⊗[R] N) := inferInstance
 
-theorem linearIndependent_one_tmul {S} [Semiring S] [Algebra R S] [Flat R S] {ι} {v : ι → M}
+section Algebra
+
+variable {S : Type*} [Semiring S] [Algebra R S]
+
+theorem linearIndependent_one_tmul [Flat R S] {ι} {v : ι → M}
     (hv : LinearIndependent R v) : LinearIndependent S ((1 : S) ⊗ₜ[R] v ·) := by
   classical rw [LinearIndependent, ← LinearMap.coe_restrictScalars R,
     Finsupp.linearCombination_one_tmul]
   simpa using lTensor_preserves_injective_linearMap _ hv
+
+variable (R S M)
+
+/-- See also `Module.FaithfullyFlat.tensorProduct_mk_injective`. -/
+lemma tensorProduct_mk_injective [FaithfulSMul R S] [Flat R M] :
+    Injective (TensorProduct.mk R S M 1) := by
+  have : TensorProduct.mk R S M 1 =
+      (Algebra.linearMap R S).rTensor M ∘ (TensorProduct.lid R M).symm := by ext; simp
+  rw [this]
+  refine Injective.comp ?_ (LinearEquiv.injective _)
+  exact Flat.rTensor_preserves_injective_linearMap _ <| FaithfulSMul.algebraMap_injective R S
+
+lemma _root_.LinearMap.baseChangeHom_injective [FaithfulSMul R S] [Flat R N] :
+    Injective (LinearMap.baseChangeHom R S M N) := by
+  intro f g h
+  ext m
+  simpa using Flat.tensorProduct_mk_injective R N S <| LinearMap.congr_fun h (1 ⊗ₜ[R] m)
+
+end Algebra
 
 end Flat
 
@@ -295,7 +318,6 @@ lemma iff_lTensor_preserves_injective_linearMap : Flat R M ↔
       (f : N →ₗ[R] N'), Function.Injective f → Function.Injective (f.lTensor M) :=
   iff_lTensor_preserves_injective_linearMap'
 
-set_option backward.isDefEq.respectTransparency false in
 variable (M) in
 /-- If `M` is flat then `M ⊗ -` is an exact functor. -/
 lemma lTensor_exact [Flat R M] ⦃N N' N'' : Type*⦄
@@ -313,7 +335,6 @@ lemma lTensor_exact [Flat R M] ⦃N N' N'' : Type*⦄
       simpa [ι, -Subtype.val_injective] using Subtype.val_injective) (map_zero _)
   exact _root_.lTensor_exact _ (fun x ↦ by simp [π]) Quotient.mk''_surjective
 
-set_option backward.isDefEq.respectTransparency false in
 variable (M) in
 /-- If `M` is flat then `- ⊗ M` is an exact functor. -/
 lemma rTensor_exact [Flat R M] ⦃N N' N'' : Type*⦄
@@ -399,6 +420,27 @@ theorem includeRight_injective [Module.Flat R B] (ha : Function.Injective (algeb
   ext; simp
 
 end Algebra.TensorProduct
+
+variable (A) [Module.Flat R A] {M : Type*} [AddCommMonoid M] [Module R M] (p : Submodule R M)
+
+namespace Submodule
+
+theorem toBaseChange_injective : Function.Injective (p.toBaseChange A) :=
+  (p.subtype.baseChange A).injective_rangeRestrict_iff.mpr
+    (Module.Flat.lTensor_preserves_injective_linearMap p.subtype (injective_subtype p))
+
+/-- `Submodule.toBaseChange` as a `LinearEquiv`. -/
+@[simps! apply]
+noncomputable def toBaseChange.toLinearEquiv : A ⊗[R] ↥p ≃ₗ[A] baseChange A p :=
+  .ofBijective (p.toBaseChange A) ⟨p.toBaseChange_injective A, p.toBaseChange_surjective A⟩
+
+@[simp]
+theorem toBaseChange.toLinearEquiv_symm_apply (a : A) (m : p) :
+    (toBaseChange.toLinearEquiv A p).symm
+      ⟨a ⊗ₜ[R] m, tmul_mem_baseChange_of_mem a m.2⟩ = a ⊗ₜ[R] m :=
+  (toBaseChange.toLinearEquiv A p).symm_apply_apply (a ⊗ₜ[R] m)
+
+end Submodule
 
 end Injective
 
@@ -591,7 +633,6 @@ theorem IsSMulRegular.of_flat {x : R} (reg : IsSMulRegular R x) :
 
 end IsSMulRegular
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Let `R` be a commutative semiring, let `C` be a commutative `R`-algebra, and let `A` be an
   `R`-algebra. If `C ⊗[R] B` is reduced for all finitely generated subalgebras `B` of `A`, then
   `C ⊗[R] A` is also reduced. -/

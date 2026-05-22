@@ -105,25 +105,17 @@ instance : Coe ℂ ℍ := ⟨coeComplex⟩
 theorem re_coeComplex (z : ℂ) : (z : ℍ).re = z.re :=
   rfl
 
-@[deprecated (since := "2025-08-31")] alias coeComplex_re := re_coeComplex
-
 @[simp, norm_cast]
 theorem imI_coeComplex (z : ℂ) : (z : ℍ).imI = z.im :=
   rfl
-
-@[deprecated (since := "2025-08-31")] alias coeComplex_imI := imI_coeComplex
 
 @[simp, norm_cast]
 theorem imJ_coeComplex (z : ℂ) : (z : ℍ).imJ = 0 :=
   rfl
 
-@[deprecated (since := "2025-08-31")] alias coeComplex_imJ := imJ_coeComplex
-
 @[simp, norm_cast]
 theorem imK_coeComplex (z : ℂ) : (z : ℍ).imK = 0 :=
   rfl
-
-@[deprecated (since := "2025-08-31")] alias coeComplex_imK := imK_coeComplex
 
 @[simp, norm_cast]
 theorem coeComplex_add (z w : ℂ) : ↑(z + w) = (z + w : ℍ) := by ext <;> simp
@@ -158,7 +150,6 @@ noncomputable def ofComplex : ℂ →ₐ[ℝ] ℍ where
 @[simp]
 theorem coe_ofComplex : ⇑ofComplex = coeComplex := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The norm of the components as a Euclidean vector equals the norm of the quaternion. -/
 lemma norm_toLp_equivTuple (x : ℍ) : ‖WithLp.toLp 2 (equivTuple ℝ x)‖ = ‖x‖ := by
   rw [norm_eq_sqrt_real_inner, norm_eq_sqrt_real_inner, inner_self, normSq_def', PiLp.inner_apply,
