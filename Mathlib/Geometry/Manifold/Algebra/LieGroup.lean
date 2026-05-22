@@ -50,7 +50,7 @@ so the definition does not apply. Hence the definition should be more general, a
 `I : ModelWithCorners 𝕜 E H`.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 

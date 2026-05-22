@@ -16,7 +16,7 @@ and weak equivalences from the axioms of model categories.
 
 -/
 
-@[expose] public section
+public section
 
 
 universe w v u

@@ -343,8 +343,8 @@ public lemma PathInTube.subpathOn_range_subset {X : Type*} [TopologicalSpace X] 
   have h_mono : (part.t i.castSucc : ℝ) ≤ part.t i.succ :=
     part.h_mono i.castSucc_lt_succ.le
   simpa [Path.subpathOn_apply] using
-    hγ.stays_in_U i (Set.Icc.convexCombo (part.t i.castSucc) (part.t i.succ) t)
-      ⟨Set.Icc.le_convexCombo h_mono t, Set.Icc.convexCombo_le h_mono t⟩
+    hγ.stays_in_U i (Set.Icc.convexComb (part.t i.castSucc) (part.t i.succ) t)
+      ⟨Set.Icc.le_convexComb h_mono t, Set.Icc.convexComb_le h_mono t⟩
 
 /-- Convert TubeData with partition to the set of paths in the tube -/
 @[expose] public def TubeData.toSet {X : Type*} [TopologicalSpace X] {x y : X} {n : ℕ}

@@ -77,7 +77,7 @@ theorem range_im : range im = univ :=
   im_surjective.range_eq
 
 /-- The natural inclusion of the real numbers into the complex numbers. -/
-@[coe]
+@[coe, implicit_reducible]
 def ofReal (r : ℝ) : ℂ :=
   ⟨r, 0⟩
 instance : Coe ℝ ℂ :=
@@ -197,7 +197,7 @@ instance : Sub ℂ :=
 /--
 `mulAux` is an auxiliary definition for defining multiplication and scalar multiplication on `ℂ`
 in such a way that `real_smul {x : ℝ} {z : ℂ} : x • z = x * z` holds definitionally.
-This makes sure that `Module.restrictScalars ℝ ℂ ℂ = Complex.module` definitionally.
+This makes sure that `Module.restrictScalars ℝ ℂ ℂ = Complex.instModule` definitionally.
 -/
 @[no_expose]
 def mulAux {R : Type*} [SMul R ℝ] (re : R) (im : ℝ) (z : ℂ) : ℂ :=
@@ -568,6 +568,7 @@ theorem add_conj (z : ℂ) : z + conj z = (2 * z.re : ℝ) :=
   Complex.ext_iff.2 <| by simp [two_mul, ofReal]
 
 /-- The coercion `ℝ → ℂ` as a `RingHom`. -/
+@[implicit_reducible]
 def ofRealHom : ℝ →+* ℂ where
   toFun x := (x : ℂ)
   map_one' := ofReal_one
@@ -761,7 +762,7 @@ theorem im_eq_sub_conj (z : ℂ) : (z.im : ℂ) = (z - conj z) / (2 * I) := by
   simp only [sub_conj, ofReal_mul, ofReal_ofNat, mul_right_comm,
     mul_div_cancel_left₀ _ (mul_ne_zero two_ne_zero I_ne_zero : 2 * I ≠ 0)]
 
-/-- Show the imaginary number ⟨x, y⟩ as an "x + y*I" string
+/-- Show the imaginary number ⟨x, y⟩ as an `"x + y*I"` string
 
 Note that the Real numbers used for x and y will show as Cauchy sequences due to the way Real
 numbers are represented.

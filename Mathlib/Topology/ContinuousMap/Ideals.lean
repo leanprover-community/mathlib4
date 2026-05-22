@@ -165,7 +165,6 @@ open RCLike
 
 variable {X 𝕜 : Type*} [RCLike 𝕜] [TopologicalSpace X]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- An auxiliary lemma used in the proof of `ContinuousMap.idealOfSet_ofIdeal_eq_closure` which may
 be useful on its own. -/
 theorem exists_mul_le_one_eqOn_ge (f : C(X, ℝ≥0)) {c : ℝ≥0} (hc : 0 < c) :
@@ -390,8 +389,7 @@ def continuousMapEval : C(X, characterSpace 𝕜 C(X, 𝕜)) where
   toFun x :=
     ⟨{  toFun := fun f => f x
         map_add' := fun _ _ => rfl
-        map_smul' := fun _ _ => rfl
-        cont := continuous_eval_const x }, by
+        map_smul' := fun _ _ => rfl }, by
         rw [CharacterSpace.eq_set_map_one_map_mul]; exact ⟨rfl, fun f g => rfl⟩⟩
   continuous_toFun := by
     exact Continuous.subtype_mk (continuous_of_continuous_eval map_continuous) _

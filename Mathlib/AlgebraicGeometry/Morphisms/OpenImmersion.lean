@@ -19,7 +19,7 @@ remaining theorems analogous to other lemmas in `AlgebraicGeometry/Morphisms/*`.
 
 -/
 
-@[expose] public section
+public section
 
 
 noncomputable section

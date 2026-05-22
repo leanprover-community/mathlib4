@@ -388,16 +388,10 @@ def trans (P₀ : Path.Homotopic.Quotient x₀ x₁) (P₁ : Path.Homotopic.Quot
     Path.Homotopic.Quotient x₀ x₂ :=
   Quotient.map₂ Path.trans (fun (_ : Path x₀ x₁) _ hp (_ : Path x₁ x₂) _ hq => hcomp hp hq) P₀ P₁
 
-@[deprecated (since := "2025-11-13")]
-noncomputable alias _root_.Path.Homotopic.Quotient.comp := Quotient.trans
-
 @[simp, grind =]
 theorem mk_trans (P₀ : Path x₀ x₁) (P₁ : Path x₁ x₂) :
     mk (P₀.trans P₁) = Quotient.trans (mk P₀) (mk P₁) :=
   rfl
-
-@[deprecated (since := "2025-11-13")]
-noncomputable alias _root_.Path.Homotopic.comp_lift := Quotient.mk_trans
 
 /-- The image of a path homotopy class `P₀` under a map `f`.
 This is `Path.map` descended to the quotient. -/
@@ -406,14 +400,8 @@ def map (P₀ : Path.Homotopic.Quotient x₀ x₁) (f : C(X, Y)) :
   _root_.Quotient.map
     (fun q : Path x₀ x₁ => q.map f.continuous) (fun _ _ h => Path.Homotopic.map h f) P₀
 
-@[deprecated (since := "2025-11-13")]
-noncomputable alias _root_.Path.Homotopic.Quotient.mapFn := Quotient.map
-
 theorem mk_map (P₀ : Path x₀ x₁) (f : C(X, Y)) : mk (P₀.map f.continuous) = map (mk P₀) f :=
   rfl
-
-@[deprecated (since := "2025-11-13")]
-noncomputable alias _root_.Path.Homotopic.map_lift := Quotient.mk_map
 
 end Quotient
 
@@ -472,22 +460,22 @@ open Set.Icc
 variable {X : Type*} [TopologicalSpace X] {x y : X}
 
 /-- Extract a subpath from `γ` on the interval `[a, b]`. This is `γ` reparametrised via
-`Set.Icc.convexCombo a b`, i.e. `t ↦ a + t (b - a)`. -/
+`Set.Icc.convexComb a b`, i.e. `t ↦ a + t (b - a)`. -/
 def subpathOn (γ : Path x y) (a b : unitInterval) : Path (γ a) (γ b) where
-  toFun t := γ (convexCombo a b t)
+  toFun t := γ (convexComb a b t)
   source' := by simp
   target' := by simp
 
 @[simp]
 theorem subpathOn_apply (γ : Path x y) (a b : unitInterval) (t : unitInterval) :
-    (γ.subpathOn a b) t = γ (convexCombo a b t) := by
-  unfold subpathOn convexCombo
+    (γ.subpathOn a b) t = γ (convexComb a b t) := by
+  unfold subpathOn convexComb
   simp only [Path.coe_mk_mk]
 
 /-- Splitting a sub-path in halves rejoining them gives the original path. -/
 private theorem subpathOn_trans_aux₁ (γ : Path x y) (a b : unitInterval) (_hab : a ≤ b) :
-    ((γ.subpathOn a (Set.Icc.convexCombo a b unitInterval.half)).trans
-      (γ.subpathOn (Set.Icc.convexCombo a b unitInterval.half) b)) =
+    ((γ.subpathOn a (Set.Icc.convexComb a b unitInterval.half)).trans
+      (γ.subpathOn (Set.Icc.convexComb a b unitInterval.half) b)) =
     (γ.subpathOn a b) := by
   ext t
   simp only [trans, one_div, extend, Set.IccExtend, subpathOn, coe_mk',
@@ -507,16 +495,16 @@ of the splitting point.
 private theorem subpathOn_trans_aux₂ (γ : Path x y) (a b : unitInterval) (_hab : a ≤ b)
     (s t : unitInterval) :
     Path.Homotopic
-      ((γ.subpathOn a (convexCombo a b s)).trans
-        (γ.subpathOn (convexCombo a b s) b))
-      ((γ.subpathOn a (convexCombo a b t)).trans
-        (γ.subpathOn (convexCombo a b t) b)) := by
+      ((γ.subpathOn a (convexComb a b s)).trans
+        (γ.subpathOn (convexComb a b s) b))
+      ((γ.subpathOn a (convexComb a b t)).trans
+        (γ.subpathOn (convexComb a b t) b)) := by
   refine ⟨{
       toFun := fun ⟨u, v⟩ =>
-        ((γ.subpathOn a (convexCombo a b (convexCombo s t u))).trans
-          (γ.subpathOn (convexCombo a b (convexCombo s t u)) b)) v
+        ((γ.subpathOn a (convexComb a b (convexComb s t u))).trans
+          (γ.subpathOn (convexComb a b (convexComb s t u)) b)) v
       continuous_toFun := by
-        simp only [trans_apply, one_div, subpathOn_apply, convexCombo]
+        simp only [trans_apply, one_div, subpathOn_apply, convexComb]
         simp only [← extend_apply, dite_eq_ite]
         apply continuous_if_le (hfg := by grind) <;> fun_prop
       map_zero_left v := by simp [Path.trans_apply]
@@ -539,8 +527,8 @@ theorem subpathOn_trans
       (γ.subpathOn a c) := by
   suffices ∀ s : unitInterval,
     Path.Homotopic
-      ((γ.subpathOn a (Set.Icc.convexCombo a c s)).trans
-        (γ.subpathOn (Set.Icc.convexCombo a c s) c))
+      ((γ.subpathOn a (Set.Icc.convexComb a c s)).trans
+        (γ.subpathOn (Set.Icc.convexComb a c s) c))
       (γ.subpathOn a c) by
     have hac : (a : ℝ) ≤ c := hab.trans hbc
     have hab' : (a : ℝ) ≤ b := hab
@@ -558,7 +546,7 @@ theorem subpathOn_trans
             simp [hca, hba]
           · have hca_nonneg : 0 ≤ (c : ℝ) - a := sub_nonneg.mpr hac
             exact div_le_one_of_le₀ (by linarith) hca_nonneg⟩
-    convert this s <;> exact Set.Icc.eq_convexCombo hab hbc
+    convert this s <;> exact Set.Icc.eq_convexComb hab hbc
   intro s
   rw [← Path.subpathOn_trans_aux₁ γ a c (hab.trans hbc)]
   apply Path.subpathOn_trans_aux₂ γ a c (hab.trans hbc) s

@@ -354,7 +354,7 @@ lemma mul_left_strictMono {I : FractionalIdeal A⁰ K} (hI : I ≠ 0) : StrictMo
 lemma mul_right_strictMono {I : FractionalIdeal A⁰ K} (hI : I ≠ 0) : StrictMono (I * ·) :=
   fun _J _K hJK ↦ mul_lt_mul_of_pos_left hJK <| pos_iff_ne_zero.2 hI
 
-instance [IsDedekindDomain A] : PosMulReflectLE (Ideal A) where
+instance : PosMulReflectLE (Ideal A) where
   elim I J K e := by
     dsimp
     rwa [← FractionalIdeal.coeIdeal_le_coeIdeal (FractionRing A),

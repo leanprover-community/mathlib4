@@ -700,7 +700,7 @@ public theorem exists_open_nhd_pathComponent_preimage
           Set.range (β.toPath.subpathOn (part.t i.castSucc) (part.t i.succ)) ⊆ T.U i := by
         rintro _ ⟨t, rfl⟩
         simp only [Path.subpathOn_apply]
-        exact hβ_stays i _ ⟨Set.Icc.le_convexCombo hab t, Set.Icc.convexCombo_le hab t⟩
+        exact hβ_stays i _ ⟨Set.Icc.le_convexComb hab t, Set.Icc.convexComb_le hab t⟩
       have hρ_cast : Set.range (ρ i.castSucc) ⊆ T.U i := by
         refine (hρ_range _).trans ?_
         rw [hV'_castSucc_eq]; exact T.h_V_left_subset i

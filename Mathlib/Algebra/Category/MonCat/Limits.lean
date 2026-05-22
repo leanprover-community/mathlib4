@@ -26,9 +26,7 @@ assert_not_exists MonoidWithZero
 
 noncomputable section
 
-open CategoryTheory
-
-open CategoryTheory.Limits
+open CategoryTheory Limits
 
 universe v u w
 

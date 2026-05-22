@@ -23,8 +23,6 @@ public import Mathlib.LinearAlgebra.Quotient.Basic
 
 namespace LinearMap
 
-open Pointwise Submodule MulAction
-
 variable {R : Type*} [Semiring R]
   {U V : Type*} [AddCommMonoid U] [AddCommMonoid V]
   [Module R U] [Module R V] (e : V ≃ₗ[R] V)
@@ -62,7 +60,8 @@ end LinearMap
 
 namespace LinearEquiv
 
-open Pointwise LinearMap Submodule MulAction
+open scoped Pointwise
+open LinearMap Submodule MulAction
 
 variable {R : Type*} [Semiring R]
   {U V : Type*} [AddCommMonoid U] [AddCommMonoid V]
@@ -102,8 +101,6 @@ theorem map_eq_of_mem_fixingSubgroup (W : Submodule R V)
   · simp only [SetLike.mem_coe, coe_coe] at hv hv'
     rwa [← hv', he w hv]
   · refine ⟨v, hv, he v hv⟩
-
-open Pointwise MulAction
 
 variable {R V : Type*} [Ring R] [AddCommGroup V] [Module R V]
 
