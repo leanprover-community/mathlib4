@@ -28,8 +28,6 @@ variable {M : Matrix n n α}
 /-- If `M` is both Hermitian and unitary, then it squares to the identity mactrix. -/
 theorem involution_of_hermitian_of_unitary (h₁ : M.IsHermitian) (h₂ : M ∈ Matrix.unitaryGroup n α) :
     M * M = 1 := by
-  nth_rw 2 [←h₁]
-  rw [←Matrix.star_eq_conjTranspose]
-  rw [Matrix.mem_unitaryGroup_iff.mp h₂]
+  rwa [mem_unitaryGroup_iff, h₁.star_eq] at h₂
 
 end Matrix
