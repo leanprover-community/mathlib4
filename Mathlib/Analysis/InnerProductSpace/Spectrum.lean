@@ -235,9 +235,8 @@ private theorem card_filter_unsortedEigenvalues_eq (hT : T.IsSymmetric)
     Finset.card {i | hT.unsortedEigenvalues hn i = μ} = Module.finrank 𝕜 (eigenspace T μ) := by
   by_cases hμ : HasEigenvalue T μ
   · convert!
-    hT.direct_sum_isInternal.card_filter_subordinateOrthonormalBasisIndex_eq hn
-      hT.orthogonalFamily_eigenspaces' ⟨μ, hμ⟩ with
-    i
+      hT.direct_sum_isInternal.card_filter_subordinateOrthonormalBasisIndex_eq hn
+        hT.orthogonalFamily_eigenspaces' ⟨μ, hμ⟩ with i
     unfold unsortedEigenvalues
     let ⟨x, hx⟩ := hT.direct_sum_isInternal.subordinateOrthonormalBasisIndex hn i
       hT.orthogonalFamily_eigenspaces'

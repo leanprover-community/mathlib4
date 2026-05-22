@@ -330,7 +330,8 @@ theorem integral_cexp_neg_mul_sq_norm_add
       (π / b) ^ (Module.finrank ℝ V / 2 : ℂ) * cexp (c ^ 2 * ‖w‖ ^ 2 / (4 * b)) := by
   let e := (stdOrthonormalBasis ℝ V).repr.symm
   rw [← e.measurePreserving.integral_comp e.toHomeomorph.measurableEmbedding]
-  convert! integral_cexp_neg_mul_sq_norm_add_of_euclideanSpace hb c (e.symm w) <;> simp [LinearIsometryEquiv.inner_map_eq_flip]
+  convert! integral_cexp_neg_mul_sq_norm_add_of_euclideanSpace hb c (e.symm w) <;>
+    simp [LinearIsometryEquiv.inner_map_eq_flip]
 
 theorem integral_cexp_neg_mul_sq_norm (hb : 0 < b.re) :
     ∫ v : V, cexp (-b * ‖v‖ ^ 2) = (π / b) ^ (Module.finrank ℝ V / 2 : ℂ) := by

@@ -696,7 +696,9 @@ theorem IsOpenEmbedding.map_nhds_eq (hf : IsOpenEmbedding f) (x : X) :
 lemma IsOpenEmbedding.isOpen_iff_image_isOpen (hf : IsOpenEmbedding f) {s : Set X} :
     IsOpen s ↔ IsOpen (f '' s) where
   mp := hf.isOpenMap s
-  mpr h := by convert! ← h.preimage hf.isEmbedding.continuous; apply preimage_image_eq _ hf.injective
+  mpr h := by
+    convert! ← h.preimage hf.isEmbedding.continuous
+    apply preimage_image_eq _ hf.injective
 
 theorem IsOpenEmbedding.tendsto_nhds_iff [TopologicalSpace Z] {f : ι → Y} {l : Filter ι} {y : Y}
     (hg : IsOpenEmbedding g) : Tendsto f l (𝓝 y) ↔ Tendsto (g ∘ f) l (𝓝 (g y)) :=

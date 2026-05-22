@@ -122,8 +122,7 @@ theorem tendsto_atTop_ciSup (h_mono : Monotone f) (hbdd : BddAbove <| range f) :
       h_mono.directed_le.directedOn_range.isLUB_csSup (Set.range_nonempty f) hbdd
 
 theorem tendsto_atBot_ciSup (h_anti : Antitone f) (hbdd : BddAbove <| range f) :
-    Tendsto f atBot (𝓝 (⨆ i, f i)) := by convert!
-      tendsto_atTop_ciSup h_anti.dual hbdd.dual using 1
+    Tendsto f atBot (𝓝 (⨆ i, f i)) := by convert! tendsto_atTop_ciSup h_anti.dual hbdd.dual using 1
 
 end CiSup
 
@@ -132,12 +131,10 @@ section CiInf
 variable [ConditionallyCompletePartialOrderInf α] [InfConvergenceClass α] {f : ι → α}
 
 theorem tendsto_atBot_ciInf (h_mono : Monotone f) (hbdd : BddBelow <| range f) :
-    Tendsto f atBot (𝓝 (⨅ i, f i)) := by convert!
-      tendsto_atTop_ciSup h_mono.dual hbdd.dual using 1
+    Tendsto f atBot (𝓝 (⨅ i, f i)) := by convert! tendsto_atTop_ciSup h_mono.dual hbdd.dual using 1
 
 theorem tendsto_atTop_ciInf (h_anti : Antitone f) (hbdd : BddBelow <| range f) :
-    Tendsto f atTop (𝓝 (⨅ i, f i)) := by convert!
-      tendsto_atBot_ciSup h_anti.dual hbdd.dual using 1
+    Tendsto f atTop (𝓝 (⨅ i, f i)) := by convert! tendsto_atBot_ciSup h_anti.dual hbdd.dual using 1
 
 end CiInf
 

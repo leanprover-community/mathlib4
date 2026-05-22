@@ -72,13 +72,14 @@ lemma integral_bilinear_hasLineDerivAt_right_eq_neg_left_of_integrable_aux1 [Sig
     · intro t ht
       have : (x, t) ∈ tsupport g :=
         tsupport_comp_subset_preimage (f := fun y ↦ (x, y)) g (by fun_prop) ht
-      convert!
-        (hf (x, t) this).scomp_of_eq t ((hasDerivAt_id t).add (hasDerivAt_const t (-t))) (by simp) <;> simp
+      convert! (hf (x, t) this).scomp_of_eq t ((hasDerivAt_id t).add (hasDerivAt_const t (-t)))
+        (by simp) <;> simp
     · intro t ht
       have : (x, t) ∈ tsupport f :=
         tsupport_comp_subset_preimage (f := fun y ↦ (x, y)) f (by fun_prop) ht
       convert!
-        (hg (x, t) this).scomp_of_eq t ((hasDerivAt_id t).add (hasDerivAt_const t (-t))) (by simp) <;> simp
+        (hg (x, t) this).scomp_of_eq t ((hasDerivAt_id t).add (hasDerivAt_const t (-t)))
+          (by simp) <;> simp
   _ = - ∫ x, B (f' x) (g x) ∂(μ.prod volume) := by rw [integral_neg, integral_prod _ hf'g]
 
 variable [BorelSpace E]
