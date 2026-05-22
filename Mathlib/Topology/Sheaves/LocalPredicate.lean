@@ -361,8 +361,8 @@ the presheaf of continuous functions.
 def subpresheafContinuousPrelocalIsoPresheafToTop {X : TopCat.{u}} (T : TopCat.{u}) :
     subpresheafToTypes (continuousPrelocal X T) ≅ presheafToTop X T :=
   NatIso.ofComponents fun X ↦
-    { hom := ↾(by rintro ⟨f, c⟩; exact ofHom ⟨f, c⟩)
-      inv := ↾(by rintro ⟨f, c⟩; exact ⟨f, c⟩) }
+    { hom := ↾fun f ↦ ofHom ⟨f.1, f.2⟩
+      inv := ↾fun f ↦ ⟨f.1, f.1.2⟩ }
 
 /-- The sheaf of continuous functions on `X` with values in a space `T`.
 -/

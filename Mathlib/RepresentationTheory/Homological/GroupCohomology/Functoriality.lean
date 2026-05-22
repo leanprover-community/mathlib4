@@ -46,7 +46,6 @@ theorem congr {f₁ f₂ : G →* H} (h : f₁ = f₂) {φ : res f₁ A ⟶ B} {
   subst h
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a group homomorphism `f : G →* H` and a representation morphism `φ : Res(f)(A) ⟶ B`,
 this is the chain map sending `x : Hⁿ → A` to `(g : Gⁿ) ↦ φ (x (f ∘ g))`. -/
 @[simps! -isSimp f f_hom]
@@ -92,7 +91,6 @@ lemma cochainsMap_f_map_mono (hf : Function.Surjective f) [Mono φ] (i : ℕ) :
     ((Rep.mono_iff_injective φ).1 inferInstance).comp_left.comp <|
     LinearMap.funLeft_injective_of_surjective k A _ hf.comp_left
 
-set_option backward.isDefEq.respectTransparency false in
 instance cochainsMap_id_f_map_mono {A B : Rep k G} (φ : A ⟶ B) [Mono φ] (i : ℕ) :
     Mono ((cochainsMap (MonoidHom.id G) φ).f i) :=
   cochainsMap_f_map_mono (MonoidHom.id G) φ (fun x => ⟨x, rfl⟩) i
@@ -103,7 +101,6 @@ lemma cochainsMap_f_map_epi (hf : Function.Injective f) [Epi φ] (i : ℕ) :
     ((Rep.epi_iff_surjective φ).1 inferInstance).comp_left.comp <|
     LinearMap.funLeft_surjective_of_injective k A _ hf.comp_left
 
-set_option backward.isDefEq.respectTransparency false in
 instance cochainsMap_id_f_map_epi {A B : Rep k G} (φ : A ⟶ B) [Epi φ] (i : ℕ) :
     Epi ((cochainsMap (MonoidHom.id G) φ).f i) :=
   cochainsMap_f_map_epi (MonoidHom.id G) φ (fun _ _ h => h) i

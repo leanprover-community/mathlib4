@@ -137,8 +137,6 @@ theorem IsTrail.of_cons {u v w : V} {h : G.Adj u v} {p : G.Walk v w} :
 theorem isTrail_cons {u v w : V} (h : G.Adj u v) (p : G.Walk v w) :
     (cons h p).IsTrail ↔ p.IsTrail ∧ s(u, v) ∉ p.edges := by simp [isTrail_def, and_comm]
 
-@[deprecated (since := "2025-11-03")] alias cons_isTrail_iff := isTrail_cons
-
 protected lemma IsTrail.cons {w : G.Walk u' v} (hw : w.IsTrail) (hu : G.Adj u u')
     (hu' : s(u, u') ∉ w.edges) : (w.cons hu).IsTrail := by simp [*]
 
@@ -420,9 +418,9 @@ lemma IsPath.getVert_eq_start_iff_of_not_nil {i : ℕ} {p : G.Walk u w} (hp : p.
 
 lemma IsPath.getVert_eq_start_iff {i : ℕ} {p : G.Walk u w} (hp : p.IsPath) (hi : i ≤ p.length) :
     p.getVert i = u ↔ i = 0 := by
-  by_cases h' : p.Nil
-  · simp_all [nil_iff_length_eq.mp h']
-  · exact hp.getVert_eq_start_iff_of_not_nil h'
+  cases p
+  · simpa using hi
+  · exact hp.getVert_eq_start_iff_of_not_nil not_nil_cons
 
 lemma IsPath.getVert_eq_end_iff {i : ℕ} {p : G.Walk u w} (hp : p.IsPath) (hi : i ≤ p.length) :
     p.getVert i = w ↔ i = p.length := by
@@ -939,8 +937,8 @@ alias ⟨_, map_isTrail_of_injective⟩ := map_isTrail_iff_of_injective
 
 theorem map_isCycle_iff_of_injective {p : G.Walk u u} (hinj : Function.Injective f) :
     (p.map f).IsCycle ↔ p.IsCycle := by
-  rw [isCycle_def, isCycle_def, map_isTrail_iff_of_injective hinj, Ne, map_eq_nil_iff,
-    support_map, ← List.map_tail, List.nodup_map_iff hinj]
+  rw [isCycle_def, isCycle_def, map_isTrail_iff_of_injective hinj, ne_eq, ne_eq, eq_nil_iff_nil,
+    eq_nil_iff_nil, nil_map_iff, support_map, ← List.map_tail, List.nodup_map_iff hinj]
 
 alias ⟨_, IsCycle.map⟩ := map_isCycle_iff_of_injective
 

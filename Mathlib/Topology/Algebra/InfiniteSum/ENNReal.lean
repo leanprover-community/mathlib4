@@ -463,7 +463,7 @@ theorem tsum_lt_tsum {f g : α → ℝ≥0} {i : α} (h : ∀ a : α, f a ≤ g 
     (hg : Summable g) : ∑' n, f n < ∑' n, g n :=
   hasSum_lt h hi (summable_of_le h hg).hasSum hg.hasSum
 
-@[mono]
+@[gcongr, mono]
 theorem tsum_strict_mono {f g : α → ℝ≥0} (hg : Summable g) (h : f < g) : ∑' n, f n < ∑' n, g n :=
   let ⟨hle, _i, hi⟩ := Pi.lt_def.mp h
   tsum_lt_tsum hle hi hg

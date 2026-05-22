@@ -23,8 +23,8 @@ domains and valuation rings.
 * `Module.Flat.isSMulRegular_of_nonZeroDivisors`: Scalar multiplication by a nonzerodivisor of `R`
   is injective on a flat `R`-module.
 * `Module.Flat.torsion_eq_bot`: `Torsion R M = ⊥` if `M` is a flat `R`-module.
-* `Module.Flat.flat_iff_torsion_eq_bot_of_valuationRing_localized_maximal`: if localizing `R` at
-  the complement of any maximal ideal is a valuation ring then `Torsion R M = ⊥` iff `M` is a
+* `Module.Flat.flat_iff_torsion_eq_bot_of_valuationRing_localization_isMaximal`: if localizing `R`
+  at the complement of any maximal ideal is a valuation ring then `Torsion R M = ⊥` iff `M` is a
   flat `R`-module.
 -/
 

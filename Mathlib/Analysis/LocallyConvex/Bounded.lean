@@ -274,9 +274,7 @@ theorem IsVonNBounded.closure [T1Space E] [RegularSpace E] [ContinuousConstSMul 
   rcases exists_mem_nhds_isClosed_subset hV with ⟨W, hW₁, hW₂, hW₃⟩
   specialize ha hW₁
   filter_upwards [ha] with b ha'
-  grw [closure_mono ha', closure_smul₀ b]
-  apply smul_set_mono
-  grw [closure_subset_iff_isClosed.mpr hW₂, hW₃]
+  grw [ha', closure_smul₀ b, closure_subset_iff_isClosed.mpr hW₂, hW₃]
 
 variable [ContinuousSMul 𝕜 E]
 
@@ -361,9 +359,6 @@ end IsTopologicalAddGroup
 theorem sUnion_isVonNBounded_eq_univ : ⋃₀ setOf (IsVonNBounded 𝕜) = (Set.univ : Set E) :=
   Set.eq_univ_iff_forall.mpr fun x =>
     Set.mem_sUnion.mpr ⟨{x}, isVonNBounded_singleton _, Set.mem_singleton _⟩
-
-@[deprecated (since := "2025-11-14")]
-alias isVonNBounded_covers := sUnion_isVonNBounded_eq_univ
 
 variable (𝕜 E)
 

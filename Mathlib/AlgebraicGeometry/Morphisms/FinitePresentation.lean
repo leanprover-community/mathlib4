@@ -67,6 +67,16 @@ instance (priority := 900) locallyOfFinitePresentation_of_isOpenImmersion [IsOpe
 instance : MorphismProperty.IsStableUnderComposition @LocallyOfFinitePresentation :=
   HasRingHomProperty.stableUnderComposition RingHom.finitePresentation_stableUnderComposition
 
+@[simp]
+lemma LocallyOfFinitePresentation.SpecMap_iff {R S : CommRingCat.{u}} (f : R ⟶ S) :
+    LocallyOfFinitePresentation (Spec.map f) ↔ f.hom.FinitePresentation :=
+  HasRingHomProperty.Spec_iff
+
+lemma Scheme.Hom.finitePresentation_appTop {X Y : Scheme.{u}} (f : X ⟶ Y) [IsAffine X] [IsAffine Y]
+    [LocallyOfFinitePresentation f] :
+    f.appTop.hom.FinitePresentation :=
+  HasRingHomProperty.appTop (P := @LocallyOfFinitePresentation) _ inferInstance
+
 instance locallyOfFinitePresentation_comp {X Y Z : Scheme.{u}} (f : X ⟶ Y) (g : Y ⟶ Z)
     [hf : LocallyOfFinitePresentation f] [hg : LocallyOfFinitePresentation g] :
     LocallyOfFinitePresentation (f ≫ g) :=
