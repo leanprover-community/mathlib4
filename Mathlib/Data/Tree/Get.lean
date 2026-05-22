@@ -46,7 +46,6 @@ is not in the tree, returns none. -/
 abbrev _root_.Tree.indexOf (lt : α → α → Prop) [DecidableRel lt] (x : α) : Tree α → Option PosNum :=
   BinaryTree.indexOf lt x
 
-
 /-- Retrieves an element uniquely determined by a `PosNum` from the tree,
 taking the following path to get to the element:
 - `bit0` - go to left child
