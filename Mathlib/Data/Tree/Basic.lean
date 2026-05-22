@@ -64,6 +64,11 @@ def traverse {m : Type* → Type*} [Applicative m] {α β} (f : α → m β)
   | .nil => pure nil
   | .node a l r => .node <$> f a <*> traverse f l <*> traverse f r
 
+/--
+Do an action for every node of the tree.
+Actions are taken in node -> left subtree -> right subtree recursive order.
+This function is the `traverse` function for the `Traversable BinaryTree` instance.
+-/
 @[deprecated BinaryTree.traverse (since := "2026-05-22")]
 abbrev _root_.Tree.traverse {m : Type* → Type*} [Applicative m] {α β} (f : α → m β)
 (t : BinaryTree α) : m (BinaryTree β) :=
@@ -76,6 +81,9 @@ def map {β} (f : α → β) : BinaryTree α → BinaryTree β
   | nil => nil
   | node a l r => node (f a) (map f l) (map f r)
 
+/-- Apply a function to each value in the BinaryTree.
+This is the `map` function for the `BinaryTree` functor.
+-/
 @[deprecated BinaryTree.map (since := "2026-05-22")]
 abbrev _root_.Tree.map {α β} (f : α → β) (t : Tree α) : Tree β := BinaryTree.map f t
 
@@ -103,6 +111,7 @@ def numNodes : BinaryTree α → ℕ
   | nil => 0
   | node _ a b => a.numNodes + b.numNodes + 1
 
+/-- The number of internal nodes (i.e. not including leaves) of a binary tree -/
 @[deprecated BinaryTree.numNodes (since := "2026-05-22")]
 abbrev _root_.Tree.numNodes {α} (t : Tree α) : ℕ := BinaryTree.numNodes t
 
@@ -112,6 +121,7 @@ def numLeaves : BinaryTree α → ℕ
   | nil => 1
   | node _ a b => a.numLeaves + b.numLeaves
 
+/-- The number of leaves of a binary tree -/
 @[deprecated BinaryTree.numLeaves (since := "2026-05-22")]
 abbrev _root_.Tree.numLeaves {α} (t : Tree α) : ℕ := BinaryTree.numLeaves t
 
@@ -122,6 +132,7 @@ def height : BinaryTree α → ℕ
   | nil => 0
   | node _ a b => max a.height b.height + 1
 
+/-- The height - length of the longest path from the root - of a binary tree -/
 @[deprecated BinaryTree.height (since := "2026-05-22")]
 abbrev _root_.Tree.height {α} (t : Tree α) : ℕ := BinaryTree.height t
 
@@ -144,6 +155,7 @@ def left : BinaryTree α → BinaryTree α
   | nil => nil
   | node _ l _r => l
 
+/-- The left child of the tree, or `nil` if the tree is `nil` -/
 @[deprecated BinaryTree.left (since := "2026-05-22")]
 abbrev _root_.Tree.left {α} (t : Tree α) : Tree α := BinaryTree.left t
 
@@ -153,6 +165,7 @@ def right : BinaryTree α → BinaryTree α
   | nil => nil
   | node _ _l r => r
 
+/-- The right child of the tree, or `nil` if the tree is `nil` -/
 @[deprecated BinaryTree.right (since := "2026-05-22")]
 abbrev _root_.Tree.right {α} (t : Tree α) : Tree α := BinaryTree.right t
 
@@ -165,6 +178,7 @@ def unitRecOn {motive : BinaryTree Unit → Sort*} (t : BinaryTree Unit) (base :
     (ind : ∀ x y, motive x → motive y → motive (x △ y)) : motive t :=
   t.recOn base fun _u ↦ ind
 
+/-- Induction principle for `Tree Unit`s -/
 @[deprecated BinaryTree.unitRecOn (since := "2026-05-22")]
 abbrev _root_.Tree.unitRecOn {motive : Tree Unit → Sort*} (t : Tree Unit) (base : motive nil)
     (ind : ∀ x y, motive x → motive y → motive (x △ y)) : motive t :=
