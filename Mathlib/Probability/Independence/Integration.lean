@@ -326,6 +326,25 @@ theorem IndepFun.integral_bilin
     ((integrable_map_measure hY.aestronglyMeasurable.aestronglyMeasurable_id_map hY.aemeasurable).2
       hY) B
 
+/-- If `X` and `Y` are random variables and `B` is a continuous bilinear map
+such that `∀ x y, c * ‖x‖ * ‖y‖ ≤ ‖B x y‖`, then `∫ ω, B (X ω) (Y ω) ∂μ = B μ[X] μ[Y].`
+
+The assumption on `B` allows to drop the integrability condition in
+`IndepFun.integral_bilin'`, which is useful for the versions where `B` is the scalar
+multiplication or the multiplication. -/
+theorem IndepFun.integral_bilin'
+    [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedSpace 𝕜 E] [CompleteSpace E]
+    [MeasurableSpace E] [BorelSpace E]
+    [NormedAddCommGroup F] [NormedSpace ℝ F] [NormedSpace 𝕜 F] [CompleteSpace F]
+    [MeasurableSpace F] [BorelSpace F]
+    [NormedAddCommGroup G] [NormedSpace ℝ G] [NormedSpace 𝕜 G] [CompleteSpace G]
+    {X : Ω → E} {Y : Ω → F} (hXY : X ⟂ᵢ[μ] Y) (hX : AEStronglyMeasurable X μ)
+    (hY : AEStronglyMeasurable Y μ)
+    (B : E →L[ℝ] F →L[ℝ] G) (c : ℝ≥0) (hc : c ≠ 0) (hB : ∀ x y, c * ‖x‖ * ‖y‖ ≤ ‖B x y‖) :
+    ∫ ω, B (X ω) (Y ω) ∂μ = B μ[X] μ[Y] :=
+  hXY.integral_bilin_comp_comp' hX.aemeasurable hY.aemeasurable
+    hX.aestronglyMeasurable_id_map hY.aestronglyMeasurable_id_map B c hc hB
+
 /-- The scalar product of two independent and integrable random variables is integrable. -/
 theorem IndepFun.integrable_smul
     [TopologicalSpace E] [ContinuousENorm E] [MeasurableSpace E] [OpensMeasurableSpace E]
@@ -381,13 +400,13 @@ lemma IndepFun.integral_comp_mul_comp
   hXY.integral_fun_comp_mul_comp hX hY hf hg
 
 lemma IndepFun.integral_smul_eq_smul_integral
-    [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedSpace 𝕜 E] [SecondCountableTopology E]
-    [MeasurableSpace E] [BorelSpace E]
+    [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedSpace 𝕜 E] [MeasurableSpace E] [BorelSpace E]
     {X : Ω → 𝕜} {Y : Ω → E} (hXY : X ⟂ᵢ[μ] Y)
     (hX : AEStronglyMeasurable X μ) (hY : AEStronglyMeasurable Y μ) :
-    μ[X • Y] = μ[X] • μ[Y] :=
-  hXY.integral_comp_smul_comp hX.aemeasurable hY.aemeasurable
-    aestronglyMeasurable_id aestronglyMeasurable_id
+    μ[X • Y] = μ[X] • μ[Y] := by
+  by_cases hE : CompleteSpace E
+  · exact hXY.integral_bilin' (𝕜 := 𝕜) hX hY (.lsmul ℝ 𝕜) 1 (by simp) (by simp [norm_smul])
+  · simp [integral, hE]
 
 lemma IndepFun.integral_mul_eq_mul_integral
     (hXY : X ⟂ᵢ[μ] Y) (hX : AEStronglyMeasurable X μ) (hY : AEStronglyMeasurable Y μ) :
@@ -395,8 +414,7 @@ lemma IndepFun.integral_mul_eq_mul_integral
   hXY.integral_smul_eq_smul_integral hX hY
 
 lemma IndepFun.integral_fun_smul_eq_smul_integral
-    [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedSpace 𝕜 E] [SecondCountableTopology E]
-    [MeasurableSpace E] [BorelSpace E]
+    [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedSpace 𝕜 E] [MeasurableSpace E] [BorelSpace E]
     {X : Ω → 𝕜} {Y : Ω → E} (hXY : X ⟂ᵢ[μ] Y)
     (hX : AEStronglyMeasurable X μ) (hY : AEStronglyMeasurable Y μ) :
     ∫ ω, X ω • Y ω ∂μ = (∫ ω, X ω ∂μ) • ∫ ω, Y ω ∂μ :=
