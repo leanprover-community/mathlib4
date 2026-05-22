@@ -55,6 +55,9 @@ theorem of_isEmpty [IsEmpty α] {s : Set α} : IsClub s :=
 protected theorem univ : IsClub (α := α) .univ :=
   ⟨.univ, .univ⟩
 
+protected theorem nonempty [Nonempty α] (hs : IsClub s) : s.Nonempty :=
+  hs.isCofinal.nonempty
+
 theorem _root_.isClub_empty_iff : IsClub (α := α) ∅ ↔ IsEmpty α :=
   ⟨fun h ↦ isCofinal_empty_iff.1 h.isCofinal, fun _ ↦ .of_isEmpty⟩
 
