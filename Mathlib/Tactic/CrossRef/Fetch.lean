@@ -78,15 +78,26 @@ any drift between the two when a new case is added to `Database`. -/
 public theorem Database.ofName?_name (d : Database) : Database.ofName? d.name = some d := by
   cases d <;> rfl
 
-/-- The outcome of trying to fetch a snippet. -/
-public inductive SnippetOutcome where
-  /-- Upstream returned a (title, description). Either may be empty. -/
-  | ok (title : String) (description : String)
-  /-- The tag was authoritatively missing upstream. -/
-  | missing
+/-- A successfully fetched snippet from an upstream database. -/
+public structure Snippet where
+  /-- The display title (e.g. `"Lemma 14.32.3"`). May be empty. -/
+  title : String
+  /-- The natural-language description. May be empty. -/
+  description : String
+  deriving Repr
+
+/-- A problem encountered while fetching a snippet. -/
+public inductive SnippetError where
   /-- A transient problem (network, parse, …). -/
   | network (reason : String)
   deriving Repr
+
+/-- The outcome of trying to fetch a snippet.
+
+* `.ok (some s)` — upstream returned a snippet (either field of `s` may be empty).
+* `.ok none`     — the tag was authoritatively missing upstream.
+* `.error e`     — a transient problem (network, parse, …). -/
+public abbrev SnippetOutcome := Except SnippetError (Option Snippet)
 
 /-- The `User-Agent` curl sends. Wikidata's API will throttle anonymous clients
 without one, so we identify ourselves. -/
@@ -167,29 +178,30 @@ private def fetchWikidata (qid : String) : IO SnippetOutcome := do
   let url := s!"https://www.wikidata.org/w/api.php?action=wbgetentities&ids={qid}\
               &languages=en&props=labels%7Cdescriptions&format=json"
   let (status, body) ← fetchUrl url
-  if status != 200 then return .network s!"wikidata HTTP {status}"
+  if status != 200 then return .error (.network s!"wikidata HTTP {status}")
   match Json.parse body with
-  | .error e => return .network s!"wikidata json: {e}"
+  | .error e => return .error (.network s!"wikidata json: {e}")
   | .ok json =>
     match json.getObjVal? "error" with
     | .ok err =>
       let code := jsonStrPath? err ["code"] |>.getD ""
       let info := jsonStrPath? err ["info"] |>.getD code
-      if code == "no-such-entity" then return .missing
-      else return .network s!"wikidata {code}: {info}"
+      if code == "no-such-entity" then return .ok none
+      else return .error (.network s!"wikidata {code}: {info}")
     | _ =>
       match json.getObjVal? "entities" with
-      | .error _ => return .network "wikidata: no `entities` field"
+      | .error _ => return .error (.network "wikidata: no `entities` field")
       | .ok entities =>
         match entities.getObjVal? qid with
-        | .error _ => return .missing
+        | .error _ => return .ok none
         | .ok ent =>
           match ent.getObjVal? "missing" with
-          | .ok _ => return .missing
+          | .ok _ => return .ok none
           | _ =>
             let label := jsonStrPath? ent ["labels", "en", "value"] |>.getD ""
             let desc  := jsonStrPath? ent ["descriptions", "en", "value"] |>.getD ""
-            return .ok (flattenWhitespace label) (flattenWhitespace desc)
+            return .ok (some { title := flattenWhitespace label
+                               description := flattenWhitespace desc })
 
 /-! ### Stacks / Kerodon (Gerby) -/
 
@@ -231,17 +243,17 @@ private def parseGerbyTitle (html : String) : String :=
   flattenWhitespace (if reference.isEmpty then cap else s!"{cap} {reference}")
 
 private def fetchGerby (db : Database) (tag : String) : IO SnippetOutcome := do
-  let some base := gerbyBase? db | return .network s!"{db.name}: no Gerby base"
+  let some base := gerbyBase? db | return .error (.network s!"{db.name}: no Gerby base")
   let url := s!"{base}/data/tag/{tag}/content/statement"
   let (status, body) ← fetchUrl url
-  if status != 200 then return .network s!"{db.name} HTTP {status}"
+  if status != 200 then return .error (.network s!"{db.name} HTTP {status}")
   -- Gerby returns HTTP 200 even for missing tags; detect via body text.
-  if body.trimAscii.toString == "This tag does not exist." then return .missing
+  if body.trimAscii.toString == "This tag does not exist." then return .ok none
   let title := parseGerbyTitle body
   let snippet := stripHtml body
   if title.isEmpty && snippet.isEmpty then
-    return .network s!"{db.name}: could not parse statement"
-  return .ok title snippet
+    return .error (.network s!"{db.name}: could not parse statement")
+  return .ok (some { title, description := snippet })
 
 /-- Fetch one snippet from the appropriate upstream database. -/
 public def fetchSnippet (db : Database) (tag : String) : IO SnippetOutcome :=

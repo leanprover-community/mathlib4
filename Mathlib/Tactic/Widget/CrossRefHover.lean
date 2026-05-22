@@ -50,7 +50,7 @@ open scoped ProofWidgets.Jsx in
 /-- Render the result of a snippet fetch as HTML for the info view. -/
 private def renderOutcome (db : Database) (tag : String) (comment : String) :
     SnippetOutcome → Html
-  | .ok title description =>
+  | .ok (some { title, description }) =>
     let titleHtml : Html :=
       if title.isEmpty then <span/>
       else <span className="b mr1">{.text title}</span>
@@ -69,13 +69,13 @@ private def renderOutcome (db : Database) (tag : String) (comment : String) :
       </div>,
       commentHtml
     ]
-  | .missing =>
+  | .ok none =>
     let url : String := databaseURL db ++ tag
     Html.element "div" #[("className", "pa2 red")] #[
       .text s!"⚠ This {db.name} tag is not present on {databaseLabel db}: ",
       <a href={url} target="_blank">{.text s!"{tag} ↗"}</a>
     ]
-  | .network reason =>
+  | .error (.network reason) =>
     Html.element "div" #[("className", "pa2 orange")] #[
       .text s!"Could not reach {databaseLabel db}: {reason}. \
               (Is curl on PATH? Are we offline?)"
