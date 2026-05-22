@@ -143,7 +143,7 @@ theorem nu_lt_one_of_dvd_prodPrimes {d : ℕ} (hdP : d ∣ s.prodPrimes) (hd_ne_
   calc
     s.nu d = ∏ p ∈ d.primeFactors, s.nu p := (prod_primeFactors_nu hdP).symm
     _ < ∏ p ∈ d.primeFactors, 1 := by
-      apply prod_lt_prod_of_nonempty
+      apply prod_lt_prod_of_nonempty₀
       · intro p hp
         simp only [mem_primeFactors] at hp
         apply s.nu_pos_of_prime p hp.1 (hp.2.1.trans hdP)
