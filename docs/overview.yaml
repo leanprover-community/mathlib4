@@ -589,7 +589,7 @@ Data structures:
     finite map: 'Finmap'
 
   Trees:
-    tree: 'Tree'
+    tree: 'BinaryTree'
     red-black tree: 'Batteries.RBSet'
     size-balanced binary search tree: 'Ordnode'
     W type: 'WType'
