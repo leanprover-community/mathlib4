@@ -309,37 +309,35 @@ theorem eLpNorm_smul_le_mul_eLpNorm {p q r : ℝ≥0∞} {f : α → E} (hp : p 
   simpa using (eLpNorm_le_eLpNorm_mul_eLpNorm_of_nnnorm hp hq hφ hf (· • ·) 1
       (.of_forall fun _ => by simpa using nnnorm_smul_le _ _) : _)
 
+omit [IsBoundedSMul 𝕜 E] in
+theorem eLpNorm_exponent_zero_smul_le_left (f : α → E) (φ : α → 𝕜) :
+    eLpNorm (φ • f) 0 μ ≤ eLpNorm φ 0 μ := by
+  simp only [eLpNorm_exponent_zero, Pi.smul_apply']
+  apply measure_mono
+  simp only [Function.support_subset_iff, ne_eq, enorm_eq_zero, Function.mem_support]
+  intro _ hx
+  contrapose! hx
+  rw [hx, zero_smul]
+
+omit [IsBoundedSMul 𝕜 E] in
+theorem eLpNorm_exponent_zero_smul_le_right (f : α → E) (φ : α → 𝕜) :
+    eLpNorm (φ • f) 0 μ ≤ eLpNorm f 0 μ := by
+  simp only [eLpNorm_exponent_zero, Pi.smul_apply']
+  apply measure_mono
+  simp only [Function.support_subset_iff, ne_eq, enorm_eq_zero, Function.mem_support]
+  intro _ hx
+  contrapose! hx
+  rw [hx, smul_zero]
+
 theorem MemLp.smul {p q r : ℝ≥0∞} {f : α → E} {φ : α → 𝕜}
     (hf : MemLp f q μ) (hφ : MemLp φ p μ) [hpqr : HolderTriple p q r] : MemLp (φ • f) r μ := by
   have hpqr' := hpqr.inv_add_inv_eq_inv
   rcases eq_or_ne p 0 with rfl | hp
-  · have hr : r = 0 := by
-      simp only [ENNReal.inv_zero, top_add] at hpqr'
-      exact inv_eq_top.mp hpqr'.symm
-    rw [hr]
-    simp only [memLp_zero_iff_aestronglyMeasurable_and_volume_support_lt_top,
-      Pi.smul_apply'] at hφ ⊢
-    refine ⟨hφ.1.smul hf.1, ?_⟩
-    apply lt_of_le_of_lt ?_ hφ.2
-    apply measure_mono
-    simp only [Function.support_subset_iff, ne_eq, enorm_eq_zero, Function.mem_support]
-    intro _ hx
-    contrapose! hx
-    rw [hx, zero_smul]
+  · rw [HolderTriple.zero_of_zero_left q r]
+    exact ⟨hφ.1.smul hf.1, lt_of_le_of_lt (eLpNorm_exponent_zero_smul_le_left f φ) hφ.2⟩
   rcases eq_or_ne q 0 with rfl | hq
-  · have hr : r = 0 := by
-      simp only [ENNReal.inv_zero, add_top] at hpqr'
-      exact inv_eq_top.mp hpqr'.symm
-    rw [hr]
-    simp only [memLp_zero_iff_aestronglyMeasurable_and_volume_support_lt_top,
-      Pi.smul_apply'] at hf ⊢
-    refine ⟨hφ.1.smul hf.1, ?_⟩
-    apply lt_of_le_of_lt ?_ hf.2
-    apply measure_mono
-    simp only [Function.support_subset_iff, ne_eq, enorm_eq_zero, Function.mem_support]
-    intro _ hx
-    contrapose! hx
-    rw [hx, smul_zero]
+  · rw [HolderTriple.zero_of_zero_right p r]
+    exact ⟨hφ.1.smul hf.1, lt_of_le_of_lt (eLpNorm_exponent_zero_smul_le_right f φ) hf.2⟩
   exact ⟨hφ.1.smul hf.1,
     eLpNorm_smul_le_mul_eLpNorm hp hq hf.1 hφ.1 |>.trans_lt <|
       ENNReal.mul_lt_top hφ.eLpNorm_lt_top hf.eLpNorm_lt_top⟩

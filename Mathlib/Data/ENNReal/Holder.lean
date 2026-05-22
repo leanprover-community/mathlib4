@@ -119,6 +119,14 @@ lemma holderConjugate_div_div (hr₀ : r ≠ 0) (hr : r ≠ ∞) : HolderConjuga
     rw [ENNReal.inv_div (.inl hr) (.inl hr₀), ENNReal.inv_div (.inl hr) (.inl hr₀), div_eq_mul_inv,
       div_eq_mul_inv, ← mul_add, inv_add_inv_eq_inv p q r, ENNReal.mul_inv_cancel hr₀ hr, inv_one]
 
+theorem zero_of_zero_left (q r : ℝ≥0∞) [h : HolderTriple 0 q r] : r = 0 := by
+  have := h.inv_add_inv_eq_inv.symm
+  simp_all
+
+theorem zero_of_zero_right (p r : ℝ≥0∞) [h : HolderTriple p 0 r] : r = 0 := by
+  have := h.inv_add_inv_eq_inv.symm
+  simp_all
+
 end HolderTriple
 
 /-! ### Hölder conjugates -/
