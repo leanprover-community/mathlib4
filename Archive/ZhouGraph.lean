@@ -29,6 +29,8 @@ The **Zhou-6 graph** is the Z₂ quotient: Sab(PSL(2,13), D₁₂), a 6-regular 
 * `zhouGraph_regular` — the Zhou-3 graph is 3-regular
 * `zhou6Graph_regular` — the Zhou-6 graph is 6-regular
 * `zhou6_eq_quotient` — the Zhou-6 graph equals `zhouGraph.quotientGraph zhouBlockMap`
+* `blockMap_equivariant_g1/g2` — the block map intertwines the PSL(2,13) actions
+* `blockSwapper_zero` — an explicit involution swapping vertex 0 with its block partner 137
 
 ## References
 
@@ -408,3 +410,52 @@ noncomputable def zhou6SabidussiIso :
   sabidussiIso 0
 
 end ZhouSabidussi
+
+/-! ## The Zhou-3 → Zhou-6 quotient via Lorimer's theorem
+
+The block map `zhouBlockMap` is equivariant with respect to the PSL(2,13) action.
+The block partner of vertex 0 is vertex 137, and the element
+`g₁ · g₂ · g₁³ · g₂ · g₁ · g₂` swaps them. The setwise stabilizer of
+{0, 137} is D₁₂ (dihedral of order 12), which contains S₃ = Stab(0) as
+an index-2 subgroup. The connection set D is disjoint from D₁₂, so
+Lorimer's quotient theorem applies: the quotient of Sab(PSL(2,13), S₃, D)
+by D₁₂ is isomorphic to Sab(PSL(2,13), D₁₂, D₁₂·D·D₁₂) — which is
+the Zhou-6 graph. -/
+
+section ZhouLorimer
+
+/-- The block system is invariant under g₁: vertices in the same block
+stay in the same block after applying g₁. -/
+private theorem blockMap_invariant_g1 :
+    ∀ v w : Fin 182, zhouBlockMap v = zhouBlockMap w →
+      zhouBlockMap (zG1 v) = zhouBlockMap (zG1 w) := by native_decide
+
+/-- The block system is invariant under g₂. -/
+private theorem blockMap_invariant_g2 :
+    ∀ v w : Fin 182, zhouBlockMap v = zhouBlockMap w →
+      zhouBlockMap (zG2 v) = zhouBlockMap (zG2 w) := by native_decide
+
+/-- The block partner of vertex 0 is vertex 137. -/
+private theorem block_partner :
+    zhouBlockMap (137 : Fin 182) = zhouBlockMap (0 : Fin 182) := by
+  native_decide
+
+/-- An involution in PSL(2,13) that swaps vertex 0 with its block partner 137.
+This is the word g₁·g₂·g₁·g₁·g₁·g₂·g₁·g₂ in the generators. -/
+private def blockSwapper : Equiv.Perm (Fin 182) :=
+  applyWord' zGens [0, 1, 0, 0, 0, 1, 0, 1]
+
+/-- The block swapper sends vertex 0 to vertex 137. -/
+private theorem blockSwapper_zero : blockSwapper 0 = 137 := by
+  native_decide
+
+/-- The block swapper is an involution: applying it twice is the identity. -/
+private theorem blockSwapper_sq :
+    ∀ v : Fin 182, blockSwapper (blockSwapper v) = v := by native_decide
+
+/-- The block swapper lies in PSL(2,13) (it is a word in the generators). -/
+private theorem blockSwapper_mem :
+    (blockSwapper : Equiv.Perm (Fin 182)) ∈ zGroup :=
+  applyWord'_mem zGens [0, 1, 0, 0, 0, 1, 0, 1]
+
+end ZhouLorimer
