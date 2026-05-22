@@ -62,6 +62,7 @@ import Archive.Imo.Imo2024Q6
 import Archive.Imo.Imo2025Q3
 import Archive.Kuratowski
 import Archive.LangerGraph
+import Archive.PrimitiveGraphs
 import Archive.MinimalSheffer
 import Archive.MiuLanguage.Basic
 import Archive.MiuLanguage.DecisionNec
