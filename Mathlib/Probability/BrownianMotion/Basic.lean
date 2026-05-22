@@ -409,19 +409,16 @@ lemma IsBrownian.indep_zero (hB : IsBrownian B P) (mB : ∀ t, Measurable (B t))
   -- `σ(B (ε + t) - B ε | t ≥ 0)` by the weak Markov property.
   have key1 (ε : ℝ≥0) (hε1 : 0 < ε) (hε2 : ε ≤ I.min' hI) :
       ∫ ω in A, f (fun t ↦ B t ω - B ε ω) ∂P = P.real A * ∫ ω, f (fun t ↦ B t ω - B ε ω) ∂P := by
-    rw [IndepSets.setIntegral_eq_mul _ (by fun_prop) (hm3' A hA) (by fun_prop)]
-    refine indepSets_of_indepSets_of_le_right
-      (Indep.singleton_indepSets ((IndepFun_iff_Indep _ _ _).1 (hB.indepFun_shift ε)).symm ?_) ?_
-    · suffices m3 ≤ .comap (fun ω (t : Set.Iic ε) ↦ B t ω) MeasurableSpace.pi from this A hA
-      apply iInf₂_le_of_le ε hε1
+    rw [Indep.setIntegral_eq_mul hm3' _ (by fun_prop) hA (by fun_prop)]
+    refine indep_of_indep_of_le (hB.indepFun_shift ε).symm ?_ ?_
+    · apply iInf₂_le_of_le ε hε1
       rw [natural_eq_comap]
-    simp only [Set.setOf_subset_setOf, ← measurableSpace_le_iff]
     apply comap_le_comap_of_eq_comp (fun x t ↦ x (t.1 - ε)) (by fun_prop)
     ext ω t
     simp only [Function.comp_apply, sub_left_inj]
     rw [add_tsub_cancel_of_le (hε2.trans (I.min'_le t.1 t.2))]
   -- Because `f` is continuous and `B t ⟶ 0` almost surely as `t → 0`,
-  -- we deduce that almost surely `f (fun t ↦ B t - B ε) ⟶ f (fun t ↦ B t)` as `t → 0`.
+  -- we deduce that almost surely `f (fun t ↦ B t - B ε) ⟶ f (fun t ↦ B t)` as `ε → 0⁺`.
   have key2 : ∀ᵐ ω ∂P, Tendsto (fun ε ↦ f (fun t ↦ B t ω - B ε ω)) (𝓝[>] 0)
       (𝓝 (f (fun t ↦ B t ω))) := by
     filter_upwards [hB.tendsto_nhds_zero] with ω hω
@@ -442,7 +439,7 @@ lemma IsBrownian.indep_zero (hB : IsBrownian B P) (mB : ∀ t, Measurable (B t))
   -- as `ε → 0⁺`, and we can conclude by uniqueness of the limit.
   refine tendsto_nhds_unique h1 ?_
   refine Tendsto.congr' (f₁ := fun ε ↦ P.real A * ∫ ω, f (fun t ↦ B t ω - B ε ω) ∂P) ?_ ?_
-  · apply sets_of_superset _ (Ioc_mem_nhdsGT (I.min' hI).2)
+  · apply mem_of_superset (Ioc_mem_nhdsGT (I.min' hI).2)
     rintro ε ⟨h1, h2⟩
     exact (key1 ε h1 h2).symm
   refine Filter.Tendsto.const_mul (b := P.real A) ?_
