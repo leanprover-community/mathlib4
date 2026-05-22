@@ -31,7 +31,7 @@ namespace SubmonoidClass
 
 open Submonoid
 
-@[to_additive]
+@[to_additive, simp]
 theorem iSup_toSubmonoid {S : Type*} {M : Type*} [SetLike S M] [Monoid M] [SubmonoidClass S M]
     [SupSet S] [IsConcreteSSup S M]
     {ι : Sort*} (ℳ : ι → S) :
@@ -39,7 +39,7 @@ theorem iSup_toSubmonoid {S : Type*} {M : Type*} [SetLike S M] [Monoid M] [Submo
   rw [iSup,IsConcreteSSup.sSup_toSubmonoid,←Set.range_comp]
   rfl
 
-@[to_additive, simp]
+@[to_additive]
 theorem mem_iSup_iff_mem_iSup_Submonoid {S : Type*} {M : Type*} [SetLike S M] [Monoid M]
     [SubmonoidClass S M] [SupSet S] [IsConcreteSSup S M] {ι : Sort*} (ℳ : ι → S) (m : M) :
     m ∈ (⨆ i, ℳ i : S) ↔ m ∈ (⨆ i, ofClass (ℳ i)) := by
