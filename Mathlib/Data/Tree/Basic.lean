@@ -12,13 +12,12 @@ public import Mathlib.Util.CompileInductive
 # BinaryTree
 
 Provides binary tree storage for values of any type.
-See also `Lean.Data.RBBinaryTree` for red-black BinaryTrees - this version allows more operations
+See also `Lean.Data.RBTree` for red-black trees - this version allows more operations
 to be defined and is better suited for in-kernel computation.
 
-We also specialize for `BinaryTree Unit`, which is a binary BinaryTree without any
+We also specialize for `BinaryTree Unit`, which is a binary tree without any
 additional data. We provide the notation `a △ b` for making a `BinaryTree Unit` with children
-`a` and `b`, and the notation `l △[a] r` for a binary tree with root node
-containing value `a` and two children `l` and `r`.
+`a` and `b`.
 
 ## References
 
@@ -28,7 +27,7 @@ containing value `a` and two children `l` and `r`.
 @[expose] public section
 
 
-/-- A binary BinaryTree with values stored in non-leaf nodes. -/
+/-- A binary tree with values stored in non-leaf nodes. -/
 inductive BinaryTree.{u} (α : Type u) : Type u
   | nil : BinaryTree α
   | node (value : α) (left : BinaryTree α) (right : BinaryTree α) : BinaryTree α
@@ -46,8 +45,8 @@ instance : Inhabited (BinaryTree α) :=
 
 
 /--
-Do an action for every node of the BinaryTree.
-Actions are taken in node -> left subBinaryTree -> right subBinaryTree recursive order.
+Do an action for every node of the tree.
+Actions are taken in node -> left subtree -> right subtree recursive order.
 This function is the `traverse` function for the `Traversable BinaryTree` instance.
 -/
 def traverse {m : Type* → Type*} [Applicative m] {α β} (f : α → m β)
@@ -80,19 +79,19 @@ theorem traverse_pure (t : BinaryTree α) {m : Type u → Type*} [Applicative m]
   | node v l r hl hr =>
     rw [traverse, hl, hr, map_pure, pure_seq, seq_pure, map_pure, map_pure]
 
-/-- The number of internal nodes (i.e. not including leaves) of a binary BinaryTree -/
+/-- The number of internal nodes (i.e. not including leaves) of a binary tree -/
 @[simp]
 def numNodes : BinaryTree α → ℕ
   | nil => 0
   | node _ a b => a.numNodes + b.numNodes + 1
 
-/-- The number of leaves of a binary BinaryTree -/
+/-- The number of leaves of a binary tree -/
 @[simp]
 def numLeaves : BinaryTree α → ℕ
   | nil => 1
   | node _ a b => a.numLeaves + b.numLeaves
 
-/-- The height - length of the longest path from the root - of a binary BinaryTree -/
+/-- The height - length of the longest path from the root - of a binary tree -/
 @[simp]
 def height : BinaryTree α → ℕ
   | nil => 0
@@ -111,13 +110,13 @@ theorem height_le_numNodes : ∀ x : BinaryTree α, x.height ≤ x.numNodes
     Nat.max_le.2 ⟨Nat.le_trans a.height_le_numNodes <| a.numNodes.le_add_right _,
       Nat.le_trans b.height_le_numNodes <| b.numNodes.le_add_left _⟩
 
-/-- The left child of the BinaryTree, or `nil` if the BinaryTree is `nil` -/
+/-- The left child of the tree, or `nil` if the tree is `nil` -/
 @[simp]
 def left : BinaryTree α → BinaryTree α
   | nil => nil
   | node _ l _r => l
 
-/-- The right child of the BinaryTree, or `nil` if the BinaryTree is `nil` -/
+/-- The right child of the tree, or `nil` if the tree is `nil` -/
 @[simp]
 def right : BinaryTree α → BinaryTree α
   | nil => nil
