@@ -195,7 +195,7 @@ theorem dirSupClosed_of_type_le_omega0 [LinearOrder α] [WellFoundedLT α]
     apply Finite.dirSupClosed
     rw [Set.Finite, ← mk_lt_aleph0_iff]
     simp_all
-  · let e : ℕ ≃o s := by
+  · have e : ℕ ≃o s := by
       rw [omega0, ← lift_id (type _), lift_type_eq] at hω
       exact OrderIso.ofRelIsoLT hω.some.symm
     have hfs : .range (Subtype.val ∘ e) = s := by simp
