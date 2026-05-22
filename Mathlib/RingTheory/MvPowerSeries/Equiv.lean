@@ -203,11 +203,11 @@ theorem _root_.MvPowerSeries.HasSubst.toMvPowerSeries (hf : f.constantCoeff = 0)
     intro hd
     rw [toMvPowerSeries_apply, MvPowerSeries.rename_eq_subst, this, coeff_subst (HasSubst.X _),
       finsum_eq_zero_of_forall_eq_zero]
-    intro n
-    by_cases! hn : n = 0
-    · simp [hn, hf]
-    have : d ≠ single s n := ne_iff.mpr ⟨s, by simp [hd, hn.symm]⟩
-    rw [MvPowerSeries.X_pow_eq, MvPowerSeries.coeff_monomial, if_neg this, smul_zero]
+    simp only [MvPowerSeries.X_pow_eq, MvPowerSeries.coeff_monomial, smul_eq_mul, mul_ite, mul_one,
+      mul_zero, ite_eq_right_iff]
+    intro _ a
+    subst a
+    simp_all
 
 theorem toMvPowerSeries_val {a : σ → MvPowerSeries τ R} (i : σ)
     (ha : MvPowerSeries.HasSubst a) : (f.toMvPowerSeries i).subst a = f.subst (a i) := by
@@ -222,8 +222,8 @@ variable (f : σ → τ) [TendstoCofinite f] (a : σ) (p : R⟦X⟧)
 
 @[simp]
 lemma MvPowerSeries.rename_comp_toMvPowerSeries :
-    (rename (R := R) f).comp (PowerSeries.toMvPowerSeries a)
-      = PowerSeries.toMvPowerSeries (f a) := by
+    (rename (R := R) f).comp (PowerSeries.toMvPowerSeries a) =
+      PowerSeries.toMvPowerSeries (f a) := by
   ext
   simp [toMvPowerSeries_apply, comp_def]
 
