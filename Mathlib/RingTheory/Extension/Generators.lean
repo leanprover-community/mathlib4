@@ -55,8 +55,8 @@ open TensorProduct MvPolynomial
 variable (R : Type u) (S : Type v) (ι : Type w) [CommRing R] [CommRing S] [Algebra R S]
 
 /-- A family of generators of an `R`-algebra `S` consists of
-1. `vars`: The type of variables.
-2. `val : vars → S`: The assignment of each variable to a value in `S`.
+1. `ι`: The type of variables.
+2. `val : ι → S`: The assignment of each variable to a value in `S`.
 3. `σ`: A section of `R[X] → S`. -/
 structure Algebra.Generators where
   /-- The assignment of each variable to a value in `S`. -/
