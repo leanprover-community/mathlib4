@@ -111,7 +111,6 @@ lemma IsPreBrownian.covariance_fun_eval (hB : IsPreBrownian B P) (s t : ℝ≥0)
     cov[fun ω ↦ B s ω, fun ω ↦ B t ω; P] = min s t :=
   hB.covariance_eval s t
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A centered Gaussian process with the right covariance is a pre-Brownian motion. -/
 theorem IsGaussianProcess.isPreBrownian_of_covariance (h1 : IsGaussianProcess X P)
     (h2 : ∀ t, P[X t] = 0) (h3 : ∀ s t, s ≤ t → cov[X s, X t; P] = s) :
@@ -150,7 +149,6 @@ theorem IsGaussianProcess.isPreBrownian_of_covariance (h1 : IsGaussianProcess X 
       · exact fun i ↦ (IsGaussian.hasGaussianLaw_id.eval i).memLp_two
       · exact fun i ↦ ((h1.hasGaussianLaw I).isGaussian_map.hasGaussianLaw_id.eval i).memLp_two
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `B` is a pre-Brownian motion and `c > 0`, then
 `t ↦ 1/√c B (c t)` is a pre-Brownian motion. -/
 lemma IsPreBrownian.smul (hB : IsPreBrownian B P) {c : ℝ≥0} (hc : c ≠ 0) :
@@ -165,7 +163,6 @@ lemma IsPreBrownian.smul (hB : IsPreBrownian B P) {c : ℝ≥0} (hc : c ≠ 0) :
     · simp [field]
     · exact mul_le_mul_right hst c
 
-set_option backward.isDefEq.respectTransparency false in
 /-- **Weak Markov property**: If `B` is a pre-Brownian motion, then
 `t ↦ B (t₀ + t) - B t₀` is a pre-Brownian motion which is independent from `(B t, t ≤ t₀)`.
 This is the proof that it is pre-Brownian, see `IsPreBrownian.indepFun_shift` for independence. -/
@@ -182,7 +179,6 @@ lemma IsPreBrownian.shift (hB : IsPreBrownian B P) (t₀ : ℝ≥0) :
     any_goals exact (hB.isGaussianProcess.hasGaussianLaw_eval _).memLp_two
     exact hB.isGaussianProcess.hasGaussianLaw_sub.memLp_two
 
-set_option backward.isDefEq.respectTransparency false in
 /-- **Weak Markov property**: If `B` is a pre-Brownian motion, then
 `B (t₀ + t) - B t₀` is a pre-Brownian motion which is independent from `(B t, t ≤ t₀)`.
 This is the proof that of independence, see `IsPreBrownian.shift` for the proof
@@ -210,7 +206,6 @@ lemma IsPreBrownian.indepFun_shift (hB : IsPreBrownian B P) (t₀ : ℝ≥0) :
     · simp [ht, le_add_right]
     all_goals exact (hB.isGaussianProcess.hasGaussianLaw_eval _).memLp_two
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `B` is a pre-Brownian motion and then `t ↦ t * B (1 / t)` is a pre-Brownian motion. -/
 lemma IsPreBrownian.inv (hB : IsPreBrownian B P) :
     IsPreBrownian (fun t ω ↦ t * (B (1 / t) ω)) P := by
