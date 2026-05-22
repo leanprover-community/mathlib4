@@ -185,12 +185,14 @@ theorem coeff_C (n : ℕ) (a : R) : coeff n (C a : R⟦X⟧) = if n = 0 then a e
 theorem coeff_zero_C (a : R) : coeff 0 (C a) = a := by
   rw [coeff_C, if_pos rfl]
 
-theorem coeff_ne_zero_C {a : R} {n : ℕ} (h : n ≠ 0) : coeff n (C a) = 0 := by
+theorem coeff_C_of_ne_zero {a : R} {n : ℕ} (h : n ≠ 0) : coeff n (C a) = 0 := by
   rw [coeff_C, if_neg h]
+
+@[deprecated (since := "2026-05-20")] alias coeff_ne_zero_C := coeff_C_of_ne_zero
 
 @[simp]
 theorem coeff_succ_C {a : R} {n : ℕ} : coeff (n + 1) (C a) = 0 :=
-  coeff_ne_zero_C n.succ_ne_zero
+  coeff_C_of_ne_zero n.succ_ne_zero
 
 @[grind inj]
 theorem C_injective : Function.Injective (C (R := R)) := MvPowerSeries.C_injective
@@ -608,15 +610,9 @@ variable {R : Type*} [CommSemiring R] {ι : Type*}
 theorem coeff_prod [DecidableEq ι] (f : ι → PowerSeries R) (d : ℕ) (s : Finset ι) :
     coeff d (∏ j ∈ s, f j) = ∑ l ∈ finsuppAntidiag s d, ∏ i ∈ s, coeff (l i) (f i) := by
   simp only [coeff]
-  rw [MvPowerSeries.coeff_prod, ← AddEquiv.finsuppUnique_symm d, ← mapRange_finsuppAntidiag_eq,
-    sum_map, sum_congr rfl]
-  intro x _
-  apply prod_congr rfl
-  intro i _
-  congr 2
-  simp only [AddEquiv.toEquiv_eq_coe, Finsupp.mapRange.addEquiv_toEquiv, AddEquiv.toEquiv_symm,
-    Equiv.coe_toEmbedding, Finsupp.mapRange.equiv_apply, AddEquiv.coe_toEquiv_symm,
-    Finsupp.mapRange_apply, AddEquiv.finsuppUnique_symm]
+  rw [MvPowerSeries.coeff_prod, ← Finsupp.uniqueAddEquiv_symm_apply _ d,
+    ← mapRange_finsuppAntidiag_eq, sum_map]
+  rfl
 
 theorem prod_monomial (f : ι → ℕ) (g : ι → R) (s : Finset ι) :
     ∏ i ∈ s, monomial (f i) (g i) = monomial (∑ i ∈ s, f i) (∏ i ∈ s, g i) := by

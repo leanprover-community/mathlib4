@@ -284,6 +284,11 @@ divides `b`. -/
 theorem mulVec_cramer (A : Matrix n n α) (b : n → α) : A *ᵥ cramer A b = A.det • b := by
   rw [cramer_eq_adjugate_mulVec, mulVec_mulVec, mul_adjugate, smul_mulVec, one_mulVec]
 
+theorem det_eq_zero_of_mulVec_eq_zero_of_mem_nonZeroDivisors {M : Matrix n n α} {v : n → α}
+    (h : M *ᵥ v = 0) {i : n} (hi : v i ∈ nonZeroDivisors α) : M.det = 0 := by
+  apply mul_right_mem_nonZeroDivisors_eq_zero_iff hi |>.mp
+  simpa [adjugate_mul, smul_mulVec] using congr((M.adjugate *ᵥ $h) i)
+
 theorem adjugate_subsingleton [Subsingleton n] (A : Matrix n n α) : adjugate A = 1 := by
   ext i j
   simp [Subsingleton.elim i j, adjugate_apply, det_eq_elem_of_subsingleton _ i, one_apply]

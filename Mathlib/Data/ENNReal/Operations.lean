@@ -58,15 +58,9 @@ lemma mul_right_strictMono (h₀ : a ≠ 0) (hinf : a ≠ ∞) : StrictMono (a *
     a * b < a * c :=
   ENNReal.mul_right_strictMono h0 hinf bc
 
-@[deprecated (since := "2025-11-15")]
-protected alias mul_lt_mul_left' := ENNReal.mul_lt_mul_right
-
 @[gcongr] protected theorem mul_lt_mul_left (h0 : a ≠ 0) (hinf : a ≠ ⊤) (bc : b < c) :
     b * a < c * a :=
   mul_comm b a ▸ mul_comm c a ▸ ENNReal.mul_right_strictMono h0 hinf bc
-
-@[deprecated (since := "2025-11-15")]
-protected alias mul_lt_mul_right' := ENNReal.mul_lt_mul_left
 
 -- TODO: generalize to `WithTop`
 protected theorem mul_right_inj (h0 : a ≠ 0) (hinf : a ≠ ∞) : a * b = a * c ↔ b = c :=
@@ -80,15 +74,9 @@ protected theorem mul_left_inj (h0 : c ≠ 0) (hinf : c ≠ ∞) : a * c = b * c
 protected lemma mul_le_mul_iff_right (h0 : a ≠ 0) (hinf : a ≠ ∞) : a * b ≤ a * c ↔ b ≤ c :=
   (mul_right_strictMono h0 hinf).le_iff_le
 
-@[deprecated (since := "2025-11-15")]
-protected alias mul_le_mul_left := ENNReal.mul_le_mul_iff_right
-
 -- TODO: generalize to `WithTop`
 protected lemma mul_le_mul_iff_left (h0 : c ≠ 0) (hinf : c ≠ ∞) : a * c ≤ b * c ↔ a ≤ b :=
   (mul_left_strictMono h0 hinf).le_iff_le
-
-@[deprecated (since := "2025-11-15")]
-protected alias mul_le_mul_right := ENNReal.mul_le_mul_iff_left
 
 -- TODO: generalize to `WithTop`
 protected lemma mul_lt_mul_iff_right (h0 : a ≠ 0) (hinf : a ≠ ∞) : a * b < a * c ↔ b < c :=

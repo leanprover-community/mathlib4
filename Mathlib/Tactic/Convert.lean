@@ -183,6 +183,14 @@ macro_rules
 | `(tactic| convert! $cfg $[←%$l]? $t $[using $n]? $[with $[$w]*]?) =>
     `(tactic| convert ! $cfg $[←%$l]? $t:term $[using $n]? $[with $[$w]*]?)
 
+@[tactic_alt convert]
+syntax (name := convert!) "convert!" Lean.Parser.Tactic.optConfig " ←"? ppSpace term
+  (" using " num)? (" with" (ppSpace colGt rintroPat)*)? : tactic
+
+macro_rules
+| `(tactic| convert! $cfg $[←%$l]? $t $[using $n]? $[with $[$w]*]?) =>
+    `(tactic| convert $cfg $[←%$l]? $t:term $[using $n]? $[with $[$w]*]?)
+
 /--
 Elaborates `term` ensuring the expected type, allowing stuck metavariables.
 Returns stuck metavariables as additional goals.

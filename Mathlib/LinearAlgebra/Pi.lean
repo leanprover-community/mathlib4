@@ -369,8 +369,8 @@ variable [Semiring R] {φ : ι → Type*} [(i : ι) → AddCommMonoid (φ i)] [(
 open LinearMap
 
 /-- A version of `Set.pi` for submodules. Given an index set `I` and a family of submodules
-`p : (i : ι) → Submodule R (φ i)`, `pi I s` is the submodule of dependent functions
-`f : (i : ι) → φ i` such that `f i` belongs to `p a` whenever `i ∈ I`. -/
+`p : (i : ι) → Submodule R (φ i)`, `pi I p` is the submodule of dependent functions
+`f : (i : ι) → φ i` such that `f i` belongs to `p i` whenever `i ∈ I`. -/
 @[simps]
 def pi (I : Set ι) (p : (i : ι) → Submodule R (φ i)) : Submodule R ((i : ι) → φ i) where
   carrier := Set.pi I fun i => p i

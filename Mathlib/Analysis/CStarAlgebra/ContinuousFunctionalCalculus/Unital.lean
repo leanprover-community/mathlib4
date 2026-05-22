@@ -289,8 +289,7 @@ section cfcL
 noncomputable def cfcL {a : A} (ha : p a) : C(spectrum R a, R) →L[R] A :=
   { cfcHom ha with
     toFun := cfcHom ha
-    map_smul' := map_smul _
-    cont := by fun_prop }
+    map_smul' := map_smul _ }
 
 end cfcL
 

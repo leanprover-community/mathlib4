@@ -6,6 +6,7 @@ Authors: Anne Baanen, Wen Yang
 module
 
 public import Mathlib.Data.Fintype.Parity
+public import Mathlib.Data.Matrix.Action
 public import Mathlib.LinearAlgebra.Matrix.Adjugate
 public import Mathlib.LinearAlgebra.Matrix.ToLin
 public import Mathlib.LinearAlgebra.Matrix.Transvection
@@ -460,6 +461,30 @@ lemma mulVecSL {v : Fin 2 → R} (hab : IsCoprime (v 0) (v 1)) (A : SL(2, R)) :
   simpa only [← vecMul_transpose] using hab.vecMulSL A.transpose
 
 end IsCoprime
+
+namespace Matrix
+
+section Action
+
+variable {F : Type*} [CommRing F] {ι : Type*} [DecidableEq ι] [Fintype ι]
+
+instance : DistribMulAction (Matrix.SpecialLinearGroup ι F) (ι → F) where
+  smul m v := m.1 • v
+  smul_zero _ := smul_zero (M := Matrix ι ι F) _
+  smul_add _ := smul_add (M := Matrix ι ι F) _
+  one_smul _ := one_smul (M := Matrix ι ι F) _
+  mul_smul _ _ _ := SemigroupAction.mul_smul (α := Matrix ι ι F) _ _ _
+
+instance : SMulCommClass (Matrix.SpecialLinearGroup ι F) F (ι → F) where
+  smul_comm m k v := show m.1 • k • v = k • m.1 • v from smul_comm _ _ _
+
+protected lemma SpecialLinearGroup.smul_def
+    (m : Matrix.SpecialLinearGroup ι F) (v : ι → F) :
+    m • v = m.1 • v := rfl
+
+end Action
+
+end Matrix
 
 namespace ModularGroup
 

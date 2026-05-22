@@ -141,6 +141,11 @@ lemma closure_eq_preimage_closure_image (hf : IsInducing f) (s : Set X) :
 theorem isClosed_iff (hf : IsInducing f) {s : Set X} :
     IsClosed s ↔ ∃ t, IsClosed t ∧ f ⁻¹' t = s := by rw [hf.eq_induced, isClosed_induced_iff]
 
+theorem image_eq_isClosed_inter_range (hf : IsInducing f) {s : Set X} (hs : IsClosed s) :
+    ∃ c, IsClosed c ∧ f '' s = c ∩ range f := by
+  obtain ⟨c, hc, rfl⟩ := hf.isClosed_iff.1 hs
+  exact ⟨c, hc, image_preimage_eq_inter_range⟩
+
 theorem isClosed_iff' (hf : IsInducing f) {s : Set X} :
     IsClosed s ↔ ∀ x, f x ∈ closure (f '' s) → x ∈ s := by rw [hf.eq_induced, isClosed_induced_iff']
 
@@ -150,6 +155,11 @@ theorem isClosed_preimage (h : IsInducing f) (s : Set Y) (hs : IsClosed s) :
 
 theorem isOpen_iff (hf : IsInducing f) {s : Set X} :
     IsOpen s ↔ ∃ t, IsOpen t ∧ f ⁻¹' t = s := by rw [hf.eq_induced, isOpen_induced_iff]
+
+theorem image_eq_isOpen_inter_range (hf : IsInducing f) {s : Set X} (hs : IsOpen s) :
+    ∃ c, IsOpen c ∧ f '' s = c ∩ range f := by
+  obtain ⟨c, hc, rfl⟩ := hf.isOpen_iff.1 hs
+  exact ⟨c, hc, image_preimage_eq_inter_range⟩
 
 theorem setOf_isOpen (hf : IsInducing f) :
     {s : Set X | IsOpen s} = preimage f '' {t | IsOpen t} :=

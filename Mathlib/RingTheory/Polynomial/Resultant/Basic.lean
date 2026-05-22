@@ -29,13 +29,8 @@ This file contains basic facts about resultant of two polynomials over commutati
   `resultant (∏ a ∈ s, (X - C a)) f = ∏ a ∈ s, f.eval a`.
   This allows us to write the `resultant f g` as the product of terms of the form `a - b` where `a`
   is a root of `f` and `b` is a root of `g`.
-* A smaller intermediate goal is to show that the Sylvester matrix corresponds to the linear map
-  that we will call the Sylvester map, which is `R[X]_n × R[X]_m →ₗ[R] R[X]_(n + m)` given by
-  `(p, q) ↦ f * p + g * q`, where `R[X]_n` is
-  `Polynomial.degreeLT` in `Mathlib.RingTheory.Polynomial.Basic`.
 * Resultant of two binary forms (i.e. homogeneous polynomials in two variables), after binary forms
   are implemented.
-
 -/
 
 @[expose] public section
@@ -933,8 +928,6 @@ discriminant. -/
 noncomputable def discr (f : R[X]) : R :=
   f.sylvesterDeriv.det * (-1) ^ (f.natDegree * (f.natDegree - 1) / 2)
 
-@[deprecated (since := "2025-10-20")] alias disc := discr
-
 /-- The discriminant of a constant polynomial is `1`. -/
 @[simp] lemma discr_C (r : R) : discr (C r) = 1 := by
   let e : Fin ((C r).natDegree - 1 + (C r).natDegree) ≃ Fin 0 := finCongr (by simp)
@@ -970,10 +963,6 @@ lemma discr_of_degree_eq_two {f : R[X]} (hf : f.degree = 2) :
   simp only [this, Matrix.det_fin_three, Matrix.of_apply, Matrix.cons_val', Matrix.cons_val_zero,
     Matrix.cons_val_fin_one, Matrix.cons_val_one, Matrix.cons_val, hf]
   ring_nf
-
-@[deprecated (since := "2025-10-20")] alias disc_C := discr_C
-@[deprecated (since := "2025-10-20")] alias disc_of_degree_eq_one := discr_of_degree_eq_one
-@[deprecated (since := "2025-10-20")] alias disc_of_degree_eq_two := discr_of_degree_eq_two
 
 /-- Relation between the resultant and the discriminant.
 
@@ -1028,8 +1017,6 @@ lemma discr_of_degree_eq_three {f : R[X]} (hf : f.degree = 3) :
   simp [Matrix.det_succ_row_zero (n := 4), Matrix.det_succ_row_zero (n := 3), Fin.succAbove,
     Matrix.det_fin_three, Finset.sum_fin_eq_sum_range, Finset.sum_range_succ, hf]
   ring_nf
-
-@[deprecated (since := "2025-10-20")] alias disc_of_degree_eq_three := discr_of_degree_eq_three
 
 end disc
 

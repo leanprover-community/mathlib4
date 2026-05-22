@@ -101,9 +101,6 @@ theorem isIntegral_two_mul_cos_rat_mul_pi (q : ℚ) : IsIntegral ℤ <| 2 * cos 
   isIntegral_algebraMap_iff (B := ℂ) RCLike.ofReal_injective |>.mp <| by
     simp [Complex.isIntegral_two_mul_cos_rat_mul_pi]
 
-@[deprecated (since := "2025-11-15")]
-alias _root_.isIntegral_two_mul_cos_rat_mul_pi := isIntegral_two_mul_cos_rat_mul_pi
-
 /-- `sin(q * π)` for `q : ℚ` is algebraic over `ℤ`, using the real `sin` function. -/
 theorem isAlgebraic_sin_rat_mul_pi (q : ℚ) : IsAlgebraic ℤ <| sin <| q * π :=
   .of_mul (by simp) (isAlgebraic_algebraMap _) (isIntegral_two_mul_sin_rat_mul_pi q).isAlgebraic

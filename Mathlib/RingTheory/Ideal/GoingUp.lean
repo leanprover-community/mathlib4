@@ -420,9 +420,6 @@ theorem under_ne_bot [Nontrivial A] [IsDomain B] (hP : P ≠ ⊥) : under A P �
 instance Quotient.algebra_isIntegral_of_liesOver : Algebra.IsIntegral (A ⧸ p) (B ⧸ P) :=
   Algebra.IsIntegral.tower_top A
 
-@[deprecated (since := "2025-11-06")] alias exists_ideal_liesOver_maximal_of_isIntegral :=
-  exists_maximal_ideal_liesOver_of_isIntegral
-
 end IsIntegral
 
 section IsIntegral

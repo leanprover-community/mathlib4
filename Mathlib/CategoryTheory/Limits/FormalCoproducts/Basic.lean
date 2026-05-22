@@ -187,7 +187,7 @@ maps from each component, which is the universal property of coproducts. -/
 
 /-- `cofan 𝒜 f` is a coproduct of `f`. -/
 @[simps!] def isColimitCofan : IsColimit (cofan 𝒜 f) :=
-  mkCofanColimit (cofan 𝒜 f) (fun t ↦ (cofanHomEquiv _ _ _).symm t.inj)
+  Cofan.IsColimit.mk (cofan 𝒜 f) (fun t ↦ (cofanHomEquiv _ _ _).symm t.inj)
     (fun t i ↦ congrFun ((cofanHomEquiv _ _ _).right_inv t.inj) i)
     (fun _ _ h ↦ (Equiv.eq_symm_apply _).2 (funext h))
 

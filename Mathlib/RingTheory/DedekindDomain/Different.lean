@@ -516,7 +516,7 @@ lemma coeSubmodule_differentIdeal :
   have : Algebra.IsIntegral A B := IsIntegralClosure.isIntegral_algebra _ L
   simp only [AlgEquiv.toLinearEquiv_toLinearMap, Submodule.map_comp]
   rw [← coeSubmodule, coeSubmodule_differentIdeal_fractionRing _ _,
-    Submodule.map_div, ← AlgEquiv.toAlgHom_toLinearMap, Submodule.map_one]
+    Submodule.map_div, AlgEquiv.toLinearMap, ← AlgEquiv.toAlgHom_toLinearMap, Submodule.map_one]
   congr 1
   refine (map_equiv_traceDual A K _).trans ?_
   congr 1

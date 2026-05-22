@@ -356,11 +356,6 @@ theorem smul_mk [SMul R M] [IsScalarTower R M M] (c : R) (a b) :
   change (c • 1) • a /ₒ (b * 1) = _
   rw [smul_assoc, one_smul, mul_one]
 
--- move me
-instance {R M : Type*} [CommMonoid M] [SMul R M] [IsScalarTower R M M] : SMulCommClass R M M where
-  smul_comm r s x := by
-    rw [← one_smul M (s • x), ← smul_assoc, smul_comm, smul_assoc, one_smul]
-
 -- Note: Previously there was a `MulDistribMulAction R (Localization S)`.
 -- It was removed as it is not the correct action.
 

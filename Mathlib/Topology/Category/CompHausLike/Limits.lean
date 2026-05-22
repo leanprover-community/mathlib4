@@ -100,7 +100,7 @@ abbrev finiteCoproduct.cofan : Limits.Cofan X :=
 
 /-- The explicit finite coproduct cocone is a colimit cocone. -/
 def finiteCoproduct.isColimit : Limits.IsColimit (finiteCoproduct.cofan X) :=
-  mkCofanColimit _
+  Cofan.IsColimit.mk _
     (fun s ↦ desc _ fun a ↦ s.inj a)
     (fun _ _ ↦ ι_desc _ _ _)
     fun _ _ hm ↦ finiteCoproduct.hom_ext _ _ _ fun a ↦

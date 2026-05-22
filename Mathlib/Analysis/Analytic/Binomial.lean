@@ -139,7 +139,7 @@ theorem one_add_cpow_hasFPowerSeriesOnBall_zero {a : ℂ} :
     intro z hz
     simp only [Nat.cast_add, Nat.cast_one, B, derivWithin_of_isOpen Metric.isOpen_ball hz,
       deriv_const_mul_field']
-    rw [_root_.deriv_cpow_const (by fun_prop), deriv_const_add', deriv_id'', mul_one,
+    rw [_root_.deriv_cpow_const (by fun_prop), deriv_const_add_id, mul_one,
       show a - (n + 1) = a - n - 1 by ring, ← mul_assoc]
     · congr
       simp [descPochhammer_succ_right, Polynomial.smeval_mul, Polynomial.smeval_natCast]

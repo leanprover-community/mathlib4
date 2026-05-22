@@ -163,6 +163,13 @@ theorem deriv_const_add (c : F) : deriv (c + f ·) x = deriv f x := by
 theorem deriv_const_add' (c : F) : (deriv (c + f ·)) = deriv f :=
   funext fun _ ↦ deriv_const_add c
 
+theorem deriv_const_add_id (c : 𝕜) : deriv (c + ·) x = 1 := by
+  rw [deriv_const_add c, deriv_id'']
+
+@[simp]
+theorem deriv_const_add_id' (c : 𝕜) : (deriv (c + ·)) = fun _ => 1 :=
+  funext fun _ ↦ deriv_const_add_id c
+
 lemma differentiableAt_comp_add_const {a b : 𝕜} :
     DifferentiableAt 𝕜 (fun x ↦ f (x + b)) a ↔ DifferentiableAt 𝕜 f (a + b) := by
   grind [add_comm, differentiableAt_comp_add_left]
@@ -432,8 +439,19 @@ theorem derivWithin_const_sub (c : F) :
     derivWithin (fun y ↦ c - f y) s x = -derivWithin f s x := by
   simp [sub_eq_add_neg, derivWithin.fun_neg]
 
-theorem deriv_const_sub (c : F) : deriv (fun y ↦ c - f y) x = -deriv f x := by
+theorem deriv_const_sub (c : F) : deriv (c - f ·) x = -deriv f x := by
   simp only [← derivWithin_univ, derivWithin_const_sub]
+
+@[simp]
+theorem deriv_const_sub' (c : F) : deriv (c - f ·) = (-deriv f ·) :=
+  funext fun _ => deriv_const_sub c
+
+theorem deriv_const_sub_id (c : 𝕜) : deriv (c - ·) x = -1 := by
+  rw [deriv_const_sub c, deriv_id'']
+
+@[simp]
+theorem deriv_const_sub_id' (c : 𝕜) : deriv (c - ·) = fun _ => -1 :=
+  funext fun _ => deriv_const_sub_id c
 
 lemma differentiableAt_comp_sub_const {a b : 𝕜} :
     DifferentiableAt 𝕜 (fun x ↦ f (x - b)) a ↔ DifferentiableAt 𝕜 f (a - b) := by

@@ -161,7 +161,7 @@ theorem DifferentiableAt.fderiv_norm_self {x : E} (h : DifferentiableAt ℝ (‖
   simp_rw [this]
   rw [deriv_mul_const]
   · conv_lhs => enter [1, 1]; change _root_.abs ∘ (fun t ↦ 1 + t)
-    rw [deriv_comp, deriv_abs, deriv_const_add]
+    rw [deriv_comp, deriv_abs, deriv_const_add_id]
     · simp
     · exact differentiableAt_abs (by simp)
     · exact differentiableAt_id.const_add _

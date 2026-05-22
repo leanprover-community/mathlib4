@@ -42,6 +42,7 @@ type with a zero. They are denoted `R⸨X⸩`.
 ## Main Results
 
 * Basic properties of Hasse derivatives
+
 ### About the `X`-Adic valuation:
 * The (integral) valuation of a power series is the order of the first non-zero coefficient, see
   `LaurentSeries.intValuation_le_iff_coeff_lt_eq_zero`.
@@ -385,12 +386,6 @@ theorem coe_X : ((X : RatFunc F) : F⸨X⸩) = single 1 1 := by
 theorem single_one_eq_pow {R : Type*} [Semiring R] (n : ℕ) :
     single (n : ℤ) (1 : R) = single (1 : ℤ) 1 ^ n := by
   simp
-
-@[deprecated HahnSeries.inv_single (since := "2025-11-07")]
-theorem single_inv (d : ℤ) {α : F} (hα : α ≠ 0) :
-    single (-d) (α⁻¹ : F) = (single (d : ℤ) (α : F))⁻¹ := by
-  apply eq_inv_of_mul_eq_one_right
-  simp [hα]
 
 theorem single_zpow (n : ℤ) :
     single (n : ℤ) (1 : F) = single (1 : ℤ) 1 ^ n := by

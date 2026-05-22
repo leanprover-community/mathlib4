@@ -337,12 +337,14 @@ lemma Integrable.comp_snd {f : β → E} (hf : Integrable f ν) (μ : Measure α
   exact hf.comp_snd μ
 
 omit [SFinite ν] in
+@[fun_prop]
 theorem Integrable.smul_prod {R : Type*} [NormedRing R] [Module R E] [IsBoundedSMul R E]
     {f : α → R} {g : β → E} (hf : Integrable f μ) (hg : Integrable g ν) :
     Integrable (fun z : α × β => f z.1 • g z.2) (μ.prod ν) :=
   hf.op_fst_snd continuous_smul ⟨1, by simpa using norm_smul_le⟩ hg
 
 omit [SFinite ν] in
+@[fun_prop]
 theorem Integrable.mul_prod {L : Type*} [NormedRing L] {f : α → L} {g : β → L} (hf : Integrable f μ)
     (hg : Integrable g ν) : Integrable (fun z : α × β => f z.1 * g z.2) (μ.prod ν) :=
   hf.smul_prod hg

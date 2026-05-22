@@ -210,6 +210,15 @@ theorem ContinuousOn.circleAverage {f : ℂ → E} {s : Set ℝ} {c : ℂ}
   fun_prop
 
 /--
+The circle average of a continuous function is itself continuous, as a function
+of the radius.
+-/
+@[fun_prop] theorem Continuous.circleAverage {f : ℂ → E} (hf : Continuous f) :
+    Continuous (Real.circleAverage f c) := by
+  apply (intervalIntegral.continuous_parametric_intervalIntegral_of_continuous' _ _ _).const_smul
+  fun_prop
+
+/--
 Companion lemma to `ContinuousOn.circleAverage`: a function continuous on `Ioc r
 R` and constant on `Ioo r R` is constant.
 -/
