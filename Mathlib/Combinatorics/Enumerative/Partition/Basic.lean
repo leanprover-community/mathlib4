@@ -262,7 +262,7 @@ def toYoungDiagram {n : ℕ} (p : Partition n) : YoungDiagram :=
 
 theorem youngDiagram_rowLens_eq_sorted_parts {n : ℕ} (p : Partition n) :
     p.toYoungDiagram.rowLens = (p.parts.sort (· ≥ ·)) := by
-  rw [Partition.toYoungDiagram, YoungDiagram.rowLens_ofRowLens_eq_self]
+  rw [toYoungDiagram, YoungDiagram.rowLens_ofRowLens_eq_self]
   simp only [ge_iff_le, mem_sort]
   intro x
   exact p.parts_pos
@@ -293,7 +293,7 @@ theorem ofYoungDiagram_toYoungDiagram_eq_self {n : ℕ} {μ : YoungDiagram} (h :
 theorem toYoungDiagram_ofYoungDiagram_eq_self {n : ℕ} {p : Partition n} :
     ofYoungDiagram p.toYoungDiagram (youngDiagram_card_eq_parts_sum p) = p := by
   rw [ofYoungDiagram]
-  apply Nat.Partition.ext
+  apply Partition.ext
   simp only
   rw [youngDiagram_rowLens_eq_parts]
 
@@ -306,7 +306,7 @@ def equivPartitionYoungDiagram {n : ℕ} : Partition n ≃ { μ : YoungDiagram /
 
 /-- Conjugate a partition (equivalent to transposing its Young diagram). -/
 def conjugate {n : ℕ} (p : Partition n) : Partition n :=
-  Partition.ofYoungDiagram p.toYoungDiagram.transpose (by
+  ofYoungDiagram p.toYoungDiagram.transpose (by
     have hs : p.toYoungDiagram.transpose.card = p.toYoungDiagram.card := by
       simp [YoungDiagram.transpose, YoungDiagram.card]
     rw [hs, youngDiagram_card_eq_parts_sum]
@@ -315,7 +315,7 @@ def conjugate {n : ℕ} (p : Partition n) : Partition n :=
 /-- Conjugation is an involution. -/
 @[simp]
 theorem conjugate_conjugate {n : ℕ} (p : Partition n) : p.conjugate.conjugate = p := by
-  apply Nat.Partition.ext
+  apply Partition.ext
   change (↑(p.conjugate.toYoungDiagram.transpose.rowLens) : Multiset ℕ) = p.parts
   rw [conjugate, ofYoungDiagram_toYoungDiagram_eq_self, YoungDiagram.transpose_transpose,
     youngDiagram_rowLens_eq_parts]
