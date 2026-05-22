@@ -139,14 +139,14 @@ lemma ceil_congr (h : ∀ n : ℕ∞, r ≤ n ↔ s ≤ n) : ⌈r⌉ₑ = ⌈s�
   | _, ⊤ => by simp
   | (r : ℝ≥0), (n : ℕ) => by
     -- FIXME: Why does `norm_cast` not use `ENNReal.ofNNReal_add_natCast`?
-    norm_cast; rw [← ENNReal.ofNNReal_add_natCast]; norm_cast; exact n.floor_add_natCast zero_le'
+    norm_cast; rw [← ENNReal.ofNNReal_add_natCast]; norm_cast; exact n.floor_add_natCast zero_le
 
 @[simp] lemma ceil_add_toENNReal : ∀ (r : ℝ≥0∞) (n : ℕ∞), ⌈r + n⌉ₑ = ⌈r⌉ₑ + n
   | ∞, _ => by simp
   | _, ⊤ => by simp
   | (r : ℝ≥0), (n : ℕ) => by
     -- FIXME: Why does `norm_cast` not use `ENNReal.ofNNReal_sub_natCast`?
-    norm_cast; rw [← ENNReal.ofNNReal_add_natCast]; norm_cast; exact Nat.ceil_add_natCast zero_le' _
+    norm_cast; rw [← ENNReal.ofNNReal_add_natCast]; norm_cast; exact Nat.ceil_add_natCast zero_le _
 
 @[simp] lemma floor_toENNReal_add (r : ℝ≥0∞) (n : ℕ∞) : ⌊n + r⌋ₑ = n + ⌊r⌋ₑ := by
   simp [add_comm, floor_add_toENNReal]

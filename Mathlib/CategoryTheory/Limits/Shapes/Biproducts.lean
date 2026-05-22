@@ -706,9 +706,9 @@ instance {ι} (f : ι → Type*) (g : (i : ι) → (f i) → C)
               simp [biproduct.ι_π_ne _ h]
             · simp [biproduct.ι_π_ne_assoc _ w] }
       isBilimit :=
-      { isLimit := mkFanLimit _
+      { isLimit := Fan.IsLimit.mk _
           (fun s => biproduct.lift fun b => biproduct.lift fun c => s.proj ⟨b, c⟩)
-        isColimit := mkCofanColimit _
+        isColimit := Cofan.IsColimit.mk _
           (fun s => biproduct.desc fun b => biproduct.desc fun c => s.inj ⟨b, c⟩) } }
 
 /-- An iterated biproduct is a biproduct over a sigma type. -/

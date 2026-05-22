@@ -311,7 +311,6 @@ def apply [ContinuousConstSMul 𝕜 F] (m : Π i, E i) : ContinuousMultilinearMa
   toFun c := c m
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
-  cont := continuous_eval_const m
 
 variable {𝕜 E F}
 
