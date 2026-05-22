@@ -26,6 +26,27 @@ variable {T : ∀ ⦃i j : ι⦄, i ≤ j → Type*} {f : ∀ _ _ h, T h}
 variable [∀ i j (h : i ≤ j), FunLike (T h) (G i) (G j)] [DirectedSystem G (f · · ·)]
 variable [IsDirectedOrder ι]
 
+namespace PseudoMetricSpace
+
+variable [∀ i, PseudoMetricSpace (G i)]
+variable [∀ i j h, IsometryClass (T h) (G i) (G j)]
+
+noncomputable instance : PseudoMetricSpace (DirectLimit G f) where
+  dist := DirectLimit.lift₂ f f (fun i ↦ dist (α := G i))
+    (fun i j h x y ↦ (IsometryClass.dist_eq (f i j h) x y).symm)
+  dist_self := DirectLimit.induction f fun i x ↦ by rw [← dist_self x, lift₂_def]
+  dist_comm := DirectLimit.induction₂ f fun i x y ↦ by simp_rw [lift₂_def, dist_comm x y]
+  dist_triangle := DirectLimit.induction₃ f fun i x y z ↦ by simp_rw [lift₂_def, dist_triangle]
+
+lemma dist_def (i : ι) (x y : G i) :
+    dist (α := DirectLimit G f) ⟦⟨i,x⟩⟧ ⟦⟨i,y⟩⟧ = dist x y := by
+  change DirectLimit.lift₂ f f _
+    (fun i j h x y ↦ (IsometryClass.dist_eq (f i j h) x y).symm)
+    ⟦⟨i, x⟩⟧ ⟦⟨i, y⟩⟧ = dist x y
+  rw [lift₂_def]
+
+end PseudoMetricSpace
+
 namespace MetricSpace
 
 variable [∀ i, MetricSpace (G i)]
@@ -34,19 +55,14 @@ variable [∀ i j h, IsometryClass (T h) (G i) (G j)]
 noncomputable instance : MetricSpace (DirectLimit G f) where
   dist := DirectLimit.lift₂ f f (fun i ↦ dist (α := G i))
     (fun i j h x y ↦ (IsometryClass.dist_eq (f i j h) x y).symm)
-  dist_self := DirectLimit.induction f (fun i x ↦ by rw [← dist_self x, lift₂_def])
-  dist_comm := DirectLimit.induction₂ f (fun i x y ↦ by simp_rw [lift₂_def, dist_comm x y])
-  dist_triangle := DirectLimit.induction₃ f (fun i x y z ↦ by simp_rw [lift₂_def, dist_triangle])
+  __ := (inferInstance : PseudoMetricSpace (DirectLimit G f))
   eq_of_dist_eq_zero {x y} h := DirectLimit.induction₂ f (fun i x' y' h' ↦ by
     rw [lift₂_def] at h'
     simp [eq_of_dist_eq_zero h']) x y h
 
 lemma dist_def (i : ι) (x y : G i) :
-    dist (α := DirectLimit G f) ⟦⟨i,x⟩⟧ ⟦⟨i,y⟩⟧ = dist x y := by
-  change DirectLimit.lift₂ f f _
-    (fun i j h x y ↦ (IsometryClass.dist_eq (f i j h) x y).symm)
-    ⟦⟨i, x⟩⟧ ⟦⟨i, y⟩⟧ = dist x y
-  rw [lift₂_def]
+    dist (α := DirectLimit G f) ⟦⟨i,x⟩⟧ ⟦⟨i,y⟩⟧ = dist x y :=
+  DirectLimit.PseudoMetricSpace.dist_def i x y
 
 end MetricSpace
 
