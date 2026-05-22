@@ -193,22 +193,18 @@ def runLinter (ctx : ContextInfo) (lctx : LocalContext) (expectedType? : Option 
       msgs := msgs.push msg
   if msgs.isEmpty then
     return none
-  let mut msg := ← do
-    if let some decl := ctx.parentDecl? then
-      -- Use `addMessageContextPartial` to clear the local context,
-      -- so as to avoid a name clash with the recursive auxiliary hypothesis of the same name.
-      pure m!"Overlapping instances in `{← addMessageContextPartial (.ofConstName decl)}`:\n"
-    else
-      pure m!"Overlapping instances:"
+  let inDecl ← if let some decl := ctx.parentDecl? then
+    pure m!" in `{← addMessageContextPartial (.ofConstName decl)}`" else pure ""
+  let mut msg := m!"Overlapping instance parameters{inDecl}:\n"
   for overlapMsg in msgs do
     msg := msg ++ m!"\n⚠️ {overlapMsg}"
   if needsDiamondMsg then
     msg := msg ++ m!"\n\n\
       When a data-carrying type class has multiple potential instances coming from different \
-      instances parameters, then these instances are incompatible. \
-      This is an example of \"instance diamond\", which leads to unexpected unification failures.\
+      instance parameters, then these potential instances are incompatible. This is an example of \
+      an \"instance diamond\", which leads to unexpected unification failures.\
       \n\n\
-      Restructure your instance parameters to avoid this."
+      Delete or combine some of your instance parameters to avoid this."
   addMessageContextFull msg
 
 initialize registerTraceClass `overlappingInstances

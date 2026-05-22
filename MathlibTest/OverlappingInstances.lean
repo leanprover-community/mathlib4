@@ -28,7 +28,7 @@ error: unsolved goals
 inst✝¹ inst✝ : Add Nat
 ⊢ [Add Nat] → [Add Nat] → Bool
 ---
-warning: Overlapping instances in `foo`:
+warning: Overlapping instance parameters in `foo`:
 
 ⚠️ There are 4 `[Add Nat]` instances; one is sufficient.
 
@@ -40,13 +40,13 @@ def foo [Add Nat] [Add Nat] : [Add Nat] → [Add Nat] → Bool := by
 
 /--
 @ +3:21...+4:12
-warning: Overlapping instances in `foo₁`:
+warning: Overlapping instance parameters in `foo₁`:
 
 ⚠️ `[FooBarBaz Nat]` and `[FooBarBaq Nat]` can be used to infer conflicting versions of `[SubBar Nat]`.
 
-When a data-carrying type class has multiple potential instances coming from different instances parameters, then these instances are incompatible. This is an example of "instance diamond", which leads to unexpected unification failures.
+When a data-carrying type class has multiple potential instances coming from different instance parameters, then these potential instances are incompatible. This is an example of an "instance diamond", which leads to unexpected unification failures.
 
-Restructure your instance parameters to avoid this.
+Delete or combine some of your instance parameters to avoid this.
 
 Note: This linter can be disabled with `set_option linter.overlappingInstances false`
 -/
@@ -57,7 +57,7 @@ set_option linter.overlappingInstances true in
   exact true
 
 /--
-warning: Overlapping instances in `foo₂`:
+warning: Overlapping instance parameters in `foo₂`:
 
 ⚠️ There are 2 `[FooBarBaz Nat]` instances; one is sufficient.
 ⚠️ `[FooBarBaz
@@ -70,7 +70,7 @@ Note: This linter can be disabled with `set_option linter.overlappingInstances f
 def foo₂ [FooBarBaz Nat] [FooBarBaz Nat] [FooBarBaq Nat] : Bool := true
 
 /--
-warning: Overlapping instances in `foo₃`:
+warning: Overlapping instance parameters in `foo₃`:
 
 ⚠️ There are 2 `[FooBarBaz Nat]` instances; one is sufficient.
 
@@ -80,7 +80,7 @@ Note: This linter can be disabled with `set_option linter.overlappingInstances f
 def foo₃ [FooBarBaz Nat] [FooBarBaz Nat] : Bool := true
 
 /--
-warning: Overlapping instances in `foo₄`:
+warning: Overlapping instance parameters in `foo₄`:
 
 ⚠️ There are 2 `[FooBarBaz Nat]` instances; one is sufficient.
 ⚠️ `[FooBarBaz Nat]`, `[FooBarBaz Nat]`, and `[Bar Nat]` can be used to infer conflicting versions of `[SubBar Nat]`.
@@ -92,13 +92,13 @@ Note: This linter can be disabled with `set_option linter.overlappingInstances f
 theorem foo₄ [FooBarBaz Nat] [FooBarBaz Nat] [Bar Nat] : True := trivial
 
 /--
-warning: Overlapping instances in `foo₅`:
+warning: Overlapping instance parameters in `foo₅`:
 
 ⚠️ `[FooBarBaz Nat]` and `[FooBarBaz' Nat]` can be used to infer conflicting versions of `[Baz Nat]` and `[SubBar Nat]`.
 
-When a data-carrying type class has multiple potential instances coming from different instances parameters, then these instances are incompatible. This is an example of "instance diamond", which leads to unexpected unification failures.
+When a data-carrying type class has multiple potential instances coming from different instance parameters, then these potential instances are incompatible. This is an example of an "instance diamond", which leads to unexpected unification failures.
 
-Restructure your instance parameters to avoid this.
+Delete or combine some of your instance parameters to avoid this.
 
 Note: This linter can be disabled with `set_option linter.overlappingInstances false`
 -/
@@ -106,15 +106,15 @@ Note: This linter can be disabled with `set_option linter.overlappingInstances f
 lemma foo₅ [FooBarBaz Nat] [FooBarBaz' Nat] : True := trivial
 
 /--
-warning: Overlapping instances in `foo₆`:
+warning: Overlapping instance parameters in `foo₆`:
 
 ⚠️ `[FooBarBaz Nat]` and `[FooBarBaz' Nat]` can be used to infer conflicting versions of `[Baz Nat]`.
 ⚠️ `[FooBarBaz
    Nat]`, `[FooBarBaz' Nat]`, and `[FooBarBaq Nat]` can be used to infer conflicting versions of `[SubBar Nat]`.
 
-When a data-carrying type class has multiple potential instances coming from different instances parameters, then these instances are incompatible. This is an example of "instance diamond", which leads to unexpected unification failures.
+When a data-carrying type class has multiple potential instances coming from different instance parameters, then these potential instances are incompatible. This is an example of an "instance diamond", which leads to unexpected unification failures.
 
-Restructure your instance parameters to avoid this.
+Delete or combine some of your instance parameters to avoid this.
 
 Note: This linter can be disabled with `set_option linter.overlappingInstances false`
 -/
@@ -126,7 +126,7 @@ namespace Foo
 /-! Test unresolving name (`foo`, not `Foo.foo` or `_private...foo`) -/
 
 /--
-warning: Overlapping instances in `foo`:
+warning: Overlapping instance parameters in `foo`:
 
 ⚠️ There are 2 `[Add Nat]` instances; one is sufficient.
 
@@ -146,7 +146,7 @@ class IsBar : Prop extends IsFoo
 class IsBaz : Prop extends IsBar
 
 /--
-warning: Overlapping instances in `_example`:
+warning: Overlapping instance parameters in `_example`:
 
 ⚠️ `[IsBar]` and `[IsBaz]` each imply `[IsFoo]`.
 💡️ Of these, `[IsBar]` may be removed.
@@ -162,7 +162,7 @@ class Baz1 : Type extends Baz
 class Baz2 : Type extends Baz
 
 /--
-warning: Overlapping instances in `_example`:
+warning: Overlapping instance parameters in `_example`:
 
 ⚠️ `[IsFoo]` and `[Bar]` each imply `[IsFoo]`.
 💡️ Of these, `[IsFoo]` may be removed.
@@ -177,7 +177,7 @@ example [IsBar] [Bar] : True := trivial
 example [Bar] [Baz] : True := trivial
 
 /--
-warning: Overlapping instances in `_example`:
+warning: Overlapping instance parameters in `_example`:
 
 ⚠️ There are 2 `[Baz]` instances; one is sufficient.
 
@@ -187,7 +187,7 @@ Note: This linter can be disabled with `set_option linter.overlappingInstances f
 example [Baz] [Baz] : True := trivial
 
 /--
-warning: Overlapping instances in `_example`:
+warning: Overlapping instance parameters in `_example`:
 
 ⚠️ `[Baz]` and `[Baz1]` can be used to infer conflicting versions of `[Baz]`.
 💡️ Of these, `[Baz]` may be removed.
@@ -198,13 +198,13 @@ Note: This linter can be disabled with `set_option linter.overlappingInstances f
 example [Baz] [Baz1] : True := trivial
 
 /--
-warning: Overlapping instances in `_example`:
+warning: Overlapping instance parameters in `_example`:
 
 ⚠️ `[Baz1]` and `[Baz2]` can be used to infer conflicting versions of `[Baz]`.
 
-When a data-carrying type class has multiple potential instances coming from different instances parameters, then these instances are incompatible. This is an example of "instance diamond", which leads to unexpected unification failures.
+When a data-carrying type class has multiple potential instances coming from different instance parameters, then these potential instances are incompatible. This is an example of an "instance diamond", which leads to unexpected unification failures.
 
-Restructure your instance parameters to avoid this.
+Delete or combine some of your instance parameters to avoid this.
 
 Note: This linter can be disabled with `set_option linter.overlappingInstances false`
 -/
@@ -221,7 +221,7 @@ class inductive IndFoo where
 | mk₁ (n : Nat) | mk₂ (b : Bool)
 
 /--
-warning: Overlapping instances in `indFoo`:
+warning: Overlapping instance parameters in `indFoo`:
 
 ⚠️ There are 2 `[IndFoo]` instances; one is sufficient.
 
@@ -234,7 +234,7 @@ class inductive IndFooProp : Prop where
 | mk₁ (n : Nat) | mk₂ (b : Bool)
 
 /--
-warning: Overlapping instances in `indFooProp`:
+warning: Overlapping instance parameters in `indFooProp`:
 
 ⚠️ There are 2 `[IndFooProp]` instances; one is sufficient.
 
@@ -250,7 +250,7 @@ section instantiateMVars
 variable {α : Type*} [Repr α]
 
 /--
-warning: Overlapping instances in `needsInstantiateMVars`:
+warning: Overlapping instance parameters in `needsInstantiateMVars`:
 
 ⚠️ There are 2 `[Repr α]` instances; one is sufficient.
 
@@ -269,7 +269,7 @@ def fooNothing [Add Nat] [Add Nat] : [Add Nat] → [Add Nat] → Bool := true
 set_option linter.overlappingInstances false
 
 /--
-warning: Overlapping instances in `fooSomething`:
+warning: Overlapping instance parameters in `fooSomething`:
 
 ⚠️ There are 4 `[Add Nat]` instances; one is sufficient.
 
@@ -290,7 +290,7 @@ class A (α : Sort u) where
 class B (α : Type u) extends A α
 
 /--
-warning: Overlapping instances in `_example`:
+warning: Overlapping instance parameters in `_example`:
 
 ⚠️ `[B α]` and `[A α]` can be used to infer conflicting versions of `[A α]`.
 💡️ Of these, `[A α]` may be removed.
@@ -315,7 +315,7 @@ class B' (α β : Type*) [A' α] extends B α β where
 instance {α} : A α where
 
 /--
-warning: Overlapping instances in `_example`:
+warning: Overlapping instance parameters in `_example`:
 
 ⚠️ `[B α β]` and `[B' α β]` can be used to infer conflicting versions of `[B α β]`.
 💡️ Of these, `[B α β]` may be removed.
@@ -330,7 +330,7 @@ end parameters
 /-! Test a `where` clause. -/
 
 /--
-warning: Overlapping instances in `List.lt'.go`:
+warning: Overlapping instance parameters in `List.lt'.go`:
 
 ⚠️ There are 2 `[DecidableEq α]` instances; one is sufficient.
 
@@ -356,7 +356,7 @@ class IsAClass2 extends IsAClass1
 example [IsAClass1] [IsAClass1'] : True := trivial
 
 /--
-warning: Overlapping instances in `_example`:
+warning: Overlapping instance parameters in `_example`:
 
 ⚠️ `[IsAClass1]` and `[IsAClass2]` can be used to infer conflicting versions of `[IsAClass1]`.
 💡️ Of these, `[IsAClass1]` may be removed.
