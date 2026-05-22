@@ -546,14 +546,14 @@ public def isBadNameWithUnderscore (name : Name) : Bool := Id.run do
       (`Mathlib.Tactic).isPrefixOf declName || (`Mathlib.Parser).isPrefixOf declName ||
       declName.components.any (· == `Simps) ||
       last.endsWith "_1" || last.endsWith "_2" || last.endsWith "_mathlib" then
+      declName.components.any (·.toString.endsWith '_') then
     return false
-  if declName.components.any (·.toString.endsWith '_') then return false
   if declName.toString.contains "_" then return true
   else return false
 
 open Batteries.Tactic.Lint in
 /-- Linter that checks for definitions whose name contains an underscore:
-this violates the naming convention. -/
+such names violate the naming convention. -/
 @[env_linter] public def defsWithUnderscore : Batteries.Tactic.Lint.Linter where
   noErrorsFound := "no definitions with an underscore in their name found."
   errorsFound := "FOUND definitions with an underscore in their name."
