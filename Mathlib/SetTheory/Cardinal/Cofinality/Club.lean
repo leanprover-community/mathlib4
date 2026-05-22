@@ -5,9 +5,7 @@ Authors: Violeta Hernández Palacios
 -/
 module
 
-public import Mathlib.Order.DirSupClosed
-public import Mathlib.Order.IsNormal
-public import Mathlib.SetTheory.Cardinal.Cofinality.Basic
+public import Mathlib.SetTheory.Cardinal.Cofinality.Ordinal
 
 /-!
 # Club sets
@@ -27,7 +25,7 @@ public section
 
 universe u v
 
-open Cardinal Order
+open Cardinal Order Ordinal
 
 /-- A club set is closed under suprema and cofinal. -/
 structure IsClub {α : Type*} [LinearOrder α] (s : Set α) where
@@ -51,7 +49,7 @@ theorem IsClub.univ : IsClub (α := α) .univ :=
 protected theorem IsClub.nonempty [Nonempty α] (hs : IsClub s) : s.Nonempty :=
   hs.isCofinal.nonempty
 
-theorem _root_.isClub_empty_iff : IsClub (α := α) ∅ ↔ IsEmpty α :=
+theorem isClub_empty_iff : IsClub (α := α) ∅ ↔ IsEmpty α :=
   ⟨fun h ↦ isCofinal_empty_iff.1 h.isCofinal, fun _ ↦ .of_isEmpty⟩
 
 theorem IsClub.union (hs : IsClub s) (ht : IsClub t) : IsClub (s ∪ t) :=
@@ -127,7 +125,7 @@ theorem IsClub.inter {s t : Set α} (hα : cof α ≠ ℵ₀) (hs : IsClub s) (h
   rw [← Set.sInter_pair]
   have H : ∀ x ∈ ({s, t} : Set _), IsClub x := by simpa [hs]
   obtain hα | hα' := hα.lt_or_gt
-  · rw [cof_lt_aleph0_iff] at hα
+  · rw [Order.cof_lt_aleph0_iff] at hα
     exact .sInter_of_cof_le_one hα H
   · exact .sInter hα (hα'.trans_le' <| by simp) H
 
@@ -180,7 +178,7 @@ theorem not_isStationary_empty : ¬ IsStationary (∅ : Set α) := by
 
 theorem IsClub.isStationary [Nonempty α] [WellFoundedLT α] (hα : cof α ≠ ℵ₀) (hs : IsClub s) :
     IsStationary s :=
-  fun t ht ↦ (hs.inter hα ht).nonempty
+  fun _ ht ↦ (hs.inter hα ht).nonempty
 
 /-- Non-stationary sets form an ideal. -/
 theorem not_isStationary_union [WellFoundedLT α] (hα : cof α ≠ ℵ₀)
@@ -191,6 +189,11 @@ theorem not_isStationary_union [WellFoundedLT α] (hα : cof α ≠ ℵ₀)
   refine ⟨_, hu.inter hα hv, ?_⟩
   grind
 
+theorem dirSupClosed_of_type_le_omega0 [WellFoundedLT α] {s : Set α} (hs : typeLT s ≤ ω) :
+    DirSupClosed s := by
+  
+  sorry
+
 theorem IsStationary.of_not_isCofinal_compl (hs : ¬ IsCofinal (sᶜ)) : IsStationary s := by
   intro t ht
   obtain ⟨a, ha⟩ := not_isCofinal_iff.1 hs
@@ -199,5 +202,9 @@ theorem IsStationary.of_not_isCofinal_compl (hs : ¬ IsCofinal (sᶜ)) : IsStati
   contrapose! ha
   exact ⟨b, ha, hb'⟩
 
-proof_wanted isStationary_iff_not_isCofinal_compl (hα : cof α ≤ ℵ₀) :
-    IsStationary s ↔ ¬ IsCofinal (sᶜ)
+theorem isStationary_iff_not_isCofinal_compl [WellFoundedLT α] (hα : cof α ≤ ℵ₀) :
+    IsStationary s ↔ ¬ IsCofinal (sᶜ) where
+  mp hs h := by
+    obtain ⟨t, ht, ht', htα⟩ := Ordinal.ord_cof_eq_of_isCofinal h
+    sorry
+  mpr := .of_not_isCofinal_compl

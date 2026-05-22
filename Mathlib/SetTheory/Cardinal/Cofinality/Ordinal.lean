@@ -151,7 +151,8 @@ theorem cof_omega0 : cof ω = ℵ₀ :=
 
 @[deprecated (since := "2026-02-18")] alias cof_eq_one_iff_is_succ := cof_eq_one_iff
 
-theorem ord_cof_eq (α : Type*) [LinearOrder α] [WellFoundedLT α] :
+variable (α) in
+theorem ord_cof_eq [LinearOrder α] [WellFoundedLT α] :
     ∃ s : Set α, IsCofinal s ∧ typeLT s = (Order.cof α).ord := by
   obtain ⟨s, hs, hs'⟩ := Order.cof_eq α
   obtain ⟨r, hr, hr'⟩ := exists_ord_eq s
@@ -166,8 +167,18 @@ theorem ord_cof_eq (α : Type*) [LinearOrder α] [WellFoundedLT α] :
     · obtain ⟨x, z, hz, rfl⟩ := x
       exact (hz _ hxy').asymm hxy
 
+theorem ord_cof_eq_of_isCofinal [LinearOrder α] [WellFoundedLT α] {s : Set α} (hs : IsCofinal s) :
+    ∃ t ⊆ s, IsCofinal t ∧ typeLT t = (Order.cof α).ord := by
+  obtain ⟨t, ht, ht'⟩ := ord_cof_eq s
+  rw [cof_eq_of_isCofinal hs] at ht'
+  refine ⟨t, ?_, hs.trans ht, ?_⟩
+  · simp
+  · rw [← ht']
+    exact ((Subtype.strictMono_coe _).strictMonoOn _).orderIso.ordinal_type_eq.symm
+
+variable (α) in
 @[simp]
-theorem _root_.Order.cof_ord_cof (α : Type*) [LinearOrder α] [WellFoundedLT α] :
+theorem _root_.Order.cof_ord_cof [LinearOrder α] [WellFoundedLT α] :
     (Order.cof α).ord.cof = Order.cof α := by
   obtain ⟨s, hs, hs'⟩ := ord_cof_eq α
   rw [← hs', cof_type]
@@ -183,6 +194,14 @@ theorem cof_ord_cof (o : Ordinal) : o.cof.ord.cof = o.cof := by
 
 @[deprecated (since := "2026-03-21")] alias cof_cof := cof_ord_cof
 
+theorem dirSupClosed_of_type_le_omega0 [LinearOrder α] [WellFoundedLT α]
+    {s : Set α} (hs : IsCofinal s) (hs' : typeLT s ≤ ω) : DirSupClosed s := by
+  obtain rfl | hs₀ := s.eq_empty_or_nonempty
+  · simp
+  let f (n : ℕ) : α := if hn : n < typeLT s then enum (· < · : s → _) ⟨n, hn⟩
+  sorry
+
+#exit
 /-! ### Cofinalities and suprema -/
 
 section LinearOrder
