@@ -107,7 +107,7 @@ section
 variable {C : Type u₁} {D : Type u₂} [Category.{v₁} C] [Category.{v₁} D]
 variable (i : D ⥤ C)
 
-/-- This cannot be a local instance since it has free variables,
+/- This cannot be a local instance since it has free variables,
 it can instead be used as a have when needed.
 We assume `HasFiniteProducts D` as a hypothesis below, to avoid making this a local instance.
 -/

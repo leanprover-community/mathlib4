@@ -537,7 +537,7 @@ variable {v : ι → V} {s t : Set V} {x y : V}
 
 open Submodule
 
-/-! TODO: some of the following proofs can generalized with a zero_ne_one predicate type class
+/- TODO: some of the following proofs can generalized with a zero_ne_one predicate type class
 (instead of a data containing type class) -/
 
 theorem mem_span_insert_exchange :
