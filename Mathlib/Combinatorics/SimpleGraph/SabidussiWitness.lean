@@ -3,7 +3,9 @@ Copyright (c) 2026 Robin Langer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robin Langer
 -/
-import Mathlib.Combinatorics.SimpleGraph.Representation
+module
+
+public import Mathlib.Combinatorics.SimpleGraph.Representation
 
 /-!
 # Sabidussi witness helpers
@@ -21,6 +23,8 @@ prove closure membership, and prove the closure preserves adjacency.
 -/
 
 set_option linter.style.nativeDecide false
+
+@[expose] public section
 
 variable {n k : ℕ}
 
@@ -58,7 +62,7 @@ theorem applyWord'_mem (gens : Fin k → Equiv.Perm (Fin n))
   induction w with
   | nil => exact Subgroup.one_mem _
   | cons i rest ih =>
-    show (genOrInv' gens i).trans (applyWord' gens rest) ∈ _
+    change (genOrInv' gens i).trans (applyWord' gens rest) ∈ _
     exact Subgroup.mul_mem _ ih (genOrInv'_mem_closure gens i)
 
 /-- If every generator preserves adjacency in `Γ`, then every element of the
