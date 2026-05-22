@@ -38,6 +38,12 @@ def indexOf (lt : α → α → Prop) [DecidableRel lt] (x : α) : BinaryTree α
     | Ordering.eq => some PosNum.one
     | Ordering.gt => PosNum.bit1 <$> indexOf lt x t₂
 
+
+@[deprecated BinaryTree.indexOf (since := "2026-05-22")]
+abbrev Tree.indexOf (lt : α → α → Prop) [DecidableRel lt] (x : α) : Tree α →  Option PosNum :=
+  BinaryTree.indexOf lt x
+
+
 /-- Retrieves an element uniquely determined by a `PosNum` from the tree,
 taking the following path to get to the element:
 - `bit0` - go to left child
@@ -49,9 +55,17 @@ def get : PosNum → BinaryTree α → Option α
   | PosNum.bit0 n, node _a t₁ _t₂ => t₁.get n
   | PosNum.bit1 n, node _a _t₁ t₂ => t₂.get n
 
+@[deprecated BinaryTree.get (since := "2026-05-22")]
+abbrev Tree.get (n : PosNum) (t : Tree α) : Option α :=
+  BinaryTree.get n t
+
 /-- Retrieves an element from the tree, or the provided default value
 if the index is invalid. See `Tree.get`. -/
 def getOrElse (n : PosNum) (t : BinaryTree α) (v : α) : α :=
   (t.get n).getD v
+
+@[deprecated BinaryTree.getOrElse (since := "2026-05-22")]
+abbrev Tree.getOrElse (n : PosNum) (t : Tree α) (v : α) : α :=
+  BinaryTree.getOrElse n t v
 
 end BinaryTree

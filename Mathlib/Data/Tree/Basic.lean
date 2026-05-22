@@ -9,7 +9,7 @@ public import Mathlib.Data.Nat.Notation
 public import Mathlib.Util.CompileInductive
 
 /-!
-# BinaryTree
+# Binary tree
 
 Provides binary tree storage for values of any type.
 See also `Lean.Data.RBTree` for red-black trees - this version allows more operations
