@@ -14,13 +14,8 @@ public import Mathlib.Order.Category.PartOrdEmb
 
 Given a regular cardinal `κ : Cardinal.{u}`, we define the
 category `CardinalFilteredPoset κ` of `κ`-directed partially ordered
-types (with order embeddings as morphisms), and we show that it is
-a `κ`-accessible category.
-
-If `κ ≤ κ'` where `κ'` is also a regular cardinal, we characterize
-the `κ'`-presentable objects of `CardinalFilteredPoset κ` as
-the objects `J` such that the underlying type `J.obj` has
-cardinality `< κ'`.
+types (with order embeddings as morphisms). We shall show that it is
+a `κ`-accessible category (TODO @joelriou).
 
 ## References
 * [Adámek, J. and Rosický, J., *Locally presentable and accessible categories*][Adamek_Rosicky_1994]
