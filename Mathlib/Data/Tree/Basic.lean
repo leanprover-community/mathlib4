@@ -34,6 +34,17 @@ inductive BinaryTree.{u} (α : Type u) : Type u
   deriving DecidableEq, Repr
 compile_inductive% BinaryTree
 
+@[deprecated BinaryTree (since := "2026-05-22")]
+abbrev Tree.{u} (α : Type u) : Type u := BinaryTree α
+
+@[deprecated BinaryTree.nil (since := "2026-05-22")]
+abbrev Tree.leaf.{u} {α : Type u} : BinaryTree α := BinaryTree.nil
+
+@[deprecated BinaryTree.node (since := "2026-05-22")]
+abbrev Tree.node.{u} {α : Type u} (value : α) (left : BinaryTree α) (right : BinaryTree α)
+: BinaryTree α :=
+  BinaryTree.node value left right
+
 namespace BinaryTree
 
 universe u
@@ -54,12 +65,20 @@ def traverse {m : Type* → Type*} [Applicative m] {α β} (f : α → m β)
   | .nil => pure nil
   | .node a l r => .node <$> f a <*> traverse f l <*> traverse f r
 
+@[deprecated BinaryTree.traverse (since := "2026-05-22")]
+abbrev Tree.traverse {m : Type* → Type*} [Applicative m] {α β} (f : α → m β)
+(t : BinaryTree α) : m (BinaryTree β) :=
+  BinaryTree.traverse f t
+
 /-- Apply a function to each value in the BinaryTree.
 This is the `map` function for the `BinaryTree` functor.
 -/
 def map {β} (f : α → β) : BinaryTree α → BinaryTree β
   | nil => nil
   | node a l r => node (f a) (map f l) (map f r)
+
+@[deprecated BinaryTree.map (since := "2026-05-22")]
+abbrev Tree.map {α β} (f : α → β) (t : BinaryTree α) : BinaryTree β := BinaryTree.map f t
 
 theorem id_map (t : BinaryTree α) : t.map id = t := by
   induction t with
@@ -85,17 +104,27 @@ def numNodes : BinaryTree α → ℕ
   | nil => 0
   | node _ a b => a.numNodes + b.numNodes + 1
 
+@[deprecated BinaryTree.numNodes (since := "2026-05-22")]
+abbrev Tree.numNodes {α} (t : BinaryTree α) : ℕ := BinaryTree.numNodes t
+
 /-- The number of leaves of a binary tree -/
 @[simp]
 def numLeaves : BinaryTree α → ℕ
   | nil => 1
   | node _ a b => a.numLeaves + b.numLeaves
 
+@[deprecated BinaryTree.numLeaves (since := "2026-05-22")]
+abbrev Tree.numLeaves {α} (t : BinaryTree α) : ℕ := BinaryTree.numLeaves t
+
+
 /-- The height - length of the longest path from the root - of a binary tree -/
 @[simp]
 def height : BinaryTree α → ℕ
   | nil => 0
   | node _ a b => max a.height b.height + 1
+
+@[deprecated BinaryTree.height (since := "2026-05-22")]
+abbrev Tree.height {α} (t : BinaryTree α) : ℕ := BinaryTree.height t
 
 theorem numLeaves_eq_numNodes_succ (x : BinaryTree α) : x.numLeaves = x.numNodes + 1 := by
   induction x <;> simp [*, Nat.add_comm, Nat.add_assoc, Nat.add_left_comm]
@@ -116,11 +145,17 @@ def left : BinaryTree α → BinaryTree α
   | nil => nil
   | node _ l _r => l
 
+@[deprecated BinaryTree.left (since := "2026-05-22")]
+abbrev Tree.left {α} (t : BinaryTree α) : BinaryTree α := BinaryTree.left t
+
 /-- The right child of the tree, or `nil` if the tree is `nil` -/
 @[simp]
 def right : BinaryTree α → BinaryTree α
   | nil => nil
   | node _ _l r => r
+
+@[deprecated BinaryTree.right (since := "2026-05-22")]
+abbrev Tree.right {α} (t : BinaryTree α) : BinaryTree α := BinaryTree.right t
 
 /-- A node with `Unit` data -/
 scoped infixr:65 " △ " => BinaryTree.node ()
@@ -130,6 +165,11 @@ scoped infixr:65 " △ " => BinaryTree.node ()
 def unitRecOn {motive : BinaryTree Unit → Sort*} (t : BinaryTree Unit) (base : motive nil)
     (ind : ∀ x y, motive x → motive y → motive (x △ y)) : motive t :=
   t.recOn base fun _u ↦ ind
+
+@[deprecated BinaryTree.unitRecOn (since := "2026-05-22")]
+abbrev Tree.unitRecOn {motive : BinaryTree Unit → Sort*} (t : BinaryTree Unit) (base : motive nil)
+    (ind : ∀ x y, motive x → motive y → motive (x △ y)) : motive t :=
+  BinaryTree.unitRecOn t base ind
 
 theorem left_node_right_eq_self : ∀ {x : BinaryTree Unit} (_hx : x ≠ nil), x.left △ x.right = x
   | nil, h => by trivial
