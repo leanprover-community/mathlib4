@@ -337,13 +337,21 @@ theorem IsProj.trace {p : Submodule R M} {f : M →ₗ[R] M} (h : IsProj p f) [M
   rw [h.eq_conj_prodMap, trace_conj', trace_prodMap', trace_id, map_zero, add_zero]
 
 open LinearMap in
-/-- An idempotent endomorphism of a finite-dimensional vector space over a
-characteristic-zero field with vanishing trace is the zero map. -/
-theorem IsIdempotentElem.trace_eq_zero_iff {K : Type*} [Field K] [CharZero K]
-    {V : Type*} [AddCommGroup V] [Module K V] [Module.Finite K V]
-    {e : V →ₗ[K] V} (he : IsIdempotentElem e) :
-    trace K V e = 0 ↔ e = 0 := by
-  rw [he.isProj_range.trace, Nat.cast_eq_zero, Submodule.finrank_eq_zero, range_eq_bot]
+/-- An idempotent endomorphism of a module over a characteristic-zero commutative ring
+with vanishing trace is the zero map, provided its range and kernel are finite and free.
+
+The `Module.Free` and `Module.Finite` instance arguments on `range e` and `ker e` are
+automatic over a field, and more generally over any principal ideal domain `R` for which
+`M` itself is finite and free (submodules of finite free modules over a PID are finite
+and free). -/
+theorem IsIdempotentElem.trace_eq_zero_iff {R : Type*} [CommRing R] [CharZero R]
+    {M : Type*} [AddCommGroup M] [Module R M]
+    {e : M →ₗ[R] M} (he : IsIdempotentElem e)
+    [Module.Free R (range e)] [Module.Finite R (range e)]
+    [Module.Free R (ker e)] [Module.Finite R (ker e)] :
+    trace R M e = 0 ↔ e = 0 := by
+  rw [he.isProj_range.trace, Nat.cast_eq_zero, finrank_eq_zero_iff_of_free,
+    Submodule.subsingleton_iff_eq_bot, range_eq_bot]
 
 alias ⟨IsIdempotentElem.eq_zero_of_trace_eq_zero, _⟩ := IsIdempotentElem.trace_eq_zero_iff
 
