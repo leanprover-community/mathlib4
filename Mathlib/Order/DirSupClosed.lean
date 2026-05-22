@@ -5,11 +5,12 @@ Authors: Christopher Hoskin, Violeta Hernández Palacios
 -/
 module
 
+public import Mathlib.Data.Fintype.Order
 public import Mathlib.Order.Antisymmetrization
 public import Mathlib.Order.CompleteLattice.Defs
 public import Mathlib.Order.UpperLower.Basic
 
-import Mathlib.Data.Set.Lattice
+import Mathlib.Data.Nat.Lattice
 
 /-!
 # Sets closed under directed suprema
@@ -299,6 +300,29 @@ theorem dirSupClosed_singleton (a : α) : DirSupClosed {a} := by
 
 theorem dirSupClosedOn_singleton (a : α) : DirSupClosedOn D {a} :=
   (dirSupClosed_singleton a).dirSupClosedOn
+
+theorem DirSupClosed.of_finite (hs : s.Finite) : DirSupClosed s := by
+  intro t ht ht₀ ht₁ a ha
+  obtain ⟨b, hbt, hb⟩ := ht₁.finite_le ht₀ (hs.subset ht)
+  exact ht <| ha.unique ⟨hb, fun x hx ↦ hx hbt⟩ ▸ hbt
+
+theorem dirSupClosed_range_nat {f : ℕ → α} (hf : Monotone f) (hf' : IsCofinal (.range f)) :
+    DirSupClosed (range f) := by
+  intro s hs hs₀ hs₁ a ha
+  obtain ⟨_, ⟨n, rfl⟩, han⟩ := hf' a
+  obtain rfl | han := han.eq_or_lt
+  · simp
+  have hfb : BddAbove (f ⁻¹' s) := by
+    refine ⟨n, fun m hm ↦ ?_⟩
+    by_contra! hnm
+    exact (ha.1 hm).not_gt (han.trans_le (hf hnm.le))
+  refine ⟨sSup (f ⁻¹' s), IsLUB.unique ⟨?_, ?_⟩ ha⟩ <;> intro x hx
+  · obtain ⟨m, rfl⟩ := hs hx
+    exact hf (le_csSup hfb hx)
+  · apply hx (Nat.sSup_mem _ hfb)
+    obtain ⟨x, hx⟩ := hs₀
+    obtain ⟨m, rfl⟩ := hs hx
+    exact ⟨m, hx⟩
 
 end PartialOrder
 
