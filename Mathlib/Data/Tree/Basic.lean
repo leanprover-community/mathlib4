@@ -24,7 +24,7 @@ additional data. We provide the notation `a △ b` for making a `BinaryTree Unit
 <https://leanprover-community.github.io/archive/stream/113488-general/topic/tactic.20question.html>
 -/
 
-public section
+@[expose] public section
 
 
 /-- A binary tree with values stored in non-leaf nodes. -/
