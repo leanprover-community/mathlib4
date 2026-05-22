@@ -1,5 +1,3 @@
-
-
 import Mathlib.Tactic.ToFun
 import Mathlib.Analysis.Normed.Ring.Basic
 
