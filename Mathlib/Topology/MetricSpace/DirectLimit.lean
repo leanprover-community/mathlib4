@@ -61,11 +61,9 @@ variable [∀ i, MetricSpace (G i)]
 variable [∀ i j h, IsometryClass (T h) (G i) (G j)]
 
 noncomputable instance : MetricSpace (DirectLimit G f) where
-  dist := DirectLimit.lift₂ f f (fun i ↦ dist (α := G i))
-    (fun i j h x y ↦ (IsometryClass.dist_eq (f i j h) x y).symm)
   __ := (inferInstance : PseudoMetricSpace (DirectLimit G f))
   eq_of_dist_eq_zero {x y} h := DirectLimit.induction₂ f (fun i x' y' h' ↦ by
-    rw [lift₂_def] at h'
+    rw [dist_def] at h'
     simp [eq_of_dist_eq_zero h']) x y h
 
 end MetricSpace
