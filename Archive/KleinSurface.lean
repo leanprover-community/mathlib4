@@ -177,3 +177,67 @@ private def kleinZ7Data : Array (Fin 8) :=
 
 -- Quotient graph theorems omitted; they depend on SimpleGraph.quotientGraph
 -- from the Sabidussi chain (#39551) and belong in a separate PR.
+
+/-! ## Sabidussi coset graph representation -/
+
+section KleinSabidussi
+
+private def kG1F : Array (Fin 56) := #[0,6,26,48,41,34,27,16,39,52,36,18,46,29,9,45,54,50,30,12,23,5,33,49,17,55,42,1,4,40,11,15,44,51,21,3,47,8,38,37,13,28,2,25,53,31,19,10,35,20,24,22,14,32,7,43]
+private def kG1I : Array (Fin 56) := #[0,27,42,35,28,21,1,54,37,14,47,30,19,40,52,31,7,24,11,46,49,34,51,20,50,43,2,6,41,13,18,45,53,22,5,48,10,39,38,8,29,4,26,55,32,15,12,36,3,23,17,33,9,44,16,25]
+private def kG2F : Array (Fin 56) := #[1,0,6,5,4,3,2,11,10,9,8,7,13,12,19,18,17,16,15,14,20,27,26,25,24,23,22,21,42,48,47,46,45,44,43,35,41,40,39,38,37,36,28,34,33,32,31,30,29,52,51,50,49,55,54,53]
+private def kG2I : Array (Fin 56) := #[1,0,6,5,4,3,2,11,10,9,8,7,13,12,19,18,17,16,15,14,20,27,26,25,24,23,22,21,42,48,47,46,45,44,43,35,41,40,39,38,37,36,28,34,33,32,31,30,29,52,51,50,49,55,54,53]
+private theorem kG1F_s : kG1F.size = 56 := by native_decide
+private theorem kG1I_s : kG1I.size = 56 := by native_decide
+private theorem kG2F_s : kG2F.size = 56 := by native_decide
+private theorem kG2I_s : kG2I.size = 56 := by native_decide
+private def kG1 : Equiv.Perm (Fin 56) where
+  toFun i := kG1F[i.val]'(by have := kG1F_s; omega)
+  invFun i := kG1I[i.val]'(by have := kG1I_s; omega)
+  left_inv := by native_decide
+  right_inv := by native_decide
+private def kG2 : Equiv.Perm (Fin 56) where
+  toFun i := kG2F[i.val]'(by have := kG2F_s; omega)
+  invFun i := kG2I[i.val]'(by have := kG2I_s; omega)
+  left_inv := by native_decide
+  right_inv := by native_decide
+private def kGens : Fin 2 → Equiv.Perm (Fin 56) | 0 => kG1 | 1 => kG2
+private def kGroup : Subgroup (Equiv.Perm (Fin 56)) := Subgroup.closure (Set.range kGens)
+
+private def kWD : Array (List (Fin 4)) := #[
+  [],[1],[1,0,1],[1,2,1,0,1],[1,0,1,2,1,0],[1,2,1,0],[1,0],[1,0,1,0,1,2,1,2,1,2],
+  [1,0,1,2,1,2,1,2,1],[1,2,1,2,1,0,1,0,1,2],[1,0,1,2,1,2,1,2],[1,0,1,2,1,2,1,0,1,0],
+  [1,2,1,0,1,0,1,2,1],[1,2,1,0,1,0,1,2],[1,2,1,2,1,0,1,0,1,0],[1,0,1,0,1,0,1,2,1,2],
+  [1,0,1,0,1,2,1,2,1],[1,0,1,0,1,2,1,2],[1,0,1,2,1,2,1,0,1,2],[1,2,1,0,1,0,1,2,1,2],
+  [1,2,1,2,1,0,1,2],[1,2,1],[1,0,1,0,1],[1,2,1,2,1,0,1],[1,0,1,0,1,2,1,0],[1,2,1,2,1,0],
+  [1,0,1,0],[1,2],[1,0,1,2,1],[1,2,1,0,1,0,1],[1,0,1,2,1,2,1,0,1],[1,0,1,0,1,0,1,2,1,0],
+  [1,0,1,0,1,0,1,2],[1,0,1,0,1,0],[1,2,1,2],[1,2,1,0,1,2],[1,0,1,2,1,2,1],
+  [1,2,1,0,1,0,1,0,1],[1,0,1,2,1,2,1,2,1,0,1],[1,0,1,2,1,2,1,2,1,0],[1,2,1,0,1,0,1,0],
+  [1,0,1,2,1,2],[1,0,1,2],[1,2,1,2,1],[1,0,1,0,1,0,1],[1,0,1,0,1,0,1,2,1],
+  [1,2,1,0,1,0,1,2,1,0],[1,0,1,2,1,2,1,0],[1,2,1,0,1,0],[1,2,1,2,1,0,1,0],
+  [1,0,1,0,1,2,1],[1,0,1,0,1,2],[1,2,1,2,1,0,1,0,1],[1,2,1,2,1,2,1],[1,0,1,0,1,2,1,2,1,0],
+  [1,2,1,2,1,2]]
+private theorem kWD_s : kWD.size = 56 := by native_decide
+private def kWit (v : Fin 56) : List (Fin 4) := kWD[v.val]'(by have := kWD_s; omega)
+private theorem kWit_ok : ∀ v : Fin 56, applyWord' kGens (kWit v) 0 = v := by native_decide
+private noncomputable instance : MulAction kGroup (Fin 56) := MulAction.compHom _ kGroup.subtype
+private noncomputable instance : GraphAction kGroup (Fin 56) kleinGraph where
+  adj_smul g u v h := closureGraphAction kGens
+    (fun i => by match i with | 0 => exact (by native_decide) | 1 => exact (by native_decide))
+    g.1 g.2 u v h
+private noncomputable instance : MulAction.IsPretransitive kGroup (Fin 56) where
+  exists_smul_eq x y :=
+    ⟨⟨_, kGroup.mul_mem (applyWord'_mem kGens _) (kGroup.inv_mem (applyWord'_mem kGens _))⟩, by
+      change ((applyWord' kGens (kWit x)).symm.trans (applyWord' kGens (kWit y))) x = y
+      simp only [Equiv.trans_apply]
+      rw [show (applyWord' kGens (kWit x)).symm x = 0 from by
+        rw [Equiv.symm_apply_eq]; exact (kWit_ok x).symm]; exact kWit_ok y⟩
+
+/-- **The Klein quartic graph is a Sabidussi coset graph**: `Sab(PGL(2,7), C₂₄, D)`.
+
+PGL(2,7) (order 336) acts vertex-transitively on the 56 vertices.
+The stabilizer of vertex 0 has order 6, giving 336/6 = 56 vertices. -/
+noncomputable def kleinSabidussiIso :
+    kleinGraph ≃g SimpleGraph.cosetGraph (MulAction.stabilizer kGroup (0 : Fin 56))
+      (connectionSet kGroup kleinGraph 0) (connectionSet.isConnectionSet 0) :=
+  sabidussiIso 0
+end KleinSabidussi
