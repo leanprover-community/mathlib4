@@ -130,14 +130,13 @@ private theorem bell_cons_mul_count (m : Multiset ℕ) {a : ℕ} (ha : a ≠ 0) 
         simp [rest, Finset.erase_eq_of_notMem hmem, hcount]
     simpa [c, hsplit, mul_assoc] using Multiset.bell_mul_eq m
   have hm : m.sum ! * a ! = m.bell * a ! * c := by grind
-  have ha_mem : a ∈ (a ::ₘ m).toFinset.erase 0 := by simp [ha]
   have hc : 0 < a ! * c := Nat.mul_pos (by positivity) <|
     Nat.mul_pos (by simp [Nat.factorial_pos]) (by positivity)
   apply Nat.eq_of_mul_eq_mul_right hc
   calc
     _ = (m.sum + a)! := by
       have hq := Multiset.bell_mul_eq (a ::ₘ m)
-      rw [← Finset.mul_prod_erase _ _ ha_mem, ← hrest] at hq
+      rw [← Finset.mul_prod_erase _ _ (a := a) (by simp [*]), ← hrest] at hq
       simpa [c, Nat.factorial_succ, add_comm, mul_assoc, mul_left_comm] using hq
     _ = ((m.sum + a).choose a * m.bell) * (a ! * c) := by
       simp [← Nat.add_choose_mul_factorial_mul_factorial, mul_assoc, hm]
@@ -277,10 +276,8 @@ private def sigmaPartitionWithPartEquiv (n : ℕ) :
 that `m.sum = n`. -/
 theorem bell_eq_sum_partition (n : ℕ) : n.bell = ∑ p : n.Partition, p.parts.bell := by
   refine Nat.strong_induction_on n ?_
-  intro n ih
-  cases n with
-  | zero => simp
-  | succ n =>
+  rintro (_ | n) ih
+  · simp
   rw [Nat.bell_succ]
   calc
   _ = ∑ i : Fin n.succ, ∑ q : (n - i).Partition, n.choose i * q.parts.bell := by
