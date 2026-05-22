@@ -20,6 +20,10 @@ elab "#check_title " title:str : command => do
 
 /-- info: Message: 'error: the PR title does not contain a colon' -/
 #guard_msgs in
+#check_title ""
+
+/-- info: Message: 'error: the PR title does not contain a colon' -/
+#guard_msgs in
 #check_title "my short PR title"
 
 /--
@@ -31,6 +35,27 @@ Allowed values for `kind` are [feat, chore, perf, refactor, style, fix, doc, tes
 -/
 #guard_msgs in
 #check_title "fsdfs: bad title"
+
+-- TODO: can these error messages be more informative?
+/--
+info: Message: 'error: the PR title should be of the form
+  kind: main title
+or
+  kind(scope): main title
+Allowed values for `kind` are [feat, chore, perf, refactor, style, fix, doc, test, ci]'
+-/
+#guard_msgs in
+#check_title "feat:"
+
+/--
+info: Message: 'error: the PR title should be of the form
+  kind: main title
+or
+  kind(scope): main title
+Allowed values for `kind` are [feat, chore, perf, refactor, style, fix, doc, test, ci]'
+-/
+#guard_msgs in
+#check_title "feat: "
 
 /-- info: Message: 'error: the PR title should not end with a full stop' -/
 #guard_msgs in
