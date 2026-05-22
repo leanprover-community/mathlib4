@@ -50,7 +50,7 @@ lemma extendedHom_quotientMk (α : (FractionalIdeal A⁰ (FractionRing A))ˣ) :
 
 @[simp]
 theorem extendedHom_mk (I : (FractionalIdeal A⁰ (FractionRing A))ˣ) :
-    extendedHom A B (ClassGroup.mk I) = ClassGroup.mk
+    extendedHom A B (ClassGroup.mk _ I) = ClassGroup.mk _
         (Units.map (FractionalIdeal.extendedHom (FractionRing B) B).toMonoidHom I) := by
   rw [← ClassGroup.Quot_mk_eq_mk, ← ClassGroup.Quot_mk_eq_mk]
   exact extendedHom_quotientMk A B I
@@ -85,7 +85,7 @@ lemma extendedHom_mk0 [IsDedekindDomain B] (I : (Ideal A)⁰) :
 
 theorem extendedHom_mk0' (I : (Ideal A)⁰) :
     extendedHom A B (ClassGroup.mk0 I) =
-      ClassGroup.mk (Units.map (FractionalIdeal.extendedHom (FractionRing B) B).toMonoidHom
+      ClassGroup.mk _ (Units.map (FractionalIdeal.extendedHom (FractionRing B) B).toMonoidHom
       (FractionalIdeal.mk0 (FractionRing A) I)) := by
   rw [← ClassGroup.mk_mk0 (FractionRing A), extendedHom_mk]
 
