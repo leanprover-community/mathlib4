@@ -325,30 +325,25 @@ lemma tsum_oddLogDivMulPred_nat_tail_lt_integral : ∑' n : ℕ, oddLogDivMulPre
   let I := ∫ x in Set.Ioi 2, oddLogDivMulPred x
   let A := ∫ x in 2..3, oddLogDivMulPred x
   let J := ∫ x in Set.Ioi 3, oddLogDivMulPred x
-  let δ := A - oddLogDivMulPred 3
-  have hgap : 0 < δ := by
-    dsimp [δ, A]
+  have hgap : 0 < A - oddLogDivMulPred 3 := by
+    dsimp [A]
     exact sub_pos.mpr oddLogDivMulPred_three_lt_integral_two_three
   have hI_decomp : A + J = I :=
     intervalIntegral.integral_interval_add_Ioi integral_oddLogDivMulPred_converges
       (integral_oddLogDivMulPred_converges.mono_set
         (Set.Ioi_subset_Ioi (by norm_num)))
-  have hI_sub_delta : I - δ = oddLogDivMulPred 3 + J := by
-    dsimp [δ]
+  have hI_sub_delta : I - (A - oddLogDivMulPred 3) = oddLogDivMulPred 3 + J := by
     rw [← hI_decomp]
     ring
-  have hpartial (n : ℕ) : ∑ i ∈ range n, oddLogDivMulPred ((i + 3 : ℕ) : ℝ) ≤ I - δ := by
+  have hpartial (n : ℕ) : ∑ i ∈ range n, oddLogDivMulPred ((i + 3 : ℕ) : ℝ)
+      ≤ I - (A - oddLogDivMulPred 3) := by
     rcases n with rfl | m
     · rw [sum_range_zero, hI_sub_delta]
       refine add_nonneg (oddLogDivMulPred_nonneg (by norm_num)) ?_
       refine setIntegral_nonneg measurableSet_Ioi fun x hx ↦ ?_
       exact oddLogDivMulPred_nonneg (by grind)
-    · have hrest_eq : ∑ i ∈ range m, oddLogDivMulPred ((i + 4 : ℕ) : ℝ) =
-            ∑ j ∈ Ico 3 (m + 3), oddLogDivMulPred (j + 1 : ℕ) := by
-        rw [range_eq_Ico, ← sum_Ico_add' (fun j ↦ oddLogDivMulPred (j + 1 : ℕ)) 0 m (c := 3)]
-      have hanti_interval : AntitoneOn oddLogDivMulPred (Set.Icc 3 ((m + 3 : ℕ) : ℝ)) :=
+    · have hanti_interval : AntitoneOn oddLogDivMulPred (Set.Icc 3 ((m + 3 : ℕ) : ℝ)) :=
         oddLogDivMulPred_strictAntiOn.antitoneOn.mono fun x hx ↦ le_trans (by norm_num) hx.1
-      have hm23 : 2 ≤ ((m + 3 : ℕ) : ℝ) := by exact_mod_cast (by omega : 2 ≤ m + 3)
       have htail_nonneg : 0 ≤ ∫ x in Set.Ioi (((m + 3 : ℕ) : ℝ)), oddLogDivMulPred x :=
         setIntegral_nonneg measurableSet_Ioi fun x hx ↦ oddLogDivMulPred_nonneg (by grind)
       have hJ_decomp : (∫ x in 3..((m + 3 : ℕ) : ℝ), oddLogDivMulPred x)
@@ -357,24 +352,23 @@ lemma tsum_oddLogDivMulPred_nat_tail_lt_integral : ∑' n : ℕ, oddLogDivMulPre
         exact intervalIntegral.integral_interval_add_Ioi
           (integral_oddLogDivMulPred_converges.mono_set
             (Set.Ioi_subset_Ioi (by norm_num)))
-          (integral_oddLogDivMulPred_converges.mono_set (Set.Ioi_subset_Ioi hm23))
+          (integral_oddLogDivMulPred_converges.mono_set (by grind))
       calc
         _ = oddLogDivMulPred 3 + ∑ i ∈ range m, oddLogDivMulPred ((i + 4 : ℕ) : ℝ) := by
           rw [sum_range_succ']
           simp [Nat.add_assoc, add_comm]
-        _ ≤ I - δ := by
+        _ ≤ I - (A - oddLogDivMulPred 3) := by
           rw [hI_sub_delta]
           have hsum_le_J : ∑ i ∈ range m, oddLogDivMulPred ((i + 4 : ℕ) : ℝ) ≤ J := by
             calc
               _ ≤ ∫ x in 3..((m + 3 : ℕ) : ℝ), oddLogDivMulPred x := by
-                rw [hrest_eq]
+                rw [range_eq_Ico, sum_Ico_add' (fun j ↦ oddLogDivMulPred (j + 1 : ℕ)) 0 m 3]
                 exact AntitoneOn.sum_le_integral_Ico (by omega) hanti_interval
               _ ≤ J := by linarith
           simpa [add_comm, add_left_comm, add_assoc] using
             add_le_add_left hsum_le_J (oddLogDivMulPred 3)
-  have htail_le : ∑' n : ℕ, oddLogDivMulPred ((n + 3 : ℕ) : ℝ) ≤ I - δ :=
-    tsum_le_of_sum_range_le (fun n ↦ oddLogDivMulPred_nonneg (by exact_mod_cast (by lia)))
-      hpartial
+  have htail_le : ∑' n : ℕ, oddLogDivMulPred ((n + 3 : ℕ) : ℝ) ≤ I - (A - oddLogDivMulPred 3) :=
+    tsum_le_of_sum_range_le (fun n ↦ oddLogDivMulPred_nonneg (by grind)) hpartial
   linarith
 
 lemma odd_tail_lt_first_term_add_integral : ∑' k : Set.Ici 2, oddLogDivMulPred k
@@ -630,7 +624,7 @@ lemma finite_primeLogDivMulPred_lt_one {n : ℕ} :
         odd_tail_lt_seven_log_five_add_five_div_forty, log_five_lt_d9]
 
 lemma log_factorial_lt_mul_primeLogSum_add_self {n : ℕ} (hn : 1 ≤ n) :
-    log (n.factorial) < n * (∑ p ∈ Ioc 0 n with p.Prime, log p / p) + n := by
+    log (n.factorial) ≤ n * (∑ p ∈ Ioc 0 n with p.Prime, log p / p) + n := by
   have hnpos : (0 : ℝ) < n := by exact_mod_cast lt_of_lt_of_le (by norm_num) hn
   nlinarith [mul_lt_mul_of_pos_left (finite_primeLogDivMulPred_lt_one (n := n)) hnpos,
     log_factorial_le_mul_primeLogSum_add_error (n := n)]
