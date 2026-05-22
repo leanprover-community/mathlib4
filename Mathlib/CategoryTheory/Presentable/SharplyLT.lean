@@ -26,14 +26,42 @@ namespace Cardinal
 variable {κ₁ κ₂ : Cardinal.{w}} [Fact κ₁.IsRegular] [Fact κ₂.IsRegular]
 
 variable (κ₁ κ₂) in
-structure SharplyLT : Prop where
-  lt : κ₁ < κ₂
+structure SharplyLE : Prop where
+  le : κ₁ ≤ κ₂
   isCardinalAccessible_cardinalDirectedPoset :
     IsCardinalAccessibleCategory (CardinalFilteredPoset κ₁) κ₂
 
-namespace SharplyLT
+open CardinalFilteredPoset in
+lemma exists_cofinal_of_isCardinalAccessibleCategory_cardinalFilteredPoset
+    (h : κ₁ ≤ κ₂) [IsCardinalAccessibleCategory (CardinalFilteredPoset κ₁) κ₂]
+    {X : Type w} (hX : HasCardinalLT X κ₂) :
+    ∃ (A : Set (SetCardinalLT κ₁ X)), HasCardinalLT A κ₂ ∧ IsCofinal A := by
+  obtain ⟨J, _, _, ⟨p⟩⟩ := (isCardinalFilteredGenerator_isCardinalPresentable
+    (CardinalFilteredPoset κ₁) κ₂).exists_colimitsOfShape (setCardinalLT κ₁ X)
+  have : IsCardinalFiltered J κ₁ := .of_le _ h
+  have hp (j : J) : HasCardinalLT (p.diag.obj j).obj κ₂ := by
+    rw [← CardinalFilteredPoset.isCardinalPresentable_iff _ h]
+    exact p.prop_diag_obj j
+  choose j y hy using fun x ↦ Types.jointly_surjective_of_isColimit
+    (isColimitOfPreserves (forget (CardinalFilteredPoset κ₁)) p.isColimit)
+    (SetCardinalLT.singleton κ₁ x)
+  dsimp at y hy
+  let j' := IsCardinalFiltered.max j hX
+  let y' (x : X) : (p.diag.obj j').obj :=
+    p.diag.map (IsCardinalFiltered.toMax j hX x) (y x)
+  have hy' (x : X) : p.ι.app j' (y' x) = SetCardinalLT.singleton κ₁ x := by
+    rw [← hy, ← p.w (IsCardinalFiltered.toMax j hX x)]
+    rfl
+  refine ⟨Set.range (p.ι.app j'), (hp j').of_surjective _
+    (Set.rangeFactorization_surjective (f := p.ι.app j')), fun ⟨B, hB⟩ ↦ ?_⟩
+  let j'' := IsCardinalFiltered.max (fun b ↦ y' b.val) hB
+  refine ⟨_, ⟨j'', rfl⟩, fun b hb ↦ ?_⟩
+  have : y' b ≤ j'' := (leOfHom (IsCardinalFiltered.toMax (fun b ↦ y' b.val) hB ⟨b, hb⟩) :)
+  refine (p.ι.app j').hom.hom.monotone this ?_
+  convert Set.mem_singleton b
+  exact Subtype.ext_iff.1 (hy' b)
 
-lemma le (h : SharplyLT κ₁ κ₂) : κ₁ ≤ κ₂ := h.lt.le
+namespace SharplyLE
 
 section
 
@@ -41,11 +69,11 @@ section
 is a property of objects which allows to show that `C` is a `κ₂`-accessible category.
 This property is defined as the closure of `κ₁`-presentable objects under
 colimits of shape `J` for categories `J` such that `Arrow J` is of cardinality `< κ₂`. -/
-def generator (_ : SharplyLT κ₁ κ₂) (C : Type u) [Category.{v} C] :
+abbrev generator (_ : SharplyLE κ₁ κ₂) (C : Type u) [Category.{v} C] :
     ObjectProperty C :=
   (isCardinalPresentable C κ₁).colimitsCardinalClosure κ₂
 
-variable (h : SharplyLT κ₁ κ₂) (C : Type u) [Category.{v} C]
+variable (h : SharplyLE κ₁ κ₂) (C : Type u) [Category.{v} C]
 
 lemma generator_le_isCardinalPresentable [LocallySmall.{w} C] :
     h.generator C ≤ isCardinalPresentable C κ₂ :=
@@ -53,16 +81,11 @@ lemma generator_le_isCardinalPresentable [LocallySmall.{w} C] :
     (fun _ _ hJ ↦ isClosedUnderColimitsOfShape_isCardinalPresentable C hJ)
     (isCardinalPresentable_monotone _ h.le)
 
-instance [IsCardinalAccessibleCategory C κ₁] :
-    ObjectProperty.EssentiallySmall.{w} (h.generator C) := by
-  dsimp [generator]
-  infer_instance
-
 variable [IsCardinalAccessibleCategory C κ₁]
 
 namespace isCardinalFilteredGenerator
 
-def prop (_ : SharplyLT κ₁ κ₂) (J : Type w) [PartialOrder J] (A : Set J) : Prop :=
+def prop (_ : SharplyLE κ₁ κ₂) (J : Type w) [PartialOrder J] (A : Set J) : Prop :=
   IsCardinalFiltered (Subtype A) κ₁ ∧ HasCardinalLT (Subtype A) κ₂
 
 variable {h} {C} {X : C} {J : Type w} [PartialOrder J]
@@ -168,21 +191,21 @@ lemma isCardinalFilteredGenerator :
 
 end
 
-lemma isCardinalAccessible (h : SharplyLT κ₁ κ₂)
+lemma isCardinalAccessible (h : SharplyLE κ₁ κ₂)
     (C : Type u) [Category.{v} C] [IsCardinalAccessibleCategory C κ₁] :
     IsCardinalAccessibleCategory C κ₂ where
   toHasCardinalFilteredColimits := .of_le C h.le
   exists_generator :=
     ⟨_, inferInstance, h.isCardinalFilteredGenerator C⟩
 
-lemma trans (h₁₂ : SharplyLT κ₁ κ₂) {κ₃ : Cardinal.{w}} [Fact κ₃.IsRegular]
-    (h₂₃ : SharplyLT κ₂ κ₃) :
-    SharplyLT κ₁ κ₃ where
-  lt := h₁₂.lt.trans h₂₃.lt
+lemma trans (h₁₂ : SharplyLE κ₁ κ₂) {κ₃ : Cardinal.{w}} [Fact κ₃.IsRegular]
+    (h₂₃ : SharplyLE κ₂ κ₃) :
+    SharplyLE κ₁ κ₃ where
+  le := h₁₂.le.trans h₂₃.le
   isCardinalAccessible_cardinalDirectedPoset := by
     have := h₁₂.isCardinalAccessible_cardinalDirectedPoset
     exact h₂₃.isCardinalAccessible _
 
-end SharplyLT
+end SharplyLE
 
 end Cardinal

@@ -418,6 +418,10 @@ variable (κ) (X : Type u)
 
 abbrev SetCardinalLT := Subtype (fun (S : Set X) ↦ HasCardinalLT S κ)
 
+variable {X} in
+abbrev SetCardinalLT.singleton (x : X) : SetCardinalLT κ X :=
+  ⟨{x}, hasCardinalLT_of_finite _ _ (Cardinal.IsRegular.aleph0_le Fact.out)⟩
+
 instance : IsCardinalFiltered (SetCardinalLT κ X) κ :=
   isCardinalFiltered_preorder _ _
     (fun K f hK ↦
