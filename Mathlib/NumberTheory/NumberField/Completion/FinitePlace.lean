@@ -11,10 +11,8 @@ public import Mathlib.NumberTheory.NumberField.InfinitePlace.Embeddings
 public import Mathlib.RingTheory.DedekindDomain.Factorization
 public import Mathlib.RingTheory.Valuation.Archimedean
 public import Mathlib.Topology.Algebra.Valued.NormedValued
-public import Mathlib.LinearAlgebra.FreeModule.IdealQuotient
 public import Mathlib.RingTheory.Ideal.Int
 public import Mathlib.RingTheory.Valuation.Discrete.RankOne
-public import Mathlib.Topology.Algebra.Valued.NormedValued
 
 import Mathlib.Algebra.FiniteSupport.Basic
 
@@ -267,7 +265,7 @@ theorem FinitePlace.norm_lt_one_iff_mem (x : R) :
   rw [norm_embedding]
   exact v.adicAbv_coe_lt_one_iff (one_lt_absNorm_nnreal v) x
 
-lemma FinitePlace.two_le_norm_of_one_lt_norm {v : HeightOneSpectrum (𝓞 K)}
+lemma FinitePlace.two_le_norm_of_one_lt_norm {v : HeightOneSpectrum R}
     (x : v.adicCompletion K) (h : 1 < ‖x‖) :
     2 ≤ ‖x‖ := by
   rw [FinitePlace.norm_def, WithZeroMulInt.toNNReal_neg_apply (absNorm_ne_zero v) (by aesop)]
