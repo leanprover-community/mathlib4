@@ -24,6 +24,8 @@ nonnegative on `s`.
 * `AbsolutelyMonotoneOn.contDiffOn` — the function is `C^∞` on `s`.
 * `AbsolutelyMonotoneOn.of_contDiff` — a globally `C^∞` function with nonnegative iterated
   derivatives on `s` is absolutely monotone on `s`.
+* `AbsolutelyMonotoneOn.iff_iteratedDerivWithin_nonneg` — under `UniqueDiffOn`, the definition
+  is equivalent to `f` being `C^∞` on `s` with every iterated derivative within `s` nonnegative.
 * `AbsolutelyMonotoneOn.add` — closure under addition.
 * `AbsolutelyMonotoneOn.smul` — closure under nonnegative scalar multiplication.
 
@@ -50,7 +52,8 @@ open scoped ContDiff
 iterated derivatives of `f` on `s` are nonnegative. For technical reasons related to unique
 differentiability, the precise definition is phrased as the existence of a Taylor series for
 `f` on `s` whose `n`th term, evaluated at the all-ones tuple, is nonnegative for every `n` and
-every `x ∈ s`. See the module docstring for the equivalence under `UniqueDiffOn`. -/
+every `x ∈ s`. See `AbsolutelyMonotoneOn.iff_iteratedDerivWithin_nonneg` for the equivalence
+under `UniqueDiffOn`. -/
 def AbsolutelyMonotoneOn (f : ℝ → ℝ) (s : Set ℝ) : Prop :=
   ∃ p : ℝ → FormalMultilinearSeries ℝ ℝ ℝ,
     HasFTaylorSeriesUpToOn ∞ f p s ∧
@@ -81,6 +84,16 @@ theorem iteratedDerivWithin_nonneg (hf : AbsolutelyMonotoneOn f s) (hs : UniqueD
     hp.eq_iteratedFDerivWithin_of_uniqueDiffOn (mod_cast le_top) hs hx
   rw [iteratedDerivWithin_eq_iteratedFDerivWithin, ← heq]
   exact hp_nn n hx
+
+/-- Under `UniqueDiffOn`, a function is absolutely monotone on `s` iff it is `C^∞` on `s` with
+every iterated derivative within `s` nonnegative. -/
+theorem iff_iteratedDerivWithin_nonneg (hs : UniqueDiffOn ℝ s) :
+    AbsolutelyMonotoneOn f s ↔
+      ContDiffOn ℝ ∞ f s ∧ ∀ n : ℕ, ∀ x ∈ s, 0 ≤ iteratedDerivWithin n f s x := by
+  refine ⟨fun hf => ⟨hf.contDiffOn, fun n x hx => hf.iteratedDerivWithin_nonneg hs n hx⟩, ?_⟩
+  rintro ⟨hcont, hnn⟩
+  refine ⟨ftaylorSeriesWithin ℝ f s, hcont.ftaylorSeriesWithin hs, fun n x hx => ?_⟩
+  exact iteratedDerivWithin_eq_iteratedFDerivWithin (𝕜 := ℝ) (f := f) (s := s) ▸ hnn n x hx
 
 /-! ### Closure properties -/
 
