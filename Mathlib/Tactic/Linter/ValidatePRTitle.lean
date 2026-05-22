@@ -29,10 +29,18 @@ def prTitle : Parser (String × Option String × String) := do
         <* skipString "): ")
       <|> (skipString ": " *> pure none)
     )
-  let mainTitle ← manyChars any
+  let mainTitle ← many1Chars any
   return (kind, scope, mainTitle)
 
 -- Some self-tests for the parser.
+
+/-- info: Except.error "offset 6: expected: ): " -/
+#guard_msgs in
+#eval Parser.run prTitle "feat(x):"
+/-- info: Except.error "offset 9: unexpected end of input" -/
+#guard_msgs in
+#eval Parser.run prTitle "feat(x): "
+
 /-- info: Except.ok ("feat", some "x", "foo") -/
 #guard_msgs in
 #eval Parser.run prTitle "feat(x): foo"
