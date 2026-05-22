@@ -5,9 +5,9 @@ public import Mathlib.RingTheory.GradedAlgebra.Map.auxiliary
 
 @[expose] public section
 /-
-This file defines a type class assumption `AddSubmonoidSSup σ M`, which asserts that the `sSup` in
-some `SetLike` structure `σ` of `AddSubmonoid`s of some `AddCommMonoid` `M` is just the `sSup` of
-submonoids (i.e. the span/additive closure of the union.)
+This file defines a type class assumption `AddSubmonoidClass.IsConcreteSSup σ M`, which asserts that
+the `sSup` in some `SetLike` structure `σ` of `AddSubmonoid`s of some `AddCommMonoid` `M` is just
+the `sSup` of submonoids (i.e. the span/additive closure of the union.)
 
 Given `{σ M : Type*} [SetLike σ M]`, we have a map
 
@@ -27,72 +27,105 @@ M`.
 
 - Mathlib's `[IsConcreteLE σ M]` asserts that `coe` is order-preserving and also order-reflecting.
   (In functor language, `coe` *is* a functor, automatically faithful, and also full.)
-- The map `AddSubmonoid M → Set M` (a special case of `coe`) has the property `IsConcreteLE`. It
-  moreover preserves arbitrary meets/infimas/limits = intersections, but not joins/supremas/
-  colimits. (In functor  language, it is a full and faithful functor that preserves limits. It is
+
+- We have `[IsConcreteLE (AddSubmonoid M) M]`, so the second map `AddSubmonoid M → Set M` in the
+  above factorization is order-preserving and order-reflecting.
+
+  It also preserves arbitrary meets/infimas/limits = intersections, but not joins/supremas/
+  colimits. (In functor language, it is a full and faithful functor that preserves limits. It is
   right adjoint to `AddSubmonoid.closure`.  Together, these functors define a  "GaloisInsertion",
   i.e. a Galois adjunction such that `closure ∘ coe = id`.)
-- The assumption `[AddSubmonoidSSup σ M]` defined here asserts that the factorization
-  `ofClass : σ → AddSubmonoid M` preserves joins/supremas/colimits.
-  This implies that the map is order-preserving, but we do not need this.
-  It also implies that there is a right adjoint, but again, we do not need this.
-  Perhaps there should be an additional typeclass for  "order-preserving" anyway, which
-  `AddSubmonoidSSup` extends.
-- Could perhaps put even stronger assumptions on the factorization `ofClass : σ → AddSubmonoid M`.
-   hink about the case `σ = Submodules R M`.  Here, the map `ofClass : σ → AddSubmonoid M` is
-  - order preserving, and
-  - preserves limits, and
-  - preserves colimits.
-  Its left adjoint sends a submonoid `A` to the smallest R-submodule containing `A`,
-  its right adjoint sends a submonoid `A` the largest R-submodule contained in `A`.
-  (There is always some  such R-submodule; in the worst case, it's the submodule {0}.)
-  Precomposing either of these with `ofClass` is the identity on `σ`, so these two Galois
-  adjunctions are a Galois insertion and a Galois coinsertion, respectively.
-  -/
 
+- The assumption `[AddSubmonoidClass.IsConcreteSSup σ M]` defined here asserts that the
+  factorization `ofClass : σ → AddSubmonoid M` preserves joins/supremas/colimits.
 
-class AddSubmonoidSSup (σ : Type*) [CompleteLattice σ]
-  (M : outParam Type*) [AddCommMonoid M]
-  [SetLike σ M] [AddSubmonoidClass σ M]
-  where
-  sSup_toAddSubmonoid (S : Set σ) :
-  AddSubmonoid.ofClass (sSup S) = sSup (AddSubmonoid.ofClass '' S)
+  This implies that the map is order-preserving, but we do not need this. It also implies that there
+  is a right adjoint, but again, we do not need this. Note that this follows the general pattern in
+  Mathlib, where sup-preserving maps are *defined* without an explicit assumption that they preserve
+  order.
 
-/-- A SetLike generalization of `Submodule.iSup_toAddSubmonoid` -/
-lemma SetLike.iSup_toAddSubmonoid {σ : Type*} [CompleteLattice σ]
-  {M : Type*} [AddCommMonoid M] [SetLike σ M] [AddSubmonoidClass σ M]
-  [AddSubmonoidSSup σ M] {ι : Sort*} (ℳ : ι → σ) :
-  AddSubmonoid.ofClass (⨆ i, ℳ i) = ⨆ i, AddSubmonoid.ofClass (ℳ i)
-  := by
-  rw [iSup,AddSubmonoidSSup.sSup_toAddSubmonoid,←Set.range_comp]
+- In the cases where we currently want to apply `[AddSubmonoidClass.IsConcreteSSup σ M]`, the
+  factorization `ofClass : σ → AddSubmonoid M` satisfies stronger properties. For examplve, for
+  `σ = Submodules R M`, the map `ofClass : σ → AddSubmonoid M` is:
+
+  - order-preserving and
+  - limit-preserves and
+  - colimit-preserving.
+
+  Its left adjoint sends a submonoid `A` to the smallest R-submodule containing `A`, its right
+  adjoint sends a submonoid `A` the largest R-submodule contained in `A`. (There is always some such
+  R-submodule; in the worst case, it's the submodule {0}.) Precomposing either of these with
+  `ofClass` is the identity on `σ`, so these two Galois adjunctions are a Galois insertion and a
+  Galois coinsertion, respectively.
+-/
+
+section Mathlib.Algebra.Group.Submonoid.Defs
+-- SubmoduleClass is defined at line 117, and the last mention is in line 156
+
+/- Notes:
+ - `AddSubmonoidClass.IsConcreteSSup`:
+   Writing `(M : Type*)` rather than `(M : outParam Type*)` in accordance with the docstring of
+   `Setlike` (Mathlib/Data/SetLike/Basic.lean, lines 96-103).  However, there is
+   `(B : outParam Type*)` in the definition of `IsConcreteLE`, so I'm confused above this.
+
+- `SetLike.iSup_toAddSubmonoid` is a SetLike generalization of `Submodule.iSup_toAddSubmonoid`.
+-/
+
+open Submonoid in
+/-- A class to indicate that the canonical map `.ofClass` from a class `S` of submonoids
+    of `M` to `Submonoid M` preserves suprema. -/
+class SubmonoidClass.IsConcreteSSup (S : Type*) (M : outParam Type*) [Monoid M] [SetLike S M]
+    [SubmonoidClass S M] [SupSet S] : Prop where
+  sSup_toSubmonoid (S : Set S) : ofClass (sSup S) = sSup (ofClass '' S)
+
+open AddSubmonoid in
+/-- A class to indicate that the canonical map `.ofClass` from a class `S` of additive submonoids
+    of `M` to `AddSubmonoid M` preserves suprema. -/
+class AddSubmonoidClass.IsConcreteSSup (S : Type*) (M : outParam Type*) [AddMonoid M] [SetLike S M]
+    [AddSubmonoidClass S M] [SupSet S] : Prop where
+  sSup_toAddSubmonoid (S : Set S) : ofClass (sSup S) = sSup (ofClass '' S)
+
+attribute [to_additive existing] SubmonoidClass.IsConcreteSSup
+
+namespace SubmonoidClass
+
+open Submonoid
+
+@[to_additive]
+theorem iSup_toSubmonoid {σ : Type*} {M : Type*} [SetLike σ M] [Monoid M] [SubmonoidClass σ M]
+    [SupSet σ] [IsConcreteSSup σ M]
+    {ι : Sort*} (ℳ : ι → σ) :
+    ofClass (⨆ i, ℳ i) = ⨆ i, ofClass (ℳ i) := by
+  rw [iSup,IsConcreteSSup.sSup_toSubmonoid,←Set.range_comp]
   rfl
 
-@[simp]
-lemma SetLike.mem_iSup_iff_mem_iSup_AddSubmonoid {σ : Type*} [CompleteLattice σ]
-  {M : Type*} [AddCommMonoid M] [SetLike σ M] [AddSubmonoidClass σ M]
-  [AddSubmonoidSSup σ M] {ι : Sort*} (ℳ : ι → σ) (m : M) :
-  m ∈ (⨆ i, ℳ i : σ) ↔ m ∈ (⨆ i, AddSubmonoid.ofClass (ℳ i))
-  := by
-  rw [← SetLike.iSup_toAddSubmonoid ℳ]
+@[to_additive, simp]
+theorem mem_iSup_iff_mem_iSup_Submonoid {σ : Type*} {M : Type*} [SetLike σ M] [Monoid M]
+    [SubmonoidClass σ M] [SupSet σ] [IsConcreteSSup σ M] {ι : Sort*} (ℳ : ι → σ) (m : M) :
+    m ∈ (⨆ i, ℳ i : σ) ↔ m ∈ (⨆ i, ofClass (ℳ i)) := by
+  rw [← iSup_toSubmonoid ℳ]
   rfl
 
-instance (M : Type*) [AddCommMonoid M] :
-  AddSubmonoidSSup (AddSubmonoid M) M where
-  sSup_toAddSubmonoid S := by
-    -- This is essentially `rfl`, but still 3 lines:
-    have h₁ (N : AddSubmonoid M) : AddSubmonoid.ofClass N = N := rfl
-    have h₂ (S : Set (AddSubmonoid M)) : AddSubmonoid.ofClass '' S = S :=
-    Set.EqOn.image_eq_self fun ⦃x⦄ ↦ congrFun rfl
-    rw [h₁,h₂]
+@[to_additive]
+instance (M : Type*) [Monoid M] : IsConcreteSSup (Submonoid M) M where
+  sSup_toSubmonoid S := by
+    have : ofClass (sSup S) = sSup S := by rfl
+    rw [this, Set.EqOn.image_eq_self (f := ofClass) (fun _ ↦ congrFun rfl)]
 
-instance (M : Type*) [AddCommGroup M] :
-  AddSubmonoidSSup (AddSubgroup M) M where
-  sSup_toAddSubmonoid S := by
-    have (N : AddSubgroup M) : AddSubmonoid.ofClass N = N.toAddSubmonoid := by rfl
-    simp [this, Subgroup.toAddSubmonoid_sSup]
+end SubmonoidClass
 
-instance (R : Type*) [Semiring R] (M : Type*) [AddCommMonoid M] [Module R M] :
-  AddSubmonoidSSup (Submodule R M) M where
+end Mathlib.Algebra.Group.Submonoid.Defs
+/- --------------------------------------- -/
+
+@[to_additive]
+instance (M : Type*) [Group M] : SubmonoidClass.IsConcreteSSup (Subgroup M) M where
+  sSup_toSubmonoid S := by
+    have (N : Subgroup M) : Submonoid.ofClass N = N.toSubmonoid := by rfl
+    simp [this, Subgroup.toSubmonoid_sSup]
+
+
+instance (R : Type*) (M : Type*) [Semiring R] [AddCommMonoid M] [Module R M] :
+    AddSubmonoidClass.IsConcreteSSup (Submodule R M) M where
   sSup_toAddSubmonoid S := by
     have (N : Submodule R M) : AddSubmonoid.ofClass N = N.toAddSubmonoid := by rfl
     simp only [this, Submodule.toAddSubmonoid_sSup]

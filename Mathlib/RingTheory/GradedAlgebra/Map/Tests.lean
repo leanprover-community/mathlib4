@@ -10,7 +10,19 @@ variable (f : ι₁ → ι₂)
 variable {M : Type*}
 variable [AddCommMonoid M] (ℳ : ι₁ → AddSubmonoid M)
 variable [DirectSum.Decomposition ℳ]
-#check (inferInstance : AddSubmonoidSSup (AddSubmonoid M) M)
+#check (inferInstance : AddSubmonoidClass.IsConcreteSSup (AddSubmonoid M) M)
+instance : (DirectSum.Decomposition (DirectSum.Decomposition.map f ℳ)) :=
+  DirectSum.Decomposition.map.decomposition f ℳ
+#check (inferInstance : (DirectSum.Decomposition (DirectSum.Decomposition.map f ℳ)))
+end AddCommMonoids
+
+
+section AddCommMonoids
+variable (f : ι₁ → ι₂)
+variable {M : Type*}
+variable [AddCommMonoid M] (ℳ : ι₁ → AddSubmonoid M)
+variable [DirectSum.Decomposition ℳ]
+#check (inferInstance : AddSubmonoidClass.IsConcreteSSup (AddSubmonoid M) M)
 instance : (DirectSum.Decomposition (DirectSum.Decomposition.map f ℳ)) :=
   DirectSum.Decomposition.map.decomposition f ℳ
 #check (inferInstance : (DirectSum.Decomposition (DirectSum.Decomposition.map f ℳ)))
@@ -21,7 +33,7 @@ variable (f : ι₁ → ι₂)
 variable {M : Type*}
 variable [AddCommGroup M] (ℳ : ι₁ → AddSubgroup M)
 variable [DirectSum.Decomposition ℳ]
-#check (inferInstance : AddSubmonoidSSup (AddSubgroup M) M)
+#check (inferInstance : AddSubmonoidClass.IsConcreteSSup (AddSubgroup M) M)
 instance : (DirectSum.Decomposition (DirectSum.Decomposition.map f ℳ)) :=
   DirectSum.Decomposition.map.decomposition f ℳ
 #check (inferInstance : (DirectSum.Decomposition (DirectSum.Decomposition.map f ℳ)))
@@ -32,7 +44,7 @@ variable (f : ι₁ → ι₂)
 variable {R M : Type*}
 variable [Semiring R] [AddCommMonoid M] [Module R M] (ℳ : ι₁ → Submodule R M)
 variable [DirectSum.Decomposition ℳ]
-#check (inferInstance : AddSubmonoidSSup (Submodule R M) M)
+#check (inferInstance : AddSubmonoidClass.IsConcreteSSup (Submodule R M) M)
 instance : (DirectSum.Decomposition (DirectSum.Decomposition.map f ℳ)) :=
   DirectSum.Decomposition.map.decomposition f ℳ
 #check (inferInstance : (DirectSum.Decomposition (DirectSum.Decomposition.map f ℳ)))
@@ -50,3 +62,9 @@ instance : (GradedAlgebra (DirectSum.Decomposition.map f 𝒜)) :=
 #check (inferInstance : (GradedAlgebra (DirectSum.Decomposition.map f 𝒜)))
 
 end Algebras
+
+variable {G : Type} [Group G] [TopologicalSpace G]
+
+#check OpenSubgroup G
+#check (inferInstance : SubmonoidClass (Subgroup G) G)
+#check (inferInstance : SubmonoidClass (OpenSubgroup G) G)

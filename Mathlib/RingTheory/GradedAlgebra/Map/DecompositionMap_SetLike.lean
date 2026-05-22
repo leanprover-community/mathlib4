@@ -14,13 +14,13 @@ open DirectSum
 variable {M : Type*} [AddCommMonoid M]
 variable {ι : Type*} [DecidableEq ι]
 variable {σ : Type*} [SetLike σ M] [AddSubmonoidClass σ M]
-                     [CompleteLattice σ] [AddSubmonoidSSup σ M]
+                     [CompleteLattice σ] [AddSubmonoidClass.IsConcreteSSup σ M]
 variable (ℳ : ι → σ)
 
 -- TODO: Some of the following should be private
 def codomain_equal :
    ↥(⨆ i, AddSubmonoid.ofClass (ℳ i)) ≃+ ↥(⨆ i, ℳ i : σ)  :=
-   (AddEquiv.addSubmonoidCongr (SetLike.iSup_toAddSubmonoid ℳ).symm)
+   (AddEquiv.addSubmonoidCongr (AddSubmonoidClass.iSup_toAddSubmonoid ℳ).symm)
 
 def toIsup_ : (⨁ i, ℳ i) →+ ↥(⨆ i, AddSubmonoid.ofClass (ℳ i)) :=
   DirectSum.toAddMonoid
@@ -51,7 +51,7 @@ private lemma SetLike.toIsup_surjective : Function.Surjective (toIsup ℳ) := by
         by rw [toAddMonoid_of]; rfl⟩
     | zero => exact ⟨0, by simp⟩
     | add x y u v hx hy =>
-      rw [←SetLike.iSup_toAddSubmonoid] at u v
+      rw [←AddSubmonoidClass.iSup_toAddSubmonoid] at u v
       obtain ⟨a, ha⟩ := hx
       obtain ⟨b, hb⟩ := hy
       exact ⟨a + b, by simp [ha, hb]⟩
@@ -73,7 +73,7 @@ variable (ℳ : ι₁ → σ)
 def DirectSum.Decomposition.map : ι₂ → σ
   := fun j ↦ iSup (fun i : { i : ι₁ // f i = j} ↦ ℳ i)
 
-variable [AddSubmonoidClass σ M] [AddSubmonoidSSup σ M]
+variable [AddSubmonoidClass σ M] [AddSubmonoidClass.IsConcreteSSup σ M]
 variable [DirectSum.Decomposition ℳ]
 
 abbrev Dec' := ⨁ j, (Decomposition.map f ℳ) j
@@ -126,13 +126,13 @@ variable (f : ι₁ →+ ι₂)
 variable {R : Type*} [CommSemiring R]
 variable {A : Type*} [Semiring A] [Algebra R A]
 variable {σ : Type*} [SetLike σ A] [AddSubmonoidClass σ A] [CompleteLattice σ]
-  [AddSubmonoidSSup σ A]
+  [AddSubmonoidClass.IsConcreteSSup σ A]
 variable (𝒜 : ι₁ → σ) [GradedRing 𝒜]
 
 open Pointwise in
 lemma one_le_induced_grad_zero : 1 ≤ AddSubmonoid.ofClass (Decomposition.map f 𝒜 0) := by
   unfold Decomposition.map
-  rw [AddSubmonoid.one_le, SetLike.iSup_toAddSubmonoid]
+  rw [AddSubmonoid.one_le, AddSubmonoidClass.iSup_toAddSubmonoid]
   have h : 1 ∈ AddSubmonoid.ofClass (𝒜 0) := SetLike.GradedOne.one_mem
   exact AddSubmonoid.mem_iSup_of_mem ⟨0, map_zero f⟩ h
 
@@ -143,7 +143,7 @@ lemma induced_grad_mul_le (i j : ι₂) :
   ≤ AddSubmonoid.ofClass ((Decomposition.map f 𝒜) (i + j))
   := by
   unfold Decomposition.map
-  repeat rw [SetLike.iSup_toAddSubmonoid]
+  repeat rw [AddSubmonoidClass.iSup_toAddSubmonoid]
   simp_rw [AddSubmonoid.iSup_mul,AddSubmonoid.mul_iSup]
   apply iSup_le
   intro i'

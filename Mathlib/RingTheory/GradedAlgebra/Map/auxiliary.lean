@@ -140,32 +140,26 @@ end SigmaFiber
 open Pointwise in
 /-- A lemma that exists for `Submodule`s in Mathlib but not for `AddSubmonoid`s: -/
 lemma AddSubmonoid.one_le {A : Type*} [AddMonoidWithOne A] {P : AddSubmonoid A} :
-  (1 : AddSubmonoid A) ≤ P ↔ (1 : A) ∈ P := by
+    (1 : AddSubmonoid A) ≤ P ↔ (1 : A) ∈ P := by
   rw [AddSubmonoid.one_eq_closure, AddSubmonoid.closure_le, Set.singleton_subset_iff]
   rfl
 
+@[to_additive]
 /- An analogue of Mathlib's `Submodule.iSup_toAddSubmonoid` --/
-theorem Subgroup.iSup_toAddSubmonoid {ι M : Type*} [AddCommGroup M]
-  (p : ι → AddSubgroup M) :
-  (⨆ i, p i).toAddSubmonoid = ⨆ i, (p i).toAddSubmonoid
-  := by
-  refine le_antisymm
-    (fun x hx ↦ ?_)
-    (iSup_le fun i x hx ↦ (le_iSup p i) hx)
-  -- Now induct on x ∈ ⨆ i, f i.
-  induction hx using AddSubgroup.iSup_induction' with
-  | hp i y hy           => exact AddSubmonoid.mem_iSup_of_mem i hy
-  | h1                  => exact zero_mem _
-  | hadd y z _ _ hy hz  => exact add_mem hy hz
+theorem Subgroup.iSup_toSubmonoid {ι M : Type*} [Group M] (p : ι → Subgroup M) :
+    (⨆ i, p i).toSubmonoid = ⨆ i, (p i).toSubmonoid := by
+  refine le_antisymm (fun x hx ↦ ?_) (iSup_le fun i x hx ↦ (le_iSup p i) hx)
+  induction hx using Subgroup.iSup_induction' with
+  | hp i y hy           => exact Submonoid.mem_iSup_of_mem i hy
+  | h1                  => exact one_mem _
+  | hmul y z _ _ hy hz  => exact mul_mem hy hz
 
-@[simp]
+@[to_additive, simp]
 /- An analogue of Mathlib's `Submodule.toAddSubmonoid_sSup` --/
-theorem Subgroup.toAddSubmonoid_sSup {M : Type*} [AddCommGroup M]
-  (s : Set (AddSubgroup M)) :
-  (sSup s).toAddSubmonoid = sSup (AddSubgroup.toAddSubmonoid '' s)
-  := by
-    rw [sSup_image',sSup_eq_iSup']
-    exact (Subgroup.iSup_toAddSubmonoid _)
+theorem Subgroup.toSubmonoid_sSup {M : Type*} [Group M] (s : Set (Subgroup M)) :
+    (sSup s).toSubmonoid = sSup (Subgroup.toSubmonoid '' s) := by
+  rw [sSup_image',sSup_eq_iSup',Subgroup.iSup_toSubmonoid _]
 
 -- #check Submodule.toAddSubmonoid_sSup -- simp lemma
 -- #check Submodule.iSup_toAddSubmonoid -- not a simp lemma
+
