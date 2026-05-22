@@ -336,26 +336,16 @@ theorem IsProj.trace {p : Submodule R M} {f : M →ₗ[R] M} (h : IsProj p f) [M
     trace R M f = (finrank R p : R) := by
   rw [h.eq_conj_prodMap, trace_conj', trace_prodMap', trace_id, map_zero, add_zero]
 
+open LinearMap in
 /-- An idempotent endomorphism of a finite-dimensional vector space over a
-characteristic-zero field with vanishing trace is the zero map.
-
-The trace of an idempotent equals the cast of the rank of its range
-(`LinearMap.IsProj.trace`). Over a characteristic-zero field, vanishing trace
-forces the rank to be zero, hence the range is `⊥` and the endomorphism
-vanishes. -/
-theorem IsIdempotentElem.eq_zero_of_trace_eq_zero
-    {K : Type*} [Field K] [CharZero K]
+characteristic-zero field with vanishing trace is the zero map. -/
+theorem IsIdempotentElem.trace_eq_zero_iff {K : Type*} [Field K] [CharZero K]
     {V : Type*} [AddCommGroup V] [Module K V] [Module.Finite K V]
-    {e : V →ₗ[K] V} (he : IsIdempotentElem e) (htr : trace K V e = 0) :
-    e = 0 := by
-  have hproj : IsProj (range e) e := IsIdempotentElem.isProj_range _ he
-  have htr_eq : trace K V e = (finrank K (range e) : K) := hproj.trace
-  rw [htr] at htr_eq
-  have hfinrank_zero : finrank K (range e) = 0 := by
-    have h : ((finrank K (range e) : ℕ) : K) = 0 := htr_eq.symm
-    exact_mod_cast h
-  rw [← range_eq_bot, ← Submodule.finrank_eq_zero]
-  exact hfinrank_zero
+    {e : V →ₗ[K] V} (he : IsIdempotentElem e) :
+    trace K V e = 0 ↔ e = 0 := by
+  rw [he.isProj_range.trace, Nat.cast_eq_zero, Submodule.finrank_eq_zero, range_eq_bot]
+
+alias ⟨IsIdempotentElem.eq_zero_of_trace_eq_zero, _⟩ := IsIdempotentElem.trace_eq_zero_iff
 
 lemma isNilpotent_trace_of_isNilpotent {f : M →ₗ[R] M} (hf : IsNilpotent f) :
     IsNilpotent (trace R M f) := by
