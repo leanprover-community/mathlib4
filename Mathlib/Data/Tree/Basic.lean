@@ -77,7 +77,7 @@ def map {β} (f : α → β) : BinaryTree α → BinaryTree β
   | node a l r => node (f a) (map f l) (map f r)
 
 @[deprecated BinaryTree.map (since := "2026-05-22")]
-abbrev Tree.map {α β} (f : α → β) (t : Tree α) : Tree β := BinaryTree.map f t
+abbrev _root_.Tree.map {α β} (f : α → β) (t : Tree α) : Tree β := BinaryTree.map f t
 
 theorem id_map (t : BinaryTree α) : t.map id = t := by
   induction t with
