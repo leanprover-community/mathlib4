@@ -260,7 +260,7 @@ private def partitionWithPartEquiv {n a : ℕ} (ha1 : 1 ≤ a) (ha : a ≤ n + 1
       exact p.1.parts_pos (p.1.parts.erase_subset a hi)
     · have hs : a + (p.1.parts.erase a).sum = n + 1 := by
         simpa [p.1.parts_sum] using congrArg Multiset.sum (Multiset.cons_erase p.2)
-      lia
+      omega
   invFun q := ⟨⟨a ::ₘ q.parts, by grind, by simp [q.parts_sum, ha]⟩, by simp⟩
   left_inv p := Subtype.ext <| Partition.ext <| cons_erase p.property
   right_inv q := Partition.ext <| erase_cons_head a q.parts
@@ -290,9 +290,9 @@ theorem bell_eq_sum_partition (n : ℕ) : n.bell = ∑ p : n.Partition, p.parts.
     _ = ∑ i : Fin n.succ, ∑ p : {p : (n + 1).Partition // (i + 1 : ℕ) ∈ p.parts},
         choose n i * (p.1.parts.erase (i + 1)).bell := by
       congr! with i
-      have h1 : 1 ≤ (i + 1 : ℕ) := by lia
-      have h2 : (i + 1 : ℕ) ≤ n + 1 := by lia
-      have hsub : n + 1 - (i + 1 : ℕ) = n - i := by lia
+      have h1 : 1 ≤ (i + 1 : ℕ) := by omega
+      have h2 : (i + 1 : ℕ) ≤ n + 1 := by omega
+      have hsub : n + 1 - (i + 1 : ℕ) = n - i := by omega
       exact hsub ▸ (Fintype.sum_equiv (partitionWithPartEquiv h1 h2) _ _ (fun _ ↦ rfl)).symm
     _ = ∑ x : Σ p : (n + 1).Partition, p.parts.toFinset,
         choose n (x.2.1 - 1) * (x.1.parts.erase x.2.1).bell := by
