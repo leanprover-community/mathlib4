@@ -33,8 +33,6 @@ variable [∀ i, SeminormedGroup (G i)]
 variable [∀ i j h, MonoidHomClass (T h) (G i) (G j)]
 variable [∀ i j h, IsometryClass (T h) (G i) (G j)]
 
-#synth ∀ i, PseudoMetricSpace (G i)
-
 @[to_additive]
 noncomputable instance : SeminormedGroup (DirectLimit G f) where
   norm := DirectLimit.lift f (ih := fun i x ↦ ‖x‖) (fun i j h x ↦ by
@@ -58,15 +56,6 @@ variable [∀ i j h, IsometryClass (T h) (G i) (G j)]
 noncomputable instance : NormedGroup (DirectLimit G f) where
   __ := (inferInstance : SeminormedGroup (DirectLimit G f))
   __ := (inferInstance : MetricSpace (DirectLimit G f))
-
-@[to_additive]
-noncomputable instance : NormedGroup (DirectLimit G f) where
-  norm := DirectLimit.lift f (ih := fun i x ↦ ‖x‖) (fun i j h x ↦ by
-    simpa [NormedGroup.dist_eq] using (IsometryClass.dist_eq (f i j h) 1 x).symm)
-  dist_eq := DirectLimit.induction₂ f (fun i x y ↦ by
-    rw [dist_def, NormedGroup.dist_eq, inv_def, mul_def, DirectLimit.lift_def])
-
-
 
 end NormedGroup
 
