@@ -55,7 +55,7 @@ private def AlgCat.coconeOfIsFiltered (hc : IsColimit c) (j : J) : Cocone F wher
       ← c.w (IsFiltered.rightToMax j k)]
   ι.naturality k k' f := by
     ext
-    exact congr($(c.ι.naturality f).hom _)
+    exact c.ι.naturality_apply _ _
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The lifted cocone is colimiting. -/
