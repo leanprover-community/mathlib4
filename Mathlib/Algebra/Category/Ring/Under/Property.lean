@@ -139,24 +139,25 @@ open RingHom
 
 variable {P}
 
-set_option backward.isDefEq.respectTransparency false in
 lemma CommRingCat.preservesLimit_parallelPair_tensorProd_iff_tensorEqualizer_bijective
     {R S : CommRingCat.{u}} [Algebra R S] {A B : Under R} {f g : A ⟶ B} :
     PreservesLimit (parallelPair f g) (tensorProd R S) ↔
       Function.Bijective ((toAlgHom f).tensorEqualizer R S (toAlgHom g)) := by
   let c : Fork f g := Under.equalizerFork f g
   let hc : IsLimit c := Under.equalizerForkIsLimit f g
-  let h' := (R.tensorProd S).map (AlgHom.equalizer (toAlgHom f) (toAlgHom g)).val.toUnder
-  have w' : h' ≫ (Algebra.TensorProduct.map (.id S S) (toAlgHom f)).toUnder =
-      h' ≫ (Algebra.TensorProduct.map (.id S S) (toAlgHom g)).toUnder := by
+  let ι : R.mkUnder (AlgHom.equalizer (toAlgHom f) (toAlgHom g)) ⟶ A :=
+    (AlgHom.equalizer (toAlgHom f) (toAlgHom g)).val.toUnder
+  let h' := (R.tensorProd S).map ι
+  have w' : h' ≫ (tensorProd R S).map f = h' ≫ (tensorProd R S).map g := by
     simpa using congr((R.tensorProd S).map $(CommRingCat.Under.equalizer_comp f g))
   let e : IsLimit ((R.tensorProd S).mapCone c) ≃ IsLimit (Fork.ofι h' w') :=
-    isLimitMapConeForkEquiv (tensorProd R S) (Under.equalizer_comp _ _)
+    isLimitMapConeForkEquiv (tensorProd R S) (Under.equalizer_comp f g)
   rw [preservesLimit_iff_isLimit_mapCone hc, e.nonempty_congr,
-    (Under.equalizerFork'IsLimit _ _).nonempty_isLimit_iff_isIso_lift]
-  have heq : (Under.equalizerFork'IsLimit _ _).lift (Fork.ofι h' w') =
-      (AlgHom.tensorEqualizer S S (toAlgHom f) (toAlgHom g)).toUnder := by
-    refine Fork.IsLimit.hom_ext (Under.equalizerFork'IsLimit _ _) ?_
+    (Under.equalizerForkIsLimit _ _).nonempty_isLimit_iff_isIso_lift]
+  have heq : (Under.equalizerForkIsLimit _ _).lift (Fork.ofι h' w') =
+      (AlgHom.tensorEqualizer S S (toAlgHom f) (toAlgHom g)).toUnder ≫
+        Under.homMk (CommRingCat.ofHom (.id _)) := by
+    refine Fork.IsLimit.hom_ext (Under.equalizerForkIsLimit _ _) ?_
     rw [Fork.IsLimit.lift_ι]
     ext : 2
     dsimp
