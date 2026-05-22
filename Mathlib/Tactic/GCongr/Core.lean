@@ -228,7 +228,7 @@ def getRel (e : Expr) : Option (Name × Expr × Expr) :=
       none
   | _ => none
 
-/-- If `e` is of the form `r a b`, replace either `a` or `b` with `e`. -/
+/-- If `r` is of the form `rel a b`, replace either `a` or `b` with `e`. -/
 def updateRel (r e : Expr) (isLhs : Bool) : Expr :=
   match r with
   | .forallE _ d b _ => if isLhs then r.updateForallE! e b else r.updateForallE! d e
@@ -400,6 +400,18 @@ initialize registerBuiltinAttribute {
 
 initialize registerTraceClass `Meta.gcongr
 
+/-- A version of the `rfl` tactic that also closes goals of the form `⊢ p → p`. -/
+def _root_.Lean.MVarId.applyRflOrId (goal : MVarId) : MetaM Unit := goal.withContext do
+  let t ← whnfR (← goal.getType)
+  if t.isForall then
+    let lhs := t.bindingDomain!
+    let rhs := t.bindingBody!
+    guard !rhs.hasLooseBVars
+    guard <| ← isDefEq lhs rhs
+    goal.assign (.lam t.bindingName! lhs (.bvar 0) t.bindingInfo!)
+  else
+    goal.applyRfl
+
 /-- `gcongr_discharger` is used by `gcongr` to discharge side goals.
 
 This is an extensible tactic using [`macro_rules`](lean-manual://section/tactic-macro-extension).
@@ -505,7 +517,7 @@ lemma rel_imp_rel (h₁ : r c a) (h₂ : r b d) : r a b → r c d :=
 Construct a `GCongrLemma` for `gcongr` goals of the form `a ≺ b → c ≺ d`.
 This will be tried if there is no other available `@[gcongr]` lemma.
 For example, the relation `a ≡ b [ZMOD n]` has an instance of `IsTrans`, so a congruence of the form
-`a ≡ b [ZMOD n] → c ≡ d [ZMOD n]` can be solved with `rel_imp_rel`, `rel_trans` or `rel_trans'`.
+`a ≡ b [ZMOD n] → c ≡ d [ZMOD n]` can be solved with `rel_imp_rel`.
 -/
 def relImpRelLemma (arity : Nat) : List GCongrLemma :=
   if arity < 2 then [] else [{
@@ -613,7 +625,7 @@ partial def _root_.Lean.MVarId.gcongr
   if mdataLhs?.isNone then
     -- A. If there is no pattern annotation, try to resolve the goal by reflexivity, or
     -- by the provided tactic `mainGoalDischarger`, and continue on if this fails.
-    try withReducible g.applyRfl; return true
+    try withReducible g.applyRflOrId; return true
     catch _ =>
       if ← dischargeMain g then
         return true
@@ -637,7 +649,7 @@ partial def _root_.Lean.MVarId.gcongr
     -- If there are no annotations at all, we close the goal with `rfl`. Otherwise,
     -- we report that the provided pattern doesn't apply.
     unless containsHoleAnnotation mdataExpr do
-      try withDefault g.applyRfl; return true
+      try withDefault g.applyRflOrId; return true
       catch _ => throwTacticEx `gcongr g m!"\
         subgoal {← withReducible g.getType'} is not allowed by the provided pattern \
         and is not closed by `rfl`"

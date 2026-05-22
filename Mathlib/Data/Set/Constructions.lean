@@ -94,4 +94,4 @@ end FiniteInter
 the empty finset, but `s` is a family of sets, not finsets). -/
 theorem Set.biUnion_empty_finset {ι X : Type*} {s : ι → Set X} :
     ⋃ i ∈ (∅ : Finset ι), s i = ∅ := by
-  simp only [Finset.notMem_empty, iUnion_of_empty, iUnion_empty]
+  simp

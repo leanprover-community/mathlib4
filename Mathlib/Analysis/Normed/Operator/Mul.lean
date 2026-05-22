@@ -49,10 +49,8 @@ theorem mul_apply' (x y : R) : mul 𝕜 R x y = x * y :=
 theorem opNorm_mul_apply_le (x : R) : ‖mul 𝕜 R x‖ ≤ ‖x‖ :=
   opNorm_le_bound _ (norm_nonneg x) (norm_mul_le x)
 
-
 theorem opNorm_mul_le : ‖mul 𝕜 R‖ ≤ 1 :=
   LinearMap.mkContinuous₂_norm_le _ zero_le_one _
-
 
 /-- Multiplication on the left in a non-unital normed algebra `R` as a non-unital algebra
 homomorphism into the algebra of *continuous* linear maps. This is the left regular representation
@@ -126,11 +124,9 @@ lemma isometry_mul : Isometry (mul 𝕜 R) :=
 lemma opNorm_mul_apply (x : R) : ‖mul 𝕜 R x‖ = ‖x‖ :=
   (AddMonoidHomClass.isometry_iff_norm (mul 𝕜 R)).mp (isometry_mul 𝕜 R) x
 
-
 @[simp]
 lemma opNNNorm_mul_apply (x : R) : ‖mul 𝕜 R x‖₊ = ‖x‖₊ :=
   Subtype.ext <| opNorm_mul_apply 𝕜 R x
-
 
 /-- Multiplication in a normed algebra as a linear isometry to the space of
 continuous linear maps. -/
@@ -156,26 +152,29 @@ section RingEquiv
 
 variable (𝕜 E)
 
-/-- If `M` is a normed space over `𝕜`, then the space of maps `𝕜 →L[𝕜] M` is linearly equivalent
-to `M`. (See `ring_lmap_equiv_self` for a stronger statement.) -/
-def ring_lmap_equiv_selfₗ : (𝕜 →L[𝕜] E) ≃ₗ[𝕜] E where
-  toFun := fun f ↦ f 1
-  invFun := (ContinuousLinearMap.id 𝕜 𝕜).smulRight
-  map_smul' := fun a f ↦ by simp only [coe_smul', Pi.smul_apply, RingHom.id_apply]
-  map_add' := fun f g ↦ by simp only [add_apply]
-  left_inv := fun f ↦ by ext; simp only [smulRight_apply, coe_id', _root_.id, one_smul]
-  right_inv := fun m ↦ by simp only [smulRight_apply, id_apply, one_smul]
-
 /-- If `M` is a normed space over `𝕜`, then the space of maps `𝕜 →L[𝕜] M` is linearly isometrically
 equivalent to `M`. -/
-def ring_lmap_equiv_self : (𝕜 →L[𝕜] E) ≃ₗᵢ[𝕜] E where
-  toLinearEquiv := ring_lmap_equiv_selfₗ 𝕜 E
-  norm_map' := by
-    refine fun f ↦ le_antisymm ?_ ?_
-    · simpa only [norm_one, mul_one] using le_opNorm f 1
-    · refine opNorm_le_bound' f (norm_nonneg <| f 1) (fun x _ ↦ ?_)
-      rw [(by rw [smul_eq_mul, mul_one] : f x = f (x • 1)), map_smul,
-        norm_smul, mul_comm, (by rfl : ring_lmap_equiv_selfₗ 𝕜 E f = f 1)]
+def toSpanSingletonLIE : E ≃ₗᵢ[𝕜] (𝕜 →L[𝕜] E) where
+  toLinearEquiv := toSpanSingletonLE 𝕜 𝕜 E
+  norm_map' _ := by simp
+
+@[simp]
+lemma toSpanSingletonLIE_apply (x : E) : toSpanSingletonLIE 𝕜 E x = toSpanSingleton 𝕜 x := rfl
+
+@[simp] lemma toSpanSingletonLIE_symm_apply (f : 𝕜 →L[𝕜] E) :
+    (toSpanSingletonLIE 𝕜 E).symm f = f 1 := rfl
+
+@[simp] lemma toLinearEquiv_toSpanSingletonLIE :
+    (toSpanSingletonLIE 𝕜 E).toLinearEquiv = toSpanSingletonLE 𝕜 𝕜 E := rfl
+
+@[simp] lemma toContinuousLinearEquiv_toSpanSingletonLIE :
+    (toSpanSingletonLIE 𝕜 E).toContinuousLinearEquiv = toSpanSingletonCLE := rfl
+
+@[deprecated "Use the reverse of `toSpanSingletonLE`." (since := "2026-05-21")]
+alias ring_lmap_equiv_selfₗ := toSpanSingletonLE
+
+@[deprecated "Use the reverse of `toSpanSingletonLIE`." (since := "2026-05-21")]
+alias ring_lmap_equiv_self := toSpanSingletonLIE
 
 end RingEquiv
 

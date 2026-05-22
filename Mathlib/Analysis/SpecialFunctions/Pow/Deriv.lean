@@ -250,7 +250,6 @@ theorem Complex.deriv_const_cpow (hf : DifferentiableAt ℂ f x) (c : ℂ) :
   rw [← derivWithin_univ, derivWithin_const_cpow, derivWithin_univ]
   rwa [differentiableWithinAt_univ]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Although `fun x => x ^ r` for fixed `r` is *not* complex-differentiable along the negative real
 line, it is still real-differentiable, and the derivative is what one would formally expect.
 See `hasDerivAt_ofReal_cpow_const` for an alternate formulation. -/
@@ -744,6 +743,10 @@ theorem deriv_const_rpow (ha : 0 < a) (hf : DifferentiableAt ℝ f x) :
     deriv (a ^ f ·) x = Real.log a * deriv f x * a ^ f x :=
   (hf.hasDerivAt.const_rpow ha).deriv
 
+@[simp]
+theorem deriv_const_rpow_id (ha : 0 < a) :
+    deriv (a ^ ·) x = Real.log a * a ^ x := by
+  rw [deriv_const_rpow ha differentiableAt_fun_id, deriv_id'', mul_one]
 
 end deriv
 
