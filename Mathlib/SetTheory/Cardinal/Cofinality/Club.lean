@@ -5,7 +5,9 @@ Authors: Violeta Hernández Palacios
 -/
 module
 
-public import Mathlib.SetTheory.Cardinal.Cofinality.Ordinal
+public import Mathlib.Order.DirSupClosed
+public import Mathlib.Order.IsNormal
+public import Mathlib.SetTheory.Cardinal.Cofinality.Basic
 
 /-!
 # Club sets
@@ -196,13 +198,3 @@ theorem IsStationary.of_not_isCofinal_compl (hs : ¬ IsCofinal (sᶜ)) : IsStati
   refine ⟨b, ?_, hb⟩
   contrapose! ha
   exact ⟨b, ha, hb'⟩
-
-theorem isStationary_iff_not_isCofinal_compl [WellFoundedLT α] (hα : cof α ≤ ℵ₀) :
-    IsStationary s ↔ ¬ IsCofinal (sᶜ) where
-  mp hs h := by
-    obtain ⟨t, hts, ht, htα⟩ := ord_cof_eq_of_isCofinal h
-    have ht' := dirSupClosed_of_type_le_omega0 ht (htα.trans_le ?_)
-    · cases hs ⟨ht', ht⟩
-      grind
-    · simpa using ord_mono hα
-  mpr := .of_not_isCofinal_compl
