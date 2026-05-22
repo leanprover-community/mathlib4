@@ -87,10 +87,12 @@ theorem _root_.ringKrullDimLE_zero_quotient_iff_forall_minimalPrimes_isMaximal
     rw [map_comap_of_surjective (Quotient.mk I) Quotient.mk_surjective] at this
     exact this.resolve_left hJ.1.1.ne_top
 
+-- PRed
 theorem _root_.ENat.toNat_pos {x : ENat} (hx0 : x ≠ 0) (hxt : x ≠ ⊤) : 0 < x.toNat := by
   rw [Nat.pos_iff_ne_zero, ne_eq, ENat.toNat_eq_zero, not_or]
   exact ⟨hx0, hxt⟩
 
+-- PRed
 theorem _root_.Algebra.IsIntegral.mem_minimalPrimes_map_under
     {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] [Algebra.IsIntegral R S]
     (p : Ideal S) [p.IsPrime] : p ∈ ((p.under R).map (algebraMap R S)).minimalPrimes := by
