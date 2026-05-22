@@ -96,7 +96,7 @@ end MeasureTheory.Lp
 
 @[simp]
 theorem SchwartzMap.toLp_fourier_eq (f : 𝓢(E, F)) :
-    𝓕 (f.toLp two_ne_zero) = (𝓕 f).toLp two_ne_zero := by
+    𝓕 (f.toLp 2) = (𝓕 f).toLp 2 := by
   apply LinearMap.extendOfNorm_eq
   · exact SchwartzMap.denseRange_toLpCLM ENNReal.ofNat_ne_top
   use 1
@@ -109,7 +109,7 @@ alias SchwartzMap.toLp_fourierTransform_eq := SchwartzMap.toLp_fourier_eq
 
 @[simp]
 theorem SchwartzMap.toLp_fourierInv_eq (f : 𝓢(E, F)) :
-    𝓕⁻ (f.toLp two_ne_zero) = (𝓕⁻ f).toLp two_ne_zero := by
+    𝓕⁻ (f.toLp 2) = (𝓕⁻ f).toLp 2 := by
   apply LinearMap.extendOfNorm_eq
   · exact SchwartzMap.denseRange_toLpCLM ENNReal.ofNat_ne_top
   use 1
@@ -133,7 +133,11 @@ theorem fourier_toTemperedDistribution_eq (f : Lp (α := E) F 2) :
     · exact (fourierCLM ℂ 𝓢'(E, F) ∘L toTemperedDistributionCLM F volume 2).continuous
     · exact (toTemperedDistributionCLM F volume 2 ∘L fourierCLM ℂ (Lp (α := E) F 2)).continuous
   intro f
-  simp [p, TemperedDistribution.fourier_toTemperedDistributionCLM_eq]
+  simp only [toLpCLM_apply, toTemperedDistribution_toLp_eq, TemperedDistribution.fourier_toTemperedDistributionCLM_eq, toLp_fourier_eq, p]
+  simp? [p, TemperedDistribution.fourier_toTemperedDistributionCLM_eq]
+  --simp only [toLpCLM_apply, toTemperedDistribution_toLp_eq, TemperedDistribution.fourier_toTemperedDistributionCLM_eq, toLp_fourier_eq, p]
+
+#check fourier_toTemperedDistribution_eq
 
 /-- The `𝓢'`-inverse Fourier transform and the `L2`-inverse Fourier transform coincide on `L2`. -/
 theorem fourierInv_toTemperedDistribution_eq (f : Lp (α := E) F 2) :

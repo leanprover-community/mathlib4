@@ -181,7 +181,7 @@ instance instCoeDep {p : ℝ≥0∞} [hp : Fact (1 ≤ p)] (f : Lp F p μ) :
 
 @[simp]
 theorem toTemperedDistribution_toLp_eq [SecondCountableTopology E] {p : ℝ≥0∞} [hp : Fact (1 ≤ p)]
-    (f : 𝓢(E, F)) : ((f.toLp (ENNReal.ne_zero_of_ge_one hp.out) μ) : 𝓢'(E, F))
+    (f : 𝓢(E, F)) : ((f.toLp p μ) : 𝓢'(E, F))
       = f.toTemperedDistributionCLM E F μ := by
   ext g
   simp only [Lp.toTemperedDistribution_apply, toTemperedDistributionCLM_apply_apply]
@@ -205,8 +205,7 @@ def toTemperedDistributionCLM (μ : Measure E := by volume_tac) [μ.HasTemperate
     have hpq : ENNReal.HolderConjugate p (1 - p⁻¹)⁻¹ :=
       ENNReal.HolderConjugate.inv_one_sub_inv' hp.out
     exact (((lsmul ℂ ℂ (E := F)).flip.lpPairing μ p (1 - p⁻¹)⁻¹
-      (ENNReal.HolderConjugate.ne_zero p (1 - p⁻¹)⁻¹) (by simp)).flip (g.toLp (p := (1 - p⁻¹)⁻¹)
-        (by simp) μ)).cont
+      (ENNReal.HolderConjugate.ne_zero p (1 - p⁻¹)⁻¹) (by simp)).flip (g.toLp (1 - p⁻¹)⁻¹ μ)).cont
 
 @[simp]
 theorem toTemperedDistributionCLM_apply {p : ℝ≥0∞} [hp : Fact (1 ≤ p)] (f : Lp F p μ) :
