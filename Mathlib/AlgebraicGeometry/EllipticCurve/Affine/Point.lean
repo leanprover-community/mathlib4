@@ -377,22 +377,18 @@ lemma XYIdeal'_eq {x y : F} (h : W.Nonsingular x y) :
     (XYIdeal' h : FractionalIdeal W.CoordinateRing⁰ W.FunctionField) = XYIdeal W x (C y) :=
   rfl
 
--- note: giving `W` to `XYIdeal'` explicitly hugely speeds up elaboration for some reason.
--- see https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/Field.20.28FunctionField.20.3Fm.2E19.29/near/594011283
 lemma mk_XYIdeal'_neg_mul {x y : F} (h : W.Nonsingular x y) :
-    ClassGroup.mk W.FunctionField (XYIdeal' (W := W) <| (nonsingular_neg ..).mpr h) *
-      ClassGroup.mk W.FunctionField (XYIdeal' (W := W) h) = 1 := by
+    ClassGroup.mk W.FunctionField (XYIdeal'  <| (nonsingular_neg ..).mpr h) *
+      ClassGroup.mk W.FunctionField (XYIdeal' h) = 1 := by
   rw [← map_mul]
   exact (ClassGroup.mk_eq_one_of_coe_ideal <| (coeIdeal_mul ..).symm.trans <|
     FractionalIdeal.coeIdeal_inj.mpr <| XYIdeal_neg_mul h).mpr ⟨_, XClass_ne_zero x, rfl⟩
 
--- note: giving `W` to `XYIdeal'` explicitly hugely speeds up elaboration for some reason.
--- see https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/Field.20.28FunctionField.20.3Fm.2E19.29/near/594011283
 lemma mk_XYIdeal'_mul_mk_XYIdeal' [DecidableEq F] {x₁ x₂ y₁ y₂ : F} (h₁ : W.Nonsingular x₁ y₁)
     (h₂ : W.Nonsingular x₂ y₂) (hxy : ¬(x₁ = x₂ ∧ y₁ = W.negY x₂ y₂)) :
-    ClassGroup.mk W.FunctionField (XYIdeal' (W := W) h₁) *
-        ClassGroup.mk W.FunctionField (XYIdeal' (W := W) h₂) =
-      ClassGroup.mk W.FunctionField (XYIdeal' (W := W) <| nonsingular_add h₁ h₂ hxy) := by
+    ClassGroup.mk W.FunctionField (XYIdeal' h₁) *
+        ClassGroup.mk W.FunctionField (XYIdeal' h₂) =
+      ClassGroup.mk W.FunctionField (XYIdeal' <| nonsingular_add h₁ h₂ hxy) := by
   rw [← map_mul]
   exact (ClassGroup.mk_eq_mk_of_coe_ideal (coeIdeal_mul ..).symm <| XYIdeal'_eq _).mpr
     ⟨_, _, XClass_ne_zero _, YClass_ne_zero _, XYIdeal_mul_XYIdeal h₁.left h₂.left hxy⟩
