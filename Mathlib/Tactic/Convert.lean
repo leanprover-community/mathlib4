@@ -226,32 +226,10 @@ elab_rules : tactic
     let expectedType ← mkFreshExprMVar (mkSort (← getLevel (← getMainTarget)))
     let (e, gs) ← elabTermForConvert term expectedType
     if semireducible.isNone then
-      liftMetaTactic fun g ↦ do
-        -- Suggest `convert!` instead of `convert` if we rely on default transparency.
-        let redGoals ← g.convert e sym.isSome (n.map (·.getNat))
-          { config with postTransparency := .reducible }
-          patterns
-        let defaultGoals ← g.convert e sym.isSome (n.map (·.getNat))
-          { config with postTransparency := .default }
-          patterns
-        if redGoals.length == defaultGoals.length then
-          let sameGoals ← try
-            (redGoals.zip defaultGoals).allM fun (g₁, g₂) => do
-              -- Check that they agree on the set of free variables, otherwise we get errors.
-              -- We assume the context in the `convert` case is a subset of the `convert!` case
-              -- since `convert!` can more agressively unfold and introduce more variables.
-              if !(← g₁.getDecl).lctx.isSubPrefixOf (← g₂.getDecl).lctx then return false
-              g₂.withContext <| withReducible <| isDefEq (← g₁.getType) (← g₂.getType)
-            catch _ => pure false
-          -- If the goals are not the same then we should preserve the original behaviour
-          -- and use `convert!`.
-          if !sameGoals then
-            let tac ← `(tactic| convert!%$tk $cfg $[←%$sym]? $term $[using $n]? $[with $ps?*]?)
-            TryThis.addSuggestion tk { suggestion := tac } (origSpan? := ← getRef)
-        return defaultGoals ++ gs
-    else
-      liftMetaTactic fun g ↦
-        return (← g.convert e sym.isSome (n.map (·.getNat)) config patterns) ++ gs
+      let tac ← `(tactic| convert!%$tk $cfg $[←%$sym]? $term $[using $n]? $[with $ps?*]?)
+      TryThis.addSuggestion tk { suggestion := tac } (origSpan? := ← getRef)
+    liftMetaTactic fun g ↦
+      return (← g.convert e sym.isSome (n.map (·.getNat)) config patterns) ++ gs
 
 /--
 `convert_to t` on a goal `⊢ t'` changes the goal to `⊢ t` and adds new goals for proving the
