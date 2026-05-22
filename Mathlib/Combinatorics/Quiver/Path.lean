@@ -5,8 +5,8 @@ Authors: David Wärn, Kim Morrison, Matteo Cipollina
 -/
 module
 
+public import Mathlib.Basic.Logic.Lemmas
 public import Mathlib.Combinatorics.Quiver.Prefunctor
-public import Mathlib.Logic.Lemmas
 public import Batteries.Data.List.Basic
 
 /-!

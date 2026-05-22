@@ -233,12 +233,12 @@
   "Mathlib.Tactic.ToExpr": ["Mathlib.Tactic.AdaptationNote"],
   "Mathlib.Tactic.ToDual": ["Mathlib.Tactic.Translate.ToDual"],
   "Mathlib.Tactic.ToAdditive": ["Mathlib.Tactic.Translate.ToAdditive"],
-  "Mathlib.Tactic.TermCongr": ["Mathlib.Logic.Basic"],
+  "Mathlib.Tactic.TermCongr": ["Mathlib.Basic.Logic.Basic"],
   "Mathlib.Tactic.TautoSet":
   ["Mathlib.Data.Set.Disjoint", "Mathlib.Data.Set.SymmDiff"],
-  "Mathlib.Tactic.Tauto": ["Mathlib.Logic.Basic"],
+  "Mathlib.Tactic.Tauto": ["Mathlib.Basic.Logic.Basic"],
   "Mathlib.Tactic.TFAE": ["Mathlib.Data.List.TFAE", "Mathlib.Tactic.Have"],
-  "Mathlib.Tactic.Subsingleton": ["Mathlib.Logic.Basic", "Std.Logic"],
+  "Mathlib.Tactic.Subsingleton": ["Mathlib.Basic.Logic.Basic", "Std.Logic"],
   "Mathlib.Tactic.Simps.Basic": ["Batteries.Data.String.Basic"],
   "Mathlib.Tactic.Says": ["Batteries.Data.String.Basic"],
   "Mathlib.Tactic.Ring.NamePolyVars": ["Mathlib.Algebra.MvPolynomial.Basic"],
@@ -267,7 +267,7 @@
   "Mathlib.Tactic.NormNum.BigOperators":
   ["Mathlib.Algebra.BigOperators.Group.Finset.Basic",
    "Mathlib.Data.List.FinRange"],
-  "Mathlib.Tactic.Nontriviality.Core": ["Mathlib.Logic.Nontrivial.Basic"],
+  "Mathlib.Tactic.Nontriviality.Core": ["Mathlib.Basic.Nontrivial.Basic"],
   "Mathlib.Tactic.NoncommRing": ["Mathlib.Algebra.Group.Action.Defs"],
   "Mathlib.Tactic.MoveAdd":
   ["Mathlib.Algebra.Group.Basic",
@@ -282,7 +282,7 @@
   "Mathlib.Tactic.Lemma": ["Lean.Parser.Command"],
   "Mathlib.Tactic.IrreducibleDef":
   ["Mathlib.Data.Subtype", "Mathlib.Util.TermReduce"],
-  "Mathlib.Tactic.ITauto": ["Batteries.Tactic.Init", "Mathlib.Logic.Basic"],
+  "Mathlib.Tactic.ITauto": ["Batteries.Tactic.Init", "Mathlib.Basic.Logic.Basic"],
   "Mathlib.Tactic.Group": ["Mathlib.Algebra.Group.Commutator"],
   "Mathlib.Tactic.GCongr.CoreAttrs": ["Mathlib.Tactic.GCongr.Core"],
   "Mathlib.Tactic.GCongr.Core": ["Mathlib.Order.Defs"],
@@ -318,7 +318,7 @@
   "Mathlib.Tactic.ContinuousFunctionalCalculus": ["Mathlib.Tactic.FunProp"],
   "Mathlib.Tactic.Continuity": ["Mathlib.Tactic.Continuity.Init"],
   "Mathlib.Tactic.CongrM": ["Mathlib.Tactic.WithoutCDot"],
-  "Mathlib.Tactic.CongrExclamation": ["Mathlib.Logic.Basic"],
+  "Mathlib.Tactic.CongrExclamation": ["Mathlib.Basic.Logic.Basic"],
   "Mathlib.Tactic.Choose": ["Mathlib.Logic.Function.Basic"],
   "Mathlib.Tactic.CategoryTheory.ToApp":
   ["Mathlib.CategoryTheory.Category.Cat"],
@@ -397,15 +397,15 @@
   "Mathlib.MeasureTheory.MeasurableSpace.Embedding": ["Mathlib.Tactic.FunProp"],
   "Mathlib.MeasureTheory.MeasurableSpace.Defs": ["Mathlib.Tactic.FunProp.Attr"],
   "Mathlib.ModelTheory.Definability": ["Mathlib.Tactic.FunProp"],
-  "Mathlib.Logic.Relation": ["Mathlib.Logic.Basic"],
-  "Mathlib.Logic.Nontrivial.Defs": ["Mathlib.Init.Logic"],
+  "Mathlib.Logic.Relation": ["Mathlib.Basic.Logic.Basic"],
+  "Mathlib.Basic.Nontrivial.Defs": ["Mathlib.Init.Logic"],
   "Mathlib.Logic.Function.Defs": ["Mathlib.Tactic.AdaptationNote"],
   "Mathlib.Logic.Function.Basic": ["Batteries.Tactic.Init"],
   "Mathlib.Logic.Equiv.Prod": ["Mathlib.Data.Prod.PProd"],
   "Mathlib.Logic.Equiv.Fin.Basic": ["Batteries.Data.Fin.Lemmas"],
   "Mathlib.Logic.Equiv.Defs":
   ["Mathlib.Data.Bool.Basic", "Mathlib.Data.Subtype"],
-  "Mathlib.Logic.Basic":
+  "Mathlib.Basic.Logic.Basic":
   ["Batteries.Tactic.Trans", "Mathlib.Tactic.AdaptationNote"],
   "Mathlib.LinearAlgebra.Matrix.Transvection": ["Mathlib.Data.Matrix.DMatrix"],
   "Mathlib.LinearAlgebra.DFinsupp": ["Mathlib.LinearAlgebra.Finsupp.SumProd"],

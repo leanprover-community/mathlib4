@@ -5,8 +5,8 @@ Authors: Mario Carneiro
 -/
 module
 
+public import Mathlib.Basic.Denumerable
 public import Mathlib.Data.Nat.Lattice
-public import Mathlib.Logic.Denumerable
 public import Mathlib.Logic.Function.Iterate
 public import Mathlib.Order.Hom.Basic
 public import Mathlib.Data.Set.Subsingleton

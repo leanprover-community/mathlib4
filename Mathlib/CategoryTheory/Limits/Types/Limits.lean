@@ -5,7 +5,7 @@ Authors: Kim Morrison, Reid Barton
 -/
 module
 
-public import Mathlib.Logic.UnivLE
+public import Mathlib.Basic.UnivLE
 public import Mathlib.CategoryTheory.Limits.HasLimits
 
 /-!

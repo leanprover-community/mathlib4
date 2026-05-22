@@ -5,7 +5,7 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Mathlib.Logic.Denumerable
+public import Mathlib.Basic.Denumerable
 
 /-!
 # Equivalences involving `List`-like types
