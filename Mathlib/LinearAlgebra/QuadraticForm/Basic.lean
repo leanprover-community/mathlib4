@@ -1257,7 +1257,7 @@ noncomputable def toMatrix : Matrix n n R :=
   LinearMap.toMatrix₂ b b (Q.associated)
 
 lemma toMatrix_eq_toMatrix' (Q : QuadraticForm R (n → R)) :
-    Q.toMatrix (Pi.basisFun R n)  = Q.toMatrix' := by
+    Q.toMatrix (Pi.basisFun R n) = Q.toMatrix' := by
   simp only [toMatrix, toMatrix']
   exact LinearEquiv.congr_arg rfl
 

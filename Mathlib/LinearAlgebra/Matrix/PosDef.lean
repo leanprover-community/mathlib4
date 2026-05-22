@@ -585,7 +585,7 @@ variable {n : Type*} [Fintype n]
 theorem posDef_of_toMatrix' [DecidableEq n] {Q : QuadraticForm ℝ (n → ℝ)}
     (hQ : Q.toMatrix'.PosDef) : Q.PosDef := by
   rw [← Q.toQuadraticMap_associated ℝ,
-    ← (LinearMap.toMatrix₂' ℝ).left_inv ((Q.associatedHom (R := ℝ) ℝ))]
+    ← (LinearMap.toMatrix₂' ℝ).left_inv (Q.associatedHom ℝ)]
   exact hQ.toQuadraticForm'
 
 theorem posDef_toMatrix' [DecidableEq n] {Q : QuadraticForm ℝ (n → ℝ)} (hQ : Q.PosDef) :
