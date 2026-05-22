@@ -226,29 +226,99 @@ theorem countRestricted_two (n : ℕ) : countRestricted n 2 = distincts n := by
 def oddDistincts (n : ℕ) : Finset n.Partition :=
   odds n ∩ distincts n
 
+end Partition
+
+/-! ### Conversion between Young diagrams -/
+
+private lemma youngDiagram_rowLens_sum_eq_card (μ : YoungDiagram) : μ.rowLens.sum = μ.card := by
+  have hf : ∀ c ∈ μ.cells, c.fst ∈ Finset.range (μ.colLen 0) := by
+    intro c hc
+    rw [Finset.mem_range, ← YoungDiagram.mem_iff_lt_colLen]
+    exact μ.up_left_mem (le_refl _) (Nat.zero_le _) hc
+  have hr : ∀ i ∈ Finset.range (μ.colLen 0), ({c ∈ μ.cells | c.fst = i}).card = μ.rowLen i := by
+    intro i _hi
+    rw [YoungDiagram.rowLen_eq_card]
+    rfl
+  rw [YoungDiagram.card, Finset.card_eq_sum_card_fiberwise hf, Finset.sum_congr rfl hr,
+    YoungDiagram.rowLens, ← List.sum_toFinset, List.toFinset_range]
+  exact List.nodup_range
+
+namespace Partition
+
 /-- Convert a Young diagram to a partition. -/
-def ofYoungDiagram (μ : YoungDiagram) : Partition (μ.card) where
+def ofYoungDiagram {n : ℕ} (μ : YoungDiagram) (h : μ.card = n) : Partition n where
   parts := μ.rowLens
   parts_pos := μ.pos_of_mem_rowLens _
   parts_sum := by
-    have hf : ∀ c ∈ μ.cells, c.fst ∈ Finset.range (μ.colLen 0) := by
-      intro c hc
-      rw [Finset.mem_range, ← YoungDiagram.mem_iff_lt_colLen]
-      exact μ.up_left_mem (le_refl _) (Nat.zero_le _) hc
-    have hr : ∀ i ∈ Finset.range (μ.colLen 0), ({c ∈ μ.cells | c.fst = i}).card = μ.rowLen i := by
-      intro i _hi
-      rw [YoungDiagram.rowLen_eq_card]
-      rfl
     simp only [sum_coe]
-    rw [YoungDiagram.card, Finset.card_eq_sum_card_fiberwise hf, Finset.sum_congr rfl hr,
-      YoungDiagram.rowLens, ← List.sum_toFinset, List.toFinset_range]
-    exact List.nodup_range
+    rw [youngDiagram_rowLens_sum_eq_card]
+    exact h
 
 /-- Convert a partition to a Young diagram. -/
-def toYoungDiagram (p : Partition n) : YoungDiagram :=
+def toYoungDiagram {n : ℕ} (p : Partition n) : YoungDiagram :=
   YoungDiagram.ofRowLens
     (p.parts.sort (· ≥ ·))
     (Multiset.pairwise_sort p.parts (· ≥ ·)).sortedGE
+
+theorem youngDiagram_rowLens_eq_sorted_parts {n : ℕ} (p : Partition n) :
+    p.toYoungDiagram.rowLens = (p.parts.sort (· ≥ ·)) := by
+  rw [Partition.toYoungDiagram, YoungDiagram.rowLens_ofRowLens_eq_self]
+  simp only [ge_iff_le, mem_sort]
+  intro x
+  exact p.parts_pos
+
+theorem youngDiagram_rowLens_eq_parts {n : ℕ} (p : Partition n) :
+    ↑p.toYoungDiagram.rowLens = p.parts := by
+  rw [youngDiagram_rowLens_eq_sorted_parts, Multiset.sort_eq]
+
+theorem youngDiagram_card_eq_parts_sum {n : ℕ} (p : Partition n) :
+    p.toYoungDiagram.card = n := by
+  rw [← youngDiagram_rowLens_sum_eq_card, youngDiagram_rowLens_eq_sorted_parts]
+  calc (p.parts.sort (· ≥ ·)).sum
+        = (↑(p.parts.sort (· ≥ ·)) : Multiset ℕ).sum := Multiset.sum_coe _
+      _ = p.parts.sum := by rw [Multiset.sort_eq]
+      _ = n := p.parts_sum
+
+theorem ofYoungDiagram_toYoungDiagram_eq_self {n : ℕ} {μ : YoungDiagram} (h : μ.card = n) :
+    (ofYoungDiagram μ h).toYoungDiagram = μ := by
+  rw [ofYoungDiagram, toYoungDiagram]
+  simp only
+  conv =>
+    lhs
+    congr
+    rw [Multiset.coe_sort]
+    exact List.mergeSort_eq_self (· ≥ ·) μ.rowLens_sorted.pairwise
+  exact YoungDiagram.ofRowLens_to_rowLens_eq_self
+
+theorem toYoungDiagram_ofYoungDiagram_eq_self {n : ℕ} (p : Partition n) :
+    ofYoungDiagram p.toYoungDiagram (youngDiagram_card_eq_parts_sum p) = p := by
+  rw [ofYoungDiagram]
+  apply Nat.Partition.ext
+  simp only
+  rw [youngDiagram_rowLens_eq_parts]
+
+/-- Equivalence between partitions and Young diagrams of appropriate size. -/
+def equivPartitionYoungDiagram {n : ℕ} : Partition n ≃ { μ : YoungDiagram // μ.card = n } where
+  toFun p := ⟨p.toYoungDiagram, youngDiagram_card_eq_parts_sum p⟩
+  invFun μ := ofYoungDiagram μ μ.2
+  left_inv := toYoungDiagram_ofYoungDiagram_eq_self
+  right_inv := fun ⟨_, h⟩ => Subtype.mk_eq_mk.mpr (ofYoungDiagram_toYoungDiagram_eq_self h)
+
+/-- Conjugate a partition (equivalent to transposing its Young diagram). -/
+def conjugate {n : ℕ} (p : Partition n) : Partition n :=
+  Partition.ofYoungDiagram p.toYoungDiagram.transpose (by
+    have hs : p.toYoungDiagram.transpose.card = p.toYoungDiagram.card := by
+      simp [YoungDiagram.transpose, YoungDiagram.card]
+    rw [hs, youngDiagram_card_eq_parts_sum]
+  )
+
+/-- Conjugation is an involution. -/
+@[simp]
+theorem conjugate_conjugate {n : ℕ} (p : Partition n) : p.conjugate.conjugate = p := by
+  apply Nat.Partition.ext
+  change (↑(p.conjugate.toYoungDiagram.transpose.rowLens) : Multiset ℕ) = p.parts
+  rw [conjugate, ofYoungDiagram_toYoungDiagram_eq_self, YoungDiagram.transpose_transpose,
+    youngDiagram_rowLens_eq_parts]
 
 end Partition
 
