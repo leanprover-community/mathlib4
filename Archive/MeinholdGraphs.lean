@@ -3,7 +3,7 @@ Copyright (c) 2026 Robin Langer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robin Langer
 -/
-import Archive.ClayworthSabidussi
+import Archive.ClayworthGraph
 
 /-!
 # Meinhold-72: quotient of the Clayworth graph via PSL(3,2)

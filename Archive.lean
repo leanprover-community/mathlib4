@@ -1,5 +1,6 @@
 import Archive.Arithcc
 import Archive.BolzaSurface
+import Archive.ClayworthGraph
 import Archive.ClayworthSabidussi
 import Archive.ClayworthSurface
 import Archive.MeinholdGraphs
