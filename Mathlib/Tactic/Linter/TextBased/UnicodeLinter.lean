@@ -181,10 +181,6 @@ public def emojis : Array Char := #[
   .ofNat 0x1F389,  -- 🎉️
   '\u23F3',        -- ⏳️
   .ofNat 0x1F3C1,  -- 🏁️️
-]
-
-/-- Unicode symbols in mathlib that may be followed by the emoji variant selector, or may not. -/
-public def maybeEmojis : Array Char := #[
   '⚠'              -- ⚠️
 ]
 
@@ -206,7 +202,6 @@ public def isAllowedCharacter (c : Char) : Bool :=
   || withVSCodeAbbrev.contains c
   || othersInMathlib.contains c
   || emojis.contains c
-  || maybeEmojis.contains c
   || nonEmojis.contains c
   || c == UnicodeVariant.emoji
   || c == UnicodeVariant.text
