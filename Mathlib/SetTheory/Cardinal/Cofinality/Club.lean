@@ -129,7 +129,7 @@ theorem IsClub.inter {s t : Set α} (hα : cof α ≠ ℵ₀) (hs : IsClub s) (h
   rw [← Set.sInter_pair]
   have H : ∀ x ∈ ({s, t} : Set _), IsClub x := by simpa [hs]
   obtain hα | hα' := hα.lt_or_gt
-  · rw [Order.cof_lt_aleph0_iff] at hα
+  · rw [cof_lt_aleph0_iff] at hα
     exact .sInter_of_cof_le_one hα H
   · exact .sInter hα (hα'.trans_le' <| by simp) H
 
