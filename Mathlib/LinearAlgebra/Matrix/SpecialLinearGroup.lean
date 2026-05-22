@@ -478,7 +478,7 @@ instance : DistribMulAction (Matrix.SpecialLinearGroup ι F) (ι → F) where
 instance : SMulCommClass (Matrix.SpecialLinearGroup ι F) F (ι → F) where
   smul_comm m k v := show m.1 • k • v = k • m.1 • v from smul_comm _ _ _
 
-lemma SpecialLinearGroup.smulVec_def
+protected lemma SpecialLinearGroup.smul_def
     (m : Matrix.SpecialLinearGroup ι F) (v : ι → F) :
     m • v = m.1 • v := rfl
 
