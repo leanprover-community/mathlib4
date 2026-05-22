@@ -83,7 +83,7 @@ theorem lift_cof (o : Ordinal.{u}) : Cardinal.lift.{v} (cof o) = cof (Ordinal.li
 theorem _root_.Order.cofWithin_ordinal (o : Ordinal.{u}) : cofWithin o = cof (lift.{u + 1} o) := by
   rw [← cof_typein, typein_ordinal]
 
-@[deprecated (since := "2026-05-22")]
+@[deprecated cofWithin_ordinal (since := "2026-05-22")]
 protected theorem cof_Iio (o : Ordinal.{u}) : Order.cof (Iio o) = cof (lift.{u + 1} o) :=
   cofWithin_ordinal o
 
