@@ -19,7 +19,7 @@ cardinality of a cofinal subset.
 
 public noncomputable section
 
-open Cardinal Set Notation Order
+open Cardinal Set Order
 
 universe u v w
 
@@ -226,11 +226,9 @@ theorem cof_Iio (x : α) : cof (Iio x) = cofWithin x :=
 
 theorem cofWithin_le {s : Set α} (hs : IsCofinalFor (Iio x) s) (hsx : s ⊆ Iio x) :
     cofWithin x ≤ #s := by
-  trans #(Iio x ↓∩ s)
-  · refine cof_le fun ⟨y, hy⟩ ↦ ?_
-    obtain ⟨z, hz, hyz⟩ := hs hy
-    refine ⟨⟨z, hsx hz⟩, ?_, ?_⟩ <;> simpa
-  · exact mk_preimage_val_le_right ..
+  refine (cof_le fun ⟨y, hy⟩ ↦ ?_).trans <| mk_preimage_val_le_right ..
+  obtain ⟨z, hz, hyz⟩ := hs hy
+  exact ⟨⟨z, hsx hz⟩, hz, hyz⟩
 
 @[simp]
 theorem cofWithin_eq_zero_iff : cofWithin x = 0 ↔ IsMin x := by
