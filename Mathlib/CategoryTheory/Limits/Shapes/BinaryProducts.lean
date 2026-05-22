@@ -394,13 +394,13 @@ def BinaryCofan.IsColimit.desc {W : C} {s : BinaryCofan X Y} (h : IsColimit s)
   h.desc (BinaryCofan.mk f g)
 
 @[reassoc (attr := simp)]
-lemma BinaryCofan.IsColimit.desc_fst {W : C} {s : BinaryCofan X Y} (h : IsColimit s)
+lemma BinaryCofan.IsColimit.inl_desc {W : C} {s : BinaryCofan X Y} (h : IsColimit s)
     (f : X ⟶ W) (g : Y ⟶ W) :
     s.inl ≫ desc h f g = f :=
   h.fac (BinaryCofan.mk f g) _
 
 @[reassoc (attr := simp)]
-lemma BinaryCofan.IsColimit.desc_snd {W : C} {s : BinaryCofan X Y} (h : IsColimit s)
+lemma BinaryCofan.IsColimit.inr_desc {W : C} {s : BinaryCofan X Y} (h : IsColimit s)
     (f : X ⟶ W) (g : Y ⟶ W) :
     s.inr ≫ desc h f g = g :=
   h.fac (BinaryCofan.mk f g) _
@@ -416,7 +416,7 @@ def BinaryCofan.IsColimit.desc' {W X Y : C} {s : BinaryCofan X Y} (h : IsColimit
 /-- Binary products are symmetric. -/
 def BinaryFan.isLimitFlip {X Y : C} {c : BinaryFan X Y} (hc : IsLimit c) :
     IsLimit (BinaryFan.mk c.snd c.fst) :=
-  BinaryFan.isLimitMk (fun s => hc.lift (BinaryFan.mk s.snd s.fst)) (fun _ => hc.fac _ _)
+  BinaryFan.isLimitMk (fun s => IsLimit.lift hc s.snd s.fst) (fun _ => hc.fac _ _)
     (fun _ => hc.fac _ _) fun s _ e₁ e₂ =>
     BinaryFan.IsLimit.hom_ext hc
       (e₂.trans (hc.fac (BinaryFan.mk s.snd s.fst) ⟨WalkingPair.left⟩).symm)
@@ -450,7 +450,7 @@ set_option backward.isDefEq.respectTransparency false in
 noncomputable def BinaryFan.isLimitCompLeftIso {X Y X' : C} (c : BinaryFan X Y) (f : X ⟶ X')
     [IsIso f] (h : IsLimit c) : IsLimit (BinaryFan.mk (c.fst ≫ f) c.snd) := by
   fapply BinaryFan.isLimitMk
-  · exact fun s => h.lift (BinaryFan.mk (s.fst ≫ inv f) s.snd)
+  · exact fun s => IsLimit.lift h (s.fst ≫ inv f) s.snd
   · simp
   · simp
   · intro s m e₁ e₂
@@ -466,7 +466,7 @@ noncomputable def BinaryFan.isLimitCompRightIso {X Y Y' : C} (c : BinaryFan X Y)
 /-- Binary coproducts are symmetric. -/
 def BinaryCofan.isColimitFlip {X Y : C} {c : BinaryCofan X Y} (hc : IsColimit c) :
     IsColimit (BinaryCofan.mk c.inr c.inl) :=
-  BinaryCofan.isColimitMk (fun s => hc.desc (BinaryCofan.mk s.inr s.inl)) (fun _ => hc.fac _ _)
+  BinaryCofan.isColimitMk (fun s => IsColimit.desc hc s.inr s.inl) (fun _ => hc.fac _ _)
     (fun _ => hc.fac _ _) fun s _ e₁ e₂ =>
     BinaryCofan.IsColimit.hom_ext hc
       (e₂.trans (hc.fac (BinaryCofan.mk s.inr s.inl) ⟨WalkingPair.left⟩).symm)
@@ -500,7 +500,7 @@ set_option backward.isDefEq.respectTransparency false in
 noncomputable def BinaryCofan.isColimitCompLeftIso {X Y X' : C} (c : BinaryCofan X Y) (f : X' ⟶ X)
     [IsIso f] (h : IsColimit c) : IsColimit (BinaryCofan.mk (f ≫ c.inl) c.inr) := by
   fapply BinaryCofan.isColimitMk
-  · exact fun s => h.desc (BinaryCofan.mk (inv f ≫ s.inl) s.inr)
+  · exact fun s => BinaryCofan.IsColimit.desc h (inv f ≫ s.inl) s.inr
   · simp
   · simp
   · intro s m e₁ e₂
@@ -1503,11 +1503,11 @@ if `sYZ` is a limit cone we can construct a binary fan over `sXY.X Z`.
 
 This is an ingredient of building the associator for a Cartesian category. -/
 def BinaryFan.assocInv (P : IsLimit sXY) (s : BinaryFan X sYZ.pt) : BinaryFan sXY.pt Z :=
-  BinaryFan.mk (P.lift (BinaryFan.mk s.fst (s.snd ≫ sYZ.fst))) (s.snd ≫ sYZ.snd)
+  BinaryFan.mk (IsLimit.lift P s.fst (s.snd ≫ sYZ.fst)) (s.snd ≫ sYZ.snd)
 
 @[simp]
 lemma BinaryFan.assocInv_fst (P : IsLimit sXY) (s : BinaryFan X sYZ.pt) :
-    (assocInv P s).fst = P.lift (mk s.fst (s.snd ≫ sYZ.fst)) := rfl
+    (assocInv P s).fst = IsLimit.lift P s.fst (s.snd ≫ sYZ.fst) := rfl
 
 @[simp]
 lemma BinaryFan.assocInv_snd (P : IsLimit sXY) (s : BinaryFan X sYZ.pt) :
@@ -1531,10 +1531,10 @@ protected def IsLimit.assoc (P : IsLimit sXY) (Q : IsLimit sYZ) {s : BinaryFan s
     · apply P.hom_ext
       rintro ⟨⟨⟩⟩
       · simpa using w ⟨.left⟩
-      · replace w : m ≫ Q.lift (BinaryFan.mk (s.fst ≫ sXY.snd) s.snd) = t.π.app ⟨.right⟩ := by
+      · replace w : m ≫ BinaryFan.IsLimit.lift Q (s.fst ≫ sXY.snd) s.snd = t.π.app ⟨.right⟩ := by
           simpa using w ⟨.right⟩
         simp [← w]
-    · replace w : m ≫ Q.lift (BinaryFan.mk (s.fst ≫ sXY.snd) s.snd) = t.π.app ⟨.right⟩ := by
+    · replace w : m ≫ BinaryFan.IsLimit.lift Q (s.fst ≫ sXY.snd) s.snd = t.π.app ⟨.right⟩ := by
         simpa using w ⟨.right⟩
       simp [← w]
 
