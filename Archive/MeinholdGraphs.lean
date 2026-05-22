@@ -38,6 +38,10 @@ Five quotients of Clayworth named for their sparsity and symmetry:
 | Meinhold-1344 | 1344 | 9 | 6 | 4·G₂(2) | C₃×C₃ |
 | Meinhold-2016 | 2016 | 6 | 8 | G₂(2) | C₆ |
 
+## Visualizations
+
+* [The Meinhold-72 graph](https://raw.githubusercontent.com/RaggedR/symmetric-graphs/main/lean/named_graphs/meinhold-72.jpeg) — 72 vertices, 7-regular, quotient of Clayworth by PSL(3,2)
+
 ## References
 
 * Robin Langer, *Symmetric Graphs and their Quotients*, arXiv:1306.4798
