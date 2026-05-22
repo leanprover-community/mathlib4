@@ -32,7 +32,7 @@ also in the subset.
 @[expose] public section
 
 
-variable (K V : Type*) [Field K] [AddCommGroup V] [Module K V]
+variable (K V : Type*) [DivisionRing K] [AddCommGroup V] [Module K V]
 
 namespace Projectivization
 
