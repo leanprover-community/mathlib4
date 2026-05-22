@@ -312,7 +312,7 @@ theorem approx_Gamma_integral_tendsto_Gamma_integral {s : ℂ} (hs : 0 < re s) :
       ((ae_restrict_iff' measurableSet_Ioi).mpr (ae_of_all _ f_tends)) using
     1
     -- limit of f is the integrand we want
-    
+
   -- limit of f is the integrand we want
   · ext1 n
     rw [MeasureTheory.integral_indicator (measurableSet_Ioc : MeasurableSet (Ioc (_ : ℝ) _)),

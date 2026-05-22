@@ -148,7 +148,7 @@ lemma totallyBounded_iff_finite_residueField [(Valued.v : Valuation K Γ₀).Ran
       (Ideal.Quotient.mk_eq_mk_iff_sub_mem (I := 𝓂[K]) y x).mpr
         _
           -- TODO: make Valued.maximalIdeal abbreviations instead of def
-          
+
     -- TODO: make Valued.maximalIdeal abbreviations instead of def
     rw [Valued.maximalIdeal, hp.maximalIdeal_eq, ← SetLike.mem_coe,
       (Valuation.integer.integers _).coe_span_singleton_eq_setOf_le_v_algebraMap]

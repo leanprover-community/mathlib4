@@ -133,7 +133,7 @@ theorem IsAffineOpen.primeIdealOf_genericPoint {X : Scheme} [IsIntegral X] {U : 
     genericPoint_eq_of_isOpenImmersion
       (U.toScheme.isoSpec.hom ≫ Spec.map (X.presheaf.map (eqToHom U.isOpenEmbedding_obj_top).op))
         -- Porting note: this was `ext1`
-        
+
   -- Porting note: this was `ext1`
   apply Subtype.ext
   exact (genericPoint_eq_of_isOpenImmersion U.ι).symm

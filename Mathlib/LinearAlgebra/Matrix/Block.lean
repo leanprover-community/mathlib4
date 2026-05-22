@@ -243,7 +243,7 @@ theorem equiv_block_det (M : Matrix m m R) {p q : m → Prop} [DecidablePred p] 
       (toSquareBlockProp M q)
         -- Removed `@[simp]` attribute,
         -- as the LHS simplifies already to `M.toSquareBlock id i ⟨i, ⋯⟩ ⟨i, ⋯⟩`
-        
+
 
 -- Removed `@[simp]` attribute,
 -- as the LHS simplifies already to `M.toSquareBlock id i ⟨i, ⋯⟩ ⟨i, ⋯⟩`

@@ -52,7 +52,7 @@ instance projective_ultrafilter (X : Type*) : Projective (of <| Ultrafilter X) w
       denseRange_pure.equalizer (g.hom.hom.continuous.comp hh) f.hom.hom.continuous
         _
           -- This used to be `rw`, but we need `rw; rfl` after https://github.com/leanprover/lean4/pull/2644
-          
+
     -- This used to be `rw`, but we need `rw; rfl` after https://github.com/leanprover/lean4/pull/2644
     rw [comp_assoc, ultrafilter_extend_extends, ← comp_assoc, this, id_comp]
     rfl

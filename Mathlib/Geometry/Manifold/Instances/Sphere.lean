@@ -405,7 +405,7 @@ instance EuclideanSpace.instIsManifoldSphere
         (ℝ ∙ (v : E))ᗮ.subtypeL.contDiff).comp U.symm.contDiff
       convert! H₁.comp_inter (H₂.contDiffOn : ContDiffOn ℝ ω _ Set.univ) using 1
         -- -- squeezed from `ext, simp [sphere_ext_iff, stereographic'_symm_apply, real_inner_comm]`
-        
+
       -- -- squeezed from `ext, simp [sphere_ext_iff, stereographic'_symm_apply, real_inner_comm]`
       simp only [OpenPartialHomeomorph.trans_toPartialEquiv,
         OpenPartialHomeomorph.symm_toPartialEquiv, PartialEquiv.trans_source,
