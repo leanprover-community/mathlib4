@@ -91,16 +91,25 @@ private def meinhold72NeighborData : Array (Fin 72) := #[
   4, 33, 39, 45, 53, 61, 66, 0, 5, 8, 34, 48, 57, 62,
 ]
 
+private def meinhold72AdjBool (u v : Fin 72) : Bool :=
+  u ≠ v &&
+  (let b := 7 * u.val
+   meinhold72NeighborData[b]'(by omega) == v ||
+   meinhold72NeighborData[b + 1]'(by omega) == v ||
+   meinhold72NeighborData[b + 2]'(by omega) == v ||
+   meinhold72NeighborData[b + 3]'(by omega) == v ||
+   meinhold72NeighborData[b + 4]'(by omega) == v ||
+   meinhold72NeighborData[b + 5]'(by omega) == v ||
+   meinhold72NeighborData[b + 6]'(by omega) == v)
+
 /-- The Meinhold-72 graph: 72 vertices, 7-regular, girth 4, diameter 5. -/
 def meinhold72Graph : SimpleGraph (Fin 72) where
-  Adj v w := v ≠ w ∧ w ∈ (List.range 7).map
-    (fun i => meinhold72NeighborData[v.val * 7 + i])
-  symm := by
-    intro v w ⟨hne, hmem⟩
-    constructor
-    · exact hne.symm
-    · native_decide
-  loopless v h := h.1 rfl
+  Adj u v := meinhold72AdjBool u v
+  symm u v := by simp only [meinhold72AdjBool]; revert u v; native_decide
+  loopless := ⟨fun u => by simp only [meinhold72AdjBool]; revert u; native_decide⟩
+
+instance meinhold72DecAdj : DecidableRel meinhold72Graph.Adj :=
+  fun u v => inferInstanceAs (Decidable (meinhold72AdjBool u v))
 
 /-! ## Block map: Clayworth → Meinhold-72 -/
 
@@ -255,12 +264,12 @@ theorem meinholdBlockMap_surjective : Function.Surjective meinholdBlockMap := by
 theorem meinholdBlockMap_adj {v w : Fin 4032}
     (h : clayworthGraph.Adj v w) :
     meinholdBlockMap v = meinholdBlockMap w ∨ meinhold72Graph.Adj (meinholdBlockMap v) (meinholdBlockMap w) := by
-  native_decide
+  revert h; revert v w; native_decide
 
 /-- Meinhold-72 is 7-regular: every vertex has exactly 7 neighbors. -/
 theorem meinhold72_degree (v : Fin 72) :
     (meinhold72Graph.neighborFinset v).card = 7 := by
-  native_decide
+  revert v; native_decide
 
 /-- Meinhold-72 has no triangles (girth ≥ 4). -/
 theorem meinhold72_triangleFree :
@@ -285,9 +294,9 @@ theorem meinholdBlockMap_lifts {a b : Fin 72}
     (h : meinhold72Graph.Adj a b) :
     ∃ v w : Fin 4032, meinholdBlockMap v = a ∧ meinholdBlockMap w = b ∧
       clayworthGraph.Adj v w := by
-  native_decide
+  revert h; revert a b; native_decide
 
 /-- Each fiber of the block map has exactly 56 vertices. -/
 theorem meinholdBlockMap_fiber_card (b : Fin 72) :
     (Finset.univ.filter fun v : Fin 4032 => meinholdBlockMap v = b).card = 56 := by
-  native_decide
+  revert b; native_decide
