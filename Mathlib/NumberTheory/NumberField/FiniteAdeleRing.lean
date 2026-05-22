@@ -29,7 +29,7 @@ variable {K : Type*} [Field K] [NumberField K]
 
 namespace FiniteAdeleRing
 
-open RingOfIntegers.HeightOneSpectrum IsDedekindDomain HeightOneSpectrum FiniteAdeleRing
+open IsDedekindDomain HeightOneSpectrum FiniteAdeleRing
 
 theorem mulSupport_finite (x : (FiniteAdeleRing (𝓞 K) K)ˣ) :
     (Function.mulSupport fun v ↦ ‖x.1 v‖).Finite := by
