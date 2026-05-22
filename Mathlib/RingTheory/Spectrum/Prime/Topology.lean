@@ -961,7 +961,7 @@ lemma denseRange_comap_iff_minimalPrimes :
       simp only [Set.mem_setOf, Ideal.IsMinimalPrime] at hI ⊢
       convert hI using 2 with p
       exact ⟨fun h ↦ ⟨h.1, bot_le⟩, fun h ↦ ⟨h.1, H.trans (h.1.radical_le_iff.mpr bot_le)⟩⟩
-    obtain ⟨p, hp, _, rfl⟩ := Ideal.exists_comap_eq_of_mem_minimalPrimes f (I := ⊥) I this
+    obtain ⟨p, hp, _, rfl⟩ := Ideal.exists_comap_eq_of_isMinimalPrime f (I := ⊥) I this
     exact ⟨⟨p, hp⟩, rfl⟩
   · intro H p
     obtain ⟨q, hq, hq'⟩ := Ideal.exists_minimalPrimes_le (J := p.asIdeal) bot_le
@@ -1182,7 +1182,7 @@ lemma closure_image_comap_zeroLocus (I : Ideal S) :
     exact zeroLocus_anti_mono (Set.image_preimage_subset _ _)
   · rintro x (hx : I.comap f ≤ x.asIdeal)
     obtain ⟨q, hq₁, hq₂⟩ := Ideal.exists_minimalPrimes_le hx
-    obtain ⟨p', hp', hp'', rfl⟩ := Ideal.exists_comap_eq_of_mem_minimalPrimes f _ hq₁
+    obtain ⟨p', hp', hp'', rfl⟩ := Ideal.exists_comap_eq_of_isMinimalPrime f _ hq₁
     let p'' : PrimeSpectrum S := ⟨p', hp'⟩
     apply isClosed_closure.stableUnderSpecialization ((le_iff_specializes
       (comap f ⟨p', hp'⟩) x).mp hq₂) (subset_closure (by exact ⟨_, hp'', rfl⟩))
@@ -1283,19 +1283,24 @@ lemma zeroLocus_minimalPrimes :
 
 variable {R}
 
-lemma vanishingIdeal_mem_minimalPrimes {s : Set (PrimeSpectrum R)} :
-    vanishingIdeal s ∈ minimalPrimes R ↔ closure s ∈ irreducibleComponents (PrimeSpectrum R) := by
+lemma vanishingIdeal_isMinimalPrime_iff {s : Set (PrimeSpectrum R)} :
+    IsMinimalPrime (vanishingIdeal s) ↔ closure s ∈ irreducibleComponents (PrimeSpectrum R) := by
   constructor
   · rw [← zeroLocus_minimalPrimes, ← zeroLocus_vanishingIdeal_eq_closure]
+    exact fun h ↦ Set.mem_image_of_mem _ h
+  · rw [← (Set.ext_iff.mp (vanishingIdeal_irreducibleComponents R) _).trans Set.mem_setOf,
+      ← vanishingIdeal_closure]
     exact Set.mem_image_of_mem _
-  · rw [← vanishingIdeal_irreducibleComponents, ← vanishingIdeal_closure]
-    exact Set.mem_image_of_mem _
+
+@[deprecated "Use `PrimeSpectrum.vanishingIdeal_isMinimalPrime_iff` instead."
+  (since := "2026-05-13")]
+alias vanishingIdeal_mem_minimalPrimes := vanishingIdeal_isMinimalPrime_iff
 
 lemma zeroLocus_ideal_mem_irreducibleComponents {I : Ideal R} :
     zeroLocus I ∈ irreducibleComponents (PrimeSpectrum R) ↔ I.radical ∈ minimalPrimes R := by
   rw [← vanishingIdeal_zeroLocus_eq_radical]
   conv_lhs => rw [← (isClosed_zeroLocus _).closure_eq]
-  exact vanishingIdeal_mem_minimalPrimes.symm
+  exact vanishingIdeal_isMinimalPrime_iff.symm
 
 end CommSemiring
 

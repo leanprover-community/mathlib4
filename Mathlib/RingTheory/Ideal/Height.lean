@@ -178,14 +178,17 @@ lemma Ideal.finiteHeight_of_le {I J : Ideal R} (e : I ≤ J) (hJ : J ≠ ⊤) [F
 
 /-- If J is a prime ideal containing I, and its height is less than or equal to the height of I,
 then J is a minimal prime over I -/
-lemma Ideal.mem_minimalPrimes_of_height_eq {I J : Ideal R} (e : I ≤ J) [J.IsPrime]
-    [FiniteHeight J] (e' : J.height ≤ I.height) : J ∈ I.minimalPrimes := by
+lemma Ideal.isMinimalPrime_of_height_eq {I J : Ideal R} (e : I ≤ J) [J.IsPrime]
+    [FiniteHeight J] (e' : J.height ≤ I.height) : I.IsMinimalPrime J := by
   obtain ⟨p, h₁, h₂⟩ := Ideal.exists_minimalPrimes_le e
   convert h₁
   refine (eq_of_le_of_not_lt h₂ fun h₃ ↦ ?_).symm
   have := h₁.isPrime
   have := finiteHeight_of_le h₂ IsPrime.ne_top'
   exact lt_irrefl _ ((height_strict_mono_of_is_prime h₃).trans_le (e'.trans <| height_mono h₁.le))
+
+@[deprecated "Use `Ideal.isMinimalPrime_of_height_eq` instead." (since := "2026-05-13")]
+alias Ideal.mem_minimalPrimes_of_height_eq := Ideal.isMinimalPrime_of_height_eq
 
 /-- A prime ideal has height zero if and only if it is minimal -/
 lemma Ideal.primeHeight_eq_zero_iff {I : Ideal R} [I.IsPrime] :
@@ -207,8 +210,8 @@ lemma Ideal.one_le_height_span_singleton_of_mem_nonZeroDivisors
   have : q.IsPrime := hq.isPrime
   rw [ENat.one_le_iff_ne_zero, Ne, primeHeight_eq_zero_iff]
   intro hmin
-  exact absurd hx <| notMem_nonZeroDivisors_of_mem_mem_minimalPrimes
-    (hq.1.2 <| Ideal.mem_span_singleton.mpr <| dvd_refl x) hmin
+  exact absurd hx <| notMem_nonZeroDivisors_of_isMinimalPrime
+    (hq.le <| Submodule.mem_span_singleton_self x) hmin
 
 @[simp]
 lemma Ideal.height_bot [Nontrivial R] : (⊥ : Ideal R).height = 0 := by
@@ -373,10 +376,13 @@ lemma IsLocalization.height_map_of_disjoint {S : Type*} [CommRing S] [Algebra R 
   rw [AtPrime.ringKrullDim_eq_height P, AtPrime.ringKrullDim_eq_height p] at this
   exact WithBot.coe_eq_coe.mp this
 
-lemma mem_minimalPrimes_of_primeHeight_eq_height {I J : Ideal R} [J.IsPrime] (e : I ≤ J)
+lemma isMinimalPrime_of_primeHeight_eq_height {I J : Ideal R} [J.IsPrime] (e : I ≤ J)
     (e' : J.primeHeight = I.height) [J.FiniteHeight] : J ∈ I.minimalPrimes := by
   rw [← J.height_eq_primeHeight] at e'
-  exact mem_minimalPrimes_of_height_eq e (e' ▸ le_refl _)
+  exact isMinimalPrime_of_height_eq e (e' ▸ le_refl _)
+
+@[deprecated "Use `isMinimalPrimes_of_primeHeight_eq_height` instead." (since := "2026-05-13")]
+alias mem_minimalPrimes_of_primeHeight_eq_height := isMinimalPrime_of_primeHeight_eq_height
 
 lemma exists_spanRank_le_and_le_height_of_le_height [IsNoetherianRing R] (I : Ideal R) (r : ℕ)
     (hr : r ≤ I.height) : ∃ J ≤ I, J.spanRank ≤ r ∧ r ≤ J.height := by
@@ -424,7 +430,7 @@ lemma exists_spanRank_le_and_le_height_of_le_height [IsNoetherianRing R] (I : Id
           apply le_antisymm
           · rwa [← p.height_eq_primeHeight]
           · rwa [← e]
-        refine ⟨mem_minimalPrimes_of_primeHeight_eq_height (le_sup_left.trans hp.le) this.symm, ?_⟩
+        refine ⟨isMinimalPrime_of_primeHeight_eq_height (le_sup_left.trans hp.le) this.symm, ?_⟩
         rwa [p.height_eq_primeHeight, eq_comm]
       · exact hp.le <| Ideal.mem_sup_right <| mem_span_singleton_self x
 

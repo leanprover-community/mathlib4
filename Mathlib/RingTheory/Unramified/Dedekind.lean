@@ -40,11 +40,11 @@ theorem isDedekindDomainDvr.of_formallyUnramified : IsDedekindDomainDvr B where
       infer_instance
     rw [← (Algebra.FormallyUnramified.isRadical_map_isMaximal A B p).radical,
       IsLocalization.map_radical q.primeCompl,
-      IsLocalization.AtPrime.radical_map_of_mem_minimalPrimes (Localization.AtPrime q) q,
+      IsLocalization.AtPrime.radical_map_of_isMinimalPrime (Localization.AtPrime q) q,
       Localization.AtPrime.map_eq_maximalIdeal]
-    rw [Ideal.minimalPrimes_eq_comap]
+    rw [Set.mem_setOf.symm.trans (Set.ext_iff.mp Ideal.minimalPrimes_eq_comap _)]
     exact ⟨q.map (Ideal.Quotient.mk (p.map (algebraMap A B))),
-      IsArtinianRing.mem_minimalPrimes bot_le, Ideal.comap_map_mk Ideal.map_comap_le⟩
+      IsArtinianRing.isMinimalPrime bot_le, Ideal.comap_map_mk Ideal.map_comap_le⟩
 
 include A in
 /-- A domain finite and unramified over a Dedekind domain is a Dedekind domain. -/

@@ -433,15 +433,20 @@ lemma Ideal.under_map_of_isLocalizationAtPrime {p : Ideal R} [p.IsPrime] (hpq : 
     simp [Ideal.primeCompl, ← le_compl_iff_disjoint_left, hpq]
   exact IsLocalization.under_map_of_isPrime_disjoint _ _ (by simpa) disj
 
-lemma IsLocalization.subsingleton_primeSpectrum_of_mem_minimalPrimes
-    {R : Type*} [CommSemiring R] (p : Ideal R) (hp : p ∈ minimalPrimes R)
-    (S : Type*) [CommSemiring S] [Algebra R S] [IsLocalization.AtPrime S p (hp := hp.1.1)] :
+lemma IsLocalization.subsingleton_primeSpectrum_of_isMinimalPrime
+    {R : Type*} [CommSemiring R] (p : Ideal R) (hp : IsMinimalPrime p)
+    (S : Type*) [CommSemiring S] [Algebra R S] [IsLocalization.AtPrime S p (hp := hp.isPrime)] :
     Subsingleton (PrimeSpectrum S) :=
-  have := hp.1.1
-  have : Unique (Set.Iic (⟨p, hp.1.1⟩ : PrimeSpectrum R)) := ⟨⟨⟨p, hp.1.1⟩, by exact
-    fun ⦃x⦄ a ↦ a⟩, fun i ↦ Subtype.ext <| PrimeSpectrum.ext <|
-    (minimalPrimes_eq_minimals (R := R) ▸ hp).eq_of_le i.1.2 i.2⟩
+  have := hp.isPrime
+  have : Unique (Set.Iic (⟨p, hp.isPrime⟩ : PrimeSpectrum R)) := ⟨⟨⟨p, hp.isPrime⟩, fun _ a ↦ a⟩,
+    fun i ↦ Subtype.ext <| PrimeSpectrum.ext <|
+      ((IsMinimalPrime.iff_minimal p).mp hp).eq_of_le i.1.2 i.2⟩
   (IsLocalization.AtPrime.primeSpectrumOrderIso S p).subsingleton
+
+@[deprecated "Use `IsLocalization.subsingleton_primeSpectrum_of_isMinimalPrime` instead."
+  (since := "2026-05-13")]
+alias IsLocalization.subsingleton_primeSpectrum_of_mem_minimalPrimes :=
+  IsLocalization.subsingleton_primeSpectrum_of_isMinimalPrime
 
 open Ideal in
 /-- If `R'` (resp. `S'`) is the localization of `R` (resp. `S`) and

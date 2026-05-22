@@ -121,14 +121,20 @@ instance (priority := 100) (I : Ideal R) [I.IsPrime] [Ring.KrullDimLE 0 R] : I.I
 lemma Ideal.isMaximal_iff_isPrime [Ring.KrullDimLE 0 R] {I : Ideal R} : I.IsMaximal ↔ I.IsPrime :=
   ⟨IsMaximal.isPrime, fun _ ↦ inferInstance⟩
 
-lemma Ideal.mem_minimalPrimes_of_krullDimLE_zero [Ring.KrullDimLE 0 R]
-    (I : Ideal R) [I.IsPrime] : I ∈ minimalPrimes R :=
-  minimalPrimes_eq_minimals (R := R) ▸
+lemma Ideal.isMinimalPrime_of_krullDimLE_zero [Ring.KrullDimLE 0 R]
+    (I : Ideal R) [I.IsPrime] : IsMinimalPrime I :=
+  (IsMinimalPrime.iff_minimal I).mpr
     ⟨‹_›, fun J hJ hJI ↦ (IsMaximal.eq_of_le inferInstance IsPrime.ne_top' hJI).ge⟩
 
-lemma Ideal.mem_minimalPrimes_iff_isPrime [Ring.KrullDimLE 0 R] {I : Ideal R} :
-    I ∈ minimalPrimes R ↔ I.IsPrime :=
-  ⟨(·.1.1), fun _ ↦ I.mem_minimalPrimes_of_krullDimLE_zero⟩
+@[deprecated "Use `Ideal.isMinimalPrime_of_krullDimLE_zero` instead." (since := "2026-05-13")]
+alias Ideal.mem_minimalPrimes_of_krullDimLE_zero := Ideal.isMinimalPrime_of_krullDimLE_zero
+
+lemma Ideal.isMinimalPrime_iff_isPrime [Ring.KrullDimLE 0 R] {I : Ideal R} :
+    IsMinimalPrime I ↔ I.IsPrime :=
+  ⟨(·.isPrime), fun _ ↦ I.isMinimalPrime_of_krullDimLE_zero⟩
+
+@[deprecated "Use `Ideal.isMinimalPrime_iff_isPrime` instead." (since := "2026-05-13")]
+alias Ideal.mem_minimalPrimes_iff_isPrime := Ideal.isMinimalPrime_iff_isPrime
 
 theorem nilradical_le_jacobson (R) [CommRing R] : nilradical R ≤ Ring.jacobson R :=
   nilradical_eq_sInf R ▸ le_sInf fun _I hI ↦ sInf_le (Ideal.IsMaximal.isPrime ⟨hI⟩)
