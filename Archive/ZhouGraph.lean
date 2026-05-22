@@ -689,4 +689,62 @@ noncomputable def zhouLorimerQuotientIso :
     stabilizer_le_zhouOvergroup
     connectionSet_disjoint_zhouOvergroup
 
+/-! ### Arc-transitivity of Zhou-3
+
+The Zhou-3 graph is arc-transitive because its connection set is a single
+double coset HaH where a is an involution sending vertex 0 to its neighbor 3.
+This is the word g₁⁻¹·g₂·g₁⁻¹·g₁⁻¹·g₂·g₁·g₁·g₂·g₁ in the generators. -/
+
+/-- The arc-swapping involution: sends vertex 0 to vertex 3 (a neighbor). -/
+private def arcSwapper : Equiv.Perm (Fin 182) :=
+  applyWord' zGens [2, 1, 2, 2, 1, 0, 0, 1, 0]
+
+/-- The arc swapper sends 0 to 3 (a neighbor of 0). -/
+private theorem arcSwapper_image : arcSwapper 0 = 3 := by native_decide
+
+/-- The arc swapper is an involution. -/
+private theorem arcSwapper_sq :
+    ∀ v : Fin 182, arcSwapper (arcSwapper v) = v := by native_decide
+
+/-- The arc swapper lies in PSL(2,13). -/
+private theorem arcSwapper_mem : arcSwapper ∈ zGroup :=
+  applyWord'_mem zGens [2, 1, 2, 2, 1, 0, 0, 1, 0]
+
+/-- The arc swapper is not in the stabilizer of vertex 0. -/
+private theorem arcSwapper_not_in_stab :
+    (⟨arcSwapper, arcSwapper_mem⟩ : zGroup) ∉
+      MulAction.stabilizer zGroup (0 : Fin 182) := by
+  intro h
+  have := MulAction.mem_stabilizer_iff.mp h
+  have : arcSwapper 0 = 0 := this
+  have := arcSwapper_image
+  simp_all
+
+/-- The arc swapper squares to the identity in the group. -/
+private theorem arcSwapper_mul_self :
+    arcSwapper * arcSwapper = 1 := by native_decide
+
+private theorem arcSwapper_sq_eq_one :
+    (⟨arcSwapper, arcSwapper_mem⟩ : zGroup) ^ 2 = 1 := by
+  have : (⟨arcSwapper, arcSwapper_mem⟩ : zGroup) *
+         (⟨arcSwapper, arcSwapper_mem⟩ : zGroup) = 1 := by
+    apply Subtype.ext; exact arcSwapper_mul_self
+  rwa [sq]
+
+/-- **The Zhou-3 graph is arc-transitive.** The connection set is the single
+double coset H·a·H where a is the arc-swapping involution (0 ↔ 3).
+Arc-transitivity follows from Lorimer's forward theorem. -/
+noncomputable def zhouArcTransitive :
+    IsArcTransitive zGroup (zGroup ⧸ MulAction.stabilizer zGroup (0 : Fin 182))
+      (sabidussiSymmetricGraph
+        (MulAction.stabilizer zGroup (0 : Fin 182))
+        ⟨arcSwapper, arcSwapper_mem⟩
+        arcSwapper_sq_eq_one
+        arcSwapper_not_in_stab) :=
+  lorimer_forward
+    (MulAction.stabilizer zGroup (0 : Fin 182))
+    ⟨arcSwapper, arcSwapper_mem⟩
+    arcSwapper_sq_eq_one
+    arcSwapper_not_in_stab
+
 end ZhouLorimer
