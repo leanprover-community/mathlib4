@@ -26,6 +26,10 @@ whose quotient is K₄.
 * `petersenGraph_regular` — the Petersen graph is 3-regular
 * `cubeQuotient_eq_top` — the antipodal quotient of the cube is K₄
 
+## Visualizations
+
+* [Dodecahedron → Petersen quotient](https://raw.githubusercontent.com/RaggedR/symmetric-graphs/main/lean/named_graphs/dodecahedron-quotient-petersen.jpeg) — the Z₂ antipodal quotient, with fibers color-coded
+
 ## References
 
 * Robin Langer, *Symmetric Graphs and their Quotients*, arXiv:1306.4798
