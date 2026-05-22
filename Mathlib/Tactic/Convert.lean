@@ -200,15 +200,12 @@ def elabTermForConvert (term : Syntax) (expectedType? : Option Expr) :
       return t
 
 elab_rules : tactic
-| `(tactic| convert%$tk $[!%$semireducible]? $cfg $[←%$sym]? $term $[using $n]? $[with $ps?*]?) =>
+| `(tactic| convert $[!]? $cfg $[←%$sym]? $term $[using $n]? $[with $ps?*]?) =>
   withMainContext do
     let config ← Congr!.elabConfig (mkOptionalNode cfg)
     let patterns := (ps?.getD #[]).toList
     let expectedType ← mkFreshExprMVar (mkSort (← getLevel (← getMainTarget)))
     let (e, gs) ← elabTermForConvert term expectedType
-    if semireducible.isNone then
-      let tac ← `(tactic| convert!%$tk $cfg $[←%$sym]? $term $[using $n]? $[with $ps?*]?)
-      TryThis.addSuggestion tk { suggestion := tac } (origSpan? := ← getRef)
     liftMetaTactic fun g ↦
       return (← g.convert e sym.isSome (n.map (·.getNat)) config patterns) ++ gs
 
