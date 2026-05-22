@@ -644,8 +644,7 @@ where
 /-- Convert a goal into an `Eq` goal if possible (since we have a better shot at those).
 Also, if `tryClose := true`, then try to close the goal using an assumption, `Subsingleton.Elim`,
 or definitional equality. -/
-def Lean.MVarId.preCongr! (mvarId : MVarId) (tryClose : Bool) :
-    MetaM (Option MVarId) := do
+def Lean.MVarId.preCongr! (mvarId : MVarId) (tryClose : Bool) : MetaM (Option MVarId) := do
   -- Next, turn `HEq` and `Iff` into `Eq`
   let mvarId ← mvarId.heqOfEq
   if tryClose then
