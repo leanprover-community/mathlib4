@@ -109,6 +109,8 @@ equal to the corresponding factor `g i` of another finite product, then
 theorem prod_le_prod [MulLeftMono N] (h : ∀ i ∈ s, f i ≤ g i) : ∏ i ∈ s, f i ≤ ∏ i ∈ s, g i :=
   Multiset.prod_map_le_prod_map f g h
 
+@[deprecated (since := "2026-05-22")] alias prod_le_prod' := prod_le_prod
+
 attribute [bound] sum_le_sum
 
 /-- In an ordered additive commutative monoid, if each summand `f i` of one finite sum is less than
@@ -120,6 +122,8 @@ add_decl_doc sum_le_sum
 theorem one_le_prod [MulLeftMono N] (h : ∀ i ∈ s, 1 ≤ f i) : 1 ≤ ∏ i ∈ s, f i :=
   le_trans (by rw [prod_const_one]) (prod_le_prod h)
 
+@[deprecated (since := "2026-05-22")] alias one_le_prod' := one_le_prod
+
 @[to_additive sum_nonneg']
 theorem one_le_prod'' [MulLeftMono N] (h : ∀ i : ι, 1 ≤ f i) : 1 ≤ ∏ i ∈ s, f i :=
   Finset.one_le_prod fun i _ ↦ h i
@@ -130,6 +134,8 @@ attribute [deprecated one_le_prod (since := "2026-05-22")] one_le_prod''
 @[to_additive]
 theorem prod_le_one [MulLeftMono N] (h : ∀ i ∈ s, f i ≤ 1) : ∏ i ∈ s, f i ≤ 1 :=
   (prod_le_prod h).trans_eq (by rw [prod_const_one])
+
+@[deprecated (since := "2026-05-22")] alias prod_le_prod_of_subset_of_one_le' := prod_le_one
 
 @[to_additive (attr := gcongr)]
 theorem prod_le_prod_of_subset_of_one_le [MulLeftMono N] (h : s ⊆ t)
@@ -145,20 +151,30 @@ lemma prod_le_prod_of_subset_of_le_one [MulLeftMono N] (h : s ⊆ t) (hf : ∀ i
     ∏ i ∈ t, f i ≤ ∏ i ∈ s, f i :=
   prod_le_prod_of_subset_of_one_le (N := Nᵒᵈ) h hf
 
+@[deprecated (since := "2026-05-22")]
+alias prod_le_prod_of_subset_of_le_one' := prod_le_prod_of_subset_of_le_one
+
 @[to_additive]
 theorem prod_mono_set_of_one_le [MulLeftMono N] (hf : ∀ x, 1 ≤ f x) :
     Monotone fun s ↦ ∏ x ∈ s, f x :=
   fun _ _ hst ↦ prod_le_prod_of_subset_of_one_le hst fun x _ _ ↦ hf x
+
+@[deprecated (since := "2026-05-22")] alias prod_mono_set_of_one_le' := prod_mono_set_of_one_le
 
 @[to_additive]
 theorem prod_anti_set_of_le_one [MulLeftMono N] (hf : ∀ (x : ι), f x ≤ 1) :
     Antitone fun (s : Finset ι) => ∏ x ∈ s, f x :=
   fun _ _ hst ↦ prod_le_prod_of_subset_of_le_one hst (by simp [hf])
 
+@[deprecated (since := "2026-05-22")] alias prod_anti_set_of_le_one' := prod_anti_set_of_le_one
+
 @[to_additive]
 theorem prod_le_univ_prod_of_one_le [MulLeftMono N] [Fintype ι] {s : Finset ι} (w : ∀ x, 1 ≤ f x) :
     ∏ x ∈ s, f x ≤ ∏ x, f x :=
   prod_le_prod_of_subset_of_one_le (subset_univ s) fun a _ _ ↦ w a
+
+@[deprecated (since := "2026-05-22")]
+alias prod_le_univ_prod_of_one_le' := prod_le_univ_prod_of_one_le
 
 @[to_additive]
 theorem prod_eq_one_iff_of_one_le {ι : Type u_1} {N : Type u_5} [CommMonoid N] [PartialOrder N]
@@ -171,6 +187,8 @@ theorem prod_eq_one_iff_of_one_le {ι : Type u_1} {N : Type u_5} [CommMonoid N] 
     have : ∀ i ∈ s, 1 ≤ f i := fun _ ↦ H _ ∘ mem_insert_of_mem
     rw [prod_insert ha, mul_eq_one_iff_of_one_le (H _ <| mem_insert_self _ _) (one_le_prod this),
       forall_mem_insert, ih this]
+
+@[deprecated (since := "2026-05-22")] alias prod_eq_one_iff_of_one_le' := prod_eq_one_iff_of_one_le
 
 @[to_additive sum_pos_iff_of_nonneg]
 lemma one_lt_prod_iff_of_one_le {ι : Type u_1} {N : Type u_5} [CommMonoid N] [PartialOrder N]
@@ -186,6 +204,8 @@ theorem prod_eq_one_iff_of_le_one {ι : Type u_1} {N : Type u_5} [CommMonoid N] 
     (∀ i ∈ s, f i ≤ 1) → ((∏ i ∈ s, f i) = 1 ↔ ∀ i ∈ s, f i = 1) :=
   prod_eq_one_iff_of_one_le (N := Nᵒᵈ)
 
+@[deprecated (since := "2026-05-22")] alias prod_eq_one_iff_of_le_one' := prod_eq_one_iff_of_le_one
+
 @[to_additive]
 lemma prod_lt_one_iff_of_le_one {ι : Type u_1} {N : Type u_5} [CommMonoid N] [PartialOrder N]
     {f : ι → N} {s : Finset ι} [MulLeftMono N] (hf : ∀ x ∈ s, f x ≤ 1) :
@@ -199,6 +219,8 @@ theorem single_le_prod [MulLeftMono N] (hf : ∀ i ∈ s, 1 ≤ f i) {a} (h : a 
     f a = ∏ i ∈ {a}, f i := (prod_singleton _ _).symm
     _ ≤ ∏ i ∈ s, f i :=
       prod_le_prod_of_subset_of_one_le (singleton_subset_iff.2 h) fun i hi _ ↦ hf i hi
+
+@[deprecated (since := "2026-05-22")] alias single_le_prod' := single_le_prod
 
 @[to_additive]
 lemma mul_le_prod [MulLeftMono N] {i j : ι} (hf : ∀ i ∈ s, 1 ≤ f i) (hi : i ∈ s) (hj : j ∈ s)
@@ -238,11 +260,17 @@ theorem prod_fiberwise_le_prod_of_one_le_prod_fiber [MulLeftMono N] {t : Finset 
     _ = ∏ x ∈ s, f x :=
       prod_fiberwise_of_maps_to (fun _ hx ↦ mem_union.2 <| Or.inr <| mem_image_of_mem _ hx) _
 
+@[deprecated (since := "2026-05-22")]
+alias prod_fiberwise_le_prod_of_one_le_prod_fiber' := prod_fiberwise_le_prod_of_one_le_prod_fiber
+
 @[to_additive]
 theorem prod_le_prod_fiberwise_of_prod_fiber_le_one [MulLeftMono N] {t : Finset ι'} {g : ι → ι'}
     {f : ι → N} (h : ∀ y ∉ t, ∏ x ∈ s with g x = y, f x ≤ 1) :
     ∏ x ∈ s, f x ≤ ∏ y ∈ t, ∏ x ∈ s with g x = y, f x :=
   prod_fiberwise_le_prod_of_one_le_prod_fiber (N := Nᵒᵈ) h
+
+@[deprecated (since := "2026-05-22")]
+alias prod_le_prod_fiberwise_of_prod_fiber_le_one' := prod_le_prod_fiberwise_of_prod_fiber_le_one
 
 @[to_additive]
 lemma prod_image_le_of_one_le [MulLeftMono N]
@@ -421,10 +449,14 @@ theorem prod_le_prod_of_subset (h : s ⊆ t) : ∏ x ∈ s, f x ≤ ∏ x ∈ t,
   have := CanonicallyOrderedMul.toIsOrderedMonoid (α := M)
   prod_le_prod_of_subset_of_one_le h fun _ _ _ ↦ one_le
 
+@[deprecated (since := "2026-05-22")] alias prod_le_prod_of_subset' := prod_le_prod_of_subset
+
 @[to_additive]
 theorem prod_mono_set (f : ι → M) : Monotone fun s ↦ ∏ x ∈ s, f x := fun _ _ hs ↦
   have := CanonicallyOrderedMul.toIsOrderedMonoid (α := M)
   prod_le_prod_of_subset hs
+
+@[deprecated (since := "2026-05-22")] alias prod_mono_set' := prod_mono_set
 
 @[to_additive]
 theorem prod_le_prod_of_ne_one (h : ∀ x ∈ s, f x ≠ 1 → x ∈ t) :
@@ -438,6 +470,8 @@ theorem prod_le_prod_of_ne_one (h : ∀ x ∈ s, f x ≠ 1 → x ∈ t) :
       mul_le_of_le_one_of_le
         (prod_le_one <| by simp only [mem_filter, and_imp]; exact fun _ _ ↦ le_of_eq)
         (prod_le_prod_of_subset <| by simpa only [subset_iff, mem_filter, and_imp])
+
+@[deprecated (since := "2026-05-22")] alias prod_le_prod_of_ne_one' := prod_le_prod_of_ne_one
 
 @[to_additive sum_pos_iff]
 lemma one_lt_prod_iff {ι M : Type*} [CommMonoid M] [PartialOrder M] [CanonicallyOrderedMul M]
@@ -456,6 +490,8 @@ theorem prod_lt_prod [MulLeftStrictMono M] (hle : ∀ i ∈ s, f i ≤ g i) (hlt
     ∏ i ∈ s, f i < ∏ i ∈ s, g i :=
   Multiset.prod_lt_prod hle hlt
 
+@[deprecated (since := "2026-05-22")] alias prod_lt_prod' := prod_lt_prod
+
 /-- In an ordered commutative monoid, if each factor `f i` of one nontrivial finite product is
 strictly less than the corresponding factor `g i` of another nontrivial finite product, then
 `s.prod f < s.prod g`. -/
@@ -464,6 +500,8 @@ theorem prod_lt_prod_of_nonempty [MulLeftStrictMono M] (hs : s.Nonempty)
   (hlt : ∀ i ∈ s, f i < g i) :
     ∏ i ∈ s, f i < ∏ i ∈ s, g i :=
   Multiset.prod_lt_prod_of_nonempty (by aesop) hlt
+
+@[deprecated (since := "2026-05-22")] alias prod_lt_prod_of_nonempty' := prod_lt_prod_of_nonempty
 
 /-- In an ordered additive commutative monoid, if each summand `f i` of one nontrivial finite sum is
 strictly less than the corresponding summand `g i` of another nontrivial finite sum, then
@@ -485,6 +523,8 @@ theorem prod_lt_prod_of_subset [MulLeftStrictMono M] (h : s ⊆ t) {i : ι} (ht 
         simp only [mem_insert, not_or] at h'x
         exact hle x hx h'x.2
 
+@[deprecated (since := "2026-05-22")] alias prod_lt_prod_of_subset' := prod_lt_prod_of_subset
+
 @[to_additive]
 theorem single_lt_prod [MulLeftStrictMono M] {i j : ι} (hij : j ≠ i) (hi : i ∈ s) (hj : j ∈ s)
     (hlt : 1 < f j) (hle : ∀ k ∈ s, k ≠ i → 1 ≤ f k) : f i < ∏ k ∈ s, f k :=
@@ -493,6 +533,8 @@ theorem single_lt_prod [MulLeftStrictMono M] {i j : ι} (hij : j ≠ i) (hi : i 
     _ < ∏ k ∈ s, f k :=
       prod_lt_prod_of_subset (singleton_subset_iff.2 hi) hj (mt mem_singleton.1 hij) hlt
         fun k hks hki ↦ hle k hks (mt mem_singleton.2 hki)
+
+@[deprecated (since := "2026-05-22")] alias single_lt_prod' := single_lt_prod
 
 @[to_additive sum_pos]
 theorem one_lt_prod [MulLeftStrictMono M] (h : ∀ i ∈ s, 1 < f i) (hs : s.Nonempty) :
@@ -553,6 +595,8 @@ theorem exists_lt_of_prod_lt [MulLeftMono M] (Hlt : ∏ i ∈ s, f i < ∏ i ∈
   contrapose! Hlt with Hle
   exact prod_le_prod Hle
 
+@[deprecated (since := "2026-05-22")] alias exists_lt_of_prod_lt' := exists_lt_of_prod_lt
+
 variable [IsOrderedCancelMonoid M]
 
 @[to_additive]
@@ -560,6 +604,8 @@ theorem exists_le_of_prod_le (hs : s.Nonempty) (Hle : ∏ i ∈ s, f i ≤ ∏ i
     ∃ i ∈ s, f i ≤ g i := by
   contrapose! Hle with Hlt
   exact prod_lt_prod_of_nonempty hs Hlt
+
+@[deprecated (since := "2026-05-22")] alias exists_le_of_prod_le' := exists_le_of_prod_le
 
 @[to_additive exists_pos_of_sum_zero_of_exists_nonzero]
 theorem exists_one_lt_of_prod_one_of_exists_ne_one (f : ι → M) (h₁ : ∏ i ∈ s, f i = 1)
@@ -570,6 +616,9 @@ theorem exists_one_lt_of_prod_one_of_exists_ne_one (f : ι → M) (h₁ : ∏ i 
   calc
     ∏ j ∈ s, f j < ∏ j ∈ s, 1 := prod_lt_prod h₁ ⟨i, m, (h₁ i m).lt_of_ne i_ne⟩
     _ = 1 := prod_const_one
+
+@[deprecated (since := "2026-05-22")]
+alias exists_one_lt_of_prod_one_of_exists_ne_one' := exists_one_lt_of_prod_one_of_exists_ne_one
 
 end LinearOrderedCancelCommMonoid
 
@@ -610,6 +659,8 @@ variable [Fintype ι] [CommMonoid M] [Preorder M] [MulLeftMono M] {f : ι → M}
 theorem prod_mono : Monotone fun f : ι → M ↦ ∏ i, f i := fun _ _ hfg ↦
   Finset.prod_le_prod fun x _ ↦ hfg x
 
+@[deprecated (since := "2026-05-22")] alias prod_mono' := prod_mono
+
 @[to_additive sum_nonneg]
 lemma one_le_prod (hf : 1 ≤ f) : 1 ≤ ∏ i, f i := Finset.one_le_prod fun _ _ ↦ hf _
 
@@ -635,6 +686,8 @@ theorem prod_strictMono : StrictMono fun f : ι → M ↦ ∏ x, f x :=
   fun _ _ hfg ↦
   let ⟨hle, i, hlt⟩ := Pi.lt_def.mp hfg
   Finset.prod_lt_prod (fun i _ ↦ hle i) ⟨i, Finset.mem_univ i, hlt⟩
+
+@[deprecated (since := "2026-05-22")] alias prod_strictMono' := prod_strictMono
 
 @[to_additive sum_pos]
 lemma one_lt_prod (hf : 1 < f) : 1 < ∏ i, f i :=
