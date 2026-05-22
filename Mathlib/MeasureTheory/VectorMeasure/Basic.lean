@@ -728,6 +728,11 @@ theorem restrict_restrict {s t : Set α} (hs : MeasurableSet s) (ht : Measurable
   ext u hu
   simp [restrict_apply, hs, hu, ht, Set.inter_assoc]
 
+theorem restrict_map {f : α → β} (hf : Measurable f) {s : Set β} (hs : MeasurableSet s) :
+    (v.map f).restrict s = (v.restrict (f ⁻¹' s)).map f := by
+  ext t ht
+  simp [map_apply, hs, hf hs, restrict_apply, ht, hf, hf ht]
+
 section ContinuousAdd
 
 variable [ContinuousAdd M]

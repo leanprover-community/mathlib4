@@ -269,219 +269,118 @@ theorem setIntegral_eq_zero_of_ae_eq_zero
   · rw [integral_undef]
     contrapose hf
     exact hf.1
+  simp only [transpose_restrict, variation_restrict ht] at hf
   have : ∫ᵛ x in t, hf.mk f x ∂[B; μ] = 0 := by
     refine integral_eq_zero_of_ae ?_
     simp only [transpose_restrict, variation_restrict ht]
-    sorry
-  sorry
---      ae_restrict_iff (hf.stronglyMeasurable_mk.measurableSet_eq_fun stronglyMeasurable_zero)]
-
-
-#exit
-
+    apply (ae_restrict_iff' ht).2
     filter_upwards [ae_imp_of_ae_restrict hf.ae_eq_mk, ht_eq] with x hx h'x h''x
     rw [← hx h''x]
     exact h'x h''x
   rw [← this]
-  exact integral_congr_ae hf.ae_eq_mk
-
-#exit
+  apply integral_congr_ae
+  simp only [transpose_restrict, variation_restrict ht]
+  exact hf.ae_eq_mk
 
 theorem setIntegral_eq_zero_of_forall_eq_zero (ht_eq : ∀ x ∈ t, f x = 0) :
     ∫ᵛ x in t, f x ∂[B; μ] = 0 :=
   setIntegral_eq_zero_of_ae_eq_zero (Eventually.of_forall ht_eq)
 
 theorem frequently_ae_ne_zero_of_setIntegral_ne_zero (hU : ∫ᵛ x in t, f x ∂[B; μ] ≠ 0) :
-    ∃ᶠ x in ae (μ.restrict t), f x ≠ 0 :=
-  frequently_ae_ne_zero_of_integral_ne_zero hU
+    ∃ᶠ x in ae ((μ.transpose B).variation.restrict t), f x ≠ 0 := by
+  have ht : MeasurableSet t := by
+    contrapose! hU
+    simp [setIntegral_eq_zero_of_not_measurableSet hU]
+  rw [← variation_restrict ht, ← transpose_restrict]
+  exact frequently_ae_ne_zero_of_integral_ne_zero hU
 
 theorem exists_ne_zero_of_setIntegral_ne_zero (hU : ∫ᵛ x in t, f x ∂[B; μ] ≠ 0) :
     ∃ x, x ∈ t ∧ f x ≠ 0 := by
   contrapose! hU; exact setIntegral_eq_zero_of_forall_eq_zero hU
 
-theorem integral_union_eq_left_of_ae_aux (ht_eq : ∀ᵐ x ∂[B; μ].restrict t, f x = 0)
-    (haux : StronglyMeasurable f) (H : IntegrableOn f (s ∪ t) μ) :
+theorem integral_union_eq_left_of_ae (hs : MeasurableSet s) (ht : MeasurableSet t)
+    (ht_eq : ∀ᵐ x ∂(μ.transpose B).variation.restrict t, f x = 0) :
     ∫ᵛ x in s ∪ t, f x ∂[B; μ] = ∫ᵛ x in s, f x ∂[B; μ] := by
-  let k := f ⁻¹' {0}
-  have hk : MeasurableSet k := by borelize E; exact haux.measurable (measurableSet_singleton _)
-  have h's : IntegrableOn f s μ := H.mono subset_union_left le_rfl
-  have A : ∀ u : Set X, ∫ᵛ x in u ∩ k, f x ∂[B; μ] = 0 := fun u =>
-    setIntegral_eq_zero_of_forall_eq_zero fun x hx => hx.2
-  rw [← integral_inter_add_diff hk h's, ← integral_inter_add_diff hk H, A, A, zero_add, zero_add,
-    union_diff_distrib, union_comm]
-  apply setIntegral_congr_set
-  rw [union_ae_eq_right]
-  apply measure_mono_null diff_subset
-  rw [measure_eq_zero_iff_ae_notMem]
-  filter_upwards [ae_imp_of_ae_restrict ht_eq] with x hx h'x using h'x.2 (hx h'x.1)
+  classical
+  rw [← integral_indicator hs, ← integral_indicator (hs.union ht)]
+  apply integral_congr_ae
+  rw [ae_restrict_iff' ht] at ht_eq
+  filter_upwards [ht_eq] with x hx
+  classical
+  simp only [indicator_apply, mem_union]
+  grind
 
-theorem integral_union_eq_left_of_ae (ht_eq : ∀ᵐ x ∂[B; μ].restrict t, f x = 0) :
-    ∫ᵛ x in s ∪ t, f x ∂[B; μ] = ∫ᵛ x in s, f x ∂[B; μ] := by
-  have ht : IntegrableOn f t μ := by apply integrableOn_zero.congr_fun_ae; symm; exact ht_eq
-  by_cases H : IntegrableOn f (s ∪ t) μ; swap
-  · rw [integral_undef H, integral_undef]; simpa [integrableOn_union, ht] using H
-  let f' := H.1.mk f
-  calc
-    ∫ᵛ x : X in s ∪ t, f x ∂[B; μ] = ∫ᵛ x : X in s ∪ t, f' x ∂[B; μ] := integral_congr_ae H.1.ae_eq_mk
-    _ = ∫ᵛ x in s, f' x ∂[B; μ] := by
-      apply
-        integral_union_eq_left_of_ae_aux _ H.1.stronglyMeasurable_mk (H.congr_fun_ae H.1.ae_eq_mk)
-      filter_upwards [ht_eq,
-        ae_mono (Measure.restrict_mono subset_union_right le_rfl) H.1.ae_eq_mk] with x hx h'x
-      rw [← h'x, hx]
-    _ = ∫ᵛ x in s, f x ∂[B; μ] :=
-      integral_congr_ae
-        (ae_mono (Measure.restrict_mono subset_union_left le_rfl) H.1.ae_eq_mk.symm)
+theorem integral_union_eq_left_of_forall (hs : MeasurableSet s) (ht : MeasurableSet t)
+    (ht_eq : ∀ x ∈ t, f x = 0) : ∫ᵛ x in s ∪ t, f x ∂[B; μ] = ∫ᵛ x in s, f x ∂[B; μ] := by
+  apply integral_union_eq_left_of_ae hs ht
+  rw [ae_restrict_iff' ht]
+  filter_upwards with x using ht_eq x
 
-theorem integral_union_eq_left_of_forall₀ {f : X → E} (ht : NullMeasurableSet t μ)
-    (ht_eq : ∀ x ∈ t, f x = 0) : ∫ᵛ x in s ∪ t, f x ∂[B; μ] = ∫ᵛ x in s, f x ∂[B; μ] :=
-  integral_union_eq_left_of_ae ((ae_restrict_iff'₀ ht).2 (Eventually.of_forall ht_eq))
-
-theorem integral_union_eq_left_of_forall {f : X → E} (ht : MeasurableSet t)
-    (ht_eq : ∀ x ∈ t, f x = 0) : ∫ᵛ x in s ∪ t, f x ∂[B; μ] = ∫ᵛ x in s, f x ∂[B; μ] :=
-  integral_union_eq_left_of_forall₀ ht.nullMeasurableSet ht_eq
-
-theorem setIntegral_eq_of_subset_of_ae_diff_eq_zero_aux (hts : s ⊆ t)
-    (h't : ∀ᵐ x ∂[B; μ], x ∈ t \ s → f x = 0) (haux : StronglyMeasurable f)
-    (h'aux : IntegrableOn f t μ) : ∫ᵛ x in t, f x ∂[B; μ] = ∫ᵛ x in s, f x ∂[B; μ] := by
-  let k := f ⁻¹' {0}
-  have hk : MeasurableSet k := by borelize E; exact haux.measurable (measurableSet_singleton _)
-  calc
-    ∫ᵛ x in t, f x ∂[B; μ] = ∫ᵛ x in t ∩ k, f x ∂[B; μ] + ∫ᵛ x in t \ k, f x ∂[B; μ] := by
-      rw [integral_inter_add_diff hk h'aux]
-    _ = ∫ᵛ x in t \ k, f x ∂[B; μ] := by
-      rw [setIntegral_eq_zero_of_forall_eq_zero fun x hx => ?_, zero_add]; exact hx.2
-    _ = ∫ᵛ x in s \ k, f x ∂[B; μ] := by
-      apply setIntegral_congr_set
-      filter_upwards [h't] with x hx
-      change (x ∈ t \ k) = (x ∈ s \ k)
-      simp only [eq_iff_iff, and_congr_left_iff, mem_diff]
-      intro h'x
-      by_cases xs : x ∈ s
-      · simp only [xs, hts xs]
-      · simp only [xs, iff_false]
-        intro xt
-        exact h'x (hx ⟨xt, xs⟩)
-    _ = ∫ᵛ x in s ∩ k, f x ∂[B; μ] + ∫ᵛ x in s \ k, f x ∂[B; μ] := by
-      have : ∀ x ∈ s ∩ k, f x = 0 := fun x hx => hx.2
-      rw [setIntegral_eq_zero_of_forall_eq_zero this, zero_add]
-    _ = ∫ᵛ x in s, f x ∂[B; μ] := by rw [integral_inter_add_diff hk (h'aux.mono hts le_rfl)]
-
-/-- If a function vanishes almost everywhere on `t \ s` with `s ⊆ t`, then its integrals on `s`
-and `t` coincide if `t` is null-measurable. -/
-theorem setIntegral_eq_of_subset_of_ae_diff_eq_zero (ht : NullMeasurableSet t μ) (hts : s ⊆ t)
-    (h't : ∀ᵐ x ∂[B; μ], x ∈ t \ s → f x = 0) : ∫ᵛ x in t, f x ∂[B; μ] = ∫ᵛ x in s, f x ∂[B; μ] := by
-  by_cases h : IntegrableOn f t μ; swap
-  · have : ¬IntegrableOn f s μ := fun H => h (H.of_ae_diff_eq_zero ht h't)
-    rw [integral_undef h, integral_undef this]
-  let f' := h.1.mk f
-  calc
-    ∫ᵛ x in t, f x ∂[B; μ] = ∫ᵛ x in t, f' x ∂[B; μ] := integral_congr_ae h.1.ae_eq_mk
-    _ = ∫ᵛ x in s, f' x ∂[B; μ] := by
-      apply
-        setIntegral_eq_of_subset_of_ae_diff_eq_zero_aux hts _ h.1.stronglyMeasurable_mk
-          (h.congr h.1.ae_eq_mk)
-      filter_upwards [h't, ae_imp_of_ae_restrict h.1.ae_eq_mk] with x hx h'x h''x
-      rw [← h'x h''x.1, hx h''x]
-    _ = ∫ᵛ x in s, f x ∂[B; μ] := by
-      apply integral_congr_ae
-      apply ae_restrict_of_ae_restrict_of_subset hts
-      exact h.1.ae_eq_mk.symm
+theorem setIntegral_eq_of_subset_of_ae_diff_eq_zero (hs : MeasurableSet s) (ht : MeasurableSet t)
+    (hts : s ⊆ t) (h't : ∀ᵐ x ∂(μ.transpose B).variation.restrict (t \ s), f x = 0) :
+    ∫ᵛ x in t, f x ∂[B; μ] = ∫ᵛ x in s, f x ∂[B; μ] := by
+  rwa [← union_diff_cancel hts, integral_union_eq_left_of_ae hs (ht.diff hs)]
 
 /-- If a function vanishes on `t \ s` with `s ⊆ t`, then its integrals on `s`
-and `t` coincide if `t` is measurable. -/
-theorem setIntegral_eq_of_subset_of_forall_diff_eq_zero (ht : MeasurableSet t) (hts : s ⊆ t)
-    (h't : ∀ x ∈ t \ s, f x = 0) : ∫ᵛ x in t, f x ∂[B; μ] = ∫ᵛ x in s, f x ∂[B; μ] :=
-  setIntegral_eq_of_subset_of_ae_diff_eq_zero ht.nullMeasurableSet hts
-    (Eventually.of_forall fun x hx => h't x hx)
+and `t` coincide. -/
+theorem setIntegral_eq_of_subset_of_forall_diff_eq_zero
+    (hs : MeasurableSet s) (ht : MeasurableSet t) (hts : s ⊆ t)
+    (h't : ∀ x ∈ t \ s, f x = 0) : ∫ᵛ x in t, f x ∂[B; μ] = ∫ᵛ x in s, f x ∂[B; μ] := by
+  apply setIntegral_eq_of_subset_of_ae_diff_eq_zero hs ht hts
+  apply (ae_restrict_iff' (ht.diff hs)).2
+  filter_upwards with x using h't x
 
 /-- If a function vanishes almost everywhere on `sᶜ`, then its integral on `s`
 coincides with its integral on the whole space. -/
-theorem setIntegral_eq_integral_of_ae_compl_eq_zero (h : ∀ᵐ x ∂[B; μ], x ∉ s → f x = 0) :
+theorem setIntegral_eq_integral_of_ae_compl_eq_zero (hs : MeasurableSet s)
+    (h : ∀ᵐ x ∂(μ.transpose B).variation, x ∉ s → f x = 0) :
     ∫ᵛ x in s, f x ∂[B; μ] = ∫ᵛ x, f x ∂[B; μ] := by
   symm
   nth_rw 1 [← setIntegral_univ]
-  apply setIntegral_eq_of_subset_of_ae_diff_eq_zero nullMeasurableSet_univ (subset_univ _)
+  apply setIntegral_eq_of_subset_of_ae_diff_eq_zero hs MeasurableSet.univ (subset_univ _)
+  apply (ae_restrict_iff' (MeasurableSet.univ.diff hs)).2
   filter_upwards [h] with x hx h'x using hx h'x.2
 
 /-- If a function vanishes on `sᶜ`, then its integral on `s` coincides with its integral on the
 whole space. -/
-theorem setIntegral_eq_integral_of_forall_compl_eq_zero (h : ∀ x, x ∉ s → f x = 0) :
+theorem setIntegral_eq_integral_of_forall_compl_eq_zero (hs : MeasurableSet s)
+    (h : ∀ x, x ∉ s → f x = 0) :
     ∫ᵛ x in s, f x ∂[B; μ] = ∫ᵛ x, f x ∂[B; μ] :=
-  setIntegral_eq_integral_of_ae_compl_eq_zero (Eventually.of_forall h)
+  setIntegral_eq_integral_of_ae_compl_eq_zero hs (Eventually.of_forall h)
 
-theorem setIntegral_neg_eq_setIntegral_nonpos [PartialOrder E] {f : X → E}
-    (hf : AEStronglyMeasurable f μ) :
-    ∫ᵛ x in {x | f x < 0}, f x ∂[B; μ] = ∫ᵛ x in {x | f x ≤ 0}, f x ∂[B; μ] := by
-  have h_union : {x | f x ≤ 0} = {x | f x < 0} ∪ {x | f x = 0} := by
-    simp_rw [le_iff_lt_or_eq, setOf_or]
-  rw [h_union]
-  have B : NullMeasurableSet {x | f x = 0} μ :=
-    hf.nullMeasurableSet_eq_fun aestronglyMeasurable_zero
-  symm
-  refine integral_union_eq_left_of_ae ?_
-  filter_upwards [ae_restrict_mem₀ B] with x hx using hx
-
-theorem integral_norm_eq_pos_sub_neg {f : X → ℝ} (hfi : Integrable f μ) :
-    ∫ᵛ x, ‖f x‖ ∂[B; μ] = ∫ᵛ x in {x | 0 ≤ f x}, f x ∂[B; μ] - ∫ᵛ x in {x | f x ≤ 0}, f x ∂[B; μ] :=
-  have h_meas : NullMeasurableSet {x | 0 ≤ f x} μ :=
-    aestronglyMeasurable_const.nullMeasurableSet_le hfi.1
-  calc
-    ∫ᵛ x, ‖f x‖ ∂[B; μ] = ∫ᵛ x in {x | 0 ≤ f x}, ‖f x‖ ∂[B; μ] + ∫ᵛ x in {x | 0 ≤ f x}ᶜ, ‖f x‖ ∂[B; μ] := by
-      rw [← integral_add_compl₀ h_meas hfi.norm]
-    _ = ∫ᵛ x in {x | 0 ≤ f x}, f x ∂[B; μ] + ∫ᵛ x in {x | 0 ≤ f x}ᶜ, ‖f x‖ ∂[B; μ] := by
-      congr 1
-      refine setIntegral_congr_fun₀ h_meas fun x hx => ?_
-      dsimp only
-      rw [Real.norm_eq_abs, abs_eq_self.mpr _]
-      exact hx
-    _ = ∫ᵛ x in {x | 0 ≤ f x}, f x ∂[B; μ] - ∫ᵛ x in {x | 0 ≤ f x}ᶜ, f x ∂[B; μ] := by
-      congr 1
-      rw [← integral_neg]
-      refine setIntegral_congr_fun₀ h_meas.compl fun x hx => ?_
-      dsimp only
-      rw [Real.norm_eq_abs, abs_eq_neg_self.mpr _]
-      rw [Set.mem_compl_iff, Set.notMem_setOf_iff] at hx
-      linarith
-    _ = ∫ᵛ x in {x | 0 ≤ f x}, f x ∂[B; μ] - ∫ᵛ x in {x | f x ≤ 0}, f x ∂[B; μ] := by
-      rw [← setIntegral_neg_eq_setIntegral_nonpos hfi.1, compl_setOf]; simp only [not_le]
-
-theorem setIntegral_const [CompleteSpace E] (c : E) : ∫ᵛ _ in s, c ∂[B; μ] = μ.real s • c := by
-  rw [integral_const, measureReal_restrict_apply_univ]
+theorem setIntegral_const [CompleteSpace G] [IsFiniteMeasure ((μ.restrict s).transpose B).variation]
+    (c : E) : ∫ᵛ _ in s, c ∂[B; μ] = B c (μ s) := by
+  by_cases hs : MeasurableSet s
+  · rw [integral_const, restrict_apply _ hs MeasurableSet.univ, univ_inter]
+  · simp [setIntegral_eq_zero_of_not_measurableSet hs, μ.not_measurable' hs]
 
 @[simp]
-theorem integral_indicator_const [CompleteSpace E] (e : E) ⦃s : Set X⦄ (s_meas : MeasurableSet s) :
-    ∫ᵛ x : X, s.indicator (fun _ : X => e) x ∂[B; μ] = μ.real s • e := by
+theorem integral_indicator_const [CompleteSpace G]
+    (e : E) ⦃s : Set X⦄ [IsFiniteMeasure ((μ.restrict s).transpose B).variation]
+    (s_meas : MeasurableSet s) :
+    ∫ᵛ x, s.indicator (fun _ : X ↦ e) x ∂[B; μ] = B e (μ s) := by
   rw [integral_indicator s_meas, ← setIntegral_const]
 
-@[simp]
-theorem integral_indicator_one ⦃s : Set X⦄ (hs : MeasurableSet s) :
-    ∫ᵛ x, s.indicator 1 x ∂[B; μ] = μ.real s :=
-  (integral_indicator_const 1 hs).trans ((smul_eq_mul ..).trans (mul_one _))
+#check integral_map
 
-theorem setIntegral_indicatorConstLp [CompleteSpace E]
-    {p : ℝ≥0∞} (hs : MeasurableSet s) (ht : MeasurableSet t) (hμt : μ t ≠ ∞) (e : E) :
-    ∫ᵛ x in s, indicatorConstLp p ht hμt e x ∂[B; μ] = μ.real (t ∩ s) • e :=
-  calc
-    ∫ᵛ x in s, indicatorConstLp p ht hμt e x ∂[B; μ] = ∫ᵛ x in s, t.indicator (fun _ => e) x ∂[B; μ] := by
-      rw [setIntegral_congr_ae hs (indicatorConstLp_coeFn.mono fun x hx _ => hx)]
-    _ = (μ.real (t ∩ s)) • e := by rw [integral_indicator_const _ ht, measureReal_restrict_apply ht]
+#check Measure.restrict_map
 
-theorem integral_indicatorConstLp [CompleteSpace E]
-    {p : ℝ≥0∞} (ht : MeasurableSet t) (hμt : μ t ≠ ∞) (e : E) :
-    ∫ᵛ x, indicatorConstLp p ht hμt e x ∂[B; μ] = μ.real t • e :=
-  calc
-    ∫ᵛ x, indicatorConstLp p ht hμt e x ∂[B; μ] = ∫ᵛ x in univ, indicatorConstLp p ht hμt e x ∂[B; μ] := by
-      rw [setIntegral_univ]
-    _ = μ.real (t ∩ univ) • e := setIntegral_indicatorConstLp MeasurableSet.univ ht hμt e
-    _ = μ.real t • e := by rw [inter_univ]
+theorem setIntegral_map {β : Type*} [MeasurableSpace β]
+    {φ : X → β} (hφ : Measurable φ) {f : β → E} {s : Set β} (hs : MeasurableSet s)
+    (hfm : AEStronglyMeasurable f ((μ.transpose B).variation.map φ))
+    (hfi' : μ.Integrable (f ∘ φ) B) :
+    ∫ᵛ y in s, f y ∂[B; μ.map φ] = ∫ᵛ x in φ ⁻¹' s, f (φ x) ∂[B; μ] := by
+  rw [map_restrict]
 
-theorem setIntegral_map {Y} [MeasurableSpace Y] {g : X → Y} {f : Y → E} {s : Set Y}
-    (hs : MeasurableSet s) (hf : AEStronglyMeasurable f (Measure.map g μ)) (hg : AEMeasurable g μ) :
+
+#exit
+
     ∫ᵛ y in s, f y ∂Measure.map g μ = ∫ᵛ x in g ⁻¹' s, f (g x) ∂[B; μ] := by
   rw [Measure.restrict_map_of_aemeasurable hg hs,
     integral_map (hg.mono_measure Measure.restrict_le_self) (hf.mono_measure _)]
   exact Measure.map_mono_of_aemeasurable Measure.restrict_le_self hg
+
+#exit
 
 theorem _root_.MeasurableEmbedding.setIntegral_map {Y} {_ : MeasurableSpace Y} {f : X → Y}
     (hf : MeasurableEmbedding f) (g : Y → E) (s : Set Y) :
