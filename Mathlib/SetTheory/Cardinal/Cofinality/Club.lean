@@ -12,9 +12,11 @@ public import Mathlib.SetTheory.Cardinal.Cofinality.Basic
 /-!
 # Club sets
 
-A subset of a well-ordered type `α` is called a club set when it is closed in the order topology and
-cofinal. If `α` has no maximum, then an equivalent condition is that `α` is closed and unbounded;
-hence the name.
+A subset of a well-ordered type `α` is called a **club set** when it is closed in the order topology
+and cofinal. If `α` has no maximum, then an equivalent condition is that `α` is closed and
+unbounded; hence the name.
+
+A **stationary set** is a set which intersects all club sets.
 
 ## Implementation notes
 
@@ -27,7 +29,7 @@ public section
 
 universe u v
 
-open Cardinal Order Ordinal
+open Cardinal Order
 
 /-- A club set is closed under suprema and cofinal. -/
 structure IsClub {α : Type*} [LinearOrder α] (s : Set α) where
