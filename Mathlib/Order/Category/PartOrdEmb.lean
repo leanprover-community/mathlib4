@@ -161,7 +161,7 @@ def Iso.mk {α β : PartOrdEmb.{u}} (e : α ≃o β) : α ≅ β where
   hom := ofHom e
   inv := ofHom e.symm
 
-/-- The order isomorphism induced by an isomorphism in `PartOrdEmb`. -/
+/-- The order isomorphism corresponding to an isomorphism in `PartOrdEmb`. -/
 @[simps]
 def orderIsoOfIso {α β : PartOrdEmb.{u}} (e : α ≅ β) :
     α ≃o β where
@@ -170,6 +170,13 @@ def orderIsoOfIso {α β : PartOrdEmb.{u}} (e : α ≅ β) :
   left_inv := ConcreteCategory.congr_hom e.hom_inv_id
   right_inv := ConcreteCategory.congr_hom e.inv_hom_id
   map_rel_iff' := Hom.le_iff_le _ _ _
+
+/-- Isomorphisms in `PartOrdEmb` correspond to order isomorphisms. -/
+@[simps]
+def orderIsoEquivIso {α β : PartOrdEmb.{u}} :
+    (α ≅ β) ≃ (α ≃o β) where
+  toFun := orderIsoOfIso
+  invFun := Iso.mk
 
 instance : (forget PartOrdEmb.{u}).ReflectsIsomorphisms where
   reflects {α β} f hf := by

@@ -40,7 +40,7 @@ variable (κ : Cardinal.{u}) [Fact κ.IsRegular]
 /-- The property of objects in `PartOrdEmb` that are
 satisfied by partially ordered types of cardinality `< κ`. -/
 abbrev isCardinalFiltered : ObjectProperty PartOrdEmb.{u} :=
-    fun X ↦ IsCardinalFiltered X κ
+  fun X ↦ IsCardinalFiltered X κ
 
 @[simp]
 lemma isCardinalFiltered_iff (X : PartOrdEmb.{u}) :
@@ -55,9 +55,9 @@ variable {κ} {J : Type u} [SmallCategory J] [IsCardinalFiltered J κ]
   {F : J ⥤ PartOrdEmb.{u}} {c : Cocone (F ⋙ forget _)} (hc : IsColimit c)
 
 lemma isCardinalFiltered_pt (hF : ∀ j, IsCardinalFiltered (F.obj j) κ) :
-    letI := isFiltered_of_isCardinalFiltered J κ
+    haveI := isFiltered_of_isCardinalFiltered J κ
     IsCardinalFiltered (CoconePt hc) κ := by
-  letI := isFiltered_of_isCardinalFiltered J κ
+  haveI := isFiltered_of_isCardinalFiltered J κ
   refine isCardinalFiltered_preorder _ _ (fun K f hK ↦ ?_)
   rw [← hasCardinalLT_iff_cardinal_mk_lt] at hK
   choose j₀ x₀ hx₀ using fun k ↦ Types.jointly_surjective_of_isColimit hc (f k)
@@ -218,6 +218,9 @@ namespace coconeWithTop
 
 variable (J : CardinalFilteredPoset κ)
 
+-- The `@[nolint unusedArguments]` facilitates the definitions below towards
+-- `isColimitCoconeWithTop`: in particlar, it allows to setup `IsCardinalFiltered`
+-- instances on `indexSet J h` assuming `h : κ ≤ κ'`.
 /-- Given two regular cardinals `κ ≤ κ'` and `J : CardinalFilteredPoset κ`,
 this is the partially ordered set consisting of subsets `S` of `J.withTop`
 that are of cardinality `< κ'` and contain `⊤`.
@@ -296,7 +299,7 @@ noncomputable def isColimitCoconeWithTop : IsColimit (coconeWithTop J h) :=
       | none =>
         exact ⟨⟨_, pair_mem_indexSet _ (Classical.arbitrary _)⟩,
           ⟨⊤, Set.mem_insert_of_mem _ rfl⟩, rfl⟩
-    · obtain rfl : x = y := h
+    · subst h
       exact ⟨j, 𝟙 _, rfl⟩)
 
 include h in
