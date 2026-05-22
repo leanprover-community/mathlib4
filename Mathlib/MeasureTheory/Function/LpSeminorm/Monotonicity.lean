@@ -174,15 +174,13 @@ theorem eLpNorm_le_mul_eLpNorm_of_ae_le_mul'' {f : α → ε} {c : ℝ≥0∞} {
 theorem MemLp.of_nnnorm_le_mul {f : α → E} {g : α → F} {c : ℝ≥0} (hg : MemLp g p μ)
     (hf : AEStronglyMeasurable f μ) (hfg : ∀ᵐ x ∂μ, ‖f x‖₊ ≤ c * ‖g x‖₊) : MemLp f p μ := by
   rcases eq_or_ne p 0 with rfl | hp
-  · simp only [memLp_zero_iff_aestronglyMeasurable_and_volume_support_lt_top] at hg ⊢
-    refine ⟨hf, ?_⟩
+  · refine ⟨hf, ?_⟩
     calc
-      _ ≤ μ (Function.support fun x ↦ c * ‖g x‖ₑ) := by
-        apply measure_support_mono <| mem_of_superset hfg ?_
-        simp [enorm_eq_nnnorm, ← ENNReal.coe_mul]
-      _ ≤ μ (Function.support fun x ↦ ‖g x‖ₑ) := by
-        apply measure_mono
-        simp
+      _ ≤ eLpNorm g 0 μ := by
+        apply eLpNorm_exponent_zero_mono_of_ae_zero
+        filter_upwards [hfg] with x hx h
+        rw [enorm_eq_nnnorm] at h
+        simp_all
       _ < ∞ := hg.2
   exact ⟨hf, (eLpNorm_le_nnreal_smul_eLpNorm_of_ae_le_mul hfg hp).trans_lt <|
     ENNReal.mul_lt_top ENNReal.coe_lt_top (by finiteness)⟩
