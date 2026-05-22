@@ -19,7 +19,7 @@ cardinality of a cofinal subset.
 
 public noncomputable section
 
-open Function Cardinal Set Set.Notation Order
+open Cardinal Set Notation Order
 
 universe u v w
 
