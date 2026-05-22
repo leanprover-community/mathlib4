@@ -159,7 +159,7 @@ def contains [BEq α] (t : BinaryTree α) (a : α) :  Bool := match t with
   | l △[b] r => a == b || l.contains a  || r.contains a
 
 /-- `contains` is sound and complete with respect to `Mem`. -/
-theorem contains_iff {α : Type u} [inst : BEq α] [inst_1 : LawfulBEq α]
+theorem contains_iff [BEq α] [LawfulBEq α]
   (a : α) (t : BinaryTree α) : t.contains a = true ↔ a ∈ t := by
   fun_induction contains
   · simp_all only [Bool.false_eq_true, false_iff]
@@ -184,13 +184,13 @@ theorem contains_iff {α : Type u} [inst : BEq α] [inst_1 : LawfulBEq α]
 instance [BEq α] [LawfulBEq α] (a : α) (t : BinaryTree α) : Decidable (a ∈ t)  :=
   decidable_of_iff (t.contains a = true) (t.contains_iff a)
 
-/-- Checks whether a boolean predicate holds for every node in the tree.
+/-- An implementation of checking whether a boolean predicate holds for every node in the tree.
     Traversal order: current node, then left subtree, then right subtree. -/
 def all (p : α → Bool) : BinaryTree α → Bool
   | nil        => true
   | l △[b] r => p b && all p l && all p r
 
-theorem all_iff (p : α → Prop) [inst : DecidablePred p]
+theorem all_iff (p : α → Prop) [DecidablePred p]
   (t : BinaryTree α) : t.all (fun x ↦ p x) = true ↔ ∀ x ∈ t, p x := by
   fun_induction all
   · simp only [true_iff]; intros; contradiction
