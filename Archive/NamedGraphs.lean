@@ -287,3 +287,50 @@ noncomputable def cubeSabidussiIso :
       (connectionSet cGroup cubeGraph 0) (connectionSet.isConnectionSet 0) :=
   sabidussiIso 0
 end CubeSabidussi
+
+section PetersenSabidussi
+private def pG1F : Array (Fin 10) := #[2,1,7,6,3,9,5,0,4,8]
+private def pG1I : Array (Fin 10) := #[7,1,0,4,8,6,3,2,9,5]
+private def pG2F : Array (Fin 10) := #[3,4,0,5,6,2,9,8,7,1]
+private def pG2I : Array (Fin 10) := #[2,9,5,0,1,3,4,8,7,6]
+private theorem pG1F_s : pG1F.size = 10 := by native_decide
+private theorem pG1I_s : pG1I.size = 10 := by native_decide
+private theorem pG2F_s : pG2F.size = 10 := by native_decide
+private theorem pG2I_s : pG2I.size = 10 := by native_decide
+private def pG1 : Equiv.Perm (Fin 10) where
+  toFun i := pG1F[i.val]'(by have := pG1F_s; omega)
+  invFun i := pG1I[i.val]'(by have := pG1I_s; omega)
+  left_inv := by native_decide
+  right_inv := by native_decide
+private def pG2 : Equiv.Perm (Fin 10) where
+  toFun i := pG2F[i.val]'(by have := pG2F_s; omega)
+  invFun i := pG2I[i.val]'(by have := pG2I_s; omega)
+  left_inv := by native_decide
+  right_inv := by native_decide
+private def pGens : Fin 2 → Equiv.Perm (Fin 10) | 0 => pG1 | 1 => pG2
+private def pGroup : Subgroup (Equiv.Perm (Fin 10)) := Subgroup.closure (Set.range pGens)
+private def pWD : Array (List (Fin 4)) :=
+  #[[], [1,2,3], [0], [1], [1,2], [0,3], [1,0], [2], [2,1], [0,3,0]]
+private theorem pWD_s : pWD.size = 10 := by native_decide
+private def pWit (v : Fin 10) : List (Fin 4) := pWD[v.val]'(by have := pWD_s; omega)
+private theorem pWit_ok :
+    ∀ v : Fin 10, applyWord' pGens (pWit v) 0 = v := by native_decide
+private noncomputable instance : MulAction pGroup (Fin 10) := MulAction.compHom _ pGroup.subtype
+private noncomputable instance : GraphAction pGroup (Fin 10) petersenGraph where
+  adj_smul g u v h := closureGraphAction pGens
+    (fun i => by match i with | 0 => exact (by native_decide) | 1 => exact (by native_decide))
+    g.1 g.2 u v h
+private noncomputable instance : MulAction.IsPretransitive pGroup (Fin 10) where
+  exists_smul_eq x y :=
+    ⟨⟨_, pGroup.mul_mem (applyWord'_mem pGens _) (pGroup.inv_mem (applyWord'_mem pGens _))⟩, by
+      change ((applyWord' pGens (pWit x)).symm.trans (applyWord' pGens (pWit y))) x = y
+      simp only [Equiv.trans_apply]
+      rw [show (applyWord' pGens (pWit x)).symm x = 0 from by
+        rw [Equiv.symm_apply_eq]; exact (pWit_ok x).symm]; exact pWit_ok y⟩
+
+/-- **The Petersen graph is a Sabidussi coset graph**: `Sab(S₅, S₂×S₃, D)`. -/
+noncomputable def petersenSabidussiIso :
+    petersenGraph ≃g SimpleGraph.cosetGraph (MulAction.stabilizer pGroup (0 : Fin 10))
+      (connectionSet pGroup petersenGraph 0) (connectionSet.isConnectionSet 0) :=
+  sabidussiIso 0
+end PetersenSabidussi
