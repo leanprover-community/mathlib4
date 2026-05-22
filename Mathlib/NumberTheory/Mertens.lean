@@ -325,20 +325,13 @@ lemma tsum_oddLogDivMulPred_nat_tail_lt_integral : ∑' n : ℕ, oddLogDivMulPre
   let I := ∫ x in Set.Ioi 2, oddLogDivMulPred x
   let A := ∫ x in 2..3, oddLogDivMulPred x
   let J := ∫ x in Set.Ioi 3, oddLogDivMulPred x
-  have hgap : 0 < A - oddLogDivMulPred 3 := by
-    dsimp [A]
-    exact sub_pos.mpr oddLogDivMulPred_three_lt_integral_two_three
   have hI_decomp : A + J = I :=
     intervalIntegral.integral_interval_add_Ioi integral_oddLogDivMulPred_converges
-      (integral_oddLogDivMulPred_converges.mono_set
-        (Set.Ioi_subset_Ioi (by norm_num)))
-  have hI_sub_delta : I - (A - oddLogDivMulPred 3) = oddLogDivMulPred 3 + J := by
-    rw [← hI_decomp]
-    ring
-  have hpartial (n : ℕ) : ∑ i ∈ range n, oddLogDivMulPred ((i + 3 : ℕ) : ℝ)
-      ≤ I - (A - oddLogDivMulPred 3) := by
+      (integral_oddLogDivMulPred_converges.mono_set (by grind))
+  have hpartial (n : ℕ) : ∑ i ∈ range n, oddLogDivMulPred (i + 3 : ℕ)
+      ≤ oddLogDivMulPred 3 + J := by
     rcases n with rfl | m
-    · rw [sum_range_zero, hI_sub_delta]
+    · rw [sum_range_zero]
       refine add_nonneg (oddLogDivMulPred_nonneg (by norm_num)) ?_
       refine setIntegral_nonneg measurableSet_Ioi fun x hx ↦ ?_
       exact oddLogDivMulPred_nonneg (by grind)
@@ -350,15 +343,13 @@ lemma tsum_oddLogDivMulPred_nat_tail_lt_integral : ∑' n : ℕ, oddLogDivMulPre
             + ∫ x in Set.Ioi (((m + 3 : ℕ) : ℝ)), oddLogDivMulPred x = J := by
         dsimp [J]
         exact intervalIntegral.integral_interval_add_Ioi
-          (integral_oddLogDivMulPred_converges.mono_set
-            (Set.Ioi_subset_Ioi (by norm_num)))
+          (integral_oddLogDivMulPred_converges.mono_set (by grind))
           (integral_oddLogDivMulPred_converges.mono_set (by grind))
       calc
         _ = oddLogDivMulPred 3 + ∑ i ∈ range m, oddLogDivMulPred ((i + 4 : ℕ) : ℝ) := by
           rw [sum_range_succ']
           simp [Nat.add_assoc, add_comm]
-        _ ≤ I - (A - oddLogDivMulPred 3) := by
-          rw [hI_sub_delta]
+        _ ≤ oddLogDivMulPred 3 + J := by
           have hsum_le_J : ∑ i ∈ range m, oddLogDivMulPred ((i + 4 : ℕ) : ℝ) ≤ J := by
             calc
               _ ≤ ∫ x in 3..((m + 3 : ℕ) : ℝ), oddLogDivMulPred x := by
@@ -367,9 +358,9 @@ lemma tsum_oddLogDivMulPred_nat_tail_lt_integral : ∑' n : ℕ, oddLogDivMulPre
               _ ≤ J := by linarith
           simpa [add_comm, add_left_comm, add_assoc] using
             add_le_add_left hsum_le_J (oddLogDivMulPred 3)
-  have htail_le : ∑' n : ℕ, oddLogDivMulPred ((n + 3 : ℕ) : ℝ) ≤ I - (A - oddLogDivMulPred 3) :=
+  have htail_le : ∑' n : ℕ, oddLogDivMulPred ((n + 3 : ℕ) : ℝ) ≤ oddLogDivMulPred 3 + J :=
     tsum_le_of_sum_range_le (fun n ↦ oddLogDivMulPred_nonneg (by grind)) hpartial
-  linarith
+  linarith [oddLogDivMulPred_three_lt_integral_two_three]
 
 lemma odd_tail_lt_first_term_add_integral : ∑' k : Set.Ici 2, oddLogDivMulPred k
       < oddLogDivMulPred 2 + ∫ x in Set.Ioi 2, oddLogDivMulPred x := by
