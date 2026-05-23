@@ -11,7 +11,17 @@ public import Mathlib.SetTheory.Cardinal.Cofinality.Club
 /-!
 # Dieudonné measure
 
-write neat thing here
+Let `α` be a well-ordered type, of uncountable cofinality. We can define a measurable space on `α`,
+consisting of sets that either contain or entirely omit an `IsClub` set. On this measurable space,
+the indicator function of stationary sets is a measure.
+
+In the specific case `α = Iio ω₁`, this is known as the Dieudonné measure. We use this name for the
+general case, for lack of a better term.
+
+## Implementation notes
+
+The Dieudonné measure on a type `α` is instead defined on the type alias `Dieudonne α`, which
+inherits the order structure of `α`.
 -/
 
 @[expose] public noncomputable section
@@ -20,7 +30,7 @@ open Cardinal MeasureTheory Order Set
 
 variable {α : Type*} {x y : α} [LinearOrder α]
 
-/-- A type alias which endows a well-order `α` with the Dieudonne measure. -/
+/-- A type alias which endows a well-order `α` with the Dieudonné measure. -/
 def Dieudonne (α : Type*) : Type _ := α
 
 namespace Dieudonne
@@ -39,6 +49,7 @@ def val : Dieudonne α ≃o α := .refl _
 variable [WellFoundedLT α] [h₀ : Fact (cof α ≠ ℵ₀)]
 include h₀
 
+/-- Measurable sets in Dieudonné space either contain or entirely omit some club set. -/
 instance : MeasurableSpace (Dieudonne α) where
   MeasurableSet' s := ∃ t, IsClub t ∧ (t ⊆ s ∨ t ⊆ sᶜ)
   measurableSet_empty := ⟨_, .univ, by simp⟩
@@ -70,6 +81,7 @@ theorem measurableSet_of_not_isStationary (hs : ¬ IsStationary s) : MeasurableS
   exact ⟨t, ht, .inr <| ht'.subset_compl_left⟩
 
 open Classical in
+/-- The measure on Dieudonné space is defined as the indicator function for stationary sets. -/
 def measure : Measure (Dieudonne α) where
   measureOf s := if IsStationary s then 1 else 0
   empty := by simp
