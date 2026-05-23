@@ -5,11 +5,10 @@ Authors: Chris Birkbeck
 -/
 module
 
-public import Mathlib.Algebra.Order.Floor.Semifield
 public import Mathlib.NumberTheory.ModularForms.CuspFormSubmodule
 public import Mathlib.NumberTheory.ModularForms.Discriminant
-public import Mathlib.Data.Rat.Star
-public import Mathlib.LinearAlgebra.Dimension.Localization
+
+import Mathlib.Algebra.Order.Floor.Semifield
 
 /-!
 # Dimension formula for level 1 modular forms
@@ -213,7 +212,7 @@ theorem dimension_level_one (k : ℕ) (hk2 : Even k) :
     interval_cases k
     · simpa using levelOne_weight_zero_rank_one
     · grind
-    · convert levelOne_weight_two_rank_zero
+    · convert! levelOne_weight_two_rank_zero
       norm_num
   · -- `3 ≤ k < 12`: the lemma `rank_eq_one_add_rank_cuspForm` applies
     -- and the mod form space of weight `k - 12` is zero
