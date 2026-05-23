@@ -199,7 +199,7 @@ set_option backward.isDefEq.respectTransparency false in
 lemma mono_map'_of_injective [HasCoproduct (X ∘ ι)] [HasCoproduct X]
     [HasCoproduct (fun (k : ((Set.range ι)ᶜ : Set I)) => X k.1)] :
     Mono (Sigma.map' ι (fun j => 𝟙 ((X ∘ ι) j))) := by
-  convert mono_of_injective' X ι hι
+  convert! mono_of_injective' X ι hι
   apply Sigma.hom_ext
   intro j
   rw [Sigma.ι_comp_map', id_comp, colimit.ι_desc]
@@ -217,7 +217,7 @@ lemma mono_inj (c : Cofan X) (h : IsColimit c) (i : I)
   let ι : Unit → I := fun _ ↦ i
   have hι : Function.Injective ι := fun _ _ _ ↦ rfl
   exact mono_of_injective X ι hι c (Cofan.mk (X i) (fun _ ↦ 𝟙 _)) h
-    (mkCofanColimit _ (fun s => s.inj ()))
+    (Cofan.IsColimit.mk _ (fun s => s.inj ()))
 
 instance mono_ι [HasCoproduct X] (i : I)
     [HasCoproduct (fun (k : ((Set.range (fun _ : Unit ↦ i))ᶜ : Set I)) => X k.1)] :
