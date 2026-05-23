@@ -26,8 +26,8 @@ namespace Cardinal
 variable {κ₁ κ₂ : Cardinal.{w}} [Fact κ₁.IsRegular] [Fact κ₂.IsRegular]
 
 variable (κ₁ κ₂) in
-structure SharplyLE : Prop where
-  le : κ₁ ≤ κ₂
+structure SharplyLT : Prop where
+  lt : κ₁ < κ₂
   isCardinalAccessible_cardinalDirectedPoset :
     IsCardinalAccessibleCategory (CardinalFilteredPoset κ₁) κ₂
 
@@ -62,7 +62,7 @@ lemma exists_cofinal_of_isCardinalAccessibleCategory_cardinalFilteredPoset
   exact Subtype.ext_iff.1 (hy' b)
 
 open CardinalFilteredPoset in
-lemma exists_isCardinalFiltered_set_of_exists_cofinal (h₀ : κ₁ ≤ κ₂)
+lemma exists_isCardinalFiltered_set_of_exists_cofinal (h₀ : κ₁ < κ₂)
     (h : ∀ (X : Type w) (hX : HasCardinalLT X κ₂),
     ∃ (A : Set (SetCardinalLT κ₁ X)), HasCardinalLT A κ₂ ∧ IsCofinal A)
     {X : Type w} [PartialOrder X] [IsCardinalFiltered X κ₁]
@@ -70,7 +70,9 @@ lemma exists_isCardinalFiltered_set_of_exists_cofinal (h₀ : κ₁ ≤ κ₂)
     ∃ (B : Set X), A ⊆ B ∧ IsCardinalFiltered B κ₁ ∧ HasCardinalLT B κ₂ := by
   sorry
 
-namespace SharplyLE
+namespace SharplyLT
+
+lemma le (h : SharplyLT κ₁ κ₂) : κ₁ ≤ κ₂ := h.lt.le
 
 section
 
@@ -78,11 +80,11 @@ section
 is a property of objects which allows to show that `C` is a `κ₂`-accessible category.
 This property is defined as the closure of `κ₁`-presentable objects under
 colimits of shape `J` for categories `J` such that `Arrow J` is of cardinality `< κ₂`. -/
-abbrev generator (_ : SharplyLE κ₁ κ₂) (C : Type u) [Category.{v} C] :
+abbrev generator (_ : SharplyLT κ₁ κ₂) (C : Type u) [Category.{v} C] :
     ObjectProperty C :=
   (isCardinalPresentable C κ₁).colimitsCardinalClosure κ₂
 
-variable (h : SharplyLE κ₁ κ₂) (C : Type u) [Category.{v} C]
+variable (h : SharplyLT κ₁ κ₂) (C : Type u) [Category.{v} C]
 
 lemma generator_le_isCardinalPresentable [LocallySmall.{w} C] :
     h.generator C ≤ isCardinalPresentable C κ₂ :=
@@ -94,7 +96,7 @@ variable [IsCardinalAccessibleCategory C κ₁]
 
 namespace isCardinalFilteredGenerator
 
-def prop (_ : SharplyLE κ₁ κ₂) (J : Type w) [PartialOrder J] (A : Set J) : Prop :=
+def prop (_ : SharplyLT κ₁ κ₂) (J : Type w) [PartialOrder J] (A : Set J) : Prop :=
   IsCardinalFiltered (Subtype A) κ₁ ∧ HasCardinalLT (Subtype A) κ₂
 
 variable {h} {C} {X : C} {J : Type w} [PartialOrder J]
@@ -200,21 +202,21 @@ lemma isCardinalFilteredGenerator :
 
 end
 
-lemma isCardinalAccessible (h : SharplyLE κ₁ κ₂)
+lemma isCardinalAccessible (h : SharplyLT κ₁ κ₂)
     (C : Type u) [Category.{v} C] [IsCardinalAccessibleCategory C κ₁] :
     IsCardinalAccessibleCategory C κ₂ where
   toHasCardinalFilteredColimits := .of_le C h.le
   exists_generator :=
     ⟨_, inferInstance, h.isCardinalFilteredGenerator C⟩
 
-lemma trans (h₁₂ : SharplyLE κ₁ κ₂) {κ₃ : Cardinal.{w}} [Fact κ₃.IsRegular]
-    (h₂₃ : SharplyLE κ₂ κ₃) :
-    SharplyLE κ₁ κ₃ where
-  le := h₁₂.le.trans h₂₃.le
+lemma trans (h₁₂ : SharplyLT κ₁ κ₂) {κ₃ : Cardinal.{w}} [Fact κ₃.IsRegular]
+    (h₂₃ : SharplyLT κ₂ κ₃) :
+    SharplyLT κ₁ κ₃ where
+  lt := h₁₂.lt.trans h₂₃.lt
   isCardinalAccessible_cardinalDirectedPoset := by
     have := h₁₂.isCardinalAccessible_cardinalDirectedPoset
     exact h₂₃.isCardinalAccessible _
 
-end SharplyLE
+end SharplyLT
 
 end Cardinal
