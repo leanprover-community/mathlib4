@@ -246,7 +246,7 @@ instance epi_r {A : C} : Epi (r A) := by
     · intro s m h
       haveI : Mono (prod.lift (𝟙 A) (0 : A ⟶ A)) := mono_of_mono_fac (prod.lift_fst _ _)
       apply (cancel_mono (prod.lift (𝟙 A) (0 : A ⟶ A))).1
-      convert h
+      convert! h
       apply Limits.prod.hom_ext <;> simp
   let hp2 : IsColimit (CokernelCofork.ofπ (Limits.prod.snd : A ⨯ A ⟶ A) hlp) :=
     epiIsCokernelOfKernel _ hp1
