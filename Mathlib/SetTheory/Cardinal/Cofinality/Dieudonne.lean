@@ -159,7 +159,7 @@ instance [NoMaxOrder α] : NoAtoms (α := α) measure where
     exact not_isMax _
 
 @[simp]
-theorem support_measure [NoMaxOrder α] [TopologicalSpace α] [OrderTopology α] :
+theorem support_measure [NoMaxOrder α] [TopologicalSpace α] [ClosedIciTopology α] :
     (measure (α := α)).support = ∅ := by
   ext x
   rw [mem_empty_iff_false, iff_false, Measure.mem_support_iff,
