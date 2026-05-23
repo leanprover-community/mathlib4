@@ -396,7 +396,7 @@ instance (X : C) (Y : F.op.LeftExtension (yoneda.obj X)) :
   default := StructuredArrow.homMk
       (yonedaEquiv.symm (yonedaEquiv (F := F.op.comp Y.right) Y.hom)) (by
         ext Z f
-        convert (Y.hom.naturality_apply f.op _).symm
+        convert! (Y.hom.naturality_apply f.op _).symm
         simp)
   uniq φ := by
     ext1
