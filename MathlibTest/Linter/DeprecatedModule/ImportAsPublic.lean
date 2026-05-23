@@ -1,10 +1,11 @@
 module
 
-import all MathlibTest.Linter.DeprecatedModule.DeprecatedModuleNew
+public import MathlibTest.Linter.DeprecatedModule.ImportBase
+
 
 /--
 warning: Testing public import deprecation
-'MathlibTest.Linter.DeprecatedModule.DeprecatedModuleNew' has been deprecated: please replace this import by
+'MathlibTest.Linter.DeprecatedModule.ImportBase' has been deprecated: please replace this import by
 
 import Mathlib.Tactic.Linter.DocPrime
 import Mathlib.Tactic.Linter.DocString
@@ -14,5 +15,5 @@ Note: This linter can be disabled with `set_option linter.deprecated.module fals
 -/
 #guard_msgs in
 /-!
-This file imports a deprecated module with `import all`.
+This file imports a deprecated module with `public import`.
 -/
