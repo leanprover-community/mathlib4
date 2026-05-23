@@ -121,7 +121,7 @@ theorem δ_comp_δ {n} {i j : Fin (n + 2)} (H : i ≤ j) :
 theorem δ_comp_δ' {n} {i : Fin (n + 2)} {j : Fin (n + 3)} (H : Fin.castSucc i < j) :
     X.δ j ≫ X.δ i =
       X.δ (Fin.castSucc i) ≫
-        X.δ (j.pred fun (hj : j = 0) => by simp [hj, Fin.not_lt_zero] at H) := by
+        X.δ (j.pred H.ne_zero) := by
   dsimp [δ]
   simp only [← X.map_comp, ← op_comp, SimplexCategory.δ_comp_δ' H]
 @[reassoc]
@@ -185,7 +185,7 @@ theorem δ_comp_σ_of_gt {n} {i : Fin (n + 2)} {j : Fin (n + 1)} (H : Fin.castSu
 @[reassoc]
 theorem δ_comp_σ_of_gt' {n} {i : Fin (n + 3)} {j : Fin (n + 2)} (H : j.succ < i) :
     X.σ j ≫ X.δ i =
-      X.δ (i.pred fun (hi : i = 0) => by simp only [Fin.not_lt_zero, hi] at H) ≫
+      X.δ (i.pred H.ne_zero) ≫
         X.σ (j.castLT ((add_lt_add_iff_right 1).mp (lt_of_lt_of_le H i.is_le))) := by
   dsimp [δ, σ]
   simp only [← X.map_comp, ← op_comp, SimplexCategory.δ_comp_σ_of_gt' H]
@@ -586,7 +586,7 @@ theorem δ_comp_δ {n} {i j : Fin (n + 2)} (H : i ≤ j) :
 @[reassoc]
 theorem δ_comp_δ' {n} {i : Fin (n + 2)} {j : Fin (n + 3)} (H : Fin.castSucc i < j) :
     X.δ i ≫ X.δ j =
-      X.δ (j.pred fun (hj : j = 0) => by simp only [hj, Fin.not_lt_zero] at H) ≫
+      X.δ (j.pred H.ne_zero) ≫
         X.δ (Fin.castSucc i) := by
   dsimp [δ]
   simp only [← X.map_comp, SimplexCategory.δ_comp_δ' H]
@@ -653,8 +653,7 @@ theorem δ_comp_σ_of_gt {n} {i : Fin (n + 2)} {j : Fin (n + 1)} (H : Fin.castSu
 theorem δ_comp_σ_of_gt' {n} {i : Fin (n + 3)} {j : Fin (n + 2)} (H : j.succ < i) :
     X.δ i ≫ X.σ j =
       X.σ (j.castLT ((add_lt_add_iff_right 1).mp (lt_of_lt_of_le H i.is_le))) ≫
-        X.δ (i.pred <|
-          fun (hi : i = 0) => by simp only [Fin.not_lt_zero, hi] at H) := by
+        X.δ (i.pred H.ne_zero) := by
   dsimp [δ, σ]
   simp only [← X.map_comp, SimplexCategory.δ_comp_σ_of_gt' H]
 

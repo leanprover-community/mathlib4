@@ -644,8 +644,10 @@ theorem summable_norm_mul_geometric_of_norm_lt_one' {F : Type*} [NormedRing F]
       simpa [Nat.cast_pow] using
       (isBigO_norm_left.mpr (isBigO_norm_right.mpr hu)).mul (isBigO_refl (fun n ↦ (‖r‖ ^ n)) atTop)
   _ =O[atTop] fun n ↦ ‖r' ^ n‖ := by
-      convert isBigO_norm_right.mpr (isBigO_norm_left.mpr
-        (isLittleO_pow_const_mul_const_pow_const_pow_of_norm_lt k hrr').isBigO)
+      convert!
+        isBigO_norm_right.mpr
+          (isBigO_norm_left.mpr
+            (isLittleO_pow_const_mul_const_pow_const_pow_of_norm_lt k hrr').isBigO)
       simp only [norm_pow, norm_mul]
 
 theorem summable_of_isEquivalent {ι E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
