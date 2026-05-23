@@ -5,6 +5,7 @@ Authors: Nailin Guan
 -/
 module
 
+public import Mathlib.FieldTheory.PurelyInseparable.AdjoinPthRoots
 public import Mathlib.FieldTheory.SeparablyGenerated
 public import Mathlib.RingTheory.Ideal.MinimalPrime.Noetherian
 public import Mathlib.RingTheory.LocalProperties.Reduced
@@ -415,42 +416,7 @@ lemma tensorProduct_isReduced_of_isSeparablyGenerated_of_isReduced [IsReduced S]
 
 section charp
 
-/-- Adjoining all `p`-th root to a field of characteristic `p`.
-It is defined as the field itself with algebra map being the frobenius map. -/
-@[nolint unusedArguments]
-def adjoinPthRoots (p : ℕ) [ExpChar k p] := k
-
 variable (p : ℕ) [ExpChar k p]
-
-instance : Field (adjoinPthRoots k p) := inferInstanceAs (Field k)
-
-instance : Algebra k (adjoinPthRoots k p) := (frobenius k p).toAlgebra
-
-/-- The map `adjoinPthRoots k p → k` with underlying map `RingHom.id`. -/
-def adjoinPthRootsSelf : (adjoinPthRoots k p) →+* k := RingHom.id k
-
-lemma adjoinPthRootsSelf_algebraMap (x : adjoinPthRoots k p) :
-    algebraMap k (adjoinPthRoots k p) (adjoinPthRootsSelf k p x) = x ^ p := rfl
-
-lemma adjoinPthRoots_pth_power_mem_bot (x : adjoinPthRoots k p) :
-    x ^ p ∈ (⊥ : IntermediateField k (adjoinPthRoots k p)) := by
-  use adjoinPthRootsSelf k p x
-  rfl
-
-instance [Fact (Nat.Prime p)] : Algebra.IsAlgebraic k (adjoinPthRoots k p) where
-  isAlgebraic x := by
-    use Polynomial.X ^ p - Polynomial.C (adjoinPthRootsSelf k p x)
-    refine ⟨(Polynomial.monic_X_pow_sub_C _ (NeZero.ne' p).symm).ne_zero, ?_⟩
-    simp [adjoinPthRootsSelf_algebraMap]
-
-/-- The map `k → adjoinPthRoots k p` for taking `p`-th root with underlying map `RingHom.id`. -/
-def adjoinPthRootsPthRoot : k →+* (adjoinPthRoots k p) := RingHom.id k
-
-lemma adjoinPthRootsPthRoot_bijective : Function.Bijective (adjoinPthRootsPthRoot k p) :=
-  (RingEquiv.refl k).bijective
-
-lemma adjoinPthRootsPthRoot_pow (x : k) : algebraMap k (adjoinPthRoots k p) x =
-    (adjoinPthRootsPthRoot k p x) ^ p := rfl
 
 lemma linearIndepOn_pow_of_isReduced_tensorProduct (hp : Nat.Prime p)
     (red : IsReduced (TensorProduct k (adjoinPthRoots k p) K)) (s : Finset K)
@@ -471,7 +437,8 @@ lemma linearIndepOn_pow_of_isReduced_tensorProduct (hp : Nat.Prime p)
     | prime hq => assumption
   have rooty_supp : rooty.support = y.support :=
     Finsupp.support_mapRange_of_injective (map_zero _) y (adjoinPthRootsPthRoot_bijective k p).1
-  have rooty_app (x : s) : (rooty x) ^ p = algebraMap k _ (y x) := adjoinPthRootsPthRoot_pow k p _
+  have rooty_app (x : s) : (rooty x) ^ p = algebraMap k _ (y x) :=
+    (adjoinPthRootsPthRoot_pow k p _).symm
   have h0 : frobenius _ p (rooty.sum fun (i : s) (c : adjoinPthRoots k p) ↦ c ⊗ₜ[k] i.1) = 0 := by
     simp only [Finsupp.sum, map_sum, frobenius_def, Algebra.TensorProduct.tmul_pow, rooty_app]
     simp only [Finsupp.linearCombination, Finsupp.coe_lsum, Finsupp.sum, LinearMap.coe_smulRight,
