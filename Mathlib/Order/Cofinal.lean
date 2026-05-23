@@ -141,6 +141,30 @@ end PartialOrder
 section LinearOrder
 variable [LinearOrder α]
 
+theorem not_isCofinal_iff {s : Set α} : ¬ IsCofinal s ↔ ∃ x, ∀ y ∈ s, y < x := by
+  simp [IsCofinal]
+
+theorem BddAbove.of_not_isCofinal {s : Set α} (h : ¬ IsCofinal s) : BddAbove s := by
+  rw [not_isCofinal_iff] at h
+  obtain ⟨x, h⟩ := h
+  exact ⟨x, fun y hy ↦ (h y hy).le⟩
+
+theorem IsCofinal.of_not_bddAbove {s : Set α} (h : ¬ BddAbove s) : IsCofinal s := by
+  contrapose h
+  exact .of_not_isCofinal h
+
+/-- In a linear order with no maximum, cofinal sets are the same as unbounded sets. -/
+theorem not_isCofinal_iff_bddAbove [NoMaxOrder α] {s : Set α} : ¬ IsCofinal s ↔ BddAbove s := by
+  use .of_not_isCofinal
+  rw [not_isCofinal_iff]
+  rintro ⟨x, h⟩
+  obtain ⟨z, hz⟩ := exists_gt x
+  exact ⟨z, fun y hy ↦ (h hy).trans_lt hz⟩
+
+/-- In a linear order with no maximum, cofinal sets are the same as unbounded sets. -/
+theorem not_bddAbove_iff_isCofinal [NoMaxOrder α] {s : Set α} : ¬ BddAbove s ↔ IsCofinal s :=
+  not_iff_comm.1 not_isCofinal_iff_bddAbove
+
 theorem IsCofinal.inter_Ici {s : Set α} (h : IsCofinal s) (x : α) :
     IsCofinal (s ∩ Ici x) := by
   intro y
@@ -173,30 +197,6 @@ theorem IsCofinal.Ioi_inter [NoMaxOrder α] {s : Set α} (h : IsCofinal s) (x : 
 @[simp]
 theorem isCofinal_Ioi [NoMaxOrder α] (x : α) : IsCofinal (Ioi x) := by
   simpa using IsCofinal.univ.inter_Ioi x
-
-theorem not_isCofinal_iff {s : Set α} : ¬ IsCofinal s ↔ ∃ x, ∀ y ∈ s, y < x := by
-  simp [IsCofinal]
-
-theorem BddAbove.of_not_isCofinal {s : Set α} (h : ¬ IsCofinal s) : BddAbove s := by
-  rw [not_isCofinal_iff] at h
-  obtain ⟨x, h⟩ := h
-  exact ⟨x, fun y hy ↦ (h y hy).le⟩
-
-theorem IsCofinal.of_not_bddAbove {s : Set α} (h : ¬ BddAbove s) : IsCofinal s := by
-  contrapose h
-  exact .of_not_isCofinal h
-
-/-- In a linear order with no maximum, cofinal sets are the same as unbounded sets. -/
-theorem not_isCofinal_iff_bddAbove [NoMaxOrder α] {s : Set α} : ¬ IsCofinal s ↔ BddAbove s := by
-  use .of_not_isCofinal
-  rw [not_isCofinal_iff]
-  rintro ⟨x, h⟩
-  obtain ⟨z, hz⟩ := exists_gt x
-  exact ⟨z, fun y hy ↦ (h hy).trans_lt hz⟩
-
-/-- In a linear order with no maximum, cofinal sets are the same as unbounded sets. -/
-theorem not_bddAbove_iff_isCofinal [NoMaxOrder α] {s : Set α} : ¬ BddAbove s ↔ IsCofinal s :=
-  not_iff_comm.1 not_isCofinal_iff_bddAbove
 
 /-- The set of "records" (the smallest inputs yielding the highest values) with respect to a
 well-ordering of `α` is a cofinal set. -/
