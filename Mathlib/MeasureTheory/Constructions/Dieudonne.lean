@@ -31,8 +31,7 @@ namespace MeasureTheory.Dieudonne
 
 open Cardinal Order Set
 
-variable {α : Type*} {x y : α} {s : Set α} [LinearOrder α] [WellFoundedLT α]
-  [h₀ : Fact (cof α ≠ ℵ₀)]
+variable {α : Type*} {s : Set α} [LinearOrder α] [WellFoundedLT α] [h₀ : Fact (cof α ≠ ℵ₀)]
 include h₀
 
 /-- Measurable sets in Dieudonné space either contain or entirely omit some club set. -/
