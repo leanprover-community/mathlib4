@@ -358,6 +358,9 @@ The definitions and theorems in this section were formerly implementation detail
 used in the definition of the Krull topology. Since the Krull topology is now defined in
 terms of the uniform group structure on `Gal(L/K)`, they are now unused,
 and have been deprecated without replacement.
+
+When this section is removed then the `public import Mathlib.Topology.Algebra.FilterBasis` at
+the top of this file should be removed too.
 -/
 
 /-- Given a field extension `L/K`, `finiteExts K L` is the set of
