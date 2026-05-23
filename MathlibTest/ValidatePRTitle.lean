@@ -69,6 +69,15 @@ Allowed values for `kind` are [feat, chore, perf, refactor, style, fix, doc, tes
 #guard_msgs in
 #check_title "feat: RPC acronyms are fine"
 
+-- This PR title is arguable not very bad (Lindelöf is a proper name),
+-- a better fix is to start with a verb (which you should do anyway.)
+/-- info: Message: 'error: the main PR title should be lowercased' -/
+#guard_msgs in
+#check_title "feat: Lindelöf spaces something something"
+
+#guard_msgs in
+#check_title "feat: add lemmas about Lindelöf spaces"
+
 -- Tabs in PR titles are banned.
 /-- info: Message: 'error: the PR title contains a tab; please use single spaces instead' -/
 #guard_msgs in
@@ -101,3 +110,6 @@ info: Message: 'error: the PR title contains multiple consecutive spaces; please
 -- TODO: should this error?
 #guard_msgs in
 #check_title "feat(confusing) (forbidden): title"
+
+#guard_msgs in
+#check_title "feat: umlauts such as Lindelöf spaces are allowed"
