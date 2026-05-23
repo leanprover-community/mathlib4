@@ -27,7 +27,7 @@ This is mostly copied from `ModuleCat`.
 
 -/
 
-@[expose] public section
+public section
 
 open Set Function CategoryTheory
 

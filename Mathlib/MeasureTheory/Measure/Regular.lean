@@ -745,7 +745,7 @@ protected theorem map_iff [BorelSpace α] [MeasurableSpace β] [TopologicalSpace
     [BorelSpace β] (f : α ≃ₜ β) :
     InnerRegular (Measure.map f μ) ↔ InnerRegular μ := by
   refine ⟨fun h ↦ ?_, fun h ↦ h.map f⟩
-  convert h.map f.symm
+  convert! h.map f.symm
   rw [map_map f.symm.continuous.measurable f.continuous.measurable]
   simp
 
@@ -799,11 +799,11 @@ instance {ι : Type*} {μ : ι → Measure α} [∀ i, InnerRegular (μ i)] :
     simp only [hs, Measure.sum_apply]
     exact ENNReal.summable.hasSum
   obtain ⟨a, ha⟩ : ∃ (a : Finset ι), r < (∑ i ∈ a, μ i) s := by
-    simp only [coe_finset_sum, Finset.sum_apply]
+    simp only [coe_finsetSum, Finset.sum_apply]
     exact ((tendsto_order.1 this).1 r hr).exists
   rcases MeasurableSet.exists_lt_isCompact hs ha with ⟨K, Ks, hK, h'K⟩
   refine ⟨K, Ks, hK, h'K.trans_le ?_⟩
-  simp only [coe_finset_sum, Finset.sum_apply]
+  simp only [coe_finsetSum, Finset.sum_apply]
   exact (ENNReal.sum_le_tsum _).trans (le_sum_apply _ _)
 
 end InnerRegular
@@ -881,7 +881,7 @@ instance restrict [h : InnerRegularCompactLTTop μ] (A : Set α) :
 instance (priority := 50) [h : InnerRegularCompactLTTop μ] [IsFiniteMeasure μ] :
     InnerRegular μ := by
   constructor
-  convert h.innerRegular with s
+  convert! h.innerRegular with s
   simp [measure_ne_top μ s]
 
 instance (priority := 50) [BorelSpace α] [R1Space α] [InnerRegularCompactLTTop μ]
@@ -970,7 +970,7 @@ instance smul [h : InnerRegularCompactLTTop μ] (c : ℝ≥0∞) : InnerRegularC
     · simp [h's] at hr
     · simp [h'c, h's] at hs
   · constructor
-    convert InnerRegularWRT.smul h.innerRegular c using 2 with s
+    convert! InnerRegularWRT.smul h.innerRegular c using 2 with s
     have : (c • μ) s ≠ ∞ ↔ μ s ≠ ∞ := by simp [ENNReal.mul_eq_top, hc, h'c]
     simp only [this]
 
@@ -1122,7 +1122,7 @@ protected theorem map_iff [BorelSpace α] [MeasurableSpace β] [TopologicalSpace
     [BorelSpace β] (f : α ≃ₜ β) :
     Regular (Measure.map f μ) ↔ Regular μ := by
   refine ⟨fun h ↦ ?_, fun h ↦ h.map f⟩
-  convert h.map f.symm
+  convert! h.map f.symm
   rw [map_map f.symm.continuous.measurable f.continuous.measurable]
   simp
 

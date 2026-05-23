@@ -39,7 +39,7 @@ variable {n : ℕ} {𝕜 : Type*} {k : 𝕜} [NontriviallyNormedField 𝕜]
 
 /-- `descPochhammer 𝕜 n` is differentiable. -/
 theorem differentiable_descPochhammer_eval : Differentiable 𝕜 (descPochhammer 𝕜 n).eval := by
-  simp [descPochhammer_eval_eq_prod_range, Differentiable.fun_finset_prod]
+  simp [descPochhammer_eval_eq_prod_range, Differentiable.fun_finsetProd]
 
 /-- `descPochhammer 𝕜 n` is continuous. -/
 theorem continuous_descPochhammer_eval : Continuous (descPochhammer 𝕜 n).eval := by
@@ -48,7 +48,7 @@ theorem continuous_descPochhammer_eval : Continuous (descPochhammer 𝕜 n).eval
 lemma deriv_descPochhammer_eval_eq_sum_prod_range_erase (n : ℕ) (k : 𝕜) :
     deriv (descPochhammer 𝕜 n).eval k
       = ∑ i ∈ Finset.range n, ∏ j ∈ (Finset.range n).erase i, (k - j) := by
-  simp [descPochhammer_eval_eq_prod_range, deriv_fun_finset_prod]
+  simp [descPochhammer_eval_eq_prod_range, deriv_fun_finsetProd]
 
 /-- `deriv (descPochhammer ℝ n)` is monotone on `(n-1, ∞)`. -/
 lemma monotoneOn_deriv_descPochhammer_eval (n : ℕ) :

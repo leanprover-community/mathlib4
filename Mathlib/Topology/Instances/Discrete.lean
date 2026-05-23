@@ -22,7 +22,7 @@ and `OrderTopology ℕ` become available.
 
 -/
 
-@[expose] public section
+public section
 
 
 open Order Set TopologicalSpace Filter

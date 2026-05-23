@@ -34,7 +34,7 @@ where the indexes `(i, j)` in our sum correspond to `(i, j + 1)`
 For this reason, we have `-` before the sum in our formal statement.
 -/
 
-@[expose] public section
+public section
 
 open Filter ContinuousAlternatingMap Finset VectorField
 open scoped Topology
