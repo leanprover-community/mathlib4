@@ -6,7 +6,7 @@ Authors: Violeta Hernández Palacios
 module
 
 public import Mathlib.Order.DirSupClosed
-public import Mathlib.Order.Filter.Defs
+public import Mathlib.Order.Filter.CardinalInter
 public import Mathlib.Order.IsNormal
 public import Mathlib.SetTheory.Cardinal.Cofinality.Basic
 
@@ -140,6 +140,16 @@ def clubFilter (hα : cof α ≠ ℵ₀) : Filter α where
     exact ⟨_, Set.inter_subset_inter hus hvt, hu.inter hα hv⟩
 
 @[simp] theorem mem_clubFilter {hα : cof α ≠ ℵ₀} : s ∈ clubFilter hα ↔ ∃ t ⊆ s, IsClub t := .rfl
+
+theorem cardinalInterFilter_clubFilter {hα : cof α ≠ ℵ₀} :
+    CardinalInterFilter (clubFilter hα) (cof α) where
+  cardinal_sInter_mem s hsα hs := by
+    simp_rw [mem_clubFilter] at hs
+    choose t hts ht using hs
+    refine ⟨⋂ x : s, t _ x.2, ?_, ?_⟩
+    · rw [Set.sInter_eq_iInter]
+      exact Set.iInter_mono (by simpa)
+    · apply IsClub.iInter hα <;> simpa
 
 theorem Order.IsNormal.isClub_range {f : α → α} (hf : IsNormal f) : IsClub (.range f) :=
   ⟨hf.dirSupClosed_range, fun x ↦ ⟨_, ⟨x, rfl⟩, hf.strictMono.le_apply⟩⟩
