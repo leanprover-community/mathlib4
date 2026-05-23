@@ -69,7 +69,7 @@ lemma CovariantDerivative.isGeodAt_iff_horiz {γ : ℝ → M} {t₀ : ℝ}
   conv_lhs => rw [Eq.comm, cov.lift_vec_eq_iff (velocity I γ t).2]
   rw [← cov.mem_horiz_iff_proj, proj_velocity,
       show mfderiv% (velocity I γ) t (1 : ℝ) = (velocity I.tangent (velocity I γ) t).2 from
-        rfl, -- TODO need a simp lemma here?
+        rfl, -- TODO need a simp lemma here?
       ]
   -- TODO: understand why
   -- simp [proj_velocity, proj_acceleration I ht]
