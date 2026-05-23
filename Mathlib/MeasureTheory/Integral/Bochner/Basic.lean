@@ -543,7 +543,7 @@ theorem tendsto_integral_approxOn_of_measurable_of_range_subset
   exact Eventually.of_forall fun x => subset_closure (hs (Set.mem_union_left _ (mem_range_self _)))
 
 -- We redeclare `E` here to temporarily avoid
--- the `[CompleteSpace E]` and `[NormedSpace ℝ E]` instances.
+-- the `[NormedSpace ℝ E]` instance.
 theorem tendsto_integral_norm_approxOn_sub
     {E : Type*} [NormedAddCommGroup E] [MeasurableSpace E] [BorelSpace E] {f : α → E}
     (fmeas : Measurable f) (hf : Integrable f μ) [SeparableSpace (range f ∪ {0} : Set E)] :
@@ -591,11 +591,9 @@ variable [ClosedIciTopology E]
 
 /-- The integral of a function which is nonnegative almost everywhere is nonnegative. -/
 lemma integral_nonneg_of_ae {f : α → E} (hf : 0 ≤ᵐ[μ] f) :
-    0 ≤ ∫ x, f x ∂μ := by
-  by_cases hE : CompleteSpace E
-  · exact integral_eq_setToFun f ▸ setToFun_nonneg (dominatedFinMeasAdditive_weightedSMul μ)
-      (fun s _ _ => weightedSMul_nonneg s) hf
-  · simp [integral, hE]
+    0 ≤ ∫ x, f x ∂μ :=
+  integral_eq_setToFun f ▸ setToFun_nonneg (dominatedFinMeasAdditive_weightedSMul μ)
+    (fun s _ _ => weightedSMul_nonneg s) hf
 
 lemma integral_nonneg {f : α → E} (hf : 0 ≤ f) :
     0 ≤ ∫ x, f x ∂μ :=
@@ -1001,8 +999,6 @@ theorem nndist_integral_add_measure_le_lintegral
 @[simp]
 theorem integral_smul_measure (f : α → G) (c : ℝ≥0∞) :
     ∫ x, f x ∂c • μ = c.toReal • ∫ x, f x ∂μ := by
-  by_cases hG : CompleteSpace G; swap
-  · simp [integral, hG]
   -- First we consider the “degenerate” case `c = ∞`
   rcases eq_or_ne c ∞ with (rfl | hc)
   · rw [ENNReal.toReal_top, zero_smul, integral_eq_setToFun, setToFun_top_smul_measure]
@@ -1021,8 +1017,6 @@ theorem integral_smul_nnreal_measure (f : α → G) (c : ℝ≥0) :
 
 theorem integral_map_of_stronglyMeasurable {β} [MeasurableSpace β] {φ : α → β} (hφ : Measurable φ)
     {f : β → G} (hfm : StronglyMeasurable f) : ∫ y, f y ∂Measure.map φ μ = ∫ x, f (φ x) ∂μ := by
-  by_cases hG : CompleteSpace G; swap
-  · simp [integral, hG]
   by_cases hfi : Integrable f (Measure.map φ μ); swap
   · rw [integral_undef hfi, integral_undef]
     exact fun hfφ => hfi ((integrable_map_measure hfm.aestronglyMeasurable hφ.aemeasurable).2 hfφ)
