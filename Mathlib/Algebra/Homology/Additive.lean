@@ -26,8 +26,8 @@ open CategoryTheory CategoryTheory.Category CategoryTheory.Limits HomologicalCom
 
 variable {ι : Type*}
 variable {V : Type u} [Category.{v} V] [Preadditive V]
-variable {W : Type*} [Category W] [Preadditive W]
-variable {W₁ W₂ : Type*} [Category W₁] [Category W₂] [HasZeroMorphisms W₁] [HasZeroMorphisms W₂]
+variable {W : Type*} [Category* W] [Preadditive W]
+variable {W₁ W₂ : Type*} [Category* W₁] [Category* W₂] [HasZeroMorphisms W₁] [HasZeroMorphisms W₂]
 variable {c : ComplexShape ι} {C D : HomologicalComplex V c}
 variable (f : C ⟶ D) (i : ι)
 
@@ -213,8 +213,7 @@ theorem map_chain_complex_of (F : W₁ ⥤ W₂) [F.PreservesZeroMorphisms] (X :
         rw [← F.map_comp, sq n, Functor.map_zero] := by
   refine HomologicalComplex.ext rfl ?_
   rintro i j (rfl : j + 1 = i)
-  simp only [CategoryTheory.Functor.mapHomologicalComplex_obj_d, of_d, eqToHom_refl, comp_id,
-    id_comp]
+  simp
 
 end ChainComplex
 
@@ -222,13 +221,15 @@ variable [HasZeroObject W₁] [HasZeroObject W₂]
 
 namespace HomologicalComplex
 
-instance (W : Type*) [Category W] [Preadditive W] [HasZeroObject W] [DecidableEq ι] (j : ι) :
+set_option backward.isDefEq.respectTransparency false in
+instance (W : Type*) [Category* W] [Preadditive W] [HasZeroObject W] [DecidableEq ι] (j : ι) :
     (single W c j).Additive where
   map_add {_ _ f g} := by ext; simp [single]
 
 variable (F : W₁ ⥤ W₂) [F.PreservesZeroMorphisms]
     (c : ComplexShape ι) [DecidableEq ι]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Turning an object into a complex supported at `j` then applying a functor is
 the same as applying the functor then forming the complex.
 -/

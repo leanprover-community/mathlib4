@@ -25,7 +25,7 @@ we can equip bounded continuous functions with the corresponding operations.
 
 -/
 
-@[expose] public section
+public section
 
 open scoped NNReal
 
@@ -34,7 +34,7 @@ section bounded_sub
 ### Bounded subtraction
 -/
 
-open Pointwise
+open scoped Pointwise
 
 /-- A typeclass saying that `(p : R × R) ↦ p.1 - p.2` maps any product of bounded sets to a bounded
 set. This property automatically holds for seminormed additive groups, but it also holds, e.g.,
@@ -75,7 +75,8 @@ section bounded_mul
 ### Bounded multiplication and addition
 -/
 
-open Pointwise Set
+open scoped Pointwise
+open Set
 
 /-- A typeclass saying that `(p : R × R) ↦ p.1 + p.2` maps any product of bounded sets to a bounded
 set. This property follows from `LipschitzAdd`, and thus automatically holds, e.g., for seminormed
@@ -210,6 +211,7 @@ section NonUnitalSeminormedRing
 
 variable {R : Type*} [NonUnitalSeminormedRing R]
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 instance : BoundedMul R where
   isBounded_mul {s t} hs ht := by
     obtain ⟨Af, hAf⟩ := (Metric.isBounded_iff_subset_closedBall 0).mp hs
@@ -227,9 +229,9 @@ instance : BoundedMul R where
       · exact mem_closedBall_zero_iff.mp (hAf x_in_s)
       · exact mem_closedBall_zero_iff.mp (hAg y_in_t)
     calc ‖x₁ * y₁ - x₂ * y₂‖
-     _ ≤ ‖x₁ * y₁‖ + ‖x₂ * y₂‖        := norm_sub_le _ _
-     _ ≤ Af * Ag + Af * Ag            := add_le_add (aux hx₁ hy₁) (aux hx₂ hy₂)
-     _ = 2 * Af * Ag                  := by simp [← two_mul, mul_assoc]
+     _ ≤ ‖x₁ * y₁‖ + ‖x₂ * y₂‖ := norm_sub_le _ _
+     _ ≤ Af * Ag + Af * Ag     := add_le_add (aux hx₁ hy₁) (aux hx₂ hy₂)
+     _ = 2 * Af * Ag           := by simp [← two_mul, mul_assoc]
 
 end NonUnitalSeminormedRing
 

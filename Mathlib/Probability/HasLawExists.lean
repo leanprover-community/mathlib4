@@ -15,7 +15,7 @@ This file contains lemmas that state the existence of random variables with give
 and a given dependency structure (currently only mutual independence is considered).
 -/
 
-@[expose] public section
+public section
 
 open MeasureTheory Measure
 
@@ -23,7 +23,8 @@ namespace ProbabilityTheory
 
 universe u v
 
-lemma _root_.Measure.exists_hasLaw {𝓧 : Type u} {m𝓧 : MeasurableSpace 𝓧} (μ : Measure 𝓧) :
+lemma _root_.MeasureTheory.Measure.exists_hasLaw {𝓧 : Type u} {m𝓧 : MeasurableSpace 𝓧}
+    (μ : Measure 𝓧) :
     ∃ Ω : Type u, ∃ _ : MeasurableSpace Ω, ∃ P : Measure Ω, ∃ X : Ω → 𝓧,
       Measurable X ∧ HasLaw X μ P :=
   ⟨𝓧, m𝓧, μ, id, measurable_id, .id⟩

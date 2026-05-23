@@ -64,6 +64,7 @@ def tensorProductFan' : Fan (fun i ↦ mkUnder S (S ⊗[R] (P i).right)) :=
   Fan.mk (mkUnder S <| ∀ i, S ⊗[R] (P i).right)
     (fun i ↦ AlgHom.toUnder <| Pi.evalAlgHom S _ i)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The two fans on `i ↦ S ⊗[R] P i` agree if `ι` is finite. -/
 def tensorProductFanIso [Fintype ι] [DecidableEq ι] :
     tensorProductFan S P ≅ tensorProductFan' S P :=
@@ -112,6 +113,7 @@ lemma equalizer_comp {A B : Under R} (f g : A ⟶ B) :
   ext (a : AlgHom.equalizer (toAlgHom f) (toAlgHom g))
   exact a.property
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The canonical fork on `f g : A ⟶ B` given by the equalizer. -/
 def equalizerFork {A B : Under R} (f g : A ⟶ B) :
     Fork f g :=
@@ -148,6 +150,7 @@ def equalizerFork'IsLimit {A B : Type u} [CommRing A] [CommRing B] [Algebra R A]
     IsLimit (Under.equalizerFork' f g) :=
   Under.equalizerForkIsLimit f.toUnder g.toUnder
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The fork on `𝟙 ⊗[R] f` and `𝟙 ⊗[R] g` given by `S ⊗[R] eq(f, g)`. -/
 def tensorProdEqualizer {A B : Under R} (f g : A ⟶ B) :
     Fork ((tensorProd R S).map f) ((tensorProd R S).map g) :=

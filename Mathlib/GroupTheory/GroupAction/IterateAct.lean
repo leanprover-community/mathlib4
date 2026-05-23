@@ -17,7 +17,7 @@ that acts on `α` by iterates of `f`, `⟨n⟩ • x = f^[n] x`.
 It is useful to convert between definitions and theorems about maps and monoid actions.
 -/
 
-@[expose] public section
+public section
 
 /-- A structure with a single field `val : ℕ`
 that additively acts on `α` by `⟨n⟩ +ᵥ x = f^[n] x`. -/

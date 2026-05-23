@@ -20,7 +20,7 @@ bounded continuous functions `X →ᵇ ℝ`. These lemmas live in a separate fil
 Urysohn's lemma, normal topological space
 -/
 
-@[expose] public section
+public section
 
 
 open BoundedContinuousFunction

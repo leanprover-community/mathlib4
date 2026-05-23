@@ -83,12 +83,12 @@ theorem comp_embeddingPiTangent_mfderiv (x : M) (hx : x ∈ s) :
             (@ContinuousLinearMap.proj ℝ _ ι (fun _ => E × ℝ) _ _ (fun _ => inferInstance)
               (f.ind x hx))).comp
         (mfderiv I 𝓘(ℝ, ι → E × ℝ) f.embeddingPiTangent x) =
-      mfderiv I I (chartAt H (f.c (f.ind x hx))) x := by
+      mfderiv% (chartAt H (f.c (f.ind x hx))) x := by
   set L :=
     (ContinuousLinearMap.fst ℝ E ℝ).comp
       (@ContinuousLinearMap.proj ℝ _ ι (fun _ => E × ℝ) _ _ (fun _ => inferInstance) (f.ind x hx))
   have := L.hasMFDerivAt.comp x
-    (f.embeddingPiTangent.contMDiff.mdifferentiableAt (mod_cast le_top)).hasMFDerivAt
+    (f.embeddingPiTangent.contMDiff.mdifferentiableAt (by simp)).hasMFDerivAt
   convert hasMFDerivAt_unique this _
   refine (hasMFDerivAt_extChartAt (f.mem_chartAt_ind_source x hx)).congr_of_eventuallyEq ?_
   refine (f.eventuallyEq_one x hx).mono fun y hy => ?_
@@ -97,7 +97,7 @@ theorem comp_embeddingPiTangent_mfderiv (x : M) (hx : x ∈ s) :
   rw [hy, Pi.one_apply, one_smul]
 
 theorem embeddingPiTangent_ker_mfderiv (x : M) (hx : x ∈ s) :
-    LinearMap.ker (mfderiv I 𝓘(ℝ, ι → E × ℝ) f.embeddingPiTangent x) = ⊥ := by
+    (mfderiv I 𝓘(ℝ, ι → E × ℝ) f.embeddingPiTangent x).ker = ⊥ := by
   apply bot_unique
   rw [← (mdifferentiable_chart (f.c (f.ind x hx))).ker_mfderiv_eq_bot
       (f.mem_chartAt_ind_source x hx),
@@ -113,7 +113,7 @@ supports of bump functions, then for some `n` it can be immersed into the `n`-di
 Euclidean space. -/
 theorem exists_immersion_euclidean {ι : Type*} [Finite ι] (f : SmoothBumpCovering ι I M) :
     ∃ (n : ℕ) (e : M → EuclideanSpace ℝ (Fin n)),
-      ContMDiff I (𝓡 n) ∞ e ∧ Injective e ∧ ∀ x : M, Injective (mfderiv I (𝓡 n) e x) := by
+      CMDiff ∞ e ∧ Injective e ∧ ∀ x : M, Injective (mfderiv% e x) := by
   cases nonempty_fintype ι
   set F := EuclideanSpace ℝ (Fin <| finrank ℝ (ι → E × ℝ))
   letI : IsNoetherian ℝ (E × ℝ) := IsNoetherian.iff_fg.2 inferInstance
@@ -124,7 +124,7 @@ theorem exists_immersion_euclidean {ι : Type*} [Finite ι] (f : SmoothBumpCover
     eEF.toDiffeomorph.contMDiff.comp f.embeddingPiTangent.contMDiff,
     eEF.injective.comp f.embeddingPiTangent_injective, fun x => ?_⟩
   rw [mfderiv_comp _ eEF.differentiableAt.mdifferentiableAt
-      (f.embeddingPiTangent.contMDiff.mdifferentiableAt (mod_cast le_top)),
+      (f.embeddingPiTangent.contMDiff.mdifferentiableAt (by simp)),
     eEF.mfderiv_eq]
   exact eEF.injective.comp (f.embeddingPiTangent_injective_mfderiv _ trivial)
 
@@ -135,7 +135,7 @@ supports of bump functions, then for some `n` it can be embedded into the `n`-di
 Euclidean space. -/
 theorem exists_embedding_euclidean_of_compact [T2Space M] [CompactSpace M] :
     ∃ (n : ℕ) (e : M → EuclideanSpace ℝ (Fin n)),
-      ContMDiff I (𝓡 n) ∞ e ∧ IsClosedEmbedding e ∧ ∀ x : M, Injective (mfderiv I (𝓡 n) e x) := by
+      CMDiff ∞ e ∧ IsClosedEmbedding e ∧ ∀ x : M, Injective (mfderiv% e x) := by
   rcases SmoothBumpCovering.exists_isSubordinate I isClosed_univ fun (x : M) _ => univ_mem with
     ⟨ι, f, -⟩
   haveI := f.fintype

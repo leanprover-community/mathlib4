@@ -5,8 +5,9 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Analysis.Asymptotics.Theta
 public import Mathlib.Analysis.Normed.Group.Completion
+public import Mathlib.Analysis.Asymptotics.Defs
+public import Mathlib.Topology.Algebra.InfiniteSum.Order
 
 /-!
 # Asymptotics in the completion of a normed space
@@ -15,7 +16,7 @@ In this file we prove lemmas relating `f = O(g)` etc
 for composition of functions with coercion of a seminormed group to its completion.
 -/
 
-@[expose] public section
+public section
 
 variable {α E F : Type*} [Norm E] [SeminormedAddCommGroup F]
   {f : α → E} {g : α → F} {l : Filter α}

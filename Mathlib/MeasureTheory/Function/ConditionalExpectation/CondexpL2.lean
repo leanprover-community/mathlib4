@@ -12,8 +12,8 @@ public import Mathlib.MeasureTheory.Function.L2Space
 /-! # Conditional expectation in L2
 
 This file contains one step of the construction of the conditional expectation, which is completed
-in `MeasureTheory.Function.ConditionalExpectation.Basic`. See that file for a description of the
-full process.
+in `Mathlib/MeasureTheory/Function/ConditionalExpectation/Basic.lean`. See that file for a
+description of the full process.
 
 We build the conditional expectation of an `L²` function, as an element of `L²`. This is the
 orthogonal projection on the subspace of almost everywhere `m`-measurable functions.
@@ -176,7 +176,7 @@ theorem condExpL2_ae_eq_zero_of_ae_eq_zero (hs : MeasurableSet[m] s) (hμs : μ 
       · rwa [ENNReal.coe_eq_zero, nnnorm_eq_zero] at hx
     · refine Measurable.coe_nnreal_ennreal (Measurable.nnnorm ?_)
       exact (Lp.stronglyMeasurable _).measurable
-  refine le_antisymm ?_ (zero_le _)
+  rw [← nonpos_iff_eq_zero]
   refine (lintegral_nnnorm_condExpL2_le hs hμs f).trans (le_of_eq ?_)
   rw [lintegral_eq_zero_iff]
   · refine hf.mono fun x hx => ?_
@@ -371,8 +371,6 @@ theorem condExpIndSMul_smul [NormedSpace ℝ F] [SMulCommClass ℝ 𝕜 F] (hs :
     condExpIndSMul hm hs hμs (c • x) = c • condExpIndSMul hm hs hμs x := by
   simp_rw [condExpIndSMul, toSpanSingleton_smul, smul_compLpL, smul_apply]
 
-@[deprecated (since := "2025-08-28")] alias condExpIndSMul_smul' := condExpIndSMul_smul
-
 theorem condExpIndSMul_ae_eq_smul (hm : m ≤ m0) (hs : MeasurableSet s) (hμs : μ s ≠ ∞) (x : G) :
     condExpIndSMul hm hs hμs x =ᵐ[μ] fun a =>
       (condExpL2 ℝ ℝ hm (indicatorConstLp 2 hs hμs 1) : α → ℝ) a • x :=
@@ -413,7 +411,7 @@ theorem integrable_condExpIndSMul (hm : m ≤ m0) [SigmaFinite (μ.trim hm)] (hs
 theorem condExpIndSMul_empty {x : G} : condExpIndSMul hm MeasurableSet.empty
     ((measure_empty (μ := μ)).le.trans_lt ENNReal.coe_lt_top).ne x = 0 := by
   rw [condExpIndSMul, indicatorConstLp_empty]
-  simp only [Submodule.coe_zero, ContinuousLinearMap.map_zero]
+  simp only [Submodule.coe_zero, map_zero]
 
 theorem setIntegral_condExpL2_indicator (hs : MeasurableSet[m] s) (ht : MeasurableSet t)
     (hμs : μ s ≠ ∞) (hμt : μ t ≠ ∞) :

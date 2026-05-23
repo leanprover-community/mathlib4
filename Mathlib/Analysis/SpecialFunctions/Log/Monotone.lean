@@ -6,6 +6,7 @@ Authors: Bolton Bailey
 module
 
 public import Mathlib.Analysis.SpecialFunctions.Pow.Real
+public import Mathlib.Analysis.SpecialFunctions.Log.NegMulLog
 
 /-!
 # Logarithm Tonality
@@ -18,7 +19,7 @@ form `x ^ a`.
 logarithm, tonality
 -/
 
-@[expose] public section
+public section
 
 
 open Set Filter Function
@@ -29,16 +30,24 @@ noncomputable section
 
 namespace Real
 
-theorem log_mul_self_monotoneOn : MonotoneOn (fun x : ℝ => log x * x) { x | 1 ≤ x } := by
-  -- TODO: can be strengthened to exp (-1) ≤ x
-  simp only [MonotoneOn, mem_setOf_eq]
-  intro x hex y hey hxy
-  have y_pos : 0 < y := lt_of_lt_of_le zero_lt_one hey
-  gcongr
-  rwa [le_log_iff_exp_le y_pos, Real.exp_zero]
+theorem mul_log_strictMonoOn : StrictMonoOn (fun x ↦ x * log x) <| .Ici <| exp (-1) := by
+  refine strictMonoOn_of_deriv_pos (convex_Ici _) continuous_mul_log.continuousOn fun x hx ↦ ?_
+  have hlt : rexp (-1) < x := by simpa using hx
+  have hpos : 0 < x := by grind [Real.exp_pos]
+  grind [deriv_mul_log, Real.lt_log_iff_exp_lt hpos |>.mpr hlt]
 
-theorem log_div_self_antitoneOn : AntitoneOn (fun x : ℝ => log x / x) { x | exp 1 ≤ x } := by
-  simp only [AntitoneOn, mem_setOf_eq]
+@[deprecated Real.mul_log_strictMonoOn (since := "2026-04-07")]
+theorem log_mul_self_monotoneOn : MonotoneOn (fun x : ℝ => log x * x) { x | 1 ≤ x } := by
+  grind [mul_log_strictMonoOn.monotoneOn, MonotoneOn.mono, show exp (-1) < 1 by norm_num]
+
+theorem mul_log_strictAntiOn :
+    StrictAntiOn (fun x : ℝ ↦ x * log x) <| .Icc 0 (exp (-1)) := by
+  refine strictAntiOn_of_deriv_neg (convex_Icc ..) continuous_mul_log.continuousOn fun x hx ↦ ?_
+  have hgt : x < rexp (-1) := by simp_all [interior_Icc, mem_Ioo]
+  have hpos : 0 < x := by simp_all [interior_Icc, mem_Ioo]
+  grind [deriv_mul_log, Real.log_lt_iff_lt_exp hpos |>.mpr hgt]
+
+theorem log_div_self_antitoneOn : AntitoneOn (fun x : ℝ ↦ log x / x) <| .Ici (exp 1) := by
   intro x hex y hey hxy
   have x_pos : 0 < x := (exp_pos 1).trans_le hex
   have y_pos : 0 < y := (exp_pos 1).trans_le hey
@@ -52,32 +61,24 @@ theorem log_div_self_antitoneOn : AntitoneOn (fun x : ℝ => log x / x) { x | ex
     _ = log x / x * y - log x := by ring
 
 theorem log_div_self_rpow_antitoneOn {a : ℝ} (ha : 0 < a) :
-    AntitoneOn (fun x : ℝ => log x / x ^ a) { x | exp (1 / a) ≤ x } := by
-  simp only [AntitoneOn, mem_setOf_eq]
+    AntitoneOn (fun x : ℝ ↦ log x / x ^ a) <| .Ici (exp a⁻¹) := by
   intro x hex y _ hxy
-  have x_pos : 0 < x := lt_of_lt_of_le (exp_pos (1 / a)) hex
+  simp only
+  have x_pos : 0 < x := lt_of_lt_of_le (exp_pos a⁻¹) (le_of_le_of_eq hex rfl)
   have y_pos : 0 < y := by linarith
-  nth_rw 1 [← rpow_one y]
-  nth_rw 1 [← rpow_one x]
+  nth_rw 1 [← rpow_one y, ← rpow_one x]
   rw [← div_self (ne_of_lt ha).symm, div_eq_mul_one_div a a, rpow_mul y_pos.le, rpow_mul x_pos.le,
     log_rpow (rpow_pos_of_pos y_pos a), log_rpow (rpow_pos_of_pos x_pos a), mul_div_assoc,
     mul_div_assoc, mul_le_mul_iff_right₀ (one_div_pos.mpr ha)]
-  refine log_div_self_antitoneOn ?_ ?_ ?_
-  · simp only [Set.mem_setOf_eq]
-    convert rpow_le_rpow _ hex (le_of_lt ha) using 1
-    · rw [← exp_mul]
-      simp only [Real.exp_eq_exp]
-      field
+  have hbound {z : ℝ} (hz : z ∈ Ici (rexp a⁻¹)) : z ^ a ∈ {b | rexp 1 ≤ b} := by
+    rw [mem_setOf_eq]
+    convert rpow_le_rpow _ hz (le_of_lt ha) using 1
+    · simp only [← exp_mul, Real.exp_eq_exp, field]
     positivity
-  · simp only [Set.mem_setOf_eq]
-    convert rpow_le_rpow _ (_root_.trans hex hxy) (le_of_lt ha) using 1
-    · rw [← exp_mul]
-      simp only [Real.exp_eq_exp]
-      field
-    positivity
+  refine log_div_self_antitoneOn (hbound hex) (hbound (hex.trans hxy)) ?_
   gcongr
 
-theorem log_div_sqrt_antitoneOn : AntitoneOn (fun x : ℝ => log x / √x) { x | exp 2 ≤ x } := by
+theorem log_div_sqrt_antitoneOn : AntitoneOn (fun x : ℝ ↦ log x / √x) <| .Ici (exp 2) := by
   simp_rw [sqrt_eq_rpow]
   convert log_div_self_rpow_antitoneOn one_half_pos
   norm_num

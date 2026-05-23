@@ -9,6 +9,7 @@ public import Mathlib.Algebra.Category.Ring.Colimits
 public import Mathlib.Algebra.Category.Ring.Constructions
 public import Mathlib.Algebra.MvPolynomial.CommRing
 public import Mathlib.Topology.Algebra.Ring.Basic
+public import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
 
 /-!
 # Topology on `Hom(R, S)`
@@ -76,7 +77,7 @@ def precompHomeomorph (f : A ≅ B) :
   right_inv _ := by simp
 
 lemma isHomeomorph_precomp (f : A ⟶ B) [IsIso f] :
-    IsHomeomorph ((f ≫ ·) : (B ⟶ R) → (A ⟶ R))  :=
+    IsHomeomorph ((f ≫ ·) : (B ⟶ R) → (A ⟶ R)) :=
   (precompHomeomorph (asIso f)).isHomeomorph
 
 /-- `Hom(A/I, R)` has the subspace topology of `Hom(A, R)`.
@@ -133,7 +134,7 @@ lemma isClosedEmbedding_hom [IsTopologicalRing R] [T1Space R] :
     (.uniqueProd (⊥_ CommRingCat ⟶ R) _)).isClosedEmbedding.comp
     (isClosedEmbedding_precomp_of_surjective f this) using 2 with g
   ext x
-  simp [f]
+  simp +instances [f]
 
 instance [T2Space R] : T2Space (A ⟶ R) :=
   (isEmbedding_hom R A).t2Space
@@ -144,6 +145,7 @@ instance [IsTopologicalRing R] [T1Space R] [CompactSpace R] :
 
 open Limits
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `Hom(B ⊗[A] C, R)` has the subspace topology from `Hom(B, R) × Hom(C, R)`. -/
 lemma isEmbedding_pushout [IsTopologicalRing R] (φ : A ⟶ B) (ψ : A ⟶ C) :
     IsEmbedding fun f : pushout φ ψ ⟶ R ↦ (pushout.inl φ ψ ≫ f, pushout.inr φ ψ ≫ f) := by

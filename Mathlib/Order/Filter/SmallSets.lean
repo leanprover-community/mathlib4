@@ -21,8 +21,9 @@ then saying that `fun i ↦ support (f i)` tendsto `(𝓝 0).smallSets` is a way
 `f` tends to the Dirac delta distribution.
 -/
 
-@[expose] public section
+assert_not_exists Set.Finite
 
+@[expose] public section
 
 open Filter
 
@@ -126,7 +127,7 @@ theorem HasAntitoneBasis.tendsto_smallSets {ι} [Preorder ι] {s : ι → Set α
     (hl : l.HasAntitoneBasis s) : Tendsto s atTop l.smallSets :=
   tendsto_smallSets_iff.2 fun _t ht => hl.eventually_subset ht
 
-@[mono]
+@[gcongr, mono]
 theorem monotone_smallSets : Monotone (@smallSets α) :=
   monotone_lift' monotone_id monotone_const
 

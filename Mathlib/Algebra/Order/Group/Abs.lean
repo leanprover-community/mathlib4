@@ -21,7 +21,7 @@ negation. This generalizes the usual absolute value on real numbers (`|x| = max 
 - `|a|ₘ`: The *absolute value* of an element `a` of a multiplicative lattice ordered group
 -/
 
-@[expose] public section
+public section
 
 open Function
 
@@ -74,8 +74,6 @@ theorem inv_le_of_mabs_le (h : |a|ₘ ≤ b) : b⁻¹ ≤ a :=
 theorem le_of_mabs_le (h : |a|ₘ ≤ b) : a ≤ b :=
   (mabs_le.mp h).2
 
-@[deprecated (since := "2025-08-14")] alias mabs_mul := mabs_mul_le
-
 @[to_additive]
 theorem mabs_mul' (a b : G) : |a|ₘ ≤ |b|ₘ * |b * a|ₘ := by simpa using mabs_mul_le b⁻¹ (b * a)
 
@@ -114,6 +112,10 @@ theorem mabs_div_mabs_le_mabs_div (a b : G) : |a|ₘ / |b|ₘ ≤ |a / b|ₘ :=
     calc
       |a|ₘ = |a / b * b|ₘ := by rw [div_mul_cancel]
       _ ≤ |a / b|ₘ * |b|ₘ := mabs_mul_le _ _
+
+@[to_additive]
+theorem mabs_div_mabs_le_mabs_mul (a b : G) : |a|ₘ / |b|ₘ ≤ |a * b|ₘ :=
+  mabs_inv b ▸ div_inv_eq_mul a b ▸ mabs_div_mabs_le_mabs_div a b⁻¹
 
 @[to_additive]
 theorem mabs_mabs_div_mabs_le_mabs_div (a b : G) : |(|a|ₘ / |b|ₘ)|ₘ ≤ |a / b|ₘ :=

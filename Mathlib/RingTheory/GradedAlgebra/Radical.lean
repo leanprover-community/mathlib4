@@ -52,8 +52,7 @@ theorem Ideal.IsHomogeneous.isPrime_of_homogeneous_mem_or_mem {I : Ideal A} (hI 
     Ideal.IsPrime I :=
   ⟨I_ne_top, by
     intro x y hxy
-    by_contra! rid
-    obtain ⟨rid₁, rid₂⟩ := rid
+    by_contra! ⟨rid₁, rid₂⟩
     classical
       /-
         The idea of the proof is the following :

@@ -88,9 +88,9 @@ def noncommCoprod : M × N →* P where
   map_one' := by simp only [Prod.fst_one, Prod.snd_one, map_one, mul_one]
   __ := f.toMulHom.noncommCoprod g.toMulHom comm
 
-/-- Variant of `MonoidHom.noncomCoprod_apply` with the product written in the other direction. -/
+/-- Variant of `MonoidHom.noncommCoprod_apply` with the product written in the other direction. -/
 @[to_additive
-  /-- Variant of `AddMonoidHom.noncomCoprod_apply` with the sum written in the other direction -/]
+  /-- Variant of `AddMonoidHom.noncommCoprod_apply` with the sum written in the other direction -/]
 theorem noncommCoprod_apply' (comm) (mn : M × N) :
     (f.noncommCoprod g comm) mn = g mn.2 * f mn.1 := by
   rw [← comm, MonoidHom.noncommCoprod_apply]

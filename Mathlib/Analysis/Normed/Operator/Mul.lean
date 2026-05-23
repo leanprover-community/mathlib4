@@ -49,10 +49,8 @@ theorem mul_apply' (x y : R) : mul 𝕜 R x y = x * y :=
 theorem opNorm_mul_apply_le (x : R) : ‖mul 𝕜 R x‖ ≤ ‖x‖ :=
   opNorm_le_bound _ (norm_nonneg x) (norm_mul_le x)
 
-
 theorem opNorm_mul_le : ‖mul 𝕜 R‖ ≤ 1 :=
   LinearMap.mkContinuous₂_norm_le _ zero_le_one _
-
 
 /-- Multiplication on the left in a non-unital normed algebra `R` as a non-unital algebra
 homomorphism into the algebra of *continuous* linear maps. This is the left regular representation
@@ -101,7 +99,7 @@ theorem opNorm_mulLeftRight_le :
 representation of the algebra on itself is isometric. Every unital normed algebra with `‖1‖ = 1` is
 a regular normed algebra (see `NormedAlgebra.instRegularNormedAlgebra`). In addition, so is every
 C⋆-algebra, non-unital included (see `CStarRing.instRegularNormedAlgebra`), but there are yet other
-examples. Any algebra with an approximate identity (e.g., $$L^1$$) is also regular.
+examples. Any algebra with an approximate identity (e.g., `L¹`) is also regular.
 
 This is a useful class because it gives rise to a nice norm on the unitization; in particular it is
 a C⋆-norm when the norm on `A` is a C⋆-norm. -/
@@ -126,11 +124,9 @@ lemma isometry_mul : Isometry (mul 𝕜 R) :=
 lemma opNorm_mul_apply (x : R) : ‖mul 𝕜 R x‖ = ‖x‖ :=
   (AddMonoidHomClass.isometry_iff_norm (mul 𝕜 R)).mp (isometry_mul 𝕜 R) x
 
-
 @[simp]
 lemma opNNNorm_mul_apply (x : R) : ‖mul 𝕜 R x‖₊ = ‖x‖₊ :=
   Subtype.ext <| opNorm_mul_apply 𝕜 R x
-
 
 /-- Multiplication in a normed algebra as a linear isometry to the space of
 continuous linear maps. -/
@@ -156,26 +152,29 @@ section RingEquiv
 
 variable (𝕜 E)
 
-/-- If `M` is a normed space over `𝕜`, then the space of maps `𝕜 →L[𝕜] M` is linearly equivalent
-to `M`. (See `ring_lmap_equiv_self` for a stronger statement.) -/
-def ring_lmap_equiv_selfₗ : (𝕜 →L[𝕜] E) ≃ₗ[𝕜] E where
-  toFun := fun f ↦ f 1
-  invFun := (ContinuousLinearMap.id 𝕜 𝕜).smulRight
-  map_smul' := fun a f ↦ by simp only [coe_smul', Pi.smul_apply, RingHom.id_apply]
-  map_add' := fun f g ↦ by simp only [add_apply]
-  left_inv := fun f ↦ by ext; simp only [smulRight_apply, coe_id', _root_.id, one_smul]
-  right_inv := fun m ↦ by simp only [smulRight_apply, id_apply, one_smul]
-
 /-- If `M` is a normed space over `𝕜`, then the space of maps `𝕜 →L[𝕜] M` is linearly isometrically
 equivalent to `M`. -/
-def ring_lmap_equiv_self : (𝕜 →L[𝕜] E) ≃ₗᵢ[𝕜] E where
-  toLinearEquiv := ring_lmap_equiv_selfₗ 𝕜 E
-  norm_map' := by
-    refine fun f ↦ le_antisymm ?_ ?_
-    · simpa only [norm_one, mul_one] using le_opNorm f 1
-    · refine opNorm_le_bound' f (norm_nonneg <| f 1) (fun x _ ↦ ?_)
-      rw [(by rw [smul_eq_mul, mul_one] : f x = f (x • 1)), ContinuousLinearMap.map_smul,
-        norm_smul, mul_comm, (by rfl : ring_lmap_equiv_selfₗ 𝕜 E f = f 1)]
+def toSpanSingletonLIE : E ≃ₗᵢ[𝕜] (𝕜 →L[𝕜] E) where
+  toLinearEquiv := toSpanSingletonLE 𝕜 𝕜 E
+  norm_map' _ := by simp
+
+@[simp]
+lemma toSpanSingletonLIE_apply (x : E) : toSpanSingletonLIE 𝕜 E x = toSpanSingleton 𝕜 x := rfl
+
+@[simp] lemma toSpanSingletonLIE_symm_apply (f : 𝕜 →L[𝕜] E) :
+    (toSpanSingletonLIE 𝕜 E).symm f = f 1 := rfl
+
+@[simp] lemma toLinearEquiv_toSpanSingletonLIE :
+    (toSpanSingletonLIE 𝕜 E).toLinearEquiv = toSpanSingletonLE 𝕜 𝕜 E := rfl
+
+@[simp] lemma toContinuousLinearEquiv_toSpanSingletonLIE :
+    (toSpanSingletonLIE 𝕜 E).toContinuousLinearEquiv = toSpanSingletonCLE := rfl
+
+@[deprecated "Use the reverse of `toSpanSingletonLE`." (since := "2026-05-21")]
+alias ring_lmap_equiv_selfₗ := toSpanSingletonLE
+
+@[deprecated "Use the reverse of `toSpanSingletonLIE`." (since := "2026-05-21")]
+alias ring_lmap_equiv_self := toSpanSingletonLIE
 
 end RingEquiv
 
@@ -183,8 +182,8 @@ end MultiplicationLinear
 
 section SMulLinear
 
-variable (𝕜) (R : Type*) [NormedField R]
-variable [NormedAlgebra 𝕜 R] [NormedSpace R E] [IsScalarTower 𝕜 R E]
+variable (𝕜) (R : Type*) [SeminormedRing R]
+variable [NormedAlgebra 𝕜 R] [Module R E] [IsBoundedSMul R E] [IsScalarTower 𝕜 R E]
 
 /-- Scalar multiplication as a continuous bilinear map. -/
 def lsmul : R →L[𝕜] E →L[𝕜] E :=
@@ -201,25 +200,15 @@ theorem lsmul_flip_apply (x : E) :
     (lsmul 𝕜 𝕜).flip x = toSpanSingleton 𝕜 x :=
   rfl
 
-@[deprecated (since := "29-08-2025")] alias comp_lsmul_flip_apply := comp_toSpanSingleton
-
 variable {𝕜} in
 theorem lsmul_flip_inj {x y : E} :
     (lsmul 𝕜 R).flip x = (lsmul 𝕜 R).flip y ↔ x = y :=
   ⟨fun h => by simpa using congr($h 1), fun h => h ▸ rfl⟩
 
-variable {R}
-
-theorem norm_toSpanSingleton (x : E) : ‖toSpanSingleton 𝕜 x‖ = ‖x‖ := by
-  refine opNorm_eq_of_bounds (norm_nonneg _) (fun x => ?_) fun N _ h => ?_
-  · rw [toSpanSingleton_apply, norm_smul, mul_comm]
-  · simpa [toSpanSingleton_apply, norm_smul] using h 1
-
-variable {𝕜}
+variable {R 𝕜}
 
 theorem opNorm_lsmul_apply_le (x : R) : ‖(lsmul 𝕜 R x : E →L[𝕜] E)‖ ≤ ‖x‖ :=
   ContinuousLinearMap.opNorm_le_bound _ (norm_nonneg x) fun y => norm_smul_le x y
-
 
 /-- The norm of `lsmul` is at most 1 in any semi-normed group. -/
 theorem opNorm_lsmul_le : ‖(lsmul 𝕜 R : R →L[𝕜] E →L[𝕜] E)‖ ≤ 1 := by
@@ -261,7 +250,7 @@ end
 
 This is `ContinuousLinearMap.opNorm_lsmul_le` as an equality. -/
 @[simp]
-theorem opNorm_lsmul [NormedField R] [NormedAlgebra 𝕜 R] [NormedSpace R E]
+theorem opNorm_lsmul [NormedDivisionRing R] [NormedAlgebra 𝕜 R] [Module R E] [NormSMulClass R E]
     [IsScalarTower 𝕜 R E] [Nontrivial E] : ‖(lsmul 𝕜 R : R →L[𝕜] E →L[𝕜] E)‖ = 1 := by
   refine ContinuousLinearMap.opNorm_eq_of_bounds zero_le_one (fun x => ?_) fun N _ h => ?_
   · rw [one_mul]

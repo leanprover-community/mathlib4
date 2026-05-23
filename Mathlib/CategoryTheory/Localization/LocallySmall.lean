@@ -33,6 +33,7 @@ variable {C : Type u₁} [Category.{v₁} C] (W : MorphismProperty C)
 a `HasLocalization.{w} W` instance by shrinking the morphisms in `D`.
 (This version assumes that the types of objects of the categories
 `C` and `D` are in the same universe.) -/
+@[implicit_reducible]
 noncomputable def hasLocalizationOfLocallySmall
     {D : Type u₁} [Category.{v₂} D] [LocallySmall.{w} D]
     (L : C ⥤ D) [L.IsLocalization W] :
@@ -40,6 +41,8 @@ noncomputable def hasLocalizationOfLocallySmall
   D := ShrinkHoms D
   L := L ⋙ (ShrinkHoms.equivalence D).functor
 
+-- adding `@[implicit_reducible]` causes downstream breakage
+set_option warn.classDefReducibility false in
 /-- If `L : C ⥤ D` is a localization functor for a class of morphisms
 `W : MorphismProperty C`, and `D` is locally `w`-small, we may obtain
 a `HasLocalization.{w} W` instance. This should be used only in the
@@ -50,10 +53,10 @@ noncomputable irreducible_def hasLocalizationOfLocallySmall'
     (L : C ⥤ D) [L.IsLocalization W] :
     HasLocalization.{w} W := by
   have : LocallySmall.{w} (InducedCategory _ L.obj) :=
-    ⟨fun X Y ↦ inferInstanceAs (Small.{w} (L.obj X ⟶ L.obj Y))⟩
+    ⟨fun X Y ↦ small_of_injective InducedCategory.homEquiv.injective⟩
   let L' : C ⥤ (InducedCategory _ L.obj) :=
     { obj X := X
-      map f := L.map f }
+      map f := InducedCategory.homMk (L.map f) }
   have := Localization.essSurj L W
   have : (inducedFunctor L.obj).EssSurj := ⟨fun Y ↦ ⟨_, ⟨L.objObjPreimageIso Y⟩⟩⟩
   have : (inducedFunctor L.obj).IsEquivalence := { }

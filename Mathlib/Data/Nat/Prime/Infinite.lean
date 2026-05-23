@@ -18,7 +18,7 @@ public import Mathlib.Order.Bounds.Basic
 
 -/
 
-@[expose] public section
+public section
 
 open Bool Subtype
 

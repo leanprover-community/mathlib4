@@ -36,7 +36,7 @@ variable [DecidableEq α]
 iff `α` has decidable equality. -/
 @[to_additive
 /-- The maximal reduction of a word. It is computable iff `α` has decidable equality. -/]
-def reduce : (L : List (α × Bool)) -> List (α × Bool) :=
+def reduce : (L : List (α × Bool)) → List (α × Bool) :=
   List.rec [] fun hd1 _tl1 ih =>
     List.casesOn ih [hd1] fun hd2 tl2 =>
       if hd1.1 = hd2.1 ∧ hd1.2 = not hd2.2 then tl2 else hd1 :: hd2 :: tl2
@@ -289,7 +289,7 @@ instance : DecidableEq (FreeGroup α) :=
 --    of equation lemmas.
 instance Red.decidableRel : DecidableRel (@Red α)
   | [], [] => isTrue Red.refl
-  | [], _hd2 :: _tl2 => isFalse fun H => List.noConfusion (Red.nil_iff.1 H)
+  | [], _hd2 :: _tl2 => isFalse fun H => List.noConfusion rfl (heq_of_eq (Red.nil_iff.1 H))
   | (x, b) :: tl, [] =>
     match Red.decidableRel tl [(x, not b)] with
     | isTrue H => isTrue <| Red.trans (Red.cons_cons H) <| (@Red.Step.not _ [] [] _ _).to_red

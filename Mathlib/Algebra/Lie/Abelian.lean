@@ -21,7 +21,7 @@ In this file we define these concepts and provide some related definitions and r
 
   * `LieModule.IsTrivial`
   * `IsLieAbelian`
-  * `commutative_ring_iff_abelian_lie_ring`
+  * `isMulCommutative_iff_isLieAbelian`
   * `LieModule.ker`
   * `LieModule.maxTrivSubmodule`
   * `LieAlgebra.center`
@@ -40,7 +40,6 @@ universe u v w w₁ w₂
 class LieModule.IsTrivial (L : Type v) (M : Type w) [Bracket L M] [Zero M] : Prop where
   trivial : ∀ (x : L) (m : M), ⁅x, m⁆ = 0
 
-@[simp]
 theorem trivial_lie_zero (L : Type v) (M : Type w) [Bracket L M] [Zero M] [LieModule.IsTrivial L M]
     (x : L) (m : M) : ⁅x, m⁆ = 0 :=
   LieModule.IsTrivial.trivial x m
@@ -68,7 +67,7 @@ theorem Function.Injective.isLieAbelian {R : Type u} {L₁ : Type v} {L₂ : Typ
       calc
         f ⁅x, y⁆ = ⁅f x, f y⁆ := LieHom.map_lie f x y
         _ = 0 := trivial_lie_zero _ _ _ _
-        _ = f 0 := (map_zero _).symm}
+        _ = f 0 := (map_zero _).symm }
 
 theorem Function.Surjective.isLieAbelian {R : Type u} {L₁ : Type v} {L₂ : Type w} [CommRing R]
     [LieRing L₁] [LieRing L₂] [LieAlgebra R L₁] [LieAlgebra R L₂] {f : L₁ →ₗ⁅R⁆ L₂}
@@ -83,12 +82,13 @@ theorem lie_abelian_iff_equiv_lie_abelian {R : Type u} {L₁ : Type v} {L₂ : T
     IsLieAbelian L₁ ↔ IsLieAbelian L₂ :=
   ⟨e.symm.injective.isLieAbelian, e.injective.isLieAbelian⟩
 
-theorem commutative_ring_iff_abelian_lie_ring {A : Type v} [Ring A] :
-    Std.Commutative (α := A) (· * ·) ↔ IsLieAbelian A := by
-  have h₁ : Std.Commutative (α := A) (· * ·) ↔ ∀ a b : A, a * b = b * a :=
-    ⟨fun h => h.1, fun h => ⟨h⟩⟩
-  have h₂ : IsLieAbelian A ↔ ∀ a b : A, ⁅a, b⁆ = 0 := ⟨fun h => h.1, fun h => ⟨h⟩⟩
-  simp only [h₁, h₂, LieRing.of_associative_ring_bracket, sub_eq_zero]
+theorem isMulCommutative_iff_isLieAbelian {A : Type v} [Ring A] :
+    IsMulCommutative A ↔ IsLieAbelian A := by
+  have : IsLieAbelian A ↔ ∀ a b : A, ⁅a, b⁆ = 0 := ⟨(·.trivial), (⟨·⟩)⟩
+  simp [this, isMulCommutative_iff, LieRing.of_associative_ring_bracket, sub_eq_zero]
+
+@[deprecated (since := "2026-04-01")]
+alias commutative_ring_iff_abelian_lie_ring := isMulCommutative_iff_isLieAbelian
 
 @[simp] theorem LieSubalgebra.isLieAbelian_lieSpan_iff
     {R L : Type*} [CommRing R] [LieRing L] [LieAlgebra R L] {s : Set L} :
@@ -96,8 +96,8 @@ theorem commutative_ring_iff_abelian_lie_ring {A : Type v} [Ring A] :
   refine ⟨fun h x hx y hy ↦ ?_, fun h ↦ ⟨fun ⟨x, hx⟩ ⟨y, hy⟩ ↦ ?_⟩⟩
   · let x' : lieSpan R L s := ⟨x, subset_lieSpan hx⟩
     let y' : lieSpan R L s := ⟨y, subset_lieSpan hy⟩
-    suffices ⁅x', y'⁆ = 0 by simpa [x', y', Subtype.ext_iff, -trivial_lie_zero] using this
-    simp
+    suffices ⁅x', y'⁆ = 0 by simpa [x', y', Subtype.ext_iff] using this
+    simp [trivial_lie_zero]
   · induction hx using lieSpan_induction with
     | mem w hw =>
       induction hy using lieSpan_induction with
@@ -141,6 +141,15 @@ protected def ker : LieIdeal R L :=
 protected theorem mem_ker (x : L) : x ∈ LieModule.ker R L M ↔ ∀ m : M, ⁅x, m⁆ = 0 := by
   simp only [LieModule.ker, LieHom.mem_ker, LinearMap.ext_iff, LinearMap.zero_apply,
     toEnd_apply_apply]
+
+lemma _root_.LieIdeal.isLieAbelian_iff {I : LieIdeal R L} :
+    IsLieAbelian I ↔ I ≤ LieModule.ker R L I := by
+  refine ⟨fun hI x hx ↦ LieHom.mem_ker.mpr ?_, fun h ↦ ⟨fun ⟨x, hx⟩ ⟨y, hy⟩ ↦ ?_⟩⟩
+  · ext y
+    have := IsTrivial.trivial (⟨x, hx⟩ : I) y
+    rw [LieIdeal.coe_bracket_of_module] at this
+    simp [this]
+  · simpa using LinearMap.congr_fun (h hx) ⟨y, hy⟩
 
 lemma isFaithful_iff_ker_eq_bot : IsFaithful R L M ↔ LieModule.ker R L M = ⊥ := by
   rw [isFaithful_iff', LieSubmodule.ext_iff]
@@ -201,7 +210,7 @@ def maxTrivHom (f : M →ₗ⁅R,L⁆ N) : maxTrivSubmodule R L M →ₗ⁅R,L�
       (congr_arg f (m.property x)).trans (map_zero _)⟩
   map_add' m n := by ext; simp
   map_smul' t m := by ext; simp
-  map_lie' {x m} := by simp
+  map_lie' {x m} := by simp [trivial_lie_zero]
 
 @[norm_cast, simp]
 theorem coe_maxTrivHom_apply (f : M →ₗ⁅R,L⁆ N) (m : maxTrivSubmodule R L M) :
@@ -238,7 +247,7 @@ def maxTrivLinearMapEquivLieModuleHom : maxTrivSubmodule R L (M →ₗ[R] N) ≃
     { toLinearMap := f.val
       map_lie' := fun {x m} => by
         have hf : ⁅x, f.val⁆ m = 0 := by rw [f.property x, LinearMap.zero_apply]
-        rw [LieHom.lie_apply, sub_eq_zero, ← LinearMap.toFun_eq_coe] at hf; exact hf.symm}
+        rw [LieHom.lie_apply, sub_eq_zero, ← LinearMap.toFun_eq_coe] at hf; exact hf.symm }
   map_add' f g := by ext; simp
   map_smul' F G := by ext; simp
   invFun F := ⟨F, fun x => by ext; simp⟩
@@ -385,8 +394,8 @@ instance : LieModule.IsTrivial L (TrivialLieModule R L M) where
   trivial _ _ := rfl
 
 instance : LieModule R L (TrivialLieModule R L M) where
-  smul_lie := by simp
-  lie_smul := by simp
+  smul_lie := by simp [trivial_lie_zero]
+  lie_smul := by simp [trivial_lie_zero]
 
 end TrivialLieModule
 

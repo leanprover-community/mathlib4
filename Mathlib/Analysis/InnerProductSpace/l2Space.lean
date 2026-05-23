@@ -57,9 +57,9 @@ We also define a *predicate* `IsHilbertSum 𝕜 G V`, where `V : Π i, G i →�
 ## Main results
 
 * `lp.instInnerProductSpace`: Construction of the inner product space instance on the Hilbert sum
-  `lp G 2`. Note that from the file `Analysis.Normed.Lp.lpSpace`, the space `lp G 2` already
-  held a normed space instance (`lp.normedSpace`), and if each `G i` is a Hilbert space (i.e.,
-  complete), then `lp G 2` was already known to be complete (`lp.completeSpace`). So the work
+  `lp G 2`. Note that from the file `Mathlib/Analysis/Normed/Lp/lpSpace.lean`, the space `lp G 2`
+  already held a normed space instance (`lp.normedSpace`), and if each `G i` is a Hilbert space
+  (i.e., complete), then `lp G 2` was already known to be complete (`lp.completeSpace`). So the work
   here is to define the inner product and show it is compatible.
 
 * `OrthogonalFamily.range_linearIsometry`: Given a family `G` of inner product spaces and a family
@@ -84,7 +84,7 @@ Hilbert space, Hilbert sum, l2, Hilbert basis, unitary equivalence, isometric is
 @[expose] public section
 
 open RCLike Submodule Filter
-open scoped NNReal ENNReal ComplexConjugate Topology
+open scoped NNReal ENNReal ComplexConjugate Topology lp
 
 noncomputable section
 
@@ -93,10 +93,6 @@ variable [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 variable {G : ι → Type*} [∀ i, NormedAddCommGroup (G i)] [∀ i, InnerProductSpace 𝕜 (G i)]
 
 local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
-
-/-- `ℓ²(ι, 𝕜)` is the Hilbert space of square-summable functions `ι → 𝕜`, herein implemented
-as `lp (fun i : ι => 𝕜) 2`. -/
-notation "ℓ²(" ι ", " 𝕜 ")" => lp (fun i : ι => 𝕜) 2
 
 /-! ### Inner product space structure on `lp G 2` -/
 
@@ -328,6 +324,7 @@ protected theorem IsHilbertSum.linearIsometryEquiv_symm_apply_dfinsupp_sum_singl
     hV.linearIsometryEquiv.symm (W₀.sum (lp.single 2)) = W₀.sum fun i => V i := by
   simp only [map_dfinsuppSum, IsHilbertSum.linearIsometryEquiv_symm_apply_single]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- In the canonical isometric isomorphism between a Hilbert sum `E` of `G : ι → Type*` and
 `lp G 2`, a finitely-supported vector in `lp G 2` is the image of the associated finite sum of
 elements of `E`. -/
@@ -393,14 +390,14 @@ instance instFunLike : FunLike (HilbertBasis ι 𝕜 E) ι E where
     apply LinearIsometryEquiv.symm_bijective.injective
     apply LinearIsometryEquiv.toContinuousLinearEquiv_injective
     apply ContinuousLinearEquiv.coe_injective
-    refine lp.ext_continuousLinearMap ( ENNReal.ofNat_ne_top (n := nat_lit 2)) fun i => ?_
+    refine lp.ext_continuousLinearMap (ENNReal.ofNat_ne_top (n := nat_lit 2)) fun i => ?_
     ext
     exact congr_fun h i
 
 @[simp]
 protected theorem repr_symm_single [DecidableEq ι] (b : HilbertBasis ι 𝕜 E) (i : ι) :
     b.repr.symm (lp.single 2 i (1 : 𝕜)) = b i := by
-  dsimp [instFunLike]
+  dsimp +instances [instFunLike]
   convert rfl
 
 
@@ -437,8 +434,7 @@ protected theorem hasSum_repr_symm (b : HilbertBasis ι 𝕜 E) (f : ℓ²(ι, �
   have : lp.single (E := (fun _ : ι => 𝕜)) 2 i (f i * 1) = f i • lp.single 2 i 1 :=
     lp.single_smul (E := (fun _ : ι => 𝕜)) 2 i (f i) (1 : 𝕜)
   rw [mul_one] at this
-  rw [LinearIsometryEquiv.map_smul, b.repr_self, ← this,
-    LinearIsometryEquiv.coe_toContinuousLinearEquiv]
+  rw [map_smul, b.repr_self, ← this, LinearIsometryEquiv.coe_toContinuousLinearEquiv]
   exact (b.repr.apply_symm_apply (lp.single 2 i (f i))).symm
 
 protected theorem hasSum_repr (b : HilbertBasis ι 𝕜 E) (x : E) :

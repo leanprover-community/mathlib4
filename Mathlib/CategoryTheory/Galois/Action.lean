@@ -30,7 +30,7 @@ namespace PreGaloisCategory
 
 open Limits Functor
 
-variable {C : Type*} [Category C] (F : C ⥤ FintypeCat.{u})
+variable {C : Type*} [Category* C] (F : C ⥤ FintypeCat.{u})
 
 /-- Any (fiber) functor `F : C ⥤ FintypeCat` naturally factors via
 the forgetful functor from `Action FintypeCat (Aut F)` to `FintypeCat`. -/

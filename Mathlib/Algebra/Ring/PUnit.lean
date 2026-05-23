@@ -15,7 +15,7 @@ This file collects facts about algebraic structures on the one-element type, e.g
 commutative ring.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Field
 
@@ -30,7 +30,8 @@ instance commRing : CommRing PUnit where
   mul_zero := by intros; rfl
   natCast _ := unit
 
-instance cancelCommMonoidWithZero : CancelCommMonoidWithZero PUnit where
+instance : IsCancelMulZero PUnit where
   mul_left_cancel_of_ne_zero := by simp
+  mul_right_cancel_of_ne_zero := by simp
 
 end PUnit

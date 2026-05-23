@@ -124,7 +124,7 @@ private theorem mul_smul' [DecidableEq ιA] [DecidableEq ιB] [GSemiring A] [Gmo
         (DirectSum.mulHom A) =
       (AddMonoidHom.compHom AddMonoidHom.flipHom <|
           (smulAddMonoidHom A M).flip.compHom.comp <| smulAddMonoidHom A M).flip
-    from-- `fun a b c ↦ a • (b • c)` as a bundled hom
+    from -- `fun a b c ↦ a • (b • c)` as a bundled hom
       DFunLike.congr_fun (DFunLike.congr_fun (DFunLike.congr_fun this a) b) c
   ext ai ax bi bx ci cx : 6
   dsimp only [coe_comp, Function.comp_apply, compHom_apply_apply, flip_apply, flipHom_apply]
@@ -137,8 +137,8 @@ private theorem mul_smul' [DecidableEq ιA] [DecidableEq ιB] [GSemiring A] [Gmo
 /-- The `Module` derived from `gmodule A M`. -/
 instance module [DecidableEq ιA] [DecidableEq ιB] [GSemiring A] [Gmodule A M] :
     Module (⨁ i, A i) (⨁ i, M i) where
-  one_smul := one_smul' _ _
-  mul_smul := mul_smul' _ _
+  one_smul := by exact one_smul' _ _
+  mul_smul := by exact mul_smul' _ _
   smul_add r := (smulAddMonoidHom A M r).map_add
   smul_zero r := (smulAddMonoidHom A M r).map_zero
   add_smul r s x := by simp only [smul_def, map_add, AddMonoidHom.add_apply]
@@ -196,6 +196,7 @@ variable [AddCommMonoid M] [Module A M] [SetLike σ M] [AddSubmonoidClass σ' A]
 /-- The smul multiplication of `A` on `⨁ i, 𝓜 i` from `(⨁ i, 𝓐 i) →+ (⨁ i, 𝓜 i) →+ ⨁ i, 𝓜 i`
 turns `⨁ i, 𝓜 i` into an `A`-module
 -/
+@[implicit_reducible]
 def isModule [DecidableEq ιA] [DecidableEq ιM] [GradedRing 𝓐] : Module A (⨁ i, 𝓜 i) :=
   { Module.compHom _ (DirectSum.decomposeRingEquiv 𝓐 : A ≃+* ⨁ i, 𝓐 i).toRingHom with
     smul := fun a b => DirectSum.decompose 𝓐 a • b }

@@ -15,7 +15,7 @@ public import Mathlib.Order.Filter.Basic
 This file proves that finitely many conditions eventually hold if each of them eventually holds.
 -/
 
-@[expose] public section
+public section
 
 open Function Set Order
 open scoped symmDiff
@@ -188,24 +188,6 @@ theorem mem_iInf_finite' {f : ι → Filter α} (s) :
     s ∈ iInf f ↔ ∃ t : Finset (PLift ι), s ∈ ⨅ i ∈ t, f (PLift.down i) :=
   (Set.ext_iff.1 (iInf_sets_eq_finite' f) s).trans mem_iUnion
 
-/-- The dual version does not hold! `Filter α` is not a `CompleteDistribLattice`. -/
--- See note [reducible non-instances]
-abbrev coframeMinimalAxioms : Coframe.MinimalAxioms (Filter α) :=
-  { Filter.instCompleteLatticeFilter with
-    iInf_sup_le_sup_sInf := fun f s t ⟨h₁, h₂⟩ => by
-      classical
-      rw [iInf_subtype']
-      rw [sInf_eq_iInf', ← Filter.mem_sets, iInf_sets_eq_finite, mem_iUnion] at h₂
-      obtain ⟨u, hu⟩ := h₂
-      rw [← Finset.inf_eq_iInf] at hu
-      suffices ⨅ i : s, f ⊔ ↑i ≤ f ⊔ u.inf fun i => ↑i from this ⟨h₁, hu⟩
-      refine Finset.induction_on u (le_sup_of_le_right le_top) ?_
-      rintro ⟨i⟩ u _ ih
-      rw [Finset.inf_insert, sup_inf_left]
-      exact le_inf (iInf_le _ _) ih }
-
-instance instCoframe : Coframe (Filter α) := .ofMinimalAxioms coframeMinimalAxioms
-
 theorem mem_iInf_finset {s : Finset α} {f : α → Filter β} {t : Set β} :
     (t ∈ ⨅ a ∈ s, f a) ↔ ∃ p : α → Set β, (∀ a ∈ s, p a ∈ f a) ∧ t = ⋂ a ∈ s, p a := by
   classical
@@ -219,21 +201,6 @@ theorem mem_iInf_finset {s : Finset α} {f : α → Filter β} {t : Set β} :
     simp [ha]
   · rintro ⟨p, hpf, rfl⟩
     exact iInter_mem.2 fun a => mem_iInf_of_mem a (hpf a a.2)
-
-
-@[elab_as_elim]
-theorem iInf_sets_induct {f : ι → Filter α} {s : Set α} (hs : s ∈ iInf f) {p : Set α → Prop}
-    (uni : p univ) (ins : ∀ {i s₁ s₂}, s₁ ∈ f i → p s₂ → p (s₁ ∩ s₂)) : p s := by
-  classical
-  rw [mem_iInf_finite'] at hs
-  simp only [← Finset.inf_eq_iInf] at hs
-  rcases hs with ⟨is, his⟩
-  induction is using Finset.induction_on generalizing s with
-  | empty => rwa [mem_top.1 his]
-  | insert _ _ _ ih =>
-    rw [Finset.inf_insert, mem_inf_iff] at his
-    rcases his with ⟨s₁, hs₁, s₂, hs₂, rfl⟩
-    exact ins hs₁ (ih hs₂)
 
 /-! #### `principal` equations -/
 

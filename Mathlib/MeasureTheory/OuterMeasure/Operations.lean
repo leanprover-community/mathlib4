@@ -40,10 +40,10 @@ section Basic
 variable {α β : Type*} {m : OuterMeasure α}
 
 instance instZero : Zero (OuterMeasure α) :=
-  ⟨{  measureOf := fun _ => 0
+  ⟨{  measureOf _ := 0
       empty := rfl
-      mono := by intro _ _ _; exact le_refl 0
-      iUnion_nat := fun _ _ => zero_le _ }⟩
+      mono _ := le_rfl
+      iUnion_nat _ _ := zero_le }⟩
 
 @[simp]
 theorem coe_zero : ⇑(0 : OuterMeasure α) = 0 :=
@@ -225,7 +225,7 @@ theorem map_map {β γ} (f : α → β) (g : β → γ) (m : OuterMeasure α) :
     map g (map f m) = map (g ∘ f) m :=
   ext fun _ => rfl
 
-@[mono]
+@[gcongr, mono]
 theorem map_mono {β} (f : α → β) : Monotone (map f) := fun _ _ h _ => h _
 
 @[simp]
@@ -244,7 +244,7 @@ instance instLawfulFunctor : LawfulFunctor OuterMeasure := by constructor <;> in
 def dirac (a : α) : OuterMeasure α where
   measureOf s := indicator s (fun _ => 1) a
   empty := by simp
-  mono {_ _} h := indicator_le_indicator_of_subset h (fun _ => zero_le _) a
+  mono {_ _} h := by grw [h]
   iUnion_nat s _ := calc
     indicator (⋃ n, s n) 1 a = ⨆ n, indicator (s n) 1 a :=
       indicator_iUnion_apply (M := ℝ≥0∞) rfl _ _ _
@@ -284,7 +284,7 @@ def comap {β} (f : α → β) : OuterMeasure β →ₗ[ℝ≥0∞] OuterMeasure
 theorem comap_apply {β} (f : α → β) (m : OuterMeasure β) (s : Set α) : comap f m s = m (f '' s) :=
   rfl
 
-@[mono]
+@[gcongr, mono]
 theorem comap_mono {β} (f : α → β) : Monotone (comap f) := fun _ _ h _ => h _
 
 @[simp]

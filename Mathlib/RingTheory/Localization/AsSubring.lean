@@ -90,7 +90,7 @@ noncomputable def subalgebra (hS : S ≤ A⁰) : Subalgebra A K :=
 namespace subalgebra
 
 instance isLocalization_subalgebra : IsLocalization S (subalgebra K S hS) := by
-  dsimp only [Localization.subalgebra]
+  dsimp +instances only [Localization.subalgebra]
   rw [Subalgebra.copy_eq]
   infer_instance
 
@@ -140,7 +140,7 @@ instance isLocalization_ofField : IsLocalization S (ofField K S hS) := by
 
 instance (S : Subalgebra A K) : IsFractionRing S K := by
   refine IsFractionRing.of_field S K fun z ↦ ?_
-  rcases IsFractionRing.div_surjective (A := A) z with ⟨x, y, _, eq⟩
+  rcases IsFractionRing.div_surjective A z with ⟨x, y, _, eq⟩
   exact ⟨algebraMap A S x, algebraMap A S y, eq.symm⟩
 
 instance isFractionRing_ofField : IsFractionRing (ofField K S hS) K :=

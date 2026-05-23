@@ -12,7 +12,7 @@ public import Mathlib.Order.Hom.Set
 # Order isomorphisms and bounds.
 -/
 
-@[expose] public section
+public section
 
 open Set
 

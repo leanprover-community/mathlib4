@@ -9,11 +9,11 @@ public import Mathlib.Algebra.Group.TransferInstance
 public import Mathlib.Data.Finsupp.MonomialOrder
 public import Mathlib.Data.Finsupp.Weight
 
-/-! Homogeneous lexicographic monomial ordering
+/-! # Homogeneous lexicographic monomial ordering
 
 * `MonomialOrder.degLex`: a variant of the lexicographic ordering that first compares degrees.
-For this, `σ` needs to be embedded with an ordering relation which satisfies `WellFoundedGT σ`.
-(This last property is automatic when `σ` is finite).
+  For this, `σ` needs to be embedded with an ordering relation which satisfies `WellFoundedGT σ`.
+  (This last property is automatic when `σ` is finite).
 
 The type synonym is `DegLex (σ →₀ ℕ)` and the two lemmas `MonomialOrder.degLex_le_iff`
 and `MonomialOrder.degLex_lt_iff` rewrite the ordering as comparisons in the type `Lex (σ →₀ ℕ)`.
@@ -88,7 +88,7 @@ theorem degLex_def {r : α → α → Prop} {s : ℕ → ℕ → Prop} {a b : α
 namespace DegLex
 
 theorem wellFounded
-    {r : α → α → Prop} [IsTrichotomous α r] (hr : WellFounded (Function.swap r))
+    {r : α → α → Prop} [Std.Trichotomous r] (hr : WellFounded (Function.swap r))
     {s : ℕ → ℕ → Prop} (hs : WellFounded s) (hs0 : ∀ ⦃n⦄, ¬ s n 0) :
     WellFounded (Finsupp.DegLex r s) := by
   have wft := WellFounded.prod_lex hs (Finsupp.Lex.wellFounded' hs0 hs hr)
@@ -126,8 +126,8 @@ instance isStrictOrder : IsStrictOrder (DegLex (α →₀ ℕ)) (· < ·) where
       · right; exact ⟨Eq.trans hab.1 hbc.1, lt_trans hab.2 hbc.2⟩
 
 /-- The linear order on `Finsupp`s obtained by the homogeneous lexicographic ordering. -/
-instance : LinearOrder (DegLex (α →₀ ℕ)) :=
-  LinearOrder.lift'
+noncomputable instance : LinearOrder (DegLex (α →₀ ℕ)) :=
+  fast_instance% LinearOrder.lift'
     (fun (f : DegLex (α →₀ ℕ)) ↦ toLex ((ofDegLex f).degree, toLex (ofDegLex f)))
     (fun f g ↦ by simp)
 
@@ -144,11 +144,11 @@ theorem le_iff {x y : DegLex (α →₀ ℕ)} :
 instance : IsOrderedCancelAddMonoid (DegLex (α →₀ ℕ)) where
   le_of_add_le_add_left a b c h := by
     rw [le_iff] at h ⊢
-    simpa only [ofDegLex_add, degree_add, add_lt_add_iff_left, add_right_inj, toLex_add,
+    simpa only [ofDegLex_add, map_add, add_lt_add_iff_left, add_right_inj, toLex_add,
       add_le_add_iff_left] using h
   add_le_add_left a b h c := by
     rw [le_iff] at h ⊢
-    simpa [ofDegLex_add, degree_add] using h
+    simpa [ofDegLex_add, map_add] using h
 
 theorem single_strictAnti : StrictAnti (fun (a : α) ↦ toDegLex (single a 1)) := by
   intro _ _ h
@@ -177,15 +177,14 @@ theorem monotone_degree :
 noncomputable instance orderBot : OrderBot (DegLex (α →₀ ℕ)) where
   bot := toDegLex (0 : α →₀ ℕ)
   bot_le x := by
-    simp only [le_iff, ofDegLex_toDegLex, toLex_zero, degree_zero]
+    simp only [le_iff, ofDegLex_toDegLex, toLex_zero, map_zero]
     rcases eq_zero_or_pos (ofDegLex x).degree with (h | h)
     · simp only [h, lt_self_iff_false, true_and, false_or]
       exact bot_le
     · simp [h]
 
-instance wellFoundedLT [WellFoundedGT α] :
-    WellFoundedLT (DegLex (α →₀ ℕ)) :=
-  ⟨wellFounded wellFounded_gt wellFounded_lt fun n ↦ (zero_le n).not_gt⟩
+instance wellFoundedLT [WellFoundedGT α] : WellFoundedLT (DegLex (α →₀ ℕ)) :=
+  ⟨wellFounded wellFounded_gt wellFounded_lt fun _ ↦ not_lt_zero⟩
 
 end DegLex
 
@@ -207,7 +206,7 @@ noncomputable def degLex :
     by_cases! ha : a.degree < b.degree
     · exact Or.inl ha
     · refine Or.inr ⟨le_antisymm ?_ ha, toLex_monotone h⟩
-      rw [← add_tsub_cancel_of_le h, degree_add]
+      rw [← add_tsub_cancel_of_le h, map_add]
       exact Nat.le_add_right a.degree (b - a).degree
 
 theorem degLex_le_iff {a b : σ →₀ ℕ} :
@@ -238,9 +237,10 @@ example : single (1 : Fin 2) 1 ≺[degLex] single 0 1 := by
   exact Nat.one_pos
 
 /-- for the deg-lexicographic ordering, X 0 * X 1 < X 0  ^ 2 -/
-example : (single 0 1 + single 1 1) ≺[degLex] single (0 : Fin 2) 2  := by
-  simp only [degLex_lt_iff, lt_iff, ofDegLex_toDegLex, degree_add,
-    degree_single, Nat.reduceAdd, lt_self_iff_false, true_and, false_or]
+example : (single 0 1 + single 1 1) ≺[degLex] single (0 : Fin 2) 2 := by
+  rw [degLex_lt_iff, lt_iff, ofDegLex_toDegLex]
+  simp only [Fin.isValue, map_add, degree_single, Nat.reduceAdd, ofDegLex_toDegLex,
+    lt_self_iff_false, toLex_add, true_and, false_or]
   use 0
   simp
 

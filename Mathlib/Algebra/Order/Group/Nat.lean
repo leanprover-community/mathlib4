@@ -17,17 +17,17 @@ This file contains the linear ordered monoid instance on the natural numbers.
 See note [foundational algebra order theory].
 -/
 
-@[expose] public section
+public section
 
 namespace Nat
 
 /-! ### Instances -/
 
 instance instIsOrderedAddMonoid : IsOrderedAddMonoid ℕ where
-  add_le_add_left := @Nat.add_le_add_left
+  add_le_add_left := @Nat.add_le_add_right
 
 instance instIsOrderedCancelAddMonoid : IsOrderedCancelAddMonoid ℕ where
-  add_le_add_left := @Nat.add_le_add_left
+  add_le_add_left := @Nat.add_le_add_right
   le_of_add_le_add_left := @Nat.le_of_add_le_add_left
 
 instance instCanonicallyOrderedAdd : CanonicallyOrderedAdd ℕ where

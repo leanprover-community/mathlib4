@@ -156,6 +156,22 @@ lemma egauge_le_one (h : x ∈ s) : egauge 𝕜 s x ≤ 1 := by
 
 variable {𝕜}
 
+lemma le_egauge_of_forall_ne_zero [(𝓝[≠] (0 : 𝕜)).NeBot] {r : ℝ≥0∞}
+    (hs₀ : 0 ∈ s) (h : ∀ c : 𝕜, c ≠ 0 → x ∈ c • s → r ≤ ‖c‖ₑ) : r ≤ egauge 𝕜 s x := by
+  rw [le_egauge_iff]
+  intro c hc
+  rcases ne_or_eq c 0 with hc₀ | rfl
+  · exact h c hc₀ hc
+  obtain rfl : x = 0 := by
+    grw [zero_smul_set_subset, Set.mem_zero] at hc
+    exact hc
+  apply le_of_forall_gt
+  intro b hb
+  rcases Filter.nonempty_of_mem <|
+    inter_mem_nhdsWithin {(0 : 𝕜)}ᶜ (Metric.eball_mem_nhds 0 (by simpa using hb))
+    with ⟨c, hc₀, hcb⟩
+  exact (h c (by simpa using hc₀) ⟨_, hs₀, by simp⟩).trans_lt (by simpa using hcb)
+
 lemma le_egauge_smul_left (c : 𝕜) (s : Set E) (x : E) :
     egauge 𝕜 s x / ‖c‖ₑ ≤ egauge 𝕜 (c • s) x := by
   simp_rw [le_egauge_iff, smul_smul]
@@ -320,7 +336,7 @@ variable {c : 𝕜} {x : E} {r : ℝ≥0}
 lemma egauge_ball_le_of_one_lt_norm (hc : 1 < ‖c‖) (h₀ : r ≠ 0 ∨ ‖x‖ ≠ 0) :
     egauge 𝕜 (ball 0 r) x ≤ ‖c‖ₑ * ‖x‖ₑ / r := by
   letI : NontriviallyNormedField 𝕜 := ⟨c, hc⟩
-  rcases (zero_le r).eq_or_lt with rfl | hr
+  rcases eq_zero_or_pos r with rfl | hr
   · rw [ENNReal.coe_zero, ENNReal.div_zero (mul_ne_zero _ _)]
     · apply le_top
     · simpa using one_pos.trans hc

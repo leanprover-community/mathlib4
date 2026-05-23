@@ -24,7 +24,7 @@ This file establishes the class equation for finite groups.
 
 -/
 
-@[expose] public section
+public section
 
 open MulAction ConjClasses
 

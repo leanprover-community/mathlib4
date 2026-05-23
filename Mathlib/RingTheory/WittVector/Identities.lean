@@ -27,7 +27,7 @@ In this file we derive common identities between the Frobenius and Verschiebung 
 * [Commelin and Lewis, *Formalizing the Ring of Witt Vectors*][CL21]
 -/
 
-@[expose] public section
+public section
 
 
 namespace WittVector

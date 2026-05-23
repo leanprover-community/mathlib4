@@ -15,17 +15,17 @@ In this file we prove that `Set.encard` and `Set.ncard` are measurable functions
 provided that the ambient space is countable.
 -/
 
-@[expose] public section
+public section
 
 open Set
 
 variable {α : Type*} [Countable α]
 
-@[measurability]
+@[fun_prop]
 theorem measurable_encard : Measurable (Set.encard : Set α → ℕ∞) :=
   ENat.measurable_iff.2 fun _n ↦ Countable.measurableSet <| Countable.setOf_finite.mono fun _s hs ↦
     finite_of_encard_eq_coe hs
 
-@[measurability]
+@[fun_prop]
 theorem measurable_ncard : Measurable (Set.ncard : Set α → ℕ) :=
   Measurable.of_discrete.comp measurable_encard

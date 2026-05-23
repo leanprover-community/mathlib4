@@ -7,10 +7,11 @@ module
 
 public import Mathlib.Algebra.Field.Defs
 public import Mathlib.Algebra.GroupWithZero.Invertible
-public meta import Mathlib.Data.Sigma.Basic
 public import Mathlib.Algebra.Ring.Nat
 public import Mathlib.Data.Int.Cast.Basic
-public meta import Qq.MetaM
+public import Qq.MetaM
+
+public meta import Mathlib.Data.Sigma.Basic -- for the `Inhabited (Sigma β)` instance
 
 /-!
 ## The `Result` type for `norm_num`
@@ -38,14 +39,13 @@ namespace Meta.NormNum
 
 variable {u : Level}
 
-/-- A shortcut (non)instance for `AddMonoidWithOne ℕ` to shrink generated proofs. -/
-def instAddMonoidWithOneNat : AddMonoidWithOne ℕ := inferInstance
-
 /-- A shortcut (non)instance for `AddMonoidWithOne α`
 from `Semiring α` to shrink generated proofs. -/
+@[implicit_reducible]
 def instAddMonoidWithOne' {α : Type u} [Semiring α] : AddMonoidWithOne α := inferInstance
 
 /-- A shortcut (non)instance for `AddMonoidWithOne α` from `Ring α` to shrink generated proofs. -/
+@[implicit_reducible]
 def instAddMonoidWithOne {α : Type u} [Ring α] : AddMonoidWithOne α := inferInstance
 
 /-- A shortcut (non)instance for `Nat.AtLeastTwo (n + 2)` to shrink generated proofs. -/

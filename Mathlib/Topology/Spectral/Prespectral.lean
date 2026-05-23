@@ -77,6 +77,21 @@ lemma PrespectralSpace.of_isClosedEmbedding [PrespectralSpace Y]
     (f : X → Y) (hf : IsClosedEmbedding f) : PrespectralSpace X :=
   .of_isInducing f hf.isInducing hf.isProperMap.isSpectralMap
 
+/-- Let `f : X → Y` be an open embedding of topological spaces.
+If `Y` is a prespectral space (i.e., the quasi-compact opens of `Y` form a basis),
+then `X` is also a prespectral space. -/
+lemma Topology.IsOpenEmbedding.prespectralSpace [PrespectralSpace Y]
+    {f : X → Y} (hf : IsOpenEmbedding f) :
+    PrespectralSpace X where
+  isTopologicalBasis := by
+    apply isTopologicalBasis_of_isOpen_of_nhds (fun U hU ↦ hU.1) <| fun x U hx hU ↦ ?_
+    obtain ⟨V, ⟨hoV, hcV⟩, hfx, hVf⟩ : ∃ V ∈ {V | IsOpen V ∧ IsCompact V}, f x ∈ V ∧ V ⊆ f '' U :=
+      (PrespectralSpace.isTopologicalBasis (X := Y)).isOpen_iff.mp
+        (hf.isOpen_iff_image_isOpen.mp hU) (f x) ⟨x, hx, rfl⟩
+    refine ⟨f ⁻¹' V, ⟨hoV.preimage hf.continuous, ?_⟩, ⟨hfx, fun y hy ↦ ?_⟩⟩
+    · exact hf.toIsInducing.isCompact_preimage' hcV <| Set.SurjOn.subset_range hVf
+    · exact hf.injective.mem_set_image.mp (hVf hy)
+
 instance PrespectralSpace.sigma {ι : Type*} (X : ι → Type*) [∀ i, TopologicalSpace (X i)]
     [∀ i, PrespectralSpace (X i)] : PrespectralSpace (Σ i, X i) :=
   .of_isTopologicalBasis (IsTopologicalBasis.sigma fun i ↦ isTopologicalBasis) fun U hU ↦ by
@@ -104,7 +119,7 @@ def PrespectralSpace.opensEquiv [PrespectralSpace X] :
       exact fun _ ↦ id
     · intro x hxU
       obtain ⟨V, ⟨h₁, h₂⟩, hxV, hVU⟩ := isTopologicalBasis.exists_subset_of_mem_open hxU U.2
-      simp only [Opens.mem_iSup, SetLike.mem_coe]
+      simp only [Opens.mem_iSup]
       exact ⟨⟨⟨_, h₂⟩, h₁⟩, hVU, hxV⟩
   right_inv I := by
     ext U
@@ -145,3 +160,38 @@ lemma IsOpenMap.exists_opens_image_eq_of_prespectralSpace [PrespectralSpace X] {
       rintro ⟨i, hi, x, hx, rfl⟩
       have := heq ▸ mem_sSup.mpr ⟨i.1, i.2, hx⟩
       exact this
+
+lemma PrespectralSpace.exists_isCompact_and_isOpen_between [PrespectralSpace X] {K U : Set X}
+    (hK : IsCompact K) (hU : IsOpen U) (hKU : K ⊆ U) :
+    ∃ (W : Set X), IsCompact W ∧ IsOpen W ∧ K ⊆ W ∧ W ⊆ U := by
+  refine hK.induction_on ⟨∅, by simp⟩ (fun s t hst ⟨W, Wc, Wo, hKW, hWU⟩ ↦ ?_) ?_ ?_
+  · use W, Wc, Wo, subset_trans hst hKW, hWU
+  · intro s t ⟨W₁, Wc₁, Wo₁, hKW₁, hWU₁⟩ ⟨W₂, Wc₂, Wo₂, hKW₂, hWU₂⟩
+    exact ⟨W₁ ∪ W₂, Wc₁.union Wc₂, Wo₁.union Wo₂, Set.union_subset_union hKW₁ hKW₂,
+      Set.union_subset hWU₁ hWU₂⟩
+  · intro x hx
+    obtain ⟨V, h, hxV, hVU⟩ :=
+      PrespectralSpace.isTopologicalBasis.exists_subset_of_mem_open (hKU hx) hU
+    exact ⟨V, mem_nhdsWithin.mpr ⟨V, h.1, hxV, Set.inter_subset_left⟩, V, h.2, h.1, subset_rfl, hVU⟩
+
+lemma PrespectralSpace.exists_isClosed_of_not_isPreirreducible [PrespectralSpace X] (Z : Set X)
+    (hZ : ¬ IsPreirreducible Z) :
+    ∃ (A B : Set X), IsClosed A ∧ IsClosed B ∧ IsCompact Aᶜ ∧ IsCompact Bᶜ ∧
+      Z ⊆ A ∪ B ∧ (Z ∩ Aᶜ).Nonempty ∧ (Z ∩ Bᶜ).Nonempty := by
+  simp only [IsPreirreducible, not_forall] at hZ
+  rcases hZ with ⟨U₁, U₂, hU₁, hU₂, hU₁Z, hU₂Z, hU₁₂⟩
+  rw [Set.not_nonempty_iff_eq_empty, ← Set.subset_empty_iff] at hU₁₂
+  obtain ⟨x₁, hx₁⟩ : ∃ x₁ ∈ U₁, x₁ ∈ Z ∧ x₁ ∉ U₂ := by
+    obtain ⟨x, hx⟩ := hU₁Z
+    use x, hx.2, hx.1, fun h₂ ↦ hU₁₂ ⟨hx.1, hx.2, h₂⟩
+  obtain ⟨x₂, hx₂⟩ : ∃ x₂ ∈ U₂, x₂ ∈ Z ∧ x₂ ∉ U₁ := by
+    obtain ⟨x, hx⟩ := hU₂Z
+    use x, hx.2, hx.1, fun h₁ ↦ hU₁₂ ⟨hx.1, h₁, hx.2⟩
+  rw [PrespectralSpace.isTopologicalBasis.isOpen_iff] at hU₁ hU₂
+  obtain ⟨W₁, hW₁⟩ := hU₁ x₁ hx₁.1
+  obtain ⟨W₂, hW₂⟩ := hU₂ x₂ hx₂.1
+  refine ⟨W₁ᶜ, W₂ᶜ, by simpa using hW₁.1.1, by simpa using hW₂.1.1, by simp [hW₁.1.2],
+    by simp [hW₂.1.2], fun z hz ↦ ?_, ⟨x₁, by grind⟩, ⟨x₂, by grind⟩⟩
+  · by_contra! hc
+    simp only [Set.mem_union, Set.mem_compl_iff, not_or, not_not] at hc
+    exact hU₁₂ ⟨hz, hW₁.2.2 hc.1, hW₂.2.2 hc.2⟩

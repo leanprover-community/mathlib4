@@ -169,14 +169,14 @@ theorem add_rat (h : LiouvilleWith p x) (r : ℚ) : LiouvilleWith p (x + r) := b
   refine ⟨r.den ^ p * C, (tendsto_id.nsmul_atTop r.pos).frequently (hC.mono ?_)⟩
   rintro n ⟨hn, m, hne, hlt⟩
   have : (↑(r.den * m + r.num * n : ℤ) / ↑(r.den • id n) : ℝ) = m / n + r := by
-    rw [Algebra.id.smul_eq_mul, id]
+    rw [smul_eq_mul, id]
     nth_rewrite 4 [← Rat.num_div_den r]
     push_cast
     rw [add_div, mul_div_mul_left _ _ (by positivity), mul_div_mul_right _ _ (by positivity)]
   refine ⟨r.den * m + r.num * n, ?_⟩; rw [this, add_sub_add_right_eq_sub]
   refine ⟨by simpa, hlt.trans_le (le_of_eq ?_)⟩
   have : (r.den ^ p : ℝ) ≠ 0 := by positivity
-  simp [mul_rpow, Nat.cast_nonneg, mul_div_mul_left, this]
+  simp [mul_rpow, mul_div_mul_left, this]
 
 @[simp]
 theorem add_rat_iff : LiouvilleWith p (x + r) ↔ LiouvilleWith p x :=

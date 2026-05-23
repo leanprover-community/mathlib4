@@ -6,7 +6,7 @@ Authors: Arend Mellendijk
 module
 
 public import Mathlib.Data.Real.Basic
-public import Mathlib.NumberTheory.ArithmeticFunction
+public import Mathlib.NumberTheory.ArithmeticFunction.Defs
 
 /-!
 # The Selberg Sieve
@@ -34,7 +34,7 @@ minor notational difference is that we write $\nu(n)$ in place of $\frac{\omega(
 
 noncomputable section
 
-open scoped BigOperators ArithmeticFunction
+open scoped ArithmeticFunction
 
 open Finset Real Nat
 
@@ -149,7 +149,7 @@ theorem nu_lt_one_of_dvd_prodPrimes {d : ℕ} (hdP : d ∣ s.prodPrimes) (hd_ne_
         apply s.nu_pos_of_prime p hp.1 (hp.2.1.trans hdP)
       · intro p hpd; rw [mem_primeFactors_of_ne_zero hd_sq.ne_zero] at hpd
         apply s.nu_lt_one_of_prime p hpd.left (hpd.2.trans hdP)
-      · simp only [nonempty_primeFactors, show 1 < d by cutsat]
+      · simp only [nonempty_primeFactors, show 1 < d by lia]
     _ = 1 := by
       simp
 
@@ -180,9 +180,6 @@ theorem siftedSum_eq_sum_support_mul_ite :
     s.siftedSum = ∑ d ∈ s.support, s.weights d * if Nat.gcd s.prodPrimes d = 1 then 1 else 0 := by
   dsimp only [siftedSum]
   simp_rw [mul_ite, mul_one, mul_zero]
-
-@[deprecated (since := "2025-07-27")]
-alias siftedsum_eq_sum_support_mul_ite := siftedSum_eq_sum_support_mul_ite
 
 omit s in
 /-- A sequence of coefficients $\mu^{+}$ is upper Moebius if $\mu * \zeta ≤ \mu^{+} * \zeta$. These

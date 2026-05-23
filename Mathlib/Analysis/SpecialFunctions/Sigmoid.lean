@@ -29,8 +29,8 @@ that the composition of this embedding with the measurable embedding from a stan
 * `Real.sigmoid` : the sigmoid function from `ℝ` to `ℝ`.
 * `Real.sigmoid_strictMono` : the sigmoid function is strictly monotone.
 * `Real.continuous_sigmoid` : the sigmoid function is continuous.
-* `Real.sigmoid_tendsto_nhds_1_atTop` : the sigmoid function tends to `1` at `+∞`.
-* `Real.sigmoid_tendsto_nhds_0_atBot` : the sigmoid function tends to `0` at `-∞`.
+* `Real.tendsto_sigmoid_atTop` : the sigmoid function tends to `1` at `+∞`.
+* `Real.tendsto_sigmoid_atBot` : the sigmoid function tends to `0` at `-∞`.
 * `Real.hasDerivAt_sigmoid` : the derivative of the sigmoid function.
 * `Real.analyticAt_sigmoid` : the sigmoid function is analytic at every point.
 
@@ -38,16 +38,16 @@ that the composition of this embedding with the measurable embedding from a stan
 * `unitInterval.sigmoid` : the sigmoid function from `ℝ` to `I`.
 * `unitInterval.sigmoid_strictMono` : the sigmoid function is strictly monotone.
 * `unitInterval.continuous_sigmoid` : the sigmoid function is continuous.
-* `unitInterval.sigmoid_tendsto_nhds_1_atTop` : the sigmoid function tends to `1` at `+∞`.
-* `unitInterval.sigmoid_tendsto_nhds_0_atBot` : the sigmoid function tends to `0` at `-∞`.
+* `unitInterval.tendsto_sigmoid_atTop` : the sigmoid function tends to `1` at `+∞`.
+* `unitInterval.tendsto_sigmoid_atBot` : the sigmoid function tends to `0` at `-∞`.
 
 ### Sigmoid as an `OrderEmbedding` from `ℝ` to `I`
 * `OrderEmbedding.sigmoid` : the sigmoid function as an `OrderEmbedding` from `ℝ` to `I`.
-* `OrderEmbedding.isEmbedding_sigmoid` : the sigmoid function from `ℝ` to `I` is a topological
+* `Topology.isEmbedding_sigmoid` : the sigmoid function from `ℝ` to `I` is a topological
   embedding.
-* `OrderEmbedding.measurableEmbedding_sigmoid` : the sigmoid function from `ℝ` to `I` is a
+* `measurableEmbedding_sigmoid` : the sigmoid function from `ℝ` to `I` is a
   measurable embedding.
-* `OrderEmbedding.measurableEmbedding_sigmoid_comp_embeddingReal` : the composition of the
+* `measurableEmbedding_sigmoid_comp_embeddingReal` : the composition of the
   sigmoid function from `ℝ` to `I` with the measurable embedding from a standard Borel
   space `α` to `ℝ` is a measurable embedding from `α` to `I`.
 
@@ -82,7 +82,7 @@ lemma sigmoid_lt_one (x : ℝ) : sigmoid x < 1 :=
 @[bound]
 lemma sigmoid_le_one (x : ℝ) : sigmoid x ≤ 1 := (sigmoid_lt_one x).le
 
-@[mono]
+@[gcongr, mono]
 lemma sigmoid_strictMono : StrictMono sigmoid := fun a b hab ↦ by
   simp only [sigmoid]
   gcongr
@@ -118,7 +118,7 @@ open Set in
 lemma range_sigmoid : range Real.sigmoid = Ioo 0 1 := by
   refine subset_antisymm ?_ fun x hx ↦ ?_
   · rintro - ⟨x, rfl⟩
-    simp only [mem_Ioo]
+    push _ ∈ _
     bound
   · replace hx : 0 < x⁻¹ - 1 := by rwa [sub_pos, one_lt_inv_iff₀]
     exact ⟨-(log (x⁻¹ - 1)), by simp [sigmoid_def, exp_log hx]⟩
@@ -204,7 +204,9 @@ lemma DifferentiableAt.sigmoid {x : E} (hf : DifferentiableAt ℝ f x) :
     DifferentiableAt ℝ (sigmoid ∘ f) x := differentiableAt_sigmoid.comp x hf
 
 @[fun_prop]
-lemma continuous_sigmoid : Continuous sigmoid := by fun_prop
+lemma continuous_sigmoid : Continuous sigmoid := by
+  apply Differentiable.continuous (𝕜 := ℝ)  -- fun_prop can't choose `𝕜`
+  fun_prop
 
 omit [NormedSpace ℝ E] in
 @[fun_prop]
@@ -222,7 +224,7 @@ lemma sigmoid_pos (x : ℝ) : 0 < sigmoid x := Real.sigmoid_pos x
 @[bound]
 lemma sigmoid_lt_one (x : ℝ) : sigmoid x < 1 := Real.sigmoid_lt_one x
 
-@[mono]
+@[gcongr, mono]
 lemma sigmoid_strictMono : StrictMono sigmoid := Real.sigmoid_strictMono
 
 lemma sigmoid_le_iff {a b : ℝ} : sigmoid a ≤ sigmoid b ↔ a ≤ b := Real.sigmoid_le_iff

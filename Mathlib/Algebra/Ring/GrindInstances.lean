@@ -12,7 +12,7 @@ public import Mathlib.Data.Int.Cast.Basic
 # Instances for `grind`.
 -/
 
-@[expose] public section
+public section
 
 open Lean
 
@@ -29,7 +29,7 @@ instance (priority := 100) Semiring.toGrindSemiring [s : Semiring α] :
     natCast := inferInstance
     add_zero := by simp [add_zero]
     mul_one := by simp [mul_one]
-    zero_mul := by simp [zero_mul]
+    zero_mul := by simp
     pow_zero a := by simp
     pow_succ a n := by simp [pow_succ]
     ofNat_eq_natCast
@@ -96,7 +96,7 @@ example (s : Grind.CommRing α) : CommRing α :=
     zsmul := zsmulRec
     npow := npowRec
     natCast := Nat.cast
-    natCast_zero :=  Grind.Semiring.natCast_zero
+    natCast_zero := Grind.Semiring.natCast_zero
     natCast_succ n := Grind.Semiring.natCast_succ n
     intCast := Int.cast
     intCast_ofNat := Grind.Ring.intCast_natCast

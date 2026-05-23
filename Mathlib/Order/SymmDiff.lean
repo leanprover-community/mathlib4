@@ -17,7 +17,7 @@ This file defines the symmetric difference and bi-implication operators in (co-)
 
 Some examples are
 * The symmetric difference of two sets is the set of elements that are in either but not both.
-* The symmetric difference on propositions is `Xor'`.
+* The symmetric difference on propositions is `Xor`.
 * The symmetric difference on `Bool` is `Bool.xor`.
 * The equivalence of propositions. Two propositions are equivalent if they imply each other.
 * The symmetric difference translates to addition when considering a Boolean algebra as a Boolean
@@ -82,8 +82,10 @@ theorem symmDiff_def [Max α] [SDiff α] (a b : α) : a ∆ b = a \ b ⊔ b \ a 
 theorem bihimp_def [Min α] [HImp α] (a b : α) : a ⇔ b = (b ⇨ a) ⊓ (a ⇨ b) :=
   rfl
 
-theorem symmDiff_eq_Xor' (p q : Prop) : p ∆ q = Xor' p q :=
+theorem symmDiff_eq_xor (p q : Prop) : p ∆ q = Xor p q :=
   rfl
+
+@[deprecated (since := "2026-04-27")] alias symmDiff_eq_Xor' := symmDiff_eq_xor
 
 @[simp]
 theorem bihimp_iff_iff {p q : Prop} : p ⇔ q ↔ (p ↔ q) :=
@@ -242,8 +244,6 @@ theorem inf_le_bihimp {a b : α} : a ⊓ b ≤ a ⇔ b :=
   inf_le_inf le_himp le_himp
 
 theorem bihimp_eq_sup_himp_inf : a ⇔ b = a ⊔ b ⇨ a ⊓ b := by simp [himp_inf_distrib, bihimp]
-
-@[deprecated (since := "2025-06-05")] alias bihimp_eq_inf_himp_inf := bihimp_eq_sup_himp_inf
 
 theorem Codisjoint.bihimp_eq_inf {a b : α} (h : Codisjoint a b) : a ⇔ b = a ⊓ b := by
   rw [bihimp, h.himp_eq_left, h.himp_eq_right]

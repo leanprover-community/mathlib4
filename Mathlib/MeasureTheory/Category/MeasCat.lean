@@ -80,7 +80,7 @@ the pure values are the Dirac measure, and the bind operation maps to the integr
 `(μ >>= ν) s = ∫ x. (ν x) s dμ`.
 
 In probability theory, the `MeasCat`-morphisms `X → Prob X` are (sub-)Markov kernels (here `Prob` is
-the restriction of `Measure` to (sub-)probability space.)
+the restriction of `Measure` to (sub-)probability spaces.)
 -/
 def Measure : MeasCat ⥤ MeasCat where
   obj X := of (@MeasureTheory.Measure X.1 X.2)
@@ -94,7 +94,7 @@ def Giry : CategoryTheory.Monad MeasCat where
   η :=
     { app := fun X => ⟨@Measure.dirac X.1 X.2, Measure.measurable_dirac⟩
       naturality :=
-        fun _ _ ⟨_, hf⟩ => Subtype.ext <| funext fun a => (Measure.map_dirac hf a).symm }
+        fun _ _ ⟨_, hf⟩ => Subtype.ext <| funext fun a => (Measure.map_dirac' hf a).symm }
   μ :=
     { app := fun X => ⟨@Measure.join X.1 X.2, Measure.measurable_join⟩
       naturality := fun _ _ ⟨_, hf⟩ => Subtype.ext <| funext fun μ => Measure.join_map_map hf μ }
@@ -102,7 +102,7 @@ def Giry : CategoryTheory.Monad MeasCat where
   left_unit _ := Subtype.ext <| funext fun _ => Measure.join_dirac _
   right_unit _ := Subtype.ext <| funext fun _ => Measure.join_map_dirac _
 
-/-- An example for an algebra on `Measure`: the nonnegative Lebesgue integral is a hom, behaving
+/-- An example of an algebra on `Measure`: the nonnegative Lebesgue integral is a hom, behaving
 nicely under the monad operations. -/
 def Integral : Giry.Algebra where
   A := MeasCat.of ℝ≥0∞

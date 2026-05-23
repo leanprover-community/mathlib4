@@ -16,7 +16,7 @@ This file contains some lemmas about how filters `Ixx` behave as the endpoints t
 
 -/
 
-@[expose] public section
+public section
 
 namespace Finset
 

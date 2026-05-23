@@ -10,6 +10,7 @@ public import Mathlib.Analysis.Calculus.MeanValue
 public import Mathlib.Analysis.Calculus.Deriv.Polynomial
 public import Mathlib.NumberTheory.Real.Irrational
 public import Mathlib.Topology.Algebra.Polynomial
+import Mathlib.Algebra.Order.Interval.Set.Group
 
 /-!
 
@@ -138,7 +139,7 @@ theorem exists_pos_real_of_irrational_root {α : ℝ} (ha : Irrational α) {f : 
   -- Since the polynomial `fR` has finitely many roots, there is a closed interval centered at `α`
   -- such that `α` is the only root of `fR` in the interval.
   obtain ⟨ζ, z0, U⟩ : ∃ ζ > 0, closedBall α ζ ∩ fR.roots.toFinset = {α} :=
-    @exists_closedBall_inter_eq_singleton_of_discrete _ _ _ Finite.instDiscreteTopology _ ar
+    @exists_closedBall_inter_eq_singleton_of_discrete _ _ _ (toFinite _).isDiscrete _ ar
   -- Since `fR` is continuous, it is bounded on the interval above.
   obtain ⟨xm, -, hM⟩ : ∃ xm : ℝ, xm ∈ Icc (α - ζ) (α + ζ) ∧
       IsMaxOn (|fR.derivative.eval ·|) (Icc (α - ζ) (α + ζ)) xm :=
@@ -181,7 +182,7 @@ protected theorem transcendental {x : ℝ} (lx : Liouville x) : Transcendental �
   rintro ⟨f : ℤ[X], f0, ef0⟩
   -- Change `aeval x f = 0` to `eval (map _ f) = 0`, who knew.
   replace ef0 : (f.map (algebraMap ℤ ℝ)).eval x = 0 := by
-    rwa [aeval_def, ← eval_map] at ef0
+    rwa [← eval_map_algebraMap] at ef0
   -- There is a "large" real number `A` such that `(b + 1) ^ (deg f) * |f (x - a / (b + 1))| * A`
   -- is at least one.  This is obtained from lemma `exists_pos_real_of_irrational_root`.
   obtain ⟨A, hA, h⟩ : ∃ A : ℝ, 0 < A ∧ ∀ (a : ℤ) (b : ℕ),

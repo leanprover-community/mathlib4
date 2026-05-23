@@ -51,8 +51,8 @@ instance : CoeSort (CSA.{u, v} K) (Type v) := ⟨(·.carrier)⟩
 
 attribute [instance] CSA.isCentral CSA.isSimple CSA.fin_dim
 
-/-- Two finite-dimensional central simple algebras `A` and `B` are Brauer Equivalent
-  if there exist `n, m ∈ ℕ+` such that the `Mₙ(A) ≃ₐ[K] Mₘ(B)`. -/
+/-- Two finite-dimensional central simple algebras `A` and `B` are Brauer equivalent
+  if there exist `n, m ∈ ℕ+` such that `Mₙ(A) ≃ₐ[K] Mₘ(B)`. -/
 abbrev IsBrauerEquivalent (A B : CSA K) : Prop :=
   ∃ n m : ℕ, n ≠ 0 ∧ m ≠ 0 ∧ (Nonempty <| Matrix (Fin n) (Fin n) A ≃ₐ[K] Matrix (Fin m) (Fin m) B)
 
@@ -89,6 +89,7 @@ end IsBrauerEquivalent
 variable (K)
 
 /-- `CSA` equipped with Brauer Equivalence is indeed a setoid. -/
+@[implicit_reducible]
 def Brauer.CSA_Setoid : Setoid (CSA K) where
   r := IsBrauerEquivalent
   iseqv := IsBrauerEquivalent.is_eqv

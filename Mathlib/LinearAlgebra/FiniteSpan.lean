@@ -15,7 +15,7 @@ public import Mathlib.Algebra.Module.Equiv.Basic
 
 -/
 
-@[expose] public section
+public section
 
 open Set Function
 open Submodule (span)

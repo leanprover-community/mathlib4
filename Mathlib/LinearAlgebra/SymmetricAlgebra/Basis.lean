@@ -63,6 +63,10 @@ lemma equivMvPolynomial_symm_X (b : Basis κ R M) (i : κ) :
     (equivMvPolynomial b).symm (MvPolynomial.X i) = ι R M (b i) :=
   (equivMvPolynomial b).toEquiv.symm_apply_eq.mpr <| equivMvPolynomial_ι_apply b i |>.symm
 
+theorem IsSymmetricAlgebra.mvPolynomial (I : Type*) (b : Basis I R M) :
+    IsSymmetricAlgebra (Basis.constr b R (.X : I → MvPolynomial I R)) :=
+  (SymmetricAlgebra.equivMvPolynomial b).bijective
+
 /-- A basis on `M` can be lifted to a basis on `SymmetricAlgebra R M`. -/
 @[simps! repr_apply]
 noncomputable def _root_.Module.Basis.symmetricAlgebra (b : Basis κ R M) :

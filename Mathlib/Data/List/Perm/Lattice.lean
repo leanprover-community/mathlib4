@@ -16,7 +16,7 @@ public import Mathlib.Data.List.Nodup
 This file develops theory about the `List.Perm` relation and the lattice structure on lists.
 -/
 
-@[expose] public section
+public section
 
 -- Make sure we don't import algebra
 assert_not_exists Monoid
@@ -45,6 +45,9 @@ theorem Perm.bagInter {l₁ l₂ t₁ t₂ : List α} (hl : l₁ ~ l₂) (ht : t
     l₁.bagInter t₁ ~ l₂.bagInter t₂ :=
   ht.bagInter_left l₂ ▸ hl.bagInter_right _
 
+theorem Perm.bagInter_symm (l₁ l₂ : List α) : (l₁.bagInter l₂).Perm (l₂.bagInter l₁) :=
+  perm_iff_count.mpr fun _ ↦ (by simp [List.count_bagInter, Nat.min_comm])
+
 theorem Perm.inter_append {l t₁ t₂ : List α} (h : Disjoint t₁ t₂) :
     l ∩ (t₁ ++ t₂) ~ l ∩ t₁ ++ l ∩ t₂ := by
   induction l with
@@ -56,21 +59,17 @@ theorem Perm.inter_append {l t₁ t₂ : List α} (h : Disjoint t₁ t₂) :
     by_cases h₂ : x ∈ t₂
     · simp only [*, inter_cons_of_notMem, false_or, mem_append, inter_cons_of_mem,
         not_false_iff]
-      refine Perm.trans (Perm.cons _ l_ih) ?_
-      change [x] ++ xs ∩ t₁ ++ xs ∩ t₂ ~ xs ∩ t₁ ++ ([x] ++ xs ∩ t₂)
-      rw [← List.append_assoc]
-      solve_by_elim [Perm.append_right, perm_append_comm]
+      exact perm_cons_append_cons _ l_ih
     · simp [*]
 
 theorem Perm.take_inter {xs ys : List α} (n : ℕ) (h : xs ~ ys)
-    (h' : ys.Nodup) : xs.take n ~ ys.inter (xs.take n) := by
-  simp only [List.inter]
-  exact Perm.trans (show xs.take n ~ xs.filter (xs.take n).elem by
-      conv_lhs => rw [Nodup.take_eq_filter_mem ((Perm.nodup_iff h).2 h')])
-    (Perm.filter _ h)
+    (h' : ys.Nodup) : xs.take n ~ ys ∩ (xs.take n) := calc
+  xs.take n ~ xs.filter (xs.take n).elem := by
+    conv_lhs => rw [Nodup.take_eq_filter_mem ((Perm.nodup_iff h).2 h')]
+  _ ~ ys ∩ (xs.take n) := Perm.filter _ h
 
 theorem Perm.drop_inter {xs ys : List α} (n : ℕ) (h : xs ~ ys) (h' : ys.Nodup) :
-    xs.drop n ~ ys.inter (xs.drop n) := by
+    xs.drop n ~ ys ∩ (xs.drop n) := by
   by_cases h'' : n ≤ xs.length
   · let n' := xs.length - n
     have h₀ : n = xs.length - n' := by rwa [Nat.sub_sub_self]
@@ -81,11 +80,7 @@ theorem Perm.drop_inter {xs ys : List α} (n : ℕ) (h : xs ~ ys) (h' : ys.Nodup
     rw [inter_reverse]
     apply Perm.take_inter _ _ h'
     apply (reverse_perm _).trans; assumption
-  · have : xs.drop n = [] := by
-      apply eq_nil_of_length_eq_zero
-      rw [length_drop, Nat.sub_eq_zero_iff_le]
-      apply le_of_not_ge h''
-    simp [this, List.inter]
+  · grind [drop_eq_nil_of_le]
 
 theorem Perm.dropSlice_inter {xs ys : List α} (n m : ℕ) (h : xs ~ ys)
     (h' : ys.Nodup) : List.dropSlice n m xs ~ ys ∩ List.dropSlice n m xs := by

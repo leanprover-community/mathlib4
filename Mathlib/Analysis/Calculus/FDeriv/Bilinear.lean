@@ -17,7 +17,7 @@ This file contains the usual formulas (and existence assertions) for the derivat
 bounded bilinear maps.
 -/
 
-@[expose] public section
+public section
 
 
 open Asymptotics Topology

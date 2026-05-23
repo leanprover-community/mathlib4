@@ -9,9 +9,9 @@ public import Mathlib.Algebra.Order.Star.Basic
 public import Mathlib.Data.NNReal.Star
 public import Mathlib.Data.Real.Sqrt
 
-/-! # `ℝ` and `ℝ≥0` are *-ordered rings. -/
+/-! # `ℝ` and `ℝ≥0` are \*-ordered rings. -/
 
-@[expose] public section
+public section
 
 open scoped NNReal
 
@@ -22,7 +22,7 @@ In addition, providing this instance here makes it available earlier in the impo
 hierarchy; otherwise in order to access it we would need to import
 `Mathlib/Analysis/RCLike/Basic.lean`. -/
 instance Real.instStarOrderedRing : StarOrderedRing ℝ :=
-  StarOrderedRing.of_nonneg_iff' add_le_add_left fun r => by
+  StarOrderedRing.of_nonneg_iff' add_le_add_right fun r => by
     refine ⟨fun hr => ⟨√r, (mul_self_sqrt hr).symm⟩, ?_⟩
     rintro ⟨s, rfl⟩
     exact mul_self_nonneg s

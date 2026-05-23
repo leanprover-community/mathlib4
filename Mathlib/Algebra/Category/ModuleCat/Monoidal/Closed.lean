@@ -5,7 +5,7 @@ Authors: Kevin Buzzard, Kim Morrison, Jakob von Raumer
 -/
 module
 
-public import Mathlib.CategoryTheory.Closed.Monoidal
+public import Mathlib.CategoryTheory.Monoidal.Closed.Basic
 public import Mathlib.CategoryTheory.Linear.Yoneda
 public import Mathlib.Algebra.Category.ModuleCat.Monoidal.Symmetric
 
@@ -76,6 +76,7 @@ theorem ihom_ev_app (M N : ModuleCat.{u} R) :
   apply TensorProduct.ext'
   apply monoidalClosed_uncurry
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Describes the unit of the adjunction `M ⊗ - ⊣ Hom(M, -)`. Given an `R`-module `N` this should
 define a map `N ⟶ Hom(M, M ⊗ N)`, which is given by flipping the arguments in the natural
 `R`-bilinear map `M ⟶ N ⟶ M ⊗ N`. -/

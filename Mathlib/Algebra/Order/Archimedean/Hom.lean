@@ -16,7 +16,7 @@ ordered field. Reciprocally, such an ordered ring homomorphism exists when the c
 conditionally complete.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Finset
 
@@ -28,7 +28,7 @@ instance OrderRingHom.subsingleton [IsStrictOrderedRing β] [Archimedean β] :
     Subsingleton (α →+*o β) :=
   ⟨fun f g => by
     ext x
-    by_contra! h' : f x ≠ g x
+    by_contra h' : f x ≠ g x
     wlog h : f x < g x with h₂
     · exact h₂ g f x (Ne.symm h') (h'.lt_or_gt.resolve_left h)
     obtain ⟨q, hf, hg⟩ := exists_rat_btwn h

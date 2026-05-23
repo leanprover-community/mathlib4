@@ -33,7 +33,7 @@ directly transfer to minima over multisets or finsets.
 
 -/
 
-@[expose] public section
+public section
 
 variable {R S : Type*}
 

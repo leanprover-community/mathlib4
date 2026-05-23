@@ -65,9 +65,9 @@ instance : CommMonoid N₃ where
 instance : CommSemiring N₃ :=
   { (inferInstance : CommMonoid N₃) with
     add_assoc := by rintro ⟨⟩ ⟨⟩ ⟨⟩ <;> rfl
-    zero_add  := by rintro ⟨⟩ <;> rfl
-    add_zero  := by rintro ⟨⟩ <;> rfl
-    add_comm  := by rintro ⟨⟩ ⟨⟩ <;> rfl
+    zero_add := by rintro ⟨⟩ <;> rfl
+    add_zero := by rintro ⟨⟩ <;> rfl
+    add_comm := by rintro ⟨⟩ ⟨⟩ <;> rfl
     left_distrib := by rintro ⟨⟩ ⟨⟩ ⟨⟩ <;> rfl
     right_distrib := by rintro ⟨⟩ ⟨⟩ ⟨⟩ <;> rfl
     zero_mul := by rintro ⟨⟩ <;> rfl

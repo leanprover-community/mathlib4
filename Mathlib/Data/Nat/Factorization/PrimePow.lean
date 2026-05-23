@@ -57,6 +57,11 @@ theorem isPrimePow_iff_card_primeFactors_eq_one {n : ℕ} :
   simp_rw [isPrimePow_iff_factorization_eq_single, ← Nat.support_factorization,
     Finsupp.card_support_eq_one', pos_iff_ne_zero]
 
+theorem Nat.not_isPrimePow_iff_nontrivial_of_two_le {n : ℕ} (hn : 2 ≤ n) :
+    ¬ IsPrimePow n ↔ n.primeFactors.Nontrivial := by
+  rw [isPrimePow_iff_card_primeFactors_eq_one, ← Finset.one_lt_card_iff_nontrivial]
+  grind [primeFactors_eq_empty]
+
 theorem IsPrimePow.exists_ordCompl_eq_one {n : ℕ} (h : IsPrimePow n) :
     ∃ p : ℕ, p.Prime ∧ ordCompl[p] n = 1 := by
   rcases eq_or_ne n 0 with (rfl | hn0); · cases not_isPrimePow_zero h
@@ -141,10 +146,6 @@ theorem Nat.mul_divisors_filter_prime_pow {a b : ℕ} (hab : a.Coprime b) :
     and_congr_left_iff, not_false_iff, Nat.mem_divisors, or_self_iff]
   apply hab.isPrimePow_dvd_mul
 
-@[deprecated Nat.factorization_minFac_ne_zero (since := "2025-07-21")]
-lemma IsPrimePow.factorization_minFac_ne_zero {n : ℕ} (hn : IsPrimePow n) :
-    n.factorization n.minFac ≠ 0 := Nat.factorization_minFac_ne_zero (one_lt hn)
-
 /-- The canonical equivalence between pairs `(p, k)` with `p` a prime and `k : ℕ`
 and the set of prime powers given by `(p, k) ↦ p^(k+1)`. -/
 def Nat.Primes.prodNatEquiv : Nat.Primes × ℕ ≃ {n : ℕ // IsPrimePow n} where
@@ -177,3 +178,30 @@ lemma Nat.Primes.prodNatEquiv_symm_apply {n : ℕ} (hn : IsPrimePow n) :
     prodNatEquiv.symm ⟨n, hn⟩ =
       (⟨n.minFac, minFac_prime hn.ne_one⟩, n.factorization n.minFac - 1) :=
   rfl
+
+namespace Nat
+
+section PrimePowEqPow
+variable {p a m n : ℕ} (hp : p.Prime) (hn : n ≠ 0) (h : p ^ m = a ^ n)
+include hp h
+
+theorem exponent_eq_exponent_mul_factorization_of_prime_pow_eq_base_pow :
+    m = n * a.factorization p := by
+  have := congrArg Nat.factorization h
+  rw [Nat.Prime.factorization_pow hp, Nat.factorization_pow] at this
+  simpa using congr($this p)
+
+theorem exponent_dvd_of_prime_pow_eq_pow : n ∣ m :=
+  Dvd.intro (a.factorization p)
+    (exponent_eq_exponent_mul_factorization_of_prime_pow_eq_base_pow hp h).symm
+
+include hn
+theorem exists_base_eq_prime_pow_of_prime_pow_eq_base_pow : ∃ k, a = p ^ k := by
+  rcases exponent_dvd_of_prime_pow_eq_pow hp h with ⟨k, m_eq⟩
+  rw [m_eq, pow_mul'] at h
+  use k
+  exact Nat.pow_left_injective hn h.symm
+
+end PrimePowEqPow
+
+end Nat

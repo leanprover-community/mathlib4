@@ -7,12 +7,11 @@ module
 
 public import Mathlib.MeasureTheory.OuterMeasure.Induced
 public import Mathlib.MeasureTheory.OuterMeasure.AE
-public import Mathlib.Order.Filter.CountableInter
 
 /-!
 # Measure spaces
 
-This file defines measure spaces, the almost-everywhere filter and ae_measurable functions.
+This file defines measure spaces, the almost-everywhere filter and `AEMeasurable` functions.
 See `MeasureTheory.MeasureSpace` for their properties and for extended documentation.
 
 Given a measurable space `α`, a measure on `α` is a function that sends measurable sets to the
@@ -37,7 +36,7 @@ This conveniently allows us to apply the measure to sets without proving that th
 We get countable subadditivity for all sets, but only countable additivity for measurable sets.
 
 See the documentation of `MeasureTheory.MeasureSpace` for ways to construct measures and proving
-that two measure are equal.
+that two measures are equal.
 
 A `MeasureSpace` is a class that is a measurable space with a canonical measure.
 The measure is denoted `volume`.
@@ -295,6 +294,7 @@ section ae
 predicate holds for almost every `x : β` and
 - `∅ : Set α`
 - a family of sets generating the σ-algebra of `α`
+
 Moreover, if for almost every `x : β`, the predicate is closed under complements and countable
 disjoint unions, then the predicate holds for almost every `x : β` and all measurable sets of `α`.
 
@@ -318,8 +318,8 @@ end ae
 open Classical in
 /-- A measurable set `t ⊇ s` such that `μ t = μ s`. It even satisfies `μ (t ∩ u) = μ (s ∩ u)` for
 any measurable set `u` if `μ s ≠ ∞`, see `measure_toMeasurable_inter`.
-(This property holds without the assumption `μ s ≠ ∞` when the space is s-finite -- for example
-σ-finite), see `measure_toMeasurable_inter_of_sFinite`).
+This property holds without the assumption `μ s ≠ ∞` when the space is s-finite (for example
+σ-finite); see `measure_toMeasurable_inter_of_sFinite`.
 If `s` is a null measurable set, then
 we also have `t =ᵐ[μ] s`, see `NullMeasurableSet.toMeasurable_ae_eq`.
 This notion is sometimes called a "measurable hull" in the literature. -/
@@ -377,7 +377,7 @@ notation3 "∃ᵐ "(...)", "r:(scoped P =>
 
 /-- The tactic `exact volume`, to be used in optional (`autoParam`) arguments. -/
 macro "volume_tac" : tactic =>
-  `(tactic| (first | exact MeasureTheory.MeasureSpace.volume))
+  `(tactic| exact MeasureTheory.MeasureSpace.volume)
 
 end MeasureSpace
 
@@ -401,10 +401,17 @@ function. We define this property, called `AEMeasurable f μ`. It's properties a
 variable {m : MeasurableSpace α} [MeasurableSpace β] {f g : α → β} {μ ν : Measure α}
 
 /-- A function is almost everywhere measurable if it coincides almost everywhere with a measurable
-function. -/
+function.
+
+A similar notion is `MeasureTheory.NullMeasurable`. That notion is equivalent to `AEMeasurable` if
+the σ-algebra on the codomain is countably generated, but weaker in general. -/
 @[fun_prop]
 def AEMeasurable {_m : MeasurableSpace α} (f : α → β) (μ : Measure α := by volume_tac) : Prop :=
   ∃ g : α → β, Measurable g ∧ f =ᵐ[μ] g
+
+/-- A function is `m`-`AEMeasurable` with respect to a measure `μ` if it coincides almost everywhere
+with a `m`-measurable function. -/
+scoped[MeasureTheory] notation "AEMeasurable[" m "]" => @AEMeasurable _ _ _ m
 
 add_aesop_rules safe tactic
   (rule_sets := [Measurable])
@@ -417,6 +424,7 @@ theorem Measurable.aemeasurable (h : Measurable f) : AEMeasurable f μ :=
 
 namespace AEMeasurable
 
+@[fun_prop]
 lemma of_discrete [DiscreteMeasurableSpace α] : AEMeasurable f μ :=
   Measurable.of_discrete.aemeasurable
 
@@ -426,7 +434,7 @@ it shows in pretty-printing. -/
 def mk (f : α → β) (h : AEMeasurable f μ) : α → β :=
   Classical.choose h
 
-@[measurability]
+@[fun_prop]
 theorem measurable_mk (h : AEMeasurable f μ) : Measurable (h.mk f) :=
   (Classical.choose_spec h).1
 
@@ -441,15 +449,15 @@ end AEMeasurable
 theorem aemeasurable_congr (h : f =ᵐ[μ] g) : AEMeasurable f μ ↔ AEMeasurable g μ :=
   ⟨fun hf => AEMeasurable.congr hf h, fun hg => AEMeasurable.congr hg h.symm⟩
 
-@[simp, fun_prop, measurability]
+@[simp, fun_prop]
 theorem aemeasurable_const {b : β} : AEMeasurable (fun _a : α => b) μ :=
   measurable_const.aemeasurable
 
-@[fun_prop, measurability]
+@[fun_prop]
 theorem aemeasurable_id : AEMeasurable id μ :=
   measurable_id.aemeasurable
 
-@[fun_prop, measurability]
+@[fun_prop]
 theorem aemeasurable_id' : AEMeasurable (fun x => x) μ :=
   measurable_id.aemeasurable
 
@@ -457,7 +465,7 @@ theorem Measurable.comp_aemeasurable [MeasurableSpace δ] {f : α → δ} {g : �
     (hf : AEMeasurable f μ) : AEMeasurable (g ∘ f) μ :=
   ⟨g ∘ hf.mk f, hg.comp hf.measurable_mk, EventuallyEq.fun_comp hf.ae_eq_mk _⟩
 
-@[fun_prop, measurability]
+@[fun_prop]
 theorem Measurable.comp_aemeasurable' [MeasurableSpace δ] {f : α → δ} {g : δ → β}
     (hg : Measurable g) (hf : AEMeasurable f μ) : AEMeasurable (fun x ↦ g (f x)) μ :=
   Measurable.comp_aemeasurable hg hf

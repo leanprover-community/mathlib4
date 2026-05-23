@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.Module.FinitePresentation
 public import Mathlib.Algebra.Module.Torsion.Basic
-public import Mathlib.LinearAlgebra.Dual.Lemmas
 public import Mathlib.RingTheory.FiniteType
 public import Mathlib.RingTheory.Flat.EquationalCriterion
 public import Mathlib.RingTheory.Ideal.Quotient.ChineseRemainder
@@ -16,6 +15,8 @@ public import Mathlib.RingTheory.LocalRing.ResidueField.Basic
 public import Mathlib.RingTheory.LocalRing.ResidueField.Ideal
 public import Mathlib.RingTheory.Nakayama
 public import Mathlib.RingTheory.Support
+public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
+public import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 
 /-!
 # Finite modules over local rings
@@ -34,7 +35,7 @@ This file gathers various results about finite modules over a local ring `(R, �
   `l` is a split injection if and only if `k ⊗ l` is a (split) injection.
 -/
 
-@[expose] public section
+public section
 
 open Module
 
@@ -159,6 +160,7 @@ namespace Module
 
 variable [IsLocalRing R]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `M` is of finite presentation over a local ring `(R, 𝔪, k)` such that
 `𝔪 ⊗ M → M` is injective, then every family of elements that is a `k`-basis of
 `k ⊗ M` is an `R`-basis of `M`. -/
@@ -175,9 +177,8 @@ lemma exists_basis_of_basis_baseChange [Module.FinitePresentation R M]
     rw [← LinearMap.range_eq_top, Finsupp.range_linearCombination]
     refine IsLocalRing.span_eq_top_of_tmul_eq_basis (R := R) (f := v) bk
       (fun _ ↦ by simp [bk])
-  have : Module.Finite R (LinearMap.ker i) := by
-    constructor
-    exact (Submodule.fg_top _).mpr (Module.FinitePresentation.fg_ker i hi)
+  have : Module.Finite R (LinearMap.ker i) :=
+    .of_fg (Module.FinitePresentation.fg_ker i hi)
   -- We claim that `i` is actually a bijection,
   -- hence `v` induces an isomorphism `M ≃[R] Rᴵ` showing that `v` is a basis.
   let iequiv : (ι →₀ R) ≃ₗ[R] M := by
@@ -412,8 +413,8 @@ at every maximal ideal, then `M` is free of rank `n`. -/
   apply IsLocalRing.linearCombination_bijective_of_flat
   rw [← (AlgebraTensorModule.cancelBaseChange _ _ P.ResidueField ..).comp_bijective,
     ← (AlgebraTensorModule.cancelBaseChange R (R ⧸ P) P.ResidueField ..).symm.comp_bijective]
-  convert ((b' ⟨P, ‹_›⟩).repr.lTensor _ ≪≫ₗ finsuppScalarRight _ P.ResidueField _).symm.bijective
-  refine funext fun r ↦ Finsupp.induction_linear r (by simp) (by simp+contextual) fun _ _ ↦ ?_
+  convert ((b' ⟨P, ‹_›⟩).repr.lTensor _ ≪≫ₗ finsuppScalarRight _ _ P.ResidueField _).symm.bijective
+  refine funext fun r ↦ Finsupp.induction_linear r (by simp) (by simp +contextual) fun _ _ ↦ ?_
   simp [smul_tmul', ← funext_iff.mp (hb _)]
 
 @[stacks 02M9] theorem free_of_flat_of_finrank_eq [Module.Finite R M] [Flat R M]

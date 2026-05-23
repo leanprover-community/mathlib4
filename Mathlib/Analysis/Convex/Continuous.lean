@@ -14,7 +14,7 @@ This file proves that a convex function from a finite-dimensional real normed sp
 continuous.
 -/
 
-@[expose] public section
+public section
 
 open FiniteDimensional Metric Set List Bornology
 open scoped Topology

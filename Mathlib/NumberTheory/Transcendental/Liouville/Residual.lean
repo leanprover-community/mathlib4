@@ -17,7 +17,7 @@ In this file we prove that the set of Liouville numbers form a dense `Gδ` set. 
 similar statement about irrational numbers.
 -/
 
-@[expose] public section
+public section
 
 
 open scoped Filter
@@ -62,7 +62,7 @@ theorem eventually_residual_liouville : ∀ᶠ x in residual ℝ, Liouville x :=
   · rintro _ ⟨r, rfl⟩
     simp only [mem_iInter, mem_iUnion]
     refine fun n => ⟨r.num * 2, r.den * 2, ?_, ?_⟩
-    · have := r.pos; cutsat
+    · have := r.pos; lia
     · convert @mem_ball_self ℝ _ (r : ℝ) _ _
       · push_cast
         -- Workaround for https://github.com/leanprover/lean4/pull/6438; this eliminates an

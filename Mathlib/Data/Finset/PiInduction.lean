@@ -27,7 +27,7 @@ finite type.
 finite set, finite type, induction, function
 -/
 
-@[expose] public section
+public section
 
 
 open Function
@@ -80,7 +80,7 @@ theorem induction_on_pi {p : (∀ i, Finset (α i)) → Prop} (f : ∀ i, Finset
 
 /-- Given a predicate on functions `∀ i, Finset (α i)` defined on a finite type, it is true on all
 maps provided that it is true on `fun _ ↦ ∅` and for any function `g : ∀ i, Finset (α i)`, an index
-`i : ι`, and an element`x : α i` that is strictly greater than all elements of `g i`, `p g` implies
+`i : ι`, and an element `x : α i` that is strictly greater than all elements of `g i`, `p g` implies
 `p (update g i (insert x (g i)))`.
 
 This lemma requires `LinearOrder` instances on all `α i`. See also `Finset.induction_on_pi` for a
@@ -96,7 +96,7 @@ theorem induction_on_pi_max [∀ i, LinearOrder (α i)] {p : (∀ i, Finset (α 
 
 /-- Given a predicate on functions `∀ i, Finset (α i)` defined on a finite type, it is true on all
 maps provided that it is true on `fun _ ↦ ∅` and for any function `g : ∀ i, Finset (α i)`, an index
-`i : ι`, and an element`x : α i` that is strictly less than all elements of `g i`, `p g` implies
+`i : ι`, and an element `x : α i` that is strictly less than all elements of `g i`, `p g` implies
 `p (update g i (insert x (g i)))`.
 
 This lemma requires `LinearOrder` instances on all `α i`. See also `Finset.induction_on_pi` for a

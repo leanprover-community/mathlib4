@@ -143,16 +143,11 @@ theorem even_odd_of_coprime (hc : Int.gcd x y = 1) :
 
 theorem gcd_dvd : (Int.gcd x y : ℤ) ∣ z := by
   by_cases h0 : Int.gcd x y = 0
-  · have hx : x = 0 := by
-      apply Int.natAbs_eq_zero.mp
-      apply Nat.eq_zero_of_gcd_eq_zero_left h0
-    have hy : y = 0 := by
-      apply Int.natAbs_eq_zero.mp
-      apply Nat.eq_zero_of_gcd_eq_zero_right h0
+  · obtain ⟨hx, hy⟩ := Int.gcd_eq_zero_iff.mp h0
     have hz : z = 0 := by
       simpa only [PythagoreanTriple, hx, hy, add_zero, zero_eq_mul, mul_zero,
         or_self_iff] using h
-    simp only [hz, dvd_zero]
+    simp [h0, hz]
   obtain ⟨k, x0, y0, _, h2, rfl, rfl⟩ :
     ∃ (k : ℕ) (x0 y0 : _), 0 < k ∧ Int.gcd x0 y0 = 1 ∧ x = x0 * k ∧ y = y0 * k :=
     Int.exists_gcd_one' (Nat.pos_of_ne_zero h0)
@@ -163,17 +158,11 @@ theorem gcd_dvd : (Int.gcd x y : ℤ) ∣ z := by
 
 theorem normalize : PythagoreanTriple (x / Int.gcd x y) (y / Int.gcd x y) (z / Int.gcd x y) := by
   by_cases h0 : Int.gcd x y = 0
-  · have hx : x = 0 := by
-      apply Int.natAbs_eq_zero.mp
-      apply Nat.eq_zero_of_gcd_eq_zero_left h0
-    have hy : y = 0 := by
-      apply Int.natAbs_eq_zero.mp
-      apply Nat.eq_zero_of_gcd_eq_zero_right h0
+  · obtain ⟨hx, hy⟩ := Int.gcd_eq_zero_iff.mp h0
     have hz : z = 0 := by
       simpa only [PythagoreanTriple, hx, hy, add_zero, zero_eq_mul, mul_zero,
         or_self_iff] using h
-    simp only [hx, hy, hz]
-    exact zero
+    simpa [h0, hx, hy, hz] using zero
   rcases h.gcd_dvd with ⟨z0, rfl⟩
   obtain ⟨k, x0, y0, k0, h2, rfl, rfl⟩ :
     ∃ (k : ℕ) (x0 y0 : _), 0 < k ∧ Int.gcd x0 y0 = 1 ∧ x = x0 * k ∧ y = y0 * k :=
@@ -188,7 +177,7 @@ theorem normalize : PythagoreanTriple (x / Int.gcd x y) (y / Int.gcd x y) (z / I
 theorem isClassified_of_isPrimitiveClassified (hp : h.IsPrimitiveClassified) : h.IsClassified := by
   obtain ⟨m, n, H⟩ := hp
   use 1, m, n
-  cutsat
+  lia
 
 theorem isClassified_of_normalize_isPrimitiveClassified (hc : h.normalize.IsPrimitiveClassified) :
     h.IsClassified := by
@@ -247,6 +236,8 @@ For the classification of Pythagorean triples, we will use a parametrization of 
 
 variable {K : Type*} [Field K]
 
+-- Non-terminal simp, used to be field_simp
+set_option linter.flexible false in
 -- see https://github.com/leanprover-community/mathlib4/issues/29041
 set_option linter.unusedSimpArgs false in
 /-- A parameterization of the unit circle that is useful for classifying Pythagorean triples.
@@ -436,7 +427,7 @@ theorem isPrimitiveClassified_of_coprime_of_odd_of_pos (hc : Int.gcd x y = 1) (h
     norm_cast
   have hvz : v ≠ 0 := by simp [field, v, -mul_eq_zero, -div_eq_zero_iff, h0]
   have hw1 : w ≠ -1 := by
-    contrapose! hvz with hw1
+    contrapose hvz with hw1
     rw [hw1, neg_sq, one_pow, add_eq_right] at hq
     exact eq_zero_of_pow_eq_zero hq
   have hQ : ∀ x : ℚ, 1 + x ^ 2 ≠ 0 := by
@@ -481,7 +472,7 @@ theorem isPrimitiveClassified_of_coprime_of_odd_of_pos (hc : Int.gcd x y = 1) (h
     exfalso
     have h1 : 2 ∣ (Int.gcd n m : ℤ) :=
       Int.dvd_coe_gcd (Int.dvd_of_emod_eq_zero hn2) (Int.dvd_of_emod_eq_zero hm2)
-    cutsat
+    lia
   · -- m even, n odd
     apply h.isPrimitiveClassified_aux hc hzpos hm2n2 hv2 hw2 _ hmncp
     · apply Or.intro_left
@@ -505,7 +496,7 @@ theorem isPrimitiveClassified_of_coprime_of_odd_of_pos (hc : Int.gcd x y = 1) (h
         rw [← Rat.divInt_eq_div, ← Rat.divInt_mul_right (by simp : (2 : ℤ) ≠ 0)]
         rw [Int.ediv_mul_cancel h1.1, Int.ediv_mul_cancel h1.2.1, hw2, Rat.divInt_eq_div]
         norm_cast
-      · cutsat
+      · lia
     norm_num [h2.1, h1.2.2.1] at hyo
 
 theorem isPrimitiveClassified_of_coprime_of_pos (hc : Int.gcd x y = 1) (hzpos : 0 < z) :
@@ -526,12 +517,7 @@ theorem isPrimitiveClassified_of_coprime (hc : Int.gcd x y = 1) : h.IsPrimitiveC
 
 theorem classified : h.IsClassified := by
   by_cases h0 : Int.gcd x y = 0
-  · have hx : x = 0 := by
-      apply Int.natAbs_eq_zero.mp
-      apply Nat.eq_zero_of_gcd_eq_zero_left h0
-    have hy : y = 0 := by
-      apply Int.natAbs_eq_zero.mp
-      apply Nat.eq_zero_of_gcd_eq_zero_right h0
+  · obtain ⟨hx, hy⟩ := Int.gcd_eq_zero_iff.mp h0
     use 0, 1, 0
     simp [hx, hy]
   apply h.isClassified_of_normalize_isPrimitiveClassified
@@ -607,7 +593,7 @@ theorem coprime_classification' {x y z : ℤ} (h : PythagoreanTriple x y z)
           exact ht3
         · rw [Int.neg_emod_two, Int.neg_emod_two]
           apply And.intro ht4
-          cutsat
+          lia
       · exfalso
         revert h_pos
         rw [h_neg]

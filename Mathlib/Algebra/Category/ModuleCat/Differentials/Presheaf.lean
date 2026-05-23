@@ -74,7 +74,9 @@ attribute [simp] d_mul d_map d_app
 section AddCommGroup
 
 instance : Zero (M.Derivation φ) where
-  zero := { d := 0 }
+  zero :=
+    { d := 0
+      d_map := sorry }
 
 @[simp] lemma zero_d_apply {X : Dᵒᵖ} (x : R.obj X) :
     (0 : M.Derivation φ).d x = 0 := rfl
@@ -84,7 +86,8 @@ variable {M φ}
 instance : Neg (M.Derivation φ) where
   neg d :=
     { d := -d.d
-      d_mul := fun a b ↦ by dsimp; simp only [d_mul, smul_neg]; abel }
+      d_mul := fun a b ↦ by dsimp; simp only [d_mul, smul_neg]; abel
+      d_map := sorry }
 
 @[simp] lemma neg_d_apply (d : M.Derivation φ) {X : Dᵒᵖ} (x : R.obj X) :
     (-d).d x = -d.d x := rfl
@@ -92,7 +95,8 @@ instance : Neg (M.Derivation φ) where
 instance : Add (M.Derivation φ) where
   add d₁ d₂ :=
     { d := d₁.d + d₂.d
-      d_mul := by intros; dsimp; simp only [d_mul, smul_add]; abel }
+      d_mul := by intros; dsimp; simp only [d_mul, smul_add]; abel
+      d_map := sorry }
 
 @[simp] lemma add_d_apply (d d' : M.Derivation φ) {X : Dᵒᵖ} (x : R.obj X) :
     (d + d').d x = d.d x + d'.d x := rfl
@@ -101,7 +105,7 @@ instance : Sub (M.Derivation φ) where
   sub d₁ d₂ :=
     { d := d₁.d - d₂.d
       d_mul := by intros; dsimp; simp only [d_mul, smul_sub]; abel
-      d_map := by simp }
+      d_map := by sorry } --simp }
 
 @[simp] lemma sub_d_apply (d d' : M.Derivation φ) {X : Dᵒᵖ} (x : R.obj X) :
     (d - d').d x = d.d x - d'.d x := rfl
@@ -309,6 +313,7 @@ section
 
 variable (d : ∀ (X : Dᵒᵖ), (M.obj X).Derivation (φ'.app X))
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a morphism of presheaves of commutative rings `φ'`, this is the
 in derivation `M.Derivation' φ'` that is given by a compatible family of derivations
 with values in the modules `M.obj X` for all `X`. -/
@@ -340,6 +345,7 @@ end Derivation'
 
 namespace DifferentialsConstruction
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The presheaf of relative differentials of a morphism of presheaves of
 commutative rings. -/
 @[simps -isSimp]
@@ -368,6 +374,7 @@ noncomputable def derivation' : (relativeDifferentials' φ').Derivation' φ' :=
   Derivation'.mk (fun X ↦ CommRingCat.KaehlerDifferential.D (φ'.app X))
     (fun _ _ f x ↦ (relativeDifferentials'_map_d φ' f x).symm)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The derivation `Derivation' φ'` is universal. -/
 noncomputable def isUniversal' : (derivation' φ').Universal :=
   Derivation'.Universal.mk
@@ -420,13 +427,16 @@ local notation "adjunctionψ" =>
 
 variable (dφψ : P.Derivation φψ)
 
+set_option backward.isDefEq.respectTransparency false in
 protected noncomputable def pushforward : ((pushforwardψ).obj P).Derivation φ where
-  d := AddMonoidHom.mk' (fun a ↦ dφψ.d (ψ.app _ a)) (by simp)
+  d {X} := AddMonoidHom.mk' (fun a ↦ dφψ.d (ψ.app _ a)) (fun a b ↦ by
+    dsimp
+    rw [dsimp% _root_.map_add (ψ.app X).hom, _root_.map_add dφψ.d] )
   d_mul {X} a b := by
     dsimp
-    rw [map_mul, dφψ.d_mul]
+    rw [dsimp% _root_.map_mul (ψ.app X).hom, dφψ.d_mul]
   d_map {X Y} f a :=
-    (congr_arg dφψ.d (congr_fun ((forget _).congr_map (ψ.naturality f)) a)).trans
+    (congr_arg dφψ.d (ConcreteCategory.congr_hom (ψ.naturality f) a)).trans
       (dφψ.d_map _ _)
   d_app a := by subst fac; exact dφψ.d_app a
 

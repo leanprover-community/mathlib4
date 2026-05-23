@@ -79,6 +79,7 @@ theorem mono_of_isLimitMkIdId (f : X ⟶ Y) (t : IsLimit (mk (𝟙 X) (𝟙 X) r
     rcases PullbackCone.IsLimit.lift' t _ _ eq with ⟨_, rfl, rfl⟩
     rfl⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Suppose `f` and `g` are two morphisms with a common codomain and `s` is a limit cone over the
 diagram formed by `f` and `g`. Suppose `f` and `g` both factor through a monomorphism `h` via
 `x` and `y`, respectively.  Then `s` is also a limit cone over the diagram formed by `x` and `y`. -/
@@ -130,8 +131,9 @@ instance pullback.snd_of_mono {X Y Z : C} {f : X ⟶ Z} {g : Y ⟶ Z} [HasPullba
     Mono (pullback.snd f g) :=
   PullbackCone.mono_snd_of_is_pullback_of_mono (limit.isLimit _)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The map `X ×[Z] Y ⟶ X × Y` is mono. -/
-instance mono_pullback_to_prod {C : Type*} [Category C] {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z)
+instance mono_pullback_to_prod {C : Type*} [Category* C] {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z)
     [HasPullback f g] [HasBinaryProduct X Y] :
     Mono (prod.lift (pullback.fst f g) (pullback.snd f g)) :=
   ⟨fun {W} i₁ i₂ h => by
@@ -253,6 +255,7 @@ theorem epi_of_isColimitMkIdId (f : X ⟶ Y)
     rcases PushoutCocone.IsColimit.desc' t _ _ eq with ⟨_, rfl, rfl⟩
     rfl⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Suppose `f` and `g` are two morphisms with a common domain and `s` is a colimit cocone over the
 diagram formed by `f` and `g`. Suppose `f` and `g` both factor through an epimorphism `h` via
 `x` and `y`, respectively. Then `s` is also a colimit cocone over the diagram formed by `x` and
@@ -307,8 +310,9 @@ instance pushout.inr_of_epi {X Y Z : C} {f : X ⟶ Y} {g : X ⟶ Z} [HasPushout 
     Epi (pushout.inr _ _ : Z ⟶ pushout f g) :=
   PushoutCocone.epi_inr_of_is_pushout_of_epi (colimit.isColimit _)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The map `X ⨿ Y ⟶ X ⨿[Z] Y` is epi. -/
-instance epi_coprod_to_pushout {C : Type*} [Category C] {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z)
+instance epi_coprod_to_pushout {C : Type*} [Category* C] {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z)
     [HasPushout f g] [HasBinaryCoproduct Y Z] :
     Epi (coprod.desc (pushout.inl f g) (pushout.inr f g)) :=
   ⟨fun {W} i₁ i₂ h => by
@@ -336,6 +340,7 @@ variable (f : X ⟶ Z) (h : W ⟶ X) [Epi h]
 instance hasPushout_of_right_factors_epi : HasPushout h (h ≫ f) := by
   simpa only [Category.comp_id] using hasPushout_of_epi_comp (𝟙 X) f h
 
+set_option backward.isDefEq.respectTransparency false in
 instance pushout_inr_iso_of_right_factors_epi :
     IsIso (pushout.inr _ _ : _ ⟶ pushout h (h ≫ f)) := by
   convert (congrArg IsIso (show pushout.inr _ _ ≫ _ = _ from colimit.isoColimitCocone_ι_inv
@@ -349,6 +354,7 @@ attribute [local instance] hasPushout_of_right_iso
 instance hasPushout_of_left_factors_epi (f : X ⟶ Y) : HasPushout (h ≫ f) h := by
   simpa only [Category.comp_id] using hasPushout_of_epi_comp f (𝟙 X) h
 
+set_option backward.isDefEq.respectTransparency false in
 instance pushout_inl_iso_of_left_factors_epi (f : X ⟶ Y) :
     IsIso (pushout.inl _ _ : _ ⟶ pushout (h ≫ f) h) := by
   convert (congrArg IsIso (show pushout.inl _ _ ≫ _ = _ from colimit.isoColimitCocone_ι_inv

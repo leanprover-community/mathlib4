@@ -89,7 +89,7 @@ theorem select_add_select_not : ∀ x : 𝕎 R, select P x + select (fun i => ¬
     IsPoly₂.diag (hf := IsPoly₂.comp)
   ghost_calc x
   intro n
-  simp only [RingHom.map_add]
+  simp only [map_add]
   suffices
     (bind₁ (selectPoly P)) (wittPolynomial p ℤ n) +
         (bind₁ (selectPoly fun i => ¬P i)) (wittPolynomial p ℤ n) =
@@ -175,7 +175,7 @@ elab_rules : tactic
       rintro ⟨b, k⟩ h -
       replace h := $e:term p _ h
       simp only [Finset.mem_range, Finset.mem_product, true_and, Finset.mem_univ] at h
-      have hk : k < n := by omega
+      have hk : k < n := by lia
       fin_cases b <;> simp only [Function.uncurry, Matrix.cons_val_zero, Matrix.head_cons,
         WittVector.coeff_mk, Matrix.cons_val_one, WittVector.mk, Fin.mk_zero, Matrix.cons_val',
         Matrix.empty_val', Matrix.cons_val_fin_one, Matrix.cons_val_zero,

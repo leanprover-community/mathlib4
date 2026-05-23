@@ -13,7 +13,7 @@ public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 -/
 
-@[expose] public section
+public section
 
 variable {ι κ α β γ : Type*}
 

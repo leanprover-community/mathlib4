@@ -9,6 +9,7 @@ public import Mathlib.LinearAlgebra.AffineSpace.AffineMap
 public import Mathlib.Tactic.Field
 public import Mathlib.Tactic.FieldSimp
 public import Mathlib.Tactic.Module
+public import Mathlib.Algebra.NoZeroSMulDivisors.Basic
 
 /-!
 # Slope of a function
@@ -154,7 +155,7 @@ lemma slope_nonpos_iff_of_le (hxy : x ≤ y) : slope f x y ≤ 0 ↔ f y ≤ f x
   simpa using slope_nonneg_iff_of_le (f := -f) hxy
 
 lemma AntitoneOn.slope_nonpos {s : Set k} (hf : AntitoneOn f s) (hx : x ∈ s) (hy : y ∈ s) :
-    slope f x y ≤ 0:= by
+    slope f x y ≤ 0 := by
   simpa using hf.neg.slope_nonneg hx hy
 
 lemma slope_pos_iff_of_le (hxy : x ≤ y) : 0 < slope f x y ↔ f x < f y := by
@@ -170,7 +171,7 @@ lemma slope_neg_iff_of_le (hxy : x ≤ y) : slope f x y < 0 ↔ f y < f x := by
   simpa using slope_pos_iff_of_le (f := -f) hxy
 
 lemma StrictAntiOn.slope_neg {s : Set k} (hf : StrictAntiOn f s) (hx : x ∈ s) (hy : y ∈ s)
-    (hxy : x ≠ y) : slope f x y < 0:= by
+    (hxy : x ≠ y) : slope f x y < 0 := by
   simpa using hf.neg.slope_pos hx hy hxy
 
 end Order
