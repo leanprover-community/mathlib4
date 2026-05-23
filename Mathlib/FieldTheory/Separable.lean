@@ -127,16 +127,7 @@ theorem Separable.map {p : R[X]} (h : p.Separable) {f : R →+* S} : (p.map f).S
 
 theorem _root_.Associated.separable {f g : R[X]}
     (ha : Associated f g) (h : f.Separable) : g.Separable := by
-  obtain ⟨⟨u, v, h1, h2⟩, ha⟩ := ha
-  obtain ⟨a, b, h⟩ := h
-  refine ⟨a * v + b * derivative v, b * v, ?_⟩
-  replace h := congr($h * $(h1))
-  have h3 := congr(derivative $(h1))
-  simp only [← ha, derivative_mul, derivative_one] at h3 ⊢
-  calc
-    _ = (a * f + b * derivative f) * (u * v)
-      + (b * f) * (derivative u * v + u * derivative v) := by ring1
-    _ = 1 := by rw [h, h3]; ring1
+  grind [Separable.of_dvd, Associated.dvd']
 
 theorem _root_.Associated.separable_iff {f g : R[X]}
     (ha : Associated f g) : f.Separable ↔ g.Separable := ⟨ha.separable, ha.symm.separable⟩
@@ -170,7 +161,7 @@ theorem isUnit_of_self_mul_dvd_separable {p q : R[X]} (hp : p.Separable) (hq : q
       (q * (derivative q * p + derivative q * p + q * derivative p)) := by
     simp only [← mul_assoc, mul_add]
     dsimp only [Separable] at hp
-    convert hp using 1
+    convert! hp using 1
     rw [derivative_mul, derivative_mul]
     ring
   exact IsCoprime.of_mul_right_left (IsCoprime.of_mul_left_left this)
@@ -663,7 +654,7 @@ variable [Ring K] [Algebra F K]
 variable {F} in
 theorem isSeparable_algebraMap (x : F) : IsSeparable F (algebraMap F K x) :=
   Polynomial.Separable.of_dvd (Polynomial.separable_X_sub_C (x := x))
-    (minpoly.dvd F (algebraMap F K x) (by simp only [map_sub, aeval_X, aeval_C, sub_self]))
+    (minpoly.dvd F (algebraMap F K x) (by simp))
 
 instance Algebra.isSeparable_self : Algebra.IsSeparable F F :=
   ⟨isSeparable_algebraMap⟩

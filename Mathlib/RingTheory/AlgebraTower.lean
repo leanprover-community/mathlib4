@@ -42,6 +42,7 @@ variable [IsScalarTower R S A] [IsScalarTower R S B]
 
 /-- Suppose that `R → S → A` is a tower of algebras.
 If an element `r : R` is invertible in `S`, then it is invertible in `A`. -/
+@[implicit_reducible]
 def Invertible.algebraTower (r : R) [Invertible (algebraMap R S r)] :
     Invertible (algebraMap R A r) :=
   Invertible.copy (Invertible.map (algebraMap S A) (algebraMap R S r)) (algebraMap R A r)
@@ -49,9 +50,10 @@ def Invertible.algebraTower (r : R) [Invertible (algebraMap R S r)] :
 
 /-- A natural number that is invertible when coerced to `R` is also invertible
 when coerced to any `R`-algebra. -/
+@[implicit_reducible]
 def invertibleAlgebraCoeNat (n : ℕ) [inv : Invertible (n : R)] : Invertible (n : A) :=
   haveI : Invertible (algebraMap ℕ R n) := inv
-  Invertible.algebraTower ℕ R A n
+  fast_instance% Invertible.algebraTower ℕ R A n
 
 end Semiring
 end IsScalarTower
@@ -68,6 +70,9 @@ then a basis for `M` as `R`-module is also a basis for `M` as `R'`-module. -/
 @[simps! repr_apply_apply]
 noncomputable def algebraMapCoeffs : Basis ι A M :=
   b.mapCoeffs (RingEquiv.ofBijective _ h) fun c x => by simp
+
+@[deprecated (since := "2025-12-15")]
+alias algebraMapCoeffs_repr_apply_toFun := algebraMapCoeffs_repr_apply_apply
 
 @[simp]
 theorem algebraMapCoeffs_repr (m : M) :
@@ -113,7 +118,7 @@ theorem isScalarTower_of_nonempty {ι} [Nonempty ι] (b : Basis ι S A) : IsScal
 theorem isScalarTower_finsupp {ι} (b : Basis ι S A) : IsScalarTower R S (ι →₀ S) :=
   b.repr.symm.isScalarTower_of_injective R b.repr.symm.injective
 
-variable {R} {ι ι' : Type*} [DecidableEq ι'] (b : Basis ι R S) (c : Basis ι' S A)
+variable {R} {ι ι' : Type*} (b : Basis ι R S) (c : Basis ι' S A)
 
 /-- `Basis.smulTower (b : Basis ι R S) (c : Basis ι S A)` is the `R`-basis on `A`
 where the `(i, j)`th basis vector is `b i • c j`. -/
@@ -168,11 +173,11 @@ end Semiring
 section Ring
 
 variable {R S}
-variable [CommRing R] [Ring S] [Algebra R S]
+variable [CommRing R] [IsDomain R] [Ring S] [Nontrivial S] [Algebra R S]
 
-theorem Module.Basis.algebraMap_injective {ι : Type*} [NoZeroDivisors R] [Nontrivial S]
-    (b : Basis ι R S) : Function.Injective (algebraMap R S) :=
-  have : NoZeroSMulDivisors R S := b.noZeroSMulDivisors
+theorem Module.Basis.algebraMap_injective {ι : Type*} (b : Basis ι R S) :
+    Function.Injective (algebraMap R S) :=
+  have : IsTorsionFree R S := b.isTorsionFree
   FaithfulSMul.algebraMap_injective R S
 
 end Ring

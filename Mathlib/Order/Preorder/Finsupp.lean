@@ -51,7 +51,7 @@ section Preorder
 variable [Preorder M] {f g : ι →₀ M} {i : ι} {a b : M}
 
 instance preorder : Preorder (ι →₀ M) where
-  le_refl  _ _ := le_rfl
+  le_refl _ _ := le_rfl
   le_trans _ _ _ hfg hgh i := (hfg i).trans (hgh i)
 
 lemma lt_def : f < g ↔ f ≤ g ∧ ∃ i, f i < g i := Pi.lt_def

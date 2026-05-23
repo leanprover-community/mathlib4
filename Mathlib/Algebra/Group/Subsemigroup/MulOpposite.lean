@@ -5,8 +5,8 @@ Authors: Sven Manthe
 -/
 module
 
-public import Mathlib.Algebra.Group.Opposite
 public import Mathlib.Algebra.Group.Subsemigroup.Basic
+public import Mathlib.Algebra.Opposites
 
 /-!
 # Subsemigroup of opposite semigroups

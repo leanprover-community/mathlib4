@@ -61,7 +61,7 @@ Originally ported from Isabelle/HOL. The
 Fleuriot, Tobias Nipkow, Christian Sternagel.
 -/
 
-@[expose] public section
+public section
 
 open Set
 

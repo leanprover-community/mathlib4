@@ -29,7 +29,7 @@ section NNRealValued
 
 lemma apply_le_nndist_zero {X : Type*} [TopologicalSpace X] (f : X →ᵇ ℝ≥0) (x : X) :
     f x ≤ nndist 0 f := by
-  convert nndist_coe_le_nndist x
+  convert! nndist_coe_le_nndist x
   simp only [coe_zero, Pi.zero_apply, NNReal.nndist_zero_eq_val]
 
 variable {X : Type*} [MeasurableSpace X] [TopologicalSpace X]
@@ -70,7 +70,7 @@ theorem toReal_lintegral_coe_eq_integral [OpensMeasurableSpace X] (f : X →ᵇ 
   rw [integral_eq_lintegral_of_nonneg_ae _ (by simpa [Function.comp_apply] using
         (NNReal.continuous_coe.comp f.continuous).measurable.aestronglyMeasurable)]
   · simp only [ENNReal.ofReal_coe_nnreal]
-  · exact Eventually.of_forall (by simp only [Pi.zero_apply, NNReal.zero_le_coe, imp_true_iff])
+  · exact Eventually.of_forall (by simp)
 
 end NNRealValued
 
@@ -80,6 +80,7 @@ variable {X : Type*} [MeasurableSpace X] [TopologicalSpace X]
 variable (μ : Measure X)
 variable {E : Type*} [NormedAddCommGroup E]
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 lemma lintegral_nnnorm_le (f : X →ᵇ E) :
     ∫⁻ x, ‖f x‖₊ ∂μ ≤ ‖f‖₊ * (μ Set.univ) := by
   calc  ∫⁻ x, ‖f x‖₊ ∂μ
@@ -88,6 +89,7 @@ lemma lintegral_nnnorm_le (f : X →ᵇ E) :
 
 variable [OpensMeasurableSpace X] [SecondCountableTopology E] [MeasurableSpace E] [BorelSpace E]
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 lemma integrable [IsFiniteMeasure μ] (f : X →ᵇ E) :
     Integrable f μ := by
   refine ⟨f.continuous.measurable.aestronglyMeasurable, (hasFiniteIntegral_def _ _).mp ?_⟩
@@ -97,6 +99,7 @@ lemma integrable [IsFiniteMeasure μ] (f : X →ᵇ E) :
 
 variable [NormedSpace ℝ E]
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 lemma norm_integral_le_mul_norm [IsFiniteMeasure μ] (f : X →ᵇ E) :
     ‖∫ x, f x ∂μ‖ ≤ μ.real Set.univ * ‖f‖ := by
   calc  ‖∫ x, f x ∂μ‖
@@ -108,7 +111,7 @@ lemma norm_integral_le_mul_norm [IsFiniteMeasure μ] (f : X →ᵇ E) :
 
 lemma norm_integral_le_norm [IsProbabilityMeasure μ] (f : X →ᵇ E) :
     ‖∫ x, f x ∂μ‖ ≤ ‖f‖ := by
-  convert f.norm_integral_le_mul_norm μ
+  convert! f.norm_integral_le_mul_norm μ
   simp
 
 lemma isBounded_range_integral

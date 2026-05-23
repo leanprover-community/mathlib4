@@ -52,10 +52,10 @@ theorem image_subset_image2_right (ha : a ∈ s) : f a '' t ⊆ image2 f s t :=
   forall_mem_image.2 fun _ => mem_image2_of_mem ha
 
 lemma forall_mem_image2 {p : γ → Prop} :
-    (∀ z ∈ image2 f s t, p z) ↔ ∀ x ∈ s, ∀ y ∈ t, p (f x y) := by aesop
+    (∀ z ∈ image2 f s t, p z) ↔ ∀ x ∈ s, ∀ y ∈ t, p (f x y) := by grind
 
 lemma exists_mem_image2 {p : γ → Prop} :
-    (∃ z ∈ image2 f s t, p z) ↔ ∃ x ∈ s, ∃ y ∈ t, p (f x y) := by aesop
+    (∃ z ∈ image2 f s t, p z) ↔ ∃ x ∈ s, ∃ y ∈ t, p (f x y) := by grind
 
 @[simp]
 theorem image2_subset_iff {u : Set γ} : image2 f s t ⊆ u ↔ ∀ x ∈ s, ∀ y ∈ t, f x y ∈ u :=
@@ -65,7 +65,7 @@ theorem image2_subset_iff_left : image2 f s t ⊆ u ↔ ∀ a ∈ s, (fun b => f
   simp_rw [image2_subset_iff, image_subset_iff, subset_def, mem_preimage]
 
 theorem image2_subset_iff_right : image2 f s t ⊆ u ↔ ∀ b ∈ t, (fun a => f a b) '' s ⊆ u := by
-  simp_rw [image2_subset_iff, image_subset_iff, subset_def, mem_preimage, @forall₂_swap α]
+  simp_rw [image2_subset_iff, image_subset_iff, subset_def, mem_preimage, @forall₂_comm α]
 
 variable (f)
 

@@ -6,7 +6,6 @@ Authors: Anatole Dedecker
 module
 
 public import Mathlib.Algebra.Order.Floor.Ring
-public import Mathlib.Algebra.Order.Round
 public import Mathlib.Order.Filter.AtTopBot.Floor
 public import Mathlib.Topology.Algebra.Order.Group
 
@@ -54,7 +53,7 @@ theorem tendsto_mul_pow_div_factorial_sub_atTop (a c : K) (d : ℕ) :
 
 theorem tendsto_pow_div_factorial_atTop (c : K) :
     Tendsto (fun n ↦ c ^ n / n !) atTop (𝓝 0) := by
-  convert tendsto_mul_pow_div_factorial_sub_atTop 1 c 0
+  convert! tendsto_mul_pow_div_factorial_sub_atTop 1 c 0
   rw [one_mul]
 
 end FloorSemiring

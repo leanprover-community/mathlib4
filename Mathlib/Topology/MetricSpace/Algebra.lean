@@ -6,10 +6,10 @@ Authors: Heather Macbeth
 module
 
 public import Mathlib.Topology.Algebra.MulAction
-public import Mathlib.Topology.Algebra.Order.Field
 public import Mathlib.Topology.Algebra.SeparationQuotient.Basic
 public import Mathlib.Topology.Algebra.UniformMulAction
 public import Mathlib.Topology.MetricSpace.Lipschitz
+import Mathlib.Topology.Order.LiminfLimsup
 
 /-!
 # Compatibility of algebraic operations with metric space structures
@@ -29,8 +29,8 @@ be an intermediate typeclass for uniform spaces, but the algebraic hierarchy the
 
 @[expose] public section
 
-
-open NNReal
+open NNReal Filter Set
+open scoped Topology Uniformity
 
 noncomputable section
 
@@ -79,7 +79,7 @@ instance (priority := 100) LipschitzMul.continuousMul : ContinuousMul β :=
 instance Submonoid.lipschitzMul (s : Submonoid β) : LipschitzMul s where
   lipschitz_mul := ⟨LipschitzMul.C β, by
     rintro ⟨x₁, x₂⟩ ⟨y₁, y₂⟩
-    convert lipschitzWith_lipschitz_const_mul_edist ⟨(x₁ : β), x₂⟩ ⟨y₁, y₂⟩ using 1⟩
+    convert! lipschitzWith_lipschitz_const_mul_edist ⟨(x₁ : β), x₂⟩ ⟨y₁, y₂⟩ using 1⟩
 
 @[to_additive]
 instance MulOpposite.lipschitzMul : LipschitzMul βᵐᵒᵖ where
@@ -159,6 +159,96 @@ instance (priority := 100) IsBoundedSMul.toUniformContinuousConstSMul :
   ⟨fun c => ((lipschitzWith_iff_dist_le_mul (K := nndist c 0)).2 fun _ _ =>
     dist_smul_pair c _ _).uniformContinuous⟩
 
+@[to_fun]
+theorem TendstoLocallyUniformlyOn.smul₀_of_isBoundedUnder {X ι : Type*} [TopologicalSpace X]
+    {s : Set X} {F : ι → X → α} {G : ι → X → β} {f : X → α} {g : X → β} {l : Filter ι}
+    (hF : TendstoLocallyUniformlyOn F f l s) (hG : TendstoLocallyUniformlyOn G g l s)
+    (hf : ∀ x ∈ s, (𝓝[s] x).IsBoundedUnder (· ≤ ·) (fun y ↦ dist (f y) 0))
+    (hg : ∀ x ∈ s, (𝓝[s] x).IsBoundedUnder (· ≤ ·) (fun y ↦ dist (g y) 0)) :
+    TendstoLocallyUniformlyOn (F • G) (f • g) l s := by
+  have H := hF.prodMk hG
+  rw [tendstoLocallyUniformlyOn_iff_forall_tendsto] at *
+  intro x hx
+  rcases (hf x hx).sup (hg x hx) with ⟨C, hC⟩
+  simp_rw [Filter.eventually_map, max_le_iff] at hC
+  refine Tendsto.comp
+    (Metric.isBounded_ball (x := (0 : α × β)) (r := C + 1)).uniformContinuousOn_smul
+    (tendsto_inf.mpr ⟨H x hx, tendsto_principal.mpr ?_⟩)
+  filter_upwards [hF x hx (Metric.dist_mem_uniformity one_pos),
+    hG x hx (Metric.dist_mem_uniformity one_pos), tendsto_snd hC] with ⟨n, y⟩ hFn hGn hfg
+  simp only [mem_prod, Metric.mem_ball, Prod.dist_eq, Prod.fst_zero, Prod.snd_zero, sup_lt_iff,
+    mem_preimage, mem_setOf] at hFn hGn hfg ⊢
+  grw [dist_triangle_left (F n y) 0 (f y), dist_triangle_left (G n y) 0 (g y)]
+  constructor <;> constructor <;> linarith
+
+@[to_fun]
+theorem TendstoLocallyUniformlyOn.mul₀_of_isBoundedUnder {X M ι : Type*} [TopologicalSpace X]
+    [PseudoMetricSpace M] [Zero M] [Mul M] [IsBoundedSMul M M]
+    {s : Set X} {F : ι → X → M} {G : ι → X → M} {f : X → M} {g : X → M} {l : Filter ι}
+    (hF : TendstoLocallyUniformlyOn F f l s) (hG : TendstoLocallyUniformlyOn G g l s)
+    (hf : ∀ x ∈ s, (𝓝[s] x).IsBoundedUnder (· ≤ ·) (fun y ↦ dist (f y) 0))
+    (hg : ∀ x ∈ s, (𝓝[s] x).IsBoundedUnder (· ≤ ·) (fun y ↦ dist (g y) 0)) :
+    TendstoLocallyUniformlyOn (F * G) (f * g) l s :=
+  hF.smul₀_of_isBoundedUnder hG hf hg
+
+@[to_fun]
+theorem TendstoLocallyUniformly.smul₀_of_isBoundedUnder {X ι : Type*} [TopologicalSpace X]
+    {F : ι → X → α} {G : ι → X → β} {f : X → α} {g : X → β} {l : Filter ι}
+    (hF : TendstoLocallyUniformly F f l) (hG : TendstoLocallyUniformly G g l)
+    (hf : ∀ x, (𝓝 x).IsBoundedUnder (· ≤ ·) (fun y ↦ dist (f y) 0))
+    (hg : ∀ x, (𝓝 x).IsBoundedUnder (· ≤ ·) (fun y ↦ dist (g y) 0)) :
+    TendstoLocallyUniformly (F • G) (f • g) l := by
+  rw [← tendstoLocallyUniformlyOn_univ] at *
+  apply hF.smul₀_of_isBoundedUnder hG <;> simpa
+
+@[to_fun]
+theorem TendstoLocallyUniformly.mul₀_of_isBoundedUnder {X M ι : Type*} [TopologicalSpace X]
+    [PseudoMetricSpace M] [Zero M] [Mul M] [IsBoundedSMul M M]
+    {F : ι → X → M} {G : ι → X → M} {f : X → M} {g : X → M} {l : Filter ι}
+    (hF : TendstoLocallyUniformly F f l) (hG : TendstoLocallyUniformly G g l)
+    (hf : ∀ x, (𝓝 x).IsBoundedUnder (· ≤ ·) (fun y ↦ dist (f y) 0))
+    (hg : ∀ x, (𝓝 x).IsBoundedUnder (· ≤ ·) (fun y ↦ dist (g y) 0)) :
+    TendstoLocallyUniformly (F * G) (f * g) l :=
+  hF.smul₀_of_isBoundedUnder hG hf hg
+
+@[to_fun]
+theorem TendstoLocallyUniformlyOn.smul₀ {X ι : Type*} [TopologicalSpace X]
+    {s : Set X} {F : ι → X → α} {G : ι → X → β} {f : X → α} {g : X → β} {l : Filter ι}
+    (hF : TendstoLocallyUniformlyOn F f l s) (hG : TendstoLocallyUniformlyOn G g l s)
+    (hfc : ContinuousOn f s) (hgc : ContinuousOn g s) :
+    TendstoLocallyUniformlyOn (F • G) (f • g) l s :=
+  hF.smul₀_of_isBoundedUnder hG
+    (fun x hx ↦ ((hfc x hx).dist tendsto_const_nhds).isBoundedUnder_le)
+    (fun x hx ↦ ((hgc x hx).dist tendsto_const_nhds).isBoundedUnder_le)
+
+@[to_fun]
+theorem TendstoLocallyUniformlyOn.mul₀ {X M ι : Type*} [TopologicalSpace X]
+    [PseudoMetricSpace M] [Zero M] [Mul M] [IsBoundedSMul M M]
+    {s : Set X} {F : ι → X → M} {G : ι → X → M} {f : X → M} {g : X → M} {l : Filter ι}
+    (hF : TendstoLocallyUniformlyOn F f l s) (hG : TendstoLocallyUniformlyOn G g l s)
+    (hf : ContinuousOn f s) (hg : ContinuousOn g s) :
+    TendstoLocallyUniformlyOn (F * G) (f * g) l s :=
+  hF.smul₀ hG hf hg
+
+@[to_fun]
+theorem TendstoLocallyUniformly.smul₀ {X ι : Type*} [TopologicalSpace X]
+    {F : ι → X → α} {G : ι → X → β} {f : X → α} {g : X → β} {l : Filter ι}
+    (hF : TendstoLocallyUniformly F f l) (hG : TendstoLocallyUniformly G g l)
+    (hfc : Continuous f) (hgc : Continuous g) :
+    TendstoLocallyUniformly (F • G) (f • g) l :=
+  hF.smul₀_of_isBoundedUnder hG
+    (fun x ↦ ((hfc.tendsto x).dist tendsto_const_nhds).isBoundedUnder_le)
+    (fun x ↦ ((hgc.tendsto x).dist tendsto_const_nhds).isBoundedUnder_le)
+
+@[to_fun]
+theorem TendstoLocallyUniformly.mul₀ {X M ι : Type*} [TopologicalSpace X]
+    [PseudoMetricSpace M] [Zero M] [Mul M] [IsBoundedSMul M M]
+    {F : ι → X → M} {G : ι → X → M} {f : X → M} {g : X → M} {l : Filter ι}
+    (hF : TendstoLocallyUniformly F f l) (hG : TendstoLocallyUniformly G g l)
+    (hf : Continuous f) (hg : Continuous g) :
+    TendstoLocallyUniformly (F * G) (f * g) l :=
+  hF.smul₀ hG hf hg
+
 -- this instance could be deduced from `NormedSpace.isBoundedSMul`, but we prove it separately
 -- here so that it is available earlier in the hierarchy
 instance Real.isBoundedSMul : IsBoundedSMul ℝ ℝ where
@@ -166,8 +256,8 @@ instance Real.isBoundedSMul : IsBoundedSMul ℝ ℝ where
   dist_pair_smul' x₁ x₂ y := by simpa [Real.dist_eq, sub_mul] using (abs_mul (x₁ - x₂) y).le
 
 instance NNReal.isBoundedSMul : IsBoundedSMul ℝ≥0 ℝ≥0 where
-  dist_smul_pair' x y₁ y₂ := by convert dist_smul_pair (x : ℝ) (y₁ : ℝ) y₂ using 1
-  dist_pair_smul' x₁ x₂ y := by convert dist_pair_smul (x₁ : ℝ) x₂ (y : ℝ) using 1
+  dist_smul_pair' x y₁ y₂ := by convert! dist_smul_pair (x : ℝ) (y₁ : ℝ) y₂ using 1
+  dist_pair_smul' x₁ x₂ y := by convert! dist_pair_smul (x₁ : ℝ) x₂ (y : ℝ) using 1
 
 /-- If a scalar is central, then its right action is bounded when its left action is. -/
 instance IsBoundedSMul.op [SMul αᵐᵒᵖ β] [IsCentralScalar α β] : IsBoundedSMul αᵐᵒᵖ β where

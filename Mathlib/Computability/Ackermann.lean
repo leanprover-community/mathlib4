@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Computability.PartrecCode
 public import Mathlib.Tactic.Ring
-public import Mathlib.Tactic.Linarith
+public import Mathlib.Tactic.NormNum
 
 /-!
 # Ackermann function
@@ -369,7 +369,7 @@ lemma eval_pappAck_step_succ (c : Code) (n) :
 
 lemma primrec_pappAck : Primrec pappAck := by
   suffices Primrec (Nat.rec Code.succ (fun _ c => pappAck.step c)) by
-    convert this using 2 with n; induction n <;> simp [pappAck, *]
+    convert! this using 2 with n; induction n <;> simp [pappAck, *]
   apply_rules [Primrec.nat_rec₁, primrec_pappAck_step.comp, Primrec.snd]
 
 @[simp]

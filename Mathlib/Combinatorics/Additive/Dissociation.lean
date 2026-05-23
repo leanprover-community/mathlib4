@@ -64,7 +64,7 @@ lemma mulDissociated_singleton : MulDissociated ({a} : Set α) ↔ a ≠ 1 := by
 lemma not_mulDissociated :
     ¬ MulDissociated s ↔
       ∃ t : Finset α, ↑t ⊆ s ∧ ∃ u : Finset α, ↑u ⊆ s ∧ t ≠ u ∧ ∏ x ∈ t, x = ∏ x ∈ u, x := by
-  simp [MulDissociated, InjOn]; aesop
+  grind [MulDissociated, InjOn]
 
 @[to_additive]
 lemma not_mulDissociated_iff_exists_disjoint :

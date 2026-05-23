@@ -35,7 +35,7 @@ instance [Inhabited α] : Inhabited (Image f) where default := ⟨f default, ⟨
 
 /-- the inclusion of `Image f` into the target -/
 def Image.ι : Image f ⟶ β :=
-  Subtype.val
+  ↾(Subtype.val)
 
 instance : Mono (Image.ι f) :=
   (mono_iff_injective _).2 Subtype.val_injective
@@ -44,10 +44,10 @@ variable {f}
 
 /-- the universal property for the image factorisation -/
 noncomputable def Image.lift (F' : MonoFactorisation f) : Image f ⟶ F'.I :=
-  (fun x => F'.e (Classical.indefiniteDescription _ x.2).1 : Image f → F'.I)
+  ↾fun x => F'.e (Classical.indefiniteDescription _ x.2).1
 
 theorem Image.lift_fac (F' : MonoFactorisation f) : Image.lift F' ≫ F'.m = Image.ι f := by
-  funext x
+  ext x
   change (F'.e ≫ F'.m) _ = _
   rw [F'.fac, (Classical.indefiniteDescription _ x.2).2]
   rfl
@@ -58,7 +58,7 @@ end
 def monoFactorisation : MonoFactorisation f where
   I := Image f
   m := Image.ι f
-  e := Set.rangeFactorization f
+  e := ↾(Set.rangeFactorization f)
 
 /-- the factorisation through a mono has the universal property of the image. -/
 noncomputable def isImage : IsImage (monoFactorisation f) where
@@ -74,11 +74,9 @@ instance : HasImages (Type u) where
 instance : HasImageMaps (Type u) where
   has_image_map {f g} st :=
     HasImageMap.transport st (monoFactorisation f.hom) (isImage g.hom)
-      (fun x => ⟨st.right x.1, ⟨st.left (Classical.choose x.2), by
-        have p := st.w
-        replace p := congr_fun p (Classical.choose x.2)
-        simp only [Functor.id_obj, Functor.id_map, types_comp_apply] at p
-        rw [p, Classical.choose_spec x.2]⟩⟩) rfl
+      (↾fun x => ⟨st.right x.val, ⟨st.left (Classical.choose x.2), by
+        rw [elementwise_of% st.w]
+        rw [Classical.choose_spec x.property]⟩⟩) rfl
 
 variable {F : ℕᵒᵖ ⥤ Type u} {c : Cone F}
   (hF : ∀ n, Function.Surjective (F.map (homOfLE (Nat.le_succ n)).op))
@@ -98,14 +96,15 @@ lemma surjective_π_app_zero_of_surjective_map_aux :
   intro ⟨n⟩ ⟨m⟩ ⟨⟨⟨(h : m ≤ n)⟩⟩⟩
   induction h with
   | refl =>
-    erw [CategoryTheory.Functor.map_id, types_id_apply]
+    erw [CategoryTheory.Functor.map_id, id_apply]
   | @step p h ih =>
     rw [← ih]
     have h' : m ≤ p := h
     erw [CategoryTheory.Functor.map_comp (f := (homOfLE (Nat.le_succ p)).op) (g := (homOfLE h').op),
-      types_comp_apply, (hF p _).choose_spec]
+      comp_apply, (hF p _).choose_spec]
     rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 Given surjections `⋯ ⟶ Xₙ₊₁ ⟶ Xₙ ⟶ ⋯ ⟶ X₀`, the projection map `lim Xₙ ⟶ X₀` is surjective.
 -/
@@ -114,8 +113,8 @@ lemma surjective_π_app_zero_of_surjective_map
     (hF : ∀ n, Function.Surjective (F.map (homOfLE (Nat.le_succ n)).op)) :
     Function.Surjective (c.π.app ⟨0⟩) := by
   let i := hc.conePointUniqueUpToIso (limitConeIsLimit F)
-  have : c.π.app ⟨0⟩ = i.hom ≫ (limitCone F).π.app ⟨0⟩ := by simp [i]
-  rw [this]
+  have : c.π.app ⟨0⟩ = i.hom ≫ (limitCone F).π.app ⟨0⟩ := by simp [i]; rfl
+  rw [this, types_comp]
   apply Function.Surjective.comp
   · exact surjective_π_app_zero_of_surjective_map_aux hF
   · rw [← epi_iff_surjective]

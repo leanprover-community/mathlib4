@@ -37,8 +37,8 @@ namespace Complex
 `cosh x`. -/
 theorem hasStrictDerivAt_sinh (x : ℂ) : HasStrictDerivAt sinh (cosh x) x := by
   simp only [cosh, div_eq_mul_inv]
-  convert ((hasStrictDerivAt_exp x).sub (hasStrictDerivAt_id x).fun_neg.cexp).mul_const (2 : ℂ)⁻¹
-    using 1
+  convert!
+    ((hasStrictDerivAt_exp x).sub (hasStrictDerivAt_id x).fun_neg.cexp).mul_const (2 : ℂ)⁻¹ using 1
   rw [id, mul_neg_one, sub_eq_add_neg, neg_neg]
 
 /-- The complex hyperbolic sine function is everywhere differentiable, with the derivative
@@ -84,8 +84,8 @@ theorem deriv_sinh : deriv sinh = cosh :=
 derivative `sinh x`. -/
 theorem hasStrictDerivAt_cosh (x : ℂ) : HasStrictDerivAt cosh (sinh x) x := by
   simp only [sinh, div_eq_mul_inv]
-  convert ((hasStrictDerivAt_exp x).add (hasStrictDerivAt_id x).fun_neg.cexp).mul_const (2 : ℂ)⁻¹
-    using 1
+  convert!
+    ((hasStrictDerivAt_exp x).add (hasStrictDerivAt_id x).fun_neg.cexp).mul_const (2 : ℂ)⁻¹ using 1
   rw [id, mul_neg_one, sub_eq_add_neg]
 
 /-- The complex hyperbolic cosine function is everywhere differentiable, with the derivative
@@ -791,12 +791,9 @@ end
 namespace Mathlib.Meta.Positivity
 open Lean Meta Qq
 
-set_option backward.privateInPublic true in
-private alias ⟨_, sinh_pos_of_pos⟩ := Real.sinh_pos_iff
-set_option backward.privateInPublic true in
-private alias ⟨_, sinh_nonneg_of_nonneg⟩ := Real.sinh_nonneg_iff
-set_option backward.privateInPublic true in
-private alias ⟨_, sinh_ne_zero_of_ne_zero⟩ := Real.sinh_ne_zero
+alias ⟨_, sinh_pos_of_pos⟩ := Real.sinh_pos_iff
+alias ⟨_, sinh_nonneg_of_nonneg⟩ := Real.sinh_nonneg_iff
+alias ⟨_, sinh_ne_zero_of_ne_zero⟩ := Real.sinh_ne_zero
 
 /-- Extension for the `positivity` tactic: `Real.sinh` is positive/nonnegative/nonzero if its input
 is. -/

@@ -6,8 +6,8 @@ Authors: Vasily Nesterov
 module
 
 public meta import Lean.Meta.Basic
-public meta import Mathlib.Tactic.Linarith.Oracle.SimplexAlgorithm.SimplexAlgorithm
-public meta import Mathlib.Tactic.Linarith.Oracle.SimplexAlgorithm.Gauss
+public import Mathlib.Tactic.Linarith.Oracle.SimplexAlgorithm.Gauss
+public import Mathlib.Tactic.Linarith.Oracle.SimplexAlgorithm.SimplexAlgorithm
 
 /-!
 # `linarith` certificate search as an LP problem

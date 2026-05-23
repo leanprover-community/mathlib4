@@ -53,7 +53,11 @@ instance [ts : TopologicalSpace ι] [ht : OrderTopology ι] [SecondCountableTopo
     have d_count : d.Countable :=
       (((c_count.image _).union (c'_count.image _)).union (by simp)).union (by simp)
     have : {s | ∃ a ∈ d, s = Ioi a ∨ s = Iio a} = Ioi '' d ∪ Iio '' d := by
-      ext; simp; grind
+      #adaptation_note /-- Before leanprover/lean4#13166, this was just `grind`.
+      The new canonicalizer using `isDefEq` less,
+      and so does not unify as many of the conditions that `grind` wants to case split on.
+      Alternatively `ext; simp; grind` work here. -/
+      grind (splits := 12)
     rw [this]
     exact (d_count.image _).union (d_count.image _)
   -- We should check the easy direction that all the elements in our generating set are open.

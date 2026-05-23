@@ -117,8 +117,9 @@ theorem whisker_unit (t : LeftExtension f g) {x : B} (h : c ⟶ x) :
 def whiskering {x : B} (h : c ⟶ x) : LeftExtension f g ⥤ LeftExtension f (g ≫ h) where
   obj t := t.whisker h
   map η := LeftExtension.homMk (η.right ▷ h) <| by
-    simp [- LeftExtension.w, ← LeftExtension.w η]
+    simp [-LeftExtension.w, ← LeftExtension.w η]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Define a morphism between left extensions by cancelling the whiskered identities. -/
 @[simps! right]
 def whiskerIdCancel
@@ -126,6 +127,7 @@ def whiskerIdCancel
     s.ofCompId ⟶ t :=
   LeftExtension.homMk (τ.right ≫ (ρ_ _).hom)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Construct a morphism between whiskered extensions. -/
 @[simps! right]
 def whiskerHom (i : s ⟶ t) {x : B} (h : c ⟶ x) :
@@ -237,8 +239,9 @@ def whiskering {x : B} (h : x ⟶ c) : LeftLift f g ⥤ LeftLift f (h ≫ g) whe
   map η := LeftLift.homMk (h ◁ η.right) <| by
     dsimp only [whisker_lift, whisker_unit]
     rw [← LeftLift.w η]
-    simp [- LeftLift.w]
+    simp [-LeftLift.w]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Define a morphism between left lifts by cancelling the whiskered identities. -/
 @[simps! right]
 def whiskerIdCancel
@@ -246,6 +249,7 @@ def whiskerIdCancel
     s.ofIdComp ⟶ t :=
   LeftLift.homMk (τ.right ≫ (λ_ _).hom)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Construct a morphism between whiskered lifts. -/
 @[simps! right]
 def whiskerHom (i : s ⟶ t) {x : B} (h : x ⟶ c) :

@@ -57,17 +57,17 @@ both orientations are present.
 def toSimpleGraphStrict (G : Digraph V) : SimpleGraph V where
   Adj v w := v ≠ w ∧ G.Adj v w ∧ G.Adj w v
   symm _ _ h := And.intro h.1.symm h.2.symm
-  loopless _ h := h.1 rfl
+  loopless := ⟨fun _ h ↦ h.1 rfl⟩
 
 lemma toSimpleGraphStrict_subgraph_toSimpleGraphInclusive (G : Digraph V) :
     G.toSimpleGraphStrict ≤ G.toSimpleGraphInclusive :=
   fun _ _ h ↦ ⟨h.1, Or.inl h.2.1⟩
 
-@[mono]
+@[gcongr, mono]
 lemma toSimpleGraphInclusive_mono : Monotone (toSimpleGraphInclusive : _ → SimpleGraph V) :=
   fun _ _ h₁ _ _ h₂ ↦ ⟨h₂.1, h₂.2.imp (@h₁ _ _) (@h₁ _ _)⟩
 
-@[mono]
+@[gcongr, mono]
 lemma toSimpleGraphStrict_mono : Monotone (toSimpleGraphStrict : _ → SimpleGraph V) :=
   fun _ _ h₁ _ _ h₂ ↦ ⟨h₂.1, h₁ h₂.2.1, h₁ h₂.2.2⟩
 

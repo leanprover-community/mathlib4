@@ -274,7 +274,7 @@ lemma chainTopCoeff_zero_right [Nontrivial L] (hα : α.IsNonZero) :
   obtain ⟨k, hk⟩ : ∃ k : K, k • f =
       (toEnd K L L f ^ (chainTopCoeff α (0 : Weight K H L) + 1)) x := by
     have : (toEnd K L L f ^ (chainTopCoeff α (0 : Weight K H L) + 1)) x ∈ rootSpace H (-α) := by
-      convert toEnd_pow_apply_mem hf hx (chainTopCoeff α (0 : Weight K H L) + 1) using 2
+      convert! toEnd_pow_apply_mem hf hx (chainTopCoeff α (0 : Weight K H L) + 1) using 2
       rw [coe_chainTop', Weight.coe_zero, add_zero, succ_nsmul',
         add_assoc, smul_neg, neg_add_cancel, add_zero]
     simpa using (finrank_eq_one_iff_of_nonzero' ⟨f, hf⟩ (by simpa using isSl2.f_ne_zero)).mp
@@ -390,7 +390,7 @@ def rootSystem :
     .id
     { toFun := (↑)
       inj' := by
-        intro α β h; ext x; simpa using LinearMap.congr_fun h x  }
+        intro α β h; ext x; simpa using LinearMap.congr_fun h x }
     { toFun := coroot ∘ (↑)
       inj' := by rintro ⟨α, hα⟩ ⟨β, hβ⟩ h; simpa using h }
     (fun ⟨α, hα⟩ ↦ by simpa using root_apply_coroot <| by simpa using hα)
@@ -398,7 +398,7 @@ def rootSystem :
       rintro ⟨α, hα⟩ - ⟨⟨β, hβ⟩, rfl⟩
       simpa using
         ⟨reflectRoot α β, by simpa using reflectRoot_isNonZero α β <| by simpa using hβ, rfl⟩)
-    (by convert span_weight_isNonZero_eq_top K L H; ext; simp)
+    (by convert! span_weight_isNonZero_eq_top K L H; ext; simp)
 
 instance : (rootSystem H).IsRootSystem :=
   RootPairing.isRootSystem_mk'' fun α β ↦
@@ -414,6 +414,25 @@ lemma corootForm_rootSystem_eq_killing :
 @[simp] lemma rootSystem_pairing_apply (α β) : (rootSystem H).pairing β α = β.1 (coroot α.1) := rfl
 @[simp] lemma rootSystem_root_apply (α) : (rootSystem H).root α = α := rfl
 @[simp] lemma rootSystem_coroot_apply (α) : (rootSystem H).coroot α = coroot α := rfl
+
+open LieSubmodule in
+@[simp]
+lemma biSup_corootSpace_eq_top :
+    ⨆ α : Weight K H L, ⨆ (_ : α.IsNonZero), corootSpace α = ⊤ := by
+  simp only [← toSubmodule_inj, top_toSubmodule, iSup_toSubmodule,
+    ← RootPairing.IsRootSystem.span_coroot_eq_top (P := rootSystem H),
+    coe_corootSpace_eq_span_singleton, Submodule.iSup_span]
+  congr
+  ext α
+  simp [eq_comm]
+
+set_option backward.isDefEq.respectTransparency false in
+@[simp]
+lemma biSup_corootSubmodule_eq_cartan :
+    ⨆ α : Weight K H L, ⨆ (_ : α.IsNonZero), corootSubmodule α = H.toLieSubmodule := by
+  suffices ⨆ α : Weight K H L, ⨆ (_ : α.IsNonZero), corootSpace α = ⊤ from
+    le_antisymm (by simp) (by simp [← LieSubmodule.map_iSup, this])
+  simp
 
 instance : (rootSystem H).IsCrystallographic where
   exists_value α β :=

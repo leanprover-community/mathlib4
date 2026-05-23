@@ -15,13 +15,13 @@ import Mathlib.Algebra.Order.Interval.Set.Group
 
 This file proves that:
 * `MonotoneOn.intervalIntegrable_deriv`: If `f` is monotone on `a..b`, then `f'` is interval
-integrable on `a..b`.
+  integrable on `a..b`.
 * `MonotoneOn.intervalIntegral_deriv_mem_uIcc`: If `f` is monotone on `a..b`, then the integral of
-`f'` on `a..b` is in `uIcc 0 (f b - f a)`.
+  `f'` on `a..b` is in `uIcc 0 (f b - f a)`.
 * `BoundedVariationOn.intervalIntegrable_deriv`: If `f` has bounded variation on `a..b`,
-then `f'` is interval integrable on `a..b`.
+  then `f'` is interval integrable on `a..b`.
 * `AbsolutelyContinuousOnInterval.intervalIntegrable_deriv`: If `f` is absolutely continuous on
-`a..b`, then `f'` is interval integrable on `a..b`.
+  `a..b`, then `f'` is interval integrable on `a..b`.
 
 ## Tags
 interval integrable, monotone, bounded variation, absolutely continuous
@@ -65,7 +65,7 @@ lemma MonotoneOn.exists_tendsto_deriv_liminf_lintegral_enorm_le
     rw [hfg (by grind [Icc_diff_both])]
     exact hx₁.hasDerivAt.tendsto_slope.comp <|
       tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within _
-      (by convert tendsto_const_nhds.add (tendsto_inv_atTop_nhds_zero_nat (𝕜 := ℝ)); simp)
+      (by convert! tendsto_const_nhds.add (tendsto_inv_atTop_nhds_zero_nat (𝕜 := ℝ)); simp)
       (by simp [eventually_ne_atTop 0])
   · calc
       _ = liminf (fun (n : ℕ) ↦ ENNReal.ofReal (∫ (x : ℝ) in Icc a b, (G (n : ℝ)⁻¹) x)) atTop := by
@@ -78,8 +78,8 @@ lemma MonotoneOn.exists_tendsto_deriv_liminf_lintegral_enorm_le
         refine Filter.liminf_le_of_frequently_le'
           (Filter.Frequently.of_forall fun n ↦ ENNReal.ofReal_le_ofReal ?_)
         rw [integral_Icc_eq_integral_Ioc, ← intervalIntegral.integral_of_le hab]
-        convert hg.monotoneOn (Icc a (b + (n : ℝ)⁻¹)) |>.intervalIntegral_slope_le hab (by simp)
-          using 2
+        convert!
+          hg.monotoneOn (Icc a (b + (n : ℝ)⁻¹)) |>.intervalIntegral_slope_le hab (by simp) using 2
         simp [g]
       _ = ENNReal.ofReal (f b - f a) := by grind
 
@@ -119,7 +119,7 @@ theorem MonotoneOn.intervalIntegral_deriv_mem_uIcc {f : ℝ → ℝ} {a b : ℝ}
   rw [← uIcc_of_le hab] at hGf hG hG'
   have : f a ≤ f b := hf (by simp [hab]) (by simp [hab]) hab
   rw [uIcc_of_le (by linarith), mem_Icc]
-  have f_deriv_nonneg {x : ℝ} (hx : x ∈ Ioo a b): 0 ≤ deriv f x := by
+  have f_deriv_nonneg {x : ℝ} (hx : x ∈ Ioo a b) : 0 ≤ deriv f x := by
     rw [← derivWithin_of_mem_nhds (Icc_mem_nhds (a := a) (b := b) (by grind) (by grind))]
     exact hf.derivWithin_nonneg
   constructor
@@ -136,7 +136,7 @@ theorem MonotoneOn.intervalIntegral_deriv_mem_uIcc {f : ℝ → ℝ} {a b : ℝ}
         ENNReal.ofReal_le_ofReal_iff (by linarith),
         integral_Icc_eq_integral_Ioc,
         ← intervalIntegral.integral_of_le hab] at ebound
-    convert ebound using 1
+    convert! ebound using 1
     refine intervalIntegral.integral_congr_ae ?_
     rw [uIoc_of_le hab]
     filter_upwards [h₂] with x _ _

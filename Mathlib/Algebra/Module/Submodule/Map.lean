@@ -250,6 +250,11 @@ theorem comap_iInf [RingHomSurjective σ₁₂] {ι : Sort*} (f : M →ₛₗ[σ
   (gc_map_comap f).u_iInf
 
 @[simp]
+theorem comap_finsetInf [RingHomSurjective σ₁₂] {ι : Type*} (f : M →ₛₗ[σ₁₂] M₂)
+    (s : Finset ι) (p : ι → Submodule R₂ M₂) : comap f (s.inf p) = s.inf fun i ↦ comap f (p i) := by
+  simp [Finset.inf_eq_iInf]
+
+@[simp]
 theorem comap_zero : comap (0 : M →ₛₗ[σ₁₂] M₂) q = ⊤ :=
   ext <| by simp
 
@@ -306,9 +311,6 @@ theorem map_sup_comap_of_surjective (p q : Submodule R₂ M₂) :
 theorem map_iSup_comap_of_surjective {ι : Sort*} (S : ι → Submodule R₂ M₂) :
     (⨆ i, (S i).comap f).map f = iSup S :=
   (giMapComap hf).l_iSup_u _
-
-@[deprecated (since := "2025-07-08")]
-alias map_iSup_comap_of_sujective := map_iSup_comap_of_surjective
 
 theorem map_inf_comap_of_surjective (p q : Submodule R₂ M₂) :
     (p.comap f ⊓ q.comap f).map f = p ⊓ q :=
@@ -647,7 +649,10 @@ theorem submoduleComap_surjective_of_surjective (f : M →ₗ[R] M₁) (q : Subm
 /-- A linear map between two modules restricts to a linear map from any submodule p of the
 domain onto the image of that submodule.
 
-This is the linear version of `AddMonoidHom.addSubmonoidMap` and `AddMonoidHom.addSubgroupMap`. -/
+This is the linear version of `AddMonoidHom.addSubmonoidMap` and `AddMonoidHom.addSubgroupMap`.
+
+TODO: Consider making this an `abbrev`, dropping its API, and renaming to something like
+`restrictSubmodule`. -/
 def submoduleMap (f : M →ₗ[R] M₁) (p : Submodule R M) : p →ₗ[R] p.map f :=
   f.restrict fun x hx ↦ Submodule.mem_map.mpr ⟨x, hx, rfl⟩
 
@@ -658,17 +663,40 @@ theorem submoduleMap_coe_apply (f : M →ₗ[R] M₁) {p : Submodule R M} (x : p
 theorem submoduleMap_surjective (f : M →ₗ[R] M₁) (p : Submodule R M) :
     Function.Surjective (f.submoduleMap p) := f.toAddMonoidHom.addSubmonoidMap_surjective _
 
+@[grind inj]
+theorem submoduleMap_injective {f : M →ₗ[R] M₁} (hf : Injective f) (p : Submodule R M) :
+    Injective (f.submoduleMap p) :=
+  f.toAddMonoidHom.addSubmonoidMap_injective hf _
+
 variable [Semiring R₂] [AddCommMonoid M₂] [Module R₂ M₂] {σ₂₁ : R₂ →+* R}
 
 open Submodule
 
 theorem map_codRestrict [RingHomSurjective σ₂₁] (p : Submodule R M) (f : M₂ →ₛₗ[σ₂₁] M) (h p') :
-    Submodule.map (codRestrict p f h) p' = comap p.subtype (p'.map f) :=
+    map (codRestrict p f h) p' = comap p.subtype (p'.map f) :=
   Submodule.ext fun ⟨x, hx⟩ => by simp [Subtype.ext_iff]
 
 theorem comap_codRestrict (p : Submodule R M) (f : M₂ →ₛₗ[σ₂₁] M) (hf p') :
-    Submodule.comap (codRestrict p f hf) p' = Submodule.comap f (map p.subtype p') :=
+    comap (codRestrict p f hf) p' = comap f (map p.subtype p') :=
   Submodule.ext fun x => ⟨fun h => ⟨⟨_, hf x⟩, h, rfl⟩, by rintro ⟨⟨_, _⟩, h, ⟨⟩⟩; exact h⟩
+
+theorem map_domRestrict [RingHomSurjective σ₂₁] (p : Submodule R₂ M₂) (f : M₂ →ₛₗ[σ₂₁] M) (p') :
+    map (domRestrict f p) p' = map f (map p.subtype p') :=
+  map_comp p.subtype f p'
+
+theorem comap_domRestrict (p : Submodule R₂ M₂) (f : M₂ →ₛₗ[σ₂₁] M) (p') :
+    comap (domRestrict f p) p' = comap p.subtype (comap f p') :=
+  comap_comp p.subtype f p'
+
+theorem map_restrict [RingHomSurjective σ₂₁] {p : Submodule R₂ M₂} {q : Submodule R M}
+    {f : M₂ →ₛₗ[σ₂₁] M} (h : ∀ x ∈ p, f x ∈ q) (p') :
+    map (f.restrict h) p' = comap q.subtype (map f (map p.subtype p')) := by
+  rw [restrict_eq_codRestrict_domRestrict, map_codRestrict, map_domRestrict]
+
+theorem comap_restrict [RingHomSurjective σ₂₁] {p : Submodule R₂ M₂} {q : Submodule R M}
+    {f : M₂ →ₛₗ[σ₂₁] M} (h : ∀ x ∈ p, f x ∈ q) (p') :
+    comap (f.restrict h) p' = comap p.subtype (comap f (map q.subtype p')) := by
+  rw [restrict_eq_codRestrict_domRestrict, comap_codRestrict, comap_domRestrict]
 
 end LinearMap
 

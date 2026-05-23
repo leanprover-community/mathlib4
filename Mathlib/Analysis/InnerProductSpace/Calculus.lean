@@ -138,7 +138,7 @@ section
 include 𝕜
 
 theorem contDiff_norm_sq : ContDiff ℝ n fun x : E => ‖x‖ ^ 2 := by
-  convert (reCLM : 𝕜 →L[ℝ] ℝ).contDiff.comp ((contDiff_id (E := E)).inner 𝕜 (contDiff_id (E := E)))
+  convert! (reCLM : 𝕜 →L[ℝ] ℝ).contDiff.comp ((contDiff_id (E := E)).inner 𝕜 (contDiff_id (E := E)))
   exact (inner_self_eq_norm_sq _).symm
 
 theorem ContDiff.norm_sq (hf : ContDiff ℝ n f) : ContDiff ℝ n fun x => ‖f x‖ ^ 2 :=
@@ -197,7 +197,7 @@ open scoped RealInnerProductSpace
 theorem hasStrictFDerivAt_norm_sq (x : F) :
     HasStrictFDerivAt (fun x => ‖x‖ ^ 2) (2 • (innerSL ℝ x)) x := by
   simp only [sq, ← @inner_self_eq_norm_mul_norm ℝ]
-  convert (hasStrictFDerivAt_id x).inner ℝ (hasStrictFDerivAt_id x)
+  convert! (hasStrictFDerivAt_id x).inner ℝ (hasStrictFDerivAt_id x)
   ext y
   simp [two_smul, real_inner_comm]
 
@@ -374,10 +374,10 @@ namespace OpenPartialHomeomorph
 variable {c : E} {r : ℝ}
 
 theorem contDiff_unitBallBall (hr : 0 < r) : ContDiff ℝ n (unitBallBall c r hr) :=
-  (contDiff_id.const_smul _).add contDiff_const
+  (contDiff_id.const_smul r).add contDiff_const
 
 theorem contDiff_unitBallBall_symm (hr : 0 < r) : ContDiff ℝ n (unitBallBall c r hr).symm :=
-  (contDiff_id.sub contDiff_const).const_smul _
+  (contDiff_id.sub contDiff_const).const_smul r⁻¹
 
 theorem contDiff_univBall : ContDiff ℝ n (univBall c r) := by
   unfold univBall; split_ifs with h

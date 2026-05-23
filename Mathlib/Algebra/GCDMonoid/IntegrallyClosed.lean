@@ -15,12 +15,12 @@ public import Mathlib.RingTheory.Polynomial.Eisenstein.Basic
 
 -/
 
-@[expose] public section
+public section
 
 
 open scoped Polynomial
 
-variable {R A : Type*} [CommRing R] [IsDomain R] [CommRing A] [Algebra R A]
+variable {R A : Type*} [CommRing R] [CommRing A] [Algebra R A]
 
 theorem IsLocalization.surj_of_gcd_domain [GCDMonoid R] (M : Submonoid R) [IsLocalization M A]
     (z : A) : ∃ a b : R, IsUnit (gcd a b) ∧ z * algebraMap R A b = algebraMap R A a := by
@@ -28,7 +28,7 @@ theorem IsLocalization.surj_of_gcd_domain [GCDMonoid R] (M : Submonoid R) [IsLoc
   obtain ⟨x', y', hx', hy', hu⟩ := extract_gcd x y
   use x', y', hu
   rw [mul_comm, IsLocalization.mul_mk'_eq_mk'_of_mul]
-  convert IsLocalization.mk'_mul_cancel_left (M := M) (S := A) _ _ using 2
+  convert! IsLocalization.mk'_mul_cancel_left (M := M) (S := A) _ _ using 2
   grind
 
 instance (priority := 100) GCDMonoid.toIsIntegrallyClosed

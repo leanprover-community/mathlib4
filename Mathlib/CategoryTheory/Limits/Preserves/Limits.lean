@@ -63,6 +63,7 @@ theorem preservesLimitIso_inv_π (j) :
     (preservesLimitIso G F).inv ≫ G.map (limit.π F j) = limit.π _ j :=
   IsLimit.conePointUniqueUpToIso_inv_comp _ _ j
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem lift_comp_preservesLimitIso_hom (t : Cone F) :
     G.map (limit.lift _ t) ≫ (preservesLimitIso G F).hom =
@@ -75,6 +76,7 @@ instance : IsIso (limit.post F G) :=
 
 variable [PreservesLimitsOfShape J G] [HasLimitsOfShape J D] [HasLimitsOfShape J C]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `C, D` has all limits of shape `J`, and `G` preserves them, then `preservesLimitsIso` is
 functorial w.r.t. `F`. -/
 @[simps!]
@@ -97,7 +99,7 @@ variable [HasLimit F] [HasLimit (F ⋙ G)]
 preserves limits of `F`. -/
 lemma preservesLimit_of_isIso_post [IsIso (limit.post F G)] : PreservesLimit F G :=
   preservesLimit_of_preserves_limit_cone (limit.isLimit F) (by
-    convert IsLimit.ofPointIso (limit.isLimit (F ⋙ G))
+    convert! IsLimit.ofPointIso (limit.isLimit (F ⋙ G))
     assumption)
 
 end
@@ -106,6 +108,7 @@ section
 
 variable [PreservesColimit F G]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem preserves_desc_mapCocone (c₁ c₂ : Cocone F) (t : IsColimit c₁) :
     (isColimitOfPreserves G t).desc (G.mapCocone _) = G.map (t.desc c₂) :=
@@ -130,6 +133,7 @@ theorem ι_preservesColimitIso_hom (j : J) :
     G.map (colimit.ι F j) ≫ (preservesColimitIso G F).hom = colimit.ι (F ⋙ G) j :=
   (isColimitOfPreserves G (colimit.isColimit _)).comp_coconePointUniqueUpToIso_hom _ j
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem preservesColimitIso_inv_comp_desc (t : Cocone F) :
     (preservesColimitIso G F).inv ≫ G.map (colimit.desc _ t) =
@@ -142,6 +146,7 @@ instance : IsIso (colimit.post F G) :=
 
 variable [PreservesColimitsOfShape J G] [HasColimitsOfShape J D] [HasColimitsOfShape J C]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `C, D` has all colimits of shape `J`, and `G` preserves them, then `preservesColimitIso`
 is functorial w.r.t. `F`. -/
 @[simps!]
@@ -167,7 +172,7 @@ variable [HasColimit F] [HasColimit (F ⋙ G)]
 preserves colimits of `F`. -/
 lemma preservesColimit_of_isIso_post [IsIso (colimit.post F G)] : PreservesColimit F G :=
   preservesColimit_of_preserves_colimit_cocone (colimit.isColimit F) (by
-    convert IsColimit.ofPointIso (colimit.isColimit (F ⋙ G))
+    convert! IsColimit.ofPointIso (colimit.isColimit (F ⋙ G))
     assumption)
 
 end

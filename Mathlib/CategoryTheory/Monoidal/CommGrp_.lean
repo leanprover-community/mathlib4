@@ -5,7 +5,7 @@ Authors: Markus Himmel
 -/
 module
 
-public import Mathlib.CategoryTheory.Monoidal.Grp_
+public import Mathlib.CategoryTheory.Monoidal.Grp
 public import Mathlib.CategoryTheory.Monoidal.CommMon_
 
 /-!
@@ -29,8 +29,6 @@ structure CommGrp where
   [grp : GrpObj X]
   [comm : IsCommMonObj X]
 
-@[deprecated (since := "2025-10-13")] alias CommGrp_ := CommGrp
-
 attribute [instance] CommGrp.grp CommGrp.comm
 
 namespace CommGrp
@@ -41,18 +39,12 @@ variable {C}
 @[simps -isSimp X]
 abbrev toGrp (A : CommGrp C) : Grp C := ⟨A.X⟩
 
-@[deprecated (since := "2025-10-13")] alias toGrp_ := toGrp
-
 /-- A commutative group object is a commutative monoid object. -/
 @[simps X]
 def toCommMon (A : CommGrp C) : CommMon C := ⟨A.X⟩
 
-@[deprecated (since := "2025-09-15")] alias toCommMon_ := toCommMon
-
 /-- A commutative group object is a monoid object. -/
 abbrev toMon (A : CommGrp C) : Mon C := (toCommMon A).toMon
-
-@[deprecated (since := "2025-09-15")] alias toMon_ := toMon
 
 variable (C) in
 /-- The trivial commutative group object. -/
@@ -90,13 +82,9 @@ variable (C)
 def forget₂Grp : CommGrp C ⥤ Grp C :=
   inducedFunctor CommGrp.toGrp
 
-@[deprecated (since := "2025-10-13")] alias forget₂Grp_ := forget₂Grp
-
 /-- The forgetful functor from commutative group objects to group objects is fully faithful. -/
 def fullyFaithfulForget₂Grp : (forget₂Grp C).FullyFaithful :=
   fullyFaithfulInducedFunctor _
-
-@[deprecated (since := "2025-10-13")] alias fullyFaithfulForget₂Grp_ := fullyFaithfulForget₂Grp
 
 instance : (forget₂Grp C).Full := InducedCategory.full _
 instance : (forget₂Grp C).Faithful := InducedCategory.faithful _
@@ -118,8 +106,6 @@ theorem forget₂Grp_map_hom {A B : CommGrp C} (f : A ⟶ B) :
 def forget₂CommMon : CommGrp C ⥤ CommMon C where
   obj G := CommMon.mk G.X
   map f := CommMon.homMk f.hom.hom
-
-@[deprecated (since := "2025-09-15")] alias forget₂CommMon_ := forget₂CommMon
 
 /-- The forgetful functor from commutative group objects to commutative monoid objects is fully
 faithful. -/
@@ -210,6 +196,7 @@ variable {F F' : C ⥤ D} [F.Braided] [F'.Braided] {G : D ⥤ E} [G.Braided]
 
 open Monoidal
 
+set_option backward.isDefEq.respectTransparency false in
 variable (F) in
 /-- A finite-product-preserving functor takes commutative group objects to commutative group
 objects. -/
@@ -256,12 +243,14 @@ theorem comp_mapCommGrp_mul (A : CommGrp C) :
     μ[((F ⋙ G).mapCommGrp.obj A).X] = LaxMonoidal.μ (F ⋙ G) _ _ ≫ (F ⋙ G).map μ[A.X] :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The identity functor is also the identity on commutative group objects. -/
 @[simps!]
 def mapCommGrpIdIso : mapCommGrp (𝟭 C) ≅ 𝟭 (CommGrp C) :=
   NatIso.ofComponents (fun X ↦ CommGrp.mkIso (.refl _) (by simp)
     (by simp))
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The composition functor is also the composition on commutative group objects. -/
 @[simps!]
 def mapCommGrpCompIso : (F ⋙ G).mapCommGrp ≅ F.mapCommGrp ⋙ G.mapCommGrp :=
@@ -272,6 +261,7 @@ def mapCommGrpCompIso : (F ⋙ G).mapCommGrp ≅ F.mapCommGrp ⋙ G.mapCommGrp :
 def mapCommGrpNatTrans (f : F ⟶ F') : F.mapCommGrp ⟶ F'.mapCommGrp where
   app X := InducedCategory.homMk ((mapGrpNatTrans f).app X.toGrp)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Natural isomorphisms between functors lift to commutative group objects. -/
 @[simps!]
 def mapCommGrpNatIso (e : F ≅ F') : F.mapCommGrp ≅ F'.mapCommGrp :=
