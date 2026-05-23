@@ -98,7 +98,7 @@ lemma coeff_subst_sum_C_addInv_mul_X_pow_sub_X (n : ℕ) :
     by_cases hk : k = 0
     · rw [hk, show range 2 = {0, 1} by rfl, coeff, MvPowerSeries.coeff_subst
         (MvPowerSeries.hasSubst_of_constantCoeff_zero <| by simp [← constantCoeff_eq])]
-      · rw [finsum_eq_finset_sum_of_support_subset (s := {single 0 1, single 1 1}),
+      · rw [finsum_eq_finsetSum_of_support_subset (s := {single 0 1, single 1 1}),
           sum_pair (ne_iff.mpr ⟨0, by simp⟩)]
         · simp [F.lin_coeff_X, F.lin_coeff_Y]
         have (x : Fin 2 →₀ ℕ) (h : ¬(MvPowerSeries.coeff x) F.toPowerSeries
