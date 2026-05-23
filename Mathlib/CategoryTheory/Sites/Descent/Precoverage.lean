@@ -203,7 +203,7 @@ noncomputable def familyOfElements (i : ι) :
     Presieve.FamilyOfElements (F.presheafHom (D₁.obj i) (D₂.obj i)) (sieve f f' i).arrows :=
   fun Z q hq ↦
     mor w φ _ _ (sieve.fac (f := f) (f' := f') (q := Z.hom) (by
-      convert hq
+      convert! hq
       ext
       simpa using (Over.w q).symm))
 
