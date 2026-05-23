@@ -47,7 +47,6 @@ namespace IsCovariantDerivativeOn
 section projection_trivial_bundle
 
 variable [CompleteSpace 𝕜] [FiniteDimensional 𝕜 F]
-    [IsManifold I 1 M]
 
 local notation "TM" => TangentSpace I
 
@@ -80,6 +79,8 @@ lemma horiz_vert_direct_sum (hcov : IsCovariantDerivativeOn F cov s) (x : M) (f 
     intro u
     use u - (0, hcov.projection x f u), ?_, (0, hcov.projection x f u), ?_, ?_
     all_goals simp [horiz]
+
+variable [IsManifold I 1 M]
 
 set_option backward.isDefEq.respectTransparency false in
 lemma mem_horiz_iff_exists [FiniteDimensional 𝕜 E] (hcov : IsCovariantDerivativeOn F cov s) {x : M}
@@ -225,7 +226,6 @@ section horiz
 namespace CovariantDerivative
 
 variable [CompleteSpace 𝕜] [FiniteDimensional 𝕜 F]
-    [IsManifold I 1 M]
     [∀ x, IsTopologicalAddGroup (V x)] [∀ x, ContinuousSMul 𝕜 (V x)]
     [VectorBundle 𝕜 F V] [ContMDiffVectorBundle 1 F V I]
 
@@ -241,7 +241,7 @@ def proj (cov : CovariantDerivative I F V) (v : TotalSpace F V) :
   letI Tvt := t.deriv I v
   t.symmL 𝕜 v.proj ∘L tproj ∘L Tvt
 
-omit [FiniteDimensional 𝕜 F] [CompleteSpace 𝕜] [IsManifold I 1 M] in
+omit [FiniteDimensional 𝕜 F] [CompleteSpace 𝕜] in
 lemma isCovariantDerivativeOn_pushCovDer
     (cov : CovariantDerivative I F V) (e : Trivialization F (π F V)) [MemTrivializationAtlas e] :
     IsCovariantDerivativeOn F (e.pushCovDer cov) e.baseSet :=
@@ -294,7 +294,7 @@ lemma horiz_vert_direct_sum [ContMDiffVectorBundle 1 F V I]
     exact FiberBundle.mem_baseSet_trivializationAt' v.proj
   · apply hcov.horiz_vert_direct_sum
 
-variable {cov : CovariantDerivative I F V}
+variable {cov : CovariantDerivative I F V} [IsManifold I 1 M]
 
 lemma proj_mderiv {σ : Π x : M, V x} (x : M)
     (hσ : MDiffAt (T% σ) x) :

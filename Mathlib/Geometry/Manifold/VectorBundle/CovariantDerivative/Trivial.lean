@@ -30,7 +30,6 @@ variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
   {V : M → Type*} [TopologicalSpace (TotalSpace F V)] [∀ x, AddCommGroup (V x)]
   [∀ x, Module 𝕜 (V x)] [∀ x, TopologicalSpace (V x)] [∀ x, IsTopologicalAddGroup (V x)]
   [∀ x, ContinuousSMul 𝕜 (V x)] [FiberBundle F V]
-  [IsManifold I 1 M]
 
 namespace IsCovariantDerivativeOn
 
@@ -39,7 +38,7 @@ section trivial_bundle
 set_option backward.isDefEq.respectTransparency false in
 variable (I M F) in
 @[simps]
-noncomputable def trivial [IsManifold I 1 M] :
+lemma trivial :
     IsCovariantDerivativeOn F (V := Trivial M F) (fun s x ↦ mvfderiv I s x) univ where
   add hσ hσ' hx := by
     rw [mdifferentiableAt_section_trivial_iff] at hσ hσ'
@@ -64,7 +63,7 @@ section trivial_bundle
 
 variable (I M F) in
 @[simps]
-noncomputable def trivial [IsManifold I 1 M] : CovariantDerivative I F (Trivial M F) where
+noncomputable def trivial : CovariantDerivative I F (Trivial M F) where
   toFun s x := mfderiv I 𝓘(𝕜, F) s x
   isCovariantDerivativeOnUniv := IsCovariantDerivativeOn.trivial ..
 
@@ -76,8 +75,7 @@ variable {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
 -- regularity and use ∞ from `open scoped ContDiff` instead.
 
 /-- The trivial connection on the trivial bundle is smooth -/
-lemma trivial_isSmooth :
-    ContMDiffCovariantDerivative (𝕜 := 𝕜) (trivial 𝓘(𝕜, E) E E') (⊤ : ℕ∞) where
+lemma trivial_isSmooth : ContMDiffCovariantDerivative (trivial 𝓘(𝕜, E) E E') (⊤ : ℕ∞) where
   contMDiff := ⟨by
     intro σ hσ
     dsimp only [trivial]
@@ -134,7 +132,7 @@ namespace IsCovariantDerivativeOn
 -- The classification of real connections over a trivial bundle
 section classification
 
-variable [CompleteSpace 𝕜] [FiniteDimensional 𝕜 F] [IsManifold I 1 M]
+variable [CompleteSpace 𝕜] [FiniteDimensional 𝕜 F]
 
 /-- Classification of covariant derivatives over a trivial vector bundle: every connection
 is of the form `D + A`, where `D` is the trivial covariant derivative, and `A` a zeroth-order term
