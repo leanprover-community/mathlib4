@@ -132,42 +132,38 @@ To obtain the general case, we simply apply the above to $((f_n - a)^+)_n$.
 
 -/
 
+section Definitions
 
+variable [Preorder ι] [OrderBot ι] [InfSet ι]
+variable {a b : ℝ} {f : ι → Ω → ℝ} {N : ι} {n : ℕ} {ω : Ω}
+
+omit [OrderBot ι] in
 /-- `lowerCrossingTimeAux a f c N` is the first time `f` reached below `a` after time `c` before
 time `N`. -/
-noncomputable def lowerCrossingTimeAux [Preorder ι] [InfSet ι] (a : ℝ) (f : ι → Ω → ℝ) (c N : ι) :
+noncomputable def lowerCrossingTimeAux (a : ℝ) (f : ι → Ω → ℝ) (c N : ι) :
     Ω → ι :=
   hittingBtwn f (Set.Iic a) c N
 
 /-- `upperCrossingTime a b f N n` is the first time before time `N`, `f` reaches
 above `b` after `f` reached below `a` for the `n - 1`-th time. -/
-noncomputable def upperCrossingTime [Preorder ι] [OrderBot ι] [InfSet ι] (a b : ℝ) (f : ι → Ω → ℝ)
-    (N : ι) : ℕ → Ω → ι
+noncomputable def upperCrossingTime (a b : ℝ) (f : ι → Ω → ℝ) (N : ι) : ℕ → Ω → ι
   | 0 => ⊥
   | n + 1 => fun ω =>
     hittingBtwn f (Set.Ici b) (lowerCrossingTimeAux a f (upperCrossingTime a b f N n ω) N ω) N ω
 
 /-- `lowerCrossingTime a b f N n` is the first time before time `N`, `f` reaches
 below `a` after `f` reached above `b` for the `n`-th time. -/
-noncomputable def lowerCrossingTime [Preorder ι] [OrderBot ι] [InfSet ι] (a b : ℝ) (f : ι → Ω → ℝ)
-    (N : ι) (n : ℕ) : Ω → ι :=
+noncomputable def lowerCrossingTime (a b : ℝ) (f : ι → Ω → ℝ) (N : ι) (n : ℕ) : Ω → ι :=
     fun ω => hittingBtwn f (Set.Iic a) (upperCrossingTime a b f N n ω) N ω
 
 /-- The number of upcrossings (strictly) before time `N`. -/
-noncomputable def upcrossingsBefore [Preorder ι] [OrderBot ι] [InfSet ι] (a b : ℝ) (f : ι → Ω → ℝ)
-    (N : ι) (ω : Ω) : ℕ :=
+noncomputable def upcrossingsBefore (a b : ℝ) (f : ι → Ω → ℝ) (N : ι) (ω : Ω) : ℕ :=
   sSup {n | upperCrossingTime a b f N n ω < N}
 
 /-- The number of upcrossings of a realization of a stochastic process (`upcrossings` takes value
 in `ℝ≥0∞` and so is allowed to be `∞`). -/
-noncomputable def upcrossings [Preorder ι] [OrderBot ι] [InfSet ι] (a b : ℝ) (f : ι → Ω → ℝ)
-    (ω : Ω) : ℝ≥0∞ :=
+noncomputable def upcrossings (a b : ℝ) (f : ι → Ω → ℝ) (ω : Ω) : ℝ≥0∞ :=
   ⨆ N, (upcrossingsBefore a b f N ω : ℝ≥0∞)
-
-section
-
-variable [Preorder ι] [OrderBot ι] [InfSet ι]
-variable {a b : ℝ} {f : ι → Ω → ℝ} {N : ι} {n : ℕ} {ω : Ω}
 
 @[simp]
 theorem upperCrossingTime_zero : upperCrossingTime a b f N 0 = ⊥ :=
@@ -207,7 +203,7 @@ theorem upcrossings_lt_top_iff :
   · refine ⟨k, fun N => ?_⟩
     simp only [ENNReal.coe_natCast, Nat.cast_le, hk N]
 
-end
+end Definitions
 
 section ConditionallyCompleteLinearOrderBot
 
