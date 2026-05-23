@@ -219,7 +219,7 @@ lemma tendstoInDistribution_of_tendstoInMeasure_sub {X : ι → Ω'' → E}
           hF_bounded _
             _
               -- The goal is now a simple computation
-              
+
     -- The goal is now a simple computation
     _ = L * (ε / 2) * μ''.real {x | ‖Y n x - X n x‖ < ε / 2}
         + M * μ''.real {ω | ε / 2 ≤ ‖Y n ω - X n ω‖} := by
