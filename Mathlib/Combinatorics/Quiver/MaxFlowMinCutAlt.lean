@@ -696,14 +696,21 @@ lemma flow_eq_cut_cap {V : Type*} [Fintype V] [DecidableEq V] (G : FlowNetwork V
 -- ============================================================
 
 /-- The max-flow min-cut theorem: the maximum flow value equals the minimum cut capacity. -/
-theorem max_flow_min_cut {V : Type*} [Fintype V] (G : FlowNetwork V)
-    (F : RelaxedFlow V G.toSTVertices) (h : is_max_flow F) :
-    ∃ C : Cut V G, is_min_cut G C ∧ Flow_value G.toSTVertices F = cut_cap C := by
-  classical
-  have hno : no_augmenting_path G F h.1 := fun ⟨p⟩ => max_flow_no_augmenting' F h p
-  let C := mk_cut_from_S G F h.1 hno
-  exact ⟨C, fun C' => by linarith [flow_eq_cut_cap G F h.1 hno, weak_duality G C' F h.1],
-            flow_eq_cut_cap G F h.1 hno⟩
+theorem max_flow_iff_eq_min_cut {V : Type*} [Fintype V] (G : FlowNetwork V)
+    (F : RelaxedFlow V G.toSTVertices) (h : ValidFlow V G F) :
+    is_max_flow F ↔
+      ∃ C : Cut V G, is_min_cut G C ∧ Flow_value G.toSTVertices F = cut_cap C := by
+  constructor
+  · -- forward
+    intro hmax
+    classical
+    have hno : no_augmenting_path G F hmax.1 := fun ⟨p⟩ => max_flow_no_augmenting' F hmax p
+    let C := mk_cut_from_S G F hmax.1 hno
+    exact ⟨C, fun C' => by linarith [flow_eq_cut_cap G F hmax.1 hno, weak_duality G C' F hmax.1],
+              flow_eq_cut_cap G F hmax.1 hno⟩
+  · --reverse
+    rintro ⟨C, _, heq⟩
+    exact max_flow_if_eq_cut G C F h heq
 
 -- ============================================================
 -- MAX FLOW MIN CUT THEOREM (natural numbers edition)
@@ -721,12 +728,12 @@ def NatFlowNetwork.toFlowNetwork {V : Type*} [Fintype V]
   nonneg_capacity := by
     norm_num
 
-theorem max_flow_min_cut_N {V : Type*} [Fintype V] (G : NatFlowNetwork V)
-    (F : RelaxedFlow V G.toSTVertices)
-    (h : is_max_flow (G := G.toFlowNetwork) F) :
-    ∃ C : Cut V G.toFlowNetwork, is_min_cut G.toFlowNetwork C ∧
-      Flow_value G.toSTVertices F = cut_cap C := by
-  exact max_flow_min_cut G.toFlowNetwork F h
+theorem max_flow_iff_eq_min_cut_N {V : Type*} [Fintype V] (G : NatFlowNetwork V)
+    (F : RelaxedFlow V G.toSTVertices) (h : ValidFlow V G.toFlowNetwork F) :
+    is_max_flow (G := G.toFlowNetwork) F ↔
+      ∃ C : Cut V G.toFlowNetwork, is_min_cut G.toFlowNetwork C ∧
+        Flow_value G.toSTVertices F = cut_cap C := by
+  exact max_flow_iff_eq_min_cut G.toFlowNetwork F h
 
 -- ============================================================
 -- VERTEX CAPCACITY
