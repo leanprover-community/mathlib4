@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Order.GaloisConnection.Basic
 public import Mathlib.Order.Interval.Set.Basic
+public import Mathlib.Order.UpperLower.Basic
 public import Mathlib.Order.WellFounded
 
 import Mathlib.Data.Set.Lattice
@@ -165,38 +166,25 @@ theorem not_isCofinal_iff_bddAbove [NoMaxOrder α] {s : Set α} : ¬ IsCofinal s
 theorem not_bddAbove_iff_isCofinal [NoMaxOrder α] {s : Set α} : ¬ BddAbove s ↔ IsCofinal s :=
   not_iff_comm.1 not_isCofinal_iff_bddAbove
 
-theorem IsCofinal.inter_Ici {s : Set α} (h : IsCofinal s) (x : α) :
-    IsCofinal (s ∩ Ici x) := by
+theorem IsCofinal.inter_left_of_isUpperSet {s t : Set α} (hs : IsCofinal s) (ht : IsUpperSet t)
+    (ht₀ : t.Nonempty) : IsCofinal (t ∩ s) := by
   intro y
-  obtain ⟨z, hz, hyz⟩ := h (max x y)
-  use z
-  simp_all
+  obtain ⟨x, hx⟩ := ht₀
+  obtain ⟨z, hz, hyz⟩ := hs (max x y)
+  exact ⟨z, ⟨ht ((le_max_left ..).trans hyz) hx, hz⟩, (le_max_right ..).trans hyz⟩
 
-theorem IsCofinal.Ici_inter {s : Set α} (h : IsCofinal s) (x : α) :
-    IsCofinal (Ici x ∩ s) := by
+theorem IsCofinal.inter_right_of_isUpperSet {s t : Set α} (hs : IsCofinal s) (ht : IsUpperSet t)
+    (ht₀ : t.Nonempty) : IsCofinal (s ∩ t) := by
   rw [inter_comm]
-  exact h.inter_Ici x
+  exact hs.inter_left_of_isUpperSet ht ht₀
 
 @[simp]
 theorem isCofinal_Ici (x : α) : IsCofinal (Ici x) := by
-  simpa using IsCofinal.univ.inter_Ici x
-
-theorem IsCofinal.inter_Ioi [NoMaxOrder α] {s : Set α} (h : IsCofinal s) (x : α) :
-    IsCofinal (s ∩ Ioi x) := by
-  obtain ⟨x', hx⟩ := exists_gt x
-  intro y
-  obtain ⟨z, hz, hyz⟩ := h (max x' y)
-  use z
-  grind
-
-theorem IsCofinal.Ioi_inter [NoMaxOrder α] {s : Set α} (h : IsCofinal s) (x : α) :
-    IsCofinal (Ioi x ∩ s) := by
-  rw [inter_comm]
-  exact h.inter_Ioi x
+  simpa using IsCofinal.univ.inter_left_of_isUpperSet (isUpperSet_Ici x)
 
 @[simp]
 theorem isCofinal_Ioi [NoMaxOrder α] (x : α) : IsCofinal (Ioi x) := by
-  simpa using IsCofinal.univ.inter_Ioi x
+  simpa using IsCofinal.univ.inter_left_of_isUpperSet (isUpperSet_Ioi x)
 
 /-- The set of "records" (the smallest inputs yielding the highest values) with respect to a
 well-ordering of `α` is a cofinal set. -/
