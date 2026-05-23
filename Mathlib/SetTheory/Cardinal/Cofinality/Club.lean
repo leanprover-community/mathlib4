@@ -122,13 +122,22 @@ theorem IsClub.iInter {ι : Type u} {f : ι → Set α} (hα : cof α ≠ ℵ₀
   rw [← Cardinal.lift_lt]
   exact mk_range_le_lift.trans_lt hι
 
+theorem IsClub.sInter_countable {s : Set (Set α)} (hα : cof α ≠ ℵ₀) (hsα : s.Countable)
+    (hs : ∀ x ∈ s, IsClub x) : IsClub (⋂₀ s) := by
+  obtain hα | hα := hα.lt_or_gt
+  · apply IsClub.sInter_of_cof_le_one _ hs
+    rwa [← cof_lt_aleph0_iff]
+  · apply IsClub.sInter hα.ne' (hα.trans_le' _) hs
+    rwa [le_aleph0_iff_set_countable]
+
+theorem IsClub.iInter_countable {ι : Type*} {f : ι → Set α} [Countable ι] (hα : cof α ≠ ℵ₀)
+    (hf : ∀ i, IsClub (f i)) : IsClub (⋂ i, f i) := by
+  rw [← sInter_range]
+  apply IsClub.sInter_countable hα (countable_range f)
+  simpa
+
 theorem IsClub.inter (hα : cof α ≠ ℵ₀) (hs : IsClub s) (ht : IsClub t) : IsClub (s ∩ t) := by
-  rw [← sInter_pair]
-  have H : ∀ x ∈ ({s, t} : Set _), IsClub x := by simpa [hs]
-  obtain hα | hα' := hα.lt_or_gt
-  · rw [cof_lt_aleph0_iff] at hα
-    exact .sInter_of_cof_le_one hα H
-  · exact .sInter hα (hα'.trans_le' <| by simp) H
+  simpa [hs, ht] using IsClub.sInter_countable (s := {s, t}) hα
 
 theorem Order.IsNormal.isClub_range {f : α → α} (hf : IsNormal f) : IsClub (.range f) :=
   ⟨hf.dirSupClosed_range, fun x ↦ ⟨_, ⟨x, rfl⟩, hf.strictMono.le_apply⟩⟩
@@ -188,6 +197,32 @@ theorem IsStationary.of_not_isCofinal_compl (hs : ¬ IsCofinal sᶜ) : IsStation
   contrapose! ha
   exact ⟨b, ha, hb'⟩
 
+theorem isStationary_sUnion_iff_of_cof_le_one {s : Set (Set α)} (hα : cof α ≤ 1) :
+    IsStationary (⋃₀ s) ↔ ∃ x ∈ s, IsStationary x where
+  mp h := by
+    contrapose! h
+    simp_rw [not_isStationary_iff] at h ⊢
+    choose f hf hxf using h
+    refine ⟨⋂ x : s, f _ x.2, ?_, ?_⟩
+    · apply IsClub.iInter_of_cof_le_one hα
+      simpa
+    · rw [disjoint_sUnion_left]
+      exact fun x hx ↦ (hxf _ hx).mono_right (iInter_subset _ ⟨x, hx⟩)
+  mpr := fun ⟨x, hxs, hx⟩ ↦ hx.mono (subset_sUnion_of_mem hxs)
+
+theorem isStationary_iUnion_iff_of_cof_le_one {ι : Type u} {f : ι → Set α} (hα : cof α ≤ 1) :
+    IsStationary (⋃ i, f i) ↔ ∃ i, IsStationary (f i) := by
+  rw [← sUnion_range, isStationary_sUnion_iff_of_cof_le_one hα]
+  simp
+
+theorem isStationary_sUnion_iff_of_orderTop [OrderTop α] {s : Set (Set α)} :
+    IsStationary (⋃₀ s) ↔ ∃ x ∈ s, IsStationary x :=
+  isStationary_sUnion_iff_of_cof_le_one (by simp)
+
+theorem isStationary_iUnion_iff_of_orderTop [OrderTop α] {ι : Type u} {f : ι → Set α} :
+    IsStationary (⋃ i, f i) ↔ ∃ i, IsStationary (f i) :=
+  isStationary_iUnion_iff_of_cof_le_one (by simp)
+
 section WellFoundedLT
 variable [WellFoundedLT α]
 
@@ -213,14 +248,21 @@ theorem isStationary_iUnion_iff {ι : Type u} {f : ι → Set α} (hα : cof α 
   · rw [← Cardinal.lift_lt]
     exact mk_range_le_lift.trans_lt hι
 
+theorem isStationary_sUnion_countable_iff {s : Set (Set α)} (hα : cof α ≠ ℵ₀) (hsα : s.Countable) :
+    IsStationary (⋃₀ s) ↔ ∃ x ∈ s, IsStationary x := by
+  obtain hα | hα := hα.lt_or_gt
+  · apply isStationary_sUnion_iff_of_cof_le_one
+    rwa [← cof_lt_aleph0_iff]
+  · apply isStationary_sUnion_iff hα.ne' (hα.trans_le' _)
+    rwa [le_aleph0_iff_set_countable]
+
+theorem isStationary_iUnion_countable_iff {ι : Type*} {f : ι → Set α} [Countable ι]
+    (hα : cof α ≠ ℵ₀) : IsStationary (⋃ i, f i) ↔ ∃ i, IsStationary (f i) := by
+  rw [← sUnion_range, isStationary_sUnion_countable_iff hα (countable_range f)]
+  simp
+
 theorem isStationary_union_iff (hα : cof α ≠ ℵ₀) :
-    IsStationary (s ∪ t) ↔ IsStationary s ∨ IsStationary t where
-  mp h := by
-    contrapose! h
-    simp_rw [not_isStationary_iff, disjoint_iff_inter_eq_empty] at h ⊢
-    obtain ⟨⟨u, hu, hsu⟩, ⟨v, hv, hsv⟩⟩ := h
-    refine ⟨_, hu.inter hα hv, ?_⟩
-    grind
-  mpr h := h.elim (.mono · subset_union_left) (.mono · subset_union_right)
+    IsStationary (s ∪ t) ↔ IsStationary s ∨ IsStationary t := by
+  simpa using isStationary_sUnion_countable_iff (s := {s, t}) hα
 
 end WellFoundedLT
