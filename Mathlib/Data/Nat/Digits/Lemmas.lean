@@ -336,6 +336,9 @@ this function just return `b.digits n`.
 def digitsAppend (b l n : ℕ) : List ℕ :=
   b.digits n ++ replicate (l - (b.digits n).length) 0
 
+theorem digitsAppend_def (b l n : ℕ) :
+    digitsAppend b l n = b.digits n ++ replicate (l - (b.digits n).length) 0 := by rfl
+
 theorem length_digitsAppend {b : ℕ} (hb : 1 < b) (l : ℕ) (hn : n < b ^ l) :
     (digitsAppend b l n).length = l := by
   rw [digitsAppend, length_append, length_replicate, Nat.add_sub_cancel']
