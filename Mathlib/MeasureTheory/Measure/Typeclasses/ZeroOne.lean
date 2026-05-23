@@ -20,8 +20,8 @@ We introduce the typeclass `IsZeroOneMeasure` for measures that only take the va
 
 ## Main statements
 
-* `exists_eq_dirac`: in a standard Borel space, a zero-one measure that is not the zero measure is
-  a Dirac measure.
+* `exists_eq_dirac`: in a countably separated measurable space, a zero-one measure that is not
+  the zero measure is a Dirac measure.
 
 -/
 
@@ -93,9 +93,10 @@ lemma measure_inter_eq_prod {s t : Set α} (hs : MeasurableSet s) (ht : Measurab
   cases μ.zero_one s <;> cases μ.zero_one t <;> cases μ.zero_one (s ∩ t)
   all_goals try simp_all [measure_inter_eq_one]
 
-/-- In a standard Borel space, a zero-one measure that is not the zero measure is a Dirac
-measure. -/
-theorem exists_eq_dirac [StandardBorelSpace α] [NeZero μ] : ∃ x₀, μ = Measure.dirac x₀ := by
+/-- In a countably separated measurable space, a zero-one measure that is not the zero measure is
+a Dirac measure. -/
+theorem exists_eq_dirac [MeasurableSpace.CountablySeparated α] [NeZero μ] :
+    ∃ x₀, μ = Measure.dirac x₀ := by
   have : IsProbabilityMeasure μ := by
     rcases IsZeroOrProbabilityMeasure.measure_univ (μ := μ) with (h | h)
     · simp_all
@@ -141,6 +142,7 @@ theorem exists_eq_dirac [StandardBorelSpace α] [NeZero μ] : ∃ x₀, μ = Mea
       · contradiction
   use x₀
   ext s hs
+  rw [Measure.dirac_apply' x₀ hs]
   by_cases h : x₀ ∈ s
   · simp [h]
     have : μ {x₀} ≤ μ s := measure_mono (μ := μ) (by grind)
