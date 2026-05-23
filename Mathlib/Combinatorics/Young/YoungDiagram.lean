@@ -236,6 +236,9 @@ protected theorem transpose_mono {μ ν : YoungDiagram} (h_le : μ ≤ ν) : μ.
 def transposeOrderIso : YoungDiagram ≃o YoungDiagram :=
   ⟨⟨transpose, transpose, fun _ => by simp, fun _ => by simp⟩, by simp⟩
 
+lemma transpose_card_eq_card (μ : YoungDiagram) : μ.transpose.card = μ.card := by
+  simp [transpose, YoungDiagram.card]
+
 end Transpose
 
 section Rows

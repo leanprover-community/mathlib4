@@ -281,9 +281,7 @@ def equivPartitionYoungDiagram {n : ℕ} : Partition n ≃ { μ : YoungDiagram |
 /-- Conjugate a partition (equivalent to transposing its Young diagram). -/
 def conjugate {n : ℕ} (p : Partition n) : Partition n :=
   ofYoungDiagram p.toYoungDiagram.transpose (by
-    have hs : p.toYoungDiagram.transpose.card = p.toYoungDiagram.card := by
-      simp [YoungDiagram.transpose, YoungDiagram.card]
-    rw [hs, card_toYoungDiagram]
+    rw [YoungDiagram.transpose_card_eq_card, card_toYoungDiagram]
   )
 
 /-- Conjugation is an involution. -/
