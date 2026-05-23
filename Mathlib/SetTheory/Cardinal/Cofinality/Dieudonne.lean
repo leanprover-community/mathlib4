@@ -130,8 +130,16 @@ noncomputable def measure : Measure α where
 instance : IsZeroOneMeasure (α := α) measure where
   zero_one₀ s _ := by rw [or_comm]; classical exact ite_eq_or_eq ..
 
-theorem measure_of_isStationary (hs : IsStationary s) : measure s = 1 := dif_pos hs
-theorem measure_of_not_isStationary (hs : ¬ IsStationary s) : measure s = 0 := dif_neg hs
+theorem measure_eq_one_iff : measure s = 1 ↔ IsStationary s := by
+  classical change ite .. = 1 ↔ _
+  simp
+
+theorem measure_eq_zero_iff : measure s = 0 ↔ ¬ IsStationary s := by
+  classical change ite .. = 0 ↔ _
+  simp
+
+alias ⟨_, measure_of_isStationary⟩ := measure_eq_one_iff
+alias ⟨_, measure_of_not_isStationary⟩ := measure_eq_zero_iff
 
 theorem measure_of_isClub [Nonempty α] (hs : IsClub s) : measure s = 1 :=
   measure_of_isStationary (hs.isStationary h₀.out)
