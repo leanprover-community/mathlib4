@@ -288,7 +288,7 @@ lemma dirSupInaccOn_Iic (a : α) : DirSupInaccOn D (Iic a) :=
 
 end Preorder
 
-namespace PartialOrder
+section PartialOrder
 variable [PartialOrder α]
 
 theorem dirSupClosed_singleton (a : α) : DirSupClosed {a} := by
@@ -321,6 +321,24 @@ theorem dirSupInaccOn_iff_of_linearOrder :
 theorem dirSupInacc_iff_of_linearOrder :
     DirSupInacc s ↔ ∀ ⦃d⦄, d.Nonempty → ∀ ⦃a⦄, IsLUB d a → a ∈ s → (d ∩ s).Nonempty := by
   simp [DirSupInacc]
+
+lemma dirSupClosed_Ioi (a : α) : DirSupClosed (Ioi a) := by
+  simpa using (dirSupInacc_Iic a).compl
+
+lemma dirSupClosedOn_Ioi (a : α) : DirSupClosedOn D (Ioi a) := by
+  simpa using (dirSupInaccOn_Iic a).compl
+
+lemma dirSupInacc_Ioi (a : α) : DirSupInacc (Ioi a) := by
+  simpa using (dirSupClosed_Iic a).compl
+
+lemma dirSupInaccOn_Ioi (a : α) : DirSupInaccOn D (Ioi a) := by
+  simpa using (dirSupClosedOn_Iic a).compl
+
+lemma dirSupClosed_Ici (a : α) : DirSupClosed (Ici a) := by
+  simpa using (dirSupClosed_Ioi a).union (dirSupClosed_singleton a)
+
+lemma dirSupClosedOn_Ici (a : α) : DirSupClosedOn D (Ici a) :=
+  (dirSupClosed_Ici a).dirSupClosedOn
 
 end LinearOrder
 

@@ -53,6 +53,11 @@ theorem IsCofinal.mono {s t : Set α} (h : s ⊆ t) (hs : IsCofinal s) : IsCofin
   obtain ⟨b, hb, hb'⟩ := hs a
   exact ⟨b, h hb, hb'⟩
 
+theorem IsCofinal.nonempty [Nonempty α] {s : Set α} (h : IsCofinal s) : s.Nonempty := by
+  inhabit α
+  obtain ⟨x, hx, _⟩ := h default
+  exact ⟨x, hx⟩
+
 end LE
 
 section Preorder
@@ -135,6 +140,31 @@ end PartialOrder
 
 section LinearOrder
 variable [LinearOrder α]
+
+theorem IsCofinal.inter_Ici {s : Set α} (h : IsCofinal s) (x : α) :
+    IsCofinal (s ∩ Ici x) := by
+  intro y
+  obtain ⟨z, hz, hyz⟩ := h (max x y)
+  use z
+  simp_all
+
+theorem IsCofinal.Ici_inter {s : Set α} (h : IsCofinal s) (x : α) :
+    IsCofinal (Ici x ∩ s) := by
+  rw [inter_comm]
+  exact h.inter_Ici x
+
+theorem IsCofinal.inter_Ioi [NoMaxOrder α] {s : Set α} (h : IsCofinal s) (x : α) :
+    IsCofinal (s ∩ Ioi x) := by
+  obtain ⟨x', hx⟩ := exists_gt x
+  intro y
+  obtain ⟨z, hz, hyz⟩ := h (max x' y)
+  use z
+  grind
+
+theorem IsCofinal.Ioi_inter [NoMaxOrder α] {s : Set α} (h : IsCofinal s) (x : α) :
+    IsCofinal (Ioi x ∩ s) := by
+  rw [inter_comm]
+  exact h.inter_Ioi x
 
 theorem not_isCofinal_iff {s : Set α} : ¬ IsCofinal s ↔ ∃ x, ∀ y ∈ s, y < x := by
   simp [IsCofinal]
