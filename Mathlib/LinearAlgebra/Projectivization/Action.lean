@@ -176,7 +176,7 @@ instance : IsMultiplyPretransitive (Matrix.SpecialLinearGroup ι K) (ℙ K (ι �
         induction D using Projectivization.ind with | _ v hv => ?_
         simp only [smul_mk, id_eq, mk_eq_mk_iff']
         refine ⟨1, ?_⟩
-        simp [one_smul, Matrix.SpecialLinearGroup.smulVec_def,
+        simp [one_smul, Matrix.SpecialLinearGroup.smul_def,
           φ, Matrix.SpecialLinearGroup.toLin'_equiv, SpecialLinearGroup.smul_def]}
   IsPretransitive.of_embedding (f := f) Function.surjective_id
 
