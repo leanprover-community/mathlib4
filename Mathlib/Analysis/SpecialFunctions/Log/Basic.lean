@@ -305,7 +305,7 @@ theorem log_sqrt {x : ℝ} (hx : 0 ≤ x) : log (√x) = log x / 2 := by
 
 theorem log_le_sub_one_of_pos {x : ℝ} (hx : 0 < x) : log x ≤ x - 1 := by
   rw [le_sub_iff_add_le]
-  convert add_one_le_exp (log x)
+  convert! add_one_le_exp (log x)
   rw [exp_log hx]
 
 lemma one_sub_inv_le_log_of_pos (hx : 0 < x) : 1 - x⁻¹ ≤ log x := by
@@ -471,6 +471,15 @@ theorem isLittleO_const_log_atTop {c : ℝ} : (fun _ => c) =o[atTop] log := by
   continuousOn_invFun x hx := (continuousAt_log (ne_of_gt hx)).continuousWithinAt
 
 end Real
+
+namespace Nat.Prime
+
+theorem log_pos {p : ℕ} (hp : p.Prime) : 0 < Real.log p :=
+  Real.log_pos <| mod_cast hp.one_lt
+
+theorem log_ne_zero {p : ℕ} (hp : p.Prime) : Real.log p ≠ 0 := hp.log_pos.ne'
+
+end Nat.Prime
 
 section Continuity
 
