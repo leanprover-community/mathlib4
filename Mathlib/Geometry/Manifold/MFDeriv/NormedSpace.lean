@@ -520,12 +520,13 @@ variable (I) in
 /-- The exterior derivative of a vector-valued function on `M`,
 as a section of the cotangent bundle.
 
-Future: this could be generalised to functions into additive torsors over abelian Lie groups
+Future: this could be generalised to functions into additive torsors over abelian Lie groups.
 -/
 @[expose]
 noncomputable def mvfderiv (g : M → F) :
     Π x : M, TangentSpace I x →L[𝕜] F :=
   fun x ↦ (NormedSpace.fromTangentSpace <| g x).toContinuousLinearMap ∘L (mfderiv% g x)
+@[deprecated (since := "2026-05-17")] alias extDerivFun := mvfderiv
 
 namespace Manifold
 open scoped Bundle Manifold ContDiff
@@ -562,7 +563,7 @@ open Bundle PrettyPrinter Delaborator SubExpr
 
 /-- Delaborator for `mvfderiv`. -/
 -- There is no need to special-case any arguments which could use the T% s elaborator:
--- the argument to `mvfderivWithin` is a vector-valued function, which a map to a total space
+-- the argument to `mvfderiv` is a vector-valued function, which a map to a total space
 -- can never be.
 @[app_delab mvfderiv] meta def delab_mvfderiv : Delab := do
   whenPPOption getPPNotation do
@@ -669,6 +670,7 @@ lemma mvfderiv_add {g g' : M → F} {x : M} (hg : MDiffAt g x) (hg' : MDiffAt g'
     d% (g + g') x = d% g x + d% g' x := by
   simp [mvfderiv, mfderiv_add hg hg']
   rfl
+@[deprecated (since := "2026-05-17")] alias extDerivFun_add := mvfderiv_add
 
 @[simp, to_fun mvfderiv_fun_sub]
 lemma mvfderiv_sub {g g' : M → F} {x : M} (hg : MDiffAt g x) (hg' : MDiffAt g' x) :
@@ -684,17 +686,15 @@ lemma mvfderiv_neg {g : M → F} {x : M} :
 
 @[simp, to_fun mvfderiv_fun_smul]
 lemma mvfderiv_smul {x : M} {a : M → 𝕜} (ha : MDiffAt a x) {g : M → F} (hg : MDiffAt g x) :
-    d% (a • g) x =
-      a x • d% g x + (d% a x).smulRight (g x) := by
+    d% (a • g) x = a x • d% g x + (d% a x).smulRight (g x) := by
   ext v
-  simp [mvfderiv, -Pi.smul_apply', -Pi.smul_apply, fromTangentSpace_mfderiv_smul_apply ha hg]
-  rfl
+  simp [mvfderiv, -Pi.smul_apply', fromTangentSpace_mfderiv_smul_apply ha hg]
 
 @[simp, to_fun mvfderiv_fun_mul]
 lemma mvfderiv_mul {f g : M → 𝕜} {x : M} (hf : MDiffAt f x) (hg : MDiffAt g x) :
     d% (f * g) x = f x • d% g x + (g x) • (d% f x) := by
   ext v
-  simp [mvfderiv, -Pi.smul_apply', -Pi.smul_apply, ← smul_eq_mul, mfderiv_smul hf hg]
+  simp only [mvfderiv, ← smul_eq_mul, mfderiv_smul hf hg]
   simp [mul_comm _ (g x)]
 
 @[simp]
@@ -703,5 +703,4 @@ lemma mvfderiv_zero {x : M} : d% (0 : M → F) x = 0 := by
     rw [← mvfderiv_add (by exact mdifferentiable_const ..) (by exact mdifferentiable_const ..)]
     simp
   simpa using this
-
 @[deprecated (since := "2026-05-17")] alias extDerivFun_zero := mvfderiv_zero
