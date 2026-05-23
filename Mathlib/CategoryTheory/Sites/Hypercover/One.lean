@@ -76,8 +76,7 @@ lemma pullback_sieve₁ {i₁ i₂ : E.I₀} {W : C} (p₁ : W ⟶ E.X i₁) (p�
     Sieve.pullback f (E.sieve₁ p₁ p₂) = E.sieve₁ (f ≫ p₁) (f ≫ p₂) := by
   refine le_antisymm ?_ ?_ <;>
   · intro Z g ⟨k, u, hu₁, hu₂⟩
-    use k, u
-    simp_all
+    cat_disch
 
 section
 
