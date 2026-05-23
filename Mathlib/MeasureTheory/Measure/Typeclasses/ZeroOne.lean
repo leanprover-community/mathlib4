@@ -93,6 +93,167 @@ lemma measure_inter_eq_prod {s t : Set α} (hs : MeasurableSet s) (ht : Measurab
   cases μ.zero_one s <;> cases μ.zero_one t <;> cases μ.zero_one (s ∩ t)
   all_goals try simp_all [measure_inter_eq_one]
 
+lemma measure_singleton_eq_measure_measurableAtom {α : Type*} {mα : MeasurableSpace α}
+    (μ : Measure α) (x : α) :
+    μ {x} = μ (measurableAtom x) := by
+  refine le_antisymm (measure_mono ?_) ?_
+  · rintro y rfl
+    exact mem_measurableAtom_self y
+  · rw [← measure_toMeasurable {x}]
+    refine measure_mono ?_
+    refine measurableAtom_subset (measurableSet_toMeasurable μ {x}) ?_
+    exact subset_toMeasurable _ _ (mem_singleton x)
+
+open MeasurableSpace
+
+-- the atoms in a countably generated measurable space
+open Classical in
+def todo (α : Type*) [MeasurableSpace α] [CountablyGenerated α] : (ℕ → Prop) → Set α :=
+  fun p ↦ ⋂ n, if p n then natGeneratingSequence α n else (natGeneratingSequence α n)ᶜ
+
+lemma measurableSet_todo [CountablyGenerated α] (p : ℕ → Prop) : MeasurableSet (todo α p) := by
+  refine MeasurableSet.iInter fun n ↦ ?_
+  convert MeasurableSet.ite' (fun _ ↦ measurableSet_natGeneratingSequence n)
+    (fun _ ↦ (measurableSet_natGeneratingSequence n).compl)
+
+lemma disjoint_todo [CountablyGenerated α] : Pairwise (Function.onFun Disjoint (todo α)) := by
+  intro p q hpq s hsp hsq
+  simp only [le_eq_subset, bot_eq_empty, subset_empty_iff] at hsp hsq ⊢
+  ext x
+  simp only [mem_empty_iff_false, iff_false]
+  intro hxs
+  obtain ⟨n, hn⟩ : ∃ n, p n ≠ q n := by grind
+  specialize hsp hxs
+  specialize hsq hxs
+  simp only [todo, mem_iInter] at hsp hsq
+  grind
+
+lemma iUnion_todo [CountablyGenerated α] : ⋃ p, todo α p = univ := by
+  ext x
+  simp only [todo, mem_iUnion, mem_iInter, mem_univ, iff_true]
+  exact ⟨fun n ↦ x ∈ natGeneratingSequence α n, fun n ↦ by grind⟩
+
+lemma mem_todo_natGeneratingSequence [CountablyGenerated α] (x : α) :
+    x ∈ todo α (x ∈ natGeneratingSequence α ·) := by simp [todo]; grind
+
+open Classical in
+lemma exists_eq_iUnion_todo [CountablyGenerated α] {s : Set α} (hs : MeasurableSet s) :
+    ∃ (q : (ℕ → Prop) → Prop), s = ⋃ p, if q p then todo α p else ∅ := by
+  rw [← generateFrom_natGeneratingSequence α] at hs
+  refine generateFrom_induction (range (natGeneratingSequence α)) _ ?_ ?_ ?_ ?_ s hs
+  · simp only [mem_range, forall_exists_index, forall_apply_eq_imp_iff]
+    refine fun n _ ↦ ⟨fun p ↦ p n, ?_⟩
+    ext x
+    simp only [mem_iUnion, mem_ite_empty_right]
+    refine ⟨fun hx ↦ ?_, ?_⟩
+    · exact ⟨(x ∈ natGeneratingSequence α ·), by simp [todo]; grind⟩
+    · rintro ⟨p, hpn, hpx⟩
+      simp only [todo, mem_iInter] at hpx
+      specialize hpx n
+      simpa [hpn] using hpx
+  · exact ⟨fun _ ↦ False, by simp⟩
+  · simp only [forall_exists_index]
+    intro t ht q htq
+    refine ⟨fun p ↦ ¬ q p, ?_⟩
+    ext x
+    simp only [htq, compl_iUnion, mem_iInter, mem_compl_iff, mem_ite_empty_right, not_and,
+      mem_iUnion]
+    refine ⟨fun h ↦ ?_, ?_⟩
+    · refine ⟨fun n ↦ x ∈ natGeneratingSequence α n, ?_, mem_todo_natGeneratingSequence x⟩
+      contrapose! h
+      refine ⟨fun n ↦ x ∈ natGeneratingSequence α n, h, mem_todo_natGeneratingSequence x⟩
+    · rintro ⟨p, hpq, hpx⟩ p' hqp' hx_mem
+      have hpp' : p ≠ p' := by grind
+      have h_disj : Disjoint (todo α p) (todo α p') := disjoint_todo hpp'
+      grind
+  · intro t ht h
+    choose q hq using h
+    refine ⟨fun p ↦ ⨆ n, q n p, ?_⟩
+    ext
+    simp [hq]
+    grind
+
+lemma measurableAtom_eq_iInter_natGeneratingSequence [CountablyGenerated α] (x : α) :
+    measurableAtom x = todo α (x ∈ natGeneratingSequence α ·) := by
+  let A := natGeneratingSequence α
+  have hA : ∀ n, MeasurableSet (A n) := measurableSet_natGeneratingSequence
+  have hA_gen : generateFrom (range A) = mα := generateFrom_natGeneratingSequence α
+  change measurableAtom x = todo α (x ∈ A ·)
+  refine subset_antisymm (measurableAtom_subset ?_ ?_) ?_
+  · exact measurableSet_todo _
+  · exact mem_todo_natGeneratingSequence x
+  classical
+  unfold measurableAtom
+  simp only [subset_iInter_iff]
+  intro s hxs hs
+  obtain ⟨q, hq⟩ : ∃ (q : (ℕ → Prop) → Prop), s = ⋃ p, if q p then todo α p else ∅ :=
+    exists_eq_iUnion_todo hs
+  suffices q (x ∈ A ·) by
+    rw [hq]
+    refine subset_trans (le_of_eq ?_) (subset_iUnion _ (x ∈ A ·))
+    simp [this]
+  simp only [hq, mem_iUnion, mem_ite_empty_right] at hxs
+  obtain ⟨p, hpq, hpx⟩ := hxs
+  suffices p = (x ∈ A ·) by rwa [← this]
+  by_contra! hp
+  have h_disj : Disjoint (todo α p) (todo α (x ∈ A ·)) := disjoint_todo hp
+  have hx_mem : x ∈ todo α (x ∈ A ·) := mem_todo_natGeneratingSequence x
+  grind
+
+lemma measurableSet_measurableAtom [CountablyGenerated α] (x : α) :
+    MeasurableSet (measurableAtom x) := by
+  rw [measurableAtom_eq_iInter_natGeneratingSequence]
+  exact measurableSet_todo _
+
+open MeasurableSpace in
+/-- In a countably separated measurable space, a zero-one measure that is not the zero measure is
+a Dirac measure. -/
+theorem exists_eq_dirac' [CountablyGenerated α] [NeZero μ] :
+    ∃ x₀, μ = Measure.dirac x₀ := by
+  have : IsProbabilityMeasure μ := by
+    rcases IsZeroOrProbabilityMeasure.measure_univ (μ := μ) with (h | h)
+    · simp_all
+    · exact ⟨h⟩
+  let A := natGeneratingSequence α
+  have hAm : ∀ n, MeasurableSet (A n) := measurableSet_natGeneratingSequence
+  let B := fun n => if h : μ (A n) = 1 then A n else (A n)ᶜ
+  have mBn : MeasurableSet (⋂ n, B n) := by
+    refine MeasurableSet.iInter fun n ↦ ?_
+    simp only [dite_eq_ite, B]
+    convert MeasurableSet.ite' (fun _ ↦ hAm n) (fun _ ↦ (hAm n).compl)
+  have hBn : μ (⋂ n, B n) = 1 := by
+    refine (prob_compl_eq_zero_iff mBn).mp ?_
+    simp only [dite_eq_ite, compl_iInter, measure_iUnion_null_iff, B]
+    intro n
+    have := μ.zero_one (A n)
+    split_ifs with h <;> simp_all
+  obtain ⟨x₀, hx₀⟩ : (⋂ n, B n).Nonempty := by by_contra! h; simp [h] at hBn
+  classical
+  have hBA n : B n = if x₀ ∈ A n then A n else (A n)ᶜ := by
+    simp only [mem_iInter] at hx₀
+    specialize hx₀ n
+    revert hx₀
+    simp [B]
+    grind
+  have hB_atom : ⋂ n, B n = measurableAtom x₀ := by
+    classical
+    rw [measurableAtom_eq_iInter_natGeneratingSequence]
+    congr with n x
+    rw [hBA n]
+  use x₀
+  ext s hs
+  rw [Measure.dirac_apply' x₀ hs]
+  by_cases h : x₀ ∈ s
+  · simp only [h, indicator_of_mem, Pi.one_apply]
+    refine le_antisymm prob_le_one ?_
+    rw [← hBn, hB_atom]
+    exact measure_mono (measurableAtom_subset hs h)
+  · simp only [h, not_false_eq_true, indicator_of_notMem]
+    refine measure_mono_null (t := (⋂ n, B n)ᶜ) ?_ ?_
+    · rw [subset_compl_comm, hB_atom]
+      exact measurableAtom_subset hs.compl (by grind)
+    · rwa [prob_compl_eq_zero_iff mBn]
+
 /-- In a countably separated measurable space, a zero-one measure that is not the zero measure is
 a Dirac measure. -/
 theorem exists_eq_dirac [MeasurableSpace.CountablySeparated α] [NeZero μ] :
@@ -106,38 +267,32 @@ theorem exists_eq_dirac [MeasurableSpace.CountablySeparated α] [NeZero μ] :
   have mBn : MeasurableSet (⋂ n, B n) := by
     refine MeasurableSet.iInter fun n ↦ ?_
     simp only [dite_eq_ite, B]
-    split_ifs
-    · exact hAm n
-    · exact (hAm n).compl
+    convert MeasurableSet.ite' (fun _ ↦ hAm n) (fun _ ↦ (hAm n).compl)
   have hBn : μ (⋂ n, B n) = 1 := by
     refine (prob_compl_eq_zero_iff mBn).mp ?_
     simp only [dite_eq_ite, compl_iInter, measure_iUnion_null_iff, B]
     intro n
-    split_ifs with h
-    · simp_all
-    · rw [compl_compl]
-      rcases μ.zero_one (A n) with (h₀ | h₁)
-      · exact h₀
-      · simp_all
-  obtain ⟨x₀, hx₀⟩ : ∃ x₀, ⋂ n, B n = {x₀} := by
+    have := μ.zero_one (A n)
+    split_ifs with h <;> simp_all
+  obtain ⟨x₀, hx₀_mem⟩ : (⋂ n, B n).Nonempty := by by_contra! h; simp [h] at hBn
+  have hx₀ : ⋂ n, B n = {x₀} := by
     simp_rw [eq_singleton_iff_unique_mem]
     have neBn : (⋂ n, B n).Nonempty := by
       by_contra! h
       rw [h] at hBn
       simp_all
-    refine ⟨neBn.some, neBn.some_mem, fun y hy ↦ ?_⟩
-    refine hAsep y (by trivial) neBn.some (by trivial) fun n ↦ ?_
-    have hsome := neBn.some_mem
-    simp only [dite_eq_ite, mem_iInter, B] at hsome hy
-    specialize hsome n
+    refine ⟨hx₀_mem, fun y hy ↦ ?_⟩
+    refine hAsep y (by trivial) x₀ (by trivial) fun n ↦ ?_
+    simp only [dite_eq_ite, mem_iInter, B] at hx₀_mem hy
+    specialize hx₀_mem n
     specialize hy n
     constructor
     · intro h
       split_ifs at hy with hμAn
-      · simpa [hμAn] using hsome
+      · simpa [hμAn] using hx₀_mem
       · contradiction
     · intro h
-      split_ifs at hsome with hμAn
+      split_ifs at hx₀_mem with hμAn
       · simpa [hμAn] using hy
       · contradiction
   use x₀
