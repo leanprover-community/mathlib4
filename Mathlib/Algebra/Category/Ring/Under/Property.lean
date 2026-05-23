@@ -182,8 +182,9 @@ lemma RingHom.HasStableEqualizers.preservesEqualizers_pushout (hPi : RespectsIso
   algebraize [f.hom]
   have : PreservesLimit (K ⋙ Under.forget (toMorphismProperty P) ⊤ R)
       (CategoryTheory.Under.pushout f) := by
-    convert preservesLimit_of_natIso _ (CommRingCat.tensorProdIsoPushout R S)
-    convert preservesLimit_of_iso_diagram _ (diagramIsoParallelPair _).symm
+    rw [← CommRingCat.ofHom_hom f,
+      ← preservesLimit_iff_of_natIso _ (CommRingCat.tensorProdIsoPushout R S),
+      ← preservesLimit_iff_of_iso_diagram _ (diagramIsoParallelPair _).symm]
     exact hPse.preservesLimit_parallelPair_tensorProd _ _ ((K.obj _).prop) ((K.obj _).prop)
   have : PreservesLimit K (Under.pushout (toMorphismProperty P) ⊤ f ⋙
         Under.forget (toMorphismProperty P) ⊤ S) := by
