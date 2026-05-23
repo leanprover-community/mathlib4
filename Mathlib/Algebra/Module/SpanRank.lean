@@ -154,7 +154,7 @@ lemma spanRank_span_range_of_linearIndependent [RankCondition R] {ι : Type u} {
   rw [this]
   refine le_trans ?_ ((Module.Basis.span hs).le_span (R := R) (J := Subtype.val ⁻¹' x.1) ?_)
   · rw [mk_range_eq]
-    exact .of_comp (f := Subtype.val) (by convert hv; ext; simp [Module.Basis.span_apply])
+    exact .of_comp (f := Subtype.val) (by convert! hv; ext; simp [Module.Basis.span_apply])
   · apply map_injective_of_injective (f := (span R _).subtype) (injective_subtype _)
     simp [map_span, Set.image_preimage_eq_inter_range, Set.inter_eq_self_of_subset_left, ← x.2]
 
@@ -210,7 +210,7 @@ lemma lift_spanRank_le_iff_exists_span_set_card_le (p : Submodule R M) {a : Card
   if and only if there is a generating subset with cardinality less than or equal to `a`. -/
 lemma FG.spanRank_le_iff_exists_span_set_card_le (p : Submodule R M) {a : Cardinal} :
     p.spanRank ≤ a ↔ ∃ s : Set M, #s ≤ a ∧ span R s = p := by
-  convert lift_spanRank_le_iff_exists_span_set_card_le p (a := a) <;> simp
+  convert! lift_spanRank_le_iff_exists_span_set_card_le p (a := a) <;> simp
 
 @[simp]
 lemma spanRank_eq_zero_iff_eq_bot {I : Submodule R M} : I.spanRank = 0 ↔ I = ⊥ := by

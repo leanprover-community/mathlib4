@@ -536,9 +536,6 @@ lemma isNilpotent_trace_of_isNilpotent {R S : Type*} [CommRing R] [CommRing S] [
     (hx : IsNilpotent x) : IsNilpotent (trace R S x) :=
   LinearMap.isNilpotent_trace_of_isNilpotent (hx.map (lmul R S))
 
-@[deprecated (since := "2025-10-21")] alias trace_isNilpotent_of_isNilpotent :=
-  isNilpotent_trace_of_isNilpotent
-
 end Algebra
 
 end isNilpotent
