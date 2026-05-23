@@ -388,8 +388,7 @@ lemma sum_rowLens_eq_card (μ : YoungDiagram) : μ.rowLens.sum = μ.card := by
     exact μ.up_left_mem (le_refl _) (Nat.zero_le _) hc
   have hr : ∀ i ∈ Finset.range (μ.colLen 0), ({c ∈ μ.cells | c.1 = i}).card = μ.rowLen i := by
     intro i _hi
-    rw [YoungDiagram.rowLen_eq_card]
-    rfl
+    rw [YoungDiagram.rowLen_eq_card, row]
   rw [YoungDiagram.card, Finset.card_eq_sum_card_fiberwise hf, Finset.sum_congr rfl hr,
     YoungDiagram.rowLens, ← List.sum_toFinset, List.toFinset_range]
   exact List.nodup_range
