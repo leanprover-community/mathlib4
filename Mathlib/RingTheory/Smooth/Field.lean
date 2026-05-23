@@ -67,7 +67,11 @@ lemma Algebra.Generators.homOfComm_cotangentSpace_map_eq [Algebra S T] [IsScalar
     congr
     rw [Generators.homOfComm_toExtensionHom_toAlgHom]
     exact MvPolynomial.rename_X _ _
-  simpa using this
+  apply this.trans
+  simp only [toExtension_Ring, LinearEquiv.restrictScalars_toLinearMap, Module.Basis.coe_repr_symm,
+    Finsupp.lmapDomain_apply, Finsupp.mapDomain_single, Finsupp.mapRange.linearMap_apply,
+    Finsupp.mapRange_single, linearMap_apply, map_one]
+  exact ((Finsupp.linearCombination_single T _ _).trans (one_smul T _)).symm
 
 variable (R S T) in
 lemma Algebra.Generators.homOfComm_cotangentSpace_map_injective_of_injective [Algebra S T]
