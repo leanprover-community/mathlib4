@@ -199,7 +199,7 @@ set_option backward.isDefEq.respectTransparency false in
 lemma mono_map'_of_injective [HasCoproduct (X ∘ ι)] [HasCoproduct X]
     [HasCoproduct (fun (k : ((Set.range ι)ᶜ : Set I)) => X k.1)] :
     Mono (Sigma.map' ι (fun j => 𝟙 ((X ∘ ι) j))) := by
-  convert mono_of_injective' X ι hι
+  convert! mono_of_injective' X ι hι
   apply Sigma.hom_ext
   intro j
   rw [Sigma.ι_comp_map', id_comp, colimit.ι_desc]
