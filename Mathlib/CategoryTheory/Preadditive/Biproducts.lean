@@ -295,9 +295,8 @@ def biproduct.reindex {β γ : Type} [Finite β] (ε : β ≃ γ)
     cases nonempty_fintype β
     ext g g'
     by_cases h : g' = g <;>
-      simp [Preadditive.sum_comp, biproduct.lift_desc,
-        biproduct.ι_π, comp_dite, Equiv.apply_eq_iff_eq_symm_apply,
-        h]
+      simp [Preadditive.sum_comp, biproduct.lift_desc, biproduct.ι_π, comp_dite,
+        Equiv.apply_eq_iff_eq_symm_apply, h]
 
 /-- In a preadditive category, we can construct a binary biproduct for `X Y : C` from
 any binary bicone `b` satisfying `total : b.fst ≫ b.inl + b.snd ≫ b.inr = 𝟙 b.X`.
@@ -660,9 +659,9 @@ instance subsingleton_preadditive_of_hasBinaryBiproducts {C : Type u} [Category.
   allEq := fun a b => by
     apply Preadditive.ext; funext X Y; apply AddCommGroup.ext; funext f g
     have h₁ := @biprod.add_eq_lift_id_desc _ _ a _ _ f g
-      (by convert (inferInstance : HasBinaryBiproduct X X); subsingleton)
+      (by convert! (inferInstance : HasBinaryBiproduct X X); subsingleton)
     have h₂ := @biprod.add_eq_lift_id_desc _ _ b _ _ f g
-      (by convert (inferInstance : HasBinaryBiproduct X X); subsingleton)
+      (by convert! (inferInstance : HasBinaryBiproduct X X); subsingleton)
     refine h₁.trans (Eq.trans ?_ h₂.symm)
     congr! 2 <;> subsingleton
 
@@ -911,7 +910,7 @@ lemma preservesBiproduct_of_mono_biproductComparison {f : J → C} [HasBiproduct
       (F.mapIso (biproduct.isoProduct f)).inv ≫
         biproductComparison F f ≫ (biproduct.isoProduct _).hom := by
     ext j
-    convert piComparison_comp_π F f j; simp [← Function.comp_def, ← Functor.map_comp]
+    convert! piComparison_comp_π F f j; simp [← Function.comp_def, ← Functor.map_comp]
   haveI : IsIso (biproductComparison F f) := isIso_of_mono_of_isSplitEpi _
   haveI : IsIso (piComparison F f) := by
     rw [that]

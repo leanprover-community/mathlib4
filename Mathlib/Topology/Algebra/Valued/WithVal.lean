@@ -62,7 +62,7 @@ section Ring
 
 variable [Ring R] (v : Valuation R Γ₀)
 
-instance : Ring (WithVal v) := Equiv.ring { toFun := ofVal, invFun := toVal v }
+instance : Ring (WithVal v) := fast_instance% Equiv.ring { toFun := ofVal, invFun := toVal v }
 instance : Inhabited (WithVal v) := ⟨0⟩
 instance : Preorder (WithVal v) := .lift (v ∘ ofVal)
 
@@ -118,6 +118,18 @@ lemma toVal_bijective : Function.Bijective (toVal v) :=
 @[simp] lemma toVal_pow (x : R) (n : ℕ) : toVal v (x ^ n) = (toVal v x) ^ n := rfl
 
 @[simp] lemma ofVal_pow (x : WithVal v) (n : ℕ) : ofVal (x ^ n) = (ofVal x) ^ n := rfl
+
+@[simp] lemma toVal_natCast (n : ℕ) : toVal v n = n := rfl
+
+@[simp] lemma ofVal_natCast (n : ℕ) : ofVal (n : WithVal v) = n := rfl
+
+@[simp] lemma toVal_intCast (z : ℤ) : toVal v z = z := rfl
+
+@[simp] lemma ofVal_intCast (z : ℤ) : ofVal (z : WithVal v) = z := rfl
+
+@[simp] lemma toVal_ofNat (n : ℕ) [n.AtLeastTwo] : toVal v ofNat(n) = ofNat(n) := rfl
+
+@[simp] lemma ofVal_ofNat (n : ℕ) [n.AtLeastTwo] : ofVal (ofNat(n) : WithVal v) = ofNat(n) := rfl
 
 @[simp] lemma toVal_eq_zero (x : R) : toVal v x = 0 ↔ x = 0 := (toVal_injective v).eq_iff
 
@@ -190,7 +202,7 @@ variable [CommRing R] (v : Valuation R Γ₀)
 
 instance : CommRing (WithVal v) := fast_instance% (equiv v).commRing
 
-instance : ValuativeRel (WithVal v) := .ofValuation (valuation v)
+instance : ValuativeRel (WithVal v) := fast_instance% .ofValuation (valuation v)
 
 instance : (valuation v).Compatible := .ofValuation (valuation v)
 
@@ -266,9 +278,9 @@ section left
 
 variable [CommRing R] (v : Valuation R Γ₀) [Semiring S] [Algebra R S]
 
-instance : Algebra (WithVal v) S where
+instance : Algebra (WithVal v) S := fast_instance% {
   __ := (inferInstance : Module (WithVal v) S)
-  __ := Algebra.compHom S (equiv v).toRingHom
+  __ := Algebra.compHom S (equiv v).toRingHom }
 
 theorem algebraMap_left_apply (s : WithVal v) :
     algebraMap (WithVal v) S s = algebraMap R S s.ofVal := rfl
@@ -285,7 +297,7 @@ section right
 
 variable [CommSemiring R] [Ring S] [Algebra R S] (v : Valuation S Γ₀)
 
-instance : Algebra R (WithVal v) := (equiv v).algebra R
+instance : Algebra R (WithVal v) := fast_instance% (equiv v).algebra R
 
 theorem algebraMap_right_apply (r : R) :
     algebraMap R (WithVal v) r = toVal v (algebraMap R S r) := rfl
@@ -326,6 +338,18 @@ instance [NumberField R] : NumberField (WithVal v) where
 @[simp] lemma toVal_inv (x : R) : toVal v x⁻¹ = (toVal v x)⁻¹ := rfl
 
 @[simp] lemma ofVal_inv (x : WithVal v) : ofVal (x⁻¹) = (ofVal x)⁻¹ := rfl
+
+@[simp] lemma toVal_zpow (x : R) (z : ℤ) : toVal v (x ^ z) = (toVal v x) ^ z := rfl
+
+@[simp] lemma ofVal_zpow (x : WithVal v) (z : ℤ) : ofVal (x ^ z) = (ofVal x) ^ z := rfl
+
+@[simp] lemma toVal_nnratCast (q : ℚ≥0) : toVal v q = q := rfl
+
+@[simp] lemma ofVal_nnratCast (q : ℚ≥0) : ofVal (q : WithVal v) = q := rfl
+
+@[simp] lemma toVal_ratCast (q : ℚ) : toVal v q = q := rfl
+
+@[simp] lemma ofVal_ratCast (q : ℚ) : ofVal (q : WithVal v) = q := rfl
 
 end Field
 
@@ -591,8 +615,9 @@ theorem IsEquiv.valuedCompletion_le_one_iff {K : Type*} [Field K] {v : Valuation
     have h1 (x : UniformSpace.Completion (WithVal v)) :
       Valued.v x ≤ 1 ↔ Valued.v.restrict x ≤ 1 := by rw [restrict_le_one_iff]
     simp_rw [h1]
-    convert (mapEquiv h.uniformEquiv).toHomeomorph.isClosed_setOf_iff
-      (Valued.isClopen_closedBall _ one_ne_zero) (Valued.isClopen_closedBall _ one_ne_zero)
+    convert!
+      (mapEquiv h.uniformEquiv).toHomeomorph.isClosed_setOf_iff
+        (Valued.isClopen_closedBall _ one_ne_zero) (Valued.isClopen_closedBall _ one_ne_zero)
     rw [restrict_le_one_iff]
     rfl
   | ih a =>
