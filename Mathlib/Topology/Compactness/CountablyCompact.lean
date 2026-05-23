@@ -276,9 +276,12 @@ theorem Topology.IsInducing.isSeqCompact_iff {f : E → F} (hf : IsInducing f) :
     choose a ha using hfa
     exact ⟨a, ha.1, φ, hφ.1, hf.tendsto_nhds_iff.2 (ha.2 ▸ hφ.2)⟩
 
+@[deprecated (since := "2026-05-23")]
+alias Topology.IsEmbedding.isSeqCompact_iff := Topology.IsInducing.isSeqCompact_iff
+
 theorem Subtype.isSeqCompact_iff {p : E → Prop} {A : Set { x // p x }} :
     IsSeqCompact A ↔ IsSeqCompact ((↑) '' A : Set E) :=
-  IsEmbedding.subtypeVal.isSeqCompact_iff
+  IsEmbedding.subtypeVal.toIsInducing.isSeqCompact_iff
 
 theorem isSeqCompact_iff_isSeqCompact_univ : IsSeqCompact A ↔ IsSeqCompact (univ : Set A) := by
   rw [Subtype.isSeqCompact_iff, image_univ, Subtype.range_coe]
