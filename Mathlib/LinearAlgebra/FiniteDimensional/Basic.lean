@@ -129,9 +129,9 @@ noncomputable def basisSingleton (ι : Type*) [Unique ι] (h : finrank K V = 1) 
       map_smul' := by simp [mul_div]
       left_inv := fun w => by
         apply_fun b.repr using b.repr.toEquiv.injective
-        apply_fun Equiv.finsuppUnique
+        apply_fun Finsupp.uniqueEquiv default
         simp only [map_smulₛₗ, Finsupp.coe_smul, Finsupp.single_eq_same,
-          smul_eq_mul, Pi.smul_apply, Equiv.finsuppUnique_apply]
+          smul_eq_mul, Pi.smul_apply, Finsupp.uniqueEquiv_apply]
         exact div_mul_cancel₀ _ h
       right_inv := fun f => by
         ext
@@ -353,7 +353,7 @@ theorem _root_.Module.End.injective_of_surjective {f : Module.End R M} (hf : Sur
 
 variable {R M} in
 theorem _root_.Module.bijective_of_surjective_of_finite_of_free_of_finrank_eq
-    [StrongRankCondition R] {N : Type*} [AddCommGroup N] [Module R N] [Module.Finite R N] [Free R N]
+    [StrongRankCondition R] {N : Type*} [AddCommGroup N] [Module R N] [Free R N]
     (h : finrank R M = finrank R N) {f : M →ₗ[R] N} (hf : Function.Surjective f) :
     Function.Bijective f := by
   have : Module.Finite R N := Module.Finite.of_surjective f hf
