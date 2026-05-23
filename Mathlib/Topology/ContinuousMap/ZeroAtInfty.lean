@@ -427,12 +427,21 @@ theorem isClosed_range_toBCF : IsClosed (range (toBCF : C₀(α, β) → α →�
       _ ≤ ε := by grw [mem_ball.1 hg, add_halves ε]
   exact ⟨⟨f.toContinuousMap, this⟩, rfl⟩
 
-
 /-- Continuous functions vanishing at infinity taking values in a complete space form a
 complete space. -/
 instance instCompleteSpace [CompleteSpace β] : CompleteSpace C₀(α, β) :=
   (completeSpace_iff_isComplete_range isometry_toBCF.isUniformInducing).mpr
     isClosed_range_toBCF.isComplete
+
+theorem lipschitz_eval_const (x : α) : LipschitzWith 1 fun f : C₀(α, β) ↦ f x :=
+  LipschitzWith.mk_one fun _ _ => by
+    simp_rw [← dist_toBCF_eq_dist, ← toBCF_apply]
+    apply dist_coe_le_dist x
+
+/-- The evaluation map is continuous, as a joint function of `u` and `x`. -/
+instance : ContinuousEval C₀(α, β) α β where
+  continuous_eval := continuous_prod_of_continuous_lipschitzWith _ 1
+    (fun f ↦ f.continuous) lipschitz_eval_const
 
 end Metric
 
