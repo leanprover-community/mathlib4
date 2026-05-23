@@ -29,10 +29,10 @@ The Dieudonné measurable space and measure on a well-order are scoped to the
 
 namespace MeasureTheory.Dieudonne
 
-open Cardinal MeasureTheory Order Set
+open Cardinal Order Set
 
-variable {α : Type*} {x y : α} {s : Set α} [LinearOrder α]
-  [WellFoundedLT α] [h₀ : Fact (cof α ≠ ℵ₀)]
+variable {α : Type*} {x y : α} {s : Set α} [LinearOrder α] [WellFoundedLT α]
+  [h₀ : Fact (cof α ≠ ℵ₀)]
 include h₀
 
 /-- Measurable sets in Dieudonné space either contain or entirely omit some club set. -/
