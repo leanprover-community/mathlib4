@@ -44,13 +44,12 @@ are defined by an action of `R` on `S` (formally, we have two scalar towers), th
 equivalence from `M` to `M₂` is also an `R`-linear equivalence.
 
 See also `LinearMap.restrictScalars`. -/
-@[simps]
-def restrictScalars (f : M ≃ₗ[S] M₂) : M ≃ₗ[R] M₂ :=
-  { f.toLinearMap.restrictScalars R with
-    toFun := f
-    invFun := f.symm
-    left_inv := f.left_inv
-    right_inv := f.right_inv }
+@[simps!, simps toLinearMap]
+def restrictScalars (f : M ≃ₗ[S] M₂) : M ≃ₗ[R] M₂ where
+  toLinearMap := f.toLinearMap.restrictScalars R
+  invFun := f.symm
+  left_inv := f.left_inv
+  right_inv := f.right_inv
 
 theorem restrictScalars_injective :
     Function.Injective (restrictScalars R : (M ≃ₗ[S] M₂) → M ≃ₗ[R] M₂) := fun _ _ h ↦

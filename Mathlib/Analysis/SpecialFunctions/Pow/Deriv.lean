@@ -7,11 +7,12 @@ Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne, Sébasti
 module
 
 public import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
-public import Mathlib.Analysis.SpecialFunctions.Complex.LogDeriv
 public import Mathlib.Analysis.Calculus.FDeriv.Extend
 public import Mathlib.Analysis.Calculus.Deriv.Prod
 public import Mathlib.Analysis.SpecialFunctions.Log.Deriv
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
+
+import Mathlib.Analysis.SpecialFunctions.Complex.LogDeriv
 
 /-!
 # Derivatives of power function on `ℂ`, `ℝ`, `ℝ≥0`, and `ℝ≥0∞`
@@ -743,6 +744,10 @@ theorem deriv_const_rpow (ha : 0 < a) (hf : DifferentiableAt ℝ f x) :
     deriv (a ^ f ·) x = Real.log a * deriv f x * a ^ f x :=
   (hf.hasDerivAt.const_rpow ha).deriv
 
+@[simp]
+theorem deriv_const_rpow_id (ha : 0 < a) :
+    deriv (a ^ ·) x = Real.log a * a ^ x := by
+  rw [deriv_const_rpow ha differentiableAt_fun_id, deriv_id'', mul_one]
 
 end deriv
 

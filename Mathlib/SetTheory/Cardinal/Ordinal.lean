@@ -124,10 +124,9 @@ theorem card_sSup_le {c : Cardinal} {s : Set Ordinal.{u}}
 
 theorem card_opow_le_of_omega0_le_left {a : Ordinal} (ha : ω ≤ a) (b : Ordinal) :
     (a ^ b).card ≤ max a.card b.card := by
-  refine limitRecOn b ?_ ?_ ?_
-  · simpa using one_lt_omega0.le.trans ha
-  · intro b IH
-    simp_rw [Order.succ_eq_add_one]
+  induction b using limitRecOn with
+  | zero => simpa using one_lt_omega0.le.trans ha
+  | add_one b IH =>
     rw [opow_add_one, card_mul, card_add_one, Cardinal.mul_eq_max_of_aleph0_le_right, max_comm]
     · grw [IH]
       rw [← max_assoc, max_self]
@@ -136,7 +135,7 @@ theorem card_opow_le_of_omega0_le_left {a : Ordinal} (ha : ω ≤ a) (b : Ordina
       rintro ⟨rfl, -⟩
       cases omega0_pos.not_ge ha
     · rwa [aleph0_le_card]
-  · intro b hb IH
+  | limit b hb IH =>
     rw [(isNormal_opow (one_lt_omega0.trans_le ha)).apply_of_isSuccLimit hb]
     exact card_iSup_Iio_le (le_max_right ..) fun i ↦
       (IH i i.2).trans (max_le_max_left _ (card_le_card i.2.le))
