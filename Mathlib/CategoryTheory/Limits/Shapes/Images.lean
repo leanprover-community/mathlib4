@@ -184,7 +184,7 @@ def copy (F : MonoFactorisation f) (m : F.I ⟶ Y) (e : X ⟶ F.I)
 @[simp]
 lemma fac_apply {F G : C ⥤ Type w} {f : F ⟶ G} {X : C}
     (H : MonoFactorisation f) (x : F.obj X) : H.m.app X (H.e.app X x) = f.app X x := by
-  simp [← types_comp_apply, ← NatTrans.comp_app]
+  simp [← comp_apply, ← NatTrans.comp_app]
 
 end MonoFactorisation
 
@@ -488,7 +488,7 @@ theorem image.ext [HasImage f] {W : C} {g h : image f ⟶ W} [HasLimit (parallel
   have t : v ≫ q = 𝟙 (image f) :=
     (cancel_mono_id (image.ι f)).1
       (by
-        convert t₀ using 1
+        convert! t₀ using 1
         rw [Category.assoc])
   -- The proof from wikipedia next proves `q ≫ v = 𝟙 _`,
   -- and concludes that `equalizer g h ≅ image f`,

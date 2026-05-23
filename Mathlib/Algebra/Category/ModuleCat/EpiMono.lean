@@ -38,14 +38,14 @@ theorem range_eq_top_of_epi [Epi f] : LinearMap.range f.hom = ⊤ :=
 
 theorem mono_iff_ker_eq_bot : Mono f ↔ LinearMap.ker f.hom = ⊥ :=
   ⟨fun _ => ker_eq_bot_of_mono _, fun hf =>
-    ConcreteCategory.mono_of_injective _ <| by convert LinearMap.ker_eq_bot.1 hf⟩
+    ConcreteCategory.mono_of_injective _ <| by convert! LinearMap.ker_eq_bot.1 hf⟩
 
 theorem mono_iff_injective : Mono f ↔ Function.Injective f := by
   rw [mono_iff_ker_eq_bot, LinearMap.ker_eq_bot]
 
 theorem epi_iff_range_eq_top : Epi f ↔ LinearMap.range f.hom = ⊤ :=
   ⟨fun _ => range_eq_top_of_epi _, fun hf =>
-    ConcreteCategory.epi_of_surjective _ <| by convert LinearMap.range_eq_top.1 hf⟩
+    ConcreteCategory.epi_of_surjective _ <| by convert! LinearMap.range_eq_top.1 hf⟩
 
 theorem epi_iff_surjective : Epi f ↔ Function.Surjective f := by
   rw [epi_iff_range_eq_top, LinearMap.range_eq_top]
@@ -61,18 +61,14 @@ instance mono_as_hom'_subtype (U : Submodule R X) : Mono (ModuleCat.ofHom U.subt
 instance epi_as_hom''_mkQ (U : Submodule R X) : Epi (ModuleCat.ofHom U.mkQ) :=
   (epi_iff_range_eq_top _).mpr <| Submodule.range_mkQ _
 
-set_option backward.isDefEq.respectTransparency false in
 instance forget_preservesEpimorphisms : (forget (ModuleCat.{v} R)).PreservesEpimorphisms where
     preserves f hf := by
-      rw [CategoryTheory.epi_iff_surjective, ConcreteCategory.forget_map_eq_coe,
-        ← epi_iff_surjective]
+      rw [CategoryTheory.ofHom_epi_iff_surjective, ← epi_iff_surjective]
       exact hf
 
-set_option backward.isDefEq.respectTransparency false in
 instance forget_preservesMonomorphisms : (forget (ModuleCat.{v} R)).PreservesMonomorphisms where
     preserves f hf := by
-      rw [CategoryTheory.mono_iff_injective, ConcreteCategory.forget_map_eq_coe,
-        ← mono_iff_injective]
+      rw [CategoryTheory.ofHom_mono_iff_injective, ← mono_iff_injective]
       exact hf
 
 end ModuleCat

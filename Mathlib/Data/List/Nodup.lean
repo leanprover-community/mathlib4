@@ -28,9 +28,6 @@ protected theorem Pairwise.nodup {l : List α} {r : α → α → Prop} [Std.Irr
     Nodup l :=
   h.imp ne_of_irrefl
 
-@[deprecated (since := "2025-10-11")]
-alias Sorted.nodup := Pairwise.nodup
-
 open scoped Relator in
 theorem rel_nodup {r : α → β → Prop} (hr : Relator.BiUnique r) : (Forall₂ r ⇒ (· ↔ ·)) Nodup Nodup
   | _, _, Forall₂.nil => by simp only [nodup_nil]
@@ -124,10 +121,6 @@ theorem not_nodup_of_get_eq_of_ne (xs : List α) (n m : Fin xs.length)
   rw [nodup_iff_injective_get]
   exact fun hinj => hne (hinj h)
 
-@[deprecated Nodup.idxOf_getElem (since := "2025-11-10")]
-theorem idxOf_getElem [DecidableEq α] {l : List α} : Nodup l → (i : Nat) → (h : i < l.length) →
-    idxOf l[i] l = i := Nodup.idxOf_getElem
-
 -- This is incorrectly named and should be `idxOf_get`;
 -- this already exists, so will require a deprecation dance.
 theorem get_idxOf [BEq α] [LawfulBEq α] {l : List α} (H : Nodup l) (i : Fin l.length) :
@@ -157,8 +150,6 @@ theorem getElem_bijective_iff [BEq α] [LawfulBEq α] :
 theorem count_eq_one_of_mem [BEq α] [LawfulBEq α] {a : α} {l : List α} (d : Nodup l) (h : a ∈ l) :
     count a l = 1 :=
   nodup_iff_count_eq_one.mp d a h
-
-@[deprecated (since := "2025-11-07")] alias count_eq_of_nodup := Nodup.count
 
 theorem Nodup.of_append_left : Nodup (l₁ ++ l₂) → Nodup l₁ :=
   Nodup.sublist (sublist_append_left l₁ l₂)

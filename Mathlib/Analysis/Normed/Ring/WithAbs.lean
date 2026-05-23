@@ -253,8 +253,7 @@ variable [Semiring T] [Module R T] (v : AbsoluteValue T S)
 variable (R) in
 /-- The canonical `R`-linear isomorphism between `WithAbs v` and `T`, when
 `v : AbsoluteValue T S`. -/
-def linearEquiv [Semiring T] [Module R T] (v : AbsoluteValue T S) :
-    WithAbs v ≃ₗ[R] T := (equiv v).linearEquiv R
+def linearEquiv : WithAbs v ≃ₗ[R] T := (equiv v).linearEquiv R
 
 variable {v}
 

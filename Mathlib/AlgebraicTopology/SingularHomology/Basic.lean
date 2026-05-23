@@ -76,6 +76,7 @@ lemma singularChainComplexFunctorAdjunction_unit_app (R : C) :
     Adjunction.comp, singularChainComplexFunctor,
     SSet.chainComplexFunctorAdjunction, SSet.chainComplexFunctor]
   simp [stdSimplexToTop]
+  rfl
 
 set_option backward.isDefEq.respectTransparency false in
 lemma ι_singularChainComplexFunctorAdjunction_counit_app_app (F : TopCat ⥤ C) (X : TopCat) (i) :

@@ -413,14 +413,14 @@ theorem mdifferentiableOn_iff :
     specialize h w this
     have w1 : w ∈ (chartAt H x).source := by simp only [w, hz, mfld_simps]
     have w2 : f w ∈ (chartAt H' y).source := by simp only [w, hz, mfld_simps]
-    convert ((mdifferentiableWithinAt_iff_of_mem_source w1 w2).mp h).2.mono _
+    convert! ((mdifferentiableWithinAt_iff_of_mem_source w1 w2).mp h).2.mono _
     · simp only [w, hz, mfld_simps]
     · mfld_set_tac
   · rintro ⟨hcont, hdiff⟩ x hx
     refine differentiableWithinAt_localInvariantProp.liftPropWithinAt_iff.mpr ?_
     refine ⟨hcont x hx, ?_⟩
     dsimp [DifferentiableWithinAtProp]
-    convert hdiff x (f x) (extChartAt I x x) (by simp only [hx, mfld_simps]) using 1
+    convert! hdiff x (f x) (extChartAt I x x) (by simp only [hx, mfld_simps]) using 1
     mfld_set_tac
 
 /-- One can reformulate smoothness on a set as continuity on this set, and smoothness in any
@@ -437,7 +437,7 @@ theorem mdifferentiableOn_iff_target :
   constructor
   · refine fun h' y => ⟨?_, fun x _ => h' x y⟩
     have h'' : ContinuousOn _ univ := (ModelWithCorners.continuous I').continuousOn
-    convert (h''.comp_inter (chartAt H' y).continuousOn_toFun).comp_inter h
+    convert! (h''.comp_inter (chartAt H' y).continuousOn_toFun).comp_inter h
     simp
   · exact fun h' x y => (h' y).2 x 0
 
@@ -448,7 +448,7 @@ theorem mdifferentiable_iff :
         ∀ (x : M) (y : M'),
           DifferentiableOn 𝕜 (extChartAt I' y ∘ f ∘ (extChartAt I x).symm)
             ((extChartAt I x).target ∩
-              (extChartAt I x).symm ⁻¹' (f ⁻¹' (extChartAt I' y).source)) := by
+              (extChartAt I x).symm ⁻¹' f ⁻¹' (extChartAt I' y).source) := by
   simp [← mdifferentiableOn_univ, mdifferentiableOn_iff, continuousOn_univ]
 
 /-- One can reformulate smoothness as continuity and smoothness in any extended chart in the
@@ -563,7 +563,7 @@ lemma mdifferentiableWithinAt_of_mfderivWithin_injective
     MDifferentiableWithinAt I I' f s x := by
   nontriviality E
   have : Nontrivial (TangentSpace I x) := inferInstanceAs (Nontrivial E)
-  contrapose! hf
+  contrapose hf
   rw [mfderivWithin_zero_of_not_mdifferentiableWithinAt hf]
   exact not_injective_const
 
@@ -625,7 +625,7 @@ theorem HasMFDerivWithinAt.union (hs : HasMFDerivWithinAt I I' f s x f')
     (ht : HasMFDerivWithinAt I I' f t x f') : HasMFDerivWithinAt I I' f (s ∪ t) x f' := by
   constructor
   · exact ContinuousWithinAt.union hs.1 ht.1
-  · convert HasFDerivWithinAt.union hs.2 ht.2 using 1
+  · convert! HasFDerivWithinAt.union hs.2 ht.2 using 1
     simp only [union_inter_distrib_right, preimage_union]
 
 theorem HasMFDerivWithinAt.mono_of_mem_nhdsWithin
@@ -1124,7 +1124,7 @@ theorem HasMFDerivWithinAt.comp (hg : HasMFDerivWithinAt I' I'' g u (f x) g')
       (ContinuousLinearMap.comp g' f' : E →L[𝕜] E'') ((extChartAt I x).symm ⁻¹' s ∩ range I)
       ((extChartAt I x) x) := by
     have :
-      (extChartAt I x).symm ⁻¹' (f ⁻¹' (extChartAt I' (f x)).source) ∈
+      (extChartAt I x).symm ⁻¹' f ⁻¹' (extChartAt I' (f x)).source ∈
         𝓝[(extChartAt I x).symm ⁻¹' s ∩ range I] (extChartAt I x) x :=
       extChartAt_preimage_mem_nhdsWithin
         (hf.1.preimage_mem_nhdsWithin (extChartAt_source_mem_nhds _))

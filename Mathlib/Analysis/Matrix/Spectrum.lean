@@ -135,9 +135,6 @@ theorem conjStarAlgAut_star_eigenvectorUnitary :
   apply PiLp.ext fun j ↦ ?_
   simp only [PiLp.smul_apply, PiLp.single_apply, smul_eq_mul, mul_ite, mul_one, mul_zero]
 
-@[deprecated (since := "2025-11-06")] alias star_mul_self_mul_eq_diagonal :=
-  conjStarAlgAut_star_eigenvectorUnitary
-
 /-- **Diagonalization theorem**, **spectral theorem** for matrices; A Hermitian matrix can be
 diagonalized by a change of basis. For the spectral theorem on linear maps, see
 `LinearMap.IsSymmetric.eigenvectorBasis_apply_self_apply`. -/
@@ -229,7 +226,7 @@ lemma exists_eigenvector_of_ne_zero (hA : IsHermitian A) (h_ne : A ≠ 0) :
     ∃ (v : n → 𝕜) (t : ℝ), t ≠ 0 ∧ v ≠ 0 ∧ A *ᵥ v = t • v := by
   classical
   have : hA.eigenvalues ≠ 0 := by
-    contrapose! h_ne
+    contrapose h_ne
     have := hA.spectral_theorem
     rwa [h_ne, Pi.comp_zero, RCLike.ofReal_zero, (by rfl : Function.const n (0 : 𝕜) = fun _ ↦ 0),
       diagonal_zero, map_zero] at this
