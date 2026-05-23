@@ -42,50 +42,81 @@ structure IsClub {α : Type*} [LinearOrder α] (s : Set α) where
 
 variable {α : Type v} {s t : Set α} {x : α} [LinearOrder α]
 
+namespace IsClub
+
 @[simp]
-theorem IsClub.of_isEmpty [IsEmpty α] {s : Set α} : IsClub s :=
+theorem of_isEmpty [IsEmpty α] {s : Set α} : IsClub s :=
   ⟨.of_isEmpty, .of_isEmpty⟩
 
 @[simp]
-theorem IsClub.univ : IsClub (α := α) .univ :=
+protected theorem univ : IsClub (α := α) .univ :=
   ⟨.univ, .univ⟩
 
-protected theorem IsClub.nonempty [Nonempty α] (hs : IsClub s) : s.Nonempty :=
+protected theorem nonempty [Nonempty α] (hs : IsClub s) : s.Nonempty :=
   hs.isCofinal.nonempty
 
-theorem isClub_empty_iff : IsClub (α := α) ∅ ↔ IsEmpty α :=
+theorem _root_.isClub_empty_iff : IsClub (α := α) ∅ ↔ IsEmpty α :=
   ⟨fun h ↦ isCofinal_empty_iff.1 h.isCofinal, fun _ ↦ .of_isEmpty⟩
 
-theorem IsClub.union (hs : IsClub s) (ht : IsClub t) : IsClub (s ∪ t) :=
+protected theorem union (hs : IsClub s) (ht : IsClub t) : IsClub (s ∪ t) :=
   ⟨hs.dirSupClosed.union ht.dirSupClosed, hs.isCofinal.mono subset_union_left⟩
 
-theorem IsClub.isLUB_mem (hs : IsClub s) (ht : t ⊆ s) (ht₀ : t.Nonempty) (hx : IsLUB t x) : x ∈ s :=
+theorem isLUB_mem (hs : IsClub s) (ht : t ⊆ s) (ht₀ : t.Nonempty) (hx : IsLUB t x) : x ∈ s :=
   hs.dirSupClosed ht ht₀ (.of_linearOrder _) hx
 
-theorem IsClub.csSup_mem {α} [ConditionallyCompleteLinearOrder α] {s t : Set α}
+theorem csSup_mem {α} [ConditionallyCompleteLinearOrder α] {s t : Set α}
     (hs : IsClub s) (ht : t ⊆ s) (ht₀ : t.Nonempty) (ht₁ : BddAbove t) : sSup t ∈ s :=
   hs.isLUB_mem ht ht₀ (isLUB_csSup ht₀ ht₁)
 
-theorem IsClub.sInter_of_orderTop {s : Set (Set α)} [OrderTop α]
-    (hs : ∀ x ∈ s, IsClub x) : IsClub (⋂₀ s) := by
+theorem inter_Ici (hs : IsClub s) (x : α) : IsClub (s ∩ Ici x) :=
+  ⟨hs.dirSupClosed.inter (dirSupClosed_Ici x), hs.isCofinal.inter_Ici x⟩
+
+theorem Ici_inter (hs : IsClub s) (x : α) : IsClub (Ici x ∩ s) :=
+  ⟨(dirSupClosed_Ici x).inter hs.dirSupClosed, hs.isCofinal.Ici_inter x⟩
+
+theorem inter_Ioi [NoMaxOrder α] (hs : IsClub s) (x : α) : IsClub (s ∩ Ioi x) :=
+  ⟨hs.dirSupClosed.inter (dirSupClosed_Ioi x), hs.isCofinal.inter_Ioi x⟩
+
+theorem Ioi_inter [NoMaxOrder α] (hs : IsClub s) (x : α) : IsClub (Ioi x ∩ s) :=
+  ⟨(dirSupClosed_Ioi x).inter hs.dirSupClosed, hs.isCofinal.Ioi_inter x⟩
+
+@[simp]
+protected theorem Ici (x : α) : IsClub (Ici x) := by
+  simpa using IsClub.univ.inter_Ici x
+
+@[simp]
+protected theorem Ioi [NoMaxOrder α] (x : α) : IsClub (Ioi x) := by
+  simpa using IsClub.univ.inter_Ioi x
+
+@[simp]
+theorem singleton_top [OrderTop α] : IsClub ({⊤} : Set α) :=
+  ⟨dirSupClosed_singleton _, by simp⟩
+
+theorem _root_.IsMax.isClub_singleton (hx : IsMax x) : IsClub {x} := by
+  let : Top α := ⟨x⟩
+  let : OrderTop α := ⟨hx.isTop⟩
+  exact singleton_top
+
+theorem sInter_of_orderTop {s : Set (Set α)} [OrderTop α] (hs : ∀ x ∈ s, IsClub x) :
+    IsClub (⋂₀ s) := by
   refine ⟨.sInter fun x hx ↦ (hs x hx).dirSupClosed, ?_⟩
   rw [isCofinal_iff_top_mem, mem_sInter]
   exact fun x hx ↦ (hs x hx).isCofinal.top_mem
 
-theorem IsClub.iInter_of_orderTop {ι : Type*} {f : ι → Set α} [OrderTop α]
-    (hs : ∀ i, IsClub (f i)) : IsClub (⋂ i, f i) := by
+theorem iInter_of_orderTop {ι : Type*} {f : ι → Set α} [OrderTop α] (hs : ∀ i, IsClub (f i)) :
+    IsClub (⋂ i, f i) := by
   rw [← sInter_range]
   exact .sInter_of_orderTop (by simpa)
 
-theorem IsClub.sInter_of_cof_le_one {s : Set (Set α)} (hα : cof α ≤ 1)
+theorem sInter_of_cof_le_one {s : Set (Set α)} (hα : cof α ≤ 1)
     (hs : ∀ x ∈ s, IsClub x) : IsClub (⋂₀ s) := by
   cases isEmpty_or_nonempty α; · simp
   cases topOrderOrNoTopOrder α
   · exact .sInter_of_orderTop hs
   · cases one_lt_cof.not_ge hα
 
-theorem IsClub.iInter_of_cof_le_one {ι : Type*} {f : ι → Set α} (hα : cof α ≤ 1)
-    (hs : ∀ i, IsClub (f i)) : IsClub (⋂ i, f i) := by
+theorem iInter_of_cof_le_one {ι : Type*} {f : ι → Set α} (hα : cof α ≤ 1) (hs : ∀ i, IsClub (f i)) :
+    IsClub (⋂ i, f i) := by
   rw [← sInter_range]
   exact .sInter_of_cof_le_one hα (by simpa)
 
@@ -95,7 +126,7 @@ variable [WellFoundedLT α]
 attribute [local instance]
   WellFoundedLT.toOrderBot WellFoundedLT.conditionallyCompleteLinearOrderBot
 
-theorem IsClub.sInter {s : Set (Set α)} (hα : cof α ≠ ℵ₀) (hsα : #s < cof α)
+protected theorem sInter {s : Set (Set α)} (hα : cof α ≠ ℵ₀) (hsα : #s < cof α)
     (hs : ∀ x ∈ s, IsClub x) : IsClub (⋂₀ s) := by
   cases isEmpty_or_nonempty α; · simp
   obtain hα | hα := hα.lt_or_gt
@@ -115,14 +146,14 @@ theorem IsClub.sInter {s : Set (Set α)} (hα : cof α ≠ ℵ₀) (hsα : #s < 
     · exact (hf ⟨t, ht⟩ _).2.trans <| hb ⟨_, rfl⟩
   · grind
 
-theorem IsClub.iInter {ι : Type u} {f : ι → Set α} (hα : cof α ≠ ℵ₀)
+protected theorem iInter {ι : Type u} {f : ι → Set α} (hα : cof α ≠ ℵ₀)
     (hι : lift.{v} #ι < lift.{u} (cof α)) (hf : ∀ i, IsClub (f i)) : IsClub (⋂ i, f i) := by
   rw [← sInter_range]
   refine IsClub.sInter hα ?_ (by simpa)
   rw [← Cardinal.lift_lt]
   exact mk_range_le_lift.trans_lt hι
 
-theorem IsClub.sInter_countable {s : Set (Set α)} (hα : cof α ≠ ℵ₀) (hsα : s.Countable)
+theorem sInter_countable {s : Set (Set α)} (hα : cof α ≠ ℵ₀) (hsα : s.Countable)
     (hs : ∀ x ∈ s, IsClub x) : IsClub (⋂₀ s) := by
   obtain hα | hα := hα.lt_or_gt
   · apply IsClub.sInter_of_cof_le_one _ hs
@@ -130,19 +161,19 @@ theorem IsClub.sInter_countable {s : Set (Set α)} (hα : cof α ≠ ℵ₀) (hs
   · apply IsClub.sInter hα.ne' (hα.trans_le' _) hs
     rwa [le_aleph0_iff_set_countable]
 
-theorem IsClub.iInter_countable {ι : Type*} {f : ι → Set α} [Countable ι] (hα : cof α ≠ ℵ₀)
+theorem iInter_countable {ι : Type*} {f : ι → Set α} [Countable ι] (hα : cof α ≠ ℵ₀)
     (hf : ∀ i, IsClub (f i)) : IsClub (⋂ i, f i) := by
   rw [← sInter_range]
   apply IsClub.sInter_countable hα (countable_range f)
   simpa
 
-theorem IsClub.inter (hα : cof α ≠ ℵ₀) (hs : IsClub s) (ht : IsClub t) : IsClub (s ∩ t) := by
+theorem inter (hα : cof α ≠ ℵ₀) (hs : IsClub s) (ht : IsClub t) : IsClub (s ∩ t) := by
   simpa [hs, ht] using IsClub.sInter_countable (s := {s, t}) hα
 
-theorem Order.IsNormal.isClub_range {f : α → α} (hf : IsNormal f) : IsClub (.range f) :=
+theorem _root_.Order.IsNormal.isClub_range {f : α → α} (hf : IsNormal f) : IsClub (.range f) :=
   ⟨hf.dirSupClosed_range, fun x ↦ ⟨_, ⟨x, rfl⟩, hf.strictMono.le_apply⟩⟩
 
-theorem Order.IsNormal.isClub_fixedPoints {f : α → α} (hα : cof α ≠ ℵ₀) (hf : IsNormal f) :
+theorem _root_.Order.IsNormal.isClub_fixedPoints {f : α → α} (hα : cof α ≠ ℵ₀) (hf : IsNormal f) :
     IsClub f.fixedPoints := by
   cases isEmpty_or_nonempty α; · simp
   refine ⟨fun s hs hs₀ _ a ha ↦ (hf.map_isLUB ha hs₀).unique ?_, fun a ↦ ?_⟩
@@ -158,6 +189,7 @@ theorem Order.IsNormal.isClub_fixedPoints {f : α → α} (hα : cof α ≠ ℵ�
       simpa using mk_range_le_lift (f := fun n : ℕ ↦ f^[n] a)
 
 end WellFoundedLT
+end IsClub
 
 /-! ### Stationary sets -/
 
@@ -222,6 +254,22 @@ theorem isStationary_sUnion_iff_of_orderTop [OrderTop α] {s : Set (Set α)} :
 theorem isStationary_iUnion_iff_of_orderTop [OrderTop α] {ι : Type u} {f : ι → Set α} :
     IsStationary (⋃ i, f i) ↔ ∃ i, IsStationary (f i) :=
   isStationary_iUnion_iff_of_cof_le_one (by simp)
+
+theorem isStationary_iff_top_mem [OrderTop α] : IsStationary s ↔ ⊤ ∈ s where
+  mp h := by simpa using h .singleton_top
+  mpr hs t ht := ⟨⊤, hs, ht.isCofinal.top_mem⟩
+
+@[simp]
+theorem isStationary_singleton_iff : IsStationary {x} ↔ IsMax x where
+  mp h y hy := by
+    contrapose! hy
+    apply hy.ne'.lt_of_le
+    simpa using h (.Ici y)
+  mpr h s hs := by
+    use x
+    simpa using hs.isCofinal.mem_of_isMax h
+
+theorem IsStationary.singleton_top [OrderTop α] : IsStationary {(⊤ : α)} := by simp
 
 section WellFoundedLT
 variable [WellFoundedLT α]
