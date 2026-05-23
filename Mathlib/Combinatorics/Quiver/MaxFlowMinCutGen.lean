@@ -992,7 +992,7 @@ theorem undirected_max_flow_min_cut {V : Type*} [Fintype V] {α : Type*} [Ring �
         constructor
         · exact h.1.1
         · intro fn valfn
-          have : Flow_value G.toSTVertices fn = Flow_value G.toSTVertices (fn * (trivial_flow G.toSTVertices)) := by sorry
+          have : Flow_value G.toSTVertices fn = Flow_value G.toSTVertices (fn * (trivial_flow G.toSTVertices)) := by simp [add_flow]
           rw [this]
           apply h.2
           constructor
