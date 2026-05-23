@@ -136,6 +136,9 @@ theorem measure_of_not_isStationary (hs : ¬ IsStationary s) : measure s = 0 := 
 theorem measure_of_isClub [Nonempty α] (hs : IsClub s) : measure s = 1 :=
   measure_of_isStationary (hs.isStationary h₀.out)
 
+theorem measure_of_not_isCofinal (hs : ¬ IsCofinal s) : measure s = 0 :=
+  measure_of_not_isStationary (mt IsStationary.isCofinal hs)
+
 instance [Nonempty α] : IsProbabilityMeasure (α := α) measure where
   measure_univ := measure_of_isStationary .univ
 
@@ -164,7 +167,6 @@ theorem support_measure [NoMaxOrder α] [TopologicalSpace α] [OrderTopology α]
   obtain ⟨y, hy⟩ := exists_gt x
   refine ⟨_, Iio_mem_nhds hy, fun s hs ↦ ?_⟩
   apply ((measure_mono hs).trans _).not_gt
-  rw [measure_of_not_isStationary]
-  exact mt IsStationary.isCofinal (not_isCofinal_Iio y)
+  rw [measure_of_not_isCofinal (not_isCofinal_Iio y)]
 
 end MeasureTheory.Dieudonne
