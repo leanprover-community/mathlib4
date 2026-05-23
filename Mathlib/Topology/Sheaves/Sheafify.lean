@@ -90,7 +90,7 @@ def stalkToFiber (x : X) : F.sheafify.presheaf.stalk x ⟶ F.stalk x :=
 theorem stalkToFiber_surjective (x : X) : Function.Surjective (F.stalkToFiber x) := by
   apply TopCat.stalkToFiber_surjective
   intro t
-  obtain ⟨U, m, s, rfl⟩ := F.germ_exist _ t
+  obtain ⟨U, m, s, rfl⟩ := F.exists_germ_eq t
   use ⟨U, m⟩
   fconstructor
   · exact fun y => F.germ _ _ y.2 s
