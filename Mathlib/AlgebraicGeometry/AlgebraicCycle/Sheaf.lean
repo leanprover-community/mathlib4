@@ -597,19 +597,17 @@ variable (D : AlgebraicCycle X ℤ) (x : X) [IsIntegral X] [IsLocallyNoetherian 
 
 
 noncomputable
-instance : Module (X.presheaf.stalk x) ↑(TopCat.Presheaf.stalk D.sheaf.val.presheaf x) := --inferInstance
+instance : Module (X.presheaf.stalk x) ↑(TopCat.Presheaf.stalk D.sheaf.val.presheaf x) :=
   PresheafOfModules.instModuleCarrierStalkCommRingCatCarrierAbPresheafOpensCarrier D.sheaf.val x
-
-#check (D.sheaf.presheaf.stalk x)
-
-#check X.sheaf
 
 open CategoryTheory
 open Functor
 open Limits
 open TopologicalSpace OpenNhds
+
+/-
 noncomputable
-def thth {X : Scheme} [IsIntegral X] [IsLocallyNoetherian X]
+def genericStalkToFunctionField {X : Scheme} [IsIntegral X] [IsLocallyNoetherian X]
     [IsRegularInCodimensionOne X] (D : AlgebraicCycle X ℤ) :
     (TopCat.Presheaf.stalk D.sheaf.val.presheaf (genericPoint X)) ⟶ ((forget₂ CommRingCat RingCat ⋙
     forget₂ RingCat Ab).obj X.functionField) := by
@@ -631,6 +629,98 @@ def thth {X : Scheme} [IsIntegral X] [IsLocallyNoetherian X]
     }
   }
   apply colimit.desc _ c
+
+lemma genericStalkToFunctionField_isIso {X : Scheme} [IsIntegral X] [IsLocallyNoetherian X]
+    [IsRegularInCodimensionOne X] (D : AlgebraicCycle X ℤ) :
+    IsIso D.genericStalkToFunctionField := sorry
+
+def genericStalkToFunctionFieldModuleHom {X : Scheme} [IsIntegral X] [IsLocallyNoetherian X]
+    [IsRegularInCodimensionOne X] (D : AlgebraicCycle X ℤ) :
+    ModuleCat.of X.functionField ↑(TopCat.Presheaf.stalk D.sheaf.val.presheaf (genericPoint X)) ⟶
+    ModuleCat.of X.functionField X.functionField := sorry
+
+lemma genericStalkToFunctionFieldModuleHom_isIso {X : Scheme} [IsIntegral X]
+    [IsLocallyNoetherian X]
+    [IsRegularInCodimensionOne X] (D : AlgebraicCycle X ℤ) :
+    IsIso D.genericStalkToFunctionFieldModuleHom := sorry-/
+
+noncomputable
+def genericStalkToFunctionField {X : Scheme} [IsIntegral X] [IsLocallyNoetherian X]
+    [IsRegularInCodimensionOne X] (D : AlgebraicCycle X ℤ) :
+    (TopCat.Presheaf.stalk D.sheaf.val.presheaf (genericPoint X)) ⟶ ((forget₂ CommRingCat RingCat ⋙
+    forget₂ RingCat Ab).obj X.functionField) := by
+  let c : Cocone <| ((inclusion (genericPoint ↥X)).op ⋙ D.sheaf.val.presheaf) := {
+    pt := (forget₂ RingCat Ab).obj ((forget₂ CommRingCat RingCat).obj X.functionField)
+    ι := {
+      app U :=
+        AddCommGrpCat.ofHom {
+          toFun f := f.1
+          map_zero' := rfl
+          map_add' := fun _ _ ↦ rfl
+        }
+      naturality U V f := by
+        apply AddCommGrpCat.hom_ext
+        simp
+        by_cases t : Nonempty (V.unop.1)
+        · sorry
+        · sorry
+    }
+  }
+  apply colimit.desc _ c
+
+noncomputable
+def genericStalkAddEquivFunctionField {X : Scheme} [IsIntegral X] [IsLocallyNoetherian X]
+    [IsRegularInCodimensionOne X] (D : AlgebraicCycle X ℤ) :
+    ↑(TopCat.Presheaf.stalk D.sheaf.val.presheaf (genericPoint X)) ≃+ X.functionField := by
+  apply AddEquiv.ofBijective D.genericStalkToFunctionField.hom
+  constructor
+  . sorry
+  · sorry
+
+noncomputable
+def genericStalkToFunctionFieldModuleHom {X : Scheme} [IsIntegral X] [IsLocallyNoetherian X]
+    [IsRegularInCodimensionOne X] (D : AlgebraicCycle X ℤ) :
+    ↑(TopCat.Presheaf.stalk D.sheaf.val.presheaf (genericPoint X))
+    ≃ₗ[X.functionField] X.functionField where
+      __ := D.genericStalkAddEquivFunctionField
+      map_add' a b := AddMonoidHom.map_add (AddCommGrpCat.Hom.hom D.genericStalkToFunctionField) a b
+      map_smul' := sorry
+
+/-
+Compose Topcat.Presheaf.stalkSpecializes with genericStalkToFunctionFieldModuleHom
+
+For this we will require that Topcat.Presheaf.stalkSpecializes can be lifted to a module
+homomorphism
+-/
+noncomputable
+def genericStalkToFunctionFieldModuleHom' {X : Scheme} [IsIntegral X] [IsLocallyNoetherian X]
+    [IsRegularInCodimensionOne X] (D : AlgebraicCycle X ℤ) (x : X) :
+    ↑(TopCat.Presheaf.stalk D.sheaf.val.presheaf x)
+    →ₗ[X.presheaf.stalk x] X.functionField := sorry
+
+/-
+Here we need to show that the set of elements with valuation ≤ D p form a submodule (because of
+course they do)
+
+Then we should show that these are all isomorphic because we have a map which multiplies by some
+power of a uniformizer
+
+This shouldn't rely on anything here, so we can do this and maybe get it merged independently of
+this nonsense
+
+
+Now, what's the argument that we get an isomorphism here? Well, to give a map out of a coproduct
+is to give a map out of the components. So we take a neighbourhood around p which has no points in
+the support of D except p and in which our function has no zeros or poles.
+
+Maybe we should just be doing this isomorphism directly instead of going via these stalk maps and
+so on. It occurs to me that a colimit
+-/
+
+lemma dskan {X : Scheme} [IsIntegral X] [IsLocallyNoetherian X]
+    [IsRegularInCodimensionOne X] (D : AlgebraicCycle X ℤ) (x : X) [IsDiscreteValuationRing (X.presheaf.stalk x)]:
+    Submodule.map (D.genericStalkToFunctionFieldModuleHom' x) ⊤ =
+    sorry := sorry
 
 /-
 Next: Show that this is an iso (the proof should be that (f) + D ≥ 0 on any set where
