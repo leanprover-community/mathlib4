@@ -26,6 +26,8 @@ elab "#check_title " title:str : command => do
 #guard_msgs in
 #check_title "my short PR title"
 
+section kind
+
 /--
 info: Message: 'error: the PR title should be of the form
   kind: main title
@@ -35,6 +37,28 @@ Allowed values for `kind` are [feat, chore, perf, refactor, style, fix, doc, tes
 -/
 #guard_msgs in
 #check_title "fsdfs: bad title"
+
+/--
+info: Message: 'error: the PR title should be of the form
+  kind: main title
+or
+  kind(scope): main title
+Allowed values for `kind` are [feat, chore, perf, refactor, style, fix, doc, test, ci]'
+-/
+#guard_msgs in
+#check_title "feat(test) :(confusing) bad title"
+
+/--
+info: Message: 'error: the PR title should be of the form
+  kind: main title
+or
+  kind(scope): main title
+Allowed values for `kind` are [feat, chore, perf, refactor, style, fix, doc, test, ci]'
+-/
+#guard_msgs in
+#check_title "feat(test) : bad title"
+
+end kind
 
 -- TODO: can this error message be more informative?
 /--
@@ -57,6 +81,28 @@ Allowed values for `kind` are [feat, chore, perf, refactor, style, fix, doc, tes
 -/
 #guard_msgs in
 #check_title "feat: "
+
+/--
+info: Message: 'error: the PR title starts with a space'
+---
+info: Message: 'error: the PR title contains multiple consecutive spaces; please add just one'
+-/
+#guard_msgs in
+#check_title "    feat: some PR title"
+
+section scope
+
+/-- info: Message: 'error: the PR scope must not start with 'Mathlib/'' -/
+#guard_msgs in
+#check_title "feat(Mathlib/Algebra): title"
+
+/-- info: Message: 'error: a PR's scope must not end with '.lean'' -/
+#guard_msgs in
+#check_title "feat(Algebra.lean): title"
+
+end scope
+
+section mainTitle
 
 /-- info: Message: 'error: the PR title should not end with a full stop' -/
 #guard_msgs in
@@ -119,3 +165,17 @@ info: Message: 'error: the PR contains 2 Unicode characters which are not allowe
 -/
 #guard_msgs in
 #check_title "feat: title with \u206B non-allowed unicode\u206C"
+
+end mainTitle
+
+/--
+info: Message: 'error: the PR scope must not start with 'Mathlib/''
+---
+info: Message: 'error: a PR's scope must not end with '.lean''
+---
+info: Message: 'error: the PR title should not end with a full stop'
+---
+info: Message: 'error: the PR title contains multiple consecutive spaces; please add just one'
+-/
+#guard_msgs in
+#check_title "feat(Mathlib/Algebra.lean):  title."

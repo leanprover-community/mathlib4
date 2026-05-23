@@ -112,6 +112,8 @@ public def validateTitle (title : String) : Array String := Id.run do
         errors := errors.push "error: the main PR title should be lowercased"
     if mainTitle.endsWith "." then
       errors := errors.push "error: the PR title should not end with a full stop"
+    else if mainTitle.endsWith " " then
+      errors := errors.push "error: the PR title should not end with a space"
     if title.contains "  " then
       errors := errors.push
         "error: the PR title contains multiple consecutive spaces; please add just one"
