@@ -65,7 +65,7 @@ holds for all sufficiently nice vector fields `X` on `M` and sections `σ`, `τ`
 The left hand side is the pushforward of the function `⟨σ, τ⟩` along the vector field `X`:
 the left hand side at `x` is `df(X x)`, where `f := ⟨σ, τ⟩` (ie. `X` is seen a derivation on
 the algebra of function on the base manifold acting on the function `⟨σ, τ⟩`).
-In our definition, we ask for this identity to at each `x : M`, whenever `X`, `σ` and `τ` are
+In our definition, we ask for this identity to hold at each `x : M`, whenever `X`, `σ` and `τ` are
 differentiable at `x`.
 -/
 
