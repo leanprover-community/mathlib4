@@ -183,16 +183,16 @@ theorem Module.projective_of_localization_maximal'
     simp only [← map_smul, ← smul_assoc, IsLocalization.smul_mk'_self, algebraMap_smul,
       IsLocalization.map_id_mk']
 
-/-- A finitely presented module over a noetherian ring is projective if and only if all of its
+/-- A finitely presented module is projective if and only if all of its
 localizations at maximal ideals are free. -/
 theorem Module.projective_iff_localization_maximal_free
     [Module.FinitePresentation R M] :
     Module.Projective R M ↔
       ∀ (I : Ideal R) (_ : I.IsMaximal),
-        Module.Free (Localization.AtPrime I) (LocalizedModule I.primeCompl M) := by
+        Module.Free (Localization.AtPrime I) (LocalizedModule.AtPrime I M) := by
   constructor
   · intro _ I _
-    have : Module.Projective (Localization.AtPrime I) (LocalizedModule I.primeCompl M) :=
+    have : Module.Projective (Localization.AtPrime I) (LocalizedModule.AtPrime I M) :=
       Module.projective_of_isLocalizedModule I.primeCompl
         (LocalizedModule.mkLinearMap I.primeCompl M)
     exact Module.free_of_flat_of_isLocalRing
