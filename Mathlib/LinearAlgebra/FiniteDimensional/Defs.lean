@@ -107,9 +107,6 @@ theorem _root_.Module.Basis.finiteDimensional_of_finite {ι : Type w} [Finite ι
     FiniteDimensional K V :=
   Module.Finite.of_basis h
 
-@[deprecated (since := "2025-11-12")]
-alias of_fintype_basis := Module.Basis.finiteDimensional_of_finite
-
 /-- If a vector space is `FiniteDimensional`, all bases are indexed by a finite type -/
 @[implicit_reducible]
 noncomputable def fintypeBasisIndex {ι : Type*} [FiniteDimensional K V] (b : Basis ι K V) :
