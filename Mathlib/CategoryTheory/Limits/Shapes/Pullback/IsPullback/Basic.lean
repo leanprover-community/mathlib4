@@ -868,6 +868,48 @@ theorem IsPushout.map_iff {D : Type*} [Category* D] (F : C ⥤ D) [PreservesColi
     IsPushout (F.map f) (F.map g) (F.map h) (F.map i) ↔ IsPushout f g h i :=
   ⟨fun h => h.of_map F e, fun h => h.map F⟩
 
+variable {F} in
+lemma IsPullback.preservesLimit_cospan_iff {P X Y Z : C} {fst : P ⟶ X}
+    {snd : P ⟶ Y} {f : X ⟶ Z} {g : Y ⟶ Z} (h : IsPullback fst snd f g) :
+    PreservesLimit (cospan f g) F ↔ IsPullback (F.map fst) (F.map snd) (F.map f) (F.map g) := by
+  refine ⟨fun _ ↦ h.map _, fun hF ↦ ?_⟩
+  apply preservesLimit_of_preserves_limit_cone h.isLimit
+  exact (PullbackCone.isLimitMapConeEquiv _ _).symm hF.isLimit
+
+variable {F} in
+lemma IsPushout.preservesColimit_span_iff {P X Y Z : C} {inl : X ⟶ P}
+    {inr : Y ⟶ P} {f : Z ⟶ X} {g : Z ⟶ Y} (h : IsPushout f g inl inr) :
+    PreservesColimit (span f g) F ↔ IsPushout (F.map f) (F.map g) (F.map inl) (F.map inr) := by
+  refine ⟨fun _ ↦ h.map _, fun hF ↦ ?_⟩
+  apply preservesColimit_of_preserves_colimit_cocone h.isColimit
+  exact (PushoutCocone.isColimitMapCoconeEquiv _ _).symm hF.isColimit
+
+variable {F} in
+lemma Limits.preservesLimitsOfShape_walkingCospan_of_forall_isPullback
+    (H : ∀ ⦃X Y Z : C⦄ (f : X ⟶ Z) (g : Y ⟶ Z) [HasPullback f g],
+      ∃ (P : C) (fst : P ⟶ X) (snd : P ⟶ Y),
+        IsPullback fst snd f g ∧ IsPullback (F.map fst) (F.map snd) (F.map f) (F.map g)) :
+    PreservesLimitsOfShape WalkingCospan F := by
+  suffices h : ∀ {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z), PreservesLimit (cospan f g) F from
+    ⟨fun {K} ↦ preservesLimit_of_iso_diagram _ (Limits.diagramIsoCospan K).symm⟩
+  intro X Y Z f g
+  refine .mk' fun h ↦ ?_
+  obtain ⟨P, fst, snd, h, h'⟩ := H f g
+  rwa [h.preservesLimit_cospan_iff]
+
+variable {F} in
+lemma Limits.preservesColimitsOfShape_walkingCospan_of_forall_isPushout
+    (H : ∀ ⦃X Y Z : C⦄ (f : Z ⟶ X) (g : Z ⟶ Y) [HasPushout f g],
+      ∃ (P : C) (inl : X ⟶ P) (inr : Y ⟶ P),
+        IsPushout f g inl inr ∧ IsPushout (F.map f) (F.map g) (F.map inl) (F.map inr)) :
+    PreservesColimitsOfShape WalkingSpan F := by
+  suffices h : ∀ {X Y Z : C} (f : Z ⟶ X) (g : Z ⟶ Y), PreservesColimit (span f g) F from
+    ⟨fun {K} ↦ preservesColimit_of_iso_diagram _ (diagramIsoSpan K).symm⟩
+  intro X Y Z f g
+  refine .mk' fun h ↦ ?_
+  obtain ⟨P, fst, snd, h, h'⟩ := H f g
+  rwa [h.preservesColimit_span_iff]
+
 lemma IsPullback.app [HasPullbacks D] {F₁ F₂ F₃ F₄ : C ⥤ D}
     {f₁ : F₁ ⟶ F₂} {f₂ : F₁ ⟶ F₃} {f₃ : F₂ ⟶ F₄} {f₄ : F₃ ⟶ F₄} (h : IsPullback f₁ f₂ f₃ f₄)
     (X : C) : IsPullback (f₁.app X) (f₂.app X) (f₃.app X) (f₄.app X) :=
