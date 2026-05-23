@@ -195,7 +195,6 @@ theorem pretransitive_iff_unique_quotient_of_nonempty [Nonempty α] :
 
 variable {G α}
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 instance (x : orbitRel.Quotient G α) : IsPretransitive G x.orbit where
   exists_smul_eq := by
@@ -206,7 +205,7 @@ instance (x : orbitRel.Quotient G α) : IsPretransitive G x.orbit where
     rcases zh with ⟨h, rfl⟩
     refine ⟨h * g⁻¹, ?_⟩
     ext
-    simp [mul_smul]
+    simp [mul_smul, -MulAction.orbitRel.Quotient.orbit_mk]
 
 variable (G) (α)
 
