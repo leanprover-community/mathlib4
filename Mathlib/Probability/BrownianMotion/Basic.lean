@@ -304,7 +304,7 @@ lemma IsBrownian.indep_zero (hB : IsBrownian B P) (mB : ∀ t, Measurable (B t))
     convert self_mem_nhdsWithin
     ext; simp [pos_iff_ne_zero]
   -- We prove the result by showing that `m3` is independent of itself.
-  refine measure_eq_zero_or_one_of_indep_self hm3' ?_ hA
+  refine measure_eq_zero_or_one_of_indep_self ?_ hA
   -- To do so, we show that for all `A ∈ m3`, all finite sets `I ⊆ (0, +∞)` and all
   -- bounded continuous functions `f : (I → ℝ) → ℝ`,
   -- `∫ ω in A, f (fun t ↦ B t) ∂P = P.real A * ∫ ω, f (fun t ↦ B t) ∂P`.
