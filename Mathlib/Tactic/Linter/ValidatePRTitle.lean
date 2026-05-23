@@ -80,8 +80,8 @@ are written in present imperative tense.
 Return all error messages for violations found.
 -/
 public def validateTitle (title : String) : Array String := Id.run do
-  -- The title should be of the form "abbrev: main title" or "abbrev(scope): main title".
-  -- We use the parser above to extract abbrev and scope ignoring the main title,
+  -- The title should be of the form "abbrev: subject" or "abbrev(scope): subject".
+  -- We use the parser above to extract abbrev, scope and PR subject,
   -- but give some custom errors in some easily detectable cases.
   if !title.contains ':' then
     return #["error: the PR title does not contain a colon"]
@@ -92,12 +92,12 @@ public def validateTitle (title : String) : Array String := Id.run do
   let knownKinds := ["feat", "chore", "perf", "refactor", "style", "fix", "doc", "test", "ci"]
   match Parser.run prTitle title.trimAsciiStart.copy with
   | Except.error _ =>
-    return errors.push s!"error: the PR title should be of the form\n  kind: main title\n\
-      or\n  kind(scope): main title\nAllowed values for `kind` are {knownKinds}"
-  | Except.ok (_kind, scope?, mainTitle) =>
+    return errors.push s!"error: the PR title should be of the form\n  kind: subject\n\
+      or\n  kind(scope): subject\nAllowed values for `kind` are {knownKinds}"
+  | Except.ok (_kind, scope?, subject) =>
     if let some scope := scope? then
       if scope.startsWith "Mathlib/" then
-        errors := errors.push s!"error: the PR scope must not start with 'Mathlib/'"
+        errors := errors.push s!"error: a PR's scope must not start with 'Mathlib/'"
       if scope.endsWith ".lean" then
         errors := errors.push s!"error: a PR's scope must not end with '.lean'"
       -- Disabling this for now, to reduce warning fatigue. Might enable this in the future.
@@ -106,13 +106,13 @@ public def validateTitle (title : String) : Array String := Id.run do
       -- Future: we could check if `scope` describes a directory that actually exist.
 
     -- Titles should be lower-cased (but we allow abbreviations).
-    if mainTitle.front.toLower != mainTitle.front then
-      let firstWord := mainTitle.takeWhile (!·.isWhitespace)
+    if subject.front.toLower != subject.front then
+      let firstWord := subject.takeWhile (!·.isWhitespace)
       if !(firstWord.all (fun c ↦ c.isUpper)) then
-        errors := errors.push "error: the main PR title should be lowercased"
-    if mainTitle.endsWith "." then
+        errors := errors.push "error: the PR subject should be lowercased"
+    if subject.endsWith "." then
       errors := errors.push "error: the PR title should not end with a full stop"
-    else if mainTitle.endsWith " " then
+    else if subject.endsWith " " then
       errors := errors.push "error: the PR title should not end with a space"
     if title.contains "  " then
       errors := errors.push

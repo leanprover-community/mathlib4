@@ -30,9 +30,9 @@ section kind
 
 /--
 info: Message: 'error: the PR title should be of the form
-  kind: main title
+  kind: subject
 or
-  kind(scope): main title
+  kind(scope): subject
 Allowed values for `kind` are [feat, chore, perf, refactor, style, fix, doc, test, ci]'
 -/
 #guard_msgs in
@@ -40,9 +40,9 @@ Allowed values for `kind` are [feat, chore, perf, refactor, style, fix, doc, tes
 
 /--
 info: Message: 'error: the PR title should be of the form
-  kind: main title
+  kind: subject
 or
-  kind(scope): main title
+  kind(scope): subject
 Allowed values for `kind` are [feat, chore, perf, refactor, style, fix, doc, test, ci]'
 -/
 #guard_msgs in
@@ -50,9 +50,9 @@ Allowed values for `kind` are [feat, chore, perf, refactor, style, fix, doc, tes
 
 /--
 info: Message: 'error: the PR title should be of the form
-  kind: main title
+  kind: subject
 or
-  kind(scope): main title
+  kind(scope): subject
 Allowed values for `kind` are [feat, chore, perf, refactor, style, fix, doc, test, ci]'
 -/
 #guard_msgs in
@@ -63,9 +63,9 @@ end kind
 -- TODO: can this error message be more informative?
 /--
 info: Message: 'error: the PR title should be of the form
-  kind: main title
+  kind: subject
 or
-  kind(scope): main title
+  kind(scope): subject
 Allowed values for `kind` are [feat, chore, perf, refactor, style, fix, doc, test, ci]'
 -/
 #guard_msgs in
@@ -74,9 +74,9 @@ Allowed values for `kind` are [feat, chore, perf, refactor, style, fix, doc, tes
 -- TODO: can this error message be more informative?
 /--
 info: Message: 'error: the PR title should be of the form
-  kind: main title
+  kind: subject
 or
-  kind(scope): main title
+  kind(scope): subject
 Allowed values for `kind` are [feat, chore, perf, refactor, style, fix, doc, test, ci]'
 -/
 #guard_msgs in
@@ -92,7 +92,7 @@ info: Message: 'error: the PR title contains multiple consecutive spaces; please
 
 section scope
 
-/-- info: Message: 'error: the PR scope must not start with 'Mathlib/'' -/
+/-- info: Message: 'error: a PR's scope must not start with 'Mathlib/'' -/
 #guard_msgs in
 #check_title "feat(Mathlib/Algebra): title"
 
@@ -102,22 +102,22 @@ section scope
 
 end scope
 
-section mainTitle
+section subject
 
 /-- info: Message: 'error: the PR title should not end with a full stop' -/
 #guard_msgs in
 #check_title "feat: bad title."
 
-/-- info: Message: 'error: the main PR title should be lowercased' -/
+/-- info: Message: 'error: the PR subject should be lowercased' -/
 #guard_msgs in
 #check_title "feat: My Bad Title"
 -- Starting with an acronym is fine, however.
 #guard_msgs in
 #check_title "feat: RPC acronyms are fine"
 
--- This PR title is arguable not very bad (Lindelöf is a proper name),
+-- This PR title is arguably not very bad (Lindelöf is a proper name),
 -- a better fix is to start with a verb (which you should do anyway.)
-/-- info: Message: 'error: the main PR title should be lowercased' -/
+/-- info: Message: 'error: the PR subject should be lowercased' -/
 #guard_msgs in
 #check_title "feat: Lindelöf spaces something something"
 
@@ -153,7 +153,7 @@ info: Message: 'error: the PR title contains multiple consecutive spaces; please
 #guard_msgs in
 #check_title "feat(test) (confusing) bad title"
 
--- TODO: should this error?
+-- TODO: should this error instead?
 #guard_msgs in
 #check_title "feat(confusing) (forbidden): title"
 
@@ -166,10 +166,10 @@ info: Message: 'error: the PR contains 2 Unicode characters which are not allowe
 #guard_msgs in
 #check_title "feat: title with \u206B non-allowed unicode\u206C"
 
-end mainTitle
+end subject
 
 /--
-info: Message: 'error: the PR scope must not start with 'Mathlib/''
+info: Message: 'error: a PR's scope must not start with 'Mathlib/''
 ---
 info: Message: 'error: a PR's scope must not end with '.lean''
 ---
