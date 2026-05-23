@@ -182,6 +182,13 @@ theorem colorable_one_iff : G.Colorable 1 ↔ G = ⊥ := by
   refine ⟨fun ⟨C⟩ ↦ eq_bot_iff_forall_not_adj.mpr fun u v h ↦ ?_, fun h ↦ h ▸ ⟨0, by simp⟩⟩
   exact C.map_rel h <| Subsingleton.elim ..
 
+/-- A coloring of a graph `G` is a homomorphism from it to the mapped graph.
+This is `Hom.map` spelled using colorings. The mapped graph `G.map f` can be thought of as taking
+the original graph `G` and considering every color class (independent set) as a single vertex. -/
+@[simps!]
+abbrev Coloring.homMap {α : Type*} (f : G.Coloring α) : G →g G.map f :=
+  .map f G f.map_adj
+
 /-- If `G` is `n`-colorable, then mapping the vertices of `G` produces an `n`-colorable simple
 graph. -/
 theorem Colorable.map (f : V ↪ β) [NeZero n] (hc : G.Colorable n) : (G.map f).Colorable n := by
@@ -313,7 +320,7 @@ theorem colorable_set_nonempty_of_colorable {n : ℕ} (hc : G.Colorable n) :
   ⟨n, hc⟩
 
 theorem chromaticNumber_bddBelow : BddBelow { n : ℕ | G.Colorable n } :=
-  ⟨0, fun _ _ => zero_le _⟩
+  ⟨0, fun _ _ => zero_le⟩
 
 theorem Colorable.chromaticNumber_le {n : ℕ} (hc : G.Colorable n) : G.chromaticNumber ≤ n := by
   rw [hc.chromaticNumber_eq_sInf]

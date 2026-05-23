@@ -25,7 +25,7 @@ in a preorder this is equivalent to `a ⋖ b ∨ (a ≤ b ∧ b ≤ a)`
 * `a ⩿ b` means that `b` weakly covers `a`.
 -/
 
-@[expose] public section
+public section
 
 
 open Set OrderDual
@@ -136,10 +136,6 @@ alias ⟨_, WCovBy.toDual⟩ := toDual_wcovBy_toDual_iff
 
 @[to_dual self]
 alias ⟨_, WCovBy.ofDual⟩ := ofDual_wcovBy_ofDual_iff
-
-@[deprecated (since := "2025-11-07")] alias OrderEmbedding.wcovBy_of_apply := WCovBy.of_image
-
-@[deprecated (since := "2025-11-07")] alias OrderIso.map_wcovBy := apply_wcovBy_apply_iff
 
 end Preorder
 
@@ -340,10 +336,6 @@ theorem apply_covBy_apply_iff {E : Type*} [EquivLike E α β] [OrderIsoClass E �
 @[to_dual none]
 theorem covBy_of_eq_or_eq (hab : a < b) (h : ∀ c, a ≤ c → c ≤ b → c = a ∨ c = b) : a ⋖ b :=
   ⟨hab, fun c ha hb => (h c ha.le hb.le).elim ha.ne' hb.ne⟩
-
-@[deprecated (since := "2025-11-07")] alias OrderEmbedding.covBy_of_apply := CovBy.of_image
-
-@[deprecated (since := "2025-11-07")] alias OrderIso.map_covBy := apply_covBy_apply_iff
 
 end Preorder
 
@@ -749,6 +741,16 @@ lemma coe_wcovBy_coe : (a : WithTop α) ⩿ b ↔ a ⩿ b :=
 lemma coe_covBy_coe : (a : WithTop α) ⋖ b ↔ a ⋖ b :=
   Set.OrdConnected.apply_covBy_apply_iff WithTop.coeOrderHom <| by
     simp [WithTop.range_coe, ordConnected_Iio]
+
+@[to_dual]
+theorem covBy_top_iff {a : WithTop α} : a ⋖ ⊤ ↔ ∃ b : α, IsMax b ∧ a = b := by
+  cases a with
+  | coe a => simp [CovBy, WithTop.forall, isMax_iff_forall_not_lt]
+  | top => simp [CovBy]
+
+@[to_dual (attr := simp)]
+theorem not_covBy_top [NoMaxOrder α] {a : WithTop α} : ¬ a ⋖ ⊤ := by
+  simp [covBy_top_iff]
 
 @[to_dual (attr := simp) bot_covBy_coe]
 lemma coe_covBy_top : (a : WithTop α) ⋖ ⊤ ↔ IsMax a := by

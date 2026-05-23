@@ -163,6 +163,25 @@ theorem symm_trans_self (h : X ≃ₜ Y) : h.symm.trans h = Homeomorph.refl Y :=
   ext
   apply apply_symm_apply
 
+@[simps -isSimp]
+instance : Group (X ≃ₜ X) where
+  mul f g := g.trans f
+  mul_assoc f g h := rfl
+  one := .refl X
+  one_mul f := rfl
+  mul_one f := rfl
+  inv := .symm
+  inv_mul_cancel := self_trans_symm
+
+@[simp]
+theorem one_apply (x : X) : (1 : X ≃ₜ X) x = x := rfl
+
+@[simp]
+theorem inv_apply (f : X ≃ₜ X) (x : X) : f⁻¹ x = f.symm x := rfl
+
+@[simp]
+theorem mul_apply (f g : X ≃ₜ X) (x : X) : (f * g) x = f (g x) := rfl
+
 protected theorem bijective (h : X ≃ₜ Y) : Function.Bijective h :=
   h.toEquiv.bijective
 
@@ -199,11 +218,11 @@ theorem preimage_symm (h : X ≃ₜ Y) : preimage h.symm = image h :=
   (funext h.toEquiv.image_eq_preimage_symm).symm
 
 @[simp]
-theorem image_preimage (h : X ≃ₜ Y) (s : Set Y) : h '' (h ⁻¹' s) = s :=
+theorem image_preimage (h : X ≃ₜ Y) (s : Set Y) : h '' h ⁻¹' s = s :=
   h.toEquiv.image_preimage s
 
 @[simp]
-theorem preimage_image (h : X ≃ₜ Y) (s : Set X) : h ⁻¹' (h '' s) = s :=
+theorem preimage_image (h : X ≃ₜ Y) (s : Set X) : h ⁻¹' h '' s = s :=
   h.toEquiv.preimage_image s
 
 theorem image_eq_preimage_symm (h : X ≃ₜ Y) (s : Set X) : h '' s = h.symm ⁻¹' s :=

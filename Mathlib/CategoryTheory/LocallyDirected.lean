@@ -18,7 +18,7 @@ This is the condition needed to show that a colimit (in `TopCat`) of open embedd
 gluing of the open sets. See `Mathlib/AlgebraicGeometry/Gluing.lean` for an actual application.
 -/
 
-@[expose] public section
+public section
 
 namespace CategoryTheory
 

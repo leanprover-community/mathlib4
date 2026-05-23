@@ -18,7 +18,7 @@ see `NatTrans.mono_iff_mono_app` and `NatTrans.epi_iff_epi_app`.
 
 -/
 
-@[expose] public section
+public section
 
 universe v v' v'' u u' u''
 

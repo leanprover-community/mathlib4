@@ -284,6 +284,11 @@ divides `b`. -/
 theorem mulVec_cramer (A : Matrix n n α) (b : n → α) : A *ᵥ cramer A b = A.det • b := by
   rw [cramer_eq_adjugate_mulVec, mulVec_mulVec, mul_adjugate, smul_mulVec, one_mulVec]
 
+theorem det_eq_zero_of_mulVec_eq_zero_of_mem_nonZeroDivisors {M : Matrix n n α} {v : n → α}
+    (h : M *ᵥ v = 0) {i : n} (hi : v i ∈ nonZeroDivisors α) : M.det = 0 := by
+  apply mul_right_mem_nonZeroDivisors_eq_zero_iff hi |>.mp
+  simpa [adjugate_mul, smul_mulVec] using congr((M.adjugate *ᵥ $h) i)
+
 theorem adjugate_subsingleton [Subsingleton n] (A : Matrix n n α) : adjugate A = 1 := by
   ext i j
   simp [Subsingleton.elim i j, adjugate_apply, det_eq_elem_of_subsingleton _ i, one_apply]
@@ -348,7 +353,7 @@ theorem det_adjugate (A : Matrix n n α) : (adjugate A).det = A.det ^ (Fintype.c
   apply mul_left_cancel₀ (show A'.det ≠ 0 from det_mvPolynomialX_ne_zero n ℤ)
   calc
     A'.det * A'.adjugate.det = (A' * adjugate A').det := (det_mul _ _).symm
-    _ = A'.det ^ Fintype.card n := by erw [mul_adjugate A']; rw [det_smul, det_one, mul_one]
+    _ = A'.det ^ Fintype.card n := by rw [mul_adjugate A', det_smul, det_one, mul_one]
     _ = A'.det * A'.det ^ (Fintype.card n - 1) := by rw [← pow_succ', h_card]
 
 @[simp]
@@ -443,7 +448,7 @@ theorem adjugate_mul_distrib_aux (A B : Matrix n n α) (hA : IsLeftRegular A.det
   refine (isRegular_of_isLeftRegular_det hAB).left ?_
   simp only
   rw [mul_adjugate, Matrix.mul_assoc, ← Matrix.mul_assoc B, mul_adjugate,
-    smul_mul, Matrix.one_mul, mul_smul, mul_adjugate, smul_smul, mul_comm, ← det_mul]
+    smul_mul, Matrix.one_mul, Matrix.mul_smul, mul_adjugate, smul_smul, mul_comm, ← det_mul]
 
 /-- Proof follows from "The trace Cayley-Hamilton theorem" by Darij Grinberg, Section 5.3
 -/

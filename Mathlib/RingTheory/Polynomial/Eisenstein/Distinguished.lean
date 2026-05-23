@@ -16,7 +16,7 @@ and develop the most basic lemmas about it.
 
 -/
 
-@[expose] public section
+public section
 
 open scoped Polynomial
 open PowerSeries Ideal Quotient

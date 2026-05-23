@@ -360,7 +360,6 @@ def productTriangle : Triangle C :=
     (Limits.Pi.map (fun j => (T j).mor₂))
     (Limits.Pi.map (fun j => (T j).mor₃) ≫ inv (piComparison _ _))
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A projection from the product of a family of triangles. -/
 @[simps]
 def productTriangle.π (j : J) :
@@ -390,7 +389,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- The triangle `productTriangle T` satisfies the universal property of the categorical
 product of the triangles `T`. -/
 def productTriangle.isLimitFan : IsLimit (productTriangle.fan T) :=
-  mkFanLimit _ (fun s => productTriangle.lift T s.proj) (fun s j => by cat_disch) (by
+  Fan.IsLimit.mk _ (fun s => productTriangle.lift T s.proj) (fun s j => by cat_disch) (by
     intro s m hm
     ext1
     all_goals

@@ -127,7 +127,7 @@ theorem continuousOn_taylorWithinEval {f : ℝ → E} {x : ℝ} {n : ℕ} {s : S
     (hs : UniqueDiffOn ℝ s) (hf : ContDiffOn ℝ n f s) :
     ContinuousOn (fun t => taylorWithinEval f n s t x) s := by
   simp_rw [taylor_within_apply]
-  refine continuousOn_finset_sum (Finset.range (n + 1)) fun i hi => ?_
+  refine continuousOn_finsetSum (Finset.range (n + 1)) fun i hi => ?_
   refine (continuousOn_const.mul ((continuousOn_const.sub continuousOn_id).pow _)).smul ?_
   rw [contDiffOn_nat_iff_continuousOn_differentiableOn_deriv hs] at hf
   simp only [Finset.mem_range] at hi
@@ -404,7 +404,6 @@ theorem taylor_mean_remainder_bound {f : ℝ → E} {a b C x : ℝ} {n : ℕ} (h
     gcongr
     · rw [abs_mul, abs_pow, abs_inv, Nat.abs_cast]
       gcongr
-      exact sub_nonneg.2 hyx.le
     -- Estimate the iterated derivative by `C`
     · exact hC y ⟨hay, hyx.le.trans hx.2⟩
   -- Apply the mean value theorem for vector-valued functions:
