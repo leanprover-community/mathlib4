@@ -7,6 +7,8 @@ module
 
 public import Mathlib.NumberTheory.LSeries.HurwitzZeta
 public import Mathlib.Analysis.PSeriesComplex
+public import Mathlib.Analysis.Calculus.Deriv.Star
+public import Mathlib.Analysis.Analytic.Uniqueness
 
 /-!
 # Definition of the Riemann zeta function
@@ -33,6 +35,8 @@ Euler-Mascheroni constant will follow in a subsequent PR.
   `ζ(s) = ∑' (n : ℕ), 1 / (n + 1) ^ s`.
 * `completedRiemannZeta₀_one_sub`, `completedRiemannZeta_one_sub`, and `riemannZeta_one_sub` :
   functional equation relating values at `s` and `1 - s`
+* `completedRiemannZeta₀_conj` and `completedRiemannZeta_conj` : Schwarz reflection identities
+  `Λ₀(conj s) = conj (Λ₀ s)` and `Λ(conj s) = conj (Λ s)`
 
 For special-value formulae expressing `ζ (2 * k)` and `ζ (1 - 2 * k)` in terms of Bernoulli numbers
 see `Mathlib/NumberTheory/LSeries/HurwitzZetaValues.lean`. For computation of the constant term as
@@ -51,7 +55,7 @@ open CharZero Set Filter HurwitzZeta
 
 open Complex hiding exp continuous_exp
 
-open scoped Topology Real
+open scoped Topology Real ComplexConjugate
 
 noncomputable section
 
@@ -243,3 +247,150 @@ theorem tendsto_sub_mul_tsum_nat_rpow :
   apply (tendsto_sub_mul_tsum_nat_cpow.comp this).congr fun s ↦ ?_
   simp only [one_div, Function.comp_apply, ofReal_mul, ofReal_sub, ofReal_one, ofReal_tsum,
     ofReal_inv, ofReal_cpow (Nat.cast_nonneg _), ofReal_natCast]
+
+/-!
+## Conjugation symmetry of the completed Riemann zeta function
+
+We prove `completedRiemannZeta_conj : Λ(conj s) = conj (Λ s)`, the analogue
+of `Complex.Gamma_conj` for the completed zeta. Combined with `completedRiemannZeta_one_sub`
+this makes the symmetry group of `Λ` on `ℂ` explicit. The proof works in two steps:
+
+1. On the open half-plane `{Re s > 1}`, the Dirichlet series for `Λ`
+   converges absolutely and conjugation commutes term-by-term with the
+   series, with `Complex.Gamma_conj`, and with `cpow` of the positive real
+   bases `π` and `n : ℕ` (via `Complex.conj_cpow`).
+2. Both sides extend to entire (resp. meromorphic-with-explicit-poles)
+   functions of `s`; the identity principle (`AnalyticOnNhd.eq_of_eventuallyEq`)
+   propagates the equality from `{Re s > 1}` to all of `ℂ`.
+
+The pole-decomposition `completedRiemannZeta_eq` is used to transfer the
+result from `Λ₀` (entire) to the full `Λ` (which has simple poles at `0` and `1`).
+-/
+
+/-- Helper: conjugation acts equivariantly on `(↑n : ℂ) ^ s`. -/
+private lemma conj_natCast_cpow (n : ℕ) (s : ℂ) :
+    conj ((n : ℂ) ^ s) = (n : ℂ) ^ (conj s) := by
+  by_cases h : n = 0
+  · subst h
+    simp_rw [Nat.cast_zero]
+    by_cases hs : s = 0
+    · simp [hs]
+    · have hcs : conj s ≠ 0 := by simp [hs]
+      rw [zero_cpow hs, zero_cpow hcs, map_zero]
+  · have harg : (n : ℂ).arg ≠ Real.pi := by
+      rw [natCast_arg]
+      exact ne_of_lt Real.pi_pos
+    have hcn : conj ((n : ℂ)) = (n : ℂ) := by
+      rw [show ((n : ℂ) : ℂ) = ((n : ℝ) : ℂ) by push_cast; rfl, Complex.conj_ofReal]
+    have key := Complex.conj_cpow (n : ℂ) (conj s) harg
+    rw [hcn] at key
+    rw [key, Complex.conj_conj]
+
+/-- Helper: conjugation acts equivariantly on `(↑(π : ℝ) : ℂ) ^ s`. -/
+private lemma conj_pi_cpow (s : ℂ) :
+    conj ((Real.pi : ℂ) ^ s) = (Real.pi : ℂ) ^ (conj s) := by
+  have harg : (Real.pi : ℂ).arg ≠ Real.pi := by
+    rw [Complex.arg_ofReal_of_nonneg Real.pi_pos.le]
+    exact ne_of_lt Real.pi_pos
+  have hcpi : conj ((Real.pi : ℂ)) = (Real.pi : ℂ) := Complex.conj_ofReal _
+  have key := Complex.conj_cpow (Real.pi : ℂ) (conj s) harg
+  rw [hcpi] at key
+  rw [key, Complex.conj_conj]
+
+/-- The Dirichlet series for `completedRiemannZeta` is conj-equivariant on `{Re s > 1}`. -/
+private lemma completedRiemannZeta_conj_of_one_lt_re {s : ℂ} (hs : 1 < re s) :
+    completedRiemannZeta (conj s) = conj (completedRiemannZeta s) := by
+  have hcs : 1 < re (conj s) := by rw [Complex.conj_re]; exact hs
+  rw [completedZeta_eq_tsum_of_one_lt_re hs, completedZeta_eq_tsum_of_one_lt_re hcs]
+  rw [map_mul, map_mul]
+  rw [conj_pi_cpow, ← Complex.Gamma_conj, Complex.conj_tsum]
+  congr 1
+  · congr 1
+    · congr 1
+      rw [map_div₀, map_neg, Complex.conj_ofNat]
+    · congr 1
+      rw [map_div₀, Complex.conj_ofNat]
+  · apply tsum_congr
+    intro n
+    simp only [one_div, map_inv₀]
+    rw [conj_natCast_cpow]
+
+/-- `completedRiemannZeta₀` is conj-equivariant on `{Re s > 1}`. Derived from the
+identity on `Λ` via the pole-decomposition `completedRiemannZeta_eq`. -/
+private lemma completedRiemannZeta₀_conj_of_one_lt_re {s : ℂ} (hs : 1 < re s) :
+    completedRiemannZeta₀ (conj s) = conj (completedRiemannZeta₀ s) := by
+  have hcs : 1 < re (conj s) := by rw [Complex.conj_re]; exact hs
+  have hs0 : s ≠ 0 := fun h => by rw [h] at hs; norm_num at hs
+  have hs1 : s ≠ 1 := fun h => by rw [h, Complex.one_re] at hs; norm_num at hs
+  have hcs0 : conj s ≠ 0 := fun h => by
+    apply hs0
+    have := congrArg conj h
+    rwa [Complex.conj_conj, map_zero] at this
+  have hcs1 : conj s ≠ 1 := fun h => by
+    apply hs1
+    have := congrArg conj h
+    rwa [Complex.conj_conj, map_one] at this
+  have ce1 : completedRiemannZeta (conj s) =
+      completedRiemannZeta₀ (conj s) - 1 / (conj s) - 1 / (1 - conj s) :=
+    completedRiemannZeta_eq (conj s)
+  have ce2 : completedRiemannZeta s =
+      completedRiemannZeta₀ s - 1 / s - 1 / (1 - s) :=
+    completedRiemannZeta_eq s
+  have key := completedRiemannZeta_conj_of_one_lt_re hs
+  rw [ce1, ce2] at key
+  rw [show conj (completedRiemannZeta₀ s - 1 / s - 1 / (1 - s)) =
+      conj (completedRiemannZeta₀ s) - conj (1 / s) - conj (1 / (1 - s)) by
+    rw [map_sub, map_sub]] at key
+  have c1 : conj ((1 : ℂ) / s) = 1 / conj s := by rw [map_div₀, map_one]
+  have c2 : conj ((1 : ℂ) / (1 - s)) = 1 / (1 - conj s) := by
+    rw [map_div₀, map_one, map_sub, map_one]
+  rw [c1, c2] at key
+  linear_combination key
+
+/-- The function `s ↦ conj (completedRiemannZeta₀ (conj s))` is entire. -/
+private lemma differentiable_conj_completedZeta₀_conj :
+    Differentiable ℂ (fun s => conj (completedRiemannZeta₀ (conj s))) := by
+  intro s
+  have := (differentiable_completedZeta₀ (conj s)).conj_conj
+  rw [Complex.conj_conj] at this
+  exact this
+
+/-- **Schwarz reflection for the entire piece `completedRiemannZeta₀`**: for every `s : ℂ`,
+`completedRiemannZeta₀ (conj s) = conj (completedRiemannZeta₀ s)`. This is the
+conj-equivariance counterpart of the functional equation `completedRiemannZeta₀_one_sub`,
+and the analogue of `Complex.Gamma_conj` for the completed zeta. -/
+theorem completedRiemannZeta₀_conj (s : ℂ) :
+    completedRiemannZeta₀ (conj s) = conj (completedRiemannZeta₀ s) := by
+  suffices h_eq :
+      (fun z => conj (completedRiemannZeta₀ (conj z))) = completedRiemannZeta₀ by
+    have := congrFun h_eq (conj s)
+    rw [Complex.conj_conj] at this
+    exact this.symm
+  have hf : AnalyticOnNhd ℂ (fun z => conj (completedRiemannZeta₀ (conj z))) Set.univ :=
+    fun z _ => differentiable_conj_completedZeta₀_conj.analyticAt z
+  have hg : AnalyticOnNhd ℂ completedRiemannZeta₀ Set.univ :=
+    fun z _ => differentiable_completedZeta₀.analyticAt z
+  have h2 : (2 : ℂ) ∈ {z : ℂ | 1 < re z} := by
+    rw [Set.mem_setOf_eq, show ((2 : ℂ).re = 2) by norm_num]; norm_num
+  have hopen : IsOpen {z : ℂ | 1 < re z} :=
+    isOpen_lt continuous_const Complex.continuous_re
+  refine AnalyticOnNhd.eq_of_eventuallyEq hf hg (z₀ := 2) ?_
+  filter_upwards [hopen.mem_nhds h2] with z hz
+  have key := completedRiemannZeta₀_conj_of_one_lt_re hz
+  have := congrArg conj key
+  rw [Complex.conj_conj] at this
+  exact this
+
+/-- **Schwarz reflection for the completed Riemann zeta function**: for every `s : ℂ`,
+`completedRiemannZeta (conj s) = conj (completedRiemannZeta s)`. This is the
+conj-equivariance counterpart of the functional equation `completedRiemannZeta_one_sub`.
+The proof reduces to `completedRiemannZeta₀_conj` via the pole-decomposition
+`completedRiemannZeta_eq`. -/
+theorem completedRiemannZeta_conj (s : ℂ) :
+    completedRiemannZeta (conj s) = conj (completedRiemannZeta s) := by
+  rw [completedRiemannZeta_eq (conj s), completedRiemannZeta₀_conj]
+  rw [completedRiemannZeta_eq s, map_sub, map_sub]
+  congr 1
+  · congr 1
+    rw [map_div₀, map_one]
+  · rw [map_div₀, map_one, map_sub, map_one]
