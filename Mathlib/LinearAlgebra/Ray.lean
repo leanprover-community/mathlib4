@@ -51,15 +51,15 @@ def RayVector (R M : Type*) [Zero M] :=
   { v : M // v ≠ 0 }
 
 /-- Equivalence between `RayVector` and non-zero vectors. -/
-def RayVector.equiv (R : Type*) {M : Type*} [Zero M] : RayVector R M ≃ { v : M // v ≠ 0 } :=
+def RayVector.equiv (R M : Type*) [Zero M] : RayVector R M ≃ { v : M // v ≠ 0 } :=
   Equiv.refl _
 
 instance RayVector.coe {R M : Type*} [Zero M] : CoeOut (RayVector R M) M where
-  coe x := (equiv R x).val
+  coe x := (equiv R M x).val
 
 @[simp]
 theorem RayVector.coe_equiv_symm {R M : Type*} [Zero M] {v : M} (h : v ≠ 0) :
-    (RayVector.equiv R).symm ⟨v, h⟩ = v := rfl
+    (RayVector.equiv R M).symm ⟨v, h⟩ = v := rfl
 
 @[ext]
 theorem RayVector.ext {R M : Type*} [Zero M] {x y : RayVector R M} (h : (x : M) = (y : M)) :
@@ -237,7 +237,7 @@ variable (R)
 
 /-- The ray given by a nonzero vector. -/
 def rayOfNeZero (v : M) (h : v ≠ 0) : Module.Ray R M :=
-  ⟦(RayVector.equiv R).symm ⟨v, h⟩⟧
+  ⟦(RayVector.equiv R M).symm ⟨v, h⟩⟧
 
 /-- An induction principle for `Module.Ray`, used as `induction x using Module.Ray.ind`. -/
 theorem Module.Ray.ind {C : Module.Ray R M → Prop} (h : ∀ (v) (hv : v ≠ 0), C (rayOfNeZero R v hv))
@@ -383,7 +383,7 @@ namespace RayVector
 
 /-- Negating a nonzero vector. -/
 instance {R : Type*} : Neg (RayVector R M) :=
-  ⟨fun v => (equiv R).symm ⟨-v, neg_ne_zero.2 v.prop⟩⟩
+  ⟨fun v => (equiv R M).symm ⟨-v, neg_ne_zero.2 v.prop⟩⟩
 
 /-- Negating a nonzero vector commutes with coercion to the underlying module. -/
 @[simp, norm_cast]
