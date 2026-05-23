@@ -282,8 +282,7 @@ theorem exists_factorization_of_finitePresentation [Flat R M] {P : Type*} [AddCo
   simpa [comp_assoc]
 
 @[deprecated (since := "2026-05-23")]
-alias Module.Flat.exists_factorization_of_isFinitelyPresented :=
-  exists_factorization_of_finitePresentation
+alias exists_factorization_of_isFinitelyPresented := exists_factorization_of_finitePresentation
 
 @[stacks 00NX "(1) → (2)"]
 theorem projective_of_finitePresentation [Flat R M] [FinitePresentation R M] : Projective R M :=
