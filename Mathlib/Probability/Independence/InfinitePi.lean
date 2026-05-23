@@ -114,7 +114,7 @@ lemma _root_.MeasureTheory.Measure.map_infinitePi_infinitePi_of_inj {α : Type*}
     (infinitePi P).map (fun ω i ↦ ω (f i)) = infinitePi (fun i ↦ P (f i)) := by
   rw [(iIndepFun_iff_map_fun_eq_infinitePi_map <| by fun_prop).mp ?_]
   · simp [infinitePi_map_eval]
-  exact iIndepFun.precomp hf <| iIndepFun_infinitePi (X := fun x ω ↦ ω) <| by fun_prop
+  exact .precomp hf <| iIndepFun_infinitePi (X := fun x ω ↦ ω) <| by fun_prop
 
 section curry
 
