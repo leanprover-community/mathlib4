@@ -36,7 +36,7 @@ Allowed values for `kind` are [feat, chore, perf, refactor, style, fix, doc, tes
 #guard_msgs in
 #check_title "fsdfs: bad title"
 
--- TODO: can these error messages be more informative?
+-- TODO: can this error message be more informative?
 /--
 info: Message: 'error: the PR title should be of the form
   kind: main title
@@ -47,6 +47,7 @@ Allowed values for `kind` are [feat, chore, perf, refactor, style, fix, doc, tes
 #guard_msgs in
 #check_title "feat:"
 
+-- TODO: can this error message be more informative?
 /--
 info: Message: 'error: the PR title should be of the form
   kind: main title
@@ -64,12 +65,18 @@ Allowed values for `kind` are [feat, chore, perf, refactor, style, fix, doc, tes
 /-- info: Message: 'error: the main PR title should be lowercased' -/
 #guard_msgs in
 #check_title "feat: My Bad Title"
-
--- Acronyms are valid PR titles, in any case.
--- TODO: fix this false positive!
-/-- info: Message: 'error: the main PR title should be lowercased' -/
+-- Starting with an acronym is fine, however.
 #guard_msgs in
 #check_title "feat: RPC acronyms are fine"
+
+-- Tabs in PR titles are banned.
+/-- info: Message: 'error: the PR title contains a tab; please use single spaces instead' -/
+#guard_msgs in
+#check_title "feat: PR title with a \t tab"
+
+/-- info: Message: 'error: the PR title contains a tab; please use single spaces instead' -/
+#guard_msgs in
+#check_title "feat(\t): RPC acronyms are fine"
 
 /--
 info: Message: 'error: the PR title should not end with a full stop'

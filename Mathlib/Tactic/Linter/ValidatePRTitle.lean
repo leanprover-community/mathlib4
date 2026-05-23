@@ -102,14 +102,21 @@ public def validateTitle (title : String) : Array String := Id.run do
       -- if scope.contains '.' then
       --  errors := errors.push s!"error: a PR's scope should be a directory, not a module"
       -- Future: we could check if `scope` describes a directory that actually exist.
-    -- Titles should be lower-cased: we don't enforce this for now.
+
+    -- Titles should be lower-cased (but we allow abbreviations).
     if mainTitle.front.toLower != mainTitle.front then
-      errors := errors.push "error: the main PR title should be lowercased"
+      let firstWord := mainTitle.takeWhile (!·.isWhitespace)
+      if !(firstWord.all (fun c ↦ c.isUpper)) then
+        errors := errors.push "error: the main PR title should be lowercased"
     if mainTitle.endsWith "." then
       errors := errors.push "error: the PR title should not end with a full stop"
     if title.contains "  " then
       errors := errors.push
         "error: the PR title contains multiple consecutive spaces; please add just one"
+    if title.contains "\t" then
+      errors := errors.push
+        "error: the PR title contains a tab; please use single spaces instead"
+
     -- Future: add more checks!
 
     return errors
