@@ -5,6 +5,7 @@ Authors: Robert Y. Lewis, Sébastien Gouëzel
 -/
 module
 
+public import Mathlib.Algebra.Order.CauSeq.Completion
 public import Mathlib.Analysis.Normed.Field.Basic
 public import Mathlib.Topology.MetricSpace.Cauchy
 

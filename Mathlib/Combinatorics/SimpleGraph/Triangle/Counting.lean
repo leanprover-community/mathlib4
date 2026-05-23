@@ -10,6 +10,8 @@ public import Mathlib.Combinatorics.SimpleGraph.Regularity.Uniform
 public import Mathlib.Data.Real.Basic
 public import Mathlib.Tactic.Linarith
 
+import Mathlib.GroupTheory.GroupAction.Ring
+
 /-!
 # Triangle counting lemma
 

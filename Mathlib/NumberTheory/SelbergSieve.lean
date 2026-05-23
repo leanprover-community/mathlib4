@@ -8,6 +8,8 @@ module
 public import Mathlib.Data.Real.Basic
 public import Mathlib.NumberTheory.ArithmeticFunction.Defs
 
+import Mathlib.Algebra.Order.Ring.Abs
+
 /-!
 # The Selberg Sieve
 

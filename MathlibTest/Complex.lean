@@ -1,4 +1,5 @@
 import Mathlib.Data.Complex.Basic
+import Mathlib.Data.Real.Cauchy
 import Mathlib.Algebra.DualNumber
 
 open DualNumber

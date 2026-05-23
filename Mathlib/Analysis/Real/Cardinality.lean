@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Order.Group.Pointwise.Interval
 public import Mathlib.Analysis.SpecificLimits.Basic
 public import Mathlib.Data.Rat.Cardinal
+public import Mathlib.Data.Real.Cauchy
 public import Mathlib.SetTheory.Cardinal.Continuum
 
 /-!
@@ -184,7 +185,7 @@ theorem cantorFunction_injective (h1 : 0 < c) (h2 : c < 1 / 2) :
 /-- The cardinality of the reals, as a type. -/
 theorem mk_real : #ℝ = 𝔠 := by
   apply le_antisymm
-  · rw [Real.equivCauchy.cardinal_eq]
+  · rw [Real.ringEquivCauchy.cardinal_eq]
     apply mk_quotient_le.trans
     apply (mk_subtype_le _).trans_eq
     rw [← power_def, mk_nat, mkRat, aleph0_power_aleph0]

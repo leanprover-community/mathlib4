@@ -7,6 +7,8 @@ module
 
 public import Mathlib.Data.Real.Basic
 
+import Mathlib.Algebra.Order.Ring.Cast
+
 /-!
 # Real sign function
 
