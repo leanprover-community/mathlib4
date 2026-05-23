@@ -138,14 +138,11 @@ def reassocExpr' (pf : Expr) : TermElabM Expr := do
         Term.registerSyntheticMVarWithCurrRef inst (.typeClass none)
   return e
 
-initialize registerBuiltinAttribute {
-  name := `reassoc
-  descr := ""
-  applicationTime := .afterCompilation
-  add := fun src ref kind => match ref with
+private def reassocImpl (src : Name) (ref : Syntax) (kind : AttributeKind) : AttrM Name :=
+  match ref with
   | `(attr| reassoc $[$toDual:toDualOpt]? $optAttr) => MetaM.run' do
-    if (kind != AttributeKind.global) then
-      throwError "`reassoc` can only be used as a global attribute"
+    unless kind == AttributeKind.global do
+      throwAttrMustBeGlobal `reassoc kind
     let toDual := toDual.isSome || (Translate.findTranslation? (← getEnv) ToDual.data src).isSome
     let tgt := src.appendAfter "_assoc"
     addRelatedDecl src tgt ref optAttr fun value levels => do
@@ -157,7 +154,17 @@ initialize registerBuiltinAttribute {
     if toDual then
       liftCommandElabM <| Command.elabCommand <| ←
         `(command| attribute [to_dual none] $(mkIdent tgt))
-  | _ => throwUnsupportedSyntax }
+    return tgt
+  | _ => throwUnsupportedSyntax
+
+initialize
+  registerGeneratingAttr `reassoc ((#[·]) <$> reassocImpl · · ·)
+  registerBuiltinAttribute {
+    name := `reassoc
+    descr := ""
+    applicationTime := .afterCompilation
+    add := (discard <| reassocImpl · · ·)
+    }
 
 /--
 `reassoc_of% t`, where `t` is
