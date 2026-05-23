@@ -235,6 +235,7 @@ protected theorem transpose_mono {μ ν : YoungDiagram} (h_le : μ ≤ ν) : μ.
 def transposeOrderIso : YoungDiagram ≃o YoungDiagram :=
   ⟨⟨transpose, transpose, fun _ => by simp, fun _ => by simp⟩, by simp⟩
 
+@[simp]
 lemma transpose_card_eq_card (μ : YoungDiagram) : μ.transpose.card = μ.card := by
   simp [transpose, YoungDiagram.card]
 
@@ -383,6 +384,7 @@ theorem pos_of_mem_rowLens (μ : YoungDiagram) (x : ℕ) (hx : x ∈ μ.rowLens)
   obtain ⟨i, hi, rfl : μ.rowLen i = x⟩ := hx
   rwa [List.mem_range, ← mem_iff_lt_colLen, mem_iff_lt_rowLen] at hi
 
+@[simp]
 lemma sum_rowLens_eq_card (μ : YoungDiagram) : μ.rowLens.sum = μ.card := by
   have hf : ∀ c ∈ μ.cells, c.1 ∈ Finset.range (μ.colLen 0) := by
     intro c hc
