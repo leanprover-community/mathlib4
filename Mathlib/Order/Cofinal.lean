@@ -153,6 +153,10 @@ theorem IsCofinal.Ici_inter {s : Set α} (h : IsCofinal s) (x : α) :
   rw [inter_comm]
   exact h.inter_Ici x
 
+@[simp]
+theorem isCofinal_Ici (x : α) : IsCofinal (Ici x) := by
+  simpa using IsCofinal.univ.inter_Ici x
+
 theorem IsCofinal.inter_Ioi [NoMaxOrder α] {s : Set α} (h : IsCofinal s) (x : α) :
     IsCofinal (s ∩ Ioi x) := by
   obtain ⟨x', hx⟩ := exists_gt x
@@ -165,6 +169,10 @@ theorem IsCofinal.Ioi_inter [NoMaxOrder α] {s : Set α} (h : IsCofinal s) (x : 
     IsCofinal (Ioi x ∩ s) := by
   rw [inter_comm]
   exact h.inter_Ioi x
+
+@[simp]
+theorem isCofinal_Ioi [NoMaxOrder α] (x : α) : IsCofinal (Ioi x) := by
+  simpa using IsCofinal.univ.inter_Ioi x
 
 theorem not_isCofinal_iff {s : Set α} : ¬ IsCofinal s ↔ ∃ x, ∀ y ∈ s, y < x := by
   simp [IsCofinal]
