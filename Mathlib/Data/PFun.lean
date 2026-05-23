@@ -170,25 +170,6 @@ theorem dom_coe (f : α → β) : (f : α →. β).Dom = Set.univ :=
 theorem lift_injective : Injective (PFun.lift : (α → β) → α →. β) := fun _ _ h =>
   funext fun a => Part.some_injective <| DFunLike.congr_fun h a
 
-/-- Turn an `Option`-valued function into a partial function. -/
-def ofOption (f : α → Option β) : α →. β :=
-  PFun.mk fun a => Part.ofOption (f a)
-
-@[simp]
-theorem ofOption_apply (f : α → Option β) (x : α) :
-    PFun.ofOption f x = Part.ofOption (f x) :=
-  rfl
-
-@[simp]
-theorem dom_ofOption (f : α → Option β) :
-    (PFun.ofOption f).Dom = { x | (f x).isSome } := by
-  ext x
-  cases h : f x <;> simp [ofOption, h]
-
-theorem mem_ofOption {f : α → Option β} {x : α} {y : β} :
-    y ∈ PFun.ofOption f x ↔ f x = some y := by
-  cases h : f x <;> simp [ofOption, h, eq_comm]
-
 /-- Graph of a partial function `f` as the set of pairs `(x, f x)` where `x` is in the domain of
 `f`. -/
 def graph (f : α →. β) : Set (α × β) :=
@@ -540,38 +521,8 @@ theorem toOption_toSubtype {p : β → Prop} (f : α → β) (a : α)
 protected def id (α : Type*) : α →. α :=
   PFun.mk Part.some
 
-/-- A constant partial function. -/
-def const (b : Part β) : α →. β := PFun.mk fun _ => b
-
 @[simp]
-theorem const_apply (b : Part β) (x : α) : const b x = b := rfl
-
-@[simp]
-theorem dom_const (b : Part β) : (PFun.const b : α →. β).Dom = { _x | b.Dom } :=
-  rfl
-
-@[simp]
-theorem const_some (b : β) : (PFun.const (Part.some b) : α →. β) = PFun.pure b := rfl
-
-@[deprecated const_some (since := "2026-05-02")]
-alias const_part_some := const_some
-
-/-- The everywhere-undefined partial function. -/
-def empty : α →. β := const Part.none
-
-@[simp]
-theorem empty_apply (x : α) : (empty : α →. β) x = Part.none := rfl
-
-@[simp]
-theorem dom_empty : (PFun.empty : α →. β).Dom = ∅ := rfl
-
-@[simp]
-theorem const_none : PFun.const (Part.none : Part β) = (PFun.empty : α →. β) := rfl
-
-instance : Inhabited (α →. β) :=
-  ⟨PFun.empty⟩
-
-@[simp] theorem default_eq_empty : (default : α →. β) = PFun.empty := rfl
+theorem const_part_some (b : β) : (PFun.mk fun _ : α => Part.some b) = PFun.pure b := rfl
 
 @[simp, norm_cast]
 theorem coe_id (α : Type*) : ((id : α → α) : α →. α) = PFun.id α :=

@@ -12,6 +12,7 @@ public import Mathlib.Data.PFun
 # The category of types with partial functions
 
 This defines `PartialFun`, the category of types equipped with partial functions.
+
 This category is classically equivalent to the category of pointed types. The reason it doesn't hold
 constructively stems from the difference between `Part` and `Option`. Both can model partial
 functions, but the latter forces a decidable domain.
@@ -34,7 +35,8 @@ open CategoryTheory Option
 universe u
 
 /-- The category of types equipped with partial functions. -/
-def PartialFun : Type (u + 1) := Type u
+def PartialFun : Type (u + 1) :=
+  Type u
 
 namespace PartialFun
 
@@ -48,14 +50,12 @@ def of (X : Type u) : PartialFun :=
 instance : Inhabited PartialFun.{u} :=
   ⟨PartialFun.of PUnit⟩
 
--- TODO: wrap morphisms in this category into a one-field `PFun.Hom` structure
 instance largeCategory : LargeCategory.{u} PartialFun where
-  Hom X Y := PFun X Y
+  Hom X Y := X →. Y
   id X := PFun.id X
   comp f g := g.comp f
 
-/-- Constructs a partial function isomorphism between types from an equivalence between them.
-Note: `@[simps!]` is used here to force projections through the new `PFun` structure. -/
+/-- Constructs a partial function isomorphism between types from an equivalence between them. -/
 @[simps!]
 def Iso.mk {α β : PartialFun.{u}} (e : α ≃ β) : α ≅ β where
   hom := PFun.lift e
@@ -67,8 +67,7 @@ def Iso.mk {α β : PartialFun.{u}} (e : α ≃ β) : α ≅ β where
 
 end PartialFun
 
-/-- The forgetful functor from `Type` to `PartialFun` which forgets that the maps are total.
-Note: `@[simps!]` is used here to force projections through the new `PFun` structure. -/
+/-- The forgetful functor from `Type` to `PartialFun` which forgets that the maps are total. -/
 @[simps!]
 def typeToPartialFun : Type u ⥤ PartialFun where
   obj X := X
@@ -126,7 +125,6 @@ noncomputable def partialFunToPointed : PartialFun ⥤ Pointed where
     funext fun o => Option.recOn o rfl fun a => by
       dsimp [CategoryStruct.comp]
       rw [Part.bind_toOption]
-      -- Splitting on the Option natively evaluates the bound state, matching Pointed behavior
       cases (f.toFun a).toOption <;> rfl
 
 /-- The equivalence induced by `PartialFunToPointed` and `PointedToPartialFun`. -/
@@ -135,13 +133,10 @@ noncomputable def partialFunEquivPointed : PartialFun.{u} ≌ Pointed where
   functor := partialFunToPointed
   inverse := pointedToPartialFun
   unitIso := NatIso.ofComponents (fun X => PartialFun.Iso.mk
-      { toFun := fun a => Subtype.mk (some a) (some_ne_none a)
+      { toFun := fun a => Subtype.mk (some a) (Option.some_ne_none a)
         invFun := fun a => Option.get _ (Option.ne_none_iff_isSome.1 a.property)
         left_inv := fun _ => Option.get_some _ _
         right_inv := fun ⟨a, ha⟩ => Subtype.ext (Option.some_get _) })
-      -- TODO(PFun-refactor): further golf this proof once global simp sets for PFun are established
-      -- Stability Note: This proof uses explicit `change` and `erw` to bypass defeq boundaries and
-      -- is fragile.
       fun {X Y} f => PFun.ext fun a ⟨b_val, hb⟩ => by
         classical
         cases b_val with
@@ -154,14 +149,18 @@ noncomputable def partialFunEquivPointed : PartialFun.{u} ≌ Pointed where
             change _ ∈ (f.toFun a).bind _ at h
             obtain ⟨c, hc_mem, hc_eq⟩ := Part.mem_bind_iff.mp h
             have h_eq : b = c :=
-            Option.some_inj.mp (Subtype.ext_iff.mp (Part.mem_some_iff.mp hc_eq))
+              Option.some_inj.mp (Subtype.ext_iff.mp (Part.mem_some_iff.mp hc_eq))
             subst h_eq
             change _ ∈ (Part.some _).bind _
-            erw [Part.bind_some, PFun.mem_toSubtype_iff]
+            rw [Part.bind_some]
+            change _ ∈ PFun.toSubtype _ _ _
+            rw [PFun.mem_toSubtype_iff]
             exact (Part.mem_toOption.mpr hc_mem).symm
           · intro h
             change _ ∈ (Part.some _).bind _ at h
-            erw [Part.bind_some, PFun.mem_toSubtype_iff] at h
+            rw [Part.bind_some] at h
+            change _ ∈ PFun.toSubtype _ _ _ at h
+            rw [PFun.mem_toSubtype_iff] at h
             change _ ∈ (f.toFun a).bind _
             exact Part.mem_bind_iff.mpr ⟨b, Part.mem_toOption.mp h.symm,
               Part.mem_some_iff.mpr (Subtype.ext rfl)⟩
@@ -174,7 +173,7 @@ noncomputable def partialFunEquivPointed : PartialFun.{u} ≌ Pointed where
         classical
         obtain _ | ⟨a, ha⟩ := a
         · exact f.map_point.symm
-        dsimp [CategoryStruct.comp]
+        dsimp [CategoryStruct.comp, partialFunToPointed, pointedToPartialFun]
         change Equiv.optionSubtypeNe Y.point
           ((PFun.toSubtype (fun x => x ≠ Y.point) f.toFun a).toOption) = f.toFun a
         simp only [PFun.toOption_toSubtype]
@@ -198,4 +197,4 @@ noncomputable def typeToPartialFunIsoPartialFunToPointed :
       | none => rfl
       | some x =>
         dsimp [partialFunToPointed, typeToPartialFun, typeToPointed, PFun.lift]
-        erw [Part.some_toOption]
+        convert Part.some_toOption (f x)

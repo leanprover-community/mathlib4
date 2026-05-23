@@ -226,7 +226,7 @@ theorem to_re {p : α → Prop} (hp : ComputablePred p) : REPred p := by
   unfold REPred
   refine
     (Partrec.cond hf (Decidable.Partrec.const' (Part.some ())) Partrec.none).of_eq fun n =>
-      Part.ext fun a => by cases h : f n <;> simp [h, PFun.pure]
+      Part.ext fun a => by cases h : f n <;> simp [-PFun.const_part_some,h]
 -- Post's theorem on the equivalence of r.e., co-r.e. sets and
 -- computable sets. The assumption that p is decidable is required
 -- unless we assume Markov's principle or LEM.

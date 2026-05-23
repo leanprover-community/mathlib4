@@ -200,7 +200,7 @@ lemma oracle : ∀ g ∈ O, RecursiveIn O g :=
 protected theorem some : RecursiveIn O (PFun.id α) :=
   Partrec.some.recursiveIn
 
-protected theorem none : RecursiveIn O (PFun.empty : α →. σ) :=
+protected theorem none : RecursiveIn O (PFun.mk fun _ : α => @Part.none σ) :=
   Partrec.none.recursiveIn
 
 /-- If every element of `O` is `RecursiveIn O'`, then any function which is
@@ -221,7 +221,7 @@ theorem partrec_of_oracle
   Nat.RecursiveIn.partrec_of_oracle (by simpa only [Partrec.nat_iff] using hO) hf
 
 /-- If a function is recursive in a constant partial function, then it is partial recursive. -/
-lemma partrec_of_const {s : Part ℕ} (hf : RecursiveIn {PFun.const s} f) : Partrec f :=
+lemma partrec_of_const {s : Part ℕ} (hf : RecursiveIn {PFun.mk fun _ => s} f) : Partrec f :=
   hf.partrec_of_oracle (by rintro g rfl; exact .const' s)
 
 end RecursiveIn
@@ -235,7 +235,7 @@ lemma recursiveIn_empty_iff :
 every partial function `g`. -/
 theorem partrec_iff_forall_recursiveIn_singleton :
     Partrec f ↔ ∀ g, RecursiveIn {g} f :=
-  ⟨fun hf _ => hf.recursiveIn, fun hf => (hf PFun.empty).partrec_of_const⟩
+  ⟨fun hf _ => hf.recursiveIn, fun hf => (hf (PFun.mk fun _ => Part.none)).partrec_of_const⟩
 
 namespace ComputableIn
 

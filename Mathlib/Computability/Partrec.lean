@@ -205,21 +205,22 @@ theorem of_primrec {f : ℕ → ℕ} (hf : Nat.Primrec f) : Nat.Partrec (PFun.li
     | succ m IH =>
       simp only [PFun.lift_apply, bind_eq_bind, mem_bind_iff, mem_some_iff]
       exact ⟨_, IH, rfl⟩
-/-- The identity partial recursive function. Previously named `some`. -/
-protected theorem id : Nat.Partrec (PFun.id ℕ) :=
+
+/-- The identity partial recursive function. -/
+protected theorem some : Nat.Partrec (PFun.id ℕ) :=
   of_primrec Primrec.id
 
-@[deprecated id (since := "2026-05-02")]
-protected theorem some : Nat.Partrec (PFun.id ℕ) := Nat.Partrec.id
 /-- The everywhere-undefined partial recursive function, defined via `PFun.empty`. -/
-theorem none : Nat.Partrec (PFun.empty : ℕ →. ℕ) :=
+theorem none : Nat.Partrec (PFun.mk fun _ => Part.none) :=
   (of_primrec (Nat.Primrec.const 1)).rfind.of_eq fun _ =>
-    eq_none_iff.2 fun _ ⟨h, _⟩ => by simp at h
-
+    eq_none_iff.2 fun _ ⟨h, _⟩ => by
+      rcases h with ⟨n, hn, _⟩
+      revert hn
+      simp [-PFun.const_part_some]
 theorem prec' {f g h} (hf : Nat.Partrec f) (hg : Nat.Partrec g) (hh : Nat.Partrec h) :
     Nat.Partrec (PFun.mk fun a => (f a).bind fun n => Nat.rec (g a)
       (fun y IH => do let i ← IH; h (Nat.pair a (Nat.pair y i))) n) :=
-  ((prec hg hh).comp (pair Nat.Partrec.id hf)).of_eq fun a =>
+  ((prec hg hh).comp (pair Nat.Partrec.some hf)).of_eq fun a =>
     by simp [Seq.seq, Nat.unpaired, PFun.coe_mk]
 
 -- TODO: golf this proof (PFun refactor)
@@ -232,9 +233,12 @@ theorem ppred : Nat.Partrec (PFun.mk fun n => Part.ofOption (Nat.ppred n)) :=
       (_root_.Primrec.const 0) (_root_.Primrec.const 1)).to₂
   (of_primrec (Primrec₂.unpaired'.2 this)).rfind.of_eq fun n => by
     cases n
-    · exact eq_none_iff.2 fun a h => by simp [Nat.unpaired] at h
-    · exact eq_some_iff.2 <| mem_rfind.2 ⟨by simp [Nat.unpaired],
-       fun hm => by simp [Nat.unpaired]; omega⟩
+    · exact eq_none_iff.2 fun a h => by
+        rcases h with ⟨hn, _⟩
+        revert hn
+        simp [-PFun.const_part_some, Nat.unpaired]
+    · exact eq_some_iff.2 <|
+        mem_rfind.2 ⟨by simp [Nat.unpaired], fun hm => by simp [Nat.unpaired]; omega⟩
 
 end Partrec
 
@@ -404,23 +408,23 @@ theorem of_eq {f g : α →. σ} (hf : Partrec f) (H : ∀ n, f n = g n) : Partr
 theorem of_eq_tot {f : α →. σ} {g : α → σ} (hf : Partrec f) (H : ∀ n, g n ∈ f n) : Computable g :=
   hf.of_eq fun a => eq_some_iff.2 (H a)
 
-theorem none : Partrec (PFun.empty : α →. σ) :=
+theorem none : Partrec (PFun.mk fun _ : α => @Part.none σ) :=
   Nat.Partrec.none.of_eq fun n => by ext; cases decode (α := α) n <;> simp
 
 protected theorem some : Partrec (PFun.id α) :=
   Computable.id
 
 theorem _root_.Decidable.Partrec.const' (s : Part σ) [Decidable s.Dom] :
-    Partrec (PFun.const s : α →. σ) :=
+    Partrec (PFun.mk fun _ : α => s) :=
   (Computable.ofOption (const (toOption s))).of_eq fun _ => of_toOption s
 
-theorem const' (s : Part σ) : Partrec (PFun.const s : α →. σ) :=
+theorem const' (s : Part σ) : Partrec (PFun.mk fun _ : α => s) :=
   haveI := Classical.dec s.Dom
   Decidable.Partrec.const' s
 
 protected theorem bind {f : α →. β} {g : α → β →. σ} (hf : Partrec f) (hg : Partrec₂ g) :
   Partrec (PFun.mk fun a => (f a).bind (g a)) :=
-  (hg.comp (Nat.Partrec.id.pair hf)).of_eq fun n => by
+  (hg.comp (Nat.Partrec.some.pair hf)).of_eq fun n => by
     rcases e : decode (α := α) n <;> simp [Seq.seq, e, encodek]
 
 theorem map {f : α →. β} {g : α → β → σ} (hf : Partrec f) (hg : Computable₂ g) :
