@@ -554,14 +554,13 @@ theorem card_commonNeighbors_top [DecidableEq V] {v w : V} (h : v ≠ w) :
 
 @[simp] lemma neighborFinset_eq_erase_univ [DecidableEq V] [DecidableRel G.Adj] (v : V) :
     G.neighborFinset v = univ.erase v ↔ G.IsUniversal v := by
-  rw [← insert_neighborFinset_eq_univ]
-  grind [notMem_neighborFinset_self]
+  grind [insert_neighborFinset_eq_univ, notMem_neighborFinset_self]
 
 lemma degree_eq_card_sub_one [DecidableRel G.Adj] (v : V) :
     G.degree v = Fintype.card V - 1 ↔ G.IsUniversal v := by
   classical
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · refine (G.insert_neighborFinset_eq_univ v).mp <| (Finset.card_eq_iff_eq_univ _).mp ?_
+  · rw [← G.insert_neighborFinset_eq_univ v, ← Finset.card_eq_iff_eq_univ]
     simp [h, Nat.sub_add_cancel <| Fintype.card_pos_iff.mpr ⟨v⟩]
   · simp [← card_neighborFinset_eq_degree, (G.neighborFinset_eq_erase_univ v).mpr h]
 
