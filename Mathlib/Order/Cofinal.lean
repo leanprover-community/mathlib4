@@ -178,13 +178,14 @@ theorem IsCofinal.inter_right_of_isUpperSet {s t : Set α} (hs : IsCofinal s) (h
   rw [inter_comm]
   exact hs.inter_left_of_isUpperSet ht ht₀
 
-@[simp]
-theorem isCofinal_Ici (x : α) : IsCofinal (Ici x) := by
-  simpa using IsCofinal.univ.inter_left_of_isUpperSet (isUpperSet_Ici x)
+theorem IsUpperSet.isCofinal {s : Set α} (hs : IsUpperSet s) (hs₀ : s.Nonempty) : IsCofinal s := by
+  simpa using IsCofinal.univ.inter_left_of_isUpperSet hs hs₀
 
-@[simp]
+theorem isCofinal_Ici (x : α) : IsCofinal (Ici x) := by
+  simpa using (isUpperSet_Ici x).isCofinal
+
 theorem isCofinal_Ioi [NoMaxOrder α] (x : α) : IsCofinal (Ioi x) := by
-  simpa using IsCofinal.univ.inter_left_of_isUpperSet (isUpperSet_Ioi x)
+  simpa using (isUpperSet_Ioi x).isCofinal
 
 /-- The set of "records" (the smallest inputs yielding the highest values) with respect to a
 well-ordering of `α` is a cofinal set. -/
