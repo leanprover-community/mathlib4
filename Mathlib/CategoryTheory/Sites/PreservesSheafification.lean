@@ -277,7 +277,7 @@ lemma sheafToPresheaf_map_sheafComposeNatTrans_eq_sheafifyCompIso_inv (P : Cáµ’á
     rw [this]
     rfl
   apply ((plusPlusAdjunction J E).homEquiv _ _).injective
-  convert sheafComposeNatTrans_fac J F (plusPlusAdjunction J D) (plusPlusAdjunction J E) P
+  convert! sheafComposeNatTrans_fac J F (plusPlusAdjunction J D) (plusPlusAdjunction J E) P
   dsimp [plusPlusAdjunction]
   simp
 
