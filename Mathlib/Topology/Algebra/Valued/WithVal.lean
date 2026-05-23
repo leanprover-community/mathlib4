@@ -119,6 +119,18 @@ lemma toVal_bijective : Function.Bijective (toVal v) :=
 
 @[simp] lemma ofVal_pow (x : WithVal v) (n : ℕ) : ofVal (x ^ n) = (ofVal x) ^ n := rfl
 
+@[simp] lemma toVal_natCast (n : ℕ) : toVal v n = n := rfl
+
+@[simp] lemma ofVal_natCast (n : ℕ) : ofVal (n : WithVal v) = n := rfl
+
+@[simp] lemma toVal_intCast (z : ℤ) : toVal v z = z := rfl
+
+@[simp] lemma ofVal_intCast (z : ℤ) : ofVal (z : WithVal v) = z := rfl
+
+@[simp] lemma toVal_ofNat (n : ℕ) [n.AtLeastTwo] : toVal v ofNat(n) = ofNat(n) := rfl
+
+@[simp] lemma ofVal_ofNat (n : ℕ) [n.AtLeastTwo] : ofVal (ofNat(n) : WithVal v) = ofNat(n) := rfl
+
 @[simp] lemma toVal_eq_zero (x : R) : toVal v x = 0 ↔ x = 0 := (toVal_injective v).eq_iff
 
 @[simp] lemma ofVal_eq_zero (x : WithVal v) : ofVal x = 0 ↔ x = 0 := (ofVal_injective v).eq_iff
@@ -326,6 +338,18 @@ instance [NumberField R] : NumberField (WithVal v) where
 @[simp] lemma toVal_inv (x : R) : toVal v x⁻¹ = (toVal v x)⁻¹ := rfl
 
 @[simp] lemma ofVal_inv (x : WithVal v) : ofVal (x⁻¹) = (ofVal x)⁻¹ := rfl
+
+@[simp] lemma toVal_zpow (x : R) (z : ℤ) : toVal v (x ^ z) = (toVal v x) ^ z := rfl
+
+@[simp] lemma ofVal_zpow (x : WithVal v) (z : ℤ) : ofVal (x ^ z) = (ofVal x) ^ z := rfl
+
+@[simp] lemma toVal_nnratCast (q : ℚ≥0) : toVal v q = q := rfl
+
+@[simp] lemma ofVal_nnratCast (q : ℚ≥0) : ofVal (q : WithVal v) = q := rfl
+
+@[simp] lemma toVal_ratCast (q : ℚ) : toVal v q = q := rfl
+
+@[simp] lemma ofVal_ratCast (q : ℚ) : ofVal (q : WithVal v) = q := rfl
 
 end Field
 
@@ -591,8 +615,9 @@ theorem IsEquiv.valuedCompletion_le_one_iff {K : Type*} [Field K] {v : Valuation
     have h1 (x : UniformSpace.Completion (WithVal v)) :
       Valued.v x ≤ 1 ↔ Valued.v.restrict x ≤ 1 := by rw [restrict_le_one_iff]
     simp_rw [h1]
-    convert (mapEquiv h.uniformEquiv).toHomeomorph.isClosed_setOf_iff
-      (Valued.isClopen_closedBall _ one_ne_zero) (Valued.isClopen_closedBall _ one_ne_zero)
+    convert!
+      (mapEquiv h.uniformEquiv).toHomeomorph.isClosed_setOf_iff
+        (Valued.isClopen_closedBall _ one_ne_zero) (Valued.isClopen_closedBall _ one_ne_zero)
     rw [restrict_le_one_iff]
     rfl
   | ih a =>

@@ -210,7 +210,7 @@ theorem coeff_subst_finite (ha : HasSubst a) (f : PowerSeries R) (e : τ →₀ 
     (fun (d : ℕ) ↦ coeff d f • MvPowerSeries.coeff e (a ^ d)).HasFiniteSupport := by
   rw [Function.HasFiniteSupport]
   convert (MvPowerSeries.coeff_subst_finite ha.const f e).image
-    (Finsupp.LinearEquiv.finsuppUnique ℕ ℕ Unit).toEquiv
+    (Finsupp.uniqueLinearEquiv ℕ ℕ ()).toEquiv
   rw [← Equiv.preimage_eq_iff_eq_image, ← Function.support_comp_eq_preimage]
   apply congr_arg
   rw [← Equiv.eq_comp_symm]
@@ -226,10 +226,11 @@ theorem coeff_subst (ha : HasSubst a) (f : PowerSeries R) (e : τ →₀ ℕ) :
       finsum (fun (d : ℕ) ↦
         coeff d f • (MvPowerSeries.coeff e (a ^ d))) := by
   rw [subst, MvPowerSeries.coeff_subst ha.const f e, ← finsum_comp_equiv
-    (Finsupp.LinearEquiv.finsuppUnique ℕ ℕ Unit).toEquiv.symm]
+    (Finsupp.uniqueLinearEquiv ℕ ℕ ()).toEquiv.symm]
   apply finsum_congr
   intro
-  congr <;> simp
+  congr
+  simp
 
 theorem coeff_subst' {b : S⟦X⟧} (hb : HasSubst b) (f : R⟦X⟧) (e : ℕ) :
     coeff e (f.subst b) =
@@ -325,7 +326,7 @@ theorem le_weightedOrder_subst (w : τ → ℕ) (ha : HasSubst a) (f : PowerSeri
   simp only [ne_eq, Function.comp_const, le_iInf_iff]
   intro i hi
   trans i () * MvPowerSeries.weightedOrder w a
-  · exact mul_le_mul_left (f.order_le (i ()) (by delta PowerSeries.coeff; convert hi; aesop)) _
+  · exact mul_le_mul_left (f.order_le (i ()) (by delta PowerSeries.coeff; convert! hi; aesop)) _
   · simp [Finsupp.weight_apply, Finsupp.sum_fintype]
 
 theorem le_order_subst (a : MvPowerSeries τ S) (ha : HasSubst a) (f : PowerSeries R) :
