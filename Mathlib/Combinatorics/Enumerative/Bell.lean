@@ -80,9 +80,8 @@ theorem bell_mul_eq (m : Multiset ℕ) :
   unfold bell
   rw [← Nat.mul_right_inj (a := ∏ i ∈ m.toFinset, (i * count i m)!) (by positivity)]
   simp only [← mul_assoc, Nat.multinomial_spec]
-  simp only [mul_assoc]
-  rw [mul_comm]
-  apply congr_arg₂
+  rw [mul_assoc, mul_assoc, mul_comm]
+  congr
   · rw [mul_comm, mul_assoc, ← Finset.prod_mul_distrib, Finset.prod_multiset_map_count]
     suffices this : _ by
       by_cases hm : 0 ∈ m.toFinset
@@ -94,13 +93,11 @@ theorem bell_mul_eq (m : Multiset ℕ) :
         nth_rewrite 3 [← Finset.erase_eq_of_notMem hm]
         exact this
     rw [← Finset.prod_mul_distrib]
-    apply Finset.prod_congr rfl
-    intro x hx
+    congr! 1 with x hx
     rw [← mul_assoc, bell_mul_eq_lemma]
     simp only [Finset.mem_erase, ne_eq, mem_toFinset] at hx
     simp only [ne_eq, hx.1, not_false_eq_true]
-  · apply congr_arg
-    rw [Finset.sum_multiset_count]
+  · rw [Finset.sum_multiset_count]
     simp only [smul_eq_mul, mul_comm]
 
 theorem bell_eq (m : Multiset ℕ) :
@@ -117,10 +114,10 @@ private theorem bell_cons_mul_count (m : Multiset ℕ) {a : ℕ} (ha : a ≠ 0) 
     (a ::ₘ m).bell * (a ::ₘ m).count a = (m.sum + a).choose a * m.bell := by
   let rest := ∏ j ∈ (m.toFinset.erase 0).erase a, (m.count j)!
   have hrest : rest = ∏ j ∈ ((a ::ₘ m).toFinset.erase 0).erase a, ((a ::ₘ m).count j)! := by
-    refine Finset.prod_congr ?_ ?_
+    unfold rest
+    congr! 1 with j hj
     · grind [Multiset.toFinset_cons]
-    · intro _ hj
-      simp [Finset.mem_erase.mp hj]
+    · simp [Finset.mem_erase.mp hj]
   let c := (m.map (· !)).prod * (m.count a)! * rest
   have hm0 : m.bell * c = m.sum ! := by
     have hsplit : (m.count a)! * rest = ∏ j ∈ m.toFinset.erase 0, (m.count j)! := by
