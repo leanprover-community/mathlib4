@@ -117,7 +117,7 @@ lemma functorPushforward_sieve₁'_of_preservesLimit [HasPullback (E.f i₁) (E.
         simp [← h.left, ← h.right, ← Functor.map_comp]
 
 set_option backward.isDefEq.respectTransparency false in
-lemma functorPushforward_sieve₁_of_preservesLimitsOfShape (h : p₁ ≫ E.f _ = p₂ ≫ E.f _)
+lemma functorPushforward_sieve₁_of_preservesPullbacks (h : p₁ ≫ E.f _ = p₂ ≫ E.f _)
     [HasPullbacks C] [PreservesLimitsOfShape WalkingCospan F] :
     Sieve.functorPushforward F (E.sieve₁ p₁ p₂) = (E.map F).sieve₁ (F.map p₁) (F.map p₂) := by
   refine le_antisymm (PreOneHypercover.functorPushforward_sieve₁_map_le _ _ _) ?_
