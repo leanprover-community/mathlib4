@@ -19,8 +19,7 @@ public lemma Finite.iSup_eq_iSup_subtype {ι K M F : Type*} [Finite ι] [Zero K]
   obtain ⟨i, hi⟩ : ∃ j, x j ≠ 0 := Function.ne_iff.mp hx
   have : Nonempty {j // x j ≠ 0} := .intro ⟨i, hi⟩
   have : Nonempty ι := .intro i
-  refine le_antisymm ?_ <| ciSup_le fun ⟨j, hj⟩ ↦ le_ciSup_of_le j le_rfl
-  refine ciSup_le fun j ↦ ?_
+  refine le_antisymm (ciSup_le fun j ↦ ?_) <| ciSup_le fun ⟨j, hj⟩ ↦ le_ciSup_of_le j le_rfl
   rcases eq_or_ne (x j) 0 with h | h
   · rw [h, map_zero]
     exact le_ciSup_of_le ⟨i, hi⟩ (NonnegHomClass.apply_nonneg ..)
