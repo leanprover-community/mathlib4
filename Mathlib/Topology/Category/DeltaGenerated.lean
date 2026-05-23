@@ -13,16 +13,18 @@ public import Mathlib.Topology.Convenient.Category
 /-!
 # Delta-generated topological spaces
 
-The category of delta-generated spaces.
-
-See https://ncatlab.org/nlab/show/Delta-generated+topological+space.
-
+This file defines the category `DeltaGenerated` of delta-generated spaces.
 This is a particular case of the construction in the file
-`Mathlib/Topology/Convenient/Category.Lean` for categories of `X`-generated
-spaces where `X` is a family of topological spaces.
+`Mathlib/Topology/Convenient/Category.Lean`: this is the category of
+`X`-generated spaces where `X` is the family of spaces `Fin n → ℝ`
+for all `n : ℕ`.
 
 ## TODO
 * `DeltaGenerated` is Cartesian closed (@joelriou).
+
+## References
+* https://ncatlab.org/nlab/show/Delta-generated+topological+space
+
 -/
 
 @[expose] public section
@@ -32,7 +34,7 @@ universe u
 open CategoryTheory
 
 /-- The category of delta-generated topological spaces. -/
-abbrev DeltaGenerated := GeneratedByTopCat.{u} (fun n ↦ (Fin n) → ℝ)
+abbrev DeltaGenerated := GeneratedByTopCat.{u} (fun n ↦ Fin n → ℝ)
 
 /-- The faithful (but not full) functor taking each topological space to its delta-generated
   coreflection. -/
