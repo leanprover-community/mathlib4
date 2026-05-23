@@ -248,21 +248,21 @@ theorem isStationary_iUnion_iff {ι : Type u} {f : ι → Set α} (hα : cof α 
   · rw [← Cardinal.lift_lt]
     exact mk_range_le_lift.trans_lt hι
 
-theorem isStationary_sUnion_countable_iff {s : Set (Set α)} (hα : cof α ≠ ℵ₀) (hsα : s.Countable) :
-    IsStationary (⋃₀ s) ↔ ∃ x ∈ s, IsStationary x := by
+theorem isStationary_sUnion_iff_of_countable {s : Set (Set α)} (hα : cof α ≠ ℵ₀)
+    (hsα : s.Countable) : IsStationary (⋃₀ s) ↔ ∃ x ∈ s, IsStationary x := by
   obtain hα | hα := hα.lt_or_gt
   · apply isStationary_sUnion_iff_of_cof_le_one
     rwa [← cof_lt_aleph0_iff]
   · apply isStationary_sUnion_iff hα.ne' (hα.trans_le' _)
     rwa [le_aleph0_iff_set_countable]
 
-theorem isStationary_iUnion_countable_iff {ι : Type*} {f : ι → Set α} [Countable ι]
+theorem isStationary_iUnion_iff_of_countable {ι : Type*} {f : ι → Set α} [Countable ι]
     (hα : cof α ≠ ℵ₀) : IsStationary (⋃ i, f i) ↔ ∃ i, IsStationary (f i) := by
-  rw [← sUnion_range, isStationary_sUnion_countable_iff hα (countable_range f)]
+  rw [← sUnion_range, isStationary_sUnion_iff_of_countable hα (countable_range f)]
   simp
 
 theorem isStationary_union_iff (hα : cof α ≠ ℵ₀) :
     IsStationary (s ∪ t) ↔ IsStationary s ∨ IsStationary t := by
-  simpa using isStationary_sUnion_countable_iff (s := {s, t}) hα
+  simpa using isStationary_sUnion_iff_of_countable (s := {s, t}) hα
 
 end WellFoundedLT
