@@ -430,9 +430,9 @@ lemma chromaticNumber_eq_iff_forall_surjective (hG : G.Colorable n) :
     G.chromaticNumber = n ↔ ∀ C : G.Coloring (Fin n), Surjective C := by
   rw [← hG.chromaticNumber_le.ge_iff_eq, le_chromaticNumber_iff_forall_surjective]
 
-theorem chromaticNumber_bot [Nonempty V] : (⊥ : SimpleGraph V).chromaticNumber = 1 := by
-  have : (⊥ : SimpleGraph V).Colorable 1 := colorable_one_iff.mpr rfl
-  exact this.chromaticNumber_le.antisymm <| Order.one_le_iff_pos.2 <| chromaticNumber_pos this
+theorem chromaticNumber_bot [Nonempty V] : (⊥ : SimpleGraph V).chromaticNumber = 1 :=
+  have : (⊥ : SimpleGraph V).Colorable 1 := by simp
+  this.chromaticNumber_le.antisymm <| Order.one_le_iff_pos.2 <| chromaticNumber_pos this
 
 @[simp]
 theorem chromaticNumber_top [Fintype V] : (⊤ : SimpleGraph V).chromaticNumber = Fintype.card V := by
