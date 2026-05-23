@@ -104,7 +104,7 @@ theorem OneOneReducible.of_equiv {α β} [Primcodable α] [Primcodable β] {e : 
 
 theorem OneOneReducible.of_equiv_symm {α β} [Primcodable α] [Primcodable β] {e : α ≃ β}
     (q : β → Prop) (h : Computable e.symm) : q ≤₁ (q ∘ e) := by
-  convert OneOneReducible.of_equiv _ h; funext; simp
+  convert! OneOneReducible.of_equiv _ h; funext; simp
 
 instance stdRefl_oneOneReducible {α} [Primcodable α] : Std.Refl (@OneOneReducible α α _ _) where
   refl := oneOneReducible_refl
