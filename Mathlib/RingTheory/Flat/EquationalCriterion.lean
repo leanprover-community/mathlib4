@@ -286,4 +286,9 @@ theorem projective_of_finitePresentation [Flat R M] [FinitePresentation R M] : P
   have ⟨_, f, g, eq⟩ := exists_factorization_of_isFinitelyPresented (.id (R := R) (M := M))
   .of_split f g eq.symm
 
+theorem projective_of_finite_isNoetherianRing [Flat R M] [Module.Finite R M] [IsNoetherianRing R] :
+    Projective R M :=
+  have : FinitePresentation R M := Module.finitePresentation_of_finite ..
+  projective_of_finitePresentation
+
 end Module.Flat
