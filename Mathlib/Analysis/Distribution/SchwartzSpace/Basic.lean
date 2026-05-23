@@ -5,13 +5,19 @@ Authors: Moritz Doll
 -/
 module
 
-public import Mathlib.Analysis.LocallyConvex.WithSeminorms
-public import Mathlib.Analysis.Normed.Group.ZeroAtInfty
-public import Mathlib.Analysis.Normed.Lp.SmoothApprox
-public import Mathlib.Analysis.SpecialFunctions.Pow.Real
+public import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
 public import Mathlib.Analysis.Distribution.TemperateGrowth
-public import Mathlib.Topology.Algebra.UniformFilterBasis
+public import Mathlib.Analysis.Normed.Group.ZeroAtInfty
+public import Mathlib.Analysis.SpecialFunctions.Pow.Real
 public import Mathlib.MeasureTheory.Function.L2Space
+public import Mathlib.Tactic.FunProp
+public import Mathlib.Topology.Algebra.UniformFilterBasis
+
+import Mathlib.Analysis.Calculus.ContDiff.Bounds
+import Mathlib.Analysis.Calculus.ContDiff.Operations
+import Mathlib.Analysis.Normed.Lp.SmoothApprox
+import Mathlib.Tactic.MoveAdd
+
 
 /-!
 # Schwartz space
@@ -230,7 +236,7 @@ variable [NormedField 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F] [Nor
 instance instSMul : SMul 𝕜 𝓢(E, F) :=
   ⟨fun c f =>
     { toFun := c • (f : E → F)
-      smooth' := (f.smooth _).const_smul c
+      smooth' := by exact (f.smooth _).const_smul c
       decay' k n := by
         use f.seminormAux k n * ‖c‖
         intro x
@@ -263,13 +269,13 @@ private theorem seminormAux_smul_le (k n : ℕ) (c : 𝕜) (f : 𝓢(E, F)) :
 instance instNSMul : SMul ℕ 𝓢(E, F) :=
   ⟨fun c f =>
     { toFun := c • (f : E → F)
-      smooth' := (f.smooth _).const_smul c
+      smooth' := by exact (f.smooth _).const_smul c
       decay' := by simpa [← Nat.cast_smul_eq_nsmul ℝ] using ((c : ℝ) • f).decay' }⟩
 
 instance instZSMul : SMul ℤ 𝓢(E, F) :=
   ⟨fun c f =>
     { toFun := c • (f : E → F)
-      smooth' := (f.smooth _).const_smul c
+      smooth' := by exact (f.smooth _).const_smul c
       decay' := by simpa [← Int.cast_smul_eq_zsmul ℝ] using ((c : ℝ) • f).decay' }⟩
 
 end SMul
@@ -278,7 +284,7 @@ section Zero
 
 instance instZero : Zero 𝓢(E, F) :=
   ⟨{  toFun := fun _ => 0
-      smooth' := contDiff_const
+      smooth' := by exact contDiff_const
       decay' := fun _ _ => ⟨1, fun _ => by simp⟩ }⟩
 
 instance instInhabited : Inhabited 𝓢(E, F) :=
@@ -305,7 +311,7 @@ section Neg
 
 instance instNeg : Neg 𝓢(E, F) :=
   ⟨fun f =>
-    ⟨-f, (f.smooth _).neg, fun k n => by
+    ⟨-f, by exact (f.smooth _).neg, fun k n => by
       use f.seminormAux k n
       intro x
       grw [f.decay_neg_aux k n x, f.le_seminormAux k n x]⟩⟩
@@ -319,7 +325,7 @@ section Add
 
 instance instAdd : Add 𝓢(E, F) :=
   ⟨fun f g =>
-    ⟨f + g, (f.smooth _).add (g.smooth _), fun k n => by
+    ⟨f + g, by exact (f.smooth _).add (g.smooth _), fun k n => by
       use f.seminormAux k n + g.seminormAux k n
       intro x
       grw [decay_add_le_aux k n f g x, f.le_seminormAux k n x, g.le_seminormAux k n x]⟩⟩
@@ -341,7 +347,7 @@ section Sub
 
 instance instSub : Sub 𝓢(E, F) :=
   ⟨fun f g =>
-    ⟨f - g, (f.smooth _).sub (g.smooth _), by
+    ⟨f - g, by exact (f.smooth _).sub (g.smooth _), by
       intro k n
       refine ⟨f.seminormAux k n + g.seminormAux k n, fun x => ?_⟩
       grw [← f.le_seminormAux k n x, ← g.le_seminormAux k n x]
@@ -681,11 +687,11 @@ variable [NormedSpace 𝕜 E] [NormedSpace 𝕜 G]
 /-- The map `f ↦ (x ↦ B (f x) (g x))` as a continuous `𝕜`-linear map on Schwartz space,
 where `B` is a continuous `𝕜`-linear map and `g` is a function of temperate growth. -/
 def bilinLeftCLM (B : E →L[𝕜] F →L[𝕜] G) {g : D → F} (hg : g.HasTemperateGrowth) :
-    𝓢(D, E) →L[𝕜] 𝓢(D, G) := by
-  refine mkCLM (fun f x => B (f x) (g x))
+    𝓢(D, E) →L[𝕜] 𝓢(D, G) :=
+  mkCLM (fun f x => B (f x) (g x))
     (fun _ _ _ => by simp) (fun _ _ _ => by simp)
     (fun f => (B.bilinearRestrictScalars ℝ).isBoundedBilinearMap.contDiff.comp
-      ((f.smooth ⊤).prodMk hg.1)) ?_
+      ((f.smooth ⊤).prodMk hg.1)) <| by
   rintro ⟨k, n⟩
   rcases hg.norm_iteratedFDeriv_le_uniform n with ⟨l, C, hC, hgrowth⟩
   use
@@ -917,9 +923,9 @@ variable [NormedSpace 𝕜 F]
 /-- Composition with a function on the right is a continuous linear map on Schwartz space
 provided that the function is temperate and growths polynomially near infinity. -/
 def compCLM {g : D → E} (hg : g.HasTemperateGrowth)
-    (hg_upper : ∃ (k : ℕ) (C : ℝ), ∀ x, ‖x‖ ≤ C * (1 + ‖g x‖) ^ k) : 𝓢(E, F) →L[𝕜] 𝓢(D, F) := by
-  refine mkCLM (fun f => f ∘ g) (fun _ _ _ => by simp) (fun _ _ _ => rfl)
-    (fun f => (f.smooth ⊤).comp hg.1) ?_
+    (hg_upper : ∃ (k : ℕ) (C : ℝ), ∀ x, ‖x‖ ≤ C * (1 + ‖g x‖) ^ k) : 𝓢(E, F) →L[𝕜] 𝓢(D, F) :=
+  mkCLM (fun f => f ∘ g) (fun _ _ _ => by simp) (fun _ _ _ => rfl)
+    (fun f => (f.smooth ⊤).comp hg.1) <| by
   rintro ⟨k, n⟩
   rcases hg.norm_iteratedFDeriv_le_uniform n with ⟨l, C, hC, hgrowth⟩
   rcases hg_upper with ⟨kg, Cg, hg_upper'⟩

@@ -10,6 +10,8 @@ public import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
 public import Mathlib.Analysis.Calculus.Deriv.Shift
 public import Mathlib.Analysis.SpecificLimits.RCLike
 
+import Mathlib.Analysis.SpecialFunctions.Complex.LogDeriv
+
 /-!
 # Estimates for the complex logarithm
 
