@@ -1,13 +1,14 @@
 /-
 Copyright (c) 2020 Alexander Bentkamp. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Alexander Bentkamp
+Authors: Alexander Bentkamp, Matteo Cipollina
 -/
 module
 
 public import Mathlib.LinearAlgebra.Eigenspace.Basic
+public import Mathlib.LinearAlgebra.Eigenspace.Zero
 public import Mathlib.FieldTheory.IsAlgClosed.Spectrum
-public import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
+public import Mathlib.LinearAlgebra.Basis.Flag
 
 /-!
 # Triangularizable linear endomorphisms
@@ -18,22 +19,24 @@ This file contains basic results relevant to the triangularizability of linear e
 
 * `Module.End.exists_eigenvalue`: in finite dimensions, over an algebraically closed field, every
   linear endomorphism has an eigenvalue.
-* `Module.End.iSup_genEigenspace_eq_top`: in finite dimensions, over an algebraically
+* `Module.End.iSup_maxGenEigenspace_eq_top`: in finite dimensions, over an algebraically
   closed field, the generalized eigenspaces of any linear endomorphism span the whole space.
-* `Module.End.iSup_genEigenspace_restrict_eq_top`: in finite dimensions, if the
+* `Module.End.genEigenspace_restrict_eq_top`: in finite dimensions, if the
   generalized eigenspaces of a linear endomorphism span the whole space then the same is true of
   its restriction to any invariant submodule.
+* `Module.End.exists_basis_forall_flag_mem_invtSubmodule`
+* `Module.End.exists_invariantFlag_of_iSup_maxGenEigenspace_eq_top`
+* `Module.End.exists_basis_forall_flag_mem_invtSubmodule_iff_iSup_maxGenEigenspace_eq_top`
+* `Module.End.exists_blockTriangular_toMatrix_iff_iSup_maxGenEigenspace_eq_top`
+* `Module.End.exists_basis_forall_flag_mem_invtSubmodule_finrank_of_iSup_maxGenEigenspace_eq_top`
+
+Triangularizability is stated theorem-first in terms of the existing objects `Basis.flag`,
+`Matrix.BlockTriangular`, `Flag`, and `Module.End.invtSubmodule`.
 
 ## References
 
 * [Sheldon Axler, *Linear Algebra Done Right*][axler2024]
 * https://en.wikipedia.org/wiki/Eigenvalues_and_eigenvectors
-
-## TODO
-
-Define triangularizable endomorphisms (e.g., as existence of a maximal chain of invariant subspaces)
-and prove that in finite dimensions over a field, this is equivalent to the property that the
-generalized eigenspaces span the whole space.
 
 ## Tags
 
@@ -42,12 +45,117 @@ eigenspace, eigenvector, eigenvalue, eigen
 
 public section
 
-open Set Function Module Module
+open Set Function Module
 
 variable {K V : Type*} [Field K] [AddCommGroup V] [Module K V]
   {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M]
 
 namespace Module.End
+
+variable {n : ℕ} {f : End K V} {b : Basis (Fin n) K V}
+
+theorem forall_flag_mem_invtSubmodule_iff_forall_mem_toFlag :
+    (∀ k : Fin (n + 1), b.flag k ∈ f.invtSubmodule) ↔
+      ∀ ⦃p : Submodule K V⦄, p ∈ b.toFlag → p ∈ f.invtSubmodule := by
+  constructor
+  · intro hf p hp
+    rw [Basis.mem_toFlag] at hp
+    obtain ⟨k, rfl⟩ := hp
+    exact hf k
+  · intro hf k
+    exact hf (Basis.mem_toFlag b |>.2 ⟨k, rfl⟩)
+
+/-- A triangularizing basis gives an invariant complete flag. -/
+theorem exists_invariantFlag_of_forall_flag_mem_invtSubmodule
+    (hb : ∀ k : Fin (n + 1), b.flag k ∈ f.invtSubmodule) :
+    ∃ c : Flag (Submodule K V), ∀ ⦃p : Submodule K V⦄, p ∈ c → p ∈ f.invtSubmodule :=
+  ⟨b.toFlag, forall_flag_mem_invtSubmodule_iff_forall_mem_toFlag.mp hb⟩
+
+theorem forall_flag_mem_invtSubmodule_map {V₂ : Type*} [AddCommGroup V₂] [Module K V₂]
+    (hb : ∀ k : Fin (n + 1), b.flag k ∈ f.invtSubmodule) (e : V ≃ₗ[K] V₂) :
+    ∀ k : Fin (n + 1), (b.map e).flag k ∈ (e.conj f).invtSubmodule := by
+  intro k
+  rw [Module.Basis.flag_map]
+  exact LinearEquiv.map_mem_invtSubmodule_conj_iff.mpr (hb k)
+
+theorem forall_flag_mem_invtSubmodule_iff_blockTriangular_toMatrix :
+    (∀ k : Fin (n + 1), b.flag k ∈ f.invtSubmodule) ↔
+      (LinearMap.toMatrix b b f).BlockTriangular id := by
+  constructor
+  · intro hf i j hji
+    rw [LinearMap.toMatrix_apply]
+    have hmem : f (b j) ∈ LinearMap.ker (b.coord i) := by
+      apply b.flag_le_ker_coord
+      · exact Fin.castSucc_lt_iff_succ_le.mp (show j.castSucc < i.castSucc from hji)
+      · exact (hf j.succ : b.flag j.succ ≤ (b.flag j.succ).comap f)
+          (b.self_mem_flag (Fin.castSucc_lt_succ_iff.mpr le_rfl))
+    simpa [Module.Basis.coord_apply] using LinearMap.mem_ker.mp hmem
+  · intro hf k
+    rw [Module.End.mem_invtSubmodule]
+    exact b.flag_le_iff.2 fun i hik => by
+      change f (b i) ∈ b.flag k
+      rw [b.mem_flag_iff_repr_eq_zero]
+      intro l hlk
+      rw [← LinearMap.toMatrix_apply b b f l i]
+      exact hf (Fin.castSucc_lt_castSucc_iff.mp (lt_of_lt_of_le hik hlk))
+
+theorem charpoly_splits_of_forall_flag_mem_invtSubmodule [FiniteDimensional K V]
+    (hb : ∀ k : Fin (n + 1), b.flag k ∈ f.invtSubmodule) :
+    f.charpoly.Splits := by
+  rw [← LinearMap.charpoly_toMatrix (f := f) b]
+  rw [Matrix.charpoly_of_upperTriangular _
+    (forall_flag_mem_invtSubmodule_iff_blockTriangular_toMatrix.mp hb)]
+  exact Polynomial.Splits.prod fun i _ => by
+    simpa [sub_eq_add_neg] using Polynomial.Splits.X_add_C (-(LinearMap.toMatrix b b f i i))
+
+/-- If the generalized eigenspaces of `f` span the whole space, then the same holds for the map
+induced by `f` on a quotient by an invariant submodule. -/
+theorem iSup_genEigenspace_mapQ_eq_top {p : Submodule K V} {f : End K V}
+    (hfp : p ≤ p.comap f) {k : ℕ∞} (hf : ⨆ μ, f.genEigenspace μ k = ⊤) :
+    ⨆ μ, Module.End.genEigenspace (p.mapQ p f hfp : End K (V ⧸ p)) μ k = ⊤ := by
+  rw [← top_le_iff]
+  calc
+    ⊤ = (⊤ : Submodule K V).map p.mkQ := by
+      rw [Submodule.map_top]
+      exact (LinearMap.range_eq_top.mpr p.mkQ_surjective).symm
+    _ = (⨆ μ, f.genEigenspace μ k).map p.mkQ := by rw [hf]
+    _ = ⨆ μ, (f.genEigenspace μ k).map p.mkQ := by rw [Submodule.map_iSup]
+    _ ≤ ⨆ μ, Module.End.genEigenspace (p.mapQ p f hfp : End K (V ⧸ p)) μ k :=
+      iSup_mono fun μ =>
+        Module.End.map_genEigenspace_le p.mkQ (Submodule.mapQ_mkQ p p f (h := hfp)) μ k
+
+/-- Maximal-generalized-eigenspace version -/
+theorem iSup_maxGenEigenspace_mapQ_eq_top {p : Submodule K V} {f : End K V}
+    (hfp : p ≤ p.comap f) (hf : ⨆ μ, f.maxGenEigenspace μ = ⊤) :
+    ⨆ μ, Module.End.maxGenEigenspace (p.mapQ p f hfp : End K (V ⧸ p)) μ = ⊤ :=
+  iSup_genEigenspace_mapQ_eq_top hfp hf
+
+private theorem forall_flag_mem_invtSubmodule_mkFinCons_of_sub_mem_span_singleton
+    {n : ℕ} {f : End K V}
+    {v : V} {μ : K} {W : Submodule K V} {g : End K W} {bW : Basis (Fin n) K W}
+    {hli hsp} (hg : ∀ k : Fin (n + 1), bW.flag k ∈ g.invtSubmodule)
+    (hv : f v = μ • v)
+    (hfg : ∀ w : W, f (w : V) - (g w : V) ∈ K ∙ v) :
+    ∀ k : Fin (n + 2), (Basis.mkFinCons v bW hli hsp).flag k ∈ f.invtSubmodule := by
+  intro k
+  refine Fin.cases (by simp) (fun k => ?_) k
+  rw [Module.End.mem_invtSubmodule]
+  exact (Basis.mkFinCons v bW hli hsp).flag_le_iff.2 fun i hi => by
+    change f (Basis.mkFinCons v bW hli hsp i) ∈ (Basis.mkFinCons v bW hli hsp).flag k.succ
+    revert hi
+    refine Fin.cases (fun _ => ?_) ?_ i
+    · rw [show Basis.mkFinCons v bW hli hsp 0 = v by simp, hv]
+      exact Submodule.smul_mem _ _ <|
+        Basis.span_singleton_le_mkFinCons_flag_succ k (Submodule.mem_span_singleton_self v)
+    intro i hi
+    rw [show Basis.mkFinCons v bW hli hsp i.succ = (bW i : V) by simp]
+    have hgw := (hg k : bW.flag k ≤ (bW.flag k).comap g)
+      (bW.self_mem_flag (Fin.succ_lt_succ_iff.mp hi))
+    have hdecomp : f (bW i : V) = (f (bW i : V) - (g (bW i) : V)) + (g (bW i) : V) := by
+      abel
+    rw [hdecomp]
+    exact Submodule.add_mem _ (Basis.span_singleton_le_mkFinCons_flag_succ k (hfg (bW i)))
+      (Basis.map_flag_le_mkFinCons_flag_succ k ⟨_, hgw, rfl⟩)
 
 theorem exists_hasEigenvalue_of_genEigenspace_eq_top [Nontrivial M] {f : End R M} (k : ℕ∞)
     (hf : ⨆ μ, f.genEigenspace μ k = ⊤) :
@@ -57,7 +165,12 @@ theorem exists_hasEigenvalue_of_genEigenspace_eq_top [Nontrivial M] {f : End R M
     exact HasUnifEigenvalue.lt zero_lt_one hμ
   simp [HasUnifEigenvalue, ← not_forall, ← iSup_eq_bot, hf]
 
--- This is Lemma 5.19 of [axler2024], although we are no longer following that proof.
+theorem exists_hasEigenvalue_of_iSup_maxGenEigenspace_eq_top [Nontrivial M] {f : End R M}
+    (hf : ⨆ μ, f.maxGenEigenspace μ = ⊤) :
+    ∃ μ, f.HasEigenvalue μ :=
+  exists_hasEigenvalue_of_genEigenspace_eq_top ⊤ hf
+
+-- This is Lemma 5.21 of [axler2024], although we are no longer following that proof.
 /-- In finite dimensions, over an algebraically closed field, every linear endomorphism has an
 eigenvalue. -/
 theorem exists_eigenvalue [IsAlgClosed K] [FiniteDimensional K V] [Nontrivial V] (f : End K V) :
@@ -69,72 +182,226 @@ noncomputable instance [IsAlgClosed K] [FiniteDimensional K V] [Nontrivial V] (f
     Inhabited f.Eigenvalues :=
   ⟨⟨f.exists_eigenvalue.choose, f.exists_eigenvalue.choose_spec⟩⟩
 
--- Lemma 8.22(c) of [axler2024]
+private theorem exists_basis_forall_flag_mem_invtSubmodule_of_subsingleton [Subsingleton V]
+    (f : End K V) :
+    ∃ n, ∃ b : Basis (Fin n) K V, ∀ k : Fin (n + 1), b.flag k ∈ f.invtSubmodule := by
+  refine ⟨0, (Module.Basis.empty V : Basis (Fin 0) K V), ?_⟩
+  intro k
+  change (Module.Basis.empty V : Basis (Fin 0) K V).flag k ≤
+    ((Module.Basis.empty V : Basis (Fin 0) K V).flag k).comap f
+  intro x hx
+  change f x ∈ (Module.Basis.empty V : Basis (Fin 0) K V).flag k
+  convert hx using 1
+
+private noncomputable def triangularizationAux_of_iSup_maxGenEigenspace_eq_top {V : Type*}
+    [AddCommGroup V] [Module K V] [FiniteDimensional K V] (f : End K V)
+    (hf : ⨆ μ, f.maxGenEigenspace μ = ⊤) :
+    ∃ n, ∃ b : Basis (Fin n) K V, ∀ k : Fin (n + 1), b.flag k ∈ f.invtSubmodule :=
+  haveI : Decidable (Nontrivial V) := Classical.propDecidable _
+  if hV : Nontrivial V then
+    let ⟨μ, hμ⟩ := exists_hasEigenvalue_of_iSup_maxGenEigenspace_eq_top hf
+    let ⟨v, hv⟩ := Module.End.HasEigenvalue.exists_hasEigenvector hμ
+    let L : Submodule K V := K ∙ v
+    have hL : L ≤ L.comap f := by
+      rw [Submodule.span_singleton_le_iff_mem]
+      change f v ∈ L
+      rw [hv.apply_eq_smul]
+      exact Submodule.smul_mem L μ (Submodule.mem_span_singleton_self v)
+    let qf : End K (V ⧸ L) := L.mapQ L f hL
+    have hqf : ⨆ μ, qf.maxGenEigenspace μ = ⊤ :=
+      iSup_maxGenEigenspace_mapQ_eq_top hL hf
+    let ⟨n, bq, hbq⟩ := triangularizationAux_of_iSup_maxGenEigenspace_eq_top qf hqf
+    let ⟨W, hW⟩ := L.exists_isCompl
+    let e : (V ⧸ L) ≃ₗ[K] W := Submodule.quotientEquivOfIsCompl L W hW
+    let g : End K W := e.conj qf
+    ⟨n + 1, Basis.mkFinConsOfIsCompl v (bq.map e) hv.2 hW, by
+      simpa [Basis.mkFinConsOfIsCompl] using
+        forall_flag_mem_invtSubmodule_mkFinCons_of_sub_mem_span_singleton
+        (forall_flag_mem_invtSubmodule_map hbq e)
+        hv.apply_eq_smul
+        (by
+          intro w
+          have hq : L.mkQ (f (w : V)) = L.mkQ (g w : V) := by
+            calc
+              L.mkQ (f (w : V)) = qf (L.mkQ (w : V)) := by
+                rw [Submodule.mkQ_apply, Submodule.mkQ_apply, Submodule.mapQ_apply]
+              _ = qf (e.symm w) := by simp [e, Submodule.mkQ_apply]
+              _ = e.symm (g w) := by simp [g]
+              _ = L.mkQ (g w : V) := by simp [e, Submodule.mkQ_apply]
+          change f (w : V) - (g w : V) ∈ L
+          rw [← Submodule.ker_mkQ L]
+          exact LinearMap.mem_ker.mpr (by
+            simpa using congr_arg (fun x => x - L.mkQ (g w : V)) hq))⟩
+  else
+    haveI : Subsingleton V := not_nontrivial_iff_subsingleton.mp hV
+    exists_basis_forall_flag_mem_invtSubmodule_of_subsingleton f
+termination_by Module.finrank K V
+decreasing_by
+  have hdim := Submodule.finrank_quotient_add_finrank L
+  rw [finrank_span_singleton hv.2] at hdim
+  rw [← hdim]
+  exact Nat.lt_add_of_pos_right Nat.zero_lt_one
+
+/-- If the maximal generalized eigenspaces of a finite-dimensional endomorphism span the whole
+space, then there is a basis whose associated flag is invariant. -/
+theorem exists_basis_forall_flag_mem_invtSubmodule_of_iSup_maxGenEigenspace_eq_top
+    [FiniteDimensional K V]
+    {f : End K V} (hf : ⨆ μ, f.maxGenEigenspace μ = ⊤) :
+    ∃ n, ∃ b : Basis (Fin n) K V, ∀ k : Fin (n + 1), b.flag k ∈ f.invtSubmodule :=
+  triangularizationAux_of_iSup_maxGenEigenspace_eq_top f hf
+
+/-- If the maximal generalized eigenspaces of a finite-dimensional endomorphism span the whole
+space, then the endomorphism has an upper triangular matrix in some basis. -/
+theorem exists_blockTriangular_toMatrix_of_iSup_maxGenEigenspace_eq_top [FiniteDimensional K V]
+    {f : End K V} (hf : ⨆ μ, f.maxGenEigenspace μ = ⊤) :
+    ∃ n, ∃ b : Basis (Fin n) K V, (LinearMap.toMatrix b b f).BlockTriangular id := by
+  obtain ⟨n, b, hb⟩ := exists_basis_forall_flag_mem_invtSubmodule_of_iSup_maxGenEigenspace_eq_top hf
+  exact ⟨n, b, forall_flag_mem_invtSubmodule_iff_blockTriangular_toMatrix.mp hb⟩
+
+/-- If the maximal generalized eigenspaces of a finite-dimensional endomorphism span the whole
+space, then there is a basis indexed by the dimension whose associated flag is invariant. -/
+theorem exists_basis_forall_flag_mem_invtSubmodule_finrank_of_iSup_maxGenEigenspace_eq_top
+    [FiniteDimensional K V]
+    {f : End K V} (hf : ⨆ μ, f.maxGenEigenspace μ = ⊤) :
+    ∃ b : Basis (Fin (finrank K V)) K V,
+      ∀ k : Fin (finrank K V + 1), b.flag k ∈ f.invtSubmodule := by
+  obtain ⟨n, b, hb⟩ := exists_basis_forall_flag_mem_invtSubmodule_of_iSup_maxGenEigenspace_eq_top hf
+  have h : n = finrank K V := by
+    simpa using (Module.finrank_eq_card_basis b).symm
+  subst n
+  exact ⟨b, hb⟩
+
+/-- If the maximal generalized eigenspaces of a finite-dimensional endomorphism span the whole
+space, then its matrix in some dimension-indexed basis is upper triangular. -/
+theorem exists_blockTriangular_toMatrix_finrank_of_iSup_maxGenEigenspace_eq_top
+    [FiniteDimensional K V] {f : End K V} (hf : ⨆ μ, f.maxGenEigenspace μ = ⊤) :
+    ∃ b : Basis (Fin (finrank K V)) K V, (LinearMap.toMatrix b b f).BlockTriangular id := by
+  obtain ⟨b, hb⟩ :=
+    exists_basis_forall_flag_mem_invtSubmodule_finrank_of_iSup_maxGenEigenspace_eq_top hf
+  exact ⟨b, forall_flag_mem_invtSubmodule_iff_blockTriangular_toMatrix.mp hb⟩
+
+theorem finrank_finset_sup_maxGenEigenspace [FiniteDimensional K V]
+    (f : End K V) (s : Finset K) :
+    finrank K (s.sup (fun μ => f.maxGenEigenspace μ) : Submodule K V) =
+      ∑ μ ∈ s, finrank K (f.maxGenEigenspace μ) := by
+  classical
+  have hind := Module.End.independent_maxGenEigenspace f
+  induction s using Finset.induction_on with
+  | empty => simp
+  | insert μ s hμ ih =>
+      have hdisj : Disjoint (f.maxGenEigenspace μ)
+          (s.sup (fun μ => f.maxGenEigenspace μ) : Submodule K V) := by
+        have hs := hind.supIndep' (insert μ s)
+        simpa [hμ] using
+          (Finset.supIndep_iff_disjoint_erase.mp hs μ (Finset.mem_insert_self μ s))
+      have hfin := Submodule.finrank_sup_add_finrank_inf_eq (f.maxGenEigenspace μ)
+        (s.sup (fun μ => f.maxGenEigenspace μ) : Submodule K V)
+      rw [hdisj.eq_bot, finrank_bot, add_zero] at hfin
+      rw [Finset.sup_insert, Finset.sum_insert hμ, hfin, ih]
+
+/-- If the characteristic polynomial of a finite-dimensional endomorphism splits, then its maximal
+generalized eigenspaces span the whole space. -/
+theorem iSup_maxGenEigenspace_eq_top_of_charpoly_splits [FiniteDimensional K V]
+    {f : End K V} (hf : f.charpoly.Splits) :
+    ⨆ μ, f.maxGenEigenspace μ = ⊤ := by
+  classical -- needed
+  let s := f.charpoly.roots.toFinset
+  have hs : (s.sup (fun μ => f.maxGenEigenspace μ) : Submodule K V) = ⊤ := by
+    apply Submodule.eq_top_of_finrank_eq
+    calc
+      finrank K (s.sup (fun μ => f.maxGenEigenspace μ) : Submodule K V)
+          = ∑ μ ∈ s, finrank K (f.maxGenEigenspace μ) :=
+            finrank_finset_sup_maxGenEigenspace f s
+      _ = ∑ μ ∈ s, f.charpoly.rootMultiplicity μ := by
+            refine Finset.sum_congr rfl fun μ _ => ?_
+            exact LinearMap.finrank_maxGenEigenspace_eq f μ
+      _ = ∑ μ ∈ s, f.charpoly.roots.count μ := by
+            refine Finset.sum_congr rfl fun μ _ => ?_
+            rw [Polynomial.count_roots]
+      _ = f.charpoly.roots.card := by
+            exact Multiset.sum_count_eq_card (by simp [s])
+      _ = f.charpoly.natDegree := hf.natDegree_eq_card_roots.symm
+      _ = finrank K V := LinearMap.charpoly_natDegree f
+  rw [← top_le_iff, ← hs]
+  exact Finset.sup_le fun μ _ => le_iSup f.maxGenEigenspace μ
+
+theorem iSup_maxGenEigenspace_eq_top_of_forall_flag_mem_invtSubmodule [FiniteDimensional K V]
+    (hb : ∀ k : Fin (n + 1), b.flag k ∈ f.invtSubmodule) :
+    ⨆ μ, f.maxGenEigenspace μ = ⊤ :=
+  iSup_maxGenEigenspace_eq_top_of_charpoly_splits
+    (charpoly_splits_of_forall_flag_mem_invtSubmodule hb)
+
+theorem exists_basis_forall_flag_mem_invtSubmodule_iff_iSup_maxGenEigenspace_eq_top
+    [FiniteDimensional K V]
+    (f : End K V) :
+    (∃ n, ∃ b : Basis (Fin n) K V, ∀ k : Fin (n + 1), b.flag k ∈ f.invtSubmodule) ↔
+      ⨆ μ, f.maxGenEigenspace μ = ⊤ :=
+  ⟨fun ⟨_, _, hb⟩ => iSup_maxGenEigenspace_eq_top_of_forall_flag_mem_invtSubmodule hb,
+    exists_basis_forall_flag_mem_invtSubmodule_of_iSup_maxGenEigenspace_eq_top⟩
+
+/-- In finite dimensions, existence of a basis in which the matrix of `f` is upper triangular is
+equivalent to spanning by maximal generalized eigenspaces. -/
+theorem exists_blockTriangular_toMatrix_iff_iSup_maxGenEigenspace_eq_top [FiniteDimensional K V]
+    (f : End K V) :
+    (∃ n, ∃ b : Basis (Fin n) K V, (LinearMap.toMatrix b b f).BlockTriangular id) ↔
+      ⨆ μ, f.maxGenEigenspace μ = ⊤ := by
+  rw [← exists_basis_forall_flag_mem_invtSubmodule_iff_iSup_maxGenEigenspace_eq_top f]
+  constructor
+  · rintro ⟨n, b, hb⟩
+    exact ⟨n, b, forall_flag_mem_invtSubmodule_iff_blockTriangular_toMatrix.mpr hb⟩
+  · rintro ⟨n, b, hb⟩
+    exact ⟨n, b, forall_flag_mem_invtSubmodule_iff_blockTriangular_toMatrix.mp hb⟩
+
+section finiteDimensional
+
+variable [FiniteDimensional K V]
+
+/-- If the maximal generalized eigenspaces of a finite-dimensional endomorphism span the whole
+space, then the endomorphism admits an invariant complete flag. -/
+theorem exists_invariantFlag_of_iSup_maxGenEigenspace_eq_top
+    {f : End K V} (hf : ⨆ μ, f.maxGenEigenspace μ = ⊤) :
+    ∃ c : Flag (Submodule K V), ∀ ⦃p : Submodule K V⦄, p ∈ c → p ∈ f.invtSubmodule := by
+  obtain ⟨_, b, hb⟩ := exists_basis_forall_flag_mem_invtSubmodule_of_iSup_maxGenEigenspace_eq_top hf
+  exact exists_invariantFlag_of_forall_flag_mem_invtSubmodule (b := b) hb
+
+end finiteDimensional
+
 /-- In finite dimensions, over an algebraically closed field, the generalized eigenspaces of any
 linear endomorphism span the whole space. -/
 theorem iSup_maxGenEigenspace_eq_top [IsAlgClosed K] [FiniteDimensional K V] (f : End K V) :
-    ⨆ (μ : K), f.maxGenEigenspace μ = ⊤ := by
-  -- We prove the claim by strong induction on the dimension of the vector space.
-  suffices ∀ n, finrank K V = n → ⨆ (μ : K), f.maxGenEigenspace μ = ⊤ by exact this _ rfl
-  intro n h_dim
-  induction n using Nat.strong_induction_on generalizing V with | h n ih =>
-  rcases n with - | n
-  -- If the vector space is 0-dimensional, the result is trivial.
-  · rw [← top_le_iff]
-    simp only [Submodule.finrank_eq_zero.1 (Eq.trans (finrank_top _ _) h_dim), bot_le]
-  -- Otherwise the vector space is nontrivial.
-  · haveI : Nontrivial V := finrank_pos_iff.1 (by rw [h_dim]; apply Nat.zero_lt_succ)
-    -- Hence, `f` has an eigenvalue `μ₀`.
-    obtain ⟨μ₀, hμ₀⟩ : ∃ μ₀, f.HasEigenvalue μ₀ := exists_eigenvalue f
-    -- We define `ES` to be the generalized eigenspace
-    let ES := f.genEigenspace μ₀ (finrank K V)
-    -- and `ER` to be the generalized eigenrange.
-    let ER := f.genEigenrange μ₀ (finrank K V)
-    -- `f` maps `ER` into itself.
-    have h_f_ER : ∀ x : V, x ∈ ER → f x ∈ ER := fun x hx =>
-      map_genEigenrange_le (Submodule.mem_map_of_mem hx)
-    -- Therefore, we can define the restriction `f'` of `f` to `ER`.
-    let f' : End K ER := f.restrict h_f_ER
-    -- The dimension of `ES` is positive
-    have h_dim_ES_pos : 0 < finrank K ES := by
-      dsimp +instances only [ES]
-      rw [h_dim]
-      apply pos_finrank_genEigenspace_of_hasEigenvalue hμ₀ (Nat.zero_lt_succ n)
-    -- and the dimensions of `ES` and `ER` add up to `finrank K V`.
-    have h_dim_add : finrank K ER + finrank K ES = finrank K V := by
-      dsimp +instances only [ER, ES]
-      rw [Module.End.genEigenspace_nat, Module.End.genEigenrange_nat]
-      apply LinearMap.finrank_range_add_finrank_ker
-    -- Therefore the dimension `ER` mus be smaller than `finrank K V`.
-    have h_dim_ER : finrank K ER < n.succ := by lia
-    -- This allows us to apply the induction hypothesis on `ER`:
-    have ih_ER : ⨆ (μ : K), f'.maxGenEigenspace μ = ⊤ :=
-      ih (finrank K ER) h_dim_ER f' rfl
-    -- The induction hypothesis gives us a statement about subspaces of `ER`. We can transfer this
-    -- to a statement about subspaces of `V` via `Submodule.subtype`:
-    have ih_ER' : ⨆ (μ : K), (f'.maxGenEigenspace μ).map ER.subtype = ER := by
-      simp only [(Submodule.map_iSup _ _).symm, ih_ER, Submodule.map_subtype_top ER]
-    -- Moreover, every generalized eigenspace of `f'` is contained in the corresponding generalized
-    -- eigenspace of `f`.
-    have hff' :
-      ∀ μ, (f'.maxGenEigenspace μ).map ER.subtype ≤ f.maxGenEigenspace μ := by
-      intros
-      rw [maxGenEigenspace, genEigenspace_restrict]
-      apply Submodule.map_comap_le
-    -- It follows that `ER` is contained in the span of all generalized eigenvectors.
-    have hER : ER ≤ ⨆ (μ : K), f.maxGenEigenspace μ := by
-      rw [← ih_ER']
-      exact iSup_mono hff'
-    -- `ES` is contained in this span by definition.
-    have hES : ES ≤ ⨆ (μ : K), f.maxGenEigenspace μ :=
-      ((f.genEigenspace μ₀).mono le_top).trans (le_iSup f.maxGenEigenspace μ₀)
-    -- Moreover, we know that `ER` and `ES` are disjoint.
-    have h_disjoint : Disjoint ER ES := generalized_eigenvec_disjoint_range_ker f μ₀
-    -- Since the dimensions of `ER` and `ES` add up to the dimension of `V`, it follows that the
-    -- span of all generalized eigenvectors is all of `V`.
-    change ⨆ (μ : K), f.maxGenEigenspace μ = ⊤
-    rw [← top_le_iff, ← Submodule.eq_top_of_disjoint ER ES h_dim_add.ge h_disjoint]
-    apply sup_le hER hES
+    ⨆ (μ : K), f.maxGenEigenspace μ = ⊤ :=
+  iSup_maxGenEigenspace_eq_top_of_charpoly_splits (IsAlgClosed.splits f.charpoly)
+
+/-- In finite dimensions over an algebraically closed field, every endomorphism admits a basis whose
+associated flag is invariant. -/
+theorem exists_basis_forall_flag_mem_invtSubmodule [IsAlgClosed K] [FiniteDimensional K V]
+    (f : End K V) :
+    ∃ n, ∃ b : Basis (Fin n) K V, ∀ k : Fin (n + 1), b.flag k ∈ f.invtSubmodule :=
+  exists_basis_forall_flag_mem_invtSubmodule_of_iSup_maxGenEigenspace_eq_top
+    (iSup_maxGenEigenspace_eq_top f)
+
+/-- In finite dimensions over an algebraically closed field, every endomorphism admits a basis
+indexed by the dimension whose associated flag is invariant. -/
+theorem exists_basis_forall_flag_mem_invtSubmodule_finrank [IsAlgClosed K] [FiniteDimensional K V]
+    (f : End K V) :
+    ∃ b : Basis (Fin (finrank K V)) K V,
+      ∀ k : Fin (finrank K V + 1), b.flag k ∈ f.invtSubmodule :=
+  exists_basis_forall_flag_mem_invtSubmodule_finrank_of_iSup_maxGenEigenspace_eq_top
+    (iSup_maxGenEigenspace_eq_top f)
+
+/-- In finite dimensions over an algebraically closed field, every endomorphism has an upper
+triangular matrix in some dimension-indexed basis. -/
+theorem exists_blockTriangular_toMatrix_finrank [IsAlgClosed K] [FiniteDimensional K V]
+    (f : End K V) :
+    ∃ b : Basis (Fin (finrank K V)) K V, (LinearMap.toMatrix b b f).BlockTriangular id :=
+  exists_blockTriangular_toMatrix_finrank_of_iSup_maxGenEigenspace_eq_top
+    (iSup_maxGenEigenspace_eq_top f)
+
+/-- In finite dimensions over an algebraically closed field, every endomorphism admits an invariant
+complete flag. -/
+theorem exists_invariantFlag [IsAlgClosed K] [FiniteDimensional K V] (f : End K V) :
+    ∃ c : Flag (Submodule K V), ∀ ⦃p : Submodule K V⦄, p ∈ c → p ∈ f.invtSubmodule :=
+  exists_invariantFlag_of_iSup_maxGenEigenspace_eq_top (iSup_maxGenEigenspace_eq_top f)
 
 end Module.End
 
