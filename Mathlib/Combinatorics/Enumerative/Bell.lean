@@ -200,17 +200,17 @@ which counts the number of partitions of a set of cardinality `n`.
 -/
 protected def bell : ℕ → ℕ
   | 0 => 1
-  | n + 1 => ∑ i : Fin n.succ, choose n i * (n - i).bell
+  | n + 1 => ∑ i ≤ n, choose n i * (n - i).bell
 
 theorem bell_succ (n : ℕ) :
-    (n + 1).bell = ∑ i : Fin n.succ, choose n i * (n - i).bell := by
+    (n + 1).bell = ∑ i ≤ n, choose n i * (n - i).bell := by
   rw [Nat.bell]
 
 theorem bell_succ' (n : ℕ) :
     (n + 1).bell = ∑ ij ∈ Finset.antidiagonal n, choose n ij.1 * ij.2.bell := by
   rw [Nat.bell_succ,
-    Finset.Nat.sum_antidiagonal_eq_sum_range_succ (fun x y ↦ choose n x * y.bell) n,
-    Finset.sum_range]
+    ← Nat.range_succ_eq_Iic,
+    ← Finset.Nat.sum_antidiagonal_eq_sum_range_succ (fun x y ↦ choose n x * y.bell) n]
 
 @[simp]
 theorem bell_zero : Nat.bell 0 = 1 := by
@@ -218,11 +218,13 @@ theorem bell_zero : Nat.bell 0 = 1 := by
 
 @[simp]
 theorem bell_one : Nat.bell 1 = 1 := by
-  simp [Nat.bell]
+  have : Finset.Iic 0 = {0} := Eq.symm (Finset.eq_of_veq rfl)
+  simp [Nat.bell, this]
 
 @[simp]
 theorem bell_two : Nat.bell 2 = 2 := by
-  simp [Nat.bell]
+  have : Finset.Iic 1 = {0, 1} := Finset.eq_of_veq rfl
+  simp [Nat.bell, this]
 
 theorem bell_eq_sum_erase {n : ℕ} (p : (n + 1).Partition) :
     ∑ a ∈ p.parts.toFinset, n.choose (a - 1) * (p.parts.erase a).bell = p.parts.bell := by
@@ -277,19 +279,20 @@ theorem bell_eq_sum_partition (n : ℕ) : n.bell = ∑ p : n.Partition, p.parts.
   · simp
   rw [Nat.bell_succ]
   calc
-  _ = ∑ i : Fin n.succ, ∑ q : (n - i).Partition, n.choose i * q.parts.bell := by
+  _ = ∑ i ≤ n, ∑ q : (n - i).Partition, n.choose i * q.parts.bell := by
     congr! with i
     simp [ih (n - i) _, Finset.mul_sum]
-  _ = ∑ i : Fin n.succ, ∑ p : {p : (n + 1).Partition // (i + 1 : ℕ) ∈ p.parts},
+  _ = ∑ i ≤ n, ∑ p : {p : (n + 1).Partition // (i + 1 : ℕ) ∈ p.parts},
       choose n i * (p.1.parts.erase (i + 1)).bell := by
-    congr! with i
+    congr! with i hi
+    have : i ≤ n := Finset.mem_Iic.mp hi
     have h1 : 1 ≤ (i + 1 : ℕ) := by lia
     have h2 : (i + 1 : ℕ) ≤ n + 1 := by lia
     have hsub : n + 1 - (i + 1 : ℕ) = n - i := by lia
     exact hsub ▸ (Fintype.sum_equiv (partitionWithPartEquiv h1 h2) _ _ (fun _ ↦ rfl)).symm
   _ = ∑ x : Σ p : (n + 1).Partition, p.parts.toFinset,
       choose n (x.2.1 - 1) * (x.1.parts.erase x.2.1).bell := by
-    rw [← Fintype.sum_sigma']
+    rw [← Nat.range_succ_eq_Iic, Finset.sum_range, ← Fintype.sum_sigma']
     refine Fintype.sum_equiv (sigmaPartitionWithPartEquiv n) _ _ ?_
     simp [sigmaPartitionWithPartEquiv]
   _ = ∑ p : (n + 1).Partition, ∑ a : p.parts.toFinset,
