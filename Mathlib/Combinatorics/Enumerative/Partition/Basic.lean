@@ -262,13 +262,13 @@ theorem card_toYoungDiagram {n : ℕ} (p : Partition n) :
 @[simp]
 theorem toYoungDiagram_ofYoungDiagram {n : ℕ} {μ : YoungDiagram} (h : μ.card = n) :
     (ofYoungDiagram μ h).toYoungDiagram = μ := by
-  simp [toYoungDiagram, ofYoungDiagram, List.mergeSort_eq_self (· ≥ ·) μ.rowLens_sorted.pairwise, 
+  simp [toYoungDiagram, ofYoungDiagram, List.mergeSort_eq_self (· ≥ ·) μ.rowLens_sorted.pairwise,
     YoungDiagram.ofRowLens_to_rowLens_eq_self]
 
 @[simp]
 theorem ofYoungDiagram_toYoungDiagram {n : ℕ} {p : Partition n} :
     ofYoungDiagram p.toYoungDiagram (card_toYoungDiagram p) = p := by
-  ext 
+  ext
   simp [ofYoungDiagram]
 
 /-- Equivalence between partitions and Young diagrams of appropriate size. -/
