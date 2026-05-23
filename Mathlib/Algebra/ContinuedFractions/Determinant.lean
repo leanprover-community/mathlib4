@@ -70,8 +70,6 @@ theorem determinant :
       partNum_none_iff_s_none.mpr terminatedAt_n]
     grind
   · exact determinant_aux <| Or.inr <| not_terminatedAt_n
-
-
 end GenContFract
 
 namespace SimpContFract
