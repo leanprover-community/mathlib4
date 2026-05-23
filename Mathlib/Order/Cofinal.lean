@@ -120,6 +120,12 @@ theorem isCofinal_iff_iUnion_Iio_eq_univ [NoMaxOrder α] {s : Set α} :
     obtain ⟨z, hz, hz'⟩ := hs y
     exact ⟨z, hz, hy.trans_le hz'⟩
 
+@[simp]
+theorem not_isCofinal_Iio (x : α) : ¬ IsCofinal (Iio x) := by
+  intro hx
+  have := hx x
+  grind
+
 end Preorder
 
 section PartialOrder

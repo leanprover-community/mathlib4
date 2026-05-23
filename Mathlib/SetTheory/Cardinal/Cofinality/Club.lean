@@ -221,6 +221,10 @@ theorem not_isStationary_empty : ¬ IsStationary (∅ : Set α) := by
   intro h
   simpa using h .univ
 
+theorem IsStationary.isCofinal (hs : IsStationary s) : IsCofinal s := by
+  intro x
+  simpa using hs (isClub_Ici x)
+
 theorem IsStationary.of_not_isCofinal_compl (hs : ¬ IsCofinal sᶜ) : IsStationary s := by
   intro t ht
   obtain ⟨a, ha⟩ := not_isCofinal_iff.1 hs
@@ -261,10 +265,7 @@ theorem isStationary_iff_top_mem [OrderTop α] : IsStationary s ↔ ⊤ ∈ s wh
 
 @[simp]
 theorem isStationary_singleton_iff : IsStationary {x} ↔ IsMax x where
-  mp h y hy := by
-    contrapose! hy
-    apply hy.ne'.lt_of_le
-    simpa using h (isClub_Ici y)
+  mp h := by simpa [isTop_iff_isMax] using h.isCofinal
   mpr h s hs := by
     use x
     simpa using hs.isCofinal.mem_of_isMax h

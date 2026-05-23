@@ -5,6 +5,7 @@ Authors: Violeta Hernández Palacios
 -/
 module
 
+public import Mathlib.MeasureTheory.Measure.Support
 public import Mathlib.MeasureTheory.Measure.Typeclasses.ZeroOne
 public import Mathlib.SetTheory.Cardinal.Cofinality.Club
 
@@ -13,8 +14,7 @@ public import Mathlib.SetTheory.Cardinal.Cofinality.Club
 
 Let `α` be a well-ordered type, of uncountable cofinality. We can define a measurable space on `α`,
 consisting of sets that either contain or entirely omit an `IsClub` set. On this measurable space,
-the indicator function of stationary sets is a zero-one measure, which will nevertheless not be a
-Dirac measure.
+the indicator function of stationary sets is a zero-one measure with empty support.
 
 In the specific case `α = Iio ω₁`, this is known as the Dieudonné measure. We use this name for the
 general case, for lack of a better term.
@@ -23,10 +23,6 @@ general case, for lack of a better term.
 
 The Dieudonné measurable space and measure on a well-order are scoped to the
 `MeasureTheory.Dieudonne` namespace.
-
-## TODO
-
-Prove that the Dieudonné measure has empty support.
 -/
 
 @[expose] public section
@@ -153,11 +149,22 @@ theorem measure_eq_dirac [OrderTop α] : measure (α := α) = Measure.dirac ⊤ 
   · rw [measure_of_not_isStationary hs, indicator_of_notMem]
     rwa [← isStationary_iff_top_mem]
 
-/-- The Dieudonné measure on an order with no maximum is not a Dirac measure. -/
 instance [NoMaxOrder α] : NoAtoms (α := α) measure where
   measure_singleton x := by
     apply measure_of_not_isStationary
     rw [isStationary_singleton_iff]
     exact not_isMax _
+
+@[simp]
+theorem support_measure [NoMaxOrder α] [TopologicalSpace α] [OrderTopology α] :
+    (measure (α := α)).support = ∅ := by
+  ext x
+  rw [mem_empty_iff_false, iff_false, Measure.mem_support_iff,
+    Filter.not_frequently, Filter.eventually_smallSets]
+  obtain ⟨y, hy⟩ := exists_gt x
+  refine ⟨_, Iio_mem_nhds hy, fun s hs ↦ ?_⟩
+  apply ((measure_mono hs).trans _).not_gt
+  rw [measure_of_not_isStationary]
+  exact mt IsStationary.isCofinal (not_isCofinal_Iio y)
 
 end MeasureTheory.Dieudonne
