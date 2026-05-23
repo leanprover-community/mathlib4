@@ -278,7 +278,7 @@ theorem stabilizer_isOpen_of_isIntegral [Algebra.IsIntegral K L] (x : L) :
   open IntermediateField in
   let E := adjoin K {x}
   have hL : FiniteDimensional K E := adjoin.finiteDimensional (Algebra.IsIntegral.isIntegral x)
-  convert isOpen_fixingSubgroup E
+  convert! isOpen_fixingSubgroup E
   ext g
   simpa using (forall_mem_adjoin_smul_eq_self_iff K (S := {x}) g).symm
 
