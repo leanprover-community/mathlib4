@@ -30,7 +30,7 @@ This file contains basic results relevant to the triangularizability of linear e
 * `Module.End.exists_blockTriangular_toMatrix_iff_iSup_maxGenEigenspace_eq_top`
 * `Module.End.exists_basis_forall_flag_mem_invtSubmodule_finrank_of_iSup_maxGenEigenspace_eq_top`
 
-Triangularizability is stated theorem-first in terms of the existing objects `Basis.flag`,
+Triangularizability is stated in terms of the existing objects `Basis.flag`,
 `Matrix.BlockTriangular`, `Flag`, and `Module.End.invtSubmodule`.
 
 ## References
