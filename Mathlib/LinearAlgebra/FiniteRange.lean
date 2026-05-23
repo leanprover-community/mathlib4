@@ -49,11 +49,11 @@ variable [Semiring K]
   [AddCommMonoid V₂] [Module K V₂]
   [AddCommMonoid V₃] [Module K V₃]
 
-/-- A linear map **has finite range** if its range is finitely generated. -/
-def HasFiniteRange (f : V →ₗ[K] V₂) := f.range.FG
-
 /-- A linear map **has Noetherian range** if its range is a Noetherian module. -/
 def HasNoetherianRange (f : V →ₗ[K] V₂) := IsNoetherian K f.range
+
+/-- A linear map **has finite range** if its range is finitely generated. -/
+def HasFiniteRange (f : V →ₗ[K] V₂) := f.range.FG
 
 lemma hasNoetherianRange_iff_range {f : V →ₗ[K] V₂} :
     f.HasNoetherianRange ↔ IsNoetherian K f.range :=
@@ -63,28 +63,44 @@ lemma hasFiniteRange_iff_range {f : V →ₗ[K] V₂} :
     f.HasFiniteRange ↔ f.range.FG :=
   Iff.rfl
 
-alias ⟨HasFiniteRange.fg_range, _⟩ := hasFiniteRange_iff_range
 alias ⟨HasNoetherianRange.isNoetherian_range, _⟩ := hasNoetherianRange_iff_range
+alias ⟨HasFiniteRange.fg_range, _⟩ := hasFiniteRange_iff_range
 
-@[simp] lemma HasFiniteRange.zero : (0 : V →ₗ[K] V₂).HasFiniteRange := by
-  simp [HasFiniteRange, Submodule.fg_bot]
+lemma HasNoetherianRange.hasFiniteRange {u : V →ₗ[K] V₂} (h : u.HasNoetherianRange) :
+    u.HasFiniteRange :=
+  have := h.isNoetherian_range; FG.of_finite
 
 @[simp] lemma HasNoetherianRange.zero : (0 : V →ₗ[K] V₂).HasNoetherianRange := by
   simp [HasNoetherianRange, isNoetherian_submodule, Submodule.fg_bot]
 
-lemma HasFiniteRange.comp_left {u : V →ₗ[K] V₂} (h : u.HasFiniteRange)
-    (v : V₂ →ₗ[K] V₃) : (v ∘ₗ u).HasFiniteRange := by
-  rw [LinearMap.HasFiniteRange, LinearMap.range_comp] at *
-  exact Submodule.FG.map v h
+@[simp] lemma HasFiniteRange.zero : (0 : V →ₗ[K] V₂).HasFiniteRange :=
+  HasNoetherianRange.zero.hasFiniteRange
 
 lemma HasNoetherianRange.comp_left {u : V →ₗ[K] V₂} (h : u.HasNoetherianRange)
     (v : V₂ →ₗ[K] V₃) : (v ∘ₗ u).HasNoetherianRange := by
   rw [LinearMap.HasNoetherianRange, LinearMap.range_comp] at *
   infer_instance
 
-lemma HasNoetherianRange.hasFiniteRange {u : V →ₗ[K] V₂} (h : u.HasNoetherianRange) :
-    u.HasFiniteRange :=
-  have := h.isNoetherian_range; FG.of_finite
+lemma HasFiniteRange.comp_left {u : V →ₗ[K] V₂} (h : u.HasFiniteRange)
+    (v : V₂ →ₗ[K] V₃) : (v ∘ₗ u).HasFiniteRange := by
+  rw [LinearMap.HasFiniteRange, LinearMap.range_comp] at *
+  exact Submodule.FG.map v h
+
+@[simp] lemma HasNoetherianRange.of_isNoetherian_dom [IsNoetherian K V] {f : V →ₗ[K] V₂} :
+    f.HasNoetherianRange :=
+  hasNoetherianRange_iff_range.mpr inferInstance
+
+@[simp] lemma HasFiniteRange.of_finite_dom [Module.Finite K V] {f : V →ₗ[K] V₂} :
+    f.HasFiniteRange := by
+  simp [HasFiniteRange]
+
+@[simp] lemma HasNoetherianRange.of_isNoetherian_rng [IsNoetherian K V₂] {f : V →ₗ[K] V₂} :
+    f.HasNoetherianRange :=
+  hasNoetherianRange_iff_range.mpr inferInstance
+
+@[simp] lemma HasFiniteRange.of_isNoetherian_rng [IsNoetherian K V₂] {f : V →ₗ[K] V₂} :
+    f.HasFiniteRange :=
+  HasNoetherianRange.of_isNoetherian_rng.hasFiniteRange
 
 end Semiring
 
