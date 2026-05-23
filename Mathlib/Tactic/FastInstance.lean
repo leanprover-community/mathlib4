@@ -111,8 +111,8 @@ partial def makeFastInstance (inst expectedType : Expr) (root := true) (trace : 
         mvarId.assign (← makeFastInstance arg argExpectedType (root := false) (trace := trace'))
       else
         -- For data fields, make sure that the lambda binders have the right type.
-        forallTelescopeReducing argExpectedType fun xs _ ↦ do
-          mvarId.assign <| ← mkLambdaFVars xs (arg.beta xs)
+        mvarId.assign <| ← forallTelescopeReducing argExpectedType fun xs _ ↦ do
+          mkLambdaFVars xs (← whnfI (mkAppN arg xs))
     return mkAppN f (← mvars.mapM instantiateMVars)
 
 /--
