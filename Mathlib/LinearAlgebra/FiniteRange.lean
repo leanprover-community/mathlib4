@@ -14,10 +14,22 @@ public import Mathlib.Algebra.Module.Submodule.EqLocus
 In this file, we define:
 
 * `LinearMap.HasFiniteRange`: a predicate expressing that a linear map has finitely generated range.
-* `LinearMap.FiniteRange`: the submodule of `E →ₗ[K] F` consisting of finite rank linear maps
-* `LinearMap.FiniteRangeSetoid.setoid`: the setoid on `E →ₗ[K] F` identifying linear maps which
-  differ by a finite rank linear map. Equivalently, two linear maps are equivalent for this
-  relation if and only if they agree on a co-finitely generated subspace of the domain.
+* `LinearMap.HasNoetherianRange`: a predicate expressing that a linear map has noetherian range,
+  i.e, all submodules of the range are finitely generated. This should be thought of as the
+  "better behaved" version of `LinearMap.HasFiniteRange`: for example, `HasNoetherianRange`
+  is always stable by addition, whereas `HasFiniteRange` might not be. The two notions agree
+  over noetherian rings (hence, in particular, over fields).
+* `LinearMap.finiteRange`: the submodule of `E →ₗ[K] F` consisting of linear maps with
+  *noetherian* ranges. We allow ourself this slightly abusive name because the more natural
+  definition (the submodule of linear maps with finitely generated ranges) only makes sense over a
+  noetherian ring, in which case the two notions agree.
+* `LinearMap.FiniteRangeSetoid.setoid`: the setoid on `E →ₗ[K] F` associated to
+  `LinearMap.finiteRange`. This identifies linear maps which differ by a linear map with
+  noetherian range. Equivalently, two linear maps are equivalent for this
+  relation if and only if they agree on a subspace `A` of the domain such that `E ⧸ A` is
+  noetherian. As with `LinearMap.finiteRange`, we allow ourself a slightly abusive name because the
+  more natural definition in terms of `LinearMap.HasFiniteRange` is only well behaved over a
+  noetherian ring, in which case the two notions agree.
   This is an instance in the scope `LinearMap.FiniteRangeSetoid`,
   so opening this scope allows this relation to be denoted by `≈`.
 -/
@@ -156,10 +168,10 @@ variable [CommRing K]
   hf.comp_left (lsmul K V₂ c)
 
 variable (K V V₂) in
-/-- `LinearMap.FiniteRange` is the submodule of `V →ₗ[K] W` consisting of linear maps satisfying
-`LinearMap.HasNoetherianRange`. The reason for this discrepancy is that the more natural notion
-`LinearMap.HasFiniteRange` only gives rise to a submodule when `K` is noetherian, in which case
-it agrees with `LinearMap.HasNoetherianRange`. -/
+/-- `LinearMap.finiteRange` is the submodule of `V →ₗ[K] W` consisting of linear maps satisfying
+`LinearMap.HasNoetherianRange`. We allow ourself this slightly abusive name because the set of
+linear maps satisfying `LinearMap.HasFiniteRange` is only a submodule over a noetherian ring,
+in which case the two notions agree. -/
 def finiteRange : Submodule K (V →ₗ[K] V₂) where
   carrier := {u | u.HasNoetherianRange}
   add_mem' hu hv := by simp_all
@@ -185,13 +197,11 @@ variable [CommRing K]
 
 namespace FiniteRangeSetoid
 
-/-- TODO: rewrite this
-
-
-This is the equivalence relation on linear maps such that `u ≈ v` precisely
-when `u - v` is a finite rank linear map. Equivalently, `u ≈ v` if and only if `u` and `v`
-agree on a co-finitely generated subspace of the domain
-(see `LinearMap.FiniteRangeSetoid.equiv_iff_eqLocus`).
+/-- This is the equivalence relation on linear maps such that `u ≈ v` precisely
+when `u - v` is a linear map with noetherian range. We allow ourself this slightly abusive name
+because the more natural definition (`u - v` has finitely generated range) only yields a
+well-behaved relation (more precisely, an additive congruence relation) over a noetherian ring,
+in which case the two notions agree.
 
 This setoid is declared as an instance in scope `LinearMap.FiniteRangeSetoid`. -/
 scoped instance setoid : Setoid (V →ₗ[K] V₂) := (LinearMap.finiteRange K V V₂).quotientRel
