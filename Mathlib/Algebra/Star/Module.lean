@@ -103,14 +103,23 @@ instance StarAddMonoid.toStarModuleRat [AddCommGroup R] [Module ℚ R] [StarAddM
 
 end SMulLemmas
 
+section starLinearEquiv
+
+variable (R : Type*) {A : Type*}
+  [CommSemiring R] [StarRing R] [AddCommMonoid A] [StarAddMonoid A] [Module R A] [StarModule R A]
+
 /-- If `A` is a module over a commutative `R` with compatible actions,
 then `star` is a semilinear equivalence. -/
-@[simps]
-def starLinearEquiv (R : Type*) {A : Type*} [CommSemiring R] [StarRing R] [AddCommMonoid A]
-    [StarAddMonoid A] [Module R A] [StarModule R A] : A ≃ₗ⋆[R] A :=
-  { starAddEquiv with
-    toFun := star
-    map_smul' := star_smul }
+@[simps! apply, simps! -isSimp symm_apply]
+def starLinearEquiv : A ≃ₗ⋆[R] A where
+  __ := starAddEquiv
+  map_smul' := star_smul
+
+@[simp]
+theorem starLinearEquiv_symm : (starLinearEquiv R : A ≃ₗ⋆[R] A).symm = starLinearEquiv R :=
+  rfl
+
+end starLinearEquiv
 
 section SelfSkewAdjoint
 
