@@ -111,7 +111,7 @@ def isLimitConeOfForget (c : Cone (F ⋙ forget)) (hc : IsLimit c) :
   rw [le_iInf_iff]
   intro j
   rw [coinduced_le_iff_le_induced, induced_compose]
-  convert continuous_iff_le_induced.1 (s.π.app j).hom.continuous
+  convert! continuous_iff_le_induced.1 (s.π.app j).hom.continuous
   ext x
   exact ConcreteCategory.hom_ext_iff.mp (hc.fac ((forget).mapCone s) j) x
 
@@ -224,7 +224,7 @@ def isColimitCoconeOfForget (c : Cocone (F ⋙ forget)) (hc : IsColimit c) :
   rw [iSup_le_iff]
   intro j
   rw [coinduced_le_iff_le_induced, induced_compose]
-  convert continuous_iff_le_induced.1 (s.ι.app j).hom.continuous
+  convert! continuous_iff_le_induced.1 (s.ι.app j).hom.continuous
   ext x
   exact ConcreteCategory.hom_ext_iff.mp (hc.fac ((forget).mapCocone s) j) x
 
