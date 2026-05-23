@@ -31,7 +31,7 @@ namespace CategoryTheory.Abelian
 
 variable [Small.{v} R] {M N : ModuleCat.{v} R}
 
-/-- If `r • N = 0`, `r • 𝟙 M` induce zero hom between `Ext M N n`. -/
+/-- If `r • N = 0`, then `r • 𝟙 M` induces the zero endomorphism on `Ext M N n`. -/
 lemma Ext.postcomp_smul_id_eq_zero_of_mem_annihilator {r : R} (mem_ann : r ∈ Module.annihilator R N)
     (n : ℕ) : AddCommGrpCat.ofHom ((Ext.mk₀ (r • 𝟙 M)).postcomp N (add_zero n)) = 0 := by
   ext h
