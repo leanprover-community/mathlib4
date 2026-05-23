@@ -72,7 +72,8 @@ restrict to `a ∈ Icc 0 1` to simplify the statement. -/
 lemma hasSum_hurwitzZeta_of_one_lt_re {a : ℝ} (ha : a ∈ Icc 0 1) {s : ℂ} (hs : 1 < re s) :
     HasSum (fun n : ℕ ↦ 1 / (n + a : ℂ) ^ s) (hurwitzZeta a s) := by
   convert!
-    (hasSum_nat_hurwitzZetaEven_of_mem_Icc ha hs).add (hasSum_nat_hurwitzZetaOdd_of_mem_Icc ha hs) using 1
+    (hasSum_nat_hurwitzZetaEven_of_mem_Icc ha hs).add (hasSum_nat_hurwitzZetaOdd_of_mem_Icc ha hs)
+    using 1
   ext1 n
   -- plain `ring_nf` works here, but the following is faster:
   apply show ∀ (x y : ℂ), x = (x + y) / 2 + (x - y) / 2 by intros; ring
