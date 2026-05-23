@@ -61,6 +61,15 @@ lemma exists_cofinal_of_isCardinalAccessibleCategory_cardinalFilteredPoset
   convert Set.mem_singleton b
   exact Subtype.ext_iff.1 (hy' b)
 
+open CardinalFilteredPoset in
+lemma exists_isCardinalFiltered_set_of_exists_cofinal (h₀ : κ₁ ≤ κ₂)
+    (h : ∀ (X : Type w) (hX : HasCardinalLT X κ₂),
+    ∃ (A : Set (SetCardinalLT κ₁ X)), HasCardinalLT A κ₂ ∧ IsCofinal A)
+    {X : Type w} [PartialOrder X] [IsCardinalFiltered X κ₁]
+    (A : Set X) (hA : HasCardinalLT A κ₂) :
+    ∃ (B : Set X), A ⊆ B ∧ IsCardinalFiltered B κ₁ ∧ HasCardinalLT B κ₂ := by
+  sorry
+
 namespace SharplyLE
 
 section
