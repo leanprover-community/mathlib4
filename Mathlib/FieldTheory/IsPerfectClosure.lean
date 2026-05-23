@@ -167,7 +167,7 @@ theorem IsPRadical.comap_pNilradical [IsPRadical i p] :
 variable (K) in
 instance IsPRadical.of_id : IsPRadical (RingHom.id K) p where
   pow_mem' x := ⟨0, x, by simp⟩
-  ker_le' x h := by convert Ideal.zero_mem _
+  ker_le' x h := by convert! Ideal.zero_mem _
 
 /-- Composition of `p`-radical ring homomorphisms is also `p`-radical. -/
 theorem IsPRadical.trans [IsPRadical i p] [IsPRadical f p] :
