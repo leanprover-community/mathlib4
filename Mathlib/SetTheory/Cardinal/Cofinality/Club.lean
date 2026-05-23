@@ -184,7 +184,24 @@ theorem IsClub.isStationary [Nonempty α] [WellFoundedLT α] (hα : cof α ≠ �
     IsStationary s :=
   fun _ ht ↦ (hs.inter hα ht).nonempty
 
-/-- Non-stationary sets form an ideal. -/
+theorem not_isStationary_sUnion [WellFoundedLT α] {s : Set (Set α)} (hα : cof α ≠ ℵ₀)
+    (hsα : #s < cof α) (hs : ∀ x ∈ s, ¬ IsStationary x) : ¬ IsStationary (⋃₀ s) := by
+  simp_rw [IsStationary, not_forall, Set.not_nonempty_iff_eq_empty,
+    ← Set.disjoint_iff_inter_eq_empty] at hs ⊢
+  choose f hf hf' using hs
+  refine ⟨⋂ x : s, f _ x.2, ?_, ?_⟩
+  · apply IsClub.iInter hα <;> simpa
+  · rw [Set.disjoint_sUnion_left]
+    exact fun x hx ↦ (hf' _ hx).mono_right <| Set.iInter_subset (fun x : s ↦ f x.1 x.2) ⟨x, hx⟩
+
+theorem not_isStationary_iUnion [WellFoundedLT α] {ι : Type u} {f : ι → Set α} (hα : cof α ≠ ℵ₀)
+    (hι : Cardinal.lift.{v} #ι < Cardinal.lift.{u} (cof α)) (hf : ∀ i, ¬ IsStationary (f i)) :
+    ¬ IsStationary (⋃ i, f i) := by
+  rw [← Set.sUnion_range]
+  refine not_isStationary_sUnion hα ?_ (by simpa)
+  rw [← Cardinal.lift_lt]
+  exact mk_range_le_lift.trans_lt hι
+
 theorem not_isStationary_union [WellFoundedLT α] (hα : cof α ≠ ℵ₀)
     (hs : ¬ IsStationary s) (ht : ¬ IsStationary t) : ¬ IsStationary (s ∪ t) := by
   simp_rw [IsStationary, not_forall, Set.not_nonempty_iff_eq_empty] at hs ht ⊢
