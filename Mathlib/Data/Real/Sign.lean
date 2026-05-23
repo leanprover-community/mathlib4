@@ -69,7 +69,7 @@ theorem sign_intCast (z : ℤ) : sign (z : ℝ) = ↑(Int.sign z) := by
   obtain hn | rfl | hp := lt_trichotomy z (0 : ℤ)
   · rw [sign_of_neg (Int.cast_lt_zero.mpr hn), Int.sign_eq_neg_one_of_neg hn, Int.cast_neg,
       Int.cast_one]
-  · rw [Int.cast_zero, sign_zero, Int.sign_zero, Int.cast_zero]
+  · simp
   · rw [sign_of_pos (Int.cast_pos.mpr hp), Int.sign_eq_one_of_pos hp, Int.cast_one]
 
 theorem sign_neg {r : ℝ} : sign (-r) = -sign r := by

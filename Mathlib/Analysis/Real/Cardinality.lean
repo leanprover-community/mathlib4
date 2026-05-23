@@ -187,9 +187,9 @@ theorem mk_real : #ℝ = 𝔠 := by
   · rw [Real.equivCauchy.cardinal_eq]
     apply mk_quotient_le.trans
     apply (mk_subtype_le _).trans_eq
-    rw [← power_def, mk_nat, mkRat, aleph0_power_aleph0]
+    simp
   · convert mk_le_of_injective (cantorFunction_injective _ _)
-    · rw [← power_def, mk_bool, mk_nat, two_power_aleph0]
+    · simp
     · exact 1 / 3
     · simp
     · norm_num

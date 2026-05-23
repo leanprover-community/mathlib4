@@ -571,7 +571,7 @@ theorem derivative_comp (p q : R[X]) :
 /-- Chain rule for formal derivative of polynomials. -/
 theorem derivative_eval₂_C (p q : R[X]) :
     derivative (p.eval₂ C q) = p.derivative.eval₂ C q * derivative q :=
-  Polynomial.induction_on p (fun r => by rw [eval₂_C, derivative_C, eval₂_zero, zero_mul])
+  Polynomial.induction_on p (fun r => by simp)
     (fun p₁ p₂ ih₁ ih₂ => by
       rw [eval₂_add, derivative_add, ih₁, ih₂, derivative_add, eval₂_add, add_mul])
     fun n r ih => by

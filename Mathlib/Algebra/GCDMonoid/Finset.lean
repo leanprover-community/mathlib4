@@ -85,7 +85,7 @@ theorem lcm_singleton {b : β} : ({b} : Finset β).lcm f = normalize (f b) :=
 theorem normalize_lcm : normalize (s.lcm f) = s.lcm f := by simp [lcm_def]
 
 theorem lcm_union [DecidableEq β] : (s₁ ∪ s₂).lcm f = GCDMonoid.lcm (s₁.lcm f) (s₂.lcm f) :=
-  Finset.induction_on s₁ (by rw [empty_union, lcm_empty, lcm_one_left, normalize_lcm])
+  Finset.induction_on s₁ (by simp)
     fun a s _ ih ↦ by rw [insert_union, lcm_insert, lcm_insert, ih, lcm_assoc]
 
 theorem lcm_congr {f g : β → α} (hs : s₁ = s₂) (hfg : ∀ a ∈ s₂, f a = g a) :
@@ -164,7 +164,7 @@ theorem gcd_singleton {b : β} : ({b} : Finset β).gcd f = normalize (f b) :=
 theorem normalize_gcd : normalize (s.gcd f) = s.gcd f := by simp [gcd_def]
 
 theorem gcd_union [DecidableEq β] : (s₁ ∪ s₂).gcd f = GCDMonoid.gcd (s₁.gcd f) (s₂.gcd f) :=
-  Finset.induction_on s₁ (by rw [empty_union, gcd_empty, gcd_zero_left, normalize_gcd])
+  Finset.induction_on s₁ (by simp)
     fun a s _ ih ↦ by rw [insert_union, gcd_insert, gcd_insert, ih, gcd_assoc]
 
 theorem gcd_congr {f g : β → α} (hs : s₁ = s₂) (hfg : ∀ a ∈ s₂, f a = g a) :
