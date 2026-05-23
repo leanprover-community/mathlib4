@@ -44,10 +44,10 @@ structure Homeomorph (X : Type*) (Y : Type*) [TopologicalSpace X] [TopologicalSp
     extends X ≃ Y where
   /-- The forward map of a homeomorphism is a continuous function. -/
   continuous_toFun : Continuous toFun := by
-    first | fun_prop | eta_expand; dsimp -failIfUnchanged; fun_prop
+    first | fun_prop | eta_expand; dsimp; fun_prop | skip
   /-- The inverse map of a homeomorphism is a continuous function. -/
   continuous_invFun : Continuous invFun := by
-    first | fun_prop | eta_expand; dsimp -failIfUnchanged; fun_prop
+    first | fun_prop | eta_expand; dsimp; fun_prop | skip
 
 @[inherit_doc]
 infixl:25 " ≃ₜ " => Homeomorph
