@@ -68,6 +68,14 @@ theorem coe_product (s : Finset α) (t : Finset β) :
     (↑(s ×ˢ t) : Set (α × β)) = (s : Set α) ×ˢ t :=
   Set.ext fun _ => Finset.mem_product
 
+/-- The product `s ×ˢ t` of two finsets, viewed as a subtype, is equivalent to the product of the
+subtypes `s × t`. The `Finset` analogue of `Equiv.Set.prod`. -/
+def _root_.Equiv.Finset.prod (s : Finset α) (t : Finset β) : ↥(s ×ˢ t) ≃ s × t where
+  toFun x := ⟨⟨x.1.1, (mem_product.mp x.2).1⟩, ⟨x.1.2, (mem_product.mp x.2).2⟩⟩
+  invFun x := ⟨⟨x.1.1, x.2.1⟩, mem_product.mpr ⟨x.1.2, x.2.2⟩⟩
+  left_inv _ := rfl
+  right_inv _ := rfl
+
 theorem subset_product_image_fst [DecidableEq α] : (s ×ˢ t).image Prod.fst ⊆ s := fun i => by
   simp +contextual [mem_image]
 
