@@ -91,7 +91,7 @@ theorem element_of_chain_not_isUnit_of_index_ne_zero {n : ℕ} {i : Fin (n + 1)}
 
 theorem first_of_chain_isUnit {q : Associates M} {n : ℕ} {c : Fin (n + 1) → Associates M}
     (h₁ : StrictMono c) (h₂ : ∀ {r}, r ≤ q ↔ ∃ i, r = c i) : IsUnit (c 0) := by
-  obtain ⟨i, hr⟩ := h₂.mp Associates.one_le
+  obtain ⟨i, hr⟩ := h₂.mp one_le
   rw [Associates.isUnit_iff_eq_one, ← Associates.le_one_iff, hr]
   exact h₁.monotone (Fin.zero_le i)
 
@@ -101,7 +101,7 @@ theorem second_of_chain_is_irreducible {q : Associates M} {n : ℕ} (hn : n ≠ 
     (hq : q ≠ 0) : Irreducible (c 1) := by
   rcases n with - | n; · contradiction
   refine (Associates.isAtom_iff (ne_zero_of_dvd_ne_zero hq (h₂.2 ⟨1, rfl⟩))).mp ⟨?_, fun b hb => ?_⟩
-  · exact ne_bot_of_gt (h₁ (show (0 : Fin (n + 2)) < 1 from Fin.zero_lt_one))
+  · exact ne_bot_of_gt (h₁ zero_lt_one)
   obtain ⟨⟨i, hi⟩, rfl⟩ := h₂.1 (hb.le.trans (h₂.2 ⟨1, rfl⟩))
   cases i
   · exact (Associates.isUnit_iff_eq_one _).mp (first_of_chain_isUnit h₁ @h₂)
