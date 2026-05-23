@@ -183,6 +183,16 @@ theorem setIntegral_indicator (hs : MeasurableSet s) (ht : MeasurableSet t) :
     ∫ᵛ x in s, t.indicator f x ∂[B; μ] = ∫ᵛ x in s ∩ t, f x ∂[B; μ] := by
   rw [integral_indicator ht, μ.restrict_restrict ht hs, Set.inter_comm]
 
+theorem setIntegral_congr_set
+    (hs : MeasurableSet s) (ht : MeasurableSet t) (hst : s =ᵐ[(μ.transpose B).variation] t) :
+    ∫ᵛ x in s, f x ∂[B; μ] = ∫ᵛ x in t, f x ∂[B; μ] := by
+  rw [← integral_indicator hs, ← integral_indicator ht]
+  apply integral_congr_ae
+  filter_upwards [hst] with x hx
+  replace hx : x ∈ s ↔ x ∈ t := by simpa using hx
+  simp [indicator]
+  grind
+
 theorem integral_piecewise [DecidablePred (· ∈ s)]
     (hs : MeasurableSet s) (hf : μ.IntegrableOn f B s) (hg : μ.IntegrableOn g B sᶜ) :
     ∫ᵛ x, s.piecewise f g x ∂[B; μ] = ∫ᵛ x in s, f x ∂[B; μ] + ∫ᵛ x in sᶜ, g x ∂[B; μ] := by
@@ -433,159 +443,4 @@ theorem norm_setIntegral_le_of_norm_le_const {C : ℝ}
   apply norm_setIntegral_le_of_norm_le_const_ae
   filter_upwards [ae_restrict_mem hs] with x hx using hC x hx
 
-/-! ### Lemmas about adding and removing interval boundaries
-
-The primed lemmas take explicit arguments about the endpoint having zero measure, while the
-unprimed ones use `[NoAtoms μ]`.
--/
-
-#exit
-
-section PartialOrder
-
-variable [PartialOrder X] {x y : X}
-
-theorem integral_Icc_eq_integral_Ioc' (hx : μ {x} = 0) :
-    ∫ᵛ t in Icc x y, f t ∂[B; μ] = ∫ᵛ t in Ioc x y, f t ∂[B; μ] :=
-  setIntegral_congr_set (Ioc_ae_eq_Icc' hx).symm
-
-theorem integral_Icc_eq_integral_Ico' (hy : μ {y} = 0) :
-    ∫ᵛ t in Icc x y, f t ∂[B; μ] = ∫ᵛ t in Ico x y, f t ∂[B; μ] :=
-  setIntegral_congr_set (Ico_ae_eq_Icc' hy).symm
-
-theorem integral_Ioc_eq_integral_Ioo' (hy : μ {y} = 0) :
-    ∫ᵛ t in Ioc x y, f t ∂[B; μ] = ∫ᵛ t in Ioo x y, f t ∂[B; μ] :=
-  setIntegral_congr_set (Ioo_ae_eq_Ioc' hy).symm
-
-theorem integral_Ico_eq_integral_Ioo' (hx : μ {x} = 0) :
-    ∫ᵛ t in Ico x y, f t ∂[B; μ] = ∫ᵛ t in Ioo x y, f t ∂[B; μ] :=
-  setIntegral_congr_set (Ioo_ae_eq_Ico' hx).symm
-
-theorem integral_Icc_eq_integral_Ioo' (hx : μ {x} = 0) (hy : μ {y} = 0) :
-    ∫ᵛ t in Icc x y, f t ∂[B; μ] = ∫ᵛ t in Ioo x y, f t ∂[B; μ] :=
-  setIntegral_congr_set (Ioo_ae_eq_Icc' hx hy).symm
-
-theorem integral_Iic_eq_integral_Iio' (hx : μ {x} = 0) :
-    ∫ᵛ t in Iic x, f t ∂[B; μ] = ∫ᵛ t in Iio x, f t ∂[B; μ] :=
-  setIntegral_congr_set (Iio_ae_eq_Iic' hx).symm
-
-theorem integral_Ici_eq_integral_Ioi' (hx : μ {x} = 0) :
-    ∫ᵛ t in Ici x, f t ∂[B; μ] = ∫ᵛ t in Ioi x, f t ∂[B; μ] :=
-  setIntegral_congr_set (Ioi_ae_eq_Ici' hx).symm
-
-variable [NoAtoms μ]
-
-theorem integral_Icc_eq_integral_Ioc : ∫ᵛ t in Icc x y, f t ∂[B; μ] = ∫ᵛ t in Ioc x y, f t ∂[B; μ] :=
-  integral_Icc_eq_integral_Ioc' <| measure_singleton x
-
-theorem integral_Icc_eq_integral_Ico : ∫ᵛ t in Icc x y, f t ∂[B; μ] = ∫ᵛ t in Ico x y, f t ∂[B; μ] :=
-  integral_Icc_eq_integral_Ico' <| measure_singleton y
-
-theorem integral_Ioc_eq_integral_Ioo : ∫ᵛ t in Ioc x y, f t ∂[B; μ] = ∫ᵛ t in Ioo x y, f t ∂[B; μ] :=
-  integral_Ioc_eq_integral_Ioo' <| measure_singleton y
-
-theorem integral_Ico_eq_integral_Ioo : ∫ᵛ t in Ico x y, f t ∂[B; μ] = ∫ᵛ t in Ioo x y, f t ∂[B; μ] :=
-  integral_Ico_eq_integral_Ioo' <| measure_singleton x
-
-theorem integral_Ico_eq_integral_Ioc : ∫ᵛ t in Ico x y, f t ∂[B; μ] = ∫ᵛ t in Ioc x y, f t ∂[B; μ] := by
-  rw [integral_Ico_eq_integral_Ioo, integral_Ioc_eq_integral_Ioo]
-
-theorem integral_Icc_eq_integral_Ioo : ∫ᵛ t in Icc x y, f t ∂[B; μ] = ∫ᵛ t in Ioo x y, f t ∂[B; μ] := by
-  rw [integral_Icc_eq_integral_Ico, integral_Ico_eq_integral_Ioo]
-
-theorem integral_Iic_eq_integral_Iio : ∫ᵛ t in Iic x, f t ∂[B; μ] = ∫ᵛ t in Iio x, f t ∂[B; μ] :=
-  integral_Iic_eq_integral_Iio' <| measure_singleton x
-
-theorem integral_Ici_eq_integral_Ioi : ∫ᵛ t in Ici x, f t ∂[B; μ] = ∫ᵛ t in Ioi x, f t ∂[B; μ] :=
-  integral_Ici_eq_integral_Ioi' <| measure_singleton x
-
-end PartialOrder
-
-end NormedAddCommGroup
-
-section IntegrableUnion
-
-variable {ι : Type*} [Countable ι] {μ : Measure X} [NormedAddCommGroup E]
-
-theorem integrableOn_iUnion_of_summable_integral_norm {f : X → E} {s : ι → Set X}
-    (hi : ∀ i : ι, IntegrableOn f (s i) μ)
-    (h : Summable fun i : ι => ∫ᵛ x : X in s i, ‖f x‖ ∂[B; μ]) : IntegrableOn f (iUnion s) μ := by
-  refine ⟨AEStronglyMeasurable.iUnion fun i => (hi i).1, (lintegral_iUnion_le _ _).trans_lt ?_⟩
-  have B := fun i => lintegral_coe_eq_integral (fun x : X => ‖f x‖₊) (hi i).norm
-  simp_rw [enorm_eq_nnnorm, tsum_congr B]
-  have S' : Summable fun i : ι =>
-      (NNReal.mk (∫ᵛ x : X in s i, ‖f x‖₊ ∂[B; μ]) (integral_nonneg fun x => NNReal.coe_nonneg _)) := by
-    rw [← NNReal.summable_coe]; exact h
-  have S'' := ENNReal.tsum_coe_eq S'.hasSum
-  simp_rw [ENNReal.coe_nnreal_eq, NNReal.coe_mk, coe_nnnorm] at S''
-  convert ENNReal.ofReal_lt_top
-
-variable [TopologicalSpace X] [BorelSpace X] [T2Space X] [IsLocallyFiniteMeasure μ]
-
-/-- If `s` is a countable family of compact sets, `f` is a continuous function, and the sequence
-`‖f.restrict (s i)‖ * μ (s i)` is summable, then `f` is integrable on the union of the `s i`. -/
-theorem integrableOn_iUnion_of_summable_norm_restrict {f : C(X, E)} {s : ι → Compacts X}
-    (hf : Summable fun i : ι => ‖f.restrict (s i)‖ * μ.real (s i)) :
-    IntegrableOn f (⋃ i : ι, s i) μ := by
-  refine
-    integrableOn_iUnion_of_summable_integral_norm
-      (fun i => (map_continuous f).continuousOn.integrableOn_compact (s i).isCompact)
-      (.of_nonneg_of_le (fun ι => integral_nonneg fun x => norm_nonneg _) (fun i => ?_) hf)
-  rw [← (Real.norm_of_nonneg (integral_nonneg fun x => norm_nonneg _) : ‖_‖ = ∫ᵛ x in s i, ‖f x‖ ∂[B; μ])]
-  exact
-    norm_setIntegral_le_of_norm_le_const (s i).isCompact.measure_lt_top
-      fun x hx => (norm_norm (f x)).symm ▸ (f.restrict (s i : Set X)).norm_coe_le_norm ⟨x, hx⟩
-
-/-- If `s` is a countable family of compact sets covering `X`, `f` is a continuous function, and
-the sequence `‖f.restrict (s i)‖ * μ (s i)` is summable, then `f` is integrable. -/
-theorem integrable_of_summable_norm_restrict {f : C(X, E)} {s : ι → Compacts X}
-    (hf : Summable fun i : ι => ‖f.restrict (s i)‖ * μ.real (s i))
-    (hs : ⋃ i : ι, ↑(s i) = (univ : Set X)) : Integrable f μ := by
-  simpa only [hs, integrableOn_univ] using integrableOn_iUnion_of_summable_norm_restrict hf
-
-end IntegrableUnion
-
-/-! ### Continuity of the set integral
-
-We prove that for any set `s`, the function
-`fun f : X →₁[μ] E => ∫ᵛ x in s, f x ∂[B; μ]` is continuous. -/
-
-section ContinuousSetIntegral
-
-variable [NormedAddCommGroup E]
-  {𝕜 : Type*} [NormedRing 𝕜] [NormedAddCommGroup F] [Module 𝕜 F] [IsBoundedSMul 𝕜 F]
-  {p : ℝ≥0∞} {μ : Measure X}
-
-@[continuity]
-theorem continuous_setIntegral [NormedSpace ℝ E] (s : Set X) :
-    Continuous fun f : X →₁[μ] E => ∫ᵛ x in s, f x ∂[B; μ] := by
-  haveI : Fact ((1 : ℝ≥0∞) ≤ 1) := ⟨le_rfl⟩
-  have h_comp :
-    (fun f : X →₁[μ] E => ∫ᵛ x in s, f x ∂[B; μ]) =
-      integral (μ.restrict s) ∘ fun f => LpToLpRestrictCLM X E ℝ μ 1 s f := by
-    ext1 f
-    rw [Function.comp_apply, integral_congr_ae (LpToLpRestrictCLM_coeFn ℝ s f)]
-  rw [h_comp]
-  exact continuous_integral.comp (LpToLpRestrictCLM X E ℝ μ 1 s).continuous
-
-end ContinuousSetIntegral
-
-end MeasureTheory
-
-section Support
-
-variable {M : Type*} [NormedAddCommGroup M] [NormedSpace ℝ M] {mX : MeasurableSpace X}
-  {ν : Measure X} {F : X → M}
-
-theorem MeasureTheory.setIntegral_support : ∫ᵛ x in support F, F x ∂ν = ∫ᵛ x, F x ∂ν := by
-  nth_rw 2 [← setIntegral_univ]
-  rw [setIntegral_eq_of_subset_of_forall_diff_eq_zero MeasurableSet.univ (subset_univ (support F))]
-  exact fun _ hx => notMem_support.mp <| notMem_of_mem_diff hx
-
-theorem MeasureTheory.setIntegral_tsupport [TopologicalSpace X] :
-    ∫ᵛ x in tsupport F, F x ∂ν = ∫ᵛ x, F x ∂ν := by
-  nth_rw 2 [← setIntegral_univ]
-  rw [setIntegral_eq_of_subset_of_forall_diff_eq_zero MeasurableSet.univ (subset_univ (tsupport F))]
-  exact fun _ hx => image_eq_zero_of_notMem_tsupport <| notMem_of_mem_diff hx
-
-end Support
+end MeasureTheory.VectorMeasure
