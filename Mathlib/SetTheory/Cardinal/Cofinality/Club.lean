@@ -81,11 +81,11 @@ theorem Ioi_inter [NoMaxOrder α] (hs : IsClub s) (x : α) : IsClub (Ioi x ∩ s
   ⟨(dirSupClosed_Ioi x).inter hs.dirSupClosed, hs.isCofinal.Ioi_inter x⟩
 
 @[simp]
-protected theorem Ici (x : α) : IsClub (Ici x) := by
+theorem _root_.isClub_Ici (x : α) : IsClub (Ici x) := by
   simpa using IsClub.univ.inter_Ici x
 
 @[simp]
-protected theorem Ioi [NoMaxOrder α] (x : α) : IsClub (Ioi x) := by
+theorem _root_.isClub_Ioi [NoMaxOrder α] (x : α) : IsClub (Ioi x) := by
   simpa using IsClub.univ.inter_Ioi x
 
 @[simp]
@@ -264,7 +264,7 @@ theorem isStationary_singleton_iff : IsStationary {x} ↔ IsMax x where
   mp h y hy := by
     contrapose! hy
     apply hy.ne'.lt_of_le
-    simpa using h (.Ici y)
+    simpa using h (isClub_Ici y)
   mpr h s hs := by
     use x
     simpa using hs.isCofinal.mem_of_isMax h
