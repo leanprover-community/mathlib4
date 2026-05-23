@@ -81,7 +81,7 @@ instance PartialMap.isDominant_toRationalMap (f : X.PartialMap Y) [IsDominant f.
     f.toRationalMap.IsDominant := by
   rwa [f.isDominant_toRationalMap_iff]
 
-instance RationalMap.isDominant_representative (f : X ⤏ Y) [f.IsDominant] :
+instance (f : X ⤏ Y) [f.IsDominant] :
     IsDominant f.representative.hom := by
   rwa [← f.representative.isDominant_toRationalMap_iff, f.toRationalMap_representative]
 
