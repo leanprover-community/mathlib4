@@ -160,6 +160,9 @@ end WellFoundedLT
 def IsStationary (s : Set α) : Prop :=
   ∀ ⦃t⦄, IsClub t → (s ∩ t).Nonempty
 
+theorem not_isStationary_iff : ¬ IsStationary s ↔ ∃ t, IsClub t ∧ Disjoint s t := by
+  simp [IsStationary, Set.not_nonempty_iff_eq_empty, Set.disjoint_iff]
+
 @[gcongr]
 theorem IsStationary.mono (hs : IsStationary s) (h : s ⊆ t) : IsStationary t :=
   fun _u hu ↦ (hs hu).mono (Set.inter_subset_inter_left _ h)
