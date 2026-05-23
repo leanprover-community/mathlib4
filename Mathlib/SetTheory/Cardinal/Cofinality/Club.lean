@@ -126,8 +126,8 @@ theorem IsClub.inter {s t : Set α} (hα : cof α ≠ ℵ₀) (hs : IsClub s) (h
     exact .sInter_of_cof_le_one hα H
   · exact .sInter hα (hα'.trans_le' <| by simp) H
 
-variable (α) in
 /-- The filter consisting of all sets which contain a club set. -/
+@[expose, simps]
 def clubFilter (hα : cof α ≠ ℵ₀) : Filter α where
   sets := {s | ∃ t ⊆ s, IsClub t}
   univ_sets := ⟨_, subset_rfl, .univ⟩
@@ -138,6 +138,8 @@ def clubFilter (hα : cof α ≠ ℵ₀) : Filter α where
     obtain ⟨u, hus, hu⟩ := hs
     obtain ⟨v, hvt, hv⟩ := ht
     exact ⟨_, Set.inter_subset_inter hus hvt, hu.inter hα hv⟩
+
+@[simp] theorem mem_clubFilter {hα : cof α ≠ ℵ₀} : s ∈ clubFilter hα ↔ ∃ t ⊆ s, IsClub t := .rfl
 
 theorem Order.IsNormal.isClub_range {f : α → α} (hf : IsNormal f) : IsClub (.range f) :=
   ⟨hf.dirSupClosed_range, fun x ↦ ⟨_, ⟨x, rfl⟩, hf.strictMono.le_apply⟩⟩
