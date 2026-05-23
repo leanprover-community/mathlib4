@@ -468,8 +468,9 @@ lemma stalkwise {P} (hP : RingHom.RespectsIso P) :
       ∀ (p : Ideal S) (_ : p.IsPrime), P (Localization.localRingHom _ p φ rfl) := by
   have := stalkwiseIsZariskiLocalAtTarget_of_respectsIso hP
   have := stalkwise_isZariskiLocalAtSource_of_respectsIso hP
-  convert of_isZariskiLocalAtSource_of_isZariskiLocalAtTarget
-    (P := AlgebraicGeometry.stalkwise P) with R S _ _ φ
+  convert!
+    of_isZariskiLocalAtSource_of_isZariskiLocalAtTarget (P := AlgebraicGeometry.stalkwise P) with R
+    S _ _ φ
   exact (stalkwise_SpecMap_iff hP (CommRingCat.ofHom φ)).symm
 
 lemma stableUnderComposition (hP : RingHom.StableUnderComposition Q) :

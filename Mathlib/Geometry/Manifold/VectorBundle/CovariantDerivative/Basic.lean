@@ -303,8 +303,7 @@ lemma finite_affine_combination {ι : Type*} {s : Finset ι}
           rw [(h i).leibniz hσ hg]
           simp [mvfderiv]
           module
-      _ = g x • ∑ i ∈ s, f i x • cov i σ x +
-        (∑ i ∈ s, f i) x • (d% g x).smulRight (σ x) := by
+      _ = g x • ∑ i ∈ s, f i x • cov i σ x + (∑ i ∈ s, f i) x • (d% g x).smulRight (σ x) := by
           rw [Finset.sum_add_distrib, Finset.smul_sum, Finset.sum_apply, Finset.sum_smul]
       _ = g x • ∑ i ∈ s, f i x • cov i σ x + (d% g x).smulRight (σ x) := by rw [hf]; simp
 
