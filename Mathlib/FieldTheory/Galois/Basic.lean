@@ -736,7 +736,6 @@ end
 
 end IntermediateField
 
-
 end restrictRestrictAlgEquivMapHom
 
 namespace Algebra
