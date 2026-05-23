@@ -92,7 +92,7 @@ instance [IsImmersion f] : IsClosedImmersion f.liftCoborder := by
     simp only [Scheme.Hom.liftCoborder_ι]; infer_instance
   have : IsPreimmersion f.liftCoborder := .of_comp f.liftCoborder f.coborderRange.ι
   refine .of_isPreimmersion _ ?_
-  convert isClosed_preimage_val_coborder
+  convert! isClosed_preimage_val_coborder
   apply Set.image_injective.mpr f.coborderRange.ι.isEmbedding.injective
   rw [← Set.range_comp, ← TopCat.coe_comp, ← Scheme.Hom.comp_base, f.liftCoborder_ι]
   exact (Set.image_preimage_eq_of_subset (by simpa using subset_coborder)).symm
@@ -221,7 +221,7 @@ theorem comp_iff {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [IsImmersion g] :
 set_option backward.isDefEq.respectTransparency false in
 instance : IsImmersion (prod.lift (𝟙 X) (𝟙 X)) := by
   rw [← MorphismProperty.cancel_right_of_respectsIso @IsImmersion _ (prodIsoPullback X X).hom]
-  convert (inferInstance : IsImmersion (pullback.diagonal (terminal.from X)))
+  convert! (inferInstance : IsImmersion (pullback.diagonal (terminal.from X)))
   ext : 1 <;> simp
 
 instance (f g : X ⟶ Y) : IsImmersion (equalizer.ι f g) :=

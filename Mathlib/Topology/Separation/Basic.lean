@@ -125,7 +125,7 @@ theorem TopologicalSpace.IsTopologicalBasis.inseparable_iff {b : Set (Set X)}
     (hb : IsTopologicalBasis b) {x y : X} : Inseparable x y ↔ ∀ s ∈ b, (x ∈ s ↔ y ∈ s) :=
   ⟨fun h _ hs ↦ inseparable_iff_forall_isOpen.1 h _ (hb.isOpen hs),
     fun h ↦ hb.nhds_hasBasis.eq_of_same_basis <| by
-      convert hb.nhds_hasBasis using 2
+      convert! hb.nhds_hasBasis using 2
       exact and_congr_right (h _)⟩
 
 theorem TopologicalSpace.IsTopologicalBasis.eq_iff [T0Space X] {b : Set (Set X)}
@@ -392,6 +392,9 @@ theorem TopologicalSpace.IsTopologicalBasis.exists_mem_of_ne [T1Space X] {b : Se
 protected theorem Finset.isClosed [T1Space X] (s : Finset X) : IsClosed (s : Set X) :=
   s.finite_toSet.isClosed
 
+instance : T1Space (CofiniteTopology X) where
+  t1 x := CofiniteTopology.isClosed_iff.mpr <| by simp
+
 theorem t1Space_TFAE (X : Type u) [TopologicalSpace X] :
     List.TFAE [T1Space X,
       ∀ x, IsClosed ({ x } : Set X),
@@ -421,9 +424,13 @@ theorem t1Space_TFAE (X : Type u) [TopologicalSpace X] :
   tfae_have 1 → 4 := by
     simp only [continuous_def, CofiniteTopology.isOpen_iff']
     rintro H s (rfl | hs)
-    exacts [isOpen_empty, compl_compl s ▸ (@Set.Finite.isClosed _ _ H _ hs).isOpen_compl]
-  tfae_have 4 → 2 :=
-    fun h x => (CofiniteTopology.isClosed_iff.2 <| Or.inr (finite_singleton _)).preimage h
+    · exact isOpen_empty
+    · rw [← compl_compl s, preimage_compl]
+      exact hs.preimage (Equiv.injective _).injOn |>.isClosed.isOpen_compl
+  tfae_have 4 → 2 := by
+    intro h x
+    rw [← CofiniteTopology.of.preimage_image {x}]
+    exact (Set.Finite.isClosed <| by simp) |>.preimage h
   tfae_have 2 ↔ 10 := by
     simp only [← closure_subset_iff_isClosed, specializes_iff_mem_closure, subset_def,
       mem_singleton_iff, eq_comm]
@@ -479,9 +486,6 @@ theorem nhds_le_nhds_iff [T1Space X] {a b : X} : 𝓝 a ≤ 𝓝 b ↔ a = b :=
 
 instance (priority := 100) [T1Space X] : R0Space X :=
   (t1Space_iff_t0Space_and_r0Space.mp ‹T1Space X›).right
-
-instance : T1Space (CofiniteTopology X) :=
-  t1Space_iff_continuous_cofinite_of.mpr continuous_id
 
 instance (priority := 80) [T0Space X] [R0Space X] : T1Space X :=
   t1Space_iff_t0Space_and_r0Space.mpr ⟨‹T0Space X›, ‹R0Space X›⟩
@@ -666,7 +670,7 @@ theorem Dense.diff_finset [T1Space X] [∀ x : X, NeBot (𝓝[≠] x)] {s : Set 
 obtains a dense set. -/
 theorem Dense.diff_finite [T1Space X] [∀ x : X, NeBot (𝓝[≠] x)] {s : Set X} (hs : Dense s)
     {t : Set X} (ht : t.Finite) : Dense (s \ t) := by
-  convert hs.diff_finset ht.toFinset
+  convert! hs.diff_finset ht.toFinset
   exact (Finite.coe_toFinset _).symm
 
 /-- If a function to a `T1Space` tends to some limit `y` at some point `x`, then necessarily
