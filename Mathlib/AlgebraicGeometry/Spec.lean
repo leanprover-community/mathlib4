@@ -356,7 +356,7 @@ def toPushforwardStalkAlgHom :
 
 theorem isLocalizedModule_toPushforwardStalkAlgHom_aux (y) :
     ∃ x : S × p.asIdeal.primeCompl, x.2 • y = toPushforwardStalkAlgHom R S p x.1 := by
-  obtain ⟨U, hp, s, e⟩ := TopCat.Presheaf.germ_exist _ _ y
+  obtain ⟨U, hp, s, e⟩ := TopCat.Presheaf.exists_germ_eq _ y
   obtain ⟨_, ⟨r, rfl⟩, hpr : p ∈ PrimeSpectrum.basicOpen r, hrU : PrimeSpectrum.basicOpen r ≤ U⟩ :=
     PrimeSpectrum.isTopologicalBasis_basic_opens.exists_subset_of_mem_open (show p ∈ U from hp) U.2
   change PrimeSpectrum.basicOpen r ≤ U at hrU
