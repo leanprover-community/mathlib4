@@ -431,7 +431,7 @@ theorem hausdorffEDist_iUnion_le {ι : Sort*} {s t : ι → Set α} :
 theorem hausdorffEDist_union_le {s₁ s₂ t₁ t₂ : Set α} :
     hausdorffEDist (s₁ ∪ s₂) (t₁ ∪ t₂) ≤ max (hausdorffEDist s₁ t₁) (hausdorffEDist s₂ t₂) := by
   simp_rw [union_eq_iUnion, sup_eq_iSup]
-  convert hausdorffEDist_iUnion_le with (_ | _)
+  convert! hausdorffEDist_iUnion_le with (_ | _)
 
 theorem hausdorffEDist_prod_le {s₁ t₁ : Set α} {s₂ t₂ : Set β} :
     hausdorffEDist (s₁ ×ˢ s₂) (t₁ ×ˢ t₂) ≤ max (hausdorffEDist s₁ t₁) (hausdorffEDist s₂ t₂) := by

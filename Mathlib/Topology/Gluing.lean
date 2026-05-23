@@ -245,7 +245,7 @@ theorem preimage_image_eq_image (i j : D.J) (U : Set (𝖣.U i)) :
 
 theorem preimage_image_eq_image' (i j : D.J) (U : Set (𝖣.U i)) :
     𝖣.ι j ⁻¹' 𝖣.ι i '' U = (D.t i j ≫ D.f _ _) '' D.f _ _ ⁻¹' U := by
-  convert D.preimage_image_eq_image i j U using 1
+  convert! D.preimage_image_eq_image i j U using 1
   rw [coe_comp, coe_comp, Set.image_comp]
   congr! 1
   rw [← Set.eq_preimage_iff_image_eq, Set.preimage_preimage]
@@ -299,7 +299,7 @@ structure MkCore where
 theorem MkCore.t_inv (h : MkCore) (i j : h.J) (x : h.V j i) : h.t i j ((h.t j i) x) = x := by
   have := h.cocycle j i j x ?_
   · rw [h.t_id] at this
-    · convert Subtype.ext this
+    · convert! Subtype.ext this
   rw [h.V_id]
   trivial
 
@@ -347,7 +347,7 @@ def mk' (h : MkCore.{u}) : TopCat.GlueData where
     dsimp only [Opens.coe_inclusion', hom_comp, hom_ofHom, ContinuousMap.comp_assoc,
       ContinuousMap.comp_apply, ContinuousMap.coe_mk, hom_id, ContinuousMap.id_apply]
     rw [Subtype.mk_eq_mk, Prod.mk_inj, Subtype.mk_eq_mk, Subtype.ext_iff, and_self_iff]
-    convert congr_arg Subtype.val (h.t_inv k i ⟨x, hx'⟩) using 3
+    convert! congr_arg Subtype.val (h.t_inv k i ⟨x, hx'⟩) using 3
     refine Subtype.ext ?_
     exact h.cocycle i j k ⟨x, hx⟩ hx'
   f_mono _ _ := (TopCat.mono_iff_injective _).mpr fun _ _ h => Subtype.ext h
@@ -400,7 +400,7 @@ theorem fromOpenSubsetsGlue_isOpenMap : IsOpenMap (fromOpenSubsetsGlue U) := by
   constructor
   · rw [← Set.image_preimage_eq_inter_range]
     apply (Opens.isOpenEmbedding (X := TopCat.of α) (U i)).isOpenMap
-    convert hs i using 1
+    convert! hs i using 1
     rw [← ι_fromOpenSubsetsGlue, coe_comp, Set.preimage_comp]
     congr! 1
     exact Set.preimage_image_eq _ (fromOpenSubsetsGlue_injective U)
