@@ -66,8 +66,8 @@ variable
 
 -- move this
 variable {M : Type*} [TopologicalSpace M] [ChartedSpace H M] [IsManifold I 1 M] in
-lemma injective_eval_mdifferentiableAt_vectorField (V : Type*) [AddCommGroup V] [Module ℝ V] [TopologicalSpace V]
-    (x : M) :
+lemma injective_eval_mdifferentiableAt_vectorField
+    (V : Type*) [AddCommGroup V] [Module ℝ V] [TopologicalSpace V] (x : M) :
     Function.Injective
       (fun A : TangentSpace I x →L[ℝ] V ↦
         fun (Z : Π x, TangentSpace I x) (_ : MDiffAt (T% Z) x) ↦ A (Z x)) :=

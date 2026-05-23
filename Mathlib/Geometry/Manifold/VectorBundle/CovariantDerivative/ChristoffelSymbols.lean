@@ -70,7 +70,7 @@ lemma eq_product_apply [Fintype ι]
     ChristoffelSymbol I f hs.toIsLocalFrameOn i j k x = inner ℝ (f (s i) x (s j x)) (s k x) := by
   -- Choose a linear order on ι: which one really does not matter for our result.
   have : LinearOrder ι := by
-    choose r wo using exists_wellOrder _
+    choose r wo using exists_wellFoundedLT _
     exact r
   have : LocallyFiniteOrderBot ι := by sorry
   sorry
