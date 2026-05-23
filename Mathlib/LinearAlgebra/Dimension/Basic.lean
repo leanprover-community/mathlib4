@@ -189,7 +189,7 @@ theorem lift_rank_le_of_injective_injectiveₛ (i : R' → R) (j : M →+ M')
     (hc : ∀ (r : R') (m : M), j (i r • m) = r • j m) :
     lift.{v'} (Module.rank R M) ≤ lift.{v} (Module.rank R' M') := by
   simp_rw [Module.rank, lift_iSup bddAbove_of_small]
-  exact ciSup_mono' bddAbove_of_small fun ⟨s, h⟩ ↦ ⟨⟨j '' s,
+  exact ciSup_mono_of_forall_exists' bddAbove_of_small fun ⟨s, h⟩ ↦ ⟨⟨j '' s,
     LinearIndepOn.id_image (h.linearIndependent.map_of_injective_injectiveₛ i j hi hj hc)⟩,
     lift_mk_le'.mpr ⟨(Equiv.Set.image j s hj).toEmbedding⟩⟩
 
@@ -273,7 +273,7 @@ theorem lift_rank_le_of_injective_injective [AddCommGroup M'] [Module R' M']
     (hc : ∀ (r : R') (m : M), j (i r • m) = r • j m) :
     lift.{v'} (Module.rank R M) ≤ lift.{v} (Module.rank R' M') := by
   simp_rw [Module.rank, lift_iSup bddAbove_of_small]
-  exact ciSup_mono' bddAbove_of_small fun ⟨s, h⟩ ↦
+  exact ciSup_mono_of_forall_exists' bddAbove_of_small fun ⟨s, h⟩ ↦
     ⟨⟨j '' s, LinearIndepOn.id_image <| h.linearIndependent.map_of_injective_injective i j hi
       (fun _ _ ↦ hj <| by rwa [j.map_zero]) hc⟩,
     lift_mk_le'.mpr ⟨(Equiv.Set.image j s hj).toEmbedding⟩⟩
@@ -381,7 +381,7 @@ theorem lift_rank_range_le (f : M →ₗ[R] M') : Cardinal.lift.{v}
   · apply Cardinal.lift_le.mpr
     refine le_ciSup Cardinal.bddAbove_of_small ⟨rangeSplitting f '' s, ?_⟩
     apply LinearIndependent.of_comp f.rangeRestrict
-    convert li.comp (Equiv.Set.rangeSplittingImageEquiv f s) (Equiv.injective _) using 1
+    convert! li.comp (Equiv.Set.rangeSplittingImageEquiv f s) (Equiv.injective _) using 1
   · exact (Cardinal.lift_mk_eq'.mpr ⟨Equiv.Set.rangeSplittingImageEquiv f s⟩).ge
 
 theorem rank_range_le (f : M →ₗ[R] M₁) : Module.rank R (LinearMap.range f) ≤ Module.rank R M := by
@@ -394,6 +394,11 @@ theorem lift_rank_map_le (f : M →ₗ[R] M') (p : Submodule R M) :
 
 theorem rank_map_le (f : M →ₗ[R] M₁) (p : Submodule R M) :
     Module.rank R (p.map f) ≤ Module.rank R p := by simpa using lift_rank_map_le f p
+
+theorem rank_map_eq {f : M →ₗ[R] M₁} (hf : Injective f) (p : Submodule R M) :
+    Module.rank R (p.map f) = Module.rank R p :=
+  le_antisymm (rank_map_le f p)
+    ((f.submoduleMap p).rank_le_of_injective <| LinearMap.submoduleMap_injective hf p)
 
 lemma Submodule.rank_mono {s t : Submodule R M} (h : s ≤ t) : Module.rank R s ≤ Module.rank R t :=
   (Submodule.inclusion h).rank_le_of_injective fun ⟨x, _⟩ ⟨y, _⟩ eq =>

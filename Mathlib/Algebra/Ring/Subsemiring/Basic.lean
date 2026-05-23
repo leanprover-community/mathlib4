@@ -390,7 +390,7 @@ theorem closure_eq_of_le {s : Set R} {t : Subsemiring R} (h₁ : s ⊆ t) (h₂ 
 
 theorem mem_map_equiv {f : R ≃+* S} {K : Subsemiring R} {x : S} :
     x ∈ K.map (f : R →+* S) ↔ f.symm x ∈ K := by
-  convert @Set.mem_image_equiv _ _ (↑K) f.toEquiv x using 1
+  convert! @Set.mem_image_equiv _ _ (↑K) f.toEquiv x using 1
 
 theorem map_equiv_eq_comap_symm (f : R ≃+* S) (K : Subsemiring R) :
     K.map (f : R →+* S) = K.comap f.symm :=
@@ -690,6 +690,17 @@ theorem mem_sSup_of_directedOn {S : Set (Subsemiring R)} (Sne : S.Nonempty)
 theorem coe_sSup_of_directedOn {S : Set (Subsemiring R)} (Sne : S.Nonempty)
     (hS : DirectedOn (· ≤ ·) S) : (↑(sSup S) : Set R) = ⋃ s ∈ S, ↑s :=
   Set.ext fun x => by simp [mem_sSup_of_directedOn Sne hS]
+
+theorem isMulCommutative_iSup {ι : Sort*} [Nonempty ι]
+    {S : ι → Subsemiring R} [hS : ∀ i, IsMulCommutative (S i)]
+    (dir : Directed (· ≤ ·) S) : IsMulCommutative (⨆ i, S i : Subsemiring R) := by
+  simpa [isMulCommutative_iff, ← SetLike.mem_coe, coe_iSup_of_directed dir,
+    Subsemigroup.coe_iSup_of_directed dir] using Subsemigroup.isMulCommutative_iSup dir
+
+instance instIsMulCommutative_iSup {ι : Type*} [Nonempty ι] [Preorder ι] [IsDirectedOrder ι]
+    {S : ι →o Subsemiring R} [hS : ∀ i, IsMulCommutative (S i)] :
+    IsMulCommutative (⨆ i, S i : Subsemiring R) :=
+  isMulCommutative_iSup S.monotone.directed_le
 
 end Subsemiring
 
