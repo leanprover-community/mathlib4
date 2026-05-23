@@ -321,8 +321,10 @@ theorem isNoetherian_of_tower (R) {S M} [Semiring R] [Semiring S] [AddCommMonoid
     [Module S M] [Module R M] [IsScalarTower R S M] (h : IsNoetherian R M) : IsNoetherian S M :=
   isNoetherian_mk ⟨(Submodule.restrictScalarsEmbedding R S M).dual.wellFounded h.wf⟩
 
+#check isNoetherian_pi
+
 instance isNoetherian_of_isNoetherianRing_of_finite (R M : Type*)
-    [Ring R] [AddCommGroup M] [Module R M] [IsNoetherianRing R] [Module.Finite R M] :
+    [Semiring R] [AddCommGroup M] [Module R M] [IsNoetherianRing R] [Module.Finite R M] :
     IsNoetherian R M :=
   have ⟨_, _, h⟩ := Module.Finite.exists_fin' R M
   isNoetherian_of_surjective _ (LinearMap.range_eq_top.mpr h)
