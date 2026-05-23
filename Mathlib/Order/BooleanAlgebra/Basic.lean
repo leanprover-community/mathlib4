@@ -455,7 +455,7 @@ instance (priority := 100) BooleanAlgebra.toBiheytingAlgebra : BiheytingAlgebra 
 theorem hnot_eq_compl : ￢x = xᶜ :=
   rfl
 
-/-- NOTE: Is this theorem needed at all or can we use `top_sdiff'`. -/
+/- NOTE: Is this theorem needed at all or can we use `top_sdiff'`. -/
 theorem top_sdiff : ⊤ \ x = xᶜ :=
   top_sdiff' x
 

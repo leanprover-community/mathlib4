@@ -205,7 +205,7 @@ variable [Preorder β] {f g : α → β} {x : α} {s t : Set α} {y z : β}
 
 section Definitions
 
-/-! In https://leanprover.zulipchat.com/#narrow/channel/116395-maths/topic/Semicontinuity.20definition.20for.20non-linear.20orders/with/436241797
+/- In https://leanprover.zulipchat.com/#narrow/channel/116395-maths/topic/Semicontinuity.20definition.20for.20non-linear.20orders/with/436241797
 it was suggested to redefine `LowerSemicontinuous` in a way that works better for partial orders.
 The following example shows that this redefinition can still take place even in light of the
 refactor in terms of `Semicontinuous`. -/

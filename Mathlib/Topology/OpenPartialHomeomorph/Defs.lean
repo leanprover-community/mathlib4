@@ -114,7 +114,7 @@ theorem toPartialEquiv_injective :
     Injective (toPartialEquiv : OpenPartialHomeomorph X Y → PartialEquiv X Y)
   | ⟨_, _, _, _, _⟩, ⟨_, _, _, _, _⟩, rfl => rfl
 
-/-! Register a few simp lemmas to make sure that `simp` puts the application of a local
+/- Register a few simp lemmas to make sure that `simp` puts the application of a local
 homeomorphism in its normal form, i.e., in terms of its coercion to a function. -/
 
 @[simp, mfld_simps]

@@ -246,7 +246,7 @@ theorem free_iff_linearEquiv : Free R M ↔ Nonempty (M ≃ₗ[R] R) := by
     (Fintype.card_eq_one_iff_nonempty_unique.mp (by simpa using this)).some
   exact ⟨e ≪≫ₗ LinearEquiv.finsuppUnique R R _⟩
 
-/-! TODO: The ≤ direction holds for arbitrary invertible modules over any commutative **ring** by
+/- TODO: The ≤ direction holds for arbitrary invertible modules over any commutative **ring** by
 considering the localization at a prime (which is free of rank 1) using the strong rank condition.
 The ≥ direction fails in general but holds for domains and Noetherian rings,
 see https://math.stackexchange.com/q/5089900 and https://mathoverflow.net/a/499611. -/
@@ -510,7 +510,7 @@ instance [Subsingleton (Pic R)] : Free R M :=
   have := subsingleton_iffₛ.mp ‹_› (Finite.reprₛ R M) inferInstance
   .of_equiv (Finite.reprEquivₛ R M)
 
-/-! TODO: it's still true that the Picard group of a (commutative) local semiring is trivial;
+/- TODO: it's still true that the Picard group of a (commutative) local semiring is trivial;
 in fact invertible modules over a semiring are Zariski-locally free (but projective module may
 not be). See Remark 7.10, Example 9.6 and 9.8, and Theorem 11.7 in [BorgerJun2024]. -/
 instance (R) [CommRing R] [IsLocalRing R] : Subsingleton (Pic R) :=
