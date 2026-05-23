@@ -337,7 +337,7 @@ end Definition_lemmas
 
 section Indep
 
-variable {m₁ m₂ m₃ : MeasurableSpace Ω} (m' : MeasurableSpace Ω)
+variable {m₁ m₂ m₃ m₄ : MeasurableSpace Ω} (m' : MeasurableSpace Ω)
   {_mΩ : MeasurableSpace Ω} {μ : Measure Ω}
 
 @[symm]
@@ -375,6 +375,10 @@ theorem indep_of_indep_of_le_left (h_indep : Indep m₁ m₂ μ) (h31 : m₃ ≤
 theorem indep_of_indep_of_le_right (h_indep : Indep m₁ m₂ μ) (h32 : m₃ ≤ m₂) :
     Indep m₁ m₃ μ :=
   Kernel.indep_of_indep_of_le_right h_indep h32
+
+theorem indep_of_indep_of_le (h_indep : Indep m₁ m₂ μ) (h31 : m₃ ≤ m₁) (h42 : m₄ ≤ m₂) :
+    Indep m₃ m₄ μ :=
+  Kernel.indep_of_indep_of_le h_indep h31 h42
 
 theorem iIndep_of_iIndep_of_le {m₁ m₂ : ι → MeasurableSpace Ω} (h_indep : iIndep m₂ μ)
     (h_le : ∀ i, m₁ i ≤ m₂ i) : iIndep m₁ μ :=
