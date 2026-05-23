@@ -279,15 +279,18 @@ variable [CommRing K]
 open scoped LinearMap.FiniteRangeSetoid
 
 /-- `u` is a **left quasi-inverse** to `v` if `u ∘ₗ v ≈ id` modulo
-finite rank linear maps. -/
+linear maps with noetherian ranges. Recall that if the scalar ring is noetherian
+(e.g a field), then "noetherian range" can be replaced by "finitely generated range". -/
 def LeftQuasiInverse (u : V →ₗ[K] V₂) (v : V₂ →ₗ[K] V) := u ∘ₗ v ≈ .id
 
 /-- `u` is a **right quasi-inverse** to `v` if `v ∘ₗ u ≈ id` modulo
-finite rank linear maps. -/
+linear maps with noetherian ranges. Recall that if the scalar ring is noetherian
+(e.g a field), then "noetherian range" can be replaced by "finitely generated range". -/
 def RightQuasiInverse (u : V₃ →ₗ[K] V₂) (v : V₂ →ₗ[K] V₃) := v ∘ₗ u ≈ .id
 
 /-- `u` is a **quasi-inverse** to `v` if `u ∘ₗ v ≈ id` and `v ∘ₗ u ≈ id` modulo
-finite rank linear maps. -/
+linear maps with noetherian ranges. Recall that if the scalar ring is noetherian
+(e.g a field), then "noetherian range" can be replaced by "finitely generated range". -/
 def QuasiInverse (u : V₃ →ₗ[K] V₂) (v : V₂ →ₗ[K] V₃) :=
   u.LeftQuasiInverse v ∧ u.RightQuasiInverse v
 
