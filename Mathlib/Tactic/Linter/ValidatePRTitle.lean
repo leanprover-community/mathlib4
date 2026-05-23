@@ -7,6 +7,7 @@ Authors: Michael Rothgang
 module
 
 import Mathlib.Init
+import Mathlib.Tactic.Linter.TextBased.UnicodeLinter
 import Std.Internal.Parsec.String
 
 /-!
@@ -69,6 +70,7 @@ def prTitle : Parser (String × Option String × String) := do
 #guard_msgs in
 #eval Parser.run prTitle "chore: test"
 
+open Mathlib.Linter.TextBased in
 /--
 Check if `title` matches the mathlib conventions for PR titles
 (documented at <https://leanprover-community.github.io/contribute/commit.html>).
@@ -116,7 +118,12 @@ public def validateTitle (title : String) : Array String := Id.run do
     if title.contains "\t" then
       errors := errors.push
         "error: the PR title contains a tab; please use single spaces instead"
-
-    -- Future: add more checks!
-
+    -- Check for unicode characters which are not allowed: we don't want direction-changing
+    -- characters, invisible spaces or so (for example). We re-use the code in the Unicode linter.
+    if !(title.all (fun c ↦ UnicodeLinter.isAllowedCharacter c || c == '\t')) then
+      let chars := title.chars.filter (fun c ↦ !UnicodeLinter.isAllowedCharacter c)
+      let err := ", ".intercalate <| chars.map
+        (fun c ↦ s!"'{c}' ({UnicodeLinter.Char.printCodepointHex c}).")|>.toList
+      errors := errors.push s!"error: the PR contains {chars.length} Unicode characters \
+        which are not allowed: {err}"
     return errors

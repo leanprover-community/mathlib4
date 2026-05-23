@@ -113,3 +113,9 @@ info: Message: 'error: the PR title contains multiple consecutive spaces; please
 
 #guard_msgs in
 #check_title "feat: umlauts such as Lindelöf spaces are allowed"
+
+/--
+info: Message: 'error: the PR contains 2 Unicode characters which are not allowed: '⁫' (U+206b)., '⁬' (U+206c).'
+-/
+#guard_msgs in
+#check_title "feat: title with \u206B non-allowed unicode\u206C"
