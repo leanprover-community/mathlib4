@@ -200,7 +200,7 @@ theorem IsConnected.iUnion_of_reflTransGen {ι : Type*} [Nonempty ι] {s : ι �
   ⟨nonempty_iUnion.2 <| Nonempty.elim ‹_› fun i : ι => ⟨i, (H _).nonempty⟩,
     IsPreconnected.iUnion_of_reflTransGen (fun i => (H i).isPreconnected) K⟩
 
-lemma IsPreconnected.transGen_of_iUnion {ι : Sort*} {s : ι → Set α}
+lemma IsPreconnected.transGen_of_iUnion {ι : Type*} {s : ι → Set α}
     (hs : IsPreconnected (⋃ n, s n)) (hs' : ∀ i, IsOpen (s i)) (i j : ι) (hi : (s i).Nonempty)
     (hj : (s j).Nonempty) : TransGen (fun a b ↦ (s a ∩ s b).Nonempty) i j := by
   by_contra hij
