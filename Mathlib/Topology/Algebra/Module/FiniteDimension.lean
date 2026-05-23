@@ -384,8 +384,7 @@ theorem coe_toContinuousLinearEquiv' (e : E ≃ₗ[𝕜] F) : (e.toContinuousLin
 
 @[simp]
 theorem coe_toContinuousLinearEquiv_symm (e : E ≃ₗ[𝕜] F) :
-    (e.toContinuousLinearEquiv.symm : F →ₗ[𝕜] E) = e.symm :=
-  rfl
+    (e.toContinuousLinearEquiv.toLinearEquiv.symm : F →ₗ[𝕜] E) = e.symm := rfl
 
 @[simp]
 theorem coe_toContinuousLinearEquiv_symm' (e : E ≃ₗ[𝕜] F) :
@@ -739,6 +738,14 @@ theorem Submodule.ClosedComplemented.of_finiteDimensional_quotient {p : Submodul
 @[deprecated (since := "2026-05-09")]
 alias Submodule.ClosedComplemented.of_quotient_finiteDimensional :=
   Submodule.ClosedComplemented.of_finiteDimensional_quotient
+
+lemma Submodule.ClosedComplemented.of_finiteDimensional_of_le
+    {A B : Submodule 𝕜 E} [FiniteDimensional 𝕜 A] (hA : A.ClosedComplemented) [T2Space A]
+    (hB : B ≤ A) : B.ClosedComplemented := by
+  obtain ⟨p, hp⟩ := hA
+  obtain ⟨C, hBC⟩ := B.exists_isCompl
+  refine ⟨((projectionOnto B C hBC).domRestrict A).toContinuousLinearMap ∘SL p, fun x ↦ ?_⟩
+  simp [hp ⟨x, hB x.2⟩]
 
 omit [IsTopologicalAddGroup F] [ContinuousSMul 𝕜 F] in
 theorem ContinuousLinearMap.ker_closedComplemented_of_finiteDimensional_range [T2Space F]

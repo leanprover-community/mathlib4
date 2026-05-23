@@ -266,9 +266,9 @@ theorem derivFamily_lt_ord_lift {ι : Type u} {f : ι → Ordinal → Ordinal} {
   | zero =>
     rw [derivFamily_zero]
     exact nfpFamily_lt_ord_lift hω (by rwa [hc.cof_ord]) hf
-  | succ b hb =>
+  | add_one b hb =>
     intro hb'
-    rw [derivFamily_succ]
+    rw [derivFamily_add_one]
     exact
       nfpFamily_lt_ord_lift hω (by rwa [hc.cof_ord]) hf
         ((isSuccLimit_ord hc.1).succ_lt (hb ((lt_succ b).trans hb')))
