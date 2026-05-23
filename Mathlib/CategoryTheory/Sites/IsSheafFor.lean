@@ -478,7 +478,7 @@ noncomputable def shrinkFunctorHomEquiv [LocallySmall.{w} C] {F : Cᵒᵖ ⥤ Ty
       naturality Y Z g := by
         ext ⟨f, hf⟩
         dsimp
-        convert t.2.to_sieveCompatible _ _ _
+        convert! t.2.to_sieveCompatible _ _ _
         simp only [Opposite.op_unop, shrinkYonedaObjObjEquiv_obj_map]
         rfl }
   left_inv t := by cat_disch
@@ -501,7 +501,7 @@ lemma shrinkFunctor_ι_comp_eq_iff_isAmalgamation [LocallySmall.{w} C] (F : Cᵒ
   · rintro rfl Y f hf
     simp [shrinkYonedaEquiv_naturality, shrinkYonedaEquiv_comp, shrinkYonedaEquiv_shrinkYoneda_map]
   · ext Y ⟨u, hu⟩
-    convert h (shrinkYonedaObjObjEquiv u) hu
+    convert! h (shrinkYonedaObjObjEquiv u) hu
     · rw [shrinkYonedaEquiv_naturality, shrinkYonedaEquiv_comp, shrinkYonedaEquiv_shrinkYoneda_map]
       simp
     · rw! [Equiv.symm_apply_apply]
@@ -870,7 +870,7 @@ lemma isSheafFor_pullback_iff (P : Cᵒᵖ ⥤ Type w) {X : C} (R : Sieve X)
   simp only [this, ← isSheafFor_iff_generate,
     isSheafFor_ofArrows_iff_bijective_toCompabible, ← e.bijective.of_comp_iff',
     ← Function.Bijective.of_comp_iff _ (P.mapIso (asIso f).symm.op).toEquiv.bijective]
-  convert Iff.rfl using 2
+  convert! Iff.rfl using 2
   ext
   simp [e]
 
@@ -895,7 +895,7 @@ lemma isSheafFor_over_map_op_comp_ofArrows_iff
         replace this := congr_arg (P.map φ.op) this
         dsimp at this
         simp only [← comp_apply, ← Functor.map_comp, ← op_comp] at this
-        convert this <;> cat_disch⟩
+        convert! this <;> cat_disch⟩
       invFun s := ⟨fun i ↦ s.val i, fun i₁ i₂ Z g₁ g₂ h ↦
         s.property i₁ i₂ _ ((Over.map p).map g₁) ((Over.map p).map g₂)
           (by simp only [← Functor.map_comp, h])⟩ }
@@ -912,7 +912,7 @@ lemma isSheafFor_over_map_op_comp_iff
   obtain ⟨ι, Z, g, rfl⟩ := R.exists_eq_ofArrows
   rw [← isSheafFor_iff_generate, isSheafFor_pullback_iff,
     isSheafFor_over_map_op_comp_ofArrows_iff, isSheafFor_iff_generate]
-  convert Iff.rfl
+  convert! Iff.rfl
   refine le_antisymm ?_ ?_
   · rintro W _ ⟨T, _, a, ⟨_, b, _, ⟨i⟩, rfl⟩, rfl⟩
     refine ⟨(Over.map p).obj (Z i), Over.homMk (a.left ≫ b.left) ?_, _, ⟨i⟩, ?_⟩
