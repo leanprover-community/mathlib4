@@ -23,6 +23,10 @@ general case, for lack of a better term.
 
 The Dieudonné measurable space and measure on a well-order are scoped to the
 `MeasureTheory.Dieudonne` namespace.
+
+## TODO
+
+Prove that the Dieudonné measure has empty support.
 -/
 
 @[expose] public section
