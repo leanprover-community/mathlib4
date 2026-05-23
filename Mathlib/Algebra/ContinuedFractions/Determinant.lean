@@ -65,9 +65,9 @@ theorem determinant :
     g.nums n * g.dens (n + 1) - g.dens n * g.nums (n + 1) =
       ∏ i ∈ Finset.range (n + 1), - (g.partNums.get? i).getD 0 := by
   rcases em <| TerminatedAt g n with terminatedAt_n | not_terminatedAt_n
-  · rw [dens_stable_of_terminated n.le_succ terminatedAt_n]
-    rw [nums_stable_of_terminated n.le_succ terminatedAt_n]
-    rw [Finset.prod_range_succ, partNum_none_iff_s_none.mpr terminatedAt_n]
+  · rw [dens_stable_of_terminated n.le_succ terminatedAt_n,
+      nums_stable_of_terminated n.le_succ terminatedAt_n, Finset.prod_range_succ,
+      partNum_none_iff_s_none.mpr terminatedAt_n]
     grind
   · exact determinant_aux <| Or.inr <| not_terminatedAt_n
 
