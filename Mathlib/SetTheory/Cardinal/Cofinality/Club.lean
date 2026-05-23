@@ -210,7 +210,7 @@ theorem not_isStationary_union [WellFoundedLT α] (hα : cof α ≠ ℵ₀)
   refine ⟨_, hu.inter hα hv, ?_⟩
   grind
 
-theorem IsStationary.of_not_isCofinal_compl (hs : ¬ IsCofinal (sᶜ)) : IsStationary s := by
+theorem IsStationary.of_not_isCofinal_compl (hs : ¬ IsCofinal sᶜ) : IsStationary s := by
   intro t ht
   obtain ⟨a, ha⟩ := not_isCofinal_iff.1 hs
   obtain ⟨b, hb, hb'⟩ := ht.isCofinal a
