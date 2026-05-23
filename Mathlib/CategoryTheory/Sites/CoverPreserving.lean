@@ -179,10 +179,10 @@ lemma Functor.PreservesOneHypercovers.of_coverPreserving [HasPullbacks C]
     have : HasPullback ((E.toPreOneHypercover.map F).f i₁) ((E.toPreOneHypercover.map F).f i₂) :=
       hasPullback_of_preservesPullback F (E.f i₁) (E.f i₂)
     have := H.cover_preserve (E.mem₁ i₁ i₂ (pullback.fst (E.f i₁) (E.f i₂)) _ pullback.condition)
-    rw [PreOneHypercover.functorPushforward_sieve₁_of_preservesLimitsOfShape] at this
-    · refine K.superset_covering ?_
-        (K.pullback_stable (IsPullback.lift (.map _ (.of_hasPullback _ _)) p₁ p₂ h) this)
-      simp [PreOneHypercover.pullback_sieve₁]
-    · exact pullback.condition
+    rw [PreOneHypercover.functorPushforward_sieve₁_of_preservesLimitsOfShape _ _ _
+      pullback.condition] at this
+    refine K.superset_covering ?_
+      (K.pullback_stable (IsPullback.lift (.map _ (.of_hasPullback _ _)) p₁ p₂ h) this)
+    simp [PreOneHypercover.pullback_sieve₁]
 
 end CategoryTheory
