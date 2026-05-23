@@ -77,7 +77,7 @@ lemma PartialMap.isDominant_toRationalMap_iff (f : X.PartialMap Y) :
     f.toRationalMap.IsDominant ↔ IsDominant f.hom :=
   f.toRationalMap.isDominant_iff
 
-instance PartialMap.isDominant_toRationalMap (f : X.PartialMap Y) [IsDominant f.hom] :
+instance (f : X.PartialMap Y) [IsDominant f.hom] :
     f.toRationalMap.IsDominant := by
   rwa [f.isDominant_toRationalMap_iff]
 
