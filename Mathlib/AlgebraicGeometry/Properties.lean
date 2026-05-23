@@ -354,10 +354,9 @@ lemma coheight_eq_of_isOpenImmersion {U X : Scheme} {x : U} (f : U ⟶ X) [IsOpe
 open Order in
 lemma idealHeight_eq_coheight (R : CommRingCat) (x : Spec R) :
     x.asIdeal.height = coheight x := by
-  rw [Ideal.height_eq_primeHeight x.asIdeal, Ideal.primeHeight,
+  rw [PrimeSpectrum.height_eq_orderHeight,
     ← Order.coheight_orderIso (specOrderIsoPrimeSpectrum R), ← height_ofDual,
     specOrderIsoPrimeSpectrum_apply, OrderDual.ofDual_toDual]
-  rfl
 
 open Order in
 @[stacks 02IZ]
