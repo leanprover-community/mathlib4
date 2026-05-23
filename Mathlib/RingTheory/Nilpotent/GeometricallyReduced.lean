@@ -13,12 +13,16 @@ public import Mathlib.RingTheory.LocalRing.ResidueField.Ideal
 # Geometrically reduced algebras
 
 In this file we introduce geometrically reduced algebras.
-For a commutative ring `R` and `R`-algebra `A`, we say that `A` is geometrically reduced
+For a commutative ring `R` and an `R`-algebra `A`, we say that `A` is geometrically reduced
 (`IsGeometricallyReduced`) if for every prime ideal `p` of `R`, the base change of `A`
 to an algebraic closure of `κ(p)` is reduced.
 In the case of `R = k` a field, this is equivalent to `AlgebraicClosure k ⊗[k] A` being reduced.
 
 ## Main results
+
+- `Algebra.isGeometricallyReduced_field_iff` : for a field `k` and a commutative `k`-algebra `A`,
+  `A` is geometrically reduced iff `AlgebraicClosure k ⊗[k] A` is reduced.
+
 - `IsGeometricallyReduced.of_forall_fg`: for a field `k` and a commutative `k`-algebra `A`, if all
   finitely generated subalgebras `B` of `A` are geometrically reduced, then `A` is geometrically
   reduced.
