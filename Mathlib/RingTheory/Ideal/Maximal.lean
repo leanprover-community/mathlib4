@@ -148,7 +148,7 @@ theorem span_singleton_prime {p : α} (hp : p ≠ 0) : IsPrime (span ({p} : Set 
   simp [isPrime_iff, Prime, span_singleton_eq_top, hp, mem_span_singleton]
 
 theorem span_singleton_isPrime_of_prime {p : α} (hp : Prime p) : (span {p}).IsPrime := by
-  rwa [Ideal.span_singleton_prime hp.ne_zero]
+  simp [Ideal.span_singleton_prime hp.ne_zero, hp]
 
 theorem IsMaximal.isPrime {I : Ideal α} (H : I.IsMaximal) : I.IsPrime :=
   ⟨H.1.1, @fun x y hxy =>
