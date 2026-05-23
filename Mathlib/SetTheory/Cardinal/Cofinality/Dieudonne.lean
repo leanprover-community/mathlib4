@@ -5,7 +5,7 @@ Authors: Violeta Hernández Palacios
 -/
 module
 
-public import Mathlib.MeasureTheory.Measure.MeasureSpaceDef
+public import Mathlib.MeasureTheory.Measure.Typeclasses.ZeroOne
 public import Mathlib.SetTheory.Cardinal.Cofinality.Club
 
 /-!
@@ -83,7 +83,7 @@ def measure : Measure (Dieudonne α) where
     sorry
   trim_le s := by
     rw [OuterMeasure.trim_eq_iInf']
-    change ⨅ _, dite .. ≤ dite ..
+    change ⨅ _, ite .. ≤ ite ..
     split_ifs with hs
     · refine iInf_le_of_le ⟨univ, ?_⟩ ?_
       · simp
@@ -92,10 +92,17 @@ def measure : Measure (Dieudonne α) where
       · simpa using measurableSet_of_not_isStationary hs
       · simp [hs]
 
+instance : IsZeroOneMeasure (α := α) measure where
+  zero_one₀ s _ := by rw [or_comm]; classical exact ite_eq_or_eq ..
+
 theorem measure_of_isStationary (hs : IsStationary s) : measure s = 1 := dif_pos hs
 theorem measure_of_not_isStationary (hs : ¬ IsStationary s) : measure s = 0 := dif_neg hs
 
 theorem measure_of_isClub [Nonempty α] (hs : IsClub s) : measure s = 1 :=
   measure_of_isStationary (hs.isStationary h₀.out)
+
+@[simp]
+theorem measure_univ [Nonempty α] : measure (@univ α) = 1 :=
+  measure_of_isStationary .univ
 
 end Dieudonne
