@@ -1122,8 +1122,10 @@ lemma touchpointWeights_reindex (e : Fin (n + 1) ≃ Fin (m + 1)) (signs : Finse
   rw [eq_comm, ← affineCombination_eq_touchpoint_iff]
   · rw [touchpoint_reindex, ← affineCombination_touchpointWeights, reindex]
     dsimp only
-    rw [← Equiv.coe_toEmbedding, ← Finset.affineCombination_map]
-    simp
+    let e' : Fin (m + 1) ↪ Fin (n + 1) := e.symm.toEmbedding
+    change (Finset.affineCombination ℝ Finset.univ (_ ∘ e')) (s.touchpointWeights _ _ ∘ e') = _
+    rw [← Finset.affineCombination_map]
+    simp [e']
   · rw [Finset.sum_comp_equiv]
     simp
 
