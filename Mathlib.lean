@@ -3023,6 +3023,7 @@ public import Mathlib.CategoryTheory.LocallyCartesianClosed.Sections
 public import Mathlib.CategoryTheory.LocallyDirected
 public import Mathlib.CategoryTheory.MarkovCategory.Basic
 public import Mathlib.CategoryTheory.MarkovCategory.Positive
+public import Mathlib.CategoryTheory.MeromorphicFunctions
 public import Mathlib.CategoryTheory.Monad.Adjunction
 public import Mathlib.CategoryTheory.Monad.Algebra
 public import Mathlib.CategoryTheory.Monad.Basic
@@ -3409,6 +3410,7 @@ public import Mathlib.CategoryTheory.Subfunctor.Equalizer
 public import Mathlib.CategoryTheory.Subfunctor.Finite
 public import Mathlib.CategoryTheory.Subfunctor.Image
 public import Mathlib.CategoryTheory.Subfunctor.OfSection
+public import Mathlib.CategoryTheory.Subfunctor.PresheafOfSubmonoids
 public import Mathlib.CategoryTheory.Subfunctor.Sieves
 public import Mathlib.CategoryTheory.Subfunctor.Subobject
 public import Mathlib.CategoryTheory.Subobject.ArtinianObject
@@ -3479,6 +3481,7 @@ public import Mathlib.CategoryTheory.WithTerminal.Cone
 public import Mathlib.CategoryTheory.WithTerminal.FinCategory
 public import Mathlib.CategoryTheory.WithTerminal.Lemmas
 public import Mathlib.CategoryTheory.Yoneda
+public import Mathlib.CategoryTheory.«MeromorphicFunctions copy»
 public import Mathlib.Combinatorics.Additive.AP.Three.Behrend
 public import Mathlib.Combinatorics.Additive.AP.Three.Defs
 public import Mathlib.Combinatorics.Additive.ApproximateSubgroup
