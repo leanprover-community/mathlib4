@@ -52,22 +52,16 @@ section
 
 variable {M N : Type*} [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
 
-/-- The linear map `M⧸xM → N⧸xN` induced by `M → N`. -/
-def quotSMulTopLinearMap (x : R) (f : M →ₗ[R] N) : QuotSMulTop x M →ₗ[R] QuotSMulTop x N :=
-  Submodule.mapQ _ _ f (fun m hm ↦ by
-    rcases (Submodule.mem_smul_pointwise_iff_exists _ _ _).mp hm with ⟨m', _, hm'⟩
-    simpa [← hm'] using Submodule.smul_mem_pointwise_smul _ x ⊤ trivial)
-
 /-- The linear equivalence `M⧸xM ≃ N⧸xN` induced by `M ≃ N`. -/
-def quotSMulTopLinearEquiv (x : R) (e : M ≃ₗ[R] N) : (QuotSMulTop x M) ≃ₗ[R] (QuotSMulTop x N) where
-  __ := quotSMulTopLinearMap x e.toLinearMap
-  invFun := quotSMulTopLinearMap x e.symm.toLinearMap
+def QuotSMulTop.equiv (x : R) (e : M ≃ₗ[R] N) : (QuotSMulTop x M) ≃ₗ[R] (QuotSMulTop x N) where
+  __ := QuotSMulTop.map x e.toLinearMap
+  invFun := QuotSMulTop.map x e.symm.toLinearMap
   left_inv y := by
     induction y using Submodule.Quotient.induction_on
-    simp [quotSMulTopLinearMap]
+    simp
   right_inv y := by
     induction y using Submodule.Quotient.induction_on
-    simp [quotSMulTopLinearMap]
+    simp
 
 variable (M) in
 /-- The linear equivalence `M⧸(r1. ... rk, a)M ≃ M ⧸ (r1. ... rk)M ⧸ a • ⊤`. -/
@@ -76,7 +70,7 @@ def Submodule.quotOfListSMulTopEquivQuotSMulTopOuter {rs rs' : List R} {a : R}
     QuotSMulTop a (M ⧸ Ideal.ofList rs' • (⊤ : Submodule R M)) :=
   ((Submodule.quotEquivOfEq _ _ (by simp [eq, sup_comm, Ideal.ofList_reverse])).trans
     (Submodule.quotOfListConsSMulTopEquivQuotSMulTopOuter M a rs'.reverse)).trans
-    (quotSMulTopLinearEquiv a (Submodule.quotEquivOfEq _ _ (by simp [Ideal.ofList_reverse])))
+    (QuotSMulTop.equiv a (Submodule.quotEquivOfEq _ _ (by simp [Ideal.ofList_reverse])))
 
 /-- The linear equivalence `R⧸(r1. ... rk, a) ≃ R ⧸ (r1. ... rk) ⧸ a • ⊤`. -/
 def Ideal.quotOfListSMulTopEquivQuotSMulTopOuter {rs rs' : List R} {a : R}
@@ -84,7 +78,7 @@ def Ideal.quotOfListSMulTopEquivQuotSMulTopOuter {rs rs' : List R} {a : R}
     QuotSMulTop a (R ⧸ Ideal.ofList rs') :=
     ((Submodule.quotEquivOfEq _ _ (by simp)).trans
     (Submodule.quotOfListSMulTopEquivQuotSMulTopOuter R eq)).trans
-    (quotSMulTopLinearEquiv a (Submodule.quotEquivOfEq _ _ (by simp)))
+    (QuotSMulTop.equiv a (Submodule.quotEquivOfEq _ _ (by simp)))
 
 end
 
@@ -160,7 +154,7 @@ noncomputable def ext_quotient_regular_sequence_length [IsLocalRing R] [IsNoethe
       simpa using reg'
     let e1' : QuotSMulTop a (Shrink.{v} (R ⧸ Ideal.ofList rs')) ≃ₗ[R]
       (Shrink.{v} (R ⧸ Ideal.ofList rs)) :=
-      ((quotSMulTopLinearEquiv a (Shrink.linearEquiv R (R ⧸ Ideal.ofList rs'))).trans
+      ((QuotSMulTop.equiv a (Shrink.linearEquiv R (R ⧸ Ideal.ofList rs'))).trans
       (Ideal.quotOfListSMulTopEquivQuotSMulTopOuter eqapp).symm).trans (Shrink.linearEquiv R _).symm
     let e1 : Ext (ModuleCat.of R (Shrink.{v} (R ⧸ Ideal.ofList rs))) M (n + 1) ≃ₗ[R]
       Ext (ModuleCat.of R (QuotSMulTop a (Shrink.{v} (R ⧸ Ideal.ofList rs')))) M (n + 1) := {
@@ -175,7 +169,7 @@ noncomputable def ext_quotient_regular_sequence_length [IsLocalRing R] [IsNoethe
       quotSMulTop_ext_equiv_ext_quotSMulTop (ModuleCat.of R (Shrink.{v} (R ⧸ Ideal.ofList rs')))
         n a reg'' M
     exact ((e1.trans e2.symm).trans
-      (quotSMulTopLinearEquiv a (hn rs' rs'reg (by simp [rs', len])))).trans
+      (QuotSMulTop.equiv a (hn rs' rs'reg (by simp [rs', len])))).trans
       (Submodule.quotOfListSMulTopEquivQuotSMulTopOuter M eqapp).symm
 
 end
@@ -363,7 +357,7 @@ lemma ext_succ_nontrivial_of_eq_of_le [IsNoetherianRing R] (M : ModuleCat.{v} R)
   have isl2 : IsLocalizedModule (p.1.map f).primeCompl f2 :=
     isLocalizedModule_map_of_disjoint q.1.primeCompl Rq (p.1.map f)
     (M.localizedModuleMkLinearMap q.1.primeCompl) (M.localizedModuleMkLinearMap p.1.primeCompl)
-  have isl := Ext.isLocalizedModule' (p.1.map f).primeCompl Rp f1 isl1 f2 isl2 i
+  have isl := Ext.isLocalizedModule (p.1.map f).primeCompl Rp f1 isl1 f2 isl2 i
   absurd nontrivial_of_islocalizedModule isl ntr
   exact not_nontrivial_iff_subsingleton.mpr sub'
 
@@ -472,7 +466,7 @@ lemma supportDim_le_injectiveDimension [IsLocalRing R] [IsNoetherianRing R] (M :
     have isl1 : IsLocalizedModule qq.1.1.primeCompl f.toLinearMap := by
       have := isLocalizedModule_id qq.1.1.primeCompl (Shrink.{v} (R ⧸ maximalIdeal R)) R
       exact IsLocalizedModule.of_linearEquiv qq.1.1.primeCompl LinearMap.id f
-    have isl := Ext.isLocalizedModule' qq.1.1.primeCompl
+    have isl := Ext.isLocalizedModule qq.1.1.primeCompl
       (Localization qq.1.1.primeCompl) f.toLinearMap isl1
       (M.localizedModuleMkLinearMap qq.1.1.primeCompl)
       (M.localizedModule_isLocalizedModule qq.1.1.primeCompl) q.length
@@ -738,7 +732,7 @@ lemma residueField_ext_subsingleton_of_no_insert (p : Ideal R) [p.IsPrime] (lt :
   have : IsLocalizedModule.AtPrime p g :=
     IsLocalizedModule.of_linearEquiv p.primeCompl f _
   let h : (ModuleCat.of R R) →ₗ[R] (ModuleCat.of Rp Rp) := Algebra.linearMap R Rp
-  have isl := Ext.isLocalizedModule' p.primeCompl (Localization.AtPrime p) g
+  have isl := Ext.isLocalizedModule p.primeCompl (Localization.AtPrime p) g
     (IsLocalizedModule.of_linearEquiv p.primeCompl f _) h inferInstance k
   exact isl.subsingleton_of_subsingleton
 
@@ -815,7 +809,7 @@ lemma isGorensteinLocalRing_of_exists (k : ℕ) (gt : ringKrullDim R < k)
       let Mq := ModuleCat.of Rq (LocalizedModule.AtPrime q M)
       let g : M →ₗ[R] Mq := LocalizedModule.mkLinearMap q.primeCompl M
       let h : (ModuleCat.of R R) →ₗ[R] (ModuleCat.of Rq Rq) := Algebra.linearMap R Rq
-      have isl := Ext.isLocalizedModule' q.primeCompl Rq g inferInstance h inferInstance k
+      have isl := Ext.isLocalizedModule q.primeCompl Rq g inferInstance h inferInstance k
       have : Subsingleton (Ext Mq (ModuleCat.of Rq Rq) k) := injlt.subsingleton _ k k (le_refl _) Mq
       absurd qmem
       simp only [notMem_support_iff]
