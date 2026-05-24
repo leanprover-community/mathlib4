@@ -439,8 +439,8 @@ section CommRing
 variable [CommRing R] [StarRing R]
 
 instance : CommRing (selfAdjoint R) :=
-  fast_instance% Function.Injective.commRing _ Subtype.coe_injective (selfAdjoint R).coe_zero val_one
-    (selfAdjoint R).coe_add val_mul (selfAdjoint R).coe_neg (selfAdjoint R).coe_sub
+  fast_instance% Function.Injective.commRing _ Subtype.coe_injective (selfAdjoint R).coe_zero
+    val_one (selfAdjoint R).coe_add val_mul (selfAdjoint R).coe_neg (selfAdjoint R).coe_sub
     (by intros; rfl) (by intros; rfl) val_pow
     (fun _ => rfl) fun _ => rfl
 
@@ -512,7 +512,8 @@ instance [Monoid R] [MulAction R A] [StarModule R A] : MulAction R (selfAdjoint 
   fast_instance% Function.Injective.mulAction Subtype.val Subtype.coe_injective val_smul
 
 instance [Monoid R] [DistribMulAction R A] [StarModule R A] : DistribMulAction R (selfAdjoint A) :=
-  fast_instance% Function.Injective.distribMulAction (selfAdjoint A).subtype Subtype.coe_injective val_smul
+  fast_instance% Function.Injective.distribMulAction (selfAdjoint A).subtype
+    Subtype.coe_injective val_smul
 
 end SMul
 
@@ -584,7 +585,8 @@ theorem val_smul [Monoid R] [DistribMulAction R A] [StarModule R A] (r : R) (x :
   rfl
 
 instance [Monoid R] [DistribMulAction R A] [StarModule R A] : DistribMulAction R (skewAdjoint A) :=
-  fast_instance% Function.Injective.distribMulAction (skewAdjoint A).subtype Subtype.coe_injective val_smul
+  fast_instance% Function.Injective.distribMulAction (skewAdjoint A).subtype
+    Subtype.coe_injective val_smul
 
 instance [Semiring R] [Module R A] [StarModule R A] : Module R (skewAdjoint A) :=
   fast_instance% Function.Injective.module R (skewAdjoint A).subtype Subtype.coe_injective val_smul

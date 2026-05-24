@@ -391,7 +391,8 @@ instance : Pow (G →+c[a, a] G) ℕ where
   pow f n := ⟨f^[n], Commute.iterate_left (AddConstMapClass.semiconj f) _⟩
 
 instance : Monoid (G →+c[a, a] G) :=
-  fast_instance% DFunLike.coe_injective.monoid (M₂ := Function.End G) _ rfl (fun _ _ ↦ rfl) fun _ _ ↦ rfl
+  fast_instance% DFunLike.coe_injective.monoid (M₂ := Function.End G) _ rfl (fun _ _ ↦ rfl)
+    fun _ _ ↦ rfl
 
 theorem mul_def (f g : G →+c[a, a] G) : f * g = f.comp g := rfl
 @[simp, push_cast] theorem coe_mul (f g : G →+c[a, a] G) : ⇑(f * g) = f ∘ g := rfl

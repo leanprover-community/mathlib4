@@ -35,7 +35,8 @@ variable [SetLike S R] [hSR : SubsemiringClass S R] (s : S)
 namespace SubsemiringClass
 
 instance instCharZero [CharZero R] : CharZero s :=
-  fast_instance% ⟨Function.Injective.of_comp (f := Subtype.val) (g := Nat.cast (R := s)) Nat.cast_injective⟩
+  fast_instance% ⟨Function.Injective.of_comp (f := Subtype.val) (g := Nat.cast (R := s))
+    Nat.cast_injective⟩
 
 end SubsemiringClass
 

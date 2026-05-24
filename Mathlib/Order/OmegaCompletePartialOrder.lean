@@ -475,7 +475,8 @@ protected def ωSup (c : Chain (α →o β)) : α →o β where
 
 @[simps! ωSup_coe]
 instance omegaCompletePartialOrder : OmegaCompletePartialOrder (α →o β) :=
-  fast_instance% OmegaCompletePartialOrder.lift OrderHom.coeFnHom OrderHom.ωSup (fun _ _ h => h) fun _ => rfl
+  fast_instance% OmegaCompletePartialOrder.lift OrderHom.coeFnHom OrderHom.ωSup
+    (fun _ _ h => h) fun _ => rfl
 
 end OrderHom
 

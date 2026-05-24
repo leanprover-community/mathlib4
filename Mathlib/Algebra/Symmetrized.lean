@@ -234,7 +234,8 @@ instance addCommGroup [AddCommGroup α] : AddCommGroup αˢʸᵐ :=
   { SymAlg.addCommMonoid, SymAlg.addGroup with }
 
 instance {R : Type*} [Semiring R] [AddCommMonoid α] [Module R α] : Module R αˢʸᵐ :=
-  fast_instance% Function.Injective.module R ⟨⟨unsym, unsym_zero⟩, unsym_add⟩ unsym_injective unsym_smul
+  fast_instance% Function.Injective.module R ⟨⟨unsym, unsym_zero⟩, unsym_add⟩ unsym_injective
+    unsym_smul
 
 instance [Mul α] [AddMonoidWithOne α] [Invertible (2 : α)] (a : α) [Invertible a] :
     Invertible (sym a) where

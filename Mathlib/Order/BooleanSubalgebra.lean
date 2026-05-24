@@ -126,8 +126,8 @@ instance (L : BooleanSubalgebra α) : PartialOrder L :=
 
 /-- A Boolean subalgebra of a lattice inherits a Boolean algebra structure. -/
 instance instBooleanAlgebraCoe (L : BooleanSubalgebra α) : BooleanAlgebra L :=
-  fast_instance% Subtype.coe_injective.booleanAlgebra _ .rfl .rfl val_sup val_inf val_top val_bot val_compl
-    val_sdiff val_himp
+  fast_instance% Subtype.coe_injective.booleanAlgebra _ .rfl .rfl val_sup val_inf val_top val_bot
+    val_compl val_sdiff val_himp
 
 /-- The natural lattice hom from a Boolean subalgebra to the original lattice. -/
 def subtype (L : BooleanSubalgebra α) : BoundedLatticeHom L α where

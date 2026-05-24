@@ -97,8 +97,8 @@ instance commMonoid [CommMonoid α] : CommMonoid (ULift α) :=
 
 @[to_additive]
 instance divInvMonoid [DivInvMonoid α] : DivInvMonoid (ULift α) :=
-  fast_instance% Equiv.ulift.injective.divInvMonoid _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
-    (fun _ _ => rfl) fun _ _ => rfl
+  fast_instance% Equiv.ulift.injective.divInvMonoid _ rfl (fun _ _ => rfl) (fun _ => rfl)
+    (fun _ _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
 
 @[to_additive]
 instance group [Group α] : Group (ULift α) :=
@@ -107,8 +107,8 @@ instance group [Group α] : Group (ULift α) :=
 
 @[to_additive]
 instance commGroup [CommGroup α] : CommGroup (ULift α) :=
-  fast_instance% Equiv.ulift.injective.commGroup _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
-    (fun _ _ => rfl) fun _ _ => rfl
+  fast_instance% Equiv.ulift.injective.commGroup _ rfl (fun _ _ => rfl) (fun _ => rfl)
+    (fun _ _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
 
 @[to_additive]
 instance leftCancelSemigroup [LeftCancelSemigroup α] : LeftCancelSemigroup (ULift α) :=
