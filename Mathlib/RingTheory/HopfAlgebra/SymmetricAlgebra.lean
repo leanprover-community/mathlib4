@@ -22,13 +22,8 @@ namespace SymmetricAlgebra
 
 variable (R : Type*) [CommRing R] (M : Type*) [AddCommMonoid M] [Module R M]
 
-open scoped TensorProduct
-
 instance instHopfAlgebra : HopfAlgebra R (SymmetricAlgebra R M) := by
-  refine .ofAlgHom (lift (-ι R M)) ?_ ?_ <;>
-    · apply algHom_ext
-      ext x
-      simp [algebraMapInv_ι]
+  refine .ofAlgHom (lift (-ι R M)) ?_ ?_ <;> ext x <;> simp
 
 @[simp]
 theorem antipode_ι (x : M) :

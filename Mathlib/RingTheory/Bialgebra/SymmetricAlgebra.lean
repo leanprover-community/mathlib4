@@ -25,16 +25,11 @@ variable (R : Type*) [CommSemiring R] (M : Type*) [AddCommMonoid M] [Module R M]
 
 open scoped TensorProduct
 
-instance instBialgebra : Bialgebra R (SymmetricAlgebra R M) :=
-  .ofAlgHom
+instance instBialgebra : Bialgebra R (SymmetricAlgebra R M) := by
+  refine .ofAlgHom
     (lift <| (TensorProduct.mk R _ _).flip 1 ∘ₗ ι R M + TensorProduct.mk R _ _ 1 ∘ₗ ι R M)
-    algebraMapInv
-    (by
-      ext x
-      simp [Algebra.TensorProduct.one_def, TensorProduct.add_tmul, TensorProduct.tmul_add]
-      abel)
-    (by ext x; simp [algebraMapInv_ι])
-    (by ext x; simp [algebraMapInv_ι])
+    algebraMapInv ?_ ?_ ?_ <;> ext x <;> simp
+  abel
 
 @[simp]
 theorem comul_ι (x : M) :
