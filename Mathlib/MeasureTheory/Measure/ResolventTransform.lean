@@ -41,7 +41,7 @@ Cauchy transform, given by the formulas:
 resolvent transform, Stieljes transform, Cauchy transform
 -/
 
-@[expose] public section
+public section
 
 variable {𝕜 A : Type*}
 
@@ -104,10 +104,10 @@ def resolventTransform (μ : Measure 𝕜) (a : A) :=
   ∫ x, resolvent a x ∂μ
 
 lemma resolventTransform_def (μ : Measure 𝕜) :
-    resolventTransform μ = fun (a : A) ↦ (∫ x, resolvent a x ∂μ) := rfl
+    resolventTransform μ = fun (a : A) ↦ (∫ x, resolvent a x ∂μ) := by rfl
 
 lemma resolventTransform_apply (μ : Measure 𝕜) (a : A) :
-    resolventTransform μ a = ∫ x, resolvent a x ∂μ := rfl
+    resolventTransform μ a = ∫ x, resolvent a x ∂μ := by rfl
 
 @[simp]
 lemma resolventTransform_zero_measure : resolventTransform (0 : Measure 𝕜) = (0 : A → A) := by
