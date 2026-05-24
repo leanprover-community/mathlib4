@@ -45,7 +45,8 @@ variable {𝕜 R V W W₂ Q : Type*}
 
 section Seminormed
 
-variable [SeminormedAddCommGroup V] [SeminormedAddCommGroup W] [SeminormedAddCommGroup W₂]
+variable [AddCommGroup V] [SeminormedAddCommGroup V] [AddCommGroup W] [SeminormedAddCommGroup W]
+  [AddCommGroup W₂] [SeminormedAddCommGroup W₂]
 variable [NontriviallyNormedField 𝕜] [NormedSpace 𝕜 V] [NormedSpace 𝕜 W] [NormedSpace 𝕜 W₂]
 variable [PseudoMetricSpace Q] [NormedAddTorsor W Q]
 
@@ -148,7 +149,7 @@ end Seminormed
 
 section Normed
 
-variable [NormedAddCommGroup V] [NormedAddCommGroup W]
+variable [AddCommGroup V] [NormedAddCommGroup V] [AddCommGroup W] [NormedAddCommGroup W]
 variable [NontriviallyNormedField 𝕜] [NormedSpace 𝕜 V] [NormedSpace 𝕜 W]
 variable [MetricSpace Q] [NormedAddTorsor W Q]
 
