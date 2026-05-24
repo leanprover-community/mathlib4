@@ -252,7 +252,7 @@ theorem IsRamified.ne_conjugate {w₁ w₂ : InfinitePlace K} (h : w₂.IsRamifi
   by_cases h_eq : w₁ = w₂
   · rw [isRamified_iff, isComplex_iff] at h
     exact Ne.symm (h_eq ▸ h.1)
-  · contrapose! h_eq
+  · contrapose h_eq
     rw [← mk_embedding w₁, h_eq, mk_conjugate_eq, mk_embedding]
 
 lemma IsRamified.comap_embedding {w : InfinitePlace K} (h : w.IsRamified k) :
@@ -418,7 +418,7 @@ lemma even_nat_card_aut_of_not_isUnramified [IsGalois k K] (hw : ¬ IsUnramified
   · cases nonempty_fintype Gal(K/k)
     rw [even_iff_two_dvd, ← not_isUnramified_iff_card_stabilizer_eq_two.mp hw]
     exact Subgroup.card_subgroup_dvd_card (Stab w)
-  · convert Even.zero
+  · convert! Even.zero
     by_contra e
     exact H (Nat.finite_of_card_ne_zero e)
 

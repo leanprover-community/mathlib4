@@ -12,7 +12,7 @@ public import Mathlib.Analysis.Normed.Algebra.UnitizationL1
 public import Mathlib.Analysis.Normed.Ring.Units
 public import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
 public import Mathlib.FieldTheory.IsAlgClosed.Spectrum
-public import Mathlib.Topology.Algebra.Module.CharacterSpace
+public import Mathlib.Topology.Algebra.Module.Spaces.CharacterSpace
 public import Mathlib.Topology.Semicontinuity.Hemicontinuity
 
 /-!
@@ -173,7 +173,6 @@ section QuasispectrumCompact
 variable {B : Type*} [NonUnitalNormedRing B] [NormedSpace 𝕜 B] [CompleteSpace B]
 variable [IsScalarTower 𝕜 B B] [SMulCommClass 𝕜 B B] [ProperSpace 𝕜]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem _root_.quasispectrum.isCompact (a : B) : IsCompact (quasispectrum 𝕜 a) := by
   rw [Unitization.quasispectrum_eq_spectrum_inr' 𝕜 𝕜,
@@ -186,7 +185,6 @@ instance _root_.quasispectrum.instCompactSpace (a : B) :
     CompactSpace (quasispectrum 𝕜 a) :=
   isCompact_iff_compactSpace.mp <| quasispectrum.isCompact a
 
-set_option backward.isDefEq.respectTransparency false in
 instance _root_.quasispectrum.instCompactSpaceNNReal [NormedSpace ℝ B] [IsScalarTower ℝ B B]
     [SMulCommClass ℝ B B] (a : B) [CompactSpace (quasispectrum ℝ a)] :
     CompactSpace (quasispectrum ℝ≥0 a) := by
@@ -256,7 +254,7 @@ theorem spectralRadius_le_pow_nnnorm_pow_one_div (a : A) (n : ℕ) :
       ENNReal.coe_mul] using coe_mono (Real.toNNReal_mono (norm_le_norm_mul_of_mem pow_mem))
   -- take (n + 1)ᵗʰ roots and clean up the left-hand side
   have hn : 0 < ((n + 1 : ℕ) : ℝ) := mod_cast Nat.succ_pos'
-  convert monotone_rpow_of_nonneg (one_div_pos.mpr hn).le nnnorm_pow_le using 1
+  convert! monotone_rpow_of_nonneg (one_div_pos.mpr hn).le nnnorm_pow_le using 1
   all_goals dsimp
   · rw [one_div, pow_rpow_inv_natCast]
     positivity
@@ -321,7 +319,6 @@ open scoped NNReal ENNReal
 
 variable [NontriviallyNormedField 𝕜] [NormedRing A] [NormedAlgebra 𝕜 A]
 
-set_option backward.isDefEq.respectTransparency false in
 variable (𝕜) in
 /-- In a Banach algebra `A` over a nontrivially normed field `𝕜`, for any `a : A` the
 power series with coefficients `a ^ n` represents the function `(1 - z • a)⁻¹` in a disk of
@@ -392,7 +389,7 @@ theorem exp_mem_exp [RCLike 𝕜] [NormedRing A] [NormedAlgebra 𝕜 A] [Complet
     simpa only [pow_succ, Algebra.smul_mul_assoc] using hb.tsum_mul_right (a - ↑ₐ z)
   have h₃ : exp (a - ↑ₐ z) = 1 + (a - ↑ₐ z) * b := by
     rw [exp_eq_tsum 𝕜]
-    convert (expSeries_summable' (𝕂 := 𝕜) (a - ↑ₐ z)).tsum_eq_zero_add
+    convert! (expSeries_summable' (𝕂 := 𝕜) (a - ↑ₐ z)).tsum_eq_zero_add
     · simp only [Nat.factorial_zero, Nat.cast_one, inv_one, pow_zero, one_smul]
     · exact h₀.symm
   rw [spectrum.mem_iff, IsUnit.sub_iff, ← one_mul (↑ₐ (exp z)), hexpmul, ← _root_.sub_mul,
@@ -422,7 +419,7 @@ instance (priority := 100) [FunLike F A 𝕜] [AlgHomClass F 𝕜 A 𝕜] :
 /-- An algebra homomorphism into the base field, as a continuous linear map (since it is
 automatically bounded). -/
 def toContinuousLinearMap (φ : A →ₐ[𝕜] 𝕜) : StrongDual 𝕜 A :=
-  { φ.toLinearMap with cont := map_continuous φ }
+  { φ.toLinearMap with }
 
 @[simp]
 theorem coe_toContinuousLinearMap (φ : A →ₐ[𝕜] 𝕜) : ⇑φ.toContinuousLinearMap = φ :=
@@ -517,7 +514,6 @@ lemma _root_.Subalgebra.isUnit_of_isUnit_val_of_eventually {l : Filter S} {a : S
   apply Units.mul_eq_one_iff_inv_eq.mp
   simpa [-IsUnit.mul_val_inv] using congr(($hx.mul_val_inv : A))
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `S : Subalgebra 𝕜 A` is a closed subalgebra of a Banach algebra `A`, then for any
 `x : S`, the boundary of the spectrum of `x` relative to `S` is a subset of the spectrum of
 `↑x : A` relative to `A`. -/
@@ -553,7 +549,6 @@ lemma Subalgebra.frontier_subset_frontier :
 
 open Set Notation
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `S` is a closed subalgebra of a Banach algebra `A`, then for any `x : S`, the spectrum of `x`
 is the spectrum of `↑x : A` along with the connected components of the complement of the spectrum of
 `↑x : A` which contain an element of the spectrum of `x : S`. -/
@@ -579,7 +574,6 @@ lemma Subalgebra.spectrum_sUnion_connectedComponentIn :
   refine inter_subset_inter_right _ ?_ |>.trans <| inter_subset_right
   exact frontier_subset_frontier S x
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Let `S` be a closed subalgebra of a Banach algebra `A`, and let `x : S`. If `z` is in the
 spectrum of `x`, then the connected component of `z` in the complement of the spectrum of `↑x : A`
 is bounded (or else `z` actually belongs to the spectrum of `↑x : A`). -/
@@ -664,7 +658,7 @@ lemma _root_.NNReal.spectralRadius_mem_spectrum {A : Type*} [NormedRing A] [Norm
   obtain ⟨x, hx₁, hx₂⟩ := spectrum.exists_nnnorm_eq_spectralRadius_of_nonempty ha
   rw [← hx₂, ENNReal.toNNReal_coe, ← spectrum.algebraMap_mem_iff ℝ, NNReal.algebraMap_eq_coe]
   have : 0 ≤ x := ha'.rightInvOn hx₁ ▸ NNReal.zero_le_coe
-  convert hx₁
+  convert! hx₁
   simpa
 
 lemma _root_.Real.spectralRadius_mem_spectrum {A : Type*} [NormedRing A] [NormedAlgebra ℝ A]
@@ -733,21 +727,20 @@ theorem upperHemicontinuous_spectrum_nnreal [NormedRing A] [NormedAlgebra ℝ A]
   obtain ⟨⟨h₁, -⟩, h₂⟩ : IsClosedEmbedding ((↑) : ℝ≥0 → ℝ) := NNReal.isClosedEmbedding_coe
   exact upperHemicontinuous_spectrum ℝ A |>.isInducing_comp h₁ h₂
 
-set_option backward.isDefEq.respectTransparency false in
 open WithLp in
 /-- The map `a ↦ quasispectrum 𝕜 a` is upper hemicontinuous. -/
 theorem upperHemicontinuous_quasispectrum [NontriviallyNormedField 𝕜] [ProperSpace 𝕜]
     [NonUnitalNormedRing A] [NormedSpace 𝕜 A] [SMulCommClass 𝕜 A A] [IsScalarTower 𝕜 A A]
     [CompleteSpace A] :
     UpperHemicontinuous (quasispectrum 𝕜 : A → Set 𝕜) := by
-  convert upperHemicontinuous_spectrum 𝕜 (WithLp 1 (Unitization 𝕜 A)) |>.comp
-    unitization_isometry_inr.continuous
+  convert!
+    upperHemicontinuous_spectrum 𝕜 (WithLp 1 (Unitization 𝕜 A)) |>.comp
+      unitization_isometry_inr.continuous
   ext1 a
   rw [Unitization.quasispectrum_eq_spectrum_inr,
     ← AlgEquiv.spectrum_eq (unitizationAlgEquiv 𝕜 (𝕜 := 𝕜) (A := A) |>.symm)]
   congr
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The map `a ↦ quasispectrum ℝ≥0 a` is upper hemicontinuous. -/
 theorem upperHemicontinuous_quasispectrum_nnreal [NonUnitalNormedRing A]
     [NormedSpace ℝ A] [SMulCommClass ℝ A A] [IsScalarTower ℝ A A] [CompleteSpace A] :

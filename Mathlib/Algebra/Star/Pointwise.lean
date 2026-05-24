@@ -24,10 +24,9 @@ if `s t : Set α`, then under suitable assumption on `α`, it is shown
 
 @[expose] public section
 
-
 namespace Set
 
-open Pointwise
+open scoped Pointwise
 
 local postfix:max "⋆" => star
 

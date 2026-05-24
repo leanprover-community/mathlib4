@@ -15,7 +15,7 @@ public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.AbelianImages
 
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 

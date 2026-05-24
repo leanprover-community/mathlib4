@@ -72,9 +72,8 @@ lemma eLpNormEssSup_indicator_le (s : Set α) (f : α → ε) :
 
 lemma eLpNormEssSup_indicator_const_le (s : Set α) (c : ε) :
     eLpNormEssSup (s.indicator fun _ : α => c) μ ≤ ‖c‖ₑ := by
-  by_cases hμ0 : μ = 0
-  · rw [hμ0, eLpNormEssSup_measure_zero]
-    exact zero_le _
+  obtain rfl | hμ0 := eq_or_ne μ 0
+  · simp
   · exact (eLpNormEssSup_indicator_le s fun _ => c).trans (eLpNormEssSup_const c hμ0).le
 
 lemma eLpNormEssSup_indicator_const_eq (s : Set α) (c : ε) (hμs : μ s ≠ 0) :
@@ -82,7 +81,7 @@ lemma eLpNormEssSup_indicator_const_eq (s : Set α) (c : ε) (hμs : μ s ≠ 0)
   refine le_antisymm (eLpNormEssSup_indicator_const_le s c) ?_
   by_contra! h
   have h' := ae_iff.mp (ae_lt_of_essSup_lt h)
-  push_neg at h'
+  push Not at h'
   refine hμs (measure_mono_null (fun x hx_mem => ?_) h')
   rw [Set.mem_setOf_eq, Set.indicator_of_mem hx_mem]
 

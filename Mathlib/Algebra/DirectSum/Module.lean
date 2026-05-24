@@ -40,18 +40,18 @@ variable {ι : Type v}
 variable {M : ι → Type w} [∀ i, AddCommMonoid (M i)] [∀ i, Module R (M i)]
 
 instance : Module R (⨁ i, M i) :=
-  DFinsupp.module
+  inferInstanceAs <| Module R (Π₀ i, M i)
 
 instance {S : Type*} [Semiring S] [∀ i, Module S (M i)] [∀ i, SMulCommClass R S (M i)] :
     SMulCommClass R S (⨁ i, M i) :=
-  DFinsupp.smulCommClass
+  inferInstanceAs <| SMulCommClass R S (Π₀ i, M i)
 
 instance {S : Type*} [Semiring S] [SMul R S] [∀ i, Module S (M i)] [∀ i, IsScalarTower R S (M i)] :
     IsScalarTower R S (⨁ i, M i) :=
-  DFinsupp.isScalarTower
+  inferInstanceAs <| IsScalarTower R S (Π₀ i, M i)
 
 instance [∀ i, Module Rᵐᵒᵖ (M i)] [∀ i, IsCentralScalar R (M i)] : IsCentralScalar R (⨁ i, M i) :=
-  DFinsupp.isCentralScalar
+  inferInstanceAs <| IsCentralScalar R (Π₀ i, M i)
 
 theorem smul_apply (b : R) (v : ⨁ i, M i) (i : ι) : (b • v) i = b • v i :=
   DFinsupp.smul_apply _ _ _
@@ -348,7 +348,7 @@ variable [DecidableEq ι] [∀ i j, AddCommMonoid (δ i j)] [∀ i j, Module R (
 
 /-- `curry` as a linear map. -/
 def sigmaLcurry : (⨁ i : Σ _, _, δ i.1 i.2) →ₗ[R] ⨁ (i) (j), δ i j :=
-  { sigmaCurry with map_smul' := fun r ↦ by convert DFinsupp.sigmaCurry_smul (δ := δ) r }
+  { sigmaCurry with map_smul' := fun r ↦ by convert! DFinsupp.sigmaCurry_smul (δ := δ) r }
 
 @[simp]
 theorem sigmaLcurry_apply (f : ⨁ i : Σ _, _, δ i.1 i.2) (i : ι) (j : α i) :

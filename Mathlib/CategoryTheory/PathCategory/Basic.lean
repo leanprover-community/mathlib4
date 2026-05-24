@@ -5,9 +5,7 @@ Authors: Kim Morrison, Robin Carlier
 -/
 module
 
-public import Mathlib.CategoryTheory.EqToHom
 public import Mathlib.CategoryTheory.Quotient
-public import Mathlib.Combinatorics.Quiver.Path
 
 /-!
 # The category paths on a quiver.
@@ -21,7 +19,6 @@ We check that the quotient of the path category of a category by the canonical r
 -/
 
 @[expose] public section
-
 
 universe v₁ v₂ u₁ u₂
 
@@ -167,7 +164,7 @@ theorem lift_unique {C} [Category* C] (φ : V ⥤q C) (Φ : Paths V ⥤ C)
       -- Porting note: Had to do substitute `p.cons f'` and `f'.toPath` by their fully qualified
       -- versions in this `have` clause (elsewhere too).
       have : Φ.map (Quiver.Path.cons p f') = Φ.map p ≫ Φ.map (Quiver.Hom.toPath f') := by
-        convert Functor.map_comp Φ p (Quiver.Hom.toPath f')
+        convert! Functor.map_comp Φ p (Quiver.Hom.toPath f')
       rw [this, ih]
 
 /-- Two functors out of a path category are equal when they agree on singleton paths. -/

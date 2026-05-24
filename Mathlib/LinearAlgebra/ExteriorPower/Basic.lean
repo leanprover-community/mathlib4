@@ -114,7 +114,7 @@ lemma ιMulti_span :
   exact ExteriorAlgebra.ιMulti_span_fixedDegree R n
 
 open Set Submodule in
-/-- A version of `ιMulti_span_fixedDegree_of_span` that works in the exterior power. -/
+/-- A version of `ιMulti_span_fixedDegree_of_span_eq_top` that works in the exterior power. -/
 lemma ιMulti_span_of_span {s : Set M} (hs : span R s = ⊤) :
     span R (ιMulti R n '' {a | range a ⊆ s}) = ⊤ := by
   apply LinearMap.map_injective (ker_subtype (⋀[R]^n M))
@@ -160,14 +160,14 @@ noncomputable def relationsSolutionEquiv {ι : Type*} [DecidableEq ι] {M : Type
         rw [map_sub, map_add, Finsupp.linearCombination_single, one_smul,
           Finsupp.linearCombination_single, one_smul,
           Finsupp.linearCombination_single, one_smul, sub_eq_zero] at this
-        convert this.symm -- `convert` is necessary due to the implementation of `MultilinearMap`
+        convert! this.symm -- `convert` is necessary due to the implementation of `MultilinearMap`
       map_update_smul' := fun m i r x ↦ by
         have := s.linearCombination_var_relation (.smul m i r x)
         dsimp at this ⊢
         rw [Finsupp.smul_single, smul_eq_mul, mul_one, map_sub,
           Finsupp.linearCombination_single, one_smul,
           Finsupp.linearCombination_single, sub_eq_zero] at this
-        convert this
+        convert! this
       map_eq_zero_of_eq' := fun v i j hm hij ↦
         by simpa using s.linearCombination_var_relation (.alt v i j hm hij) }
   invFun f :=

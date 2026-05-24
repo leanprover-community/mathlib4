@@ -12,16 +12,20 @@ public import Mathlib.RingTheory.HahnSeries.Multiplication
 In this file we introduce heterogeneous vertex operators using Hahn series.  When `R = ℂ`, `V = W`,
 and `Γ = ℤ`, then this is the usual notion of "meromorphic left-moving 2D field".  The notion we use
 here allows us to consider composites and scalar-multiply by multivariable Laurent series.
+
 ## Definitions
 * `HVertexOperator` : An `R`-linear map from an `R`-module `V` to `HahnModule Γ W`.
 * The coefficient function as an `R`-linear map.
 * Composition of heterogeneous vertex operators - values are Hahn series on lex order product.
+
 ## Main results
 * Ext
+
 ## TODO
 * curry for tensor product inputs
 * more API to make ext comparisons easier.
 * formal variable API, e.g., like the `T` function for Laurent polynomials.
+
 ## References
 
 * [R. Borcherds, *Vertex Algebras, Kac-Moody Algebras, and the Monster*][borcherds1986vertex]
@@ -84,9 +88,6 @@ def of_coeff (f : Γ → V →ₗ[R] W) (hf : ∀ (x : V), (Function.support (f 
   toFun x := (of R) { coeff := fun g => f g x, isPWO_support' := hf x }
   map_add' _ _ := by ext; simp
   map_smul' _ _ := by ext; simp
-
-@[deprecated (since := "2025-08-30")] alias coeff_add := map_add
-@[deprecated (since := "2025-08-30")] alias coeff_smul := map_smul
 
 @[simp]
 theorem coeff_of_coeff (f : Γ → V →ₗ[R] W)

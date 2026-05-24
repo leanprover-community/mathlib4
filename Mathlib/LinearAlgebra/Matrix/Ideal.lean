@@ -96,7 +96,7 @@ theorem single_mem_jacobson_matrix (I : Ideal R) :
   obtain rfl | qj := eq_or_ne q j
   · by_cases iq : i = q
     · simp [iq, N, zMx, single, mul_apply, sum_apply, ite_and, sub_mul]
-    · convert I.mul_mem_left (-M i p * x) zMx
+    · convert! I.mul_mem_left (-M i p * x) zMx
       simp [iq, N, single, mul_apply, sum_apply, ite_and, sub_mul]
       simp [sub_add, mul_add, mul_sub, mul_assoc]
   · simp [N, qj, sum_apply, mul_apply]
@@ -131,7 +131,7 @@ def matrix (c : RingCon R) : RingCon (Matrix n n R) where
   iseqv.symm h := fun _ _ ↦ c.symm <| h _ _
   iseqv.trans h₁ h₂ := fun _ _ ↦ c.trans (h₁ _ _) (h₂ _ _)
   add' h₁ h₂ := fun _ _ ↦ c.add (h₁ _ _) (h₂ _ _)
-  mul' h₁ h₂ := fun _ _ ↦ c.finset_sum _ fun _ _ => c.mul (h₁ _ _) (h₂ _ _)
+  mul' h₁ h₂ := fun _ _ ↦ c.finsetSum _ fun _ _ => c.mul (h₁ _ _) (h₂ _ _)
 
 @[simp low]
 theorem matrix_apply {c : RingCon R} {M N : Matrix n n R} :
@@ -214,7 +214,7 @@ theorem matrix_ofMatrix [DecidableEq n] (c : RingCon (Matrix n n R)) :
   constructor
   · intro h
     rw [matrix_eq_sum_single x, matrix_eq_sum_single y]
-    refine c.finset_sum _ fun i _ ↦ c.finset_sum _ fun j _ ↦ h i j i j
+    refine c.finsetSum _ fun i _ ↦ c.finsetSum _ fun j _ ↦ h i j i j
   · intro h i' j' i j
     simpa using c.mul (c.mul (c.refl <| single i i' 1) h) (c.refl <| single j' j 1)
 
@@ -322,7 +322,6 @@ end NonAssocRing
 section Ring
 variable [Ring R] [Fintype n]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem asIdeal_matrix [DecidableEq n] (I : TwoSidedIdeal R) :
     asIdeal (I.matrix n) = (asIdeal I).matrix n := by
   ext; simp
@@ -338,7 +337,6 @@ open Matrix
 
 variable {R : Type*} [Ring R] {n : Type*} [Fintype n] [DecidableEq n]
 
-set_option backward.privateInPublic true in
 private lemma jacobson_matrix_le (I : TwoSidedIdeal R) :
     (I.matrix n).jacobson ≤ I.jacobson.matrix n := by
   -- Proof generalized from example 8 in

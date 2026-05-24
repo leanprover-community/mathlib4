@@ -62,13 +62,13 @@ set_option backward.privateInPublic.warn false in
 /-- The category `Cᵒᵖ` is equipped with the shift such that the shift by `n` on `Cᵒᵖ`
 corresponds to the shift by `-n` on `C`. -/
 scoped instance : HasShift Cᵒᵖ ℤ :=
-  (inferInstance : HasShift (OppositeShiftAux C) ℤ)
+  inferInstanceAs <| HasShift (OppositeShiftAux C) ℤ
 
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 instance [Preadditive C] [∀ (n : ℤ), (shiftFunctor C n).Additive] (n : ℤ) :
     (shiftFunctor Cᵒᵖ n).Additive :=
-  (inferInstance : (shiftFunctor (OppositeShiftAux C) n).Additive)
+  inferInstanceAs <| (shiftFunctor (OppositeShiftAux C) n).Additive
 
 end Opposite
 

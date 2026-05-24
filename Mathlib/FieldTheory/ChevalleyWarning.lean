@@ -100,7 +100,6 @@ theorem MvPolynomial.sum_eval_eq_zero (f : MvPolynomial σ K)
 
 variable [DecidableEq K] (p : ℕ) [CharP K p]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The **Chevalley–Warning theorem**, finitary version.
 Let `(f i)` be a finite family of multivariate polynomials
 in finitely many variables (`X s`, `s : σ`) over a finite field of characteristic `p`.
@@ -146,7 +145,7 @@ theorem char_dvd_card_solutions_of_sum_lt {s : Finset ι} {f : ι → MvPolynomi
   -- It remains to verify the crucial assumption of this machine
   show F.totalDegree < (q - 1) * Fintype.card σ
   calc
-    F.totalDegree ≤ ∑ i ∈ s, (1 - f i ^ (q - 1)).totalDegree := totalDegree_finset_prod s _
+    F.totalDegree ≤ ∑ i ∈ s, (1 - f i ^ (q - 1)).totalDegree := totalDegree_finsetProd s _
     _ ≤ ∑ i ∈ s, (q - 1) * (f i).totalDegree := sum_le_sum fun i _ => ?_
     -- see ↓
     _ = (q - 1) * ∑ i ∈ s, (f i).totalDegree := (mul_sum ..).symm
@@ -179,7 +178,7 @@ theorem char_dvd_card_solutions {f : MvPolynomial σ K} (h : f.totalDegree < Fin
     p ∣ Fintype.card { x : σ → K // eval x f = 0 } := by
   let F : Unit → MvPolynomial σ K := fun _ => f
   have : (∑ i : Unit, (F i).totalDegree) < Fintype.card σ := h
-  convert char_dvd_card_solutions_of_sum_lt p this
+  convert! char_dvd_card_solutions_of_sum_lt p this
   aesop
 
 /-- The **Chevalley–Warning theorem**, binary version.

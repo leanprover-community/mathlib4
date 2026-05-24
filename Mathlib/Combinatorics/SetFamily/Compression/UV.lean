@@ -92,7 +92,7 @@ theorem compress_of_disjoint_of_le' (hva : Disjoint v a) (hua : u ≤ a) :
       (le_sdiff.2 ⟨(le_sup_right : v ≤ a ⊔ v), hva.mono_right hua⟩),
     sdiff_sup_cancel (le_sup_of_le_left hua), hva.symm.sup_sdiff_cancel_right]
 
-@[simp]
+@[simp, grind =]
 theorem compress_self (u a : α) : compress u u a = a := by
   unfold compress
   split_ifs with h
@@ -153,14 +153,7 @@ protected theorem IsCompressed.eq (h : IsCompressed u v s) : 𝓒 u v s = s := h
 
 @[simp]
 theorem compression_self (u : α) (s : Finset α) : 𝓒 u u s = s := by
-  unfold compression
-  convert union_empty s
-  · ext a
-    rw [mem_filter, compress_self, and_self_iff]
-  · refine eq_empty_of_forall_notMem fun a ha ↦ ?_
-    simp_rw [mem_filter, mem_image, compress_self] at ha
-    obtain ⟨⟨b, hb, rfl⟩, hb'⟩ := ha
-    exact hb' hb
+  grind [mem_compression]
 
 /-- Any family is compressed along two identical elements. -/
 theorem isCompressed_self (u : α) (s : Finset α) : IsCompressed u u s := compression_self u s
@@ -356,7 +349,7 @@ theorem shadow_compression_subset_compression_shadow (u v : Finset α)
       rw [union_sdiff_distrib, ‹v \ u = v›]
       exact (erase_subset _ _).trans subset_union_right
     -- and then arguing that it's the same
-    convert this using 1
+    convert! this using 1
     rw [sdiff_union_erase_cancel (hus.trans subset_union_left) ‹x ∈ u›, erase_union_distrib,
       erase_insert ‹x ∉ s›, erase_eq_of_notMem ‹x ∉ v›, sdiff_erase (mem_union_right _ hyv),
       union_sdiff_cancel_right hsv]
@@ -382,7 +375,7 @@ theorem shadow_compression_subset_compression_shadow (u v : Finset α)
       refine sup_sdiff_mem_of_mem_compression (by rwa [hxy.eq]) ((erase_subset _ _).trans ‹_›) ?_
       rw [← sdiff_erase (mem_union_left _ <| hus hwu)]
       exact disjoint_sdiff
-    convert this using 1
+    convert! this using 1
     rw [insert_union_comm, insert_erase ‹w ∈ u›,
       sdiff_union_of_subset (hus.trans subset_union_left),
       sdiff_erase (mem_union_right _ ‹z ∈ v›), union_sdiff_cancel_right hsv]
@@ -392,7 +385,7 @@ theorem shadow_compression_subset_compression_shadow (u v : Finset α)
   have : (insert w ((s ∪ v) \ u) ∪ u) \ v ∈ 𝒜 :=
     sup_sdiff_mem_of_mem_compression ‹insert w ((s ∪ v) \ u) ∈ 𝒜'› ‹_›
       (disjoint_insert_right.2 ⟨‹_›, disjoint_sdiff⟩)
-  convert this using 1
+  convert! this using 1
   rw [insert_union, sdiff_union_of_subset (hus.trans subset_union_left),
     insert_sdiff_of_notMem _ (hwu ∘ hwB ∘ mem_union_right _), union_sdiff_cancel_right hsv]
 
