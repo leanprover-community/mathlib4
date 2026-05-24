@@ -103,8 +103,9 @@ end Ring
 
 section NormedField
 
-variable [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕜₂] {σ₁₂ : 𝕜 →+* 𝕜₂}
-  [NormedAddCommGroup E] [NormedAddCommGroup Eₗ] [NormedAddCommGroup F] [NormedAddCommGroup Fₗ]
+variable [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕜₂] {σ₁₂ : 𝕜 →+* 𝕜₂} [AddCommGroup E]
+  [NormedAddCommGroup E] [AddCommGroup Eₗ] [NormedAddCommGroup Eₗ] [AddCommGroup F]
+  [NormedAddCommGroup F] [AddCommGroup Fₗ] [NormedAddCommGroup Fₗ]
   [NormedSpace 𝕜 E] [NormedSpace 𝕜 Eₗ] [NormedSpace 𝕜₂ F] [NormedSpace 𝕜₂ Fₗ] [CompleteSpace F]
   (f g : E →SL[σ₁₂] F) {e : E →L[𝕜] Eₗ}
 
@@ -144,8 +145,8 @@ namespace LinearMap
 section compInv
 
 variable [DivisionRing 𝕜] [DivisionRing 𝕜₂] {σ₁₂ : 𝕜 →+* 𝕜₂}
-  [AddCommGroup E] [NormedAddCommGroup F] [SeminormedAddCommGroup Eₗ]
-  [Module 𝕜 E] [Module 𝕜₂ F] [Module 𝕜 Eₗ]
+  [AddCommGroup E] [AddCommGroup F] [NormedAddCommGroup F] [AddCommGroup Eₗ]
+  [SeminormedAddCommGroup Eₗ] [Module 𝕜 E] [Module 𝕜₂ F] [Module 𝕜 Eₗ]
 
 variable (f : E →ₛₗ[σ₁₂] F) (g : E →ₗ[𝕜] Eₗ)
 
@@ -178,9 +179,9 @@ end compInv
 section NormedDivisionRing
 
 variable [NormedDivisionRing 𝕜] [NormedDivisionRing 𝕜₂] {σ₁₂ : 𝕜 →+* 𝕜₂}
-  [AddCommGroup E] [SeminormedAddCommGroup Eₗ] [NormedAddCommGroup F]
-  [Module 𝕜 E] [Module 𝕜₂ F] [IsBoundedSMul 𝕜₂ F] [Module 𝕜 Eₗ] [IsBoundedSMul 𝕜 Eₗ]
-  [CompleteSpace F]
+  [AddCommGroup E] [AddCommGroup Eₗ] [SeminormedAddCommGroup Eₗ] [AddCommGroup F]
+  [NormedAddCommGroup F] [Module 𝕜 E] [Module 𝕜₂ F] [IsBoundedSMul 𝕜₂ F] [Module 𝕜 Eₗ]
+  [IsBoundedSMul 𝕜 Eₗ] [CompleteSpace F]
 
 variable (f : E →ₛₗ[σ₁₂] F) (e : E →ₗ[𝕜] Eₗ)
 
@@ -219,8 +220,8 @@ end NormedDivisionRing
 
 section NormedField
 
-variable [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕜₂] {σ₁₂ : 𝕜 →+* 𝕜₂}
-  [NormedAddCommGroup F] [SeminormedAddCommGroup Eₗ]
+variable [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕜₂] {σ₁₂ : 𝕜 →+* 𝕜₂} [AddCommGroup F]
+  [NormedAddCommGroup F] [AddCommGroup Eₗ] [SeminormedAddCommGroup Eₗ]
   [NormedSpace 𝕜₂ F] [NormedSpace 𝕜 Eₗ]
   [AddCommGroup E] [Module 𝕜 E] [CompleteSpace F]
 
@@ -239,9 +240,9 @@ namespace LinearEquiv
 section extend
 
 variable [NormedDivisionRing 𝕜] [NormedDivisionRing 𝕜₂]
-  [AddCommGroup E] [NormedAddCommGroup Eₗ] [AddCommGroup F] [NormedAddCommGroup Fₗ]
-  [Module 𝕜 E] [Module 𝕜 Eₗ] [IsBoundedSMul 𝕜 Eₗ] [Module 𝕜₂ F] [Module 𝕜₂ Fₗ] [IsBoundedSMul 𝕜₂ Fₗ]
-  [CompleteSpace Eₗ] [CompleteSpace Fₗ]
+  [AddCommGroup E] [AddCommGroup Eₗ] [NormedAddCommGroup Eₗ] [AddCommGroup F] [AddCommGroup Fₗ]
+  [NormedAddCommGroup Fₗ] [Module 𝕜 E] [Module 𝕜 Eₗ] [IsBoundedSMul 𝕜 Eₗ] [Module 𝕜₂ F]
+  [Module 𝕜₂ Fₗ] [IsBoundedSMul 𝕜₂ Fₗ] [CompleteSpace Eₗ] [CompleteSpace Fₗ]
 
 variable {σ₁₂ : 𝕜 →+* 𝕜₂} {σ₂₁ : 𝕜₂ →+* 𝕜} [RingHomInvPair σ₁₂ σ₂₁] [RingHomInvPair σ₂₁ σ₁₂]
 variable (f : E ≃ₛₗ[σ₁₂] F) (e₁ : E →ₗ[𝕜] Eₗ) (e₂ : F →ₗ[𝕜₂] Fₗ)
@@ -311,8 +312,8 @@ section extendOfIsometry
 variable [NormedField 𝕜] [NormedField 𝕜₂]
   [AddCommGroup E] [Module 𝕜 E]
   [AddCommGroup F] [Module 𝕜₂ F]
-  [NormedAddCommGroup Eₗ] [NormedSpace 𝕜 Eₗ] [CompleteSpace Eₗ]
-  [NormedAddCommGroup Fₗ] [NormedSpace 𝕜₂ Fₗ] [CompleteSpace Fₗ]
+  [AddCommGroup Eₗ] [NormedAddCommGroup Eₗ] [NormedSpace 𝕜 Eₗ] [CompleteSpace Eₗ]
+  [AddCommGroup Fₗ] [NormedAddCommGroup Fₗ] [NormedSpace 𝕜₂ Fₗ] [CompleteSpace Fₗ]
 
 variable {σ₁₂ : 𝕜 →+* 𝕜₂} {σ₂₁ : 𝕜₂ →+* 𝕜} [RingHomInvPair σ₁₂ σ₂₁] [RingHomInvPair σ₂₁ σ₁₂]
 variable (f : E ≃ₛₗ[σ₁₂] F) (e₁ : E →ₗ[𝕜] Eₗ) (e₂ : F →ₗ[𝕜₂] Fₗ)
