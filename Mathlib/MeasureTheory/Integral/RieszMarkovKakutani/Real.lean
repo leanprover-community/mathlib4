@@ -183,6 +183,7 @@ private lemma exists_nat_large (a' b' : ℝ) {ε : ℝ} (hε : 0 < ε) : ∃ (N 
   obtain ⟨N, hN, h'N⟩ := (((tendsto_order.1 B).2 _ hε).and (Ici_mem_atTop 1)).exists
   exact ⟨N, h'N, hN.le⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The main estimate in the proof of the Riesz-Markov-Kakutani: `Λ f` is bounded above by the
 integral of `f` with respect to the `rieszMeasure` associated to `Λ`. -/
 private lemma integral_riesz_aux (f : C_c(X, ℝ)) : Λ f ≤ ∫ x, f x ∂(rieszMeasure Λ) := by
@@ -242,8 +243,8 @@ private lemma integral_riesz_aux (f : C_c(X, ℝ)) : Λ f ≤ ∫ x, f x ∂(rie
     _ ≤ ∑ n, Λ ((y n + ε') • g n) := ?_
     _ = ∑ n, (y n + ε') * Λ (g n) := by simp
     -- That `y n + ε'` can be negative is bad in the inequalities so we artificially include `|a|`.
-    _ = ∑ n, (|a| + y n + ε') * Λ (g n) - |a| * ∑ n, Λ (g n) :=
-      by simp [add_assoc, add_mul |a|, Finset.sum_add_distrib, Finset.mul_sum]
+    _ = ∑ n, (|a| + y n + ε') * Λ (g n) - |a| * ∑ n, Λ (g n) := by
+      simp [add_assoc, add_mul |a|, Finset.sum_add_distrib, Finset.mul_sum]
     _ ≤ ∑ n, (|a| + y n + ε') * (μ.real (E n) + ε' / N) - |a| * ∑ n, Λ (g n) := ?_
     _ ≤ ∑ n, (|a| + y n + ε') * (μ.real (E n) + ε' / N) - |a| * μ.real K := ?_
     _ = ∑ n, (y n - ε') * μ.real (E n) +
@@ -469,7 +470,7 @@ lemma _root_.MeasureTheory.Measure.exists_regular_eq_of_compactSpace [CompactSpa
 integrates in the same way bounded continuous functions, and is regular. -/
 lemma _root_.MeasureTheory.Measure.exists_innerRegular_eq_of_isCompact
     (μ : Measure X) [IsFiniteMeasure μ] {K : Set X} (hK : IsCompact K) (h : μ Kᶜ = 0) :
-    ∃ (ν : Measure X), ν.InnerRegular ∧ IsFiniteMeasure ν ∧
+    ∃ (ν : Measure X), ν.InnerRegular ∧ IsFiniteMeasure ν ∧ ν Kᶜ = 0 ∧
       ∀ g : X →ᵇ ℝ, ∫ x, g x ∂μ = ∫ x, g x ∂ν := by
   let μ' : Measure K := μ.comap Subtype.val
   obtain ⟨ν', ν'_reg, ν'_fin, hν'⟩ : ∃ (ν : Measure K), ν.Regular ∧ IsFiniteMeasure ν ∧
@@ -477,8 +478,10 @@ lemma _root_.MeasureTheory.Measure.exists_innerRegular_eq_of_isCompact
     have : CompactSpace K := isCompact_iff_compactSpace.mp hK
     exact Measure.exists_regular_eq_of_compactSpace μ'
   refine ⟨ν'.map Subtype.val, Measure.InnerRegular.map_of_continuous (by fun_prop),
-    by infer_instance, fun g ↦ ?_⟩
-  convert hν' (g.compContinuous ⟨Subtype.val, by fun_prop⟩)
+    by infer_instance, ?_, fun g ↦ ?_⟩
+  · rw [Measure.map_apply (by fun_prop) hK.measurableSet.compl]
+    simp
+  convert! hν' (g.compContinuous ⟨Subtype.val, by fun_prop⟩)
   · simp only [BoundedContinuousFunction.compContinuous_apply, ContinuousMap.coe_mk]
     rw [← integral_map (φ := Subtype.val) (by fun_prop) (by fun_prop)]
     simp only [map_comap_subtype_coe hK.measurableSet, μ', Measure.restrict_eq_self_of_ae_mem h]

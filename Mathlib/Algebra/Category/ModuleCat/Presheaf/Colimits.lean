@@ -32,6 +32,7 @@ section Colimits
 variable [∀ {X Y : Cᵒᵖ} (f : X ⟶ Y), PreservesColimit (F ⋙ evaluation R Y)
   (ModuleCat.restrictScalars (R.map f).hom)]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A cocone in the category `PresheafOfModules R` is colimit if it is so after the application
 of the functors `evaluation R X` for all `X`. -/
 def evaluationJointlyReflectsColimits (c : Cocone F)
@@ -62,6 +63,7 @@ instance {X Y : Cᵒᵖ} (f : X ⟶ Y) :
   ⟨_, isColimitOfPreserves (ModuleCat.restrictScalars (R.map f).hom)
     (colimit.isColimit (F ⋙ evaluation R Y))⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given `F : J ⥤ PresheafOfModules.{v} R`, this is the presheaf of modules obtained by
 taking a colimit in the category of modules over `R.obj X` for all `X`. -/
 @[simps]
@@ -155,5 +157,19 @@ noncomputable instance toPresheaf_preservesFiniteColimits :
     PreservesFiniteColimits (toPresheaf R) where
 
 end Finite
+
+section HasColimitsOfSize
+
+variable [HasColimitsOfSize.{v₂, u₂} AddCommGrpCat.{v}]
+
+instance hasColimitsOfSize : HasColimitsOfSize.{v₂, u₂} (PresheafOfModules.{v} R) where
+
+noncomputable instance evaluation_preservesColimitsOfSize (X : Cᵒᵖ) :
+    PreservesColimitsOfSize.{v₂, u₂} (evaluation R X : PresheafOfModules.{v} R ⥤ _) where
+
+noncomputable instance toPresheaf_preservesColimitsOfSize :
+    PreservesColimitsOfSize.{v₂, u₂} (toPresheaf.{v} R) where
+
+end HasColimitsOfSize
 
 end PresheafOfModules

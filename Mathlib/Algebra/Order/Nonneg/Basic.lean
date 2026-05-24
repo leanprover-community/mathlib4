@@ -140,7 +140,7 @@ section AddMonoid
 variable [AddMonoid α] [Preorder α] [AddLeftMono α]
 
 instance addMonoid : AddMonoid { x : α // 0 ≤ x } :=
-  Subtype.coe_injective.addMonoid _ Nonneg.coe_zero (fun _ _ => rfl) fun _ _ => rfl
+  fast_instance% Subtype.coe_injective.addMonoid _ Nonneg.coe_zero (fun _ _ => rfl) fun _ _ => rfl
 
 /-- Coercion `{x : α // 0 ≤ x} → α` as an `AddMonoidHom`. -/
 @[simps]
@@ -161,7 +161,8 @@ section AddCommMonoid
 variable [AddCommMonoid α] [Preorder α] [AddLeftMono α]
 
 instance addCommMonoid : AddCommMonoid { x : α // 0 ≤ x } :=
-  Subtype.coe_injective.addCommMonoid _ Nonneg.coe_zero (fun _ _ => rfl) (fun _ _ => rfl)
+  fast_instance%
+    Subtype.coe_injective.addCommMonoid _ Nonneg.coe_zero (fun _ _ => rfl) (fun _ _ => rfl)
 
 end AddCommMonoid
 
@@ -169,7 +170,8 @@ section AddCancelCommMonoid
 variable [AddCancelCommMonoid α] [Preorder α] [AddLeftMono α]
 
 instance addCancelCommMonoid : AddCancelCommMonoid {x : α // 0 ≤ x} :=
-  Subtype.coe_injective.addCancelCommMonoid _ Nonneg.coe_zero (fun _ _ => rfl) (fun _ _ => rfl)
+  fast_instance%
+    Subtype.coe_injective.addCancelCommMonoid _ Nonneg.coe_zero (fun _ _ => rfl) (fun _ _ => rfl)
 
 end AddCancelCommMonoid
 
@@ -213,8 +215,6 @@ theorem mk_pow {x : α} (hx : 0 ≤ x) (n : ℕ) :
     (⟨x, hx⟩ : { x : α // 0 ≤ x }) ^ n = ⟨x ^ n, pow_nonneg hx n⟩ :=
   rfl
 
-@[deprecated (since := "2025-05-19")] alias pow_nonneg := _root_.pow_nonneg
-
 end Pow
 
 section Semiring
@@ -223,7 +223,7 @@ variable [Semiring α] [PartialOrder α] [ZeroLEOneClass α]
   [AddLeftMono α] [PosMulMono α]
 
 instance semiring : Semiring { x : α // 0 ≤ x } :=
-  Subtype.coe_injective.semiring _ Nonneg.coe_zero Nonneg.coe_one
+  fast_instance% Subtype.coe_injective.semiring _ Nonneg.coe_zero Nonneg.coe_one
     (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) fun _ => rfl
 
@@ -245,7 +245,7 @@ variable [CommSemiring α] [PartialOrder α] [ZeroLEOneClass α]
   [AddLeftMono α] [PosMulMono α]
 
 instance commSemiring : CommSemiring { x : α // 0 ≤ x } :=
-  Subtype.coe_injective.commSemiring _ Nonneg.coe_zero Nonneg.coe_one
+  fast_instance% Subtype.coe_injective.commSemiring _ Nonneg.coe_zero Nonneg.coe_one
     (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) fun _ => rfl
 

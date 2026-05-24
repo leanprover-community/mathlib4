@@ -8,7 +8,6 @@ module
 public import Mathlib.Topology.Separation.CompletelyRegular
 
 import Mathlib.Topology.UniformSpace.OfCompactT2
-import Mathlib.Topology.UrysohnsLemma
 
 /-!
 # Uniformizable Spaces

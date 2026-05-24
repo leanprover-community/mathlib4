@@ -19,7 +19,7 @@ In the rank-one case, this is equivalent to the value group being isomorphic to 
 
 -/
 
-@[expose] public section
+public section
 
 namespace ValuativeRel
 
@@ -56,15 +56,17 @@ lemma IsDiscrete.of_compatible_withZeroMulInt (v : Valuation R ℤᵐ⁰) [v.Com
   have : IsRankLeOne R := .of_compatible_mulArchimedean v
   by_cases h : IsNontrivial R
   · by_cases H : DenselyOrdered (ValueGroupWithZero R)
-    · exfalso
-      refine (MonoidWithZeroHom.range_nontrivial (ValueGroupWithZero.embed v)).not_subsingleton ?_
+    · classical
+      exfalso
+      refine (MonoidWithZeroHom.range_nontrivial
+        (ValueGroupWithZero.orderMonoidIso v).toMonoidWithZeroHom).not_subsingleton ?_
       rw [← WithZero.denselyOrdered_set_iff_subsingleton]
       exact (ValueGroupWithZero.embed_strictMono v).denselyOrdered_range
     · rw [isNontrivial_iff_nontrivial_units] at h
       rw [← LinearOrderedCommGroupWithZero.discrete_iff_not_denselyOrdered] at H
       rw [nonempty_orderIso_withZeroMul_int_iff] at H
       exact H.left
-  · rw [isNontrivial_iff_nontrivial_units] at h; push_neg at h
+  · rw [isNontrivial_iff_nontrivial_units] at h; push Not at h
     refine ⟨⟨0, zero_lt_one, fun y hy ↦ ?_⟩⟩
     contrapose! hy
     have : 1 = Units.mk0 y hy.ne' := Subsingleton.elim _ _

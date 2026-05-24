@@ -45,10 +45,8 @@ absorbent, balanced, locally convex, LCTVS
 
 @[expose] public section
 
-
 open Set
-
-open Pointwise Topology
+open scoped Pointwise Topology
 
 variable {𝕜 𝕝 E F : Type*} {ι : Sort*} {κ : ι → Sort*}
 
@@ -287,12 +285,11 @@ theorem Absorbent.submodule_eq_top {V : Submodule 𝕜 E} (hV : Absorbent 𝕜 (
     V = ⊤ := (StrictMono.apply_eq_top_iff (α := Submodule 𝕜 E) (β := Set E) (fun _ _ a_1 ↦ a_1)).mp
   hV.eq_univ_of_smulMemClass
 
-variable {F ℱ 𝕜₂ : Type*} [Semiring 𝕜₂] {σ : 𝕜₂ →+* 𝕜}
+variable {F 𝕜₂ : Type*} [Semiring 𝕜₂] {σ : 𝕜₂ →+* 𝕜}
 variable [AddCommGroup F] [Module 𝕜₂ F]
-variable [FunLike ℱ F E] [SemilinearMapClass ℱ σ F E]
 
-theorem Absorbent.subset_range_iff_surjective [RingHomSurjective σ] {f : ℱ} {s : Set E}
-    (hs_abs : Absorbent 𝕜 s) : s ⊆ LinearMap.range f ↔ (⇑f).Surjective :=
+theorem Absorbent.subset_range_iff_surjective [RingHomSurjective σ] {f : F →ₛₗ[σ] E} {s : Set E}
+    (hs_abs : Absorbent 𝕜 s) : s ⊆ f.range ↔ (⇑f).Surjective :=
   ⟨fun hs_sub ↦ LinearMap.range_eq_top.mp ((hs_abs.mono hs_sub).submodule_eq_top), fun h a _ ↦ h a⟩
 
 end NontriviallyNormedField

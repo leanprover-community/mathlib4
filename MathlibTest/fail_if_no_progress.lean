@@ -1,3 +1,4 @@
+module
 import Mathlib.Tactic.FailIfNoProgress
 import Mathlib.Tactic.Basic
 

@@ -16,7 +16,7 @@ In this file we prove that `Set.Ici` etc. are monotone/antitone functions. We al
 about functions monotone on intervals in `SuccOrder`s.
 -/
 
-@[expose] public section
+public section
 
 
 open Set

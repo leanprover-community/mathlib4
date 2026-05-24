@@ -17,7 +17,7 @@ public import Mathlib.RingTheory.UniqueFactorizationDomain.NormalizedFactors
   primes `p`, and `f` is multiplicative on coprime elements, then `f` is multiplicative everywhere.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Field
 
@@ -25,12 +25,12 @@ variable {α : Type*}
 
 namespace UniqueFactorizationMonoid
 
-variable {R : Type*} [CancelCommMonoidWithZero R] [UniqueFactorizationMonoid R]
+variable {R : Type*} [CommMonoidWithZero R] [UniqueFactorizationMonoid R]
 
 section Multiplicative
 
-variable [CancelCommMonoidWithZero α] [UniqueFactorizationMonoid α]
-variable {β : Type*} [CancelCommMonoidWithZero β]
+variable [CommMonoidWithZero α] [UniqueFactorizationMonoid α]
+variable {β : Type*} [CommMonoidWithZero β]
 
 theorem prime_pow_coprime_prod_of_coprime_insert [DecidableEq α] {s : Finset α} (i : α → ℕ) (p : α)
     (hps : p ∉ s) (is_prime : ∀ q ∈ insert p s, Prime q)
@@ -45,7 +45,7 @@ theorem prime_pow_coprime_prod_of_coprime_insert [DecidableEq α] {s : Finset α
   obtain ⟨q, q_mem, rfl⟩ := Multiset.mem_map.mp q_mem'
   replace hdq := hd.dvd_of_dvd_pow hdq
   have : p ∣ q := dvd_trans (hd.irreducible.dvd_symm hp.irreducible hdp) hdq
-  convert q_mem using 0
+  convert! q_mem using 0
   rw [Finset.mem_val,
     is_coprime _ (Finset.mem_insert_self p s) _ (Finset.mem_insert_of_mem q_mem) this]
 

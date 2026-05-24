@@ -26,7 +26,7 @@ smooth algebras (TODO @chrisflav).
   `I/I² → S ⊗[R] (Ω[R[Xᵢ]⁄R]) = ⊕ᵢ S → ⊕ⱼ S` is bijective, `P` is submersive.
 -/
 
-@[expose] public section
+public section
 
 universe t₂ t₁ u v
 
@@ -41,6 +41,7 @@ namespace Generators
 variable (P : Generators R S ι) {u : σ → ι} (hu : Function.Injective u)
   {v : κ → ι} (hv : Function.Injective v)
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 If `H¹(L_{S/R}) = 0` and `R[xᵢ] → S` are generators indexed by `σ ⊕ κ` such that the images
 of `dxₖ` for `k : κ` span `Ω[S⁄R]` and the span of the `dXₖ` for `k : κ` in
@@ -126,9 +127,9 @@ lemma isUnit_jacobian_of_cotangentRestrict_bijective
   · rw [heq]
     exact (b.linearIndependent.map' _ (LinearMap.ker_eq_bot_of_injective h.injective)).map' _
       (Finsupp.linearEquivFunOnFinite S S σ).ker
-  · rw [heq, Set.range_comp, Set.range_comp, ← Submodule.map_span, ← Submodule.map_span,
+  · rw [heq, Set.range_comp, Set.range_comp, Submodule.span_image_linearEquiv, ← Submodule.map_span,
       b.span_eq, Submodule.map_top, LinearMap.range_eq_top_of_surjective _ h.surjective,
-      Submodule.map_top, LinearEquivClass.range]
+      Submodule.map_top, LinearEquiv.range]
 
 end PreSubmersivePresentation
 

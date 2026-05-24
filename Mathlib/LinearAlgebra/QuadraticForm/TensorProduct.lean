@@ -7,6 +7,7 @@ module
 
 public import Mathlib.LinearAlgebra.BilinearForm.TensorProduct
 public import Mathlib.LinearAlgebra.QuadraticForm.Basic
+public import Mathlib.Tactic.LinearCombination
 
 /-!
 # The quadratic form on a tensor product
@@ -74,8 +75,10 @@ theorem associated_tmul [Invertible (2 : A)]
   letI : Invertible (2 : A) := (Invertible.map (algebraMap R A) 2).copy 2 (map_ofNat _ _).symm
   rw [QuadraticMap.tmul, BilinMap.tmul]
   have : Subsingleton (Invertible (2 : A)) := inferInstance
-  convert associated_left_inverse A (LinearMap.BilinMap.tmul_isSymm
-    (QuadraticMap.associated_isSymm A Q₁) (QuadraticMap.associated_isSymm R Q₂))
+  convert!
+    associated_left_inverse A
+      (LinearMap.BilinMap.tmul_isSymm (QuadraticMap.associated_isSymm A Q₁)
+        (QuadraticMap.associated_isSymm R Q₂))
 
 end QuadraticMap
 
@@ -110,6 +113,7 @@ theorem associated_tmul [Invertible (2 : A)] (Q₁ : QuadraticForm A M₁) (Q₂
     ← QuadraticMap.associated_tmul Q₁ Q₂]
   aesop
 
+set_option backward.isDefEq.respectTransparency false in
 theorem polarBilin_tmul [Invertible (2 : A)] (Q₁ : QuadraticForm A M₁) (Q₂ : QuadraticForm R M₂) :
     polarBilin (Q₁.tmul Q₂) = ⅟(2 : A) • BilinForm.tmul (polarBilin Q₁) (polarBilin Q₂) := by
   simp_rw [← two_nsmul_associated A, ← two_nsmul_associated R, BilinForm.tmul, tmul_smul,

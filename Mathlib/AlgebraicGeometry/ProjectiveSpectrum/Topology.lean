@@ -236,7 +236,7 @@ theorem zeroLocus_bUnion (s : Set (Set A)) :
 theorem vanishingIdeal_iUnion {γ : Sort*} (t : γ → Set (ProjectiveSpectrum 𝒜)) :
     vanishingIdeal (⋃ i, t i) = ⨅ i, vanishingIdeal (t i) :=
   HomogeneousIdeal.toIdeal_injective <| by
-    convert (gc_ideal 𝒜).u_iInf; exact HomogeneousIdeal.toIdeal_iInf _
+    convert! (gc_ideal 𝒜).u_iInf; exact HomogeneousIdeal.toIdeal_iInf _
 
 theorem zeroLocus_inf (I J : Ideal A) :
     zeroLocus 𝒜 ((I ⊓ J : Ideal A) : Set A) = zeroLocus 𝒜 I ∪ zeroLocus 𝒜 J :=
@@ -277,9 +277,6 @@ theorem mem_compl_zeroLocus_iff_notMem {f : A} {I : ProjectiveSpectrum 𝒜} :
     I ∈ (zeroLocus 𝒜 {f} : Set (ProjectiveSpectrum 𝒜))ᶜ ↔ f ∉ I.asHomogeneousIdeal := by
   rw [Set.mem_compl_iff, mem_zeroLocus, Set.singleton_subset_iff]; rfl
 
-@[deprecated (since := "2025-05-23")]
-alias mem_compl_zeroLocus_iff_not_mem := mem_compl_zeroLocus_iff_notMem
-
 /-- The Zariski topology on the prime spectrum of a commutative ring is defined via the closed sets
 of the topology: they are exactly those sets that are the zero locus of a subset of the ring. -/
 instance zariskiTopology : TopologicalSpace (ProjectiveSpectrum 𝒜) :=
@@ -290,7 +287,7 @@ instance zariskiTopology : TopologicalSpace (ProjectiveSpectrum 𝒜) :=
       let f : Zs → Set _ := fun i => Classical.choose (h i.2)
       have H : (Set.iInter fun i ↦ zeroLocus 𝒜 (f i)) ∈ Set.range (zeroLocus 𝒜) :=
         ⟨_, zeroLocus_iUnion 𝒜 _⟩
-      convert H using 2
+      convert! H using 2
       funext i
       exact (Classical.choose_spec (h i.2)).symm)
     (by

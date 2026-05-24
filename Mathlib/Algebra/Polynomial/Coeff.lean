@@ -53,7 +53,7 @@ theorem support_smul [SMulZeroClass S R] (r : S) (p : R[X]) :
     support (r • p) ⊆ support p := by
   intro i hi
   rw [mem_support_iff] at hi ⊢
-  contrapose! hi
+  contrapose hi
   simp [hi]
 
 open scoped Pointwise in
@@ -86,9 +86,11 @@ theorem lcoeff_apply (n : ℕ) (f : R[X]) : lcoeff R n f = coeff f n :=
   rfl
 
 @[simp]
-theorem finset_sum_coeff {ι : Type*} (s : Finset ι) (f : ι → R[X]) (n : ℕ) :
+theorem finsetSum_coeff {ι : Type*} (s : Finset ι) (f : ι → R[X]) (n : ℕ) :
     coeff (∑ b ∈ s, f b) n = ∑ b ∈ s, coeff (f b) n :=
   map_sum (lcoeff R n) _ _
+
+@[deprecated (since := "2026-04-08")] alias finset_sum_coeff := finsetSum_coeff
 
 lemma coeff_list_sum (l : List R[X]) (n : ℕ) :
     l.sum.coeff n = (l.map (lcoeff R n)).sum :=
@@ -277,9 +279,9 @@ theorem mul_X_pow_eq_zero {p : R[X]} {n : ℕ} (H : p * X ^ n = 0) : p = 0 :=
   ext fun k => (coeff_mul_X_pow p n k).symm.trans <| ext_iff.1 H (k + n)
 
 theorem isRegular_X_pow (n : ℕ) : IsRegular (X ^ n : R[X]) := by
-  suffices IsLeftRegular (X^n : R[X]) from
+  suffices IsLeftRegular (X ^ n : R[X]) from
     ⟨this, this.right_of_commute (fun p => commute_X_pow p n)⟩
-  intro P Q (hPQ : X^n * P = X^n * Q)
+  intro P Q (hPQ : X ^ n * P = X ^ n * Q)
   ext i
   rw [← coeff_X_pow_mul P n i, hPQ, coeff_X_pow_mul Q n i]
 
@@ -320,7 +322,7 @@ theorem C_dvd_iff_dvd_coeff (r : R) (φ : R[X]) : C r ∣ φ ↔ ∀ i, r ∣ φ
       let ψ : R[X] := ∑ i ∈ φ.support, monomial i (c' i)
       use ψ
       ext i
-      simp only [c', ψ, coeff_C_mul, mem_support_iff, coeff_monomial, finset_sum_coeff,
+      simp only [c', ψ, coeff_C_mul, mem_support_iff, coeff_monomial, finsetSum_coeff,
         Finset.sum_ite_eq']
       split_ifs with hi
       · rw [hc]

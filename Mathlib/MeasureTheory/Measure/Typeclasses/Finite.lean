@@ -192,13 +192,13 @@ lemma tendsto_measure_biUnion_Ici_zero_of_pairwise_disjoint
     intro x hx
     simp only [mem_iInter, mem_iUnion, exists_prop] at hx
     obtain ⟨j, _, x_in_Es_j⟩ := hx 0
-    obtain ⟨k, k_gt_j, x_in_Es_k⟩ := hx (j+1)
+    obtain ⟨k, k_gt_j, x_in_Es_k⟩ := hx (j + 1)
     have oops := (Es_disj (Nat.ne_of_lt k_gt_j)).ne_of_mem x_in_Es_j x_in_Es_k
     contradiction
   have key := tendsto_measure_iInter_atTop (μ := μ) (fun n ↦ by measurability)
     decr ⟨0, measure_ne_top _ _⟩
   simp only [nothing, measure_empty] at key
-  convert key
+  convert! key
 
 open scoped symmDiff
 
@@ -210,7 +210,7 @@ theorem abs_measureReal_sub_le_measureReal_symmDiff'
   have hts : μ (t \ s) ≠ ∞ := (measure_lt_top_of_subset diff_subset ht').ne
   suffices (μ s).toReal - (μ t).toReal = (μ (s \ t)).toReal - (μ (t \ s)).toReal by
     rw [this, measure_symmDiff_eq hs ht, ENNReal.toReal_add hst hts]
-    convert abs_sub (μ (s \ t)).toReal (μ (t \ s)).toReal <;> simp
+    convert! abs_sub (μ (s \ t)).toReal (μ (t \ s)).toReal <;> simp
   rw [measure_diff' s ht ht', measure_diff' t hs hs',
     ENNReal.toReal_sub_of_le measure_le_measure_union_right (by finiteness),
     ENNReal.toReal_sub_of_le measure_le_measure_union_right (by finiteness),
@@ -321,6 +321,12 @@ protected theorem Measure.isTopologicalBasis_isOpen_lt_top [TopologicalSpace α]
   rcases μ.exists_isOpen_measure_lt_top x with ⟨v, xv, hv, μv⟩
   refine ⟨v ∩ s, ⟨hv.inter hs, lt_of_le_of_lt ?_ μv⟩, ⟨xv, xs⟩, inter_subset_right⟩
   exact measure_mono inter_subset_left
+
+instance [TopologicalSpace α] (μ : Measure α) [hμ : IsLocallyFiniteMeasure μ] :
+    IsLocallyFiniteMeasure (μ.restrict s) where
+  finiteAtNhds x := by
+    obtain ⟨t, ht, hmus⟩ := hμ.finiteAtNhds x
+    exact ⟨t, ht, lt_of_le_of_lt (restrict_apply_le s t) hmus⟩
 
 /-- A measure `μ` is finite on compacts if any compact set `K` satisfies `μ K < ∞`. -/
 class IsFiniteMeasureOnCompacts [TopologicalSpace α] (μ : Measure α) : Prop where
@@ -474,7 +480,7 @@ theorem filter_mono_ae (h : f ⊓ (ae μ) ≤ g) (hg : μ.FiniteAtFilter g) : μ
 protected theorem measure_mono (h : μ ≤ ν) : ν.FiniteAtFilter f → μ.FiniteAtFilter f :=
   fun ⟨s, hs, hν⟩ => ⟨s, hs, (Measure.le_iff'.1 h s).trans_lt hν⟩
 
-@[mono]
+@[gcongr, mono]
 protected theorem mono (hf : f ≤ g) (hμ : μ ≤ ν) : ν.FiniteAtFilter g → μ.FiniteAtFilter f :=
   fun h => (h.filter_mono hf).measure_mono hμ
 

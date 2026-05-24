@@ -24,7 +24,7 @@ public meta section
 namespace Mathlib.Tactic
 open Lean Elab Elab.Tactic Meta
 
-syntax setArgsRest := ppSpace ident (" : " term)? " := " term (" with " "← "? ident)?
+syntax setArgsRest := ppSpace binderIdent (" : " term)? " := " term (" with " "← "? binderIdent)?
 
 /--
 `set a := t with h` is a variant of `let a := t`. It adds the hypothesis `h : a = t` to
@@ -55,8 +55,15 @@ syntax (name := setTactic) "set" "!"? setArgsRest : tactic
 macro "set!" rest:setArgsRest : tactic => `(tactic| set ! $rest:setArgsRest)
 
 elab_rules : tactic
-| `(tactic| set%$tk $[!%$rw]? $a:ident $[: $ty:term]? := $val:term $[with $[←%$rev]? $h:ident]?) =>
+| `(tactic| set%$tk $[!%$rw]? $a:binderIdent $[: $ty:term]? :=
+    $val:term $[with $[←%$rev]? $h:binderIdent]?) =>
   withMainContext do
+    let a ← match a with
+      | `(binderIdent| $a:ident) => `(ident| $a)
+      | _ => `(ident| a)
+    let h ← h.mapM fun h => match h with
+      | `(binderIdent| $h:ident) => `(ident| $h)
+      | _ => `(ident| h)
     let (ty, vale) ← match ty with
     | some ty =>
       let ty ← Term.elabType ty

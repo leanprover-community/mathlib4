@@ -73,6 +73,7 @@ lemma norm_ascPochhammer_le (k : ℕ) (x : ℤ_[p]) :
 instance : IsAddTorsionFree ℤ_[p] where
   nsmul_right_injective _ := smul_right_injective ℤ_[p]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The p-adic integers are a binomial ring, i.e. a ring where binomial coefficients make sense. -/
 noncomputable instance instBinomialRing : BinomialRing ℤ_[p] where
   -- We define `multichoose` as a fraction in `ℚ_[p]` together with a proof that its norm is `≤ 1`.
@@ -85,7 +86,7 @@ noncomputable instance instBinomialRing : BinomialRing ℤ_[p] where
 
 @[fun_prop]
 lemma continuous_multichoose (k : ℕ) : Continuous (fun x : ℤ_[p] ↦ Ring.multichoose x k) := by
-  simp only [Ring.multichoose, BinomialRing.multichoose, continuous_induced_rng]
+  simp only [Ring.multichoose, BinomialRing.multichoose]
   fun_prop
 
 @[fun_prop]
@@ -222,7 +223,7 @@ lemma fwdDiff_iter_le_of_forall_le {f : C(ℤ_[p], E)} {s t : ℕ}
 estimate of the decay rate. -/
 lemma fwdDiff_tendsto_zero (f : C(ℤ_[p], E)) : Tendsto (Δ_[1]^[·] f 0) atTop (𝓝 0) := by
   -- first extract an `s`
-  refine NormedAddCommGroup.tendsto_nhds_zero.mpr (fun ε hε ↦ ?_)
+  refine NormedAddGroup.tendsto_nhds_zero.mpr (fun ε hε ↦ ?_)
   have : Tendsto (fun s ↦ ‖f‖ / p ^ s) _ _ := tendsto_const_nhds.div_atTop
     (tendsto_pow_atTop_atTop_of_one_lt (mod_cast hp.out.one_lt))
   obtain ⟨s, hs⟩ := (this.eventually_lt_const hε).exists
@@ -341,7 +342,7 @@ lemma hasSum_mahler (f : C(ℤ_[p], E)) : HasSum (fun n ↦ mahlerTerm (Δ_[1]^[
       (mahlerSeries (Δ_[1]^[·] f 0) : C(ℤ_[p], E)) :=
     hasSum_mahlerSeries (fwdDiff_tendsto_zero f)
   -- Now show that the sum of the Mahler terms must equal `f` on a dense set, so it is actually `f`.
-  convert this using 1
+  convert! this using 1
   refine ContinuousMap.coe_injective (denseRange_natCast.equalizer
     (map_continuous f) (map_continuous _) (funext fun n ↦ ?_))
   simpa [mahlerSeries_apply_nat (fwdDiff_tendsto_zero f) le_rfl]

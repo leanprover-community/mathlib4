@@ -72,6 +72,7 @@ theorem unop {W : MorphismProperty C} {L : Cᵒᵖ ⥤ Dᵒᵖ} (h : W.op.IsInve
   dsimp
   infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 lemma prod {C₁ C₂ : Type*} [Category* C₁] [Category* C₂]
     {W₁ : MorphismProperty C₁} {W₂ : MorphismProperty C₂}
     {E₁ E₂ : Type*} [Category* E₁] [Category* E₂] {F₁ : C₁ ⥤ E₁} {F₂ : C₂ ⥤ E₂}
@@ -132,6 +133,7 @@ theorem IsInvertedBy.iff_of_iso (W : MorphismProperty C) {F₁ F₂ : C ⥤ D} (
   dsimp [IsInvertedBy]
   simp only [NatIso.isIso_map_iff e]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma IsInvertedBy.isoClosure_iff (W : MorphismProperty C) (F : C ⥤ D) :
     W.isoClosure.IsInvertedBy F ↔ W.IsInvertedBy F := by

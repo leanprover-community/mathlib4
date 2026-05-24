@@ -156,7 +156,7 @@ parentheses. More precisely,
 Note that `f₁ ◁ f₂ ◁ f₃ ◁ η ▷ f₄ ▷ f₅` is actually `f₁ ◁ (f₂ ◁ (f₃ ◁ ((η ▷ f₄) ▷ f₅)))`.
 -/
 
-attribute [instance] homCategory
+attribute [instance_reducible, instance] homCategory
 
 attribute [reassoc]
   whiskerLeft_comp id_whiskerLeft comp_whiskerLeft comp_whiskerRight whiskerRight_id
@@ -231,7 +231,7 @@ def whiskerLeftIso (f : a ⟶ b) {g h : b ⟶ c} (η : g ≅ h) : f ≫ g ≅ f 
 instance whiskerLeft_isIso (f : a ⟶ b) {g h : b ⟶ c} (η : g ⟶ h) [IsIso η] : IsIso (f ◁ η) :=
   (whiskerLeftIso f (asIso η)).isIso_hom
 
-@[simp]
+@[simp, push]
 theorem inv_whiskerLeft (f : a ⟶ b) {g h : b ⟶ c} (η : g ⟶ h) [IsIso η] :
     inv (f ◁ η) = f ◁ inv η := by
   apply IsIso.inv_eq_of_hom_inv_id
@@ -246,11 +246,17 @@ def whiskerRightIso {f g : a ⟶ b} (η : f ≅ g) (h : b ⟶ c) : f ≫ h ≅ g
 instance whiskerRight_isIso {f g : a ⟶ b} (η : f ⟶ g) (h : b ⟶ c) [IsIso η] : IsIso (η ▷ h) :=
   (whiskerRightIso (asIso η) h).isIso_hom
 
-@[simp]
+@[simp, push]
 theorem inv_whiskerRight {f g : a ⟶ b} (η : f ⟶ g) (h : b ⟶ c) [IsIso η] :
     inv (η ▷ h) = inv η ▷ h := by
   apply IsIso.inv_eq_of_hom_inv_id
   simp only [← comp_whiskerRight, id_whiskerRight, IsIso.hom_inv_id]
+
+@[inherit_doc whiskerLeftIso]
+scoped infixr:82 " ◁ᵢ " => whiskerLeftIso
+
+@[inherit_doc whiskerRightIso]
+scoped infixl:82 " ▷ᵢ " => whiskerRightIso
 
 @[reassoc (attr := simp)]
 theorem pentagon_inv (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) (i : d ⟶ e) :

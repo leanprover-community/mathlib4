@@ -55,7 +55,8 @@ This file contains basic results on dual vector spaces.
     antitone Galois coinsertion.
   * `Subspace.quotAnnihilatorEquiv` is the equivalence
     `Dual K V ⧸ W.dualAnnihilator ≃ₗ[K] Dual K W`.
-  * `LinearMap.dualPairing_nondegenerate` says that `Module.dualPairing` is nondegenerate.
+  * `LinearMap.id_nondegenerate` says that `LinearMap.id` is nondegenerate as a bilinear pairing.
+  * `LinearMap.eval_nondegenerate` says that `Dual.eval` is nondegenerate.
   * `Subspace.is_compl_dualAnnihilator` says that the dual annihilator carries complementary
     subspaces to complementary subspaces.
 * Finite-dimensional vector spaces:
@@ -192,10 +193,6 @@ variable (K)
 theorem eval_apply_eq_zero_iff (v : V) : (eval K V) v = 0 ↔ v = 0 :=
   SetLike.ext_iff.mp (eval_ker K V) v
 
-theorem forall_dual_apply_eq_zero_iff (v : V) : (∀ φ : Module.Dual K V, φ v = 0) ↔ v = 0 := by
-  rw [← eval_apply_eq_zero_iff K v, LinearMap.ext_iff]
-  simp only [eval_apply, zero_apply]
-
 /-- This is a linear map version of `SeparatingDual.exists_ne_zero` in a projective module. -/
 theorem Projective.exists_dual_ne_zero (R : Type*) [Semiring R] [Module R V]
     [Projective R V] {x : V} (hx : x ≠ 0) : ∃ f : Dual R V, f x ≠ 0 :=
@@ -204,6 +201,13 @@ theorem Projective.exists_dual_ne_zero (R : Type*) [Semiring R] [Module R V]
   have : i x ≠ 0 := i.map_eq_zero_iff (injective_of_comp_eq_id i s his) |>.not.mpr hx
   have ⟨j, hj⟩ := not_forall.mp fun h ↦ b.repr.map_ne_zero_iff.mpr this <| Finsupp.ext h
   ⟨b.coord j ∘ₗ i, hj⟩
+
+theorem forall_dual_apply_eq_zero_iff
+    (R : Type*) [Semiring R] [Module R V] [Projective R V] (v : V) :
+    (∀ φ : Module.Dual R V, φ v = 0) ↔ v = 0 := by
+  refine ⟨fun h ↦ ?_, fun hv ↦ by simp [hv]⟩
+  contrapose! h
+  exact Projective.exists_dual_ne_zero R h
 
 /-- This is a linear map version of `SeparatingDual.exists_eq_one` in a projective module. -/
 theorem Projective.exists_dual_eq_one (K : Type*) [Semifield K] [Module K V] [Projective K V]
@@ -291,7 +295,7 @@ instance instFiniteDimensionalOfIsReflexive (K V : Type*)
     exact lt_irrefl _ this
   have h₁ : lift (Module.rank K V) < Module.rank K (Dual K V) := lift_rank_lt_rank_dual contra
   have h₂ : Module.rank K (Dual K V) < Module.rank K (Dual K (Dual K V)) := by
-    convert lift_rank_lt_rank_dual <| le_trans (by simpa) h₁.le
+    convert! lift_rank_lt_rank_dual <| le_trans (by simpa) h₁.le
     rw [lift_id']
   exact lt_trans h₁ h₂
 
@@ -310,17 +314,18 @@ theorem dualCoannihilator_top [Projective R M] :
     (⊤ : Submodule R (Module.Dual R M)).dualCoannihilator = ⊥ := by
   rw [dualCoannihilator, dualAnnihilator_top, comap_bot, Module.eval_ker]
 
-theorem exists_dual_map_eq_bot_of_notMem {x : M} (hx : x ∉ p) (hp' : Free R (M ⧸ p)) :
+theorem exists_dual_map_eq_bot_of_notMem
+    {R M : Type*} [Ring R] [AddCommGroup M] [Module R M] {p : Submodule R M}
+    {x : M} (hx : x ∉ p) (hp' : Projective R (M ⧸ p)) :
     ∃ f : Dual R M, f x ≠ 0 ∧ p.map f = ⊥ := by
   suffices ∃ f : Dual R (M ⧸ p), f (p.mkQ x) ≠ 0 by
     obtain ⟨f, hf⟩ := this; exact ⟨f.comp p.mkQ, hf, by simp [Submodule.map_comp]⟩
-  rwa [← Submodule.Quotient.mk_eq_zero, ← Submodule.mkQ_apply,
-    ← forall_dual_apply_eq_zero_iff (K := R), not_forall] at hx
+  rw [← Submodule.Quotient.mk_eq_zero, ← Submodule.mkQ_apply] at hx
+  exact Projective.exists_dual_ne_zero R hx
 
-@[deprecated (since := "2025-05-24")]
-alias exists_dual_map_eq_bot_of_nmem := exists_dual_map_eq_bot_of_notMem
-
-theorem exists_dual_map_eq_bot_of_lt_top (hp : p < ⊤) (hp' : Free R (M ⧸ p)) :
+theorem exists_dual_map_eq_bot_of_lt_top
+    {R M : Type*} [Ring R] [AddCommGroup M] [Module R M] {p : Submodule R M}
+    (hp : p < ⊤) (hp' : Projective R (M ⧸ p)) :
     ∃ f : Dual R M, f ≠ 0 ∧ p.map f = ⊥ := by
   obtain ⟨x, hx⟩ : ∃ x : M, x ∉ p := by rw [lt_top_iff_ne_top] at hp; contrapose! hp; ext; simp [hp]
   obtain ⟨f, hf, hf'⟩ := p.exists_dual_map_eq_bot_of_notMem hx hp'
@@ -329,7 +334,7 @@ theorem exists_dual_map_eq_bot_of_lt_top (hp : p < ⊤) (hp' : Free R (M ⧸ p))
 /-- Consider a reflexive module and a set `s` of linear forms. If for any `z ≠ 0` there exists
 `f ∈ s` such that `f z ≠ 0`, then `s` spans the whole dual space. -/
 theorem span_eq_top_of_ne_zero [IsReflexive R M]
-    {s : Set (M →ₗ[R] R)} [Free R ((M →ₗ[R] R) ⧸ (span R s))]
+    {s : Set (M →ₗ[R] R)} [Projective R ((M →ₗ[R] R) ⧸ (span R s))]
     (h : ∀ z ≠ 0, ∃ f ∈ s, f z ≠ 0) : span R s = ⊤ := by
   by_contra! hn
   obtain ⟨φ, φne, hφ⟩ := exists_dual_map_eq_bot_of_lt_top hn.lt_top inferInstance
@@ -378,7 +383,7 @@ theorem _root_.mem_span_of_iInf_ker_le_ker [Finite ι] {L : ι → E →ₗ[𝕜
   conv_lhs => enter [2]; intro i; rw [← p.liftQ_mkQ (L i) (iInf_le _ i)]
   rw [← p.liftQ_mkQ K h]
   ext x
-  convert LinearMap.congr_fun hK' (p.mkQ x)
+  convert! LinearMap.congr_fun hK' (p.mkQ x)
   simp only [L', LinearMap.coe_sum, Finset.sum_apply, smul_apply, coe_comp, Function.comp_apply,
     smul_eq_mul]
 
@@ -397,7 +402,7 @@ theorem dualAnnihilator_dualCoannihilator_eq {W : Subspace K V} :
   refine le_antisymm (fun v ↦ Function.mtr ?_) (le_dualAnnihilator_dualCoannihilator _)
   simp only [mem_dualAnnihilator, mem_dualCoannihilator]
   rw [← Quotient.mk_eq_zero W, ← Module.forall_dual_apply_eq_zero_iff K]
-  push_neg
+  push Not
   refine fun ⟨φ, hφ⟩ ↦ ⟨φ.comp W.mkQ, fun w hw ↦ ?_, hφ⟩
   rw [comp_apply, mkQ_apply, (Quotient.mk_eq_zero W).mpr hw, φ.map_zero]
 
@@ -563,12 +568,10 @@ simultaneously restricting to `W.dualAnnihilator`.
 
 See `Subspace.dualCopairing_nondegenerate`. -/
 def dualCopairing (W : Submodule R M) : W.dualAnnihilator →ₗ[R] M ⧸ W →ₗ[R] R :=
-  LinearMap.flip <|
-    W.liftQ ((Module.dualPairing R M).domRestrict W.dualAnnihilator).flip
-      (by
-        intro w hw
-        ext ⟨φ, hφ⟩
-        exact (mem_dualAnnihilator φ).mp hφ w hw)
+  LinearMap.flip <| W.liftQ W.dualAnnihilator.subtype.flip (by
+    intro w hw
+    ext ⟨φ, hφ⟩
+    exact (mem_dualAnnihilator φ).mp hφ w hw)
 
 instance (W : Submodule R M) : FunLike (W.dualAnnihilator) M R where
   coe φ := φ.val
@@ -676,7 +679,6 @@ open LinearMap in
 theorem quotDualCoannihilatorToDual_nondegenerate (W : Submodule R (Dual R M)) :
     W.quotDualCoannihilatorToDual.Nondegenerate := by
   rw [Nondegenerate, separatingLeft_iff_ker_eq_bot, separatingRight_iff_flip_ker_eq_bot]
-  letI : AddCommGroup W := inferInstance
   simp_rw [ker_eq_bot]
   exact ⟨W.quotDualCoannihilatorToDual_injective, W.flip_quotDualCoannihilatorToDual_injective⟩
 
@@ -699,7 +701,7 @@ theorem range_dualMap_eq_dualAnnihilator_ker_of_subtype_range_surjective (f : M 
   have rr_surj : Function.Surjective f.rangeRestrict := by
     rw [← range_eq_top, range_rangeRestrict]
   have := range_dualMap_eq_dualAnnihilator_ker_of_surjective f.rangeRestrict rr_surj
-  convert this using 1
+  convert! this using 1
   · calc
       _ = range ((range f).subtype.comp f.rangeRestrict).dualMap := by simp
       _ = _ := ?_
@@ -714,7 +716,9 @@ end CommRing
 
 section VectorSpace
 
-variable {K V₁ V₂ : Type*} [Field K]
+section
+
+variable {K V₁ V₂ : Type*} [DivisionRing K]
 variable [AddCommGroup V₁] [Module K V₁] [AddCommGroup V₂] [Module K V₂]
 
 namespace Module.Dual
@@ -724,7 +728,7 @@ variable {f : Module.Dual K V₁}
 section
 variable (hf : f ≠ 0)
 
-lemma range_eq_top_of_ne_zero {K V₁ : Type*} [Semifield K] [AddCommMonoid V₁] [Module K V₁]
+lemma range_eq_top_of_ne_zero {K V₁ : Type*} [DivisionSemiring K] [AddCommMonoid V₁] [Module K V₁]
     {f : Module.Dual K V₁} (hf : f ≠ 0) : LinearMap.range f = ⊤ :=
   LinearMap.range_eq_top.mpr (LinearMap.surjective hf)
 
@@ -772,10 +776,35 @@ lemma eq_of_ker_eq_of_apply_eq [FiniteDimensional K V₁] {f g : Module.Dual K V
 
 end Module.Dual
 
+end
+
 namespace LinearMap
 
-theorem dualPairing_nondegenerate : (dualPairing K V₁).Nondegenerate :=
-  ⟨separatingLeft_iff_ker_eq_bot.mpr ker_id, fun x => (forall_dual_apply_eq_zero_iff K x).mp⟩
+variable {K V : Type*} [CommSemiring K] [AddCommMonoid V] [Module K V]
+
+theorem id_separatingLeft : SeparatingLeft (M₁ := V →ₗ[K] K) .id :=
+  separatingLeft_iff_ker_eq_bot.mpr ker_id
+
+theorem eval_separatingRight : SeparatingRight (Dual.eval K V) := id_separatingLeft
+
+variable [Module.Projective K V]
+
+theorem id_separatingRight : SeparatingRight (M₁ := V →ₗ[K] K) .id :=
+  fun x => (forall_dual_apply_eq_zero_iff K x).mp
+
+theorem eval_separatingLeft : SeparatingLeft (Dual.eval K V) := id_separatingRight
+
+theorem id_nondegenerate : Nondegenerate (M₁ := V →ₗ[K] K) .id :=
+  ⟨id_separatingLeft, id_separatingRight⟩
+
+@[deprecated (since := "2026-04-02")]
+alias dualPairing_nondegenerate := id_nondegenerate
+
+theorem eval_nondegenerate : Nondegenerate (Dual.eval K V) :=
+  ⟨eval_separatingLeft, eval_separatingRight⟩
+
+variable {K V₁ V₂ : Type*} [Field K]
+variable [AddCommGroup V₁] [Module K V₁] [AddCommGroup V₂] [Module K V₂]
 
 theorem dualMap_surjective_of_injective {f : V₁ →ₗ[K] V₂} (hf : Function.Injective f) :
     Function.Surjective f.dualMap := fun φ ↦
@@ -795,6 +824,9 @@ theorem dualMap_surjective_iff {f : V₁ →ₗ[K] V₂} :
       ← Submodule.dualAnnihilator_bot, Subspace.dualAnnihilator_inj, LinearMap.ker_eq_bot]
 
 end LinearMap
+
+variable {K V₁ V₂ : Type*} [Field K]
+variable [AddCommGroup V₁] [Module K V₁] [AddCommGroup V₂] [Module K V₂]
 
 namespace Subspace
 
@@ -1018,6 +1050,19 @@ theorem span_flip_eq_top_iff_linearIndependent {ι α F} [Finite ι] [Field F] {
   rw [SetLike.ext'_iff, map_span, Submodule.coe_dualCoannihilator_span, ← Set.range_comp]
   ext
   simp [funext_iff, Finsupp.linearCombination, Finsupp.sum, Finset.sum_apply, flip]
+
+lemma Module.exists_dual_forall_apply_eq_one {ι K V : Type*} [Field K] [AddCommGroup V] [Module K V]
+    {s : Set ι} {v : ι → V} (hli : LinearIndepOn K v s) :
+    ∃ f : Dual K V, ∀ i ∈ s, f (v i) = 1 := by
+  replace hli : LinearIndepOn K id (v '' s) := LinearIndepOn.id_image hli
+  let b : Basis _ K V := .mk (hli.linearIndepOn_extend (Set.subset_univ _)) <| by
+    simpa using hli.span_extend_eq_span <| Set.subset_univ _
+  refine ⟨b.constr K 1, fun i hi ↦ ?_⟩
+  replace hi : v i ∈ hli.extend (Set.subset_univ _) :=
+    hli.subset_extend _ <| Set.mem_image_of_mem v hi
+  let ri : hli.extend (Set.subset_univ _) := ⟨v i, hi⟩
+  have : b ri = v i := by simp [b, ri]
+  simp [← this]
 
 namespace TensorProduct
 

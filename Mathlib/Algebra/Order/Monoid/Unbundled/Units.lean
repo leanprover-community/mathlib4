@@ -12,7 +12,7 @@ public import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
 # Lemmas for units in an ordered monoid
 -/
 
-@[expose] public section
+public section
 
 variable {M : Type*} [Monoid M] [LE M]
 

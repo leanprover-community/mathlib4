@@ -10,7 +10,7 @@ public import Mathlib.Order.Filter.Tendsto
 /-!
 # Product and coproduct filters
 
-In this file we define `Filter.prod f g` (notation: `f ×ˢ g`) and `Filter.coprod f g`. The product
+In this file we prove some basic properties of `f ×ˢ g` and `Filter.coprod f g`. The product
 of two filters is the largest filter `l` such that `Filter.Tendsto Prod.fst l f` and
 `Filter.Tendsto Prod.snd l g`.
 
@@ -30,13 +30,9 @@ s ∈ G  ↔  ∀ i:ℕ, ∃ n, [n..∞] × {i} ⊆ s
 Now `⋃ i, [i..∞] × {i}` is in `G` but not in `F`.
 As product filter we want to have `F` as result.
 
-## Notation
-
-* `f ×ˢ g` : `Filter.prod f g`, localized in `Filter`.
-
 -/
 
-@[expose] public section
+public section
 
 open Set
 
@@ -243,7 +239,7 @@ theorem mem_prod_iff_left {s : Set (α × β)} :
     s ∈ f ×ˢ g ↔ ∃ t ∈ f, ∀ᶠ y in g, ∀ x ∈ t, (x, y) ∈ s := by
   simp only [mem_prod_iff, prod_subset_iff]
   refine exists_congr fun _ => Iff.rfl.and <| Iff.trans ?_ exists_mem_subset_iff
-  exact exists_congr fun _ => Iff.rfl.and forall₂_swap
+  exact exists_congr fun _ => Iff.rfl.and forall₂_comm
 
 theorem mem_prod_iff_right {s : Set (α × β)} :
     s ∈ f ×ˢ g ↔ ∃ t ∈ g, ∀ᶠ x in f, ∀ y ∈ t, (x, y) ∈ s := by
@@ -466,7 +462,7 @@ theorem compl_mem_coprod {s : Set (α × β)} {la : Filter α} {lb : Filter β} 
     sᶜ ∈ la.coprod lb ↔ (Prod.fst '' s)ᶜ ∈ la ∧ (Prod.snd '' s)ᶜ ∈ lb := by
   simp only [Filter.coprod, mem_sup, compl_mem_comap]
 
-@[mono]
+@[gcongr, mono]
 theorem coprod_mono {f₁ f₂ : Filter α} {g₁ g₂ : Filter β} (hf : f₁ ≤ f₂) (hg : g₁ ≤ g₂) :
     f₁.coprod g₁ ≤ f₂.coprod g₂ :=
   sup_le_sup (comap_mono hf) (comap_mono hg)
@@ -482,6 +478,7 @@ theorem coprod_neBot_left [NeBot f] [Nonempty β] : (f.coprod g).NeBot :=
 theorem coprod_neBot_right [NeBot g] [Nonempty α] : (f.coprod g).NeBot :=
   coprod_neBot_iff.2 (Or.inr ⟨‹_›, ‹_›⟩)
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 theorem coprod_inf_prod_le (f₁ f₂ : Filter α) (g₁ g₂ : Filter β) :
     f₁.coprod g₁ ⊓ f₂ ×ˢ g₂ ≤ f₁ ×ˢ g₂ ⊔ f₂ ×ˢ g₁ := calc
   f₁.coprod g₁ ⊓ f₂ ×ˢ g₂
@@ -504,7 +501,8 @@ theorem map_prodMap_coprod_le.{u, v, w, x} {α₁ : Type u} {α₂ : Type v} {β
   intro s
   simp only [mem_map, mem_coprod_iff]
   rintro ⟨⟨u₁, hu₁, h₁⟩, u₂, hu₂, h₂⟩
-  refine ⟨⟨m₁ ⁻¹' u₁, hu₁, fun _ hx => h₁ ?_⟩, ⟨m₂ ⁻¹' u₂, hu₂, fun _ hx => h₂ ?_⟩⟩ <;> convert hx
+  refine ⟨⟨m₁ ⁻¹' u₁, hu₁, fun _ hx => h₁ ?_⟩, ⟨m₂ ⁻¹' u₂, hu₂, fun _ hx => h₂ ?_⟩⟩ <;> convert!
+    hx
 
 /-- Characterization of the coproduct of the `Filter.map`s of two principal filters `𝓟 {a}` and
 `𝓟 {i}`, the first under the constant function `fun a => b` and the second under the identity

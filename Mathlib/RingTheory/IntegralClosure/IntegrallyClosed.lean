@@ -7,6 +7,7 @@ module
 
 public import Mathlib.RingTheory.Localization.Integral
 public import Mathlib.RingTheory.Localization.LocalizationLocalization
+public import Mathlib.Algebra.Ring.Hom.InjSurj
 
 /-!
 # Integrally closed rings
@@ -53,7 +54,7 @@ but we could also consider a version of `NormalDomain` that only requires the lo
 `IsIntegrallyClosed` (even for Noetherian rings?).
 -/
 
-@[expose] public section
+public section
 
 
 open scoped nonZeroDivisors Polynomial
@@ -82,7 +83,7 @@ theorem AlgHom.isIntegrallyClosedIn (f : A →ₐ[R] B) (hf : Function.Injective
     IsIntegrallyClosedIn R B → IsIntegrallyClosedIn R A := by
   rintro ⟨inj, cl⟩
   refine ⟨Function.Injective.of_comp (f := f) ?_, fun hx => ?_, ?_⟩
-  · convert inj
+  · convert! inj
     aesop
   · obtain ⟨y, fx_eq⟩ := cl.mp ((isIntegral_algHom_iff f hf).mpr hx)
     aesop
@@ -204,8 +205,8 @@ theorem integralClosure_eq_bot_iff (hRA : Function.Injective (algebraMap R A)) :
 variable (R)
 
 @[simp]
-theorem integralClosure_eq_bot [IsIntegrallyClosedIn R A] [NoZeroSMulDivisors R A] [Nontrivial A] :
-    integralClosure R A = ⊥ :=
+theorem integralClosure_eq_bot [IsIntegrallyClosedIn R A] [IsDomain R] [Module.IsTorsionFree R A]
+    [Nontrivial A] : integralClosure R A = ⊥ :=
   (integralClosure_eq_bot_iff A (FaithfulSMul.algebraMap_injective _ _)).mpr ‹_›
 
 variable {A} {B : Type*} [CommRing B]
@@ -281,7 +282,7 @@ lemma of_isIntegrallyClosedIn
     (FaithfulSMul.algebraMap_injective R K)
   rw [isIntegrallyClosed_iff (K := FractionRing R)]
   intro x hx
-  convert (IsIntegralClosure.isIntegral_iff (A := R)).mp (hx.map f)
+  convert! (IsIntegralClosure.isIntegral_iff (A := R)).mp (hx.map f)
   simp [← f.toRingHom.injective.eq_iff]
 
 lemma _root_.IsIntegralClosure.of_isIntegralClosure_of_isIntegrallyClosedIn
@@ -346,7 +347,7 @@ theorem _root_.Associated.pow_iff [IsDomain R] [IsIntegrallyClosed R] {n : ℕ} 
 variable (R)
 
 /-- This is almost a duplicate of `IsIntegrallyClosedIn.integralClosure_eq_bot`,
-except the `NoZeroSMulDivisors` hypothesis isn't inferred automatically from `IsFractionRing`. -/
+except the `Module.IsTorsionFree` hypothesis isn't inferred automatically from `IsFractionRing`. -/
 @[simp]
 theorem integralClosure_eq_bot [IsIntegrallyClosed R] : integralClosure R K = ⊥ :=
   (integralClosure_eq_bot_iff K).mpr ‹_›

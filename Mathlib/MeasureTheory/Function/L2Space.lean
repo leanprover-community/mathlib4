@@ -14,7 +14,7 @@ public import Mathlib.MeasureTheory.Integral.Bochner.ContinuousLinearMap
 /-! # `L^2` space
 
 If `E` is an inner product space over `𝕜` (`ℝ` or `ℂ`), then `Lp E 2 μ`
-(defined in `Mathlib/MeasureTheory/Function/LpSpace.lean`)
+(defined in `Mathlib/MeasureTheory/Function/LpSpace/Basic.lean`)
 is also an inner product space, with inner product defined as `inner f g := ∫ a, ⟪f a, g a⟫ ∂μ`.
 
 ### Main results
@@ -46,13 +46,13 @@ theorem MemLp.integrable_sq {f : α → ℝ} (h : MemLp f 2 μ) : Integrable (fu
 theorem memLp_two_iff_integrable_sq_norm {f : α → F} (hf : AEStronglyMeasurable f μ) :
     MemLp f 2 μ ↔ Integrable (fun x => ‖f x‖ ^ 2) μ := by
   rw [← memLp_one_iff_integrable]
-  convert (memLp_norm_rpow_iff hf two_ne_zero ENNReal.ofNat_ne_top).symm
+  convert! (memLp_norm_rpow_iff hf two_ne_zero ENNReal.ofNat_ne_top).symm
   · simp
   · rw [div_eq_mul_inv, ENNReal.mul_inv_cancel two_ne_zero ENNReal.ofNat_ne_top]
 
 theorem memLp_two_iff_integrable_sq {f : α → ℝ} (hf : AEStronglyMeasurable f μ) :
     MemLp f 2 μ ↔ Integrable (fun x => f x ^ 2) μ := by
-  convert memLp_two_iff_integrable_sq_norm hf using 3
+  convert! memLp_two_iff_integrable_sq_norm hf using 3
   simp
 
 end
@@ -117,9 +117,9 @@ theorem eLpNorm_inner_lt_top (f g : α →₂[μ] E) : eLpNorm (fun x : α => �
     rw [← @Nat.cast_two ℝ, Real.rpow_natCast, Real.rpow_natCast]
     calc
       ‖⟪f x, g x⟫‖ ≤ ‖f x‖ * ‖g x‖ := norm_inner_le_norm _ _
-      _ ≤ 2 * ‖f x‖ * ‖g x‖ :=
-        (mul_le_mul_of_nonneg_right (le_mul_of_one_le_left (norm_nonneg _) one_le_two)
-          (norm_nonneg _))
+      _ ≤ 2 * ‖f x‖ * ‖g x‖ := by
+        gcongr
+        exact le_mul_of_one_le_left (norm_nonneg _) one_le_two
       -- TODO(kmill): the type ascription is getting around an elaboration error
       _ ≤ ‖(‖f x‖ ^ 2 + ‖g x‖ ^ 2 : ℝ)‖ := (two_mul_le_add_sq _ _).trans (le_abs_self _)
   refine (eLpNorm_mono_ae (ae_of_all _ h)).trans_lt ((eLpNorm_add_le ?_ ?_ le_rfl).trans_lt ?_)
@@ -153,7 +153,6 @@ theorem integral_inner_eq_sq_eLpNorm (f : α →₂[μ] E) :
     ENNReal.ofReal_rpow_of_nonneg (norm_nonneg _) zero_le_two, ofReal_norm_eq_enorm]
   norm_cast
 
-set_option backward.privateInPublic true in
 private theorem norm_sq_eq_re_inner (f : α →₂[μ] E) : ‖f‖ ^ 2 = RCLike.re ⟪f, f⟫ := by
   have h_two : (2 : ℝ≥0∞).toReal = 2 := by simp
   rw [inner_def, integral_inner_eq_sq_eLpNorm, norm_def, ← ENNReal.toReal_pow, RCLike.ofReal_re,
@@ -177,27 +176,23 @@ theorem integrable_inner (f g : α →₂[μ] E) : Integrable (fun x : α => ⟪
           ((Lp.aestronglyMeasurable f).inner (Lp.aestronglyMeasurable g)))).mp
     (AEEqFun.integrable_iff_mem_L1.mpr (mem_L1_inner f g))
 
-set_option backward.privateInPublic true in
 private theorem add_left' (f f' g : α →₂[μ] E) : ⟪f + f', g⟫ = ⟪f, g⟫ + ⟪f', g⟫ := by
   simp_rw [inner_def, ← integral_add (integrable_inner (𝕜 := 𝕜) f g) (integrable_inner f' g),
     ← inner_add_left]
   refine integral_congr_ae ((coeFn_add f f').mono fun x hx => ?_)
   simp only [hx, Pi.add_apply]
 
-set_option backward.privateInPublic true in
 private theorem smul_left' (f g : α →₂[μ] E) (r : 𝕜) : ⟪r • f, g⟫ = conj r * ⟪f, g⟫ := by
   rw [inner_def, inner_def, ← smul_eq_mul, ← integral_smul]
   refine integral_congr_ae ((coeFn_smul r f).mono fun x hx => ?_)
   simp only
   rw [smul_eq_mul, ← inner_smul_left, hx, Pi.smul_apply]
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 instance innerProductSpace : InnerProductSpace 𝕜 (α →₂[μ] E) where
-  norm_sq_eq_re_inner := norm_sq_eq_re_inner
+  norm_sq_eq_re_inner := private norm_sq_eq_re_inner
   conj_inner_symm _ _ := by simp_rw [inner_def, ← integral_conj, inner_conj_symm]
-  add_left := add_left'
-  smul_left := smul_left'
+  add_left := private add_left'
+  smul_left := private smul_left'
 
 end InnerProductSpace
 
@@ -209,29 +204,11 @@ variable (𝕜) {s t : Set α}
 equal to the integral of the inner product over `s`: `∫ x in s, ⟪c, f x⟫ ∂μ`. -/
 theorem inner_indicatorConstLp_eq_setIntegral_inner (f : Lp E 2 μ) (hs : MeasurableSet s) (c : E)
     (hμs : μ s ≠ ∞) : (⟪indicatorConstLp 2 hs hμs c, f⟫ : 𝕜) = ∫ x in s, ⟪c, f x⟫ ∂μ := by
-  rw [inner_def, ← integral_add_compl hs (L2.integrable_inner _ f)]
-  have h_left : (∫ x in s, ⟪(indicatorConstLp 2 hs hμs c) x, f x⟫ ∂μ) = ∫ x in s, ⟪c, f x⟫ ∂μ := by
-    suffices h_ae_eq : ∀ᵐ x ∂μ, x ∈ s → ⟪indicatorConstLp 2 hs hμs c x, f x⟫ = ⟪c, f x⟫ from
-      setIntegral_congr_ae hs h_ae_eq
-    have h_indicator : ∀ᵐ x : α ∂μ, x ∈ s → indicatorConstLp 2 hs hμs c x = c :=
-      indicatorConstLp_coeFn_mem
-    refine h_indicator.mono fun x hx hxs => ?_
-    congr
-    exact hx hxs
-  have h_right : (∫ x in sᶜ, ⟪(indicatorConstLp 2 hs hμs c) x, f x⟫ ∂μ) = 0 := by
-    suffices h_ae_eq : ∀ᵐ x ∂μ, x ∉ s → ⟪indicatorConstLp 2 hs hμs c x, f x⟫ = 0 by
-      simp_rw [← Set.mem_compl_iff] at h_ae_eq
-      suffices h_int_zero :
-          (∫ x in sᶜ, ⟪indicatorConstLp 2 hs hμs c x, f x⟫ ∂μ) = ∫ _ in sᶜ, 0 ∂μ by
-        rw [h_int_zero]
-        simp
-      exact setIntegral_congr_ae hs.compl h_ae_eq
-    have h_indicator : ∀ᵐ x : α ∂μ, x ∉ s → indicatorConstLp 2 hs hμs c x = 0 :=
-      indicatorConstLp_coeFn_notMem
-    refine h_indicator.mono fun x hx hxs => ?_
-    rw [hx hxs]
-    exact inner_zero_left _
-  rw [h_left, h_right, add_zero]
+  rw [inner_def, ← integral_indicator hs]
+  refine integral_congr_ae ((@indicatorConstLp_coeFn _ _ _ 2 μ _ s hs hμs c).mono fun x hx ↦ ?_)
+  have : ⟪indicatorConstLp 2 hs hμs c x, f x⟫ = s.indicator (fun x ↦ ⟪c, f x⟫) x := by
+    by_cases hxs : x ∈ s <;> simp [hx, hxs]
+  simpa
 
 /-- The inner product in `L2` of the indicator of a set `indicatorConstLp 2 hs hμs c` and `f` is
 equal to the inner product of the constant `c` and the integral of `f` over `s`. -/

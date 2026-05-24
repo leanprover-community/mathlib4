@@ -18,7 +18,7 @@ public import Mathlib.Order.ScottContinuity.Prod
 
 -/
 
-@[expose] public section
+public section
 
 variable {α β : Type*}
 

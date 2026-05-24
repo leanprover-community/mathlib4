@@ -16,7 +16,7 @@ public import Mathlib.Tactic.Subsingleton
 In this file we prove many lemmas like “if `f → +∞`, then `f ± c → +∞`”.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Finset
 
@@ -78,7 +78,7 @@ alias ⟨Eventually.exists_forall_of_atTop, _⟩ := eventually_atTop
 
 lemma exists_eventually_atTop {r : α → β → Prop} :
     (∃ b, ∀ᶠ a in atTop, r a b) ↔ ∀ᶠ a₀ in atTop, ∃ b, ∀ a ≥ a₀, r a b := by
-  simp_rw [eventually_atTop, ← exists_swap (α := α)]
+  simp_rw [eventually_atTop, ← exists_comm (α := α)]
   exact exists_congr fun a ↦ .symm <| forall_ge_iff <| Monotone.exists fun _ _ _ hb H n hn ↦
     H n (hb.trans hn)
 
@@ -341,7 +341,7 @@ theorem map_val_Ioi_atTop [Preorder α] [IsDirectedOrder α] [NoMaxOrder α] (a 
 order. -/
 theorem atTop_Ioi_eq [Preorder α] [IsDirectedOrder α] (a : α) :
     atTop = comap ((↑) : Ioi a → α) atTop := by
-  rcases isEmpty_or_nonempty (Ioi a) with h|⟨⟨b, hb⟩⟩
+  rcases isEmpty_or_nonempty (Ioi a) with h | ⟨⟨b, hb⟩⟩
   · subsingleton
   · rw [← map_val_atTop_of_Ici_subset (Ici_subset_Ioi.2 hb), comap_map Subtype.coe_injective]
 
@@ -444,6 +444,18 @@ theorem map_div_atTop_eq_nat (k : ℕ) (hk : 0 < k) : map (fun a => a / k) atTop
   map_atTop_eq_of_gc (fun b => k * b + (k - 1)) 1 (fun _ _ h => Nat.div_le_div_right h)
     (fun a b _ => by rw [Nat.div_le_iff_le_mul_add_pred hk])
     fun b _ => by rw [Nat.mul_add_div hk, Nat.div_eq_of_lt, Nat.add_zero]; lia
+
+theorem tendsto_inf_atTop {α β : Type*} [SemilatticeInf α]
+    {f g : β → α} (F : Filter β) (hf : Tendsto f F atTop) (hg : Tendsto g F atTop) :
+    Tendsto (fun x ↦ f x ⊓ g x) F atTop := by
+  rw [Filter.tendsto_atTop] at *
+  simp [eventually_and, hf, hg]
+
+theorem tendsto_sup_atBot {α β : Type*} [SemilatticeSup α]
+    {f g : β → α} (F : Filter β) (hf : Tendsto f F atBot) (hg : Tendsto g F atBot) :
+    Tendsto (fun x ↦ f x ⊔ g x) F atBot := by
+  rw [Filter.tendsto_atBot] at *
+  simp [eventually_and, hf, hg]
 
 section NeBot
 variable [Preorder β] {l : Filter α} [NeBot l] {f : α → β}

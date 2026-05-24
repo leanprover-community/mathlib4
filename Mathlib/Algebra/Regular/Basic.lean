@@ -14,8 +14,9 @@ public import Mathlib.Algebra.Regular.Defs
 # Regular elements
 
 By definition, a regular element in a commutative ring is a non-zero divisor.
-Lemma `isRegular_of_ne_zero` implies that every non-zero element of an integral domain is regular.
-Since it assumes that the ring is a `CancelMonoidWithZero` it applies also, for instance, to `ℕ`.
+Lemma `IsRegular.of_ne_zero` implies that every non-zero element of an integral domain is regular.
+Since it assumes that the ring is a cancellative `MonoidWithZero` it applies also,
+for instance, to `ℕ`.
 
 The lemmas in Section `MulZeroClass` show that the `0` element is (left/right-)regular if and
 only if the `MulZeroClass` is trivial.  This is useful when figuring out stopping conditions for
@@ -25,7 +26,7 @@ by adding one further `0`.
 The final goal is to develop part of the API to prove, eventually, results about non-zero-divisors.
 -/
 
-@[expose] public section
+public section
 
 variable {R : Type*}
 

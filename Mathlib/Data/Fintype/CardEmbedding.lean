@@ -16,7 +16,7 @@ public import Mathlib.Logic.Equiv.Embedding
 This file establishes the cardinality of `α ↪ β` in full generality.
 -/
 
-@[expose] public section
+public section
 
 
 local notation "|" x "|" => Finset.card x

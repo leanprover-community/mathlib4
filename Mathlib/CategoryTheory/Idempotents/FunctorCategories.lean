@@ -14,7 +14,7 @@ In this file we define an instance `functor_category_isIdempotentComplete` expre
 that a functor category `J ⥤ C` is idempotent complete when the target category `C` is.
 
 We also provide a fully faithful functor
-`karoubiFunctorCategoryEmbedding : Karoubi (J ⥤ C)) : J ⥤ Karoubi C` for all categories
+`karoubiFunctorCategoryEmbedding : Karoubi (J ⥤ C) ⥤ (J ⥤ Karoubi C)` for all categories
 `J` and `C`.
 
 -/
@@ -56,6 +56,7 @@ theorem app_p_comm : P.p.app X ≫ f.f.app X = f.f.app X ≫ Q.p.app X :=
 
 variable (J C)
 
+set_option backward.isDefEq.respectTransparency false in
 instance functor_category_isIdempotentComplete [IsIdempotentComplete C] :
     IsIdempotentComplete (J ⥤ C) := by
   refine ⟨fun F p hp => ?_⟩
@@ -113,6 +114,7 @@ def karoubiFunctorCategoryEmbedding : Karoubi (J ⥤ C) ⥤ J ⥤ Karoubi C wher
   obj := KaroubiFunctorCategoryEmbedding.obj
   map := KaroubiFunctorCategoryEmbedding.map
 
+set_option backward.isDefEq.respectTransparency false in
 instance : (karoubiFunctorCategoryEmbedding J C).Full where
   map_surjective {P Q} f :=
     ⟨{f :=

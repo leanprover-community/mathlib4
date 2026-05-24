@@ -19,7 +19,7 @@ The theorems in this file generalise `Nat.card_multiples` in
 zero, which reduces to the multiples). Theorems are given for `Ico` and `Ioc` intervals.
 -/
 
-@[expose] public section
+public section
 
 
 open Finset Int

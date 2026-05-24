@@ -59,7 +59,7 @@ def curryObj (F : C × D ⥤ E) : C ⥤ D ⥤ E where
     { obj := fun Y => F.obj (X, Y)
       map := fun g => F.map (𝟙 X ×ₘ g)
       map_id := fun Y => by rw [← prod_id]; exact F.map_id ⟨X,Y⟩
-      map_comp := fun f g => by simp [← F.map_comp]}
+      map_comp := fun f g => by simp [← F.map_comp] }
   map f :=
     { app := fun Y => F.map (f ×ₘ 𝟙 Y)
       naturality := fun {Y} {Y'} g => by simp [← F.map_comp] }
@@ -109,6 +109,16 @@ def flipping : C ⥤ D ⥤ E ≌ D ⥤ C ⥤ E where
 /-- The functor `uncurry : (C ⥤ D ⥤ E) ⥤ C × D ⥤ E` is fully faithful. -/
 def fullyFaithfulUncurry : (uncurry : (C ⥤ D ⥤ E) ⥤ C × D ⥤ E).FullyFaithful :=
   currying.fullyFaithfulFunctor
+
+/-- The functor `curry : (C × D ⥤ E) ⥤ C ⥤ D ⥤ E` is fully faithful. -/
+def fullyFaithfulCurry : (curry : (C × D ⥤ E) ⥤ C ⥤ D ⥤ E).FullyFaithful :=
+  currying.fullyFaithfulInverse
+
+instance : (curry : (C × D ⥤ E) ⥤ C ⥤ D ⥤ E).Full :=
+  fullyFaithfulCurry.full
+
+instance : (curry : (C × D ⥤ E) ⥤ C ⥤ D ⥤ E).Faithful :=
+  fullyFaithfulCurry.faithful
 
 instance : (uncurry : (C ⥤ D ⥤ E) ⥤ C × D ⥤ E).Full :=
   fullyFaithfulUncurry.full

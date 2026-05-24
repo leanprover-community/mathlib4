@@ -84,6 +84,7 @@ end
 chosen pullbacks. Contrast this with the noncomputable instance provided by
 `CategoryTheory.Over.cartesianMonoidalCategory`.
 -/
+@[instance_reducible]
 def cartesianMonoidalCategoryOver [ChosenPullbacks C] (X : C) :
     CartesianMonoidalCategory (Over X) :=
   ofChosenFiniteProducts (C := Over X)
@@ -300,7 +301,7 @@ theorem forgetAdjToOver.homEquiv_symm {X : C} (Z : Over X) (A : C) (f : Z ⟶ (t
 
 /-- The isomorphism of functors `toOver (𝟙_ C)` and `toOverUnit C`. -/
 @[simps!]
-def toOverIsoToOverUnit : toOver (𝟙_ C) ≅ toOverUnit C  :=
+def toOverIsoToOverUnit : toOver (𝟙_ C) ≅ toOverUnit C :=
   (forgetAdjToOver (𝟙_ C)).rightAdjointUniq (equivToOverUnit C |>.toAdjunction)
 
 /-- A natural isomorphism between the functors `toOver Y` and `toOver X ⋙ pullback f`

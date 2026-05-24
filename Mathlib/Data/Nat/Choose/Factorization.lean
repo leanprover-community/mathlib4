@@ -28,7 +28,7 @@ bounds in binomial coefficients. These include:
 These results appear in the [Erdős proof of Bertrand's postulate](aigner1999proofs).
 -/
 
-@[expose] public section
+public section
 
 open Finset List Finsupp
 
@@ -166,7 +166,7 @@ theorem factorization_choose_prime_pow_add_factorization (hp : p.Prime) (hkn : k
     have filter_le_Ico := (Ico 1 n.succ).card_filter_le
       fun x => p ^ x ≤ k % p ^ x + (p ^ n - k) % p ^ x ∨ p ^ x ∣ k
     rwa [card_Ico 1 n.succ] at filter_le_Ico
-  · nth_rewrite 1 [← factorization_pow_self (n:=n) hp]
+  · nth_rewrite 1 [← factorization_pow_self (n := n) hp]
     exact factorization_le_factorization_choose_add hkn hk0
 
 theorem factorization_choose_prime_pow {p n k : ℕ} (hp : p.Prime) (hkn : k ≤ p ^ n) (hk0 : k ≠ 0) :
@@ -266,7 +266,7 @@ theorem le_two_mul_of_factorization_centralBinom_pos
 /-- A binomial coefficient is the product of its prime factors, which are at most `n`. -/
 theorem prod_pow_factorization_choose (n k : ℕ) (hkn : k ≤ n) :
     (∏ p ∈ Finset.range (n + 1), p ^ (Nat.choose n k).factorization p) = choose n k := by
-  conv_rhs => rw [← factorization_prod_pow_eq_self (choose_ne_zero hkn)]
+  conv_rhs => rw [← prod_factorization_pow_eq_self (choose_ne_zero hkn)]
   rw [eq_comm]
   apply Finset.prod_subset
   · intro p hp

@@ -13,8 +13,8 @@ import Mathlib.Tactic.Recall
 See `Statement.lean` for background.
 -/
 
-macro "◾" : tactic => `(tactic| aesop)
-macro "◾" : term => `(term| by aesop)
+local macro "◾" : tactic => `(tactic| aesop)
+local macro "◾" : term => `(term| by aesop)
 
 namespace IfExpr
 
@@ -49,6 +49,7 @@ We don't want a `simp` lemma for `(ite i t e).eval` in general, only once we kno
   | .ite i t e => 2 * normSize i + max (normSize t) (normSize e) + 1
 
 set_option linter.flexible false in
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- Normalizes the expression at the same time as assigning all variables in
 `e` to the literal Booleans given by `l` -/
 def normalize (l : AList (fun _ : ℕ => Bool)) :

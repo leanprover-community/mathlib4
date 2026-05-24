@@ -9,12 +9,13 @@ public import Mathlib.Algebra.Group.Commute.Defs
 public import Mathlib.Algebra.Group.InjSurj
 public import Mathlib.Algebra.Group.Torsion
 public import Mathlib.Algebra.Opposites
+public import Mathlib.Tactic.Conv
 
 /-!
 # Group structures on the multiplicative and additive opposites
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists MonoidWithZero DenselyOrdered Units
 
@@ -234,7 +235,7 @@ attribute [nolint simpComm] AddOpposite.addCommute_unop
 @[to_additive] protected theorem isDedekindFiniteMonoid_iff [MulOne α] :
     IsDedekindFiniteMonoid αᵐᵒᵖ ↔ IsDedekindFiniteMonoid α := by
   simp_rw [isDedekindFiniteMonoid_iff, ← opEquiv.forall_congr_right]
-  simpa [← op_one, ← op_mul] using forall_swap
+  simpa [← op_one, ← op_mul] using forall_comm
 
 @[to_additive] instance [MulOne α] [IsDedekindFiniteMonoid α] : IsDedekindFiniteMonoid αᵐᵒᵖ :=
   MulOpposite.isDedekindFiniteMonoid_iff.mpr ‹_›

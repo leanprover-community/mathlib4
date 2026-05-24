@@ -71,6 +71,7 @@ lemma mapBifunctorFlipIso_flip
     mapBifunctorFlipIso K₂ K₁ F.flip c = (mapBifunctorFlipIso K₁ K₂ F c).symm :=
   (((F.mapBifunctorHomologicalComplex c₁ c₂).obj K₁).obj K₂).flip_totalFlipIso c
 
+set_option backward.isDefEq.respectTransparency false in
 variable {K₁ K₂ L₁ L₂} in
 @[reassoc (attr := simp)]
 lemma mapBifunctorFlipIso_hom_naturality :

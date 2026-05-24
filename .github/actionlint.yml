@@ -3,3 +3,4 @@ self-hosted-runner:
     - bors
     - pr
     - doc-gen
+    - lean4checker
