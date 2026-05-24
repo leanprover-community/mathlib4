@@ -26,7 +26,7 @@ of `X`.
 
 -/
 
-@[expose] public section
+public section
 
 
 open MeasureTheory Real Set Finset

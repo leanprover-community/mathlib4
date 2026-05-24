@@ -28,11 +28,6 @@ open Function
 
 variable {F α β M M₁ M₂ M₃ N N₁ N₂ N₃ P Q G H : Type*}
 
-namespace EmbeddingLike
-variable [One M] [One N] [FunLike F M N] [EmbeddingLike F M N] [OneHomClass F M N]
-
-end EmbeddingLike
-
 variable [EquivLike F α β]
 
 @[to_additive]
@@ -40,11 +35,18 @@ theorem MulEquivClass.toMulEquiv_injective [Mul α] [Mul β] [MulEquivClass F α
     Function.Injective ((↑) : F → α ≃* β) :=
   fun _ _ e ↦ DFunLike.ext _ _ fun a ↦ congr_arg (fun e : α ≃* β ↦ e.toFun a) e
 
+@[to_additive] theorem MulEquivClass.isDedekindFiniteMonoid_iff [MulOne α] [MulOne β]
+    [MulEquivClass F α β] [OneHomClass F α β] (f : F) :
+    IsDedekindFiniteMonoid α ↔ IsDedekindFiniteMonoid β where
+  mp _ := let e := MulEquivClass.toMulEquiv f
+    let g : β →* α := ⟨⟨e.symm, e.injective <| (e.right_inv ..).trans (map_one f).symm⟩, map_mul _⟩
+    .of_injective g e.symm.injective
+  mpr _ := let g : α →* β := ⟨⟨f, map_one f⟩, map_mul f⟩
+    .of_injective g (EquivLike.injective f)
+
 namespace MulEquiv
 section Mul
 variable [Mul M] [Mul N] [Mul P]
-
-section unique
 
 /-- The `MulEquiv` between two monoids with a unique element. -/
 @[to_additive /-- The `AddEquiv` between two `AddMonoid`s with a unique element. -/]
@@ -58,7 +60,13 @@ instance {M N} [Unique M] [Unique N] [Mul M] [Mul N] : Unique (M ≃* N) where
   default := ofUnique
   uniq _ := ext fun _ => Subsingleton.elim _ _
 
-end unique
+variable (α M) in
+/-- If `α` has a unique term, then the product of magmas `α → M` is isomorphic to `M`. -/
+@[to_additive (attr := simps!)
+/-- If `α` has a unique term, then the product of magmas `α → M` is isomorphic to `M`. -/]
+def funUnique [Unique α] : (α → M) ≃* M where
+  toEquiv := .funUnique ..
+  map_mul' := by simp
 
 end Mul
 
@@ -179,16 +187,6 @@ lemma monoidHomCongrRight_trans (e₁₂ : N₁ ≃* N₂) (e₂₃ : N₂ ≃* 
 
 end monoidHomCongr
 
-/-- A multiplicative analogue of `Equiv.arrowCongr`,
-for multiplicative maps from a monoid to a commutative monoid.
--/
-@[to_additive (attr := deprecated MulEquiv.monoidHomCongrLeft (since := "2025-08-12"))
-  /-- An additive analogue of `Equiv.arrowCongr`,
-  for additive maps from an additive monoid to a commutative additive monoid. -/]
-def monoidHomCongr {M N P Q} [MulOneClass M] [MulOneClass N] [CommMonoid P] [CommMonoid Q]
-    (f : M ≃* N) (g : P ≃* Q) : (M →* P) ≃* (N →* Q) :=
-  f.monoidHomCongrLeft.trans g.monoidHomCongrRight
-
 /-- A family of multiplicative equivalences `Π j, (Ms j ≃* Ns j)` generates a
 multiplicative equivalence between `Π j, Ms j` and `Π j, Ns j`.
 
@@ -231,37 +229,6 @@ def piUnique {ι : Type*} (M : ι → Type*) [∀ j, Mul (M j)] [Unique ι] :
   { Equiv.piUnique M with map_mul' := fun _ _ => Pi.mul_apply _ _ _ }
 
 end MulEquiv
-
-namespace MonoidHom
-variable {M N₁ N₂ : Type*} [Monoid M] [CommMonoid N₁] [CommMonoid N₂]
-
-/-- The equivalence `(β →* γ) ≃ (α →* γ)` obtained by precomposition with
-a multiplicative equivalence `e : α ≃* β`. -/
-@[to_additive (attr := simps -isSimp,
-deprecated MulEquiv.monoidHomCongrLeftEquiv (since := "2025-08-12"))
-/-- The equivalence `(β →+ γ) ≃ (α →+ γ)` obtained by precomposition with
-an additive equivalence `e : α ≃+ β`. -/]
-def precompEquiv {α β : Type*} [Monoid α] [Monoid β] (e : α ≃* β) (γ : Type*) [Monoid γ] :
-    (β →* γ) ≃ (α →* γ) where
-  toFun f := f.comp e
-  invFun g := g.comp e.symm
-  left_inv _ := by ext; simp
-  right_inv _ := by ext; simp
-
-/-- The equivalence `(γ →* α) ≃ (γ →* β)` obtained by postcomposition with
-a multiplicative equivalence `e : α ≃* β`. -/
-@[to_additive (attr := simps -isSimp,
-deprecated MulEquiv.monoidHomCongrRightEquiv (since := "2025-08-12"))
-/-- The equivalence `(γ →+ α) ≃ (γ →+ β)` obtained by postcomposition with
-an additive equivalence `e : α ≃+ β`. -/]
-def postcompEquiv {α β : Type*} [Monoid α] [Monoid β] (e : α ≃* β) (γ : Type*) [Monoid γ] :
-    (γ →* α) ≃ (γ →* β) where
-  toFun f := e.toMonoidHom.comp f
-  invFun g := e.symm.toMonoidHom.comp g
-  left_inv _ := by ext; simp
-  right_inv _ := by ext; simp
-
-end MonoidHom
 
 namespace Equiv
 

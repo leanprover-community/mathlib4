@@ -60,10 +60,10 @@ variable (k) in
 /-- Ideal of polynomials with common zeroes at all elements of a set -/
 def vanishingIdeal (V : Set (σ → K)) : Ideal (MvPolynomial σ k) where
   carrier := {p | ∀ x ∈ V, aeval x p = 0}
-  zero_mem' _ _ := RingHom.map_zero _
+  zero_mem' _ _ := map_zero _
   add_mem' {p q} hp hq x hx := by simp only [hq x hx, hp x hx, add_zero, map_add]
   smul_mem' p q hq x hx := by
-    simp only [hq x hx, Algebra.id.smul_eq_mul, mul_zero, map_mul]
+    simp only [hq x hx, smul_eq_mul, mul_zero, map_mul]
 
 @[simp]
 theorem mem_vanishingIdeal_iff {V : Set (σ → K)} {p : MvPolynomial σ k} :
@@ -95,18 +95,18 @@ theorem le_zeroLocus_iff_le_vanishingIdeal {V : Set (σ → K)} {I : Ideal (MvPo
 theorem zeroLocus_span (S : Set (MvPolynomial σ k)) :
     zeroLocus K (Ideal.span S) = { x | ∀ p ∈ S, aeval x p = 0 } :=
   eq_of_forall_le_iff fun _ => le_zeroLocus_iff_le_vanishingIdeal.trans <|
-    Ideal.span_le.trans forall₂_swap
+    Ideal.span_le.trans forall₂_comm
 
 theorem mem_vanishingIdeal_singleton_iff (x : σ → K) (p : MvPolynomial σ k) :
     p ∈ (vanishingIdeal k {x} : Ideal (MvPolynomial σ k)) ↔ aeval x p = 0 :=
   ⟨fun h => h x rfl, fun hpx _ hy => hy.symm ▸ hpx⟩
 
 instance {x : σ → K} : (vanishingIdeal k {x} : Ideal (MvPolynomial σ k)).IsPrime := by
-  convert RingHom.ker_isPrime (aeval (R := k) x)
+  convert! RingHom.ker_isPrime (aeval (R := k) x)
   ext; simp
 
 instance {x : σ → K} : (vanishingIdeal K {x} : Ideal (MvPolynomial σ K)).IsMaximal := by
-  convert RingHom.ker_isMaximal_of_surjective (aeval (R := K) x) ?_
+  convert! RingHom.ker_isMaximal_of_surjective (aeval (R := K) x) ?_
   · ext; simp
   · intro z; use C z; simp
 

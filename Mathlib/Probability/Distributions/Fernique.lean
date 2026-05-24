@@ -8,7 +8,6 @@ module
 public import Mathlib.Analysis.SpecificLimits.ArithmeticGeometric
 public import Mathlib.MeasureTheory.Constructions.BorelSpace.ContinuousLinearMap
 public import Mathlib.MeasureTheory.Function.L1Space.Integrable
-public import Mathlib.Topology.MetricSpace.Polish
 
 /-!
 # Fernique's theorem for rotation-invariant measures
@@ -106,7 +105,6 @@ def _root_.ContinuousLinearMap.rotation (θ : ℝ) : E × E →L[ℝ] E × E whe
     simp only [Prod.fst_add, smul_add, Prod.snd_add, neg_smul, Prod.mk_add_mk]
     abel_nf
   map_smul' c x := by simp [smul_comm c]
-  cont := by fun_prop
 
 lemma _root_.ContinuousLinearMap.rotation_apply (θ : ℝ) (x : E × E) :
     ContinuousLinearMap.rotation θ x
@@ -182,7 +180,7 @@ lemma measure_le_mul_measure_gt_normThreshold_le_of_map_rotation_eq_self [SFinit
     (h_rot : (μ.prod μ).map (ContinuousLinearMap.rotation (-(π / 4))) = μ.prod μ) (a : ℝ) (n : ℕ) :
     μ {x | ‖x‖ ≤ a} * μ {x | normThreshold a (n + 1) < ‖x‖}
       ≤ μ {x | normThreshold a n < ‖x‖} ^ 2 := by
-  convert measure_le_mul_measure_gt_le_of_map_rotation_eq_self h_rot _ _
+  convert! measure_le_mul_measure_gt_le_of_map_rotation_eq_self h_rot _ _
   simp [normThreshold_add_one]
 
 lemma lt_normThreshold_zero (ha_pos : 0 < a) : a / (1 - √2) < normThreshold a 0 := by
@@ -366,7 +364,7 @@ lemma lintegral_closedBall_diff_exp_logRatio_mul_sq_le [IsProbabilityMeasure μ]
   _ ≤ .ofReal (rexp (2⁻¹ * Real.log (c.toReal / (1 - c).toReal) * 2 ^ n))
       * c * .ofReal (rexp (-Real.log (c / (1 - c)).toReal * 2 ^ n)) := by
     gcongr ENNReal.ofReal (rexp ?_) * _ * _
-    convert logRatio_mul_normThreshold_add_one_le ha_gt ha_lt n (a := a) using 1
+    convert! logRatio_mul_normThreshold_add_one_le ha_gt ha_lt n (a := a) using 1
     ring
   _ = c * .ofReal (rexp (-2⁻¹ * Real.log (c / (1 - c)).toReal * 2 ^ n)) := by
     rw [mul_comm _ c, mul_assoc, ← ENNReal.ofReal_mul (by positivity), ← Real.exp_add]
@@ -413,7 +411,7 @@ lemma lintegral_exp_mul_sq_norm_le_mul [IsProbabilityMeasure μ]
   -- We dispense with an edge case. If `μ {x | ‖x‖ ≤ a} = 1`, then the integral over
   -- the complement of the ball is zero and we are done.
   by_cases ha : μ {x | ‖x‖ ≤ a} = 1
-  · simp [c, ha] at ht_int_zero ⊢
+  · simp only [ha, one_mul, ENNReal.toReal_div, neg_mul, ge_iff_le, c] at ht_int_zero ⊢
     refine le_add_right ((le_of_eq ?_).trans ht_int_zero)
     rw [← setLIntegral_univ]
     refine setLIntegral_congr ?_
@@ -422,9 +420,7 @@ lemma lintegral_exp_mul_sq_norm_le_mul [IsProbabilityMeasure μ]
       change μ {x | ¬ x ∈ closedBall 0 a} = 0
       rw [← ae_iff]
       filter_upwards [ha] with x hx using by simp [hx]
-    · refine measurable_to_prop ?_
-      rw [show (fun x : E ↦ ‖x‖ ≤ a) ⁻¹' {True} = {x : E | ‖x‖ ≤ a} by ext; simp]
-      exact measurableSet_le (by fun_prop) (by fun_prop)
+    · fun_prop
   -- So we can assume `μ {x | ‖x‖ ≤ a} < 1`, which implies `c' < 1`
   have ha_lt : μ {x | ‖x‖ ≤ a} < 1 := lt_of_le_of_ne prob_le_one ha
   have hc'_lt : c' < 1 := lt_of_le_of_lt hc' ha_lt
@@ -558,7 +554,7 @@ lemma exists_integrable_exp_sq_of_map_rotation_eq_self_of_isProbabilityMeasure
   -- Otherwise, we can find `b > 0` such that the ball of radius `b` has full measure
   obtain ⟨b, hb⟩ : ∃ b, μ {x | ‖x‖ ≤ b} = 1 := by
     by_contra h_ne
-    push_neg at h_meas_Ioo h_ne
+    push Not at h_meas_Ioo h_ne
     suffices μ .univ ≤ 2⁻¹ by simp at this
     have h_le a : μ {x | ‖x‖ ≤ a} ≤ 2⁻¹ := by
       have h_of_pos a' (ha : 0 < a') : μ {x | ‖x‖ ≤ a'} ≤ 2⁻¹ := by

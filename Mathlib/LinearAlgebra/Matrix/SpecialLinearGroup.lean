@@ -5,6 +5,8 @@ Authors: Anne Baanen, Wen Yang
 -/
 module
 
+public import Mathlib.Data.Fintype.Parity
+public import Mathlib.Data.Matrix.Action
 public import Mathlib.LinearAlgebra.Matrix.Adjugate
 public import Mathlib.LinearAlgebra.Matrix.ToLin
 public import Mathlib.LinearAlgebra.Matrix.Transvection
@@ -76,6 +78,9 @@ scoped[MatrixGroups] notation "SL(" n ", " R ")" => Matrix.SpecialLinearGroup (F
 namespace SpecialLinearGroup
 
 variable {n : Type u} [DecidableEq n] [Fintype n] {R : Type v} [CommRing R]
+
+/-- If `R` and `n` have decidable equality then so does `SL(n, R)`. -/
+instance [DecidableEq R] : DecidableEq (SpecialLinearGroup n R) := Subtype.instDecidableEq
 
 instance hasCoeToMatrix : Coe (SpecialLinearGroup n R) (Matrix n n R) :=
   ⟨fun A => A.val⟩
@@ -299,6 +304,19 @@ noncomputable def center_equiv_rootsOfUnity :
     (max_eq_left (NeZero.one_le : 1 ≤ Fintype.card n)).symm ▸
       center_equiv_rootsOfUnity' (Classical.arbitrary n))
 
+theorem eq_scalar_center_equiv_rootsOfUnity
+    (A : center (SpecialLinearGroup n R)) :
+    A = scalar n ((Matrix.SpecialLinearGroup.center_equiv_rootsOfUnity A : Rˣ) : R) := by
+  unfold center_equiv_rootsOfUnity Or.by_cases
+  split_ifs with h
+  · subsingleton
+  dsimp only
+  generalize_proofs _ eq
+  generalize max (Fintype.card n) 1 = c at eq
+  subst eq
+  rw [center_equiv_rootsOfUnity'_apply, rootsOfUnity.val_mkOfPowEq_coe,
+    scalar_eq_coe_self_center]
+
 end center
 
 section cast
@@ -333,7 +351,8 @@ variable [Fact (Even (Fintype.card n))]
 each element. -/
 instance instNeg : Neg (SpecialLinearGroup n R) :=
   ⟨fun g => ⟨-g, by
-    simpa [(@Fact.out <| Even <| Fintype.card n).neg_one_pow, g.det_coe] using det_smul (↑ₘg) (-1)⟩⟩
+    simpa [(@Fact.out <| Even <| Fintype.card n).neg_one_pow, g.det_coe]
+      using det_smul (↑ₘg) (-1)⟩⟩
 
 @[simp]
 theorem coe_neg (g : SpecialLinearGroup n R) : ↑(-g) = -(g : Matrix n n R) :=
@@ -367,7 +386,7 @@ theorem fin_two_induction (P : SL(2, R) → Prop)
     (h : ∀ (a b c d : R) (hdet : a * d - b * c = 1), P ⟨!![a, b; c, d], by rwa [det_fin_two_of]⟩)
     (g : SL(2, R)) : P g := by
   obtain ⟨m, hm⟩ := g
-  convert h (m 0 0) (m 0 1) (m 1 0) (m 1 1) (by rwa [det_fin_two] at hm)
+  convert! h (m 0 0) (m 0 1) (m 1 0) (m 1 1) (by rwa [det_fin_two] at hm)
   ext i j; fin_cases i <;> fin_cases j <;> rfl
 
 theorem fin_two_exists_eq_mk_of_apply_zero_one_eq_zero {R : Type*} [Field R] (g : SL(2, R))
@@ -443,6 +462,30 @@ lemma mulVecSL {v : Fin 2 → R} (hab : IsCoprime (v 0) (v 1)) (A : SL(2, R)) :
 
 end IsCoprime
 
+namespace Matrix
+
+section Action
+
+variable {F : Type*} [CommRing F] {ι : Type*} [DecidableEq ι] [Fintype ι]
+
+instance : DistribMulAction (Matrix.SpecialLinearGroup ι F) (ι → F) where
+  smul m v := m.1 • v
+  smul_zero _ := smul_zero (M := Matrix ι ι F) _
+  smul_add _ := smul_add (M := Matrix ι ι F) _
+  one_smul _ := one_smul (M := Matrix ι ι F) _
+  mul_smul _ _ _ := SemigroupAction.mul_smul (α := Matrix ι ι F) _ _ _
+
+instance : SMulCommClass (Matrix.SpecialLinearGroup ι F) F (ι → F) where
+  smul_comm m k v := show m.1 • k • v = k • m.1 • v from smul_comm _ _ _
+
+protected lemma SpecialLinearGroup.smul_def
+    (m : Matrix.SpecialLinearGroup ι F) (v : ι → F) :
+    m • v = m.1 • v := rfl
+
+end Action
+
+end Matrix
+
 namespace ModularGroup
 
 open MatrixGroups
@@ -464,6 +507,8 @@ def T : SL(2, ℤ) :=
 
 theorem coe_S : ↑S = !![0, -1; 1, 0] :=
   rfl
+
+lemma S_inv : S⁻¹ = -S := by decide
 
 theorem coe_T : ↑T = (!![1, 1; 0, 1] : Matrix _ _ ℤ) :=
   rfl

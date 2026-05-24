@@ -24,7 +24,7 @@ if they are equal upon evaluating them on an arbitrary assignment of the variabl
 
 -/
 
-@[expose] public section
+public section
 
 namespace MvPolynomial
 
@@ -36,8 +36,8 @@ private theorem funext_fin {n : ℕ} {p : MvPolynomial (Fin n) R}
   induction n with
   | zero =>
     apply (MvPolynomial.isEmptyRingEquiv R (Fin 0)).injective
-    rw [RingEquiv.map_zero]
-    convert h _ finZeroElim
+    rw [map_zero]
+    convert! h _ finZeroElim
   | succ n ih =>
     apply (finSuccEquiv R n).injective
     rw [map_zero]
@@ -66,7 +66,7 @@ theorem funext_set (h : ∀ x ∈ Set.pi .univ s, eval x p = eval x q) :
   suffices p = 0 by rw [this, map_zero]
   refine funext_fin (s ∘ f) (fun _ ↦ hs _) fun x hx ↦ ?_
   choose g hg using fun i ↦ (hs i).nonempty
-  convert h (Function.extend f x g) fun i _ ↦ ?_
+  convert! h (Function.extend f x g) fun i _ ↦ ?_
   · simp only [eval, eval₂Hom_rename, Function.extend_comp hf]
   obtain ⟨i, rfl⟩ | nex := em (∃ x, f x = i)
   · rw [hf.extend_apply]; exact hx _ ⟨⟩

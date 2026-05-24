@@ -5,10 +5,9 @@ Authors: Yaël Dillies
 -/
 module
 
-public meta import Mathlib.Algebra.Order.BigOperators.Group.Finset
-public meta import Mathlib.Data.Finset.Density
-public meta import Mathlib.Tactic.NormNum.Basic
-public meta import Mathlib.Tactic.Positivity.Core
+public import Mathlib.Algebra.Order.BigOperators.Group.Finset  -- shake: keep (Qq dependency)
+public import Mathlib.Data.Finset.Density  -- shake: keep (Qq dependency)
+public import Mathlib.Tactic.NormNum.Basic
 
 /-!
 # Positivity extensions for finsets
@@ -81,7 +80,8 @@ meta def evalFinsetSum : PositivityExt where eval {u α} zα pα e := do
       let .some pα' ← trySynthInstanceQ q(IsOrderedCancelAddMonoid $α) | pure none
       assertInstancesCommute
       let pr : Q(∀ i, 0 < $f i) ← mkLambdaFVars #[i] pbody
-      return some q(@sum_pos $ι $α $instα $pα $pα' $f $s (fun i _ ↦ $pr i) $ps))
+      return some q(@sum_pos $ι $α $instα (@PartialOrder.toPreorder _ $pα) $pα' $f $s _
+        (fun i _ ↦ $pr i) $ps))
     -- Try to show that the sum is positive
     if let some p_pos := p_pos then
       return .positive p_pos
@@ -91,7 +91,8 @@ meta def evalFinsetSum : PositivityExt where eval {u α} zα pα e := do
       let pr : Q(∀ i, 0 ≤ $f i) ← mkLambdaFVars #[i] pbody
       let pα' ← synthInstanceQ q(AddLeftMono $α)
       assertInstancesCommute
-      return .nonnegative q(@sum_nonneg $ι $α $instα $pα $f $s $pα' fun i _ ↦ $pr i)
+      return .nonnegative q(@sum_nonneg $ι $α $instα (@PartialOrder.toPreorder _ $pα) $f $s $pα'
+        fun i _ ↦ $pr i)
   | _ => throwError "not Finset.sum"
 
 variable {α : Type*} {s : Finset α}

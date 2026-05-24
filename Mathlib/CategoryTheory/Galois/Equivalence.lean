@@ -48,7 +48,7 @@ instance : (functorToContAction F).Full :=
 
 instance {F : C ⥤ FintypeCat.{u₁}} [FiberFunctor F] : (functorToContAction F).EssSurj where
   mem_essImage X := by
-    have : ContinuousSMul (Aut F) X.obj.V.carrier := X.2
+    have : ContinuousSMul (Aut F) X.obj.V := X.2
     obtain ⟨A, ⟨i⟩⟩ := exists_lift_of_continuous (F := F) X
     exact ⟨A, ⟨ObjectProperty.isoMk _ i⟩⟩
 
@@ -63,17 +63,15 @@ instance : (functorToContAction F).EssSurj := by
        (fun X ↦ by
           rw [Action.isContinuous_def]
           change Continuous ((fun p ↦ (FintypeCat.uSwitchEquiv X.obj.V).symm p) ∘
-              (fun p : Aut F' × _ ↦ (X.obj.ρ p.1) p.2) ∘
+              (fun p : Aut F' × _ ↦ (X.obj.ρ p.1).hom p.2) ∘
               (fun p : Aut F' × _ ↦ (p.1, FintypeCat.uSwitchEquiv _ p.2)))
-          have : Continuous (fun p : Aut F' × _ ↦ (X.obj.ρ p.1) p.2) := X.2.1
-          fun_prop)
+          exact Continuous.comp (by fun_prop) (Continuous.comp X.2.1 (by fun_prop)))
        (fun X ↦ by
           rw [Action.isContinuous_def]
           change Continuous ((fun p ↦ (FintypeCat.uSwitchEquiv X.obj.V).symm p) ∘
-              (fun p : Aut F' × _ ↦ (X.obj.ρ p.1) p.2) ∘
+              (fun p : Aut F' × _ ↦ (X.obj.ρ p.1).hom p.2) ∘
               (fun p : Aut F' × _ ↦ (p.1, FintypeCat.uSwitchEquiv _ p.2)))
-          have : Continuous (fun p : Aut F' × _ ↦ (X.obj.ρ p.1) p.2) := X.2.1
-          fun_prop)).trans <|
+          exact Continuous.comp (by fun_prop) (Continuous.comp X.2.1 (by fun_prop)))).trans <|
       ContAction.resEquiv _ f
   have : functorToContAction F ≅ functorToContAction F' ⋙ equiv.functor :=
     NatIso.ofComponents

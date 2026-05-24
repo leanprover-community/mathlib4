@@ -33,7 +33,7 @@ namespace CategoryTheory
 
 open Limits MonoidalCategory Category
 
-variable {I : Type u} [AddMonoid I] {C : Type*} [Category C] [MonoidalCategory C]
+variable {I : Type u} [AddMonoid I] {C : Type*} [Category* C] [MonoidalCategory C]
 
 namespace GradedObject
 
@@ -123,15 +123,11 @@ lemma id_tensorHom_id (X Y : GradedObject I C) [HasTensor X Y] :
   simp only [Functor.map_id, NatTrans.id_app, comp_id, mapMap_id]
   rfl
 
-@[deprecated (since := "2025-07-14")] alias tensor_id := id_tensorHom_id
-
 @[reassoc]
 lemma tensorHom_comp_tensorHom {X₁ X₂ X₃ Y₁ Y₂ Y₃ : GradedObject I C} (f₁ : X₁ ⟶ X₂) (f₂ : X₂ ⟶ X₃)
     (g₁ : Y₁ ⟶ Y₂) (g₂ : Y₂ ⟶ Y₃) [HasTensor X₁ Y₁] [HasTensor X₂ Y₂] [HasTensor X₃ Y₃] :
     tensorHom f₁ g₁ ≫ tensorHom f₂ g₂ = tensorHom (f₁ ≫ f₂) (g₁ ≫ g₂) := by
-  dsimp only [tensorHom, mapBifunctorMapMap]
-  rw [← mapMap_comp]
-  apply congr_mapMap
+  ext
   simp
 
 /-- The isomorphism `tensorObj X₁ Y₁ ≅ tensorObj X₂ Y₂` induced by isomorphisms of graded
@@ -221,8 +217,8 @@ lemma ιTensorObj₃_tensorHom (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) (f�
     (i₁ i₂ i₃ j : I) (h : i₁ + i₂ + i₃ = j) :
     ιTensorObj₃ X₁ X₂ X₃ i₁ i₂ i₃ j h ≫ tensorHom f₁ (tensorHom f₂ f₃) j =
       (f₁ i₁ ⊗ₘ f₂ i₂ ⊗ₘ f₃ i₃) ≫ ιTensorObj₃ Y₁ Y₂ Y₃ i₁ i₂ i₃ j h := by
-  rw [ιTensorObj₃_eq _ _ _ i₁ i₂ i₃ j h _  rfl,
-    ιTensorObj₃_eq _ _ _ i₁ i₂ i₃ j h _  rfl, assoc, ι_tensorHom,
+  rw [ιTensorObj₃_eq _ _ _ i₁ i₂ i₃ j h _ rfl,
+    ιTensorObj₃_eq _ _ _ i₁ i₂ i₃ j h _ rfl, assoc, ι_tensorHom,
     ← id_tensorHom, ← id_tensorHom, MonoidalCategory.tensorHom_comp_tensorHom_assoc, ι_tensorHom,
     MonoidalCategory.tensorHom_comp_tensorHom_assoc, id_comp, comp_id]
 
@@ -265,8 +261,8 @@ lemma ιTensorObj₃'_tensorHom (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) (f
     (i₁ i₂ i₃ j : I) (h : i₁ + i₂ + i₃ = j) :
     ιTensorObj₃' X₁ X₂ X₃ i₁ i₂ i₃ j h ≫ tensorHom (tensorHom f₁ f₂) f₃ j =
       ((f₁ i₁ ⊗ₘ f₂ i₂) ⊗ₘ f₃ i₃) ≫ ιTensorObj₃' Y₁ Y₂ Y₃ i₁ i₂ i₃ j h := by
-  rw [ιTensorObj₃'_eq _ _ _ i₁ i₂ i₃ j h _  rfl,
-    ιTensorObj₃'_eq _ _ _ i₁ i₂ i₃ j h _  rfl, assoc, ι_tensorHom,
+  rw [ιTensorObj₃'_eq _ _ _ i₁ i₂ i₃ j h _ rfl,
+    ιTensorObj₃'_eq _ _ _ i₁ i₂ i₃ j h _ rfl, assoc, ι_tensorHom,
     ← tensorHom_id, ← tensorHom_id, MonoidalCategory.tensorHom_comp_tensorHom_assoc, id_comp,
     ι_tensorHom, MonoidalCategory.tensorHom_comp_tensorHom_assoc, comp_id]
 
@@ -495,7 +491,7 @@ instance : HasTensor tensorUnit X :=
 
 instance : HasMap (((mapBifunctor (curriedTensor C) I I).obj
     ((single₀ I).obj (𝟙_ C))).obj X) (fun ⟨i₁, i₂⟩ => i₁ + i₂) :=
-  (inferInstance : HasTensor tensorUnit X)
+  inferInstanceAs <| HasTensor tensorUnit X
 
 /-- The left unitor isomorphism for graded objects. -/
 noncomputable def leftUnitor : tensorObj tensorUnit X ≅ X :=
@@ -528,7 +524,7 @@ instance : HasTensor X tensorUnit :=
 
 instance : HasMap (((mapBifunctor (curriedTensor C) I I).obj X).obj
     ((single₀ I).obj (𝟙_ C))) (fun ⟨i₁, i₂⟩ => i₁ + i₂) :=
-  (inferInstance : HasTensor X tensorUnit)
+  inferInstanceAs <| HasTensor X tensorUnit
 
 /-- The right unitor isomorphism for graded objects. -/
 noncomputable def rightUnitor : tensorObj X tensorUnit ≅ X :=
@@ -562,8 +558,9 @@ variable [DecidableEq I] [HasInitial C]
 lemma triangle :
     (associator X₁ tensorUnit X₃).hom ≫ tensorHom (𝟙 X₁) (leftUnitor X₃).hom =
       tensorHom (rightUnitor X₁).hom (𝟙 X₃) := by
-  convert mapBifunctor_triangle (curriedAssociatorNatIso C) (𝟙_ C)
-    (rightUnitorNatIso C) (leftUnitorNatIso C) (triangleIndexData I) X₁ X₃ (by simp)
+  convert!
+    mapBifunctor_triangle (curriedAssociatorNatIso C) (𝟙_ C) (rightUnitorNatIso C)
+      (leftUnitorNatIso C) (triangleIndexData I) X₁ X₃ (by simp)
   all_goals assumption
 
 end Triangle
@@ -604,13 +601,13 @@ section
 
 instance (n : ℕ) : Finite ((fun (i : ℕ × ℕ) => i.1 + i.2) ⁻¹' {n}) := by
   refine Finite.of_injective (fun ⟨⟨i₁, i₂⟩, (hi : i₁ + i₂ = n)⟩ =>
-    ((⟨i₁, by cutsat⟩, ⟨i₂, by cutsat⟩) : Fin (n + 1) × Fin (n + 1) )) ?_
+    ((⟨i₁, by lia⟩, ⟨i₂, by lia⟩) : Fin (n + 1) × Fin (n + 1))) ?_
   rintro ⟨⟨_, _⟩, _⟩ ⟨⟨_, _⟩, _⟩ h
   simpa using h
 
 instance (n : ℕ) : Finite ({ i : (ℕ × ℕ × ℕ) | i.1 + i.2.1 + i.2.2 = n }) := by
   refine Finite.of_injective (fun ⟨⟨i₁, i₂, i₃⟩, (hi : i₁ + i₂ + i₃ = n)⟩ =>
-    (⟨⟨i₁, by cutsat⟩, ⟨i₂, by cutsat⟩, ⟨i₃, by cutsat⟩⟩ :
+    (⟨⟨i₁, by lia⟩, ⟨i₂, by lia⟩, ⟨i₃, by lia⟩⟩ :
       Fin (n + 1) × Fin (n + 1) × Fin (n + 1))) ?_
   rintro ⟨⟨_, _, _⟩, _⟩ ⟨⟨_, _, _⟩, _⟩ h
   simpa using h

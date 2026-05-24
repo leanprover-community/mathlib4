@@ -60,7 +60,7 @@ theorem nodup (n m : ℕ) : Nodup (Ico n m) := by
 @[simp]
 theorem mem {n m l : ℕ} : l ∈ Ico n m ↔ n ≤ l ∧ l < m := by
   suffices n ≤ l ∧ l < n + (m - n) ↔ n ≤ l ∧ l < m by simp [Ico, this]
-  cutsat
+  lia
 
 theorem eq_nil_of_le {n m : ℕ} (h : m ≤ n) : Ico n m = [] := by
   simp [Ico, Nat.sub_eq_zero_iff_le.mpr h]
@@ -83,9 +83,9 @@ theorem eq_empty_iff {n m : ℕ} : Ico n m = [] ↔ m ≤ n :=
 theorem append_consecutive {n m l : ℕ} (hnm : n ≤ m) (hml : m ≤ l) :
     Ico n m ++ Ico m l = Ico n l := by
   dsimp only [Ico]
-  convert range'_append using 2
+  convert! range'_append using 2
   · rw [Nat.one_mul, Nat.add_sub_cancel' hnm]
-  · cutsat
+  · lia
 
 @[simp]
 theorem inter_consecutive (n m l : ℕ) : Ico n m ∩ Ico m l = [] := by
@@ -99,7 +99,7 @@ theorem inter_consecutive (n m l : ℕ) : Ico n m ∩ Ico m l = [] := by
 @[simp]
 theorem bagInter_consecutive (n m l : Nat) :
     @List.bagInter ℕ instBEqOfDecidableEq (Ico n m) (Ico m l) = [] :=
-  (bagInter_nil_iff_inter_nil _ _).2 (by convert inter_consecutive n m l)
+  (bagInter_nil_iff_inter_nil _ _).2 (by convert! inter_consecutive n m l)
 
 @[simp]
 theorem succ_singleton {n : ℕ} : Ico n (n + 1) = [n] := by
@@ -126,12 +126,7 @@ theorem isChain_succ (n m : ℕ) : IsChain (fun a b => b = succ a) (Ico n m) := 
   · rw [eq_nil_of_le h]
     exact .nil
 
-@[deprecated (since := "2025-09-19")]
-alias chain'_succ := isChain_succ
-
 theorem notMem_top {n m : ℕ} : m ∉ Ico n m := by simp
-
-@[deprecated (since := "2025-05-23")] alias not_mem_top := notMem_top
 
 theorem filter_lt_of_top_le {n m l : ℕ} (hml : m ≤ l) :
     ((Ico n m).filter fun x => x < l) = Ico n m :=
@@ -199,16 +194,7 @@ theorem filter_le_of_bot {n m : ℕ} (hnm : n < m) : ((Ico n m).filter fun x => 
 3. n ∈ Ico a b
 -/
 theorem trichotomy (n a b : ℕ) : n < a ∨ b ≤ n ∨ n ∈ Ico a b := by
-  by_cases h₁ : n < a
-  · left
-    exact h₁
-  · right
-    by_cases h₂ : n ∈ Ico a b
-    · right
-      exact h₂
-    · left
-      simp only [Ico.mem, not_and, not_lt] at *
-      exact h₂ h₁
+  grind [mem]
 
 end Ico
 

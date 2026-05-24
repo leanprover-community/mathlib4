@@ -6,16 +6,16 @@ Authors: Frédéric Dupuis
 module
 
 public import Mathlib.Algebra.Module.Equiv.Defs
-public import Mathlib.Algebra.Star.Basic
+public import Mathlib.Algebra.Star.Basic  -- shake: keep (used in `notation` only)
 
 /-!
 # Notation for star-linear maps
 
-This is in a separate file as a it is not needed until much later,
+This is in a separate file as it is not needed until much later,
 and avoids importing the theory of star operations unnecessarily early.
 -/
 
-@[expose] public section
+public section
 
 /-- `M →ₗ⋆[R] N` is the type of `R`-conjugate-linear maps from `M` to `N`. -/
 notation:25 M " →ₗ⋆[" R:25 "] " M₂:0 => LinearMap (starRingEnd R) M M₂

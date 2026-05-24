@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.Order.Group.Unbundled.Basic
 public import Mathlib.Algebra.Order.Monoid.Defs
 public import Mathlib.Algebra.Order.Sub.Defs
-public import Mathlib.Util.AssertExists
 
 /-!
 # Ordered groups
@@ -22,7 +21,7 @@ may differ between the multiplicative and the additive version of a lemma.
 The reason is that we did not want to change existing names in the library.
 -/
 
-@[expose] public section
+public section
 
 /-
 `NeZero` theory should not be needed at this point in the ordered algebraic hierarchy.
@@ -35,10 +34,6 @@ universe u
 
 variable {α : Type u}
 
-alias OrderedCommGroup.mul_lt_mul_left' := mul_lt_mul_left'
-
-attribute [to_additive OrderedAddCommGroup.add_lt_add_left] OrderedCommGroup.mul_lt_mul_left'
-
 alias OrderedCommGroup.le_of_mul_le_mul_left := le_of_mul_le_mul_left'
 
 attribute [to_additive] OrderedCommGroup.le_of_mul_le_mul_left
@@ -50,9 +45,9 @@ attribute [to_additive] OrderedCommGroup.lt_of_mul_lt_mul_left
 -- See note [lower instance priority]
 @[to_additive IsOrderedAddMonoid.toIsOrderedCancelAddMonoid]
 instance (priority := 100) IsOrderedMonoid.toIsOrderedCancelMonoid
-    [CommGroup α] [PartialOrder α] [IsOrderedMonoid α] : IsOrderedCancelMonoid α where
-  le_of_mul_le_mul_left a b c bc := by simpa using mul_le_mul_left' bc a⁻¹
-  le_of_mul_le_mul_right a b c bc := by simpa using mul_le_mul_left' bc a⁻¹
+    [CommGroup α] [Preorder α] [IsOrderedMonoid α] : IsOrderedCancelMonoid α where
+  le_of_mul_le_mul_left a b c bc := by simpa using mul_le_mul_right bc a⁻¹
+  le_of_mul_le_mul_right a b c bc := by simpa using mul_le_mul_right bc a⁻¹
 
 
 /-!
@@ -68,10 +63,6 @@ insert_to_additive_translation LinearOrderedCommGroup LinearOrderedAddCommGroup
 section LinearOrderedCommGroup
 
 variable [CommGroup α] [LinearOrder α] [IsOrderedMonoid α] {a : α}
-
-@[to_additive LinearOrderedAddCommGroup.add_lt_add_left]
-theorem LinearOrderedCommGroup.mul_lt_mul_left' (a b : α) (h : a < b) (c : α) : c * a < c * b :=
-  _root_.mul_lt_mul_left' h c
 
 @[to_additive eq_zero_of_neg_eq]
 theorem eq_one_of_inv_eq' (h : a⁻¹ = a) : a = 1 :=
@@ -112,10 +103,10 @@ theorem inv_le_self_iff : a⁻¹ ≤ a ↔ 1 ≤ a := by simp [inv_le_iff_one_le
 theorem inv_lt_self_iff : a⁻¹ < a ↔ 1 < a := by simp [inv_lt_iff_one_lt_mul]
 
 @[to_additive (attr := simp)]
-theorem le_inv_self_iff : a ≤ a⁻¹ ↔ a ≤ 1 := by simp [← not_iff_not]
+theorem le_inv_self_iff : a ≤ a⁻¹ ↔ a ≤ 1 := by contrapose!; exact inv_lt_self_iff
 
 @[to_additive (attr := simp)]
-theorem lt_inv_self_iff : a < a⁻¹ ↔ a < 1 := by simp [← not_iff_not]
+theorem lt_inv_self_iff : a < a⁻¹ ↔ a < 1 := by contrapose!; exact inv_le_self_iff
 
 end LinearOrderedCommGroup
 

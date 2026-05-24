@@ -107,6 +107,8 @@ attribute [coe] Substructure.carrier
 instance instSetLike : SetLike (L.Substructure M) M :=
   ⟨Substructure.carrier, fun p q h => by cases p; cases q; congr⟩
 
+instance : PartialOrder (L.Substructure M) := .ofSetLike (L.Substructure M) M
+
 /-- See Note [custom simps projection] -/
 def Simps.coe (S : L.Substructure M) : Set M :=
   S
@@ -200,7 +202,7 @@ theorem mem_sInf {S : Set (L.Substructure M)} {x : M} : x ∈ sInf S ↔ ∀ p �
   Set.mem_iInter₂
 
 theorem mem_iInf {ι : Sort*} {S : ι → L.Substructure M} {x : M} :
-    (x ∈ ⨅ i, S i) ↔ ∀ i, x ∈ S i := by simp only [iInf, mem_sInf, Set.forall_mem_range]
+    x ∈ ⨅ i, S i ↔ ∀ i, x ∈ S i := by simp only [iInf, mem_sInf, Set.forall_mem_range]
 
 @[simp, norm_cast]
 theorem coe_iInf {ι : Sort*} {S : ι → L.Substructure M} :
@@ -242,8 +244,6 @@ theorem subset_closure : s ⊆ closure L s :=
 
 theorem notMem_of_notMem_closure {P : M} (hP : P ∉ closure L s) : P ∉ s := fun h =>
   hP (subset_closure h)
-
-@[deprecated (since := "2025-05-23")] alias not_mem_of_not_mem_closure := notMem_of_notMem_closure
 
 @[simp]
 theorem closed (S : L.Substructure M) : (closure L).closed (S : Set M) :=
@@ -741,14 +741,14 @@ theorem reduct_withConstants :
   ext
   simp
 
-theorem subset_closure_withConstants : A ⊆ closure (L[[A]]) s := by
+theorem subset_closure_withConstants : A ⊆ closure L[[A]] s := by
   intro a ha
   simp only [SetLike.mem_coe]
   let a' : L[[A]].Constants := Sum.inr ⟨a, ha⟩
   exact constants_mem a'
 
 theorem closure_withConstants_eq :
-    closure (L[[A]]) s =
+    closure L[[A]] s =
       (closure L (A ∪ s)).withConstants ((A.subset_union_left).trans subset_closure) := by
   refine closure_eq_of_le ((A.subset_union_right).trans subset_closure) ?_
   rw [← (L.lhomWithConstants A).substructureReduct.le_iff_le]
@@ -782,6 +782,12 @@ theorem comp_codRestrict (f : M →[L] N) (g : N →[L] P) (p : L.Substructure P
 theorem subtype_comp_codRestrict (f : M →[L] N) (p : L.Substructure N) (h : ∀ b, f b ∈ p) :
     p.subtype.toHom.comp (codRestrict p f h) = f :=
   ext fun _ => rfl
+
+@[simp]
+theorem domRestrict_comp_codRestrict (g : N →[L] P) (f : M →[L] N) (p : L.Substructure N)
+    (h : ∀ b, f b ∈ p) :
+    (g.domRestrict p).comp (f.codRestrict p h) = g.comp f :=
+  rfl
 
 /-- The range of a first-order hom `f : M → N` is a submodule of `N`.
 See Note [range copy pattern]. -/

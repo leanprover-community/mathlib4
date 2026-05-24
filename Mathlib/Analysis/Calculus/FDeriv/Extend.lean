@@ -20,7 +20,7 @@ the right endpoint of an interval, are given in `hasDerivWithinAt_Ici_of_tendsto
 one-dimensional derivative `deriv ℝ f`.
 -/
 
-@[expose] public section
+public section
 
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {F : Type*} [NormedAddCommGroup F]
@@ -43,7 +43,7 @@ theorem hasFDerivWithinAt_closure_of_tendsto_fderiv {f : E → F} {s : Set E} {x
     -- statement is empty otherwise
     by_cases! hx : x ∉ closure s
     · rw [← closure_closure] at hx; exact HasFDerivWithinAt.of_notMem_closure hx
-    rw [HasFDerivWithinAt, hasFDerivAtFilter_iff_isLittleO, Asymptotics.isLittleO_iff]
+    rw [hasFDerivWithinAt_iff_isLittleO, Asymptotics.isLittleO_iff]
     /- One needs to show that `‖f y - f x - f' (y - x)‖ ≤ ε ‖y - x‖` for `y` close to `x` in
       `closure s`, where `ε` is an arbitrary positive constant. By continuity of the functions, it
       suffices to prove this for nearby points inside `s`. In a neighborhood of `x`, the derivative
@@ -51,7 +51,7 @@ theorem hasFDerivWithinAt_closure_of_tendsto_fderiv {f : E → F} {s : Set E} {x
       proof. -/
     intro ε ε_pos
     obtain ⟨δ, δ_pos, hδ⟩ : ∃ δ > 0, ∀ y ∈ s, dist y x < δ → ‖fderiv ℝ f y - f'‖ < ε := by
-      simpa [dist_zero_right] using tendsto_nhdsWithin_nhds.1 h ε ε_pos
+      simpa [dist_eq_norm] using tendsto_nhdsWithin_nhds.1 h ε ε_pos
     set B := ball x δ
     suffices ∀ y ∈ B ∩ closure s, ‖f y - f x - (f' y - f' x)‖ ≤ ε * ‖y - x‖ from
       mem_nhdsWithin_iff.2 ⟨δ, δ_pos, fun y hy => by simpa using this y hy⟩
@@ -79,7 +79,7 @@ theorem hasFDerivWithinAt_closure_of_tendsto_fderiv {f : E → F} {s : Set E} {x
         exact le_of_lt (h z_in.2 z_in.1)
       simpa using conv.norm_image_sub_le_of_norm_fderivWithin_le' diff bound u_in v_in
     rintro ⟨u, v⟩ uv_in
-    have f_cont' : ∀ y ∈ closure s, ContinuousWithinAt (f -  ⇑f') s y := by
+    have f_cont' : ∀ y ∈ closure s, ContinuousWithinAt (f - ⇑f') s y := by
       intro y y_in
       exact Tendsto.sub (f_cont y y_in) f'.cont.continuousWithinAt
     refine ContinuousWithinAt.closure_le uv_in ?_ ?_ key
@@ -127,7 +127,7 @@ theorem hasDerivWithinAt_Ici_of_tendsto_deriv {s : Set ℝ} {e : E} {a : ℝ} {f
     · have : y ∈ s := sab ⟨lt_of_le_of_ne hy.1 (Ne.symm h), hy.2⟩
       exact (f_diff.continuousOn y this).mono ts
   have t_diff' : Tendsto (fun x => fderiv ℝ f x) (𝓝[t] a) (𝓝 (smulRight (1 : ℝ →L[ℝ] ℝ) e)) := by
-    simp only [deriv_fderiv.symm]
+    simp only [toSpanSingleton_deriv.symm]
     exact Tendsto.comp
       (isBoundedBilinearMap_smulRight : IsBoundedBilinearMap ℝ _).continuous_right.continuousAt
       (tendsto_nhdsWithin_mono_left Ioo_subset_Ioi_self f_lim')
@@ -162,7 +162,7 @@ theorem hasDerivWithinAt_Iic_of_tendsto_deriv {s : Set ℝ} {e : E} {a : ℝ}
     · have : y ∈ s := sab ⟨hy.1, lt_of_le_of_ne hy.2 h⟩
       exact (f_diff.continuousOn y this).mono ts
   have t_diff' : Tendsto (fun x => fderiv ℝ f x) (𝓝[t] a) (𝓝 (smulRight (1 : ℝ →L[ℝ] ℝ) e)) := by
-    simp only [deriv_fderiv.symm]
+    simp only [toSpanSingleton_deriv.symm]
     exact Tendsto.comp
       (isBoundedBilinearMap_smulRight : IsBoundedBilinearMap ℝ _).continuous_right.continuousAt
       (tendsto_nhdsWithin_mono_left Ioo_subset_Iio_self f_lim')

@@ -29,7 +29,7 @@ def Equiv.Perm.decomposeFin {n : ℕ} : Perm (Fin n.succ) ≃ Fin n.succ × Perm
 @[simp]
 theorem Equiv.Perm.decomposeFin_symm_of_refl {n : ℕ} (p : Fin (n + 1)) :
     Equiv.Perm.decomposeFin.symm (p, Equiv.refl _) = swap 0 p := by
-  simp [Equiv.Perm.decomposeFin, Equiv.permCongr_def]
+  simp [Equiv.Perm.decomposeFin, Equiv.permCongr_def, pull_end]
 
 @[simp]
 theorem Equiv.Perm.decomposeFin_symm_of_one {n : ℕ} (p : Fin (n + 1)) :
@@ -92,12 +92,15 @@ theorem finRotate_succ_eq_decomposeFin {n : ℕ} :
       swap_apply_of_ne_of_ne (Nat.succ_ne_zero _) (Nat.succ_succ_ne_one _)]
 
 @[simp]
-theorem sign_finRotate (n : ℕ) : Perm.sign (finRotate (n + 1)) = (-1) ^ n := by
-  induction n with
+theorem sign_finRotate (n : ℕ) : Perm.sign (finRotate n) = (-1) ^ (n - 1) := by
+  cases n with
   | zero => simp
-  | succ n ih =>
-    rw [finRotate_succ_eq_decomposeFin]
-    simp [ih, pow_succ]
+  | succ n =>
+    induction n with
+    | zero => simp
+    | succ n ih =>
+      rw [finRotate_succ_eq_decomposeFin]
+      simp [ih, pow_succ]
 
 @[simp]
 theorem support_finRotate {n : ℕ} : support (finRotate (n + 2)) = Finset.univ := by
@@ -139,29 +142,30 @@ variable {n : ℕ} {i j : Fin n}
 
 /-- `Fin.cycleRange i` is the cycle `(0 1 2 ... i)` leaving `(i+1 ... (n-1))` unchanged. -/
 def cycleRange {n : ℕ} (i : Fin n) : Perm (Fin n) :=
-  (finRotate (i + 1)).extendDomain (castLEEmb (by cutsat)).toEquivRange
+  (finRotate (i + 1)).extendDomain (castLEEmb (by lia)).toEquivRange
 
 theorem cycleRange_of_gt (h : i < j) : cycleRange i j = j := by
   rw [cycleRange, Perm.extendDomain_apply_not_subtype]
   simpa using h
 
+set_option backward.isDefEq.respectTransparency false in
 theorem cycleRange_of_le [NeZero n] (h : i ≤ j) :
     cycleRange j i = if i = j then 0 else i + 1 := by
-  have iin : i ∈ Set.range (castLEEmb (n := j + 1) (by cutsat)) := by
-    simpa using by cutsat
-  have : (castLEEmb (by cutsat)).toEquivRange (castLT i (by cutsat)) = ⟨i, iin⟩ := by
-    simpa only [coe_castLEEmb] using by rfl
+  have iin : i ∈ Set.range (castLEEmb (n := j + 1) (by lia)) := by
+    simp; lia
+  have : (castLEEmb (by lia)).toEquivRange (castLT i (by lia)) = ⟨i, iin⟩ := by
+    simp [coe_castLEEmb]; rfl
   rw [cycleRange,
-    (finRotate (j + 1)).extendDomain_apply_subtype (castLEEmb (by cutsat)).toEquivRange iin,
+    (finRotate (j + 1)).extendDomain_apply_subtype (castLEEmb (by lia)).toEquivRange iin,
     Function.Embedding.toEquivRange_apply]
   split_ifs with ch
-  · have : ((castLEEmb (by cutsat)).toEquivRange.symm ⟨i, iin⟩) = last j := by
+  · have : ((castLEEmb (by lia)).toEquivRange.symm ⟨i, iin⟩) = last j := by
       simpa only [coe_castLEEmb, ← this, symm_apply_apply] using eq_of_val_eq (by simp [ch])
     rw [this, finRotate_last]
     rfl
-  · have hj1 : (i + 1).1 = i.1 + 1 := val_add_one_of_lt' (by cutsat)
-    have hj2 : (i.castLT (by cutsat) + 1 : Fin (j + 1)).1 =
-      (i.castLT (by cutsat) : Fin (j + 1)) + 1 := val_add_one_of_lt' (by simpa using by cutsat)
+  · have hj1 : (i + 1).1 = i.1 + 1 := val_add_one_of_lt' (by lia)
+    have hj2 : (i.castLT (by lia) + 1 : Fin (j + 1)).1 =
+      (i.castLT (by lia) : Fin (j + 1)) + 1 := val_add_one_of_lt' (by simp; lia)
     exact eq_of_val_eq (by simp [← this, hj1, hj2])
 
 theorem coe_cycleRange_of_le (h : i ≤ j) :
@@ -226,7 +230,7 @@ theorem succAbove_cycleRange (i j : Fin n) :
   rcases lt_trichotomy j i with (hlt | heq | hgt)
   · have : castSucc (j + 1) = j.succ := by
       ext
-      rw [coe_castSucc, val_succ, Fin.val_add_one_of_lt (lt_of_lt_of_le hlt i.le_last)]
+      rw [val_castSucc, val_succ, Fin.val_add_one_of_lt (lt_of_lt_of_le hlt i.le_last)]
     rw [Fin.cycleRange_of_lt hlt, Fin.succAbove_of_castSucc_lt, this, swap_apply_of_ne_of_ne]
     · apply Fin.succ_ne_zero
     · exact (Fin.succ_injective _).ne hlt.ne
@@ -311,7 +315,7 @@ when `i > j`. In other words, it rotates elements in `[i, j]` one step to the ri
 
 namespace Fin
 
-local instance {n : ℕ} {i : Fin n} : NeZero (n - i) := NeZero.of_pos (by cutsat)
+local instance {n : ℕ} {i : Fin n} : NeZero (n - i) := NeZero.of_pos (by lia)
 
 variable {n : ℕ} {i j k : Fin n}
 
@@ -346,7 +350,7 @@ theorem cycleIcc_def_gt' (hij : ¬ j ≤ i) : cycleIcc j i = 1 := by
 theorem cycleIcc_of_lt (h : k < i) : (cycleIcc i j) k = k := by
   by_cases hij : i ≤ j
   · simpa [hij] using Perm.extendDomain_apply_not_subtype _ _ (by
-      simpa [range_natAdd_castLEEmb] using by cutsat)
+      simp [range_natAdd_castLEEmb]; lia)
   · simp [hij]
 
 lemma cycleIcc_to_cycleRange (hij : i ≤ j)
@@ -356,42 +360,44 @@ lemma cycleIcc_to_cycleRange (hij : i ≤ j)
   simp [hij, ((j - i).castLT (sub_val_lt_sub hij)).cycleRange.extendDomain_apply_subtype
     (natAdd_castLEEmb _).toEquivRange kin]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem cycleIcc_of_gt (h : j < k) : (cycleIcc i j) k = k := by
   by_cases hij : i ≤ j
   · have kin : k ∈ Set.range (natAdd_castLEEmb (Nat.sub_le n i)) := by
-      simpa [range_natAdd_castLEEmb] using by cutsat
+      simp [range_natAdd_castLEEmb]; lia
     have : (((addNatEmb (n - (n - i.1))).trans (finCongr _).toEmbedding).toEquivRange.symm ⟨k, kin⟩)
-      = subNat i.1 (k.cast (by cutsat)) (by simpa using by cutsat) := by
-      simpa [symm_apply_eq] using eq_of_val_eq (by simpa using by cutsat)
+      = subNat i.1 (k.cast (by lia)) (by simp; lia) := by
+      simpa [symm_apply_eq] using eq_of_val_eq (by simp; lia)
     simp only [cycleIcc_to_cycleRange hij kin, natAdd_castLEEmb, this,
       Function.Embedding.trans_apply, addNatEmb_apply, coe_toEmbedding, finCongr_apply]
     rw [cycleRange_of_gt]
-    · exact eq_of_val_eq (by simpa using by cutsat)
-    · exact lt_def.mpr (by simpa [sub_val_of_le hij] using by cutsat)
+    · exact eq_of_val_eq (by simp; lia)
+    · exact lt_def.mpr (by simp [sub_val_of_le hij]; lia)
   · simp [hij]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem cycleIcc_of_le_of_le (hik : i ≤ k) (hkj : k ≤ j) [NeZero n] :
     (cycleIcc i j) k = if k = j then i else k + 1 := by
   have hij : i ≤ j := le_trans hik hkj
   have kin : k ∈ Set.range (natAdd_castLEEmb (Nat.sub_le n i)) := by
-    simpa [range_natAdd_castLEEmb] using by cutsat
+    simp [range_natAdd_castLEEmb]; lia
   have : (((addNatEmb (n - (n - i.1))).trans (finCongr _).toEmbedding).toEquivRange.symm ⟨k, kin⟩)
-      = subNat i.1 (k.cast (by cutsat)) (by simpa using by cutsat) := by
-    simpa [symm_apply_eq] using eq_of_val_eq (by simpa using by cutsat)
+      = subNat i.1 (k.cast (by lia)) (by simp; lia) := by
+    simpa [symm_apply_eq] using eq_of_val_eq (by simp; lia)
   simp only [cycleIcc_to_cycleRange hij kin, natAdd_castLEEmb, this, Function.Embedding.trans_apply,
     addNatEmb_apply, coe_toEmbedding, finCongr_apply]
   refine eq_of_val_eq ?_
   split_ifs with ch
-  · have : subNat i.1 (j.cast (by cutsat)) (by simp [hij]) = (j - i).castLT (sub_val_lt_sub hij) :=
+  · have : subNat i.1 (j.cast (by lia)) (by simp [hij]) = (j - i).castLT (sub_val_lt_sub hij) :=
       eq_of_val_eq (by simp [sub_val_of_le hij])
-    simpa [ch, cycleRange_of_eq this] using by cutsat
-  · have : subNat i.1 (k.cast (by cutsat)) (by simp [hik]) < (j - i).castLT (sub_val_lt_sub hij) :=
-      by simpa [lt_def, sub_val_of_le hij] using by cutsat
+    simp [ch, cycleRange_of_eq this]; lia
+  · have : subNat i.1 (k.cast (by lia)) (by simp [hik]) < (j - i).castLT (sub_val_lt_sub hij) := by
+      simp [lt_def, sub_val_of_le hij]; lia
     rw [cycleRange_of_lt this, subNat]
-    simp only [coe_cast, add_def, val_one', Nat.add_mod_mod, addNat_mk, cast_mk]
-    rw [Nat.mod_eq_of_lt (by cutsat), Nat.mod_eq_of_lt (by cutsat)]
-    cutsat
+    simp only [val_cast, add_def, val_one', Nat.add_mod_mod, addNat_mk, cast_mk]
+    rw [Nat.mod_eq_of_lt (by lia), Nat.mod_eq_of_lt (by lia)]
+    lia
 
 theorem cycleIcc_of_ge_of_lt (hik : i ≤ k) (hkj : k < j) [NeZero n] : (cycleIcc i j) k = k + 1 := by
   simp [cycleIcc_of_le_of_le hik (le_of_lt hkj), Fin.ne_of_lt hkj]
@@ -443,6 +449,11 @@ theorem cycleIcc_zero_eq_cycleRange (i : Fin n) [NeZero n] : cycleIcc 0 i = cycl
   · simp [-cycleIcc_def_le, ch]
   · simp [-cycleIcc_def_le, cycleIcc_of_gt ch, cycleRange_of_gt ch]
 
+theorem cycleIcc_comp_succAbove {n : ℕ} (i j : Fin (n + 1)) (hij : i ≤ j) :
+    (cycleIcc i j) ∘ j.succAbove = i.succAbove := by
+  grind [cycleIcc_of_lt, succAbove_of_castSucc_lt, cycleIcc_of_ge_of_lt,
+    succAbove_of_le_castSucc, coeSucc_eq_succ, cycleIcc_of_gt]
+
 theorem cycleIcc.trans [NeZero n] (hij : i ≤ j) (hjk : j ≤ k) :
     (cycleIcc i j) ∘ (cycleIcc j k) = (cycleIcc i k) := by
   ext x
@@ -453,11 +464,11 @@ theorem cycleIcc.trans [NeZero n] (hij : i ≤ j) (hjk : j ≤ k) :
   rcases lt_or_ge x j with ch2 | ch2
   · simp [cycleIcc_of_lt ch2, cycleIcc_of_le_of_le ch ch1, cycleIcc_of_le_of_le ch (le_of_lt ch2)]
     split_ifs
-    repeat cutsat
-  · simp [cycleIcc_of_le_of_le ch2 ch1, cycleIcc_of_le_of_le ch ch1]
+    repeat lia
+  · simp only [Function.comp_apply, cycleIcc_of_le_of_le ch2 ch1, cycleIcc_of_le_of_le ch ch1]
     split_ifs with h
     · exact val_eq_of_eq (cycleIcc_of_last hij)
-    · simp [cycleIcc_of_gt (lt_of_le_of_lt ch2 (lt_add_one_of_succ_lt (by cutsat)))]
+    · simp [cycleIcc_of_gt (lt_of_le_of_lt ch2 (lt_add_one_of_succ_lt (by lia)))]
 
 theorem cycleIcc.trans_left_one [NeZero n] (hij : i ≤ j) :
     (cycleIcc j i) ∘ (cycleIcc i k) = cycleIcc i k := by
@@ -479,7 +490,7 @@ theorem Equiv.Perm.sign_eq_prod_prod_Iio (σ : Equiv.Perm (Fin n)) :
     σ.sign = ∏ j, ∏ i ∈ Finset.Iio j, (if σ i < σ j then 1 else -1) := by
   suffices h : σ.sign = σ.signAux by
     rw [h, Finset.prod_sigma', Equiv.Perm.signAux]
-    convert rfl using 2 with x hx
+    convert! rfl using 2 with x hx
     · simp [Finset.ext_iff, Equiv.Perm.mem_finPairsLT]
     simp [← ite_not (p := _ ≤ _)]
   refine σ.swap_induction_on (by simp) fun π i j hne h_eq ↦ ?_
@@ -517,9 +528,9 @@ theorem Equiv.Perm.prod_Iio_comp_eq_sign_mul_prod {R : Type*} [CommRing R]
 theorem Equiv.Perm.prod_Ioi_comp_eq_sign_mul_prod {R : Type*} [CommRing R]
     (σ : Equiv.Perm (Fin n)) {f : Fin n → Fin n → R} (hf : ∀ i j, f i j = -f j i) :
     ∏ i, ∏ j ∈ Finset.Ioi i, f (σ i) (σ j) = σ.sign * ∏ i, ∏ j ∈ Finset.Ioi i, f i j := by
-  convert σ.prod_Iio_comp_eq_sign_mul_prod hf using 1
+  convert! σ.prod_Iio_comp_eq_sign_mul_prod hf using 1
   · apply Finset.prod_comm' (by simp)
-  convert rfl using 2
+  convert! rfl using 2
   apply Finset.prod_comm' (by simp)
 
 end Sign

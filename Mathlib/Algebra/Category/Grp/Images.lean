@@ -17,15 +17,11 @@ from the fact that `AddCommGrpCat` is an abelian category.
 
 @[expose] public section
 
-
-open CategoryTheory
-
-open CategoryTheory.Limits
+open CategoryTheory Limits
 
 universe u
 
 namespace AddCommGrpCat
-
 
 -- Note that because `injective_of_mono` is currently only proved in `Type 0`,
 -- we restrict to the lowest universe here for now.
@@ -67,13 +63,13 @@ noncomputable def image.lift (F' : MonoFactorisation f) : image f ⟶ F'.I :=
       haveI := F'.m_mono
       apply injective_of_mono F'.m
       change (F'.e ≫ F'.m) _ = _
-      rw [F'.fac, AddMonoidHom.map_zero]
+      rw [F'.fac, map_zero]
       exact (Classical.indefiniteDescription (fun y => f y = 0) _).2
     map_add' := by
       intro x y
       haveI := F'.m_mono
       apply injective_of_mono F'.m
-      rw [AddMonoidHom.map_add]
+      rw [map_add]
       change (F'.e ≫ F'.m) _ = (F'.e ≫ F'.m) _ + (F'.e ≫ F'.m) _
       rw [F'.fac]
       rw [(Classical.indefiniteDescription (fun z => f z = _) _).2]

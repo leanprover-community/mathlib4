@@ -22,7 +22,7 @@ is the quotient of `Y` by `∀ x : Y, f x ~ g x`
 
 universe v u
 
-open CategoryTheory Limits
+open CategoryTheory Limits ConcreteCategory
 
 namespace CategoryTheory.Limits.Types
 
@@ -33,18 +33,20 @@ is a coequalizer for the pair `(f, g)`.
 -/
 def coequalizerColimit : Limits.ColimitCocone (parallelPair f g) where
   cocone :=
-    Cofork.ofπ (Function.Coequalizer.mk f g) (funext fun x => Function.Coequalizer.condition f g x)
+    Cofork.ofπ (↾(Function.Coequalizer.mk f g))
+      (by ext x; exact Function.Coequalizer.condition f g x)
   isColimit :=
     Cofork.IsColimit.mk _
-      (fun s ↦ Function.Coequalizer.desc f g s.π s.condition)
+      (fun s ↦ ↾(Function.Coequalizer.desc f g s.π
+        (by ext x; exact ConcreteCategory.congr_hom s.condition x)))
       (fun _ ↦ rfl)
-      (fun _ _ hm ↦ funext (fun x ↦ Quot.inductionOn x (congr_fun hm)))
+      (fun _ _ hm ↦ by ext x; exact Quot.inductionOn x (congr_hom hm))
 
-/-- If `π : Y ⟶ Z` is an coequalizer for `(f, g)`, and `U ⊆ Y` such that `f ⁻¹' U = g ⁻¹' U`,
-then `π ⁻¹' (π '' U) = U`.
+/-- If `π : Y ⟶ Z` is a coequalizer for `(f, g)`, and `U ⊆ Y` such that `f ⁻¹' U = g ⁻¹' U`,
+then `π ⁻¹' π '' U = U`.
 -/
 theorem coequalizer_preimage_image_eq_of_preimage_eq (π : Y ⟶ Z) (e : f ≫ π = g ≫ π)
-    (h : IsColimit (Cofork.ofπ π e)) (U : Set Y) (H : f ⁻¹' U = g ⁻¹' U) : π ⁻¹' (π '' U) = U := by
+    (h : IsColimit (Cofork.ofπ π e)) (U : Set Y) (H : f ⁻¹' U = g ⁻¹' U) : π ⁻¹' π '' U = U := by
   have lem : ∀ x y, Function.Coequalizer.Rel f g x y → (x ∈ U ↔ y ∈ U) := by
     rintro _ _ ⟨x⟩
     change x ∈ f ⁻¹' U ↔ x ∈ g ⁻¹' U
@@ -59,25 +61,27 @@ theorem coequalizer_preimage_image_eq_of_preimage_eq (π : Y ⟶ Z) (e : f ≫ �
           WalkingParallelPair.one]
     rintro ⟨y, hy, e'⟩
     dsimp at e'
-    replace e' :=
+    have e'' :=
       (mono_iff_injective
             (h.coconePointUniqueUpToIso (coequalizerColimit f g).isColimit).inv).mp
-        inferInstance e'
-    exact (eqv.eqvGen_iff.mp (Relation.EqvGen.mono lem (Quot.eqvGen_exact e'))).mp hy
+        inferInstance
+    refine (eqv.eqvGen_iff.mp (Relation.EqvGen.mono lem (Quot.eqvGen_exact ?_))).mp hy
+    apply e''
+    convert! e'
   · exact fun hx => ⟨_, hx, rfl⟩
 
 /-- The categorical coequalizer in `Type u` is the quotient by `f g ~ g x`. -/
-noncomputable def coequalizerIso : coequalizer f g ≅ Function.Coequalizer f g :=
+noncomputable def coequalizerIso : coequalizer f g ≅ (Function.Coequalizer f g) :=
   colimit.isoColimitCocone (coequalizerColimit f g)
 
 @[elementwise (attr := simp)]
 theorem coequalizerIso_π_comp_hom :
-    coequalizer.π f g ≫ (coequalizerIso f g).hom = Function.Coequalizer.mk f g :=
+    coequalizer.π f g ≫ (coequalizerIso f g).hom = ↾(Function.Coequalizer.mk f g) :=
   colimit.isoColimitCocone_ι_hom (coequalizerColimit f g) WalkingParallelPair.one
 
 @[elementwise (attr := simp)]
 theorem coequalizerIso_quot_comp_inv :
-    ↾Function.Coequalizer.mk f g ≫ (coequalizerIso f g).inv = coequalizer.π f g :=
+    ↾(Function.Coequalizer.mk f g) ≫ (coequalizerIso f g).inv = coequalizer.π f g :=
   rfl
 
 end CategoryTheory.Limits.Types

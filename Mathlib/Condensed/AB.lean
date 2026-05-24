@@ -15,10 +15,10 @@ public import Mathlib.Condensed.Limits
 # AB axioms in condensed modules
 
 This file proves that the category of condensed modules over a ring satisfies Grothendieck's axioms
-AB5, AB4, and AB4*.
+AB5, AB4, and AB4`*`.
 -/
 
-@[expose] public section
+public section
 
 universe u
 
@@ -26,7 +26,7 @@ open Condensed CategoryTheory Limits
 
 namespace Condensed
 
-variable (A J : Type*) [Category A] [Category J] [Preadditive A]
+variable (A J : Type*) [Category* A] [Category* J] [Preadditive A]
   [∀ X, HasLimitsOfShape (StructuredArrow X Stonean.toCompHaus.op) A]
   [HasWeakSheafify (coherentTopology CompHaus.{u}) A]
   [HasWeakSheafify (extensiveTopology Stonean.{u}) A]

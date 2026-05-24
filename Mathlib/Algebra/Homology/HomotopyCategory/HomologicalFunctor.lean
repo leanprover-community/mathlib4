@@ -10,7 +10,7 @@ public import Mathlib.Algebra.Homology.HomotopyCategory.DegreewiseSplit
 public import Mathlib.Algebra.Homology.HomologySequence
 public import Mathlib.CategoryTheory.Triangulated.HomologicalFunctor
 
-/-! The homological functor
+/-! # The homological functor
 
 In this file, it is shown that if `C` is an abelian category,
 then `homologyFunctor C (ComplexShape.up ℤ) n` is a homological functor
@@ -21,13 +21,13 @@ sequence associated to a short exact sequence of homological complexes.
 
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists TwoSidedIdeal
 
 open CategoryTheory
 
-variable {C : Type*} [Category C] [Abelian C]
+variable {C : Type*} [Category* C] [Abelian C]
 
 namespace HomotopyCategory
 

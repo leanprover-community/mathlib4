@@ -16,7 +16,7 @@ Basic lemmas about the composition `κ ∘ₘ μ` of a kernel `κ` and a measure
 
 -/
 
-@[expose] public section
+public section
 
 open scoped ENNReal
 

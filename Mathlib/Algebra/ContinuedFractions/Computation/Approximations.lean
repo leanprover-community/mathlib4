@@ -213,9 +213,9 @@ theorem fib_le_of_contsAux_b :
       intro n IH hyp
       rcases n with (_ | _ | n)
       · simp [contsAux] -- case n = 0
-      · simp [contsAux] -- case n = 1
+      · simp -- case n = 1
       · let g := of v -- case 2 ≤ n
-        have : ¬n + 2 ≤ 1 := by omega
+        have : ¬n + 2 ≤ 1 := by lia
         have not_terminatedAt_n : ¬g.TerminatedAt n := Or.resolve_left hyp this
         obtain ⟨gp, s_ppred_nth_eq⟩ : ∃ gp, g.s.get? n = some gp :=
           Option.ne_none_iff_exists'.mp not_terminatedAt_n
@@ -366,8 +366,14 @@ theorem sub_convs_eq {ifp : IntFractPair K}
         have : ¬g.TerminatedAt n' :=
           (not_congr of_terminatedAt_n_iff_succ_nth_intFractPair_stream_eq_none).2 this
         exact Or.inr this
-    have determinant_eq : pA * B - pB * A = (-1) ^ n :=
-      (SimpContFract.of v).determinant_aux n_eq_zero_or_not_terminatedAt_pred_n
+    have determinant_eq : pA * B - pB * A = (-1) ^ n := by
+      match hn : n with
+      | 0 => subst n; simp [pA, pB, A, B, pred_conts, conts]
+      | n' + 1 =>
+        subst n
+        simp only [succ_ne_zero, false_or] at n_eq_zero_or_not_terminatedAt_pred_n
+        rw [add_tsub_cancel_right] at n_eq_zero_or_not_terminatedAt_pred_n
+        exact (SimpContFract.of v).determinant n_eq_zero_or_not_terminatedAt_pred_n
     -- now all we got to do is to rewrite this equality in our goal and re-arrange terms;
     -- however, for this, we first have to derive quite a few tedious inequalities.
     have pB_ineq : (fib n : K) ≤ pB :=
@@ -379,7 +385,7 @@ theorem sub_convs_eq {ifp : IntFractPair K}
     have B_ineq : (fib (n + 1) : K) ≤ B :=
       haveI : n + 1 ≤ 1 ∨ ¬g.TerminatedAt (n + 1 - 2) := by
         rcases n_eq_zero_or_not_terminatedAt_pred_n with n_eq_zero | not_terminatedAt_pred_n
-        · simp [n_eq_zero, le_refl]
+        · simp [n_eq_zero]
         · exact Or.inr not_terminatedAt_pred_n
       fib_le_of_contsAux_b this
     have zero_lt_B : 0 < B := B_ineq.trans_lt' <| cast_pos.2 <| fib_pos.2 n.succ_pos

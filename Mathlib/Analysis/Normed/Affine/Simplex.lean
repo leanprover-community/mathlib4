@@ -67,28 +67,17 @@ lemma Scalene.dist_ne {s : Simplex R P n} (hs : s.Scalene) {i₁ i₂ i₃ i₄ 
      fun y ↦ if h : e.symm y.val.1 < e.symm y.val.2 then ⟨(e.symm y.val.1, e.symm y.val.2), h⟩ else
       ⟨(e.symm y.val.2, e.symm y.val.1),
        Ne.lt_of_le (e.symm.injective.ne y.property.ne') (not_lt.1 h)⟩,
-     by
-       simp only [LeftInverse, Subtype.forall, Prod.forall]
-       intro i j h
-       split_ifs with h₁ h₂ h₃
-       · simp
-       · simp [h] at h₂
-       · simp [h, lt_asymm] at h₃
-       · simp,
-     by
-       simp only [RightInverse, LeftInverse, Subtype.forall, Prod.forall]
-       intro i j h
-       split_ifs with h₁ h₂ h₃
-       · simp
-       · simp [h] at h₂
-       · simp [h, lt_asymm] at h₃
-       · simp⟩
+     by grind,
+     by grind⟩
   simp_rw [Scalene]
-  convert (Injective.of_comp_iff' _ (Equiv.bijective f)).symm
+  convert! (Injective.of_comp_iff' _ (Equiv.bijective f)).symm
+  #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/13166
+  (replacing grind's canonicalizer with a type-directed normalizer), `grind` closed this goal.
+  It is not yet clear whether this is due to defeq abuse in Mathlib or a problem in the new
+  canonicalizer; a minimization would help. The original proof was:
+  `grind [reindex_points, dist_comm]` -/
   simp only [reindex_points, comp_apply, Equiv.coe_fn_mk, f]
-  split_ifs with h
-  · simp
-  · simp [dist_comm]
+  split <;> simp [dist_comm]
 
 /-- A simplex is equilateral if all the edge lengths are equal. -/
 def Equilateral (s : Simplex R P n) : Prop :=
@@ -103,8 +92,8 @@ lemma Equilateral.dist_eq {s : Simplex R P n} (he : s.Equilateral) {i₁ i₂ i�
 @[simp] lemma equilateral_reindex_iff {s : Simplex R P m} (e : Fin (m + 1) ≃ Fin (n + 1)) :
     (s.reindex e).Equilateral ↔ s.Equilateral := by
   refine ⟨fun ⟨r, hr⟩ ↦ ⟨r, fun i j hij ↦ ?_⟩, fun ⟨r, hr⟩ ↦ ⟨r, fun i j hij ↦ ?_⟩⟩
-  · convert hr (e i) (e j) (e.injective.ne hij) using 2 <;> simp
-  · convert hr (e.symm i) (e.symm j) (e.symm.injective.ne hij) using 2
+  · convert! hr (e i) (e j) (e.injective.ne hij) using 2 <;> simp
+  · convert! hr (e.symm i) (e.symm j) (e.symm.injective.ne hij) using 2
 
 /-- A simplex is regular if it is equivalent under an isometry to any reindexing. -/
 def Regular (s : Simplex R P n) : Prop :=
@@ -124,20 +113,20 @@ def Regular (s : Simplex R P n) : Prop :=
 
 lemma Regular.equilateral {s : Simplex R P n} (hr : s.Regular) : s.Equilateral := by
   refine ⟨dist (s.points 0) (s.points 1), fun i j hij ↦ ?_⟩
-  have hn : n ≠ 0 := by omega
+  have hn : n ≠ 0 := by lia
   by_cases hi : i = 1
   · rw [hi, dist_comm]
     rcases hr (Equiv.swap 0 j) with ⟨x, hx⟩
     nth_rw 2 [← x.dist_eq]
     simp_rw [← Function.comp_apply (f := x), ← hx]
     simp only [comp_apply, Equiv.swap_apply_left]
-    convert rfl
-    rw [Equiv.swap_apply_of_ne_of_ne (by simp [hn]) (by cutsat)]
+    convert! rfl
+    rw [Equiv.swap_apply_of_ne_of_ne (by simp [hn]) (by lia)]
   · rcases hr ((Equiv.swap 0 i).trans (Equiv.swap 1 j)) with ⟨x, hx⟩
     nth_rw 2 [← x.dist_eq]
     simp_rw [← Function.comp_apply (f := x), ← hx]
     simp only [Equiv.coe_trans, comp_apply, Equiv.swap_apply_left]
-    convert rfl
+    convert! rfl
     · exact Equiv.swap_apply_of_ne_of_ne hi hij
     · rw [Equiv.swap_apply_of_ne_of_ne (by simp [hn]) (Ne.symm hi)]
       simp
@@ -173,13 +162,9 @@ lemma equilateral_iff_dist_eq_and_dist_eq {t : Triangle R P} {i₁ i₂ i₃ : F
     have hi : (i = i₁ ∧ j = i₂) ∨ (i = i₂ ∧ j = i₁) ∨ (i = i₁ ∧ j = i₃) ∨
       (i = i₃ ∧ j = i₁) ∨ (i = i₂ ∧ j = i₃) ∨ (i = i₃ ∧ j = i₂) := by
       clear h
-      #adaptation_note /--
-      https://github.com/leanprover/lean4/issues/11009
-      -/
-      set_option synthInstance.maxSize 1000 in
       decide +revert
     rcases h with ⟨h₁, h₂⟩
-    rcases hi with ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩| ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩
+    rcases hi with ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩
     · rfl
     · exact dist_comm _ _
     · exact h₁.symm

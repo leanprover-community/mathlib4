@@ -144,7 +144,7 @@ lemma evenKernel_functional_equation (a : UnitAddCircle) (x : ℝ) :
     rw [div_eq_iff hx']
     ring
   have h3 : 1 / (-I * (I * x)) ^ (1 / 2 : ℂ) = 1 / ↑(x ^ (1 / 2 : ℝ)) := by
-    rw [neg_mul, ← mul_assoc, I_mul_I, neg_one_mul, neg_neg,ofReal_cpow hx.le, ofReal_div,
+    rw [neg_mul, ← mul_assoc, I_mul_I, neg_one_mul, neg_neg, ofReal_cpow hx.le, ofReal_div,
       ofReal_one, ofReal_ofNat]
   have h4 : -π * I * (a * I * x) ^ 2 / (I * x) = - (-π * a ^ 2 * x) := by
     rw [mul_pow, mul_pow, I_sq, div_eq_iff hx']
@@ -166,8 +166,7 @@ lemma hasSum_int_evenKernel (a : ℝ) {t : ℝ} (ht : 0 < t) :
   have (n : ℤ) : cexp (-(π * (n + a) ^ 2 * t)) = cexp (-(π * a ^ 2 * t)) *
       jacobiTheta₂_term n (a * I * t) (I * t) := by
     rw [jacobiTheta₂_term, ← Complex.exp_add]
-    ring_nf
-    simp
+    grind [I_sq]
   simpa [this] using (hasSum_jacobiTheta₂_term _ (by simpa)).mul_left _
 
 lemma hasSum_int_cosKernel (a : ℝ) {t : ℝ} (ht : 0 < t) :
@@ -248,7 +247,7 @@ end asymp
 
 section FEPair
 /-!
-## Construction of a FE-pair
+## Construction of an FE-pair
 -/
 
 /-- A `WeakFEPair` structure with `f = evenKernel a` and `g = cosKernel a`. -/
@@ -655,8 +654,10 @@ lemma differentiable_hurwitzZetaEven_sub_hurwitzZetaEven (a b : UnitAddCircle) :
   intro z
   rcases ne_or_eq z 1 with hz | rfl
   · exact (differentiableAt_hurwitzZetaEven a hz).sub (differentiableAt_hurwitzZetaEven b hz)
-  · convert (differentiableAt_hurwitzZetaEven_sub_one_div a).fun_sub
-      (differentiableAt_hurwitzZetaEven_sub_one_div b) using 2 with s
+  · convert!
+    (differentiableAt_hurwitzZetaEven_sub_one_div a).fun_sub
+      (differentiableAt_hurwitzZetaEven_sub_one_div b) using
+    2 with s
     abel
 
 /--

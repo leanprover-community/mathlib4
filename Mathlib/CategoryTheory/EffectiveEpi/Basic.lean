@@ -23,7 +23,7 @@ of the family).
 We have defined the notion of effective epi for morphisms and families of morphisms in such a
 way that avoids requiring the existence of pullbacks. However, if the relevant pullbacks exist
 then these definitions are equivalent, see the file
-`CategoryTheory/EffectiveEpi/RegularEpi.lean`
+`Mathlib/CategoryTheory/EffectiveEpi/RegularEpi.lean`
 See [nlab: *Effective Epimorphism*](https://ncatlab.org/nlab/show/effective+epimorphism) and
 [Stacks 00WP](https://stacks.math.columbia.edu/tag/00WP) for the standard definitions. Note that
 our notion of `EffectiveEpi` is often called "strict epi" in the literature.
@@ -41,7 +41,7 @@ namespace CategoryTheory
 
 open Limits Category
 
-variable {C : Type*} [Category C]
+variable {C : Type*} [Category* C]
 
 /--
 This structure encodes the data required for a morphism to be an effective epimorphism.
@@ -219,6 +219,7 @@ theorem effectiveEpi_iff_effectiveEpiFamily {B X : C} (f : X ⟶ B) :
     EffectiveEpi f ↔ EffectiveEpiFamily (fun () ↦ X) (fun () ↦ f) :=
   ⟨fun _ ↦ inferInstance, fun _ ↦ inferInstance⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 A family of morphisms with the same target inducing an isomorphism from the coproduct to the target
 is an `EffectiveEpiFamily`.
@@ -269,7 +270,7 @@ def EffectiveEpiFamilyStruct.reindex
     EffectiveEpiFamilyStruct X π where
   desc := fun f h => P.desc (fun _ => f _) (fun _ _ => h _ _)
   fac _ _ a := by
-    obtain ⟨a,rfl⟩ := e.surjective a
+    obtain ⟨a, rfl⟩ := e.surjective a
     apply P.fac
   uniq _ _ _ hm := P.uniq _ _ _ fun _ => hm _
 

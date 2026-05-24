@@ -34,12 +34,12 @@ space with dual `X^*`. A closed subspace `M` of `X` is said to be an M-ideal if 
 annihilator `M^∘` is an L-summand of `X^*`.
 
 M-ideal, M-summands and L-summands were introduced by Alfsen and Effros in [alfseneffros1972] to
-study the structure of general Banach spaces. When `A` is a JB*-triple, the M-ideals of `A` are
-exactly the norm-closed ideals of `A`. When `A` is a JBW*-triple with predual `X`, the M-summands of
-`A` are exactly the weak*-closed ideals, and their pre-duals can be identified with the L-summands
-of `X`. In the special case when `A` is a C*-algebra, the M-ideals are exactly the norm-closed
-two-sided ideals of `A`, when `A` is also a W*-algebra the M-summands are exactly the weak*-closed
-two-sided ideals of `A`.
+study the structure of general Banach spaces. When `A` is a JB\*-triple, the M-ideals of `A` are
+exactly the norm-closed ideals of `A`. When `A` is a JBW\*-triple with predual `X`, the M-summands
+of `A` are exactly the weak\*-closed ideals, and their pre-duals can be identified with the
+L-summands of `X`. In the special case when `A` is a C\*-algebra, the M-ideals are exactly the
+norm-closed two-sided ideals of `A`, when `A` is also a W\*-algebra the M-summands are exactly the
+weak\*-closed two-sided ideals of `A`.
 
 ## Implementation notes
 
@@ -119,7 +119,7 @@ theorem commute [FaithfulSMul M X] {P Q : M} (h₁ : IsLprojection X P) (h₂ : 
           _ ≥ ‖R • x‖ + 2 • ‖(P * R) • x - (R * P * R) • x‖ := by
             rw [ge_iff_le]
             have :=
-              add_le_add_right (norm_le_insert' (R • x) (R • P • R • x)) (2 • ‖(1 - R) • P • R • x‖)
+              add_le_add_left (norm_le_insert' (R • x) (R • P • R • x)) (2 • ‖(1 - R) • P • R • x‖)
             simpa only [mul_smul, sub_smul, one_smul] using this
       rw [ge_iff_le] at e1
       nth_rewrite 2 [← add_zero ‖R • x‖] at e1
@@ -155,10 +155,10 @@ theorem mul [FaithfulSMul M X] {P Q : M} (h₁ : IsLprojection X P) (h₂ : IsLp
 
 theorem join [FaithfulSMul M X] {P Q : M} (h₁ : IsLprojection X P) (h₂ : IsLprojection X Q) :
     IsLprojection X (P + Q - P * Q) := by
-  convert (Lcomplement_iff _).mp (h₁.Lcomplement.mul h₂.Lcomplement) using 1
+  convert! (Lcomplement_iff _).mp (h₁.Lcomplement.mul h₂.Lcomplement) using 1
   noncomm_ring
 
-instance Subtype.hasCompl : HasCompl { f : M // IsLprojection X f } :=
+instance Subtype.instCompl : Compl { f : M // IsLprojection X f } :=
   ⟨fun P => ⟨1 - P, P.prop.Lcomplement⟩⟩
 
 @[simp]
@@ -196,7 +196,7 @@ instance Subtype.partialOrder [FaithfulSMul M X] :
   le_trans P Q R h₁ h₂ := by
     simp only [coe_inf] at h₁ h₂ ⊢
     rw [h₁, mul_assoc, ← h₂]
-  le_antisymm P Q h₁ h₂ := Subtype.ext (by convert (P.prop.commute Q.prop).eq)
+  le_antisymm P Q h₁ h₂ := Subtype.ext (by convert! (P.prop.commute Q.prop).eq)
 
 theorem le_def [FaithfulSMul M X] (P Q : { P : M // IsLprojection X P }) :
     P ≤ Q ↔ (P : M) = ↑(P ⊓ Q) :=
@@ -293,7 +293,7 @@ instance Subtype.distribLattice [FaithfulSMul M X] :
 
 instance Subtype.BooleanAlgebra [FaithfulSMul M X] :
     BooleanAlgebra { P : M // IsLprojection X P } :=
-  { IsLprojection.Subtype.hasCompl,
+  { IsLprojection.Subtype.instCompl,
     IsLprojection.Subtype.sdiff,
     IsLprojection.Subtype.boundedOrder with
     inf_compl_le_bot := fun P =>

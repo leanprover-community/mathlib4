@@ -183,7 +183,7 @@ theorem IsWeierstrassDivisor.of_map_ne_zero [IsLocalRing A]
     (hg : g.map (IsLocalRing.residue A) ≠ 0) : g.IsWeierstrassDivisor := by
   rw [IsWeierstrassDivisor, IsWeierstrassDivisorAt, ← IsLocalRing.notMem_maximalIdeal]
   have h := coeff_order hg
-  contrapose! h
+  contrapose h
   rwa [coeff_map, IsLocalRing.residue_eq_zero_iff]
 
 theorem _root_.Polynomial.IsDistinguishedAt.isWeierstrassDivisorAt {g : A[X]} {I : Ideal A}
@@ -409,7 +409,8 @@ theorem mod_zero [IsAdicComplete I A] : H.mod 0 = 0 := by
 `A⟦X⟧ / (g) →ₗ[A] A[X]`. -/
 noncomputable def mod' [IsAdicComplete I A] : A⟦X⟧ ⧸ Ideal.span {g} →ₗ[A] A[X] where
   toFun := Quotient.lift (fun f ↦ H.mod f) fun f f' hf ↦ by
-    simp_rw [HasEquiv.Equiv, Submodule.quotientRel_def, Ideal.mem_span_singleton'] at hf
+    have hf := (Submodule.quotientRel_def (p := Ideal.span {g})).mp hf
+    rw [Ideal.mem_span_singleton'] at hf
     obtain ⟨a, ha⟩ := hf
     obtain ⟨hf1, hf2⟩ := H.isWeierstrassDivisionAt_div_mod f
     obtain ⟨hf'1, hf'2⟩ := H.isWeierstrassDivisionAt_div_mod f'
@@ -470,15 +471,16 @@ noncomputable def _root_.Polynomial.IsDistinguishedAt.algEquivQuotient :
     have hI : I ≠ ⊤ := by
       rintro rfl
       exact not_subsingleton _ ‹IsAdicComplete ⊤ A›.toIsHausdorff.subsingleton
-    have := Ideal.Quotient.nontrivial hI
+    have := Ideal.Quotient.nontrivial_iff.mpr hI
     obtain ⟨f, hfdeg, rfl⟩ : ∃ r : A[X], r.degree < g.degree ∧ Ideal.Quotient.mk _ r = f := by
       obtain ⟨f, rfl⟩ := Ideal.Quotient.mk_surjective f
       refine ⟨f %ₘ g, Polynomial.degree_modByMonic_lt f H.monic, ?_⟩
       rw [Eq.comm, Ideal.Quotient.mk_eq_mk_iff_sub_mem, Ideal.mem_span_singleton']
-      exact ⟨f /ₘ g, by rw [Polynomial.modByMonic_eq_sub_mul_div _ H.monic]; ring⟩
+      exact ⟨f /ₘ g, by rw [Polynomial.modByMonic_eq_sub_mul_div]; ring⟩
     have h1 : g.degree = ((g : A⟦X⟧).map (Ideal.Quotient.mk I)).order.toNat := by
-      convert H.degree_eq_coe_lift_order_map g 1
-        (by rwa [constantCoeff_one, ← Ideal.ne_top_iff_one]) (by simp)
+      convert!
+        H.degree_eq_coe_lift_order_map g 1 (by rwa [constantCoeff_one, ← Ideal.ne_top_iff_one])
+          (by simp)
       exact (ENat.lift_eq_toNat_of_lt_top _).symm
     dsimp
     rw [Ideal.Quotient.mk_eq_mk_iff_sub_mem, Ideal.mem_span_singleton']
@@ -662,7 +664,7 @@ variable {g : A⟦X⟧} {f : A[X]} {h : A⟦X⟧} {I : Ideal A} (H : g.IsWeierst
 include H
 
 theorem map_ne_zero_of_ne_top (hI : I ≠ ⊤) : g.map (Ideal.Quotient.mk I) ≠ 0 := by
-  have := Ideal.Quotient.nontrivial hI
+  have := Ideal.Quotient.nontrivial_iff.mpr hI
   rw [congr(map (Ideal.Quotient.mk I) $(H.eq_mul)), map_mul, ← Polynomial.polynomial_map_coe, ne_eq,
     (H.isUnit.map _).mul_left_eq_zero]
   exact_mod_cast f.map_monic_ne_zero (f := Ideal.Quotient.mk I) H.isDistinguishedAt.monic
@@ -671,7 +673,7 @@ theorem degree_eq_coe_lift_order_map_of_ne_top (hI : I ≠ ⊤) :
     f.degree = (g.map (Ideal.Quotient.mk I)).order.lift
       (order_finite_iff_ne_zero.2 (H.map_ne_zero_of_ne_top hI)) := by
   refine H.isDistinguishedAt.degree_eq_coe_lift_order_map g h ?_ H.eq_mul
-  contrapose! hI
+  contrapose hI
   exact Ideal.eq_top_of_isUnit_mem _ hI (isUnit_iff_constantCoeff.1 H.isUnit)
 
 theorem natDegree_eq_toNat_order_map_of_ne_top (hI : I ≠ ⊤) :
@@ -745,7 +747,7 @@ theorem IsWeierstrassDivision.isUnit_of_map_ne_zero
     · rw [zero_mul]
     · rw [← ENat.lt_lift_iff (h := order_finite_iff_ne_zero.2 hg), ENat.lift_eq_toNat_of_lt_top]
       refine (Finset.antidiagonal.fst_le hp).lt_of_ne ?_
-      contrapose! hnotMem
+      contrapose hnotMem
       rwa [Finset.mem_singleton, Finset.antidiagonal_congr hp (by simp)]
 
 theorem IsWeierstrassDivision.isWeierstrassFactorization

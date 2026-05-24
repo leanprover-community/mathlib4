@@ -16,7 +16,7 @@ then its restriction to `ℝ` is differentiable over `ℝ`, with derivative the 
 complex derivative.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists IsConformalMap Conformal
 
@@ -69,30 +69,28 @@ variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E]
 theorem HasStrictDerivAt.complexToReal_fderiv' {f : ℂ → E} {x : ℂ} {f' : E}
     (h : HasStrictDerivAt f f' x) :
     HasStrictFDerivAt f (reCLM.smulRight f' + I • imCLM.smulRight f') x := by
-  simpa only [Complex.restrictScalars_one_smulRight'] using
-    h.hasStrictFDerivAt.restrictScalars ℝ
+  simpa only [Complex.restrictScalars_toSpanSingleton'] using h.hasStrictFDerivAt.restrictScalars ℝ
 
 theorem HasDerivAt.complexToReal_fderiv' {f : ℂ → E} {x : ℂ} {f' : E} (h : HasDerivAt f f' x) :
     HasFDerivAt f (reCLM.smulRight f' + I • imCLM.smulRight f') x := by
-  simpa only [Complex.restrictScalars_one_smulRight'] using h.hasFDerivAt.restrictScalars ℝ
+  simpa only [Complex.restrictScalars_toSpanSingleton'] using h.hasFDerivAt.restrictScalars ℝ
 
 theorem HasDerivWithinAt.complexToReal_fderiv' {f : ℂ → E} {s : Set ℂ} {x : ℂ} {f' : E}
     (h : HasDerivWithinAt f f' s x) :
     HasFDerivWithinAt f (reCLM.smulRight f' + I • imCLM.smulRight f') s x := by
-  simpa only [Complex.restrictScalars_one_smulRight'] using
-    h.hasFDerivWithinAt.restrictScalars ℝ
+  simpa only [Complex.restrictScalars_toSpanSingleton'] using h.hasFDerivWithinAt.restrictScalars ℝ
 
 theorem HasStrictDerivAt.complexToReal_fderiv {f : ℂ → ℂ} {f' x : ℂ} (h : HasStrictDerivAt f f' x) :
     HasStrictFDerivAt f (f' • (1 : ℂ →L[ℝ] ℂ)) x := by
-  simpa only [Complex.restrictScalars_one_smulRight] using h.hasStrictFDerivAt.restrictScalars ℝ
+  simpa only [Complex.restrictScalars_toSpanSingleton] using h.hasStrictFDerivAt.restrictScalars ℝ
 
 theorem HasDerivAt.complexToReal_fderiv {f : ℂ → ℂ} {f' x : ℂ} (h : HasDerivAt f f' x) :
     HasFDerivAt f (f' • (1 : ℂ →L[ℝ] ℂ)) x := by
-  simpa only [Complex.restrictScalars_one_smulRight] using h.hasFDerivAt.restrictScalars ℝ
+  simpa only [Complex.restrictScalars_toSpanSingleton] using h.hasFDerivAt.restrictScalars ℝ
 
 theorem HasDerivWithinAt.complexToReal_fderiv {f : ℂ → ℂ} {s : Set ℂ} {f' x : ℂ}
     (h : HasDerivWithinAt f f' s x) : HasFDerivWithinAt f (f' • (1 : ℂ →L[ℝ] ℂ)) s x := by
-  simpa only [Complex.restrictScalars_one_smulRight] using h.hasFDerivWithinAt.restrictScalars ℝ
+  simpa only [Complex.restrictScalars_toSpanSingleton] using h.hasFDerivWithinAt.restrictScalars ℝ
 
 /-- If a complex function `e` is differentiable at a real point, then its restriction to `ℝ` is
 differentiable there as a function `ℝ → ℂ`, with the same derivative. -/
@@ -105,5 +103,10 @@ theorem HasDerivAt.ofReal_comp {f : ℝ → ℝ} {u : ℝ} (hf : HasDerivAt f u 
     HasDerivAt (fun y : ℝ => ↑(f y) : ℝ → ℂ) u z := by
   simpa only [ofRealCLM_apply, ofReal_one, real_smul, mul_one] using
     ofRealCLM.hasDerivAt.scomp z hf
+
+theorem HasDerivWithinAt.ofReal_comp {f : ℝ → ℝ} {s : Set ℝ} {u : ℝ}
+    (hf : HasDerivWithinAt f u s z) : HasDerivWithinAt (fun y : ℝ => ↑(f y) : ℝ → ℂ) u s z := by
+  simpa only [Function.comp_apply, ofRealCLM_apply] using
+    ofRealCLM.hasFDerivAt.comp_hasDerivWithinAt z hf
 
 end RealDerivOfComplex

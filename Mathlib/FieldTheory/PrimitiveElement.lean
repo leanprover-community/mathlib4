@@ -94,7 +94,7 @@ theorem primitive_element_inf_aux_exists_c (f g : F[X]) :
   obtain ⟨c, hc⟩ := Infinite.exists_notMem_finset s'
   simp_rw [s', s, Finset.mem_preimage, Multiset.mem_toFinset, Multiset.mem_bind, Multiset.mem_map]
     at hc
-  push_neg at hc
+  push Not at hc
   exact ⟨c, hc⟩
 
 variable (F)
@@ -133,18 +133,20 @@ theorem primitive_element_inf_aux [Algebra.IsSeparable F E] : ∃ γ : E, F⟮α
     mt EuclideanDomain.gcd_eq_zero_iff.mp (not_and.mpr fun _ => map_g_ne_zero)
   suffices p_linear : p.map (algebraMap F⟮γ⟯ E) = C h.leadingCoeff * (X - C β) by
     have finale : β = algebraMap F⟮γ⟯ E (-p.coeff 0 / p.coeff 1) := by
-      simp [map_div₀, RingHom.map_neg, ← coeff_map, ← coeff_map, p_linear,
+      simp [map_div₀, map_neg, ← coeff_map, ← coeff_map, p_linear,
         mul_sub, coeff_C, mul_div_cancel_left₀ β (mt leadingCoeff_eq_zero.mp h_ne_zero)]
     rw [finale]
     exact Subtype.mem (-p.coeff 0 / p.coeff 1)
   have h_sep : h.Separable := separable_gcd_right _ (.map (Algebra.IsSeparable.isSeparable F β))
   have h_root : h.eval β = 0 := by
     apply eval_gcd_eq_zero
-    · rw [eval_comp, eval_sub, eval_mul, eval_C, eval_C, eval_X, eval_map, ← aeval_def, ←
+    · rw [eval_comp, eval_sub, eval_mul, eval_C, eval_C, eval_X, eval_map_algebraMap, ←
         Algebra.smul_def, add_sub_cancel_right, minpoly.aeval]
-    · rw [eval_map, ← aeval_def, minpoly.aeval]
-  have h_splits : Splits (h.map ιEE') :=
-    splits_of_splits_gcd_right ιEE' map_g_ne_zero (SplittingField.splits _)
+    · rw [eval_map_algebraMap, minpoly.aeval]
+  have h_splits : Splits (h.map ιEE') := by
+    rw [← Polynomial.gcd_map]
+    exact (SplittingField.splits _).of_dvd (map_ne_zero map_g_ne_zero)
+      (EuclideanDomain.gcd_dvd_right _ _)
   have h_roots : ∀ x ∈ (h.map ιEE').roots, x = ιEE' β := by
     intro x hx
     rw [mem_roots_map h_ne_zero] at hx
@@ -158,12 +160,12 @@ theorem primitive_element_inf_aux [Algebra.IsSeparable F E] : ∃ γ : E, F⟮α
     by_contra a
     apply hc
     apply (div_eq_iff (sub_ne_zero.mpr a)).mpr
-    simp only [γ, Algebra.smul_def, RingHom.map_add, RingHom.map_mul, RingHom.comp_apply]
+    simp only [γ, Algebra.smul_def, map_add, map_mul, RingHom.comp_apply]
     ring
   rw [← eq_X_sub_C_of_separable_of_root_eq h_sep h_root h_splits h_roots]
   trans EuclideanDomain.gcd (?_ : E[X]) (?_ : E[X])
   · dsimp only [γ]
-    convert (gcd_map (algebraMap F⟮γ⟯ E)).symm
+    convert! (gcd_map (algebraMap F⟮γ⟯ E)).symm
   · simp only [map_comp, Polynomial.map_map, ← IsScalarTower.algebraMap_eq, Polynomial.map_sub,
       map_C, AdjoinSimple.algebraMap_gen, Polynomial.map_mul, map_X]
     congr
@@ -188,7 +190,7 @@ private theorem primitive_element_inf_aux_of_finite_intermediateField
     replace β_in_K := smul_mem _ β_in_K (x := (x - y)⁻¹)
     rw [smul_smul, inv_mul_eq_div, div_self (sub_ne_zero.2 hneq), one_smul] at β_in_K
     have α_in_K : α ∈ F⟮α + x • β⟯ := by
-      convert ← sub_mem αxβ_in_K (smul_mem _ β_in_K)
+      convert! ← sub_mem αxβ_in_K (smul_mem _ β_in_K)
       apply add_sub_cancel_right
     rintro x (rfl | rfl) <;> assumption
   · rw [adjoin_simple_le_iff]
@@ -318,7 +320,7 @@ theorem finite_intermediateField_of_exists_primitive_element [Algebra.IsAlgebrai
   -- which is a monic factor of `f`
   let g : IntermediateField F E → G := fun K ↦
     ⟨(minpoly K α).map (algebraMap K E), (minpoly.monic <| .of_finite K α).map _, by
-      convert Polynomial.map_dvd (algebraMap K E) (minpoly.dvd_map_of_isScalarTower F K α)
+      convert! Polynomial.map_dvd (algebraMap K E) (minpoly.dvd_map_of_isScalarTower F K α)
       rw [Polynomial.map_map]; rfl⟩
   -- The map `K ↦ g` is injective
   have hinj : Function.Injective g := fun K K' heq ↦ by
@@ -361,7 +363,7 @@ theorem AlgHom.card_of_splits (L : Type*) [Field L] [Algebra F L]
 @[simp]
 theorem AlgHom.card (K : Type*) [Field K] [IsAlgClosed K] [Algebra F K] :
     Fintype.card (E →ₐ[F] K) = finrank F E :=
-  AlgHom.card_of_splits _ _ _ (fun _ ↦ IsAlgClosed.splits_codomain _)
+  AlgHom.card_of_splits _ _ _ (fun _ ↦ IsAlgClosed.splits _)
 
 section iff
 
@@ -400,7 +402,6 @@ theorem primitive_element_iff_algHom_eq_of_eval (α : E)
   refine ⟨fun h ψ hψ ↦ (Field.primitive_element_iff_algHom_eq_of_eval' F A hA α).mp h hψ,
     fun h ↦ eq_of_le_of_finrank_eq' le_top ?_⟩
   letI : Algebra F⟮α⟯ A := (φ.comp F⟮α⟯.val).toAlgebra
-  haveI := Algebra.isSeparable_tower_top_of_isSeparable F F⟮α⟯ E
   rw [IntermediateField.finrank_top, ← AlgHom.card_of_splits _ _ A, Fintype.card_eq_one_iff]
   · exact ⟨{ __ := φ, commutes' := fun _ ↦ rfl }, fun ψ ↦ AlgHom.restrictScalars_injective F <|
       Eq.symm <| h _ (ψ.commutes <| AdjoinSimple.gen F α).symm⟩

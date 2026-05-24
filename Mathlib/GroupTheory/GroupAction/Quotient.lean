@@ -36,6 +36,8 @@ variable {α : Type u} {β : Type v} {γ : Type w}
 
 open Function
 
+open scoped commutatorElement
+
 namespace MulAction
 
 variable [Group α]
@@ -66,7 +68,7 @@ instance left_quotientAction : QuotientAction α H :=
   ⟨fun _ _ _ _ => by rwa [smul_eq_mul, smul_eq_mul, mul_inv_rev, mul_assoc, inv_mul_cancel_left]⟩
 
 @[to_additive]
-instance right_quotientAction : QuotientAction (normalizer H).op H :=
+instance right_quotientAction : QuotientAction (normalizer H : Subgroup α).op H :=
   ⟨fun b c _ _ => by
     rwa [smul_def, smul_def, smul_eq_mul_unop, smul_eq_mul_unop, mul_inv_rev, ← mul_assoc,
       mem_normalizer_iff'.mp b.prop, mul_assoc, mul_inv_cancel_left]⟩
@@ -165,7 +167,7 @@ theorem injective_ofQuotientStabilizer : Function.Injective (ofQuotientStabilize
 noncomputable def orbitEquivQuotientStabilizer (b : β) : orbit α b ≃ α ⧸ stabilizer α b :=
   Equiv.symm <|
     Equiv.ofBijective (fun g => ⟨ofQuotientStabilizer α b g, ofQuotientStabilizer_mem_orbit α b g⟩)
-      ⟨fun x y hxy => injective_ofQuotientStabilizer α b (by convert congr_arg Subtype.val hxy),
+      ⟨fun x y hxy => injective_ofQuotientStabilizer α b (by convert! congr_arg Subtype.val hxy),
         fun ⟨_, ⟨g, hgb⟩⟩ => ⟨g, Subtype.ext hgb⟩⟩
 
 /-- Orbit-stabilizer theorem. -/
@@ -232,7 +234,7 @@ noncomputable def selfEquivSigmaOrbitsQuotientStabilizer : β ≃ Σ ω : Ω, α
 @[to_additive AddAction.sigmaFixedByEquivOrbitsProdAddGroup
       /-- **Burnside's lemma** : a (noncomputable) bijection between the disjoint union of all
       `{x ∈ X | g • x = x}` for `g ∈ G` and the product `G × X/G`, where `G` is an additive group
-      acting on `X` and `X/G`denotes the quotient of `X` by the relation `orbitRel G X`. -/]
+      acting on `X` and `X/G` denotes the quotient of `X` by the relation `orbitRel G X`. -/]
 noncomputable def sigmaFixedByEquivOrbitsProdGroup : (Σ a : α, fixedBy β a) ≃ Ω × α :=
   calc
     (Σ a : α, fixedBy β a) ≃ { ab : α × β // ab.1 • ab.2 = ab.2 } :=
@@ -367,14 +369,14 @@ noncomputable def equivSubgroupOrbitsQuotientGroup [IsPretransitive α β]
     cases y using Quotient.inductionOn'
     simp only [Quotient.liftOn'_mk'']
     rw [← @Quotient.mk''_eq_mk, Quotient.eq'', orbitRel_apply]
-    convert mem_orbit_self _
+    convert! mem_orbit_self _
     rw [inv_smul_eq_iff, (exists_smul_eq α _ x).choose_spec]
   right_inv := fun g ↦ by
     cases g using Quotient.inductionOn' with | _ g
     simp only [Quotient.liftOn'_mk'', QuotientGroup.mk]
     rw [Quotient.eq'', leftRel_eq]
     simp only
-    convert one_mem H
+    convert! one_mem H
     rw [inv_mul_eq_one, eq_comm, ← inv_mul_eq_one, ← Subgroup.mem_bot,
         ← IsCancelSMul.stabilizer_eq_bot (g⁻¹ • x), mem_stabilizer_iff, mul_smul,
         (exists_smul_eq α (g⁻¹ • x) x).choose_spec]

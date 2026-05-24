@@ -118,8 +118,7 @@ lemma ae_count_iff {p : α → Prop} : (∀ᵐ x ∂count, p x) ↔ ∀ x, p x :
 @[simp]
 theorem count_singleton' {a : α} (ha : MeasurableSet ({a} : Set α)) : count ({a} : Set α) = 1 := by
   rw [count_apply_finite' (Set.finite_singleton a) ha, Set.Finite.toFinset]
-  simp [
-    ]
+  simp
 
 theorem count_singleton [MeasurableSingletonClass α] (a : α) : count ({a} : Set α) = 1 :=
   count_singleton' (measurableSet_singleton a)
@@ -163,6 +162,23 @@ instance count.isFiniteMeasure [Finite α] :
 
 @[simp]
 lemma count_univ : count (univ : Set α) = ENat.card α := by simp [count_apply .univ, encard_univ]
+
+lemma _root_.Subsingleton.count_eq_dirac [Subsingleton α] (i : α) :
+    count = dirac i := by
+  calc count
+      = count.restrict univ := by simp
+    _ = count.restrict {i} := by congr; ext j; simp [Subsingleton.elim j i]
+    _ = dirac i := by simp
+
+lemma _root_.Unique.count_eq_dirac [Unique α] : count = dirac (default : α) :=
+  Subsingleton.count_eq_dirac _
+
+lemma _root_.Function.Injective.map_count_le {f : α → β}
+    (hf : f.Injective) (h2f : Measurable f) : count.map f ≤ count := by
+  refine le_intro fun s hs _ ↦ ?_
+  rw [map_apply h2f hs, count_apply (hs.preimage h2f), count_apply hs, ← hf.encard_image]
+  have := image_preimage_subset f s
+  gcongr
 
 end Measure
 

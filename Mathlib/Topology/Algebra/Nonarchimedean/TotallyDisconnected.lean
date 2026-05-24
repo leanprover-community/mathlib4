@@ -29,9 +29,9 @@ is implied by the fact that a nonarchimedean group is totally separated.
 See Proposition 2.3.9 and Problem 63 in [F. Q. Gouvêa, *p-adic numbers*][gouvea1997].
 -/
 
-@[expose] public section
+public section
 
-open Pointwise TopologicalSpace
+open scoped Pointwise
 
 variable {G : Type*} [TopologicalSpace G] [Group G] [NonarchimedeanGroup G] [T2Space G]
 
@@ -45,8 +45,7 @@ lemma exists_openSubgroup_separating {a b : G} (h : a ≠ b) :
   use V
   simp only [Disjoint, Set.le_eq_subset, Set.bot_eq_empty, Set.subset_empty_iff]
   intro x mem_aV mem_bV
-  by_contra! con
-  obtain ⟨s, hs⟩ := con
+  by_contra! ⟨s, hs⟩
   have hsa : s ∈ a • (V : Set G) := mem_aV hs
   have hsb : s ∈ b • (V : Set G) := mem_bV hs
   rw [mem_leftCoset_iff] at hsa hsb

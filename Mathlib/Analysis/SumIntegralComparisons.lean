@@ -42,7 +42,7 @@ At the moment it contains several lemmas in this direction, for antitone or mono
 analysis, comparison, asymptotics
 -/
 
-@[expose] public section
+public section
 
 
 open Set MeasureTheory MeasureSpace
@@ -75,8 +75,10 @@ lemma integral_le_sum_Ico_of_le
     (hab : a ≤ b) (h : ∀ i ∈ Ico a b, ∀ x ∈ Ico (i : ℝ) (i + 1 : ℕ), g x ≤ f i)
     (hg : IntegrableOn g (Set.Ico a b)) :
     ∫ x in a..b, g x ≤ ∑ i ∈ Finset.Ico a b, f i := by
-  convert neg_le_neg (sum_Ico_le_integral_of_le (f := -f) (g := -g) hab
-    (fun i hi x hx ↦ neg_le_neg (h i hi x hx)) hg.neg) <;> simp
+  convert!
+    neg_le_neg
+      (sum_Ico_le_integral_of_le (f := -f) (g := -g) hab (fun i hi x hx ↦ neg_le_neg (h i hi x hx))
+        hg.neg) <;> simp
 
 theorem AntitoneOn.integral_le_sum (hf : AntitoneOn f (Icc x₀ (x₀ + a))) :
     (∫ x in x₀..x₀ + a, f x) ≤ ∑ i ∈ Finset.range a, f (x₀ + i) := by
@@ -90,10 +92,10 @@ theorem AntitoneOn.integral_le_sum (hf : AntitoneOn f (Icc x₀ (x₀ + a))) :
     · simp only [add_le_add_iff_left, Nat.cast_le, Nat.le_succ]
   calc
     ∫ x in x₀..x₀ + a, f x = ∑ i ∈ Finset.range a, ∫ x in x₀ + i..x₀ + (i + 1 : ℕ), f x := by
-      convert (intervalIntegral.sum_integral_adjacent_intervals hint).symm
+      convert! (intervalIntegral.sum_integral_adjacent_intervals hint).symm
       simp only [Nat.cast_zero, add_zero]
     _ ≤ ∑ i ∈ Finset.range a, ∫ _ in x₀ + i..x₀ + (i + 1 : ℕ), f (x₀ + i) := by
-      apply Finset.sum_le_sum fun i hi => ?_
+      gcongr with i hi
       have ia : i < a := Finset.mem_range.1 hi
       refine intervalIntegral.integral_mono_on (by simp) (hint _ ia) (by simp) fun x hx => ?_
       apply hf _ _ hx.1
@@ -151,7 +153,7 @@ theorem AntitoneOn.sum_le_integral (hf : AntitoneOn f (Icc x₀ (x₀ + a))) :
       · refine mem_Icc.2 ⟨le_add_of_nonneg_right (Nat.cast_nonneg _), ?_⟩
         simp only [add_le_add_iff_left, Nat.cast_le, ia]
     _ = ∫ x in x₀..x₀ + a, f x := by
-      convert intervalIntegral.sum_integral_adjacent_intervals hint
+      convert! intervalIntegral.sum_integral_adjacent_intervals hint
       simp only [Nat.cast_zero, add_zero]
 
 theorem AntitoneOn.sum_le_integral_Ico (hab : a ≤ b) (hf : AntitoneOn f (Set.Icc a b)) :
@@ -207,14 +209,14 @@ lemma sum_mul_Ico_le_integral_of_monotone_antitone
     have I0 : (i : ℝ) ≤ b - 1 := by
       simp only [le_sub_iff_add_le]
       norm_cast
-      omega
+      lia
     have I1 : (i : ℝ) ∈ Icc (a - 1 : ℝ) (b - 1) := by
       simp only [mem_Icc, tsub_le_iff_right]
-      exact ⟨by norm_cast; cutsat, I0⟩
+      exact ⟨by norm_cast; lia, I0⟩
     have I2 : x ∈ Icc (a : ℝ) b := by
       refine ⟨le_trans (mod_cast hi.1) hx.1, hx.2.le.trans ?_⟩
       norm_cast
-      omega
+      lia
     apply mul_le_mul
     · apply hf
       · simp only [mem_Icc, Nat.cast_le]
@@ -225,7 +227,7 @@ lemma sum_mul_Ico_le_integral_of_monotone_antitone
       · simp only [mem_Icc, tsub_le_iff_right, sub_add_cancel]
         refine ⟨le_trans (mod_cast hi.1) hx.1, hx.2.le.trans ?_⟩
         norm_cast
-        cutsat
+        lia
       · exact I1
       · simpa [sub_le_iff_le_add] using hx.2.le
     · apply gpos.trans
@@ -253,14 +255,14 @@ lemma integral_le_sum_mul_Ico_of_antitone_monotone
     have I0 : (i : ℝ) ≤ b - 1 := by
       simp only [le_sub_iff_add_le]
       norm_cast
-      omega
+      lia
     have I1 : (i : ℝ) ∈ Icc (a - 1 : ℝ) (b - 1) := by
       simp only [mem_Icc, tsub_le_iff_right]
-      exact ⟨by norm_cast; cutsat, I0⟩
+      exact ⟨by norm_cast; lia, I0⟩
     have I2 : x ∈ Icc (a : ℝ) b := by
       refine ⟨le_trans (mod_cast hi.1) hx.1, hx.2.le.trans ?_⟩
       norm_cast
-      omega
+      lia
     apply mul_le_mul
     · apply hf
       · simp only [mem_Icc, Nat.cast_le]
@@ -271,7 +273,7 @@ lemma integral_le_sum_mul_Ico_of_antitone_monotone
       · simp only [mem_Icc, tsub_le_iff_right, sub_add_cancel]
         refine ⟨le_trans (mod_cast hi.1) hx.1, hx.2.le.trans ?_⟩
         norm_cast
-        cutsat
+        lia
       · exact I1
       · simpa [sub_le_iff_le_add] using hx.2.le
     · apply gpos.trans

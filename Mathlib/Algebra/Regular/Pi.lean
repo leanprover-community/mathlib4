@@ -11,7 +11,7 @@ public import Mathlib.Algebra.Regular.SMul
 # Results about `IsRegular` and pi types
 -/
 
-@[expose] public section
+public section
 
 variable {ι α : Type*} {R : ι → Type*}
 

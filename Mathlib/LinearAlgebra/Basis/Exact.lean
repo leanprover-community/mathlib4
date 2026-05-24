@@ -99,15 +99,23 @@ noncomputable def Module.Basis.ofSplitExact (hg : Function.Surjective g) (v : Ba
   .mk (v.linearIndependent.linearIndependent_of_exact_of_retraction hs hfg hainj hsa)
     (Submodule.top_le_span_of_exact_of_retraction hs hfg hg hsa hlib hab (by rw [v.span_eq]))
 
+@[simp]
+lemma Module.Basis.ofSplitExact_apply (hg : Function.Surjective g) (v : Basis ι R M)
+    (hainj : Function.Injective a) (hsa : ∀ i, s (v (a i)) = 0)
+    (hlib : LinearIndependent R (s ∘ v ∘ b))
+    (hab : Codisjoint (Set.range a) (Set.range b)) (k : κ) :
+    ofSplitExact hs hfg hg v hainj hsa hlib hab k = g (v (a k)) := by
+  simp [ofSplitExact]
+
 end
 
 section
 include hfg
 
-lemma Submodule.linearProjOfIsCompl_comp_surjective_of_exact
+lemma Submodule.projectionOnto_comp_surjective_of_exact
     {p q : Submodule R M} (hpq : IsCompl p q)
     (hmap : Submodule.map g q = ⊤) :
-    Function.Surjective (Submodule.linearProjOfIsCompl p q hpq ∘ₗ f) := by
+    Function.Surjective (Submodule.projectionOnto p q hpq ∘ₗ f) := by
   rw [← Set.surjOn_univ, LinearMap.coe_comp, Set.surjOn_comp_iff, Set.image_univ]
   rw [← LinearMap.coe_range, ← Submodule.top_coe (R := R), surjOn_iff_le_map,
     ← hfg.linearMap_ker_eq]
@@ -115,13 +123,21 @@ lemma Submodule.linearProjOfIsCompl_comp_surjective_of_exact
   obtain ⟨a, haq, ha⟩ : g x.val ∈ q.map g := by rwa [hmap]
   exact ⟨x - a, by simp [← ha], by simpa⟩
 
-lemma Submodule.linearProjOfIsCompl_comp_bijective_of_exact
+@[deprecated (since := "2026-05-05")] alias
+  Submodule.linearProjOfIsCompl_comp_surjective_of_exact :=
+  Submodule.projectionOnto_comp_surjective_of_exact
+
+lemma Submodule.projectionOnto_comp_bijective_of_exact
     (hf : Function.Injective f) {p q : Submodule R M} (hpq : IsCompl p q)
     (hker : Disjoint (LinearMap.ker g) q) (hmap : Submodule.map g q = ⊤) :
-    Function.Bijective (Submodule.linearProjOfIsCompl p q hpq ∘ₗ f) := by
-  refine ⟨?_, Submodule.linearProjOfIsCompl_comp_surjective_of_exact hfg _ hmap⟩
+    Function.Bijective (Submodule.projectionOnto p q hpq ∘ₗ f) := by
+  refine ⟨?_, Submodule.projectionOnto_comp_surjective_of_exact hfg _ hmap⟩
   rwa [LinearMap.coe_comp, Set.InjOn.injective_iff ↑(LinearMap.range f) _ subset_rfl]
   simpa [← LinearMap.disjoint_ker_iff_injOn, ← hfg.linearMap_ker_eq]
+
+@[deprecated (since := "2026-05-05")] alias
+  Submodule.linearProjOfIsCompl_comp_bijective_of_exact :=
+  Submodule.projectionOnto_comp_bijective_of_exact
 
 lemma LinearMap.linearProjOfIsCompl_comp_bijective_of_exact
     (hf : Function.Injective f) {q : Submodule R M} {E : Type*} [AddCommGroup E] [Module R E]
@@ -131,6 +147,6 @@ lemma LinearMap.linearProjOfIsCompl_comp_bijective_of_exact
   rw [LinearMap.linearProjOfIsCompl, LinearMap.comp_assoc, LinearMap.coe_comp,
       Function.Bijective.of_comp_iff]
   · exact (LinearEquiv.ofInjective i hi).symm.bijective
-  · exact Submodule.linearProjOfIsCompl_comp_bijective_of_exact hfg hf h hker hmap
+  · exact Submodule.projectionOnto_comp_bijective_of_exact hfg hf h hker hmap
 
 end
