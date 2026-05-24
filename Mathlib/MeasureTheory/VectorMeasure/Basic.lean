@@ -719,7 +719,7 @@ theorem restrict_dirac {s : Set α} {x : α} {m : M} (hs : MeasurableSet s) [Dec
 @[simp]
 theorem restrict_singleton {a : α} : v.restrict {a} = VectorMeasure.dirac a (v {a}) := by
   by_cases h : MeasurableSet {a}
-  · ext1 s hs
+  · ext s hs
     by_cases ha : a ∈ s <;> simp [*, restrict_apply]
   · simp [restrict, h]
 
@@ -778,7 +778,7 @@ theorem restrict_add_restrict_compl (hi : MeasurableSet i) :
 
 theorem restrict_inter_add_diff (hs : MeasurableSet s) (ht : MeasurableSet t) :
     v.restrict (s ∩ t) + v.restrict (s \ t) = v.restrict s := by
-  ext1 u hu
+  ext u hu
   simp only [add_apply, restrict_apply, hs, hu, hs.inter ht, hs.diff ht]
   rw [← of_union (by grind) (hu.inter (hs.inter ht)) (hu.inter (hs.diff ht))]
   congr
