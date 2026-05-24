@@ -108,7 +108,8 @@ theorem resolvent_zero_of_mem_spectrum {r : R} {a : A} (hr : r ∈ σ a) :
 theorem mem_spectrum_iff_resolvent_zero [Nontrivial A] {r : R} {a : A} :
     r ∈ σ a ↔ resolvent a r = 0 := by
   refine ⟨fun hr ↦ resolvent_zero_of_mem_spectrum hr, fun hr ↦ ?_⟩
-  simpa [mem_iff, Ring.not_isUnit_iff_inverse_eq_zero, resolvent] using hr
+  refine ⟨resolvent_zero_of_mem_spectrum, fun hr ↦ ?_⟩
+  simpa [mem_iff, Ring.not_isUnit_iff_inverse_eq_zero]
 
 theorem notMem_iff {r : R} {a : A} : r ∉ σ a ↔ IsUnit (↑ₐ r - a) := by
   simp [mem_iff]
