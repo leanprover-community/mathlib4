@@ -57,8 +57,8 @@ variable [NontriviallyNormedField 𝕜] [MeasurableSpace 𝕜]
 
 @[fun_prop]
 theorem measurable_resolvent {a : A} [OpensMeasurableSpace 𝕜] [NormedRing A] [NormedAlgebra 𝕜 A]
-  [CompleteSpace A] [MeasurableSpace A] [BorelSpace A] :
-  Measurable (resolvent (R := 𝕜) a) := by
+    [CompleteSpace A] [MeasurableSpace A] [BorelSpace A] :
+    Measurable (resolvent (R := 𝕜) a) := by
   classical
   have h1 : ContinuousOn (resolvent (R := 𝕜) a) (resolventSet 𝕜 a) :=
     HasDerivAt.continuousOn (fun _ hx ↦ hasDerivAt_resolvent_const_left hx)
