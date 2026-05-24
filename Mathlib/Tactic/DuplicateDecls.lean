@@ -79,27 +79,13 @@ def sortBinders (e : Expr) : MetaM Expr := do
 If so, we assume that the declaration is intentionally duplicated.
 This only works for exposed definitions. -/
 def isAlias (cinfo : ConstantInfo) : Bool :=
-  cinfo.value?.any isConstBVarApp
+  (cinfo.value? (allowOpaque := true)).any isConstBVarApp
 where
   isConstBVarApp : Expr → Bool
   | .const .. => true
   | .app f (.bvar _) => isConstBVarApp f
   | .lam _ _ b _ => isConstBVarApp b
   | _ => false
-
-/-- Return `true` if `n₁` and `n₂` form a `rfl`-`refl` pair, which is a common case
-of intentional theorem duplication. -/
-def isRflRefl (n₁ n₂ : Name) : Bool :=
-  match n₁, n₂ with
-  | .str base₁ s₁, .str base₂ s₂ =>
-    base₁ == base₂ && (
-      match s₁.dropSuffix? "rfl", s₂.dropSuffix? "refl" with
-      | some s₁, some s₂ => s₁ == s₂
-      | _, _ =>
-        match s₁.dropSuffix? "refl", s₂.dropSuffix? "rfl" with
-        | some s₁, some s₂ => s₁ == s₂
-        | _, _ => false)
-  | _, _ => false
 
 /-- An inductive type for the kind of duplicate declarations to search for. -/
 public inductive Target where
@@ -112,10 +98,10 @@ public inductive Target where
   | defs
 
 /-- Compute an array of duplicate declarations in the current environment. -/
-def duplicateDeclarations (cfg : Target) : CoreM (Array (Name × Name)) := MetaM.run' do
+def duplicateDeclarations (cfg : Target) : CoreM (Array (Array Name)) := MetaM.run' do
   let env ← getEnv
-  let mut s : Std.HashMap Expr Name := {}
-  let mut dups := #[]
+  let mut visited : Std.HashMap Expr Name := {}
+  let mut dups : Std.HashMap Expr (Array Name) := {}
   for (name, cinfo) in env.constants.map₁ do
     if name.isInternalDetail
       || name.isMetaprogramming
@@ -134,19 +120,17 @@ def duplicateDeclarations (cfg : Target) : CoreM (Array (Name × Name)) := MetaM
             let normValue ← sortBinders value
             let normType ← sortBinders cinfo.type
             let key := .app normValue normType
-            if let some name' := s[key]? then
-              unless isRflRefl name name' do
-                dups := dups.push (name', name)
+            if let some name' := visited[key]? then
+              dups := dups.alter key (·.getD #[name'] |>.push name)
             else
-              s := s.insert key name
+              visited := visited.insert key name
         continue
     let normType ← sortBinders cinfo.type
-    if let some name' := s[normType]? then
-      unless isRflRefl name name' do
-        dups := dups.push (name', name)
+    if let some name' := visited[normType]? then
+      dups := dups.alter normType (·.getD #[name'] |>.push name)
     else
-      s := s.insert normType name
-  return dups
+      visited := visited.insert normType name
+  return dups.valuesArray
 
 /-- Given a module name, return a number that can be used for sorting. -/
 def libraryNumber (module : Name) : Nat :=
@@ -157,6 +141,7 @@ def libraryNumber (module : Name) : Nat :=
 2. The name of the module as a string.
 -/
 def ModuleKey := Nat × String
+  deriving Inhabited
 
 instance : Ord ModuleKey := ⟨fun a b ↦ (compare a.1 b.1).then (compare a.2 b.2)⟩
 instance : LT ModuleKey := ltOfOrd
@@ -170,17 +155,16 @@ def mkModuleKey (name : Name) (env : Environment) : ModuleKey :=
 
 /-- Return the list of pairs of duplicate declarations, grouped by the name of the module
 of one of the two lemmas. -/
-public def sortedDuplicateDeclarations (cfg : Target) :
-    CoreM (Array (String × Array (Name × Name))) := do
+def sortedDuplicateDeclarations (cfg : Target) :
+    CoreM (Array (String × Array (Array Name))) := do
   let env ← getEnv
   let dups ← duplicateDeclarations cfg
-  let mut result : Std.TreeMap ModuleKey (Std.TreeMap ModuleKey (Array (Name × Name))) := {}
-  for (a, b) in dups do
-    let A := mkModuleKey a env
-    let B := mkModuleKey b env
-    let (A, B, a, b) := if A < B then (B, A, b, a) else (A, B, a, b)
-    result := result.alter A (·.getD ∅ |>.alter B (·.getD #[] |>.push (a, b)))
-  return result.toArray.map fun (a, map) ↦ (a.2, map.valuesArray.flatten)
+  let mut result : Std.TreeMap (Array ModuleKey) (Array (Array Name)) := {}
+  for names in dups do
+    let names := names.map fun x ↦ (x, mkModuleKey x env)
+    let names := names.qsort (·.2 > ·.2)
+    result := result.alter (names.map (·.2)) (·.getD #[] |>.push (names.map (·.1)))
+  return result.toArray.map fun (a, dups) ↦ (a[0]!.2, dups)
 
 /-- The duplicate declarations linter. It tells you which duplicate declarations there are
 in the current environment. -/
@@ -189,9 +173,10 @@ public def lintDuplicateDeclarations (cfg : Target) : CoreM MessageData := do
   let mut msg := m!"Number of duplicates: {dups.foldl (init := 0) (· + ·.2.size)}"
   for (module, dups) in dups do
     msg := msg ++ s!"\n\n-- {module}"
-    for (a, b) in dups do
-      msg := msg ++ m!"\n\n{.ofConstName a} : {(← getConstInfo a).type}\n\
-                           {.ofConstName b} : {(← getConstInfo b).type}"
+    for names in dups do
+      msg := msg ++ "\n"
+      for name in names.qsort Name.lt do
+        msg := msg ++ m!"\n{.ofConstName name} : {(← getConstInfo name).type}"
   return msg
 
 end Mathlib.Tactic.DuplicateDecls
