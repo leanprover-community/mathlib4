@@ -594,6 +594,67 @@ Note this does not hold without the linearity assumption.
 lemma IsPWO.of_linearOrder [WellFoundedLT α] (s : Set α) : s.IsPWO :=
   (IsWF.of_wellFoundedLT s).isPWO
 
+/--
+If there is a monotone surjective `f : α × β ≃ γ` where `α` and `β` are shipped with well-orders
+`<`, and `γ` is shipped with a partial order `<`, then the partial order on `γ` is well-founded.
+-/
+@[to_dual]
+theorem wellFoundedLT_of_monotone_prod
+    {α β γ : Type*} [LinearOrder α] [LinearOrder β] [WellFoundedLT α] [WellFoundedLT β]
+    [PartialOrder γ] {f : α × β ≃ γ} (mono : Monotone f) : WellFoundedLT γ := by
+  /- Overview: (For readability `α × β` and `γ` are not always explicitly differentiated).
+    Given a nonempty `s : Set γ`,
+    its minimal element exists iff
+    there exists a minimal element (w.r.t. the partial order order on `γ`) of a set
+    {a minimal elements of m w.r.t. the pairwise order on `α × β` (`min' m` in code) | m ∈ `s`}
+    (belonging to which is denoted as `∃ x, (f ∘ min') x = ·` or `Set.range (f ∘ min')` in code, and
+     the existence of such a minimal element of which is denoted as
+     `∃ m, Minimal (∃ x, (f ∘ min') x = ·) m`).
+    We can find that the order w.r.t. the order of `.fst : α` and the order of `.snd : β` are
+    both strict but inverse with each other over the above set
+    (`min'_fst_gt_min'_fst_iff_min'_snd_gt_min'_snd` in code),
+    so the set is a well order set both w.r.t. `.fst : α` and
+    w.r.t. its dual order (i.e., w.r.t. `.snd : β`).
+    Thus the set much be finite, so there much exists a minimal element w.r.t. any partial order. -/
+  rw [WellFounded.wellFoundedLT_iff_exists_minimal]
+  intro s hs
+  let min' (m : s) :=
+    WellFoundedLT.exists_minimal inferInstance (f.symm '' s ∩ (Set.Iic <| f.symm m))
+      ⟨f.symm m, by simp⟩ |>.choose
+  have min'_mem_s (m) : f (min' m) ∈ s := by grind [Minimal]
+  have min'_le (m) : min' m ≤ f.symm m := by grind [Minimal]
+  convert_to ∃ m, Minimal (∃ x, (f ∘ min') x = ·) m using 2
+  · refine minimal_iff_minimal_of_imp_of_forall ?_ ?_
+    · exact fun x hx ↦ hx.elim (fun m h ↦ h ▸ min'_mem_s m)
+    intro x hx
+    use f <| min' ⟨x, hx⟩
+    simpa using mono (min'_le _)
+  refine Set.WellFoundedOn.exists_minimal ?_ (hs.elim (⟨f <| min' ⟨·, ·⟩, _, rfl⟩))
+  apply Set.Finite.wellFoundedOn
+  have min'_fst_gt_min'_fst_iff_min'_snd_gt_min'_snd (m1 m2) :
+      (min' m1).1 < (min' m2).1 ↔ (min' m1).2 > (min' m2).2 := by
+    by_contra!
+    apply Or.imp (Prod.lt_iff.mpr ∘ .inl) (Prod.lt_iff.mpr ∘ .inr) at this
+    rcases this with h_lt | h_lt
+    all_goals
+      refine Minimal.not_lt (Exists.choose_spec _) ?_ h_lt
+      simp [min'_mem_s, le_of_lt <| lt_of_lt_of_le h_lt (min'_le _)]
+  refine @Set.WellFoundedOn.finite_of_wellFoundedOn_swap _
+    (Function.onFun (· < · : α → α → Prop) (f.symm ·|>.1)) _ ?_ ?_ ?_
+  · rw [Function.onFun_onFun_eq]
+    apply Function.Injective.isStrictTotalOrder_onFun
+    apply Set.InjOn.injective (s := Set.range (f ∘ min')) (f := (f.symm · |>.1))
+    rintro _ ⟨m1, rfl⟩ _ ⟨m2, rfl⟩ h1
+    simp only [Function.comp_apply, Equiv.symm_apply_apply, EmbeddingLike.apply_eq_iff_eq] at h1 ⊢
+    suffices h2 : (min' m1).2 = (min' m2).2 from Prod.ext h1 h2
+    simp [le_antisymm_iff, ← not_lt, ← min'_fst_gt_min'_fst_iff_min'_snd_gt_min'_snd, h1]
+  · exact Set.wellFoundedOn_image.mp (WellFounded.wellFoundedOn wellFounded_lt)
+  · rw [Function.onFun_swap_comm, ← Set.wellFoundedOn_image]
+    apply Set.WellFoundedOn.mono' (r := Function.onFun (· < · : β → β → Prop) (f.symm ·|>.2))
+    on_goal 2 => exact Set.wellFoundedOn_image.mp (WellFounded.wellFoundedOn wellFounded_lt)
+    rintro _ ⟨_, ⟨m1, rfl⟩, rfl⟩ _ ⟨_, ⟨m2, rfl⟩, rfl⟩
+    simpa [Function.onFun] using (min'_fst_gt_min'_fst_iff_min'_snd_gt_min'_snd m2 m1).mp
+
 end LinearOrder
 
 end Set
