@@ -39,7 +39,8 @@ variable {X V : Type*} {mX : MeasurableSpace X}
 
 section Basic
 
-variable [TopologicalSpace V] [ENormedAddCommMonoid V] [T2Space V] {μ ν : VectorMeasure X V}
+variable [TopologicalSpace V] [AddCommMonoid V] [ENormedAddCommMonoid V] [T2Space V]
+  {μ ν : VectorMeasure X V}
 
 @[simp]
 lemma variation_apply (μ : VectorMeasure X V) (s : Set X) :
@@ -133,7 +134,7 @@ end Basic
 
 section NormedAddCommGroup
 
-variable [NormedAddCommGroup V] {μ ν : VectorMeasure X V}
+variable [AddCommGroup V] [NormedAddCommGroup V] {μ ν : VectorMeasure X V}
 
 theorem norm_measure_le_variation {E : Set X} (hE : μ.variation E ≠ ∞ := by finiteness) :
     ‖μ E‖ ≤ μ.variation.real E := by
