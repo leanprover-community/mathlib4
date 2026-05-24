@@ -214,13 +214,12 @@ section Preorder
 variable [Preorder α]
 
 /-- The cofinality of an element `x` within a preorder is defined as `cof (Iio x)`. -/
-@[expose]
 def cofWithin (x : α) : Cardinal :=
   cof (Iio x)
 
 @[simp]
 theorem cof_Iio (x : α) : cof (Iio x) = cofWithin x :=
-  rfl
+  (rfl)
 
 theorem cofWithin_le {s : Set α} (hs : IsCofinalFor (Iio x) s) (hsx : s ⊆ Iio x) :
     cofWithin x ≤ #s := by
