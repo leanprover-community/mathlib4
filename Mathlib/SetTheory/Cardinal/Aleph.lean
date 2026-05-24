@@ -82,7 +82,7 @@ theorem isInitial_ord (c : Cardinal) : IsInitial c.ord := by
 
 @[simp]
 theorem isInitial_natCast (n : ℕ) : IsInitial n := by
-  rw [IsInitial, card_nat, ord_nat]
+  rw [IsInitial, card_nat, ord_natCast]
 
 theorem isInitial_zero : IsInitial 0 := by
   exact_mod_cast isInitial_natCast 0
@@ -600,9 +600,7 @@ theorem isNormal_preBeth : Order.IsNormal preBeth := by
 
 theorem preBeth_nat : ∀ n : ℕ, preBeth n = (2 ^ ·)^[n] (0 : ℕ)
   | 0 => by simp
-  | n + 1 => by
-    rw [natCast_succ, preBeth_succ, Function.iterate_succ_apply', preBeth_nat]
-    simp
+  | n + 1 => by simp [Function.iterate_succ_apply', preBeth_nat]
 
 @[simp]
 theorem preBeth_one : preBeth 1 = 1 := by
