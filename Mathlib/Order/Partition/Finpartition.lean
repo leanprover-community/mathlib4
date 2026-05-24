@@ -141,13 +141,13 @@ def map {β : Type*} [Lattice β] [OrderBot β] {a : α} (e : α ≃o β) (P : F
     have := P.supIndep hu hb (by simp [hbu]) (map_rel e.symm hx) ?_
     · rw [← e.symm.map_bot] at this
       exact e.symm.map_rel_iff.mp this
-    · convert e.symm.map_rel_iff.mpr hxu
+    · convert! e.symm.map_rel_iff.mpr hxu
       rw [map_finset_sup, sup_map]
       rfl
   sup_parts := by simp [← P.sup_parts]
   bot_notMem := by
     rw [mem_map_equiv]
-    convert P.bot_notMem
+    convert! P.bot_notMem
     exact e.symm.map_bot
 
 @[simp]
@@ -739,7 +739,7 @@ lemma exists_enumeration : ∃ f : s ≃ Σ t : P.parts, Fin #t.1,
   simp [equivSigmaParts, Equiv.sigmaCongr, Equiv.sigmaCongrLeft]
 
 theorem sum_card_parts : ∑ i ∈ P.parts, #i = #s := by
-  convert congr_arg Finset.card P.biUnion_parts
+  convert! congr_arg Finset.card P.biUnion_parts
   rw [card_biUnion P.supIndep.pairwiseDisjoint]
   rfl
 
