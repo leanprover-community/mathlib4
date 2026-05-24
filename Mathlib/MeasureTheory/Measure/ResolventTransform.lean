@@ -115,7 +115,7 @@ lemma resolventTransform_zero_measure : resolventTransform (0 : Measure 𝕜) = 
   simp [resolventTransform_def]
 
 @[simp]
-lemma resolventTransform_dirac [OpensMeasurableSpace 𝕜] [CompleteSpace A]
+lemma resolventTransform_dirac [MeasurableSingletonClass 𝕜] [CompleteSpace A]
     (x : 𝕜) (a : A) : resolventTransform (.dirac x) a = resolvent a x := by
   simp [resolventTransform_def]
 
