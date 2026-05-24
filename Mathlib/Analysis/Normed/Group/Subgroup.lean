@@ -32,7 +32,7 @@ namespace Subgroup
 
 section SeminormedGroup
 
-variable [SeminormedGroup E] {s : Subgroup E}
+variable [Group E] [SeminormedGroup E] {s : Subgroup E}
 
 /-- A subgroup of a seminormed group is also a seminormed group,
 with the restriction of the norm. -/
@@ -62,15 +62,16 @@ theorem norm_coe {s : Subgroup E} (x : s) : ‖(x : E)‖ = ‖x‖ :=
 end SeminormedGroup
 
 @[to_additive]
-instance seminormedCommGroup [SeminormedCommGroup E] {s : Subgroup E} : SeminormedCommGroup s :=
+instance seminormedCommGroup [CommGroup E] [SeminormedCommGroup E] {s : Subgroup E} :
+    SeminormedCommGroup s :=
   fast_instance% SeminormedCommGroup.induced _ _ s.subtype
 
 @[to_additive]
-instance normedGroup [NormedGroup E] {s : Subgroup E} : NormedGroup s :=
+instance normedGroup [Group E] [NormedGroup E] {s : Subgroup E} : NormedGroup s :=
   fast_instance% NormedGroup.induced _ _ s.subtype Subtype.coe_injective
 
 @[to_additive]
-instance normedCommGroup [NormedCommGroup E] {s : Subgroup E} : NormedCommGroup s :=
+instance normedCommGroup [CommGroup E] [NormedCommGroup E] {s : Subgroup E} : NormedCommGroup s :=
   fast_instance% NormedCommGroup.induced _ _ s.subtype Subtype.coe_injective
 
 end Subgroup
@@ -82,7 +83,7 @@ namespace SubgroupClass
 
 section SeminormedGroup
 
-variable [SeminormedGroup E] {S : Type*} [SetLike S E] [SubgroupClass S E] (s : S)
+variable [Group E] [SeminormedGroup E] {S : Type*} [SetLike S E] [SubgroupClass S E] (s : S)
 
 /-- A subgroup of a seminormed group is also a seminormed group,
 with the restriction of the norm. -/
@@ -101,18 +102,18 @@ theorem coe_norm (x : s) : ‖x‖ = ‖(x : E)‖ :=
 end SeminormedGroup
 
 @[to_additive]
-instance (priority := 75) seminormedCommGroup [SeminormedCommGroup E] {S : Type*} [SetLike S E]
-    [SubgroupClass S E] (s : S) : SeminormedCommGroup s :=
+instance (priority := 75) seminormedCommGroup [CommGroup E] [SeminormedCommGroup E] {S : Type*}
+    [SetLike S E] [SubgroupClass S E] (s : S) : SeminormedCommGroup s :=
   fast_instance% SeminormedCommGroup.induced _ _ (SubgroupClass.subtype s)
 
 @[to_additive]
-instance (priority := 75) normedGroup [NormedGroup E] {S : Type*} [SetLike S E] [SubgroupClass S E]
-    (s : S) : NormedGroup s :=
+instance (priority := 75) normedGroup [Group E] [NormedGroup E] {S : Type*} [SetLike S E]
+    [SubgroupClass S E] (s : S) : NormedGroup s :=
   fast_instance% NormedGroup.induced _ _ (SubgroupClass.subtype s) Subtype.coe_injective
 
 @[to_additive]
-instance (priority := 75) normedCommGroup [NormedCommGroup E] {S : Type*} [SetLike S E]
-    [SubgroupClass S E] (s : S) : NormedCommGroup s :=
+instance (priority := 75) normedCommGroup [CommGroup E] [NormedCommGroup E] {S : Type*}
+    [SetLike S E] [SubgroupClass S E] (s : S) : NormedCommGroup s :=
   fast_instance% NormedCommGroup.induced _ _ (SubgroupClass.subtype s) Subtype.coe_injective
 
 end SubgroupClass
