@@ -25,7 +25,7 @@ namespace Nat.Partition
 /-- Conjugate a partition (equivalent to transposing its Young diagram). -/
 def conjugate {n : ℕ} (p : Partition n) : Partition n :=
   (YoungDiagram.ofPartition p).transpose.toPartition (by
-    rw [YoungDiagram.transpose_card_eq_card, YoungDiagram.card_ofPartition]
+    rw [YoungDiagram.card_transpose, YoungDiagram.card_ofPartition]
   )
 
 /-- Conjugation is an involution. -/

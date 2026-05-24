@@ -236,7 +236,7 @@ def transposeOrderIso : YoungDiagram ≃o YoungDiagram :=
   ⟨⟨transpose, transpose, fun _ => by simp, fun _ => by simp⟩, by simp⟩
 
 @[simp]
-lemma transpose_card_eq_card (μ : YoungDiagram) : μ.transpose.card = μ.card := by
+lemma card_transpose (μ : YoungDiagram) : μ.transpose.card = μ.card := by
   simp [transpose, YoungDiagram.card]
 
 end Transpose
