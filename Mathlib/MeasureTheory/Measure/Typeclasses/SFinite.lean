@@ -160,7 +160,7 @@ theorem preimage_spanningSetsIndex_singleton (μ : Measure α) [SigmaFinite μ] 
 
 theorem spanningSetsIndex_eq_iff (μ : Measure α) [SigmaFinite μ] {x : α} {n : ℕ} :
     spanningSetsIndex μ x = n ↔ x ∈ disjointed (spanningSets μ) n := by
-  convert Set.ext_iff.1 (preimage_spanningSetsIndex_singleton μ n) x
+  convert! Set.ext_iff.1 (preimage_spanningSetsIndex_singleton μ n) x
 
 theorem mem_disjointed_spanningSetsIndex (μ : Measure α) [SigmaFinite μ] (x : α) :
     x ∈ disjointed (spanningSets μ) (spanningSetsIndex μ x) :=
