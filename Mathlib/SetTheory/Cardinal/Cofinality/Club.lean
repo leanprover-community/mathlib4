@@ -45,8 +45,6 @@ structure IsClub {α : Type*} [LinearOrder α] (s : Set α) where
 
 namespace IsClub
 
-namespace IsClub
-
 @[simp]
 theorem of_isEmpty [IsEmpty α] {s : Set α} : IsClub s :=
   ⟨.of_isEmpty, .of_isEmpty⟩
@@ -337,9 +335,9 @@ theorem isStationary_union_iff (hα : cof α ≠ ℵ₀) :
 /-- **Fodor's lemma**, or the **pressing down lemma**: if `α` has the order type of a regular
 cardinal, `s` is a stationary set, and `f : α → α` is a regressive function on `s`, there exists
 some stationary subset of `s` which is constant on `f`. -/
-theorem exists_isStationary_preimage_singleton
-    [WellFoundedLT α] [IsRegularCardinalOrder α] {f : α → α} (hα : cof α ≠ ℵ₀)
-    (hs : IsStationary s) (hf : ∀ x ∈ s, f x < x) : ∃ a, IsStationary (s ∩ f ⁻¹' {a}) := by
+theorem exists_isStationary_preimage_singleton [IsRegularCardinalOrder α] {f : α → α}
+    (hα : cof α ≠ ℵ₀) (hs : IsStationary s) (hf : ∀ x ∈ s, f x < x) :
+    ∃ a, IsStationary (s ∩ f ⁻¹' {a}) := by
   unfold IsStationary
   by_contra!
   choose g hg using this
