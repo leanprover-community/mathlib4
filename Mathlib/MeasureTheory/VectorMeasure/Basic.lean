@@ -649,6 +649,7 @@ variable {R : Type*} [Semiring R] [Module R M] [Module R N]
 
 variable [ContinuousConstSMul R M] [ContinuousConstSMul R N]
 
+@[simp]
 theorem mapRange_smul {v : VectorMeasure α M} {f : M →ₗ[R] N} (hf : Continuous f) {c : R} :
     (c • v).mapRange f.toAddMonoidHom hf = c • (v.mapRange f.toAddMonoidHom hf) := by
   ext; simp
@@ -715,6 +716,20 @@ theorem restrict_dirac {s : Set α} {x : α} {m : M} (hs : MeasurableSet s) [Dec
   ext t ht
   simp only [hs, ht, restrict_apply]
   split_ifs with has <;> simp [dirac, ht, ht.inter hs, has]
+
+@[simp]
+theorem restrict_dirac_of_mem {s : Set α} {x : α} {m : M} (hs : MeasurableSet s) (hx : x ∈ s) :
+    (VectorMeasure.dirac x m).restrict s = VectorMeasure.dirac x m := by
+  classical
+  simp [restrict_dirac, hs, hx]
+
+@[simp]
+theorem restrict_dirac_of_notMem {s : Set α} {x : α} {m : M} (hx : x ∉ s) :
+    (VectorMeasure.dirac x m).restrict s = 0 := by
+  classical
+  by_cases hs : MeasurableSet s
+  · simp [restrict_dirac, hs, hx]
+  · simp [restrict, hs]
 
 @[simp]
 theorem restrict_singleton {a : α} : v.restrict {a} = VectorMeasure.dirac a (v {a}) := by

@@ -146,13 +146,14 @@ lemma variation_apply_eq_zero (hs : MeasurableSet s) :
     simp [h t hts ht]
 
 @[simp] lemma variation_eq_zero :
-    μ.variation = 0 ↔ μ = 0 := by
-  refine ⟨fun h ↦ ?_, fun h ↦ by simp [h]⟩
-  ext s hs
-  apply enorm_eq_zero.1
-  apply le_antisymm ?_ (by simp)
-  grw [← le_zero_iff, enorm_measure_le_variation]
-  simp [h]
+    μ.variation = 0 ↔ μ = 0 where
+  mp h := by
+    ext s hs
+    apply enorm_eq_zero.1
+    apply le_antisymm ?_ (by simp)
+    grw [enorm_measure_le_variation]
+    simp [h]
+  mpr h := by simp [h]
 
 lemma variation_restrict (hs : MeasurableSet s) :
     (μ.restrict s).variation = μ.variation.restrict s := by
@@ -165,10 +166,8 @@ lemma variation_restrict (hs : MeasurableSet s) :
     calc μ.variation (t ∩ s)
     _ ≤ (μ.restrict s).variation (t ∩ s) := by
       apply variation_apply_le_of_forall_enorm_le (ht.inter hs) (fun u u_meas hu ↦ ?_)
-      have : μ u = μ.restrict s u := by
-        rw [VectorMeasure.restrict_apply _ hs u_meas]
-        congr
-        grind
+      have : μ u = μ.restrict s u :=
+        (VectorMeasure.restrict_eq_self _ hs u_meas (hu.trans inter_subset_right)).symm
       rw [this]
       apply enorm_measure_le_variation
     _ ≤ (μ.restrict s).variation t := by
@@ -263,13 +262,13 @@ instance {𝕜 : Type*} [NormedField 𝕜] [NormedSpace 𝕜 V] {c : 𝕜} [IsFi
   simp only [variation_smul]
   infer_instance
 
-instance [Finite X] : IsFiniteMeasure μ.variation := by
-  classical
-  let : Fintype X := Fintype.ofFinite X
-  constructor
-  simp only [variation_apply, preVariation_apply, MeasurableSet.univ, ennrealToMeasure_apply,
-    ennrealPreVariation_apply, preVariationFun, ↓reduceDIte, ← sup_univ_eq_ciSup]
-  exact (Finset.sup_lt_iff (by simp)).2 (fun b hb ↦ by simp [ENNReal.sum_lt_top, enorm_lt_top])
+instance [Finite X] : IsFiniteMeasure μ.variation where
+  measure_univ_lt_top := by
+    classical
+    let : Fintype X := Fintype.ofFinite X
+    simp only [variation_apply, preVariation_apply, MeasurableSet.univ, ennrealToMeasure_apply,
+      ennrealPreVariation_apply, preVariationFun, ↓reduceDIte, ← sup_univ_eq_ciSup]
+    exact (Finset.sup_lt_iff (by simp)).2 (fun b hb ↦ by simp [ENNReal.sum_lt_top, enorm_lt_top])
 
 instance {x : X} {v : V} : IsFiniteMeasure (VectorMeasure.dirac x v).variation := by
   simp only [variation_dirac, enorm_eq_nnnorm, Measure.coe_nnreal_smul]
