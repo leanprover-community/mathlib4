@@ -60,7 +60,7 @@ projective module
 universe w v u
 
 open LinearMap hiding id
-open DirectSum hiding id id_apply
+open DirectSum hiding id_apply
 open Finsupp
 
 /- The actual implementation we choose: `P` is projective if the natural surjection
@@ -297,19 +297,9 @@ variable {ι : Type v} {M : ι → Type w} [(i : ι) → AddCommMonoid (M i)] [(
 theorem Projective.directSum_iff : Projective R (⨁ i, M i) ↔ ∀ (i : ι), Projective R (M i) := by
   classical
   refine ⟨fun H i ↦ ?_, fun H ↦ ?_⟩
-  · refine iff_split'.{max u v w} |>.mpr ?_
-    obtain ⟨T, I₁, I₂, I₃, f, g, hfg⟩ := iff_split.mp H
-    refine ⟨T, I₁, I₂, I₃, f.comp (DirectSum.lof ..), (DirectSum.component ..).comp g, ?_⟩
-    simp [← comp_assoc _ f, comp_assoc _ g, hfg]
-  · refine iff_split.mpr ?_
-    have := fun i ↦ iff_split'.{max u v w}.mp (H i)
-    choose T I₁ I₂ I₃ f g hfg using this
-    refine ⟨⨁ i, T i, inferInstance, inferInstance, inferInstance, ?_⟩
-    use DirectSum.toModule _ _ _ fun i ↦ (DirectSum.lof ..).comp (f i)
-    use DirectSum.toModule _ _ _ fun i ↦ (DirectSum.lof ..).comp (g i)
-    ext x
-    have := by simpa using LinearMap.ext_iff.mp (hfg x)
-    simp [this]
+  · exact .of_split (DirectSum.lof ..) (DirectSum.component ..) (by simp)
+  · let e : (⨁ i, M i) ≃ₗ[R] Π₀ i, M i := .refl ..
+    exact Projective.of_equiv' e.symm
 
 instance Projective.directSum [∀ (i : ι), Projective R (M i)] : Projective R (⨁ i, M i) :=
   directSum_iff.mpr ‹_›
