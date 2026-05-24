@@ -117,10 +117,9 @@ lemma completeSpace_of_completeSpace_Lp [hp : Fact (1 ≤ p)]
     ∧ x ∈ Function.support f ∧ ∀ n, m (u n) x = (f x) • u n := (A.and (B.and C)).exists
   simp only [Function.comp_apply, hmx, f'] at xlim
   refine ⟨(f x)⁻¹ • g x, ?_⟩
-  apply tendsto_nhds_of_cauchySeq_of_subseq hu (StrictMono.tendsto_atTop hns)
-  convert Tendsto.const_smul xlim (f x)⁻¹ with n
   apply tendsto_nhds_of_cauchySeq_of_subseq hu hns.tendsto_atTop
   convert xlim.const_smul (f x)⁻¹ with n
+  rw [smul_smul, inv_mul_cancel₀, one_smul, Function.comp]
   exact hx
 
 end MeasureTheory
