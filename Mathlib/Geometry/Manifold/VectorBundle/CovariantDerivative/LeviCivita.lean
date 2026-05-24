@@ -59,7 +59,7 @@ attribute [fun_prop] MDifferentiable MDifferentiableAt
 
 end funpropsetup
 
--- Let `M` be a `C^2` manifold modeled on `(E, H)`.
+-- Let `M` be a `C²` manifold modeled on `(E, H)`.
 variable
   {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
   {H : Type*} [TopologicalSpace H] (I : ModelWithCorners ℝ E H)
@@ -83,7 +83,7 @@ variable
 open scoped RealInnerProductSpace
 
 -- move this, and think whether it could be more general
--- Note that Mathlib/Topology/FiberBundle/Basic.lean has a lot of similar lemma but far from enough
+-- Note that Mathlib/Topology/FiberBundle/Basic.lean has a lot of similar lemmas but far from enough
 -- imports.
 lemma VectorBundle.completeSpace (R : Type*) [NontriviallyNormedField R]
     {B : Type*} [TopologicalSpace B]
@@ -123,9 +123,9 @@ variable [IsContMDiffRiemannianBundle I 1 E (fun (x : M) ↦ TangentSpace I x)]
 -- with `open scoped RealInnerProductSpace.`
 local notation "⟪" X ", " Y "⟫" => fun x ↦ inner ℝ (X x) (Y x)
 
-/- TODO: The next two lemmas are workaround for some version of Lean 4 #9077
-(Instance synthesis sees through type synonyms). They should be removed when that issue will
-be fully solved. -/
+/- TODO: The next two lemmas are workarounds for some version of https://github.com/leanprover/lean4/issues/9077
+(Instance synthesis sees through type synonyms).
+They should be removed when that issue will be fully solved. -/
 
 variable {I} in
 @[fun_prop] lemma _root_.MDifferentiable.inner_bundle' {X Y : Π x : M, TangentSpace I x}
