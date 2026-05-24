@@ -187,7 +187,7 @@ theorem seminormFromConst_isPowMul : IsPowMul (seminormFromConst' c f) := fun x 
     exact (tendsto_seminormFromConst_seq_atTop hf1 hc hpm (x ^ m)).comp
       (tendsto_id.const_mul_atTop' (lt_of_lt_of_le zero_lt_one hm))
   apply tendsto_nhds_unique hlim
-  convert (tendsto_seminormFromConst_seq_atTop hf1 hc hpm x).pow m using 1
+  convert! (tendsto_seminormFromConst_seq_atTop hf1 hc hpm x).pow m using 1
   ext n
   simp only [seminormFromConst_seq, div_pow, ← hpm _ hm, ← pow_mul, mul_pow, mul_comm m n]
 
