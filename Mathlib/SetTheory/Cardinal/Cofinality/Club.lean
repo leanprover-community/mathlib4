@@ -122,7 +122,7 @@ theorem IsClub.iInter {ι : Type u} {f : ι → Set α} (hα : cof α ≠ ℵ₀
   rw [← Cardinal.lift_lt]
   exact mk_range_le_lift.trans_lt hι
 
-theorem IsClub.sInter_countable {s : Set (Set α)} (hα : cof α ≠ ℵ₀) (hsα : s.Countable)
+theorem IsClub.sInter_of_countable {s : Set (Set α)} (hα : cof α ≠ ℵ₀) (hsα : s.Countable)
     (hs : ∀ x ∈ s, IsClub x) : IsClub (⋂₀ s) := by
   obtain hα | hα := hα.lt_or_gt
   · apply IsClub.sInter_of_cof_le_one _ hs
@@ -130,14 +130,14 @@ theorem IsClub.sInter_countable {s : Set (Set α)} (hα : cof α ≠ ℵ₀) (hs
   · apply IsClub.sInter hα.ne' (hα.trans_le' _) hs
     rwa [le_aleph0_iff_set_countable]
 
-theorem IsClub.iInter_countable {ι : Type*} {f : ι → Set α} [Countable ι] (hα : cof α ≠ ℵ₀)
+theorem IsClub.iInter_of_countable {ι : Type*} {f : ι → Set α} [Countable ι] (hα : cof α ≠ ℵ₀)
     (hf : ∀ i, IsClub (f i)) : IsClub (⋂ i, f i) := by
   rw [← sInter_range]
-  apply IsClub.sInter_countable hα (countable_range f)
+  apply IsClub.sInter_of_countable hα (countable_range f)
   simpa
 
 theorem IsClub.inter (hα : cof α ≠ ℵ₀) (hs : IsClub s) (ht : IsClub t) : IsClub (s ∩ t) := by
-  simpa [hs, ht] using IsClub.sInter_countable (s := {s, t}) hα
+  simpa [hs, ht] using IsClub.sInter_of_countable (s := {s, t}) hα
 
 theorem Order.IsNormal.isClub_range {f : α → α} (hf : IsNormal f) : IsClub (.range f) :=
   ⟨hf.dirSupClosed_range, fun x ↦ ⟨_, ⟨x, rfl⟩, hf.strictMono.le_apply⟩⟩
