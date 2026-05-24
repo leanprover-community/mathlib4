@@ -98,14 +98,6 @@ def principal (a : α) : DedekindCut α :=
   ext; simp
 
 @[simp]
-theorem principal_le_principal {a b : α} : principal a ≤ principal b ↔ a ≤ b := by
-  simpa using ofObject_le_ofAttribute_iff (r := (· ≤ ·)) (a := a)
-
-@[simp]
-theorem principal_lt_principal {a b : α} : principal a < principal b ↔ a < b := by
-  simp [lt_iff_le_not_ge]
-
-@[simp]
 lemma principal_le_iff {a : α} {c : DedekindCut α} :
     principal a ≤ c ↔ a ∈ c.left := by
   simp only [← extent_subset_extent_iff, left_principal]
@@ -116,6 +108,15 @@ lemma le_principal_iff {a : α} {c : DedekindCut α} :
     c ≤ principal a ↔ a ∈ c.right := by
   simp only [← intent_subset_intent_iff, right_principal]
   exact ⟨fun h ↦ h self_mem_Ici, fun h _y hy ↦ mem_intent_of_intent_rel hy h⟩
+
+@[simp]
+theorem principal_le_principal {a b : α} : principal a ≤ principal b ↔ a ≤ b := by
+  simp
+
+@[simp]
+theorem principal_lt_principal {a b : α} : principal a < principal b ↔ a < b := by
+  simp [lt_iff_le_not_ge]
+
 
 /-- We can never have a computable decidable instance, for the same reason we can't on `Set α`. -/
 noncomputable instance : DecidableLE (DedekindCut α) :=
