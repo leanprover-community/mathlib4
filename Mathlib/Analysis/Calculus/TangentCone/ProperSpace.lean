@@ -21,7 +21,7 @@ open Filter Set Metric NormedField
 open scoped Topology
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-  {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+  {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
 
 /-- In a proper space, the tangent cone at a non-isolated point is nontrivial. -/
 theorem tangentConeAt_nonempty_of_properSpace [ProperSpace E]
