@@ -10,6 +10,7 @@ public import Mathlib.Algebra.Notation.Pi.Basic
 public import Mathlib.Data.FunLike.Basic
 public import Mathlib.Logic.Function.Iterate
 public import Mathlib.Logic.Equiv.Defs
+import Mathlib.Tactic.FastInstance
 
 /-!
 # Type tags that turn additive structures into multiplicative, and vice versa
@@ -267,7 +268,7 @@ instance Additive.addMonoid [h : Monoid α] : AddMonoid (Additive α) :=
     nsmul_zero := @Monoid.npow_zero α h
     nsmul_succ := @Monoid.npow_succ α h }
 
-instance Multiplicative.monoid [h : AddMonoid α] : Monoid (Multiplicative α) :=
+instance Multiplicative.monoid [h : AddMonoid α] : Monoid (Multiplicative α) := fast_instance%
   { Multiplicative.mulOneClass, Multiplicative.semigroup with
     npow := @AddMonoid.nsmul α h
     npow_zero := @AddMonoid.nsmul_zero α h

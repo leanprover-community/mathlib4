@@ -10,6 +10,7 @@ public import Mathlib.Algebra.Notation.Pi.Basic
 public import Mathlib.Data.Sum.Basic
 public import Mathlib.Logic.Unique
 public import Mathlib.Tactic.Spread
+import Mathlib.Tactic.FastInstance
 
 /-!
 # Instances and theorems on pi types
@@ -61,15 +62,15 @@ instance invOneClass [∀ i, InvOneClass (f i)] : InvOneClass (∀ i, f i) where
   inv_one := by ext; exact inv_one
 
 @[to_additive]
-instance monoid [∀ i, Monoid (f i)] : Monoid (∀ i, f i) where
+instance monoid [∀ i, Monoid (f i)] : Monoid (∀ i, f i) := fast_instance% {
   __ := semigroup
   __ := mulOneClass
   npow := fun n x i => x i ^ n
   npow_zero := by intros; ext; exact Monoid.npow_zero _
-  npow_succ := by intros; ext; exact Monoid.npow_succ _ _
+  npow_succ := by intros; ext; exact Monoid.npow_succ _ _ }
 
 @[to_additive]
-instance commMonoid [∀ i, CommMonoid (f i)] : CommMonoid (∀ i, f i) :=
+instance commMonoid [∀ i, CommMonoid (f i)] : CommMonoid (∀ i, f i) := fast_instance%
   { monoid, commSemigroup with }
 
 @[to_additive Pi.subNegMonoid]
