@@ -113,8 +113,8 @@ lemma condExp_le_nonneg_const [PartialOrder E] [ClosedIciTopology E] [IsOrderedA
   · filter_upwards with a using by simp_all [condExp_of_not_integrable hfint]
   by_cases! hsig : ¬ SigmaFinite (μ.trim hm)
   · filter_upwards with a using by simp_all [condExp_of_not_sigmaFinite hm hsig]
-  refine (isCountablySpanning_spanningSets (μ.trim hm)).null_of_forall_restrict_null
-    (fun t ⟨n, hn⟩ => ?_) fun t ⟨n, hn⟩ => hn ▸ ?_
+  refine (isCountablySpanning_spanningSets (μ.trim hm)).null_of_forall_restrict_null ?_ ?_
+  rintro - ⟨n, rfl⟩
   · exact hn ▸ hm _ (measurableSet_spanningSets (μ.trim hm) n)
   have h1 := condExp_restrict_ae_eq_restrict hm (measurableSet_spanningSets (μ.trim hm) n) hfint
   have : IsFiniteMeasure (μ.restrict (spanningSets (μ.trim hm) n)) := isFiniteMeasure_restrict.2
