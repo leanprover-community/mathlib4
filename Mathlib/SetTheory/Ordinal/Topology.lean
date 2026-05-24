@@ -217,10 +217,9 @@ theorem IsAcc.isSuccLimit {o : Ordinal} {S : Set Ordinal} (h : o.IsAcc S) : IsSu
   rcases h.2 x (lt_of_lt_of_le (lt_succ x) hx.le) with ⟨p, hp⟩
   exact (hx.symm ▸ (succ_le_iff.mpr hp.2.1)).not_gt hp.2.2
 
-theorem IsAcc.mono {o : Ordinal} {S T : Set Ordinal} (h : S ⊆ T) (ho : o.IsAcc S) :
-    o.IsAcc T := by
-  rw [isAcc_iff] at *
-  exact ⟨ho.1, fun p plto ↦ (ho.2 p plto).casesOn fun s hs ↦ ⟨s, h hs.1, hs.2⟩⟩
+@[deprecated AccPt.mono (since := "2026-05-24")]
+theorem IsAcc.mono {o : Ordinal} {S T : Set Ordinal} (h : S ⊆ T) (ho : o.IsAcc S) : o.IsAcc T :=
+  AccPt.mono ho (monotone_principal h)
 
 theorem IsAcc.inter_Ioo_nonempty {o : Ordinal} {S : Set Ordinal} (hS : o.IsAcc S)
     {p : Ordinal} (hp : p < o) : (S ∩ Ioo p o).Nonempty := hS.forall_lt p hp
@@ -240,8 +239,8 @@ alias ⟨IsClosedBelow.forall_lt, _⟩ := isClosedBelow_iff
 theorem IsClosedBelow.sInter {o : Ordinal} {S : Set (Set Ordinal)}
     (h : ∀ C ∈ S, IsClosedBelow C o) : IsClosedBelow (⋂₀ S) o := by
   rw [isClosedBelow_iff]
-  intro p plto pAcc C CmemS
-  exact (h C CmemS).forall_lt p plto (pAcc.mono (sInter_subset_of_mem CmemS))
+  exact fun p plto pAcc C CmemS ↦ (h C CmemS).forall_lt p plto <|
+    AccPt.mono pAcc (monotone_principal (sInter_subset_of_mem CmemS))
 
 theorem IsClosedBelow.iInter {ι : Type u} {f : ι → Set Ordinal} {o : Ordinal}
     (h : ∀ i, IsClosedBelow (f i) o) : IsClosedBelow (⋂ i, f i) o :=
