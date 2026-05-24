@@ -101,6 +101,8 @@ lemma tensorCotangentSpace_tmul (t : T) (x : P.CotangentSpace) :
   simp [tensorCotangentSpace_tmul_tmul, CotangentSpace.map_tmul_eq_tmul_map,
     smul_tmul', Algebra.smul_def, RingHom.algebraMap_toAlgebra]
 
+-- #defeq_abuse in
+set_option backward.isDefEq.respectTransparency false in
 /-- If `T` is flat over `R`, there is a `T`-linear isomorphism
 `T ⊗[R] P.Cotangent ≃ₗ[T] (P.baseChange).Cotangent`. -/
 noncomputable def tensorCotangentOfFlat [Module.Flat R T] :
@@ -118,7 +120,7 @@ lemma tensorCotangentOfFlat_tmul [Module.Flat R T] (t : T) (x : P.Cotangent) :
   simp only [tensorCotangentOfFlat, LinearEquiv.trans_apply, AlgebraTensorModule.congr_tmul,
     LinearEquiv.refl_apply, LinearEquiv.restrictScalars_apply, cotangentEquivCotangentKer_apply,
     Cotangent.val_mk, Ideal.tensorCotangentEquiv_tmul, map_smul, Cotangent.map_mk,
-    Hom.toAlgHom_apply, Ideal.Cotangent.equivOfEq_toCotangent]
+    Hom.toAlgHom_apply] --, Ideal.Cotangent.equivOfEq_toCotangent]
   rfl
 
 /-- The canonical map `T ⊗[R] P.H1Cotangent →ₗ[T] (P.baseChange).H1Cotangent`. -/

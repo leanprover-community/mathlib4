@@ -133,7 +133,7 @@ lemma differentiableAt_smul_iff (c : R) [Invertible c] :
 `c` must be invertible, i.e. if `R` is a field. -/
 theorem fderiv_const_smul_of_invertible (c : R) [Invertible c] :
     fderiv 𝕜 (c • f) x = c • fderiv 𝕜 f x := by
-  simp [← fderivWithin_univ, fderivWithin_const_smul_of_invertible c uniqueDiffWithinAt_univ]
+  simpa [← fderivWithin_univ] using fderivWithin_const_smul_of_invertible c uniqueDiffWithinAt_univ
 
 end ConstSMul
 
@@ -178,7 +178,9 @@ typeclass. -/
 lemma fderiv_const_smul_field (c : R) : fderiv 𝕜 (c • f) = c • fderiv 𝕜 f := by
   simp_rw [← fderivWithin_univ]
   ext x
-  simp [fderivWithin_const_smul_field c uniqueDiffWithinAt_univ]
+  simp only [Pi.smul_apply, coe_smul']
+  rw [fderivWithin_const_smul_field c uniqueDiffWithinAt_univ]
+  exact smul_apply c (fderivWithin 𝕜 f Set.univ x) _
 
 @[deprecated (since := "2026-01-11")] alias fderiv_const_smul_of_field := fderiv_const_smul_field
 
@@ -595,7 +597,8 @@ theorem fderivWithin_neg (hxs : UniqueDiffWithinAt 𝕜 s x) :
 
 @[simp]
 theorem fderiv_fun_neg : fderiv 𝕜 (fun y => -f y) x = -fderiv 𝕜 f x := by
-  simp only [← fderivWithin_univ, fderivWithin_fun_neg uniqueDiffWithinAt_univ]
+  simp only [← fderivWithin_univ]
+  rw [fderivWithin_fun_neg uniqueDiffWithinAt_univ]
 
 /-- Version of `fderiv_neg` where the function is written `-f` instead of `fun y ↦ - f y`. -/
 theorem fderiv_neg : fderiv 𝕜 (-f) x = -fderiv 𝕜 f x :=
@@ -842,7 +845,8 @@ theorem fderivWithin_const_sub (hxs : UniqueDiffWithinAt 𝕜 s x) (c : F) :
   simp only [sub_eq_add_neg, fderivWithin_const_add, fderivWithin_fun_neg, hxs]
 
 theorem fderiv_const_sub (c : F) : fderiv 𝕜 (fun y => c - f y) x = -fderiv 𝕜 f x := by
-  simp only [← fderivWithin_univ, fderivWithin_const_sub uniqueDiffWithinAt_univ]
+  simp only [← fderivWithin_univ]
+  rw [fderivWithin_const_sub uniqueDiffWithinAt_univ]
 
 end Sub
 

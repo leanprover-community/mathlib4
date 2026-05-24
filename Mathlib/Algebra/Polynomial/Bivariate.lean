@@ -280,7 +280,7 @@ theorem Bivariate.swap_monomial (n : ℕ) (f : R[X]) :
 
 theorem Bivariate.swap_monomial_monomial (n m : ℕ) (r : R) :
     swap (monomial n (monomial m r)) = (monomial m (monomial n r)) := by
-  simp [← C_mul_X_pow_eq_monomial]; ac_rfl
+  simp [← C_mul_X_pow_eq_monomial, X_pow_mul_assoc]
 
 /-- Evaluating `swap p` at `x`, `y` is the same as evaluating `p` at `y` `x`. -/
 theorem Bivariate.aevalAeval_swap (x y : A) (p : R[X][Y]) :

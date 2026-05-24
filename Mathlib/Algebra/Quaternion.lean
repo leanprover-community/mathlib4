@@ -1217,6 +1217,7 @@ theorem normSq_div : normSq (a / b) = normSq a / normSq b :=
 theorem normSq_zpow (z : ℤ) : normSq (a ^ z) = normSq a ^ z :=
   map_zpow₀ normSq a z
 
+omit [LinearOrder R] [IsStrictOrderedRing R] in
 @[norm_cast]
 theorem normSq_ratCast (q : ℚ) : normSq (q : ℍ[R]) = (q : ℍ[R]) ^ 2 := by
   rw [← coe_ratCast, normSq_coe, coe_pow]
