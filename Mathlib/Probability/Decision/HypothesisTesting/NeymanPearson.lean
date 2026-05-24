@@ -36,7 +36,7 @@ the likelihood ratio against the threshold `t⁻¹`).
 
 ## References
 
-* E. L. Lehmann and J. P. Romano, *Testing Statistical Hypotheses*, §3.2.
+* Ingster, Y. and Suslina, I.A., 2012. Nonparametric goodness-of-fit testing under Gaussian models (Vol. 169). Springer Science & Business Media.
 -/
 
 @[expose] public section
