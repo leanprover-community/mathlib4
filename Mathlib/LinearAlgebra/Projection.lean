@@ -287,8 +287,8 @@ def quotientEquivOfIsCompl (h : IsCompl p q) : (E ⧸ p) ≃ₗ[R] q :=
     (by ext; simp [Quotient.eq, sub_mem_comm_iff, sub_projection_mem])
 
 theorem quotientEquivOfIsCompl_comp_mkQ (h : IsCompl p q) :
-    (quotientEquivOfIsCompl p q h : E ⧸ p →ₗ[R] q) ∘ₗ p.mkQ = q.projectionOnto p h.symm := by
-  ext; rfl
+    (quotientEquivOfIsCompl p q h : E ⧸ p →ₗ[R] q) ∘ₗ p.mkQ = q.projectionOnto p h.symm :=
+  rfl
 
 @[simp]
 theorem quotientEquivOfIsCompl_apply_mk (h : IsCompl p q) (x : E) :
