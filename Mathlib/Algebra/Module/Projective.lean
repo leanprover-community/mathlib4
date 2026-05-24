@@ -291,8 +291,8 @@ end OfLiftingProperty
 
 section DirectSum
 
-variable {R : Type u} [Semiring R] {ι : Type v} {M : ι → Type w} [(i : ι) → AddCommMonoid (M i)]
-    [(i : ι) → Module R (M i)]
+variable {R : Type u} [Semiring R]
+variable {ι : Type v} {M : ι → Type w} [(i : ι) → AddCommMonoid (M i)] [(i : ι) → Module R (M i)]
 
 theorem Projective.directSum_iff : Projective R (⨁ i, M i) ↔ ∀ (i : ι), Projective R (M i) := by
   classical
