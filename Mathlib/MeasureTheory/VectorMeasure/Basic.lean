@@ -288,7 +288,7 @@ lemma apply_eq_zero_of_isEmpty [IsEmpty α] (μ : VectorMeasure α M) (s : Set �
   simp [eq_empty_of_isEmpty s]
 
 instance instSubsingleton [IsEmpty α] : Subsingleton (VectorMeasure α M) :=
-  ⟨fun μ ν => by ext1 s _; rw [apply_eq_zero_of_isEmpty, apply_eq_zero_of_isEmpty]⟩
+  ⟨fun μ ν => by ext; rw [apply_eq_zero_of_isEmpty, apply_eq_zero_of_isEmpty]⟩
 
 theorem eq_zero_of_isEmpty [IsEmpty α] (μ : VectorMeasure α M) : μ = 0 :=
   Subsingleton.elim μ 0
