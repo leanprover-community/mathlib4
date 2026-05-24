@@ -26,8 +26,8 @@ open Function Metric Set Filter Finset Topology NNReal
 open LinearMap (range ker)
 
 variable {𝕜 𝕜' : Type*} [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕜'] {σ : 𝕜 →+* 𝕜'}
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜' F] (f : E →SL[σ] F)
+variable {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable {F : Type*} [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace 𝕜' F] (f : E →SL[σ] F)
 
 namespace ContinuousLinearMap
 
@@ -252,9 +252,10 @@ theorem isQuotientMap (surj : Surjective f) : IsQuotientMap f :=
 
 end
 
-theorem _root_.AffineMap.isOpenMap {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-    [CompleteSpace F] {P Q : Type*} [MetricSpace P] [NormedAddTorsor E P] [MetricSpace Q]
-    [NormedAddTorsor F Q] (f : P →ᵃ[𝕜] Q) (hf : Continuous f) (surj : Surjective f) :
+theorem _root_.AffineMap.isOpenMap {F : Type*} [AddCommGroup F] [NormedAddCommGroup F]
+    [NormedSpace 𝕜 F] [CompleteSpace F] {P Q : Type*} [MetricSpace P] [NormedAddTorsor E P]
+    [MetricSpace Q] [NormedAddTorsor F Q] (f : P →ᵃ[𝕜] Q) (hf : Continuous f)
+    (surj : Surjective f) :
     IsOpenMap f :=
   AffineMap.isOpenMap_linear_iff.mp <|
     ContinuousLinearMap.isOpenMap { f.linear with cont := AffineMap.continuous_linear_iff.mpr hf }
@@ -371,7 +372,7 @@ lemma equivRange_symm_apply (hinj : Injective f) (hclo : IsClosed (range f))
 
 section
 
-variable {E F : Type*}
+variable {E F : Type*} [AddCommGroup E] [AddCommGroup F]
   [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedAddCommGroup F] [NormedSpace 𝕜 F]
   [CompleteSpace E] [CompleteSpace F]
 
@@ -492,8 +493,8 @@ theorem spectrum_eq {f : E →L[𝕜] E} :
 `ContinuousLinearMap.closed_complemented_range_of_isCompl_of_ker_eq_bot`.
 
 This is `f.coprod G.subtypeL` as a `ContinuousLinearEquiv`. -/
-noncomputable def coprodSubtypeLEquivOfIsCompl {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-    [CompleteSpace F] (f : E →L[𝕜] F) {G : Submodule 𝕜 F}
+noncomputable def coprodSubtypeLEquivOfIsCompl {F : Type*} [AddCommGroup F] [NormedAddCommGroup F]
+    [NormedSpace 𝕜 F] [CompleteSpace F] (f : E →L[𝕜] F) {G : Submodule 𝕜 F}
     (h : IsCompl f.range G) [CompleteSpace G] (hker : f.ker = ⊥) : (E × G) ≃L[𝕜] F :=
   ContinuousLinearEquiv.ofBijective (f.coprod G.subtypeL)
     (by
@@ -502,8 +503,8 @@ noncomputable def coprodSubtypeLEquivOfIsCompl {F : Type*} [NormedAddCommGroup F
       · simp [h.disjoint])
     (by simp [LinearMap.range_coprod, h.sup_eq_top])
 
-theorem range_eq_map_coprodSubtypeLEquivOfIsCompl {F : Type*} [NormedAddCommGroup F]
-    [NormedSpace 𝕜 F] [CompleteSpace F] (f : E →L[𝕜] F) {G : Submodule 𝕜 F}
+theorem range_eq_map_coprodSubtypeLEquivOfIsCompl {F : Type*} [AddCommGroup F]
+    [NormedAddCommGroup F] [NormedSpace 𝕜 F] [CompleteSpace F] (f : E →L[𝕜] F) {G : Submodule 𝕜 F}
     (h : IsCompl f.range G) [CompleteSpace G] (hker : f.ker = ⊥) :
     f.range =
       ((⊤ : Submodule 𝕜 E).prod (⊥ : Submodule 𝕜 G)).map
@@ -514,8 +515,8 @@ theorem range_eq_map_coprodSubtypeLEquivOfIsCompl {F : Type*} [NormedAddCommGrou
 
 /- TODO: remove the assumption `f.ker = ⊥` in the next lemma, by using the map induced by `f` on
 `E / f.ker`, once we have quotient normed spaces. -/
-theorem closed_complemented_range_of_isCompl_of_ker_eq_bot {F : Type*} [NormedAddCommGroup F]
-    [NormedSpace 𝕜 F] [CompleteSpace F] (f : E →L[𝕜] F) (G : Submodule 𝕜 F)
+theorem closed_complemented_range_of_isCompl_of_ker_eq_bot {F : Type*} [AddCommGroup F]
+    [NormedAddCommGroup F] [NormedSpace 𝕜 F] [CompleteSpace F] (f : E →L[𝕜] F) (G : Submodule 𝕜 F)
     (h : IsCompl f.range G) (hG : IsClosed (G : Set F)) (hker : f.ker = ⊥) :
     IsClosed (f.range : Set F) := by
   haveI : CompleteSpace G := hG.completeSpace_coe
@@ -529,7 +530,8 @@ end ContinuousLinearMap
 section ClosedGraphThm
 
 variable [CompleteSpace E]
-variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F] [CompleteSpace F] (g : E →ₗ[𝕜] F)
+variable {F : Type*} [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace 𝕜 F] [CompleteSpace F]
+  (g : E →ₗ[𝕜] F)
 
 /-- The **closed graph theorem** : a linear map between two Banach spaces whose graph is closed
 is continuous. -/
@@ -607,7 +609,7 @@ section BijectivityCriteria
 namespace ContinuousLinearMap
 
 variable {σ : 𝕜 →+* 𝕜'} {σ' : 𝕜' →+* 𝕜} [RingHomInvPair σ σ']
-variable {F : Type u_4} [NormedAddCommGroup F] [NormedSpace 𝕜' F]
+variable {F : Type u_4} [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace 𝕜' F]
 variable [CompleteSpace E]
 
 lemma closed_range_of_antilipschitz {f : E →SL[σ] F} {c : ℝ≥0} (hf : AntilipschitzWith c f) :
