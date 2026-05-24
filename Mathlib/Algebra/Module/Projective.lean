@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Module.Shrink
 public import Mathlib.LinearAlgebra.TensorProduct.Basis
 public import Mathlib.Logic.UnivLE
+public import Mathlib.LinearAlgebra.DirectSum.Basis
 
 /-!
 
@@ -59,6 +60,7 @@ projective module
 universe w v u
 
 open LinearMap hiding id
+open DirectSum hiding id id_apply
 open Finsupp
 
 /- The actual implementation we choose: `P` is projective if the natural surjection
@@ -286,5 +288,38 @@ theorem Projective.of_lifting_property {R : Type u} [Ring R] {P : Type v} [AddCo
   exact ⟨e.toLinearMap ∘ₗ g, hg⟩
 
 end OfLiftingProperty
+
+section DirectSum
+
+variable {R : Type u} [Semiring R] {ι : Type v} {M : ι → Type w} [(i : ι) → AddCommMonoid (M i)]
+    [(i : ι) → Module R (M i)]
+
+theorem directSum_iff : Module.Projective R (⨁ i, M i) ↔ ∀ (i : ι), Module.Projective R (M i) := by
+  classical
+  constructor
+  · intro H i
+    refine Projective.iff_split'.{max u v w} |>.mpr ?_
+    obtain ⟨T, I₁, I₂, I₃, f, g, hfg⟩ := Projective.iff_split.mp H
+    refine ⟨T, I₁, I₂, I₃, f.comp (DirectSum.lof ..), (DirectSum.component ..).comp g, ?_⟩
+    rw [LinearMap.ext_iff] at hfg
+    ext
+    simp at hfg
+    simp [hfg]
+  · intro H
+    refine Projective.iff_split.mpr ?_
+    have := fun i ↦ Projective.iff_split'.{max u v w}.mp (H i)
+    choose T I₁ I₂ I₃ f g hfg using this
+    refine ⟨⨁ i, T i, inferInstance, inferInstance, inferInstance, ?_⟩
+    use DirectSum.toModule _ _ _ fun i ↦ (DirectSum.lof ..).comp (f i)
+    use DirectSum.toModule _ _ _ fun i ↦ (DirectSum.lof ..).comp (g i)
+    ext x
+    have := LinearMap.ext_iff.mp (hfg x)
+    simp at this
+    simp [this]
+
+instance Projective.directSum [∀ (i : ι), Module.Projective R (M i)] :
+    Module.Projective R (⨁ i, M i) := directSum_iff.mpr ‹_›
+
+end DirectSum
 
 end Module
