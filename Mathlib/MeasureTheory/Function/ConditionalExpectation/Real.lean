@@ -88,7 +88,7 @@ theorem integral_norm_condExp_rpow_le {p : ℝ} (hp : 1 ≤ p) {f : α → E}
     · exact Integrable.norm_condExp_rpow_le hp hf
   _ = _ := integral_condExp hm
 
-theorem integral_norm_condExp_le (f : α → E) : ∫ x, ‖(μ[f | m]) x‖ ∂μ ≤ ∫ x, ‖f x‖ ∂μ := by
+theorem integral_norm_condExp_le (f : α → E) : ∫ x, ‖μ[f | m] x‖ ∂μ ≤ ∫ x, ‖f x‖ ∂μ := by
   by_cases! hfint : ¬ Integrable f μ
   · simpa [condExp_of_not_integrable hfint] using integral_nonneg (fun x => norm_nonneg (f x))
   simpa using integral_norm_condExp_rpow_le le_rfl (by simpa using hfint.norm)
