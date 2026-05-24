@@ -880,19 +880,19 @@ def seminormedRing : SeminormedRing L := by
 
 /-- `L` with the spectral norm is a `NormedAddCommGroup`. -/
 @[implicit_reducible]
-def normedAddCommGroup : NormedAddCommGroup L := by
-  haveI : NormedField L := normedField K L
-  infer_instance
+def normedAddCommGroup : NormedAddCommGroup L :=
+  letI : NormedField L := normedField K L
+  inferInstance
 
 /-- `L` with the spectral norm is a `SeminormedAddCommGroup`. -/
 @[implicit_reducible]
-def seminormedAddCommGroup : SeminormedAddCommGroup L := by
-  have : NormedField L := normedField K L
-  infer_instance
+def seminormedAddCommGroup : SeminormedAddCommGroup L :=
+  letI : NormedField L := normedField K L
+  inferInstance
 
 /-- `L` with the spectral norm is a `NormedSpace` over `K`. -/
 @[implicit_reducible]
-def normedSpace : @NormedSpace K L _ (seminormedAddCommGroup K L) :=
+def normedSpace : @NormedSpace K L _ _ (seminormedAddCommGroup K L) :=
   letI _ := seminormedAddCommGroup K L
   { (inferInstance : Module K L) with
     norm_smul_le r x := by
