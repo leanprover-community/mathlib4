@@ -18,7 +18,7 @@ Function that returns unit length vector that points in the same direction
 
 @[expose] public section
 
-variable {V : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V]
+variable {V : Type*} [AddCommGroup V] [NormedAddCommGroup V] [NormedSpace ℝ V]
 
 /-- For a nonzero vector `x`, `normalize x` is the unit-length vector that points
 in the same direction as `x`. If `x = 0`, then `normalize x = 0`. -/
