@@ -54,7 +54,7 @@ the ideal spanned by all variables. -/
 def truncTotalAlgHom (σ R : Type*) [Finite σ] [CommRing R] (n : ℕ) :
     MvPowerSeries σ R →ₐ[MvPolynomial σ R]
       MvPolynomial σ R ⧸ (MvPolynomial.idealOfVars σ R) ^ n where
-  toFun p := truncTotal n p
+  toFun p := Ideal.Quotient.mk _ (truncTotal n p)
   map_one' := by
     by_cases! h : n = 0
     · have := Ideal.Quotient.subsingleton_iff.mpr
@@ -95,6 +95,7 @@ theorem coeff_toAdicCompletion_val_apply_out {x : σ →₀ ℕ} {p : MvPowerSer
   · rw [toAdicCompletion_apply_eq_mk_truncTotal, smul_eq_mul]
     nth_rw 1 [← Ideal.mul_top (MvPolynomial.idealOfVars σ R ^ n), ← Ideal.Quotient.eq,
       Ideal.Quotient.mk_out]
+    rfl
   exact hx
 
 theorem toAdicCompletion_coe (p : MvPolynomial σ R) :
