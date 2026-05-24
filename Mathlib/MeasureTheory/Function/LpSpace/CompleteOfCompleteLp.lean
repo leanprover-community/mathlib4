@@ -21,7 +21,7 @@ open Filter ContinuousLinearMap
 
 namespace MeasureTheory
 
-variable {α E : Type*} [NormedAddCommGroup E] [MeasurableSpace α] {p : ℝ≥0∞} {μ : Measure α}
+variable {α E : Type*} [NormedAddCommGroup E] {mα : MeasurableSpace α} {p : ℝ≥0∞} {μ : Measure α}
 
 lemma FinStronglyMeasurable.exists_measurableSet_measure_pos_lt_top {f : α → E}
     (hf : FinStronglyMeasurable f μ) (h'f : ¬(f =ᵐ[μ] 0)) :
@@ -31,7 +31,7 @@ lemma FinStronglyMeasurable.exists_measurableSet_measure_pos_lt_top {f : α → 
   have A n : μ (Function.support (fn n)) = 0 := by
     by_contra!
     have := h'f (Function.support (fn n)) (fn n).measurableSet_support (by positivity)
-    exact (lt_irrefl _ (this.trans_lt (hfn n))).elim
+    grind
   have B : ∀ᵐ x ∂μ, ∀ n, fn n x = 0 := ae_all_iff.mpr A
   filter_upwards [B] with x hx
   apply tendsto_nhds_unique (hfn_lim x)
@@ -100,17 +100,11 @@ lemma completeSpace_of_completeSpace_Lp [hp : Fact (1 ≤ p)]
     (tendstoInMeasure_of_tendsto_Lp hg).exists_seq_tendsto_ae
   have : (ae (μ.restrict (Function.support f))).NeBot := by
     apply ae_restrict_neBot.2
-    have : NeZero μ := by
-      contrapose! hf
-      simp [neZero_iff] at hf
-      ext
-      simp only [hf, ae_zero, ZeroMemClass.coe_zero]
-      trivial
+    apply μ.measure_support_eq_zero_iff.not.2
     contrapose! hf
     ext
-    filter_upwards [compl_mem_ae_iff.2 hf] with y hy
-    simp at hy
-    simp [hy]
+    grw [Lp.coeFn_zero]
+    exact hf
   have A : ∀ᵐ x ∂(μ.restrict (Function.support f)),
     Tendsto (fun i ↦ f' (ns i) x) atTop (𝓝 (g x)) := ae_restrict_of_ae nslim
   have B : ∀ᵐ x ∂(μ.restrict (Function.support f)), x ∈ Function.support f :=
@@ -125,7 +119,8 @@ lemma completeSpace_of_completeSpace_Lp [hp : Fact (1 ≤ p)]
   refine ⟨(f x)⁻¹ • g x, ?_⟩
   apply tendsto_nhds_of_cauchySeq_of_subseq hu (StrictMono.tendsto_atTop hns)
   convert Tendsto.const_smul xlim (f x)⁻¹ with n
-  rw [smul_smul, inv_mul_cancel₀, one_smul, Function.comp]
+  apply tendsto_nhds_of_cauchySeq_of_subseq hu hns.tendsto_atTop
+  convert xlim.const_smul (f x)⁻¹ with n
   exact hx
 
 end MeasureTheory

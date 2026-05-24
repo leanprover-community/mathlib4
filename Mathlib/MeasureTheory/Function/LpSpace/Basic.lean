@@ -850,7 +850,7 @@ def compLpL₂ [Fact (1 ≤ p)] (B : G →L[𝕜] E →L[𝕜] F) :
 @[simp] theorem compLpL₂_apply_apply [Fact (1 ≤ p)] (B : G →L[𝕜] E →L[𝕜] F) (g : G) (f : Lp E p μ) :
     compLpL₂ p μ B g f = (B g).compLp f := rfl
 
-theorem norm_compLpL₂ [Fact (1 ≤ p)] (B : G →L[𝕜] E →L[𝕜] F) :
+theorem norm_compLpL₂_le [Fact (1 ≤ p)] (B : G →L[𝕜] E →L[𝕜] F) :
     ‖B.compLpL₂ p μ‖ ≤ ‖B‖ :=
   LinearMap.mkContinuous₂_norm_le _ (norm_nonneg _) _
 
