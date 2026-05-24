@@ -6,50 +6,106 @@ Authors: Robin Carlier
 module
 
 public import Mathlib.Tactic.NonemptyAttr
-public import Mathlib.CategoryTheory.Functor.FullyFaithful
+public import Mathlib.Logic.Nonempty
 
-open CategoryTheory
+/-! Tests for the behavior of the `nonempty` attribute. -/
 
 @[expose] public section
 
-variable (C : Type*) [Category* C]
-def F : C ⥤ C where
-  obj x := x
-  map x := x
+def Foo := Unit
 
-@[nonempty]
-def Ff : (F C).FullyFaithful :=
-  sorry
+@[nonempty] def F : Foo := .unit
 
-@[nonempty]
-def Ff' : (F C).FullyFaithful :=
-  sorry
+/-- info: instNonemptyFoo : Nonempty Foo -/
+#guard_msgs in #check instNonemptyFoo
 
-instance (C : Type*) [Category* C] : Nonempty (F C).FullyFaithful := sorry
-instance (C : Type*) [Category* C] : Nonempty (F C).FullyFaithful := sorry
-instance (C : Type*) [Category* C] : Nonempty (F C).FullyFaithful := sorry
+/-- info: instNonemptyFoo -/
+#guard_msgs in #synth Nonempty Foo
 
--- @[nonempty]
--- def Ff' : ∀ (C : Type*) [Category* C], (F C).FullyFaithful :=
---   sorry
+#guard_msgs in @[nonempty] def G : Foo := .unit
 
-section
+/-! testing if repeated application add suffixes -/
 
-#check Ff
--- #check instFullF
--- #check instFaithfulF
+/-- info: instNonemptyFoo_1 : Nonempty Foo -/
+#guard_msgs in #check instNonemptyFoo_1
 
-set_option trace.Meta.synthInstance true in
-#synth Nonempty (F C).FullyFaithful
-#synth (F C).Full
-#synth (F C).Faithful
+def Bar := Unit
+
+#guard_msgs in @[nonempty -inst] def H : Bar := .unit
+
+/--
+error: failed to synthesize
+  Nonempty Bar
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+-/
+#guard_msgs in #synth Nonempty Bar
+
+#guard_msgs in @[nonempty (priority := 100) -inst] def K : Bar := .unit
+
+/-! Testing if named priority work -/
+
+#guard_msgs in @[nonempty (priority := mid) -inst] def U : Bar := .unit
+
+/-! Testing if manual name works -/
+
+#guard_msgs in @[nonempty (priority := mid) (name := hello) -inst] def V : Bar := .unit
+
+/-- info: hello : Nonempty Bar -/
+#guard_msgs in #check hello
+
+/-! Check that `scoped nonempty` correctly adds a scoped instance -/
+section «scoped»
+
+def Boz := Unit
+
+namespace Boz
+
+@[scoped nonempty] def foo : Boz := .unit
+
+/-- info: instNonempty -/
+#guard_msgs in #synth Nonempty Boz
+
+end Boz
+
+/--
+error: failed to synthesize
+  Nonempty Boz
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+-/
+#guard_msgs in #synth Nonempty Boz
+
+/-- info: instNonempty -/
+#guard_msgs in open scoped Boz in #synth Nonempty Boz
+
+end «scoped»
 
 end
 
-example : (F C).Full := inferInstance
-example : (F C).Faithful := inferInstance
+/-! Check interaction of nonempty with private/public. -/
 
-@[nonempty]
-def Ff'' : Nat := sorry
+section
+
+@[expose] public def Faa := Unit
+
+@[nonempty] def faaAux : Faa := .unit
+
+-- Should be private:
+
+/--
+info: private theorem instNonemptyFaa : Nonempty Faa :=
+Nonempty.intro faaAux
+-/
+#guard_msgs in
+#print instNonemptyFaa
+
+@[nonempty (name := bar)] def faaAux' : Faa := .unit
+
+/--
+info: private theorem bar : Nonempty Faa :=
+Nonempty.intro faaAux'
+-/
+#guard_msgs in #print bar
 
 end
