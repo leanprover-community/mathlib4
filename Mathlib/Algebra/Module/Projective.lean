@@ -294,31 +294,25 @@ section DirectSum
 variable {R : Type u} [Semiring R] {ι : Type v} {M : ι → Type w} [(i : ι) → AddCommMonoid (M i)]
     [(i : ι) → Module R (M i)]
 
-theorem directSum_iff : Module.Projective R (⨁ i, M i) ↔ ∀ (i : ι), Module.Projective R (M i) := by
+theorem Projective.directSum_iff : Projective R (⨁ i, M i) ↔ ∀ (i : ι), Projective R (M i) := by
   classical
-  constructor
-  · intro H i
-    refine Projective.iff_split'.{max u v w} |>.mpr ?_
-    obtain ⟨T, I₁, I₂, I₃, f, g, hfg⟩ := Projective.iff_split.mp H
+  refine ⟨fun H i ↦ ?_, fun H ↦ ?_⟩
+  · refine iff_split'.{max u v w} |>.mpr ?_
+    obtain ⟨T, I₁, I₂, I₃, f, g, hfg⟩ := iff_split.mp H
     refine ⟨T, I₁, I₂, I₃, f.comp (DirectSum.lof ..), (DirectSum.component ..).comp g, ?_⟩
-    rw [LinearMap.ext_iff] at hfg
-    ext
-    simp at hfg
-    simp [hfg]
-  · intro H
-    refine Projective.iff_split.mpr ?_
-    have := fun i ↦ Projective.iff_split'.{max u v w}.mp (H i)
+    simp [← comp_assoc _ f, comp_assoc _ g, hfg]
+  · refine iff_split.mpr ?_
+    have := fun i ↦ iff_split'.{max u v w}.mp (H i)
     choose T I₁ I₂ I₃ f g hfg using this
     refine ⟨⨁ i, T i, inferInstance, inferInstance, inferInstance, ?_⟩
     use DirectSum.toModule _ _ _ fun i ↦ (DirectSum.lof ..).comp (f i)
     use DirectSum.toModule _ _ _ fun i ↦ (DirectSum.lof ..).comp (g i)
     ext x
-    have := LinearMap.ext_iff.mp (hfg x)
-    simp at this
+    have := by simpa using LinearMap.ext_iff.mp (hfg x)
     simp [this]
 
-instance Projective.directSum [∀ (i : ι), Module.Projective R (M i)] :
-    Module.Projective R (⨁ i, M i) := directSum_iff.mpr ‹_›
+instance Projective.directSum [∀ (i : ι), Projective R (M i)] : Projective R (⨁ i, M i) :=
+  directSum_iff.mpr ‹_›
 
 end DirectSum
 

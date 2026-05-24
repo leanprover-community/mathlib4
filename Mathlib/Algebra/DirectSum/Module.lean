@@ -213,6 +213,14 @@ theorem component.of [DecidableEq ι] (i j : ι) (b : M j) :
     component R ι M i ((lof R ι M j) b) = if h : j = i then Eq.recOn h b else 0 :=
   DFinsupp.single_apply
 
+lemma component_comp_lof [DecidableEq ι] (i j : ι) :
+    component R ι M i ∘ₗ lof R ι M j = if h : j = i then h ▸ .id else 0 := by
+  aesop (add simp component.of)
+
+@[simp]
+lemma component_comp_lof_same [DecidableEq ι] (i : ι) : component R ι M i ∘ₗ lof R ι M i = .id := by
+  simp [component_comp_lof]
+
 section map
 
 variable {R} {N : ι → Type*}
