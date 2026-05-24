@@ -19,8 +19,9 @@ field of characteristic `p`.
 
 * `adjoinPthRoots`: the field extension adjoining all `p`-th roots, defined as the field itself,
   with the algebra map being the frobenius map.
-* `adjoinPthRootsPthRoot`: the ring equivalence with underlying identity map, mapping an element
-  to its unique `p`-th root in `adjoinPthRoots`.
+* `adjoinPthRootsPthRoot`: the `p`-th root map `k → adjoinPthRoots k p`, mapping an element
+  to its unique `p`-th root in `adjoinPthRoots`. It is implemented as a `RingEquiv` with underlying
+  identity map.
 
 -/
 
@@ -28,8 +29,7 @@ public section
 
 variable (k : Type*) [Field k]
 
-/-- Adjoining all `p`-th root to a field of characteristic `p`.
-It is defined as the field itself with algebra map being the frobenius map. -/
+/-- Adjoining all `p`-th root to a field of characteristic `p`. -/
 @[nolint unusedArguments, expose]
 def adjoinPthRoots (p : ℕ) [ExpChar k p] := k
 
@@ -39,7 +39,7 @@ instance : Field (adjoinPthRoots k p) := inferInstanceAs (Field k)
 
 instance : Algebra k (adjoinPthRoots k p) := (frobenius k p).toAlgebra
 
-/-- The equivalence `k ≃ adjoinPthRoots k p` with underlying map id. -/
+/-- The `p`-th root map `k → adjoinPthRoots k p`, as a `RingEquiv`. -/
 def adjoinPthRootsPthRoot : k ≃+* adjoinPthRoots k p := RingEquiv.refl k
 
 lemma adjoinPthRootsPthRoot_apply_pow (x : k) :
