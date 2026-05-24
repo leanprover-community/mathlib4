@@ -10,7 +10,6 @@ public import Mathlib.RingTheory.LocalProperties.Submodule
 public import Mathlib.RingTheory.Localization.Algebra
 public import Mathlib.RingTheory.Localization.Away.Basic
 public import Mathlib.Algebra.Module.LocalizedModule.AtPrime
-public import Mathlib.Algebra.Module.LocalizedModule.Away
 
 /-!
 # Local properties about linear maps
@@ -20,7 +19,7 @@ injectivity, surjectivity, bijectivity and exactness of linear maps are local pr
 More precisely, we show that these can be checked at maximal ideals and on standard covers.
 -/
 
-@[expose] public section
+public section
 
 open Submodule LocalizedModule Ideal LinearMap
 

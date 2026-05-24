@@ -12,7 +12,7 @@ public import Mathlib.Analysis.Calculus.MeanValue
 # Higher differentiability over `ℝ` or `ℂ`
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -157,7 +157,7 @@ theorem ContDiff.lipschitzWith_of_hasCompactSupport {f : E' → F'}
     (hf : HasCompactSupport f) (h'f : ContDiff 𝕂 n f) (hn : n ≠ 0) :
     ∃ C, LipschitzWith C f := by
   obtain ⟨C, hC⟩ := (hf.fderiv 𝕂).exists_bound_of_continuous (h'f.continuous_fderiv hn)
-  refine ⟨⟨max C 0, le_max_right _ _⟩, ?_⟩
+  refine ⟨.mk (max C 0) (le_max_right _ _), ?_⟩
   apply lipschitzWith_of_nnnorm_fderiv_le (h'f.differentiable hn) (fun x ↦ ?_)
   simp [← NNReal.coe_le_coe, hC x]
 

@@ -66,7 +66,7 @@ alias ⟨_, Aesop.sigma_nonempty_of_exists_nonempty⟩ := sigma_nonempty
 theorem sigma_eq_empty : s.sigma t = ∅ ↔ ∀ i ∈ s, t i = ∅ := by
   contrapose!; exact sigma_nonempty
 
-@[mono]
+@[gcongr, mono]
 theorem sigma_mono (hs : s₁ ⊆ s₂) (ht : ∀ i, t₁ i ⊆ t₂ i) : s₁.sigma t₁ ⊆ s₂.sigma t₂ :=
   fun ⟨i, _⟩ h =>
   let ⟨hi, ha⟩ := mem_sigma.1 h
@@ -90,6 +90,16 @@ theorem sigma_eq_biUnion [DecidableEq (Σ i, α i)] (s : Finset ι) (t : ∀ i, 
     s.sigma t = s.biUnion fun i => (t i).map <| Embedding.sigmaMk i := by
   ext ⟨x, y⟩
   simp [and_left_comm]
+
+lemma filter_sigma (s : Finset ι) (t : ∀ i, Finset (α i)) (p : (i : ι) × α i → Prop)
+    [DecidablePred p] : (s.sigma t).filter p = s.sigma fun i ↦ (t i).filter fun x => p ⟨i, x⟩ := by
+  ext ⟨i, a⟩
+  simp [Finset.mem_filter, Finset.mem_sigma, and_assoc]
+
+lemma filter_sigma' (s : Finset ι) (t : ∀ i, Finset (α i)) (p : (i : ι) → α i → Prop)
+    [∀ i, DecidablePred (p i)] :
+    (s.sigma t).filter (fun x ↦ p x.fst x.snd) = s.sigma fun i ↦ (t i).filter (p i)  := by
+  simp [filter_sigma]
 
 variable (s t) (f : (Σ i, α i) → β)
 
@@ -178,16 +188,10 @@ theorem notMem_sigmaLift_of_ne_left (f : ∀ ⦃i⦄, α i → β i → Finset (
   rw [mem_sigmaLift]
   exact fun H => h H.fst
 
-@[deprecated (since := "2025-05-23")]
-alias not_mem_sigmaLift_of_ne_left := notMem_sigmaLift_of_ne_left
-
 theorem notMem_sigmaLift_of_ne_right (f : ∀ ⦃i⦄, α i → β i → Finset (γ i)) {a : Sigma α}
     (b : Sigma β) {x : Sigma γ} (h : b.1 ≠ x.1) : x ∉ sigmaLift f a b := by
   rw [mem_sigmaLift]
   exact fun H => h H.snd.fst
-
-@[deprecated (since := "2025-05-23")]
-alias not_mem_sigmaLift_of_ne_right := notMem_sigmaLift_of_ne_right
 
 variable {f g : ∀ ⦃i⦄, α i → β i → Finset (γ i)} {a : Σ i, α i} {b : Σ i, β i}
 

@@ -13,6 +13,7 @@ public import Mathlib.Analysis.CStarAlgebra.Basic
 public import Mathlib.Analysis.Normed.Operator.ContinuousLinearMap
 public import Mathlib.Analysis.Normed.Ring.Finite
 public import Mathlib.Data.Real.Sqrt
+public import Mathlib.Tactic.LinearCombination
 
 /-!
 # `RCLike`: a typeclass for ℝ or ℂ
@@ -82,6 +83,7 @@ class RCLike (K : semiOutParam Type*) extends DenselyNormedField K, StarRing K,
   -- note we cannot put this in the `extends` clause
   [toDecidableEq : DecidableEq K]
 
+attribute [instance_reducible] RCLike.toPartialOrder RCLike.toDecidableEq
 scoped[ComplexOrder] attribute [instance 100] RCLike.toPartialOrder
 attribute [instance 100] RCLike.toDecidableEq
 
@@ -144,9 +146,6 @@ theorem ofReal_zero : ((0 : ℝ) : K) = 0 :=
 @[rclike_simps]
 theorem zero_re : re (0 : K) = (0 : ℝ) :=
   map_zero re
-
-@[deprecated (since := "2025-05-29")]
-alias zero_re' := zero_re
 
 @[rclike_simps]
 theorem zero_im : im (0 : K) = (0 : ℝ) :=
@@ -224,8 +223,16 @@ theorem re_ofReal_mul (r : ℝ) (z : K) : re (↑r * z) = r * re z := by
   simp only [mul_re, ofReal_im, zero_mul, ofReal_re, sub_zero]
 
 @[rclike_simps]
+theorem re_mul_ofReal (z : K) (r : ℝ) : re (z * ↑r) = re z * r := by
+  rw [mul_comm, re_ofReal_mul, mul_comm]
+
+@[rclike_simps]
 theorem im_ofReal_mul (r : ℝ) (z : K) : im (↑r * z) = r * im z := by
   simp only [add_zero, ofReal_im, zero_mul, ofReal_re, mul_im]
+
+@[rclike_simps]
+theorem im_mul_ofReal (z : K) (r : ℝ) : im (z * ↑r) = im z * r := by
+  rw [mul_comm, im_ofReal_mul, mul_comm]
 
 @[rclike_simps]
 theorem smul_re (r : ℝ) (z : K) : re (r • z) = r * re z := by
@@ -359,6 +366,7 @@ theorem is_real_TFAE (z : K) :
   tfae_have 5 → 1 := fun hz => by rwa [isSelfAdjoint_iff] at hz
   tfae_finish
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 theorem conj_eq_iff_real {z : K} : conj z = z ↔ ∃ r : ℝ, z = (r : K) :=
   calc
     _ ↔ ∃ r : ℝ, (r : K) = z := (is_real_TFAE z).out 0 1
@@ -644,7 +652,7 @@ lemma norm_nnratCast (q : ℚ≥0) : ‖(q : K)‖ = q := by
   rw [← ofReal_nnratCast]; exact norm_of_nonneg q.cast_nonneg
 
 @[simp, rclike_simps, norm_cast]
-lemma nnnorm_nnratCast (q : ℚ≥0) : ‖(q : K)‖₊ = q := by simp [nnnorm]
+lemma nnnorm_nnratCast (q : ℚ≥0) : ‖(q : K)‖₊ = q := by simp [nnnorm]; rfl
 
 variable (K) in
 lemma norm_nsmul [NormedAddCommGroup E] [NormedSpace K E] (n : ℕ) (x : E) : ‖n • x‖ = n • ‖x‖ := by
@@ -653,24 +661,6 @@ lemma norm_nsmul [NormedAddCommGroup E] [NormedSpace K E] (n : ℕ) (x : E) : �
 variable (K) in
 lemma nnnorm_nsmul [NormedAddCommGroup E] [NormedSpace K E] (n : ℕ) (x : E) :
     ‖n • x‖₊ = n • ‖x‖₊ := by simpa [Nat.cast_smul_eq_nsmul] using nnnorm_smul (n : K) x
-
-section NormedField
-variable [NormedField E] [CharZero E] [NormedSpace K E]
-include K
-
-variable (K) in
-lemma norm_nnqsmul (q : ℚ≥0) (x : E) : ‖q • x‖ = q • ‖x‖ := by
-  simpa [NNRat.cast_smul_eq_nnqsmul] using norm_smul (q : K) x
-
-variable (K) in
-lemma nnnorm_nnqsmul (q : ℚ≥0) (x : E) : ‖q • x‖₊ = q • ‖x‖₊ := by
-  simpa [NNRat.cast_smul_eq_nnqsmul] using nnnorm_smul (q : K) x
-
-@[bound]
-lemma norm_expect_le {ι : Type*} {s : Finset ι} {f : ι → E} : ‖𝔼 i ∈ s, f i‖ ≤ 𝔼 i ∈ s, ‖f i‖ :=
-  Finset.le_expect_of_subadditive norm_zero norm_add_le fun _ _ ↦ by rw [norm_nnqsmul K]
-
-end NormedField
 
 theorem mul_self_norm (z : K) : ‖z‖ * ‖z‖ = normSq z := by rw [normSq_eq_def', sq]
 
@@ -779,6 +769,24 @@ noncomputable instance Real.instRCLike : RCLike ℝ where
 end Instances
 
 namespace RCLike
+
+section NormedField
+variable [NormedField E] [CharZero E] [NormedSpace K E]
+include K
+
+variable (K) in
+lemma norm_nnqsmul (q : ℚ≥0) (x : E) : ‖q • x‖ = q • ‖x‖ := by
+  simpa [NNRat.cast_smul_eq_nnqsmul] using norm_smul (q : K) x
+
+variable (K) in
+lemma nnnorm_nnqsmul (q : ℚ≥0) (x : E) : ‖q • x‖₊ = q • ‖x‖₊ := by
+  simpa [NNRat.cast_smul_eq_nnqsmul] using nnnorm_smul (q : K) x
+
+@[bound]
+lemma norm_expect_le {ι : Type*} {s : Finset ι} {f : ι → E} : ‖𝔼 i ∈ s, f i‖ ≤ 𝔼 i ∈ s, ‖f i‖ :=
+  Finset.le_expect_of_subadditive norm_zero norm_add_le fun _ _ ↦ by rw [norm_nnqsmul K]
+
+end NormedField
 
 section Order
 
@@ -1010,7 +1018,7 @@ end CleanupLemmas
 section LinearMaps
 
 /-- The real part in an `RCLike` field, as a linear map. -/
-def reLm : K →ₗ[ℝ] ℝ :=
+noncomputable def reLm : K →ₗ[ℝ] ℝ :=
   { re with map_smul' := smul_re }
 
 @[simp, rclike_simps]
@@ -1036,7 +1044,7 @@ theorem continuous_re : Continuous (re : K → ℝ) :=
   reCLM.continuous
 
 /-- The imaginary part in an `RCLike` field, as a linear map. -/
-def imLm : K →ₗ[ℝ] ℝ :=
+noncomputable def imLm : K →ₗ[ℝ] ℝ :=
   { im with map_smul' := smul_im }
 
 @[simp, rclike_simps]
@@ -1100,13 +1108,20 @@ instance (priority := 100) : ContinuousStar K :=
 theorem continuous_conj : Continuous (conj : K → K) :=
   continuous_star
 
-/-- The `ℝ → K` coercion, as a linear map -/
+/-- The `ℝ → K` coercion, as an algebra map. -/
 noncomputable def ofRealAm : ℝ →ₐ[ℝ] K :=
   Algebra.ofId ℝ K
 
 @[simp, rclike_simps]
 theorem ofRealAm_coe : (ofRealAm : ℝ → K) = ofReal :=
   rfl
+
+variable (K) in
+/-- The `ℝ → K` coercion, as a ⋆-algebra map. -/
+noncomputable def ofRealStarAlgHom : ℝ →⋆ₐ[ℝ] K := .ofId ℝ K
+
+@[simp] theorem coe_ofRealStarAlgHom : (ofRealStarAlgHom K : ℝ → K) = ofReal := rfl
+@[simp] lemma toAlgHom_ofRealStarAlgHom : (ofRealStarAlgHom K).toAlgHom = ofRealAm := rfl
 
 /-- The ℝ → K coercion, as a linear isometry -/
 noncomputable def ofRealLI : ℝ →ₗᵢ[ℝ] K where
@@ -1154,6 +1169,28 @@ lemma lipschitzWith_im : LipschitzWith 1 (im (K := K)) := by
   _ = ‖im (x - y)‖ₑ := by rw [map_sub im x y]
   _ ≤ ‖x - y‖ₑ := by rw [enorm_le_iff_norm_le]; exact norm_im_le_norm (x - y)
 
+/-- The canonical map between `RCLike` types. It maps `x : 𝕜` to `re x + im x * I`. -/
+@[simps] def map (𝕜 𝕜' : Type*) [RCLike 𝕜] [RCLike 𝕜'] : 𝕜 →L[ℝ] 𝕜' where
+  toFun x := re x + im x * (I : 𝕜')
+  map_add' _ _ := by simp only [map_add, add_mul]; ring
+  map_smul' _ _ := by simp [real_smul_eq_coe_mul, mul_assoc]
+
+@[simp] theorem map_same_eq_id : map K K = .id ℝ K := by ext; simp
+
+@[simp] theorem map_to_real : map K ℝ = reCLM := by
+  ext; simp only [map_apply, I, mul_zero, add_zero]; rfl
+
+@[simp] theorem map_from_real : map ℝ K = ofRealCLM := by ext; simp
+
+open scoped ComplexOrder in
+lemma instOrderClosedTopology : OrderClosedTopology K where
+  isClosed_le' := by
+    conv in _ ≤ _ => rw [RCLike.le_iff_re_im]
+    simp_rw [Set.setOf_and]
+    refine IsClosed.inter (isClosed_le ?_ ?_) (isClosed_eq ?_ ?_) <;> fun_prop
+
+scoped[ComplexOrder] attribute [instance] RCLike.instOrderClosedTopology
+
 end LinearMaps
 
 /-!
@@ -1182,7 +1219,7 @@ def realRingEquiv (h : I = (0 : K)) : K ≃+* ℝ where
 @[simps]
 noncomputable def realLinearIsometryEquiv (h : I = (0 : K)) : K ≃ₗᵢ[ℝ] ℝ where
   map_smul' := smul_re
-  norm_map' z := by rw [← re_add_im z]; simp [- re_add_im, h]
+  norm_map' z := by rw [← re_add_im z]; simp [-re_add_im, h]
   __ := realRingEquiv h
 
 end CaseSpecific
@@ -1193,7 +1230,7 @@ lemma norm_le_im_iff_eq_I_mul_norm {z : K} :
   · simp [h, im_eq_zero]
   · have : (I : K) ≠ 0 := fun _ ↦ by simp_all
     rw [← mul_right_inj' (neg_ne_zero.mpr this)]
-    convert norm_le_re_iff_eq_norm (z := -I * z) using 2
+    convert! norm_le_re_iff_eq_norm (z := -I * z) using 2
     all_goals simp [neg_mul, ← mul_assoc, I_mul_I_of_nonzero this, norm_I_of_ne_zero this]
 
 lemma im_le_neg_norm_iff_eq_neg_I_mul_norm {z : K} :
@@ -1225,6 +1262,7 @@ instance (priority := 100) (𝕜 : Type*) [h : RCLike 𝕜] : IsRCLikeNormedFiel
 
 /-- A copy of an `RCLike` field in which the `NormedField` field is adjusted to be become defeq
 to a propeq one. -/
+@[implicit_reducible]
 noncomputable def RCLike.copy_of_normedField {𝕜 : Type*} (h : RCLike 𝕜) (hk : NormedField 𝕜)
     (h'' : hk = h.toNormedField) : RCLike 𝕜 where
   __ := hk
@@ -1268,9 +1306,43 @@ noncomputable def RCLike.copy_of_normedField {𝕜 : Type*} (h : RCLike 𝕜) (h
 
 /-- Given a normed field `𝕜` satisfying `IsRCLikeNormedField 𝕜`, build an associated `RCLike 𝕜`
 structure on `𝕜` which is definitionally compatible with the given normed field structure. -/
+@[implicit_reducible]
 noncomputable def IsRCLikeNormedField.rclike (𝕜 : Type*)
     [hk : NormedField 𝕜] [h : IsRCLikeNormedField 𝕜] : RCLike 𝕜 := by
   choose p hp using h.out
   exact p.copy_of_normedField hk hp
 
 end
+
+namespace LinearIsometryEquiv
+variable {𝕜 V W G : Type*} [RCLike 𝕜] [SeminormedAddCommGroup V] [Module 𝕜 V]
+  [SeminormedAddCommGroup W] [NormedSpace 𝕜 W] [SeminormedAddCommGroup G] [NormedSpace 𝕜 G]
+
+/-- Left scalar multiplication of a unit with norm one and a linear isometric equivalence,
+as a linear isometric equivalence. -/
+instance : SMul (unitary 𝕜) (V ≃ₗᵢ[𝕜] W) where smul α e :=
+  { __ := Unitary.toUnits α • e.toLinearEquiv
+    norm_map' _ := by simp [norm_smul] }
+
+@[simp] theorem smul_apply (e : V ≃ₗᵢ[𝕜] W) (α : unitary 𝕜) (x : V) :
+    (α • e) x = (α : 𝕜) • e x := rfl
+
+theorem symm_smul_apply (e : V ≃ₗᵢ[𝕜] W) (α : unitary 𝕜) (x : W) :
+    (α • e).symm x = (↑α⁻¹ : 𝕜) • e.symm x := rfl
+
+@[simp] theorem symm_units_smul (e : G ≃ₗᵢ[𝕜] W) (α : unitary 𝕜) :
+    (α • e).symm = α⁻¹ • e.symm := by ext; simp [symm_smul_apply]
+
+@[simp] theorem toLinearEquiv_smul (e : V ≃ₗᵢ[𝕜] W) (α : unitary 𝕜) :
+    (α • e).toLinearEquiv = Unitary.toUnits α • e.toLinearEquiv := rfl
+
+@[simp] theorem toContinuousLinearEquiv_smul (e : G ≃ₗᵢ[𝕜] W) (α : unitary 𝕜) :
+    (α • e).toContinuousLinearEquiv = Unitary.toUnits α • e.toContinuousLinearEquiv := rfl
+
+theorem smul_trans (α : unitary 𝕜) (e : V ≃ₗᵢ[𝕜] G) (f : G ≃ₗᵢ[𝕜] W) :
+    (α • e).trans f = α • (e.trans f) := by ext; simp
+
+theorem trans_smul (α : unitary 𝕜) (e : V ≃ₗᵢ[𝕜] G) (f : G ≃ₗᵢ[𝕜] W) :
+    e.trans (α • f) = α • (e.trans f) := by ext; simp
+
+end LinearIsometryEquiv

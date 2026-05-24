@@ -57,7 +57,7 @@ open MeasureTheory MeasureTheory.Measure Set Function TopologicalSpace Filter
 namespace MeasureTheory
 
 /-- A measurable set `s` is a *fundamental domain* for an additive action of an additive group `G`
-on a measurable space `α` with respect to a measure `α` if the sets `g +ᵥ s`, `g : G`, are pairwise
+on a measurable space `α` with respect to a measure `μ` if the sets `g +ᵥ s`, `g : G`, are pairwise
 a.e. disjoint and cover the whole space. -/
 structure IsAddFundamentalDomain (G : Type*) {α : Type*} [Zero G] [VAdd G α] [MeasurableSpace α]
     (s : Set α) (μ : Measure α := by volume_tac) : Prop where
@@ -66,7 +66,7 @@ structure IsAddFundamentalDomain (G : Type*) {α : Type*} [Zero G] [VAdd G α] [
   protected aedisjoint : Pairwise <| (AEDisjoint μ on fun g : G => g +ᵥ s)
 
 /-- A measurable set `s` is a *fundamental domain* for an action of a group `G` on a measurable
-space `α` with respect to a measure `α` if the sets `g • s`, `g : G`, are pairwise a.e. disjoint and
+space `α` with respect to a measure `μ` if the sets `g • s`, `g : G`, are pairwise a.e. disjoint and
 cover the whole space. -/
 @[to_additive IsAddFundamentalDomain]
 structure IsFundamentalDomain (G : Type*) {α : Type*} [One G] [SMul G α] [MeasurableSpace α]
@@ -181,13 +181,13 @@ theorem pairwise_aedisjoint_of_ac {ν} (h : IsFundamentalDomain G s μ) (hν : �
   h.aedisjoint.mono fun _ _ H => hν H
 
 @[to_additive]
-theorem smul_of_comm {G' : Type*} [Group G'] [MulAction G' α] [MeasurableSpace G']
-    [MeasurableSMul G' α] [SMulInvariantMeasure G' α μ] [SMulCommClass G' G α]
+theorem smul_of_comm {G' : Type*} [Group G'] [MulAction G' α]
+    [MeasurableConstSMul G' α] [SMulInvariantMeasure G' α μ] [SMulCommClass G' G α]
     (h : IsFundamentalDomain G s μ) (g : G') : IsFundamentalDomain G (g • s) μ :=
   h.image_of_equiv (MulAction.toPerm g) (measurePreserving_smul _ _).quasiMeasurePreserving
     (Equiv.refl _) <| smul_comm g
 
-variable [MeasurableSpace G] [MeasurableSMul G α] [SMulInvariantMeasure G α μ]
+variable [MeasurableConstSMul G α] [SMulInvariantMeasure G α μ]
 
 @[to_additive]
 theorem nullMeasurableSet_smul (h : IsFundamentalDomain G s μ) (g : G) :
@@ -311,7 +311,7 @@ theorem measure_set_eq (hs : IsFundamentalDomain G s μ) (ht : IsFundamentalDoma
     (hA₀ : MeasurableSet A) (hA : ∀ g : G, (fun x => g • x) ⁻¹' A = A) : μ (A ∩ s) = μ (A ∩ t) := by
   have : ∫⁻ x in s, A.indicator 1 x ∂μ = ∫⁻ x in t, A.indicator 1 x ∂μ := by
     refine hs.setLIntegral_eq ht (Set.indicator A fun _ => 1) fun g x ↦ ?_
-    convert (Set.indicator_comp_right (g • · : α → α) (g := fun _ ↦ (1 : ℝ≥0∞))).symm
+    convert! (Set.indicator_comp_right (g • · : α → α) (g := fun _ ↦ (1 : ℝ≥0∞))).symm
     rw [hA g]
   simpa [Measure.restrict_apply hA₀, lintegral_indicator hA₀] using this
 
@@ -556,8 +556,8 @@ theorem pairwise_disjoint_fundamentalInterior :
   · rwa [Ne, inv_mul_eq_iff_eq_mul, mul_one, eq_comm]
   · simpa [mul_smul, ← hxy, mem_inv_smul_set_iff] using hy.1
 
-variable [Countable G] [MeasurableSpace G] [MeasurableSpace α] [MeasurableSMul G α] {μ : Measure α}
-  [SMulInvariantMeasure G α μ]
+variable [Countable G] [MeasurableSpace α] [MeasurableConstSMul G α]
+  {μ : Measure α} [SMulInvariantMeasure G α μ]
 
 @[to_additive MeasureTheory.NullMeasurableSet.addFundamentalFrontier]
 protected theorem NullMeasurableSet.fundamentalFrontier (hs : NullMeasurableSet s μ) :
@@ -591,7 +591,7 @@ theorem measure_fundamentalInterior : μ (fundamentalInterior G s) = μ s :=
 
 end Group
 
-variable [MeasurableSpace G] [MeasurableSMul G α] [SMulInvariantMeasure G α μ]
+variable [MeasurableConstSMul G α] [SMulInvariantMeasure G α μ]
 
 protected theorem fundamentalInterior : IsFundamentalDomain G (fundamentalInterior G s) μ where
   nullMeasurableSet := hs.nullMeasurableSet.fundamentalInterior _ _
@@ -631,8 +631,8 @@ lemma measure_map_restrict_apply (s : Set α) {U : Set (Quotient α_mod_G)}
     Measure.restrict_apply (t := (Quotient.mk α_mod_G ⁻¹' U)) (measurableSet_quotient.mp meas_U)]
 
 @[to_additive]
-lemma IsFundamentalDomain.quotientMeasure_eq [Countable G] [MeasurableSpace G] {s t : Set α}
-    [SMulInvariantMeasure G α μ] [MeasurableSMul G α] (fund_dom_s : IsFundamentalDomain G s μ)
+lemma IsFundamentalDomain.quotientMeasure_eq [Countable G] {s t : Set α}
+    [SMulInvariantMeasure G α μ] [MeasurableConstSMul G α] (fund_dom_s : IsFundamentalDomain G s μ)
     (fund_dom_t : IsFundamentalDomain G t μ) :
     (μ.restrict s).map π = (μ.restrict t).map π := by
   ext U meas_U
@@ -695,7 +695,7 @@ lemma IsFundamentalDomain.hasFundamentalDomain (ν : Measure α) {s : Set α}
 /-- The `covolume` can be computed by taking the `volume` of any given fundamental domain `s`. -/
 @[to_additive]
 lemma IsFundamentalDomain.covolume_eq_volume (ν : Measure α) [Countable G]
-    [MeasurableSpace G] [MeasurableSMul G α] [SMulInvariantMeasure G α ν] {s : Set α}
+    [MeasurableConstSMul G α] [SMulInvariantMeasure G α ν] {s : Set α}
     (fund_dom_s : IsFundamentalDomain G s ν) : covolume G α ν = ν s := by
   dsimp [covolume]
   simp only [(fund_dom_s.hasFundamentalDomain ν), ↓reduceDIte]
@@ -789,7 +789,7 @@ theorem IsFundamentalDomain.measurePreserving_quotient_mk
     haveI : HasFundamentalDomain G α ν := ⟨𝓕, h𝓕⟩
     rw [h𝓕.projection_respects_measure (μ := μ)]
 
-variable [SMulInvariantMeasure G α ν] [Countable G] [MeasurableSpace G] [MeasurableSMul G α]
+variable [SMulInvariantMeasure G α ν] [Countable G] [MeasurableConstSMul G α]
 
 /-- Given a measure upstairs (i.e., on `α`), and a choice `s` of fundamental domain, there's always
 an artificial way to generate a measure downstairs such that the pair satisfies the
@@ -818,7 +818,7 @@ theorem IsFundamentalDomain.quotientMeasureEqMeasurePreimage_of_zero
   apply fund_dom_s.quotientMeasureEqMeasurePreimage
   ext U meas_U
   simp only [Measure.coe_zero, Pi.zero_apply]
-  convert (measure_inter_null_of_null_right (h := vol_s) (Quotient.mk α_mod_G ⁻¹' U)).symm
+  convert! (measure_inter_null_of_null_right (h := vol_s) (Quotient.mk α_mod_G ⁻¹' U)).symm
   rw [measure_map_restrict_apply (meas_U := meas_U)]
 
 /-- If a measure `μ` on a quotient satisfies `QuotientMeasureEqMeasurePreimage` with respect to a
@@ -833,7 +833,7 @@ lemma QuotientMeasureEqMeasurePreimage.sigmaFiniteQuotient
   simp only [mem_setOf_eq] at hA_meas
   refine ⟨⟨fun n ↦ π '' (A n), by simp, fun n ↦ ?_, ?_⟩⟩
   · obtain ⟨s, fund_dom_s⟩ := i'
-    have : π ⁻¹' (π '' (A n)) = _ := MulAction.quotient_preimage_image_eq_union_mul (A n) (G := G)
+    have : π ⁻¹' π '' (A n) = _ := MulAction.quotient_preimage_image_eq_union_mul (A n) (G := G)
     have measπAn : MeasurableSet (π '' A n) := by
       let _ : Setoid α := α_mod_G
       rw [measurableSet_quotient, Quotient.mk''_eq_mk, this]
@@ -844,7 +844,7 @@ lemma QuotientMeasureEqMeasurePreimage.sigmaFiniteQuotient
     rw [fund_dom_s.measure_eq_tsum (A n)]
     exact measure_iUnion_le _
   · rw [← image_iUnion, hA']
-    refine image_univ_of_surjective (by convert Quotient.mk'_surjective)
+    refine image_univ_of_surjective (by convert! Quotient.mk'_surjective)
 
 /-- A measure `μ` on `α ⧸ G` satisfying `QuotientMeasureEqMeasurePreimage` and having finite
 covolume is a finite measure. -/
@@ -857,7 +857,7 @@ theorem QuotientMeasureEqMeasurePreimage.isFiniteMeasure_quotient
   rw [h𝓕.projection_respects_measure (μ := μ)]
   have : Fact (ν 𝓕 < ∞) := by
     apply Fact.mk
-    convert Ne.lt_top h
+    convert! Ne.lt_top h
     exact (h𝓕.covolume_eq_volume ν).symm
   infer_instance
 
@@ -879,8 +879,8 @@ end QuotientMeasureEqMeasurePreimage
 section QuotientMeasureEqMeasurePreimage
 
 
-variable [Group G] [MulAction G α] [MeasureSpace α] [Countable G] [MeasurableSpace G]
-  [SMulInvariantMeasure G α volume] [MeasurableSMul G α]
+variable [Group G] [MulAction G α] [MeasureSpace α] [Countable G]
+  [SMulInvariantMeasure G α volume] [MeasurableConstSMul G α]
 
 local notation "α_mod_G" => MulAction.orbitRel G α
 

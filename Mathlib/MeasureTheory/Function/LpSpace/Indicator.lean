@@ -48,7 +48,7 @@ theorem exists_eLpNorm_indicator_le (hp : p ≠ ∞) (c : E) {ε : ℝ≥0∞} (
       Filter.Tendsto (fun x : ℝ≥0 => ((‖c‖₊ * x ^ (1 / p.toReal) : ℝ≥0) : ℝ≥0∞)) (𝓝 0)
         (𝓝 (0 : ℝ≥0)) := by
       rw [ENNReal.tendsto_coe]
-      convert (NNReal.continuousAt_rpow_const (Or.inr hp₀')).tendsto.const_mul _
+      convert! (NNReal.continuousAt_rpow_const (Or.inr hp₀')).tendsto.const_mul _
       simp [hp₀''.ne']
     have hε' : 0 < ε := hε.bot_lt
     obtain ⟨δ, hδ, hδε'⟩ := NNReal.nhds_zero_basis.eventually_iff.mp (this.eventually_le_const hε')
@@ -68,6 +68,16 @@ theorem _root_.HasCompactSupport.memLp_of_bound {f : X → E} (hf : HasCompactSu
   have := memLp_top_of_bound h2f C hfC
   exact this.mono_exponent_of_measure_support_ne_top
     (fun x ↦ image_eq_zero_of_notMem_tsupport) (hf.measure_lt_top.ne) le_top
+
+/-- A bounded measurable function with compact support is in L^p.
+This is the `ENNReal`-valued version of `HasCompactSupport.memLp_of_bound`. -/
+theorem _root_.HasCompactSupport.memLp_of_enorm_bound {f : X → E} (hf : HasCompactSupport f)
+    (h2f : AEStronglyMeasurable f μ) {C : ℝ≥0∞} (hfC : ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ C) (hC : C ≠ ⊤) :
+      MemLp f p μ := by
+  have : MemLp f ∞ μ :=
+    ⟨h2f, eLpNormEssSup_le_of_ae_enorm_bound hfC |>.trans_lt hC.lt_top⟩
+  exact this.mono_exponent_of_measure_support_ne_top
+    (fun x ↦ image_eq_zero_of_notMem_tsupport) hf.measure_ne_top le_top
 
 /-- A continuous function with compact support is in L^p. -/
 theorem _root_.Continuous.memLp_of_hasCompactSupport [OpensMeasurableSpace X]
@@ -111,9 +121,6 @@ theorem indicatorConstLp_coeFn_mem : ∀ᵐ x : α ∂μ, x ∈ s → indicatorC
 theorem indicatorConstLp_coeFn_notMem : ∀ᵐ x : α ∂μ, x ∉ s → indicatorConstLp p hs hμs c x = 0 :=
   indicatorConstLp_coeFn.mono fun _x hx hxs => hx.trans (Set.indicator_of_notMem hxs _)
 
-@[deprecated (since := "2025-05-24")]
-alias indicatorConstLp_coeFn_nmem := indicatorConstLp_coeFn_notMem
-
 theorem norm_indicatorConstLp (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞) :
     ‖indicatorConstLp p hs hμs c‖ = ‖c‖ * μ.real s ^ (1 / p.toReal) := by
   rw [Lp.norm_def, eLpNorm_congr_ae indicatorConstLp_coeFn,
@@ -151,17 +158,15 @@ theorem enorm_indicatorConstLp_le :
   simpa [ENNReal.coe_rpow_of_nonneg, ENNReal.coe_toNNReal hμs, Lp.enorm_def, ← enorm_eq_nnnorm]
     using ENNReal.coe_le_coe.2 <| nnnorm_indicatorConstLp_le (c := c) (hμs := hμs)
 
-set_option backward.proofsInPublic true in
 theorem edist_indicatorConstLp_eq_enorm {t : Set α} {ht : MeasurableSet t} {hμt : μ t ≠ ∞} :
     edist (indicatorConstLp p hs hμs c) (indicatorConstLp p ht hμt c) =
-      ‖indicatorConstLp p (hs.symmDiff ht) (by finiteness) c‖ₑ := by
+      ‖indicatorConstLp (μ := μ) p (hs.symmDiff ht) (by finiteness) c‖ₑ := by
   unfold indicatorConstLp
   rw [Lp.edist_toLp_toLp, eLpNorm_indicator_sub_indicator, Lp.enorm_toLp]
 
-set_option backward.proofsInPublic true in
 theorem dist_indicatorConstLp_eq_norm {t : Set α} {ht : MeasurableSet t} {hμt : μ t ≠ ∞} :
     dist (indicatorConstLp p hs hμs c) (indicatorConstLp p ht hμt c) =
-      ‖indicatorConstLp p (hs.symmDiff ht) (by finiteness) c‖ := by
+      ‖indicatorConstLp (μ := μ) p (hs.symmDiff ht) (by finiteness) c‖ := by
   -- Squeezed for performance reasons
   simp only [Lp.dist_edist, edist_indicatorConstLp_eq_enorm, enorm, ENNReal.coe_toReal,
     Lp.coe_nnnorm]
@@ -175,8 +180,8 @@ theorem tendsto_indicatorConstLp_set [hp₁ : Fact (1 ≤ p)] {β : Type*} {l : 
   rw [tendsto_iff_dist_tendsto_zero]
   have hp₀ : p ≠ 0 := (one_pos.trans_le hp₁.out).ne'
   simp only [dist_indicatorConstLp_eq_norm, norm_indicatorConstLp hp₀ hp]
-  convert tendsto_const_nhds.mul
-    (((ENNReal.tendsto_toReal ENNReal.zero_ne_top).comp h).rpow_const _)
+  convert!
+    tendsto_const_nhds.mul (((ENNReal.tendsto_toReal ENNReal.zero_ne_top).comp h).rpow_const _)
   · simp [ENNReal.toReal_eq_zero_iff, hp, hp₀]
   · simp
 
@@ -212,12 +217,8 @@ theorem indicatorConstLp_disjoint_union {s t : Set α} (hs : MeasurableSet s) (h
     indicatorConstLp p (hs.union ht) (by finiteness) c =
       indicatorConstLp p hs hμs c + indicatorConstLp p ht hμt c := by
   ext1
-  grw [Lp.coeFn_add, indicatorConstLp_coeFn]
-  refine
-    EventuallyEq.trans ?_
-      (EventuallyEq.fun_add indicatorConstLp_coeFn.symm indicatorConstLp_coeFn.symm)
-  rw [Set.indicator_union_of_disjoint hst]
-
+  grw [Lp.coeFn_add, indicatorConstLp_coeFn, indicatorConstLp_coeFn, indicatorConstLp_coeFn]
+  rw [Set.indicator_union_of_disjoint hst, Pi.add_def]
 end IndicatorConstLp
 
 section const

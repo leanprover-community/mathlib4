@@ -9,7 +9,7 @@ public import Mathlib.Algebra.BigOperators.Finsupp.Basic
 
 /-! # Connection between `Submonoid.closure` and `Finsupp.prod` -/
 
-@[expose] public section
+public section
 
 assert_not_exists Field
 

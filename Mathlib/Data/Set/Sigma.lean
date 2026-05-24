@@ -25,16 +25,16 @@ variable {ι ι' : Type*} {α : ι → Type*} {s s₁ s₂ : Set ι} {t t₁ t�
 theorem range_sigmaMk (i : ι) : range (Sigma.mk i : α i → Sigma α) = Sigma.fst ⁻¹' {i} := by grind
 
 theorem preimage_image_sigmaMk_of_ne (h : i ≠ j) (s : Set (α j)) :
-    Sigma.mk i ⁻¹' (Sigma.mk j '' s) = ∅ := by grind
+    Sigma.mk i ⁻¹' Sigma.mk j '' s = ∅ := by grind
 
 theorem image_sigmaMk_preimage_sigmaMap_subset {β : ι' → Type*} (f : ι → ι')
     (g : ∀ i, α i → β (f i)) (i : ι) (s : Set (β (f i))) :
-    Sigma.mk i '' (g i ⁻¹' s) ⊆ Sigma.map f g ⁻¹' (Sigma.mk (f i) '' s) :=
+    Sigma.mk i '' g i ⁻¹' s ⊆ Sigma.map f g ⁻¹' Sigma.mk (f i) '' s :=
   image_subset_iff.2 fun x hx ↦ ⟨g i x, hx, rfl⟩
 
 theorem image_sigmaMk_preimage_sigmaMap {β : ι' → Type*} {f : ι → ι'} (hf : Function.Injective f)
     (g : ∀ i, α i → β (f i)) (i : ι) (s : Set (β (f i))) :
-    Sigma.mk i '' (g i ⁻¹' s) = Sigma.map f g ⁻¹' (Sigma.mk (f i) '' s) := by
+    Sigma.mk i '' g i ⁻¹' s = Sigma.map f g ⁻¹' Sigma.mk (f i) '' s := by
   refine (image_sigmaMk_preimage_sigmaMap_subset f g i s).antisymm ?_
   rintro ⟨j, x⟩ ⟨y, hys, hxy⟩
   simp only [hf.eq_iff, Sigma.map, Sigma.ext_iff] at hxy

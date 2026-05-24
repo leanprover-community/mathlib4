@@ -6,8 +6,8 @@ Authors: Johannes Hölzl, Mario Carneiro, Floris van Doorn
 module
 
 public import Mathlib.Data.ULift
+public import Mathlib.Tactic.PPWithUniv
 public import Mathlib.Util.Delaborators
-public import Mathlib.Util.AssertExists
 
 /-!
 # Cardinal Numbers
@@ -93,22 +93,22 @@ instance canLiftCardinalType : CanLift Cardinal.{u} (Type u) mk fun _ => True :=
   ⟨fun c _ => Quot.inductionOn c fun α => ⟨α, rfl⟩⟩
 
 @[elab_as_elim]
-theorem inductionOn {p : Cardinal → Prop} (c : Cardinal) (h : ∀ α, p #α) : p c :=
-  Quotient.inductionOn c h
+theorem inductionOn {motive : Cardinal → Prop} (c : Cardinal) (mk : ∀ α, motive #α) : motive c :=
+  Quotient.inductionOn c mk
 
 @[elab_as_elim]
-theorem inductionOn₂ {p : Cardinal → Cardinal → Prop} (c₁ : Cardinal) (c₂ : Cardinal)
-    (h : ∀ α β, p #α #β) : p c₁ c₂ :=
-  Quotient.inductionOn₂ c₁ c₂ h
+theorem inductionOn₂ {motive : Cardinal → Cardinal → Prop} (c₁ c₂ : Cardinal)
+    (mk : ∀ α β, motive #α #β) : motive c₁ c₂ :=
+  Quotient.inductionOn₂ c₁ c₂ mk
 
 @[elab_as_elim]
-theorem inductionOn₃ {p : Cardinal → Cardinal → Cardinal → Prop} (c₁ : Cardinal) (c₂ : Cardinal)
-    (c₃ : Cardinal) (h : ∀ α β γ, p #α #β #γ) : p c₁ c₂ c₃ :=
-  Quotient.inductionOn₃ c₁ c₂ c₃ h
+theorem inductionOn₃ {motive : Cardinal → Cardinal → Cardinal → Prop} (c₁ c₂ c₃ : Cardinal)
+    (mk : ∀ α β γ, motive #α #β #γ) : motive c₁ c₂ c₃ :=
+  Quotient.inductionOn₃ c₁ c₂ c₃ mk
 
-theorem induction_on_pi {ι : Type u} {p : (ι → Cardinal.{v}) → Prop}
-    (f : ι → Cardinal.{v}) (h : ∀ f : ι → Type v, p fun i ↦ #(f i)) : p f :=
-  Quotient.induction_on_pi f h
+theorem induction_on_pi {ι : Type*} {motive : (ι → Cardinal) → Prop}
+    (f : ι → Cardinal) (mk : ∀ f : ι → Type v, motive fun i ↦ #(f i)) : motive f :=
+  Quotient.induction_on_pi f mk
 
 protected theorem eq : #α = #β ↔ Nonempty (α ≃ β) :=
   Quotient.eq'

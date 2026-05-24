@@ -5,6 +5,7 @@ Authors: Yury Kudryashov
 -/
 module
 
+public import Aesop
 public import Mathlib.Logic.Function.Iterate
 public import Mathlib.Order.Monotone.Basic
 
@@ -18,7 +19,7 @@ Current selection of inequalities is motivated by formalization of the rotation 
 a circle homeomorphism.
 -/
 
-@[expose] public section
+public section
 
 open Function
 

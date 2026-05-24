@@ -6,11 +6,11 @@ Authors: Frédéric Dupuis
 module
 
 public import Mathlib.Computability.AkraBazzi.GrowsPolynomially
-public import Mathlib.Analysis.Calculus.Deriv.Inv
 public import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
-public import Mathlib.Analysis.SpecialFunctions.Log.Deriv
 
 import Mathlib.Analysis.SpecialFunctions.Log.InvLog
+public import Mathlib.Analysis.Calculus.Deriv.Basic
+public import Mathlib.Tactic.Positivity
 
 /-!
 # Akra-Bazzi theorem: the sum transform
@@ -322,7 +322,7 @@ lemma eventually_one_sub_smoothingFn_pos_real : ∀ᶠ (x : ℝ) in atTop, 0 < 1
   eventually_one_sub_smoothingFn_gt_const_real 0 zero_lt_one
 
 lemma eventually_one_sub_smoothingFn_pos : ∀ᶠ (n : ℕ) in atTop, 0 < 1 - ε n :=
-  (eventually_one_sub_smoothingFn_pos_real).natCast_atTop
+  eventually_one_sub_smoothingFn_pos_real.natCast_atTop
 
 lemma eventually_one_sub_smoothingFn_nonneg : ∀ᶠ (n : ℕ) in atTop, 0 ≤ 1 - ε n := by
   filter_upwards [eventually_one_sub_smoothingFn_pos] with n hn; exact le_of_lt hn
@@ -490,7 +490,7 @@ bound expression. -/
 
 @[continuity, fun_prop]
 lemma continuous_sumCoeffsExp : Continuous (fun (p : ℝ) => ∑ i, a i * (b i) ^ p) := by
-  refine continuous_finset_sum Finset.univ fun i _ => Continuous.mul (by fun_prop) ?_
+  refine continuous_finsetSum Finset.univ fun i _ => Continuous.mul (by fun_prop) ?_
   exact Continuous.rpow continuous_const continuous_id (fun x => Or.inl (ne_of_gt (R.b_pos i)))
 
 lemma strictAnti_sumCoeffsExp : StrictAnti (fun (p : ℝ) => ∑ i, a i * (b i) ^ p) := by
@@ -502,7 +502,7 @@ lemma strictAnti_sumCoeffsExp : StrictAnti (fun (p : ℝ) => ∑ i, a i * (b i) 
 lemma tendsto_zero_sumCoeffsExp : Tendsto (fun (p : ℝ) => ∑ i, a i * (b i) ^ p) atTop (𝓝 0) := by
   have h₁ : Finset.univ.sum (fun _ : α => (0 : ℝ)) = 0 := by simp
   rw [← h₁]
-  refine tendsto_finset_sum (univ : Finset α) (fun i _ => ?_)
+  refine tendsto_finsetSum (univ : Finset α) (fun i _ => ?_)
   rw [← mul_zero (a i)]
   refine Tendsto.mul (by simp) <| tendsto_rpow_atTop_of_base_lt_one _ ?_ (R.b_lt_one i)
   have := R.b_pos i
@@ -662,7 +662,7 @@ lemma eventually_atTop_sumTransform_le :
         congr; rw [Nat.card_Ico, Nat.cast_sub (le_of_lt <| hr_lt_n i)]
       _ ≤ n ^ (p a b) * n * (c₂ * g n / n ^ ((p a b) + 1)) := by
         gcongr; simp only [tsub_le_iff_right, le_add_iff_nonneg_right, Nat.cast_nonneg]
-      _ = c₂ * (n^((p a b) + 1) / n ^ ((p a b) + 1)) * g n := by
+      _ = c₂ * (n ^ ((p a b) + 1) / n ^ ((p a b) + 1)) * g n := by
         rw [← Real.rpow_add_one (by positivity) (p a b)]; ring
       _ = c₂ * g n := by rw [div_self (by positivity), mul_one]
       _ ≤ max c₂ (c₂ / c₁ ^ ((p a b) + 1)) * g n := by gcongr; exact le_max_left _ _
@@ -684,7 +684,7 @@ lemma eventually_atTop_sumTransform_ge :
   | inl hp => -- 0 ≤ (p a b) + 1
     calc sumTransform (p a b) g (r i n) n
       _ = n ^ (p a b) * (∑ u ∈ Finset.Ico (r i n) n, g u / u ^ ((p a b) + 1)) := rfl
-      _ ≥ n ^ (p a b) * (∑ u ∈ Finset.Ico (r i n) n, c₂ * g n / u^((p a b) + 1)) := by
+      _ ≥ n ^ (p a b) * (∑ u ∈ Finset.Ico (r i n) n, c₂ * g n / u ^ ((p a b) + 1)) := by
         gcongr with u hu
         rw [Finset.mem_Ico] at hu
         have hu' : u ∈ Set.Icc (r i n) n := ⟨hu.1, by lia⟩
@@ -717,7 +717,7 @@ lemma eventually_atTop_sumTransform_ge :
         gcongr; exact min_le_left _ _
   | inr hp => -- (p a b) + 1 < 0
     calc sumTransform (p a b) g (r i n) n
-        = n ^ (p a b) * (∑ u ∈ Finset.Ico (r i n) n, g u / u^((p a b) + 1)) := by rfl
+        = n ^ (p a b) * (∑ u ∈ Finset.Ico (r i n) n, g u / u ^ ((p a b) + 1)) := by rfl
       _ ≥ n ^ (p a b) * (∑ u ∈ Finset.Ico (r i n) n, c₂ * g n / u ^ ((p a b) + 1)) := by
         gcongr with u hu
         rw [Finset.mem_Ico] at hu
@@ -728,7 +728,7 @@ lemma eventually_atTop_sumTransform_ge :
         calc c₁ * n ≤ r i n := by exact hn₁ i
                   _ ≤ u := by exact_mod_cast hu'.1
       _ ≥ n ^ (p a b) * (∑ _u ∈ Finset.Ico (r i n) n, c₂ * g n / (r i n) ^ ((p a b) + 1)) := by
-        gcongr n^(p a b) * (Finset.Ico (r i n) n).sum (fun _ => c₂ * g n / ?_) with u hu
+        gcongr n ^ (p a b) * (Finset.Ico (r i n) n).sum (fun _ => c₂ * g n / ?_) with u hu
         · rw [Finset.mem_Ico] at hu
           have := calc 0 < r i n := hrpos_i
                       _ ≤ u := hu.1

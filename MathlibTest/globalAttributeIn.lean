@@ -11,6 +11,11 @@ import Mathlib.Tactic.Linter.GlobalAttributeIn
 -- Test disabling the linter.
 set_option linter.globalAttributeIn false
 
+-- After https://github.com/leanprover/lean4/pull/12263,
+-- we need to add `instance_reducible` before we can add `instance` to `Int.add`.
+set_option allowUnsafeReducibility true in
+attribute [instance_reducible] Int.add
+
 set_option autoImplicit false in
 attribute [instance] Int.add in
 instance : Inhabited Int where
@@ -63,7 +68,7 @@ instance : Inhabited Int where
 namespace X
 
 -- Here's another example, with nested attributes.
-/-- warning: declaration uses 'sorry' -/
+/-- warning: declaration uses `sorry` -/
 #guard_msgs in
 theorem foo (x y : Nat) : x = y := sorry
 

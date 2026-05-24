@@ -5,7 +5,7 @@ Authors: Frédéric Dupuis
 -/
 module
 
-public meta import Mathlib.Data.Real.Sqrt
+public import Mathlib.Data.Real.Sqrt
 
 /-! # `norm_num` extension for `Real.sqrt`
 

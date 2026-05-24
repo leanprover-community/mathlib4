@@ -400,7 +400,7 @@ theorem mem_roots_iff [IsDomain R] (h0 : P.toPoly ≠ 0) (x : R) :
 theorem card_roots_le [IsDomain R] [DecidableEq R] : P.roots.toFinset.card ≤ 3 := by
   apply (toFinset_card_le P.toPoly.roots).trans
   by_cases hP : P.toPoly = 0
-  · exact (card_roots' P.toPoly).trans (by rw [hP, natDegree_zero]; exact zero_le 3)
+  · simp [hP]
   · exact WithBot.coe_le_coe.1 ((card_roots hP).trans degree_cubic_le)
 
 end Extension
@@ -487,14 +487,6 @@ theorem card_roots_of_discr_ne_zero [DecidableEq K] (ha : P.a ≠ 0) (h3 : (P.to
     (hd : P.discr ≠ 0) : (map φ P).roots.toFinset.card = 3 := by
   rwa [toFinset_card_of_nodup <| (discr_ne_zero_iff_roots_nodup ha h3).mp hd,
     ← splits_iff_card_roots ha]
-
-@[deprecated (since := "2025-10-20")] alias disc := discr
-@[deprecated (since := "2025-10-20")] alias disc_eq_prod_three_roots := discr_eq_prod_three_roots
-@[deprecated (since := "2025-10-20")] alias disc_ne_zero_iff_roots_ne := discr_ne_zero_iff_roots_ne
-@[deprecated (since := "2025-10-20")] alias disc_ne_zero_iff_roots_nodup :=
-  discr_ne_zero_iff_roots_nodup
-@[deprecated (since := "2025-10-20")] alias card_roots_of_disc_ne_zero :=
-  card_roots_of_discr_ne_zero
 
 end Discriminant
 

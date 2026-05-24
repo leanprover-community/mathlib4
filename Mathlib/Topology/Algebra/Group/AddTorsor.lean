@@ -86,8 +86,6 @@ theorem IsTopologicalAddTorsor.to_isTopologicalAddGroup : IsTopologicalAddGroup 
 @[simps!]
 def Homeomorph.vaddConst (p : P) : V ≃ₜ P where
   __ := Equiv.vaddConst p
-  continuous_toFun := by fun_prop
-  continuous_invFun := by fun_prop
 
 end AddTorsor
 

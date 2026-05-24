@@ -24,7 +24,7 @@ that the series `∑' n : ℕ, x ^ (n + 1) / (n + 1)` converges to `(-Real.log (
 logarithm, derivative
 -/
 
-@[expose] public section
+public section
 
 
 open Filter Finset Set
@@ -44,7 +44,7 @@ theorem hasStrictDerivAt_log_of_pos (hx : 0 < x) : HasStrictDerivAt log x⁻¹ x
 
 theorem hasStrictDerivAt_log (hx : x ≠ 0) : HasStrictDerivAt log x⁻¹ x := by
   rcases hx.lt_or_gt with hx | hx
-  · convert (hasStrictDerivAt_log_of_pos (neg_pos.mpr hx)).comp x (hasStrictDerivAt_neg x) using 1
+  · convert! (hasStrictDerivAt_log_of_pos (neg_pos.mpr hx)).comp x (hasStrictDerivAt_neg x) using 1
     · ext y; exact (log_neg_eq_log y).symm
     · ring
   · exact hasStrictDerivAt_log_of_pos hx
@@ -71,11 +71,11 @@ theorem deriv_log (x : ℝ) : deriv log x = x⁻¹ :=
 theorem deriv_log' : deriv log = Inv.inv :=
   funext deriv_log
 
-theorem contDiffAt_log {n : WithTop ℕ∞} {x : ℝ} : ContDiffAt ℝ n log x ↔ x ≠ 0 := by
+theorem contDiffAt_log {n : ℕ∞ω} {x : ℝ} : ContDiffAt ℝ n log x ↔ x ≠ 0 := by
   refine ⟨fun h ↦ continuousAt_log_iff.1 h.continuousAt, fun hx ↦ ?_⟩
   have A y (hy : 0 < y) : ContDiffAt ℝ n log y := by
     apply expPartialHomeomorph.contDiffAt_symm_deriv (f₀' := y) hy.ne' (by simpa)
-    · convert hasDerivAt_exp (log y)
+    · convert! hasDerivAt_exp (log y)
       rw [exp_log hy]
     · exact analyticAt_rexp.contDiffAt
   rcases hx.lt_or_gt with hx | hx
@@ -83,15 +83,15 @@ theorem contDiffAt_log {n : WithTop ℕ∞} {x : ℝ} : ContDiffAt ℝ n log x �
       apply ContDiffAt.comp
       · apply A _ (Left.neg_pos_iff.mpr hx)
       apply contDiffAt_id.neg
-    convert this
+    convert! this
     ext x
     simp
   · exact A x hx
 
 @[fun_prop]
-theorem contDiffOn_log {n : WithTop ℕ∞} : ContDiffOn ℝ n log {0}ᶜ := by
+theorem contDiffOn_log {n : ℕ∞ω} : ContDiffOn ℝ n log {0}ᶜ := by
   intro x hx
-  simp only [mem_compl_iff, mem_singleton_iff] at hx
+  push _ ∈ _ at hx
   exact (contDiffAt_log.2 hx).contDiffWithinAt
 
 end Real
@@ -227,7 +227,7 @@ theorem abs_log_sub_add_sum_range_le {x : ℝ} (h : |x| < 1) (n : ℕ) :
     have : HasDerivAt F ((∑ i ∈ range n, ↑(i + 1) * y ^ i / (↑i + 1)) + (-1) / (1 - y)) y :=
       .add (.fun_sum fun i _ ↦ (hasDerivAt_pow (i + 1) y).div_const ((i : ℝ) + 1))
         (((hasDerivAt_id y).const_sub _).log <| sub_ne_zero.2 hy.2.ne')
-    convert this using 1
+    convert! this using 1
     calc
       -y ^ n / (1 - y) = ∑ i ∈ Finset.range n, y ^ i + -1 / (1 - y) := by
         simp [field, geom_sum_eq hy.2.ne, sub_ne_zero.2 hy.2.ne, sub_ne_zero.2 hy.2.ne']
@@ -243,7 +243,6 @@ theorem abs_log_sub_add_sum_range_le {x : ℝ} (h : |x| < 1) (n : ℕ) :
         have : |y| ≤ |x| := abs_le.2 hy
         have : 1 - |x| ≤ |1 - y| := le_trans (by linarith [hy.2]) (le_abs_self _)
         gcongr
-        exact sub_pos.2 h
   -- third step: apply the mean value inequality
   have C : ‖F x - F 0‖ ≤ |x| ^ n / (1 - |x|) * ‖x - 0‖ := by
     refine Convex.norm_image_sub_le_of_norm_hasDerivWithin_le
@@ -272,7 +271,8 @@ lemma hasDerivAt_half_log_one_add_div_one_sub_sub_sum_range
           ?_).const_mul _).sub (HasDerivAt.fun_sum fun i hi ↦ (hasDerivAt_pow _ _).div_const _))
         |>.congr_deriv ?_
   · simp only [id_eq, div_ne_zero_iff, Pi.div_apply]; grind
-  have : (∑ i ∈ range n, (2 * i + 1) * y ^ (2 * i) / (2 * i + 1)) = (∑ i ∈ range n, (y^2) ^ i) := by
+  have : (∑ i ∈ range n, (2 * i + 1) * y ^ (2 * i) / (2 * i + 1)) =
+      (∑ i ∈ range n, (y ^ 2) ^ i) := by
     congr with i
     simp [field, mul_comm, ← pow_mul]
   have hy₃ : y ^ 2 ≠ 1 := by simp [hy₁.ne', hy₂.ne]
@@ -307,7 +307,7 @@ lemma sum_range_sub_log_div_le {x : ℝ} (h : |x| < 1) (n : ℕ) :
       _ ≤ (x ^ 2) ^ n / (1 - x ^ 2) := by gcongr ?_ ^ n / (1 - ?_); simpa [abs_lt] using h
       _ ≤ |x| ^ (2 * n) / (1 - x ^ 2) := by simp [pow_mul]
   -- third step: apply the mean value inequality
-  have C : ‖F x - F 0‖ ≤ |x| ^ (2 * n) / (1 - x^2) * ‖x - 0‖ :=
+  have C : ‖F x - F 0‖ ≤ |x| ^ (2 * n) / (1 - x ^ 2) * ‖x - 0‖ :=
     (convex_Icc (-|x|) |x|).norm_image_sub_le_of_norm_hasDerivWithin_le
       (fun y hy ↦ (A _ (hI hy)).hasDerivWithinAt) B
       (by simp) (by simp [le_abs_self, neg_le, neg_le_abs x])
@@ -369,9 +369,9 @@ theorem hasSum_pow_div_log_of_abs_lt_one {x : ℝ} (h : |x| < 1) :
       rw [norm_eq_abs, abs_div, ← pow_abs, abs_of_nonneg this]
     _ ≤ |x| ^ (i + 1) / (0 + 1) := by
       gcongr
-      exact i.cast_nonneg
+      positivity
     _ ≤ |x| ^ i := by
-      simpa [pow_succ] using mul_le_of_le_one_right (pow_nonneg (abs_nonneg x) i) (le_of_lt h)
+      simpa [pow_succ] using mul_le_of_le_one_right (by positivity) h.le
 
 /-- Power series expansion of `log(1 + x) - log(1 - x)` for `|x| < 1`. -/
 theorem hasSum_log_sub_log_of_abs_lt_one {x : ℝ} (h : |x| < 1) :
@@ -387,7 +387,7 @@ theorem hasSum_log_sub_log_of_abs_lt_one {x : ℝ} (h : |x| < 1) :
     ring_nf
   rw [← h_term_eq_goal, (mul_right_injective₀ (two_ne_zero' ℕ)).hasSum_iff]
   · have h₁ := (hasSum_pow_div_log_of_abs_lt_one (Eq.trans_lt (abs_neg x) h)).mul_left (-1)
-    convert h₁.add (hasSum_pow_div_log_of_abs_lt_one h) using 1
+    convert! h₁.add (hasSum_pow_div_log_of_abs_lt_one h) using 1
     ring_nf
   · intro m hm
     rw [range_two_mul, Set.mem_setOf_eq, ← Nat.even_add_one] at hm
@@ -403,7 +403,7 @@ theorem hasSum_log_one_add_inv {a : ℝ} (h : 0 < a) :
     · linarith
     · linarith
     · exact div_pos one_pos (by linarith)
-  convert hasSum_log_sub_log_of_abs_lt_one h₁ using 1
+  convert! hasSum_log_sub_log_of_abs_lt_one h₁ using 1
   have h₂ : (2 : ℝ) * a + 1 ≠ 0 := by linarith
   have h₃ := h.ne'
   rw [← log_div]
@@ -420,16 +420,17 @@ theorem hasSum_log_one_add {a : ℝ} (h : 0 ≤ a) :
       (log (1 + a)) := by
   obtain (rfl | ha0) := eq_or_ne a 0
   · simp [hasSum_zero]
-  · convert hasSum_log_one_add_inv (inv_pos.mpr (lt_of_le_of_ne h ha0.symm)) using 4
+  · convert! hasSum_log_one_add_inv (inv_pos.mpr (lt_of_le_of_ne h ha0.symm)) using 4
     all_goals simp [field, add_comm]
 
 lemma le_log_one_add_of_nonneg {x : ℝ} (hx : 0 ≤ x) : 2 * x / (x + 2) ≤ log (1 + x) := by
-  convert le_hasSum (hasSum_log_one_add hx) 0 (by intros; positivity) using 1
+  convert! le_hasSum (hasSum_log_one_add hx) 0 (by intros; positivity) using 1
   simp [field]
 
 lemma lt_log_one_add_of_pos {x : ℝ} (hx : 0 < x) : 2 * x / (x + 2) < log (1 + x) := by
-  convert lt_hasSum (hasSum_log_one_add hx.le) 0 (by intros; positivity)
-    1 (by positivity) (by positivity) using 1
+  convert!
+    lt_hasSum (hasSum_log_one_add hx.le) 0 (by intros; positivity) 1 (by positivity)
+      (by positivity) using 1
   simp [field]
 
 end Real

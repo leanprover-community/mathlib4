@@ -50,7 +50,7 @@ polynomials `preΨₙ`, `ΨSqₙ`, and `Φₙ` all have their expected leading t
 elliptic curve, division polynomial, torsion point
 -/
 
-@[expose] public section
+public section
 
 open Polynomial
 
@@ -236,7 +236,7 @@ lemma natDegree_preΨ'_le (n : ℕ) : (W.preΨ' n).natDegree ≤ (n ^ 2 - if Eve
 @[simp]
 lemma coeff_preΨ' (n : ℕ) : (W.preΨ' n).coeff ((n ^ 2 - if Even n then 4 else 1) / 2) =
     if Even n then n / 2 else n := by
-  convert (W.natDegree_coeff_preΨ' n).right using 1
+  convert! (W.natDegree_coeff_preΨ' n).right using 1
   rcases n.even_or_odd' with ⟨n, rfl | rfl⟩ <;> simp [expCoeff, n.not_even_two_mul_add_one]
 
 lemma coeff_preΨ'_ne_zero {n : ℕ} (h : (n : R) ≠ 0) :

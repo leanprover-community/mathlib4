@@ -15,7 +15,7 @@ In this file we prove theorems about products and sums over a `Finset.powerset`.
 
 -/
 
-@[expose] public section
+public section
 
 variable {α β γ : Type*}
 

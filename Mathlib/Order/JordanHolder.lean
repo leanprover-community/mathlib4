@@ -225,7 +225,7 @@ theorem isMaximal_eraseLast_last {s : CompositionSeries X} (h : 0 < s.length) :
   rw [last_eraseLast, last]
   have := s.step ⟨s.length - 1, by lia⟩
   simp only [Fin.castSucc_mk, Fin.succ_mk, mem_setOf_eq] at this
-  convert this using 3
+  convert! this using 3
   exact (tsub_add_cancel_of_le h).symm
 
 theorem eq_snoc_eraseLast {s : CompositionSeries X} (h : 0 < s.length) :
@@ -265,6 +265,7 @@ theorem trans {s₁ s₂ s₃ : CompositionSeries X} (h₁ : Equivalent s₁ s�
   ⟨h₁.choose.trans h₂.choose,
     fun i => iso_trans (h₁.choose_spec i) (h₂.choose_spec (h₁.choose i))⟩
 
+set_option backward.isDefEq.respectTransparency false in
 protected theorem smash {s₁ s₂ t₁ t₂ : CompositionSeries X}
     (hs : s₁.last = s₂.head) (ht : t₁.last = t₂.head)
     (h₁ : Equivalent s₁ t₁) (h₂ : Equivalent s₂ t₂) :
@@ -282,6 +283,7 @@ protected theorem smash {s₁ s₂ t₁ t₂ : CompositionSeries X}
     · intro i
       simpa [e, -Fin.castSucc_natAdd, smash_natAdd, smash_succ_natAdd] using h₂.choose_spec i⟩
 
+set_option backward.isDefEq.respectTransparency false in
 protected theorem snoc {s₁ s₂ : CompositionSeries X} {x₁ x₂ : X} {hsat₁ : IsMaximal s₁.last x₁}
     {hsat₂ : IsMaximal s₂.last x₂} (hequiv : Equivalent s₁ s₂)
     (hlast : Iso (s₁.last, x₁) (s₂.last, x₂)) : Equivalent (s₁.snoc x₁ hsat₁) (s₂.snoc x₂ hsat₂) :=

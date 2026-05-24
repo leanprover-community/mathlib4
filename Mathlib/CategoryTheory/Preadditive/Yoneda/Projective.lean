@@ -14,7 +14,7 @@ public import Mathlib.Algebra.Category.ModuleCat.EpiMono
 An object is projective iff the preadditive coyoneda functor on it preserves epimorphisms.
 -/
 
-@[expose] public section
+public section
 
 
 universe v u

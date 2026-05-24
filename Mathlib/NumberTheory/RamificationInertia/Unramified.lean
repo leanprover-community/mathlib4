@@ -8,6 +8,7 @@ module
 public import Mathlib.NumberTheory.RamificationInertia.Basic
 public import Mathlib.RingTheory.LocalRing.ResidueField.Instances
 public import Mathlib.RingTheory.Unramified.LocalRing
+public import Mathlib.LinearAlgebra.FreeModule.IdealQuotient
 
 /-!
 
@@ -22,13 +23,13 @@ We connect `Ideal.ramificationIdx` to the commutative algebra notion predicate o
 
 -/
 
-@[expose] public section
+public section
 
 variable {R S T : Type*} [CommRing R] [CommRing S] [CommRing T]
 variable [Algebra R S] [Algebra S T] [Algebra R T] [IsScalarTower R S T]
 
 local notation3 "e(" P "|" R ")" =>
-  Ideal.ramificationIdx (algebraMap _ _) (Ideal.under R P) P
+  Ideal.ramificationIdx (Ideal.under R P) P
 
 open IsLocalRing Algebra
 
@@ -36,6 +37,7 @@ lemma Ideal.ramificationIdx_eq_one_of_isUnramifiedAt
     {p : Ideal S} [p.IsPrime] [IsNoetherianRing S] [IsUnramifiedAt R p]
     (hp : p ≠ ⊥) [IsDomain S] [EssFiniteType R S] :
     e(p|R) = 1 :=
+  let := Localization.AtPrime.algebraOfLiesOver (p.under R) p
   (Ideal.ramificationIdx_eq_one_of_map_localization Ideal.map_comap_le hp
     p.primeCompl_le_nonZeroDivisors
     ((isUnramifiedAt_iff_map_eq R (p.under R) p).mp ‹_›).2)
@@ -48,6 +50,9 @@ lemma IsUnramifiedAt.of_liesOver_of_ne_bot
     IsUnramifiedAt R p := by
   let p₀ : Ideal R := p.under R
   have : P.LiesOver p₀ := .trans P p p₀
+  let := Localization.AtPrime.algebraOfLiesOver p₀ p
+  let := Localization.AtPrime.algebraOfLiesOver p P
+  let := Localization.AtPrime.algebraOfLiesOver p₀ P
   have hp₀ : p₀ = P.under R := Ideal.LiesOver.over
   have : EssFiniteType S T := .of_comp R S T
   have := Algebra.EssFiniteType.isNoetherianRing S T
@@ -79,11 +84,10 @@ in `R`, then `P ∩ S` (as a prime of `S`) is also unramified in `R`.
 lemma Algebra.IsUnramifiedAt.of_liesOver
     (p : Ideal S) (P : Ideal T) [P.LiesOver p] [p.IsPrime] [P.IsPrime]
     [IsUnramifiedAt R P] [EssFiniteType R S] [EssFiniteType R T]
-    [IsDedekindDomain S] [IsDomain T] [NoZeroSMulDivisors S T] : IsUnramifiedAt R p :=
+    [IsDedekindDomain S] [IsDomain T] [Module.IsTorsionFree S T] : IsUnramifiedAt R p :=
   IsUnramifiedAt.of_liesOver_of_ne_bot R p P P.primeCompl_le_nonZeroDivisors
     (Ideal.ne_bot_of_liesOver_of_ne_bot · P)
 
-set_option synthInstance.maxHeartbeats 25000 in -- infer_instance timeout
 /-- Let `R` be a domain of characteristic 0, finite rank over `ℤ`, `S` be a Dedekind domain
 that is a finite `R`-algebra. Let `p` be a prime of `S`, then `p` is unramified iff `e(p) = 1`. -/
 lemma Algebra.isUnramifiedAt_iff_of_isDedekindDomain
@@ -91,6 +95,7 @@ lemma Algebra.isUnramifiedAt_iff_of_isDedekindDomain
     [Module.Finite ℤ R] [CharZero R] [Algebra.IsIntegral R S]
     (hp : p ≠ ⊥) :
     Algebra.IsUnramifiedAt R p ↔ e(p|R) = 1 := by
+  let := Localization.AtPrime.algebraOfLiesOver (p.under R) p
   rw [isUnramifiedAt_iff_map_eq R (p.under R) p, and_iff_right,
     Ideal.IsDedekindDomain.ramificationIdx_eq_one_iff hp Ideal.map_comap_le]
   have : Finite (R ⧸ p.under R) :=

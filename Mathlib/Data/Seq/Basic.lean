@@ -182,8 +182,7 @@ theorem get?_mem_take {s : Seq α} {m n : ℕ} (h_mn : m < n) {x : α}
     rw [← hl, take, head_eq_some h_get]
     simp
   | succ k ih =>
-    obtain ⟨l, hl⟩ := Nat.exists_eq_add_of_lt h_mn
-    subst hl
+    obtain ⟨l, rfl⟩ := Nat.exists_eq_add_of_lt h_mn
     have : ∃ y, s.get? 0 = some y := by
       apply ge_stable _ _ h_get
       simp
@@ -306,6 +305,7 @@ theorem append_assoc (s t u : Seq α) : append (append s t) u = append s (append
         case cons _ s => exact ⟨s, t, u, rfl, rfl⟩
   · exact ⟨s, t, u, rfl, rfl⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem of_mem_append {s₁ s₂ : Seq α} {a : α} (h : a ∈ append s₁ s₂) : a ∈ s₁ ∨ a ∈ s₂ := by
   have := h; revert this
   generalize e : append s₁ s₂ = ss; intro h; revert s₁
@@ -457,7 +457,8 @@ theorem join_cons (a : α) (s S) : join (cons (a, s) S) = cons a (append s (join
     | _, _, Or.inr ⟨a, s, S, rfl, rfl⟩ => by
       cases s
       · simp [join_cons_nil]
-      · simpa [join_cons_cons, join_cons_nil] using Or.inr ⟨_, _, S, rfl, rfl⟩
+      · simpa only [BisimO, join_cons_cons, destruct_cons, cons_append, true_and] using
+          Or.inr ⟨_, _, S, rfl, rfl⟩
 
 set_option linter.flexible false in -- TODO: fix non-terminal simp
 @[simp]
@@ -494,7 +495,7 @@ theorem drop_get? {n m : ℕ} {s : Seq α} : (s.drop n).get? m = s.get? (n + m) 
   | zero => simp [drop]
   | succ k ih =>
     simp only [drop, get?_tail]
-    convert ih using 2
+    convert! ih using 2
     lia
 
 theorem dropn_add (s : Seq α) (m) : ∀ n, drop s (m + n) = drop (drop s m) n
@@ -534,7 +535,7 @@ theorem drop_length' {n : ℕ} {s : Seq α} :
     | nil => simp
     | cons x s =>
       simp only [drop_succ_cons, length'_cons, Nat.cast_add, Nat.cast_one]
-      convert drop_length' using 1
+      convert! drop_length' using 1
       generalize s.length' = m
       enat_to_nat
       lia
@@ -621,12 +622,12 @@ theorem zipWith_map (s₁ : Seq α) (s₂ : Seq β) (f₁ : α → α') (f₂ : 
 
 theorem zipWith_map_left (s₁ : Seq α) (s₂ : Seq β) (f : α → α') (g : α' → β → γ) :
     zipWith g (s₁.map f) s₂ = zipWith (fun a b ↦ g (f a) b) s₁ s₂ := by
-  convert zipWith_map _ _ _ (@id β) _
+  convert! zipWith_map _ _ _ (@id β) _
   simp
 
 theorem zipWith_map_right (s₁ : Seq α) (s₂ : Seq β) (f : β → β') (g : α → β' → γ) :
     zipWith g s₁ (s₂.map f) = zipWith (fun a b ↦ g a (f b)) s₁ s₂ := by
-  convert zipWith_map _ _ (@id α) _ _
+  convert! zipWith_map _ _ (@id α) _ _
   simp
 
 theorem zip_map (s₁ : Seq α) (s₂ : Seq β) (f₁ : α → α') (f₂ : β → β') :
@@ -637,12 +638,12 @@ theorem zip_map (s₁ : Seq α) (s₂ : Seq β) (f₁ : α → α') (f₂ : β �
 
 theorem zip_map_left (s₁ : Seq α) (s₂ : Seq β) (f : α → α') :
     (s₁.map f).zip s₂ = (s₁.zip s₂).map (Prod.map f id) := by
-  convert zip_map _ _ _ _
+  convert! zip_map _ _ _ _
   simp
 
 theorem zip_map_right (s₁ : Seq α) (s₂ : Seq β) (f : β → β') :
     s₁.zip (s₂.map f) = (s₁.zip s₂).map (Prod.map id f) := by
-  convert zip_map _ _ _ _
+  convert! zip_map _ _ _ _
   simp
 
 end ZipWith
@@ -742,7 +743,7 @@ theorem all_of_get {p : α → Prop} {s : Seq α} (h : ∀ n x, s.get? n = .some
   simp only [mem_iff_exists_get?]
   grind
 
-private lemma all_coind_drop_motive {s : Seq α} (motive : Seq α → Prop) (base : motive s)
+lemma all_coind_drop_motive {s : Seq α} (motive : Seq α → Prop) (base : motive s)
     (step : ∀ hd tl, motive (.cons hd tl) → motive tl) (n : ℕ) :
     motive (s.drop n) := by
   induction n with

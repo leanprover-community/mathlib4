@@ -404,21 +404,16 @@ theorem star_snd (a : 𝓜(𝕜, A)) (b : A) : (star a).snd b = star (a.fst (sta
 
 instance instStarAddMonoid : StarAddMonoid 𝓜(𝕜, A) :=
   { DoubleCentralizer.instStar with
-    star_involutive := fun x => by ext <;> simp only [star_fst, star_snd, star_star]
-    star_add := fun x y => by
-      ext <;>
-        simp only [star_fst, star_snd, add_fst, add_snd, ContinuousLinearMap.add_apply, star_add] }
+    star_involutive _ := by ext <;> simp
+    star_add _ _ := by ext <;> simp }
 
 instance instStarRing : StarRing 𝓜(𝕜, A) :=
   { DoubleCentralizer.instStarAddMonoid with
-    star_mul := fun a b => by
-      ext <;>
-        simp only [star_fst, star_snd, mul_fst, mul_snd, star_star, ContinuousLinearMap.coe_mul,
-          Function.comp_apply] }
+    star_mul _ _ := by ext <;> simp }
 
 instance instStarModule : StarModule 𝕜 𝓜(𝕜, A) :=
   { DoubleCentralizer.instStarAddMonoid (𝕜 := 𝕜) (A := A) with
-    star_smul := fun k a => by ext <;> exact star_smul _ _ }
+    star_smul _ _ := by ext <;> exact star_smul _ _ }
 
 end Star
 
@@ -525,11 +520,7 @@ instance [CompleteSpace A] : CompleteSpace 𝓜(𝕜, A) := by
   rw [completeSpace_iff_isComplete_range isUniformEmbedding_toProdMulOpposite.isUniformInducing]
   apply IsClosed.isComplete
   simp only [range_toProdMulOpposite, Set.setOf_forall]
-  refine isClosed_iInter fun x => isClosed_iInter fun y => isClosed_eq ?_ ?_
-  · exact
-      ((ContinuousLinearMap.apply 𝕜 A _).continuous.comp <| continuous_unop.comp continuous_snd).mul
-        continuous_const
-  exact continuous_const.mul ((ContinuousLinearMap.apply 𝕜 A _).continuous.comp continuous_fst)
+  exact isClosed_iInter fun x ↦ isClosed_iInter fun y ↦ isClosed_eq (by fun_prop) (by fun_prop)
 
 variable [StarRing A] [CStarRing A]
 
@@ -542,7 +533,7 @@ theorem norm_fst_eq_snd (a : 𝓜(𝕜, A)) : ‖a.fst‖ = ‖a.snd‖ := by
     have h1 b : C * ‖f b‖₊ * ‖b‖₊ ≤ C * ‖f‖₊ * ‖b‖₊ ^ 2 := by grw [f.le_opNNNorm b]; ring_nf; rfl
     have := NNReal.div_le_of_le_mul <| f.opNNNorm_le_bound _ <| by
       simpa only [sqrt_sq, sqrt_mul] using fun b ↦ sqrt_le_sqrt.2 <| (h b).trans (h1 b)
-    convert NNReal.rpow_le_rpow this two_pos.le
+    convert! NNReal.rpow_le_rpow this two_pos.le
     · simp only [NNReal.rpow_two, div_pow, sq_sqrt]
       simp only [sq, mul_self_div_self]
     · simp only [NNReal.rpow_two, sq_sqrt]

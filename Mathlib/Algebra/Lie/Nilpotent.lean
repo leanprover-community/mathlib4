@@ -573,7 +573,7 @@ theorem lcs_add_le_iff (l k : ℕ) : N₁.lcs (l + k) ≤ N₂ ↔ N₁.lcs l �
     rw [(by abel : l + (k + 1) = l + 1 + k), ih, ucs_succ, lcs_succ, top_lie_le_iff_le_normalizer]
 
 theorem lcs_le_iff (k : ℕ) : N₁.lcs k ≤ N₂ ↔ N₁ ≤ N₂.ucs k := by
-  convert lcs_add_le_iff (R := R) (L := L) (M := M) 0 k
+  convert! lcs_add_le_iff (R := R) (L := L) (M := M) 0 k
   rw [zero_add]
 
 theorem gc_lcs_ucs (k : ℕ) :
@@ -901,6 +901,7 @@ theorem lcs_succ : I.lcs M (k + 1) = ⁅I, I.lcs M k⁆ :=
 theorem lcs_top : (⊤ : LieIdeal R L).lcs M k = lowerCentralSeries R L M k :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 -- Porting note: added `LieSubmodule.toSubmodule` in the statement
 theorem coe_lcs_eq [LieModule R L M] :
     LieSubmodule.toSubmodule (I.lcs M k) = lowerCentralSeries R I M k := by
@@ -919,33 +920,6 @@ instance [IsNilpotent L I] : LieRing.IsNilpotent I := by
   exact Function.injective_id.lieModuleIsNilpotent hfg
 
 end LieIdeal
-
-section OfAssociative
-
-variable (R : Type u) {A : Type v} [CommRing R] [Ring A] [Algebra R A]
-
-theorem _root_.LieAlgebra.ad_nilpotent_of_nilpotent {a : A} (h : IsNilpotent a) :
-    IsNilpotent (LieAlgebra.ad R A a) := by
-  rw [LieAlgebra.ad_eq_lmul_left_sub_lmul_right]
-  have hl : IsNilpotent (LinearMap.mulLeft R a) := by rwa [LinearMap.isNilpotent_mulLeft_iff]
-  have hr : IsNilpotent (LinearMap.mulRight R a) := by rwa [LinearMap.isNilpotent_mulRight_iff]
-  have := @LinearMap.commute_mulLeft_right R A _ _ _ _ _ a a
-  exact this.isNilpotent_sub hl hr
-
-variable {R}
-
-theorem _root_.LieSubalgebra.isNilpotent_ad_of_isNilpotent_ad {L : Type v} [LieRing L]
-    [LieAlgebra R L] (K : LieSubalgebra R L) {x : K} (h : IsNilpotent (LieAlgebra.ad R L ↑x)) :
-    IsNilpotent (LieAlgebra.ad R K x) := by
-  obtain ⟨n, hn⟩ := h
-  use n
-  exact Module.End.submodule_pow_eq_zero_of_pow_eq_zero (K.ad_comp_incl_eq x) hn
-
-theorem _root_.LieAlgebra.isNilpotent_ad_of_isNilpotent {L : LieSubalgebra R A} {x : L}
-    (h : IsNilpotent (x : A)) : IsNilpotent (LieAlgebra.ad R L x) :=
-  L.isNilpotent_ad_of_isNilpotent_ad <| LieAlgebra.ad_nilpotent_of_nilpotent R h
-
-end OfAssociative
 
 section ExtendScalars
 

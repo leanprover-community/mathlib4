@@ -18,7 +18,7 @@ The lemmas in this file require at least one of the following of the Lebesgue in
 * The measure is finite, s-finite or sigma-finite
 -/
 
-@[expose] public section
+public section
 
 namespace MeasureTheory
 
@@ -110,7 +110,7 @@ theorem _root_.NNReal.count_const_le_le_of_tsum_le [MeasurableSingletonClass α]
   apply
     ENNReal.count_const_le_le_of_tsum_le (measurable_coe_nnreal_ennreal.comp a_mble) _
       (mod_cast ε_ne_zero) (@ENNReal.coe_ne_top ε)
-  convert ENNReal.coe_le_coe.mpr tsum_le_c
+  convert! ENNReal.coe_le_coe.mpr tsum_le_c
   simp_rw [Function.comp_apply]
   rw [ENNReal.tsum_coe_eq a_summable.hasSum]
 
@@ -303,7 +303,7 @@ theorem SimpleFunc.exists_lt_lintegral_simpleFunc_of_lt_lintegral {m : Measurabl
       Measure.exists_subset_measure_lt_top hs this
     refine ⟨piecewise t ht (const α c) (const α 0), fun x => ?_, ?_, ?_⟩
     · refine indicator_le_indicator_of_subset ts (fun x => ?_) x
-      exact zero_le _
+      exact zero_le
     · simp only [ht, const_zero, coe_piecewise, coe_const, SimpleFunc.coe_zero, univ_inter,
         piecewise_eq_indicator, ENNReal.coe_indicator, Function.const_apply, lintegral_indicator,
         lintegral_const, Measure.restrict_apply', ENNReal.mul_lt_top ENNReal.coe_lt_top t_top]
@@ -344,7 +344,7 @@ theorem exists_lt_lintegral_simpleFunc_of_lt_lintegral {m : MeasurableSpace α} 
   simp_rw [lintegral_eq_nnreal, lt_iSup_iff] at hL
   rcases hL with ⟨g₀, hg₀, g₀L⟩
   have h'L : L < ∫⁻ x, g₀ x ∂μ := by
-    convert g₀L
+    convert! g₀L
     rw [← SimpleFunc.lintegral_eq_lintegral, SimpleFunc.coe_map]
     simp only [Function.comp_apply]
   rcases SimpleFunc.exists_lt_lintegral_simpleFunc_of_lt_lintegral h'L with ⟨g, hg, gL, gtop⟩

@@ -27,7 +27,7 @@ defined in this file but is introduced in
 
 -/
 
-@[expose] public section
+public section
 
 
 open scoped ENNReal MeasureTheory

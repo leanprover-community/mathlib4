@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+set -euxo pipefail
+
+BENCH="scripts/bench"
+
+"$BENCH/repeatedly.py" -n 5 -- \
+  "$BENCH/measure.py" --append -t open-mathlib -d -- \
+  lake lean Mathlib.lean

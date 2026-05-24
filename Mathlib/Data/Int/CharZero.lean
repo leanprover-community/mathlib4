@@ -15,7 +15,7 @@ public import Mathlib.Data.Int.Cast.Pi
 
 -/
 
-@[expose] public section
+public section
 
 open Nat Set
 

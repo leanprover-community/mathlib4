@@ -14,7 +14,7 @@ public import Mathlib.Algebra.Group.Units.Equiv
 # More lemmas about irreducible elements
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists MonoidWithZero IsOrderedMonoid Multiset
 

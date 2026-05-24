@@ -5,9 +5,8 @@ Authors: Mario Carneiro
 -/
 module
 
-public meta import Mathlib.Tactic.NormNum.Basic
-public meta import Mathlib.Data.Rat.Cast.CharZero
-public meta import Mathlib.Algebra.Field.Basic
+public import Mathlib.Data.Rat.Cast.CharZero
+public import Mathlib.Tactic.NormNum.Basic
 
 /-!
 # `norm_num` plugins for `Rat.cast` and `⁻¹`.
@@ -158,7 +157,7 @@ theorem isRat_inv_neg {α} [DivisionRing α] [CharZero α] {a : α} {n d : ℕ} 
 open Lean
 
 attribute [local instance] monadLiftOptionMetaM in
-/-- The result of inverting a norm_num result. -/
+/-- The result of inverting a `norm_num` result. -/
 def Result.inv {u : Level} {α : Q(Type u)} {a : Q($α)} (ra : Result a)
     (dsα : Q(DivisionSemiring $α)) (czα? : Option Q(CharZero $α)) :
     MetaM (Result q($a⁻¹)) := do

@@ -89,13 +89,8 @@ notation "∫⋯∫⁻_" s ", " f => lmarginal (fun _ ↦ volume) s f
 variable (μ)
 
 theorem _root_.Measurable.lmarginal [∀ i, SigmaFinite (μ i)] (hf : Measurable f) :
-    Measurable (∫⋯∫⁻_s, f ∂μ) := by
-  refine Measurable.lintegral_prod_right ?_
-  refine hf.comp ?_
-  rw [measurable_pi_iff]; intro i
-  by_cases hi : i ∈ s
-  · simpa [hi, updateFinset] using measurable_pi_iff.1 measurable_snd _
-  · simpa [hi, updateFinset] using measurable_pi_iff.1 measurable_fst _
+    Measurable (∫⋯∫⁻_s, f ∂μ) :=
+  Measurable.lintegral_prod_right (hf.comp measurable_updateFinset')
 
 @[simp] theorem lmarginal_empty (f : (∀ i, X i) → ℝ≥0∞) : ∫⋯∫⁻_∅, f ∂μ = f := by
   ext1 x
@@ -221,9 +216,6 @@ theorem lmarginal_update_of_notMem {i : δ}
     rw [lmarginal_insert _ hf hi', lmarginal_insert _ (hf.comp measurable_update_left) hi']
     have hii' : i ≠ i' := mt (by rintro rfl; exact mem_insert_self i s) hi
     simp_rw [update_comm hii', ih (mt Finset.mem_insert_of_mem hi)]
-
-@[deprecated (since := "2025-05-23")]
-alias lmarginal_update_of_not_mem := lmarginal_update_of_notMem
 
 theorem lmarginal_eq_of_subset {f g : (∀ i, X i) → ℝ≥0∞} (hst : s ⊆ t)
     (hf : Measurable f) (hg : Measurable g) (hfg : ∫⋯∫⁻_s, f ∂μ = ∫⋯∫⁻_s, g ∂μ) :

@@ -221,7 +221,7 @@ theorem exists_elementaryEmbedding_card_eq_of_ge (M : Type w') [L.Structure M] [
   obtain ⟨N0, hN0⟩ := (L.elementaryDiagram M).exists_large_model_of_infinite_model κ M
   rw [← lift_le.{max u v}, lift_lift, lift_lift] at h2
   obtain ⟨N, ⟨NN0⟩, hN⟩ :=
-    exists_elementaryEmbedding_card_eq_of_le (L[[M]]) N0 κ
+    exists_elementaryEmbedding_card_eq_of_le L[[M]] N0 κ
       (aleph0_le_lift.1 ((aleph0_le_lift.2 (aleph0_le_mk M)).trans h2))
       (by
         simp only [card_withConstants, lift_add, lift_lift]
@@ -305,7 +305,7 @@ theorem models_iff_not_satisfiable (φ : L.Sentence) : T ⊨ᵇ φ ↔ ¬IsSatis
           (Set.subset_union_right (Set.mem_singleton _)))
         (h1 (h2.some.subtheoryModel Set.subset_union_left)),
       fun h M => ?_⟩
-  contrapose! h
+  contrapose h
   rw [← Sentence.realize_not] at h
   refine
     ⟨{  Carrier := M
@@ -316,7 +316,7 @@ theorem models_iff_not_satisfiable (φ : L.Sentence) : T ⊨ᵇ φ ↔ ¬IsSatis
 theorem ModelsBoundedFormula.realize_sentence {φ : L.Sentence} (h : T ⊨ᵇ φ) (M : Type*)
     [L.Structure M] [M ⊨ T] [Nonempty M] : M ⊨ φ := by
   rw [models_iff_not_satisfiable] at h
-  contrapose! h
+  contrapose h
   have : M ⊨ T ∪ {Formula.not φ} := by
     simp only [Set.union_singleton, model_iff, Set.mem_insert_iff, forall_eq_or_imp,
       Sentence.realize_not]
@@ -329,8 +329,6 @@ theorem models_formula_iff_onTheory_models_equivSentence {φ : L.Formula α} :
   refine ⟨fun h => models_sentence_iff.2 (fun M => ?_),
     fun h => models_formula_iff.2 (fun M v => ?_)⟩
   · letI := (L.lhomWithConstants α).reduct M
-    have : (L.lhomWithConstants α).IsExpansionOn M := LHom.isExpansionOn_reduct _ _
-      -- why doesn't that instance just work?
     rw [Formula.realize_equivSentence]
     have : M ⊨ T := (LHom.onTheory_model _ _).1 M.is_model -- why isn't M.is_model inferInstance?
     let M' := Theory.ModelType.of T M
@@ -535,7 +533,7 @@ theorem empty_infinite_Theory_isComplete : Language.empty.infiniteTheory.IsCompl
   (empty_theory_categorical.{0} ℵ₀ _).isComplete ℵ₀ _ le_rfl (by simp)
     ⟨by
       haveI : Language.empty.Structure ℕ := emptyStructure
-      exact ((model_infiniteTheory_iff Language.empty).2 (inferInstanceAs (Infinite ℕ))).bundled⟩
+      exact ((model_infiniteTheory_iff Language.empty).2 (inferInstance : Infinite ℕ)).bundled⟩
     fun M => (model_infiniteTheory_iff Language.empty).1 M.is_model
 
 end Cardinal

@@ -30,44 +30,43 @@ including a version of the Cantor-Bendixson Theorem.
 accumulation point, perfect set, cantor-bendixson.
 -/
 
-@[expose] public section
+public section
 
-open Set Filter
+open Set Filter Metric Function
+open scoped ENNReal
 
 section CantorInjMetric
-
-open Function ENNReal
 
 variable {α : Type*} [MetricSpace α] {C : Set α} {ε : ℝ≥0∞}
 
 private theorem Perfect.small_diam_aux (hC : Perfect C) (ε_pos : 0 < ε) {x : α} (xC : x ∈ C) :
-    let D := closure (EMetric.ball x (ε / 2) ∩ C)
-    Perfect D ∧ D.Nonempty ∧ D ⊆ C ∧ EMetric.diam D ≤ ε := by
-  have : x ∈ EMetric.ball x (ε / 2) := by
-    apply EMetric.mem_ball_self
+    let D := closure (Metric.eball x (ε / 2) ∩ C)
+    Perfect D ∧ D.Nonempty ∧ D ⊆ C ∧ Metric.ediam D ≤ ε := by
+  have : x ∈ Metric.eball x (ε / 2) := by
+    apply Metric.mem_eball_self
     rw [ENNReal.div_pos_iff]
     exact ⟨ne_of_gt ε_pos, by simp⟩
-  have := hC.closure_nhds_inter x xC this EMetric.isOpen_ball
+  have := hC.closure_nhds_inter x xC this Metric.isOpen_eball
   refine ⟨this.1, this.2, ?_, ?_⟩
   · rw [IsClosed.closure_subset_iff hC.closed]
     apply inter_subset_right
-  rw [EMetric.diam_closure]
-  apply le_trans (EMetric.diam_mono inter_subset_left)
-  convert EMetric.diam_ball (x := x)
+  rw [Metric.ediam_closure]
+  apply le_trans (Metric.ediam_mono inter_subset_left)
+  convert! Metric.ediam_eball_le (x := x)
   rw [mul_comm, ENNReal.div_mul_cancel] <;> norm_num
 
 /-- A refinement of `Perfect.splitting` for metric spaces, where we also control
 the diameter of the new perfect sets. -/
 theorem Perfect.small_diam_splitting (hC : Perfect C) (hnonempty : C.Nonempty) (ε_pos : 0 < ε) :
-    ∃ C₀ C₁ : Set α, (Perfect C₀ ∧ C₀.Nonempty ∧ C₀ ⊆ C ∧ EMetric.diam C₀ ≤ ε) ∧
-    (Perfect C₁ ∧ C₁.Nonempty ∧ C₁ ⊆ C ∧ EMetric.diam C₁ ≤ ε) ∧ Disjoint C₀ C₁ := by
+    ∃ C₀ C₁ : Set α, (Perfect C₀ ∧ C₀.Nonempty ∧ C₀ ⊆ C ∧ Metric.ediam C₀ ≤ ε) ∧
+    (Perfect C₁ ∧ C₁.Nonempty ∧ C₁ ⊆ C ∧ Metric.ediam C₁ ≤ ε) ∧ Disjoint C₀ C₁ := by
   rcases hC.splitting hnonempty with ⟨D₀, D₁, ⟨perf0, non0, sub0⟩, ⟨perf1, non1, sub1⟩, hdisj⟩
   obtain ⟨x₀, hx₀⟩ := non0
   obtain ⟨x₁, hx₁⟩ := non1
   rcases perf0.small_diam_aux ε_pos hx₀ with ⟨perf0', non0', sub0', diam0⟩
   rcases perf1.small_diam_aux ε_pos hx₁ with ⟨perf1', non1', sub1', diam1⟩
   refine
-    ⟨closure (EMetric.ball x₀ (ε / 2) ∩ D₀), closure (EMetric.ball x₁ (ε / 2) ∩ D₁),
+    ⟨closure (Metric.eball x₀ (ε / 2) ∩ D₀), closure (Metric.eball x₁ (ε / 2) ∩ D₁),
       ⟨perf0', non0', sub0'.trans sub0, diam0⟩, ⟨perf1', non1', sub1'.trans sub1, diam1⟩, ?_⟩
   apply Disjoint.mono _ _ hdisj <;> assumption
 
@@ -110,9 +109,9 @@ theorem Perfect.exists_nat_bool_injection
     rcases Nat.exists_eq_succ_of_ne_zero hm with ⟨n, rfl⟩
     dsimp
     cases x n
-    · convert (h0 _ _ _).2.2.2
+    · convert! (h0 _ _ _).2.2.2
       rw [PiNat.res_length]
-    convert (h1 _ _ _).2.2.2
+    convert! (h1 _ _ _).2.2.2
     rw [PiNat.res_length]
   have hdisj' : CantorScheme.Disjoint D := by
     rintro l (a | a) (b | b) hab <;> try contradiction

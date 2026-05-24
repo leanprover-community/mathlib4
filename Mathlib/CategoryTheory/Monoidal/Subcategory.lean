@@ -27,7 +27,7 @@ braided/symmetric structure.
 * Add monoidal/braided versions of `ObjectProperty.Lift`
 -/
 
-@[expose] public section
+public section
 
 
 universe u v
@@ -83,7 +83,7 @@ instance : MonoidalCategoryStruct P.FullSubcategory where
   tensorHom f g := ObjectProperty.homMk (f.hom ⊗ₘ g.hom)
   tensorUnit := ⟨𝟙_ C, P.prop_unit⟩
   associator X Y Z := P.isoMk (α_ X.1 Y.1 Z.1)
-  leftUnitor X :=  P.isoMk (λ_ X.1)
+  leftUnitor X := P.isoMk (λ_ X.1)
   rightUnitor X := P.isoMk (ρ_ X.1)
 
 /--
@@ -178,6 +178,7 @@ section Closed
 
 variable [MonoidalClosed C] [P.IsMonoidalClosed]
 
+set_option backward.isDefEq.respectTransparency false in
 instance fullMonoidalClosedSubcategory : MonoidalClosed (FullSubcategory P) where
   closed X :=
     { rightAdj := P.lift (P.ι ⋙ ihom X.1) (fun Y => P.prop_ihom X.2 Y.2)

@@ -166,7 +166,7 @@ def invMulSubgroup (A : Finset G) (h : #(A * A) < (3 / 2 : ℚ) * #A) : Subgroup
   mul_mem' := by
     norm_cast
     have h₁ x (hx : x ∈ A) y (hy : y ∈ A) : (1 / 2 : ℚ) * #A < #(x • A ∩ y • A) := by
-      convert lt_card_smul_inter_smul (by simpa using Rat.cast_strictMono (K := ℝ) h) hx hy
+      convert! lt_card_smul_inter_smul (by simpa using Rat.cast_strictMono (K := ℝ) h) hx hy
       norm_num
       simp [← Rat.cast_lt (K := ℝ)]
     intro a c ha hc
@@ -210,7 +210,7 @@ private lemma weak_invMulSubgroup_bound (h : #(A * A) < (3 / 2 : ℚ) * #A) :
     #(A⁻¹ * A) < 2 * #A := by
   have h₀ : A.Nonempty := nonempty_of_doubling h
   have h₁ a (ha : a ∈ A⁻¹ * A) : (1 / 2 : ℚ) * #A < #{xy ∈ A ×ˢ A | xy.1 * xy.2⁻¹ = a} := by
-    convert lt_card_mul_inv_eq (by simpa using Rat.cast_strictMono (K := ℝ) h) ha
+    convert! lt_card_mul_inv_eq (by simpa using Rat.cast_strictMono (K := ℝ) h) ha
     norm_num
     simp [← Rat.cast_lt (K := ℝ)]
   have h₂ : ∀ x ∈ A ×ˢ A, (fun ⟨x, y⟩ => x * y⁻¹) x ∈ A⁻¹ * A := by
@@ -609,6 +609,7 @@ private lemma IsAtom.eq_of_inter_nonempty (hK : K ≤ 1) (hS : S.Nonempty)
   replace hB := eq_of_subset_of_card_le inter_subset_right hB
   exact hA.symm.trans hB
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- For `K < 1` and `S ⊆ G` finite and nonempty, the value of connectivity is attained by a
 nonempty finite subset of `G`. That is, a fragment for given `K` and `S` exists. -/
 private lemma exists_nonempty_isFragment (hK : K < 1) (hS : S.Nonempty) :
@@ -717,6 +718,7 @@ private lemma exists_subgroup_isAtom (hK : K < 1) (hS : S.Nonempty) :
   · simpa only [← mem_coe, coe_smul_finset] using H.mem_carrier
   · simpa [Set.toFinset_smul_set, toFinset_coe, H] using IsAtom.smul_finset n⁻¹ hN
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- If `S` is nonempty such that there is `A` with `|S| ≤ |A|` such that `|A * S| ≤ (2 - ε) * |S|`
 for some `0 < ε ≤ 1`, then there is a finite subgroup `H` of `G` of size `|H| ≤ (2 / ε - 1) * |S|`
 such that `S` is covered by at most `2 / ε - 1` right cosets of `H`. -/

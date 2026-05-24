@@ -16,7 +16,7 @@ then its restriction to `ℝ` is differentiable over `ℝ`, with derivative the 
 complex derivative.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists IsConformalMap Conformal
 
@@ -103,5 +103,10 @@ theorem HasDerivAt.ofReal_comp {f : ℝ → ℝ} {u : ℝ} (hf : HasDerivAt f u 
     HasDerivAt (fun y : ℝ => ↑(f y) : ℝ → ℂ) u z := by
   simpa only [ofRealCLM_apply, ofReal_one, real_smul, mul_one] using
     ofRealCLM.hasDerivAt.scomp z hf
+
+theorem HasDerivWithinAt.ofReal_comp {f : ℝ → ℝ} {s : Set ℝ} {u : ℝ}
+    (hf : HasDerivWithinAt f u s z) : HasDerivWithinAt (fun y : ℝ => ↑(f y) : ℝ → ℂ) u s z := by
+  simpa only [Function.comp_apply, ofRealCLM_apply] using
+    ofRealCLM.hasFDerivAt.comp_hasDerivWithinAt z hf
 
 end RealDerivOfComplex

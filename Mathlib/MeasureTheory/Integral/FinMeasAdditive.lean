@@ -121,7 +121,7 @@ theorem map_iUnion_fin_meas_set_eq_sum (T : Set α → β) (T_empty : T ∅ = 0)
   rw [←
     h_add (S a) (⋃ i ∈ s, S i) (hS_meas a) (measurableSet_biUnion _ fun i _ => hS_meas i)
       (hps a (Finset.mem_insert_self a s))]
-  · congr; convert Finset.iSup_insert a s S
+  · congr; convert! Finset.iSup_insert a s S
   · exact (measure_biUnion_lt_top s.finite_toSet fun i hi ↦
       (hps i <| Finset.mem_insert_of_mem hi).lt_top).ne
   · simp_rw [Set.disjoint_iUnion_right]
@@ -183,7 +183,7 @@ theorem of_measure_le {μ' : Measure α} (h : μ ≤ μ') (hT : DominatedFinMeas
     _ ≤ C * μ'.real s := by
       simp only [measureReal_def]
       gcongr
-      exacts [hμ's.ne, h s]
+      exact hμ's.ne
 
 theorem add_measure_right {_ : MeasurableSpace α} (μ ν : Measure α)
     (hT : DominatedFinMeasAdditive μ T C) (hC : 0 ≤ C) : DominatedFinMeasAdditive (μ + ν) T C :=
@@ -462,7 +462,7 @@ theorem setToSimpleFunc_nonneg' (T : Set α → G' →L[ℝ] G'')
   rw [mem_range] at hi
   obtain ⟨y, hy⟩ := Set.mem_range.mp hi
   rw [← hy]
-  convert hf y
+  convert! hf y
 
 theorem setToSimpleFunc_mono [IsOrderedAddMonoid G']
     {T : Set α → G' →L[ℝ] G''} (h_add : FinMeasAdditive μ T)

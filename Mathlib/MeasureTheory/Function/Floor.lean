@@ -14,7 +14,7 @@ In this file we prove that `Int.floor`, `Int.ceil`, `Int.fract`, `Nat.floor`, an
 measurable under some assumptions on the (semi)ring.
 -/
 
-@[expose] public section
+public section
 
 
 open Set

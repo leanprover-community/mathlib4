@@ -61,7 +61,7 @@ section dual
     rw [← compl_subset_compl, ← hIB.sdiff_eq_right, ← union_diff_distrib, diff_eq, compl_inter,
       compl_compl, union_subset_iff, compl_subset_compl] at hB''₂
     have hssu := (subset_inter (hB''₂.2) hIE).ssubset_of_ne
-      (by { rintro rfl; apply hI; convert hB''; simp [hB''.subset_ground] })
+      (by { rintro rfl; apply hI; convert! hB''; simp [hB''.subset_ground] })
     obtain ⟨e, ⟨(heB'' : e ∉ _), heE⟩, heI⟩ := exists_of_ssubset hssu
     use e
     simp_rw [mem_diff, insert_subset_iff, and_iff_left heI, and_iff_right heE, and_iff_right hIE]
@@ -90,7 +90,7 @@ section dual
         inter_union_distrib_left, hdj.symm.inter_eq, empty_union, diff_eq, ← inter_assoc,
         ← diff_eq, diff_subset_comm, diff_eq, inter_assoc, ← diff_eq, inter_comm]
       exact subset_trans (inter_subset_inter_right _ hB''.subset_ground) hXJ
-    obtain ⟨B₁,hB₁,hI'B₁,hB₁I⟩ := (hB'.indep.subset hI').exists_isBase_subset_union_isBase hB''
+    obtain ⟨B₁, hB₁, hI'B₁, hB₁I⟩ := (hB'.indep.subset hI').exists_isBase_subset_union_isBase hB''
     rw [union_comm, ← union_assoc, union_eq_self_of_subset_right inter_subset_left] at hB₁I
     obtain rfl : B₁ = B' := by
       refine hB₁.eq_of_subset_indep hB'.indep (fun e he ↦ ?_)
@@ -100,7 +100,7 @@ section dual
       exact hB₁.indep.subset (insert_subset he (subset_union_right.trans hI'B₁))
     by_contra hdj'
     obtain ⟨e, heJ, heB'⟩ := not_disjoint_iff.mp hdj'
-    obtain (heB'' | ⟨-,heX⟩ ) := hB₁I heB'
+    obtain (heB'' | ⟨-, heX⟩) := hB₁I heB'
     · exact hdj.ne_of_mem heJ heB'' rfl
     exact heX (hJX heJ)
   subset_ground := by tauto
