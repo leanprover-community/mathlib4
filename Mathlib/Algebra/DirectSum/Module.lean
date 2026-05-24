@@ -348,7 +348,7 @@ variable [DecidableEq ι] [∀ i j, AddCommMonoid (δ i j)] [∀ i j, Module R (
 
 /-- `curry` as a linear map. -/
 def sigmaLcurry : (⨁ i : Σ _, _, δ i.1 i.2) →ₗ[R] ⨁ (i) (j), δ i j :=
-  { sigmaCurry with map_smul' := fun r ↦ by convert DFinsupp.sigmaCurry_smul (δ := δ) r }
+  { sigmaCurry with map_smul' := fun r ↦ by convert! DFinsupp.sigmaCurry_smul (δ := δ) r }
 
 @[simp]
 theorem sigmaLcurry_apply (f : ⨁ i : Σ _, _, δ i.1 i.2) (i : ι) (j : α i) :

@@ -65,7 +65,7 @@ instance instCommGroup : CommGroup (GrothendieckGroup M) where
   inv_mul_cancel a := by
     cases a using ind
     rw [inv_mk, mk_eq_monoidOf_mk', ← Submonoid.LocalizationMap.mk'_mul]
-    convert Submonoid.LocalizationMap.mk'_self' _ _
+    convert! Submonoid.LocalizationMap.mk'_self' _ _
     rw [mul_comm, Submonoid.coe_mul]
 
 @[to_additive (attr := simp)]
