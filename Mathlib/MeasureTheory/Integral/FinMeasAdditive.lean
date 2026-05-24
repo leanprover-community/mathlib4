@@ -263,13 +263,10 @@ theorem add_measure_left {_ : MeasurableSpace α} (μ ν : Measure α)
 theorem finsetSum_measure {ι} {s : Finset ι} (hs : s.Nonempty) (μ : ι → Measure α)
     (T : ι → Set α → β) (C : ι → ℝ) (hT : ∀ i, DominatedFinMeasAdditive (μ i) (T i) (C i)) :
     DominatedFinMeasAdditive (∑ i ∈ s, μ i) (∑ i ∈ s, T i) (s.sup' hs C) := by
-  classical
-  induction s using Finset.induction_on with
-  | empty => grind
-  | insert i s his ih =>
-    by_cases hs' : s.Nonempty
-    · simpa [his, Finset.sup'_insert hs' C] using (hT i).add_measure (μ i) (∑ j ∈ s, μ j) (ih hs')
-    · simp_all
+  induction hs using Finset.Nonempty.cons_induction with
+  | singleton i => simp_all
+  | @cons i s his hs' ih =>
+    simpa [his, Finset.sup'_cons hs' C] using (hT i).add_measure (μ i) (∑ j ∈ s, μ j) ih
 
 theorem of_smul_measure {c : ℝ≥0∞} (hc_ne_top : c ≠ ∞) (hT : DominatedFinMeasAdditive (c • μ) T C) :
     DominatedFinMeasAdditive μ T (c.toReal * C) := by

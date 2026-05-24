@@ -1103,8 +1103,9 @@ theorem setToFun_add_measure {ν : Measure α} (hTμ : DominatedFinMeasAdditive 
   have hTν_add : DominatedFinMeasAdditive (μ + ν) T' (max C' 0) :=
     hTν.max_zero.add_measure_left μ ν (le_max_right C' 0)
   calc
-    _ = setToFun (μ + ν) T hTμ_add f + setToFun (μ + ν) T' hTν_add f :=
-      setToFun_add_left hTμ_add hTν_add f
+    setToFun (μ + ν) (T + T') (hTμ.add_measure μ ν hTν) f =
+      setToFun (μ + ν) T hTμ_add f + setToFun (μ + ν) T' hTν_add f :=
+        setToFun_add_left hTμ_add hTν_add f
     _ = setToFun μ T hTμ f + setToFun ν T' hTν f := by
       rw [setToFun_congr_measure_of_add_right hTμ_add hTμ f (hμ.add_measure hν),
         setToFun_congr_measure_of_add_left hTν_add hTν f (hμ.add_measure hν)]
@@ -1122,16 +1123,13 @@ theorem setToFun_finsetSum_measure {ι} {s : Finset ι} (hs : s.Nonempty)
     setToFun (∑ i ∈ s, μs i) (∑ i ∈ s, Ts i)
       (DominatedFinMeasAdditive.finsetSum_measure hs μs Ts Cs hTs) f =
       ∑ i ∈ s, setToFun (μs i) (Ts i) (hTs i) f := by
-  classical
-  induction s using Finset.induction_on with
-  | empty => grind
-  | insert i s his ih =>
-    by_cases hs' : s.Nonempty
-    · simpa [his, ih hs' fun j hj => hf j (Finset.mem_insert_of_mem hj)] using
-        setToFun_add_measure (hTs i) (DominatedFinMeasAdditive.finsetSum_measure hs' μs Ts Cs hTs)
-        (hf i (s.mem_insert_self i))
-        (integrable_finsetSum_measure.2 fun j hj => hf j (Finset.mem_insert_of_mem hj))
-    · simp_all
+  induction hs using Finset.Nonempty.cons_induction with
+  | singleton i => simp
+  | @cons i s his hs' ih =>
+    simpa [his, ih fun j hj => hf j (Finset.mem_cons_of_mem hj)] using
+      setToFun_add_measure (hTs i) (DominatedFinMeasAdditive.finsetSum_measure hs' μs Ts Cs hTs)
+      (hf i (Finset.mem_cons_self i s))
+      (integrable_finsetSum_measure.2 fun j hj => hf j (Finset.mem_cons_of_mem hj))
 
 theorem setToFun_top_smul_measure (hT : DominatedFinMeasAdditive (∞ • μ) T C) (f : α → E) :
     setToFun (∞ • μ) T hT f = 0 := by
