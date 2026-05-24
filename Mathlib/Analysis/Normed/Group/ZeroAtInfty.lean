@@ -21,7 +21,7 @@ public section
 open Topology Filter
 
 variable {E F 𝓕 : Type*}
-variable [SeminormedAddGroup E] [SeminormedAddCommGroup F]
+variable [AddCommGroup E] [SeminormedAddGroup E] [AddCommGroup F] [SeminormedAddCommGroup F]
 variable [FunLike 𝓕 E F] [ZeroAtInftyContinuousMapClass 𝓕 E F]
 
 theorem ZeroAtInftyContinuousMapClass.norm_le (f : 𝓕) (ε : ℝ) (hε : 0 < ε) :
