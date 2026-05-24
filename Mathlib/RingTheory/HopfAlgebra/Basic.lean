@@ -19,6 +19,8 @@ In this file we define `HopfAlgebra`, and provide instances for:
 
 * `HopfAlgebra R A` : the Hopf algebra structure on an `R`-bialgebra `A`.
 * `HopfAlgebra.antipode` : the `R`-linear map `A →ₗ[R] A`.
+* `HopfAlgebra.ofAlgHom` : construct a Hopf algebra structure from an algebra hom
+  `A →ₐ[R] Aᵐᵒᵖ` satisfying the antipode identities.
 
 ## Main results
 
@@ -229,3 +231,25 @@ instance toHopfAlgebra : HopfAlgebra R R where
 theorem antipode_eq_id : antipode R (A := R) = .id := rfl
 
 end CommSemiring
+
+namespace HopfAlgebra
+
+variable {R A : Type*} [CommSemiring R] [Semiring A] [Bialgebra R A]
+
+open Coalgebra MulOpposite
+
+/-- Upgrade a bialgebra to a Hopf algebra by specifying the antipode as an algebra map
+`A →ₐ[R] Aᵐᵒᵖ` with appropriate conditions. -/
+noncomputable abbrev ofAlgHom (antipode : A →ₐ[R] Aᵐᵒᵖ)
+    (mul_antipode_rTensor_comul :
+      LinearMap.mul' R A ∘ₗ ((opLinearEquiv R).symm.toLinearMap ∘ₗ
+        antipode.toLinearMap).rTensor A ∘ₗ comul = Algebra.linearMap R A ∘ₗ counit)
+    (mul_antipode_lTensor_comul :
+      LinearMap.mul' R A ∘ₗ ((opLinearEquiv R).symm.toLinearMap ∘ₗ
+        antipode.toLinearMap).lTensor A ∘ₗ comul = Algebra.linearMap R A ∘ₗ counit) :
+    HopfAlgebra R A where
+  antipode := (opLinearEquiv R).symm.toLinearMap ∘ₗ antipode.toLinearMap
+  mul_antipode_rTensor_comul := mul_antipode_rTensor_comul
+  mul_antipode_lTensor_comul := mul_antipode_lTensor_comul
+
+end HopfAlgebra
