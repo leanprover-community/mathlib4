@@ -538,7 +538,7 @@ theorem toPartition_ofPartition {n : ℕ} {p : Nat.Partition n} :
   simp [toPartition]
 
 /-- Equivalence between Young diagrams of cardinality `n` and partitions of `n`. -/
-def equivPartition {n : ℕ} : { μ : YoungDiagram | μ.card = n } ≃ Nat.Partition n where
+def equivPartition {n : ℕ} : { μ : YoungDiagram // μ.card = n } ≃ Nat.Partition n where
   toFun μ := toPartition μ μ.2
   invFun p := ⟨ofPartition p, card_ofPartition p⟩
   left_inv := fun ⟨_, h⟩ => Subtype.mk_eq_mk.mpr (ofPartition_toPartition h)
