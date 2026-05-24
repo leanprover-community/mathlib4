@@ -50,9 +50,9 @@ open Fin Function
 namespace ContinuousAlternatingMap
 
 variable {𝕜 E F G : Type*} [NontriviallyNormedField 𝕜]
-  [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-  [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-  [NormedAddCommGroup G] [NormedSpace 𝕜 G]
+  [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+  [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+  [AddCommGroup G] [NormedAddCommGroup G] [NormedSpace 𝕜 G]
   {n : ℕ}
 
 /-- If `f` is a continuous `(n + 1)`-multilinear alternating map, `x` is an element of the domain,
