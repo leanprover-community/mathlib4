@@ -104,7 +104,7 @@ def resolventTransform (μ : Measure 𝕜) (a : A) :=
   ∫ x, resolvent a x ∂μ
 
 lemma resolventTransform_def (μ : Measure 𝕜) :
-  resolventTransform μ = fun (a : A) ↦ (∫ x, resolvent a x ∂μ) := rfl
+    resolventTransform μ = fun (a : A) ↦ (∫ x, resolvent a x ∂μ) := rfl
 
 lemma resolventTransform_apply (μ : Measure 𝕜) (a : A) :
     resolventTransform μ a = ∫ x, resolvent a x ∂μ := rfl
