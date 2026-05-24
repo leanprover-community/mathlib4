@@ -28,7 +28,7 @@ section SameSpace
 
 variable {α ε ε' : Type*} {m : MeasurableSpace α} {μ : Measure α} {f : α → ε}
   [TopologicalSpace ε] [ContinuousENorm ε]
-  [TopologicalSpace ε'] [ESeminormedAddMonoid ε']
+  [TopologicalSpace ε'] [AddMonoid ε'] [ESeminormedAddMonoid ε']
 
 theorem eLpNorm'_le_eLpNorm'_mul_rpow_measure_univ {p q : ℝ} (hp0_lt : 0 < p) (hpq : p ≤ q)
     (hf : AEStronglyMeasurable f μ) :
@@ -158,8 +158,8 @@ end SameSpace
 
 section Bilinear
 
-variable {α E F G : Type*} {m : MeasurableSpace α}
-  [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedAddCommGroup G] {μ : Measure α}
+variable {α E F G : Type*} {m : MeasurableSpace α} [AddCommGroup E] [NormedAddCommGroup E]
+  [AddCommGroup F] [NormedAddCommGroup F] [AddCommGroup G] [NormedAddCommGroup G] {μ : Measure α}
   {f : α → E} {g : α → F}
 
 open NNReal
@@ -276,8 +276,8 @@ end Bilinear
 
 section IsBoundedSMul
 
-variable {𝕜 α E F : Type*} {m : MeasurableSpace α} {μ : Measure α} [NormedRing 𝕜]
-  [NormedAddCommGroup E] [MulActionWithZero 𝕜 E] [IsBoundedSMul 𝕜 E]
+variable {𝕜 α E F : Type*} {m : MeasurableSpace α} {μ : Measure α} [NormedRing 𝕜] [AddCommGroup E]
+  [NormedAddCommGroup E] [MulActionWithZero 𝕜 E] [IsBoundedSMul 𝕜 E] [AddCommGroup F]
   [NormedAddCommGroup F] [MulActionWithZero 𝕜 F] [IsBoundedSMul 𝕜 F] {f : α → E}
 
 theorem eLpNorm_smul_le_eLpNorm_top_mul_eLpNorm (p : ℝ≥0∞) (hf : AEStronglyMeasurable f μ)
