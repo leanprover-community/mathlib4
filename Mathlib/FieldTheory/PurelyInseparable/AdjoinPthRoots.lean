@@ -10,21 +10,17 @@ public import Mathlib.FieldTheory.PurelyInseparable.PerfectClosure
 
 /-!
 
-# The extension of adjoining all pth root to a field of characteriatic p.
+# The extension adjoining all p-th roots to a field of characteristic p.
 
-In this file, we introduced the field extension of adjoining all `p`th roots to
-a field of characteristic `p`.
+In this file, we introduce the field extension adjoining all `p`-th roots to a
+field of characteristic `p`.
 
 # Main definitions and results
 
-* `adjoinPthRoots` : the field extension of adjoining all `p`th roots, defined as the field itself,
-  with algebra map being the frobenius.
-
-* `adjoinPthRootsSelf` : the underlying identity map, equal to the `p`th power of the
-  original element after mapped by algebra map.
-
-* `adjoinPthRootsPthRoot` : the underlying identity map, mapping an element to its unique
-  `p`-th root in `adjoinPthRoots`, inverse to `adjoinPthRootsSelf`.
+* `adjoinPthRoots`: the field extension adjoining all `p`-th roots, defined as the field itself,
+  with the algebra map being the frobenius map.
+* `adjoinPthRootsPthRoot`: the ring equivalence with underlying identity map, mapping an element
+  to its unique `p`-th root in `adjoinPthRoots`.
 
 -/
 
