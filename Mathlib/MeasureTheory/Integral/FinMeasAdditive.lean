@@ -209,9 +209,8 @@ theorem add (hT : DominatedFinMeasAdditive μ T C) (hT' : DominatedFinMeasAdditi
   exact (norm_add_le _ _).trans (add_le_add (hT.2 s hs hμs) (hT'.2 s hs hμs))
 
 theorem neg (hT : DominatedFinMeasAdditive μ T C) :
-    DominatedFinMeasAdditive μ (-T) C := by
-  refine ⟨hT.1.neg, fun s hs hμs => ?_⟩
-  simpa only [Pi.neg_apply, norm_neg] using hT.2 s hs hμs
+    DominatedFinMeasAdditive μ (-T) C :=
+  ⟨hT.1.neg, fun s hs hμs => by simpa using hT.2 s hs hμs⟩
 
 theorem smul [SeminormedAddGroup 𝕜] [DistribSMul 𝕜 β] [IsBoundedSMul 𝕜 β]
     (hT : DominatedFinMeasAdditive μ T C) (c : 𝕜) :
