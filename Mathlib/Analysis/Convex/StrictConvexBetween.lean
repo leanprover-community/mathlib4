@@ -23,7 +23,7 @@ space.
 open Metric
 open scoped Convex
 
-variable {V P : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V]
+variable {V P : Type*} [AddCommGroup V] [NormedAddCommGroup V] [NormedSpace ℝ V]
 variable [StrictConvexSpace ℝ V]
 
 section PseudoMetricSpace
@@ -107,9 +107,10 @@ theorem dist_lt_dist_add_dist_iff {a b c : P} :
 
 end MetricSpace
 
-variable {E F PE PF : Type*} [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedSpace ℝ E]
-  [NormedSpace ℝ F] [StrictConvexSpace ℝ E] [MetricSpace PE] [MetricSpace PF] [NormedAddTorsor E PE]
-  [NormedAddTorsor F PF] {r : ℝ} {f : PF → PE} {x y z : PE}
+variable {E F PE PF : Type*} [AddCommGroup E] [NormedAddCommGroup E] [AddCommGroup F]
+  [NormedAddCommGroup F] [NormedSpace ℝ E] [NormedSpace ℝ F] [StrictConvexSpace ℝ E]
+  [MetricSpace PE] [MetricSpace PF] [NormedAddTorsor E PE] [NormedAddTorsor F PF]
+  {r : ℝ} {f : PF → PE} {x y z : PE}
 
 lemma eq_lineMap_of_dist_eq_mul_of_dist_eq_mul (hxy : dist x y = r * dist x z)
     (hyz : dist y z = (1 - r) * dist x z) : y = AffineMap.lineMap x z r := by
