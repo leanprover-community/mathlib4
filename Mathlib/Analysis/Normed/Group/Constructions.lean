@@ -374,7 +374,7 @@ We could repeat this instance to provide a `[NormPseudoMetric E] [Group E] [IsNo
 but that case would likely never be used.
 -/
 instance instIsNormedAddGroup [NormPseudoMetric E] [AddGroup E] [IsNormedAddGroup E] : IsNormedAddGroup Eᵐᵒᵖ where
-  dist_eq _ _ := dist_eq_norm_neg_add _ _
+  dist_eq _ _ := dist_eq_norm_neg_add (E := E) _ _
 
 lemma norm_op [NormPseudoMetric E] [AddGroup E] [IsNormedAddGroup E] (a : E) : ‖MulOpposite.op a‖ = ‖a‖ := rfl
 

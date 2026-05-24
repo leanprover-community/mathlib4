@@ -191,7 +191,8 @@ theorem norm_eval_le_injectiveSeminorm (f : ContinuousMultilinearMap 𝕜 E F) (
     rfl
   refine le_trans ?_ (mul_le_mul_of_nonneg_left (hle x) (norm_nonneg f'))
   simp only [Seminorm.comp_apply, coe_normSeminorm, ← toDualContinuousMultilinearMap_apply_apply]
-  rw [mul_comm]
+  #adaptation_note /-- `conv_rhs =>` was not needed. -/
+  conv_rhs => rw [mul_comm]
   exact ContinuousLinearMap.le_opNorm _ _
 
 theorem injectiveSeminorm_le_projectiveSeminorm :

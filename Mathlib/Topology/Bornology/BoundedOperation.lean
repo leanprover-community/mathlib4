@@ -158,7 +158,8 @@ variable {R : Type*} [NormPseudoMetric R] [AddCommGroup R] [IsNormedAddGroup R]
 lemma SeminormedAddCommGroup.lipschitzWith_sub :
     LipschitzWith 2 (fun (p : R × R) ↦ p.1 - p.2) := by
   convert LipschitzWith.prod_fst.sub LipschitzWith.prod_snd
-  norm_num
+  · norm_num
+  · infer_instance
 
 instance : BoundedSub R := boundedSub_of_lipschitzWith_sub SeminormedAddCommGroup.lipschitzWith_sub
 

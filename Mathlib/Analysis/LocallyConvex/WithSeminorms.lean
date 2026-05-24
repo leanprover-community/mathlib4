@@ -450,16 +450,17 @@ theorem SeminormFamily.withSeminorms_iff_topologicalSpace_eq_iInf [IsTopological
       t = ⨅ i, (p i).toNormPseudoMetric.toUniformSpace.toTopologicalSpace := by
   rw [p.withSeminorms_iff_nhds_eq_iInf,
     IsTopologicalAddGroup.ext_iff inferInstance
-      (topologicalAddGroup_iInf fun i => (p i).toSeminormedAddCommGroup.toIsTopologicalAddGroup),
+      (topologicalAddGroup_iInf fun i =>
+        @IsNormedAddGroup.toIsTopologicalAddGroup _ (_) (_) (p i).toIsNormedAddGroup),
     nhds_iInf]
   congrm _ = ⨅ i, ?_
-  exact @comap_norm_nhds_zero _ (p i).toSeminormedAddGroup
+  exact @comap_norm_nhds_zero _ (_) (_) (p i).toIsNormedAddGroup
 
 theorem WithSeminorms.continuous_seminorm {p : SeminormFamily 𝕜 E ι} (hp : WithSeminorms p)
     (i : ι) : Continuous (p i) := by
   have := hp.topologicalAddGroup
   rw [p.withSeminorms_iff_topologicalSpace_eq_iInf.mp hp]
-  exact continuous_iInf_dom (@continuous_norm _ (p i).toSeminormedAddGroup)
+  exact continuous_iInf_dom (@continuous_norm _ (_) (_) (p i).toIsNormedAddGroup)
 
 theorem WithSeminorms.toPolynormableSpace {p : SeminormFamily 𝕜 E ι} (hp : WithSeminorms p) :
     PolynormableSpace 𝕜 E where
@@ -485,10 +486,11 @@ theorem SeminormFamily.withSeminorms_iff_uniformSpace_eq_iInf [u : UniformSpace 
     WithSeminorms p ↔ u = ⨅ i, (p i).toNormPseudoMetric.toUniformSpace := by
   rw [p.withSeminorms_iff_nhds_eq_iInf,
     IsUniformAddGroup.ext_iff inferInstance
-      (isUniformAddGroup_iInf fun i => (p i).toSeminormedAddCommGroup.to_isUniformAddGroup),
+      (isUniformAddGroup_iInf fun i =>
+        @IsNormedAddGroup.to_isUniformAddGroup _ (_) (_) (p i).toIsNormedAddGroup),
     UniformSpace.toTopologicalSpace_iInf, nhds_iInf]
   congrm _ = ⨅ i, ?_
-  exact @comap_norm_nhds_zero _ (p i).toAddGroupSeminorm.toSeminormedAddGroup
+  exact @comap_norm_nhds_zero _ (_) (_) (p i).toIsNormedAddGroup
 
 end IsTopologicalAddGroup
 

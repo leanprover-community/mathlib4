@@ -67,7 +67,7 @@ asymptotic cone is trivial. -/
 theorem isBounded_iff_asymptoticCone_subset_singleton {s : Set P} :
     IsBounded s ↔ asymptoticCone ℝ s ⊆ {0} := by
   refine ⟨asymptoticCone_subset_singleton_of_bounded, fun h => ?_⟩
-  simp_rw [isBounded_def, cobounded_eq_iSup_sphere_asymptoticNhds, mem_iSup]
+  simp_rw [isBounded_def, cobounded_eq_iSup_sphere_asymptoticNhds (V := V), mem_iSup]
   intro v hv
   by_contra h'
   exact Metric.ne_of_mem_sphere hv one_ne_zero (h h')

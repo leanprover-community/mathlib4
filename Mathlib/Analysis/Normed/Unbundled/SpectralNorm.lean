@@ -930,7 +930,9 @@ def seminormedAddCommGroup : SeminormedAddCommGroup L := by
 
 /-- `L` with the spectral norm is a `NormedSpace` over `K`. -/
 @[implicit_reducible]
-def normedSpace : @NormedSpace K L _ (seminormedAddCommGroup K L) :=
+def normedSpace :
+    letI _ := seminormedAddCommGroup K L
+    NormedSpace K L :=
   letI _ := seminormedAddCommGroup K L
   { (inferInstance : Module K L) with
     norm_smul_le r x := by
@@ -940,7 +942,8 @@ def normedSpace : @NormedSpace K L _ (seminormedAddCommGroup K L) :=
 /-- `L` with the spectral norm is a `NormedAlgebra` over `K`. -/
 @[implicit_reducible]
 def normedAlgebra :
-    @NormedAlgebra K L _ (seminormedRing K L) :=
+    letI _ := seminormedRing K L
+    NormedAlgebra K L :=
   letI _ := normedField K L
   { normedSpace K L, (inferInstance : Algebra K L) with }
 
@@ -949,7 +952,8 @@ that is a normed algebra over `K`. -/
 @[implicit_reducible]
 def normedAlgebra' (E L : Type*) [Field L] [Algebra K L] [Algebra.IsAlgebraic K L] [NormedField E]
     [NormedAlgebra K E] [Algebra E L] [IsScalarTower K E L] :
-    @NormedAlgebra E L _ (seminormedRing K L) :=
+    letI _ := seminormedRing K L
+    NormedAlgebra E L :=
   letI _ := normedField K L
   letI _ := normedAlgebra K L
   letI _ := Algebra.IsAlgebraic.tower_bot K E L

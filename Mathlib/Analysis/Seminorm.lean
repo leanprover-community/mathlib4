@@ -723,15 +723,21 @@ theorem sub_mem_closedBall (p : Seminorm 𝕜 E) (x₁ x₂ y : E) (r : ℝ) :
   simp_rw [mem_closedBall, sub_sub]
 
 lemma ball_eq_metric :
-    letI := AddGroupSeminorm.toSeminormedAddCommGroup p.toAddGroupSeminorm
+    letI := p.toAddGroupSeminorm.toNormPseudoMetric
+    haveI := p.toAddGroupSeminorm.toIsNormedAddGroup
     p.ball x r = Metric.ball x r := by
+  let := p.toAddGroupSeminorm.toNormPseudoMetric
+  have := p.toAddGroupSeminorm.toIsNormedAddGroup
   ext
   simp only [mem_ball_iff_norm]
   rfl
 
 lemma closedBall_eq_metric :
-    letI := AddGroupSeminorm.toSeminormedAddCommGroup p.toAddGroupSeminorm
+    letI := p.toAddGroupSeminorm.toNormPseudoMetric
+    haveI := p.toAddGroupSeminorm.toIsNormedAddGroup
     p.closedBall x r = Metric.closedBall x r := by
+  let := p.toAddGroupSeminorm.toNormPseudoMetric
+  have := p.toAddGroupSeminorm.toIsNormedAddGroup
   ext
   simp only [mem_closedBall_iff_norm]
   rfl
@@ -1184,15 +1190,15 @@ lemma uniformSpace_eq_of_hasBasis
     {p' : ι → Prop} {s : ι → Set E} (p : Seminorm 𝕜 E) (hb : (𝓝 0 : Filter E).HasBasis p' s)
     (h₁ : ∃ r, p.closedBall 0 r ∈ 𝓝 0) (h₂ : ∀ i, p' i → ∃ r > 0, p.ball 0 r ⊆ s i) :
     ‹UniformSpace E› = p.toAddGroupSeminorm.toNormPseudoMetric.toUniformSpace := by
-  refine IsUniformAddGroup.ext ‹_›
-    p.toAddGroupSeminorm.toSeminormedAddCommGroup.to_isUniformAddGroup ?_
+  let := p.toAddGroupSeminorm.toNormPseudoMetric
+  have := p.toAddGroupSeminorm.toIsNormedAddGroup
+  refine IsUniformAddGroup.ext ‹_› inferInstance ?_
   apply le_antisymm
-  · rw [← @comap_norm_nhds_zero E p.toAddGroupSeminorm.toSeminormedAddGroup, ← tendsto_iff_comap]
+  · rw [← comap_norm_nhds_zero, ← tendsto_iff_comap]
     suffices Continuous p from this.tendsto' 0 _ (map_zero p)
     rcases h₁ with ⟨r, hr⟩
     exact p.continuous' hr
-  · rw [(@NormedAddGroup.nhds_zero_basis_norm_lt E
-      p.toAddGroupSeminorm.toSeminormedAddGroup).le_basis_iff hb]
+  · rw [NormedAddGroup.nhds_zero_basis_norm_lt.le_basis_iff hb]
     simpa only [subset_def, mem_ball_zero] using h₂
 
 lemma uniformity_eq_of_hasBasis

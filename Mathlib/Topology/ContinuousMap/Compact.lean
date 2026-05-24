@@ -196,19 +196,19 @@ theorem dist_le_two_norm (x y : α) : dist (f x) (f y) ≤ 2 * ‖f‖ :=
 
 /-- The norm of a function is controlled by the supremum of the pointwise norms. -/
 theorem norm_le {C : ℝ} (C0 : (0 : ℝ) ≤ C) : ‖f‖ ≤ C ↔ ∀ x : α, ‖f x‖ ≤ C :=
-  @BoundedContinuousFunction.norm_le _ _ _ _ (mkOfCompact f) _ C0
+  @BoundedContinuousFunction.norm_le _ _ _ _ _ _ (mkOfCompact f) _ C0
 
 theorem norm_le_of_nonempty [Nonempty α] {M : ℝ} : ‖f‖ ≤ M ↔ ∀ x, ‖f x‖ ≤ M :=
-  @BoundedContinuousFunction.norm_le_of_nonempty _ _ _ _ _ (mkOfCompact f) _
+  @BoundedContinuousFunction.norm_le_of_nonempty _ _ _ _ _ _ _ (mkOfCompact f) _
 
 theorem norm_lt_iff {M : ℝ} (M0 : 0 < M) : ‖f‖ < M ↔ ∀ x, ‖f x‖ < M :=
-  @BoundedContinuousFunction.norm_lt_iff_of_compact _ _ _ _ _ (mkOfCompact f) _ M0
+  @BoundedContinuousFunction.norm_lt_iff_of_compact _ _ _ _ _ _ _ (mkOfCompact f) _ M0
 
 theorem nnnorm_lt_iff {M : ℝ≥0} (M0 : 0 < M) : ‖f‖₊ < M ↔ ∀ x : α, ‖f x‖₊ < M :=
   f.norm_lt_iff M0
 
 theorem norm_lt_iff_of_nonempty [Nonempty α] {M : ℝ} : ‖f‖ < M ↔ ∀ x, ‖f x‖ < M :=
-  @BoundedContinuousFunction.norm_lt_iff_of_nonempty_compact _ _ _ _ _ _ (mkOfCompact f) _
+  @BoundedContinuousFunction.norm_lt_iff_of_nonempty_compact _ _ _ _ _ _ _ _ (mkOfCompact f) _
 
 theorem nnnorm_lt_iff_of_nonempty [Nonempty α] {M : ℝ≥0} : ‖f‖₊ < M ↔ ∀ x, ‖f x‖₊ < M :=
   f.norm_lt_iff_of_nonempty

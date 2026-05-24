@@ -296,7 +296,7 @@ example : (instMetricSpace (𝕜 := 𝕜) (A := A)).toUniformSpace = instUniform
 
 section
 
-variable {𝕜 A : Type*} [NontriviallyNormedField 𝕜] [NormMetric A] [NonUnitalRing A] [IsNormedRing A]
+variable {𝕜 A : Type*} [NontriviallyNormedField 𝕜] [NormMetric A] [NonUnitalRing A]
 
 protected theorem uniformContinuous_fst : UniformContinuous (fun x : Unitization 𝕜 A ↦ x.fst) :=
   uniformContinuous_fst.comp Unitization.uniformEquivProd.uniformContinuous

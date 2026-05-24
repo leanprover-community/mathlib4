@@ -367,7 +367,7 @@ end PseudoEMetricSpace
 
 -- See note [lower instance priority]
 @[to_additive]
-instance (priority := 100) SeminormedCommGroup.to_lipschitzMul : LipschitzMul E :=
+instance (priority := 100) IsNormedGroup.to_lipschitzMul : LipschitzMul E :=
   ⟨⟨1 + 1, LipschitzWith.prod_fst.mul LipschitzWith.prod_snd⟩⟩
 
 -- See note [lower instance priority]
@@ -375,13 +375,13 @@ instance (priority := 100) SeminormedCommGroup.to_lipschitzMul : LipschitzMul E 
 continuous. -/
 @[to_additive /-- A seminormed group is a uniform additive group, i.e., addition and subtraction are
 uniformly continuous. -/]
-instance (priority := 100) SeminormedCommGroup.to_isUniformGroup : IsUniformGroup E :=
+instance (priority := 100) IsNormedGroup.to_isUniformGroup : IsUniformGroup E :=
   ⟨(LipschitzWith.prod_fst.div LipschitzWith.prod_snd).uniformContinuous⟩
 
 -- short-circuit type class inference
 -- See note [lower instance priority]
 @[to_additive]
-instance (priority := 100) SeminormedCommGroup.toIsTopologicalGroup : IsTopologicalGroup E :=
+instance (priority := 100) IsNormedGroup.toIsTopologicalGroup : IsTopologicalGroup E :=
   inferInstance
 
 /-! ### SeparationQuotient -/

@@ -163,7 +163,7 @@ theorem isLittleO_pow_const_const_pow_of_one_lt {R : Type*} [NormMetric R] [Ring
 /-- For a real `r > 1` we have `n = o(r ^ n)` as `n → ∞`. -/
 theorem isLittleO_coe_const_pow_of_one_lt {R : Type*} [NormMetric R] [Ring R] [IsNormedRing R] {r : ℝ} (hr : 1 < r) :
     ((↑) : ℕ → R) =o[atTop] fun n ↦ r ^ n := by
-  simpa only [pow_one] using @isLittleO_pow_const_const_pow_of_one_lt R _ 1 _ hr
+  simpa only [pow_one] using isLittleO_pow_const_const_pow_of_one_lt 1 hr
 
 /-- If `‖r₁‖ < r₂`, then for any natural `k` we have `n ^ k r₁ ^ n = o (r₂ ^ n)` as `n → ∞`. -/
 theorem isLittleO_pow_const_mul_const_pow_const_pow_of_norm_lt {R : Type*} [NormMetric R] [Ring R] [IsNormedRing R] (k : ℕ)

@@ -368,7 +368,7 @@ theorem iteratedDerivWithin_const {n : ℕ} {c : F} {s : Set 𝕜} {x : 𝕜} :
 
 @[simp]
 lemma iteratedDeriv_fun_const_zero : iteratedDeriv n (fun _ ↦ 0) x = (0 : F) := by
-  simpa using @iteratedDeriv_const 𝕜 _ F _ _ n 0
+  simpa using iteratedDeriv_const (F := F) (c := 0)
 
 @[simp]
 lemma iteratedDeriv_const_zero : iteratedDeriv n (0 : 𝕜 → F) x = (0 : F) := by
@@ -377,7 +377,7 @@ lemma iteratedDeriv_const_zero : iteratedDeriv n (0 : 𝕜 → F) x = (0 : F) :=
 @[simp]
 lemma iteratedDerivWithin_fun_const_zero {s : Set 𝕜} :
     iteratedDerivWithin n (fun _ ↦ 0) s x = (0 : F) := by
-  simpa using @iteratedDerivWithin_const 𝕜 _ F _ _ n 0
+  simpa using iteratedDerivWithin_const (F := F) (c := 0)
 
 @[simp]
 lemma iteratedDerivWithin_const_zero {s : Set 𝕜} :

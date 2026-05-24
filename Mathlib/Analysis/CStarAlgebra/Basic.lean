@@ -81,7 +81,7 @@ end NormedStarGroup
 
 instance RingHomIsometric.starRingEnd [NormMetric E] [CommRing E] [IsNormedRing E] [StarRing E] [NormedStarGroup E] :
     RingHomIsometric (starRingEnd E) :=
-  ⟨@norm_star _ _ _ _⟩
+  ⟨@norm_star _ _ _ _ _ _⟩
 
 /-- A C⋆-ring is a normed star ring that satisfies the stronger condition `‖x‖ ^ 2 ≤ ‖x⋆ * x‖`
 for every `x`. Note that this condition actually implies equality, as is shown in
@@ -152,7 +152,7 @@ theorem star_mul_self_ne_zero_iff (x : E) : x⋆ * x ≠ 0 ↔ x ≠ 0 := by
 
 @[simp]
 theorem mul_star_self_eq_zero_iff (x : E) : x * x⋆ = 0 ↔ x = 0 := by
-  simpa only [star_eq_zero, star_star] using @star_mul_self_eq_zero_iff _ _ _ _ (star x)
+  simpa only [star_eq_zero, star_star] using @star_mul_self_eq_zero_iff _ _ _ _ _ _ (star x)
 
 theorem mul_star_self_ne_zero_iff (x : E) : x * x⋆ ≠ 0 ↔ x ≠ 0 := by
   simp only [Ne, mul_star_self_eq_zero_iff]
@@ -302,6 +302,6 @@ example {𝕜 A : Type*} [NormedField 𝕜] [StarRing 𝕜] [NormPseudoMetric A]
 
 instance to_cstarRing {R A} [CommRing R] [StarRing R] [NormMetric A] [Ring A] [IsNormedRing A] [StarRing A] [CStarRing A]
     [Algebra R A] [StarModule R A] (S : StarSubalgebra R A) : CStarRing S where
-  norm_mul_self_le x := @CStarRing.norm_mul_self_le A _ _ _ x
+  norm_mul_self_le x := @CStarRing.norm_mul_self_le A _ _ _ _ _ x
 
 end StarSubalgebra
