@@ -26,11 +26,13 @@ a `p`-group (no finiteness hypothesis needed: the family of normal
 * `Subgroup.isPGroup_pCore` : `pCore p G` is itself a `p`-group.
 * `Subgroup.le_pCore` : every normal `p`-subgroup of `G` is contained in
   `pCore p G`.
+* `Subgroup.normal_le_pCore` : for `N` normal in `G`, `N ≤ pCore p G`
+  iff `N` is a `p`-group.
 * `Subgroup.mem_pCore_iff` : an element lies in `pCore p G` iff it lies in
   some normal `p`-subgroup.
 * `Subgroup.pCore_eq_bot_iff` : `pCore p G = ⊥` iff `G` has no non-trivial
   normal `p`-subgroup.
-* `Subgroup.pCore_eq_top` : if `G` is itself a `p`-group, `pCore p G = ⊤`.
+* `Subgroup.pCore_eq_top_iff` : `pCore p G = ⊤` iff `G` is itself a `p`-group.
 * `Subgroup.pCore_eq_iInf_sylow` : for finite `G` and prime `p`, the
   `p`-core equals the intersection of all Sylow `p`-subgroups.
 
@@ -99,6 +101,12 @@ theorem isPGroup_pCore : IsPGroup p (pCore p G) := by
   ext
   simpa using Subtype.ext_iff.mp hk
 
+/-- For a normal subgroup `N` of `G`, containment in the `p`-core is
+characterised by being a `p`-group. -/
+theorem normal_le_pCore {N : Subgroup G} [hN : N.Normal] :
+    N ≤ pCore p G ↔ IsPGroup p N :=
+  ⟨fun h => isPGroup_pCore.to_le h, le_pCore hN⟩
+
 /-- Characterisation of membership in the `p`-core: an element lies in
 `pCore p G` iff it lies in some normal `p`-subgroup of `G`. -/
 theorem mem_pCore_iff {x : G} :
@@ -116,9 +124,13 @@ theorem pCore_eq_bot_iff :
   obtain ⟨N, hN, hP, hxN⟩ := mem_pCore_iff.mp hx
   simpa [h N hN hP] using hxN
 
+/-- `pCore p G = ⊤` iff the whole group `G` is a `p`-group. -/
+theorem pCore_eq_top_iff : pCore p G = ⊤ ↔ IsPGroup p (⊤ : Subgroup G) :=
+  ⟨fun h => isPGroup_pCore.to_le (h ▸ le_rfl), fun h => eq_top_iff.2 (le_pCore inferInstance h)⟩
+
 /-- If `G` itself is a `p`-group, then `pCore p G = ⊤`. -/
 theorem pCore_eq_top (h : IsPGroup p (⊤ : Subgroup G)) : pCore p G = ⊤ :=
-  eq_top_iff.2 (le_pCore inferInstance h)
+  pCore_eq_top_iff.2 h
 
 /-- The `p`-core is contained in every Sylow `p`-subgroup. -/
 theorem pCore_le_sylow [Fact p.Prime] [Finite G] (P : Sylow p G) : pCore p G ≤ P := by
