@@ -51,22 +51,16 @@ section
 
 variable {M N : Type*} [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
 
-/-- The linear map `M⧸xM → N⧸xN` induced by `M → N`. -/
-def quotSMulTopLinearMap (x : R) (f : M →ₗ[R] N) : QuotSMulTop x M →ₗ[R] QuotSMulTop x N :=
-  Submodule.mapQ _ _ f (fun m hm ↦ by
-    rcases (Submodule.mem_smul_pointwise_iff_exists _ _ _).mp hm with ⟨m', _, hm'⟩
-    simpa [← hm'] using Submodule.smul_mem_pointwise_smul _ x ⊤ trivial)
-
 /-- The linear equivalence `M⧸xM ≃ N⧸xN` induced by `M ≃ N`. -/
-def quotSMulTopLinearEquiv (x : R) (e : M ≃ₗ[R] N) : (QuotSMulTop x M) ≃ₗ[R] (QuotSMulTop x N) where
-  __ := quotSMulTopLinearMap x e.toLinearMap
-  invFun := quotSMulTopLinearMap x e.symm.toLinearMap
+def QuotSMulTop.equiv (x : R) (e : M ≃ₗ[R] N) : (QuotSMulTop x M) ≃ₗ[R] (QuotSMulTop x N) where
+  __ := QuotSMulTop.map x e.toLinearMap
+  invFun := QuotSMulTop.map x e.symm.toLinearMap
   left_inv y := by
     induction y using Submodule.Quotient.induction_on
-    simp [quotSMulTopLinearMap]
+    simp
   right_inv y := by
     induction y using Submodule.Quotient.induction_on
-    simp [quotSMulTopLinearMap]
+    simp
 
 variable (M) in
 /-- The linear equivalence `M⧸(r1. ... rk, a)M ≃ M ⧸ (r1. ... rk)M ⧸ a • ⊤`. -/
@@ -75,7 +69,7 @@ def Submodule.quotOfListSMulTopEquivQuotSMulTopOuter {rs rs' : List R} {a : R}
     QuotSMulTop a (M ⧸ Ideal.ofList rs' • (⊤ : Submodule R M)) :=
   ((Submodule.quotEquivOfEq _ _ (by simp [eq, sup_comm, Ideal.ofList_reverse])).trans
     (Submodule.quotOfListConsSMulTopEquivQuotSMulTopOuter M a rs'.reverse)).trans
-    (quotSMulTopLinearEquiv a (Submodule.quotEquivOfEq _ _ (by simp [Ideal.ofList_reverse])))
+    (QuotSMulTop.equiv a (Submodule.quotEquivOfEq _ _ (by simp [Ideal.ofList_reverse])))
 
 /-- The linear equivalence `R⧸(r1. ... rk, a) ≃ R ⧸ (r1. ... rk) ⧸ a • ⊤`. -/
 def Ideal.quotOfListSMulTopEquivQuotSMulTopOuter {rs rs' : List R} {a : R}
@@ -83,7 +77,7 @@ def Ideal.quotOfListSMulTopEquivQuotSMulTopOuter {rs rs' : List R} {a : R}
     QuotSMulTop a (R ⧸ Ideal.ofList rs') :=
     ((Submodule.quotEquivOfEq _ _ (by simp)).trans
     (Submodule.quotOfListSMulTopEquivQuotSMulTopOuter R eq)).trans
-    (quotSMulTopLinearEquiv a (Submodule.quotEquivOfEq _ _ (by simp)))
+    (QuotSMulTop.equiv a (Submodule.quotEquivOfEq _ _ (by simp)))
 
 end
 
@@ -159,7 +153,7 @@ noncomputable def ext_quotient_regular_sequence_length [IsLocalRing R] [IsNoethe
       simpa using reg'
     let e1' : QuotSMulTop a (Shrink.{v} (R ⧸ Ideal.ofList rs')) ≃ₗ[R]
       (Shrink.{v} (R ⧸ Ideal.ofList rs)) :=
-      ((quotSMulTopLinearEquiv a (Shrink.linearEquiv R (R ⧸ Ideal.ofList rs'))).trans
+      ((QuotSMulTop.equiv a (Shrink.linearEquiv R (R ⧸ Ideal.ofList rs'))).trans
       (Ideal.quotOfListSMulTopEquivQuotSMulTopOuter eqapp).symm).trans (Shrink.linearEquiv R _).symm
     let e1 : Ext (ModuleCat.of R (Shrink.{v} (R ⧸ Ideal.ofList rs))) M (n + 1) ≃ₗ[R]
       Ext (ModuleCat.of R (QuotSMulTop a (Shrink.{v} (R ⧸ Ideal.ofList rs')))) M (n + 1) := {
@@ -174,7 +168,7 @@ noncomputable def ext_quotient_regular_sequence_length [IsLocalRing R] [IsNoethe
       quotSMulTop_ext_equiv_ext_quotSMulTop (ModuleCat.of R (Shrink.{v} (R ⧸ Ideal.ofList rs')))
         n a reg'' M
     exact ((e1.trans e2.symm).trans
-      (quotSMulTopLinearEquiv a (hn rs' rs'reg (by simp [rs', len])))).trans
+      (QuotSMulTop.equiv a (hn rs' rs'reg (by simp [rs', len])))).trans
       (Submodule.quotOfListSMulTopEquivQuotSMulTopOuter M eqapp).symm
 
 end
