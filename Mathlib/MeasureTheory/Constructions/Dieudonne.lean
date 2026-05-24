@@ -45,7 +45,7 @@ scoped instance : MeasurableSpace α where
       exact ⟨t, ht, .inl (htf.trans (subset_iUnion f i))⟩
     choose g hg hgf using hf
     refine ⟨⋂ i, g i, ?_, .inr ?_⟩
-    · apply IsClub.iInter_countable _ hg
+    · apply IsClub.iInter_of_countable _ hg
       simpa using h₀.out
     · rw [subset_compl_iff_disjoint_left, disjoint_iUnion_left]
       refine fun i ↦ .mono_right (Set.iInter_subset g i) ?_
@@ -93,7 +93,7 @@ noncomputable def measure : Measure α where
     · cases H.2 <| H.1.mono hst
     · split_ifs <;> simp_all
   iUnion_nat f _ := by
-    rw [isStationary_iUnion_countable_iff (by simpa using h₀.out)]
+    rw [isStationary_iUnion_iff_of_countable (by simpa using h₀.out)]
     split_ifs with hf
     · obtain ⟨i, hi⟩ := hf
       apply (ENNReal.le_tsum i).trans'
@@ -102,7 +102,7 @@ noncomputable def measure : Measure α where
       simpa using hf
   m_iUnion f hf hf' := by
     dsimp
-    rw [isStationary_iUnion_countable_iff (by simpa using h₀.out)]
+    rw [isStationary_iUnion_iff_of_countable (by simpa using h₀.out)]
     split_ifs with hf
     · obtain ⟨i, hi⟩ := hf
       rw [tsum_eq_single i]
