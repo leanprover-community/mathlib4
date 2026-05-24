@@ -6,11 +6,9 @@ Authors: Nailin Guan
 module
 
 public import Mathlib.LinearAlgebra.Dimension.OrzechProperty
-public import Mathlib.RingTheory.DiscreteValuationRing.TFAE
-public import Mathlib.RingTheory.RegularLocalRing.Defs
-public import Mathlib.RingTheory.Ideal.KrullsHeightTheorem
-public import Mathlib.RingTheory.KrullDimension.Field
+public import Mathlib.RingTheory.LocalRing.MaximalIdeal.Square
 public import Mathlib.RingTheory.Regular.RegularSequence
+public import Mathlib.RingTheory.RegularLocalRing.Defs
 
 /-!
 
@@ -161,7 +159,7 @@ lemma quotient_isRegularLocalRing_tfae [IsRegularLocalRing R] (S : Finset R)
     have fin : (maximalIdeal (R ⧸ Ideal.span (S : Set R))).generators.Finite :=
       (IsNoetherian.noetherian _).finite_generators
     let U := Quotient.out '' (maximalIdeal (R ⧸ Ideal.span (S : Set R))).generators
-    let _ : Fintype U := (Set.Finite.image _ fin).fintype
+    let : Fintype U := (Set.Finite.image _ fin).fintype
     use S ∪ U.toFinset
     have span : Ideal.span (S ∪ U) = maximalIdeal R := by
       rw [Ideal.span_union, ← Ideal.mk_ker (I := Ideal.span (S : Set R)), sup_comm,

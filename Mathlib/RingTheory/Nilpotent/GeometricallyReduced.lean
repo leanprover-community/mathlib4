@@ -13,12 +13,16 @@ public import Mathlib.RingTheory.LocalRing.ResidueField.Ideal
 # Geometrically reduced algebras
 
 In this file we introduce geometrically reduced algebras.
-For a commutative ring `R` and `R`-algebra `A`, we say that `A` is geometrically reduced
+For a commutative ring `R` and an `R`-algebra `A`, we say that `A` is geometrically reduced
 (`IsGeometricallyReduced`) if for every prime ideal `p` of `R`, the base change of `A`
 to an algebraic closure of `κ(p)` is reduced.
 In the case of `R = k` a field, this is equivalent to `AlgebraicClosure k ⊗[k] A` being reduced.
 
 ## Main results
+
+- `Algebra.isGeometricallyReduced_field_iff` : for a field `k` and a commutative `k`-algebra `A`,
+  `A` is geometrically reduced iff `AlgebraicClosure k ⊗[k] A` is reduced.
+
 - `IsGeometricallyReduced.of_forall_fg`: for a field `k` and a commutative `k`-algebra `A`, if all
   finitely generated subalgebras `B` of `A` are geometrically reduced, then `A` is geometrically
   reduced.
@@ -48,17 +52,17 @@ variable {k A : Type*} [Field k] [Ring A] [Algebra k A]
   the base change to `AlgebraicClosure p.ResidueField` is reduced. -/
 @[mk_iff]
 class IsGeometricallyReduced (R A : Type*) [CommRing R] [Ring A] [Algebra R A] : Prop where
-  isReduced_algebraicClosure_residueField_tensorProduct (p : Ideal R) [p.IsPrime] :
-  IsReduced (AlgebraicClosure p.ResidueField ⊗[R] A)
+  isReduced_algebraicClosure_tensorProduct (p : Ideal R) [p.IsPrime] :
+    IsReduced (AlgebraicClosure p.ResidueField ⊗[R] A)
 
-attribute [instance] IsGeometricallyReduced.isReduced_algebraicClosure_residueField_tensorProduct
+attribute [instance] IsGeometricallyReduced.isReduced_algebraicClosure_tensorProduct
 
 section Field
 
 lemma isGeometricallyReduced_field_iff (k A : Type*) [Field k] [Ring A] [Algebra k A] :
     IsGeometricallyReduced k A ↔ IsReduced (AlgebraicClosure k ⊗[k] A) := by
   let e (p : Ideal k) [p.IsPrime] : AlgebraicClosure k ≃ₐ[k] AlgebraicClosure p.ResidueField :=
-    have := p.AlgEquivResidueFieldOfField.isAlgebraic
+    have := p.algEquivResidueFieldOfField.isAlgebraic
     IsAlgClosure.equiv k _ _
   refine ⟨fun ⟨h⟩ ↦ ?_, fun h ↦ ⟨fun p hp ↦ ?_⟩⟩
   · exact isReduced_of_injective _ (Algebra.TensorProduct.congr (e ⊥) AlgEquiv.refl).injective

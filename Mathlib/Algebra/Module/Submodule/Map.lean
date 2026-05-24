@@ -649,7 +649,10 @@ theorem submoduleComap_surjective_of_surjective (f : M →ₗ[R] M₁) (q : Subm
 /-- A linear map between two modules restricts to a linear map from any submodule p of the
 domain onto the image of that submodule.
 
-This is the linear version of `AddMonoidHom.addSubmonoidMap` and `AddMonoidHom.addSubgroupMap`. -/
+This is the linear version of `AddMonoidHom.addSubmonoidMap` and `AddMonoidHom.addSubgroupMap`.
+
+TODO: Consider making this an `abbrev`, dropping its API, and renaming to something like
+`restrictSubmodule`. -/
 def submoduleMap (f : M →ₗ[R] M₁) (p : Submodule R M) : p →ₗ[R] p.map f :=
   f.restrict fun x hx ↦ Submodule.mem_map.mpr ⟨x, hx, rfl⟩
 
@@ -659,6 +662,11 @@ theorem submoduleMap_coe_apply (f : M →ₗ[R] M₁) {p : Submodule R M} (x : p
 
 theorem submoduleMap_surjective (f : M →ₗ[R] M₁) (p : Submodule R M) :
     Function.Surjective (f.submoduleMap p) := f.toAddMonoidHom.addSubmonoidMap_surjective _
+
+@[grind inj]
+theorem submoduleMap_injective {f : M →ₗ[R] M₁} (hf : Injective f) (p : Submodule R M) :
+    Injective (f.submoduleMap p) :=
+  f.toAddMonoidHom.addSubmonoidMap_injective hf _
 
 variable [Semiring R₂] [AddCommMonoid M₂] [Module R₂ M₂] {σ₂₁ : R₂ →+* R}
 

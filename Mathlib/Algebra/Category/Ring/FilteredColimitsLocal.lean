@@ -162,7 +162,7 @@ the `residueFieldCocone` constructed from `c` is also a colimit cocone,
 i.e. the residue field of colimit of local rings
 (and local homomorphisms) is a colimit of the residue field of these local rings.
 -/
-noncomputable def isColimit_residueFieldCocone (hc : IsColimit c) :
+noncomputable def isColimitResidueFieldCocone (hc : IsColimit c) :
     IsColimit (residueFieldCocone F hc) :=
   letI (j : J) : Field ((residueFieldFunctor F).obj j) := inferInstanceAs <| Field (ResidueField _)
   letI := isLocalRing_of_isColimit F hc
@@ -187,22 +187,22 @@ theorem isLocalHom_desc (hc : IsColimit c) : IsLocalHom (hc.desc s).hom := by
     ((IsLocalRing.local_hom_TFAE _).out 0 3 |>.mp (s_ι j))
   exact this hx'
 
-theorem residueField_map_desc_eq_isColimit_residueFieldCocone_desc (hc : IsColimit c) :
-    ((isColimit_residueFieldCocone F hc).desc (residueFieldCocone' F s)) =
+theorem residueField_map_desc_eq_isColimitResidueFieldCocone_desc (hc : IsColimit c) :
+    ((isColimitResidueFieldCocone F hc).desc (residueFieldCocone' F s)) =
     CommRingCat.ofHom (@ResidueField.map _ _ _ (isLocalRing_of_isColimit F hc) _ _ (hc.desc s).hom
     (isLocalHom_desc F s hc)) := by
-  refine ((isColimit_residueFieldCocone F hc).uniq _ _ fun j ↦ ?_).symm
+  refine ((isColimitResidueFieldCocone F hc).uniq _ _ fun j ↦ ?_).symm
   simp only [residueFieldCocone', Functor.const_obj_obj, residueFieldCocone, ← hc.fac s j, hom_comp]
   erw [← ofHom_comp]
   congr 1
   exact (@ResidueField.map_comp _ _ _ _ (isLocalRing_of_isColimit F hc) _ s_pt _ _ _ _
     (isLocalHom_ι F hc j) (isLocalHom_desc F s hc)).symm
 
-theorem residueField_map_desc_eq_isColimit_residueFieldCocone_desc' (hc : IsColimit c) :
-    ((isColimit_residueFieldCocone F hc).desc (residueFieldCocone' F s)).hom =
+theorem residueField_map_desc_eq_isColimitResidueFieldCocone_desc' (hc : IsColimit c) :
+    ((isColimitResidueFieldCocone F hc).desc (residueFieldCocone' F s)).hom =
     @ResidueField.map _ _ _ (isLocalRing_of_isColimit F hc) _ _ (hc.desc s).hom
     (isLocalHom_desc F s hc) := by
   simpa using congr(CommRingCat.Hom.hom
-    $(residueField_map_desc_eq_isColimit_residueFieldCocone_desc F s hc))
+    $(residueField_map_desc_eq_isColimitResidueFieldCocone_desc F s hc))
 
 end CommRingCat.FilteredColimit

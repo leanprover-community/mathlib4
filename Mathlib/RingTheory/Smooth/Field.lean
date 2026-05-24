@@ -67,7 +67,10 @@ lemma Algebra.Generators.homOfComm_cotangentSpace_map_eq [Algebra S T] [IsScalar
     congr
     rw [Generators.homOfComm_toExtensionHom_toAlgHom]
     exact MvPolynomial.rename_X _ _
-  simpa using this
+  simp only [Module.Basis.coe_repr_symm, Finsupp.linearCombination_single, linearMap_apply, this,
+    toExtension_Ring, LinearEquiv.restrictScalars_toLinearMap, Finsupp.lmapDomain_apply, one_smul,
+    Finsupp.mapDomain_single, Finsupp.mapRange.linearMap_apply, Finsupp.mapRange_single, map_one]
+  exact ((Finsupp.linearCombination_single T _ _).trans (one_smul T _)).symm
 
 variable (R S T) in
 lemma Algebra.Generators.homOfComm_cotangentSpace_map_injective_of_injective [Algebra S T]
@@ -178,7 +181,7 @@ instance (priority := low) Algebra.FormallySmooth.of_perfectField
     [PerfectField K] [Algebra.EssFiniteType K L] : Algebra.FormallySmooth K L := by
   obtain ⟨s, hs, H⟩ := exists_isTranscendenceBasis_and_isSeparable_of_perfectField K L
   have : Algebra.IsSeparable (↥(IntermediateField.adjoin K (Set.range ((↑) : s → L)))) L := by
-    convert H <;> simp
+    convert! H <;> simp
   exact .of_algebraicIndependent_of_isSeparable hs.1
 
 variable (K L) in
