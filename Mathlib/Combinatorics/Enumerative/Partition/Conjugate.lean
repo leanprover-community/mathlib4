@@ -34,8 +34,4 @@ theorem conjugate_conjugate {n : ℕ} (p : Partition n) : p.conjugate.conjugate 
   ext
   simp [conjugate]
 
-/-- The finset of those partitions which are their own conjugate. -/
-def selfConjugate (n : ℕ) : Finset n.Partition :=
-  Finset.univ.filter fun p => p = p.conjugate
-
 end Nat.Partition
