@@ -125,7 +125,7 @@ def decomposeAux : R[M] →ₐ[R] ⨁ i : ι, gradeBy R f i :=
         symm
         dsimp +instances only [toAdd_one, Eq.ndrec, Set.mem_setOf_eq, ne_eq, OneHom.toFun_eq_coe,
           OneHom.coe_mk, toAdd_mul]
-        convert DirectSum.of_mul_of (A := (fun i : ι => gradeBy R f i)) _ _
+        convert! DirectSum.of_mul_of (A := (fun i : ι => gradeBy R f i)) _ _
         repeat { rw [map_add] }
         simp only [SetLike.coe_gMul]
         exact Eq.trans (by rw [one_mul]) (single_mul_single ..).symm }
@@ -154,12 +154,12 @@ theorem decomposeAux_coe {i : ι} (x : gradeBy R f i) :
     exact map_zero _
   · intro m b y hmy hb ih hmby
     have : Disjoint (Finsupp.single m b).support y.support := by
-      simpa only [Finsupp.support_single_ne_zero _ hb, Finset.disjoint_singleton_left]
+      simpa only [Finsupp.support_single _ hb, Finset.disjoint_singleton_left]
     rw [mem_gradeBy_iff, Finsupp.support_add_eq this, Finset.coe_union, Set.union_subset_iff]
       at hmby
     obtain ⟨h1, h2⟩ := hmby
     have : f m = i := by
-      rwa [Finsupp.support_single_ne_zero _ hb, Finset.coe_singleton, Set.singleton_subset_iff]
+      rwa [Finsupp.support_single _ hb, Finset.coe_singleton, Set.singleton_subset_iff]
         at h1
     subst this
     simp only [map_add, decomposeAux_single f m]
