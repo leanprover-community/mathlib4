@@ -474,8 +474,8 @@ theorem carrier.asIdeal.prime : (carrier.asIdeal f_deg hm q).IsPrime :=
         rw [HomogeneousLocalization.ext_iff_val, HomogeneousLocalization.val_mk,
           HomogeneousLocalization.val_zero]; simp_rw [proj_apply]
         convert! mk_zero (S := Submonoid.powers f) _
-        rw [decompose_of_mem_ne 𝒜 _ hn.symm, zero_pow hm.ne']
-        · first | exact hnx | exact hny
+        rw [decompose_of_mem_ne 𝒜 _ hn.symm, ZeroMemClass.coe_zero, zero_pow hm.ne']
+        first | exact hnx | exact hny
 
 /-- The function `Spec A⁰_f → Proj|D(f)` sending `q` to `{a | aᵢᵐ/fⁱ ∈ q}`. -/
 def toFun : (Spec.T A⁰_ f) → Proj.T| pbo f := fun q =>
