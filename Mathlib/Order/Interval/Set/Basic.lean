@@ -161,7 +161,6 @@ theorem nonempty_Icc : (Icc a b).Nonempty ↔ a ≤ b :=
 theorem nonempty_Ico : (Ico a b).Nonempty ↔ a < b :=
   ⟨fun ⟨_, hx⟩ => hx.1.trans_lt hx.2, fun h => ⟨a, left_mem_Ico.2 h⟩⟩
 
-
 @[simp, to_dual self]
 theorem nonempty_Ioo [DenselyOrdered α] : (Ioo a b).Nonempty ↔ a < b :=
   ⟨fun ⟨_, ha, hb⟩ => ha.trans hb, exists_between⟩
@@ -187,6 +186,14 @@ theorem nonempty_Ioc_subtype (h : a < b) : Nonempty (Ioc a b) :=
 @[to_dual self]
 theorem nonempty_Ioo_subtype [DenselyOrdered α] (h : a < b) : Nonempty (Ioo a b) :=
   Nonempty.to_subtype (nonempty_Ioo.mpr h)
+
+@[to_dual]
+theorem _root_.isUpperSet_Ici (a : α) : IsUpperSet (Ici a) :=
+  fun _ _ => ge_trans
+
+@[to_dual]
+theorem _root_.isUpperSet_Ioi (a : α) : IsUpperSet (Ioi a) :=
+  fun _ _ => flip lt_of_lt_of_le
 
 @[to_additive (attr := simp)]
 theorem Iio_one_eq_empty [One α] [IsBotOneClass α] : Set.Iio (1 : α) = ∅ := by
