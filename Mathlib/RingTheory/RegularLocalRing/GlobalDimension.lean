@@ -103,7 +103,7 @@ theorem IsRegularRing.globalDimension_eq_ringKrullDim [Small.{v} R] [IsRegularRi
     have bdd : BddAbove (Set.range f) := by
       use ⊤
       simp [mem_upperBounds]
-    rw [← Ideal.sup_height_of_maximal_eq_ringKrullDim, iSup_subtype', WithBot.coe_iSup bdd]
+    rw [← Ideal.sup_isMaximal_height_eq_ringKrullDim, iSup_subtype', WithBot.coe_iSup bdd]
     apply le_antisymm
     · simp only [iSup_le_iff]
       intro p
