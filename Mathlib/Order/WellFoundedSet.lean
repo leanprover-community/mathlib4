@@ -559,6 +559,14 @@ lemma WellFoundedOn.mapsTo {α β : Type*} {r : α → α → Prop} (f : β → 
     t.WellFoundedOn (r on f) := by
   exact InvImage.wf (fun x : t ↦ ⟨f x, h x.prop⟩) hw
 
+@[to_dual]
+theorem WellFoundedOn.exists_minimal {α : Type*} [Preorder α] {s : Set α}
+    (h : s.WellFoundedOn (· < ·)) (nonempty : s.Nonempty) : ∃ a, Minimal (· ∈ s) a := by
+  rw [wellFoundedOn_iff, ← WellFounded.subtype_iff] at h
+  convert WellFoundedLT.exists_minimal ⟨h⟩ Set.univ (@Set.univ_nonempty _ (by simpa))
+  refine ⟨fun ⟨a, ha⟩ ↦ ⟨⟨a, ha.prop⟩, ?_⟩, fun ⟨a, this⟩ ↦ ⟨a, ?_⟩⟩
+  <;> simpa only [mem_univ, minimal_true_subtype]
+
 end WellFoundedOn
 
 section LinearOrder
