@@ -31,9 +31,6 @@ variable {A : Type*} [PartialOrder A] [Ring A] [StarRing A] [TopologicalSpace A]
 @[expose]
 noncomputable def conjSqrt (c : A) : A →L[ℝ] A where
   toLinearMap := .mulLeftRight ℝ (sqrt c, sqrt c)
-  cont := by
-    dsimp [LinearMap.mulLeftRight, LinearMap.mulLeft, LinearMap.mulRight]
-    fun_prop
 
 @[simp] lemma toLinearMap_conjSqrt (c : A) :
     (conjSqrt c).toLinearMap = .mulLeftRight ℝ (sqrt c, sqrt c) := rfl

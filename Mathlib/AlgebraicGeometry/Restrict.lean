@@ -168,7 +168,7 @@ lemma stalkIso_inv {X : Scheme.{u}} (U : X.Opens) (x : U) :
   apply TopCat.Presheaf.stalk_hom_ext
   intro W hxW
   simp only [Category.comp_id, U.germ_stalkIso_hom_assoc]
-  convert (Scheme.Hom.germ_stalkMap U.ι (U.ι ''ᵁ W) x ⟨_, hxW, rfl⟩).symm
+  convert! (Scheme.Hom.germ_stalkMap U.ι (U.ι ''ᵁ W) x ⟨_, hxW, rfl⟩).symm
   refine (U.toScheme.presheaf.germ_res (homOfLE ?_) _ _).symm
   exact (Set.preimage_image_eq _ Subtype.val_injective).le
 
