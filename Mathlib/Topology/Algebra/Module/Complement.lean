@@ -468,7 +468,7 @@ theorem toLinearEquiv_quotientEquivOfIsTopCompl (h : IsTopCompl p q) :
 
 theorem quotientEquivOfIsTopCompl_comp_mkQ (h : IsTopCompl p q) :
     (quotientEquivOfIsTopCompl p q h : (M ⧸ p) →ₗ[R] q) ∘ₗ p.mkQ =
-    q.projectionOnto p h.isCompl.symm :=
+      q.projectionOnto p h.isCompl.symm :=
   rfl
 
 @[simp]
