@@ -193,14 +193,42 @@ private theorem exists_basis_forall_flag_mem_invtSubmodule_of_subsingleton [Subs
   change f x ∈ (Module.Basis.empty V : Basis (Fin 0) K V).flag k
   convert hx using 1
 
-private noncomputable def triangularizationAux_of_iSup_maxGenEigenspace_eq_top {V : Type*}
-    [AddCommGroup V] [Module K V] [FiniteDimensional K V] (f : End K V)
+private theorem mkFinCons_linearIndependent_of_isCompl {N : Submodule K V} {y : V}
+    (hy : y ≠ 0) (hN : IsCompl (K ∙ y) N) :
+    ∀ (c : K), ∀ x ∈ N, c • y + x = 0 → c = 0 := by
+  intro c x hx hcx
+  have hcy_eq : c • y = -x := add_eq_zero_iff_eq_neg.mp hcx
+  have hcyN : c • y ∈ N := by
+    rw [hcy_eq]
+    exact N.neg_mem hx
+  have hcyL : c • y ∈ K ∙ y :=
+    Submodule.smul_mem _ _ (Submodule.mem_span_singleton_self y)
+  have hcy0 : c • y = 0 := hN.disjoint.le_bot ⟨hcyL, hcyN⟩
+  by_contra hc
+  exact hy <| by simpa [hcy0] using (inv_smul_smul₀ hc y).symm
+
+private theorem mkFinCons_span_of_isCompl {N : Submodule K V} {y : V}
+    (hN : IsCompl (K ∙ y) N) :
+    ∀ z : V, ∃ c : K, z + c • y ∈ N := by
+  intro z
+  have hz : z ∈ K ∙ y ⊔ N := by
+    rw [hN.sup_eq_top]
+    exact Submodule.mem_top
+  obtain ⟨_, hu, w, hw, huz⟩ := Submodule.mem_sup.mp hz
+  obtain ⟨a, rfl⟩ := Submodule.mem_span_singleton.mp hu
+  refine ⟨-a, ?_⟩
+  rw [← huz]
+  simpa [add_assoc, add_comm, add_left_comm] using hw
+
+/-- If the maximal generalized eigenspaces of a finite-dimensional endomorphism span the whole
+space, then there is a basis whose associated flag is invariant. -/
+theorem exists_basis_forall_flag_mem_invtSubmodule_of_iSup_maxGenEigenspace_eq_top {V : Type*}
+    [AddCommGroup V] [Module K V] [FiniteDimensional K V] {f : End K V}
     (hf : ⨆ μ, f.maxGenEigenspace μ = ⊤) :
-    ∃ n, ∃ b : Basis (Fin n) K V, ∀ k : Fin (n + 1), b.flag k ∈ f.invtSubmodule :=
-  haveI : Decidable (Nontrivial V) := Classical.propDecidable _
-  if hV : Nontrivial V then
-    let ⟨μ, hμ⟩ := exists_hasEigenvalue_of_iSup_maxGenEigenspace_eq_top hf
-    let ⟨v, hv⟩ := Module.End.HasEigenvalue.exists_hasEigenvector hμ
+    ∃ n, ∃ b : Basis (Fin n) K V, ∀ k : Fin (n + 1), b.flag k ∈ f.invtSubmodule := by
+  by_cases hV : Nontrivial V
+  · obtain ⟨μ, hμ⟩ := exists_hasEigenvalue_of_iSup_maxGenEigenspace_eq_top hf
+    obtain ⟨v, hv⟩ := Module.End.HasEigenvalue.exists_hasEigenvector hμ
     let L : Submodule K V := K ∙ v
     have hL : L ≤ L.comap f := by
       rw [Submodule.span_singleton_le_iff_mem]
@@ -210,45 +238,38 @@ private noncomputable def triangularizationAux_of_iSup_maxGenEigenspace_eq_top {
     let qf : End K (V ⧸ L) := L.mapQ L f hL
     have hqf : ⨆ μ, qf.maxGenEigenspace μ = ⊤ :=
       iSup_maxGenEigenspace_mapQ_eq_top hL hf
-    let ⟨n, bq, hbq⟩ := triangularizationAux_of_iSup_maxGenEigenspace_eq_top qf hqf
-    let ⟨W, hW⟩ := L.exists_isCompl
+    obtain ⟨n, bq, hbq⟩ :=
+      exists_basis_forall_flag_mem_invtSubmodule_of_iSup_maxGenEigenspace_eq_top (f := qf) hqf
+    obtain ⟨W, hW⟩ := L.exists_isCompl
     let e : (V ⧸ L) ≃ₗ[K] W := Submodule.quotientEquivOfIsCompl L W hW
     let g : End K W := e.conj qf
-    ⟨n + 1, Basis.mkFinConsOfIsCompl v (bq.map e) hv.2 hW, by
-      simpa [Basis.mkFinConsOfIsCompl] using
-        forall_flag_mem_invtSubmodule_mkFinCons_of_sub_mem_span_singleton
-        (forall_flag_mem_invtSubmodule_map hbq e)
-        hv.apply_eq_smul
-        (by
-          intro w
-          have hq : L.mkQ (f (w : V)) = L.mkQ (g w : V) := by
-            calc
-              L.mkQ (f (w : V)) = qf (L.mkQ (w : V)) := by
-                rw [Submodule.mkQ_apply, Submodule.mkQ_apply, Submodule.mapQ_apply]
-              _ = qf (e.symm w) := by simp [e, Submodule.mkQ_apply]
-              _ = e.symm (g w) := by simp [g]
-              _ = L.mkQ (g w : V) := by simp [e, Submodule.mkQ_apply]
-          change f (w : V) - (g w : V) ∈ L
-          rw [← Submodule.ker_mkQ L]
-          exact LinearMap.mem_ker.mpr (by
-            simpa using congr_arg (fun x => x - L.mkQ (g w : V)) hq))⟩
-  else
-    haveI : Subsingleton V := not_nontrivial_iff_subsingleton.mp hV
-    exists_basis_forall_flag_mem_invtSubmodule_of_subsingleton f
+    let hli := mkFinCons_linearIndependent_of_isCompl hv.2 hW
+    let hsp := mkFinCons_span_of_isCompl (y := v) hW
+    refine ⟨n + 1, Basis.mkFinCons v (bq.map e) hli hsp, ?_⟩
+    exact forall_flag_mem_invtSubmodule_mkFinCons_of_sub_mem_span_singleton
+      (forall_flag_mem_invtSubmodule_map hbq e)
+      hv.apply_eq_smul
+      (by
+        intro w
+        have hq : L.mkQ (f (w : V)) = L.mkQ (g w : V) := by
+          calc
+            L.mkQ (f (w : V)) = qf (L.mkQ (w : V)) := by
+              rw [Submodule.mkQ_apply, Submodule.mkQ_apply, Submodule.mapQ_apply]
+            _ = qf (e.symm w) := by simp [e, Submodule.mkQ_apply]
+            _ = e.symm (g w) := by simp [g]
+            _ = L.mkQ (g w : V) := by simp [e, Submodule.mkQ_apply]
+        change f (w : V) - (g w : V) ∈ L
+        rw [← Submodule.ker_mkQ L]
+        exact LinearMap.mem_ker.mpr (by
+          simpa using congr_arg (fun x => x - L.mkQ (g w : V)) hq))
+  · haveI : Subsingleton V := not_nontrivial_iff_subsingleton.mp hV
+    exact exists_basis_forall_flag_mem_invtSubmodule_of_subsingleton f
 termination_by Module.finrank K V
 decreasing_by
   have hdim := Submodule.finrank_quotient_add_finrank L
   rw [finrank_span_singleton hv.2] at hdim
   rw [← hdim]
   exact Nat.lt_add_of_pos_right Nat.zero_lt_one
-
-/-- If the maximal generalized eigenspaces of a finite-dimensional endomorphism span the whole
-space, then there is a basis whose associated flag is invariant. -/
-theorem exists_basis_forall_flag_mem_invtSubmodule_of_iSup_maxGenEigenspace_eq_top
-    [FiniteDimensional K V]
-    {f : End K V} (hf : ⨆ μ, f.maxGenEigenspace μ = ⊤) :
-    ∃ n, ∃ b : Basis (Fin n) K V, ∀ k : Fin (n + 1), b.flag k ∈ f.invtSubmodule :=
-  triangularizationAux_of_iSup_maxGenEigenspace_eq_top f hf
 
 /-- If the maximal generalized eigenspaces of a finite-dimensional endomorphism span the whole
 space, then the endomorphism has an upper triangular matrix in some basis. -/

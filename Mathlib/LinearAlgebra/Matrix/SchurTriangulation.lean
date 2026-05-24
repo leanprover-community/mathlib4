@@ -1,0 +1,84 @@
+/-
+Copyright (c) 2025 Gordon Hsu. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Gordon Hsu, Matteo Cipollina
+-/
+module
+
+public import Mathlib.Analysis.InnerProductSpace.Adjoint
+public import Mathlib.Analysis.InnerProductSpace.Triangularizable
+
+/-!
+# Schur triangulation
+
+Schur triangulation is also known as Schur decomposition or Schur triangularization. It states that
+a square matrix over an algebraically closed field, for example `ℂ`, is unitarily similar to an
+upper triangular matrix.
+
+The statements in this file are theorem-first: they assert existence of a unitary matrix and a
+block-upper-triangular matrix, rather than making noncanonical choices.
+
+## Main results
+
+* `Matrix.exists_orthonormalBasis_blockTriangular_toEuclideanLin`: every matrix over an
+  algebraically closed `RCLike` field has an orthonormal basis in which the associated linear map is
+  block upper triangular.
+* `Matrix.exists_unitaryGroup_blockTriangular`: every matrix over an algebraically closed `RCLike`
+  field is unitarily similar to a matrix satisfying `Matrix.BlockTriangular id`.
+-/
+
+@[expose] public section
+
+namespace Matrix
+
+open Module
+open scoped InnerProductSpace
+
+variable {𝕜 : Type*} [RCLike 𝕜] [IsAlgClosed 𝕜]
+variable {n : Type*} [Fintype n] [LinearOrder n] (A : Matrix n n 𝕜)
+
+/-- Every matrix over an algebraically closed `RCLike` field has an orthonormal basis in which its
+associated linear map has a block-upper-triangular matrix. -/
+theorem exists_orthonormalBasis_blockTriangular_toEuclideanLin :
+    ∃ b : OrthonormalBasis n 𝕜 (EuclideanSpace 𝕜 n),
+      (LinearMap.toMatrixOrthonormal b (toEuclideanLin A)).BlockTriangular id := by
+  let f : Module.End 𝕜 (EuclideanSpace 𝕜 n) := toEuclideanLin A
+  obtain ⟨b, hb⟩ := Module.End.exists_orthonormalBasis_blockTriangular_toMatrix_finrank f
+  let e : Fin (finrank 𝕜 (EuclideanSpace 𝕜 n)) ≃o n :=
+    Fintype.orderIsoFinOfCardEq n (finrank_euclideanSpace.symm)
+  let e' : Fin (finrank 𝕜 (EuclideanSpace 𝕜 n)) ≃ n := e.toEquiv
+  let b' := b.reindex e'
+  refine ⟨b', ?_⟩
+  intro i j hji
+  calc LinearMap.toMatrixOrthonormal b' f i j
+      = LinearMap.toMatrixOrthonormal b f (e'.symm i) (e'.symm j) := by
+        change LinearMap.toMatrixOrthonormal (b.reindex e') f i j =
+          LinearMap.toMatrixOrthonormal b f (e'.symm i) (e'.symm j)
+        rw [LinearMap.toMatrixOrthonormal_reindex b e' f]
+        rfl
+    _ = 0 := hb (e.symm.lt_iff_lt.mpr hji)
+
+/-- **Schur triangulation**, **Schur decomposition** for matrices over an algebraically closed
+`RCLike` field, eventhough the only relevant cases are for complex matrices.
+In particular, a complex matrix is unitarily similar to an upper triangular matrix. -/
+theorem exists_unitaryGroup_blockTriangular :
+    ∃ U : Matrix.unitaryGroup n 𝕜, ∃ T : Matrix n n 𝕜,
+      T.BlockTriangular id ∧ A = U * T * star (U : Matrix n n 𝕜) := by
+  obtain ⟨b, hb⟩ := exists_orthonormalBasis_blockTriangular_toEuclideanLin A
+  let c := EuclideanSpace.basisFun n 𝕜
+  let U : Matrix.unitaryGroup n 𝕜 :=
+    ⟨c.toBasis.toMatrix b.toBasis, c.toMatrix_orthonormalBasis_mem_unitary b⟩
+  let T : Matrix n n 𝕜 := LinearMap.toMatrixOrthonormal b (toEuclideanLin A)
+  have hUT : (U : Matrix n n 𝕜) * T = A * U := by
+    let cb := c.toBasis
+    let bb := b.toBasis
+    calc cb.toMatrix bb * LinearMap.toMatrix bb bb (toEuclideanLin A)
+        = LinearMap.toMatrix cb cb (toEuclideanLin A) * cb.toMatrix bb := by simp
+      _ = LinearMap.toMatrix cb cb (toLin cb cb A) * (U : Matrix n n 𝕜) := rfl
+      _ = A * U := by simp
+  refine ⟨U, T, hb, ?_⟩
+  calc A
+      = A * U * star (U : Matrix n n 𝕜) := by simp [mul_assoc]
+    _ = U * T * star (U : Matrix n n 𝕜) := by rw [← hUT]
+
+end Matrix

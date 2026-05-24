@@ -2028,6 +2028,7 @@ public import Mathlib.Analysis.InnerProductSpace.Subspace
 public import Mathlib.Analysis.InnerProductSpace.Symmetric
 public import Mathlib.Analysis.InnerProductSpace.TensorProduct
 public import Mathlib.Analysis.InnerProductSpace.Trace
+public import Mathlib.Analysis.InnerProductSpace.Triangularizable
 public import Mathlib.Analysis.InnerProductSpace.TwoDim
 public import Mathlib.Analysis.InnerProductSpace.WeakOperatorTopology
 public import Mathlib.Analysis.InnerProductSpace.l2Space
@@ -5053,6 +5054,7 @@ public import Mathlib.LinearAlgebra.Matrix.Rank
 public import Mathlib.LinearAlgebra.Matrix.Reindex
 public import Mathlib.LinearAlgebra.Matrix.RowCol
 public import Mathlib.LinearAlgebra.Matrix.SchurComplement
+public import Mathlib.LinearAlgebra.Matrix.SchurTriangulation
 public import Mathlib.LinearAlgebra.Matrix.SemiringInverse
 public import Mathlib.LinearAlgebra.Matrix.SesquilinearForm
 public import Mathlib.LinearAlgebra.Matrix.SpecialLinearGroup
