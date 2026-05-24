@@ -41,7 +41,8 @@ algebra-homomorphisms.)
 open Function Set Metric
 
 variable (𝕜 : Type*) {V V₁ V₁' V₂ V₃ V₄ : Type*} {P₁ P₁' : Type*} (P P₂ : Type*) {P₃ P₄ : Type*}
-  [NormedField 𝕜]
+  [NormedField 𝕜] [AddCommGroup V] [AddCommGroup V₁] [AddCommGroup V₁'] [AddCommGroup V₂]
+  [AddCommGroup V₃] [AddCommGroup V₄]
   [SeminormedAddCommGroup V] [NormedSpace 𝕜 V] [PseudoMetricSpace P] [NormedAddTorsor V P]
   [SeminormedAddCommGroup V₁] [NormedSpace 𝕜 V₁] [PseudoMetricSpace P₁] [NormedAddTorsor V₁ P₁]
   [SeminormedAddCommGroup V₁'] [NormedSpace 𝕜 V₁'] [MetricSpace P₁'] [NormedAddTorsor V₁' P₁']
