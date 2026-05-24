@@ -37,7 +37,7 @@ See also:
   with more assumptions on `G`)
 * `continuous_tsum` (continuity of infinite sums in a parameter)
 -/
-lemma tendsto_tsum_of_dominated_convergence {α β G : Type*} {𝓕 : Filter α}
+lemma tendsto_tsum_of_dominated_convergence {α β G : Type*} {𝓕 : Filter α} [AddCommGroup G]
     [NormedAddCommGroup G] [CompleteSpace G]
     {f : α → β → G} {g : β → G} {bound : β → ℝ} (h_sum : Summable bound)
     (hab : ∀ k : β, Tendsto (f · k) 𝓕 (𝓝 (g k)))
