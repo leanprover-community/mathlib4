@@ -45,7 +45,7 @@ resolvent transform, Stieljes transform, Cauchy transform
 
 variable {𝕜 A : Type*}
 
-open MeasureTheory Measure Metric Filter Complex spectrum
+open MeasureTheory Measure Metric Complex spectrum
 
 open scoped Topology
 
