@@ -161,7 +161,7 @@ theorem neg [AddGroup β] (hT : FinMeasAdditive μ T) :
   intro s t hs ht hμs hμt hst
   have h_comm : T s + T t = T t + T s := by
     rw [← hT s t hs ht hμs hμt hst, ← hT t s ht hs hμt hμs hst.symm, union_comm]
-  simp_all [Pi.neg_apply, hT s t hs ht hμs hμt hst, neg_add_rev]
+  simp_all [hT s t hs ht hμs hμt hst, neg_add_rev]
 
 theorem sub [AddCommGroup β] (hT : FinMeasAdditive μ T) (hT' : FinMeasAdditive μ T') :
     FinMeasAdditive μ (T - T') :=
