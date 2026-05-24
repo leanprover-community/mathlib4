@@ -8,6 +8,7 @@ module
 public import Mathlib.Data.Finsupp.Lex
 public import Mathlib.Data.Finsupp.WellFounded
 public import Mathlib.Data.List.TFAE
+public import Mathlib.Data.Finsupp.PWO
 
 /-! # Monomial orders
 
@@ -82,6 +83,10 @@ variable {σ : Type*} (m : MonomialOrder σ)
   "`MonomialOrder` no longer contains or implies `.wf : WellFoundedLT .syn`"
   (since := "2026-05-12")]
 lemma wf [inst : WellFoundedLT m.syn] : WellFoundedLT m.syn := inst
+
+instance (priority := low) [Finite σ] : WellFoundedLT m.syn :=
+  letI := m.toSyn_monotone.wellQuasiOrderedLE_of_wellQuasiOrderedLE_of_surjective m.toSyn.surjective
+  inferInstance
 
 lemma le_add_right (a b : σ →₀ ℕ) :
     m.toSyn a ≤ m.toSyn a + m.toSyn b := by
