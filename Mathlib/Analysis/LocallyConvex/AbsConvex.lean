@@ -221,10 +221,13 @@ theorem absConvexHull_eq_convexHull_balancedHull {s : Set E} :
       convex_absConvexHull)
 
 /-- In general, equality doesn't hold here - e.g. consider `s := {(-1, 1), (1, 1)}` in `ℝ²`. -/
-theorem balancedHull_convexHull_subseteq_absConvexHull {s : Set E} :
+theorem balancedHull_convexHull_subset_absConvexHull {s : Set E} :
     balancedHull 𝕜 (convexHull 𝕜 s) ⊆ absConvexHull 𝕜 s :=
   balanced_absConvexHull.balancedHull_subset_of_subset
     (convexHull_min subset_absConvexHull convex_absConvexHull)
+
+@[deprecated balancedHull_convexHull_subset_absConvexHull (since := "2026-05-23")]
+alias balancedHull_convexHull_subseteq_absConvexHull := balancedHull_convexHull_subset_absConvexHull
 
 variable [TopologicalSpace E] [ContinuousConstSMul 𝕜 E]
 
