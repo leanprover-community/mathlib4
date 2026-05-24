@@ -384,8 +384,7 @@ theorem coe_toContinuousLinearEquiv' (e : E ≃ₗ[𝕜] F) : (e.toContinuousLin
 
 @[simp]
 theorem coe_toContinuousLinearEquiv_symm (e : E ≃ₗ[𝕜] F) :
-    (e.toContinuousLinearEquiv.symm : F →ₗ[𝕜] E) = e.symm :=
-  rfl
+    (e.toContinuousLinearEquiv.toLinearEquiv.symm : F →ₗ[𝕜] E) = e.symm := rfl
 
 @[simp]
 theorem coe_toContinuousLinearEquiv_symm' (e : E ≃ₗ[𝕜] F) :
