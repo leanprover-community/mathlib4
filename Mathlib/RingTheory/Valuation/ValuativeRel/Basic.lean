@@ -267,8 +267,6 @@ lemma mul_vle_mul {x x' y y' : R} (h1 : x ≤ᵥ y) (h2 : x' ≤ᵥ y') : x * x'
 
 @[deprecated (since := "2025-12-20")] alias mul_srel_mul_iff_right := mul_vlt_mul_iff_right
 
-@[deprecated (since := "2025-11-04")] alias rel_mul := mul_vle_mul
-
 @[gcongr]
 lemma mul_veq_mul {x x' y y' : R} (h1 : x =ᵥ y) (h2 : x' =ᵥ y') : x * x' =ᵥ y * y' :=
   ⟨mul_vle_mul h1.vle h2.vle, mul_vle_mul h1.vge h2.vge⟩
@@ -617,7 +615,7 @@ theorem ValueGroupWithZero.inv_mk (x : R) (y : posSubmonoid R) (hx : ¬x ≤ᵥ 
 
 /-- The value group-with-zero is a linearly ordered commutative group with zero. -/
 instance : LinearOrderedCommGroupWithZero (ValueGroupWithZero R) where
-  zero_le _ := bot_le
+  isBot_zero _ := bot_le
   exists_pair_ne := by
     refine ⟨0, 1, fun h => ?_⟩
     apply ge_of_eq at h
@@ -1109,7 +1107,7 @@ def embed [v.Compatible] : ValueGroupWithZero R →*₀ ValueGroup₀ v where
     simp only [Valuation.Compatible.vle_iff_le (v := v), map_mul, ← and_imp, ← le_antisymm_iff]
     rw [div_eq_div_iff]
     · simp only [ValueGroup₀.restrict₀_apply, Valuation.apply_posSubmonoid_ne_zero, ↓reduceDIte,
-      dite_mul, zero_mul]
+        dite_mul, zero_mul]
       split_ifs
       all_goals try simp_all [← WithZero.coe_mul, ← Units.val_inj]
     · simp [ValueGroup₀.restrict₀]
@@ -1149,7 +1147,7 @@ where the first row is the map `v` factored through its image group (with zero) 
 @[simp]
 lemma embed_valuation_eq_restrict₀ [v.Compatible] (x : R) :
     embed v (valuation R x) = ValueGroup₀.restrict₀ v x := by
-  convert embed_mk v x 1
+  convert! embed_mk v x 1
   simp
 
 /--
