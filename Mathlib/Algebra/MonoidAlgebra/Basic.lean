@@ -314,7 +314,7 @@ theorem domCongr_toAlgHom (e : M ≃* N) : (domCongr R A e).toAlgHom = mapDomain
 
 @[to_additive (attr := simp)]
 lemma domCongr_support (e : M ≃* N) (f : A[M]) : (domCongr R A e f).support = f.support.map e := by
-  ext; simp
+  ext; simp [MulEquiv.apply_eq_iff_symm_apply]
 
 @[to_additive (attr := simp)]
 theorem domCongr_single (e : M ≃* N) (m : M) (a : A) :
