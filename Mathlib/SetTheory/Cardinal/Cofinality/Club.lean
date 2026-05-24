@@ -181,13 +181,17 @@ theorem isStationary_univ_iff : IsStationary (.univ (α := α)) ↔ Nonempty α 
     isClub_empty_iff]
 
 @[simp]
-theorem IsStationary.univ [Nonempty α] : IsStationary (.univ (α := α)) :=
+protected theorem IsStationary.univ [Nonempty α] : IsStationary (.univ (α := α)) :=
   isStationary_univ_iff.2 ‹_›
 
 @[simp]
 theorem not_isStationary_empty : ¬ IsStationary (∅ : Set α) := by
   intro h
   simpa using h .univ
+
+@[simp]
+theorem not_isStationary_of_isEmpty [IsEmpty α] : ¬ IsStationary s :=
+  s.eq_empty_of_isEmpty ▸ not_isStationary_empty
 
 theorem IsStationary.of_not_isCofinal_compl (hs : ¬ IsCofinal sᶜ) : IsStationary s := by
   intro t ht

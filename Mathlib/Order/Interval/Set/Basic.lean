@@ -468,7 +468,7 @@ variable [PartialOrder α] {a b c : α}
 
 @[simp]
 theorem Icc_self (a : α) : Icc a a = {a} :=
-  Set.ext <| by simp [Icc, le_antisymm_iff, and_comm]
+  ext <| by simp [Icc, le_antisymm_iff, and_comm]
 
 instance instIccUnique : Unique (Icc a a) where
   default := ⟨a, by simp⟩
