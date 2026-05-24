@@ -893,7 +893,8 @@ protected theorem postcomp_uniformContinuous [UniformSpace γ] {f : γ → β}
     (hf : UniformContinuous f) : UniformContinuous (ofFun 𝔖 ∘ (f ∘ ·) ∘ toFun 𝔖) := by
   -- This is a direct consequence of `UniformOnFun.comap_eq`
   rw [uniformContinuous_iff_le_comap]
-  exact (UniformOnFun.mono (uniformContinuous_iff_le_comap.mp hf) subset_rfl).trans_eq UniformOnFun.comap_eq
+  exact (UniformOnFun.mono (uniformContinuous_iff_le_comap.mp hf)
+    subset_rfl).trans_eq UniformOnFun.comap_eq
 
 /-- Post-composition by a uniform inducing is a uniform inducing for the
 uniform structures of `𝔖`-convergence.
