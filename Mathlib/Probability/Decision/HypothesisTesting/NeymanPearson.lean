@@ -35,7 +35,6 @@ the likelihood ratio against the threshold `t⁻¹`).
   `t > 0` and `0 ≤ η ≤ 1`.
 
 ## References
-
 * Ingster, Y. and Suslina, I.A., 2012. Nonparametric goodness-of-fit testing under Gaussian models (Vol. 169). Springer Science & Business Media.
 -/
 
