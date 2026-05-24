@@ -145,7 +145,6 @@ class IsLeftDerivabilityStructure : Prop where
 attribute [instance] IsLeftDerivabilityStructure.hasLeftResolutions
   IsLeftDerivabilityStructure.guitartExact'
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isLeftDerivabilityStructure_iff_op :
     Φ.IsLeftDerivabilityStructure ↔
       Φ.op.IsRightDerivabilityStructure := by
@@ -156,7 +155,7 @@ lemma isLeftDerivabilityStructure_iff_op :
     TwoSquare.guitartExact_op_iff _
   constructor
   · rintro ⟨_, _⟩
-    rwa [Φ.op.isRightDerivabilityStructure_iff _ _ _ e', eq]
+    simpa [Φ.op.isRightDerivabilityStructure_iff _ _ _ e', eq]
   · intro
     have : Φ.HasLeftResolutions := by
       rw [hasLeftResolutions_iff_op]
@@ -189,7 +188,6 @@ instance [W₁.ContainsIdentities] : (LocalizerMorphism.id W₁).IsLeftDerivabil
   dsimp
   exact TwoSquare.guitartExact_id' W₁.Q
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isRightDerivabilityStructure_iff_op :
     Φ.IsRightDerivabilityStructure ↔
       Φ.op.IsLeftDerivabilityStructure := by
@@ -198,11 +196,9 @@ lemma isRightDerivabilityStructure_iff_op :
   let e' : Φ.functor.op ⋙ W₂.Q.op ≅ W₁.Q.op ⋙ F.op := NatIso.op e.symm
   have eq : TwoSquare.GuitartExact e'.inv ↔ TwoSquare.GuitartExact e.hom :=
     TwoSquare.guitartExact_op_iff _
-  constructor
-  · rintro ⟨_, _⟩
-    rwa [Φ.op.isLeftDerivabilityStructure_iff _ _ _ e', eq]
-  · intro
-    have : Φ.HasRightResolutions := by
+  refine ⟨fun ⟨_, _⟩ ↦ ?_, fun _ ↦ ?_⟩
+  · simpa [Φ.op.isLeftDerivabilityStructure_iff _ _ _ e', eq]
+  · have : Φ.HasRightResolutions := by
       rw [hasRightResolutions_iff_op]
       infer_instance
     refine ⟨inferInstance, ?_⟩

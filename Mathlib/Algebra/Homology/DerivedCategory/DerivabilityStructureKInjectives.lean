@@ -6,6 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.Algebra.Homology.DerivedCategory.KInjective
+public import Mathlib.Algebra.Homology.Precylinder
 public import Mathlib.CategoryTheory.Abelian.Monomorphisms
 public import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Constructor
 public import Mathlib.CategoryTheory.Localization.OfQuotient
@@ -19,7 +20,7 @@ public import Mathlib.CategoryTheory.Localization.OfQuotient
 
 universe w
 
-open CategoryTheory Abelian Limits ZeroObject
+open CategoryTheory Abelian Limits ZeroObject HomotopicalAlgebra
 
 variable {C : Type*} [Category C] [Abelian C]
 
@@ -295,13 +296,9 @@ instance : toHomotopyCategory.IsLocalization (KInjectives.quasiIso C) := by
     dsimp at f₀ f₁ h
     let H : Homotopy f₀ f₁ :=
       HomotopyCategory.homotopyOfEq _ _ (HomotopyCategory.KInjectives.ι.congr_map h)
-    refine ⟨mk (HomologicalComplex.cylinder K),
-      ObjectProperty.homMk (HomologicalComplex.cylinder.ι₀ K),
-      ObjectProperty.homMk (HomologicalComplex.cylinder.ι₁ K),
-      ObjectProperty.homMk (HomologicalComplex.cylinder.π K), ?_,
-      by cat_disch, by cat_disch,
-      ObjectProperty.homMk (HomologicalComplex.cylinder.desc f₀ f₁ H),
-      by cat_disch, by cat_disch⟩
+    refine ⟨K.precylinder.toFullSubcategory (by dsimp; infer_instance),
+      Precylinder.LeftHomotopy.fullSubcategoryEquiv.symm
+        { h := HomologicalComplex.cylinder.desc _ _ H  }, ?_⟩
     · exact (HomologicalComplex.cylinder.homotopyEquiv K
         (fun n ↦ ⟨n - 1, by simp⟩)).quasiIso_hom
 

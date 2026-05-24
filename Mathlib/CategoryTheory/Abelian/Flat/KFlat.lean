@@ -29,6 +29,7 @@ public import Mathlib.CategoryTheory.GuitartExact.Quotient
 @[expose] public section
 
 open CategoryTheory MonoidalCategory Limits Opposite ZeroObject
+  HomotopicalAlgebra
 
 section
 
@@ -420,15 +421,12 @@ instance : (L A).functor.IsLocalization (WL A) :=
       dsimp only [Functor.comp_map] at this
       apply isIso_of_reflects_iso _ ((B A).functor)) (by
       rintro ⟨K₁, hK₁⟩ ⟨K₂, hK₂⟩ (f₀ f₁) hf
-      refine ⟨⟨K₁.cylinder, kFlat_cylinder _ hK₁⟩,
-        ObjectProperty.homMk (cylinder.ι₀ _),
-        ObjectProperty.homMk (cylinder.ι₁ _),
-        ObjectProperty.homMk (cylinder.π _),
-        ⟨cylinder.homotopyEquiv K₁ (fun n ↦ ⟨n - 1, by simp⟩), rfl⟩,
-        by cat_disch, by cat_disch,
-        ObjectProperty.homMk (cylinder.desc f₀.hom f₁.hom
-          (HomotopyCategory.homotopyOfEq _ _ ((ObjectProperty.ι _).congr_map hf))),
-        by cat_disch, by cat_disch⟩)
+      refine ⟨K₁.precylinder.toFullSubcategory (by exact kFlat_cylinder _ hK₁),
+        ?_, ?_⟩
+      · exact Precylinder.LeftHomotopy.fullSubcategoryEquiv.symm
+          { h := cylinder.desc _ _
+                (HomotopyCategory.homotopyOfEq _ _ ((ObjectProperty.ι _).congr_map hf)) }
+      · exact ⟨cylinder.homotopyEquiv K₁ (fun n ↦ ⟨n - 1, by simp⟩), rfl⟩)
 
 instance : (L A).IsLocalizedEquivalence :=
   (L A).isLocalizedEquivalence_of_isLocalization (WL A)
@@ -452,14 +450,13 @@ instance : (R A).functor.EssSurj := by
   infer_instance
 
 instance : TwoSquare.GuitartExact (iso A).inv :=
-  TwoSquare.GuitartExact.quotient (iso A).symm (by
+  TwoSquare.GuitartExact.quotient_of_nonempty_leftHomotopy (iso A).symm (by
     rintro ⟨K₁, hK₁⟩ K₂ (f₀ f₁ : K₁ ⟶ K₂) hf
-    refine ⟨⟨K₁.cylinder, kFlat_cylinder _ hK₁⟩, ObjectProperty.homMk (cylinder.ι₀ _),
-      ObjectProperty.homMk (cylinder.ι₁ _), ?_,
-      cylinder.desc f₀ f₁ (HomotopyCategory.homotopyOfEq _ _ hf),
-      cylinder.ι₀_desc _ _ _, cylinder.ι₁_desc _ _ _⟩
-    ext : 1
-    exact HomotopyCategory.eq_of_homotopy _ _ (cylinder.homotopy₀₁ K₁ (fun n ↦ ⟨n -1, by simp⟩)))
+    refine ⟨K₁.precylinder.toFullSubcategory (by exact kFlat_cylinder K₁ hK₁),
+      ?_, ⟨?_⟩⟩
+    · ext : 1
+      exact HomotopyCategory.eq_of_homotopy _ _ (cylinder.homotopy₀₁ _ (fun n ↦ ⟨n - 1, by simp⟩))
+    · exact { h := cylinder.desc _ _ (HomotopyCategory.homotopyOfEq _ _ hf) })
 
 end kFlatLocalizerSquare
 

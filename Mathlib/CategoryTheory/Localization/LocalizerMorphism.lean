@@ -94,7 +94,7 @@ variable (Φ : LocalizerMorphism W₁ W₂)
 /-- The opposite localizer morphism `LocalizerMorphism W₁.op W₂.op` deduced
 from `Φ : LocalizerMorphism W₁ W₂`. -/
 @[simps]
-protected def op : LocalizerMorphism W₁.op W₂.op where
+def op : LocalizerMorphism W₁.op W₂.op where
   functor := Φ.functor.op
   map _ _ _ hf := Φ.map _ hf
 
@@ -154,7 +154,7 @@ lemma isEquivalence_iff : G.IsEquivalence ↔ G'.IsEquivalence :=
 
 /-- If a localizer morphism induces a fully faithful functor on some choice of
 localized categories, it will be so for any choice of localized categories. -/
-noncomputable def fullyFaithfulImp (hG : G.FullyFaithful) : G'.FullyFaithful :=
+private noncomputable def fullyFaithfulImp (hG : G.FullyFaithful) : G'.FullyFaithful :=
   let E₁ := Localization.uniq L₁ L₁' W₁
   let E₂ := Localization.uniq L₂ L₂' W₂
   let e : L₁ ⋙ G ⋙ E₂.functor ≅ L₁ ⋙ E₁.functor ⋙ G' :=
@@ -274,7 +274,7 @@ instance IsLocalizedEquivalence.comp [Φ.IsLocalizedEquivalence]
   of_isLocalization_of_isLocalization _ W₃.Q
 
 /-- Condition that a `LocalizerMorphism` induces a fully faithful functor
-on the localized categories -/
+on the localized categories. -/
 class IsLocalizedFullyFaithful : Prop where
   /-- the induced functor on the constructed localized categories is fully faithful -/
   nonempty_fullyFaithful : Nonempty (Φ.localizedFunctor W₁.Q W₂.Q).FullyFaithful
@@ -290,11 +290,12 @@ instance [Φ.IsLocalizedEquivalence] : Φ.IsLocalizedFullyFaithful where
 
 /-- If a `LocalizerMorphism` becomes a fully faithful after localization, then any compatible
 functor between the localized categories is fully faithful. -/
-noncomputable irreducible_def fullyFaithful
+@[no_expose] noncomputable def fullyFaithful
     [h : Φ.IsLocalizedFullyFaithful] [CatCommSq Φ.functor L₁ L₂ G] :
-    G.FullyFaithful := (Nonempty.some (by
-  rw [Φ.nonempty_fullyFaithful_iff L₁ L₂ G W₁.Q W₂.Q (Φ.localizedFunctor W₁.Q W₂.Q)]
-  exact h.nonempty_fullyFaithful))
+    G.FullyFaithful :=
+  Nonempty.some (by
+    rw [Φ.nonempty_fullyFaithful_iff L₁ L₂ G W₁.Q W₂.Q (Φ.localizedFunctor W₁.Q W₂.Q)]
+    exact h.nonempty_fullyFaithful)
 
 lemma faithful [Φ.IsLocalizedFullyFaithful] [CatCommSq Φ.functor L₁ L₂ G] :
     G.Faithful :=
@@ -306,7 +307,7 @@ lemma full [Φ.IsLocalizedFullyFaithful] [CatCommSq Φ.functor L₁ L₂ G] :
 
 /-- If a `LocalizerMorphism` becomes fully faithful after localization,
 then the induced functor on the localized categories is fully faithful. -/
-noncomputable irreducible_def fullyFaithfulLocalizedFunctor [Φ.IsLocalizedFullyFaithful] :
+@[no_expose] noncomputable def fullyFaithfulLocalizedFunctor [Φ.IsLocalizedFullyFaithful] :
     (Φ.localizedFunctor L₁ L₂).FullyFaithful :=
   Φ.fullyFaithful L₁ L₂ _
 
@@ -323,6 +324,12 @@ instance [Φ.IsLocalizedFullyFaithful] : Φ.op.IsLocalizedFullyFaithful := by
   exact IsLocalizedFullyFaithful.mk' Φ.op W₁.Q.op W₂.Q.op G.op
     (Φ.fullyFaithful W₁.Q W₂.Q G).op
 
+/-- Assume that a localizer morphism `Φ : LocalizerMorphism W₁ W₂` induces
+a fully faithful functor on the localized categories.
+If `L₂ : C₂ ⥤ D₂` is a localization functor for `W₂` and we have a
+factorization `iso : Φ.functor ⋙ L₂ ≅ L₁ ⋙ F` as an essentially surjective
+functor `L₁ : C₁ ⥤ D₁` followed by a fully faithful functor `F : D₁ ⥤ D₂`,
+then `L₁` is a localization functor for `W₁`. -/
 lemma isLocalization_of_isLocalizedFullyFaithful
     [Φ.IsLocalizedFullyFaithful] {L₂ : C₂ ⥤ D₂} [L₂.IsLocalization W₂]
     {L₁ : C₁ ⥤ D₁} {F : D₁ ⥤ D₂}
@@ -346,6 +353,17 @@ lemma isLocalization_of_isLocalizedFullyFaithful
   have : G.IsEquivalence := { }
   exact IsLocalization.of_equivalence_target W₁.Q W₁ L₁ G.asEquivalence e
 
+instance IsLocalizedFullyFaithful.comp
+    (Ψ : LocalizerMorphism W₂ W₃)
+    [Φ.IsLocalizedFullyFaithful] [Ψ.IsLocalizedFullyFaithful] :
+    (Φ.comp Ψ).IsLocalizedFullyFaithful :=
+  letI : CatCommSq (Φ.comp Ψ).functor W₁.Q W₃.Q
+      (Φ.localizedFunctor W₁.Q W₂.Q ⋙ Ψ.localizedFunctor W₂.Q W₃.Q) :=
+    CatCommSq.hComp _ _ _ W₂.Q _ _ _
+  IsLocalizedFullyFaithful.mk' _ W₁.Q W₃.Q _
+    ((Φ.fullyFaithfulLocalizedFunctor W₁.Q W₂.Q).comp
+      (Ψ.fullyFaithfulLocalizedFunctor W₂.Q W₃.Q))
+
 /-- The localizer morphism from `W₁.arrow` to `W₂.arrow` that is induced by
 `Φ : LocalizerMorphism W₁ W₂`. -/
 abbrev arrow : LocalizerMorphism W₁.arrow W₂.arrow where
@@ -357,28 +375,14 @@ lemma isLocalizedEquivalence_op_iff :
   constructor
   · intro
     let G := Φ.op.localizedFunctor W₁.Q.op W₂.Q.op
-    have : CatCommSq Φ.functor W₁.Q W₂.Q G.unop :=
+    letI : CatCommSq Φ.functor W₁.Q W₂.Q G.unop :=
       ⟨NatIso.unop (CatCommSq.iso Φ.op.functor W₁.Q.op W₂.Q.op G).symm⟩
     exact IsLocalizedEquivalence.mk' Φ W₁.Q W₂.Q G.unop
   · intro
     let G := Φ.localizedFunctor W₁.Q W₂.Q
-    have : CatCommSq Φ.op.functor W₁.Q.op W₂.Q.op G.op :=
+    letI : CatCommSq Φ.op.functor W₁.Q.op W₂.Q.op G.op :=
       ⟨NatIso.op (CatCommSq.iso Φ.functor W₁.Q W₂.Q G).symm⟩
     exact IsLocalizedEquivalence.mk' Φ.op W₁.Q.op W₂.Q.op G.op
-
-instance [Φ.IsLocalizedEquivalence] : Φ.op.IsLocalizedEquivalence := by
-  rwa [isLocalizedEquivalence_op_iff]
-
-instance (Ψ : LocalizerMorphism W₂ W₃) [Φ.IsLocalizedEquivalence]
-    [Ψ.IsLocalizedEquivalence] : (Φ.comp Ψ).IsLocalizedEquivalence := by
-  let G := Φ.localizedFunctor W₁.Q W₂.Q ⋙ Ψ.localizedFunctor W₂.Q W₃.Q
-  have : CatCommSq (Φ.comp Ψ).functor W₁.Q W₃.Q G :=
-    ⟨Functor.associator _ _ _ ≪≫ isoWhiskerLeft _
-        (CatCommSq.iso Ψ.functor W₂.Q W₃.Q (Ψ.localizedFunctor W₂.Q W₃.Q)) ≪≫
-        (Functor.associator _ _ _).symm ≪≫
-      isoWhiskerRight (CatCommSq.iso Φ.functor W₁.Q W₂.Q (Φ.localizedFunctor W₁.Q W₂.Q)) _ ≪≫
-      Functor.associator _ _ _⟩
-  exact IsLocalizedEquivalence.mk' (Φ.comp Ψ) W₁.Q W₃.Q G
 
 variable {Φ} in
 lemma isLocalizedEquivalence_of_iso {Φ' : LocalizerMorphism W₁ W₂} (e : Φ.functor ≅ Φ'.functor)
@@ -403,20 +407,24 @@ lemma isLocalizedEquivalence_of_precomp (Ψ : LocalizerMorphism W₂ W₃)
   have := Functor.isEquivalence_of_comp_left G₁₂ G₂₃
   exact IsLocalizedEquivalence.mk' Ψ W₂.Q W₃.Q G₂₃
 
-class IsInduced : Prop where
-  inverseImage_eq : W₂.inverseImage Φ.functor = W₁
+/-- If `Φ : LocalizerMorphism W₁ W₂`, the typeclass `Φ.IsInduced`
+says that `W₂.inverseImage Φ.functor = W₁`. -/
+class IsInduced (Φ : LocalizerMorphism W₁ W₂) : Prop where
+  inverseImage_eq (Φ) : W₂.inverseImage Φ.functor = W₁
 
-@[simp]
-lemma inverseImage_eq [Φ.IsInduced] : W₂.inverseImage Φ.functor = W₁ :=
-  IsInduced.inverseImage_eq
+export IsInduced (inverseImage_eq)
 
 instance [Φ.IsInduced] : Φ.op.IsInduced where
   inverseImage_eq := by
-    simp only [← Φ.inverseImage_eq]
-    rfl
+    simp [← Φ.inverseImage_eq]
 
 instance : (id W₁).IsInduced where
   inverseImage_eq := rfl
+
+instance (Ψ : LocalizerMorphism W₂ W₃) [Φ.IsInduced] [Ψ.IsInduced] :
+    (Φ.comp Ψ).IsInduced where
+  inverseImage_eq := by
+    simp [← Φ.inverseImage_eq, ← Ψ.inverseImage_eq]
 
 instance [Φ.IsInduced] : Φ.arrow.IsInduced where
   inverseImage_eq := by
@@ -427,33 +435,38 @@ section
 
 variable [Φ.functor.IsEquivalence] [Φ.IsInduced] [W₂.RespectsIso]
 
-set_option backward.isDefEq.respectTransparency false in
+attribute [local simp] Functor.asEquivalence_counitIso_hom_app
+  Functor.asEquivalence_counitIso_inv_app in
+/-- The inverse of a localizer morphism `Φ : LocalizerMorphism W₁ W₂`,
+when `Φ.functor` is an equivalence, `W₁` is induced by `W₂`
+and `W₂` respects isomorphisms. -/
 @[simps]
-noncomputable def inv :
-    LocalizerMorphism W₂ W₁ where
+noncomputable def inv : LocalizerMorphism W₂ W₁ where
   functor := Φ.functor.inv
   map := by
     simp only [← Φ.inverseImage_eq]
     intro X Y f hf
-    exact (W₂.arrow_mk_iso_iff (Arrow.isoMk (Φ.functor.asEquivalence.counitIso.app _)
-      (Φ.functor.asEquivalence.counitIso.app _))).2 hf
+    exact (W₂.arrow_mk_iso_iff
+      (Arrow.isoMk (Φ.functor.asEquivalence.counitIso.app _)
+        (Φ.functor.asEquivalence.counitIso.app _))).2 hf
 
 instance : Φ.inv.functor.IsEquivalence := by
   dsimp
   infer_instance
 
-set_option backward.isDefEq.respectTransparency false in
+attribute [local simp] Functor.asEquivalence_inverse
+  Functor.asEquivalence_counitIso_hom_app Functor.asEquivalence_counitIso_inv_app in
 instance : Φ.inv.IsInduced where
   inverseImage_eq := by
     ext X Y f
     simp only [← Φ.inverseImage_eq]
-    exact (W₂.arrow_mk_iso_iff (Arrow.isoMk (Φ.functor.asEquivalence.counitIso.app _)
-      (Φ.functor.asEquivalence.counitIso.app _)))
+    exact W₂.arrow_mk_iso_iff
+      (Arrow.isoMk (Φ.functor.asEquivalence.counitIso.app _)
+        (Φ.functor.asEquivalence.counitIso.app _))
 
 lemma isLocalizedEquivalence_of_isInduced :
     Φ.IsLocalizedEquivalence := by
-  apply IsLocalizedEquivalence.of_equivalence
-  intro X Y f hf
+  refine IsLocalizedEquivalence.of_equivalence _ (fun X Y f hf ↦ ?_)
   let e :
       Arrow.mk (Φ.functor.map (Φ.functor.preimage
         ((Φ.functor.objObjPreimageIso X).hom ≫ f ≫ (Φ.functor.objObjPreimageIso Y).inv))) ≅

@@ -6,10 +6,9 @@ Authors: Joël Riou
 module
 
 public import Mathlib.Algebra.Homology.ShortComplex.ShortExact
-public import Mathlib.CategoryTheory.Preadditive.Injective.LiftingProperties
-public import Mathlib.CategoryTheory.MorphismProperty.Composition
 public import Mathlib.CategoryTheory.MorphismProperty.Retract
 public import Mathlib.CategoryTheory.MorphismProperty.LiftingProperty
+public import Mathlib.CategoryTheory.Preadditive.Injective.LiftingProperties
 
 /-!
 # Epimorphisms with an injective kernel
@@ -77,6 +76,13 @@ lemma epiWithInjectiveKernel_of_iso {X Y : C} (f : X ⟶ Y) [IsIso f] :
   exact ⟨0, inferInstance, 0, by simp,
     ⟨ShortComplex.Splitting.ofIsZeroOfIsIso _ (isZero_zero C) (by assumption)⟩⟩
 
+lemma epiWithInjectiveKernel_iff_of_isZero {X Y : C} (f : X ⟶ Y) (hY : IsZero Y) :
+    epiWithInjectiveKernel f ↔ Injective X := by
+  simp only [epiWithInjectiveKernel, hY.epi f, true_and]
+  exact Injective.iso_iff
+    { hom := kernel.ι f
+      inv := kernel.lift _ (𝟙 X) (hY.eq_of_tgt _ _) }
+
 instance : (epiWithInjectiveKernel : MorphismProperty C).IsMultiplicative where
   id_mem _ := epiWithInjectiveKernel_of_iso _
   comp_mem {X Y Z} g₁ g₂ hg₁ hg₂ := by
@@ -107,39 +113,30 @@ instance : (epiWithInjectiveKernel : MorphismProperty C).IsMultiplicative where
               BinaryBicone.inl_snd_assoc, BinaryBicone.inr_snd_assoc, zero_add]
             abel }
 
-set_option backward.isDefEq.respectTransparency false in
 instance : (epiWithInjectiveKernel (C := C)).IsStableUnderRetracts where
   of_retract := by
     rintro X' Y' X Y f' f r ⟨_, hf⟩
     have : Epi f' :=
       (MorphismProperty.epimorphisms C).of_retract r (.infer_property _)
     let r' : Retract (kernel f') (kernel f) :=
-      { i := kernel.map _ _ r.left.i r.right.i (by simp)
-        r := kernel.map _ _ r.left.r r.right.r (by simp) }
+      { i := kernel.map _ _ r.i.left r.i.right (Arrow.w r.i).symm
+        r := kernel.map _ _ r.r.left r.r.right (Arrow.w r.r).symm
+        retract := by ext; simp [dsimp% r.left.retract] }
     exact ⟨inferInstance, r'.injective⟩
 
 lemma epiWithInjectiveKernel.hasLiftingProperty
     {X Y : C} {p : X ⟶ Y} (hp : epiWithInjectiveKernel p)
     {A B : C} (i : A ⟶ B) [Mono i] :
     HasLiftingProperty i p := by
-  suffices (MorphismProperty.monomorphisms C).rlp p from this _ (.infer_property _)
+  suffices (MorphismProperty.monomorphisms C).rlp p from this _ inferInstance
   rw [epiWithInjectiveKernel_iff] at hp
   obtain ⟨I, _, s, hs, ⟨σ⟩⟩ := hp
-  have hI : (MorphismProperty.monomorphisms C).rlp (0 : I ⟶ 0) := by
-    intro A B i (hi : Mono i)
-    exact Injective.hasLiftingProperty_of_isZero _ _ (isZero_zero C)
+  have hI : (MorphismProperty.monomorphisms C).rlp (0 : I ⟶ 0) :=
+    fun _ _ _ _ ↦ Injective.hasLiftingProperty_of_isZero _ _ (isZero_zero C)
   refine MorphismProperty.of_isPullback (f' := σ.r) (f := 0) ⟨by simp, ⟨?_⟩⟩ hI
   refine PullbackCone.IsLimit.mk _ (fun t ↦ t.fst ≫ s + t.snd ≫ σ.s)
-    (fun t ↦ ?_) (fun t ↦ ?_) (fun t m hm₁ hm₂ ↦ ?_)
-  · have := σ.f_r
-    dsimp at this ⊢
-    simp [this]
-  · have := σ.s_g
-    dsimp
-    simp [hs, this]
-  · have := σ.id
-    dsimp at this ⊢
-    simp only [← hm₁, ← hm₂, Category.assoc, ← Preadditive.comp_add, this, comp_id]
+    (fun t ↦ by simp [dsimp% σ.f_r]) (fun t ↦ by simp [hs, dsimp% σ.s_g]) (fun t m hm₁ hm₂ ↦ ?_)
+  simp [← hm₁, ← hm₂, ← Preadditive.comp_add, dsimp% σ.id]
 
 instance : (monoWithProjectiveCokernel : MorphismProperty C).IsMultiplicative := by
   rw [monoWithProjectiveCokernel_eq_unop]
@@ -155,13 +152,6 @@ lemma monoWithProjectiveCokernel_iff_of_isZero {X Y : C} (f : X ⟶ Y) (hX : IsZ
   exact Projective.iso_iff
     { hom := cokernel.desc _ (𝟙 Y) (hX.eq_of_src _ _)
       inv := cokernel.π f }
-
-lemma epiWithInjectiveKernel_iff_of_isZero {X Y : C} (f : X ⟶ Y) (hY : IsZero Y) :
-    epiWithInjectiveKernel f ↔ Injective X := by
-  simp only [epiWithInjectiveKernel, hY.epi f, true_and]
-  exact Injective.iso_iff
-    { hom := kernel.ι f
-      inv := kernel.lift _ (𝟙 X) (hY.eq_of_tgt _ _) }
 
 end Abelian
 

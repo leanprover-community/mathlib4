@@ -36,7 +36,7 @@ lemma quasiIso_eq_subcategoryAcyclic_trW :
   obtain ⟨M, g, h, mem⟩ := CategoryTheory.Pretriangulated.distinguished_cocone_triangle f
   have := (HomotopyCategory.subcategoryAcyclic C).trW_iff_of_distinguished _
     ((HomotopyCategory.Minus.ι C).map_distinguished _ mem)
-  erw [← HomotopyCategory.quasiIso_eq_subcategoryAcyclic_trW] at this
+  rw [← HomotopyCategory.quasiIso_eq_trW_subcategoryAcyclic] at this
   erw [(subcategoryAcyclic C).trW_iff_of_distinguished _ mem]
   exact this
 
@@ -66,7 +66,7 @@ instance : (Qh : _ ⥤ Minus C).IsTriangulated := by
   dsimp only [Qh]
   infer_instance
 
-instance : (HomotopyCategory.minus C).IsTriangulatedLeftLocalizing
+instance : (HomotopyCategory.minus C).IsVerdierLeftLocalizing
     (HomotopyCategory.subcategoryAcyclic C) where
   fac {K L} φ hK hL := by
     obtain ⟨K : CochainComplex _ _, rfl⟩ := HomotopyCategory.quotient_obj_surjective K
@@ -102,8 +102,9 @@ instance : (Qh (C := C)).EssSurj := by
     ⟨(asIso (Q.map ((Q.objPreimage X).πTruncGE n))).symm ≪≫ Q.objObjPreimageIso X⟩⟩
 
 instance : Qh.IsLocalization (HomotopyCategory.Minus.subcategoryAcyclic C).trW :=
-  ObjectProperty.isLocalization_of_isTriangulated_of_isLocalizedFullyFaithful
-    (QhCompιIsoιCompQh C).symm
+  ((HomotopyCategory.minus C).triangulatedLocalizerMorphism
+    (HomotopyCategory.subcategoryAcyclic C)).isLocalization_of_isLocalizedFullyFaithful
+      (QhCompιIsoιCompQh C).symm
 
 instance : Qh.IsLocalization (HomotopyCategory.Minus.quasiIso C) := by
   rw [HomotopyCategory.Minus.quasiIso_eq_subcategoryAcyclic_trW]

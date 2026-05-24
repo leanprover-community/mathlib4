@@ -5,6 +5,7 @@ Authors: Joël Riou
 -/
 module
 
+public import Mathlib.CategoryTheory.Comma.CatCommSq
 public import Mathlib.CategoryTheory.Localization.LocalizerMorphism
 public import Mathlib.CategoryTheory.Comma.CatCommSq
 
@@ -359,6 +360,7 @@ lemma hasRightResolutions_of_arrow [Φ.arrow.HasRightResolutions] :
   exact
    ⟨{ w := R.w.left
       hw := R.hw.1 } ⟩
+section
 
 variable {T : LocalizerMorphism W₁ W₂} {L : LocalizerMorphism W₁ W₁'}
   {R : LocalizerMorphism W₂ W₂'} {B : LocalizerMorphism W₁' W₂'}
@@ -395,7 +397,7 @@ lemma hasRightResolutions_of_iso_of_essSurj_of_full
     T.HasRightResolutions := by
   intro X₂
   let ρ : B.RightResolution (R.functor.obj X₂) := Classical.arbitrary _
-  obtain ⟨X₁, ⟨e⟩⟩ := Functor.EssSurj.mem_essImage (F := L.functor) ρ.X₁
+  obtain ⟨X₁, ⟨e⟩⟩ := Functor.EssSurj.mem_essImage L.functor ρ.X₁
   exact ⟨{
     X₁ := X₁
     w := R.functor.preimage (ρ.w ≫ B.functor.map e.inv ≫ iso.inv.app X₁)
@@ -410,7 +412,7 @@ lemma hasLeftResolutions_of_iso_of_essSurj_of_full
     T.HasLeftResolutions := by
   intro X₂
   let ρ : B.LeftResolution (R.functor.obj X₂) := Classical.arbitrary _
-  obtain ⟨X₁, ⟨e⟩⟩ := Functor.EssSurj.mem_essImage (F := L.functor) ρ.X₁
+  obtain ⟨X₁, ⟨e⟩⟩ := Functor.EssSurj.mem_essImage L.functor ρ.X₁
   exact ⟨{
     X₁ := X₁
     w := R.functor.preimage (iso.hom.app X₁ ≫ B.functor.map e.hom ≫ ρ.w)
@@ -438,7 +440,6 @@ lemma hasRightResolutions_arrow_of_essSurj_of_full
     (iso : T.functor ⋙ R.functor ≅ L.functor ⋙ B.functor) [T.arrow.HasRightResolutions] :
     B.arrow.HasRightResolutions := by
   letI : CatCommSq T.functor L.functor R.functor B.functor := ⟨iso⟩
-  let a := (CatCommSq.iso T.arrow.functor L.arrow.functor R.arrow.functor B.arrow.functor)
   exact hasRightResolutions_of_iso_of_essSurj
     (CatCommSq.iso T.arrow.functor L.arrow.functor R.arrow.functor B.arrow.functor)
 
@@ -447,7 +448,6 @@ lemma hasLeftResolutions_arrow_of_essSurj_of_full
     (iso : T.functor ⋙ R.functor ≅ L.functor ⋙ B.functor) [T.arrow.HasLeftResolutions] :
     B.arrow.HasLeftResolutions := by
   letI : CatCommSq T.functor L.functor R.functor B.functor := ⟨iso⟩
-  let a := (CatCommSq.iso T.arrow.functor L.arrow.functor R.arrow.functor B.arrow.functor)
   exact hasLeftResolutions_of_iso_of_essSurj
     (CatCommSq.iso T.arrow.functor L.arrow.functor R.arrow.functor B.arrow.functor)
 
@@ -466,6 +466,8 @@ lemma hasLeftResolutions_arrow_iff_of_equivalences
   letI : CatCommSq T.functor L.functor R.functor B.functor := ⟨iso⟩
   exact hasLeftResolutions_iff_iso_of_essSurj_of_full
     (CatCommSq.iso T.arrow.functor L.arrow.functor R.arrow.functor B.arrow.functor)
+
+end
 
 end LocalizerMorphism
 

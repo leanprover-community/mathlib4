@@ -25,7 +25,7 @@ open CategoryTheory Category Limits
 def HomotopyCategory.Plus.mk {C : Type*} [Category C] [Preadditive C] [HasZeroObject C]
     [HasBinaryBiproducts C] (K : CochainComplex C ℤ) (hK : ∃ n, K.IsStrictlyGE n) :
     HomotopyCategory.Plus C :=
-  ⟨(HomotopyCategory.quotient C (ComplexShape.up ℤ)).obj K, hK.choose, hK.choose_spec⟩
+  ⟨(HomotopyCategory.quotient C (ComplexShape.up ℤ)).obj K, by simpa⟩
 
 namespace CochainComplex
 
@@ -131,7 +131,9 @@ lemma isIso_rightDerivedFunctorPlusUnit_app_of_bounded
       IsIso (F.rightDerivedFunctorPlusUnit.app
         ((HomotopyCategory.Plus.singleFunctor C 0).obj (K.X i)))) :
     IsIso (F.rightDerivedFunctorPlusUnit.app
-      ⟨(HomotopyCategory.quotient C (ComplexShape.up ℤ)).obj K, a, ha⟩) := by
+      ⟨(HomotopyCategory.quotient C (ComplexShape.up ℤ)).obj K, by
+        simp only [HomotopyCategory.plus_quotient_obj_iff]
+        exact ⟨a, ha⟩⟩) := by
   let S := (ObjectProperty.ofNatTrans F.rightDerivedFunctorPlusUnit).map
     (HomotopyCategory.Plus.ι C)
   have : (ObjectProperty.ofNatTrans F.rightDerivedFunctorPlusUnit).IsTriangulated := by
@@ -339,8 +341,10 @@ instance isIso_rightDerivedFunctorPlusCompNatTrans
     [hFG : ∀ (I : InjectiveObject C), IsIso (G.rightDerivedFunctorPlusUnit.app
         ((HomotopyCategory.Plus.singleFunctor D 0).obj (F.obj ((InjectiveObject.ι C).obj I))))] :
     IsIso (rightDerivedFunctorPlusCompNatTrans e) := by
-  apply isIso_rightDerivedFunctorPlusCompNatTrans'
-  rintro ⟨⟨K⟩, n, hK⟩
+  refine isIso_rightDerivedFunctorPlusCompNatTrans' _ (fun ⟨X, hX⟩ ↦ ?_)
+  obtain ⟨K, rfl⟩ := HomotopyCategory.quotient_obj_surjective X
+  simp only [HomotopyCategory.plus_quotient_obj_iff] at hX
+  obtain ⟨n, hn⟩ := hX
   exact G.isIso_rightDerivedFunctorPlusUnit_app
     (((InjectiveObject.ι C ⋙ F).mapHomologicalComplex (ComplexShape.up ℤ)).obj K) n
     (fun i _ => hFG _)

@@ -357,46 +357,6 @@ noncomputable def δIso (hi : IsZero (S.X₂.homology i)) (hj : IsZero (S.X₂.h
     S.X₃.homology i ≅ S.X₁.homology j :=
   @asIso _ _ _ _ (hS.δ i j hij) (hS.isIso_δ i j hij hi hj)
 
-include hS in
-lemma acyclic_X₁ (hg : _root_.QuasiIso S.g) : S.X₁.Acyclic := by
-  intro j
-  rw [exactAt_iff_isZero_homology]
-  by_cases hj : ∃ i, c.Rel i j
-  · obtain ⟨i, hij⟩ := hj
-    apply (hS.homology_exact₁ i j hij).isZero_X₂
-    · simp [← cancel_epi (HomologicalComplex.homologyMap S.g i)]
-    · dsimp
-      rw [← cancel_mono (HomologicalComplex.homologyMap S.g j), zero_comp,
-        ← HomologicalComplex.homologyMap_comp, S.zero,
-        HomologicalComplex.homologyMap_zero]
-  · have := hS.mono_f
-    have := HomologicalComplex.mono_homologyMap_of_mono_of_not_rel S.f j (by tauto)
-    rw [IsZero.iff_id_eq_zero,
-      ← cancel_mono (HomologicalComplex.homologyMap S.f j),
-      ← cancel_mono (HomologicalComplex.homologyMap S.g j), zero_comp, zero_comp,
-      id_comp, ← HomologicalComplex.homologyMap_comp, S.zero,
-      HomologicalComplex.homologyMap_zero]
-
-include hS in
-lemma acyclic_X₃ (h : _root_.QuasiIso S.f) : S.X₃.Acyclic := by
-  intro i
-  rw [exactAt_iff_isZero_homology]
-  by_cases hi : ∃ j, c.Rel i j
-  · obtain ⟨j, hij⟩ := hi
-    apply (hS.homology_exact₃ i j hij).isZero_X₂
-    · dsimp
-      rw [← cancel_epi (HomologicalComplex.homologyMap S.f i), comp_zero,
-        ← HomologicalComplex.homologyMap_comp, S.zero,
-        HomologicalComplex.homologyMap_zero]
-    · simp [← cancel_mono (HomologicalComplex.homologyMap S.f j)]
-  · have := hS.epi_g
-    have pi := HomologicalComplex.epi_homologyMap_of_epi_of_not_rel S.g i (by tauto)
-    rw [IsZero.iff_id_eq_zero,
-      ← cancel_epi (HomologicalComplex.homologyMap S.g i),
-      ← cancel_epi (HomologicalComplex.homologyMap S.f i), comp_zero, comp_zero,
-      comp_id, ← HomologicalComplex.homologyMap_comp, S.zero,
-      HomologicalComplex.homologyMap_zero]
-
 end ShortExact
 
 end ShortComplex

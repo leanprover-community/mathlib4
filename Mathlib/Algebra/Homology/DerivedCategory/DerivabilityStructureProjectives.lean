@@ -267,24 +267,25 @@ instance : (R C).functor.EssSurj := by dsimp; infer_instance
 def iso : (CochainComplex.Minus.localizerMorphism C).functor ⋙
   (R C).functor ≅ (L C).functor ⋙ (localizerMorphism C).functor := Iso.refl _
 
-open HomologicalComplex in
+open CochainComplex HomologicalComplex in
 instance : TwoSquare.GuitartExact (iso C).inv :=
-  TwoSquare.GuitartExact.quotient (iso C).symm (by
+  TwoSquare.GuitartExact.quotient_of_nonempty_leftHomotopy (iso C).symm (by
     rintro ⟨K₁, n₁, hn₁⟩ ⟨K₂, n₂, hn₂⟩ f₀ f₁ hf
     obtain ⟨f₀, rfl⟩ := ObjectProperty.homMk_surjective f₀
     obtain ⟨f₁, rfl⟩ := ObjectProperty.homMk_surjective f₁
     dsimp [Functor.mapCochainComplexMinus] at f₀ f₁
-    refine ⟨⟨K₁.cylinder, CochainComplex.minus_cylinder _ ⟨_, hn₁⟩⟩,
-      ObjectProperty.homMk (cylinder.ι₀ _),
-      ObjectProperty.homMk (cylinder.ι₁ _), ?_,
-      ObjectProperty.homMk ?_, ?_⟩
+    refine ⟨Minus.precylinder _, ?_, ⟨?_⟩⟩
     · ext : 1
       exact eq_of_homotopy _ _ (cylinder.homotopy₀₁ _ (fun n ↦ ⟨n - 1, by simp⟩))
-    · exact (cylinder.mapHomologicalComplexObjIso K₁ (ProjectiveObject.ι C)
-          (fun n ↦ ⟨n - 1, by simp⟩)).hom ≫
-        cylinder.desc f₀ f₁ (homotopyOfEq _ _ ((HomotopyCategory.Minus.ι C).congr_map hf))
-    · dsimp [Functor.mapCochainComplexMinus]
-      cat_disch)
+    · refine Precylinder.LeftHomotopy.fullSubcategoryEquiv.symm
+        { h := (cylinder.mapHomologicalComplexObjIso _ (ProjectiveObject.ι C)
+          (fun n ↦ ⟨n - 1, by simp⟩)).hom ≫ cylinder.desc f₀ f₁ (homotopyOfEq _ _
+            ((HomotopyCategory.Minus.ι C).congr_map hf))
+          h₀ := ?_
+          h₁ := ?_ }
+      all_goals
+        dsimp [Functor.mapCochainComplexMinus]
+        cat_disch)
 
 end isLeftDerivabilityStructure
 

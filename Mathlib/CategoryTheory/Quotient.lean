@@ -5,8 +5,6 @@ Authors: David Wärn
 -/
 module
 
-public import Mathlib.CategoryTheory.NatIso
-public import Mathlib.CategoryTheory.EqToHom
 public import Mathlib.CategoryTheory.Groupoid
 
 /-!
@@ -239,7 +237,7 @@ theorem functor_homRel_eq_compClosure_eqvGen {X Y : C} (f g : X ⟶ Y) :
 
 theorem compClosure.congruence :
     Congruence fun X Y => Relation.EqvGen (@HomRel.CompClosure C _ r X Y) := by
-  convert (inferInstance : Congruence (functor r).homRel)
+  convert! (inferInstance : Congruence (functor r).homRel)
   ext
   rw [functor_homRel_eq_compClosure_eqvGen]
 
@@ -370,7 +368,7 @@ instance [L.Full] : (Quotient.lift L.homRel L (by simp)).Full where
 
 instance : (Quotient.lift L.homRel L (by simp)).Faithful where
   map_injective := by
-    rintro ⟨X⟩ ⟨Y⟩ ⟨f⟩ ⟨g⟩ h
+    rintro ⟨_⟩ ⟨_⟩ ⟨_⟩ ⟨_⟩ h
     exact Quotient.sound _ h
 
 instance [L.EssSurj] : (Quotient.lift L.homRel L (by simp)).EssSurj where

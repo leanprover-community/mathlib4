@@ -162,23 +162,26 @@ lemma isKInjective_of_injective (L : CochainComplex C ℤ) (d : ℤ)
       limitSequence_eqUpTo φ hφ x₀ k₀ n (n - 1) (by lia) (by lia),
       limitSequence_eqUpTo φ hφ x₀ k₀ (n + 1) n (by lia) (by lia)]
 
+attribute [local instance] preservesBinaryBiproducts_of_preservesBiproducts in
 instance (K L : CochainComplex C ℤ) [hK : K.IsKInjective] [hL : L.IsKInjective] :
     (K ⊞ L).IsKInjective := by
   let S := (HomotopyCategory.subcategoryAcyclic C).rightOrthogonal
   rw [isKInjective_iff_rightOrthogonal] at hK hL ⊢
-  have : PreservesBinaryBiproducts (HomotopyCategory.quotient C (.up ℤ)) :=
-    preservesBinaryBiproducts_of_preservesBiproducts _
   refine ObjectProperty.prop_of_iso _
     ((HomotopyCategory.quotient C (.up ℤ)).mapBiprod K L).symm ?_
   apply ObjectProperty.prop_biprod_of_isClosedUnderBinaryProducts
   all_goals assumption
+
+instance (K : CochainComplex C ℕ) [∀ n, Injective (K.X n)] :
+    IsKInjective (K.extend ComplexShape.embeddingUpNat) :=
+  isKInjective_of_injective _ 0
 
 set_option backward.isDefEq.respectTransparency false in
 lemma IsKInjective.eq_δ_of_cocycle {K L : CochainComplex C ℤ} {n : ℤ}
     (z : Cocycle K L n) [L.IsKInjective] (hK : K.Acyclic) (m : ℤ) (hm : m + 1 = n) :
     ∃ (α : Cochain K L m), δ m n α = z.1 := by
   obtain ⟨φ, hφ⟩ := (Cocycle.equivHom ..).surjective (z.rightShift n 0 (zero_add n))
-  rw [Subtype.ext_iff] at hφ
+  rw [Cocycle.ext_iff] at hφ
   dsimp at hφ
   obtain ⟨h⟩ := IsKInjective.nonempty_homotopy_zero φ hK
   obtain ⟨f, hf⟩ := Cochain.equivHomotopy _ _ h
@@ -187,9 +190,8 @@ lemma IsKInjective.eq_δ_of_cocycle {K L : CochainComplex C ℤ} {n : ℤ}
   apply (Cochain.rightShiftAddEquiv _ _ _ n 0 (by simp)).injective
   dsimp
   rw [← hφ, hf, δ_units_smul, Cochain.rightShift_units_smul,
-    Cochain.δ_rightUnshift _ _ _ _ 0 (by simp),
-    Cochain.rightShift_units_smul, Cochain.rightShift_rightUnshift,
-    smul_smul, Int.units_mul_self, one_smul]
+    Cochain.δ_rightUnshift _ _ _ _ 0 (by simp)]
+  simp [smul_smul]
 
 lemma IsKInjective.eq_δ_of_cocycle' {K L : CochainComplex C ℤ} {n : ℤ}
     (z : Cocycle K L n) [L.IsKInjective] (hL : L.Acyclic) (m : ℤ) (hm : m + 1 = n) :
@@ -207,7 +209,7 @@ lemma IsKInjective.bijective_precomp
   have hL := IsKInjective.rightOrthogonal L
   rw [← ObjectProperty.isLocal_trW] at hL
   apply hL
-  rwa [← HomotopyCategory.quasiIso_eq_subcategoryAcyclic_trW,
+  rwa [← HomotopyCategory.quasiIso_eq_trW_subcategoryAcyclic,
     HomotopyCategory.quotient_map_mem_quasiIso_iff]
 
 end CochainComplex

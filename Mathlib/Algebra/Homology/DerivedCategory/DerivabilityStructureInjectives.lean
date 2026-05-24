@@ -228,7 +228,8 @@ lemma isIso_quotient_map
   rw [← isIso_iff_of_reflects_iso _ (HomotopyCategory.Plus.ι (InjectiveObject C)),
     ← isIso_iff_of_reflects_iso _ (Functor.mapHomotopyCategory (InjectiveObject.ι C) (.up ℤ))]
   dsimp
-  rw [CochainComplex.IsKInjective.isIso_quotient_map_iff_quasiIso]
+  rw [HomologicalComplex.isIso_quotient_map_iff_homotopyEquivalences,
+    ← CochainComplex.IsKInjective.quasiIso_iff]
   rfl
 
 namespace isRightDerivabilityStructure
@@ -264,8 +265,8 @@ lemma inverseImage_quasiIso_mapCochainComplexPlus_injectivesι :
       (CochainComplex.Plus.ι (InjectiveObject C)) := by
   ext K L f
   simp [CochainComplex.Plus.quasiIso, Functor.mapCochainComplexPlus,
-    ← CochainComplex.IsKInjective.isIso_quotient_map_iff_quasiIso,
-    ← isIso_quotient_map_iff_homotopyEquivalences,
+    ← HomologicalComplex.isIso_quotient_map_iff_homotopyEquivalences,
+    CochainComplex.IsKInjective.quasiIso_iff,
     ← isIso_iff_of_reflects_iso _ ((InjectiveObject.ι C).mapHomotopyCategory (.up ℤ))]
 
 instance : (HomotopyCategory.Plus.quotient (InjectiveObject C)).IsLocalization
@@ -320,22 +321,24 @@ def iso : (CochainComplex.Plus.localizerMorphism C).functor ⋙
 set_option backward.isDefEq.respectTransparency false in
 open HomologicalComplex CochainComplex in
 instance : TwoSquare.GuitartExact (iso C).hom :=
-  TwoSquare.GuitartExact.quotient' (iso C).symm (by
+  TwoSquare.GuitartExact.quotient_of_nonempty_rightHomotopy (iso C).symm (by
     rintro ⟨K₁, n₁, hn₁⟩ ⟨K₂, n₂, hn₂⟩ f₀ f₁ hf
     obtain ⟨f₀, rfl⟩ := ObjectProperty.homMk_surjective f₀
     obtain ⟨f₁, rfl⟩ := ObjectProperty.homMk_surjective f₁
     dsimp [Functor.mapCochainComplexPlus] at f₀ f₁
-    refine ⟨⟨K₂.pathObject, CochainComplex.plus_pathObject K₂ ⟨n₂, hn₂⟩⟩,
-      ObjectProperty.homMk (pathObject.π₀ K₂),
-      ObjectProperty.homMk (pathObject.π₁ K₂),
-      ?_, ObjectProperty.homMk ?_, ?_⟩
+    refine ⟨Plus.prepathObject _, ?_, ⟨?_⟩⟩
     · ext : 1
       exact eq_of_homotopy _ _ (pathObject.homotopy₀₁ _ (fun n ↦ ⟨n + 1, by simp⟩))
-    · exact pathObject.lift f₀ f₁ (homotopyOfEq _ _ ((HomotopyCategory.Plus.ι C).congr_map hf)) ≫
-        (pathObject.mapHomologicalComplexObjIso K₂ (InjectiveObject.ι C)
-          (fun n ↦ ⟨n + 1, by simp⟩)).inv
-    · dsimp [Functor.mapCochainComplexPlus]
-      cat_disch)
+    · refine PrepathObject.RightHomotopy.fullSubcategoryEquiv.symm
+        { h := pathObject.lift f₀ f₁ (homotopyOfEq _ _
+          ((HomotopyCategory.Plus.ι C).congr_map hf)) ≫
+          (pathObject.mapHomologicalComplexObjIso K₂ (InjectiveObject.ι C)
+            (fun n ↦ ⟨n + 1, by simp⟩)).inv
+          h₀ := ?_
+          h₁ := ?_ }
+      all_goals
+        dsimp [Functor.mapCochainComplexPlus]
+        cat_disch)
 
 end isRightDerivabilityStructure
 
@@ -388,12 +391,14 @@ instance (K : HomotopyCategory.Plus C) [(∀ (n : ℤ), Injective (K.obj.as.X n)
   have (Y : HomotopyCategory.Plus (InjectiveObject C)) :
       IsIso (α.app ((InjectiveObject.ι C).mapHomotopyCategoryPlus.obj Y)) :=
     (localizerMorphism_derives F).isIso_of_isRightDerivedFunctor _ _
-  obtain ⟨Y, ⟨e⟩⟩ : (InjectiveObject.ι C).mapHomotopyCategoryPlus.essImage K :=
-    ⟨(quotient _).obj
-      ((CochainComplex.Plus.fibrantObjectEquivalence C).inverse.obj ⟨⟨_, K.property⟩, by
-          dsimp [fibrantObjects]
-          rw [CochainComplex.Plus.modelCategoryQuillen.isFibrant_iff]
-          infer_instance⟩), ⟨Iso.refl _⟩⟩
+  obtain ⟨Y, ⟨e⟩⟩ : (InjectiveObject.ι C).mapHomotopyCategoryPlus.essImage K := by
+    obtain ⟨X, hX⟩ := K
+    obtain ⟨K, rfl⟩ := HomotopyCategory.quotient_obj_surjective X
+    refine ⟨(quotient _).obj
+      ((CochainComplex.Plus.fibrantObjectEquivalence C).inverse.obj
+      ⟨⟨K, by simpa using hX⟩, ?_⟩), ⟨Iso.refl _⟩⟩
+    dsimp [fibrantObjects]
+    rwa [CochainComplex.Plus.modelCategoryQuillen.isFibrant_iff]
   rw [← NatTrans.isIso_app_iff_of_iso α e]
   infer_instance
 

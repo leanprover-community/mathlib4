@@ -93,7 +93,7 @@ lemma hasCoproduct_of_direct_factor [HasCoproduct Y] : HasCoproduct X := by
   let p : ∐ Y ⟶ ∐ Y := Sigma.map (fun i => (hX i).r ≫ (hX i).i)
   obtain ⟨S, h, fac⟩ := retract_of_isIdempotentComplete _ p (by aesop_cat)
   refine ⟨Cofan.mk S (fun i => (hX i).i ≫ Sigma.ι Y i ≫ h.r),
-    mkCofanColimit _ (fun c => h.i ≫ Sigma.desc (fun i => (hX i).r ≫ c.inj i))
+    Cofan.IsColimit.mk _ (fun c => h.i ≫ Sigma.desc (fun i => (hX i).r ≫ c.inj i))
       (fun c i => by simp [p, reassoc_of% fac])
       (fun c m hm => ?_)⟩
   dsimp at m ⊢
@@ -137,7 +137,7 @@ lemma cofanOfIsZero_inj (j : J) :
 set_option backward.isDefEq.respectTransparency false in
 include hι in
 noncomputable def isColimitCofanOfIsZero : IsColimit (cofanOfIsZero X ι) :=
-  mkCofanColimit _ (fun s => Sigma.desc (f := X ∘ ι) (fun j => s.inj (ι j)))
+  Cofan.IsColimit.mk _ (fun s => Sigma.desc (f := X ∘ ι) (fun j => s.inj (ι j)))
     (fun s i => by
       by_cases hi : i ∈ Set.range ι
       · obtain ⟨j, rfl⟩ := hi
@@ -203,7 +203,7 @@ lemma cofanOfIsZeroButOne_ι_self :
 
 noncomputable def isColimitCofanOfIsZeroButOne :
     IsColimit (cofanOfIsZeroButOne X i hX) :=
-  mkCofanColimit _ (fun s => s.inj i) (fun s j => by
+  Cofan.IsColimit.mk _ (fun s => s.inj i) (fun s j => by
     by_cases hj : j = i
     · subst hj
       simp

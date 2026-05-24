@@ -181,24 +181,16 @@ lemma llp_ofHoms_iff_hasLiftingProperty (ι : Type*) [Nonempty ι] {A B X Y : C}
 
 end MorphismProperty
 
-namespace Functor
-
-variable {D : Type*} [Category* D] (G : C ⥤ D) [G.IsEquivalence]
-    {A B X Y : C} (i : A ⟶ B) (p : X ⟶ Y)
-
-lemma hasLiftingProperty_iff_of_isEquivalence :
+lemma Functor.hasLiftingProperty_iff_of_isEquivalence
+    {D : Type*} [Category* D] (G : C ⥤ D) [G.IsEquivalence]
+    {A B X Y : C} (i : A ⟶ B) (p : X ⟶ Y) :
     HasLiftingProperty (G.map i) (G.map p) ↔
       HasLiftingProperty i p := by
-  have h₁ := G.asEquivalence.toAdjunction.hasLiftingProperty_iff i (G.map p)
-  dsimp at h₁
-  rw [h₁, ← MorphismProperty.rlp_ofHoms_iff_hasLiftingProperty Unit,
+  simp only [dsimp% G.asEquivalence.toAdjunction.hasLiftingProperty_iff,
     ← MorphismProperty.rlp_ofHoms_iff_hasLiftingProperty Unit]
   exact MorphismProperty.arrow_mk_iso_iff _
     (Arrow.isoMk (G.asEquivalence.unitIso.symm.app _)
       (G.asEquivalence.unitIso.symm.app _)
       (G.asEquivalence.unitIso.inv.naturality p).symm)
-
-end Functor
-
 
 end CategoryTheory

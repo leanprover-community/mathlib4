@@ -126,10 +126,9 @@ noncomputable def sheafificationAdjunction :
     { homEquiv := fun _ _ ↦ sheafificationHomEquiv α
       homEquiv_naturality_left_symm := fun {P₀ Q₀ N} f g ↦ by
         apply (SheafOfModules.toSheaf _).map_injective
-        rw [Functor.map_comp]
-        erw [toSheaf_map_sheafificationHomEquiv_symm,
-          toSheaf_map_sheafificationHomEquiv_symm α g]
-        rw [Functor.map_comp]
+        simp only [Functor.comp_obj, Functor.map_comp]
+        rw [toSheaf_map_sheafificationHomEquiv_symm α (f ≫ g),
+          toSheaf_map_sheafificationHomEquiv_symm α g, Functor.map_comp]
         apply (CategoryTheory.sheafificationAdjunction J
           AddCommGrpCat.{v}).homEquiv_naturality_left_symm
       homEquiv_naturality_right := fun {P₀ M N} f g ↦ by

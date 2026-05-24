@@ -59,13 +59,6 @@ instance : (degreewiseEpiWithInjectiveKernel (C := C)).IsStableUnderRetracts whe
 
 variable {K L : CochainComplex C ℤ} (φ : K ⟶ L)
 
-def monoUpTo (n : ℤ) : Prop := ∀ (i : ℤ) (_ : i ≤ n), Mono (φ.f i)
-
-lemma degreewiseEpiWithInjectiveKernel.epi {K L : CochainComplex C ℤ} {f : K ⟶ L}
-    (hf : degreewiseEpiWithInjectiveKernel f) :
-    Epi f :=
-  HomologicalComplex.epi_of_epi_f f (fun n ↦ (hf n).1)
-
 /-- A morphism of cochain complexes `φ` in an abelian category satisfies
 `degreewiseMonoWithProjectiveKernel φ` if for any `i : ℤ`, the morphism
 `φ.f i` is a monomorphism with a projective kernel. -/
@@ -109,6 +102,10 @@ lemma degreewiseEpiWithInjectiveKernel_iff_of_isZero {K L : CochainComplex C ℤ
     degreewiseEpiWithInjectiveKernel f ↔ ∀ (n : ℤ), Injective (K.X n) :=
   forall_congr' (fun n ↦ by
     rw [epiWithInjectiveKernel_iff_of_isZero]
-    exact Functor.map_isZero (HomologicalComplex.eval _ _ n) hL)
+    exact (HomologicalComplex.eval _ _ n).map_isZero hL)
+
+lemma degreewiseEpiWithInjectiveKernel.epi {K L : CochainComplex C ℤ} {f : K ⟶ L}
+    (h : degreewiseEpiWithInjectiveKernel f) : Epi f :=
+  HomologicalComplex.epi_of_epi_f f (fun n ↦ (h n).1)
 
 end CochainComplex

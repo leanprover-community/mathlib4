@@ -116,7 +116,7 @@ theorem prod_zero_index [∀ i, AddCommMonoid (β i)] [∀ (i) (x : β i), Decid
 theorem prod_single_index [∀ i, Zero (β i)] [∀ (i) (x : β i), Decidable (x ≠ 0)] [CommMonoid γ]
     {i : ι} {b : β i} {h : ∀ i, β i → γ} (h_zero : h i 0 = 1) : (single i b).prod h = h i b := by
   by_cases h : b ≠ 0
-  · simp [DFinsupp.prod, support_single_ne_zero h]
+  · simp [DFinsupp.prod, support_single h]
   · rw [not_not] at h
     simp [h, h_zero]
     rfl
@@ -238,14 +238,14 @@ def sumZeroHom [∀ i, Zero (β i)] [AddCommMonoid γ] (φ : ∀ i, ZeroHom (β 
       · intro i H1 H2
         rw [Finset.mem_inter] at H2
         simp only [Multiset.mem_toFinset] at H1 H2
-        convert map_zero (φ i)
+        convert! map_zero (φ i)
         exact (hy i).resolve_left (mt (And.intro H1) H2)
       · intro i _
         rfl
       · intro i H1 H2
         rw [Finset.mem_inter] at H2
         simp only [Multiset.mem_toFinset] at H1 H2
-        convert map_zero (φ i)
+        convert! map_zero (φ i)
         exact (hx i).resolve_left (mt (fun H3 => And.intro H3 H1) H2)
   map_zero' := by
     simp only [toFun_eq_coe, coe_zero, Pi.zero_apply, map_zero, Finset.sum_const_zero]; rfl
@@ -316,7 +316,7 @@ theorem sumAddHom_single [∀ i, AddZeroClass (β i)] [AddCommMonoid γ] (φ : �
 theorem sumAddHom_piSingle [∀ i, AddZeroClass (β i)] [AddCommMonoid γ] (i) (φ : β i →+ γ) :
     sumAddHom (Pi.single i φ) = φ.comp (evalAddMonoidHom i) :=
   AddMonoidHom.toZeroHom_injective <| by
-    convert sumZeroHom_piSingle i φ.toZeroHom using 1
+    convert! sumZeroHom_piSingle i φ.toZeroHom using 1
     rw [DFinsupp.sumAddHom_toZeroHom]
     conv_lhs =>
       enter [1, i]

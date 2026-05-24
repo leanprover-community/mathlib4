@@ -8,10 +8,10 @@ module
 public import Mathlib.Algebra.Group.Nat.Defs
 public import Mathlib.CategoryTheory.Category.Preorder
 public import Mathlib.CategoryTheory.Comma.Arrow
-public import Mathlib.CategoryTheory.EpiMono
 public import Mathlib.Data.Fintype.Basic
 public import Mathlib.Tactic.FinCases
 public import Mathlib.Tactic.SuppressCompilation
+
 /-!
 # Composable arrows
 
@@ -473,6 +473,27 @@ def whiskerLeftFunctor (Φ : Fin (n + 1) ⥤ Fin (m + 1)) :
 def _root_.Fin.succFunctor (n : ℕ) : Fin n ⥤ Fin (n + 1) where
   obj i := i.succ
   map {_ _} hij := homOfLE (Fin.succ_le_succ_iff.2 (leOfHom hij))
+
+/-- The functor `Fin (l + 1) ⥤ Fin (n + 1)` which sends `i` to `k + i` -/
+@[simps!]
+def _root_.Fin.natAddLEFunctor {n k l : ℕ} (h : k + l ≤ n) : Fin (l + 1) ⥤ Fin (n + 1) where
+  obj := fun ⟨i, _⟩ => ⟨k + i , by lia⟩
+  map {_ _} hij := homOfLE (by rw [Fin.le_iff_val_le_val]; simpa using (leOfHom hij))
+
+/-- The functor `ComposableArrows C n ⥤ ComposableArrows C l` obtained by precomposition with
+the functor `Fin.natAddLEFunctor`. -/
+@[simps!]
+def natAddLEFunctor {n k l : ℕ} (h : k + l ≤ n) :
+    ComposableArrows C n ⥤ ComposableArrows C l :=
+  whiskerLeftFunctor (Fin.natAddLEFunctor h)
+
+lemma natAddLEFunctor_obj' {n k l i : ℕ} (h : k + l ≤ n) (R : ComposableArrows C n)
+    (_ : i ≤ l := by lia) :
+    ((natAddLEFunctor h).obj R).obj' i = R.obj' (k + i) := rfl
+
+lemma natAddLEFunctor_app' {n k l i : ℕ} (h : k + l ≤ n) {R₁ R₂ : ComposableArrows C n}
+    (φ : R₁ ⟶ R₂) (_ : i ≤ l := by lia) :
+    app' ((natAddLEFunctor h).map φ) i = app' φ (k + i) := rfl
 
 /-- The functor `ComposableArrows C (n + 1) ⥤ ComposableArrows C n` which forgets
 the first arrow. -/

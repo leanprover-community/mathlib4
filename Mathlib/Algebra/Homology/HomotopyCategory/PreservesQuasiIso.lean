@@ -29,14 +29,14 @@ lemma preservesQuasiIso_iff_preserves_acyclic :
   constructor
   · intro hF K hK
     have hf : quasiIso _ _ (0 : 0 ⟶ K) := by
-      rw [quasiIso_eq_subcategoryAcyclic_trW, ObjectProperty.trW_iff]
+      rw [quasiIso_eq_trW_subcategoryAcyclic, ObjectProperty.trW_iff]
       refine ⟨K, 𝟙 K, 0, isomorphic_distinguished _
         (inv_rot_of_distTriang _ (contractible_distinguished K)) _ ?_, hK⟩
       exact Triangle.isoMk _ _ ((Functor.mapZeroObject _).symm)
         (Iso.refl _) (Iso.refl _) (by simp) (by simp) (by simp)
     replace hf := hF _ hf
     simp only [MorphismProperty.inverseImage_iff,
-      quasiIso_eq_subcategoryAcyclic_trW] at hf
+      quasiIso_eq_trW_subcategoryAcyclic] at hf
     rw [ObjectProperty.trW_iff] at hf
     obtain ⟨Z, g, h, hT, hZ⟩ := hf
     simp only [ObjectProperty.prop_inverseImage_iff]
@@ -45,7 +45,7 @@ lemma preservesQuasiIso_iff_preserves_acyclic :
       (ObjectProperty.prop_of_isZero _ (F.map_isZero (isZero_zero _))) hZ
   · intro hF K L f hf
     simp only [MorphismProperty.inverseImage_iff,
-      quasiIso_eq_subcategoryAcyclic_trW] at hf ⊢
+      quasiIso_eq_trW_subcategoryAcyclic] at hf ⊢
     rw [ObjectProperty.trW_iff] at hf
     obtain ⟨Z, g, h, hT, hZ⟩ := hf
     exact ObjectProperty.trW.mk _ (F.map_distinguished _ hT) (hF _ hZ)

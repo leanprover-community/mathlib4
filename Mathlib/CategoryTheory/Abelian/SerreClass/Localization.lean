@@ -175,7 +175,6 @@ lemma mono_map_tfae {X Y : C} (f : X ⟶ Y) :
     intro W z hz
     obtain ⟨φ, hφ⟩ := Localization.exists_rightFraction L P.isoModSerre
       ((L.objObjPreimageIso W).hom ≫ z)
-    have hs := Localization.inverts L P.isoModSerre φ.s φ.hs
     rw [← cancel_epi (L.objObjPreimageIso W).hom, comp_zero, hφ,
       ← cancel_epi (L.map φ.s), comp_zero,
       MorphismProperty.RightFraction.map_s_comp_map]
@@ -209,7 +208,6 @@ lemma epi_map_tfae {X Y : C} (f : X ⟶ Y) :
     intro W z hz
     obtain ⟨φ, hφ⟩ := Localization.exists_leftFraction L P.isoModSerre
       (z ≫ (L.objObjPreimageIso W).inv)
-    have hs := Localization.inverts L P.isoModSerre φ.s φ.hs
     rw [← cancel_mono (L.objObjPreimageIso W).inv, zero_comp, hφ,
       ← cancel_mono (L.map φ.s), zero_comp,
       MorphismProperty.LeftFraction.map_comp_map_s]
@@ -304,7 +302,6 @@ lemma preservesKernel {X Y : C} (f : X ⟶ Y) :
       generalizing W
   · obtain ⟨φ, hφ⟩ := Localization.exists_rightFraction L P.isoModSerre
       ((L.objObjPreimageIso W).hom ≫ w)
-    have _ := Localization.inverts L P.isoModSerre φ.s φ.hs
     rw [← cancel_epi (L.map φ.s),
       MorphismProperty.RightFraction.map_s_comp_map] at hφ
     obtain ⟨l, hl⟩ := this _ (L.map φ.f) (by
@@ -336,7 +333,6 @@ lemma preservesCokernel {X Y : C} (f : X ⟶ Y) :
       generalizing W
   · obtain ⟨φ, hφ⟩ := Localization.exists_leftFraction L P.isoModSerre
       (w ≫ (L.objObjPreimageIso W).inv)
-    have _ := Localization.inverts L P.isoModSerre φ.s φ.hs
     rw [← cancel_mono (L.map φ.s), Category.assoc,
       MorphismProperty.LeftFraction.map_comp_map_s] at hφ
     obtain ⟨l, hl⟩ := this _ (L.map φ.f) (by rw [← hφ, reassoc_of% hw, zero_comp]) ⟨_, rfl, by simp⟩

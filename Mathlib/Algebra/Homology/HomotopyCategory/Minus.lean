@@ -6,6 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.Algebra.Homology.CochainComplexMinus
+public import Mathlib.Algebra.Homology.HomotopyCategory.Plus
 public import Mathlib.Algebra.Homology.HomotopyCategory.Triangulated
 public import Mathlib.Algebra.Homology.HomotopyCategory.SingleFunctors
 public import Mathlib.Algebra.Homology.HomotopyCofiber
@@ -23,14 +24,19 @@ public import Mathlib.CategoryTheory.Shift.SingleFunctorsLift
 @[expose] public section
 
 open CategoryTheory Category Limits Triangulated ZeroObject Pretriangulated
+  HomotopicalAlgebra
 
 variable (C : Type _) [Category C] [Preadditive C]
   {D : Type _} [Category D] [Preadditive D] [HasZeroObject D] [HasBinaryBiproducts D]
   (A : Type _) [Category A] [Abelian A]
 
-variable {C} [HasBinaryBiproducts C] in
-open HomologicalComplex in
-lemma CochainComplex.minus_cylinder (K : CochainComplex C ℤ) (hK : CochainComplex.minus C K) :
+namespace CochainComplex
+
+open HomologicalComplex
+
+variable {C} [HasBinaryBiproducts C]
+
+lemma minus_cylinder (K : CochainComplex C ℤ) (hK : CochainComplex.minus C K) :
     CochainComplex.minus C (cylinder K) := by
   obtain ⟨n, hn⟩ := hK
   refine ⟨n + 1, ?_⟩
@@ -42,6 +48,26 @@ lemma CochainComplex.minus_cylinder (K : CochainComplex C ℤ) (hK : CochainComp
     simpa using K.isZero_of_isStrictlyLE n i
   · simp only [ComplexShape.up_Rel] at hj
     exact K.isZero_of_isStrictlyLE n _ (by lia)
+
+lemma minus_pathObject (K : CochainComplex C ℤ) (hK : CochainComplex.minus C K) :
+    CochainComplex.minus C (pathObject K) := by
+  obtain ⟨n, hn⟩ := hK
+  refine ⟨n + 1, ?_⟩
+  rw [CochainComplex.isStrictlyLE_iff]
+  intro i hi
+  refine pathObject.isZero_X _ _ (K.isZero_of_isStrictlyLE n _ (by lia)) (fun j hj ↦ ?_)
+  simp only [ComplexShape.up_Rel] at hj
+  exact K.isZero_of_isStrictlyLE n _ (by lia)
+
+/-- The pre-cylinder object attached to `K : Minus C`. -/
+noncomputable abbrev Minus.precylinder (K : Minus C) : Precylinder K :=
+  K.obj.precylinder.toFullSubcategory (K.obj.minus_cylinder K.property)
+
+/-- The pre-path object attached to `K : Minus C`. -/
+noncomputable abbrev Minus.prepathObject (K : Minus C) : PrepathObject K :=
+  K.obj.prepathObject.toFullSubcategory (K.obj.minus_pathObject K.property)
+
+end CochainComplex
 
 namespace HomotopyCategory
 
@@ -149,12 +175,10 @@ instance :
     obtain ⟨f₁, rfl⟩ := ObjectProperty.homMk_surjective f₁
     dsimp at f₀ f₁ hf
     replace hf := homotopyOfEq f₀ f₁ ((HomotopyCategory.Minus.ι _).congr_map hf)
-    refine ⟨⟨cylinder K, CochainComplex.minus_cylinder _ hK⟩,
-      ObjectProperty.homMk (cylinder.ι₀ _),
-      ObjectProperty.homMk (cylinder.ι₁ _),
-      ObjectProperty.homMk (cylinder.π _), ?_, by cat_disch, by cat_disch,
-      ObjectProperty.homMk (cylinder.desc f₀ f₁ hf), by cat_disch, by cat_disch⟩
-    exact ⟨cylinder.homotopyEquiv _ (fun n ↦ ⟨n - 1, by simp⟩), rfl⟩)
+    exact ⟨CochainComplex.Minus.precylinder _,
+      Precylinder.LeftHomotopy.fullSubcategoryEquiv.symm
+      { h := cylinder.desc f₀ f₁ hf },
+      ⟨cylinder.homotopyEquiv _ (fun j ↦ ⟨j - 1, by simp⟩), rfl⟩⟩)
 
 def quotientCompι :
   quotient C ⋙ ι C ≅

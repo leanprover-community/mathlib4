@@ -39,7 +39,7 @@ lemma quasiIso_eq_subcategoryAcyclic_trW :
   obtain ⟨M, g, h, mem⟩ := CategoryTheory.Pretriangulated.distinguished_cocone_triangle f
   have := (HomotopyCategory.subcategoryAcyclic C).trW_iff_of_distinguished _
     ((HomotopyCategory.Plus.ι C).map_distinguished _ mem)
-  erw [← HomotopyCategory.quasiIso_eq_subcategoryAcyclic_trW] at this
+  rw [← HomotopyCategory.quasiIso_eq_trW_subcategoryAcyclic] at this
   erw [(subcategoryAcyclic C).trW_iff_of_distinguished _ mem]
   exact this
 
@@ -56,8 +56,11 @@ namespace Plus
 
 noncomputable def Qh : HomotopyCategory.Plus C ⥤ Plus C :=
   t.plus.lift (HomotopyCategory.Plus.ι _ ⋙ DerivedCategory.Qh) (by
-    rintro ⟨⟨X⟩, n, h⟩
-    exact ⟨n, t.isGE_of_iso ((quotientCompQhIso C).symm.app X) n⟩)
+    rintro ⟨K, hK⟩
+    obtain ⟨K, rfl⟩ := HomotopyCategory.quotient_obj_surjective K
+    simp only [HomotopyCategory.plus_quotient_obj_iff] at hK
+    obtain ⟨n, hn⟩ := hK
+    exact ⟨n, t.isGE_of_iso ((quotientCompQhIso C).symm.app K) n⟩)
 
 noncomputable instance : (Qh : _ ⥤ Plus C).CommShift ℤ := by
   dsimp only [Qh]
@@ -76,20 +79,23 @@ lemma Qh_map_bijective_of_isKInjective (K L : HomotopyCategory.Plus C)
     ((HomotopyCategory.Plus.fullyFaithfulι C).map_bijective _ _)] at this
   rwa [← Function.Bijective.of_comp_iff' (t.plus.fullyFaithfulι.map_bijective _ _)]
 
-instance : (HomotopyCategory.plus C).IsTriangulatedRightLocalizing
+instance : (HomotopyCategory.plus C).IsVerdierRightLocalizing
     (HomotopyCategory.subcategoryAcyclic C) where
   fac {K L} φ hK hL := by
     obtain ⟨K : CochainComplex _ _, rfl⟩ := HomotopyCategory.quotient_obj_surjective K
     obtain ⟨L : CochainComplex _ _, rfl⟩ := HomotopyCategory.quotient_obj_surjective L
+    simp only [HomotopyCategory.plus_quotient_obj_iff] at hL
     obtain ⟨n, hn : L.IsStrictlyGE n⟩ := hL
     obtain ⟨φ, rfl⟩ := (HomotopyCategory.quotient _ _).map_surjective φ
     rw [HomotopyCategory.quotient_obj_mem_subcategoryAcyclic_iff_acyclic] at hK
     refine ⟨(HomotopyCategory.quotient _ _).obj (K.truncGE n),
       (HomotopyCategory.quotient _ _).map (K.πTruncGE n),
       (HomotopyCategory.quotient _ _).map (CochainComplex.truncGEMap φ n ≫ inv (L.πTruncGE n)),
-      ⟨n, (inferInstance : (K.truncGE n).IsStrictlyGE n)⟩, ?_, by simp [← Functor.map_comp]⟩
-    rw [HomotopyCategory.quotient_obj_mem_subcategoryAcyclic_iff_acyclic]
-    exact hK.truncGE _
+      ?_, ?_, by simp [← Functor.map_comp]⟩
+    · simp only [HomotopyCategory.plus_quotient_obj_iff]
+      exact ⟨n, inferInstance⟩
+    · rw [HomotopyCategory.quotient_obj_mem_subcategoryAcyclic_iff_acyclic]
+      exact hK.truncGE _
 
 variable (C)
 
@@ -100,10 +106,11 @@ instance : (Qh (C := C)).EssSurj := by
   suffices ∀ (X : DerivedCategory C) (n : ℤ) (_ : X.IsGE n),
     ∃ (K : CochainComplex C ℤ) (_ : K.IsStrictlyGE n),
       Nonempty (DerivedCategory.Q.obj K ≅ X) from ⟨by
-        rintro ⟨X, n, hn⟩
-        obtain ⟨K, e, h⟩ := hn
-        refine ⟨⟨(HomotopyCategory.quotient C (ComplexShape.up ℤ)).obj K, n, h⟩,
-          ⟨Plus.ι.preimageIso ((quotientCompQhIso C).app _ ≪≫ e.symm)⟩⟩⟩
+        intro ⟨X, n, K, e, h⟩
+        refine ⟨⟨(HomotopyCategory.quotient C (ComplexShape.up ℤ)).obj K, ?_⟩,
+          ⟨Plus.ι.preimageIso ((quotientCompQhIso C).app _ ≪≫ e.symm)⟩⟩
+        · simp only [HomotopyCategory.plus_quotient_obj_iff]
+          exact ⟨n, h⟩⟩
   intro X n hn
   have : (Q.objPreimage X).IsGE n := by
     rw [← isGE_Q_obj_iff]
@@ -112,8 +119,9 @@ instance : (Qh (C := C)).EssSurj := by
     ⟨(asIso (Q.map ((Q.objPreimage X).πTruncGE n))).symm ≪≫ Q.objObjPreimageIso X⟩⟩
 
 instance : Qh.IsLocalization (HomotopyCategory.Plus.subcategoryAcyclic C).trW :=
-  ObjectProperty.isLocalization_of_isTriangulated_of_isLocalizedFullyFaithful
-    (QhCompιIsoιCompQh C).symm
+  ((HomotopyCategory.plus C).triangulatedLocalizerMorphism
+    (HomotopyCategory.subcategoryAcyclic C)).isLocalization_of_isLocalizedFullyFaithful
+      (QhCompιIsoιCompQh C).symm
 
 instance : Qh.IsLocalization (HomotopyCategory.Plus.quasiIso C) := by
   rw [HomotopyCategory.Plus.quasiIso_eq_subcategoryAcyclic_trW]

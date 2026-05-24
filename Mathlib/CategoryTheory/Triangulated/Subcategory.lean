@@ -71,7 +71,7 @@ lemma Pi.congr_π {J : Type _} (F : J → C) [HasProduct F] {j₁ j₂ : J} (h :
 
 set_option backward.isDefEq.respectTransparency false in
 noncomputable def isLimitFanOfEquiv : IsLimit (fanOfEquiv X e) :=
-  mkFanLimit _ (fun s => Pi.lift (fun j₂ => s.proj (e.symm j₂) ≫ eqToHom (by simp) ))
+  Fan.IsLimit.mk _ (fun s => Pi.lift (fun j₂ => s.proj (e.symm j₂) ≫ eqToHom (by simp) ))
     (fun s j => by simp [Fan.congr_proj _ (e.symm_apply_apply j)])
     (fun s m hm => Limits.Pi.hom_ext (f := X) _ _ (fun j ↦ by simp [← hm]))
 
@@ -196,6 +196,13 @@ lemma IsTriangulatedClosed₃.mk' [P.IsClosedUnderIsomorphisms]
     (hP : ∀ (T : Triangle C) (_ : T ∈ distTriang C)
       (_ : P T.obj₁) (_ : P T.obj₂), P T.obj₃) : P.IsTriangulatedClosed₃ where
   ext₃' := by simpa only [isoClosure_eq_self] using hP
+
+lemma IsTriangulatedClosed₂.of_isTriangulatedClosed₃
+    [P.IsTriangulatedClosed₃] [P.IsStableUnderShift ℤ] :
+    P.IsTriangulatedClosed₂ where
+  ext₂' _ hT h₁ h₃ :=
+    P.ext_of_isTriangulatedClosed₃' _ (inv_rot_of_distTriang _ hT)
+      (P.le_shift _ _ h₃) h₁
 
 variable (P)
 

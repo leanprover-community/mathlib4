@@ -9,12 +9,6 @@ public import Mathlib.Algebra.Homology.HomotopyCategory.Acyclic
 public import Mathlib.Algebra.Homology.HomotopyCategory.SingleFunctors
 public import Mathlib.Algebra.Homology.HomotopyCategory.MappingCocone
 public import Mathlib.Algebra.Homology.HomotopyCategory.Triangulated
---public import Mathlib.Algebra.Homology.HomotopyCategory.HomologicalFunctor
---public import Mathlib.Algebra.Homology.HomotopyCategory.ShiftSequence
---public import Mathlib.Algebra.Homology.HomotopyCategory.ShortExact
---public import Mathlib.Algebra.Homology.HomotopyCategory.SingleFunctors
---public import Mathlib.Algebra.Homology.HomotopyCategory.Triangulated
---public import Mathlib.Algebra.Homology.Localization
 
 /-! # The derived category of an abelian category
 
@@ -114,18 +108,29 @@ instance {K L : CochainComplex C ℤ} (f : K ⟶ L) [QuasiIso f] :
 def Qh : HomotopyCategory C (ComplexShape.up ℤ) ⥤ DerivedCategory C :=
   HomologicalComplexUpToQuasiIso.Qh
 
-variable (C)
-
+variable (C) in
 /-- The natural isomorphism `HomotopyCategory.quotient C (ComplexShape.up ℤ) ⋙ Qh ≅ Q`. -/
 def quotientCompQhIso : HomotopyCategory.quotient C (ComplexShape.up ℤ) ⋙ Qh ≅ Q :=
   HomologicalComplexUpToQuasiIso.quotientCompQhIso C (ComplexShape.up ℤ)
+
+@[reassoc (attr := simp)]
+lemma quotientCompQhIso_hom_naturality {K L : CochainComplex C ℤ} (f : K ⟶ L) :
+    dsimp% Qh.map ((HomotopyCategory.quotient _ _).map f) ≫ (quotientCompQhIso C).hom.app L =
+      (quotientCompQhIso C).hom.app K ≫ Q.map f :=
+  (quotientCompQhIso C).hom.naturality f
+
+@[reassoc]
+lemma quotientCompQhIso_inv_naturality {K L : CochainComplex C ℤ} (f : K ⟶ L) :
+    dsimp% Q.map f ≫ (quotientCompQhIso C).inv.app L =
+      (quotientCompQhIso C).inv.app K ≫ Qh.map ((HomotopyCategory.quotient _ _).map f) :=
+  (quotientCompQhIso C).inv.naturality f
 
 instance : Qh.IsLocalization (HomotopyCategory.quasiIso C (ComplexShape.up ℤ)) := by
   dsimp [Qh, DerivedCategory]
   infer_instance
 
 instance : Qh.IsLocalization (HomotopyCategory.subcategoryAcyclic C).trW := by
-  rw [← HomotopyCategory.quasiIso_eq_subcategoryAcyclic_trW]
+  rw [← HomotopyCategory.quasiIso_eq_trW_subcategoryAcyclic]
   infer_instance
 
 instance : Preadditive (DerivedCategory C) :=
@@ -194,11 +199,11 @@ instance : (Q : _ ⥤ DerivedCategory C).mapArrow.EssSurj where
     exact ⟨Arrow.mk f, ⟨e⟩⟩
 
 instance : (HomotopyCategory.quasiIso C (ComplexShape.up ℤ)).HasLeftCalculusOfFractions := by
-  rw [HomotopyCategory.quasiIso_eq_subcategoryAcyclic_trW]
+  rw [HomotopyCategory.quasiIso_eq_trW_subcategoryAcyclic]
   infer_instance
 
 instance : (HomotopyCategory.quasiIso C (ComplexShape.up ℤ)).HasRightCalculusOfFractions := by
-  rw [HomotopyCategory.quasiIso_eq_subcategoryAcyclic_trW]
+  rw [HomotopyCategory.quasiIso_eq_trW_subcategoryAcyclic]
   infer_instance
 
 instance : (Qh : _ ⥤ DerivedCategory C).EssSurj :=
@@ -207,7 +212,6 @@ instance : (Qh : _ ⥤ DerivedCategory C).EssSurj :=
 instance : (Q : _ ⥤ DerivedCategory C).EssSurj :=
   Localization.essSurj _ (HomologicalComplex.quasiIso _ _)
 
-variable {C} in
 lemma mem_distTriang_iff (T : Triangle (DerivedCategory C)) :
     (T ∈ distTriang (DerivedCategory C)) ↔ ∃ (X Y : CochainComplex C ℤ) (f : X ⟶ Y),
       Nonempty (T ≅ Q.mapTriangle.obj (CochainComplex.mappingCone.triangle f)) := by
@@ -233,7 +237,7 @@ section
 
 open CochainComplex
 
-variable {C} {K L : CochainComplex C ℤ} (φ : K ⟶ L)
+variable {K L : CochainComplex C ℤ} (φ : K ⟶ L)
 
 lemma mappingCone_triangle_distinguished :
     DerivedCategory.Q.mapTriangle.obj (mappingCone.triangle φ) ∈ distTriang _ := by
@@ -248,6 +252,8 @@ lemma mappingCocone_triangle_distinguished :
     DerivedCategory.Q.mapTriangle.mapIso (mappingCocone.rotateTriangleIso φ))
 
 end
+
+variable (C)
 
 /-- The single functors `C ⥤ DerivedCategory C` for all `n : ℤ` along with
 their compatibilities with shifts. -/

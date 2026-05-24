@@ -101,7 +101,7 @@ image of `F`. In other words, for every `Y : D`, there is some `X : C` with `F.o
 @[stacks 001C]
 class EssSurj (F : C ⥤ D) : Prop where
   /-- All the objects of the target category are in the essential image. -/
-  mem_essImage (Y : D) : F.essImage Y
+  mem_essImage (F) (Y : D) : F.essImage Y
 
 instance EssSurj.toEssImage : EssSurj F.toEssImage where
   mem_essImage := fun ⟨_, hY⟩ => ⟨hY.witness, ⟨F.essImage.isoMk hY.getIso⟩⟩
@@ -119,7 +119,7 @@ variable [F.EssSurj]
     codomain. Applying the functor to this preimage will yield an object isomorphic to `Y`, see
     `obj_obj_preimage_iso`. -/
 def objPreimage (Y : D) : C :=
-  essImage.witness (@EssSurj.mem_essImage _ _ _ _ F _ Y)
+  essImage.witness (EssSurj.mem_essImage F Y)
 
 /-- Applying an essentially surjective functor to a preimage of `Y` yields an object that is
     isomorphic to `Y`. -/
@@ -143,7 +143,7 @@ instance instEssSurjId : EssSurj (𝟭 C) where
   mem_essImage Y := ⟨Y, ⟨Iso.refl _⟩⟩
 
 lemma essSurj_of_iso {F G : C ⥤ D} [EssSurj F] (α : F ≅ G) : EssSurj G where
-  mem_essImage Y := Functor.essImage.ofNatIso α (EssSurj.mem_essImage Y)
+  mem_essImage Y := Functor.essImage.ofNatIso α (EssSurj.mem_essImage F Y)
 
 instance essSurj_comp (F : C ⥤ D) (G : D ⥤ E) [F.EssSurj] [G.EssSurj] :
     (F ⋙ G).EssSurj where
@@ -159,7 +159,7 @@ variable {F} {X : E}
 lemma essImage_comp_apply_of_essSurj : (F ⋙ G).essImage X ↔ G.essImage X where
   mp := fun ⟨Y, ⟨e⟩⟩ ↦ ⟨F.obj Y, ⟨e⟩⟩
   mpr := fun ⟨Y, ⟨e⟩⟩ ↦
-    let ⟨Z, ⟨e'⟩⟩ := Functor.EssSurj.mem_essImage Y; ⟨Z, ⟨(G.mapIso e').trans e⟩⟩
+    let ⟨Z, ⟨e'⟩⟩ := Functor.EssSurj.mem_essImage F Y; ⟨Z, ⟨(G.mapIso e').trans e⟩⟩
 
 /-- Pre-composing by an essentially surjective functor doesn't change the essential image. -/
 @[simp] lemma essImage_comp_of_essSurj : (F ⋙ G).essImage = G.essImage :=
@@ -202,18 +202,18 @@ lemma essImage_ι_comp (F : C ⥤ D) (P : ObjectProperty C) :
   · rintro ⟨X, hX, ⟨e⟩⟩
     exact ⟨⟨X, hX⟩, ⟨e⟩⟩
 
-lemma full_of_precomp_essSurj (F : D ⥤ E) (L : C ⥤ D) [EssSurj L]
+lemma full_of_comp_essSurj (F : D ⥤ E) (L : C ⥤ D) [EssSurj L]
     (h : ∀ ⦃X₁ X₂ : C⦄ (φ : F.obj (L.obj X₁) ⟶ F.obj (L.obj X₂)),
       ∃ (f : L.obj X₁ ⟶ L.obj X₂), F.map f = φ) :
-    Full F := ⟨by
+    F.Full := ⟨by
   intro X₁ X₂ ψ
   obtain ⟨f, hf⟩ := h (F.map (L.objObjPreimageIso X₁).hom ≫ ψ ≫
     F.map (L.objObjPreimageIso X₂).inv)
   exact ⟨(L.objObjPreimageIso X₁).inv ≫ f ≫ (L.objObjPreimageIso X₂).hom, by simp [hf]⟩⟩
 
-lemma faithful_of_precomp_essSurj (F : D ⥤ E) (L : C ⥤ D) [EssSurj L]
+lemma faithful_of_comp_essSurj (F : D ⥤ E) (L : C ⥤ D) [EssSurj L]
     (h : ∀ ⦃X₁ X₂ : C⦄ (f g : L.obj X₁ ⟶ L.obj X₂), F.map f = F.map g → f = g) :
-    Faithful F where
+    F.Faithful where
   map_injective hfg := by
     rw [← cancel_mono (L.objObjPreimageIso _).inv, ← cancel_epi (L.objObjPreimageIso _).hom]
     exact h _ _ (by simp [hfg])

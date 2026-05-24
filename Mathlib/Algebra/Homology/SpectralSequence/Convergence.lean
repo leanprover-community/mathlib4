@@ -516,7 +516,7 @@ lemma isIso_filtration_map'_iff (i j : WithBot (α n)) (φ : j ⟶ i) (k : ℕ) 
   subst hk
   induction k with
   | zero =>
-    simp only [ConvergenceStripes.sub_zero, not_lt_zero', forall_eq',
+    simp only [ConvergenceStripes.sub_zero, not_lt_zero, forall_eq',
       IsEmpty.forall_iff, forall_const, iff_true]
     change IsIso (h.filtration.map (𝟙 _))
     infer_instance
