@@ -413,7 +413,8 @@ where `x ≤ y` if and only if `y ∈ closure {x}`.
 
 
 instance : PartialOrder (ProjectiveSpectrum 𝒜) :=
-  fast_instance% PartialOrder.lift asHomogeneousIdeal fun ⟨_, _, _⟩ ⟨_, _, _⟩ => by simp only [mk.injEq, imp_self]
+  fast_instance% PartialOrder.lift asHomogeneousIdeal
+    fun ⟨_, _, _⟩ ⟨_, _, _⟩ => by simp only [mk.injEq, imp_self]
 
 @[simp]
 theorem as_ideal_le_as_ideal (x y : ProjectiveSpectrum 𝒜) :

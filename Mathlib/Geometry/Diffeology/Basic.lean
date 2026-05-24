@@ -495,7 +495,8 @@ lemma isPlot_generatedFrom_of_mem {g : Set ((n : ℕ) × (𝔼ⁿ → X))} {n : 
     (hp : ⟨n, p⟩ ∈ g) : (@IsPlot _ (generateFrom g)) p :=
   self_subset_toPlots_generateFrom g hp
 
-instance : PartialOrder (DiffeologicalSpace X) := fast_instance% PartialOrder.lift _ injective_toPlots
+instance : PartialOrder (DiffeologicalSpace X) := fast_instance%
+  PartialOrder.lift _ injective_toPlots
 
 lemma le_def {d₁ d₂ : DiffeologicalSpace X} : d₁ ≤ d₂ ↔ d₁.toPlots ⊆ d₂.toPlots := Iff.rfl
 

@@ -458,7 +458,8 @@ theorem add_apply (Q Q' : QuadraticMap R M N) (x : M) : (Q + Q') x = Q x + Q' x 
   rfl
 
 instance : AddCommMonoid (QuadraticMap R M N) :=
-  fast_instance% DFunLike.coe_injective.addCommMonoid _ coeFn_zero coeFn_add fun _ _ => coeFn_smul _ _
+  fast_instance% DFunLike.coe_injective.addCommMonoid _ coeFn_zero coeFn_add
+    fun _ _ => coeFn_smul _ _
 
 /-- `@CoeFn (QuadraticMap R M)` as an `AddMonoidHom`.
 

@@ -75,20 +75,24 @@ instance [SemigroupWithZero β] : SemigroupWithZero (α →₀ β) :=
   fast_instance% DFunLike.coe_injective.semigroupWithZero _ coe_zero coe_mul
 
 instance [NonUnitalNonAssocSemiring β] : NonUnitalNonAssocSemiring (α →₀ β) :=
-  fast_instance% DFunLike.coe_injective.nonUnitalNonAssocSemiring _ coe_zero coe_add coe_mul fun _ _ ↦ rfl
+  fast_instance% DFunLike.coe_injective.nonUnitalNonAssocSemiring _ coe_zero coe_add coe_mul
+    fun _ _ ↦ rfl
 
 instance [NonUnitalSemiring β] : NonUnitalSemiring (α →₀ β) :=
   fast_instance% DFunLike.coe_injective.nonUnitalSemiring _ coe_zero coe_add coe_mul fun _ _ ↦ rfl
 
 instance [NonUnitalCommSemiring β] : NonUnitalCommSemiring (α →₀ β) :=
-  fast_instance% DFunLike.coe_injective.nonUnitalCommSemiring _ coe_zero coe_add coe_mul fun _ _ ↦ rfl
+  fast_instance% DFunLike.coe_injective.nonUnitalCommSemiring _ coe_zero coe_add coe_mul
+    fun _ _ ↦ rfl
 
 instance [NonUnitalNonAssocRing β] : NonUnitalNonAssocRing (α →₀ β) :=
-  fast_instance% DFunLike.coe_injective.nonUnitalNonAssocRing _ coe_zero coe_add coe_mul coe_neg coe_sub
+  fast_instance% DFunLike.coe_injective.nonUnitalNonAssocRing _ coe_zero coe_add coe_mul coe_neg
+    coe_sub
     (fun _ _ ↦ rfl) fun _ _ ↦ rfl
 
 instance [NonUnitalRing β] : NonUnitalRing (α →₀ β) :=
-  fast_instance% DFunLike.coe_injective.nonUnitalRing _ coe_zero coe_add coe_mul coe_neg coe_sub (fun _ _ ↦ rfl)
+  fast_instance% DFunLike.coe_injective.nonUnitalRing _ coe_zero coe_add coe_mul coe_neg coe_sub
+    (fun _ _ ↦ rfl)
     fun _ _ ↦ rfl
 
 instance [NonUnitalCommRing β] : NonUnitalCommRing (α →₀ β) :=

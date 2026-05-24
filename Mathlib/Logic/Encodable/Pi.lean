@@ -64,6 +64,7 @@ def fintypePi (α : Type*) (π : α → Type*) [DecidableEq α] [Fintype α] [�
 /-- If `α` and `β` are encodable and `α` is a fintype, then `α → β` is encodable as well. -/
 instance fintypeArrowOfEncodable {α β : Type*} [Encodable α] [Fintype α] [Encodable β] :
     Encodable (α → β) :=
-  fast_instance% ofEquiv (Fin (Fintype.card α) → β) <| Equiv.arrowCongr fintypeEquivFin (Equiv.refl _)
+  fast_instance% ofEquiv (Fin (Fintype.card α) → β) <| Equiv.arrowCongr fintypeEquivFin
+    (Equiv.refl _)
 
 end Encodable

@@ -312,12 +312,14 @@ instance : AddCommGroup (P →ᴬ[R] W) :=
 
 instance [Monoid S] [DistribMulAction S W] [SMulCommClass R S W] [ContinuousConstSMul S W] :
     DistribMulAction S (P →ᴬ[R] W) :=
-  fast_instance% Function.Injective.distribMulAction ⟨⟨fun f ↦ f.toAffineMap.toFun, rfl⟩, coe_add⟩ coe_injective
+  fast_instance% Function.Injective.distribMulAction
+    ⟨⟨fun f ↦ f.toAffineMap.toFun, rfl⟩, coe_add⟩ coe_injective
     coe_smul
 
 instance [Semiring S] [Module S W] [SMulCommClass R S W] [ContinuousConstSMul S W] :
     Module S (P →ᴬ[R] W) :=
-  fast_instance% Function.Injective.module S ⟨⟨fun f ↦ f.toAffineMap.toFun, rfl⟩, coe_add⟩ coe_injective coe_smul
+  fast_instance% Function.Injective.module S
+    ⟨⟨fun f ↦ f.toAffineMap.toFun, rfl⟩, coe_add⟩ coe_injective coe_smul
 
 variable [TopologicalSpace V] [IsTopologicalAddTorsor P]
 

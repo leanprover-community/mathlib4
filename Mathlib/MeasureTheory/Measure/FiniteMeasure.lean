@@ -275,7 +275,8 @@ theorem toMeasure_sum {ι : Type*} {s : Finset ι} {ν : ι → FiniteMeasure Ω
   map_sum toMeasureAddMonoidHom _ _
 
 instance {Ω : Type*} [MeasurableSpace Ω] : Module ℝ≥0 (FiniteMeasure Ω) :=
-  fast_instance% Function.Injective.module _ toMeasureAddMonoidHom toMeasure_injective toMeasure_smul
+  fast_instance% Function.Injective.module _ toMeasureAddMonoidHom toMeasure_injective
+    toMeasure_smul
 
 @[simp]
 theorem smul_apply [IsScalarTower R ℝ≥0 ℝ≥0] (c : R) (μ : FiniteMeasure Ω) (s : Set Ω) :

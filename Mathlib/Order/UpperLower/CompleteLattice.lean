@@ -111,7 +111,8 @@ instance _root_.LowerSet.completeLattice : CompleteLattice (LowerSet α) :=
 
 @[to_dual existing]
 instance _root_.LowerSet.completelyDistribLattice : CompletelyDistribLattice (LowerSet α) :=
-  fast_instance% .ofMinimalAxioms <| SetLike.coe_injective.completelyDistribLatticeMinimalAxioms .of _
+  fast_instance% .ofMinimalAxioms <| SetLike.coe_injective.completelyDistribLatticeMinimalAxioms .of
+    _
     .rfl .rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ ↦ rfl) rfl rfl
 
 @[to_dual]

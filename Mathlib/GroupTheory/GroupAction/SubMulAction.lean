@@ -271,7 +271,8 @@ instance : InfSet (SubMulAction R M) :=
 
 @[to_additive]
 instance : CompleteLattice (SubMulAction R M) :=
-  fast_instance% SetLike.coe_injective.completeLattice _ .rfl .rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl)
+  fast_instance% SetLike.coe_injective.completeLattice _ .rfl .rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
+    (fun _ ↦ rfl)
     (fun _ ↦ rfl) rfl rfl
 
 @[to_additive (attr := simp)]

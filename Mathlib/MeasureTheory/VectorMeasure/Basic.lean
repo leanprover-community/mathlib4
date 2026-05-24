@@ -305,7 +305,8 @@ theorem coe_add (v w : VectorMeasure α M) : ⇑(v + w) = v + w := rfl
 theorem add_apply (v w : VectorMeasure α M) (i : Set α) : (v + w) i = v i + w i := rfl
 
 instance instAddCommMonoid : AddCommMonoid (VectorMeasure α M) :=
-  fast_instance% Function.Injective.addCommMonoid _ coe_injective coe_zero coe_add fun _ _ => coe_smul _ _
+  fast_instance% Function.Injective.addCommMonoid _ coe_injective coe_zero coe_add
+    fun _ _ => coe_smul _ _
 
 /-- `(⇑)` is an `AddMonoidHom`. -/
 @[simps]

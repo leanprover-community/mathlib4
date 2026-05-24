@@ -284,7 +284,8 @@ instance [Π i, Group (R i)] [∀ i, SubgroupClass (S i) (R i)] :
 @[to_additive]
 instance [Π i, CommGroup (R i)] [∀ i, SubgroupClass (S i) (R i)] :
     CommGroup (Πʳ i, [R i, B i]_[𝓕]) :=
-  fast_instance% DFunLike.coe_injective.commGroup _ rfl (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ _ ↦ rfl)
+  fast_instance% DFunLike.coe_injective.commGroup _ rfl (fun _ _ ↦ rfl) (fun _ ↦ rfl)
+    (fun _ _ ↦ rfl)
     (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
 
 instance [Π i, Ring (R i)] [∀ i, SubringClass (S i) (R i)] :

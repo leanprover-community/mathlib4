@@ -41,6 +41,7 @@ lemma Set.biInter_finsetSigma_univ' (s : Finset ι) (f : Π i, κ i → Set α) 
 variable [Fintype ι]
 
 instance Sigma.instFintype : Fintype (Σ i, κ i) := ⟨univ.sigma fun _ ↦ univ, by simp⟩
-instance PSigma.instFintype : Fintype (Σ' i, κ i) := fast_instance% .ofEquiv _ (Equiv.psigmaEquivSigma _).symm
+instance PSigma.instFintype : Fintype (Σ' i, κ i) := fast_instance%
+  .ofEquiv _ (Equiv.psigmaEquivSigma _).symm
 
 @[simp] lemma Finset.univ_sigma_univ : univ.sigma (fun _ ↦ univ) = (univ : Finset (Σ i, κ i)) := rfl

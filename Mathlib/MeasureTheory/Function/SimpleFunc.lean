@@ -514,7 +514,8 @@ instance instAddCommMonoid [AddCommMonoid β] : AddCommMonoid (α →ₛ β) :=
     coe_injective coe_zero coe_add fun _ _ => coe_smul _ _
 
 instance instAddGroup [AddGroup β] : AddGroup (α →ₛ β) :=
-  fast_instance% Function.Injective.addGroup (fun f => show α → β from f) coe_injective coe_zero coe_add coe_neg
+  fast_instance% Function.Injective.addGroup
+    (fun f => show α → β from f) coe_injective coe_zero coe_add coe_neg
     coe_sub (fun _ _ => coe_smul _ _) fun _ _ => coe_smul _ _
 
 instance instAddCommGroup [AddCommGroup β] : AddCommGroup (α →ₛ β) :=
