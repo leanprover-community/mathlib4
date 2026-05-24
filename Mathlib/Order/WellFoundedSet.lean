@@ -559,6 +559,13 @@ lemma WellFoundedOn.mapsTo {α β : Type*} {r : α → α → Prop} (f : β → 
     t.WellFoundedOn (r on f) := by
   exact InvImage.wf (fun x : t ↦ ⟨f x, h x.prop⟩) hw
 
+theorem WellFoundedOn.finite_of_wellFoundedOn_swap {α : Type*} {r : α → α → Prop} {s : Set α}
+    [IsStrictTotalOrder s (Function.onFun r Subtype.val)]
+    (h : WellFoundedOn s r) (h' : WellFoundedOn s (Function.swap r)) :
+    s.Finite := by
+  rw [Set.wellFoundedOn_iff, ← WellFounded.subtype_iff, ← isWellFounded_iff] at h h'
+  exact Set.finite_coe_iff.mp <| @IsWellOrder.finite_of_isWellOrder_of_isWellOrder_swap _ _ ⟨⟩ h'
+
 end WellFoundedOn
 
 section LinearOrder
