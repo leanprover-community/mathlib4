@@ -165,25 +165,25 @@ theorem not_isCofinal_iff_bddAbove [NoMaxOrder α] {s : Set α} : ¬ IsCofinal s
 theorem not_bddAbove_iff_isCofinal [NoMaxOrder α] {s : Set α} : ¬ BddAbove s ↔ IsCofinal s :=
   not_iff_comm.1 not_isCofinal_iff_bddAbove
 
-theorem IsCofinal.inter_left_of_isUpperSet {s t : Set α} (hs : IsCofinal s) (ht : IsUpperSet t)
-    (ht₀ : t.Nonempty) : IsCofinal (t ∩ s) := by
+theorem IsCofinal.inter_of_isUpperSet_left {s t : Set α} (hs : IsCofinal s) (ht : IsUpperSet t)
+    (ht₀ : t.Nonempty) : IsCofinal (s ∩ t) := by
   intro y
   obtain ⟨x, hx⟩ := ht₀
   obtain ⟨z, hz, hyz⟩ := hs (max x y)
-  exact ⟨z, ⟨ht ((le_max_left ..).trans hyz) hx, hz⟩, (le_max_right ..).trans hyz⟩
+  exact ⟨z, ⟨hz, ht ((le_max_left ..).trans hyz) hx⟩, (le_max_right ..).trans hyz⟩
 
-theorem IsCofinal.inter_right_of_isUpperSet {s t : Set α} (hs : IsCofinal s) (ht : IsUpperSet t)
-    (ht₀ : t.Nonempty) : IsCofinal (s ∩ t) := by
+theorem IsCofinal.inter_of_isUpperSet_right {s t : Set α} (hs : IsCofinal s) (ht : IsUpperSet t)
+    (ht₀ : t.Nonempty) : IsCofinal (t ∩ s) := by
   rw [inter_comm]
-  exact hs.inter_left_of_isUpperSet ht ht₀
+  exact hs.inter_of_isUpperSet_left ht ht₀
 
 theorem IsUpperSet.isCofinal {s : Set α} (hs : IsUpperSet s) (hs₀ : s.Nonempty) : IsCofinal s := by
-  simpa using IsCofinal.univ.inter_left_of_isUpperSet hs hs₀
+  simpa using IsCofinal.univ.inter_of_isUpperSet_left hs hs₀
 
-theorem isCofinal_Ici (x : α) : IsCofinal (Ici x) := by
+@[simp] protected theorem IsCofinal.Ici (x : α) : IsCofinal (Ici x) := by
   simpa using (isUpperSet_Ici x).isCofinal
 
-theorem isCofinal_Ioi [NoMaxOrder α] (x : α) : IsCofinal (Ioi x) := by
+@[simp] protected theorem IsCofinal.Ioi [NoMaxOrder α] (x : α) : IsCofinal (Ioi x) := by
   simpa using (isUpperSet_Ioi x).isCofinal
 
 /-- The set of "records" (the smallest inputs yielding the highest values) with respect to a
