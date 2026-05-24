@@ -751,7 +751,7 @@ end TopologicalSpace
 
 section NormedSpace
 
-variable [NontriviallyNormedField 𝕜]
+variable [NontriviallyNormedField 𝕜] [AddCommGroup E] [AddCommGroup F]
 variable [SeminormedAddCommGroup E] [SeminormedAddCommGroup F] [NormedSpace 𝕜 E] [NormedSpace 𝕜 F]
 variable {f : α → E} {g : α → F} {l : Filter α}
 
