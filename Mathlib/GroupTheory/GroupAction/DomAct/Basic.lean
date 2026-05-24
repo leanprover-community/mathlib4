@@ -223,7 +223,8 @@ theorem smul_monoidHom_apply (c : Mᵈᵐᵃ) (f : A →* B) (a : A) : (c • f)
 @[simp]
 theorem mk_smul_monoidHom_apply (c : M) (f : A →* B) (a : A) : (mk c • f) a = f (c • a) := rfl
 
-instance : MulAction Mᵈᵐᵃ (A →* B) := fast_instance% DFunLike.coe_injective.mulAction (⇑) fun _ _ ↦ rfl
+instance : MulAction Mᵈᵐᵃ (A →* B) := fast_instance%
+  DFunLike.coe_injective.mulAction (⇑) fun _ _ ↦ rfl
 
 end MonoidHom
 
