@@ -35,7 +35,7 @@ public section
 
 open Metric
 
-variable {𝕜 : Type*} [RCLike 𝕜] {E : Type*} [NormedAddCommGroup E]
+variable {𝕜 : Type*} [RCLike 𝕜] {E : Type*} [AddCommGroup E] [NormedAddCommGroup E]
 
 theorem RCLike.norm_coe_norm {z : E} : ‖(‖z‖ : 𝕜)‖ = ‖z‖ := by simp
 
@@ -103,7 +103,7 @@ We require that the map is an additive monoid homomorphism, and acts as a multip
 in practice this means `f` is a linear map, but we allow the flexibility so it is convenient
 to apply for eg continuous linear maps also, without a coercion in the goal.
 -/
-lemma antilipschitz_of_bound_of_norm_one {𝓕 E F : Type*}
+lemma antilipschitz_of_bound_of_norm_one {𝓕 E F : Type*} [AddCommGroup E] [AddCommGroup F]
     [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedSpace 𝕜 E] [NormedSpace 𝕜 F]
     [FunLike 𝓕 E F] [AddMonoidHomClass 𝓕 E F] [MulActionHomClass 𝓕 𝕜 E F]
     (f : 𝓕) {K : NNReal} (h : ∀ x, ‖x‖ = 1 → 1 ≤ K * ‖f x‖) :
