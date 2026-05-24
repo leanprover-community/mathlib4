@@ -9,6 +9,7 @@ public import Mathlib.Algebra.Group.Idempotent
 public import Mathlib.Algebra.Ring.Equiv
 public import Mathlib.Algebra.Ring.PUnit
 public import Mathlib.Order.Hom.BoundedLattice
+public import Mathlib.RingTheory.Ideal.Quotient.Defs
 public import Mathlib.Tactic.Abel
 public import Mathlib.Tactic.Ring
 
@@ -105,6 +106,13 @@ instance (priority := 100) toCommRing : CommRing α :=
   { (inferInstance : BooleanRing α) with
     mul_comm := fun a b => by rw [← add_eq_zero', mul_add_mul] }
 
+instance (I : Ideal α) [I.IsTwoSided] : BooleanRing (α ⧸ I) where
+  isIdempotentElem x := by
+    apply Quotient.ind
+    intro x
+    change ⟦x * x⟧ = ⟦x⟧
+    rw [isIdempotentElem x]
+
 end BooleanRing
 
 instance : BooleanRing PUnit :=
@@ -148,6 +156,11 @@ theorem toBoolAlg_inj {a b : α} : toBoolAlg a = toBoolAlg b ↔ a = b :=
 
 theorem ofBoolAlg_inj {a b : AsBoolAlg α} : ofBoolAlg a = ofBoolAlg b ↔ a = b :=
   Iff.rfl
+
+/-- A recursor for `AsBoolAlg`. Use as `induction x`. -/
+@[elab_as_elim, induction_eliminator, cases_eliminator]
+protected def AsBoolAlg.rec {β : AsBoolAlg α → Sort*} (ind : ∀ a, β (toBoolAlg a)) :
+    ∀ a, β a := fun a ↦ ind (ofBoolAlg a)
 
 instance [Inhabited α] : Inhabited (AsBoolAlg α) :=
   ‹Inhabited α›
@@ -367,6 +380,11 @@ theorem toBoolRing_inj {a b : α} : toBoolRing a = toBoolRing b ↔ a = b :=
 theorem ofBoolRing_inj {a b : AsBoolRing α} : ofBoolRing a = ofBoolRing b ↔ a = b :=
   Iff.rfl
 
+/-- A recursor for `AsBoolRing`. Use as `induction x`. -/
+@[elab_as_elim, induction_eliminator, cases_eliminator]
+protected def AsBoolRing.rec {β : AsBoolRing α → Sort*} (ind : ∀ a, β (toBoolRing a)) :
+    ∀ a, β a := fun a ↦ ind (ofBoolRing a)
+
 instance [Inhabited α] : Inhabited (AsBoolRing α) :=
   ⟨default (α := α)⟩
 
@@ -470,6 +488,19 @@ theorem toBoolRing_inf (a b : α) : toBoolRing (a ⊓ b) = toBoolRing a * toBool
 @[simp]
 theorem toBoolRing_symmDiff (a b : α) : toBoolRing (a ∆ b) = toBoolRing a + toBoolRing b :=
   rfl
+
+@[simp]
+theorem toBoolRing_compl (a : α) : toBoolRing aᶜ = 1 + toBoolRing a := by
+  rw [← top_symmDiff, toBoolRing_symmDiff, toBoolRing_top]
+
+@[simp]
+theorem toBoolRing_sup (a b : α) :
+    toBoolRing (a ⊔ b) = toBoolRing a + toBoolRing b + toBoolRing a * toBoolRing b := by
+  rw [← symmDiff_symmDiff_inf, toBoolRing_symmDiff, toBoolRing_symmDiff, toBoolRing_inf]
+
+@[simp]
+theorem toBoolRing_sdiff (a b : α) : toBoolRing (a \ b) = toBoolRing a * (1 + toBoolRing b) := by
+  simp [sdiff_eq]
 
 /-- Turn a bounded lattice homomorphism from Boolean algebras `α` to `β` into a ring homomorphism
 from `α` to `β` considered as Boolean rings. -/

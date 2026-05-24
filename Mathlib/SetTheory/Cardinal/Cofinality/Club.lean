@@ -6,7 +6,6 @@ Authors: Violeta Hernández Palacios
 module
 
 public import Mathlib.Order.DirSupClosed
-public import Mathlib.Order.Filter.CardinalInter
 public import Mathlib.Order.IsNormal
 public import Mathlib.SetTheory.Cardinal.Cofinality.Basic
 
@@ -31,8 +30,6 @@ public section
 universe u v
 
 open Cardinal Order Set
-
-variable {α : Type v} {s t : Set α} {x : α} [LinearOrder α]
 
 variable {α : Type v} {s t : Set α} {x : α} [LinearOrder α]
 
@@ -165,46 +162,6 @@ theorem _root_.Order.IsNormal.isClub_fixedPoints {f : α → α} (hα : cof α �
 
 end WellFoundedLT
 end IsClub
-
-/-- The filter consisting of all sets which contain a club set. -/
-@[expose, simps]
-def clubFilter [WellFoundedLT α] (hα : cof α ≠ ℵ₀) : Filter α where
-  sets := {s | ∃ t ⊆ s, IsClub t}
-  univ_sets := ⟨_, subset_rfl, .univ⟩
-  sets_of_superset {s t} hs hst := by
-    obtain ⟨u, hus, hu⟩ := hs
-    exact ⟨u, hus.trans hst, hu⟩
-  inter_sets {s t} hs ht := by
-    obtain ⟨u, hus, hu⟩ := hs
-    obtain ⟨v, hvt, hv⟩ := ht
-    exact ⟨_, Set.inter_subset_inter hus hvt, hu.inter hα hv⟩
-
-@[simp]
-theorem mem_clubFilter [WellFoundedLT α] {hα : cof α ≠ ℵ₀} :
-    s ∈ clubFilter hα ↔ ∃ t ⊆ s, IsClub t :=
-  .rfl
-
-theorem cardinalInterFilter_clubFilter [WellFoundedLT α] {hα : cof α ≠ ℵ₀} :
-    CardinalInterFilter (clubFilter hα) (cof α) where
-  cardinal_sInter_mem s hsα hs := by
-    simp_rw [mem_clubFilter] at hs
-    choose t hts ht using hs
-    refine ⟨⋂ x : s, t _ x.2, ?_, ?_⟩
-    · rw [Set.sInter_eq_iInter]
-      exact Set.iInter_mono (by simpa)
-    · apply IsClub.iInter hα <;> simpa
-
-theorem countableInterFilter_clubFilter [WellFoundedLT α] {hα : cof α ≠ ℵ₀} :
-    CountableInterFilter (clubFilter hα) where
-  countable_sInter_mem s hsα hs := by
-    simp_rw [mem_clubFilter] at hs
-    choose t hts ht using hs
-    refine ⟨⋂ x : s, t _ x.2, ?_, ?_⟩
-    · rw [Set.sInter_eq_iInter]
-      exact Set.iInter_mono (by simpa)
-    · have := hsα.to_subtype
-      apply IsClub.iInter_of_countable hα
-      simpa
 
 /-! ### Stationary sets -/
 
