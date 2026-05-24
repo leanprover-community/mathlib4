@@ -190,7 +190,7 @@ theorem is_invariant_one' (A : SL(2, ℤ)) : (1 : ℍ → ℂ) ∣[(0 : ℤ)] (A
 theorem slash_action_eq'_iff (k : ℤ) (f : ℍ → ℂ) (γ : SL(2, ℤ)) (z : ℍ) :
     (f ∣[k] γ) z = f z ↔ f (γ • z) = ((γ 1 0 : ℂ) * z + (γ 1 1 : ℂ)) ^ k * f z := by
   simp only [SL_slash_apply]
-  convert inv_mul_eq_iff_eq_mul₀ (G₀ := ℂ) _ using 2
+  convert! inv_mul_eq_iff_eq_mul₀ (G₀ := ℂ) _ using 2
   · simp only [mul_comm (f _), denom, zpow_neg]
     rfl
   · exact zpow_ne_zero k (denom_ne_zero γ z)
