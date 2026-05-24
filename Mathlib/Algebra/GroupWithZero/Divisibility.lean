@@ -172,12 +172,12 @@ lemma pow_dvd_pow_iff (ha₀ : a ≠ 0) (ha : ¬IsUnit a) : a ^ n ∣ a ^ m ↔ 
     apply pow_ne_zero m ha₀
   · apply pow_dvd_pow
 
-lemma mul_dvd_left_iff_isUnit {a b : α} (ha0 : a ≠ 0) : a * b ∣ a ↔ IsUnit b := by
+lemma mul_dvd_left_iff_isUnit (ha0 : a ≠ 0) : a * b ∣ a ↔ IsUnit b := by
   nth_rw 2 [← mul_one a]
   rw [mul_dvd_mul_iff_left ha0]
   exact isUnit_iff_dvd_one.symm
 
-lemma mul_dvd_right_iff_isUnit {a b : α} (ha0 : a ≠ 0) : b * a ∣ a ↔ IsUnit b := by
+lemma mul_dvd_right_iff_isUnit (ha0 : a ≠ 0) : b * a ∣ a ↔ IsUnit b := by
   rw [mul_comm]
   exact mul_dvd_left_iff_isUnit ha0
 
