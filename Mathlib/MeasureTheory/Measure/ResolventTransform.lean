@@ -174,9 +174,7 @@ theorem analyticOn_resolventTransform [NormedAlgebra 𝕜 ℂ] {μ : Measure �
     AnalyticOn ℂ (resolventTransform μ) (algebraMap 𝕜 ℂ '' μ.support)ᶜ := by
   rw [analyticOn_iff_differentiableOn]
   · intro z hz
-    apply DifferentiableAt.differentiableWithinAt
-    apply HasDerivAt.differentiableAt
-    exact hasDerivAt_resolventTransform z hz
+    exact (hasDerivAt_resolventTransform μ z hz).differentiableAt.differentiableWithinAt
   apply isOpen_compl_iff.mpr
   refine (Topology.IsClosedEmbedding.isClosed_iff_image_isClosed ?_).mp isClosed_support
   exact (algebraMap_isometry 𝕜 ℂ).isClosedEmbedding
