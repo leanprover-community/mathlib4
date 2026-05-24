@@ -324,6 +324,7 @@ theorem IsCountablyCompact.exists_accPt_of_infinite
       ((Set.finite_singleton a).preimage hx_inj.injOn).compl_mem_cofinite
   · exact tendsto_principal.mpr <| Eventually.of_forall fun n => (f n).2
 
+set_option linter.tacticAnalysis.verifyGrindOnly false in
 /-- In a `T₁` space, a set is countably compact if and only if every infinite subset has an
 accumulation point in the set. -/
 theorem isCountablyCompact_iff_infinite_subset_has_accPt [T1Space E] {A : Set E} :
@@ -340,10 +341,13 @@ theorem isCountablyCompact_iff_infinite_subset_has_accPt [T1Space E] {A : Set E}
     · -- Case 2: Infinite range
       obtain ⟨a, haA, hacc⟩ := h (Set.range x ∩ A) inter_subset_right <| by
         rw [eventually_iff, mem_cofinite, compl_setOf] at hx
-        exact hfin.inter_of_finite_diff (hx.image x |>.subset (by grind))
+        refine hfin.inter_of_finite_diff (hx.image x |>.subset ?_)
+        simp only [diff_subset_iff]
+        grind
       refine ⟨a, haA, ?_⟩
       simp_rw [mapClusterPt_iff_frequently, frequently_cofinite_iff_infinite]
-      exact fun s hs ↦ Infinite.of_accPt (hacc.nhds_inter hs) |>.mono (by grind) |>.of_image x
+      refine fun s hs ↦ Infinite.of_accPt (hacc.nhds_inter hs) |>.mono ?_ |>.of_image x
+      grind only [= subset_def, = mem_inter_iff, = mem_image, = mem_range, usr mem_setOf_eq]
 
 /-- A countably compact Lindelöf set is compact. -/
 theorem IsLindelof.isCompact (hA : IsCountablyCompact A) (hl : IsLindelof A) :

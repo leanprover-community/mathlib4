@@ -251,6 +251,7 @@ theorem _root_.BoundedVariationOn.sub_le {f : α → ℝ} {s : Set α} (h : Boun
   rw [← Real.dist_eq]
   exact h.dist_le hx hy
 
+set_option linter.tacticAnalysis.verifyGrindOnly false in
 /-- Consider a monotone function `u` parameterizing some points of a set `s`. Given `x ∈ s`, then
 one can find another monotone function `v` parameterizing the same points as `u`, with `x` added.
 In particular, the variation of a function along `u` is bounded by its variation along `v`. -/
@@ -261,7 +262,7 @@ theorem add_point (f : α → E) {s : Set α} {x : α} (hx : x ∈ s) (u : ℕ �
         ∑ j ∈ Finset.range m, edist (f (v (j + 1))) (f (v j)) := by
   rcases le_or_gt (u n) x with (h | h)
   · let v i := if i ≤ n then u i else x
-    refine ⟨v, n + 2, by grind [Monotone], by grind, (mem_image _ _ _).2 ⟨n + 1, by grind⟩, ?_⟩
+    refine ⟨v, n + 2, by grind only [Monotone], by grind, (mem_image _ _ _).2 ⟨n + 1, by grind⟩, ?_⟩
     calc
       (∑ i ∈ Finset.range n, edist (f (u (i + 1))) (f (u i))) =
           ∑ i ∈ Finset.range n, edist (f (v (i + 1))) (f (v i)) := by grind [Finset.sum_congr]
@@ -327,6 +328,7 @@ theorem add_point (f : α → E) {s : Set α} {x : α} (hx : x ∈ s) (u : ℕ �
       _ = ∑ j ∈ Finset.range (n + 1), edist (f (w (j + 1))) (f (w j)) := by
         rw [Finset.sum_Ico_consecutive, Finset.sum_Ico_consecutive, Finset.range_eq_Ico] <;> grind
 
+set_option linter.tacticAnalysis.verifyGrindOnly false in
 /-- The variation of a function on the union of two sets `s` and `t`, with `s` to the left of `t`,
 bounds the sum of the variations along `s` and `t`. -/
 theorem add_le_union (f : α → E) {s t : Set α} (h : ∀ x ∈ s, ∀ y ∈ t, x ≤ y) :
@@ -363,7 +365,8 @@ theorem add_le_union (f : α → E) {s t : Set α} (h : ∀ x ∈ s, ∀ y ∈ t
         abel
     _ ≤ ∑ i ∈ Finset.range (n + 1 + m), edist (f (w (i + 1))) (f (w i)) := by
       rw [← Finset.sum_union]
-      · gcongr; grind
+      · gcongr
+        grind only [= Finset.subset_iff, = Finset.mem_union, = Finset.mem_range, = Finset.mem_Ico]
       · exact Finset.disjoint_left.2 (by grind)
     _ ≤ eVariationOn f (s ∪ t) := sum_le (by grind [Monotone]) (by grind)
 
@@ -505,6 +508,7 @@ end Monotone
 
 /-! ### Left and right limits of bounded variation functions -/
 
+set_option linter.tacticAnalysis.verifyGrindOnly false in
 /-- If a function is continuous on the left at a point `a`, then its variations on `Iio a` and
 on `Iic a` coincide. We give a version relative to a set `s`. -/
 lemma eVariationOn_inter_Iio_eq_inter_Iic_of_continuousWithinAt
@@ -544,8 +548,9 @@ lemma eVariationOn_inter_Iio_eq_inter_Iic_of_continuousWithinAt
       simp only [Finset.range_add_one, Finset.mem_range, lt_self_iff_false, not_false_eq_true,
         Finset.sum_insert]
       congr 1 <;> grind [Finset.sum_congr]
-    _ ≤ eVariationOn f (s ∩ Iio a) :=
-      sum_le_of_monotoneOn_Iic (by grind [MonotoneOn, StrictMonoOn]) (by grind [StrictMonoOn])
+    _ ≤ eVariationOn f (s ∩ Iio a) := by
+      refine sum_le_of_monotoneOn_Iic ?_ (by grind [StrictMonoOn])
+      grind only [StrictMonoOn, mem_Iic, mem_inter_iff, mem_Ioo, MonotoneOn]
 
 /-- If a function is continuous on the right at a point `a`, then its variations on `Ioi a` and
 on `Ici a` coincide. We give a version relative to a set `s`. -/

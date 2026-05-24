@@ -489,14 +489,16 @@ instance [T2Space α] : T2Space (Compacts α) where
     rw [SetLike.not_le_iff_exists] at h'
     obtain ⟨x, hx₁, hx₂⟩ := h'
     obtain ⟨U, V, hU, hV, hU', hV', hUV⟩ := K₂.isCompact.separation_of_notMem hx₂
+    have := @not_disjoint_iff_nonempty_inter α
     exact ⟨_, _, isOpen_inter_nonempty_of_isOpen hV, isOpen_subsets_of_isOpen hU, ⟨x, hx₁, hV'⟩,
-      hU', by grind [Set.Nonempty]⟩
+      hU', by grind⟩
 
 @[simp]
 theorem t2Space_iff : T2Space (Compacts α) ↔ T2Space α :=
   ⟨fun _ => isEmbedding_singleton.t2Space, fun _ => inferInstance⟩
 
 instance [RegularSpace α] : RegularSpace (Compacts α) := by
+  have := @not_disjoint_iff_nonempty_inter α
   simp_rw [regularSpace_generateFrom induced_generateFrom_eq, image_union, image_image, powerset,
     preimage_setOf_eq, Filter.disjoint_iff]
   rintro _ (⟨U, hU, rfl⟩ | ⟨U, hU, rfl⟩) K hK
@@ -504,7 +506,7 @@ instance [RegularSpace α] : RegularSpace (Compacts α) := by
       SeparatedNhds.of_isCompact_isClosed K.isCompact hU.isClosed_compl
         (disjoint_compl_right_iff_subset.mpr hK)
     refine ⟨{K | (↑K ∩ W).Nonempty}, ?_, {K | ↑K ⊆ V},
-      (isOpen_subsets_of_isOpen hV).mem_nhds_iff.mpr hKV, by grind [Set.Nonempty]⟩
+      (isOpen_subsets_of_isOpen hV).mem_nhds_iff.mpr hKV, by grind⟩
     simp_rw [(isOpen_inter_nonempty_of_isOpen hW).mem_nhdsSet, compl_setOf,
       ← inter_compl_nonempty_iff]
     grw [hUW]
@@ -512,7 +514,7 @@ instance [RegularSpace α] : RegularSpace (Compacts α) := by
     obtain ⟨V, W, hV, hW, hxV, hUW, hVW⟩ :=
       SeparatedNhds.of_isCompact_isClosed (isCompact_singleton (x := x)) hU.isClosed_compl
         (by simpa)
-    refine ⟨{K | ↑K ⊆ W}, ?_, {K | (↑K ∩ V).Nonempty}, ?_, by grind [Set.Nonempty]⟩
+    refine ⟨{K | ↑K ⊆ W}, ?_, {K | (↑K ∩ V).Nonempty}, ?_, by grind⟩
     · simp_rw [(isOpen_subsets_of_isOpen hW).mem_nhdsSet, compl_setOf, not_nonempty_iff_eq_empty,
         ← disjoint_iff_inter_eq_empty, ← subset_compl_iff_disjoint_right]
       gcongr
