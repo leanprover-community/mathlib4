@@ -110,13 +110,18 @@ variable (R : Type*) {A : Type*}
 
 /-- If `A` is a module over a commutative `R` with compatible actions,
 then `star` is a semilinear equivalence. -/
-@[simps! apply, simps! -isSimp symm_apply]
+@[simps! apply]
 def starLinearEquiv : A ≃ₗ⋆[R] A where
   __ := starAddEquiv
   map_smul' := star_smul
 
+@[deprecated "Use `symm_starLinearEquiv` and `starLinearEquiv_apply` instead"
+  (since := "2026-05-24")]
+theorem starLinearEquiv_symm_apply (x : A) : (starLinearEquiv R).symm x = starAddEquiv.invFun x :=
+  rfl
+
 @[simp]
-theorem starLinearEquiv_symm : (starLinearEquiv R : A ≃ₗ⋆[R] A).symm = starLinearEquiv R :=
+theorem symm_starLinearEquiv : (starLinearEquiv R : A ≃ₗ⋆[R] A).symm = starLinearEquiv R :=
   rfl
 
 end starLinearEquiv

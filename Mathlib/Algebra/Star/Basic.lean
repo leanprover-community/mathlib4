@@ -98,7 +98,7 @@ protected def Equiv.star [InvolutiveStar R] : Equiv.Perm R :=
   star_involutive.toPerm _
 
 @[simp]
-theorem Equiv.star_symm [InvolutiveStar R] : (Equiv.star : R ≃ R).symm = Equiv.star :=
+theorem Equiv.symm_star [InvolutiveStar R] : (Equiv.star : R ≃ R).symm = Equiv.star :=
   rfl
 
 theorem eq_star_of_eq_star [InvolutiveStar R] {r s : R} (h : r = star s) : s = star r := by
@@ -243,7 +243,7 @@ def starAddEquiv [AddMonoid R] [StarAddMonoid R] : R ≃+ R where
   map_add' := star_add
 
 @[simp]
-theorem starAddEquiv_symm [AddMonoid R] [StarAddMonoid R] :
+theorem symm_starAddEquiv [AddMonoid R] [StarAddMonoid R] :
     (starAddEquiv : R ≃+ R).symm = starAddEquiv :=
   rfl
 
