@@ -27,31 +27,44 @@ since they have both `≤` and `⊆` defined on them, with different meanings.
 TODO: Unify more order operations suh as `∪`/`⊔` and `∩`/`⊓`.
 -/
 
+/-- `UsesSetNotationForOrder` is used to tracks whether a type is tagged with
+`@[use_set_notation_for_order]`. -/
+public class UsesSetNotationForOrder (α : Type*)
+
 meta section
 
 namespace Mathlib.Meta.SetNotationForOrder
 
 open Lean Meta Elab Term PrettyPrinter.Delaborator SubExpr
 
+/-- Add an instance of `UsesSetNotationForOrder` for `declName`. -/
+def mkUsesSetNotationForOrderInstance (declName : Name) (kind : AttributeKind) : CoreM Unit :=
+  MetaM.run' do
+  let cinfo ← getConstInfo declName
+  forallTelescope cinfo.type fun xs _ ↦ do
+  let instName := .str declName "instUsesSetNotationForOrder"
+  let app := mkAppN (.const declName (cinfo.levelParams.map .param)) xs
+  addDecl <| Declaration.defnDecl {
+    name := instName
+    levelParams := cinfo.levelParams
+    type := ← mkForallFVars xs <| ← mkAppM ``UsesSetNotationForOrder #[app]
+    value := ← mkLambdaFVars xs <| ← mkAppOptM ``UsesSetNotationForOrder.mk #[app]
+    hints := .regular 0
+    safety := .safe }
+  registerInstance instName kind (eval_prio default)
+
 /-- The `@[use_set_notation_for_order]` attribute marks that order operations on the given type
 should use set-style notation. For example, `⊆` for `≤` and `∪` for `⊔`.
 This affects both elaboration and delaboration. -/
-initialize setNotationExt : NameMapExtension Unit ← registerNameMapExtension _
-
-@[inherit_doc setNotationExt]
 initialize
   registerBuiltinAttribute {
     name := `use_set_notation_for_order
     descr := "use set notation for order operations on this type"
-    add declName _stx kind := do
-      unless kind == .global do
-        throwAttrMustBeGlobal `use_set_notation_for_order kind
-      setNotationExt.add declName () }
+    add declName _stx kind := mkUsesSetNotationForOrderInstance declName kind }
 
 /-- Whether to use set notation for the given type or not. -/
 def useSetNotationFor (type : Expr) : MetaM Bool := do
-  let .const n _ := (← whnfR type).getAppFn | return false
-  return (setNotationExt.find? (← getEnv) n).isSome
+  return (← trySynthInstance (← mkAppM ``UsesSetNotationForOrder #[type])) matches .some _
 
 /-! ## Delaboration -/
 
