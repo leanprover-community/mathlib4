@@ -90,15 +90,11 @@ theorem _root_.AccPt.not_isMin {a : α} {s : Set α} (h : AccPt a (𝓟 s)) : ¬
 
 @[to_dual]
 theorem _root_.AccPt.isSuccLimit {a : α} {s : Set α} (h : AccPt a (𝓟 s)) : IsSuccLimit a := by
-  simp_rw [accPt_iff, Set.Nonempty] at h
-  rw [IsSuccLimit, IsSuccPrelimit]
-  unfold CovBy
-  grind
+  grind [IsSuccLimit, IsSuccPrelimit, accPt_iff, covBy_iff_Ioo_eq, Set.Nonempty]
 
 @[to_dual]
 theorem isSuccLimit_of_mem_frontier {a : α} {s : Set α} (ha : a ∈ frontier s) : IsSuccLimit a := by
   rw [← isOpen_singleton_iff.not_left]
-  rw [frontier_eq_closure_inter_closure] at ha
-  grind [mem_closure_iff, Set.Nonempty]
+  grind [frontier_eq_closure_inter_closure, mem_closure_iff, Set.Nonempty]
 
 end SuccOrder
