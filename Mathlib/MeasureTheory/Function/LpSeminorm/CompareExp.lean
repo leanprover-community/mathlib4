@@ -278,7 +278,7 @@ end Bilinear
 
 section IsBoundedSMul
 
-variable {𝕜 α E F : Type*} {m : MeasurableSpace α} {μ : Measure α} [NormedRing 𝕜]
+variable {𝕜 α E F : Type*} {m : MeasurableSpace α} {μ : Measure α} [NormMetric 𝕜] [Ring 𝕜] [IsNormedRing 𝕜]
   [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [MulActionWithZero 𝕜 E] [IsBoundedSMul 𝕜 E]
   [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [MulActionWithZero 𝕜 F] [IsBoundedSMul 𝕜 F] {f : α → E}
 
@@ -316,7 +316,7 @@ end IsBoundedSMul
 
 section Mul
 
-variable {α : Type*} {_ : MeasurableSpace α} {𝕜 : Type*} [NormedRing 𝕜] {μ : Measure α}
+variable {α : Type*} {_ : MeasurableSpace α} {𝕜 : Type*} [NormMetric 𝕜] [Ring 𝕜] [IsNormedRing 𝕜] {μ : Measure α}
   {p q r : ℝ≥0∞} {f : α → 𝕜} {φ : α → 𝕜}
 
 theorem MemLp.mul (hf : MemLp f q μ) (hφ : MemLp φ p μ) [hpqr : HolderTriple p q r] :
@@ -332,7 +332,7 @@ theorem MemLp.mul' (hf : MemLp f q μ) (hφ : MemLp φ p μ) [hpqr : HolderTripl
 end Mul
 
 section Prod
-variable {ι α 𝕜 : Type*} {_ : MeasurableSpace α} [NormedCommRing 𝕜] {μ : Measure α} {f : ι → α → 𝕜}
+variable {ι α 𝕜 : Type*} {_ : MeasurableSpace α} [NormMetric 𝕜] [CommRing 𝕜] [IsNormedRing 𝕜] {μ : Measure α} {f : ι → α → 𝕜}
   {p : ι → ℝ≥0∞} {s : Finset ι}
 
 open Finset in

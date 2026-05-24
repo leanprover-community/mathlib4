@@ -271,7 +271,7 @@ inherit an algebra structure.
 -/
 
 
-variable {A : Type*} [NormedRing A] [NormedAlgebra 𝕜 A] [ContMDiffRing 𝓘(𝕜, A) n A]
+variable {A : Type*} [NormMetric A] [Ring A] [IsNormedRing A] [NormedAlgebra 𝕜 A] [ContMDiffRing 𝓘(𝕜, A) n A]
 
 /-- `C^n` constant functions as a `RingHom`. -/
 def C : 𝕜 →+* C^n⟮I, N; 𝓘(𝕜, A), A⟯ where

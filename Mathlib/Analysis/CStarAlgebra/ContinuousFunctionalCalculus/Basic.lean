@@ -64,7 +64,7 @@ namespace StarAlgebra.elemental
 
 variable [CStarAlgebra A]
 
-example {R A : Type*} [CommRing R] [StarRing R] [NormedRing A] [Algebra R A] [StarRing A]
+example {R A : Type*} [CommRing R] [StarRing R] [NormMetric A] [Ring A] [IsNormedRing A] [Algebra R A] [StarRing A]
     [ContinuousStar A] [StarModule R A] (a : A) [IsStarNormal a] :
     NormedCommRing (elemental R a) where
 

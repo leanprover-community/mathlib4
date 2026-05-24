@@ -26,7 +26,7 @@ variable {𝕜 ι : Type*} [Fintype ι]
 
 namespace Integrable
 
-variable [NormedCommRing 𝕜]
+variable [NormMetric 𝕜] [CommRing 𝕜] [IsNormedRing 𝕜]
 
 /-- On a finite product space in `n` variables, for a natural number `n`, a product of integrable
 functions depending on each coordinate is integrable. -/

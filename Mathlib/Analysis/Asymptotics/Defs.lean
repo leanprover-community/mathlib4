@@ -72,7 +72,7 @@ variable [NormPseudoMetric E'] [AddCommGroup E'] [IsNormedAddGroup E'] [NormPseu
   [NormPseudoMetric E'''] [AddGroup E'''] [IsNormedAddGroup E''']
   [NormPseudoMetric R'] [Ring R'] [IsNormedRing R']
 
-variable {S : Type*} [NormedRing S] [NormMulClass S]
+variable {S : Type*} [NormMetric S] [Ring S] [IsNormedRing S] [NormMulClass S]
 variable [NormedDivisionRing 𝕜] [NormedDivisionRing 𝕜']
 variable {c c' c₁ c₂ : ℝ} {f : α → E} {g : α → F} {k : α → G}
 variable {f' : α → E'} {g' : α → F'} {k' : α → G'}

@@ -44,7 +44,7 @@ open Filter Topology
 
 variable {p : ℕ} [Fact p.Prime]
 
-variable {R : Type*} [NormedRing R] [Algebra ℤ_[p] R] [IsBoundedSMul ℤ_[p] R]
+variable {R : Type*} [NormMetric R] [Ring R] [IsNormedRing R] [Algebra ℤ_[p] R] [IsBoundedSMul ℤ_[p] R]
   [IsUltrametricDist R]
 
 lemma AddChar.tendsto_eval_one_sub_pow {κ : AddChar ℤ_[p] R} (hκ : Continuous κ) :

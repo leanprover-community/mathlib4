@@ -482,7 +482,7 @@ lemma mapMahlerMeasure_zero : (0 : A[X]).mapMahlerMeasure v = 0 := by
 lemma mapMahlerMeasure_one : (1 : A[X]).mapMahlerMeasure v = 1 := by
   simp [mapMahlerMeasure]
 
-variable {A : Type*} [NormedRing A] (p : A[X]) (v : A →+* ℂ)
+variable {A : Type*} [NormMetric A] [Ring A] [IsNormedRing A] (p : A[X]) (v : A →+* ℂ)
 
 lemma mapMahlerMeasure_const (hv : Isometry v) (z : A) : (C z).mapMahlerMeasure v = ‖z‖ := by
   simp [mapMahlerMeasure, hv.norm_map_of_map_zero (map_zero _)]

@@ -37,7 +37,7 @@ noncomputable section
 open Topology
 open scoped Ring
 
-variable {R : Type*} [NormedRing R] [HasSummableGeomSeries R]
+variable {R : Type*} [NormMetric R] [Ring R] [IsNormedRing R] [HasSummableGeomSeries R]
 
 namespace Units
 

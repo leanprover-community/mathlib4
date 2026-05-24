@@ -90,7 +90,7 @@ theorem range_toLpHom [Fact (1 ≤ p)] :
       ((ContinuousMap.toAEEqFunAddHom μ).comp (toContinuousMapAddMonoidHom α E))
       (by rintro - ⟨f, rfl⟩; exact mem_Lp f : _ ≤ Lp E p μ)
 
-variable (𝕜 : Type*) [Fact (1 ≤ p)] [NormedRing 𝕜] [Module 𝕜 E] [IsBoundedSMul 𝕜 E]
+variable (𝕜 : Type*) [Fact (1 ≤ p)] [NormMetric 𝕜] [Ring 𝕜] [IsNormedRing 𝕜] [Module 𝕜 E] [IsBoundedSMul 𝕜 E]
 
 /-- The bounded linear map of considering a bounded continuous function on a finite-measure space
 as an element of `Lp`. -/
@@ -134,7 +134,7 @@ namespace ContinuousMap
 
 variable [CompactSpace α] [IsFiniteMeasure μ]
 variable (𝕜 : Type*) (p μ) [Fact (1 ≤ p)]
-  [NormedRing 𝕜] [Module 𝕜 E] [IsBoundedSMul 𝕜 E]
+  [NormMetric 𝕜] [Ring 𝕜] [IsNormedRing 𝕜] [Module 𝕜 E] [IsBoundedSMul 𝕜 E]
 
 /-- The bounded linear map of considering a continuous function on a compact finite-measure
 space `α` as an element of `Lp`.  By definition, the norm on `C(α, E)` is the sup-norm, transferred

@@ -139,7 +139,7 @@ theorem fourier_smul_convolution_eq {f₁ : E → ℂ} {f₂ : E → F₁}
     𝓕 (f₁ ⋆[lsmul ℂ ℂ] f₂) ξ = (𝓕 f₁ ξ) • (𝓕 f₂ ξ) :=
   fourier_bilin_convolution_eq (lsmul ℂ ℂ) hf₁ hf₂ hf₁' hf₂' ξ
 
-variable [NormedRing R] [NormedSpace ℂ R] [IsScalarTower ℂ R R] [SMulCommClass ℂ R R]
+variable [NormMetric R] [Ring R] [IsNormedRing R] [NormedSpace ℂ R] [IsScalarTower ℂ R R] [SMulCommClass ℂ R R]
   [CompleteSpace R]
 
 /-- The Fourier transform of the convolution is given by the multiplication of the Fourier transform

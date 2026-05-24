@@ -711,7 +711,7 @@ theorem norm_restr {k n : ℕ} (f : G [×n]→L[𝕜] G') (s : Finset (Fin n)) (
 
 section
 
-variable {A : Type*} [NormedCommRing A] [NormedAlgebra 𝕜 A]
+variable {A : Type*} [NormMetric A] [CommRing A] [IsNormedRing A] [NormedAlgebra 𝕜 A]
 
 @[simp]
 theorem norm_mkPiAlgebra_le [Nonempty ι] : ‖ContinuousMultilinearMap.mkPiAlgebra 𝕜 ι A‖ ≤ 1 := by

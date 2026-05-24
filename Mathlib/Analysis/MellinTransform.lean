@@ -175,7 +175,7 @@ theorem hasMellin_sub {f g : ℝ → E} {s : ℂ} (hf : MellinConvergent f s)
     simpa only [mellin, smul_sub] using integral_sub hf hg⟩
 
 theorem hasMellin_const_smul {f : ℝ → E} {s : ℂ} (hf : MellinConvergent f s)
-    {R : Type*} [NormedRing R] [Module R E] [IsBoundedSMul R E] [SMulCommClass ℂ R E] (c : R) :
+    {R : Type*} [NormMetric R] [Ring R] [IsNormedRing R] [Module R E] [IsBoundedSMul R E] [SMulCommClass ℂ R E] (c : R) :
     HasMellin (fun t => c • f t) s (c • mellin f s) :=
   ⟨hf.const_smul c, by simp [mellin, smul_comm, hf.integral_smul]⟩
 

@@ -22,7 +22,7 @@ public import Mathlib.Tactic.Bound
 
 namespace PowerSeries
 
-variable {R : Type*} [NormedRing R] (c : ℝ)
+variable {R : Type*} [NormMetric R] [Ring R] [IsNormedRing R] (c : ℝ)
 
 open PowerSeries Filter
 open scoped Topology

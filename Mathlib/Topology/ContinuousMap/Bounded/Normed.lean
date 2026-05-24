@@ -348,9 +348,9 @@ instance instNonUnitalCommRing [NormPseudoMetric R] [NonUnitalCommRing R] [IsNor
 example [NormPseudoMetric R] [NonUnitalCommRing R] [IsNormedRing R] :
     NonUnitalSeminormedCommRing (α →ᵇ R) where
 
-example [NonUnitalNormedRing R] : NonUnitalNormedRing (α →ᵇ R) where
+example [NormMetric R] [NonUnitalRing R] [IsNormedRing R] : NonUnitalNormedRing (α →ᵇ R) where
 
-example [NonUnitalNormedCommRing R] :
+example [NormMetric R] [NonUnitalCommRing R] [IsNormedRing R] :
     NonUnitalNormedCommRing (α →ᵇ R) where
 
 end NonUnital
@@ -404,7 +404,7 @@ protected def _root_.RingHom.compLeftContinuousBounded (α : Type*)
 
 end Seminormed
 
-example [NormedRing R] : NormedRing (α →ᵇ R) where
+example [NormMetric R] [Ring R] [IsNormedRing R] : NormedRing (α →ᵇ R) where
 
 end NormedRing
 
@@ -417,7 +417,7 @@ instance instCommRing [NormPseudoMetric R] [CommRing R] [IsNormedRing R] : CommR
 
 example [NormPseudoMetric R] [CommRing R] [IsNormedRing R] : SeminormedCommRing (α →ᵇ R) where
 
-example [NormedCommRing R] : NormedCommRing (α →ᵇ R) where
+example [NormMetric R] [CommRing R] [IsNormedRing R] : NormedCommRing (α →ᵇ R) where
 
 end NormedCommRing
 
@@ -441,7 +441,7 @@ end NonUnitalAlgebra
 section NormedAlgebra
 
 variable {𝕜 : Type*} [NormedField 𝕜] [TopologicalSpace α]
-variable [NormedRing γ] [NormedAlgebra 𝕜 γ]
+variable [NormMetric γ] [Ring γ] [IsNormedRing γ] [NormedAlgebra 𝕜 γ]
 
 /-- `BoundedContinuousFunction.const` as a `RingHom`. -/
 def C : 𝕜 →+* α →ᵇ γ where
@@ -469,7 +469,7 @@ variable (𝕜)
 /-- Composition on the left by a (lipschitz-continuous) homomorphism of topological `R`-algebras,
 as an `AlgHom`. Similar to `AlgHom.compLeftContinuous`. -/
 @[simps!]
-protected def AlgHom.compLeftContinuousBounded [NormedRing β] [NormedAlgebra 𝕜 β]
+protected def AlgHom.compLeftContinuousBounded [NormMetric β] [Ring β] [IsNormedRing β] [NormedAlgebra 𝕜 β]
     (g : β →ₐ[𝕜] γ) {C : NNReal} (hg : LipschitzWith C g) : (α →ᵇ β) →ₐ[𝕜] (α →ᵇ γ) :=
   { g.toRingHom.compLeftContinuousBounded α hg with
     commutes' := fun _ => DFunLike.ext _ _ fun _ => g.commutes' _ }

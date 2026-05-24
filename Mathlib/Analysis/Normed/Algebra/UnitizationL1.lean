@@ -28,7 +28,7 @@ non-unital Banach algebra is compact, which can be established by passing to the
 
 @[expose] public section
 
-variable (𝕜 A : Type*) [NormedField 𝕜] [NonUnitalNormedRing A]
+variable (𝕜 A : Type*) [NormedField 𝕜] [NormMetric A] [NonUnitalRing A] [IsNormedRing A]
 variable [NormedSpace 𝕜 A]
 
 namespace WithLp

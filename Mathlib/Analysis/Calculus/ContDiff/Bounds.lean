@@ -260,7 +260,7 @@ end
 
 section
 
-variable {ι : Type*} {A : Type*} [NormedRing A] [NormedAlgebra 𝕜 A] {A' : Type*} [NormedCommRing A']
+variable {ι : Type*} {A : Type*} [NormMetric A] [Ring A] [IsNormedRing A] [NormedAlgebra 𝕜 A] {A' : Type*} [NormMetric A'] [CommRing A'] [IsNormedRing A']
   [NormedAlgebra 𝕜 A']
 
 theorem norm_iteratedFDerivWithin_mul_le {f : E → A} {g : E → A} {N : ℕ∞ω}

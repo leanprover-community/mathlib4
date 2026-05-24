@@ -117,7 +117,7 @@ end Topological
 
 section Normed
 
-variable [Fintype m] [DecidableEq m] [NormedRing 𝔸] [NormedAlgebra ℚ 𝔸] [CompleteSpace 𝔸]
+variable [Fintype m] [DecidableEq m] [NormMetric 𝔸] [Ring 𝔸] [IsNormedRing 𝔸] [NormedAlgebra ℚ 𝔸] [CompleteSpace 𝔸]
 
 set_option backward.isDefEq.respectTransparency false in
 nonrec theorem exp_add_of_commute (A B : Matrix m m 𝔸) (h : Commute A B) :
@@ -164,7 +164,7 @@ end Normed
 section NormedComm
 
 variable [Fintype m] [DecidableEq m]
-  [NormedCommRing 𝔸] [NormedAlgebra ℚ 𝔸] [CompleteSpace 𝔸]
+  [NormMetric 𝔸] [CommRing 𝔸] [IsNormedRing 𝔸] [NormedAlgebra ℚ 𝔸] [CompleteSpace 𝔸]
 
 set_option backward.isDefEq.respectTransparency false in
 theorem exp_neg (A : Matrix m m 𝔸) : exp (-A) = (exp A)⁻¹ := by

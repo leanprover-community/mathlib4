@@ -14,7 +14,7 @@ This file defines some basic maps by unitaries in C⋆-algebras. -/
 @[expose] public section
 
 namespace Unitary
-variable {R A : Type*} [NormedRing A] [StarRing A] [CStarRing A] [Ring R] [Module R A]
+variable {R A : Type*} [NormMetric A] [Ring A] [IsNormedRing A] [StarRing A] [CStarRing A] [Ring R] [Module R A]
 
 section mulLeft
 variable [SMulCommClass R A A]

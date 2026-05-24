@@ -123,8 +123,8 @@ open scoped BoundedContinuousFunction
 open BoundedContinuousFunction
 
 variable {α E R A : Type*} (𝕜 : Type*) [TopologicalSpace α] [DiscreteTopology α]
-variable [NormedRing A] [NormOneClass A] [NontriviallyNormedField 𝕜] [NormedAlgebra 𝕜 A]
-variable [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E] [NonUnitalNormedRing R]
+variable [NormMetric A] [Ring A] [IsNormedRing A] [NormOneClass A] [NontriviallyNormedField 𝕜] [NormedAlgebra 𝕜 A]
+variable [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E] [NormMetric R] [NonUnitalRing R] [IsNormedRing R]
 
 section NormedAddCommGroup
 

@@ -25,7 +25,7 @@ variable {𝕜 E A B : Type*} [NontriviallyNormedField 𝕜] [NormMetric E] [Add
 section Polynomial
 open Polynomial
 
-variable [NormedRing B] [NormedAlgebra 𝕜 B] [Algebra A B] {f : E → B}
+variable [NormMetric B] [Ring B] [IsNormedRing B] [NormedAlgebra 𝕜 B] [Algebra A B] {f : E → B}
 
 theorem AnalyticWithinAt.aeval_polynomial (hf : AnalyticWithinAt 𝕜 f s z) (p : A[X]) :
     AnalyticWithinAt 𝕜 (fun x ↦ aeval (f x) p) s z := by
@@ -46,10 +46,10 @@ theorem AnalyticOnNhd.aeval_polynomial (hf : AnalyticOnNhd 𝕜 f s) (p : A[X]) 
 theorem AnalyticOn.aeval_polynomial (hf : AnalyticOn 𝕜 f s) (p : A[X]) :
     AnalyticOn 𝕜 (fun x ↦ aeval (f x) p) s := fun x hx ↦ (hf x hx).aeval_polynomial p
 
-theorem AnalyticOnNhd.eval_polynomial {A} [NormedCommRing A] [NormedAlgebra 𝕜 A] (p : A[X]) :
+theorem AnalyticOnNhd.eval_polynomial {A} [NormMetric A] [CommRing A] [IsNormedRing A] [NormedAlgebra 𝕜 A] (p : A[X]) :
     AnalyticOnNhd 𝕜 (eval · p) Set.univ := analyticOnNhd_id.aeval_polynomial p
 
-theorem AnalyticOn.eval_polynomial {A} [NormedCommRing A] [NormedAlgebra 𝕜 A] (p : A[X]) :
+theorem AnalyticOn.eval_polynomial {A} [NormMetric A] [CommRing A] [IsNormedRing A] [NormedAlgebra 𝕜 A] (p : A[X]) :
     AnalyticOn 𝕜 (eval · p) Set.univ := analyticOn_id.aeval_polynomial p
 
 end Polynomial
@@ -57,7 +57,7 @@ end Polynomial
 section MvPolynomial
 open MvPolynomial
 
-variable [NormedCommRing B] [NormedAlgebra 𝕜 B] [Algebra A B] {σ : Type*} {f : E → σ → B}
+variable [NormMetric B] [CommRing B] [IsNormedRing B] [NormedAlgebra 𝕜 B] [Algebra A B] {σ : Type*} {f : E → σ → B}
 
 theorem AnalyticAt.aeval_mvPolynomial (hf : ∀ i, AnalyticAt 𝕜 (f · i) z) (p : MvPolynomial σ A) :
     AnalyticAt 𝕜 (fun x ↦ aeval (f x) p) z := by

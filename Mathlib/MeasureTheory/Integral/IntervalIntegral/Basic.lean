@@ -302,7 +302,7 @@ protected theorem aestronglyMeasurable_restrict_uIoc (h : IntervalIntegrable f �
 
 end
 
-variable [NormedRing A] {f g : ℝ → ε} {a b : ℝ} {μ : Measure ℝ}
+variable [NormMetric A] [Ring A] [IsNormedRing A] {f g : ℝ → ε} {a b : ℝ} {μ : Measure ℝ}
 
 theorem smul {R : Type*} [NormMetric R] [AddCommGroup R] [IsNormedAddGroup R] [SMulZeroClass R E] [IsBoundedSMul R E] {f : ℝ → E}
     (h : IntervalIntegrable f μ a b) (r : R) :
@@ -362,7 +362,7 @@ end Mul
 
 section SMul
 
-variable {f : ℝ → 𝕜} {g : ℝ → E} [NormedRing 𝕜] [Module 𝕜 E] [NormSMulClass 𝕜 E]
+variable {f : ℝ → 𝕜} {g : ℝ → E} [NormMetric 𝕜] [Ring 𝕜] [IsNormedRing 𝕜] [Module 𝕜 E] [NormSMulClass 𝕜 E]
 
 theorem smul_continuousOn (hf : IntervalIntegrable f μ a b)
     (hg : ContinuousOn g [[a, b]]) : IntervalIntegrable (fun x => f x • g x) μ a b := by
@@ -792,7 +792,7 @@ nonrec theorem integral_smul [NormedDivisionRing 𝕜] [Module 𝕜 E] [NormSMul
   simp only [intervalIntegral, integral_smul, smul_sub]
 
 theorem _root_.IntervalIntegrable.integral_smul
-    {R : Type*} [NormedRing R] [Module R E] [IsBoundedSMul R E] [SMulCommClass ℝ R E]
+    {R : Type*} [NormMetric R] [Ring R] [IsNormedRing R] [Module R E] [IsBoundedSMul R E] [SMulCommClass ℝ R E]
     {f : ℝ → E} (r : R) (hf : IntervalIntegrable f μ a b) :
     ∫ x in a..b, r • f x ∂μ = r • ∫ x in a..b, f x ∂μ := by
   simp only [intervalIntegral, smul_sub, hf.1.integral_smul, hf.2.integral_smul]

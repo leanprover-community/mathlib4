@@ -287,7 +287,7 @@ end Unital
 
 section Isometric
 
-variable [NonUnitalNormedRing A] [StarRing A] [ContinuousStar A]
+variable [NormMetric A] [NonUnitalRing A] [IsNormedRing A] [StarRing A] [ContinuousStar A]
   [NormedSpace ℝ A] [SMulCommClass ℝ A A] [IsScalarTower ℝ A A]
   [NonUnitalIsometricContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
   [PartialOrder A] [StarOrderedRing A] [NonnegSpectrumClass ℝ A] [CompleteSpace A]
@@ -301,7 +301,7 @@ section CStar
 
 /- This section requires `A` to be a `CStarRing` -/
 
-variable [NonUnitalNormedRing A] [StarRing A] [CStarRing A]
+variable [NormMetric A] [NonUnitalRing A] [IsNormedRing A] [StarRing A] [CStarRing A]
   [NormedSpace ℝ A] [SMulCommClass ℝ A A] [IsScalarTower ℝ A A]
   [NonUnitalContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
   [PartialOrder A] [StarOrderedRing A] [NonnegSpectrumClass ℝ A]

@@ -161,7 +161,7 @@ lemma exists_isMinOn_norm_sub_smul (𝕜 : Type*) {F : Type*} [NormedField 𝕜]
 
 namespace Complex
 
-variable {F : Type*} [NormedRing F] [NormOneClass F] [NormMulClass F] [NormedAlgebra ℂ F]
+variable {F : Type*} [NormMetric F] [Ring F] [IsNormedRing F] [NormOneClass F] [NormMulClass F] [NormedAlgebra ℂ F]
 
 /- If the norm of every monic linear polynomial over `ℂ`, evaluated at some `x : F`,
 is bounded below by `M`, then the norm of the value at `x - algebraMap ℂ F c` of a monic polynomial
@@ -258,7 +258,7 @@ end Complex
 
 namespace Real
 
-variable {F : Type*} [NormedRing F] [NormedAlgebra ℝ F]
+variable {F : Type*} [NormMetric F] [Ring F] [IsNormedRing F] [NormedAlgebra ℝ F]
 
 /- A (private) abbreviation introduced for conciseness below.
 We will show that for every `x : F`, `φ x` takes the value zero. -/

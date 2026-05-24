@@ -400,7 +400,7 @@ example [Fact (1 ≤ p)] : SeminormedAddGroup.toNNNorm = (Lp.instNNNorm : NNNorm
 
 section IsBoundedSMul
 
-variable [NormedRing 𝕜] [NormedRing 𝕜'] [Module 𝕜 E] [Module 𝕜' E]
+variable [NormMetric 𝕜] [Ring 𝕜] [IsNormedRing 𝕜] [NormMetric 𝕜'] [Ring 𝕜'] [IsNormedRing 𝕜'] [Module 𝕜 E] [Module 𝕜' E]
 variable [IsBoundedSMul 𝕜 E] [IsBoundedSMul 𝕜' E]
 
 theorem const_smul_mem_Lp (c : 𝕜) (f : Lp E p μ) : c • (f : α →ₘ[μ] E) ∈ Lp E p μ := by
@@ -455,7 +455,7 @@ end Lp
 
 namespace MemLp
 
-variable {𝕜 : Type*} [NormedRing 𝕜] [Module 𝕜 E] [IsBoundedSMul 𝕜 E]
+variable {𝕜 : Type*} [NormMetric 𝕜] [Ring 𝕜] [IsNormedRing 𝕜] [Module 𝕜 E] [IsBoundedSMul 𝕜 E]
 
 theorem toLp_const_smul {f : α → E} (c : 𝕜) (hf : MemLp f p μ) :
     (hf.const_smul c).toLp (c • f) = c • hf.toLp f :=
@@ -607,7 +607,7 @@ theorem compMeasurePreserving_iterate {f : α → α} (hf : MeasurePreserving f 
     nth_rewrite 1 [add_comm n 1]
     simp [Function.iterate_add, h, compMeasurePreserving_comp (hf.iterate n) hf]
 
-variable (𝕜 : Type*) [NormedRing 𝕜] [Module 𝕜 E] [IsBoundedSMul 𝕜 E]
+variable (𝕜 : Type*) [NormMetric 𝕜] [Ring 𝕜] [IsNormedRing 𝕜] [Module 𝕜 E] [IsBoundedSMul 𝕜 E]
 
 /-- `MeasureTheory.Lp.compMeasurePreserving` as a linear map. -/
 @[simps]
@@ -772,7 +772,7 @@ theorem add_compLp (L L' : E →SL[σ] F) (f : Lp E p μ) :
   filter_upwards with x
   rw [coe_add', Pi.add_def]
 
-theorem smul_compLp {𝕜''} [NormedRing 𝕜''] [Module 𝕜'' F] [IsBoundedSMul 𝕜'' F]
+theorem smul_compLp {𝕜''} [NormMetric 𝕜''] [Ring 𝕜''] [IsNormedRing 𝕜''] [Module 𝕜'' F] [IsBoundedSMul 𝕜'' F]
     [SMulCommClass 𝕜' 𝕜'' F] (c : 𝕜'') (L : E →SL[σ] F) (f : Lp E p μ) :
     (c • L).compLp f = c • L.compLp f := by
   ext1
@@ -819,7 +819,7 @@ theorem coeFn_compLpL [Fact (1 ≤ p)] (L : E →SL[σ] F) (f : Lp E p μ) :
 theorem add_compLpL [Fact (1 ≤ p)] (L L' : E →SL[σ] F) :
     (L + L').compLpL p μ = L.compLpL p μ + L'.compLpL p μ := by ext1 f; exact add_compLp L L' f
 
-theorem smul_compLpL [Fact (1 ≤ p)] {𝕜''} [NormedRing 𝕜''] [Module 𝕜'' F] [IsBoundedSMul 𝕜'' F]
+theorem smul_compLpL [Fact (1 ≤ p)] {𝕜''} [NormMetric 𝕜''] [Ring 𝕜''] [IsNormedRing 𝕜''] [Module 𝕜'' F] [IsBoundedSMul 𝕜'' F]
     [SMulCommClass 𝕜' 𝕜'' F] (c : 𝕜'') (L : E →SL[σ] F) :
     (c • L).compLpL p μ = c • L.compLpL p μ := by
   ext1 f; exact smul_compLp c L f

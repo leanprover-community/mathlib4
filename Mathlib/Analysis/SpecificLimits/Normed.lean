@@ -36,14 +36,14 @@ open scoped Ring
 variable {α : Type*}
 
 theorem tendsto_natCast_atTop_cobounded
-    [NormedRing α] [NormSMulClass ℤ α] [Nontrivial α] :
+    [NormMetric α] [Ring α] [IsNormedRing α] [NormSMulClass ℤ α] [Nontrivial α] :
     Tendsto Nat.cast atTop (Bornology.cobounded α) := by
   rw [← tendsto_norm_atTop_iff_cobounded]
   simpa [norm_natCast_eq_mul_norm_one] using tendsto_natCast_atTop_atTop
     |>.atTop_mul_const (norm_pos_iff.mpr one_ne_zero)
 
 theorem tendsto_intCast_atBot_sup_atTop_cobounded
-    [NormedRing α] [NormSMulClass ℤ α] [Nontrivial α] :
+    [NormMetric α] [Ring α] [IsNormedRing α] [NormSMulClass ℤ α] [Nontrivial α] :
     Tendsto Int.cast (atBot ⊔ atTop) (Bornology.cobounded α) := by
   rw [← tendsto_norm_atTop_iff_cobounded]
   simpa [norm_intCast_eq_abs_mul_norm_one] using tendsto_intCast_atTop_atTop
@@ -51,12 +51,12 @@ theorem tendsto_intCast_atBot_sup_atTop_cobounded
     |>.atTop_mul_const (norm_pos_iff.mpr one_ne_zero)
 
 theorem tendsto_intCast_atBot_cobounded
-    [NormedRing α] [NormSMulClass ℤ α] [Nontrivial α] :
+    [NormMetric α] [Ring α] [IsNormedRing α] [NormSMulClass ℤ α] [Nontrivial α] :
     Tendsto Int.cast atBot (Bornology.cobounded α) :=
   tendsto_intCast_atBot_sup_atTop_cobounded.mono_left le_sup_left
 
 theorem tendsto_intCast_atTop_cobounded
-    [NormedRing α] [NormSMulClass ℤ α] [Nontrivial α] :
+    [NormMetric α] [Ring α] [IsNormedRing α] [NormSMulClass ℤ α] [Nontrivial α] :
     Tendsto Int.cast atTop (Bornology.cobounded α) :=
   tendsto_intCast_atBot_sup_atTop_cobounded.mono_left le_sup_right
 
@@ -143,7 +143,7 @@ theorem TFAE_exists_lt_isLittleO_pow (f : ℕ → ℝ) (R : ℝ) :
   tfae_finish
 
 /-- For any natural `k` and a real `r > 1` we have `n ^ k = o(r ^ n)` as `n → ∞`. -/
-theorem isLittleO_pow_const_const_pow_of_one_lt {R : Type*} [NormedRing R] (k : ℕ) {r : ℝ}
+theorem isLittleO_pow_const_const_pow_of_one_lt {R : Type*} [NormMetric R] [Ring R] [IsNormedRing R] (k : ℕ) {r : ℝ}
     (hr : 1 < r) : (fun n ↦ (n : R) ^ k : ℕ → R) =o[atTop] fun n ↦ r ^ n := by
   have : Tendsto (fun x : ℝ ↦ x ^ k) (𝓝[>] 1) (𝓝 1) :=
     ((continuous_id.pow k).tendsto' (1 : ℝ) 1 (one_pow _)).mono_left inf_le_left
@@ -161,12 +161,12 @@ theorem isLittleO_pow_const_const_pow_of_one_lt {R : Type*} [NormedRing R] (k : 
   simpa [_root_.div_eq_inv_mul, Real.norm_eq_abs, abs_of_nonneg h0] using n.cast_le_pow_div_sub h1
 
 /-- For a real `r > 1` we have `n = o(r ^ n)` as `n → ∞`. -/
-theorem isLittleO_coe_const_pow_of_one_lt {R : Type*} [NormedRing R] {r : ℝ} (hr : 1 < r) :
+theorem isLittleO_coe_const_pow_of_one_lt {R : Type*} [NormMetric R] [Ring R] [IsNormedRing R] {r : ℝ} (hr : 1 < r) :
     ((↑) : ℕ → R) =o[atTop] fun n ↦ r ^ n := by
   simpa only [pow_one] using @isLittleO_pow_const_const_pow_of_one_lt R _ 1 _ hr
 
 /-- If `‖r₁‖ < r₂`, then for any natural `k` we have `n ^ k r₁ ^ n = o (r₂ ^ n)` as `n → ∞`. -/
-theorem isLittleO_pow_const_mul_const_pow_const_pow_of_norm_lt {R : Type*} [NormedRing R] (k : ℕ)
+theorem isLittleO_pow_const_mul_const_pow_const_pow_of_norm_lt {R : Type*} [NormMetric R] [Ring R] [IsNormedRing R] (k : ℕ)
     {r₁ : R} {r₂ : ℝ} (h : ‖r₁‖ < r₂) :
     (fun n ↦ (n : R) ^ k * r₁ ^ n : ℕ → R) =o[atTop] fun n ↦ r₂ ^ n := by
   by_cases h0 : r₁ = 0
@@ -269,14 +269,14 @@ theorem AbsoluteValue.tendsto_div_one_add_pow_nhds_zero {v : AbsoluteValue R S} 
 /-- A normed ring has summable geometric series if, for all `ξ` of norm `< 1`, the geometric series
 `∑ ξ ^ n` converges. This holds both in complete normed rings and in normed fields, providing a
 convenient abstraction of these two classes to avoid repeating the same proofs. -/
-class HasSummableGeomSeries (K : Type*) [NormedRing K] : Prop where
+class HasSummableGeomSeries (K : Type*) [NormMetric K] [Ring K] [IsNormedRing K] : Prop where
   summable_geometric_of_norm_lt_one : ∀ (ξ : K), ‖ξ‖ < 1 → Summable (fun n ↦ ξ ^ n)
 
-lemma summable_geometric_of_norm_lt_one {K : Type*} [NormedRing K] [HasSummableGeomSeries K]
+lemma summable_geometric_of_norm_lt_one {K : Type*} [NormMetric K] [Ring K] [IsNormedRing K] [HasSummableGeomSeries K]
     {x : K} (h : ‖x‖ < 1) : Summable (fun n ↦ x ^ n) :=
   HasSummableGeomSeries.summable_geometric_of_norm_lt_one x h
 
-instance {R : Type*} [NormedRing R] [CompleteSpace R] : HasSummableGeomSeries R := by
+instance {R : Type*} [NormMetric R] [Ring R] [IsNormedRing R] [CompleteSpace R] : HasSummableGeomSeries R := by
   constructor
   intro x hx
   have h1 : Summable fun n : ℕ ↦ ‖x‖ ^ n := summable_geometric_of_lt_one (norm_nonneg _) hx
@@ -284,7 +284,7 @@ instance {R : Type*} [NormedRing R] [CompleteSpace R] : HasSummableGeomSeries R 
 
 section HasSummableGeometricSeries
 
-variable {R : Type*} [NormedRing R]
+variable {R : Type*} [NormMetric R] [Ring R] [IsNormedRing R]
 
 open NormedSpace
 
@@ -397,7 +397,7 @@ end Geometric
 
 section MulGeometric
 
-variable {R : Type*} [NormedRing R] {𝕜 : Type*} [NormedDivisionRing 𝕜]
+variable {R : Type*} [NormMetric R] [Ring R] [IsNormedRing R] {𝕜 : Type*} [NormedDivisionRing 𝕜]
 
 theorem summable_norm_mul_geometric_of_norm_lt_one {k : ℕ} {r : R}
     (hr : ‖r‖ < 1) {u : ℕ → ℕ} (hu : (fun n ↦ (u n : ℝ)) =O[atTop] (fun n ↦ (↑(n ^ k) : ℝ))) :
@@ -916,7 +916,7 @@ open Bornology
 variable {R K : Type*}
 
 section NormedAddCommGroup
-variable [NormedRing K] [IsDomain K] [NormMetric R] [AddCommGroup R] [IsNormedAddGroup R]
+variable [NormMetric K] [Ring K] [IsNormedRing K] [IsDomain K] [NormMetric R] [AddCommGroup R] [IsNormedAddGroup R]
 variable [Module K R] [IsTorsionFree K R] [NormSMulClass K R]
 
 lemma tendsto_zero_of_isBoundedUnder_smul_of_tendsto_cobounded {f : α → K} {g : α → R}
@@ -965,7 +965,7 @@ lemma tendsto_smul_comp_nat_floor_of_tendsto_nsmul [NormSMulClass ℤ K] [Linear
 
 end NormedAddCommGroup
 
-lemma tendsto_smul_comp_nat_floor_of_tendsto_mul [NormedRing K] [NormedRing R]
+lemma tendsto_smul_comp_nat_floor_of_tendsto_mul [NormMetric K] [Ring K] [IsNormedRing K] [NormMetric R] [Ring R] [IsNormedRing R]
     [Module K R] [IsTorsionFree K R] [NormSMulClass K R] [NormSMulClass ℤ K] [LinearOrder K]
     [IsStrictOrderedRing K] [FloorSemiring K] [HasSolidNorm K] {g : ℕ → R} {t : R}
     (hg : Tendsto (fun n : ℕ ↦ (n : R) * g n) atTop (𝓝 t)) :

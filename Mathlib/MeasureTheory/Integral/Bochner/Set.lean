@@ -920,7 +920,7 @@ We prove that for any set `s`, the function
 section ContinuousSetIntegral
 
 variable [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E]
-  {𝕜 : Type*} [NormedRing 𝕜] [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [Module 𝕜 F] [IsBoundedSMul 𝕜 F]
+  {𝕜 : Type*} [NormMetric 𝕜] [Ring 𝕜] [IsNormedRing 𝕜] [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [Module 𝕜 F] [IsBoundedSMul 𝕜 F]
   {p : ℝ≥0∞} {μ : Measure X}
 
 /-- For `f : Lp E p μ`, we can define an element of `Lp E p (μ.restrict s)` by

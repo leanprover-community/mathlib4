@@ -270,7 +270,7 @@ section Normed
 section AnyFieldAnyAlgebra
 
 variable {𝕂 𝔸 𝔹 : Type*} [NontriviallyNormedField 𝕂]
-variable [NormedRing 𝔸] [NormedRing 𝔹] [NormedAlgebra 𝕂 𝔸]
+variable [NormMetric 𝔸] [Ring 𝔸] [IsNormedRing 𝔸] [NormMetric 𝔹] [Ring 𝔹] [IsNormedRing 𝔹] [NormedAlgebra 𝕂 𝔸]
 
 theorem norm_expSeries_summable_of_mem_ball (x : 𝔸)
     (hx : x ∈ Metric.eball (0 : 𝔸) (expSeries 𝕂 𝔸).radius) :
@@ -428,7 +428,7 @@ end AnyFieldDivisionAlgebra
 
 section AnyFieldCommAlgebra
 
-variable {𝕂 𝔸 : Type*} [NontriviallyNormedField 𝕂] [NormedCommRing 𝔸] [NormedAlgebra 𝕂 𝔸]
+variable {𝕂 𝔸 : Type*} [NontriviallyNormedField 𝕂] [NormMetric 𝔸] [CommRing 𝔸] [IsNormedRing 𝔸] [NormedAlgebra 𝕂 𝔸]
   [CompleteSpace 𝔸]
 
 /-- In a commutative Banach-algebra `𝔸` over a normed field `𝕂` of characteristic zero,
@@ -444,7 +444,7 @@ end AnyFieldCommAlgebra
 section AnyAlgebra
 
 variable (𝕂 𝔸 : Type*) [NontriviallyNormedField 𝕂] [CharZero 𝕂] [ContinuousSMul ℚ 𝕂]
-variable [NormedRing 𝔸] [NormedAlgebra 𝕂 𝔸]
+variable [NormMetric 𝔸] [Ring 𝔸] [IsNormedRing 𝔸] [NormedAlgebra 𝕂 𝔸]
 
 /-- In a normed algebra `𝔸` over `𝕂 = ℝ` or `𝕂 = ℂ`, the series defining the exponential map
 has an infinite radius of convergence. -/
@@ -501,7 +501,7 @@ theorem exp_analytic (x : 𝔸) : AnalyticAt 𝕂 exp x :=
 end AnyAlgebra
 
 section Rat
-variable {𝔸 𝔹 : Type*} [NormedRing 𝔸] [NormedAlgebra ℚ 𝔸] [CompleteSpace 𝔸] [NormedRing 𝔹]
+variable {𝔸 𝔹 : Type*} [NormMetric 𝔸] [Ring 𝔸] [IsNormedRing 𝔸] [NormedAlgebra ℚ 𝔸] [CompleteSpace 𝔸] [NormMetric 𝔹] [Ring 𝔹] [IsNormedRing 𝔹]
 
 @[continuity, fun_prop]
 theorem exp_continuous : Continuous (exp : 𝔸 → 𝔸) := by
@@ -601,19 +601,19 @@ theorem _root_.Prod.snd_exp [NormedAlgebra ℚ 𝔹] [CompleteSpace 𝔹] (x : �
   map_exp (RingHom.snd 𝔸 𝔹) continuous_snd x
 
 @[simp]
-theorem _root_.Pi.coe_exp {ι : Type*} {𝔸 : ι → Type*} [Finite ι] [∀ i, NormedRing (𝔸 i)]
+theorem _root_.Pi.coe_exp {ι : Type*} {𝔸 : ι → Type*} [Finite ι] [∀ i, NormMetric (𝔸 i)] [∀ i, Ring (𝔸 i)] [∀ i, IsNormedRing (𝔸 i)]
     [∀ i, NormedAlgebra ℚ (𝔸 i)] [∀ i, CompleteSpace (𝔸 i)] (x : ∀ i, 𝔸 i) (i : ι) :
     exp x i = exp (x i) :=
   let ⟨_⟩ := nonempty_fintype ι
   map_exp (Pi.evalRingHom 𝔸 i) (continuous_apply _) x
 
-theorem _root_.Pi.exp_def {ι : Type*} {𝔸 : ι → Type*} [Finite ι] [∀ i, NormedRing (𝔸 i)]
+theorem _root_.Pi.exp_def {ι : Type*} {𝔸 : ι → Type*} [Finite ι] [∀ i, NormMetric (𝔸 i)] [∀ i, Ring (𝔸 i)] [∀ i, IsNormedRing (𝔸 i)]
     [∀ i, NormedAlgebra ℚ (𝔸 i)] [∀ i, CompleteSpace (𝔸 i)] (x : ∀ i, 𝔸 i) :
     exp x = fun i => exp (x i) :=
   funext <| Pi.coe_exp x
 
 theorem _root_.Function.update_exp {ι : Type*} {𝔸 : ι → Type*} [Finite ι] [DecidableEq ι]
-    [∀ i, NormedRing (𝔸 i)] [∀ i, NormedAlgebra ℚ (𝔸 i)] [∀ i, CompleteSpace (𝔸 i)] (x : ∀ i, 𝔸 i)
+    [∀ i, NormMetric (𝔸 i)] [∀ i, Ring (𝔸 i)] [∀ i, IsNormedRing (𝔸 i)] [∀ i, NormedAlgebra ℚ (𝔸 i)] [∀ i, CompleteSpace (𝔸 i)] (x : ∀ i, 𝔸 i)
     (j : ι) (xj : 𝔸 j) :
     Function.update (exp x) j (exp xj) = exp (Function.update x j xj) := by
   ext i
@@ -656,7 +656,7 @@ end DivisionAlgebra
 
 section CommAlgebra
 
-variable {𝕂 𝔸 : Type*} [NormedCommRing 𝔸] [NormedAlgebra ℚ 𝔸] [CompleteSpace 𝔸]
+variable {𝕂 𝔸 : Type*} [NormMetric 𝔸] [CommRing 𝔸] [IsNormedRing 𝔸] [NormedAlgebra ℚ 𝔸] [CompleteSpace 𝔸]
 
 /-- In a commutative Banach-algebra `𝔸` over `𝕂 = ℝ` or `𝕂 = ℂ`,
 `NormedSpace.exp (x+y) = (NormedSpace.exp x) * (NormedSpace.exp y)`. -/

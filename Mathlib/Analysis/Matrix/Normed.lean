@@ -436,14 +436,14 @@ protected def linftyOpSemiNormedRing [NormPseudoMetric α] [Ring α] [IsNormedRi
 non-unital ring. Not declared as an instance because there are several natural choices for defining
 the norm of a matrix. -/
 @[instance_reducible]
-protected def linftyOpNonUnitalNormedRing [NonUnitalNormedRing α] :
+protected def linftyOpNonUnitalNormedRing [NormMetric α] [NonUnitalRing α] [IsNormedRing α] :
     NonUnitalNormedRing (Matrix n n α) where
 
 /-- Normed ring instance (using sup norm of L1 norm) for matrices over a normed ring.  Not
 declared as an instance because there are several natural choices for defining the norm of a
 matrix. -/
 @[instance_reducible]
-protected def linftyOpNormedRing [NormedRing α] [DecidableEq n] : NormedRing (Matrix n n α) where
+protected def linftyOpNormedRing [NormMetric α] [Ring α] [IsNormedRing α] [DecidableEq n] : NormedRing (Matrix n n α) where
 
 /-- Normed algebra instance (using sup norm of L1 norm) for matrices over a normed algebra. Not
 declared as an instance because there are several natural choices for defining the norm of a

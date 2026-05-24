@@ -427,7 +427,7 @@ theorem iteratedFDeriv_sum {ι : Type*} {f : ι → E → F} {u : Finset ι} {i 
 
 section MulProd
 
-variable {𝔸 𝔸' ι 𝕜' : Type*} [NormedRing 𝔸] [NormedAlgebra 𝕜 𝔸] [NormedCommRing 𝔸']
+variable {𝔸 𝔸' ι 𝕜' : Type*} [NormMetric 𝔸] [Ring 𝔸] [IsNormedRing 𝔸] [NormedAlgebra 𝕜 𝔸] [NormMetric 𝔸'] [CommRing 𝔸'] [IsNormedRing 𝔸']
   [NormedAlgebra 𝕜 𝔸'] [NormedField 𝕜'] [NormedAlgebra 𝕜 𝕜']
 
 -- The product is smooth.
@@ -544,7 +544,7 @@ end MulProd
 
 section SMul
 
-variable {𝕜' : Type*} [NormedRing 𝕜']
+variable {𝕜' : Type*} [NormMetric 𝕜'] [Ring 𝕜'] [IsNormedRing 𝕜']
   [NormedAlgebra 𝕜 𝕜'] [Module 𝕜' F] [IsBoundedSMul 𝕜' F] [IsScalarTower 𝕜 𝕜' F]
 
 -- The scalar multiplication is smooth.
@@ -588,7 +588,7 @@ drop `ContDiff*` assumptions in some lemmas about `iteratedFDeriv` and `iterated
 section ConstSMul
 
 variable {R A : Type*} [DistribSMul R F] [SMulCommClass 𝕜 R F] [ContinuousConstSMul R F]
-  [NormedRing A] [NormedAlgebra 𝕜 A] [Module A F] [IsScalarTower 𝕜 A F] [IsBoundedSMul A F]
+  [NormMetric A] [Ring A] [IsNormedRing A] [NormedAlgebra 𝕜 A] [Module A F] [IsScalarTower 𝕜 A F] [IsBoundedSMul A F]
 
 /-- Scalar multiplication is smooth (as a function of the vector variable). -/
 @[fun_prop]
@@ -766,7 +766,7 @@ end prodMap
 section AlgebraInverse
 
 variable (𝕜)
-variable {R : Type*} [NormedRing R] [NormedAlgebra 𝕜 R]
+variable {R : Type*} [NormMetric R] [Ring R] [IsNormedRing R] [NormedAlgebra 𝕜 R]
 
 open NormedRing ContinuousLinearMap Ring
 

@@ -50,7 +50,7 @@ open ContinuousMap
 
 variable {X : Type*} {𝕜 : Type*} {A : Type*} {p : A → Prop} [RCLike 𝕜]
   [MeasurableSpace X] {μ : Measure X}
-  [NormedRing A] [StarRing A] [NormedAlgebra 𝕜 A]
+  [NormMetric A] [Ring A] [IsNormedRing A] [StarRing A] [NormedAlgebra 𝕜 A]
   [ContinuousFunctionalCalculus 𝕜 A p]
   [CompleteSpace A]
 
@@ -203,7 +203,7 @@ section nonunital
 open ContinuousMapZero
 
 variable {X : Type*} {𝕜 : Type*} {A : Type*} {p : A → Prop} [RCLike 𝕜]
-  [MeasurableSpace X] {μ : Measure X} [NonUnitalNormedRing A] [StarRing A]
+  [MeasurableSpace X] {μ : Measure X} [NormMetric A] [NonUnitalRing A] [IsNormedRing A] [StarRing A]
   [NormedSpace 𝕜 A] [IsScalarTower 𝕜 A A] [SMulCommClass 𝕜 A A]
   [NonUnitalContinuousFunctionalCalculus 𝕜 A p]
   [CompleteSpace A]

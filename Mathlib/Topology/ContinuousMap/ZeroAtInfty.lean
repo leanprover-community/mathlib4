@@ -483,11 +483,11 @@ instance instIsNormedRing [NormPseudoMetric β] [NonUnitalRing β] [IsNormedRing
 
 noncomputable example [NormPseudoMetric β] [NonUnitalRing β] [IsNormedRing β] : NonUnitalSeminormedRing C₀(α, β) where
 
-noncomputable example [NonUnitalNormedRing β] : NonUnitalNormedRing C₀(α, β) where
+noncomputable example [NormMetric β] [NonUnitalRing β] [IsNormedRing β] : NonUnitalNormedRing C₀(α, β) where
 
 noncomputable example [NormPseudoMetric β] [NonUnitalCommRing β] [IsNormedRing β] : NonUnitalSeminormedCommRing C₀(α, β) where
 
-noncomputable example [NonUnitalNormedCommRing β] : NonUnitalNormedCommRing C₀(α, β) where
+noncomputable example [NormMetric β] [NonUnitalCommRing β] [IsNormedRing β] : NonUnitalNormedCommRing C₀(α, β) where
 
 end NormedRing
 
@@ -560,7 +560,7 @@ end StarRing
 
 section CStarRing
 
-instance instCStarRing [NonUnitalNormedRing β] [StarRing β] [CStarRing β] : CStarRing C₀(α, β) where
+instance instCStarRing [NormMetric β] [NonUnitalRing β] [IsNormedRing β] [StarRing β] [CStarRing β] : CStarRing C₀(α, β) where
   norm_mul_self_le f := CStarRing.norm_mul_self_le (x := f.toBCF)
 
 end CStarRing

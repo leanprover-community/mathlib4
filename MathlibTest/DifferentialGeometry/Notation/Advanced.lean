@@ -850,7 +850,7 @@ end UpperHalfPlane
 
 section units
 
-variable {R : Type*} [NormedRing R] [CompleteSpace R] [NormedAlgebra 𝕜 R]
+variable {R : Type*} [NormMetric R] [Ring R] [IsNormedRing R] [CompleteSpace R] [NormedAlgebra 𝕜 R]
 
 variable {f : Rˣ → 𝕜} in
 /-- info: MDifferentiable (modelWithCornersSelf 𝕜 R) (modelWithCornersSelf 𝕜 𝕜) f : Prop -/

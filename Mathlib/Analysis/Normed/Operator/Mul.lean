@@ -232,7 +232,7 @@ variable (𝕜) (R : Type*)
 
 section
 
-variable [NonUnitalNormedRing R] [NormedSpace 𝕜 R] [IsScalarTower 𝕜 R R]
+variable [NormMetric R] [NonUnitalRing R] [IsNormedRing R] [NormedSpace 𝕜 R] [IsScalarTower 𝕜 R R]
 variable [SMulCommClass 𝕜 R R] [RegularNormedAlgebra 𝕜 R] [Nontrivial R]
 
 @[simp]

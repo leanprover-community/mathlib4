@@ -192,7 +192,7 @@ theorem IsLittleO.trans_tendsto (hfg : f'' =o[l] g'') (hg : Tendsto g'' l (𝓝 
 lemma isLittleO_id_one [One F''] [NeZero (1 : F'')] : (fun x : E'' => x) =o[𝓝 0] (1 : E'' → F'') :=
   isLittleO_id_const one_ne_zero
 
-theorem continuousAt_iff_isLittleO {α : Type*} {E : Type*} [NormedRing E] [NormOneClass E]
+theorem continuousAt_iff_isLittleO {α : Type*} {E : Type*} [NormMetric E] [Ring E] [IsNormedRing E] [NormOneClass E]
     [TopologicalSpace α] {f : α → E} {x : α} :
     (ContinuousAt f x) ↔ (fun (y : α) ↦ f y - f x) =o[𝓝 x] (fun (_ : α) ↦ (1 : E)) := by
   simp [ContinuousAt, ← tendsto_sub_nhds_zero_iff]
@@ -785,7 +785,7 @@ lemma Asymptotics.IsBigO.comp_summable_norm {ι E F : Type*}
   summable_of_isBigO hg <| hf.norm_norm.comp_tendsto <|
     tendsto_zero_iff_norm_tendsto_zero.2 hg.tendsto_cofinite_zero
 
-lemma Summable.mul_tendsto_const {F ι : Type*} [NormedRing F] [NormMulClass F] [NormOneClass F]
+lemma Summable.mul_tendsto_const {F ι : Type*} [NormMetric F] [Ring F] [IsNormedRing F] [NormMulClass F] [NormOneClass F]
     [CompleteSpace F] {f g : ι → F} (hf : Summable fun n ↦ ‖f n‖) {c : F}
     (hg : Tendsto g cofinite (𝓝 c)) : Summable fun n ↦ f n * g n := by
   apply summable_of_isBigO hf

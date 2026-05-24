@@ -191,7 +191,7 @@ end Left
 section Right
 section RCLike
 
-variable {X 𝕜 A : Type*} {p : A → Prop} [RCLike 𝕜] [NormedRing A] [StarRing A]
+variable {X 𝕜 A : Type*} {p : A → Prop} [RCLike 𝕜] [NormMetric A] [Ring A] [IsNormedRing A] [StarRing A]
     [NormedAlgebra 𝕜 A] [IsometricContinuousFunctionalCalculus 𝕜 A p]
     [ContinuousStar A]
 
@@ -384,7 +384,7 @@ end RCLike
 
 section NNReal
 
-variable {X A : Type*} [NormedRing A] [StarRing A]
+variable {X A : Type*} [NormMetric A] [Ring A] [IsNormedRing A] [StarRing A]
     [NormedAlgebra ℝ A] [IsometricContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
     [ContinuousStar A] [PartialOrder A] [StarOrderedRing A] [NonnegSpectrumClass ℝ A]
     [T2Space A] [IsSemitopologicalRing A]
@@ -694,7 +694,7 @@ end Left
 section Right
 section RCLike
 
-variable {X 𝕜 A : Type*} {p : A → Prop} [RCLike 𝕜] [NonUnitalNormedRing A] [StarRing A]
+variable {X 𝕜 A : Type*} {p : A → Prop} [RCLike 𝕜] [NormMetric A] [NonUnitalRing A] [IsNormedRing A] [StarRing A]
     [NormedSpace 𝕜 A] [IsScalarTower 𝕜 A A] [SMulCommClass 𝕜 A A] [ContinuousStar A]
     [NonUnitalIsometricContinuousFunctionalCalculus 𝕜 A p]
 
@@ -896,7 +896,7 @@ end RCLike
 
 section NNReal
 
-variable {X A : Type*} [NonUnitalNormedRing A] [StarRing A]
+variable {X A : Type*} [NormMetric A] [NonUnitalRing A] [IsNormedRing A] [StarRing A]
     [NormedSpace ℝ A] [IsScalarTower ℝ A A] [SMulCommClass ℝ A A] [ContinuousStar A]
     [NonUnitalIsometricContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
     [PartialOrder A] [StarOrderedRing A] [NonnegSpectrumClass ℝ A]

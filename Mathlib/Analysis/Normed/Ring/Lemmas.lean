@@ -135,7 +135,7 @@ instance Int.instNormMulClass : NormMulClass ℤ :=
   ⟨fun a b ↦ by simp [← Int.norm_cast_real, abs_mul]⟩
 
 section NonUnitalNormedRing
-variable [NonUnitalNormedRing α] [NormMulClass α] {a : α}
+variable [NormMetric α] [NonUnitalRing α] [IsNormedRing α] [NormMulClass α] {a : α}
 
 lemma antilipschitzWith_mul_left {a : α} (ha : a ≠ 0) : AntilipschitzWith (‖a‖₊⁻¹) (a * ·) :=
   AntilipschitzWith.of_le_mul_dist fun _ _ ↦ by simp [dist_eq_norm, ← mul_sub, ha]

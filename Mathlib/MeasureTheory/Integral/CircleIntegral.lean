@@ -187,7 +187,7 @@ theorem circleIntegrable_const (a : E) (c : ℂ) (R : ℝ) : CircleIntegrable (f
 
 namespace CircleIntegrable
 
-variable {f g : ℂ → E} {c : ℂ} {R : ℝ} {A : Type*} [NormedRing A] {a : A}
+variable {f g : ℂ → E} {c : ℂ} {R : ℝ} {A : Type*} [NormMetric A] [Ring A] [IsNormedRing A] {a : A}
 
 /--
 Analogue of `IntervalIntegrable.abs`: If a real-valued function `f` is circle integrable, then so is

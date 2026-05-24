@@ -256,7 +256,7 @@ theorem integral_bilinear_deriv_right_eq_neg_left (f : 𝓢(ℝ, E)) (g : 𝓢(�
     (fun x _ ↦ f.hasDerivAt x) (fun x _ ↦ g.hasDerivAt x) (pairing L f (derivCLM ℝ F g)).integrable
     (pairing L (derivCLM ℝ E f) g).integrable (pairing L f g).integrable
 
-variable [NormedRing 𝕜] [NormedSpace ℝ 𝕜] [IsScalarTower ℝ 𝕜 𝕜] [SMulCommClass ℝ 𝕜 𝕜] in
+variable [NormMetric 𝕜] [Ring 𝕜] [IsNormedRing 𝕜] [NormedSpace ℝ 𝕜] [IsScalarTower ℝ 𝕜 𝕜] [SMulCommClass ℝ 𝕜 𝕜] in
 /-- Integration by parts of Schwartz functions for the 1-dimensional derivative.
 
 Version for multiplication of scalar-valued Schwartz functions. -/
@@ -301,7 +301,7 @@ theorem integral_bilinear_lineDerivOp_right_eq_neg_left (f : 𝓢(D, E)) (g : �
     (bilinLeftCLM L g.hasTemperateGrowth _).integrable
   all_goals exact fun x _ ↦ (hasFDerivAt _ x).hasLineDerivAt v
 
-variable [NormedRing 𝕜] [NormedSpace ℝ 𝕜] [IsScalarTower ℝ 𝕜 𝕜] [SMulCommClass ℝ 𝕜 𝕜] in
+variable [NormMetric 𝕜] [Ring 𝕜] [IsNormedRing 𝕜] [NormedSpace ℝ 𝕜] [IsScalarTower ℝ 𝕜 𝕜] [SMulCommClass ℝ 𝕜 𝕜] in
 /-- Integration by parts of Schwartz functions for directional derivatives.
 
 Version for multiplication of scalar-valued Schwartz functions. -/
@@ -353,7 +353,7 @@ theorem integral_bilinear_laplacian_right_eq_left (f : 𝓢(E, F₁)) (g : 𝓢(
   · exact fun _ _ ↦ (pairing L (∂_{_} <| ∂_{_} f) g).integrable
   · exact fun _ _ ↦ (pairing L f (∂_{_} <| ∂_{_} g)).integrable
 
-variable [NormedRing 𝕜] [NormedSpace ℝ 𝕜] [IsScalarTower ℝ 𝕜 𝕜] [SMulCommClass ℝ 𝕜 𝕜] in
+variable [NormMetric 𝕜] [Ring 𝕜] [IsNormedRing 𝕜] [NormedSpace ℝ 𝕜] [IsScalarTower ℝ 𝕜 𝕜] [SMulCommClass ℝ 𝕜 𝕜] in
 /-- Integration by parts of Schwartz functions for the Laplacian.
 
 Version for multiplication of scalar-valued Schwartz functions. -/

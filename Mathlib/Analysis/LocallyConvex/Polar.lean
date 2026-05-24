@@ -46,7 +46,7 @@ namespace LinearMap
 
 section NormedRing
 
-variable [NormedCommRing 𝕜] [AddCommMonoid E] [AddCommMonoid F]
+variable [NormMetric 𝕜] [CommRing 𝕜] [IsNormedRing 𝕜] [AddCommMonoid E] [AddCommMonoid F]
 variable [Module 𝕜 E] [Module 𝕜 F]
 
 
@@ -191,7 +191,7 @@ section
 /-- Given a subset `s` in a monoid `M` (over a commutative ring `R`), the polar `polar R s` is the
 subset of `StrongDual R M` consisting of those functionals which evaluate to something of norm at
 most one at all points `z ∈ s`. -/
-def polar (R : Type*) [NormedCommRing R] {M : Type*} [AddCommMonoid M]
+def polar (R : Type*) [NormMetric R] [CommRing R] [IsNormedRing R] {M : Type*} [AddCommMonoid M]
     [TopologicalSpace M] [Module R M] : Set M → Set (StrongDual R M) :=
   (topDualPairing R M).flip.polar
 

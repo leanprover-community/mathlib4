@@ -482,16 +482,16 @@ instance [NormMetric R] [AddCommGroup R] [IsNormedAddGroup R] : IsNormedAddGroup
 
 noncomputable example [NormMetric R] [AddCommGroup R] [IsNormedAddGroup R] : NormedAddCommGroup C(α, R)₀ where
 
-noncomputable instance [NormedCommRing R] : IsNormedRing C(α, R)₀ where
+noncomputable instance [NormMetric R] [CommRing R] [IsNormedRing R] : IsNormedRing C(α, R)₀ where
   norm_mul_le f g := norm_mul_le (f : C(α, R)) g
 
-noncomputable example [NormedCommRing R] : NonUnitalNormedCommRing C(α, R)₀ where
+noncomputable example [NormMetric R] [CommRing R] [IsNormedRing R] : NonUnitalNormedCommRing C(α, R)₀ where
 
-noncomputable instance [NormedField 𝕜] [NormedCommRing R] [NormedAlgebra 𝕜 R] :
+noncomputable instance [NormedField 𝕜] [NormMetric R] [CommRing R] [IsNormedRing R] [NormedAlgebra 𝕜 R] :
     NormedSpace 𝕜 C(α, R)₀ where
   norm_smul_le r f := norm_smul_le r (f : C(α, R))
 
-instance [NormedCommRing R] [StarRing R] [CStarRing R] : CStarRing C(α, R)₀ where
+instance [NormMetric R] [CommRing R] [IsNormedRing R] [StarRing R] [CStarRing R] : CStarRing C(α, R)₀ where
   norm_mul_self_le f := CStarRing.norm_mul_self_le (f : C(α, R))
 
 end Norm

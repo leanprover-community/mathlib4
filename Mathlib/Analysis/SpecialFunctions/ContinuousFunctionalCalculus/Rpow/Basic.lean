@@ -505,7 +505,7 @@ lemma rpow_neg_one_eq_inv (a : Aˣ) (ha : (0 : A) ≤ a := by cfc_tac) :
   refine a.inv_eq_of_mul_eq_one_left ?_ |>.symm
   simpa [rpow_one (a : A)] using rpow_neg_mul_rpow 1 (a.isStrictlyPositive_iff.mpr ha)
 
-lemma rpow_neg_one_eq_cfc_inv {A : Type*} [PartialOrder A] [NormedRing A] [StarRing A]
+lemma rpow_neg_one_eq_cfc_inv {A : Type*} [PartialOrder A] [NormMetric A] [Ring A] [IsNormedRing A] [StarRing A]
     [StarOrderedRing A] [NormedAlgebra ℝ A] [NonnegSpectrumClass ℝ A]
     [ContinuousFunctionalCalculus ℝ A IsSelfAdjoint] (a : A) :
     a ^ (-1 : ℝ) = cfc (·⁻¹ : ℝ≥0 → ℝ≥0) a :=

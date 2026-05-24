@@ -176,7 +176,7 @@ end Seminormed
 
 section Normed
 
-variable [NormedRing R]
+variable [NormMetric R] [Ring R] [IsNormedRing R]
 
 /-- The spectral value of `p` equals zero if and only if `p` is of the form `X ^ n`. -/
 theorem spectralValue_eq_zero_iff [Nontrivial R] {p : R[X]} (hp : p.Monic) :

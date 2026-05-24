@@ -143,7 +143,7 @@ lemma ContinuousMap.integral_apply [NormedSpace ℝ E] [CompleteSpace E] {f : X 
     _ = _ := rfl
 
 open scoped ContinuousMapZero in
-theorem ContinuousMapZero.integral_apply {R : Type*} [NormedCommRing R] [Zero Y]
+theorem ContinuousMapZero.integral_apply {R : Type*} [NormMetric R] [CommRing R] [IsNormedRing R] [Zero Y]
     [NormedAlgebra ℝ R] [CompleteSpace R] {f : X → C(Y, R)₀}
     (hf : MeasureTheory.Integrable f μ) (y : Y) :
     (∫ (x : X), f x ∂μ) y = ∫ (x : X), (f x) y ∂μ := by
@@ -230,7 +230,7 @@ theorem integral_smul_const {𝕜 : Type*} [RCLike 𝕜] [NormedSpace 𝕜 E] [C
 Note that the integrability hypothesis in the two lemmas below is necessary: consider the case
 where `A = ℝ × ℝ`, `c = (1,0)`, and `f` is only integrable on the first component.
 -/
-lemma integral_const_mul_of_integrable {A : Type*} [NonUnitalNormedRing A] [NormedSpace ℝ A]
+lemma integral_const_mul_of_integrable {A : Type*} [NormMetric A] [NonUnitalRing A] [IsNormedRing A] [NormedSpace ℝ A]
     [IsScalarTower ℝ A A] [SMulCommClass ℝ A A] {f : X → A} (hf : Integrable f μ) {c : A} :
     ∫ x, c * f x ∂μ = c * ∫ x, f x ∂μ := by
   by_cases hA : CompleteSpace A
@@ -238,7 +238,7 @@ lemma integral_const_mul_of_integrable {A : Type*} [NonUnitalNormedRing A] [Norm
     rw [ContinuousLinearMap.integral_comp_comm _ hf]
   · simp [integral, hA]
 
-lemma integral_mul_const_of_integrable {A : Type*} [NonUnitalNormedRing A] [NormedSpace ℝ A]
+lemma integral_mul_const_of_integrable {A : Type*} [NormMetric A] [NonUnitalRing A] [IsNormedRing A] [NormedSpace ℝ A]
     [IsScalarTower ℝ A A] [SMulCommClass ℝ A A] {f : X → A} (hf : Integrable f μ) {c : A} :
     ∫ x, f x * c ∂μ = (∫ x, f x ∂μ) * c := by
   by_cases hA : CompleteSpace A

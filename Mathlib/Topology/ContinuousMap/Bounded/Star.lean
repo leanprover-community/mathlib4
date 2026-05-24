@@ -77,7 +77,7 @@ end NormedAddCommGroup
 section CStarRing
 
 variable [TopologicalSpace α]
-variable [NonUnitalNormedRing β] [StarRing β]
+variable [NormMetric β] [NonUnitalRing β] [IsNormedRing β] [StarRing β]
 
 instance instStarRing [NormedStarGroup β] : StarRing (α →ᵇ β) where
   __ := instStarAddMonoid
@@ -97,7 +97,7 @@ end CStarRing
 section NormedAlgebra
 
 variable (𝕜 : Type*) [NormedField 𝕜] [TopologicalSpace α]
-  [NormedRing β] [NormedAlgebra 𝕜 β] [StarAddMonoid β] [NormedStarGroup β]
+  [NormMetric β] [Ring β] [IsNormedRing β] [NormedAlgebra 𝕜 β] [StarAddMonoid β] [NormedStarGroup β]
 
 /-- The ⋆-algebra-homomorphism forgetting that a bounded continuous function is bounded. -/
 @[simps!]

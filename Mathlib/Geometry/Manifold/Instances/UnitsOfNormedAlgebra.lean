@@ -33,7 +33,7 @@ open scoped Manifold ContDiff
 
 namespace Units
 
-variable {R : Type*} [NormedRing R] [CompleteSpace R] {n : ℕ∞ω}
+variable {R : Type*} [NormMetric R] [Ring R] [IsNormedRing R] [CompleteSpace R] {n : ℕ∞ω}
 
 instance : ChartedSpace R Rˣ :=
   isOpenEmbedding_val.singletonChartedSpace

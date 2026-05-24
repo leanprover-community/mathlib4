@@ -69,7 +69,7 @@ open Filter ENNReal spectrum CStarRing NormedSpace
 
 section UnitarySpectrum
 
-variable {𝕜 : Type*} [NormedField 𝕜] {E : Type*} [NormedRing E] [StarRing E] [CStarRing E]
+variable {𝕜 : Type*} [NormedField 𝕜] {E : Type*} [NormMetric E] [Ring E] [IsNormedRing E] [StarRing E] [CStarRing E]
   [NormedAlgebra 𝕜 E] [CompleteSpace E]
 
 theorem Unitary.spectrum_subset_circle (u : unitary E) :

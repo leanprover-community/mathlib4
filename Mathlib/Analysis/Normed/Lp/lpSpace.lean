@@ -288,7 +288,7 @@ theorem finsetSum {ι} (s : Finset ι) {f : ι → ∀ i, E i} (hf : ∀ i ∈ s
 
 section IsBoundedSMul
 
-variable [NormedRing 𝕜] [∀ i, Module 𝕜 (E i)] [∀ i, IsBoundedSMul 𝕜 (E i)]
+variable [NormMetric 𝕜] [Ring 𝕜] [IsNormedRing 𝕜] [∀ i, Module 𝕜 (E i)] [∀ i, IsBoundedSMul 𝕜 (E i)]
 
 theorem const_smul {f : ∀ i, E i} (hf : Memℓp f p) (c : 𝕜) : Memℓp (c • f) p := by
   rcases p.trichotomy with (rfl | rfl | hp)
@@ -640,7 +640,7 @@ end ComparePointwise
 
 section IsBoundedSMul
 
-variable [NormedRing 𝕜] [NormedRing 𝕜']
+variable [NormMetric 𝕜] [Ring 𝕜] [IsNormedRing 𝕜] [NormMetric 𝕜'] [Ring 𝕜'] [IsNormedRing 𝕜']
 variable [∀ i, Module 𝕜 (E i)] [∀ i, Module 𝕜' (E i)]
 
 instance : Module 𝕜 (PreLp E) :=
@@ -727,7 +727,7 @@ lemma norm_tsum_le (f : ℓ¹(α, E)) :
   ‖∑' i, f i‖ ≤ ∑' i, ‖f i‖ := norm_tsum_le_tsum_norm (.of_norm (by simpa using f.2.summable))
   _ = ‖f‖ := by simp [norm_eq_tsum_rpow]
 
-variable [NormedRing 𝕜] [Module 𝕜 E] [IsBoundedSMul 𝕜 E] [CompleteSpace E]
+variable [NormMetric 𝕜] [Ring 𝕜] [IsNormedRing 𝕜] [Module 𝕜 E] [IsBoundedSMul 𝕜 E] [CompleteSpace E]
 
 variable (α 𝕜 E) in
 /-- Summation (i.e., `tsum`) in `ℓ¹(α, E)` as a continuous linear map. -/
@@ -810,7 +810,7 @@ instance [hp : Fact (1 ≤ p)] : NormedStarGroup (lp E p) where
     · simp only [lp.norm_eq_ciSup, lp.star_apply, norm_star]
     · simp only [lp.norm_eq_tsum_rpow h, lp.star_apply, norm_star]
 
-variable [Star 𝕜] [NormedRing 𝕜]
+variable [Star 𝕜] [NormMetric 𝕜] [Ring 𝕜] [IsNormedRing 𝕜]
 variable [∀ i, Module 𝕜 (E i)] [∀ i, IsBoundedSMul 𝕜 (E i)] [∀ i, StarModule 𝕜 (E i)]
 
 instance : StarModule 𝕜 (lp E p) where
@@ -820,7 +820,7 @@ end NormedStarGroup
 
 section NonUnitalNormedRing
 
-variable {I : Type*} {B : I → Type*} [∀ i, NonUnitalNormedRing (B i)]
+variable {I : Type*} {B : I → Type*} [∀ i, NormMetric (B i)] [∀ i, NonUnitalRing (B i)] [∀ i, IsNormedRing (B i)]
 
 theorem _root_.Memℓp.infty_mul {f g : ∀ i, B i} (hf : Memℓp f ∞) (hg : Memℓp g ∞) :
     Memℓp (f * g) ∞ := by
@@ -851,19 +851,19 @@ instance instIsNormedRing : IsNormedRing (lp B ∞) where
     _ ≤ ‖f‖ * ‖g‖ := mul_le_mul (lp.norm_apply_le_norm ENNReal.top_ne_zero f i)
       (lp.norm_apply_le_norm ENNReal.top_ne_zero g i) (norm_nonneg _) (norm_nonneg _)
 
-instance instNonUnitalCommRing {B : I → Type*} [∀ i, NonUnitalNormedCommRing (B i)] :
+instance instNonUnitalCommRing {B : I → Type*} [∀ i, NormMetric (B i)] [∀ i, NonUnitalCommRing (B i)] [∀ i, IsNormedRing (B i)] :
     NonUnitalCommRing (lp B ∞) where
   mul_comm _ _ := ext <| mul_comm ..
 
-example {B : I → Type*} [∀ i, NonUnitalNormedCommRing (B i)] :
+example {B : I → Type*} [∀ i, NormMetric (B i)] [∀ i, NonUnitalCommRing (B i)] [∀ i, IsNormedRing (B i)] :
     NonUnitalNormedCommRing (lp B ∞) where
 
 -- we also want a `NonUnitalNormedCommRing` instance, but this has to wait for https://github.com/leanprover-community/mathlib3/pull/13719
-instance infty_isScalarTower {𝕜} [NormedRing 𝕜] [∀ i, Module 𝕜 (B i)] [∀ i, IsBoundedSMul 𝕜 (B i)]
+instance infty_isScalarTower {𝕜} [NormMetric 𝕜] [Ring 𝕜] [IsNormedRing 𝕜] [∀ i, Module 𝕜 (B i)] [∀ i, IsBoundedSMul 𝕜 (B i)]
     [∀ i, IsScalarTower 𝕜 (B i) (B i)] : IsScalarTower 𝕜 (lp B ∞) (lp B ∞) :=
   ⟨fun r f g => lp.ext <| smul_assoc (N := ∀ i, B i) (α := ∀ i, B i) r (⇑f) (⇑g)⟩
 
-instance infty_smulCommClass {𝕜} [NormedRing 𝕜] [∀ i, Module 𝕜 (B i)] [∀ i, IsBoundedSMul 𝕜 (B i)]
+instance infty_smulCommClass {𝕜} [NormMetric 𝕜] [Ring 𝕜] [IsNormedRing 𝕜] [∀ i, Module 𝕜 (B i)] [∀ i, IsBoundedSMul 𝕜 (B i)]
     [∀ i, SMulCommClass 𝕜 (B i) (B i)] : SMulCommClass 𝕜 (lp B ∞) (lp B ∞) :=
   ⟨fun r f g => lp.ext <| smul_comm (N := ∀ i, B i) (α := ∀ i, B i) r (⇑f) (⇑g)⟩
 
@@ -888,7 +888,7 @@ end NonUnitalNormedRing
 
 section NormedRing
 
-variable {I : Type*} {B : I → Type*} [∀ i, NormedRing (B i)]
+variable {I : Type*} {B : I → Type*} [∀ i, NormMetric (B i)] [∀ i, Ring (B i)] [∀ i, IsNormedRing (B i)]
 
 instance _root_.PreLp.ring : Ring (PreLp B) :=
   inferInstanceAs (Ring (∀ i, B i))
@@ -944,7 +944,7 @@ end NormedRing
 
 section NormedCommRing
 
-variable {I : Type*} {B : I → Type*} [∀ i, NormedCommRing (B i)] [∀ i, NormOneClass (B i)]
+variable {I : Type*} {B : I → Type*} [∀ i, NormMetric (B i)] [∀ i, CommRing (B i)] [∀ i, IsNormedRing (B i)] [∀ i, NormOneClass (B i)]
 
 instance inftyCommRing : CommRing (lp B ∞) where
   mul_comm := mul_comm
@@ -956,7 +956,7 @@ end NormedCommRing
 section Algebra
 
 variable {I : Type*} {B : I → Type*}
-variable [NormedField 𝕜] [∀ i, NormedRing (B i)] [∀ i, NormedAlgebra 𝕜 (B i)]
+variable [NormedField 𝕜] [∀ i, NormMetric (B i)] [∀ i, Ring (B i)] [∀ i, IsNormedRing (B i)] [∀ i, NormedAlgebra 𝕜 (B i)]
 
 instance _root_.PreLp.algebra : Algebra 𝕜 (PreLp B) :=
   inferInstanceAs <| Algebra 𝕜 (∀ i, B i)
@@ -987,7 +987,7 @@ end Algebra
 
 section Single
 
-variable [NormedRing 𝕜] [∀ i, Module 𝕜 (E i)] [∀ i, IsBoundedSMul 𝕜 (E i)]
+variable [NormMetric 𝕜] [Ring 𝕜] [IsNormedRing 𝕜] [∀ i, Module 𝕜 (E i)] [∀ i, IsBoundedSMul 𝕜 (E i)]
 variable [DecidableEq α]
 
 /-- The element of `lp E p` which is `a : E i` at the index `i`, and zero elsewhere. -/
@@ -1210,7 +1210,7 @@ end Single
 
 section OfLE
 
-variable [NormedRing 𝕜] [∀ i, Module 𝕜 (E i)] [∀ i, IsBoundedSMul 𝕜 (E i)] {p q r : ℝ≥0∞}
+variable [NormMetric 𝕜] [Ring 𝕜] [IsNormedRing 𝕜] [∀ i, Module 𝕜 (E i)] [∀ i, IsBoundedSMul 𝕜 (E i)] {p q r : ℝ≥0∞}
 
 variable (𝕜 E) in
 /-- The `AddSubgroup.inclusion` between `lp` spaces, as a linear map. -/
@@ -1239,7 +1239,7 @@ end OfLE
 
 section Eval
 
-variable [NormedRing 𝕜] [∀ i, Module 𝕜 (E i)] [∀ i, IsBoundedSMul 𝕜 (E i)] {p q r : ℝ≥0∞}
+variable [NormMetric 𝕜] [Ring 𝕜] [IsNormedRing 𝕜] [∀ i, Module 𝕜 (E i)] [∀ i, IsBoundedSMul 𝕜 (E i)] {p q r : ℝ≥0∞}
 
 variable (E p) in
 /-- Evaluation at a single coordinate, as a linear map on `lp E p`. -/

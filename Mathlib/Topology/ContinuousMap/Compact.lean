@@ -254,19 +254,19 @@ example [NormPseudoMetric R] [Ring R] [IsNormedRing R] : SeminormedRing C(α, R)
 
 example [NormPseudoMetric R] [CommRing R] [IsNormedRing R] : SeminormedCommRing C(α, R) where
 
-example [NonUnitalNormedRing R] : NonUnitalNormedRing C(α, R) where
+example [NormMetric R] [NonUnitalRing R] [IsNormedRing R] : NonUnitalNormedRing C(α, R) where
 
-example [NonUnitalNormedCommRing R] : NonUnitalNormedCommRing C(α, R) where
+example [NormMetric R] [NonUnitalCommRing R] [IsNormedRing R] : NonUnitalNormedCommRing C(α, R) where
 
-example [NormedRing R] : NormedRing C(α, R) where
+example [NormMetric R] [Ring R] [IsNormedRing R] : NormedRing C(α, R) where
 
-example [NormedCommRing R] : NormedCommRing C(α, R) where
+example [NormMetric R] [CommRing R] [IsNormedRing R] : NormedCommRing C(α, R) where
 
 end
 
 section
 
-variable {𝕜 : Type*} [NormedRing 𝕜] [Module 𝕜 E] [IsBoundedSMul 𝕜 E]
+variable {𝕜 : Type*} [NormMetric 𝕜] [Ring 𝕜] [IsNormedRing 𝕜] [Module 𝕜 E] [IsBoundedSMul 𝕜 E]
 
 instance normedSpace {𝕜 : Type*} [NormedField 𝕜] [NormedSpace 𝕜 E] : NormedSpace 𝕜 C(α, E) where
   norm_smul_le := norm_smul_le
@@ -475,7 +475,7 @@ section CStarRing
 variable {α : Type*} {β : Type*}
 variable [TopologicalSpace α] [CompactSpace α]
 
-instance [NonUnitalNormedRing β] [StarRing β] [CStarRing β] : CStarRing C(α, β) where
+instance [NormMetric β] [NonUnitalRing β] [IsNormedRing β] [StarRing β] [CStarRing β] : CStarRing C(α, β) where
   norm_mul_self_le f := by
     rw [← sq, ← Real.le_sqrt (norm_nonneg _) (norm_nonneg _),
       ContinuousMap.norm_le _ (Real.sqrt_nonneg _)]

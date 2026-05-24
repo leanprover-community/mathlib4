@@ -272,7 +272,7 @@ noncomputable section Normed
 
 section Ring
 
-variable [NormedRing R] [NormMetric M] [AddCommGroup M] [IsNormedAddGroup M] [Module R M] [Module Rᵐᵒᵖ M]
+variable [NormMetric R] [Ring R] [IsNormedRing R] [NormMetric M] [AddCommGroup M] [IsNormedAddGroup M] [Module R M] [Module Rᵐᵒᵖ M]
 variable [IsBoundedSMul R M] [IsBoundedSMul Rᵐᵒᵖ M] [SMulCommClass R Rᵐᵒᵖ M]
 
 instance instL1NormMetric : NormMetric (tsze R M) :=
@@ -286,7 +286,7 @@ end Ring
 
 section CommRing
 
-variable [NormedCommRing R] [NormMetric M] [AddCommGroup M] [IsNormedAddGroup M]
+variable [NormMetric R] [CommRing R] [IsNormedRing R] [NormMetric M] [AddCommGroup M] [IsNormedAddGroup M]
 variable [Module R M] [Module Rᵐᵒᵖ M] [IsCentralScalar R M]
 variable [IsBoundedSMul R M]
 
@@ -296,7 +296,7 @@ end CommRing
 
 section Algebra
 
-variable [NormedField 𝕜] [NormedRing R] [NormMetric M] [AddCommGroup M] [IsNormedAddGroup M]
+variable [NormedField 𝕜] [NormMetric R] [Ring R] [IsNormedRing R] [NormMetric M] [AddCommGroup M] [IsNormedAddGroup M]
 variable [NormedAlgebra 𝕜 R] [NormedSpace 𝕜 M] [Module R M] [Module Rᵐᵒᵖ M]
 variable [IsBoundedSMul R M] [IsBoundedSMul Rᵐᵒᵖ M] [SMulCommClass R Rᵐᵒᵖ M]
 variable [IsScalarTower 𝕜 R M] [IsScalarTower 𝕜 Rᵐᵒᵖ M]
@@ -314,7 +314,7 @@ end Normed
 
 section
 
-variable [NormedRing R] [NormMetric M] [AddCommGroup M] [IsNormedAddGroup M]
+variable [NormMetric R] [Ring R] [IsNormedRing R] [NormMetric M] [AddCommGroup M] [IsNormedAddGroup M]
 variable [NormedAlgebra ℚ R] [NormedSpace ℚ M] [Module R M] [Module Rᵐᵒᵖ M]
 variable [IsBoundedSMul R M] [IsBoundedSMul Rᵐᵒᵖ M] [SMulCommClass R Rᵐᵒᵖ M]
 variable [CompleteSpace R] [CompleteSpace M]

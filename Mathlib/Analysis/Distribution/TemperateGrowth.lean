@@ -269,7 +269,7 @@ theorem HasTemperateGrowth.smul {f : E → 𝕜} {g : E → F} (hf : f.HasTemper
     (hg : g.HasTemperateGrowth) : (f • g).HasTemperateGrowth :=
   (ContinuousLinearMap.lsmul ℝ 𝕜).bilinear_hasTemperateGrowth hf hg
 
-variable [NormedRing R] [NormedAlgebra ℝ R]
+variable [NormMetric R] [Ring R] [IsNormedRing R] [NormedAlgebra ℝ R]
 
 /-- The product of two functions of temperate growth is again of temperate growth. -/
 @[to_fun (attr := fun_prop)]

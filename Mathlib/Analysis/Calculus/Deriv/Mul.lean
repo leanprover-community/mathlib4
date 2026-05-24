@@ -99,7 +99,7 @@ section SMul
 /-! ### Derivative of the multiplication of a scalar function and a vector function -/
 
 
-variable {𝕜' : Type*} [NormedRing 𝕜'] [NormedAlgebra 𝕜 𝕜'] [Module 𝕜' F] [IsBoundedSMul 𝕜' F]
+variable {𝕜' : Type*} [NormMetric 𝕜'] [Ring 𝕜'] [IsNormedRing 𝕜'] [NormedAlgebra 𝕜 𝕜'] [Module 𝕜' F] [IsBoundedSMul 𝕜' F]
   [IsScalarTower 𝕜 𝕜' F] {c : 𝕜 → 𝕜'} {c' : 𝕜'}
 
 @[to_fun]
@@ -256,7 +256,7 @@ section Mul
 /-! ### Derivative of the multiplication of two functions -/
 
 
-variable {𝕜' 𝔸 : Type*} [NormedDivisionRing 𝕜'] [NormedRing 𝔸] [NormedAlgebra 𝕜 𝕜']
+variable {𝕜' 𝔸 : Type*} [NormedDivisionRing 𝕜'] [NormMetric 𝔸] [Ring 𝔸] [IsNormedRing 𝔸] [NormedAlgebra 𝕜 𝕜']
   [NormedAlgebra 𝕜 𝔸] {c d : 𝕜 → 𝔸} {c' d' : 𝔸} {u v : 𝕜 → 𝕜'}
 
 @[to_fun]
@@ -405,7 +405,7 @@ section Prod
 
 section HasDeriv
 
-variable {ι : Type*} [DecidableEq ι] {𝔸' : Type*} [NormedCommRing 𝔸'] [NormedAlgebra 𝕜 𝔸']
+variable {ι : Type*} [DecidableEq ι] {𝔸' : Type*} [NormMetric 𝔸'] [CommRing 𝔸'] [IsNormedRing 𝔸'] [NormedAlgebra 𝕜 𝔸']
   {u : Finset ι} {f : ι → 𝕜 → 𝔸'} {f' : ι → 𝔸'}
 
 theorem HasDerivAt.fun_finsetProd (hf : ∀ i ∈ u, HasDerivAt (f i) (f' i) x) :
@@ -482,7 +482,7 @@ theorem derivWithin_finsetProd (hf : ∀ i ∈ u, DifferentiableWithinAt 𝕜 (f
 
 end HasDeriv
 
-variable {ι : Type*} {𝔸' : Type*} [NormedCommRing 𝔸'] [NormedAlgebra 𝕜 𝔸']
+variable {ι : Type*} {𝔸' : Type*} [NormMetric 𝔸'] [CommRing 𝔸'] [IsNormedRing 𝔸'] [NormedAlgebra 𝕜 𝔸']
   {u : Finset ι} {f : ι → 𝕜 → 𝔸'}
 
 @[fun_prop]

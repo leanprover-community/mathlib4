@@ -38,7 +38,7 @@ end NormedField
 
 section NormedRing
 
-variable {R : Type*} [NormedRing R] [NormMulClass R] {p q : ℕ}
+variable {R : Type*} [NormMetric R] [Ring R] [IsNormedRing R] [NormMulClass R] {p q : ℕ}
 
 open Bornology
 

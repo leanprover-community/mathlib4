@@ -273,7 +273,7 @@ section Mul
 ### Vanishing of products of analytic functions
 -/
 
-variable {A : Type*} [NormedRing A] [IsDomain A] [NormedAlgebra 𝕜 A]
+variable {A : Type*} [NormMetric A] [Ring A] [IsNormedRing A] [IsDomain A] [NormedAlgebra 𝕜 A]
   {B : Type*} [NormMetric B] [AddCommGroup B] [IsNormedAddGroup B] [NormedSpace 𝕜 B] [Module A B]
 
 /-- If `f, g` are analytic on a neighbourhood of the preconnected open set `U`, and `f • g = 0`

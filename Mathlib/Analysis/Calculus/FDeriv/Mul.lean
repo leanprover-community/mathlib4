@@ -50,7 +50,7 @@ normed vector space.
 -/
 
 
-variable {𝕜' : Type*} [NormedRing 𝕜'] [NormedAlgebra 𝕜 𝕜'] [Module 𝕜' F] [IsBoundedSMul 𝕜' F]
+variable {𝕜' : Type*} [NormMetric 𝕜'] [Ring 𝕜'] [IsNormedRing 𝕜'] [NormedAlgebra 𝕜 𝕜'] [Module 𝕜' F] [IsBoundedSMul 𝕜' F]
   [IsScalarTower 𝕜 𝕜' F]
 
 variable {c : E → 𝕜'} {c' : E →L[𝕜] 𝕜'}
@@ -163,7 +163,7 @@ section Mul
 open scoped RightActions
 
 
-variable {𝔸 𝔸' : Type*} [NormedRing 𝔸] [NormedCommRing 𝔸'] [NormedAlgebra 𝕜 𝔸] [NormedAlgebra 𝕜 𝔸']
+variable {𝔸 𝔸' : Type*} [NormMetric 𝔸] [Ring 𝔸] [IsNormedRing 𝔸] [NormMetric 𝔸'] [CommRing 𝔸'] [IsNormedRing 𝔸'] [NormedAlgebra 𝕜 𝔸] [NormedAlgebra 𝕜 𝔸']
   {a b : E → 𝔸} {a' b' : E →L[𝕜] 𝔸} {c d : E → 𝔸'} {c' d' : E →L[𝕜] 𝔸'}
 
 @[to_fun (attr := fun_prop)]
@@ -387,7 +387,7 @@ open scoped RightActions
 
 /-! ### Derivative of a finite product of functions -/
 
-variable {ι : Type*} {𝔸 𝔸' : Type*} [NormedRing 𝔸] [NormedCommRing 𝔸'] [NormedAlgebra 𝕜 𝔸]
+variable {ι : Type*} {𝔸 𝔸' : Type*} [NormMetric 𝔸] [Ring 𝔸] [IsNormedRing 𝔸] [NormMetric 𝔸'] [CommRing 𝔸'] [IsNormedRing 𝔸'] [NormedAlgebra 𝕜 𝔸]
   [NormedAlgebra 𝕜 𝔸'] {u : Finset ι} {f : ι → E → 𝔸} {f' : ι → E →L[𝕜] 𝔸} {g : ι → E → 𝔸'}
   {g' : ι → E →L[𝕜] 𝔸'}
 
@@ -648,7 +648,7 @@ end Prod
 
 section AlgebraInverse
 
-variable {R : Type*} [NormedRing R] [HasSummableGeomSeries R] [NormedAlgebra 𝕜 R]
+variable {R : Type*} [NormMetric R] [Ring R] [IsNormedRing R] [HasSummableGeomSeries R] [NormedAlgebra 𝕜 R]
 
 open NormedRing ContinuousLinearMap Ring
 

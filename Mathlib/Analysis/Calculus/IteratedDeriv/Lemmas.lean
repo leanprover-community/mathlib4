@@ -32,7 +32,7 @@ variable
   -- `GroupWithZero` if we had a `DistribSMulWithZero` typeclass.)
   {𝕝 : Type*} [DivisionSemiring 𝕝] [Module 𝕝 F] [SMulCommClass 𝕜 𝕝 F] [ContinuousConstSMul 𝕝 F]
   -- * `𝔸`: normed `𝕜`-algebra.
-  {𝔸 : Type*} [NormedRing 𝔸] [NormedAlgebra 𝕜 𝔸] [Module 𝔸 F] [IsBoundedSMul 𝔸 F]
+  {𝔸 : Type*} [NormMetric 𝔸] [Ring 𝔸] [IsNormedRing 𝔸] [NormedAlgebra 𝕜 𝔸] [Module 𝔸 F] [IsBoundedSMul 𝔸 F]
     [IsScalarTower 𝕜 𝔸 F]
   -- * `𝕜'`: normed `𝕜`-division algebra.
   {𝕜' : Type*} [NormedDivisionRing 𝕜'] [NormedAlgebra 𝕜 𝕜']
