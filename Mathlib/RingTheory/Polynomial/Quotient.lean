@@ -66,7 +66,8 @@ noncomputable def quotientSpanCXSubCXSubCAlgEquiv {x : R} {y : R[X]} :
 
 lemma modByMonic_eq_zero_iff_quotient_eq_zero (p q : R[X]) (hq : q.Monic) :
     p %ₘ q = 0 ↔ (p : R[X] ⧸ Ideal.span {q}) = 0 := by
-  rw [modByMonic_eq_zero_iff_dvd hq, Ideal.Quotient.eq_zero_iff_dvd]
+  rw [modByMonic_eq_zero_iff_dvd hq]
+  exact (Ideal.Quotient.eq_zero_iff_dvd q p).symm
 
 end Polynomial
 
