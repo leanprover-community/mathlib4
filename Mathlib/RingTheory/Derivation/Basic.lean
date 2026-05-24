@@ -239,7 +239,7 @@ def coeFnAddMonoidHom : Derivation R A M →+ A → M where
 lemma coeFnAddMonoidHom_apply (D : Derivation R A M) : coeFnAddMonoidHom D = D := rfl
 
 instance : DistribMulAction S (Derivation R A M) :=
-  Function.Injective.distribMulAction coeFnAddMonoidHom coe_injective coe_smul
+  fast_instance% Function.Injective.distribMulAction coeFnAddMonoidHom coe_injective coe_smul
 
 instance [DistribMulAction Sᵐᵒᵖ M] [IsCentralScalar S M] :
     IsCentralScalar S (Derivation R A M) where
@@ -255,7 +255,7 @@ end Scalar
 
 instance instModule {S : Type*} [Semiring S] [Module S M] [SMulCommClass R S M]
     [SMulCommClass S A M] : Module S (Derivation R A M) :=
-  Function.Injective.module S coeFnAddMonoidHom coe_injective coe_smul
+  fast_instance% Function.Injective.module S coeFnAddMonoidHom coe_injective coe_smul
 
 section PushForward
 

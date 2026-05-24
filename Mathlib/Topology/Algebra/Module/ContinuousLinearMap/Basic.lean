@@ -665,7 +665,7 @@ variable [ContinuousAdd M₁]
 
 This generalizes `Function.End.applyMulAction`. -/
 instance applyModule : Module (M₁ →L[R₁] M₁) M₁ :=
-  Module.compHom _ toLinearMapRingHom
+  fast_instance% Module.compHom _ toLinearMapRingHom
 
 @[simp]
 protected theorem smul_def (f : M₁ →L[R₁] M₁) (a : M₁) : f • a = f a :=

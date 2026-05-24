@@ -31,7 +31,7 @@ theorem UnitsInt.univ : (Finset.univ : Finset ℤˣ) = {1, -1} := rfl
 theorem Fintype.card_units_int : Fintype.card ℤˣ = 2 := rfl
 
 instance [Monoid α] [Fintype α] [DecidableEq α] : Fintype αˣ :=
-  Fintype.ofEquiv _ (unitsEquivProdSubtype α).symm
+  fast_instance% Fintype.ofEquiv _ (unitsEquivProdSubtype α).symm
 
 instance [Monoid α] [Finite α] : Finite αˣ := .of_injective _ Units.val_injective
 

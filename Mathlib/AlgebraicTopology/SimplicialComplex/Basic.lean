@@ -81,7 +81,7 @@ instance : IsConcreteLE (PreAbstractSimplicialComplex ι) (Finset ι) where
   coe_subset_coe' := .rfl
 
 instance : PartialOrder (PreAbstractSimplicialComplex ι) :=
-  PartialOrder.lift (fun K => K.faces) (fun _ _ => PreAbstractSimplicialComplex.ext)
+  fast_instance% PartialOrder.lift (fun K => K.faces) (fun _ _ => PreAbstractSimplicialComplex.ext)
 
 instance : SupSet (PreAbstractSimplicialComplex ι) where
   sSup s :=
@@ -205,7 +205,7 @@ instance : IsConcreteLE (AbstractSimplicialComplex ι) (Finset ι) where
   coe_subset_coe' := .rfl
 
 instance : PartialOrder (AbstractSimplicialComplex ι) :=
-  PartialOrder.lift (fun K => K.faces) (fun _ _ => AbstractSimplicialComplex.ext)
+  fast_instance% PartialOrder.lift (fun K => K.faces) (fun _ _ => AbstractSimplicialComplex.ext)
 
 theorem toPreAbstractSimplicialComplex_injective :
     Function.Injective (toPreAbstractSimplicialComplex (ι := ι)) :=

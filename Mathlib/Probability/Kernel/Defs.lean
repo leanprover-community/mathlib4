@@ -100,7 +100,7 @@ noncomputable instance instSMulNat : SMul ℕ (Kernel α β) where
 @[simp] lemma nsmul_apply (n : ℕ) (κ : Kernel α β) (a : α) : (n • κ) a = n • κ a := rfl
 
 noncomputable instance instAddCommMonoid : AddCommMonoid (Kernel α β) :=
-  DFunLike.coe_injective.addCommMonoid _ coe_zero coe_add (by intros; rfl)
+  fast_instance% DFunLike.coe_injective.addCommMonoid _ coe_zero coe_add (by intros; rfl)
 
 instance instPartialOrder : PartialOrder (Kernel α β) := .lift _ DFunLike.coe_injective
 

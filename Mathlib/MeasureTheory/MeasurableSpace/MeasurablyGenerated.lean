@@ -283,7 +283,7 @@ theorem coe_top : ↑(⊤ : Subtype (MeasurableSet : Set α → Prop)) = (⊤ : 
 
 noncomputable instance Subtype.instBooleanAlgebra :
     BooleanAlgebra (Subtype (MeasurableSet : Set α → Prop)) :=
-  Subtype.coe_injective.booleanAlgebra _ .rfl .rfl coe_union coe_inter coe_top coe_bot coe_compl
+  fast_instance% Subtype.coe_injective.booleanAlgebra _ .rfl .rfl coe_union coe_inter coe_top coe_bot coe_compl
     coe_sdiff coe_himp
 
 @[measurability]

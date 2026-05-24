@@ -88,7 +88,7 @@ instance : Min (FiniteGaloisIntermediateField k K) where
   min L₁ L₂ := .mk <| L₁ ⊓ L₂
 
 instance : PartialOrder (FiniteGaloisIntermediateField k K) :=
-  PartialOrder.lift _ val_injective
+  fast_instance% PartialOrder.lift _ val_injective
 
 instance : Lattice (FiniteGaloisIntermediateField k K) :=
   val_injective.lattice _ .rfl .rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)

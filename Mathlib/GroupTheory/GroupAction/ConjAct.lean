@@ -241,7 +241,7 @@ theorem Subgroup.val_conj_smul {H : Subgroup G} [H.Normal] (g : ConjAct G) (h : 
 
 instance Subgroup.conjMulDistribMulAction {H : Subgroup G} [H.Normal] :
     MulDistribMulAction (ConjAct G) H :=
-  Subtype.coe_injective.mulDistribMulAction H.subtype Subgroup.val_conj_smul
+  fast_instance% Subtype.coe_injective.mulDistribMulAction H.subtype Subgroup.val_conj_smul
 
 /-- Group conjugation on a normal subgroup. Analogous to `MulAut.conj`. -/
 def _root_.MulAut.conjNormal {H : Subgroup G} [H.Normal] : G →* MulAut H :=

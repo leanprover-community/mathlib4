@@ -67,7 +67,7 @@ attribute [simp] algebraMap_σ
 -- We want to make sure `R₀` acts compatibly on `R` and `S` to avoid nonsensical instances
 @[nolint unusedArguments]
 noncomputable instance {R₀} [CommRing R₀] [Algebra R₀ R] [Algebra R₀ S] [IsScalarTower R₀ R S] :
-    Algebra R₀ P.Ring := Algebra.compHom P.Ring (algebraMap R₀ R)
+    Algebra R₀ P.Ring := fast_instance% Algebra.compHom P.Ring (algebraMap R₀ R)
 
 instance {R₀} [CommRing R₀] [Algebra R₀ R] [Algebra R₀ S] [IsScalarTower R₀ R S] :
     IsScalarTower R₀ R P.Ring := IsScalarTower.of_algebraMap_eq' rfl
@@ -377,7 +377,7 @@ instance Cotangent.module : Module S P.Cotangent where
 
 noncomputable
 instance {R₀} [CommRing R₀] [Algebra R₀ S] : Module R₀ P.Cotangent :=
-  Module.compHom P.Cotangent (algebraMap R₀ S)
+  fast_instance% Module.compHom P.Cotangent (algebraMap R₀ S)
 
 instance {R₁ R₂} [CommRing R₁] [CommRing R₂] [Algebra R₁ S] [Algebra R₂ S] [Algebra R₁ R₂]
     [IsScalarTower R₁ R₂ S] :

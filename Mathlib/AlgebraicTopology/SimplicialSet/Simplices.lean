@@ -117,7 +117,7 @@ see `SSet.S.le_def` and `SSet.S.le_iff`. Note that the
 category structure on `X.S` induced by this preorder is not
 the "category of simplices" of `X` (which is see `X.Elementsᵒᵖ`);
 see `SSet.S.le_iff_nonempty_hom` for the precise relation. -/
-instance : Preorder X.S := Preorder.lift subcomplex
+instance : Preorder X.S := fast_instance% Preorder.lift subcomplex
 
 lemma le_def {s t : X.S} : s ≤ t ↔ s.subcomplex ≤ t.subcomplex :=
   Iff.rfl

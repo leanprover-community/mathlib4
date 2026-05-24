@@ -179,7 +179,7 @@ set_option backward.privateInPublic true in
 end
 
 instance uniqueHomFromTrivial (A : CommGrp C) : Unique (trivial C ⟶ A) :=
-  Equiv.unique (show _ ≃ (Grp.trivial C ⟶ A.toGrp) from
+  fast_instance% Equiv.unique (show _ ≃ (Grp.trivial C ⟶ A.toGrp) from
     InducedCategory.homEquiv)
 
 instance : HasInitial (CommGrp C) :=

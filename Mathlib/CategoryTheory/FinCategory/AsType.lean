@@ -31,7 +31,7 @@ abbrev ObjAsType : Type :=
   InducedCategory α (Fintype.equivFin α).symm
 
 instance {i j : ObjAsType α} : Fintype (i ⟶ j) :=
-  Fintype.ofEquiv _ InducedCategory.homEquiv.symm
+  fast_instance% Fintype.ofEquiv _ InducedCategory.homEquiv.symm
 
 /-- The constructed category is indeed equivalent to `α`. -/
 noncomputable def objAsTypeEquiv : ObjAsType α ≌ α :=

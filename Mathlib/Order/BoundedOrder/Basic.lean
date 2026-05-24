@@ -9,6 +9,7 @@ public import Mathlib.Order.Max
 public import Mathlib.Order.ULift
 public import Mathlib.Tactic.ByCases
 public import Mathlib.Tactic.Finiteness.Attr
+public import Mathlib.Tactic.FastInstance
 
 /-!
 # ⊤ and ⊥, bounded lattices and variants
@@ -441,7 +442,7 @@ instance [Top α] : Top (ULift.{v} α) where top := up ⊤
 
 @[to_dual]
 instance [LE α] [OrderBot α] : OrderBot (ULift.{v} α) :=
-  OrderBot.lift ULift.down (fun _ _ => down_le.mp) down_bot
+  fast_instance% OrderBot.lift ULift.down (fun _ _ => down_le.mp) down_bot
 
 instance [LE α] [BoundedOrder α] : BoundedOrder (ULift.{v} α) where
 

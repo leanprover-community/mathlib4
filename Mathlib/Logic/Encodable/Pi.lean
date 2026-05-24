@@ -38,10 +38,10 @@ instance List.Vector.countable [Countable α] {n} : Countable (List.Vector α n)
 
 /-- If `α` is encodable, then so is `Fin n → α`. -/
 instance finArrow [Encodable α] {n} : Encodable (Fin n → α) :=
-  ofEquiv _ (Equiv.vectorEquivFin _ _).symm
+  fast_instance% ofEquiv _ (Equiv.vectorEquivFin _ _).symm
 
 instance finPi (n) (π : Fin n → Type*) [∀ i, Encodable (π i)] : Encodable (∀ i, π i) :=
-  ofEquiv _ (Equiv.piEquivSubtypeSigma (Fin n) π)
+  fast_instance% ofEquiv _ (Equiv.piEquivSubtypeSigma (Fin n) π)
 
 -- TODO: Unify with `fintypePi` and find a better name
 /-- When `α` is finite and `β` is encodable, `α → β` is encodable too. Because the encoding is not
@@ -64,6 +64,6 @@ def fintypePi (α : Type*) (π : α → Type*) [DecidableEq α] [Fintype α] [�
 /-- If `α` and `β` are encodable and `α` is a fintype, then `α → β` is encodable as well. -/
 instance fintypeArrowOfEncodable {α β : Type*} [Encodable α] [Fintype α] [Encodable β] :
     Encodable (α → β) :=
-  ofEquiv (Fin (Fintype.card α) → β) <| Equiv.arrowCongr fintypeEquivFin (Equiv.refl _)
+  fast_instance% ofEquiv (Fin (Fintype.card α) → β) <| Equiv.arrowCongr fintypeEquivFin (Equiv.refl _)
 
 end Encodable

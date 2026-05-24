@@ -34,7 +34,7 @@ def DList.listEquivDList : List α ≃ DList α where
   right_inv _ := DList.ofList_toList _
 
 instance : Traversable DList :=
-  Equiv.traversable DList.listEquivDList
+  fast_instance% Equiv.traversable DList.listEquivDList
 
 instance : LawfulTraversable DList :=
   Equiv.isLawfulTraversable DList.listEquivDList

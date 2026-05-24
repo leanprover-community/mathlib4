@@ -30,7 +30,7 @@ section FiniteInfinite
 
 instance DFinsupp.fintype {ι : Sort _} {π : ι → Sort _} [DecidableEq ι] [∀ i, Zero (π i)]
     [Fintype ι] [∀ i, Fintype (π i)] : Fintype (Π₀ i, π i) :=
-  Fintype.ofEquiv (∀ i, π i) DFinsupp.equivFunOnFintype.symm
+  fast_instance% Fintype.ofEquiv (∀ i, π i) DFinsupp.equivFunOnFintype.symm
 
 instance DFinsupp.infinite_of_left {ι : Sort _} {π : ι → Sort _} [∀ i, Nontrivial (π i)]
     [∀ i, Zero (π i)] [Infinite ι] : Infinite (Π₀ i, π i) := by

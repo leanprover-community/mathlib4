@@ -71,7 +71,7 @@ lemma ext_iff (x y : X.N) :
     x = y ↔ x.toS = y.toS := by
   grind [cases SSet.N]
 
-instance : Preorder X.N := Preorder.lift toS
+instance : Preorder X.N := fast_instance% Preorder.lift toS
 
 lemma le_iff {x y : X.N} : x ≤ y ↔ x.subcomplex ≤ y.subcomplex :=
   Iff.rfl

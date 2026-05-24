@@ -541,11 +541,11 @@ theorem sum_apply {ι : Type*} (s : Finset ι) (f : ι → NormedAddGroupHom V�
 
 instance distribMulAction {R : Type*} [MonoidWithZero R] [DistribMulAction R V₂]
     [PseudoMetricSpace R] [IsBoundedSMul R V₂] : DistribMulAction R (NormedAddGroupHom V₁ V₂) :=
-  Function.Injective.distribMulAction coeAddHom coe_injective coe_smul
+  fast_instance% Function.Injective.distribMulAction coeAddHom coe_injective coe_smul
 
 instance module {R : Type*} [Semiring R] [Module R V₂] [PseudoMetricSpace R] [IsBoundedSMul R V₂] :
     Module R (NormedAddGroupHom V₁ V₂) :=
-  Function.Injective.module _ coeAddHom coe_injective coe_smul
+  fast_instance% Function.Injective.module _ coeAddHom coe_injective coe_smul
 
 /-! ### Composition of normed group homs -/
 

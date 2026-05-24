@@ -50,7 +50,7 @@ namespace Quotient
 variable {I} {x y : R}
 
 instance one (I : Ideal R) : One (R ⧸ I) :=
-  ⟨Submodule.Quotient.mk 1⟩
+  fast_instance% ⟨Submodule.Quotient.mk 1⟩
 
 set_option backward.isDefEq.respectTransparency false in
 /-- On `Ideal`s, `Submodule.quotientRel` is a ring congruence. -/
@@ -86,7 +86,7 @@ def mk : R →+* R ⧸ I where
   map_add' _ _ := rfl
 
 instance : Coe R (R ⧸ I) :=
-  ⟨Ideal.Quotient.mk I⟩
+  fast_instance% ⟨Ideal.Quotient.mk I⟩
 
 /-- Two `RingHom`s from the quotient by an ideal are equal if their
 compositions with `Ideal.Quotient.mk'` are equal.

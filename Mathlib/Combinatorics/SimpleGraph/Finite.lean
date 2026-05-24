@@ -258,7 +258,7 @@ theorem degree_compl [Fintype (Gᶜ.neighborSet v)] [Fintype V] :
     simp [card_union_of_disjoint (Set.disjoint_toFinset.mpr (compl_neighborSet_disjoint G v))]
 
 instance incidenceSetFintype [DecidableEq V] : Fintype (G.incidenceSet v) :=
-  Fintype.ofEquiv (G.neighborSet v) (G.incidenceSetEquivNeighborSet v).symm
+  fast_instance% Fintype.ofEquiv (G.neighborSet v) (G.incidenceSetEquivNeighborSet v).symm
 
 /-- This is the `Finset` version of `incidenceSet`. -/
 def incidenceFinset [DecidableEq V] : Finset (Sym2 V) :=

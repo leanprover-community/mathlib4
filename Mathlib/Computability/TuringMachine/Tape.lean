@@ -11,6 +11,7 @@ public import Mathlib.Data.List.GetD
 public import Mathlib.Algebra.Group.Int.Defs
 public import Mathlib.Algebra.Group.Nat.Defs
 public import Mathlib.Data.List.Basic
+public import Mathlib.Tactic.FastInstance
 
 /-!
 # Turing machine tapes
@@ -126,10 +127,10 @@ def ListBlank (Γ) [Inhabited Γ] :=
   Quotient (BlankRel.setoid Γ)
 
 instance ListBlank.inhabited {Γ} [Inhabited Γ] : Inhabited (ListBlank Γ) :=
-  ⟨Quotient.mk'' []⟩
+  fast_instance% ⟨Quotient.mk'' []⟩
 
 instance ListBlank.hasEmptyc {Γ} [Inhabited Γ] : EmptyCollection (ListBlank Γ) :=
-  ⟨Quotient.mk'' []⟩
+  fast_instance% ⟨Quotient.mk'' []⟩
 
 /-- A modified version of `Quotient.liftOn'` specialized for `ListBlank`, with the stronger
 precondition `BlankExtends` instead of `BlankRel`. -/

@@ -164,7 +164,7 @@ variable (G : Type*) [Group G] [MulSemiringAction G R]
 /-- If `G` acts on `R` as a `MulSemiringAction`, then it also acts on `IsLocalRing.ResidueField R`.
 -/
 noncomputable instance : MulSemiringAction G (IsLocalRing.ResidueField R) :=
-  MulSemiringAction.compHom _ <| mapAut.comp (MulSemiringAction.toRingAut G R)
+  fast_instance% MulSemiringAction.compHom _ <| mapAut.comp (MulSemiringAction.toRingAut G R)
 
 @[simp]
 theorem residue_smul (g : G) (r : R) : residue R (g • r) = g • residue R r :=

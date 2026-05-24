@@ -81,7 +81,7 @@ instance [P.IsMonoidalStable] : MonoidalCategoryStruct (WideSubcategory P) where
   tensorHom f g := ⟨f.1 ⊗ₘ g.1, P.tensorHom_mem _ _ f.2 g.2⟩
 
 instance [P.IsMonoidalStable] : MonoidalCategory (WideSubcategory P) :=
-  Monoidal.induced (wideSubcategoryInclusion P)
+  fast_instance% Monoidal.induced (wideSubcategoryInclusion P)
     { εIso := Iso.refl _
       μIso _ _ := Iso.refl _ }
 

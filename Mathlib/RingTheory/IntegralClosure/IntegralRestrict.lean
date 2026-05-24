@@ -216,7 +216,7 @@ attribute [local instance] FractionRing.liftAlgebra FractionRing.isScalarTower_l
 noncomputable
 instance (priority := 900) [IsDomain A] [IsDomain B] [IsIntegrallyClosed B]
     [Module.Finite A B] [IsTorsionFree A B] : Fintype (B ≃ₐ[A] B) :=
-  haveI : IsIntegralClosure B A (FractionRing B) :=
+  fast_instance% haveI : IsIntegralClosure B A (FractionRing B) :=
     IsIntegralClosure.of_isIntegrallyClosed _ _ _
   -- TODO: How is this even supposed to fire? `R` and `S` cannot be inferred.
   haveI : Algebra.IsAlgebraic (FractionRing A) (FractionRing B) :=

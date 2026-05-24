@@ -8,6 +8,7 @@ module
 public import Mathlib.Order.Hom.Bounded
 public import Mathlib.Order.Hom.Lattice
 public import Mathlib.Order.SymmDiff
+public import Mathlib.Tactic.FastInstance
 
 /-!
 # Bounded lattice homomorphisms
@@ -305,7 +306,7 @@ instance : PartialOrder (SupBotHom α β) :=
 
 @[to_dual]
 instance : SemilatticeSup (SupBotHom α β) :=
-  DFunLike.coe_injective.semilatticeSup _ .rfl .rfl fun _ _ ↦ rfl
+  fast_instance% DFunLike.coe_injective.semilatticeSup _ .rfl .rfl fun _ _ ↦ rfl
 
 @[to_dual]
 instance : OrderBot (SupBotHom α β) where

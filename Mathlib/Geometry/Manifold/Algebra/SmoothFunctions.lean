@@ -82,12 +82,12 @@ under pointwise multiplication.
 @[to_additive]
 instance semigroup {G : Type*} [Semigroup G] [TopologicalSpace G] [ChartedSpace H' G]
     [ContMDiffMul I' n G] : Semigroup C^n⟮I, N; I', G⟯ :=
-  DFunLike.coe_injective.semigroup _ coe_mul
+  fast_instance% DFunLike.coe_injective.semigroup _ coe_mul
 
 @[to_additive]
 instance monoid {G : Type*} [Monoid G] [TopologicalSpace G] [ChartedSpace H' G]
     [ContMDiffMul I' n G] : Monoid C^n⟮I, N; I', G⟯ :=
-  DFunLike.coe_injective.monoid _ coe_one coe_mul coe_pow
+  fast_instance% DFunLike.coe_injective.monoid _ coe_one coe_mul coe_pow
 
 /-- Coercion to a function as a `MonoidHom`. Similar to `MonoidHom.coeFn`. -/
 @[to_additive (attr := simps) /-- Coercion to a function as an `AddMonoidHom`.
@@ -131,7 +131,7 @@ variable {I I'}
 @[to_additive]
 instance commMonoid {G : Type*} [CommMonoid G] [TopologicalSpace G] [ChartedSpace H' G]
     [ContMDiffMul I' n G] : CommMonoid C^n⟮I, N; I', G⟯ :=
-  DFunLike.coe_injective.commMonoid _ coe_one coe_mul coe_pow
+  fast_instance% DFunLike.coe_injective.commMonoid _ coe_one coe_mul coe_pow
 
 @[to_additive]
 instance group {G : Type*} [Group G] [TopologicalSpace G] [ChartedSpace H' G] [LieGroup I' n G] :
@@ -250,7 +250,7 @@ theorem smul_comp {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V] (r : �
 
 instance module {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V] :
     Module 𝕜 C^n⟮I, N; 𝓘(𝕜, V), V⟯ :=
-  Function.Injective.module 𝕜 coeFnAddMonoidHom ContMDiffMap.coe_injective coe_smul
+  fast_instance% Function.Injective.module 𝕜 coeFnAddMonoidHom ContMDiffMap.coe_injective coe_smul
 
 /-- Coercion to a function as a `LinearMap`. -/
 @[simps]

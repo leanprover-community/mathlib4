@@ -284,7 +284,7 @@ theorem val_smul_eq_evalₐ_smul (n : ℕ) (r : AdicCompletion I R)
   induction r using induction_on; rfl
 
 instance : Module (R ⧸ (I • ⊤ : Ideal R)) (M ⧸ (I • ⊤ : Submodule R M)) :=
-  Function.Surjective.moduleLeft (Ideal.Quotient.mk (I • ⊤ : Ideal R))
+  fast_instance% Function.Surjective.moduleLeft (Ideal.Quotient.mk (I • ⊤ : Ideal R))
     Ideal.Quotient.mk_surjective (fun _ _ ↦ rfl)
 
 instance : IsScalarTower R (R ⧸ (I • ⊤ : Ideal R)) (M ⧸ (I • ⊤ : Submodule R M)) where

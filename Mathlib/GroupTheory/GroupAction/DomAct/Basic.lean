@@ -223,7 +223,7 @@ theorem smul_monoidHom_apply (c : Mᵈᵐᵃ) (f : A →* B) (a : A) : (c • f)
 @[simp]
 theorem mk_smul_monoidHom_apply (c : M) (f : A →* B) (a : A) : (mk c • f) a = f (c • a) := rfl
 
-instance : MulAction Mᵈᵐᵃ (A →* B) := DFunLike.coe_injective.mulAction (⇑) fun _ _ ↦ rfl
+instance : MulAction Mᵈᵐᵃ (A →* B) := fast_instance% DFunLike.coe_injective.mulAction (⇑) fun _ _ ↦ rfl
 
 end MonoidHom
 
@@ -256,15 +256,15 @@ end DistribSMul
 variable {A M B : Type*}
 
 instance [Monoid M] [AddMonoid A] [DistribMulAction M A] [AddZeroClass B] :
-    MulAction Mᵈᵐᵃ (A →+ B) := DFunLike.coe_injective.mulAction (⇑) fun _ _ ↦ rfl
+    MulAction Mᵈᵐᵃ (A →+ B) := fast_instance% DFunLike.coe_injective.mulAction (⇑) fun _ _ ↦ rfl
 
 instance [Monoid M] [AddMonoid A] [DistribMulAction M A] [AddCommMonoid B] :
     DistribMulAction Mᵈᵐᵃ (A →+ B) :=
-  DFunLike.coe_injective.distribMulAction (AddMonoidHom.coeFn A B) fun _ _ ↦ rfl
+  fast_instance% DFunLike.coe_injective.distribMulAction (AddMonoidHom.coeFn A B) fun _ _ ↦ rfl
 
 instance [Monoid M] [Monoid A] [MulDistribMulAction M A] [CommMonoid B] :
     MulDistribMulAction Mᵈᵐᵃ (A →* B) :=
-  DFunLike.coe_injective.mulDistribMulAction (MonoidHom.coeFn A B) fun _ _ ↦ rfl
+  fast_instance% DFunLike.coe_injective.mulDistribMulAction (MonoidHom.coeFn A B) fun _ _ ↦ rfl
 
 end AddMonoidHom
 

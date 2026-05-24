@@ -458,7 +458,7 @@ theorem add_apply (Q Q' : QuadraticMap R M N) (x : M) : (Q + Q') x = Q x + Q' x 
   rfl
 
 instance : AddCommMonoid (QuadraticMap R M N) :=
-  DFunLike.coe_injective.addCommMonoid _ coeFn_zero coeFn_add fun _ _ => coeFn_smul _ _
+  fast_instance% DFunLike.coe_injective.addCommMonoid _ coeFn_zero coeFn_add fun _ _ => coeFn_smul _ _
 
 /-- `@CoeFn (QuadraticMap R M)` as an `AddMonoidHom`.
 
@@ -542,7 +542,7 @@ theorem sub_apply (Q Q' : QuadraticMap R M N) (x : M) : (Q - Q') x = Q x - Q' x 
   rfl
 
 instance : AddCommGroup (QuadraticMap R M N) :=
-  DFunLike.coe_injective.addCommGroup _ coeFn_zero coeFn_add coeFn_neg coeFn_sub
+  fast_instance% DFunLike.coe_injective.addCommGroup _ coeFn_zero coeFn_add coeFn_neg coeFn_sub
     (fun _ _ => coeFn_smul _ _) fun _ _ => coeFn_smul _ _
 
 end RingOperators

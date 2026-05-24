@@ -197,7 +197,7 @@ theorem ext : (∀ x, p x = q x) → p = q :=
 
 @[to_additive]
 instance : PartialOrder (GroupSeminorm E) :=
-  PartialOrder.lift _ DFunLike.coe_injective
+  fast_instance% PartialOrder.lift _ DFunLike.coe_injective
 
 @[to_additive]
 theorem le_def : p ≤ q ↔ (p : E → ℝ) ≤ q :=
@@ -319,7 +319,7 @@ theorem sup_apply (x : E) : (p ⊔ q) x = p x ⊔ q x :=
 
 @[to_additive]
 instance semilatticeSup : SemilatticeSup (GroupSeminorm E) :=
-  DFunLike.coe_injective.semilatticeSup _ .rfl .rfl coe_sup
+  fast_instance% DFunLike.coe_injective.semilatticeSup _ .rfl .rfl coe_sup
 
 /-- Composition of a group seminorm with a monoid homomorphism as a group seminorm. -/
 @[to_additive /-- Composition of an additive group seminorm with an additive monoid homomorphism as
@@ -495,7 +495,7 @@ theorem ext : (∀ x, p x = q x) → p = q :=
   DFunLike.ext p q
 
 noncomputable instance : PartialOrder (NonarchAddGroupSeminorm E) :=
-  PartialOrder.lift _ DFunLike.coe_injective
+  fast_instance% PartialOrder.lift _ DFunLike.coe_injective
 
 theorem le_def : p ≤ q ↔ (p : E → ℝ) ≤ q :=
   Iff.rfl
@@ -587,7 +587,7 @@ theorem sup_apply (x : E) : (p ⊔ q) x = p x ⊔ q x :=
   rfl
 
 noncomputable instance : SemilatticeSup (NonarchAddGroupSeminorm E) :=
-  DFunLike.coe_injective.semilatticeSup _ .rfl .rfl coe_sup
+  fast_instance% DFunLike.coe_injective.semilatticeSup _ .rfl .rfl coe_sup
 
 end AddGroup
 
@@ -742,7 +742,7 @@ theorem ext : (∀ x, p x = q x) → p = q :=
 
 @[to_additive]
 instance : PartialOrder (GroupNorm E) :=
-  PartialOrder.lift _ DFunLike.coe_injective
+  fast_instance% PartialOrder.lift _ DFunLike.coe_injective
 
 @[to_additive]
 theorem le_def : p ≤ q ↔ (p : E → ℝ) ≤ q :=
@@ -797,7 +797,7 @@ theorem sup_apply (x : E) : (p ⊔ q) x = p x ⊔ q x :=
 
 @[to_additive]
 instance : SemilatticeSup (GroupNorm E) :=
-  DFunLike.coe_injective.semilatticeSup _ .rfl .rfl coe_sup
+  fast_instance% DFunLike.coe_injective.semilatticeSup _ .rfl .rfl coe_sup
 
 end Group
 
@@ -866,7 +866,7 @@ theorem ext : (∀ x, p x = q x) → p = q :=
   DFunLike.ext p q
 
 noncomputable instance : PartialOrder (NonarchAddGroupNorm E) :=
-  PartialOrder.lift _ DFunLike.coe_injective
+  fast_instance% PartialOrder.lift _ DFunLike.coe_injective
 
 theorem le_def : p ≤ q ↔ (p : E → ℝ) ≤ q :=
   Iff.rfl
@@ -899,7 +899,7 @@ theorem sup_apply (x : E) : (p ⊔ q) x = p x ⊔ q x :=
   rfl
 
 noncomputable instance : SemilatticeSup (NonarchAddGroupNorm E) :=
-  DFunLike.coe_injective.semilatticeSup _ .rfl .rfl coe_sup
+  fast_instance% DFunLike.coe_injective.semilatticeSup _ .rfl .rfl coe_sup
 
 instance [DecidableEq E] : One (NonarchAddGroupNorm E) :=
   ⟨{ (1 : NonarchAddGroupSeminorm E) with

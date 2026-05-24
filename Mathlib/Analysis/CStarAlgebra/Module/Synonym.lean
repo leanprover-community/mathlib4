@@ -186,7 +186,7 @@ variable {A E}
 
 instance [u : UniformSpace E] : UniformSpace C⋆ᵐᵒᵈ(A, E) := u.comap <| equiv A E
 
-instance [Bornology E] : Bornology C⋆ᵐᵒᵈ(A, E) := Bornology.induced <| equiv A E
+instance [Bornology E] : Bornology C⋆ᵐᵒᵈ(A, E) := fast_instance% Bornology.induced <| equiv A E
 
 
 /-- `WithCStarModule.equiv` as a uniform equivalence between `C⋆ᵐᵒᵈ(A, E)` and `E`. -/

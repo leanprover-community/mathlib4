@@ -10,6 +10,7 @@ public import Mathlib.Data.Prod.Basic
 public import Mathlib.Data.Prod.PProd
 public import Mathlib.Data.Sum.Basic
 public import Mathlib.Logic.Equiv.Basic
+public import Mathlib.Tactic.FastInstance
 
 /-!
 # Injective functions
@@ -81,7 +82,7 @@ theorem toEmbedding_injective : Function.Injective (Equiv.toEmbedding : (α ≃ 
   fun _ _ h ↦ by rwa [DFunLike.ext'_iff] at h ⊢
 
 instance coeEmbedding : Coe (α ≃ β) (α ↪ β) :=
-  ⟨Equiv.toEmbedding⟩
+  fast_instance% ⟨Equiv.toEmbedding⟩
 
 end Equiv
 

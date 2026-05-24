@@ -60,6 +60,6 @@ instance [Group G] [MulAction G β] [MulAction Gᵐᵒᵖ β] [IsCentralScalar G
 
 @[to_additive]
 instance [Group G] [MulAction G β] : MulAction G (α ↪ β) :=
-  DFunLike.coe_injective.mulAction _ coe_smul
+  fast_instance% DFunLike.coe_injective.mulAction _ coe_smul
 
 end Function.Embedding

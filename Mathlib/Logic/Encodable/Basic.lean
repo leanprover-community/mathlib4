@@ -264,7 +264,7 @@ theorem decode_sum_val (n : ℕ) : (decode n : Option (α ⊕ β)) = decodeSum n
 end Sum
 
 instance _root_.Bool.encodable : Encodable Bool :=
-  ofEquiv (Unit ⊕ Unit) Equiv.boolEquivPUnitSumPUnit
+  fast_instance% ofEquiv (Unit ⊕ Unit) Equiv.boolEquivPUnitSumPUnit
 
 @[simp]
 theorem encode_true : encode true = 1 :=
@@ -294,7 +294,7 @@ theorem decode_ge_two (n) (h : 2 ≤ n) : (decode n : Option Bool) = none := by
   simp only [decodeSum, div2_val]; cases bodd n <;> simp [e]
 
 noncomputable instance _root_.Prop.encodable : Encodable Prop :=
-  ofEquiv Bool Equiv.propEquivBool
+  fast_instance% ofEquiv Bool Equiv.propEquivBool
 
 section Sigma
 
@@ -373,18 +373,18 @@ instance _root_.Fin.encodable (n) : Encodable (Fin n) :=
   ofEquiv _ Fin.equivSubtype
 
 instance _root_.Int.encodable : Encodable ℤ :=
-  ofEquiv _ Equiv.intEquivNat
+  fast_instance% ofEquiv _ Equiv.intEquivNat
 
 instance _root_.PNat.encodable : Encodable ℕ+ :=
-  ofEquiv _ Equiv.pnatEquivNat
+  fast_instance% ofEquiv _ Equiv.pnatEquivNat
 
 /-- The lift of an encodable type is encodable -/
 instance _root_.ULift.encodable [Encodable α] : Encodable (ULift α) :=
-  ofEquiv _ Equiv.ulift
+  fast_instance% ofEquiv _ Equiv.ulift
 
 /-- The lift of an encodable type is encodable. -/
 instance _root_.PLift.encodable [Encodable α] : Encodable (PLift α) :=
-  ofEquiv _ Equiv.plift
+  fast_instance% ofEquiv _ Equiv.plift
 
 /-- If `β` is encodable and there is an injection `f : α → β`, then `α` is encodable as well. -/
 @[implicit_reducible]

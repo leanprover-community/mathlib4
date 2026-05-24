@@ -348,7 +348,7 @@ theorem GLPos.coe_neg_apply (g : GLPos n R) (i j : n) :
   rfl
 
 instance : HasDistribNeg (GLPos n R) :=
-  Subtype.coe_injective.hasDistribNeg _ GLPos.coe_neg_GL (GLPos n R).coe_mul
+  fast_instance% Subtype.coe_injective.hasDistribNeg _ GLPos.coe_neg_GL (GLPos n R).coe_mul
 
 end Neg
 

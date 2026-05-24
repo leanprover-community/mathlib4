@@ -1164,11 +1164,11 @@ variable [Zero R]
 
 /-- The `Finsupp` version of `Pi.unique`. -/
 instance uniqueOfRight [Subsingleton R] : Unique (α →₀ R) :=
-  DFunLike.coe_injective.unique
+  fast_instance% DFunLike.coe_injective.unique
 
 /-- The `Finsupp` version of `Pi.uniqueOfIsEmpty`. -/
 instance uniqueOfLeft [IsEmpty α] : Unique (α →₀ R) :=
-  DFunLike.coe_injective.unique
+  fast_instance% DFunLike.coe_injective.unique
 
 end
 

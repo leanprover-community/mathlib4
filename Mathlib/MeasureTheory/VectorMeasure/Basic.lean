@@ -305,7 +305,7 @@ theorem coe_add (v w : VectorMeasure α M) : ⇑(v + w) = v + w := rfl
 theorem add_apply (v w : VectorMeasure α M) (i : Set α) : (v + w) i = v i + w i := rfl
 
 instance instAddCommMonoid : AddCommMonoid (VectorMeasure α M) :=
-  Function.Injective.addCommMonoid _ coe_injective coe_zero coe_add fun _ _ => coe_smul _ _
+  fast_instance% Function.Injective.addCommMonoid _ coe_injective coe_zero coe_add fun _ _ => coe_smul _ _
 
 /-- `(⇑)` is an `AddMonoidHom`. -/
 @[simps]
@@ -351,7 +351,7 @@ theorem coe_sub (v w : VectorMeasure α M) : ⇑(v - w) = v - w := rfl
 theorem sub_apply (v w : VectorMeasure α M) (i : Set α) : (v - w) i = v i - w i := rfl
 
 instance instAddCommGroup : AddCommGroup (VectorMeasure α M) :=
-  Function.Injective.addCommGroup _ coe_injective coe_zero coe_add coe_neg coe_sub
+  fast_instance% Function.Injective.addCommGroup _ coe_injective coe_zero coe_add coe_neg coe_sub
     (fun _ _ => coe_smul _ _) fun _ _ => coe_smul _ _
 
 end AddCommGroup
@@ -362,7 +362,7 @@ variable {M : Type*} [AddCommMonoid M] [TopologicalSpace M]
 variable {R : Type*} [Semiring R] [DistribMulAction R M] [ContinuousConstSMul R M]
 
 instance instDistribMulAction [ContinuousAdd M] : DistribMulAction R (VectorMeasure α M) :=
-  Function.Injective.distribMulAction coeFnAddMonoidHom coe_injective coe_smul
+  fast_instance% Function.Injective.distribMulAction coeFnAddMonoidHom coe_injective coe_smul
 
 end DistribMulAction
 
@@ -372,7 +372,7 @@ variable {M : Type*} [AddCommMonoid M] [TopologicalSpace M]
 variable {R : Type*} [Semiring R] [Module R M] [ContinuousConstSMul R M]
 
 instance instModule [ContinuousAdd M] : Module R (VectorMeasure α M) :=
-  Function.Injective.module R coeFnAddMonoidHom coe_injective coe_smul
+  fast_instance% Function.Injective.module R coeFnAddMonoidHom coe_injective coe_smul
 
 end Module
 

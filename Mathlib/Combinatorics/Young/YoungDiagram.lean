@@ -171,7 +171,7 @@ instance : Inhabited YoungDiagram :=
   ⟨⊥⟩
 
 instance : DistribLattice YoungDiagram :=
-  Function.Injective.distribLattice YoungDiagram.cells (fun μ ν h ↦ by rwa [YoungDiagram.ext_iff])
+  fast_instance% Function.Injective.distribLattice YoungDiagram.cells (fun μ ν h ↦ by rwa [YoungDiagram.ext_iff])
     .rfl .rfl (fun _ _ ↦ rfl) fun _ _ ↦ rfl
 
 end DistribLattice

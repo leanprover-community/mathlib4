@@ -53,7 +53,7 @@ variable [NumberField K]
 
 /-- There are finitely many embeddings of a number field. -/
 noncomputable instance : Fintype (K →+* A) :=
-  Fintype.ofEquiv (K →ₐ[ℚ] A) RingHom.equivRatAlgHom.symm
+  fast_instance% Fintype.ofEquiv (K →ₐ[ℚ] A) RingHom.equivRatAlgHom.symm
 
 variable [IsAlgClosed A]
 

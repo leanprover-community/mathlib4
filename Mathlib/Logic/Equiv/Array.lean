@@ -48,7 +48,7 @@ instance for `array` was)
 
 /-- If `α` is encodable, then so is `Array α`. -/
 instance Array.encodable {α} [Encodable α] : Encodable (Array α) :=
-  Encodable.ofEquiv _ (Equiv.arrayEquivList _)
+  fast_instance% Encodable.ofEquiv _ (Equiv.arrayEquivList _)
 
 /-- If `α` is countable, then so is `Array α`. -/
 instance Array.countable {α} [Countable α] : Countable (Array α) :=

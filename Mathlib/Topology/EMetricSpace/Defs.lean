@@ -322,7 +322,7 @@ abbrev PseudoEMetricSpace.induced {α β} (f : α → β) (m : PseudoEMetricSpac
 
 /-- Pseudoemetric space instance on subsets of pseudoemetric spaces -/
 instance {α : Type*} {p : α → Prop} [PseudoEMetricSpace α] : PseudoEMetricSpace (Subtype p) :=
-  PseudoEMetricSpace.induced Subtype.val ‹_›
+  fast_instance% PseudoEMetricSpace.induced Subtype.val ‹_›
 
 /-- The extended pseudodistance on a subset of a pseudoemetric space is the restriction of
 the original pseudodistance, by definition. -/
@@ -359,7 +359,7 @@ namespace MulOpposite
 @[to_additive
 /-- Pseudoemetric space instance on the additive opposite of a pseudoemetric space. -/]
 instance {α : Type*} [PseudoEMetricSpace α] : PseudoEMetricSpace αᵐᵒᵖ :=
-  PseudoEMetricSpace.induced unop ‹_›
+  fast_instance% PseudoEMetricSpace.induced unop ‹_›
 
 @[to_additive]
 theorem edist_unop (x y : αᵐᵒᵖ) : edist (unop x) (unop y) = edist x y := rfl
@@ -371,7 +371,7 @@ end MulOpposite
 
 section ULift
 
-instance : PseudoEMetricSpace (ULift α) := PseudoEMetricSpace.induced ULift.down ‹_›
+instance : PseudoEMetricSpace (ULift α) := fast_instance% PseudoEMetricSpace.induced ULift.down ‹_›
 
 theorem ULift.edist_eq (x y : ULift α) : edist x y = edist x.down y.down := rfl
 
@@ -813,15 +813,15 @@ abbrev EMetricSpace.induced {γ β} (f : γ → β) (hf : Function.Injective f) 
 
 /-- EMetric space instance on subsets of emetric spaces -/
 instance {α : Type*} {p : α → Prop} [EMetricSpace α] : EMetricSpace (Subtype p) :=
-  EMetricSpace.induced Subtype.val Subtype.coe_injective ‹_›
+  fast_instance% EMetricSpace.induced Subtype.val Subtype.coe_injective ‹_›
 
 /-- EMetric space instance on the multiplicative opposite of an emetric space. -/
 @[to_additive /-- EMetric space instance on the additive opposite of an emetric space. -/]
 instance {α : Type*} [EMetricSpace α] : EMetricSpace αᵐᵒᵖ :=
-  EMetricSpace.induced MulOpposite.unop MulOpposite.unop_injective ‹_›
+  fast_instance% EMetricSpace.induced MulOpposite.unop MulOpposite.unop_injective ‹_›
 
 instance {α : Type*} [EMetricSpace α] : EMetricSpace (ULift α) :=
-  EMetricSpace.induced ULift.down ULift.down_injective ‹_›
+  fast_instance% EMetricSpace.induced ULift.down ULift.down_injective ‹_›
 
 /-- Reformulation of the uniform structure in terms of the extended distance -/
 theorem uniformity_edist : 𝓤 γ = ⨅ ε > 0, 𝓟 { p : γ × γ | edist p.1 p.2 < ε } :=
@@ -993,7 +993,7 @@ abbrev WeakEMetricSpace.induced
 /-- `WeakEMetricSpace` instance on subsets of emetric spaces -/
 instance {α : Type*} {p : α → Prop} [TopologicalSpace α] [WeakEMetricSpace α] :
     WeakEMetricSpace (Subtype p) :=
-  WeakEMetricSpace.induced Subtype.coe_injective ‹_›
+  fast_instance% WeakEMetricSpace.induced Subtype.coe_injective ‹_›
 
 end
 

@@ -246,7 +246,7 @@ def _root_.Equiv.toPartialEquiv (e : α ≃ β) : PartialEquiv α β :=
   e.toPartialEquivOfImageEq univ univ <| by rw [image_univ, e.surjective.range_eq]
 
 instance inhabitedOfEmpty [IsEmpty α] [IsEmpty β] : Inhabited (PartialEquiv α β) :=
-  ⟨((Equiv.equivEmpty α).trans (Equiv.equivEmpty β).symm).toPartialEquiv⟩
+  fast_instance% ⟨((Equiv.equivEmpty α).trans (Equiv.equivEmpty β).symm).toPartialEquiv⟩
 
 /-- Create a copy of a `PartialEquiv` providing better definitional equalities. -/
 @[simps -fullyApplied]

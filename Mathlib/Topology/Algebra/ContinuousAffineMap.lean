@@ -270,7 +270,7 @@ instance [DistribMulAction Sᵐᵒᵖ W] [IsCentralScalar S W] : IsCentralScalar
   op_smul_eq_smul _ _ := ext fun _ ↦ op_smul_eq_smul _ _
 
 instance : MulAction S (P →ᴬ[R] W) :=
-  Function.Injective.mulAction _ coe_injective coe_smul
+  fast_instance% Function.Injective.mulAction _ coe_injective coe_smul
 
 variable [TopologicalSpace V] [IsTopologicalAddTorsor P] [IsTopologicalAddGroup W]
 
@@ -312,12 +312,12 @@ instance : AddCommGroup (P →ᴬ[R] W) :=
 
 instance [Monoid S] [DistribMulAction S W] [SMulCommClass R S W] [ContinuousConstSMul S W] :
     DistribMulAction S (P →ᴬ[R] W) :=
-  Function.Injective.distribMulAction ⟨⟨fun f ↦ f.toAffineMap.toFun, rfl⟩, coe_add⟩ coe_injective
+  fast_instance% Function.Injective.distribMulAction ⟨⟨fun f ↦ f.toAffineMap.toFun, rfl⟩, coe_add⟩ coe_injective
     coe_smul
 
 instance [Semiring S] [Module S W] [SMulCommClass R S W] [ContinuousConstSMul S W] :
     Module S (P →ᴬ[R] W) :=
-  Function.Injective.module S ⟨⟨fun f ↦ f.toAffineMap.toFun, rfl⟩, coe_add⟩ coe_injective coe_smul
+  fast_instance% Function.Injective.module S ⟨⟨fun f ↦ f.toAffineMap.toFun, rfl⟩, coe_add⟩ coe_injective coe_smul
 
 variable [TopologicalSpace V] [IsTopologicalAddTorsor P]
 

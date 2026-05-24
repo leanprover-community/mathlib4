@@ -53,7 +53,7 @@ theorem Dart.toProd_injective : Function.Injective (Dart.toProd : G.Dart → V �
   Dart.ext
 
 instance Dart.fintype [Fintype V] [DecidableRel G.Adj] : Fintype G.Dart :=
-  Fintype.ofEquiv (Σ v, G.neighborSet v)
+  fast_instance% Fintype.ofEquiv (Σ v, G.neighborSet v)
     { toFun := fun s => ⟨(s.fst, s.snd), s.snd.property⟩
       invFun := fun d => ⟨d.fst, d.snd, d.adj⟩ }
 

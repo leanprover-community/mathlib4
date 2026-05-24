@@ -21,7 +21,7 @@ public section
 variable {ι α : Type*} [DecidableEq ι] [Fintype ι] [Zero α] [Fintype α]
 
 noncomputable instance Finsupp.fintype : Fintype (ι →₀ α) :=
-  Fintype.ofEquiv _ Finsupp.equivFunOnFinite.symm
+  fast_instance% Fintype.ofEquiv _ Finsupp.equivFunOnFinite.symm
 
 instance Finsupp.infinite_of_left [Nontrivial α] [Infinite ι] : Infinite (ι →₀ α) :=
   let ⟨_, hm⟩ := exists_ne (0 : α)

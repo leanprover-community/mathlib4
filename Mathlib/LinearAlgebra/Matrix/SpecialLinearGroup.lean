@@ -180,7 +180,7 @@ theorem row_ne_zero [Nontrivial R] (g : SpecialLinearGroup n R) (i : n) : g i �
 end CoeLemmas
 
 instance monoid : Monoid (SpecialLinearGroup n R) :=
-  Function.Injective.monoid _ Subtype.coe_injective coe_one coe_mul coe_pow
+  fast_instance% Function.Injective.monoid _ Subtype.coe_injective coe_one coe_mul coe_pow
 
 instance : Group (SpecialLinearGroup n R) :=
   { SpecialLinearGroup.monoid, SpecialLinearGroup.hasInv with
@@ -359,7 +359,7 @@ theorem coe_neg (g : SpecialLinearGroup n R) : ↑(-g) = -(g : Matrix n n R) :=
   rfl
 
 instance : HasDistribNeg (SpecialLinearGroup n R) :=
-  Function.Injective.hasDistribNeg _ Subtype.coe_injective coe_neg coe_mul
+  fast_instance% Function.Injective.hasDistribNeg _ Subtype.coe_injective coe_neg coe_mul
 
 @[simp]
 theorem coe_int_neg (g : SpecialLinearGroup n ℤ) : ↑(-g) = (-↑g : SpecialLinearGroup n R) :=

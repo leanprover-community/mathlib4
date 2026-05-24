@@ -787,7 +787,7 @@ instance (G' : Subgraph G) [Fintype G'.verts] (v : V) [DecidablePred (· ∈ G'.
 
 instance coeFiniteAt {G' : Subgraph G} (v : G'.verts) [Fintype (G'.neighborSet v)] :
     Fintype (G'.coe.neighborSet v) :=
-  Fintype.ofEquiv _ (coeNeighborSetEquiv v).symm
+  fast_instance% Fintype.ofEquiv _ (coeNeighborSetEquiv v).symm
 
 theorem IsSpanning.card_verts [Fintype V] {G' : Subgraph G} [Fintype G'.verts] (h : G'.IsSpanning) :
     G'.verts.toFinset.card = Fintype.card V := by

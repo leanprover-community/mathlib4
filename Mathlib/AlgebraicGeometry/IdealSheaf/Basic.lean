@@ -85,7 +85,7 @@ protected lemma ext {I J : X.IdealSheafData} (h : I.ideal = J.ideal) : I = J := 
 
 section Order
 
-instance : PartialOrder (IdealSheafData X) := PartialOrder.lift ideal fun _ _ ↦ IdealSheafData.ext
+instance : PartialOrder (IdealSheafData X) := fast_instance% PartialOrder.lift ideal fun _ _ ↦ IdealSheafData.ext
 
 lemma le_def {I J : IdealSheafData X} : I ≤ J ↔ ∀ U, I.ideal U ≤ J.ideal U := .rfl
 

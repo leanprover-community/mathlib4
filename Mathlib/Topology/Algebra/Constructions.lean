@@ -99,7 +99,7 @@ variable [TopologicalSpace M] [Monoid M] [TopologicalSpace N] [Monoid N] [Topolo
 @[to_additive
 /-- The additive units of a monoid are equipped with a topology, via the embedding into `M × M`. -/]
 instance instTopologicalSpaceUnits : TopologicalSpace Mˣ :=
-  TopologicalSpace.induced (embedProduct M) inferInstance
+  fast_instance% TopologicalSpace.induced (embedProduct M) inferInstance
 
 @[to_additive]
 theorem isInducing_embedProduct : IsInducing (embedProduct M) := ⟨rfl⟩

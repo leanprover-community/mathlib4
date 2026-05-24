@@ -114,7 +114,7 @@ instance Subtype.metricSpace {α : Type*} {p : α → Prop} [MetricSpace α] :
 
 @[to_additive]
 instance MulOpposite.instMetricSpace {α : Type*} [MetricSpace α] : MetricSpace αᵐᵒᵖ :=
-  MetricSpace.induced MulOpposite.unop MulOpposite.unop_injective ‹_›
+  fast_instance% MetricSpace.induced MulOpposite.unop MulOpposite.unop_injective ‹_›
 
 section Real
 

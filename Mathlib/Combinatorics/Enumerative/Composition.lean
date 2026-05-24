@@ -843,7 +843,7 @@ def compositionAsSetEquiv (n : ℕ) : CompositionAsSet n ≃ Finset (Fin (n - 1)
       exists_eq_right']
 
 instance compositionAsSetFintype (n : ℕ) : Fintype (CompositionAsSet n) :=
-  Fintype.ofEquiv _ (compositionAsSetEquiv n).symm
+  fast_instance% Fintype.ofEquiv _ (compositionAsSetEquiv n).symm
 
 theorem compositionAsSet_card (n : ℕ) : Fintype.card (CompositionAsSet n) = 2 ^ (n - 1) := by
   have : Fintype.card (Finset (Fin (n - 1))) = 2 ^ (n - 1) := by simp
@@ -1019,7 +1019,7 @@ def compositionEquiv (n : ℕ) : Composition n ≃ CompositionAsSet n where
     exact c.toComposition_boundaries
 
 instance compositionFintype (n : ℕ) : Fintype (Composition n) :=
-  Fintype.ofEquiv _ (compositionEquiv n).symm
+  fast_instance% Fintype.ofEquiv _ (compositionEquiv n).symm
 
 theorem composition_card (n : ℕ) : Fintype.card (Composition n) = 2 ^ (n - 1) := by
   rw [← compositionAsSet_card n]

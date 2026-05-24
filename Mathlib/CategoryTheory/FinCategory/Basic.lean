@@ -32,7 +32,7 @@ noncomputable section
 namespace CategoryTheory
 
 instance discreteFintype {α : Type*} [Fintype α] : Fintype (Discrete α) :=
-  Fintype.ofEquiv α discreteEquiv.symm
+  fast_instance% Fintype.ofEquiv α discreteEquiv.symm
 
 instance {α : Type*} [Finite α] : Finite (Discrete α) :=
   Finite.of_equiv α discreteEquiv.symm

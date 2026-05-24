@@ -58,7 +58,7 @@ namespace Subtype
 variable {p : α → Prop}
 
 instance pseudoMetricSpace : PseudoMetricSpace (Subtype p) :=
-  PseudoMetricSpace.induced Subtype.val ‹_›
+  fast_instance% PseudoMetricSpace.induced Subtype.val ‹_›
 
 lemma dist_eq (x y : Subtype p) : dist x y = dist (x : α) y := rfl
 
@@ -89,7 +89,7 @@ namespace MulOpposite
 
 @[to_additive]
 instance instPseudoMetricSpace : PseudoMetricSpace αᵐᵒᵖ :=
-  PseudoMetricSpace.induced MulOpposite.unop ‹_›
+  fast_instance% PseudoMetricSpace.induced MulOpposite.unop ‹_›
 
 @[to_additive (attr := simp)]
 lemma dist_unop (x y : αᵐᵒᵖ) : dist (unop x) (unop y) = dist x y := rfl

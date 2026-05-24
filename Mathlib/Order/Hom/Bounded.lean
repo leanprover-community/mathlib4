@@ -6,6 +6,7 @@ Authors: Yaël Dillies
 module
 
 public import Mathlib.Order.Hom.Basic
+public import Mathlib.Tactic.FastInstance
 
 /-!
 # Bounded order homomorphisms
@@ -310,7 +311,7 @@ instance : Min (TopHom α β) :=
 
 @[to_dual]
 instance : SemilatticeInf (TopHom α β) :=
-  DFunLike.coe_injective.semilatticeInf _ .rfl .rfl fun _ _ ↦ rfl
+  fast_instance% DFunLike.coe_injective.semilatticeInf _ .rfl .rfl fun _ _ ↦ rfl
 
 @[to_dual (attr := simp)]
 theorem coe_inf : ⇑(f ⊓ g) = ⇑f ⊓ ⇑g :=
@@ -332,7 +333,7 @@ instance : Max (TopHom α β) :=
 
 @[to_dual]
 instance : SemilatticeSup (TopHom α β) :=
-  DFunLike.coe_injective.semilatticeSup _ .rfl .rfl fun _ _ ↦ rfl
+  fast_instance% DFunLike.coe_injective.semilatticeSup _ .rfl .rfl fun _ _ ↦ rfl
 
 @[to_dual (attr := simp)]
 theorem coe_sup : ⇑(f ⊔ g) = ⇑f ⊔ ⇑g :=

@@ -8,6 +8,7 @@ module
 public import Mathlib.Data.ULift
 public import Mathlib.Tactic.PPWithUniv
 public import Mathlib.Util.Delaborators
+public import Mathlib.Tactic.FastInstance
 
 /-!
 # Cardinal Numbers
@@ -243,7 +244,7 @@ theorem mk_eq_one (α : Type u) [Subsingleton α] [Nonempty α] : #α = 1 :=
   let ⟨_⟩ := nonempty_unique α; (Equiv.ofUnique α (ULift (Fin 1))).cardinal_eq
 
 instance : Add Cardinal.{u} :=
-  ⟨map₂ Sum fun _ _ _ _ => Equiv.sumCongr⟩
+  fast_instance% ⟨map₂ Sum fun _ _ _ _ => Equiv.sumCongr⟩
 
 theorem add_def (α β : Type u) : #α + #β = #(α ⊕ β) :=
   rfl
@@ -264,7 +265,7 @@ theorem mk_psum (α : Type u) (β : Type v) : #(α ⊕' β) = lift.{v} #α + lif
   (mk_congr (Equiv.psumEquivSum α β)).trans (mk_sum α β)
 
 instance : Mul Cardinal.{u} :=
-  ⟨map₂ Prod fun _ _ _ _ => Equiv.prodCongr⟩
+  fast_instance% ⟨map₂ Prod fun _ _ _ _ => Equiv.prodCongr⟩
 
 theorem mul_def (α β : Type u) : #α * #β = #(α × β) :=
   rfl

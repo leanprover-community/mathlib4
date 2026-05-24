@@ -312,7 +312,7 @@ theorem sub_apply (f g : ModularForm Γ k) (z : ℍ) : (f - g) z = f z - g z :=
   rfl
 
 instance : AddCommGroup (ModularForm Γ k) :=
-  DFunLike.coe_injective.addCommGroup _ rfl coe_add coe_neg coe_sub coe_smul coe_smul
+  fast_instance% DFunLike.coe_injective.addCommGroup _ rfl coe_add coe_neg coe_sub coe_smul coe_smul
 
 /-- Additive coercion from `ModularForm` to `ℍ → ℂ`. -/
 @[simps]
@@ -322,10 +322,10 @@ def coeHom : ModularForm Γ k →+ ℍ → ℂ where
   map_add' _ _ := rfl
 
 instance : Module ℝ (ModularForm Γ k) :=
-  Function.Injective.module ℝ coeHom DFunLike.coe_injective fun _ _ => rfl
+  fast_instance% Function.Injective.module ℝ coeHom DFunLike.coe_injective fun _ _ => rfl
 
 instance [Γ.HasDetOne] : Module ℂ (ModularForm Γ k) :=
-  Function.Injective.module ℂ coeHom DFunLike.coe_injective fun _ _ => rfl
+  fast_instance% Function.Injective.module ℂ coeHom DFunLike.coe_injective fun _ _ => rfl
 
 instance : Inhabited (ModularForm Γ k) :=
   ⟨0⟩
@@ -506,7 +506,7 @@ theorem sub_apply (f g : CuspForm Γ k) (z : ℍ) : (f - g) z = f z - g z :=
   rfl
 
 instance : AddCommGroup (CuspForm Γ k) :=
-  DFunLike.coe_injective.addCommGroup _ rfl coe_add coe_neg coe_sub coe_smul coe_smul
+  fast_instance% DFunLike.coe_injective.addCommGroup _ rfl coe_add coe_neg coe_sub coe_smul coe_smul
 
 /-- Additive coercion from `CuspForm` to `ℍ → ℂ`. -/
 @[simps]
@@ -516,10 +516,10 @@ def coeHom : CuspForm Γ k →+ ℍ → ℂ where
   map_add' _ _ := rfl
 
 instance : Module ℝ (CuspForm Γ k) :=
-  Function.Injective.module ℝ coeHom DFunLike.coe_injective fun _ _ => rfl
+  fast_instance% Function.Injective.module ℝ coeHom DFunLike.coe_injective fun _ _ => rfl
 
 instance [Γ.HasDetOne] : Module ℂ (CuspForm Γ k) :=
-  Function.Injective.module ℂ coeHom DFunLike.coe_injective fun _ _ => rfl
+  fast_instance% Function.Injective.module ℂ coeHom DFunLike.coe_injective fun _ _ => rfl
 
 instance : Inhabited (CuspForm Γ k) :=
   ⟨0⟩

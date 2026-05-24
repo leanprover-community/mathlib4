@@ -13,6 +13,7 @@ public import Mathlib.Tactic.Simps.Basic
 public import Mathlib.Tactic.Substs
 
 import Mathlib.Tactic.Attr.Register
+public import Mathlib.Tactic.FastInstance
 
 /-!
 # Equivalence between types
@@ -140,7 +141,7 @@ protected theorem Perm.congr_fun {f g : Equiv.Perm α} (h : f = g) (x : α) : f 
 /-- Any type is equivalent to itself. -/
 @[refl] protected def refl (α : Sort*) : α ≃ α := ⟨id, id, fun _ => rfl, fun _ => rfl⟩
 
-instance inhabited' : Inhabited (α ≃ α) := ⟨Equiv.refl α⟩
+instance inhabited' : Inhabited (α ≃ α) := fast_instance% ⟨Equiv.refl α⟩
 
 /-- Inverse of an equivalence `e : α ≃ β`. -/
 @[symm]
@@ -199,7 +200,7 @@ instance equiv_subsingleton_dom [Subsingleton α] : Subsingleton (α ≃ β) :=
   ⟨fun f _ => Equiv.ext fun _ => @Subsingleton.elim _ (Equiv.subsingleton.symm f) _ _⟩
 
 instance permUnique [Subsingleton α] : Unique (Perm α) :=
-  uniqueOfSubsingleton (Equiv.refl α)
+  fast_instance% uniqueOfSubsingleton (Equiv.refl α)
 
 theorem Perm.subsingleton_eq_refl [Subsingleton α] (e : Perm α) : e = Equiv.refl α :=
   Subsingleton.elim _ _

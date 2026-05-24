@@ -158,17 +158,17 @@ def Fintype.prodRight {α β} [DecidableEq β] [Fintype (α × β)] [Nonempty α
   ⟨(@univ (α × β) _).image Prod.snd, fun b => by simp⟩
 
 instance ULift.fintype (α : Type*) [Fintype α] : Fintype (ULift α) :=
-  Fintype.ofEquiv _ Equiv.ulift.symm
+  fast_instance% Fintype.ofEquiv _ Equiv.ulift.symm
 
 instance PLift.fintype (α : Type*) [Fintype α] : Fintype (PLift α) :=
-  Fintype.ofEquiv _ Equiv.plift.symm
+  fast_instance% Fintype.ofEquiv _ Equiv.plift.symm
 
 instance PLift.fintypeProp (p : Prop) [Decidable p] : Fintype (PLift p) :=
   ⟨if h : p then {⟨h⟩} else ∅, fun ⟨h⟩ => by simp [h]⟩
 
 instance Quotient.fintype [Fintype α] (s : Setoid α) [DecidableRel ((· ≈ ·) : α → α → Prop)] :
     Fintype (Quotient s) :=
-  Fintype.ofSurjective Quotient.mk'' Quotient.mk''_surjective
+  fast_instance% Fintype.ofSurjective Quotient.mk'' Quotient.mk''_surjective
 
 instance PSigma.fintypePropLeft {α : Prop} {β : α → Type*} [Decidable α] [∀ a, Fintype (β a)] :
     Fintype (Σ' a, β a) :=
@@ -177,7 +177,7 @@ instance PSigma.fintypePropLeft {α : Prop} {β : α → Type*} [Decidable α] [
 
 instance PSigma.fintypePropRight {α : Type*} {β : α → Prop} [∀ a, Decidable (β a)] [Fintype α] :
     Fintype (Σ' a, β a) :=
-  Fintype.ofEquiv { a // β a }
+  fast_instance% Fintype.ofEquiv { a // β a }
     ⟨fun ⟨x, y⟩ => ⟨x, y⟩, fun ⟨x, y⟩ => ⟨x, y⟩, fun ⟨_, _⟩ => rfl, fun ⟨_, _⟩ => rfl⟩
 
 instance PSigma.fintypePropProp {α : Prop} {β : α → Prop} [Decidable α] [∀ a, Decidable (β a)] :

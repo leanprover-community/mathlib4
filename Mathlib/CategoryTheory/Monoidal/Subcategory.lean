@@ -91,7 +91,7 @@ When `P : ObjectProperty C` is monoidal, the full subcategory for `P` inherits t
 monoidal structure of `C`.
 -/
 instance fullMonoidalSubcategory : MonoidalCategory (FullSubcategory P) :=
-  Monoidal.induced P.ι
+  fast_instance% Monoidal.induced P.ι
     { μIso _ _ := Iso.refl _
       εIso := Iso.refl _ }
 

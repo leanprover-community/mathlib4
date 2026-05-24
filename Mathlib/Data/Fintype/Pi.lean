@@ -153,7 +153,7 @@ noncomputable instance _root_.Function.Embedding.fintype {α β} [Fintype α] [F
 
 instance RelHom.instFintype {α β} [Fintype α] [Fintype β] [DecidableEq α] {r : α → α → Prop}
     {s : β → β → Prop} [DecidableRel r] [DecidableRel s] : Fintype (r →r s) :=
-  Fintype.ofEquiv {f : α → β // ∀ {x y}, r x y → s (f x) (f y)} <| Equiv.mk
+  fast_instance% Fintype.ofEquiv {f : α → β // ∀ {x y}, r x y → s (f x) (f y)} <| Equiv.mk
     (fun f ↦ ⟨f.1, f.2⟩) (fun f ↦ ⟨f.1, f.2⟩) (fun _ ↦ rfl) (fun _ ↦ rfl)
 
 noncomputable instance RelEmbedding.instFintype {α β} [Fintype α] [Fintype β]

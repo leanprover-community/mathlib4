@@ -158,7 +158,7 @@ instance [HasLimitsOfShape WalkingParallelPair C] :
   hasLimitsOfShape_of_hasLimitsOfShape_createsLimitsOfShape (Ind.inclusion C)
 
 noncomputable instance [HasFiniteLimits C] : CreatesFiniteLimits (Ind.inclusion C) :=
-  letI _ : CreatesFiniteProducts (Ind.inclusion C) :=
+  fast_instance% letI _ : CreatesFiniteProducts (Ind.inclusion C) :=
     { creates _ _ := createsLimitsOfShapeOfEquiv (Discrete.equivalence Equiv.ulift) _ }
   createsFiniteLimitsOfCreatesEqualizersAndFiniteProducts (Ind.inclusion C)
 

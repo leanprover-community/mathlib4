@@ -531,7 +531,7 @@ theorem ext {f g : RingTopology R} (h : f.IsOpen = g.IsOpen) : f = g :=
 /-- The ordering on ring topologies on the ring `R`.
   `t ≤ s` if every set open in `s` is also open in `t` (`t` is finer than `s`). -/
 instance : PartialOrder (RingTopology R) :=
-  PartialOrder.lift RingTopology.toTopologicalSpace toTopologicalSpace_injective
+  fast_instance% PartialOrder.lift RingTopology.toTopologicalSpace toTopologicalSpace_injective
 
 set_option backward.privateInPublic true in
 private def def_sInf (S : Set (RingTopology R)) : RingTopology R :=

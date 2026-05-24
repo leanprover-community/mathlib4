@@ -103,7 +103,7 @@ variable [TopologicalSpace (TotalSpace F₁ E₁)] [TopologicalSpace (TotalSpace
 /-- Equip the total space of the fiberwise product of two fiber bundles `E₁`, `E₂` with
 the induced topology from the diagonal embedding into `TotalSpace F₁ E₁ × TotalSpace F₂ E₂`. -/
 instance FiberBundle.Prod.topologicalSpace : TopologicalSpace (TotalSpace (F₁ × F₂) (E₁ ×ᵇ E₂)) :=
-  TopologicalSpace.induced
+  fast_instance% TopologicalSpace.induced
     (fun p ↦ ((⟨p.1, p.2.1⟩ : TotalSpace F₁ E₁), (⟨p.1, p.2.2⟩ : TotalSpace F₂ E₂)))
     inferInstance
 

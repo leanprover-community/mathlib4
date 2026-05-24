@@ -137,7 +137,7 @@ lemma isQuotientMap_mk : IsQuotientMap (ZerothHomotopy.mk (X := X)) :=
   isQuotientMap_quotient_mk'
 
 instance inhabited : Inhabited (ZerothHomotopy ℝ) :=
-  ⟨@Quotient.mk' ℝ (pathSetoid ℝ) 0⟩
+  fast_instance% ⟨@Quotient.mk' ℝ (pathSetoid ℝ) 0⟩
 
 instance [Nonempty X] : Nonempty (ZerothHomotopy X) := ⟨.mk (Classical.arbitrary _)⟩
 

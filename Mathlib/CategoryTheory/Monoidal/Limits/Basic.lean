@@ -39,7 +39,7 @@ open Functor.LaxMonoidal
 
 set_option backward.isDefEq.respectTransparency false in
 instance : (lim (J := J) (C := C)).LaxMonoidal :=
-  Functor.LaxMonoidal.ofTensorHom
+  fast_instance% Functor.LaxMonoidal.ofTensorHom
     (ε :=
       limit.lift _
         { pt := _

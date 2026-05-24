@@ -6,6 +6,7 @@ Authors: Yaël Dillies
 module
 
 public import Mathlib.Order.Hom.Basic
+public import Mathlib.Tactic.FastInstance
 
 /-!
 # Unbounded lattice homomorphisms
@@ -287,7 +288,7 @@ instance : PartialOrder (SupHom α β) :=
 
 @[to_dual]
 instance : SemilatticeSup (SupHom α β) :=
-  DFunLike.coe_injective.semilatticeSup _ .rfl .rfl fun _ _ ↦ rfl
+  fast_instance% DFunLike.coe_injective.semilatticeSup _ .rfl .rfl fun _ _ ↦ rfl
 
 @[to_dual]
 instance [Bot β] : Bot (SupHom α β) :=
@@ -299,15 +300,15 @@ instance [Top β] : Top (SupHom α β) :=
 
 @[to_dual]
 instance [OrderBot β] : OrderBot (SupHom α β) :=
-  OrderBot.lift ((↑) : _ → α → β) (fun _ _ => id) rfl
+  fast_instance% OrderBot.lift ((↑) : _ → α → β) (fun _ _ => id) rfl
 
 @[to_dual]
 instance [OrderTop β] : OrderTop (SupHom α β) :=
-  OrderTop.lift ((↑) : _ → α → β) (fun _ _ => id) rfl
+  fast_instance% OrderTop.lift ((↑) : _ → α → β) (fun _ _ => id) rfl
 
 @[to_dual]
 instance [BoundedOrder β] : BoundedOrder (SupHom α β) :=
-  BoundedOrder.lift ((↑) : _ → α → β) (fun _ _ => id) rfl rfl
+  fast_instance% BoundedOrder.lift ((↑) : _ → α → β) (fun _ _ => id) rfl rfl
 
 @[to_dual (attr := simp)]
 theorem coe_sup (f g : SupHom α β) : ⇑(f ⊔ g) = ⇑f ⊔ ⇑g :=

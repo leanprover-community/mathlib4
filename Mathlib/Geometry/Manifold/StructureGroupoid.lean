@@ -183,7 +183,7 @@ theorem StructureGroupoid.mem_iff_of_eqOnSource {G : StructureGroupoid H}
 
 /-- Partial order on the set of groupoids, given by inclusion of the members of the groupoid. -/
 instance StructureGroupoid.partialOrder : PartialOrder (StructureGroupoid H) :=
-  PartialOrder.lift StructureGroupoid.members fun a b h ↦ by
+  fast_instance% PartialOrder.lift StructureGroupoid.members fun a b h ↦ by
     cases a
     cases b
     dsimp at h

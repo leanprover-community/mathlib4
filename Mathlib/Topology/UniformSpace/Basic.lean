@@ -322,7 +322,7 @@ open uniformity
 section Constructions
 
 instance : PartialOrder (UniformSpace α) :=
-  PartialOrder.lift (fun u => 𝓤[u]) fun _ _ => UniformSpace.ext
+  fast_instance% PartialOrder.lift (fun u => 𝓤[u]) fun _ _ => UniformSpace.ext
 
 protected theorem UniformSpace.le_def {u₁ u₂ : UniformSpace α} : u₁ ≤ u₂ ↔ 𝓤[u₁] ≤ 𝓤[u₂] := Iff.rfl
 

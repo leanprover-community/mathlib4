@@ -81,7 +81,7 @@ in `t` (`t` is finer than `s`). -/
   /-- The ordering on group topologies on the group `γ`. `t ≤ s` if every set open in `s`
   is also open in `t` (`t` is finer than `s`). -/]
 instance : PartialOrder (GroupTopology α) :=
-  PartialOrder.lift toTopologicalSpace toTopologicalSpace_injective
+  fast_instance% PartialOrder.lift toTopologicalSpace toTopologicalSpace_injective
 
 @[to_additive (attr := simp)]
 theorem toTopologicalSpace_le {x y : GroupTopology α} :

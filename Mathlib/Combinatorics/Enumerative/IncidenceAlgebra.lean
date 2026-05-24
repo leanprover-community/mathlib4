@@ -156,10 +156,10 @@ lemma constSMul_apply (c : M) (f : IncidenceAlgebra 𝕜 α) (a b : α) : (c •
 end Smul
 
 instance instAddMonoid [AddMonoid 𝕜] [LE α] : AddMonoid (IncidenceAlgebra 𝕜 α) :=
-  DFunLike.coe_injective.addMonoid _ coe_zero coe_add fun _ _ ↦ rfl
+  fast_instance% DFunLike.coe_injective.addMonoid _ coe_zero coe_add fun _ _ ↦ rfl
 
 instance instAddCommMonoid [AddCommMonoid 𝕜] [LE α] : AddCommMonoid (IncidenceAlgebra 𝕜 α) :=
-  DFunLike.coe_injective.addCommMonoid _ coe_zero coe_add fun _ _ ↦ rfl
+  fast_instance% DFunLike.coe_injective.addCommMonoid _ coe_zero coe_add fun _ _ ↦ rfl
 
 section AddGroup
 variable [AddGroup 𝕜] [LE α]
@@ -176,12 +176,12 @@ lemma neg_apply (f : IncidenceAlgebra 𝕜 α) (a b : α) : (-f) a b = -f a b :=
 lemma sub_apply (f g : IncidenceAlgebra 𝕜 α) (a b : α) : (f - g) a b = f a b - g a b := rfl
 
 instance instAddGroup : AddGroup (IncidenceAlgebra 𝕜 α) :=
-  DFunLike.coe_injective.addGroup _ coe_zero coe_add coe_neg coe_sub (fun _ _ ↦ rfl) fun _ _ ↦ rfl
+  fast_instance% DFunLike.coe_injective.addGroup _ coe_zero coe_add coe_neg coe_sub (fun _ _ ↦ rfl) fun _ _ ↦ rfl
 
 end AddGroup
 
 instance instAddCommGroup [AddCommGroup 𝕜] [LE α] : AddCommGroup (IncidenceAlgebra 𝕜 α) :=
-  DFunLike.coe_injective.addCommGroup _ coe_zero coe_add coe_neg coe_sub (fun _ _ ↦ rfl)
+  fast_instance% DFunLike.coe_injective.addCommGroup _ coe_zero coe_add coe_neg coe_sub (fun _ _ ↦ rfl)
     fun _ _ ↦ rfl
 
 section One
@@ -278,12 +278,12 @@ instance [Preorder α] [LocallyFiniteOrder α] [DecidableEq α] [Semiring 𝕜] 
 
 instance smulWithZeroRight [Zero 𝕜] [Zero 𝕝] [SMulWithZero 𝕜 𝕝] [LE α] :
     SMulWithZero 𝕜 (IncidenceAlgebra 𝕝 α) :=
-  DFunLike.coe_injective.smulWithZero ⟨((⇑) : IncidenceAlgebra 𝕝 α → α → α → 𝕝), coe_zero⟩
+  fast_instance% DFunLike.coe_injective.smulWithZero ⟨((⇑) : IncidenceAlgebra 𝕝 α → α → α → 𝕝), coe_zero⟩
     coe_constSMul
 
 instance moduleRight [Preorder α] [Semiring 𝕜] [AddCommMonoid 𝕝] [Module 𝕜 𝕝] :
     Module 𝕜 (IncidenceAlgebra 𝕝 α) :=
-  DFunLike.coe_injective.module _ ⟨⟨((⇑) : IncidenceAlgebra 𝕝 α → α → α → 𝕝), coe_zero⟩, coe_add⟩
+  fast_instance% DFunLike.coe_injective.module _ ⟨⟨((⇑) : IncidenceAlgebra 𝕝 α → α → α → 𝕝), coe_zero⟩, coe_add⟩
     coe_constSMul
 
 instance algebraRight [PartialOrder α] [LocallyFiniteOrder α] [DecidableEq α] [CommSemiring 𝕜]

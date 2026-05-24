@@ -89,7 +89,7 @@ instance : InfSet (UpperSet α) :=
   ⟨fun S => ⟨⋃ s ∈ S, ↑s, isUpperSet_iUnion₂ fun s _ => s.upper⟩⟩
 
 instance : PartialOrder (UpperSet α) :=
-  PartialOrder.lift _ (toDual.injective.comp SetLike.coe_injective)
+  fast_instance% PartialOrder.lift _ (toDual.injective.comp SetLike.coe_injective)
 
 instance completeLattice : CompleteLattice (UpperSet α) :=
   (toDual.injective.comp SetLike.coe_injective).completeLattice _
@@ -102,16 +102,16 @@ instance completelyDistribLattice : CompletelyDistribLattice (UpperSet α) :=
 
 @[to_dual existing]
 instance _root_.LowerSet.instPartialOrder : PartialOrder (LowerSet α) :=
-  PartialOrder.lift _ SetLike.coe_injective
+  fast_instance% PartialOrder.lift _ SetLike.coe_injective
 
 @[to_dual existing]
 instance _root_.LowerSet.completeLattice : CompleteLattice (LowerSet α) :=
-  SetLike.coe_injective.completeLattice _
+  fast_instance% SetLike.coe_injective.completeLattice _
     .rfl .rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ ↦ rfl) rfl rfl
 
 @[to_dual existing]
 instance _root_.LowerSet.completelyDistribLattice : CompletelyDistribLattice (LowerSet α) :=
-  .ofMinimalAxioms <| SetLike.coe_injective.completelyDistribLatticeMinimalAxioms .of _
+  fast_instance% .ofMinimalAxioms <| SetLike.coe_injective.completelyDistribLatticeMinimalAxioms .of _
     .rfl .rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ ↦ rfl) rfl rfl
 
 @[to_dual]

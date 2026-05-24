@@ -9,6 +9,7 @@ public import Mathlib.Order.Disjoint
 public import Mathlib.Order.RelIso.Basic
 public import Mathlib.Tactic.Monotonicity.Attr
 public import Mathlib.Tactic.PPWithUniv
+public import Mathlib.Tactic.FastInstance
 
 /-!
 # Order homomorphisms
@@ -287,10 +288,10 @@ instance : Inhabited (α →o α) :=
 
 /-- The preorder structure of `α →o β` is pointwise inequality: `f ≤ g ↔ ∀ a, f a ≤ g a`. -/
 instance : Preorder (α →o β) :=
-  @Preorder.lift (α →o β) (α → β) _ DFunLike.coe
+  fast_instance% @Preorder.lift (α →o β) (α → β) _ DFunLike.coe
 
 instance {β : Type*} [PartialOrder β] : PartialOrder (α →o β) :=
-  @PartialOrder.lift (α →o β) (α → β) _ toFun ext
+  fast_instance% @PartialOrder.lift (α →o β) (α → β) _ toFun ext
 
 @[to_dual self]
 theorem le_def {f g : α →o β} : f ≤ g ↔ ∀ x, f x ≤ g x :=

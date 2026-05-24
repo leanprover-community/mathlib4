@@ -287,7 +287,7 @@ theorem testAgainstNN_lipschitz (μ : ProbabilityMeasure Ω) :
 (induced) from the topology of weak convergence of finite measures via the inclusion
 `MeasureTheory.ProbabilityMeasure.toFiniteMeasure`. -/
 instance : TopologicalSpace (ProbabilityMeasure Ω) :=
-  TopologicalSpace.induced toFiniteMeasure inferInstance
+  fast_instance% TopologicalSpace.induced toFiniteMeasure inferInstance
 
 theorem toFiniteMeasure_continuous :
     Continuous (toFiniteMeasure : ProbabilityMeasure Ω → FiniteMeasure Ω) :=

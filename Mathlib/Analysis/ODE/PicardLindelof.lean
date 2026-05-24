@@ -187,7 +187,7 @@ lemma apply_of_zero (α : FunSpace t₀ x₀ 0 L) : α t₀ = x₀ := by
 over all `t` in the domain. This is finite when the domain is compact, such as a closed
 interval in our case. -/
 noncomputable instance : MetricSpace (FunSpace t₀ x₀ r L) :=
-  MetricSpace.induced toContinuousMap toContinuousMap.injective inferInstance
+  fast_instance% MetricSpace.induced toContinuousMap toContinuousMap.injective inferInstance
 
 lemma isUniformInducing_toContinuousMap :
     IsUniformInducing fun α : FunSpace t₀ x₀ r L ↦ α.toContinuousMap := ⟨rfl⟩

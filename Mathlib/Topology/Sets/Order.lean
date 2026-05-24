@@ -75,10 +75,10 @@ instance : Bot (ClopenUpperSet α) :=
   ⟨⟨⊥, isUpperSet_empty⟩⟩
 
 instance : Lattice (ClopenUpperSet α) :=
-  SetLike.coe_injective.lattice _ .rfl .rfl (fun _ _ ↦ rfl) fun _ _ ↦ rfl
+  fast_instance% SetLike.coe_injective.lattice _ .rfl .rfl (fun _ _ ↦ rfl) fun _ _ ↦ rfl
 
 instance : BoundedOrder (ClopenUpperSet α) :=
-  BoundedOrder.lift ((↑) : _ → Set α) (fun _ _ => id) rfl rfl
+  fast_instance% BoundedOrder.lift ((↑) : _ → Set α) (fun _ _ => id) rfl rfl
 
 @[simp]
 theorem coe_sup (s t : ClopenUpperSet α) : (↑(s ⊔ t) : Set α) = ↑s ∪ ↑t :=

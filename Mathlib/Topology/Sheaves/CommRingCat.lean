@@ -198,7 +198,7 @@ instance : Pow (X ⟶ (forget₂ TopCommRingCat TopCat).obj R) ℕ where
   pow f n := ofHom (f.hom ^ n)
 
 instance : CommRing (X ⟶ (forget₂ TopCommRingCat TopCat).obj R) :=
-  Function.Injective.commRing _ ConcreteCategory.hom_injective
+  fast_instance% Function.Injective.commRing _ ConcreteCategory.hom_injective
     rfl rfl (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ => rfl)
 

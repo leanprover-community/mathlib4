@@ -209,7 +209,7 @@ def uniformEquivProd : (Unitization 𝕜 A) ≃ᵤ (𝕜 × A) :=
 
 /-- The bornology on `Unitization 𝕜 A` is inherited from `𝕜 × A`. -/
 instance instBornology : Bornology (Unitization 𝕜 A) :=
-  Bornology.induced <| addEquiv 𝕜 A
+  fast_instance% Bornology.induced <| addEquiv 𝕜 A
 
 theorem isUniformEmbedding_addEquiv {𝕜} [NontriviallyNormedField 𝕜] :
     IsUniformEmbedding (addEquiv 𝕜 A) where

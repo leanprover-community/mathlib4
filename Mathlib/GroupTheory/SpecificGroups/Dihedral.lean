@@ -145,7 +145,7 @@ def equivSum : DihedralGroup n ≃ (ZMod n) ⊕ (ZMod n) where
 /-- If `0 < n`, then `DihedralGroup n` is a finite group.
 -/
 instance [NeZero n] : Fintype (DihedralGroup n) :=
-  Fintype.ofEquiv _ equivSum.symm
+  fast_instance% Fintype.ofEquiv _ equivSum.symm
 
 instance : Infinite (DihedralGroup 0) :=
   equivSum.symm.infinite_iff.mp inferInstance

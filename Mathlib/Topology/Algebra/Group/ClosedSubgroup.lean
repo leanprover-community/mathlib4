@@ -82,7 +82,7 @@ instance instInfClosedSubgroup : Min (ClosedSubgroup G) :=
 
 @[to_additive]
 instance instSemilatticeInfClosedSubgroup : SemilatticeInf (ClosedSubgroup G) :=
-  SetLike.coe_injective.semilatticeInf _ .rfl .rfl fun _ _ ↦ rfl
+  fast_instance% SetLike.coe_injective.semilatticeInf _ .rfl .rfl fun _ _ ↦ rfl
 
 @[to_additive]
 instance [CompactSpace G] (H : ClosedSubgroup G) : CompactSpace H :=

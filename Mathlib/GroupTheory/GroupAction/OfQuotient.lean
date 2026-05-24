@@ -26,7 +26,7 @@ variable {G : Type*} [Group G] {A : Type*} [MulAction G A]
 variable {H : Subgroup G} [H.Normal]
 
 instance : MulAction (G ⧸ H) (fixedPoints H A) :=
-  ofEndHom <|
+  fast_instance% ofEndHom <|
     QuotientGroup.lift H (toEndHom : G →* Function.End (fixedPoints H A))
     (fun g hg ↦ by funext a; ext; exact a.2 ⟨g, hg⟩)
 

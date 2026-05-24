@@ -471,7 +471,7 @@ theorem coe_sup (I J : FractionalIdeal S P) : ↑(I ⊔ J) = (I ⊔ J : Submodul
   rfl
 
 instance lattice : Lattice (FractionalIdeal S P) :=
-  Function.Injective.lattice _ Subtype.coe_injective .rfl .rfl coe_sup coe_inf
+  fast_instance% Function.Injective.lattice _ Subtype.coe_injective .rfl .rfl coe_sup coe_inf
 
 end Lattice
 
@@ -606,7 +606,7 @@ theorem coe_natCast (n : ℕ) : ((n : FractionalIdeal S P) : Submodule R P) = n 
   by induction n <;> simp [*, Nat.unaryCast]
 
 instance commSemiring : CommSemiring (FractionalIdeal S P) :=
-  Function.Injective.commSemiring _ Subtype.coe_injective coe_zero coe_one coe_add coe_mul
+  fast_instance% Function.Injective.commSemiring _ Subtype.coe_injective coe_zero coe_one coe_add coe_mul
     (fun _ _ => coe_nsmul _ _) coe_pow coe_natCast
 
 instance : CanonicallyOrderedAdd (FractionalIdeal S P) where

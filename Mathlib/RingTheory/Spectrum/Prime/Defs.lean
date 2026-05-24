@@ -53,7 +53,7 @@ instance : Coe (PrimeSpectrum R) (Ideal R) where
   coe P := P.asIdeal
 
 instance : PartialOrder (PrimeSpectrum R) :=
-  PartialOrder.lift asIdeal (@PrimeSpectrum.ext _ _)
+  fast_instance% PartialOrder.lift asIdeal (@PrimeSpectrum.ext _ _)
 
 @[simp]
 theorem asIdeal_le_asIdeal (x y : PrimeSpectrum R) : x.asIdeal ≤ y.asIdeal ↔ x ≤ y :=

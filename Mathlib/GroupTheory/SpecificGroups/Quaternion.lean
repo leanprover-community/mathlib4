@@ -165,7 +165,7 @@ set_option backward.privateInPublic.warn false in
 /-- If `0 < n`, then `QuaternionGroup n` is a finite group.
 -/
 instance [NeZero n] : Fintype (QuaternionGroup n) :=
-  Fintype.ofEquiv _ fintypeHelper
+  fast_instance% Fintype.ofEquiv _ fintypeHelper
 
 instance : Nontrivial (QuaternionGroup n) :=
   ⟨⟨a 0, xa 0, by simp [- a_zero]⟩⟩

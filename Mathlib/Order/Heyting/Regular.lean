@@ -154,10 +154,10 @@ instance : Inhabited (Regular α) :=
   ⟨⊥⟩
 
 instance : PartialOrder (Regular α) :=
-  PartialOrder.lift _ coe_injective
+  fast_instance% PartialOrder.lift _ coe_injective
 
 instance boundedOrder : BoundedOrder (Regular α) :=
-  BoundedOrder.lift ((↑) : Regular α → α) (fun _ _ => id) coe_top coe_bot
+  fast_instance% BoundedOrder.lift ((↑) : Regular α → α) (fun _ _ => id) coe_top coe_bot
 
 @[simp, norm_cast]
 theorem coe_le_coe {a b : Regular α} : (a : α) ≤ b ↔ a ≤ b :=

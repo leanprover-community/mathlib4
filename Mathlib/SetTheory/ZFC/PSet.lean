@@ -110,7 +110,7 @@ protected theorem equiv_of_isEmpty (x y : PSet) [IsEmpty x.Type] [IsEmpty y.Type
   equiv_iff.2 <| by simp
 
 instance setoid : Setoid PSet :=
-  ⟨PSet.Equiv, Equiv.refl, Equiv.symm, Equiv.trans⟩
+  fast_instance% ⟨PSet.Equiv, Equiv.refl, Equiv.symm, Equiv.trans⟩
 
 /-- A pre-set is a subset of another pre-set if every element of the first family is extensionally
 equivalent to some element of the second family. -/

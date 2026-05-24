@@ -271,7 +271,7 @@ instance : InfSet (SubMulAction R M) :=
 
 @[to_additive]
 instance : CompleteLattice (SubMulAction R M) :=
-  SetLike.coe_injective.completeLattice _ .rfl .rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl)
+  fast_instance% SetLike.coe_injective.completeLattice _ .rfl .rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl)
     (fun _ ↦ rfl) rfl rfl
 
 @[to_additive (attr := simp)]
@@ -338,7 +338,7 @@ variable [hA : SMulMemClass A R M] (S' : A)
 /-- A `SubMulAction` of a `MulAction` is a `MulAction`. -/
 @[to_additive /-- A `SubAddAction` of an `AddAction` is an `AddAction`. -/]
 instance (priority := 75) toMulAction : MulAction R S' :=
-  Subtype.coe_injective.mulAction Subtype.val (SetLike.val_smul S')
+  fast_instance% Subtype.coe_injective.mulAction Subtype.val (SetLike.val_smul S')
 
 /-- The natural `MulActionHom` over `R` from a `SubMulAction` of `M` to `M`. -/
 @[to_additive /-- The natural `AddActionHom` over `R` from a `SubAddAction` of `M` to `M`. -/]

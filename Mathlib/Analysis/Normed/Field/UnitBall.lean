@@ -52,7 +52,7 @@ instance Metric.unitBall.instCommSemigroup [SeminormedCommRing 𝕜] :
 
 instance Metric.unitBall.instHasDistribNeg [NonUnitalSeminormedRing 𝕜] :
     HasDistribNeg (ball (0 : 𝕜) 1) :=
-  Subtype.coe_injective.hasDistribNeg ((↑) : ball (0 : 𝕜) 1 → 𝕜) (fun _ => rfl) fun _ _ => rfl
+  fast_instance% Subtype.coe_injective.hasDistribNeg ((↑) : ball (0 : 𝕜) 1 → 𝕜) (fun _ => rfl) fun _ _ => rfl
 
 @[simp, norm_cast]
 protected theorem Metric.unitBall.coe_mul [NonUnitalSeminormedRing 𝕜] (x y : ball (0 : 𝕜) 1) :
@@ -105,7 +105,7 @@ instance Metric.unitClosedBall.instSemigroup [NonUnitalSeminormedRing 𝕜] :
 
 instance Metric.unitClosedBall.instHasDistribNeg [NonUnitalSeminormedRing 𝕜] :
     HasDistribNeg (closedBall (0 : 𝕜) 1) :=
-  Subtype.coe_injective.hasDistribNeg ((↑) : closedBall (0 : 𝕜) 1 → 𝕜) (fun _ => rfl) fun _ _ => rfl
+  fast_instance% Subtype.coe_injective.hasDistribNeg ((↑) : closedBall (0 : 𝕜) 1 → 𝕜) (fun _ => rfl) fun _ _ => rfl
 
 instance Metric.unitClosedBall.instContinuousMul [NonUnitalSeminormedRing 𝕜] :
     ContinuousMul (closedBall (0 : 𝕜) 1) :=
@@ -259,7 +259,7 @@ instance Metric.unitSphere.instGroup [NormedDivisionRing 𝕜] : Group (sphere (
 
 instance Metric.sphere.instHasDistribNeg [SeminormedRing 𝕜] [NormMulClass 𝕜] [NormOneClass 𝕜] :
     HasDistribNeg (sphere (0 : 𝕜) 1) :=
-  Subtype.coe_injective.hasDistribNeg ((↑) : sphere (0 : 𝕜) 1 → 𝕜) (fun _ => rfl) fun _ _ => rfl
+  fast_instance% Subtype.coe_injective.hasDistribNeg ((↑) : sphere (0 : 𝕜) 1 → 𝕜) (fun _ => rfl) fun _ _ => rfl
 
 instance Metric.sphere.instContinuousMul [SeminormedRing 𝕜] [NormMulClass 𝕜] [NormOneClass 𝕜] :
     ContinuousMul (sphere (0 : 𝕜) 1) :=

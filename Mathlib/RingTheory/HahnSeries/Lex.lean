@@ -36,7 +36,7 @@ section PartialOrder
 variable [Zero R] [PartialOrder R]
 
 instance : PartialOrder (Lex R⟦Γ⟧) :=
-  PartialOrder.lift (toLex <| ofLex · |>.coeff) fun x y ↦ by simp
+  fast_instance% PartialOrder.lift (toLex <| ofLex · |>.coeff) fun x y ↦ by simp
 
 theorem lt_iff (a b : Lex R⟦Γ⟧) :
     a < b ↔ ∃ (i : Γ), (∀ (j : Γ), j < i → (ofLex a).coeff j = (ofLex b).coeff j)

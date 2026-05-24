@@ -62,7 +62,7 @@ instance isCentralScalar [∀ i, Zero (β i)] [∀ i, SMulZeroClass γ (β i)]
 structure on each coordinate. -/
 instance distribMulAction [Monoid γ] [∀ i, AddMonoid (β i)] [∀ i, DistribMulAction γ (β i)] :
     DistribMulAction γ (Π₀ i, β i) :=
-  Function.Injective.distribMulAction coeFnAddMonoidHom DFunLike.coe_injective coe_smul
+  fast_instance% Function.Injective.distribMulAction coeFnAddMonoidHom DFunLike.coe_injective coe_smul
 
 /-- Dependent functions with finite support inherit a module structure from such a structure on
 each coordinate. -/

@@ -134,7 +134,7 @@ abbrev mkIso {M N : CommMon C} (e : M.X ≅ N.X) (one_f : η[M.X] ≫ e.hom = η
   mkIso' e
 
 instance uniqueHomFromTrivial (A : CommMon C) : Unique (trivial C ⟶ A) :=
-  Equiv.unique (show _ ≃ (Mon.trivial C ⟶ A.toMon) from
+  fast_instance% Equiv.unique (show _ ≃ (Mon.trivial C ⟶ A.toMon) from
     InducedCategory.homEquiv)
 
 open CategoryTheory.Limits

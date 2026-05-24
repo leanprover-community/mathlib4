@@ -275,7 +275,7 @@ theorem toMeasure_sum {ι : Type*} {s : Finset ι} {ν : ι → FiniteMeasure Ω
   map_sum toMeasureAddMonoidHom _ _
 
 instance {Ω : Type*} [MeasurableSpace Ω] : Module ℝ≥0 (FiniteMeasure Ω) :=
-  Function.Injective.module _ toMeasureAddMonoidHom toMeasure_injective toMeasure_smul
+  fast_instance% Function.Injective.module _ toMeasureAddMonoidHom toMeasure_injective toMeasure_smul
 
 @[simp]
 theorem smul_apply [IsScalarTower R ℝ≥0 ℝ≥0] (c : R) (μ : FiniteMeasure Ω) (s : Set Ω) :
@@ -504,7 +504,7 @@ theorem toWeakDualBCNN_apply (μ : FiniteMeasure Ω) (f : Ω →ᵇ ℝ≥0) :
 from the weak-\* topology on `WeakDual ℝ≥0 (Ω →ᵇ ℝ≥0)` via the function
 `MeasureTheory.FiniteMeasure.toWeakDualBCNN`. -/
 instance instTopologicalSpace : TopologicalSpace (FiniteMeasure Ω) :=
-  TopologicalSpace.induced toWeakDualBCNN inferInstance
+  fast_instance% TopologicalSpace.induced toWeakDualBCNN inferInstance
 
 theorem toWeakDualBCNN_continuous : Continuous (@toWeakDualBCNN Ω _ _ _) :=
   continuous_induced_dom

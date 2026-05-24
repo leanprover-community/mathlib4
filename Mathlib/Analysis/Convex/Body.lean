@@ -121,14 +121,14 @@ theorem coe_nsmul : ∀ (n : ℕ) (K : ConvexBody V), ↑(n • K) = n • (K : 
   | (n + 1), K => congr_arg₂ (Set.image2 (· + ·)) (coe_nsmul n K) rfl
 
 noncomputable instance : AddMonoid (ConvexBody V) :=
-  SetLike.coe_injective.addMonoid _ rfl (fun _ _ ↦ rfl) fun _ _ ↦ coe_nsmul _ _
+  fast_instance% SetLike.coe_injective.addMonoid _ rfl (fun _ _ ↦ rfl) fun _ _ ↦ coe_nsmul _ _
 
 @[simp, norm_cast]
 theorem coe_add (K L : ConvexBody V) : (↑(K + L) : Set V) = (K : Set V) + L :=
   rfl
 
 noncomputable instance : AddCommMonoid (ConvexBody V) :=
-  SetLike.coe_injective.addCommMonoid _ rfl (fun _ _ ↦ rfl) fun _ _ ↦ coe_nsmul _ _
+  fast_instance% SetLike.coe_injective.addCommMonoid _ rfl (fun _ _ ↦ rfl) fun _ _ ↦ coe_nsmul _ _
 
 end ContinuousAdd
 
@@ -160,7 +160,7 @@ theorem smul_le_of_le (K : ConvexBody V) (h_zero : 0 ∈ K) {a b : ℝ≥0} (h :
 variable [ContinuousAdd V]
 
 noncomputable instance : DistribMulAction ℝ (ConvexBody V) :=
-  SetLike.coe_injective.distribMulAction ⟨⟨_, coe_zero⟩, coe_add⟩ coe_smul
+  fast_instance% SetLike.coe_injective.distribMulAction ⟨⟨_, coe_zero⟩, coe_add⟩ coe_smul
 
 /-- The convex bodies in a fixed space $V$ form a module over the nonnegative reals. -/
 noncomputable instance : Module ℝ≥0 (ConvexBody V) where

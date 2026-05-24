@@ -28,7 +28,7 @@ namespace ContinuousMonoidHom
 
 @[to_additive]
 instance : TopologicalSpace (ContinuousMonoidHom A B) :=
-  TopologicalSpace.induced toContinuousMap ContinuousMap.compactOpen
+  fast_instance% TopologicalSpace.induced toContinuousMap ContinuousMap.compactOpen
 
 @[to_additive]
 theorem isInducing_toContinuousMap :

@@ -73,7 +73,7 @@ lemma eq_iff_sMk_eq {X : SSet.{u}} {A : X.Subcomplex} (x y : A.N) :
   rw [N.ext_iff, SSet.N.ext_iff]
 
 instance : PartialOrder A.N :=
-  PartialOrder.lift toN (fun _ _ ↦ by simp [ext_iff])
+  fast_instance% PartialOrder.lift toN (fun _ _ ↦ by simp [ext_iff])
 
 lemma le_iff {x y : A.N} : x ≤ y ↔ x.toN ≤ y.toN :=
   Iff.rfl

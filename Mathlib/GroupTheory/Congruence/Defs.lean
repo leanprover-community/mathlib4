@@ -579,7 +579,7 @@ instance commMagma {M : Type*} [CommMagma M] (c : Con M) : CommMagma c.Quotient 
 @[to_additive /-- The quotient of an `AddCommSemigroup` by an additive congruence relation is
 an `AddCommSemigroup`. -/]
 instance commSemigroup {M : Type*} [CommSemigroup M] (c : Con M) : CommSemigroup c.Quotient :=
-  Function.Surjective.commSemigroup _ Quotient.mk''_surjective fun _ _ => rfl
+  fast_instance% Function.Surjective.commSemigroup _ Quotient.mk''_surjective fun _ _ => rfl
 
 /-- The quotient of a monoid by a congruence relation is a monoid. -/
 @[to_additive /-- The quotient of an `AddMonoid` by an additive congruence relation is

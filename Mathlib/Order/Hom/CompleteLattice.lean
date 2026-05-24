@@ -438,7 +438,7 @@ theorem cancel_left {g : FrameHom β γ} {f₁ f₂ : FrameHom α β} (hg : Inje
   ⟨fun h => ext fun a => hg <| by rw [← comp_apply, h, comp_apply], congr_arg _⟩
 
 instance : PartialOrder (FrameHom α β) :=
-  PartialOrder.lift _ DFunLike.coe_injective
+  fast_instance% PartialOrder.lift _ DFunLike.coe_injective
 
 end FrameHom
 

@@ -41,7 +41,7 @@ abbrev Bornology.induced {α β : Type*} [Bornology β] (f : α → β) : Bornol
   le_cofinite := (comap_mono (Bornology.le_cofinite β)).trans (comap_cofinite_le _)
 
 instance {p : α → Prop} : Bornology (Subtype p) :=
-  Bornology.induced (Subtype.val : Subtype p → α)
+  fast_instance% Bornology.induced (Subtype.val : Subtype p → α)
 
 namespace Bornology
 

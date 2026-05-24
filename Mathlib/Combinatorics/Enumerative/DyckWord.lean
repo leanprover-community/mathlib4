@@ -539,7 +539,7 @@ def equivTreesOfNumNodesEq (n : ℕ) : { p : DyckWord // p.semilength = n } ≃ 
   equivTree.subtypeEquiv (by simp)
 
 instance {n : ℕ} : Fintype { p : DyckWord // p.semilength = n } :=
-  Fintype.ofEquiv _ (equivTreesOfNumNodesEq n).symm
+  fast_instance% Fintype.ofEquiv _ (equivTreesOfNumNodesEq n).symm
 
 /-- There are `catalan n` Dyck words of semilength `n` (or length `2 * n`). -/
 theorem card_dyckWord_semilength_eq_catalan (n : ℕ) :

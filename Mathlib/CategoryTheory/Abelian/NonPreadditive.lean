@@ -146,7 +146,7 @@ instance isIso_factorThruImage [Mono f] : IsIso (Abelian.factorThruImage f) :=
 
 /-- The canonical morphism `i : coimage f ⟶ Q` is a monomorphism -/
 instance : Mono (Abelian.factorThruCoimage f) :=
-  fast_instance% let I := Abelian.coimage f
+  let I := Abelian.coimage f
   let i := Abelian.factorThruCoimage f
   let p := cokernel.π (kernel.ι f)
   NormalEpiCategory.mono_of_cancel_zero _ fun R (g : R ⟶ I) (hgi : g ≫ i = 0) => by

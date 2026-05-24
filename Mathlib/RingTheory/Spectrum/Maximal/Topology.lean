@@ -41,7 +41,7 @@ theorem toPrimeSpectrum_range :
 /-- The Zariski topology on the maximal spectrum of a commutative ring is defined as the subspace
 topology induced by the natural inclusion into the prime spectrum. -/
 instance zariskiTopology : TopologicalSpace <| MaximalSpectrum R :=
-  PrimeSpectrum.zariskiTopology.induced toPrimeSpectrum
+  fast_instance% PrimeSpectrum.zariskiTopology.induced toPrimeSpectrum
 
 instance : T1Space <| MaximalSpectrum R :=
   ⟨fun x => isClosed_induced_iff.mpr

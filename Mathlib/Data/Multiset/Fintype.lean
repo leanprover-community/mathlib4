@@ -171,7 +171,7 @@ theorem toEmbedding_coeEquiv_trans (m : Multiset α) :
     m.coeEquiv.toEmbedding.trans (Function.Embedding.subtype _) = m.coeEmbedding := by ext <;> rfl
 
 instance fintypeCoe : Fintype m :=
-  Fintype.ofEquiv m.toEnumFinset m.coeEquiv.symm
+  fast_instance% Fintype.ofEquiv m.toEnumFinset m.coeEquiv.symm
 
 attribute [irreducible] fintypeCoe
 

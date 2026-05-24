@@ -91,7 +91,7 @@ instance : Bornology α := inferInstanceAs (Bornology β)
 ```
 Users should instead write something like:
 ```
-instance : Bornology α := Bornology.induced (f : α → β)
+instance : Bornology α := fast_instance% Bornology.induced (f : α → β)
 ```
 in order to avoid abuse of the definitional equality `α := β`. -/
 lemma isBounded_iff_of_bilipschitz (hf₁ : AntilipschitzWith K₁ f) (hf₂ : LipschitzWith K₂ f)

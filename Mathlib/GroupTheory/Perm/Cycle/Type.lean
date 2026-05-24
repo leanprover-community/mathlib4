@@ -466,7 +466,7 @@ def equivVector : ∀ n, vectorsProdEqOne G n ≃ List.Vector G (n - 1)
   | (n + 1) => (vectorEquiv G n).symm
 
 instance [Fintype G] : Fintype (vectorsProdEqOne G n) :=
-  Fintype.ofEquiv (List.Vector G (n - 1)) (equivVector G n).symm
+  fast_instance% Fintype.ofEquiv (List.Vector G (n - 1)) (equivVector G n).symm
 
 theorem card [Fintype G] : Fintype.card (vectorsProdEqOne G n) = Fintype.card G ^ (n - 1) :=
   (Fintype.card_congr (equivVector G n)).trans (card_vector (n - 1))

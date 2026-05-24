@@ -67,32 +67,32 @@ theorem support_mul [DecidableEq α] {g₁ g₂ : α →₀ β} :
   subset_inter support_mul_subset_left support_mul_subset_right
 
 instance : MulZeroClass (α →₀ β) :=
-  DFunLike.coe_injective.mulZeroClass _ coe_zero coe_mul
+  fast_instance% DFunLike.coe_injective.mulZeroClass _ coe_zero coe_mul
 
 end
 
 instance [SemigroupWithZero β] : SemigroupWithZero (α →₀ β) :=
-  DFunLike.coe_injective.semigroupWithZero _ coe_zero coe_mul
+  fast_instance% DFunLike.coe_injective.semigroupWithZero _ coe_zero coe_mul
 
 instance [NonUnitalNonAssocSemiring β] : NonUnitalNonAssocSemiring (α →₀ β) :=
-  DFunLike.coe_injective.nonUnitalNonAssocSemiring _ coe_zero coe_add coe_mul fun _ _ ↦ rfl
+  fast_instance% DFunLike.coe_injective.nonUnitalNonAssocSemiring _ coe_zero coe_add coe_mul fun _ _ ↦ rfl
 
 instance [NonUnitalSemiring β] : NonUnitalSemiring (α →₀ β) :=
-  DFunLike.coe_injective.nonUnitalSemiring _ coe_zero coe_add coe_mul fun _ _ ↦ rfl
+  fast_instance% DFunLike.coe_injective.nonUnitalSemiring _ coe_zero coe_add coe_mul fun _ _ ↦ rfl
 
 instance [NonUnitalCommSemiring β] : NonUnitalCommSemiring (α →₀ β) :=
-  DFunLike.coe_injective.nonUnitalCommSemiring _ coe_zero coe_add coe_mul fun _ _ ↦ rfl
+  fast_instance% DFunLike.coe_injective.nonUnitalCommSemiring _ coe_zero coe_add coe_mul fun _ _ ↦ rfl
 
 instance [NonUnitalNonAssocRing β] : NonUnitalNonAssocRing (α →₀ β) :=
-  DFunLike.coe_injective.nonUnitalNonAssocRing _ coe_zero coe_add coe_mul coe_neg coe_sub
+  fast_instance% DFunLike.coe_injective.nonUnitalNonAssocRing _ coe_zero coe_add coe_mul coe_neg coe_sub
     (fun _ _ ↦ rfl) fun _ _ ↦ rfl
 
 instance [NonUnitalRing β] : NonUnitalRing (α →₀ β) :=
-  DFunLike.coe_injective.nonUnitalRing _ coe_zero coe_add coe_mul coe_neg coe_sub (fun _ _ ↦ rfl)
+  fast_instance% DFunLike.coe_injective.nonUnitalRing _ coe_zero coe_add coe_mul coe_neg coe_sub (fun _ _ ↦ rfl)
     fun _ _ ↦ rfl
 
 instance [NonUnitalCommRing β] : NonUnitalCommRing (α →₀ β) :=
-  DFunLike.coe_injective.nonUnitalCommRing _ coe_zero coe_add coe_mul coe_neg coe_sub
+  fast_instance% DFunLike.coe_injective.nonUnitalCommRing _ coe_zero coe_add coe_mul coe_neg coe_sub
     (fun _ _ ↦ rfl) fun _ _ ↦ rfl
 
 lemma pointwise_smul_support_finite [Zero γ] [SMulZeroClass β γ] (f : α → β)
@@ -115,7 +115,7 @@ theorem coe_pointwise_smul [Semiring β] (f : α → β) (g : α →₀ β) : �
 
 /-- The pointwise multiplicative action of functions on finitely supported functions -/
 instance pointwiseModule [Semiring β] : Module (α → β) (α →₀ β) :=
-  Function.Injective.module _ coeFnAddHom DFunLike.coe_injective coe_pointwise_smul
+  fast_instance% Function.Injective.module _ coeFnAddHom DFunLike.coe_injective coe_pointwise_smul
 
 instance [Semiring β] : IsScalarTower β (α → β) (α →₀ β) where
   smul_assoc r f m := by ext; simp [mul_assoc]

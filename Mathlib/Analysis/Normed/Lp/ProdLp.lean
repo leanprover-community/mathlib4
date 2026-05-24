@@ -457,7 +457,7 @@ private lemma prod_uniformity_aux [PseudoEMetricSpace α] [PseudoEMetricSpace β
   rfl
 
 instance instProdBornology (p : ℝ≥0∞) (α β : Type*) [Bornology α] [Bornology β] :
-    Bornology (WithLp p (α × β)) := Bornology.induced ofLp
+    Bornology (WithLp p (α × β)) := fast_instance% Bornology.induced ofLp
 
 set_option backward.privateInPublic true in
 private lemma prod_cobounded_aux [PseudoMetricSpace α] [PseudoMetricSpace β] :
@@ -474,7 +474,7 @@ section TopologicalSpace
 variable [TopologicalSpace α] [TopologicalSpace β]
 
 instance instProdTopologicalSpace : TopologicalSpace (WithLp p (α × β)) :=
-  instTopologicalSpaceProd.induced ofLp
+  fast_instance% instTopologicalSpaceProd.induced ofLp
 
 @[continuity, fun_prop]
 lemma prod_continuous_toLp : Continuous (@toLp p (α × β)) :=

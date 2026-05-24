@@ -76,7 +76,7 @@ variable (K : Type v) [Field K] [Algebra A K]
 /-- The value group of the valuation ring `A`. Note: this is actually a group with zero. -/
 def ValueGroup : Type v := Quotient (MulAction.orbitRel Aˣ K)
 
-instance : Inhabited (ValueGroup A K) := ⟨Quotient.mk'' 0⟩
+instance : Inhabited (ValueGroup A K) := fast_instance% ⟨Quotient.mk'' 0⟩
 
 instance : LE (ValueGroup A K) :=
   LE.mk fun x y =>
@@ -92,12 +92,12 @@ instance : LE (ValueGroup A K) :=
           simp_rw [Units.smul_def, ← he, mul_smul]
           rw [← mul_smul _ _ b, Units.inv_mul, one_smul])
 
-instance : Zero (ValueGroup A K) := ⟨Quotient.mk'' 0⟩
+instance : Zero (ValueGroup A K) := fast_instance% ⟨Quotient.mk'' 0⟩
 
-instance : One (ValueGroup A K) := ⟨Quotient.mk'' 1⟩
+instance : One (ValueGroup A K) := fast_instance% ⟨Quotient.mk'' 1⟩
 
 instance : Mul (ValueGroup A K) :=
-  Mul.mk fun x y =>
+  fast_instance% Mul.mk fun x y =>
     Quotient.liftOn₂' x y (fun a b => Quotient.mk'' <| a * b)
       (by
         rintro _ _ a b ⟨c, rfl⟩ ⟨d, rfl⟩
@@ -108,7 +108,7 @@ instance : Mul (ValueGroup A K) :=
         ring)
 
 instance : Inv (ValueGroup A K) :=
-  Inv.mk fun x =>
+  fast_instance% Inv.mk fun x =>
     Quotient.liftOn' x (fun a => Quotient.mk'' a⁻¹)
       (by
         rintro _ a ⟨b, rfl⟩
