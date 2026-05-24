@@ -94,3 +94,34 @@ protected alias _root_.AddCon.finset_sum := AddCon.finsetSum
 protected alias finset_prod := Con.finsetProd
 
 end Con
+
+/-
+section CommMonoidWithZero
+universe u v v₁ v₂ w
+variable {ι : Type u} {γ : Type w} {β : ι → Type v} {β₁ : ι → Type v₁} {β₂ : ι → Type v₂}
+
+variable [DecidableEq ι]
+variable [Π i, Zero (β i)] [CommMonoidWithZero γ] [Nontrivial γ] [NoZeroDivisors γ]
+  {f : Π₀ i, β i} {g : Π i, β i → γ}
+
+
+lemma _root_.RingCon.dfinsuppProd {A : Type*} [CommSemiring A] {r : RingCon A}
+    [∀ i, Zero (β i)] [∀ i (y : β i), Decidable (y ≠ 0)]
+    (h : (i : ι) → β i → A) (h' : (i : ι) → β i → A)
+    {f g : Π₀ i, β i} (hf : ∀ i, h i 0 = 1) (hf' : ∀ i, h' i 0 = 1)
+    (H : ∀ i, r (h i (f i)) (h' i (g i))) :
+    r (f.prod h) (g.prod h') := by
+  apply Con.dfinsuppProd
+  · intro i
+    rw [hf]
+  -- h h' hf hf' H
+
+lemma _root_.RingCon.dfinsuppSum {A : Type*} [Semiring A] {r : RingCon A}
+    [∀ i, Zero (β i)] [∀ i (y : β i), Decidable (y ≠ 0)]
+    (h : (i : ι) → β i → A) (h' : (i : ι) → β i → A)
+    {f g : Π₀ i, β i} (hf : ∀ i, h i 0 = 0) (hf' : ∀ i, h' i 0 = 0)
+    (H : ∀ i, r (h i (f i)) (h' i (g i))) :
+    r (f.sum h) (g.sum h') :=
+  AddCon.dfinsuppSum (r := r.toAddCon) h h' hf hf' H
+
+-/
