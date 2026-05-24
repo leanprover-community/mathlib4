@@ -7,7 +7,6 @@ module
 
 public import Mathlib.CategoryTheory.Comma.CatCommSq
 public import Mathlib.CategoryTheory.Localization.LocalizerMorphism
-public import Mathlib.CategoryTheory.Comma.CatCommSq
 
 /-!
 # Resolutions for a morphism of localizers

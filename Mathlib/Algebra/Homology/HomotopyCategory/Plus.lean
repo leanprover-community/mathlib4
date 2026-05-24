@@ -16,8 +16,6 @@ public import Mathlib.CategoryTheory.Shift.SingleFunctorsLift
 public import Mathlib.CategoryTheory.Localization.OfQuotient
 public import Mathlib.Algebra.Homology.HomotopyCategory.Acyclic
 public import Mathlib.Algebra.Homology.Precylinder
-public import Mathlib.CategoryTheory.Localization.OfQuotient
-
 
 /-!
 # The triangulated subcategory of bounded below cochain complexes up to homotopy
