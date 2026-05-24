@@ -185,7 +185,7 @@ section Subset
 
 variable {s t : Finset α}
 
-@[deprecated "This is now a syntactic identity" (since := "2026-03-16")]
+@[deprecated "This is now a syntactic identity" (since := "2026-05-24")]
 theorem subset_of_le : s ≤ t → s ⊆ t := id
 
 theorem subset_def : s ⊆ t ↔ s.1 ⊆ t.1 :=
@@ -240,19 +240,19 @@ theorem Subset.antisymm_iff {s₁ s₂ : Finset α} : s₁ = s₂ ↔ s₁ ⊆ s
 
 theorem not_subset : ¬s ⊆ t ↔ ∃ x ∈ s, x ∉ t := by simp only [← coe_subset, Set.not_subset, mem_coe]
 
-@[deprecated "This is now a syntactic equality" (since := "2026-03-16"), nolint synTaut]
+@[deprecated "This is now a syntactic equality" (since := "2026-05-24"), nolint synTaut]
 theorem le_eq_subset : ((· ≤ ·) : Finset α → Finset α → Prop) = (· ⊆ ·) :=
   rfl
 
-@[deprecated "This is now a syntactic equality" (since := "2026-03-16"), nolint synTaut]
+@[deprecated "This is now a syntactic equality" (since := "2026-05-24"), nolint synTaut]
 theorem lt_eq_subset : ((· < ·) : Finset α → Finset α → Prop) = (· ⊂ ·) :=
   rfl
 
-@[deprecated "This is now a syntactic equality" (since := "2026-03-16"), nolint synTaut]
+@[deprecated "This is now a syntactic equality" (since := "2026-05-24"), nolint synTaut]
 theorem le_iff_subset {s₁ s₂ : Finset α} : s₁ ≤ s₂ ↔ s₁ ⊆ s₂ :=
   Iff.rfl
 
-@[deprecated "This is now a syntactic equality" (since := "2026-03-16"), nolint synTaut]
+@[deprecated "This is now a syntactic equality" (since := "2026-05-24"), nolint synTaut]
 theorem lt_iff_ssubset {s₁ s₂ : Finset α} : s₁ < s₂ ↔ s₁ ⊂ s₂ :=
   Iff.rfl
 

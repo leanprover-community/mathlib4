@@ -596,13 +596,13 @@ alias LE.le.not_ssubset := not_ssubset_of_subset
 
 alias LE.le.ssubset_of_not_subset := ssubset_of_subset_not_subset
 
-@[deprecated (since := "2026-03-17")]
+@[deprecated (since := "2026-05-24")]
 alias HasSSubset.SSubset.subset := LT.lt.subset
-@[deprecated (since := "2026-03-17")]
+@[deprecated (since := "2026-05-24")]
 alias HasSSubset.SSubset.not_subset := LT.lt.not_subset
-@[deprecated (since := "2026-03-17")]
+@[deprecated (since := "2026-05-24")]
 alias HasSubset.Subset.not_ssubset := LE.le.not_ssubset
-@[deprecated (since := "2026-03-17")]
+@[deprecated (since := "2026-05-24")]
 alias HasSubset.Subset.ssubset_of_not_subset := LE.le.ssubset_of_not_subset
 
 theorem ssubset_of_subset_of_ssubset [IsTrans α (· ⊆ ·)] (h₁ : a ⊆ b) (h₂ : b ⊂ c) : a ⊂ c :=
@@ -644,19 +644,19 @@ alias LE.le.ssubset_or_eq := ssubset_or_eq_of_subset
 alias LE.le.eq_of_not_ssubset := eq_of_subset_of_not_ssubset
 alias LE.le.eq_of_not_ssuperset := eq_of_superset_of_not_ssuperset
 
-@[deprecated (since := "2026-03-17")]
+@[deprecated (since := "2026-05-24")]
 alias HasSubset.Subset.trans_ssubset := LE.le.trans_ssubset
-@[deprecated (since := "2026-03-17")]
+@[deprecated (since := "2026-05-24")]
 alias HasSSubset.SSubset.trans_subset := LT.lt.trans_subset
-@[deprecated (since := "2026-03-17")]
+@[deprecated (since := "2026-05-24")]
 alias HasSubset.Subset.ssubset_of_ne := LE.le.ssubset_of_ne
-@[deprecated (since := "2026-03-17")]
+@[deprecated (since := "2026-05-24")]
 alias HasSubset.Subset.eq_or_ssubset := LE.le.eq_or_ssubset
-@[deprecated (since := "2026-03-17")]
+@[deprecated (since := "2026-05-24")]
 alias HasSubset.Subset.ssubset_or_eq := LE.le.ssubset_or_eq
-@[deprecated (since := "2026-03-17")]
+@[deprecated (since := "2026-05-24")]
 alias HasSubset.Subset.eq_of_not_ssubset := LE.le.eq_of_not_ssubset
-@[deprecated (since := "2026-03-17")]
+@[deprecated (since := "2026-05-24")]
 alias HasSubset.Subset.eq_of_not_ssuperset := LE.le.eq_of_not_ssuperset
 
 theorem ssubset_iff_subset_ne [@Std.Antisymm α (· ⊆ ·)] : a ⊂ b ↔ a ⊆ b ∧ a ≠ b :=
