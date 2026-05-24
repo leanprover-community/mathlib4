@@ -166,14 +166,14 @@ theorem not_bddAbove_iff_isCofinal [NoMaxOrder α] {s : Set α} : ¬ BddAbove s 
   not_iff_comm.1 not_isCofinal_iff_bddAbove
 
 theorem IsCofinal.inter_of_isUpperSet_left {s t : Set α} (hs : IsCofinal s) (ht : IsUpperSet t)
-    (ht₀ : t.Nonempty) : IsCofinal (s ∩ t) := by
+    (ht₀ : t.Nonempty) : IsCofinal (t ∩ s) := by
   intro y
   obtain ⟨x, hx⟩ := ht₀
   obtain ⟨z, hz, hyz⟩ := hs (max x y)
-  exact ⟨z, ⟨hz, ht ((le_max_left ..).trans hyz) hx⟩, (le_max_right ..).trans hyz⟩
+  exact ⟨z, ⟨ht ((le_max_left ..).trans hyz) hx, hz⟩, (le_max_right ..).trans hyz⟩
 
 theorem IsCofinal.inter_of_isUpperSet_right {s t : Set α} (hs : IsCofinal s) (ht : IsUpperSet t)
-    (ht₀ : t.Nonempty) : IsCofinal (t ∩ s) := by
+    (ht₀ : t.Nonempty) : IsCofinal (s ∩ t) := by
   rw [inter_comm]
   exact hs.inter_of_isUpperSet_left ht ht₀
 
