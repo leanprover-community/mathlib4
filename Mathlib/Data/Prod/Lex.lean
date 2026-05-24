@@ -218,8 +218,8 @@ instance [Preorder α] [Preorder β] [DenselyOrdered α] [DenselyOrdered β] :
 instance [Preorder α] [Preorder β] [NoMinOrder β] [DenselyOrdered β] :
     DenselyOrdered (α ×ₗ β) where
   dense x y h := by
-    cases x with | h x =>
-    cases y with | h y =>
+    cases x with | h x
+    cases y with | h y
     simp only [Prod.Lex.toLex_lt_toLex] at h
     rcases h with (h | h)
     · obtain ⟨v, hv⟩ := exists_lt y.2
@@ -233,8 +233,8 @@ instance [Preorder α] [Preorder β] [NoMinOrder β] [DenselyOrdered β] :
 instance [Preorder α] [Preorder β] [NoMaxOrder β] [DenselyOrdered β] :
     DenselyOrdered (α ×ₗ β) where
   dense x y h := by
-    cases x with | h x =>
-    cases y with | h y =>
+    cases x with | h x
+    cases y with | h y
     simp only [Prod.Lex.toLex_lt_toLex] at h
     rcases h with (h | h)
     · obtain ⟨v, hv⟩ := exists_gt x.2

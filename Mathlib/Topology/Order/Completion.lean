@@ -21,7 +21,7 @@ Let `α` be a linear order.
 * `DedekindCut.continuous_principal`: the map `DedekindCut.principal : α → DedekindCut α`
   that embeds `α` in its Dedekind completion is continuous for the order topologies.
 * `Order.Fill α`: this is a type with a dense linear order endowed
-with a continuous order-embedding `Order.Fill.some` of `α`.
+  with a continuous order-embedding `Order.Fill.some` of `α`.
   It is defined as a subtype of `α × ℚ` and its order is induced by the lexicographic order.
 * `Order.Fill.some`: the order embedding `α ↪o Order.Fill α` given by `a ↦ (a, 0)`.
 * `Order.Fill.continuous_some`: the map `⇑Order.Fill.some` is continuous for the order topologies.
