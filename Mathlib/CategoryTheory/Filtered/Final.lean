@@ -36,7 +36,7 @@ final can be restated. We show:
 
 -/
 
-@[expose] public section
+public section
 
 universe v₁ v₂ v₃ u₁ u₂ u₃
 

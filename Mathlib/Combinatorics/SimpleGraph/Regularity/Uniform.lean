@@ -235,7 +235,7 @@ def IsUniform (ε : 𝕜) : Prop :=
 lemma bot_isUniform (hε : 0 < ε) : (⊥ : Finpartition A).IsUniform G ε := by
   rw [Finpartition.IsUniform, Finpartition.card_bot, nonUniforms_bot _ hε, Finset.card_empty,
     Nat.cast_zero]
-  exact mul_nonneg (Nat.cast_nonneg _) hε.le
+  positivity
 
 lemma isUniform_one : P.IsUniform G (1 : 𝕜) := by
   rw [IsUniform, mul_one, Nat.cast_le]
@@ -347,8 +347,8 @@ lemma IsEquipartition.card_biUnion_offDiag_le (hε : 0 < ε) (hP : P.IsEquiparti
   refine (mul_le_mul_of_nonneg_left this <| by positivity).trans ?_
   suffices 1 ≤ ε / 4 * #P.parts by
     rw [mul_left_comm, ← sq]
-    convert mul_le_mul_of_nonneg_left this (mul_nonneg zero_le_two <| sq_nonneg (#A : 𝕜))
-      using 1 <;> ring
+    convert! mul_le_mul_of_nonneg_left this (mul_nonneg zero_le_two <| sq_nonneg (#A : 𝕜)) using 1
+      <;> ring
   rwa [← div_le_iff₀', one_div_div]
   positivity
 
