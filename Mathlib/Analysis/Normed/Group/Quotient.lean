@@ -512,7 +512,7 @@ nonrec theorem Ideal.Quotient.norm_mk_lt {I : Ideal R} (x : R ⧸ I) {ε : ℝ} 
 
 theorem Ideal.Quotient.norm_mk_le (r : R) : ‖Ideal.Quotient.mk I r‖ ≤ ‖r‖ := norm_mk_le_norm
 
-instance Ideal.Quotient.IsNormedRing : IsNormedRing (R ⧸ I) where
+instance Ideal.Quotient.instIsNormedRing : IsNormedRing (R ⧸ I) where
   dist_eq := dist_eq_norm_neg_add
   norm_mul_le x y := le_of_forall_pos_le_add fun ε hε => by
     have := ((nhds_basis_ball.prod_nhds nhds_basis_ball).tendsto_iff nhds_basis_ball).mp
