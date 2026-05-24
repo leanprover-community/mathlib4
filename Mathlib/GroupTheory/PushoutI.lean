@@ -454,7 +454,7 @@ theorem summand_smul_def' {i : ι} (g : G i) (w : NormalWord d) :
         head := g * (equivPair i w).head } := rfl
 
 noncomputable instance mulAction : MulAction (PushoutI φ) (NormalWord d) :=
-  MulAction.ofEndHom <|
+  fast_instance% MulAction.ofEndHom <|
     lift
       (fun _ => MulAction.toEndHom)
       MulAction.toEndHom <| by

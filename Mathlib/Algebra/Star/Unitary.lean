@@ -400,7 +400,7 @@ theorem coe_neg (U : unitary R) : ↑(-U) = (-U : R) :=
   rfl
 
 instance : HasDistribNeg (unitary R) :=
-  Subtype.coe_injective.hasDistribNeg _ coe_neg (unitary R).coe_mul
+  fast_instance% Subtype.coe_injective.hasDistribNeg _ coe_neg (unitary R).coe_mul
 
 end Ring
 

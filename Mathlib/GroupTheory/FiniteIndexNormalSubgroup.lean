@@ -84,7 +84,7 @@ instance instInfFiniteIndexNormalSubgroup : Min (FiniteIndexNormalSubgroup G) :=
 @[to_additive]
 instance instSemilatticeInfFiniteIndexNormalSubgroup :
     SemilatticeInf (FiniteIndexNormalSubgroup G) :=
-  SetLike.coe_injective.semilatticeInf _ .rfl .rfl fun _ _ ↦ rfl
+  fast_instance% SetLike.coe_injective.semilatticeInf _ .rfl .rfl fun _ _ ↦ rfl
 
 @[to_additive]
 instance : Max (FiniteIndexNormalSubgroup G) :=

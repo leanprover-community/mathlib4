@@ -175,7 +175,7 @@ open ContinuousMap
 compact-open topology on the space `C(I,X)` of continuous maps from `I` to `X`.
 -/
 instance instTopologicalSpace : TopologicalSpace (Path x y) :=
-  TopologicalSpace.induced ((↑) : _ → C(I, X)) ContinuousMap.compactOpen
+  fast_instance% TopologicalSpace.induced ((↑) : _ → C(I, X)) ContinuousMap.compactOpen
 
 instance : ContinuousEval (Path x y) I X := .of_continuous_forget continuous_induced_dom
 

@@ -143,7 +143,7 @@ instance : Min (DiscreteQuotient X) :=
   ⟨fun S₁ S₂ => ⟨S₁.1 ⊓ S₂.1, fun x => (S₁.2 x).inter (S₂.2 x)⟩⟩
 
 instance : PartialOrder (DiscreteQuotient X) :=
-  PartialOrder.lift _ toSetoid_injective
+  fast_instance% PartialOrder.lift _ toSetoid_injective
 
 instance : SemilatticeInf (DiscreteQuotient X) :=
   toSetoid_injective.semilatticeInf _ .rfl .rfl fun _ _ ↦ rfl

@@ -143,11 +143,11 @@ instance : Sub (FreeLieAlgebra R X) where
   sub := Quot.map₂ Sub.sub (fun _ _ _ => Rel.subLeft _) fun _ _ _ => Rel.subRight _
 
 instance : AddGroup (FreeLieAlgebra R X) :=
-  Function.Surjective.addGroup (Quot.mk _) Quot.mk_surjective rfl (fun _ _ => rfl)
+  fast_instance% Function.Surjective.addGroup (Quot.mk _) Quot.mk_surjective rfl (fun _ _ => rfl)
     (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
 
 instance : AddCommSemigroup (FreeLieAlgebra R X) :=
-  Function.Surjective.addCommSemigroup (Quot.mk _) Quot.mk_surjective fun _ _ => rfl
+  fast_instance% Function.Surjective.addCommSemigroup (Quot.mk _) Quot.mk_surjective fun _ _ => rfl
 
 instance : AddCommGroup (FreeLieAlgebra R X) :=
   { (inferInstance : AddGroup (FreeLieAlgebra R X)),
@@ -155,7 +155,7 @@ instance : AddCommGroup (FreeLieAlgebra R X) :=
 
 instance {S : Type*} [Semiring S] [Module S R] [IsScalarTower S R R] :
     Module S (FreeLieAlgebra R X) :=
-  Function.Surjective.module S ⟨⟨Quot.mk (Rel R X), rfl⟩, fun _ _ => rfl⟩
+  fast_instance% Function.Surjective.module S ⟨⟨Quot.mk (Rel R X), rfl⟩, fun _ _ => rfl⟩
     Quot.mk_surjective (fun _ _ => rfl)
 
 /-- Note that here we turn the `Mul` coming from the `NonUnitalNonAssocSemiring` structure

@@ -147,7 +147,7 @@ end Sigma
 
 /-- If `α` and `β` are denumerable, then so is their product. -/
 instance prod : Denumerable (α × β) :=
-  ofEquiv _ (Equiv.sigmaEquivProd α β).symm
+  fast_instance% ofEquiv _ (Equiv.sigmaEquivProd α β).symm
 
 theorem prod_ofNat_val (n : ℕ) :
     ofNat (α × β) n = (ofNat α (unpair n).1, ofNat β (unpair n).2) := by simp
@@ -163,11 +163,11 @@ instance pnat : Denumerable ℕ+ :=
 
 /-- The lift of a denumerable type is denumerable. -/
 instance ulift : Denumerable (ULift α) :=
-  ofEquiv _ Equiv.ulift
+  fast_instance% ofEquiv _ Equiv.ulift
 
 /-- The lift of a denumerable type is denumerable. -/
 instance plift : Denumerable (PLift α) :=
-  ofEquiv _ Equiv.plift
+  fast_instance% ofEquiv _ Equiv.plift
 
 /-- If `α` is denumerable, then `α × α` and `α` are equivalent. -/
 def pair : α × α ≃ α :=

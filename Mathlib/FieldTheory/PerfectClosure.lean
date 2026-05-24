@@ -137,7 +137,7 @@ private theorem mul_aux_right (x y1 y2 : ℕ × K) (H : R K p y1 y2) :
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 instance instMul : Mul (PerfectClosure K p) :=
-  ⟨Quot.lift
+  fast_instance% ⟨Quot.lift
       (fun x : ℕ × K =>
         Quot.lift
           (fun y : ℕ × K =>
@@ -205,7 +205,7 @@ private theorem add_aux_right (x y1 y2 : ℕ × K) (H : R K p y1 y2) :
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 instance instAdd : Add (PerfectClosure K p) :=
-  ⟨Quot.lift
+  fast_instance% ⟨Quot.lift
       (fun x : ℕ × K =>
         Quot.lift
           (fun y : ℕ × K =>
@@ -221,7 +221,7 @@ theorem mk_add_mk (x y : ℕ × K) :
   rfl
 
 instance instNeg : Neg (PerfectClosure K p) :=
-  ⟨Quot.lift (fun x : ℕ × K => mk K p (x.1, -x.2)) fun x y (H : R K p x y) =>
+  fast_instance% ⟨Quot.lift (fun x : ℕ × K => mk K p (x.1, -x.2)) fun x y (H : R K p x y) =>
       match x, y, H with
       | _, _, R.intro n x => Quot.sound <| by rw [← map_neg]; apply R.intro⟩
 
@@ -471,7 +471,7 @@ section Field
 variable [Field K] (p : ℕ) [Fact p.Prime] [CharP K p]
 
 instance instInv : Inv (PerfectClosure K p) :=
-  ⟨Quot.lift (fun x : ℕ × K => Quot.mk (R K p) (x.1, x.2⁻¹)) fun x y (H : R K p x y) =>
+  fast_instance% ⟨Quot.lift (fun x : ℕ × K => Quot.mk (R K p) (x.1, x.2⁻¹)) fun x y (H : R K p x y) =>
       match x, y, H with
       | _, _, R.intro n x =>
         Quot.sound <| by

@@ -82,7 +82,7 @@ instance isCentralScalar [SMul S R] [SMul S M] [IsScalarTower S R M] [SMul S·µê·
   p.toSubMulAction.isCentralScalar
 
 instance instIsTorsionFree [Module.IsTorsionFree R M] : Module.IsTorsionFree R p :=
-  Subtype.coe_injective.moduleIsTorsionFree _ (by simp)
+  fast_instance% Subtype.coe_injective.moduleIsTorsionFree _ (by simp)
 
 section AddAction
 

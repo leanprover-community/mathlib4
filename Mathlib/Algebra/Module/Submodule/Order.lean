@@ -24,14 +24,14 @@ variable [Semiring R]
 instance toIsOrderedAddMonoid [AddCommMonoid M] [PartialOrder M] [IsOrderedAddMonoid M]
     [Module R M] (S : Submodule R M) :
     IsOrderedAddMonoid S :=
-  Function.Injective.isOrderedAddMonoid Subtype.val (fun _ _ => rfl) .rfl
+  fast_instance% Function.Injective.isOrderedAddMonoid Subtype.val (fun _ _ => rfl) .rfl
 
 /-- A submodule of an ordered cancellative additive monoid is an ordered cancellative additive
 monoid. -/
 instance toIsOrderedCancelAddMonoid [AddCommMonoid M] [PartialOrder M]
     [IsOrderedCancelAddMonoid M] [Module R M] (S : Submodule R M) :
     IsOrderedCancelAddMonoid S :=
-  Function.Injective.isOrderedCancelAddMonoid Subtype.val (fun _ _ => rfl) .rfl
+  fast_instance% Function.Injective.isOrderedCancelAddMonoid Subtype.val (fun _ _ => rfl) .rfl
 
 end OrderedMonoid
 

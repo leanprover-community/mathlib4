@@ -480,7 +480,7 @@ theorem unitsSMul_one_group_smul (g : A) (w : NormalWord d) :
     rfl
 
 noncomputable instance : MulAction (HNNExtension G A B φ) (NormalWord d) :=
-  MulAction.ofEndHom <| (MulAction.toEndHom (M := Equiv.Perm (NormalWord d))).comp
+  fast_instance% MulAction.ofEndHom <| (MulAction.toEndHom (M := Equiv.Perm (NormalWord d))).comp
     (HNNExtension.lift (MulAction.toPermHom _ _) (unitsSMulEquiv φ) <| by
       intro a
       ext : 1

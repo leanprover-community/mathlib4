@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Control.ULift
 public import Mathlib.Logic.Equiv.Basic
+public import Mathlib.Tactic.FastInstance
 
 /-!
 # Extra lemmas about `ULift` and `PLift`
@@ -30,7 +31,7 @@ instance [Nonempty α] : Nonempty (PLift α) :=
   Equiv.plift.nonempty
 
 instance [Unique α] : Unique (PLift α) :=
-  Equiv.plift.unique
+  fast_instance% Equiv.plift.unique
 
 instance [DecidableEq α] : DecidableEq (PLift α) :=
   Equiv.plift.decidableEq
@@ -82,7 +83,7 @@ instance [Nonempty α] : Nonempty (ULift α) :=
   Equiv.ulift.nonempty
 
 instance [Unique α] : Unique (ULift α) :=
-  Equiv.ulift.unique
+  fast_instance% Equiv.ulift.unique
 
 instance [DecidableEq α] : DecidableEq (ULift α) :=
   Equiv.ulift.decidableEq

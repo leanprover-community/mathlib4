@@ -57,7 +57,7 @@ instance {r : X → X → Prop} [t : TopologicalSpace X] : TopologicalSpace (Quo
 
 instance instTopologicalSpaceQuotient {s : Setoid X} [t : TopologicalSpace X] :
     TopologicalSpace (Quotient s) :=
-  coinduced Quotient.mk' t
+  fast_instance% coinduced Quotient.mk' t
 
 instance instTopologicalSpaceSigma {ι : Type*} {X : ι → Type v} [t₂ : ∀ i, TopologicalSpace (X i)] :
     TopologicalSpace (Sigma X) :=

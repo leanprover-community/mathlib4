@@ -854,7 +854,7 @@ theorem smul_apply (t : R) (f : M →ₗ⁅R,L⁆ N) (m : M) : (t • f) m = t �
   rfl
 
 instance : Module R (M →ₗ⁅R,L⁆ N) :=
-  Function.Injective.module R
+  fast_instance% Function.Injective.module R
     { toFun := fun f => f.toLinearMap.toFun, map_zero' := rfl, map_add' := coe_add }
     coe_injective coe_smul
 

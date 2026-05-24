@@ -51,7 +51,7 @@ lemma Functor.mapConnectedComponents_mk {K : Type u₂} [Category.{v₂} K] (F :
     F.mapConnectedComponents (Quotient.mk _ j) = Quotient.mk _ (F.obj j) := rfl
 
 instance [Inhabited J] : Inhabited (ConnectedComponents J) :=
-  ⟨Quotient.mk'' default⟩
+  fast_instance% ⟨Quotient.mk'' default⟩
 
 /-- Every function from connected components of a category gives a functor to discrete category -/
 def ConnectedComponents.functorToDiscrete (X : Type*)

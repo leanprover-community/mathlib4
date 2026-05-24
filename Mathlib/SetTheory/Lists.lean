@@ -10,6 +10,7 @@ public import Mathlib.Algebra.Order.Monoid.NatCast
 public import Mathlib.Algebra.Ring.Nat
 public import Mathlib.Data.Sigma.Basic
 public import Batteries.Tactic.Lint.TypeClass
+public import Mathlib.Tactic.FastInstance
 
 /-!
 # A computable model of ZFA without infinity
@@ -309,7 +310,7 @@ theorem Equiv.trans : ∀ {l₁ l₂ l₃ : Lists α}, l₁ ~ l₂ → l₂ ~ l�
     simpa using ⟨IH₁, IH₂⟩
 
 instance instSetoidLists : Setoid (Lists α) :=
-  ⟨(· ~ ·), Equiv.refl, @Equiv.symm _, @Equiv.trans _⟩
+  fast_instance% ⟨(· ~ ·), Equiv.refl, @Equiv.symm _, @Equiv.trans _⟩
 
 section Decidable
 

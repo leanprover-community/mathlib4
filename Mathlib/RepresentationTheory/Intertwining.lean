@@ -461,13 +461,13 @@ instance : One (IntertwiningMap ρ ρ) := ⟨id ρ⟩
 @[simp] lemma coe_one : ((1 : IntertwiningMap ρ ρ) : V → V) = (_root_.id : V → V) := rfl
 
 instance : Semigroup (IntertwiningMap ρ ρ) :=
-  Function.Injective.semigroup (fun f : IntertwiningMap ρ ρ => f.toLinearMap)
+  fast_instance% Function.Injective.semigroup (fun f : IntertwiningMap ρ ρ => f.toLinearMap)
     (toLinearMap_injective ρ ρ) (coe_mul ρ)
 
 instance : Pow (IntertwiningMap ρ ρ) ℕ := ⟨fun f n => npowRecAuto n f⟩
 
 instance : Monoid (IntertwiningMap ρ ρ) :=
-  Function.Injective.monoid (fun f : IntertwiningMap ρ ρ => f.toLinearMap)
+  fast_instance% Function.Injective.monoid (fun f : IntertwiningMap ρ ρ => f.toLinearMap)
     (toLinearMap_injective ρ ρ) rfl (fun _ _ => rfl)
     (fun f n => by
       induction n with

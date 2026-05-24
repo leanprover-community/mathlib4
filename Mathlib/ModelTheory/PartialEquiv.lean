@@ -67,7 +67,7 @@ variable {L M N}
 namespace PartialEquiv
 
 noncomputable instance instInhabited_self : Inhabited (M ≃ₚ[L] M) :=
-  ⟨⊤, ⊤, Equiv.refl L (⊤ : L.Substructure M)⟩
+  fast_instance% ⟨⊤, ⊤, Equiv.refl L (⊤ : L.Substructure M)⟩
 
 /-- Maps to the symmetric partial equivalence. -/
 def symm (f : M ≃ₚ[L] N) : N ≃ₚ[L] M where
@@ -397,7 +397,7 @@ theorem countable_self_fgequiv_of_countable [Countable M] :
   exact Function.Embedding.countable ⟨g, g_inj⟩
 
 instance inhabited_self_FGEquiv : Inhabited (L.FGEquiv M M) :=
-  ⟨⟨⟨⊥, ⊥, Equiv.refl L (⊥ : L.Substructure M)⟩, fg_bot⟩⟩
+  fast_instance% ⟨⟨⟨⊥, ⊥, Equiv.refl L (⊥ : L.Substructure M)⟩, fg_bot⟩⟩
 
 instance inhabited_FGEquiv_of_IsEmpty_Constants_and_Relations
     [IsEmpty L.Constants] [IsEmpty (L.Relations 0)] : Inhabited (L.FGEquiv M N) :=

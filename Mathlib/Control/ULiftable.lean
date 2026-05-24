@@ -11,6 +11,7 @@ public import Mathlib.Control.Monad.Writer
 public import Mathlib.Logic.Equiv.Basic
 public import Mathlib.Logic.Equiv.Functor
 public import Mathlib.Control.Lawful
+public import Mathlib.Tactic.FastInstance
 
 /-!
 # Universe lifting for type families
@@ -128,11 +129,11 @@ def StateT.uliftable' {m : Type u₀ → Type v₀} {m' : Type u₁ → Type v�
     StateT.equiv <| Equiv.piCongr F fun _ => ULiftable.congr <| Equiv.prodCongr G F
 
 instance {m m'} [ULiftable m m'] : ULiftable (StateT s m) (StateT (ULift s) m') :=
-  StateT.uliftable' Equiv.ulift.symm
+  fast_instance% StateT.uliftable' Equiv.ulift.symm
 
 instance StateT.instULiftableULiftULift {m m'} [ULiftable m m'] :
     ULiftable (StateT (ULift.{max v₀ u₀} s) m) (StateT (ULift.{max v₁ u₀} s) m') :=
-  StateT.uliftable' <| Equiv.ulift.trans Equiv.ulift.symm
+  fast_instance% StateT.uliftable' <| Equiv.ulift.trans Equiv.ulift.symm
 
 /-- for specific reader monads, this function helps to create a uliftable instance -/
 @[implicit_reducible]
@@ -141,11 +142,11 @@ def ReaderT.uliftable' {m m'} [ULiftable m m'] (F : s ≃ s') :
   congr G := ReaderT.equiv <| Equiv.piCongr F fun _ => ULiftable.congr G
 
 instance {m m'} [ULiftable m m'] : ULiftable (ReaderT s m) (ReaderT (ULift s) m') :=
-  ReaderT.uliftable' Equiv.ulift.symm
+  fast_instance% ReaderT.uliftable' Equiv.ulift.symm
 
 instance ReaderT.instULiftableULiftULift {m m'} [ULiftable m m'] :
     ULiftable (ReaderT (ULift.{max v₀ u₀} s) m) (ReaderT (ULift.{max v₁ u₀} s) m') :=
-  ReaderT.uliftable' <| Equiv.ulift.trans Equiv.ulift.symm
+  fast_instance% ReaderT.uliftable' <| Equiv.ulift.trans Equiv.ulift.symm
 
 /-- for specific continuation passing monads, this function helps to create a uliftable instance -/
 @[implicit_reducible]
@@ -154,11 +155,11 @@ def ContT.uliftable' {m m'} [ULiftable m m'] (F : r ≃ r') :
   congr := ContT.equiv (ULiftable.congr F)
 
 instance {s m m'} [ULiftable m m'] : ULiftable (ContT s m) (ContT (ULift s) m') :=
-  ContT.uliftable' Equiv.ulift.symm
+  fast_instance% ContT.uliftable' Equiv.ulift.symm
 
 instance ContT.instULiftableULiftULift {m m'} [ULiftable m m'] :
     ULiftable (ContT (ULift.{max v₀ u₀} s) m) (ContT (ULift.{max v₁ u₀} s) m') :=
-  ContT.uliftable' <| Equiv.ulift.trans Equiv.ulift.symm
+  fast_instance% ContT.uliftable' <| Equiv.ulift.trans Equiv.ulift.symm
 
 /-- for specific writer monads, this function helps to create a uliftable instance -/
 @[implicit_reducible]
@@ -167,11 +168,11 @@ def WriterT.uliftable' {m m'} [ULiftable m m'] (F : w ≃ w') :
   congr G := WriterT.equiv <| ULiftable.congr <| Equiv.prodCongr G F
 
 instance {m m'} [ULiftable m m'] : ULiftable (WriterT s m) (WriterT (ULift s) m') :=
-  WriterT.uliftable' Equiv.ulift.symm
+  fast_instance% WriterT.uliftable' Equiv.ulift.symm
 
 instance WriterT.instULiftableULiftULift {m m'} [ULiftable m m'] :
     ULiftable (WriterT (ULift.{max v₀ u₀} s) m) (WriterT (ULift.{max v₁ u₀} s) m') :=
-  WriterT.uliftable' <| Equiv.ulift.trans Equiv.ulift.symm
+  fast_instance% WriterT.uliftable' <| Equiv.ulift.trans Equiv.ulift.symm
 
 instance Except.instULiftable {ε : Type u₀} :
     ULiftable (Except.{u₀, v₁} ε) (Except.{u₀, v₂} ε) where

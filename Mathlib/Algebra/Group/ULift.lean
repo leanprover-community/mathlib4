@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Group.Equiv.Defs
 public import Mathlib.Algebra.Group.InjSurj
+public import Mathlib.Tactic.FastInstance
 
 /-!
 # `ULift` instances for groups and monoids
@@ -80,38 +81,38 @@ instance semigroup [Semigroup α] : Semigroup (ULift α) :=
 
 @[to_additive]
 instance commSemigroup [CommSemigroup α] : CommSemigroup (ULift α) :=
-  (Equiv.ulift.injective.commSemigroup _) fun _ _ => rfl
+  fast_instance% (Equiv.ulift.injective.commSemigroup _) fun _ _ => rfl
 
 @[to_additive]
 instance mulOneClass [MulOneClass α] : MulOneClass (ULift α) :=
-  Equiv.ulift.injective.mulOneClass _ rfl (by intros; rfl)
+  fast_instance% Equiv.ulift.injective.mulOneClass _ rfl (by intros; rfl)
 
 @[to_additive]
 instance monoid [Monoid α] : Monoid (ULift α) :=
-  Equiv.ulift.injective.monoid _ rfl (fun _ _ => rfl) fun _ _ => rfl
+  fast_instance% Equiv.ulift.injective.monoid _ rfl (fun _ _ => rfl) fun _ _ => rfl
 
 @[to_additive]
 instance commMonoid [CommMonoid α] : CommMonoid (ULift α) :=
-  Equiv.ulift.injective.commMonoid _ rfl (fun _ _ => rfl) fun _ _ => rfl
+  fast_instance% Equiv.ulift.injective.commMonoid _ rfl (fun _ _ => rfl) fun _ _ => rfl
 
 @[to_additive]
 instance divInvMonoid [DivInvMonoid α] : DivInvMonoid (ULift α) :=
-  Equiv.ulift.injective.divInvMonoid _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
+  fast_instance% Equiv.ulift.injective.divInvMonoid _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) fun _ _ => rfl
 
 @[to_additive]
 instance group [Group α] : Group (ULift α) :=
-  Equiv.ulift.injective.group _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
+  fast_instance% Equiv.ulift.injective.group _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) fun _ _ => rfl
 
 @[to_additive]
 instance commGroup [CommGroup α] : CommGroup (ULift α) :=
-  Equiv.ulift.injective.commGroup _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
+  fast_instance% Equiv.ulift.injective.commGroup _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) fun _ _ => rfl
 
 @[to_additive]
 instance leftCancelSemigroup [LeftCancelSemigroup α] : LeftCancelSemigroup (ULift α) :=
-  Equiv.ulift.injective.leftCancelSemigroup _ fun _ _ => rfl
+  fast_instance% Equiv.ulift.injective.leftCancelSemigroup _ fun _ _ => rfl
 
 @[to_additive]
 instance rightCancelSemigroup [RightCancelSemigroup α] : RightCancelSemigroup (ULift α) :=

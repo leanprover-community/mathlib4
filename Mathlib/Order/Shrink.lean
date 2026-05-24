@@ -42,7 +42,7 @@ section Preorder
 variable [Preorder α]
 
 noncomputable instance : Preorder (Shrink.{u} α) :=
-  Preorder.lift (equivShrink α).symm
+  fast_instance% Preorder.lift (equivShrink α).symm
 
 variable (α) in
 /-- The order isomorphism `α ≃o Shrink.{u} α`. -/

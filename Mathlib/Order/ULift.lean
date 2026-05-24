@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Logic.Function.ULift
 public import Mathlib.Order.Basic
+public import Mathlib.Tactic.FastInstance
 
 /-! # Ordered structures on `ULift.{v} α`
 
@@ -85,9 +86,9 @@ instance [LE α] [LT α] [BEq α] [Ord α] [inst : Std.LawfulBOrd α] :
   isLE_iff_le := inst.isLE_iff_le
 
 instance [Preorder α] : Preorder (ULift.{v} α) :=
-  Preorder.lift ULift.down
+  fast_instance% Preorder.lift ULift.down
 
 instance [PartialOrder α] : PartialOrder (ULift.{v} α) :=
-  PartialOrder.lift ULift.down ULift.down_injective
+  fast_instance% PartialOrder.lift ULift.down ULift.down_injective
 
 end ULift

@@ -759,7 +759,7 @@ instance : SMul S (torsion' R M S) :=
       rw [smul_comm, h, smul_zero]⟩⟩
 
 instance : DistribMulAction S (torsion' R M S) :=
-  Subtype.coe_injective.distribMulAction (torsion' R M S).subtype.toAddMonoidHom fun (_ : S) _ =>
+  fast_instance% Subtype.coe_injective.distribMulAction (torsion' R M S).subtype.toAddMonoidHom fun (_ : S) _ =>
     rfl
 
 instance : SMulCommClass S R (torsion' R M S) :=

@@ -80,7 +80,7 @@ theorem zsmul_f_apply (n : ℤ) (f : C ⟶ D) (i : ι) : (n • f).f i = n • f
   rfl
 
 instance : AddCommGroup (C ⟶ D) :=
-  Function.Injective.addCommGroup Hom.f HomologicalComplex.hom_f_injective
+  fast_instance% Function.Injective.addCommGroup Hom.f HomologicalComplex.hom_f_injective
     (by cat_disch) (by cat_disch) (by cat_disch) (by cat_disch) (by cat_disch) (by cat_disch)
 
 instance : Preadditive (HomologicalComplex V c) where

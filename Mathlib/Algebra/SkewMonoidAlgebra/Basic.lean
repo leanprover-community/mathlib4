@@ -138,7 +138,7 @@ instance [Nontrivial k] [Nonempty G] :
     Nontrivial (SkewMonoidAlgebra k G) := Function.Injective.nontrivial ofFinsupp_injective
 
 instance [Subsingleton k] : Unique (SkewMonoidAlgebra k G) :=
-  Function.Injective.unique toFinsupp_injective
+  fast_instance% Function.Injective.unique toFinsupp_injective
 
 instance : AddMonoid (SkewMonoidAlgebra k G) where
   __ := toFinsupp_injective.addMonoid _ toFinsupp_zero toFinsupp_add
@@ -352,7 +352,7 @@ instance : AddCommMonoid (SkewMonoidAlgebra k G) where
 section sum
 
 instance [DecidableEq G] [DecidableEq k] : DecidableEq (SkewMonoidAlgebra k G) :=
-  Equiv.decidableEq toFinsuppAddEquiv.toEquiv
+  fast_instance% Equiv.decidableEq toFinsuppAddEquiv.toEquiv
 
 /-- `sum f g` is the sum of `g a (f.coeff a)` over the support of `f`. -/
 def sum {N : Type*} [AddCommMonoid N] (f : SkewMonoidAlgebra k G) (g : G → k → N) : N :=

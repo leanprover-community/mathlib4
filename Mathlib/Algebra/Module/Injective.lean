@@ -142,7 +142,7 @@ instance : Min (ExtensionOf i f) where
       is_extension := fun _ => X1.is_extension _ }
 
 instance : PartialOrder (ExtensionOf i f) :=
-  PartialOrder.lift _ ExtensionOf.toLinearPMap_injective
+  fast_instance% PartialOrder.lift _ ExtensionOf.toLinearPMap_injective
 
 instance : SemilatticeInf (ExtensionOf i f) :=
   ExtensionOf.toLinearPMap_injective.semilatticeInf _

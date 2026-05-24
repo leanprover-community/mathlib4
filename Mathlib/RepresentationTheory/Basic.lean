@@ -160,7 +160,7 @@ end
 /-- A `k`-linear representation of `G` on `V` can be thought of as a module over `k[G]`.
 -/
 noncomputable instance : Module k[G] ρ.asModule :=
-  Module.compHom V (asAlgebraHom ρ).toRingHom
+  fast_instance% Module.compHom V (asAlgebraHom ρ).toRingHom
 
 @[simp]
 theorem asModuleEquiv_map_smul (r : k[G]) (x : ρ.asModule) :

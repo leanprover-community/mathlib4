@@ -317,7 +317,7 @@ theorem cardinalMk_algHom (K : Type u) (V : Type v) (W : Type w) [Field K] [Ring
 
 noncomputable instance AlgEquiv.fintype (K : Type u) (V : Type v) [Field K] [Field V] [Algebra K V]
     [FiniteDimensional K V] : Fintype (V ≃ₐ[K] V) :=
-  Fintype.ofEquiv (V →ₐ[K] V) (algEquivEquivAlgHom K V).symm
+  fast_instance% Fintype.ofEquiv (V →ₐ[K] V) (algEquivEquivAlgHom K V).symm
 
 theorem finrank_algHom (K : Type u) (V : Type v) [Field K] [Field V] [Algebra K V]
     [FiniteDimensional K V] : Fintype.card (V →ₐ[K] V) ≤ finrank V (V →ₗ[K] V) :=

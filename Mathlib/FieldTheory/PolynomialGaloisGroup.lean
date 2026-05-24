@@ -99,7 +99,7 @@ instance uniqueGalXPow (n : ℕ) : Unique (X ^ n : F[X]).Gal :=
   uniqueGalOfSplits _ (Splits.X_pow _)
 
 instance [h : Fact ((p.map (algebraMap F E)).Splits)] : Algebra p.SplittingField E :=
-  (IsSplittingField.lift p.SplittingField p h.1).toRingHom.toAlgebra
+  fast_instance% (IsSplittingField.lift p.SplittingField p h.1).toRingHom.toAlgebra
 
 instance [h : Fact ((p.map (algebraMap F E)).Splits)] : IsScalarTower F p.SplittingField E :=
   IsScalarTower.of_algebraMap_eq fun x =>

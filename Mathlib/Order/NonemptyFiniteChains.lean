@@ -41,7 +41,7 @@ namespace NonemptyFiniteChains
 attribute [simp] nonempty
 
 instance (X : Type u) [PartialOrder X] : PartialOrder (NonemptyFiniteChains X) :=
-  PartialOrder.lift finset (fun _ _ _ ↦ by aesop)
+  fast_instance% PartialOrder.lift finset (fun _ _ _ ↦ by aesop)
 
 variable {X Y : Type*} [PartialOrder X] [PartialOrder Y]
 

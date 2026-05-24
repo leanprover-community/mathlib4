@@ -328,7 +328,7 @@ noncomputable def Monoidal.inducingFunctorData :
     rfl
 
 noncomputable instance monoidalCategory : MonoidalCategory (HomologicalComplex C c) :=
-  Monoidal.induced _ (Monoidal.inducingFunctorData C c)
+  fast_instance% Monoidal.induced _ (Monoidal.inducingFunctorData C c)
 
 noncomputable example {D : Type*} [Category* D] [Preadditive D] [MonoidalCategory D]
     [HasZeroObject D] [HasFiniteCoproducts D] [((curriedTensor D).Additive)]

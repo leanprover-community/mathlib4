@@ -475,7 +475,7 @@ protected def ωSup (c : Chain (α →o β)) : α →o β where
 
 @[simps! ωSup_coe]
 instance omegaCompletePartialOrder : OmegaCompletePartialOrder (α →o β) :=
-  OmegaCompletePartialOrder.lift OrderHom.coeFnHom OrderHom.ωSup (fun _ _ h => h) fun _ => rfl
+  fast_instance% OmegaCompletePartialOrder.lift OrderHom.coeFnHom OrderHom.ωSup (fun _ _ h => h) fun _ => rfl
 
 end OrderHom
 
@@ -499,7 +499,7 @@ instance : OrderHomClass (α →𝒄 β) α β where
   map_rel f _ _ h := f.mono h
 
 instance : PartialOrder (α →𝒄 β) :=
-  (PartialOrder.lift fun f => f.toOrderHom.toFun) <| by rintro ⟨⟨⟩⟩ ⟨⟨⟩⟩ h; congr
+  fast_instance% (PartialOrder.lift fun f => f.toOrderHom.toFun) <| by rintro ⟨⟨⟩⟩ ⟨⟨⟩⟩ h; congr
 
 namespace ContinuousHom
 
@@ -669,7 +669,7 @@ protected def ωSup (c : Chain (α →𝒄 β)) : α →𝒄 β where
 
 @[simps ωSup]
 instance : OmegaCompletePartialOrder (α →𝒄 β) :=
-  OmegaCompletePartialOrder.lift ContinuousHom.toMono ContinuousHom.ωSup
+  fast_instance% OmegaCompletePartialOrder.lift ContinuousHom.toMono ContinuousHom.ωSup
     (fun _ _ h => h) (fun _ => rfl)
 
 @[fun_prop]
