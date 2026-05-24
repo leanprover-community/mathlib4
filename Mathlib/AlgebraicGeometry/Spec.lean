@@ -291,7 +291,7 @@ theorem Spec_Γ_naturality {R S : CommRingCat.{u}} (f : R ⟶ S) :
 @[simps! hom_app inv_app]
 def LocallyRingedSpace.SpecΓIdentity : Spec.toLocallyRingedSpace.rightOp ⋙ Γ ≅ 𝟭 _ :=
   Iso.symm <| NatIso.ofComponents.{u, u, u + 1, u + 1} (fun R ↦ asIso (toSpecΓ R) :)
-    fun {X Y} f => by convert Spec_Γ_naturality (R := X) (S := Y) f
+    fun {X Y} f => by convert! Spec_Γ_naturality (R := X) (S := Y) f
 
 end SpecΓ
 
@@ -356,7 +356,7 @@ def toPushforwardStalkAlgHom :
 
 theorem isLocalizedModule_toPushforwardStalkAlgHom_aux (y) :
     ∃ x : S × p.asIdeal.primeCompl, x.2 • y = toPushforwardStalkAlgHom R S p x.1 := by
-  obtain ⟨U, hp, s, e⟩ := TopCat.Presheaf.germ_exist _ _ y
+  obtain ⟨U, hp, s, e⟩ := TopCat.Presheaf.exists_germ_eq _ y
   obtain ⟨_, ⟨r, rfl⟩, hpr : p ∈ PrimeSpectrum.basicOpen r, hrU : PrimeSpectrum.basicOpen r ≤ U⟩ :=
     PrimeSpectrum.isTopologicalBasis_basic_opens.exists_subset_of_mem_open (show p ∈ U from hp) U.2
   change PrimeSpectrum.basicOpen r ≤ U at hrU
