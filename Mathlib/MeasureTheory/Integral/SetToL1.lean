@@ -1099,9 +1099,9 @@ theorem setToFun_add_measure {ν : Measure α} (hTμ : DominatedFinMeasAdditive 
     setToFun (μ + ν) (T + T') (hTμ.add_measure μ ν hTν) f =
       setToFun μ T hTμ f + setToFun ν T' hTν f :=
   have hTμ_add : DominatedFinMeasAdditive (μ + ν) T (max C 0) :=
-    hTμ.max_zero.add_measure_right μ ν (le_max_right C 0)
+    (hTμ.le (le_max_left C 0)).add_measure_right μ ν (le_max_right C 0)
   have hTν_add : DominatedFinMeasAdditive (μ + ν) T' (max C' 0) :=
-    hTν.max_zero.add_measure_left μ ν (le_max_right C' 0)
+    (hTν.le (le_max_left C' 0)).add_measure_left μ ν (le_max_right C' 0)
   calc
     setToFun (μ + ν) (T + T') (hTμ.add_measure μ ν hTν) f =
       setToFun (μ + ν) T hTμ_add f + setToFun (μ + ν) T' hTν_add f :=
@@ -1117,17 +1117,17 @@ theorem setToFun_sub_measure {ν : Measure α} (hTμ : DominatedFinMeasAdditive 
   simp [sub_eq_add_neg, setToFun_add_measure hTμ hTν.neg hμ hν, setToFun_neg' hTν]
 
 theorem setToFun_finsetSum_measure {ι} {s : Finset ι} (hs : s.Nonempty)
-    {μs : ι → Measure α} {Ts : ι → Set α → E →L[ℝ] F} {Cs : ι → ℝ}
-    (hTs : ∀ i, DominatedFinMeasAdditive (μs i) (Ts i) (Cs i))
-    (hf : ∀ i ∈ s, Integrable f (μs i)) :
-    setToFun (∑ i ∈ s, μs i) (∑ i ∈ s, Ts i)
-      (DominatedFinMeasAdditive.finsetSum_measure hs μs Ts Cs hTs) f =
-      ∑ i ∈ s, setToFun (μs i) (Ts i) (hTs i) f := by
+    {μ : ι → Measure α} {T : ι → Set α → E →L[ℝ] F} {C : ι → ℝ}
+    (hTs : ∀ i, DominatedFinMeasAdditive (μ i) (T i) (C i))
+    (hf : ∀ i ∈ s, Integrable f (μ i)) :
+    setToFun (∑ i ∈ s, μ i) (∑ i ∈ s, T i)
+      (DominatedFinMeasAdditive.finsetSum_measure hs μ T C hTs) f =
+      ∑ i ∈ s, setToFun (μ i) (T i) (hTs i) f := by
   induction hs using Finset.Nonempty.cons_induction with
   | singleton i => simp
   | @cons i s his hs' ih =>
     simpa [his, ih fun j hj => hf j (Finset.mem_cons_of_mem hj)] using
-      setToFun_add_measure (hTs i) (DominatedFinMeasAdditive.finsetSum_measure hs' μs Ts Cs hTs)
+      setToFun_add_measure (hTs i) (DominatedFinMeasAdditive.finsetSum_measure hs' μ T C hTs)
       (hf i (Finset.mem_cons_self i s))
       (integrable_finsetSum_measure.2 fun j hj => hf j (Finset.mem_cons_of_mem hj))
 
