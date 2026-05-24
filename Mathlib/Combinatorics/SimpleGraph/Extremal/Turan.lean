@@ -435,8 +435,7 @@ theorem CliqueFree.card_edgeFinset_le (cf : G.CliqueFree (r + 1)) :
     simp [turanNumber_eq, card_edgeFinset_le_card_choose_two]
   · obtain ⟨H, _, maxH⟩ := exists_isTuranMaximal (V := V) hr
     convert! maxH.2 cf
-    rw [((isTuranMaximal_iff_nonempty_iso_turanGraph hr).mp maxH).some.card_edgeFinset_eq,
-      turanNumber]
+    rw [((isTuranMaximal_iff_nonempty_iso_turanGraph hr).mp maxH).some.card_edgeFinset_eq]
 
 lemma strictMonoOn_turanNumber : StrictMonoOn (turanNumber n) (Set.Icc 1 n) := by
   rintro a ⟨lba, -⟩ b ⟨lbb, ubb⟩ hab
