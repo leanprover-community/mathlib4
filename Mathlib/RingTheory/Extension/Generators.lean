@@ -531,7 +531,7 @@ lemma ofComp_toAlgHom_monomial_sumElim (Q : Generators S T ι') (P : Generators 
 lemma toComp_toAlgHom_monomial (Q : Generators S T ι') (P : Generators R S ι) (j a) :
     (Q.toComp P).toAlgHom (monomial j a) =
       monomial (Finsupp.sumElim 0 j) a := by
-  convert rename_monomial _ _ _
+  convert! rename_monomial _ _ _
   ext f (i₁ | i₂) <;>
     simp [Finsupp.mapDomain_notin_range, Finsupp.mapDomain_apply Sum.inr_injective]
 
@@ -700,9 +700,9 @@ lemma map_toComp_ker (Q : Generators S T ι') (P : Generators R S ι) :
         simp only [coeff_add, map_add, ite_add_zero]
         rw [finsum_add_distrib, hp, hq]
         · refine (((support p).map e).finite_toSet.subset ?_)
-          convert this p
+          convert! this p
         · refine (((support q).map e).finite_toSet.subset ?_)
-          convert this q
+          convert! this q
 
 /--
 Given `R[X] → S` and `S[Y] → T`, this is the lift of an element in `ker(S[Y] → T)`

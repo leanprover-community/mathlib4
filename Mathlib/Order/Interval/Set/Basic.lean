@@ -195,9 +195,13 @@ theorem _root_.isUpperSet_Ici (a : α) : IsUpperSet (Ici a) :=
 theorem _root_.isUpperSet_Ioi (a : α) : IsUpperSet (Ioi a) :=
   fun _ _ => flip lt_of_lt_of_le
 
+@[to_additive (attr := simp)]
+theorem Iio_one_eq_empty [One α] [IsBotOneClass α] : Set.Iio (1 : α) = ∅ := by
+  ext; simp
+
 @[to_additive]
-instance isEmpty_Iio_one [One α] [IsBotOneClass α] : IsEmpty (Set.Iio (1 : α)) :=
-  ⟨fun a ↦ not_lt_one a.2⟩
+instance isEmpty_Iio_one [One α] [IsBotOneClass α] : IsEmpty (Set.Iio (1 : α)) := by
+  simp
 
 @[to_dual]
 instance [NoMinOrder α] : NoMinOrder (Iio a) :=

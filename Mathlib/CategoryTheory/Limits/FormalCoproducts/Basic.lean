@@ -310,7 +310,7 @@ def isLimitPullbackCone : IsLimit (pullbackCone f g pb) := by
     (fun s ↦ congrArg (·.1.snd)
       ((homPullbackEquiv f g pb hpb s.pt).right_inv ⟨(s.fst, s.snd), s.condition⟩))
     (fun s m h₁ h₂ ↦ ?_)
-  convert ((homPullbackEquiv f g pb hpb s.pt).left_inv m).symm using 3
+  convert! ((homPullbackEquiv f g pb hpb s.pt).left_inv m).symm using 3
   rw [← h₁, ← h₂]; rfl
 
 -- Arguments cannot be inferred.
