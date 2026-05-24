@@ -56,7 +56,7 @@ lemma StrictConvex.diff_interior_subset_extremePoints {𝕜 A : Type*} [Semiring
   rwa [← hyz, ← add_smul, hab, one_smul] at hxab
 
 section Normed
-variable {A : Type*} [NormedAddCommGroup A] [NormedSpace ℝ A]
+variable {A : Type*} [AddCommGroup A] [NormedAddCommGroup A] [NormedSpace ℝ A]
 
 /-- In a nontrivial normed space, the extreme points of the closed ball is contained in
 the sphere. -/
