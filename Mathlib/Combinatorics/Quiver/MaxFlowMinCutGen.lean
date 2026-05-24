@@ -1057,6 +1057,7 @@ def is_max_undirected_flow {V : Type*} {α : Type*} [Ring α] [LinearOrder α] [
   ValidFlow_undirected V α G fn ∧ ∀ fn' : RelaxedFlow V α G.toSTVertices, ValidFlow_undirected V α G fn' →
     Flow_value G.toSTVertices fn' ≤ Flow_value G.toSTVertices fn
 
+/-- Any undirected maximal flow is also a directed maximal flow -/
 lemma undirected_max_directed_max {V : Type*} [Fintype V] {α : Type*} [Ring α] [LinearOrder α] [IsStrictOrderedRing α] (G : Undirected_FlowNetwork V α) (F : RelaxedFlow V α G.toSTVertices) :
   is_max_undirected_flow F → is_max_flow F := by
   intro h
@@ -1095,10 +1096,7 @@ theorem undirected_max_flow_iff_eq_min_cut {V : Type*} [Fintype V] {α : Type*} 
 /-- every maximum flow witnesses a minimum cut with equal value -/
 theorem undirected_max_flow_min_cut {V : Type*} [Fintype V] {α : Type*} [Ring α] [LinearOrder α] [IsStrictOrderedRing α] (G : Undirected_FlowNetwork V α)
   (F : RelaxedFlow V α G.toSTVertices) (h : is_max_undirected_flow F) :
-    ∃ C, is_min_cut G.toFlowNetwork C ∧ Flow_value G.toSTVertices F = cut_cap C := by
-      have : is_max_flow F := undirected_max_directed_max G F h
-      obtain ⟨C, hC, FCeq⟩ := max_flow_min_cut G.toFlowNetwork F this
-      use C
+    ∃ C, is_min_cut G.toFlowNetwork C ∧ Flow_value G.toSTVertices F = cut_cap C := (undirected_max_flow_iff_eq_min_cut G F h.1).mp h
 
 /-- An equivalent for the max flow min cut theorem for ℤ for undirected flow networks -/
 theorem undirected_max_flow_min_cut_Z {V : Type*} [Fintype V] (G : Undirected_FlowNetwork V ℤ) :
