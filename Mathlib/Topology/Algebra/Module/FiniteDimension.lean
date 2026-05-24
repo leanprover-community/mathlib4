@@ -305,7 +305,7 @@ def toContinuousLinearMap : (E →ₗ[𝕜] F') ≃ₗ[𝕜] E →L[𝕜] F' whe
 
 /-- Algebra equivalence between the linear maps and continuous linear maps on a finite-dimensional
 space. -/
-def _root_.Module.End.toContinuousLinearMap (E : Type v) [NormedAddCommGroup E]
+def _root_.Module.End.toContinuousLinearMap (E : Type v) [AddCommGroup E] [NormedAddCommGroup E]
     [NormedSpace 𝕜 E] [FiniteDimensional 𝕜 E] : (E →ₗ[𝕜] E) ≃ₐ[𝕜] (E →L[𝕜] E) :=
   { LinearMap.toContinuousLinearMap with
     map_mul' := fun _ _ ↦ rfl
