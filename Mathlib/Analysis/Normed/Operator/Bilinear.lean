@@ -32,8 +32,9 @@ section SemiNormed
 
 open Metric ContinuousLinearMap
 
-variable [SeminormedAddCommGroup E] [SeminormedAddCommGroup Eₗ] [SeminormedAddCommGroup F]
-  [SeminormedAddCommGroup Fₗ] [SeminormedAddCommGroup G] [SeminormedAddCommGroup Gₗ]
+variable [AddCommGroup E] [SeminormedAddCommGroup E] [AddCommGroup Eₗ] [SeminormedAddCommGroup Eₗ]
+  [AddCommGroup F] [SeminormedAddCommGroup F] [AddCommGroup Fₗ] [SeminormedAddCommGroup Fₗ]
+   [AddCommGroup G] [SeminormedAddCommGroup G] [AddCommGroup Gₗ] [SeminormedAddCommGroup Gₗ]
 
 variable [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕜₂] [NontriviallyNormedField 𝕜₃]
   [NormedSpace 𝕜 E] [NormedSpace 𝕜 Eₗ] [NormedSpace 𝕜₂ F] [NormedSpace 𝕜 Fₗ] [NormedSpace 𝕜₃ G]
@@ -284,7 +285,7 @@ theorem _root_.Continuous.const_clm_comp {X} [TopologicalSpace X] {f : X → E �
 theorem _root_.Continuous.clm_comp_const {X} [TopologicalSpace X] {g : X → F →SL[σ₂₃] G}
     (hg : Continuous g) (f : E →SL[σ₁₂] F) :
     Continuous (fun x => (g x).comp f : X → E →SL[σ₁₃] G) :=
-  (@ContinuousLinearMap.flip _ _ _ _ _ (E →SL[σ₁₃] G) _ _ _ _ _ _ _ _ _ _ _ _ _
+  (@ContinuousLinearMap.flip _ _ _ _ _ (E →SL[σ₁₃] G) _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
     (compSL E F G σ₁₂ σ₂₃) f).continuous.comp hg
 
 variable (𝕜 σ₁₂ σ₂₃ E Fₗ Gₗ)
@@ -330,7 +331,8 @@ variable {σ₂₁ : 𝕜₂ →+* 𝕜} [RingHomInvPair σ₁₂ σ₂₁] [Rin
 
 namespace ContinuousLinearMap
 
-variable {E' F' : Type*} [SeminormedAddCommGroup E'] [SeminormedAddCommGroup F']
+variable {E' F' : Type*} [AddCommGroup E'] [SeminormedAddCommGroup E']
+  [AddCommGroup F'] [SeminormedAddCommGroup F']
 variable {𝕜₁' : Type*} {𝕜₂' : Type*} [NontriviallyNormedField 𝕜₁'] [NontriviallyNormedField 𝕜₂']
   [NormedSpace 𝕜₁' E'] [NormedSpace 𝕜₂' F'] {σ₁' : 𝕜₁' →+* 𝕜} {σ₁₃' : 𝕜₁' →+* 𝕜₃} {σ₂' : 𝕜₂' →+* 𝕜₂}
   {σ₂₃' : 𝕜₂' →+* 𝕜₃} [RingHomCompTriple σ₁' σ₁₃ σ₁₃'] [RingHomCompTriple σ₂' σ₂₃ σ₂₃']
@@ -438,9 +440,12 @@ section Restrict
 namespace ContinuousLinearMap
 
 variable {𝕜' : Type*} [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜 𝕜']
-  [SeminormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedSpace 𝕜' E] [IsScalarTower 𝕜 𝕜' E]
-  [SeminormedAddCommGroup F] [NormedSpace 𝕜 F] [NormedSpace 𝕜' F] [IsScalarTower 𝕜 𝕜' F]
-  [SeminormedAddCommGroup G] [NormedSpace 𝕜 G] [NormedSpace 𝕜' G] [IsScalarTower 𝕜 𝕜' G]
+  [AddCommGroup E] [SeminormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedSpace 𝕜' E]
+  [IsScalarTower 𝕜 𝕜' E]
+  [AddCommGroup F] [SeminormedAddCommGroup F] [NormedSpace 𝕜 F] [NormedSpace 𝕜' F]
+  [IsScalarTower 𝕜 𝕜' F]
+  [AddCommGroup G] [SeminormedAddCommGroup G] [NormedSpace 𝕜 G] [NormedSpace 𝕜' G]
+  [IsScalarTower 𝕜 𝕜' G]
 
 variable (𝕜) in
 /-- Convenience function for restricting the linearity of a bilinear map. -/
