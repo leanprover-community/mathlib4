@@ -356,7 +356,7 @@ theorem linearIndependent_of_ne_zero_of_inner_eq_zero {ι : Type*} {v : ι → E
   have h' : g i * ⟪v i, v i⟫ = ⟪v i, ∑ j ∈ s, g j • v j⟫ := by
     rw [inner_sum]
     symm
-    convert Finset.sum_eq_single (M := 𝕜) i ?_ ?_
+    convert! Finset.sum_eq_single (M := 𝕜) i ?_ ?_
     · rw [inner_smul_right]
     · intro j _hj hji
       rw [inner_smul_right, ho hji.symm, mul_zero]
@@ -817,7 +817,7 @@ theorem real_inner_div_norm_mul_norm_eq_neg_one_iff (x y : F) :
 the equality case for Cauchy-Schwarz. -/
 theorem inner_eq_one_iff_of_norm_eq_one {x y : E} (hx : ‖x‖ = 1) (hy : ‖y‖ = 1) :
     ⟪x, y⟫ = 1 ↔ x = y := by
-  convert inner_eq_norm_mul_iff (𝕜 := 𝕜) (E := E) using 2 <;> simp [hx, hy]
+  convert! inner_eq_norm_mul_iff (𝕜 := 𝕜) (E := E) using 2 <;> simp [hx, hy]
 
 /-- If the inner product of two unit vectors is `-1`, then the two vectors are negations of each
 other. -/
@@ -852,14 +852,7 @@ theorem inner_lt_norm_mul_iff_real {x y : F} : ⟪x, y⟫_ℝ < ‖x‖ * ‖y�
 /-- If the inner product of two unit vectors is strictly less than `1`, then the two vectors are
 distinct. One form of the equality case for Cauchy-Schwarz. -/
 theorem inner_lt_one_iff_real_of_norm_eq_one {x y : F} (hx : ‖x‖ = 1) (hy : ‖y‖ = 1) :
-    ⟪x, y⟫_ℝ < 1 ↔ x ≠ y := by convert inner_lt_norm_mul_iff_real (F := F) <;> simp [hx, hy]
-
-@[deprecated (since := "2025-11-15")] alias inner_eq_one_iff_of_norm_one :=
-  inner_eq_one_iff_of_norm_eq_one
-@[deprecated (since := "2025-11-15")] alias inner_self_eq_one_of_norm_one :=
-  inner_self_eq_one_of_norm_eq_one
-@[deprecated (since := "2025-11-15")] alias inner_lt_one_iff_real_of_norm_one :=
-  inner_lt_one_iff_real_of_norm_eq_one
+    ⟪x, y⟫_ℝ < 1 ↔ x ≠ y := by convert! inner_lt_norm_mul_iff_real (F := F) <;> simp [hx, hy]
 
 /-- The sphere of radius `r = ‖y‖` is tangent to the plane `⟪x, y⟫ = ‖y‖ ^ 2` at `x = y`. -/
 theorem eq_of_norm_le_re_inner_eq_norm_sq {x y : E} (hle : ‖x‖ ≤ ‖y‖) (h : re ⟪x, y⟫ = ‖y‖ ^ 2) :
