@@ -21,7 +21,7 @@ This file contains further lemmas about normed groups, requiring heavier imports
 
 public section
 
-variable {E : Type*} [SeminormedAddCommGroup E]
+variable {E : Type*} [AddCommGroup E] [SeminormedAddCommGroup E]
 open NNReal Topology
 
 theorem eventually_nnnorm_sub_lt (x₀ : E) {ε : ℝ≥0} (ε_pos : 0 < ε) :
