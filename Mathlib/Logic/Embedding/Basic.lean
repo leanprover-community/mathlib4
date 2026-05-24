@@ -135,6 +135,18 @@ protected def trans {α β γ} (f : α ↪ β) (g : β ↪ γ) : α ↪ γ :=
 @[norm_cast]
 theorem coe_trans {α β γ} (f : α ↪ β) (g : β ↪ γ) : ⇑(f.trans g) = ⇑g ∘ ⇑f := rfl
 
+@[simp]
+theorem refl_trans {α β : Type*} (f : α ↪ β) : .trans (.refl α) f = f :=
+  rfl
+
+@[simp]
+theorem trans_refl {α β : Type*} (f : α ↪ β) : .trans f (.refl β) = f :=
+  rfl
+
+theorem trans_assoc {α β γ δ : Type*} (f : α ↪ β) (g : β ↪ γ) (h : γ ↪ δ) :
+    (f.trans g).trans h = f.trans (g.trans h) :=
+  rfl
+
 instance : Trans Embedding Embedding Embedding := ⟨Embedding.trans⟩
 
 @[simp] lemma mk_id {α} : mk id injective_id = .refl α := rfl
