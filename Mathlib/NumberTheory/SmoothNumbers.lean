@@ -213,14 +213,9 @@ def equivProdNatFactoredNumbers {s : Finset ℕ} {p : ℕ} (hp : p.Prime) (hs : 
   right_inv := by
     rintro ⟨m, hm₀, hm⟩
     rw [Subtype.mk.injEq, ← primeFactorsList_count_eq, ← prod_replicate, ← prod_append]
-    nth_rewrite 3 [← prod_primeFactorsList hm₀]
-    have : m.primeFactorsList.filter (· = p) = m.primeFactorsList.filter (· ∉ s) := by
-      refine (filter_congr fun q hq ↦ ?_).symm
-      simp only [decide_not]
-      rcases Finset.mem_insert.mp <| hm _ hq with h | h
-      · simp only [h, hs, decide_false, Bool.not_false, decide_true]
-      · simp only [h, decide_true, Bool.not_true, false_eq_decide_iff]
-        exact fun H ↦ hs <| H ▸ h
+    conv_rhs => rw [← prod_primeFactorsList hm₀]
+    have : m.primeFactorsList.filter (· = p) = m.primeFactorsList.filter (· ∉ s) :=
+      filter_congr <| by grind
     refine prod_eq <| (filter_eq p).symm ▸ this ▸ perm_append_comm.trans ?_
     simp only [decide_not]
     exact filter_append_perm (· ∈ s) (primeFactorsList m)
