@@ -371,43 +371,35 @@ lemma integral_oddLogDivMulPred_eq_half_integral : ∫ x in Set.Ioi 2, oddLogDiv
     congr 1
     ext y
     by_cases hy : 4 < y
-    · simp [Set.mem_Ioi, hy]
-    · simp [Set.mem_Ioi, hy]
+    <;> simp [Set.mem_Ioi, hy]
   calc
     _ = ∫ x in Set.Ioi 2, g (2 * x + 1) := by
-      refine setIntegral_congr_fun measurableSet_Ioi ?_
-      intro x hx
-      rw [oddLogDivMulPred]
-      dsimp [g]
+      refine setIntegral_congr_fun measurableSet_Ioi fun x hx ↦ ?_
+      rw [oddLogDivMulPred, hg]
       ring_nf
-    _ = 1 / 2 * ∫ y in Set.Ioi 4, g (y + 1) := by
-      rw [integral_comp_mul_left_Ioi (fun y ↦ g (y + 1)) 2 (by norm_num)]
-      norm_num
-    _ = _ := by rw [hshift, hg]
+    _ = _ := by
+      rw [integral_comp_mul_left_Ioi (fun y ↦ g (y + 1)) 2 _, ← hshift, hg]
+      <;> norm_num
 
 lemma half_integral_log_div_mul_pred_le : (1 / 2 : ℝ) * ∫ u in Set.Ioi 5, log u / (u * (u - 1))
     ≤ 5 / 8 * ∫ u in Set.Ioi 5, log u / u ^ 2 := by
   have hbound_int : IntegrableOn (fun u ↦ 5 / 4 * (log u / u ^ 2)) (Set.Ioi 5) :=
     (integrableOn_Ioi_deriv_of_nonneg' hasDerivAt_neg_log_add_one_div log_div_sq_nonneg
       tendsto_neg_log_add_one_div_atTop).const_mul (5 / 4)
-  have hpoint : ∀ u ∈ Set.Ioi 5, log u / (u * (u - 1)) ≤ 5 / 4 * (log u / u ^ 2) := by
-    intro u hu
+  have hpoint (u : ℝ) (hu : u ∈ Set.Ioi 5) : log u / (u * (u - 1)) ≤ 5 / 4 * (log u / u ^ 2) := by
     have hu5 : 5 < u := hu
     calc
       log u / (u * (u - 1)) = log u * (1 / (u * (u - 1))) := by rw [div_eq_mul_one_div]
       _ ≤ log u * (5 / (4 * u ^ 2)) := by
         refine mul_le_mul_of_nonneg_left ?_ (by bound)
-        rw [div_le_div_iff₀ (by nlinarith) (mul_pos (by norm_num) (sq_pos_of_pos (by positivity)))]
+        rw [div_le_div_iff₀ (by nlinarith) (by positivity)]
         nlinarith
       _ = 5 / 4 * (log u / u ^ 2) := by field_simp
-  have hpred_nonneg : ∀ u ∈ Set.Ioi 5, 0 ≤ log u / (u * (u - 1)) := by
-    intro u hu
-    have hu5 : 5 < u := hu
-    exact div_nonneg (by bound) (by grind [mul_nonneg])
   have hpred_int : IntegrableOn (fun u ↦ log u / (u * (u - 1))) (Set.Ioi 5) := by
     refine Integrable.mono_nonneg hbound_int.integrable ?_ ?_ ?_
     · exact Measurable.aestronglyMeasurable (by fun_prop)
-    · exact (ae_restrict_mem measurableSet_Ioi).mono hpred_nonneg
+    · refine (ae_restrict_mem measurableSet_Ioi).mono fun _ _ ↦ ?_
+      exact div_nonneg (by grind [log_nonneg]) (by grind [mul_nonneg])
     · exact (ae_restrict_mem measurableSet_Ioi).mono hpoint
   have hmono : ∫ u in Set.Ioi 5, log u / (u * (u - 1))
       ≤ ∫ u in Set.Ioi 5, 5 / 4 * (log u / u ^ 2) :=
