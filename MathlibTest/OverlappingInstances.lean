@@ -64,6 +64,10 @@ warning: Overlapping instance parameters in `foo₂`:
    Nat]`, `[FooBarBaz Nat]`, and `[FooBarBaq Nat]` can be used to infer conflicting versions of `[SubBar Nat]`.
 💡️ Of these, `[FooBarBaz Nat]` and `[FooBarBaz Nat]` may be removed.
 
+When a data-carrying type class has multiple potential instances coming from different instance parameters, then these potential instances are incompatible. This is an example of an "instance diamond", which leads to unexpected unification failures.
+
+Delete or combine some of your instance parameters to avoid this.
+
 Note: This linter can be disabled with `set_option linter.overlappingInstances false`
 -/
 #guard_msgs in
@@ -85,6 +89,10 @@ warning: Overlapping instance parameters in `foo₄`:
 ⚠️ There are 2 `[FooBarBaz Nat]` instances; one is sufficient.
 ⚠️ `[FooBarBaz Nat]`, `[FooBarBaz Nat]`, and `[Bar Nat]` can be used to infer conflicting versions of `[SubBar Nat]`.
 💡️ Of these, `[FooBarBaz Nat]`, `[FooBarBaz Nat]`, and `[Bar Nat]` may be removed.
+
+When a data-carrying type class has multiple potential instances coming from different instance parameters, then these potential instances are incompatible. This is an example of an "instance diamond", which leads to unexpected unification failures.
+
+Delete or combine some of your instance parameters to avoid this.
 
 Note: This linter can be disabled with `set_option linter.overlappingInstances false`
 -/
@@ -192,6 +200,10 @@ warning: Overlapping instance parameters in `_example`:
 ⚠️ `[Baz]` and `[Baz1]` can be used to infer conflicting versions of `[Baz]`.
 💡️ Of these, `[Baz]` may be removed.
 
+When a data-carrying type class has multiple potential instances coming from different instance parameters, then these potential instances are incompatible. This is an example of an "instance diamond", which leads to unexpected unification failures.
+
+Delete or combine some of your instance parameters to avoid this.
+
 Note: This linter can be disabled with `set_option linter.overlappingInstances false`
 -/
 #guard_msgs in
@@ -295,6 +307,10 @@ warning: Overlapping instance parameters in `_example`:
 ⚠️ `[B α]` and `[A α]` can be used to infer conflicting versions of `[A α]`.
 💡️ Of these, `[A α]` may be removed.
 
+When a data-carrying type class has multiple potential instances coming from different instance parameters, then these potential instances are incompatible. This is an example of an "instance diamond", which leads to unexpected unification failures.
+
+Delete or combine some of your instance parameters to avoid this.
+
 Note: This linter can be disabled with `set_option linter.overlappingInstances false`
 -/
 #guard_msgs in
@@ -319,6 +335,10 @@ warning: Overlapping instance parameters in `_example`:
 
 ⚠️ `[B α β]` and `[B' α β]` can be used to infer conflicting versions of `[B α β]`.
 💡️ Of these, `[B α β]` may be removed.
+
+When a data-carrying type class has multiple potential instances coming from different instance parameters, then these potential instances are incompatible. This is an example of an "instance diamond", which leads to unexpected unification failures.
+
+Delete or combine some of your instance parameters to avoid this.
 
 Note: This linter can be disabled with `set_option linter.overlappingInstances false`
 -/
@@ -360,6 +380,10 @@ warning: Overlapping instance parameters in `_example`:
 
 ⚠️ `[IsAClass1]` and `[IsAClass2]` can be used to infer conflicting versions of `[IsAClass1]`.
 💡️ Of these, `[IsAClass1]` may be removed.
+
+When a data-carrying type class has multiple potential instances coming from different instance parameters, then these potential instances are incompatible. This is an example of an "instance diamond", which leads to unexpected unification failures.
+
+Delete or combine some of your instance parameters to avoid this.
 
 Note: This linter can be disabled with `set_option linter.overlappingInstances false`
 -/

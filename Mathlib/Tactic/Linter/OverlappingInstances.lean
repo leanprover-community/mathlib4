@@ -167,8 +167,10 @@ def runLinter (ctx : ContextInfo) (lctx : LocalContext) (expectedType? : Option 
         m!"There are {fvarTypes.size} `{.sbracket fvarTypes[0]!}` instances; one is sufficient."
     else
       let propOverlap ← overlaps.allM isProp
+      unless propOverlap do
+        needsDiamondMsg := true
       -- Ignore `Prop` overlaps when data conflicts are present.
-      let overlaps ← if !propOverlap then overlaps.filterM (notM <| isProp ·) else pure overlaps
+      let overlaps ← if propOverlap then pure overlaps else overlaps.filterM (notM <| isProp ·)
       let localInsts := (← getLCtx).decls.toList.reduceOption
       -- Otherwise, figure out which instances can be synthesized from the other instances
       let mut redundant := #[]
@@ -184,9 +186,7 @@ def runLinter (ctx : ContextInfo) (lctx : LocalContext) (expectedType? : Option 
       let mut msg :=
         m!"{fvarTypes} {ite propOverlap "each imply"
           "can be used to infer conflicting versions of"} {overlaps}."
-      if redundant.isEmpty then
-        needsDiamondMsg := true
-      else
+      unless redundant.isEmpty do
         let redundant' := .andList <| redundant.toList.map (m!"`{.sbracket ·}`")
         msg := m!"{msg}\n💡️ Of these, {redundant'} may be removed."
       msgs := msgs.push msg
