@@ -235,10 +235,9 @@ theorem Integrable.norm_condExp_rpow_le {p : ℝ} (hp : 1 ≤ p)
     apply condExp_nonneg
     filter_upwards with a; positivity
   have hl := (Real.continuous_rpow_const hp'.le).lowerSemicontinuous.lowerSemicontinuousOn (Ici 0)
-  have := (convexOn_rpow hp).map_condExp_le hm hl ?_ isClosed_Ici hf_int.norm hfint
-  · filter_upwards [norm_condExp_le (f := f), this] with a ha hb
-    exact (Real.rpow_le_rpow (norm_nonneg _) ha hp'.le).trans hb
-  · filter_upwards with a; simp
+  have := (convexOn_rpow hp).map_condExp_le hm hl (by simp) isClosed_Ici hf_int.norm hfint
+  filter_upwards [norm_condExp_le (f := f), this] with a ha hb
+  exact (Real.rpow_le_rpow (norm_nonneg _) ha hp'.le).trans hb
 
 /-- **Conditional Jensen's inequality**: in a finite dimensional Banach space `E` with a measure
 `μ` that is σ-finite on a sub-σ-algebra `m`, if `φ : E → ℝ` is convex, then for any `f : α → E` such
