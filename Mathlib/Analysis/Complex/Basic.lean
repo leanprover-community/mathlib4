@@ -262,9 +262,8 @@ theorem conjCAE_toAlgEquiv : conjCAE.toAlgEquiv = conjAe :=
 @[simp] theorem conjCLE_toLinearEquiv : conjCLE.toLinearEquiv = conjAe.toLinearEquiv :=
   rfl
 
-@[simp] lemma conjCLE_coe_toLinearMap :
-    (conjCLE : ℂ →ₗ[ℝ] ℂ) = conjAe.toLinearMap :=
-  rfl
+@[deprecated "Now provable by simp" (since := "2026-04-13")]
+lemma conjCLE_coe_toLinearMap : (conjCLE : ℂ →ₗ[ℝ] ℂ) = conjAe.toLinearMap := by simp
 
 @[simp]
 theorem conjCAE_apply (z : ℂ) : conjCAE z = conj z :=
@@ -312,8 +311,9 @@ lemma _root_.Filter.Tendsto.ofReal {α : Type*} {l : Filter α} {f : α → ℝ}
 
 /-- The only continuous ring homomorphism from `ℝ` to `ℂ` is the identity. -/
 theorem ringHom_eq_ofReal_of_continuous {f : ℝ →+* ℂ} (h : Continuous f) : f = ofRealHom := by
-  convert congr_arg AlgHom.toRingHom <| Subsingleton.elim (AlgHom.mk' f <| map_real_smul f h)
-    (Algebra.ofId ℝ ℂ)
+  convert!
+    congr_arg AlgHom.toRingHom <|
+      Subsingleton.elim (AlgHom.mk' f <| map_real_smul f h) (Algebra.ofId ℝ ℂ)
 
 /-- Continuous linear map version of the canonical embedding of `ℝ` in `ℂ`. -/
 def ofRealCLM : ℝ →L[ℝ] ℂ :=

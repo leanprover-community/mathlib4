@@ -31,6 +31,8 @@ universe u v
 
 open Cardinal Order Set
 
+variable {α : Type v} {s t : Set α} {x : α} [LinearOrder α]
+
 /-- A club set is closed under suprema and cofinal. -/
 structure IsClub {α : Type*} [LinearOrder α] (s : Set α) where
   /-- Club sets are closed under suprema. If `α` is a well-order with the order topology, this
@@ -39,8 +41,6 @@ structure IsClub {α : Type*} [LinearOrder α] (s : Set α) where
   /-- Club sets are cofinal. If `α` has no maximum, this condition is equivalent to `¬ BddAbove s`.
   See `not_bddAbove_iff_isCofinal`. -/
   isCofinal : IsCofinal s
-
-variable {α : Type v} {s t : Set α} {x : α} [LinearOrder α]
 
 namespace IsClub
 
@@ -59,7 +59,7 @@ theorem _root_.isClub_empty_iff : IsClub (α := α) ∅ ↔ IsEmpty α :=
   ⟨fun h ↦ isCofinal_empty_iff.1 h.isCofinal, fun _ ↦ .of_isEmpty⟩
 
 protected theorem union (hs : IsClub s) (ht : IsClub t) : IsClub (s ∪ t) :=
-  ⟨hs.dirSupClosed.union ht.dirSupClosed, hs.isCofinal.mono subset_union_left⟩
+  ⟨hs.dirSupClosed.union ht.dirSupClosed, hs.isCofinal.mono Set.subset_union_left⟩
 
 theorem isLUB_mem (hs : IsClub s) (ht : t ⊆ s) (ht₀ : t.Nonempty) (hx : IsLUB t x) : x ∈ s :=
   hs.dirSupClosed ht ht₀ (.of_linearOrder _) hx
@@ -108,8 +108,8 @@ theorem iInter_of_orderTop {ι : Type*} {f : ι → Set α} [OrderTop α] (hs : 
   rw [← sInter_range]
   exact .sInter_of_orderTop (by simpa)
 
-theorem sInter_of_cof_le_one {s : Set (Set α)} (hα : cof α ≤ 1)
-    (hs : ∀ x ∈ s, IsClub x) : IsClub (⋂₀ s) := by
+theorem sInter_of_cof_le_one {s : Set (Set α)} (hα : cof α ≤ 1) (hs : ∀ x ∈ s, IsClub x) :
+    IsClub (⋂₀ s) := by
   cases isEmpty_or_nonempty α; · simp
   cases topOrderOrNoTopOrder α
   · exact .sInter_of_orderTop hs
@@ -147,13 +147,14 @@ protected theorem sInter {s : Set (Set α)} (hα : cof α ≠ ℵ₀) (hsα : #s
   · grind
 
 protected theorem iInter {ι : Type u} {f : ι → Set α} (hα : cof α ≠ ℵ₀)
-    (hι : lift.{v} #ι < lift.{u} (cof α)) (hf : ∀ i, IsClub (f i)) : IsClub (⋂ i, f i) := by
+    (hι : lift.{v} #ι < lift.{u} (cof α)) (hf : ∀ i, IsClub (f i)) :
+    IsClub (⋂ i, f i) := by
   rw [← sInter_range]
   refine IsClub.sInter hα ?_ (by simpa)
-  rw [← Cardinal.lift_lt]
+  rw [← lift_lt]
   exact mk_range_le_lift.trans_lt hι
 
-theorem sInter_countable {s : Set (Set α)} (hα : cof α ≠ ℵ₀) (hsα : s.Countable)
+theorem sInter_of_countable {s : Set (Set α)} (hα : cof α ≠ ℵ₀) (hsα : s.Countable)
     (hs : ∀ x ∈ s, IsClub x) : IsClub (⋂₀ s) := by
   obtain hα | hα := hα.lt_or_gt
   · apply IsClub.sInter_of_cof_le_one _ hs
@@ -161,14 +162,14 @@ theorem sInter_countable {s : Set (Set α)} (hα : cof α ≠ ℵ₀) (hsα : s.
   · apply IsClub.sInter hα.ne' (hα.trans_le' _) hs
     rwa [le_aleph0_iff_set_countable]
 
-theorem iInter_countable {ι : Type*} {f : ι → Set α} [Countable ι] (hα : cof α ≠ ℵ₀)
+theorem iInter_of_countable {ι : Type*} {f : ι → Set α} [Countable ι] (hα : cof α ≠ ℵ₀)
     (hf : ∀ i, IsClub (f i)) : IsClub (⋂ i, f i) := by
   rw [← sInter_range]
-  apply IsClub.sInter_countable hα (countable_range f)
+  apply IsClub.sInter_of_countable hα (countable_range f)
   simpa
 
-theorem inter (hα : cof α ≠ ℵ₀) (hs : IsClub s) (ht : IsClub t) : IsClub (s ∩ t) := by
-  simpa [hs, ht] using IsClub.sInter_countable (s := {s, t}) hα
+protected theorem inter (hα : cof α ≠ ℵ₀) (hs : IsClub s) (ht : IsClub t) : IsClub (s ∩ t) := by
+  simpa [hs, ht] using IsClub.sInter_of_countable (s := {s, t}) hα
 
 theorem _root_.Order.IsNormal.isClub_range {f : α → α} (hf : IsNormal f) : IsClub (.range f) :=
   ⟨hf.dirSupClosed_range, fun x ↦ ⟨_, ⟨x, rfl⟩, hf.strictMono.le_apply⟩⟩
@@ -213,17 +214,21 @@ theorem isStationary_univ_iff : IsStationary (.univ (α := α)) ↔ Nonempty α 
     isClub_empty_iff]
 
 @[simp]
-theorem IsStationary.univ [Nonempty α] : IsStationary (.univ (α := α)) :=
+protected theorem IsStationary.univ [Nonempty α] : IsStationary (.univ (α := α)) :=
   isStationary_univ_iff.2 ‹_›
+
+theorem IsStationary.isCofinal (hs : IsStationary s) : IsCofinal s := by
+  intro x
+  simpa using hs (isClub_Ici x)
 
 @[simp]
 theorem not_isStationary_empty : ¬ IsStationary (∅ : Set α) := by
   intro h
   simpa using h .univ
 
-theorem IsStationary.isCofinal (hs : IsStationary s) : IsCofinal s := by
-  intro x
-  simpa using hs (isClub_Ici x)
+@[simp]
+theorem not_isStationary_of_isEmpty [IsEmpty α] : ¬ IsStationary s :=
+  s.eq_empty_of_isEmpty ▸ not_isStationary_empty
 
 theorem IsStationary.of_not_isCofinal_compl (hs : ¬ IsCofinal sᶜ) : IsStationary s := by
   intro t ht
@@ -294,24 +299,24 @@ theorem isStationary_iUnion_iff {ι : Type u} {f : ι → Set α} (hα : cof α 
     (hι : lift.{v} #ι < lift.{u} (cof α)) : IsStationary (⋃ i, f i) ↔ ∃ i, IsStationary (f i) := by
   rw [← sUnion_range, isStationary_sUnion_iff hα]
   · simp
-  · rw [← Cardinal.lift_lt]
+  · rw [← lift_lt]
     exact mk_range_le_lift.trans_lt hι
 
-theorem isStationary_sUnion_countable_iff {s : Set (Set α)} (hα : cof α ≠ ℵ₀) (hsα : s.Countable) :
-    IsStationary (⋃₀ s) ↔ ∃ x ∈ s, IsStationary x := by
+theorem isStationary_sUnion_iff_of_countable {s : Set (Set α)} (hα : cof α ≠ ℵ₀)
+    (hsα : s.Countable) : IsStationary (⋃₀ s) ↔ ∃ x ∈ s, IsStationary x := by
   obtain hα | hα := hα.lt_or_gt
   · apply isStationary_sUnion_iff_of_cof_le_one
     rwa [← cof_lt_aleph0_iff]
   · apply isStationary_sUnion_iff hα.ne' (hα.trans_le' _)
     rwa [le_aleph0_iff_set_countable]
 
-theorem isStationary_iUnion_countable_iff {ι : Type*} {f : ι → Set α} [Countable ι]
+theorem isStationary_iUnion_iff_of_countable {ι : Type*} {f : ι → Set α} [Countable ι]
     (hα : cof α ≠ ℵ₀) : IsStationary (⋃ i, f i) ↔ ∃ i, IsStationary (f i) := by
-  rw [← sUnion_range, isStationary_sUnion_countable_iff hα (countable_range f)]
+  rw [← sUnion_range, isStationary_sUnion_iff_of_countable hα (countable_range f)]
   simp
 
 theorem isStationary_union_iff (hα : cof α ≠ ℵ₀) :
     IsStationary (s ∪ t) ↔ IsStationary s ∨ IsStationary t := by
-  simpa using isStationary_sUnion_countable_iff (s := {s, t}) hα
+  simpa using isStationary_sUnion_iff_of_countable (s := {s, t}) hα
 
 end WellFoundedLT
