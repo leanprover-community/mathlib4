@@ -57,17 +57,7 @@ theorem rnDeriv_ae_eq_condExp {hm : m ≤ m0} [hμm : SigmaFinite (μ.trim hm)] 
     exact (SignedMeasure.measurable_rnDeriv _ _).stronglyMeasurable
   · exact (SignedMeasure.measurable_rnDeriv _ _).stronglyMeasurable.aestronglyMeasurable
 
-variable {E : Type*} [NormedAddCommGroup E]
-
-theorem MemLp.isBoundedUnder {f : α → E} (hf : MemLp f ∞ μ) :
-    IsBoundedUnder (fun x1 x2 ↦ x1 ≤ x2) (ae μ) fun x ↦ ‖f x‖ :=
-  ⟨_, ae_le_lpNorm_exponent_top hf⟩
-
-theorem isCoboundedUnder_le_norm [NeZero μ] {f : α → E} :
-    IsCoboundedUnder (fun x1 x2 ↦ x1 ≤ x2) (ae μ) fun x ↦ ‖f x‖ :=
-  isCoboundedUnder_le_of_le (x := 0) _ (fun _ => norm_nonneg _)
-
-variable [NormedSpace ℝ E] [CompleteSpace E]
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
 
 theorem integral_norm_condExp_rpow_le {p : ℝ} (hp : 1 ≤ p) {f : α → E}
     (hf : Integrable (fun x => ‖f x‖ ^ p) μ) :
@@ -116,15 +106,13 @@ lemma condExp_le_nonneg_const [PartialOrder E] [ClosedIciTopology E] [IsOrderedA
   by_cases! hsig : ¬ SigmaFinite (μ.trim hm)
   · filter_upwards with a using by simp_all [condExp_of_not_sigmaFinite hm hsig]
   refine (isCountablySpanning_spanningSets (μ.trim hm)).null_of_forall_restrict_null ?_ ?_
-  rintro - ⟨n, rfl⟩
-  · exact hn ▸ hm _ (measurableSet_spanningSets (μ.trim hm) n)
-  have h1 := condExp_restrict_ae_eq_restrict hm (measurableSet_spanningSets (μ.trim hm) n) hfint
-  have : IsFiniteMeasure (μ.restrict (spanningSets (μ.trim hm) n)) := isFiniteMeasure_restrict.2
-    ((le_trim hm).trans_lt (measure_spanningSets_lt_top (μ.trim hm) n)).ne
-  have h2 := condExp_mono (μ := μ.restrict (spanningSets (μ.trim hm) n)) (m := m)
-    hfint.restrict (integrable_const c) (ae_restrict_of_ae hfc)
-  filter_upwards [h1, h2] with a ha hb
-  grw [← ha, hb, condExp_const hm]
+  <;> rintro - ⟨n, rfl⟩
+  · exact hm _ (measurableSet_spanningSets (μ.trim hm) n)
+  · have h1 := condExp_restrict_ae_eq_restrict hm (measurableSet_spanningSets (μ.trim hm) n) hfint
+    have h2 := condExp_mono (μ := μ.restrict (spanningSets (μ.trim hm) n)) (m := m)
+      hfint.restrict (integrable_const c) (ae_restrict_of_ae hfc)
+    filter_upwards [h1, h2] with a ha hb
+    grw [← ha, hb, condExp_const hm]
 
 /-- If `‖f‖` is bounded almost everywhere by `R`, then so is its conditional expectation. -/
 theorem ae_bdd_norm_condExp_of_ae_bdd_norm {R : ℝ} {f : α → E} (hbdd : ∀ᵐ x ∂μ, ‖f x‖ ≤ R) :
@@ -135,11 +123,12 @@ theorem ae_bdd_norm_condExp_of_ae_bdd_norm {R : ℝ} {f : α → E} (hbdd : ∀�
 
 theorem MemLp.ae_norm_condExp_le_essSup {f : α → E} (hf : MemLp f ∞ μ) :
     ∀ᵐ (x : α) ∂μ, ‖μ[f | m] x‖ ≤ essSup (‖f ·‖) μ :=
-  (ae_bdd_norm_condExp_of_ae_bdd_norm (ae_le_essSup hf.isBoundedUnder))
+  (ae_bdd_norm_condExp_of_ae_bdd_norm (ae_le_essSup ⟨_, ae_le_lpNorm_exponent_top hf⟩))
 
 theorem MemLp.essSup_norm_condExp_le_essSup_norm [NeZero μ] {f : α → E} (hf : MemLp f ∞ μ) :
     essSup (fun x ↦ ‖μ[f | m] x‖) μ ≤ essSup (fun x ↦ ‖f x‖) μ :=
-  essSup_le_of_ae_le _ hf.ae_norm_condExp_le_essSup isCoboundedUnder_le_norm
+  essSup_le_of_ae_le _ hf.ae_norm_condExp_le_essSup
+    (isCoboundedUnder_le_of_le _ (fun _ => norm_nonneg _))
 
 theorem MemLp.lpNorm_condExp_le_lpNorm {f : α → E} {p : ℝ≥0∞} (hp : 1 ≤ p) (hf : MemLp f p μ) :
     lpNorm μ[f | m] p μ ≤ lpNorm f p μ := by
