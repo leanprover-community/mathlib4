@@ -487,9 +487,7 @@ section EquivPartition
 /-! ### Equivalence between Young diagrams and partitions
 
 This section defines the equivalence between Young diagrams `μ` with cardinality `n` and
-partitions of `n`, where each row of the diagram becomes a part of the partition:
-  `YoungDiagram.equivPartition :`
-  `{ μ : YoungDiagram | μ.card = n } ≃ Partition n`
+partitions of `n`, where each row of the diagram becomes a part of the partition.
 
 The two directions are `YoungDiagram.toPartition` and `YoungDiagram.ofPartition`.
 
