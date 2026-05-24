@@ -27,7 +27,7 @@ whereas it is a very common target for valuations.
 The solutions is to use a typeclass, and that is exactly what we do in this file.
 -/
 
-@[expose] public section
+public section
 
 variable {G α : Type*}
 

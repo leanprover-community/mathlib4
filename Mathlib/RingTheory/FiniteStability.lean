@@ -18,7 +18,7 @@ stable under base change.
 
 -/
 
-@[expose] public section
+public section
 
 open scoped TensorProduct
 

@@ -29,7 +29,7 @@ cases of ℤ being examples of structures in ring theory.
 prime, irreducible, integers, normalization monoid, gcd monoid, greatest common divisor
 -/
 
-@[expose] public section
+public section
 
 namespace Int
 

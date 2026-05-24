@@ -16,7 +16,7 @@ morphism `homologyMap φ` in homology is an isomorphism.
 
 -/
 
-@[expose] public section
+public section
 
 namespace CategoryTheory
 

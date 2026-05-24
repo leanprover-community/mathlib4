@@ -131,7 +131,7 @@ lemma schwartz_zippel_sup_sum :
                 {x₀ ∈ S 0 | eval (cons x₀ xₜ) p = 0}) := by
             rw [← filter_filter, filter_piFinset_eq_map_consEquiv S (fun r ↦ eval r pₖ ≠ 0),
               filter_map, card_map, product_eq_biUnion_right, filter_biUnion]
-            simp [Function.comp_def, filter_image]
+            simp [filter_image]
             rfl
           _ ≤ ∑ xₜ ∈ tail S ^^ n with eval xₜ pₖ ≠ 0,
                 #(image (fun x₀ ↦ (x₀, xₜ)) {x₀ ∈ S 0 | eval (cons x₀ xₜ) p = 0}) :=

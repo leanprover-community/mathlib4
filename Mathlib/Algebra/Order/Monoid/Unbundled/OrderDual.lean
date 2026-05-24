@@ -10,7 +10,7 @@ public import Mathlib.Algebra.Order.Monoid.Unbundled.Defs
 
 /-! # Unbundled ordered monoid structures on the order dual. -/
 
-@[expose] public section
+public section
 
 universe u
 

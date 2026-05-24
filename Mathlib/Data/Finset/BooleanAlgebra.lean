@@ -21,7 +21,7 @@ This file provides the `BooleanAlgebra (Finset α)` instance, under the assumpti
 * `Finset.booleanAlgebra`: `Finset α` is a Boolean algebra if `α` is finite
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Monoid
 
@@ -273,8 +273,7 @@ section DecEq
 
 variable [Fintype α] [DecidableEq α]
 
-@[simp]
-lemma filter_univ_mem (s : Finset α) : univ.filter (· ∈ s) = s := by simp [filter_mem_eq_inter]
+lemma filter_univ_mem (s : Finset α) : univ.filter (· ∈ s) = s := by simp
 
 instance decidableCodisjoint : Decidable (Codisjoint s t) :=
   decidable_of_iff _ codisjoint_left.symm

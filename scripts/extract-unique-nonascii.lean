@@ -56,7 +56,7 @@ def main : IO Unit := do
   let stdin ← IO.getStdin
   let allText ← stdin.readToEnd
   let manuallyExcluded := (allText.toList.filter Char.manuallyExcluded).eraseDups
-  IO.println s!"Manually excluded these carachters:"
+  IO.println s!"Manually excluded these characters:"
   IO.println s!"{reprCharsChunked manuallyExcluded}"
   let outputList := (allText.toList.filter Char.allowedNonAscii).eraseDups
   IO.println s!"Found {outputList.length} valid unique non-ascii characters:"

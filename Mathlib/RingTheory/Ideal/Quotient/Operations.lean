@@ -492,7 +492,7 @@ theorem Quotient.span_singleton_one (I : Ideal A) [I.IsTwoSided] :
   rw [← map_one (mk _), ← Submodule.range_mkQ I, ← Submodule.map_top, ← Ideal.span_singleton_one,
     Ideal.span, Submodule.map_span, Set.image_singleton, Submodule.mkQ_apply, Quotient.mk_eq_mk]
 
-open Pointwise in
+open scoped Pointwise in
 lemma Quotient.smul_top {R : Type*} [CommRing R] (a : R) (I : Ideal R) :
     (a • ⊤ : Submodule R (R ⧸ I)) = Submodule.span R {Submodule.Quotient.mk a} := by
   simp [← Ideal.Quotient.span_singleton_one, Algebra.smul_def, Submodule.smul_span]
@@ -577,7 +577,7 @@ lemma _root_.AlgHom.liftOfSurjective_comp (f : A →ₐ[R] B) (hf : Function.Sur
 lemma _root_.AlgHom.liftOfSurjective_surjective (f : A →ₐ[R] B) (hf : Function.Surjective f)
     (g : A →ₐ[R] C) (H : RingHom.ker f.toRingHom ≤ RingHom.ker g.toRingHom)
     (hg : Function.Surjective g) : Function.Surjective (AlgHom.liftOfSurjective f hf g H) :=
-  .of_comp (g := f) (by convert hg; ext; simp)
+  .of_comp (g := f) (by convert! hg; ext; simp)
 
 end liftOfSurjective
 

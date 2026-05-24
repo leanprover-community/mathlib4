@@ -160,7 +160,7 @@ theorem unifTight_of_subsingleton [Subsingleton ι] (hp_top : p ≠ ∞)
   obtain ⟨i⟩ := hι
   obtain ⟨s, _, hμs, hfε⟩ := (hf i).exists_eLpNorm_indicator_compl_lt hp_top (coe_ne_zero.2 hε.ne')
   refine ⟨s, ne_of_lt hμs, fun j => ?_⟩
-  convert hfε.le
+  convert! hfε.le
 
 /-- This lemma is less general than `MeasureTheory.unifTight_finite` which applies to
 all sequences indexed by a finite type. -/
@@ -250,8 +250,8 @@ private theorem tendsto_Lp_of_tendsto_ae_of_meas (hp : 1 ≤ p) (hp' : p ≠ ∞
   intro ε hε
   by_cases hfinε : ε ≠ ∞; swap
   · rw [not_ne_iff.mp hfinε]; exact ⟨0, fun n _ => le_top⟩
-  by_cases hμ : μ = 0
-  · rw [hμ]; use 0; intro n _; rw [eLpNorm_measure_zero]; exact zero_le ε
+  obtain rfl | hμ := eq_or_ne μ 0
+  · simp
   have hε' : 0 < ε / 3 := ENNReal.div_pos hε.ne' (ofNat_ne_top)
   -- use tightness to divide the domain into interior and exterior
   obtain ⟨Eg, hmEg, hμEg, hgε⟩ := MemLp.exists_eLpNorm_indicator_compl_lt hp' hg' hε'.ne'

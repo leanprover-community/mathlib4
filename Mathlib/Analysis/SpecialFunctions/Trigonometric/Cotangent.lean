@@ -163,7 +163,7 @@ lemma logDeriv_sin_div_eq_cot (hz : x ∈ ℂ_ℤ) :
   rw [this, logDeriv_div _ (by apply sin_pi_mul_ne_zero hz) ?_
     (DifferentiableAt.comp _ (Complex.differentiableAt_sin) (by fun_prop)) (by fun_prop),
     logDeriv_comp (Complex.differentiableAt_sin) (by fun_prop), Complex.logDeriv_sin,
-    deriv_const_mul _ (by fun_prop), deriv_id'', logDeriv_const_mul, logDeriv_id']
+    deriv_const_mul_id, logDeriv_const_mul, logDeriv_id']
   · ring
   · simp
   · simp only [ne_eq, mul_eq_zero, ofReal_eq_zero, not_or]
@@ -404,7 +404,7 @@ theorem iteratedDerivWithin_cot_pi_mul_eq_mul_tsum_div_pow {k : ℕ} (hk : 1 ≤
     (hz : z ∈ ℍₒ) :
     iteratedDerivWithin k (fun x : ℂ ↦ π * cot (π * x)) ℍₒ z =
       (-1) ^ k * k ! * ∑' n : ℤ, 1 / (z + n) ^ (k + 1) := by
-  convert iteratedDerivWithin_cot_pi_mul_eq_mul_tsum_zpow hk hz with n
+  convert! iteratedDerivWithin_cot_pi_mul_eq_mul_tsum_zpow hk hz with n
   rw [show (-1 - k : ℤ) = -(k + 1 :) by norm_cast; lia, zpow_neg_coe_of_pos _ (by lia),
     one_div]
 
