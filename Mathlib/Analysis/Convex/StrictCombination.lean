@@ -86,7 +86,7 @@ end Set
 
 section Space
 
-variable [NormedAddCommGroup V] [NormedSpace ℝ V] [StrictConvexSpace ℝ V]
+variable [AddCommGroup V] [NormedAddCommGroup V] [NormedSpace ℝ V] [StrictConvexSpace ℝ V]
 
 lemma centerMass_mem_ball_of_strictConvexSpace {t : Finset ι} {w : ι → ℝ} {p : V} {r : ℝ}
     {z : ι → V} (h0 : ∀ i ∈ t, 0 ≤ w i) {i j : ι} (hi : i ∈ t) (hj : j ∈ t) (hij : z i ≠ z j)
