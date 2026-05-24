@@ -100,7 +100,7 @@ set_option backward.defeqAttrib.useBackward true in
 lemma shortComplexMap_id (hn₁ : n₀ + 1 = n₁ := by lia) (hn₂ : n₁ + 1 = n₂ := by lia) :
     X.shortComplexMap f₁ f₂ f₃ f₁ f₂ f₃ (𝟙 _) n₀ n₁ n₂ hn₁ hn₂ = 𝟙 _ := by
   ext
-  all_goals dsimp; convert (X.H _).map_id _; cat_disch
+  all_goals dsimp; convert! (X.H _).map_id _; cat_disch
 
 set_option backward.defeqAttrib.useBackward true in
 @[reassoc, simp]

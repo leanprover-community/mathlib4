@@ -154,7 +154,7 @@ lemma μ_comp_assoc : ((linearizeMap (α_ X Y Z).hom).comp
     TensorProduct.assoc_tmul, LinearMap.lTensor_tmul, toLinearMap_apply]
   -- after fixing the defeq problems in `Action` and in the monoidal category structure of `types`
   -- this line should close the goal so this is left as an indicator.
-  with_reducible convert dsimp% linearizeMap_single (α_ X Y Z).hom ((x, y), z) (1 : k)
+  with_reducible convert! dsimp% linearizeMap_single (α_ X Y Z).hom ((x, y), z) (1 : k)
   all_goals with_reducible simp
 
 variable (X) in

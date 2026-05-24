@@ -144,7 +144,6 @@
  ["defsWithUnderscore", "Finite.divisionRing_to_field"],
  ["defsWithUnderscore", "Finset.instGradeMinOrder_multiset"],
  ["defsWithUnderscore", "Finset.instGradeMinOrder_nat"],
- ["defsWithUnderscore", "Finsupp.onFinset_support"],
  ["defsWithUnderscore", "FixedDetMatrices.reduce_rec"],
  ["defsWithUnderscore", "FractionRing.mulSemiringAction_of_isGaloisGroup"],
  ["defsWithUnderscore", "Function.fromTypes_cons_equiv"],

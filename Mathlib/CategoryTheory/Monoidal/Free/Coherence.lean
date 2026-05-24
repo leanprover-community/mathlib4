@@ -288,7 +288,7 @@ def normalizeIso : tensorFunc C ≅ normalize' C :=
   NatIso.ofComponents (normalizeIsoAux C) <| by
     intro X Y f
     ext ⟨n⟩
-    convert normalize_naturality n f using 1
+    convert! normalize_naturality n f using 1
     any_goals dsimp; rw [normalizeIsoApp_eq]
 
 set_option backward.defeqAttrib.useBackward true in
