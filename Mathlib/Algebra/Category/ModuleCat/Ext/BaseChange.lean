@@ -178,7 +178,7 @@ instance (M N : ModuleCat.{v'} S) : IsScalarTower R S (M ⟶ N) where
 
 /-- The separate definition of `(ModuleCat.extendScalars' R S).mapLinearMap`
 to avoid some instance in namespace `ModuleCat.Algebra`. -/
-noncomputable def ModuleCat.extendScalars'_map_LinearMap (M N : ModuleCat.{v} R) :
+noncomputable def ModuleCat.extendScalars'.mapLinearMap (M N : ModuleCat.{v} R) :
   (M ⟶ N) →ₗ[R] ((ModuleCat.extendScalars'.{v, v'} R S).obj M ⟶
     (ModuleCat.extendScalars'.{v, v'} R S).obj N) :=
   letI : Linear R (ModuleCat.{v'} S) := ModuleCat.Algebra.instLinear
@@ -186,15 +186,15 @@ noncomputable def ModuleCat.extendScalars'_map_LinearMap (M N : ModuleCat.{v} R)
   (ModuleCat.extendScalars'.{v, v'} R S).mapLinearMap R (X := M) (Y := N)
 
 omit [Small.{v} R] in
-lemma ModuleCat.extendScalars'_map_LinearMap_eq_mapAddHom (M N : ModuleCat.{v} R) :
-  extendScalars'_map_LinearMap.{v, v'} S M N =
+lemma ModuleCat.extendScalars'.mapLinearMap_eq_mapAddHom (M N : ModuleCat.{v} R) :
+  extendScalars'.mapLinearMap.{v, v'} S M N =
   (ModuleCat.extendScalars'.{v, v'} R S).mapAddHom (X := M) (Y := N) := rfl
 
 set_option backward.isDefEq.respectTransparency false in
 omit [Small.{v} R] in
 lemma ModuleCat.isBaseChange_hom [Module.Flat R S]
     (M N : ModuleCat.{v} R) [Module.FinitePresentation R M] :
-    IsBaseChange S (ModuleCat.extendScalars'_map_LinearMap.{v, v'} S M N) := by
+    IsBaseChange S (ModuleCat.extendScalars'.mapLinearMap.{v, v'} S M N) := by
   let _ : SMulCommClass S R (Shrink.{v', max v u'} (TensorProduct R S N)) :=
     Equiv.smulCommClass S R (equivShrink (TensorProduct R S ↑N)).symm
   let hmod : Module R (Shrink.{v'} (TensorProduct R S M) →ₗ[S] Shrink.{v'} (TensorProduct R S N)) :=
@@ -208,7 +208,7 @@ lemma ModuleCat.isBaseChange_hom [Module.Flat R S]
       simp }
   let _ :  IsScalarTower R S (((ModuleCat.extendScalars'.{v, v'} R S).obj M) →ₗ[S]
     ((ModuleCat.extendScalars'.{v, v'} R S).obj N)) := hsca
-  have : ModuleCat.extendScalars'_map_LinearMap.{v, v'} S M N =
+  have : ModuleCat.extendScalars'.mapLinearMap.{v, v'} S M N =
     ((ModuleCat.homLinearEquiv (S := S)).symm.restrictScalars R).toLinearMap.comp
     (((((Shrink.linearEquiv.{v'} S (TensorProduct R S N)).symm.congrRight).trans
     ((Shrink.linearEquiv.{v'} S (TensorProduct R S M)).symm.congrLeft (Shrink.{v'}
@@ -240,7 +240,7 @@ theorem CategoryTheory.Abelian.Ext.isBaseChange_aux [IsNoetherianRing R] [Module
     IsBaseChange S (extendScalars'.mapExtLinearMap.{v, v'} S M N n) := by
   induction n generalizing M N
   · have : Module.FinitePresentation R M := Module.finitePresentation_of_finite R M
-    have isb : IsBaseChange S (extendScalars'_map_LinearMap.{v, v'} S M N) :=
+    have isb : IsBaseChange S (extendScalars'.mapLinearMap.{v, v'} S M N) :=
       ModuleCat.isBaseChange_hom.{v, v'} S M N
     convert ((IsBaseChange.ofEquiv linearEquiv₀).comp isb).comp
       (IsBaseChange.ofEquiv linearEquiv₀.symm)
@@ -304,7 +304,7 @@ theorem CategoryTheory.Abelian.Ext.isBaseChange_aux [IsNoetherianRing R] [Module
 
 /-- If `MS` in `ModuleCat S` is base change of an `R`-module `M`,
 then it is isomporhic to `(ModuleCat.extendScalars' R S).obj M`. -/
-noncomputable def ModuleCat.iso_extendScalars'_of_isBaseChange' {M : ModuleCat.{v} R}
+noncomputable def ModuleCat.isoExtendScalars'OfIsBaseChange' {M : ModuleCat.{v} R}
     {MS : ModuleCat.{v'} S} [Module R MS] [IsScalarTower R S MS] (f : M →ₗ[R] MS)
     (isb1 : IsBaseChange S f) : MS ≅ (ModuleCat.extendScalars'.{v, v'} R S).obj M :=
   (isb1.equiv.symm.trans (Shrink.linearEquiv S (TensorProduct R S M)).symm).toModuleIso
@@ -312,34 +312,34 @@ noncomputable def ModuleCat.iso_extendScalars'_of_isBaseChange' {M : ModuleCat.{
 namespace CategoryTheory.Abelian
 
 set_option backward.isDefEq.respectTransparency false in
-/-- The isomprohism on `Ext` induced by `ModuleCat.iso_extendScalars'_of_isBaseChange'`. -/
-noncomputable def Ext.isBaseChangeMap_aux' {M N : ModuleCat.{v} R}
+/-- The isomprohism on `Ext` induced by `ModuleCat.isoExtendScalars'OfIsBaseChange'`. -/
+noncomputable def Ext.isBaseChangeMapAux {M N : ModuleCat.{v} R}
     {MS NS : ModuleCat.{v'} S} [Module R MS] [IsScalarTower R S MS]
     [Module R NS] [IsScalarTower R S NS] (f : M →ₗ[R] MS) (isb1 : IsBaseChange S f)
     (g : N →ₗ[R] NS) (isb2 : IsBaseChange S g) (n : ℕ) :
     Ext ((ModuleCat.extendScalars'.{v, v'} R S).obj M)
     ((ModuleCat.extendScalars'.{v, v'} R S).obj N) n ≃ₗ[S] Ext MS NS n := {
   __ := (((extFunctorObj ((ModuleCat.extendScalars'.{v, v'} R S).obj M) n).mapIso
-  (iso_extendScalars'_of_isBaseChange' S g isb2).symm).trans (((extFunctor n).mapIso
-  (iso_extendScalars'_of_isBaseChange' S f isb1).op).app NS)).addCommGroupIsoToAddEquiv
+  (isoExtendScalars'OfIsBaseChange' S g isb2).symm).trans (((extFunctor n).mapIso
+  (isoExtendScalars'OfIsBaseChange' S f isb1).op).app NS)).addCommGroupIsoToAddEquiv
   map_smul' s x := by simp [Iso.addCommGroupIsoToAddEquiv] }
 
-/-- Compostion of `Ext.isBaseChangeMap_aux'` and `ModuleCat.extendScalars'.mapExtLinearMap`. -/
-noncomputable def Ext.isBaseChangeMap' [Module.Flat R S] {M N : ModuleCat.{v} R}
+/-- Compostion of `Ext.isBaseChangeMapAux` and `ModuleCat.extendScalars'.mapExtLinearMap`. -/
+noncomputable def Ext.isBaseChangeMap [Module.Flat R S] {M N : ModuleCat.{v} R}
     {MS NS : ModuleCat.{v'} S} [Module R MS] [IsScalarTower R S MS]
     [Module R NS] [IsScalarTower R S NS] (f : M →ₗ[R] MS) (isb1 : IsBaseChange S f)
     (g : N →ₗ[R] NS) (isb2 : IsBaseChange S g) (n : ℕ) : Ext M N n →ₗ[R] Ext MS NS n :=
-  ((Ext.isBaseChangeMap_aux' S f isb1 g isb2 n).restrictScalars R).toLinearMap.comp
+  ((Ext.isBaseChangeMapAux S f isb1 g isb2 n).restrictScalars R).toLinearMap.comp
     (extendScalars'.mapExtLinearMap.{v, v'} S M N n)
 
-theorem Ext.isBaseChange' [IsNoetherianRing R] [Module.Flat R S] (M N : ModuleCat.{v} R)
+theorem Ext.isBaseChange [IsNoetherianRing R] [Module.Flat R S] (M N : ModuleCat.{v} R)
     [Module.Finite R M] {MS NS : ModuleCat.{v'} S}
     [Module R MS] [IsScalarTower R S MS] [Module R NS] [IsScalarTower R S NS]
     (f : M →ₗ[R] MS) (isb1 : IsBaseChange S f)
     (g : N →ₗ[R] NS) (isb2 : IsBaseChange S g)
-    (n : ℕ) : IsBaseChange S (Ext.isBaseChangeMap'.{v, v'} S f isb1 g isb2 n) :=
+    (n : ℕ) : IsBaseChange S (Ext.isBaseChangeMap.{v, v'} S f isb1 g isb2 n) :=
   (Ext.isBaseChange_aux.{v, v'} S M N n).comp
-  (IsBaseChange.ofEquiv (isBaseChangeMap_aux' S f isb1 g isb2 n))
+  (IsBaseChange.ofEquiv (isBaseChangeMapAux S f isb1 g isb2 n))
 
 end CategoryTheory.Abelian
 
@@ -359,22 +359,22 @@ variable [UnivLE.{v, v'}] [Small.{v} R] [Small.{v'} A]
 
 variable {R}
 
-/-- `Ext.isBaseChangeMap'` specifying to localization. -/
-noncomputable def Ext.isLocalizedModuleMap' {M N : ModuleCat.{v} R} {MS NS : ModuleCat.{v'} A}
+/-- `Ext.isBaseChangeMap` specifying to localization. -/
+noncomputable def Ext.isLocalizedModuleMap {M N : ModuleCat.{v} R} {MS NS : ModuleCat.{v'} A}
     [Module R MS] [IsScalarTower R A MS] [Module R NS] [IsScalarTower R A NS]
     (f : M →ₗ[R] MS) (isl1 : IsLocalizedModule S f) (g : N →ₗ[R] NS) (isl2 : IsLocalizedModule S g)
     (n : ℕ) : Ext M N n →ₗ[R] Ext MS NS n :=
   haveI := IsLocalization.flat A S
-  (Ext.isBaseChangeMap'.{v, v'} A f (IsLocalizedModule.isBaseChange S A f) g
+  (Ext.isBaseChangeMap.{v, v'} A f (IsLocalizedModule.isBaseChange S A f) g
     (IsLocalizedModule.isBaseChange S A g) n)
 
-theorem Ext.isLocalizedModule' [IsNoetherianRing R] {M N : ModuleCat.{v} R}
+theorem Ext.isLocalizedModule [IsNoetherianRing R] {M N : ModuleCat.{v} R}
     [Module.Finite R M] {MS NS : ModuleCat.{v'} A}
     [Module R MS] [IsScalarTower R A MS] [Module R NS] [IsScalarTower R A NS]
     (f : M →ₗ[R] MS) (isl1 : IsLocalizedModule S f) (g : N →ₗ[R] NS) (isl2 : IsLocalizedModule S g)
-    (n : ℕ) : IsLocalizedModule S (Ext.isLocalizedModuleMap'.{v, v'} S A f isl1 g isl2 n) :=
+    (n : ℕ) : IsLocalizedModule S (Ext.isLocalizedModuleMap.{v, v'} S A f isl1 g isl2 n) :=
   haveI := IsLocalization.flat A S
-  (isLocalizedModule_iff_isBaseChange S A _).mpr (Ext.isBaseChange'.{v, v'} A M N
+  (isLocalizedModule_iff_isBaseChange S A _).mpr (Ext.isBaseChange.{v, v'} A M N
     f (IsLocalizedModule.isBaseChange S A f) g (IsLocalizedModule.isBaseChange S A g) n)
 
 end CategoryTheory.Abelian
