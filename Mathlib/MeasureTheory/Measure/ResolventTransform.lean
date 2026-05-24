@@ -31,9 +31,9 @@ Cauchy transform, given by the formulas:
 
 ## Main statements
 
-* `MeasureTheory.hasDerivAt_resolventTransform` : For any `a` not in the support of `μ`,
+* `hasDerivAt_resolventTransform`: For any `a` not in the support of `μ`,
   the `resolventTransform` has derivative `∫ x, resolvent a x ^ 2 ∂u` at `a`.
-* `MeasureTheory.analyticOn_resolventTransform` : In the case `A = ℂ`, the `resolventTransform`
+* `analyticOn_resolventTransform`: In the case `A = ℂ`, the `resolventTransform`
   is holomorphic on the complement of `μ.support`.
 
 ## Tags
