@@ -78,7 +78,7 @@ theorem hasSum_nat_jacobiTheta {τ : ℂ} (hτ : 0 < im τ) :
     Int.cast_zero, sq (0 : ℂ), mul_zero, zero_mul, neg_sq, ← mul_two,
     Complex.exp_zero, add_sub_assoc, (by norm_num : (1 : ℂ) - 1 * 2 = -1), ← sub_eq_add_neg,
     Nat.cast_add, Nat.cast_one] at this
-  convert this.div_const 2 using 1
+  convert! this.div_const 2 using 1
   simp_rw [mul_div_cancel_right₀ _ (two_ne_zero' ℂ)]
 
 theorem jacobiTheta_eq_tsum_nat {τ : ℂ} (hτ : 0 < im τ) :
