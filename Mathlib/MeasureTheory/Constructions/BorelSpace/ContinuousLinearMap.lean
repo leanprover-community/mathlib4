@@ -23,7 +23,7 @@ variable {α : Type*} [MeasurableSpace α]
 
 namespace ContinuousLinearMap
 
-variable {R E F : Type*} [Semiring R]
+variable {R E F : Type*} [Semiring R] [AddCommGroup E] [AddCommGroup F]
   [SeminormedAddCommGroup E] [Module R E] [MeasurableSpace E] [OpensMeasurableSpace E]
   [SeminormedAddCommGroup F] [Module R F] [MeasurableSpace F] [BorelSpace F]
 
@@ -41,8 +41,8 @@ end ContinuousLinearMap
 namespace ContinuousLinearMap
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] {F : Type*} [NormedAddCommGroup F]
-  [NormedSpace 𝕜 F]
+variable {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+  {F : Type*} [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 
 instance instMeasurableSpace : MeasurableSpace (E →L[𝕜] F) :=
   borel _
@@ -68,8 +68,8 @@ end ContinuousLinearMap
 section ContinuousLinearMapNontriviallyNormedField
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] [MeasurableSpace E] [BorelSpace E]
-  {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+variable {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace 𝕜 E] [MeasurableSpace E]
+  [BorelSpace E] {F : Type*} [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 
 @[fun_prop]
 theorem Measurable.apply_continuousLinearMap {φ : α → F →L[𝕜] E} (hφ : Measurable φ) (v : F) :
@@ -86,8 +86,8 @@ end ContinuousLinearMapNontriviallyNormedField
 section NormedSpace
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜] [MeasurableSpace 𝕜]
-variable [BorelSpace 𝕜] {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] [MeasurableSpace E]
-  [BorelSpace E]
+variable [BorelSpace 𝕜] {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+  [MeasurableSpace E] [BorelSpace E]
 
 theorem measurable_smul_const {f : α → 𝕜} {c : E} (hc : c ≠ 0) :
     (Measurable fun x => f x • c) ↔ Measurable f :=
