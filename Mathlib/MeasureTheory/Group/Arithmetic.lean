@@ -317,12 +317,6 @@ instance {β : Type*} [AddCommMonoid β] [PartialOrder β]
   simp_rw [Set.diagonal, le_antisymm_iff, ← tsub_eq_zero_iff_le]
   measurability
 
-@[deprecated (since := "2025-11-11")]
-alias measurableSet_eq_fun' := measurableSet_eq_fun
-
-@[deprecated (since := "2025-11-11")]
-alias measurableSet_eq_fun_of_countable := measurableSet_eq_fun
-
 end Div
 
 /-- We say that a type has `MeasurableNeg` if `x ↦ -x` is a measurable function. -/
@@ -342,11 +336,11 @@ export MeasurableNeg (measurable_neg)
 instance (priority := 100) measurableDiv_of_mul_inv (G : Type*) [MeasurableSpace G]
     [DivInvMonoid G] [MeasurableMul G] [MeasurableInv G] : MeasurableDiv G where
   measurable_const_div c := by
-    convert measurable_inv.const_mul c using 1
+    convert! measurable_inv.const_mul c using 1
     ext1
     apply div_eq_mul_inv
   measurable_div_const c := by
-    convert measurable_id.mul_const c⁻¹ using 1
+    convert! measurable_id.mul_const c⁻¹ using 1
     ext1
     apply div_eq_mul_inv
 
