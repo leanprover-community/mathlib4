@@ -20,7 +20,7 @@ variable {X E F G : Type*} {mX : MeasurableSpace X}
   [NormedAddCommGroup E] [NormedSpace ℝ E]
   [NormedAddCommGroup F] [NormedSpace ℝ F]
   [NormedAddCommGroup G] [NormedSpace ℝ G]
-  {μ : VectorMeasure X F} {f : X → E} {B : E →L[ℝ] F →L[ℝ] G} {s : Set X}
+  {μ : VectorMeasure X F} {f g : X → E} {B : E →L[ℝ] F →L[ℝ] G} {s : Set X}
 
 open scoped Classical in
 /-- The vector measure with density `f` with respect to a vector measure `μ`, associating to a
@@ -52,16 +52,84 @@ lemma withDensity_zero_vectorMeasure : (0 : VectorMeasure X F).withDensity f B =
 @[simp]
 lemma withDensity_zero : μ.withDensity 0 B = 0 := by
   ext s hs
-  have : μ.Integrable 0 B := by
-    simp [VectorMeasure.Integrable]
-    apply integrable_zero
   simp [withDensity_apply]
 
+lemma withDensity_congr (h : f =ᵐ[(μ.transpose B).variation] g) :
+    μ.withDensity f B = μ.withDensity g B := by
+  by_cases hf : μ.Integrable f B
+  · simp only [withDensity, hf, ↓reduceDIte, Integrable.congr hf h, mk.injEq]
+    ext s
+    apply setIntegral_congr_ae
+    filter_upwards [h] with x hx xs using hx
+  · have : ¬(μ.Integrable g B) := by simpa [← integrable_congr h] using hf
+    simp [withDensity, hf, this]
 
 lemma restrict_withDensity (hf : μ.Integrable f B) :
     (μ.withDensity f B).restrict s = (μ.restrict s).withDensity f B := by
   by_cases hs : MeasurableSet s; swap
   · simp [restrict_not_measurable _ hs]
+  · ext t ht
+    simp only [hs, ht, restrict_apply]
+    rw [withDensity_apply hf, withDensity_apply hf.restrict, restrict_restrict _ ht hs]
+
+
+#check MemLp.exists_simpleFunc_eLpNorm_sub_lt
+local infixr:25 " →ₛ " => SimpleFunc
+
+#check SimpleFunc.lintegral
+
+#check SimpleFunc.map
+
+#check SimpleFunc.map_lintegral
+
+lemma variation_withDensity (hf : μ.Integrable f B) :
+    (μ.withDensity f B).variation = (μ.transpose B).variation.withDensity (fun x ↦ ‖f x‖ₑ) := by
+  apply le_antisymm
+  · apply variation_le_of_forall_enorm_le (fun s hs ↦ ?_)
+    rw [withDensity_apply hf, MeasureTheory.withDensity_apply _ hs]
+    apply enorm_setIntegral_le_lintegral_enorm
+  apply Measure.le_iff.2 (fun s hs ↦ ?_)
+  rw [MeasureTheory.withDensity_apply _ hs]
+  apply ENNReal.le_of_forall_pos_le_add
+  rintro ε εpos -
+  let δ := ε / 10
+  have δpos : 0 < δ := div_pos εpos (by norm_num)
+  obtain ⟨g, hg, -⟩ : ∃ (g : X →ₛ E), eLpNorm (f - ⇑g) 1 (μ.transpose B).variation < δ
+      ∧ MemLp (⇑g) 1 (μ.transpose B).variation :=
+    (memLp_one_iff_integrable.2 hf).exists_simpleFunc_eLpNorm_sub_lt (by simp)
+      (by simpa using δpos.ne')
+  have A : ∫⁻ a in s, ‖f a‖ₑ ∂(μ.transpose B).variation
+        ≤ ∫⁻ a in s, ‖g a‖ₑ ∂(μ.transpose B).variation + δ := calc
+    _ ≤ ∫⁻ a in s, ‖f a - g a‖ₑ + ‖g a‖ₑ ∂(μ.transpose B).variation := by
+      gcongr with a
+      nth_rw 1 [show f a = (f a - g a) + g a by abel]
+      exact enorm_add_le (f a - g a) (g a)
+    _ = ∫⁻ a in s, ‖g a‖ₑ ∂(μ.transpose B).variation +
+          ∫⁻ a in s, ‖f a - g a‖ₑ ∂(μ.transpose B).variation := by
+      rw [lintegral_add_right, add_comm]
+      exact g.stronglyMeasurable.enorm
+    _ ≤ ∫⁻ a in s, ‖g a‖ₑ ∂(μ.transpose B).variation +
+          ∫⁻ a, ‖f a - g a‖ₑ ∂(μ.transpose B).variation := by
+      gcongr
+      exact Measure.restrict_le_self
+    _ ≤ ∫⁻ a in s, ‖g a‖ₑ ∂(μ.transpose B).variation + δ := by
+      rw [eLpNorm_one_eq_lintegral_enorm] at hg
+      gcongr
+      exact hg.le
+  have B : ∫⁻ a in s, ‖g a‖ₑ ∂(μ.transpose B).variation =
+      ∑ i ∈ g.range, ‖i‖ₑ * ((μ.transpose B).restrict s).variation (g ⁻¹' {i}) := calc
+    _ = (g.map (‖·‖ₑ)).lintegral ((μ.transpose B).variation.restrict s) :=
+      SimpleFunc.lintegral_eq_lintegral _ _
+    _ = ∑ i ∈ g.range, ‖i‖ₑ * (μ.transpose B).variation.restrict s (g ⁻¹' {i}) :=
+      SimpleFunc.map_lintegral _ _
+    _ = ∑ i ∈ g.range, ‖i‖ₑ * ((μ.transpose B).restrict s).variation (g ⁻¹' {i}) := by
+      simp_rw [variation_restrict hs]
+
+
+
+
+
+
 
 
 end MeasureTheory.VectorMeasure
