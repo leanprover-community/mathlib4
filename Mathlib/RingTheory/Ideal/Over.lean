@@ -339,7 +339,11 @@ def stabilizerHom : MulAction.stabilizer G P →* ((B ⧸ P) ≃ₐ[A ⧸ p] (B 
 lemma ker_stabilizerHom :
     (stabilizerHom P p G).ker = (P.inertia G).subgroupOf _ := by
   ext σ
-  simp [DFunLike.ext_iff, mk_surjective.forall, Quotient.eq]
+  refine ⟨fun h x ↦ Ideal.Quotient.eq.mp (DFunLike.congr_fun h (Ideal.Quotient.mk P x)),
+    fun h ↦ ?_⟩
+  ext q
+  obtain ⟨x, rfl⟩ := mk_surjective q
+  exact Ideal.Quotient.eq.mpr (h x)
 
 theorem map_ker_stabilizer_subtype :
     (stabilizerHom P p G).ker.map (Subgroup.subtype _) = P.inertia G := by
