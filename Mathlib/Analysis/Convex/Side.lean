@@ -734,7 +734,7 @@ end LinearOrderedField
 
 section Normed
 
-variable [SeminormedAddCommGroup V] [NormedSpace ℝ V] [PseudoMetricSpace P]
+variable [AddCommGroup V] [SeminormedAddCommGroup V] [NormedSpace ℝ V] [PseudoMetricSpace P]
 variable [NormedAddTorsor V P]
 
 theorem isConnected_setOf_wSameSide {s : AffineSubspace ℝ P} (x : P) (h : (s : Set P).Nonempty) :
