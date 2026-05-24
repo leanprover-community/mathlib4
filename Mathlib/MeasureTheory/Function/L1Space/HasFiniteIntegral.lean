@@ -37,8 +37,8 @@ open Topology ENNReal MeasureTheory NNReal
 open Set Filter TopologicalSpace ENNReal EMetric MeasureTheory
 
 variable {α β γ ε ε' ε'' : Type*} {m : MeasurableSpace α} {μ ν : Measure α}
-variable [NormedAddCommGroup β] [NormedAddCommGroup γ] [ENorm ε] [ENorm ε']
-  [TopologicalSpace ε''] [ESeminormedAddMonoid ε'']
+variable [AddCommGroup β] [NormedAddCommGroup β] [AddCommGroup γ] [NormedAddCommGroup γ] [ENorm ε]
+  [ENorm ε'] [TopologicalSpace ε''] [AddMonoid ε''] [ESeminormedAddMonoid ε'']
 
 namespace MeasureTheory
 
@@ -246,7 +246,8 @@ theorem hasFiniteIntegral_zero_measure {m : MeasurableSpace α} (f : α → ε) 
 
 variable (α μ) in
 @[fun_prop, simp]
-theorem hasFiniteIntegral_zero {ε : Type*} [TopologicalSpace ε] [ESeminormedAddMonoid ε] :
+theorem hasFiniteIntegral_zero {ε : Type*} [TopologicalSpace ε] [AddMonoid ε]
+    [ESeminormedAddMonoid ε] :
     HasFiniteIntegral (fun _ : α => (0 : ε)) μ := by
   simp [hasFiniteIntegral_iff_enorm]
 
@@ -284,7 +285,8 @@ theorem HasFiniteIntegral.of_isEmpty [IsEmpty α] {f : α → β} :
 
 @[simp]
 theorem HasFiniteIntegral.of_subsingleton_codomain
-    {ε : Type*} [TopologicalSpace ε] [ESeminormedAddMonoid ε] [Subsingleton ε] {f : α → ε} :
+    {ε : Type*} [TopologicalSpace ε] [AddMonoid ε] [ESeminormedAddMonoid ε] [Subsingleton ε]
+    {f : α → ε} :
     HasFiniteIntegral f μ :=
   hasFiniteIntegral_zero _ _ |>.congr <| .of_forall fun _ ↦ Subsingleton.elim _ _
 
@@ -313,7 +315,7 @@ theorem isFiniteMeasure_withDensity_ofReal {f : α → ℝ} (hfi : HasFiniteInte
 section DominatedConvergence
 
 variable {F : ℕ → α → β} {f : α → β} {bound : α → ℝ}
-  {ε : Type*} [TopologicalSpace ε] [ESeminormedAddMonoid ε]
+  {ε : Type*} [TopologicalSpace ε] [AddMonoid ε] [ESeminormedAddMonoid ε]
   {F' : ℕ → α → ε} {f' : α → ε} {bound' : α → ℝ≥0∞}
 
 theorem all_ae_norm_ofReal_F_le_bound (h : ∀ n, ∀ᵐ a ∂μ, ‖F n a‖ ≤ bound a) :
@@ -452,8 +454,8 @@ section NormedSpace
 variable {𝕜 : Type*}
 
 @[fun_prop]
-theorem HasFiniteIntegral.smul [NormedAddCommGroup 𝕜] [SMulZeroClass 𝕜 β] [IsBoundedSMul 𝕜 β]
-    (c : 𝕜) {f : α → β} (hf : HasFiniteIntegral f μ) :
+theorem HasFiniteIntegral.smul [AddCommGroup 𝕜] [NormedAddCommGroup 𝕜] [SMulZeroClass 𝕜 β]
+    [IsBoundedSMul 𝕜 β] (c : 𝕜) {f : α → β} (hf : HasFiniteIntegral f μ) :
     HasFiniteIntegral (c • f) μ := by
   simp only [HasFiniteIntegral]
   calc
@@ -466,8 +468,9 @@ theorem HasFiniteIntegral.smul [NormedAddCommGroup 𝕜] [SMulZeroClass 𝕜 β]
 -- once such a typeclass exists.
 -- This will let us unify with `HasFiniteIntegral.smul` above.
 @[fun_prop]
-theorem HasFiniteIntegral.smul_enorm [NormedAddGroup 𝕜] [SMul 𝕜 ε''] [ENormSMulClass 𝕜 ε'']
-    (c : 𝕜) {f : α → ε''} (hf : HasFiniteIntegral f μ) : HasFiniteIntegral (c • f) μ := by
+theorem HasFiniteIntegral.smul_enorm [AddCommGroup 𝕜] [NormedAddGroup 𝕜] [SMul 𝕜 ε'']
+    [ENormSMulClass 𝕜 ε''] (c : 𝕜) {f : α → ε''} (hf : HasFiniteIntegral f μ) :
+    HasFiniteIntegral (c • f) μ := by
   simp only [HasFiniteIntegral]
   calc
     ∫⁻ a : α, ‖c • f a‖ₑ ∂μ = ∫⁻ a : α, ‖c‖ₑ * ‖f a‖ₑ ∂μ := lintegral_congr fun i ↦ enorm_smul _ _
@@ -514,7 +517,7 @@ end count
 
 section restrict
 
-variable {E : Type*} [NormedAddCommGroup E] {f : α → ε}
+variable {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] {f : α → ε}
 
 @[fun_prop]
 lemma HasFiniteIntegral.restrict (h : HasFiniteIntegral f μ) {s : Set α} :
