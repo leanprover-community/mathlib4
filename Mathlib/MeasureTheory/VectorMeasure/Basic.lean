@@ -93,6 +93,7 @@ initialize_simps_projections VectorMeasure (measureOf' → apply)
 theorem empty (v : VectorMeasure α M) : v ∅ = 0 :=
   v.empty'
 
+@[simp]
 theorem not_measurable (v : VectorMeasure α M) {i : Set α} (hi : ¬MeasurableSet i) : v i = 0 :=
   v.not_measurable' hi
 
@@ -128,7 +129,7 @@ theorem hasSum_of_disjoint_iUnion (hm : ∀ i, MeasurableSet (f i)) (hd : Pairwi
     HasSum (fun i => v (f i)) (v (⋃ i, f i)) := by
   rcases Countable.exists_injective_nat β with ⟨e, he⟩
   rw [← hasSum_extend_zero he]
-  convert m_iUnion v (f := Function.extend e f fun _ ↦ ∅) _ _
+  convert! m_iUnion v (f := Function.extend e f fun _ ↦ ∅) _ _
   · simp only [Pi.zero_def, Function.apply_extend v, Function.comp_def, empty]
   · exact (iSup_extend_bot he _).symm
   · simp [Function.apply_extend MeasurableSet, Function.comp_def, hm]
@@ -225,7 +226,7 @@ theorem tendsto_vectorMeasure_iUnion_atTop_nat
   have : HasSum (fun n ↦ v (t n)) (v (⋃ n, s n)) := by
     rw [← iUnion_disjointed]
     apply m_iUnion _ ht (disjoint_disjointed _)
-  convert (HasSum.tendsto_sum_nat this).comp (tendsto_add_atTop_nat 1) with n
+  convert! (HasSum.tendsto_sum_nat this).comp (tendsto_add_atTop_nat 1) with n
   dsimp
   rw [← of_biUnion_finset]
   · rw [biUnion_range_succ_disjointed, Monotone.partialSups_eq hm]
@@ -516,6 +517,10 @@ theorem ennrealToMeasure_apply {m : MeasurableSpace α} {v : VectorMeasure α �
   rw [ennrealToMeasure, ofMeasurable_apply _ hs]
 
 @[simp]
+theorem ennrealToMeasure_zero : ennrealToMeasure (0 : VectorMeasure α ℝ≥0∞) = 0 := by
+  simp [ennrealToMeasure]
+
+@[simp]
 theorem _root_.MeasureTheory.Measure.toENNRealVectorMeasure_ennrealToMeasure
     (μ : VectorMeasure α ℝ≥0∞) :
     toENNRealVectorMeasure (ennrealToMeasure μ) = μ := ext fun s hs => by
@@ -553,7 +558,7 @@ def map (v : VectorMeasure α M) (f : α → β) : VectorMeasure β M :=
       not_measurable' := fun _ hi => if_neg hi
       m_iUnion' := by
         intro g hg₁ hg₂
-        convert v.m_iUnion (fun i => hf (hg₁ i)) fun i j hij => (hg₂ hij).preimage _
+        convert! v.m_iUnion (fun i => hf (hg₁ i)) fun i j hij => (hg₂ hij).preimage _
         · rw [if_pos (hg₁ _)]
         · rw [Set.preimage_iUnion, if_pos (MeasurableSet.iUnion hg₁)] }
   else 0
@@ -651,7 +656,8 @@ def restrict (v : VectorMeasure α M) (i : Set α) : VectorMeasure α M :=
       not_measurable' := fun _ hi => if_neg hi
       m_iUnion' := by
         intro f hf₁ hf₂
-        convert v.m_iUnion (fun n => (hf₁ n).inter hi)
+        convert!
+          v.m_iUnion (fun n => (hf₁ n).inter hi)
             (hf₂.mono fun i j => Disjoint.mono inf_le_left inf_le_left)
         · rw [if_pos (hf₁ _)]
         · rw [Set.iUnion_inter, if_pos (MeasurableSet.iUnion hf₁)] }
@@ -1194,7 +1200,7 @@ def trim {m n : MeasurableSpace α} (v : VectorMeasure α M) (hle : m ≤ n) :
     (fun f hf₁ hf₂ => by
       dsimp only
       have hf₁' : ∀ k, MeasurableSet[n] (f k) := fun k => hle _ (hf₁ k)
-      convert v.m_iUnion hf₁' hf₂ using 1
+      convert! v.m_iUnion hf₁' hf₂ using 1
       · ext n
         rw [if_pos (hf₁ n)]
       · rw [if_pos (@MeasurableSet.iUnion _ _ m _ _ hf₁)])

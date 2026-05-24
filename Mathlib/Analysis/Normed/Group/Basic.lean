@@ -352,7 +352,7 @@ theorem NormedGroup.nhds_basis_norm_lt (x : E) :
 @[to_additive]
 theorem NormedGroup.nhds_one_basis_norm_lt :
     (𝓝 (1 : E)).HasBasis (fun ε : ℝ => 0 < ε) fun ε => { y | ‖y‖ < ε } := by
-  convert NormedGroup.nhds_basis_norm_lt (1 : E) using 1
+  convert! NormedGroup.nhds_basis_norm_lt (1 : E) using 1
   simp
 
 @[deprecated (since := "2026-02-17")]
@@ -364,7 +364,7 @@ alias NormedAddCommGroup.nhds_zero_basis_norm_lt := NormedAddGroup.nhds_zero_bas
 @[to_additive]
 theorem NormedGroup.uniformity_basis_dist :
     (𝓤 E).HasBasis (fun ε : ℝ => 0 < ε) fun ε => { p : E × E | ‖p.fst⁻¹ * p.snd‖ < ε } := by
-  convert Metric.uniformity_basis_dist (α := E) using 1
+  convert! Metric.uniformity_basis_dist (α := E) using 1
   simp [dist_eq_norm_inv_mul]
 
 open Finset
@@ -713,7 +713,7 @@ structure on the domain. -/
 `SeminormedAddGroup` induces a `SeminormedAddGroup` structure on the domain. -/]
 abbrev SeminormedGroup.induced [Group E] [SeminormedGroup F] [MonoidHomClass 𝓕 E F] (f : 𝓕) :
     SeminormedGroup E :=
-  { PseudoMetricSpace.induced f toPseudoMetricSpace with
+  fast_instance% { PseudoMetricSpace.induced f toPseudoMetricSpace with
     norm := fun x => ‖f x‖
     dist_eq := fun x y => by simp only [map_mul, map_inv, ← dist_eq_norm_inv_mul]; rfl }
 
@@ -725,7 +725,7 @@ abbrev SeminormedGroup.induced [Group E] [SeminormedGroup F] [MonoidHomClass �
 abbrev SeminormedCommGroup.induced
     [CommGroup E] [SeminormedGroup F] [MonoidHomClass 𝓕 E F] (f : 𝓕) :
     SeminormedCommGroup E :=
-  { SeminormedGroup.induced E F f with
+  fast_instance% { SeminormedGroup.induced E F f with
     mul_comm := mul_comm }
 
 -- See note [reducible non-instances].
@@ -736,7 +736,7 @@ structure on the domain. -/
 abbrev NormedGroup.induced
     [Group E] [NormedGroup F] [MonoidHomClass 𝓕 E F] (f : 𝓕) (h : Injective f) :
     NormedGroup E :=
-  { SeminormedGroup.induced E F f, MetricSpace.induced f h _ with }
+  fast_instance% { SeminormedGroup.induced E F f, MetricSpace.induced f h _ with }
 
 -- See note [reducible non-instances].
 /-- An injective group homomorphism from a `CommGroup` to a `NormedGroup` induces a
@@ -745,8 +745,7 @@ abbrev NormedGroup.induced
 `NormedCommGroup` induces a `NormedCommGroup` structure on the domain. -/]
 abbrev NormedCommGroup.induced [CommGroup E] [NormedGroup F] [MonoidHomClass 𝓕 E F] (f : 𝓕)
     (h : Injective f) : NormedCommGroup E :=
-  { SeminormedGroup.induced E F f, MetricSpace.induced f h _ with
-    mul_comm := mul_comm }
+  fast_instance% { SeminormedCommGroup.induced E F f, MetricSpace.induced f h _ with }
 
 end Induced
 

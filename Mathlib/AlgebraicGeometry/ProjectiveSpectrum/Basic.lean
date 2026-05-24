@@ -79,10 +79,9 @@ theorem basicOpen_eq_iSup_proj (f : A) :
 theorem isBasis_basicOpen :
     TopologicalSpace.Opens.IsBasis (Set.range (basicOpen 𝒜)) := by
   delta TopologicalSpace.Opens.IsBasis
-  convert ProjectiveSpectrum.isTopologicalBasis_basic_opens 𝒜
+  convert! ProjectiveSpectrum.isTopologicalBasis_basic_opens 𝒜
   exact (Set.range_comp _ _).symm
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `{ xᵢ }` spans the irrelevant ideal of `A`, then `D₊(xᵢ)` covers `Proj A`. -/
 lemma iSup_basicOpen_eq_top {ι : Type*} (f : ι → A)
     (hf : (HomogeneousIdeal.irrelevant 𝒜).toIdeal ≤ Ideal.span (Set.range f)) :
@@ -118,15 +117,16 @@ lemma iSup_basicOpen_eq_top' {ι : Type*} (f : ι → A)
     · rw [DirectSum.decompose_of_mem_ne 𝒜 hn hn', sub_zero]
       exact Ideal.subset_span ⟨_, rfl⟩
   | algebraMap r =>
-    convert zero_mem (Ideal.span _)
+    convert! zero_mem (Ideal.span _)
     rw [sub_eq_zero]
     exact (DirectSum.decompose_of_mem_same 𝒜 r.2).symm
   | add x y hx hy _ _ =>
     rw [map_add, add_sub_add_comm]
     exact add_mem ‹_› ‹_›
   | mul x y hx hy hx' hy' =>
-    convert add_mem (Ideal.mul_mem_left _ x hy')
-      (Ideal.mul_mem_right (GradedRing.projZeroRingHom 𝒜 y) _ hx') using 1
+    convert!
+      add_mem (Ideal.mul_mem_left _ x hy')
+        (Ideal.mul_mem_right (GradedRing.projZeroRingHom 𝒜 y) _ hx') using 1
     rw [map_mul]
     ring
 
@@ -165,7 +165,7 @@ noncomputable
 def basicOpenIsoSpec : (basicOpen 𝒜 f).toScheme ≅ Spec (.of <| Away 𝒜 f) :=
   have : IsIso (basicOpenToSpec 𝒜 f) := by
     apply (isIso_iff_of_reflects_iso _ Scheme.forgetToLocallyRingedSpace).mp ?_
-    convert ProjectiveSpectrum.Proj.isIso_toSpec 𝒜 f f_deg hm using 1
+    convert! ProjectiveSpectrum.Proj.isIso_toSpec 𝒜 f f_deg hm using 1
     refine Eq.trans ?_ (ΓSpec.locallyRingedSpaceAdjunction.homEquiv_apply _ _ _).symm
     dsimp [basicOpenToSpec, Scheme.Opens.toSpecΓ]
     simp only [eqToHom_op, Category.assoc, ← Spec.map_comp]
@@ -206,7 +206,6 @@ lemma isAffineOpen_basicOpen : IsAffineOpen (basicOpen 𝒜 f) := by
   rw [← opensRange_awayι 𝒜 f f_deg hm]
   exact isAffineOpen_opensRange (awayι _ _ _ _)
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma awayι_toSpecZero : awayι 𝒜 f f_deg hm ≫ toSpecZero 𝒜 =
     Spec.map (CommRingCat.ofHom (fromZeroRingHom 𝒜 _)) := by
@@ -336,9 +335,6 @@ def affineOpenCoverOfIrrelevantLESpan {ι : Type*} (f : ι → A) {m : ι → �
     rw [opensRange_awayι]
     exact (mem_iSup.mp ((iSup_basicOpen_eq_top 𝒜 f hf).ge (Set.mem_univ x))).choose_spec
 
-@[deprecated (since := "2025-10-07")]
-noncomputable alias openCoverOfISupEqTop := affineOpenCoverOfIrrelevantLESpan
-
 /-- `Proj A` is covered by `Spec (A_f)₀` for all homogeneous elements of positive degree. -/
 @[simps! f] noncomputable
 def affineOpenCover : (Proj 𝒜).AffineOpenCover :=
@@ -349,7 +345,7 @@ def affineOpenCover : (Proj 𝒜).AffineOpenCover :=
   rw [← DirectSum.sum_support_decompose 𝒜 z]
   refine Ideal.sum_mem _ fun c hc ↦ if hc0 : c = 0 then ?_ else
     Ideal.subset_span ⟨⟨⟨c, Nat.pos_iff_ne_zero.mpr hc0⟩, _⟩, rfl⟩
-  convert Ideal.zero_mem _
+  convert! Ideal.zero_mem _
   subst hc0
   exact hz
 
@@ -383,7 +379,6 @@ def toBasicOpenOfGlobalSections (H : f t = x) (h0d : 0 < d) (hd : t ∈ 𝒜 d) 
   · rw [← Submonoid.map_le_iff_le_comap, Submonoid.map_powers]
     simp [H]
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma homOfLE_toBasicOpenOfGlobalSections_ι
     {H : f t = x} {h0d : 0 < d} {hd : t ∈ 𝒜 d} {H' : f t' = x'} {h0d' : 0 < d'} {hd' : t' ∈ 𝒜 d'}
@@ -432,7 +427,7 @@ def openCoverOfMapIrrelevantEqTop : X.OpenCover :=
       · intro x hx
         rw [← DirectSum.sum_support_decompose 𝒜 x]
         refine Ideal.sum_mem _ fun c hc ↦ ?_
-        have : c ≠ 0 := by contrapose! hc; simpa [hc] using hx
+        have : c ≠ 0 := by contrapose hc; simpa [hc] using hx
         exact Ideal.subset_span ⟨⟨c, _, this.bot_lt, by simp⟩, rfl⟩
     ext1
     apply compl_injective

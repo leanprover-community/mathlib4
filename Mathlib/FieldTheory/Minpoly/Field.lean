@@ -310,7 +310,7 @@ theorem coeff_zero_eq_zero (hx : IsIntegral A x) : coeff (minpoly A x) 0 = 0 ↔
 
 /-- The minimal polynomial of a nonzero element has nonzero constant coefficient. -/
 theorem coeff_zero_ne_zero (hx : IsIntegral A x) (h : x ≠ 0) : coeff (minpoly A x) 0 ≠ 0 := by
-  contrapose! h
+  contrapose h
   simpa only [hx, coeff_zero_eq_zero] using h
 
 end IsDomain

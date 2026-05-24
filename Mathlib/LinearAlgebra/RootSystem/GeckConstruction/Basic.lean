@@ -328,8 +328,8 @@ instance : IsLieAbelian (cartanSubalgebra' b) := by
   refine ⟨fun ⟨⟨x, hx⟩, hx'⟩ ⟨⟨y, hy⟩, hy'⟩ ↦ ?_⟩
   let x' : cartanSubalgebra b := ⟨x, hx'⟩
   let y' : cartanSubalgebra b := ⟨y, hy'⟩
-  suffices ⁅x', y'⁆ = 0 by simpa [x', y', Subtype.ext_iff, -trivial_lie_zero] using this
-  simp
+  suffices ⁅x', y'⁆ = 0 by simpa [x', y', Subtype.ext_iff] using this
+  simp [trivial_lie_zero]
 
 instance : LieModule.IsTriangularizable R (cartanSubalgebra' b) (b.support ⊕ ι → R) := by
   refine ⟨fun ⟨⟨x, hx'⟩, hx⟩ ↦ ?_⟩
@@ -391,7 +391,6 @@ variable (b) in
     simp only [← mul_assoc, ω_mul_ω, one_mul]
     simp [mul_assoc]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma ωConj_mem_of_mem
     {x : Matrix (b.support ⊕ ι) (b.support ⊕ ι) R} (hx : x ∈ lieAlgebra b) :
     ωConj b x ∈ lieAlgebra b := by
