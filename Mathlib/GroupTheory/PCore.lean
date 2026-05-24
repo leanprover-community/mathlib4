@@ -28,6 +28,8 @@ a `p`-group (no finiteness hypothesis needed: the family of normal
   `pCore p G`.
 * `Subgroup.mem_pCore_iff` : an element lies in `pCore p G` iff it lies in
   some normal `p`-subgroup.
+* `Subgroup.pCore_eq_iInf_sylow` : for finite `G` and prime `p`, the
+  `p`-core equals the intersection of all Sylow `p`-subgroups.
 
 ## Notation
 
@@ -57,28 +59,25 @@ which makes `Subgroup.iSup_induction` directly applicable. -/
 def pCore (p : ℕ) (G : Type*) [Group G] : Subgroup G :=
   ⨆ N : {N : Subgroup G // N.Normal ∧ IsPGroup p N}, (N : Subgroup G)
 
+/-- The subtype of normal `p`-subgroups is nonempty (it contains `⊥`). -/
+instance : Nonempty {N : Subgroup G // N.Normal ∧ IsPGroup p N} :=
+  ⟨⟨⊥, inferInstance, IsPGroup.of_bot⟩⟩
+
 /-- Every normal `p`-subgroup of `G` is contained in the `p`-core. -/
 theorem le_pCore {N : Subgroup G} (hN_normal : N.Normal) (hN_pGroup : IsPGroup p N) :
     N ≤ pCore p G :=
-  le_iSup (f := fun N : {N : Subgroup G // N.Normal ∧ IsPGroup p N} => (N : Subgroup G))
+  le_iSup (fun N : {N : Subgroup G // N.Normal ∧ IsPGroup p N} => (N : Subgroup G))
     ⟨N, hN_normal, hN_pGroup⟩
 
 /-- The `p`-core is normal in `G`. -/
 instance pCore_normal : (pCore p G).Normal where
   conj_mem a ha g := by
-    refine iSup_induction _ (C := fun a => g * a * g⁻¹ ∈ pCore p G) ha ?_ ?_ ?_
-    · -- An element of some specific normal `p`-subgroup `N`: conjugation stays inside `N`.
-      intro N y hy
-      exact mem_iSup_of_mem N (N.2.1.conj_mem y hy g)
-    · -- `g * 1 * g⁻¹ = 1`.
-      change g * 1 * g⁻¹ ∈ pCore p G
-      rw [mul_one, mul_inv_cancel]
-      exact one_mem _
-    · -- `g * (y * z) * g⁻¹ = (g * y * g⁻¹) * (g * z * g⁻¹)`.
-      intro y z hy hz
-      change g * (y * z) * g⁻¹ ∈ pCore p G
-      rw [show g * (y * z) * g⁻¹ = (g * y * g⁻¹) * (g * z * g⁻¹) by group]
-      exact mul_mem hy hz
+    refine iSup_induction _ (C := fun a => g * a * g⁻¹ ∈ pCore p G) ha
+      (fun N y hy => mem_iSup_of_mem N (N.2.1.conj_mem y hy g)) (by simp) ?_
+    intro y z hy hz
+    change g * (y * z) * g⁻¹ ∈ pCore p G
+    rw [show g * (y * z) * g⁻¹ = (g * y * g⁻¹) * (g * z * g⁻¹) by group]
+    exact mul_mem hy hz
 
 /-- The indexing family of normal `p`-subgroups is directed under `≤`:
 for any two normal `p`-subgroups, their join is again a normal
@@ -87,68 +86,59 @@ theorem directed_normal_isPGroup :
     Directed (· ≤ ·)
       (fun N : {N : Subgroup G // N.Normal ∧ IsPGroup p N} => (N : Subgroup G)) := by
   rintro ⟨N₁, h₁N, h₁P⟩ ⟨N₂, h₂N, h₂P⟩
-  refine ⟨⟨N₁ ⊔ N₂, @Subgroup.sup_normal _ _ N₁ N₂ h₁N h₂N,
-    @IsPGroup.to_sup_of_normal_left _ _ _ N₁ N₂ h₁P h₂P h₁N⟩, le_sup_left, le_sup_right⟩
+  haveI := h₁N
+  haveI := h₂N
+  exact ⟨⟨N₁ ⊔ N₂, sup_normal N₁ N₂, h₁P.to_sup_of_normal_left h₂P⟩,
+    le_sup_left, le_sup_right⟩
 
 /-- The `p`-core is itself a `p`-group. Since the family of normal
 `p`-subgroups is directed under `≤`, every element of the supremum
 already lies in one of them. -/
 theorem isPGroup_pCore : IsPGroup p (pCore p G) := by
   intro ⟨x, hx⟩
-  haveI : Nonempty {N : Subgroup G // N.Normal ∧ IsPGroup p N} :=
-    ⟨⟨⊥, inferInstance, IsPGroup.of_bot⟩⟩
   obtain ⟨N, hxN⟩ := (mem_iSup_of_directed directed_normal_isPGroup).mp hx
   obtain ⟨k, hk⟩ := N.2.2 ⟨x, hxN⟩
-  exact ⟨k, by simpa [Subtype.ext_iff] using Subtype.ext_iff.mp hk⟩
+  refine ⟨k, ?_⟩
+  ext
+  simpa using Subtype.ext_iff.mp hk
 
 /-- Characterisation of membership in the `p`-core: an element lies in
 `pCore p G` iff it lies in some normal `p`-subgroup of `G`. -/
 theorem mem_pCore_iff {x : G} :
     x ∈ pCore p G ↔ ∃ N : Subgroup G, N.Normal ∧ IsPGroup p N ∧ x ∈ N := by
-  haveI : Nonempty {N : Subgroup G // N.Normal ∧ IsPGroup p N} :=
-    ⟨⟨⊥, inferInstance, IsPGroup.of_bot⟩⟩
   rw [pCore, mem_iSup_of_directed directed_normal_isPGroup]
   exact ⟨fun ⟨N, hxN⟩ => ⟨N, N.2.1, N.2.2, hxN⟩,
     fun ⟨N, hN, hP, hxN⟩ => ⟨⟨N, hN, hP⟩, hxN⟩⟩
 
 /-- The `p`-core is contained in every Sylow `p`-subgroup. -/
 theorem pCore_le_sylow [Fact p.Prime] [Finite G] (P : Sylow p G) : pCore p G ≤ P := by
-  classical
-  obtain ⟨P₀, hP₀⟩ := (isPGroup_pCore (G := G) (p := p)).exists_le_sylow
+  have hpg : IsPGroup p (pCore p G) := isPGroup_pCore
+  obtain ⟨P₀, hP₀⟩ := hpg.exists_le_sylow
   obtain ⟨g, rfl⟩ := MulAction.exists_smul_eq G P₀ P
-  rw [Sylow.coe_subgroup_smul]
-  calc
-    pCore p G = MulAut.conj g • pCore p G := (Normal.conj_smul_eq_self g (pCore p G)).symm
-    _ ≤ MulAut.conj g • (P₀ : Subgroup G) := smul_le_smul_left (MulAut.conj g) hP₀
+  rw [Sylow.coe_subgroup_smul, ← pCore_normal.conj_smul_eq_self g]
+  exact smul_le_smul_left (MulAut.conj g) hP₀
 
-/-- The intersection of all Sylow `p`-subgroups is normal. -/
+/-- The intersection of all Sylow `p`-subgroups is normal: conjugation
+permutes the Sylow `p`-subgroups, so the intersection is fixed. -/
 theorem normal_iInf_sylow [Fact p.Prime] [Finite G] :
-    (⨅ P : Sylow p G, (P : Subgroup G)).Normal := by
-  classical
-  refine Normal.of_conjugate_fixed fun g => ?_
-  ext x
-  simp only [Subgroup.mem_pointwise_smul_iff_inv_smul_mem, Subgroup.mem_iInf]
-  constructor
-  · intro hx P
-    specialize hx (g⁻¹ • P)
-    rw [Sylow.coe_subgroup_smul, Subgroup.mem_pointwise_smul_iff_inv_smul_mem] at hx
-    simpa [MulAut.conj_apply, mul_assoc] using hx
-  · intro hx P
-    specialize hx (g • P)
-    rw [Sylow.coe_subgroup_smul, Subgroup.mem_pointwise_smul_iff_inv_smul_mem] at hx
-    simpa [MulAut.conj_apply, mul_assoc] using hx
+    (⨅ P : Sylow p G, (P : Subgroup G)).Normal where
+  conj_mem n hn g := by
+    simp only [mem_iInf] at hn ⊢
+    intro P
+    have h := hn (g⁻¹ • P)
+    rw [Sylow.coe_subgroup_smul, mem_pointwise_smul_iff_inv_smul_mem] at h
+    simpa using h
 
-/-- The intersection of all Sylow `p`-subgroups is a `p`-group. -/
+/-- The intersection of all Sylow `p`-subgroups is a `p`-group, being
+contained in any single Sylow `p`-subgroup. -/
 theorem isPGroup_iInf_sylow [Fact p.Prime] :
-    IsPGroup p ↥(⨅ P : Sylow p G, (P : Subgroup G)) := by
-  classical
-  exact (Sylow.nonempty.some : Sylow p G).2.to_le (iInf_le _ _)
+    IsPGroup p ↥(⨅ P : Sylow p G, (P : Subgroup G)) :=
+  (Classical.arbitrary (Sylow p G)).2.to_le (iInf_le _ _)
 
-/-- For a finite group, the `p`-core is the intersection of all Sylow `p`-subgroups. -/
+/-- For a finite group `G` and a prime `p`, the `p`-core equals the
+intersection of all Sylow `p`-subgroups. -/
 theorem pCore_eq_iInf_sylow [Fact p.Prime] [Finite G] :
-    pCore p G = ⨅ P : Sylow p G, (P : Subgroup G) := by
-  refine le_antisymm ?_ ?_
-  · exact le_iInf pCore_le_sylow
-  · exact le_pCore normal_iInf_sylow isPGroup_iInf_sylow
+    pCore p G = ⨅ P : Sylow p G, (P : Subgroup G) :=
+  le_antisymm (le_iInf pCore_le_sylow) (le_pCore normal_iInf_sylow isPGroup_iInf_sylow)
 
 end Subgroup
