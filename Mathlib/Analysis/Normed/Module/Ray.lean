@@ -21,7 +21,7 @@ public section
 
 open Real
 
-variable {E : Type*} [SeminormedAddCommGroup E] [NormedSpace ℝ E] {F : Type*}
+variable {E : Type*} [NormPseudoMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace ℝ E] {F : Type*}
 [NormedAddCommGroup F] [NormedSpace ℝ F]
 
 namespace SameRay

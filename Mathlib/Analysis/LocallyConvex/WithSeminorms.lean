@@ -495,13 +495,13 @@ end IsTopologicalAddGroup
 section NormedSpace
 
 /-- The topology of a `NormedSpace 𝕜 E` is induced by the seminorm `normSeminorm 𝕜 E`. -/
-theorem norm_withSeminorms (𝕜 E) [NormedField 𝕜] [SeminormedAddCommGroup E] [NormedSpace 𝕜 E] :
+theorem norm_withSeminorms (𝕜 E) [NormedField 𝕜] [NormPseudoMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E] :
     WithSeminorms fun _ : Fin 1 => normSeminorm 𝕜 E := by
   rw [SeminormFamily.withSeminorms_iff_nhds_eq_iInf, iInf_const, coe_normSeminorm,
     comap_norm_nhds_zero]
 
 /-- A (semi-)normed space is polynormable. -/
-instance [NormedField 𝕜] [SeminormedAddCommGroup E] [NormedSpace 𝕜 E] :
+instance [NormedField 𝕜] [NormPseudoMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E] :
     PolynormableSpace 𝕜 E :=
   norm_withSeminorms 𝕜 E |>.toPolynormableSpace
 
@@ -688,7 +688,7 @@ theorem continuous_of_isBounded {p : SeminormFamily 𝕝 E ι} {q : SeminormFami
 @[deprecated (since := "2026-03-09")]
 alias _root_.Seminorm.continuous_from_bounded := continuous_of_isBounded
 
-theorem continuous_normedSpace_rng (F) [SeminormedAddCommGroup F] [NormedSpace 𝕝₂ F]
+theorem continuous_normedSpace_rng (F) [NormPseudoMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace 𝕝₂ F]
     [TopologicalSpace E] {p : ι → Seminorm 𝕝 E} (hp : WithSeminorms p)
     (f : E →ₛₗ[τ₁₂] F) (hf : ∃ (s : Finset ι) (C : ℝ≥0), (normSeminorm 𝕝₂ F).comp f ≤ C • s.sup p) :
     Continuous f := by
@@ -698,7 +698,7 @@ theorem continuous_normedSpace_rng (F) [SeminormedAddCommGroup F] [NormedSpace �
 @[deprecated (since := "2026-03-09")]
 alias _root_.Seminorm.cont_withSeminorms_normedSpace := continuous_normedSpace_rng
 
-theorem continuous_normedSpace_dom (E) [SeminormedAddCommGroup E] [NormedSpace 𝕝 E]
+theorem continuous_normedSpace_dom (E) [NormPseudoMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕝 E]
     [TopologicalSpace F] {q : ι → Seminorm 𝕝₂ F} (hq : WithSeminorms q)
     (f : E →ₛₗ[τ₁₂] F) (hf : ∀ i : ι, ∃ C : ℝ≥0, (q i).comp f ≤ C • normSeminorm 𝕝 E) :
     Continuous f := by
@@ -848,7 +848,7 @@ section bounded_of_continuous
 namespace Seminorm
 
 variable [NontriviallyNormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
-  [SeminormedAddCommGroup F] [NormedSpace 𝕜 F]
+  [NormPseudoMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace 𝕜 F]
   {p : SeminormFamily 𝕜 E ι}
 
 /-- In a semi-`NormedSpace`, a continuous seminorm is zero on elements of norm `0`. -/
@@ -941,7 +941,7 @@ end LocallyConvexSpace
 
 section NormedSpace
 
-variable (𝕜) [NormedField 𝕜] [NormedSpace ℝ 𝕜] [SeminormedAddCommGroup E]
+variable (𝕜) [NormedField 𝕜] [NormedSpace ℝ 𝕜] [NormPseudoMetric E] [AddCommGroup E] [IsNormedAddGroup E]
 
 /-- Not an instance since `𝕜` can't be inferred. See `NormedSpace.toLocallyConvexSpace` for a
 slightly weaker instance version. -/

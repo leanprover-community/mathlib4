@@ -46,8 +46,8 @@ variable {𝕜 𝕜₂ 𝕜₃ E F Fₗ G 𝓕 : Type*}
 
 section SemiNormed
 
-variable [SeminormedAddCommGroup E] [SeminormedAddCommGroup F] [SeminormedAddCommGroup Fₗ]
-  [SeminormedAddCommGroup G]
+variable [NormPseudoMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormPseudoMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormPseudoMetric Fₗ] [AddCommGroup Fₗ] [IsNormedAddGroup Fₗ]
+  [NormPseudoMetric G] [AddCommGroup G] [IsNormedAddGroup G]
 
 variable [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕜₂] [NontriviallyNormedField 𝕜₃]
   [NormedSpace 𝕜 E] [NormedSpace 𝕜₂ F] [NormedSpace 𝕜 Fₗ] [NormedSpace 𝕜₃ G]
@@ -332,7 +332,7 @@ instance normOneClass [NontrivialTopology E] : NormOneClass (E →L[𝕜] E) :=
   ⟨norm_id⟩
 
 theorem opNorm_smul_le {𝕜' : Type*} [DistribSMul 𝕜' F] [SMulCommClass 𝕜₂ 𝕜' F]
-    [SeminormedAddCommGroup 𝕜'] [IsBoundedSMul 𝕜' F]
+    [NormPseudoMetric 𝕜'] [AddCommGroup 𝕜'] [IsNormedAddGroup 𝕜'] [IsBoundedSMul 𝕜' F]
     (c : 𝕜') (f : E →SL[σ₁₂] F) : ‖c • f‖ ≤ ‖c‖ * ‖f‖ :=
   (c • f).opNorm_le_bound (mul_nonneg (norm_nonneg _) (opNorm_nonneg _)) fun _ => by
     grw [smul_apply, norm_smul_le, mul_assoc, le_opNorm]
@@ -475,7 +475,7 @@ theorem restrictScalarsIsometry_toLinearMap :
 end RestrictScalars
 
 lemma norm_pi_le_of_le {ι : Type*} [Fintype ι]
-    {M : ι → Type*} [∀ i, SeminormedAddCommGroup (M i)] [∀ i, NormedSpace 𝕜 (M i)] {C : ℝ}
+    {M : ι → Type*} [∀ i, NormPseudoMetric (M i)] [∀ i, AddCommGroup (M i)] [∀ i, IsNormedAddGroup (M i)] [∀ i, NormedSpace 𝕜 (M i)] {C : ℝ}
     {L : (i : ι) → (E →L[𝕜] M i)} (hL : ∀ i, ‖L i‖ ≤ C) (hC : 0 ≤ C) :
     ‖pi L‖ ≤ C := by
   refine opNorm_le_bound _ hC (fun x ↦ ?_)

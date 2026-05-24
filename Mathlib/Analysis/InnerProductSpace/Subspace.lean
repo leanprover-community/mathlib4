@@ -26,7 +26,7 @@ variable {𝕜 E F : Type*} [RCLike 𝕜]
 
 section Submodule
 
-variable [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
+variable [NormPseudoMetric E] [AddCommGroup E] [IsNormedAddGroup E] [InnerProductSpace 𝕜 E]
 
 local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
@@ -62,7 +62,7 @@ end Submodule
 
 section OrthogonalFamily_Seminormed
 
-variable [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
+variable [NormPseudoMetric E] [AddCommGroup E] [IsNormedAddGroup E] [InnerProductSpace 𝕜 E]
 
 local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
@@ -82,7 +82,7 @@ product space structure on each of the submodules is important -- for example, w
 their Hilbert sum (`PiLp V 2`).  For example, given an orthonormal set of vectors `v : ι → E`,
 we have an associated orthogonal family of one-dimensional subspaces of `E`, which it is convenient
 to be able to discuss using `ι → 𝕜` rather than `Π i : ι, span 𝕜 (v i)`. -/
-def OrthogonalFamily (G : ι → Type*) [∀ i, SeminormedAddCommGroup (G i)]
+def OrthogonalFamily (G : ι → Type*) [∀ i, NormPseudoMetric (G i)] [∀ i, AddCommGroup (G i)] [∀ i, IsNormedAddGroup (G i)]
     [∀ i, InnerProductSpace 𝕜 (G i)] (V : ∀ i, G i →ₗᵢ[𝕜] E) : Prop :=
   Pairwise fun i j => ∀ v : G i, ∀ w : G j, ⟪V i v, V j w⟫ = 0
 

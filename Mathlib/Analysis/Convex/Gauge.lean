@@ -524,7 +524,7 @@ end AddCommGroup
 
 section Seminormed
 
-variable [SeminormedAddCommGroup E] [NormedSpace ℝ E] {s : Set E} {r : ℝ} {x : E}
+variable [NormPseudoMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace ℝ E] {s : Set E} {r : ℝ} {x : E}
 open Metric
 
 theorem gauge_unit_ball (x : E) : gauge (ball (0 : E) 1) x = ‖x‖ := by

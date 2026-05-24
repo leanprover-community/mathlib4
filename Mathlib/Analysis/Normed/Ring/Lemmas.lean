@@ -107,7 +107,7 @@ namespace SeparationQuotient
 instance [NonUnitalSeminormedRing α] : IsNormedRing (SeparationQuotient α) where
   norm_mul_le := Quotient.ind₂ norm_mul_le
 
-instance [SeminormedAddCommGroup α] [One α] [NormOneClass α] :
+instance [NormPseudoMetric α] [AddCommGroup α] [IsNormedAddGroup α] [One α] [NormOneClass α] :
     NormOneClass (SeparationQuotient α) where
   norm_one := norm_one (α := α)
 

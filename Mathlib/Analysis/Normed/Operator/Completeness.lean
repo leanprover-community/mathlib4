@@ -35,7 +35,7 @@ namespace ContinuousLinearMap
 
 section Completeness
 
-variable {E' : Type*} [SeminormedAddCommGroup E'] [NormedSpace 𝕜 E'] [RingHomIsometric σ₁₂]
+variable {E' : Type*} [NormPseudoMetric E'] [AddCommGroup E'] [IsNormedAddGroup E'] [NormedSpace 𝕜 E'] [RingHomIsometric σ₁₂]
 
 /-- Construct a bundled continuous (semi)linear map from a map `f : E → F` and a proof of the fact
 that it belongs to the closure of the image of a bounded set `s : Set (E →SL[σ₁₂] F)` under coercion

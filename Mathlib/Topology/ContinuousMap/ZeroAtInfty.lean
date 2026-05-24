@@ -448,15 +448,15 @@ field `𝕜` whenever `β` is as well.
 
 section NormedSpace
 
-noncomputable instance instNormPseudoMetric [SeminormedAddCommGroup β] :
+noncomputable instance instNormPseudoMetric [NormPseudoMetric β] [AddCommGroup β] [IsNormedAddGroup β] :
     NormPseudoMetric C₀(α, β) := fast_instance%
   .induced _ _ (⟨⟨toBCF, rfl⟩, fun _ _ => rfl⟩ : C₀(α, β) →+ α →ᵇ β)
 
-instance instIsNormedAddGroup [SeminormedAddCommGroup β] :
+instance instIsNormedAddGroup [NormPseudoMetric β] [AddCommGroup β] [IsNormedAddGroup β] :
     IsNormedAddGroup C₀(α, β) :=
   .induced _ _ (⟨⟨toBCF, rfl⟩, fun _ _ => rfl⟩ : C₀(α, β) →+ α →ᵇ β)
 
-noncomputable example [SeminormedAddCommGroup β] : SeminormedAddCommGroup C₀(α, β) where
+noncomputable example [NormPseudoMetric β] [AddCommGroup β] [IsNormedAddGroup β] : SeminormedAddCommGroup C₀(α, β) where
 
 noncomputable instance instNormMetric [NormedAddCommGroup β] :
     NormMetric C₀(α, β) := fast_instance%
@@ -464,7 +464,7 @@ noncomputable instance instNormMetric [NormedAddCommGroup β] :
 
 noncomputable example [NormedAddCommGroup β] : NormedAddCommGroup C₀(α, β) where
 
-variable [SeminormedAddCommGroup β] {𝕜 : Type*} [NormedField 𝕜] [NormedSpace 𝕜 β]
+variable [NormPseudoMetric β] [AddCommGroup β] [IsNormedAddGroup β] {𝕜 : Type*} [NormedField 𝕜] [NormedSpace 𝕜 β]
 
 @[simp]
 theorem norm_toBCF_eq_norm {f : C₀(α, β)} : ‖f.toBCF‖ = ‖f‖ :=

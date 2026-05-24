@@ -32,7 +32,7 @@ namespace Subgroup
 
 section SeminormedGroup
 
-variable [SeminormedGroup E] {s : Subgroup E}
+variable [NormPseudoMetric E] [Group E] [IsNormedGroup E] {s : Subgroup E}
 
 /-- A subgroup of a seminormed group is also a seminormed group,
 with the restriction of the norm. -/
@@ -75,7 +75,7 @@ namespace SubgroupClass
 
 section SeminormedGroup
 
-variable [SeminormedGroup E] {S : Type*} [SetLike S E] [SubgroupClass S E] (s : S)
+variable [NormPseudoMetric E] [Group E] [IsNormedGroup E] {S : Type*} [SetLike S E] [SubgroupClass S E] (s : S)
 
 /-- missing doc -/
 @[to_additive /-- missing doc -/]

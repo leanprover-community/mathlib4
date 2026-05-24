@@ -1307,7 +1307,7 @@ end Seminorm
 
 section normSeminorm
 
-variable (𝕜) (E) [NormedField 𝕜] [SeminormedAddCommGroup E] [NormedSpace 𝕜 E] {r : ℝ}
+variable (𝕜) (E) [NormedField 𝕜] [NormPseudoMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E] {r : ℝ}
 
 /-- The norm of a seminormed group as a seminorm. -/
 def normSeminorm : Seminorm 𝕜 E :=

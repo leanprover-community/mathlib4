@@ -22,7 +22,7 @@ open scoped ComplexConjugate
 namespace StrongDual
 
 
-variable {𝕜 F : Type*} [RCLike 𝕜] [SeminormedAddCommGroup F] [NormedSpace 𝕜 F]
+variable {𝕜 F : Type*} [RCLike 𝕜] [NormPseudoMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace 𝕜 F]
 variable [NormedSpace ℝ F] [IsScalarTower ℝ 𝕜 F]
 
 /-- The norm of the extension is bounded by `‖fr‖`. -/

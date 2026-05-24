@@ -30,7 +30,7 @@ instance [Inner 𝕜 H] : Inner 𝕜 Hᵐᵒᵖ where inner x y := inner 𝕜 x.
 @[simp] theorem inner_op [Inner 𝕜 H] (x y : H) : inner 𝕜 (op x) (op y) = inner 𝕜 x y := rfl
 
 section InnerProductSpace
-variable [RCLike 𝕜] [SeminormedAddCommGroup H] [InnerProductSpace 𝕜 H]
+variable [RCLike 𝕜] [NormPseudoMetric H] [AddCommGroup H] [IsNormedAddGroup H] [InnerProductSpace 𝕜 H]
 
 instance : InnerProductSpace 𝕜 Hᵐᵒᵖ where
   norm_sq_eq_re_inner x := (inner_self_eq_norm_sq x.unop).symm

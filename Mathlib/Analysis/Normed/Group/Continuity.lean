@@ -27,7 +27,7 @@ open ENNReal Filter NNReal Uniformity Pointwise Topology
 
 section SeminormedGroup
 
-variable [SeminormedGroup E] [SeminormedGroup F] [SeminormedGroup G]
+variable [NormPseudoMetric E] [Group E] [IsNormedGroup E] [NormPseudoMetric F] [Group F] [IsNormedGroup F] [NormPseudoMetric G] [Group G] [IsNormedGroup G]
 
 open Finset
 
@@ -126,7 +126,7 @@ end SeminormedGroup
 section Instances
 
 @[to_additive]
-instance SeminormedGroup.toContinuousENorm [SeminormedGroup E] : ContinuousENorm E where
+instance SeminormedGroup.toContinuousENorm [NormPseudoMetric E] [Group E] [IsNormedGroup E] : ContinuousENorm E where
   continuous_enorm := ENNReal.isOpenEmbedding_coe.continuous.comp continuous_nnnorm'
 
 @[to_additive]
@@ -138,7 +138,7 @@ end Instances
 
 section SeminormedGroup
 
-variable [SeminormedGroup E] [SeminormedGroup F] [SeminormedGroup G] {s : Set E} {a : E}
+variable [NormPseudoMetric E] [Group E] [IsNormedGroup E] [NormPseudoMetric F] [Group F] [IsNormedGroup F] [NormPseudoMetric G] [Group G] [IsNormedGroup G] {s : Set E} {a : E}
 
 set_option linter.docPrime false in
 @[to_additive Inseparable.norm_eq_norm]
@@ -208,7 +208,7 @@ end ContinuousENorm
 
 section SeminormedGroup
 
-variable [SeminormedGroup E] [SeminormedGroup F] [SeminormedGroup G] {s : Set E} {a : E}
+variable [NormPseudoMetric E] [Group E] [IsNormedGroup E] [NormPseudoMetric F] [Group F] [IsNormedGroup F] [NormPseudoMetric G] [Group G] [IsNormedGroup G] {s : Set E} {a : E}
 
 section
 
@@ -289,7 +289,7 @@ end SeminormedGroup
 
 section SeminormedCommGroup
 
-variable [SeminormedCommGroup E] [SeminormedCommGroup F] {a b : E} {r : ℝ}
+variable [NormPseudoMetric E] [CommGroup E] [IsNormedGroup E] [NormPseudoMetric F] [CommGroup F] [IsNormedGroup F] {a b : E} {r : ℝ}
 
 @[to_additive]
 theorem tendsto_iff_norm_div_tendsto_zero {f : α → E} {a : Filter α} {b : E} :

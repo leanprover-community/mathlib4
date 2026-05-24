@@ -21,7 +21,7 @@ open Set Real Metric ContinuousLinearMap
 
 section SemiNormed
 
-variable [SeminormedAddCommGroup E] [SeminormedAddCommGroup F] [SeminormedAddCommGroup G]
+variable [NormPseudoMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormPseudoMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormPseudoMetric G] [AddCommGroup G] [IsNormedAddGroup G]
 variable [NormedSpace 𝕜 E] [NormedSpace 𝕜 F] [NormedSpace 𝕜 G]
 
 namespace ContinuousLinearMap
@@ -76,10 +76,10 @@ section Prod
 
 variable (𝕜)
 variable (M₁ M₂ M₃ M₄ : Type*)
-  [SeminormedAddCommGroup M₁] [NormedSpace 𝕜 M₁]
-  [SeminormedAddCommGroup M₂] [NormedSpace 𝕜 M₂]
-  [SeminormedAddCommGroup M₃] [NormedSpace 𝕜 M₃]
-  [SeminormedAddCommGroup M₄] [NormedSpace 𝕜 M₄]
+  [NormPseudoMetric M₁] [AddCommGroup M₁] [IsNormedAddGroup M₁] [NormedSpace 𝕜 M₁]
+  [NormPseudoMetric M₂] [AddCommGroup M₂] [IsNormedAddGroup M₂] [NormedSpace 𝕜 M₂]
+  [NormPseudoMetric M₃] [AddCommGroup M₃] [IsNormedAddGroup M₃] [NormedSpace 𝕜 M₃]
+  [NormPseudoMetric M₄] [AddCommGroup M₄] [IsNormedAddGroup M₄] [NormedSpace 𝕜 M₄]
 
 /-- `ContinuousLinearMap.prodMap` as a continuous linear map. -/
 noncomputable def prodMapL : (M₁ →L[𝕜] M₂) × (M₃ →L[𝕜] M₄) →L[𝕜] M₁ × M₃ →L[𝕜] M₂ × M₄ :=
@@ -148,7 +148,7 @@ variable (𝕜 E F)
 
 /-- The operator norm of the first projection `E × F → E` is exactly 1 if `E` is nontrivial. -/
 @[simp] lemma norm_fst [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-    [SeminormedAddCommGroup F] [NormedSpace 𝕜 F] [Nontrivial E] :
+    [NormPseudoMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace 𝕜 F] [Nontrivial E] :
     ‖fst 𝕜 E F‖ = 1 := by
   refine le_antisymm (norm_fst_le ..) ?_
   let ⟨e, he⟩ := exists_ne (0 : E)
@@ -157,7 +157,7 @@ variable (𝕜 E F)
   rwa [← mul_le_mul_iff_of_pos_right (norm_pos_iff.mpr he), one_mul]
 
 /-- The operator norm of the second projection `E × F → F` is exactly 1 if `F` is nontrivial. -/
-@[simp] lemma norm_snd [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
+@[simp] lemma norm_snd [NormPseudoMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E]
     [NormedAddCommGroup F] [NormedSpace 𝕜 F] [Nontrivial F] :
     ‖snd 𝕜 E F‖ = 1 := by
   refine le_antisymm (norm_snd_le ..) ?_

@@ -30,7 +30,7 @@ variable {𝕜 𝕜₂ 𝕜₃ E F G : Type*}
 section NontriviallySemiNormed
 
 variable [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕜₂] [NontriviallyNormedField 𝕜₃]
-variable [SeminormedAddCommGroup E] [SeminormedAddCommGroup F] [SeminormedAddCommGroup G]
+variable [NormPseudoMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormPseudoMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormPseudoMetric G] [AddCommGroup G] [IsNormedAddGroup G]
 variable [NormedSpace 𝕜 E] [NormedSpace 𝕜₂ F] [NormedSpace 𝕜₃ G]
 variable {σ₁₂ : 𝕜 →+* 𝕜₂} {σ₂₃ : 𝕜₂ →+* 𝕜₃} {σ₁₃ : 𝕜 →+* 𝕜₃} [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃]
 variable [RingHomIsometric σ₁₂] [RingHomIsometric σ₂₃] [RingHomIsometric σ₁₃]
@@ -123,7 +123,7 @@ end ContinuousLinearEquiv
 end NontriviallySemiNormed
 
 section DenselyNormedDomain
-variable [NormedAddCommGroup E] [SeminormedAddCommGroup F]
+variable [NormedAddCommGroup E] [NormPseudoMetric F] [AddCommGroup F] [IsNormedAddGroup F]
 variable [DenselyNormedField 𝕜] [NontriviallyNormedField 𝕜₂]
 variable [NormedSpace 𝕜 E] [NormedSpace 𝕜₂ F] {σ₁₂ : 𝕜 →+* 𝕜₂} [RingHomIsometric σ₁₂]
 

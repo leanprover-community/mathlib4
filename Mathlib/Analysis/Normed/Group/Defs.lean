@@ -274,7 +274,7 @@ instance as a special case of a more general `SeminormedGroup` instance. -/
 satisfying `∀ x, ‖x‖ = 0 → x = 0`. This avoids having to go back to the `(Pseudo)MetricSpace`
 level when declaring a `NormedAddGroup` instance as a special case of a more general
 `SeminormedAddGroup` instance. -/]
-abbrev NormedGroup.ofSeparation [SeminormedGroup E] (h : ∀ x : E, ‖x‖ = 0 → x = 1) :
+abbrev NormedGroup.ofSeparation [NormPseudoMetric E] [Group E] [IsNormedGroup E] (h : ∀ x : E, ‖x‖ = 0 → x = 1) :
     NormedGroup E where
   toNormMetric := .ofMulSeparation h
 

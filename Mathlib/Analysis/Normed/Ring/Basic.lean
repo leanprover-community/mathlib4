@@ -145,7 +145,7 @@ export NormOneClass (norm_one)
 attribute [simp] norm_one
 
 section SeminormedAddCommGroup
-variable [SeminormedAddCommGroup G] [One G] [NormOneClass G]
+variable [NormPseudoMetric G] [AddCommGroup G] [IsNormedAddGroup G] [One G] [NormOneClass G]
 
 @[simp] lemma nnnorm_one : ‖(1 : G)‖₊ = 1 := NNReal.eq norm_one
 @[simp] lemma enorm_one : ‖(1 : G)‖ₑ = 1 := by simp [enorm]
@@ -157,20 +157,20 @@ end SeminormedAddCommGroup
 
 end NormOneClass
 
-instance ULift.normOneClass [SeminormedAddCommGroup α] [One α] [NormOneClass α] :
+instance ULift.normOneClass [NormPseudoMetric α] [AddCommGroup α] [IsNormedAddGroup α] [One α] [NormOneClass α] :
     NormOneClass (ULift α) :=
   ⟨by simp [ULift.norm_def]⟩
 
-instance Prod.normOneClass [SeminormedAddCommGroup α] [One α] [NormOneClass α]
-    [SeminormedAddCommGroup β] [One β] [NormOneClass β] : NormOneClass (α × β) :=
+instance Prod.normOneClass [NormPseudoMetric α] [AddCommGroup α] [IsNormedAddGroup α] [One α] [NormOneClass α]
+    [NormPseudoMetric β] [AddCommGroup β] [IsNormedAddGroup β] [One β] [NormOneClass β] : NormOneClass (α × β) :=
   ⟨by simp [Prod.norm_def]⟩
 
 instance Pi.normOneClass {ι : Type*} {α : ι → Type*} [Nonempty ι] [Fintype ι]
-    [∀ i, SeminormedAddCommGroup (α i)] [∀ i, One (α i)] [∀ i, NormOneClass (α i)] :
+    [∀ i, NormPseudoMetric (α i)] [∀ i, AddCommGroup (α i)] [∀ i, IsNormedAddGroup (α i)] [∀ i, One (α i)] [∀ i, NormOneClass (α i)] :
     NormOneClass (∀ i, α i) :=
   ⟨by simpa [Pi.norm_def] using Finset.sup_const Finset.univ_nonempty 1⟩
 
-instance MulOpposite.normOneClass [SeminormedAddCommGroup α] [One α] [NormOneClass α] :
+instance MulOpposite.normOneClass [NormPseudoMetric α] [AddCommGroup α] [IsNormedAddGroup α] [One α] [NormOneClass α] :
     NormOneClass αᵐᵒᵖ :=
   ⟨@norm_one α _ _ _⟩
 
@@ -458,7 +458,7 @@ end NNReal
 
 /-- A restatement of `MetricSpace.tendsto_atTop` in terms of the norm. -/
 theorem NormedAddCommGroup.tendsto_atTop [Nonempty α] [Preorder α] [IsDirectedOrder α]
-    {β : Type*} [SeminormedAddCommGroup β] {f : α → β} {b : β} :
+    {β : Type*} [NormPseudoMetric β] [AddCommGroup β] [IsNormedAddGroup β] {f : α → β} {b : β} :
     Tendsto f atTop (𝓝 b) ↔ ∀ ε, 0 < ε → ∃ N, ∀ n, N ≤ n → ‖f n - b‖ < ε :=
   (atTop_basis.tendsto_iff Metric.nhds_basis_ball).trans (by simp [dist_eq_norm])
 
@@ -466,7 +466,7 @@ theorem NormedAddCommGroup.tendsto_atTop [Nonempty α] [Preorder α] [IsDirected
 uses `∃ N, ∀ n > N, ...` rather than `∃ N, ∀ n ≥ N, ...`
 -/
 theorem NormedAddCommGroup.tendsto_atTop' [Nonempty α] [Preorder α] [IsDirectedOrder α]
-    [NoMaxOrder α] {β : Type*} [SeminormedAddCommGroup β] {f : α → β} {b : β} :
+    [NoMaxOrder α] {β : Type*} [NormPseudoMetric β] [AddCommGroup β] [IsNormedAddGroup β] {f : α → β} {b : β} :
     Tendsto f atTop (𝓝 b) ↔ ∀ ε, 0 < ε → ∃ N, ∀ n, N < n → ‖f n - b‖ < ε :=
   (atTop_basis_Ioi.tendsto_iff Metric.nhds_basis_ball).trans (by simp [dist_eq_norm])
 
@@ -514,7 +514,7 @@ class NormMulClass (α : Type*) [Norm α] [Mul α] : Prop where
 
 section SeminormedAddCommGroup
 
-variable [SeminormedAddCommGroup α] [Mul α] [NormMulClass α] (a b : α)
+variable [NormPseudoMetric α] [AddCommGroup α] [IsNormedAddGroup α] [Mul α] [NormMulClass α] (a b : α)
 
 @[simp] lemma nnnorm_mul : ‖a * b‖₊ = ‖a‖₊ * ‖b‖₊ := NNReal.eq <| norm_mul a b
 

@@ -113,7 +113,7 @@ open Filter Function Bornology Metric Set Topology Filter
 variable {𝕜 M E : Type*}
 variable [NontriviallyNormedField 𝕜]
 variable [AddCommGroup M] [TopologicalSpace M] [Module 𝕜 M]
-variable [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable [NormPseudoMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E]
 
 namespace WeakDual
 

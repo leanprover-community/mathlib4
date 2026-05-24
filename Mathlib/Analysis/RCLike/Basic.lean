@@ -1309,8 +1309,8 @@ noncomputable def IsRCLikeNormedField.rclike (𝕜 : Type*)
 end
 
 namespace LinearIsometryEquiv
-variable {𝕜 V W G : Type*} [RCLike 𝕜] [SeminormedAddCommGroup V] [Module 𝕜 V]
-  [SeminormedAddCommGroup W] [NormedSpace 𝕜 W] [SeminormedAddCommGroup G] [NormedSpace 𝕜 G]
+variable {𝕜 V W G : Type*} [RCLike 𝕜] [NormPseudoMetric V] [AddCommGroup V] [IsNormedAddGroup V] [Module 𝕜 V]
+  [NormPseudoMetric W] [AddCommGroup W] [IsNormedAddGroup W] [NormedSpace 𝕜 W] [NormPseudoMetric G] [AddCommGroup G] [IsNormedAddGroup G] [NormedSpace 𝕜 G]
 
 /-- Left scalar multiplication of a unit with norm one and a linear isometric equivalence,
 as a linear isometric equivalence. -/

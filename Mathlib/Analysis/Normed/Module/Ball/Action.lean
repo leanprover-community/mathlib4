@@ -23,7 +23,7 @@ public section
 
 open Metric Set
 
-variable {𝕜 𝕜' E : Type*} [NormedField 𝕜] [NormedField 𝕜'] [SeminormedAddCommGroup E]
+variable {𝕜 𝕜' E : Type*} [NormedField 𝕜] [NormedField 𝕜'] [NormPseudoMetric E] [AddCommGroup E] [IsNormedAddGroup E]
   [NormedSpace 𝕜 E] [NormedSpace 𝕜' E] {r : ℝ}
 
 section ClosedBall

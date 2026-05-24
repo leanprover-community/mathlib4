@@ -24,8 +24,8 @@ variable {α : Type*} [MeasurableSpace α]
 namespace ContinuousLinearMap
 
 variable {R E F : Type*} [Semiring R]
-  [SeminormedAddCommGroup E] [Module R E] [MeasurableSpace E] [OpensMeasurableSpace E]
-  [SeminormedAddCommGroup F] [Module R F] [MeasurableSpace F] [BorelSpace F]
+  [NormPseudoMetric E] [AddCommGroup E] [IsNormedAddGroup E] [Module R E] [MeasurableSpace E] [OpensMeasurableSpace E]
+  [NormPseudoMetric F] [AddCommGroup F] [IsNormedAddGroup F] [Module R F] [MeasurableSpace F] [BorelSpace F]
 
 @[fun_prop]
 protected theorem measurable (L : E →L[R] F) : Measurable L :=

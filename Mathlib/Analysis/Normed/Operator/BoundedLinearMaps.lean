@@ -65,9 +65,9 @@ open Metric ContinuousLinearMap
 section Semiring
 
 variable {𝕜 E F G : Type*} [Semiring 𝕜]
-    [SeminormedAddCommGroup E] [Module 𝕜 E]
-    [SeminormedAddCommGroup F] [Module 𝕜 F]
-    [SeminormedAddCommGroup G] [Module 𝕜 G]
+    [NormPseudoMetric E] [AddCommGroup E] [IsNormedAddGroup E] [Module 𝕜 E]
+    [NormPseudoMetric F] [AddCommGroup F] [IsNormedAddGroup F] [Module 𝕜 F]
+    [NormPseudoMetric G] [AddCommGroup G] [IsNormedAddGroup G] [Module 𝕜 G]
     {f g : E → F}
 
 variable (𝕜 f) in
@@ -282,7 +282,7 @@ variable {𝕜 A : Type*} [CommSemiring 𝕜] [SeminormedRing A] [Algebra 𝕜 A
 
 /-- Scalar multiplication (for a normed `𝕜`-algebra acting on a normed `𝕜`-module) as a bounded
 bilinear map. -/
-theorem isBoundedBilinearMap_smul {E : Type*} [SeminormedAddCommGroup E] [Module 𝕜 E]
+theorem isBoundedBilinearMap_smul {E : Type*} [NormPseudoMetric E] [AddCommGroup E] [IsNormedAddGroup E] [Module 𝕜 E]
     [Module A E] [IsBoundedSMul A E] [IsScalarTower 𝕜 A E] :
     IsBoundedBilinearMap 𝕜 fun p : A × E ↦ p.1 • p.2 where
   add_left := add_smul
@@ -298,9 +298,9 @@ theorem isBoundedBilinearMap_mul :
 
 end CommSemiring
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [SeminormedAddCommGroup E]
-  [NormedSpace 𝕜 E] {F : Type*} [SeminormedAddCommGroup F] [NormedSpace 𝕜 F] {G : Type*}
-  [SeminormedAddCommGroup G] [NormedSpace 𝕜 G]
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormPseudoMetric E] [AddCommGroup E] [IsNormedAddGroup E]
+  [NormedSpace 𝕜 E] {F : Type*} [NormPseudoMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace 𝕜 F] {G : Type*}
+  [NormPseudoMetric G] [AddCommGroup G] [IsNormedAddGroup G] [NormedSpace 𝕜 G]
 
 /-- A continuous linear map satisfies `IsBoundedLinearMap` -/
 theorem ContinuousLinearMap.isBoundedLinearMap (f : E →L[𝕜] F) : IsBoundedLinearMap 𝕜 f :=
@@ -324,7 +324,7 @@ variable {ι : Type*} [Fintype ι]
 
 /-- Taking the Cartesian product of two continuous multilinear maps is a bounded linear
 operation. -/
-theorem isBoundedLinearMap_prod_multilinear {E : ι → Type*} [∀ i, SeminormedAddCommGroup (E i)]
+theorem isBoundedLinearMap_prod_multilinear {E : ι → Type*} [∀ i, NormPseudoMetric (E i)] [∀ i, AddCommGroup (E i)] [∀ i, IsNormedAddGroup (E i)]
     [∀ i, NormedSpace 𝕜 (E i)] :
     IsBoundedLinearMap 𝕜 fun p : ContinuousMultilinearMap 𝕜 E F × ContinuousMultilinearMap 𝕜 E G =>
       p.1.prod p.2 :=
@@ -525,7 +525,7 @@ namespace ContinuousLinearEquiv
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-variable {F : Type*} [SeminormedAddCommGroup F] [NormedSpace 𝕜 F]
+variable {F : Type*} [NormPseudoMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace 𝕜 F]
 
 open Set
 open scoped Topology

@@ -40,13 +40,13 @@ Note that since this requires `SeminormedAddCommGroup` and not `NormedAddCommGro
 typeclass can be used for "seminormed spaces" too, just as `Module` can be used for
 "semimodules". -/
 @[ext]
-class NormedSpace (𝕜 : Type*) (E : Type*) [NormedField 𝕜] [SeminormedAddCommGroup E]
+class NormedSpace (𝕜 : Type*) (E : Type*) [NormedField 𝕜] [NormPseudoMetric E] [AddCommGroup E] [IsNormedAddGroup E]
     extends Module 𝕜 E where
   protected norm_smul_le : ∀ (a : 𝕜) (b : E), ‖a • b‖ ≤ ‖a‖ * ‖b‖
 
 attribute [inherit_doc NormedSpace] NormedSpace.norm_smul_le
 
-variable [NormedField 𝕜] [SeminormedAddCommGroup E] [SeminormedAddCommGroup F]
+variable [NormedField 𝕜] [NormPseudoMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormPseudoMetric F] [AddCommGroup F] [IsNormedAddGroup F]
 variable [NormedSpace 𝕜 E] [NormedSpace 𝕜 F]
 
 -- see Note [lower instance priority]
@@ -154,7 +154,7 @@ instance Prod.normedSpace : NormedSpace 𝕜 (E × F) :=
       simp only [norm_smul, Prod.norm_def, le_rfl] }
 
 /-- The product of finitely many normed spaces is a normed space, with the sup norm. -/
-instance Pi.normedSpace {ι : Type*} {E : ι → Type*} [Fintype ι] [∀ i, SeminormedAddCommGroup (E i)]
+instance Pi.normedSpace {ι : Type*} {E : ι → Type*} [Fintype ι] [∀ i, NormPseudoMetric (E i)] [∀ i, AddCommGroup (E i)] [∀ i, IsNormedAddGroup (E i)]
     [∀ i, NormedSpace 𝕜 (E i)] : NormedSpace 𝕜 (∀ i, E i) where
   norm_smul_le a f := by
     simp_rw [← coe_nnnorm, ← NNReal.coe_mul, NNReal.coe_le_coe, Pi.nnnorm_def,
@@ -169,11 +169,11 @@ instance MulOpposite.instNormedSpace : NormedSpace 𝕜 Eᵐᵒᵖ where
 
 /-- A subspace of a normed space is also a normed space, with the restriction of the norm. -/
 instance Submodule.normedSpace {𝕜 R : Type*} [SMul 𝕜 R] [NormedField 𝕜] [Ring R] {E : Type*}
-    [SeminormedAddCommGroup E] [NormedSpace 𝕜 E] [Module R E] [IsScalarTower 𝕜 R E]
+    [NormPseudoMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E] [Module R E] [IsScalarTower 𝕜 R E]
     (s : Submodule R E) : NormedSpace 𝕜 s where
   norm_smul_le c x := norm_smul_le c (x : E)
 
-variable {S 𝕜 R E : Type*} [SMul 𝕜 R] [NormedField 𝕜] [Ring R] [SeminormedAddCommGroup E]
+variable {S 𝕜 R E : Type*} [SMul 𝕜 R] [NormedField 𝕜] [Ring R] [NormPseudoMetric E] [AddCommGroup E] [IsNormedAddGroup E]
 variable [NormedSpace 𝕜 E] [Module R E] [IsScalarTower 𝕜 R E] [SetLike S E] [AddSubgroupClass S E]
 variable [SMulMemClass S R E] (s : S)
 
@@ -187,7 +187,7 @@ domain, using the `SeminormedAddCommGroup.induced` norm.
 
 See note [reducible non-instances] -/
 abbrev NormedSpace.induced {F : Type*} (𝕜 E G : Type*) [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
-    [SeminormedAddCommGroup G] [NormedSpace 𝕜 G] [FunLike F E G] [LinearMapClass F 𝕜 E G] (f : F) :
+    [NormPseudoMetric G] [AddCommGroup G] [IsNormedAddGroup G] [NormedSpace 𝕜 G] [FunLike F E G] [LinearMapClass F 𝕜 E G] (f : F) :
     letI := NormPseudoMetric.induced E G f
     letI := IsNormedAddGroup.induced E G f
     NormedSpace 𝕜 E :=
@@ -488,7 +488,7 @@ section NormedSpace
 
 variable (𝕜 𝕜' E)
 variable [NormedField 𝕜] [NormedField 𝕜'] [NormedAlgebra 𝕜 𝕜']
-  [SeminormedAddCommGroup E] [NormedSpace 𝕜' E]
+  [NormPseudoMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜' E]
 
 /-- Warning: This declaration should be used judiciously.
 Please consider using `IsScalarTower` instead.
@@ -505,7 +505,7 @@ def NormedSpace.restrictScalars : NormedSpace 𝕜 E :=
     norm_smul_le := fun c x =>
       (norm_smul_le (algebraMap 𝕜 𝕜' c) (_ : E)).trans_eq <| by rw [norm_algebraMap'] }
 
-theorem NormedSpace.restrictScalars_eq {E : Type*} [SeminormedAddCommGroup E]
+theorem NormedSpace.restrictScalars_eq {E : Type*} [NormPseudoMetric E] [AddCommGroup E] [IsNormedAddGroup E]
     [h : NormedSpace 𝕜 E] [NormedSpace 𝕜' E] [IsScalarTower 𝕜 𝕜' E] :
     NormedSpace.restrictScalars 𝕜 𝕜' E = h := by
   ext
@@ -523,7 +523,7 @@ This is not an instance as it would be contrary to the purpose of `RestrictScala
 -/
 @[implicit_reducible]
 def Module.RestrictScalars.normedSpaceOrig {𝕜 : Type*} {𝕜' : Type*} {E : Type*} [NormedField 𝕜']
-    [SeminormedAddCommGroup E] [I : NormedSpace 𝕜' E] : NormedSpace 𝕜' (RestrictScalars 𝕜 𝕜' E) :=
+    [NormPseudoMetric E] [AddCommGroup E] [IsNormedAddGroup E] [I : NormedSpace 𝕜' E] : NormedSpace 𝕜' (RestrictScalars 𝕜 𝕜' E) :=
   I
 
 end NormedSpace
@@ -882,13 +882,13 @@ abbrev NormedAddCommGroup.ofCoreReplaceAll [U : UniformSpace E] [B : Bornology E
 /-- Produces a `NormedSpace 𝕜 E` instance from a `NormedSpace.Core`. This is meant to be used
 on types where the `NormedAddCommGroup E` instance has also been defined using `core`.
 See note [reducible non-instances]. -/
-abbrev NormedSpace.ofCore {𝕜 : Type*} {E : Type*} [NormedField 𝕜] [SeminormedAddCommGroup E]
+abbrev NormedSpace.ofCore {𝕜 : Type*} {E : Type*} [NormedField 𝕜] [NormPseudoMetric E] [AddCommGroup E] [IsNormedAddGroup E]
     [Module 𝕜 E] (core : NormedSpace.Core 𝕜 E) : NormedSpace 𝕜 E where
   norm_smul_le r x := by rw [core.norm_smul r x]
 
 end Core
 
-variable {G H : Type*} [SeminormedAddCommGroup G] [SeminormedAddCommGroup H] [NormedSpace ℝ H]
+variable {G H : Type*} [NormPseudoMetric G] [AddCommGroup G] [IsNormedAddGroup G] [NormPseudoMetric H] [AddCommGroup H] [IsNormedAddGroup H] [NormedSpace ℝ H]
   {s : Set G}
 
 /-- A group homomorphism from a normed group to a real normed space,

@@ -36,8 +36,8 @@ open NNReal
 
 -- TODO: migrate to the new morphism / morphism_class style
 /-- A morphism of seminormed abelian groups is a bounded group homomorphism. -/
-structure NormedAddGroupHom (V W : Type*) [SeminormedAddCommGroup V]
-  [SeminormedAddCommGroup W] where
+structure NormedAddGroupHom (V W : Type*) [NormPseudoMetric V] [AddCommGroup V] [IsNormedAddGroup V]
+  [NormPseudoMetric W] [AddCommGroup W] [IsNormedAddGroup W] where
   /-- The function underlying a `NormedAddGroupHom` -/
   toFun : V → W
   /-- A `NormedAddGroupHom` is additive. -/
@@ -47,7 +47,7 @@ structure NormedAddGroupHom (V W : Type*) [SeminormedAddCommGroup V]
 
 namespace AddMonoidHom
 
-variable {V W : Type*} [SeminormedAddCommGroup V] [SeminormedAddCommGroup W]
+variable {V W : Type*} [NormPseudoMetric V] [AddCommGroup V] [IsNormedAddGroup V] [NormPseudoMetric W] [AddCommGroup W] [IsNormedAddGroup W]
   {f g : NormedAddGroupHom V W}
 
 /-- Associate to a group homomorphism a bounded group homomorphism under a norm control condition.
@@ -65,8 +65,8 @@ def mkNormedAddGroupHom' (f : V →+ W) (C : ℝ≥0) (hC : ∀ x, ‖f x‖₊ 
 
 end AddMonoidHom
 
-theorem exists_pos_bound_of_bound {V W : Type*} [SeminormedAddCommGroup V]
-    [SeminormedAddCommGroup W] {f : V → W} (M : ℝ) (h : ∀ x, ‖f x‖ ≤ M * ‖x‖) :
+theorem exists_pos_bound_of_bound {V W : Type*} [NormPseudoMetric V] [AddCommGroup V] [IsNormedAddGroup V]
+    [NormPseudoMetric W] [AddCommGroup W] [IsNormedAddGroup W] {f : V → W} (M : ℝ) (h : ∀ x, ‖f x‖ ≤ M * ‖x‖) :
     ∃ N, 0 < N ∧ ∀ x, ‖f x‖ ≤ N * ‖x‖ :=
   ⟨max M 1, lt_of_lt_of_le zero_lt_one (le_max_right _ _), fun x =>
     calc
@@ -76,8 +76,8 @@ theorem exists_pos_bound_of_bound {V W : Type*} [SeminormedAddCommGroup V]
 
 namespace NormedAddGroupHom
 
-variable {V V₁ V₂ V₃ : Type*} [SeminormedAddCommGroup V] [SeminormedAddCommGroup V₁]
-  [SeminormedAddCommGroup V₂] [SeminormedAddCommGroup V₃]
+variable {V V₁ V₂ V₃ : Type*} [NormPseudoMetric V] [AddCommGroup V] [IsNormedAddGroup V] [NormPseudoMetric V₁] [AddCommGroup V₁] [IsNormedAddGroup V₁]
+  [NormPseudoMetric V₂] [AddCommGroup V₂] [IsNormedAddGroup V₂] [NormPseudoMetric V₃] [AddCommGroup V₃] [IsNormedAddGroup V₃]
 
 variable {f g : NormedAddGroupHom V₁ V₂}
 
@@ -603,7 +603,7 @@ theorem zero_comp (f : NormedAddGroupHom V₁ V₂) : (0 : NormedAddGroupHom V�
   ext
   rfl
 
-theorem comp_assoc {V₄ : Type*} [SeminormedAddCommGroup V₄] (h : NormedAddGroupHom V₃ V₄)
+theorem comp_assoc {V₄ : Type*} [NormPseudoMetric V₄] [AddCommGroup V₄] [IsNormedAddGroup V₄] (h : NormedAddGroupHom V₃ V₄)
     (g : NormedAddGroupHom V₂ V₃) (f : NormedAddGroupHom V₁ V₂) :
     (h.comp g).comp f = h.comp (g.comp f) := by
   ext
@@ -617,8 +617,8 @@ end NormedAddGroupHom
 
 namespace NormedAddGroupHom
 
-variable {V W V₁ V₂ V₃ : Type*} [SeminormedAddCommGroup V] [SeminormedAddCommGroup W]
-  [SeminormedAddCommGroup V₁] [SeminormedAddCommGroup V₂] [SeminormedAddCommGroup V₃]
+variable {V W V₁ V₂ V₃ : Type*} [NormPseudoMetric V] [AddCommGroup V] [IsNormedAddGroup V] [NormPseudoMetric W] [AddCommGroup W] [IsNormedAddGroup W]
+  [NormPseudoMetric V₁] [AddCommGroup V₁] [IsNormedAddGroup V₁] [NormPseudoMetric V₂] [AddCommGroup V₂] [IsNormedAddGroup V₂] [NormPseudoMetric V₃] [AddCommGroup V₃] [IsNormedAddGroup V₃]
 
 /-- The inclusion of an `AddSubgroup`, as bounded group homomorphism. -/
 @[simps!]
@@ -749,8 +749,8 @@ theorem normNoninc_of_isometry (hf : Isometry f) : f.NormNoninc := fun v =>
 
 end Isometry
 
-variable {W₁ W₂ W₃ : Type*} [SeminormedAddCommGroup W₁] [SeminormedAddCommGroup W₂]
-  [SeminormedAddCommGroup W₃]
+variable {W₁ W₂ W₃ : Type*} [NormPseudoMetric W₁] [AddCommGroup W₁] [IsNormedAddGroup W₁] [NormPseudoMetric W₂] [AddCommGroup W₂] [IsNormedAddGroup W₂]
+  [NormPseudoMetric W₃] [AddCommGroup W₃] [IsNormedAddGroup W₃]
 
 variable (f) (g : NormedAddGroupHom V W)
 variable {f₁ g₁ : NormedAddGroupHom V₁ W₁}

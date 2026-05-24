@@ -24,8 +24,8 @@ section SeminormedAddCommGroup
 
 variable {𝕜 E F : Type*}
   [NormedField 𝕜] [PartialOrder 𝕜]
-  [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
-  [SeminormedAddCommGroup F] [NormedSpace 𝕜 F]
+  [NormPseudoMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E]
+  [NormPseudoMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace 𝕜 F]
 
 @[simp]
 lemma LinearIsometryEquiv.strictConvex_preimage {s : Set F} (e : E ≃ₗᵢ[𝕜] F) :
@@ -42,7 +42,7 @@ end SeminormedAddCommGroup
 variable {𝕜 E F : Type*} [NormedField 𝕜] [PartialOrder 𝕜]
 
 lemma StrictConvex.linearIsometry_preimage [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-    [SeminormedAddCommGroup F] [NormedSpace 𝕜 F] {s : Set F}
+    [NormPseudoMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace 𝕜 F] {s : Set F}
     (hs : StrictConvex 𝕜 s) (e : E →ₗᵢ[𝕜] F) : StrictConvex 𝕜 (e ⁻¹' s) :=
   hs.linear_preimage _ e.continuous e.injective
 

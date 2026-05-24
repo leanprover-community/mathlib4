@@ -38,7 +38,7 @@ protected abbrev normMetric [NormMetric β] (e : α ≃ β) :
 
 /-- Transfer a `IsNormedGroup` across an `Equiv` -/
 @[to_additive /-- Transfer a `IsNormedAddGroup` across an `Equiv` -/]
-protected lemma isNormedGroup [SeminormedCommGroup β] (e : α ≃ β) :
+protected lemma isNormedGroup [NormPseudoMetric β] [CommGroup β] [IsNormedGroup β] (e : α ≃ β) :
     letI := e.normPseudoMetric
     letI := e.commGroup
     IsNormedGroup α :=
@@ -48,7 +48,7 @@ protected lemma isNormedGroup [SeminormedCommGroup β] (e : α ≃ β) :
 
 /-- Transfer a `SeminormedCommGroup` across an `Equiv` -/
 @[to_additive /-- Transfer a `SeminormedCommGroup` across an `Equiv` -/]
-protected abbrev seminormedCommGroup [SeminormedCommGroup β] (e : α ≃ β) :
+protected abbrev seminormedCommGroup [NormPseudoMetric β] [CommGroup β] [IsNormedGroup β] (e : α ≃ β) :
     SeminormedCommGroup α where
   __ := e.normPseudoMetric
   __ := e.commGroup
@@ -64,7 +64,7 @@ protected abbrev normedCommGroup [NormedCommGroup β] (e : α ≃ β) :
 
 /-- Transfer `NormedSpace` across an `Equiv` -/
 protected abbrev normedSpace (𝕜 : Type*) [NormedField 𝕜]
-    [SeminormedAddCommGroup β] [NormedSpace 𝕜 β] (e : α ≃ β) :
+    [NormPseudoMetric β] [AddCommGroup β] [IsNormedAddGroup β] [NormedSpace 𝕜 β] (e : α ≃ β) :
     letI := e.seminormedAddCommGroup
     NormedSpace 𝕜 α :=
   letI := e.seminormedAddCommGroup

@@ -46,7 +46,7 @@ lemma gram_apply [Inner 𝕜 E] (v : n → E) (i j : n) :
 variable [RCLike 𝕜]
 
 section SemiInnerProductSpace
-variable [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
+variable [NormPseudoMetric E] [AddCommGroup E] [IsNormedAddGroup E] [InnerProductSpace 𝕜 E]
 
 @[simp]
 lemma gram_zero : gram 𝕜 (0 : n → E) = 0 := Matrix.ext fun _ _ ↦ inner_zero_left _

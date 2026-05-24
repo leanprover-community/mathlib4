@@ -40,7 +40,7 @@ open Topology ENNReal NNReal
 
 open Finset Filter Metric
 
-variable {ι α E F ε : Type*} [SeminormedAddCommGroup E] [SeminormedAddCommGroup F]
+variable {ι α E F ε : Type*} [NormPseudoMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormPseudoMetric F] [AddCommGroup F] [IsNormedAddGroup F]
   [TopologicalSpace ε] [ContinuousENorm ε] [AddCommMonoid ε] [IsESeminormedAddMonoid ε]
 
 theorem cauchySeq_finset_iff_vanishing_norm {f : ι → E} :

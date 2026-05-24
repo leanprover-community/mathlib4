@@ -43,8 +43,8 @@ section BasicProperties_Seminormed
 
 open scoped InnerProductSpace
 
-variable [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
-variable [SeminormedAddCommGroup F] [InnerProductSpace ℝ F]
+variable [NormPseudoMetric E] [AddCommGroup E] [IsNormedAddGroup E] [InnerProductSpace 𝕜 E]
+variable [NormPseudoMetric F] [AddCommGroup F] [IsNormedAddGroup F] [InnerProductSpace ℝ F]
 
 local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
@@ -369,8 +369,8 @@ section Norm_Seminormed
 
 open scoped InnerProductSpace
 
-variable [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
-variable [SeminormedAddCommGroup F] [InnerProductSpace ℝ F]
+variable [NormPseudoMetric E] [AddCommGroup E] [IsNormedAddGroup E] [InnerProductSpace 𝕜 E]
+variable [NormPseudoMetric F] [AddCommGroup F] [IsNormedAddGroup F] [InnerProductSpace ℝ F]
 
 local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
@@ -905,7 +905,7 @@ open scoped InnerProductSpace
 
 variable {G : Type*}
 variable (𝕜 E)
-variable [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
+variable [NormPseudoMetric E] [AddCommGroup E] [IsNormedAddGroup E] [InnerProductSpace 𝕜 E]
 
 local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
@@ -951,7 +951,7 @@ theorem real_inner_I_smul_self (x : E) :
 creates a diamond with `PiLp.innerProductSpace` because `re (sum i, ⟪x i, y i⟫)` and
 `sum i, re ⟪x i, y i⟫` are not defeq. -/
 @[implicit_reducible]
-def InnerProductSpace.complexToReal [SeminormedAddCommGroup G] [InnerProductSpace ℂ G] :
+def InnerProductSpace.complexToReal [NormPseudoMetric G] [AddCommGroup G] [IsNormedAddGroup G] [InnerProductSpace ℂ G] :
     InnerProductSpace ℝ G :=
   InnerProductSpace.rclikeToReal ℂ G
 

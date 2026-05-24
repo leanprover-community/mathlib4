@@ -52,7 +52,7 @@ end Int
 -- we can state some lemmas about `zsmul`.
 section
 
-variable [SeminormedCommGroup α]
+variable [NormPseudoMetric α] [CommGroup α] [IsNormedGroup α]
 
 @[to_additive norm_zsmul_le]
 theorem norm_zpow_le_mul_norm (n : ℤ) (a : α) : ‖a ^ n‖ ≤ ‖n‖ * ‖a‖ := by

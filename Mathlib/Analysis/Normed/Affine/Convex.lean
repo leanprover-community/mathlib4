@@ -28,7 +28,7 @@ open AffineBasis Module Metric Set
 open scoped Convex Pointwise Topology
 
 section SeminormedAddCommGroup
-variable [SeminormedAddCommGroup E] [NormedSpace ℝ E] [PseudoMetricSpace P] [NormedAddTorsor E P]
+variable [NormPseudoMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace ℝ E] [PseudoMetricSpace P] [NormedAddTorsor E P]
 variable {s : Set E}
 
 theorem Wbtw.dist_add_dist {x y z : P} (h : Wbtw ℝ x y z) :

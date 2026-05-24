@@ -195,7 +195,7 @@ end Topology
 noncomputable section Seminormed
 
 section Ring
-variable [SeminormedCommRing S] [SeminormedRing R] [SeminormedAddCommGroup M]
+variable [SeminormedCommRing S] [SeminormedRing R] [NormPseudoMetric M] [AddCommGroup M] [IsNormedAddGroup M]
 variable [Algebra S R] [Module S M]
 variable [IsBoundedSMul S R] [IsBoundedSMul S M]
 
@@ -258,7 +258,7 @@ end Ring
 
 section CommRing
 
-variable [SeminormedCommRing R] [SeminormedAddCommGroup M]
+variable [SeminormedCommRing R] [NormPseudoMetric M] [AddCommGroup M] [IsNormedAddGroup M]
 variable [Module R M] [Module Rᵐᵒᵖ M] [IsCentralScalar R M]
 variable [IsBoundedSMul R M]
 

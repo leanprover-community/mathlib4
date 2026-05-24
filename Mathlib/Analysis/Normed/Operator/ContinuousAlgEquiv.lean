@@ -30,8 +30,8 @@ The proof follows the same idea as the non-continuous version.
 open ContinuousLinearMap ContinuousLinearEquiv
 
 section
-variable {𝕜 V W : Type*} [NontriviallyNormedField 𝕜] [SeminormedAddCommGroup V]
-  [SeminormedAddCommGroup W] [NormedSpace 𝕜 V] [NormedSpace 𝕜 W] [SeparatingDual 𝕜 V]
+variable {𝕜 V W : Type*} [NontriviallyNormedField 𝕜] [NormPseudoMetric V] [AddCommGroup V] [IsNormedAddGroup V]
+  [NormPseudoMetric W] [AddCommGroup W] [IsNormedAddGroup W] [NormedSpace 𝕜 V] [NormedSpace 𝕜 W] [SeparatingDual 𝕜 V]
   [SeparatingDual 𝕜 W]
 
 /-- This is the continuous version of `AlgEquiv.eq_linearEquivConjAlgEquiv`. -/

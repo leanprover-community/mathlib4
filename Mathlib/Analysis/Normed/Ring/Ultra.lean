@@ -27,11 +27,11 @@ The weakest ring-like structure that has a bundled norm such that `‖1‖ = 1` 
 Since the statements below hold in any context, we can state them
 in an unbundled fashion using `[NormOneClass R]`.
 In fact one can actually prove all these lemmas only assuming
-`{R : Type*} [SeminormedAddGroup R] [One R] [NormOneClass R] [IsUltrametricDist R]`.
+`{R : Type*} [NormPseudoMetric R] [AddGroup R] [IsNormedAddGroup R] [One R] [NormOneClass R] [IsUltrametricDist R]`.
 But one has to give the typeclass machinery a little help in order to get it to recognise that there
 is a coercion from `ℕ` or `ℤ` to `R`.
 Instead, we use weakest pre-existing typeclass that implies both
-`[SeminormedAddGroup R]` and `[AddGroupWithOne R]`, which is `[SeminormedRing R]`.
+`[NormPseudoMetric R] [AddGroup R] [IsNormedAddGroup R]` and `[AddGroupWithOne R]`, which is `[SeminormedRing R]`.
 
 ## Tags
 

@@ -1299,7 +1299,7 @@ end Matrix
 
 open ContinuousLinearMap LinearMap in
 theorem InnerProductSpace.toMatrix_rankOne {𝕜 E F ι ι' : Type*} [RCLike 𝕜]
-    [SeminormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedAddCommGroup F] [InnerProductSpace 𝕜 F]
+    [NormPseudoMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E] [NormedAddCommGroup F] [InnerProductSpace 𝕜 F]
     [Finite ι] [Fintype ι'] [DecidableEq ι'] (x : E) (y : F) (b : Module.Basis ι 𝕜 E)
     (b' : OrthonormalBasis ι' 𝕜 F) :
     (rankOne 𝕜 x y).toMatrix b'.toBasis b = .vecMulVec (b.repr x) (star (b'.repr y)) := by

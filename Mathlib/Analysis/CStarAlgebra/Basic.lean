@@ -43,14 +43,14 @@ open Topology
 local postfix:max "⋆" => star
 
 /-- A normed star group is a normed group with a compatible `star` which is isometric. -/
-class NormedStarGroup (E : Type*) [SeminormedAddCommGroup E] [StarAddMonoid E] : Prop where
+class NormedStarGroup (E : Type*) [NormPseudoMetric E] [AddCommGroup E] [IsNormedAddGroup E] [StarAddMonoid E] : Prop where
   norm_star_le : ∀ x : E, ‖x⋆‖ ≤ ‖x‖
 
 variable {𝕜 E α : Type*}
 
 section NormedStarGroup
 
-variable [SeminormedAddCommGroup E] [StarAddMonoid E] [NormedStarGroup E]
+variable [NormPseudoMetric E] [AddCommGroup E] [IsNormedAddGroup E] [StarAddMonoid E] [NormedStarGroup E]
 
 @[simp]
 lemma norm_star (x : E) : ‖x⋆‖ = ‖x‖ :=
@@ -270,7 +270,7 @@ theorem IsStarProjection.norm_le [NonUnitalNormedRing E] [StarRing E] [CStarRing
 section starₗᵢ
 
 variable [CommSemiring 𝕜] [StarRing 𝕜]
-variable [SeminormedAddCommGroup E] [StarAddMonoid E] [NormedStarGroup E]
+variable [NormPseudoMetric E] [AddCommGroup E] [IsNormedAddGroup E] [StarAddMonoid E] [NormedStarGroup E]
 variable [Module 𝕜 E] [StarModule 𝕜 E]
 
 variable (𝕜) in

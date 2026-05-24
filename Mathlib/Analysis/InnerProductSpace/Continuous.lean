@@ -31,7 +31,7 @@ variable {𝕜 E F : Type*} [RCLike 𝕜]
 
 section Continuous
 
-variable [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
+variable [NormPseudoMetric E] [AddCommGroup E] [IsNormedAddGroup E] [InnerProductSpace 𝕜 E]
 
 local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 

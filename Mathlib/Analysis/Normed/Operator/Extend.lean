@@ -144,7 +144,7 @@ namespace LinearMap
 section compInv
 
 variable [DivisionRing 𝕜] [DivisionRing 𝕜₂] {σ₁₂ : 𝕜 →+* 𝕜₂}
-  [AddCommGroup E] [NormedAddCommGroup F] [SeminormedAddCommGroup Eₗ]
+  [AddCommGroup E] [NormedAddCommGroup F] [NormPseudoMetric Eₗ] [AddCommGroup Eₗ] [IsNormedAddGroup Eₗ]
   [Module 𝕜 E] [Module 𝕜₂ F] [Module 𝕜 Eₗ]
 
 variable (f : E →ₛₗ[σ₁₂] F) (g : E →ₗ[𝕜] Eₗ)
@@ -178,7 +178,7 @@ end compInv
 section NormedDivisionRing
 
 variable [NormedDivisionRing 𝕜] [NormedDivisionRing 𝕜₂] {σ₁₂ : 𝕜 →+* 𝕜₂}
-  [AddCommGroup E] [SeminormedAddCommGroup Eₗ] [NormedAddCommGroup F]
+  [AddCommGroup E] [NormPseudoMetric Eₗ] [AddCommGroup Eₗ] [IsNormedAddGroup Eₗ] [NormedAddCommGroup F]
   [Module 𝕜 E] [Module 𝕜₂ F] [IsBoundedSMul 𝕜₂ F] [Module 𝕜 Eₗ] [IsBoundedSMul 𝕜 Eₗ]
   [CompleteSpace F]
 
@@ -220,7 +220,7 @@ end NormedDivisionRing
 section NormedField
 
 variable [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕜₂] {σ₁₂ : 𝕜 →+* 𝕜₂}
-  [NormedAddCommGroup F] [SeminormedAddCommGroup Eₗ]
+  [NormedAddCommGroup F] [NormPseudoMetric Eₗ] [AddCommGroup Eₗ] [IsNormedAddGroup Eₗ]
   [NormedSpace 𝕜₂ F] [NormedSpace 𝕜 Eₗ]
   [AddCommGroup E] [Module 𝕜 E] [CompleteSpace F]
 

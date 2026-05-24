@@ -279,7 +279,7 @@ def IsCoercive [NormedAddCommGroup E] [NormedSpace ℝ E] (B : E →L[ℝ] E →
 section Equicontinuous
 
 variable {ι : Type*} [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕜₂] {σ₁₂ : 𝕜 →+* 𝕜₂}
-  [RingHomIsometric σ₁₂] [SeminormedAddCommGroup E] [SeminormedAddCommGroup F]
+  [RingHomIsometric σ₁₂] [NormPseudoMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormPseudoMetric F] [AddCommGroup F] [IsNormedAddGroup F]
   [NormedSpace 𝕜 E] [NormedSpace 𝕜₂ F] (f : ι → E →SL[σ₁₂] F)
 
 /-- Equivalent characterizations for equicontinuity of a family of continuous linear maps
@@ -340,11 +340,11 @@ variable {ι : Type*} [Fintype ι] [DecidableEq ι]
     (𝕜 : Type*) [NontriviallyNormedField 𝕜] (E : ι → Type*)
 
 /-- The injection `x ↦ Pi.single i x` as a linear isometry. -/
-protected def LinearIsometry.single [∀ i, SeminormedAddCommGroup (E i)] [∀ i, NormedSpace 𝕜 (E i)]
+protected def LinearIsometry.single [∀ i, NormPseudoMetric (E i)] [∀ i, AddCommGroup (E i)] [∀ i, IsNormedAddGroup (E i)] [∀ i, NormedSpace 𝕜 (E i)]
     (i : ι) : E i →ₗᵢ[𝕜] Π j, E j :=
   (LinearMap.single 𝕜 E i).toLinearIsometry (.single i)
 
-lemma ContinuousLinearMap.norm_single_le_one [∀ i, SeminormedAddCommGroup (E i)]
+lemma ContinuousLinearMap.norm_single_le_one [∀ i, NormPseudoMetric (E i)] [∀ i, AddCommGroup (E i)] [∀ i, IsNormedAddGroup (E i)]
     [∀ i, NormedSpace 𝕜 (E i)] (i : ι) :
     ‖ContinuousLinearMap.single 𝕜 E i‖ ≤ 1 :=
   (LinearIsometry.single 𝕜 E i).norm_toContinuousLinearMap_le
@@ -361,32 +361,32 @@ section inl_inr
 variable (𝕜 : Type*) [NontriviallyNormedField 𝕜] (E F : Type*)
 
 /-- The injection `x ↦ LinearMap.inl E F x` as a linear isometry. -/
-protected def LinearIsometry.inl [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
-    [SeminormedAddCommGroup F] [NormedSpace 𝕜 F] : E →ₗᵢ[𝕜] E × F :=
+protected def LinearIsometry.inl [NormPseudoMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E]
+    [NormPseudoMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace 𝕜 F] : E →ₗᵢ[𝕜] E × F :=
   (LinearMap.inl 𝕜 E F).toLinearIsometry .inl
 
 @[simp]
-lemma LinearIsometry.inl_apply [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
-    [SeminormedAddCommGroup F] [NormedSpace 𝕜 F] (x : E) :
+lemma LinearIsometry.inl_apply [NormPseudoMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E]
+    [NormPseudoMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace 𝕜 F] (x : E) :
     LinearIsometry.inl 𝕜 E F x = (x, 0) := rfl
 
 /-- The injection `x ↦ LinearMap.inr E F x` as a linear isometry. -/
-protected def LinearIsometry.inr [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
-    [SeminormedAddCommGroup F] [NormedSpace 𝕜 F] : F →ₗᵢ[𝕜] E × F :=
+protected def LinearIsometry.inr [NormPseudoMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E]
+    [NormPseudoMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace 𝕜 F] : F →ₗᵢ[𝕜] E × F :=
   (LinearMap.inr 𝕜 E F).toLinearIsometry .inr
 
 @[simp]
-lemma LinearIsometry.inr_apply [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
-    [SeminormedAddCommGroup F] [NormedSpace 𝕜 F] (y : F) :
+lemma LinearIsometry.inr_apply [NormPseudoMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E]
+    [NormPseudoMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace 𝕜 F] (y : F) :
     LinearIsometry.inr 𝕜 E F y = (0, y) := rfl
 
-lemma ContinuousLinearMap.norm_inl_le_one [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
-    [SeminormedAddCommGroup F] [NormedSpace 𝕜 F] :
+lemma ContinuousLinearMap.norm_inl_le_one [NormPseudoMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E]
+    [NormPseudoMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace 𝕜 F] :
     ‖ContinuousLinearMap.inl 𝕜 E F‖ ≤ 1 :=
   (LinearIsometry.inl 𝕜 E F).norm_toContinuousLinearMap_le
 
-lemma ContinuousLinearMap.norm_inr_le_one [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
-    [SeminormedAddCommGroup F] [NormedSpace 𝕜 F] :
+lemma ContinuousLinearMap.norm_inr_le_one [NormPseudoMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E]
+    [NormPseudoMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace 𝕜 F] :
     ‖ContinuousLinearMap.inr 𝕜 E F‖ ≤ 1 :=
   (LinearIsometry.inr 𝕜 E F).norm_toContinuousLinearMap_le
 

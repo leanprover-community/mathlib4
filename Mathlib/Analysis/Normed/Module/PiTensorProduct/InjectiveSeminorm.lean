@@ -82,8 +82,8 @@ universe uι u𝕜 uE uF
 
 variable {ι : Type uι} [Fintype ι]
 variable {𝕜 : Type u𝕜} [NontriviallyNormedField 𝕜]
-variable {E : ι → Type uE} [∀ i, SeminormedAddCommGroup (E i)] [∀ i, NormedSpace 𝕜 (E i)]
-variable {F : Type uF} [SeminormedAddCommGroup F] [NormedSpace 𝕜 F]
+variable {E : ι → Type uE} [∀ i, NormPseudoMetric (E i)] [∀ i, AddCommGroup (E i)] [∀ i, IsNormedAddGroup (E i)] [∀ i, NormedSpace 𝕜 (E i)]
+variable {F : Type uF} [NormPseudoMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace 𝕜 F]
 
 open scoped TensorProduct
 
@@ -287,8 +287,8 @@ end seminorm
 section map
 
 variable {E' E'' : ι → Type*}
-variable [∀ i, SeminormedAddCommGroup (E' i)] [∀ i, NormedSpace 𝕜 (E' i)]
-variable [∀ i, SeminormedAddCommGroup (E'' i)] [∀ i, NormedSpace 𝕜 (E'' i)]
+variable [∀ i, NormPseudoMetric (E' i)] [∀ i, AddCommGroup (E' i)] [∀ i, IsNormedAddGroup (E' i)] [∀ i, NormedSpace 𝕜 (E' i)]
+variable [∀ i, NormPseudoMetric (E'' i)] [∀ i, AddCommGroup (E'' i)] [∀ i, IsNormedAddGroup (E'' i)] [∀ i, NormedSpace 𝕜 (E'' i)]
 variable (g : Π i, E' i →L[𝕜] E'' i) (f : Π i, E i →L[𝕜] E' i)
 
 /-- Let `Eᵢ` and `E'ᵢ` be two families of normed `𝕜`-vector spaces.
@@ -349,8 +349,8 @@ protected theorem mapL_pow (f : Π i, E i →L[𝕜] E i) (n : ℕ) :
 -- to avoid the `[Fintype ι]` assumption present throughout the rest of the file.
 open Function in
 private theorem mapL_add_smul_aux {ι : Type uι}
-    {E : ι → Type uE} [(i : ι) → SeminormedAddCommGroup (E i)] [(i : ι) → NormedSpace 𝕜 (E i)]
-    {E' : ι → Type u_1} [(i : ι) → SeminormedAddCommGroup (E' i)] [(i : ι) → NormedSpace 𝕜 (E' i)]
+    {E : ι → Type uE} [(i : ι) → NormPseudoMetric (E i)] [(i : ι) → AddCommGroup (E i)] [(i : ι) → IsNormedAddGroup (E i)] [(i : ι) → NormedSpace 𝕜 (E i)]
+    {E' : ι → Type u_1} [(i : ι) → NormPseudoMetric (E' i)] [(i : ι) → AddCommGroup (E' i)] [(i : ι) → IsNormedAddGroup (E' i)] [(i : ι) → NormedSpace 𝕜 (E' i)]
     (f : (i : ι) → E i →L[𝕜] E' i) [DecidableEq ι] (i : ι) (u : E i →L[𝕜] E' i) :
     (fun j ↦ (update f i u j).toLinearMap) =
       update (fun j ↦ (f j).toLinearMap) i u.toLinearMap := by

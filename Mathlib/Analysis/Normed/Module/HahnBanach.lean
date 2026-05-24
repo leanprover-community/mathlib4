@@ -36,7 +36,7 @@ universe u v
 
 namespace Real
 
-variable {E : Type*} [SeminormedAddCommGroup E] [NormedSpace ℝ E]
+variable {E : Type*} [NormPseudoMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace ℝ E]
 
 /-- **Hahn-Banach theorem** for continuous linear functions over `ℝ`.
 See also `exists_extension_norm_eq` in the root namespace for a more general version
@@ -66,7 +66,7 @@ section RCLike
 open RCLike
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [IsRCLikeNormedField 𝕜] {E F : Type*}
-  [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
+  [NormPseudoMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E]
   [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 
 /-- **Hahn-Banach theorem** for continuous linear functions over `𝕜`
@@ -140,7 +140,7 @@ open ContinuousLinearEquiv Submodule
 
 section Seminormed
 
-variable {E : Type u} [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable {E : Type u} [NormPseudoMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E]
 
 /-- Corollary of Hahn-Banach. Given an element `x` of a normed space with `‖x‖ ≠ 0`, there
 exists an element of the dual space, of norm `1`, whose value on `x` is `‖x‖`. -/

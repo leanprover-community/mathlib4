@@ -692,7 +692,7 @@ end CommGroup
 
 section NormedAddCommGroup
 
-variable [SeminormedAddCommGroup G]
+variable [NormPseudoMetric G] [AddCommGroup G] [IsNormedAddGroup G]
 
 /-- Compute `(f ⋆ g) x₀` if the support of the `f` is within `Metric.ball 0 R`, and `g` is constant
 on `Metric.ball x₀ R`.

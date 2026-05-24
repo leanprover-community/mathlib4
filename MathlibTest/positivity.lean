@@ -427,11 +427,11 @@ example {α : Type*} [Fintype α] [Nonempty α] : 0 < Fintype.card α := by posi
 
 section Norms
 
-example [SeminormedGroup E] {a : E} (_ha : a ≠ 1) : 0 ≤ ‖a‖ := by positivity
+example [NormPseudoMetric E] [Group E] [IsNormedGroup E] {a : E} (_ha : a ≠ 1) : 0 ≤ ‖a‖ := by positivity
 example [NormedGroup E] {a : E} : 0 ≤ ‖a‖ := by positivity
 example [NormedGroup E] {a : E} (ha : a ≠ 1) : 0 < ‖a‖ := by positivity
 
-example [SeminormedAddGroup E] {a : E} (_ha : a ≠ 0) : 0 ≤ ‖a‖ := by positivity
+example [NormPseudoMetric E] [AddGroup E] [IsNormedAddGroup E] {a : E} (_ha : a ≠ 0) : 0 ≤ ‖a‖ := by positivity
 example [NormedAddGroup E] {a : E} : 0 ≤ ‖a‖ := by positivity
 example [NormedAddGroup E] {a : E} (ha : a ≠ 0) : 0 < ‖a‖ := by positivity
 

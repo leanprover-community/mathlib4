@@ -64,7 +64,7 @@ namespace LinearIsometry
 
 open LinearMap
 
-variable {F E₁ : Type*} [SeminormedAddCommGroup F] [NormedAddCommGroup E₁]
+variable {F E₁ : Type*} [NormPseudoMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedAddCommGroup E₁]
 variable {R₁ : Type*} [Field R₁] [Module R₁ E₁] [Module R₁ F] [FiniteDimensional R₁ E₁]
   [FiniteDimensional R₁ F]
 
@@ -92,7 +92,7 @@ namespace AffineIsometry
 open AffineMap
 
 variable {𝕜 : Type*} {V₁ V₂ : Type*} {P₁ P₂ : Type*} [NormedField 𝕜] [NormedAddCommGroup V₁]
-  [SeminormedAddCommGroup V₂] [NormedSpace 𝕜 V₁] [NormedSpace 𝕜 V₂] [MetricSpace P₁]
+  [NormPseudoMetric V₂] [AddCommGroup V₂] [IsNormedAddGroup V₂] [NormedSpace 𝕜 V₁] [NormedSpace 𝕜 V₂] [MetricSpace P₁]
   [PseudoMetricSpace P₂] [NormedAddTorsor V₁ P₁] [NormedAddTorsor V₂ P₂]
 
 variable [FiniteDimensional 𝕜 V₁] [FiniteDimensional 𝕜 V₂]
@@ -469,7 +469,7 @@ theorem FiniteDimensional.of_isCompact_closedBall {V : Type*} [NormedAddCommGrou
 
 /-- A locally compact normed vector space is proper. -/
 lemma ProperSpace.of_locallyCompactSpace (𝕜 : Type*) [NontriviallyNormedField 𝕜] {E : Type*}
-    [SeminormedAddCommGroup E] [NormedSpace 𝕜 E] [LocallyCompactSpace E] : ProperSpace E := by
+    [NormPseudoMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E] [LocallyCompactSpace E] : ProperSpace E := by
   rcases exists_isCompact_closedBall (0 : E) with ⟨r, rpos, hr⟩
   rcases NormedField.exists_one_lt_norm 𝕜 with ⟨c, hc⟩
   have hC : ∀ n, IsCompact (closedBall (0 : E) (‖c‖ ^ n * r)) := fun n ↦ by

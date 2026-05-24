@@ -51,7 +51,7 @@ variable (𝕜 E : Type*)
 
 section Seminormed
 
-variable [RCLike 𝕜] [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
+variable [RCLike 𝕜] [NormPseudoMetric E] [AddCommGroup E] [IsNormedAddGroup E] [InnerProductSpace 𝕜 E]
 
 local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
@@ -230,7 +230,7 @@ instance [NormedAddCommGroup E] [CompleteSpace E] [InnerProductSpace ℝ E] :
     simp
 
 /-- A nonzero rank-one operator has rank one. -/
-lemma rank_rankOne {𝕜 E F : Type*} [RCLike 𝕜] [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
+lemma rank_rankOne {𝕜 E F : Type*} [RCLike 𝕜] [NormPseudoMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E]
     [NormedAddCommGroup F] [InnerProductSpace 𝕜 F] {x : E} {y : F} (hx : x ≠ 0) (hy : y ≠ 0) :
     (rankOne 𝕜 x y).rank = 1 := by
   rw [LinearMap.rank, rankOne_def, range_smulRight_apply, Module.rank_eq_one_iff_finrank_eq_one]

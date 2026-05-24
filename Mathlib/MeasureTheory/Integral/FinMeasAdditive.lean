@@ -134,13 +134,13 @@ end FinMeasAdditive
 
 /-- A `FinMeasAdditive` set function whose norm on every set is less than the measure of the
 set (up to a multiplicative constant). -/
-def DominatedFinMeasAdditive {β} [SeminormedAddCommGroup β] {_ : MeasurableSpace α} (μ : Measure α)
+def DominatedFinMeasAdditive {β} [NormPseudoMetric β] [AddCommGroup β] [IsNormedAddGroup β] {_ : MeasurableSpace α} (μ : Measure α)
     (T : Set α → β) (C : ℝ) : Prop :=
   FinMeasAdditive μ T ∧ ∀ s, MeasurableSet s → μ s < ∞ → ‖T s‖ ≤ C * μ.real s
 
 namespace DominatedFinMeasAdditive
 
-variable {β : Type*} [SeminormedAddCommGroup β] {T T' : Set α → β} {C C' : ℝ}
+variable {β : Type*} [NormPseudoMetric β] [AddCommGroup β] [IsNormedAddGroup β] {T T' : Set α → β} {C C' : ℝ}
 
 theorem zero {m : MeasurableSpace α} (μ : Measure α) (hC : 0 ≤ C) :
     DominatedFinMeasAdditive μ (0 : Set α → β) C := by
@@ -166,7 +166,7 @@ theorem add (hT : DominatedFinMeasAdditive μ T C) (hT' : DominatedFinMeasAdditi
   rw [Pi.add_apply, add_mul]
   exact (norm_add_le _ _).trans (add_le_add (hT.2 s hs hμs) (hT'.2 s hs hμs))
 
-theorem smul [SeminormedAddGroup 𝕜] [DistribSMul 𝕜 β] [IsBoundedSMul 𝕜 β]
+theorem smul [NormPseudoMetric 𝕜] [AddGroup 𝕜] [IsNormedAddGroup 𝕜] [DistribSMul 𝕜 β] [IsBoundedSMul 𝕜 β]
     (hT : DominatedFinMeasAdditive μ T C) (c : 𝕜) :
     DominatedFinMeasAdditive μ (fun s => c • T s) (‖c‖ * C) := by
   refine ⟨hT.1.smul c, fun s hs hμs => (norm_smul_le _ _).trans ?_⟩

@@ -36,7 +36,7 @@ open Topology
 
 variable {𝕜 : Type*} [NormedField 𝕜]
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-variable {F : Type*} [SeminormedAddCommGroup F] [NormedSpace ℝ F]
+variable {F : Type*} [NormPseudoMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace ℝ F]
 
 /-- Riesz's lemma, which usually states that it is possible to find a
 vector with norm 1 whose distance to a closed proper subspace is

@@ -210,8 +210,8 @@ section Normed
 ## Reformulations for seminormed spaces
 -/
 
-variable {E : Type*} [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
-variable {F : Type*} [SeminormedAddCommGroup F] [NormedSpace 𝕜 F]
+variable {E : Type*} [NormPseudoMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E]
+variable {F : Type*} [NormPseudoMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace 𝕜 F]
 variable {f : E → F} {f' : E →L[𝕜] F} {s : Set E} {x : E}
 
 theorem hasFDerivAtFilter_iff_isLittleO {L : Filter (E × E)} :

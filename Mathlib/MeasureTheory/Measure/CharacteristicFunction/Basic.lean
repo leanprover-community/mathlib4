@@ -59,8 +59,8 @@ open scoped ENNReal
 
 namespace BoundedContinuousFunction
 
-variable {E F : Type*} [SeminormedAddCommGroup E] [InnerProductSpace ℝ E]
-  [SeminormedAddCommGroup F] [NormedSpace ℝ F]
+variable {E F : Type*} [NormPseudoMetric E] [AddCommGroup E] [IsNormedAddGroup E] [InnerProductSpace ℝ E]
+  [NormPseudoMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace ℝ F]
 
 /-- The bounded continuous map `x ↦ exp(⟪x, t⟫ * I)`. -/
 noncomputable
@@ -134,7 +134,7 @@ set_option backward.isDefEq.respectTransparency false in
 lemma charFun_apply_real {μ : Measure ℝ} (t : ℝ) :
     charFun μ t = ∫ x, exp (t * x * I) ∂μ := by simp [charFun_apply]
 
-variable [SeminormedAddCommGroup E] [InnerProductSpace ℝ E]
+variable [NormPseudoMetric E] [AddCommGroup E] [IsNormedAddGroup E] [InnerProductSpace ℝ E]
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp]

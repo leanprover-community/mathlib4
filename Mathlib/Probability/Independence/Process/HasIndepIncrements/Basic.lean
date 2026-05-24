@@ -113,8 +113,8 @@ protected lemma HasIndepIncrements.map' {F G : Type*} [MeasurableSpace G] [FunLi
   simp_rw [← map_sub]
   exact (hX n t ht).comp (fun _ ↦ f) (fun _ ↦ hf)
 
-protected lemma HasIndepIncrements.map {R F : Type*} [Semiring R] [SeminormedAddCommGroup E]
-    [Module R E] [OpensMeasurableSpace E] [SeminormedAddCommGroup F] [Module R F]
+protected lemma HasIndepIncrements.map {R F : Type*} [Semiring R] [NormPseudoMetric E] [AddCommGroup E] [IsNormedAddGroup E]
+    [Module R E] [OpensMeasurableSpace E] [NormPseudoMetric F] [AddCommGroup F] [IsNormedAddGroup F] [Module R F]
     [MeasurableSpace F] [BorelSpace F] (L : E →L[R] F) (hX : HasIndepIncrements X P) :
     HasIndepIncrements (fun t ω ↦ L (X t ω)) P :=
   hX.map' L.measurable

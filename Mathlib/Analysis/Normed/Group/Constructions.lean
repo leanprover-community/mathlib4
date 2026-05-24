@@ -72,7 +72,7 @@ instance [NormMetric E] : NormMetric (ULift E) :=
   NormMetric.induced _ _ ULift.down ULift.down_injective
 
 @[to_additive]
-instance [SeminormedGroup E] : IsNormedGroup (ULift E) :=
+instance [NormPseudoMetric E] [Group E] [IsNormedGroup E] : IsNormedGroup (ULift E) :=
   IsNormedGroup.induced _ _
   { toFun := ULift.down,
     map_one' := rfl,
@@ -124,7 +124,7 @@ namespace Additive
 instance [NormPseudoMetric E] : NormPseudoMetric (Additive E) where
 instance [NormMetric E] : NormMetric (Additive E) where
 
-instance [SeminormedGroup E] : IsNormedAddGroup (Additive E) where
+instance [NormPseudoMetric E] [Group E] [IsNormedGroup E] : IsNormedAddGroup (Additive E) where
   dist_eq x y := dist_eq_norm_inv_mul x.toMul y.toMul
 
 end Additive
@@ -134,7 +134,7 @@ namespace Additive
 instance [NormPseudoMetric E] : NormPseudoMetric (Additive E) where
 instance [NormMetric E] : NormMetric (Additive E) where
 
-instance [SeminormedGroup E] : IsNormedAddGroup (Additive E) where
+instance [NormPseudoMetric E] [Group E] [IsNormedGroup E] : IsNormedAddGroup (Additive E) where
   dist_eq x y := dist_eq_norm_inv_mul x.toMul y.toMul
 
 end Additive
@@ -144,7 +144,7 @@ namespace Multiplicative
 instance [NormPseudoMetric E] : NormPseudoMetric (Multiplicative E) where
 instance [NormMetric E] : NormMetric (Multiplicative E) where
 
-instance [SeminormedAddGroup E] : IsNormedGroup (Multiplicative E) where
+instance [NormPseudoMetric E] [AddGroup E] [IsNormedAddGroup E] : IsNormedGroup (Multiplicative E) where
   dist_eq x y := dist_eq_norm_neg_add x.toAdd y.toAdd
 
 end Multiplicative
@@ -188,7 +188,7 @@ instance (priority := 100) [NormMetric E] : NormMetric Eᵒᵈ where
 
 -- See note [lower instance priority]
 @[to_additive]
-instance (priority := 100) [SeminormedGroup E] : IsNormedGroup Eᵒᵈ where
+instance (priority := 100) [NormPseudoMetric E] [Group E] [IsNormedGroup E] : IsNormedGroup Eᵒᵈ where
   dist_eq := IsNormedGroup.dist_eq (E := E)
 
 end OrderDual
@@ -220,7 +220,7 @@ instance [NormMetric E] [NormMetric F] : NormMetric (E × F) where
 
 section SeminormedGroup
 
-variable [SeminormedGroup E] [SeminormedGroup F]
+variable [NormPseudoMetric E] [Group E] [IsNormedGroup E] [NormPseudoMetric F] [Group F] [IsNormedGroup F]
 
 /-- Product of seminormed groups, using the sup norm. -/
 @[to_additive /-- Product of seminormed groups, using the sup norm. -/]
@@ -246,7 +246,7 @@ section Pi
 variable [Fintype ι]
 
 section SeminormedGroup
-variable [∀ i, SeminormedGroup (G i)] [SeminormedGroup E] (f : ∀ i, G i) {x : ∀ i, G i} {r : ℝ}
+variable [∀ i, NormPseudoMetric (G i)] [∀ i, Group (G i)] [∀ i, IsNormedGroup (G i)] [NormPseudoMetric E] [Group E] [IsNormedGroup E] (f : ∀ i, G i) {x : ∀ i, G i} {r : ℝ}
 
 @[to_additive Pi.instNormPseudoMetric]
 instance Pi.instNormPseudoMetric' : NormPseudoMetric (∀ i, G i) where
@@ -370,18 +370,18 @@ instance instNormMetric [NormMetric E] : NormMetric Eᵐᵒᵖ where
 Note that we do not provide this more generally as `Norm Eᵐᵒᵖ`, as this is not always a good
 choice of norm in the multiplicative `SeminormedGroup E` case.
 
-We could repeat this instance to provide a `[SeminormedGroup E] : SeminormedGroup Eᵃᵒᵖ` instance,
+We could repeat this instance to provide a `[NormPseudoMetric E] [Group E] [IsNormedGroup E] : SeminormedGroup Eᵃᵒᵖ` instance,
 but that case would likely never be used.
 -/
-instance instIsNormedAddGroup [SeminormedAddGroup E] : IsNormedAddGroup Eᵐᵒᵖ where
+instance instIsNormedAddGroup [NormPseudoMetric E] [AddGroup E] [IsNormedAddGroup E] : IsNormedAddGroup Eᵐᵒᵖ where
   dist_eq _ _ := dist_eq_norm_neg_add _ _
 
-lemma norm_op [SeminormedAddGroup E] (a : E) : ‖MulOpposite.op a‖ = ‖a‖ := rfl
+lemma norm_op [NormPseudoMetric E] [AddGroup E] [IsNormedAddGroup E] (a : E) : ‖MulOpposite.op a‖ = ‖a‖ := rfl
 
-lemma norm_unop [SeminormedAddGroup E] (a : Eᵐᵒᵖ) : ‖MulOpposite.unop a‖ = ‖a‖ := rfl
+lemma norm_unop [NormPseudoMetric E] [AddGroup E] [IsNormedAddGroup E] (a : Eᵐᵒᵖ) : ‖MulOpposite.unop a‖ = ‖a‖ := rfl
 
-lemma nnnorm_op [SeminormedAddGroup E] (a : E) : ‖MulOpposite.op a‖₊ = ‖a‖₊ := rfl
+lemma nnnorm_op [NormPseudoMetric E] [AddGroup E] [IsNormedAddGroup E] (a : E) : ‖MulOpposite.op a‖₊ = ‖a‖₊ := rfl
 
-lemma nnnorm_unop [SeminormedAddGroup E] (a : Eᵐᵒᵖ) : ‖MulOpposite.unop a‖₊ = ‖a‖₊ := rfl
+lemma nnnorm_unop [NormPseudoMetric E] [AddGroup E] [IsNormedAddGroup E] (a : Eᵐᵒᵖ) : ‖MulOpposite.unop a‖₊ = ‖a‖₊ := rfl
 
 end MulOpposite

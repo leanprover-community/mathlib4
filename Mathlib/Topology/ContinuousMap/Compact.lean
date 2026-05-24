@@ -35,7 +35,7 @@ open NNReal BoundedContinuousFunction Set Metric
 namespace ContinuousMap
 
 variable {α β E : Type*}
-variable [TopologicalSpace α] [CompactSpace α] [PseudoMetricSpace β] [SeminormedAddCommGroup E]
+variable [TopologicalSpace α] [CompactSpace α] [PseudoMetricSpace β] [NormPseudoMetric E] [AddCommGroup E] [IsNormedAddGroup E]
 
 section
 
@@ -318,12 +318,12 @@ theorem linearIsometryBoundedOfCompact_of_compact_toEquiv :
 
 end
 
-@[simp] lemma nnnorm_smul_const {R β : Type*} [SeminormedAddCommGroup β] [SeminormedRing R]
+@[simp] lemma nnnorm_smul_const {R β : Type*} [NormPseudoMetric β] [AddCommGroup β] [IsNormedAddGroup β] [SeminormedRing R]
     [Module R β] [NormSMulClass R β] (f : C(α, R)) (b : β) :
     ‖f • const α b‖₊ = ‖f‖₊ * ‖b‖₊ := by
   simp only [nnnorm_eq_iSup_nnnorm, smul_apply', const_apply, nnnorm_smul, iSup_mul]
 
-@[simp] lemma norm_smul_const {R β : Type*} [SeminormedAddCommGroup β] [SeminormedRing R]
+@[simp] lemma norm_smul_const {R β : Type*} [NormPseudoMetric β] [AddCommGroup β] [IsNormedAddGroup β] [SeminormedRing R]
     [Module R β] [NormSMulClass R β] (f : C(α, R)) (b : β) :
     ‖f • const α b‖ = ‖f‖ * ‖b‖ := by
   simp only [← coe_nnnorm, NNReal.coe_mul, nnnorm_smul_const]
@@ -457,7 +457,7 @@ Furthermore, if `α` is compact and `β` is a C⋆-ring, then `C(α, β)` is a C
 section NormedSpace
 
 variable {α : Type*} {β : Type*}
-variable [TopologicalSpace α] [SeminormedAddCommGroup β] [StarAddMonoid β] [NormedStarGroup β]
+variable [TopologicalSpace α] [NormPseudoMetric β] [AddCommGroup β] [IsNormedAddGroup β] [StarAddMonoid β] [NormedStarGroup β]
 
 theorem _root_.BoundedContinuousFunction.mkOfCompact_star [CompactSpace α] (f : C(α, β)) :
     mkOfCompact (star f) = star (mkOfCompact f) :=

@@ -30,7 +30,7 @@ open ENNReal Filter NNReal Uniformity Pointwise Topology
 
 section SeminormedGroup
 
-variable [SeminormedGroup E] [SeminormedGroup F] [SeminormedGroup G] {s : Set E}
+variable [NormPseudoMetric E] [Group E] [IsNormedGroup E] [NormPseudoMetric F] [Group F] [IsNormedGroup F] [NormPseudoMetric G] [Group G] [IsNormedGroup G] {s : Set E}
   {a a₁ a₂ b c d : E} {r r₁ r₂ : ℝ}
 
 @[to_additive]
@@ -82,7 +82,7 @@ theorem norm_zpow_isUnit (a : E) {n : ℤ} (hn : IsUnit n) : ‖a ^ n‖ = ‖a�
   rw [← norm_pow_natAbs, Int.isUnit_iff_natAbs_eq.mp hn, pow_one]
 
 @[simp]
-theorem norm_units_zsmul {E : Type*} [SeminormedAddGroup E] (n : ℤˣ) (a : E) : ‖n • a‖ = ‖a‖ :=
+theorem norm_units_zsmul {E : Type*} [NormPseudoMetric E] [AddGroup E] [IsNormedAddGroup E] (n : ℤˣ) (a : E) : ‖n • a‖ = ‖a‖ :=
   norm_isUnit_zsmul a n.isUnit
 
 open scoped symmDiff in
@@ -281,13 +281,13 @@ theorem norm_div_sub_norm_div_le_norm_div (u v w : E) : ‖u / w‖ - ‖v / w�
   simpa using norm_mul_le' (u / v) (v / w)
 
 @[to_additive norm_add_sub_norm_sub_le_two_mul]
-lemma norm_mul_sub_norm_div_le_two_mul {E : Type*} [SeminormedGroup E] (u v : E) :
+lemma norm_mul_sub_norm_div_le_two_mul {E : Type*} [NormPseudoMetric E] [Group E] [IsNormedGroup E] (u v : E) :
     ‖u * v‖ - ‖u / v‖ ≤ 2 * ‖v‖ := by
   simpa [-tsub_le_iff_right, tsub_le_iff_left, two_mul, add_assoc]
     using norm_mul₃_le' (a := (u / v)) (b := v) (c := v)
 
 @[to_additive norm_add_sub_norm_sub_le_two_mul_min]
-lemma norm_mul_sub_norm_div_le_two_mul_min {E : Type*} [SeminormedCommGroup E] (u v : E) :
+lemma norm_mul_sub_norm_div_le_two_mul_min {E : Type*} [NormPseudoMetric E] [CommGroup E] [IsNormedGroup E] (u v : E) :
     ‖u * v‖ - ‖u / v‖ ≤ 2 * min ‖u‖ ‖v‖ := by
   rw [mul_min_of_nonneg _ _ (by positivity)]
   refine le_min ?_ (norm_mul_sub_norm_div_le_two_mul u v)
@@ -459,7 +459,7 @@ theorem nnnorm_zpow_isUnit (a : E) {n : ℤ} (hn : IsUnit n) : ‖a ^ n‖₊ = 
   NNReal.eq <| norm_zpow_isUnit a hn
 
 @[simp]
-theorem nnnorm_units_zsmul {E : Type*} [SeminormedAddGroup E] (n : ℤˣ) (a : E) : ‖n • a‖₊ = ‖a‖₊ :=
+theorem nnnorm_units_zsmul {E : Type*} [NormPseudoMetric E] [AddGroup E] [IsNormedAddGroup E] (n : ℤˣ) (a : E) : ‖n • a‖₊ = ‖a‖₊ :=
   NNReal.eq <| norm_isUnit_zsmul a n.isUnit
 
 @[to_additive (attr := simp)]
@@ -633,7 +633,7 @@ theorem edist_eq_enorm_inv_mul (a b : E) : edist a b = ‖a⁻¹ * b‖ₑ := by
 @[deprecated (since := "2026-02-11")] alias edist_zero_eq_enorm := edist_zero_right
 
 @[to_additive]
-lemma enorm_div_rev {E : Type*} [SeminormedGroup E] (a b : E) : ‖a / b‖ₑ = ‖b / a‖ₑ := by
+lemma enorm_div_rev {E : Type*} [NormPseudoMetric E] [Group E] [IsNormedGroup E] (a b : E) : ‖a / b‖ₑ = ‖b / a‖ₑ := by
   rw [← enorm_inv', inv_div]
 
 @[to_additive]
@@ -720,7 +720,7 @@ abbrev NormMetric.induced [NormMetric F] (f : E → F) (hf : Injective f) :
 variable [FunLike 𝓕 E F]
 
 @[to_additive]
-lemma IsNormedGroup.induced [Group E] [SeminormedGroup F] [MonoidHomClass 𝓕 E F] (f : 𝓕) :
+lemma IsNormedGroup.induced [Group E] [NormPseudoMetric F] [Group F] [IsNormedGroup F] [MonoidHomClass 𝓕 E F] (f : 𝓕) :
     letI : NormPseudoMetric E := .induced E F f
     IsNormedGroup E :=
   letI : NormPseudoMetric E := .induced E F f
@@ -750,7 +750,7 @@ end Subtype
 
 section SeminormedCommGroup
 
-variable [SeminormedCommGroup E] [SeminormedCommGroup F] {a b : E} {r : ℝ}
+variable [NormPseudoMetric E] [CommGroup E] [IsNormedGroup E] [NormPseudoMetric F] [CommGroup F] [IsNormedGroup F] {a b : E} {r : ℝ}
 variable {ε : Type*} [TopologicalSpace ε] [ContinuousENorm ε] [CommMonoid ε] [IsESeminormedMonoid ε]
 
 @[to_additive]
@@ -799,7 +799,7 @@ theorem edist_eq_enorm_div (a b : E) : edist a b = ‖a / b‖ₑ := by
 theorem dist_inv (x y : E) : dist x⁻¹ y = dist x y⁻¹ := by
   simp_rw [dist_eq_norm_inv_mul, ← norm_inv' (x⁻¹ * y⁻¹), mul_inv, inv_inv]
 
-theorem norm_multiset_sum_le {E} [SeminormedAddCommGroup E] (m : Multiset E) :
+theorem norm_multiset_sum_le {E} [NormPseudoMetric E] [AddCommGroup E] [IsNormedAddGroup E] (m : Multiset E) :
     ‖m.sum‖ ≤ (m.map fun x => ‖x‖).sum :=
   m.le_sum_of_subadditive norm norm_zero.le norm_add_le
 
@@ -825,7 +825,7 @@ theorem enorm_sum_le (s : Finset ι) (f : ι → ε) :
   s.le_sum_of_subadditive enorm enorm_zero.le enorm_add_le f
 
 @[bound]
-theorem norm_sum_le {E} [SeminormedAddCommGroup E] (s : Finset ι) (f : ι → E) :
+theorem norm_sum_le {E} [NormPseudoMetric E] [AddCommGroup E] [IsNormedAddGroup E] (s : Finset ι) (f : ι → E) :
     ‖∑ i ∈ s, f i‖ ≤ ∑ i ∈ s, ‖f i‖ :=
   s.le_sum_of_subadditive norm norm_zero.le norm_add_le f
 

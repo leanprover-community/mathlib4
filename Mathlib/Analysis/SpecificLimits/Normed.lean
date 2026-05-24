@@ -550,7 +550,7 @@ end MulGeometric
 
 section SummableLeGeometric
 
-variable [SeminormedAddCommGroup α] {r C : ℝ} {f : ℕ → α}
+variable [NormPseudoMetric α] [AddCommGroup α] [IsNormedAddGroup α] {r C : ℝ} {f : ℕ → α}
 
 nonrec theorem SeminormedAddCommGroup.cauchySeq_of_le_geometric {C : ℝ} {r : ℝ} (hr : r < 1)
     {u : ℕ → α} (h : ∀ n, ‖u n - u (n + 1)‖ ≤ C * r ^ n) : CauchySeq u :=
@@ -626,7 +626,7 @@ end SummableLeGeometric
 
 /-! ### Summability tests based on comparison with geometric series -/
 
-theorem summable_of_ratio_norm_eventually_le {α : Type*} [SeminormedAddCommGroup α]
+theorem summable_of_ratio_norm_eventually_le {α : Type*} [NormPseudoMetric α] [AddCommGroup α] [IsNormedAddGroup α]
     [CompleteSpace α] {f : ℕ → α} {r : ℝ} (hr₁ : r < 1)
     (h : ∀ᶠ n in atTop, ‖f (n + 1)‖ ≤ r * ‖f n‖) : Summable f := by
   by_cases! hr₀ : 0 ≤ r
@@ -653,7 +653,7 @@ theorem summable_of_ratio_test_tendsto_lt_one {α : Type*} [NormedAddCommGroup �
   filter_upwards [h.eventually_le_const hr₀, hf] with _ _ h₁
   rwa [← div_le_iff₀ (norm_pos_iff.mpr h₁)]
 
-theorem not_summable_of_ratio_norm_eventually_ge {α : Type*} [SeminormedAddCommGroup α] {f : ℕ → α}
+theorem not_summable_of_ratio_norm_eventually_ge {α : Type*} [NormPseudoMetric α] [AddCommGroup α] [IsNormedAddGroup α] {f : ℕ → α}
     {r : ℝ} (hr : 1 < r) (hf : ∃ᶠ n in atTop, ‖f n‖ ≠ 0)
     (h : ∀ᶠ n in atTop, r * ‖f n‖ ≤ ‖f (n + 1)‖) : ¬Summable f := by
   rw [eventually_atTop] at h
@@ -671,7 +671,7 @@ theorem not_summable_of_ratio_norm_eventually_ge {α : Type*} [SeminormedAddComm
     exact hN h''.symm
   · grind
 
-theorem not_summable_of_ratio_test_tendsto_gt_one {α : Type*} [SeminormedAddCommGroup α]
+theorem not_summable_of_ratio_test_tendsto_gt_one {α : Type*} [NormPseudoMetric α] [AddCommGroup α] [IsNormedAddGroup α]
     {f : ℕ → α} {l : ℝ} (hl : 1 < l) (h : Tendsto (fun n ↦ ‖f (n + 1)‖ / ‖f n‖) atTop (𝓝 l)) :
     ¬Summable f := by
   have key : ∀ᶠ n in atTop, ‖f n‖ ≠ 0 := by
