@@ -122,7 +122,7 @@ lemma condExp_le_nonneg_const [PartialOrder E] [ClosedIciTopology E] [IsOrderedA
   have h2 := condExp_mono (μ := (μ.restrict (spanningSets (μ.trim hm) n))) (m := m)
     hfint.restrict (integrable_const c) (ae_restrict_of_ae hfc)
   filter_upwards [h1, h2] with a ha hb
-  rwa [← ha, ← congrFun (condExp_const (μ := (μ.restrict (spanningSets (μ.trim hm) n))) hm c) a]
+  grw [← ha, hb, condExp_const hm]
 
 /-- If `‖f‖` is bounded almost everywhere by `R`, then so is its conditional expectation. -/
 theorem ae_bdd_norm_condExp_of_ae_bdd_norm {R : ℝ} {f : α → E} (hbdd : ∀ᵐ x ∂μ, ‖f x‖ ≤ R) :
