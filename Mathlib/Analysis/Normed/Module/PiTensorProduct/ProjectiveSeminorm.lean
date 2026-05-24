@@ -43,7 +43,7 @@ universe uι u𝕜 uE uF
 
 variable {ι : Type uι} [Fintype ι]
 variable {𝕜 : Type u𝕜}
-variable {E : ι → Type uE} [∀ i, SeminormedAddCommGroup (E i)]
+variable {E : ι → Type uE} [∀ i, AddCommGroup (E i)] [∀ i, SeminormedAddCommGroup (E i)]
 
 open scoped TensorProduct
 
@@ -124,7 +124,7 @@ section NontriviallyNormedField
 
 variable [NontriviallyNormedField 𝕜] [∀ i, NormedSpace 𝕜 (E i)]
 
-theorem norm_eval_le_projectiveSeminorm {G : Type*} [SeminormedAddCommGroup G]
+theorem norm_eval_le_projectiveSeminorm {G : Type*} [AddCommGroup G] [SeminormedAddCommGroup G]
     [NormedSpace 𝕜 G] (f : ContinuousMultilinearMap 𝕜 E G) (x : ⨂[𝕜] i, E i) :
     ‖lift f.toMultilinearMap x‖ ≤ ‖f‖ * ‖x‖ := by
   rw [norm_def, mul_comm, Real.iInf_mul_of_nonneg (norm_nonneg _)]
