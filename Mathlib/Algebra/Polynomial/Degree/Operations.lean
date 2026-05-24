@@ -257,9 +257,6 @@ theorem monic_of_natDegree_le_of_coeff_eq_one (n : ℕ) (pn : p.natDegree ≤ n)
 theorem monic_of_degree_le (n : ℕ) (pn : p.degree ≤ n) (p1 : p.coeff n = 1) : Monic p :=
   monic_of_natDegree_le_of_coeff_eq_one n (natDegree_le_of_degree_le pn) p1
 
-@[deprecated (since := "2025-10-24")]
-alias monic_of_degree_le_of_coeff_eq_one := monic_of_degree_le
-
 theorem leadingCoeff_add_of_degree_lt (h : degree p < degree q) :
     leadingCoeff (p + q) = leadingCoeff q := by
   have : coeff p (natDegree q) = 0 := coeff_natDegree_eq_zero_of_degree_lt h
