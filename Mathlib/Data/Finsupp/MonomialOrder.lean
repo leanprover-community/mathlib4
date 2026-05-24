@@ -71,14 +71,17 @@ structure MonomialOrder (σ : Type*) where
   toSyn : (σ →₀ ℕ) ≃+ syn
   /-- `toSyn` is monotone -/
   toSyn_monotone : Monotone toSyn
-  /-- `syn` is a well ordering -/
-  wf : WellFoundedLT syn := by infer_instance
 
-attribute [instance] MonomialOrder.acm MonomialOrder.lo MonomialOrder.iocam MonomialOrder.wf
+attribute [instance] MonomialOrder.acm MonomialOrder.lo MonomialOrder.iocam
 
 namespace MonomialOrder
 
 variable {σ : Type*} (m : MonomialOrder σ)
+
+@[deprecated inferInstance
+  "`MonomialOrder` no longer contains or implies `.wf : WellFoundedLT .syn`"
+  (since := "2026-05-12")]
+lemma wf [inst : WellFoundedLT m.syn] : WellFoundedLT m.syn := inst
 
 lemma le_add_right (a b : σ →₀ ℕ) :
     m.toSyn a ≤ m.toSyn a + m.toSyn b := by
@@ -146,18 +149,20 @@ example : toLex (Finsupp.single 1 1) < toLex (Finsupp.single 0 2) := by
 variable {σ : Type*} [LinearOrder σ]
 
 /-- The lexicographic order on `σ →₀ ℕ`, as a `MonomialOrder` -/
-noncomputable def MonomialOrder.lex [WellFoundedGT σ] :
-    MonomialOrder σ where
+noncomputable def MonomialOrder.lex : MonomialOrder σ where
   syn := Lex (σ →₀ ℕ)
   toSyn :=
   { toEquiv := toLex
     map_add' := toLex_add }
   toSyn_monotone := Finsupp.toLex_monotone
 
-theorem MonomialOrder.lex_le_iff [WellFoundedGT σ] {c d : σ →₀ ℕ} :
+instance [WellFoundedGT σ] : WellFoundedLT (MonomialOrder.lex (σ := σ)).syn :=
+  inferInstanceAs <| WellFoundedLT (Lex (σ →₀ ℕ))
+
+theorem MonomialOrder.lex_le_iff {c d : σ →₀ ℕ} :
     c ≼[lex] d ↔ toLex c ≤ toLex d := Iff.rfl
 
-theorem MonomialOrder.lex_lt_iff [WellFoundedGT σ] {c d : σ →₀ ℕ} :
+theorem MonomialOrder.lex_lt_iff {c d : σ →₀ ℕ} :
     c ≺[lex] d ↔ toLex c < toLex d := Iff.rfl
 
 theorem MonomialOrder.lex_lt_iff_of_unique [Unique σ] {c d : σ →₀ ℕ} :
