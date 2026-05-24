@@ -88,6 +88,20 @@ namespace DupNamespaceLinter
 
 open Lean Parser Elab Command Meta Linter
 
+def hasDuplicates (items : List Name) : Bool := Id.run do
+  return !items.Nodup
+
+#guard hasDuplicates [`Foo, `Foo] == true
+#guard hasDuplicates [`Bar, `Foo, `Foo] == true
+#guard hasDuplicates [`Foo, `Foo, `Bar] == true
+#guard hasDuplicates [`Foo, `Foo, `Bar, `Baz, `hoge] == true
+#guard hasDuplicates [`Foo, `Foos, `Bar, `Baz] == false
+#guard hasDuplicates [`Foo, `Bar, `Foo, `baz] == true
+#guard hasDuplicates [`Foo, `Bar, `Foo, `Bar, `baz] == true
+#guard hasDuplicates [`Foo, `Bar, `Baz, `Hoge, `Foo, `Baz, `baz] == true -- `Foo duplicate
+#guard hasDuplicates [`Foo, `Bar, `Baz, `Hoge, `Foo, `Bar, `baz] == true -- `Foo, `Bar duplicate
+#guard hasDuplicates [`Foo, `Bar, `Baz, `Hoge, `Foo, `Bar, `Baz, `baz] == true -- `Foo, `Bar duplicate
+
 @[inherit_doc linter.dupNamespace]
 def dupNamespace : Linter where run := withSetOptionIn fun stx ↦ do
   if getLinterValue linter.dupNamespace (← getLinterOptions) then
@@ -98,10 +112,13 @@ def dupNamespace : Linter where run := withSetOptionIn fun stx ↦ do
       let declName := id.getId
       if declName.hasMacroScopes || isPrivateName declName then continue
       let nm := declName.components
-      let some (dup, _) := nm.zip (nm.tailD []) |>.find? fun (x, y) ↦ x == y
-        | continue
-      Linter.logLint linter.dupNamespace id
-        m!"The namespace '{dup}' is duplicated in the declaration '{declName}'"
+      if !nm.Nodup then
+        -- There are duplicate naming components: find the longest substring of duplicate
+        -- component(s).
+        let duplicated := nm.filter (fun comp ↦ nm.count comp > 1)
+        let (s, verb) := if duplicated.length > 1 then ("s", "are") else ("", "is")
+        Linter.logLint linter.dupNamespace id
+          m!"The namespace component{s} `{duplicated}` {verb} duplicated in the declaration `{declName}`"
 
 initialize addLinter dupNamespace
 
