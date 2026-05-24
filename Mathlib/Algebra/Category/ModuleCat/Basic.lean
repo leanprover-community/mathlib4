@@ -354,7 +354,7 @@ instance : SMul ℤ (M ⟶ N) where
 @[simp] lemma hom_zsmul (n : ℤ) (f : M ⟶ N) : (n • f).hom = n • f.hom := rfl
 
 instance : AddCommGroup (M ⟶ N) :=
-  Function.Injective.addCommGroup (Hom.hom) hom_injective
+  fast_instance% Function.Injective.addCommGroup (Hom.hom) hom_injective
     rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
 
 @[simp] lemma hom_sum {ι : Type*} (f : ι → (M ⟶ N)) (s : Finset ι) :
@@ -406,7 +406,7 @@ section Module
 variable {M N : ModuleCat.{v} R} {S : Type*} [Semiring S] [Module S N] [SMulCommClass R S N]
 
 instance Hom.instModule : Module S (M ⟶ N) :=
-  Function.Injective.module S
+  fast_instance% Function.Injective.module S
     { toFun := Hom.hom, map_zero' := hom_zero, map_add' := hom_add }
     hom_injective
     (fun _ _ => rfl)

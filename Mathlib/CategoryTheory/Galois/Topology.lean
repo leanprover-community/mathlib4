@@ -75,7 +75,7 @@ lemma aut_discreteTopology (X : C) : DiscreteTopology (Aut (F.obj X)) := ⟨rfl�
 
 /-- `Aut F` is equipped with the by the embedding into `∀ X, Aut (F.obj X)` induced embedding. -/
 instance : TopologicalSpace (Aut F) :=
-  TopologicalSpace.induced (autEmbedding F) inferInstance
+  fast_instance% TopologicalSpace.induced (autEmbedding F) inferInstance
 
 /-lemma autEmbedding_range :
     Set.range (autEmbedding F) =

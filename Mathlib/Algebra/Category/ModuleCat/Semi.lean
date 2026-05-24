@@ -305,7 +305,7 @@ instance : SMul ℕ (M ⟶ N) where
 alias hom_zsmul := hom_nsmul
 
 instance : AddCommMonoid (M ⟶ N) :=
-  Function.Injective.addCommMonoid Hom.hom hom_injective rfl (fun _ _ => rfl) (fun _ _ => rfl)
+  fast_instance% Function.Injective.addCommMonoid Hom.hom hom_injective rfl (fun _ _ => rfl) (fun _ _ => rfl)
 
 @[simp] lemma hom_sum {ι : Type*} (f : ι → (M ⟶ N)) (s : Finset ι) :
     (∑ i ∈ s, f i).hom = ∑ i ∈ s, (f i).hom :=
@@ -356,7 +356,7 @@ section Module
 variable {M N : SemimoduleCat.{v} R} {S : Type*} [Semiring S] [Module S N] [SMulCommClass R S N]
 
 instance Hom.instModule : Module S (M ⟶ N) :=
-  Function.Injective.module S
+  fast_instance% Function.Injective.module S
     { toFun := Hom.hom, map_zero' := hom_zero, map_add' := hom_add }
     hom_injective
     (fun _ _ => rfl)

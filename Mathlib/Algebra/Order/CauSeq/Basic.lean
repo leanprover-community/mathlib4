@@ -332,7 +332,7 @@ instance instNatCast : NatCast (CauSeq β abv) := ⟨fun n => const n⟩
 instance instIntCast : IntCast (CauSeq β abv) := ⟨fun n => const n⟩
 
 instance addGroupWithOne : AddGroupWithOne (CauSeq β abv) :=
-  Function.Injective.addGroupWithOne Subtype.val Subtype.val_injective rfl rfl
+  fast_instance% Function.Injective.addGroupWithOne Subtype.val Subtype.val_injective rfl rfl
   coe_add coe_neg coe_sub
   (by intros; rfl)
   (by intros; rfl)
@@ -355,7 +355,7 @@ theorem const_pow (x : β) (n : ℕ) : const (x ^ n) = const x ^ n :=
   rfl
 
 instance ring : Ring (CauSeq β abv) :=
-  Function.Injective.ring Subtype.val Subtype.val_injective rfl rfl coe_add coe_mul coe_neg coe_sub
+  fast_instance% Function.Injective.ring Subtype.val Subtype.val_injective rfl rfl coe_add coe_mul coe_neg coe_sub
     (fun _ _ => coe_smul _ _) (fun _ _ => coe_smul _ _) coe_pow (fun _ => rfl) fun _ => rfl
 
 instance {β : Type*} [CommRing β] {abv : β → α} [IsAbsoluteValue abv] : CommRing (CauSeq β abv) :=

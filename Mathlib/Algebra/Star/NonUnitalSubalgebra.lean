@@ -300,7 +300,7 @@ instance instSMulCommClass [SMulCommClass R A A] : SMulCommClass R S S where
 end
 
 instance instIsTorsionFree [IsTorsionFree R A] : IsTorsionFree R S :=
-  fast_instance% Subtype.coe_injective.moduleIsTorsionFree _ (by simp)
+  Subtype.coe_injective.moduleIsTorsionFree _ (by simp)
 
 protected theorem coe_add (x y : S) : (↑(x + y) : A) = ↑x + ↑y :=
   rfl

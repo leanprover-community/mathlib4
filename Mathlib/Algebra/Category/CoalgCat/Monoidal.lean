@@ -61,6 +61,6 @@ noncomputable def MonoidalCategory.inducingFunctorData :
   rightUnitor_eq X := ModuleCat.hom_ext <| TensorProduct.ext <| by ext; rfl
 
 noncomputable instance instMonoidalCategory : MonoidalCategory (CoalgCat R) :=
-  Monoidal.induced (forget₂ _ (ModuleCat R)) (MonoidalCategory.inducingFunctorData R)
+  fast_instance% Monoidal.induced (forget₂ _ (ModuleCat R)) (MonoidalCategory.inducingFunctorData R)
 
 end CoalgCat

@@ -446,7 +446,7 @@ lemma limitsOfShape_monotone {W₁ W₂ : MorphismProperty C} (h : W₁ ≤ W₂
 
 set_option backward.isDefEq.respectTransparency false in
 instance : (W.limitsOfShape J).RespectsIso :=
-  RespectsIso.of_respects_arrow_iso _ (by
+  fast_instance% RespectsIso.of_respects_arrow_iso _ (by
     rintro ⟨_, _, f⟩ ⟨Y₁, Y₂, g⟩ e ⟨X₁, X₂, c₁, c₂, h₁, h₂, f, hf⟩
     let e₁ := Arrow.leftFunc.mapIso e
     let e₂ := Arrow.rightFunc.mapIso e

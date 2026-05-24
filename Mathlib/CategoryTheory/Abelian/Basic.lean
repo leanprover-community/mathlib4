@@ -738,7 +738,7 @@ variable [Limits.HasPushouts C] {W X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z)
 
 set_option backward.isDefEq.respectTransparency false in
 instance mono_pushout_of_mono_f [Mono f] : Mono (pushout.inr _ _ : Z ⟶ pushout f g) :=
-  mono_of_cancel_zero _ fun {R} e h => by
+  fast_instance% mono_of_cancel_zero _ fun {R} e h => by
     let u := biprod.lift (0 : R ⟶ Y) e
     have hu : u ≫ BiproductToPushoutIsCokernel.biproductToPushout f g = 0 := by simpa [u]
     have :=
@@ -761,7 +761,7 @@ instance mono_pushout_of_mono_f [Mono f] : Mono (pushout.inr _ _ : Z ⟶ pushout
 
 set_option backward.isDefEq.respectTransparency false in
 instance mono_pushout_of_mono_g [Mono g] : Mono (pushout.inl f g) :=
-  mono_of_cancel_zero _ fun {R} e h => by
+  fast_instance% mono_of_cancel_zero _ fun {R} e h => by
     let u := biprod.lift e (0 : R ⟶ Z)
     have hu : u ≫ BiproductToPushoutIsCokernel.biproductToPushout f g = 0 := by simpa [u]
     have :=

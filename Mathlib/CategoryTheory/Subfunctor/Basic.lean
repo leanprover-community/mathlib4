@@ -48,7 +48,7 @@ structure Subfunctor (F : C ⥤ Type w) where
 variable {F F' F'' : C ⥤ Type w} (G G' : Subfunctor F)
 
 instance : PartialOrder (Subfunctor F) :=
-  PartialOrder.lift Subfunctor.obj (fun _ _ => Subfunctor.ext)
+  fast_instance% PartialOrder.lift Subfunctor.obj (fun _ _ => Subfunctor.ext)
 
 instance : CompleteLattice (Subfunctor F) where
   sup F G :=
