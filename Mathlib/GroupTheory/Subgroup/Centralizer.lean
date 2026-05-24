@@ -157,7 +157,7 @@ instance instIsMulCommutative_closure {S : Type*} [SetLike S G] [MulMemClass S G
 theorem centralizer_le_normalizer (s : Set G) : centralizer s ≤ normalizer s := by
   refine fun g hg h ↦ ⟨fun hh ↦ ?_, fun hh ↦ ?_⟩
   · simpa [← hg h hh]
-  · convert hh
+  · convert! hh
     simpa using hg _ hh
 
 @[to_additive]

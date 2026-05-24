@@ -158,7 +158,7 @@ theorem uniformBell_one_right (m : ℕ) : uniformBell m 1 = 1 := by
 
 theorem uniformBell_mul_eq (m : ℕ) {n : ℕ} (hn : n ≠ 0) :
     uniformBell m n * n ! ^ m * m ! = (m * n)! := by
-  convert bell_mul_eq (replicate m n)
+  convert! bell_mul_eq (replicate m n)
   · simp only [map_replicate, prod_replicate]
   · simp only [toFinset_replicate]
     split_ifs with hm
