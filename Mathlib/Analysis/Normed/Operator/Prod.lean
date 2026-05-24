@@ -21,7 +21,9 @@ open Set Real Metric ContinuousLinearMap
 
 section SemiNormed
 
-variable [SeminormedAddCommGroup E] [SeminormedAddCommGroup F] [SeminormedAddCommGroup G]
+variable [AddCommGroup E] [SeminormedAddCommGroup E]
+  [AddCommGroup F] [SeminormedAddCommGroup F]
+  [AddCommGroup G] [SeminormedAddCommGroup G]
 variable [NormedSpace 𝕜 E] [NormedSpace 𝕜 F] [NormedSpace 𝕜 G]
 
 namespace ContinuousLinearMap
@@ -75,7 +77,8 @@ end OpNorm
 section Prod
 
 variable (𝕜)
-variable (M₁ M₂ M₃ M₄ : Type*)
+variable (M₁ M₂ M₃ M₄ : Type*) [AddCommGroup M₁] [AddCommGroup M₂] [AddCommGroup M₃]
+  [AddCommGroup M₄]
   [SeminormedAddCommGroup M₁] [NormedSpace 𝕜 M₁]
   [SeminormedAddCommGroup M₂] [NormedSpace 𝕜 M₂]
   [SeminormedAddCommGroup M₃] [NormedSpace 𝕜 M₃]
@@ -147,7 +150,7 @@ section FirstSecond
 variable (𝕜 E F)
 
 /-- The operator norm of the first projection `E × F → E` is exactly 1 if `E` is nontrivial. -/
-@[simp] lemma norm_fst [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+@[simp] lemma norm_fst [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace 𝕜 E] [AddCommGroup F]
     [SeminormedAddCommGroup F] [NormedSpace 𝕜 F] [Nontrivial E] :
     ‖fst 𝕜 E F‖ = 1 := by
   refine le_antisymm (norm_fst_le ..) ?_
@@ -157,8 +160,8 @@ variable (𝕜 E F)
   rwa [← mul_le_mul_iff_of_pos_right (norm_pos_iff.mpr he), one_mul]
 
 /-- The operator norm of the second projection `E × F → F` is exactly 1 if `F` is nontrivial. -/
-@[simp] lemma norm_snd [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
-    [NormedAddCommGroup F] [NormedSpace 𝕜 F] [Nontrivial F] :
+@[simp] lemma norm_snd [AddCommGroup E] [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
+    [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace 𝕜 F] [Nontrivial F] :
     ‖snd 𝕜 E F‖ = 1 := by
   refine le_antisymm (norm_snd_le ..) ?_
   let ⟨f, hf⟩ := exists_ne (0 : F)
