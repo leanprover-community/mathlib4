@@ -11,6 +11,7 @@ public import Mathlib.RepresentationTheory.Character
 public import Mathlib.RepresentationTheory.Maschke
 public import Mathlib.RingTheory.SimpleModule.InjectiveProjective
 public import Mathlib.Algebra.Lie.OfAssociative
+public import Mathlib.RepresentationTheory.Rep.Iso
 
 /-!
 # Applications of Maschke's theorem
@@ -30,9 +31,9 @@ an algebraically closed field in which the order of `G` is invertible:
 
 -/
 
-@[expose] public section
+public section
 
-universe u
+universe u v w
 
 variable {k : Type u} [Field k] {G : Type u} [Finite G] [Group G]
 
@@ -46,7 +47,7 @@ variable [NeZero (Nat.card G : k)]
 If `G` is finite and its order is nonzero in the field `k`, then every object of
 `Rep k G` is injective.
 -/
-instance (V : Rep k G) : Injective V := by
+instance (V : Rep.{w} k G) : Injective V := by
   rw [← Rep.equivalenceModuleMonoidAlgebra.map_injective_iff,
     ← Module.injective_iff_injective_object]
   exact Module.injective_of_isSemisimpleRing _ _
@@ -56,7 +57,7 @@ If `G` is finite and its order is nonzero in the field `k`, then every object of
 `Rep k G` is projective.
 -/
 -- Will this clash with the previously defined `Projective` instances?
-instance (V : Rep k G) : Projective V := by
+instance (V : Rep.{u} k G) : Projective V := by
   rw [← Rep.equivalenceModuleMonoidAlgebra.map_projective_iff,
     ← IsProjective.iff_projective]
   exact Module.projective_of_isSemisimpleRing _ _
@@ -81,7 +82,6 @@ instance [NeZero (Nat.card G : k)] (V : FDRep k G) : Projective V :=
 
 variable [IsAlgClosed k]
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 If `G` is finite and its order is nonzero in an algebraically closed field `k`,
 then an object of `FDRep k G` is simple if and only if its space of endomorphisms is

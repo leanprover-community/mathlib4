@@ -63,14 +63,14 @@ instance (F : ℕ ⥤ C) : F.IsWellOrderContinuous where
   nonempty_isColimit m hm := by simp at hm
 
 instance {n : ℕ} (F : Fin n ⥤ C) : F.IsWellOrderContinuous where
-  nonempty_isColimit _ hj := (Order.not_isSuccLimit hj).elim
+  nonempty_isColimit _ hj := (Order.not_isSuccLimit_of_isSuccArchimedean hj).elim
 
 lemma isWellOrderContinuous_of_iso {F G : J ⥤ C} (e : F ≅ G) [F.IsWellOrderContinuous] :
     G.IsWellOrderContinuous where
   nonempty_isColimit (m : J) (hm : Order.IsSuccLimit m) :=
     ⟨(IsColimit.precomposeHomEquiv (isoWhiskerLeft _ e) _).1
       (IsColimit.ofIsoColimit (F.isColimitOfIsWellOrderContinuous m hm)
-        (Cocones.ext (e.app _)))⟩
+        (Cocone.ext (e.app _)))⟩
 
 instance (F : J ⥤ C) {J' : Type w'} [PartialOrder J'] (f : J' ≤i J)
     [F.IsWellOrderContinuous] :

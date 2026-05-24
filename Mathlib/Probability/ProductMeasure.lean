@@ -321,16 +321,16 @@ theorem piContent_tendsto_zero {A : ℕ → Set (Π i, X i)} (A_mem : ∀ n, A n
   obtain u_fin | u_inf := finite_or_infinite u
   · let _ := Fintype.ofFinite u
     simp_rw [fun n ↦ piContent_eq_measure_pi (fun i : u ↦ μ i) (mB n)]
-    convert tendsto_measure_iInter_atTop (fun n ↦ (mB n).nullMeasurableSet) B_anti
-      ⟨0, measure_ne_top _ _⟩
+    convert!
+      tendsto_measure_iInter_atTop (fun n ↦ (mB n).nullMeasurableSet) B_anti ⟨0, measure_ne_top _ _⟩
     · rw [B_inter, measure_empty]
     · infer_instance
   · -- If `u` is infinite, then we have an equivalence with `ℕ` so we can apply `secondLemma`.
     have count_u : Countable u := Set.countable_iUnion (fun n ↦ (s n).countable_toSet)
     obtain ⟨φ, -⟩ := Classical.exists_true_of_nonempty (α := ℕ ≃ u) nonempty_equiv_of_countable
     conv => enter [1]; ext n; rw [← infinitePiNat_map_piCongrLeft _ φ (B_mem n)]
-    convert tendsto_measure_iInter_atTop (fun n ↦ (mB n).nullMeasurableSet) B_anti
-      ⟨0, measure_ne_top _ _⟩
+    convert!
+      tendsto_measure_iInter_atTop (fun n ↦ (mB n).nullMeasurableSet) B_anti ⟨0, measure_ne_top _ _⟩
     · rw [B_inter, measure_empty]
     · infer_instance
 
@@ -444,7 +444,7 @@ lemma infinitePi_pi_of_countable {s : Set ι} (hs : Countable s) {t : (i : ι) �
       simpa using Set.pi_mono' (by simp) (Set.image_mono h)
     · exact ⟨{Nonempty.some s_ne}, by simp⟩
   · rw [ENNReal.tprod_eq_iInf_prod (by simp [prob_le_one])]
-    exact tendsto_atTop_iInf (prod_anti_set_of_le_one (by simp [prob_le_one]))
+    exact tendsto_atTop_iInf (prod_anti_set_of_le_one' (by simp [prob_le_one]))
 
 lemma infinitePi_pi_univ [Countable ι] {t : (i : ι) → Set (X i)}
     (mt : ∀ i : ι, MeasurableSet (t i)) :
@@ -551,7 +551,7 @@ lemma infinitePi_map_curry_symm :
         (MeasurableEquiv.curry ι κ X).symm = ⇑(MeasurableEquiv.piCurry (fun _ _ ↦ X)).symm := by
       ext; simp [piCongrLeft, Equiv.piCongrLeft, Sigma.uncurry]
     rw [this, infinitePi_map_piCurry_symm]
-    convert infinitePi_map_piCongrLeft (fun p ↦ μ p.1 p.2) (Equiv.sigmaEquivProd ι κ).symm |>.symm
+    convert! infinitePi_map_piCongrLeft (fun p ↦ μ p.1 p.2) (Equiv.sigmaEquivProd ι κ).symm |>.symm
   all_goals fun_prop
 
 lemma infinitePi_map_curry :

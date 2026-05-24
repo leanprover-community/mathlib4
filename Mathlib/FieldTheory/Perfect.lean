@@ -52,6 +52,8 @@ section PerfectRing
 section Monoid
 variable (M : Type*) (p q : ℕ) [CommMonoid M] [PerfectRing M p] [PerfectRing M q]
 
+namespace PerfectRing
+
 instance one : PerfectRing M 1 :=
   ⟨by simpa using bijective_id⟩
 
@@ -60,6 +62,8 @@ instance mul : PerfectRing M (p * q) :=
 
 instance pow (n : ℕ) : PerfectRing M (p ^ n) :=
   n.recOn (inferInstanceAs (PerfectRing M 1)) fun n _ ↦ inferInstanceAs (PerfectRing M (p ^ n * p))
+
+end PerfectRing
 
 /-- The `p`-th power automorphism for a perfect monoid. -/
 @[simps! apply]
@@ -179,12 +183,12 @@ theorem iterateFrobeniusEquiv_symm :
 @[simp]
 theorem frobeniusEquiv_symm_apply_frobenius (x : R) :
     (frobeniusEquiv R p).symm (frobenius R p x) = x :=
-  leftInverse_surjInv PerfectRing.bijective_frobenius x
+  (frobeniusEquiv R p).symm_apply_apply x
 
 @[simp]
 theorem frobenius_apply_frobeniusEquiv_symm (x : R) :
     frobenius R p ((frobeniusEquiv R p).symm x) = x :=
-  surjInv_eq _ _
+  (frobeniusEquiv R p).apply_symm_apply x
 
 @[simp]
 theorem frobenius_comp_frobeniusEquiv_symm :
@@ -358,14 +362,14 @@ theorem roots_expand_pow_map_iterateFrobenius_le :
     simp_rw [count_nsmul, count_roots, ← rootMultiplicity_expand_pow, ← count_roots, count_map,
       count_eq_card_filter_eq]
     exact card_le_card (monotone_filter_right _ fun _ h ↦ iterateFrobenius_inj R p n h)
-  convert Nat.zero_le _
+  convert! Nat.zero_le _
   simp_rw [count_map, card_eq_zero]
   exact ext' fun t ↦ count_zero t ▸ count_filter_of_neg fun h' ↦ h ⟨t, h'⟩
 
 theorem roots_expand_map_frobenius_le :
     (expand R p f).roots.map (frobenius R p) ≤ p • f.roots := by
   rw [← iterateFrobenius_one]
-  convert ← roots_expand_pow_map_iterateFrobenius_le p 1 f <;> apply pow_one
+  convert! ← roots_expand_pow_map_iterateFrobenius_le p 1 f <;> apply pow_one
 
 theorem roots_expand_pow_image_iterateFrobenius_subset [DecidableEq R] :
     (expand R (p ^ n) f).roots.toFinset.image (iterateFrobenius R p n) ⊆ f.roots.toFinset := by
@@ -376,7 +380,7 @@ theorem roots_expand_pow_image_iterateFrobenius_subset [DecidableEq R] :
 theorem roots_expand_image_frobenius_subset [DecidableEq R] :
     (expand R p f).roots.toFinset.image (frobenius R p) ⊆ f.roots.toFinset := by
   rw [← iterateFrobenius_one]
-  convert ← roots_expand_pow_image_iterateFrobenius_subset p 1 f
+  convert! ← roots_expand_pow_image_iterateFrobenius_subset p 1 f
   apply pow_one
 
 section PerfectRing

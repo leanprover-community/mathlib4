@@ -8,8 +8,8 @@
 #    and this validator file), then fails if any referenced path is missing or escapes
 #    the checked out scripts directory.
 #
-# 2. Ensure every `actions/checkout` of `leanprover-community/mathlib-ci`
-#     in workflow files sets an explicit `with.ref`
+# 2. Ensure workflow files do not check out `leanprover-community/mathlib-ci`
+#    directly and instead use the local `get-mathlib-ci` action.
 #
 # The logic is fairly naive and the point is to prevent mistakes rather than a bulletproof validation of all possible dynamic path constructions, but it should catch common typos and missing files in mathlib-ci.
 name: Validate mathlib-ci script paths
@@ -31,17 +31,18 @@ jobs:
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
-      - name: Checkout mathlib-ci
+      - name: Checkout local actions
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
-          repository: leanprover-community/mathlib-ci
-          ref: master # Check paths against the latest version of the repo, which should be 'the objective' version for any workflow
+          ref: ${{ github.workflow_sha }}
           fetch-depth: 1
-          path: ci-tools
-
-      - name: Set up CI scripts paths
-        id: checkout_ci_scripts
-        uses: ./ci-tools/.github/actions/setup-ci-scripts
+          sparse-checkout: .github/actions
+          path: workflow-actions
+      - name: Get mathlib-ci
+        id: get_mathlib_ci
+        uses: ./workflow-actions/.github/actions/get-mathlib-ci
+        with:
+          ref: master # Check paths against the latest version of the repo, which should be 'the objective' version for any workflow
 
       # We scan literal "$CI_SCRIPTS_DIR/..." and "${CI_SCRIPTS_DIR}/..."
       # references in workflow text and check those paths in the checked out mathlib-ci ref; dynamically
@@ -49,7 +50,7 @@ jobs:
       # but this should catch common typos and missing files in mathlib-ci.
       - name: Validate CI_SCRIPTS_DIR references
         env:
-          CI_SCRIPTS_DIR: ${{ steps.checkout_ci_scripts.outputs.scripts_dir }}
+          CI_SCRIPTS_DIR: ${{ steps.get_mathlib_ci.outputs.scripts_dir }}
         shell: python
         run: |
           import os
@@ -126,11 +127,11 @@ jobs:
 
           print(f"Validated {len(references)} CI_SCRIPTS_DIR reference(s).")
 
-      # Ensure every actions/checkout of leanprover-community/mathlib-ci
-      # in workflow files sets an explicit `with.ref`.
+      # Ensure workflow files do not check out leanprover-community/mathlib-ci
+      # directly. They should use the local get-mathlib-ci action instead.
       # Parsing is intentionally lightweight: scan lines, strip YAML comments,
       # and use indentation to stay within one step's `with:` block.
-      - name: Validate mathlib-ci checkout refs
+      - name: Validate mathlib-ci checkout usage
         shell: python
         run: |
           import re
@@ -168,21 +169,8 @@ jobs:
             """Return indentation width using plain leading spaces."""
             return len(line) - len(line.lstrip(" "))
 
-          def parse_yaml_scalar(value: str) -> str:
-            """Parse a simple scalar value from a YAML key/value line."""
-            value = strip_yaml_comment(value).strip()
-            if not value:
-              return ""
-            if len(value) >= 2 and value[0] == value[-1] and value[0] in {"'", '"'}:
-              return value[1:-1]
-            return value
-
           def collect_mathlib_ci_checkouts(workflow, workflow_text):
-            """Find `actions/checkout` steps that target `mathlib-ci`.
-
-            Returns one record per matching checkout step with source lines and
-            ref metadata.
-            """
+            """Find direct `actions/checkout` steps that target `mathlib-ci`."""
             lines = workflow_text.splitlines()
             results = []
 
@@ -192,7 +180,9 @@ jobs:
               if not repo_match:
                 continue
 
-              repository = parse_yaml_scalar(repo_match.group(1))
+              repository = strip_yaml_comment(repo_match.group(1)).strip()
+              if len(repository) >= 2 and repository[0] == repository[-1] and repository[0] in {"'", '"'}:
+                repository = repository[1:-1]
               if not repository.endswith("/mathlib-ci"):
                 continue
 
@@ -218,38 +208,16 @@ jobs:
               if not step_uses_checkout:
                 continue
 
-              ref_value = None
-              ref_line = None
-              k = i + 1
-              while k < len(lines):
-                # Stay in this `with:` mapping and look for sibling `ref:`.
-                candidate = strip_yaml_comment(lines[k]).rstrip()
-                if not candidate.strip():
-                  k += 1
-                  continue
-                candidate_indent = leading_spaces(candidate)
-                if candidate_indent < repo_indent:
-                  break
-                ref_match = re.match(r"^\s*ref:\s*(.*?)\s*$", candidate)
-                if ref_match and candidate_indent == repo_indent:
-                  ref_value = parse_yaml_scalar(ref_match.group(1))
-                  ref_line = k + 1
-                  break
-                k += 1
-
               results.append(
                 {
                   "workflow": workflow.name,
                   "repository_line": i + 1,
-                  "ref": ref_value,
-                  "ref_line": ref_line,
                 }
               )
             return results
 
           workflow_files = sorted(workflows_dir.glob("*.yml")) + sorted(workflows_dir.glob("*.yaml"))
           errors = []
-          validated_checkouts = 0
           for workflow in workflow_files:
             # Skip this validator workflow to avoid validating its checkout.
             if workflow.name == "validate_mathlib_ci_paths.yml":
@@ -257,11 +225,10 @@ jobs:
             workflow_text = workflow.read_text()
             checkout_steps = collect_mathlib_ci_checkouts(workflow, workflow_text)
             for step in checkout_steps:
-              ref_line = step["ref_line"] if step["ref_line"] is not None else step["repository_line"]
-              if not step["ref"]:
-                errors.append(f"{workflow}:{ref_line} checks out mathlib-ci without an explicit `with.ref`.")
-                continue
-              validated_checkouts += 1
+              errors.append(
+                f"{workflow}:{step['repository_line']} checks out mathlib-ci directly; "
+                "use `./workflow-actions/.github/actions/get-mathlib-ci` instead."
+              )
 
           if errors:
             print("Validation failures:")
@@ -269,4 +236,4 @@ jobs:
               print(error)
             sys.exit(1)
 
-          print(f"Validated explicit `with.ref` in {validated_checkouts} mathlib-ci checkout step(s).")
+          print("Validated that workflow files use the local get-mathlib-ci action.")

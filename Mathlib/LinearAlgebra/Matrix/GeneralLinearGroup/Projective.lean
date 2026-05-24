@@ -5,8 +5,9 @@ Authors: Yury G. Kudryashov
 -/
 module
 
-public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Basic
+public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Defs
 public import Mathlib.Data.Sign.Basic
+import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Basic
 
 /-!
 # Projective general linear group
@@ -48,6 +49,10 @@ theorem mk_surjective : Function.Surjective (mk : GL n R → PGL(n, R)) :=
 theorem ker_mk : mk.ker = Subgroup.center (GL n R) := QuotientGroup.ker_mk' _
 
 @[simp]
+theorem mk_eq_one {g : GL n R} : mk g = 1 ↔ g ∈ Subgroup.center (GL n R) := by
+  rw [← MonoidHom.mem_ker, ker_mk]
+
+@[simp]
 theorem mk_scalar (u : Rˣ) : mk (.scalar n u) = 1 := by
   rw [← MonoidHom.mem_ker, ker_mk, GeneralLinearGroup.center_eq_range_scalar]
   simp
@@ -76,6 +81,7 @@ theorem lift_comp_mk {f : GL n R →* M} (hf) : (lift f hf).comp mk = f := by
 
 /-- Given an action of `GL n R` such that the scalar matrices act trivially,
 define an action of `PGL n R`. -/
+@[implicit_reducible]
 def mulActionOfGL {α : Type*} [MulAction (GL n R) α]
     (h : ∀ (u : Rˣ) (a : α), GeneralLinearGroup.scalar n u • a = a) :
     MulAction (PGL(n, R)) α :=

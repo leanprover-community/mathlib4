@@ -46,16 +46,18 @@ with chain maps identified when they are homotopic. -/
 def HomotopyCategory :=
   CategoryTheory.Quotient (homotopic V c)
 
-instance : Category (HomotopyCategory V c) := by
-  dsimp only [HomotopyCategory]
-  infer_instance
+instance : Category (HomotopyCategory V c) :=
+  inferInstanceAs <| Category (CategoryTheory.Quotient (homotopic V c))
 
--- TODO the homotopy_category is preadditive
 namespace HomotopyCategory
 
-instance : Preadditive (HomotopyCategory V c) := Quotient.preadditive _ (by
-  rintro _ _ _ _ _ _ ⟨h⟩ ⟨h'⟩
-  exact ⟨Homotopy.add h h'⟩)
+instance : Preadditive (CategoryTheory.Quotient (homotopic V c)) :=
+  Quotient.preadditive _ (by
+    rintro _ _ _ _ _ _ ⟨h⟩ ⟨h'⟩
+    exact ⟨Homotopy.add h h'⟩)
+
+instance : Preadditive (HomotopyCategory V c) :=
+  inferInstanceAs <| Preadditive (CategoryTheory.Quotient (homotopic V c))
 
 /-- The quotient functor from complexes to the homotopy category. -/
 def quotient : HomologicalComplex V c ⥤ HomotopyCategory V c :=
@@ -67,16 +69,13 @@ instance : (quotient V c).EssSurj := Quotient.essSurj_functor _
 
 instance : (quotient V c).Additive where
 
-instance : Preadditive (CategoryTheory.Quotient (homotopic V c)) :=
-  (inferInstance : Preadditive (HomotopyCategory V c))
-
 instance : Functor.Additive (Quotient.functor (homotopic V c)) where
 
 instance [Linear R V] : Linear R (HomotopyCategory V c) :=
   Quotient.linear R (homotopic V c) (fun _ _ _ _ _ h => ⟨h.some.smul _⟩)
 
-instance [Linear R V] : Functor.Linear R (HomotopyCategory.quotient V c) :=
-  Quotient.linear_functor _ _ _
+instance [Linear R V] : Functor.Linear R (quotient V c) :=
+  Quotient.linear_functor _ (homotopic V c) _
 
 open ZeroObject
 
@@ -170,6 +169,20 @@ lemma quotient_inverts_homotopyEquivalences :
   rintro K L _ ⟨e, rfl⟩
   change IsIso (isoOfHomotopyEquiv e).hom
   infer_instance
+
+variable (V c) in
+lemma inverseImage_quotient_isomorphisms :
+    (MorphismProperty.isomorphisms _).inverseImage (HomotopyCategory.quotient V c) =
+      homotopyEquivalences V c := by
+  ext K L f
+  simp only [MorphismProperty.inverseImage_iff, MorphismProperty.isomorphisms.iff]
+  refine ⟨fun _ ↦ ?_, fun hf ↦ quotient_inverts_homotopyEquivalences _ _ _ hf⟩
+  obtain ⟨g, hg⟩ := (quotient V c).map_surjective (inv ((quotient _ _).map f))
+  exact ⟨{
+    hom := f
+    inv := g
+    homotopyHomInvId := homotopyOfEq _ _ (by simp [hg])
+    homotopyInvHomId := homotopyOfEq _ _ (by simp [hg]) }, rfl⟩
 
 lemma isZero_quotient_obj_iff (C : HomologicalComplex V c) :
     IsZero ((quotient _ _).obj C) ↔ Nonempty (Homotopy (𝟙 C) 0) := by

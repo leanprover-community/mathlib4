@@ -55,7 +55,7 @@ variable {C}
 instance (priority := 100) monoCoprodOfHasZeroMorphisms [HasZeroMorphisms C] : MonoCoprod C :=
   ⟨fun A B c hc => by
     haveI : IsSplitMono c.inl :=
-      IsSplitMono.mk' (SplitMono.mk (hc.desc (BinaryCofan.mk (𝟙 A) 0)) (IsColimit.fac _ _ _))
+      IsSplitMono.mk' (SplitMono.mk (BinaryCofan.IsColimit.desc hc (𝟙 A) 0) (IsColimit.fac _ _ _))
     infer_instance⟩
 
 namespace MonoCoprod
@@ -64,7 +64,8 @@ set_option backward.isDefEq.respectTransparency false in
 theorem binaryCofan_inr {A B : C} [MonoCoprod C] (c : BinaryCofan A B) (hc : IsColimit c) :
     Mono c.inr := by
   haveI hc' : IsColimit (BinaryCofan.mk c.inr c.inl) :=
-    BinaryCofan.IsColimit.mk _ (fun f₁ f₂ => hc.desc (BinaryCofan.mk f₂ f₁))
+    BinaryCofan.IsColimit.mk _
+      (fun f₁ f₂ => BinaryCofan.IsColimit.desc (s := c) hc f₂ f₁)
       (by simp) (by simp)
       (fun f₁ f₂ m h₁ h₂ => BinaryCofan.IsColimit.hom_ext hc (by cat_disch) (by cat_disch))
   exact binaryCofan_inl _ hc'
@@ -90,20 +91,22 @@ theorem mk' (h : ∀ A B : C, ∃ (c : BinaryCofan A B) (_ : IsColimit c), Mono 
     obtain ⟨c, hc₁, hc₂⟩ := h A B
     simpa only [mono_inl_iff hc' hc₁] using hc₂⟩
 
+set_option backward.isDefEq.respectTransparency false in
 instance monoCoprodType : MonoCoprod (Type u) :=
   MonoCoprod.mk' fun A B => by
-    refine ⟨BinaryCofan.mk (Sum.inl : A ⟶ A ⊕ B) Sum.inr, ?_, ?_⟩
+    refine ⟨BinaryCofan.mk (↾(Sum.inl : A → A ⊕ B))
+      (↾Sum.inr), ?_, ?_⟩
     · exact BinaryCofan.IsColimit.mk _
-        (fun f₁ f₂ x => by
+        (fun f₁ f₂ => ↾fun x => by
           rcases x with x | x
           exacts [f₁ x, f₂ x])
         (fun f₁ f₂ => by rfl)
         (fun f₁ f₂ => by rfl)
         (fun f₁ f₂ m h₁ h₂ => by
-          funext x
+          ext x
           rcases x with x | x
-          · exact congr_fun h₁ x
-          · exact congr_fun h₂ x)
+          · exact ConcreteCategory.congr_hom h₁ x
+          · exact ConcreteCategory.congr_hom h₂ x)
     · rw [mono_iff_injective]
       intro a₁ a₂ h
       simpa using h
@@ -176,8 +179,8 @@ lemma mono_of_injective_aux (hι : Function.Injective ι) (c : Cofan X) (c₁ : 
   let e := ((Equiv.ofInjective ι hι).sumCongr (Equiv.refl _)).trans (Equiv.Set.sumCompl _)
   refine mono_binaryCofanSum_inl' (Cofan.mk c.pt (fun i' => c.inj (e i'))) _ _ ?_
     hc₁ hc₂ _ (by simp [e])
-  exact IsColimit.ofIsoColimit ((IsColimit.ofCoconeEquiv (Cocones.equivalenceOfReindexing
-    (Discrete.equivalence e) (Iso.refl _))).symm hc) (Cocones.ext (Iso.refl _))
+  exact IsColimit.ofIsoColimit ((IsColimit.ofCoconeEquiv (Cocone.equivalenceOfReindexing
+    (Discrete.equivalence e) (Iso.refl _))).symm hc) (Cocone.ext (Iso.refl _))
 
 variable (hι : Function.Injective ι) (c : Cofan X) (c₁ : Cofan (X ∘ ι))
   (hc : IsColimit c) (hc₁ : IsColimit c₁)
@@ -197,7 +200,7 @@ set_option backward.isDefEq.respectTransparency false in
 lemma mono_map'_of_injective [HasCoproduct (X ∘ ι)] [HasCoproduct X]
     [HasCoproduct (fun (k : ((Set.range ι)ᶜ : Set I)) => X k.1)] :
     Mono (Sigma.map' ι (fun j => 𝟙 ((X ∘ ι) j))) := by
-  convert mono_of_injective' X ι hι
+  convert! mono_of_injective' X ι hι
   apply Sigma.hom_ext
   intro j
   rw [Sigma.ι_comp_map', id_comp, colimit.ι_desc]
@@ -215,7 +218,7 @@ lemma mono_inj (c : Cofan X) (h : IsColimit c) (i : I)
   let ι : Unit → I := fun _ ↦ i
   have hι : Function.Injective ι := fun _ _ _ ↦ rfl
   exact mono_of_injective X ι hι c (Cofan.mk (X i) (fun _ ↦ 𝟙 _)) h
-    (mkCofanColimit _ (fun s => s.inj ()))
+    (Cofan.IsColimit.mk _ (fun s => s.inj ()))
 
 instance mono_ι [HasCoproduct X] (i : I)
     [HasCoproduct (fun (k : ((Set.range (fun _ : Unit ↦ i))ᶜ : Set I)) => X k.1)] :
@@ -241,7 +244,7 @@ theorem monoCoprod_of_preservesCoprod_of_reflectsMono [MonoCoprod D]
     apply MonoCoprod.binaryCofan_inl
     apply mapIsColimitOfPreservesOfIsColimit F
     apply IsColimit.ofIsoColimit h
-    refine Cocones.ext (φ := eqToIso rfl) ?_
+    refine Cocone.ext (φ := eqToIso rfl) ?_
     rintro ⟨(j₁ | j₂)⟩ <;> simp only [const_obj_obj, eqToIso_refl, Iso.refl_hom,
       Category.comp_id, BinaryCofan.mk_inl, BinaryCofan.mk_inr]
 

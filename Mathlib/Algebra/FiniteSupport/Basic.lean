@@ -7,20 +7,23 @@ module
 
 public import Mathlib.Algebra.BigOperators.Group.Finset.Lemmas
 public import Mathlib.Algebra.FiniteSupport.Defs
+public import Mathlib.Algebra.Group.Action.Pi
+public import Mathlib.Algebra.GroupWithZero.Action.Defs
 public import Mathlib.Algebra.Order.Group.Indicator
 public import Mathlib.Data.Set.Finite.Lattice
 
-import Mathlib.Algebra.Group.Support
+import Mathlib.Algebra.GroupWithZero.Indicator
+import Mathlib.Algebra.Module.Basic
 
 /-!
-# Make fun_prop work for finite (mulitplicative) support
+# Make `fun_prop` work for finite (multiplicative) support
 
-We provide API lemmas for the predicate `HasFiniteMulSupport` (and its additivized version)
-on functions so that `fun_prop` can prove it for functions that are
+We provide API lemmas for the predicate `HasFiniteMulSupport` (and its additivized version
+`HasFiniteSupport`) on functions so that `fun_prop` can prove it for functions that are
 built from other functions with finite multiplicative support.
 -/
 
-@[expose] public section
+public section
 
 namespace Function
 
@@ -66,15 +69,11 @@ lemma HasFiniteMulSupport.mul {M : Type*} [MulOneClass M] {f g : α → M}
     HasFiniteMulSupport (f * g) :=
   (hf.union hg).subset <| mulSupport_mul ..
 
-attribute [to_additive existing] HasFiniteMulSupport.fun_mul
-
 @[to_additive (attr := to_fun (attr := fun_prop))]
 lemma HasFiniteMulSupport.inv {M : Type*} [DivisionMonoid M] {f : α → M}
     (hf : HasFiniteMulSupport f) :
     HasFiniteMulSupport f⁻¹ :=
   hf.comp inv_one
-
-attribute [to_additive existing] HasFiniteMulSupport.fun_inv
 
 @[to_additive (attr := fun_prop)]
 lemma HasFiniteMulSupport.prod {M : Type*} [CommMonoid M] {ι : Type*} {f : ι → α → M}
@@ -88,23 +87,17 @@ lemma HasFiniteMulSupport.div {M : Type*} [DivisionMonoid M] {f g : α → M}
     HasFiniteMulSupport (f / g) :=
   (hf.union hg).subset <| mulSupport_div ..
 
-attribute [to_additive existing] HasFiniteMulSupport.fun_div
-
 @[to_additive (attr := to_fun (attr := fun_prop))]
 lemma HasFiniteMulSupport.pow {M : Type*} [Monoid M] {f : α → M} (hf : HasFiniteMulSupport f)
     (n : ℕ) :
     HasFiniteMulSupport (f ^ n) :=
   hf.comp (one_pow n)
 
-attribute [to_additive existing] HasFiniteMulSupport.fun_pow
-
 @[to_additive (attr := to_fun (attr := fun_prop))]
 lemma HasFiniteMulSupport.zpow {M : Type*} [DivisionMonoid M] {f : α → M}
     (hf : HasFiniteMulSupport f) (n : ℤ) :
     HasFiniteMulSupport (f ^ n) :=
   hf.comp (one_zpow n)
-
-attribute [to_additive existing] HasFiniteMulSupport.fun_zpow
 
 @[to_additive (attr := fun_prop)]
 lemma HasFiniteMulSupport.max [LinearOrder M] {f g : α → M} (hf : HasFiniteMulSupport f)
@@ -171,6 +164,74 @@ lemma HasFiniteMulSupport.inf' [SemilatticeInf M] {ι : Type*} {f : ι → α �
   contrapose! ha
   exact Finset.inf'_eq_of_forall hs (fun x ↦ f x a) ha
 
+variable {β : Type*} {f : β → M} {g : α → β}
+
+@[to_additive (attr := fun_prop)]
+lemma HasFiniteMulSupport.comp_of_injective (hg : Injective g) (hf : f.HasFiniteMulSupport) :
+    (f ∘ g).HasFiniteMulSupport := by
+  refine Set.Finite.of_injOn ?_ (Set.injOn_of_injective hg) hf
+  grind [Set.mapsTo_iff_subset_preimage, Function.mulSupport]
+
+@[to_additive (attr := fun_prop)]
+lemma HasFiniteMulSupport.fun_comp_of_injective (hg : Injective g) (hf : f.HasFiniteMulSupport) :
+    (fun a ↦ f (g a)).HasFiniteMulSupport :=
+  hf.comp_of_injective hg
+
+@[to_additive]
+lemma HasFiniteMulSupport.of_comp [One β] (hfg : (f ∘ g).HasFiniteMulSupport) (h : f 1 = 1)
+    (hf : Injective f) :
+    g.HasFiniteMulSupport := by
+  refine Set.Finite.subset hfg fun _ ha ↦ Set.mem_setOf.mpr fun H ↦ Set.mem_setOf.mp ha ?_
+  grind
+
+-- The additive version is a special case of `Function.HasFiniteSupport.smul_left`.
+@[fun_prop]
+lemma HasFiniteSupport.hasFiniteMulSupport_fun_pow {M : Type*} [Monoid M] (f : α → M) {g : α → ℕ}
+    (hg : g.HasFiniteSupport) :
+    (fun a : α ↦ f a ^ g a).HasFiniteMulSupport :=
+  Set.Finite.subset hg fun a ha ↦ by contrapose! ha; simp_all
+
+section MulZeroClass
+
+variable {M : Type*} [MulZeroClass M]
+
+@[to_fun (attr := fun_prop)]
+lemma HasFiniteSupport.mul_left {f : α → M} (hf : f.HasFiniteSupport) (g : α → M) :
+    (f * g).HasFiniteSupport :=
+  Set.Finite.subset hf fun _ ha ↦ support_mul_subset_left f g ha
+
+@[to_fun (attr := fun_prop)]
+lemma HasFiniteSupport.mul_right (f : α → M) {g : α → M} (hg : g.HasFiniteSupport) :
+    (f * g).HasFiniteSupport :=
+  Set.Finite.subset hg fun _ ha ↦ support_mul_subset_right f g ha
+
+end MulZeroClass
+
 end Function
 
+@[fun_prop]
+lemma Multiset.hasFiniteSupport_count {α : Type*} [DecidableEq α] (s : Multiset α) :
+    (count · s).HasFiniteSupport :=
+  s.toFinset.finite_toSet.subset <| by simp
+
 end
+
+namespace Function.HasFiniteSupport
+
+public section SMul
+
+variable {α R M : Type*} [Zero M]
+
+@[to_fun (attr := fun_prop)]
+lemma smul_left [Zero R] [SMulWithZero R M] {f : α → R} (hf : f.HasFiniteSupport) (g : α → M) :
+    (f • g).HasFiniteSupport :=
+  Set.Finite.subset hf fun _ ha ↦ support_smul_subset_left f g ha
+
+@[to_fun (attr := fun_prop)]
+lemma smul_right [SMulZeroClass R M] (f : α → R) {g : α → M} (hg : g.HasFiniteSupport) :
+    (f • g).HasFiniteSupport :=
+  Set.Finite.subset hg fun _ ha ↦ support_smul_subset_right f g ha
+
+end SMul
+
+end Function.HasFiniteSupport

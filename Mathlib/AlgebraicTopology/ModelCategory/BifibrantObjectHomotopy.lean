@@ -195,7 +195,7 @@ lemma HoCat.ιFibrantObject_map_toHoCat_map {X Y : BifibrantObject C} (f : X ⟶
       FibrantObject.toHoCat.map (FibrantObject.homMk f.hom) :=
   rfl
 
-/-- The isomomorphism `toHoCat ⋙ HoCat.ιFibrantObject ≅ ιFibrantObject ⋙ FibrantObject.toHoCat`
+/-- The isomorphism `toHoCat ⋙ HoCat.ιFibrantObject ≅ ιFibrantObject ⋙ FibrantObject.toHoCat`
 between functors `BifibrantObject C ⥤ FibrantObject.HoCat C`. -/
 def toHoCatCompιFibrantObject :
     toHoCat (C := C) ⋙ HoCat.ιFibrantObject ≅
@@ -219,7 +219,7 @@ lemma HoCat.ιCofibrantObject_map_toHoCat_map {X Y : BifibrantObject C} (f : X �
       CofibrantObject.toHoCat.map (CofibrantObject.homMk f.hom) :=
   rfl
 
-/-- The isomomorphism
+/-- The isomorphism
 `toHoCat ⋙ HoCat.ιCofibrantObject ≅ ιCofibrantObject ⋙ CofibrantObject.toHoCat`
 between functors `BifibrantObject C ⥤ CofibrantObject.HoCat C`. -/
 def toHoCatCompιCofibrantObject :
@@ -428,16 +428,15 @@ noncomputable def HoCat.adj :
   left_triangle_components X := by
     obtain ⟨X, rfl⟩ := toHoCat_obj_surjective X
     obtain ⟨X, _, rfl⟩ := CofibrantObject.mk_surjective X
-    rw [← cancel_mono (HoCat.adjCounitIso.inv.app _), Category.assoc, Iso.hom_inv_id_app]
+    rw [comp_hom_eq_id]; push inv
     apply bifibrantResolutionObj_hom_ext
     dsimp
-    simp only [HoCat.adjCounitIso_inv_app, Category.comp_id, Category.id_comp,
+    simp only [HoCat.adjCounitIso_inv_app,
       BifibrantObject.HoCat.ιCofibrantObject_map_toHoCat_map, ObjectProperty.homMk_hom]
     apply bifibrantResolutionMap_fac'
   right_triangle_components X := by
     obtain ⟨X, rfl⟩ := BifibrantObject.toHoCat_obj_surjective X
-    rw [← cancel_mono (BifibrantObject.HoCat.ιCofibrantObject.map (HoCat.adjCounitIso.inv.app _)),
-      Category.assoc, ← Functor.map_comp, Iso.hom_inv_id_app]
+    rw [comp_hom_eq_id]; push inv
     cat_disch
 
 instance : IsIso (HoCat.adj (C := C)).counit := by

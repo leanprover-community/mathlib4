@@ -360,7 +360,7 @@ lemma bddAbove_range_prod {F : ι → α × β} :
   simp only [bddAbove_prod, ← range_comp]
 
 @[to_dual]
-theorem isLUB_prod {s : Set (α × β)} (p : α × β) :
+theorem isLUB_prod {s : Set (α × β)} {p : α × β} :
     IsLUB s p ↔ IsLUB (Prod.fst '' s) p.1 ∧ IsLUB (Prod.snd '' s) p.2 := by
   refine
     ⟨fun H =>

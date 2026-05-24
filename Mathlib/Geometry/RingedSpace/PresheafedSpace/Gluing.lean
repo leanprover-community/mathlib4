@@ -22,8 +22,8 @@ provided.
 
 * `AlgebraicGeometry.PresheafedSpace.GlueData`: A structure containing the family of gluing data.
 * `CategoryTheory.GlueData.glued`: The glued presheafed space.
-    This is defined as the multicoequalizer of `∐ V i j ⇉ ∐ U i`, so that the general colimit API
-    can be used.
+  This is defined as the multicoequalizer of `∐ V i j ⇉ ∐ U i`, so that the general colimit API
+  can be used.
 * `CategoryTheory.GlueData.ι`: The immersion `ι i : U i ⟶ glued` for each `i : J`.
 
 ## Main results
@@ -80,15 +80,16 @@ namespace PresheafedSpace
 1. An index type `J`
 2. A presheafed space `U i` for each `i : J`.
 3. A presheafed space `V i j` for each `i j : J`.
-  (Note that this is `J × J → PresheafedSpace C` rather than `J → J → PresheafedSpace C` to
-  connect to the limits library more easily.)
+   (Note that this is `J × J → PresheafedSpace C` rather than `J → J → PresheafedSpace C` to
+   connect to the limits library more easily.)
 4. An open immersion `f i j : V i j ⟶ U i` for each `i j : J`.
 5. A transition map `t i j : V i j ⟶ V j i` for each `i j : J`.
+
 such that
 6. `f i i` is an isomorphism.
 7. `t i i` is the identity.
 8. `V i j ×[U i] V i k ⟶ V i j ⟶ V j i` factors through `V j k ×[U j] V j i ⟶ V j i` via some
-    `t' : V i j ×[U i] V i k ⟶ V j k ×[U j] V j i`.
+   `t' : V i j ×[U i] V i k ⟶ V j k ×[U j] V j i`.
 9. `t' i j k ≫ t' j k i ≫ t' k i j = 𝟙 _`.
 
 We can then glue the spaces `U i` together by identifying `V i j` with `V j i`, such
@@ -131,7 +132,7 @@ theorem ι_isOpenEmbedding [HasLimits C] (i : D.J) : IsOpenEmbedding (𝖣.ι i)
 
 set_option backward.isDefEq.respectTransparency false in
 theorem pullback_base (i j k : D.J) (S : Set (D.V (i, j)).carrier) :
-    (π₂ i, j, k) '' ((π₁ i, j, k) ⁻¹' S) = D.f i k ⁻¹' (D.f i j '' S) := by
+    (π₂ i, j, k) '' (π₁ i, j, k) ⁻¹' S = D.f i k ⁻¹' D.f i j '' S := by
   have eq₁ : _ = (π₁ i, j, k).base := PreservesPullback.iso_hom_fst (forget C) _ _
   have eq₂ : _ = (π₂ i, j, k).base := PreservesPullback.iso_hom_snd (forget C) _ _
   rw [← eq₁, ← eq₂, TopCat.coe_comp, Set.image_comp, TopCat.coe_comp, Set.preimage_comp,
@@ -150,7 +151,7 @@ theorem f_invApp_f_app (i j k : D.J) (U : Opens (D.V (i, j)).carrier) :
           (D.V _).presheaf.map
             (eqToHom
               (by
-                delta IsOpenImmersion.opensFunctor
+                delta IsOpenImmersion.opensFunctor IsOpenEmbedding.functor
                 dsimp only [Functor.op, IsOpenMap.functor, Opens.map, unop_op]
                 congr
                 apply pullback_base)) := by
@@ -162,7 +163,7 @@ theorem f_invApp_f_app (i j k : D.J) (U : Opens (D.V (i, j)).carrier) :
   erw [(π₁ i, j, k).c.naturality_assoc, reassoc_of% this, ← Functor.map_comp_assoc,
     IsOpenImmersion.inv_naturality_assoc, IsOpenImmersion.app_invApp_assoc, ←
     (D.V (i, k)).presheaf.map_comp, ← (D.V (i, k)).presheaf.map_comp]
-  convert (Category.comp_id _).symm
+  convert! (Category.comp_id _).symm
   erw [(D.V (i, k)).presheaf.map_id]
   rfl
 
@@ -176,7 +177,7 @@ theorem snd_invApp_t_app' (i j k : D.J) (U : Opens (pullback (D.f i j) (D.f i k)
         (D.t' k i j).c.app _ ≫ (π₁⁻¹ k, j, i) (unop _) := by
   fconstructor
   -- Porting note: I don't know what the magic was in Lean3 proof, it just skipped the proof of `eq`
-  · delta IsOpenImmersion.opensFunctor
+  · delta IsOpenImmersion.opensFunctor IsOpenEmbedding.functor
     dsimp only [Functor.op, Opens.map, IsOpenMap.functor, unop_op, Opens.coe_mk]
     congr 2
     have := (𝖣.t_fac k i j).symm
@@ -235,7 +236,7 @@ variable [HasLimits C]
 
 set_option backward.isDefEq.respectTransparency false in
 theorem ι_image_preimage_eq (i j : D.J) (U : Opens (D.U i).carrier) :
-    (Opens.map (𝖣.ι j).base).obj ((D.ι_isOpenEmbedding i).isOpenMap.functor.obj U) =
+    (Opens.map (𝖣.ι j).base).obj ((D.ι_isOpenEmbedding i).functor.obj U) =
       (opensFunctor (D.f j i)).obj
         ((Opens.map (𝖣.t j i).base).obj ((Opens.map (𝖣.f i j).base).obj U)) := by
   ext1
@@ -256,11 +257,11 @@ theorem ι_image_preimage_eq (i j : D.J) (U : Opens (D.U i).carrier) :
   · rw [← TopCat.mono_iff_injective]
     infer_instance
 
-/-- (Implementation). The map `Γ(𝒪_{U_i}, U) ⟶ Γ(𝒪_{U_j}, 𝖣.ι j ⁻¹' (𝖣.ι i '' U))` -/
+/-- (Implementation). The map `Γ(𝒪_{U_i}, U) ⟶ Γ(𝒪_{U_j}, 𝖣.ι j ⁻¹' 𝖣.ι i '' U)` -/
 def opensImagePreimageMap (i j : D.J) (U : Opens (D.U i).carrier) :
     (D.U i).presheaf.obj (op U) ⟶
     (D.U j).presheaf.obj (op <|
-      (Opens.map (𝖣.ι j).base).obj ((D.ι_isOpenEmbedding i).isOpenMap.functor.obj U)) :=
+      (Opens.map (𝖣.ι j).base).obj ((D.ι_isOpenEmbedding i).functor.obj U)) :=
   (D.f i j).c.app (op U) ≫
     (D.t j i).c.app _ ≫
       (D.f_open j i).invApp _ (unop _) ≫
@@ -307,7 +308,7 @@ theorem opensImagePreimageMap_app_assoc (i j k : D.J) (U : Opens (D.U i).carrier
 the image `ι '' U` in the glued space is the limit of this diagram. -/
 abbrev diagramOverOpen {i : D.J} (U : Opens (D.U i).carrier) :
     (WalkingMultispan (.prod D.J))ᵒᵖ ⥤ C :=
-  componentwiseDiagram 𝖣.diagram.multispan ((D.ι_isOpenEmbedding i).isOpenMap.functor.obj U)
+  componentwiseDiagram 𝖣.diagram.multispan ((D.ι_isOpenEmbedding i).functor.obj U)
 
 /-- (Implementation)
 The projection from the limit of `diagram_over_open` to a component of `D.U j`. -/
@@ -390,11 +391,11 @@ theorem ιInvApp_π {i : D.J} (U : Opens (D.U i).carrier) :
     ∃ eq, D.ιInvApp U ≫ D.diagramOverOpenπ U i = (D.U i).presheaf.map (eqToHom eq) := by
   fconstructor
   -- Porting note: I don't know what the magic was in Lean3 proof, it just skipped the proof of `eq`
-  · congr; ext1; change _ = _ ⁻¹' (_ '' _); ext1 x
+  · congr; ext1; change _ = _ ⁻¹' _ '' _; ext1 x
     simp only [SetLike.mem_coe, unop_op, Set.mem_preimage, Set.mem_image]
     refine ⟨fun h => ⟨_, h, rfl⟩, ?_⟩
     rintro ⟨y, h1, h2⟩
-    convert h1 using 1
+    convert! h1 using 1
     delta ι Multicoequalizer.π at h2
     apply_fun (D.ι _).base
     · exact h2.symm
@@ -443,7 +444,7 @@ theorem π_ιInvApp_π (i j : D.J) (U : Opens (D.U i).carrier) :
     iterate 3 rw [← Functor.map_comp_assoc]
     rw [NatTrans.naturality_assoc]
     erw [← (D.V (i, j)).presheaf.map_comp]
-    convert
+    convert!
       limit.w (componentwiseDiagram 𝖣.diagram.multispan _)
         (Quiver.Hom.op (WalkingMultispan.Hom.fst (i, j)))
   · rw [Category.comp_id]
@@ -488,10 +489,12 @@ instance ιIsOpenImmersion (i : D.J) : IsOpenImmersion (𝖣.ι i) where
 set_option backward.isDefEq.respectTransparency false in
 /-- The following diagram is a pullback, i.e. `Vᵢⱼ` is the intersection of `Uᵢ` and `Uⱼ` in `X`.
 
+```
 Vᵢⱼ ⟶ Uᵢ
  |      |
  ↓      ↓
  Uⱼ ⟶ X
+```
 -/
 def vPullbackConeIsLimit (i j : D.J) : IsLimit (𝖣.vPullbackCone i j) :=
   PullbackCone.isLimitAux' _ fun s => by
@@ -533,15 +536,16 @@ namespace SheafedSpace
 1. An index type `J`
 2. A sheafed space `U i` for each `i : J`.
 3. A sheafed space `V i j` for each `i j : J`.
-  (Note that this is `J × J → SheafedSpace C` rather than `J → J → SheafedSpace C` to
-  connect to the limits library more easily.)
+   (Note that this is `J × J → SheafedSpace C` rather than `J → J → SheafedSpace C` to
+   connect to the limits library more easily.)
 4. An open immersion `f i j : V i j ⟶ U i` for each `i j : J`.
 5. A transition map `t i j : V i j ⟶ V j i` for each `i j : J`.
+
 such that
 6. `f i i` is an isomorphism.
 7. `t i i` is the identity.
 8. `V i j ×[U i] V i k ⟶ V i j ⟶ V j i` factors through `V j k ×[U j] V j i ⟶ V j i` via some
-    `t' : V i j ×[U i] V i k ⟶ V j k ×[U j] V j i`.
+   `t' : V i j ×[U i] V i k ⟶ V j k ×[U j] V j i`.
 9. `t' i j k ≫ t' j k i ≫ t' k i j = 𝟙 _`.
 
 We can then glue the spaces `U i` together by identifying `V i j` with `V j i`, such
@@ -587,10 +591,12 @@ theorem ι_jointly_surjective (x : 𝖣.glued) : ∃ (i : D.J) (y : D.U i), (�
 
 /-- The following diagram is a pullback, i.e. `Vᵢⱼ` is the intersection of `Uᵢ` and `Uⱼ` in `X`.
 
+```
 Vᵢⱼ ⟶ Uᵢ
  |      |
  ↓      ↓
  Uⱼ ⟶ X
+```
 -/
 def vPullbackConeIsLimit (i j : D.J) : IsLimit (𝖣.vPullbackCone i j) :=
   𝖣.vPullbackConeIsLimitOfMap forgetToPresheafedSpace i j
@@ -606,15 +612,16 @@ namespace LocallyRingedSpace
 1. An index type `J`
 2. A locally ringed space `U i` for each `i : J`.
 3. A locally ringed space `V i j` for each `i j : J`.
-  (Note that this is `J × J → LocallyRingedSpace` rather than `J → J → LocallyRingedSpace` to
-  connect to the limits library more easily.)
+   (Note that this is `J × J → LocallyRingedSpace` rather than `J → J → LocallyRingedSpace` to
+   connect to the limits library more easily.)
 4. An open immersion `f i j : V i j ⟶ U i` for each `i j : J`.
 5. A transition map `t i j : V i j ⟶ V j i` for each `i j : J`.
+
 such that
 6. `f i i` is an isomorphism.
 7. `t i i` is the identity.
 8. `V i j ×[U i] V i k ⟶ V i j ⟶ V j i` factors through `V j k ×[U j] V j i ⟶ V j i` via some
-    `t' : V i j ×[U i] V i k ⟶ V j k ×[U j] V j i`.
+   `t' : V i j ×[U i] V i k ⟶ V j k ×[U j] V j i`.
 9. `t' i j k ≫ t' j k i ≫ t' k i j = 𝟙 _`.
 
 We can then glue the spaces `U i` together by identifying `V i j` with `V j i`, such

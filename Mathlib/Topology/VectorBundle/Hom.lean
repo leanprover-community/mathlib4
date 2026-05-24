@@ -124,14 +124,8 @@ def continuousLinearMap :
 instance continuousLinearMap.isLinear [∀ x, ContinuousAdd (E₂ x)] [∀ x, ContinuousSMul 𝕜₂ (E₂ x)] :
     (Pretrivialization.continuousLinearMap σ e₁ e₂).IsLinear 𝕜₂ where
   linear x _ :=
-    { map_add := fun L L' ↦
-        show (e₂.continuousLinearMapAt 𝕜₂ x).comp ((L + L').comp (e₁.symmL 𝕜₁ x)) = _ by
-          simp_rw [add_comp, comp_add]
-          rfl
-      map_smul := fun c L ↦
-        show (e₂.continuousLinearMapAt 𝕜₂ x).comp ((c • L).comp (e₁.symmL 𝕜₁ x)) = _ by
-          simp_rw [smul_comp, comp_smulₛₗ, RingHom.id_apply]
-          rfl }
+    { map_add L L' := by simp [continuousLinearMap, Pretrivialization.toFun']
+      map_smul c L := by simp [continuousLinearMap, Pretrivialization.toFun'] }
 
 theorem continuousLinearMap_apply (p : TotalSpace (F₁ →SL[σ] F₂) fun x ↦ E₁ x →SL[σ] E₂ x) :
     (continuousLinearMap σ e₁ e₂) p =
@@ -209,7 +203,7 @@ def Bundle.ContinuousLinearMap.vectorPrebundle :
         (mem_baseSet_trivializationAt _ _ _)
     let φ : (E₁ b →SL[σ] E₂ b) ≃L[𝕜₂] F₁ →SL[σ] F₂ := L₁.arrowCongrSL L₂
     have : IsInducing fun x ↦ (b, φ x) := isInducing_const_prod.mpr φ.toHomeomorph.isInducing
-    convert this
+    convert! this
     ext f
     dsimp [Pretrivialization.continuousLinearMap_apply]
     rw [Trivialization.linearMapAt_def_of_mem _ (mem_baseSet_trivializationAt _ _ _)]

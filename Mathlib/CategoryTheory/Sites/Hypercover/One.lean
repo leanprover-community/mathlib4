@@ -71,14 +71,28 @@ def sieve₁ {i₁ i₂ : E.I₀} {W : C} (p₁ : W ⟶ E.X i₁) (p₂ : W ⟶ 
     rintro Z Z' g ⟨j, h, fac₁, fac₂⟩ φ
     exact ⟨j, φ ≫ h, by simpa using φ ≫= fac₁, by simpa using φ ≫= fac₂⟩
 
+lemma pullback_sieve₁ {i₁ i₂ : E.I₀} {W : C} (p₁ : W ⟶ E.X i₁) (p₂ : W ⟶ E.X i₂)
+    {T : C} (f : T ⟶ W) :
+    Sieve.pullback f (E.sieve₁ p₁ p₂) = E.sieve₁ (f ≫ p₁) (f ≫ p₂) := by
+  refine le_antisymm ?_ ?_ <;>
+  · intro Z g ⟨k, u, hu₁, hu₂⟩
+    cat_disch
+
 section
 
 variable {i₁ i₂ : E.I₀} [HasPullback (E.f i₁) (E.f i₂)]
 
 /-- The obvious morphism `E.Y j ⟶ pullback (E.f i₁) (E.f i₂)` given by `E : PreOneHypercover S`. -/
-noncomputable abbrev toPullback (j : E.I₁ i₁ i₂) [HasPullback (E.f i₁) (E.f i₂)] :
-    E.Y j ⟶ pullback (E.f i₁) (E.f i₂) :=
+noncomputable abbrev toPullback (j : E.I₁ i₁ i₂) : E.Y j ⟶ pullback (E.f i₁) (E.f i₂) :=
   pullback.lift (E.p₁ j) (E.p₂ j) (E.w j)
+
+@[reassoc (attr := simp)]
+lemma toPullback_fst (k : E.I₁ i₁ i₂) : E.toPullback k ≫ pullback.fst _ _ = E.p₁ k := by
+  rw [pullback.lift_fst]
+
+@[reassoc (attr := simp)]
+lemma toPullback_snd (k : E.I₁ i₁ i₂) : E.toPullback k ≫ pullback.snd _ _ = E.p₂ k := by
+  rw [pullback.lift_snd]
 
 variable (i₁ i₂) in
 /-- The sieve of `pullback (E.f i₁) (E.f i₂)` given by `E : PreOneHypercover S`. -/
@@ -427,7 +441,7 @@ section
 variable {S : C} {E : PreOneHypercover.{w} S} {F : PreOneHypercover.{w'} S}
   {i i' j j' : E.I₀} (hii' : i = i') (hjj' : j = j')
 
-/-- If `i = i'` and `j = j'` this is an equivalence betweeen the `1`-index type at `i`, `j` and
+/-- If `i = i'` and `j = j'` this is an equivalence between the `1`-index type at `i`, `j` and
 the one at `i'`, `j'`. -/
 def congrIndexOneOfEq {E : PreOneHypercover.{w} S} {i i' j j' : E.I₀}
     (hii' : i = i') (hjj' : j = j') :
@@ -477,8 +491,8 @@ lemma I₁'.ext {a b : E.I₁'} (left : a.1.1 = b.1.1) (right : a.1.2 = b.1.2)
   simpa using h
 
 /--
-If `i = i'` and `j = j'` this is the isomorphism betweeen the `1`-component at
-`congrIndexOneOfEq k : E.I₁ i' j'` and the `1``-compontent at `k : E.I₁ i j`.
+If `i = i'` and `j = j'` this is the isomorphism between the `1`-component at
+`congrIndexOneOfEq k : E.I₁ i' j'` and the `1`-component at `k : E.I₁ i j`.
 
 Note: This isomorphism could also be constructed inline from `eqToIso`. We only
 use `eqToIso` directly to construct isomorphisms `E.Y k ≅ E.Y k'` where `k k' : E.I₁ i j`
@@ -755,7 +769,7 @@ def Hom.mapMulticospan {E : PreOneHypercover.{w} S} {F : PreOneHypercover.{w'} S
     | .snd _, .id _ => by simp
 
 set_option backward.isDefEq.respectTransparency false in
-/-- Isomorphic pre-`1`-hypercovers have equivalent mutifork index categories. -/
+/-- Isomorphic pre-`1`-hypercovers have equivalent multifork index categories. -/
 @[simps! functor inverse]
 def equivalenceMulticospanOfIso {E F : PreOneHypercover.{w} S} (f : E ≅ F) :
     WalkingMulticospan E.multicospanShape ≌ WalkingMulticospan F.multicospanShape where
@@ -776,7 +790,7 @@ def equivalenceMulticospanOfIso {E F : PreOneHypercover.{w} S} (f : E ≅ F) :
 
 set_option backward.isDefEq.respectTransparency false in
 /-- If `E` and `F` are isomorphic pre-`1`-hypercovers and `G` is a presheaf,
-the multifork for `E` is exact if and only if the multifork for `E` is exact. -/
+the multifork for `E` is exact if and only if the multifork for `F` is exact. -/
 noncomputable
 def isLimitEquivOfIso {E F : PreOneHypercover.{w} S} (f : E ≅ F) (G : Cᵒᵖ ⥤ A) :
     IsLimit (E.multifork G) ≃ IsLimit (F.multifork G) := by
@@ -790,7 +804,7 @@ def isLimitEquivOfIso {E F : PreOneHypercover.{w} S} (f : E ≅ F) (G : Cᵒᵖ 
       exact G.mapIso (asIso (f.hom.h₁ i.2)).symm.op
     · simp [← Functor.map_comp_assoc, ← Functor.map_comp, ← op_comp, f.hom.w₁₁]
     · simp [← Functor.map_comp_assoc, ← Functor.map_comp, ← op_comp, f.hom.w₁₂]
-  · refine Cones.ext (Iso.refl _) fun i ↦ ?_
+  · refine Cone.ext (Iso.refl _) fun i ↦ ?_
     induction i with
     | left _ => simp [← Functor.map_comp, ← op_comp]
     | right _ => simp [← Functor.map_comp, ← op_comp, f.hom.w₁₁_assoc]
@@ -890,20 +904,20 @@ variable {S : C} (E : J.OneHypercover S) (F : Sheaf J A)
 section
 
 variable {E F}
-variable (c : Multifork (E.multicospanIndex F.val))
+variable (c : Multifork (E.multicospanIndex F.obj))
 
 /-- Auxiliary definition of `isLimitMultifork`. -/
-noncomputable def multiforkLift : c.pt ⟶ F.val.obj (Opposite.op S) :=
-  F.cond.amalgamateOfArrows _ E.mem₀ c.ι (fun W i₁ i₂ p₁ p₂ w => by
-    apply F.cond.hom_ext ⟨_, E.mem₁ _ _ _ _ w⟩
+noncomputable def multiforkLift : c.pt ⟶ F.obj.obj (Opposite.op S) :=
+  F.property.amalgamateOfArrows _ E.mem₀ c.ι (fun W i₁ i₂ p₁ p₂ w => by
+    apply F.property.hom_ext ⟨_, E.mem₁ _ _ _ _ w⟩
     rintro ⟨T, g, j, h, fac₁, fac₂⟩
     dsimp
     simp only [assoc, ← Functor.map_comp, ← op_comp, fac₁, fac₂]
     simp only [op_comp, Functor.map_comp]
-    simpa using c.condition ⟨⟨i₁, i₂⟩, j⟩ =≫ F.val.map h.op)
+    simpa using c.condition ⟨⟨i₁, i₂⟩, j⟩ =≫ F.obj.map h.op)
 
 @[reassoc]
-lemma multiforkLift_map (i₀ : E.I₀) : multiforkLift c ≫ F.val.map (E.f i₀).op = c.ι i₀ := by
+lemma multiforkLift_map (i₀ : E.I₀) : multiforkLift c ≫ F.obj.map (E.f i₀).op = c.ι i₀ := by
   simp [multiforkLift]
 
 end
@@ -914,7 +928,7 @@ induced by `E.p₁ j` and `E.p₂ j`. -/
 noncomputable def isLimitMultifork : IsLimit (E.multifork F.1) :=
   Multifork.IsLimit.mk _ (fun c => multiforkLift c) (fun c => multiforkLift_map c) (by
     intro c m hm
-    apply F.cond.hom_ext_ofArrows _ E.mem₀
+    apply F.property.hom_ext_ofArrows _ E.mem₀
     intro i₀
     dsimp only
     rw [multiforkLift_map]

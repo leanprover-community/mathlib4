@@ -344,6 +344,9 @@ protected theorem UniformSpace.le_sInf {tt : Set (UniformSpace α)} {t : Uniform
     (h : ∀ t' ∈ tt, t ≤ t') : t ≤ sInf tt :=
   show 𝓤[t] ≤ ⨅ u ∈ tt, 𝓤[u] from le_iInf₂ h
 
+protected theorem UniformSpace.isGLB_sInf {tt : Set (UniformSpace α)} : IsGLB tt (sInf tt) :=
+  ⟨fun _ ↦ UniformSpace.sInf_le, fun _ ↦ UniformSpace.le_sInf⟩
+
 instance : Top (UniformSpace α) :=
   ⟨@UniformSpace.mk α ⊤ ⊤ le_top le_top fun x ↦ by simp only [nhds_top, comap_top]⟩
 
@@ -378,10 +381,8 @@ instance : CompleteLattice (UniformSpace α) where
   le_top a := show a.uniformity ≤ ⊤ from le_top
   bot_le u := u.toCore.refl
   sSup tt := sInf { t | ∀ t' ∈ tt, t' ≤ t }
-  le_sSup _ _ h := UniformSpace.le_sInf fun _ h' => h' _ h
-  sSup_le _ _ h := UniformSpace.sInf_le h
-  le_sInf _ _ hs := UniformSpace.le_sInf hs
-  sInf_le _ _ ha := UniformSpace.sInf_le ha
+  isLUB_sSup _ := isGLB_upperBounds.mp UniformSpace.isGLB_sInf
+  isGLB_sInf _ := UniformSpace.isGLB_sInf
 
 theorem iInf_uniformity {ι : Sort*} {u : ι → UniformSpace α} : 𝓤[iInf u] = ⨅ i, 𝓤[u i] :=
   iInf_range
@@ -677,7 +678,7 @@ alias ⟨UniformContinuousOn.restrict, UniformContinuousOn.of_restrict⟩ :=
 theorem tendsto_of_uniformContinuous_subtype [UniformSpace α] [UniformSpace β] {f : α → β}
     {s : Set α} {a : α} (hf : UniformContinuous fun x : s => f x.val) (ha : s ∈ 𝓝 a) :
     Tendsto f (𝓝 a) (𝓝 (f a)) := by
-  rw [(@map_nhds_subtype_coe_eq_nhds α _ s a (mem_of_mem_nhds ha) ha).symm]
+  rw [(@map_nhds_subtype_coe_eq_nhds α _ (· ∈ s) a (mem_of_mem_nhds ha) ha).symm]
   exact tendsto_map' hf.continuous.continuousAt
 
 theorem UniformContinuousOn.continuousOn [UniformSpace α] [UniformSpace β] {f : α → β} {s : Set α}

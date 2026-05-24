@@ -12,7 +12,6 @@ on:
       - 'trying'
       # ignore branches meant for experiments
       - 'ci-dev/**'
-  merge_group:
 
 concurrency:
   # label each workflow run; only the latest with each label will run
@@ -24,6 +23,7 @@ concurrency:
 # Limit permissions for GITHUB_TOKEN for the entire workflow
 permissions:
   contents: read
+  id-token: write
   pull-requests: write  # Only allow PR comments/labels
   # All other permissions are implicitly 'none'
 
@@ -35,5 +35,7 @@ jobs:
     with:
       concurrency_group: ${{ github.workflow }}-${{ github.ref }}-${{ (github.event_name == 'push' && github.ref == 'refs/heads/master' && github.run_id) || '' }}
       pr_branch_ref: ${{ github.sha }}
+      # Use the MASTER cache key only on mathlib4/master; nightly-testing and other branches use NON_MASTER
+      cache_application_id: ${{ github.repository == 'leanprover-community/mathlib4' && github.ref == 'refs/heads/master' && vars.CACHE_MASTER_WRITER_AZURE_APP_ID || vars.CACHE_NON_MASTER_WRITER_AZURE_APP_ID }}
       runs_on: pr
     secrets: inherit

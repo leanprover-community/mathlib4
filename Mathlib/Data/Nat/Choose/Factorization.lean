@@ -266,7 +266,7 @@ theorem le_two_mul_of_factorization_centralBinom_pos
 /-- A binomial coefficient is the product of its prime factors, which are at most `n`. -/
 theorem prod_pow_factorization_choose (n k : ℕ) (hkn : k ≤ n) :
     (∏ p ∈ Finset.range (n + 1), p ^ (Nat.choose n k).factorization p) = choose n k := by
-  conv_rhs => rw [← factorization_prod_pow_eq_self (choose_ne_zero hkn)]
+  conv_rhs => rw [← prod_factorization_pow_eq_self (choose_ne_zero hkn)]
   rw [eq_comm]
   apply Finset.prod_subset
   · intro p hp

@@ -44,7 +44,7 @@ to add a `(h : ¬ IsField A)` assumption whenever this is explicitly needed.
 dedekind domain, dedekind ring
 -/
 
-@[expose] public section
+public section
 
 
 variable (A : Type*) [CommRing A] [IsDomain A]
@@ -72,13 +72,8 @@ theorem Ring.DimensionLEOne.localization {R : Type*} (Rₘ : Type*) [CommRing R]
   refine Ideal.isMaximal_def.mpr ⟨hpp.ne_top, Ideal.maximal_of_no_maximal fun P hpP hPm => ?_⟩
   have hpP' : (⟨p, hpp⟩ : { p : Ideal Rₘ // p.IsPrime }) < ⟨P, hPm.isPrime⟩ := hpP
   rw [← (IsLocalization.orderIsoOfPrime M Rₘ).lt_iff_lt] at hpP'
-  haveI : Ideal.IsPrime (Ideal.comap (algebraMap R Rₘ) p) :=
-    ((IsLocalization.orderIsoOfPrime M Rₘ) ⟨p, hpp⟩).2.1
-  haveI : Ideal.IsPrime (Ideal.comap (algebraMap R Rₘ) P) :=
-    ((IsLocalization.orderIsoOfPrime M Rₘ) ⟨P, hPm.isPrime⟩).2.1
-  have hlt : Ideal.comap (algebraMap R Rₘ) p < Ideal.comap (algebraMap R Rₘ) P := hpP'
-  refine h.not_lt_lt ⊥ (Ideal.comap _ _) (Ideal.comap _ _) ⟨?_, hlt⟩
-  exact IsLocalization.bot_lt_comap_prime _ _ hM _ hp0⟩
+  refine h.not_lt_lt ⊥ (p.under R) (P.under R) ⟨?_, hpP'⟩
+  exact IsLocalization.bot_lt_under_prime _ _ hM _ hp0⟩
 
 /-- The localization of a Dedekind domain is a Dedekind domain. -/
 theorem IsLocalization.isDedekindDomain [IsDedekindDomain A] {M : Submonoid A} (hM : M ≤ A⁰)
@@ -113,7 +108,6 @@ instance Localization.AtPrime.isDedekindDomain [IsDedekindDomain A] (P : Ideal A
     IsDedekindDomain (Localization.AtPrime P) :=
   IsLocalization.AtPrime.isDedekindDomain A P _
 
-set_option backward.isDefEq.respectTransparency false in
 theorem IsLocalization.AtPrime.not_isField {P : Ideal A} (hP : P ≠ ⊥) [pP : P.IsPrime] (Aₘ : Type*)
     [CommRing Aₘ] [Algebra A Aₘ] [IsLocalization.AtPrime Aₘ P] : ¬ IsField Aₘ := by
   intro h

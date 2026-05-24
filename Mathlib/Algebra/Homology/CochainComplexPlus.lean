@@ -13,7 +13,7 @@ public import Mathlib.CategoryTheory.ObjectProperty.Shift
 # Bounded below cochain complexes
 
 In this file, we consider the full subcategory `CochainComplex.Plus C`
-of `CochainComplex C ℤ` consisting of bounded below cocahin complexes
+of `CochainComplex C ℤ` consisting of bounded below cochain complexes
 in a category `C`.
 
 -/
@@ -97,6 +97,10 @@ lemma mono_iff [HasLimitsOfShape WalkingCospan C] {X Y : Plus C} (f : X ⟶ Y) :
     Mono f ↔ Mono f.hom :=
   ⟨fun _ ↦ inferInstanceAs (Mono ((ι C).map f)),
     fun _ ↦ Functor.mono_of_mono_map (ι C) (by assumption)⟩
+
+instance [HasLimitsOfShape WalkingCospan C] {X Y : Plus C} (f : X ⟶ Y) [Mono f] :
+    Mono f.hom := by
+  rwa [← mono_iff]
 
 /-- The class of quasi-isomorphisms in the category of bounded
 below cochain complexes. -/

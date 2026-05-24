@@ -200,7 +200,6 @@ private theorem det_projVandermonde_of_field (v w : Fin n → K) :
   simp only [of_apply, projVandermonde_apply_of_ne_zero h0, val_succ, val_castSucc, cons_succ, W, r]
   ring
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The formula for the determinant of a projective Vandermonde matrix. -/
 theorem det_projVandermonde (v w : Fin n → R) : (projVandermonde v w).det =
     ∏ i : Fin n, ∏ j ∈ Finset.Ioi i, (v j * w i - v i * w j) := by
@@ -212,7 +211,7 @@ theorem det_projVandermonde (v w : Fin n → R) : (projVandermonde v w).det =
   rw [projVandermonde_map, ← RingHom.map_det, IsFractionRing.coe_inj] at hdet
   apply_fun MvPolynomial.eval₂Hom (Int.castRingHom R) (fun x ↦ (if x.2 then v else w) x.1) at hdet
   rw [RingHom.map_det] at hdet
-  convert hdet <;>
+  convert! hdet <;>
   simp [← Matrix.ext_iff, projVandermonde_apply]
 
 /-- The formula for the determinant of a Vandermonde matrix. -/
@@ -301,7 +300,7 @@ private lemma of_eval_descPochhammer_eq_mul_of_choose {n : ℕ} (v : Fin n → �
     (of fun i j : Fin n => (descPochhammer ℤ j).eval (v i : ℤ)).det =
     (∏ i : Fin n, Nat.factorial i) *
       (of fun i j : Fin n => (Nat.choose (v i) j : ℤ)).det := by
-  convert det_mul_row (fun (i : Fin n) => ((Nat.factorial (i : ℕ)) : ℤ)) _
+  convert! det_mul_row (fun (i : Fin n) => ((Nat.factorial (i : ℕ)) : ℤ)) _
   · rw [of_apply, descPochhammer_eval_eq_descFactorial ℤ _ _]
     congr
     exact Nat.descFactorial_eq_factorial_mul_choose _ _

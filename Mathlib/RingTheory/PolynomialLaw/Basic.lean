@@ -55,7 +55,7 @@ only assumes `R` is a commutative semiring.
 ## References
 
 * [Roby, Norbert. 1963. «Lois polynomes et lois formelles en théorie des modules».
-Annales scientifiques de l’École Normale Supérieure 80 (3): 213‑348](Roby-1963)
+  Annales scientifiques de l’École Normale Supérieure 80 (3): 213‑348](Roby-1963)
 
 -/
 
@@ -235,7 +235,7 @@ instance : CoeFun (M →ₚₗ[R] N) (fun _ ↦ M → N) where
 theorem one_tmul_ground_apply' {S : Type u} [CommSemiring S] [Algebra R S] (x : M) :
     1 ⊗ₜ (f.ground x) = (f.toFun' S) (1 ⊗ₜ x) := by
   rw [ground_apply]
-  convert f.isCompat_apply' (Algebra.algHom R R S) (1 ⊗ₜ[R] x)
+  convert! f.isCompat_apply' (Algebra.algHom R R S) (1 ⊗ₜ[R] x)
   · simp only [includeRight_lid]
   · rw [rTensor_tmul, toLinearMap_apply, map_one]
 
@@ -531,7 +531,6 @@ variable
   (r a b : R) (f g : M →ₚₗ[R] N)
   {S : Type*} [CommSemiring S] [Algebra R S]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Extension of `PolynomialLaw.zero_def` -/
 @[simp]
 theorem toFun_zero : (0 : M →ₚₗ[R] N).toFun S = 0 := by
@@ -585,7 +584,7 @@ variable {R : Type u} [CommSemiring R]
 theorem one_tmul_ground (x : M) :
     1 ⊗ₜ f.ground x = f.toFun S (1 ⊗ₜ x) := by
   simp only [ground, toFun'_eq_toFun]
-  convert f.isCompat_apply (Algebra.ofId R S) (1 ⊗ₜ[R] x)
+  convert! f.isCompat_apply (Algebra.ofId R S) (1 ⊗ₜ[R] x)
   · simp only [Function.comp_apply, TensorProduct.lid_symm_apply, TensorProduct.includeRight_lid]
     congr
   · rw [rTensor_tmul, toLinearMap_apply, _root_.map_one]

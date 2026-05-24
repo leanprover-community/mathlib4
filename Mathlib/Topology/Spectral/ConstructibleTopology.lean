@@ -37,6 +37,7 @@ def constructibleTopologySubbasis (X : Type*) [TopologicalSpace X] : Set (Set X)
 
 /-- The constructible topology on a topological space `X` has as a subbasis
 the open and compact sets of `X` and their complements. -/
+@[implicit_reducible]
 def constructibleTopology (X : Type*) [TopologicalSpace X] : TopologicalSpace X :=
   .generateFrom (constructibleTopologySubbasis X)
 
@@ -46,7 +47,7 @@ def WithConstructibleTopology (X : Type*) [TopologicalSpace X] : Type _ :=
   X
 
 instance : TopologicalSpace (WithConstructibleTopology X) :=
-  constructibleTopology X
+  fast_instance% constructibleTopology X
 
 open Topology
 

@@ -52,13 +52,12 @@ def Cover.toPresieveOverProp {X : Q.Over ⊤ S} (𝒰 : Cover.{u} (precoverage P
     (h : ∀ j, Q (𝒰.X j ↘ S)) : Presieve X :=
   Presieve.ofArrows (fun i ↦ (𝒰.X i).asOverProp S (h i)) (fun i ↦ (𝒰.f i).asOverProp S)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma Cover.overEquiv_generate_toPresieveOver_eq_ofArrows {X : Over S}
     (𝒰 : Cover.{u} (precoverage P) X.left)
     [𝒰.Over S] : Sieve.overEquiv X (Sieve.generate 𝒰.toPresieveOver) =
       Sieve.ofArrows 𝒰.X 𝒰.f := by
   ext V f
-  simp only [Sieve.overEquiv_iff, Functor.const_obj_obj, Sieve.generate_apply]
+  simp only [Sieve.overEquiv_iff, Sieve.generate_apply]
   constructor
   · rintro ⟨U, h, g, ⟨k⟩, hcomp⟩
     exact ⟨𝒰.X k, h.left, 𝒰.f k, ⟨k⟩, congrArg CommaMorphism.left hcomp⟩
@@ -83,7 +82,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- The pretopology on `Over S` induced by `P` where coverings are given by `P`-covers
 of `S`-schemes. -/
 def overPretopology : Pretopology (Over S) where
-  coverings Y R := ∃ (𝒰 : Cover.{u} (precoverage P) Y.left) (_ : 𝒰.Over S), R = 𝒰.toPresieveOver
+  coverings Y := {R | ∃ (𝒰 : Cover.{u} (precoverage P) Y.left) (_ : 𝒰.Over S), R = 𝒰.toPresieveOver}
   has_isos {X Y} f _ := ⟨coverOfIsIso f.left, inferInstance, (Presieve.ofArrows_pUnit _).symm⟩
   pullbacks := by
     rintro Y X f _ ⟨𝒰, h, rfl⟩
@@ -94,8 +93,9 @@ def overPretopology : Pretopology (Over S) where
     rintro X _ T ⟨𝒰, h, rfl⟩ H
     choose V h hV using H
     refine ⟨𝒰.bind (fun j => V ((𝒰.f j).asOver S) ⟨j⟩), inferInstance, ?_⟩
-    convert Presieve.ofArrows_bind _ (fun j ↦ (𝒰.f j).asOver S) _
-      (fun Y f H j ↦ ((V f H).X j).asOver S) (fun Y f H j ↦ ((V f H).f j).asOver S)
+    convert!
+      Presieve.ofArrows_bind _ (fun j ↦ (𝒰.f j).asOver S) _ (fun Y f H j ↦ ((V f H).X j).asOver S)
+        (fun Y f H j ↦ ((V f H).f j).asOver S)
     apply hV
 
 /-- The topology on `Over S` induced from the topology on `Scheme` defined by `P`.
@@ -179,9 +179,9 @@ are given by `P`-coverings in `S`-schemes satisfying `Q`.
 The most common case is `P = Q`. In this case, this is simply surjective families
 in `S`-schemes with `P`. -/
 def smallPretopology : Pretopology (Q.Over ⊤ S) where
-  coverings Y R :=
-    ∃ (𝒰 : Cover.{u} (precoverage P) Y.left) (_ : 𝒰.Over S) (h : ∀ j : 𝒰.I₀, Q (𝒰.X j ↘ S)),
-      R = 𝒰.toPresieveOverProp h
+  coverings Y :=
+    {R | ∃ (𝒰 : Cover.{u} (precoverage P) Y.left) (_ : 𝒰.Over S) (h : ∀ j : 𝒰.I₀, Q (𝒰.X j ↘ S)),
+      R = 𝒰.toPresieveOverProp h}
   has_isos {X Y} f := ⟨coverOfIsIso f.left, inferInstance, fun _ ↦ Y.prop,
     (Presieve.ofArrows_pUnit _).symm⟩
   pullbacks := by
@@ -197,9 +197,10 @@ def smallPretopology : Pretopology (Q.Over ⊤ S) where
     let 𝒱j (j : 𝒰.I₀) : (Cover (precoverage P) ((𝒰.X j).asOverProp S (p j)).left) :=
       V ((𝒰.f j).asOverProp S) ⟨j⟩
     refine ⟨𝒰.bind (fun j ↦ 𝒱j j), inferInstance, fun j ↦ pV _ _ _, ?_⟩
-    convert Presieve.ofArrows_bind _ (fun j ↦ ((𝒰.f j).asOverProp S)) _
-      (fun Y f H j ↦ ((V f H).X j).asOverProp S (pV _ _ _))
-      (fun Y f H j ↦ ((V f H).f j).asOverProp S)
+    convert!
+      Presieve.ofArrows_bind _ (fun j ↦ ((𝒰.f j).asOverProp S)) _
+        (fun Y f H j ↦ ((V f H).X j).asOverProp S (pV _ _ _))
+        (fun Y f H j ↦ ((V f H).f j).asOverProp S)
     apply hV
 
 set_option backward.isDefEq.respectTransparency false in

@@ -277,7 +277,7 @@ lemma one_le_finprod {M : Type*} [CommMonoidWithZero M] [Preorder M] [ZeroLEOneC
 theorem MonoidHom.map_finprod_plift (f : M →* N) (g : α → M)
     (h : HasFiniteMulSupport <| g ∘ PLift.down) : f (∏ᶠ x, g x) = ∏ᶠ x, f (g x) := by
   rw [finprod_eq_prod_plift_of_mulSupport_subset h.coe_toFinset.ge,
-    finprod_eq_prod_plift_of_mulSupport_subset, map_prod]
+    finprod_eq_prod_plift_of_mulSupport_subset, _root_.map_prod]
   rw [h.coe_toFinset]
   exact mulSupport_comp_subset f.map_one (g ∘ PLift.down)
 
@@ -336,7 +336,7 @@ variable {α β ι G M N : Type*} [CommMonoid M] [CommMonoid N]
 @[to_additive]
 theorem finprod_eq_mulIndicator_apply (s : Set α) (f : α → M) (a : α) :
     ∏ᶠ _ : a ∈ s, f a = mulIndicator s f a := by
-  classical convert finprod_eq_if (M := M) (p := a ∈ s) (x := f a)
+  classical convert! finprod_eq_if (M := M) (p := a ∈ s) (x := f a)
 
 @[to_additive (attr := simp)]
 theorem finprod_apply_ne_one (f : α → M) (a : α) : ∏ᶠ _ : f a ≠ 1, f a = f a := by
@@ -374,11 +374,17 @@ theorem finprod_eq_prod_of_mulSupport_subset_of_finite (f : α → M) {s : Set �
   finprod_eq_prod_of_mulSupport_subset f <| by rwa [Set.Finite.coe_toFinset]
 
 @[to_additive]
-theorem finprod_eq_finset_prod_of_mulSupport_subset (f : α → M) {s : Finset α}
+theorem finprod_eq_finsetProd_of_mulSupport_subset (f : α → M) {s : Finset α}
     (h : mulSupport f ⊆ (s : Set α)) : ∏ᶠ i, f i = ∏ i ∈ s, f i :=
   haveI h' : (s.finite_toSet.subset h).toFinset ⊆ s := by
     simpa [← Finset.coe_subset, Set.coe_toFinset]
   finprod_eq_prod_of_mulSupport_toFinset_subset _ _ h'
+
+@[deprecated (since := "2026-04-08")]
+alias finsum_eq_finset_sum_of_support_subset := finsum_eq_finsetSum_of_support_subset
+
+@[to_additive existing, deprecated (since := "2026-04-08")]
+alias finprod_eq_finset_prod_of_mulSupport_subset := finprod_eq_finsetProd_of_mulSupport_subset
 
 @[to_additive]
 theorem finprod_def (f : α → M) [Decidable (HasFiniteMulSupport f)] :
@@ -403,17 +409,26 @@ theorem finprod_of_not_hasFiniteMulSupport {f : α → M} (hf : ¬ f.HasFiniteMu
   finprod_of_infinite_mulSupport <| Set.not_finite.mp hf
 
 @[to_additive]
-theorem finite_mulSupport_of_finprod_ne_one {f : α → M} (h : ∏ᶠ i, f i ≠ 1) :
+theorem hasFiniteMulSupport_of_finprod_ne_one {f : α → M} (h : ∏ᶠ i, f i ≠ 1) :
     HasFiniteMulSupport f :=
   not_infinite.mp <| (finprod_of_infinite_mulSupport ·).mt h
 
-theorem finite_support_of_finsum_eq_one {R : Type*} [NonAssocSemiring R] {f : α → R}
+@[deprecated (since := "2026-03-03")] alias
+  finite_mulSupport_of_finprod_ne_one := hasFiniteMulSupport_of_finprod_ne_one
+
+@[deprecated (since := "2026-03-03")] alias
+  finite_support_of_finsum_ne_zero := hasFiniteSupport_of_finsum_ne_zero
+
+theorem hasFiniteSupport_of_finsum_eq_one {R : Type*} [NonAssocSemiring R] {f : α → R}
     (h : ∑ᶠ i, f i = 1) : HasFiniteSupport f := by
   cases subsingleton_or_nontrivial R
   · simp_rw [HasFiniteSupport, Subsingleton.support_eq, finite_empty]
-  · apply finite_support_of_finsum_ne_zero
+  · apply hasFiniteSupport_of_finsum_ne_zero
     rw [h]
     exact one_ne_zero
+
+@[deprecated (since := "2026-03-03")] alias
+  finite_support_of_finsum_eq_one := hasFiniteSupport_of_finsum_eq_one
 
 @[to_additive]
 theorem finprod_eq_prod (f : α → M) (hf : HasFiniteMulSupport f) :
@@ -423,10 +438,22 @@ theorem finprod_eq_prod (f : α → M) (hf : HasFiniteMulSupport f) :
 theorem finprod_eq_prod_of_fintype [Fintype α] (f : α → M) : ∏ᶠ i : α, f i = ∏ i, f i :=
   finprod_eq_prod_of_mulSupport_toFinset_subset _ (Set.toFinite _) <| Finset.subset_univ _
 
+theorem finprod_ne_zero {M₀ : Type*} [CommMonoidWithZero M₀] [Nontrivial M₀] [NoZeroDivisors M₀]
+    {f : α → M₀} (h : ∀ i, f i ≠ 0) :
+    ∏ᶠ i, f i ≠ 0 := by
+  by_cases h₂ : Set.Finite f.mulSupport
+  · grind [finprod_eq_prod f h₂, Finset.prod_ne_zero_iff]
+  · simp [finprod_of_infinite_mulSupport h₂]
+
 @[to_additive]
-theorem map_finset_prod {α F : Type*} [Fintype α] [EquivLike F M N] [MulEquivClass F M N] (f : F)
+theorem map_finsetProd {α F : Type*} [Fintype α] [EquivLike F M N] [MulEquivClass F M N] (f : F)
     (g : α → M) : f (∏ i : α, g i) = ∏ i : α, f (g i) := by
   simp [← finprod_eq_prod_of_fintype, MulEquivClass.map_finprod]
+
+@[deprecated (since := "2026-04-08")] alias map_finset_sum := map_finsetSum
+
+@[to_additive existing, deprecated (since := "2026-04-08")]
+alias map_finset_prod := map_finsetProd
 
 @[to_additive]
 theorem finprod_cond_eq_prod_of_cond_iff (f : α → M) {p : α → Prop} {t : Finset α}
@@ -577,8 +604,8 @@ lemma finprod_le_finprod' [PartialOrder M] [MulLeftMono M] (hf : HasFiniteMulSup
     ∏ᶠ a, f a ≤ ∏ᶠ a, g a := by
   have : Fintype ↑(f.mulSupport ∪ g.mulSupport) := (hf.union hg).fintype
   let s := (f.mulSupport ∪ g.mulSupport).toFinset
-  rw [finprod_eq_finset_prod_of_mulSupport_subset f (show f.mulSupport ⊆ s by grind),
-    finprod_eq_finset_prod_of_mulSupport_subset g (show g.mulSupport ⊆ s by grind)]
+  rw [finprod_eq_finsetProd_of_mulSupport_subset f (show f.mulSupport ⊆ s by grind),
+    finprod_eq_finsetProd_of_mulSupport_subset g (show g.mulSupport ⊆ s by grind)]
   exact Finset.prod_le_prod' fun i _ ↦ h i
 
 /-- Monotonicity of `finprod`. See `finprod_le_finprod'` for a variant where
@@ -589,9 +616,18 @@ lemma finprod_le_finprod {M : Type*} [CommMonoidWithZero M] [PartialOrder M] [Ze
     ∏ᶠ a, f a ≤ ∏ᶠ a, g a := by
   have : Fintype ↑(f.mulSupport ∪ g.mulSupport) := (hf.union hg).fintype
   let s := (f.mulSupport ∪ g.mulSupport).toFinset
-  rw [finprod_eq_finset_prod_of_mulSupport_subset f (show f.mulSupport ⊆ s by grind),
-    finprod_eq_finset_prod_of_mulSupport_subset g (show g.mulSupport ⊆ s by grind)]
+  rw [finprod_eq_finsetProd_of_mulSupport_subset f (show f.mulSupport ⊆ s by grind),
+    finprod_eq_finsetProd_of_mulSupport_subset g (show g.mulSupport ⊆ s by grind)]
   exact Finset.prod_le_prod (fun i _ ↦ hf₀ i) fun i _ ↦ h i
+
+lemma finprod_zero_le_one {M α : Type*} [CommMonoidWithZero M] [PartialOrder M]
+    [ZeroLEOneClass M] [PosMulMono M] :
+    ∏ᶠ _ : α, (0 : M) ≤ 1 := by
+  rw [← finprod_one (α := α)]
+  by_cases H : (fun _ : α ↦ (0 : M)).HasFiniteMulSupport
+  · exact finprod_le_finprod H (fun _ ↦ le_rfl) (by fun_prop) fun _ ↦ zero_le_one
+  · rw [finprod_of_not_hasFiniteMulSupport H]
+    exact finprod_one.symm.le
 
 /-!
 ### Distributivity w.r.t. addition, subtraction, and (scalar) multiplication
@@ -1029,8 +1065,8 @@ theorem finprod_mem_sUnion {t : Set (Set α)} (h : t.PairwiseDisjoint id) (ht₀
 lemma finprod_option {f : Option α → M} (hf : HasFiniteMulSupport (f ∘ some)) :
     ∏ᶠ o, f o = f none * ∏ᶠ a, f (some a) := by
   replace hf : (mulSupport f).Finite := by simpa [finite_option]
-  convert finprod_mem_insert' f (show none ∉ Set.range Option.some by simp)
-    (hf.subset inter_subset_right)
+  convert!
+    finprod_mem_insert' f (show none ∉ Set.range Option.some by simp) (hf.subset inter_subset_right)
   · simp
   · rw [finprod_mem_range]
     exact Option.some_injective _
@@ -1134,7 +1170,7 @@ theorem prod_finprod_comm (s : Finset α) (f : α → β → M) (h : ∀ a ∈ s
 @[to_additive]
 theorem finprod_prod_filter [DecidableEq α] (f : β → α) (s : Finset β) (g : β → M) :
     ∏ᶠ x, ∏ y ∈ s with f y = x, g y = ∏ k ∈ s, g k := by
-  rw [finprod_eq_finset_prod_of_mulSupport_subset]
+  rw [finprod_eq_finsetProd_of_mulSupport_subset]
   · rw [Finset.prod_image']
     exact fun _ _ ↦ rfl
   · intro x hx
@@ -1231,7 +1267,7 @@ theorem finsum_mem_mul {R : Type*} [NonUnitalNonAssocSemiring R] [NoZeroDivisors
 lemma finprod_apply {α ι : Type*} {f : ι → α → N} (hf : HasFiniteMulSupport f) (a : α) :
     (∏ᶠ i, f i) a = ∏ᶠ i, f i a := by
   classical
-  have hf' : HasFiniteMulSupport fun i ↦ f i a := hf.subset (by aesop)
+  have hf' : HasFiniteMulSupport fun i ↦ f i a := by fun_prop (disch := simp)
   simp only [finprod_def, dif_pos, hf, hf', Finset.prod_apply]
   symm
   apply Finset.prod_subset <;> aesop
@@ -1325,6 +1361,17 @@ lemma Nat.cast_finprod [Finite ι] {R : Type*} [CommSemiring R] (f : ι → ℕ)
     ↑(∏ᶠ x, f x : ℕ) = ∏ᶠ x, (f x : R) :=
   (Nat.castRingHom R).map_finprod f.mulSupport.toFinite
 
+/-- This version does not assume that `ι` is finite (compare `Nat.cast_finprod`), but instead needs
+to assume characteristic zero to deal with the infinite case. -/
+@[simp, norm_cast]
+lemma Nat.cast_finprod' {R : Type*} [CommSemiring R] [CharZero R] (f : ι → ℕ) :
+    (∏ᶠ (x : ι), f x : ℕ) = ∏ᶠ (x : ι), (f x : R) := by
+  by_cases hf : f.HasFiniteMulSupport
+  · exact map_finprod (Nat.castRingHom R) hf
+  · have H : ¬ (fun i ↦ (f i : R)).HasFiniteMulSupport :=
+      fun h ↦ hf <| h.of_comp cast_one cast_injective
+    rw [finprod_of_not_hasFiniteMulSupport hf, finprod_of_not_hasFiniteMulSupport H, cast_one]
+
 @[simp, norm_cast]
 lemma Nat.cast_finprod_mem {s : Set ι} (hs : s.Finite) {R : Type*} [CommSemiring R] (f : ι → ℕ) :
     ↑(∏ᶠ x ∈ s, f x : ℕ) = ∏ᶠ x ∈ s, (f x : R) :=
@@ -1341,3 +1388,29 @@ lemma Nat.cast_finsum_mem {s : Set ι} (hs : s.Finite) {M : Type*}
   (Nat.castAddMonoidHom M).map_finsum_mem _ hs
 
 end type
+
+/-!
+### Some API for `fun a ↦ f a ^ count a s` on multisets
+-/
+
+namespace Multiset
+
+variable {α M : Type*} [DecidableEq α] [CommMonoid M]
+
+@[to_additive]
+lemma mulSupport_fun_pow_count_subset (s : Multiset α) (f : α → M) :
+    (fun a ↦ f a ^ count a s).mulSupport ⊆ s.toFinset := by
+  simp +contextual [not_imp_comm]
+
+@[to_additive (attr := fun_prop)]
+lemma hasFiniteMulSupport_fun_pow_count (s : Multiset α) (f : α → M) :
+    (fun a ↦ (f a) ^ s.count a).HasFiniteMulSupport :=
+  s.toFinset.finite_toSet.subset <| mulSupport_fun_pow_count_subset ..
+
+@[to_additive]
+lemma prod_map_eq_finprod (s : Multiset α) (f : α → M) :
+    (s.map f).prod = ∏ᶠ a, f a ^ s.count a := by
+  rw [Finset.prod_multiset_map_count, eq_comm]
+  exact finprod_eq_prod_of_mulSupport_subset _ <| mulSupport_fun_pow_count_subset ..
+
+end Multiset

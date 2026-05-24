@@ -6,6 +6,7 @@ Authors: Johan Commelin, Kim Morrison, Adam Topaz, Joël Riou
 module
 
 public import Mathlib.AlgebraicTopology.SimplicialSet.StdSimplex
+public import Mathlib.AlgebraicTopology.SimplicialSet.SubcomplexOp
 public import Mathlib.CategoryTheory.Subfunctor.Equalizer
 
 /-!
@@ -39,13 +40,24 @@ def horn (n : ℕ) (i : Fin (n + 1)) : (Δ[n] : SSet.{u}).Subcomplex where
 /-- The `i`-th horn `Λ[n, i]` of the standard `n`-simplex -/
 scoped[Simplicial] notation3 "Λ[" n ", " i "]" => SSet.horn (n : ℕ) i
 
-set_option backward.isDefEq.respectTransparency false in
+lemma mem_horn_iff {n : ℕ} (i : Fin (n + 1)) {m : SimplexCategoryᵒᵖ} (x : Δ[n].obj m) :
+    x ∈ (horn n i).obj m ↔ Set.range (stdSimplex.asOrderHom x) ∪ {i} ≠ Set.univ := Iff.rfl
+
 lemma horn_eq_iSup (n : ℕ) (i : Fin (n + 1)) :
     horn.{u} n i =
       ⨆ (j : ({i}ᶜ : Set (Fin (n + 1)))), stdSimplex.face {j.1}ᶜ := by
   ext m j
   simp [stdSimplex.face_obj, horn, Set.eq_univ_iff_forall]
   rfl
+
+instance {n : ℕ} (i : Fin (n + 1)) : HasDimensionLT (horn.{u} n i) n := by
+  rw [horn_eq_iSup, hasDimensionLT_iSup_iff]
+  intro i
+  exact stdSimplex.hasDimensionLT_face _ _ (by simp [Finset.card_compl])
+
+lemma mem_horn_iff_notMem_range {n d : ℕ} (s : Δ[n] _⦋d⦌) (i : Fin (n + 1)) :
+    s ∈ (horn.{u} n i).obj _ ↔ ∃ (j : Fin (n + 1)) (_ : j ≠ i), j ∉ Set.range s := by
+  simp [horn_eq_iSup]
 
 lemma face_le_horn {n : ℕ} (i j : Fin (n + 1)) (h : i ≠ j) :
     stdSimplex.face.{u} {i}ᶜ ≤ horn n j := by
@@ -74,6 +86,93 @@ lemma horn_obj_zero (n : ℕ) (i : Fin (n + 3)) :
   fin_cases a
   exact Ne.symm hk.2
 
+lemma horn_obj_eq_univ {n : ℕ} (i : Fin (n + 1)) (m : ℕ) (h : m + 1 < n := by lia) :
+    (horn.{u} n i).obj (op ⦋m⦌) = .univ := by
+  ext x
+  obtain ⟨f, rfl⟩ := stdSimplex.objEquiv.symm.surjective x
+  obtain ⟨j, hij, hj⟩ : ∃ (j : Fin (n + 1)), j ≠ i ∧ j ∉ Set.range f.toOrderHom := by
+    by_contra!
+    have : Finset.image f.toOrderHom ⊤ ∪ {i} = ⊤ := by ext k; by_cases k = i <;> aesop
+    have := (congr_arg Finset.card this).symm.le.trans (Finset.card_union_le _ _)
+    simp only [SimplexCategory.len_mk, Finset.top_eq_univ, Finset.card_univ, Fintype.card_fin,
+      Finset.card_singleton, add_le_add_iff_right] at this
+    have : n ≤ m + 1 := by simpa using this.trans Finset.card_image_le
+    lia
+  have : ∃ j, ¬j = i ∧ ∀ (i : Fin (m + 1)), ¬(stdSimplex.objEquiv.symm.{u} f) i = j :=
+    ⟨j, hij, fun k hk ↦ hj ⟨k, hk⟩⟩
+  simpa [horn_eq_iSup] using this
+
+lemma subcomplex_le_horn_iff {n : ℕ}
+    (A : Δ[n + 1].Subcomplex) (i : Fin (n + 2)) :
+    A ≤ horn.{u} (n + 1) i ↔ ¬ stdSimplex.face {i}ᶜ ≤ A := by
+  refine ⟨fun hA h ↦ ?_, fun h ↦ ?_⟩
+  · replace h := h.trans hA
+    rw [stdSimplex.face_singleton_compl, Subcomplex.ofSimplex_le_iff, mem_horn_iff] at h
+    apply h
+    rw [stdSimplex.coe_asOrderHom_objEquiv_symm, SimplexCategory.coe_δ,
+      Fin.range_succAbove, Set.compl_union_self]
+  · rw [Subcomplex.le_iff_contains_nonDegenerate]
+    intro d x hx
+    by_cases! hd : d < n
+    · simp [horn_obj_eq_univ i d]
+    · obtain ⟨⟨S, hS⟩, rfl⟩ := stdSimplex.nonDegenerateEquiv'.symm.surjective x
+      dsimp at hS
+      simp only [stdSimplex.nonDegenerateEquiv'_symm_mem_iff_face_le] at hx ⊢
+      obtain hd | rfl := hd.lt_or_eq
+      · obtain rfl : S = .univ := by
+          rw [← Finset.card_eq_iff_eq_univ, Fintype.card_fin]
+          exact le_antisymm (card_finset_fin_le S) (by lia)
+        exact (h (le_trans (by simp) hx)).elim
+      · replace hS : Sᶜ.card = 1 := by
+          have := S.card_compl_add_card
+          rw [Fintype.card_fin] at this
+          lia
+        obtain ⟨j, rfl⟩ : ∃ j, S = {j}ᶜ := by
+          rw [Finset.card_eq_one] at hS
+          obtain ⟨j, hS⟩ := hS
+          exact ⟨j, by simp [← hS]⟩
+        exact face_le_horn _ _ (by rintro rfl; tauto)
+
+lemma face_le_horn_iff {n : ℕ} (S : Finset (Fin (n + 2))) (j : Fin (n + 2)) :
+    stdSimplex.face.{u} S ≤ Λ[n + 1, j] ↔ S ≠ .univ ∧ S ≠ {j}ᶜ := by
+  rw [subcomplex_le_horn_iff, stdSimplex.face_le_face_iff, ← not_iff_not]
+  simp only [Finset.le_eq_subset, Decidable.not_not, ne_eq, not_and_or]
+  refine ⟨fun h ↦ ?_, by aesop⟩
+  rw [← Finset.compl_subset_compl, compl_compl,
+    Finset.subset_singleton_iff, Finset.compl_eq_empty_iff] at h
+  grind [eq_compl_comm]
+
+lemma objEquiv_symm_notMem_horn_of_isIso {n : ℕ} (i : Fin (n + 1))
+    {d : SimplexCategory} (f : d ⟶ ⦋n⦌) [IsIso f] :
+    stdSimplex.objEquiv.symm.{u} f ∉ Λ[n, i].obj (op d) := by
+  rw [mem_horn_iff, ne_eq, not_not]
+  ext i
+  simpa using Or.inr ⟨inv f i, by simp [stdSimplex.coe_asOrderHom_objEquiv_symm.{u}]⟩
+
+lemma objEquiv_symm_δ_mem_horn_iff {n : ℕ} (i j : Fin (n + 2)) :
+    (stdSimplex.objEquiv (m := op ⦋n⦌)).symm
+      (SimplexCategory.δ i) ∈ (horn.{u} (n + 1) j).obj (op ⦋n⦌) ↔ i ≠ j := by
+  dsimp
+  rw [← Subcomplex.ofSimplex_le_iff, ← stdSimplex.face_singleton_compl, face_le_horn_iff]
+  simp
+
+lemma objEquiv_symm_δ_notMem_horn_iff {n : ℕ} (i j : Fin (n + 2)) :
+    (stdSimplex.objEquiv (m := op ⦋n⦌)).symm
+      (SimplexCategory.δ i) ∉ (horn.{u} _ j).obj (op ⦋n⦌) ↔ i = j := by
+  simp [objEquiv_symm_δ_mem_horn_iff.{u}]
+
+lemma op_horn {n : ℕ} (i : Fin (n + 1)) :
+    Λ[n, i].op.preimage (stdSimplex.opIso.{u} ⦋n⦌).inv = Λ[n, i.rev] := by
+  ext ⟨⟨d⟩⟩ j
+  simp only [Subcomplex.preimage_obj, Set.mem_preimage, stdSimplex.opIso_inv_app_hom_apply,
+    Subcomplex.mem_op_obj_iff, mem_horn_iff_notMem_range, Set.mem_range, not_exists, ne_eq,
+    exists_prop, stdSimplex.opObjEquiv_opObjEquiv_symm_apply]
+  constructor
+  · rintro ⟨k, h₁, h₂⟩
+    exact ⟨k.rev, by simpa, fun l hl ↦ by grind [h₂ l.rev]⟩
+  · rintro ⟨k, h₁, h₂⟩
+    exact ⟨k.rev, by grind⟩
+
 namespace horn
 
 open SimplexCategory Finset Opposite
@@ -99,7 +198,7 @@ end
 This edge only exists if `{i, a, b}` has cardinality less than `n`. -/
 @[simps]
 def edge (n : ℕ) (i a b : Fin (n + 1)) (hab : a ≤ b) (H : #{i, a, b} ≤ n) :
-    (Λ[n, i] : SSet.{u}) _⦋1⦌ :=
+    (Λ[n, i] : SSet.{u}).obj (op ⦋1⦌) :=
   ⟨stdSimplex.edge n a b hab, by
     have hS : ¬ ({i, a, b} = Finset.univ) := fun hS ↦ by
       have := Finset.card_le_card hS.symm.le
@@ -108,7 +207,7 @@ def edge (n : ℕ) (i a b : Fin (n + 1)) (hab : a ≤ b) (H : #{i, a, b} ≤ n) 
     rw [Finset.eq_univ_iff_forall, not_forall] at hS
     obtain ⟨k, hk⟩ := hS
     simp only [mem_insert, mem_singleton, not_or] at hk
-    -- this was produced by `simp? [horn_eq_iSup]`
+    -- this was produced by `simp? [horn_eq_iSup, -Fin.forall_fin_two]`
     simp only [horn_eq_iSup, Subfunctor.iSup_obj, Set.iUnion_coe_set, Set.mem_compl_iff,
       Set.mem_singleton_iff, Set.mem_iUnion, stdSimplex.mem_face_iff, Nat.reduceAdd, mem_compl,
       mem_singleton, exists_prop]
@@ -147,7 +246,7 @@ which is the type of horn that occurs in the horn-filling condition of quasicate
 @[simps]
 def primitiveTriangle {n : ℕ} (i : Fin (n + 4))
     (h₀ : 0 < i) (hₙ : i < Fin.last (n + 3))
-    (k : ℕ) (h : k < n + 2) : (Λ[n + 3, i] : SSet.{u}) _⦋2⦌ := by
+    (k : ℕ) (h : k < n + 2) : (Λ[n + 3, i] : SSet.{u}).obj (op ⦋2⦌) := by
   refine ⟨stdSimplex.triangle
     (n := n+3) ⟨k, by lia⟩ ⟨k+1, by lia⟩ ⟨k+2, by lia⟩ ?_ ?_, ?_⟩
   · simp only [Fin.mk_le_mk, le_add_iff_nonneg_right, zero_le]
@@ -190,7 +289,6 @@ def face {n : ℕ} (i j : Fin (n + 2)) (h : j ≠ i) : (Λ[n + 1, i] : SSet.{u})
   yonedaEquiv (Subfunctor.lift (stdSimplex.δ j) (by
     simpa using face_le_horn _ _ h))
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Two morphisms from a horn are equal if they are equal on all suitable faces. -/
 protected
 lemma hom_ext {n : ℕ} {i : Fin (n + 2)} {S : SSet} (σ₁ σ₂ : (Λ[n + 1, i] : SSet.{u}) ⟶ S)
@@ -226,7 +324,6 @@ lemma yonedaEquiv_ι {n : ℕ} (i : Fin (n + 2)) (j : Fin (n + 2)) (hij : j ≠ 
     yonedaEquiv (ι i j hij) = face i j hij := by
   rw [ι, Equiv.apply_symm_apply]
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma ι_ι {n : ℕ} (i : Fin (n + 2)) (j : Fin (n + 2)) (hij : j ≠ i) :
     ι i j hij ≫ Λ[n + 1, i].ι =

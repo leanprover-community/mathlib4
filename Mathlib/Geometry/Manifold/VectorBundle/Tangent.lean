@@ -6,6 +6,7 @@ Authors: Floris van Doorn, Heather Macbeth
 module
 
 public import Mathlib.Geometry.Manifold.VectorBundle.Basic
+import Mathlib.Geometry.Manifold.Notation
 
 /-! # Tangent bundles
 
@@ -46,7 +47,7 @@ noncomputable section
 
 section General
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {n : WithTop ℕ∞} {E : Type*} [NormedAddCommGroup E]
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {n : ℕ∞ω} {E : Type*} [NormedAddCommGroup E]
   [NormedSpace 𝕜 E] {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H : Type*}
   [TopologicalSpace H] {I : ModelWithCorners 𝕜 E H} {H' : Type*} [TopologicalSpace H']
   {I' : ModelWithCorners 𝕜 E' H'} {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
@@ -91,7 +92,7 @@ def tangentBundleCore : VectorBundleCore 𝕜 M E (atlas H M) where
   coordChange i j x :=
     fderivWithin 𝕜 (j.1.extend I ∘ (i.1.extend I).symm) (range I) (i.1.extend I x)
   coordChange_self i x hx v := by
-    rw [Filter.EventuallyEq.fderivWithin_eq, fderivWithin_id', ContinuousLinearMap.id_apply]
+    rw [Filter.EventuallyEq.fderivWithin_eq, fderivWithin_fun_id, ContinuousLinearMap.id_apply]
     · exact I.uniqueDiffWithinAt_image
     · filter_upwards [i.1.extend_target_mem_nhdsWithin hx] with y hy
       exact (i.1.extend I).right_inv hy
@@ -169,7 +170,7 @@ lemma hasFDerivWithinAt_tangentCoordChange {x y z : M}
 
 lemma continuousOn_tangentCoordChange (x y : M) : ContinuousOn (tangentCoordChange I x y)
     ((extChartAt I x).source ∩ (extChartAt I y).source) := by
-  convert (tangentBundleCore I M).continuousOn_coordChange (achart H x) (achart H y) <;>
+  convert! (tangentBundleCore I M).continuousOn_coordChange (achart H x) (achart H y) <;>
   simp only [tangentBundleCore_baseSet, coe_achart, ← extChartAt_source I]
 
 end tangentCoordChange
@@ -179,13 +180,13 @@ local notation "TM" => TangentBundle I M
 section TangentBundleInstances
 
 instance : TopologicalSpace TM :=
-  (tangentBundleCore I M).toTopologicalSpace
+  inferInstanceAs <| TopologicalSpace (tangentBundleCore I M).TotalSpace
 
 instance TangentSpace.fiberBundle : FiberBundle E (TangentSpace I : M → Type _) :=
-  (tangentBundleCore I M).fiberBundle
+  inferInstanceAs <| FiberBundle E (tangentBundleCore I M).Fiber
 
 instance TangentSpace.vectorBundle : VectorBundle 𝕜 E (TangentSpace I : M → Type _) :=
-  (tangentBundleCore I M).vectorBundle
+  inferInstanceAs <| VectorBundle 𝕜 E (tangentBundleCore I M).Fiber
 
 namespace TangentBundle
 
@@ -400,14 +401,14 @@ def tangentBundleModelSpaceHomeomorph : TangentBundle I H ≃ₜ ModelProd H E :
       let p : TangentBundle I H := ⟨I.symm (0 : E), (0 : E)⟩
       have : Continuous (chartAt (ModelProd H E) p) := by
         rw [← continuousOn_univ]
-        convert (chartAt (ModelProd H E) p).continuousOn
+        convert! (chartAt (ModelProd H E) p).continuousOn
         simp only [mfld_simps]
       simpa only [mfld_simps] using this
     continuous_invFun := by
       let p : TangentBundle I H := ⟨I.symm (0 : E), (0 : E)⟩
       have : Continuous (chartAt (ModelProd H E) p).symm := by
         rw [← continuousOn_univ]
-        convert (chartAt (ModelProd H E) p).symm.continuousOn
+        convert! (chartAt (ModelProd H E) p).symm.continuousOn
         simp only [mfld_simps]
       simpa only [mfld_simps] using this }
 
@@ -453,7 +454,7 @@ lemma contMDiff_snd_tangentBundle_modelSpace :
   change ContMDiff I.tangent 𝓘(𝕜, E) n
     ((id Prod.snd : ModelProd H E → E) ∘ (tangentBundleModelSpaceHomeomorph I))
   apply ContMDiff.comp (I' := I.prod 𝓘(𝕜, E))
-  · convert contMDiff_snd
+  · convert! contMDiff_snd
     rw [chartedSpaceSelf_prod]
     rfl
   · exact contMDiff_tangentBundleModelSpaceHomeomorph
@@ -462,22 +463,20 @@ lemma contMDiff_snd_tangentBundle_modelSpace :
 space sense. -/
 lemma contMDiffWithinAt_vectorSpace_iff_contDiffWithinAt
     {V : Π (x : E), TangentSpace 𝓘(𝕜, E) x} {s : Set E} {x : E} :
-    ContMDiffWithinAt 𝓘(𝕜, E) 𝓘(𝕜, E).tangent n (fun x ↦ (V x : TangentBundle 𝓘(𝕜, E) E)) s x ↔
-      ContDiffWithinAt 𝕜 n V s x := by
+    CMDiffAt[s] n (T% V) x ↔ ContDiffWithinAt 𝕜 n V s x := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · exact ContMDiffWithinAt.contDiffWithinAt <|
       (contMDiff_snd_tangentBundle_modelSpace E 𝓘(𝕜, E)).contMDiffAt.comp_contMDiffWithinAt _ h
   · apply Bundle.contMDiffWithinAt_totalSpace.2
     refine ⟨contMDiffWithinAt_id, ?_⟩
-    convert h.contMDiffWithinAt with y
+    convert! h.contMDiffWithinAt with y
     simp
 
 /-- A vector field on a vector space is `C^n` in the manifold sense iff it is `C^n` in the vector
 space sense. -/
 lemma contMDiffAt_vectorSpace_iff_contDiffAt
     {V : Π (x : E), TangentSpace 𝓘(𝕜, E) x} {x : E} :
-    ContMDiffAt 𝓘(𝕜, E) 𝓘(𝕜, E).tangent n (fun x ↦ (V x : TangentBundle 𝓘(𝕜, E) E)) x ↔
-      ContDiffAt 𝕜 n V x := by
+    CMDiffAt n (T% V) x ↔ ContDiffAt 𝕜 n V x := by
   simp only [← contMDiffWithinAt_univ, ← contDiffWithinAt_univ,
     contMDiffWithinAt_vectorSpace_iff_contDiffWithinAt]
 
@@ -485,16 +484,13 @@ lemma contMDiffAt_vectorSpace_iff_contDiffAt
 space sense. -/
 lemma contMDiffOn_vectorSpace_iff_contDiffOn
     {V : Π (x : E), TangentSpace 𝓘(𝕜, E) x} {s : Set E} :
-    ContMDiffOn 𝓘(𝕜, E) 𝓘(𝕜, E).tangent n (fun x ↦ (V x : TangentBundle 𝓘(𝕜, E) E)) s ↔
-      ContDiffOn 𝕜 n V s := by
+    CMDiff[s] n (T% V) ↔ ContDiffOn 𝕜 n V s := by
   simp only [ContMDiffOn, ContDiffOn, contMDiffWithinAt_vectorSpace_iff_contDiffWithinAt]
 
 /-- A vector field on a vector space is `C^n` in the manifold sense iff it is `C^n` in the vector
 space sense. -/
-lemma contMDiff_vectorSpace_iff_contDiff
-    {V : Π (x : E), TangentSpace 𝓘(𝕜, E) x} :
-    ContMDiff 𝓘(𝕜, E) 𝓘(𝕜, E).tangent n (fun x ↦ (V x : TangentBundle 𝓘(𝕜, E) E)) ↔
-      ContDiff 𝕜 n V := by
+lemma contMDiff_vectorSpace_iff_contDiff {V : Π (x : E), TangentSpace 𝓘(𝕜, E) x} :
+    CMDiff n (T% V) ↔ ContDiff 𝕜 n V := by
   simp only [← contMDiffOn_univ, ← contDiffOn_univ, contMDiffOn_vectorSpace_iff_contDiffOn]
 
 section inTangentCoordinates

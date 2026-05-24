@@ -1,3 +1,4 @@
+module
 import Mathlib.Tactic.Inhabit
 
 namespace InhabitTests

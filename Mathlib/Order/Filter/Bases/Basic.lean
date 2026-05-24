@@ -298,7 +298,7 @@ theorem HasBasis.eventually_iff (hl : l.HasBasis p s) {q : α → Prop} :
 
 theorem HasBasis.frequently_iff (hl : l.HasBasis p s) {q : α → Prop} :
     (∃ᶠ x in l, q x) ↔ ∀ i, p i → ∃ x ∈ s i, q x := by
-  simp only [Filter.Frequently, hl.eventually_iff]; push_neg; rfl
+  simp only [Filter.Frequently, hl.eventually_iff]; push Not; rfl
 
 theorem HasBasis.exists_iff (hl : l.HasBasis p s) {P : Set α → Prop}
     (mono : ∀ ⦃s t⦄, s ⊆ t → P t → P s) : (∃ s ∈ l, P s) ↔ ∃ i, p i ∧ P (s i) :=
@@ -430,12 +430,7 @@ theorem hasBasis_biInf_of_directed' {ι : Type*} {ι' : ι → Sort _} {dom : Se
       s ii'.1 ii'.2 := by
   refine ⟨fun t => ?_⟩
   rw [mem_biInf_of_directed h hdom, Sigma.exists]
-  refine exists_congr fun i => ⟨?_, ?_⟩
-  · rintro ⟨hi, hti⟩
-    rcases (hl i hi).mem_iff.mp hti with ⟨b, hb, hbt⟩
-    exact ⟨b, ⟨hi, hb⟩, hbt⟩
-  · rintro ⟨b, ⟨hi, hb⟩, hibt⟩
-    exact ⟨hi, (hl i hi).mem_iff.mpr ⟨b, hb, hibt⟩⟩
+  grind +splitIndPred
 
 theorem hasBasis_biInf_of_directed {ι : Type*} {ι' : Sort _} {dom : Set ι} (hdom : dom.Nonempty)
     {l : ι → Filter α} (s : ι → ι' → Set α) (p : ι → ι' → Prop)
@@ -444,12 +439,7 @@ theorem hasBasis_biInf_of_directed {ι : Type*} {ι' : Sort _} {dom : Set ι} (h
       s ii'.1 ii'.2 := by
   refine ⟨fun t => ?_⟩
   rw [mem_biInf_of_directed h hdom, Prod.exists]
-  refine exists_congr fun i => ⟨?_, ?_⟩
-  · rintro ⟨hi, hti⟩
-    rcases (hl i hi).mem_iff.mp hti with ⟨b, hb, hbt⟩
-    exact ⟨b, ⟨hi, hb⟩, hbt⟩
-  · rintro ⟨b, ⟨hi, hb⟩, hibt⟩
-    exact ⟨hi, (hl i hi).mem_iff.mpr ⟨b, hb, hibt⟩⟩
+  grind +splitIndPred
 
 lemma hasBasis_top :
     (⊤ : Filter α).HasBasis (fun _ : Unit ↦ True) (fun _ ↦ Set.univ) :=
@@ -503,7 +493,7 @@ theorem HasBasis.principal_inf (hl : l.HasBasis p s) (s' : Set α) :
 
 theorem HasBasis.inf_basis_neBot_iff (hl : l.HasBasis p s) (hl' : l'.HasBasis p' s') :
     NeBot (l ⊓ l') ↔ ∀ ⦃i⦄, p i → ∀ ⦃i'⦄, p' i' → (s i ∩ s' i').Nonempty :=
-  (hl.inf' hl').neBot_iff.trans <| by simp [@forall_swap _ ι']
+  (hl.inf' hl').neBot_iff.trans <| by simp [@forall_comm _ ι']
 
 theorem HasBasis.inf_neBot_iff (hl : l.HasBasis p s) :
     NeBot (l ⊓ l') ↔ ∀ ⦃i⦄, p i → ∀ ⦃s'⦄, s' ∈ l' → (s i ∩ s').Nonempty :=
@@ -778,7 +768,7 @@ theorem map_sigma_mk_comap {π : α → Type*} {π' : β → Type*} {f : α → 
     (hf : Function.Injective f) (g : ∀ a, π a → π' (f a)) (a : α) (l : Filter (π' (f a))) :
     map (Sigma.mk a) (comap (g a) l) = comap (Sigma.map f g) (map (Sigma.mk (f a)) l) := by
   refine (((basis_sets _).comap _).map _).eq_of_same_basis ?_
-  convert ((basis_sets l).map (Sigma.mk (f a))).comap (Sigma.map f g)
+  convert! ((basis_sets l).map (Sigma.mk (f a))).comap (Sigma.map f g)
   apply image_sigmaMk_preimage_sigmaMap hf
 
 end Filter
