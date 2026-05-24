@@ -66,7 +66,7 @@ instance fintypeNodupList [Fintype α] : Fintype { l : List α // l.Nodup } := b
     constructor
     · simp only [Finset.coe_toList]
       rfl
-    · convert Finset.nodup_toList (Finset.univ.powerset : Finset (Finset α))
+    · convert! Finset.nodup_toList (Finset.univ.powerset : Finset (Finset α))
       ext l
       refine Pairwise.iff ?_
       intro m n
@@ -97,7 +97,7 @@ instance fintypeNodupList [Fintype α] : Fintype { l : List α // l.Nodup } := b
     constructor
     · intro h
       rcases h with ⟨f, hf⟩
-      convert f.nodup
+      convert! f.nodup
       rw [hf]
       rfl
     · intro h
