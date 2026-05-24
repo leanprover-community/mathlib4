@@ -566,6 +566,14 @@ theorem WellFoundedOn.finite_of_wellFoundedOn_swap {α : Type*} {r : α → α �
   rw [Set.wellFoundedOn_iff, ← WellFounded.subtype_iff, ← isWellFounded_iff] at h h'
   exact Set.finite_coe_iff.mp <| @IsWellOrder.finite_of_isWellOrder_of_isWellOrder_swap _ _ ⟨⟩ h'
 
+@[to_dual]
+theorem WellFoundedOn.exists_minimal {α : Type*} [Preorder α] {s : Set α}
+    (h : s.WellFoundedOn (· < ·)) (nonempty : s.Nonempty) : ∃ a, Minimal (· ∈ s) a := by
+  rw [wellFoundedOn_iff, ← WellFounded.subtype_iff] at h
+  convert WellFoundedLT.exists_minimal ⟨h⟩ Set.univ (@Set.univ_nonempty _ (by simpa))
+  refine ⟨fun ⟨a, ha⟩ ↦ ⟨⟨a, ha.prop⟩, ?_⟩, fun ⟨a, this⟩ ↦ ⟨a, ?_⟩⟩
+  <;> simpa only [mem_univ, minimal_true_subtype]
+
 end WellFoundedOn
 
 section LinearOrder
