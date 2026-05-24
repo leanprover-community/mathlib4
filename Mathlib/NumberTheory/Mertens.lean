@@ -358,34 +358,30 @@ lemma half_integral_log_div_mul_pred_le : 1 / 2 * ∫ u in Set.Ioi 5, log u / (u
   ring
 
 lemma integral_oddLogDivMulPred_le_log_five_add_one_div_eight :
-    ∫ x in Set.Ioi 2, oddLogDivMulPred x ≤ (log 5 + 1) / 8 := by calc
-  _ = _ :=  by
-    set g := fun u ↦ log u / (u * (u - 1)) with hg
-    have hshift : ∫ y in Set.Ioi 4, g (y + 1) = ∫ u in Set.Ioi 5, g u := by
-      rw [← show (4 : ℝ) + 1 = 5 by norm_num, ← integral_indicator measurableSet_Ioi,
-        ← integral_indicator measurableSet_Ioi,
+    ∫ x in Set.Ioi 2, oddLogDivMulPred x ≤ (log 5 + 1) / 8 := by
+  set g := fun u ↦ log u / (u * (u - 1)) with hg
+  calc
+    _ = ∫ x in Set.Ioi 2, g (2 * x + 1) :=
+      setIntegral_congr_fun measurableSet_Ioi fun x hx ↦ by simp [oddLogDivMulPred, hg]
+    _ = (2 : ℝ)⁻¹ * ∫ y in Set.Ioi (2 * 2), g (y + 1) :=
+      integral_comp_mul_left_Ioi (fun y ↦ g (y + 1)) 2 (by norm_num)
+    _ = (1 / 2) * ∫ y in Set.Ioi 4, g (y + 1) := by norm_num
+    _ = (1 / 2) * ∫ u in Set.Ioi 5, g u := by
+      rw [← integral_indicator measurableSet_Ioi, ← integral_indicator measurableSet_Ioi,
+        ← show (4 : ℝ) + 1 = 5 by norm_num,
         ← integral_add_right_eq_self (fun u ↦ Set.indicator (Set.Ioi (4 + 1)) g u) 1]
-      congr 1
-      ext y
+      congr 2; ext y
       by_cases hy : 4 < y
       <;> simp [Set.mem_Ioi, hy]
-    calc
-      _ = ∫ x in Set.Ioi 2, g (2 * x + 1) := by
-        refine setIntegral_congr_fun measurableSet_Ioi fun x hx ↦ ?_
-        rw [oddLogDivMulPred, hg]
-        ring_nf
-      _ = _ := by
-        rw [integral_comp_mul_left_Ioi (fun y ↦ g (y + 1)) 2 _, ← hshift, hg]
-        <;> norm_num
-  _ ≤ _ := half_integral_log_div_mul_pred_le
-  _ ≤ _ := by
-    have : ∀ u ∈ Set.Ioi 5, 0 ≤ log u / u ^ 2 :=
-      fun u hu ↦ div_nonneg (log_nonneg (by grind)) (sq_nonneg u)
-    simp [field]
-    have : ∫ u in Set.Ioi 5, log u / u ^ 2 = (log 5 + 1) / 5 := by
-      simpa using integral_Ioi_of_hasDerivAt_of_nonneg' hasDerivAt_neg_log_add_one_div this
-        tendsto_neg_log_add_one_div_atTop
-    simp [this, field]
+    _ = 1 / 2 * ∫ u in Set.Ioi 5, log u / (u * (u - 1)) := by rw [hg]
+    _ ≤ 5 / 8 * ∫ u in Set.Ioi 5, log u / u ^ 2 := half_integral_log_div_mul_pred_le
+    _ ≤ _ := by
+      have : ∀ u ∈ Set.Ioi 5, 0 ≤ log u / u ^ 2 :=
+        fun u hu ↦ div_nonneg (log_nonneg (by grind)) (sq_nonneg u)
+      have : ∫ u in Set.Ioi 5, log u / u ^ 2 = (log 5 + 1) / 5 := by
+        simpa using integral_Ioi_of_hasDerivAt_of_nonneg' hasDerivAt_neg_log_add_one_div this
+          tendsto_neg_log_add_one_div_atTop
+      simp [this, field]
 
 lemma odd_tail_lt_seven_log_five_add_five_div_forty :
     ∑' k : Set.Ici 2, oddLogDivMulPred k < (7 * log 5 + 5) / 40 := by
