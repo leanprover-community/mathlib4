@@ -277,7 +277,7 @@ private lemma aux_isBigO_linear (z : ℍ) (a b : ℤ) :
   simp [abs_of_pos (r_pos _)]
 
 lemma isLittleO_const_left_of_properSpace_of_discreteTopology
-    {α : Type*} (a : α) [NormedAddCommGroup α] [DiscreteTopology α]
+    {α : Type*} (a : α) [AddCommGroup α] [NormedAddCommGroup α] [DiscreteTopology α]
     [ProperSpace α] : (fun _ : α ↦ a) =o[cofinite] (‖·‖) := by
   simpa [isLittleO_const_left, Function.comp_def] using
     .inr <| tendsto_norm_comp_cofinite_atTop_of_isClosedEmbedding IsClosedEmbedding.id
@@ -293,8 +293,8 @@ lemma isBigO_linear_add_const_vec (z : ℍ) (a b : ℤ) :
   (aux_isBigO_linear z a b).trans (vec_add_const_isTheta a b).isBigO
 
 /-- If a function `ℤ² → ℂ` is `O (‖n‖ ^ a)⁻¹` for `2 < a`, then the function is summable. -/
-lemma summable_of_isBigO_rpow_norm {E : Type*} [NormedAddCommGroup E] [CompleteSpace E]
-    {f : (Fin 2 → ℤ) → E} {a : ℝ} (hab : 2 < a)
+lemma summable_of_isBigO_rpow_norm {E : Type*} [AddCommGroup E] [NormedAddCommGroup E]
+    [CompleteSpace E] {f : (Fin 2 → ℤ) → E} {a : ℝ} (hab : 2 < a)
     (hf : f =O[cofinite] fun n ↦ (‖n‖ ^ a)⁻¹) : Summable f :=
   summable_of_isBigO
     ((summable_one_div_norm_rpow hab).congr fun b ↦ Real.rpow_neg (norm_nonneg b) a) hf
