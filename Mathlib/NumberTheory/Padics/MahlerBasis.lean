@@ -117,7 +117,7 @@ variable {M G : Type*}
 /-- Bound for iterated forward differences of a continuous function from a compact space to a
 nonarchimedean seminormed group. -/
 lemma IsUltrametricDist.norm_fwdDiff_iter_apply_le [TopologicalSpace M] [CompactSpace M]
-    [AddCommMonoid M] [SeminormedAddCommGroup G] [IsUltrametricDist G]
+    [AddCommMonoid M] [AddCommGroup G] [SeminormedAddCommGroup G] [IsUltrametricDist G]
     (h : M) (f : C(M, G)) (m : M) (n : ℕ) : ‖Δ_[h]^[n] f m‖ ≤ ‖f‖ := by
   -- A proof by induction on `n` would be possible but would involve some messing around to
   -- define `Δ_[h]` as an operator on continuous maps (not just on bare functions). So instead we
@@ -150,7 +150,7 @@ namespace PadicInt
 
 section norm_fwdDiff
 
-variable {p : ℕ} [hp : Fact p.Prime] {E : Type*}
+variable {p : ℕ} [hp : Fact p.Prime] {E : Type*} [AddCommGroup E]
   [NormedAddCommGroup E] [Module ℤ_[p] E] [IsBoundedSMul ℤ_[p] E] [IsUltrametricDist E]
 
 /--
@@ -244,8 +244,8 @@ end norm_fwdDiff
 
 section mahler_coeff
 
-variable {E : Type*} [NormedAddCommGroup E] [Module ℤ_[p] E] [IsBoundedSMul ℤ_[p] E]
-  (a : E) (n : ℕ) (x : ℤ_[p])
+variable {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] [Module ℤ_[p] E]
+  [IsBoundedSMul ℤ_[p] E] (a : E) (n : ℕ) (x : ℤ_[p])
 
 /--
 A single term of a Mahler series, given by the product of the scalar-valued continuous map
