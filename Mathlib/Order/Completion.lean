@@ -109,7 +109,6 @@ lemma le_principal_iff {a : α} {c : DedekindCut α} :
   simp only [← intent_subset_intent_iff, right_principal]
   exact ⟨fun h ↦ h self_mem_Ici, fun h _y hy ↦ mem_intent_of_intent_rel hy h⟩
 
-@[simp]
 theorem principal_le_principal {a b : α} : principal a ≤ principal b ↔ a ≤ b := by
   simp
 
