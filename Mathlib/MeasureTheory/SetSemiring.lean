@@ -270,7 +270,7 @@ lemma exists_disjoint_finset_diff_eq (hC : IsSetSemiring C) (hs : s ∈ C) (hI :
         refine hxy ?_
         refine Subtype.ext ?_
         exact h_dis.elim x.prop y.prop h_contra
-      convert hJu_disj' (x : Set α) (h_ss x.prop) y (h_ss y.prop) hxy_disj
+      convert! hJu_disj' (x : Set α) (h_ss x.prop) y (h_ss y.prop) hxy_disj
       · rw [sUnion_eq_biUnion]
         congr
       · rw [sUnion_eq_biUnion]
