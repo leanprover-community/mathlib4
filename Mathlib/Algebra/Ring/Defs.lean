@@ -147,9 +147,21 @@ class Semiring (α : Type u) extends AddCommMonoid α, MonoidWithZero α, NonUni
 class Ring (R : Type u) extends Semiring R, AddCommGroup R, AddGroupWithOne R
 
 -- Add some short-cut instances to avoid going through the less used ring type classes.
-instance [Semiring α] : Distrib α := inferInstance
-instance [Semiring α] : MulZeroClass α := inferInstance
-instance [Semiring α] : MulZeroOneClass α := inferInstance
+instance [i : Semiring α] : Distrib α where
+  left_distrib := i.toDistrib.left_distrib
+  right_distrib := i.toDistrib.right_distrib
+
+instance [i : Semiring α] : MulZeroClass α where
+  zero_mul := i.toMonoidWithZero.zero_mul
+  mul_zero := i.toMonoidWithZero.mul_zero
+
+instance [i : Semiring α] : MulZeroOneClass α where
+  toMulOneClass := {
+    one_mul := i.toMulOneClass.one_mul
+    mul_one := i.toMulOneClass.mul_one }
+  zero_mul := i.toMonoidWithZero.zero_mul
+  mul_zero := i.toMonoidWithZero.mul_zero
+
 attribute [instance] Semiring.toMonoid
 
 /-!
