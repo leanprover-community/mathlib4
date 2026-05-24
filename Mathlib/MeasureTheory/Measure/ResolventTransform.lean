@@ -98,7 +98,7 @@ section Definition
 variable [NormedField 𝕜] [NormedRing A] [NormedAlgebra ℝ A] [NormedAlgebra 𝕜 A]
   {m𝕜 : MeasurableSpace 𝕜}
 
-/-- The resolvent transform of a measure of a measure `μ`. -/
+/-- The resolvent transform of a measure. -/
 noncomputable
 def resolventTransform (μ : Measure 𝕜) (a : A) :=
   ∫ x, resolvent a x ∂μ
