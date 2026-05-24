@@ -28,10 +28,13 @@ a `p`-group (no finiteness hypothesis needed: the family of normal
   `pCore p G`.
 * `Subgroup.mem_pCore_iff` : an element lies in `pCore p G` iff it lies in
   some normal `p`-subgroup.
+* `Subgroup.pCore_eq_bot_iff` : `pCore p G = ⊥` iff `G` has no non-trivial
+  normal `p`-subgroup.
+* `Subgroup.pCore_eq_top` : if `G` is itself a `p`-group, `pCore p G = ⊤`.
 * `Subgroup.pCore_eq_iInf_sylow` : for finite `G` and prime `p`, the
   `p`-core equals the intersection of all Sylow `p`-subgroups.
 
-## Notation
+## Terminology
 
 The notation `O_p(G)` for the `p`-core is classical; in code we use the
 descriptive name `pCore`.
@@ -70,14 +73,8 @@ theorem le_pCore {N : Subgroup G} (hN_normal : N.Normal) (hN_pGroup : IsPGroup p
     ⟨N, hN_normal, hN_pGroup⟩
 
 /-- The `p`-core is normal in `G`. -/
-instance pCore_normal : (pCore p G).Normal where
-  conj_mem a ha g := by
-    refine iSup_induction _ (C := fun a => g * a * g⁻¹ ∈ pCore p G) ha
-      (fun N y hy => mem_iSup_of_mem N (N.2.1.conj_mem y hy g)) (by simp) ?_
-    intro y z hy hz
-    change g * (y * z) * g⁻¹ ∈ pCore p G
-    rw [show g * (y * z) * g⁻¹ = (g * y * g⁻¹) * (g * z * g⁻¹) by group]
-    exact mul_mem hy hz
+instance pCore_normal : (pCore p G).Normal :=
+  normal_iSup_normal fun N => N.2.1
 
 /-- The indexing family of normal `p`-subgroups is directed under `≤`:
 for any two normal `p`-subgroups, their join is again a normal
@@ -109,6 +106,19 @@ theorem mem_pCore_iff {x : G} :
   rw [pCore, mem_iSup_of_directed directed_normal_isPGroup]
   exact ⟨fun ⟨N, hxN⟩ => ⟨N, N.2.1, N.2.2, hxN⟩,
     fun ⟨N, hN, hP, hxN⟩ => ⟨⟨N, hN, hP⟩, hxN⟩⟩
+
+/-- The `p`-core is trivial iff `G` has no non-trivial normal `p`-subgroup. -/
+theorem pCore_eq_bot_iff :
+    pCore p G = ⊥ ↔ ∀ N : Subgroup G, N.Normal → IsPGroup p N → N = ⊥ := by
+  refine ⟨fun h N hN hP => le_bot_iff.mp (h ▸ le_pCore hN hP), fun h => ?_⟩
+  rw [eq_bot_iff_forall]
+  intro x hx
+  obtain ⟨N, hN, hP, hxN⟩ := mem_pCore_iff.mp hx
+  simpa [h N hN hP] using hxN
+
+/-- If `G` itself is a `p`-group, then `pCore p G = ⊤`. -/
+theorem pCore_eq_top (h : IsPGroup p (⊤ : Subgroup G)) : pCore p G = ⊤ :=
+  eq_top_iff.2 (le_pCore inferInstance h)
 
 /-- The `p`-core is contained in every Sylow `p`-subgroup. -/
 theorem pCore_le_sylow [Fact p.Prime] [Finite G] (P : Sylow p G) : pCore p G ≤ P := by
