@@ -359,8 +359,8 @@ variable [UnivLE.{v, v'}] [Small.{v} R] [Small.{v'} A]
 
 variable {R}
 
-/-- `Ext.isBaseChangeMap'` specifying to localization. -/
-noncomputable def Ext.isLocalizedModuleMap' {M N : ModuleCat.{v} R} {MS NS : ModuleCat.{v'} A}
+/-- `Ext.isBaseChangeMap` specifying to localization. -/
+noncomputable def Ext.isLocalizedModuleMap {M N : ModuleCat.{v} R} {MS NS : ModuleCat.{v'} A}
     [Module R MS] [IsScalarTower R A MS] [Module R NS] [IsScalarTower R A NS]
     (f : M →ₗ[R] MS) (isl1 : IsLocalizedModule S f) (g : N →ₗ[R] NS) (isl2 : IsLocalizedModule S g)
     (n : ℕ) : Ext M N n →ₗ[R] Ext MS NS n :=
@@ -368,11 +368,11 @@ noncomputable def Ext.isLocalizedModuleMap' {M N : ModuleCat.{v} R} {MS NS : Mod
   (Ext.isBaseChangeMap.{v, v'} A f (IsLocalizedModule.isBaseChange S A f) g
     (IsLocalizedModule.isBaseChange S A g) n)
 
-theorem Ext.isLocalizedModule' [IsNoetherianRing R] {M N : ModuleCat.{v} R}
+theorem Ext.isLocalizedModule [IsNoetherianRing R] {M N : ModuleCat.{v} R}
     [Module.Finite R M] {MS NS : ModuleCat.{v'} A}
     [Module R MS] [IsScalarTower R A MS] [Module R NS] [IsScalarTower R A NS]
     (f : M →ₗ[R] MS) (isl1 : IsLocalizedModule S f) (g : N →ₗ[R] NS) (isl2 : IsLocalizedModule S g)
-    (n : ℕ) : IsLocalizedModule S (Ext.isLocalizedModuleMap'.{v, v'} S A f isl1 g isl2 n) :=
+    (n : ℕ) : IsLocalizedModule S (Ext.isLocalizedModuleMap.{v, v'} S A f isl1 g isl2 n) :=
   haveI := IsLocalization.flat A S
   (isLocalizedModule_iff_isBaseChange S A _).mpr (Ext.isBaseChange.{v, v'} A M N
     f (IsLocalizedModule.isBaseChange S A f) g (IsLocalizedModule.isBaseChange S A g) n)
