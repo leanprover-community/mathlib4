@@ -26,7 +26,7 @@ open Set Metric TopologicalSpace Function Filter
 
 open scoped Topology NNReal
 
-variable {α β F : Type*} [NormedAddCommGroup F] [CompleteSpace F] {u : α → ℝ}
+variable {α β F : Type*} [AddCommGroup F] [NormedAddCommGroup F] [CompleteSpace F] {u : α → ℝ}
 
 /-- An infinite sum of functions with summable sup norm is the uniform limit of its partial sums.
 Version relative to a set, with general index set. -/
@@ -79,7 +79,7 @@ theorem tendstoUniformlyOn_tsum_of_cofinite_eventually {ι : Type*} {f : ι → 
   have : i ∉ hN.toFinset := fun hg ↦ hi (Finset.union_subset_left hn hg)
   simp_all
 
-theorem tendstoUniformlyOn_tsum_nat_eventually {α F : Type*} [NormedAddCommGroup F]
+theorem tendstoUniformlyOn_tsum_nat_eventually {α F : Type*} [AddCommGroup F] [NormedAddCommGroup F]
     [CompleteSpace F] {f : ℕ → α → F} {u : ℕ → ℝ} (hu : Summable u) {s : Set α}
     (hfu : ∀ᶠ n in atTop, ∀ x ∈ s, ‖f n x‖ ≤ u n) :
     TendstoUniformlyOn (fun N x => ∑ n ∈ Finset.range N, f n x)
