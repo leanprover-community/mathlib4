@@ -317,10 +317,10 @@ theorem tprod_one_add [T2Space α] (h : Summable (∏ i ∈ ·, f i)) :
   HasProd.tprod_eq <| hasProd_one_add_of_hasSum_prod h.hasSum
 
 section Ordered
-variable [LinearOrder ι] [LocallyFiniteOrderBot ι] [T2Space α]
+variable [LinearOrder ι] [LocallyFiniteOrderBot ι]
 
 /-- The infinite version of `Finset.prod_one_add_ordered`. -/
-theorem tprod_one_add_ordered [ContinuousAdd α]
+theorem tprod_one_add_ordered [T2Space α] [ContinuousAdd α]
     (hsum : Summable fun i ↦ f i * ∏ j ∈ Iio i, (1 + f j))
     (hprod : Multipliable (1 + f ·)) :
     ∏' i, (1 + f i) = 1 + ∑' i, f i * ∏ j ∈ Iio i, (1 + f j) := by
@@ -339,9 +339,9 @@ theorem tprod_one_add_ordered [ContinuousAdd α]
   congr
   grind
 
-omit [CommSemiring α] in
 /-- The infinite version of `Finset.prod_one_sub_ordered`. -/
-theorem tprod_one_sub_ordered [CommRing α] [IsTopologicalAddGroup α]
+theorem tprod_one_sub_ordered {α : Type*} {f : ι → α}
+    [CommRing α] [TopologicalSpace α] [T2Space α] [IsTopologicalAddGroup α]
     (hsum : Summable fun i ↦ f i * ∏ j ∈ Iio i, (1 - f j))
     (hprod : Multipliable (1 - f ·)) :
     ∏' i, (1 - f i) = 1 - ∑' i, f i * ∏ j ∈ Iio i, (1 - f j) := by
