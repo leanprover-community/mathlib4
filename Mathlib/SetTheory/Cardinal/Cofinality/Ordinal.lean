@@ -64,8 +64,9 @@ theorem cof_toType (o : Ordinal) : Order.cof o.ToType = o.cof := by
 
 @[simp]
 theorem cof_typein [LinearOrder α] [WellFoundedLT α] (x : α) :
-    cof (typein (α := α) (· < ·) x) = cofWithin x :=
-  cof_type _
+    cof (typein (α := α) (· < ·) x) = cofWithin x := by
+  rw [← cof_Iio]
+  exact cof_type _
 
 @[deprecated (since := "2026-02-18")] alias cof_eq_cof_toType := cof_toType
 @[deprecated (since := "2026-02-18")] alias le_cof_type := le_cof_iff
@@ -84,8 +85,9 @@ theorem _root_.Order.cofWithin_ordinal (o : Ordinal.{u}) : cofWithin o = cof (li
   rw [← cof_typein, typein_ordinal]
 
 @[deprecated cofWithin_ordinal (since := "2026-05-22")]
-protected theorem cof_Iio (o : Ordinal.{u}) : Order.cof (Iio o) = cof (lift.{u + 1} o) :=
-  cofWithin_ordinal o
+protected theorem cof_Iio (o : Ordinal.{u}) : Order.cof (Iio o) = cof (lift.{u + 1} o) := by
+  rw [cof_Iio]
+  exact cofWithin_ordinal o
 
 theorem cof_le_card (o : Ordinal) : cof o ≤ card o := by
   simpa using cof_le_cardinalMk o.ToType
