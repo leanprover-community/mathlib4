@@ -55,18 +55,7 @@ class IsGeometricallyReduced (R A : Type*) [CommRing R] [Ring A] [Algebra R A] :
   isReduced_algebraicClosure_tensorProduct (p : Ideal R) [p.IsPrime] :
     IsReduced (AlgebraicClosure p.ResidueField ⊗[R] A)
 
-attribute [instance] IsGeometricallyReduced.isReduced_algebraicClosure_residueField_tensorProduct
-
-section Field
-
-lemma isGeometricallyReduced_field_iff (k A : Type*) [Field k] [Ring A] [Algebra k A] :
-    IsGeometricallyReduced k A ↔ IsReduced (AlgebraicClosure k ⊗[k] A) := by
-  let e (p : Ideal k) [p.IsPrime] : AlgebraicClosure k ≃ₐ[k] AlgebraicClosure p.ResidueField :=
-    have := p.AlgEquivResidueFieldOfField.isAlgebraic
-    IsAlgClosure.equiv k _ _
-  refine ⟨fun ⟨h⟩ ↦ ?_, fun h ↦ ⟨fun p hp ↦ ?_⟩⟩
-  · exact isReduced_of_injective _ (Algebra.TensorProduct.congr (e ⊥) AlgEquiv.refl).injective
-  · exact isReduced_of_injective _ (Algebra.TensorProduct.congr (e p).symm AlgEquiv.refl).injective
+attribute [instance] IsGeometricallyReduced.isReduced_algebraicClosure_tensorProduct
 
 section Field
 

@@ -88,6 +88,7 @@ lemma algebraMap_eq_zero (x : S) (mem : x ∈ maximalIdeal S) : algebraMap S K x
   simp only [mem_maximalIdeal, mem_nonunits_iff] at mem
   exact (iff_not_comm.mp isUnit_iff_ne_zero).mpr ((IsLocalHom.map_nonunit x).mt mem)
 
+/-- An `S`-algebra `K` is algebra over the residue field of `S` if algebra map `IsLocalHom`. -/
 local instance [IsLocalHom (algebraMap S K)] : Algebra (ResidueField S) K :=
   (Ideal.Quotient.lift _ (algebraMap S K) (fun x hx ↦ algebraMap_eq_zero x hx)).toAlgebra
 
@@ -116,6 +117,7 @@ lemma minpoly_residueField_eq_map (x : K) (int : IsIntegral S x) :
     exact (Polynomial.aeval_map_algebraMap _ x g).symm
 
 set_option linter.unusedVariables false in
+/-- Extension of a local ring for an algebraic element over its residue field. -/
 abbrev adjoinAlgebraic (x : K) (int : IsIntegral S x) : Type u := S[X] ⧸ Ideal.span {minpoly S x}
 
 instance (x : K) (int : IsIntegral S x) : Module.Finite S (adjoinAlgebraic K S x int) :=
@@ -163,6 +165,7 @@ lemma span_minpoly_le_ker (x : K) : Ideal.span {minpoly S x} ≤
     RingHom.ker (Polynomial.aeval x) := by
   simp
 
+/-- The algebra map for `adjoinAlgebraic` to the whole extension. -/
 noncomputable abbrev adjoinAlgebraicToK (x : K) (int : IsIntegral S x) :
     adjoinAlgebraic K S x int →+* K :=
   Ideal.Quotient.lift _ (Polynomial.aeval x).toRingHom (fun _ h ↦ span_minpoly_le_ker K S x h)
@@ -183,6 +186,7 @@ lemma adjoinAlgebraic_mem_range (x : K) (int : IsIntegral S x) :
   simp [RingHom.algebraMap_toAlgebra]
 
 set_option linter.unusedVariables false in
+/-- Extension of a local ring for a transcendental element over its residue field. -/
 abbrev adjoinTranscendental (x : K) (nint : ¬ IsIntegral S x) : Type u :=
   Localization.AtPrime ((maximalIdeal S).map Polynomial.C)
 
@@ -204,6 +208,7 @@ lemma adjoinTranscendental_aeval_ker (x : K) (nint : ¬ IsIntegral S x) :
   change RingHom.ker (Polynomial.aeval x).toRingHom = _
   rw [this, RingHom.ker_comp_of_injective _ inj, Polynomial.ker_mapRingHom, ker_residue]
 
+/-- The algebra map for `adjoinTranscendental` to the whole extension. -/
 noncomputable abbrev adjoinTranscendentalToK (x : K) (nint : ¬ IsIntegral S x) :
     adjoinTranscendental K S x nint →+* K :=
   IsLocalization.lift (M := ((maximalIdeal S).map Polynomial.C).primeCompl)
@@ -228,7 +233,15 @@ lemma adjoinTranscendental_mem_range (x : K) (nint : ¬ IsIntegral S x) :
 
 end Monogenic
 
+/--
+Given a local ring `R` and `K` a field extension over residue field of `R`.
+Flat extension is flat `R`-algebra `S` that is a local ring, forming scalar tower `K/S/R` with
+its maximal ideal equal to the maximal ideal of `R` mapped by algebra map.
+
+This structure is for forming the category to do interation on.
+-/
 structure FlatExtension where
+  /-- The underlying ring. -/
   Ring : Type u
   [commRing : CommRing Ring]
   [isLocalRing : IsLocalRing Ring]
@@ -254,13 +267,17 @@ instance (S : FlatExtension R K) : IsLocalHom (algebraMap S K) := by
   rw [S.eqmap, Ideal.map_map, ← IsScalarTower.algebraMap_eq R]
   exact ((IsLocalRing.local_hom_TFAE _).out 0 2).mp ‹_›
 
+/-- The local ring itself as trivial flat extension. -/
 noncomputable def trivial : FlatExtension R K where
   Ring := R
   isScalarTower := IsScalarTower.left R
   eqmap := by simp
 
 variable {R K} in
+/-- Homomorphisms between flat extensions are `R`-algebra map that is compatible with
+their algebra maps to the whole extension `K`. -/
 structure Hom (S₁ S₂ : FlatExtension R K) where
+  /-- The underlying `AlgHom`. -/
   algHom : S₁.Ring →ₐ[R] S₂.Ring
   comm : (IsScalarTower.toAlgHom R S₂ K).comp algHom = IsScalarTower.toAlgHom R S₁ K
 
@@ -272,8 +289,11 @@ instance (S₁ S₂ : FlatExtension R K) (f : S₁.Hom S₂) : IsLocalHom f.algH
 
 variable {R K}
 
+/-- Identity homomorphism for flat extensions. -/
 def Hom.id (S : FlatExtension R K) : Hom S S := ⟨AlgHom.id R S.Ring, by simp⟩
 
+/-- Composition of homomorphisms between flat extensions,
+with underlying `R`-algebra map the composition. -/
 def Hom.comp {S₁ S₂ S₃ : FlatExtension R K} (f : Hom S₁ S₂) (g : Hom S₂ S₃) :
     Hom S₁ S₃ := ⟨g.algHom.comp f.algHom, by simp [← AlgHom.comp_assoc, g.comm, f.comm]⟩
 
@@ -282,6 +302,8 @@ instance : Category (FlatExtension R K) where
   id S := Hom.id S
   comp f g := f.comp g
 
+/-- Extension of a flat extension by an algebraic element over its residue field,
+the `FlatExtension` language version of `adjoinAlgebraic`. -/
 noncomputable abbrev adjoinAlgebraic (S : FlatExtension R K) (x : K)
     (int : IsIntegral S x) : FlatExtension R K where
   Ring := Monogenic.adjoinAlgebraic K S x int
@@ -291,6 +313,8 @@ noncomputable abbrev adjoinAlgebraic (S : FlatExtension R K) (x : K)
     rw [Monogenic.adjoinAlgebraic_maximalIdeal_eq_map K S x int,
       IsScalarTower.algebraMap_eq R S, ← Ideal.map_map, S.eqmap]
 
+/-- The homomorphism from a flat extension to `FlatExtension.adjoinAlgebraic`,
+with unduerlying `R`-algebra map `IsScalarTower.toAlgHom`. -/
 noncomputable abbrev toAdjoinAlgebraic (S : FlatExtension R K) (x : K)
     (int : IsIntegral S x) : S ⟶ S.adjoinAlgebraic x int where
   algHom := IsScalarTower.toAlgHom R S.Ring _
@@ -298,6 +322,8 @@ noncomputable abbrev toAdjoinAlgebraic (S : FlatExtension R K) (x : K)
     ext y
     simp [← IsScalarTower.algebraMap_apply S _ K y]
 
+/-- Extension of a flat extension by a transcendental element over its residue field,
+the `FlatExtension` language version of `adjoinTranscendental`. -/
 noncomputable abbrev adjoinTranscendental (S : FlatExtension R K) (x : K)
     (nint : ¬ IsIntegral S x) : FlatExtension R K where
   Ring := Monogenic.adjoinTranscendental K S x nint
@@ -307,6 +333,8 @@ noncomputable abbrev adjoinTranscendental (S : FlatExtension R K) (x : K)
     rw [Monogenic.adjoinTranscendental_maximalIdeal_eq_map K S x nint,
       IsScalarTower.algebraMap_eq R S, ← Ideal.map_map, ← S.eqmap]
 
+/-- The homomorphism from a flat extension to `FlatExtension.adjoinTranscendental`,
+with unduerlying `R`-algebra map `IsScalarTower.toAlgHom`. -/
 noncomputable abbrev toAdjoinTranscendental (S : FlatExtension R K) (x : K)
     (nint : ¬ IsIntegral S x) : S ⟶ S.adjoinTranscendental x nint where
   algHom := IsScalarTower.toAlgHom R S.Ring _
@@ -317,6 +345,14 @@ noncomputable abbrev toAdjoinTranscendental (S : FlatExtension R K) (x : K)
 variable (R K)
 
 open Classical in
+/--
+A `SuccStruct` on `FlatExtension R K`.
+
+For `S : FlatExtension R K`, if residue field of `S` is already the whole field `K` then
+`succ` of `S` is simply `S` itself; else arbitrarily pick `x : K` that is not in the residue field
+of `S`, `succ` of `S` is `adjoinAlgebraic` or `adjoinTranscendental`, depending on whether `x` is
+algebraic over residue field of `S`.
+-/
 noncomputable def SuccStruct : SuccStruct (FlatExtension R K) where
   X₀ := trivial R K
   succ S := if surj : Function.Surjective (algebraMap S K) then S else
@@ -364,6 +400,7 @@ instance : ConcreteCategory (FlatExtension R K)
   hom {S₁ S₂} f := ⟨f.algHom, f.comm⟩
   ofHom {S₁ S₂} f := ⟨f.1, f.2⟩
 
+/-- Construction of homomorphism between `FlatExtension` from `RingHom`. -/
 def Hom.mk' {S₁ S₂ : FlatExtension R K} (f : S₁ →+* S₂)
     (h_algHom : f.comp (algebraMap R S₁) = algebraMap R S₂)
     (h_comm : (algebraMap S₂ K).comp f = algebraMap S₁ K) : Hom S₁ S₂ where
@@ -381,6 +418,7 @@ variable {R K} {J : Type u} [SmallCategory J] [IsFiltered J] {F : J ⥤ FlatExte
   (c : Cocone (F ⋙ (forget₂ _ CommRingCat)))
 
 variable (F) in
+/-- For a functor to `FlatExtension`, the cocone in `CommRingCat` with `pt` being `K`. -/
 def algebraMapKCocone : Cocone (F ⋙ (forget₂ _ CommRingCat)) where
   pt := .of K
   ι := {
@@ -406,6 +444,8 @@ lemma algebraMap_comp_ι_eq (j j' : J) :
   simp only [Functor.const_obj_obj, Functor.comp_obj, ← heq1, CommRingCat.hom_comp, ← heq2]
   exact RingHom.comp_assoc ..
 
+/-- Auxiliary construction for `pt` of colimit in `FlatExtension`, with underlying ring the
+colimit in `CommRingCat`. -/
 noncomputable def coconeOfCoconeForgetPt (hc : IsColimit c) : FlatExtension R K := by
   let j := Classical.choice ‹IsFiltered J›.2
   let : IsLocalRing c.pt := @CommRingCat.FilteredColimit.isLocalRing_of_isColimit _ _ _ _ _
@@ -454,6 +494,7 @@ noncomputable def coconeOfCoconeForgetPt (hc : IsColimit c) : FlatExtension R K 
           (fun _ _ f ↦ inferInstanceAs (IsLocalHom (F.map f).algHom.toRingHom)) hc j)
             (instIsLocalHomRingRingHomAlgebraMap R K _)
 
+/-- The cocone for colimit in `FlatExtension`. -/
 noncomputable def coconeOfCoconeForget (hc : IsColimit c) : Cocone F where
   pt := coconeOfCoconeForgetPt c hc
   ι := {
@@ -466,6 +507,7 @@ noncomputable def coconeOfCoconeForget (hc : IsColimit c) : Cocone F where
       ext x
       exact congr($(c.ι.naturality f) x) }
 
+/-- `FlatExtension.FilteredColimit.coconeOfCoconeForget` is colimit. -/
 noncomputable def isColimitCoconeOfCoconeForget (hc : IsColimit c) :
     IsColimit (coconeOfCoconeForget c hc) := by
   let pt (s : Cocone F) := CommRingCat.of s.pt

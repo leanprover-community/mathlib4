@@ -5,6 +5,7 @@ Authors: Nailin Guan
 -/
 module
 
+public import Mathlib.FieldTheory.PurelyInseparable.AdjoinPthRoots
 public import Mathlib.FieldTheory.SeparablyGenerated
 public import Mathlib.RingTheory.Ideal.MinimalPrime.Noetherian
 public import Mathlib.RingTheory.LocalProperties.Reduced
@@ -27,7 +28,7 @@ Let `K/k` be arbitrary field extension with characteristic `p > 0`, then TFAE
 # Main definitions and results
 
 * `Algebra.IsSeparablyGenerated` : A field extension is separably generated if there exists
-  an transcendental basis such that the extension above it is separable.
+  a transcendence basis such that the extension above it is separable.
 
 * `Algebra.IsTranscendentalSeparable` : A field extension is transcendental separable if
   every finitely generated subextension is separably generated.
@@ -70,7 +71,7 @@ section
 
 variable (k : Type u) (K : Type v) [Field k] [Field K] [Algebra k K]
 
-/-- A field extension is separably generated if there exists an transcendental basis such that
+/-- A field extension is separably generated if there exists a transcendence basis such that
 the extension above it is separable. -/
 @[mk_iff, stacks 030O "Part 1"]
 class Algebra.IsSeparablyGenerated : Prop where
@@ -86,7 +87,7 @@ lemma Algebra.isSeparablyGenerated_of_equiv {K' : Type w} [Field K'] [Algebra k 
   let g := (e ∘ f) ∘ (equivShrink ι).symm
   use Shrink.{w} ι, g, (e.isTranscendenceBasis isT).comp_equiv (equivShrink ι).symm
   have eq : (IntermediateField.adjoin k (Set.range f)).map e =
-    (IntermediateField.adjoin k (Set.range g)) := by
+      (IntermediateField.adjoin k (Set.range g)) := by
     simp [IntermediateField.adjoin_map, g, Set.range_comp e f]
   let e' := ((IntermediateField.adjoin k (Set.range f)).equivMap e.toAlgHom).trans
     (IntermediateField.equivOfEq eq)
@@ -98,26 +99,18 @@ lemma Algebra.isSeparable_iff_isSeparablyGenerated_and_isAlgebraic :
   · use (∅ : Set K), fun x ↦ 0
     have eqbot : IntermediateField.adjoin k (Set.range fun (x : (∅ : Set K)) ↦ (0 : K)) = ⊥ :=
       IntermediateField.adjoin_eq_bot_iff.mpr (fun _ ↦ by simp)
-    have sep : Algebra.IsSeparable (⊥ : IntermediateField k K) K := by
-      apply IsSeparable.of_equiv_equiv (IntermediateField.botEquiv k K).symm.toRingEquiv
-        (RingEquiv.refl K)
-      ext
-      simp [-AlgEquiv.symm_toRingEquiv]
     refine ⟨isTranscendenceBasis_iff_algebraicIndependent_isAlgebraic.mpr ⟨?_, ?_⟩, ?_⟩
     · simpa using RingHom.injective _
-    · rw [← IntermediateField.isAlgebraic_adjoin_iff_top, eqbot]
-      exact sep.isAlgebraic
-    · rw [eqbot]
-      exact sep
+    · simpa [← IntermediateField.isAlgebraic_adjoin_iff_top, eqbot]
+        using (Algebra.isSeparable_tower_top_of_isSeparable k _  K).isAlgebraic
+    · simpa [eqbot] using Algebra.isSeparable_tower_top_of_isSeparable k _  K
   · have := isT.isEmpty_iff_isAlgebraic.mpr alg
     have : IntermediateField.adjoin k (Set.range T) = ⊥ :=
       IntermediateField.adjoin_eq_bot_iff.mpr (fun _ ↦ by simp)
     rw [this] at sep
-    apply IsSeparable.of_equiv_equiv (IntermediateField.botEquiv k K).toRingEquiv
-      (RingEquiv.refl K)
-    ext x
-    rcases (IntermediateField.botEquiv k K).symm.surjective x with ⟨y, rfl⟩
-    simp
+    have : Algebra.IsSeparable k (⊥ : IntermediateField k K) :=
+      AlgEquiv.Algebra.isSeparable (IntermediateField.botEquiv k K).symm
+    exact Algebra.IsSeparable.trans k (⊥ : IntermediateField k K) K
 
 /-- A field extension is transcendental separable if every finitely generated subextension is
 separably generated. -/
@@ -131,12 +124,12 @@ lemma Algebra.isSeparable_iff_isTranscendentalSeparable_and_isAlgebraic :
       (Algebra.IsTranscendentalSeparable k K ∧ Algebra.IsAlgebraic k K) := by
   refine ⟨fun h ↦ ⟨⟨fun L hL ↦ ?_⟩, inferInstance⟩, fun ⟨sep, alg⟩ ↦ ?_⟩
   · exact ((Algebra.isSeparable_iff_isSeparablyGenerated_and_isAlgebraic k L).mp inferInstance).1
-  · refine Algebra.isSeparable_iff.mpr (fun x ↦ ⟨IsIntegral.isIntegral x, ?_⟩)
+  · refine Algebra.isSeparable_iff.mpr fun x ↦ ⟨IsIntegral.isIntegral x, ?_⟩
     let L := IntermediateField.adjoin k {x}
     have fin : EssFiniteType k L := IntermediateField.essFiniteType_iff.mpr
       (IntermediateField.fg_adjoin_of_finite (Set.finite_singleton x))
     have sep' := (Algebra.isSeparable_iff_isSeparablyGenerated_and_isAlgebraic k L).mpr
-      ⟨sep.1 L fin, inferInstance⟩
+      ⟨sep.forall_isSeparablyGenerated L fin, inferInstance⟩
     exact Subalgebra.isSeparable_iff.mp sep' x (by simp [L])
 
 end
@@ -423,42 +416,7 @@ lemma tensorProduct_isReduced_of_isSeparablyGenerated_of_isReduced [IsReduced S]
 
 section charp
 
-/-- Adjoining all `p`-th root to a field of characteristic `p`.
-It is defined as the field itself with algebra map being the frobenius map. -/
-@[nolint unusedArguments]
-def adjoinPthRoots (p : ℕ) [ExpChar k p] := k
-
 variable (p : ℕ) [ExpChar k p]
-
-instance : Field (adjoinPthRoots k p) := inferInstanceAs (Field k)
-
-instance : Algebra k (adjoinPthRoots k p) := (frobenius k p).toAlgebra
-
-/-- The map `adjoinPthRoots k p → k` with underlying map `RingHom.id`. -/
-def adjoinPthRootsSelf : (adjoinPthRoots k p) →+* k := RingHom.id k
-
-lemma adjoinPthRootsSelf_algebraMap (x : adjoinPthRoots k p) :
-    algebraMap k (adjoinPthRoots k p) (adjoinPthRootsSelf k p x) = x ^ p := rfl
-
-lemma adjoinPthRoots_pth_power_mem_bot (x : adjoinPthRoots k p) :
-    x ^ p ∈ (⊥ : IntermediateField k (adjoinPthRoots k p)) := by
-  use adjoinPthRootsSelf k p x
-  rfl
-
-instance [Fact (Nat.Prime p)] : Algebra.IsAlgebraic k (adjoinPthRoots k p) where
-  isAlgebraic x := by
-    use Polynomial.X ^ p - Polynomial.C (adjoinPthRootsSelf k p x)
-    refine ⟨(Polynomial.monic_X_pow_sub_C _ (NeZero.ne' p).symm).ne_zero, ?_⟩
-    simp [adjoinPthRootsSelf_algebraMap]
-
-/-- The map `k → adjoinPthRoots k p` for taking `p`-th root with underlying map `RingHom.id`. -/
-def adjoinPthRootsPthRoot : k →+* (adjoinPthRoots k p) := RingHom.id k
-
-lemma adjoinPthRootsPthRoot_bijective : Function.Bijective (adjoinPthRootsPthRoot k p) :=
-  (RingEquiv.refl k).bijective
-
-lemma adjoinPthRootsPthRoot_pow (x : k) : algebraMap k (adjoinPthRoots k p) x =
-    (adjoinPthRootsPthRoot k p x) ^ p := rfl
 
 lemma linearIndepOn_pow_of_isReduced_tensorProduct (hp : Nat.Prime p)
     (red : IsReduced (TensorProduct k (adjoinPthRoots k p) K)) (s : Finset K)
@@ -478,8 +436,9 @@ lemma linearIndepOn_pow_of_isReduced_tensorProduct (hp : Nat.Prime p)
     | zero => exact (Nat.not_prime_one hp).elim
     | prime hq => assumption
   have rooty_supp : rooty.support = y.support :=
-    Finsupp.support_mapRange_of_injective (map_zero _) y (adjoinPthRootsPthRoot_bijective k p).1
-  have rooty_app (x : s) : (rooty x) ^ p = algebraMap k _ (y x) := adjoinPthRootsPthRoot_pow k p _
+    Finsupp.support_mapRange_of_injective (map_zero _) y (adjoinPthRootsPthRoot k p).injective
+  have rooty_app (x : s) : (rooty x) ^ p = algebraMap k _ (y x) :=
+    adjoinPthRootsPthRoot_apply_pow k p _
   have h0 : frobenius _ p (rooty.sum fun (i : s) (c : adjoinPthRoots k p) ↦ c ⊗ₜ[k] i.1) = 0 := by
     simp only [Finsupp.sum, map_sum, frobenius_def, Algebra.TensorProduct.tmul_pow, rooty_app]
     simp only [Finsupp.linearCombination, Finsupp.coe_lsum, Finsupp.sum, LinearMap.coe_smulRight,
@@ -493,7 +452,7 @@ lemma linearIndepOn_pow_of_isReduced_tensorProduct (hp : Nat.Prime p)
     fun (x : s) ↦ (1 : adjoinPthRoots k p) ⊗ₜ[k] x.1) rooty = 0 := by
     simpa [Finsupp.linearCombination, rooty, Algebra.smul_def] using eq_zero_of_pow_eq_zero h0
   exact (map_eq_zero_iff (Finsupp.mapRange.addMonoidHom (adjoinPthRootsPthRoot k p).toAddMonoidHom)
-    (Finsupp.mapRange_injective _ (map_zero _) (adjoinPthRootsPthRoot_bijective k p).1)).mp
+    (Finsupp.mapRange_injective _ (map_zero _) (adjoinPthRootsPthRoot k p).injective)).mp
     ((map_eq_zero_iff _ li').mp this)
 
 instance : ExpChar (AlgebraicClosure k) p := ExpChar.of_injective_algebraMap' k _
