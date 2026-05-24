@@ -22,7 +22,7 @@ open Filter
 open scoped ENNReal
 
 variable {α E ε : Type*} {m m0 : MeasurableSpace α} {p : ℝ≥0∞} {q : ℝ} {μ : Measure α}
-  [NormedAddCommGroup E] [TopologicalSpace ε] [ContinuousENorm ε]
+  [AddCommGroup E] [NormedAddCommGroup E] [TopologicalSpace ε] [ContinuousENorm ε]
 
 theorem eLpNorm'_trim (hm : m ≤ m0) {f : α → ε} (hf : StronglyMeasurable[m] f) :
     eLpNorm' f q (μ.trim hm) = eLpNorm' f q μ := by
