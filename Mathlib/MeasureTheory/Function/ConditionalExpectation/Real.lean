@@ -71,7 +71,7 @@ variable [NormedSpace ℝ E] [CompleteSpace E]
 
 theorem integral_norm_condExp_rpow_le {p : ℝ} (hp : 1 ≤ p) {f : α → E}
     (hf : Integrable (fun x => ‖f x‖ ^ p) μ) :
-    ∫ x, ‖(μ[f | m]) x‖ ^ p ∂μ ≤ ∫ x, ‖f x‖ ^ p ∂μ := by
+    ∫ x, ‖μ[f | m] x‖ ^ p ∂μ ≤ ∫ x, ‖f x‖ ^ p ∂μ := by
   have hp' : 0 < p := by linarith
   by_cases! hm : ¬ m ≤ m0
   · simp only [condExp_of_not_le hm, Pi.zero_apply, _root_.norm_zero,
