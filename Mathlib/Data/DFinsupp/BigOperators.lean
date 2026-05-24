@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.BigOperators.GroupWithZero.Action
 public import Mathlib.Algebra.BigOperators.Group.Finset.Sigma
 public import Mathlib.Data.DFinsupp.Ext
--- public import Mathlib.GroupTheory.Congruence.BigOperators
 public import Mathlib.RingTheory.Congruence.Defs
 
 /-!
