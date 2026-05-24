@@ -9,6 +9,7 @@ public import Mathlib.Algebra.DirectSum.Algebra
 public import Mathlib.Algebra.DirectSum.Decomposition
 public import Mathlib.Algebra.DirectSum.Internal
 public import Mathlib.Algebra.DirectSum.Ring
+public import Mathlib.GroupTheory.Congruence.BigOperators
 
 /-!
 # Internally-graded rings and algebras
@@ -134,12 +135,12 @@ theorem RingConGen.Rel.isHomogeneous_of (hr : Rel.IsHomogeneous 𝒜 r) :
     simp only [decompose_mul, coe_mul_apply_eq_dfinsuppSum]
     apply (ringConGen r).dfinsuppSum _ _ (by simp) (by simp)
     intro i
-    apply RingCon.dfinsuppSum _ _ (by simp) (by simp)
+    apply (ringConGen r).dfinsuppSum _ _ (by simp) (by simp)
     intro j
     by_cases hn : i + j = n
     · simp only [if_pos hn]
       exact (ringConGen r).mul (k i) (k' j)
-    · simp [if_neg hn, (ringConGen r).refl]
+    · simp [if_neg hn]
 
 end GradedRing
 
