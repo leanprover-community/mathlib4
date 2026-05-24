@@ -399,8 +399,6 @@ theorem IndepSets.biUnion {s : ι → Set (Set Ω)} {s' : Set (Set Ω)}
     IndepSets (⋃ n ∈ u, s n) s' μ :=
   Kernel.IndepSets.biUnion hyp
 
-@[deprecated (since := "2025-10-28")] alias IndepSets.bUnion := IndepSets.biUnion
-
 theorem IndepSets.inter {s₁ s' : Set (Set Ω)} (s₂ : Set (Set Ω)) (h₁ : IndepSets s₁ s' μ) :
     IndepSets (s₁ ∩ s₂) s' μ :=
   Kernel.IndepSets.inter s₂ h₁
@@ -751,7 +749,7 @@ variables defined on the product space `Ω × Ω'`. -/
 lemma indepFun_prod (mX : Measurable X) (mY : Measurable Y) :
     (fun ω ↦ X ω.1) ⟂ᵢ[μ.prod ν] (fun ω ↦ Y ω.2) := by
   refine indepFun_iff_map_prod_eq_prod_map_map (by fun_prop) (by fun_prop) |>.2 ?_
-  convert Measure.map_prod_map μ ν mX mY |>.symm
+  convert! Measure.map_prod_map μ ν mX mY |>.symm
   · rw [← Function.comp_def, ← Measure.map_map mX measurable_fst, Measure.map_fst_prod,
       measure_univ, one_smul]
   · rw [← Function.comp_def, ← Measure.map_map mY measurable_snd, Measure.map_snd_prod,
@@ -1067,7 +1065,7 @@ lemma iIndepFun.cond [Finite ι] (hY : ∀ i, Measurable (Y i))
     iIndepFun X μ[|⋂ i, Y i ⁻¹' t i] := by
   rw [iIndepFun_iff]
   intro s f hf
-  convert cond_iInter hY hindep hf (fun i _ ↦ hy _) ht using 2 with i hi
+  convert! cond_iInter hY hindep hf (fun i _ ↦ hy _) ht using 2 with i hi
   simpa using cond_iInter hY hindep (fun j hj ↦ hf _ <| Finset.mem_singleton.1 hj ▸ hi)
     (fun i _ ↦ hy _) ht
 
