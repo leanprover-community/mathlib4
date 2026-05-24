@@ -365,8 +365,9 @@ theorem pair_subset (ha : a ∈ s) (hb : b ∈ s) : {a, b} ⊆ s :=
 
 theorem subset_pair_iff : s ⊆ {a, b} ↔ ∀ x ∈ s, x = a ∨ x = b := by grind
 
+set_option linter.tacticAnalysis.verifyGrindOnly false in
 theorem subset_pair_iff_eq {x y : α} : s ⊆ {x, y} ↔ s = ∅ ∨ s = {x} ∨ s = {y} ∨ s = {x, y} where
-  mp := by grind
+  mp := by grind only [subset_def, mem_insert_iff, mem_singleton_iff, mem_empty_iff_false]
   mpr := by grind
 
 theorem Nonempty.subset_pair_iff_eq (hs : s.Nonempty) :

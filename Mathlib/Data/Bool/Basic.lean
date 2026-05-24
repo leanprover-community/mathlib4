@@ -195,15 +195,19 @@ theorem ofNat_le_ofNat {n m : Nat} (h : n ≤ m) : ofNat n ≤ ofNat m := by
 theorem toNat_le_toNat {b₀ b₁ : Bool} (h : b₀ ≤ b₁) : toNat b₀ ≤ toNat b₁ := by
   cases b₀ <;> cases b₁ <;> simp_all +decide
 
-theorem ofNat_toNat (b : Bool) : ofNat (toNat b) = b := by grind [cases Bool]
+set_option linter.tacticAnalysis.verifyGrindOnly false in
+theorem ofNat_toNat (b : Bool) : ofNat (toNat b) = b := by
+  grind only [cases Bool, = ofNat_zero, = toNat_true, = toNat_false, = ofNat_add_one]
 
+set_option linter.tacticAnalysis.verifyGrindOnly false in
 @[simp]
 theorem injective_iff {α : Sort*} {f : Bool → α} : Function.Injective f ↔ f false ≠ f true :=
-  ⟨fun Hinj Heq ↦ false_ne_true (Hinj Heq), fun H x y ↦ by grind [cases Bool]⟩
+  ⟨fun Hinj Heq ↦ false_ne_true (Hinj Heq), fun H x y ↦ by grind only [cases Bool]⟩
 
+set_option linter.tacticAnalysis.verifyGrindOnly false in
 /-- **Kaminski's Equation** -/
 theorem apply_apply_apply (f : Bool → Bool) (x : Bool) : f (f (f x)) = f x := by
-  cases h₁ : f true <;> cases h₂ : f false <;> grind [cases Bool]
+  cases h₁ : f true <;> cases h₂ : f false <;> grind only [cases Bool]
 
 /-- `xor3 x y c` is `((x XOR y) XOR c)`. -/
 protected def xor3 (x y c : Bool) :=

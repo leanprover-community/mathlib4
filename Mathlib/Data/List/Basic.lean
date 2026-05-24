@@ -97,7 +97,7 @@ theorem exists_of_length_succ {n} : ∀ l : List α, l.length = n + 1 → ∃ h 
 
 theorem length_eq_succ_iff {n} {l : List α} :
     l.length = n + 1 ↔ ∃ h t, h :: t = l ∧ t.length = n := by
-  grind [cases List]
+  cases l <;> grind
 
 @[simp] lemma length_injective_iff : Injective (List.length : List α → ℕ) ↔ Subsingleton α := by
   constructor

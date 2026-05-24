@@ -97,7 +97,10 @@ instance [Std.Total r] [Std.Total s] : Std.Total (Lex r s) :=
     | inr a, inr b => (total_of s a b).imp Lex.inr Lex.inr⟩
 
 instance [Std.Trichotomous r] [Std.Trichotomous s] : Std.Trichotomous (Lex r s) := by
-  grind [Std.Trichotomous, Lex]
+  constructor
+  have := Std.Trichotomous.trichotomous (r := r)
+  have := Std.Trichotomous.trichotomous (r := s)
+  grind [Lex]
 
 instance [IsWellOrder α r] [IsWellOrder β s] :
     IsWellOrder (α ⊕ β) (Sum.Lex r s) where wf := Sum.lex_wf IsWellFounded.wf IsWellFounded.wf

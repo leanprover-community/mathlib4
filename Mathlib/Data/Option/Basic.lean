@@ -123,26 +123,26 @@ theorem mem_pmem {a : α} (h : ∀ a ∈ x, p a) (ha : a ∈ x) : f a (h a ha) �
 theorem pmap_bind {α β γ} {x : Option α} {g : α → Option β} {p : β → Prop} {f : ∀ b, p b → γ} (H)
     (H' : ∀ (a : α), ∀ b ∈ g a, b ∈ x >>= g) :
     pmap f (x >>= g) H = x >>= fun a ↦ pmap f (g a) fun _ h ↦ H _ (H' a _ h) := by
-  grind [cases Option]
+  cases x <;> grind
 
 theorem bind_pmap {α β γ} {p : α → Prop} (f : ∀ a, p a → β) (x : Option α) (g : β → Option γ) (H) :
     pmap f x H >>= g = x.pbind fun a h ↦ g (f a (H _ h)) := by
-  grind [cases Option, pmap]
+  cases x <;> grind
 
 variable {f x}
 
 theorem pbind_eq_none {f : ∀ a : α, a ∈ x → Option β}
     (h' : ∀ a (H : a ∈ x), f a H = none → x = none) : x.pbind f = none ↔ x = none := by
-  grind [cases Option]
+  cases x <;> grind
 
 theorem join_pmap_eq_pmap_join {f : ∀ a, p a → β} {x : Option (Option α)} (H) :
     (pmap (pmap f) x H).join = pmap f x.join fun a h ↦ H (some a) (mem_of_mem_join h) _ rfl := by
-  grind [cases Option]
+  cases x <;> grind
 
 theorem pmap_bind_id_eq_pmap_join {f : ∀ a, p a → β} {x : Option (Option α)} (H) :
     ((pmap (pmap f) x H).bind fun a ↦ a) =
       pmap f x.join fun a h ↦ H (some a) (mem_of_mem_join h) _ rfl := by
-  grind [cases Option]
+  cases x <;> grind
 
 end pmap
 

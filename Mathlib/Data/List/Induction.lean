@@ -38,7 +38,7 @@ theorem reverseRec_concat {motive : List α → Sort*} (x : α) (xs : List α) (
     (append_singleton : ∀ (l : List α) (a : α), motive l → motive (l ++ [a])) :
     (xs ++ [x]).reverseRec nil append_singleton =
     append_singleton xs x (xs.reverseRec nil append_singleton) := by
-  grind [reverseRec, cases List]
+  cases xs <;> grind [reverseRec]
 
 /-- Like `reverseRec`, but with the list parameter placed first. -/
 @[elab_as_elim]
@@ -92,7 +92,7 @@ theorem bidirectionalRec_cons_append {motive : List α → Sort*}
     (a : α) (l : List α) (b : α) :
     bidirectionalRec nil singleton cons_append (a :: (l ++ [b])) =
       cons_append a l b (bidirectionalRec nil singleton cons_append l) := by
-  grind [bidirectionalRec, cases List]
+  cases l <;> grind [bidirectionalRec]
 
 /-- Like `bidirectionalRec`, but with the list parameter placed first. -/
 @[elab_as_elim]

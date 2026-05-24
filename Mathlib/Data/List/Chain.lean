@@ -150,10 +150,14 @@ theorem isChain_cons_map_of_isChain_cons {S : β → β → Prop} (f : α → β
     {l : List α} (p : IsChain R (a :: l)) : IsChain S (f a :: map f l) :=
   (isChain_cons_map f).2 <| p.imp H
 
+set_option linter.tacticAnalysis.verifyGrindOnly false in
 theorem isChain_pmap {S : β → β → Prop} {p : α → Prop} (f : ∀ a, p a → β) {l : List α}
     (hl : ∀ a ∈ l, p a) : IsChain S (pmap f l hl) ↔
     IsChain (fun a b => ∃ ha, ∃ hb, S (f a ha) (f b hb)) l := by
-  induction l using twoStepInduction <;> grind
+  induction l using twoStepInduction
+  · grind
+  · grind
+  · grind only [= isChain_cons_cons, = pmap_cons]
 
 theorem isChain_pmap_of_isChain {S : β → β → Prop} {p : α → Prop} {f : ∀ a, p a → β}
     (H : ∀ a b ha hb, R a b → S (f a ha) (f b hb)) {l : List α} (hl₁ : IsChain R l)
@@ -170,10 +174,11 @@ theorem isChain_cons_pmap {p : β → Prop} (f : ∀ b, p b → α) {l : List β
     IsChain (fun a b => ∃ ha, ∃ hb, R (f a ha) (f b hb)) (a :: l) :=
   isChain_pmap (l := a :: _) f (by grind)
 
+set_option linter.tacticAnalysis.verifyGrindOnly false in
 theorem isChain_cons_pmap_of_isChain_cons {S : β → β → Prop} {p : α → Prop} {f : ∀ a, p a → β}
     (H : ∀ a b ha hb, R a b → S (f a ha) (f b hb)) {l : List α} {a} (ha)
     (hl₁ : IsChain R (a :: l)) (hl₂ : ∀ a ∈ l, p a) : IsChain S (f a ha :: pmap f l hl₂) :=
-    (isChain_cons_pmap f _ _).2 <| hl₁.imp_of_mem_imp (by grind)
+    (isChain_cons_pmap f _ _).2 <| hl₁.imp_of_mem_imp (by grind only [= mem_cons])
 
 theorem isChain_cons_of_isChain_cons_pmap {S : β → β → Prop} {p : α → Prop} (f : ∀ a, p a → β)
     {l : List α} (hl₁ : ∀ a ∈ l, p a) {a} (ha) (hl₂ : IsChain S (f a ha :: pmap f l hl₁))

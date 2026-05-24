@@ -94,11 +94,12 @@ variable (l : List α) (n : ℕ)
 
 theorem tail_take_eq_take_tail : (l.take n).tail = l.tail.take (n - 1) := by
   ext
-  grind
+  grind only [= getElem?_neg, = getElem?_pos, = length_take, = length_tail, = Nat.min_def,
+    = getElem_tail, = getElem_take]
 
 theorem dropLast_take_eq_take_dropLast : (l.take n).dropLast = l.dropLast.take (n - 1) := by
   ext
-  grind
+  grind only [= getElem?_take, = getElem?_dropLast, = length_take, = Nat.min_def]
 
 theorem tail_drop_eq_drop_tail : (l.drop n).tail = l.tail.drop n := by
   ext

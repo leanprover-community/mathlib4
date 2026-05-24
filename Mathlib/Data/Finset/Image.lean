@@ -312,10 +312,10 @@ theorem image_congr (h : (s : Set α).EqOn f g) : Finset.image f s = Finset.imag
   simp_rw [mem_image, ← bex_def]
   exact exists₂_congr fun x hx => by rw [h hx]
 
+set_option linter.tacticAnalysis.verifyGrindOnly false in
 theorem _root_.Function.Injective.mem_finset_image (hf : Injective f) :
     f a ∈ s.image f ↔ a ∈ s := by
-  grind
-
+  grind only [= mem_image]
 
 @[simp, norm_cast]
 theorem coe_image : ↑(s.image f) = f '' ↑s :=
