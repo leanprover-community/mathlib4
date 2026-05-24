@@ -100,6 +100,23 @@ section scope
 #guard_msgs in
 #check_title "feat(Algebra.lean): title"
 
+/-- info: Message: 'error: a PR's scope should be a directory, not a module' -/
+#guard_msgs in
+#check_title "feat(Algebra.Topology): title"
+
+/-- info: Message: 'error: a PR's scope must not contain spaces' -/
+#guard_msgs in
+#check_title "feat(Algebra Topology): title"
+
+/--
+info: Message: 'error: a PR's scope must not contain backslashes --- use forward slashes instead'
+-/
+#guard_msgs in
+#check_title "feat(Algebra\\Too): title"
+
+#guard_msgs in
+#check_title "feat(Algebra/Too): title"
+
 end scope
 
 section subject
@@ -153,7 +170,8 @@ info: Message: 'error: the PR title contains multiple consecutive spaces; please
 #guard_msgs in
 #check_title "feat(test) (confusing) bad title"
 
--- TODO: should this error instead?
+-- TODO: should this give a better error?
+/-- info: Message: 'error: a PR's scope must not contain spaces' -/
 #guard_msgs in
 #check_title "feat(confusing) (forbidden): title"
 

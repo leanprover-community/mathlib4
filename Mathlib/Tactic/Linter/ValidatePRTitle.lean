@@ -98,12 +98,17 @@ public def validateTitle (title : String) : Array String := Id.run do
     if let some scope := scope? then
       if scope.startsWith "Mathlib/" then
         errors := errors.push s!"error: a PR's scope must not start with 'Mathlib/'"
+      if scope.contains " " then
+        errors := errors.push s!"error: a PR's scope must not contain spaces"
+      if scope.contains "\\" then
+        errors := errors.push
+          s!"error: a PR's scope must not contain backslashes --- use forward slashes instead"
       if scope.endsWith ".lean" then
         errors := errors.push s!"error: a PR's scope must not end with '.lean'"
-      -- Disabling this for now, to reduce warning fatigue. Might enable this in the future.
-      -- if scope.contains '.' then
-      --  errors := errors.push s!"error: a PR's scope should be a directory, not a module"
+      else if scope.contains '.' then
+        errors := errors.push s!"error: a PR's scope should be a directory, not a module"
       -- Future: we could check if `scope` describes a directory that actually exist.
+      -- Should we allow special syntax such as `Data/*/Basic` or `{Set,Group}Theory`?
 
     -- Titles should be lower-cased (but we allow abbreviations).
     if subject.front.toLower != subject.front then
