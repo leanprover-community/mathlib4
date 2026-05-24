@@ -6010,6 +6010,7 @@ public import Mathlib.Order.InitialSeg
 public import Mathlib.Order.Interval.Basic
 public import Mathlib.Order.Interval.Finset.Basic
 public import Mathlib.Order.Interval.Finset.Box
+public import Mathlib.Order.Interval.Finset.Card
 public import Mathlib.Order.Interval.Finset.Defs
 public import Mathlib.Order.Interval.Finset.DenselyOrdered
 public import Mathlib.Order.Interval.Finset.Fin
