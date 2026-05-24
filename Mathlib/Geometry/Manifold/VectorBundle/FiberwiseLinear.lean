@@ -134,7 +134,7 @@ theorem ContMDiffFiberwiseLinear.locality_aux₁
     rw [← hesu p] at this
     exact this.1
   have he : e.source = (Prod.fst '' e.source) ×ˢ (univ : Set F) := by
-    apply HasSubset.Subset.antisymm
+    apply subset_antisymm
     · intro p hp
       exact ⟨⟨p, hp, rfl⟩, trivial⟩
     · rintro ⟨x, v⟩ ⟨⟨p, hp, rfl : p.fst = x⟩, -⟩

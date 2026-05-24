@@ -474,7 +474,6 @@ lemma subset_of_eq_of_subset (hab : a = b) (hbc : b ⊆ c) : a ⊆ c := by rwa [
 
 lemma subset_of_subset_of_eq (hab : a ⊆ b) (hbc : b = c) : a ⊆ c := by rwa [← hbc]
 
-@[refl, simp]
 lemma subset_refl [@Std.Refl α (· ⊆ ·)] (a : α) : a ⊆ a := refl _
 
 lemma subset_rfl [@Std.Refl α (· ⊆ ·)] : a ⊆ a := refl _
@@ -487,7 +486,6 @@ lemma ne_of_not_subset [@Std.Refl α (· ⊆ ·)] : ¬a ⊆ b → a ≠ b := mt 
 
 lemma ne_of_not_superset [@Std.Refl α (· ⊆ ·)] : ¬a ⊆ b → b ≠ a := mt superset_of_eq
 
-@[trans]
 lemma subset_trans [IsTrans α (· ⊆ ·)] {a b c : α} : a ⊆ b → b ⊆ c → a ⊆ c := _root_.trans
 
 lemma subset_antisymm [@Std.Antisymm α (· ⊆ ·)] : a ⊆ b → b ⊆ a → a = b := antisymm
