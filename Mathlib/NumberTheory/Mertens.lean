@@ -329,26 +329,6 @@ lemma tsum_oddLogDivMulPred_nat_tail_lt_integral : ∑' n : ℕ, oddLogDivMulPre
     intervalIntegral.integral_interval_add_Ioi integral_oddLogDivMulPred_converges
       (integral_oddLogDivMulPred_converges.mono_set (by grind))
 
-lemma integral_oddLogDivMulPred_eq_half_integral : ∫ x in Set.Ioi 2, oddLogDivMulPred x
-    = (1 / 2 : ℝ) * ∫ u in Set.Ioi 5, log u / (u * (u - 1)) := by
-  set g := fun u ↦ log u / (u * (u - 1)) with hg
-  have hshift : ∫ y in Set.Ioi 4, g (y + 1) = ∫ u in Set.Ioi 5, g u := by
-    rw [← show (4 : ℝ) + 1 = 5 by norm_num, ← integral_indicator measurableSet_Ioi,
-      ← integral_indicator measurableSet_Ioi,
-      ← integral_add_right_eq_self (fun u ↦ Set.indicator (Set.Ioi (4 + 1)) g u) 1]
-    congr 1
-    ext y
-    by_cases hy : 4 < y
-    <;> simp [Set.mem_Ioi, hy]
-  calc
-    _ = ∫ x in Set.Ioi 2, g (2 * x + 1) := by
-      refine setIntegral_congr_fun measurableSet_Ioi fun x hx ↦ ?_
-      rw [oddLogDivMulPred, hg]
-      ring_nf
-    _ = _ := by
-      rw [integral_comp_mul_left_Ioi (fun y ↦ g (y + 1)) 2 _, ← hshift, hg]
-      <;> norm_num
-
 lemma half_integral_log_div_mul_pred_le : 1 / 2 * ∫ u in Set.Ioi 5, log u / (u * (u - 1))
     ≤ 5 / 8 * ∫ u in Set.Ioi 5, log u / u ^ 2 := by
   have hbound_int : IntegrableOn (fun u ↦ 5 / 4 * (log u / u ^ 2)) (Set.Ioi 5) := by
@@ -379,7 +359,24 @@ lemma half_integral_log_div_mul_pred_le : 1 / 2 * ∫ u in Set.Ioi 5, log u / (u
 
 lemma integral_oddLogDivMulPred_le_log_five_add_one_div_eight :
     ∫ x in Set.Ioi 2, oddLogDivMulPred x ≤ (log 5 + 1) / 8 := by calc
-  _ = _ := integral_oddLogDivMulPred_eq_half_integral
+  _ = _ :=  by
+    set g := fun u ↦ log u / (u * (u - 1)) with hg
+    have hshift : ∫ y in Set.Ioi 4, g (y + 1) = ∫ u in Set.Ioi 5, g u := by
+      rw [← show (4 : ℝ) + 1 = 5 by norm_num, ← integral_indicator measurableSet_Ioi,
+        ← integral_indicator measurableSet_Ioi,
+        ← integral_add_right_eq_self (fun u ↦ Set.indicator (Set.Ioi (4 + 1)) g u) 1]
+      congr 1
+      ext y
+      by_cases hy : 4 < y
+      <;> simp [Set.mem_Ioi, hy]
+    calc
+      _ = ∫ x in Set.Ioi 2, g (2 * x + 1) := by
+        refine setIntegral_congr_fun measurableSet_Ioi fun x hx ↦ ?_
+        rw [oddLogDivMulPred, hg]
+        ring_nf
+      _ = _ := by
+        rw [integral_comp_mul_left_Ioi (fun y ↦ g (y + 1)) 2 _, ← hshift, hg]
+        <;> norm_num
   _ ≤ _ := half_integral_log_div_mul_pred_le
   _ ≤ _ := by
     have : ∀ u ∈ Set.Ioi 5, 0 ≤ log u / u ^ 2 :=
