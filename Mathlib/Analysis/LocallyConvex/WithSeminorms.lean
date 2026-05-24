@@ -68,7 +68,7 @@ variable {R 𝕜 𝕜₂ 𝕝 𝕝₂ E F G ι ι' : Type*}
 
 section FilterBasis
 
-variable [SeminormedRing R] [AddCommGroup E] [Module R E]
+variable [NormPseudoMetric R] [Ring R] [IsNormedRing R] [AddCommGroup E] [Module R E]
 variable (R E ι)
 
 /-- An abbreviation for indexed families of seminorms. This is mainly to allow for dot-notation. -/
@@ -225,8 +225,8 @@ section Bounded
 
 namespace Seminorm
 
-variable [SeminormedRing 𝕜] [AddCommGroup E] [Module 𝕜 E]
-variable [SeminormedRing 𝕜₂] [AddCommGroup F] [Module 𝕜₂ F]
+variable [NormPseudoMetric 𝕜] [Ring 𝕜] [IsNormedRing 𝕜] [AddCommGroup E] [Module 𝕜 E]
+variable [NormPseudoMetric 𝕜₂] [Ring 𝕜₂] [IsNormedRing 𝕜₂] [AddCommGroup F] [Module 𝕜₂ F]
 variable {σ₁₂ : 𝕜 →+* 𝕜₂} [RingHomIsometric σ₁₂]
 
 /-- The proposition that a linear map is bounded between spaces with families of seminorms. -/
@@ -785,7 +785,7 @@ section Congr
 namespace WithSeminorms
 
 variable [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
-variable [SeminormedRing 𝕜₂] [AddCommGroup F] [Module 𝕜₂ F]
+variable [NormPseudoMetric 𝕜₂] [Ring 𝕜₂] [IsNormedRing 𝕜₂] [AddCommGroup F] [Module 𝕜₂ F]
 variable {σ₁₂ : 𝕜 →+* 𝕜₂} [RingHomIsometric σ₁₂]
 
 /-- Two families of seminorms `p` and `q` on the same space generate the same topology

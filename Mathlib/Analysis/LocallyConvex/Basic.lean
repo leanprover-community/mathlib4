@@ -52,7 +52,7 @@ variable {𝕜 𝕝 E F : Type*} {ι : Sort*} {κ : ι → Sort*}
 
 section SeminormedRing
 
-variable [SeminormedRing 𝕜]
+variable [NormPseudoMetric 𝕜] [Ring 𝕜] [IsNormedRing 𝕜]
 
 section SMul
 

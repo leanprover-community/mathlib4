@@ -284,7 +284,7 @@ theorem eventually_nhds_zero_mapsTo [TopologicalSpace F] [IsTopologicalAddGroup 
   apply_rules [mem_iInf_of_mem, mem_principal_self]
 
 variable {σ F} in
-theorem isVonNBounded_image2_apply {R : Type*} [SeminormedRing R]
+theorem isVonNBounded_image2_apply {R : Type*} [NormPseudoMetric R] [Ring R] [IsNormedRing R]
     [TopologicalSpace F] [IsTopologicalAddGroup F]
     [DistribMulAction R F] [ContinuousConstSMul R F] [SMulCommClass 𝕜₂ R F]
     {𝔖 : Set (Set E)} {S : Set (E →SLᵤ[σ, 𝔖] F)} (hS : IsVonNBounded R S)

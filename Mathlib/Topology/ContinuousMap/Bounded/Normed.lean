@@ -291,7 +291,7 @@ section NonUnital
 
 section Seminormed
 
-variable [NonUnitalSeminormedRing R]
+variable [NormPseudoMetric R] [NonUnitalRing R] [IsNormedRing R]
 
 instance instNonUnitalRing : NonUnitalRing (α →ᵇ R) := fast_instance%
   DFunLike.coe_injective.nonUnitalRing _ coe_zero coe_add coe_mul coe_neg coe_sub
@@ -341,11 +341,11 @@ lemma nnnorm_sum_eq_sup [IsCancelMulZero R] {ι : Type*} {f : ι → (α →ᵇ 
 
 end Seminormed
 
-instance instNonUnitalCommRing [NonUnitalSeminormedCommRing R] :
+instance instNonUnitalCommRing [NormPseudoMetric R] [NonUnitalCommRing R] [IsNormedRing R] :
     NonUnitalCommRing (α →ᵇ R) where
   mul_comm _ _ := ext fun _ ↦ mul_comm ..
 
-example [NonUnitalSeminormedCommRing R] :
+example [NormPseudoMetric R] [NonUnitalCommRing R] [IsNormedRing R] :
     NonUnitalSeminormedCommRing (α →ᵇ R) where
 
 example [NonUnitalNormedRing R] : NonUnitalNormedRing (α →ᵇ R) where
@@ -357,7 +357,7 @@ end NonUnital
 
 section Seminormed
 
-variable [SeminormedRing R]
+variable [NormPseudoMetric R] [Ring R] [IsNormedRing R]
 
 @[simp]
 theorem coe_npowRec (f : α →ᵇ R) : ∀ n, ⇑(npowRec n f) = (⇑f) ^ n
@@ -397,7 +397,7 @@ example : SeminormedRing (α →ᵇ R) where
 `RingHom`. Similar to `RingHom.compLeftContinuous`. -/
 @[simps!]
 protected def _root_.RingHom.compLeftContinuousBounded (α : Type*)
-    [TopologicalSpace α] [SeminormedRing β] [SeminormedRing γ]
+    [TopologicalSpace α] [NormPseudoMetric β] [Ring β] [IsNormedRing β] [NormPseudoMetric γ] [Ring γ] [IsNormedRing γ]
     (g : β →+* γ) {C : NNReal} (hg : LipschitzWith C g) : (α →ᵇ β) →+* (α →ᵇ γ) :=
   { g.toMonoidHom.compLeftContinuousBounded α hg,
     g.toAddMonoidHom.compLeftContinuousBounded α hg with }
@@ -412,10 +412,10 @@ section NormedCommRing
 
 variable [TopologicalSpace α] {R : Type*}
 
-instance instCommRing [SeminormedCommRing R] : CommRing (α →ᵇ R) where
+instance instCommRing [NormPseudoMetric R] [CommRing R] [IsNormedRing R] : CommRing (α →ᵇ R) where
   mul_comm _ _ := ext fun _ ↦ mul_comm _ _
 
-example [SeminormedCommRing R] : SeminormedCommRing (α →ᵇ R) where
+example [NormPseudoMetric R] [CommRing R] [IsNormedRing R] : SeminormedCommRing (α →ᵇ R) where
 
 example [NormedCommRing R] : NormedCommRing (α →ᵇ R) where
 
@@ -424,7 +424,7 @@ end NormedCommRing
 section NonUnitalAlgebra
 
 -- these hypotheses could be generalized if we generalize `IsBoundedSMul` to `Bornology`.
-variable {𝕜 : Type*} [PseudoMetricSpace 𝕜] [TopologicalSpace α] [NonUnitalSeminormedRing β]
+variable {𝕜 : Type*} [PseudoMetricSpace 𝕜] [TopologicalSpace α] [NormPseudoMetric β] [NonUnitalRing β] [IsNormedRing β]
 variable [Zero 𝕜] [SMul 𝕜 β] [IsBoundedSMul 𝕜 β]
 
 instance [IsScalarTower 𝕜 β β] : IsScalarTower 𝕜 (α →ᵇ β) (α →ᵇ β) where

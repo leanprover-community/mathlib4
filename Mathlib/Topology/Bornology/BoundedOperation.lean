@@ -209,7 +209,7 @@ section NonUnitalSeminormedRing
 ### Bounded operations in non-unital seminormed rings
 -/
 
-variable {R : Type*} [NonUnitalSeminormedRing R]
+variable {R : Type*} [NormPseudoMetric R] [NonUnitalRing R] [IsNormedRing R]
 
 set_option linter.style.whitespace false in -- manual alignment is not recognised
 instance : BoundedMul R where

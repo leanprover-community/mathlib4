@@ -28,7 +28,7 @@ norm, algebra norm
 
 /-- An algebra norm on an `R`-algebra `S` is a ring norm on `S` compatible with the
 action of `R`. -/
-structure AlgebraNorm (R : Type*) [SeminormedCommRing R] (S : Type*) [Ring S] [Algebra R S] extends
+structure AlgebraNorm (R : Type*) [NormPseudoMetric R] [CommRing R] [IsNormedRing R] (S : Type*) [Ring S] [Algebra R S] extends
   RingNorm S, Seminorm R S
 
 attribute [nolint docBlame] AlgebraNorm.toSeminorm AlgebraNorm.toRingNorm
@@ -44,13 +44,13 @@ instance (K : Type*) [NormedField K] : Inhabited (AlgebraNorm K K) :=
 
 /-- `AlgebraNormClass F R S` states that `F` is a type of `R`-algebra norms on the ring `S`.
 You should extend this class when you extend `AlgebraNorm`. -/
-class AlgebraNormClass (F : Type*) (R : outParam <| Type*) [SeminormedCommRing R]
+class AlgebraNormClass (F : Type*) (R : outParam <| Type*) [NormPseudoMetric R] [CommRing R] [IsNormedRing R]
     (S : outParam <| Type*) [Ring S] [Algebra R S] [FunLike F S ℝ] : Prop
     extends RingNormClass F S ℝ, SeminormClass F R S
 
 namespace AlgebraNorm
 
-variable {R : Type*} [SeminormedCommRing R] {S : Type*} [Ring S] [Algebra R S] {f : AlgebraNorm R S}
+variable {R : Type*} [NormPseudoMetric R] [CommRing R] [IsNormedRing R] {S : Type*} [Ring S] [Algebra R S] {f : AlgebraNorm R S}
 
 /-- The ring seminorm underlying an algebra norm. -/
 def toRingSeminorm' (f : AlgebraNorm R S) : RingSeminorm S :=
@@ -122,7 +122,7 @@ end AlgebraNorm
 
 /-- A multiplicative algebra norm on an `R`-algebra norm `S` is a multiplicative ring norm on `S`
   compatible with the action of `R`. -/
-structure MulAlgebraNorm (R : Type*) [SeminormedCommRing R] (S : Type*) [Ring S] [Algebra R S]
+structure MulAlgebraNorm (R : Type*) [NormPseudoMetric R] [CommRing R] [IsNormedRing R] (S : Type*) [Ring S] [Algebra R S]
   extends MulRingNorm S, Seminorm R S
 
 attribute [nolint docBlame] MulAlgebraNorm.toSeminorm MulAlgebraNorm.toMulRingNorm
@@ -139,13 +139,13 @@ instance (K : Type*) [NormedField K] : Inhabited (MulAlgebraNorm K K) :=
 
 /-- `MulAlgebraNormClass F R S` states that `F` is a type of multiplicative `R`-algebra norms on
 the ring `S`. You should extend this class when you extend `MulAlgebraNorm`. -/
-class MulAlgebraNormClass (F : Type*) (R : outParam <| Type*) [SeminormedCommRing R]
+class MulAlgebraNormClass (F : Type*) (R : outParam <| Type*) [NormPseudoMetric R] [CommRing R] [IsNormedRing R]
     (S : outParam <| Type*) [Ring S] [Algebra R S] [FunLike F S ℝ] : Prop
     extends MulRingNormClass F S ℝ, SeminormClass F R S
 
 namespace MulAlgebraNorm
 
-variable {R S : outParam <| Type*} [SeminormedCommRing R] [Ring S] [Algebra R S]
+variable {R S : outParam <| Type*} [NormPseudoMetric R] [CommRing R] [IsNormedRing R] [Ring S] [Algebra R S]
   {f : AlgebraNorm R S}
 
 instance : FunLike (MulAlgebraNorm R S) S ℝ where

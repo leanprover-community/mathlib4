@@ -463,7 +463,7 @@ theorem Submodule.Quotient.norm_mk_le (m : M) : ‖(Submodule.Quotient.mk m : M 
   norm_mk_le_norm
 
 instance Submodule.Quotient.instIsBoundedSMul (𝕜 : Type*)
-    [SeminormedCommRing 𝕜] [Module 𝕜 M] [IsBoundedSMul 𝕜 M] [SMul 𝕜 R] [IsScalarTower 𝕜 R M] :
+    [NormPseudoMetric 𝕜] [CommRing 𝕜] [IsNormedRing 𝕜] [Module 𝕜 M] [IsBoundedSMul 𝕜 M] [SMul 𝕜 R] [IsScalarTower 𝕜 R M] :
     IsBoundedSMul 𝕜 (M ⧸ S) :=
   .of_norm_smul_le fun k x =>
     -- this is `QuotientAddGroup.norm_lift_apply_le` for `f : M → M ⧸ S` given by
@@ -504,7 +504,7 @@ end Submodule
 
 section Ideal
 
-variable {R : Type*} [SeminormedCommRing R] (I : Ideal R)
+variable {R : Type*} [NormPseudoMetric R] [CommRing R] [IsNormedRing R] (I : Ideal R)
 
 nonrec theorem Ideal.Quotient.norm_mk_lt {I : Ideal R} (x : R ⧸ I) {ε : ℝ} (hε : 0 < ε) :
     ∃ r : R, Ideal.Quotient.mk I r = x ∧ ‖r‖ < ‖x‖ + ε :=

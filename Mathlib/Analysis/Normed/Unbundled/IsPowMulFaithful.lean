@@ -56,7 +56,7 @@ theorem contraction_of_isPowMul_of_boundedWrt {F : Type*} {α : outParam (Type*)
 
 /-- Given a bounded `f : α →+* β` between seminormed rings, is the seminorm on `β` is
   power-multiplicative, then `f` is a contraction. -/
-theorem contraction_of_isPowMul {α β : Type*} [SeminormedRing α] [SeminormedRing β]
+theorem contraction_of_isPowMul {α β : Type*} [NormPseudoMetric α] [Ring α] [IsNormedRing α] [NormPseudoMetric β] [Ring β] [IsNormedRing β]
     (hβ : IsPowMul (norm : β → ℝ)) {f : α →+* β} (hf : f.IsBounded) (x : α) : norm (f x) ≤ norm x :=
   contraction_of_isPowMul_of_boundedWrt (SeminormedRing.toRingSeminorm α) hβ hf x
 

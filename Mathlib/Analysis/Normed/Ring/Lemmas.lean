@@ -27,7 +27,7 @@ open scoped Topology NNReal Pointwise
 
 section NonUnitalSeminormedRing
 
-variable [NonUnitalSeminormedRing α]
+variable [NormPseudoMetric α] [NonUnitalRing α] [IsNormedRing α]
 
 theorem Filter.Tendsto.zero_mul_isBoundedUnder_le {f g : ι → α} {l : Filter ι}
     (hf : Tendsto f l (𝓝 0)) (hg : IsBoundedUnder (· ≤ ·) l ((‖·‖) ∘ g)) :
@@ -44,7 +44,7 @@ open Finset in
 /-- Non-unital seminormed ring structure on the product of finitely many non-unital seminormed
 rings, using the sup norm. -/
 instance Pi.isNormedRing {R : ι → Type*} [Fintype ι]
-    [∀ i, NonUnitalSeminormedRing (R i)] : IsNormedRing (∀ i, R i) :=
+    [∀ i, NormPseudoMetric (R i)] [∀ i, NonUnitalRing (R i)] [∀ i, IsNormedRing (R i)] : IsNormedRing (∀ i, R i) :=
   { instIsNormedAddGroup with
     norm_mul_le x y := NNReal.coe_mono <| calc
       (univ.sup fun i ↦ ‖x i * y i‖₊) ≤ univ.sup ((‖x ·‖₊) * (‖y ·‖₊)) :=
@@ -56,15 +56,15 @@ end NonUnitalSeminormedRing
 
 section SeminormedRing
 
-variable [SeminormedRing α]
+variable [NormPseudoMetric α] [Ring α] [IsNormedRing α]
 
-lemma RingHom.isometry {𝕜₁ 𝕜₂ : Type*} [SeminormedRing 𝕜₁] [SeminormedRing 𝕜₂]
+lemma RingHom.isometry {𝕜₁ 𝕜₂ : Type*} [NormPseudoMetric 𝕜₁] [Ring 𝕜₁] [IsNormedRing 𝕜₁] [NormPseudoMetric 𝕜₂] [Ring 𝕜₂] [IsNormedRing 𝕜₂]
     (σ : 𝕜₁ →+* 𝕜₂) [RingHomIsometric σ] :
     Isometry σ := AddMonoidHomClass.isometry_of_norm _ fun _ => RingHomIsometric.norm_map
 
 /-- If `σ` and `σ'` are mutually inverse, then one is `RingHomIsometric` if the other is. Not an
 instance, as it would cause loops. -/
-lemma RingHomIsometric.inv {𝕜₁ 𝕜₂ : Type*} [SeminormedRing 𝕜₁] [SeminormedRing 𝕜₂]
+lemma RingHomIsometric.inv {𝕜₁ 𝕜₂ : Type*} [NormPseudoMetric 𝕜₁] [Ring 𝕜₁] [IsNormedRing 𝕜₁] [NormPseudoMetric 𝕜₂] [Ring 𝕜₂] [IsNormedRing 𝕜₂]
     (σ : 𝕜₁ →+* 𝕜₂) {σ' : 𝕜₂ →+* 𝕜₁} [RingHomInvPair σ σ'] [RingHomIsometric σ] :
     RingHomIsometric σ' :=
   ⟨fun {x} ↦ by rw [← RingHomIsometric.norm_map (σ := σ), RingHomInvPair.comp_apply_eq₂]⟩
@@ -78,7 +78,7 @@ lemma tendsto_pow_cobounded_cobounded
 end SeminormedRing
 
 -- see Note [lower instance priority]
-instance (priority := 100) NonUnitalSeminormedRing.toContinuousMul [NonUnitalSeminormedRing α] :
+instance (priority := 100) NonUnitalSeminormedRing.toContinuousMul [NormPseudoMetric α] [NonUnitalRing α] [IsNormedRing α] :
     ContinuousMul α :=
   ⟨continuous_iff_continuousAt.2 fun x =>
       tendsto_iff_norm_sub_tendsto_zero.2 <| by
@@ -99,12 +99,12 @@ instance (priority := 100) NonUnitalSeminormedRing.toContinuousMul [NonUnitalSem
 
 -- see Note [lower instance priority]
 /-- A seminormed ring is a topological ring. -/
-instance (priority := 100) NonUnitalSeminormedRing.toIsTopologicalRing [NonUnitalSeminormedRing α] :
+instance (priority := 100) NonUnitalSeminormedRing.toIsTopologicalRing [NormPseudoMetric α] [NonUnitalRing α] [IsNormedRing α] :
     IsTopologicalRing α where
 
 namespace SeparationQuotient
 
-instance [NonUnitalSeminormedRing α] : IsNormedRing (SeparationQuotient α) where
+instance [NormPseudoMetric α] [NonUnitalRing α] [IsNormedRing α] : IsNormedRing (SeparationQuotient α) where
   norm_mul_le := Quotient.ind₂ norm_mul_le
 
 instance [NormPseudoMetric α] [AddCommGroup α] [IsNormedAddGroup α] [One α] [NormOneClass α] :

@@ -434,7 +434,7 @@ theorem opNorm_neg (f : ContinuousMultilinearMap 𝕜 E G) : ‖-f‖ = ‖f‖ 
 
 section
 
-variable {𝕜' : Type*} [SeminormedRing 𝕜'] [Module 𝕜' G] [IsBoundedSMul 𝕜' G] [SMulCommClass 𝕜 𝕜' G]
+variable {𝕜' : Type*} [NormPseudoMetric 𝕜'] [Ring 𝕜'] [IsNormedRing 𝕜'] [Module 𝕜' G] [IsBoundedSMul 𝕜' G] [SMulCommClass 𝕜 𝕜' G]
 
 theorem opNorm_smul_le (c : 𝕜') (f : ContinuousMultilinearMap 𝕜 E G) : ‖c • f‖ ≤ ‖c‖ * ‖f‖ :=
   (c • f).opNorm_le_bound (mul_nonneg (norm_nonneg _) (opNorm_nonneg _)) fun m ↦ by
@@ -738,7 +738,7 @@ end
 
 section
 
-variable {n : ℕ} {A : Type*} [SeminormedRing A] [NormedAlgebra 𝕜 A]
+variable {n : ℕ} {A : Type*} [NormPseudoMetric A] [Ring A] [IsNormedRing A] [NormedAlgebra 𝕜 A]
 
 theorem norm_mkPiAlgebraFin_succ_le : ‖ContinuousMultilinearMap.mkPiAlgebraFin 𝕜 n.succ A‖ ≤ 1 := by
   refine opNorm_le_bound zero_le_one fun m => ?_

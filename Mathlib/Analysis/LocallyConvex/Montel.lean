@@ -35,7 +35,7 @@ open Filter Topology Set ContinuousLinearMap Bornology
 section Definition
 
 variable {𝕜 E F : Type*}
-variable [SeminormedRing 𝕜] [Zero E] [SMul 𝕜 E]
+variable [NormPseudoMetric 𝕜] [Ring 𝕜] [IsNormedRing 𝕜] [Zero E] [SMul 𝕜 E]
   [TopologicalSpace E]
 
 /-- A Montel space is a topological vector space that has the Heine-Borel property: every closed and
@@ -43,7 +43,7 @@ variable [SeminormedRing 𝕜] [Zero E] [SMul 𝕜 E]
 
 Note that we are not requiring that `E` is a barrelled space, so the usual definition of a Montel
 space would be `[MontelSpace 𝕜 E] [BarrelledSpace 𝕜 E]`. -/
-class MontelSpace (𝕜 E : Type*) [SeminormedRing 𝕜] [Zero E] [SMul 𝕜 E]
+class MontelSpace (𝕜 E : Type*) [NormPseudoMetric 𝕜] [Ring 𝕜] [IsNormedRing 𝕜] [Zero E] [SMul 𝕜 E]
     [TopologicalSpace E] : Prop where
   heine_borel : ∀ s : Set E, IsClosed s → IsVonNBounded 𝕜 s → IsCompact s
 

@@ -477,15 +477,15 @@ end NormedSpace
 
 section NormedRing
 
-instance instIsNormedRing [NonUnitalSeminormedRing β] :
+instance instIsNormedRing [NormPseudoMetric β] [NonUnitalRing β] [IsNormedRing β] :
     IsNormedRing C₀(α, β) where
   norm_mul_le f g := norm_mul_le f.toBCF g.toBCF
 
-noncomputable example [NonUnitalSeminormedRing β] : NonUnitalSeminormedRing C₀(α, β) where
+noncomputable example [NormPseudoMetric β] [NonUnitalRing β] [IsNormedRing β] : NonUnitalSeminormedRing C₀(α, β) where
 
 noncomputable example [NonUnitalNormedRing β] : NonUnitalNormedRing C₀(α, β) where
 
-noncomputable example [NonUnitalSeminormedCommRing β] : NonUnitalSeminormedCommRing C₀(α, β) where
+noncomputable example [NormPseudoMetric β] [NonUnitalCommRing β] [IsNormedRing β] : NonUnitalSeminormedCommRing C₀(α, β) where
 
 noncomputable example [NonUnitalNormedCommRing β] : NonUnitalNormedCommRing C₀(α, β) where
 

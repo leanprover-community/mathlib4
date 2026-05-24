@@ -243,16 +243,16 @@ section
 
 variable {R : Type*}
 
-instance [NonUnitalSeminormedRing R] : IsNormedRing C(α, R) where
+instance [NormPseudoMetric R] [NonUnitalRing R] [IsNormedRing R] : IsNormedRing C(α, R) where
   norm_mul_le f g := norm_mul_le (mkOfCompact f) (mkOfCompact g)
 
-example [NonUnitalSeminormedRing R] : NonUnitalSeminormedRing C(α, R) where
+example [NormPseudoMetric R] [NonUnitalRing R] [IsNormedRing R] : NonUnitalSeminormedRing C(α, R) where
 
-example [NonUnitalSeminormedCommRing R] : NonUnitalSeminormedCommRing C(α, R) where
+example [NormPseudoMetric R] [NonUnitalCommRing R] [IsNormedRing R] : NonUnitalSeminormedCommRing C(α, R) where
 
-example [SeminormedRing R] : SeminormedRing C(α, R) where
+example [NormPseudoMetric R] [Ring R] [IsNormedRing R] : SeminormedRing C(α, R) where
 
-example [SeminormedCommRing R] : SeminormedCommRing C(α, R) where
+example [NormPseudoMetric R] [CommRing R] [IsNormedRing R] : SeminormedCommRing C(α, R) where
 
 example [NonUnitalNormedRing R] : NonUnitalNormedRing C(α, R) where
 
@@ -318,19 +318,19 @@ theorem linearIsometryBoundedOfCompact_of_compact_toEquiv :
 
 end
 
-@[simp] lemma nnnorm_smul_const {R β : Type*} [NormPseudoMetric β] [AddCommGroup β] [IsNormedAddGroup β] [SeminormedRing R]
+@[simp] lemma nnnorm_smul_const {R β : Type*} [NormPseudoMetric β] [AddCommGroup β] [IsNormedAddGroup β] [NormPseudoMetric R] [Ring R] [IsNormedRing R]
     [Module R β] [NormSMulClass R β] (f : C(α, R)) (b : β) :
     ‖f • const α b‖₊ = ‖f‖₊ * ‖b‖₊ := by
   simp only [nnnorm_eq_iSup_nnnorm, smul_apply', const_apply, nnnorm_smul, iSup_mul]
 
-@[simp] lemma norm_smul_const {R β : Type*} [NormPseudoMetric β] [AddCommGroup β] [IsNormedAddGroup β] [SeminormedRing R]
+@[simp] lemma norm_smul_const {R β : Type*} [NormPseudoMetric β] [AddCommGroup β] [IsNormedAddGroup β] [NormPseudoMetric R] [Ring R] [IsNormedRing R]
     [Module R β] [NormSMulClass R β] (f : C(α, R)) (b : β) :
     ‖f • const α b‖ = ‖f‖ * ‖b‖ := by
   simp only [← coe_nnnorm, NNReal.coe_mul, nnnorm_smul_const]
 
 section NormSum
 
-variable {R : Type*} [NonUnitalSeminormedRing R] [IsCancelMulZero R]
+variable {R : Type*} [NormPseudoMetric R] [NonUnitalRing R] [IsNormedRing R] [IsCancelMulZero R]
 
 open BoundedContinuousFunction
 
@@ -372,7 +372,7 @@ end NormSum
 
 section
 
-variable {𝕜 : Type*} {γ : Type*} [NormedField 𝕜] [SeminormedRing γ] [NormedAlgebra 𝕜 γ]
+variable {𝕜 : Type*} {γ : Type*} [NormedField 𝕜] [NormPseudoMetric γ] [Ring γ] [IsNormedRing γ] [NormedAlgebra 𝕜 γ]
 
 instance : NormedAlgebra 𝕜 C(α, γ) :=
   { ContinuousMap.normedSpace, ContinuousMap.algebra with }

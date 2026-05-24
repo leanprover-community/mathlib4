@@ -178,7 +178,7 @@ namespace StrongDual
 
 section
 
-variable (R M : Type*) [SeminormedCommRing R] [TopologicalSpace M] [AddCommGroup M] [Module R M]
+variable (R M : Type*) [NormPseudoMetric R] [CommRing R] [IsNormedRing R] [TopologicalSpace M] [AddCommGroup M] [Module R M]
 
 theorem dualPairing_separatingLeft : (topDualPairing R M).SeparatingLeft := by
   rw [LinearMap.separatingLeft_iff_ker_eq_bot, LinearMap.ker_eq_bot]

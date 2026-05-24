@@ -146,7 +146,7 @@ open Filter Bornology Set in
 /-- In a normed algebra `F` over a normed field `𝕜` that is a proper space, the function
 `z : 𝕜 ↦ ‖x - algebraMap 𝕜 F z‖` achieves a global minimum for every `x : F`. -/
 lemma exists_isMinOn_norm_sub_smul (𝕜 : Type*) {F : Type*} [NormedField 𝕜] [ProperSpace 𝕜]
-    [SeminormedRing F] [NormedAlgebra 𝕜 F] [NormOneClass F] (x : F) :
+    [NormPseudoMetric F] [Ring F] [IsNormedRing F] [NormedAlgebra 𝕜 F] [NormOneClass F] (x : F) :
     ∃ z : 𝕜, IsMinOn (‖x - algebraMap 𝕜 F ·‖) univ z := by
   have : Tendsto (‖x - algebraMap 𝕜 F ·‖) (cobounded 𝕜) atTop := by
     exact tendsto_norm_cobounded_atTop |>.comp <| tendsto_const_sub_cobounded x |>.comp <| by simp

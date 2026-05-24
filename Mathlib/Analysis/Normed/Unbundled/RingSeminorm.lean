@@ -201,7 +201,7 @@ theorem map_pow_le_pow' {F α : Type*} [Ring α] [FunLike F α ℝ] [RingSeminor
   | n + 1 => map_pow_le_pow _ _ n.succ_ne_zero
 
 /-- The norm of a `NonUnitalSeminormedRing` as a `RingSeminorm`. -/
-def normRingSeminorm (R : Type*) [NonUnitalSeminormedRing R] : RingSeminorm R :=
+def normRingSeminorm (R : Type*) [NormPseudoMetric R] [NonUnitalRing R] [IsNormedRing R] : RingSeminorm R :=
   { normAddGroupSeminorm R with
     toFun := norm
     mul_le' := norm_mul_le }
@@ -437,7 +437,7 @@ open Int
 
 set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- The seminorm on a `SeminormedRing`, as a `RingSeminorm`. -/
-def SeminormedRing.toRingSeminorm (R : Type*) [SeminormedRing R] : RingSeminorm R where
+def SeminormedRing.toRingSeminorm (R : Type*) [NormPseudoMetric R] [Ring R] [IsNormedRing R] : RingSeminorm R where
   toFun     := norm
   map_zero' := norm_zero
   add_le'   := norm_add_le
@@ -445,7 +445,7 @@ def SeminormedRing.toRingSeminorm (R : Type*) [SeminormedRing R] : RingSeminorm 
   neg'      := norm_neg
 
 @[simp]
-theorem SeminormedRing.toRingSeminorm_apply (R : Type*) [SeminormedRing R] (x : R) :
+theorem SeminormedRing.toRingSeminorm_apply (R : Type*) [NormPseudoMetric R] [Ring R] [IsNormedRing R] (x : R) :
     (SeminormedRing.toRingSeminorm R) x = ‖x‖ :=
   rfl
 

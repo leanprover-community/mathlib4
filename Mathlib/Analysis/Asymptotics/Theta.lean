@@ -31,8 +31,8 @@ variable {α : Type*} {β : Type*} {E : Type*} {F : Type*} {G : Type*} {E' : Typ
 
 variable [Norm E] [Norm F] [Norm G]
 variable [NormPseudoMetric E'] [AddCommGroup E'] [IsNormedAddGroup E'] [NormPseudoMetric F'] [AddCommGroup F'] [IsNormedAddGroup F'] [NormPseudoMetric G'] [AddCommGroup G'] [IsNormedAddGroup G']
-  [NormMetric E''] [AddCommGroup E''] [IsNormedAddGroup E''] [NormMetric F''] [AddCommGroup F''] [IsNormedAddGroup F''] [NormMetric G''] [AddCommGroup G''] [IsNormedAddGroup G''] [SeminormedRing R]
-  [SeminormedRing R']
+  [NormMetric E''] [AddCommGroup E''] [IsNormedAddGroup E''] [NormMetric F''] [AddCommGroup F''] [IsNormedAddGroup F''] [NormMetric G''] [AddCommGroup G''] [IsNormedAddGroup G''] [NormPseudoMetric R] [Ring R] [IsNormedRing R]
+  [NormPseudoMetric R'] [Ring R'] [IsNormedRing R']
 
 variable [NormedField 𝕜] [NormedField 𝕜']
 variable {c c' c₁ c₂ : ℝ} {f : α → E} {g : α → F} {k : α → G}

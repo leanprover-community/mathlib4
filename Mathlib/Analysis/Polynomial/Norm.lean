@@ -42,7 +42,7 @@ the polynomial's value on the unit circle.
 
 @[expose] public section supnorm_seminorm
 
-variable {A : Type*} [SeminormedRing A] (p : Polynomial A)
+variable {A : Type*} [NormPseudoMetric A] [Ring A] [IsNormedRing A] (p : Polynomial A)
 
 namespace Polynomial
 

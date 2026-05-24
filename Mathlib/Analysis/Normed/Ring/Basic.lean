@@ -176,7 +176,7 @@ instance MulOpposite.normOneClass [NormPseudoMetric α] [AddCommGroup α] [IsNor
 
 section NonUnitalSeminormedRing
 
-variable [NonUnitalSeminormedRing α] {a a₁ a₂ b c : α}
+variable [NormPseudoMetric α] [NonUnitalRing α] [IsNormedRing α] {a a₁ a₂ b c : α}
 
 /-- The norm is submultiplicative. -/
 theorem norm_mul_le (a b : α) : ‖a * b‖ ≤ ‖a‖ * ‖b‖ :=
@@ -214,7 +214,7 @@ theorem mulRight_bound (x : α) : ∀ y : α, ‖AddMonoidHom.mulRight x y‖ �
 /-- A non-unital subalgebra of a non-unital seminormed ring is also a non-unital seminormed ring,
 with the restriction of the norm. -/
 instance NonUnitalSubalgebra.instIsNormedRing {𝕜 : Type*} [CommRing 𝕜] {E : Type*}
-    [NonUnitalSeminormedRing E] [Module 𝕜 E] (s : NonUnitalSubalgebra 𝕜 E) :
+    [NormPseudoMetric E] [NonUnitalRing E] [IsNormedRing E] [Module 𝕜 E] (s : NonUnitalSubalgebra 𝕜 E) :
     IsNormedRing s where
   norm_mul_le a b := norm_mul_le a.1 b.1
 
@@ -223,7 +223,7 @@ with the restriction of the norm. -/
 -- necessary to require `SMulMemClass S 𝕜 E` so that `𝕜` can be determined as an `outParam`
 @[nolint unusedArguments]
 instance (priority := 75) NonUnitalSubalgebraClass.instIsNormedRing {S 𝕜 E : Type*}
-    [CommRing 𝕜] [NonUnitalSeminormedRing E] [Module 𝕜 E] [SetLike S E] [NonUnitalSubringClass S E]
+    [CommRing 𝕜] [NormPseudoMetric E] [NonUnitalRing E] [IsNormedRing E] [Module 𝕜 E] [SetLike S E] [NonUnitalSubringClass S E]
     [SMulMemClass S 𝕜 E] (s : S) :
     IsNormedRing s where
   norm_mul_le a b := norm_mul_le a.1 b.1
@@ -233,7 +233,7 @@ instance ULift.instIsNormedRing : IsNormedRing (ULift α) where
 
 /-- Non-unital seminormed ring structure on the product of two non-unital seminormed rings,
   using the sup norm. -/
-instance Prod.instIsNormedRing [NonUnitalSeminormedRing β] :
+instance Prod.instIsNormedRing [NormPseudoMetric β] [NonUnitalRing β] [IsNormedRing β] :
     IsNormedRing (α × β) where
   norm_mul_le x y := calc
     ‖x * y‖ = ‖(x.1 * y.1, x.2 * y.2)‖ := rfl
@@ -254,11 +254,11 @@ end NonUnitalSeminormedRing
 
 section SeminormedRing
 
-variable [SeminormedRing α] {a b c : α}
+variable [NormPseudoMetric α] [Ring α] [IsNormedRing α] {a b c : α}
 
 /-- A subalgebra of a seminormed ring is also a seminormed ring, with the restriction of the
 norm. -/
-instance Subalgebra.instIsNormedRing {𝕜 : Type*} [CommRing 𝕜] {E : Type*} [SeminormedRing E]
+instance Subalgebra.instIsNormedRing {𝕜 : Type*} [CommRing 𝕜] {E : Type*} [NormPseudoMetric E] [Ring E] [IsNormedRing E]
     [Algebra 𝕜 E] (s : Subalgebra 𝕜 E) : IsNormedRing s :=
   inferInstance
 
@@ -267,7 +267,7 @@ norm. -/
 -- necessary to require `SMulMemClass S 𝕜 E` so that `𝕜` can be determined as an `outParam`
 @[nolint unusedArguments]
 theorem SubalgebraClass.instIsNormedRing {S 𝕜 E : Type*} [CommRing 𝕜]
-    [SeminormedRing E] [Algebra 𝕜 E] [SetLike S E] [SubringClass S E] [SMulMemClass S 𝕜 E]
+    [NormPseudoMetric E] [Ring E] [IsNormedRing E] [Algebra 𝕜 E] [SetLike S E] [SubringClass S E] [SMulMemClass S 𝕜 E]
     (s : S) : IsNormedRing s :=
   inferInstance
 
@@ -402,7 +402,7 @@ lemma nnnorm_commutator_units_sub_one_le (a b : αˣ) :
 
 /-- A homomorphism `f` between semi_normed_rings is bounded if there exists a positive
   constant `C` such that for all `x` in `α`, `norm (f x) ≤ C * norm x`. -/
-def RingHom.IsBounded {α : Type*} [SeminormedRing α] {β : Type*} [SeminormedRing β]
+def RingHom.IsBounded {α : Type*} [NormPseudoMetric α] [Ring α] [IsNormedRing α] {β : Type*} [NormPseudoMetric β] [Ring β] [IsNormedRing β]
     (f : α →+* β) : Prop :=
   ∃ C : ℝ, 0 < C ∧ ∀ x : α, norm (f x) ≤ C * norm x
 
@@ -424,7 +424,7 @@ section NormedCommRing
 
 /-- A subalgebra of a seminormed commutative ring is also a seminormed commutative ring, with the
 restriction of the norm. -/
-instance Subalgebra.seminormedCommRing {𝕜 : Type*} [CommRing 𝕜] {E : Type*} [SeminormedCommRing E]
+instance Subalgebra.seminormedCommRing {𝕜 : Type*} [CommRing 𝕜] {E : Type*} [NormPseudoMetric E] [CommRing E] [IsNormedRing E]
     [Algebra 𝕜 E] (s : Subalgebra 𝕜 E) : IsNormedRing s :=
   inferInstance
 
@@ -483,16 +483,16 @@ class RingHomIsometric [Semiring R₁] [Semiring R₂] [Norm R₁] [Norm R₂] (
 attribute [simp] RingHomIsometric.norm_map
 
 @[simp]
-theorem RingHomIsometric.nnnorm_map [SeminormedRing R₁] [SeminormedRing R₂] (σ : R₁ →+* R₂)
+theorem RingHomIsometric.nnnorm_map [NormPseudoMetric R₁] [Ring R₁] [IsNormedRing R₁] [NormPseudoMetric R₂] [Ring R₂] [IsNormedRing R₂] (σ : R₁ →+* R₂)
     [RingHomIsometric σ] (x : R₁) : ‖σ x‖₊ = ‖x‖₊ :=
   NNReal.eq norm_map
 
 @[simp]
-theorem RingHomIsometric.enorm_map [SeminormedRing R₁] [SeminormedRing R₂] (σ : R₁ →+* R₂)
+theorem RingHomIsometric.enorm_map [NormPseudoMetric R₁] [Ring R₁] [IsNormedRing R₁] [NormPseudoMetric R₂] [Ring R₂] [IsNormedRing R₂] (σ : R₁ →+* R₂)
     [RingHomIsometric σ] (x : R₁) : ‖σ x‖ₑ = ‖x‖ₑ :=
   congrArg ENNReal.ofNNReal <| nnnorm_map σ x
 
-variable [SeminormedRing R₁]
+variable [NormPseudoMetric R₁] [Ring R₁] [IsNormedRing R₁]
 
 instance RingHomIsometric.ids : RingHomIsometric (RingHom.id R₁) :=
   ⟨rfl⟩
@@ -524,7 +524,7 @@ end SeminormedAddCommGroup
 
 section SeminormedRing
 
-variable [SeminormedRing α] [NormOneClass α] [NormMulClass α]
+variable [NormPseudoMetric α] [Ring α] [IsNormedRing α] [NormOneClass α] [NormMulClass α]
 
 /-- `norm` as a `MonoidWithZeroHom`. -/
 @[simps]
@@ -562,7 +562,7 @@ end SeminormedRing
 
 section SeminormedCommRing
 
-variable [SeminormedCommRing α] [NormMulClass α] [NormOneClass α]
+variable [NormPseudoMetric α] [CommRing α] [IsNormedRing α] [NormMulClass α] [NormOneClass α]
 
 @[simp]
 theorem norm_prod (s : Finset β) (f : β → α) : ‖∏ b ∈ s, f b‖ = ∏ b ∈ s, ‖f b‖ :=
@@ -609,7 +609,7 @@ section Induced
 
 variable {F : Type*} (R S : Type*) [FunLike F R S]
 
-abbrev IsNormedRing.induced [NonUnitalRing R] [NonUnitalSeminormedRing S]
+abbrev IsNormedRing.induced [NonUnitalRing R] [NormPseudoMetric S] [NonUnitalRing S] [IsNormedRing S]
     [NonUnitalRingHomClass F R S] (f : F) :
     letI := NormPseudoMetric.induced R S f
     IsNormedRing R :=
@@ -619,7 +619,7 @@ abbrev IsNormedRing.induced [NonUnitalRing R] [NonUnitalSeminormedRing S]
 
 /-- A ring homomorphism from a `Ring R` to a `SeminormedRing S` which induces the norm structure
 `SeminormedRing.induced` makes `R` satisfy `‖(1 : R)‖ = 1` whenever `‖(1 : S)‖ = 1`. -/
-theorem NormOneClass.induced {F : Type*} (R S : Type*) [Ring R] [SeminormedRing S]
+theorem NormOneClass.induced {F : Type*} (R S : Type*) [Ring R] [NormPseudoMetric S] [Ring S] [IsNormedRing S]
     [NormOneClass S] [FunLike F R S] [RingHomClass F R S] (f : F) :
     letI := NormPseudoMetric.induced R S f
     NormOneClass R :=
@@ -628,7 +628,7 @@ theorem NormOneClass.induced {F : Type*} (R S : Type*) [Ring R] [SeminormedRing 
 
 /-- A ring homomorphism from a `Ring R` to a `SeminormedRing S` which induces the norm structure
 `SeminormedRing.induced` makes `R` satisfy `‖(1 : R)‖ = 1` whenever `‖(1 : S)‖ = 1`. -/
-theorem NormMulClass.induced {F : Type*} (R S : Type*) [Ring R] [SeminormedRing S]
+theorem NormMulClass.induced {F : Type*} (R S : Type*) [Ring R] [NormPseudoMetric S] [Ring S] [IsNormedRing S]
     [NormMulClass S] [FunLike F R S] [RingHomClass F R S] (f : F) :
     letI := NormPseudoMetric.induced R S f
     NormMulClass R :=
@@ -641,14 +641,14 @@ namespace SubringClass
 
 variable {S R : Type*} [SetLike S R]
 
-instance toIsNormedRing [SeminormedRing R] [SubringClass S R] (s : S) : IsNormedRing s :=
+instance toIsNormedRing [NormPseudoMetric R] [Ring R] [IsNormedRing R] [SubringClass S R] (s : S) : IsNormedRing s :=
   .induced s R (SubringClass.subtype s)
 
-instance toNormOneClass [SeminormedRing R] [NormOneClass R] [SubringClass S R] (s : S) :
+instance toNormOneClass [NormPseudoMetric R] [Ring R] [IsNormedRing R] [NormOneClass R] [SubringClass S R] (s : S) :
     NormOneClass s :=
   .induced s R <| SubringClass.subtype _
 
-instance toNormMulClass [SeminormedRing R] [NormMulClass R] [SubringClass S R] (s : S) :
+instance toNormMulClass [NormPseudoMetric R] [Ring R] [IsNormedRing R] [NormMulClass R] [SubringClass S R] (s : S) :
     NormMulClass s :=
   .induced s R <| SubringClass.subtype _
 

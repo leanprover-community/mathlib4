@@ -419,7 +419,7 @@ lemma smul {α} [NormPseudoMetric α] [AddCommGroup α] [IsNormedAddGroup α] [S
   gcongr
   exact hf x₁ x₂
 
-lemma smul_iff {α} [SeminormedRing α] [Module α Y] [NormSMulClass α Y] (a : α)
+lemma smul_iff {α} [NormPseudoMetric α] [Ring α] [IsNormedRing α] [Module α Y] [NormSMulClass α Y] (a : α)
     (ha : ‖a‖₊ ≠ 0) :
     HolderWith (C * ‖a‖₊) r (a • f) ↔ HolderWith C r f := by
   simp_rw [HolderWith, ENNReal.coe_mul, Pi.smul_apply, edist_smul₀, ENNReal.smul_def, smul_eq_mul,

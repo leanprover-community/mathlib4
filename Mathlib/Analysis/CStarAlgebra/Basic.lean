@@ -296,7 +296,7 @@ end starₗᵢ
 
 namespace StarSubalgebra
 
-example {𝕜 A : Type*} [NormedField 𝕜] [StarRing 𝕜] [SeminormedRing A] [StarRing A]
+example {𝕜 A : Type*} [NormedField 𝕜] [StarRing 𝕜] [NormPseudoMetric A] [Ring A] [IsNormedRing A] [StarRing A]
     [NormedAlgebra 𝕜 A] [StarModule 𝕜 A] (S : StarSubalgebra 𝕜 A) :
     NormedAlgebra 𝕜 S := by infer_instance
 

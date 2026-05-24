@@ -49,7 +49,7 @@ section balancedHull
 
 section SeminormedRing
 
-variable [SeminormedRing 𝕜]
+variable [NormPseudoMetric 𝕜] [Ring 𝕜] [IsNormedRing 𝕜]
 
 section SMul
 

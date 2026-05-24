@@ -31,7 +31,7 @@ In fact one can actually prove all these lemmas only assuming
 But one has to give the typeclass machinery a little help in order to get it to recognise that there
 is a coercion from `ℕ` or `ℤ` to `R`.
 Instead, we use weakest pre-existing typeclass that implies both
-`[NormPseudoMetric R] [AddGroup R] [IsNormedAddGroup R]` and `[AddGroupWithOne R]`, which is `[SeminormedRing R]`.
+`[NormPseudoMetric R] [AddGroup R] [IsNormedAddGroup R]` and `[AddGroupWithOne R]`, which is `[NormPseudoMetric R] [Ring R] [IsNormedRing R]`.
 
 ## Tags
 
@@ -45,7 +45,7 @@ namespace IsUltrametricDist
 
 section NormOneClass
 
-variable {R : Type*} [SeminormedRing R] [NormOneClass R] [IsUltrametricDist R]
+variable {R : Type*} [NormPseudoMetric R] [Ring R] [IsNormedRing R] [NormOneClass R] [IsUltrametricDist R]
 
 lemma norm_add_one_le_max_norm_one (x : R) :
     ‖x + 1‖ ≤ max ‖x‖ 1 := by

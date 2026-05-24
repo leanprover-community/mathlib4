@@ -47,7 +47,7 @@ variable {𝕜 E : Type*}
 
 section AbsolutelyConvex
 
-variable (𝕜) [SeminormedRing 𝕜] [SMul 𝕜 E] [AddCommMonoid E] [PartialOrder 𝕜]
+variable (𝕜) [NormPseudoMetric 𝕜] [Ring 𝕜] [IsNormedRing 𝕜] [SMul 𝕜 E] [AddCommMonoid E] [PartialOrder 𝕜]
 
 /-- A set is absolutely convex if it is balanced and convex. -/
 def AbsConvex (s : Set E) : Prop := Balanced 𝕜 s ∧ Convex 𝕜 s
@@ -298,7 +298,7 @@ theorem totallyBounded_absConvexHull (hs : TotallyBounded s) :
 
 end
 
-lemma zero_mem_absConvexHull {s : Set E} [SeminormedRing 𝕜] [PartialOrder 𝕜] [AddCommGroup E]
+lemma zero_mem_absConvexHull {s : Set E} [NormPseudoMetric 𝕜] [Ring 𝕜] [IsNormedRing 𝕜] [PartialOrder 𝕜] [AddCommGroup E]
     [Module 𝕜 E] [Nonempty s] : 0 ∈ absConvexHull 𝕜 s :=
   balanced_absConvexHull.zero_mem (Nonempty.mono subset_absConvexHull Set.Nonempty.of_subtype)
 

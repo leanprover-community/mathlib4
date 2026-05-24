@@ -172,7 +172,7 @@ section Seminormed
 open Filter ENNReal
 open scoped Topology NNReal
 
-variable {𝕜 : Type*} (E : Type*) [NontriviallyNormedField 𝕜] [SeminormedRing E]
+variable {𝕜 : Type*} (E : Type*) [NontriviallyNormedField 𝕜] [NormPseudoMetric E] [Ring E] [IsNormedRing E]
     [NormedAlgebra 𝕜 E] (c : ℕ → 𝕜) (n : ℕ)
 
 @[simp]

@@ -68,9 +68,9 @@ variable {α : Type*} {β : Type*} {E : Type*} {F : Type*} {G : Type*} {E' : Typ
 
 variable [Norm E] [Norm F] [Norm G]
 variable [NormPseudoMetric E'] [AddCommGroup E'] [IsNormedAddGroup E'] [NormPseudoMetric F'] [AddCommGroup F'] [IsNormedAddGroup F'] [NormPseudoMetric G'] [AddCommGroup G'] [IsNormedAddGroup G']
-  [NormMetric E''] [AddCommGroup E''] [IsNormedAddGroup E''] [NormMetric F''] [AddCommGroup F''] [IsNormedAddGroup F''] [NormMetric G''] [AddCommGroup G''] [IsNormedAddGroup G''] [SeminormedRing R]
+  [NormMetric E''] [AddCommGroup E''] [IsNormedAddGroup E''] [NormMetric F''] [AddCommGroup F''] [IsNormedAddGroup F''] [NormMetric G''] [AddCommGroup G''] [IsNormedAddGroup G''] [NormPseudoMetric R] [Ring R] [IsNormedRing R]
   [NormPseudoMetric E'''] [AddGroup E'''] [IsNormedAddGroup E''']
-  [SeminormedRing R']
+  [NormPseudoMetric R'] [Ring R'] [IsNormedRing R']
 
 variable {S : Type*} [NormedRing S] [NormMulClass S]
 variable [NormedDivisionRing 𝕜] [NormedDivisionRing 𝕜']

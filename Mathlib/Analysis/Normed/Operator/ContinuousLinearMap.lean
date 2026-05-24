@@ -130,7 +130,7 @@ end
 end SeminormedAddCommGroup
 
 section SeminormedBounded
-variable [SeminormedRing 𝕜] [Ring 𝕜₂] [NormPseudoMetric E] [AddCommGroup E] [IsNormedAddGroup E]
+variable [NormPseudoMetric 𝕜] [Ring 𝕜] [IsNormedRing 𝕜] [Ring 𝕜₂] [NormPseudoMetric E] [AddCommGroup E] [IsNormedAddGroup E]
 variable [Module 𝕜 E] [IsBoundedSMul 𝕜 E]
 
 /-- Reinterpret a linear map `𝕜 →ₗ[𝕜] E` as a continuous linear map. This construction

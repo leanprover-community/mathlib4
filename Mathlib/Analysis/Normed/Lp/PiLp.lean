@@ -813,7 +813,7 @@ theorem edist_eq_of_L2 (x y : PiLp 2 β) :
 
 end L2
 
-instance instIsBoundedSMul [SeminormedRing 𝕜] [∀ i, NormPseudoMetric (β i)] [∀ i, AddCommGroup (β i)] [∀ i, IsNormedAddGroup (β i)]
+instance instIsBoundedSMul [NormPseudoMetric 𝕜] [Ring 𝕜] [IsNormedRing 𝕜] [∀ i, NormPseudoMetric (β i)] [∀ i, AddCommGroup (β i)] [∀ i, IsNormedAddGroup (β i)]
     [∀ i, Module 𝕜 (β i)] [∀ i, IsBoundedSMul 𝕜 (β i)] :
     IsBoundedSMul 𝕜 (PiLp p β) :=
   .of_nnnorm_smul_le fun c f => by
@@ -829,7 +829,7 @@ instance instIsBoundedSMul [SeminormedRing 𝕜] [∀ i, NormPseudoMetric (β i)
       gcongr
       apply nnnorm_smul_le
 
-instance instNormSMulClass [SeminormedRing 𝕜] [∀ i, NormPseudoMetric (β i)] [∀ i, AddCommGroup (β i)] [∀ i, IsNormedAddGroup (β i)]
+instance instNormSMulClass [NormPseudoMetric 𝕜] [Ring 𝕜] [IsNormedRing 𝕜] [∀ i, NormPseudoMetric (β i)] [∀ i, AddCommGroup (β i)] [∀ i, IsNormedAddGroup (β i)]
     [∀ i, Module 𝕜 (β i)] [∀ i, NormSMulClass 𝕜 (β i)] :
     NormSMulClass 𝕜 (PiLp p β) :=
   .of_nnnorm_smul fun c f => by
@@ -1200,7 +1200,7 @@ end Basis
 open Matrix
 
 nonrec theorem basis_toMatrix_basisFun_mul [Fintype ι]
-    {𝕜} [SeminormedCommRing 𝕜] (b : Basis ι 𝕜 (PiLp p fun _ : ι => 𝕜))
+    {𝕜} [NormPseudoMetric 𝕜] [CommRing 𝕜] [IsNormedRing 𝕜] (b : Basis ι 𝕜 (PiLp p fun _ : ι => 𝕜))
     (A : Matrix ι ι 𝕜) :
     b.toMatrix (PiLp.basisFun _ _ _) * A =
       Matrix.of fun i j => b.repr (toLp p (Aᵀ j)) i := by
@@ -1274,7 +1274,7 @@ lemma nnnorm_seminormedAddCommGroupToPi [∀ i, NormPseudoMetric (α i)] [∀ i,
     ‖x‖₊ = ‖toLp p x‖₊ := rfl
 
 lemma isBoundedSMulSeminormedAddCommGroupToPi
-    [∀ i, NormPseudoMetric (α i)] [∀ i, AddCommGroup (α i)] [∀ i, IsNormedAddGroup (α i)] {R : Type*} [SeminormedRing R]
+    [∀ i, NormPseudoMetric (α i)] [∀ i, AddCommGroup (α i)] [∀ i, IsNormedAddGroup (α i)] {R : Type*} [NormPseudoMetric R] [Ring R] [IsNormedRing R]
     [∀ i, Module R (α i)] [∀ i, IsBoundedSMul R (α i)] :
     letI := pseudoMetricSpaceToPi p α
     IsBoundedSMul R (Π i, α i) := by
@@ -1284,7 +1284,7 @@ lemma isBoundedSMulSeminormedAddCommGroupToPi
   · simpa [dist_pseudoMetricSpaceToPi] using dist_pair_smul x y (toLp p z)
 
 lemma normSMulClassSeminormedAddCommGroupToPi
-    [∀ i, NormPseudoMetric (α i)] [∀ i, AddCommGroup (α i)] [∀ i, IsNormedAddGroup (α i)] {R : Type*} [SeminormedRing R]
+    [∀ i, NormPseudoMetric (α i)] [∀ i, AddCommGroup (α i)] [∀ i, IsNormedAddGroup (α i)] {R : Type*} [NormPseudoMetric R] [Ring R] [IsNormedRing R]
     [∀ i, Module R (α i)] [∀ i, NormSMulClass R (α i)] :
     letI := seminormedAddCommGroupToPi p α
     NormSMulClass R (Π i, α i) := by

@@ -34,7 +34,7 @@ section MultiplicationLinear
 
 section NonUnital
 
-variable (𝕜) (R : Type*) [NonUnitalSeminormedRing R]
+variable (𝕜) (R : Type*) [NormPseudoMetric R] [NonUnitalRing R] [IsNormedRing R]
 variable [NormedSpace 𝕜 R] [IsScalarTower 𝕜 R R] [SMulCommClass 𝕜 R R]
 
 /-- Multiplication in a non-unital normed algebra as a continuous bilinear map. -/
@@ -111,7 +111,7 @@ class _root_.RegularNormedAlgebra : Prop where
 
 /-- Every (unital) normed algebra such that `‖1‖ = 1` is a `RegularNormedAlgebra`. -/
 instance _root_.NormedAlgebra.instRegularNormedAlgebra {𝕜 R : Type*} [NontriviallyNormedField 𝕜]
-    [SeminormedRing R] [NormedAlgebra 𝕜 R] [NormOneClass R] : RegularNormedAlgebra 𝕜 R where
+    [NormPseudoMetric R] [Ring R] [IsNormedRing R] [NormedAlgebra 𝕜 R] [NormOneClass R] : RegularNormedAlgebra 𝕜 R where
   isometry_mul' := AddMonoidHomClass.isometry_of_norm (mul 𝕜 R) <|
     fun x => le_antisymm (opNorm_mul_apply_le _ _ _) <| by
       convert ratio_le_opNorm ((mul 𝕜 R) x) (1 : R)
@@ -145,7 +145,7 @@ theorem coe_mulₗᵢ : ⇑(mulₗᵢ 𝕜 R) = mul 𝕜 R :=
 end NonUnital
 
 section NonUnitalSeminormedCommRing
-variable {R : Type*} [NonUnitalSeminormedCommRing R] [NormedSpace 𝕜 R] [IsScalarTower 𝕜 R R]
+variable {R : Type*} [NormPseudoMetric R] [NonUnitalCommRing R] [IsNormedRing R] [NormedSpace 𝕜 R] [IsScalarTower 𝕜 R R]
   [SMulCommClass 𝕜 R R]
 
 @[simp] lemma flip_mul : (ContinuousLinearMap.mul 𝕜 R).flip = .mul 𝕜 R := by ext; simp [mul_comm]
@@ -183,7 +183,7 @@ end MultiplicationLinear
 
 section SMulLinear
 
-variable (𝕜) (R : Type*) [SeminormedRing R]
+variable (𝕜) (R : Type*) [NormPseudoMetric R] [Ring R] [IsNormedRing R]
 variable [NormedAlgebra 𝕜 R] [Module R E] [IsBoundedSMul R E] [IsScalarTower 𝕜 R E]
 
 /-- Scalar multiplication as a continuous bilinear map. -/

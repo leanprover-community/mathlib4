@@ -72,17 +72,17 @@ section Algebra
 
 variable (A : Type*)
 
-instance [SeminormedRing A] : IsNormedRing (Completion A) where
+instance [NormPseudoMetric A] [Ring A] [IsNormedRing A] : IsNormedRing (Completion A) where
   norm_mul_le x y := by
     induction x, y using induction_on₂ with
     | hp => apply isClosed_le <;> fun_prop
     | ih x y => simpa only [← coe_mul, norm_coe] using norm_mul_le x y
 
-example [SeminormedRing A] : NormedRing (Completion A) where
+example [NormPseudoMetric A] [Ring A] [IsNormedRing A] : NormedRing (Completion A) where
 
-example [SeminormedCommRing A] : NormedCommRing (Completion A) where
+example [NormPseudoMetric A] [CommRing A] [IsNormedRing A] : NormedCommRing (Completion A) where
 
-instance [NormedField 𝕜] [SeminormedCommRing A] [NormedAlgebra 𝕜 A] :
+instance [NormedField 𝕜] [NormPseudoMetric A] [CommRing A] [IsNormedRing A] [NormedAlgebra 𝕜 A] :
     NormedAlgebra 𝕜 (Completion A) where
   norm_smul_le := norm_smul_le
 

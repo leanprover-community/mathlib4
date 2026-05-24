@@ -209,12 +209,12 @@ section NormedSpace
 attribute [local instance] Matrix.normPseudoMetric Matrix.isNormedAddGroup
 
 /-- This applies to the sup norm of sup norm. -/
-protected theorem isBoundedSMul [SeminormedRing R] [NormPseudoMetric α] [AddCommGroup α] [IsNormedAddGroup α] [Module R α]
+protected theorem isBoundedSMul [NormPseudoMetric R] [Ring R] [IsNormedRing R] [NormPseudoMetric α] [AddCommGroup α] [IsNormedAddGroup α] [Module R α]
     [IsBoundedSMul R α] : IsBoundedSMul R (Matrix m n α) :=
   Pi.instIsBoundedSMul
 
 /-- This applies to the sup norm of sup norm. -/
-protected theorem normSMulClass [SeminormedRing R] [NormPseudoMetric α] [AddCommGroup α] [IsNormedAddGroup α] [Module R α]
+protected theorem normSMulClass [NormPseudoMetric R] [Ring R] [IsNormedRing R] [NormPseudoMetric α] [AddCommGroup α] [IsNormedAddGroup α] [Module R α]
     [NormSMulClass R α] : NormSMulClass R (Matrix m n α) :=
   Pi.instNormSMulClass
 
@@ -302,7 +302,7 @@ protected def linftyOpNormedAddCommGroup [NormMetric α] [AddCommGroup α] [IsNo
 /-- This applies to the sup norm of L1 norm. -/
 @[local instance]
 protected theorem linftyOpIsBoundedSMul
-    [SeminormedRing R] [NormPseudoMetric α] [AddCommGroup α] [IsNormedAddGroup α] [Module R α] [IsBoundedSMul R α] :
+    [NormPseudoMetric R] [Ring R] [IsNormedRing R] [NormPseudoMetric α] [AddCommGroup α] [IsNormedAddGroup α] [Module R α] [IsBoundedSMul R α] :
     IsBoundedSMul R (Matrix m n α) :=
   letI := PiLp.pseudoMetricSpaceToPi 1 (fun _ : n ↦ α)
   letI := PiLp.isBoundedSMulSeminormedAddCommGroupToPi (R := R) 1 (fun _ : n ↦ α)
@@ -311,7 +311,7 @@ protected theorem linftyOpIsBoundedSMul
 /-- This applies to the sup norm of L1 norm. -/
 @[local instance]
 protected theorem linftyOpNormSMulClass
-    [SeminormedRing R] [NormPseudoMetric α] [AddCommGroup α] [IsNormedAddGroup α] [Module R α] [NormSMulClass R α] :
+    [NormPseudoMetric R] [Ring R] [IsNormedRing R] [NormPseudoMetric α] [AddCommGroup α] [IsNormedAddGroup α] [Module R α] [NormSMulClass R α] :
     NormSMulClass R (Matrix m n α) :=
   letI := PiLp.seminormedAddCommGroupToPi 1 (fun _ : n ↦ α)
   letI := PiLp.normSMulClassSeminormedAddCommGroupToPi (R := R) 1 (fun _ : n ↦ α)
@@ -373,7 +373,7 @@ end SeminormedAddCommGroup
 
 section NonUnitalSeminormedRing
 
-variable [NonUnitalSeminormedRing α]
+variable [NormPseudoMetric α] [NonUnitalRing α] [IsNormedRing α]
 
 theorem linfty_opNNNorm_mul (A : Matrix l m α) (B : Matrix m n α) : ‖A * B‖₊ ≤ ‖A‖₊ * ‖B‖₊ := by
   simp_rw [linfty_opNNNorm_def, Matrix.mul_apply]
@@ -409,7 +409,7 @@ end NonUnitalSeminormedRing
 non-unital ring. Not declared as an instance because there are several natural choices for defining
 the norm of a matrix. -/
 @[local instance]
-protected lemma linftyOpIsNormedRing [NonUnitalSeminormedRing α] :
+protected lemma linftyOpIsNormedRing [NormPseudoMetric α] [NonUnitalRing α] [IsNormedRing α] :
     IsNormedRing (Matrix n n α) where
   norm_mul_le := linfty_opNorm_mul
 
@@ -417,19 +417,19 @@ protected lemma linftyOpIsNormedRing [NonUnitalSeminormedRing α] :
 non-unital ring. Not declared as an instance because there are several natural choices for defining
 the norm of a matrix. -/
 @[instance_reducible]
-protected def linftyOpNonUnitalSemiNormedRing [NonUnitalSeminormedRing α] :
+protected def linftyOpNonUnitalSemiNormedRing [NormPseudoMetric α] [NonUnitalRing α] [IsNormedRing α] :
     NonUnitalSeminormedRing (Matrix n n α) where
 
 /-- The `L₁-L∞` norm preserves one on non-empty matrices. Note this is safe as an instance, as it
 carries no data. -/
-instance linfty_opNormOneClass [SeminormedRing α] [NormOneClass α] [DecidableEq n] [Nonempty n] :
+instance linfty_opNormOneClass [NormPseudoMetric α] [Ring α] [IsNormedRing α] [NormOneClass α] [DecidableEq n] [Nonempty n] :
     NormOneClass (Matrix n n α) where norm_one := (linfty_opNorm_diagonal _).trans norm_one
 
 /-- Seminormed ring instance (using sup norm of L1 norm) for matrices over a seminormed ring. Not
 declared as an instance because there are several natural choices for defining the norm of a
 matrix. -/
 @[instance_reducible]
-protected def linftyOpSemiNormedRing [SeminormedRing α] [DecidableEq n] :
+protected def linftyOpSemiNormedRing [NormPseudoMetric α] [Ring α] [IsNormedRing α] [DecidableEq n] :
     SeminormedRing (Matrix n n α) where
 
 /-- Normed non-unital ring instance (using sup norm of L1 norm) for matrices over a normed
@@ -449,7 +449,7 @@ protected def linftyOpNormedRing [NormedRing α] [DecidableEq n] : NormedRing (M
 declared as an instance because there are several natural choices for defining the norm of a
 matrix. -/
 @[instance_reducible, local instance]
-protected def linftyOpNormedAlgebra [NormedField R] [SeminormedRing α] [NormedAlgebra R α]
+protected def linftyOpNormedAlgebra [NormedField R] [NormPseudoMetric α] [Ring α] [IsNormedRing α] [NormedAlgebra R α]
     [DecidableEq n] : NormedAlgebra R (Matrix n n α) :=
   { Matrix.linftyOpNormedSpace, Matrix.instAlgebra with }
 
@@ -582,7 +582,7 @@ def frobeniusNormedAddCommGroup [NormMetric α] [AddCommGroup α] [IsNormedAddGr
 
 /-- This applies to the Frobenius norm. -/
 @[local instance]
-theorem frobeniusIsBoundedSMul [SeminormedRing R] [NormPseudoMetric α] [AddCommGroup α] [IsNormedAddGroup α] [Module R α]
+theorem frobeniusIsBoundedSMul [NormPseudoMetric R] [Ring R] [IsNormedRing R] [NormPseudoMetric α] [AddCommGroup α] [IsNormedAddGroup α] [Module R α]
     [IsBoundedSMul R α] :
     IsBoundedSMul R (Matrix m n α) :=
   letI := PiLp.seminormedAddCommGroupToPi 2 (fun _ : n ↦ α)
@@ -591,7 +591,7 @@ theorem frobeniusIsBoundedSMul [SeminormedRing R] [NormPseudoMetric α] [AddComm
 
 /-- This applies to the Frobenius norm. -/
 @[local instance]
-theorem frobeniusNormSMulClass [SeminormedRing R] [NormPseudoMetric α] [AddCommGroup α] [IsNormedAddGroup α] [Module R α]
+theorem frobeniusNormSMulClass [NormPseudoMetric R] [Ring R] [IsNormedRing R] [NormPseudoMetric α] [AddCommGroup α] [IsNormedAddGroup α] [Module R α]
     [NormSMulClass R α] :
     NormSMulClass R (Matrix m n α) :=
   letI := PiLp.seminormedAddCommGroupToPi 2 (fun _ : n ↦ α)

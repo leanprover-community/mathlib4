@@ -94,7 +94,7 @@ open Nat Real
 
 section Seminormed
 
-variable [SeminormedRing R]
+variable [NormPseudoMetric R] [Ring R] [IsNormedRing R]
 
 /-- The function `ℕ → ℝ` sending `n` to `‖ p.coeff n ‖^(1/(p.natDegree - n : ℝ))`, if
   `n < p.natDegree`, or to `0` otherwise. -/

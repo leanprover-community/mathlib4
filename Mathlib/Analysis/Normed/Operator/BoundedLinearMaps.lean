@@ -122,7 +122,7 @@ theorem snd : IsBoundedLinearMap 𝕜 fun x : E × F => x.2 := by
   rw [one_mul]
   exact le_max_right _ _
 
-theorem smul {𝕜' : Type*} (c : 𝕜') [SeminormedRing 𝕜'] [Module 𝕜' F] [IsBoundedSMul 𝕜' F]
+theorem smul {𝕜' : Type*} (c : 𝕜') [NormPseudoMetric 𝕜'] [Ring 𝕜'] [IsNormedRing 𝕜'] [Module 𝕜' F] [IsBoundedSMul 𝕜' F]
     [SMulCommClass 𝕜 𝕜' F] (hf : IsBoundedLinearMap 𝕜 f) : IsBoundedLinearMap 𝕜 (c • f) :=
   let ⟨hlf, M, _, hM⟩ := hf
   (c • hlf.mk' f).isLinear.with_bound (‖c‖ * M) fun x =>
@@ -278,7 +278,7 @@ end Semiring
 
 section CommSemiring
 
-variable {𝕜 A : Type*} [CommSemiring 𝕜] [SeminormedRing A] [Algebra 𝕜 A]
+variable {𝕜 A : Type*} [CommSemiring 𝕜] [NormPseudoMetric A] [Ring A] [IsNormedRing A] [Algebra 𝕜 A]
 
 /-- Scalar multiplication (for a normed `𝕜`-algebra acting on a normed `𝕜`-module) as a bounded
 bilinear map. -/
@@ -426,7 +426,7 @@ theorem IsBoundedBilinearMap.deriv_apply (h : IsBoundedBilinearMap 𝕜 f) (p q 
 variable (𝕜) in
 /-- The function `ContinuousLinearMap.mulLeftRight : 𝕜' × 𝕜' → (𝕜' →L[𝕜] 𝕜')` is a bounded
 bilinear map. -/
-theorem ContinuousLinearMap.mulLeftRight_isBoundedBilinear (𝕜' : Type*) [SeminormedRing 𝕜']
+theorem ContinuousLinearMap.mulLeftRight_isBoundedBilinear (𝕜' : Type*) [NormPseudoMetric 𝕜'] [Ring 𝕜'] [IsNormedRing 𝕜']
     [NormedAlgebra 𝕜 𝕜'] :
     IsBoundedBilinearMap 𝕜 fun p : 𝕜' × 𝕜' => ContinuousLinearMap.mulLeftRight 𝕜 𝕜' p.1 p.2 :=
   (ContinuousLinearMap.mulLeftRight 𝕜 𝕜').isBoundedBilinearMap

@@ -206,7 +206,7 @@ theorem sub (hf : AbsolutelyContinuousOnInterval f a b)
     AbsolutelyContinuousOnInterval (f - g) a b := by
   simpa [sub_eq_add_neg] using hf.add (hg.neg)
 
-theorem const_smul {M : Type*} [SeminormedRing M] [Module M F] [NormSMulClass M F]
+theorem const_smul {M : Type*} [NormPseudoMetric M] [Ring M] [IsNormedRing M] [Module M F] [NormSMulClass M F]
     (α : M) (hf : AbsolutelyContinuousOnInterval f a b) :
     AbsolutelyContinuousOnInterval (fun x ↦ α • f x) a b := by
   apply squeeze_zero (fun t ↦ ?_) (fun t ↦ ?_) (by simpa using hf.const_mul ‖α‖)
@@ -254,7 +254,7 @@ theorem exists_bound (hf : AbsolutelyContinuousOnInterval f a b) :
 /-- If `f` and `g` are absolutely continuous on `uIcc a b`, then `f • g` is absolutely continuous
 on `uIcc a b`. -/
 @[to_fun]
-theorem smul {M : Type*} [SeminormedRing M] [Module M F] [NormSMulClass M F]
+theorem smul {M : Type*} [NormPseudoMetric M] [Ring M] [IsNormedRing M] [Module M F] [NormSMulClass M F]
     {f : ℝ → M} {g : ℝ → F}
     (hf : AbsolutelyContinuousOnInterval f a b) (hg : AbsolutelyContinuousOnInterval g a b) :
     AbsolutelyContinuousOnInterval (f • g) a b := by
