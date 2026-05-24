@@ -68,17 +68,19 @@ theorem csSup_mem {α} [ConditionallyCompleteLinearOrder α] {s t : Set α}
     (hs : IsClub s) (ht : t ⊆ s) (ht₀ : t.Nonempty) (ht₁ : BddAbove t) : sSup t ∈ s :=
   hs.isLUB_mem ht ht₀ (isLUB_csSup ht₀ ht₁)
 
-theorem inter_Ici (hs : IsClub s) (x : α) : IsClub (s ∩ Ici x) :=
-  ⟨hs.dirSupClosed.inter (dirSupClosed_Ici x), hs.isCofinal.inter_Ici x⟩
+theorem inter_Ici (hs : IsClub s) (x : α) : IsClub (s ∩ Ici x) where
+  dirSupClosed := hs.dirSupClosed.inter (.Ici x)
+  isCofinal := hs.isCofinal.inter_of_isUpperSet_left (isUpperSet_Ici x) nonempty_Ici
 
-theorem Ici_inter (hs : IsClub s) (x : α) : IsClub (Ici x ∩ s) :=
-  ⟨(dirSupClosed_Ici x).inter hs.dirSupClosed, hs.isCofinal.Ici_inter x⟩
+theorem Ici_inter (hs : IsClub s) (x : α) : IsClub (Ici x ∩ s) := by
+  rw [inter_comm]; exact hs.inter_Ici x
 
-theorem inter_Ioi [NoMaxOrder α] (hs : IsClub s) (x : α) : IsClub (s ∩ Ioi x) :=
-  ⟨hs.dirSupClosed.inter (dirSupClosed_Ioi x), hs.isCofinal.inter_Ioi x⟩
+theorem inter_Ioi [NoMaxOrder α] (hs : IsClub s) (x : α) : IsClub (s ∩ Ioi x) where
+  dirSupClosed := hs.dirSupClosed.inter (.Ioi x)
+  isCofinal := hs.isCofinal.inter_of_isUpperSet_left (isUpperSet_Ioi x) nonempty_Ioi
 
-theorem Ioi_inter [NoMaxOrder α] (hs : IsClub s) (x : α) : IsClub (Ioi x ∩ s) :=
-  ⟨(dirSupClosed_Ioi x).inter hs.dirSupClosed, hs.isCofinal.Ioi_inter x⟩
+theorem Ioi_inter [NoMaxOrder α] (hs : IsClub s) (x : α) : IsClub (Ioi x ∩ s) := by
+  rw [inter_comm]; exact hs.inter_Ioi x
 
 @[simp]
 theorem _root_.isClub_Ici (x : α) : IsClub (Ici x) := by
