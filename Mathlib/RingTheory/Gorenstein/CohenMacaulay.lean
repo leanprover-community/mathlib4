@@ -732,7 +732,7 @@ lemma residueField_ext_subsingleton_of_no_insert (p : Ideal R) [p.IsPrime] (lt :
   have : IsLocalizedModule.AtPrime p g :=
     IsLocalizedModule.of_linearEquiv p.primeCompl f _
   let h : (ModuleCat.of R R) →ₗ[R] (ModuleCat.of Rp Rp) := Algebra.linearMap R Rp
-  have isl := Ext.isLocalizedModule' p.primeCompl (Localization.AtPrime p) g
+  have isl := Ext.isLocalizedModule p.primeCompl (Localization.AtPrime p) g
     (IsLocalizedModule.of_linearEquiv p.primeCompl f _) h inferInstance k
   exact isl.subsingleton_of_subsingleton
 
@@ -792,9 +792,9 @@ lemma isGorensteinLocalRing_of_exists (k : ℕ) (gt : ringKrullDim R < k)
       obtain ⟨m, hm⟩ := exist_nat_eq' Rq
       have mle : m ≤ n := by
         rw [← Order.lt_add_one_iff, ← Nat.cast_lt (α := WithBot ℕ∞), ← hm, ← hn,
-          IsLocalization.AtPrime.ringKrullDim_eq_height q, Ideal.height_eq_primeHeight,
-          ← maximalIdeal_primeHeight_eq_ringKrullDim, WithBot.coe_lt_coe]
-        exact Ideal.primeHeight_strict_mono qlt
+          IsLocalization.AtPrime.ringKrullDim_eq_height q,
+          ← maximalIdeal_height_eq_ringKrullDim, WithBot.coe_lt_coe]
+        exact Ideal.height_strict_mono_of_isPrime qlt
       simp only [hn, Nat.cast_lt] at gt
       have mlt : m < k - 1 := by omega
       have isg : IsGorensteinLocalRing Rq := by
@@ -809,7 +809,7 @@ lemma isGorensteinLocalRing_of_exists (k : ℕ) (gt : ringKrullDim R < k)
       let Mq := ModuleCat.of Rq (LocalizedModule.AtPrime q M)
       let g : M →ₗ[R] Mq := LocalizedModule.mkLinearMap q.primeCompl M
       let h : (ModuleCat.of R R) →ₗ[R] (ModuleCat.of Rq Rq) := Algebra.linearMap R Rq
-      have isl := Ext.isLocalizedModule' q.primeCompl Rq g inferInstance h inferInstance k
+      have isl := Ext.isLocalizedModule q.primeCompl Rq g inferInstance h inferInstance k
       have : Subsingleton (Ext Mq (ModuleCat.of Rq Rq) k) := injlt.subsingleton _ k k (le_refl _) Mq
       absurd qmem
       simp only [notMem_support_iff]
