@@ -104,7 +104,7 @@ lemma Polynomial.localization_at_comap_maximal_isGorensteinLocalRing_of_isGorens
     ((Localization.AtPrime p) ⧸ (maximalIdeal R).map (algebraMap R (Localization.AtPrime p))))
     (ModuleCat.of (Localization.AtPrime p) (Localization.AtPrime p)) i) := by
     have := hn i hi
-    apply (Ext.isBaseChange' (Localization.AtPrime p)
+    apply (Ext.isBaseChange (Localization.AtPrime p)
       _ _ f isb1 g (IsBaseChange.linearMap R (Localization.AtPrime p)) i).equiv.symm.subsingleton
   have lep : (maximalIdeal R).map C ≤ p := by simpa [← max] using map_comap_le
   have Ker : RingHom.ker (Polynomial.mapRingHom (residue R)) = (maximalIdeal R).map C := by
