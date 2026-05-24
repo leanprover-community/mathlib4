@@ -23,7 +23,7 @@ open Set
 
 section ESeminormedAddMonoid
 
-variable {α ε : Type*} [TopologicalSpace ε] [ESeminormedAddMonoid ε]
+variable {α ε : Type*} [TopologicalSpace ε] [ContinuousENorm ε] [AddMonoid ε] [IsESeminormedAddMonoid ε]
   {s t : Set α} (f : α → ε) (a : α)
 
 lemma enorm_indicator_eq_indicator_enorm :

@@ -36,7 +36,7 @@ open scoped ENNReal
 namespace MeasureTheory.VectorMeasure
 
 variable {X V : Type*} {mX : MeasurableSpace X}
-  [TopologicalSpace V] [ENormedAddCommMonoid V] [T2Space V]
+  [TopologicalSpace V] [ContinuousENorm V] [AddCommMonoid V] [IsENormedAddMonoid V] [T2Space V]
 
 @[simp]
 lemma variation_apply (μ : VectorMeasure X V) (s : Set X) :
