@@ -44,7 +44,7 @@ noncomputable def quotIdealMapEquivTensorQuotAux :
     rfl
 
 private lemma quotIdealMapEquivTensorQuotAux_mk (b : B) :
-    (quotIdealMapEquivTensorQuotAux B I) b = b ⊗ₜ[A] 1 :=
+    (quotIdealMapEquivTensorQuotAux B I) (Ideal.Quotient.mk _ b) = b ⊗ₜ[A] 1 :=
   rfl
 
 /-- `B ⊗[A] (A ⧸ I)` is isomorphic as a `B`-algebra to `B ⧸ I B`. -/
@@ -59,12 +59,13 @@ noncomputable def quotIdealMapEquivTensorQuot :
 
 @[simp]
 lemma quotIdealMapEquivTensorQuot_mk (b : B) :
-    quotIdealMapEquivTensorQuot B I b = b ⊗ₜ[A] 1 :=
+    quotIdealMapEquivTensorQuot B I (Ideal.Quotient.mk _ b) = b ⊗ₜ[A] 1 :=
   rfl
 
 @[simp]
 lemma quotIdealMapEquivTensorQuot_symm_tmul (b : B) (a : A) :
-    (quotIdealMapEquivTensorQuot B I).symm (b ⊗ₜ[A] a) = Submodule.Quotient.mk (a • b) :=
+    (quotIdealMapEquivTensorQuot B I).symm (b ⊗ₜ[A] Ideal.Quotient.mk _ a) =
+      Ideal.Quotient.mk _ (a • b) :=
   rfl
 
 /-- `(A ⧸ I) ⊗[A] B` is isomorphic as an `A ⧸ I`-algebra to `B ⧸ I B`. -/
@@ -82,7 +83,7 @@ noncomputable def quotIdealMapEquivQuotTensor :
 
 @[simp]
 lemma quotIdealMapEquivQuotTensor_mk (b : B) :
-    quotIdealMapEquivQuotTensor B I b = 1 ⊗ₜ[A] b :=
+    quotIdealMapEquivQuotTensor B I (Ideal.Quotient.mk _ b) = 1 ⊗ₜ[A] b :=
   rfl
 
 end
