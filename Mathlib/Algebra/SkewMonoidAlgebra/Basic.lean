@@ -352,7 +352,7 @@ instance : AddCommMonoid (SkewMonoidAlgebra k G) where
 section sum
 
 instance [DecidableEq G] [DecidableEq k] : DecidableEq (SkewMonoidAlgebra k G) :=
-  fast_instance% Equiv.decidableEq toFinsuppAddEquiv.toEquiv
+  Equiv.decidableEq toFinsuppAddEquiv.toEquiv
 
 /-- `sum f g` is the sum of `g a (f.coeff a)` over the support of `f`. -/
 def sum {N : Type*} [AddCommMonoid N] (f : SkewMonoidAlgebra k G) (g : G → k → N) : N :=

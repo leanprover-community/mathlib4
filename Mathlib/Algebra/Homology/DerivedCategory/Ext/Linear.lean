@@ -37,7 +37,7 @@ variable {R : Type t} [Ring R] {C : Type u} [Category.{v} C] [Abelian C] [Linear
 variable {X Y : C} {n : ℕ}
 
 noncomputable instance : Module R (Ext X Y n) :=
-  letI := HasDerivedCategory.standard C
+  fast_instance% letI := HasDerivedCategory.standard C
   Equiv.module R homEquiv
 
 lemma smul_eq_comp_mk₀ (x : Ext X Y n) (r : R) :

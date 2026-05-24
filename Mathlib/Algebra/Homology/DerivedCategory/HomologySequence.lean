@@ -91,7 +91,7 @@ instance (n : ℤ) : (homologyFunctor C n).IsHomological :=
 /-- The functors `homologyFunctor C n : DerivedCategory C ⥤ C` for all `n : ℤ` are part
 of a "shift sequence", i.e. they satisfy compatibilities with shifts. -/
 noncomputable instance : (homologyFunctor C 0).ShiftSequence ℤ :=
-  Functor.ShiftSequence.induced (homologyFunctorFactorsh C 0) ℤ
+  fast_instance% Functor.ShiftSequence.induced (homologyFunctorFactorsh C 0) ℤ
     (homologyFunctor C) (homologyFunctorFactorsh C)
 
 lemma shift_homologyFunctor (n : ℤ) :

@@ -278,10 +278,10 @@ end Preorder
 variable [NonAssocSemiring β]
 
 instance [Preorder β] : Preorder (OrderRingHom α β) :=
-  Preorder.lift ((⇑) : _ → α → β)
+  fast_instance% Preorder.lift ((⇑) : _ → α → β)
 
 instance [PartialOrder β] : PartialOrder (OrderRingHom α β) :=
-  PartialOrder.lift _ DFunLike.coe_injective
+  fast_instance% PartialOrder.lift _ DFunLike.coe_injective
 
 end OrderRingHom
 

@@ -271,7 +271,7 @@ def coeFnAddMonoidHom : LieDerivation R L M →+ L → M where
 lemma coeFnAddMonoidHom_apply (D : LieDerivation R L M) : coeFnAddMonoidHom D = D := rfl
 
 instance : DistribMulAction S (LieDerivation R L M) :=
-  Function.Injective.distribMulAction coeFnAddMonoidHom coe_injective coe_smul
+  fast_instance% Function.Injective.distribMulAction coeFnAddMonoidHom coe_injective coe_smul
 
 instance [SMul S T] [IsScalarTower S T M] : IsScalarTower S T (LieDerivation R L M) :=
   ⟨fun _ _ _ => ext fun _ => smul_assoc _ _ _⟩
@@ -283,7 +283,7 @@ end Scalar
 
 instance instModule {S : Type*} [Semiring S] [Module S M] [SMulCommClass R S M]
     [SMulBracketCommClass S L M] : Module S (LieDerivation R L M) :=
-  Function.Injective.module S coeFnAddMonoidHom coe_injective coe_smul
+  fast_instance% Function.Injective.module S coeFnAddMonoidHom coe_injective coe_smul
 
 end
 

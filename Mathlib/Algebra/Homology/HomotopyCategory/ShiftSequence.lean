@@ -185,7 +185,7 @@ variable [CategoryWithHomology C]
 
 noncomputable instance :
     (homologyFunctor C (ComplexShape.up ℤ) 0).ShiftSequence ℤ :=
-  Functor.ShiftSequence.induced (homologyFunctorFactors C (ComplexShape.up ℤ) 0) ℤ
+  fast_instance% Functor.ShiftSequence.induced (homologyFunctorFactors C (ComplexShape.up ℤ) 0) ℤ
     (homologyFunctor C (ComplexShape.up ℤ))
     (homologyFunctorFactors C (ComplexShape.up ℤ))
 

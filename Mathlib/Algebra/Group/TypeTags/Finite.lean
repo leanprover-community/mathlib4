@@ -32,10 +32,10 @@ instance [h : Infinite α] : Infinite (Additive α) := h
 instance [h : Infinite α] : Infinite (Multiplicative α) := h
 
 instance Additive.fintype : ∀ [Fintype α], Fintype (Additive α) :=
-  Fintype.ofEquiv α Additive.ofMul
+  fast_instance% Fintype.ofEquiv α Additive.ofMul
 
 instance Multiplicative.fintype : ∀ [Fintype α], Fintype (Multiplicative α) :=
-  Fintype.ofEquiv α Multiplicative.ofAdd
+  fast_instance% Fintype.ofEquiv α Multiplicative.ofAdd
 
 @[simp] lemma Fintype.card_multiplicative (α : Type*) [Fintype α] :
     card (Multiplicative α) = card α := Finset.card_map _

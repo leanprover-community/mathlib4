@@ -50,7 +50,7 @@ instance isOrderedAddMonoid [AddCommMonoid α] [PartialOrder α] [IsOrderedAddMo
 
 instance isOrderedCancelAddMonoid [AddCommMonoid α] [PartialOrder α] [IsOrderedCancelAddMonoid α] :
     IsOrderedCancelAddMonoid { x : α // 0 ≤ x } :=
-  Function.Injective.isOrderedCancelAddMonoid _ Nonneg.coe_add .rfl
+  fast_instance% Function.Injective.isOrderedCancelAddMonoid _ Nonneg.coe_add .rfl
 
 instance isOrderedRing [Semiring α] [PartialOrder α] [IsOrderedRing α] :
     IsOrderedRing { x : α // 0 ≤ x } :=

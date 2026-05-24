@@ -324,7 +324,7 @@ instance : IsScalarTower G (CauSeq β abv) (CauSeq β abv) :=
 end SMul
 
 instance addGroup : AddGroup (CauSeq β abv) :=
-  Function.Injective.addGroup Subtype.val Subtype.val_injective rfl coe_add coe_neg coe_sub
+  fast_instance% Function.Injective.addGroup Subtype.val Subtype.val_injective rfl coe_add coe_neg coe_sub
     (fun _ _ => coe_smul _ _) fun _ _ => coe_smul _ _
 
 instance instNatCast : NatCast (CauSeq β abv) := ⟨fun n => const n⟩
