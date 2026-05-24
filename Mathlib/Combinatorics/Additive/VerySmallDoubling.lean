@@ -166,7 +166,7 @@ def invMulSubgroup (A : Finset G) (h : #(A * A) < (3 / 2 : ℚ) * #A) : Subgroup
   mul_mem' := by
     norm_cast
     have h₁ x (hx : x ∈ A) y (hy : y ∈ A) : (1 / 2 : ℚ) * #A < #(x • A ∩ y • A) := by
-      convert lt_card_smul_inter_smul (by simpa using Rat.cast_strictMono (K := ℝ) h) hx hy
+      convert! lt_card_smul_inter_smul (by simpa using Rat.cast_strictMono (K := ℝ) h) hx hy
       norm_num
       simp [← Rat.cast_lt (K := ℝ)]
     intro a c ha hc
@@ -210,7 +210,7 @@ private lemma weak_invMulSubgroup_bound (h : #(A * A) < (3 / 2 : ℚ) * #A) :
     #(A⁻¹ * A) < 2 * #A := by
   have h₀ : A.Nonempty := nonempty_of_doubling h
   have h₁ a (ha : a ∈ A⁻¹ * A) : (1 / 2 : ℚ) * #A < #{xy ∈ A ×ˢ A | xy.1 * xy.2⁻¹ = a} := by
-    convert lt_card_mul_inv_eq (by simpa using Rat.cast_strictMono (K := ℝ) h) ha
+    convert! lt_card_mul_inv_eq (by simpa using Rat.cast_strictMono (K := ℝ) h) ha
     norm_num
     simp [← Rat.cast_lt (K := ℝ)]
   have h₂ : ∀ x ∈ A ×ˢ A, (fun ⟨x, y⟩ => x * y⁻¹) x ∈ A⁻¹ * A := by
