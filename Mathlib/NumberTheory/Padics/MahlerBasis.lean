@@ -151,7 +151,7 @@ namespace PadicInt
 section norm_fwdDiff
 
 variable {p : ℕ} [hp : Fact p.Prime] {E : Type*}
-  [NormedAddCommGroup E] [Module ℤ_[p] E] [IsBoundedSMul ℤ_[p] E] [IsUltrametricDist E]
+  [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [Module ℤ_[p] E] [IsBoundedSMul ℤ_[p] E] [IsUltrametricDist E]
 
 /--
 Second step in Bojanić's proof of Mahler's theorem (equation (11) of [bojanic74]): show that values
@@ -244,7 +244,7 @@ end norm_fwdDiff
 
 section mahler_coeff
 
-variable {E : Type*} [NormedAddCommGroup E] [Module ℤ_[p] E] [IsBoundedSMul ℤ_[p] E]
+variable {E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [Module ℤ_[p] E] [IsBoundedSMul ℤ_[p] E]
   (a : E) (n : ℕ) (x : ℤ_[p])
 
 /--

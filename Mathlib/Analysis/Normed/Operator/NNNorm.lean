@@ -123,7 +123,7 @@ end ContinuousLinearEquiv
 end NontriviallySemiNormed
 
 section DenselyNormedDomain
-variable [NormedAddCommGroup E] [NormPseudoMetric F] [AddCommGroup F] [IsNormedAddGroup F]
+variable [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormPseudoMetric F] [AddCommGroup F] [IsNormedAddGroup F]
 variable [DenselyNormedField 𝕜] [NontriviallyNormedField 𝕜₂]
 variable [NormedSpace 𝕜 E] [NormedSpace 𝕜₂ F] {σ₁₂ : 𝕜 →+* 𝕜₂} [RingHomIsometric σ₁₂]
 

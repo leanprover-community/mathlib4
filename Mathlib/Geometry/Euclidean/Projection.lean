@@ -32,8 +32,8 @@ noncomputable section
 namespace EuclideanGeometry
 
 variable {𝕜 : Type*} {V : Type*} {P : Type*} [RCLike 𝕜]
-variable [NormedAddCommGroup V] [InnerProductSpace 𝕜 V]
-variable {V₂ P₂ : Type*} [NormedAddCommGroup V₂] [InnerProductSpace 𝕜 V₂]
+variable [NormMetric V] [AddCommGroup V] [IsNormedAddGroup V] [InnerProductSpace 𝕜 V]
+variable {V₂ P₂ : Type*} [NormMetric V₂] [AddCommGroup V₂] [IsNormedAddGroup V₂] [InnerProductSpace 𝕜 V₂]
 
 open AffineSubspace
 
@@ -574,8 +574,8 @@ namespace Simplex
 open EuclideanGeometry
 
 variable {𝕜 : Type*} {V : Type*} {P : Type*} [RCLike 𝕜]
-variable [NormedAddCommGroup V] [InnerProductSpace 𝕜 V]
-variable {V₂ P₂ : Type*} [NormedAddCommGroup V₂] [InnerProductSpace 𝕜 V₂]
+variable [NormMetric V] [AddCommGroup V] [IsNormedAddGroup V] [InnerProductSpace 𝕜 V]
+variable {V₂ P₂ : Type*} [NormMetric V₂] [AddCommGroup V₂] [IsNormedAddGroup V₂] [InnerProductSpace 𝕜 V₂]
 
 variable [MetricSpace P] [NormedAddTorsor V P]
 

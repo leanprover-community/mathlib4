@@ -51,9 +51,9 @@ noncomputable section
 namespace Manifold
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-  {E₁ E₂ E₃ E₄ : Type*} [NormedAddCommGroup E₁] [NormedSpace 𝕜 E₁]
-  [NormedAddCommGroup E₂] [NormedSpace 𝕜 E₂]
-  [NormedAddCommGroup E₃] [NormedSpace 𝕜 E₃] [NormedAddCommGroup E₄] [NormedSpace 𝕜 E₄]
+  {E₁ E₂ E₃ E₄ : Type*} [NormMetric E₁] [AddCommGroup E₁] [IsNormedAddGroup E₁] [NormedSpace 𝕜 E₁]
+  [NormMetric E₂] [AddCommGroup E₂] [IsNormedAddGroup E₂] [NormedSpace 𝕜 E₂]
+  [NormMetric E₃] [AddCommGroup E₃] [IsNormedAddGroup E₃] [NormedSpace 𝕜 E₃] [NormMetric E₄] [AddCommGroup E₄] [IsNormedAddGroup E₄] [NormedSpace 𝕜 E₄]
   {H H' G G' : Type*} [TopologicalSpace H] [TopologicalSpace H']
   [TopologicalSpace G] [TopologicalSpace G']
   {I : ModelWithCorners 𝕜 E₁ H} {I' : ModelWithCorners 𝕜 E₂ H'}

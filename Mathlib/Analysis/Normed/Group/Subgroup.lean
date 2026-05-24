@@ -63,7 +63,7 @@ end SeminormedGroup
 
 /-- missing doc -/
 @[to_additive /-- missing doc -/]
-instance [NormedGroup E] {s : Subgroup E} : NormMetric s :=
+instance [NormMetric E] [Group E] [IsNormedGroup E] {s : Subgroup E} : NormMetric s :=
   fast_instance% NormMetric.induced _ _ s.subtype Subtype.coe_injective
 
 end Subgroup
@@ -101,7 +101,7 @@ end SeminormedGroup
 
 /-- missing doc -/
 @[to_additive /-- missing doc -/]
-instance (priority := 75) [NormedGroup E] {S : Type*} [SetLike S E] [SubgroupClass S E]
+instance (priority := 75) [NormMetric E] [Group E] [IsNormedGroup E] {S : Type*} [SetLike S E] [SubgroupClass S E]
     (s : S) : NormMetric s :=
   fast_instance% NormMetric.induced _ _ (SubgroupClass.subtype s) Subtype.coe_injective
 

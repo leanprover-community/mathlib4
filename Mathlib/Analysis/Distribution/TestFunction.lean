@@ -57,9 +57,9 @@ open Function Seminorm SeminormFamily Set TopologicalSpace UniformSpace
 open scoped BoundedContinuousFunction NNReal Topology ContDiff
 
 variable {𝕜 𝕂 : Type*} [NontriviallyNormedField 𝕜]
-  {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {Ω Ω₁ Ω₂ : Opens E}
-  {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F] [NormedSpace 𝕜 F]
-  {F' : Type*} [NormedAddCommGroup F'] [NormedSpace ℝ F'] [NormedSpace 𝕜 F']
+  {E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace ℝ E] {Ω Ω₁ Ω₂ : Opens E}
+  {F : Type*} [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace ℝ F] [NormedSpace 𝕜 F]
+  {F' : Type*} [NormMetric F'] [AddCommGroup F'] [IsNormedAddGroup F'] [NormedSpace ℝ F'] [NormedSpace 𝕜 F']
   {n n₁ n₂ k : ℕ∞}
 
 variable (Ω F n) in
@@ -84,8 +84,8 @@ open Distributions
 /-- `TestFunctionClass B Ω F n` states that `B` is a type of `n`-times continuously
 differentiable functions `E → F` with compact support contained in `Ω : Opens E`. -/
 class TestFunctionClass (B : Type*)
-    {E : outParam <| Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] (Ω : outParam <| Opens E)
-    (F : outParam <| Type*) [NormedAddCommGroup F] [NormedSpace ℝ F]
+    {E : outParam <| Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace ℝ E] (Ω : outParam <| Opens E)
+    (F : outParam <| Type*) [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace ℝ F]
     (n : outParam ℕ∞) extends FunLike B E F where
   map_contDiff (f : B) : ContDiff ℝ n f
   map_hasCompactSupport (f : B) : HasCompactSupport f
@@ -96,15 +96,15 @@ open TestFunctionClass
 namespace TestFunctionClass
 
 instance (B : Type*)
-    {E : outParam <| Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] (Ω : outParam <| Opens E)
-    (F : outParam <| Type*) [NormedAddCommGroup F] [NormedSpace ℝ F]
+    {E : outParam <| Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace ℝ E] (Ω : outParam <| Opens E)
+    (F : outParam <| Type*) [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace ℝ F]
     (n : outParam ℕ∞) [TestFunctionClass B Ω F n] :
     ContinuousMapClass B E F where
   map_continuous f := (map_contDiff f).continuous
 
 instance (B : Type*)
-    {E : outParam <| Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] (Ω : outParam <| Opens E)
-    (F : outParam <| Type*) [NormedAddCommGroup F] [NormedSpace ℝ F]
+    {E : outParam <| Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace ℝ E] (Ω : outParam <| Opens E)
+    (F : outParam <| Type*) [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace ℝ F]
     (n : outParam ℕ∞) [TestFunctionClass B Ω F n] :
     BoundedContinuousMapClass B E F where
   map_bounded f := by

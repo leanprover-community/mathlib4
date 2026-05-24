@@ -87,7 +87,7 @@ lemma variation_zero : (0 : VectorMeasure X V).variation = 0 := by
   exact preVariation_zero
 
 @[simp]
-lemma variation_neg {V : Type*} [NormedAddCommGroup V] (μ : MeasureTheory.VectorMeasure X V) :
+lemma variation_neg {V : Type*} [NormMetric V] [AddCommGroup V] [IsNormedAddGroup V] (μ : MeasureTheory.VectorMeasure X V) :
     (-μ).variation = μ.variation := by simp [variation]
 
 lemma absolutelyContinuous (μ : VectorMeasure X V) : μ ≪ᵥ μ.ennrealVariation := by

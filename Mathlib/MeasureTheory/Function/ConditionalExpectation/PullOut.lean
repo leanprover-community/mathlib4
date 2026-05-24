@@ -44,8 +44,8 @@ open scoped NNReal ENNReal Topology MeasureTheory
 namespace MeasureTheory
 
 variable {Ω : Type*} {m mΩ : MeasurableSpace Ω} {μ : Measure Ω}
-  {E F G : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
-  [NormedAddCommGroup F] [NormedSpace ℝ F] [NormedAddCommGroup G] [NormedSpace ℝ G]
+  {E F G : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace ℝ E]
+  [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace ℝ F] [NormMetric G] [AddCommGroup G] [IsNormedAddGroup G] [NormedSpace ℝ G]
   [CompleteSpace G] (B : F →L[ℝ] E →L[ℝ] G)
 
 /-- Auxiliary lemma for `condExp_bilin_of_stronglyMeasurable_left`. -/

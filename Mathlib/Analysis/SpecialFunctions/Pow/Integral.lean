@@ -100,9 +100,9 @@ theorem lintegral_rpow_eq_lintegral_meas_lt_mul
 
 end LayercakeLT
 
-variable {E F : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
+variable {E F : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
   [MeasurableSpace E] [BorelSpace E]
-  [NormedAddCommGroup F]
+  [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F]
   {μ : Measure E} [μ.IsAddHaarMeasure]
 
 open Set Metric in

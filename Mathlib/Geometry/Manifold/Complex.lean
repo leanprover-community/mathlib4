@@ -45,8 +45,8 @@ public section
 open scoped Manifold Topology Filter
 open Function Set Filter Complex
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E]
-variable {F : Type*} [NormedAddCommGroup F] [NormedSpace ℂ F]
+variable {E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace ℂ E]
+variable {F : Type*} [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace ℂ F]
 variable {H : Type*} [TopologicalSpace H] {I : ModelWithCorners ℂ E H} [I.Boundaryless]
 variable {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
   [IsManifold I 1 M]

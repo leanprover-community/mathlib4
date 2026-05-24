@@ -28,9 +28,9 @@ implicit function, inverse function
 public section
 
 variable {𝕜 : Type*} [RCLike 𝕜]
-  {E₁ : Type*} [NormedAddCommGroup E₁] [NormedSpace 𝕜 E₁] [CompleteSpace E₁]
-  {E₂ : Type*} [NormedAddCommGroup E₂] [NormedSpace 𝕜 E₂] [CompleteSpace E₂]
-  {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F] [CompleteSpace F]
+  {E₁ : Type*} [NormMetric E₁] [AddCommGroup E₁] [IsNormedAddGroup E₁] [NormedSpace 𝕜 E₁] [CompleteSpace E₁]
+  {E₂ : Type*} [NormMetric E₂] [AddCommGroup E₂] [IsNormedAddGroup E₂] [NormedSpace 𝕜 E₂] [CompleteSpace E₂]
+  {F : Type*} [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace 𝕜 F] [CompleteSpace F]
 
 open scoped Topology ContDiff
 

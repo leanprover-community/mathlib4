@@ -55,8 +55,8 @@ We develop the basic properties of these notions, notably:
 
 variable {𝕜 E F G : Type*}
 
-variable [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-  [NormedAddCommGroup F] [NormedSpace 𝕜 F] [NormedAddCommGroup G] [NormedSpace 𝕜 G]
+variable [NontriviallyNormedField 𝕜] [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E]
+  [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace 𝕜 F] [NormMetric G] [AddCommGroup G] [IsNormedAddGroup G] [NormedSpace 𝕜 G]
 
 open Topology NNReal Filter ENNReal Set Asymptotics
 open scoped Pointwise

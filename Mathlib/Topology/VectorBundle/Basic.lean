@@ -348,7 +348,7 @@ end Bundle
 open Bundle
 
 variable [NontriviallyNormedField R] [∀ x, AddCommMonoid (E x)] [∀ x, Module R (E x)]
-  [NormedAddCommGroup F] [NormedSpace R F] [TopologicalSpace B] [TopologicalSpace (TotalSpace F E)]
+  [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace R F] [TopologicalSpace B] [TopologicalSpace (TotalSpace F E)]
   [∀ x, TopologicalSpace (E x)] [FiberBundle F E]
 
 /-- The space `Bundle.TotalSpace F E` (for `E : B → Type*` such that each `E x` is a topological
@@ -770,7 +770,7 @@ end
 section
 
 variable [NontriviallyNormedField R] [∀ x, AddCommMonoid (E x)] [∀ x, Module R (E x)]
-  [NormedAddCommGroup F] [NormedSpace R F] [TopologicalSpace B] [∀ x, TopologicalSpace (E x)]
+  [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace R F] [TopologicalSpace B] [∀ x, TopologicalSpace (E x)]
 
 open TopologicalSpace
 
@@ -913,7 +913,7 @@ variable {𝕜₁ 𝕜₂ : Type*} [NontriviallyNormedField 𝕜₁] [Nontrivial
 variable {σ : 𝕜₁ →+* 𝕜₂}
 variable {B' : Type*} [TopologicalSpace B']
 variable [NormedSpace 𝕜₁ F] [∀ x, Module 𝕜₁ (E x)] [TopologicalSpace (TotalSpace F E)]
-variable {F' : Type*} [NormedAddCommGroup F'] [NormedSpace 𝕜₂ F'] {E' : B' → Type*}
+variable {F' : Type*} [NormMetric F'] [AddCommGroup F'] [IsNormedAddGroup F'] [NormedSpace 𝕜₂ F'] {E' : B' → Type*}
   [∀ x, AddCommMonoid (E' x)] [∀ x, Module 𝕜₂ (E' x)] [TopologicalSpace (TotalSpace F' E')]
 
 variable [FiberBundle F E] [VectorBundle 𝕜₁ F E]

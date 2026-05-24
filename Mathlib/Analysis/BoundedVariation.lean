@@ -36,7 +36,7 @@ public section
 open scoped NNReal Topology
 open Set MeasureTheory Filter
 
-variable {V : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V] [FiniteDimensional ℝ V]
+variable {V : Type*} [NormMetric V] [AddCommGroup V] [IsNormedAddGroup V] [NormedSpace ℝ V] [FiniteDimensional ℝ V]
 
 namespace LocallyBoundedVariationOn
 

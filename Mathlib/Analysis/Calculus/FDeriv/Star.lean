@@ -28,8 +28,8 @@ public section
 
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [StarRing 𝕜]
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-variable {F : Type*} [NormedAddCommGroup F] [StarAddMonoid F] [NormedSpace 𝕜 F] [StarModule 𝕜 F]
+variable {E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E]
+variable {F : Type*} [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [StarAddMonoid F] [NormedSpace 𝕜 F] [StarModule 𝕜 F]
   [ContinuousStar F]
 
 variable {f : E → F} {f' : E →L[𝕜] F} {x : E} {s : Set E} {L : Filter (E × E)}

@@ -81,7 +81,7 @@ end Basic
 
 namespace HasGaussianLaw
 
-variable [NormedAddCommGroup E] [MeasurableSpace E] [BorelSpace E] {X : Ω → E}
+variable [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [MeasurableSpace E] [BorelSpace E] {X : Ω → E}
 
 lemma of_subsingleton [NormedSpace ℝ E] [Subsingleton E] [IsProbabilityMeasure P] :
     HasGaussianLaw X P where
@@ -140,7 +140,7 @@ lemma integrable [CompleteSpace E] [SecondCountableTopology E] (hX : HasGaussian
     Integrable X P :=
   memLp_one_iff_integrable.1 <| hX.memLp (by norm_num)
 
-variable [NormedAddCommGroup F] [NormedSpace ℝ F] [MeasurableSpace F] [BorelSpace F]
+variable [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace ℝ F] [MeasurableSpace F] [BorelSpace F]
 
 lemma map (hX : HasGaussianLaw X P) (L : E →L[ℝ] F) : HasGaussianLaw (L ∘ X) P :=
   hX.map_of_measurable L (by fun_prop)
@@ -204,7 +204,7 @@ end Prod
 
 section Pi
 
-variable {E : ι → Type*} [∀ i, NormedAddCommGroup (E i)]
+variable {E : ι → Type*} [∀ i, NormMetric (E i)] [∀ i, AddCommGroup (E i)] [∀ i, IsNormedAddGroup (E i)]
   [∀ i, NormedSpace ℝ (E i)] [∀ i, MeasurableSpace (E i)] [∀ i, BorelSpace (E i)]
   {X : (i : ι) → Ω → E i}
 
@@ -225,14 +225,14 @@ lemma toLp_pi [Finite ι] (p : ℝ≥0∞) [Fact (1 ≤ p)] (hX : HasGaussianLaw
 
 variable [Fintype ι]
 
-lemma sum {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [MeasurableSpace E]
+lemma sum {E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace ℝ E] [MeasurableSpace E]
     [BorelSpace E] [SecondCountableTopology E]
     {X : ι → Ω → E} (hX : HasGaussianLaw (fun ω ↦ (X · ω)) P) :
     HasGaussianLaw (∑ i, X i) P := by
   convert hX.map (∑ i, .proj i)
   ext; simp
 
-lemma fun_sum {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [MeasurableSpace E]
+lemma fun_sum {E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace ℝ E] [MeasurableSpace E]
     [BorelSpace E] [SecondCountableTopology E]
     {X : ι → Ω → E} (hX : HasGaussianLaw (fun ω ↦ (X · ω)) P) :
     HasGaussianLaw (fun ω ↦ ∑ i, X i ω) P := by

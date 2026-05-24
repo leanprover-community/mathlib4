@@ -87,7 +87,7 @@ def OrthogonalFamily (G : ι → Type*) [∀ i, NormPseudoMetric (G i)] [∀ i, 
   Pairwise fun i j => ∀ v : G i, ∀ w : G j, ⟪V i v, V j w⟫ = 0
 
 variable {𝕜}
-variable {G : ι → Type*} [∀ i, NormedAddCommGroup (G i)] [∀ i, InnerProductSpace 𝕜 (G i)]
+variable {G : ι → Type*} [∀ i, NormMetric (G i)] [∀ i, AddCommGroup (G i)] [∀ i, IsNormedAddGroup (G i)] [∀ i, InnerProductSpace 𝕜 (G i)]
   {V : ∀ i, G i →ₗᵢ[𝕜] E}
 
 theorem Orthonormal.orthogonalFamily {v : ι → E} (hv : Orthonormal 𝕜 v) :
@@ -244,7 +244,7 @@ end OrthogonalFamily_Seminormed
 
 section OrthogonalFamily
 
-variable [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
+variable [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [InnerProductSpace 𝕜 E]
 
 local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 

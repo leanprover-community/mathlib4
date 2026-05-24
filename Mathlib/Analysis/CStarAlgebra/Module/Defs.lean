@@ -299,7 +299,7 @@ open scoped InnerProductSpace
 using `NormedAddCommGroup.ofCoreReplaceAll` and `NormedSpace.ofCore`. See
 `Analysis.CStarAlgebra.Module.Constructions` for examples. -/
 variable {A E : Type*} [NonUnitalCStarAlgebra A] [PartialOrder A] [StarOrderedRing A] [SMul A E]
-  [NormedAddCommGroup E] [NormedSpace ℂ E] [CStarModule A E]
+  [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace ℂ E] [CStarModule A E]
 
 /-- The function `⟨x, y⟩ ↦ ⟪x, y⟫` bundled as a continuous sesquilinear map. -/
 noncomputable def innerSL : E →L⋆[ℂ] E →L[ℂ] A :=

@@ -742,7 +742,7 @@ end
 section NormedCodomain
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 variable {E : Type*} [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
-variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+variable {F : Type*} [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace 𝕜 F]
 
 variable {f : E → F}
 variable {f' : E →L[𝕜] F}
@@ -795,8 +795,8 @@ end NormedCodomain
 -- statement.
 section not_TVS
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+variable {E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E]
+variable {F : Type*} [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace 𝕜 F]
 
 variable {f : E → F}
 variable {f' : E →L[𝕜] F}
@@ -967,8 +967,8 @@ section Semilinear
 ## Results involving semilinear maps
 -/
 variable {𝕜 V V' W W' : Type*} [NontriviallyNormedField 𝕜] {σ σ' : RingHom 𝕜 𝕜}
-  [NormedAddCommGroup V] [NormedSpace 𝕜 V] [NormedAddCommGroup V'] [NormedSpace 𝕜 V']
-  [NormedAddCommGroup W] [NormedSpace 𝕜 W] [NormedAddCommGroup W'] [NormedSpace 𝕜 W']
+  [NormMetric V] [AddCommGroup V] [IsNormedAddGroup V] [NormedSpace 𝕜 V] [NormMetric V'] [AddCommGroup V'] [IsNormedAddGroup V'] [NormedSpace 𝕜 V']
+  [NormMetric W] [AddCommGroup W] [IsNormedAddGroup W] [NormedSpace 𝕜 W] [NormMetric W'] [AddCommGroup W'] [IsNormedAddGroup W'] [NormedSpace 𝕜 W']
   [RingHomIsometric σ] [RingHomInvPair σ σ'] (L : W →SL[σ] W') (R : V' →SL[σ'] V)
 
 /-- If `L` and `R` are semilinear maps whose composite is linear, and `f` has Fréchet derivative

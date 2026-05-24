@@ -32,8 +32,8 @@ open scoped ENNReal
 
 variable {𝕜 E F : Type*}
   [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
-  [NormedAddCommGroup E] [MeasurableSpace E] [BorelSpace E] [NormedSpace 𝕜 E]
-  [NormedAddCommGroup F] [MeasurableSpace F] [BorelSpace F] [NormedSpace 𝕜 F] {L : E →ₗ[𝕜] F}
+  [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [MeasurableSpace E] [BorelSpace E] [NormedSpace 𝕜 E]
+  [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [MeasurableSpace F] [BorelSpace F] [NormedSpace 𝕜 F] {L : E →ₗ[𝕜] F}
   {μ : Measure E} {ν : Measure F}
   [IsAddHaarMeasure μ] [IsAddHaarMeasure ν]
 

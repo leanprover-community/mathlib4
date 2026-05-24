@@ -41,8 +41,8 @@ open Set LinearMap Pointwise
 open scoped RealInnerProductSpace
 
 variable {R E F : Type*}
-  [NormedAddCommGroup E] [InnerProductSpace ℝ E] [CompleteSpace E]
-  [NormedAddCommGroup F] [InnerProductSpace ℝ F] [CompleteSpace F]
+  [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [InnerProductSpace ℝ E] [CompleteSpace E]
+  [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [InnerProductSpace ℝ F] [CompleteSpace F]
   {s t : Set E} {x x₀ y : E}
 
 open Function

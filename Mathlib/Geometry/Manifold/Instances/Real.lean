@@ -434,7 +434,7 @@ lemma boundary_Icc : (𝓡∂ 1).boundary (Icc x y) = {⊥, ⊤} := by
         Icc_isInteriorPoint_interior hp
     · rintro (rfl | rfl) <;> simp at hp
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+variable {E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace ℝ E]
   {H : Type*} [TopologicalSpace H] (I : ModelWithCorners ℝ E H)
   {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
 

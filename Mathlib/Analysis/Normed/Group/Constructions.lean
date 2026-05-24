@@ -335,10 +335,10 @@ lemma Pi.sum_nnnorm_apply_le_nnnorm' : ∑ i, ‖f i‖₊ ≤ Fintype.card ι �
 end SeminormedGroup
 
 @[to_additive Pi.instNormMetric]
-instance Pi.instNormMetric' [∀ i, NormedGroup (G i)] : NormMetric (∀ i, G i) where
+instance Pi.instNormMetric' [∀ i, NormMetric (G i)] [∀ i, Group (G i)] [∀ i, IsNormedGroup (G i)] : NormMetric (∀ i, G i) where
   norm f := ↑(Finset.univ.sup fun b => ‖f b‖₊)
 
-theorem Pi.nnnorm_single [DecidableEq ι] [∀ i, NormedAddCommGroup (G i)] {i : ι} (y : G i) :
+theorem Pi.nnnorm_single [DecidableEq ι] [∀ i, NormMetric (G i)] [∀ i, AddCommGroup (G i)] [∀ i, IsNormedAddGroup (G i)] {i : ι} (y : G i) :
     ‖Pi.single i y‖₊ = ‖y‖₊ := by
   have H : ∀ b, ‖single i y b‖₊ = single (M := fun _ ↦ ℝ≥0) i ‖y‖₊ b := by
     intro b
@@ -346,10 +346,10 @@ theorem Pi.nnnorm_single [DecidableEq ι] [∀ i, NormedAddCommGroup (G i)] {i :
     simp
   simp [Pi.nnnorm_def, H, Pi.single_apply, Finset.sup_ite, Finset.filter_eq']
 
-lemma Pi.enorm_single [DecidableEq ι] [∀ i, NormedAddCommGroup (G i)] {i : ι} (y : G i) :
+lemma Pi.enorm_single [DecidableEq ι] [∀ i, NormMetric (G i)] [∀ i, AddCommGroup (G i)] [∀ i, IsNormedAddGroup (G i)] {i : ι} (y : G i) :
     ‖Pi.single i y‖ₑ = ‖y‖ₑ := by simp [enorm, Pi.nnnorm_single]
 
-theorem Pi.norm_single [DecidableEq ι] [∀ i, NormedAddCommGroup (G i)] {i : ι} (y : G i) :
+theorem Pi.norm_single [DecidableEq ι] [∀ i, NormMetric (G i)] [∀ i, AddCommGroup (G i)] [∀ i, IsNormedAddGroup (G i)] {i : ι} (y : G i) :
     ‖Pi.single i y‖ = ‖y‖ :=
   congr_arg Subtype.val <| Pi.nnnorm_single y
 

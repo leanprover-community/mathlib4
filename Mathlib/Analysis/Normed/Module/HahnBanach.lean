@@ -67,7 +67,7 @@ open RCLike
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [IsRCLikeNormedField 𝕜] {E F : Type*}
   [NormPseudoMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E]
-  [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+  [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace 𝕜 F]
 
 /-- **Hahn-Banach theorem** for continuous linear functions over `𝕜`
 satisfying `IsRCLikeNormedField 𝕜`. -/
@@ -171,7 +171,7 @@ theorem exists_dual_vector'' (x : E) : ∃ g : StrongDual 𝕜 E, ‖g‖ ≤ 1 
 
 end Seminormed
 
-variable {E : Type u} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable {E : Type u} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E]
 
 /-- Variant of Hahn-Banach, eliminating the hypothesis that `x` be nonzero, and choosing
 the dual element arbitrarily when `x = 0`. -/

@@ -23,8 +23,8 @@ open Filter Finset
 
 open Topology
 
-variable {G : Type*} [NormedAddCommGroup G] [CompleteSpace G]
-variable {H : Type*} [NormedAddCommGroup H]
+variable {G : Type*} [NormMetric G] [AddCommGroup G] [IsNormedAddGroup G] [CompleteSpace G]
+variable {H : Type*} [NormMetric H] [AddCommGroup H] [IsNormedAddGroup H]
 
 /-- Given `f : NormedAddGroupHom G H` for some complete `G` and a subgroup `K` of `H`, if every
 element `x` of `K` has a preimage under `f` whose norm is at most `C*‖x‖` then the same holds for

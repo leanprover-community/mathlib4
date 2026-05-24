@@ -399,7 +399,7 @@ theorem isBoundedBilinearMap_smulRight :
 /-- The composition of a continuous linear map with a continuous multilinear map is a bounded
 bilinear operation. -/
 theorem isBoundedBilinearMap_compMultilinear {ι : Type*} {E : ι → Type*} [Fintype ι]
-    [∀ i, NormedAddCommGroup (E i)] [∀ i, NormedSpace 𝕜 (E i)] :
+    [∀ i, NormMetric (E i)] [∀ i, AddCommGroup (E i)] [∀ i, IsNormedAddGroup (E i)] [∀ i, NormedSpace 𝕜 (E i)] :
     IsBoundedBilinearMap 𝕜 fun p : (F →L[𝕜] G) × ContinuousMultilinearMap 𝕜 E F =>
       p.1.compContinuousMultilinearMap p.2 :=
   (compContinuousMultilinearMapL 𝕜 E F G).isBoundedBilinearMap
@@ -524,7 +524,7 @@ end
 namespace ContinuousLinearEquiv
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable {E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E]
 variable {F : Type*} [NormPseudoMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace 𝕜 F]
 
 open Set

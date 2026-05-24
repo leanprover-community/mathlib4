@@ -655,11 +655,11 @@ lemma norm_nnratCast (q : ℚ≥0) : ‖(q : K)‖ = q := by
 lemma nnnorm_nnratCast (q : ℚ≥0) : ‖(q : K)‖₊ = q := by simp [nnnorm]; rfl
 
 variable (K) in
-lemma norm_nsmul [NormedAddCommGroup E] [NormedSpace K E] (n : ℕ) (x : E) : ‖n • x‖ = n • ‖x‖ := by
+lemma norm_nsmul [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace K E] (n : ℕ) (x : E) : ‖n • x‖ = n • ‖x‖ := by
   simpa [Nat.cast_smul_eq_nsmul] using norm_smul (n : K) x
 
 variable (K) in
-lemma nnnorm_nsmul [NormedAddCommGroup E] [NormedSpace K E] (n : ℕ) (x : E) :
+lemma nnnorm_nsmul [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace K E] (n : ℕ) (x : E) :
     ‖n • x‖₊ = n • ‖x‖₊ := by simpa [Nat.cast_smul_eq_nsmul] using nnnorm_smul (n : K) x
 
 theorem mul_self_norm (z : K) : ‖z‖ * ‖z‖ = normSq z := by rw [normSq_eq_def', sq]

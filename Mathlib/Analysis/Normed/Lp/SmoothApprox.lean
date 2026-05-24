@@ -24,14 +24,14 @@ This result is recorded in `MeasureTheory.MemLp.exist_sub_eLpNorm_le`.
 
 public section
 
-variable {α β E F : Type*} [MeasurableSpace E] [NormedAddCommGroup F]
+variable {α β E F : Type*} [MeasurableSpace E] [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F]
 
 open scoped Nat NNReal ContDiff
 open MeasureTheory Pointwise ENNReal
 
 namespace HasCompactSupport
 
-variable [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E] [BorelSpace E]
+variable [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E] [BorelSpace E]
   [NormedSpace ℝ F]
   (μ : Measure E := by volume_tac) [IsFiniteMeasureOnCompacts μ]
 
@@ -69,7 +69,7 @@ end HasCompactSupport
 
 namespace MeasureTheory.MemLp
 
-variable [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E] [BorelSpace E]
+variable [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E] [BorelSpace E]
   [NormedSpace ℝ F]
   {μ : Measure E} [IsFiniteMeasureOnCompacts μ]
 

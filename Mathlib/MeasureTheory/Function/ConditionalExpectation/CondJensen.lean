@@ -30,7 +30,7 @@ public section
 
 open MeasureTheory Function Set Filter
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
+variable {E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace ℝ E] [CompleteSpace E]
   {α : Type*} {f : α → E} {φ : E → ℝ} {m mα : MeasurableSpace α} {μ : Measure α} {s : Set E}
 
 private lemma Convex.condExp_mem_of_hereditarilyLindelofSpace [IsFiniteMeasure μ]

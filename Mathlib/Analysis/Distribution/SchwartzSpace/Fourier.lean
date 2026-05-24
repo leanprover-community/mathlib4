@@ -37,8 +37,8 @@ namespace SchwartzMap
 
 variable
   (𝕜 : Type*) [RCLike 𝕜]
-  {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E] [NormedSpace 𝕜 E] [SMulCommClass ℂ 𝕜 E]
-  {V : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [FiniteDimensional ℝ V]
+  {E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace ℂ E] [NormedSpace 𝕜 E] [SMulCommClass ℂ 𝕜 E]
+  {V : Type*} [NormMetric V] [AddCommGroup V] [IsNormedAddGroup V] [InnerProductSpace ℝ V] [FiniteDimensional ℝ V]
   [MeasurableSpace V] [BorelSpace V]
 
 section definition
@@ -159,8 +159,8 @@ end definition
 section eval
 
 variable {𝕜' : Type*} [NormedField 𝕜']
-  {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
-  {G : Type*} [NormedAddCommGroup G] [NormedSpace ℂ G] [NormedSpace 𝕜' G] [SMulCommClass ℝ 𝕜' G]
+  {F : Type*} [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace ℝ F]
+  {G : Type*} [NormMetric G] [AddCommGroup G] [IsNormedAddGroup G] [NormedSpace ℂ G] [NormedSpace 𝕜' G] [SMulCommClass ℝ 𝕜' G]
 
 variable (𝕜') in
 theorem fourier_evalCLM_eq (f : 𝓢(V, F →L[ℝ] G)) (m : F) :
@@ -234,8 +234,8 @@ end deriv
 section fubini
 
 variable
-  {F : Type*} [NormedAddCommGroup F] [NormedSpace ℂ F]
-  {G : Type*} [NormedAddCommGroup G] [NormedSpace ℂ G]
+  {F : Type*} [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace ℂ F]
+  {G : Type*} [NormMetric G] [AddCommGroup G] [IsNormedAddGroup G] [NormedSpace ℂ G]
 
 variable [CompleteSpace E] [CompleteSpace F]
 
@@ -298,7 +298,7 @@ end fubini
 
 section L1
 
-variable {F : Type*} [NormedAddCommGroup F] [NormedSpace ℂ F]
+variable {F : Type*} [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace ℂ F]
 
 theorem norm_fourier_apply_le_toLp_one (f : 𝓢(V, F)) (x : V) :
     ‖𝓕 f x‖ ≤ ‖f.toLp 1‖ := calc
@@ -320,7 +320,7 @@ end L1
 
 section L2
 
-variable {H : Type*} [NormedAddCommGroup H] [InnerProductSpace ℂ H] [CompleteSpace H]
+variable {H : Type*} [NormMetric H] [AddCommGroup H] [IsNormedAddGroup H] [InnerProductSpace ℂ H] [CompleteSpace H]
 
 /-- Plancherel's theorem for Schwartz functions. -/
 @[simp] theorem integral_inner_fourier_fourier (f g : 𝓢(V, H)) :

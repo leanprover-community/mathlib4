@@ -136,7 +136,7 @@ end
 section Applications
 
 variable [SecondCountableTopology α] [BorelSpace α] [IsLocallyFiniteMeasure μ] {E : Type*}
-  [NormedAddCommGroup E]
+  [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E]
 
 /-- A version of **Lebesgue's density theorem** for a sequence of closed balls whose centers are
 not required to be fixed.

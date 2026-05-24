@@ -30,7 +30,7 @@ This comes up in non-commutative graph theory for example.
 
 @[expose] public section
 
-variable {𝕜 E : Type*} [RCLike 𝕜] [NormedAddCommGroup E]
+variable {𝕜 E : Type*} [RCLike 𝕜] [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E]
   [InnerProductSpace 𝕜 E] [FiniteDimensional 𝕜 E]
 
 open TensorProduct LinearMap LinearIsometryEquiv Coalgebra

@@ -458,11 +458,11 @@ instance instIsNormedAddGroup [NormPseudoMetric β] [AddCommGroup β] [IsNormedA
 
 noncomputable example [NormPseudoMetric β] [AddCommGroup β] [IsNormedAddGroup β] : SeminormedAddCommGroup C₀(α, β) where
 
-noncomputable instance instNormMetric [NormedAddCommGroup β] :
+noncomputable instance instNormMetric [NormMetric β] [AddCommGroup β] [IsNormedAddGroup β] :
     NormMetric C₀(α, β) := fast_instance%
   .induced _ _ (⟨⟨toBCF, rfl⟩, fun _ _ => rfl⟩ : C₀(α, β) →+ α →ᵇ β) (toBCF_injective α β)
 
-noncomputable example [NormedAddCommGroup β] : NormedAddCommGroup C₀(α, β) where
+noncomputable example [NormMetric β] [AddCommGroup β] [IsNormedAddGroup β] : NormedAddCommGroup C₀(α, β) where
 
 variable [NormPseudoMetric β] [AddCommGroup β] [IsNormedAddGroup β] {𝕜 : Type*} [NormedField 𝕜] [NormedSpace 𝕜 β]
 
@@ -530,7 +530,7 @@ end Star
 
 section NormedStar
 
-variable [NormedAddCommGroup β] [StarAddMonoid β] [NormedStarGroup β]
+variable [NormMetric β] [AddCommGroup β] [IsNormedAddGroup β] [StarAddMonoid β] [NormedStarGroup β]
 
 instance instNormedStarGroup : NormedStarGroup C₀(α, β) where
   norm_star_le f := (norm_star f.toBCF :).le

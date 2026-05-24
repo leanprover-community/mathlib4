@@ -244,7 +244,7 @@ end Seminormed
 section Normed
 
 variable {𝕜 E : Type*} [RCLike 𝕜]
-variable [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
+variable [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [InnerProductSpace 𝕜 E]
 
 local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 

@@ -204,7 +204,7 @@ instance instNormPseudoMetric : NormPseudoMetric (α →ᵇ β) where
 instance instIsNormedAddGroup : IsNormedAddGroup (α →ᵇ β) where
   dist_eq f g := by simp only [norm_eq, dist_eq, dist_eq_norm_neg_add, add_apply, neg_apply]
 
-instance instNormMetric {α β} [TopologicalSpace α] [NormedAddCommGroup β] :
+instance instNormMetric {α β} [TopologicalSpace α] [NormMetric β] [AddCommGroup β] [IsNormedAddGroup β] :
     NormMetric (α →ᵇ β) where
 
 theorem nnnorm_def : ‖f‖₊ = nndist f 0 := rfl
@@ -522,7 +522,7 @@ end NormedAlgebra
 section NormedLatticeOrderedGroup
 
 variable [TopologicalSpace α]
-  [NormedAddCommGroup β] [Lattice β] [HasSolidNorm β] [IsOrderedAddMonoid β]
+  [NormMetric β] [AddCommGroup β] [IsNormedAddGroup β] [Lattice β] [HasSolidNorm β] [IsOrderedAddMonoid β]
 
 instance instPartialOrder : PartialOrder (α →ᵇ β) :=
   PartialOrder.lift (fun f => f.toFun) (by simp [Injective])

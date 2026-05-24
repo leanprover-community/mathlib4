@@ -28,7 +28,7 @@ The theorem `canonicalCovariantTensor_eq_sum` shows that
 
 open InnerProductSpace TensorProduct
 
-variable (E : Type*) [NormedAddCommGroup E] [InnerProductSpace ℝ E]
+variable (E : Type*) [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [InnerProductSpace ℝ E]
 
 /-- The canonical contravariant tensor corresponding to the inner product -/
 noncomputable def InnerProductSpace.canonicalContravariantTensor :

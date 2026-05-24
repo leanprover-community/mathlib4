@@ -52,7 +52,7 @@ open scoped ENNReal NNReal RealInnerProductSpace
 namespace ProbabilityTheory.IsGaussianProcess
 
 variable {T Ω E : Type*} {mΩ : MeasurableSpace Ω} {P : Measure Ω}
-    [NormedAddCommGroup E] [MeasurableSpace E] [BorelSpace E]
+    [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [MeasurableSpace E] [BorelSpace E]
     [SecondCountableTopology E] [CompleteSpace E]
 
 section iIndepFun

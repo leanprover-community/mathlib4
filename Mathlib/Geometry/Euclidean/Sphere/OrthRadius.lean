@@ -33,7 +33,7 @@ open AffineSubspace Function RealInnerProductSpace
 open scoped Affine
 
 variable {V P : Type*}
-variable [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P] [NormedAddTorsor V P]
+variable [NormMetric V] [AddCommGroup V] [IsNormedAddGroup V] [InnerProductSpace ℝ V] [MetricSpace P] [NormedAddTorsor V P]
 
 /-- The affine subspace orthogonal to the radius vector of the sphere `s` at the point `p` (if
 `p` lies in `s`, this is the tangent space; generally, this is the polar of the inversion of `p`

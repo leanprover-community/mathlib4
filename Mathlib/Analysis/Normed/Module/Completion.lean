@@ -62,7 +62,7 @@ theorem coe_toComplL : ⇑(toComplL : E →L[𝕜] Completion E) = ((↑) : E �
   rfl
 
 @[simp]
-theorem norm_toComplL {𝕜 E : Type*} [NontriviallyNormedField 𝕜] [NormedAddCommGroup E]
+theorem norm_toComplL {𝕜 E : Type*} [NontriviallyNormedField 𝕜] [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E]
     [NormedSpace 𝕜 E] [Nontrivial E] : ‖(toComplL : E →L[𝕜] Completion E)‖ = 1 :=
   (toComplₗᵢ : E →ₗᵢ[𝕜] Completion E).norm_toContinuousLinearMap
 

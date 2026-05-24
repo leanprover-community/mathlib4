@@ -64,7 +64,7 @@ namespace SimpleFunc
 
 section Lp
 
-variable [MeasurableSpace β] [MeasurableSpace E] [NormedAddCommGroup E] [NormedAddCommGroup F]
+variable [MeasurableSpace β] [MeasurableSpace E] [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F]
   {q : ℝ} {p : ℝ≥0∞}
 
 theorem nnnorm_approxOn_le [OpensMeasurableSpace E] {f : β → E} (hf : Measurable f) {s : Set E}
@@ -179,7 +179,7 @@ theorem tendsto_approxOn_range_Lp [BorelSpace E] {f : β → E} [hp : Fact (1 �
 
 /-- Any function in `ℒp` can be approximated by a simple function if `p < ∞`. -/
 theorem _root_.MeasureTheory.MemLp.exists_simpleFunc_eLpNorm_sub_lt {E : Type*}
-    [NormedAddCommGroup E] {f : β → E} {μ : Measure β} (hf : MemLp f p μ) (hp_ne_top : p ≠ ∞)
+    [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] {f : β → E} {μ : Measure β} (hf : MemLp f p μ) (hp_ne_top : p ≠ ∞)
     {ε : ℝ≥0∞} (hε : ε ≠ 0) : ∃ g : β →ₛ E, eLpNorm (f - ⇑g) p μ < ε ∧ MemLp g p μ := by
   borelize E
   let f' := hf.1.mk f
@@ -206,7 +206,7 @@ end Lp
 section Integrable
 
 variable [MeasurableSpace β]
-variable [MeasurableSpace E] [NormedAddCommGroup E]
+variable [MeasurableSpace E] [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E]
 
 theorem tendsto_approxOn_L1_enorm [OpensMeasurableSpace E] {f : β → E} (hf : Measurable f)
     {s : Set E} {y₀ : E} (h₀ : y₀ ∈ s) [SeparableSpace s] {μ : Measure β}
@@ -240,7 +240,7 @@ end Integrable
 section SimpleFuncProperties
 
 variable [MeasurableSpace α]
-variable [NormedAddCommGroup E] [NormedAddCommGroup F]
+variable [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F]
 variable {μ : Measure α} {p : ℝ≥0∞}
 
 /-!
@@ -371,7 +371,7 @@ namespace Lp
 
 open AEEqFun
 
-variable [MeasurableSpace α] [NormedAddCommGroup E] [NormedAddCommGroup F] (p : ℝ≥0∞)
+variable [MeasurableSpace α] [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] (p : ℝ≥0∞)
   (μ : Measure α)
 
 variable (E)
@@ -698,7 +698,7 @@ end CoeToLp
 
 section Order
 
-variable {G : Type*} [NormedAddCommGroup G]
+variable {G : Type*} [NormMetric G] [AddCommGroup G] [IsNormedAddGroup G]
 
 theorem coeFn_le [PartialOrder G] (f g : Lp.simpleFunc G p μ) : (f : α → G) ≤ᵐ[μ] g ↔ f ≤ g := by
   rw [← Subtype.coe_le_coe, ← Lp.coeFn_le]
@@ -792,7 +792,7 @@ end simpleFunc
 
 end Lp
 
-variable [MeasurableSpace α] [NormedAddCommGroup E] {f : α → E} {p : ℝ≥0∞} {μ : Measure α}
+variable [MeasurableSpace α] [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] {f : α → E} {p : ℝ≥0∞} {μ : Measure α}
 
 /-- To prove something for an arbitrary `Lp` function in a second countable Borel normed group, it
 suffices to show that

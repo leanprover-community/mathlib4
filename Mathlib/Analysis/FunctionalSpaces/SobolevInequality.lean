@@ -293,7 +293,7 @@ end DecidableEq
 
 /-! ## The Gagliardo-Nirenberg-Sobolev inequality -/
 
-variable {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
+variable {F : Type*} [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace ℝ F]
 
 /-- The **Gagliardo-Nirenberg-Sobolev inequality**.  Let `u` be a continuously differentiable
 compactly-supported function `u` on `ℝⁿ`, for `n ≥ 2`.  (More literally we encode `ℝⁿ` as
@@ -350,7 +350,7 @@ theorem lintegral_pow_le_pow_lintegral_fderiv_aux [Fintype ι]
     _ ≤ ‖fderiv ℝ u (update x i y)‖ₑ * ‖deriv (update x i) y‖ₑ := ContinuousLinearMap.le_opENorm _ _
     _ ≤ ‖fderiv ℝ u (update x i y)‖ₑ := by simp [deriv_update, Pi.enorm_single]
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [MeasurableSpace E] [BorelSpace E]
+variable {E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace ℝ E] [MeasurableSpace E] [BorelSpace E]
   [FiniteDimensional ℝ E] (μ : Measure E) [IsAddHaarMeasure μ]
 
 open Module
@@ -457,7 +457,7 @@ def eLpNormLESNormFDerivOfEqInnerConst (p : ℝ) : ℝ≥0 :=
   let n := finrank ℝ E
   eLpNormLESNormFDerivOneConst μ (NNReal.conjExponent n) * (p * (n - 1) / (n - p)).toNNReal
 
-variable {F' : Type*} [NormedAddCommGroup F'] [InnerProductSpace ℝ F']
+variable {F' : Type*} [NormMetric F'] [AddCommGroup F'] [IsNormedAddGroup F'] [InnerProductSpace ℝ F']
 
 /-- The **Gagliardo-Nirenberg-Sobolev inequality**.  Let `u` be a continuously differentiable
 compactly-supported function `u` on a normed space `E` of finite dimension `n`, equipped

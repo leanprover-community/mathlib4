@@ -150,7 +150,7 @@ end Real
 
 /-- For a probability measure on a normed space `E` and `L : Dual ℝ E`, a bound on the measure
 of the set `{x | r < |L x|}` in terms of the integral of the characteristic function. -/
-lemma measureReal_abs_dual_gt_le_integral_charFunDual {E : Type*} [NormedAddCommGroup E]
+lemma measureReal_abs_dual_gt_le_integral_charFunDual {E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E]
     [NormedSpace ℝ E] {mE : MeasurableSpace E} [OpensMeasurableSpace E]
     {μ : Measure E} [IsProbabilityMeasure μ] (L : StrongDual ℝ E) {r : ℝ} (hr : 0 < r) :
     μ.real {x | r < |L x|} ≤ 2⁻¹ * r * ‖∫ t in -2 * r⁻¹..2 * r⁻¹, 1 - charFunDual μ (t • L)‖ := by

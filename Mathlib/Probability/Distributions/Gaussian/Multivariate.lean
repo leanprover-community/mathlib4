@@ -52,7 +52,7 @@ section stdGaussian
 
 /-! ### Standard Gaussian measure over a Euclidean space -/
 
-variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E] [FiniteDimensional ℝ E]
+variable {E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [InnerProductSpace ℝ E] [FiniteDimensional ℝ E]
   [MeasurableSpace E]
 
 variable (E) in
@@ -126,7 +126,7 @@ lemma covarianceBilin_stdGaussian :
   · exact LinearMap.BilinForm.isPosSemidef_iff.2 isPosSemidef_inner
   · simp [charFun_stdGaussian, neg_div, innerSL_apply_apply ℝ]
 
-lemma stdGaussian_map {F : Type*} [NormedAddCommGroup F] [InnerProductSpace ℝ F] [MeasurableSpace F]
+lemma stdGaussian_map {F : Type*} [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [InnerProductSpace ℝ F] [MeasurableSpace F]
     [BorelSpace F] (f : E ≃ₗᵢ[ℝ] F) :
     haveI := f.finiteDimensional; (stdGaussian E).map f = stdGaussian F := by
   have := f.finiteDimensional

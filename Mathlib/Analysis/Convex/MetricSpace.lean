@@ -272,7 +272,7 @@ lemma ConvexSpace.ofConvex.coe_convexCombination
   rfl
 
 instance (priority := low) {V P : Type*}
-    [NormedAddCommGroup V] [NormedSpace ℝ V] [MetricSpace P] [NormedAddTorsor V P] :
+    [NormMetric V] [AddCommGroup V] [IsNormedAddGroup V] [NormedSpace ℝ V] [MetricSpace P] [NormedAddTorsor V P] :
     IsConvexMetricSpace P where
   dist_convexCombination_map_le' f σ₁ σ₂ := by
     let p : P := Nonempty.some inferInstance
@@ -287,7 +287,7 @@ instance (priority := low) {V P : Type*}
     grw [Finsupp.sum, Finsupp.sum, norm_sum_le]
     simp [norm_smul, abs_eq_self.mpr (f.nonneg _), dist_eq_norm_vsub]
 
-lemma IsConvexMetricSpace.of_convex {E : Type*} [NormedAddCommGroup E]
+lemma IsConvexMetricSpace.of_convex {E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E]
     [NormedSpace ℝ E] {S : Set E} (H : Convex ℝ S) :
     letI : ConvexSpace ℝ S := .ofConvex H
     IsConvexMetricSpace S := by

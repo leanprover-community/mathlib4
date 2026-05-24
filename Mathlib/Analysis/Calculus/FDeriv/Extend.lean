@@ -23,7 +23,7 @@ one-dimensional derivative `deriv ℝ f`.
 public section
 
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {F : Type*} [NormedAddCommGroup F]
+variable {E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace ℝ E] {F : Type*} [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F]
   [NormedSpace ℝ F]
 
 open Filter Set Metric ContinuousLinearMap

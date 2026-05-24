@@ -130,7 +130,7 @@ instance SeminormedGroup.toContinuousENorm [NormPseudoMetric E] [Group E] [IsNor
   continuous_enorm := ENNReal.isOpenEmbedding_coe.continuous.comp continuous_nnnorm'
 
 @[to_additive]
-instance NormedGroup.toIsENormedMonoid {F : Type*} [NormedGroup F] : IsENormedMonoid F where
+instance NormedGroup.toIsENormedMonoid {F : Type*} [NormMetric F] [Group F] [IsNormedGroup F] : IsENormedMonoid F where
   enorm_eq_zero := by simp [enorm_eq_nnnorm]
   enorm_mul_le := by simp [enorm_eq_nnnorm, ← coe_add, nnnorm_mul_le']
 
@@ -369,7 +369,7 @@ end SeminormedCommGroup
 
 section NormedGroup
 
-variable [NormedGroup E] {a b : E}
+variable [NormMetric E] [Group E] [IsNormedGroup E] {a b : E}
 
 /-- See `tendsto_norm_one` for a version with full neighborhoods. -/
 @[to_additive /-- See `tendsto_norm_zero` for a version with full neighborhoods. -/]
@@ -391,7 +391,7 @@ lemma comap_norm_nhdsGT_zero' : comap norm (𝓝[>] 0) = 𝓝[≠] (1 : E) := by
   simp [nhdsWithin, comap_norm_nhds_one, Set.preimage, Set.compl_def]
 
 @[to_additive]
-theorem tendsto_norm_div_self_nhdsNE {E : Type*} [NormedCommGroup E] (a : E) :
+theorem tendsto_norm_div_self_nhdsNE {E : Type*} [NormMetric E] [CommGroup E] [IsNormedGroup E] (a : E) :
     Tendsto (fun x => ‖x / a‖) (𝓝[≠] a) (𝓝[>] 0) := by
   simp_rw [← norm_inv_mul]
   exact tendsto_norm_inv_mul_self_nhdsNE a

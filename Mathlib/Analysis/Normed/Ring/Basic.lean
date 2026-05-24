@@ -575,7 +575,7 @@ theorem nnnorm_prod (s : Finset β) (f : β → α) : ‖∏ b ∈ s, f b‖₊ 
 end SeminormedCommRing
 
 section NormedAddCommGroup
-variable [NormedAddCommGroup α] [MulOneClass α] [NormMulClass α] [Nontrivial α]
+variable [NormMetric α] [AddCommGroup α] [IsNormedAddGroup α] [MulOneClass α] [NormMulClass α] [Nontrivial α]
 
 /-- Deduce `NormOneClass` from `NormMulClass` under a suitable nontriviality hypothesis. Not
 an instance, in order to avoid loops with `NormOneClass.nontrivial`. -/

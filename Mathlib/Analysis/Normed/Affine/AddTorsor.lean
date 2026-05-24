@@ -29,7 +29,7 @@ open NNReal Topology
 open Filter
 
 variable {V P W Q : Type*} [NormPseudoMetric V] [AddCommGroup V] [IsNormedAddGroup V] [PseudoMetricSpace P] [NormedAddTorsor V P]
-  [NormedAddCommGroup W] [MetricSpace Q] [NormedAddTorsor W Q]
+  [NormMetric W] [AddCommGroup W] [IsNormedAddGroup W] [MetricSpace Q] [NormedAddTorsor W Q]
 
 section NormedSpace
 

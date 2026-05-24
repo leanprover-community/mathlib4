@@ -20,7 +20,7 @@ open scoped ENNReal
 namespace MeasureTheory
 
 variable {α F : Type*} {m : MeasurableSpace α} {p : ℝ≥0∞} {q : ℝ} {μ : Measure α}
-  [NormedAddCommGroup F] {f : α → F}
+  [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] {f : α → F}
 
 section Lp
 

@@ -318,7 +318,7 @@ end TensorProduct
 
 section InnerProductSpace
 
-variable [NormedAddCommGroup E] [InnerProductSpace ℝ E] [FiniteDimensional ℝ E]
+variable [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [InnerProductSpace ℝ E] [FiniteDimensional ℝ E]
 
 section LinearMap
 

@@ -174,9 +174,9 @@ instance : IsNormedAddGroup C(α, E) where
   dist_eq x y := by rw [← norm_mkOfCompact, ← dist_mkOfCompact, dist_eq_norm_neg_add,
     mkOfCompact_add, mkOfCompact_neg]
 
-instance {E : Type*} [NormedAddCommGroup E] : NormMetric C(α, E) where
+instance {E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] : NormMetric C(α, E) where
 
-example {E : Type*} [NormedAddCommGroup E] : NormedAddCommGroup C(α, E) where
+example {E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] : NormedAddCommGroup C(α, E) where
 
 instance [Nonempty α] [One E] [NormOneClass E] : NormOneClass C(α, E) where
   norm_one := by simp only [← norm_mkOfCompact, mkOfCompact_one, norm_one]
@@ -428,7 +428,7 @@ of `C(X, E)` (i.e. locally uniform convergence). -/
 open TopologicalSpace
 
 variable {X : Type*} [TopologicalSpace X] [LocallyCompactSpace X]
-variable {E : Type*} [NormedAddCommGroup E] [CompleteSpace E]
+variable {E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [CompleteSpace E]
 
 theorem summable_of_locally_summable_norm {ι : Type*} {F : ι → C(X, E)}
     (hF : ∀ K : Compacts X, Summable fun i => ‖(F i).restrict K‖) : Summable F := by

@@ -233,7 +233,7 @@ end SeminormedAddCommGroup
 
 section NormedAddCommGroup
 
-variable [NormedAddCommGroup V] [NormedSpace ℝ V]
+variable [NormMetric V] [AddCommGroup V] [IsNormedAddGroup V] [NormedSpace ℝ V]
 
 /-- Convex bodies in a fixed normed space `V` form a metric space under the Hausdorff metric. -/
 noncomputable instance : MetricSpace (ConvexBody V) where

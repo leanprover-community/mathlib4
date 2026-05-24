@@ -63,7 +63,7 @@ lemma congr (hX : IsGaussianProcess X P) (hXY : ∀ t, X t =ᵐ[P] Y t) :
 
 end Basic
 
-variable [NormedAddCommGroup E] [MeasurableSpace E] [BorelSpace E]
+variable [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [MeasurableSpace E] [BorelSpace E]
 
 section Maps
 
@@ -122,7 +122,7 @@ section Transformations
 /-! ### Operations that preserve Gaussianity -/
 
 variable [NormedSpace ℝ E] [SecondCountableTopology E]
-  {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F] [MeasurableSpace F]
+  {F : Type*} [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace ℝ F] [MeasurableSpace F]
   [BorelSpace F] [SecondCountableTopology F] {Y : S → Ω → F}
 
 /-- If a stochastic process `Y` is such that for each `s`, `Y s` can be written as a linear

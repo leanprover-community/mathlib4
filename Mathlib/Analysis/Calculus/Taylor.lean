@@ -56,7 +56,7 @@ open scoped Interval Topology Nat
 open Set
 
 variable {𝕜 E F : Type*}
-variable [NormedAddCommGroup E] [NormedSpace ℝ E]
+variable [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace ℝ E]
 
 /-- The `k`th coefficient of the Taylor polynomial. -/
 noncomputable def taylorCoeffWithin (f : ℝ → E) (k : ℕ) (s : Set ℝ) (x₀ : ℝ) : E :=
@@ -451,7 +451,7 @@ Then
 $$f(x) - (P_n f)(x₀, x) = \int_{x_0}^x \frac{f^{(n+1)}(t) (x - t)^n}{n!} dt,$$
 where $P_n f$ denotes the Taylor polynomial of degree $n$ and $f^{(n+1)}$ is the $n+1$-th iterated
 derivative. -/
-theorem taylor_integral_remainder_aux [NormedAddCommGroup F] [NormedSpace ℝ F]
+theorem taylor_integral_remainder_aux [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace ℝ F]
     {f : ℝ → F} {x x₀ : ℝ} {n : ℕ}
     (hf : ∀ k ≤ n, let u := fun t ↦ (x - t) ^ k / k !;
       let v := fun t ↦ iteratedDerivWithin k f [[x₀, x]] t;
@@ -531,7 +531,7 @@ We assume that `f` is `n+1`-times continuously differentiable on the closed set 
 $$f(x) - (P_n f)(x₀, x) = \int_{x_0}^x \frac{f^{(n+1)}(t) (x - t)^n}{n!} dt,$$
 where $P_n f$ denotes the Taylor polynomial of degree $n$ and $f^{(n+1)}$ is the $n+1$-th iterated
 derivative. -/
-theorem taylor_integral_remainder [NormedAddCommGroup F] [NormedSpace ℝ F]
+theorem taylor_integral_remainder [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace ℝ F]
     [CompleteSpace F] {f : ℝ → F} {x x₀ : ℝ} {n : ℕ}
     (hf : ContDiffOn ℝ (n + 1 : ℕ) f (uIcc x₀ x)) :
     f x - taylorWithinEval f n (uIcc x₀ x) x₀ x =

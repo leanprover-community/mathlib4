@@ -22,7 +22,7 @@ proofs or more geometrical content generally go in separate files.
 
 To declare `P` as the type of points in a Euclidean affine space with
 `V` as the type of vectors, use
-`[NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P] [NormedAddTorsor V P]`.
+`[NormMetric V] [AddCommGroup V] [IsNormedAddGroup V] [InnerProductSpace ℝ V] [MetricSpace P] [NormedAddTorsor V P]`.
 This works better with `outParam` to make
 `V` implicit in most cases than having a separate type alias for
 Euclidean affine spaces.
@@ -54,7 +54,7 @@ Euclidean affine spaces.
 
 
 variable {V : Type*} {P : Type*}
-variable [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
+variable [NormMetric V] [AddCommGroup V] [IsNormedAddGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
 variable [NormedAddTorsor V P]
 
 /-- The inner product of two vectors given with `weightedVSub`, in

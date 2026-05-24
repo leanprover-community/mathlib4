@@ -125,7 +125,7 @@ lemma toLinearMap_inclusionInDoubleDualWeak :
       (toWeakSpace 𝕜 X).arrowCongr StrongDual.toWeakDual (inclusionInDoubleDual 𝕜 X).toLinearMap :=
   rfl
 
-variable (𝕜 : Type*) [RCLike 𝕜] (X : Type*) [NormedAddCommGroup X] [NormedSpace 𝕜 X]
+variable (𝕜 : Type*) [RCLike 𝕜] (X : Type*) [NormMetric X] [AddCommGroup X] [IsNormedAddGroup X] [NormedSpace 𝕜 X]
 
 /-- `inclusionInDoubleDualWeak` is a topological embedding from the weak topology to the weak-star
 topology. -/

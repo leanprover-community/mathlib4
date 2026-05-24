@@ -153,7 +153,7 @@ lemma tendsto_norm_comp_cofinite_atTop_of_isClosedEmbedding' {X : Type*} [Topolo
 end SeminormedGroup
 
 section NormedAddGroup
-variable [NormedAddGroup E] [TopologicalSpace α] {f : α → E}
+variable [NormMetric E] [AddGroup E] [IsNormedAddGroup E] [TopologicalSpace α] {f : α → E}
 
 lemma Continuous.bounded_above_of_compact_support (hf : Continuous f) (h : HasCompactSupport f) :
     ∃ C, ∀ x, ‖f x‖ ≤ C := by
@@ -162,7 +162,7 @@ lemma Continuous.bounded_above_of_compact_support (hf : Continuous f) (h : HasCo
 end NormedAddGroup
 
 section NormedAddGroupSource
-variable [NormedAddGroup α] {f : α → E}
+variable [NormMetric α] [AddGroup α] [IsNormedAddGroup α] {f : α → E}
 
 @[to_additive]
 lemma HasCompactMulSupport.exists_pos_le_norm [One E] (hf : HasCompactMulSupport f) :

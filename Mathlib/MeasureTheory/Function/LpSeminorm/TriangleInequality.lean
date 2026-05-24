@@ -22,7 +22,7 @@ open scoped Topology
 
 namespace MeasureTheory
 
-variable {α E ε ε' : Type*} {m : MeasurableSpace α} [NormedAddCommGroup E]
+variable {α E ε ε' : Type*} {m : MeasurableSpace α} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E]
   [TopologicalSpace ε] [ContinuousENorm ε] [AddMonoid ε] [IsESeminormedAddMonoid ε] [TopologicalSpace ε'] [ContinuousENorm ε'] [AddCommMonoid ε'] [IsESeminormedAddMonoid ε']
   {p : ℝ≥0∞} {q : ℝ} {μ : Measure α} {f g : α → ε}
 

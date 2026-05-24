@@ -365,7 +365,7 @@ end SeminormedAddCommGroup
 
 section NormedAddCommGroup
 
-variable [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E]
 
 theorem smul_closedBall (c : 𝕜) (x : E) {r : ℝ} (hr : 0 ≤ r) :
     c • closedBall x r = closedBall (c • x) (‖c‖ * r) := by

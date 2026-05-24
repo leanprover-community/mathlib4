@@ -15,7 +15,7 @@ open Bundle Filter Function Topology
 open scoped Manifold ContDiff
 
 variable
-  {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+  {E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace ℝ E]
   {H : Type*} [TopologicalSpace H] {I : ModelWithCorners ℝ E H} {M : Type*} [TopologicalSpace M]
   [ChartedSpace H M] [IsManifold I ∞ M]
   (f : M → M) (x : M) (s : Set M)

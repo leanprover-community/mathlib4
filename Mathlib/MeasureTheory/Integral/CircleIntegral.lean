@@ -67,7 +67,7 @@ integral, circle, Cauchy integral
 
 @[expose] public section
 
-variable {E : Type*} [NormedAddCommGroup E]
+variable {E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E]
 
 noncomputable section
 

@@ -469,18 +469,18 @@ lemma isometry_toContinuousMap [MetricSpace R] [Zero R] :
     Isometry (toContinuousMap : C(α, R)₀ → C(α, R)) :=
   fun _ _ ↦ rfl
 
-noncomputable instance [NormedAddCommGroup R] : Norm C(α, R)₀ where
+noncomputable instance [NormMetric R] [AddCommGroup R] [IsNormedAddGroup R] : Norm C(α, R)₀ where
   norm f := ‖(f : C(α, R))‖
 
-lemma norm_def [NormedAddCommGroup R] (f : C(α, R)₀) : ‖f‖ = ‖(f : C(α, R))‖ :=
+lemma norm_def [NormMetric R] [AddCommGroup R] [IsNormedAddGroup R] (f : C(α, R)₀) : ‖f‖ = ‖(f : C(α, R))‖ :=
   rfl
 
-noncomputable instance [NormedAddCommGroup R] : NormMetric C(α, R)₀ where
+noncomputable instance [NormMetric R] [AddCommGroup R] [IsNormedAddGroup R] : NormMetric C(α, R)₀ where
 
-instance [NormedAddCommGroup R] : IsNormedAddGroup C(α, R)₀ where
+instance [NormMetric R] [AddCommGroup R] [IsNormedAddGroup R] : IsNormedAddGroup C(α, R)₀ where
   dist_eq f g := IsNormedAddGroup.dist_eq (f : C(α, R)) g
 
-noncomputable example [NormedAddCommGroup R] : NormedAddCommGroup C(α, R)₀ where
+noncomputable example [NormMetric R] [AddCommGroup R] [IsNormedAddGroup R] : NormedAddCommGroup C(α, R)₀ where
 
 noncomputable instance [NormedCommRing R] : IsNormedRing C(α, R)₀ where
   norm_mul_le f g := norm_mul_le (f : C(α, R)) g

@@ -40,7 +40,7 @@ namespace TopologicalGroup.IsSES
 variable {A B C E : Type*} [Group A] [Group B] [Group C]
   [TopologicalSpace A] [TopologicalSpace B] [TopologicalSpace C]
   {φ : A →* B} {ψ : B →* C} (H : TopologicalGroup.IsSES φ ψ)
-  [IsTopologicalGroup A] [IsTopologicalGroup B] [NormedAddCommGroup E]
+  [IsTopologicalGroup A] [IsTopologicalGroup B] [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E]
 
 /-- If `φ : A →* B` and `ψ : B →* C` define a short exact sequence of topological groups, then we
 can pull back a continuous compactly supported function `f` on `B` along `φ` to the continuous

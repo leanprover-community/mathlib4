@@ -723,23 +723,23 @@ theorem norm_snd_le [NormPseudoMetric α] [AddCommGroup α] [IsNormedAddGroup α
 
 end
 
-instance instProdNormMetric [NormedAddCommGroup α] [NormedAddCommGroup β] :
+instance instProdNormMetric [NormMetric α] [AddCommGroup α] [IsNormedAddGroup α] [NormMetric β] [AddCommGroup β] [IsNormedAddGroup β] :
     NormMetric (WithLp p (α × β)) where
 
 /-- normed group instance on the product of two normed groups, using the `L^p` norm. -/
-example [NormedAddCommGroup α] [NormedAddCommGroup β] :
+example [NormMetric α] [AddCommGroup α] [IsNormedAddGroup α] [NormMetric β] [AddCommGroup β] [IsNormedAddGroup β] :
     NormedAddCommGroup (WithLp p (α × β)) where
 
-example [NormedAddCommGroup α] [NormedAddCommGroup β] :
+example [NormMetric α] [AddCommGroup α] [IsNormedAddGroup α] [NormMetric β] [AddCommGroup β] [IsNormedAddGroup β] :
     (instProdNormMetric p α β).toMetricSpace.toUniformSpace.toTopologicalSpace =
     instProdTopologicalSpace p α β :=
   rfl
 
-example [NormedAddCommGroup α] [NormedAddCommGroup β] :
+example [NormMetric α] [AddCommGroup α] [IsNormedAddGroup α] [NormMetric β] [AddCommGroup β] [IsNormedAddGroup β] :
     (instProdNormMetric p α β).toMetricSpace.toUniformSpace = instProdUniformSpace p α β :=
   rfl
 
-example [NormedAddCommGroup α] [NormedAddCommGroup β] :
+example [NormMetric α] [AddCommGroup α] [IsNormedAddGroup α] [NormMetric β] [AddCommGroup β] [IsNormedAddGroup β] :
     (instProdNormMetric p α β).toMetricSpace.toBornology = instProdBornology p α β :=
   rfl
 
@@ -1098,7 +1098,7 @@ abbrev normedSpaceSeminormedAddCommGroupToProd
 /-- This definition allows to endow `α × β` with the Lp norm with the uniformity and bornology
 being defeq to the product ones. It is useful to endow a type synonym of `α × β` with the
 Lp norm. -/
-abbrev normMetricToProd [NormedAddCommGroup α] [NormedAddCommGroup β] :
+abbrev normMetricToProd [NormMetric α] [AddCommGroup α] [IsNormedAddGroup α] [NormMetric β] [AddCommGroup β] [IsNormedAddGroup β] :
     NormMetric (α × β) where
   norm x := ‖toLp p x‖
   toPseudoMetricSpace := pseudoMetricSpaceToProd p α β
@@ -1109,7 +1109,7 @@ abbrev normMetricToProd [NormedAddCommGroup α] [NormedAddCommGroup β] :
 /-- This definition allows to endow `α × β` with the Lp norm with the uniformity and bornology
 being defeq to the product ones. It is useful to endow a type synonym of `α × β` with the
 Lp norm. -/
-abbrev normedAddCommGroupToProd [NormedAddCommGroup α] [NormedAddCommGroup β] :
+abbrev normedAddCommGroupToProd [NormMetric α] [AddCommGroup α] [IsNormedAddGroup α] [NormMetric β] [AddCommGroup β] [IsNormedAddGroup β] :
     NormedAddCommGroup (α × β) where
   toNormMetric := normMetricToProd p α β
   toIsNormedAddGroup := isNormedAddGroupToProd p α β

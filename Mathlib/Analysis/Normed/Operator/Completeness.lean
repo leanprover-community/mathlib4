@@ -25,7 +25,7 @@ open scoped NNReal Topology Uniformity
 
 -- the `ₗ` subscript variables are for special cases about linear (as opposed to semilinear) maps
 variable {𝕜 𝕜₂ E F Fₗ : Type*}
-variable [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedAddCommGroup Fₗ]
+variable [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormMetric Fₗ] [AddCommGroup Fₗ] [IsNormedAddGroup Fₗ]
 
 variable [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕜₂]
   [NormedSpace 𝕜 E] [NormedSpace 𝕜₂ F] [NormedSpace 𝕜 Fₗ]

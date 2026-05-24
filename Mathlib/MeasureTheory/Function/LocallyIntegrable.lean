@@ -34,7 +34,7 @@ variable {X Y ε ε' ε'' E F R : Type*} [MeasurableSpace X] [TopologicalSpace X
 variable [MeasurableSpace Y] [TopologicalSpace Y]
 variable [TopologicalSpace ε] [ContinuousENorm ε] [TopologicalSpace ε'] [ContinuousENorm ε']
   [TopologicalSpace ε''] [ContinuousENorm ε''] [AddMonoid ε''] [IsESeminormedAddMonoid ε'']
-  [NormedAddCommGroup E] [NormedAddCommGroup F] {f g : X → ε} {μ ν : Measure X} {s : Set X}
+  [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] {f g : X → ε} {μ ν : Measure X} {s : Set X}
 
 namespace MeasureTheory
 
@@ -197,7 +197,7 @@ theorem locallyIntegrableOn_iff [PseudoMetrizableSpace ε]
 
 theorem _root_.ContinuousLinearMap.locallyIntegrableOn_comp {E H 𝕜 𝕜' : Type*}
     [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕜']
-    [NormedAddCommGroup E] [NormedSpace 𝕜' E] [NormedAddCommGroup H] [NormedSpace 𝕜 H]
+    [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜' E] [NormMetric H] [AddCommGroup H] [IsNormedAddGroup H] [NormedSpace 𝕜 H]
     {σ : 𝕜 →+* 𝕜'} [RingHomIsometric σ] {f : X → H} (L : H →SL[σ] E)
     (hf : LocallyIntegrableOn f s μ) : LocallyIntegrableOn (L ∘ f) s μ :=
   (L.integrableAtFilter_comp <| hf · ·)
@@ -393,7 +393,7 @@ protected theorem LocallyIntegrable.sub {f g : X → E}
 protected theorem LocallyIntegrable.neg {f : X → E} (hf : LocallyIntegrable f μ) :
     LocallyIntegrable (-f) μ := fun x ↦ (hf x).neg
 
-protected theorem LocallyIntegrable.smul {f : X → E} {𝕜 : Type*} [NormedAddCommGroup 𝕜]
+protected theorem LocallyIntegrable.smul {f : X → E} {𝕜 : Type*} [NormMetric 𝕜] [AddCommGroup 𝕜] [IsNormedAddGroup 𝕜]
     [SMulZeroClass 𝕜 E] [IsBoundedSMul 𝕜 E] (hf : LocallyIntegrable f μ) (c : 𝕜) :
     LocallyIntegrable (c • f) μ := fun x ↦ (hf x).smul c
 

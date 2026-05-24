@@ -26,7 +26,7 @@ public section
 open Filter Finset Function Bornology
 open scoped Topology
 
-variable {𝕜 E : Type*} [RCLike 𝕜] [NormedAddCommGroup E]
+variable {𝕜 E : Type*} [RCLike 𝕜] [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E]
 
 /-- **Von Neumann Mean Ergodic Theorem**, a version for a normed space.
 

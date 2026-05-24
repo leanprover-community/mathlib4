@@ -45,7 +45,7 @@ open scoped MeasureTheory Topology Interval NNReal ENNReal
 
 open MeasureTheory TopologicalSpace Set Filter Asymptotics intervalIntegral
 
-variable {E F : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedAddCommGroup F]
+variable {E F : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace ℝ E] [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F]
 
 /-- If `f` is eventually differentiable along a nontrivial filter `l : Filter ℝ` that is generated
 by convex sets, the norm of `f` tends to infinity along `l`, and `f' = O(g)` along `l`, where `f'`

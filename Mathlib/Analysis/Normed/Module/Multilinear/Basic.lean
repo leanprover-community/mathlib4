@@ -624,7 +624,7 @@ def prodL :
 
 /-- `ContinuousMultilinearMap.pi` as a `LinearIsometryEquiv`. -/
 @[simps! apply symm_apply]
-def piₗᵢ {ι' : Type v'} [Fintype ι'] {E' : ι' → Type wE'} [∀ i', NormedAddCommGroup (E' i')]
+def piₗᵢ {ι' : Type v'} [Fintype ι'] {E' : ι' → Type wE'} [∀ i', NormMetric (E' i')] [∀ i', AddCommGroup (E' i')] [∀ i', IsNormedAddGroup (E' i')]
     [∀ i', NormedSpace 𝕜 (E' i')] :
     (Π i', ContinuousMultilinearMap 𝕜 E (E' i'))
       ≃ₗᵢ[𝕜] (ContinuousMultilinearMap 𝕜 E (Π i, E' i)) where
@@ -1244,7 +1244,7 @@ namespace ContinuousMultilinearMap
 
 variable {𝕜 : Type u} {ι : Type v} {E : ι → Type wE} {G : Type wG} {G' : Type wG'} [Fintype ι]
   [NontriviallyNormedField 𝕜] [∀ i, NormPseudoMetric (E i)] [∀ i, AddCommGroup (E i)] [∀ i, IsNormedAddGroup (E i)] [∀ i, NormedSpace 𝕜 (E i)]
-  [NormedAddCommGroup G] [NormedSpace 𝕜 G] [NormPseudoMetric G'] [AddCommGroup G'] [IsNormedAddGroup G'] [NormedSpace 𝕜 G']
+  [NormMetric G] [AddCommGroup G] [IsNormedAddGroup G] [NormedSpace 𝕜 G] [NormPseudoMetric G'] [AddCommGroup G'] [IsNormedAddGroup G'] [NormedSpace 𝕜 G']
 
 /-- A continuous linear map is zero iff its norm vanishes. -/
 theorem opNorm_zero_iff {f : ContinuousMultilinearMap 𝕜 E G} : ‖f‖ = 0 ↔ f = 0 := by
@@ -1281,7 +1281,7 @@ section Norm
 `SeminormedAddCommGroup`). -/
 
 variable {𝕜 : Type u} {ι : Type v} {E : ι → Type wE} {G : Type wG} [Fintype ι]
-  [NontriviallyNormedField 𝕜] [∀ i, NormedAddCommGroup (E i)] [∀ i, NormedSpace 𝕜 (E i)]
+  [NontriviallyNormedField 𝕜] [∀ i, NormMetric (E i)] [∀ i, AddCommGroup (E i)] [∀ i, IsNormedAddGroup (E i)] [∀ i, NormedSpace 𝕜 (E i)]
   [NormPseudoMetric G] [AddCommGroup G] [IsNormedAddGroup G] [NormedSpace 𝕜 G]
 
 namespace MultilinearMap

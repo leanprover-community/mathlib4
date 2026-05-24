@@ -106,7 +106,7 @@ theorem closedBall_inv_subset_polar_closedBall {r : ℝ} :
 
 /-- The `polar` of closed ball in a normed space `E` is the closed ball of the dual with inverse
 radius. -/
-theorem polar_closedBall {𝕜 E : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E] {r : ℝ}
+theorem polar_closedBall {𝕜 E : Type*} [RCLike 𝕜] [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E] {r : ℝ}
     (hr : 0 < r) :
     StrongDual.polar 𝕜 (closedBall (0 : E) r) = closedBall (0 : StrongDual 𝕜 E) r⁻¹ := by
   refine Subset.antisymm ?_ (closedBall_inv_subset_polar_closedBall 𝕜)
@@ -115,7 +115,7 @@ theorem polar_closedBall {𝕜 E : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [
   refine ContinuousLinearMap.opNorm_le_of_ball hr (inv_nonneg.mpr hr.le) fun z _ => ?_
   simpa only [one_div] using LinearMap.bound_of_ball_bound' hr 1 x'.toLinearMap h z
 
-theorem polar_ball {𝕜 E : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E] {r : ℝ}
+theorem polar_ball {𝕜 E : Type*} [RCLike 𝕜] [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E] {r : ℝ}
     (hr : 0 < r) : StrongDual.polar 𝕜 (ball (0 : E) r) = closedBall (0 : StrongDual 𝕜 E) r⁻¹ := by
   letI : NormedSpace ℝ E := .restrictScalars ℝ 𝕜 E
   rw [← polar_closedBall hr, ← closure_ball _ hr.ne', polar_closure]
@@ -130,7 +130,7 @@ theorem isBounded_polar_of_mem_nhds_zero {s : Set E} (s_nhds : s ∈ 𝓝 (0 : E
     (((topDualPairing 𝕜 E).flip.polar_antitone r_ball).trans <|
       polar_ball_subset_closedBall_div ha r_pos)
 
-theorem sInter_polar_eq_closedBall {𝕜 E : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+theorem sInter_polar_eq_closedBall {𝕜 E : Type*} [RCLike 𝕜] [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E]
     {r : ℝ} (hr : 0 < r) :
     ⋂₀ (StrongDual.polar 𝕜 '' { F | F.Finite ∧ F ⊆ closedBall (0 : E) r⁻¹ }) = closedBall 0 r := by
   conv_rhs => rw [← inv_inv r]
@@ -164,7 +164,7 @@ end LinearMap
 
 section Deprecated
 
-variable (𝕜 : Type*) [RCLike 𝕜] {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable (𝕜 : Type*) [RCLike 𝕜] {E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E]
 
 @[deprecated SeparatingDual.eq_zero_of_forall_dual_eq_zero (since := "2026-03-18")]
 theorem NormedSpace.eq_zero_of_forall_dual_eq_zero {x : E}

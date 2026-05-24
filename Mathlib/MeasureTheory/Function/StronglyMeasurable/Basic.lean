@@ -174,7 +174,7 @@ noncomputable def approxBounded {_ : MeasurableSpace α} [Norm β] [SMul ℝ β]
     (hf : StronglyMeasurable f) (c : ℝ) : ℕ → SimpleFunc α β := fun n =>
   (hf.approx n).map fun x => min 1 (c / ‖x‖) • x
 
-theorem tendsto_approxBounded_of_norm_le {β} {f : α → β} [NormedAddCommGroup β] [NormedSpace ℝ β]
+theorem tendsto_approxBounded_of_norm_le {β} {f : α → β} [NormMetric β] [AddCommGroup β] [IsNormedAddGroup β] [NormedSpace ℝ β]
     {m : MeasurableSpace α} (hf : StronglyMeasurable[m] f) {c : ℝ} {x : α} (hfx : ‖f x‖ ≤ c) :
     Tendsto (fun n => hf.approxBounded c n x) atTop (𝓝 (f x)) := by
   have h_tendsto := hf.tendsto_approx x
@@ -205,7 +205,7 @@ theorem tendsto_approxBounded_of_norm_le {β} {f : α → β} [NormedAddCommGrou
   refine Tendsto.min tendsto_const_nhds ?_
   exact Tendsto.div tendsto_const_nhds h_tendsto.norm hfx0
 
-theorem tendsto_approxBounded_ae {β} {f : α → β} [NormedAddCommGroup β] [NormedSpace ℝ β]
+theorem tendsto_approxBounded_ae {β} {f : α → β} [NormMetric β] [AddCommGroup β] [IsNormedAddGroup β] [NormedSpace ℝ β]
     {m m0 : MeasurableSpace α} {μ : Measure α} (hf : StronglyMeasurable[m] f) {c : ℝ}
     (hf_bound : ∀ᵐ x ∂μ, ‖f x‖ ≤ c) :
     ∀ᵐ x ∂μ, Tendsto (fun n => hf.approxBounded c n x) atTop (𝓝 (f x)) := by

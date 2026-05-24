@@ -325,7 +325,7 @@ theorem opNorm_zero : ‖(0 : NormedAddGroupHom V₁ V₂)‖ = 0 :=
     (opNorm_nonneg _)
 
 /-- For normed groups, an operator is zero iff its norm vanishes. -/
-theorem opNorm_zero_iff {V₁ V₂ : Type*} [NormedAddCommGroup V₁] [NormedAddCommGroup V₂]
+theorem opNorm_zero_iff {V₁ V₂ : Type*} [NormMetric V₁] [AddCommGroup V₁] [IsNormedAddGroup V₁] [NormMetric V₂] [AddCommGroup V₂] [IsNormedAddGroup V₂]
     {f : NormedAddGroupHom V₁ V₂} : ‖f‖ = 0 ↔ f = 0 :=
   Iff.intro
     (fun hn =>
@@ -517,7 +517,7 @@ instance toIsNormedAddGroup : IsNormedAddGroup (NormedAddGroupHom V₁ V₂) :=
       neg' := opNorm_neg
       add_le' := opNorm_add_le }
 
-instance toNormMetric {V₁ V₂ : Type*} [NormedAddCommGroup V₁] [NormedAddCommGroup V₂] :
+instance toNormMetric {V₁ V₂ : Type*} [NormMetric V₁] [AddCommGroup V₁] [IsNormedAddGroup V₁] [NormMetric V₂] [AddCommGroup V₂] [IsNormedAddGroup V₂] :
     NormMetric (NormedAddGroupHom V₁ V₂) :=
   AddGroupNorm.toNormMetric
     { toFun := opNorm
@@ -666,7 +666,7 @@ theorem ker_zero : (0 : NormedAddGroupHom V₁ V₂).ker = ⊤ := by
 theorem coe_ker : (f.ker : Set V₁) = (f : V₁ → V₂) ⁻¹' {0} :=
   rfl
 
-theorem isClosed_ker {V₂ : Type*} [NormedAddCommGroup V₂] (f : NormedAddGroupHom V₁ V₂) :
+theorem isClosed_ker {V₂ : Type*} [NormMetric V₂] [AddCommGroup V₂] [IsNormedAddGroup V₂] (f : NormedAddGroupHom V₁ V₂) :
     IsClosed (f.ker : Set V₁) :=
   f.coe_ker ▸ IsClosed.preimage f.continuous (T1Space.t1 0)
 

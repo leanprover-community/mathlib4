@@ -30,8 +30,8 @@ open Filter Asymptotics ENNReal NNReal
 
 variable {α : Type*}
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-variable {E F G H : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedAddCommGroup F]
-  [NormedSpace 𝕜 F] [NormedAddCommGroup G] [NormedSpace 𝕜 G] [NormedAddCommGroup H]
+variable {E F G H : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E] [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F]
+  [NormedSpace 𝕜 F] [NormMetric G] [AddCommGroup G] [IsNormedAddGroup G] [NormedSpace 𝕜 G] [NormMetric H] [AddCommGroup H] [IsNormedAddGroup H]
   [NormedSpace 𝕜 H]
 
 variable {A : Type*} [NormedRing A] [NormedAlgebra 𝕜 A]
@@ -450,7 +450,7 @@ or `fun x ↦ (f ⬝ x)`. We use the latter spelling in the statements, for read
 section
 
 variable {ι : Type*} [Fintype ι] {e : E} {Fm : ι → Type*}
-    [∀ i, NormedAddCommGroup (Fm i)] [∀ i, NormedSpace 𝕜 (Fm i)]
+    [∀ i, NormMetric (Fm i)] [∀ i, AddCommGroup (Fm i)] [∀ i, IsNormedAddGroup (Fm i)] [∀ i, NormedSpace 𝕜 (Fm i)]
     {f : Π i, E → Fm i} {s : Set E} {r : ℝ≥0∞}
     {p : Π i, FormalMultilinearSeries 𝕜 E (Fm i)}
 

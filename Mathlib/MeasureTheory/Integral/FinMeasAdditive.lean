@@ -41,9 +41,9 @@ open Set Filter ENNReal Finset
 
 namespace MeasureTheory
 
-variable {α E F F' G 𝕜 : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
-  [NormedAddCommGroup F] [NormedSpace ℝ F] [NormedAddCommGroup F'] [NormedSpace ℝ F']
-  [NormedAddCommGroup G] {m : MeasurableSpace α} {μ : Measure α}
+variable {α E F F' G 𝕜 : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace ℝ E]
+  [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace ℝ F] [NormMetric F'] [AddCommGroup F'] [IsNormedAddGroup F'] [NormedSpace ℝ F']
+  [NormMetric G] [AddCommGroup G] [IsNormedAddGroup G] {m : MeasurableSpace α} {μ : Measure α}
 
 local infixr:25 " →ₛ " => SimpleFunc
 
@@ -148,14 +148,14 @@ theorem zero {m : MeasurableSpace α} (μ : Measure α) (hC : 0 ≤ C) :
   rw [Pi.zero_apply, norm_zero]
   exact mul_nonneg hC toReal_nonneg
 
-theorem eq_zero_of_measure_zero {β : Type*} [NormedAddCommGroup β] {T : Set α → β} {C : ℝ}
+theorem eq_zero_of_measure_zero {β : Type*} [NormMetric β] [AddCommGroup β] [IsNormedAddGroup β] {T : Set α → β} {C : ℝ}
     (hT : DominatedFinMeasAdditive μ T C) {s : Set α} (hs : MeasurableSet s) (hs_zero : μ s = 0) :
     T s = 0 := by
   refine norm_eq_zero.mp ?_
   refine ((hT.2 s hs (by simp [hs_zero])).trans (le_of_eq ?_)).antisymm (norm_nonneg _)
   rw [measureReal_def, hs_zero, ENNReal.toReal_zero, mul_zero]
 
-theorem eq_zero {β : Type*} [NormedAddCommGroup β] {T : Set α → β} {C : ℝ} {_ : MeasurableSpace α}
+theorem eq_zero {β : Type*} [NormMetric β] [AddCommGroup β] [IsNormedAddGroup β] {T : Set α → β} {C : ℝ} {_ : MeasurableSpace α}
     (hT : DominatedFinMeasAdditive (0 : Measure α) T C) {s : Set α} (hs : MeasurableSet s) :
     T s = 0 :=
   eq_zero_of_measure_zero hT hs (by simp only [Measure.coe_zero, Pi.zero_apply])
@@ -412,7 +412,7 @@ theorem setToSimpleFunc_smul_real (T : Set α → E →L[ℝ] F) (h_add : FinMea
       (Finset.sum_congr rfl fun b _ => by rw [map_smul (T (f ⁻¹' {b})) c b])
     _ = c • setToSimpleFunc T f := by simp only [setToSimpleFunc, smul_sum]
 
-theorem setToSimpleFunc_smul {E} [NormedAddCommGroup E] [SMulZeroClass 𝕜 E]
+theorem setToSimpleFunc_smul {E} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [SMulZeroClass 𝕜 E]
     [NormedSpace ℝ E] [DistribSMul 𝕜 F] (T : Set α → E →L[ℝ] F) (h_add : FinMeasAdditive μ T)
     (h_smul : ∀ c : 𝕜, ∀ s x, T s (c • x) = c • T s x) (c : 𝕜) {f : α →ₛ E} (hf : Integrable f μ) :
     setToSimpleFunc T (c • f) = c • setToSimpleFunc T f :=
@@ -425,8 +425,8 @@ theorem setToSimpleFunc_smul {E} [NormedAddCommGroup E] [SMulZeroClass 𝕜 E]
 section Order
 
 variable {G' G'' : Type*}
-  [NormedAddCommGroup G''] [PartialOrder G''] [IsOrderedAddMonoid G''] [NormedSpace ℝ G'']
-  [NormedAddCommGroup G'] [PartialOrder G'] [NormedSpace ℝ G']
+  [NormMetric G''] [AddCommGroup G''] [IsNormedAddGroup G''] [PartialOrder G''] [IsOrderedAddMonoid G''] [NormedSpace ℝ G'']
+  [NormMetric G'] [AddCommGroup G'] [IsNormedAddGroup G'] [PartialOrder G'] [NormedSpace ℝ G']
 
 theorem setToSimpleFunc_mono_left {m : MeasurableSpace α} (T T' : Set α → F →L[ℝ] G'')
     (hTT' : ∀ s x, T s x ≤ T' s x) (f : α →ₛ F) : setToSimpleFunc T f ≤ setToSimpleFunc T' f := by

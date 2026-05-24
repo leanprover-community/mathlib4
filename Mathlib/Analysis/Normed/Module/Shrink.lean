@@ -33,7 +33,7 @@ instance [NormPseudoMetric α] [AddCommGroup α] [IsNormedAddGroup α] : IsNorme
 example [NormPseudoMetric α] [AddCommGroup α] [IsNormedAddGroup α] : SeminormedAddCommGroup (Shrink.{v} α) :=
   inferInstance
 
-example [NormedAddCommGroup α] : NormedAddCommGroup (Shrink.{v} α) :=
+example [NormMetric α] [AddCommGroup α] [IsNormedAddGroup α] : NormedAddCommGroup (Shrink.{v} α) :=
   inferInstance
 
 instance [NormPseudoMetric α] [AddCommGroup α] [IsNormedAddGroup α] [NormedSpace 𝕜 α] : NormedSpace 𝕜 (Shrink.{v} α) :=

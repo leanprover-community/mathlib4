@@ -56,7 +56,7 @@ protected abbrev seminormedCommGroup [NormPseudoMetric β] [CommGroup β] [IsNor
 
 /-- Transfer a `NormedCommGroup` across an `Equiv` -/
 @[to_additive /-- Transfer a `NormedCommGroup` across an `Equiv` -/]
-protected abbrev normedCommGroup [NormedCommGroup β] (e : α ≃ β) :
+protected abbrev normedCommGroup [NormMetric β] [CommGroup β] [IsNormedGroup β] (e : α ≃ β) :
     NormedCommGroup α where
   __ := e.normMetric
   __ := e.commGroup

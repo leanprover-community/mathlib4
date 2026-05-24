@@ -645,7 +645,7 @@ theorem summable_of_ratio_norm_eventually_le {α : Type*} [NormPseudoMetric α] 
     by_contra! h
     exact not_lt.mpr (norm_nonneg _) (lt_of_le_of_lt hn <| mul_neg_of_neg_of_pos hr₀ h)
 
-theorem summable_of_ratio_test_tendsto_lt_one {α : Type*} [NormedAddCommGroup α] [CompleteSpace α]
+theorem summable_of_ratio_test_tendsto_lt_one {α : Type*} [NormMetric α] [AddCommGroup α] [IsNormedAddGroup α] [CompleteSpace α]
     {f : ℕ → α} {l : ℝ} (hl₁ : l < 1) (hf : ∀ᶠ n in atTop, f n ≠ 0)
     (h : Tendsto (fun n ↦ ‖f (n + 1)‖ / ‖f n‖) atTop (𝓝 l)) : Summable f := by
   rcases exists_between hl₁ with ⟨r, hr₀, hr₁⟩
@@ -714,7 +714,7 @@ section
 /-! ### Dirichlet and alternating series tests -/
 
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+variable {E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace ℝ E]
 variable {b : ℝ} {f : ℕ → ℝ} {z : ℕ → E}
 
 /-- **Dirichlet's test** for monotone sequences. -/
@@ -916,7 +916,7 @@ open Bornology
 variable {R K : Type*}
 
 section NormedAddCommGroup
-variable [NormedRing K] [IsDomain K] [NormedAddCommGroup R]
+variable [NormedRing K] [IsDomain K] [NormMetric R] [AddCommGroup R] [IsNormedAddGroup R]
 variable [Module K R] [IsTorsionFree K R] [NormSMulClass K R]
 
 lemma tendsto_zero_of_isBoundedUnder_smul_of_tendsto_cobounded {f : α → K} {g : α → R}

@@ -193,14 +193,14 @@ end SeminormedAddCommGroup
 declared as an instance because there are several natural choices for defining the norm of a
 matrix. -/
 @[instance_reducible]
-protected def normMetric [NormedAddCommGroup α] : NormMetric (Matrix m n α) :=
+protected def normMetric [NormMetric α] [AddCommGroup α] [IsNormedAddGroup α] : NormMetric (Matrix m n α) :=
   fast_instance% Pi.instNormMetric
 
 /-- Normed group instance (using sup norm of sup norm) for matrices over a normed group.  Not
 declared as an instance because there are several natural choices for defining the norm of a
 matrix. -/
 @[instance_reducible]
-protected def normedAddCommGroup [NormedAddCommGroup α] : NormedAddCommGroup (Matrix m n α) where
+protected def normedAddCommGroup [NormMetric α] [AddCommGroup α] [IsNormedAddGroup α] : NormedAddCommGroup (Matrix m n α) where
   toNormMetric := Matrix.normMetric
   toIsNormedAddGroup := Matrix.isNormedAddGroup
 
@@ -283,7 +283,7 @@ protected def linftyOpSeminormedAddCommGroup [NormPseudoMetric α] [AddCommGroup
 declared as an instance because there are several natural choices for defining the norm of a
 matrix. -/
 @[instance_reducible, local instance]
-protected def linftyOpNormMetric [NormedAddCommGroup α] :
+protected def linftyOpNormMetric [NormMetric α] [AddCommGroup α] [IsNormedAddGroup α] :
     NormMetric (Matrix m n α) :=
   fast_instance%
   @Pi.instNormMetric m _ _ (fun _ ↦
@@ -294,7 +294,7 @@ protected def linftyOpNormMetric [NormedAddCommGroup α] :
 declared as an instance because there are several natural choices for defining the norm of a
 matrix. -/
 @[instance_reducible]
-protected def linftyOpNormedAddCommGroup [NormedAddCommGroup α] :
+protected def linftyOpNormedAddCommGroup [NormMetric α] [AddCommGroup α] [IsNormedAddGroup α] :
     NormedAddCommGroup (Matrix m n α) where
   toNormMetric := Matrix.linftyOpNormMetric
   toIsNormedAddGroup := Matrix.linftyOpIsNormedAddGroup
@@ -571,14 +571,14 @@ def frobeniusSeminormedAddCommGroup [NormPseudoMetric α] [AddCommGroup α] [IsN
 declared as an instance because there are several natural choices for defining the norm of a
 matrix. -/
 @[instance_reducible, local instance]
-def frobeniusNormMetric [NormedAddCommGroup α] : NormMetric (Matrix m n α) :=
+def frobeniusNormMetric [NormMetric α] [AddCommGroup α] [IsNormedAddGroup α] : NormMetric (Matrix m n α) :=
   fast_instance% @PiLp.normMetricToPi 2 _ _ _ _ (fun _ ↦ PiLp.normedAddCommGroupToPi 2 _)
 
 /-- Normed group instance (using the Frobenius norm) for matrices over a normed group.  Not
 declared as an instance because there are several natural choices for defining the norm of a
 matrix. -/
 @[instance_reducible]
-def frobeniusNormedAddCommGroup [NormedAddCommGroup α] : NormedAddCommGroup (Matrix m n α) where
+def frobeniusNormedAddCommGroup [NormMetric α] [AddCommGroup α] [IsNormedAddGroup α] : NormedAddCommGroup (Matrix m n α) where
 
 /-- This applies to the Frobenius norm. -/
 @[local instance]

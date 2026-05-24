@@ -33,7 +33,7 @@ open Filter Metric Real Set
 namespace ValueDistribution
 
 variable
-  {E : Type*} [NormedAddCommGroup E]
+  {E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E]
   {f g : ℂ → E} {a : WithTop E} {a₀ : E}
 
 open Real

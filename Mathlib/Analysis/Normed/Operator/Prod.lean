@@ -147,7 +147,7 @@ section FirstSecond
 variable (𝕜 E F)
 
 /-- The operator norm of the first projection `E × F → E` is exactly 1 if `E` is nontrivial. -/
-@[simp] lemma norm_fst [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+@[simp] lemma norm_fst [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E]
     [NormPseudoMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace 𝕜 F] [Nontrivial E] :
     ‖fst 𝕜 E F‖ = 1 := by
   refine le_antisymm (norm_fst_le ..) ?_
@@ -158,7 +158,7 @@ variable (𝕜 E F)
 
 /-- The operator norm of the second projection `E × F → F` is exactly 1 if `F` is nontrivial. -/
 @[simp] lemma norm_snd [NormPseudoMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E]
-    [NormedAddCommGroup F] [NormedSpace 𝕜 F] [Nontrivial F] :
+    [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace 𝕜 F] [Nontrivial F] :
     ‖snd 𝕜 E F‖ = 1 := by
   refine le_antisymm (norm_snd_le ..) ?_
   let ⟨f, hf⟩ := exists_ne (0 : F)

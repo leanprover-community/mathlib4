@@ -15,7 +15,7 @@ public import Mathlib.Data.Complex.Basic
 
 This file defines inner product spaces.
 Hilbert spaces can be obtained using the set of assumptions
-`[RCLike 𝕜] [NormedAddCommGroup E] [InnerProductSpace 𝕜 E] [CompleteSpace E]`.
+`[RCLike 𝕜] [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [InnerProductSpace 𝕜 E] [CompleteSpace E]`.
 For convenience, a variable alias `HilbertSpace` is provided so that one can write
 `variable? [HilbertSpace 𝕜 E]` and get this as a suggestion.
 
@@ -181,7 +181,7 @@ def PreInnerProductSpace.toCore [NormPseudoMetric E] [AddCommGroup E] [IsNormedA
 `InnerProductSpace.Core.norm` is propositionally but not definitionally equal to the original
 norm. -/
 @[implicit_reducible]
-def InnerProductSpace.toCore [NormedAddCommGroup E] [c : InnerProductSpace 𝕜 E] :
+def InnerProductSpace.toCore [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [c : InnerProductSpace 𝕜 E] :
     InnerProductSpace.Core 𝕜 E :=
   { c with
     re_inner_nonneg := fun x => by
@@ -636,6 +636,6 @@ def InnerProductSpace.ofCoreOfTopology [AddCommGroup F] [hF : Module 𝕜 F] [To
 /-- A Hilbert space is a complete normed inner product space. -/
 @[variable_alias]
 structure HilbertSpace (𝕜 E : Type*) [RCLike 𝕜]
-  [NormedAddCommGroup E] [InnerProductSpace 𝕜 E] [CompleteSpace E]
+  [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [InnerProductSpace 𝕜 E] [CompleteSpace E]
 
 end

@@ -136,7 +136,7 @@ end Seminormed
 
 section Normed
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [Nontrivial E]
+variable {E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace ℝ E] [Nontrivial E]
 
 theorem interior_closedBall' (x : E) (r : ℝ) : interior (closedBall x r) = ball x r := by
   rcases eq_or_ne r 0 with (rfl | hr)

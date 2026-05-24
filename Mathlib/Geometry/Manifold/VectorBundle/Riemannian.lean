@@ -29,11 +29,11 @@ The following code block is the standard way to say "Let `E` be a smooth vector 
 a `C^n` Riemannian structure over a `C^n` manifold `B`":
 ```
 variable
-  {EB : Type*} [NormedAddCommGroup EB] [NormedSpace ℝ EB]
+  {EB : Type*} [NormMetric EB] [AddCommGroup EB] [IsNormedAddGroup EB] [NormedSpace ℝ EB]
   {HB : Type*} [TopologicalSpace HB] {IB : ModelWithCorners ℝ EB HB} {n : WithTop ℕ∞}
   {B : Type*} [TopologicalSpace B] [ChartedSpace HB B]
-  {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
-  {E : B → Type*} [TopologicalSpace (TotalSpace F E)] [∀ x, NormedAddCommGroup (E x)]
+  {F : Type*} [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace ℝ F]
+  {E : B → Type*} [TopologicalSpace (TotalSpace F E)] [∀ x, NormMetric (E x)] [∀ x, AddCommGroup (E x)] [∀ x, IsNormedAddGroup (E x)]
   [∀ x, InnerProductSpace ℝ (E x)] [FiberBundle F E] [VectorBundle ℝ F E]
   [IsManifold IB n B] [ContMDiffVectorBundle n F E IB]
   [IsContMDiffRiemannianBundle IB n F E]
@@ -48,11 +48,11 @@ open scoped ContDiff Topology
 section
 
 variable
-  {EB : Type*} [NormedAddCommGroup EB] [NormedSpace ℝ EB]
+  {EB : Type*} [NormMetric EB] [AddCommGroup EB] [IsNormedAddGroup EB] [NormedSpace ℝ EB]
   {HB : Type*} [TopologicalSpace HB] {IB : ModelWithCorners ℝ EB HB} {n n' : ℕ∞ω}
   {B : Type*} [TopologicalSpace B] [ChartedSpace HB B]
-  {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
-  {E : B → Type*} [TopologicalSpace (TotalSpace F E)] [∀ x, NormedAddCommGroup (E x)]
+  {F : Type*} [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace ℝ F]
+  {E : B → Type*} [TopologicalSpace (TotalSpace F E)] [∀ x, NormMetric (E x)] [∀ x, AddCommGroup (E x)] [∀ x, IsNormedAddGroup (E x)]
   [∀ x, InnerProductSpace ℝ (E x)]
   [FiberBundle F E] [VectorBundle ℝ F E]
 
@@ -93,7 +93,7 @@ instance [IsContMDiffRiemannianBundle IB 3 F E] : IsContMDiffRiemannianBundle IB
 
 section Trivial
 
-variable {F₁ : Type*} [NormedAddCommGroup F₁] [InnerProductSpace ℝ F₁]
+variable {F₁ : Type*} [NormMetric F₁] [AddCommGroup F₁] [IsNormedAddGroup F₁] [InnerProductSpace ℝ F₁]
 
 set_option backward.isDefEq.respectTransparency false in
 /-- A trivial vector bundle, in which the model fiber has a scalar product,
@@ -110,7 +110,7 @@ end Trivial
 section ContMDiff
 
 variable
-  {EM : Type*} [NormedAddCommGroup EM] [NormedSpace ℝ EM]
+  {EM : Type*} [NormMetric EM] [AddCommGroup EM] [IsNormedAddGroup EM] [NormedSpace ℝ EM]
   {HM : Type*} [TopologicalSpace HM] {IM : ModelWithCorners ℝ EM HM}
   {M : Type*} [TopologicalSpace M] [ChartedSpace HM M]
   [h : IsContMDiffRiemannianBundle IB n F E]
@@ -165,7 +165,7 @@ end ContMDiff
 section MDifferentiable
 
 variable
-  {EM : Type*} [NormedAddCommGroup EM] [NormedSpace ℝ EM]
+  {EM : Type*} [NormMetric EM] [AddCommGroup EM] [IsNormedAddGroup EM] [NormedSpace ℝ EM]
   {HM : Type*} [TopologicalSpace HM] {IM : ModelWithCorners ℝ EM HM}
   {M : Type*} [TopologicalSpace M] [ChartedSpace HM M]
   [h : IsContMDiffRiemannianBundle IB 1 F E]
@@ -225,10 +225,10 @@ namespace Bundle
 section Construction
 
 variable
-  {EB : Type*} [NormedAddCommGroup EB] [NormedSpace ℝ EB]
+  {EB : Type*} [NormMetric EB] [AddCommGroup EB] [IsNormedAddGroup EB] [NormedSpace ℝ EB]
   {HB : Type*} [TopologicalSpace HB] {IB : ModelWithCorners ℝ EB HB} {n n' : ℕ∞ω}
   {B : Type*} [TopologicalSpace B] [ChartedSpace HB B]
-  {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
+  {F : Type*} [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace ℝ F]
   {E : B → Type*} [TopologicalSpace (TotalSpace F E)]
   [∀ b, TopologicalSpace (E b)] [∀ b, AddCommGroup (E b)] [∀ b, Module ℝ (E b)]
   [∀ b, IsTopologicalAddGroup (E b)] [∀ b, ContinuousConstSMul ℝ (E b)]

@@ -44,8 +44,8 @@ A reproducing kernel Hilbert space is a Hilbert space with an
 injection to functions mapping into another Hilbert space, such that point evaluation is continuous.
 -/
 class RKHS (𝕜 : outParam Type*) (H : Type*) (X V : outParam Type*) [RCLike 𝕜]
-    [NormedAddCommGroup V] [InnerProductSpace 𝕜 V]
-    [NormedAddCommGroup H] [InnerProductSpace 𝕜 H] where
+    [NormMetric V] [AddCommGroup V] [IsNormedAddGroup V] [InnerProductSpace 𝕜 V]
+    [NormMetric H] [AddCommGroup H] [IsNormedAddGroup H] [InnerProductSpace 𝕜 H] where
   /-- Continuous injection to functions from the reproducing kernel Hilbert space `H` to functions
   from the domain `X` to the Hilbert space `V` -/
   coeCLM (𝕜) : H →L[𝕜] X → V
@@ -55,8 +55,8 @@ namespace RKHS
 
 variable {𝕜 : Type*} [RCLike 𝕜]
 variable {X : Type*}
-variable {V : Type*} [NormedAddCommGroup V] [InnerProductSpace 𝕜 V]
-variable {H : Type*} [NormedAddCommGroup H] [InnerProductSpace 𝕜 H]
+variable {V : Type*} [NormMetric V] [AddCommGroup V] [IsNormedAddGroup V] [InnerProductSpace 𝕜 V]
+variable {H : Type*} [NormMetric H] [AddCommGroup H] [IsNormedAddGroup H] [InnerProductSpace 𝕜 H]
 variable [RKHS 𝕜 H X V]
 
 /--

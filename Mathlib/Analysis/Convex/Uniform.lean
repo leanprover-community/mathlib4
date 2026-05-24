@@ -119,7 +119,7 @@ theorem exists_forall_closed_ball_dist_add_le_two_mul_sub (hε : 0 < ε) (r : �
 
 end SeminormedAddCommGroup
 
-variable [NormedAddCommGroup E] [NormedSpace ℝ E] [UniformConvexSpace E]
+variable [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace ℝ E] [UniformConvexSpace E]
 
 -- See note [lower instance priority]
 instance (priority := 100) UniformConvexSpace.toStrictConvexSpace : StrictConvexSpace ℝ E :=

@@ -42,10 +42,10 @@ public section
 
 variable {𝕜 ι E : Type*} {F G : ι → Type*} {H : Type*}
   [NontriviallyNormedField 𝕜]
-  [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-  [∀ i, NormedAddCommGroup (F i)] [∀ i, NormedSpace 𝕜 (F i)]
-  [∀ i, NormedAddCommGroup (G i)] [∀ i, NormedSpace 𝕜 (G i)]
-  [NormedAddCommGroup H] [NormedSpace 𝕜 H]
+  [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E]
+  [∀ i, NormMetric (F i)] [∀ i, AddCommGroup (F i)] [∀ i, IsNormedAddGroup (F i)] [∀ i, NormedSpace 𝕜 (F i)]
+  [∀ i, NormMetric (G i)] [∀ i, AddCommGroup (G i)] [∀ i, IsNormedAddGroup (G i)] [∀ i, NormedSpace 𝕜 (G i)]
+  [NormMetric H] [AddCommGroup H] [IsNormedAddGroup H] [NormedSpace 𝕜 H]
   {f : E → ContinuousMultilinearMap 𝕜 G H} {f' : E →L[𝕜] ContinuousMultilinearMap 𝕜 G H}
   {g : ∀ i, E → F i →L[𝕜] G i} {g' : ∀ i, E →L[𝕜] F i →L[𝕜] G i}
   {s : Set E} {x : E}

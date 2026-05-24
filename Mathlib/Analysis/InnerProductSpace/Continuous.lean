@@ -96,7 +96,7 @@ open Submodule
 
 variable {E F ι : Type*}
 variable (𝕜 : Type*) [RCLike 𝕜]
-variable [NormedAddCommGroup E] [NormedAddCommGroup F]
+variable [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F]
 variable [InnerProductSpace 𝕜 E] [InnerProductSpace ℝ F]
 variable {x y : E} {S : Set E} {f : ι → E}
 

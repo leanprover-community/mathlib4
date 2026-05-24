@@ -39,14 +39,14 @@ noncomputable section
 
 section Defs
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E]
+variable {E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace ℂ E]
 
 /-- Predicate on `f` and `s` asserting that the Mellin integral is well-defined. -/
 def MellinConvergent (f : ℝ → E) (s : ℂ) : Prop :=
   IntegrableOn (fun t : ℝ => (t : ℂ) ^ (s - 1) • f t) (Ioi 0)
 
 theorem MellinConvergent.const_smul {f : ℝ → E} {s : ℂ} (hf : MellinConvergent f s) {𝕜 : Type*}
-    [NormedAddCommGroup 𝕜] [SMulZeroClass 𝕜 E] [IsBoundedSMul 𝕜 E] [SMulCommClass ℂ 𝕜 E] (c : 𝕜) :
+    [NormMetric 𝕜] [AddCommGroup 𝕜] [IsNormedAddGroup 𝕜] [SMulZeroClass 𝕜 E] [IsBoundedSMul 𝕜 E] [SMulCommClass ℂ 𝕜 E] (c : 𝕜) :
     MellinConvergent (fun t => c • f t) s := by
   simpa only [MellinConvergent, smul_comm] using hf.smul c
 
@@ -181,7 +181,7 @@ theorem hasMellin_const_smul {f : ℝ → E} {s : ℂ} (hf : MellinConvergent f 
 
 end Defs
 
-variable {E : Type*} [NormedAddCommGroup E]
+variable {E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E]
 
 section MellinConvergent
 

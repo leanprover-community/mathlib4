@@ -155,7 +155,7 @@ end SeminormedBounded
 
 section Normed
 variable [Ring 𝕜] [Ring 𝕜₂]
-variable [NormedAddCommGroup E] [NormedAddCommGroup F] [Module 𝕜 E] [Module 𝕜₂ F]
+variable [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [Module 𝕜 E] [Module 𝕜₂ F]
 variable {σ : 𝕜 →+* 𝕜₂} (f g : E →SL[σ] F) (x y z : E)
 
 theorem ContinuousLinearMap.isUniformEmbedding_of_bound {K : ℝ≥0} (hf : ∀ x, ‖x‖ ≤ K * ‖f x‖) :

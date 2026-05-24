@@ -17,5 +17,5 @@ in earlier files.
 public section
 
 noncomputable
-instance {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℂ E] [CompleteSpace E] :
+instance {E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [InnerProductSpace ℂ E] [CompleteSpace E] :
     CStarAlgebra (E →L[ℂ] E) where

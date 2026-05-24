@@ -105,7 +105,7 @@ theorem eLpNorm_le_of_ae_tendsto {ι : Type*} {u : Filter ι} [NeBot u] [IsCount
 
 /-! ### `Lp` is complete iff Cauchy sequences of `ℒp` have limits in `ℒp` -/
 
-variable {E : Type*} [NormedAddCommGroup E]
+variable {E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E]
 
 theorem tendsto_Lp_iff_tendsto_eLpNorm' {ι} {fi : Filter ι} [Fact (1 ≤ p)] (f : ι → Lp E p μ)
     (f_lim : Lp E p μ) :

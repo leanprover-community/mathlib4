@@ -22,8 +22,8 @@ public section
 
 variable {𝕜 ι E F G H : Type*}
   [NontriviallyNormedField 𝕜]
-  [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-  [NormedAddCommGroup G] [NormedSpace 𝕜 G] [NormedAddCommGroup H] [NormedSpace 𝕜 H]
+  [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E] [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace 𝕜 F]
+  [NormMetric G] [AddCommGroup G] [IsNormedAddGroup G] [NormedSpace 𝕜 G] [NormMetric H] [AddCommGroup H] [IsNormedAddGroup H] [NormedSpace 𝕜 H]
 
 open ContinuousAlternatingMap
 open scoped Topology

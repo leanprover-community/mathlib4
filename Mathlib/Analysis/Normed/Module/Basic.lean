@@ -97,7 +97,7 @@ theorem Filter.IsBoundedUnder.smul_tendsto_zero {f : α → 𝕜} {g : α → E}
     (norm_smul_le y x).trans_eq (mul_comm _ _)
 
 instance NormedSpace.discreteTopology_zmultiples
-    {E : Type*} [NormedAddCommGroup E] [NormedSpace ℚ E] (e : E) :
+    {E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace ℚ E] (e : E) :
     DiscreteTopology <| AddSubgroup.zmultiples e := by
   have : IsAddTorsionFree E := .of_module_rat E
   rcases eq_or_ne e 0 with (rfl | he)
@@ -113,7 +113,7 @@ instance NormedSpace.discreteTopology_zmultiples
       ← Int.cast_abs, Int.cast_lt, Int.abs_lt_one_iff, smul_eq_zero, or_iff_left he]
 
 section Real
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [Nontrivial E]
+variable {E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace ℝ E] [Nontrivial E]
 
 lemma Metric.diam_sphere_eq (x : E) {r : ℝ} (hr : 0 ≤ r) : diam (sphere x r) = 2 * r := by
   apply le_antisymm
@@ -198,7 +198,7 @@ abbrev NormedSpace.induced {F : Type*} (𝕜 E G : Type*) [NormedField 𝕜] [Ad
 section NontriviallyNormedSpace
 
 variable (𝕜 E)
-variable [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E] [Nontrivial E]
+variable [NontriviallyNormedField 𝕜] [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E] [Nontrivial E]
 include 𝕜
 
 /-- If `E` is a nontrivial normed space over a nontrivially normed field `𝕜`, then `E` is unbounded:
@@ -233,7 +233,7 @@ end NontriviallyNormedSpace
 section NormedSpace
 
 variable (𝕜 E)
-variable [NormedField 𝕜] [Infinite 𝕜] [NormedAddCommGroup E] [Nontrivial E] [NormedSpace 𝕜 E]
+variable [NormedField 𝕜] [Infinite 𝕜] [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [Nontrivial E] [NormedSpace 𝕜 E]
 include 𝕜
 
 /-- A normed vector space over an infinite normed field is a noncompact space.

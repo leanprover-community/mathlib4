@@ -37,7 +37,7 @@ open scoped symmDiff Topology NNReal ENNReal
 
 variable {α : Type*} [LinearOrder α] [DenselyOrdered α] [TopologicalSpace α] [OrderTopology α]
   [SecondCountableTopology α] [CompactIccSpace α] [hα : MeasurableSpace α] [BorelSpace α]
-  {E : Type*} [NormedAddCommGroup E] [CompleteSpace E]
+  {E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [CompleteSpace E]
   {f : α → E} {a b : α}
 
 namespace BoundedVariationOn

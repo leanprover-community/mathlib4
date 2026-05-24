@@ -190,7 +190,7 @@ end MetricSpace
 
 section NormedSpace
 
-variable [NormedAddCommGroup V] [NormedSpace ℝ V] [MetricSpace P] [NormedAddTorsor V P]
+variable [NormMetric V] [AddCommGroup V] [IsNormedAddGroup V] [NormedSpace ℝ V] [MetricSpace P] [NormedAddTorsor V P]
 
 /-- If a set of points is cospherical, then its image under the inclusion of any affine subspace
 containing it is cospherical. -/
@@ -344,7 +344,7 @@ end NormedSpace
 
 section EuclideanSpace
 
-variable [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P] [NormedAddTorsor V P]
+variable [NormMetric V] [AddCommGroup V] [IsNormedAddGroup V] [InnerProductSpace ℝ V] [MetricSpace P] [NormedAddTorsor V P]
 
 /-- A set of points in an affine subspace is cospherical if and only if its image in the ambient
 space is cospherical. -/

@@ -717,10 +717,10 @@ theorem norm_apply_le [∀ i, NormPseudoMetric (β i)] [∀ i, AddCommGroup (β 
 
 end
 
-instance instNormMetric [∀ i, NormedAddCommGroup (α i)] : NormMetric (PiLp p α) where
+instance instNormMetric [∀ i, NormMetric (α i)] [∀ i, AddCommGroup (α i)] [∀ i, IsNormedAddGroup (α i)] : NormMetric (PiLp p α) where
 
 /-- normed group instance on the product of finitely many normed groups, using the `L^p` norm. -/
-example [∀ i, NormedAddCommGroup (α i)] : NormedAddCommGroup (PiLp p α) where
+example [∀ i, NormMetric (α i)] [∀ i, AddCommGroup (α i)] [∀ i, IsNormedAddGroup (α i)] : NormedAddCommGroup (PiLp p α) where
 
 theorem nnnorm_eq_sum {p : ℝ≥0∞} [Fact (1 ≤ p)] {β : ι → Type*} (hp : p ≠ ∞)
     [∀ i, NormPseudoMetric (β i)] [∀ i, AddCommGroup (β i)] [∀ i, IsNormedAddGroup (β i)] (f : PiLp p β) :
@@ -1306,7 +1306,7 @@ abbrev normedSpaceSeminormedAddCommGroupToPi
 /-- This definition allows to endow `Π i, α i` with the Lp norm with the uniformity and bornology
 being defeq to the product ones. It is useful to endow a type synonym of `Π i, α i` with the
 Lp norm. -/
-abbrev normMetricToPi [∀ i, NormedAddCommGroup (α i)] :
+abbrev normMetricToPi [∀ i, NormMetric (α i)] [∀ i, AddCommGroup (α i)] [∀ i, IsNormedAddGroup (α i)] :
     NormMetric (Π i, α i) where
   norm x := ‖toLp p x‖
   toPseudoMetricSpace := pseudoMetricSpaceToPi p α
@@ -1318,7 +1318,7 @@ abbrev normMetricToPi [∀ i, NormedAddCommGroup (α i)] :
 /-- This definition allows to endow `Π i, α i` with the Lp norm with the uniformity and bornology
 being defeq to the product ones. It is useful to endow a type synonym of `Π i, α i` with the
 Lp norm. -/
-abbrev normedAddCommGroupToPi [∀ i, NormedAddCommGroup (α i)] :
+abbrev normedAddCommGroupToPi [∀ i, NormMetric (α i)] [∀ i, AddCommGroup (α i)] [∀ i, IsNormedAddGroup (α i)] :
     NormedAddCommGroup (Π i, α i) where
   toNormMetric := normMetricToPi p α
   toIsNormedAddGroup := isNormedAddGroupToPi p α

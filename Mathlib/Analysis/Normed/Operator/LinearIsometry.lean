@@ -44,7 +44,7 @@ variable {R R₂ R₃ R₄ E E₂ E₃ E₄ F 𝓕 : Type*} [Semiring R] [Semiri
   [RingHomCompTriple σ₄₂ σ₂₁ σ₄₁] [RingHomCompTriple σ₄₃ σ₃₂ σ₄₂] [RingHomCompTriple σ₄₃ σ₃₁ σ₄₁]
   [NormPseudoMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormPseudoMetric E₂] [AddCommGroup E₂] [IsNormedAddGroup E₂] [NormPseudoMetric E₃] [AddCommGroup E₃] [IsNormedAddGroup E₃]
   [NormPseudoMetric E₄] [AddCommGroup E₄] [IsNormedAddGroup E₄] [Module R E] [Module R₂ E₂] [Module R₃ E₃] [Module R₄ E₄]
-  [NormedAddCommGroup F] [Module R F]
+  [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [Module R F]
 
 /-- A `σ₁₂`-semilinear isometric embedding of a normed `R`-module into an `R₂`-module,
 denoted as `f : E →ₛₗᵢ[σ₁₂] E₂`. -/

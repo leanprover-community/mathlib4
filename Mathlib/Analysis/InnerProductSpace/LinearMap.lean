@@ -76,7 +76,7 @@ end Complex_Seminormed
 
 section Complex
 
-variable {V : Type*} [NormedAddCommGroup V] [InnerProductSpace ℂ V]
+variable {V : Type*} [NormMetric V] [AddCommGroup V] [IsNormedAddGroup V] [InnerProductSpace ℂ V]
 
 /-- A linear map `T` is zero, if and only if the identity `⟪T x, x⟫_ℂ = 0` holds for all `x`.
 -/
@@ -353,8 +353,8 @@ lemma inner_right_rankOne_apply (x y : F) (z w : G) :
   simp [inner_smul_right, mul_comm]
 
 section Normed
-variable {F H : Type*} [NormedAddCommGroup F] [InnerProductSpace 𝕜 F]
-  [NormedAddCommGroup H] [InnerProductSpace 𝕜 H]
+variable {F H : Type*} [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [InnerProductSpace 𝕜 F]
+  [NormMetric H] [AddCommGroup H] [IsNormedAddGroup H] [InnerProductSpace 𝕜 H]
 
 @[simp] theorem rankOne_eq_zero {x : E} {y : F} : rankOne 𝕜 x y = 0 ↔ x = 0 ∨ y = 0 := by
   simp [ContinuousLinearMap.ext_iff, rankOne_apply, forall_or_right, or_comm,
@@ -410,8 +410,8 @@ namespace ContinuousLinearMap
 
 open InnerProductSpace
 
-variable [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
-    [NormedAddCommGroup F] [InnerProductSpace 𝕜 F]
+variable [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [InnerProductSpace 𝕜 E]
+    [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [InnerProductSpace 𝕜 F]
 
 theorem opNorm_le_of_re_inner_le {T : E →L[𝕜] F} {C : ℝ} (hC : 0 ≤ C)
     (h : ∀ x y, ‖x‖ = 1 → ‖y‖ = 1 → re ⟪T x, y⟫_𝕜 ≤ C) : ‖T‖ ≤ C := by

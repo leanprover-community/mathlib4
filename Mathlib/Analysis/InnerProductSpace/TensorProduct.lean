@@ -47,10 +47,10 @@ inner product spaces.
 @[expose] public section
 
 variable {𝕜 E F G H : Type*} [RCLike 𝕜]
-  [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
-  [NormedAddCommGroup F] [InnerProductSpace 𝕜 F]
-  [NormedAddCommGroup G] [InnerProductSpace 𝕜 G]
-  [NormedAddCommGroup H] [InnerProductSpace 𝕜 H]
+  [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [InnerProductSpace 𝕜 E]
+  [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [InnerProductSpace 𝕜 F]
+  [NormMetric G] [AddCommGroup G] [IsNormedAddGroup G] [InnerProductSpace 𝕜 G]
+  [NormMetric H] [AddCommGroup H] [IsNormedAddGroup H] [InnerProductSpace 𝕜 H]
 
 open scoped TensorProduct
 

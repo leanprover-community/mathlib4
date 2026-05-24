@@ -47,7 +47,7 @@ open scoped ENNReal
 section LpPiLp
 
 
-variable {α : Type*} {E : α → Type*} [∀ i, NormedAddCommGroup (E i)] {p : ℝ≥0∞}
+variable {α : Type*} {E : α → Type*} [∀ i, NormMetric (E i)] [∀ i, AddCommGroup (E i)] [∀ i, IsNormedAddGroup (E i)] {p : ℝ≥0∞}
 
 section Finite
 
@@ -124,7 +124,7 @@ open BoundedContinuousFunction
 
 variable {α E R A : Type*} (𝕜 : Type*) [TopologicalSpace α] [DiscreteTopology α]
 variable [NormedRing A] [NormOneClass A] [NontriviallyNormedField 𝕜] [NormedAlgebra 𝕜 A]
-variable [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NonUnitalNormedRing R]
+variable [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E] [NonUnitalNormedRing R]
 
 section NormedAddCommGroup
 

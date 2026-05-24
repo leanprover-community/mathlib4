@@ -23,7 +23,7 @@ public section
 open Complex ComplexConjugate InnerProductSpace Topology
 
 variable
-  {F : Type*} [NormedAddCommGroup F] [NormedSpace ℂ F]
+  {F : Type*} [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace ℂ F]
   {f : ℂ → F} {x : ℂ}
 
 /-!

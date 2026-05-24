@@ -39,12 +39,12 @@ class NormedAddTorsor (V : outParam Type*) (P : Type*) [NormPseudoMetric V] [Add
   dist_eq_norm' : ∀ x y : P, dist x y = ‖(x -ᵥ y : V)‖
 
 /-- Shortcut instance to help typeclass inference out. -/
-instance (priority := 100) NormedAddTorsor.toAddTorsor' {V P : Type*} [NormedAddCommGroup V]
+instance (priority := 100) NormedAddTorsor.toAddTorsor' {V P : Type*} [NormMetric V] [AddCommGroup V] [IsNormedAddGroup V]
     [MetricSpace P] [NormedAddTorsor V P] : AddTorsor V P :=
   NormedAddTorsor.toAddTorsor
 
 variable {α V P W Q : Type*} [NormPseudoMetric V] [AddCommGroup V] [IsNormedAddGroup V] [PseudoMetricSpace P] [NormedAddTorsor V P]
-  [NormedAddCommGroup W] [MetricSpace Q] [NormedAddTorsor W Q]
+  [NormMetric W] [AddCommGroup W] [IsNormedAddGroup W] [MetricSpace Q] [NormedAddTorsor W Q]
 
 instance (priority := 100) NormedAddTorsor.to_isIsIsometricVAdd : IsIsometricVAdd V P :=
   ⟨fun c => Isometry.of_dist_eq fun x y => by
@@ -194,7 +194,7 @@ def pseudoMetricSpaceOfNormedAddCommGroupOfAddTorsor (V P : Type*) [NormPseudoMe
 /-- The distance defines a metric space structure on the torsor. This
 is not an instance because it depends on `V` to define a `MetricSpace P`. -/
 @[implicit_reducible]
-def metricSpaceOfNormedAddCommGroupOfAddTorsor (V P : Type*) [NormedAddCommGroup V]
+def metricSpaceOfNormedAddCommGroupOfAddTorsor (V P : Type*) [NormMetric V] [AddCommGroup V] [IsNormedAddGroup V]
     [AddTorsor V P] : MetricSpace P where
   dist x y := ‖(x -ᵥ y : V)‖
   dist_self x := by simp

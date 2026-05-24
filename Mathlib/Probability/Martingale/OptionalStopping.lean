@@ -40,7 +40,7 @@ variable {Ω : Type*} {m0 : MeasurableSpace Ω} {μ : Measure Ω} {𝒢 : Filtra
 /-- Given a submartingale `f` and bounded stopping times `τ` and `π` such that `τ ≤ π`, the
 expectation of `stoppedValue f τ` is less than or equal to the expectation of `stoppedValue f π`.
 This is the forward direction of the optional stopping theorem. -/
-theorem Submartingale.expected_stoppedValue_mono {E : Type*} [NormedAddCommGroup E]
+theorem Submartingale.expected_stoppedValue_mono {E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E]
     [NormedSpace ℝ E] [CompleteSpace E] [PartialOrder E] [IsOrderedAddMonoid E]
     [IsOrderedModule ℝ E] [ClosedIciTopology E] [SigmaFiniteFiltration μ 𝒢] {f : ℕ → Ω → E}
     (hf : Submartingale f 𝒢 μ) (hτ : IsStoppingTime 𝒢 τ) (hπ : IsStoppingTime 𝒢 π) (hle : τ ≤ π)

@@ -242,8 +242,8 @@ end Ring
 section
 
 variable {R E F : Type*} [NontriviallyNormedField R]
-  [NormedAddCommGroup E] [NormedSpace R E] [CompleteSpace E]
-  [NormedAddCommGroup F] [NormedSpace R F] [CompleteSpace F]
+  [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace R E] [CompleteSpace E]
+  [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace R F] [CompleteSpace F]
 
 /-- A continuous linear map between Banach spaces has a continuous left inverse if it is injective,
 has closed range and its range has a closed complement. -/

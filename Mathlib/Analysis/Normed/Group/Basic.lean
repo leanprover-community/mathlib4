@@ -984,7 +984,7 @@ end SeminormedCommGroup
 
 section NormedGroup
 
-variable [NormedGroup E] {a b : E}
+variable [NormMetric E] [Group E] [IsNormedGroup E] {a b : E}
 
 @[to_additive (attr := simp) norm_le_zero_iff]
 lemma norm_le_zero_iff' : ‖a‖ ≤ 0 ↔ a = 1 := by rw [← dist_one_right, dist_le_zero]
@@ -1048,7 +1048,7 @@ end NormedGroup
 
 section NormedAddGroup
 
-variable [NormedAddGroup E] [TopologicalSpace α] {f : α → E}
+variable [NormMetric E] [AddGroup E] [IsNormedAddGroup E] [TopologicalSpace α] {f : α → E}
 
 /-! Some relations with `HasCompactSupport` -/
 

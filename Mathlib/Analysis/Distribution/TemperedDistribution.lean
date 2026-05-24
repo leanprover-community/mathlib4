@@ -44,7 +44,7 @@ variable {ι 𝕜 E F F₁ F₂ : Type*}
 
 section definition
 
-variable [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedSpace ℝ E] [NormedSpace ℂ F]
+variable [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace ℝ E] [NormedSpace ℂ F]
 
 variable (E F) in
 /-- The space of tempered distribution is the space of continuous linear maps from the Schwartz to
@@ -65,7 +65,7 @@ end definition
 
 section Embeddings
 
-variable [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedSpace ℝ E] [NormedSpace ℂ F]
+variable [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace ℝ E] [NormedSpace ℂ F]
 
 namespace MeasureTheory.Measure
 
@@ -234,7 +234,7 @@ namespace TemperedDistribution
 
 section Multiplication
 
-variable [NormedAddCommGroup E] [NormedAddCommGroup F]
+variable [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F]
   [NormedSpace ℝ E] [NormedSpace ℂ F]
 
 variable (F) in
@@ -315,7 +315,7 @@ end Multiplication
 
 section deriv
 
-variable [NormedAddCommGroup F] [NormedSpace ℂ F]
+variable [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace ℂ F]
 
 variable (F) in
 /-- The 1-dimensional derivative on tempered distribution as a continuous `ℂ`-linear map. -/
@@ -341,7 +341,7 @@ section lineDeriv
 
 open LineDeriv
 
-variable [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedSpace ℝ E] [NormedSpace ℂ F]
+variable [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace ℝ E] [NormedSpace ℂ F]
 
 /-- The partial derivative (or directional derivative) in the direction `m : E` as a
 continuous linear map on tempered distributions. -/
@@ -397,7 +397,7 @@ section Laplacian
 open Laplacian LineDeriv
 open scoped SchwartzMap
 
-variable [NormedAddCommGroup E] [NormedAddCommGroup F]
+variable [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F]
   [InnerProductSpace ℝ E] [FiniteDimensional ℝ E] [NormedSpace ℂ F]
 
 set_option backward.isDefEq.respectTransparency false in
@@ -436,7 +436,7 @@ section Fourier
 
 open FourierTransform
 
-variable [NormedAddCommGroup E] [NormedAddCommGroup F]
+variable [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F]
   [InnerProductSpace ℝ E] [NormedSpace ℂ F]
   [FiniteDimensional ℝ E] [MeasurableSpace E] [BorelSpace E]
 
@@ -561,7 +561,7 @@ end Fourier
 
 section DiracDelta
 
-variable [NormedAddCommGroup E]
+variable [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E]
 
 section definition
 

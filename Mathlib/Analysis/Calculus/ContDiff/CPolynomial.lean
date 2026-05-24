@@ -24,8 +24,8 @@ open scoped ENNReal ContDiff
 universe u v
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-variable {E : Type u} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-variable {F : Type v} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+variable {E : Type u} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E]
+variable {F : Type v} [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace 𝕜 F]
 
 section fderiv
 
@@ -52,7 +52,7 @@ end fderiv
 
 namespace ContinuousMultilinearMap
 
-variable {ι : Type*} {E : ι → Type*} [∀ i, NormedAddCommGroup (E i)] [∀ i, NormedSpace 𝕜 (E i)]
+variable {ι : Type*} {E : ι → Type*} [∀ i, NormMetric (E i)] [∀ i, AddCommGroup (E i)] [∀ i, IsNormedAddGroup (E i)] [∀ i, NormedSpace 𝕜 (E i)]
   [Fintype ι] (f : ContinuousMultilinearMap 𝕜 E F) {n : ℕ∞ω} {x : Π i, E i}
 
 open FormalMultilinearSeries

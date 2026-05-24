@@ -78,7 +78,7 @@ theorem closedBall_subset_range_iff_surjective [RingHomSurjective σ₁₂] {f :
   ⟨fun h ↦ (ball_subset_range_iff_surjective hr).mp <| subset_trans ball_subset_closedBall h,
     by simp_all⟩
 
-variable {F' 𝓕' : Type*} [NormedAddCommGroup F'] [NormedSpace ℝ F'] [Nontrivial F']
+variable {F' 𝓕' : Type*} [NormMetric F'] [AddCommGroup F'] [IsNormedAddGroup F'] [NormedSpace ℝ F'] [Nontrivial F']
 {τ : 𝕜 →+* ℝ} [FunLike 𝓕' E F'] [SemilinearMapClass 𝓕' τ E F']
 
 theorem sphere_subset_range_iff_surjective [RingHomSurjective τ] {f : 𝓕'} {x : F'} {r : ℝ}

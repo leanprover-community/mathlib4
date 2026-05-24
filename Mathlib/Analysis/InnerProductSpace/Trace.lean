@@ -20,7 +20,7 @@ public section
 namespace LinearMap
 
 variable {𝕜 E ι : Type*} [RCLike 𝕜] [Fintype ι]
-variable [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
+variable [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [InnerProductSpace 𝕜 E]
 
 open scoped InnerProductSpace
 

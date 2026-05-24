@@ -21,7 +21,7 @@ public section
 open Complex Set
 open scoped Topology
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E]
+variable {E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace ℂ E]
   {f g : E → ℂ} {z : ℂ} {x : E} {s : Set E}
 
 /-- `log` is analytic away from nonpositive reals -/

@@ -306,8 +306,8 @@ end BasicProperties_Seminormed
 
 section BasicProperties
 
-variable [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
-variable [NormedAddCommGroup F] [InnerProductSpace ℝ F]
+variable [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [InnerProductSpace 𝕜 E]
+variable [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [InnerProductSpace ℝ F]
 
 local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
@@ -644,8 +644,8 @@ section Norm
 
 open scoped InnerProductSpace
 
-variable [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
-variable [NormedAddCommGroup F] [InnerProductSpace ℝ F]
+variable [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [InnerProductSpace 𝕜 E]
+variable [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [InnerProductSpace ℝ F]
 variable {ι : Type*}
 
 local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
@@ -983,7 +983,7 @@ example :
 
 section IsPosSemidef
 
-variable [NormedAddCommGroup E] [InnerProductSpace ℝ E]
+variable [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [InnerProductSpace ℝ E]
 
 lemma isSymm_inner : LinearMap.IsSymm (innerₗ E) where
   eq x y := by simp [real_inner_comm]

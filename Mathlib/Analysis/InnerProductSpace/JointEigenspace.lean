@@ -53,7 +53,7 @@ open Submodule
 
 section RCLike
 
-variable [RCLike 𝕜] [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
+variable [RCLike 𝕜] [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [InnerProductSpace 𝕜 E]
 variable {α : 𝕜} {A B : E →ₗ[𝕜] E} {T : n → Module.End 𝕜 E}
 
 /-- The joint eigenspaces of a pair of symmetric operators form an

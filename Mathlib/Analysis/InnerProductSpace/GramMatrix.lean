@@ -104,7 +104,7 @@ theorem linearIndependent_of_det_gram_ne_zero [Fintype n] [DecidableEq n] {v : n
 end SemiInnerProductSpace
 
 section NormedInnerProductSpace
-variable [NormedAddCommGroup E] [InnerProductSpace 𝕜 E] [Finite n]
+variable [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [InnerProductSpace 𝕜 E] [Finite n]
 
 /-- In a normed space, linear independence of `v` implies positive definiteness of `gram 𝕜 v`. -/
 theorem posDef_gram_of_linearIndependent

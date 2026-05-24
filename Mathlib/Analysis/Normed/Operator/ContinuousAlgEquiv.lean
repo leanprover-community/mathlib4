@@ -96,8 +96,8 @@ public theorem ContinuousLinearEquiv.conjContinuousAlgEquiv_surjective :
 
 end
 
-variable {𝕜 V W : Type*} [RCLike 𝕜] [NormedAddCommGroup V] [InnerProductSpace 𝕜 V] [CompleteSpace V]
-  [NormedAddCommGroup W] [InnerProductSpace 𝕜 W] [CompleteSpace W]
+variable {𝕜 V W : Type*} [RCLike 𝕜] [NormMetric V] [AddCommGroup V] [IsNormedAddGroup V] [InnerProductSpace 𝕜 V] [CompleteSpace V]
+  [NormMetric W] [AddCommGroup W] [IsNormedAddGroup W] [InnerProductSpace 𝕜 W] [CompleteSpace W]
 
 section auxiliaryDefs
 

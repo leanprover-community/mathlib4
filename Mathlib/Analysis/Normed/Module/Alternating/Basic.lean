@@ -621,7 +621,7 @@ variable {𝕜 : Type u} {n : ℕ} {E : Type wE} {F : Type wF} {ι : Type v}
   [Fintype ι]
   [NontriviallyNormedField 𝕜]
   [NormPseudoMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E]
-  [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+  [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace 𝕜 F]
 
 namespace ContinuousAlternatingMap
 

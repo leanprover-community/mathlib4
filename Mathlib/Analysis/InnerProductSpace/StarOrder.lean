@@ -27,7 +27,7 @@ namespace ContinuousLinearMap
 open RCLike
 open scoped NNReal
 
-variable {𝕜 H : Type*} [RCLike 𝕜] [NormedAddCommGroup H] [InnerProductSpace 𝕜 H] [CompleteSpace H]
+variable {𝕜 H : Type*} [RCLike 𝕜] [NormMetric H] [AddCommGroup H] [IsNormedAddGroup H] [InnerProductSpace 𝕜 H] [CompleteSpace H]
 variable [Algebra ℝ (H →L[𝕜] H)] [IsScalarTower ℝ 𝕜 (H →L[𝕜] H)]
 
 open scoped InnerProductSpace in
@@ -76,7 +76,7 @@ lemma instStarOrderedRingRCLike
       | add f g _ _ hf hg => exact hf.add hg
 
 set_option backward.isDefEq.respectTransparency false in
-instance instStarOrderedRing {H : Type*} [NormedAddCommGroup H]
+instance instStarOrderedRing {H : Type*} [NormMetric H] [AddCommGroup H] [IsNormedAddGroup H]
     [InnerProductSpace ℂ H] [CompleteSpace H] : StarOrderedRing (H →L[ℂ] H) :=
   instStarOrderedRingRCLike
 

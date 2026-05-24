@@ -59,7 +59,7 @@ theorem _root_.LinearEquiv.toSpanNonzeroSingleton_homothety (x : E) (h : x ≠ 0
 end Seminormed
 
 section Normed
-variable [NormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable [NormedField 𝕜] [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E]
 
 /-- Given a nonzero element `x` of a normed space `E₁` over a field `𝕜`, the natural
 continuous linear equivalence from `𝕜` to the span of `x`. -/

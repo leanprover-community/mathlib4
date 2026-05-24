@@ -460,7 +460,7 @@ theorem tendstoInMeasure_of_tendsto_eLpNorm_top {E} [NormPseudoMetric E] [AddCom
   simp [edist_eq_enorm_sub]
 
 /-- Convergence in Lp implies convergence in measure. -/
-theorem tendstoInMeasure_of_tendsto_eLpNorm [NormedAddCommGroup E]
+theorem tendstoInMeasure_of_tendsto_eLpNorm [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E]
     {l : Filter ι} (hp_ne_zero : p ≠ 0)
     (hf : ∀ n, AEStronglyMeasurable (f n) μ) (hg : AEStronglyMeasurable g μ)
     (hfg : Tendsto (fun n => eLpNorm (f n - g) p μ) l (𝓝 0)) : TendstoInMeasure μ f l g := by
@@ -470,7 +470,7 @@ theorem tendstoInMeasure_of_tendsto_eLpNorm [NormedAddCommGroup E]
   · exact tendstoInMeasure_of_tendsto_eLpNorm_of_ne_top hp_ne_zero hp_ne_top hf hg hfg
 
 /-- Convergence in Lp implies convergence in measure. -/
-theorem tendstoInMeasure_of_tendsto_Lp [NormedAddCommGroup E] [hp : Fact (1 ≤ p)]
+theorem tendstoInMeasure_of_tendsto_Lp [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [hp : Fact (1 ≤ p)]
     {f : ι → Lp E p μ} {g : Lp E p μ}
     {l : Filter ι} (hfg : Tendsto f l (𝓝 g)) : TendstoInMeasure μ (fun n => f n) l g :=
   tendstoInMeasure_of_tendsto_eLpNorm (zero_lt_one.trans_le hp.elim).ne.symm

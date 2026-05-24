@@ -84,9 +84,9 @@ noncomputable section
 open Set Fin Filter Function
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-  {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-  {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-  {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 G]
+  {E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E]
+  {F : Type*} [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace 𝕜 F]
+  {G : Type*} [NormMetric G] [AddCommGroup G] [IsNormedAddGroup G] [NormedSpace 𝕜 G]
   {s : Set E} {t : Set F}
   {q : F → FormalMultilinearSeries 𝕜 F G} {p : E → FormalMultilinearSeries 𝕜 E F}
 
@@ -920,7 +920,7 @@ is `O(f(a))` too.
 This lemma can be used, e.g., to show that the composition of two $C^{k+α}$ functions
 is a $C^{k+α}$ function. -/
 theorem taylorComp_sub_taylorComp_isBigO
-    {α H : Type*} [NormedAddCommGroup H] {l : Filter α} {p₁ p₂ : α → FormalMultilinearSeries 𝕜 F G}
+    {α H : Type*} [NormMetric H] [AddCommGroup H] [IsNormedAddGroup H] {l : Filter α} {p₁ p₂ : α → FormalMultilinearSeries 𝕜 F G}
     {q₁ q₂ : α → FormalMultilinearSeries 𝕜 E F} {f : α → H} {n : ℕ}
     (hp_bdd : ∀ k ≤ n, l.IsBoundedUnder (· ≤ ·) (‖p₁ · k‖))
     (hpf : ∀ k ≤ n, (fun a ↦ p₁ a k - p₂ a k) =O[l] f)
@@ -961,7 +961,7 @@ Then the difference between `n`th terms of `(p₁ a).taylorComp (q₁ a)` and `(
 is `o(f(a))` too.
 -/
 theorem taylorComp_sub_taylorComp_isLittleO
-    {α H : Type*} [NormedAddCommGroup H] {l : Filter α} {p₁ p₂ : α → FormalMultilinearSeries 𝕜 F G}
+    {α H : Type*} [NormMetric H] [AddCommGroup H] [IsNormedAddGroup H] {l : Filter α} {p₁ p₂ : α → FormalMultilinearSeries 𝕜 F G}
     {q₁ q₂ : α → FormalMultilinearSeries 𝕜 E F} {f : α → H} {n : ℕ}
     (hp_bdd : ∀ k ≤ n, l.IsBoundedUnder (· ≤ ·) (‖p₁ · k‖))
     (hpf : ∀ k ≤ n, (fun a ↦ p₁ a k - p₂ a k) =o[l] f)
