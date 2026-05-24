@@ -19,7 +19,7 @@ open scoped NNReal ENNReal
 
 namespace MeasureTheory
 
-variable {α E ε' : Type*} {m0 : MeasurableSpace α} [NormedAddCommGroup E]
+variable {α E ε' : Type*} {m0 : MeasurableSpace α} [AddCommGroup E] [NormedAddCommGroup E]
   [TopologicalSpace ε'] [ContinuousENorm ε']
   {p : ℝ≥0∞} (μ : Measure α)
 
