@@ -1174,7 +1174,6 @@ lemma lipschitzWith_im : LipschitzWith 1 (im (K := K)) := by
   toFun x := re x + im x * (I : 𝕜')
   map_add' _ _ := by simp only [map_add, add_mul]; ring
   map_smul' _ _ := by simp [real_smul_eq_coe_mul, mul_assoc]
-  cont := by fun_prop
 
 @[simp] theorem map_same_eq_id : map K K = .id ℝ K := by ext; simp
 
@@ -1231,7 +1230,7 @@ lemma norm_le_im_iff_eq_I_mul_norm {z : K} :
   · simp [h, im_eq_zero]
   · have : (I : K) ≠ 0 := fun _ ↦ by simp_all
     rw [← mul_right_inj' (neg_ne_zero.mpr this)]
-    convert norm_le_re_iff_eq_norm (z := -I * z) using 2
+    convert! norm_le_re_iff_eq_norm (z := -I * z) using 2
     all_goals simp [neg_mul, ← mul_assoc, I_mul_I_of_nonzero this, norm_I_of_ne_zero this]
 
 lemma im_le_neg_norm_iff_eq_neg_I_mul_norm {z : K} :

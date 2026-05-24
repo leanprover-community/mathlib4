@@ -140,10 +140,8 @@ lemma _root_.Ordinal.card_le_card_vonNeumann (o : Ordinal) : o.card ≤ card (V_
 open Cardinal in
 theorem card_vonNeumann (o : Ordinal.{u}) : card (V_ o) = preBeth o := by
   induction o using Ordinal.limitRecOn with
-  | zero =>
-    rw [vonNeumann_zero, card_empty, preBeth_zero]
-  | succ o ih =>
-    rw [vonNeumann_succ, card_powerset, ih, preBeth_succ]
+  | zero => simp
+  | add_one o ih => simp [ih]
   | limit o ho ih =>
     simp_rw [preBeth_limit ho.isSuccPrelimit, ← fun i : Set.Iio o => ih i i.2,
       vonNeumann_of_isSuccPrelimit ho.isSuccPrelimit]
