@@ -187,8 +187,13 @@ theorem nonempty_Ioc_subtype (h : a < b) : Nonempty (Ioc a b) :=
 theorem nonempty_Ioo_subtype [DenselyOrdered α] (h : a < b) : Nonempty (Ioo a b) :=
   Nonempty.to_subtype (nonempty_Ioo.mpr h)
 
-@[to_dual] theorem isUpperSet_Ici (a : α) : IsUpperSet (Ici a) := fun _ _ => ge_trans
-@[to_dual] theorem isUpperSet_Ioi (a : α) : IsUpperSet (Ioi a) := fun _ _ => flip lt_of_lt_of_le
+@[to_dual]
+theorem _root_.isUpperSet_Ici (a : α) : IsUpperSet (Ici a) :=
+  fun _ _ => ge_trans
+
+@[to_dual]
+theorem _root_.isUpperSet_Ioi (a : α) : IsUpperSet (Ioi a) :=
+  fun _ _ => flip lt_of_lt_of_le
 
 @[to_additive]
 instance isEmpty_Iio_one [One α] [IsBotOneClass α] : IsEmpty (Set.Iio (1 : α)) :=
