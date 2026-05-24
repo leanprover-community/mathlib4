@@ -113,6 +113,13 @@ theorem RelIso.wellQuasiOrdered_iff {α β} {r : α → α → Prop} {s : β →
   congr! with g a b
   simp [f.map_rel_iff]
 
+theorem RelHom.wellQuasiOrdered_of_wellQuasiOrdered_of_surjective {α β} {r : α → α → Prop}
+    {s : β → β → Prop} (h : WellQuasiOrdered r) (f : r →r s) (hf : Function.Surjective f) :
+    WellQuasiOrdered s := by
+  intro seq
+  have ⟨_, _, hmn⟩ := h (Function.surjInv hf ∘ seq)
+  exact ⟨_, _, hmn.1, by simpa [Function.surjInv_eq] using f.map_rel hmn.2⟩
+
 /-- A typeclass for an order with a well-quasi-ordered `≤` relation.
 
 Note that this is unlike `WellFoundedLT`, which instead takes a `<` relation. -/
@@ -177,6 +184,15 @@ theorem wellQuasiOrderedLE_iff :
 
 instance [WellQuasiOrderedLE α] [Preorder β] [WellQuasiOrderedLE β] : WellQuasiOrderedLE (α × β) :=
   ⟨wellQuasiOrdered_le.prod wellQuasiOrdered_le⟩
+
+theorem Monotone.wellQuasiOrderedLE_of_wellQuasiOrderedLE_of_surjective [Preorder β]
+    [WellQuasiOrderedLE α] {f : α → β} (mono : Monotone f) (hf : Function.Surjective f) :
+    WellQuasiOrderedLE β :=
+  ⟨RelHom.wellQuasiOrdered_of_wellQuasiOrdered_of_surjective wellQuasiOrdered_le ⟨_, (mono ·)⟩ hf⟩
+
+theorem OrderHom.wellQuasiOrderedLE_of_wellQuasiOrderedLE_of_surjective [Preorder β]
+    [WellQuasiOrderedLE α] (f : α →o β) (hf : Function.Surjective f) :
+    WellQuasiOrderedLE β := f.monotone.wellQuasiOrderedLE_of_wellQuasiOrderedLE_of_surjective hf
 
 end Preorder
 
