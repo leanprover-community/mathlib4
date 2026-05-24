@@ -63,7 +63,8 @@ noncomputable section
 
 open scoped NNReal ENNReal Function
 
-variable {𝕜 𝕜' : Type*} {α : Type*} {E : α → Type*} {p q : ℝ≥0∞} [∀ i, NormedAddCommGroup (E i)]
+variable {𝕜 𝕜' : Type*} {α : Type*} {E : α → Type*} {p q : ℝ≥0∞}
+  [∀ i, AddCommGroup (E i)] [∀ i, NormedAddCommGroup (E i)]
 
 /-!
 ### `Memℓp` predicate
@@ -174,8 +175,8 @@ theorem mono {f : (i : α) → E i} {g : α → ℝ}
 /-- Often it is more convenient to use `Memℓp.mono`, where the bounding function is real-valued.
 This version is provable from that one using `Memℓp.toNorm` applied to the argument with type
 `Memℓp g p`. -/
-theorem mono' {F : α → Type*} [∀ i, NormedAddCommGroup (F i)] {f : (i : α) → E i}
-    {g : (i : α) → F i} (hg : Memℓp g p) (hfg : ∀ i, ‖f i‖ ≤ ‖g i‖) :
+theorem mono' {F : α → Type*} [∀ i, AddCommGroup (F i)] [∀ i, NormedAddCommGroup (F i)]
+    {f : (i : α) → E i} {g : (i : α) → F i} (hg : Memℓp g p) (hfg : ∀ i, ‖f i‖ ≤ ‖g i‖) :
     Memℓp f p :=
   hg.norm.mono hfg
 
@@ -189,7 +190,7 @@ theorem summable (hp : 0 < p.toReal) {f : ∀ i, E i} (hf : Memℓp f p) :
     Summable fun i => ‖f i‖ ^ p.toReal :=
   (memℓp_gen_iff hp).1 hf
 
-lemma summable_of_one {E : Type*} [NormedAddCommGroup E] [CompleteSpace E]
+lemma summable_of_one {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] [CompleteSpace E]
     {x : α → E} (hx : Memℓp x 1) : Summable x :=
   .of_norm <| by simpa using hx.summable
 
@@ -334,7 +335,7 @@ We choose to deal with this issue by making a type synonym for `∀ i, E i` rath
 subgroup itself, because this allows all the spaces `lp E p` (for varying `p`) to be subgroups of
 the same ambient group, which permits lemma statements like `lp.monotone` (below). -/
 @[nolint unusedArguments]
-def PreLp (E : α → Type*) [∀ i, NormedAddCommGroup (E i)] : Type _ :=
+def PreLp (E : α → Type*) [∀ i, AddCommGroup (E i)] [∀ i, NormedAddCommGroup (E i)] : Type _ :=
   ∀ i, E i
 deriving AddCommGroup
 
@@ -347,7 +348,8 @@ of those functions `f` such that `Memℓp f p` (i.e., `f` has finite `p`-norm).
 The non-dependent version comes equipped with the notation `ℓ^p(ι, E)` in the `lp` namespace. When
 `p` takes the values `0`, `1` or `2`, the notation `ℓ⁰(ι, E)`, `ℓ¹(ι, E)`, `ℓ²(ι, E)` is also
 available. -/
-def lp (E : α → Type*) [∀ i, NormedAddCommGroup (E i)] (p : ℝ≥0∞) : AddSubgroup (PreLp E) where
+def lp (E : α → Type*) [∀ i, AddCommGroup (E i)] [∀ i, NormedAddCommGroup (E i)] (p : ℝ≥0∞) :
+    AddSubgroup (PreLp E) where
   carrier := { f | Memℓp f p }
   zero_mem' := zero_memℓp
   add_mem' := Memℓp.add
@@ -623,7 +625,7 @@ theorem norm_le_of_forall_sum_le (hp : 0 < p.toReal) {C : ℝ} (hC : 0 ≤ C) {f
     (hf : ∀ s : Finset α, ∑ i ∈ s, ‖f i‖ ^ p.toReal ≤ C ^ p.toReal) : ‖f‖ ≤ C :=
   norm_le_of_tsum_le hp hC (((lp.memℓp f).summable hp).tsum_le_of_sum_le hf)
 
-lemma norm_mono {F : α → Type*} [∀ i, NormedAddCommGroup (F i)]
+lemma norm_mono {F : α → Type*} [∀ i, AddCommGroup (F i)] [∀ i, NormedAddCommGroup (F i)]
     {p : ℝ≥0∞} (hp : p ≠ 0) {x : lp E p} {y : lp F p} (h : ∀ i, ‖x i‖ ≤ ‖y i‖) :
     ‖x‖ ≤ ‖y‖ := by
   obtain (rfl | rfl | hp) := p.trichotomy
@@ -718,7 +720,7 @@ end IsBoundedSMul
 
 section Sum
 
-variable {E : Type*} [NormedAddCommGroup E]
+variable {E : Type*} [AddCommGroup E] [NormedAddCommGroup E]
 
 lemma norm_tsum_le (f : ℓ¹(α, E)) :
     ‖∑' i, f i‖ ≤ ‖f‖ := calc
