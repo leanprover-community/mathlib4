@@ -101,11 +101,6 @@ private lemma tendsto_neg_log_add_one_div_atTop :
     · norm_num
   simpa using h.neg
 
-private lemma integrableOn_log_div_sq_Ioi_five :
-    IntegrableOn (fun u ↦ log u / u ^ 2) (Set.Ioi 5) :=
-  integrableOn_Ioi_deriv_of_nonneg' hasDerivAt_neg_log_add_one_div log_div_sq_nonneg
-    tendsto_neg_log_add_one_div_atTop
-
 lemma summable_primeLogDivMulPred : Summable fun p : Nat.Primes ↦ log p / (p * (p - 1)) := by
   have hmajor : Summable fun p : Nat.Primes ↦ 4 * (p : ℝ) ^ (-(3 / 2 : ℝ)) :=
     (Nat.Primes.summable_rpow.mpr (by norm_num)).mul_left 4
@@ -248,17 +243,14 @@ lemma prime_tail_lt_odd_tail : ∑' p : {p : Nat.Primes // 5 ≤ p.1}, log p / (
         _ = (((p : ℕ) - 1 : ℕ) : ℝ) := by norm_cast; omega
         _ = (p : ℝ) - 1 := by norm_num [Nat.cast_sub (by omega : 1 ≤ (p : ℕ))]
     rw [hpeq_real, hppred_real]
-  have hodd_nonneg : ∀ k : Set.Ici 2, 0 ≤ oddLogDivMulPred k := by
-    intro k
-    exact oddLogDivMulPred_nonneg (by simp; grind)
+  have hodd_nonneg (k : Set.Ici 2) : 0 ≤ oddLogDivMulPred k :=
+    oddLogDivMulPred_nonneg (by simp; grind)
   let rest := fun k ↦ if k = k4 then 0 else oddLogDivMulPred k
-  have hrest_nonneg : ∀ k : Set.Ici 2, 0 ≤ rest k := by
-    intro k
+  have hrest_nonneg (k : Set.Ici 2) : 0 ≤ rest k := by
     by_cases h : k = k4
     · simp [rest, h]
     · simpa [rest, h] using hodd_nonneg k
-  have hrest_le : ∀ k : Set.Ici 2, rest k ≤ oddLogDivMulPred k := by
-    intro k
+  have hrest_le (k : Set.Ici 2) : rest k ≤ oddLogDivMulPred k := by
     by_cases h : k = k4
     · subst k
       simpa [rest] using hodd_nonneg k4
@@ -402,7 +394,8 @@ lemma integral_oddLogDivMulPred_eq_half_integral : ∫ x in Set.Ioi 2, oddLogDiv
 lemma half_integral_log_div_mul_pred_le : (1 / 2 : ℝ) * ∫ u in Set.Ioi 5, log u / (u * (u - 1))
     ≤ 5 / 8 * ∫ u in Set.Ioi 5, log u / u ^ 2 := by
   have hbound_int : IntegrableOn (fun u ↦ 5 / 4 * (log u / u ^ 2)) (Set.Ioi 5) :=
-    integrableOn_log_div_sq_Ioi_five.const_mul (5 / 4)
+    (integrableOn_Ioi_deriv_of_nonneg' hasDerivAt_neg_log_add_one_div log_div_sq_nonneg
+      tendsto_neg_log_add_one_div_atTop).const_mul (5 / 4)
   have hpoint : ∀ u ∈ Set.Ioi 5, log u / (u * (u - 1)) ≤ 5 / 4 * (log u / u ^ 2) := by
     intro u hu
     have hu5 : 5 < u := hu
