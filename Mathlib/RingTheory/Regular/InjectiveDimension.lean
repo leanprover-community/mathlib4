@@ -200,7 +200,7 @@ universe u'
 variable {R' : Type u'} [CommRing R'] (f : R →+* R')
 
 /-- Restricting scalar by surjective ring homomorphism is fully faithful. -/
-def ModuleCat.restrictScalars_fullyFaithful_of_surjective (h : Function.Surjective f) :
+def ModuleCat.restrictScalarsFullyFaithfulOfSurjective (h : Function.Surjective f) :
     (ModuleCat.restrictScalars.{v} f).FullyFaithful where
   preimage {X Y} g := ofHom
     { __ := g.hom
@@ -293,7 +293,7 @@ theorem extClass_comp_mapExt_bijective {M : ModuleCat.{v} R} {x : R} (regR : IsS
     · change Function.Bijective (Ext.mapExactFunctor _)
       rw [Ext.mapExactFunctor₀, Equiv.comp_bijective, Equiv.bijective_comp]
       apply Functor.FullyFaithful.map_bijective
-      exact ModuleCat.restrictScalars_fullyFaithful_of_surjective _ Ideal.Quotient.mk_surjective
+      exact ModuleCat.restrictScalarsFullyFaithfulOfSurjective _ Ideal.Quotient.mk_surjective
   · rename_i n ih
     let S := N.projectiveShortComplex
     have S_exact : S.ShortExact := N.shortExact_projectiveShortComplex
