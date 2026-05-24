@@ -178,7 +178,7 @@ instance (priority := low) Algebra.FormallySmooth.of_perfectField
     [PerfectField K] [Algebra.EssFiniteType K L] : Algebra.FormallySmooth K L := by
   obtain ⟨s, hs, H⟩ := exists_isTranscendenceBasis_and_isSeparable_of_perfectField K L
   have : Algebra.IsSeparable (↥(IntermediateField.adjoin K (Set.range ((↑) : s → L)))) L := by
-    convert H <;> simp
+    convert! H <;> simp
   exact .of_algebraicIndependent_of_isSeparable hs.1
 
 variable (K L) in

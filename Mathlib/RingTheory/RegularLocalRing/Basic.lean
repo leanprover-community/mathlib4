@@ -6,11 +6,9 @@ Authors: Nailin Guan
 module
 
 public import Mathlib.LinearAlgebra.Dimension.OrzechProperty
-public import Mathlib.RingTheory.DiscreteValuationRing.TFAE
-public import Mathlib.RingTheory.RegularLocalRing.Defs
-public import Mathlib.RingTheory.Ideal.KrullsHeightTheorem
-public import Mathlib.RingTheory.KrullDimension.Field
+public import Mathlib.RingTheory.LocalRing.MaximalIdeal.Square
 public import Mathlib.RingTheory.Regular.RegularSequence
+public import Mathlib.RingTheory.RegularLocalRing.Defs
 
 /-!
 
@@ -27,7 +25,7 @@ In this file, we prove that regular local ring is domain
 
 -/
 
-@[expose] public section
+public section
 
 open IsLocalRing IsRegularLocalRing
 
@@ -112,7 +110,6 @@ lemma IsLocalRing.spanFinrank_maximalIdeal_quotient [IsLocalRing R] [IsNoetheria
   have : Fintype.card (S : Set R) = S.card := Fintype.card_ofFinset S (fun x ↦ Finset.mem_coe)
   rw [← frk, ← this, ← finrank_span_eq_card li, Submodule.finrank_quotient_add_finrank]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma quotient_isRegularLocalRing_tfae [IsRegularLocalRing R] (S : Finset R)
     (sub : (S : Set R) ⊆ maximalIdeal R) :
     [∃ (T : Finset R), S ⊆ T ∧ T.card = ringKrullDim R ∧ Ideal.span T = maximalIdeal R,
@@ -162,7 +159,7 @@ lemma quotient_isRegularLocalRing_tfae [IsRegularLocalRing R] (S : Finset R)
     have fin : (maximalIdeal (R ⧸ Ideal.span (S : Set R))).generators.Finite :=
       (IsNoetherian.noetherian _).finite_generators
     let U := Quotient.out '' (maximalIdeal (R ⧸ Ideal.span (S : Set R))).generators
-    let _ : Fintype U := (Set.Finite.image _ fin).fintype
+    let : Fintype U := (Set.Finite.image _ fin).fintype
     use S ∪ U.toFinset
     have span : Ideal.span (S ∪ U) = maximalIdeal R := by
       rw [Ideal.span_union, ← Ideal.mk_ker (I := Ideal.span (S : Set R)), sup_comm,
@@ -205,7 +202,6 @@ theorem Ideal.span_singleton_mul_eq_self_of_isPrime {p : Ideal R} [p.IsPrime]
   exact Ideal.mul_mem_mul (Ideal.mem_span_singleton_self _)
     ((Ideal.IsPrime.mul_mem_left_iff hx).mp hyp)
 
-set_option backward.isDefEq.respectTransparency false in
 open Pointwise in
 theorem isDomain_of_isRegularLocalRing [IsRegularLocalRing R] : IsDomain R := by
   obtain ⟨n, hn⟩ := FiniteRingKrullDim.ringKrullDim_eq_nat R
@@ -238,7 +234,6 @@ theorem isDomain_of_isRegularLocalRing [IsRegularLocalRing R] : IsDomain R := by
 
 instance [IsRegularLocalRing R] : IsDomain R := isDomain_of_isRegularLocalRing R
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Regular local ring of dimension one is discrete valuation ring.
 For iff version, should exist after making `IsDiscreteValuationRing` extend `IsDomain`. -/
 lemma IsDiscreteValuationRing.of_isRegularLocalRing_of_ringKrullDim_eq_one [IsRegularLocalRing R]
@@ -261,9 +256,8 @@ theorem isRegular_of_span_eq_maximalIdeal [IsRegularLocalRing R] (rs : List R)
   have card : rs.toFinset.card = ringKrullDim R := by
     apply le_antisymm (le_of_le_of_eq (Nat.cast_le.mpr rs.toFinset_card_le) len)
     simp only [← (isRegularLocalRing_iff R).mp ‹_›, Nat.cast_le, ← span, Ideal.ofList,
-      ← List.coe_toFinset rs]
-    exact le_of_le_of_eq (Submodule.spanFinrank_span_le_ncard_of_finite rs.toFinset.finite_toSet)
-      (Set.ncard_coe_finset rs.toFinset)
+      ← List.coe_toFinset rs, ← Set.ncard_coe_finset rs.toFinset]
+    exact (Submodule.spanFinrank_span_le_ncard_of_finite rs.toFinset.finite_toSet)
   have : IsDomain (R ⧸ Ideal.ofList (List.take i rs)) := by
     refine @isDomain_of_isRegularLocalRing _ _ ?_
     rw [Ideal.ofList, ← (List.take i rs).coe_toFinset]

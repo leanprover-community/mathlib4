@@ -127,7 +127,7 @@ theorem eqv_class_mem {c : Set (Set α)} (H : ∀ a, ∃! b ∈ c, a ∈ b) {y} 
 
 theorem eqv_class_mem' {c : Set (Set α)} (H : ∀ a, ∃! b ∈ c, a ∈ b) {x} :
     { y : α | mkClasses c H x y } ∈ c := by
-  convert @Setoid.eqv_class_mem _ _ H x using 3
+  convert! @Setoid.eqv_class_mem _ _ H x using 3
   rw [Setoid.comm']
 
 /-- Distinct elements of a set of sets partitioning α are disjoint. -/
