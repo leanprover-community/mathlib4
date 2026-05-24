@@ -38,6 +38,7 @@ def indexOf (lt : α → α → Prop) [DecidableRel lt] (x : α) : BinaryTree α
     | Ordering.eq => some PosNum.one
     | Ordering.gt => PosNum.bit1 <$> indexOf lt x t₂
 
+set_option linter.deprecated false in
 /-- Finds the index of an element in the tree assuming the tree has been
 constructed according to the provided decidable order on its elements.
 If it hasn't, the result will be incorrect. If it has, but the element
@@ -57,6 +58,7 @@ def get : PosNum → BinaryTree α → Option α
   | PosNum.bit0 n, node _a t₁ _t₂ => t₁.get n
   | PosNum.bit1 n, node _a _t₁ t₂ => t₂.get n
 
+set_option linter.deprecated false in
 /-- Retrieves an element uniquely determined by a `PosNum` from the tree,
 taking the following path to get to the element:
 - `bit0` - go to left child
@@ -71,6 +73,7 @@ if the index is invalid. See `BinaryTree.get`. -/
 def getOrElse (n : PosNum) (t : BinaryTree α) (v : α) : α :=
   (t.get n).getD v
 
+set_option linter.deprecated false in
 /-- Retrieves an element from the tree, or the provided default value
 if the index is invalid. See `Tree.get`. -/
 @[deprecated BinaryTree.getOrElse (since := "2026-05-22")]

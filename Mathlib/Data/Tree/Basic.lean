@@ -38,9 +38,11 @@ compile_inductive% BinaryTree
 @[deprecated BinaryTree (since := "2026-05-22")]
 abbrev Tree.{u} (α : Type u) : Type u := BinaryTree α
 
+set_option linter.deprecated false in
 /-- Tree.nil -/
 @[deprecated BinaryTree.nil (since := "2026-05-22")]
 abbrev Tree.nil.{u} {α : Type u} : Tree α := BinaryTree.nil
+set_option linter.deprecated false in
 
 /-- Tree.node -/
 @[deprecated BinaryTree.node (since := "2026-05-22")]
@@ -84,6 +86,7 @@ def map {β} (f : α → β) : BinaryTree α → BinaryTree β
   | nil => nil
   | node a l r => node (f a) (map f l) (map f r)
 
+set_option linter.deprecated false in
 /-- Apply a function to each value in the BinaryTree.
 This is the `map` function for the `BinaryTree` functor.
 -/
@@ -114,6 +117,7 @@ def numNodes : BinaryTree α → ℕ
   | nil => 0
   | node _ a b => a.numNodes + b.numNodes + 1
 
+set_option linter.deprecated false in
 /-- The number of internal nodes (i.e. not including leaves) of a binary tree -/
 @[deprecated BinaryTree.numNodes (since := "2026-05-22")]
 abbrev _root_.Tree.numNodes {α} (t : Tree α) : ℕ := BinaryTree.numNodes t
@@ -124,6 +128,7 @@ def numLeaves : BinaryTree α → ℕ
   | nil => 1
   | node _ a b => a.numLeaves + b.numLeaves
 
+set_option linter.deprecated false in
 /-- The number of leaves of a binary tree -/
 @[deprecated BinaryTree.numLeaves (since := "2026-05-22")]
 abbrev _root_.Tree.numLeaves {α} (t : Tree α) : ℕ := BinaryTree.numLeaves t
@@ -135,6 +140,7 @@ def height : BinaryTree α → ℕ
   | nil => 0
   | node _ a b => max a.height b.height + 1
 
+set_option linter.deprecated false in
 /-- The height - length of the longest path from the root - of a binary tree -/
 @[deprecated BinaryTree.height (since := "2026-05-22")]
 abbrev _root_.Tree.height {α} (t : Tree α) : ℕ := BinaryTree.height t
@@ -158,6 +164,7 @@ def left : BinaryTree α → BinaryTree α
   | nil => nil
   | node _ l _r => l
 
+set_option linter.deprecated false in
 /-- The left child of the tree, or `nil` if the tree is `nil` -/
 @[deprecated BinaryTree.left (since := "2026-05-22")]
 abbrev _root_.Tree.left {α} (t : Tree α) : Tree α := BinaryTree.left t
@@ -168,6 +175,7 @@ def right : BinaryTree α → BinaryTree α
   | nil => nil
   | node _ _l r => r
 
+set_option linter.deprecated false in
 /-- The right child of the tree, or `nil` if the tree is `nil` -/
 @[deprecated BinaryTree.right (since := "2026-05-22")]
 abbrev _root_.Tree.right {α} (t : Tree α) : Tree α := BinaryTree.right t
@@ -181,6 +189,7 @@ def unitRecOn {motive : BinaryTree Unit → Sort*} (t : BinaryTree Unit) (base :
     (ind : ∀ x y, motive x → motive y → motive (x △ y)) : motive t :=
   t.recOn base fun _u ↦ ind
 
+set_option linter.deprecated false in
 /-- Induction principle for `Tree Unit`s -/
 @[deprecated BinaryTree.unitRecOn (since := "2026-05-22")]
 abbrev _root_.Tree.unitRecOn {motive : Tree Unit → Sort*} (t : Tree Unit) (base : motive nil)
