@@ -115,18 +115,17 @@ theorem applyComposition_ones (p : FormalMultilinearSeries 𝕜 E F) (n : ℕ) :
   refine congr_arg v ?_
   rw [Fin.ext_iff, Fin.val_castLE, Composition.ones_embedding, Fin.val_mk]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem applyComposition_single (p : FormalMultilinearSeries 𝕜 E F) {n : ℕ} (hn : 0 < n)
     (v : Fin n → E) : p.applyComposition (Composition.single n hn) v = fun _j => p n v := by
   ext j
   refine p.congr (by simp) fun i hi1 hi2 => ?_
   dsimp
   congr 1
-  convert Composition.single_embedding hn ⟨i, hi2⟩ using 1
+  convert! Composition.single_embedding hn ⟨i, hi2⟩ using 1
   obtain ⟨j_val, j_property⟩ := j
   have : j_val = 0 := le_bot_iff.1 (Nat.lt_succ_iff.1 j_property)
-  congr!
-  simp
+  rw! [this]
+  rfl
 
 @[simp]
 theorem removeZero_applyComposition (p : FormalMultilinearSeries 𝕜 E F) {n : ℕ}
@@ -152,7 +151,7 @@ theorem applyComposition_update (p : FormalMultilinearSeries 𝕜 E F) {n : ℕ}
     let j' := c.invEmbedding j
     suffices B : Function.update v j z ∘ r = Function.update (v ∘ r) j' z by rw [B]
     suffices C : Function.update v (r j') z ∘ r = Function.update (v ∘ r) j' z by
-      convert C; exact (c.embedding_comp_inv j).symm
+      convert! C; exact (c.embedding_comp_inv j).symm
     exact Function.update_comp_eq_of_injective _ (c.embedding _).injective _ _
   · simp only [h, Function.update_of_ne, Ne, not_false_iff]
     let r : Fin (c.blocksFun k) → Fin n := c.embedding k
@@ -387,7 +386,7 @@ theorem comp_id (p : FormalMultilinearSeries 𝕜 E F) (x : E) : p.comp (id 𝕜
     obtain ⟨i, hi⟩ : ∃ (i : Fin b.blocks.length), b.blocks[i] = k :=
       List.get_of_mem hk
     let j : Fin b.length := ⟨i.val, b.blocks_length ▸ i.prop⟩
-    have A : 1 < b.blocksFun j := by convert lt_k
+    have A : 1 < b.blocksFun j := by convert! lt_k
     ext v
     rw [compAlongComposition_apply, ContinuousMultilinearMap.zero_apply]
     apply ContinuousMultilinearMap.map_coord_zero _ j
@@ -486,10 +485,10 @@ theorem comp_summable_nnreal (q : FormalMultilinearSeries 𝕜 F G) (p : FormalM
   refine Summable.mul_left _ ?_
   have : ∀ n : ℕ, HasSum (fun c : Composition n => (4 ^ n : ℝ≥0)⁻¹) (2 ^ (n - 1) / 4 ^ n) := by
     intro n
-    convert hasSum_fintype fun c : Composition n => (4 ^ n : ℝ≥0)⁻¹
+    convert! hasSum_fintype fun c : Composition n => (4 ^ n : ℝ≥0)⁻¹
     simp [Finset.card_univ, composition_card, div_eq_mul_inv]
   refine NNReal.summable_sigma.2 ⟨fun n => (this n).summable, (NNReal.summable_nat_add_iff 1).1 ?_⟩
-  convert (NNReal.summable_geometric (NNReal.div_lt_one_of_lt one_lt_two)).mul_left (1 / 4) using 1
+  convert! (NNReal.summable_geometric (NNReal.div_lt_one_of_lt one_lt_two)).mul_left (1 / 4) using 1
   ext1 n
   rw [(this _).tsum_eq, add_tsub_cancel_right]
   simp [field, pow_succ, mul_pow, show (4 : ℝ≥0) = 2 * 2 by norm_num]
@@ -1165,7 +1164,7 @@ theorem sizeUpTo_sizeUpTo_add (a : Composition n) (b : Composition a.length) {i 
   | succ j IHj =>
     have A : j < blocksFun b ⟨i, hi⟩ := lt_trans (lt_add_one j) hj
     have B : j < length (sigmaCompositionAux a b ⟨i, (length_gather a b).symm ▸ hi⟩) := by
-      convert A; rw [← length_sigmaCompositionAux]
+      convert! A; rw [← length_sigmaCompositionAux]
     have C : sizeUpTo b i + j < sizeUpTo b (i + 1) := by
       simp only [sizeUpTo_succ b hi, add_lt_add_iff_left]
       exact A
@@ -1253,7 +1252,6 @@ namespace FormalMultilinearSeries
 
 open Composition
 
-set_option backward.isDefEq.respectTransparency false in
 theorem comp_assoc (r : FormalMultilinearSeries 𝕜 G H) (q : FormalMultilinearSeries 𝕜 F G)
     (p : FormalMultilinearSeries 𝕜 E F) : (r.comp q).comp p = r.comp (q.comp p) := by
   ext n v
@@ -1292,6 +1290,7 @@ theorem comp_assoc (r : FormalMultilinearSeries 𝕜 G H) (q : FormalMultilinear
   -- `sizeUpTo_sizeUpTo_add`.
   refine congr_arg v (Fin.ext ?_)
   dsimp [Composition.embedding]
-  rw [sizeUpTo_sizeUpTo_add _ _ hi1 hj1, add_assoc]
+  rw [← add_assoc, ← sizeUpTo_sizeUpTo_add _ _ hi1 hj1]
+  rfl
 
 end FormalMultilinearSeries
