@@ -16,7 +16,7 @@ public section
 variable {𝕜 V P : Type*}
 
 section RCLike
-variable [RCLike 𝕜] [NormedAddCommGroup V] [InnerProductSpace 𝕜 V] [MetricSpace P]
+variable [RCLike 𝕜] [AddCommGroup V] [NormedAddCommGroup V] [InnerProductSpace 𝕜 V] [MetricSpace P]
 variable [NormedAddTorsor V P]
 
 open scoped InnerProductSpace
@@ -32,7 +32,7 @@ theorem inner_vsub_right_eq_zero_symm {v : V} {a b : P} :
 end RCLike
 
 section Real
-variable [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
+variable [AddCommGroup V] [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
 variable [NormedAddTorsor V P]
 
 open scoped RealInnerProductSpace
