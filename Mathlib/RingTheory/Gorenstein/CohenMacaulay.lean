@@ -362,7 +362,7 @@ lemma ext_succ_nontrivial_of_eq_of_le [IsNoetherianRing R] (M : ModuleCat.{v} R)
   have isl2 : IsLocalizedModule (p.1.map f).primeCompl f2 :=
     isLocalizedModule_map_of_disjoint q.1.primeCompl Rq (p.1.map f)
     (M.localizedModuleMkLinearMap q.1.primeCompl) (M.localizedModuleMkLinearMap p.1.primeCompl)
-  have isl := Ext.isLocalizedModule' (p.1.map f).primeCompl Rp f1 isl1 f2 isl2 i
+  have isl := Ext.isLocalizedModule (p.1.map f).primeCompl Rp f1 isl1 f2 isl2 i
   absurd nontrivial_of_islocalizedModule isl ntr
   exact not_nontrivial_iff_subsingleton.mpr sub'
 
@@ -471,7 +471,7 @@ lemma supportDim_le_injectiveDimension [IsLocalRing R] [IsNoetherianRing R] (M :
     have isl1 : IsLocalizedModule qq.1.1.primeCompl f.toLinearMap := by
       have := isLocalizedModule_id qq.1.1.primeCompl (Shrink.{v} (R ⧸ maximalIdeal R)) R
       exact IsLocalizedModule.of_linearEquiv qq.1.1.primeCompl LinearMap.id f
-    have isl := Ext.isLocalizedModule' qq.1.1.primeCompl
+    have isl := Ext.isLocalizedModule qq.1.1.primeCompl
       (Localization qq.1.1.primeCompl) f.toLinearMap isl1
       (M.localizedModuleMkLinearMap qq.1.1.primeCompl)
       (M.localizedModule_isLocalizedModule qq.1.1.primeCompl) q.length
