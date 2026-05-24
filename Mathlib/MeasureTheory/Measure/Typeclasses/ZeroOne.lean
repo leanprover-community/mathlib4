@@ -22,6 +22,10 @@ We introduce the typeclass `IsZeroOneMeasure` for measures that only take the va
 
 * `exists_eq_dirac`: in a countably separated measurable space, a zero-one measure that is not
   the zero measure is a Dirac measure.
+* `exists_eq_dirac'`: same result in a countably generated measurable space.
+
+The common property of the two types of spaces in those results is that there exists a
+countable family of sets that generates the atoms of the measurable space.
 
 -/
 
@@ -136,7 +140,7 @@ lemma exists_eq_dirac_of_measurableAtom_eq_iInter [NeZero μ] [∀ (A : Set α),
       exact measurableAtom_subset hs.compl (by grind)
     · rwa [prob_compl_eq_zero_iff mBn]
 
-/-- In a countably separated measurable space, a zero-one measure that is not the zero measure is
+/-- In a countably generated measurable space, a zero-one measure that is not the zero measure is
 a Dirac measure. -/
 theorem exists_eq_dirac' [MeasurableSpace.CountablyGenerated α] [NeZero μ] :
     ∃ x₀, μ = Measure.dirac x₀ := by
