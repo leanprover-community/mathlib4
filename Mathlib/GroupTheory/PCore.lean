@@ -5,7 +5,7 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.GroupTheory.PGroup
+public import Mathlib.GroupTheory.Sylow
 
 /-!
 # The `p`-core of a group
@@ -36,8 +36,6 @@ descriptive name `pCore`.
 
 ## TODO
 
-* For finite `G` and prime `p`, the `p`-core equals the intersection of
-  all Sylow `p`-subgroups: `pCore p G = ⨅ P : Sylow p G, (P : Subgroup G)`.
 * Behaviour of `pCore` under group homomorphisms.
 * Interaction with `IsSolvable` and the upper Fitting series.
 -/
@@ -45,6 +43,8 @@ descriptive name `pCore`.
 @[expose] public section
 
 namespace Subgroup
+
+open scoped Pointwise
 
 variable {G : Type*} [Group G] {p : ℕ}
 
@@ -110,5 +110,45 @@ theorem mem_pCore_iff {x : G} :
   rw [pCore, mem_iSup_of_directed directed_normal_isPGroup]
   exact ⟨fun ⟨N, hxN⟩ => ⟨N, N.2.1, N.2.2, hxN⟩,
     fun ⟨N, hN, hP, hxN⟩ => ⟨⟨N, hN, hP⟩, hxN⟩⟩
+
+/-- The `p`-core is contained in every Sylow `p`-subgroup. -/
+theorem pCore_le_sylow [Fact p.Prime] [Finite G] (P : Sylow p G) : pCore p G ≤ P := by
+  classical
+  obtain ⟨P₀, hP₀⟩ := (isPGroup_pCore (G := G) (p := p)).exists_le_sylow
+  obtain ⟨g, rfl⟩ := MulAction.exists_smul_eq G P₀ P
+  rw [Sylow.coe_subgroup_smul]
+  calc
+    pCore p G = MulAut.conj g • pCore p G := (Normal.conj_smul_eq_self g (pCore p G)).symm
+    _ ≤ MulAut.conj g • (P₀ : Subgroup G) := smul_le_smul_left (MulAut.conj g) hP₀
+
+/-- The intersection of all Sylow `p`-subgroups is normal. -/
+theorem normal_iInf_sylow [Fact p.Prime] [Finite G] :
+    (⨅ P : Sylow p G, (P : Subgroup G)).Normal := by
+  classical
+  refine Normal.of_conjugate_fixed fun g => ?_
+  ext x
+  simp only [Subgroup.mem_pointwise_smul_iff_inv_smul_mem, Subgroup.mem_iInf]
+  constructor
+  · intro hx P
+    specialize hx (g⁻¹ • P)
+    rw [Sylow.coe_subgroup_smul, Subgroup.mem_pointwise_smul_iff_inv_smul_mem] at hx
+    simpa [MulAut.conj_apply, mul_assoc] using hx
+  · intro hx P
+    specialize hx (g • P)
+    rw [Sylow.coe_subgroup_smul, Subgroup.mem_pointwise_smul_iff_inv_smul_mem] at hx
+    simpa [MulAut.conj_apply, mul_assoc] using hx
+
+/-- The intersection of all Sylow `p`-subgroups is a `p`-group. -/
+theorem isPGroup_iInf_sylow [Fact p.Prime] :
+    IsPGroup p ↥(⨅ P : Sylow p G, (P : Subgroup G)) := by
+  classical
+  exact (Sylow.nonempty.some : Sylow p G).2.to_le (iInf_le _ _)
+
+/-- For a finite group, the `p`-core is the intersection of all Sylow `p`-subgroups. -/
+theorem pCore_eq_iInf_sylow [Fact p.Prime] [Finite G] :
+    pCore p G = ⨅ P : Sylow p G, (P : Subgroup G) := by
+  refine le_antisymm ?_ ?_
+  · exact le_iInf pCore_le_sylow
+  · exact le_pCore normal_iInf_sylow isPGroup_iInf_sylow
 
 end Subgroup
