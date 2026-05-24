@@ -123,7 +123,7 @@ theorem periodic_comp_ofComplex [SlashInvariantFormClass F Γ k] (hΓ : h ∈ Γ
   by_cases! hw : 0 < im w
   · have : 0 < im (w + h) := by simp [hw]
     simp only [comp_apply, ofComplex_apply_of_im_pos this, ofComplex_apply_of_im_pos hw]
-    convert SlashInvariantForm.vAdd_apply_of_mem_strictPeriods f ⟨w, hw⟩ hΓ using 2
+    convert! SlashInvariantForm.vAdd_apply_of_mem_strictPeriods f ⟨w, hw⟩ hΓ using 2
     ext
     simp [add_comm]
   · have : im (w + h) ≤ 0 := by simpa using hw
@@ -180,8 +180,10 @@ lemma hasSum_qExpansion_of_norm_lt {f : ℍ → ℂ} (hh : 0 < h)
     (hfper : Periodic (f ∘ ofComplex) h) (hfhol : MDiff f) (hfbdd : IsBoundedAtImInfty f)
     {q : ℂ} (hq : ‖q‖ < 1) :
     HasSum (fun m : ℕ ↦ (qExpansion h f).coeff m • q ^ m) (cuspFunction h f q) := by
-  convert hasSum_taylorSeries_on_ball (differentiableOn_cuspFunction_ball hh hfper hfhol hfbdd)
-      (by simpa using hq) using 2 with m
+  convert!
+    hasSum_taylorSeries_on_ball (differentiableOn_cuspFunction_ball hh hfper hfhol hfbdd)
+      (by simpa using hq) using
+    2 with m
   grind [qExpansion_coeff, sub_zero, smul_eq_mul]
 
 lemma hasSum_qExpansion {f : ℍ → ℂ} (hh : 0 < h)
@@ -327,10 +329,12 @@ theorem exp_decay_sub_atImInfty {f : ℍ → ℂ} (hh : 0 < h)
     (hfper : Periodic (f ∘ ofComplex) h) (hfhol : MDiff f) (hfbdd : IsBoundedAtImInfty f) :
     (fun τ ↦ f τ - valueAtInfty f) =O[atImInfty] fun τ ↦ Real.exp (-2 * π * τ.im / h) := by
   have := hfbdd.comp_tendsto tendsto_comap_im_ofComplex
-  convert (hfper.exp_decay_sub_of_bounded_at_inf hh
-    (eventually_of_mem (preimage_mem_comap (Ioi_mem_atTop 0))
-      fun z hz ↦ by simpa using (UpperHalfPlane.mdifferentiableAt_iff.mp <| hfhol ⟨z, hz⟩))
-        this).comp_tendsto tendsto_coe_atImInfty
+  convert!
+    (hfper.exp_decay_sub_of_bounded_at_inf hh
+          (eventually_of_mem (preimage_mem_comap (Ioi_mem_atTop 0)) fun z hz ↦ by
+            simpa using (UpperHalfPlane.mdifferentiableAt_iff.mp <| hfhol ⟨z, hz⟩))
+          this).comp_tendsto
+      tendsto_coe_atImInfty
   simpa [cuspFunction] using
     (cuspFunction_apply_zero hh (analyticAt_cuspFunction_zero hh hfper hfhol hfbdd) hfper).symm
 
@@ -374,8 +378,8 @@ theorem exp_decay_sub_atImInfty' [ModularFormClass F Γ k] [Γ.HasDetPlusMinusOn
   have hh : 0 < Γ.strictWidthInfty := Γ.strictWidthInfty_pos_iff.mpr Fact.out
   have hΓ : Γ.strictWidthInfty ∈ Γ.strictPeriods := Γ.strictWidthInfty_mem_strictPeriods
   refine ⟨2 * π / Γ.strictWidthInfty, div_pos Real.two_pi_pos hh, ?_⟩
-  convert exp_decay_sub_atImInfty hh (periodic_comp_ofComplex f hΓ) (holo f)
-    (bdd_at_infty f) using 3 with τ
+  convert! exp_decay_sub_atImInfty hh (periodic_comp_ofComplex f hΓ) (holo f) (bdd_at_infty f) using
+    3 with τ
   ring_nf
 
 /-- Version of `exp_decay_atImInfty` stating a less precise result but easier to apply in practice

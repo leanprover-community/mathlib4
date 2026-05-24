@@ -6,6 +6,7 @@ Authors: Kyle Miller, Rémi Bottinelli
 module
 
 public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
+public import Mathlib.Combinatorics.SimpleGraph.Walk.Chord
 public import Mathlib.Data.Set.Card
 
 /-!
@@ -256,7 +257,7 @@ theorem finite_neighborSet_toSubgraph (p : G.Walk u v) : (p.toSubgraph.neighborS
 
 lemma toSubgraph_le_induce_support (p : G.Walk u v) :
     p.toSubgraph ≤ (⊤ : G.Subgraph).induce {v | v ∈ p.support} := by
-  convert Subgraph.le_induce_top_verts
+  convert! Subgraph.le_induce_top_verts
   exact p.verts_toSubgraph.symm
 
 theorem toSubgraph_adj_getVert {u v} (w : G.Walk u v) {i : ℕ} (hi : i < w.length) :
@@ -365,6 +366,11 @@ theorem map_mapToSubgraph_eq_induce_id {u v : V} (w : G.Walk u v) :
     w.mapToSubgraph.map (⟨fun v ↦ ⟨v, w.mem_verts_toSubgraph.mp v.prop⟩, w.toSubgraph.adj_sub⟩ :
       w.toSubgraph.coe →g G.induce _) = w.induce _ (fun _ ↦ id) :=
   w.map_mapToSubgraph_eq_induce ..
+
+theorem isInduced_toSubgraph {w : G.Walk u v} : w.toSubgraph.IsInduced ↔ w.IsChordless := by
+  simp_rw [Subgraph.IsInduced, IsChordless, IsChord, Sym2.forall, Sym2.lift_mk, G.mem_edgeSet,
+    mem_verts_toSubgraph, adj_toSubgraph_iff_mem_edges]
+  grind only
 
 namespace IsPath
 
