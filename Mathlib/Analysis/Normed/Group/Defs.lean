@@ -116,17 +116,6 @@ class IsESeminormedAddMonoid (E : Type*)
   enorm_zero : ‖(0 : E)‖ₑ = 0
   protected enorm_add_le : ∀ x y : E, ‖x + y‖ₑ ≤ ‖x‖ₑ + ‖y‖ₑ
 
-/-- missing doc -/
-@[class_abbrev]
-structure ESeminormedAddMonoid (E : Type*) [TopologicalSpace E] where
-  /-- missing doc -/
-  [toContinuousENorm : ContinuousENorm E]
-  /-- missing doc -/
-  [toAddMonoid : AddMonoid E]
-  [toIsESeminormedAddMonoid : IsESeminormedAddMonoid E]
-
-attribute [instance] ESeminormedAddMonoid.mk
-
 /-- An enormed monoid is an additive monoid endowed with a continuous enorm,
 which is positive definite: in other words, this is an `ESeminormedAddMonoid` with a positive
 definiteness condition added. -/
@@ -134,34 +123,12 @@ class IsENormedAddMonoid (E : Type*) [TopologicalSpace E] [ContinuousENorm E] [A
   enorm_eq_zero : ∀ x : E, ‖x‖ₑ = 0 ↔ x = 0
   protected enorm_add_le : ∀ x y : E, ‖x + y‖ₑ ≤ ‖x‖ₑ + ‖y‖ₑ
 
-/-- missing doc -/
-@[class_abbrev]
-structure ENormedAddMonoid (E : Type*) [TopologicalSpace E] where
-  /-- missing doc -/
-  [toContinuousENorm : ContinuousENorm E]
-  /-- missing doc -/
-  [toAddMonoid : AddMonoid E]
-  [toIsENormedAddMonoid : IsENormedAddMonoid E]
-
-attribute [instance] ENormedAddMonoid.mk
-
 /-- An e-seminormed monoid is a monoid endowed with a continuous enorm.
 Note that we only ask for the enorm to be a semi-norm: non-trivial elements may have enorm zero. -/
 @[to_additive]
 class IsESeminormedMonoid (E : Type*) [TopologicalSpace E] [ContinuousENorm E] [Monoid E] where
   enorm_zero : ‖(1 : E)‖ₑ = 0
   protected enorm_mul_le : ∀ x y : E, ‖x * y‖ₑ ≤ ‖x‖ₑ + ‖y‖ₑ
-
-/-- missing doc -/
-@[class_abbrev, to_additive]
-structure ESeminormedMonoid (E : Type*) [TopologicalSpace E] where
-  /-- missing doc -/
-  [toContinuousENorm : ContinuousENorm E]
-  /-- missing doc -/
-  [toMonoid : Monoid E]
-  [toIsESeminormedMonoid : IsESeminormedMonoid E]
-
-attribute [instance] ESeminormedMonoid.mk
 
 /-- An enormed monoid is a monoid endowed with a continuous enorm,
 which is positive definite: in other words, this is an `ESeminormedMonoid` with a positive
@@ -176,61 +143,6 @@ instance [TopologicalSpace E] [ContinuousENorm E] [Monoid E] [IsENormedMonoid E]
     IsESeminormedMonoid E where
   enorm_zero := (‹IsENormedMonoid E›.enorm_eq_zero _).mpr rfl
   enorm_mul_le := ‹IsENormedMonoid E›.enorm_mul_le
-
-/-- missing doc -/
-@[class_abbrev, to_additive]
-structure ENormedMonoid (E : Type*) [TopologicalSpace E] where
-  /-- missing doc -/
-  [toContinuousENorm : ContinuousENorm E]
-  /-- missing doc -/
-  [toMonoid : Monoid E]
-  [toIsENormedMonoid : IsENormedMonoid E]
-
-attribute [instance] ENormedMonoid.mk
-
-/-- missing doc -/
-@[class_abbrev]
-structure ESeminormedAddCommMonoid (E : Type*) [TopologicalSpace E] where
-  /-- missing doc -/
-  [toContinuousENorm : ContinuousENorm E]
-  /-- missing doc -/
-  [toAddCommMonoid : AddCommMonoid E]
-  [toIsESeminormedAddMonoid : IsESeminormedAddMonoid E]
-
-attribute [instance] ESeminormedAddCommMonoid.mk
-
-/-- missing doc -/
-@[class_abbrev]
-structure ENormedAddCommMonoid (E : Type*) [TopologicalSpace E] where
-  /-- missing doc -/
-  [toContinuousENorm : ContinuousENorm E]
-  /-- missing doc -/
-  [toAddCommMonoid : AddCommMonoid E]
-  [toIsENormedAddMonoid : IsENormedAddMonoid E]
-
-attribute [instance] ENormedAddCommMonoid.mk
-
-/-- missing doc -/
-@[class_abbrev, to_additive]
-structure ESeminormedCommMonoid (E : Type*) [TopologicalSpace E] where
-  /-- missing doc -/
-  [toContinuousENorm : ContinuousENorm E]
-  /-- missing doc -/
-  [toCommMonoid : CommMonoid E]
-  [toIsESeminormedMonoid : IsESeminormedMonoid E]
-
-attribute [instance] ESeminormedCommMonoid.mk
-
-/-- missing doc -/
-@[class_abbrev, to_additive]
-structure ENormedCommMonoid (E : Type*) [TopologicalSpace E] where
-  /-- missing doc -/
-  [toContinuousENorm : ContinuousENorm E]
-  /-- missing doc -/
-  [toCommMonoid : CommMonoid E]
-  [toIsENormedMonoid : IsENormedMonoid E]
-
-attribute [instance] ENormedCommMonoid.mk
 
 /-- missing doc -/
 class NormPseudoMetric (E : Type*) extends Norm E, PseudoMetricSpace E where
