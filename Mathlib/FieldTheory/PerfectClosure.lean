@@ -471,7 +471,8 @@ section Field
 variable [Field K] (p : ℕ) [Fact p.Prime] [CharP K p]
 
 instance instInv : Inv (PerfectClosure K p) :=
-  fast_instance% ⟨Quot.lift (fun x : ℕ × K => Quot.mk (R K p) (x.1, x.2⁻¹)) fun x y (H : R K p x y) =>
+  fast_instance% ⟨Quot.lift (fun x : ℕ × K => Quot.mk (R K p) (x.1, x.2⁻¹))
+      fun x y (H : R K p x y) =>
       match x, y, H with
       | _, _, R.intro n x =>
         Quot.sound <| by

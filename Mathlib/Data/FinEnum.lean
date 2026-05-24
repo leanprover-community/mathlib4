@@ -139,7 +139,8 @@ theorem card_fin {n} [FinEnum (Fin n)] : card (Fin n) = n := Fin.equiv_iff_eq.mp
 
 instance Quotient.enum [FinEnum α] (s : Setoid α) [DecidableRel ((· ≈ ·) : α → α → Prop)] :
     FinEnum (Quotient s) :=
-  fast_instance% FinEnum.ofSurjective Quotient.mk'' fun x => Quotient.inductionOn x fun x => ⟨x, rfl⟩
+  fast_instance% FinEnum.ofSurjective Quotient.mk'' fun x =>
+    Quotient.inductionOn x fun x => ⟨x, rfl⟩
 
 /-- enumerate all finite sets of a given type -/
 def Finset.enum [DecidableEq α] : List α → List (Finset α)

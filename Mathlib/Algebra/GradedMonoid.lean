@@ -337,7 +337,8 @@ variable [AddCommMonoid ι] [GCommMonoid A]
 
 /-- The `CommMonoid` structure derived from `GCommMonoid A`. -/
 instance (priority := 900) GradeZero.commMonoid : CommMonoid (A 0) :=
-  fast_instance% Function.Injective.commMonoid (mk 0) sigma_mk_injective rfl mk_zero_smul mk_zero_pow
+  fast_instance% Function.Injective.commMonoid (mk 0) sigma_mk_injective rfl mk_zero_smul
+    mk_zero_pow
 
 end Monoid
 

@@ -305,7 +305,8 @@ instance : SMul ℕ (M ⟶ N) where
 alias hom_zsmul := hom_nsmul
 
 instance : AddCommMonoid (M ⟶ N) :=
-  fast_instance% Function.Injective.addCommMonoid Hom.hom hom_injective rfl (fun _ _ => rfl) (fun _ _ => rfl)
+  fast_instance% Function.Injective.addCommMonoid Hom.hom hom_injective rfl (fun _ _ => rfl)
+    (fun _ _ => rfl)
 
 @[simp] lemma hom_sum {ι : Type*} (f : ι → (M ⟶ N)) (s : Finset ι) :
     (∑ i ∈ s, f i).hom = ∑ i ∈ s, (f i).hom :=
