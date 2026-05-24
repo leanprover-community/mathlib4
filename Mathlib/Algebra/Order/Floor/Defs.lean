@@ -170,7 +170,7 @@ instance : FloorRing ℤ where
 
 /-- A `FloorRing` constructor from the `floor` function alone. -/
 @[implicit_reducible]
-def FloorRing.ofFloor (α) [Ring α] [LinearOrder α] [IsStrictOrderedRing α] (floor : α → ℤ)
+def FloorRing.ofFloor (α) [Ring α] [LinearOrder α] [IsOrderedRing α] (floor : α → ℤ)
     (gc_coe_floor : GaloisConnection (↑) floor) : FloorRing α :=
   { floor
     ceil := fun a => -floor (-a)
@@ -179,7 +179,7 @@ def FloorRing.ofFloor (α) [Ring α] [LinearOrder α] [IsStrictOrderedRing α] (
 
 /-- A `FloorRing` constructor from the `ceil` function alone. -/
 @[implicit_reducible]
-def FloorRing.ofCeil (α) [Ring α] [LinearOrder α] [IsStrictOrderedRing α] (ceil : α → ℤ)
+def FloorRing.ofCeil (α) [Ring α] [LinearOrder α] [IsOrderedRing α] (ceil : α → ℤ)
     (gc_ceil_coe : GaloisConnection ceil (↑)) : FloorRing α :=
   { floor := fun a => -ceil (-a)
     ceil
@@ -286,7 +286,7 @@ theorem floor_le (a : α) : (⌊a⌋ : α) ≤ a :=
 theorem floor_nonneg : 0 ≤ ⌊a⌋ ↔ 0 ≤ a := by rw [le_floor, Int.cast_zero]
 
 @[bound]
-theorem floor_nonpos [IsStrictOrderedRing α] (ha : a ≤ 0) : ⌊a⌋ ≤ 0 := by
+theorem floor_nonpos [IsOrderedRing α] (ha : a ≤ 0) : ⌊a⌋ ≤ 0 := by
   rw [← @cast_le α, Int.cast_zero]
   exact (floor_le a).trans ha
 
@@ -306,7 +306,7 @@ theorem le_ceil (a : α) : a ≤ ⌈a⌉ :=
   gc_ceil_coe.le_u_l a
 
 @[bound]
-theorem ceil_nonneg [IsStrictOrderedRing α] (ha : 0 ≤ a) : 0 ≤ ⌈a⌉ := mod_cast ha.trans (le_ceil a)
+theorem ceil_nonneg [IsOrderedRing α] (ha : 0 ≤ a) : 0 ≤ ⌈a⌉ := mod_cast ha.trans (le_ceil a)
 
 @[simp]
 theorem ceil_pos : 0 < ⌈a⌉ ↔ 0 < a := by rw [lt_ceil, cast_zero]
@@ -315,7 +315,7 @@ end Int
 
 section FloorRingToSemiring
 
-variable [Ring α] [LinearOrder α] [IsStrictOrderedRing α] [FloorRing α]
+variable [Ring α] [LinearOrder α] [IsOrderedRing α] [FloorRing α]
 
 /-! #### A floor ring as a floor semiring -/
 

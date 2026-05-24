@@ -1280,7 +1280,6 @@ instance (priority := 100) hasCokernels_of_hasCoequalizers [HasCoequalizers C] :
 section HasKernels
 variable [HasKernels C]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The kernel of an arrow is natural. -/
 @[simps]
 noncomputable def ker : Arrow C ⥤ C where
@@ -1297,7 +1296,6 @@ end HasKernels
 section HasCokernels
 variable [HasCokernels C]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The cokernel of an arrow is natural. -/
 @[simps]
 noncomputable def coker : Arrow C ⥤ C where

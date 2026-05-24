@@ -16,18 +16,18 @@ public import Mathlib.CategoryTheory.Functor.OfSequence
 /-!
 # Factorization lemma
 
-In this file, we shall show that if `f : K ⟶ L` is a morphism between bounded below
+In this file, we show that if `f : K ⟶ L` is a morphism between bounded below
 cochain complexes in an abelian category with enough injectives,
 there exists a factorization `ι ≫ π = f` with `ι : K ⟶ K'` a monomorphism that is also
 a quasimorphism and `π : K' ⟶ L` a morphism which degreewise is an epimorphism with
 an injective kernel, while `K'` is also bounded below (with precise bounds depending
 on the available bounds for `K` and `L`): this is
-`CochainComplex.Plus.modelCategoryQuillen.cm5a` (TODO). Using the factorization
+`CochainComplex.Plus.modelCategoryQuillen.cm5a`. Using the factorization
 obtained in the file `Mathlib/Algebra/Homology/Factorizations/CM5b.lean`,
 we may assume `f : K ⇨ L` is a monomorphism (a case which appears as
-the lemma `CochainComplex.Plus.modelCategoryQuillen.cm5a_cof` (TODO)).
+the lemma `CochainComplex.Plus.modelCategoryQuillen.cm5a_cof`).
 
-In the proof, the key (private) lemma shall be
+In the proof, the key (private) lemma is be
 `CochainComplex.Plus.modelCategoryQuillen.cm5a_cof.step` which shows that
 if `f` is a monomorphism which is a quasi-isomorphism in degrees `≤ n₀` and
 `n₀ + 1 = n₁`, then `f` has a factorisation `ι ≫ π = f`
@@ -45,7 +45,7 @@ a projective system `ℕᵒᵖ ⥤ CochainComplex C ℤ`
 (see `CochainComplex.Plus.modelCategoryQuillen.cm5a_cof.cochainComplexFunctor`).
 Degreewise, this projective system is essentially constant, which allows
 to take its limit, which shall be the intermediate object in the
-lemma `cm5a_cof` (TODO).
+lemma `cm5a_cof`.
 
 -/
 
@@ -62,7 +62,7 @@ namespace cm5a_cof
 /-- Given a morphism `f : K ⟶ L`, this is the property of factorisations
 of `f` consisting of a monomorphism followed by a degreewise epimorphism
 with injective kernel. -/
-public def cofFib : ObjectProperty (Factorisation f) :=
+def cofFib : ObjectProperty (Factorisation f) :=
   fun F ↦ Mono F.ι ∧ degreewiseEpiWithInjectiveKernel F.π
 
 instance (F : (cofFib f).FullSubcategory) : Mono F.obj.ι :=
@@ -71,13 +71,13 @@ instance (F : (cofFib f).FullSubcategory) : Mono F.obj.ι :=
 variable {f} in
 /-- The property that the first morphism of a factorisation is
 a quasi-isomorphisms in degrees `≤ n`. -/
-public def quasiIsoLE (n : ℤ) : ObjectProperty (cofFib f).FullSubcategory :=
+def quasiIsoLE (n : ℤ) : ObjectProperty (cofFib f).FullSubcategory :=
   fun F ↦ ∀ i ≤ n, QuasiIsoAt F.obj.ι i
 
 variable {f} in
 /-- The property that the second morphism of a factorisation is
 an isomorphism in degrees `≤ n`. -/
-public def isIsoLE (n : ℤ) : ObjectProperty (cofFib f).FullSubcategory :=
+def isIsoLE (n : ℤ) : ObjectProperty (cofFib f).FullSubcategory :=
   fun F ↦ ∀ i ≤ n, IsIso (F.obj.π.f i)
 
 namespace step₁
@@ -392,8 +392,6 @@ lemma quasiIsoAt_ι [Mono f] [Mono (homologyMap f n)] (q : ℤ) (hq : q ≤ n) :
 
 end step₂
 
--- This lemma and a few definitions above are made public only in order to please CI.
--- They will be made private again when the proofs of `cm5a_cof` and `cm5a` are added.
 open step₂ in
 lemma step₂ [EnoughInjectives C] [Mono f] (n₀ n₁ : ℤ)
     (hf : ∀ i ≤ n₀, QuasiIsoAt f i) [Mono (homologyMap f n₁)] (hn₁ : n₀ + 1 = n₁ := by lia) :
@@ -403,7 +401,7 @@ lemma step₂ [EnoughInjectives C] [Mono f] (n₀ n₁ : ℤ)
     fun i hi ↦ quasiIsoAt_ι f n₁ (fun j hj ↦ hf j (by lia)) _ hi,
     isIso_π_f f n₁⟩
 
-public lemma step [EnoughInjectives C] [Mono f] (n₀ n₁ : ℤ) (hn₁ : n₀ + 1 = n₁)
+lemma step [EnoughInjectives C] [Mono f] (n₀ n₁ : ℤ)
     (hf : ∀ i ≤ n₀, QuasiIsoAt f i) (hn₁ : n₀ + 1 = n₁ := by lia) :
     ∃ (F : (cofFib f).FullSubcategory), quasiIsoLE n₁ F ∧ isIsoLE n₀ F := by
   obtain ⟨F₁, h₁, h₂, _⟩ := step₁ f n₀ n₁ hf
@@ -416,14 +414,238 @@ public lemma step [EnoughInjectives C] [Mono f] (n₀ n₁ : ℤ) (hn₁ : n₀ 
   dsimp
   infer_instance
 
+/-- The category of factorisations of `f` as a monomorphism that is a quasi-isomorphism
+in degrees `≤ n` followed by a degreewise epimorphism with an injective kernel. -/
+abbrev CofFibFactorizationQuasiIsoLE (n : ℤ) := (quasiIsoLE (f := f) n).FullSubcategory
+
+variable [EnoughInjectives C]
+
+namespace CofFibFactorizationQuasiIsoLE
+
+/-- When `K` and `L` are both strictly `≥ n + 1`, this is the factorization `f ≫ 𝟙 L = f`
+of a monomorphism `f : K ⟶ L` as a monomorphism that is a quasi-isomorphism in degrees `≤ n`
+followed by a degreewise epimorphism with an injective kernel. -/
+def zero [Mono f] (n : ℤ) [K.IsStrictlyGE (n + 1)] [L.IsStrictlyGE (n + 1)] :
+    CofFibFactorizationQuasiIsoLE f (n + (0 : ℕ)) :=
+  .mk (.mk { mid := L, ι := f, π := 𝟙 L }
+    ⟨by assumption, fun i ↦ epiWithInjectiveKernel_of_iso (𝟙 (L.X i))⟩)
+    (fun i hi ↦ by
+      dsimp
+      rw [quasiIsoAt_iff_isIso_homologyMap]
+      apply IsZero.isIso
+      all_goals
+      · rw [← exactAt_iff_isZero_homology]
+        exact exactAt_of_isGE _ (n + 1) i)
+
+variable {f} in
+lemma exists_next {n₀ : ℤ} (F : CofFibFactorizationQuasiIsoLE f n₀)
+    (n₁ : ℤ) (hn₁ : n₀ + 1 = n₁) :
+    ∃ (F' : CofFibFactorizationQuasiIsoLE f n₁) (g : F'.1 ⟶ F.1),
+      ∀ (i : ℤ) (_ : i ≤ n₀), IsIso (g.hom.h.f i) := by
+  obtain ⟨F₁₂, h₁, h₂⟩ := step F.obj.obj.ι n₀ n₁ F.property
+  exact ⟨.mk (.mk { mid := F₁₂.obj.mid, ι := F₁₂.obj.ι, π := F₁₂.obj.π ≫ F.obj.obj.π }
+    ⟨by dsimp; infer_instance,
+      MorphismProperty.comp_mem _ _ _ F₁₂.property.2 F.obj.property.2⟩) h₁,
+      ObjectProperty.homMk { h := F₁₂.obj.π }, h₂⟩
+
+variable {f} in
+/-- Given `F : CofFibFactorizationQuasiIsoLE f n₀`, this is term in
+`CofFibFactorizationQuasiIsoLE f n₁` with `n₀ + 1 = n₁` that is given
+by the lemma `exists_next`. -/
+noncomputable def next {n₀ : ℤ} (F : CofFibFactorizationQuasiIsoLE f n₀)
+    (n₁ : ℤ) (hn₁ : n₀ + 1 = n₁) :
+    CofFibFactorizationQuasiIsoLE f n₁ :=
+  (F.exists_next n₁ hn₁).choose
+
+variable {f} in
+/-- Given `F : CofFibFactorizationQuasiIsoLE f n₀`, this is the morphism which relates
+the intermediate objects in the factorisations `F.next n₁ _` and `F`. -/
+noncomputable def fromNext {n₀ : ℤ} (F : CofFibFactorizationQuasiIsoLE f n₀)
+    (n₁ : ℤ) (hn₁ : n₀ + 1 = n₁) :
+    (F.next n₁ hn₁).obj ⟶ F.obj :=
+  (F.exists_next n₁ hn₁).choose_spec.choose
+
+variable {f} in
+lemma isIso_fromNext_hom_h_f {n₀ : ℤ} (F : CofFibFactorizationQuasiIsoLE f n₀)
+    (n₁ : ℤ) (hn₁ : n₀ + 1 = n₁) (i : ℤ) (hi : i ≤ n₀) :
+    IsIso ((F.fromNext n₁ hn₁).hom.h.f i) :=
+  (F.exists_next n₁ hn₁).choose_spec.choose_spec i hi
+
+/-- Assuming `f : K ⟶ L` is a monomorphism between complexes that are strictly `≥ n₀ + 1`,
+this is a dependent sequence of terms in `CofFibFactorizationQuasiIsoLE f (n₀ + q)`
+for all `q : ℕ`. -/
+noncomputable def sequence
+    [Mono f] (n₀ : ℤ) [K.IsStrictlyGE (n₀ + 1)] [L.IsStrictlyGE (n₀ + 1)] :
+    ∀ (q : ℕ), CofFibFactorizationQuasiIsoLE f (n₀ + q)
+  | 0 => zero f n₀
+  | q + 1 => (sequence n₀ q).next _ (by lia)
+
+variable [Mono f] (n₀ : ℤ) [K.IsStrictlyGE (n₀ + 1)] [L.IsStrictlyGE (n₀ + 1)]
+
+/-- The morphism `(sequence f n₀ (q + 1)).obj ⟶ (sequence f n₀ q).obj` given by `fromNext`. -/
+noncomputable def toSequenceNext (q : ℕ) :
+    (sequence f n₀ (q + 1)).obj ⟶ (sequence f n₀ q).obj :=
+  (sequence f n₀ q).fromNext _ (by lia)
+
+end CofFibFactorizationQuasiIsoLE
+
+variable [Mono f] (n₀ : ℤ) [K.IsStrictlyGE (n₀ + 1)] [L.IsStrictlyGE (n₀ + 1)]
+
+/-- Given a monomorphism `f : K ⟶ L` between complexes that are strictly `≥ n₀ + 1`,
+this is a projective system in `(cofFib f).FullSubcategory` given by the
+sequence of morphisms `CofFibFactorizationQuasiIsoLE.toSequenceNext`. -/
+noncomputable def functor : ℕᵒᵖ ⥤ (cofFib f).FullSubcategory :=
+  (Functor.ofSequence (fun q ↦ (CofFibFactorizationQuasiIsoLE.toSequenceNext f n₀ q).op)).leftOp
+
+lemma isIso_functor_map_hom_h_f {q₁ q₂ : ℕ} (hq : q₁ ≤ q₂) (i : ℤ) (hi : i ≤ n₀ + q₁) :
+    IsIso (((functor f n₀).map (homOfLE hq).op).hom.h.f i) := by
+  wlog hq' : q₁ + 1 = q₂ generalizing q₁ q₂
+  · clear hq'
+    obtain ⟨k, hk⟩ := Nat.le.dest hq
+    induction k generalizing q₁ q₂ with
+    | zero =>
+      obtain rfl : q₁ = q₂ := by simpa using hk
+      simp only [homOfLE_refl, op_id, CategoryTheory.Functor.map_id,
+        ObjectProperty.FullSubcategory.id_hom, Factorisation.id_h, id_f]
+      infer_instance
+    | succ k h =>
+      rw [← homOfLE_comp (show q₁ ≤ q₁ + k by lia) (show q₁ + k ≤ q₂ by lia),
+        op_comp, Functor.map_comp]
+      exact IsIso.comp_isIso' (this _ (by lia) (by lia)) (h _ (by lia) rfl)
+  subst hq'
+  dsimp [functor]
+  rw [Functor.ofSequence_map_homOfLE_succ]
+  exact CofFibFactorizationQuasiIsoLE.isIso_fromNext_hom_h_f _ _ _ _ hi
+
+/-- Given a monomorphism `f : K ⟶ L` between complexes that are strictly `≥ n₀ + 1`,
+this is a projective system in `CochainComplex C ℤ`, whose limit shall give
+the intermediate object in the factorization lemma `cm5a_cof`. -/
+noncomputable abbrev cochainComplexFunctor : ℕᵒᵖ ⥤ CochainComplex C ℤ :=
+  functor f n₀ ⋙ ObjectProperty.ι _ ⋙ Factorisation.forget
+
+lemma isEventuallyConstantTo (i : ℤ) (q : ℕ) (h : i ≤ n₀ + q := by lia) :
+    (cochainComplexFunctor f n₀ ⋙ eval _ _ i).IsEventuallyConstantTo (op q) :=
+  fun _ _ ↦ isIso_functor_map_hom_h_f _ _ _ _ (by lia)
+
+instance (i : ℤ) : HasLimit (cochainComplexFunctor f n₀ ⋙ eval _ _ i) :=
+  (isEventuallyConstantTo f n₀ i (n₀ - i).natAbs).hasLimit
+
+/-- Given a monomorphism `f : K ⟶ L` between complexes that are strictly `≥ n₀ + 1`,
+this is the limit of the projective system
+`cochainComplexFunctor f n₀ : Nᵒᵖ ⥤ CochainComplex C ℤ`: this is the
+intermediate object in the factorization lemma `cm5a_cof`. -/
+noncomputable abbrev mid : CochainComplex C ℤ := limit (cochainComplexFunctor f n₀)
+
+/-- The projections from `mid f n₀`. -/
+noncomputable def midπ (q : ℕ) : mid f n₀ ⟶ ((functor f n₀).obj (op q)).obj.mid :=
+  limit.π _ (op q)
+
+@[reassoc (attr := simp)]
+lemma midπ_w (q₁ q₂ : ℕ) (hq : q₁ ≤ q₂) :
+    midπ f n₀ q₂ ≫ ((functor f n₀).map (homOfLE hq).op).hom.h =
+      midπ f n₀ q₁ :=
+  limit.w _ _
+
+@[reassoc (attr := simp)]
+lemma midπ_w_f (q₁ q₂ : ℕ) (hq : q₁ ≤ q₂) (i : ℤ) :
+    (midπ f n₀ q₂).f i ≫ ((functor f n₀).map (homOfLE hq).op).hom.h.f i =
+      (midπ f n₀ q₁).f i := by
+  rw [← midπ_w f n₀ q₁ q₂ hq]
+  dsimp
+
+lemma isIso_midπ_f (q : ℕ) (i : ℤ) (h : i ≤ n₀ + q := by lia) :
+    IsIso ((midπ f n₀ q).f i) :=
+  isIso_π_f_of_isLimit_of_isEventuallyConstantTo _ (limit.isLimit _) _ _
+    (isEventuallyConstantTo f n₀ _ _)
+
+lemma quasiIsoAt_midπ (q : ℕ) (i : ℤ) (h : i + 1 ≤ n₀ + q) :
+    QuasiIsoAt (midπ f n₀ q) i :=
+  quasiIsoAt_π_of_isLimit_of_isEventuallyConstantTo _ (limit.isLimit _)
+    (i - 1) i (i + 1) (by simp) (by simp) _
+    (isEventuallyConstantTo f n₀ _ _)
+    (isEventuallyConstantTo f n₀ _ _)
+    (isEventuallyConstantTo f n₀ _ _)
+
+/-- The first morphism `ι f n₀ : K ⟶ mid f n₀` of the factorization lemma `cm5a_cof`. -/
+noncomputable def ι : K ⟶ mid f n₀ :=
+  limit.lift _ (Cone.mk _ { app q := ((functor f n₀).obj q).obj.ι })
+
+set_option backward.isDefEq.respectTransparency false in
+@[reassoc (attr := simp)]
+lemma ι_midπ (q : ℕ) : ι f n₀ ≫ midπ f n₀ q = ((functor f n₀).obj (op q)).obj.ι := by
+  simp [ι, midπ]
+
+@[reassoc (attr := simp)]
+lemma ι_midπ_f (q : ℕ) (i : ℤ) : (ι f n₀).f i ≫ (midπ f n₀ q).f i =
+    ((functor f n₀).obj (op q)).obj.ι.f i := by
+  rw [← ι_midπ]
+  dsimp
+
+/-- The second morphism `π f n₀ : mid f n₀ ⟶ L` of the factorization lemma `cm5a_cof`. -/
+noncomputable def π : mid f n₀ ⟶ L := midπ f n₀ 0 ≫ ((functor f n₀).obj (op 0)).obj.π
+
+@[reassoc (attr := simp)]
+lemma ι_π : ι f n₀ ≫ π f n₀ = f := by
+  simp [π]
+
+@[reassoc (attr := simp)]
+lemma midπ_π (q : ℕ) : midπ f n₀ q ≫ ((functor f n₀).obj (op q)).obj.π = π f n₀ := by
+  simp [π, ← midπ_w_assoc f n₀ 0 q (by lia)]
+
+@[reassoc (attr := simp)]
+lemma midπ_π_f (q : ℕ) (i : ℤ) :
+    (midπ f n₀ q).f i ≫ ((functor f n₀).obj (op q)).obj.π.f i = (π f n₀).f i := by
+  rw [← midπ_π f n₀ q]
+  dsimp
+
+set_option backward.isDefEq.respectTransparency false in
+instance : (mid f n₀).IsStrictlyGE (n₀ + 1) := by
+  rw [isStrictlyGE_iff]
+  intro i hi
+  have := isIso_midπ_f f n₀ 0 i
+  exact (L.isZero_of_isStrictlyGE (n₀ + 1) i).of_iso (asIso ((midπ f n₀ 0).f i))
+
+instance : Mono (ι f n₀) :=
+  HomologicalComplex.mono_of_mono_f _ (fun i ↦ by
+    obtain ⟨q, _⟩ : ∃ (q : ℕ), IsIso ((midπ f n₀ q).f i) :=
+      ⟨(i - n₀).natAbs, isIso_midπ_f f n₀ _ i⟩
+    exact mono_of_mono_fac (ι_midπ_f f n₀ q i))
+
+instance : QuasiIso (ι f n₀) where
+  quasiIsoAt i := by
+    obtain ⟨q, hq⟩ : ∃ (q : ℕ), i + 1 ≤ n₀ + q := ⟨(i + 1 - n₀).natAbs, by lia⟩
+    have := quasiIsoAt_midπ f n₀ q i hq
+    rw [← quasiIsoAt_iff_comp_right _ (midπ f n₀ q), ι_midπ]
+    exact (CofFibFactorizationQuasiIsoLE.sequence f n₀ q).property i (by lia)
+
+lemma degreewiseEpiWithInjectiveKernel_π : degreewiseEpiWithInjectiveKernel (π f n₀) := by
+  intro i
+  obtain ⟨q, hq⟩ : ∃ (q : ℕ), i ≤ n₀ + q := ⟨(i - n₀).natAbs, by lia⟩
+  rw [← midπ_π_f f n₀ q]
+  have := isIso_midπ_f f n₀ q i
+  exact MorphismProperty.comp_mem _ _ _
+    (epiWithInjectiveKernel_of_iso _)
+    ((CofFibFactorizationQuasiIsoLE.sequence f n₀ q).obj.property.2 i)
+
 end cm5a_cof
 
-proof_wanted cm5a_cof (n : ℤ) [K.IsStrictlyGE n] [L.IsStrictlyGE n] [Mono f] [EnoughInjectives C] :
-    ∃ (K' : CochainComplex C ℤ) (_hK' : K'.IsStrictlyGE n) (ι : K ⟶ K') (π : K' ⟶ L),
-      Mono ι ∧ QuasiIso ι ∧ degreewiseEpiWithInjectiveKernel π ∧ ι ≫ π = f
+variable [EnoughInjectives C]
 
-proof_wanted cm5a (n : ℤ) [K.IsStrictlyGE (n + 1)] [L.IsStrictlyGE n] [EnoughInjectives C] :
+open cm5a_cof in
+public lemma cm5a_cof (n : ℤ) [K.IsStrictlyGE n] [L.IsStrictlyGE n] [Mono f] :
     ∃ (K' : CochainComplex C ℤ) (_hK' : K'.IsStrictlyGE n) (ι : K ⟶ K') (π : K' ⟶ L),
-      Mono ι ∧ QuasiIso ι ∧ degreewiseEpiWithInjectiveKernel π ∧ ι ≫ π = f
+      Mono ι ∧ QuasiIso ι ∧ degreewiseEpiWithInjectiveKernel π ∧ ι ≫ π = f := by
+  obtain ⟨n, rfl⟩ : ∃ (q : ℤ), n = q + 1 := ⟨n - 1, by simp⟩
+  exact ⟨mid f n, inferInstance, ι f n, π f n, inferInstance,
+    inferInstance, degreewiseEpiWithInjectiveKernel_π f n, ι_π f n⟩
+
+public lemma cm5a (n : ℤ) [K.IsStrictlyGE (n + 1)] [L.IsStrictlyGE n] :
+    ∃ (K' : CochainComplex C ℤ) (_hK' : K'.IsStrictlyGE n) (ι : K ⟶ K') (π : K' ⟶ L),
+      Mono ι ∧ QuasiIso ι ∧ degreewiseEpiWithInjectiveKernel π ∧ ι ≫ π = f := by
+  have : K.IsStrictlyGE n := K.isStrictlyGE_of_ge n (n + 1) (by lia)
+  obtain ⟨L', _, i, p, _, hp, _, rfl⟩ := cm5b f n
+  obtain ⟨K', _, ι, π, _, _, hπ, rfl⟩ := cm5a_cof i n
+  exact ⟨K', inferInstance, ι, π ≫ p, inferInstance, inferInstance,
+    MorphismProperty.comp_mem _ _ _ hπ hp, by simp⟩
 
 end CochainComplex.Plus.modelCategoryQuillen

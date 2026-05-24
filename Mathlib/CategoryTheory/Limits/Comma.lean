@@ -215,6 +215,9 @@ namespace StructuredArrow
 
 variable {X : T} {G : A ⥤ T} (F : J ⥤ StructuredArrow X G)
 
+instance [G.Faithful] [G.Full] {Y : A} : HasInitial (StructuredArrow (G.obj Y) G) :=
+  StructuredArrow.mkIdInitial.hasInitial
+
 set_option backward.isDefEq.respectTransparency false in
 instance hasLimit [i₁ : HasLimit (F ⋙ proj X G)] [i₂ : PreservesLimit (F ⋙ proj X G) G] :
     HasLimit F := by
@@ -306,5 +309,11 @@ namespace Over
 instance {X : T} : HasTerminal (Over X) := CostructuredArrow.hasTerminal
 
 end Over
+
+namespace Under
+
+instance {X : T} : HasInitial (Under X) := Under.mkIdInitial.hasInitial
+
+end Under
 
 end CategoryTheory

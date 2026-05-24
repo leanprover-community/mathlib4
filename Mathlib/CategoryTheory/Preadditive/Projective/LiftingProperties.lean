@@ -17,7 +17,7 @@ left lifting property with respect to epimorphisms,
 
 -/
 
-@[expose] public section
+public section
 
 universe v u
 
