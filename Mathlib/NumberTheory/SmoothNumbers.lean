@@ -200,17 +200,18 @@ def equivProdNatFactoredNumbers {s : Finset ℕ} {p : ℕ} (hp : p.Prime) (hs : 
                             ⟨(m.primeFactorsList.filter (· ∈ s)).prod, prod_mem_factoredNumbers ..⟩)
   left_inv := by
     rintro ⟨e, m, hm₀, hm⟩
-    have hpm : ¬ p ∣ m := hp.coprime_iff_not_dvd.mp <| hp.factoredNumbers_coprime hs ⟨hm₀, hm⟩
-    simp (etaStruct := .all) only [Prod.mk.injEq, Subtype.mk.injEq]
+    have hpm : ¬ p ∣ m := by grind [mem_primeFactorsList]
+    simp only [Prod.mk.injEq, Subtype.mk.injEq]
     constructor
     · rw [factorization_mul (pow_ne_zero e hp.ne_zero) hm₀, Finsupp.add_apply,
         factorization_pow_self hp, factorization_eq_zero_of_not_dvd hpm, add_zero]
-    · nth_rewrite 2 [← prod_primeFactorsList hm₀]
+    · conv_rhs => rw [← prod_primeFactorsList hm₀]
       refine prod_eq <|
         (filter _ <| perm_primeFactorsList_mul (pow_ne_zero e hp.ne_zero) hm₀).trans ?_
       rw [filter_append, hp.primeFactorsList_pow,
           filter_eq_nil_iff.mpr fun q hq ↦ by rw [mem_replicate] at hq; simp [hq.2, hs],
-          nil_append, filter_eq_self.mpr fun q hq ↦ by simp only [hm q hq, decide_true]]
+      rw [filter_append, hp.primeFactorsList_pow, filter_eq_nil_iff.mpr <| by grind, nil_append,
+        filter_eq_self.mpr <| by grind]
   right_inv := by
     rintro ⟨m, hm₀, hm⟩
     rw [Subtype.mk.injEq, ← primeFactorsList_count_eq, ← prod_replicate, ← prod_append]
