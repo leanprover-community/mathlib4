@@ -261,7 +261,7 @@ def compContinuousLinearMapL (f : ∀ i, E i →L[𝕜] E₁ i) :
 
 @[fun_prop]
 theorem continuous_compContinuousLinearMap_left (f : ∀ i, E i →L[𝕜] E₁ i) :
-    Continuous fun g : ContinuousMultilinearMap 𝕜 E₁ F => g.compContinuousLinearMap f :=
+    Continuous fun g : ContinuousMultilinearMap 𝕜 E₁ F ↦ g.compContinuousLinearMap f :=
   map_continuous (compContinuousLinearMapL f)
 
 end CompContinuousLinearMap
@@ -393,8 +393,7 @@ theorem compContinuousMultilinearMapL_apply (g : F →L[𝕜] G) (f : Continuous
 
 @[fun_prop]
 theorem continuous_compContinuousMultilinearMap (g : F →L[𝕜] G) :
-    Continuous (g.compContinuousMultilinearMap :
-      ContinuousMultilinearMap 𝕜 E F → ContinuousMultilinearMap 𝕜 E G) :=
+    Continuous (g.compContinuousMultilinearMap (M₁ := E)) :=
   map_continuous (compContinuousMultilinearMapL 𝕜 E F G g)
 
 end ContinuousLinearMap
