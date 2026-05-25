@@ -55,30 +55,43 @@ lemma denom_upperRightHom (x : ℝ) (τ : ℂ) :
     denom (Matrix.GeneralLinearGroup.upperRightHom x) τ = 1 := by
   simp [denom, Matrix.GeneralLinearGroup.upperRightHom_apply]
 
+/-- The determinant of the upper-triangular matrix `upperRightHom x = [[1, x], [0, 1]]` is `1`. -/
+@[simp]
+lemma det_upperRightHom (x : ℝ) :
+    ((Matrix.GeneralLinearGroup.upperRightHom x).det.val : ℝ) = 1 := by
+  rw [Matrix.GeneralLinearGroup.val_det_apply]
+  simp [Matrix.GeneralLinearGroup.upperRightHom_apply, Matrix.det_fin_two]
+
+/-- The Möbius action of `upperRightHom x` on `τ : ℍ` is the shift `x +ᵥ τ`. -/
+@[simp]
+lemma upperRightHom_smul (x : ℝ) (τ : ℍ) :
+    (Matrix.GeneralLinearGroup.upperRightHom x) • τ = (x +ᵥ τ : ℍ) := by
+  have hdet : 0 < (Matrix.GeneralLinearGroup.upperRightHom x).det.val := by
+    rw [Matrix.GeneralLinearGroup.val_det_apply]
+    simp [Matrix.GeneralLinearGroup.upperRightHom_apply, Matrix.det_fin_two]
+  ext1
+  rw [coe_smul_of_det_pos hdet]
+  simp [num, denom, Matrix.GeneralLinearGroup.upperRightHom_apply,
+    UpperHalfPlane.coe_vadd, add_comm]
+
+/-- Pointwise: `σ (upperRightHom x) z = z`, since `det = 1 > 0` makes `σ` the identity. -/
+@[simp]
+lemma σ_upperRightHom_apply (x : ℝ) (z : ℂ) :
+    σ (Matrix.GeneralLinearGroup.upperRightHom x) z = z := by
+  unfold σ
+  rw [if_pos]
+  · rfl
+  · rw [Matrix.GeneralLinearGroup.val_det_apply]
+    simp [Matrix.GeneralLinearGroup.upperRightHom_apply, Matrix.det_fin_two]
+
 /-- The action of `T^j` on a function `g : ℍ → ℂ` via the slash action of weight `k` is the
 shift `g((j : ℝ) +ᵥ τ)`. -/
 lemma slash_T_zpow_apply_general (k : ℤ) (j : ℤ) (g : ℍ → ℂ) (τ : ℍ) :
     (g ∣[k] ((ModularGroup.T : SL(2, ℤ))^j : GL (Fin 2) ℝ)) τ =
       g ((j : ℝ) +ᵥ τ) := by
-  have hgl : ((ModularGroup.T : SL(2, ℤ))^j : GL (Fin 2) ℝ) =
-      Matrix.SpecialLinearGroup.mapGL ℝ ((ModularGroup.T)^j : SL(2, ℤ)) := by
-    change (Matrix.SpecialLinearGroup.mapGL ℝ ModularGroup.T)^j = _
-    rw [← map_zpow]
-  rw [hgl]
-  change (g ∣[k] ((ModularGroup.T)^j : SL(2, ℤ))) τ = _
-  rw [SL_slash_apply, modular_T_zpow_smul]
-  have hdenom : denom (((ModularGroup.T)^j : SL(2, ℤ)) : GL (Fin 2) ℝ) (τ : ℂ) = 1 := by
-    have hcoe : (((((ModularGroup.T)^j : SL(2, ℤ)) : GL (Fin 2) ℝ)) :
-        Matrix (Fin 2) (Fin 2) ℝ) =
-        ((((ModularGroup.T)^j : SL(2, ℤ)) : Matrix (Fin 2) (Fin 2) ℤ)).map (Int.castRingHom ℝ) :=
-      rfl
-    change ((((((ModularGroup.T)^j : SL(2, ℤ)) : GL (Fin 2) ℝ)) :
-        Matrix (Fin 2) (Fin 2) ℝ) 1 0 : ℂ) * τ +
-        ((((((ModularGroup.T)^j : SL(2, ℤ)) : GL (Fin 2) ℝ)) :
-          Matrix (Fin 2) (Fin 2) ℝ) 1 1 : ℂ) = 1
-    rw [hcoe, ModularGroup.coe_T_zpow]
-    simp
-  rw [hdenom, one_zpow, mul_one]
+  rw [ModularGroup.coe_GL_T_zpow_eq_upperRightHom, slash_apply, σ_upperRightHom_apply,
+    upperRightHom_smul, denom_upperRightHom, det_upperRightHom]
+  simp
 
 section Generators
 

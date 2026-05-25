@@ -307,6 +307,17 @@ lemma _root_.ModularGroup.mapGL_T_zpow_eq_upperRightHom (n : ℤ) :
       simp [Matrix.SpecialLinearGroup.mapGL_coe_matrix, ModularGroup.coe_T]
   rw [map_zpow, hT, ← AddChar.map_zsmul_eq_zpow, zsmul_one]
 
+/-- The form Lean elaborates `((T : SL(2, ℤ))^n : GL (Fin 2) ℝ)` to: coerce `T` to `GL(2, ℝ)`
+first, then raise to the `n`-th power. Equals `upperRightHom n`. Variant of
+`mapGL_T_zpow_eq_upperRightHom`. -/
+@[simp]
+lemma _root_.ModularGroup.coe_GL_T_zpow_eq_upperRightHom (n : ℤ) :
+    (((ModularGroup.T : SL(2, ℤ)) : GL (Fin 2) ℝ))^n =
+      Matrix.GeneralLinearGroup.upperRightHom ((n : ℝ)) := by
+  rw [show (((ModularGroup.T : SL(2, ℤ)) : GL (Fin 2) ℝ)) =
+      Matrix.SpecialLinearGroup.mapGL ℝ (ModularGroup.T : SL(2, ℤ)) from rfl, ← map_zpow]
+  exact ModularGroup.mapGL_T_zpow_eq_upperRightHom n
+
 lemma strictPeriods_eq_zmultiples_one_of_T_mem {Γ : Subgroup SL(2, ℤ)} (hΓ : ModularGroup.T ∈ Γ) :
     strictPeriods (Γ : Subgroup (GL (Fin 2) ℝ)) = AddSubgroup.zmultiples 1 := by
   ext x
