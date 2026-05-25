@@ -17,9 +17,8 @@ This file contains results about smoothness of affine maps.
 ## Main results
 
 * `ContinuousAffineMap.contDiff`: a continuous affine map is smooth.
-* `AffineMap.lineMap_contDiff_uncurry`, `AffineMap.lineMap_contDiff`,
-  `ContDiff.lineMap` and variants: `AffineMap.lineMap` is smooth in its three
-  arguments, jointly and pointwise.
+* `AffineMap.contDiff_lineMap_uncurry`: `AffineMap.lineMap` is smooth in its three arguments,
+  jointly and pointwise.
 
 -/
 
@@ -45,13 +44,13 @@ variable [NormedAddCommGroup V] [NormedSpace 𝕜 V]
 
 /-- `AffineMap.lineMap` is smooth in all three arguments. -/
 @[fun_prop]
-theorem lineMap_contDiff_uncurry {n : WithTop ℕ∞} :
+theorem contDiff_lineMap_uncurry {n : WithTop ℕ∞} :
     ContDiff 𝕜 n (fun pqc : V × V × 𝕜 ↦ AffineMap.lineMap pqc.1 pqc.2.1 pqc.2.2) := by
   simp only [AffineMap.lineMap_apply_module]
   fun_prop
 
 /-- `AffineMap.lineMap` is smooth as a function `𝕜 → V`. -/
-theorem lineMap_contDiff (p₀ p₁ : V) {n : WithTop ℕ∞} :
+theorem contDiff_lineMap (p₀ p₁ : V) {n : WithTop ℕ∞} :
     ContDiff 𝕜 n (AffineMap.lineMap p₀ p₁ : 𝕜 → V) := by
   fun_prop
 
