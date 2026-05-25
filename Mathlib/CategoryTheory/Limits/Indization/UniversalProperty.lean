@@ -16,20 +16,13 @@ variable {C : Type u₁} {D : Type u₂} [Category.{v₁} C] [Category.{v₂} D]
   [HasFilteredColimitsOfSize.{v₁, v₁} D]
 
 lemma Functor.isLeftKanExtension_of_iso' {C H D : Type*} [Category* C] [Category* H] [Category* D]
-    {F : D ⥤ H} {L L' : C ⥤ D} {G : C ⥤ H} (e : L ≅ L')
-    (α : G ⟶ L ⋙ F) (α' : G ⟶ L' ⋙ F)
+    {F : D ⥤ H} {L L' : C ⥤ D} {G : C ⥤ H} (e : L ≅ L') (α : G ⟶ L ⋙ F) (α' : G ⟶ L' ⋙ F)
     (comm : α ≫ Functor.whiskerRight e.hom _ = α') [F.IsLeftKanExtension α] :
     F.IsLeftKanExtension α' := by
-  sorry
+  rw [← Functor.isLeftKanExtension_iff_postcompose (L := L) (L' := 𝟭 _) (L'' := L') α
+    (Functor.rightUnitor _ ≪≫ e) (Functor.leftUnitor _).hom α']
+  infer_instance
 
-set_option backward.isDefEq.respectTransparency false in
-def Functor.LeftExtension.restrict {C H D D' : Type*} [Category* C] [Category* H] [Category* D]
-    [Category* D']
-    {L : C ⥤ D} {L' : D ⥤ D'} (G : C ⥤ H) :
-    (L ⋙ L').LeftExtension G ⥤ L.LeftExtension G :=
-  LeftExtension.postcomp₁ L' (𝟙 _) G
-
-set_option backward.isDefEq.respectTransparency false in
 def Functor.LeftExtension.coconeAtPostcomp₁Iso {C H D D' : Type*} [Category* C] [Category* H]
     [Category* D] [Category* D']
     {L : C ⥤ D} {L' : D ⥤ D'} {G : C ⥤ H} (e : (L ⋙ L').LeftExtension G) (d : D) :
@@ -37,7 +30,6 @@ def Functor.LeftExtension.coconeAtPostcomp₁Iso {C H D D' : Type*} [Category* C
       Cocone.whisker (CostructuredArrow.post L L' d) (e.coconeAt (L'.obj d)) :=
   Cocone.ext (Iso.refl _) fun j ↦ by simp
 
-set_option backward.isDefEq.respectTransparency false in
 def Functor.LeftExtension.IsPointwiseLeftKanExtension.postcomp₁ {C H D D' : Type*}
     [Category* C] [Category* H] [Category* D] [Category* D']
     {L : C ⥤ D} {L' : D ⥤ D'} {G : C ⥤ H}
@@ -48,7 +40,6 @@ def Functor.LeftExtension.IsPointwiseLeftKanExtension.postcomp₁ {C H D D' : Ty
   refine .ofIsoColimit ?_ (Functor.LeftExtension.coconeAtPostcomp₁Iso e d).symm
   exact (Functor.Final.isColimitWhiskerEquiv _ _).symm (h _)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma Functor.isLeftKanExtension_comp_left {C H D D' : Type*} [Category* C] [Category* H]
     [Category* D] [Category* D'] {F : D' ⥤ H} {L : C ⥤ D} {L' : D ⥤ D'}
     {G : C ⥤ H} [L'.Faithful] [L'.Full]
@@ -60,24 +51,37 @@ lemma Functor.isLeftKanExtension_comp_left {C H D D' : Type*} [Category* C] [Cat
   ext
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 lemma Functor.HasPointwiseLeftKanExtension.of_iso {C H D : Type*} [Category* C] [Category* H]
     [Category* D] {L L' : C ⥤ D} {F F' : C ⥤ H}
     [L.HasPointwiseLeftKanExtension F] (e₁ : L ≅ L') (e₂ : F ≅ F') :
     L'.HasPointwiseLeftKanExtension F' := by
   intro Y
-  rw [Functor.hasPointwiseLeftKanExtensionAt_iff_of_natIso _ e₁.symm]
-  sorry
+  dsimp only [HasPointwiseLeftKanExtensionAt]
+  let e : CostructuredArrow.proj L' Y ⋙ F' ≅
+      CostructuredArrow.map₂ ((Functor.leftUnitor _).hom ≫ e₁.hom ≫ (Functor.rightUnitor _).inv)
+      (𝟙 _) ⋙
+      CostructuredArrow.proj L Y ⋙ F :=
+    NatIso.ofComponents (fun X ↦ (e₂.app _).symm)
+  rw [hasColimit_iff_of_iso e]
+  infer_instance
+
+lemma Functor.HasPointwiseLeftKanExtension.iff_of_iso {C H D : Type*} [Category* C] [Category* H]
+    [Category* D] {L L' : C ⥤ D} {F F' : C ⥤ H} (e₁ : L ≅ L') (e₂ : F ≅ F') :
+    L.HasPointwiseLeftKanExtension F ↔ L'.HasPointwiseLeftKanExtension F' :=
+  ⟨fun _ ↦ .of_iso e₁ e₂, fun _ ↦ .of_iso e₁.symm e₂.symm⟩
 
 namespace Ind
 
+@[simps!]
 noncomputable
 def costructuredArrowEquivalence (X : Ind C) :
-    CostructuredArrow Ind.yoneda X ≌ CostructuredArrow yoneda X.1 :=
+    CostructuredArrow Ind.yoneda X ≌ CostructuredArrow yoneda X.obj :=
   (Functor.asEquivalence (CostructuredArrow.post Ind.yoneda (Ind.inclusion C) X)).trans
     (CostructuredArrow.mapNatIso yonedaCompInclusion)
 
 instance (X : Ind C) : IsFiltered (CostructuredArrow Ind.yoneda X) :=
-  RepresentablyCoflat.filtered X
+  inferInstance
 
 instance (X : Ind C) : HasColimitsOfShape (CostructuredArrow Ind.yoneda X) D :=
   Functor.Final.hasColimitsOfShape_of_final (E := D)
@@ -117,27 +121,28 @@ instance (X : Ind C) : HasColimitsOfShape (CostructuredArrow yoneda X.obj) (Ind 
 
 instance (X : Ind C) : HasColimitsOfShape (CostructuredArrow Ind.yoneda X) (Ind C) := inferInstance
 
+def _root_.CategoryTheory.denseAtYoneda (X : Cᵒᵖ ⥤ Type v₁) : yoneda.DenseAt X :=
+  Presheaf.isColimitTautologicalCocone X
+
+protected def denseAtYoneda (X : Ind C) : Ind.yoneda.DenseAt X := by
+  refine isColimitOfReflects (Ind.inclusion C) ?_
+  refine IsColimit.equivOfNatIsoOfIso
+    (Functor.associator _ _ _ ≪≫ Functor.isoWhiskerLeft _ Ind.yonedaCompInclusion).symm _ _ ?_
+    ((denseAtYoneda X.obj).whiskerEquivalence X.costructuredArrowEquivalence)
+  refine Cocone.ext (Iso.refl _) fun j ↦ ?_
+  dsimp [costructuredArrowEquivalence]
+  simp only [Category.id_comp]
+  apply Category.comp_id
+
 def isoColimit (X : Ind C) : X ≅
-    colimit (CostructuredArrow.proj Ind.yoneda X ⋙ Ind.yoneda) := by
-  refine X.colimitPresentationCompYoneda.symm ≪≫ ?_
-  letI j : X.presentation.F ≅ X.presentation.toCostructuredArrow ⋙
-      CostructuredArrow.proj yoneda X.obj :=
-    NatIso.ofComponents (fun _ ↦ Iso.refl _)
-  refine colim.mapIso (Functor.isoWhiskerRight j _) ≪≫
-      colim.mapIso (Functor.associator _ _ _) ≪≫
-    Functor.Final.colimitIso _ _ ≪≫
-    (HasColimit.isoOfEquivalence (Ind.costructuredArrowEquivalence X) (Iso.refl _)).symm
+    colimit (CostructuredArrow.proj Ind.yoneda X ⋙ Ind.yoneda) :=
+  (Ind.denseAtYoneda X).isoColimit
 
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma ι_isoColimit_inv (X : Ind C) (j : CostructuredArrow Ind.yoneda X) :
     colimit.ι _ j ≫ X.isoColimit.inv = j.hom := by
-  simp only [Functor.comp_obj, CostructuredArrow.proj_obj, isoColimit, colim_obj,
-    Functor.isoWhiskerRight_refl, Functor.mapIso_refl, Iso.refl_trans, Iso.trans_inv, Iso.symm_inv,
-    Functor.mapIso_inv, colim_map, Category.assoc]
-  rw [reassoc_of% HasColimit.isoOfEquivalence_hom_π]
-  simp
-  sorry
+  simp [isoColimit]
 
 attribute [local instance] preservesColimitsOfSize_rightOp
 
@@ -152,8 +157,8 @@ instance (F : C ⥤ D) : PreservesFilteredColimitsOfSize.{v₁, v₁} (Ind.lan.o
   preserves_filtered_colimits J _ _ := by
     let D' : Type _ := (D ⥤ Type (max u₁ u₂ v₁ v₂))ᵒᵖ
     let i : D ⥤ D' := uliftCoyoneda.{max u₁ u₂ v₁ v₂}.rightOp
-    suffices PreservesColimitsOfShape J (Ind.lan.obj F ⋙ i) by
-      apply preservesColimitsOfShape_of_reflects_of_preserves _ i
+    suffices PreservesColimitsOfShape J (Ind.lan.obj F ⋙ i) from
+      preservesColimitsOfShape_of_reflects_of_preserves _ i
     let u : (Cᵒᵖ ⥤ Type v₁) ⥤ (Cᵒᵖ ⥤ Type max u₁ u₂ v₁ v₂) :=
       (Functor.whiskeringRight _ _ _).obj uliftFunctor.{max u₁ u₂ v₁ v₂}
     let j : Ind.yoneda ⋙ Ind.inclusion C ≅ yoneda := Ind.yonedaCompInclusion
@@ -181,8 +186,6 @@ instance (F : C ⥤ D) : PreservesFilteredColimitsOfSize.{v₁, v₁} (Ind.lan.o
       dsimp [γ', H]
       apply Functor.isLeftKanExtension_of_iso' iso γ γ'
       rfl
-    have := Functor.isLeftKanExtension_comp_left γ'
-    have : γ' = α := rfl
     have hα : (Ind.inclusion C ⋙ u ⋙ H).IsLeftKanExtension α :=
       -- this is abusing some associator def-eqs
       Functor.isLeftKanExtension_comp_left γ'
