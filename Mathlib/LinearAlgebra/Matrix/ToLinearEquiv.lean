@@ -190,16 +190,6 @@ lemma separatingRight_iff_det_ne_zero {A : Type*} [DecidableEq n] [CommRing A] [
   simp [hv]
 
 omit [Fintype n] in
-theorem separatingLeft_iff_separatingRight [Finite n] {A : Type*} [CommRing A] [IsDomain A]
-    {M : Matrix n n A} : M.SeparatingLeft ↔ M.SeparatingRight := by
-  classical
-  have := Fintype.ofFinite n
-  rw [separatingLeft_iff_det_ne_zero, separatingRight_iff_det_ne_zero]
-
-alias ⟨SeparatingLeft.separatingRight, SeparatingRight.separatingLeft⟩ :=
-  separatingLeft_iff_separatingRight
-
-omit [Fintype n] in
 theorem nondegenerate_iff_separatingLeft [Finite n] {A : Type*} [CommRing A] [IsDomain A]
     {M : Matrix n n A} : M.Nondegenerate ↔ M.SeparatingLeft := by
   classical
@@ -216,6 +206,14 @@ theorem nondegenerate_iff_separatingRight [Finite n] {A : Type*} [CommRing A] [I
   rw [nondegenerate_iff_det_ne_zero, separatingRight_iff_det_ne_zero]
 
 alias ⟨_, SeparatingRight.nondegenerate⟩ := nondegenerate_iff_separatingRight
+
+omit [Fintype n] in
+theorem separatingLeft_iff_separatingRight [Finite n] {A : Type*} [CommRing A] [IsDomain A]
+    {M : Matrix n n A} : M.SeparatingLeft ↔ M.SeparatingRight :=
+  nondegenerate_iff_separatingLeft.symm.trans nondegenerate_iff_separatingRight
+
+alias ⟨SeparatingLeft.separatingRight, SeparatingRight.separatingLeft⟩ :=
+  separatingLeft_iff_separatingRight
 
 theorem Nondegenerate.mul_iff_right {A : Type*} [CommRing A] [IsDomain A]
     {M N : Matrix n n A} (h : N.Nondegenerate) :
