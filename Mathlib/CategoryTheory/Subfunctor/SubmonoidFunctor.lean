@@ -17,7 +17,6 @@ public import Mathlib.Order.CompletePartialOrder
 
 Given a functor `R: C ⥤ MonCat`, we define a subfunctor of submonoids. We also define
 a sheaf of submonoids when `R` is a sheaf.
-
 -/
 
 @[expose] public section
