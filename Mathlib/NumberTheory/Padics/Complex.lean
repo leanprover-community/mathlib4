@@ -208,7 +208,7 @@ theorem norm_eq_norm' : (‖·‖ : ℂ_[p] → ℝ) = Valued.v.norm := by
   · exact uniformContinuous_norm
   · letI S := (Valued.toNormedField ℂ_[p] NNReal).toNormedCommRing.toNormedRing.toSeminormedRing
     letI := S.toNonUnitalSeminormedRing.toSeminormedAddCommGroup.toSeminormedAddGroup
-    exact @uniformContinuous_norm ℂ_[p] this
+    exact @uniformContinuous_norm ℂ_[p] _ this
   · intro x
     simp [Valued.v.norm_def, restrict_def]
 
