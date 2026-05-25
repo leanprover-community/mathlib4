@@ -28,7 +28,7 @@ open MeasureTheory
 namespace ContinuousMapZero
 
 variable {X Y : Type*} [MeasurableSpace X] {μ : Measure X} [TopologicalSpace Y]
-variable {E : Type*} [NormedAddCommGroup E]
+variable {E : Type*} [AddCommGroup E] [NormedAddCommGroup E]
 
 /-- A natural criterion for `HasFiniteIntegral` of a `C(Y, E)₀`-valued function is the existence
 of some positive function with finite integral such that `∀ᵐ x ∂μ, ∀ y : Y, ‖f x y‖ ≤ bound x`.
