@@ -28,8 +28,9 @@ section Real
   its extension fields such as `ℂ`).
 -/
 
-variable {n : WithTop ℕ∞} {𝕂 : Type*} [RCLike 𝕂] {E' : Type*} [NormedAddCommGroup E']
-  [NormedSpace 𝕂 E'] {F' : Type*} [NormedAddCommGroup F'] [NormedSpace 𝕂 F']
+variable {n : WithTop ℕ∞} {𝕂 : Type*} [RCLike 𝕂] {E' : Type*} [AddCommGroup E']
+  [NormedAddCommGroup E'] [NormedSpace 𝕂 E'] {F' : Type*} [AddCommGroup F'] [NormedAddCommGroup F']
+  [NormedSpace 𝕂 F']
 
 /-- If a function has a Taylor series at order at least 1, then at points in the interior of the
 domain of definition, the term of order 1 of this series is a strict derivative of `f`. -/
@@ -79,9 +80,9 @@ theorem ContDiff.hasStrictDerivAt {f : 𝕂 → F'} {x : 𝕂} (hf : ContDiff �
     HasStrictDerivAt f (deriv f x) x :=
   hf.contDiffAt.hasStrictDerivAt hn
 
-variable {E F : Type*}
-    [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedAddCommGroup F] [NormedSpace ℝ F] {f : E → F}
-    {p : E → FormalMultilinearSeries ℝ E F} {s : Set E} {x : E}
+variable {E F : Type*} [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℝ E]
+  [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace ℝ F] {f : E → F}
+  {p : E → FormalMultilinearSeries ℝ E F} {s : Set E} {x : E}
 
 /-- If `f` has a formal Taylor series `p` up to order `1` on `{x} ∪ s`, where `s` is a convex set,
 and `‖p x 1‖₊ < K`, then `f` is `K`-Lipschitz in a neighborhood of `x` within `s`. -/
