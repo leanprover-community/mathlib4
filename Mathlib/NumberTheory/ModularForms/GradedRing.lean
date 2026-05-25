@@ -199,7 +199,7 @@ private lemma surj_at_small_weight {n : ℕ} (hn12 : n < 12) (hk_even : Even (n 
   obtain rfl | rfl | rfl | rfl | rfl | rfl :
       n = 0 ∨ n = 2 ∨ n = 4 ∨ n = 6 ∨ n = 8 ∨ n = 10 := by
     rcases hk_even with ⟨m, hm⟩
-    omega
+    lia
   · exact surj_of_rank_one ModularForm.levelOne_weight_zero_rank_one
       one_ne_zero_modularForm 1
       ((map_one _).trans (DirectSum.of_zero_one _).symm) f
