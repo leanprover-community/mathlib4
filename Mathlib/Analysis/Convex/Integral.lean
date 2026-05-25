@@ -43,8 +43,9 @@ open MeasureTheory MeasureTheory.Measure Metric Set Filter TopologicalSpace Func
 
 open scoped Topology ENNReal Convex
 
-variable {α E : Type*} {m0 : MeasurableSpace α} [NormedAddCommGroup E] [NormedSpace ℝ E]
-  [CompleteSpace E] {μ : Measure α} {s : Set E} {t : Set α} {f : α → E} {g : E → ℝ} {C : ℝ}
+variable {α E : Type*} {m0 : MeasurableSpace α} [AddCommGroup E] [NormedAddCommGroup E]
+  [NormedSpace ℝ E] [CompleteSpace E]
+  {μ : Measure α} {s : Set E} {t : Set α} {f : α → E} {g : E → ℝ} {C : ℝ}
 
 /-!
 ### Non-strict Jensen's inequality
