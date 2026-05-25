@@ -123,7 +123,7 @@ lemma Ideal.comap_map_eq_self_of_faithfullyFlat (I : Ideal A) :
   have : ((quotIdealMapEquivTensorQuot B I).symm.toLinearEquiv.toLinearMap.restrictScalars _ ∘ₗ
       TensorProduct.mk A B (A ⧸ I) 1) x = 0 := by
     simp [← Algebra.algebraMap_eq_smul_one, hx]
-  simp [this]
+  simpa using this
 
 /-- If `B` is a faithfully-flat `A`-algebra, every ideal in `A` is the preimage of some ideal
 in `B`. -/
