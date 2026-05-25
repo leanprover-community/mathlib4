@@ -128,7 +128,6 @@ def Hσ (q : ℕ) : K[X] ⟶ K[X] :=
 def homotopyHσToZero (q : ℕ) : Homotopy (Hσ q : K[X] ⟶ K[X]) 0 :=
   nullHomotopy' (hσ' q)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- In degree `0`, the null homotopic map `Hσ` is zero. -/
 theorem Hσ_eq_zero (q : ℕ) : (Hσ q : K[X] ⟶ K[X]).f 0 = 0 := by
   unfold Hσ
