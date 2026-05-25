@@ -39,7 +39,7 @@ open scoped LieRinehartAlgebra
 
 variable (A L : Type*) [CommRing A] [LieRing L] [Module A L]
 
-/- A Lie-Rinehart subalgebra of a Lie-Rinehart algebra `(R A L)` is an `A`-submodule of `L`, which
+/-- A Lie-Rinehart subalgebra of a Lie-Rinehart algebra `(R A L)` is an `A`-submodule of `L`, which
 is stable under the Lie bracket. (This can be defined independently of `R` and most
 Lie-Rinehart algebra axioms). -/
 structure LieRinehartSubalgebra extends Submodule A L where
