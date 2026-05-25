@@ -95,7 +95,7 @@ theorem mk_eq_mk_of_basis (v : Basis ι R M) (v' : Basis ι' R M) :
 /-- Given two bases indexed by `ι` and `ι'` of an `R`-module, where `R` satisfies the invariant
 basis number property, an equiv `ι ≃ ι'`. -/
 def Module.Basis.indexEquiv (v : Basis ι R M) (v' : Basis ι' R M) : ι ≃ ι' :=
-  (Cardinal.mk_liftEq.2.1 <| mk_eq_mk_of_basis v v').some
+  (Cardinal.mk_liftEq.1 <| mk_eq_mk_of_basis v v').some
 
 theorem mk_eq_mk_of_basis' {ι' : Type w} (v : Basis ι R M) (v' : Basis ι' R M) : #ι = #ι' :=
   Cardinal.lift_inj.1 <| mk_eq_mk_of_basis v v'
@@ -365,14 +365,20 @@ theorem card_le_card_of_le {N O : Submodule R M} (hNO : N ≤ O) [Fintype ι]
   b.card_le_card_of_linearIndependent
     (b'.linearIndependent.map_injOn (inclusion hNO) (N.inclusion_injective _).injOn)
 
+theorem mk_liftEq_rank (v : Basis ι R M) : #ι =ₗ Module.rank R M := by
+  haveI := nontrivial_of_invariantBasisNumber R
+  rw [← v.mk_range_eq_rank]
+  exact (Cardinal.mk_range_eq_of_injective v.injective).symm
+
+-- TODO: deprecate
 theorem mk_eq_rank (v : Basis ι R M) :
     Cardinal.lift.{v} #ι = Cardinal.lift.{w} (Module.rank R M) := by
-  haveI := nontrivial_of_invariantBasisNumber R
-  rw [← v.mk_range_eq_rank, Cardinal.mk_range_eq_of_injective v.injective]
+  simpa using mk_liftEq_rank v
 
+-- TODO: deprecate
 theorem mk_eq_rank'.{m} (v : Basis ι R M) :
-    Cardinal.lift.{max v m} #ι = Cardinal.lift.{max w m} (Module.rank R M) :=
-  Cardinal.lift_umax_eq.{w, v, m}.mpr v.mk_eq_rank
+    Cardinal.lift.{max v m} #ι = Cardinal.lift.{max w m} (Module.rank R M) := by
+  simpa using mk_liftEq_rank v
 
 end Module.Basis
 

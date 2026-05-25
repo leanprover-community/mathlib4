@@ -206,7 +206,7 @@ lemma exists_ordinal (A₀ : Subobject X) :
   let κ := Order.succ (Cardinal.mk (Shrink.{w} (Subobject X)))
   have : Nonempty κ.ord.ToType := by simp [κ]
   have := WellFoundedLT.toOrderBot κ.ord.ToType
-  exact ⟨κ.ord, top_mem_range hG A₀ (lt_of_lt_of_le (Order.lt_succ _) (by simp [κ]))⟩
+  exact ⟨κ.ord, top_mem_range hG A₀ ((Order.lt_succ _).trans_eq (by simp [κ]))⟩
 
 section
 

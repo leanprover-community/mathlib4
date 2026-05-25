@@ -193,6 +193,7 @@ private theorem lift_mk_eq'' {α : Type u} {β : Type v} :
 def liftEq (a : Cardinal.{u}) (b : Cardinal.{v}) : Prop := lift.{v} a = lift.{u} b
 
 @[inherit_doc] infix:50 " =ₗ " => liftEq
+recommended_spelling "liftEq" for "=ₗ" in [liftEq, «term_=ₗ_»]
 
 @[simp, refl] theorem liftEq_refl (a : Cardinal.{u}) : a =ₗ a := rfl
 theorem liftEq_rfl {a : Cardinal.{u}} : a =ₗ a := rfl

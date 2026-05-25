@@ -208,7 +208,7 @@ theorem exists_elementaryEmbedding_card_eq_of_le (M : Type w') [L.Structure M] [
     ⟨(equivShrink S).bundledInduced L,
       ⟨S.subtype.comp (Equiv.bundledInducedEquiv L _).symm.toElementaryEmbedding⟩,
       lift_inj.1 (_root_.trans ?_ hS)⟩
-  simp only [Equiv.bundledInduced_α, lift_mk_shrink']
+  simp [Equiv.bundledInduced_α]
 
 section
 
