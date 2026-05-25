@@ -98,7 +98,7 @@ theorem continuous_some [TopologicalSpace α] [OrderTopology α] : Continuous (X
     · convert isOpen_Ioi (a := x)
       ext
       simp [some, Prod.Lex.lt_iff, hq.not_gt]
-    · obtain ⟨y, hy⟩ := (not_isSuccPrelimit_iff_exists_covBy _).1 <| mt hx₁ hq.not_ge
+    · obtain ⟨y, hy⟩ := not_isSuccPrelimit_iff.1 <| mt hx₁ hq.not_ge
       convert isOpen_Ioi (a := y)
       ext
       simpa [some, Prod.Lex.lt_iff, hq, le_iff_lt_or_eq] using hy.le_iff_lt_right
@@ -106,7 +106,7 @@ theorem continuous_some [TopologicalSpace α] [OrderTopology α] : Continuous (X
     · convert isOpen_Iio (a := x)
       ext
       simp [some, Prod.Lex.lt_iff, hq.not_gt]
-    · obtain ⟨y, hy⟩ := (not_isPredPrelimit_iff_exists_covBy _).1 <| mt hx₂ hq.not_ge
+    · obtain ⟨y, hy⟩ := not_isPredPrelimit_iff.1 <| mt hx₂ hq.not_ge
       convert isOpen_Iio (a := y)
       ext
       simpa [some, Prod.Lex.lt_iff, hq, le_iff_lt_or_eq] using hy.le_iff_lt_left
