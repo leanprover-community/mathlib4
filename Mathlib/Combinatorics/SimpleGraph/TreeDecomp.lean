@@ -360,8 +360,7 @@ theorem IsContained.treeWidth_le {A : SimpleGraph V} {B : SimpleGraph V'}
 lemma treeWidth_bot [Finite V] : (⊥ : SimpleGraph V).treeWidth = 0 := by
   have := Fintype.ofFinite V
   have : (⊥ : SimpleGraph V).etreeWidth = 0 :=
-    le_antisymm ((etreeWidth_le_ewidth botTreeDecomp).trans ewidth_botTreeDecomp.le)
-      zero_le
+    le_antisymm ((etreeWidth_le_ewidth botTreeDecomp).trans ewidth_botTreeDecomp.le) zero_le
   simp [treeWidth, this]
 
 /-- The treewidth of a graph is positive iff it has an edge. -/
