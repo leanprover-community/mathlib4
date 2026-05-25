@@ -34,9 +34,9 @@ open Filter
 open scoped Topology
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [IsRCLikeNormedField 𝕜]
-  {E₁ : Type*} [NormedAddCommGroup E₁] [NormedSpace 𝕜 E₁] [CompleteSpace E₁]
-  {E₂ : Type*} [NormedAddCommGroup E₂] [NormedSpace 𝕜 E₂] [CompleteSpace E₂]
-  {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F] [CompleteSpace F]
+  {E₁ : Type*} [AddCommGroup E₁] [NormedAddCommGroup E₁] [NormedSpace 𝕜 E₁] [CompleteSpace E₁]
+  {E₂ : Type*} [AddCommGroup E₂] [NormedAddCommGroup E₂] [NormedSpace 𝕜 E₂] [CompleteSpace E₂]
+  {F : Type*} [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace 𝕜 F] [CompleteSpace F]
 
 variable {u : E₁ × E₂}
   {f : E₁ → E₂ → F} {f₁ : E₁ → E₂ → E₁ →L[𝕜] F} {f₂ : E₁ → E₂ → E₂ →L[𝕜] F}
