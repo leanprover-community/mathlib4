@@ -3,13 +3,9 @@ Copyright (c) 2026 Chris Birkbeck. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck
 -/
-module
+module -- shake: keep-all
 
-public import Mathlib.Algebra.Order.Floor.Semifield
-public import Mathlib.NumberTheory.ModularForms.CuspFormSubmodule
-public import Mathlib.NumberTheory.ModularForms.Discriminant
-public import Mathlib.Data.Rat.Star
-public import Mathlib.LinearAlgebra.Dimension.Localization
+public import Mathlib.NumberTheory.ModularForms.LevelOne.DimensionFormula
 
 /-!
 # Dimension formula for level 1 modular forms

@@ -267,7 +267,7 @@ theorem le_restrictScalars_separableClosure (L : IntermediateField F E) :
 /-- `separableClosure` as a `ClosureOperator`. -/
 abbrev separableClosureOperator : ClosureOperator (IntermediateField F E) := by
   refine .mk' (fun K ↦ (separableClosure K E).restrictScalars F) (fun K L le x hx ↦ ?_)
-    le_restrictScalars_separableClosure fun K x hx ↦ ?_ <;> dsimp only at hx ⊢
+    le_restrictScalars_separableClosure fun K x hx ↦ ?_
   · let _ := (inclusion le).toAlgebra
     have : IsScalarTower K L E := .of_algebraMap_eq' rfl
     exact hx.tower_top _
@@ -395,7 +395,7 @@ lemma exists_finset_maximalFor_isTranscendenceBasis_separableClosure
   have : Module.Finite (adjoin F (s : Set E)) E := by
     apply +allowSynthFailures Algebra.finite_of_essFiniteType_of_isAlgebraic
     · exact .of_comp F _ _
-    · convert hs.isAlgebraic_field <;> simp [s]
+    · convert! hs.isAlgebraic_field <;> simp [s]
   have : Module.Finite ((separableClosure (adjoin F (s : Set E)) E).restrictScalars F) E :=
     inferInstanceAs <| Module.Finite (separableClosure (adjoin F (s : Set E)) E) E
   exact d.not_lt_argminOn _ ht (by apply finrank_lt_of_gt H)

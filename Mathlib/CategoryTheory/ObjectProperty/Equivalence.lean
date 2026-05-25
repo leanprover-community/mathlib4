@@ -18,7 +18,6 @@ by an inequality `P ≤ Q` in `ObjectProperty C` is an equivalence iff
 
 -/
 
-
 @[expose] public section
 
 universe v v' u u'

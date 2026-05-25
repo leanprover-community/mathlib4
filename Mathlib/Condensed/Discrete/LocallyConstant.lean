@@ -188,7 +188,7 @@ noncomputable def componentHom (a : Fiber (f.comap g.hom.hom)) :
   ConcreteCategory.ofHom
   { toFun x := ⟨g x.val, by
       simp only [Fiber.mk, Set.mem_preimage, Set.mem_singleton_iff]
-      convert map_eq_image _ _ x
+      convert! map_eq_image _ _ x
       exact map_preimage_eq_image_map _ _ a⟩
     continuous_toFun := by
       -- term mode gives "unknown free variable" error.
@@ -295,7 +295,7 @@ noncomputable def counit [HasExplicitFiniteCoproducts.{u} P] : haveI := CompHaus
     rw [this]
     apply congrArg
     symm
-    convert (b.preimage).prop
+    convert! (b.preimage).prop
     exact (mem_iff_eq_image (g.hom.app _ ∘ f) _ _).symm
 
 /--
@@ -355,7 +355,7 @@ noncomputable def adjunction [HasExplicitFiniteCoproducts.{u} P] :
     apply presheaf_ext ((unit P hs).app _ x)
     intro a
     erw [incl_of_counitAppApp]
-    simp only [ counitAppAppImage]
+    simp only [counitAppAppImage]
     erw [← map_eq_image _ a ⟨PUnit.unit, by simp [mem_iff_eq_image, ← map_preimage_eq_image]⟩]
     rfl
 

@@ -66,7 +66,6 @@ divided powers (`DividedPowerAlgebra.lift`).
 
 @[expose] public section
 
-
 noncomputable section
 
 open Finset Ideal MvPolynomial RingQuot
@@ -127,7 +126,7 @@ protected theorem induction_on' {P : DividedPowerAlgebra R M → Prop} (f : Divi
   rw [← hf]
   induction F using MvPolynomial.induction_on generalizing f with
   | C a =>
-      convert h_C a using 1
+      convert! h_C a using 1
       rw [mkAlgHom, AlgHom.coe_mk]
   | add g1 g2 hg1 hg2 =>
       rw [map_add]

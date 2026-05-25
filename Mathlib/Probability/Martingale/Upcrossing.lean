@@ -302,8 +302,8 @@ theorem upperCrossingTime_bound_eq (f : ℕ → Ω → ℝ) (N : ℕ) (ω : Ω) 
         (Set.Iic (Nat.find (exists_upperCrossingTime_eq f N ω hab)).pred) := by
       refine strictMonoOn_Iic_of_lt_succ fun m hm => upperCrossingTime_lt_succ hab ?_
       rw [Nat.lt_pred_iff] at hm
-      convert Nat.find_min _ hm
-    convert StrictMonoOn.Iic_id_le hmono N (Nat.le_sub_one_of_lt hN')
+      convert! Nat.find_min _ hm
+    convert! StrictMonoOn.Iic_id_le hmono N (Nat.le_sub_one_of_lt hN')
   · rw [not_lt] at hN'
     exact upperCrossingTime_stabilize hN' (Nat.find_spec (exists_upperCrossingTime_eq f N ω hab))
 
@@ -414,7 +414,7 @@ theorem Submartingale.sum_mul_upcrossingStrat_le [IsFiniteMeasure μ] (hf : Subm
       Pi.mul_apply]
     refine integral_sub (Integrable.sub (integrable_finsetSum _ fun i _ => hf.integrable _)
       (integrable_finsetSum _ fun i _ => hf.integrable _)) ?_
-    convert (hf.sum_upcrossingStrat_mul a b N).integrable n using 1
+    convert! (hf.sum_upcrossingStrat_mul a b N).integrable n using 1
     ext; simp
   rw [h₂, sub_nonneg] at h₁
   refine le_trans h₁ ?_
@@ -445,7 +445,7 @@ theorem upperCrossingTime_lt_of_le_upcrossingsBefore (hN : 0 < N) (hab : a < b)
 theorem upperCrossingTime_eq_of_upcrossingsBefore_lt (hab : a < b)
     (hn : upcrossingsBefore a b f N ω < n) : upperCrossingTime a b f N n ω = N := by
   refine le_antisymm upperCrossingTime_le (not_lt.1 ?_)
-  convert notMem_of_csSup_lt hn (upperCrossingTime_lt_bddAbove hab) using 1
+  convert! notMem_of_csSup_lt hn (upperCrossingTime_lt_bddAbove hab) using 1
 
 theorem upcrossingsBefore_le (f : ℕ → Ω → ℝ) (ω : Ω) (hab : a < b) :
     upcrossingsBefore a b f N ω ≤ N := by

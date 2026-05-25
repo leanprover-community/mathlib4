@@ -289,8 +289,7 @@ section cfcL
 noncomputable def cfcL {a : A} (ha : p a) : C(spectrum R a, R) →L[R] A :=
   { cfcHom ha with
     toFun := cfcHom ha
-    map_smul' := map_smul _
-    cont := by fun_prop }
+    map_smul' := map_smul _ }
 
 end cfcL
 
@@ -611,7 +610,7 @@ lemma cfc_comp (g f : R → R) (a : A) (ha : p a := by cfc_tac)
     ext
     simp
   rw [cfc_apply .., cfc_apply f a,
-    cfc_apply _ _ (cfcHom_predicate (show p a from ha) _) (by convert hg), ← cfcHom_comp _ _]
+    cfc_apply _ _ (cfcHom_predicate (show p a from ha) _) (by convert! hg), ← cfcHom_comp _ _]
   swap
   · exact ContinuousMap.mk _ <| hf.restrict.codRestrict fun x ↦ by rw [sp_eq]; use x.1; simp
   · congr
@@ -785,7 +784,7 @@ lemma cfc_inv (hf' : ∀ x ∈ spectrum R a, f x ≠ 0)
 lemma cfc_inv_id (a : Aˣ) (ha : p a := by cfc_tac) :
     cfc (fun x ↦ x⁻¹ : R → R) (a : A) = a⁻¹ := by
   rw [← Ring.inverse_unit]
-  convert cfc_inv (id : R → R) (a : A) ?_
+  convert! cfc_inv (id : R → R) (a : A) ?_
   · exact (cfc_id R (a : A)).symm
   · rintro x hx rfl
     exact spectrum.zero_notMem R a.isUnit hx

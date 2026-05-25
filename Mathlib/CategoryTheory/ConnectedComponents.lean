@@ -24,7 +24,6 @@ components of `J`, and it is shown that this is equivalent to `J`.
 
 @[expose] public section
 
-
 universe v₁ v₂ v₃ u₁ u₂
 
 noncomputable section

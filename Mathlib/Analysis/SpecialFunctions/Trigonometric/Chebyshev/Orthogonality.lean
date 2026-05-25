@@ -37,7 +37,6 @@ Chebyshev T polynomials are orthogonal with respect to `√(1 - x ^ 2)⁻¹`.
 * Bundle Chebyshev T polynomials into a HilbertBasis for MeasureTheory.Lp ℝ 2 measureT
 
 -/
-
 public section
 
 namespace Polynomial.Chebyshev
@@ -73,7 +72,7 @@ theorem integrable_measureT {f : ℝ → ℝ} (hf : ContinuousOn f (Set.Icc (-1)
   rw [measureT, restrict_withDensity (by measurability),
     integrable_withDensity_iff (by fun_prop) (by simp)]
   unfold IntegrableOn at this
-  convert this
+  convert! this
 
 open Set in
 theorem integral_measureT_eq_integral_cos {f : ℝ → ℝ} :

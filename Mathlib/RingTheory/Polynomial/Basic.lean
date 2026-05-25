@@ -61,7 +61,7 @@ variable {R}
 theorem mem_degreeLE {n : WithBot ℕ} {f : R[X]} : f ∈ degreeLE R n ↔ degree f ≤ n := by
   simp only [degreeLE, Submodule.mem_iInf, degree_le_iff_coeff_zero, LinearMap.mem_ker]; rfl
 
-@[mono]
+@[gcongr, mono]
 theorem degreeLE_mono {m n : WithBot ℕ} (H : m ≤ n) : degreeLE R m ≤ degreeLE R n := fun _ hf =>
   mem_degreeLE.2 (le_trans (mem_degreeLE.1 hf) H)
 
@@ -88,7 +88,7 @@ theorem degreeLE_eq_span_X_pow [DecidableEq R] {n : ℕ} :
 theorem mem_degreeLT {n : ℕ} {f : R[X]} : f ∈ degreeLT R n ↔ degree f < n := by
   simpa [degreeLT, Submodule.mem_iInf] using (degree_lt_iff_coeff_zero _ _).symm
 
-@[mono]
+@[gcongr, mono]
 theorem degreeLT_mono {m n : ℕ} (H : m ≤ n) : degreeLT R m ≤ degreeLT R n := fun _ hf =>
   mem_degreeLT.2 (lt_of_lt_of_le (mem_degreeLT.1 hf) <| WithBot.coe_le_coe.2 H)
 
@@ -576,7 +576,7 @@ theorem eq_zero_of_constant_mem_of_maximal (hR : IsField R) (I : Ideal R[X]) [hI
     (x : R) (hx : C x ∈ I) : x = 0 := by
   refine Classical.by_contradiction fun hx0 => hI.ne_top ((eq_top_iff_one I).2 ?_)
   obtain ⟨y, hy⟩ := hR.mul_inv_cancel hx0
-  convert I.mul_mem_left (C y) hx
+  convert! I.mul_mem_left (C y) hx
   rw [← C.map_mul, hR.mul_comm y x, hy, map_one]
 
 end Ring
@@ -594,13 +594,13 @@ theorem isPrime_map_C_iff_isPrime (P : Ideal R) :
   constructor
   · intro H
     have := comap_isPrime C (map C P)
-    convert this using 1
+    convert! this using 1
     ext x
     simp only [mem_comap, mem_map_C_iff]
     constructor
     · rintro h (- | n)
       · rwa [coeff_C_zero]
-      · simp only [coeff_C_ne_zero (Nat.succ_ne_zero _), Submodule.zero_mem]
+      · simp only [coeff_C_of_ne_zero (Nat.succ_ne_zero _), Submodule.zero_mem]
     · intro h
       simpa only [coeff_C_zero] using h 0
   · intro h
@@ -684,7 +684,7 @@ theorem mem_span_C_coeff : f ∈ Ideal.span { g : R[X] | ∃ i : ℕ, g = C (coe
     rw [mem_setOf_eq]
     use n
   have : monomial n (1 : R) • C (coeff f n) ∈ p := p.smul_mem _ this
-  convert this using 1
+  convert! this using 1
   simp only [monomial_mul_C, one_mul, smul_eq_mul]
   rw [← C_mul_X_pow_eq_monomial]
 
@@ -728,7 +728,7 @@ private theorem prime_C_iff_of_fintype {R : Type u} (σ : Type v) {r : R} [CommR
   · induction Fintype.card σ with
     | zero => exact MulEquiv.prime_iff (isEmptyAlgEquiv R (Fin 0)).symm (p := r)
     | succ d hd =>
-      convert MulEquiv.prime_iff (finSuccEquiv R d).symm (p := Polynomial.C (C r))
+      convert! MulEquiv.prime_iff (finSuccEquiv R d).symm (p := Polynomial.C (C r))
       · simp [← finSuccEquiv_comp_C_eq_C]
       · simp [← hd, Polynomial.prime_C_iff]
 
@@ -745,7 +745,7 @@ theorem prime_C_iff : Prime (C r : MvPolynomial σ R) ↔ Prime r :=
       obtain ⟨s, a', b', rfl, rfl⟩ := exists_finset_rename₂ a b
       rw [← algebraMap_eq] at hd
       have : algebraMap R _ r ∣ a' * b' := by
-        convert _root_.map_dvd (killCompl Subtype.val_injective) hd
+        convert! _root_.map_dvd (killCompl Subtype.val_injective) hd
         · simp
         · simp
       rw [← rename_C ((↑) : s → σ)]
@@ -765,18 +765,18 @@ theorem prime_rename_iff (s : Set σ) {p : MvPolynomial s R} :
       apply ringHom_ext
       · intro
         simp only [eqv, AlgHom.toRingHom_eq_coe, RingHom.coe_coe, rename_C,
-          AlgEquiv.toAlgHom_eq_coe, AlgEquiv.toAlgHom_toRingHom, RingHom.coe_comp,
-          AlgEquiv.coe_trans, Function.comp_apply, MvPolynomial.sumAlgEquiv_symm_apply,
-          iterToSum_C_C, renameEquiv_apply, Equiv.coe_trans, Equiv.sumComm_apply]
+          AlgEquiv.toAlgHom_toRingHom, RingHom.coe_comp, AlgEquiv.coe_trans,
+          Function.comp_apply, MvPolynomial.sumAlgEquiv_symm_apply, iterToSum_C_C,
+          renameEquiv_apply, Equiv.coe_trans, Equiv.sumComm_apply]
       · intro
         simp only [eqv, AlgHom.toRingHom_eq_coe, RingHom.coe_coe, rename_X,
-          AlgEquiv.toAlgHom_eq_coe, AlgEquiv.toAlgHom_toRingHom, RingHom.coe_comp,
-          AlgEquiv.coe_trans, Function.comp_apply, MvPolynomial.sumAlgEquiv_symm_apply,
-          iterToSum_C_X, renameEquiv_apply, Equiv.coe_trans, Equiv.sumComm_apply, Sum.swap_inr,
+          AlgEquiv.toAlgHom_toRingHom, RingHom.coe_comp, AlgEquiv.coe_trans,
+          Function.comp_apply, MvPolynomial.sumAlgEquiv_symm_apply, iterToSum_C_X,
+          renameEquiv_apply, Equiv.coe_trans, Equiv.sumComm_apply, Sum.swap_inr,
           Equiv.Set.sumCompl_apply_inl]
     apply_fun (· p) at this
-    simp only [AlgHom.toRingHom_eq_coe, RingHom.coe_coe, AlgEquiv.toAlgHom_eq_coe,
-      AlgEquiv.toAlgHom_toRingHom, RingHom.coe_comp, Function.comp_apply] at this
+    simp only [AlgHom.toRingHom_eq_coe, RingHom.coe_coe, AlgEquiv.toAlgHom_toRingHom,
+      RingHom.coe_comp, Function.comp_apply] at this
     rw [this, MulEquiv.prime_iff, prime_C_iff]
 
 end MvPolynomial
@@ -849,7 +849,7 @@ protected theorem Polynomial.isNoetherianRing [inst : IsNoetherianRing R] : IsNo
           have := Polynomial.degree_sub_lt h1 hp0 h2
           rw [Polynomial.degree_eq_natDegree hp0] at this
           rw [← sub_add_cancel p (q * Polynomial.X ^ (k - q.natDegree))]
-          convert (Ideal.span ↑s).add_mem _ ((Ideal.span (s : Set R[X])).mul_mem_right _ _)
+          convert! (Ideal.span ↑s).add_mem _ ((Ideal.span (s : Set R[X])).mul_mem_right _ _)
           · by_cases hpq : p - q * Polynomial.X ^ (k - q.natDegree) = 0
             · rw [hpq]
               exact Ideal.zero_mem _

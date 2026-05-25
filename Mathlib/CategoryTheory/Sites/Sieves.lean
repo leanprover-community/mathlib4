@@ -708,7 +708,7 @@ lemma generate_eq_bot_iff (R : Presieve X) : generate R = ⊥ ↔ R = ⊥ := by
 lemma comp_mem_iff (i : X ⟶ Y) (f : Y ⟶ Z) [IsIso i] (S : Sieve Z) :
     S (i ≫ f) ↔ S f := by
   refine ⟨fun H ↦ ?_, fun H ↦ S.downward_closed H _⟩
-  convert S.downward_closed H (inv i)
+  convert! S.downward_closed H (inv i)
   simp
 
 section
@@ -1270,7 +1270,7 @@ def uliftFunctorInclusion (S : Sieve X) :
 @[simps]
 def toUliftFunctor (S : Sieve X) {Y : C} (f : Y ⟶ X) (hf : S f) :
     uliftYoneda.{w}.obj Y ⟶ Sieve.uliftFunctor.{w} S where
-  app Z := TypeCat.ofHom fun g ↦ ⟨g.down ≫ f, S.downward_closed hf g.down⟩
+  app Z := ↾fun g ↦ ⟨g.down ≫ f, S.downward_closed hf g.down⟩
 
 theorem uliftNatTransOfLe_comm {S T : Sieve X} (h : S ≤ T) :
     uliftNatTransOfLe.{w} h ≫ uliftFunctorInclusion.{w} _ = uliftFunctorInclusion.{w} _ :=

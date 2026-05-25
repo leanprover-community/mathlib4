@@ -189,7 +189,7 @@ noncomputable def rTensorAlgEquiv :
 @[simp]
 lemma rTensorAlgEquiv_apply (x : (MvPolynomial σ S) ⊗[R] N) :
     rTensorAlgEquiv x = rTensorAlgHom x := by
-  rw [← AlgHom.coe_coe, ← AlgEquiv.toAlgHom_eq_coe]
+  rw [← AlgHom.coe_coe]
   congr 1
   ext _ d <;> simpa [rTensorAlgEquiv] using! rTensor_apply_tmul_apply _ _ d
 
@@ -240,8 +240,7 @@ lemma algebraTensorAlgEquiv_symm_monomial (m : σ →₀ ℕ) (a : A) :
 
 @[simp]
 lemma algebraTensorAlgEquiv_symm_comp_aeval :
-    (((algebraTensorAlgEquiv (σ := σ) R A).symm.restrictScalars R) :
-        MvPolynomial σ A →ₐ[R] A ⊗[R] MvPolynomial σ R).comp
+    ((algebraTensorAlgEquiv (σ := σ) R A).symm.toAlgHom.restrictScalars R).comp
       (MvPolynomial.mapAlgHom (R := R) (S₁ := R) (S₂ := A) (Algebra.ofId R A)) =
       Algebra.TensorProduct.includeRight := by
   ext

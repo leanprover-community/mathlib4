@@ -44,11 +44,11 @@ theorem hasProd_one : HasProd (fun _ ↦ 1 : β → α) 1 L := by simp [HasProd,
 
 @[to_additive (attr := simp)]
 theorem hasProd_empty [IsEmpty β] : HasProd f 1 L := by
-  convert hasProd_one
+  convert! hasProd_one
 
 @[to_additive (attr := nontriviality)]
 theorem HasProd.of_subsingleton_cod [Subsingleton α] : HasProd f 1 L := by
-  convert hasProd_one
+  convert! hasProd_one
 
 @[to_additive (attr := simp)]
 theorem multipliable_one : Multipliable (fun _ ↦ 1 : β → α) L :=
@@ -169,7 +169,7 @@ lemma hasProd_singleton (m : β) (f : β → α) : HasProd (({m} : Set β).restr
 @[to_additive]
 theorem hasProd_ite_eq (b : β) [DecidablePred (· = b)] (a : α) (L := unconditional β) [L.LeAtTop] :
     HasProd (fun b' ↦ if b' = b then a else 1) a L := by
-  convert hasProd_single b (hf := fun b' hb' ↦ if_neg hb') (L := L)
+  convert! hasProd_single b (hf := fun b' hb' ↦ if_neg hb') (L := L)
   exact (if_pos rfl).symm
 
 @[to_additive]
@@ -221,7 +221,7 @@ protected theorem HasProd.map [CommMonoid γ] [TopologicalSpace γ] (hf : HasPro
 protected theorem Topology.IsInducing.hasProd_iff [CommMonoid γ] [TopologicalSpace γ] {G}
     [FunLike G α γ] [MonoidHomClass G α γ] {g : G} (hg : IsInducing g) (f : β → α) (a : α) :
     HasProd (g ∘ f) (g a) L ↔ HasProd f a L := by
-  simp_rw [HasProd, comp_apply, ← map_prod]
+  simp_rw [HasProd, comp_apply, ← _root_.map_prod]
   exact hg.tendsto_nhds_iff.symm
 
 @[to_additive]
@@ -261,7 +261,7 @@ lemma Topology.IsClosedEmbedding.map_tprod {ι α α' G : Type*}
       simp only [Multipliable, HasProd] at h ⊢
       obtain ⟨b, hb⟩ := h
       obtain ⟨a, ha⟩ : b ∈ Set.range g :=
-        hge.isClosed_range.mem_of_tendsto hb (.of_forall <| by simp [← map_prod])
+        hge.isClosed_range.mem_of_tendsto hb (.of_forall <| by simp [← _root_.map_prod])
       use a
       simp [hge.tendsto_nhds_iff, Function.comp_def, ha, hb]
   · simpa [tprod_bot hL] using
@@ -288,7 +288,7 @@ lemma Topology.IsInducing.multipliable_iff_tprod_comp_mem_range [CommMonoid γ] 
     · by_cases hL : L.NeBot
       · exact ⟨_, hf.map_tprod g hg.continuous⟩
       · by_cases hfs : (mulSupport fun x ↦ g (f x)).Finite
-        · simp [tprod_bot hL, finprod_eq_prod _ hfs, ← map_prod]
+        · simp [tprod_bot hL, finprod_eq_prod _ hfs, ← _root_.map_prod]
         · exact ⟨1, by simp [tprod_bot hL, finprod_of_infinite_mulSupport hfs]⟩
   · rintro ⟨hgf, a, ha⟩
     use a
@@ -338,7 +338,7 @@ lemma Multipliable.pow (hf : Multipliable f L) (n : ℕ) : Multipliable (f · ^ 
 theorem hasProd_prod {f : γ → β → α} {a : γ → α} {s : Finset γ} :
     (∀ i ∈ s, HasProd (f i) (a i) L) → HasProd (fun b ↦ ∏ i ∈ s, f i b) (∏ i ∈ s, a i) L := by
   classical
-  exact Finset.induction_on s (by simp only [hasProd_one, prod_empty, forall_true_iff]) <| by
+  exact Finset.induction_on s (by simp) <| by
     simp +contextual only [mem_insert, forall_eq_or_imp, not_false_iff,
       prod_insert, and_imp]
     exact fun x s _ IH hx h ↦ hx.mul (IH h)
@@ -418,7 +418,7 @@ theorem eq_mul_of_hasProd_ite [L.LeAtTop] [L.NeBot] {α : Type*} [TopologicalSpa
     [T2Space α] [ContinuousMul α] [DecidableEq β] {f : β → α} {a : α} (hf : HasProd f a L) (b : β)
     (a' : α) (hf' : HasProd (fun n ↦ ite (n = b) 1 (f n)) a' L) : a = a' * f b := by
   refine (mul_one a).symm.trans (hf.update' b 1 ?_)
-  convert hf'
+  convert! hf'
   apply update_apply
 
 end HasProd
@@ -459,7 +459,7 @@ theorem tprod_one : ∏'[L] _, (1 : α) = 1 := by
 
 @[to_additive (attr := simp)]
 theorem tprod_empty [IsEmpty β] : ∏'[L] b, f b = 1 := by
-  convert tprod_one (L := L)
+  convert! tprod_one (L := L)
 
 @[to_additive]
 theorem tprod_congr {f g : β → α}

@@ -253,7 +253,6 @@ def sheafHomSectionsEquiv (F G : Sheaf J A) :
 
 @[simp]
 lemma sheafHomSectionsEquiv_symm_apply_coe_apply {F G : Sheaf J A} (φ : F ⟶ G) (X : Cᵒᵖ) :
-    ((sheafHomSectionsEquiv F G).symm φ).1 X = (J.overPullback A X.unop).map φ := by
-  with_unfolding_all rfl
+    ((sheafHomSectionsEquiv F G).symm φ).1 X = (J.overPullback A X.unop).map φ := (rfl)
 
 end CategoryTheory

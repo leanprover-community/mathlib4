@@ -234,7 +234,7 @@ private lemma re_log_comb_nonneg' {a : ℝ} (ha₀ : 0 ≤ a) (ha₁ : a < 1) {z
   · simp only [← mul_div_assoc, ← add_div]
     refine div_nonneg ?_ n.cast_nonneg
     rw [← pow_mul, pow_mul', sq, mul_re, ← sq, ← sq, ← sq_norm_sub_sq_re, norm_pow, hz]
-    convert (show 0 ≤ 2 * a ^ n * ((z ^ n).re + 1) ^ 2 by positivity) using 1
+    convert! (show 0 ≤ 2 * a ^ n * ((z ^ n).re + 1) ^ 2 by positivity) using 1
     ring
 
 -- This is the version of the technical positivity lemma for logarithms of Euler factors.
@@ -252,7 +252,7 @@ private lemma re_log_comb_nonneg {n : ℕ} (hn : 2 ≤ n) {x : ℝ} (hx : 1 < x)
       simp only [neg_re, mul_re, I_re, ofReal_re, zero_mul, I_im, ofReal_im, mul_zero, sub_self,
         neg_zero, Real.rpow_zero, one_mul]
     rw [MulChar.one_apply hn', one_mul]
-    convert re_log_comb_nonneg' (by positivity) hn hz using 6
+    convert! re_log_comb_nonneg' (by positivity) hn hz using 6
     · simp only [ofReal_cpow n.cast_nonneg (-x), ofReal_natCast, ofReal_neg]
     · congr 2
       rw [neg_add, cpow_add _ _ <| mod_cast by lia, ← ofReal_neg, ofReal_cpow n.cast_nonneg (-x),
@@ -317,7 +317,7 @@ lemma LFunctionTrivChar_isBigO_near_one_horizontal :
   have : (fun w : ℂ ↦ LFunctionTrivChar N (1 + w)) =O[𝓝[≠] 0] (1 / ·) := by
     have H : Tendsto (fun w ↦ w * LFunctionTrivChar N (1 + w)) (𝓝[≠] 0)
         (𝓝 <| ∏ p ∈ N.primeFactors, (1 - (p : ℂ)⁻¹)) := by
-      convert (LFunctionTrivChar_residue_one (N := N)).comp (f := fun w ↦ 1 + w) ?_ using 1
+      convert! (LFunctionTrivChar_residue_one (N := N)).comp (f := fun w ↦ 1 + w) ?_ using 1
       · simp only [Function.comp_def, add_sub_cancel_left]
       · simpa only [tendsto_iff_comap, Homeomorph.coe_addLeft, add_zero, map_le_iff_le_comap] using
           ((Homeomorph.addLeft (1 : ℂ)).map_punctured_nhds_eq 0).le

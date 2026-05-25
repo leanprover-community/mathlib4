@@ -35,7 +35,6 @@ to construct isomorphisms between functors out of a sum.
 We further define sums of functors and natural transformations, written `F.sum G` and `α.sum β`.
 -/
 
-
 @[expose] public section
 
 

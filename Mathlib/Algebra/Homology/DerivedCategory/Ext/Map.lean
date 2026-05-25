@@ -72,7 +72,7 @@ lemma DerivedCategory.map_triangleOfSESδ [HasDerivedCategory.{t} C] [HasDerived
     descShortComplex_triangleOfSESδ_assoc]
   dsimp
   rw [← Functor.map_comp_assoc, ← CochainComplex.mappingCone.map_δ, Functor.map_comp_assoc,
-    ← reassoc_of% dsimp% F.mapDerivedCategoryFactors_hom_naturality]
+    ← Category.assoc, ← F.mapDerivedCategoryFactors_hom_naturality_assoc]
   simp [← Q.map_comp_assoc, NatTrans.shift_app,
     Functor.commShiftIso_comp_hom_app, Functor.commShiftIso_comp_inv_app]
 

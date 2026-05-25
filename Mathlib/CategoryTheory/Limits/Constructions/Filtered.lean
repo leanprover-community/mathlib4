@@ -72,7 +72,7 @@ def liftToFinsetColimitCocone [HasColimitsOfShape (Finset (Discrete α)) C]
         dsimp [liftToFinsetObj]
         apply colimit.hom_ext
         rintro ⟨⟨j, hj⟩⟩
-        convert h j using 1
+        convert! h j using 1
         · simp [← colimit.w (liftToFinsetObj F) ⟨⟨Finset.singleton_subset_iff.2 hj⟩⟩]
           rfl
         · simp }
@@ -110,8 +110,9 @@ def isColimitFiniteSubproductsCocone (f : α → C) [HasColimitsOfShape (Finset 
       colimit.cocone_x, colimit.cocone_ι, finiteSubcoproductsCocone_ι_app]
     ext j
     rw [← Category.assoc]
-    convert IsColimit.comp_coconePointUniqueUpToIso_hom
-      (liftToFinsetColimitCocone (Discrete.functor f)).isColimit (colimit.isColimit _) j
+    convert!
+      IsColimit.comp_coconePointUniqueUpToIso_hom
+        (liftToFinsetColimitCocone (Discrete.functor f)).isColimit (colimit.isColimit _) j
     · simp [← colimit.w (liftToFinsetObj _) (homOfLE (x := {j.1}) (y := S) (by simp))]
     · simp))
 
@@ -218,7 +219,7 @@ def liftToFinsetLimitCone [HasLimitsOfShape (Finset (Discrete α))ᵒᵖ C]
         dsimp [liftToFinsetObj]
         apply limit.hom_ext
         rintro ⟨⟨j, hj⟩⟩
-        convert h j using 1
+        convert! h j using 1
         · simp [← limit.w (liftToFinsetObj F) ⟨⟨⟨Finset.singleton_subset_iff.2 hj⟩⟩⟩]
           rfl
         · simp }

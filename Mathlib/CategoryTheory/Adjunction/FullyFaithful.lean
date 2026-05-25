@@ -139,7 +139,7 @@ lemma full_L_of_isSplitEpi_unit_app [∀ X, IsSplitEpi (h.unit.app X)] : L.Full 
     use ((h.homEquiv X (L.obj Y)) f ≫ section_ (h.unit.app Y))
     suffices L.map (section_ (h.unit.app Y)) = h.counit.app (L.obj Y) by simp [this]
     rw [← comp_id (L.map (section_ (h.unit.app Y)))]
-    simp only [ Functor.id_obj, ← h.left_triangle_components Y,
+    simp only [Functor.id_obj, ← h.left_triangle_components Y,
       ← assoc, ← Functor.map_comp, IsSplitEpi.id, Functor.map_id, id_comp]
 
 set_option backward.isDefEq.respectTransparency false in
@@ -285,8 +285,10 @@ theorem isIso_map_unit_of_isLeftAdjoint_comp {E : Type*} [Category* E]
   let FF := FullyFaithful.ofFullyFaithful R
   apply isIso_of_coyoneda_map_bijective
   intro Y
-  convert ((adj2.homEquiv (R.obj (L.obj X)) Y).trans <| FF.homEquiv.symm.trans <|
-    (h.homEquiv X (S.obj Y)).trans (adj2.homEquiv X Y).symm).bijective using 1
+  convert!
+    ((adj2.homEquiv (R.obj (L.obj X)) Y).trans <|
+        FF.homEquiv.symm.trans <|
+          (h.homEquiv X (S.obj Y)).trans (adj2.homEquiv X Y).symm).bijective using 1
   ext x
   have := adj2.counit_naturality x
   simp_all [Adjunction.homEquiv]

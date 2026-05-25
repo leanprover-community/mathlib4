@@ -6,7 +6,6 @@ Authors: Kim Morrison, Bhavik Mehta
 module
 
 public import Mathlib.CategoryTheory.Monad.Basic
-public import Mathlib.CategoryTheory.Adjunction.Basic
 public import Mathlib.CategoryTheory.Functor.EpiMono
 
 /-!

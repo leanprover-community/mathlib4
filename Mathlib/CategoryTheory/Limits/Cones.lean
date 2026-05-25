@@ -5,10 +5,7 @@ Authors: Stephen Morgan, Kim Morrison, Floris van Doorn
 -/
 module
 
-public import Mathlib.CategoryTheory.Functor.Const
-public import Mathlib.CategoryTheory.Discrete.Basic
 public import Mathlib.CategoryTheory.Yoneda
-public import Mathlib.CategoryTheory.Functor.ReflectsIso.Basic
 
 /-!
 # Cones and cocones
@@ -38,8 +35,6 @@ For more results about the category of cones, see `cone_category.lean`.
 set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
-
-
 
 -- morphism levels before object levels. See note [category theory universes].
 universe v₁ v₂ v₃ v₄ v₅ u₁ u₂ u₃ u₄ u₅

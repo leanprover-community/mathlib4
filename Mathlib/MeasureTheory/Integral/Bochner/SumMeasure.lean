@@ -57,7 +57,7 @@ lemma integrable_sum_measure
     Integrable f (Measure.sum μ) := by
   refine ⟨aestronglyMeasurable_sum_measure_iff.mpr fun i ↦ (hf i).aestronglyMeasurable, ?_⟩
   · rw [HasFiniteIntegral, lintegral_sum_measure]
-    convert h.tsum_ofReal_lt_top with i
+    convert! h.tsum_ofReal_lt_top with i
     rw [ofReal_integral_eq_lintegral_ofReal (hf i).norm]
     · simp_rw [ofReal_norm_eq_enorm]
     · exact ae_of_all _ fun _ ↦ by positivity
@@ -65,7 +65,7 @@ lemma integrable_sum_measure
 omit [Countable ι] in
 lemma Integrable.summable_integral (hf : Integrable f (Measure.sum μ)) :
     Summable (fun i ↦ ∫ x, ‖f x‖ ∂μ i) := by
-  convert ENNReal.summable_toReal (f := fun i ↦ ∫⁻ x, ‖f x‖ₑ ∂μ i) ?_ with i
+  convert! ENNReal.summable_toReal (f := fun i ↦ ∫⁻ x, ‖f x‖ₑ ∂μ i) ?_ with i
   · rw [← integral_toReal ?_ (by simp)]
     · simp
     · exact (hf.aestronglyMeasurable.mono_measure (Measure.le_sum _ i)).enorm
@@ -153,7 +153,7 @@ lemma integral_sum_dirac [FiniteDimensional ℝ E] (hc : ∀ i, c i ≠ ∞) :
     rw [integral_smul_measure, integral_dirac]
   · rw [integral_undef hf, tsum_eq_zero_of_not_summable]
     apply mt Summable.norm
-    convert mt (integrable_sum_dirac hc) hf
+    convert! mt (integrable_sum_dirac hc) hf
     simp [norm_smul]
 
 lemma hasSum_integral_sum_dirac [CompleteSpace E] (hc : ∀ i, c i ≠ ∞)

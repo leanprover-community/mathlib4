@@ -148,7 +148,6 @@ def restrictionGEIso :
     (fun n ↦ h.cochainComplex.restrictionXIso (ComplexShape.embeddingUpIntGE 0)
       (i := n) (i' := n) (by simp)) (by
     rintro n _ rfl
-    dsimp only
     rw [restriction_d_eq (e := (ComplexShape.embeddingUpIntGE 0)) _ (i' := n)
       (j' := (n + 1 : ℕ)) (by simp) (by simp), cochainComplex_d, h.d_ofNat]
     simp)
@@ -162,7 +161,6 @@ def restrictionLEIso :
     (fun n ↦ h.cochainComplex.restrictionXIso (ComplexShape.embeddingUpIntLE (-1))
         (i := n) (i' := .negSucc n) (by dsimp; lia)) (by
     rintro _ n rfl
-    dsimp only
     rw [restriction_d_eq (e := (ComplexShape.embeddingUpIntLE (-1))) _
       (i' := Int.negSucc (n + 1)) (j' := Int.negSucc n) (by dsimp; lia) (by dsimp; lia),
       cochainComplex_d, d_negSucc]

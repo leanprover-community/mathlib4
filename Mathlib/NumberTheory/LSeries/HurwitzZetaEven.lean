@@ -654,8 +654,10 @@ lemma differentiable_hurwitzZetaEven_sub_hurwitzZetaEven (a b : UnitAddCircle) :
   intro z
   rcases ne_or_eq z 1 with hz | rfl
   · exact (differentiableAt_hurwitzZetaEven a hz).sub (differentiableAt_hurwitzZetaEven b hz)
-  · convert (differentiableAt_hurwitzZetaEven_sub_one_div a).fun_sub
-      (differentiableAt_hurwitzZetaEven_sub_one_div b) using 2 with s
+  · convert!
+    (differentiableAt_hurwitzZetaEven_sub_one_div a).fun_sub
+      (differentiableAt_hurwitzZetaEven_sub_one_div b) using
+    2 with s
     abel
 
 /--

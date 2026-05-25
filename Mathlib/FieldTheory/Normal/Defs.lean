@@ -22,7 +22,6 @@ In this file we define normal field extensions.
 
 @[expose] public section
 
-
 noncomputable section
 
 open Polynomial IsScalarTower
@@ -213,7 +212,7 @@ def Normal.algHomEquivAut [Normal F E] : (E →ₐ[F] K₁) ≃ Gal(E/F) where
     simp [AlgHom.restrictNormal']
   right_inv σ := by
     ext
-    simp only [AlgHom.restrictNormal', AlgEquiv.toAlgHom_eq_coe, AlgEquiv.coe_ofBijective]
+    simp only [AlgHom.restrictNormal', AlgEquiv.coe_ofBijective]
     apply FaithfulSMul.algebraMap_injective E K₁
     rw [AlgHom.restrictNormal_commutes]
     simp

@@ -114,13 +114,13 @@ theorem cramer_transpose_row_self (i : n) : Aᵀ.cramer (A i) = Pi.single i A.de
 
 theorem cramer_row_self (i : n) (h : ∀ j, b j = A j i) : A.cramer b = Pi.single i A.det := by
   rw [← transpose_transpose A, det_transpose]
-  convert cramer_transpose_row_self Aᵀ i
+  convert! cramer_transpose_row_self Aᵀ i
   exact funext h
 
 @[simp]
 theorem cramer_one : cramer (1 : Matrix n n α) = 1 := by
   ext i j
-  convert congr_fun (cramer_row_self (1 : Matrix n n α) (Pi.single i 1) i _) j
+  convert! congr_fun (cramer_row_self (1 : Matrix n n α) (Pi.single i 1) i _) j
   · simp
   · intro j
     rw [Matrix.one_eq_pi_single, Pi.single_comm]
@@ -283,6 +283,11 @@ divides `b`. -/
 @[simp]
 theorem mulVec_cramer (A : Matrix n n α) (b : n → α) : A *ᵥ cramer A b = A.det • b := by
   rw [cramer_eq_adjugate_mulVec, mulVec_mulVec, mul_adjugate, smul_mulVec, one_mulVec]
+
+theorem det_eq_zero_of_mulVec_eq_zero_of_mem_nonZeroDivisors {M : Matrix n n α} {v : n → α}
+    (h : M *ᵥ v = 0) {i : n} (hi : v i ∈ nonZeroDivisors α) : M.det = 0 := by
+  apply mul_right_mem_nonZeroDivisors_eq_zero_iff hi |>.mp
+  simpa [adjugate_mul, smul_mulVec] using congr((M.adjugate *ᵥ $h) i)
 
 theorem adjugate_subsingleton [Subsingleton n] (A : Matrix n n α) : adjugate A = 1 := by
   ext i j

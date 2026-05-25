@@ -188,7 +188,7 @@ maps from each component, which is the universal property of coproducts. -/
 
 /-- `cofan 𝒜 f` is a coproduct of `f`. -/
 @[simps!] def isColimitCofan : IsColimit (cofan 𝒜 f) :=
-  mkCofanColimit (cofan 𝒜 f) (fun t ↦ (cofanHomEquiv _ _ _).symm t.inj)
+  Cofan.IsColimit.mk (cofan 𝒜 f) (fun t ↦ (cofanHomEquiv _ _ _).symm t.inj)
     (fun t i ↦ congrFun ((cofanHomEquiv _ _ _).right_inv t.inj) i)
     (fun _ _ h ↦ (Equiv.eq_symm_apply _).2 (funext h))
 
@@ -298,7 +298,7 @@ universal property of pullbacks. -/
     fun i ↦ (hpb _).lift (PullbackCone.mk (s.1.1.φ i) (s.1.2.φ i)
       (by simpa using ((hom_ext_iff _ _).1 s.2).2 i))⟩
   left_inv m := hom_ext rfl (fun i ↦ by
-    simp only [ eqToHom_refl, Category.comp_id]
+    simp only [eqToHom_refl, Category.comp_id]
     exact (hpb _).hom_ext ((pb _).equalizer_ext (by aesop) (by aesop)))
   right_inv s := by ext <;> simp
 
@@ -312,7 +312,7 @@ def isLimitPullbackCone : IsLimit (pullbackCone f g pb) := by
     (fun s ↦ congrArg (·.1.snd)
       ((homPullbackEquiv f g pb hpb s.pt).right_inv ⟨(s.fst, s.snd), s.condition⟩))
     (fun s m h₁ h₂ ↦ ?_)
-  convert ((homPullbackEquiv f g pb hpb s.pt).left_inv m).symm using 3
+  convert! ((homPullbackEquiv f g pb hpb s.pt).left_inv m).symm using 3
   rw [← h₁, ← h₂]; rfl
 
 -- Arguments cannot be inferred.

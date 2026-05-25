@@ -327,7 +327,7 @@ def extendOfIsometry (h_dense₁ : DenseRange e₁) (h_dense₂ : DenseRange e�
       refine h_dense₁.induction ?_ (isClosed_eq (by
         simp only [ContinuousLinearEquiv.coe_toLinearEquiv]; fun_prop) continuous_norm)
       rintro x ⟨y, rfl⟩
-      convert h_norm y
+      convert! h_norm y
       apply LinearMap.extendOfNorm_eq h_dense₁ (by use 1; simp [h_norm]) }
 
 theorem extendOfIsometry_apply (h_dense₁ : DenseRange e₁) (h_dense₂ : DenseRange e₂)

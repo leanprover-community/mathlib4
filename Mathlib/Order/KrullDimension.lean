@@ -198,13 +198,13 @@ lemma length_le_height {p : LTSeries α} {x : α} (hlast : p.last ≤ x) :
   · let p' := p.eraseLast.snoc x (by
       apply lt_of_lt_of_le
       · apply p.step ⟨p.length - 1, by lia⟩
-      · convert hlast
+      · convert! hlast
         simp only [Fin.succ_mk, RelSeries.last, Fin.last]
         congr; lia)
     suffices p'.length ≤ height x by
       simp only [RelSeries.snoc_length, RelSeries.eraseLast_length, Nat.cast_add, ENat.coe_sub,
         Nat.cast_one, p'] at this
-      convert this
+      convert! this
       norm_cast
       lia
     refine le_iSup₂_of_le p' ?_ le_rfl
@@ -456,7 +456,7 @@ element.
 -/
 lemma coheight_eq_top_iff {x : α} :
     coheight x = ⊤ ↔ ∀ n, ∃ p : LTSeries α, p.head = x ∧ p.length = n := by
-  convert height_eq_top_iff (α := αᵒᵈ) (x := x) using 2 with n
+  convert! height_eq_top_iff (α := αᵒᵈ) (x := x) using 2 with n
   constructor <;> (intro ⟨p, hp, hl⟩; use p.reverse; constructor <;> simpa)
 
 /-- The elements of height zero are the minimal elements. -/

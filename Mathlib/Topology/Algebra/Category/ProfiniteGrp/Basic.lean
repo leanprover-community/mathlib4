@@ -192,11 +192,11 @@ lemma inv_hom_apply {A B : ProfiniteGrp.{u}} (e : A ≅ B) (x : A) : e.inv (e.ho
 lemma hom_inv_apply {A B : ProfiniteGrp.{u}} (e : A ≅ B) (x : B) : e.hom (e.inv x) = x := by
   simp
 
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem coe_id (X : ProfiniteGrp) : (𝟙 X : X → X) = id :=
   rfl
 
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem coe_comp {X Y Z : ProfiniteGrp} (f : X ⟶ Y) (g : Y ⟶ Z) :
     (f ≫ g : X → Z) = g ∘ f :=
   rfl
@@ -272,7 +272,7 @@ def ContinuousMulEquiv.toProfiniteGrpIso {X Y : ProfiniteGrp} (e : X ≃ₜ* Y) 
 instance : HasForget₂ ProfiniteGrp Profinite where
   forget₂ := {
     obj G := G.toProfinite
-    map f := CompHausLike.ofHom _ ⟨f, by continuity⟩}
+    map f := CompHausLike.ofHom _ ⟨f, by fun_prop⟩}
 
 @[to_additive]
 instance : (forget₂ ProfiniteGrp Profinite).Faithful := {

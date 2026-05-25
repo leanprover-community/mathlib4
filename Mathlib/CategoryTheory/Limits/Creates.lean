@@ -154,7 +154,7 @@ lemma liftedLimitMapsToOriginal_hom_π
     {K : J ⥤ C} {F : C ⥤ D} [CreatesLimit K F] {c : Cone (K ⋙ F)} (t : IsLimit c) (j : J) :
       (liftedLimitMapsToOriginal t).hom.hom ≫ c.π.app j = F.map ((liftLimit t).π.app j) := by
   rw [← liftedLimitMapsToOriginal_inv_map_π (t := t)]
-  simp only [ ← Category.assoc, ← Cone.category_comp_hom,
+  simp only [← Category.assoc, ← Cone.category_comp_hom,
     Iso.hom_inv_id, Cone.category_id_hom, Category.id_comp]
 
 /-- The lifted cone is a limit. -/

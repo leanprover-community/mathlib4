@@ -6,9 +6,6 @@ Authors: Kim Morrison
 module
 
 public import Mathlib.CategoryTheory.Functor.Hom
-public import Mathlib.CategoryTheory.Products.Basic
-public import Mathlib.Data.ULift
-public import Mathlib.Logic.Function.ULift
 
 /-!
 # The Yoneda embedding
@@ -31,7 +28,6 @@ Yoneda lemma is also expressed as a natural isomorphism
 set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
-
 
 namespace CategoryTheory
 

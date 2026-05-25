@@ -214,7 +214,7 @@ lemma overEquiv_functorPullback_post {D : Type*} [Category* D] (F : C ⥤ D) {X 
   · intro Z g hg
     rw [Sieve.overEquiv_iff]
     dsimp [Presieve.functorPullback]
-    convert (Sieve.overEquiv_iff _ _).mp hg
+    convert! (Sieve.overEquiv_iff _ _).mp hg
     simp
 
 set_option backward.isDefEq.respectTransparency false in

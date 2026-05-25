@@ -29,7 +29,6 @@ An oplax functor `F` between bicategories `B` and `C` consists of
 
 @[expose] public section
 
-
 namespace CategoryTheory
 
 open Category Bicategory

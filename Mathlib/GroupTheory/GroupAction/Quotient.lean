@@ -94,12 +94,10 @@ theorem Quotient.smul_mk [QuotientAction β H] (b : β) (a : α) :
     (b • QuotientGroup.mk a : α ⧸ H) = QuotientGroup.mk (b • a) :=
   rfl
 
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem Quotient.smul_coe [QuotientAction β H] (b : β) (a : α) :
     b • (a : α ⧸ H) = (↑(b • a) : α ⧸ H) :=
   rfl
-
-attribute [simp] Quotient.smul_coe
 
 @[to_additive (attr := simp)]
 theorem Quotient.mk_smul_out [QuotientAction β H] (b : β) (q : α ⧸ H) :
@@ -169,7 +167,7 @@ theorem injective_ofQuotientStabilizer : Function.Injective (ofQuotientStabilize
 noncomputable def orbitEquivQuotientStabilizer (b : β) : orbit α b ≃ α ⧸ stabilizer α b :=
   Equiv.symm <|
     Equiv.ofBijective (fun g => ⟨ofQuotientStabilizer α b g, ofQuotientStabilizer_mem_orbit α b g⟩)
-      ⟨fun x y hxy => injective_ofQuotientStabilizer α b (by convert congr_arg Subtype.val hxy),
+      ⟨fun x y hxy => injective_ofQuotientStabilizer α b (by convert! congr_arg Subtype.val hxy),
         fun ⟨_, ⟨g, hgb⟩⟩ => ⟨g, Subtype.ext hgb⟩⟩
 
 /-- Orbit-stabilizer theorem. -/
@@ -364,21 +362,20 @@ noncomputable def equivSubgroupOrbitsQuotientGroup [IsPretransitive α β]
   invFun := fun q ↦ q.liftOn' (fun g ↦ ⟦g⁻¹ • x⟧) (by
     intro g₁ g₂ h
     rw [leftRel_eq] at h
-    simp only
     rw [← @Quotient.mk''_eq_mk, Quotient.eq'', orbitRel_apply]
     exact ⟨⟨_, h⟩, by simp [mul_smul]⟩)
   left_inv := fun y ↦ by
     cases y using Quotient.inductionOn'
     simp only [Quotient.liftOn'_mk'']
     rw [← @Quotient.mk''_eq_mk, Quotient.eq'', orbitRel_apply]
-    convert mem_orbit_self _
+    convert! mem_orbit_self _
     rw [inv_smul_eq_iff, (exists_smul_eq α _ x).choose_spec]
   right_inv := fun g ↦ by
     cases g using Quotient.inductionOn' with | _ g
     simp only [Quotient.liftOn'_mk'', QuotientGroup.mk]
     rw [Quotient.eq'', leftRel_eq]
     simp only
-    convert one_mem H
+    convert! one_mem H
     rw [inv_mul_eq_one, eq_comm, ← inv_mul_eq_one, ← Subgroup.mem_bot,
         ← IsCancelSMul.stabilizer_eq_bot (g⁻¹ • x), mem_stabilizer_iff, mul_smul,
         (exists_smul_eq α (g⁻¹ • x) x).choose_spec]

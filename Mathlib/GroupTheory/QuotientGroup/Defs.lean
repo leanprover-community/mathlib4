@@ -252,7 +252,7 @@ def lift (φ : G →* M) (HN : N ≤ φ.ker) : Q →* M :=
 theorem lift_mk {φ : G →* M} (HN : N ≤ φ.ker) (g : G) : lift N φ HN (g : Q) = φ g :=
   rfl
 
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem lift_mk' {φ : G →* M} (HN : N ≤ φ.ker) (g : G) : lift N φ HN (mk g : Q) = φ g :=
   rfl
 -- TODO: replace `mk` with `mk'`)
@@ -292,7 +292,7 @@ noncomputable def liftEquiv {φ : G →* H} (hφ : Function.Surjective φ)
 theorem liftEquiv_coe {φ : G →* H} (hφ : Function.Surjective φ) (HN : N = φ.ker) (g : G) :
     liftEquiv N hφ HN (g : Q) = φ g := rfl
 
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem liftEquiv_mk {φ : G →* H} (hφ : Function.Surjective φ) (HN : N = φ.ker) (g : G) :
     liftEquiv N hφ HN (mk g : Q) = φ g := rfl
 

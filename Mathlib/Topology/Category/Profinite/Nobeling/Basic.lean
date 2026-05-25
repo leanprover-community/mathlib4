@@ -219,9 +219,8 @@ def spanCone [∀ (s : Finset I) (i : I), Decidable (i ∈ s)] (hC : IsCompact C
   { app s := ConcreteCategory.ofHom ⟨ProjRestrict C (· ∈ unop s), continuous_projRestrict _ _⟩
     naturality := by
       intro X Y h
-      simp only [
-        Functor.const_obj_map, ← projRestricts_comp_projRestrict C
-        (leOfHom h.unop)]
+      simp only [Functor.const_obj_map,
+        ← projRestricts_comp_projRestrict C (leOfHom h.unop)]
       rfl }
 
 /-- The isomorphism `spanFunctor hC ≅ indexFunctor hC` when `hC : IsCompact C`. -/
@@ -393,7 +392,7 @@ theorem eval_eq (l : Products I) (x : C) :
     exact if_pos (h i hi)
   · simp only [List.map_map, List.prod_eq_zero_iff, List.mem_map, Function.comp_apply]
     push Not at h
-    convert h with i
+    convert! h with i
     dsimp [LocallyConstant.evalMonoidHom, e]
     simp only [ite_eq_right_iff, one_ne_zero]
 

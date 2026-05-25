@@ -489,7 +489,7 @@ theorem image.ext [HasImage f] {W : C} {g h : image f ⟶ W} [HasLimit (parallel
   have t : v ≫ q = 𝟙 (image f) :=
     (cancel_mono_id (image.ι f)).1
       (by
-        convert t₀ using 1
+        convert! t₀ using 1
         rw [Category.assoc])
   -- The proof from wikipedia next proves `q ≫ v = 𝟙 _`,
   -- and concludes that `equalizer g h ≅ image f`,
@@ -645,7 +645,7 @@ instance hasImage_comp_iso [HasImage f] [IsIso g] : HasImage (f ≫ g) :=
           have : (image.lift (MonoFactorisation.ofCompIso F') ≫ F'.m) ≫ inv g =
             image.lift (MonoFactorisation.ofCompIso F') ≫
             ((MonoFactorisation.ofCompIso F').m) := by
-              simp only [ Category.assoc,
+              simp only [Category.assoc,
                 MonoFactorisation.ofCompIso_m]
           rw [this, image.lift_fac (MonoFactorisation.ofCompIso F'), image.as_ι] } }
 
@@ -1037,7 +1037,7 @@ theorem hasStrongEpiMonoFactorisations_imp_of_isEquivalence (F : C ⥤ D) [IsEqu
           e := F.asEquivalence.counitIso.inv.app X ≫ F.map em.e
           m := F.map em.m ≫ F.asEquivalence.counitIso.hom.app Y
           fac := by
-            simp only [ Category.assoc, ← F.map_comp_assoc,
+            simp only [Category.assoc, ← F.map_comp_assoc,
               MonoFactorisation.fac, fun_inv_map, id_obj, Iso.inv_hom_id_app, Category.comp_id,
               Iso.inv_hom_id_app_assoc] }⟩
 

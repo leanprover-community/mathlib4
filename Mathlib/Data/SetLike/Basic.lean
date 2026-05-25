@@ -53,7 +53,6 @@ instance : PartialOrder (MySubobject X) := .ofSetLike (MySubobject X) X
 
 /-- Copy of a `MySubobject` with a new `carrier` equal to the old one. Useful to fix definitional
 equalities. See Note [range copy pattern]. -/
-
 protected def copy (p : MySubobject X) (s : Set X) (hs : s = ↑p) : MySubobject X :=
   { carrier := s
     op_mem' := hs.symm ▸ p.op_mem' }
@@ -270,7 +269,7 @@ section Preorder
 
 variable [Preorder A] [IsConcreteLE A B] {p q : A}
 
-@[mono]
+@[gcongr, mono]
 theorem coe_mono : Monotone (SetLike.coe : A → Set B) := fun _ _ => coe_subset_coe.mpr
 
 end Preorder
@@ -282,7 +281,7 @@ variable [PartialOrder A] [IsConcreteLE A B] {p q : A}
 @[simp, norm_cast, gcongr] lemma coe_ssubset_coe {S T : A} : (S : Set B) ⊂ T ↔ S < T := by
   rw [ssubset_iff_subset_ne, lt_iff_le_and_ne, coe_subset_coe, SetLike.coe_ne_coe]
 
-@[mono]
+@[gcongr, mono]
 theorem coe_strictMono : StrictMono (SetLike.coe : A → Set B) := fun _ _ => coe_ssubset_coe.mpr
 
 theorem exists_of_lt : p < q → ∃ x ∈ q, x ∉ p := by

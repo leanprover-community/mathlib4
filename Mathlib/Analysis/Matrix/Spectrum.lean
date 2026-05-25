@@ -135,9 +135,6 @@ theorem conjStarAlgAut_star_eigenvectorUnitary :
   apply PiLp.ext fun j ↦ ?_
   simp only [PiLp.smul_apply, PiLp.single_apply, smul_eq_mul, mul_ite, mul_one, mul_zero]
 
-@[deprecated (since := "2025-11-06")] alias star_mul_self_mul_eq_diagonal :=
-  conjStarAlgAut_star_eigenvectorUnitary
-
 /-- **Diagonalization theorem**, **spectral theorem** for matrices; A Hermitian matrix can be
 diagonalized by a change of basis. For the spectral theorem on linear maps, see
 `LinearMap.IsSymmetric.eigenvectorBasis_apply_self_apply`. -/

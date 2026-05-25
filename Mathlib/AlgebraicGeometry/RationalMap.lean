@@ -5,10 +5,7 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.AlgebraicGeometry.SpreadingOut
-public import Mathlib.AlgebraicGeometry.FunctionField
-public import Mathlib.AlgebraicGeometry.Morphisms.Separated
-/-!
+public import Mathlib.AlgebraicGeometry.Birational.RationalMap
 
 # Rational maps between schemes
 

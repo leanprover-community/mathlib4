@@ -45,7 +45,9 @@ library_note «Design choices about smooth algebraic structures» /--
 -- See note [Design choices about smooth algebraic structures]
 /-- Basic hypothesis to talk about a `C^n` (Lie) additive monoid or a `C^n` additive
 semigroup. A `C^n` additive monoid over `G`, for example, is obtained by requiring both the
-instances `AddMonoid G` and `ContMDiffAdd I n G`. -/
+instances `AddMonoid G` and `ContMDiffAdd I n G`.
+
+See also `ContMDiffVAdd I I' n G M` for `C^n` actions of `G` on a manifold `M`. -/
 class ContMDiffAdd {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [TopologicalSpace H]
     {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
     (I : ModelWithCorners 𝕜 E H) (n : ℕ∞ω)
@@ -56,7 +58,9 @@ class ContMDiffAdd {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [To
 -- See note [Design choices about smooth algebraic structures]
 /-- Basic hypothesis to talk about a `C^n` (Lie) monoid or a `C^n` semigroup.
 A `C^n` monoid over `G`, for example, is obtained by requiring both the instances `Monoid G`
-and `ContMDiffMul I n G`. -/
+and `ContMDiffMul I n G`.
+
+See also `ContMDiffSMul I I' n G M` for `C^n` actions of `G` on a manifold `M`. -/
 @[to_additive]
 class ContMDiffMul {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [TopologicalSpace H]
     {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]

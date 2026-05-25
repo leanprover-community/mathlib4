@@ -1,17 +1,10 @@
-/-
-Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Jan-David Salchow, Sébastien Gouëzel, Jean Lo, Yury Kudryashov, Frédéric Dupuis,
-  Heather Macbeth
--/
-module
+module -- shake: keep-all
 
-public import Mathlib.Algebra.Module.LinearMap.DivisionRing
-public import Mathlib.Algebra.Module.Submodule.EqLocus
-public import Mathlib.LinearAlgebra.Projection
-public import Mathlib.Topology.Algebra.ContinuousMonoidHom
-public import Mathlib.Topology.Algebra.IsUniformGroup.Defs
-public import Mathlib.Topology.Algebra.Module.Basic
+public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Basic
+public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Idempotent
+public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Quotient
+public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Restrict
+public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.RestrictScalars
 
 /-!
 # Continuous linear maps

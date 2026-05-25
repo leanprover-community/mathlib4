@@ -5,11 +5,7 @@ Authors: Heather Macbeth, Floris van Doorn, Michael Rothgang
 -/
 module
 
-public import Mathlib.Geometry.Manifold.Algebra.LieGroup
-public import Mathlib.Geometry.Manifold.MFDeriv.Basic
-public import Mathlib.Topology.ContinuousMap.Basic
-public import Mathlib.Geometry.Manifold.VectorBundle.Basic
-public import Mathlib.Geometry.Manifold.Notation
+public import Mathlib.Geometry.Manifold.VectorBundle.ContMDiffSection
 
 /-!
 # `C^n` sections

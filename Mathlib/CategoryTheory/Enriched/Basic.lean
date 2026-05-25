@@ -127,14 +127,14 @@ instance : EnrichedCategory W (TransportEnrichment F C) where
     simp only [comp_whiskerRight, Category.assoc, Functor.LaxMonoidal.μ_natural_left_assoc,
       Functor.LaxMonoidal.left_unitality_inv_assoc]
     simp_rw [← F.map_comp]
-    convert F.map_id _
+    convert! F.map_id _
     simp
   comp_id X Y := by
     simp only [MonoidalCategory.whiskerLeft_comp, Category.assoc,
       Functor.LaxMonoidal.μ_natural_right_assoc,
       Functor.LaxMonoidal.right_unitality_inv_assoc]
     simp_rw [← F.map_comp]
-    convert F.map_id _
+    convert! F.map_id _
     simp
   assoc P Q R S := by
     rw [comp_whiskerRight, Category.assoc, μ_natural_left_assoc,

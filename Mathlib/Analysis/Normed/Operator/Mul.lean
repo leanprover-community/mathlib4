@@ -49,10 +49,8 @@ theorem mul_apply' (x y : R) : mul 𝕜 R x y = x * y :=
 theorem opNorm_mul_apply_le (x : R) : ‖mul 𝕜 R x‖ ≤ ‖x‖ :=
   opNorm_le_bound _ (norm_nonneg x) (norm_mul_le x)
 
-
 theorem opNorm_mul_le : ‖mul 𝕜 R‖ ≤ 1 :=
   LinearMap.mkContinuous₂_norm_le _ zero_le_one _
-
 
 /-- Multiplication on the left in a non-unital normed algebra `R` as a non-unital algebra
 homomorphism into the algebra of *continuous* linear maps. This is the left regular representation
@@ -114,7 +112,7 @@ instance _root_.NormedAlgebra.instRegularNormedAlgebra {𝕜 R : Type*} [Nontriv
     [SeminormedRing R] [NormedAlgebra 𝕜 R] [NormOneClass R] : RegularNormedAlgebra 𝕜 R where
   isometry_mul' := AddMonoidHomClass.isometry_of_norm (mul 𝕜 R) <|
     fun x => le_antisymm (opNorm_mul_apply_le _ _ _) <| by
-      convert ratio_le_opNorm ((mul 𝕜 R) x) (1 : R)
+      convert! ratio_le_opNorm ((mul 𝕜 R) x) (1 : R)
       simp [norm_one]
 
 variable [RegularNormedAlgebra 𝕜 R]
@@ -126,11 +124,9 @@ lemma isometry_mul : Isometry (mul 𝕜 R) :=
 lemma opNorm_mul_apply (x : R) : ‖mul 𝕜 R x‖ = ‖x‖ :=
   (AddMonoidHomClass.isometry_iff_norm (mul 𝕜 R)).mp (isometry_mul 𝕜 R) x
 
-
 @[simp]
 lemma opNNNorm_mul_apply (x : R) : ‖mul 𝕜 R x‖₊ = ‖x‖₊ :=
   Subtype.ext <| opNorm_mul_apply 𝕜 R x
-
 
 /-- Multiplication in a normed algebra as a linear isometry to the space of
 continuous linear maps. -/
@@ -155,16 +151,6 @@ end NonUnitalSeminormedCommRing
 section RingEquiv
 
 variable (𝕜 E)
-
-/-- If `M` is a normed space over `𝕜`, then the space of maps `𝕜 →L[𝕜] M` is linearly equivalent
-to `M`. (See `ring_lmap_equiv_self` for a stronger statement.) -/
-def ring_lmap_equiv_selfₗ : (𝕜 →L[𝕜] E) ≃ₗ[𝕜] E where
-  toFun := fun f ↦ f 1
-  invFun := (ContinuousLinearMap.id 𝕜 𝕜).smulRight
-  map_smul' := fun a f ↦ by simp only [coe_smul', Pi.smul_apply, RingHom.id_apply]
-  map_add' := fun f g ↦ by simp only [add_apply]
-  left_inv := fun f ↦ by ext; simp only [smulRight_apply, coe_id', _root_.id, one_smul]
-  right_inv := fun m ↦ by simp only [smulRight_apply, id_apply, one_smul]
 
 /-- If `M` is a normed space over `𝕜`, then the space of maps `𝕜 →L[𝕜] M` is linearly isometrically
 equivalent to `M`. -/

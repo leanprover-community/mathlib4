@@ -23,7 +23,6 @@ and its faces (numbered from `0` to `3`) are respectively
 
 @[expose] public section
 
-
 universe v u
 
 namespace CategoryTheory

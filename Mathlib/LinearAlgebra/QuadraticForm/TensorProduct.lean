@@ -21,7 +21,6 @@ public import Mathlib.Tactic.LinearCombination
 
 @[expose] public section
 
-
 universe uR uA uM₁ uM₂ uN₁ uN₂
 
 variable {R : Type uR} {A : Type uA} {M₁ : Type uM₁} {M₂ : Type uM₂} {N₁ : Type uN₁} {N₂ : Type uN₂}
@@ -76,8 +75,10 @@ theorem associated_tmul [Invertible (2 : A)]
   letI : Invertible (2 : A) := (Invertible.map (algebraMap R A) 2).copy 2 (map_ofNat _ _).symm
   rw [QuadraticMap.tmul, BilinMap.tmul]
   have : Subsingleton (Invertible (2 : A)) := inferInstance
-  convert associated_left_inverse A (LinearMap.BilinMap.tmul_isSymm
-    (QuadraticMap.associated_isSymm A Q₁) (QuadraticMap.associated_isSymm R Q₂))
+  convert!
+    associated_left_inverse A
+      (LinearMap.BilinMap.tmul_isSymm (QuadraticMap.associated_isSymm A Q₁)
+        (QuadraticMap.associated_isSymm R Q₂))
 
 end QuadraticMap
 

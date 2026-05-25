@@ -21,8 +21,6 @@ comma, arrow
 
 @[expose] public section
 
-
-
 namespace CategoryTheory
 
 universe v u
@@ -389,6 +387,14 @@ def mapArrowEquivalence (e : C ≌ D) : Arrow C ≌ Arrow D where
   inverse := e.inverse.mapArrow
   unitIso := Functor.mapIso (mapArrowFunctor C C) e.unitIso
   counitIso := Functor.mapIso (mapArrowFunctor D D) e.counitIso
+
+set_option backward.defeqAttrib.useBackward true in
+instance essSurj_mapArrow (F : C ⥤ D) [F.Full] [F.EssSurj] :
+    F.mapArrow.EssSurj where
+  mem_essImage f :=
+    ⟨Arrow.mk (F.preimage ((F.objObjPreimageIso _).hom ≫ f.hom ≫
+      (F.objObjPreimageIso _).inv)),
+        ⟨Arrow.isoMk (F.objObjPreimageIso _) (F.objObjPreimageIso _)⟩⟩
 
 instance isEquivalence_mapArrow (F : C ⥤ D) [IsEquivalence F] :
     IsEquivalence F.mapArrow :=

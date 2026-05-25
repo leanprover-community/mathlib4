@@ -17,7 +17,6 @@ This file defines a few Yoneda embeddings for the category of commutative groups
 
 @[expose] public section
 
-
 open CategoryTheory
 
 universe u

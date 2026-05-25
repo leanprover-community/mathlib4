@@ -29,7 +29,6 @@ any category `C` such that `HasCardinalLT C κ` holds.
 
 @[expose] public section
 
-
 universe w v u
 
 namespace CategoryTheory

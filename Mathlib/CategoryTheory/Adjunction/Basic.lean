@@ -5,7 +5,6 @@ Authors: Reid Barton, Johan Commelin, Bhavik Mehta
 -/
 module
 
-public import Mathlib.CategoryTheory.Equivalence
 public import Mathlib.CategoryTheory.Yoneda
 
 /-!
@@ -83,8 +82,6 @@ Conversely `Equivalence.toAdjunction` recovers the underlying adjunction from an
 set_option backward.defeqAttrib.useBackward true
 
 @[expose] public section
-
-
 
 namespace CategoryTheory
 

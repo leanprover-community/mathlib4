@@ -81,7 +81,7 @@ lemma continuousGeneratedBy_dom_prod_iff [∀ i j, IsGeneratedBy X (X i × X j)]
   · rw [IsGeneratedBy.continuous_iff X]
     intro j p
     let φ : X i₁ × X i₂ → Y × Z := fun (x₁, x₂) ↦ (f₂ x₂, f₁ x₁)
-    replace h := h.comp (show Continuous φ by continuity).continuousGeneratedBy
+    replace h := h.comp (show Continuous φ by fun_prop).continuousGeneratedBy
     rw [continuousGeneratedBy_def] at h
     exact h p
   · rw [continuousGeneratedBy_def]

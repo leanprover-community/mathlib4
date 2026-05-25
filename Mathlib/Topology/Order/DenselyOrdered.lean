@@ -263,9 +263,8 @@ lemma DenselyOrdered.subsingleton_of_discreteTopology [DiscreteTopology α] : Su
   suffices ∀ a b : α, b ≤ a from ⟨fun a b ↦ le_antisymm (this b a) (this a b)⟩
   intro a b
   by_contra! contra
-  suffices b ∈ Ioo a b by grind
-  rw [← (isClosed_discrete (Ioo a b)).closure_eq, closure_Ioo contra.ne]
-  grind
+  have : Ioo a b = Icc a b := by rw [← closure_discrete (Ioo a b), closure_Ioo contra.ne]
+  grind => have : b ∈ Ioo a b; finish
 
 /-- Let `s` be a dense set in a nontrivial dense linear order `α`. If `s` is a
 separable space (e.g., if `α` has a second countable topology), then there exists a countable

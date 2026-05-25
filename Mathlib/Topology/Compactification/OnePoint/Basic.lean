@@ -8,6 +8,7 @@ module
 public import Mathlib.Data.Fintype.Option
 public import Mathlib.Topology.Homeomorph.Lemmas
 public import Mathlib.Topology.Sets.Opens
+import Mathlib.Topology.WithTopology
 
 /-!
 # The one-point compactification

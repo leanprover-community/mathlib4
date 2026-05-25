@@ -481,7 +481,6 @@ def eval : Code → ℕ →. ℕ
 @[simp]
 theorem eval_prec_zero (cf cg : Code) (a : ℕ) : eval (prec cf cg) (Nat.pair a 0) = eval cf a := by
   rw [eval, Nat.unpaired, Nat.unpair_pair]
-  simp (config := { Lean.Meta.Simp.neutralConfig with proj := true }) only []
   rw [Nat.rec_zero]
 
 /-- Helper lemma for the evaluation of `prec` in the recursive case. -/

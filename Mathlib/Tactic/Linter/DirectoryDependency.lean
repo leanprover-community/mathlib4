@@ -243,6 +243,7 @@ def allowedImportDirs : NamePrefixRel := .ofArray #[
   (`Mathlib.Logic.Fin.Rotate, `Mathlib.Algebra.Group.Fin.Basic),
   (`Mathlib.Logic, `Mathlib.Algebra.Notation),
   (`Mathlib.Logic, `Mathlib.Algebra.NeZero),
+  (`Mathlib.Logic, `Mathlib.Algebra.Order),
   (`Mathlib.Logic, `Mathlib.Data),
   -- TODO: this next dependency should be made more fine-grained.
   (`Mathlib.Logic, `Mathlib.Order),
@@ -323,13 +324,13 @@ def forbiddenImportDirs : NamePrefixRel := .ofArray #[
   (`Mathlib.AlgebraicTopology, `Mathlib.RepresentationTheory),
   (`Mathlib.AlgebraicTopology, `Mathlib.Testing),
   (`Mathlib.Analysis, `Mathlib.AlgebraicGeometry),
-  (`Mathlib.Analysis, `Mathlib.AlgebraicTopology),
   (`Mathlib.Analysis, `Mathlib.Computability),
   (`Mathlib.Analysis, `Mathlib.Condensed),
   (`Mathlib.Analysis, `Mathlib.InformationTheory),
   (`Mathlib.Analysis, `Mathlib.ModelTheory),
   (`Mathlib.Analysis, `Mathlib.RepresentationTheory),
   (`Mathlib.Analysis, `Mathlib.Testing),
+  (`Mathlib.Analysis.Calculus, `Mathlib.AlgebraicTopology),
   (`Mathlib.CategoryTheory, `Mathlib.AlgebraicGeometry),
   (`Mathlib.CategoryTheory, `Mathlib.Analysis),
   (`Mathlib.CategoryTheory, `Mathlib.Computability),
@@ -614,6 +615,7 @@ def overrideAllowedImportDirs : NamePrefixRel := .ofArray #[
   (`Mathlib.Analysis.Convex.SimplicialComplex.Basic, `Mathlib.AlgebraicTopology),
   (`Mathlib.Analysis.Convex.SimplicialComplex.AffineIndependentUnion, `Mathlib.AlgebraicTopology),
   (`Mathlib.Probability.Kernel.Category, `Mathlib.CategoryTheory), -- For the category of s-finite/Markov kernels
+  (`Mathlib.RepresentationTheory.Continuous, `Mathlib.Topology) -- For continuous representations
 ]
 
 end DirectoryDependency

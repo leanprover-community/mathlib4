@@ -116,7 +116,7 @@ theorem le_order (φ : R⟦X⟧) (n : ℕ∞) (h : ∀ i : ℕ, ↑i < n → coe
   cases n with
   | top => simpa using ext (by simpa using h)
   | coe n =>
-    convert nat_le_order φ n _
+    convert! nat_le_order φ n _
     simpa using h
 
 /-- The order of a formal power series is exactly `n` if the `n`th coefficient is nonzero,
@@ -429,11 +429,6 @@ theorem divXPowOrder_mul {f g : R⟦X⟧} :
         rw [mul_assoc, X_pow_mul, X_pow_mul, ← mul_assoc, mul_assoc, ← pow_add]
     _ = X ^ (f.order.toNat + g.order.toNat) * (f.divXPowOrder * g.divXPowOrder) := by
         rw [X_pow_mul, add_comm]
-
-@[deprecated divXPowOrder_mul "use `divXPowOrder_mul.symm` instead" (since := "2025-11-06")]
-theorem divXPowOrder_mul_divXPowOrder {f g : R⟦X⟧} :
-    divXPowOrder f * divXPowOrder g = divXPowOrder (f * g) :=
-  divXPowOrder_mul.symm
 
 variable [Nontrivial R]
 

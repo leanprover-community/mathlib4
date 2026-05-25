@@ -20,7 +20,6 @@ the product side.
 
 @[expose] public section
 
-
 namespace CategoryTheory
 
 open Functor

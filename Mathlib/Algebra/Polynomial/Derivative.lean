@@ -97,7 +97,7 @@ theorem derivative_C_mul_X_sq (a : R) : derivative (C a * X ^ 2) = C (a * 2) * X
   rw [derivative_C_mul_X_pow, Nat.cast_two, pow_one]
 
 theorem derivative_X_pow (n : ℕ) : derivative (X ^ n : R[X]) = C (n : R) * X ^ (n - 1) := by
-  convert derivative_C_mul_X_pow (1 : R) n <;> simp
+  convert! derivative_C_mul_X_pow (1 : R) n <;> simp
 
 @[simp]
 theorem derivative_X_pow_succ (n : ℕ) :
@@ -539,19 +539,19 @@ theorem iterate_derivative_mul_X_pow (n m : ℕ) (p : R[X]) :
 
 theorem iterate_derivative_mul_X {n : ℕ} (p : R[X]) :
     derivative^[n] (p * X) = (derivative^[n] p) * X + n • derivative^[n - 1] p := by
-  convert p.iterate_derivative_mul_X_pow n 1; · simp
+  convert! p.iterate_derivative_mul_X_pow n 1; · simp
   rcases n with rfl | n <;> simp [sum_range_succ]
 
 theorem iterate_derivative_derivative_mul_X {n : ℕ} (p : R[X]) :
     derivative^[n] (derivative p * X) = (derivative^[n + 1] p) * X + n • derivative^[n] p := by
-  convert (derivative p).iterate_derivative_mul_X_pow n 1; · simp
+  convert! (derivative p).iterate_derivative_mul_X_pow n 1; · simp
   rcases n with rfl | n <;> simp [sum_range_succ]
 
 theorem iterate_derivative_derivative_mul_X_sq {n : ℕ} (p : R[X]) :
     derivative^[n] (derivative^[2] p * X ^ 2) =
       (derivative^[n + 2] p) * X ^ 2 + (2 * n) • (derivative^[n + 1] p) * X +
         (n * (n - 1)) • derivative^[n] p := by
-  convert (derivative^[2] p).iterate_derivative_mul_X_pow n 2
+  convert! (derivative^[2] p).iterate_derivative_mul_X_pow n 2
   rcases n with rfl | n; · simp
   rcases n with rfl | n; · simp [sum_range_succ, ← mul_assoc]
   suffices ((n + 1 + 1) * (n + 1) / 2) * 2 = (n + 1 + 1) * (n + 1) by

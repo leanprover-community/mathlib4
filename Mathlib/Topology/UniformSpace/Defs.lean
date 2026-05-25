@@ -118,42 +118,6 @@ universe u v ua ub uc ud
 
 variable {α : Type ua} {β : Type ub} {γ : Type uc} {δ : Type ud} {ι : Sort*}
 
-/-- The identity relation, or the graph of the identity function -/
-@[deprecated SetRel.id (since := "2025-10-17")]
-def idRel {α : Type*} :=
-  { p : α × α | p.1 = p.2 }
-
-set_option linter.deprecated false in
-@[deprecated SetRel.mem_id (since := "2025-10-17")]
-theorem mem_idRel {a b : α} : (a, b) ∈ @idRel α ↔ a = b :=
-  Iff.rfl
-
-set_option linter.deprecated false in
-@[deprecated SetRel.id_subset_iff (since := "2025-10-17")]
-theorem idRel_subset {s : SetRel α α} : idRel ⊆ s ↔ ∀ a, (a, a) ∈ s := by
-  simp [subset_def, mem_idRel]
-
-set_option linter.deprecated false in
-@[deprecated SetRel.exists_eq_singleton_of_prod_subset_id (since := "2025-10-17")]
-theorem eq_singleton_left_of_prod_subset_idRel {X : Type*} {S T : Set X} (hS : S.Nonempty)
-    (hT : T.Nonempty) (h_diag : S ×ˢ T ⊆ SetRel.id) : ∃ x, S = {x} := by
-  obtain ⟨x, hx, -⟩ := SetRel.exists_eq_singleton_of_prod_subset_id hS hT h_diag; exact ⟨x, hx⟩
-
-set_option linter.deprecated false in
-@[deprecated SetRel.exists_eq_singleton_of_prod_subset_id (since := "2025-10-17")]
-theorem eq_singleton_right_prod_subset_idRel {X : Type*} {S T : Set X} (hS : S.Nonempty)
-    (hT : T.Nonempty) (h_diag : S ×ˢ T ⊆ SetRel.id) : ∃ x, T = {x} := by
-  obtain ⟨x, -, hx⟩ := SetRel.exists_eq_singleton_of_prod_subset_id hS hT h_diag; exact ⟨x, hx⟩
-
-@[deprecated (since := "2025-10-17")]
-alias eq_singleton_prod_subset_idRel := SetRel.exists_eq_singleton_of_prod_subset_id
-
-set_option linter.deprecated false in
-/-- The composition of relations -/
-@[deprecated SetRel.comp (since := "2025-10-17")]
-def compRel (r₁ r₂ : SetRel α α) :=
-  { p : α × α | ∃ z : α, (p.1, z) ∈ r₁ ∧ (z, p.2) ∈ r₂ }
-
 open scoped SetRel
 
 set_option linter.deprecated false in
@@ -295,13 +259,6 @@ lemma SetRel.mem_filter_prod_comm (R : SetRel α α) {f g : Filter α} [R.IsSymm
     R ∈ f ×ˢ g ↔ R ∈ g ×ˢ f := by
   rw [← R.inv_eq_self, SetRel.inv, ← mem_map, ← prod_comm, ← SetRel.inv, R.inv_eq_self]
 
-set_option linter.deprecated false in
-@[deprecated SetRel.mem_filter_prod_comm (since := "2025-10-17")]
-lemma IsSymmetricRel.mem_filter_prod_comm {s : Set (α × α)} {f g : Filter α}
-    (hs : IsSymmetricRel s) :
-    s ∈ f ×ˢ g ↔ s ∈ g ×ˢ f := by
-  rw [← hs.eq, ← mem_map, ← prod_comm, hs.eq]
-
 /-- This core description of a uniform space is outside of the type class hierarchy. It is useful
   for constructions of uniform spaces, when the topology is derived from the uniform space. -/
 structure UniformSpace.Core (α : Type u) where
@@ -411,7 +368,7 @@ abbrev UniformSpace.toCore (u : UniformSpace α) : UniformSpace.Core α where
     have : Prod.mk x ⁻¹' U ∈ 𝓝 x := by
       rw [UniformSpace.nhds_eq_comap_uniformity]
       exact preimage_mem_comap hU
-    convert mem_of_mem_nhds this
+    convert! mem_of_mem_nhds this
 
 theorem UniformSpace.toCore_toTopologicalSpace (u : UniformSpace α) :
     u.toCore.toTopologicalSpace = u.toTopologicalSpace :=

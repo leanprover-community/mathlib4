@@ -127,7 +127,7 @@ lemma CStarAlgebra.directedOn_nonneg_ball :
       · have (x) (hx : x ∈ σₙ ℝ≥0 a) : 1 - x ≠ 0 := by
           refine tsub_pos_of_lt ?_ |>.ne'
           exact lt_of_le_of_lt (le_nnnorm_of_mem_quasispectrum hx) ha₂
-        fun_prop (disch := assumption)
+        fun_prop
     _ ≤ cfcₙ f (cfcₙ g a + cfcₙ g b) := by
       have hab' : cfcₙ g a ≤ cfcₙ g a + cfcₙ g b := le_add_of_nonneg_right cfcₙ_nonneg_of_predicate
       exact CFC.monotoneOn_one_sub_one_add_inv cfcₙ_nonneg_of_predicate

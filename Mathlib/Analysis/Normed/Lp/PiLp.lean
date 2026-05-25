@@ -1150,12 +1150,12 @@ lemma coe_continuousLinearEquiv :
 lemma coe_symm_continuousLinearEquiv :
     ⇑(PiLp.continuousLinearEquiv p 𝕜 β).symm = toLp p := rfl
 
+set_option backward.defeqAttrib.useBackward true in
 variable {𝕜} in
 /-- The projection on the `i`-th coordinate of `PiLp p β`, as a continuous linear map. -/
 @[simps!]
 def proj (i : ι) : PiLp p β →L[𝕜] β i where
   __ := projₗ p β i
-  cont := PiLp.continuous_apply ..
 
 end
 

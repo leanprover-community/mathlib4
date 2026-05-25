@@ -6,7 +6,6 @@ Authors: Robin Carlier
 module
 
 public import Mathlib.CategoryTheory.Monoidal.Category
-public import Mathlib.CategoryTheory.Functor.Trifunctor
 
 /-!
 
@@ -39,7 +38,6 @@ on `d` is `d ⊙ᵣ c`, and the structure isomorphisms are of the form
 -/
 
 @[expose] public section
-
 
 namespace CategoryTheory.MonoidalCategory
 
