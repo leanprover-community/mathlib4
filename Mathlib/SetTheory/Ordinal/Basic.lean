@@ -148,6 +148,10 @@ def type (r : α → α → Prop) [wo : IsWellOrder α r] : Ordinal :=
 /-- `typeLT α` is an abbreviation for the order type of the `<` relation of `α`. -/
 scoped notation3 "typeLT " α:70 => @Ordinal.type α (· < ·) inferInstance
 
+/-- info: typeLT ℕ : Ordinal.{0} -/
+#guard_msgs in
+#check typeLT ℕ
+
 instance zero : Zero Ordinal :=
   ⟨type <| @emptyRelation PEmpty⟩
 
