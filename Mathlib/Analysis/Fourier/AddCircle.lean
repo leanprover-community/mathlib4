@@ -93,7 +93,7 @@ theorem volume_eq_smul_haarAddCircle :
     (volume : Measure (AddCircle T)) = ENNReal.ofReal T • (@haarAddCircle T _) :=
   rfl
 
-lemma integral_haarAddCircle {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+lemma integral_haarAddCircle {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℝ E]
     {f : AddCircle T → E} : ∫ t, f t ∂haarAddCircle = T⁻¹ • ∫ t, f t := by
   rw [volume_eq_smul_haarAddCircle, integral_smul_measure, ENNReal.toReal_ofReal hT.out.le,
     inv_smul_smul₀ hT.out.ne']
@@ -290,7 +290,7 @@ variable [hT : Fact (0 < T)]
 
 section fourierCoeff
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E]
+variable {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℂ E]
 
 /-- The `n`-th Fourier coefficient of a function `AddCircle T → E`, for `E` a complete normed
 `ℂ`-vector space, defined as the integral over `AddCircle T` of `fourier (-n) t • f t`. -/
@@ -445,7 +445,7 @@ theorem hasSum_sq_fourierCoeff (f : Lp ℂ 2 <| @haarAddCircle T hT) :
     apply_mod_cast lp.hasSum_norm ?_ (fourierBasis.repr f)
     simp
   have H₂ : ‖fourierBasis.repr f‖ ^ 2 = ‖f‖ ^ 2 := by simp
-  have H₃ := congr_arg RCLike.re (@L2.inner_def (AddCircle T) ℂ ℂ _ _ _ _ _ f f)
+  have H₃ := congr_arg RCLike.re (L2.inner_def (α := AddCircle T) (E := ℂ) (𝕜 := ℂ) f f)
   rw [← integral_re] at H₃
   · simp only [← norm_sq_eq_re_inner] at H₃
     rwa [H₂, H₃] at H₁
