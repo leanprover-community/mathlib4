@@ -1,4 +1,3 @@
-
 import Mathlib.Algebra.Ring.Nat
 import Mathlib.Data.Nat.Prime.Defs
 import Mathlib.CategoryTheory.Category.Basic
