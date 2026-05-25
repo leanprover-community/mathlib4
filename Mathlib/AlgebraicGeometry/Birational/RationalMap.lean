@@ -254,7 +254,7 @@ lemma equiv_of_fromSpecStalkOfMem_eq [IrreducibleSpace X]
       ((Set.image_subset_range _ _).trans_eq (Subtype.range_val)).trans inf_le_right, ?_⟩
     rw [← cancel_epi (Scheme.Hom.isoImage _ _).hom]
     simp only [restrict_hom, ← Category.assoc] at e ⊢
-    convert e using 2 <;> rw [← cancel_mono (Scheme.Opens.ι _)] <;> simp
+    convert! e using 2 <;> rw [← cancel_mono (Scheme.Opens.ι _)] <;> simp
   · rw [← f.fromSpecStalkOfMem_restrict hdense inf_le_left ⟨hxf, hxg⟩,
       ← g.fromSpecStalkOfMem_restrict hdense inf_le_right ⟨hxf, hxg⟩] at H
     simpa only [fromSpecStalkOfMem, restrict_domain, Opens.fromSpecStalkOfMem, Spec.map_inv,
@@ -333,6 +333,20 @@ lemma RationalMap.exists_rep (f : X ⤏ Y) : ∃ g : X.PartialMap Y, g.toRationa
 lemma PartialMap.toRationalMap_eq_iff {f g : X.PartialMap Y} :
     f.toRationalMap = g.toRationalMap ↔ f.equiv g :=
   Quotient.eq
+
+/-- An arbitrarily chosen partial map representing `f`. Use `RationalMap.toPartialMap` instead
+if `X` is reduced and `Y` is separated. -/
+noncomputable def RationalMap.representative (f : X ⤏ Y) : X.PartialMap Y :=
+  f.exists_rep.choose
+
+@[simp]
+lemma RationalMap.toRationalMap_representative (f : X ⤏ Y) :
+    f.representative.toRationalMap = f :=
+  f.exists_rep.choose_spec
+
+lemma PartialMap.representative_toRationalMap_equiv (f : X.PartialMap Y) :
+    f.toRationalMap.representative.equiv f := by
+  rw [← PartialMap.toRationalMap_eq_iff, f.toRationalMap.toRationalMap_representative]
 
 @[simp]
 lemma PartialMap.restrict_toRationalMap (f : X.PartialMap Y) (U : X.Opens)
@@ -516,7 +530,7 @@ def RationalMap.toPartialMap [IsReduced X] [Y.IsSeparated] (f : X ⤏ Y) : X.Par
     IsPullback.isoPullback_hom_snd_assoc]
   change _ ≫ _ ≫ (g x).hom = _ ≫ _ ≫ (g y).hom
   simp_rw [← cancel_epi (X.isoOfEq congr($(hg₂ x) ⊓ $(hg₂ y))).hom, ← Category.assoc]
-  convert (PartialMap.equiv_iff_of_isSeparated (S := ⊤_ _) (f := g x) (g := g y)).mp ?_ using 1
+  convert! (PartialMap.equiv_iff_of_isSeparated (S := ⊤_ _) (f := g x) (g := g y)).mp ?_ using 1
   · dsimp; congr 1; simp [g, ← cancel_mono (Opens.ι _)]
   · dsimp; congr 1; simp [g, ← cancel_mono (Opens.ι _)]
   · rw [← PartialMap.toRationalMap_eq_iff, hg₁, hg₁]

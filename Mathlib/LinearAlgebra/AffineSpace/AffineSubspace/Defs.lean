@@ -206,7 +206,7 @@ def directionOfNonempty {s : AffineSubspace k P} (h : (s : Set P).Nonempty) : Su
     rintro _ _ ⟨p₁, hp₁, p₂, hp₂, rfl⟩ ⟨p₃, hp₃, p₄, hp₄, rfl⟩
     rw [← vadd_vsub_assoc]
     refine vsub_mem_vsub ?_ hp₄
-    convert s.smul_vsub_vadd_mem 1 hp₁ hp₂ hp₃
+    convert! s.smul_vsub_vadd_mem 1 hp₁ hp₂ hp₃
     rw [one_smul]
   smul_mem' := by
     rintro c _ ⟨p₁, hp₁, p₂, hp₂, rfl⟩
@@ -241,7 +241,7 @@ theorem vadd_mem_of_mem_direction {s : AffineSubspace k P} {v : V} (hv : v ∈ s
   rw [mem_direction_iff_eq_vsub ⟨p, hp⟩] at hv
   rcases hv with ⟨p₁, hp₁, p₂, hp₂, hv⟩
   rw [hv]
-  convert s.smul_vsub_vadd_mem 1 hp₁ hp₂ hp
+  convert! s.smul_vsub_vadd_mem 1 hp₁ hp₂ hp
   rw [one_smul]
 
 /-- Subtracting two points in the subspace produces a vector in the direction. -/
@@ -260,7 +260,7 @@ the original point is in the subspace. -/
 theorem vadd_mem_iff_mem_of_mem_direction {s : AffineSubspace k P} {v : V} (hv : v ∈ s.direction)
     {p : P} : v +ᵥ p ∈ s ↔ p ∈ s := by
   refine ⟨fun h => ?_, fun h => vadd_mem_of_mem_direction hv h⟩
-  convert vadd_mem_of_mem_direction (Submodule.neg_mem _ hv) h
+  convert! vadd_mem_of_mem_direction (Submodule.neg_mem _ hv) h
   simp
 
 /-- Given a point in an affine subspace, the set of vectors in its direction equals the set of
