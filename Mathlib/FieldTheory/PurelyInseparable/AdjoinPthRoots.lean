@@ -29,10 +29,7 @@ public section
 
 variable (k : Type*) [Field k]
 
-/-- Adjoining all `p`-th root to a field of characteristic `p`.
-
-Note: It is defined as a typeclass synonym of the field `k` itself
-with a `k`-algebra structure given by the frobenius map. -/
+/-- Adjoining all `p`-th root to a field of characteristic `p`. -/
 def AdjoinPthRoots := k
 
 noncomputable instance : Field (AdjoinPthRoots k) := inferInstanceAs (Field k)
