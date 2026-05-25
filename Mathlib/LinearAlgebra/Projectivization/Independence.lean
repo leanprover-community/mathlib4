@@ -113,7 +113,7 @@ theorem independent_pair_iff_ne (u v : ℙ K V) : Independent ![u, v] ↔ u ≠ 
   rw [independent_iff_not_dependent, dependent_pair_iff_eq u v]
 
 /-- Two points are independent if and only if their underlying vectors are linearly independent. -/
-lemma independent_mk_iff_linearIndep (u v : V) (hu : u ≠ 0) (hv : v ≠ 0) :
+lemma independent_mk_iff_linearIndep {u v : V} (hu : u ≠ 0) (hv : v ≠ 0) :
     Independent ![mk K u hu, mk K v hv] ↔ LinearIndependent K ![u, v] := by
   rw [independent_pair_iff_ne, ne_eq, mk_eq_mk_iff' K u v hu hv, linearIndependent_fin2]
   simp only [Matrix.cons_val_zero, Matrix.cons_val_one]
