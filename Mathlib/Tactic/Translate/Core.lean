@@ -224,9 +224,9 @@ structure TranslateData : Type where
   changeNumeral : Bool
   /-- When `isDual := true`, every translation `A → B` will also give a translation `B → A`. -/
   isDual : Bool
-  guessNameData : GuessName.GuessNameData
+  guessNameExt : GuessName.GuessNameExt
 
-attribute [inherit_doc GuessName.GuessNameData] TranslateData.guessNameData
+attribute [inherit_doc GuessName.GuessNameExt] TranslateData.guessNameExt
 
 /-- Get the translation for the given name. -/
 def findTranslation? (env : Environment) (t : TranslateData) : Name → Option TranslationInfo :=
@@ -302,7 +302,7 @@ where
           Unless the original translation was wrong, please remove this `{t.attrName}` attribute."
     modifyEnv (t.translations.addEntry · (src, info))
     trace[translate] "Added translation {src} ↦ {tgt}\
-      {if info.reorder.reorder.isEmpty then "" else s!" (reorder := {info.reorder.reorder})}"} \
+      {if info.reorder.reorder.isEmpty then "" else s!" (reorder := {info.reorder.reorder})"} \
       (relevant_arg := {info.relevantArg})"
 
 /-- `Config` is the type of the arguments that can be provided to `to_additive`. -/
@@ -557,15 +557,16 @@ where
       return tmpLCtx.mkLambda (usedLetOnly := false) fvars e
 
 /-- Rename binder names in pi type. -/
-def renameBinderNames (t : TranslateData) (rename : NameMap Name) (src : Expr) : Expr :=
+def renameBinderNames (data : GuessName.GuessNameData) (rename : NameMap Name)
+    (src : Expr) : Expr :=
   src.mapForallBinderNames fun n => (rename.get? n).getD <|
     match n with
     | .str p s => .str p <|
-      let s' := GuessName.guessName t.guessNameData s
+      let s' := GuessName.guessName data s
       if s' != s then s' else
       -- If the name starts with `h`, translate the rest of the name, e.g. `hmax` ↦ `hmin`.
       if let some suffix := s.dropPrefix? 'h' then
-        "h" ++ GuessName.guessName t.guessNameData suffix.toString
+        "h" ++ GuessName.guessName data suffix.toString
       else
         s
     | n => n
@@ -633,7 +634,8 @@ def updateDecl (t : TranslateData) (tgt : Name) (srcDecl : ConstantInfo)
   let mut type := decl.type
   if let some b := unfoldBoundaries? then
     type ← b.insertBoundaries decl.type t.attrName
-  let (type', relevantArg₂) ← applyReplacementForall t dont <| renameBinderNames t rename type
+  let (type', relevantArg₂) ← applyReplacementForall t dont <|
+    renameBinderNames (t.guessNameExt.getState (← getEnv)) rename type
   type ← reorderForall reorder.reorder type'
   if let some b := unfoldBoundaries? then
     type ← b.unfoldInsertions type
@@ -881,9 +883,9 @@ def warnParametricAttr {β : Type} [Inhabited β] (stx : Syntax) (attr : Paramet
 /-- `translateLemmas names argInfo desc t` runs `t` on all elements of `names`
 and adds translations between the generated lemmas (the output of `t`).
 `names` must be non-empty. -/
-def translateLemmas {m : Type → Type} [Monad m] [MonadError m] [MonadLiftT CoreM m]
+def translateLemmas
     (t : TranslateData) (names : Array Name) (reorder : Reorder) (relevantArg : RelevantArg)
-    (desc : String) (ref : Syntax) (runAttr : Name → m (Array Name)) : m Unit := do
+    (desc : String) (ref : Syntax) (runAttr : Name → CoreM (Array Name)) : CoreM Unit := do
   let auxLemmas ← names.mapM runAttr
   let nLemmas := auxLemmas[0]!.size
   for nm in names, lemmas in auxLemmas do
@@ -891,7 +893,10 @@ def translateLemmas {m : Type → Type} [Monad m] [MonadError m] [MonadLiftT Cor
       throwError "{names[0]!} and {nm} do not generate the same number of {desc}."
   for srcLemmas in auxLemmas, tgtLemmas in auxLemmas.eraseIdx! 0 do
     for srcLemma in srcLemmas, tgtLemma in tgtLemmas do
-      insertTranslation t srcLemma tgtLemma reorder relevantArg ref
+      -- Only add a translation if one doesn't already exist.
+      -- This happens if `srcLemma` is the `_assoc` lemma from `to_dual (attr := reassoc)`.
+      if (findTranslation? (← getEnv) t srcLemma).isNone then
+        insertTranslation t srcLemma tgtLemma reorder relevantArg ref
 
 /-- Return the provided target name or autogenerate one if one was not provided. -/
 def targetName (t : TranslateData) (cfg : Config) (src : Name) : CoreM Name := do
@@ -911,7 +916,7 @@ def targetName (t : TranslateData) (cfg : Config) (src : Name) : CoreM Name := d
         return tgt
   let .str pre s := src | throwError "{t.attrName}: can't transport {src}"
   trace[translate_detail] "The name {s} splits as {open GuessName in s.splitCase}"
-  let tgt_auto := GuessName.guessName t.guessNameData s
+  let tgt_auto := GuessName.guessName (t.guessNameExt.getState (← getEnv)) s
   let depth := cfg.tgt.getNumParts
   let pre := translateNamespace (← getEnv) pre
   let (pre1, pre2) := pre.splitAt (depth - 1)

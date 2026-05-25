@@ -72,6 +72,22 @@ lemma Ideal.Fiber.exists_smul_eq_one_tmul (x : p.Fiber S) : ∃ r ∉ p, ∃ s, 
     (Algebra.TensorProduct.comm _ _ _ x)
   refine ⟨r, hr, s, by simpa using congr((Algebra.TensorProduct.comm _ _ _).symm $e)⟩
 
+attribute [local instance] Algebra.TensorProduct.rightAlgebra in
+/-- `p.Fiber S` is isomorphic to the quotient `Sₚ ⧸ pSₚ`. -/
+noncomputable def Fiber.algEquivQuotient :
+    letI Rp := Localization p.primeCompl
+    letI pRp := IsLocalRing.maximalIdeal Rp
+    letI Sp := Localization (Algebra.algebraMapSubmonoid S p.primeCompl)
+    letI pSp := pRp.map (algebraMap Rp Sp)
+    p.Fiber S ≃ₐ[S] Sp ⧸ pSp :=
+  (commRight R S p.ResidueField).symm.trans <| (tensorQuotientEquiv S _ S _).trans <|
+    { __ := Ideal.quotientEquiv _ _ (Localization.tensorLeftAlgEquiv p.primeCompl S) (by
+        rw [← Ideal.map_coe includeRight, Ideal.map_map]
+        congr
+        ext
+        simp [Localization.tensorLeftAlgEquiv_apply_one_tmul p.primeCompl])
+      commutes' := by simp }
+
 set_option backward.isDefEq.respectTransparency false in
 variable (R S) in
 /-- The fiber `PrimeSpectrum S → PrimeSpectrum R` at a prime ideal
@@ -95,7 +111,7 @@ noncomputable def PrimeSpectrum.preimageEquivFiber (p : PrimeSpectrum R) :
       ← Ideal.IsPrime.mul_mem_left_iff (x := algebraMap _ _ r), ← Algebra.smul_def, e]
     · simp
     · rw [← Ideal.mem_comap, ← PrimeSpectrum.comap_asIdeal]
-      convert hr
+      convert! hr
       exact (residueField_comap _).le ⟨q.comap (algebraMap _ _), rfl⟩
     · simpa [-Algebra.algebraMap_self, -AlgHom.commutes, -AlgHom.map_algebraMap,
         -Ideal.ResidueField.map_algebraMap]
@@ -149,8 +165,8 @@ noncomputable def PrimeSpectrum.preimageHomeomorphFiber (R S : Type*) [CommRing 
   exact
   { __ := preimageOrderIsoFiber R S p
     continuous_toFun := by
-      convert (H.toHomeomorphOfSurjective
-        (preimageOrderIsoFiber R S p).symm.surjective).symm.continuous
+      convert!
+        (H.toHomeomorphOfSurjective (preimageOrderIsoFiber R S p).symm.surjective).symm.continuous
       ext1 x
       obtain ⟨x, rfl⟩ := (H.toHomeomorphOfSurjective
         (preimageOrderIsoFiber R S p).symm.surjective).surjective x

@@ -93,12 +93,10 @@ namespace Grp
 /-- An additive group object is an additive monoid object. -/]
 abbrev toMon (A : Grp C) : Mon C := ⟨A.X⟩
 
-set_option backward.inferInstanceAs.wrap.data false in
 variable (C) in
 /-- The trivial group object. -/
 @[to_additive (attr := simps!) /-- The trivial additive group object. -/]
-def trivial : Grp C :=
-  { Mon.trivial C with grp := inferInstanceAs (GrpObj (𝟙_ C)) }
+def trivial : Grp C := { Mon.trivial C with grp := GrpObj.instTensorUnit }
 
 @[to_additive]
 instance : Inhabited (Grp C) where
@@ -338,7 +336,7 @@ lemma toMonObj_injective {X : C} :
   suffices h₁.inv = h₂.inv by cases h₁; congr!
   apply lift_left_mul_ext (𝟙 _)
   rw [left_inv]
-  convert @left_inv _ _ _ _ h₁ using 2
+  convert! @left_inv _ _ _ _ h₁ using 2
   exacts [congr(($e.symm).mul), congr(($e.symm).one)]
 
 @[to_additive (attr := ext)]
@@ -457,14 +455,25 @@ instance uniqueHomFromTrivial (A : Grp C) : Unique (trivial C ⟶ A) :=
 instance uniqueHomToTrivial (A : Grp C) : Unique (A ⟶ trivial C) :=
   (show _ ≃ (A.toMon ⟶ Mon.trivial C) from InducedCategory.homEquiv).unique
 
+variable (C) in
 @[to_additive]
-instance : HasZeroObject (Grp C) where
-  zero := ⟨Grp.trivial C,
-    fun A ↦ nonempty_unique (Grp.trivial C ⟶ A),
-    fun A ↦ nonempty_unique (A ⟶ Grp.trivial C)⟩
+lemma isZero_trivial : IsZero (trivial C) where
+  unique_to A := nonempty_unique (trivial C ⟶ A)
+  unique_from A := nonempty_unique (A ⟶ trivial C)
 
 @[to_additive]
-noncomputable instance : HasZeroMorphisms (Grp C) := HasZeroObject.zeroMorphismsOfZeroObject
+instance : HasZeroObject (Grp C) where
+  zero := ⟨Grp.trivial C, isZero_trivial C⟩
+
+@[to_additive]
+noncomputable instance (G H : Grp C) : Zero (G ⟶ H) where
+  zero := Grp.homMk (toUnit _ ≫ η)
+
+@[to_additive (attr := simp)]
+lemma zero_hom (G H : Grp C) : (0 : G ⟶ H).hom = 0 := rfl
+
+@[to_additive]
+noncomputable instance : HasZeroMorphisms (Grp C) where
 
 /-! ### `Grp C` is cartesian-monoidal -/
 

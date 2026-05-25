@@ -35,9 +35,7 @@ Define connected orders (the transitive symmetric closure of `≤` is everything
 
 open Function
 
-universe u v w
-
-variable {α : Type u} {β : Type v} {ι : Sort w} (r r' s : α → α → Prop)
+variable {α β : Type*} {ι κ : Sort*} (r r' s : α → α → Prop)
 
 /-- Local notation for a relation -/
 local infixl:50 " ≼ " => r
@@ -60,10 +58,10 @@ theorem directedOn_iff_directed {s} : @DirectedOn α r s ↔ Directed r (Subtype
 
 alias ⟨DirectedOn.directed_val, _⟩ := directedOn_iff_directed
 
-theorem directedOn_range {f : ι → α} : Directed r f ↔ DirectedOn r (Set.range f) := by
+theorem directedOn_range {f : ι → α} : DirectedOn r (.range f) ↔ Directed r f := by
   simp_rw [Directed, DirectedOn, Set.forall_mem_range, Set.exists_range_iff]
 
-protected alias ⟨Directed.directedOn_range, _⟩ := directedOn_range
+protected alias ⟨_, Directed.directedOn_range⟩ := directedOn_range
 
 theorem directedOn_image {s : Set β} {f : β → α} :
     DirectedOn r (f '' s) ↔ DirectedOn (f ⁻¹'o r) s := by
@@ -81,6 +79,11 @@ theorem DirectedOn.mono {s : Set α} (h : DirectedOn r s) (H : ∀ ⦃a b⦄, r 
 
 theorem directed_comp {ι} {f : ι → β} {g : β → α} : Directed r (g ∘ f) ↔ Directed (g ⁻¹'o r) f :=
   Iff.rfl
+
+lemma directed_comp_iff_of_surjective {f : ι → κ} (hf : f.Surjective) {g : κ → α} :
+    Directed r (g ∘ f) ↔ Directed r g := by simp [Directed, hf.forall, hf.exists]
+
+alias ⟨_, Directed.comp_of_surjective⟩ := directed_comp_iff_of_surjective
 
 theorem Directed.mono {s : α → α → Prop} {ι} {f : ι → α} (H : ∀ a b, r a b → s a b)
     (h : Directed r f) : Directed s f := fun a b =>
@@ -131,6 +134,10 @@ theorem Std.Total.directed [Std.Total r] (f : ι → α) : Directed r f := fun i
 
 theorem Std.Total.directedOn [Std.Total r] (s : Set α) : DirectedOn r s := fun a ha b hb =>
   Or.casesOn (total_of r a b) (fun h => ⟨b, hb, h, refl _⟩) fun h => ⟨a, ha, refl _, h⟩
+
+@[simp]
+theorem DirectedOn.of_linearOrder [LinearOrder α] (s : Set α) : DirectedOn (· ≤ ·) s :=
+  Std.Total.directedOn s
 
 /-- `IsDirected α r` states that for any elements `a`, `b` there exists an element `c` such that
 `r a c` and `r b c`. -/
