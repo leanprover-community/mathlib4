@@ -684,7 +684,7 @@ theorem lift_id : ∀ a, lift.{u, u} a = a :=
 theorem lift_uzero (a : Ordinal.{u}) : lift.{0} a = a :=
   lift_id' a
 
-theorem lift_type_le {α : Type u} {β : Type v} {r s} [IsWellOrder α r] [IsWellOrder β s] :
+private theorem lift_type_le' {α : Type u} {β : Type v} {r s} [IsWellOrder α r] [IsWellOrder β s] :
     lift.{max v w} (type r) ≤ lift.{max u w} (type s) ↔ Nonempty (r ≼i s) := by
   constructor <;> refine fun ⟨f⟩ ↦ ⟨?_⟩
   · exact (RelIso.preimage Equiv.ulift r).symm.toInitialSeg.trans
@@ -692,14 +692,18 @@ theorem lift_type_le {α : Type u} {β : Type v} {r s} [IsWellOrder α r] [IsWel
   · exact (RelIso.preimage Equiv.ulift r).toInitialSeg.trans
       (f.trans (RelIso.preimage Equiv.ulift s).symm.toInitialSeg)
 
+theorem lift_type_le {α : Type u} {β : Type v} {r s} [IsWellOrder α r] [IsWellOrder β s] :
+    lift.{v} (type r) ≤ lift.{u} (type s) ↔ Nonempty (r ≼i s) :=
+  lift_type_le'.{u, v, 0}
+
 theorem lift_type_eq {α : Type u} {β : Type v} {r s} [IsWellOrder α r] [IsWellOrder β s] :
-    lift.{max v w} (type r) = lift.{max u w} (type s) ↔ Nonempty (r ≃r s) := by
+    lift.{v} (type r) = lift.{u} (type s) ↔ Nonempty (r ≃r s) := by
   refine Quotient.eq'.trans ⟨?_, ?_⟩ <;> refine fun ⟨f⟩ ↦ ⟨?_⟩
   · exact (RelIso.preimage Equiv.ulift r).symm.trans <| f.trans (RelIso.preimage Equiv.ulift s)
   · exact (RelIso.preimage Equiv.ulift r).trans <| f.trans (RelIso.preimage Equiv.ulift s).symm
 
 theorem lift_type_lt {α : Type u} {β : Type v} {r s} [IsWellOrder α r] [IsWellOrder β s] :
-    lift.{max v w} (type r) < lift.{max u w} (type s) ↔ Nonempty (r ≺i s) := by
+    lift.{v} (type r) < lift.{u} (type s) ↔ Nonempty (r ≺i s) := by
   constructor <;> refine fun ⟨f⟩ ↦ ⟨?_⟩
   · exact (f.relIsoTrans (RelIso.preimage Equiv.ulift r).symm).transInitial
       (RelIso.preimage Equiv.ulift s).toInitialSeg
@@ -710,7 +714,7 @@ theorem lift_type_lt {α : Type u} {β : Type v} {r s} [IsWellOrder α r] [IsWel
 theorem lift_le {a b : Ordinal} : lift.{u, v} a ≤ lift.{u, v} b ↔ a ≤ b :=
   inductionOn₂ a b fun α r _ β s _ => by
     rw [← lift_umax]
-    exact lift_type_le.{_, _, u}
+    exact lift_type_le'.{_, _, u}
 
 @[simp]
 theorem lift_inj {a b : Ordinal} : lift.{u, v} a = lift.{u, v} b ↔ a = b := by
@@ -737,8 +741,7 @@ theorem type_lt_Iio (o : Ordinal.{u}) : typeLT (Iio o) = lift.{u + 1} o := by si
 def liftInitialSeg : Ordinal.{v} ≤i Ordinal.{max u v} := by
   refine ⟨RelEmbedding.ofMonotone lift.{u} (by simp),
     fun a b ↦ Ordinal.inductionOn₂ a b fun α r _ β s _ h ↦ ?_⟩
-  rw [RelEmbedding.ofMonotone_coe, ← lift_id'.{max u v} (type s),
-    ← lift_umax.{v, u}, lift_type_lt] at h
+  rw [RelEmbedding.ofMonotone_coe, ← lift_umax, ← lift_id'.{v} (type s), lift_type_lt] at h
   obtain ⟨f⟩ := h
   use typein r f.top
   rw [RelEmbedding.ofMonotone_coe, ← lift_umax, lift_typein_top, lift_id']
