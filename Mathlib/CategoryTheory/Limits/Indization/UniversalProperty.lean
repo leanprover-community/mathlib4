@@ -20,6 +20,7 @@ of categories of `C ⥤ D` with the full subcategory of filtered-colimit preserv
 
 ## Main results
 
+- `CategoryTheory.Ind.denseAtYoneda`: `Ind.yoneda : C ⥤ Ind C` is everywhere dense.
 - `CategoryTheory.Ind.lanEquiv`: The left Kan extension functor `(C ⥤ D) ⥤ Ind C ⥤ D` along
   `Ind.yoneda` induces an equivalence of categories on the full subcategory of functors preserving
   filtered colimits.
@@ -37,147 +38,7 @@ open Limits
 
 variable {C : Type u₁} {D : Type u₂} [Category.{v₁} C] [Category.{v₂} D]
 
-@[simp]
-lemma ObjectProperty.essImage_ι {C : Type*} [Category* C] (P : ObjectProperty C) :
-    P.ι.essImage = P.isoClosure :=
-  le_antisymm (fun _ ⟨Y, ⟨e⟩⟩ ↦ ⟨Y.obj, Y.property, ⟨e.symm⟩⟩)
-    fun _ ⟨_, h, ⟨e⟩⟩ ↦ ⟨⟨_, h⟩, ⟨e.symm⟩⟩
-
-lemma Limits.PreservesFilteredColimitsOfSize.of_iso {F F' : C ⥤ D}
-    [PreservesFilteredColimitsOfSize.{t, w} F] (e : F ≅ F') :
-    PreservesFilteredColimitsOfSize.{t, w} F' :=
-  ⟨fun J _ _ ↦ preservesColimitsOfShape_of_natIso (J := J) e⟩
-
-lemma Limits.PreservesFilteredColimitsOfSize.iff_of_iso {F F' : C ⥤ D}
-    [PreservesFilteredColimitsOfSize.{t, w} F] (e : F ≅ F') :
-    PreservesFilteredColimitsOfSize.{t, w} F ↔ PreservesFilteredColimitsOfSize.{t, w} F' :=
-  ⟨fun _ ↦ .of_iso e, fun _ ↦ .of_iso e.symm⟩
-
-lemma Functor.isLeftKanExtension_of_iso' {C H D : Type*} [Category* C] [Category* H] [Category* D]
-    {F : D ⥤ H} {L L' : C ⥤ D} {G : C ⥤ H} (e : L ≅ L') (α : G ⟶ L ⋙ F) (α' : G ⟶ L' ⋙ F)
-    (comm : α ≫ Functor.whiskerRight e.hom _ = α') [F.IsLeftKanExtension α] :
-    F.IsLeftKanExtension α' := by
-  rw [← Functor.isLeftKanExtension_iff_postcompose (L := L) (L' := 𝟭 _) (L'' := L') α
-    (Functor.rightUnitor _ ≪≫ e) (Functor.leftUnitor _).hom α']
-  infer_instance
-
-/-- Let `F` be a left-extension of `G` along `L ⋙ L'` and `d : D`. The cocone of `F` as an extension
-along `L` at `d` is isomorphic to the whiskered cocone of `F` at `d`. -/
-def Functor.LeftExtension.coconeAtPostcomp₁Iso {C H D D' : Type*} [Category* C] [Category* H]
-    [Category* D] [Category* D']
-    {L : C ⥤ D} {L' : D ⥤ D'} {G : C ⥤ H} (F : (L ⋙ L').LeftExtension G) (d : D) :
-    ((LeftExtension.postcomp₁ L' (𝟙 (L ⋙ L')) G).obj F).coconeAt d ≅
-      Cocone.whisker (CostructuredArrow.post L L' d) (F.coconeAt (L'.obj d)) :=
-  Cocone.ext (Iso.refl _) fun j ↦ by simp
-
-/-- If `F` is the pointwise left Kan extension of `G` along `L ⋙ L'` and `L'` is fully faithful,
-then `L' ⋙ F` is the pointwise left Kan extension of `G` along `L`. -/
-def Functor.LeftExtension.IsPointwiseLeftKanExtension.postcomp₁ {C H D D' : Type*}
-    [Category* C] [Category* H] [Category* D] [Category* D']
-    {L : C ⥤ D} {L' : D ⥤ D'} {G : C ⥤ H}
-    (F : (L ⋙ L').LeftExtension G) [L'.Full] [L'.Faithful]
-    (h : F.IsPointwiseLeftKanExtension) :
-    ((LeftExtension.postcomp₁ L' (𝟙 _) G).obj F).IsPointwiseLeftKanExtension := by
-  intro d
-  refine .ofIsoColimit ?_ (Functor.LeftExtension.coconeAtPostcomp₁Iso F d).symm
-  exact (Functor.Final.isColimitWhiskerEquiv _ _).symm (h _)
-
-lemma Functor.isLeftKanExtension_comp_left {C H D D' : Type*} [Category* C] [Category* H]
-    [Category* D] [Category* D'] {F : D' ⥤ H} {L : C ⥤ D} {L' : D ⥤ D'}
-    {G : C ⥤ H} [L'.Faithful] [L'.Full]
-    (α : G ⟶ (L ⋙ L') ⋙ F) [F.IsLeftKanExtension α] [(L ⋙ L').HasPointwiseLeftKanExtension G] :
-    (L' ⋙ F).IsLeftKanExtension (α ≫ (Functor.associator _ _ _).hom) := by
-  let e : (LeftExtension.mk _ α).IsPointwiseLeftKanExtension :=
-    isPointwiseLeftKanExtensionOfIsLeftKanExtension F α
-  convert e.postcomp₁.isLeftKanExtension
-  ext
-  simp
-
-set_option backward.isDefEq.respectTransparency false in
-lemma Functor.HasPointwiseLeftKanExtension.of_iso {C H D : Type*} [Category* C] [Category* H]
-    [Category* D] {L L' : C ⥤ D} {F F' : C ⥤ H}
-    [L.HasPointwiseLeftKanExtension F] (e₁ : L ≅ L') (e₂ : F ≅ F') :
-    L'.HasPointwiseLeftKanExtension F' := by
-  intro Y
-  dsimp only [HasPointwiseLeftKanExtensionAt]
-  let e : CostructuredArrow.proj L' Y ⋙ F' ≅
-      CostructuredArrow.map₂ ((Functor.leftUnitor _).hom ≫ e₁.hom ≫ (Functor.rightUnitor _).inv)
-      (𝟙 _) ⋙
-      CostructuredArrow.proj L Y ⋙ F :=
-    NatIso.ofComponents (fun X ↦ (e₂.app _).symm)
-  rw [hasColimit_iff_of_iso e]
-  infer_instance
-
-lemma Functor.HasPointwiseLeftKanExtension.iff_of_iso {C H D : Type*} [Category* C] [Category* H]
-    [Category* D] {L L' : C ⥤ D} {F F' : C ⥤ H} (e₁ : L ≅ L') (e₂ : F ≅ F') :
-    L.HasPointwiseLeftKanExtension F ↔ L'.HasPointwiseLeftKanExtension F' :=
-  ⟨fun _ ↦ .of_iso e₁ e₂, fun _ ↦ .of_iso e₁.symm e₂.symm⟩
-
-instance {C D : Type*} [Category* C] [Category* D] (F : C ⥤ D) [F.IsDense] :
-    Functor.IsLeftKanExtension (𝟭 D) (Functor.rightUnitor F).inv :=
-  ((Functor.isDense_iff_nonempty_isPointwiseLeftKanExtension F).mp ‹_›).some.isLeftKanExtension
-
-lemma Functor.DenseAt.hasPointwiseLeftKanExtensionAt {C D : Type*} [Category* C] [Category* D]
-    (F : C ⥤ D) (X : D) (hf : F.DenseAt X) :
-    F.HasPointwiseLeftKanExtensionAt F X :=
-  ⟨_, hf⟩
-
-instance {C D : Type*} [Category* C] [Category* D] (F : C ⥤ D) [F.IsDense] :
-    F.HasPointwiseLeftKanExtension F :=
-  fun X ↦ (Functor.IsDense.isDenseAt F X).some.hasPointwiseLeftKanExtensionAt
-
-/-- If `F` is dense, the left Kan extension of `F` along `F` is isomorphic to the identity. -/
-def Functor.IsDense.leftKanExtensionIso {C D : Type*} [Category* C] [Category* D] (F : C ⥤ D)
-    [F.IsDense] : F.leftKanExtension F ≅ 𝟭 D :=
-  Functor.leftKanExtensionUnique _ (F.leftKanExtensionUnit F) _ F.rightUnitor.inv
-
-@[reassoc (attr := simp)]
-lemma Functor.IsDense.leftKanExtensionUnit_leftKanExtensionIso_hom {C D : Type*} [Category* C]
-    [Category* D] (F : C ⥤ D) [F.IsDense] :
-    F.leftKanExtensionUnit F ≫ F.whiskerLeft (Functor.IsDense.leftKanExtensionIso F).hom =
-      F.rightUnitor.inv := by
-  simp [Functor.IsDense.leftKanExtensionIso]
-
-@[reassoc (attr := simp)]
-lemma Functor.IsDense.leftKanExtensionUnit_leftKanExtensionIso_hom_app {C D : Type*} [Category* C]
-    [Category* D] (F : C ⥤ D) [F.IsDense] (X : C) :
-    (F.leftKanExtensionUnit F).app X ≫ (Functor.IsDense.leftKanExtensionIso F).hom.app (F.obj X) =
-      F.rightUnitor.inv.app _ :=
-  congr($(Functor.IsDense.leftKanExtensionUnit_leftKanExtensionIso_hom _).app _)
-
-instance {C D H : Type*} [Category* C] [Category* D] [Category* H] (L : C ⥤ D)
-    [∀ (G : C ⥤ H), L.HasPointwiseLeftKanExtension G] [L.Full] [L.Faithful] :
-    (L.lan : _ ⥤ D ⥤ H).Full :=
-  (L.lanAdjunction _).fullyFaithfulLOfIsIsoUnit.full
-
-instance {C D H : Type*} [Category* C] [Category* D] [Category* H] (L : C ⥤ D)
-    [∀ (G : C ⥤ H), L.HasPointwiseLeftKanExtension G] [L.Full] [L.Faithful] :
-    (L.lan : _ ⥤ D ⥤ H).Faithful :=
-  (L.lanAdjunction _).fullyFaithfulLOfIsIsoUnit.faithful
-
 namespace Ind
-
-/-- The equivalence of categories induced by `Ind.inclusion : Ind C ⥤ Cᵒᵖ ⥤ Type v`. -/
-@[simps! functor]
-noncomputable def costructuredArrowEquivalence (X : Ind C) :
-    CostructuredArrow Ind.yoneda X ≌ CostructuredArrow yoneda X.obj :=
-  (Functor.asEquivalence (CostructuredArrow.post Ind.yoneda (Ind.inclusion C) X)).trans
-    (CostructuredArrow.mapNatIso yonedaCompInclusion)
-
-instance [HasFilteredColimitsOfSize.{v₁, v₁} D] (X : Ind C) :
-    HasColimitsOfShape (CostructuredArrow Ind.yoneda X) D :=
-  Functor.Final.hasColimitsOfShape_of_final (E := D)
-    (X.presentation.toCostructuredArrow ⋙ (Ind.costructuredArrowEquivalence X).inverse)
-
-instance (F : Ind C ⥤ D) [PreservesFilteredColimitsOfSize.{v₁, v₁} F] (X : Ind C) :
-    PreservesColimitsOfShape (CostructuredArrow Ind.yoneda X) F :=
-  Functor.Final.preservesColimitsOfShape_of_final
-    (X.presentation.toCostructuredArrow ⋙ (Ind.costructuredArrowEquivalence X).inverse) _
-
-/-- `yoneda` is dense: Every `X : Cᵒᵖ ⥤ Type v` is the colimit over
-`CostructuredArrow.proj yoneda X ⋙ yoneda`. -/
-def _root_.CategoryTheory.denseAtYoneda (X : Cᵒᵖ ⥤ Type v₁) : yoneda.DenseAt X :=
-  Presheaf.isColimitTautologicalCocone X
 
 /-- `Ind.yoneda` is dense: Every `X : Ind C` is the colimit over
 `CostructuredArrow.proj Ind.yoneda X ⋙ Ind.yoneda`. -/
@@ -194,21 +55,7 @@ protected def denseAtYoneda (X : Ind C) : Ind.yoneda.DenseAt X := by
 instance : (Ind.yoneda (C := C)).IsDense where
   isDenseAt X := ⟨X.denseAtYoneda⟩
 
-attribute [local instance] preservesColimitsOfSize_rightOp
-
-instance : PreservesLimitsOfSize.{t, w} (uliftCoyoneda.{w'} : Cᵒᵖ ⥤ _) := by
-  apply preservesLimits_of_evaluation
-  intro K
-  change PreservesLimitsOfSize.{t, w} (yoneda.obj K ⋙ uliftFunctor.{w'})
-  infer_instance
-
-instance (X : Ind C) : HasColimitsOfShape (CostructuredArrow yoneda X.obj) (Ind C) :=
-  Functor.Final.hasColimitsOfShape_of_final (E := Ind C) (X.presentation.toCostructuredArrow)
-
-instance (X : Ind C) : HasColimitsOfShape (CostructuredArrow yoneda
-    ((Ind.inclusion (C := C)).obj X)) (Ind C) :=
-  Functor.Final.hasColimitsOfShape_of_final (E := Ind C) (X.presentation.toCostructuredArrow)
-
+attribute [local instance] preservesColimitsOfSize_rightOp in
 set_option backward.isDefEq.respectTransparency false in
 instance (F : C ⥤ D) [Ind.yoneda.HasPointwiseLeftKanExtension F] :
     PreservesFilteredColimitsOfSize.{v₁, v₁} (Ind.yoneda.leftKanExtension F) where
@@ -242,8 +89,7 @@ instance (F : C ⥤ D) [Ind.yoneda.HasPointwiseLeftKanExtension F] :
       Functor.isoWhiskerRight j.symm _
     have hγ' : H.IsLeftKanExtension γ' := by
       dsimp [γ', H]
-      apply Functor.isLeftKanExtension_of_iso' iso γ γ'
-      rfl
+      exact .of_iso₃ (.refl _) iso (.refl _) γ γ' rfl
     have hα : (Ind.inclusion C ⋙ u ⋙ H).IsLeftKanExtension α :=
       -- this is abusing some associator def-eqs
       Functor.isLeftKanExtension_comp_left γ'

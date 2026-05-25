@@ -117,6 +117,13 @@ noncomputable def Ind.yonedaCompInclusion : Ind.yoneda ⋙ Ind.inclusion C ≅ C
   isoWhiskerLeft (ObjectProperty.lift _ _ _)
     (isoWhiskerRight (Ind.equivalence C).counitIso (ObjectProperty.ι _))
 
+/-- The equivalence of categories induced by `Ind.inclusion : Ind C ⥤ Cᵒᵖ ⥤ Type v`. -/
+@[simps! functor]
+noncomputable def Ind.costructuredArrowEquivalence (X : Ind C) :
+    CostructuredArrow Ind.yoneda X ≌ CostructuredArrow yoneda X.obj :=
+  (Functor.asEquivalence (CostructuredArrow.post Ind.yoneda (Ind.inclusion C) X)).trans
+    (CostructuredArrow.mapNatIso yonedaCompInclusion)
+
 noncomputable instance {J : Type v} [SmallCategory J] [IsFiltered J] :
     ObjectProperty.IsClosedUnderColimitsOfShape (IsIndObject (C := C)) J :=
   .mk' (by
@@ -204,6 +211,13 @@ instance : RepresentablyCoflat (Ind.yoneda (C := C)) := by
 
 noncomputable instance : PreservesFiniteColimits (Ind.yoneda (C := C)) :=
   preservesFiniteColimits_of_coflat _
+
+instance (X : Ind C) : HasColimitsOfShape (CostructuredArrow yoneda X.obj) (Ind C) :=
+  Functor.Final.hasColimitsOfShape_of_final (E := Ind C) X.presentation.toCostructuredArrow
+
+instance (X : Ind C) : HasColimitsOfShape (CostructuredArrow yoneda
+    ((Ind.inclusion (C := C)).obj X)) (Ind C) :=
+  Functor.Final.hasColimitsOfShape_of_final (E := Ind C) X.presentation.toCostructuredArrow
 
 /-- This is the functor `(I ⥤ C) ⥤ Ind C` that sends a functor `F` to `colim (Y ∘ F)`, where `Y`
 is the Yoneda embedding. It is known as "ind-lim" and denoted `“colim”` in [Kashiwara2006]. -/
@@ -308,5 +322,21 @@ noncomputable def Ind.leftExactFunctorEquivalence : Ind C ≌ LeftExactFunctor C
     (by ext; apply isIndObject_iff_preservesFiniteLimits)
 
 end Small
+
+section
+
+variable {D : Type*} [Category* D]
+
+instance [HasFilteredColimitsOfSize.{v, v} D] (X : Ind C) :
+    HasColimitsOfShape (CostructuredArrow Ind.yoneda X) D :=
+  Functor.Final.hasColimitsOfShape_of_final (E := D)
+    (X.presentation.toCostructuredArrow ⋙ (Ind.costructuredArrowEquivalence X).inverse)
+
+instance (F : Ind C ⥤ D) [PreservesFilteredColimitsOfSize.{v, v} F] (X : Ind C) :
+    PreservesColimitsOfShape (CostructuredArrow Ind.yoneda X) F :=
+  Functor.Final.preservesColimitsOfShape_of_final
+    (X.presentation.toCostructuredArrow ⋙ (Ind.costructuredArrowEquivalence X).inverse) _
+
+end
 
 end CategoryTheory

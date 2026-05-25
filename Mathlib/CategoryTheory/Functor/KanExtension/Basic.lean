@@ -888,6 +888,28 @@ instance isRightKanExtensionAlongEquivalence' (L : C ⥤ D) (α : L ⋙ F₁ ⟶
   inferInstanceAs <|
     F₁.IsRightKanExtension (asIso α : (asEquivalence L).functor ⋙ F₁ ≅ F₀).hom
 
+lemma IsLeftKanExtension.of_iso₃ {F F' : D ⥤ H} {L L' : C ⥤ D} {G G' : C ⥤ H}
+    (e₁ : F ≅ F') (e₂ : L ≅ L') (e₃ : G ≅ G') (α : G ⟶ L ⋙ F) (α' : G' ⟶ L' ⋙ F')
+    (h : α ≫ Functor.whiskerLeft _ e₁.hom ≫ Functor.whiskerRight e₂.hom _ = e₃.hom ≫ α')
+    [F.IsLeftKanExtension α] :
+    F'.IsLeftKanExtension α' := by
+  rw [isLeftKanExtension_iff_of_iso₂ _ (α ≫ Functor.whiskerRight e₂.hom _) e₃.symm e₁.symm]
+  · rw [← Functor.isLeftKanExtension_iff_postcompose (L := L) (L' := 𝟭 _) (L'' := L') α
+      (Functor.rightUnitor _ ≪≫ e₂) (Functor.leftUnitor _).hom _]
+    infer_instance
+  · rw [eq_comm, ← e₃.eq_inv_comp] at h
+    ext
+    simp [h]
+
+lemma isLeftKanExtension_iff_of_iso₃ {F F' : D ⥤ H} {L L' : C ⥤ D} {G G' : C ⥤ H} {α : G ⟶ L ⋙ F}
+    {α' : G' ⟶ L' ⋙ F'} (e₁ : F ≅ F') (e₂ : L ≅ L') (e₃ : G ≅ G')
+    (h : α ≫ Functor.whiskerLeft _ e₁.hom ≫ Functor.whiskerRight e₂.hom _ = e₃.hom ≫ α') :
+    F.IsLeftKanExtension α ↔ F'.IsLeftKanExtension α' := by
+  refine ⟨fun ha ↦ .of_iso₃ e₁ e₂ e₃ α α' h, fun ha ↦ .of_iso₃ e₁.symm e₂.symm e₃.symm α' α ?_⟩
+  rw [eq_comm, ← e₃.eq_inv_comp] at h
+  ext
+  simp [h, ← Functor.map_comp]
+
 end
 
 end Functor
