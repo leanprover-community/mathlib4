@@ -187,13 +187,56 @@ namespace ModularForm
 
 section GaloisProd
 
-variable (N : ℕ) (f : ℍ → ℂ)
+variable {α : Type*} [CommMonoid α] (N : ℕ) (f : ℍ → α)
 
 /-- The product `∏_{j < N} f(τ - j)`, used as a building block of the norm map. -/
-noncomputable def galoisProd (τ : ℍ) : ℂ :=
+noncomputable def galoisProd (τ : ℍ) : α :=
   ∏ j ∈ Finset.range N, f (ofComplex ((τ : ℂ) - j))
 
 variable {N f}
+
+@[simp]
+lemma galoisProd_apply (τ : ℍ) :
+    galoisProd N f τ = ∏ j ∈ Finset.range N, f (ofComplex ((τ : ℂ) - j)) := rfl
+
+/-- The Galois product of the zero function is zero when `N > 0`. -/
+@[simp]
+lemma galoisProd_zero {β : Type*} [CommMonoidWithZero β] (hN : 0 < N) :
+    galoisProd N (0 : ℍ → β) = 0 := by
+  ext τ
+  simp [Finset.prod_eq_zero (Finset.mem_range.mpr hN)]
+
+/-- The Galois product over an empty range is the constant function `1`. -/
+@[simp]
+lemma galoisProd_zero_nat {g : ℍ → α} : galoisProd 0 g = 1 := by
+  ext τ
+  simp
+
+/-- The Galois product of a constant function `c` is `c^N`. -/
+@[simp]
+lemma galoisProd_const (c : α) (τ : ℍ) :
+    galoisProd N (fun _ => c) τ = c ^ N := by
+  simp [Finset.prod_const, Finset.card_range]
+
+/-- The Galois product distributes over pointwise multiplication of functions. -/
+lemma galoisProd_mul (g h : ℍ → α) :
+    galoisProd N (g * h) = galoisProd N g * galoisProd N h := by
+  ext τ
+  simp [Pi.mul_apply, Finset.prod_mul_distrib]
+
+/-- The Galois product distributes over multiplication by a constant function. -/
+lemma galoisProd_const_mul (c : α) (g : ℍ → α) :
+    galoisProd N (fun τ => c * g τ) = fun τ => c ^ N * galoisProd N g τ := by
+  ext τ
+  simp [Finset.prod_mul_distrib, Finset.prod_const, Finset.card_range]
+
+end GaloisProd
+
+/-! ### ℂ-valued specialisation: analytic and q-expansion properties -/
+
+section GaloisProdComplex
+
+variable {N : ℕ} {f : ℍ → ℂ}
 
 /-- If `f` has period `N` along `ofComplex`, then `galoisProd N f` has period `1`. -/
 lemma galoisProd_periodic_one (hN : 0 < N)
@@ -335,7 +378,7 @@ lemma qExpansion_one_galoisProd_order_eq_qExpansion_self_order (hN : 0 < N)
   rw [mul_comm ML] at h_combine
   exact ENat.mul_left_cancel₀ (mod_cast hN.ne') (ENat.coe_ne_top _) h_combine
 
-end GaloisProd
+end GaloisProdComplex
 
 section NormDecomposition
 
