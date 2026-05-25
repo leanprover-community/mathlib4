@@ -100,8 +100,8 @@ theorem lintegral_rpow_eq_lintegral_meas_lt_mul
 
 end LayercakeLT
 
-variable {E F : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
-  [MeasurableSpace E] [BorelSpace E]
+variable {E F : Type*} [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℝ E]
+  [FiniteDimensional ℝ E] [MeasurableSpace E] [BorelSpace E] [AddCommGroup F]
   [NormedAddCommGroup F]
   {μ : Measure E} [μ.IsAddHaarMeasure]
 
