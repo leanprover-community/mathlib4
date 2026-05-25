@@ -35,8 +35,6 @@ a `p`-group (no finiteness hypothesis needed: the family of normal
 * Interaction with `IsSolvable` and the upper Fitting series.
 -/
 
-@[expose] public section
-
 namespace Subgroup
 
 open scoped Pointwise
@@ -49,7 +47,7 @@ the largest normal `p`-subgroup of `G`.
 
 We define it via an `iSup` over the subtype of normal `p`-subgroups,
 which makes `Subgroup.iSup_induction` directly applicable. -/
-def pCore (p : ℕ) (G : Type*) [Group G] : Subgroup G :=
+@[expose] public def pCore (p : ℕ) (G : Type*) [Group G] : Subgroup G :=
   ⨆ N : {N : Subgroup G // N.Normal ∧ IsPGroup p N}, (N : Subgroup G)
 
 /-- The subtype of normal `p`-subgroups is nonempty (it contains `⊥`). -/
@@ -57,19 +55,19 @@ private instance : Nonempty {N : Subgroup G // N.Normal ∧ IsPGroup p N} :=
   ⟨⟨⊥, inferInstance, IsPGroup.of_bot⟩⟩
 
 /-- Every normal `p`-subgroup of `G` is contained in the `p`-core. -/
-theorem le_pCore {N : Subgroup G} (hN_normal : N.Normal) (hN_pGroup : IsPGroup p N) :
+public theorem le_pCore {N : Subgroup G} (hN_normal : N.Normal) (hN_pGroup : IsPGroup p N) :
     N ≤ pCore p G :=
   le_iSup (fun N : {N : Subgroup G // N.Normal ∧ IsPGroup p N} => (N : Subgroup G))
     ⟨N, hN_normal, hN_pGroup⟩
 
 /-- The `p`-core is normal in `G`. -/
-instance pCore_normal : (pCore p G).Normal :=
+public instance pCore_normal : (pCore p G).Normal :=
   normal_iSup_normal fun N => N.2.1
 
 /-- The indexing family of normal `p`-subgroups is directed under `≤`:
 for any two normal `p`-subgroups, their join is again a normal
 `p`-subgroup. -/
-theorem directed_pCore :
+public theorem directed_pCore :
     Directed (· ≤ ·)
       (fun N : {N : Subgroup G // N.Normal ∧ IsPGroup p N} => (N : Subgroup G)) := by
   rintro ⟨N₁, h₁N, h₁P⟩ ⟨N₂, h₂N, h₂P⟩
@@ -81,7 +79,7 @@ theorem directed_pCore :
 /-- The `p`-core is itself a `p`-group. Since the family of normal
 `p`-subgroups is directed under `≤`, every element of the supremum
 already lies in one of them. -/
-theorem isPGroup_pCore : IsPGroup p (pCore p G) := by
+public theorem isPGroup_pCore : IsPGroup p (pCore p G) := by
   intro ⟨x, hx⟩
   obtain ⟨N, hxN⟩ := (mem_iSup_of_directed directed_pCore).mp hx
   obtain ⟨k, hk⟩ := N.2.2 ⟨x, hxN⟩
@@ -91,20 +89,20 @@ theorem isPGroup_pCore : IsPGroup p (pCore p G) := by
 
 /-- For a normal subgroup `N` of `G`, containment in the `p`-core is
 characterised by being a `p`-group. -/
-theorem normal_le_pCore {N : Subgroup G} [hN : N.Normal] :
+public theorem normal_le_pCore {N : Subgroup G} [hN : N.Normal] :
     N ≤ pCore p G ↔ IsPGroup p N :=
   ⟨fun h => isPGroup_pCore.to_le h, le_pCore hN⟩
 
 /-- Characterisation of membership in the `p`-core: an element lies in
 `pCore p G` iff it lies in some normal `p`-subgroup of `G`. -/
-theorem mem_pCore_iff {x : G} :
+public theorem mem_pCore_iff {x : G} :
     x ∈ pCore p G ↔ ∃ N : Subgroup G, N.Normal ∧ IsPGroup p N ∧ x ∈ N := by
   rw [pCore, mem_iSup_of_directed directed_pCore]
   exact ⟨fun ⟨N, hxN⟩ => ⟨N, N.2.1, N.2.2, hxN⟩,
     fun ⟨N, hN, hP, hxN⟩ => ⟨⟨N, hN, hP⟩, hxN⟩⟩
 
 /-- The `p`-core is trivial iff `G` has no non-trivial normal `p`-subgroup. -/
-theorem pCore_eq_bot_iff :
+public theorem pCore_eq_bot_iff :
     pCore p G = ⊥ ↔ ∀ N : Subgroup G, N.Normal → IsPGroup p N → N = ⊥ := by
   refine ⟨fun h N hN hP => le_bot_iff.mp (h ▸ le_pCore hN hP), fun h => ?_⟩
   rw [eq_bot_iff_forall]
@@ -113,23 +111,23 @@ theorem pCore_eq_bot_iff :
   simpa [h N hN hP] using hxN
 
 /-- `pCore p G = ⊤` iff the whole group `G` is a `p`-group. -/
-theorem pCore_eq_top_iff : pCore p G = ⊤ ↔ IsPGroup p (⊤ : Subgroup G) :=
+public theorem pCore_eq_top_iff : pCore p G = ⊤ ↔ IsPGroup p (⊤ : Subgroup G) :=
   ⟨fun h => isPGroup_pCore.to_le (h ▸ le_rfl), fun h => eq_top_iff.2 (le_pCore inferInstance h)⟩
 
 /-- If `G` itself is a `p`-group, then `pCore p G = ⊤`. -/
-theorem pCore_eq_top (h : IsPGroup p (⊤ : Subgroup G)) : pCore p G = ⊤ :=
+public theorem pCore_eq_top (h : IsPGroup p (⊤ : Subgroup G)) : pCore p G = ⊤ :=
   pCore_eq_top_iff.2 h
 
 /-- The `0`-core is the whole group: every group is a `0`-group, since
 `g ^ 0 ^ 1 = g ^ 0 = 1`. -/
 @[simp]
-theorem pCore_zero : pCore 0 G = ⊤ :=
+public theorem pCore_zero : pCore 0 G = ⊤ :=
   pCore_eq_top fun _ => ⟨1, by simp⟩
 
 /-- The `1`-core is trivial: a `1`-group is necessarily the trivial group,
 since `g ^ 1 ^ k = g ^ 1 = g`. -/
 @[simp]
-theorem pCore_one : pCore 1 G = ⊥ := by
+public theorem pCore_one : pCore 1 G = ⊥ := by
   rw [eq_bot_iff_forall]
   intro x hx
   obtain ⟨k, hk⟩ := isPGroup_pCore ⟨x, hx⟩
@@ -140,7 +138,7 @@ theorem pCore_one : pCore 1 G = ⊥ := by
 needs no finiteness or primality: `P ⊔ pCore p G` is a `p`-subgroup
 (as the join of a `p`-subgroup with a normal `p`-subgroup), so by
 maximality of `P` it equals `P`. -/
-theorem pCore_le_sylow (P : Sylow p G) : pCore p G ≤ P := by
+public theorem pCore_le_sylow (P : Sylow p G) : pCore p G ≤ P := by
   have hpsup : IsPGroup p ((P : Subgroup G) ⊔ pCore p G : Subgroup G) :=
     P.2.to_sup_of_normal_right isPGroup_pCore
   have heq : (P : Subgroup G) ⊔ pCore p G = P := P.3 hpsup le_sup_left
@@ -148,7 +146,7 @@ theorem pCore_le_sylow (P : Sylow p G) : pCore p G ≤ P := by
 
 /-- The intersection of all Sylow `p`-subgroups is normal: conjugation
 permutes the Sylow `p`-subgroups, so the intersection is fixed. -/
-theorem normal_iInf_sylow : (⨅ P : Sylow p G, (P : Subgroup G)).Normal where
+public theorem normal_iInf_sylow : (⨅ P : Sylow p G, (P : Subgroup G)).Normal where
   conj_mem n hn g := by
     simp only [mem_iInf] at hn ⊢
     intro P
@@ -158,14 +156,14 @@ theorem normal_iInf_sylow : (⨅ P : Sylow p G, (P : Subgroup G)).Normal where
 
 /-- The intersection of all Sylow `p`-subgroups is a `p`-group, being
 contained in any single Sylow `p`-subgroup. -/
-theorem isPGroup_iInf_sylow : IsPGroup p ↥(⨅ P : Sylow p G, (P : Subgroup G)) :=
+public theorem isPGroup_iInf_sylow : IsPGroup p ↥(⨅ P : Sylow p G, (P : Subgroup G)) :=
   (Classical.arbitrary (Sylow p G)).2.to_le (iInf_le _ _)
 
 /-- The `p`-core equals the intersection of all Sylow `p`-subgroups.
 This holds for arbitrary groups and arbitrary `p`: each Sylow contains
 `pCore p G` by maximality, and the intersection of Sylows is itself a
 normal `p`-subgroup hence contained in `pCore p G`. -/
-theorem pCore_eq_iInf_sylow : pCore p G = ⨅ P : Sylow p G, (P : Subgroup G) :=
+public theorem pCore_eq_iInf_sylow : pCore p G = ⨅ P : Sylow p G, (P : Subgroup G) :=
   le_antisymm (le_iInf pCore_le_sylow) (le_pCore normal_iInf_sylow isPGroup_iInf_sylow)
 
 section Hom
@@ -173,31 +171,32 @@ section Hom
 variable {H : Type*} [Group H]
 
 /-- A surjective group homomorphism sends the `p`-core into the `p`-core. -/
-theorem map_pCore_le_pCore {f : G →* H} (hf : Function.Surjective f) :
+public theorem map_pCore_le_pCore {f : G →* H} (hf : Function.Surjective f) :
     (pCore p G).map f ≤ pCore p H :=
   le_pCore (pCore_normal.map f hf) (isPGroup_pCore.map f)
 
 /-- A surjective group homomorphism pulls back the `p`-core to a subgroup
 containing the source's `p`-core. (Equivalent to `map_pCore_le_pCore`
 by the `map`/`comap` adjunction.) -/
-theorem pCore_le_comap_pCore {f : G →* H} (hf : Function.Surjective f) :
+public theorem pCore_le_comap_pCore {f : G →* H} (hf : Function.Surjective f) :
     pCore p G ≤ (pCore p H).comap f :=
   map_le_iff_le_comap.mp (map_pCore_le_pCore hf)
 
 /-- If the kernel of `f : G →* H` is a `p`-group, then the preimage of the
 `p`-core of `H` is contained in the `p`-core of `G`. -/
-theorem comap_pCore_le_pCore {f : G →* H} (hker : IsPGroup p f.ker) :
+public theorem comap_pCore_le_pCore {f : G →* H} (hker : IsPGroup p f.ker) :
     (pCore p H).comap f ≤ pCore p G :=
   le_pCore (pCore_normal.comap f) (isPGroup_pCore.comap_of_ker_isPGroup f hker)
 
 /-- If `f : G →* H` is surjective with `p`-group kernel, then the `p`-core
 of `G` is the preimage of the `p`-core of `H`. -/
-theorem comap_pCore_eq_pCore {f : G →* H} (hf : Function.Surjective f) (hker : IsPGroup p f.ker) :
+public theorem comap_pCore_eq_pCore {f : G →* H} (hf : Function.Surjective f)
+    (hker : IsPGroup p f.ker) :
     (pCore p H).comap f = pCore p G :=
   le_antisymm (comap_pCore_le_pCore hker) (pCore_le_comap_pCore hf)
 
 /-- A group isomorphism preserves the `p`-core. -/
-theorem _root_.MulEquiv.map_pCore (e : G ≃* H) :
+public theorem _root_.MulEquiv.map_pCore (e : G ≃* H) :
     (pCore p G).map e.toMonoidHom = pCore p H := by
   rw [map_equiv_eq_comap_symm']
   exact comap_pCore_eq_pCore e.symm.surjective (IsPGroup.ker_isPGroup_of_injective e.symm.injective)
