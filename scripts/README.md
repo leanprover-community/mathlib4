@@ -274,6 +274,16 @@ please do not add new entries to these files. PRs removing (the need for) entrie
 
 **API surrounding CI**
 - `check_title_labels.lean` is used to check whether a PR title follows our [commit style conventions](https://leanprover-community.github.io/contribute/commit.html).
+- `dumpReasonableDecls.lean` runs against an environment with `Mathlib` imported and
+  produces (a) a sorted list of every "reasonable" declaration name (one per line) and
+  (b) a single-line JSON of per-module transitive-import counts. Used by `build_template.yml`'s
+  post-build step to bundle `decls.txt` and `imports.json` into the `import-graph` artifact;
+  the post-build `.github/workflows/decls-diff.yml` workflow consumes those to render the
+  PR summary comment's `#### Declarations diff` section.
+- `declsDiff.sh` takes two `decls.txt` files (typically the reference and new commit's
+  artifacts from `dumpReasonableDecls.lean`) and emits both the raw `+NAME` / `-NAME` diff
+  and a Markdown override snippet for the PR summary comment. Pure file comparison, no env
+  load. Invoked by `.github/actions/decls-diff/action.yml`.
 
 **Docker images**
 - `docker_build.sh` builds the `lean4`, `gitpod4`, and `gitpod4-blueprint` Docker images.
