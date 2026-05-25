@@ -61,7 +61,7 @@ def toSubfunctor : Subfunctor (M ⋙ forget MonCat) where
   obj _ := (S.obj _).carrier
   map := S.map
 
-variable {M M' : C ⥤ MonCat.{w}} (S : SubmonoidFunctor M) (S' : SubmonoidFunctor M')
+variable {M M' M'' : C ⥤ MonCat.{w}} (S : SubmonoidFunctor M) (S' : SubmonoidFunctor M')
 
 instance {U : C} : CoeHead (S.toMonoidFunctor.obj U) (M.obj U) where
   coe := Subtype.val
@@ -107,9 +107,11 @@ def ι : S.toMonoidFunctor ⟶ M where
 
 section image
 
+variable (p : M ⟶ M')
+
 /-- The submonoid functor defined by the image along a morphism of functors of monoids. -/
 @[simps]
-def image (S : SubmonoidFunctor M) (p : M ⟶ M') : SubmonoidFunctor M' where
+def image (S : SubmonoidFunctor M) : SubmonoidFunctor M' where
   obj _ := Submonoid.map (MonCat.Hom.hom (p.app _)) (S.obj _)
   map i := by
     rw [← Submonoid.map_le_iff_le_comap, Submonoid.map_map, ← MonCat.hom_comp, ← p.naturality,
@@ -117,7 +119,9 @@ def image (S : SubmonoidFunctor M) (p : M ⟶ M') : SubmonoidFunctor M' where
     grw [S.map_le]
 
 variable (M) in
-lemma image_id : image ⊤ (𝟙 M) = ⊤ := by aesop
+lemma image_id : image (𝟙 M) ⊤ = ⊤ := by aesop
+
+lemma image_comp (p' : M' ⟶ M'') : S.image (p ≫ p') = (S.image p).image p' := by cat_disch
 
 end image
 
@@ -132,23 +136,23 @@ def comap (S' : SubmonoidFunctor M') (p : M ⟶ M') : SubmonoidFunctor M where
     exact Submonoid.mem_comap.mp (Set.mem_of_mem_of_subset h (S'.map _))
 
 @[simp]
-lemma image_comap_ι : image (comap S (S.ι)) (S.ι) = S := by aesop
+lemma image_comap_ι : image (S.ι) (comap S (S.ι)) = S := by aesop
 
 end comap
 
 section lift
 
-variable (p' : M' ⟶ M) (S : SubmonoidFunctor M) (S' : SubmonoidFunctor M')
-  (hp' : image ⊤ p' ≤ S)
+variable (p : M ⟶ M') (S : SubmonoidFunctor M) (S' : SubmonoidFunctor M')
+  (hp : image p ⊤ ≤ S')
 
 /-- If the image of morphism `M' ⟶ M` lands in a submonoid functor `S`,
 then the morphism factors through it. -/
 @[simps! app]
-def lift : M' ⟶ S.toMonoidFunctor where
-  app U := MonCat.ofHom <| MonoidHom.codRestrict (p'.app U).hom _ fun x ↦ hp' _ (by simp; )
+def lift : M ⟶ S'.toMonoidFunctor where
+  app U := MonCat.ofHom <| MonoidHom.codRestrict (p.app U).hom _ fun x ↦ hp _ (by simp; )
 
 @[reassoc (attr := simp)]
-theorem lift_ι : lift p' S hp' ≫ S.ι = p' := rfl
+theorem lift_ι : lift p S' hp ≫ S'.ι = p := rfl
 
 end lift
 
