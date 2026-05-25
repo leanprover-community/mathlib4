@@ -98,12 +98,16 @@ lemma of_span_eq_top_target (s : Set S) (hs : Ideal.span (s : Set S) = ⊤)
   have ht : Ideal.span (t : Set A) = ⊤ := by
     rw [Ideal.eq_top_iff_one]
     have : ∑ g : { x // x ∈ s }, g' g * h' g = (1 : A) := by
-      apply eq_of_sub_eq_zero
-      rw [← map_one (Ideal.Quotient.mk I), ← map_sub, Ideal.Quotient.eq_zero_iff_mem]
-      apply Ideal.subset_span
-      simp
-    simp_rw [← this, Finset.univ_eq_attach, map_sum, map_mul]
-    refine Ideal.sum_mem _ (fun g _ ↦ Ideal.mul_mem_right _ _ <| Ideal.subset_span ?_)
+      exact (Ideal.Quotient.mk_eq_one_iff_sub_mem (I := I) _).mpr <| Ideal.subset_span <| by
+        simp
+    rw [← this, Finset.univ_eq_attach]
+    suffices (Ideal.Quotient.mk I) (∑ g ∈ s.attach, g' g * h' g) ∈
+        Ideal.span (t : Set A) by
+      exact this
+    rw [map_sum]
+    simp_rw [(Ideal.Quotient.mk I).map_mul]
+    refine Ideal.sum_mem _ (fun g _ ↦ Ideal.mul_mem_right ((Ideal.Quotient.mk I) (h' g))
+      (Ideal.span (t : Set A)) <| Ideal.subset_span ?_)
     simp [t]
   have : Algebra.FinitePresentation R A := by
     apply Algebra.FinitePresentation.quotient
