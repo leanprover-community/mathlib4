@@ -59,7 +59,7 @@ theorem cyclotomic_expand_eq_cyclotomic_mul {p n : ℕ} (hp : Nat.Prime p) (hdiv
       refine minpoly.dvd ℚ _ ?_
       rw [← eval_map_algebraMap, map_expand, map_cyclotomic, expand_eval, ← IsRoot.def,
         @isRoot_cyclotomic_iff]
-      convert! IsPrimitiveRoot.pow_of_dvd hprim hp.ne_zero (dvd_mul_left p n)
+      convert IsPrimitiveRoot.pow_of_dvd hprim hp.ne_zero (dvd_mul_left p n)
       rw [Nat.mul_div_cancel _ (Nat.Prime.pos hp)]
     · have hprim := Complex.isPrimitiveRoot_exp _ hnpos.ne.symm
       rw [cyclotomic_eq_minpoly_rat hprim hnpos]
@@ -100,7 +100,7 @@ theorem cyclotomic_expand_eq_cyclotomic {p n : ℕ} (hp : Nat.Prime p) (hdiv : p
     refine minpoly.isIntegrallyClosed_dvd (hprim.isIntegral hpos) ?_
     rw [← eval_map_algebraMap, map_expand, map_cyclotomic, expand_eval, ← IsRoot.def,
       @isRoot_cyclotomic_iff]
-    convert! IsPrimitiveRoot.pow_of_dvd hprim hp.ne_zero (dvd_mul_left p n)
+    convert IsPrimitiveRoot.pow_of_dvd hprim hp.ne_zero (dvd_mul_left p n)
     rw [Nat.mul_div_cancel _ hp.pos]
   · rw [natDegree_expand, natDegree_cyclotomic, natDegree_cyclotomic, mul_comm n,
       Nat.totient_mul_of_prime_of_dvd hp hdiv, mul_comm]

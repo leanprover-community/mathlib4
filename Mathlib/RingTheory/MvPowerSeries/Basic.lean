@@ -154,7 +154,7 @@ theorem monomial_def [DecidableEq σ] (n : σ →₀ ℕ) :
     monomial n = LinearMap.single R (fun _ ↦ R) n := by
   rw [monomial]
   -- unify the `Decidable` arguments
-  convert! rfl
+  convert rfl
 
 set_option backward.isDefEq.respectTransparency false in
 theorem coeff_monomial [DecidableEq σ] (m n : σ →₀ ℕ) (a : R) :

@@ -62,7 +62,7 @@ theorem LinearIndependent.sumElim_of_quotient
 theorem LinearIndepOn.union_of_quotient {s t : Set ι} {f : ι → M} (hs : LinearIndepOn R f s)
     (ht : LinearIndepOn R (mkQ (span R (f '' s)) ∘ f) t) : LinearIndepOn R f (s ∪ t) := by
   apply hs.union ht.of_comp
-  convert! (Submodule.range_ker_disjoint ht).symm
+  convert (Submodule.range_ker_disjoint ht).symm
   · simp
   aesop
 
@@ -475,7 +475,7 @@ theorem finrank_span_set_eq_card {s : Set M} [Fintype s] (hs : LinearIndepOn R i
 
 theorem finrank_span_finset_eq_card {s : Finset M} (hs : LinearIndepOn R id (s : Set M)) :
     finrank R (span R (s : Set M)) = s.card := by
-  convert! finrank_span_set_eq_card (s := (s : Set M)) hs
+  convert finrank_span_set_eq_card (s := (s : Set M)) hs
   ext
   simp
 

@@ -150,13 +150,13 @@ theorem definable_biUnion_finset {ι : Type*} {f : ι → Set (α → M)}
 theorem definable_iInter_of_finite {ι : Type*} [Finite ι] {f : ι → Set (α → M)}
     (hf : ∀ i, A.Definable L (f i)) : A.Definable L (⋂ i, f i) := by
   haveI := Fintype.ofFinite ι
-  convert! definable_finset_inf hf Finset.univ using 1
+  convert definable_finset_inf hf Finset.univ using 1
   simp
 
 theorem definable_iUnion_of_finite {ι : Type*} [Finite ι] {f : ι → Set (α → M)}
     (hf : ∀ i, A.Definable L (f i)) : A.Definable L (⋃ i, f i) := by
   haveI := Fintype.ofFinite ι
-  convert! definable_finset_sup hf Finset.univ using 1
+  convert definable_finset_sup hf Finset.univ using 1
   simp
 
 @[simp]
@@ -523,7 +523,7 @@ lemma _root_.Set.Definable.preimage_map
       (hF i).preimage_comp (fun | none => Sum.inr i | some j => Sum.inl j)
   have h_cyl : A.Definable L { w : α ⊕ β → M | w ∘ Sum.inr ∈ S } :=
     hS.preimage_comp Sum.inr
-  convert! Definable.exists_of_finite (Definable.inter h_graph h_cyl) using 1
+  convert Definable.exists_of_finite (Definable.inter h_graph h_cyl) using 1
   ext v
   simp [← funext_iff]
 
@@ -551,7 +551,7 @@ theorem DefinableFun.ite {p : (α → M) → Prop} {g} [DecidablePred p]
   let P : Set (Option α → M) := {w | p (w ∘ some)}
   have hP : A.Definable L P := hp.preimage_comp some
   simp only [DefinableFun]
-  convert! (hP.inter hf).union (hP.compl.inter hg)
+  convert (hP.inter hf).union (hP.compl.inter hg)
   ext w
   by_cases h : p (w ∘ some) <;> simp [tupleGraph, P, h]
 

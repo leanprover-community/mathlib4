@@ -164,7 +164,7 @@ theorem coe_ofVectorSpace : ⇑(ofVectorSpace K V) = ((↑) : _ → _) :=
 
 theorem ofVectorSpaceIndex.linearIndependent :
     LinearIndependent K ((↑) : ofVectorSpaceIndex K V → V) := by
-  convert! (ofVectorSpace K V).linearIndependent
+  convert (ofVectorSpace K V).linearIndependent
   ext x
   rw [ofVectorSpace_apply_self]
 

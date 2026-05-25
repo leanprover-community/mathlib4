@@ -226,7 +226,7 @@ See `star_mem` for only one direction. -/
 theorem star_mem_iff {x : CliffordAlgebra Q} : star x ∈ pinGroup Q ↔ x ∈ pinGroup Q := by
   refine ⟨?_, star_mem⟩
   intro hx
-  convert! star_mem hx
+  convert star_mem hx
   exact (star_star x).symm
 
 instance : Star (pinGroup Q) where
@@ -357,7 +357,7 @@ See `star_mem` for only one direction.
 theorem star_mem_iff {x : CliffordAlgebra Q} : star x ∈ spinGroup Q ↔ x ∈ spinGroup Q := by
   refine ⟨?_, star_mem⟩
   intro hx
-  convert! star_mem hx
+  convert star_mem hx
   exact (star_star x).symm
 
 instance : Star (spinGroup Q) where

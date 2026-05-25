@@ -240,7 +240,7 @@ theorem unitsMap_norm_surjective : Function.Surjective (Units.map <| Algebra.nor
     simp_rw [Nat.card_units]
     classical
     have := Fintype.ofFinite K'ˣ
-    convert!
+    convert
       IsCyclic.card_pow_eq_one_le (α := K'ˣ) <|
         Nat.div_pos
             (Nat.sub_le_sub_right (Nat.card_le_card_of_injective _ (algebraMap K K').injective)

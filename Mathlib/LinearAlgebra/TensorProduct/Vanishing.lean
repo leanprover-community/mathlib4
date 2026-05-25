@@ -204,7 +204,7 @@ theorem vanishesTrivially_of_sum_tmul_eq_zero_of_rTensor_injective
   have : VanishesTrivially R m' n := vanishesTrivially_of_sum_tmul_eq_zero R hm' hm'n
   unfold VanishesTrivially at this ⊢
   convert! this with κ _ a y j
-  convert! (injective_iff_map_eq_zero' _).mp (injective_subtype (span R (Set.range m))) _
+  convert (injective_iff_map_eq_zero' _).mp (injective_subtype (span R (Set.range m))) _
   simp [m'_eq]
 
 /-- **Equational criterion for vanishing**
@@ -241,7 +241,7 @@ theorem rTensor_injective_of_forall_vanishesTrivially
   unfold VanishesTrivially at this ⊢
   convert! this
   symm
-  convert! (injective_iff_map_eq_zero' _).mp (injective_subtype M') _
+  convert (injective_iff_map_eq_zero' _).mp (injective_subtype M') _
   simp
 
 /-- Every expression $\sum_i m_i \otimes n_i$ which vanishes also vanishes trivially if and only if

@@ -271,7 +271,7 @@ theorem IsLocalRing.linearIndependent_of_flat [Flat R M] {ι : Type u} (v : ι �
   have a_eq i : a i j = a' i.1 := by simp_rw [a', dif_pos i.2]
   have hfn : f n = -(∑ i ∈ s, f i * a' i) * hj.unit⁻¹ := by
     rw [← hj.mul_left_inj, mul_assoc, hj.val_inv_mul, mul_one, eq_neg_iff_add_eq_zero]
-    convert! hfa j
+    convert hfa j
     simp_rw [a_eq, Finset.sum_coe_sort _ (fun i ↦ f i * a' i), s.sum_insert hn, n_def]
   let c (i : ι) : R := -(if i = n then 0 else a' i) * hj.unit⁻¹
   specialize ih (v + (c · • v n)) ?_ ?_
@@ -413,7 +413,7 @@ at every maximal ideal, then `M` is free of rank `n`. -/
   apply IsLocalRing.linearCombination_bijective_of_flat
   rw [← (AlgebraTensorModule.cancelBaseChange _ _ P.ResidueField ..).comp_bijective,
     ← (AlgebraTensorModule.cancelBaseChange R (R ⧸ P) P.ResidueField ..).symm.comp_bijective]
-  convert! ((b' ⟨P, ‹_›⟩).repr.lTensor _ ≪≫ₗ finsuppScalarRight _ _ P.ResidueField _).symm.bijective
+  convert ((b' ⟨P, ‹_›⟩).repr.lTensor _ ≪≫ₗ finsuppScalarRight _ _ P.ResidueField _).symm.bijective
   refine funext fun r ↦ Finsupp.induction_linear r (by simp) (by simp +contextual) fun _ _ ↦ ?_
   simp [smul_tmul', ← funext_iff.mp (hb _)]
 

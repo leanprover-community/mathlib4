@@ -128,7 +128,7 @@ lemma taylorWithinEval_charFun_two_zero (hX : AEMeasurable X P)
     taylorWithinEval (charFun (P.map X)) 2 univ 0 t =
       1 + (P[X] : ℝ) * t * I - (P[X ^ 2] : ℝ) * t ^ 2 / 2 := by
   have : IsProbabilityMeasure (P.map X) := Measure.isProbabilityMeasure_map hX
-  convert! taylorWithinEval_charFun_zero hint t with x
+  convert taylorWithinEval_charFun_zero hint t with x
   simp only [Pi.pow_apply, Nat.reduceAdd, Finset.sum_range_succ, Finset.range_one,
     Finset.sum_singleton, Nat.factorial_zero, Nat.cast_one, inv_one, pow_zero, mul_one,
     integral_const, probReal_univ, smul_eq_mul, ofReal_one, Nat.factorial_one, pow_one, one_mul,

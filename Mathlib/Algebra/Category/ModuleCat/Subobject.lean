@@ -47,9 +47,10 @@ noncomputable def subobjectModule : Subobject M ≃o Submodule R M :=
         · ext x
           rfl)
       left_inv := fun N => by
-        convert!
+        convert
           congr_arg LinearMap.range
-            (ModuleCat.hom_ext_iff.mp (underlyingIso_arrow (ofHom N.subtype))) using 1
+            (ModuleCat.hom_ext_iff.mp (underlyingIso_arrow (ofHom N.subtype))) using
+          1
         · have :
             (underlyingIso (ofHom N.subtype)).inv =
               ofHom (underlyingIso (ofHom N.subtype)).symm.toLinearEquiv.toLinearMap := by
@@ -59,7 +60,7 @@ noncomputable def subobjectModule : Subobject M ≃o Submodule R M :=
         · exact (Submodule.range_subtype _).symm
       map_rel_iff' := fun {S T} => by
         refine ⟨fun h => ?_, fun h => mk_le_mk_of_comm (↟(Submodule.inclusion h)) rfl⟩
-        convert! LinearMap.range_comp_le_range (ofMkLEMk _ _ h).hom (ofHom T.subtype).hom
+        convert LinearMap.range_comp_le_range (ofMkLEMk _ _ h).hom (ofHom T.subtype).hom
         · rw [← hom_comp, ofMkLEMk_comp]
           exact (Submodule.range_subtype _).symm
         · exact (Submodule.range_subtype _).symm }

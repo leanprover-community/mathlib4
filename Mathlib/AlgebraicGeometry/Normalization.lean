@@ -237,7 +237,7 @@ lemma toNormalization_app_preimage (U : Y.affineOpens) :
   have H : f.toNormalization ⁻¹ᵁ f.fromNormalization ⁻¹ᵁ U =
       (f ⁻¹ᵁ U).ι ''ᵁ (((f ⁻¹ᵁ U).ι ≫ f.toNormalization) ⁻¹ᵁ f.fromNormalization ⁻¹ᵁ U) := by
     simp [← Scheme.Hom.comp_preimage]
-  convert! congr($(Scheme.Hom.congr_app (f.ι_toNormalization U) (f.fromNormalization ⁻¹ᵁ U)) ≫
+  convert congr($(Scheme.Hom.congr_app (f.ι_toNormalization U) (f.fromNormalization ⁻¹ᵁ U)) ≫
     X.presheaf.map (eqToHom H).op) using 1
   · simp [Hom.app_eq_appLE]
   dsimp
@@ -350,7 +350,7 @@ instance [IsReduced X] : IsReduced f.normalization :=
 instance [IsIntegral X] : IsIntegral f.normalization :=
   have : IrreducibleSpace f.normalization := by
     rw [irreducibleSpace_def]
-    convert!
+    convert
       ((IrreducibleSpace.isIrreducible_univ X).image _
           f.toNormalization.continuous.continuousOn).closure
     simpa using f.toNormalization.denseRange.closure_range.symm
@@ -642,7 +642,7 @@ instance [Smooth g] : IsIso (f.normalizationPullback g) := by
     ((pullback.snd f g).normalizationObjIso hV).inv ≫
     (pullback.snd f g).normalization.presheaf.map (eqToHom
       (by simp only [W, ← Scheme.Hom.comp_preimage, Scheme.Hom.normalizationPullback_snd])).op
-  convert! show IsIso φ by dsimp only [φ]; infer_instance using 1
+  convert show IsIso φ by dsimp only [φ]; infer_instance using 1
   ext1
   · dsimp [φ]
     simp only [Scheme.Hom.app_eq_appLE, colimit.ι_desc_assoc, span_left, PushoutCocone.mk_pt,

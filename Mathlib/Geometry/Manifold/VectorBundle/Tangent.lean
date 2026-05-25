@@ -170,7 +170,7 @@ lemma hasFDerivWithinAt_tangentCoordChange {x y z : M}
 
 lemma continuousOn_tangentCoordChange (x y : M) : ContinuousOn (tangentCoordChange I x y)
     ((extChartAt I x).source ∩ (extChartAt I y).source) := by
-  convert! (tangentBundleCore I M).continuousOn_coordChange (achart H x) (achart H y) <;>
+  convert (tangentBundleCore I M).continuousOn_coordChange (achart H x) (achart H y) <;>
   simp only [tangentBundleCore_baseSet, coe_achart, ← extChartAt_source I]
 
 end tangentCoordChange
@@ -401,14 +401,14 @@ def tangentBundleModelSpaceHomeomorph : TangentBundle I H ≃ₜ ModelProd H E :
       let p : TangentBundle I H := ⟨I.symm (0 : E), (0 : E)⟩
       have : Continuous (chartAt (ModelProd H E) p) := by
         rw [← continuousOn_univ]
-        convert! (chartAt (ModelProd H E) p).continuousOn
+        convert (chartAt (ModelProd H E) p).continuousOn
         simp only [mfld_simps]
       simpa only [mfld_simps] using this
     continuous_invFun := by
       let p : TangentBundle I H := ⟨I.symm (0 : E), (0 : E)⟩
       have : Continuous (chartAt (ModelProd H E) p).symm := by
         rw [← continuousOn_univ]
-        convert! (chartAt (ModelProd H E) p).symm.continuousOn
+        convert (chartAt (ModelProd H E) p).symm.continuousOn
         simp only [mfld_simps]
       simpa only [mfld_simps] using this }
 

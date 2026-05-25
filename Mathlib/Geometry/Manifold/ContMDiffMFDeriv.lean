@@ -167,7 +167,7 @@ protected theorem ContMDiffWithinAt.mfderivWithin {x₀ : N} {f : N → M → M'
   · exact mfderivWithin_eq_fderivWithin
   · exact mdifferentiableAt_extChartAt (by simpa using h'x)
   · apply MDifferentiableWithinAt.comp (I' := I) (u := u) _ _ _ inter_subset_right
-    · convert! hx.mdifferentiableWithinAt one_ne_zero
+    · convert hx.mdifferentiableWithinAt one_ne_zero
       exact PartialEquiv.left_inv (extChartAt I (g x₀)) h2
     · apply (mdifferentiableWithinAt_extChartAt_symm _).mono
       · exact inter_subset_left.trans (extChartAt_target_subset_range (g x₀))

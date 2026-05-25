@@ -282,7 +282,7 @@ of some chart on `M`. -/
 lemma chart_eq {s : Opens M} (hs : Nonempty s) {e : OpenPartialHomeomorph s H}
     (he : e ∈ atlas H s) : ∃ x : s, e = (chartAt H (x : M)).subtypeRestr hs := by
   rcases he with ⟨xset, ⟨x, hx⟩, he⟩
-  exact ⟨x, mem_singleton_iff.mp (by convert! he)⟩
+  exact ⟨x, mem_singleton_iff.mp (by convert he)⟩
 
 /-- If `t` is a non-empty open subset of `H`,
 every chart of `t` is the restriction of some chart on `H`. -/

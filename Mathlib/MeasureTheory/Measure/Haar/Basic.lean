@@ -180,7 +180,7 @@ theorem index_pos (K : PositiveCompacts G) {V : Set G} (hV : (interior V).Nonemp
   · rintro ⟨t, h1t, h2t⟩; rw [Finset.card_eq_zero] at h2t; subst h2t
     obtain ⟨g, hg⟩ := K.interior_nonempty
     change g ∈ (∅ : Set G)
-    convert! h1t (interior_subset hg); symm
+    convert h1t (interior_subset hg); symm
     simp only [Finset.notMem_empty, iUnion_of_empty, iUnion_empty]
   · exact index_defined K.isCompact hV
 

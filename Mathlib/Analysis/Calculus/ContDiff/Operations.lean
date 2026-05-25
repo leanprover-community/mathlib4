@@ -80,7 +80,7 @@ theorem hasFTaylorSeriesUpToOn_pi' {n : ℕ∞ω} :
       ∀ i, HasFTaylorSeriesUpToOn n (fun x => Φ x i)
         (fun x m => (@ContinuousLinearMap.proj 𝕜 _ ι F' _ _ _ i).compContinuousMultilinearMap
           (P' x m)) s := by
-  convert! hasFTaylorSeriesUpToOn_pi (𝕜 := 𝕜) (φ := fun i x ↦ Φ x i); ext; rfl
+  convert! hasFTaylorSeriesUpToOn_pi (𝕜 := 𝕜) (φ := fun i x ↦ Φ x i)
 
 theorem contDiffWithinAt_pi :
     ContDiffWithinAt 𝕜 n Φ s x ↔ ∀ i, ContDiffWithinAt 𝕜 n (fun x => Φ x i) s x := by
@@ -929,7 +929,7 @@ theorem OpenPartialHomeomorph.contDiffAt_symm [CompleteSpace E] (f : OpenPartial
         have h_deriv : HasFDerivAt f (e : E →L[𝕜] F) (f.symm x) := by
           rw [he]
           exact hff' (f.symm x) hxu
-        convert! f.hasFDerivAt_symm hx.1 h_deriv
+        convert f.hasFDerivAt_symm hx.1 h_deriv
         simp [← he]
       · -- Then we check that the formula, being a composition of `ContDiff` pieces, is
         -- itself `ContDiff`

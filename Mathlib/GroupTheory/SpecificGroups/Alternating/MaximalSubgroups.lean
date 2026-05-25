@@ -92,7 +92,7 @@ theorem stabilizer.surjective_toPerm {s : Set α} (hs : sᶜ.Nontrivial) :
     intro _
     simp only [mem_smul_set]
     rintro ⟨x, hx, rfl⟩
-    convert! hx
+    convert hx
     rw [Perm.smul_def, ← Perm.notMem_support]
     exact (Set.disjoint_left.mp hk_support) hx
   intro g

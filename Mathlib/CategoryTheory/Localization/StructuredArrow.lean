@@ -106,13 +106,13 @@ lemma induction_structuredArrow
     fun g ↦ P (structuredArrowEquiv W W.Q L g)
   rw [← (structuredArrowEquiv W W.Q L).apply_symm_apply g]
   apply induction_structuredArrow' W P'
-  · convert! hP₀
+  · convert hP₀
     simp
   · intro Y₁ Y₂ f φ hφ
-    convert! hP₁ f (homEquiv W W.Q L φ) hφ
+    convert hP₁ f (homEquiv W W.Q L φ) hφ
     simp [homEquiv_comp]
   · intro Y₁ Y₂ w hw φ hφ
-    convert! hP₂ w hw (homEquiv W W.Q L φ) hφ
+    convert hP₂ w hw (homEquiv W W.Q L φ) hφ
     simp [homEquiv_comp, homEquiv_isoOfHom_inv]
 
 end

@@ -297,7 +297,7 @@ lemma segment_inter_subset_endpoint_of_linearIndependent_sub
   have Hy : y = (y - c) + c := by abel
   rw [Hx, Hy, smul_add, smul_add] at H
   have : c + q • (y - c) = c + p • (x - c) := by
-    convert! H using 1 <;> simp [sub_smul]
+    convert H using 1 <;> simp [sub_smul]
   obtain ⟨rfl, rfl⟩ : p = 0 ∧ q = 0 := h.eq_zero_of_pair' ((add_right_inj c).1 this).symm
   simp
 
@@ -343,7 +343,7 @@ theorem midpoint_mem_segment [Invertible (2 : 𝕜)] (x y : E) : midpoint 𝕜 x
 
 theorem mem_openSegment_sub_add [Invertible (2 : 𝕜)] (x y : E) :
     x ∈ openSegment 𝕜 (x - y) (x + y) := by
-  convert! midpoint_mem_openSegment (𝕜 := 𝕜) (x - y) (x + y)
+  convert midpoint_mem_openSegment (𝕜 := 𝕜) (x - y) (x + y)
   rw [midpoint_sub_add]
 
 theorem mem_segment_sub_add [Invertible (2 : 𝕜)] (x y : E) : x ∈ [x - y -[𝕜] x + y] :=
@@ -351,7 +351,7 @@ theorem mem_segment_sub_add [Invertible (2 : 𝕜)] (x y : E) : x ∈ [x - y -[�
 
 theorem mem_openSegment_add_sub [Invertible (2 : 𝕜)] (x y : E) :
     x ∈ openSegment 𝕜 (x + y) (x - y) := by
-  convert! midpoint_mem_openSegment (𝕜 := 𝕜) (x + y) (x - y)
+  convert midpoint_mem_openSegment (𝕜 := 𝕜) (x + y) (x - y)
   rw [midpoint_add_sub]
 
 theorem mem_segment_add_sub [Invertible (2 : 𝕜)] (x y : E) : x ∈ [x + y -[𝕜] x - y] :=

@@ -213,7 +213,7 @@ theorem linearly_dependent_of_isLocalExtrOn (hT : IsSelfAdjoint T) {x₀ : F}
     (hextr : IsLocalExtrOn T.reApplyInnerSelf (sphere (0 : F) ‖x₀‖) x₀) :
     ∃ a b : ℝ, (a, b) ≠ 0 ∧ a • x₀ + b • T x₀ = 0 := by
   have H : IsLocalExtrOn T.reApplyInnerSelf {x : F | ‖x‖ ^ 2 = ‖x₀‖ ^ 2} x₀ := by
-    convert! hextr
+    convert hextr
     ext x
     simp
   -- find Lagrange multipliers for the function `T.re_apply_inner_self` and the
@@ -245,7 +245,7 @@ theorem eq_smul_self_of_isLocalExtrOn_real (hT : IsSelfAdjoint T) {x₀ : F}
   have hc : T x₀ = (-b⁻¹ * a) • x₀ := by
     linear_combination (norm := match_scalars <;> field) b⁻¹ • h₂
   set c : ℝ := -b⁻¹ * a
-  convert! hc
+  convert hc
   simpa [field, inner_smul_left, mul_comm a] using congr_arg (fun x => ⟪x, x₀⟫_ℝ) hc
 
 end Real
@@ -276,7 +276,7 @@ quotient. -/
 theorem hasEigenvector_of_isMaxOn (hT : IsSelfAdjoint T) {x₀ : E} (hx₀ : x₀ ≠ 0)
     (hextr : IsMaxOn T.reApplyInnerSelf (sphere (0 : E) ‖x₀‖) x₀) :
     HasEigenvector (T : E →ₗ[𝕜] E) (⨆ x : { x : E // x ≠ 0 }, T.rayleighQuotient x : ℝ) x₀ := by
-  convert! hT.hasEigenvector_of_isLocalExtrOn hx₀ (Or.inr hextr.localize)
+  convert hT.hasEigenvector_of_isLocalExtrOn hx₀ (Or.inr hextr.localize)
   have hx₀' : 0 < ‖x₀‖ := by simp [hx₀]
   have hx₀'' : x₀ ∈ sphere (0 : E) ‖x₀‖ := by simp
   rw [T.iSup_rayleigh_eq_iSup_rayleigh_sphere hx₀']
@@ -295,7 +295,7 @@ quotient. -/
 theorem hasEigenvector_of_isMinOn (hT : IsSelfAdjoint T) {x₀ : E} (hx₀ : x₀ ≠ 0)
     (hextr : IsMinOn T.reApplyInnerSelf (sphere (0 : E) ‖x₀‖) x₀) :
     HasEigenvector (T : E →ₗ[𝕜] E) (⨅ x : { x : E // x ≠ 0 }, T.rayleighQuotient x : ℝ) x₀ := by
-  convert! hT.hasEigenvector_of_isLocalExtrOn hx₀ (Or.inl hextr.localize)
+  convert hT.hasEigenvector_of_isLocalExtrOn hx₀ (Or.inl hextr.localize)
   have hx₀' : 0 < ‖x₀‖ := by simp [hx₀]
   have hx₀'' : x₀ ∈ sphere (0 : E) ‖x₀‖ := by simp
   rw [T.iInf_rayleigh_eq_iInf_rayleigh_sphere hx₀']

@@ -96,7 +96,7 @@ lemma det_mul_corner_pow :
     pow_one, det_one, smul_eq_mul, mul_one]
   -- `Decidable (P = Q)` diamond induced by `Prop.linearOrder`, which is classical, when `P` and `Q`
   -- are themselves decidable.
-  convert! rfl
+  convert rfl
 
 /-- A matrix with X added to the corner. -/
 noncomputable def cornerAddX : Matrix m m S[X] :=

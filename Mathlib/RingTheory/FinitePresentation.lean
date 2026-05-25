@@ -373,7 +373,7 @@ theorem ker_fg_of_mvPolynomial {n : ℕ} (f : MvPolynomial (Fin n) R →ₐ[R] A
 theorem ker_fG_of_surjective (f : A →ₐ[R] B) (hf : Function.Surjective f)
     [FinitePresentation R A] [FinitePresentation R B] : (RingHom.ker f.toRingHom).FG := by
   obtain ⟨n, g, hg, _⟩ := FinitePresentation.out (R := R) (A := A)
-  convert! (ker_fg_of_mvPolynomial (f.comp g) (hf.comp hg)).map g.toRingHom
+  convert (ker_fg_of_mvPolynomial (f.comp g) (hf.comp hg)).map g.toRingHom
   simp_rw [RingHom.ker_eq_comap_bot, AlgHom.toRingHom_eq_coe, AlgHom.comp_toRingHom]
   rw [← Ideal.comap_comap, Ideal.map_comap_of_surjective (g : MvPolynomial (Fin n) R →+* A) hg]
 
@@ -488,7 +488,7 @@ lemma polynomial_induction
   | zero =>
     refine fg_ker _ _ _ (hg.comp (MvPolynomial.C_surjective (Fin 0))) ?_
     rw [← comap_ker]
-    convert! hg'.map (MvPolynomial.isEmptyRingEquiv R (Fin 0)).toRingHom using 1
+    convert hg'.map (MvPolynomial.isEmptyRingEquiv R (Fin 0)).toRingHom using 1
     simp only [RingEquiv.toRingHom_eq_coe]
     exact Ideal.comap_symm (MvPolynomial.isEmptyRingEquiv R (Fin 0))
   | succ n IH =>
@@ -496,10 +496,10 @@ lemma polynomial_induction
       (MvPolynomial.renameEquiv R (finSuccEquiv n)).trans (MvPolynomial.optionEquivRight R (Fin n))
     have he : (ker (g'.comp <| RingHomClass.toRingHom e.symm)).FG := by
       rw [← RingHom.comap_ker]
-      convert! hg'.map e.toAlgHom.toRingHom using 1
+      convert hg'.map e.toAlgHom.toRingHom using 1
       exact Ideal.comap_symm e.toRingEquiv
     have := IH (R := R[X]) (S := S) (g'.comp e.symm) (hg.comp e.symm.surjective) he
-    convert! comp _ _ _ _ _ (polynomial _) this using 1
+    convert comp _ _ _ _ _ (polynomial _) this using 1
     rw [comp_assoc, comp_assoc]
     congr 1 with r
     simp [e]

@@ -79,7 +79,7 @@ variable [Preorder α] [Preorder β] [Preorder γ]
 
 instance : FunLike (Chain α) ℕ α where
   coe c := c.toOrderHom
-  coe_injective' := by rintro ⟨f, hf⟩; congr!
+  coe_injective' := by rintro ⟨f, hf⟩; congr! (config := { postTransparency := .default })
 
 initialize_simps_projections Chain (toFun → apply)
 
@@ -286,7 +286,7 @@ lemma ωScottContinuous_iff_monotone_map_ωSup :
     ωScottContinuous f ↔ ∃ hf : Monotone f, ∀ c : Chain α, f (ωSup c) = ωSup (c.map ⟨f, hf⟩) := by
   refine ⟨fun hf ↦ ⟨hf.monotone, hf.map_ωSup⟩, ?_⟩
   intro hf _ ⟨c, hc⟩ _ _ _ hda
-  convert! isLUB_range_ωSup (c.map { toFun := f, monotone' := hf.1 })
+  convert isLUB_range_ωSup (c.map { toFun := f, monotone' := hf.1 })
   · simp [← hc, ← (Set.range_comp f ⇑c)]
   · rw [← hc] at hda
     rw [← hf.2 c, ωSup_eq_of_isLUB hda]

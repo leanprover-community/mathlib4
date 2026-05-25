@@ -47,7 +47,7 @@ noncomputable instance [Monoid M] : Group (IsUnit.submonoid M) :=
 @[to_additive]
 noncomputable instance [CommMonoid M] : CommGroup (IsUnit.submonoid M) :=
   { (inferInstance : Group (IsUnit.submonoid M)) with
-    mul_comm := fun a b ↦ by convert! mul_comm a b }
+    mul_comm := fun a b ↦ by convert mul_comm a b }
 
 @[to_additive]
 theorem IsUnit.Submonoid.coe_inv [Monoid M] (x : IsUnit.submonoid M) :
@@ -70,7 +70,7 @@ def leftInv : Submonoid M where
 @[to_additive]
 theorem leftInv_leftInv_le : S.leftInv.leftInv ≤ S := by
   rintro x ⟨⟨y, z, h₁⟩, h₂ : x * y = 1⟩
-  convert! z.prop
+  convert z.prop
   rw [← mul_one x, ← h₁, ← mul_assoc, h₂, one_mul]
 
 @[to_additive]
@@ -168,12 +168,12 @@ theorem mul_leftInvEquiv (x : S.leftInv) : (x : M) * S.leftInvEquiv hS x = 1 := 
 
 @[to_additive (attr := simp)]
 theorem leftInvEquiv_symm_mul (x : S) : ((S.leftInvEquiv hS).symm x : M) * x = 1 := by
-  convert! S.mul_leftInvEquiv hS ((S.leftInvEquiv hS).symm x)
+  convert S.mul_leftInvEquiv hS ((S.leftInvEquiv hS).symm x)
   simp
 
 @[to_additive (attr := simp)]
 theorem mul_leftInvEquiv_symm (x : S) : (x : M) * (S.leftInvEquiv hS).symm x = 1 := by
-  convert! S.leftInvEquiv_mul hS ((S.leftInvEquiv hS).symm x)
+  convert S.leftInvEquiv_mul hS ((S.leftInvEquiv hS).symm x)
   simp
 
 end CommMonoid

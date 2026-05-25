@@ -162,9 +162,7 @@ lemma exists_sum_smul_dirac [Countable α] (μ : Measure α) :
       congr 1
       refine (measurableAtom_eq_of_mem ?_).symm
       convert! h_points_mem _
-      simp
     · convert! h_points_mem _
-      simp
   · simp only [ne_eq, mul_eq_zero, indicator_apply_eq_zero, Pi.one_apply, one_ne_zero, imp_false,
       Subtype.forall, Set.mem_range, Subtype.exists, Subtype.mk.injEq, forall_exists_index]
     refine fun y s hs hsy hyx ↦ .inr fun hyx' ↦ hyx ?_
@@ -177,7 +175,7 @@ lemma exists_sum_smul_dirac [Countable α] (μ : Measure α) :
       simp only at h_points_mem
       rw [← hz, ← hsy]
       refine measurableAtom_eq_of_mem ?_
-      convert! h_points_mem
+      convert h_points_mem
     rw [← h2, h1]
 
 /-- Given that `α` is a countable, measurable space with all singleton sets measurable,

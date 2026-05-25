@@ -552,7 +552,7 @@ theorem iUnion_filter_not (π : Prepartition I) (p : Box ι → Prop) :
     (@Set.biUnion_diff_biUnion_eq (ι → ℝ) (Box ι) π.boxes (π.filter p).boxes (↑) _).symm using 4
   · simp +contextual
   · rw [Set.PairwiseDisjoint]
-    convert! π.pairwiseDisjoint
+    convert π.pairwiseDisjoint
     rw [Set.union_eq_left, filter_boxes, coe_filter]
     exact fun _ ⟨h, _⟩ => h
 

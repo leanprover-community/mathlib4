@@ -112,7 +112,7 @@ lemma geometrically_iff_forall_fiberToSpecResidueField :
   apply H y (Spec.map φ) p snd
   simp only [Scheme.SpecToEquivOfField, Equiv.coe_fn_symm_mk] at h
   refine .flip (.of_bot (.flip ?_) ?_ (IsPullback.of_hasPullback f (Y.fromSpecResidueField y)).flip)
-  · convert! h
+  · convert h
     simp [p]
   · simp [p, Scheme.Hom.fiberToSpecResidueField]
 

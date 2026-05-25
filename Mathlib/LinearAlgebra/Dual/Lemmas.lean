@@ -295,7 +295,7 @@ instance instFiniteDimensionalOfIsReflexive (K V : Type*)
     exact lt_irrefl _ this
   have h₁ : lift (Module.rank K V) < Module.rank K (Dual K V) := lift_rank_lt_rank_dual contra
   have h₂ : Module.rank K (Dual K V) < Module.rank K (Dual K (Dual K V)) := by
-    convert! lift_rank_lt_rank_dual <| le_trans (by simpa) h₁.le
+    convert lift_rank_lt_rank_dual <| le_trans (by simpa) h₁.le
     rw [lift_id']
   exact lt_trans h₁ h₂
 
@@ -701,7 +701,7 @@ theorem range_dualMap_eq_dualAnnihilator_ker_of_subtype_range_surjective (f : M 
   have rr_surj : Function.Surjective f.rangeRestrict := by
     rw [← range_eq_top, range_rangeRestrict]
   have := range_dualMap_eq_dualAnnihilator_ker_of_surjective f.rangeRestrict rr_surj
-  convert! this using 1
+  convert this using 1
   · calc
       _ = range ((range f).subtype.comp f.rangeRestrict).dualMap := by simp
       _ = _ := ?_

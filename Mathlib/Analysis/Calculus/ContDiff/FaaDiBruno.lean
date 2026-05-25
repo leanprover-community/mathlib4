@@ -549,7 +549,7 @@ def eraseMiddle (c : OrderedFinpartition (n + 1)) (hc : range (c.emb 0) ≠ {0})
   parts_strictMono i j hij := by
     simp only [Fin.lt_def]
     rw [← Nat.add_lt_add_iff_right (k := 1)]
-    convert! Fin.lt_def.1 (c.parts_strictMono hij)
+    convert Fin.lt_def.1 (c.parts_strictMono hij)
     · rcases eq_or_ne i (c.index 0) with rfl | hi
       -- We do not yet replace `omega` with `lia` here, as it is measurably slower.
       · simp only [↓reduceDIte, update_self, succ_mk, cast_mk, val_pred]
@@ -1095,7 +1095,7 @@ theorem HasFTaylorSeriesUpToOn.comp {n : WithTop ℕ∞} {g : F → G} {f : E �
           ((q (f x)).compAlongOrderedFinpartition (p x) (c.extend i)) =
         (q (f x)).taylorComp (p x) (m + 1) by
       rw [← this]
-      convert! B
+      convert B
       ext v
       simp only [Nat.succ_eq_add_one, Fintype.sum_option, ContinuousMultilinearMap.curryLeft_apply,
         ContinuousMultilinearMap.sum_apply, ContinuousMultilinearMap.add_apply,

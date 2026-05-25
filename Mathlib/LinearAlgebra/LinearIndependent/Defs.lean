@@ -611,7 +611,7 @@ theorem linearIndependent_iffₒₛ :
         (a := ∑ i ∈ s with g i ≤ f i, g i • v i + ∑ i ∈ s with f i < g i, f i • v i)]
       conv_lhs => rw [← add_assoc, ← Finset.sum_add_distrib]
       conv_rhs => rw [add_left_comm, ← Finset.sum_add_distrib]
-      convert! heq
+      convert heq
         <;> simp_rw [← Finset.sum_filter_add_sum_filter_not s (fun i => g i ≤ f i), not_le]
         <;> congr! 2 with i hi
         <;> simp only [Finset.mem_filter] at hi
@@ -732,9 +732,9 @@ theorem linearIndependent_iff' :
       ∀ s : Finset ι, ∀ g : ι → R, ∑ i ∈ s, g i • v i = 0 → ∀ i ∈ s, g i = 0 := by
   rw [linearIndependent_iff'ₛ]
   refine ⟨fun h s f ↦ ?_, fun h s f g ↦ ?_⟩
-  · convert! h s f 0; simp_rw [Pi.zero_apply, zero_smul, Finset.sum_const_zero]
+  · convert h s f 0; simp_rw [Pi.zero_apply, zero_smul, Finset.sum_const_zero]
   · rw [← sub_eq_zero, ← Finset.sum_sub_distrib]
-    convert! h s (f - g) using 3; simp only [Pi.sub_apply, sub_smul, sub_eq_zero]
+    convert h s (f - g) using 3; simp only [Pi.sub_apply, sub_smul, sub_eq_zero]
 
 /-- A version of `linearIndependent_iff` where the linear combination is a `Finset` sum
 of a function with support contained in the `Finset`. -/

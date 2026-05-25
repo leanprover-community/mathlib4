@@ -216,7 +216,7 @@ variable (E q) in
 @[simp]
 protected lemma smul_zero (f : Lp 𝕜 p μ) :
     f • (0 : Lp E q μ) = (0 : Lp E r μ) := by
-  convert! MemLp.zero (ε := E) |>.toLp_zero
+  convert MemLp.zero (ε := E) |>.toLp_zero
   apply MemLp.toLp_congr _ _ ?_
   filter_upwards [Lp.coeFn_zero E q μ] with x hx
   rw [Pi.smul_apply', hx]
@@ -226,7 +226,7 @@ variable (𝕜 p) in
 @[simp]
 protected lemma zero_smul (f : Lp E q μ) :
     (0 : Lp 𝕜 p μ) • f = (0 : Lp E r μ) := by
-  convert! MemLp.zero (ε := E) |>.toLp_zero
+  convert MemLp.zero (ε := E) |>.toLp_zero
   apply MemLp.toLp_congr _ _ ?_
   filter_upwards [Lp.coeFn_zero 𝕜 p μ] with x hx
   rw [Pi.smul_apply', hx]

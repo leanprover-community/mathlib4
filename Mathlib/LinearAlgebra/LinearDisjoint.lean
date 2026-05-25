@@ -542,7 +542,7 @@ theorem rank_inf_le_one_of_commute_of_flat (hf : Module.Flat R M ∨ Module.Flat
     · simp [hab] at hij
     · simp [hab.symm] at hij
     · rfl
-  convert! this
+  convert this
   ext i
   fin_cases i <;> simp
 

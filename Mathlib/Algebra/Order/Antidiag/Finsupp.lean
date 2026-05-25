@@ -141,9 +141,9 @@ lemma mapRange_finsuppAntidiag_eq {e : μ ≃+ μ'} {s : Finset ι} {n : μ} :
     rw [mem_map_equiv, this]
     apply mapRange_finsuppAntidiag_subset
     rw [← mem_map_equiv]
-    convert! hf
+    convert hf
     rw [map_map, hh]
-    convert! map_refl
+    convert map_refl
     apply Function.Embedding.equiv_symm_toEmbedding_trans_toEmbedding
 
 end AddCommMonoid

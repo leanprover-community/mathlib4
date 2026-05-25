@@ -29,7 +29,7 @@ section NNRealValued
 
 lemma apply_le_nndist_zero {X : Type*} [TopologicalSpace X] (f : X →ᵇ ℝ≥0) (x : X) :
     f x ≤ nndist 0 f := by
-  convert! nndist_coe_le_nndist x
+  convert nndist_coe_le_nndist x
   simp only [coe_zero, Pi.zero_apply, NNReal.nndist_zero_eq_val]
 
 variable {X : Type*} [MeasurableSpace X] [TopologicalSpace X]
@@ -111,7 +111,7 @@ lemma norm_integral_le_mul_norm [IsFiniteMeasure μ] (f : X →ᵇ E) :
 
 lemma norm_integral_le_norm [IsProbabilityMeasure μ] (f : X →ᵇ E) :
     ‖∫ x, f x ∂μ‖ ≤ ‖f‖ := by
-  convert! f.norm_integral_le_mul_norm μ
+  convert f.norm_integral_le_mul_norm μ
   simp
 
 lemma isBounded_range_integral

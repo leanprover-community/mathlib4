@@ -115,7 +115,7 @@ variable [IsAddLeftInvariant μ] [SFinite μ]
 theorem _root_.HasCompactSupport.hasDerivAt_convolution_right (hf : LocallyIntegrable f₀ μ)
     (hcg : HasCompactSupport g₀) (hg : ContDiff 𝕜 1 g₀) (x₀ : 𝕜) :
     HasDerivAt (f₀ ⋆[L, μ] g₀) ((f₀ ⋆[L, μ] deriv g₀) x₀) x₀ := by
-  convert! (hcg.hasFDerivAt_convolution_right L hf hg x₀).hasDerivAt using 1
+  convert (hcg.hasFDerivAt_convolution_right L hf hg x₀).hasDerivAt using 1
   rw [convolution_precompR_apply L hf (hcg.fderiv 𝕜) (hg.continuous_fderiv one_ne_zero)]
   rfl
 

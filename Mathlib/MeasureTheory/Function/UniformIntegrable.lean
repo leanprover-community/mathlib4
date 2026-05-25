@@ -397,7 +397,7 @@ theorem MemLp.eLpNorm_indicator_le (hp_one : 1 ≤ p) (hp_top : p ≠ ∞) (hf :
   obtain ⟨⟨f', hf', heq⟩, _⟩ := hf
   obtain ⟨δ, hδpos, hδ⟩ := (hℒp.ae_eq heq).eLpNorm_indicator_le_of_meas hp_one hp_top hf' hε
   refine ⟨δ, hδpos, fun s hs hμs => ?_⟩
-  convert! hδ s hs hμs using 1
+  convert hδ s hs hμs using 1
   rw [eLpNorm_indicator_eq_eLpNorm_restrict hs, eLpNorm_indicator_eq_eLpNorm_restrict hs]
   exact eLpNorm_congr_ae heq.restrict
 
@@ -416,7 +416,7 @@ theorem unifIntegrable_subsingleton [Subsingleton ι] (hp_one : 1 ≤ p) (hp_top
   · obtain ⟨i⟩ := hι
     obtain ⟨δ, hδpos, hδ⟩ := (hf i).eLpNorm_indicator_le hp_one hp_top hε
     refine ⟨δ, hδpos, fun j s hs hμs => ?_⟩
-    convert! hδ s hs hμs
+    convert hδ s hs hμs
   · exact ⟨1, zero_lt_one, fun i => False.elim <| hι <| Nonempty.intro i⟩
 
 /-- This lemma is less general than `MeasureTheory.unifIntegrable_finite` which applies to
@@ -530,7 +530,7 @@ theorem tendsto_Lp_finite_of_tendsto_ae [IsFiniteMeasure μ] (hp : 1 ≤ p) (hp'
     exact fun n => (hf n).ae_eq_mk
   filter_upwards [hfg, h_ae_forall_eq, hg.1.ae_eq_mk] with x hx_tendsto hxf_eq hxg_eq
   rw [← hxg_eq]
-  convert! hx_tendsto using 1
+  convert hx_tendsto using 1
   ext1 n
   exact (hxf_eq n).symm
 

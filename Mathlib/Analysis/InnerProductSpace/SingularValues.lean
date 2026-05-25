@@ -162,7 +162,7 @@ theorem injective_iff_forall_lt_finrank_singularValues_pos :
     use i, i.isLt
     simp [RCLike.ofReal_eq_zero.mp hi, T.singularValues_fin rfl]
   · intro ⟨i, h, hz⟩
-    convert! T.isSymmetric_adjoint_comp_self.hasEigenvalue_eigenvalues rfl ⟨i, h⟩
+    convert T.isSymmetric_adjoint_comp_self.hasEigenvalue_eigenvalues rfl ⟨i, h⟩
     rw [← sq_singularValues_of_lt, le_antisymm hz (T.singularValues_nonneg i)]
     simp
 

@@ -303,7 +303,7 @@ theorem hasLineDerivWithinAt_congr_set (h : s =ᶠ[𝓝 x] t) :
   apply hasDerivWithinAt_congr_set
   let F := fun (t : 𝕜) ↦ x + t • v
   have B : ContinuousAt F 0 := by apply Continuous.continuousAt; fun_prop
-  have : s =ᶠ[𝓝 (F 0)] t := by convert! h; simp [F]
+  have : s =ᶠ[𝓝 (F 0)] t := by convert h; simp [F]
   exact B.preimage_mem_nhds this
 
 theorem lineDifferentiableWithinAt_congr_set (h : s =ᶠ[𝓝 x] t) :
@@ -318,7 +318,7 @@ theorem lineDerivWithin_congr_set (h : s =ᶠ[𝓝 x] t) :
   apply derivWithin_congr_set
   let F := fun (t : 𝕜) ↦ x + t • v
   have B : ContinuousAt F 0 := by apply Continuous.continuousAt; fun_prop
-  have : s =ᶠ[𝓝 (F 0)] t := by convert! h; simp [F]
+  have : s =ᶠ[𝓝 (F 0)] t := by convert h; simp [F]
   exact B.preimage_mem_nhds this
 
 theorem Filter.EventuallyEq.hasLineDerivAt_iff (h : f₀ =ᶠ[𝓝 x] f₁) :
@@ -326,7 +326,7 @@ theorem Filter.EventuallyEq.hasLineDerivAt_iff (h : f₀ =ᶠ[𝓝 x] f₁) :
   apply hasDerivAt_iff
   let F := fun (t : 𝕜) ↦ x + t • v
   have B : ContinuousAt F 0 := by apply Continuous.continuousAt; fun_prop
-  have : f₀ =ᶠ[𝓝 (F 0)] f₁ := by convert! h; simp [F]
+  have : f₀ =ᶠ[𝓝 (F 0)] f₁ := by convert h; simp [F]
   exact B.preimage_mem_nhds this
 
 theorem Filter.EventuallyEq.lineDifferentiableAt_iff (h : f₀ =ᶠ[𝓝 x] f₁) :
@@ -503,7 +503,7 @@ theorem HasLineDerivWithinAt.smul (h : HasLineDerivWithinAt 𝕜 f f' s x v) (c 
   have B : HasDerivWithinAt (fun t ↦ f (x + t • v)) f' s' (g 0) := by simpa [g] using h
   have Z := B.scomp (0 : 𝕜) A.hasDerivWithinAt (mapsTo_preimage g s')
   simp only [g, s', Function.comp_def, smul_eq_mul, mul_comm c, ← smul_smul] at Z
-  convert! Z
+  convert Z
   ext t
   simp [← smul_smul]
 

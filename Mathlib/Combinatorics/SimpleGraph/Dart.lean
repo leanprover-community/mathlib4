@@ -130,7 +130,7 @@ theorem dartOfNeighborSet_injective (v : V) : Function.Injective (G.dartOfNeighb
   fun e₁ e₂ h =>
   Subtype.ext <| by
     injection h with h'
-    convert! congr_arg Prod.snd h'
+    convert congr_arg Prod.snd h'
 
 instance nonempty_dart_top [Nontrivial V] : Nonempty (⊤ : SimpleGraph V).Dart := by
   obtain ⟨v, w, h⟩ := exists_pair_ne V

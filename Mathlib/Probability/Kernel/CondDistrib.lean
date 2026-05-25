@@ -155,7 +155,7 @@ theorem condDistrib_ae_eq_of_measure_eq_compProd_of_measurable
   rw [heq, condDistrib]
   symm
   refine eq_condKernel_of_measure_eq_compProd _ ?_
-  convert! hκ
+  convert hκ
   exact heq.symm
 
 /-- `condDistrib` is a.e. uniquely defined as the kernel satisfying the defining property of

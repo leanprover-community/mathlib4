@@ -158,7 +158,7 @@ abbrev stratum' (c : FiniteArchimedeanClass M) : Submodule K (baseDomain u) :=
 theorem iSupIndep_stratum' : iSupIndep u.stratum' := by
   apply (iSupIndep_map_orderIso_iff (Submodule.mapIic u.baseDomain)).mp
   apply iSupIndep.of_coe_Iic_comp
-  convert! u.iSupIndep_stratum
+  convert u.iSupIndep_stratum
   ext1 c
   simpa using le_iSup _ _
 
@@ -366,7 +366,7 @@ theorem truncLT_mem_range_baseEmbedding (x : seed.baseEmbedding.domain)
   · rw [HahnSeries.coe_truncLTLinearMap, HahnSeries.coeff_truncLT_of_le hdc]
     have hcd : c.val ≤ d.val := hdc
     simp only [DFinsupp.mk_apply, hcd, ↓reduceIte]
-    convert! LinearMap.map_zero _
+    convert LinearMap.map_zero _
     simp
 
 /-- `HahnEmbedding.Seed.baseEmbedding` is a partial Hahn embedding. -/
@@ -569,7 +569,7 @@ theorem isWF_support_evalCoeff [IsOrderedAddMonoid R] [Archimedean R] (x : M) :
   have hmem' (n : ℕ) : seq n ∈ (ofLex (f.val y)).coeff.support := by
     specialize hmem n
     rw [Function.mem_support] at ⊢ hmem
-    convert! hmem using 1
+    convert hmem using 1
     refine (f.evalCoeff_eq ((ball_strictAnti K).antitone ?_ hy)).symm
     simpa using hanti.antitone (show 0 ≤ n by simp)
   obtain hwf := (ofLex (f.val y)).isWF_support
@@ -587,7 +587,7 @@ def eval [IsOrderedAddMonoid R] [Archimedean R] (x : M) :
 @[simp]
 theorem eval_zero [IsOrderedAddMonoid R] [Archimedean R] : f.eval 0 = 0 := by
   unfold eval
-  convert! toLex_zero
+  convert toLex_zero
   ext c
   rw [f.evalCoeff_eq (y := 0) (by simp)]
   simp

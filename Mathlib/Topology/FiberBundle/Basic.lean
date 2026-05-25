@@ -597,7 +597,7 @@ def localTriv (i : ι) : Trivialization F Z.proj where
       rw [PartialEquiv.EqOnSource.source_inter_preimage_eq (Z.localTrivAsPartialEquiv_trans i j)]
       exact (continuousOn_open_iff (Z.trivChange i j).open_source).1
         (Z.trivChange i j).continuousOn _ s_open
-    convert! this using 1
+    convert this using 1
     dsimp [f, PartialEquiv.trans_source]
     rw [← preimage_comp, inter_assoc]
   toPartialEquiv := Z.localTrivAsPartialEquiv i

@@ -377,7 +377,7 @@ lemma tendsto_riemannZeta_sub_one_div_Gammaℝ :
     (𝓝 ((γ - Complex.log (4 * ↑π)) / 2)) := by
   have := tendsto_riemannZeta_sub_one_div.add tendsto_Gamma_term_aux
   simp_rw [sub_add_sub_cancel] at this
-  convert! this using 2
+  convert this using 2
   ring_nf
 
 /-- Formula for `ζ 1`. Note that mathematically `ζ 1` is undefined, but our construction ascribes

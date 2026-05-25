@@ -78,7 +78,7 @@ def LocallyFiniteOrder.addMonoidHom :
   map_zero' := by simp
   map_add' a b := by
     wlog hab : a ≤ b generalizing a b
-    · convert! this b a (le_of_not_ge hab) using 1 <;> simp only [add_comm]
+    · convert this b a (le_of_not_ge hab) using 1 <;> simp only [add_comm]
     obtain ha | ha := le_total 0 a <;> obtain hb | hb := le_total 0 b
     · have : -b ≤ a := by trans 0 <;> simp [ha, hb]
       simp [ha, hb, card_Ico_zero_add, this]

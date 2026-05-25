@@ -180,7 +180,7 @@ lemma isLocallyClosed_tfae (s : Set X) :
     · exact (subset_iUnion₂ _ _ <| hxU x ·)
   tfae_have 5 → 1
   | H => by
-    convert!
+    convert
       H.isLocallyClosed.image IsInducing.subtypeVal
         (by simpa using isClosed_closure.isLocallyClosed)
     simpa using subset_closure

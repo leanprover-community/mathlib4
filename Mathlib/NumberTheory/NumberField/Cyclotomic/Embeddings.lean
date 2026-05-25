@@ -58,9 +58,9 @@ theorem nrComplexPlaces_eq_totient_div_two [h : IsCyclotomicExtension {n} ℚ K]
     simp [hk, key, ← two_mul]
   · have : φ n = 1 := by
       by_cases h1 : 1 < n
-      · convert! totient_two
+      · convert totient_two
         exact (eq_of_le_of_not_lt (succ_le_of_lt h1) hn).symm
-      · convert! totient_one
+      · convert totient_one
         exact eq_of_le_of_not_lt (not_lt.mp h1) (by simp [NeZero.ne _])
     rw [this]
     apply nrComplexPlaces_eq_zero_of_finrank_eq_one

@@ -637,7 +637,7 @@ subtype. -/
 theorem map_subtype_subset {t : Set α} (s : Finset t) : ↑(s.map (Embedding.subtype _)) ⊆ t := by
   intro a ha
   rw [mem_coe] at ha
-  convert! property_of_mem_map_subtype s ha
+  convert property_of_mem_map_subtype s ha
 
 end Subtype
 

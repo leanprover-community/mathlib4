@@ -127,7 +127,7 @@ lemma coheight_eq (a : α) :
     coheight a = ⨆ (p : LTSeries α) (_ : a ≤ p.head), (p.length : ℕ∞) := by
   apply Equiv.iSup_congr ⟨RelSeries.reverse, RelSeries.reverse, fun _ ↦ RelSeries.reverse_reverse _,
     fun _ ↦ RelSeries.reverse_reverse _⟩
-  congr! 1
+  congr! (config := { postTransparency := .default }) 1
 
 lemma height_le_iff {a : α} {n : ℕ∞} :
     height a ≤ n ↔ ∀ ⦃p : LTSeries α⦄, p.last ≤ a → p.length ≤ n := by
@@ -198,13 +198,13 @@ lemma length_le_height {p : LTSeries α} {x : α} (hlast : p.last ≤ x) :
   · let p' := p.eraseLast.snoc x (by
       apply lt_of_lt_of_le
       · apply p.step ⟨p.length - 1, by lia⟩
-      · convert! hlast
+      · convert hlast
         simp only [Fin.succ_mk, RelSeries.last, Fin.last]
         congr; lia)
     suffices p'.length ≤ height x by
       simp only [RelSeries.snoc_length, RelSeries.eraseLast_length, Nat.cast_add, ENat.coe_sub,
         Nat.cast_one, p'] at this
-      convert! this
+      convert this
       norm_cast
       lia
     refine le_iSup₂_of_le p' ?_ le_rfl
@@ -541,7 +541,7 @@ lemma height_eq_coe_iff {x : α} {n : ℕ} :
     simp only [Nat.cast_add, Nat.cast_one, add_eq_zero, one_ne_zero, and_false, false_or]
     rw [height_eq_coe_add_one_iff]
     simp only [hfin, true_and]
-    congr! 3
+    congr! (config := { postTransparency := .default }) 3
     rename_i y _
     cases height y <;> simp; norm_cast; lia
 

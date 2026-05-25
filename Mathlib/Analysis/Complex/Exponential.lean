@@ -93,7 +93,7 @@ variable (x y : ℂ)
 theorem exp_zero : exp 0 = 1 := by
   rw [exp]
   refine lim_eq_of_equiv_const fun ε ε0 => ⟨1, fun j hj => ?_⟩
-  convert! (config := .unfoldSameFun) ε0 -- ε0 : ε > 0 but goal is _ < ε
+  convert (config := { __ := Congr!.Config.unfoldSameFun }) ε0 -- ε0 : ε > 0 but goal is _ < ε
   rcases j with - | j
   · exact absurd hj (not_le_of_gt zero_lt_one)
   · dsimp [exp']
@@ -475,7 +475,7 @@ lemma norm_exp_sub_sum_le_exp_norm_sub_sum (x : ℂ) (n : ℕ) :
     exact Real.sum_le_exp_of_nonneg (norm_nonneg _) _
 
 lemma norm_exp_le_exp_norm (x : ℂ) : ‖exp x‖ ≤ Real.exp ‖x‖ := by
-  convert! norm_exp_sub_sum_le_exp_norm_sub_sum x 0 using 1 <;> simp
+  convert norm_exp_sub_sum_le_exp_norm_sub_sum x 0 using 1 <;> simp
 
 lemma norm_exp_sub_sum_le_norm_mul_exp (x : ℂ) (n : ℕ) :
     ‖exp x - ∑ m ∈ range n, x ^ m / m.factorial‖ ≤ ‖x‖ ^ n * Real.exp ‖x‖ := by
@@ -574,7 +574,7 @@ theorem expNear_sub (n x r₁ r₂) : expNear n x r₁ -
 theorem exp_approx_end (n m : ℕ) (x : ℝ) (e₁ : n + 1 = m) (h : |x| ≤ 1) :
     |exp x - expNear m x 0| ≤ |x| ^ m / m.factorial * ((m + 1) / m) := by
   simp only [expNear, mul_zero, add_zero]
-  convert! exp_bound (n := m) h ?_ using 1
+  convert exp_bound (n := m) h ?_ using 1
   · simp [field]
   · lia
 

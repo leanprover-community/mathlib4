@@ -862,7 +862,7 @@ theorem basicOpen_eq_of_affine {R : CommRingCat} (f : R) :
 @[simp]
 theorem basicOpen_eq_of_affine' {R : CommRingCat} (f : Γ(Spec R, ⊤)) :
     (Spec R).basicOpen f = PrimeSpectrum.basicOpen ((Scheme.ΓSpecIso R).hom f) := by
-  convert! basicOpen_eq_of_affine ((Scheme.ΓSpecIso R).hom f)
+  convert basicOpen_eq_of_affine ((Scheme.ΓSpecIso R).hom f)
   exact (Iso.hom_inv_id_apply (Scheme.ΓSpecIso R) f).symm
 
 set_option backward.isDefEq.respectTransparency false in
@@ -913,7 +913,7 @@ theorem Spec_zeroLocus_eq_zeroLocus {R : CommRingCat} (s : Set R) :
 
 theorem Spec_zeroLocus {R : CommRingCat} (s : Set Γ(Spec R, ⊤)) :
     (Spec R).zeroLocus s = PrimeSpectrum.zeroLocus ((Scheme.ΓSpecIso R).inv ⁻¹' s) := by
-  convert! Spec_zeroLocus_eq_zeroLocus ((Scheme.ΓSpecIso R).inv ⁻¹' s)
+  convert Spec_zeroLocus_eq_zeroLocus ((Scheme.ΓSpecIso R).inv ⁻¹' s)
   rw [Set.image_preimage_eq]
   exact (ConcreteCategory.bijective_of_isIso (C := CommRingCat) _).2
 section Stalks

@@ -142,7 +142,7 @@ theorem eq_const_of_tendsto_cocompact [Nontrivial E] {f : E → F} (hf : Differe
       Set.univ = t ∪ tᶜ := t.union_compl_self.symm
       _        ⊆ t ∪ s  := by gcongr
   obtain ⟨c', hc'⟩ := hf.exists_eq_const_of_bounded h_bdd
-  convert! hc'
+  convert hc'
   exact tendsto_nhds_unique hb (by simpa [hc'] using tendsto_const_nhds)
 
 /-- A corollary of Liouville's theorem where the function tends to a finite value at infinity

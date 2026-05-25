@@ -201,7 +201,7 @@ noncomputable def prod : Trivialization (F₁ × F₂) (π (F₁ × F₂) (E₁ 
   left_inv' _ := Prod.left_inv
   right_inv' _ := Prod.right_inv
   open_source := by
-    convert!
+    convert
       (e₁.open_source.prod e₂.open_source).preimage
         (FiberBundle.Prod.isInducing_diag F₁ E₁ F₂ E₂).continuous
     ext x

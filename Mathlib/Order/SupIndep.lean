@@ -303,9 +303,9 @@ theorem sSupIndep_pair {a b : α} (hab : a ≠ b) :
   · intro h
     exact h.pairwiseDisjoint (mem_insert _ _) (mem_insert_of_mem _ (mem_singleton _)) hab
   · rintro h c ((rfl : c = a) | (rfl : c = b))
-    · convert! h using 1
+    · convert h using 1
       simp [hab, sSup_singleton]
-    · convert! h.symm using 1
+    · convert h.symm using 1
       simp [hab, sSup_singleton]
 
 include hs in
@@ -390,7 +390,7 @@ theorem iSupIndep_ne_bot :
   cases eq_or_ne (t i) ⊥ with
   | inl hi => simp [hi]
   | inr hi => ?_
-  convert! h ⟨i, hi⟩
+  convert h ⟨i, hi⟩
   have : ∀ j, ⨆ (_ : t j = ⊥), t j = ⊥ := fun j ↦ by simp only [iSup_eq_bot, imp_self]
   rw [iSup_split _ (fun j ↦ t j = ⊥), iSup_subtype]
   simp only [iSup_comm (ι' := _ ≠ i), this, ne_eq, sup_of_le_right, Subtype.mk.injEq, iSup_bot,
@@ -485,7 +485,7 @@ theorem iSupIndep_comp_coe_iff_supIndep {s : Finset ι} {f : ι → α} :
     rw [Finset.supIndep_iff_disjoint_erase]
     refine Subtype.forall.trans (forall₂_congr fun a b => ?_)
     rw [Finset.sup_eq_iSup]
-    congr! 1
+    congr! (config := { postTransparency := .default }) 1
     refine iSup_subtype.trans ?_
     congr! 1
     simp [iSup_and, @iSup_comm _ (_ ∈ s)]

@@ -467,11 +467,11 @@ theorem convexCombPair_one {x y : M} :
 
 /-- A convex combination of a point with itself is that point. -/
 @[simp]
-theorem convexCombPair_same {x : M} :
-    convexCombPair s t hs ht h x x = x := by
-  unfold convexCombPair
-  convert sConvexComb_single x
-  simp only [StdSimplex.duple, StdSimplex.single, ← single_add, h]
+theorem convexComboPair_same {s t : R} (hs : 0 ≤ s) (ht : 0 ≤ t) (h : s + t = 1) {x : M} :
+    convexComboPair s t hs ht h x x = x := by
+  unfold convexComboPair
+  convert ConvexSpace.single x
+  simp only [StdSimplex.duple, StdSimplex.single, ← Finsupp.single_add, h]
 
 @[deprecated (since := "2026-05-15")] alias convexComboPair_symm := convexCombPair_same
 

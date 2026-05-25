@@ -101,7 +101,7 @@ theorem integerLattice.inter_ball_finite [NumberField K] (r : ℝ) :
   · have heq : ∀ x, canonicalEmbedding K x ∈ Metric.closedBall 0 r ↔
         ∀ φ : K →+* ℂ, ‖φ x‖ ≤ r := by
       intro x; rw [← norm_le_iff, mem_closedBall_zero_iff]
-    convert! (Embeddings.finite_of_norm_le K ℂ r).image (canonicalEmbedding K)
+    convert (Embeddings.finite_of_norm_le K ℂ r).image (canonicalEmbedding K)
     ext; constructor
     · rintro ⟨⟨_, ⟨x, rfl⟩, rfl⟩, hx⟩
       exact ⟨x, ⟨SetLike.coe_mem x, fun φ => (heq _).mp hx φ⟩, rfl⟩
@@ -128,7 +128,7 @@ noncomputable def latticeBasis [NumberField K] :
       RingHom.equivRatAlgHom
     rw [show M = N.transpose by { ext : 2; rfl }]
     rw [Matrix.det_transpose, ← pow_ne_zero_iff two_ne_zero]
-    convert!
+    convert
       (map_ne_zero_iff _ (algebraMap ℚ ℂ).injective).mpr
         (Algebra.discr_not_zero_of_basis ℚ (integralBasis K))
     rw [← Algebra.discr_reindex ℚ (integralBasis K) e.symm]

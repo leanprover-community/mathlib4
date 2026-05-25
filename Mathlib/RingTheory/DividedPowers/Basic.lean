@@ -320,7 +320,7 @@ theorem dpow_sum' {M : Type*} [AddCommMonoid M] {I : AddSubmonoid M} (dpow : ℕ
       conv_lhs => rw [← m.fill_filterNe a]
       exact Sym.count_coe_fill_of_ne (ne_of_mem_of_not_mem hi ha)
     · intro m hm
-      convert! sym_filterNe_mem a hm
+      convert sym_filterNe_mem a hm
       rw [erase_insert ha]
 
 variable {ι : Type*} [DecidableEq ι]

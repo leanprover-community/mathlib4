@@ -75,7 +75,7 @@ lemma fg_iff_exists_finite_generating_family {A : Type u} [Semiring A] {M : Type
   · intro hN
     obtain ⟨n, f, h⟩ := fg_iff_exists_fin_generating_family.mp hN
     refine ⟨ULift (Fin n), inferInstance, f ∘ ULift.down, ?_⟩
-    convert! h
+    convert h
     ext
     simp
   · rintro ⟨G, _, g, hg⟩

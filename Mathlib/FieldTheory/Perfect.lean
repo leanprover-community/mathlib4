@@ -362,14 +362,14 @@ theorem roots_expand_pow_map_iterateFrobenius_le :
     simp_rw [count_nsmul, count_roots, ← rootMultiplicity_expand_pow, ← count_roots, count_map,
       count_eq_card_filter_eq]
     exact card_le_card (monotone_filter_right _ fun _ h ↦ iterateFrobenius_inj R p n h)
-  convert! Nat.zero_le _
+  convert Nat.zero_le _
   simp_rw [count_map, card_eq_zero]
   exact ext' fun t ↦ count_zero t ▸ count_filter_of_neg fun h' ↦ h ⟨t, h'⟩
 
 theorem roots_expand_map_frobenius_le :
     (expand R p f).roots.map (frobenius R p) ≤ p • f.roots := by
   rw [← iterateFrobenius_one]
-  convert! ← roots_expand_pow_map_iterateFrobenius_le p 1 f <;> apply pow_one
+  convert ← roots_expand_pow_map_iterateFrobenius_le p 1 f <;> apply pow_one
 
 theorem roots_expand_pow_image_iterateFrobenius_subset [DecidableEq R] :
     (expand R (p ^ n) f).roots.toFinset.image (iterateFrobenius R p n) ⊆ f.roots.toFinset := by
@@ -380,7 +380,7 @@ theorem roots_expand_pow_image_iterateFrobenius_subset [DecidableEq R] :
 theorem roots_expand_image_frobenius_subset [DecidableEq R] :
     (expand R p f).roots.toFinset.image (frobenius R p) ⊆ f.roots.toFinset := by
   rw [← iterateFrobenius_one]
-  convert! ← roots_expand_pow_image_iterateFrobenius_subset p 1 f
+  convert ← roots_expand_pow_image_iterateFrobenius_subset p 1 f
   apply pow_one
 
 section PerfectRing

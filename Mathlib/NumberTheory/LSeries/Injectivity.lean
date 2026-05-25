@@ -180,7 +180,7 @@ lemma LSeries_eq_zero_iff {f : ℕ → ℂ} (hf : f 0 = 0) :
   · simpa [h] using LSeries_eq_zero_of_abscissaOfAbsConv_eq_top h
   · simp only [h, or_false]
     refine ⟨fun H ↦ ?_, fun H ↦ H ▸ LSeries_zero⟩
-    convert! (LSeries_eventually_eq_zero_iff'.mp ?_).resolve_right h
+    convert (LSeries_eventually_eq_zero_iff'.mp ?_).resolve_right h
     · refine ⟨fun H' _ _ ↦ by rw [H', Pi.zero_apply], fun H' ↦ ?_⟩
       ext (- | m)
       · simp [hf]

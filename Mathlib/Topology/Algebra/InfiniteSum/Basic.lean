@@ -44,11 +44,11 @@ theorem hasProd_one : HasProd (fun _ ↦ 1 : β → α) 1 L := by simp [HasProd,
 
 @[to_additive (attr := simp)]
 theorem hasProd_empty [IsEmpty β] : HasProd f 1 L := by
-  convert! hasProd_one
+  convert hasProd_one
 
 @[to_additive (attr := nontriviality)]
 theorem HasProd.of_subsingleton_cod [Subsingleton α] : HasProd f 1 L := by
-  convert! hasProd_one
+  convert hasProd_one
 
 @[to_additive (attr := simp)]
 theorem multipliable_one : Multipliable (fun _ ↦ 1 : β → α) L :=
@@ -169,7 +169,7 @@ lemma hasProd_singleton (m : β) (f : β → α) : HasProd (({m} : Set β).restr
 @[to_additive]
 theorem hasProd_ite_eq (b : β) [DecidablePred (· = b)] (a : α) (L := unconditional β) [L.LeAtTop] :
     HasProd (fun b' ↦ if b' = b then a else 1) a L := by
-  convert! hasProd_single b (hf := fun b' hb' ↦ if_neg hb') (L := L)
+  convert hasProd_single b (hf := fun b' hb' ↦ if_neg hb') (L := L)
   exact (if_pos rfl).symm
 
 @[to_additive]
@@ -459,7 +459,7 @@ theorem tprod_one : ∏'[L] _, (1 : α) = 1 := by
 
 @[to_additive (attr := simp)]
 theorem tprod_empty [IsEmpty β] : ∏'[L] b, f b = 1 := by
-  convert! tprod_one (L := L)
+  convert tprod_one (L := L)
 
 @[to_additive]
 theorem tprod_congr {f g : β → α}

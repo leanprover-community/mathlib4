@@ -744,7 +744,7 @@ theorem continuousOn_cfcₙ {s : Set 𝕜} (hs : IsCompact s) (f : 𝕜 → 𝕜
       x
     rw [cfcₙHomSuperset_apply, Set.restrict_apply, cfcₙ_apply _ _ (hf.mono x.2.2) hf0 x.2.1]
     congr!
-  · convert! continuousOn_empty _
+  · convert continuousOn_empty _
     rw [Set.eq_empty_iff_forall_notMem]
     exact fun a ha ↦ hs0 <| ha.2 <| quasispectrum.zero_mem 𝕜 a
 

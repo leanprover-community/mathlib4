@@ -209,7 +209,7 @@ theorem cos_lt_one_div_sqrt_sq_add_one {x : ℝ} (hx1 : -(3 * π / 2) ≤ x) (hx
   suffices ∀ {y : ℝ}, 0 < y → y ≤ 3 * π / 2 → cos y < 1 / √(y ^ 2 + 1) by
     rcases lt_or_lt_iff_ne.mpr hx3.symm with ⟨h⟩
     · exact this h hx2
-    · convert! this (by linarith : 0 < -x) (by linarith) using 1
+    · convert this (by linarith : 0 < -x) (by linarith) using 1
       · rw [cos_neg]
       · rw [neg_sq]
   intro y hy1 hy2

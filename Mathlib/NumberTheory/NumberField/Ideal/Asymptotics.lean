@@ -129,7 +129,7 @@ theorem tendsto_norm_le_div_atTop₀ :
           (𝓝 ((2 ^ nrRealPlaces K * (2 * π) ^ nrComplexPlaces K * regulator K * classNumber K) /
             (torsionOrder K * Real.sqrt |discr K|))) := by
   classical
-  convert!
+  convert
     Filter.Tendsto.congr' ?_
       (tendsto_finsetSum Finset.univ (fun C _ ↦ tendsto_norm_le_and_mk_eq_div_atTop K C))
   · rw [Finset.sum_const, Finset.card_univ, nsmul_eq_mul, classNumber]

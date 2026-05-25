@@ -283,7 +283,7 @@ theorem to_iso [h' : Epi f.base] : IsIso f := by
       dsimp only [Functor.op, Opens.map]
       congr
       exact (Set.image_preimage_eq _ ((TopCat.epi_iff_surjective _).mp h')).symm
-    convert! H.c_iso (Opens.map f.base |>.obj <| unop U)
+    convert H.c_iso (Opens.map f.base |>.obj <| unop U)
   have : IsIso f.c := NatIso.isIso_of_isIso_app _
   apply +allowSynthFailures isIso_of_components
   let t : X ≃ₜ Y := H.base_open.isEmbedding.toHomeomorph.trans
@@ -618,7 +618,7 @@ theorem isIso_of_subset {X Y : PresheafedSpace C} (f : X ⟶ Y)
   have : U = H.base_open.functor.obj ((Opens.map f.base).obj U) := by
     ext1
     exact (Set.inter_eq_left.mpr hU).symm.trans Set.image_preimage_eq_inter_range.symm
-  convert! H.c_iso ((Opens.map f.base).obj U)
+  convert H.c_iso ((Opens.map f.base).obj U)
 
 end PresheafedSpace.IsOpenImmersion
 
@@ -907,7 +907,7 @@ theorem image_preimage_is_empty (j : Discrete ι) (h : i ≠ j) (U : Opens (F.ob
   rw [ι_preservesColimitIso_hom_assoc, ι_preservesColimitIso_hom_assoc,
     HasColimit.isoOfNatIso_ι_hom_assoc, HasColimit.isoOfNatIso_ι_hom_assoc,
     TopCat.sigmaIsoSigma_hom_ι, TopCat.sigmaIsoSigma_hom_ι] at eq
-  convert! h (congr_arg Discrete.mk (congr_arg Sigma.fst eq))
+  convert h (congr_arg Discrete.mk (congr_arg Sigma.fst eq))
 
 set_option backward.isDefEq.respectTransparency false in
 instance sigma_ι_isOpenImmersion_aux [HasStrictTerminalObjects C] :
