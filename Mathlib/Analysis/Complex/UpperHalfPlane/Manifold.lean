@@ -152,6 +152,8 @@ section deriv
 TODO: would it be better to reimplement these using `mfderiv` together with a trivialization of
 the tangent space of `ℍ`, rather than using `ofComplex` as we currently do? Or would that bring
 more pain than gain?
+
+TODO(MR): investigate if using `mvfderiv` can avoid the "pain" above, and be a cleaner design!
 -/
 
 section Complex
