@@ -35,7 +35,7 @@ The Coq code is available at the following address: <http://www.lri.fr/~sboldo/e
 @[expose] public section
 
 variable {𝕜 E F : Type*} [RCLike 𝕜]
-variable [NormedAddCommGroup E] [NormedAddCommGroup F]
+variable [AddCommGroup E] [NormedAddCommGroup E] [AddCommGroup F] [NormedAddCommGroup F]
 variable [InnerProductSpace 𝕜 E] [InnerProductSpace ℝ F]
 
 local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
@@ -66,7 +66,8 @@ instance [K.HasOrthogonalProjection] : Kᗮ.HasOrthogonalProjection where
     exact K.le_orthogonal_orthogonal hwK
 
 instance HasOrthogonalProjection.map_linearIsometryEquiv [K.HasOrthogonalProjection]
-    {E' : Type*} [NormedAddCommGroup E'] [InnerProductSpace 𝕜 E'] (f : E ≃ₗᵢ[𝕜] E') :
+    {E' : Type*} [AddCommGroup E'] [NormedAddCommGroup E'] [InnerProductSpace 𝕜 E']
+    (f : E ≃ₗᵢ[𝕜] E') :
     (K.map (f.toLinearEquiv : E →ₗ[𝕜] E')).HasOrthogonalProjection where
   exists_orthogonal v := by
     rcases HasOrthogonalProjection.exists_orthogonal (K := K) (f.symm v) with ⟨w, hwK, hw⟩
@@ -74,7 +75,8 @@ instance HasOrthogonalProjection.map_linearIsometryEquiv [K.HasOrthogonalProject
     simp [← f.symm.inner_map_map, hw u hu]
 
 instance HasOrthogonalProjection.map_linearIsometryEquiv' [K.HasOrthogonalProjection]
-    {E' : Type*} [NormedAddCommGroup E'] [InnerProductSpace 𝕜 E'] (f : E ≃ₗᵢ[𝕜] E') :
+    {E' : Type*} [AddCommGroup E'] [NormedAddCommGroup E'] [InnerProductSpace 𝕜 E']
+    (f : E ≃ₗᵢ[𝕜] E') :
     (K.map (f.toLinearIsometry : E →ₗ[𝕜] E')).HasOrthogonalProjection :=
   HasOrthogonalProjection.map_linearIsometryEquiv K f
 
@@ -306,8 +308,12 @@ lemma ker_starProjection (U : Submodule 𝕜 E) [U.HasOrthogonalProjection] :
   rw [LinearMap.IsIdempotentElem.ker_eq_range U.isIdempotentElem_starProjection.toLinearMap,
     ← range_starProjection Uᗮ, starProjection_orthogonal, coe_sub, coe_id]
 
-theorem _root_.LinearIsometry.map_starProjection {E E' : Type*} [NormedAddCommGroup E]
-    [NormedAddCommGroup E'] [InnerProductSpace 𝕜 E] [InnerProductSpace 𝕜 E'] (f : E →ₗᵢ[𝕜] E')
+section
+
+variable {E E' : Type*} [AddCommGroup E] [NormedAddCommGroup E] [AddCommGroup E']
+  [NormedAddCommGroup E'] [InnerProductSpace 𝕜 E] [InnerProductSpace 𝕜 E']
+
+theorem _root_.LinearIsometry.map_starProjection (f : E →ₗᵢ[𝕜] E')
     (p : Submodule 𝕜 E) [p.HasOrthogonalProjection] [(p.map f.toLinearMap).HasOrthogonalProjection]
     (x : E) : f (p.starProjection x) = (p.map f.toLinearMap).starProjection (f x) := by
   refine (eq_starProjection_of_mem_of_inner_eq_zero ?_ fun y hy => ?_).symm
@@ -315,8 +321,7 @@ theorem _root_.LinearIsometry.map_starProjection {E E' : Type*} [NormedAddCommGr
   rcases hy with ⟨x', hx', rfl : f x' = y⟩
   rw [← f.map_sub, f.inner_map_map, starProjection_inner_eq_zero x x' hx']
 
-theorem _root_.LinearIsometry.map_starProjection' {E E' : Type*} [NormedAddCommGroup E]
-    [NormedAddCommGroup E'] [InnerProductSpace 𝕜 E] [InnerProductSpace 𝕜 E'] (f : E →ₗᵢ[𝕜] E')
+theorem _root_.LinearIsometry.map_starProjection' (f : E →ₗᵢ[𝕜] E')
     (p : Submodule 𝕜 E) [p.HasOrthogonalProjection]
     [(p.map (f : E →ₗ[𝕜] E')).HasOrthogonalProjection] (x : E) :
     f (p.starProjection x) = (p.map (f : E →ₗ[𝕜] E')).starProjection (f x) :=
@@ -324,13 +329,14 @@ theorem _root_.LinearIsometry.map_starProjection' {E E' : Type*} [NormedAddCommG
   f.map_starProjection p x
 
 /-- Orthogonal projection onto the `Submodule.map` of a subspace. -/
-theorem starProjection_map_apply {E E' : Type*} [NormedAddCommGroup E]
-    [NormedAddCommGroup E'] [InnerProductSpace 𝕜 E] [InnerProductSpace 𝕜 E'] (f : E ≃ₗᵢ[𝕜] E')
+theorem starProjection_map_apply (f : E ≃ₗᵢ[𝕜] E')
     (p : Submodule 𝕜 E) [p.HasOrthogonalProjection] (x : E') :
     (p.map (f.toLinearEquiv : E →ₗ[𝕜] E')).starProjection x =
       f (p.starProjection (f.symm x)) := by
   simpa only [f.coe_toLinearIsometry, f.apply_symm_apply] using
     (f.toLinearIsometry.map_starProjection' p (f.symm x)).symm
+
+end
 
 /-- The orthogonal projection onto the trivial submodule is the zero map. -/
 @[simp]
