@@ -41,7 +41,7 @@ namespace IsLocalization
 theorem lift_cardinalMk_le (S : Submonoid R) [IsLocalization S L] :
     Cardinal.lift.{u} #L ≤ Cardinal.lift.{v} #R := by
   have := Localization.cardinalMk_le S
-  rwa [← lift_le.{v}, lift_mk_eq'.2 ⟨(Localization.algEquiv S L).toEquiv⟩] at this
+  rwa [← lift_le.{v}, lift_mk_eq.2 ⟨(Localization.algEquiv S L).toEquiv⟩] at this
 
 /-- A localization always has cardinality less than or equal to the base ring. -/
 theorem cardinalMk_le {L : Type u} [CommSemiring L] [Algebra R L]
@@ -71,7 +71,7 @@ variable (L)
 theorem lift_cardinalMk (S : Submonoid R) [IsLocalization S L] (hS : S ≤ R⁰) :
     Cardinal.lift.{u} #L = Cardinal.lift.{v} #R := by
   have := Localization.cardinalMk hS
-  rwa [← lift_inj.{u, v}, lift_mk_eq'.2 ⟨(Localization.algEquiv S L).toEquiv⟩] at this
+  rwa [← lift_inj.{u, v}, lift_mk_eq.2 ⟨(Localization.algEquiv S L).toEquiv⟩] at this
 
 /-- If you do not localize at any zero-divisors, localization preserves cardinality. -/
 theorem cardinalMk (L : Type u) [CommRing L] [Algebra R L]

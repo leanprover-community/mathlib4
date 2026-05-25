@@ -382,7 +382,7 @@ theorem lift_rank_range_le (f : M →ₗ[R] M') : Cardinal.lift.{v}
     refine le_ciSup Cardinal.bddAbove_of_small ⟨rangeSplitting f '' s, ?_⟩
     apply LinearIndependent.of_comp f.rangeRestrict
     convert! li.comp (Equiv.Set.rangeSplittingImageEquiv f s) (Equiv.injective _) using 1
-  · exact (Cardinal.lift_mk_eq'.mpr ⟨Equiv.Set.rangeSplittingImageEquiv f s⟩).ge
+  · exact (Cardinal.lift_mk_eq.mpr ⟨Equiv.Set.rangeSplittingImageEquiv f s⟩).ge
 
 theorem rank_range_le (f : M →ₗ[R] M₁) : Module.rank R (LinearMap.range f) ≤ Module.rank R M := by
   simpa using lift_rank_range_le f

@@ -418,7 +418,7 @@ theorem range_natCast : range ((↑) : ℕ → Cardinal) = Iio ℵ₀ :=
   ext fun x => by simp only [mem_Iio, mem_range, eq_comm, lt_aleph0]
 
 theorem mk_eq_nat_iff {α : Type u} {n : ℕ} : #α = n ↔ Nonempty (α ≃ Fin n) := by
-  rw [← lift_mk_fin, ← lift_uzero #α, lift_mk_eq']
+  rw [← lift_mk_fin, ← lift_uzero #α, lift_mk_eq]
 
 theorem lt_aleph0_iff_finite {α : Type u} : #α < ℵ₀ ↔ Finite α := by
   simp only [lt_aleph0, mk_eq_nat_iff, finite_iff_exists_equiv_fin]
@@ -699,7 +699,7 @@ theorem mk_range_eq (f : α → β) (h : Injective f) : #(range f) = #α :=
 
 theorem mk_range_eq_of_injective {α : Type u} {β : Type v} {f : α → β} (hf : Injective f) :
     lift.{u} #(range f) = lift.{v} #α :=
-  lift_mk_eq'.mpr ⟨(Equiv.ofInjective f hf).symm⟩
+  lift_mk_eq.mpr ⟨(Equiv.ofInjective f hf).symm⟩
 
 @[deprecated mk_range_eq_of_injective (since := "2026-01-06")]
 theorem mk_range_eq_lift {α : Type u} {β : Type v} {f : α → β} (hf : Injective f) :

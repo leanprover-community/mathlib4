@@ -95,7 +95,7 @@ theorem mk_eq_mk_of_basis (v : Basis ι R M) (v' : Basis ι' R M) :
 /-- Given two bases indexed by `ι` and `ι'` of an `R`-module, where `R` satisfies the invariant
 basis number property, an equiv `ι ≃ ι'`. -/
 def Module.Basis.indexEquiv (v : Basis ι R M) (v' : Basis ι' R M) : ι ≃ ι' :=
-  (Cardinal.lift_mk_eq'.1 <| mk_eq_mk_of_basis v v').some
+  (Cardinal.lift_mk_eq.1 <| mk_eq_mk_of_basis v v').some
 
 theorem mk_eq_mk_of_basis' {ι' : Type w} (v : Basis ι R M) (v' : Basis ι' R M) : #ι = #ι' :=
   Cardinal.lift_inj.1 <| mk_eq_mk_of_basis v v'

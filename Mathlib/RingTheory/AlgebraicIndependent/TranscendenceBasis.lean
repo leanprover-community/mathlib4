@@ -419,7 +419,7 @@ theorem lift_cardinalMk_eq_trdeg (hx : IsTranscendenceBasis R x) :
     lift.{w} #ι = lift.{u} (trdeg R A) := by
   have := (faithfulSMul_iff_algebraMap_injective R A).mpr hx.1.algebraMap_injective
   rw [← matroid_cRank_eq, ← (matroid_isBase_iff.mpr hx.to_subtype_range).cardinalMk_eq_cRank,
-    lift_mk_eq'.mpr ⟨.ofInjective _ hx.1.injective⟩]
+    lift_mk_eq.mpr ⟨.ofInjective _ hx.1.injective⟩]
 
 theorem cardinalMk_eq_trdeg {ι : Type w} {x : ι → A} (hx : IsTranscendenceBasis R x) :
     #ι = trdeg R A := by
