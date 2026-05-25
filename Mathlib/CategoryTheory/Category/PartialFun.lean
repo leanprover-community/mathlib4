@@ -126,7 +126,7 @@ noncomputable def partialFunToPointed : PartialFun ⥤ Pointed where
     convert! Part.bind_toOption (g : PFun Y Z).toFun ((f : PFun X Y).toFun a)
 /-- The equivalence induced by `PartialFunToPointed` and `PointedToPartialFun`.
 `Part.equivOption` made functorial. -/
-@[simps!]
+@[simps! functor inverse]
 noncomputable def partialFunEquivPointed : PartialFun.{u} ≌ Pointed where
   functor := partialFunToPointed
   inverse := pointedToPartialFun
