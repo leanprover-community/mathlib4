@@ -296,20 +296,22 @@ instance instDiscreteTopPeriods [T2Space R] [hG : DiscreteTopology 𝒢] :
 
 end Ring
 
-/-- The image of `T : SL(2, ℤ)` in `GL(2, ℝ)` is the upper-triangular matrix `[1, 1; 0, 1]`. -/
+/-- The image of `T : SL(2, ℤ)` in `GL(2, S)` for any commutative ring `S` is the
+upper-triangular matrix `[1, 1; 0, 1]`. -/
 @[simp]
-lemma _root_.ModularGroup.mapGL_T_eq_upperRightHom :
-    Matrix.SpecialLinearGroup.mapGL ℝ (ModularGroup.T : SL(2, ℤ)) =
-      Matrix.GeneralLinearGroup.upperRightHom (1 : ℝ) := by
+lemma _root_.ModularGroup.mapGL_T_eq_upperRightHom {S : Type*} [CommRing S] :
+    Matrix.SpecialLinearGroup.mapGL S (ModularGroup.T : SL(2, ℤ)) =
+      Matrix.GeneralLinearGroup.upperRightHom (1 : S) := by
   ext i j
   fin_cases i <;> fin_cases j <;>
     simp [Matrix.SpecialLinearGroup.mapGL_coe_matrix, ModularGroup.coe_T]
 
-/-- The image of `T^n : SL(2, ℤ)` in `GL(2, ℝ)` is the upper-triangular matrix `[1, n; 0, 1]`. -/
+/-- The image of `T^n : SL(2, ℤ)` in `GL(2, S)` for any commutative ring `S` is the
+upper-triangular matrix `[1, n; 0, 1]`. -/
 @[simp]
-lemma _root_.ModularGroup.mapGL_T_zpow_eq_upperRightHom (n : ℤ) :
-    Matrix.SpecialLinearGroup.mapGL ℝ ((ModularGroup.T : SL(2, ℤ))^n) =
-      Matrix.GeneralLinearGroup.upperRightHom ((n : ℝ)) := by
+lemma _root_.ModularGroup.mapGL_T_zpow_eq_upperRightHom {S : Type*} [CommRing S] (n : ℤ) :
+    Matrix.SpecialLinearGroup.mapGL S ((ModularGroup.T : SL(2, ℤ))^n) =
+      Matrix.GeneralLinearGroup.upperRightHom ((n : S)) := by
   rw [Matrix.SpecialLinearGroup.mapGL_zpow, ModularGroup.mapGL_T_eq_upperRightHom,
     ← AddChar.map_zsmul_eq_zpow, zsmul_one]
 

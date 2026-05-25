@@ -55,10 +55,11 @@ lemma denom_upperRightHom (x : ℝ) (τ : ℂ) :
     denom (Matrix.GeneralLinearGroup.upperRightHom x) τ = 1 := by
   simp [denom, Matrix.GeneralLinearGroup.upperRightHom_apply]
 
-/-- The determinant of the upper-triangular matrix `upperRightHom x = [[1, x], [0, 1]]` is `1`. -/
+/-- The determinant of the upper-triangular matrix `upperRightHom x = [[1, x], [0, 1]]` is `1`,
+over any commutative ring. -/
 @[simp]
-lemma det_upperRightHom (x : ℝ) :
-    ((Matrix.GeneralLinearGroup.upperRightHom x).det.val : ℝ) = 1 := by
+lemma det_upperRightHom {R : Type*} [CommRing R] (x : R) :
+    ((Matrix.GeneralLinearGroup.upperRightHom x).det.val : R) = 1 := by
   rw [Matrix.GeneralLinearGroup.val_det_apply]
   simp [Matrix.GeneralLinearGroup.upperRightHom_apply, Matrix.det_fin_two]
 
