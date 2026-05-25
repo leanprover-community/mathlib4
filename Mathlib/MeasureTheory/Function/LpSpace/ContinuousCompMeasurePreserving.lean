@@ -37,7 +37,7 @@ namespace MeasureTheory
 namespace Lp
 
 variable (μ ν)
-variable (E : Type*) [NormedAddCommGroup E] {p : ℝ≥0∞} [Fact (1 ≤ p)]
+variable (E : Type*) [AddCommGroup E] [NormedAddCommGroup E] {p : ℝ≥0∞} [Fact (1 ≤ p)]
 
 /-- Let `X` and `Y` be R₁ topological spaces
 with Borel σ-algebras and measures `μ` and `ν`, respectively.
@@ -68,7 +68,7 @@ end Lp
 
 end MeasureTheory
 
-variable {E : Type*} [NormedAddCommGroup E] {p : ℝ≥0∞} [Fact (1 ≤ p)]
+variable {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] {p : ℝ≥0∞} [Fact (1 ≤ p)]
 
 theorem Filter.Tendsto.compMeasurePreservingLp {α : Type*} {l : Filter α}
     {f : α → Lp E p ν} {f₀ : Lp E p ν} {g : α → C(X, Y)} {g₀ : C(X, Y)}
