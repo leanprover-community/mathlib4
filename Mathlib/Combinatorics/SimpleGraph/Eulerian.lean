@@ -68,18 +68,24 @@ private theorem exists_adj_of_mem_edgeSet_and_mem
 /-! ### Bound trail length by the number of edges -/
 
 section Fintype
-variable [Fintype V] [DecidableEq V] [DecidableRel G.Adj]
+variable [Fintype V] [DecidableRel G.Adj]
 
 theorem IsTrail.length_edges_le_card_edgeFinset
     {u v : V} {p : G.Walk u v} (hp : p.IsTrail) :
     p.edges.length ≤ G.edgeFinset.card := by
+  classical
   have hsub : p.edges.toFinset ⊆ G.edgeFinset := fun e he ↦ by
     rw [List.mem_toFinset] at he
     simpa using p.edges_subset_edgeSet he
   rw [← List.toFinset_card_of_nodup hp.edges_nodup]
   exact Finset.card_le_card hsub
 
+end Fintype
+
 /-! ### Existence of a length-maximal walk satisfying a predicate -/
+
+section Finite
+variable [Finite V]
 
 /-- Existence of a walk of maximal edge-length among walks satisfying the predicate `P`.
 Captures the common pattern behind every maximal-trail construction below. -/
@@ -90,6 +96,7 @@ private theorem exists_maximal_walk
     ∃ x y, ∃ p : G.Walk x y, P p ∧
       ∀ ⦃a b⦄ (q : G.Walk a b), P q → q.edges.length ≤ p.edges.length := by
   classical
+  let _ := Fintype.ofFinite V
   set S : Finset ℕ := (Finset.range (G.edgeFinset.card + 1)).filter
     fun n => ∃ x y, ∃ p : G.Walk x y, P p ∧ p.edges.length = n with hS
   have h0 : 0 ∈ S :=
@@ -102,7 +109,7 @@ private theorem exists_maximal_walk
   exact Finset.mem_range.mpr (Nat.lt_succ_of_le
     (hP_trail q hq).length_edges_le_card_edgeFinset)
 
-end Fintype
+end Finite
 
 /-! ### Globally maximal trails -/
 
@@ -142,15 +149,17 @@ theorem reverse (hpmax : IsMaximalTrail p) : IsMaximalTrail p.reverse := by
 
 end IsMaximalTrail
 
-section Fintype
-variable [Fintype V] [DecidableEq V] [DecidableRel G.Adj]
+section Finite
+variable [Finite V]
 
 theorem exists_isMaximalTrail (u₀ : V) :
-    ∃ x y, ∃ p : G.Walk x y, IsMaximalTrail p :=
-  exists_maximal_walk (P := fun _ _ p => p.IsTrail) u₀ (by simp)
+    ∃ x y, ∃ p : G.Walk x y, IsMaximalTrail p := by
+  classical
+  let _ := Fintype.ofFinite V
+  exact exists_maximal_walk (P := fun _ _ p => p.IsTrail) u₀ (by simp)
     (fun _ _ _ h => h)
 
-end Fintype
+end Finite
 
 /-! ### Degree counts at the endpoints of a trail -/
 
@@ -192,18 +201,24 @@ theorem IsMaximalTrail.countP_edges_right_eq_degree
     ← G.card_incidenceFinset_eq_degree v]
   exact congrArg Finset.card hpmax.filter_edgesFinset_eq_incidenceFinset
 
+omit [DecidableEq V] in
+open scoped Classical in
 /-- If a maximal trail has distinct endpoints, the final endpoint has odd degree. -/
 theorem IsMaximalTrail.odd_degree_right_of_ne
     {u v : V} {p : G.Walk u v} (hpmax : IsMaximalTrail p) (huv : u ≠ v) :
-    Odd (G.degree v) :=
+  Odd (G.degree v) :=
   hpmax.countP_edges_right_eq_degree ▸ hpmax.isTrail.odd_countP_edges_right_of_ne huv
 
+omit [DecidableEq V] in
+open scoped Classical in
 /-- Symmetric version: starting vertex of a non-closed maximal trail has odd degree. -/
 theorem IsMaximalTrail.odd_degree_left_of_ne
     {u v : V} {p : G.Walk u v} (hpmax : IsMaximalTrail p) (huv : u ≠ v) :
-    Odd (G.degree u) :=
+  Odd (G.degree u) :=
   hpmax.reverse.odd_degree_right_of_ne huv.symm
 
+omit [DecidableEq V] in
+open scoped Classical in
 /-- In an all-even graph, a maximal trail is closed. -/
 theorem IsMaximalTrail.isClosed_of_forall_even_degree
     {u v : V} {p : G.Walk u v} (hpmax : IsMaximalTrail p)
@@ -291,6 +306,7 @@ vertices as endpoints (so it is not closed), and then a parity argument on a
 "maximal trail avoiding `p`'s edges" shows there is no unused edge.
 -/
 
+omit [DecidableEq V] in
 /-- If exactly two vertices have odd degree, any other vertex has even degree. -/
 private theorem all_non_endpoint_even_of_card_odd_degree_eq_two
     {u v : V} (huv : u ≠ v)
@@ -318,8 +334,6 @@ private theorem all_non_endpoint_even_of_card_odd_degree_eq_two
   have hle := ({U, W, X} : Finset {y : V | Odd (G.degree y)}).card_le_univ
   omega
 
-end Fintype
-
 /-- A trail length-maximal among trails starting at `x` and avoiding `p.edges`. -/
 def IsMaximalAvoidingFrom
     {u v x z : V} (p : G.Walk u v) (q : G.Walk x z) : Prop :=
@@ -331,14 +345,18 @@ namespace IsMaximalAvoidingFrom
 
 variable {u v x z : V} {p : G.Walk u v} {q : G.Walk x z}
 
+omit [Fintype V] [DecidableEq V] [DecidableRel G.Adj] in
 protected theorem isTrail (h : IsMaximalAvoidingFrom p q) : q.IsTrail := h.1
 
+omit [Fintype V] [DecidableEq V] [DecidableRel G.Adj] in
 theorem disjoint (h : IsMaximalAvoidingFrom p q) : q.edges.Disjoint p.edges := h.2.1
 
+omit [Fintype V] [DecidableEq V] [DecidableRel G.Adj] in
 theorem length_le (h : IsMaximalAvoidingFrom p q) {w : V} {r : G.Walk x w}
     (hr : r.IsTrail) (hdisj : r.edges.Disjoint p.edges) :
     r.edges.length ≤ q.edges.length := h.2.2 r hr hdisj
 
+omit [Fintype V] [DecidableEq V] [DecidableRel G.Adj] in
 /-- If `q` is maximal among trails from `x` avoiding `p.edges`, then any edge incident to
 its endpoint that is also unused by `p` is already used by `q`. -/
 theorem not_unused_edge_at_end (hqmax : IsMaximalAvoidingFrom p q)
@@ -365,12 +383,15 @@ theorem not_unused_edge_at_end (hqmax : IsMaximalAvoidingFrom p q)
 
 end IsMaximalAvoidingFrom
 
-section Fintype
-variable [Fintype V] [DecidableEq V] [DecidableRel G.Adj]
+section Finite
+variable [Finite V]
 
+omit [Fintype V] [DecidableEq V] [DecidableRel G.Adj] in
 /-- Existence of a maximal trail avoiding the edges of a given walk. -/
 private theorem exists_isMaximalAvoidingFrom {u v : V} (p : G.Walk u v) (x : V) :
     ∃ z, ∃ q : G.Walk x z, IsMaximalAvoidingFrom p q := by
+  classical
+  let _ := Fintype.ofFinite V
   obtain ⟨a, z, q, hqP, hmax⟩ := exists_maximal_walk
     (P := fun ⦃a b⦄ (q : G.Walk a b) =>
       a = x ∧ q.IsTrail ∧ q.edges.Disjoint p.edges)
@@ -379,6 +400,8 @@ private theorem exists_isMaximalAvoidingFrom {u v : V} (p : G.Walk u v) (x : V) 
   obtain ⟨rfl, hqTrail, hqDisj⟩ := hqP
   exact ⟨z, q, hqTrail, hqDisj, fun w r hrTrail hrDisj =>
     hmax r ⟨rfl, hrTrail, hrDisj⟩⟩
+
+end Finite
 
 /-! ### Parity arguments for trails with two odd endpoints -/
 
@@ -466,6 +489,8 @@ private theorem IsMaximalAvoidingFrom.even_countP_edges_right_of_endpoints
     obtain ⟨d, hd⟩ := Nat.not_even_iff_odd.mp hDne
     exact ⟨d - a, by omega⟩
 
+omit [DecidableEq V] in
+open scoped Classical in
 /-- A maximal trail avoiding `p` (with `p` having two odd endpoints) is closed. -/
 private theorem IsMaximalAvoidingFrom.isClosed_of_endpoints
     {u v x z : V} {p : G.Walk u v} {q : G.Walk x z}
@@ -490,7 +515,8 @@ private theorem IsMaximalAvoidingFrom.length_pos_of_unused_adj_start
     IsTrail.cons (w := (nil : G.Walk y y)) (by simp) hxy (by simp)
   have hrDisj : r.edges.Disjoint p.edges := by
     intro e her hep
-    have heq : e = s(x, y) := by simp [r] at her; exact her
+    have heq : e = s(x, y) := by
+      simpa [r] using her
     exact hxy_unused (heq ▸ hep)
   have hle := hqmax.length_le hrTrail hrDisj
   have hrLen : r.edges.length = 1 := by simp [r]
@@ -535,6 +561,8 @@ private theorem IsTrail.exists_longer_of_unused_closed_detour
 
 /-! ### Two-odd-vertex case: putting it together -/
 
+omit [DecidableEq V] in
+open scoped Classical in
 /-- If a trail has an unused edge and there are exactly two odd-degree vertices, then
 there is a closed detour from a support vertex using only unused edges. -/
 private theorem exists_unused_closed_detour
@@ -557,6 +585,8 @@ private theorem exists_unused_closed_detour
   refine ⟨x, q, hx, hqmax.isTrail, ?_, hqmax.disjoint⟩
   intro hnil; rw [hnil] at hpos; simp at hpos
 
+omit [DecidableEq V] in
+open scoped Classical in
 /-- In a connected graph with exactly two odd-degree vertices, a globally maximal trail
 uses every edge. -/
 private theorem IsMaximalTrail.mem_edges_of_connected_card_two
@@ -579,6 +609,8 @@ private theorem card_odd_degree_eq_zero_of_forall_even
     Fintype.card {v : V | Odd (G.degree v)} = 0 :=
   Fintype.card_eq_zero_iff.mpr ⟨fun x => Nat.not_even_iff_odd.mpr x.2 (heven x)⟩
 
+omit [DecidableEq V] in
+open scoped Classical in
 /-- In a connected graph with exactly two odd-degree vertices, a maximal trail is not
 closed. -/
 private theorem IsMaximalTrail.not_closed_of_card_odd_degree_eq_two
