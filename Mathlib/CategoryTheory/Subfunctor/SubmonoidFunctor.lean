@@ -156,7 +156,7 @@ variable (p : M ⟶ M') (S : SubmonoidFunctor M) (S' : SubmonoidFunctor M')
 then the morphism factors through it. -/
 @[simps! app]
 def lift : M ⟶ S'.toFunctor where
-  app U := MonCat.ofHom <| MonoidHom.codRestrict (p.app U).hom _ fun x ↦ hp _ (by simp; )
+  app U := MonCat.ofHom <| MonoidHom.codRestrict (p.app U).hom _ fun x ↦ hp _ (by simp)
 
 @[reassoc (attr := simp)]
 theorem lift_ι : lift p S' hp ≫ S'.ι = p := rfl
