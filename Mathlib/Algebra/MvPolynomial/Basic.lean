@@ -597,9 +597,9 @@ theorem coeff_C_of_ne_zero {m : σ →₀ ℕ} (h : m ≠ 0) {a : R} : coeff m (
   classical rw [coeff_C, if_neg h.symm]
 
 @[simp]
-theorem coeff_add_single_C {m : σ →₀ ℕ} {a : R} {i : σ} :
-    coeff (m + Finsupp.single i 1) (C a) = 0 :=
-  coeff_C_of_ne_zero <| fun H ↦ by simpa using congr($(H) i)
+theorem coeff_add_single_C {n : ℕ} [NeZero n] {m : σ →₀ ℕ} {a : R} {i : σ} :
+    coeff (m + Finsupp.single i n) (C a) = 0 :=
+  coeff_C_of_ne_zero <| fun H ↦ by simpa [NeZero.ne] using congr($(H) i)
 
 lemma eq_C_of_isEmpty [IsEmpty σ] (p : MvPolynomial σ R) :
     p = C (p.coeff 0) := by
