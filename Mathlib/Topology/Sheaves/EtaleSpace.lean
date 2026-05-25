@@ -56,8 +56,8 @@ structure EtaleSpace (F : Presheaf C X) where
 namespace EtaleSpace
 
 instance (F : Presheaf C X) : TopologicalSpace F.EtaleSpace :=
-  .generateFrom {s | ∃ U, ∃ f : ToType (F.obj (op U)),
-    s = {g | ∃ h, g.germ = F.germ U g.base h f}}
+  .generateFrom
+    {{g | ∃ h, g.germ = F.germ U g.base h f} | (U : Opens X) (f : ToType (F.obj <| op U))}
 
 variable {F : Presheaf C X}
 
