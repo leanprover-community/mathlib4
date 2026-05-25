@@ -55,14 +55,6 @@ lemma denom_upperRightHom (x : ℝ) (τ : ℂ) :
     denom (Matrix.GeneralLinearGroup.upperRightHom x) τ = 1 := by
   simp [denom, Matrix.GeneralLinearGroup.upperRightHom_apply]
 
-/-- The determinant of the upper-triangular matrix `upperRightHom x = [[1, x], [0, 1]]` is `1`,
-over any commutative ring. -/
-@[simp]
-lemma det_upperRightHom {R : Type*} [CommRing R] (x : R) :
-    ((Matrix.GeneralLinearGroup.upperRightHom x).det.val : R) = 1 := by
-  rw [Matrix.GeneralLinearGroup.val_det_apply]
-  simp [Matrix.GeneralLinearGroup.upperRightHom_apply, Matrix.det_fin_two]
-
 /-- The Möbius action of `upperRightHom x` on `τ : ℍ` is the shift `x +ᵥ τ`. -/
 @[simp]
 lemma upperRightHom_smul (x : ℝ) (τ : ℍ) :
@@ -93,7 +85,7 @@ lemma slash_T_zpow_apply_general (k : ℤ) (j : ℤ) (g : ℍ → ℂ) (τ : ℍ
   change (g ∣[k] ((Matrix.SpecialLinearGroup.mapGL ℝ (ModularGroup.T : SL(2, ℤ)))^j)) τ = _
   rw [← Matrix.SpecialLinearGroup.mapGL_zpow, ModularGroup.mapGL_T_zpow_eq_upperRightHom,
     slash_apply, σ_upperRightHom_apply, upperRightHom_smul, denom_upperRightHom,
-    det_upperRightHom]
+    Matrix.GeneralLinearGroup.det_upperRightHom]
   simp
 
 section Generators
