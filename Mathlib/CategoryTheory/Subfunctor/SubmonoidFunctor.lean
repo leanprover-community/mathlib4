@@ -50,7 +50,7 @@ def toMonoidFunctor (S : SubmonoidFunctor R) : C ⥤ MonCat.{w} where
   map i :=
     MonCat.ofHom <| ((R.map i).hom.submonoidComap (S.obj _)).comp <| Submonoid.inclusion (S.map i)
 
-/-- the subfunctor associated to a functor of submonoids -/
+/-- The subfunctor associated to a functor of submonoids. -/
 @[simps obj]
 def toSubfunctor (S : SubmonoidFunctor R) : Subfunctor (R ⋙ forget MonCat) where
   obj _ := (S.obj _).carrier
