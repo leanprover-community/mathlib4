@@ -96,6 +96,7 @@ theorem nondegenerate_iff_forall_eq_zero :
     separatingRight_iff_forall_mulVec_eq_zero]
 
 omit [Fintype m] [Fintype n] in
+@[simp]
 theorem separatingLeft_transpose_iff [Finite m] [Finite n] :
     Mᵀ.SeparatingLeft ↔ M.SeparatingRight := by
   have := Fintype.ofFinite m
@@ -105,6 +106,7 @@ theorem separatingLeft_transpose_iff [Finite m] [Finite n] :
 alias ⟨_, SeparatingRight.transpose⟩ := separatingLeft_transpose_iff
 
 omit [Fintype m] [Fintype n] in
+@[simp]
 theorem separatingRight_transpose_iff [Finite m] [Finite n] :
     Mᵀ.SeparatingRight ↔ M.SeparatingLeft := by
   have := Fintype.ofFinite m
@@ -114,6 +116,7 @@ theorem separatingRight_transpose_iff [Finite m] [Finite n] :
 alias ⟨_, SeparatingLeft.transpose⟩ := separatingRight_transpose_iff
 
 omit [Fintype m] [Fintype n] in
+@[simp]
 theorem nondegenerate_transpose_iff [Finite m] [Finite n] : Mᵀ.Nondegenerate ↔ M.Nondegenerate := by
   rw [nondegenerate_iff, nondegenerate_iff, separatingLeft_transpose_iff,
     separatingRight_transpose_iff, and_comm]
