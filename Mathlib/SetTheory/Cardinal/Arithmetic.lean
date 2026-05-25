@@ -616,11 +616,16 @@ section Function
 
 variable {α β : Type u} {β' : Type v}
 
-theorem mk_equiv_eq_zero_iff_lift_ne : #(α ≃ β') = 0 ↔ ¬ #α =ₗ #β' := by
+@[simp]
+theorem mk_equiv_eq_zero_iff_not_liftEq : #(α ≃ β') = 0 ↔ ¬ #α =ₗ #β' := by
   rw [mk_eq_zero_iff, ← not_nonempty_iff, ← mk_liftEq]
 
+@[deprecated (since := "2026-05-25")]
+alias mk_equiv_eq_zero_iff_lift_ne := mk_equiv_eq_zero_iff_not_liftEq
+
+@[deprecated mk_equiv_eq_zero_iff_not_liftEq (since := "2026-05-25")]
 theorem mk_equiv_eq_zero_iff_ne : #(α ≃ β) = 0 ↔ #α ≠ #β := by
-  rw [mk_equiv_eq_zero_iff_lift_ne, liftEq_iff_eq]
+  simp
 
 /-- This lemma makes lemmas assuming `Infinite α` applicable to the situation where we have
   `Infinite β` instead. -/
