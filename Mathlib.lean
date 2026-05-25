@@ -5686,7 +5686,7 @@ public import Mathlib.NumberTheory.LSeries.ZMod
 public import Mathlib.NumberTheory.LSeries.ZetaZeros
 public import Mathlib.NumberTheory.LegendreSymbol.AddCharacter
 public import Mathlib.NumberTheory.LegendreSymbol.Basic
-public import Mathlib.NumberTheory.LegendreSymbol.Cyclotomic
+public import Mathlib.NumberTheory.LegendreSymbol.Complex
 public import Mathlib.NumberTheory.LegendreSymbol.GaussEisensteinLemmas
 public import Mathlib.NumberTheory.LegendreSymbol.JacobiSymbol
 public import Mathlib.NumberTheory.LegendreSymbol.QuadraticChar.Basic

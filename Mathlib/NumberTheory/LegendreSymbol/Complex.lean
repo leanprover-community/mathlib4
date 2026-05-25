@@ -26,7 +26,7 @@ lemma ringChar_ne : ringChar ℂ ≠ ringChar F := by
   simpa only [ringChar.eq_zero] using (CharP.ringChar_ne_zero_of_finite F).symm
 
 /-- A primitive additive character on the finite field `F` with values in `ℂ`. -/
-@[expose] public noncomputable def FiniteField.primitiveChar_to_Complex : AddChar F ℂ := by
+public noncomputable def FiniteField.primitiveChar_to_Complex : AddChar F ℂ := by
   letI ch := primitiveChar F ℂ <| by exact ringChar_ne F
   refine MonoidHom.compAddChar ?_ ch.char
   exact (IsCyclotomicExtension.algEquiv {(ch.n : ℕ)} ℂ (CyclotomicField ch.n ℂ) ℂ).toMonoidHom
