@@ -183,7 +183,6 @@ lemma tensorModelOfHasCoeffsHom_comp :
     AlgEquiv.symm_comp, AlgHom.id_comp]
   ext x
   simp
-  simpa using (P.quotientEquiv_mk (MvPolynomial.X x)).symm
 
 lemma tensorModelOfHasCoeffsInv_comp :
     (P.tensorModelOfHasCoeffsInv R₀).comp (P.tensorModelOfHasCoeffsHom R₀) = AlgHom.id R _ := by

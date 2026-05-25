@@ -78,7 +78,7 @@ def auxHom : (MvPolynomial Unit R) ⧸ (Ideal.span { C r * X () - 1 }) →ₐ[R]
 
 @[simp]
 private lemma auxHom_mk (p : MvPolynomial Unit R) :
-    auxHom S r p = aeval (S₁ := S) (fun _ ↦ invSelf r) p :=
+    auxHom S r ((Ideal.Quotient.mk _) p) = aeval (S₁ := S) (fun _ ↦ invSelf r) p :=
   rfl
 
 set_option backward.privateInPublic true in
@@ -97,7 +97,7 @@ private lemma auxHom_auxInv : (auxHom S r).toRingHom.comp (auxInv S r) = RingHom
   apply IsLocalization.ringHom_ext (Submonoid.powers r)
   ext x
   simp only [auxInv, RingHom.coe_comp, Function.comp_apply]
-  simpa using auxHom_mk S r (C x)
+  simp
 
 private lemma auxInv_auxHom : (auxInv S r).comp (auxHom (S := S) r).toRingHom = RingHom.id _ := by
   rw [← RingHom.cancel_right (Ideal.Quotient.mk_surjective)]
@@ -106,13 +106,13 @@ private lemma auxInv_auxHom : (auxInv S r).comp (auxHom (S := S) r).toRingHom = 
       Function.comp_apply, RingHomCompTriple.comp_eq]
     rw [show (auxHom S r) ((Ideal.Quotient.mk (Ideal.span {C r * X () - 1})) (C x)) =
       algebraMap R S x by
-        simpa using auxHom_mk S r (C x)]
+        simp]
     simp [Away.lift_eq]
   · simp only [auxInv, AlgHom.toRingHom_eq_coe, RingHom.coe_comp, RingHom.coe_coe,
       Function.comp_apply]
     rw [show (auxHom S r) ((Ideal.Quotient.mk (Ideal.span {C r * X () - 1})) (X x)) =
       invSelf r by
-        simpa using auxHom_mk S r (X x)]
+        simp]
     simp only [Away.invSelf, Away.lift]
     rw [lift_mk'_spec]
     change (Ideal.Quotient.mk _ (1 : MvPolynomial Unit R)) =
