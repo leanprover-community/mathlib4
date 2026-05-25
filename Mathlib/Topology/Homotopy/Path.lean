@@ -297,7 +297,7 @@ protected def Quotient (x₀ x₁ : X) :=
 attribute [local instance] Homotopic.setoid
 
 instance : Inhabited (Homotopic.Quotient () ()) :=
-  fast_instance% ⟨Quotient.mk' <| Path.refl ()⟩
+  ⟨Quotient.mk' <| Path.refl ()⟩
 
 namespace Quotient
 

@@ -327,7 +327,7 @@ theorem mk_zero_pow (a : A 0) (n : ℕ) : mk _ (a ^ n) = mk _ a ^ n :=
 
 /-- The `Monoid` structure derived from `GMonoid A`. -/
 instance (priority := 900) GradeZero.monoid : Monoid (A 0) :=
-  fast_instance% Function.Injective.monoid (mk 0) sigma_mk_injective rfl mk_zero_smul mk_zero_pow
+  Function.Injective.monoid (mk 0) sigma_mk_injective rfl mk_zero_smul mk_zero_pow
 
 end Monoid
 
@@ -337,8 +337,7 @@ variable [AddCommMonoid ι] [GCommMonoid A]
 
 /-- The `CommMonoid` structure derived from `GCommMonoid A`. -/
 instance (priority := 900) GradeZero.commMonoid : CommMonoid (A 0) :=
-  fast_instance% Function.Injective.commMonoid (mk 0) sigma_mk_injective rfl mk_zero_smul
-    mk_zero_pow
+  Function.Injective.commMonoid (mk 0) sigma_mk_injective rfl mk_zero_smul mk_zero_pow
 
 end Monoid
 
@@ -355,7 +354,7 @@ def mkZeroMonoidHom : A 0 →* GradedMonoid A where
 
 /-- Each grade `A i` derives an `A 0`-action structure from `GMonoid A`. -/
 instance GradeZero.mulAction {i} : MulAction (A 0) (A i) :=
-  fast_instance% letI := MulAction.compHom (GradedMonoid A) (mkZeroMonoidHom A)
+  letI := MulAction.compHom (GradedMonoid A) (mkZeroMonoidHom A)
   Function.Injective.mulAction (mk i) sigma_mk_injective mk_zero_smul
 
 end MulAction

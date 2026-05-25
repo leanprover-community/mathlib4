@@ -549,7 +549,7 @@ theorem liftRel_iff_coeFn {r : β → γ → Prop} {f : α →ₘ[μ] β} {g : �
 section Order
 
 instance instPreorder [Preorder β] : Preorder (α →ₘ[μ] β) :=
-  fast_instance% Preorder.lift toGerm
+  Preorder.lift toGerm
 
 @[simp]
 theorem mk_le_mk [Preorder β] {f g : α → β} (hf hg) : (mk f hf : α →ₘ[μ] β) ≤ mk g hg ↔ f ≤ᵐ[μ] g :=
@@ -560,7 +560,7 @@ theorem coeFn_le [Preorder β] {f g : α →ₘ[μ] β} : (f : α → β) ≤ᵐ
   liftRel_iff_coeFn.symm
 
 instance instPartialOrder [PartialOrder β] : PartialOrder (α →ₘ[μ] β) :=
-  fast_instance% PartialOrder.lift toGerm toGerm_injective
+  PartialOrder.lift toGerm toGerm_injective
 
 section Lattice
 

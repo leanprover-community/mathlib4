@@ -51,11 +51,6 @@ file used by the library's own linters.
   names used within namespaces (e.g., `lt_iff_val_lt_val`). Only processes files that exist in the
   current repository. Safe to run multiple times; processes all warnings in a single pass.
   Usage: `python3 scripts/fix_deprecations.py`
-- `sweep_fast_instance.py`
-  Wraps `instance` bodies whose RHS uses a known smart constructor with `fast_instance%`,
-  then rebuilds the file and reverts the edit if it breaks the build or triggers the
-  `linter.fast_instance_existing` warning. Supports parallel sweeps over a subtree.
-  Usage: `python3 scripts/sweep_fast_instance.py [-j N] [--dry-run] <path>`
 - `add_deprecations.sh` is a text-based script that automatically adds deprecation statements.
   It assumes that the only difference between master and the current status of the PR consists
   of renames. More precisely, any change on a line that contains a declaration name

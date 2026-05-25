@@ -87,8 +87,7 @@ noncomputable def quotientEquiv : P.Quotient ≃ₐ[P.Ring] S :=
     rw [Algebra.ofId_apply, P.algebraMap_apply, P.aeval_val_σ]
 
 @[simp]
-lemma quotientEquiv_mk (p : P.Ring) :
-    P.quotientEquiv (Ideal.Quotient.mk P.ker p) = algebraMap P.Ring S p :=
+lemma quotientEquiv_mk (p : P.Ring) : P.quotientEquiv p = algebraMap P.Ring S p :=
   rfl
 
 @[simp]

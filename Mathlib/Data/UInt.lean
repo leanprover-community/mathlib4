@@ -90,14 +90,14 @@ run_cmd
 
       open $typeName (toBitVec_one toBitVec_mul toBitVec_pow) in
       instance instCommMonoid : CommMonoid $typeName :=
-        fast_instance% Function.Injective.commMonoid toBitVec toBitVec_injective
+        Function.Injective.commMonoid toBitVec toBitVec_injective
           toBitVec_one (fun _ _ => toBitVec_mul) (fun _ _ => toBitVec_pow _ _)
 
       open $typeName (
         toBitVec_zero toBitVec_add toBitVec_mul toBitVec_neg toBitVec_sub toBitVec_nsmul
         toBitVec_zsmul) in
       instance instNonUnitalCommRing : NonUnitalCommRing $typeName :=
-        fast_instance% Function.Injective.nonUnitalCommRing toBitVec toBitVec_injective
+        Function.Injective.nonUnitalCommRing toBitVec toBitVec_injective
           toBitVec_zero (fun _ _ => toBitVec_add) (fun _ _ => toBitVec_mul) (fun _ => toBitVec_neg)
           (fun _ _ => toBitVec_sub)
           (fun _ _ => toBitVec_nsmul _ _) (fun _ _ => toBitVec_zsmul _ _)

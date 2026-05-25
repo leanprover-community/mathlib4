@@ -517,7 +517,7 @@ private lemma uniformity_aux : 𝓤 (PiLp p β) = 𝓤[UniformSpace.comap ofLp i
   rfl
 
 instance bornology (p : ℝ≥0∞) (β : ι → Type*) [∀ i, Bornology (β i)] :
-    Bornology (PiLp p β) := fast_instance% Bornology.induced ofLp
+    Bornology (PiLp p β) := Bornology.induced ofLp
 
 set_option backward.privateInPublic true in
 private lemma cobounded_aux : @cobounded _ PseudoMetricSpace.toBornology = cobounded (PiLp p α) :=
@@ -529,7 +529,7 @@ end Aux
 /-! ### Instances on finite `L^p` products -/
 
 instance topologicalSpace [∀ i, TopologicalSpace (β i)] : TopologicalSpace (PiLp p β) :=
-  fast_instance% Pi.topologicalSpace.induced ofLp
+  Pi.topologicalSpace.induced ofLp
 
 @[fun_prop, continuity]
 theorem continuous_ofLp [∀ i, TopologicalSpace (β i)] : Continuous (@ofLp p (∀ i, β i)) :=

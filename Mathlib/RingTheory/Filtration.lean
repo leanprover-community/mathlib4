@@ -159,10 +159,10 @@ theorem iInf_N {ι : Sort*} (f : ι → I.Filtration M) : (iInf f).N = ⨅ i, (f
   congr_arg sInf (Set.range_comp _ _).symm
 
 instance : PartialOrder (I.Filtration M) :=
-  fast_instance% PartialOrder.lift _ fun _ _ ↦ Ideal.Filtration.ext
+  PartialOrder.lift _ fun _ _ ↦ Ideal.Filtration.ext
 
 instance : CompleteLattice (I.Filtration M) :=
-  fast_instance% Function.Injective.completeLattice Ideal.Filtration.N
+  Function.Injective.completeLattice Ideal.Filtration.N
     (fun _ _ ↦ Ideal.Filtration.ext) .rfl .rfl sup_N inf_N
     (fun _ ↦ sSup_image) (fun _ ↦ sInf_image) top_N bot_N
 

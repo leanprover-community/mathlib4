@@ -133,7 +133,7 @@ instance Quot.instMeasurableSpace {α} {r : α → α → Prop} [m : MeasurableS
 
 instance Quotient.instMeasurableSpace {α} {s : Setoid α} [m : MeasurableSpace α] :
     MeasurableSpace (Quotient s) :=
-  fast_instance% m.map Quotient.mk''
+  m.map Quotient.mk''
 
 @[to_additive]
 instance QuotientGroup.measurableSpace {G} [Group G] [MeasurableSpace G] (S : Subgroup G) :

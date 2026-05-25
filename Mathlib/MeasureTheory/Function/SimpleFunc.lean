@@ -514,8 +514,7 @@ instance instAddCommMonoid [AddCommMonoid β] : AddCommMonoid (α →ₛ β) :=
     coe_injective coe_zero coe_add fun _ _ => coe_smul _ _
 
 instance instAddGroup [AddGroup β] : AddGroup (α →ₛ β) :=
-  fast_instance% Function.Injective.addGroup
-    (fun f => show α → β from f) coe_injective coe_zero coe_add coe_neg
+  Function.Injective.addGroup (fun f => show α → β from f) coe_injective coe_zero coe_add coe_neg
     coe_sub (fun _ _ => coe_smul _ _) fun _ _ => coe_smul _ _
 
 instance instAddCommGroup [AddCommGroup β] : AddCommGroup (α →ₛ β) :=
@@ -664,7 +663,7 @@ end Star
 section Preorder
 variable [Preorder β] {s : Set α} {f f₁ f₂ g g₁ g₂ : α →ₛ β} {hs : MeasurableSet s}
 
-instance instPreorder : Preorder (α →ₛ β) := fast_instance% Preorder.lift (⇑)
+instance instPreorder : Preorder (α →ₛ β) := Preorder.lift (⇑)
 
 @[simp, norm_cast, gcongr] lemma coe_le_coe : ⇑f ≤ g ↔ f ≤ g := .rfl
 @[simp, norm_cast, gcongr] lemma coe_lt_coe : ⇑f < g ↔ f < g := .rfl

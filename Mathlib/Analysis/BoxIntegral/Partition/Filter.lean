@@ -207,7 +207,7 @@ def equivProd : IntegrationParams ≃ Bool × Boolᵒᵈ × Boolᵒᵈ where
   invFun l := ⟨l.1, OrderDual.ofDual l.2.1, OrderDual.ofDual l.2.2⟩
 
 instance : PartialOrder IntegrationParams :=
-  fast_instance% PartialOrder.lift equivProd equivProd.injective
+  PartialOrder.lift equivProd equivProd.injective
 
 /-- Auxiliary `OrderIso` with a product type used to lift a `BoundedOrder` structure. -/
 def isoProd : IntegrationParams ≃o Bool × Boolᵒᵈ × Boolᵒᵈ :=

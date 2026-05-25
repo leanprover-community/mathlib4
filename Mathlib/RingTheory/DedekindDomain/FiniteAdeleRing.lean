@@ -127,7 +127,7 @@ instance : Algebra K (FiniteAdeleRing R K) := (FiniteAdeleRing.algebraMap R K).t
 theorem algebraMap_apply (k : K) (v : HeightOneSpectrum R) :
     algebraMap K (FiniteAdeleRing R K) k v = k := rfl
 
-instance : Algebra R (FiniteAdeleRing R K) := fast_instance% Algebra.compHom _ (algebraMap R K)
+instance : Algebra R (FiniteAdeleRing R K) := Algebra.compHom _ (algebraMap R K)
 
 instance : IsScalarTower R K (FiniteAdeleRing R K) :=
   IsScalarTower.of_algebraMap_eq' rfl

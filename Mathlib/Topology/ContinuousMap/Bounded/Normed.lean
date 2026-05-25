@@ -514,7 +514,7 @@ instance instSMul' : SMul (α →ᵇ 𝕜) (α →ᵇ β) where
           mul_le_mul (f.norm_coe_le_norm _) (g.norm_coe_le_norm _) (norm_nonneg _) (norm_nonneg _)
 
 instance instModule' : Module (α →ᵇ 𝕜) (α →ᵇ β) :=
-  fast_instance% Module.ofMinimalAxioms
+  Module.ofMinimalAxioms
       (fun c _ _ => ext fun a => smul_add (c a) _ _)
       (fun _ _ _ => ext fun _ => add_smul _ _ _)
       (fun _ _ _ => ext fun _ => mul_smul _ _ _)
@@ -535,7 +535,7 @@ variable [TopologicalSpace α]
   [NormedAddCommGroup β] [Lattice β] [HasSolidNorm β] [IsOrderedAddMonoid β]
 
 instance instPartialOrder : PartialOrder (α →ᵇ β) :=
-  fast_instance% PartialOrder.lift (fun f => f.toFun) (by simp [Injective])
+  PartialOrder.lift (fun f => f.toFun) (by simp [Injective])
 
 instance instSup : Max (α →ᵇ β) where
   max f g :=

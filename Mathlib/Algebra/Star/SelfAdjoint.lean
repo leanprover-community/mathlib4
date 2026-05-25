@@ -439,8 +439,8 @@ section CommRing
 variable [CommRing R] [StarRing R]
 
 instance : CommRing (selfAdjoint R) :=
-  fast_instance% Function.Injective.commRing _ Subtype.coe_injective (selfAdjoint R).coe_zero
-    val_one (selfAdjoint R).coe_add val_mul (selfAdjoint R).coe_neg (selfAdjoint R).coe_sub
+  Function.Injective.commRing _ Subtype.coe_injective (selfAdjoint R).coe_zero val_one
+    (selfAdjoint R).coe_add val_mul (selfAdjoint R).coe_neg (selfAdjoint R).coe_sub
     (by intros; rfl) (by intros; rfl) val_pow
     (fun _ => rfl) fun _ => rfl
 
@@ -490,7 +490,7 @@ instance instSMulRat : SMul ℚ (selfAdjoint R) where
 @[simp, norm_cast] lemma val_qsmul (q : ℚ) (x : selfAdjoint R) : ↑(q • x) = q • (x : R) := rfl
 
 instance instField : Field (selfAdjoint R) :=
-  fast_instance% Subtype.coe_injective.field _ (selfAdjoint R).coe_zero val_one
+  Subtype.coe_injective.field _ (selfAdjoint R).coe_zero val_one
     (selfAdjoint R).coe_add val_mul (selfAdjoint R).coe_neg (selfAdjoint R).coe_sub
     val_inv val_div (swap (selfAdjoint R).coe_nsmul) (by intros; rfl) val_nnqsmul
     val_qsmul val_pow val_zpow (fun _ => rfl) (fun _ => rfl) val_nnratCast val_ratCast
@@ -509,11 +509,10 @@ theorem val_smul [SMul R A] [StarModule R A] (r : R) (x : selfAdjoint A) : ↑(r
   rfl
 
 instance [Monoid R] [MulAction R A] [StarModule R A] : MulAction R (selfAdjoint A) :=
-  fast_instance% Function.Injective.mulAction Subtype.val Subtype.coe_injective val_smul
+  Function.Injective.mulAction Subtype.val Subtype.coe_injective val_smul
 
 instance [Monoid R] [DistribMulAction R A] [StarModule R A] : DistribMulAction R (selfAdjoint A) :=
-  fast_instance% Function.Injective.distribMulAction (selfAdjoint A).subtype
-    Subtype.coe_injective val_smul
+  Function.Injective.distribMulAction (selfAdjoint A).subtype Subtype.coe_injective val_smul
 
 end SMul
 
@@ -522,7 +521,7 @@ section Module
 variable [Star R] [TrivialStar R] [AddCommGroup A] [StarAddMonoid A]
 
 instance [Semiring R] [Module R A] [StarModule R A] : Module R (selfAdjoint A) :=
-  fast_instance% Function.Injective.module R (selfAdjoint A).subtype Subtype.coe_injective val_smul
+  Function.Injective.module R (selfAdjoint A).subtype Subtype.coe_injective val_smul
 
 end Module
 
@@ -585,11 +584,10 @@ theorem val_smul [Monoid R] [DistribMulAction R A] [StarModule R A] (r : R) (x :
   rfl
 
 instance [Monoid R] [DistribMulAction R A] [StarModule R A] : DistribMulAction R (skewAdjoint A) :=
-  fast_instance% Function.Injective.distribMulAction (skewAdjoint A).subtype
-    Subtype.coe_injective val_smul
+  Function.Injective.distribMulAction (skewAdjoint A).subtype Subtype.coe_injective val_smul
 
 instance [Semiring R] [Module R A] [StarModule R A] : Module R (skewAdjoint A) :=
-  fast_instance% Function.Injective.module R (skewAdjoint A).subtype Subtype.coe_injective val_smul
+  Function.Injective.module R (skewAdjoint A).subtype Subtype.coe_injective val_smul
 
 end SMul
 

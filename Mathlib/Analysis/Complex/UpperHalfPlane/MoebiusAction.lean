@@ -287,7 +287,7 @@ end PGLAction
 section SLAction
 
 noncomputable instance SLAction {R : Type*} [CommRing R] [Algebra R ℝ] : MulAction SL(2, R) ℍ :=
-  fast_instance% MulAction.compHom ℍ <| SpecialLinearGroup.mapGL ℝ
+  MulAction.compHom ℍ <| SpecialLinearGroup.mapGL ℝ
 
 theorem coe_specialLinearGroup_apply {R : Type*} [CommRing R] [Algebra R ℝ] (g : SL(2, R)) (z : ℍ) :
     ↑(g • z) =

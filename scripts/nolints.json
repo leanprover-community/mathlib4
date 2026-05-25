@@ -826,7 +826,6 @@
  ["docBlame", "Mathlib.Tactic.Find.findType"],
  ["docBlame", "Mathlib.Tactic.GCongr.exact"],
  ["docBlame", "Module.End.Eigenvalues.val"],
- ["docBlame", "ModuleCat.MonoidalCategory.instMonoidalSemimoduleCatFunctorEquivalenceSemimoduleCat"],
  ["docBlame", "Order.Ideal.PrimePair.F"],
  ["docBlame", "Order.Ideal.PrimePair.I"],
  ["docBlame", "Mathlib.Command.Variable.variable?.checkRedundant"],
