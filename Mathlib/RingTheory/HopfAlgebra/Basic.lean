@@ -19,8 +19,9 @@ In this file we define `HopfAlgebra`, and provide instances for:
 
 * `HopfAlgebra R A` : the Hopf algebra structure on an `R`-bialgebra `A`.
 * `HopfAlgebra.antipode` : the `R`-linear map `A →ₗ[R] A`.
-* `HopfAlgebra.ofAlgHom` : construct a Hopf algebra structure from an algebra hom
+* `HopfAlgebra.ofAlgHomOp` : construct a Hopf algebra structure from an algebra hom
   `A →ₐ[R] Aᵐᵒᵖ` satisfying the antipode identities.
+* `HopfAlgebra.ofAlgHom` : the same for commutative `A`.
 
 ## Main results
 
@@ -251,5 +252,20 @@ noncomputable abbrev ofAlgHomOp (antipode : A →ₐ[R] Aᵐᵒᵖ)
   antipode := (opLinearEquiv R).symm.toLinearMap ∘ₗ antipode.toLinearMap
   mul_antipode_rTensor_comul := mul_antipode_rTensor_comul
   mul_antipode_lTensor_comul := mul_antipode_lTensor_comul
+
+noncomputable abbrev ofAlgHom {A : Type*} [CommSemiring A] [Bialgebra R A]
+    (antipode : A →ₐ[R] A)
+    (mul_antipode_rTensor_comul :
+      ((Algebra.TensorProduct.lift antipode (.id R A) fun _ ↦ .all _).comp
+        (Bialgebra.comulAlgHom R A)) = (Algebra.ofId R A).comp (Bialgebra.counitAlgHom R A))
+    (mul_antipode_lTensor_comul :
+      (Algebra.TensorProduct.lift (.id R A) antipode fun _ _ ↦ .all _ _).comp
+        (Bialgebra.comulAlgHom R A) = (Algebra.ofId R A).comp (Bialgebra.counitAlgHom R A)) :
+    HopfAlgebra R A :=
+  ofAlgHomOp (antipode.toOpposite fun _ _ ↦ .all _ _)
+    (by simpa [← Algebra.TensorProduct.lmul'_comp_map]
+          using congr(($mul_antipode_rTensor_comul).toLinearMap))
+    (by simpa [← Algebra.TensorProduct.lmul'_comp_map]
+          using congr(($mul_antipode_lTensor_comul).toLinearMap))
 
 end HopfAlgebra
