@@ -27,8 +27,8 @@ public section
 open Filter Set MeasureTheory Measure Metric
 open scoped Topology
 
-variable {E F : Type*}
-  [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedAddCommGroup F] [NormedSpace ℝ F]
+variable {E F : Type*} [AddCommGroup E]
+  [NormedAddCommGroup E] [NormedSpace ℝ E] [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace ℝ F]
 
 section Line
 
