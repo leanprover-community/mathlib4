@@ -5,7 +5,7 @@ Authors: Rémy Degenne, Kexing Ying
 -/
 module
 
-public import Mathlib.MeasureTheory.Function.ConditionalExpectation.Basic
+public import Mathlib.MeasureTheory.Function.ConditionalExpectation.Indicator
 public import Mathlib.MeasureTheory.Function.UniformIntegrable
 public import Mathlib.MeasureTheory.VectorMeasure.Decomposition.Lebesgue
 
