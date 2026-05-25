@@ -57,44 +57,9 @@ theorem rnDeriv_ae_eq_condExp {hm : m ≤ m0} [hμm : SigmaFinite (μ.trim hm)] 
     exact (SignedMeasure.measurable_rnDeriv _ _).stronglyMeasurable
   · exact (SignedMeasure.measurable_rnDeriv _ _).stronglyMeasurable.aestronglyMeasurable
 
+section HasSolidNorm
+
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
-
-theorem integral_norm_condExp_rpow_le {p : ℝ} (hp : 1 ≤ p) {f : α → E}
-    (hf : Integrable (fun x => ‖f x‖ ^ p) μ) :
-    ∫ x, ‖μ[f | m] x‖ ^ p ∂μ ≤ ∫ x, ‖f x‖ ^ p ∂μ := by
-  have hp' : 0 < p := by linarith
-  by_cases! hm : ¬ m ≤ m0
-  · simp only [condExp_of_not_le hm, Pi.zero_apply, _root_.norm_zero,
-      Real.zero_rpow hp'.ne.symm, integral_zero]
-    positivity
-  by_cases! hsig : ¬ SigmaFinite (μ.trim hm)
-  · simp only [condExp_of_not_sigmaFinite hm hsig, Pi.zero_apply, _root_.norm_zero,
-      Real.zero_rpow hp'.ne.symm, integral_zero]
-    positivity
-  calc
-  _ ≤ ∫ x, μ[(fun x => ‖f x‖ ^ p) | m] x ∂μ := by
-    refine integral_mono_of_nonneg ?_ integrable_condExp ?_
-    · filter_upwards with a; positivity
-    · exact Integrable.norm_condExp_rpow_le hp hf
-  _ = _ := integral_condExp hm
-
-theorem integral_norm_condExp_le (f : α → E) : ∫ x, ‖μ[f | m] x‖ ∂μ ≤ ∫ x, ‖f x‖ ∂μ := by
-  by_cases! hfint : ¬ Integrable f μ
-  · simpa [condExp_of_not_integrable hfint] using integral_nonneg (fun x => norm_nonneg (f x))
-  simpa using integral_norm_condExp_rpow_le le_rfl (by simpa using hfint.norm)
-
-theorem setIntegral_norm_condExp_le {s : Set α} (hs : MeasurableSet[m] s) (f : α → E) :
-    ∫ x in s, ‖(μ[f | m]) x‖ ∂μ ≤ ∫ x in s, ‖f x‖ ∂μ := by
-  by_cases! hm : ¬ m ≤ m0
-  · simpa [condExp_of_not_le hm] using integral_nonneg (fun x => norm_nonneg (f x))
-  by_cases! hfint : ¬ Integrable f μ
-  · simpa [condExp_of_not_integrable hfint] using integral_nonneg (fun x => norm_nonneg (f x))
-  by_cases! hsig : ¬ SigmaFinite (μ.trim hm)
-  · simpa [condExp_of_not_sigmaFinite hm hsig] using integral_nonneg (fun x => norm_nonneg (f x))
-  calc
-  _ = ∫ x in s, ‖(μ.restrict s)[f | m] x‖ ∂μ :=
-    (integral_congr_ae ((condExp_restrict_ae_eq_restrict hm hs hfint).fun_comp norm)).symm
-  _  ≤ _ := integral_norm_condExp_le f
 
 lemma condExp_le_nonneg_const [PartialOrder E] [ClosedIciTopology E] [IsOrderedAddMonoid E]
     [IsOrderedModule ℝ E] {f : α → E} {c : E} (hc : 0 ≤ c) (hfc : ∀ᵐ x ∂μ, f x ≤ c) :
@@ -114,16 +79,159 @@ lemma condExp_le_nonneg_const [PartialOrder E] [ClosedIciTopology E] [IsOrderedA
     filter_upwards [h1, h2] with a ha hb
     grw [← ha, hb, condExp_const hm]
 
+variable [Lattice E] [HasSolidNorm E] [IsOrderedAddMonoid E] [IsOrderedModule ℝ E]
+
+theorem ae_condExp_abs_le_abs_condExp (f : α → E) : |(μ[f | m])| ≤ᵐ[μ] μ[|f| | m] := by
+  by_cases! hfint : ¬Integrable f μ
+  · simp only [condExp_of_not_integrable hfint, abs_zero]
+    apply condExp_nonneg
+    filter_upwards with a using (abs_nonneg f a)
+  have h1 := condExp_mono (m := m) hfint hfint.abs (.of_forall (fun x => le_abs_self f x))
+  have (x : α) := abs_neg (f x) ▸ le_abs_self (- f x)
+  have h2 := condExp_mono (m := m) hfint.neg hfint.abs (.of_forall this)
+  filter_upwards [h1, h2, condExp_neg f m] with a ha hb hc
+  exact abs_le'.2 ⟨ha, hc.symm.le.trans hb⟩
+
+theorem integral_abs_condExp_le (f : α → E) : ∫ x, |μ[f | m] x| ∂μ ≤ ∫ x, |f x| ∂μ := by
+  by_cases! hm : ¬ m ≤ m0
+  · simpa [condExp_of_not_le hm] using integral_nonneg (fun x => abs_nonneg f x)
+  by_cases! hsig : ¬ SigmaFinite (μ.trim hm)
+  · simpa [condExp_of_not_sigmaFinite hm hsig] using integral_nonneg (fun x => abs_nonneg f x)
+  calc
+  _ ≤ ∫ x, μ[|f| | m] x ∂μ :=
+    integral_mono_ae integrable_condExp.abs integrable_condExp (ae_condExp_abs_le_abs_condExp f)
+  _ = _ := integral_condExp hm
+
+/-- Note that this is not trivial as we don't assume that `f` is integrable. -/
+lemma integral_condExp_le_of_ae_nonneg {f : α → ℝ} (hf : 0 ≤ᵐ[μ] f) :
+    ∫ x, μ[f | m] x ∂μ ≤ ∫ x, f x ∂μ := by
+  have h1 : ∫ x, |μ[f | m] x| ∂μ = ∫ x, μ[f | m] x ∂μ := by
+    apply integral_congr_ae
+    filter_upwards [condExp_nonneg hf] with ω hω
+    simpa
+  have h2 : ∫ x, |f x| ∂μ = ∫ x, f x ∂μ := by
+    apply integral_congr_ae
+    filter_upwards [hf] with ω hω
+    simpa
+  simpa [← h1, ← h2] using integral_abs_condExp_le f
+
+theorem setIntegral_abs_condExp_le {s : Set α} (hs : MeasurableSet[m] s) (f : α → E) :
+    ∫ x in s, |μ[f | m] x| ∂μ ≤ ∫ x in s, |f x| ∂μ := by
+  by_cases! hm : ¬ m ≤ m0
+  · simpa [condExp_of_not_le hm] using integral_nonneg (fun x => abs_nonneg f x)
+  by_cases! hfint : ¬ Integrable f μ
+  · simpa [condExp_of_not_integrable hfint] using integral_nonneg (fun x => abs_nonneg f x)
+  by_cases! hsig : ¬ SigmaFinite (μ.trim hm)
+  · simpa [condExp_of_not_sigmaFinite hm hsig] using integral_nonneg (fun x => abs_nonneg f x)
+  calc
+  _ = ∫ x in s, |(μ.restrict s)[f | m] x| ∂μ :=
+    (integral_congr_ae ((condExp_restrict_ae_eq_restrict hm hs hfint).fun_comp abs)).symm
+  _  ≤ _ := integral_abs_condExp_le f
+
+/-- Note that this is not trivial as we don't assume that `f` is integrable. -/
+lemma setIntegral_condExp_le_of_ae_nonneg {s : Set α} (hs : MeasurableSet[m] s) {f : α → ℝ}
+    (hf : 0 ≤ᵐ[μ] f) :
+    ∫ x in s, μ[f | m] x ∂μ ≤ ∫ x in s, f x ∂μ := by
+  by_cases! hm : ¬ m ≤ m0
+  · simpa [condExp_of_not_le hm] using setIntegral_nonneg_of_ae hf
+  have h1 : ∫ x in s, |μ[f | m] x| ∂μ = ∫ x in s, μ[f | m] x ∂μ := by
+    apply setIntegral_congr_ae (hm s hs)
+    filter_upwards [condExp_nonneg hf] with ω hω hωs
+    simpa
+  have h2 : ∫ x in s, |f x| ∂μ = ∫ x in s, f x ∂μ := by
+    apply setIntegral_congr_ae (hm s hs)
+    filter_upwards [hf] with ω hω hωs
+    simpa
+  simpa [← h1, ← h2] using setIntegral_abs_condExp_le hs f
+
+/-- If `|f|` is bounded almost everywhere by `R`, then so is its conditional expectation. -/
+theorem ae_bdd_abs_condExp_of_ae_bdd_abs {R : E} {f : α → E} (hbdd : ∀ᵐ x ∂μ, |f x| ≤ R) :
+    ∀ᵐ x ∂μ,  |μ[f | m] x| ≤ R := by
+  by_cases! hn : {x | |f x| ≤ R} = ∅
+  · exact measure_mono_null (by simp) <| ae_eq_empty.1 (hn ▸ (ae_eq_univ.2 hbdd).symm)
+  have hR : 0 ≤ R := (abs_nonneg _).trans hn.some_mem
+  exact (ae_condExp_abs_le_abs_condExp f).trans (condExp_le_nonneg_const (m := m) hR hbdd)
+
+/-- If the real-valued function `f` is bounded almost everywhere by `R`, then so is its conditional
+expectation. -/
+@[deprecated ae_bdd_abs_condExp_of_ae_bdd_abs (since := "2026-05-05")]
+theorem ae_bdd_condExp_of_ae_bdd {R : ℝ≥0} {f : α → ℝ} (hbdd : ∀ᵐ x ∂μ, |f x| ≤ R) :
+    ∀ᵐ x ∂μ, |(μ[f | m]) x| ≤ R := by
+  by_cases hnm : m ≤ m0
+  swap
+  · simp_rw [condExp_of_not_le hnm, Pi.zero_apply, abs_zero]
+    exact Eventually.of_forall fun _ => R.coe_nonneg
+  by_cases hfint : Integrable f μ
+  swap
+  · simp_rw [condExp_of_not_integrable hfint]
+    filter_upwards [hbdd] with x hx
+    rw [Pi.zero_apply, abs_zero]
+    exact (abs_nonneg _).trans hx
+  by_contra h
+  change μ _ ≠ 0 at h
+  simp only [← pos_iff_ne_zero, Set.compl_def, Set.mem_setOf_eq, not_le] at h
+  suffices μ.real {x | ↑R < |(μ[f|m]) x|} * ↑R < μ.real {x | ↑R < |(μ[f|m]) x|} * ↑R by
+    exact this.ne rfl
+  refine lt_of_lt_of_le (setIntegral_gt_gt R.coe_nonneg ?_ h.ne') ?_
+  · exact integrable_condExp.abs.integrableOn
+  refine (setIntegral_abs_condExp_le ?_ _).trans ?_
+  · simp_rw [← Real.norm_eq_abs]
+    exact @measurableSet_lt _ _ _ _ _ m _ _ _ _ _ measurable_const
+      stronglyMeasurable_condExp.norm.measurable
+  simp only [← smul_eq_mul, ← setIntegral_const]
+  refine setIntegral_mono_ae hfint.abs.integrableOn ?_ hbdd
+  refine ⟨aestronglyMeasurable_const, lt_of_le_of_lt ?_
+    (integrable_condExp.integrableOn : IntegrableOn (μ[f|m]) {x | ↑R < |(μ[f|m]) x|} μ).2⟩
+  refine setLIntegral_mono
+    (stronglyMeasurable_condExp.mono hnm).measurable.nnnorm.coe_nnreal_ennreal fun x hx => ?_
+  rw [enorm_eq_nnnorm, enorm_eq_nnnorm, ENNReal.coe_le_coe, Real.nnnorm_of_nonneg R.coe_nonneg]
+  exact Subtype.mk_le_mk.2 (le_of_lt hx)
+
+end HasSolidNorm
+
+section NormedSpace
+
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
+
+theorem integral_norm_condExp_rpow_le {p : ℝ} (hp : 1 ≤ p) {f : α → E}
+    (hf : Integrable (fun x => ‖f x‖ ^ p) μ) :
+    ∫ x, ‖μ[f | m] x‖ ^ p ∂μ ≤ ∫ x, ‖f x‖ ^ p ∂μ :=
+  calc
+  _ ≤ ∫ x, μ[(fun x => ‖f x‖ ^ p) | m] x ∂μ := by
+    refine integral_mono_of_nonneg ?_ integrable_condExp (Integrable.norm_condExp_rpow_le hp hf)
+    filter_upwards with a using by positivity
+  _ ≤ _ := by
+    apply integral_condExp_le_of_ae_nonneg
+    filter_upwards with ω using by positivity
+
+theorem integral_norm_condExp_le (f : α → E) : ∫ x, ‖μ[f | m] x‖ ∂μ ≤ ∫ x, ‖f x‖ ∂μ := by
+  by_cases! hfint : ¬ Integrable f μ
+  · simpa [condExp_of_not_integrable hfint] using integral_nonneg (fun x => norm_nonneg (f x))
+  simpa using integral_norm_condExp_rpow_le le_rfl (by simpa using hfint.norm)
+
+theorem setIntegral_norm_condExp_le {s : Set α} (hs : MeasurableSet[m] s) (f : α → E) :
+    ∫ x in s, ‖(μ[f | m]) x‖ ∂μ ≤ ∫ x in s, ‖f x‖ ∂μ := by
+  by_cases! hm : ¬ m ≤ m0
+  · simpa [condExp_of_not_le hm] using integral_nonneg (fun x => norm_nonneg (f x))
+  by_cases! hfint : ¬ Integrable f μ
+  · simpa [condExp_of_not_integrable hfint] using integral_nonneg (fun x => norm_nonneg (f x))
+  by_cases! hsig : ¬ SigmaFinite (μ.trim hm)
+  · simpa [condExp_of_not_sigmaFinite hm hsig] using integral_nonneg (fun x => norm_nonneg (f x))
+  calc
+  _ = ∫ x in s, ‖(μ.restrict s)[f | m] x‖ ∂μ :=
+    (integral_congr_ae ((condExp_restrict_ae_eq_restrict hm hs hfint).fun_comp norm)).symm
+  _  ≤ _ := integral_norm_condExp_le f
+
 /-- If `‖f‖` is bounded almost everywhere by `R`, then so is its conditional expectation. -/
 theorem ae_bdd_norm_condExp_of_ae_bdd_norm {R : ℝ} {f : α → E} (hbdd : ∀ᵐ x ∂μ, ‖f x‖ ≤ R) :
     ∀ᵐ x ∂μ, ‖μ[f | m] x‖ ≤ R := by
   by_cases! hn : {x | ‖f x‖ ≤ R} = ∅
   · exact measure_mono_null (by simp) <| ae_eq_empty.1 (hn ▸ (ae_eq_univ.2 hbdd).symm)
-  exact norm_condExp_le.trans (condExp_le_nonneg_const ((norm_nonneg _).trans hn.some_mem) hbdd)
+  exact (norm_condExp_le f).trans (condExp_le_nonneg_const ((norm_nonneg _).trans hn.some_mem) hbdd)
 
 theorem MemLp.ae_norm_condExp_le_essSup {f : α → E} (hf : MemLp f ∞ μ) :
     ∀ᵐ (x : α) ∂μ, ‖μ[f | m] x‖ ≤ essSup (‖f ·‖) μ :=
-  (ae_bdd_norm_condExp_of_ae_bdd_norm (ae_le_essSup ⟨_, ae_le_lpNorm_exponent_top hf⟩))
+  ae_bdd_norm_condExp_of_ae_bdd_norm (ae_le_essSup ⟨_, ae_le_lpNorm_exponent_top hf⟩)
 
 theorem MemLp.essSup_norm_condExp_le_essSup_norm [NeZero μ] {f : α → E} (hf : MemLp f ∞ μ) :
     essSup (fun x ↦ ‖μ[f | m] x‖) μ ≤ essSup (fun x ↦ ‖f x‖) μ :=
@@ -179,84 +287,7 @@ theorem eLpNorm_one_condExp_le_eLpNorm (f : α → E) : eLpNorm (μ[f | m]) 1 μ
   · simp [condExp_of_not_integrable hfint]
   exact (memLp_one_iff_integrable.2 hfint).eLpNorm_condExp_le_eLpNorm (refl 1)
 
-variable [Lattice E] [HasSolidNorm E] [IsOrderedAddMonoid E] [IsOrderedModule ℝ E]
-
-theorem ae_condExp_abs_le_abs_condExp (f : α → E) : |(μ[f | m])| ≤ᵐ[μ] μ[|f| | m] := by
-  by_cases! hfint : ¬Integrable f μ
-  · simp only [condExp_of_not_integrable hfint, abs_zero]
-    apply condExp_nonneg
-    filter_upwards with a using (abs_nonneg f a)
-  have h1 := condExp_mono (m := m) hfint hfint.abs (.of_forall (fun x => le_abs_self f x))
-  have (x : α) := abs_neg (f x) ▸ le_abs_self (- f x)
-  have h2 := condExp_mono (m := m) hfint.neg hfint.abs (.of_forall this)
-  filter_upwards [h1, h2, condExp_neg f m] with a ha hb hc
-  exact abs_le'.2 ⟨ha, hc.symm.le.trans hb⟩
-
-theorem integral_abs_condExp_le (f : α → E) : ∫ x, |μ[f | m] x| ∂μ ≤ ∫ x, |f x| ∂μ := by
-  by_cases! hm : ¬ m ≤ m0
-  · simpa [condExp_of_not_le hm] using integral_nonneg (fun x => abs_nonneg f x)
-  by_cases! hsig : ¬ SigmaFinite (μ.trim hm)
-  · simpa [condExp_of_not_sigmaFinite hm hsig] using integral_nonneg (fun x => abs_nonneg f x)
-  calc
-  _ ≤ ∫ x, μ[|f| | m] x ∂μ :=
-    integral_mono_ae integrable_condExp.abs integrable_condExp (ae_condExp_abs_le_abs_condExp f)
-  _ = _ := integral_condExp hm
-
-theorem setIntegral_abs_condExp_le {s : Set α} (hs : MeasurableSet[m] s) (f : α → E) :
-    ∫ x in s, |μ[f | m] x| ∂μ ≤ ∫ x in s, |f x| ∂μ := by
-  by_cases! hm : ¬ m ≤ m0
-  · simpa [condExp_of_not_le hm] using integral_nonneg (fun x => abs_nonneg f x)
-  by_cases! hfint : ¬ Integrable f μ
-  · simpa [condExp_of_not_integrable hfint] using integral_nonneg (fun x => abs_nonneg f x)
-  by_cases! hsig : ¬ SigmaFinite (μ.trim hm)
-  · simpa [condExp_of_not_sigmaFinite hm hsig] using integral_nonneg (fun x => abs_nonneg f x)
-  calc
-  _ = ∫ x in s, |(μ.restrict s)[f | m] x| ∂μ :=
-    (integral_congr_ae ((condExp_restrict_ae_eq_restrict hm hs hfint).fun_comp abs)).symm
-  _  ≤ _ := integral_abs_condExp_le f
-
-/-- If `|f|` is bounded almost everywhere by `R`, then so is its conditional expectation. -/
-theorem ae_bdd_abs_condExp_of_ae_bdd_abs {R : E} {f : α → E} (hbdd : ∀ᵐ x ∂μ, |f x| ≤ R) :
-    ∀ᵐ x ∂μ,  |μ[f | m] x| ≤ R := by
-  by_cases! hn : {x | |f x| ≤ R} = ∅
-  · exact measure_mono_null (by simp) <| ae_eq_empty.1 (hn ▸ (ae_eq_univ.2 hbdd).symm)
-  have hR : 0 ≤ R := (abs_nonneg _).trans hn.some_mem
-  exact (ae_condExp_abs_le_abs_condExp f).trans (condExp_le_nonneg_const (m := m) hR hbdd)
-
-/-- If the real-valued function `f` is bounded almost everywhere by `R`, then so is its conditional
-expectation. -/
-@[deprecated ae_bdd_abs_condExp_of_ae_bdd_abs (since := "2026-05-05")]
-theorem ae_bdd_condExp_of_ae_bdd {R : ℝ≥0} {f : α → ℝ} (hbdd : ∀ᵐ x ∂μ, |f x| ≤ R) :
-    ∀ᵐ x ∂μ, |(μ[f | m]) x| ≤ R := by
-  by_cases hnm : m ≤ m0
-  swap
-  · simp_rw [condExp_of_not_le hnm, Pi.zero_apply, abs_zero]
-    exact Eventually.of_forall fun _ => R.coe_nonneg
-  by_cases hfint : Integrable f μ
-  swap
-  · simp_rw [condExp_of_not_integrable hfint]
-    filter_upwards [hbdd] with x hx
-    rw [Pi.zero_apply, abs_zero]
-    exact (abs_nonneg _).trans hx
-  by_contra h
-  change μ _ ≠ 0 at h
-  simp only [← pos_iff_ne_zero, Set.compl_def, Set.mem_setOf_eq, not_le] at h
-  suffices μ.real {x | ↑R < |(μ[f|m]) x|} * ↑R < μ.real {x | ↑R < |(μ[f|m]) x|} * ↑R by
-    exact this.ne rfl
-  refine lt_of_lt_of_le (setIntegral_gt_gt R.coe_nonneg ?_ h.ne') ?_
-  · exact integrable_condExp.abs.integrableOn
-  refine (setIntegral_abs_condExp_le ?_ _).trans ?_
-  · simp_rw [← Real.norm_eq_abs]
-    exact @measurableSet_lt _ _ _ _ _ m _ _ _ _ _ measurable_const
-      stronglyMeasurable_condExp.norm.measurable
-  simp only [← smul_eq_mul, ← setIntegral_const]
-  refine setIntegral_mono_ae hfint.abs.integrableOn ?_ hbdd
-  refine ⟨aestronglyMeasurable_const, lt_of_le_of_lt ?_
-    (integrable_condExp.integrableOn : IntegrableOn (μ[f|m]) {x | ↑R < |(μ[f|m]) x|} μ).2⟩
-  refine setLIntegral_mono
-    (stronglyMeasurable_condExp.mono hnm).measurable.nnnorm.coe_nnreal_ennreal fun x hx => ?_
-  rw [enorm_eq_nnnorm, enorm_eq_nnnorm, ENNReal.coe_le_coe, Real.nnnorm_of_nonneg R.coe_nonneg]
-  exact Subtype.mk_le_mk.2 (le_of_lt hx)
+end NormedSpace
 
 /-- Given an integrable function `g`, the conditional expectations of `g` with respect to
 a sequence of sub-σ-algebras is uniformly integrable. -/
