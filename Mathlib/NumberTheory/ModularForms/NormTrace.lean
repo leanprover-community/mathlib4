@@ -202,7 +202,7 @@ lemma galoisProd_periodic_one (hN : 0 < N)
   intro w
   simp only [Function.comp_apply]
   unfold galoisProd
-  obtain ⟨n, rfl⟩ : ∃ n, N = n + 1 := ⟨N - 1, by omega⟩
+  obtain ⟨n, rfl⟩ : ∃ n, N = n + 1 := ⟨N - 1, by lia⟩
   by_cases hw : 0 < w.im
   · have hw1 : 0 < (w + 1).im := by simpa using hw
     rw [ofComplex_apply_of_im_pos hw1, ofComplex_apply_of_im_pos hw,
@@ -332,20 +332,8 @@ lemma qExpansion_one_galoisProd_order_eq_qExpansion_self_order (hN : 0 < N)
       analyticOrderAt_congr (cuspFunction_one_galoisProd_pow_eq hN hf_per hf_bdd hf_mdiff),
       ← Finset.prod_fn, analyticOrderAt_prod h_factor_an,
       Finset.sum_congr rfl h_factor_order, Finset.sum_const, Finset.card_range, nsmul_eq_mul]
-  have hN_ne : (N : ℕ∞) ≠ 0 := mod_cast hN.ne'
-  clear_value ML MR
-  rcases eq_or_ne ML ⊤ with hL | hL <;> rcases eq_or_ne MR ⊤ with hR | hR
-  · rw [hL, hR]
-  · lift MR to ℕ using hR
-    rw [hL, ENat.top_mul hN_ne] at h_combine
-    exact absurd h_combine.symm (ENat.coe_ne_top _)
-  · lift ML to ℕ using hL
-    rw [hR, ENat.mul_top hN_ne] at h_combine
-    exact absurd h_combine (ENat.coe_ne_top _)
-  · lift ML to ℕ using hL
-    lift MR to ℕ using hR
-    rw [mul_comm (N : ℕ∞)] at h_combine
-    exact_mod_cast Nat.eq_of_mul_eq_mul_right hN (mod_cast h_combine)
+  rw [mul_comm ML] at h_combine
+  exact ENat.mul_left_cancel₀ (mod_cast hN.ne') (ENat.coe_ne_top _) h_combine
 
 end GaloisProd
 
