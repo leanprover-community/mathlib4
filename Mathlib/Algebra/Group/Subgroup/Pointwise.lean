@@ -381,15 +381,19 @@ instance sup_normal (H K : Subgroup G) [hH : H.Normal] [hK : K.Normal] : (H ⊔ 
     refine ⟨g * h * g⁻¹, hH.conj_mem h hh g, g * k * g⁻¹, hK.conj_mem k hk g, ?_⟩
     simp only [mul_assoc, inv_mul_cancel_left]
 
+@[to_additive]
 theorem normal_iSup_normal {ι : Sort*} {a : ι → Subgroup G}
     (norm : ∀ i : ι, (a i).Normal) : (iSup a).Normal where
   conj_mem x hx g := by
-    refine iSup_induction (C := fun x => MulAut.conj g x ∈ iSup a) a hx ?_ ?_ ?_
+    refine iSup_induction (C := fun x => g * x * g⁻¹ ∈ iSup a) a hx ?_ ?_ ?_
     · intro i y hy
       exact mem_iSup_of_mem i ((norm i).conj_mem y hy g)
     · simp
     · intro y z hy hz
-      rw [map_mul]
+      change g * (y * z) * g⁻¹ ∈ iSup a
+      have h : g * (y * z) * g⁻¹ = (g * y * g⁻¹) * (g * z * g⁻¹) := by
+        simp only [mul_assoc, inv_mul_cancel_left]
+      rw [h]
       exact mul_mem hy hz
 
 @[to_additive]
