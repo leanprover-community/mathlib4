@@ -126,14 +126,14 @@ lemma tendsto_card_atTop_pure_of_fintype [Fintype α] :
     Tendsto (Finset.card : Finset α → ℕ) atTop (pure (Fintype.card α)) := by
   rw [Tendsto, map_card_atTop_of_fintype]
 
-/-- Tendsto along `atTop` for a function precomposed with `Finset.card` reduces to tendsto along
+/-- `Tendsto` along `atTop` for a function precomposed with `Finset.card` reduces to `Tendsto` along
 `atTop` on `ℕ`, when `α` is infinite. -/
 lemma tendsto_comp_card_atTop_iff [Infinite α] {f : ℕ → β} {l : Filter β} :
     Tendsto (fun s : Finset α ↦ f s.card) atTop l ↔ Tendsto f atTop l := by
   rw [← map_card_atTop (α := α), tendsto_map'_iff]
   rfl
 
-/-- Tendsto along `atTop` for a function precomposed with `Finset.card` reduces to tendsto along
+/-- `Tendsto` along `atTop` for a function precomposed with `Finset.card` reduces to `Tendsto` along
 `pure (Fintype.card α)`, when `α` is finite. -/
 lemma tendsto_comp_card_atTop_iff_of_fintype [Fintype α] {f : ℕ → β} {l : Filter β} :
     Tendsto (fun s : Finset α ↦ f s.card) atTop l ↔ Tendsto f (pure (Fintype.card α)) l := by
