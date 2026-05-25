@@ -218,21 +218,33 @@ theorem antipode_mul (a b : A) :
       _ = (counit (R := R) y • counit x) • (1 : A) := by
         simp only [smul_eq_mul, mul_comm (counit y)]
 
-/-! ### Construction by axiom verification on algebra generators
+end HopfAlgebra
 
-Given an `R`-bialgebra `A` and a candidate antipode `S : A →ₐ[R] Aᵐᵒᵖ`, the elements of `A`
-where each antipode axiom holds form a subalgebra. So a `HopfAlgebra R A` instance can be
-constructed by verifying the axioms on a set whose algebra-adjoint is `⊤` — typically a small
-generating set, e.g. the image of the universal map in a free construction. The corollaries
-`mul_rTensor_comul_eq_of_adjoin_eq_top` and `mul_lTensor_comul_eq_of_adjoin_eq_top` package
-this for use with `HopfAlgebra.ofAlgHom`.
--/
-
-section Construction
+namespace HopfAlgebra
 
 variable {R A : Type*} [CommSemiring R] [Semiring A] [Bialgebra R A]
 
-open MulOpposite
+open Coalgebra MulOpposite
+
+/-- Upgrade a bialgebra to a Hopf algebra by specifying the antipode as an algebra map
+`A →ₐ[R] Aᵐᵒᵖ` with appropriate conditions. -/
+noncomputable abbrev ofAlgHom (antipode : A →ₐ[R] Aᵐᵒᵖ)
+    (mul_antipode_rTensor_comul :
+      LinearMap.mul' R A ∘ₗ ((opLinearEquiv R).symm.toLinearMap ∘ₗ
+        antipode.toLinearMap).rTensor A ∘ₗ comul = Algebra.linearMap R A ∘ₗ counit)
+    (mul_antipode_lTensor_comul :
+      LinearMap.mul' R A ∘ₗ ((opLinearEquiv R).symm.toLinearMap ∘ₗ
+        antipode.toLinearMap).lTensor A ∘ₗ comul = Algebra.linearMap R A ∘ₗ counit) :
+    HopfAlgebra R A where
+  antipode := (opLinearEquiv R).symm.toLinearMap ∘ₗ antipode.toLinearMap
+  mul_antipode_rTensor_comul := mul_antipode_rTensor_comul
+  mul_antipode_lTensor_comul := mul_antipode_lTensor_comul
+
+/-! ### Construction on algebra generators
+
+The elements where each antipode axiom holds for a candidate `S : A →ₐ[R] Aᵐᵒᵖ` form a
+subalgebra, so the axioms can be verified on a generating set.
+-/
 
 /-- The rTensor antipode axiom evaluated at the single element `a ∈ A`, for the candidate
 antipode `S : A →ₐ[R] Aᵐᵒᵖ`. The Hopf algebra field `mul_antipode_rTensor_comul` is the
@@ -400,8 +412,6 @@ theorem mul_lTensor_comul_eq_of_adjoin_eq_top
   ext x
   exact (Algebra.adjoin_le (S := locus) h (hs ▸ Algebra.mem_top : x ∈ Algebra.adjoin R s)).eq
 
-end Construction
-
 end HopfAlgebra
 
 namespace CommSemiring
@@ -420,25 +430,3 @@ instance toHopfAlgebra : HopfAlgebra R R where
 theorem antipode_eq_id : antipode R (A := R) = .id := rfl
 
 end CommSemiring
-
-namespace HopfAlgebra
-
-variable {R A : Type*} [CommSemiring R] [Semiring A] [Bialgebra R A]
-
-open Coalgebra MulOpposite
-
-/-- Upgrade a bialgebra to a Hopf algebra by specifying the antipode as an algebra map
-`A →ₐ[R] Aᵐᵒᵖ` with appropriate conditions. -/
-noncomputable abbrev ofAlgHom (antipode : A →ₐ[R] Aᵐᵒᵖ)
-    (mul_antipode_rTensor_comul :
-      LinearMap.mul' R A ∘ₗ ((opLinearEquiv R).symm.toLinearMap ∘ₗ
-        antipode.toLinearMap).rTensor A ∘ₗ comul = Algebra.linearMap R A ∘ₗ counit)
-    (mul_antipode_lTensor_comul :
-      LinearMap.mul' R A ∘ₗ ((opLinearEquiv R).symm.toLinearMap ∘ₗ
-        antipode.toLinearMap).lTensor A ∘ₗ comul = Algebra.linearMap R A ∘ₗ counit) :
-    HopfAlgebra R A where
-  antipode := (opLinearEquiv R).symm.toLinearMap ∘ₗ antipode.toLinearMap
-  mul_antipode_rTensor_comul := mul_antipode_rTensor_comul
-  mul_antipode_lTensor_comul := mul_antipode_lTensor_comul
-
-end HopfAlgebra
