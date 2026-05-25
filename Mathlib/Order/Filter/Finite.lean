@@ -237,7 +237,7 @@ theorem eq_principal_of_finite [Finite α] (f : Filter α) : ∃ s, f = 𝓟 s :
   eq_principal_of_finite_sets (finite_univ.powerset.subset (by simp))
 
 theorem surjective_principal_of_finite [Finite α] : Surjective (𝓟 : Set α → Filter α) :=
-  fun f ↦ (eq_principal_of_finite f).imp (by grind)
+  fun f ↦ (eq_principal_of_finite f).imp fun _ ↦ .symm
 
 end Lattice
 
