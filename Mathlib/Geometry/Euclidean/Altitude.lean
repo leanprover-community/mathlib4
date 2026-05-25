@@ -39,9 +39,10 @@ namespace Simplex
 
 open Finset AffineSubspace EuclideanGeometry
 
-variable {V : Type*} {P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
-  [NormedAddTorsor V P]
-variable {V₂ P₂ : Type*} [NormedAddCommGroup V₂] [InnerProductSpace ℝ V₂] [MetricSpace P₂]
+variable {V : Type*} {P : Type*} [AddCommGroup V] [NormedAddCommGroup V] [InnerProductSpace ℝ V]
+  [MetricSpace P] [NormedAddTorsor V P]
+variable {V₂ P₂ : Type*} [AddCommGroup V₂] [NormedAddCommGroup V₂] [InnerProductSpace ℝ V₂]
+  [MetricSpace P₂]
 variable [NormedAddTorsor V₂ P₂]
 
 /-- An altitude of a simplex is the line that passes through a vertex
@@ -262,7 +263,7 @@ open Qq Mathlib.Meta.Positivity in
 @[positivity height _ _]
 meta def evalHeight : PositivityExt where eval {u α} _ _ e := do
   match u, α, e with
-  | 0, ~q(ℝ), ~q(@height $V $P $i1 $i2 $i3 $i4 $n $hn $s $i) =>
+  | 0, ~q(ℝ), ~q(@height $V $P $i0 $i1 $i2 $i3 $i4 $n $hn $s $i) =>
     assertInstancesCommute
     return .positive q(height_pos $s $i)
   | _, _, _ => throwError "not Simplex.height"
