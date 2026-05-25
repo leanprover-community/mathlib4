@@ -39,6 +39,21 @@ Commands:
 Options:
   --repo=OWNER/REPO  Override the repository to fetch/push cache from
   --staging-dir=<output-directory> Required for 'stage', 'stage!', 'unstage' and 'put-staged': staging directory.
+  --cache-from=LIST  Comma-separated, trust-ordered list of containers to read from
+                     (e.g. `--cache-from=master,legacy`). Overrides the per-repo default.
+                     Known containers: master, forks, nightly-testing,
+                     pr-toolchain-tests, legacy.
+  --container=NAME   Target container for upload commands (put/put!/put-unpacked/
+                     put-staged/commit/commit!). Known containers: master, forks,
+                     nightly-testing, pr-toolchain-tests, legacy. If neither this
+                     flag nor MATHLIB_CACHE_PUT_URL is set, the upload defaults
+                     to `legacy` with a deprecation warning — a transitional
+                     fallback for workflow files that pre-date the per-trust
+                     container split; you should pass --container=NAME explicitly.
+                     (During the migration, master CI runs `put` twice — once
+                     with --container=master, once with --container=legacy —
+                     so consumers on older cache tools still find master-built
+                     artifacts. Forks/nightly CI do not write to legacy.)
 
 * Linked files refer to local cache files with corresponding Lean sources
 * Commands ending with '!' should be used manually, when hot-fixes are needed
@@ -63,9 +78,9 @@ Valid arguments are:
 # Environment variables
 
 * MATHLIB_CACHE_DIR       Local cache directory (default: ~/.cache/mathlib)
-* MATHLIB_CACHE_USE_CLOUDFLARE  Set to '1' to use Cloudflare instead of Azure
-* MATHLIB_CACHE_GET_URL   Override the download URL
-* MATHLIB_CACHE_PUT_URL   Override the upload URL
+* MATHLIB_CACHE_GET_URL   Override the download URL (single-URL escape hatch;
+                          bypasses multi-container logic when set)
+* MATHLIB_CACHE_PUT_URL   Override the upload URL (single-URL escape hatch)
 
 See Cache/README.md for more details.
 "
@@ -79,7 +94,7 @@ def leanTarArgs : List String :=
   ["get", "get!", "put", "put!", "put-unpacked", "pack", "pack!", "unpack", "lookup", "stage", "stage!"]
 
 /-- The named options supported by the CLI. -/
-def knownNamedOpts : List String := ["repo", "staging-dir"]
+def knownNamedOpts : List String := ["repo", "staging-dir", "cache-from", "container"]
 
 /-- The flag options supported by the CLI. -/
 def knownFlagOpts : List String := ["help"]
@@ -120,6 +135,28 @@ def main (args : List String) : IO Unit := do
 
   let repo? ← parseNamedOpt "repo" options
   let stagingDir? ← parseNamedOpt "staging-dir" options
+  let cacheFromStr? ← parseNamedOpt "cache-from" options
+  let containerStr? ← parseNamedOpt "container" options
+
+  -- Apply `--cache-from` to the process-wide override read by `effectiveGetURLs`.
+  if let some s := cacheFromStr? then
+    match parseCacheFromList s with
+    | none =>
+      IO.eprintln s!"Unknown container name in --cache-from={s}.\n\
+        Known containers: {", ".intercalate (Container.all.map Container.name)}."
+      Process.exit 1
+    | some cs => cacheFromOverride.set (some cs)
+
+  -- Parse `--container=NAME`. Validation is unconditional; the upload commands
+  -- enforce that the flag is set (via `effectiveUploadURL`).
+  let container? ← match containerStr? with
+    | none => pure none
+    | some s => match Container.parse? s with
+      | some c => pure (some c)
+      | none =>
+        IO.eprintln s!"Unknown container name in --container={s}.\n\
+          Known containers: {", ".intercalate (Container.all.map Container.name)}."
+        Process.exit 1
 
   let mut roots : Std.HashMap Lean.Name FilePath ← parseArgs args
   if roots.isEmpty then do
@@ -140,7 +177,8 @@ def main (args : List String) : IO Unit := do
     packCache hashMap overwrite verbose unpackedOnly (← getGitCommitHash)
   let put (overwrite unpackedOnly := false) := do
     let repo := repo?.getD MATHLIBREPO
-    putFiles repo (← pack overwrite (verbose := true) unpackedOnly) overwrite (← getUploadAuth)
+    putFiles repo container? (← pack overwrite (verbose := true) unpackedOnly) overwrite
+      (← getUploadAuth)
   let stage outDir (unpackedOnly := true) := do
     stageFiles outDir (← pack (verbose := true) (unpackedOnly := unpackedOnly))
   let unstage (overwrite := false) := do
@@ -151,7 +189,7 @@ def main (args : List String) : IO Unit := do
     if !(←stagingDir.isDir) then IO.println "--staging-dir must be a directory" return
     else
       let fileSet ← getFilesWithExtension stagingDir "ltar"
-      putFilesAbsolute repo fileSet (tempConfigFilePath := stagingDir / "curl.config")
+      putFilesAbsolute repo container? fileSet (tempConfigFilePath := stagingDir / "curl.config")
         (overwrite := false) (← getUploadAuth)
 
   match args with
@@ -179,10 +217,10 @@ def main (args : List String) : IO Unit := do
     putStaged stagingDir?.get!
   | ["commit"] =>
     if !(← isGitStatusClean) then IO.println "Please commit your changes first" return else
-    commit hashMap false (← getUploadAuth)
+    commit container? hashMap false (← getUploadAuth)
   | ["commit!"] =>
     if !(← isGitStatusClean) then IO.println "Please commit your changes first" return else
-    commit hashMap true (← getUploadAuth)
+    commit container? hashMap true (← getUploadAuth)
   | ["collect"] => IO.println "TODO"
   | "lookup" :: _ => lookup hashMap roots.keys
   | [] => println help -- unreachable: options are already partitioned out

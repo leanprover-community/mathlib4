@@ -1,0 +1,438 @@
+/-
+Copyright (c) 2026 Marcelo Lynch. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Marcelo Lynch
+-/
+
+import Cache.Requests
+import Cache.Lean
+
+/-!
+# Unit tests for the cache CLI
+
+These tests cover the pure logic added for multi-container support: container
+URL construction, the per-repo trust-ordered allowlist, `mkFileURL` path
+shaping, and `--cache-from` parsing. Anything that touches `curl` or the
+network lives in the `Verification` section of the design doc instead.
+
+Run with `lake exe cache-test`. Exits 0 on success, non-zero on failure.
+
+The tests are deliberately runnable on their own (without rebuilding
+`MathlibTest`), since the cache tool is standalone and shouldn't depend on
+Mathlib's test infrastructure: a Lake package has a single `testDriver`, and the enclosing
+`mathlib` package already binds that to `MathlibTest` (see `lakefile.lean`).
+If/when the cache tool moves to its own Lake project, the `lean_exe`
+`cache-test` declared here can simply be promoted to that project's
+`testDriver`, so `lake test` would invoke it directly. Until then, this exe
+is invoked explicitly.
+-/
+
+namespace Cache.Test
+
+open Cache.Requests
+
+/-- Counter for failed assertions. -/
+initialize failures : IO.Ref Nat ← IO.mkRef 0
+
+/-- A single named assertion. On failure, prints details and bumps the counter. -/
+def assert (name : String) (cond : Bool) : IO Unit := do
+  if cond then
+    IO.println s!"  ok: {name}"
+  else
+    IO.eprintln s!"  FAIL: {name}"
+    failures.modify (· + 1)
+
+/-- Assert two strings are equal; show both on failure. -/
+def assertEq (name expected actual : String) : IO Unit := do
+  if expected == actual then
+    IO.println s!"  ok: {name}"
+  else
+    IO.eprintln s!"  FAIL: {name}\n    expected: {expected}\n    actual:   {actual}"
+    failures.modify (· + 1)
+
+section ContainerModel
+
+/-- Short name = the string used on the CLI (`--container=NAME`) and to derive
+the Azure container name. Locking this down keeps the CLI surface stable. -/
+def test_Container_name : IO Unit := do
+  IO.println "Container.name:"
+  -- "master" is the CLI label; the actual Azure container is `mathlib4-master`.
+  assertEq "master"             "master"             Container.master.name
+  -- Renamed from `pr` to `forks` to reflect what actually writes to it.
+  assertEq "forks"              "forks"              Container.forks.name
+  -- Hyphenated name must match the branch-name suffix the tool dispatches on.
+  assertEq "nightly-testing"    "nightly-testing"    Container.nightlyTesting.name
+  -- Kept the `pr-` prefix because the container exists for toolchain *PR* tests.
+  assertEq "pr-toolchain-tests" "pr-toolchain-tests" Container.prToolchainTests.name
+  -- Bare `mathlib4` (the historical monolithic container, still dual-written
+  -- to during the migration) is exposed on the CLI as `legacy`.
+  assertEq "legacy"             "legacy"             Container.legacy.name
+
+/-- Parser is the inverse of `Container.name` on valid inputs, and rejects everything else. -/
+def test_Container_parse : IO Unit := do
+  IO.println "Container.parse?:"
+  -- Every canonical name round-trips back to its enum case.
+  assert "master parses"          (Container.parse? "master" == some .master)
+  assert "forks parses"           (Container.parse? "forks" == some .forks)
+  assert "nightly-testing parses" (Container.parse? "nightly-testing" == some .nightlyTesting)
+  assert "pr-toolchain-tests parses"
+    (Container.parse? "pr-toolchain-tests" == some .prToolchainTests)
+  assert "legacy parses"          (Container.parse? "legacy" == some .legacy)
+  -- Unknown names must be rejected so `--container=bogus` errors out instead of silently
+  -- defaulting to (or worse, fabricating) a container.
+  assert "unknown rejected"       (Container.parse? "bogus" == none)
+  -- Empty string is a likely user input (e.g. `--container=`); reject explicitly.
+  assert "empty rejected"         (Container.parse? "" == none)
+
+/-- The Azure URL each container resolves to. These URLs are baked into every
+download/upload request, so changes here have an operational blast radius. -/
+def test_Container_azureURL : IO Unit := do
+  IO.println "Container.azureURL:"
+  -- The NEW dedicated master container — `mathlib4-master`, distinct from the
+  -- legacy bare `mathlib4`. Only master CI writes here.
+  assertEq "master URL"
+    "https://lakecache.blob.core.windows.net/mathlib4-master"
+    Container.master.azureURL
+  -- Per-trust-level containers follow the `mathlib4-{name}` convention.
+  assertEq "forks URL"
+    "https://lakecache.blob.core.windows.net/mathlib4-forks"
+    Container.forks.azureURL
+  assertEq "nightly-testing URL"
+    "https://lakecache.blob.core.windows.net/mathlib4-nightly-testing"
+    Container.nightlyTesting.azureURL
+  assertEq "pr-toolchain-tests URL"
+    "https://lakecache.blob.core.windows.net/mathlib4-pr-toolchain-tests"
+    Container.prToolchainTests.azureURL
+  -- Legacy keeps the bare `mathlib4` container name (no `-legacy` suffix); this
+  -- is the historical monolithic container that pre-dated the split.
+  assertEq "legacy URL"
+    "https://lakecache.blob.core.windows.net/mathlib4"
+    Container.legacy.azureURL
+
+end ContainerModel
+
+section PerRepoAllowlist
+
+/-- Trust-ordered fallback list per GitHub repo. The contract: each repo maps
+to its own dedicated container first (1-1), with `legacy` as universal last-resort
+fallback during migration. `master` is NOT in fork/nightly lists by design — that
+container only stores canonical mathlib4 paths, not fork-prefixed ones, so a
+lookup there from a fork iteration would always 404. -/
+def test_defaultContainersForRepo : IO Unit := do
+  IO.println "defaultContainersForRepo:"
+  -- Master branch reads its own container first; legacy is the universal tail.
+  assert "mathlib4 master repo → [master, legacy]"
+    (defaultContainersForRepo MATHLIBREPO == [.master, .legacy])
+  -- Nightly-testing default is the STRICT trusted-nightly view: only the
+  -- nightly container and legacy. `pr-toolchain-tests` is deliberately
+  -- excluded so trusted consumers (`nightly-testing`, `nightly-testing-green`,
+  -- `bump/*`) don't silently fall back to low-trust toolchain-PR test
+  -- artifacts. Toolchain-test branches widen this via
+  -- `containersForRepoAndBranch` once their branch class is known.
+  assert "nightly-testing repo → [nightly-testing, legacy] (strict default)"
+    (defaultContainersForRepo NIGHTLY_TESTING_REPO == [.nightlyTesting, .legacy])
+  -- A PR from a fork: its own container first, legacy as the tail.
+  -- Master-built deps are reached via the *outer* repo loop iteration with
+  -- repo = MATHLIBREPO, not by adding `master` here (which would 404 anyway).
+  assert "fork repo → [forks, legacy]"
+    (defaultContainersForRepo "alice/mathlib4" == [.forks, .legacy])
+  -- Anything unrecognized falls through to the fork-default; conservative.
+  assert "unknown repo → [forks, legacy] (fork-default)"
+    (defaultContainersForRepo "some/other-repo" == [.forks, .legacy])
+  -- Defensive: every default allowlist must end with `.legacy` so historical
+  -- artifacts remain reachable during the migration. Future edits that drop
+  -- this guarantee would silently shrink cache-hit rates.
+  assert "legacy is always last for fork repos"
+    ((defaultContainersForRepo "alice/mathlib4").getLast? == some Container.legacy)
+  assert "legacy is always last for master repo"
+    ((defaultContainersForRepo MATHLIBREPO).getLast? == some Container.legacy)
+  assert "legacy is always last for nightly-testing repo"
+    ((defaultContainersForRepo NIGHTLY_TESTING_REPO).getLast? == some Container.legacy)
+
+/-- Branch-aware read allowlist: classifies refs on the nightly-testing repo
+into trusted vs toolchain-test, with different fallback chains. The strict
+trusted-nightly chain prevents low-trust `lean-pr-testing-*` artifacts from
+being silently served to `nightly-testing-green` consumers. -/
+def test_containersForRepoAndBranch : IO Unit := do
+  IO.println "containersForRepoAndBranch:"
+  -- Trusted-nightly branches on the nightly-testing repo: strict, no
+  -- `pr-toolchain-tests` in the fallback. This is the actual trust boundary.
+  assert "nightly-testing repo + trustedNightly → [nightly-testing, legacy]"
+    (containersForRepoAndBranch NIGHTLY_TESTING_REPO (some .trustedNightly) ==
+      [.nightlyTesting, .legacy])
+  -- Toolchain-test branches: widen so they can read their own previously-
+  -- uploaded artifacts from `pr-toolchain-tests` first. Trusted nightly
+  -- artifacts are still preferred where hash spaces happen to align;
+  -- legacy is the universal tail.
+  assert "nightly-testing repo + toolchainTest → [pr-toolchain-tests, nightly-testing, legacy]"
+    (containersForRepoAndBranch NIGHTLY_TESTING_REPO (some .toolchainTest) ==
+      [.prToolchainTests, .nightlyTesting, .legacy])
+  -- When the branch hasn't been classified (e.g. CLI --repo override,
+  -- no git context, dev runs), fall back to the strict repo-only default.
+  assert "nightly-testing repo + no branch info → strict default"
+    (containersForRepoAndBranch NIGHTLY_TESTING_REPO none == [.nightlyTesting, .legacy])
+  -- Branch trust is irrelevant for non-nightly-testing repos.
+  assert "mathlib4 repo + trustedNightly (ignored) → master default"
+    (containersForRepoAndBranch MATHLIBREPO (some .trustedNightly) == [.master, .legacy])
+  assert "fork repo + toolchainTest (ignored) → forks default"
+    (containersForRepoAndBranch "alice/mathlib4" (some .toolchainTest) == [.forks, .legacy])
+
+end PerRepoAllowlist
+
+section MkFileURL
+
+/-- URL path shape: container is the host segment, repo is the path prefix.
+The asymmetry is that canonical mathlib4 uploads land at `/f/{hash}`, while
+fork uploads land at `/f/{repo}/{hash}` — this lets multiple forks share a
+container without colliding. -/
+def test_mkFileURL : IO Unit := do
+  IO.println "mkFileURL:"
+  -- Canonical mathlib4 repo → no `/f/{repo}/` prefix; this matches where
+  -- master CI actually publishes artifacts (in the new `mathlib4-master` container).
+  assertEq "master × mathlib4 (no prefix)"
+    "https://lakecache.blob.core.windows.net/mathlib4-master/f/abc.ltar"
+    (mkFileURL MATHLIBREPO Container.master.azureURL "abc.ltar")
+  -- Fork repo prefix is independent of which container — same path scheme everywhere.
+  assertEq "forks × fork (alt container + prefix)"
+    "https://lakecache.blob.core.windows.net/mathlib4-forks/f/alice/mathlib4/abc.ltar"
+    (mkFileURL "alice/mathlib4" Container.forks.azureURL "abc.ltar")
+  -- Sanity: nightly-testing in its own container still gets the repo prefix
+  -- (the `no-prefix-for-MATHLIBREPO` rule must not over-match).
+  assertEq "nightly-testing × nightly-testing repo"
+    "https://lakecache.blob.core.windows.net/mathlib4-nightly-testing/f/leanprover-community/mathlib4-nightly-testing/abc.ltar"
+    (mkFileURL NIGHTLY_TESTING_REPO Container.nightlyTesting.azureURL "abc.ltar")
+  -- Legacy container with the canonical mathlib4 repo: bare `/f/{hash}.ltar`
+  -- (where master CI historically published).
+  assertEq "legacy × mathlib4 (no prefix, historical master path)"
+    "https://lakecache.blob.core.windows.net/mathlib4/f/abc.ltar"
+    (mkFileURL MATHLIBREPO Container.legacy.azureURL "abc.ltar")
+  -- Legacy container with a fork repo: the historical fork upload location.
+  assertEq "legacy × fork (historical fork path)"
+    "https://lakecache.blob.core.windows.net/mathlib4/f/alice/mathlib4/abc.ltar"
+    (mkFileURL "alice/mathlib4" Container.legacy.azureURL "abc.ltar")
+
+end MkFileURL
+
+section ParseCacheFromList
+
+/-- Parser for the `--cache-from=a,b,c` CLI flag. Validates each name and
+preserves ordering (the order is the trust order tried at download time). -/
+def test_parseCacheFromList : IO Unit := do
+  IO.println "parseCacheFromList:"
+  -- Trivial case: one container.
+  assert "single container"
+    (parseCacheFromList "master" == some [.master])
+  -- The default user pattern: master + one alt.
+  assert "two containers"
+    (parseCacheFromList "master,forks" == some [.master, .forks])
+  -- Power-user: every known container at once.
+  assert "all five"
+    (parseCacheFromList "master,forks,nightly-testing,pr-toolchain-tests,legacy" ==
+      some [.master, .forks, .nightlyTesting, .prToolchainTests, .legacy])
+  -- The migration-fallback shape that `defaultContainersForRepo MATHLIBREPO`
+  -- now emits — make sure users can specify it explicitly too.
+  assert "master + legacy migration pattern"
+    (parseCacheFromList "master,legacy" == some [.master, .legacy])
+  -- Ordering must be preserved — it *is* the trust order. Swapping master and
+  -- forks is a legitimate (if unusual) request and must not be silently sorted.
+  assert "preserves order (forks first)"
+    (parseCacheFromList "forks,master" == some [.forks, .master])
+  -- Tolerate whitespace around commas so the flag survives ad-hoc shell quoting.
+  assert "whitespace tolerated"
+    (parseCacheFromList " master , forks " == some [.master, .forks])
+  -- One bad entry rejects the whole flag — better to fail loudly than to
+  -- silently fall back to a default the user didn't ask for.
+  assert "unknown name rejects whole list"
+    (parseCacheFromList "master,bogus" == none)
+  -- Empty input is treated as malformed (rather than as "no overrides").
+  assert "empty rejected"
+    (parseCacheFromList "" == none)
+
+end ParseCacheFromList
+
+section ExtractRepoFromUrl
+
+/-- Parses `owner/name` from a git remote URL. Used to determine the right
+per-repo container allowlist; must tolerate the URL shapes git actually emits. -/
+def test_extractRepoFromUrl : IO Unit := do
+  IO.println "extractRepoFromUrl:"
+  -- Canonical ssh shape produced by `git clone git@github.com:...`.
+  assert "ssh with .git suffix"
+    (extractRepoFromUrl "git@github.com:alice/mathlib4.git" == some "alice/mathlib4")
+  -- Same shape but missing the .git — some users configure remotes this way.
+  assert "ssh without .git suffix"
+    (extractRepoFromUrl "git@github.com:alice/mathlib4" == some "alice/mathlib4")
+  -- Standard https clone URL with .git.
+  assert "https with .git suffix"
+    (extractRepoFromUrl "https://github.com/alice/mathlib4.git" == some "alice/mathlib4")
+  -- Same minus the .git (what GitHub itself displays in the browser URL bar).
+  assert "https without .git suffix"
+    (extractRepoFromUrl "https://github.com/alice/mathlib4" == some "alice/mathlib4")
+  -- Multi-segment owner names (org with hyphens) must be preserved verbatim.
+  assert "https with leanprover-community"
+    (extractRepoFromUrl "https://github.com/leanprover-community/mathlib4.git" == some "leanprover-community/mathlib4")
+  -- Empty input → none, so downstream code can treat the URL as "no remote".
+  assert "empty string returns none"
+    (extractRepoFromUrl "" == none)
+  -- A bare token with no slash/colon is unparseable.
+  assert "malformed URL (no slash or colon)"
+    (extractRepoFromUrl "norepo" == none)
+
+end ExtractRepoFromUrl
+
+section ExtractPRNumber
+
+/-- Extracts a PR number from a git ref. The contract is "second-to-last
+segment must be `pr`, last must be a Nat". -/
+def test_extractPRNumber : IO Unit := do
+  IO.println "extractPRNumber:"
+  -- The shape git produces for fetched PR refs.
+  assert "standard PR ref format"
+    (extractPRNumber "refs/remotes/upstream/pr/1234" == some 1234)
+  -- Branch refs are not PR refs; must not match.
+  assert "master branch returns none"
+    (extractPRNumber "refs/heads/master" == none)
+  -- Minimal `pr/N` is also accepted — the parser only inspects the trailing two segments.
+  assert "simple pr number"
+    (extractPRNumber "pr/42" == some 42)
+  -- The tail must be a valid Nat; non-numeric tails are rejected (no partial parsing).
+  assert "non-numeric tail returns none"
+    (extractPRNumber "refs/remotes/upstream/pr/foo" == none)
+  -- `0` is a valid Nat; pin down that it isn't special-cased.
+  assert "zero PR number"
+    (extractPRNumber "refs/remotes/upstream/pr/0" == some 0)
+  -- A numeric tail without the `pr/` parent must not be mistaken for a PR ref.
+  assert "missing pr segment returns none"
+    (extractPRNumber "refs/remotes/upstream/42" == none)
+
+end ExtractPRNumber
+
+section HashFromFileName
+
+/-- Recovers the UInt64 cache hash from a cached file's path. The hairy bit is
+the double-suffix logic for `.ltar.part` — in-flight downloads have a `.part`
+extension that must be stripped *before* the `.ltar` extension. -/
+def test_hashFromFileName : IO Unit := do
+  IO.println "hashFromFileName:"
+  -- Standard finished-download file shape.
+  assert "simple ltar file"
+    (hashFromFileName "abc123def.ltar" == String.parseHexToUInt64? "000000abc123def")
+  -- `.ltar.part` is what's on disk mid-download (curl's `-o` target); the
+  -- parser must strip both extensions to recover the hash.
+  assert "ltar.part file (double suffix)"
+    (hashFromFileName "abc123def.ltar.part" == String.parseHexToUInt64? "000000abc123def")
+  -- Full 16-char hex needs no leading-zero handling on the parse side.
+  assert "full 16-digit hex"
+    (hashFromFileName "deadbeef00112233.ltar" == String.parseHexToUInt64? "deadbeef00112233")
+  -- A non-hex stem must fail rather than silently producing garbage.
+  assert "non-hex stem returns none"
+    (hashFromFileName "nothexa.ltar" == none)
+  -- Path prefix must not interfere — `fileStem` should extract just the basename's stem.
+  assert "file with path (extracts name only)"
+    (hashFromFileName "/path/to/abc123def.ltar" == String.parseHexToUInt64? "000000abc123def")
+
+end HashFromFileName
+
+section IsRemoteURL
+
+/-- Discriminator: is this string a remote URL (vs a local filesystem path)?
+Used to decide whether to short-circuit `git remote get-url` lookups. -/
+def test_isRemoteURL : IO Unit := do
+  IO.println "isRemoteURL:"
+  -- The three protocols accepted by the cache tool.
+  assert "https URL is remote"
+    (isRemoteURL "https://github.com/alice/mathlib4.git" == true)
+  assert "http URL is remote"
+    (isRemoteURL "http://github.com/alice/mathlib4" == true)
+  assert "ssh URL is remote"
+    (isRemoteURL "git@github.com:alice/mathlib4.git" == true)
+  -- Absolute and relative local paths must be classified as not-remote so they
+  -- get routed through `git remote get-url`.
+  assert "local path is not remote"
+    (isRemoteURL "/local/path/to/repo" == false)
+  assert "relative path is not remote"
+    (isRemoteURL "./local/repo" == false)
+  -- Defensive — empty input shouldn't accidentally match the predicate.
+  assert "empty string is not remote"
+    (isRemoteURL "" == false)
+
+end IsRemoteURL
+
+section UInt64Formatting
+
+/-- Filename derived from a hash. Must be **exactly 16 hex digits** + `.ltar`
+— pad-to-16 is what makes `hashFromFileName` reliably invertible and what
+prevents `0x1.ltar` and `0x01.ltar` from colliding as different cache keys. -/
+def test_UInt64_asLTar : IO Unit := do
+  IO.println "UInt64.asLTar:"
+  -- The leading-zero padding case: `1` must produce 15 zeros + 1.
+  assertEq "small number padded to 16 hex digits"
+    "0000000000000001.ltar"
+    (1 : UInt64).asLTar
+  -- Partially-padded: 6-digit hex gets 10 leading zeros.
+  assertEq "medium number"
+    "0000000000abc123.ltar"
+    (0xabc123 : UInt64).asLTar
+  -- Full-width hex needs no padding; verify the formatter doesn't truncate.
+  assertEq "full 16-digit number"
+    "deadbeef00112233.ltar"
+    (0xdeadbeef00112233 : UInt64).asLTar
+  -- Zero is the trickiest pad case: must not produce ".ltar" with no digits.
+  assertEq "zero is padded"
+    "0000000000000000.ltar"
+    (0 : UInt64).asLTar
+  -- Upper bound: 16 `f`s, lowercase (the parser is case-sensitive elsewhere).
+  assertEq "max UInt64"
+    "ffffffffffffffff.ltar"
+    (0xffffffffffffffff : UInt64).asLTar
+
+end UInt64Formatting
+
+section RoundTrip
+
+/-- End-to-end invariant: writing a hash to disk (via `asLTar`) and reading
+the file back (via `hashFromFileName`) must yield the original hash. This is
+the property that justifies treating the filename as a cache key in the
+first place — a regression here would silently corrupt the cache. -/
+def test_hash_roundtrip : IO Unit := do
+  IO.println "hash roundtrip (asLTar then hashFromFileName):"
+  -- Full-width hash: no padding involved.
+  let h1 : UInt64 := 0xdeadbeef00112233
+  let fileName := h1.asLTar
+  assert "roundtrip through asLTar → hashFromFileName"
+    (hashFromFileName fileName == some h1)
+  -- Short hash: exercises both pad-on-write and trim-on-read.
+  let h2 : UInt64 := 0xabc123
+  let fileName2 := h2.asLTar
+  assert "roundtrip with smaller number"
+    (hashFromFileName fileName2 == some h2)
+
+end RoundTrip
+
+def runAll : IO Unit := do
+  test_Container_name
+  test_Container_parse
+  test_Container_azureURL
+  test_defaultContainersForRepo
+  test_containersForRepoAndBranch
+  test_mkFileURL
+  test_parseCacheFromList
+  test_extractRepoFromUrl
+  test_extractPRNumber
+  test_hashFromFileName
+  test_isRemoteURL
+  test_UInt64_asLTar
+  test_hash_roundtrip
+
+end Cache.Test
+
+open Cache.Test in
+def main : IO UInt32 := do
+  runAll
+  let n ← failures.get
+  if n == 0 then
+    IO.println "\nAll cache tests passed."
+    return 0
+  else
+    IO.eprintln s!"\n{n} cache test(s) failed."
+    return 1
