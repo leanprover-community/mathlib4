@@ -256,7 +256,7 @@ noncomputable abbrev ofAlgHomOp [CommSemiring R] [Semiring A] [Bialgebra R A]
 
 /-- Upgrade a commutative bialgebra to a Hopf algebra by specifying the antipode `A →ₐ[R] A`
 with appropriate conditions. -/
-noncomputable abbrev ofAlgHom {A : Type*} [CommSemiring A] [Bialgebra R A]
+noncomputable abbrev ofAlgHom [CommSemiring A] [Bialgebra R A]
     (antipode : A →ₐ[R] A)
     (mul_antipode_rTensor_comul :
       ((Algebra.TensorProduct.lift antipode (.id R A) fun _ ↦ .all _).comp
