@@ -189,7 +189,7 @@ def totalSpaceMk (e : Expr) : MetaM Expr := do
         let body ← mkAppM ``Bundle.TotalSpace.mk' #[E', x, (e.app x).headBeta]
         mkLambdaFVars #[x] body
       else return e
-    | TangentSpace _k _ E _ _ _H _ _I M _ _ _x =>
+    | TangentSpace _k _ E _ _ _ _H _ _I M _ _ _x =>
       trace[Elab.DiffGeo.TotalSpaceMk] "`{e}` is a vector field on `{M}`"
       let body ← mkAppM ``Bundle.TotalSpace.mk' #[E, x, (e.app x).headBeta]
       mkLambdaFVars #[x] body
@@ -1003,7 +1003,7 @@ open Bundle PrettyPrinter Delaborator SubExpr
 arguments that can use the `T%` elaborator. -/
 @[app_delab mfderiv] meta def delab_mfderiv : Delab := do
   whenPPOption getPPNotation do
-  withOverApp 21 do
+  withOverApp 23 do
   try
     let fe := (← getExpr).appArg!
     let .lam n _ b _ := fe | failure
@@ -1011,7 +1011,7 @@ arguments that can use the `T%` elaborator. -/
     let σe := b.getAppArgs[4]!.getAppFn
     guard <| σe.isFVar
     let Tσs ← withAppArg do
-      let σs ← withBindingBody n <| withNaryArg 4 <| withNaryFn delab
+      let σs ← withBindingBody n <| withNaryArg 5 <| withNaryFn delab
       `(T% $σs) >>= annotateGoToSyntaxDef
     `(mfderiv% ($Tσs)) >>= annotateGoToSyntaxDef
   catch _ =>
@@ -1024,7 +1024,7 @@ arguments that can use the `T%` elaborator. -/
 arguments that can use the `T%` elaborator. -/
 @[app_delab MDifferentiable] meta def delabMDifferentiable : Delab := do
   whenPPOption getPPNotation do
-  withOverApp 21 do
+  withOverApp 23 do
   try
     let fe := (← getExpr).appArg!
     let .lam n _ b _ := fe | failure
@@ -1032,7 +1032,7 @@ arguments that can use the `T%` elaborator. -/
     let σe := b.getAppArgs[4]!.getAppFn
     guard <| σe.isFVar
     let Tσs ← withAppArg do
-      let σs ← withBindingBody n <| withNaryArg 4 <| withNaryFn delab
+      let σs ← withBindingBody n <| withNaryArg 5 <| withNaryFn delab
       `((T% $σs)) >>= annotateGoToSyntaxDef
     `(MDiff $Tσs) >>= annotateGoToSyntaxDef
   catch _ =>
@@ -1043,7 +1043,7 @@ arguments that can use the `T%` elaborator. -/
 arguments that can use the `T%` elaborator. -/
 @[app_delab MDifferentiableAt] meta def delabMDifferentiableAt : Delab := do
   whenPPOption getPPNotation do
-  withOverApp 21 do
+  withOverApp 23 do
   try
     let fe := (← getExpr).appArg!
     let .lam n _ b _ := fe | failure
@@ -1051,7 +1051,7 @@ arguments that can use the `T%` elaborator. -/
     let σe := b.getAppArgs[4]!.getAppFn
     guard <| σe.isFVar
     let Tσs ← withAppArg do
-      let σs ← withBindingBody n <| withNaryArg 4 <| withNaryFn delab
+      let σs ← withBindingBody n <| withNaryArg 5 <| withNaryFn delab
       `((T% $σs)) >>= annotateGoToSyntaxDef
     `(MDiffAt $Tσs) >>= annotateGoToSyntaxDef
   catch _ =>
@@ -1062,7 +1062,7 @@ arguments that can use the `T%` elaborator. -/
 arguments that can use the `T%` elaborator. -/
 @[app_delab MDifferentiableOn] meta def delabMDifferentiableOn : Delab := do
   whenPPOption getPPNotation do
-  withOverApp 22 do
+  withOverApp 24 do
   let ss ← withAppArg delab
   try
     let f := (← getExpr).getAppArgs[20]!
@@ -1071,18 +1071,18 @@ arguments that can use the `T%` elaborator. -/
     let σe := b.getAppArgs[4]!.getAppFn
     guard <| σe.isFVar
     let Tσs ← withNaryArg 20 do
-      let σs ← withBindingBody n <| withNaryArg 4 <| withNaryFn delab
+      let σs ← withBindingBody n <| withNaryArg 5 <| withNaryFn delab
       `((T% $σs)) >>= annotateGoToSyntaxDef
     `(MDiff[$ss] $Tσs) >>= annotateGoToSyntaxDef
   catch _ =>
-    let fs ← withNaryArg 20 <| delab
+    let fs ← withNaryArg 22 <| delab
     `(MDiff[$ss] $fs) >>= annotateGoToSyntaxDef
 
 /-- Delaborator for `MDifferentiableWithinAt` using the custom elaborator, and special-casing
 arguments that can use the `T%` elaborator. -/
 @[app_delab MDifferentiableWithinAt] meta def delabMDifferentiableWithinAt : Delab := do
   whenPPOption getPPNotation do
-  withOverApp 22 do
+  withOverApp 24 do
   let ss ← withAppArg delab
   try
     let f := (← getExpr).getAppArgs[20]!
@@ -1090,12 +1090,12 @@ arguments that can use the `T%` elaborator. -/
     guard <| b.isAppOf ``Bundle.TotalSpace.mk'
     let s := b.getAppArgs[4]!.getAppFn
     guard <| s.isFVar
-    let Tσs ← withNaryArg 20 do
-      let σs ← withBindingBody n <| withNaryArg 4 <| withNaryFn delab
+    let Tσs ← withNaryArg 22 do
+      let σs ← withBindingBody n <| withNaryArg 5 <| withNaryFn delab
       `((T% $σs)) >>= annotateGoToSyntaxDef
     `(MDiffAt[$ss] $Tσs) >>= annotateGoToSyntaxDef
   catch _ =>
-    let fs ← withNaryArg 20 <| delab
+    let fs ← withNaryArg 22 <| delab
     `(MDiffAt[$ss] $fs) >>= annotateGoToSyntaxDef
 
 -- TODO: add more delaborators (and tests) for
