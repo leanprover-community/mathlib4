@@ -38,24 +38,24 @@ structure SubmonoidFunctor where
   /-- For any `i : U ⟶ V`, `R.map i` maps the submonoid `obj U` into the submonoid `obj V`. -/
   map : ∀ {U V : C} (i : U ⟶ V), obj U ≤ (obj V).comap (R.map i).hom
 
-namespace SubmonoidFunctors
+namespace SubmonoidFunctor
 
 /-- The functor of monoids associated to a subfunctor of submonoids. -/
 @[simps obj map]
-def toMonoidFunctor (S : SubmonoidFunctors R) : C ⥤ MonCat.{w} where
+def toMonoidFunctor (S : SubmonoidFunctor R) : C ⥤ MonCat.{w} where
   obj _ := MonCat.of (S.obj _)
   map i :=
     MonCat.ofHom <| ((R.map i).hom.submonoidComap (S.obj _)).comp <| Submonoid.inclusion (S.map i)
 
-variable {R R' : C ⥤ MonCat.{w}} (S : SubmonoidFunctors R) (S' : SubmonoidFunctors R')
+variable {R R' : C ⥤ MonCat.{w}} (S : SubmonoidFunctor R) (S' : SubmonoidFunctor R')
 
 instance {U : C} : CoeHead (S.toMonoidFunctor.obj U) (R.obj U) where
   coe := Subtype.val
 
-instance : PartialOrder (SubmonoidFunctors R) :=
-  PartialOrder.lift SubmonoidFunctors.obj (fun _ _ => SubmonoidFunctors.ext)
+instance : PartialOrder (SubmonoidFunctor R) :=
+  PartialOrder.lift SubmonoidFunctor.obj (fun _ _ => SubmonoidFunctor.ext)
 
-instance : CompleteLattice (SubmonoidFunctors R) where
+instance : CompleteLattice (SubmonoidFunctor R) where
   sup F G := {
     obj U := F.obj U ⊔ G.obj U
     map i _ := by
@@ -93,9 +93,9 @@ instance : CompleteLattice (SubmonoidFunctors R) where
         rw [sSup_image',Submonoid.mem_iSup ] at hx
         intro N hN
         expose_names
-        have : ∀ (i : S), ⇑(hom (R.map f)) ⁻¹' ((@Subtype.val (SubmonoidFunctors R)
+        have : ∀ (i : S), ⇑(hom (R.map f)) ⁻¹' ((@Subtype.val (SubmonoidFunctor R)
           (fun x ↦ x ∈ S) i).obj V) ≤ ⇑(hom (R.map f)) ⁻¹' N.carrier := by tauto
-        have : ∀ (i : S), ((@Subtype.val (SubmonoidFunctors R) (fun x ↦ x ∈ S) i).obj U) ≤
+        have : ∀ (i : S), ((@Subtype.val (SubmonoidFunctor R) (fun x ↦ x ∈ S) i).obj U) ≤
           ⇑(hom (R.map f)) ⁻¹' N.carrier := by
           intro i
           simp_all only [Subtype.forall, Set.le_eq_subset]
@@ -145,7 +145,7 @@ section range
 
 /-- The submonoid functor defined by the image along a morphism of functors of monoids. -/
 @[simps]
-def range (S : SubmonoidFunctors R) (p : R ⟶ R') : SubmonoidFunctors R' where
+def range (S : SubmonoidFunctor R) (p : R ⟶ R') : SubmonoidFunctor R' where
   obj _ := Submonoid.map (MonCat.Hom.hom (p.app _)) (S.obj _)
   map := by
     rintro U V i a h
@@ -164,7 +164,7 @@ section comap
 
 /-- The submonoid functor defined by the preimage along a morphism of functors of monoids. -/
 @[simps]
-def comap (S' : SubmonoidFunctors R') (p : R ⟶ R') : SubmonoidFunctors R where
+def comap (S' : SubmonoidFunctor R') (p : R ⟶ R') : SubmonoidFunctor R where
   obj _ := Submonoid.comap (MonCat.Hom.hom (p.app _)) (S'.obj _)
   map _ _ h := by
     simp_rw [Submonoid.mem_comap, NatTrans.naturality_apply]
@@ -177,7 +177,7 @@ end comap
 
 section lift
 
-variable (p' : R' ⟶ R) (S : SubmonoidFunctors R) (S' : SubmonoidFunctors R')
+variable (p' : R' ⟶ R) (S : SubmonoidFunctor R) (S' : SubmonoidFunctor R')
   (hp' : range S' p' ≤ S)
 
 /-- If the image of a submonoid functor `S'` under a morphism of
@@ -202,6 +202,6 @@ theorem lift_ι : lift p' S S' hp' ≫ S.ι = S'.ι ≫ p' := rfl
 
 end lift
 
-end SubmonoidFunctors
+end SubmonoidFunctor
 
 end CategoryTheory
