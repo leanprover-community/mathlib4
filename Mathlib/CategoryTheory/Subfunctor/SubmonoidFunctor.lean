@@ -139,13 +139,12 @@ end comap
 section lift
 
 variable (p' : R' ⟶ R) (S : SubmonoidFunctor R) (S' : SubmonoidFunctor R')
-  (hp' : image S' p' ≤ S)
+  (hp' : image ⊤ p' ≤ S)
 
-/-- If the image of a submonoid functor `S'` under a morphism of
-functors of monoids falls in another submonoid functor `S`,
+/-- If the image of morphism `R' ⟶ R` lands in a submonoid functor `S`,
 then the morphism factors through it. -/
 @[simps! app]
-def lift : S'.toMonoidFunctor ⟶ S.toMonoidFunctor where
+def lift : R' ⟶ S.toMonoidFunctor where
   app U := MonCat.ofHom {
     toFun := (↾fun x => ⟨p'.app U x, hp' U (by aesop)⟩)
     map_one' := by aesop
