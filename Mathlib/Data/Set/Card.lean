@@ -86,7 +86,8 @@ theorem toENat_cardinalMk_subtype (P : α → Prop) :
     (Cardinal.mk {x // P x}).toENat = {x | P x}.encard :=
   rfl
 
-@[simp] theorem coe_fintypeCard (s : Set α) [Fintype s] : Fintype.card s = s.encard := by
+variable (s) in
+theorem coe_fintypeCard [Fintype s] : Fintype.card s = s.encard := by
   simp [encard_eq_coe_toFinset_card]
 
 @[simp, norm_cast] theorem encard_coe_eq_coe_finsetCard (s : Finset α) :
@@ -424,7 +425,7 @@ theorem encard_eq_four {α : Type u_1} {s : Set α} :
     encard_singleton] <;> grind
 
 theorem Nat.encard_range (k : ℕ) : {i | i < k}.encard = k := by
-  convert encard_coe_eq_coe_finsetCard (Finset.range k) using 1
+  convert! encard_coe_eq_coe_finsetCard (Finset.range k) using 1
   · rw [Finset.coe_range, Iio_def]
   rw [Finset.card_range]
 
@@ -544,7 +545,7 @@ termination_by encard s
 theorem Finite.exists_bijOn_of_encard_eq [Nonempty β] (hs : s.Finite) (h : s.encard = t.encard) :
     ∃ (f : α → β), BijOn f s t := by
   obtain ⟨f, hf, hinj⟩ := hs.exists_injOn_of_encard_le h.le; use f
-  convert hinj.bijOn_image
+  convert! hinj.bijOn_image
   rw [(hs.image f).eq_of_subset_of_encard_le (image_subset_iff.mpr hf)
     (h.symm.trans hinj.encard_image.symm).le]
 
@@ -590,6 +591,7 @@ theorem Finite.cast_ncard_eq (hs : s.Finite) : s.ncard = s.encard := by
   rwa [ncard, ENat.coe_toNat_eq_self, ne_eq, encard_eq_top_iff, Set.Infinite, not_not]
 
 variable (s) in
+@[simp]
 theorem coe_ncard_eq_encard [Finite s] : s.ncard = s.encard :=
   s.toFinite.cast_ncard_eq
 
@@ -607,6 +609,7 @@ theorem ncard_eq_toFinset_card' (s : Set α) [Fintype s] :
   simp [← _root_.Nat.card_coe_set_eq, Nat.card_eq_fintype_card]
 
 variable (s) in
+@[simp]
 theorem fintypeCard_eq_ncard [Fintype s] : Fintype.card s = s.ncard := by
   rw [ncard_eq_toFinset_card', toFinset_card]
 
@@ -733,7 +736,7 @@ theorem ncard_diff_singleton_lt_of_mem {a : α} (h : a ∈ s) (hs : s.Finite := 
 theorem ncard_diff_singleton_le (s : Set α) (a : α) : (s \ {a}).ncard ≤ s.ncard := by
   obtain hs | hs := s.finite_or_infinite
   · apply ncard_le_ncard diff_subset hs
-  convert Nat.zero_le _
+  convert! Nat.zero_le _
   exact (hs.diff (by simp)).ncard
 
 theorem pred_ncard_le_ncard_diff_singleton (s : Set α) (a : α) : s.ncard - 1 ≤ (s \ {a}).ncard := by
@@ -800,7 +803,7 @@ theorem fiber_ncard_ne_zero_iff_mem_image {y : β} (hs : s.Finite := by toFinite
 
 @[simp] theorem ncard_subtype (P : α → Prop) (s : Set α) :
     { x : Subtype P | (x : α) ∈ s }.ncard = (s ∩ setOf P).ncard := by
-  convert (ncard_image_of_injective _ (@Subtype.coe_injective _ P)).symm
+  convert! (ncard_image_of_injective _ (@Subtype.coe_injective _ P)).symm
   ext x
   simp [← and_assoc, exists_eq_right]
 
@@ -917,7 +920,7 @@ theorem surj_on_of_inj_on_of_ncard_le {t : Set β} (f : ∀ a ∈ s, β) (hf : �
   have hft := ht.fintype
   have hft' := Fintype.ofInjective f' finj
   set f'' : ∀ a, a ∈ s.toFinset → β := fun a h ↦ f a (by simpa using h)
-  convert @Finset.surj_on_of_inj_on_of_card_le _ _ _ t.toFinset f'' _ _ _ _ (by simpa) using 1
+  convert! @Finset.surj_on_of_inj_on_of_card_le _ _ _ t.toFinset f'' _ _ _ _ (by simpa) using 1
   · simp [f'']
   · simp [f'', hf]
   · intro a₁ a₂ ha₁ ha₂ h
@@ -1008,7 +1011,7 @@ theorem ncard_le_ncard_diff_add_ncard (s t : Set α) (ht : t.Finite := by toFini
   · to_encard_tac
     rw [ht.cast_ncard_eq, hs.cast_ncard_eq, hs.diff.cast_ncard_eq]
     apply encard_le_encard_diff_add_encard
-  convert Nat.zero_le _
+  convert! Nat.zero_le _
   rw [hs.ncard]
 
 theorem le_ncard_diff (s t : Set α) (hs : s.Finite := by toFinite_tac) :
@@ -1159,7 +1162,7 @@ theorem exists_eq_insert_iff_ncard (hs : s.Finite := by toFinite_tac) :
   rcases t.finite_or_infinite with ht | ht
   · rw [ncard_eq_toFinset_card _ hs, ncard_eq_toFinset_card _ ht,
       ← @Finite.toFinset_subset_toFinset _ _ _ hs ht, ← Finset.exists_eq_insert_iff]
-    convert Iff.rfl using 2; simp only [Finite.mem_toFinset]
+    convert! Iff.rfl using 2; simp only [Finite.mem_toFinset]
     ext x
     simp [Finset.ext_iff, Set.ext_iff]
   simp only [ht.ncard, add_eq_zero, and_false, iff_false, not_exists, not_and,
