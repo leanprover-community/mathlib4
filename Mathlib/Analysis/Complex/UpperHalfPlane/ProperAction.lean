@@ -99,7 +99,8 @@ lemma isProperMap_smul_I : IsProperMap fun g : SL(2, ℝ) ↦ g • I := by
   obtain ⟨A, hA⟩ := absq_le hK
   obtain ⟨A', hA'⟩ := cdsq_le hK
   -- activate the sup-norm on matrices
-  let : SeminormedAddCommGroup (Matrix (Fin 2) (Fin 2) ℝ) := Matrix.seminormedAddCommGroup
+  let : NormPseudoMetric (Matrix (Fin 2) (Fin 2) ℝ) := Matrix.normPseudoMetric
+  have : IsNormedAddGroup (Matrix (Fin 2) (Fin 2) ℝ) := Matrix.isNormedAddGroup
   have : ProperSpace (Matrix (Fin 2) (Fin 2) ℝ) := pi_properSpace
   have : IsCompact {m : Matrix (Fin 2) (Fin 2) ℝ | ∀ i j, |m i j| ≤ max √A √A'} := by
     convert ProperSpace.isCompact_closedBall (0 : Matrix (Fin 2) (Fin 2) ℝ) (max √A √A')

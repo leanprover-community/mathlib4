@@ -46,14 +46,16 @@ protected lemma isNormedGroup [NormPseudoMetric β] [CommGroup β] [IsNormedGrou
   letI := e.commGroup
   .induced _ _ e.mulEquiv
 
+set_option linter.deprecated false in
 /-- Transfer a `SeminormedCommGroup` across an `Equiv` -/
 @[to_additive /-- Transfer a `SeminormedCommGroup` across an `Equiv` -/]
 protected abbrev seminormedCommGroup [NormPseudoMetric β] [CommGroup β] [IsNormedGroup β] (e : α ≃ β) :
     SeminormedCommGroup α where
   __ := e.normPseudoMetric
   __ := e.commGroup
-  toIsNormedGroup := .induced _ _ e.mulEquiv
+  toIsNormedGroup := e.isNormedGroup
 
+set_option linter.deprecated false in
 /-- Transfer a `NormedCommGroup` across an `Equiv` -/
 @[to_additive /-- Transfer a `NormedCommGroup` across an `Equiv` -/]
 protected abbrev normedCommGroup [NormMetric β] [CommGroup β] [IsNormedGroup β] (e : α ≃ β) :
@@ -62,12 +64,21 @@ protected abbrev normedCommGroup [NormMetric β] [CommGroup β] [IsNormedGroup �
   __ := e.commGroup
   toIsNormedGroup := .induced _ _ e.mulEquiv
 
+attribute [deprecated Equiv.isNormedGroup (since := "2026-05-17")]
+  Equiv.seminormedCommGroup Equiv.normedCommGroup
+attribute [deprecated Equiv.isNormedAddGroup (since := "2026-05-17")]
+  Equiv.seminormedAddCommGroup Equiv.normedAddCommGroup
+
 /-- Transfer `NormedSpace` across an `Equiv` -/
 protected abbrev normedSpace (𝕜 : Type*) [NormedField 𝕜]
     [NormPseudoMetric β] [AddCommGroup β] [IsNormedAddGroup β] [NormedSpace 𝕜 β] (e : α ≃ β) :
-    letI := e.seminormedAddCommGroup
+    letI := e.normPseudoMetric
+    letI := e.addCommGroup
+    letI := e.isNormedAddGroup
     NormedSpace 𝕜 α :=
-  letI := e.seminormedAddCommGroup
+  letI := e.normPseudoMetric
+  letI := e.addCommGroup
+  letI := e.isNormedAddGroup
   letI := e.module 𝕜
   .induced _ _ _ (e.linearEquiv _)
 

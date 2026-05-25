@@ -736,7 +736,8 @@ protected theorem equicontinuous_TFAE {κ : Type*}
   rw [q.withSeminorms_iff_uniformSpace_eq_iInf.mp hq, uniformEquicontinuous_iInf_rng,
       equicontinuous_iInf_rng, equicontinuousAt_iInf_rng]
   refine forall_tfae [_, _, _, _, _] fun i ↦ ?_
-  let _ : SeminormedAddCommGroup F := (q i).toSeminormedAddCommGroup
+  let : NormPseudoMetric F := (q i).toNormPseudoMetric
+  have : IsNormedAddGroup F := (q i).toIsNormedAddGroup
   clear u hu hq
   -- Now we can prove the equivalence in this setting
   simp only [List.map]
@@ -896,7 +897,8 @@ lemma bound_of_continuous [t : TopologicalSpace E] (hp : WithSeminorms p)
   -- Now forget that `E` already had a topology and view it as the (semi)normed space
   -- `(E, s.sup p)`.
   clear hp hq t
-  let _ : SeminormedAddCommGroup E := (s.sup p).toSeminormedAddCommGroup
+  let : NormPseudoMetric E := (s.sup p).toNormPseudoMetric
+  have : IsNormedAddGroup E := (s.sup p).toIsNormedAddGroup
   let _ : NormedSpace 𝕜 E := { norm_smul_le := fun a b ↦ le_of_eq (map_smul_eq_mul (s.sup p) a b) }
   -- The inclusion `hε` tells us exactly that `q` is *still* continuous for this new topology
   have : Continuous q := by

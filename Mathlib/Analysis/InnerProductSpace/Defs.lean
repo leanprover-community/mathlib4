@@ -391,10 +391,10 @@ theorem norm_inner_le_norm (x y : F) : ‖⟪x, y⟫‖ ≤ ‖x‖ * ‖y‖ :=
       _ ≤ re ⟪x, x⟫ * re ⟪y, y⟫ := inner_mul_inner_self_le x y
       _ = ‖x‖ * ‖y‖ * (‖x‖ * ‖y‖) := by simp only [inner_self_eq_norm_mul_norm]; ring
 
-/-- Seminormed group structure constructed from a `PreInnerProductSpace.Core` structure -/
+/-- `NormPseudoMetric` structure constructed from a `PreInnerProductSpace.Core` structure -/
 @[instance_reducible]
-def toSeminormedAddCommGroup : SeminormedAddCommGroup F :=
-  AddGroupSeminorm.toSeminormedAddCommGroup
+def toNormPseudoMetric : NormPseudoMetric F :=
+  AddGroupSeminorm.toNormPseudoMetric
     { toFun := fun x => √(re ⟪x, x⟫)
       map_zero' := by simp only [sqrt_zero, inner_zero_right, map_zero]
       neg' := fun x => by simp only [inner_neg_left, neg_neg, inner_neg_right]
@@ -408,16 +408,15 @@ def toSeminormedAddCommGroup : SeminormedAddCommGroup F :=
           linarith
         exact nonneg_le_nonneg_of_sq_le_sq (add_nonneg (sqrt_nonneg _) (sqrt_nonneg _)) this }
 
-/-- `NormPseudoMetric` structure constructed from a `PreInnerProductSpace.Core` structure -/
-@[instance_reducible]
-def toNormPseudoMetric : NormPseudoMetric F :=
-  (toSeminormedAddCommGroup (𝕜 := 𝕜)).toNormPseudoMetric
-
 attribute [local instance] toNormPseudoMetric
 
-lemma toIsNormedAddGroup : IsNormedAddGroup F := toSeminormedAddCommGroup.toIsNormedAddGroup
+lemma toIsNormedAddGroup : IsNormedAddGroup F where
 
 attribute [local instance] toIsNormedAddGroup
+
+set_option linter.deprecated false in
+@[deprecated toIsNormedAddGroup (since := "2026-05-17")]
+def toSeminormedAddCommGroup : SeminormedAddCommGroup F where
 
 /-- Normed space (which is actually a seminorm in general) structure constructed from a
 `PreInnerProductSpace.Core` structure -/
@@ -473,10 +472,12 @@ theorem inner_self_ne_zero {x : F} : ⟪x, x⟫ ≠ 0 ↔ x ≠ 0 :=
 
 attribute [local instance] toNorm
 
-/-- Normed group structure constructed from an `InnerProductSpace.Core` structure -/
+section
+
+/-- `NormMetric` structure constructed from a `PreInnerProductSpace.Core` structure -/
 @[instance_reducible]
-def toNormedAddCommGroup : NormedAddCommGroup F :=
-  AddGroupNorm.toNormedAddCommGroup
+def toNormMetric : NormMetric F :=
+  AddGroupNorm.toNormMetric
     { toFun := fun x => √(re ⟪x, x⟫)
       map_zero' := by simp only [sqrt_zero, inner_zero_right, map_zero]
       neg' := fun x => by simp only [inner_neg_left, neg_neg, inner_neg_right]
@@ -492,16 +493,13 @@ def toNormedAddCommGroup : NormedAddCommGroup F :=
       eq_zero_of_map_eq_zero' := fun _ hx =>
         normSq_eq_zero.1 <| (sqrt_eq_zero inner_self_nonneg).1 hx }
 
-section
-
-/-- `NormMetric` structure constructed from a `PreInnerProductSpace.Core` structure -/
-@[instance_reducible]
-def toNormMetric : NormMetric F :=
-  (toNormedAddCommGroup (𝕜 := 𝕜)).toNormMetric
-
 attribute [local instance] toNormMetric
 
 attribute [local instance] toIsNormedAddGroup
+
+set_option linter.deprecated false in
+@[deprecated toIsNormedAddGroup (since := "2026-05-17")]
+def toNormedAddCommGroup : NormedAddCommGroup F where
 
 omit cd in
 /-- Normed space core structure constructed from an `InnerProductSpace.Core` structure -/
@@ -523,7 +521,8 @@ lemma topology_eq
     (h : ContinuousAt (fun (v : F) ↦ cd.inner v v) 0)
     (h' : IsVonNBounded 𝕜 {v : F | re (cd.inner v v) < 1}) :
     tF = cd.toNormMetric.toMetricSpace.toUniformSpace.toTopologicalSpace := by
-  let := cd.toNormedAddCommGroup
+  let : NormMetric F := cd.toNormMetric
+  have : IsNormedAddGroup F := InnerProductSpace.Core.toIsNormedAddGroup
   let p : Seminorm 𝕜 F := @normSeminorm 𝕜 F _ _ _ _ InnerProductSpace.Core.toNormedSpace
   suffices WithSeminorms (fun (i : Fin 1) ↦ p) by
     rw [(SeminormFamily.withSeminorms_iff_topologicalSpace_eq_iInf _).1 this]
@@ -563,9 +562,11 @@ topology to make sure it is defeq to an already existing topology. -/
   letI := toNormMetricOfTopology h h'
   {}
 
+set_option linter.deprecated false in
 /-- Normed space structure constructed from an `InnerProductSpace.Core` structure, adjusting the
 topology to make sure it is defeq to an already existing topology. -/
-@[reducible] def toNormedAddCommGroupOfTopology
+@[deprecated toIsNormedAddGroupOfTopology (since := "2026-05-17"), reducible]
+def toNormedAddCommGroupOfTopology
     [tF : TopologicalSpace F] [IsTopologicalAddGroup F] [ContinuousConstSMul 𝕜 F]
     (h : ContinuousAt (fun (v : F) ↦ cd.inner v v) 0)
     (h' : IsVonNBounded 𝕜 {v : F | re (cd.inner v v) < 1}) :
@@ -579,9 +580,11 @@ topology to make sure it is defeq to an already existing topology. -/
     [tF : TopologicalSpace F] [IsTopologicalAddGroup F] [ContinuousConstSMul 𝕜 F]
     (h : ContinuousAt (fun (v : F) ↦ cd.inner v v) 0)
     (h' : IsVonNBounded 𝕜 {v : F | re (cd.inner v v) < 1}) :
-    letI : NormedAddCommGroup F := cd.toNormedAddCommGroupOfTopology h h';
+    letI : NormMetric F := cd.toNormMetricOfTopology h h'
+    haveI : IsNormedAddGroup F := cd.toIsNormedAddGroupOfTopology h h'
     NormedSpace 𝕜 F :=
-  letI : NormedAddCommGroup F := cd.toNormedAddCommGroupOfTopology h h'
+  letI : NormMetric F := cd.toNormMetricOfTopology h h'
+  haveI : IsNormedAddGroup F := cd.toIsNormedAddGroupOfTopology h h'
   { norm_smul_le r x := by
       rw [norm_eq_sqrt_re_inner, inner_smul_left, inner_smul_right, ← mul_assoc]
       rw [RCLike.conj_mul, ← ofReal_pow, re_ofReal_mul, sqrt_mul, ← ofReal_normSq_eq_inner_self,
@@ -623,9 +626,11 @@ def InnerProductSpace.ofCoreOfTopology [AddCommGroup F] [hF : Module 𝕜 F] [To
     (cd : InnerProductSpace.Core 𝕜 F)
     (h : ContinuousAt (fun (v : F) ↦ cd.inner v v) 0)
     (h' : IsVonNBounded 𝕜 {v : F | re (cd.inner v v) < 1}) :
-    letI : NormedAddCommGroup F := cd.toNormedAddCommGroupOfTopology h h';
+    letI : NormMetric F := cd.toNormMetricOfTopology h h'
+    haveI : IsNormedAddGroup F := cd.toIsNormedAddGroupOfTopology h h'
     InnerProductSpace 𝕜 F :=
-  letI : NormedAddCommGroup F := cd.toNormedAddCommGroupOfTopology h h'
+  letI : NormMetric F := cd.toNormMetricOfTopology h h'
+  haveI : IsNormedAddGroup F := cd.toIsNormedAddGroupOfTopology h h'
   letI : NormedSpace 𝕜 F := cd.toNormedSpaceOfTopology h h'
   { cd with
     norm_sq_eq_re_inner := fun x => by

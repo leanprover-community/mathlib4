@@ -51,15 +51,18 @@ variable {S : Matrix n n 𝕜} [Fintype n] (hS : S.PosDef)
 applying Gram-Schmidt-Orthogonalization w.r.t. the inner product induced by `Sᵀ` on the standard
 basis vectors `Pi.basisFun`. -/
 noncomputable def LDL.lowerInv : Matrix n n 𝕜 :=
-  letI := Sᵀ.toNormedAddCommGroup hS.transpose
+  letI := Sᵀ.toNormMetric hS.transpose
+  haveI := Sᵀ.toIsNormedAddGroup hS.transpose.posSemidef
   letI := Sᵀ.toInnerProductSpace hS.transpose.posSemidef
   gramSchmidt 𝕜 (Pi.basisFun 𝕜 n)
 
 theorem LDL.lowerInv_eq_gramSchmidtBasis :
-    letI := Sᵀ.toNormedAddCommGroup hS.transpose
+    letI := Sᵀ.toNormMetric hS.transpose
+    haveI := Sᵀ.toIsNormedAddGroup hS.transpose.posSemidef
     letI := Sᵀ.toInnerProductSpace hS.transpose.posSemidef
     LDL.lowerInv hS = ((Pi.basisFun 𝕜 n).toMatrix (gramSchmidtBasis (Pi.basisFun 𝕜 n)))ᵀ := by
-  letI := Sᵀ.toNormedAddCommGroup hS.transpose
+  letI := Sᵀ.toNormMetric hS.transpose
+  haveI := Sᵀ.toIsNormedAddGroup hS.transpose.posSemidef
   letI := Sᵀ.toInnerProductSpace hS.transpose.posSemidef
   ext i j
   rw [LDL.lowerInv, Basis.coePiBasisFun.toMatrix_eq_transpose, coe_gramSchmidtBasis]
@@ -67,14 +70,16 @@ theorem LDL.lowerInv_eq_gramSchmidtBasis :
 
 noncomputable instance LDL.invertibleLowerInv : Invertible (LDL.lowerInv hS) := by
   rw [LDL.lowerInv_eq_gramSchmidtBasis]
-  let := Sᵀ.toNormedAddCommGroup hS.transpose
+  let := Sᵀ.toNormMetric hS.transpose
+  have := Sᵀ.toIsNormedAddGroup hS.transpose.posSemidef
   let := Sᵀ.toInnerProductSpace hS.transpose.posSemidef
   have := Basis.invertibleToMatrix (Pi.basisFun 𝕜 n) (gramSchmidtBasis (Pi.basisFun 𝕜 n))
   infer_instance
 
 theorem LDL.lowerInv_orthogonal {i j : n} (h₀ : i ≠ j) :
     ⟪LDL.lowerInv hS i, Sᵀ *ᵥ LDL.lowerInv hS j⟫ₑ = 0 :=
-  let := Sᵀ.toNormedAddCommGroup hS.transpose
+  let := Sᵀ.toNormMetric hS.transpose
+  have := Sᵀ.toIsNormedAddGroup hS.transpose.posSemidef
   let := Sᵀ.toInnerProductSpace hS.transpose.posSemidef
   gramSchmidt_orthogonal 𝕜 (Pi.basisFun 𝕜 n) h₀
 
@@ -87,7 +92,8 @@ noncomputable def LDL.diag : Matrix n n 𝕜 :=
   Matrix.diagonal (LDL.diagEntries hS)
 
 theorem LDL.lowerInv_triangular {i j : n} (hij : i < j) : LDL.lowerInv hS i j = 0 := by
-  let := Sᵀ.toNormedAddCommGroup hS.transpose
+  let := Sᵀ.toNormMetric hS.transpose
+  have := Sᵀ.toIsNormedAddGroup hS.transpose.posSemidef
   let := Sᵀ.toInnerProductSpace hS.transpose.posSemidef
   rw [← gramSchmidt_triangular hij (Pi.basisFun 𝕜 n), Pi.basisFun_repr, LDL.lowerInv]
 

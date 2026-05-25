@@ -1051,9 +1051,11 @@ lemma isNormedAddGroupToProd [NormPseudoMetric α] [AddCommGroup α] [IsNormedAd
       rw [dist_pseudoMetricSpaceToProd, IsNormedAddGroup.dist_eq, norm_normPseudoMetricToProd,
         toLp_add, toLp_neg] }
 
+set_option linter.deprecated false in
 /-- This definition allows to endow `α × β` with the Lp norm with the uniformity and bornology
 being defeq to the product ones. It is useful to endow a type synonym of `a × β` with the
 Lp norm. -/
+@[deprecated isNormedAddGroupToProd (since := "2026-05-17")]
 abbrev seminormedAddCommGroupToProd [NormPseudoMetric α] [AddCommGroup α] [IsNormedAddGroup α] [NormPseudoMetric β] [AddCommGroup β] [IsNormedAddGroup β] :
     SeminormedAddCommGroup (α × β) where
   toNormPseudoMetric := normPseudoMetricToProd p α β
@@ -1064,7 +1066,8 @@ alias norm_seminormedAddCommGroupToProd := norm_normPseudoMetricToProd
 
 lemma nnnorm_seminormedAddCommGroupToProd [NormPseudoMetric α] [AddCommGroup α] [IsNormedAddGroup α] [NormPseudoMetric β] [AddCommGroup β] [IsNormedAddGroup β]
     (x : α × β) :
-    letI := seminormedAddCommGroupToProd p α β
+    letI := normPseudoMetricToProd p α β
+    haveI := isNormedAddGroupToProd p α β
     ‖x‖₊ = ‖toLp p x‖₊ := rfl
 
 lemma isBoundedSMulSeminormedAddCommGroupToProd
@@ -1080,9 +1083,11 @@ lemma isBoundedSMulSeminormedAddCommGroupToProd
 lemma normSMulClassSeminormedAddCommGroupToProd
     [NormPseudoMetric α] [AddCommGroup α] [IsNormedAddGroup α] [NormPseudoMetric β] [AddCommGroup β] [IsNormedAddGroup β] {R : Type*} [NormPseudoMetric R] [Ring R] [IsNormedRing R]
     [Module R α] [Module R β] [NormSMulClass R α] [NormSMulClass R β] :
-    letI := seminormedAddCommGroupToProd p α β
+    letI := normPseudoMetricToProd p α β
+    haveI := isNormedAddGroupToProd p α β
     NormSMulClass R (α × β) := by
-  letI := seminormedAddCommGroupToProd p α β
+  letI := normPseudoMetricToProd p α β
+  haveI := isNormedAddGroupToProd p α β
   exact ⟨fun x y ↦ norm_smul x (toLp p y)⟩
 
 /-- This definition allows to endow `α × β` with a normed space structure corresponding to
@@ -1090,9 +1095,11 @@ the Lp norm. It is useful for type synonyms of `α × β`. -/
 abbrev normedSpaceSeminormedAddCommGroupToProd
     [NormPseudoMetric α] [AddCommGroup α] [IsNormedAddGroup α] [NormPseudoMetric β] [AddCommGroup β] [IsNormedAddGroup β] {R : Type*} [NormedField R]
     [NormedSpace R α] [NormedSpace R β] :
-    letI := seminormedAddCommGroupToProd p α β
+    letI := normPseudoMetricToProd p α β
+    haveI := isNormedAddGroupToProd p α β
     NormedSpace R (α × β) := by
-  letI := seminormedAddCommGroupToProd p α β
+  letI := normPseudoMetricToProd p α β
+  haveI := isNormedAddGroupToProd p α β
   exact ⟨fun x y ↦ norm_smul_le x (toLp p y)⟩
 
 /-- This definition allows to endow `α × β` with the Lp norm with the uniformity and bornology
@@ -1106,9 +1113,11 @@ abbrev normMetricToProd [NormMetric α] [AddCommGroup α] [IsNormedAddGroup α] 
     rw [dist_pseudoMetricSpaceToProd] at h
     exact toLp_injective p (eq_of_dist_eq_zero h)
 
+set_option linter.deprecated false in
 /-- This definition allows to endow `α × β` with the Lp norm with the uniformity and bornology
 being defeq to the product ones. It is useful to endow a type synonym of `α × β` with the
 Lp norm. -/
+@[deprecated isNormedAddGroupToProd (since := "2026-05-17")]
 abbrev normedAddCommGroupToProd [NormMetric α] [AddCommGroup α] [IsNormedAddGroup α] [NormMetric β] [AddCommGroup β] [IsNormedAddGroup β] :
     NormedAddCommGroup (α × β) where
   toNormMetric := normMetricToProd p α β

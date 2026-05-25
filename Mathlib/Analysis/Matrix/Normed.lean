@@ -287,10 +287,11 @@ protected def linftyOpNormMetric [NormMetric α] [AddCommGroup α] [IsNormedAddG
   @Pi.instNormMetric m _ _ (fun _ ↦ PiLp.normMetricToPi 1 (fun _ ↦ α)) _
     (fun _ ↦ PiLp.isNormedAddGroupToPi 1 (fun _ ↦ α))
 
+set_option linter.deprecated false in
 /-- Normed group instance (using sup norm of L1 norm) for matrices over a normed ring.  Not
 declared as an instance because there are several natural choices for defining the norm of a
 matrix. -/
-@[instance_reducible]
+@[deprecated Matrix.linftyOpIsNormedAddGroup (since := "2026-05-17"), instance_reducible]
 protected def linftyOpNormedAddCommGroup [NormMetric α] [AddCommGroup α] [IsNormedAddGroup α] :
     NormedAddCommGroup (Matrix m n α) where
   toNormMetric := Matrix.linftyOpNormMetric
@@ -310,7 +311,8 @@ protected theorem linftyOpIsBoundedSMul
 protected theorem linftyOpNormSMulClass
     [NormPseudoMetric R] [Ring R] [IsNormedRing R] [NormPseudoMetric α] [AddCommGroup α] [IsNormedAddGroup α] [Module R α] [NormSMulClass R α] :
     NormSMulClass R (Matrix m n α) :=
-  letI := PiLp.seminormedAddCommGroupToPi 1 (fun _ : n ↦ α)
+  letI := PiLp.normPseudoMetricToPi 1 (fun _ : n ↦ α)
+  haveI := PiLp.isNormedAddGroupToPi 1 (fun _ : n ↦ α)
   letI := PiLp.normSMulClassSeminormedAddCommGroupToPi (R := R) 1 (fun _ : n ↦ α)
   inferInstanceAs (NormSMulClass R (m → n → α))
 
@@ -320,7 +322,8 @@ matrix. -/
 @[instance_reducible, local instance]
 protected def linftyOpNormedSpace [NormedField R] [NormPseudoMetric α] [AddCommGroup α] [IsNormedAddGroup α] [NormedSpace R α] :
     NormedSpace R (Matrix m n α) :=
-  letI := PiLp.seminormedAddCommGroupToPi 1 (fun _ : n ↦ α)
+  letI := PiLp.normPseudoMetricToPi 1 (fun _ : n ↦ α)
+  haveI := PiLp.isNormedAddGroupToPi 1 (fun _ : n ↦ α)
   letI := PiLp.normedSpaceSeminormedAddCommGroupToPi (R := R) 1 (fun _ : n ↦ α)
   inferInstanceAs (NormedSpace R (m → n → α))
 
@@ -585,7 +588,8 @@ def frobeniusNormedAddCommGroup [NormMetric α] [AddCommGroup α] [IsNormedAddGr
 theorem frobeniusIsBoundedSMul [NormPseudoMetric R] [Ring R] [IsNormedRing R] [NormPseudoMetric α] [AddCommGroup α] [IsNormedAddGroup α] [Module R α]
     [IsBoundedSMul R α] :
     IsBoundedSMul R (Matrix m n α) :=
-  letI := PiLp.seminormedAddCommGroupToPi 2 (fun _ : n ↦ α)
+  letI := PiLp.normPseudoMetricToPi 2 (fun _ : n ↦ α)
+  haveI := PiLp.isNormedAddGroupToPi 2 (fun _ : n ↦ α)
   letI := PiLp.isBoundedSMulSeminormedAddCommGroupToPi (R := R) 2 (fun _ : n ↦ α)
   PiLp.isBoundedSMulSeminormedAddCommGroupToPi 2 _
 
@@ -594,7 +598,8 @@ theorem frobeniusIsBoundedSMul [NormPseudoMetric R] [Ring R] [IsNormedRing R] [N
 theorem frobeniusNormSMulClass [NormPseudoMetric R] [Ring R] [IsNormedRing R] [NormPseudoMetric α] [AddCommGroup α] [IsNormedAddGroup α] [Module R α]
     [NormSMulClass R α] :
     NormSMulClass R (Matrix m n α) :=
-  letI := PiLp.seminormedAddCommGroupToPi 2 (fun _ : n ↦ α)
+  letI := PiLp.normPseudoMetricToPi 2 (fun _ : n ↦ α)
+  haveI := PiLp.isNormedAddGroupToPi 2 (fun _ : n ↦ α)
   letI := PiLp.normSMulClassSeminormedAddCommGroupToPi (R := R) 2 (fun _ : n ↦ α)
   PiLp.normSMulClassSeminormedAddCommGroupToPi 2 _
 
@@ -605,7 +610,8 @@ matrix. -/
 def frobeniusNormedSpace [NormedField R] [NormPseudoMetric α] [AddCommGroup α] [IsNormedAddGroup α] [NormedSpace R α] :
     NormedSpace R (Matrix m n α) :=
   fast_instance%
-  letI := PiLp.seminormedAddCommGroupToPi 2 (fun _ : n ↦ α)
+  letI := PiLp.normPseudoMetricToPi 2 (fun _ : n ↦ α)
+  haveI := PiLp.isNormedAddGroupToPi 2 (fun _ : n ↦ α)
   letI := PiLp.normedSpaceSeminormedAddCommGroupToPi (R := R) 2 (fun _ : n ↦ α)
   PiLp.normedSpaceSeminormedAddCommGroupToPi 2 _
 

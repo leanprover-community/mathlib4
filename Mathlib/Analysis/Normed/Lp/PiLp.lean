@@ -1258,9 +1258,11 @@ lemma isNormedAddGroupToPi [∀ i, NormPseudoMetric (α i)] [∀ i, AddCommGroup
       rw [dist_pseudoMetricSpaceToPi, IsNormedAddGroup.dist_eq, norm_normPseudoMetricToPi,
         toLp_add, toLp_neg] }
 
+set_option linter.deprecated false in
 /-- This definition allows to endow `Π i, α i` with the Lp norm with the uniformity and bornology
 being defeq to the product ones. It is useful to endow a type synonym of `Π i, α i` with the
 Lp norm. -/
+@[deprecated isNormedAddGroupToPi (since := "2026-05-17")]
 abbrev seminormedAddCommGroupToPi [∀ i, NormPseudoMetric (α i)] [∀ i, AddCommGroup (α i)] [∀ i, IsNormedAddGroup (α i)] :
     SeminormedAddCommGroup (Π i, α i) where
   toNormPseudoMetric := normPseudoMetricToPi p α
@@ -1270,7 +1272,8 @@ abbrev seminormedAddCommGroupToPi [∀ i, NormPseudoMetric (α i)] [∀ i, AddCo
 alias norm_seminormedAddCommGroupToPi := norm_normPseudoMetricToPi
 
 lemma nnnorm_seminormedAddCommGroupToPi [∀ i, NormPseudoMetric (α i)] [∀ i, AddCommGroup (α i)] [∀ i, IsNormedAddGroup (α i)] (x : Π i, α i) :
-    letI := seminormedAddCommGroupToPi p α
+    letI := normPseudoMetricToPi p α
+    haveI := isNormedAddGroupToPi p α
     ‖x‖₊ = ‖toLp p x‖₊ := rfl
 
 lemma isBoundedSMulSeminormedAddCommGroupToPi
@@ -1286,9 +1289,11 @@ lemma isBoundedSMulSeminormedAddCommGroupToPi
 lemma normSMulClassSeminormedAddCommGroupToPi
     [∀ i, NormPseudoMetric (α i)] [∀ i, AddCommGroup (α i)] [∀ i, IsNormedAddGroup (α i)] {R : Type*} [NormPseudoMetric R] [Ring R] [IsNormedRing R]
     [∀ i, Module R (α i)] [∀ i, NormSMulClass R (α i)] :
-    letI := seminormedAddCommGroupToPi p α
+    letI := normPseudoMetricToPi p α
+    haveI := isNormedAddGroupToPi p α
     NormSMulClass R (Π i, α i) := by
-  letI := seminormedAddCommGroupToPi p α
+  letI := normPseudoMetricToPi p α
+  haveI := isNormedAddGroupToPi p α
   refine ⟨fun x y ↦ ?_⟩
   simp [norm_normPseudoMetricToPi, norm_smul]
 
@@ -1297,9 +1302,11 @@ the Lp norm. It is useful for type synonyms of `Π i, α i`. -/
 abbrev normedSpaceSeminormedAddCommGroupToPi
     [∀ i, NormPseudoMetric (α i)] [∀ i, AddCommGroup (α i)] [∀ i, IsNormedAddGroup (α i)] {R : Type*} [NormedField R]
     [∀ i, NormedSpace R (α i)] :
-    letI := seminormedAddCommGroupToPi p α
+    letI := normPseudoMetricToPi p α
+    haveI := isNormedAddGroupToPi p α
     NormedSpace R (Π i, α i) := by
-  letI := seminormedAddCommGroupToPi p α
+  letI := normPseudoMetricToPi p α
+  haveI := isNormedAddGroupToPi p α
   refine ⟨fun x y ↦ ?_⟩
   simp [norm_normPseudoMetricToPi, norm_smul]
 
@@ -1315,9 +1322,11 @@ abbrev normMetricToPi [∀ i, NormMetric (α i)] [∀ i, AddCommGroup (α i)] [�
     apply eq_of_dist_eq_zero at h
     exact WithLp.toLp_injective p h
 
+set_option linter.deprecated false in
 /-- This definition allows to endow `Π i, α i` with the Lp norm with the uniformity and bornology
 being defeq to the product ones. It is useful to endow a type synonym of `Π i, α i` with the
 Lp norm. -/
+@[deprecated isNormedAddGroupToPi (since := "2026-05-17")]
 abbrev normedAddCommGroupToPi [∀ i, NormMetric (α i)] [∀ i, AddCommGroup (α i)] [∀ i, IsNormedAddGroup (α i)] :
     NormedAddCommGroup (Π i, α i) where
   toNormMetric := normMetricToPi p α

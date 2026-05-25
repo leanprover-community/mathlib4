@@ -82,7 +82,8 @@ theorem MeasureTheory.measure_lt_one_eq_integral_div_gamma {p : ℝ} (hp : 0 < p
   -- We copy `E` to a new type `F` on which we will put the norm defined by `g`
   letI F : Type _ := E
   let p : AddGroupNorm F := ⟨⟨g, h1, h3, h2⟩, fun x hx ↦ h4 hx⟩
-  letI : NormedAddCommGroup F := AddGroupNorm.toNormedAddCommGroup p
+  letI : NormMetric F := p.toNormMetric
+  haveI : IsNormedAddGroup F := p.toIsNormedAddGroup
   letI : NormedSpace ℝ F := { norm_smul_le := fun _ _ ↦ h5 _ _ }
   -- We put the new topology on F
   letI : TopologicalSpace F := UniformSpace.toTopologicalSpace
@@ -115,7 +116,8 @@ theorem MeasureTheory.measure_le_eq_lt [Nontrivial E] (r : ℝ) :
   -- We copy `E` to a new type `F` on which we will put the norm defined by `g`
   letI F : Type _ := E
   let p : AddGroupNorm F := ⟨⟨g, h1, h3, h2⟩, fun x hx ↦ h4 hx⟩
-  letI : NormedAddCommGroup F := AddGroupNorm.toNormedAddCommGroup p
+  letI : NormMetric F := p.toNormMetric
+  haveI : IsNormedAddGroup F := p.toIsNormedAddGroup
   letI : NormedSpace ℝ F := { norm_smul_le := fun _ _ ↦ h5 _ _ }
   -- We put the new topology on F
   letI : TopologicalSpace F := UniformSpace.toTopologicalSpace

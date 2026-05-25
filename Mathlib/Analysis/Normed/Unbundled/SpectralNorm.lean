@@ -728,7 +728,8 @@ theorem spectralNorm_unique [CompleteSpace K] {f : AlgebraNorm K L} (hf_pm : IsP
       eq_zero_of_map_eq_zero' a ha := by
         simpa [id_eq, eq_mpr_eq_cast, cast_eq, LinearMap.coe_mk, ← spectralAlgNorm_def,
           map_eq_zero_iff_eq_zero, ZeroMemClass.coe_eq_zero] using ha }
-  let n1 : NormedRing E := RingNorm.toNormedRing hs_norm
+  let : NormMetric E := hs_norm.toNormMetric
+  have : IsNormedRing E := hs_norm.toIsNormedRing
   let N1 : NormedSpace K E :=
     { one_smul e := by simp [one_smul]
       mul_smul k1 k2 e := by simp [mul_smul]
@@ -748,7 +749,8 @@ theorem spectralNorm_unique [CompleteSpace K] {f : AlgebraNorm K L} (hf_pm : IsP
       mul_le' a b := map_mul_le_mul _ _ _
       eq_zero_of_map_eq_zero' a ha := by
         simpa [map_eq_zero_iff_eq_zero, map_eq_zero] using ha }
-  let n2 : NormedRing K⟮x⟯ := RingNorm.toNormedRing hf_norm
+  let : NormMetric K⟮x⟯ := hf_norm.toNormMetric
+  have : IsNormedRing K⟮x⟯ := hf_norm.toIsNormedRing
   let N2 : NormedSpace K K⟮x⟯ :=
     { one_smul e := by simp [one_smul]
       mul_smul k1 k2 e := by simp [mul_smul]

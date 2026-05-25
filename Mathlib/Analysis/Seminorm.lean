@@ -744,12 +744,14 @@ lemma closedBall_eq_metric :
 
 /-- The image of a ball under addition with a singleton is another ball. -/
 theorem vadd_ball (p : Seminorm 𝕜 E) : x +ᵥ p.ball y r = p.ball (x +ᵥ y) r := by
-  letI := AddGroupSeminorm.toSeminormedAddCommGroup p.toAddGroupSeminorm
+  let := p.toAddGroupSeminorm.toNormPseudoMetric
+  have := p.toAddGroupSeminorm.toIsNormedAddGroup
   simp [ball_eq_metric]
 
 /-- The image of a closed ball under addition with a singleton is another closed ball. -/
 theorem vadd_closedBall (p : Seminorm 𝕜 E) : x +ᵥ p.closedBall y r = p.closedBall (x +ᵥ y) r := by
-  letI := AddGroupSeminorm.toSeminormedAddCommGroup p.toAddGroupSeminorm
+  let := p.toAddGroupSeminorm.toNormPseudoMetric
+  have := p.toAddGroupSeminorm.toIsNormedAddGroup
   simp [closedBall_eq_metric]
 
 end SMul
