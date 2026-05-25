@@ -147,7 +147,7 @@ lemma map [TopologicalSpace 𝓨] [MeasurableSpace 𝓨] [OpensMeasurableSpace �
 
 /-- A set of measures on a product space is tight if both marginals are tight. -/
 lemma prodMk {m𝓨 : MeasurableSpace 𝓨} [TopologicalSpace 𝓨] [OpensMeasurableSpace 𝓧]
-    [OpensMeasurableSpace 𝓨] [T2Space 𝓧] [T2Space 𝓨] {μ : Set (Measure (𝓧 × 𝓨))}
+    [OpensMeasurableSpace 𝓨] {μ : Set (Measure (𝓧 × 𝓨))}
     (hμ₁ : IsTightMeasureSet (Measure.fst '' μ)) (hμ₂ : IsTightMeasureSet (Measure.snd '' μ)) :
     IsTightMeasureSet μ := by
   rw [isTightMeasureSet_iff_exists_isCompact_measure_compl_le] at hμ₁ hμ₂ ⊢
@@ -158,10 +158,10 @@ lemma prodMk {m𝓨 : MeasurableSpace 𝓨} [TopologicalSpace 𝓨] [OpensMeasur
   grw [compl_prod_eq_union, measure_union_le, ← ENNReal.add_halves (a := ε)]
   apply add_le_add
   · specialize hK₁_le _ <| mem_image_of_mem _ hκ_mem
-    rw [Measure.fst_apply hK₁_compact.measurableSet.compl] at hK₁_le
+    grw [Measure.fst, ← Measure.le_map_apply (by fun_prop)] at hK₁_le
     simpa [prod_univ] using hK₁_le
   · specialize hK₂_le _ <| Set.mem_image_of_mem _ hκ_mem
-    rw [Measure.snd_apply hK₂_compact.measurableSet.compl] at hK₂_le
+    grw [Measure.snd, ← Measure.le_map_apply (by fun_prop)] at hK₂_le
     simpa [univ_prod] using hK₂_le
 
 end IsTightMeasureSet
