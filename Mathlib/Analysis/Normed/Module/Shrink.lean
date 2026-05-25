@@ -30,12 +30,6 @@ instance [NormMetric α] : NormMetric (Shrink.{v} α) :=
 instance [NormPseudoMetric α] [AddCommGroup α] [IsNormedAddGroup α] : IsNormedAddGroup (Shrink.{v} α) :=
   (equivShrink α).symm.isNormedAddGroup
 
-example [NormPseudoMetric α] [AddCommGroup α] [IsNormedAddGroup α] : SeminormedAddCommGroup (Shrink.{v} α) :=
-  inferInstance
-
-example [NormMetric α] [AddCommGroup α] [IsNormedAddGroup α] : NormedAddCommGroup (Shrink.{v} α) :=
-  inferInstance
-
 instance [NormPseudoMetric α] [AddCommGroup α] [IsNormedAddGroup α] [NormedSpace 𝕜 α] : NormedSpace 𝕜 (Shrink.{v} α) :=
   (equivShrink α).symm.normedSpace 𝕜
 

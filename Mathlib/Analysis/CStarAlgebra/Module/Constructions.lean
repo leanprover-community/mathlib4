@@ -278,12 +278,14 @@ lemma inner_single_right [DecidableEq ι] (x : C⋆ᵐᵒᵈ(A, Π i, E i)) {i :
 @[simp]
 lemma norm_single [DecidableEq ι] (i : ι) (y : E i) :
     ‖equiv A _ |>.symm <| Pi.single i y‖ = ‖y‖ := by
-  let _ : NormedAddCommGroup C⋆ᵐᵒᵈ(A, Π i, E i) := normedAddCommGroup A
+  let : NormMetric C⋆ᵐᵒᵈ(A, Π i, E i) := normMetric A
+  let : IsNormedAddGroup C⋆ᵐᵒᵈ(A, Π i, E i) := isNormedAddGroup A
   rw [← sq_eq_sq₀ (by positivity) (by positivity)]
   simp [norm_sq_eq A]
 
 lemma norm_apply_le_norm (x : C⋆ᵐᵒᵈ(A, Π i, E i)) (i : ι) : ‖x i‖ ≤ ‖x‖ := by
-  let _ : NormedAddCommGroup C⋆ᵐᵒᵈ(A, Π i, E i) := normedAddCommGroup A
+  let : NormMetric C⋆ᵐᵒᵈ(A, Π i, E i) := normMetric A
+  let : IsNormedAddGroup C⋆ᵐᵒᵈ(A, Π i, E i) := isNormedAddGroup A
   refine abs_le_of_sq_le_sq' ?_ (by positivity) |>.2
   rw [pi_norm_sq, norm_sq_eq A]
   refine CStarAlgebra.norm_le_norm_of_nonneg_of_le inner_self_nonneg ?_
@@ -291,7 +293,8 @@ lemma norm_apply_le_norm (x : C⋆ᵐᵒᵈ(A, Π i, E i)) (i : ι) : ‖x i‖ 
 
 open Finset in
 lemma norm_equiv_le_norm_pi (x : C⋆ᵐᵒᵈ(A, Π i, E i)) : ‖equiv _ _ x‖ ≤ ‖x‖ := by
-  let _ : NormedAddCommGroup C⋆ᵐᵒᵈ(A, Π i, E i) := normedAddCommGroup A
+  let : NormMetric C⋆ᵐᵒᵈ(A, Π i, E i) := normMetric A
+  let : IsNormedAddGroup C⋆ᵐᵒᵈ(A, Π i, E i) := isNormedAddGroup A
   rw [pi_norm_le_iff_of_nonneg (by positivity)]
   simpa using norm_apply_le_norm x
 

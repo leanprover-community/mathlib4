@@ -847,7 +847,8 @@ theorem stdOrthonormalBasis_map_eq :
 -- TODO: why does it need this instance to help
 open Classical in
 instance : MeasureSpace (euclidean.mixedSpace K) :=
-  let : NormedAddCommGroup (euclidean.mixedSpace K) := inferInstance
+  let : NormMetric (euclidean.mixedSpace K) := inferInstance
+  have : IsNormedAddGroup (euclidean.mixedSpace K) := inferInstance
   let : InnerProductSpace ℝ (euclidean.mixedSpace K) := inferInstance
   let : FiniteDimensional ℝ (euclidean.mixedSpace K) := inferInstance
   let : MeasurableSpace (euclidean.mixedSpace K) := inferInstance

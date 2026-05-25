@@ -272,13 +272,21 @@ lemma normedSpaceCore : NormedSpace.Core ℂ E where
 variable (A) in
 /-- This is not listed as an instance because we often want to replace the topology, uniformity
 and bornology instead of inheriting them from the norm. -/
-noncomputable abbrev normedAddCommGroup : NormedAddCommGroup E :=
-  NormedAddCommGroup.ofCore (CStarModule.normedSpaceCore A)
+noncomputable abbrev normMetric : NormMetric E :=
+  .ofCore (CStarModule.normedSpaceCore A)
+
+variable (A) in
+lemma isNormedAddGroup :
+    letI : NormMetric E := normMetric A
+    IsNormedAddGroup E :=
+  letI : NormMetric E := normMetric A
+  {}
 
 open scoped InnerProductSpace in
 lemma norm_eq_csSup (v : E) :
     ‖v‖ = sSup { ‖⟪w, v⟫_A‖ | (w : E) (_ : ‖w‖ ≤ 1) } := by
-  let instNACG : NormedAddCommGroup E := NormedAddCommGroup.ofCore (normedSpaceCore A)
+  let : NormMetric E := normMetric A
+  have : IsNormedAddGroup E := isNormedAddGroup A
   let instNS : NormedSpace ℂ E := .ofCore (normedSpaceCore A)
   refine Eq.symm <| IsGreatest.csSup_eq ⟨⟨‖v‖⁻¹ • v, ?_, ?_⟩, ?_⟩
   · simpa only [norm_smul, norm_inv, norm_norm] using inv_mul_le_one_of_le₀ le_rfl (by positivity)

@@ -224,19 +224,6 @@ variable (S) in
 instance instNormMetric [hS : IsClosed (S : Set M)] : NormMetric (M ⧸ S) where
   __ := MetricSpace.ofT0PseudoMetricSpace _
 
-variable (S) in
-/-- The seminormed group structure on the quotient by a subgroup. -/
-@[to_additive /-- The seminormed group structure on the quotient by an additive subgroup. -/]
-noncomputable abbrev seminormedCommGroup : SeminormedCommGroup (M ⧸ S) :=
-  inferInstance
-
-variable (S) in
-/-- The quotient in the category of normed groups. -/
-@[to_additive /-- The quotient in the category of normed groups. -/]
-noncomputable abbrev normedCommGroup [hS : IsClosed (S : Set M)] :
-    NormedCommGroup (M ⧸ S) :=
-  inferInstance
-
 -- This is a sanity check left here on purpose to ensure that potential refactors won't destroy
 -- this important property.
 example :

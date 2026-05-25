@@ -109,10 +109,6 @@ theorem opNorm_zero_iff [RingHomIsometric σ₁₂] : ‖f‖ = 0 ↔ f = 0 :=
 instance toNormMetric [RingHomIsometric σ₁₂] : NormMetric (E →SL[σ₁₂] F) :=
   .ofAddSeparation fun f => (opNorm_zero_iff f).mp
 
-/-- Continuous linear maps themselves form a normed space with respect to the operator norm. -/
-example [RingHomIsometric σ₁₂] : NormedAddCommGroup (E →SL[σ₁₂] F) :=
-  inferInstance
-
 /-- Continuous linear maps form a normed ring with respect to the operator norm. -/
 example : NormedRing (E →L[𝕜] E) where
 

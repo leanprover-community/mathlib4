@@ -170,8 +170,6 @@ structure SeminormedAddGroup (E : Type*) where
   [toAddGroup : AddGroup E]
   [toIsNormedAddGroup : IsNormedAddGroup E]
 
-attribute [instance] SeminormedAddGroup.mk
-
 /-- A seminormed group is a group endowed with a norm for which `dist x y = ‖x⁻¹ * y‖` defines a
 pseudometric space structure. -/
 @[to_additive]
@@ -188,8 +186,6 @@ structure SeminormedGroup (E : Type*) where
   [toGroup : Group E]
   [toIsNormedGroup : IsNormedGroup E]
 
-attribute [instance] SeminormedGroup.mk
-
 /-- missing doc -/
 @[class_abbrev]
 structure NormedAddGroup (E : Type*) where
@@ -198,8 +194,6 @@ structure NormedAddGroup (E : Type*) where
   /-- missing doc -/
   [toAddGroup : AddGroup E]
   [toIsNormedAddGroup : IsNormedAddGroup E]
-
-attribute [instance] NormedAddGroup.mk
 
 /-- missing doc -/
 @[class_abbrev, to_additive]
@@ -210,8 +204,6 @@ structure NormedGroup (E : Type*) where
   [toGroup : Group E]
   [toIsNormedGroup : IsNormedGroup E]
 
-attribute [instance] NormedGroup.mk
-
 /-- missing doc -/
 @[class_abbrev]
 structure SeminormedAddCommGroup (E : Type*) where
@@ -220,8 +212,6 @@ structure SeminormedAddCommGroup (E : Type*) where
   /-- missing doc -/
   [toAddCommGroup : AddCommGroup E]
   [toIsNormedAddGroup : IsNormedAddGroup E]
-
-attribute [instance] SeminormedAddCommGroup.mk
 
 /-- missing doc -/
 @[class_abbrev, to_additive]
@@ -232,8 +222,6 @@ structure SeminormedCommGroup (E : Type*) where
   [toCommGroup : CommGroup E]
   [toIsNormedGroup : IsNormedGroup E]
 
-attribute [instance] SeminormedCommGroup.mk
-
 /-- missing doc -/
 @[class_abbrev]
 structure NormedAddCommGroup (E : Type*) where
@@ -243,8 +231,6 @@ structure NormedAddCommGroup (E : Type*) where
   [toAddCommGroup : AddCommGroup E]
   [toIsNormedAddGroup : IsNormedAddGroup E]
 
-attribute [instance] NormedAddCommGroup.mk
-
 /-- missing doc -/
 @[class_abbrev, to_additive]
 structure NormedCommGroup (E : Type*) where
@@ -253,8 +239,6 @@ structure NormedCommGroup (E : Type*) where
   /-- missing doc -/
   [toCommGroup : CommGroup E]
   [toIsNormedGroup : IsNormedGroup E]
-
-attribute [instance] NormedCommGroup.mk
 
 -- See note [reducible non-instances]
 /-- missing doc -/

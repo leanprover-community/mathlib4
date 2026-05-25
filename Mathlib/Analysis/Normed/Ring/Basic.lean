@@ -50,8 +50,6 @@ structure NonUnitalSeminormedRing (E : Type*) where
   [toNonUnitalRing : NonUnitalRing E]
   [toIsNormedRing : IsNormedRing E]
 
-attribute [instance] NonUnitalSeminormedRing.mk
-
 /-- missing doc -/
 @[class_abbrev]
 structure SeminormedRing (E : Type*) where
@@ -60,8 +58,6 @@ structure SeminormedRing (E : Type*) where
   /-- missing doc -/
   [toRing : Ring E]
   [toIsNormedRing : IsNormedRing E]
-
-attribute [instance] SeminormedRing.mk
 
 /-- missing doc -/
 @[class_abbrev]
@@ -72,8 +68,6 @@ structure NonUnitalNormedRing (E : Type*) where
   [toNonUnitalRing : NonUnitalRing E]
   [toIsNormedRing : IsNormedRing E]
 
-attribute [instance] NonUnitalNormedRing.mk
-
 /-- missing doc -/
 @[class_abbrev]
 structure NormedRing (E : Type*) where
@@ -82,8 +76,6 @@ structure NormedRing (E : Type*) where
   /-- missing doc -/
   [toRing : Ring E]
   [toIsNormedRing : IsNormedRing E]
-
-attribute [instance] NormedRing.mk
 
 /-- missing doc -/
 @[class_abbrev]
@@ -94,8 +86,6 @@ structure NonUnitalSeminormedCommRing (E : Type*) where
   [toNonUnitalCommRing : NonUnitalCommRing E]
   [toIsNormedRing : IsNormedRing E]
 
-attribute [instance] NonUnitalSeminormedCommRing.mk
-
 /-- missing doc -/
 @[class_abbrev]
 structure NonUnitalNormedCommRing (E : Type*) where
@@ -104,8 +94,6 @@ structure NonUnitalNormedCommRing (E : Type*) where
   /-- missing doc -/
   [toNonUnitalCommRing : NonUnitalCommRing E]
   [toIsNormedRing : IsNormedRing E]
-
-attribute [instance] NonUnitalNormedCommRing.mk
 
 /-- missing doc -/
 @[class_abbrev]
@@ -116,8 +104,6 @@ structure SeminormedCommRing (E : Type*) where
   [toCommRing : CommRing E]
   [toIsNormedRing : IsNormedRing E]
 
-attribute [instance] SeminormedCommRing.mk
-
 /-- missing doc -/
 @[class_abbrev]
 structure NormedCommRing (E : Type*) where
@@ -126,8 +112,6 @@ structure NormedCommRing (E : Type*) where
   /-- missing doc -/
   [toCommRing : CommRing E]
   [toIsNormedRing : IsNormedRing E]
-
-attribute [instance] NormedCommRing.mk
 
 instance PUnit.instIsNormedRing : IsNormedRing PUnit where
   norm_mul_le _ _ := by simp

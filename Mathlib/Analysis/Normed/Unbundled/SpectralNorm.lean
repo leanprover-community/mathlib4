@@ -910,30 +910,14 @@ lemma isNormedRing :
   letI := normedField K L
   inferInstance
 
-/-- `L` with the spectral norm is a `SeminormedRing`. -/
-@[implicit_reducible]
-def seminormedRing : SeminormedRing L := by
-  letI : NormedField L := normedField K L
-  infer_instance
-
-/-- `L` with the spectral norm is a `NormedAddCommGroup`. -/
-@[implicit_reducible]
-def normedAddCommGroup : NormedAddCommGroup L := by
-  letI : NormedField L := normedField K L
-  infer_instance
-
-/-- `L` with the spectral norm is a `SeminormedAddCommGroup`. -/
-@[implicit_reducible]
-def seminormedAddCommGroup : SeminormedAddCommGroup L := by
-  letI : NormedField L := normedField K L
-  infer_instance
-
 /-- `L` with the spectral norm is a `NormedSpace` over `K`. -/
 @[implicit_reducible]
 def normedSpace :
-    letI _ := seminormedAddCommGroup K L
+    letI := normMetric K L
+    haveI := isNormedAddGroup K L
     NormedSpace K L :=
-  letI _ := seminormedAddCommGroup K L
+  letI := normMetric K L
+  haveI := isNormedAddGroup K L
   { (inferInstance : Module K L) with
     norm_smul_le r x := by
       change spectralAlgNorm K L (r • x) ≤ ‖r‖ * spectralAlgNorm K L x
@@ -942,7 +926,8 @@ def normedSpace :
 /-- `L` with the spectral norm is a `NormedAlgebra` over `K`. -/
 @[implicit_reducible]
 def normedAlgebra :
-    letI _ := seminormedRing K L
+    letI := normMetric K L
+    haveI := isNormedRing K L
     NormedAlgebra K L :=
   letI _ := normedField K L
   { normedSpace K L, (inferInstance : Algebra K L) with }
@@ -952,7 +937,8 @@ that is a normed algebra over `K`. -/
 @[implicit_reducible]
 def normedAlgebra' (E L : Type*) [Field L] [Algebra K L] [Algebra.IsAlgebraic K L] [NormedField E]
     [NormedAlgebra K E] [Algebra E L] [IsScalarTower K E L] :
-    letI _ := seminormedRing K L
+    letI := normMetric K L
+    haveI := isNormedRing K L
     NormedAlgebra E L :=
   letI _ := normedField K L
   letI _ := normedAlgebra K L
@@ -976,8 +962,9 @@ def uniformSpace : UniformSpace L := (metricSpace K L).toUniformSpace
   by the spectral norm. -/
 instance (priority := 100) completeSpace [h_fin : FiniteDimensional K L] :
     @CompleteSpace L (uniformSpace K L) := by
-  letI := (normedAddCommGroup K L)
-  letI := (normedSpace K L)
+  letI := normMetric K L
+  haveI := isNormedRing K L
+  letI := normedSpace K L
   exact FiniteDimensional.complete K L
 
 omit [Algebra.IsAlgebraic K L] in

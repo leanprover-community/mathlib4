@@ -446,42 +446,6 @@ instance [NormPseudoMetric E] [NonUnitalRing E] [I : IsNormedRing E] :
     IsNormedRing (RestrictScalars 𝕜 𝕜' E) :=
   I
 
-example [I : SeminormedAddCommGroup E] :
-    SeminormedAddCommGroup (RestrictScalars 𝕜 𝕜' E) :=
-  inferInstance
-
-example [I : NonUnitalSeminormedRing E] :
-    NonUnitalSeminormedRing (RestrictScalars 𝕜 𝕜' E) :=
-  inferInstance
-
-example [I : NonUnitalNormedRing E] :
-    NonUnitalNormedRing (RestrictScalars 𝕜 𝕜' E) :=
-  inferInstance
-
-example [I : SeminormedRing E] :
-    SeminormedRing (RestrictScalars 𝕜 𝕜' E) :=
-  inferInstance
-
-example [I : NormedRing E] :
-    NormedRing (RestrictScalars 𝕜 𝕜' E) :=
-  inferInstance
-
-example [I : NonUnitalSeminormedCommRing E] :
-    NonUnitalSeminormedCommRing (RestrictScalars 𝕜 𝕜' E) :=
-  inferInstance
-
-example [I : NonUnitalNormedCommRing E] :
-    NonUnitalNormedCommRing (RestrictScalars 𝕜 𝕜' E) :=
-  inferInstance
-
-example [I : SeminormedCommRing E] :
-    SeminormedCommRing (RestrictScalars 𝕜 𝕜' E) :=
-  inferInstance
-
-example [I : NormedCommRing E] :
-    NormedCommRing (RestrictScalars 𝕜 𝕜' E) :=
-  inferInstance
-
 end NormInstances
 
 section NormedSpace
@@ -704,59 +668,6 @@ abbrev NormPseudoMetric.ofSeminormedSpaceCoreReplaceAll {𝕜 E : Type*} [Normed
     NormPseudoMetric E where
   toPseudoMetricSpace := .ofSeminormedSpaceCoreReplaceAll core HU HB
 
-/-- Produces a `SeminormedAddCommGroup E` instance from a `SeminormedSpace.Core`. Note that
-if this is used to define an instance on a type, it also provides a new distance measure from the
-norm.  it must therefore not be used on a type with a preexisting distance measure or topology.
-See note [reducible non-instances]. -/
-abbrev SeminormedAddCommGroup.ofCore {𝕜 : Type*} {E : Type*} [NormedField 𝕜] [AddCommGroup E]
-    [Norm E] [Module 𝕜 E] (core : SeminormedSpace.Core 𝕜 E) : SeminormedAddCommGroup E :=
-  letI := NormPseudoMetric.ofSeminormedSpaceCore core
-  letI : IsNormedAddGroup E := {}
-  inferInstance
-
-/-- Produces a `SeminormedAddCommGroup E` instance from a `SeminormedSpace.Core` on a type
-that already has an existing uniform space structure. This requires a proof that the uniformity
-induced by the norm is equal to the preexisting uniformity. See note [reducible non-instances]. -/
-abbrev SeminormedAddCommGroup.ofCoreReplaceUniformity {𝕜 : Type*} {E : Type*} [NormedField 𝕜]
-    [AddCommGroup E] [Norm E] [Module 𝕜 E] [U : UniformSpace E]
-    (core : SeminormedSpace.Core 𝕜 E)
-    (H : 𝓤[U] = 𝓤[PseudoEMetricSpace.toUniformSpace
-      (self := PseudoEMetricSpace.ofSeminormedSpaceCore core)]) :
-    SeminormedAddCommGroup E :=
-  letI := NormPseudoMetric.ofSeminormedSpaceCoreReplaceUniformity core H
-  letI : IsNormedAddGroup E := {}
-  inferInstance
-
-/-- Produces a `SeminormedAddCommGroup E` instance from a `SeminormedSpace.Core` on a type
-that already has an existing topology. This requires a proof that the uniformity
-induced by the norm is equal to the preexisting uniformity. See note [reducible non-instances]. -/
-abbrev SeminormedAddCommGroup.ofCoreReplaceTopology {𝕜 : Type*} {E : Type*} [NormedField 𝕜]
-    [AddCommGroup E] [Norm E] [Module 𝕜 E] [T : TopologicalSpace E]
-    (core : SeminormedSpace.Core 𝕜 E)
-    (H : T = (PseudoEMetricSpace.ofSeminormedSpaceCore
-      core).toUniformSpace.toTopologicalSpace) :
-    SeminormedAddCommGroup E :=
-  letI := NormPseudoMetric.ofSeminormedSpaceCoreReplaceTopology core H
-  letI : IsNormedAddGroup E := {}
-  inferInstance
-
-open Bornology in
-/-- Produces a `SeminormedAddCommGroup E` instance from a `SeminormedSpace.Core` on a type
-that already has a preexisting uniform space structure and a preexisting bornology. This requires
-proofs that the uniformity induced by the norm is equal to the preexisting uniformity, and likewise
-for the bornology. See note [reducible non-instances]. -/
-abbrev SeminormedAddCommGroup.ofCoreReplaceAll {𝕜 : Type*} {E : Type*} [NormedField 𝕜]
-    [AddCommGroup E] [Norm E] [Module 𝕜 E] [U : UniformSpace E] [B : Bornology E]
-    (core : SeminormedSpace.Core 𝕜 E)
-    (HU : 𝓤[U] = 𝓤[PseudoEMetricSpace.toUniformSpace
-      (self := PseudoEMetricSpace.ofSeminormedSpaceCore core)])
-    (HB : ∀ s : Set E, @IsBounded _ B s
-      ↔ @IsBounded _ (PseudoMetricSpace.ofSeminormedSpaceCore core).toBornology s) :
-    SeminormedAddCommGroup E :=
-  letI := NormPseudoMetric.ofSeminormedSpaceCoreReplaceAll core HU HB
-  letI : IsNormedAddGroup E := {}
-  inferInstance
-
 /-- A structure encapsulating minimal axioms needed to defined a normed vector space, as found
 in textbooks. This is meant to be used to easily define `NormedAddCommGroup E` and `NormedSpace E`
 instances from scratch on a type with no preexisting distance or topology. -/
@@ -830,54 +741,6 @@ abbrev NormMetric.ofCoreReplaceAll [U : UniformSpace E] [B : Bornology E]
       intro x y h
       rw [← sub_eq_zero, ← core.norm_eq_zero_iff, ← norm_neg_add]
       exact h }
-
-/-- Produces a `NormedAddCommGroup E` instance from a `NormedSpace.Core`. Note that if this is
-used to define an instance on a type, it also provides a new distance measure from the norm.
-it must therefore not be used on a type with a preexisting distance measure.
-See note [reducible non-instances]. -/
-abbrev NormedAddCommGroup.ofCore (core : NormedSpace.Core 𝕜 E) : NormedAddCommGroup E :=
-  letI := NormMetric.ofCore core
-  letI : IsNormedAddGroup E := {}
-  inferInstance
-
-/-- Produces a `NormedAddCommGroup E` instance from a `NormedSpace.Core` on a type
-that already has an existing uniform space structure. This requires a proof that the uniformity
-induced by the norm is equal to the preexisting uniformity. See note [reducible non-instances]. -/
-abbrev NormedAddCommGroup.ofCoreReplaceUniformity [U : UniformSpace E] (core : NormedSpace.Core 𝕜 E)
-    (H : 𝓤[U] = 𝓤[PseudoEMetricSpace.toUniformSpace
-      (self := PseudoEMetricSpace.ofSeminormedSpaceCore core.toCore)]) :
-    NormedAddCommGroup E :=
-  letI := NormMetric.ofCoreReplaceUniformity core H
-  letI : IsNormedAddGroup E := {}
-  inferInstance
-
-/-- Produces a `NormedAddCommGroup E` instance from a `NormedSpace.Core` on a type
-that already has an existing topology. This requires a proof that the uniformity
-induced by the norm is equal to the preexisting uniformity. See note [reducible non-instances]. -/
-abbrev NormedAddCommGroup.ofCoreReplaceTopology [T : TopologicalSpace E]
-    (core : NormedSpace.Core 𝕜 E)
-    (H : T = (PseudoEMetricSpace.ofSeminormedSpaceCore
-      core.toCore).toUniformSpace.toTopologicalSpace) :
-    NormedAddCommGroup E :=
-  letI := NormMetric.ofCoreReplaceTopology core H
-  letI : IsNormedAddGroup E := {}
-  inferInstance
-
-open Bornology in
-/-- Produces a `NormedAddCommGroup E` instance from a `NormedSpace.Core` on a type
-that already has a preexisting uniform space structure and a preexisting bornology. This requires
-proofs that the uniformity induced by the norm is equal to the preexisting uniformity, and likewise
-for the bornology. See note [reducible non-instances]. -/
-abbrev NormedAddCommGroup.ofCoreReplaceAll [U : UniformSpace E] [B : Bornology E]
-    (core : NormedSpace.Core 𝕜 E)
-    (HU : 𝓤[U] = 𝓤[PseudoEMetricSpace.toUniformSpace
-      (self := PseudoEMetricSpace.ofSeminormedSpaceCore core.toCore)])
-    (HB : ∀ s : Set E, @IsBounded _ B s
-      ↔ @IsBounded _ (PseudoMetricSpace.ofSeminormedSpaceCore core.toCore).toBornology s) :
-    NormedAddCommGroup E :=
-  letI := NormMetric.ofCoreReplaceAll core HU HB
-  letI : IsNormedAddGroup E := {}
-  inferInstance
 
 /-- Produces a `NormedSpace 𝕜 E` instance from a `NormedSpace.Core`. This is meant to be used
 on types where the `NormedAddCommGroup E` instance has also been defined using `core`.
