@@ -95,7 +95,7 @@ lemma isColin_pair (a b : ℙ K V) : IsColinear {a, b} := by
   induction a using Projectivization.ind with | h v hv =>
   induction b using Projectivization.ind with | h w hw =>
   change _ ≠ _ at h
-  rw [← independent_pair_iff_ne, independent_mk_iff_linearIndep] at h
+  rw [← independent_pair_iff_ne, independent_mk_iff_LinearIndependent] at h
   refine ⟨(Submodule.span K {w, v}).projectivization, ?_, ?_, fun s hs ↦ hs.casesOn ?_ ?_⟩
   · rw [Subspace.submodule.apply_symm_apply]
     exact Module.Finite.span_of_finite _ (Set.toFinite _)
@@ -125,7 +125,7 @@ lemma line_unique {x y : ℙ K V} (hxy : x ≠ y) (p q : Submodule K V) (hp1 : M
     (hq2 : x ∈ q.projectivization) (hq3 : y ∈ q.projectivization) : p = q := by
   induction x using ind with | h v hv =>
   induction y using ind with | h w hw =>
-  rw [← independent_pair_iff_ne, independent_mk_iff_linearIndep] at hxy
+  rw [← independent_pair_iff_ne, independent_mk_iff_LinearIndependent] at hxy
   rw [line_unique' hv hw hxy p hp1 hp2 hp3, line_unique' hv hw hxy q hq1 hq2 hq3]
 
 end Projectivization
