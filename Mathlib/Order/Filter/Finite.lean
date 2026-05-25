@@ -233,8 +233,11 @@ theorem eq_principal_of_finite_sets (hf : f.sets.Finite) : ∃ s, f = 𝓟 s := 
   exact Filter.ext fun B ↦ ⟨sInter_subset_of_mem, mem_of_superset ((sInter_mem hf).2 (by simp))⟩
 
 /-- Any filter on a finite type is principal. -/
-theorem eq_principal_of_finite [Finite α] : ∃ s, f = 𝓟 s :=
+theorem eq_principal_of_finite [Finite α] (f : Filter α) : ∃ s, f = 𝓟 s :=
   eq_principal_of_finite_sets (finite_univ.powerset.subset (by simp))
+
+theorem surjective_principal_of_finite [Finite α] : Surjective (𝓟 : Set α → Filter α) :=
+  fun f ↦ (eq_principal_of_finite f).imp (by grind)
 
 end Lattice
 
