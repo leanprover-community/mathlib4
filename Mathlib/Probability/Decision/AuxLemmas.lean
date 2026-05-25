@@ -16,10 +16,13 @@ public import Mathlib.MeasureTheory.Constructions.BorelSpace.Order
 open MeasureTheory
 open scoped ENNReal NNReal
 
--- from BrownianMotion
 theorem Set.Finite.lt_iInf_iff {α ι : Type*} [CompleteLinearOrder α]
     {s : Set ι} {f : ι → α} (h : s.Nonempty) (hs : s.Finite) {a : α} :
-    a < ⨅ i ∈ s, f i ↔ ∀ x ∈ s, a < f x := sorry
+    a < ⨅ i ∈ s, f i ↔ ∀ x ∈ s, a < f x := by
+  refine ⟨fun h_lt x hx ↦ ?_, fun h_lt ↦ ?_⟩
+  · exact h_lt.trans_le (csInf_le (by simp) ⟨x, by simp [hx]⟩)
+  · have : ⨅ i ∈ s, f i ∈ f '' s := hs.ciInf_mem_image f (by simpa using h)
+    grind
 
 lemma iInf_eq_bot_iff_of_finite {α ι : Type*} [CompleteLinearOrder α] [Finite ι] [Nonempty ι]
     {f : ι → α} : (⨅ i, f i) = ⊥ ↔ ∃ i, f i = ⊥ := by
