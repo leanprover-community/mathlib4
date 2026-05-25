@@ -158,6 +158,7 @@ public import Mathlib.Algebra.Category.ModuleCat.Differentials.Basic
 public import Mathlib.Algebra.Category.ModuleCat.Differentials.Presheaf
 public import Mathlib.Algebra.Category.ModuleCat.EnoughInjectives
 public import Mathlib.Algebra.Category.ModuleCat.EpiMono
+public import Mathlib.Algebra.Category.ModuleCat.Ext.Basic
 public import Mathlib.Algebra.Category.ModuleCat.Ext.DimensionShifting
 public import Mathlib.Algebra.Category.ModuleCat.Ext.Finite
 public import Mathlib.Algebra.Category.ModuleCat.Ext.HasExt
@@ -7016,6 +7017,7 @@ public import Mathlib.SetTheory.Cardinal.Arithmetic
 public import Mathlib.SetTheory.Cardinal.Basic
 public import Mathlib.SetTheory.Cardinal.Cofinality.Basic
 public import Mathlib.SetTheory.Cardinal.Cofinality.Club
+public import Mathlib.SetTheory.Cardinal.Cofinality.Enum
 public import Mathlib.SetTheory.Cardinal.Cofinality.Ordinal
 public import Mathlib.SetTheory.Cardinal.Continuum
 public import Mathlib.SetTheory.Cardinal.CountableCover
