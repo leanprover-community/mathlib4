@@ -53,7 +53,7 @@ def pCore (p : ℕ) (G : Type*) [Group G] : Subgroup G :=
   ⨆ N : {N : Subgroup G // N.Normal ∧ IsPGroup p N}, (N : Subgroup G)
 
 /-- The subtype of normal `p`-subgroups is nonempty (it contains `⊥`). -/
-instance : Nonempty {N : Subgroup G // N.Normal ∧ IsPGroup p N} :=
+private instance : Nonempty {N : Subgroup G // N.Normal ∧ IsPGroup p N} :=
   ⟨⟨⊥, inferInstance, IsPGroup.of_bot⟩⟩
 
 /-- Every normal `p`-subgroup of `G` is contained in the `p`-core. -/
