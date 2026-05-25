@@ -246,137 +246,21 @@ The elements where each antipode axiom holds for a candidate `S : A →ₐ[R] A�
 subalgebra, so the axioms can be verified on a generating set.
 -/
 
-/-- The rTensor antipode axiom evaluated at the single element `a ∈ A`, for the candidate
-antipode `S : A →ₐ[R] Aᵐᵒᵖ`. The Hopf algebra field `mul_antipode_rTensor_comul` is the
-linear-map equation `∀ x, (IsRTensorAntipodeAt R S x).eq` where `S` is the antipode viewed
-as an algebra map into `Aᵐᵒᵖ`. -/
+/-- The rTensor antipode axiom evaluated at `a`, for a candidate antipode `S : A →ₐ[R] Aᵐᵒᵖ`. -/
 @[mk_iff]
-structure IsRTensorAntipodeAt (R : Type*) [CommSemiring R] {A : Type*}
-    [Semiring A] [Bialgebra R A] (S : A →ₐ[R] Aᵐᵒᵖ) (a : A) : Prop where
-  /-- The pointwise Sweedler-form rTensor antipode equation at `a`. -/
+structure IsRTensorAntipodeAt (R) [CommSemiring R] {A} [Semiring A] [Bialgebra R A]
+    (S : A →ₐ[R] Aᵐᵒᵖ) (a : A) : Prop where
   eq : LinearMap.mul' R A
       (((opLinearEquiv R).symm.toLinearMap ∘ₗ S.toLinearMap).rTensor A (comul a)) =
     algebraMap R A (counit a)
 
-/-- The lTensor antipode axiom evaluated at the single element `a ∈ A`. -/
+/-- The lTensor antipode axiom evaluated at `a`, for a candidate antipode `S : A →ₐ[R] Aᵐᵒᵖ`. -/
 @[mk_iff]
-structure IsLTensorAntipodeAt (R : Type*) [CommSemiring R] {A : Type*}
-    [Semiring A] [Bialgebra R A] (S : A →ₐ[R] Aᵐᵒᵖ) (a : A) : Prop where
-  /-- The pointwise Sweedler-form lTensor antipode equation at `a`. -/
+structure IsLTensorAntipodeAt (R) [CommSemiring R] {A} [Semiring A] [Bialgebra R A]
+    (S : A →ₐ[R] Aᵐᵒᵖ) (a : A) : Prop where
   eq : LinearMap.mul' R A
       (((opLinearEquiv R).symm.toLinearMap ∘ₗ S.toLinearMap).lTensor A (comul a)) =
     algebraMap R A (counit a)
-
-variable {S : A →ₐ[R] Aᵐᵒᵖ}
-
-namespace IsRTensorAntipodeAt
-
-protected lemma add {a b : A}
-    (ha : IsRTensorAntipodeAt R S a) (hb : IsRTensorAntipodeAt R S b) :
-    IsRTensorAntipodeAt R S (a + b) := ⟨by
-  simp only [map_add]; rw [ha.eq, hb.eq, ← map_add]⟩
-
-protected lemma algebraMap (r : R) :
-    IsRTensorAntipodeAt R S (algebraMap R A r) := ⟨by
-  rw [Bialgebra.comul_algebraMap, Bialgebra.counit_algebraMap,
-      Algebra.TensorProduct.algebraMap_apply, LinearMap.rTensor_tmul]
-  simp⟩
-
-/-- If `S` satisfies the rTensor antipode axiom at `a` and at `b`, it does so at `a * b`.
-This is the load-bearing closure lemma: the Sweedler computation expanding `comul (a*b)`,
-applying the antihomomorphism property `S(xy) = S(y) * S(x)`, and collapsing the inner and
-outer sums via the inductive hypotheses. -/
-protected lemma mul {a b : A}
-    (ha : IsRTensorAntipodeAt R S a) (hb : IsRTensorAntipodeAt R S b) :
-    IsRTensorAntipodeAt R S (a * b) := ⟨by
-  set S₀ : A →ₗ[R] A := (opLinearEquiv R).symm.toLinearMap ∘ₗ S.toLinearMap with hS₀
-  have hS₀_antihom : ∀ x y : A, S₀ (x * y) = S₀ y * S₀ x := fun x y => by simp [hS₀, map_mul]
-  let ℛa := ℛ R a
-  let ℛb := ℛ R b
-  calc LinearMap.mul' R A (S₀.rTensor A (comul (a * b)))
-      _ = LinearMap.mul' R A (S₀.rTensor A (comul a * comul b)) := by rw [Bialgebra.comul_mul]
-      _ = ∑ p ∈ ℛa.index, ∑ q ∈ ℛb.index,
-            S₀ (ℛa.left p * ℛb.left q) * (ℛa.right p * ℛb.right q) := by
-        rw [← ℛa.eq, ← ℛb.eq, Finset.sum_mul_sum]
-        simp [Algebra.TensorProduct.tmul_mul_tmul, LinearMap.rTensor]
-      _ = ∑ p ∈ ℛa.index, ∑ q ∈ ℛb.index,
-            S₀ (ℛb.left q) * (S₀ (ℛa.left p) * ℛa.right p) * ℛb.right q := by
-        simp_rw [hS₀_antihom, mul_assoc]
-      _ = ∑ q ∈ ℛb.index, S₀ (ℛb.left q) *
-            (∑ p ∈ ℛa.index, S₀ (ℛa.left p) * ℛa.right p) * ℛb.right q := by
-        rw [Finset.sum_comm]; simp_rw [← Finset.sum_mul, ← Finset.mul_sum]
-      _ = ∑ q ∈ ℛb.index,
-            algebraMap R A (counit a) * S₀ (ℛb.left q) * ℛb.right q := by
-        refine Finset.sum_congr rfl fun q _ => ?_
-        have hℛa : ∑ p ∈ ℛa.index, S₀ (ℛa.left p) * ℛa.right p = algebraMap R A (counit a) := by
-          have := ha.eq; rw [← ℛa.eq] at this
-          simpa [LinearMap.rTensor, LinearMap.mul'_apply] using this
-        rw [hℛa, show S₀ (ℛb.left q) * algebraMap R A (counit a)
-            = algebraMap R A (counit a) * S₀ (ℛb.left q) from (Algebra.commutes _ _).symm]
-      _ = algebraMap R A (counit a) *
-            ∑ q ∈ ℛb.index, S₀ (ℛb.left q) * ℛb.right q := by
-        rw [Finset.mul_sum]; simp_rw [mul_assoc]
-      _ = algebraMap R A (counit a) * algebraMap R A (counit b) := by
-        congr 1
-        have := hb.eq; rw [← ℛb.eq] at this
-        simpa [LinearMap.rTensor, LinearMap.mul'_apply] using this
-      _ = algebraMap R A (counit (a * b)) := by rw [Bialgebra.counit_mul, map_mul]⟩
-
-end IsRTensorAntipodeAt
-
-namespace IsLTensorAntipodeAt
-
-protected lemma add {a b : A}
-    (ha : IsLTensorAntipodeAt R S a) (hb : IsLTensorAntipodeAt R S b) :
-    IsLTensorAntipodeAt R S (a + b) := ⟨by
-  simp only [map_add]; rw [ha.eq, hb.eq, ← map_add]⟩
-
-protected lemma algebraMap (r : R) :
-    IsLTensorAntipodeAt R S (algebraMap R A r) := ⟨by
-  rw [Bialgebra.comul_algebraMap, Bialgebra.counit_algebraMap,
-      Algebra.TensorProduct.algebraMap_apply, LinearMap.lTensor_tmul]
-  simp⟩
-
-/-- If `S` satisfies the lTensor antipode axiom at `a` and at `b`, it does so at `a * b`.
-Mirror image of `IsRTensorAntipodeAt.mul`. -/
-protected lemma mul {a b : A}
-    (ha : IsLTensorAntipodeAt R S a) (hb : IsLTensorAntipodeAt R S b) :
-    IsLTensorAntipodeAt R S (a * b) := ⟨by
-  set S₀ : A →ₗ[R] A := (opLinearEquiv R).symm.toLinearMap ∘ₗ S.toLinearMap with hS₀
-  have hS₀_antihom : ∀ x y : A, S₀ (x * y) = S₀ y * S₀ x := fun x y => by simp [hS₀, map_mul]
-  let ℛa := ℛ R a
-  let ℛb := ℛ R b
-  calc LinearMap.mul' R A (S₀.lTensor A (comul (a * b)))
-      _ = LinearMap.mul' R A (S₀.lTensor A (comul a * comul b)) := by rw [Bialgebra.comul_mul]
-      _ = ∑ p ∈ ℛa.index, ∑ q ∈ ℛb.index,
-            (ℛa.left p * ℛb.left q) * S₀ (ℛa.right p * ℛb.right q) := by
-        rw [← ℛa.eq, ← ℛb.eq, Finset.sum_mul_sum]
-        simp [Algebra.TensorProduct.tmul_mul_tmul, LinearMap.lTensor]
-      _ = ∑ p ∈ ℛa.index, ∑ q ∈ ℛb.index,
-            ℛa.left p * (ℛb.left q * S₀ (ℛb.right q)) * S₀ (ℛa.right p) := by
-        simp_rw [hS₀_antihom, mul_assoc]
-      _ = ∑ p ∈ ℛa.index,
-            ℛa.left p * (∑ q ∈ ℛb.index, ℛb.left q * S₀ (ℛb.right q)) * S₀ (ℛa.right p) := by
-        simp_rw [← Finset.sum_mul, ← Finset.mul_sum]
-      _ = ∑ p ∈ ℛa.index,
-            algebraMap R A (counit b) * ℛa.left p * S₀ (ℛa.right p) := by
-        refine Finset.sum_congr rfl fun p _ => ?_
-        have hℛb : ∑ q ∈ ℛb.index, ℛb.left q * S₀ (ℛb.right q) = algebraMap R A (counit b) := by
-          have := hb.eq; rw [← ℛb.eq] at this
-          simpa [LinearMap.lTensor, LinearMap.mul'_apply] using this
-        rw [hℛb, show ℛa.left p * algebraMap R A (counit b)
-            = algebraMap R A (counit b) * ℛa.left p from (Algebra.commutes _ _).symm]
-      _ = algebraMap R A (counit b) *
-            ∑ p ∈ ℛa.index, ℛa.left p * S₀ (ℛa.right p) := by
-        rw [Finset.mul_sum]; simp_rw [mul_assoc]
-      _ = algebraMap R A (counit b) * algebraMap R A (counit a) := by
-        congr 1
-        have := ha.eq; rw [← ℛa.eq] at this
-        simpa [LinearMap.lTensor, LinearMap.mul'_apply] using this
-      _ = algebraMap R A (counit (a * b)) := by
-        rw [Bialgebra.counit_mul, mul_comm (counit a) (counit b), map_mul]⟩
-
-end IsLTensorAntipodeAt
 
 /-- A candidate antipode `S : A →ₐ[R] Aᵐᵒᵖ` satisfies the rTensor antipode axiom on all of `A`
 if it satisfies it on a set whose algebra-adjoint is everything. -/
@@ -387,11 +271,49 @@ theorem mul_rTensor_comul_eq_of_adjoin_eq_top
     LinearMap.mul' R A ∘ₗ ((opLinearEquiv R).symm.toLinearMap ∘ₗ S.toLinearMap).rTensor A
         ∘ₗ comul =
       Algebra.linearMap R A ∘ₗ counit := by
+  set S₀ : A →ₗ[R] A := (opLinearEquiv R).symm.toLinearMap ∘ₗ S.toLinearMap with hS₀
+  have hS₀_antihom : ∀ x y : A, S₀ (x * y) = S₀ y * S₀ x := fun x y => by simp [hS₀, map_mul]
   let locus : Subalgebra R A :=
     { carrier := { a | IsRTensorAntipodeAt R S a }
-      mul_mem' := .mul
-      add_mem' := .add
-      algebraMap_mem' := .algebraMap }
+      add_mem' := fun ha hb => ⟨by simp only [map_add]; rw [ha.eq, hb.eq, ← map_add]⟩
+      algebraMap_mem' := fun r => ⟨by
+        rw [Bialgebra.comul_algebraMap, Bialgebra.counit_algebraMap,
+            Algebra.TensorProduct.algebraMap_apply, LinearMap.rTensor_tmul]
+        simp⟩
+      mul_mem' := fun {a b} ha hb => ⟨by
+        let ℛa := ℛ R a
+        let ℛb := ℛ R b
+        calc LinearMap.mul' R A (S₀.rTensor A (comul (a * b)))
+            _ = LinearMap.mul' R A (S₀.rTensor A (comul a * comul b)) := by
+              rw [Bialgebra.comul_mul]
+            _ = ∑ p ∈ ℛa.index, ∑ q ∈ ℛb.index,
+                  S₀ (ℛa.left p * ℛb.left q) * (ℛa.right p * ℛb.right q) := by
+              rw [← ℛa.eq, ← ℛb.eq, Finset.sum_mul_sum]
+              simp [Algebra.TensorProduct.tmul_mul_tmul, LinearMap.rTensor]
+            _ = ∑ p ∈ ℛa.index, ∑ q ∈ ℛb.index,
+                  S₀ (ℛb.left q) * (S₀ (ℛa.left p) * ℛa.right p) * ℛb.right q := by
+              simp_rw [hS₀_antihom, mul_assoc]
+            _ = ∑ q ∈ ℛb.index, S₀ (ℛb.left q) *
+                  (∑ p ∈ ℛa.index, S₀ (ℛa.left p) * ℛa.right p) * ℛb.right q := by
+              rw [Finset.sum_comm]; simp_rw [← Finset.sum_mul, ← Finset.mul_sum]
+            _ = ∑ q ∈ ℛb.index,
+                  algebraMap R A (counit a) * S₀ (ℛb.left q) * ℛb.right q := by
+              refine Finset.sum_congr rfl fun q _ => ?_
+              have hℛa : ∑ p ∈ ℛa.index, S₀ (ℛa.left p) * ℛa.right p
+                         = algebraMap R A (counit a) := by
+                have := ha.eq; rw [← ℛa.eq] at this
+                simpa [LinearMap.rTensor, LinearMap.mul'_apply] using this
+              rw [hℛa, show S₀ (ℛb.left q) * algebraMap R A (counit a)
+                  = algebraMap R A (counit a) * S₀ (ℛb.left q) from (Algebra.commutes _ _).symm]
+            _ = algebraMap R A (counit a) *
+                  ∑ q ∈ ℛb.index, S₀ (ℛb.left q) * ℛb.right q := by
+              rw [Finset.mul_sum]; simp_rw [mul_assoc]
+            _ = algebraMap R A (counit a) * algebraMap R A (counit b) := by
+              congr 1
+              have := hb.eq; rw [← ℛb.eq] at this
+              simpa [LinearMap.rTensor, LinearMap.mul'_apply] using this
+            _ = algebraMap R A (counit (a * b)) := by
+              rw [Bialgebra.counit_mul, map_mul]⟩ }
   ext x
   exact (Algebra.adjoin_le (S := locus) h (hs ▸ Algebra.mem_top : x ∈ Algebra.adjoin R s)).eq
 
@@ -404,11 +326,50 @@ theorem mul_lTensor_comul_eq_of_adjoin_eq_top
     LinearMap.mul' R A ∘ₗ ((opLinearEquiv R).symm.toLinearMap ∘ₗ S.toLinearMap).lTensor A
         ∘ₗ comul =
       Algebra.linearMap R A ∘ₗ counit := by
+  set S₀ : A →ₗ[R] A := (opLinearEquiv R).symm.toLinearMap ∘ₗ S.toLinearMap with hS₀
+  have hS₀_antihom : ∀ x y : A, S₀ (x * y) = S₀ y * S₀ x := fun x y => by simp [hS₀, map_mul]
   let locus : Subalgebra R A :=
     { carrier := { a | IsLTensorAntipodeAt R S a }
-      mul_mem' := .mul
-      add_mem' := .add
-      algebraMap_mem' := .algebraMap }
+      add_mem' := fun ha hb => ⟨by simp only [map_add]; rw [ha.eq, hb.eq, ← map_add]⟩
+      algebraMap_mem' := fun r => ⟨by
+        rw [Bialgebra.comul_algebraMap, Bialgebra.counit_algebraMap,
+            Algebra.TensorProduct.algebraMap_apply, LinearMap.lTensor_tmul]
+        simp⟩
+      mul_mem' := fun {a b} ha hb => ⟨by
+        let ℛa := ℛ R a
+        let ℛb := ℛ R b
+        calc LinearMap.mul' R A (S₀.lTensor A (comul (a * b)))
+            _ = LinearMap.mul' R A (S₀.lTensor A (comul a * comul b)) := by
+              rw [Bialgebra.comul_mul]
+            _ = ∑ p ∈ ℛa.index, ∑ q ∈ ℛb.index,
+                  (ℛa.left p * ℛb.left q) * S₀ (ℛa.right p * ℛb.right q) := by
+              rw [← ℛa.eq, ← ℛb.eq, Finset.sum_mul_sum]
+              simp [Algebra.TensorProduct.tmul_mul_tmul, LinearMap.lTensor]
+            _ = ∑ p ∈ ℛa.index, ∑ q ∈ ℛb.index,
+                  ℛa.left p * (ℛb.left q * S₀ (ℛb.right q)) * S₀ (ℛa.right p) := by
+              simp_rw [hS₀_antihom, mul_assoc]
+            _ = ∑ p ∈ ℛa.index,
+                  ℛa.left p * (∑ q ∈ ℛb.index, ℛb.left q * S₀ (ℛb.right q)) *
+                    S₀ (ℛa.right p) := by
+              simp_rw [← Finset.sum_mul, ← Finset.mul_sum]
+            _ = ∑ p ∈ ℛa.index,
+                  algebraMap R A (counit b) * ℛa.left p * S₀ (ℛa.right p) := by
+              refine Finset.sum_congr rfl fun p _ => ?_
+              have hℛb : ∑ q ∈ ℛb.index, ℛb.left q * S₀ (ℛb.right q)
+                         = algebraMap R A (counit b) := by
+                have := hb.eq; rw [← ℛb.eq] at this
+                simpa [LinearMap.lTensor, LinearMap.mul'_apply] using this
+              rw [hℛb, show ℛa.left p * algebraMap R A (counit b)
+                  = algebraMap R A (counit b) * ℛa.left p from (Algebra.commutes _ _).symm]
+            _ = algebraMap R A (counit b) *
+                  ∑ p ∈ ℛa.index, ℛa.left p * S₀ (ℛa.right p) := by
+              rw [Finset.mul_sum]; simp_rw [mul_assoc]
+            _ = algebraMap R A (counit b) * algebraMap R A (counit a) := by
+              congr 1
+              have := ha.eq; rw [← ℛa.eq] at this
+              simpa [LinearMap.lTensor, LinearMap.mul'_apply] using this
+            _ = algebraMap R A (counit (a * b)) := by
+              rw [Bialgebra.counit_mul, mul_comm (counit a) (counit b), map_mul]⟩ }
   ext x
   exact (Algebra.adjoin_le (S := locus) h (hs ▸ Algebra.mem_top : x ∈ Algebra.adjoin R s)).eq
 
