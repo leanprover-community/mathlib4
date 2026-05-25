@@ -60,20 +60,24 @@ lemma mk_preimage_down {s : Set α} : #(ULift.down.{v} ⁻¹' s) = lift.{v} (#s)
     ULift.up_bijective.comp (restrictPreimage_bijective _ (ULift.down_bijective))
   exact Equiv.ofBijective f this
 
--- `simp` can't figure out universe levels: normal form is `lift_mk_shrink'`.
+@[simp]
+theorem mk_shrink_liftEq (α : Type u) [Small.{v} α] : #(Shrink.{v} α) =ₗ #α :=
+  mk_liftEq.2 ⟨(equivShrink α).symm⟩
+
+@[deprecated mk_shrink_liftEq (since := "2026-05-24")]
 theorem lift_mk_shrink (α : Type u) [Small.{v} α] :
-    Cardinal.lift.{max u w} #(Shrink.{v} α) = Cardinal.lift.{max v w} #α :=
-  lift_mk_eq.2 ⟨(equivShrink α).symm⟩
+    Cardinal.lift.{max u w} #(Shrink.{v} α) = Cardinal.lift.{max v w} #α := by
+  simp
 
-@[simp]
+@[deprecated mk_shrink_liftEq (since := "2026-05-24")]
 theorem lift_mk_shrink' (α : Type u) [Small.{v} α] :
-    Cardinal.lift.{u} #(Shrink.{v} α) = Cardinal.lift.{v} #α :=
-  lift_mk_shrink.{u, v, 0} α
+    Cardinal.lift.{u} #(Shrink.{v} α) = Cardinal.lift.{v} #α := by
+  simp
 
-@[simp]
+@[deprecated mk_shrink_liftEq (since := "2026-05-24")]
 theorem lift_mk_shrink'' (α : Type max u v) [Small.{v} α] :
     Cardinal.lift.{u} #(Shrink.{v} α) = #α := by
-  rw [← lift_umax, lift_mk_shrink.{max u v, v, 0} α, ← lift_umax, lift_id]
+  simp
 
 theorem prod_eq_of_fintype {α : Type u} [h : Fintype α] (f : α → Cardinal.{v}) :
     prod f = Cardinal.lift.{u} (∏ i, f i) := by
@@ -418,7 +422,7 @@ theorem range_natCast : range ((↑) : ℕ → Cardinal) = Iio ℵ₀ :=
   ext fun x => by simp only [mem_Iio, mem_range, eq_comm, lt_aleph0]
 
 theorem mk_eq_nat_iff {α : Type u} {n : ℕ} : #α = n ↔ Nonempty (α ≃ Fin n) := by
-  rw [← lift_mk_fin, ← lift_uzero #α, lift_mk_eq']
+  simp [← mk_liftEq]
 
 theorem lt_aleph0_iff_finite {α : Type u} : #α < ℵ₀ ↔ Finite α := by
   simp only [lt_aleph0, mk_eq_nat_iff, finite_iff_exists_equiv_fin]
@@ -698,13 +702,13 @@ theorem mk_range_eq (f : α → β) (h : Injective f) : #(range f) = #α :=
   mk_congr (Equiv.ofInjective f h).symm
 
 theorem mk_range_eq_of_injective {α : Type u} {β : Type v} {f : α → β} (hf : Injective f) :
-    lift.{u} #(range f) = lift.{v} #α :=
-  lift_mk_eq'.mpr ⟨(Equiv.ofInjective f hf).symm⟩
+    #(range f) =ₗ #α :=
+  mk_liftEq.mpr ⟨(Equiv.ofInjective f hf).symm⟩
 
 @[deprecated mk_range_eq_of_injective (since := "2026-01-06")]
 theorem mk_range_eq_lift {α : Type u} {β : Type v} {f : α → β} (hf : Injective f) :
-    lift.{max u w} #(range f) = lift.{max v w} #α :=
-  lift_mk_eq.{v, u, w}.mpr ⟨(Equiv.ofInjective f hf).symm⟩
+    lift.{max u w} #(range f) = lift.{max v w} #α := by
+  simpa using mk_range_eq_of_injective hf
 
 lemma lift_mk_le_lift_mk_of_injective {α : Type u} {β : Type v} {f : α → β} (hf : Injective f) :
     Cardinal.lift.{v} (#α) ≤ Cardinal.lift.{u} (#β) := by
@@ -720,8 +724,8 @@ theorem mk_image_eq_of_injOn {α β : Type u} (f : α → β) (s : Set α) (h : 
   mk_congr (Equiv.Set.imageOfInjOn f s h).symm
 
 theorem mk_image_eq_of_injOn_lift {α : Type u} {β : Type v} (f : α → β) (s : Set α)
-    (h : InjOn f s) : lift.{u} #(f '' s) = lift.{v} #s :=
-  lift_mk_eq.{v, u, 0}.mpr ⟨(Equiv.Set.imageOfInjOn f s h).symm⟩
+    (h : InjOn f s) : #(f '' s) =ₗ #s :=
+  mk_liftEq.mpr ⟨(Equiv.Set.imageOfInjOn f s h).symm⟩
 
 theorem mk_image_eq {α β : Type u} {f : α → β} {s : Set α} (hf : Injective f) : #(f '' s) = #s :=
   mk_image_eq_of_injOn _ _ hf.injOn

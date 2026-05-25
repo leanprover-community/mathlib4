@@ -195,7 +195,7 @@ def liftEq (a : Cardinal.{u}) (b : Cardinal.{v}) : Prop := lift.{v} a = lift.{u}
 @[inherit_doc] infix:50 " =ₗ " => liftEq
 
 theorem liftEq_comm {a : Cardinal.{u}} {b : Cardinal.{v}} : a =ₗ b ↔ b =ₗ a := eq_comm
-alias ⟨liftEq_symm, _⟩ := liftEq_comm
+alias ⟨liftEq.symm, _⟩ := liftEq_comm
 
 @[simp]
 theorem liftEq_iff_eq {a b : Cardinal.{u}} : a =ₗ b ↔ a = b := by
@@ -210,6 +210,25 @@ theorem lift_liftEq_iff {a : Cardinal.{u}} {b : Cardinal.{v}} : lift.{w} a =ₗ 
 @[simp]
 theorem liftEq_lift_iff {a : Cardinal.{u}} {b : Cardinal.{v}} : a =ₗ lift.{w} b ↔ a =ₗ b := by
   rw [liftEq_comm, lift_liftEq_iff, liftEq_comm]
+
+@[simp]
+theorem lift_eq_iff {a : Cardinal.{u}} {b : Cardinal.{max u v}} : lift.{v} a = b ↔ a =ₗ b := by
+  simp [← liftEq_iff_eq]
+
+@[simp]
+theorem eq_lift_iff {a : Cardinal.{max u v}} {b : Cardinal.{v}} : a = lift.{u} b ↔ a =ₗ b := by
+  simp [← liftEq_iff_eq]
+
+theorem lift_injective : Injective lift.{u, v} :=
+  fun _ ↦ by simp
+
+theorem lift_inj {a b : Cardinal.{u}} : lift.{v, u} a = lift.{v, u} b ↔ a = b := by
+  simp
+
+theorem liftEq.trans {a : Cardinal.{u}} {b : Cardinal.{v}} {c : Cardinal.{w}}
+    (h₁ : a =ₗ b) (h₂ : b =ₗ c) : a =ₗ c := by
+  rw [liftEq, ← lift_inj.{_, max u v w}]
+  trans lift.{max u v w} b <;> simpa
 
 theorem mk_liftEq {α : Type u} {β : Type v} : #α =ₗ #β ↔ Nonempty (α ≃ β) :=
   Quotient.eq'.trans
@@ -240,6 +259,16 @@ theorem mk_eq_zero (α : Type u) [IsEmpty α] : #α = 0 :=
 @[simp]
 theorem lift_zero : lift 0 = 0 := mk_eq_zero _
 
+@[simp]
+theorem zero_liftEq_iff {c : Cardinal.{v}} : (0 : Cardinal.{u}) =ₗ c ↔ 0 = c := by
+  unfold liftEq
+  simpa using lift_inj (a := 0)
+
+@[simp]
+theorem liftEq_zero_iff {c : Cardinal.{v}} : c =ₗ (0 : Cardinal.{u}) ↔ c = 0 := by
+  unfold liftEq
+  simpa using lift_inj (b := 0)
+
 theorem mk_eq_zero_iff {α : Type u} : #α = 0 ↔ IsEmpty α :=
   ⟨fun e =>
     let ⟨h⟩ := Quotient.exact e
@@ -265,6 +294,19 @@ instance : Nontrivial Cardinal.{u} :=
 
 theorem mk_eq_one (α : Type u) [Subsingleton α] [Nonempty α] : #α = 1 :=
   let ⟨_⟩ := nonempty_unique α; (Equiv.ofUnique α (ULift (Fin 1))).cardinal_eq
+
+@[simp]
+theorem lift_one : lift 1 = 1 := mk_eq_one _
+
+@[simp]
+theorem one_liftEq_iff {c : Cardinal.{v}} : (1 : Cardinal.{u}) =ₗ c ↔ 1 = c := by
+  unfold liftEq
+  simpa using lift_inj (a := 1)
+
+@[simp]
+theorem liftEq_one_iff {c : Cardinal.{v}} : c =ₗ (1 : Cardinal.{u}) ↔ c = 1 := by
+  unfold liftEq
+  simpa using lift_inj (b := 1)
 
 instance : Add Cardinal.{u} :=
   ⟨map₂ Sum fun _ _ _ _ => Equiv.sumCongr⟩
@@ -342,9 +384,6 @@ theorem power_ne_zero {a : Cardinal} (b : Cardinal) : a ≠ 0 → a ^ b ≠ 0 :=
 
 theorem mul_power {a b c : Cardinal} : (a * b) ^ c = a ^ c * b ^ c :=
   inductionOn₃ a b c fun _ _ γ => mk_congr <| Equiv.arrowProdEquivProdArrow γ _ _
-
-@[simp]
-theorem lift_one : lift 1 = 1 := mk_eq_one _
 
 @[simp]
 theorem lift_add (a b : Cardinal.{u}) : lift.{v} (a + b) = lift.{v} a + lift.{v} b :=
@@ -512,6 +551,16 @@ theorem lift_aleph0 : lift ℵ₀ = ℵ₀ :=
   lift_lift _
 
 theorem lift_mk_fin (n : ℕ) : lift #(Fin n) = n := rfl
+
+@[simp]
+theorem aleph0_liftEq_iff {c : Cardinal.{v}} : (ℵ₀ : Cardinal.{u}) =ₗ c ↔ ℵ₀ = c := by
+  unfold liftEq
+  simpa using lift_inj (a := ℵ₀)
+
+@[simp]
+theorem liftEq_aleph0_iff {c : Cardinal.{v}} : c =ₗ (ℵ₀ : Cardinal.{u}) ↔ c = ℵ₀ := by
+  unfold liftEq
+  simpa using lift_inj (b := ℵ₀)
 
 /-! ### Cardinalities of basic sets and types -/
 
