@@ -670,6 +670,14 @@ theorem meromorphicOrderAt_add_of_ne
   · simpa [h.le] using meromorphicOrderAt_add_eq_left_of_lt hf₂ h
   · simpa [h.le] using meromorphicOrderAt_add_eq_right_of_lt hf₁ h
 
+theorem mul_inv_evnetuallyEq_of_meromorphicOrderAt_ne_top {f : 𝕜 → 𝕜'} (hf₁ : MeromorphicAt f x)
+    (hf₂ : meromorphicOrderAt f x ≠ ⊤) :
+    f * f⁻¹ =ᶠ[𝓝[≠] x] 1 := by
+  suffices ∀ᶠ y in 𝓝[≠] x, f y ≠ 0 by
+    filter_upwards [this]
+    aesop
+  exact (meromorphicOrderAt_ne_top_iff_eventually_ne_zero hf₁).mp hf₂
+
 /-!
 ## Level Sets of the Order Function
 -/
@@ -773,6 +781,29 @@ theorem meromorphicOrderAt_ne_top_of_isPreconnected (hf : MeromorphicOn f U) {y 
     meromorphicOrderAt f y ≠ ⊤ :=
   (hf.exists_meromorphicOrderAt_ne_top_iff_forall ⟨nonempty_of_mem h₁x, hU⟩).1
     (by use ⟨x, h₁x⟩) ⟨y, hy⟩
+
+theorem meromorphicOrderAt_eq_top_of_isPreconnected (hf : MeromorphicOn f U) {y : 𝕜}
+    (hU : IsPreconnected U) (hx : x ∈ U) (hy : y ∈ U) (h₂x : meromorphicOrderAt f x = ⊤) :
+    meromorphicOrderAt f y = ⊤ := by
+  contrapose h₂x with h
+  exact hf.meromorphicOrderAt_ne_top_of_isPreconnected hU hy hx h
+
+/-- On a preconnected set, a meromorphic function that's not constantly zero has a
+multiplicative inverse. In this version of the lemma, we relax the equality to
+`=ᶠ[codiscreteWithin U]`. -/
+theorem mul_inv_eventuallyEq {f : 𝕜 → 𝕜'} (hf : MeromorphicOn f U) (hU : IsPreconnected U)
+    (h0 : ¬f =ᶠ[codiscreteWithin U] 0) :
+    f * f⁻¹ =ᶠ[codiscreteWithin U] 1 := by
+  rw [EventuallyEq, Filter.Eventually, mem_codiscreteWithin_iff_forall_mem_nhdsNE]
+  intro x hx
+  rw [Set.union_comm, ← Filter.mem_inf_principal']
+  apply Filter.mem_inf_of_left <| mul_inv_evnetuallyEq_of_meromorphicOrderAt_ne_top (hf x hx) ?_
+  contrapose! h0
+  rw [EventuallyEq, Filter.Eventually, mem_codiscreteWithin_iff_forall_mem_nhdsNE]
+  intro y hy
+  rw [Set.union_comm, ← Filter.mem_inf_principal']
+  refine Filter.mem_inf_of_left <| meromorphicOrderAt_eq_top_iff.mp ?_
+  exact hf.meromorphicOrderAt_eq_top_of_isPreconnected hU hx hy h0
 
 /-- If a function is meromorphic on a set `U`, then for each point in `U`, it is analytic at nearby
 points in `U`. When the target space is complete, this can be strengthened to analyticity at all
