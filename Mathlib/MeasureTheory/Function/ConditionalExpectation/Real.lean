@@ -7,11 +7,10 @@ module
 
 public import Mathlib.MeasureTheory.Function.ConditionalExpectation.Indicator
 public import Mathlib.MeasureTheory.Function.UniformIntegrable
-public import Mathlib.MeasureTheory.VectorMeasure.Decomposition.Lebesgue
+public import Mathlib.MeasureTheory.VectorMeasure.Decomposition.RadonNikodym
 
 import Mathlib.MeasureTheory.Function.ConditionalExpectation.CondJensen
 import Mathlib.MeasureTheory.Function.LpSeminorm.LpNorm
-import Mathlib.MeasureTheory.VectorMeasure.Decomposition.RadonNikodym
 
 /-!
 
