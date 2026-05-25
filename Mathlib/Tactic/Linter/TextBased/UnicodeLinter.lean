@@ -195,6 +195,8 @@ public def nonEmojis : Array Char := #[]
 
 Implemented using an allowlist consisting of:
 - certain ASCII characters
+- certain emojis (`emojis` and `maybeEmojis`)
+- certain non-emoji variants of emojifiable characters (`nonEmojis` and `maybeEmojis`)
 - characters with abbreviations in the VSCode extension (`withVSCodeAbbrev`)
 - "the rest" (`othersInMathlib`)
 
