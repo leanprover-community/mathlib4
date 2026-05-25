@@ -5,8 +5,16 @@ Authors: Michael Stoll
 -/
 module
 
-public import Mathlib.NumberTheory.LegendreSymbol.AddCharacter
 public import Mathlib.Analysis.Complex.Polynomial.Basic
+public import Mathlib.NumberTheory.LegendreSymbol.AddCharacter
+
+/-!
+# Additive characters on finite fields
+
+We construct a primitive additive character on a finite field `F` with values in `ℂ`.
+This file is kept separate from `Mathlib.NumberTheory.LegendreSymbol.AddCharacter` to avoid
+importing the fundamental theorem of algebra and Bochner integral into that file.
+-/
 
 namespace AddChar
 
