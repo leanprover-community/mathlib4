@@ -5,9 +5,7 @@ Authors: Violeta Hernández Palacios
 -/
 module
 
-public import Mathlib.Order.DirSupClosed
-public import Mathlib.Order.IsNormal
-public import Mathlib.SetTheory.Cardinal.Cofinality.Basic
+public import Mathlib.SetTheory.Cardinal.Cofinality.Enum
 
 /-!
 # Club sets
@@ -144,6 +142,10 @@ theorem _root_.Order.IsNormal.isClub_fixedPoints {f : α → α} (hα : cof α �
       refine .of_not_isCofinal fun h ↦ (cof_le h).not_gt
         ((aleph0_le_cof.lt_of_ne' hα).trans_le' ?_)
       simpa using mk_range_le_lift (f := fun n : ℕ ↦ f^[n] a)
+
+theorem IsClub.isNormal_enum [IsRegularCardinalOrder α] {s : Set α} (hs : IsClub s) :
+    IsNormal (Subtype.val ∘ enum s hs.isCofinal) :=
+  isNormal_enum_iff.2 hs.dirSupClosed
 
 end WellFoundedLT
 end IsClub
