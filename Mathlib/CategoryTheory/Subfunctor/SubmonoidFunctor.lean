@@ -69,6 +69,7 @@ instance {U : C} : CoeHead (S.toMonoidFunctor.obj U) (R.obj U) where
 instance : PartialOrder (SubmonoidFunctor R) :=
   PartialOrder.lift SubmonoidFunctor.obj fun _ _ => SubmonoidFunctor.ext
 
+@[simps top_obj bot_obj sup_obj inf_obj sInf_obj sSup_obj]
 instance : CompleteLattice (SubmonoidFunctor R) where
   sup F G := {
     obj U := F.obj U ⊔ G.obj U
