@@ -24,6 +24,8 @@ Remark:
 
 -/
 
+@[expose] public section
+
 section
 variable {α β : Type*} [AddCommGroup α] [LieRing β]
 variable {R : Type*} [CommRing R] [Module R α] [LieAlgebra R β]
