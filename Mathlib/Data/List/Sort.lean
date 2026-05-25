@@ -159,7 +159,7 @@ theorem Pairwise.insertionSort_eq {l : List α} : Pairwise r l → insertionSort
 /-- For a reflexive relation, insert then erasing is the identity. -/
 theorem erase_orderedInsert [DecidableEq α] [Std.Refl r] (x : α) (xs : List α) :
     (xs.orderedInsert r x).erase x = xs := by
-  induction xs with 
+  induction xs with
   | nil => grind
   | cons hd => grind [refl (r := r) hd]
 
