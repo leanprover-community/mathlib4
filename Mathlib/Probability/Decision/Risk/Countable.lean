@@ -13,9 +13,8 @@ import Mathlib.Probability.Decision.Risk.Basic
 /-!
 # Risk in countable spaces
 
-## Main statements
-
-* `fooBar_unique`
+In countable spaces, we can write integrals as sums, hence we can write the average or Bayes risk
+with sums instead of integrals.
 
 -/
 
