@@ -75,8 +75,9 @@ theorem powerset_eq_singleton_empty : s.powerset = {∅} ↔ s = ∅ := by
 
 theorem image_injOn_powerset_of_injOn {β : Type*} [DecidableEq β] {f : α → β} (H : Set.InjOn f s) :
     Set.InjOn (α := Finset α) (·.image f) s.powerset := by
-  have {z a} (_ : z ⊆ s) (_ : a ∈ s) : a ∈ z ↔ f a ∈ z.image f := by grind [H.eq_iff]
-  exact fun _ _ _ _ _ => by grind
+  have {z a} (h₁ : z ⊆ s) (h₂ : a ∈ s) : a ∈ z ↔ f a ∈ z.image f :=
+    ⟨mem_image_of_mem f, by grind [Set.InjOn]⟩
+  grind [Set.InjOn]
 
 /-- `s.biUnion id ⊆ t` iff every member of `s` is a subset of `t`, i.e. `s ⊆ t.powerset`. -/
 lemma biUnion_id_subset_iff_subset_powerset [DecidableEq α] {s : Finset (Finset α)} :

@@ -286,7 +286,7 @@ theorem next_eq_getElem {l : List α} {a : α} (ha : a ∈ l) :
   by_cases ha' : a ∈ l.dropLast
   · simp [next, nextOr_eq_getElem_idxOf_succ_of_mem_dropLast ha',
       Nat.mod_eq_of_lt <| succ_idxOf_lt_length_of_mem_dropLast ha']
-  grind [dropLast_append_getLast, next_getLast_eq_head_of_notMem_dropLast, Nat.mod_self]
+  grind [dropLast_append_getLast hl, next_getLast_eq_head_of_notMem_dropLast, Nat.mod_self]
 
 theorem next_getElem (l : List α) (h : Nodup l) (i : Nat) (hi : i < l.length) :
     l.next l[i] (get_mem ..) = l[(i + 1) % l.length]'(Nat.mod_lt _ (i.zero_le.trans_lt hi)) := by

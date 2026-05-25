@@ -152,12 +152,16 @@ variable {r}
 /-- If `l` is already `List.Pairwise` with respect to `r`, then `insertionSort` does not change
 it. -/
 theorem Pairwise.insertionSort_eq {l : List α} : Pairwise r l → insertionSort r l = l := by
-  induction l <;> grind [cases List]
+  induction l with
+  | nil => grind
+  | cons _ tl => cases tl <;> grind
 
 /-- For a reflexive relation, insert then erasing is the identity. -/
 theorem erase_orderedInsert [DecidableEq α] [Std.Refl r] (x : α) (xs : List α) :
     (xs.orderedInsert r x).erase x = xs := by
-  induction xs <;> grind [Std.Refl]
+  induction xs with 
+  | nil => grind
+  | cons hd => grind [refl (r := r) hd]
 
 /-- Inserting then erasing an element that is absent is the identity. -/
 theorem erase_orderedInsert_of_notMem [DecidableEq α]

@@ -1290,6 +1290,7 @@ theorem ncard_sumEquiv_symm_apply {α : Type*} (s : Set α) :
 end ncard
 end Set
 
+set_option linter.tacticAnalysis.verifyGrindOnly false in
 /-- A surjective function `f : α → β` decreases cardinality by at most one if and only if
 there is at most a collision between a unique pair of elements. -/
 theorem Function.Surjective.card_le_card_add_one_iff
@@ -1310,7 +1311,8 @@ theorem Function.Surjective.card_le_card_add_one_iff
     obtain ⟨x, hx⟩ := h
     simp only [Set.subset_def, Set.mem_compl_iff] at hx
     -- we show that the only possible collision is between `x` and `g (f x)`
-    suffices ∀ a b : α, f a = f b → a ≠ b → a = x ∨ a = g (f x) by grind
+    suffices ∀ a b : α, f a = f b → a ≠ b → a = x ∨ a = g (f x) by
+      grind only [= Set.mem_insert_iff, = Set.mem_singleton_iff]
     intro a b
     by_cases ha : a ∈ Set.range g <;> by_cases hb : b ∈ Set.range g <;> grind
   · -- we must show that any two elements `a` and `b` missed by `g` are equal
