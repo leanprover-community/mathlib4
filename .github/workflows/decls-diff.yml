@@ -58,6 +58,20 @@ on:
         required: false
         type: boolean
         default: false
+  workflow_call:
+    inputs:
+      pr_number:
+        required: false
+        type: string
+        default: ''
+      run_id:
+        required: false
+        type: string
+        default: ''
+      patch_comment:
+        required: false
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -70,8 +84,10 @@ jobs:
       github.repository == 'leanprover-community/mathlib4'
       && (
         github.event_name == 'workflow_dispatch'
+        || github.event_name == 'workflow_call'
         || (
-          github.event.workflow_run.conclusion == 'success'
+          github.event_name == 'workflow_run'
+          && github.event.workflow_run.conclusion == 'success'
           && (
             github.event.workflow_run.event == 'pull_request'
             || (github.event.workflow_run.event == 'workflow_dispatch'

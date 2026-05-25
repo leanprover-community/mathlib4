@@ -23,6 +23,23 @@ on:
         required: false
         type: string
         default: 'master'
+      decls_diff_pr_number:
+        description: >-
+          For testing the post-build decls-diff workflow: PR number to
+          replay the diff against. Reads decls.txt/imports.json from the
+          PR's own (most recent) Build artifact. Leave empty to skip the
+          post-build job entirely.
+        required: false
+        type: string
+        default: ''
+      decls_diff_patch_comment:
+        description: >-
+          Default false. Flip to true to also PATCH the PR-summary
+          comment with the Lean-aware section. Only relevant when
+          decls_diff_pr_number is set.
+        required: false
+        type: boolean
+        default: false
 
 # Limit permissions for GITHUB_TOKEN for the entire workflow
 permissions:
@@ -47,4 +64,22 @@ jobs:
       mathlib_ci_ref: ${{ inputs.mathlib_ci_ref }}
       cache_application_id: ${{ vars.CACHE_NON_MASTER_WRITER_AZURE_APP_ID }}
       runs_on: pr
+    secrets: inherit
+
+  # Test the post-build decls-diff workflow as a chained reusable workflow.
+  # Until decls-diff.yml lands on master, workflow_dispatch can't register its
+  # button on the UI — so we chain it here instead.
+  decls_diff:
+    name: decls-diff (dev branch)
+    needs: build
+    if: needs.build.result == 'success'
+    permissions:
+      contents: read
+      actions: read
+      pull-requests: write
+    uses: ./.github/workflows/decls-diff.yml
+    with:
+      run_id: ${{ github.run_id }}
+      pr_number: ${{ inputs.decls_diff_pr_number }}
+      patch_comment: ${{ inputs.decls_diff_patch_comment }}
     secrets: inherit
