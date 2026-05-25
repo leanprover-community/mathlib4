@@ -306,17 +306,17 @@ theorem exists_nhds_hasAntitoneBasis_absConvex_open_add_closure_subset [FirstCou
     fun n ↦ isOpen_interior.isOpen_absConvexHull_of_zero_mem 𝕜 (hu_zero n)
   have hv_nhds : ∀ n, v n ∈ 𝓝 0 :=
     fun n ↦ (hv_open n).mem_nhds (subset_absConvexHull (hu_zero n))
-  have hv_basis : (𝓝 0).HasAntitoneBasis v :=
-    ⟨hu_basis.to_hasBasis
-      (fun n _ ↦ by
-        obtain ⟨W, ⟨hW_nhds, hW_abs⟩, hWn⟩ :=
-          (nhds_hasBasis_absConvex 𝕜 E).mem_iff.mp (hu_basis.mem_of_mem trivial)
-        obtain ⟨m, hm⟩ := hu_basis.mem_iff.mp hW_nhds
-        exact ⟨m, trivial, (absConvexHull_min (interior_subset.trans hm) hW_abs).trans hWn⟩)
-      (fun n _ ↦ by
-        obtain ⟨m, hm⟩ := hu_basis.mem_iff.mp (isOpen_interior.mem_nhds (hu_zero n))
-        exact ⟨m, trivial, hm.trans subset_absConvexHull⟩),
-    fun i j hij ↦ absConvexHull_mono (interior_mono (hu_basis.antitone hij))⟩
+  have hv_basis : (𝓝 0).HasAntitoneBasis v := by
+    refine ⟨hu_basis.to_hasBasis ?_ ?_,
+      fun _ _ hij ↦ absConvexHull_mono (interior_mono (hu_basis.antitone hij))⟩
+    · intro n _
+      obtain ⟨W, ⟨hW_nhds, hW_abs⟩, hWn⟩ :=
+        (nhds_hasBasis_absConvex 𝕜 E).mem_iff.mp (hu_basis.mem_of_mem trivial)
+      obtain ⟨m, hm⟩ := hu_basis.mem_iff.mp hW_nhds
+      exact ⟨m, trivial, (absConvexHull_min (interior_subset.trans hm) hW_abs).trans hWn⟩
+    · intro n _
+      obtain ⟨m, hm⟩ := hu_basis.mem_iff.mp (isOpen_interior.mem_nhds (hu_zero n))
+      exact ⟨m, trivial, hm.trans subset_absConvexHull⟩
   obtain ⟨φ, -, hφ_add, hφ_basis⟩ := hv_basis.subbasis_with_rel
     (r := fun i j ↦ v j + v j ⊆ v i) fun m ↦ by
       obtain ⟨W, hW_open, hW_zero, hW_add⟩ := exists_open_nhds_zero_add_subset (hv_nhds m)
@@ -324,9 +324,8 @@ theorem exists_nhds_hasAntitoneBasis_absConvex_open_add_closure_subset [FirstCou
       filter_upwards [Filter.eventually_ge_atTop N] with M hM
       exact (add_subset_add ((hv_basis.antitone hM).trans hN)
         ((hv_basis.antitone hM).trans hN)).trans hW_add
-  exact ⟨fun n ↦ v (φ n), hφ_basis, fun n ↦
-    ⟨hv_open (φ n), absConvex_absConvexHull, hφ_add n.lt_succ_self,
-      (closure_subset_add_self_of_mem_nhds_zero (hv_nhds (φ (n + 1)))).trans
+  exact ⟨v ∘ φ, hφ_basis, fun n ↦ ⟨hv_open (φ n), absConvex_absConvexHull, hφ_add (by simp),
+    (closure_subset_add_self_of_mem_nhds_zero (hv_nhds (φ (n + 1)))).trans
         (hφ_add n.lt_succ_self)⟩⟩
 
 end NontriviallyNormedField
