@@ -174,6 +174,7 @@ def lift : S'.toMonoidFunctor ⟶ S.toMonoidFunctor where
     erw [MonoidHom.comp_apply]
     simpa [Subtype.ext_iff, -NatTrans.naturality_apply] using NatTrans.naturality_apply p' g x
 
+@[reassoc (attr := simp)]
 theorem lift_ι : lift p' S S' hp' ≫ S.ι = S'.ι ≫ p' := rfl
 
 end lift
