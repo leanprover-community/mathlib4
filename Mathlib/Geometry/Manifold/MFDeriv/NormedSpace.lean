@@ -541,7 +541,7 @@ open Bundle PrettyPrinter Delaborator SubExpr
 -- There is no need to special-case any arguments which could use the `T%` elaborator:
 -- the argument to `mvfderivWithin` is a vector-valued function, which a map to a total space
 -- can never be.
-@[app_delab mvfderivWithin] meta def delab_mvfderivWithin : Delab := do
+@[app_delab mvfderivWithin] meta def delabMVFDerivWithin : Delab := do
   whenPPOption getPPNotation do
   withOverApp 16 do
   let ss ← withAppArg delab
