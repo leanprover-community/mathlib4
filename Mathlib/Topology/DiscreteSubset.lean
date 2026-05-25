@@ -365,6 +365,11 @@ lemma mem_codiscrete_subtype_iff_mem_codiscreteWithin {S : Set X} {U : Set S} :
     U ∈ codiscrete S ↔ (↑) '' U ∈ codiscreteWithin S := by
   simp [← Topology.IsEmbedding.subtypeVal.image_mem_codiscreteWithin_range]
 
+@[simp]
+theorem codiscreteWithin_eq_bot_iff {S : Set X} : codiscreteWithin S = ⊥ ↔ IsDiscrete S := by
+  simp [isDiscrete_iff_nhdsNE, codiscreteWithin, nhdsWithin, Set.diff_eq, inf_principal_eq_bot,
+    Set.compl_inter, mem_inf_principal, Set.insert_def, or_iff_not_imp_left]
+
 section T1Space
 
 variable [T1Space X]
