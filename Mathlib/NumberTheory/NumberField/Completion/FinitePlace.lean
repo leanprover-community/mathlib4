@@ -168,11 +168,11 @@ theorem adicAbv_add_le_max (x y : K) :
 
 /-- The `v`-adic absolute value of a natural number is `≤ 1`. -/
 theorem adicAbv_natCast_le_one (n : ℕ) : adicAbv K v n ≤ 1 :=
-  (isNonarchimedean_adicAbv K v).apply_natCast_le_one_of_isNonarchimedean
+  (isNonarchimedean_adicAbv K v).apply_natCast_le_one
 
 /-- The `v`-adic absolute value of an integer is `≤ 1`. -/
 theorem adicAbv_intCast_le_one (n : ℤ) : adicAbv K v n ≤ 1 :=
-  (isNonarchimedean_adicAbv K v).apply_intCast_le_one_of_isNonarchimedean
+  (isNonarchimedean_adicAbv K v).apply_intCast_le_one
 
 @[deprecated (since := "2026-03-11")]
 alias NumberField.RingOfIntegers.HeightOneSpectrum.one_lt_absNorm := one_lt_absNorm
@@ -315,6 +315,11 @@ theorem mk_apply (v : HeightOneSpectrum (𝓞 K)) (x : K) : mk v x = ‖embeddin
 
 lemma coe_apply (v : FinitePlace K) (x : K) : v x = v.val x := rfl
 
+instance : MulRingNormClass (FinitePlace K) K ℝ where
+  map_add_le_add v x y := by simpa [coe_apply] using IsAbsoluteValue.abv_add' x y
+  map_neg_eq_map v x := by simp [coe_apply]
+  eq_zero_of_map_eq_zero v := by simp
+
 /-- For a finite place `w`, return a maximal ideal `v` such that `w = finite_place v` . -/
 noncomputable def maximalIdeal (w : FinitePlace K) : HeightOneSpectrum (𝓞 K) := w.2.choose
 
@@ -347,6 +352,7 @@ theorem maximalIdeal_mk (v : HeightOneSpectrum (𝓞 K)) : maximalIdeal (mk v) =
   rw [← mk_eq_iff, mk_maximalIdeal]
 
 /-- The equivalence between finite places and maximal ideals. -/
+@[simps apply]
 noncomputable def equivHeightOneSpectrum :
     FinitePlace K ≃ HeightOneSpectrum (𝓞 K) where
   toFun := maximalIdeal
@@ -384,9 +390,16 @@ theorem hasFiniteMulSupport {x : K} (h_x_nezero : x ≠ 0) :
   simp_all only [ne_eq, div_eq_zero_iff, FaithfulSMul.algebraMap_eq_zero_iff, not_or, map_div₀]
   obtain ⟨ha, hb⟩ := h_x_nezero
   simp_rw [← RingOfIntegers.coe_eq_algebraMap]
-  fun_prop (disch := assumption)
+  fun_prop
 
 @[deprecated (since := "2026-03-03")] alias mulSupport_finite := hasFiniteMulSupport
+
+lemma hasFiniteMulSupport_fun_pow_multiplicity {M : Type*} [CommMonoid M] {I : Ideal (𝓞 K)}
+    (hI : I ≠ ⊥) (f : Ideal (𝓞 K) → M) :
+    (fun v : FinitePlace K ↦
+      f v.maximalIdeal.asIdeal ^ multiplicity v.maximalIdeal.asIdeal I).HasFiniteMulSupport :=
+  UniqueFactorizationMonoid.hasFiniteMulSupport_fun_pow_multiplicity _
+    (asIdeal_injective.comp maximalIdeal_injective) (fun v ↦ v.maximalIdeal.irreducible) hI
 
 protected
 lemma add_le (v : FinitePlace K) (x y : K) :
@@ -408,6 +421,17 @@ alias IsDedekindDomain.HeightOneSpectrum.equivHeightOneSpectrum_symm_apply :=
   equivHeightOneSpectrum_symm_apply
 @[deprecated (since := "2026-03-11")]
 alias IsDedekindDomain.HeightOneSpectrum.embedding_mul_absNorm := embedding_mul_absNorm
+
+lemma finprod_finitePlace_pow_multiplicity {I : Ideal (𝓞 K)} (hI : I ≠ ⊥) :
+    ∏ᶠ v : FinitePlace K, v.maximalIdeal.asIdeal ^ multiplicity v.maximalIdeal.asIdeal I = I := by
+  conv_rhs => rw [← finprod_heightOneSpectrum_pow_multiplicity hI]
+  simp only [← finprod_comp_equiv (equivHeightOneSpectrum (K := K)), equivHeightOneSpectrum_apply]
+
+lemma apply_mul_absNorm_pow_eq_one (v : FinitePlace K) {x : 𝓞 K} (hx : x ≠ 0) :
+    v x * v.maximalIdeal.asIdeal.absNorm ^ multiplicity v.maximalIdeal.asIdeal (span {x}) = 1 := by
+  have hnz : span {x} ≠ ⊥ := mt Submodule.span_singleton_eq_bot.mp hx
+  rw [← norm_embedding_eq v x, ← Nat.cast_pow, ← map_pow, ← maxPowDividing_eq_pow_multiplicity hnz]
+  exact HeightOneSpectrum.embedding_mul_absNorm K v.maximalIdeal hx
 
 end FinitePlace
 

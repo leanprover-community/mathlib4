@@ -50,7 +50,7 @@ In this file we prove the following facts:
   strictly differentiable. (This is a corollary of the mean value inequality.)
 -/
 
-@[expose] public section
+public section
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {F : Type*} [NormedAddCommGroup F]
   [NormedSpace ℝ F]
@@ -152,7 +152,7 @@ theorem image_le_of_liminf_slope_right_le_deriv_boundary {f : ℝ → ℝ} {a b 
     exact hx
   intro x hx
   have : ContinuousWithinAt (fun r => B x + r * (x - a)) (Ioi 0) 0 := by fun_prop
-  convert continuousWithinAt_const.closure_le _ this (Hr x hx) using 1 <;> simp
+  convert! continuousWithinAt_const.closure_le _ this (Hr x hx) using 1 <;> simp
 
 /-- General fencing theorem for continuous functions with an estimate on the derivative.
 Let `f` and `B` be continuous functions on `[a, b]` such that
@@ -317,7 +317,7 @@ theorem norm_image_sub_le_of_norm_deriv_right_le_segment {f' : ℝ → E} {C : �
   have hB : ∀ x, HasDerivAt B C x := by
     intro x
     simpa using (hasDerivAt_const x C).mul ((hasDerivAt_id x).sub (hasDerivAt_const x a))
-  convert image_norm_le_of_norm_deriv_right_le_deriv_boundary hg hg' _ hB bound
+  convert! image_norm_le_of_norm_deriv_right_le_deriv_boundary hg hg' _ hB bound
   simp only [g, B]; rw [sub_self, norm_zero, sub_self, mul_zero]
 
 /-- A function on `[a, b]` with the norm of the derivative within `[a, b]`
@@ -662,9 +662,11 @@ lemma isLittleO_pow_succ {x₀ : E} {n : ℕ} (hs : Convex ℝ s) (hx₀s : x₀
     gcongr
     exact norm_sub_le_of_mem_segment hy
   filter_upwards [this] with x ⟨h_segment, h⟩
-  convert (convex_segment x₀ x).norm_image_sub_le_of_norm_hasFDerivWithin_le
-    (f := fun x ↦ f x - f x₀) (y := x) (x := x₀) (s := segment ℝ x₀ x) ?_ h
-    (left_mem_segment ℝ x₀ x) (right_mem_segment ℝ x₀ x) using 1
+  convert!
+    (convex_segment x₀ x).norm_image_sub_le_of_norm_hasFDerivWithin_le (f := fun x ↦ f x - f x₀)
+      (y := x) (x := x₀) (s := segment ℝ x₀ x) ?_ h
+      (left_mem_segment ℝ x₀ x)
+      (right_mem_segment ℝ x₀ x) using 1
   · simp
   · simp only [hasFDerivWithinAt_sub_const_iff]
     exact fun x hx ↦ (hff' x (h_segment hx)).mono h_segment
@@ -677,7 +679,7 @@ theorem isLittleO_pow_succ_real {f f' : ℝ → E} {x₀ : ℝ} {n : ℕ} {s : S
   · rw [Asymptotics.isLittleO_iff] at h ⊢
     simpa using h
   · rw [Asymptotics.isLittleO_iff] at hf' ⊢
-    convert hf' using 4 with c hc x
+    convert! hf' using 4 with c hc x
     simp
 
 end Convex
@@ -747,13 +749,13 @@ theorem _root_.lipschitzWith_of_nnnorm_deriv_le {C : ℝ≥0} (hf : Differentiab
 then it is a constant function. -/
 theorem _root_.is_const_of_deriv_eq_zero (hf : Differentiable 𝕜 f) (hf' : ∀ x, deriv f x = 0)
     (x y : 𝕜) : f x = f y :=
-  is_const_of_fderiv_eq_zero hf (fun z => by ext; simp [← toSpanSingleton_deriv, hf']) _ _
+  is_const_of_fderiv_eq_zero hf (fun z => by simp [← toSpanSingleton_deriv, hf']) _ _
 
 theorem _root_.IsOpen.isOpen_inter_preimage_of_deriv_eq_zero
     (hs : IsOpen s) (hf : DifferentiableOn 𝕜 f s)
     (hf' : s.EqOn (deriv f) 0) (t : Set G) : IsOpen (s ∩ f ⁻¹' t) :=
   hs.isOpen_inter_preimage_of_fderiv_eq_zero hf
-    (fun x hx ↦ by ext; simp [← toSpanSingleton_deriv, hf' hx]) t
+    (fun x hx ↦ by simp [← toSpanSingleton_deriv, hf' hx]) t
 
 theorem _root_.IsOpen.exists_is_const_of_deriv_eq_zero
     (hs : IsOpen s) (hs' : IsPreconnected s) (hf : DifferentiableOn 𝕜 f s)

@@ -63,14 +63,14 @@ theorem coe_toBipointed (X : TwoP) : ↥X.toBipointed = ↥X :=
   rfl
 
 noncomputable instance largeCategory : LargeCategory TwoP :=
-  inferInstanceAs (Category (InducedCategory _ toBipointed))
+  inferInstanceAs <| Category (InducedCategory _ toBipointed)
 
 noncomputable instance concreteCategory : ConcreteCategory TwoP
     (fun X Y => Bipointed.HomSubtype X.toBipointed Y.toBipointed) :=
-  InducedCategory.concreteCategory toBipointed
+  inferInstanceAs <| ConcreteCategory (InducedCategory _ toBipointed) _
 
 noncomputable instance hasForgetToBipointed : HasForget₂ TwoP Bipointed :=
-  InducedCategory.hasForget₂ toBipointed
+  inferInstanceAs <| HasForget₂ (InducedCategory _ toBipointed) _
 
 @[ext]
 lemma hom_ext {X Y : TwoP} {f g : X ⟶ Y} (h : f.hom = g.hom) : f = g :=

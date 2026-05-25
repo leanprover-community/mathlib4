@@ -172,7 +172,7 @@ theorem natDegree_modByMonic_lt (p : R[X]) {q : R[X]} (hmq : Monic q) (hq : q �
     natDegree (p %ₘ q) < q.natDegree := by
   by_cases hpq : p %ₘ q = 0
   · rw [hpq, natDegree_zero, Nat.pos_iff_ne_zero]
-    contrapose! hq
+    contrapose hq
     exact eq_one_of_monic_natDegree_zero hmq hq
   · haveI := Nontrivial.of_polynomial_ne hpq
     exact natDegree_lt_natDegree hpq (degree_modByMonic_lt p hmq)
@@ -422,7 +422,7 @@ theorem map_dvd_map [Ring S] (f : R →+* S) (hf : Function.Injective f) {x y : 
 
 @[simp]
 theorem modByMonic_one (p : R[X]) : p %ₘ 1 = 0 :=
-  (modByMonic_eq_zero_iff_dvd (by convert monic_one (R := R))).2 (one_dvd _)
+  (modByMonic_eq_zero_iff_dvd (by convert! monic_one (R := R))).2 (one_dvd _)
 
 @[simp]
 theorem divByMonic_one (p : R[X]) : p /ₘ 1 = p := by

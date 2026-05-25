@@ -73,7 +73,7 @@ lemma LocallyLipschitzOn.exists_lipschitzOnWith_of_compact {f : α → β} {s : 
     let ⟨K', hK'⟩ := (hs.diff isOpen_ball).bddAbove_image
       (f := fun y ↦ dist (f x) (f y) / dist x y) <| .div (.mono (by fun_prop) s.diff_subset)
         (by fun_prop) fun y hy ↦ ((hε x hx).trans_le <| not_lt.1 <| dist_comm x y ▸ hy.2).ne'
-    refine ⟨⟨K' ⊔ 0, le_sup_right⟩, fun y hy ↦ ?_⟩
+    refine ⟨.mk (K' ⊔ 0) le_sup_right, fun y hy ↦ ?_⟩
     simp_rw [edist_nndist, ← ENNReal.coe_mul, ENNReal.coe_le_coe]
     refine (div_le_iff₀ ?_).1 ?_
     · exact NNReal.coe_pos.1 <| coe_nndist x y ▸
@@ -94,7 +94,7 @@ lemma LocallyLipschitzOn.exists_lipschitzOnWith_of_compact {f : α → β} {s : 
   · /- For `y ∈ ball z (ε z hz)` this follows from `f` being Lipschitz with bound `K z hz`
     on `ball z (ε z hz)`. -/
     refine (hf _ z.2 ⟨hx'.2.trans <| half_lt_self <| hε _ z.2, hx⟩ ⟨hy', hy⟩).trans <|
-      mul_le_mul_of_nonneg_right ?_ <| zero_le _
+      mul_le_mul_of_nonneg_right ?_ zero_le
     exact ENNReal.coe_le_coe.2 <| t.le_sup_of_le hz <| le_self_add
   · /- For `y ∉ ball z (ε z hz)` this follows by using the triangle inequality, bounding
     the distances from `f z` to `f x` and `f y` using the bounds `K z hz` and `K' z hz`, and then
