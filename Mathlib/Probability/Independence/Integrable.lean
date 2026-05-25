@@ -24,7 +24,7 @@ open scoped ENNReal NNReal Topology
 
 namespace MeasureTheory
 
-variable {Ω E F : Type*} [MeasurableSpace Ω] {μ : Measure Ω}
+variable {Ω E F : Type*} [MeasurableSpace Ω] {μ : Measure Ω} [AddCommGroup E]
   [NormedAddCommGroup E] [MeasurableSpace E] [OpensMeasurableSpace E]
   [MeasurableSpace F]
 
