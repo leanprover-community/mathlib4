@@ -788,14 +788,32 @@ time `τ` is the map `x ↦ u (τ ω) ω`. -/
 noncomputable
 def stoppedValue (u : ι → Ω → β) (τ : Ω → WithTop ι) : Ω → β := fun ω => u (τ ω).untopA ω
 
-theorem stoppedValue_const (u : ι → Ω → β) (i : ι) : (stoppedValue u fun _ => i) = u i :=
-  rfl
+@[simp]
+theorem stoppedValue_const (u : ι → Ω → β) (i : ι) : (stoppedValue u fun _ => i) = u i := rfl
 
 @[simp] lemma stoppedValue_comp {γ : Type*} (f : β → γ) :
     stoppedValue (fun t ω ↦ f (u t ω)) τ = fun ω ↦ f (stoppedValue u τ ω) := rfl
 
 lemma stoppedValue_norm [SeminormedAddCommGroup β] :
     stoppedValue (fun t ω ↦ ‖u t ω‖) τ = fun ω ↦ ‖stoppedValue u τ ω‖ := rfl
+
+@[to_additive (attr := simp)]
+lemma stoppedValue_inv [Inv β] : stoppedValue (u⁻¹) τ = (stoppedValue u τ)⁻¹ := rfl
+
+@[to_additive (attr := simp)]
+lemma stoppedValue_mul [Mul β] :
+    stoppedValue (u * v) τ = stoppedValue u τ * stoppedValue v τ := rfl
+
+@[to_additive (attr := simp)]
+lemma stoppedValue_div [Div β] :
+    stoppedValue (u / v) τ = stoppedValue u τ / stoppedValue v τ := rfl
+
+@[simp] lemma stoppedValue_const_smul {𝕜 : Type*} [SMul 𝕜 β] (c : 𝕜) :
+    stoppedValue (c • u) τ = c • stoppedValue u τ := rfl
+
+@[simp] lemma stoppedValue_const_bot [Bot ι] :
+    stoppedValue u (fun _ ↦ ⊥) = u ⊥ := by
+  ext; simp [stoppedValue, ← WithTop.coe_bot]
 
 variable [LinearOrder ι]
 
