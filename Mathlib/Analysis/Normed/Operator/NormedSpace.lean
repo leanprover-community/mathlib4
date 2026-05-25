@@ -26,6 +26,64 @@ open scoped NNReal
 -- the `ₗ` subscript variables are for special cases about linear (as opposed to semilinear) maps
 variable {𝕜 𝕜₂ 𝕜₃ E F Fₗ G : Type*}
 
+section SeminormedAddCommGroup
+variable [NormPseudoMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormPseudoMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormPseudoMetric G] [AddCommGroup G] [IsNormedAddGroup G]
+  [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕜₂] [NontriviallyNormedField 𝕜₃]
+  [NormedSpace 𝕜 E] [NormedSpace 𝕜₂ F] [NormedSpace 𝕜₃ G]
+  {σ₁₂ : 𝕜 →+* 𝕜₂} {σ₂₃ : 𝕜₂ →+* 𝕜₃} (f : E →SL[σ₁₂] F)
+
+namespace LinearIsometry
+section
+variable [NontrivialTopology E] [RingHomIsometric σ₁₂]
+
+@[simp] lemma norm_toContinuousLinearMap (f : E →ₛₗᵢ[σ₁₂] F) : ‖f.toContinuousLinearMap‖ = 1 :=
+  f.toContinuousLinearMap.homothety_norm <| by simp
+
+@[simp] lemma nnnorm_toContinuousLinearMap (f : E →ₛₗᵢ[σ₁₂] F) : ‖f.toContinuousLinearMap‖₊ = 1 :=
+  Subtype.ext f.norm_toContinuousLinearMap
+
+@[simp] lemma enorm_toContinuousLinearMap (f : E →ₛₗᵢ[σ₁₂] F) : ‖f.toContinuousLinearMap‖ₑ = 1 :=
+  congrArg _ f.nnnorm_toContinuousLinearMap
+
+end
+
+variable {σ₁₃ : 𝕜 →+* 𝕜₃} [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃]
+
+/-- Postcomposition of a continuous linear map with a linear isometry preserves
+the operator norm. -/
+lemma norm_toContinuousLinearMap_comp [RingHomIsometric σ₁₂] (f : F →ₛₗᵢ[σ₂₃] G)
+    {g : E →SL[σ₁₂] F} : ‖f.toContinuousLinearMap.comp g‖ = ‖g‖ :=
+  (f.toContinuousLinearMap.comp g).opNorm_ext g fun x ↦ by simp
+
+/-- Composing on the left with a linear isometry gives a linear isometry between spaces of
+continuous linear maps. -/
+def postcomp [RingHomIsometric σ₁₂] [RingHomIsometric σ₁₃] (a : F →ₛₗᵢ[σ₂₃] G) :
+    (E →SL[σ₁₂] F) →ₛₗᵢ[σ₂₃] (E →SL[σ₁₃] G) where
+  toFun f := a.toContinuousLinearMap.comp f
+  map_add' f g := by simp
+  map_smul' c f := by simp
+  norm_map' f := by simp [a.norm_toContinuousLinearMap_comp]
+
+end LinearIsometry
+
+namespace LinearIsometryEquiv
+variable [NontrivialTopology E] {σ₁₂ : 𝕜 →+* 𝕜₂} {σ₂₁ : 𝕜₂ →+* 𝕜}
+  [RingHomInvPair σ₁₂ σ₂₁] [RingHomInvPair σ₂₁ σ₁₂] [RingHomIsometric σ₁₂]
+
+@[simp] lemma norm_toContinuousLinearMap (e : E ≃ₛₗᵢ[σ₁₂] F) :
+    ‖e.toContinuousLinearEquiv.toContinuousLinearMap‖ = 1 :=
+  e.toLinearIsometry.norm_toContinuousLinearMap
+
+@[simp] lemma nnnorm_toContinuousLinearMap (e : E ≃ₛₗᵢ[σ₁₂] F) :
+    ‖e.toContinuousLinearEquiv.toContinuousLinearMap‖₊ = 1 :=
+  e.toLinearIsometry.nnnorm_toContinuousLinearMap
+
+@[simp] lemma enorm_toContinuousLinearMap (e : E ≃ₛₗᵢ[σ₁₂] F) :
+    ‖e.toContinuousLinearEquiv.toContinuousLinearMap‖ₑ = 1 :=
+  e.toLinearIsometry.enorm_toContinuousLinearMap
+
+end LinearIsometryEquiv
+end SeminormedAddCommGroup
 
 section Normed
 
@@ -91,8 +149,6 @@ end LinearMap
 
 namespace ContinuousLinearMap
 
-section OpNorm
-
 open Set Real
 
 /-- An operator is zero iff its norm vanishes. -/
@@ -118,46 +174,7 @@ theorem antilipschitz_of_isEmbedding (f : E →L[𝕜] Fₗ) (hf : IsEmbedding f
     ∃ K, AntilipschitzWith K f :=
   f.toLinearMap.antilipschitz_of_comap_nhds_le <| map_zero f ▸ (hf.nhds_eq_comap 0).ge
 
-end OpNorm
-
 end ContinuousLinearMap
-
-namespace LinearIsometry
-
-@[simp]
-theorem norm_toContinuousLinearMap [Nontrivial E] [RingHomIsometric σ₁₂] (f : E →ₛₗᵢ[σ₁₂] F) :
-    ‖f.toContinuousLinearMap‖ = 1 :=
-  f.toContinuousLinearMap.homothety_norm <| by simp
-
-@[simp]
-theorem nnnorm_toContinuousLinearMap [Nontrivial E] [RingHomIsometric σ₁₂] (f : E →ₛₗᵢ[σ₁₂] F) :
-    ‖f.toContinuousLinearMap‖₊ = 1 :=
-  Subtype.ext f.norm_toContinuousLinearMap
-
-@[simp]
-theorem enorm_toContinuousLinearMap [Nontrivial E] [RingHomIsometric σ₁₂] (f : E →ₛₗᵢ[σ₁₂] F) :
-    ‖f.toContinuousLinearMap‖ₑ = 1 :=
-  congrArg _ f.nnnorm_toContinuousLinearMap
-
-variable {σ₁₃ : 𝕜 →+* 𝕜₃} [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃]
-
-/-- Postcomposition of a continuous linear map with a linear isometry preserves
-the operator norm. -/
-theorem norm_toContinuousLinearMap_comp [RingHomIsometric σ₁₂] (f : F →ₛₗᵢ[σ₂₃] G)
-    {g : E →SL[σ₁₂] F} : ‖f.toContinuousLinearMap.comp g‖ = ‖g‖ :=
-  opNorm_ext (f.toContinuousLinearMap.comp g) g fun x => by
-    simp only [norm_map, coe_toContinuousLinearMap, coe_comp', Function.comp_apply]
-
-/-- Composing on the left with a linear isometry gives a linear isometry between spaces of
-continuous linear maps. -/
-def postcomp [RingHomIsometric σ₁₂] [RingHomIsometric σ₁₃] (a : F →ₛₗᵢ[σ₂₃] G) :
-    (E →SL[σ₁₂] F) →ₛₗᵢ[σ₂₃] (E →SL[σ₁₃] G) where
-  toFun f := a.toContinuousLinearMap.comp f
-  map_add' f g := by simp
-  map_smul' c f := by simp
-  norm_map' f := by simp [a.norm_toContinuousLinearMap_comp]
-
-end LinearIsometry
 
 end
 
@@ -180,10 +197,11 @@ theorem opNorm_comp_linearIsometryEquiv (f : F →SL[σ₂₃] G) (g : F' ≃ₛ
   · haveI := g.symm.toLinearEquiv.toEquiv.subsingleton
     simp
   refine le_antisymm ?_ ?_
-  · convert f.opNorm_comp_le g.toLinearIsometry.toContinuousLinearMap
+  · convert! f.opNorm_comp_le g.toLinearIsometry.toContinuousLinearMap
     simp [g.toLinearIsometry.norm_toContinuousLinearMap]
-  · convert (f.comp g.toLinearIsometry.toContinuousLinearMap).opNorm_comp_le
-        g.symm.toLinearIsometry.toContinuousLinearMap
+  · convert!
+    (f.comp g.toLinearIsometry.toContinuousLinearMap).opNorm_comp_le
+      g.symm.toLinearIsometry.toContinuousLinearMap
     · ext
       simp
     haveI := g.symm.surjective.nontrivial
@@ -224,7 +242,7 @@ protected theorem antilipschitz (e : E ≃SL[σ₁₂] F) :
 theorem one_le_norm_mul_norm_symm [RingHomIsometric σ₁₂] [Nontrivial E] (e : E ≃SL[σ₁₂] F) :
     1 ≤ ‖(e : E →SL[σ₁₂] F)‖ * ‖(e.symm : F →SL[σ₂₁] E)‖ := by
   rw [mul_comm]
-  convert (e.symm : F →SL[σ₂₁] E).opNorm_comp_le (e : E →SL[σ₁₂] F)
+  convert! (e.symm : F →SL[σ₂₁] E).opNorm_comp_le (e : E →SL[σ₁₂] F)
   rw [e.coe_symm_comp_coe, ContinuousLinearMap.norm_id]
 
 theorem norm_pos [RingHomIsometric σ₁₂] [Nontrivial E] (e : E ≃SL[σ₁₂] F) :
@@ -269,7 +287,7 @@ end Normed
 /-- A bounded bilinear form `B` in a real normed space is *coercive*
 if there is some positive constant C such that `C * ‖u‖ * ‖u‖ ≤ B u u`.
 -/
-def IsCoercive [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace ℝ E] (B : E →L[ℝ] E →L[ℝ] ℝ) : Prop :=
+def IsCoercive [NormPseudoMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace ℝ E] (B : E →L[ℝ] E →L[ℝ] ℝ) : Prop :=
   ∃ C, 0 < C ∧ ∀ u, C * ‖u‖ * ‖u‖ ≤ B u u
 
 section Equicontinuous
@@ -345,8 +363,8 @@ lemma ContinuousLinearMap.norm_single_le_one [∀ i, NormPseudoMetric (E i)] [�
     ‖ContinuousLinearMap.single 𝕜 E i‖ ≤ 1 :=
   (LinearIsometry.single 𝕜 E i).norm_toContinuousLinearMap_le
 
-lemma ContinuousLinearMap.norm_single [∀ i, NormMetric (E i)] [∀ i, AddCommGroup (E i)] [∀ i, IsNormedAddGroup (E i)] [∀ i, NormedSpace 𝕜 (E i)]
-    (i : ι) [Nontrivial (E i)] :
+lemma ContinuousLinearMap.norm_single [∀ i, NormPseudoMetric (E i)] [∀ i, AddCommGroup (E i)] [∀ i, IsNormedAddGroup (E i)]
+    [∀ i, NormedSpace 𝕜 (E i)] (i : ι) [NontrivialTopology (E i)] :
     ‖ContinuousLinearMap.single 𝕜 E i‖ = 1 :=
   (LinearIsometry.single 𝕜 E i).norm_toContinuousLinearMap
 
@@ -386,13 +404,13 @@ lemma ContinuousLinearMap.norm_inr_le_one [NormPseudoMetric E] [AddCommGroup E] 
     ‖ContinuousLinearMap.inr 𝕜 E F‖ ≤ 1 :=
   (LinearIsometry.inr 𝕜 E F).norm_toContinuousLinearMap_le
 
-lemma ContinuousLinearMap.norm_inl [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E]
-    [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace 𝕜 F] [Nontrivial E] :
+lemma ContinuousLinearMap.norm_inl [NormPseudoMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NontrivialTopology E]
+    [NormedSpace 𝕜 E] [NormPseudoMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace 𝕜 F] :
     ‖ContinuousLinearMap.inl 𝕜 E F‖ = 1 :=
   (LinearIsometry.inl 𝕜 E F).norm_toContinuousLinearMap
 
-lemma ContinuousLinearMap.norm_inr [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NormedSpace 𝕜 E]
-    [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace 𝕜 F] [Nontrivial F] :
+lemma ContinuousLinearMap.norm_inr [NormPseudoMetric E] [AddCommGroup E] [IsNormedAddGroup E] [NontrivialTopology E]
+    [NormedSpace 𝕜 E] [NormPseudoMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace 𝕜 F] [NontrivialTopology F] :
     ‖ContinuousLinearMap.inr 𝕜 E F‖ = 1 :=
   (LinearIsometry.inr 𝕜 E F).norm_toContinuousLinearMap
 

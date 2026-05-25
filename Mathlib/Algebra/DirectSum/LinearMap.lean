@@ -92,7 +92,7 @@ lemma trace_eq_zero_of_mapsTo_ne (h : IsInternal N) [IsNoetherian R M]
   let κ := fun i ↦ Module.Free.ChooseBasisIndex R (N i)
   let b : (i : s) → Basis (κ i) R (N i) := fun i ↦ Module.Free.chooseBasis R (N i)
   replace h : IsInternal fun i : s ↦ N i := by
-    convert DirectSum.isInternal_ne_bot_iff.mpr h <;> simp [s]
+    convert! DirectSum.isInternal_ne_bot_iff.mpr h <;> simp [s]
   simp_rw [trace_eq_matrix_trace R (h.collectedBasis b), Matrix.trace,
     diag_toMatrix_directSum_collectedBasis_eq_zero_of_mapsTo_ne h b σ hσ hf (by simp [s]),
     Pi.zero_apply, Finset.sum_const_zero]

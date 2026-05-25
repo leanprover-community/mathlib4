@@ -358,7 +358,7 @@ theorem isMultiplyPretransitive [IsPretransitive G α] {n : ℕ} {a : α} :
   · obtain ⟨g, hgxy⟩ := exists_smul_eq G (ofStabilizer.snoc x) (ofStabilizer.snoc y)
     have hg : g ∈ stabilizer G a := by
       rw [DFunLike.ext_iff] at hgxy
-      convert hgxy (last n)
+      convert! hgxy (last n)
       simp [ofStabilizer.snoc_last]
     use ⟨g, hg⟩
     ext i
@@ -476,7 +476,7 @@ theorem IsMultiplyPretransitive.index_of_fixingSubgroup_mul
     have htcard : t.ncard = k := by
       rw [← Nat.succ_inj, Nat.succ_eq_add_one, Nat.succ_eq_add_one, ← hs, hat', eq_comm]
       suffices ¬ a ∈ (Subtype.val '' t) by
-        convert Set.ncard_insert_of_notMem this ?_
+        convert! Set.ncard_insert_of_notMem this ?_
         · rw [Set.ncard_image_of_injective _ Subtype.coe_injective]
         apply Set.toFinite
       intro h
@@ -489,7 +489,7 @@ theorem IsMultiplyPretransitive.index_of_fixingSubgroup_mul
       rw [add_comm k, Nat.mul_right_comm, ← Nat.sub_sub, this, mul_comm,
         index_stabilizer_of_transitive G a]
       exact Nat.mul_factorial_pred (card_ne_zero.mpr ⟨⟨a⟩, inferInstance⟩)
-    convert hrec (ofStabilizer.isMultiplyPretransitive.mp Hk) htcard
+    convert! hrec (ofStabilizer.isMultiplyPretransitive.mp Hk) htcard
     all_goals { rw [nat_card_ofStabilizer_eq G a] }
 
 /-- For a multiply pretransitive action,
@@ -524,7 +524,7 @@ variable (α) in
 theorem isMultiplyPretransitive (n : ℕ) :
     IsMultiplyPretransitive (Perm α) α n := by
   rw [isMultiplyPretransitive_iff]
-  exact fun x y => exists_smul_eq_embedding x y
+  exact exists_smul_eq_embedding
 
 /-- The action of the permutation group of `α` on `α` is preprimitive -/
 instance : IsPreprimitive (Perm α) α :=
@@ -608,7 +608,6 @@ theorem _root_.IsMultiplyPretransitive.alternatingGroup_le
     alternatingGroup α ≤ G := by
   rcases Nat.lt_or_ge (Nat.card α) 2 with hα1 | hα
   · -- Nat.card α  < 2
-    rw [Nat.card_eq_fintype_card] at hα1
     rw [eq_bot_of_card_le_two hα1.le]
     exact bot_le
   -- 2 ≤ Nat.card α

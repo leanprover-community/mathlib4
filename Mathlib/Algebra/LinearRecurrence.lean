@@ -155,10 +155,11 @@ theorem repr_basis_eq (u : E.solSpace) :
 theorem repr_basis_apply (u : E.solSpace) (n : Fin E.order) : E.basis.repr u n = u.val n :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Two solutions are equal iff their initial conditions are equal. -/
 theorem eq_iff_eqOn_range_order (u v : ℕ → R) (hu : E.IsSolution u) (hv : E.IsSolution v) :
     u = v ↔ Set.EqOn u v ↑(range E.order) := by
+  replace hu : u ∈ E.solSpace := (is_sol_iff_mem_solSpace _ _).mp hu
+  replace hv : v ∈ E.solSpace := (is_sol_iff_mem_solSpace _ _).mp hv
   rw [← Subtype.mk.injEq u hu v hv, ← E.basis.repr.injective.eq_iff]
   constructor
   · exact fun h n hn ↦ congr($h ⟨n, Finset.mem_range.mp hn⟩)

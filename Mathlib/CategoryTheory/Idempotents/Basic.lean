@@ -106,7 +106,7 @@ theorem isIdempotentComplete_iff_idempotents_have_kernels [Preadditive C] :
   constructor
   · intro h X p hp
     haveI : HasEqualizer (𝟙 X) (𝟙 X - p) := h X (𝟙 _ - p) (idem_of_id_sub_idem p hp)
-    convert hasKernel_of_hasEqualizer (𝟙 X) (𝟙 X - p)
+    convert! hasKernel_of_hasEqualizer (𝟙 X) (𝟙 X - p)
     rw [sub_sub_cancel]
   · intro h X p hp
     haveI : HasKernel (𝟙 _ - p) := h X (𝟙 _ - p) (idem_of_id_sub_idem p hp)
@@ -146,7 +146,8 @@ theorem Equivalence.isIdempotentComplete {D : Type*} [Category* D] (ε : C ≌ D
   refine ⟨?_⟩
   intro X' p hp
   let φ := ε.counitIso.symm.app X'
-  erw [split_iff_of_iso φ p (φ.inv ≫ p ≫ φ.hom)
+  simp only [Functor.id_obj] at φ
+  rw [split_iff_of_iso φ p (φ.inv ≫ p ≫ φ.hom)
       (by
         slice_rhs 1 2 => rw [φ.hom_inv_id]
         rw [id_comp])]

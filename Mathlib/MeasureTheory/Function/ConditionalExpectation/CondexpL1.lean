@@ -248,8 +248,8 @@ theorem aestronglyMeasurable_condExpInd (hs : MeasurableSet s) (hμs : μ s ≠ 
 @[simp]
 theorem condExpInd_empty : condExpInd G hm μ ∅ = (0 : G →L[ℝ] α →₁[μ] G) := by
   ext x
-  grw [condExpInd_ae_eq_condExpIndSMul, condExpIndSMul_empty, zero_apply, Lp.coeFn_zero,
-    Lp.coeFn_zero]
+  grw [condExpInd_ae_eq_condExpIndSMul hm MeasurableSet.empty (by simp), condExpIndSMul_empty,
+    zero_apply, Lp.coeFn_zero, Lp.coeFn_zero]
 
 theorem condExpInd_smul' [NormedSpace ℝ F] [SMulCommClass ℝ 𝕜 F] (c : 𝕜) (x : F) :
     condExpInd F hm μ s (c • x) = c • condExpInd F hm μ s x :=
@@ -291,7 +291,8 @@ theorem setIntegral_condExpInd (hs : MeasurableSet[m] s) (ht : MeasurableSet t) 
 theorem condExpInd_of_measurable (hs : MeasurableSet[m] s) (hμs : μ s ≠ ∞) (c : G) :
     condExpInd G hm μ s c = indicatorConstLp 1 (hm s hs) hμs c := by
   ext1
-  grw [indicatorConstLp_coeFn, condExpInd_ae_eq_condExpIndSMul, condExpIndSMul_ae_eq_smul]
+  grw [indicatorConstLp_coeFn, condExpInd_ae_eq_condExpIndSMul hm (hm s hs) hμs,
+    condExpIndSMul_ae_eq_smul]
   rw [condExpL2_indicator_of_measurable hm hs hμs (1 : ℝ)]
   filter_upwards [indicatorConstLp_coeFn (c := (1 : ℝ))] with x hx
   rw [hx]
@@ -439,7 +440,9 @@ theorem condExpL1CLM_of_aestronglyMeasurable' (f : α →₁[μ] F') (hfm : AESt
 
 /-- Conditional expectation of a function, in L1. Its value is 0 if the function is not
 integrable. The function-valued `condExp` should be used instead in most cases. -/
-def condExpL1 (hm : m ≤ m0) (μ : Measure α) [SigmaFinite (μ.trim hm)] (f : α → F') : α →₁[μ] F' :=
+@[nolint unusedArguments] -- TODO: drop the completeness assumption in the definition, and fix
+def condExpL1 [CompleteSpace F'] (hm : m ≤ m0) (μ : Measure α) [SigmaFinite (μ.trim hm)]
+    (f : α → F') : α →₁[μ] F' :=
   setToFun μ (condExpInd F' hm μ) (dominatedFinMeasAdditive_condExpInd F' hm μ) f
 
 theorem condExpL1_undef (hf : ¬Integrable f μ) : condExpL1 hm μ f = 0 :=

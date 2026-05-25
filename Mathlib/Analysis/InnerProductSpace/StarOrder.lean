@@ -75,7 +75,6 @@ lemma instStarOrderedRingRCLike
       | zero => exact isPositive_zero
       | add f g _ _ hf hg => exact hf.add hg
 
-set_option backward.isDefEq.respectTransparency false in
 instance instStarOrderedRing {H : Type*} [NormMetric H] [AddCommGroup H] [IsNormedAddGroup H]
     [InnerProductSpace ℂ H] [CompleteSpace H] : StarOrderedRing (H →L[ℂ] H) :=
   instStarOrderedRingRCLike

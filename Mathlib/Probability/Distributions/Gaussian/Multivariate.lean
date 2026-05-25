@@ -91,7 +91,6 @@ lemma variance_dual_stdGaussian (L : StrongDual ℝ E) :
     simp
   · exact fun i ↦ IsGaussian.memLp_two_id.const_mul _
 
-set_option backward.isDefEq.respectTransparency false in
 lemma charFun_stdGaussian (t : E) :
     charFun (stdGaussian E) t = exp (- ‖t‖ ^ 2 / 2) := by
   rw [charFun_apply, stdGaussian, integral_map (Measurable.aemeasurable (by fun_prop))
@@ -214,7 +213,6 @@ lemma covarianceBilin_multivariateGaussian (hS : S.PosSemidef) (x y : EuclideanS
   · exact (CFC.sqrt_nonneg S).isSelfAdjoint.map _
   · exact IsGaussian.memLp_two_id
 
-set_option backward.isDefEq.respectTransparency false in
 lemma covariance_eval_multivariateGaussian (hS : S.PosSemidef) (i j : ι) :
     cov[fun x ↦ x i, fun x ↦ x j; multivariateGaussian μ S] = S i j := by
   have (i : ι) : (fun x : EuclideanSpace ℝ ι ↦ x i) =
@@ -243,7 +241,6 @@ lemma charFun_multivariateGaussian (hS : S.PosSemidef) (x : EuclideanSpace ℝ �
       exp (⟪x, μ⟫ * I - x ⬝ᵥ S *ᵥ x / 2) := by
   simp [IsGaussian.charFun_eq', covarianceBilin_multivariateGaussian hS]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If one restricts a multivariate Gaussian measure indexed by a finite set `I` to
 coordinates indexed by `J ⊆ I`, one obtains the multivariate Gaussian measure whose
 covariance matrix is given by the corresponding submatrix. -/

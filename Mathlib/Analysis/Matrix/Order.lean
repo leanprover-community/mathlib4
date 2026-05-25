@@ -363,7 +363,4 @@ noncomputable def toMatrixInnerProductSpace (M : Matrix n n 𝕜) (hM : M.PosSem
 
 @[deprecated (since := "2025-11-18")] alias PosDef.matrixNormedAddCommGroup :=
   toMatrixNormedAddCommGroup
-@[deprecated (since := "2025-11-12")] alias PosDef.matrixInnerProductSpace :=
-  toMatrixInnerProductSpace
-
 end Matrix

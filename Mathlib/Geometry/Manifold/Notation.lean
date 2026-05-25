@@ -1034,7 +1034,7 @@ arguments that can use the `T%` elaborator. -/
     let Tσs ← withAppArg do
       let σs ← withBindingBody n <| withNaryArg 4 <| withNaryFn delab
       `((T% $σs)) >>= annotateGoToSyntaxDef
-    `(MDiffAt $Tσs) >>= annotateGoToSyntaxDef
+    `(MDiff $Tσs) >>= annotateGoToSyntaxDef
   catch _ =>
     let fs ← withAppArg delab
     `(MDiff $fs) >>= annotateGoToSyntaxDef

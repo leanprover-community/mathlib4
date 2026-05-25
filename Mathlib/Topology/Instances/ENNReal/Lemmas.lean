@@ -195,7 +195,7 @@ statement works for `x = 0`.
 -/
 theorem hasBasis_nhds_of_ne_top' (xt : x ≠ ∞) :
     (𝓝 x).HasBasis (· ≠ 0) (fun ε => Icc (x - ε) (x + ε)) := by
-  rcases (zero_le x).eq_or_lt with rfl | x0
+  rcases eq_zero_or_pos x with rfl | x0
   · simp_rw [zero_tsub, zero_add, ← bot_eq_zero, Icc_bot, ← bot_lt_iff_ne_bot]
     exact nhds_bot_basis_Iic
   · refine (nhds_basis_Ioo' ⟨_, x0⟩ ⟨_, xt.lt_top⟩).to_hasBasis ?_ fun ε ε0 => ?_
@@ -628,7 +628,7 @@ theorem continuous_edist : Continuous fun p : α × α => edist p.1 p.2 := by
   rintro ⟨x, y⟩ ⟨x', y'⟩
   calc
     edist x y ≤ edist x x' + edist x' y' + edist y' y := edist_triangle4 _ _ _ _
-    _ = edist x' y' + (edist x x' + edist y y') := by simp only [edist_comm]; ac_rfl
+    _ = edist x' y' + (edist x x' + edist y y') := by rw [edist_comm y y']; abel
     _ ≤ edist x' y' + (edist (x, y) (x', y') + edist (x, y) (x', y')) := by
       gcongr <;> apply_rules [le_max_left, le_max_right]
     _ = edist x' y' + 2 * edist (x, y) (x', y') := by rw [← mul_two, mul_comm]

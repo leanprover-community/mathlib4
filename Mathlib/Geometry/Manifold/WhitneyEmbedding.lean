@@ -89,7 +89,7 @@ theorem comp_embeddingPiTangent_mfderiv (x : M) (hx : x ∈ s) :
       (@ContinuousLinearMap.proj ℝ _ ι (fun _ => E × ℝ) _ _ (fun _ => inferInstance) (f.ind x hx))
   have := L.hasMFDerivAt.comp x
     (f.embeddingPiTangent.contMDiff.mdifferentiableAt (by simp)).hasMFDerivAt
-  convert hasMFDerivAt_unique this _
+  convert! hasMFDerivAt_unique this _
   refine (hasMFDerivAt_extChartAt (f.mem_chartAt_ind_source x hx)).congr_of_eventuallyEq ?_
   refine (f.eventuallyEq_one x hx).mono fun y hy => ?_
   simp only [L, embeddingPiTangent_coe, ContinuousLinearMap.coe_comp', (· ∘ ·),

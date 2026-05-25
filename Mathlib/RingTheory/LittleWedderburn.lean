@@ -92,7 +92,7 @@ private theorem center_eq_top [Finite D] (hD : InductionHyp D) : Subring.center 
     rw [eval_sub, eval_X_pow, eval_one, ← key, Int.dvd_add_left this] at contra
     refine (Nat.le_of_dvd ?_ ?_).not_gt (sub_one_lt_natAbs_cyclotomic_eval (n := n) ?_ hq.ne')
     · exact tsub_pos_of_lt hq
-    · convert Int.natAbs_dvd_natAbs.mpr contra
+    · convert! Int.natAbs_dvd_natAbs.mpr contra
       clear_value q
       simp only [eq_comm, Int.natAbs_eq_iff, Nat.cast_sub hq.le, Nat.cast_one, neg_sub, true_or]
     · by_contra! h
@@ -124,8 +124,8 @@ private theorem center_eq_top [Finite D] (hD : InductionHyp D) : Subring.center 
   have card_Zx : card Zx = q ^ d := Module.card_eq_pow_finrank
   have h1qd : 1 ≤ q ^ d := by rw [← card_Zx]; exact card_pos
   haveI : IsScalarTower Z Zx D := ⟨fun x y z ↦ mul_assoc _ _ _⟩
-  rw [card_units, card_Zx, Int.natCast_div, Nat.cast_sub h1qd, Nat.cast_sub h1qn, Nat.cast_one,
-      Nat.cast_pow, Nat.cast_pow]
+  rw [card_units, card_Zx]
+  push_cast [h1qd, h1qn]
   apply Int.dvd_div_of_mul_dvd
   have aux : ∀ {k : ℕ}, ((X : ℤ[X]) ^ k - 1).eval ↑q = (q : ℤ) ^ k - 1 := by
     simp only [eval_X, eval_one, eval_pow, eval_sub, forall_const]
@@ -153,7 +153,7 @@ private theorem center_eq_top [Finite D] : Subring.center D = ⊤ := by
   rw [IH (Fintype.card R) _ R inferInstance rfl]
   · trivial
   rw [← hn, ← Subring.card_top D]
-  convert Set.card_lt_card hR
+  convert! Set.card_lt_card hR
 
 end LittleWedderburn
 

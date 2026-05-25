@@ -192,7 +192,7 @@ theorem AnalyticOnNhd.eq_const_of_re_eq_const {U : Set ℂ} {c₀ : ℝ} (h₁f 
     ∃ c, ∀ x ∈ U, f x = c := by
   obtain ⟨z₀, _⟩ := h₂U.nonempty
   by_contra h₅
-  grind [not_isOpen_singleton (c₀ : ℝ), (by aesop : (re '' (f '' U)) = { c₀ }), isOpenMap_re
+  grind [not_isOpen_singleton (c₀ : ℝ), (by aesop : (re '' f '' U) = { c₀ }), isOpenMap_re
     (f '' U) ((h₁f.is_constant_or_isOpen h₂U.isPreconnected).resolve_left h₅ U (by tauto) h₁U)]
 
 /--
@@ -217,7 +217,7 @@ theorem AnalyticOnNhd.eq_const_of_im_eq_const {U : Set ℂ} {c₀ : ℝ} (h₁f 
     ∃ c, ∀ x ∈ U, f x = c := by
   obtain ⟨z₀, _⟩ := h₂U.nonempty
   by_contra h₅
-  grind [not_isOpen_singleton (c₀ : ℝ), (by aesop : (im '' (f '' U)) = { c₀ }), isOpenMap_im
+  grind [not_isOpen_singleton (c₀ : ℝ), (by aesop : (im '' f '' U) = { c₀ }), isOpenMap_im
     (f '' U) ((h₁f.is_constant_or_isOpen h₂U.isPreconnected).resolve_left h₅ U (by tauto) h₁U)]
 
 /--
@@ -251,7 +251,7 @@ theorem Polynomial.isOpenQuotientMap_eval (p : Polynomial ℂ) (hp : p.natDegree
 namespace Complex
 
 theorem isOpenQuotientMap_pow (n : ℕ) [NeZero n] : IsOpenQuotientMap (· ^ n : ℂ → ℂ) := by
-  convert Polynomial.isOpenQuotientMap_eval (.X ^ n) _
+  convert! Polynomial.isOpenQuotientMap_eval (.X ^ n) _
   · simp
   · simpa using NeZero.ne n
 
@@ -271,7 +271,7 @@ theorem isOpenQuotientMap_zpow_compl_zero (n : ℤ) [NeZero n] :
   · have : NeZero n := ⟨Nat.cast_ne_zero.mp (NeZero.ne (n : ℤ))⟩
     exact isOpenQuotientMap_pow_compl_zero n
   · have : NeZero n := ⟨Nat.cast_ne_zero.mp <| neg_ne_zero.mp (NeZero.ne (-n : ℤ))⟩
-    convert (isOpenQuotientMap_pow_compl_zero n).comp (Homeomorph.inv₀ ℂ).isOpenQuotientMap
+    convert! (isOpenQuotientMap_pow_compl_zero n).comp (Homeomorph.inv₀ ℂ).isOpenQuotientMap
     simp [Homeomorph.inv₀]
 
 end Complex

@@ -11,6 +11,7 @@ public import Mathlib.Data.Complex.BigOperators
 public import Mathlib.LinearAlgebra.Complex.Module
 public import Mathlib.Topology.Algebra.Algebra.Equiv
 public import Mathlib.Topology.Algebra.InfiniteSum.Module
+public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.RestrictScalars
 public import Mathlib.Topology.Instances.RealVectorSpace
 
 /-!
@@ -64,7 +65,6 @@ instance : DenselyNormedField ℂ where
     let ⟨x, h⟩ := exists_between hr
     ⟨x, by rwa [norm_real, Real.norm_of_nonneg (h₀.trans_lt h.1).le]⟩
 
-set_option backward.isDefEq.respectTransparency false in
 instance {R : Type*} [NormedField R] [NormedAlgebra R ℝ] : NormedAlgebra R ℂ where
   norm_smul_le r x := by
     rw [← algebraMap_smul ℝ r x, real_smul, norm_mul, norm_real, norm_algebraMap']
@@ -185,7 +185,6 @@ theorem imCLM_coe : (imCLM : ℂ →ₗ[ℝ] ℝ) = imLm :=
 theorem imCLM_apply (z : ℂ) : (imCLM : ℂ → ℝ) z = z.im :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 theorem restrictScalars_toSpanSingleton' (x : E) :
     ContinuousLinearMap.restrictScalars ℝ (toSpanSingleton ℂ x : ℂ →L[ℂ] E) =
       reCLM.smulRight x + I • imCLM.smulRight x := by
@@ -263,9 +262,8 @@ theorem conjCAE_toAlgEquiv : conjCAE.toAlgEquiv = conjAe :=
 @[simp] theorem conjCLE_toLinearEquiv : conjCLE.toLinearEquiv = conjAe.toLinearEquiv :=
   rfl
 
-@[simp] lemma conjCLE_coe_toLinearMap :
-    (conjCLE : ℂ →ₗ[ℝ] ℂ) = conjAe.toLinearMap :=
-  rfl
+@[deprecated "Now provable by simp" (since := "2026-04-13")]
+lemma conjCLE_coe_toLinearMap : (conjCLE : ℂ →ₗ[ℝ] ℂ) = conjAe.toLinearMap := by simp
 
 @[simp]
 theorem conjCAE_apply (z : ℂ) : conjCAE z = conj z :=
@@ -313,8 +311,9 @@ lemma _root_.Filter.Tendsto.ofReal {α : Type*} {l : Filter α} {f : α → ℝ}
 
 /-- The only continuous ring homomorphism from `ℝ` to `ℂ` is the identity. -/
 theorem ringHom_eq_ofReal_of_continuous {f : ℝ →+* ℂ} (h : Continuous f) : f = ofRealHom := by
-  convert congr_arg AlgHom.toRingHom <| Subsingleton.elim (AlgHom.mk' f <| map_real_smul f h)
-    (Algebra.ofId ℝ ℂ)
+  convert!
+    congr_arg AlgHom.toRingHom <|
+      Subsingleton.elim (AlgHom.mk' f <| map_real_smul f h) (Algebra.ofId ℝ ℂ)
 
 /-- Continuous linear map version of the canonical embedding of `ℝ` in `ℂ`. -/
 def ofRealCLM : ℝ →L[ℝ] ℂ :=
@@ -408,7 +407,6 @@ open scoped ComplexOrder in
 @[simp] theorem _root_.RCLike.to_complex_nonneg_iff {𝕜 : Type*} [RCLike 𝕜] {a : 𝕜} :
     0 ≤ RCLike.re a + RCLike.im a * Complex.I ↔ 0 ≤ a := RCLike.map_nonneg_iff I_im
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The natural `ℝ`-linear isometry equivalence between `𝕜` satisfying `RCLike 𝕜` and `ℂ` when
 `RCLike.im RCLike.I = 1`. -/
 @[simps]

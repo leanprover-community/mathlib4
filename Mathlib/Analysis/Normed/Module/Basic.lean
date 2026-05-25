@@ -29,9 +29,6 @@ open scoped NNReal ENNReal uniformity
 
 section SeminormedAddCommGroup
 
--- Here, we set a rather high priority for the instance `[NormedSpace 𝕜 E] : Module 𝕜 E`
--- to take precedence over `Semiring.toModule` as this leads to instance paths with better
--- unification properties.
 /-- A normed space over a normed field is a vector space endowed with a norm which satisfies the
 equality `‖c • x‖ = ‖c‖ ‖x‖`. We require only `‖c • x‖ ≤ ‖c‖ ‖x‖` in the definition, then prove
 `‖c • x‖ = ‖c‖ ‖x‖` in `norm_smul`.
@@ -341,9 +338,6 @@ theorem tendsto_algebraMap_cobounded (𝕜 𝕜' : Type*) [NormedField 𝕜] [No
   rw [← isCobounded_def, ← isBounded_compl_iff, isBounded_iff_forall_norm_le] at hc ⊢
   obtain ⟨s, hs⟩ := hc
   exact ⟨s, fun x hx ↦ by simpa using hs (algebraMap 𝕜 𝕜' x) hx⟩
-
-@[deprecated (since := "2025-11-04")] alias
-  algebraMap_cobounded_le_cobounded := tendsto_algebraMap_cobounded
 
 /-- In a normed algebra, the inclusion of the base field in the extended field is an isometry. -/
 theorem algebraMap_isometry [NormOneClass 𝕜'] : Isometry (algebraMap 𝕜 𝕜') := by

@@ -44,7 +44,7 @@ instance (priority := 100) NormedAddTorsor.toAddTorsor' {V P : Type*} [NormMetri
   NormedAddTorsor.toAddTorsor
 
 variable {α V P W Q : Type*} [NormPseudoMetric V] [AddCommGroup V] [IsNormedAddGroup V] [PseudoMetricSpace P] [NormedAddTorsor V P]
-  [NormMetric W] [AddCommGroup W] [IsNormedAddGroup W] [MetricSpace Q] [NormedAddTorsor W Q]
+  [NormPseudoMetric W] [AddCommGroup W] [IsNormedAddGroup W] [PseudoMetricSpace Q] [NormedAddTorsor W Q]
 
 instance (priority := 100) NormedAddTorsor.to_isIsIsometricVAdd : IsIsometricVAdd V P :=
   ⟨fun c => Isometry.of_dist_eq fun x y => by

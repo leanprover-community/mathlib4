@@ -180,7 +180,7 @@ The divisor of a constant function is `0`.
 -/
 @[simp] theorem divisor_ofNat (n : ℕ) :
     divisor (ofNat(n) : 𝕜 → 𝕜) U = 0 := by
-  convert divisor_const (n : 𝕜)
+  convert! divisor_const (n : 𝕜)
   simp [Semiring.toGrindSemiring_ofNat 𝕜 n]
 
 /-!
@@ -318,7 +318,7 @@ theorem divisor_fun_prod {ι : Type*} {s : Finset ι} {f : ι → 𝕜 → 𝕜}
     (h₁f : ∀ i ∈ s, MeromorphicOn (f i) U)
     (h₂f : ∀ i ∈ s, ∀ z ∈ U, meromorphicOrderAt (f i) z ≠ ⊤) :
     divisor (fun x ↦ ∏ i ∈ s, f i x) U = ∑ i ∈ s, divisor (f i) U := by
-  convert divisor_prod h₁f h₂f
+  convert! divisor_prod h₁f h₂f
   exact (Finset.prod_apply _ s f).symm
 
 /-- The divisor of the inverse is the negative of the divisor. -/

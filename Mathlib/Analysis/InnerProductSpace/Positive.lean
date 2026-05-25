@@ -214,7 +214,7 @@ theorem isPositive_linearIsometryEquiv_conj_iff {T : E →ₗ[𝕜] E} (f : E �
     {A : E →ₗ[𝕜] E} (b : OrthonormalBasis ι 𝕜 E) :
     (A.toMatrix b.toBasis b.toBasis).PosSemidef ↔ A.IsPositive := by
   rw [← Matrix.isPositive_toEuclideanLin_iff]
-  convert isPositive_linearIsometryEquiv_conj_iff b.repr
+  convert! isPositive_linearIsometryEquiv_conj_iff b.repr
   ext
   simp [LinearMap.toMatrix]
 
@@ -223,9 +223,6 @@ theorem isPositive_linearIsometryEquiv_conj_iff {T : E →ₗ[𝕜] E} (f : E �
 theorem IsSymmetricProjection.isPositive {p : E →ₗ[𝕜] E} (hp : p.IsSymmetricProjection) :
     p.IsPositive :=
   hp.isIdempotentElem.isPositive_iff_isSymmetric.mpr hp.isSymmetric
-
-@[deprecated (since := "2025-10-17")] alias IsPositive.of_isSymmetricProjection :=
-  IsSymmetricProjection.isPositive
 
 theorem IsSymmetricProjection.le_iff_range_le_range {p q : E →ₗ[𝕜] E}
     (hp : p.IsSymmetricProjection) (hq : q.IsSymmetricProjection) : p ≤ q ↔ range p ≤ range q := by
@@ -368,7 +365,7 @@ theorem isPositive_self_comp_adjoint [CompleteSpace E] [CompleteSpace F] (S : E 
 @[aesop safe apply]
 theorem IsPositive.adjoint_conj [CompleteSpace E] [CompleteSpace F] {T : E →L[𝕜] E}
     (hT : T.IsPositive) (S : F →L[𝕜] E) : (S† ∘L T ∘L S).IsPositive := by
-  convert hT.conj_adjoint (S†)
+  convert! hT.conj_adjoint (S†)
   rw [adjoint_adjoint]
 
 theorem isPositive_adjoint_comp_self [CompleteSpace E] [CompleteSpace F] (S : E →L[𝕜] F) :
@@ -393,7 +390,7 @@ theorem _root_.LinearMap.isPositive_self_comp_adjoint (S : E →ₗ[𝕜] F) :
 @[aesop safe apply]
 theorem _root_.LinearMap.IsPositive.adjoint_conj {T : E →ₗ[𝕜] E}
     (hT : T.IsPositive) (S : F →ₗ[𝕜] E) : (S.adjoint ∘ₗ T ∘ₗ S).IsPositive := by
-  convert hT.conj_adjoint S.adjoint
+  convert! hT.conj_adjoint S.adjoint
   rw [LinearMap.adjoint_adjoint]
 
 theorem _root_.LinearMap.isPositive_adjoint_comp_self (S : E →ₗ[𝕜] F) :
@@ -515,7 +512,7 @@ theorem Submodule.starProjection_le_starProjection_iff {U V : Submodule 𝕜 E}
     U.starProjection ≤ V.starProjection ↔ U ≤ V := by
   simp_rw [← coe_le_coe_iff, isSymmetricProjection_starProjection _
       |>.le_iff_range_le_range <| isSymmetricProjection_starProjection _,
-    toLinearMap_starProjection_eq_isComplProjection, IsCompl.projection_range]
+    toLinearMap_starProjection_eq_isComplProjection, range_projection]
 
 /-- `U.starProjection = V.starProjection` iff `U = V`. -/
 theorem Submodule.starProjection_inj {U V : Submodule 𝕜 E}

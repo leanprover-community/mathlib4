@@ -486,18 +486,16 @@ lemma interior_subset_closedInterior {n : ℕ} (s : Simplex k P n) :
 
 lemma point_notMem_interior {n : ℕ} (s : Simplex k P n) (i : Fin (n + 1)) :
     s.points i ∉ s.interior := by
-  rw [← Finset.univ.affineCombination_affineCombinationSingleWeights k s.points
-    (Finset.mem_univ i), affineCombination_mem_interior_iff
-      (sum_affineCombinationSingleWeights _ _ (Finset.mem_univ i)), not_forall]
+  rw [← Finset.univ.affineCombination_piSingle k s.points (Finset.mem_univ i),
+    affineCombination_mem_interior_iff (Fintype.sum_pi_single' _ _), not_forall]
   exact ⟨i, by simp⟩
 
 lemma point_mem_closedInterior [ZeroLEOneClass k] {n : ℕ} (s : Simplex k P n) (i : Fin (n + 1)) :
     s.points i ∈ s.closedInterior := by
-  rw [← Finset.univ.affineCombination_affineCombinationSingleWeights k s.points
-    (Finset.mem_univ i), affineCombination_mem_closedInterior_iff
-      (sum_affineCombinationSingleWeights _ _ (Finset.mem_univ i))]
+  rw [← Finset.univ.affineCombination_piSingle k s.points (Finset.mem_univ i),
+    affineCombination_mem_closedInterior_iff (Fintype.sum_pi_single' _ _)]
   intro j
-  by_cases hj : j = i <;> simp [hj]
+  obtain rfl | hj := eq_or_ne j i <;> simp_all
 
 lemma interior_ssubset_closedInterior [ZeroLEOneClass k] {n : ℕ} (s : Simplex k P n) :
     s.interior ⊂ s.closedInterior := by
@@ -553,8 +551,8 @@ lemma affineCombination_mem_setInterior_face_iff_mem (I : Set k) {n : ℕ} (s : 
         (fun i hi ↦ hi0 _ (by simpa using hi)) (fun _ ↦ rfl), hw]
     have hw'01 (i) : w' i ∈ I := hii (fs.orderEmbOfFin h i) (by simp)
     rw [← (s.face h).affineCombination_mem_setInterior_iff hw'] at hw'01
-    convert hw'01
-    convert Finset.univ.affineCombination_map (fs.orderEmbOfFin h).toEmbedding w s.points using 1
+    convert! hw'01
+    convert! Finset.univ.affineCombination_map (fs.orderEmbOfFin h).toEmbedding w s.points using 1
     simp only [map_orderEmbOfFin_univ, Finset.affineCombination_indicator_subset _ _ fs.subset_univ]
     congr
     grind [Set.indicator_eq_self, support_subset_iff]

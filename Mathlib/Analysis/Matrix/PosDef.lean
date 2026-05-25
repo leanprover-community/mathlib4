@@ -152,7 +152,4 @@ noncomputable def toInnerProductSpace (M : Matrix n n 𝕜) (hM : M.PosSemidef) 
     InnerProductSpace 𝕜 (n → 𝕜) :=
   InnerProductSpace.ofCore _
 
-@[deprecated (since := "2025-10-26")] alias NormedAddCommGroup.ofMatrix := toNormedAddCommGroup
-@[deprecated (since := "2025-10-26")] alias InnerProductSpace.ofMatrix := toInnerProductSpace
-
 end Matrix

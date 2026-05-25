@@ -31,7 +31,7 @@ abbrev GroupSeminormClass.toNormPseudoMetric [Group α] [GroupSeminormClass F α
   dist x y := f (x⁻¹ * y)
   dist_self _ := by simp
   dist_comm x y := by simp [← map_inv_eq_map f (x⁻¹ * y)]
-  dist_triangle x y z := by convert map_mul_le_add f (x⁻¹ * y) (y⁻¹ * z) using 2; group
+  dist_triangle x y z := by convert! map_mul_le_add f (x⁻¹ * y) (y⁻¹ * z) using 2; group
 
 /-- Constructs a `IsNormedGroup` structure from a `GroupSeminormClass` on a `Group`. -/
 -- See note [reducible non-instances]

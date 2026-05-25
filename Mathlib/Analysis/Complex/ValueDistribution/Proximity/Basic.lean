@@ -101,7 +101,7 @@ agree, except perhaps at radius 0.
 lemma proximity_congr_codiscrete {f g : ℂ → E} {a : WithTop E} {r : ℝ}
     (hfg : f =ᶠ[codiscrete ℂ] g) (hr : r ≠ 0) :
     proximity f a r = proximity g a r :=
-  proximity_congr_codiscreteWithin (hfg.filter_mono (codiscreteWithin.mono (by tauto))) hr
+  proximity_congr_codiscreteWithin (hfg.filter_mono (codiscreteWithin_mono (by tauto))) hr
 
 /--
 For finite values `a₀`, the proximity function `proximity f a₀` equals the proximity function for
