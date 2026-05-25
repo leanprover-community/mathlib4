@@ -240,7 +240,7 @@ open Coalgebra MulOpposite
 
 /-- Upgrade a bialgebra to a Hopf algebra by specifying the antipode as an algebra map
 `A →ₐ[R] Aᵐᵒᵖ` with appropriate conditions. -/
-noncomputable abbrev ofAlgHom (antipode : A →ₐ[R] Aᵐᵒᵖ)
+noncomputable abbrev ofAlgHomOp (antipode : A →ₐ[R] Aᵐᵒᵖ)
     (mul_antipode_rTensor_comul :
       LinearMap.mul' R A ∘ₗ ((opLinearEquiv R).symm.toLinearMap ∘ₗ
         antipode.toLinearMap).rTensor A ∘ₗ comul = Algebra.linearMap R A ∘ₗ counit)
