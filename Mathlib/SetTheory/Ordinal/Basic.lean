@@ -165,8 +165,8 @@ theorem type_eq {α β} {r : α → α → Prop} {s : β → β → Prop} [IsWel
     type r = type s ↔ Nonempty (r ≃r s) :=
   Quotient.eq'
 
-theorem _root_.RelIso.ordinalType_congr {α β} {r : α → α → Prop} {s : β → β → Prop} [IsWellOrder α r]
-    [IsWellOrder β s] (h : r ≃r s) : type r = type s :=
+theorem _root_.RelIso.ordinalType_congr {α β} {r : α → α → Prop} {s : β → β → Prop}
+    [IsWellOrder α r] [IsWellOrder β s] (h : r ≃r s) : type r = type s :=
   type_eq.2 ⟨h⟩
 
 @[deprecated (since := "2026-05-25")]
