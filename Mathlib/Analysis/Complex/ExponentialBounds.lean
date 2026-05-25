@@ -91,7 +91,7 @@ theorem log_three_near_10 : |log 3 - 109861228867 / 100000000000| ≤ 1 / 10 ^ 1
     norm_num1 at *
     assumption
   have t : |2 / 3| = (2 : ℝ) / 3 := by norm_num
-  have z := Real.abs_log_sub_add_sum_range_le (x := 2 / 3) (by norm_num) 70
+  have z := abs_log_sub_add_sum_range_le (x := 2 / 3) (by norm_num) 70
   rw [t, show (1 - (2 : ℝ) / 3) = (1 / 3 : ℝ) by norm_num, one_div (3 : ℝ), log_inv,
     ← sub_eq_add_neg, _root_.abs_sub_comm] at z
   apply le_trans (_root_.abs_sub_le _ _ _) (add_le_add z _)
@@ -108,8 +108,8 @@ theorem log_five_near_10 : |log 5 - 160943791243 / 100000000000| ≤ 1 / 10 ^ 10
       (4 / 5) ^ 131 / 5⁻¹ + (1 / 10 ^ 10 - (4 / 5) ^ 131 / 5⁻¹) by
     norm_num1 at *
     assumption
-  have t : |4 / 5| = (4 : ℝ) / 5 := by rw [abs_of_pos]; norm_num
-  have z := Real.abs_log_sub_add_sum_range_le (x := 4 / 5) (by norm_num) 130
+  have t : |4 / 5| = (4 : ℝ) / 5 := by norm_num
+  have z := abs_log_sub_add_sum_range_le (x := 4 / 5) (by norm_num) 130
   rw [t, show (1 - (4 : ℝ) / 5) = (1 / 5 : ℝ) by norm_num, one_div (5 : ℝ), log_inv,
     ← sub_eq_add_neg, _root_.abs_sub_comm] at z
   apply le_trans (_root_.abs_sub_le _ _ _) (add_le_add z _)

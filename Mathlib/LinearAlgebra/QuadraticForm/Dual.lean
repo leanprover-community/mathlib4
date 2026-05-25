@@ -75,10 +75,9 @@ end Ring
 
 end LinearMap
 
-namespace QuadraticForm
-
 open QuadraticMap
 
+namespace QuadraticForm
 section Semiring
 
 variable [CommSemiring R] [AddCommMonoid M] [AddCommMonoid N] [Module R M] [Module R N]
@@ -138,7 +137,7 @@ def toDualProd (Q : QuadraticForm R M) [Invertible (2 : R)] :
     (Q.associated.comp (LinearMap.fst _ _ _) + Q.associated.comp (LinearMap.snd _ _ _))
     (LinearMap.fst _ _ _ - LinearMap.snd _ _ _)
   map_app' x := by
-    dsimp only [associated, associatedHom]
+    dsimp only [QuadraticMap.associated, QuadraticMap.associatedHom]
     dsimp only [LinearMap.smul_apply, LinearMap.coe_mk, AddHom.coe_mk, AddHom.toFun_eq_coe,
       LinearMap.coe_toAddHom, LinearMap.prod_apply, Function.prod_apply, LinearMap.add_apply,
       LinearMap.coe_comp, Function.comp_apply, LinearMap.fst_apply, LinearMap.snd_apply,
