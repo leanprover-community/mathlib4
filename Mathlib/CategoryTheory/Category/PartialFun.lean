@@ -114,19 +114,21 @@ open Classical in
 /-- The functor which maps undefined values to a new point. This makes the maps total and creates
 pointed types. This is the noncomputable part of the equivalence `PartialFunEquivPointed`. It can't
 be computable because `= Option.none` is decidable while the domain of a general `Part` isn't. -/
+@[simps obj map]
 noncomputable def partialFunToPointed : PartialFun ⥤ Pointed where
-  obj X := ⟨Option X, none⟩
-  map f := ⟨Option.elim' none fun a => (f.toFun a).toOption, rfl⟩
-  map_id X := Pointed.Hom.ext <|
-    funext fun o => Option.recOn o rfl fun a => by
-      dsimp [CategoryStruct.id]
-      convert Part.some_toOption a
-  map_comp f g := Pointed.Hom.ext <|
-    funext fun o => Option.recOn o rfl fun a => by
-      dsimp [CategoryStruct.comp]
-      rw [Part.bind_toOption]
-      cases (f.toFun a).toOption <;> rfl
-
+  obj X := ⟨Option X, (none : Option X)⟩
+  map {X Y} (f : X ⟶ Y) :=
+    { toFun := fun (o : Option X) => Option.elim' (none : Option Y) (fun a : X =>
+     ((f : PFun X Y).toFun a).toOption) o
+      map_point := rfl }
+  map_id X := Pointed.Hom.ext <| funext fun (o : Option X) => Option.recOn o rfl fun (a : X) => by
+    dsimp [CategoryStruct.id]
+    convert! Part.some_toOption a
+  map_comp {X Y Z} (f : X ⟶ Y) (g : Y ⟶ Z) := Pointed.Hom.ext <| funext fun (o : Option X) =>
+   Option.recOn o rfl fun (a : X) => by
+    dsimp [CategoryStruct.comp]
+    rw [Option.elim'_eq_elim]
+    convert! Part.bind_toOption (g : PFun Y Z).toFun ((f : PFun X Y).toFun a)
 /-- The equivalence induced by `PartialFunToPointed` and `PointedToPartialFun`. -/
 @[simps! functor inverse]
 noncomputable def partialFunEquivPointed : PartialFun.{u} ≌ Pointed where
@@ -146,7 +148,7 @@ noncomputable def partialFunEquivPointed : PartialFun.{u} ≌ Pointed where
             partialFunToPointed, PFun.lift, PartialFun.of, PFun.comp]
           constructor
           · intro h
-            change _ ∈ (f.toFun a).bind _ at h
+            change _ ∈ ((f : PFun X Y).toFun a).bind _ at h
             obtain ⟨c, hc_mem, hc_eq⟩ := Part.mem_bind_iff.mp h
             have h_eq : b = c :=
               Option.some_inj.mp (Subtype.ext_iff.mp (Part.mem_some_iff.mp hc_eq))
@@ -161,7 +163,7 @@ noncomputable def partialFunEquivPointed : PartialFun.{u} ≌ Pointed where
             rw [Part.bind_some] at h
             change _ ∈ PFun.toSubtype _ _ _ at h
             rw [PFun.mem_toSubtype_iff] at h
-            change _ ∈ (f.toFun a).bind _
+            change _ ∈ ((f : PFun X Y).toFun a).bind _
             exact Part.mem_bind_iff.mpr ⟨b, Part.mem_toOption.mp h.symm,
               Part.mem_some_iff.mpr (Subtype.ext rfl)⟩
   counitIso :=
@@ -182,7 +184,7 @@ noncomputable def partialFunEquivPointed : PartialFun.{u} ≌ Pointed where
     ext (_ | x)
     · rfl
     · classical
-      simp [partialFunToPointed, PartialFun.Iso.mk, PFun.lift]
+      simp [partialFunToPointed_map, PartialFun.Iso.mk, PFun.lift]
       rfl
 
 /-- Forgetting that maps are total and making them total again by adding a point is the same as just
@@ -191,10 +193,14 @@ adding a point. -/
 noncomputable def typeToPartialFunIsoPartialFunToPointed :
     typeToPartialFun ⋙ partialFunToPointed ≅ typeToPointed :=
   NatIso.ofComponents
-    (fun X => Pointed.Iso.mk (Equiv.refl (Option X)) rfl)
+    (fun _ =>
+      { hom := ⟨id, rfl⟩
+        inv := ⟨id, rfl⟩
+        hom_inv_id := rfl
+        inv_hom_id := rfl })
     fun {X Y} f => Pointed.Hom.ext <| funext fun a => by
       cases a with
       | none => rfl
       | some x =>
         dsimp [partialFunToPointed, typeToPartialFun, typeToPointed, PFun.lift]
-        convert Part.some_toOption (f x)
+        convert! Part.some_toOption (f x)

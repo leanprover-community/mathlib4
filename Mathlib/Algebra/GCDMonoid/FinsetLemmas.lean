@@ -9,6 +9,7 @@ public import Mathlib.Algebra.GCDMonoid.Finset
 public import Mathlib.Algebra.GCDMonoid.Nat
 public import Mathlib.Data.Nat.GCD.Basic
 public import Mathlib.RingTheory.Coprime.Lemmas
+public import Mathlib.Data.Nat.Factorization.Basic
 
 /-!
 # `Finset.lcm` lemmas
@@ -35,6 +36,14 @@ theorem lcm_eq_prod {s : Finset ι} {f : ι → ℕ} (h : Set.Pairwise s <| Nat.
     s.lcm f = s.prod f := by
   rw [show Nat.Coprime = IsRelPrime by ext; exact Nat.coprime_iff_isRelPrime] at h
   exact associated_lcm_prod h |>.eq_of_normalized (normalize_eq _) (normalize_eq _)
+
+/-- An analogue of `Nat.factorization_lcm` for `Finset.lcm`. -/
+theorem factorization_lcm {f : ι → ℕ} {s : Finset ι} (hf : ∀ k ∈ s, f k ≠ 0) (p : ℕ) :
+    (s.lcm f).factorization p = s.sup fun a ↦ (f a).factorization p := by
+  classical
+  induction s using Finset.induction with
+  | empty => simp
+  | insert _ _ _ _ => simp_all [lcm_eq_nat_lcm, Nat.factorization_lcm]
 
 namespace Rat
 
