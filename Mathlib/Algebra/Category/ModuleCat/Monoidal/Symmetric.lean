@@ -111,7 +111,9 @@ namespace ModuleCat.MonoidalCategory
 
 variable {R : Type u} [CommRing R]
 
-local instance : equivalenceSemimoduleCat (R := R).functor.Monoidal :=
+/-- The monoidal structure on the equivalence between `ModuleCat` and `SemimoduleCat`. -/
+local instance instMonoidalSemimoduleCatFunctorEquivalenceSemimoduleCat :
+    equivalenceSemimoduleCat (R := R).functor.Monoidal :=
   CategoryTheory.Monoidal.fromInducedMonoidal equivalenceSemimoduleCat.functor
   { μIso _ _ := .refl _
     εIso := .refl _

@@ -78,7 +78,8 @@ def auxHom : (MvPolynomial Unit R) ⧸ (Ideal.span { C r * X () - 1 }) →ₐ[R]
 
 @[simp]
 private lemma auxHom_mk (p : MvPolynomial Unit R) :
-    auxHom S r p = aeval (S₁ := S) (fun _ ↦ invSelf r) p :=
+    auxHom S r (Ideal.Quotient.mk (Ideal.span {C r * X () - 1}) p) =
+      aeval (S₁ := S) (fun _ ↦ invSelf r) p :=
   rfl
 
 set_option backward.privateInPublic true in

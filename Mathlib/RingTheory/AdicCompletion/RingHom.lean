@@ -115,7 +115,8 @@ variable (f : (n : ℕ) → A →ₐ[R] S ⧸ I ^ n)
       (Ideal.Quotient.factorₐ R (Ideal.pow_le_pow_right hle)).comp (f n) = f m)
 
 @[simp]
-lemma mk_liftAlgHom (n : ℕ) (x : A) : liftAlgHom I f hf x = f n x := by
+lemma mk_liftAlgHom (n : ℕ) (x : A) :
+    (Ideal.Quotient.mk (I ^ n)) (liftAlgHom I f hf x) = f n x := by
   simp [liftAlgHom]
 
 @[simp]

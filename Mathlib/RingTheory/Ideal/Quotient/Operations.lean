@@ -720,7 +720,7 @@ lemma quotientEquivAlg_symm (f : A ≃ₐ[R₁] B) (hIJ : J = I.map (f : A →+*
 
 @[simp]
 lemma quotientEquivAlg_mk (f : A ≃ₐ[R₁] B) (hIJ : J = I.map (f : A →+* B)) (x : A) :
-    Ideal.quotientEquivAlg I J f hIJ x = f x :=
+    Ideal.quotientEquivAlg I J f hIJ (Ideal.Quotient.mk I x) = f x :=
   rfl
 
 end

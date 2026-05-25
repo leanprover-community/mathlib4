@@ -271,7 +271,8 @@ def derivationQuotKerSq :
 
 @[simp]
 lemma derivationQuotKerSq_mk (x : P) :
-    derivationQuotKerSq R P S x = 1 ⊗ₜ .D R P x := rfl
+    derivationQuotKerSq R P S (Ideal.Quotient.mk (RingHom.ker (algebraMap P S) ^ 2) x) =
+      1 ⊗ₜ .D R P x := rfl
 
 set_option linter.flexible false in
 variable (R P S) in
@@ -295,18 +296,10 @@ def tensorKaehlerQuotKerSqEquiv :
       ext a
       obtain ⟨a, rfl⟩ := Ideal.Quotient.mk_surjective a
       simp [f₁, f₂, f₃, f₄, f₅]
-      have hd :
-          (derivationQuotKerSq R P S)
-            ((Ideal.Quotient.mk (RingHom.ker (algebraMap P S) ^ 2)) a) =
-              1 ⊗ₜ[P] KaehlerDifferential.D R P a :=
-        derivationQuotKerSq_mk (R := R) (P := P) (S := S) a
-      rw [hd]
-      simp [KaehlerDifferential.map_D]
     right_inv := by
       suffices f₂.comp f₅ = LinearMap.id from LinearMap.congr_fun this
       ext a
-      simp [f₁, f₂, f₃, f₄, f₅]
-      exact derivationQuotKerSq_mk (R := R) (P := P) (S := S) a }
+      simp [f₁, f₂, f₃, f₄, f₅] }
 
 @[simp]
 lemma tensorKaehlerQuotKerSqEquiv_tmul_D (s t) :

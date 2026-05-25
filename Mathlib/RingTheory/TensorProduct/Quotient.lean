@@ -113,12 +113,14 @@ noncomputable def tensorQuotientEquiv (I : Ideal T) :
 
 @[simp]
 lemma tensorQuotientEquiv_apply_tmul (I : Ideal T) (a : A) (t : T) :
-    tensorQuotientEquiv (R := R) S T A I (a ⊗ₜ t) = a ⊗ₜ[R] t :=
+    tensorQuotientEquiv (R := R) S T A I (a ⊗ₜ[R] Ideal.Quotient.mk I t) = a ⊗ₜ[R] t :=
   rfl
 
 @[simp]
 lemma tensorQuotientEquiv_symm_apply_tmul (I : Ideal T) (a : A) (t : T) :
-    (tensorQuotientEquiv (R := R) S T A I).symm (a ⊗ₜ[R] t) = a ⊗ₜ[R] (Ideal.Quotient.mk I t) :=
+    (tensorQuotientEquiv (R := R) S T A I).symm
+        (Ideal.Quotient.mk (I.map (includeRight (A := A) (R := R))) (a ⊗ₜ[R] t)) =
+      a ⊗ₜ[R] (Ideal.Quotient.mk I t) :=
   rfl
 
 /-- The tensor product over `R` of the quotient of an `S`-algebra `A` by an ideal `I` with `T`
@@ -132,12 +134,14 @@ noncomputable def quotientTensorEquiv (I : Ideal A) :
 
 @[simp]
 lemma quotientTensorEquiv_apply_tmul (I : Ideal A) (a : A) (t : T) :
-    quotientTensorEquiv (R := R) S T A I (a ⊗ₜ t) = a ⊗ₜ[R] t :=
+    quotientTensorEquiv (R := R) S T A I (Ideal.Quotient.mk I a ⊗ₜ[R] t) = a ⊗ₜ[R] t :=
   rfl
 
 @[simp]
 lemma quotientTensorEquiv_symm_apply_tmul (I : Ideal A) (a : A) (t : T) :
-    (quotientTensorEquiv (R := R) S T A I).symm (a ⊗ₜ[R] t) = Ideal.Quotient.mk _ a ⊗ₜ[R] t :=
+    (quotientTensorEquiv (R := R) S T A I).symm
+        (Ideal.Quotient.mk (I.map (algebraMap A (A ⊗[R] T))) (a ⊗ₜ[R] t)) =
+      Ideal.Quotient.mk _ a ⊗ₜ[R] t :=
   rfl
 
 end

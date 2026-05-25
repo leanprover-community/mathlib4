@@ -147,7 +147,10 @@ noncomputable def tensorModelOfHasCoeffsHom : R ⊗[R₀] P.ModelOfHasCoeffs R�
 
 @[simp]
 lemma tensorModelOfHasCoeffsHom_tmul (x : R) (y : MvPolynomial ι R₀) :
-    P.tensorModelOfHasCoeffsHom R₀ (x ⊗ₜ y) = algebraMap R S x * MvPolynomial.aeval P.val y :=
+    P.tensorModelOfHasCoeffsHom R₀
+        (x ⊗ₜ[R₀] (Ideal.Quotient.mk
+          (Ideal.span (Set.range (P.relationOfHasCoeffs R₀))) y)) =
+      algebraMap R S x * MvPolynomial.aeval P.val y :=
   rfl
 
 variable (P) in
@@ -187,12 +190,7 @@ lemma tensorModelOfHasCoeffsHom_comp :
           (Ideal.span <| Set.range (P.relationOfHasCoeffs R₀)) (MvPolynomial.X x))) := by
       simp [MvPolynomial.algebraTensorAlgEquiv_symm_X]
     _ = MvPolynomial.aeval P.val (MvPolynomial.X x) := by
-      have hhom :
-          P.tensorModelOfHasCoeffsHom R₀
-            (1 ⊗ₜ[R₀] (Ideal.Quotient.mk
-              (Ideal.span <| Set.range (P.relationOfHasCoeffs R₀)) (MvPolynomial.X x))) =
-            algebraMap R S (1 : R) * MvPolynomial.aeval P.val (MvPolynomial.X x) := rfl
-      simpa using hhom
+      simp
     _ = P.quotientEquiv ((Ideal.Quotient.mk P.ker) (MvPolynomial.X x)) := by
       change MvPolynomial.aeval (R := R) P.val (MvPolynomial.X x) =
         algebraMap P.Ring S (MvPolynomial.X x : P.Ring)
@@ -219,7 +217,10 @@ noncomputable def tensorModelOfHasCoeffsEquiv : R ⊗[R₀] P.ModelOfHasCoeffs R
 
 @[simp]
 lemma tensorModelOfHasCoeffsEquiv_tmul (x : R) (y : MvPolynomial ι R₀) :
-    P.tensorModelOfHasCoeffsEquiv R₀ (x ⊗ₜ y) = algebraMap R S x * MvPolynomial.aeval P.val y :=
+    P.tensorModelOfHasCoeffsEquiv R₀
+        (x ⊗ₜ[R₀] (Ideal.Quotient.mk
+          (Ideal.span (Set.range (P.relationOfHasCoeffs R₀))) y)) =
+      algebraMap R S x * MvPolynomial.aeval P.val y :=
   rfl
 
 @[simp]

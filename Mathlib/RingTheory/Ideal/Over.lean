@@ -308,7 +308,8 @@ def algEquivOfEqMap (h : Q = P.map σ) : (B ⧸ P) ≃ₐ[A ⧸ p] (C ⧸ Q) whe
     exact congrArg (Ideal.Quotient.mk Q) (AlgHomClass.commutes σ x)
 
 @[simp]
-theorem algEquivOfEqMap_apply (h : Q = P.map σ) (x : B) : algEquivOfEqMap p σ h x = σ x :=
+theorem algEquivOfEqMap_apply (h : Q = P.map σ) (x : B) :
+    algEquivOfEqMap p σ h (Ideal.Quotient.mk P x) = σ x :=
   rfl
 
 /-- An `A ⧸ p`-algebra isomorphism between `B ⧸ P` and `C ⧸ Q` induced by an `A`-algebra
@@ -317,7 +318,8 @@ def algEquivOfEqComap (h : P = Q.comap σ) : (B ⧸ P) ≃ₐ[A ⧸ p] (C ⧸ Q)
   algEquivOfEqMap p σ ((congrArg (map σ) h).trans (Q.map_comap_eq_self_of_equiv σ)).symm
 
 @[simp]
-theorem algEquivOfEqComap_apply (h : P = Q.comap σ) (x : B) : algEquivOfEqComap p σ h x = σ x :=
+theorem algEquivOfEqComap_apply (h : P = Q.comap σ) (x : B) :
+    algEquivOfEqComap p σ h (Ideal.Quotient.mk P x) = σ x :=
   rfl
 
 end algEquiv
@@ -333,7 +335,7 @@ def stabilizerHom : MulAction.stabilizer G P →* ((B ⧸ P) ≃ₐ[A ⧸ p] (B 
     exact congrArg (Ideal.Quotient.mk P) (mul_smul g h x)
 
 @[simp] theorem stabilizerHom_apply (g : MulAction.stabilizer G P) (b : B) :
-    stabilizerHom P p G g b = ↑(g • b) :=
+    stabilizerHom P p G g (Ideal.Quotient.mk P b) = ↑(g • b) :=
   rfl
 
 lemma ker_stabilizerHom :
