@@ -57,7 +57,7 @@ instance instFunLike : FunLike C^n⟮I, M; I', M'⟯ M M' where
 
 protected theorem contMDiff (f : C^n⟮I, M; I', M'⟯) : CMDiff n f := f.prop
 
-attribute [to_additive_ignore_args 21] ContMDiffMap ContMDiffMap.instFunLike
+attribute [to_additive_ignore_args 25] ContMDiffMap ContMDiffMap.instFunLike
 
 variable {f g : C^n⟮I, M; I', M'⟯}
 

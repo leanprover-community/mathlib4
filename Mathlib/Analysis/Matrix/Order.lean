@@ -332,7 +332,7 @@ noncomputable def toMatrixNormedAddCommGroup (M : Matrix n n 𝕜) (hM : M.PosDe
 /-- A positive semi-definite matrix `M` induces an inner product on `Matrix n n 𝕜`:
 `⟪x, y⟫ = (y * M * xᴴ).trace`. -/
 @[implicit_reducible]
-def toMatrixInnerProductSpace (M : Matrix n n 𝕜) (hM : M.PosSemidef) :
+noncomputable def toMatrixInnerProductSpace (M : Matrix n n 𝕜) (hM : M.PosSemidef) :
     letI : SeminormedAddCommGroup (Matrix n n 𝕜) := M.toMatrixSeminormedAddCommGroup hM
     InnerProductSpace 𝕜 (Matrix n n 𝕜) :=
   InnerProductSpace.ofCore _

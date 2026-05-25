@@ -261,16 +261,14 @@ matrix. -/
 protected def linftyOpNormPseudoMetric [NormPseudoMetric α] [AddCommGroup α] [IsNormedAddGroup α] :
     NormPseudoMetric (Matrix m n α) :=
   fast_instance%
-  @Pi.instNormPseudoMetric m _ _ (fun _ ↦
-    { toNormPseudoMetric := PiLp.normPseudoMetricToPi 1 (fun _ ↦ α)
-      toIsNormedAddGroup := PiLp.isNormedAddGroupToPi 1 (fun _ ↦ α) })
+  @Pi.instNormPseudoMetric m _ _ (fun _ ↦ PiLp.normPseudoMetricToPi 1 (fun _ ↦ α)) _
+    (fun _ ↦ PiLp.isNormedAddGroupToPi 1 (fun _ ↦ α))
 
 @[local instance]
 protected lemma linftyOpIsNormedAddGroup [NormPseudoMetric α] [AddCommGroup α] [IsNormedAddGroup α] :
     IsNormedAddGroup (Matrix m n α) :=
-  @Pi.instIsNormedAddGroup m _ _ (fun _ ↦
-    { toNormPseudoMetric := PiLp.normPseudoMetricToPi 1 (fun _ ↦ α)
-      toIsNormedAddGroup := PiLp.isNormedAddGroupToPi 1 (fun _ ↦ α) })
+  @Pi.instIsNormedAddGroup m _ _ (fun _ ↦ PiLp.normPseudoMetricToPi 1 (fun _ ↦ α)) _
+    (fun _ ↦ PiLp.isNormedAddGroupToPi 1 (fun _ ↦ α))
 
 /-- Seminormed group instance (using sup norm of L1 norm) for matrices over a seminormed group. Not
 declared as an instance because there are several natural choices for defining the norm of a
@@ -286,9 +284,8 @@ matrix. -/
 protected def linftyOpNormMetric [NormMetric α] [AddCommGroup α] [IsNormedAddGroup α] :
     NormMetric (Matrix m n α) :=
   fast_instance%
-  @Pi.instNormMetric m _ _ (fun _ ↦
-    { toNormMetric := PiLp.normMetricToPi 1 (fun _ ↦ α)
-      toIsNormedAddGroup := PiLp.isNormedAddGroupToPi 1 (fun _ ↦ α) })
+  @Pi.instNormMetric m _ _ (fun _ ↦ PiLp.normMetricToPi 1 (fun _ ↦ α)) _
+    (fun _ ↦ PiLp.isNormedAddGroupToPi 1 (fun _ ↦ α))
 
 /-- Normed group instance (using sup norm of L1 norm) for matrices over a normed ring.  Not
 declared as an instance because there are several natural choices for defining the norm of a
@@ -550,7 +547,8 @@ matrix. -/
 def frobeniusNormPseudoMetric [NormPseudoMetric α] [AddCommGroup α] [IsNormedAddGroup α] :
     NormPseudoMetric (Matrix m n α) :=
   fast_instance%
-  @PiLp.normPseudoMetricToPi 2 _ _ _ _ (fun _ ↦ PiLp.seminormedAddCommGroupToPi 2 _)
+  @PiLp.normPseudoMetricToPi 2 _ _ _ _ (fun _ ↦ PiLp.normPseudoMetricToPi 2 _) _
+    (fun _ ↦ PiLp.isNormedAddGroupToPi 2 _)
 
 /-- Seminormed group instance (using the Frobenius norm) for matrices over a seminormed group. Not
 declared as an instance because there are several natural choices for defining the norm of a
@@ -558,7 +556,8 @@ matrix. -/
 @[local instance]
 lemma frobeniusIsNormedAddGroup [NormPseudoMetric α] [AddCommGroup α] [IsNormedAddGroup α] :
     IsNormedAddGroup (Matrix m n α) :=
-  @PiLp.isNormedAddGroupToPi 2 _ _ _ _ (fun _ ↦ PiLp.seminormedAddCommGroupToPi 2 _)
+  @PiLp.isNormedAddGroupToPi 2 _ _ _ _ (fun _ ↦ PiLp.normPseudoMetricToPi 2 _) _
+    (fun _ ↦ PiLp.isNormedAddGroupToPi 2 _)
 
 /-- Seminormed group instance (using the Frobenius norm) for matrices over a seminormed group. Not
 declared as an instance because there are several natural choices for defining the norm of a
@@ -572,7 +571,8 @@ declared as an instance because there are several natural choices for defining t
 matrix. -/
 @[instance_reducible, local instance]
 def frobeniusNormMetric [NormMetric α] [AddCommGroup α] [IsNormedAddGroup α] : NormMetric (Matrix m n α) :=
-  fast_instance% @PiLp.normMetricToPi 2 _ _ _ _ (fun _ ↦ PiLp.normedAddCommGroupToPi 2 _)
+  fast_instance% @PiLp.normMetricToPi 2 _ _ _ _ (fun _ ↦ PiLp.normMetricToPi 2 _) _
+    (fun _ ↦ PiLp.isNormedAddGroupToPi 2 _)
 
 /-- Normed group instance (using the Frobenius norm) for matrices over a normed group.  Not
 declared as an instance because there are several natural choices for defining the norm of a
