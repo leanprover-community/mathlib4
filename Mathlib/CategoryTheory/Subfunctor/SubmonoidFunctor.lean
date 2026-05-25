@@ -158,7 +158,7 @@ def range (S : SubmonoidFunctors R) (p : R ⟶ R') : SubmonoidFunctors R' where
     cat_disch
 
 variable (R) in
-lemma range_id : range ⊤ (𝟙 R) = ⊤  := by aesop
+lemma range_id : range ⊤ (𝟙 R) = ⊤ := by aesop
 
 end range
 
