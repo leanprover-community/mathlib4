@@ -174,7 +174,7 @@ zeta function by multiplying with `∏ p ∈ N.primeFactors, (1 - (p : ℂ) ^ (-
 lemma LFunctionTrivChar_eq_mul_riemannZeta {s : ℂ} (hs : s ≠ 1) :
     LFunctionTrivChar N s = (∏ p ∈ N.primeFactors, (1 - (p : ℂ) ^ (-s))) * riemannZeta s := by
   rw [← LFunction_modOne_eq (χ := 1), LFunctionTrivChar, ← changeLevel_one N.one_dvd, mul_comm]
-  convert LFunction_changeLevel N.one_dvd 1 (.inr hs) using 4 with p
+  convert! LFunction_changeLevel N.one_dvd 1 (.inr hs) using 4 with p
   rw [MulChar.one_apply <| isUnit_of_subsingleton _, one_mul]
 
 /-- The L function of the trivial Dirichlet character mod `N` has a simple pole with
