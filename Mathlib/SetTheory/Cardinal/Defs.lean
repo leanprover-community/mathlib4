@@ -199,7 +199,7 @@ recommended_spelling "liftEq" for "=ₗ" in [LiftEq, «term_=ₗ_»]
 theorem liftEq_rfl {a : Cardinal.{u}} : a =ₗ a := rfl
 
 theorem liftEq_comm {a : Cardinal.{u}} {b : Cardinal.{v}} : a =ₗ b ↔ b =ₗ a := eq_comm
-@[symm] alias ⟨liftEq.symm, _⟩ := liftEq_comm
+@[symm] alias ⟨LiftEq.symm, _⟩ := liftEq_comm
 
 @[simp]
 theorem liftEq_iff_eq {a b : Cardinal.{u}} : a =ₗ b ↔ a = b := by
@@ -223,6 +223,14 @@ theorem lift_eq_iff {a : Cardinal.{u}} {b : Cardinal.{max u v}} : lift.{v} a = b
 theorem eq_lift_iff {a : Cardinal.{max u v}} {b : Cardinal.{v}} : a = lift.{u} b ↔ a =ₗ b := by
   simp [← liftEq_iff_eq]
 
+theorem LiftEq.lift_eq {a : Cardinal.{u}} {b : Cardinal.{v}} (h : a =ₗ b) :
+    lift.{v} a = lift.{u} b := by
+  simpa
+
+theorem LiftEq.lift_eq' {a : Cardinal.{u}} {b : Cardinal.{v}} (h : a =ₗ b) :
+    lift.{max v w} a = lift.{max u w} b := by
+  simpa
+
 theorem lift_injective : Injective lift.{u, v} :=
   fun _ ↦ by simp
 
@@ -230,7 +238,7 @@ theorem lift_inj {a b : Cardinal.{u}} : lift.{v, u} a = lift.{v, u} b ↔ a = b 
   simp
 
 @[trans]
-theorem liftEq.trans {a : Cardinal.{u}} {b : Cardinal.{v}} {c : Cardinal.{w}}
+theorem LiftEq.trans {a : Cardinal.{u}} {b : Cardinal.{v}} {c : Cardinal.{w}}
     (h₁ : a =ₗ b) (h₂ : b =ₗ c) : a =ₗ c := by
   rw [LiftEq, ← lift_inj.{_, max u v w}]
   trans lift.{max u v w} b <;> simpa
