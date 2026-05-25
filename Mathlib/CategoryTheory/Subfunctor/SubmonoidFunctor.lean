@@ -33,10 +33,10 @@ variable (R) in
 compatible with the restriction maps `R.map i`. -/
 @[ext]
 structure SubmonoidFunctor where
-  /-- A family of submonoids of `R.obj X` for all `X`. -/
-  obj : ∀ U, Submonoid (R.obj U)
+  /-- A submonoid of `R.obj U` for all `U : C`. -/
+  obj (U : C) : Submonoid (R.obj U)
   /-- For any `i : U ⟶ V`, `R.map i` maps the submonoid `obj U` into the submonoid `obj V`. -/
-  map : ∀ {U V : C} (i : U ⟶ V), obj U ≤ (obj V).comap (R.map i).hom
+  map {U V : C} (i : U ⟶ V) : obj U ≤ (obj V).comap (R.map i).hom
 
 namespace SubmonoidFunctor
 
@@ -48,7 +48,7 @@ def toMonoidFunctor (S : SubmonoidFunctor R) : C ⥤ MonCat.{w} where
     MonCat.ofHom <| ((R.map i).hom.submonoidComap (S.obj _)).comp <| Submonoid.inclusion (S.map i)
 
 /-- the subfunctor associated to a functor of submonoids -/
-@[simps obj map]
+@[simps obj]
 def toSubfunctor (S : SubmonoidFunctor R) :
     Subfunctor (Functor.comp R (CategoryTheory.forget MonCat)) where
       obj _ := (S.obj _).carrier
