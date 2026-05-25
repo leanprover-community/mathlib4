@@ -19,7 +19,7 @@ public section
 open Bornology Complex Real Set
 
 variable
-  {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+  {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℝ E]
 
 -- Auxiliary version of Liouville's theorem, for real-valued harmonic functions on the complex
 -- plane.
