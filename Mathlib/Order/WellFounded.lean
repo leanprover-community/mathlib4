@@ -82,19 +82,6 @@ instance (r : β → β → Prop) (f : α → β) [IsWellFounded β r] :
     IsWellFounded α (r.onFun f) where
   wf := IsWellFounded.wf.onFun
 
-theorem subtype_iff {p : α → Prop} :
-    WellFounded (α := Subtype p) (Function.onFun r Subtype.val) ↔
-      WellFounded (fun a b ↦ r a b ∧ p a ∧ p b) := by
-  simp_rw [wellFounded_iff_isEmpty_descending_chain, ← not_iff_not (a := IsEmpty _),
-    not_isEmpty_iff, nonempty_subtype]
-  refine ⟨fun ⟨f, ha⟩ ↦ ⟨(f ·), ?_⟩, fun ⟨f, ha⟩ ↦ ⟨(⟨f ·, ?_⟩), ?_⟩⟩ <;> grind
-
-theorem subtype_iff' {p : α → Prop} {r : Subtype p → Subtype p → Prop} :
-    WellFounded r ↔ WellFounded (fun a b ↦ ∃ ha : p a, ∃ hb : p b, r ⟨a, ha⟩ ⟨b, hb⟩) := by
-  simp_rw [wellFounded_iff_isEmpty_descending_chain, ← not_iff_not (a := IsEmpty _),
-    not_isEmpty_iff, nonempty_subtype]
-  refine ⟨fun ⟨f, ha⟩ ↦ ⟨(f ·), ?_⟩, fun ⟨f, ha⟩ ↦ ⟨(⟨f ·, (ha _).snd.fst⟩), ?_⟩⟩ <;> grind
-
 theorem _root_.Function.Injective.isWellOrder (r : β → β → Prop) {f : α → β} (hf : f.Injective)
     [IsWellOrder β r] : IsWellOrder α (r.onFun f) where
   __ := hf.trichotomous_onFun r
