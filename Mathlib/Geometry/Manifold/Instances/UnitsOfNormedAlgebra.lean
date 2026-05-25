@@ -49,8 +49,8 @@ theorem chartAt_source {a : Rˣ} : (chartAt R a).source = Set.univ :=
   rfl
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [NormedAlgebra 𝕜 R]
-  {H : Type*} [TopologicalSpace H] {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-  {I : ModelWithCorners 𝕜 E H} {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
+  {H : Type*} [TopologicalSpace H] {E : Type*} [AddCommGroup E] [NormedAddCommGroup E]
+  [NormedSpace 𝕜 E] {I : ModelWithCorners 𝕜 E H} {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
 
 instance : IsManifold 𝓘(𝕜, R) n Rˣ :=
   isOpenEmbedding_val.isManifold_singleton
@@ -88,11 +88,13 @@ instance contMDiffSMul [MulAction R M] [ContMDiffSMul 𝓘(𝕜, R) I n R M] :
   MulAction.contMDiffSMul_compHom (f := coeHom R) contMDiff_val
 
 /-- The general linear group `(V →L[𝕜] V)ˣ` of a Banach space `V` is a Lie group. -/
-example {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V] [CompleteSpace V] (n : ℕ∞ω) :
+example {V : Type*} [AddCommGroup V] [NormedAddCommGroup V] [NormedSpace 𝕜 V] [CompleteSpace V]
+    (n : ℕ∞ω) :
     LieGroup 𝓘(𝕜, V →L[𝕜] V) n (V →L[𝕜] V)ˣ := inferInstance
 
 /-- The general linear group `(V →L[𝕜] V)ˣ` of a Banach space `V` acts smoothly on `V`. -/
-example {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V] [CompleteSpace V] (n : ℕ∞ω) :
+example {V : Type*} [AddCommGroup V] [NormedAddCommGroup V] [NormedSpace 𝕜 V] [CompleteSpace V]
+    (n : ℕ∞ω) :
     ContMDiffSMul 𝓘(𝕜, V →L[𝕜] V) 𝓘(𝕜, V) n (V →L[𝕜] V)ˣ V :=
   inferInstance
 
