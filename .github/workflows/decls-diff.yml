@@ -7,19 +7,25 @@
 #
 # Triggers
 #   workflow_run: completion of `ci` (or `ci dev`) — production trigger.
-#   workflow_dispatch (input: run_id): for manual testing from a feature
-#     branch (workflow_run only fires from workflows on the default branch).
+#   workflow_dispatch: manual run, for testing from a feature branch
+#     (workflow_run only fires from workflows on the default branch).
 #
-# Inputs (workflow_dispatch only)
-#   run_id  — Build run ID whose artifact to consume. Defaults to the most
-#             recent successful run on a `ci-dev/*` branch.
+# Inputs (workflow_dispatch only; resolution priority is `pr_number` >
+# `run_id` > most-recent `ci-dev/*` run)
+#   pr_number      — PR to evaluate. Resolves its head SHA and most recent
+#                    successful `ci` Build to consume the artifact from.
+#   run_id         — Build run ID whose artifact to consume.
+#   patch_comment  — Default `false`: just compute and log the diff into
+#                    the step summary. Flip to `true` to also PATCH the
+#                    PR-summary comment (use only when testing the
+#                    comment-update path end-to-end).
 #
 # Outputs
-#   Comment side-effect on the PR associated with the Build's head SHA:
-#     * declarations-diff section replaced with the Lean-aware version
-#       (success path), or
-#     * a `merge master and retry` warning appended (cache-missing path,
-#       when no master Build artifact exists for the resolved merge-base).
+#   * Step summary: rendered Markdown override + counts.
+#   * On workflow_run, or workflow_dispatch with `patch_comment: true`: the
+#     `### PR summary` comment is updated — declarations-diff section
+#     replaced with the Lean-aware version (success path), or a
+#     `merge master and retry` warning appended (cache-missing path).
 
 name: Declarations diff (post-build)
 
@@ -29,13 +35,29 @@ on:
     types: [completed]
   workflow_dispatch:
     inputs:
-      run_id:
+      pr_number:
         description: >-
-          Build run ID whose artifact to consume (defaults to the most
-          recent successful `ci-dev/*` run).
+          PR number to evaluate. When set, resolves the PR's head SHA and
+          finds the most recent successful `ci` Build for it; takes
+          precedence over `run_id`.
         required: false
         type: string
         default: ''
+      run_id:
+        description: >-
+          Build run ID whose artifact to consume (defaults to the most
+          recent successful `ci-dev/*` run when `pr_number` is empty).
+        required: false
+        type: string
+        default: ''
+      patch_comment:
+        description: >-
+          Default `false`: compute and log the diff into the step summary
+          only. Flip to `true` to also PATCH the `### PR summary` comment
+          (only use when testing the comment-update path end-to-end).
+        required: false
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -59,21 +81,40 @@ jobs:
       )
     runs-on: ubuntu-latest
     steps:
-      - name: Resolve Build run + SHA
+      - name: Resolve Build run + SHA + patch policy
         id: meta
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           REPO: ${{ github.repository }}
+          INPUT_PR_NUMBER: ${{ inputs.pr_number }}
           INPUT_RUN_ID: ${{ inputs.run_id }}
+          INPUT_PATCH_COMMENT: ${{ inputs.patch_comment }}
         run: |
           set -euo pipefail
+
           if [ "${{ github.event_name }}" = "workflow_run" ]; then
             RUN_ID="${{ github.event.workflow_run.id }}"
             NEW_SHA="${{ github.event.workflow_run.head_sha }}"
             HEAD_BRANCH="${{ github.event.workflow_run.head_branch }}"
+            SHOULD_PATCH=true
           else
-            # workflow_dispatch — find or accept a run id
-            if [ -n "$INPUT_RUN_ID" ]; then
+            # workflow_dispatch — resolution priority:
+            #   pr_number  >  run_id  >  most-recent ci-dev/* run
+            if [ -n "$INPUT_PR_NUMBER" ]; then
+              NEW_SHA="$(gh pr view "$INPUT_PR_NUMBER" --repo "$REPO" \
+                            --json headRefOid --jq '.headRefOid')"
+              if [ -z "$NEW_SHA" ]; then
+                echo "Could not resolve head SHA for PR #$INPUT_PR_NUMBER" >&2
+                exit 1
+              fi
+              RUN_ID="$(gh api "repos/$REPO/actions/runs?head_sha=$NEW_SHA&status=success&per_page=50" \
+                          --jq '[.workflow_runs[] | select(.name == "ci")] | .[0].id // ""')"
+              if [ -z "$RUN_ID" ]; then
+                echo "No successful 'ci' run found for PR #$INPUT_PR_NUMBER (head $NEW_SHA)." >&2
+                exit 1
+              fi
+              HEAD_BRANCH="(PR #$INPUT_PR_NUMBER)"
+            elif [ -n "$INPUT_RUN_ID" ]; then
               RUN_ID="$INPUT_RUN_ID"
             else
               RUN_ID="$(gh api "repos/$REPO/actions/runs?status=success&per_page=50" \
@@ -85,16 +126,30 @@ jobs:
                 exit 1
               fi
             fi
-            INFO="$(gh api "repos/$REPO/actions/runs/$RUN_ID" --jq '{sha:.head_sha, branch:.head_branch}')"
-            NEW_SHA="$(jq -r '.sha' <<< "$INFO")"
-            HEAD_BRANCH="$(jq -r '.branch' <<< "$INFO")"
+
+            # If we didn't already resolve NEW_SHA via pr_number, fetch from the run.
+            if [ -z "${NEW_SHA:-}" ]; then
+              INFO="$(gh api "repos/$REPO/actions/runs/$RUN_ID" \
+                        --jq '{sha:.head_sha, branch:.head_branch}')"
+              NEW_SHA="$(jq -r '.sha' <<< "$INFO")"
+              HEAD_BRANCH="$(jq -r '.branch' <<< "$INFO")"
+            fi
+
+            # Patch only when the user explicitly opts in.
+            if [ "$INPUT_PATCH_COMMENT" = "true" ]; then
+              SHOULD_PATCH=true
+            else
+              SHOULD_PATCH=false
+            fi
           fi
+
           {
             echo "run-id=$RUN_ID"
             echo "new-sha=$NEW_SHA"
             echo "head-branch=$HEAD_BRANCH"
+            echo "should-patch=$SHOULD_PATCH"
           } >> "$GITHUB_OUTPUT"
-          echo "Resolved: run=$RUN_ID sha=$NEW_SHA branch=$HEAD_BRANCH"
+          echo "Resolved: run=$RUN_ID sha=$NEW_SHA branch=$HEAD_BRANCH should-patch=$SHOULD_PATCH"
 
       - name: Checkout new commit
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -162,7 +217,7 @@ jobs:
           working-directory:      ${{ github.workspace }}/pr-branch
 
       - name: Patch PR summary comment (success path)
-        if: steps.master-run.outputs.found == 'true'
+        if: steps.master-run.outputs.found == 'true' && steps.meta.outputs.should-patch == 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           REPO: ${{ github.repository }}
@@ -175,7 +230,7 @@ jobs:
           python3 ./pr-branch/.github/actions/decls-diff/updateDeclsDiffSection.py
 
       - name: Patch PR summary comment (cache-missing path)
-        if: steps.master-run.outputs.found != 'true'
+        if: steps.master-run.outputs.found != 'true' && steps.meta.outputs.should-patch == 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           REPO: ${{ github.repository }}
