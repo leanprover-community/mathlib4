@@ -28,9 +28,8 @@ the argmin in a measurable way.
 * `IsBayesEstimator`: an estimator is a Bayes estimator if it attains the Bayes risk for the prior.
 * `IsArgminEstimator`: a measurable function `f : 𝓧 → 𝓨` is an argmin estimator
   if for `(P ∘ₘ π)`-almost every `x` the value `f x` belongs to `argmin_y P†π(x)[θ ↦ ℓ θ y]`.
-* `HasArgminEstimator`: class that states that estimation problem admits an argmin Bayes
-  estimator with respect to the prior. That is, we can choose the argmin of the posterior expected
-  loss in a measurable way.
+* `HasArgminEstimator`: class that states that estimation problem admits an argmin estimator.
+  That is, we can choose the argmin of the posterior expected loss in a measurable way.
 
 ## Main statements
 
@@ -60,10 +59,10 @@ section Posterior
 variable [StandardBorelSpace Θ] [Nonempty Θ]
 
 /-- The Bayesian risk of an estimator `κ` with respect to a prior `π` can be expressed as
-an integral in the following way: `R_π(κ) = ((P†π × κ) ∘ P ∘ π)[(θ, z) ↦ ℓ(y(θ), z)]`. -/
+an integral in the following way: `R_π(κ) = ((P†π × κ) ∘ P ∘ π)[(θ, y) ↦ ℓ θ y]`. -/
 lemma avgRisk_eq_lintegral_posterior_prod
-    (hl : Measurable (Function.uncurry ℓ)) (P : Kernel Θ 𝓧) [IsFiniteKernel P] (κ : Kernel 𝓧 𝓨)
-    (π : Measure Θ) [IsFiniteMeasure π] [IsSFiniteKernel κ] :
+    (hl : Measurable (Function.uncurry ℓ)) (P : Kernel Θ 𝓧) [IsFiniteKernel P]
+    (κ : Kernel 𝓧 𝓨) [IsSFiniteKernel κ] (π : Measure Θ) [IsFiniteMeasure π] :
     avgRisk ℓ P κ π = ∫⁻ θy, ℓ θy.1 θy.2 ∂(((P†π) ×ₖ κ) ∘ₘ (P ∘ₘ π)) := by
   simp only [avgRisk]
   rw [← Measure.lintegral_compProd (f := fun θy ↦ ℓ θy.1 θy.2) (by fun_prop)]
@@ -74,17 +73,16 @@ lemma avgRisk_eq_lintegral_posterior_prod
       rw [Measure.comp_assoc, Kernel.parallelComp_comp_prod, Kernel.id_comp, Kernel.comp_id]
 
 lemma avgRisk_eq_lintegral_lintegral_lintegral
-    (hl : Measurable (Function.uncurry ℓ)) (P : Kernel Θ 𝓧) [IsFiniteKernel P] (κ : Kernel 𝓧 𝓨)
-    (π : Measure Θ) [IsFiniteMeasure π] [IsSFiniteKernel κ] :
+    (hl : Measurable (Function.uncurry ℓ)) (P : Kernel Θ 𝓧) [IsFiniteKernel P]
+    (κ : Kernel 𝓧 𝓨) [IsSFiniteKernel κ] (π : Measure Θ) [IsFiniteMeasure π] :
     avgRisk ℓ P κ π = ∫⁻ x, ∫⁻ y, ∫⁻ θ, ℓ θ y ∂(P†π) x ∂κ x ∂(P ∘ₘ π) := by
-  rw [avgRisk_eq_lintegral_posterior_prod hl,
-    Measure.lintegral_bind ((P†π) ×ₖ κ).aemeasurable (by fun_prop)]
+  rw [avgRisk_eq_lintegral_posterior_prod hl, Measure.lintegral_bind (by fun_prop) (by fun_prop)]
   congr with x
   rw [Kernel.prod_apply, lintegral_prod_symm' _ (by fun_prop)]
 
 lemma lintegral_iInf_posterior_le_avgRisk
-    (hl : Measurable (Function.uncurry ℓ)) (P : Kernel Θ 𝓧) [IsFiniteKernel P] (κ : Kernel 𝓧 𝓨)
-    (π : Measure Θ) [IsFiniteMeasure π] [IsMarkovKernel κ] :
+    (hl : Measurable (Function.uncurry ℓ)) (P : Kernel Θ 𝓧) [IsFiniteKernel P]
+    (κ : Kernel 𝓧 𝓨) [IsMarkovKernel κ] (π : Measure Θ) [IsFiniteMeasure π] :
     ∫⁻ x, ⨅ y : 𝓨, ∫⁻ θ, ℓ θ y ∂((P†π) x) ∂(P ∘ₘ π) ≤ avgRisk ℓ P κ π := by
   rw [avgRisk_eq_lintegral_lintegral_lintegral hl]
   gcongr with x
@@ -126,18 +124,15 @@ lemma IsArgminEstimator.avgRisk_eq_lintegral_iInf (hf : IsArgminEstimator ℓ P 
   rw [avgRisk_eq_lintegral_lintegral_lintegral hl]
   refine lintegral_congr_ae ?_
   filter_upwards [hf.property] with x hx
-  rwa [Kernel.deterministic_apply,
-    lintegral_dirac' _ (Measurable.lintegral_prod_left (by fun_prop))]
+  rwa [Kernel.deterministic_apply, lintegral_dirac' _ (by fun_prop)]
 
 /-- An argmin estimator is a Bayes estimator: that is, it minimizes the Bayesian risk. -/
 lemma IsArgminEstimator.isBayesEstimator (hf : IsArgminEstimator ℓ P π f)
     (hl : Measurable (Function.uncurry ℓ)) :
     IsBayesEstimator ℓ P hf.kernel π := by
-  simp_rw [IsBayesEstimator]
-  apply le_antisymm
-  · rw [hf.avgRisk_eq_lintegral_iInf hl]
-    exact lintegral_iInf_posterior_le_bayesRisk hl _ _
-  · exact bayesRisk_le_avgRisk _ _ _ _
+  refine le_antisymm ?_ (bayesRisk_le_avgRisk _ _ _ _)
+  rw [hf.avgRisk_eq_lintegral_iInf hl]
+  exact lintegral_iInf_posterior_le_bayesRisk hl _ _
 
 -- TODO: delete this and replace it in theorems with hypotheses on `𝓧` and `𝓨`
 -- once we have measurable selection theorems?
@@ -161,7 +156,7 @@ lemma isArgminEstimator_argminEstimator [h : HasArgminEstimator ℓ P π] :
     IsArgminEstimator ℓ P π (argminEstimator ℓ P π) :=
   h.exists_isArgminEstimator.choose_spec
 
-/-- If the estimation problem admits a generalized Bayes estimator, then the Bayesian risk
+/-- If the estimation problem admits an argmin estimator, then the Bayesian risk
 attains the risk lower bound `∫⁻ x, ⨅ y, ∫⁻ θ, ℓ θ y ∂((P†π) x) ∂(P ∘ₘ π)`. -/
 lemma bayesRisk_eq_of_hasArgminEstimator
     (hl : Measurable (Function.uncurry ℓ)) [HasArgminEstimator ℓ P π] :
@@ -169,8 +164,7 @@ lemma bayesRisk_eq_of_hasArgminEstimator
   rw [← isArgminEstimator_argminEstimator.isBayesEstimator hl,
     isArgminEstimator_argminEstimator.avgRisk_eq_lintegral_iInf hl]
 
--- /-- If the set of labels `𝓨` is finite, the estimation problem admits a
--- generalized Bayes estimator. -/
+-- /-- If the set of labels `𝓨` is finite, the estimation problem admits an argmin estimator. -/
 -- lemma hasArgminEstimator_of_finite [Nonempty 𝓨] [Finite 𝓨] [MeasurableSingletonClass 𝓨]
 --     (hl : Measurable (Function.uncurry ℓ)) :
 --     HasArgminEstimator ℓ P π where
