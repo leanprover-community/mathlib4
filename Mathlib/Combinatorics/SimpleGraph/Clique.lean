@@ -136,7 +136,7 @@ theorem isClique_map_iff {f : α ↪ β} {t : Set β} :
   simp [or_iff_right hs.not_subsingleton, Set.image_eq_image f.injective]
 
 theorem isClique_induce_iff {s : Set α} {t : Set s} :
-    (G.induce s).IsClique t ↔ G.IsClique t := by
+    (G.induce s).IsClique t ↔ G.IsClique (Subtype.val '' t) := by
   simp [Set.Pairwise]
 
 variable {f : α ↪ β} {t : Finset β}
