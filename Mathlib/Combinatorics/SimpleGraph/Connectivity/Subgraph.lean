@@ -502,14 +502,14 @@ lemma exists_mem_support_mem_erase_mem_support_takeUntil_eq_empty (s : Finset V)
   · use x, hxs, hx, h.le
   have : (p.takeUntil x hx).length + #(s.erase x) < n := by
     rw [← card_erase_add_one hxs] at hp
-    have := p.length_takeUntil_le hx
+    have := p.length_takeUntil_le_length hx
     lia
   obtain ⟨y, hys, hyp, h⟩ := ih _ this (s.erase x) h rfl
-  use y, mem_of_mem_erase hys, support_takeUntil_subset p hx hyp
+  use y, mem_of_mem_erase hys, support_takeUntil_subset_support p hx hyp
   rwa [takeUntil_takeUntil, erase_right_comm, filter_erase, erase_eq_of_notMem] at h
   simp only [mem_filter, mem_erase, ne_eq, not_and, and_imp]
   rintro hxy -
-  exact notMem_support_takeUntil_support_takeUntil_subset (Ne.symm hxy) hx hyp
+  exact notMem_support_takeUntil_support_takeUntil_subset_support (Ne.symm hxy) hx hyp
 
 lemma exists_mem_support_forall_mem_support_imp_eq (s : Finset V)
     (h : {x ∈ s | x ∈ p.support}.Nonempty) :

@@ -607,7 +607,7 @@ lemma endpoint_notMem_support_takeUntil {p : G.Walk u v} (hp : p.IsPath) (hw : w
   rw [Walk.mem_support_iff_exists_getVert] at hv
   obtain ⟨n, ⟨hn, hnl⟩⟩ := hv
   rw [getVert_takeUntil hw hnl] at hn
-  have := p.length_takeUntil_lt hw h.symm
+  have := p.length_takeUntil_lt_length hw h.symm
   have : n = p.length := hp.getVert_injOn (by rw [Set.mem_setOf]; lia) (by simp)
     (hn.symm ▸ p.getVert_length.symm)
   lia
@@ -634,9 +634,9 @@ theorem IsTrail.isPath_iff_isSubwalk_imp_not_isCycle {u v} {p : G.Walk u v} (ht 
     have hp := isPath_iff_isSubwalk_imp_not_isCycle ht.of_cons |>.mpr (h · · <| ·.cons hadj)
     refine cons_isPath_iff .. |>.mpr ⟨hp, fun hup ↦ h u (p.takeUntil u hup |>.cons hadj) ?_ ?_⟩
     · rw [isSubwalk_iff_support_isInfix, support_cons, support_cons]
-      exact (List.prefix_cons_inj u |>.mpr <| p.support_takeUntil_prefix hup).isInfix
+      exact (List.prefix_cons_inj u |>.mpr <| p.support_takeUntil_prefix_support hup).isInfix
     · refine cons_isCycle_iff .. |>.mpr ⟨hp.takeUntil hup, fun he ↦ ?_⟩
-      exact ht.edges_nodup.notMem <| p.edges_takeUntil_subset hup he
+      exact ht.edges_nodup.notMem <| p.edges_takeUntil_subset_edges hup he
 
 end Walk
 
@@ -741,7 +741,7 @@ theorem length_bypass_le (p : G.Walk u v) : p.bypass.length ≤ p.length := by
     simp only [bypass]
     split_ifs
     · trans
-      · apply length_dropUntil_le
+      · apply length_dropUntil_le_length
       rw [length_cons]
       lia
     · rw [length_cons, length_cons]
@@ -759,7 +759,7 @@ lemma bypass_eq_self_of_length_le (p : G.Walk u v) (h : p.length ≤ p.bypass.le
       apply Nat.not_succ_le_self p.length
       calc p.length + 1
         _ ≤ (p.bypass.dropUntil _ _).length := h
-        _ ≤ p.bypass.length := Walk.length_dropUntil_le p.bypass hb
+        _ ≤ p.bypass.length := Walk.length_dropUntil_le_length p.bypass hb
         _ ≤ p.length := Walk.length_bypass_le _
     · simp only [hb, Walk.bypass, Walk.length_cons, not_false_iff, dif_neg,
         Nat.add_le_add_iff_right] at h
@@ -775,7 +775,7 @@ theorem support_bypass_subset (p : G.Walk u v) : p.bypass.support ⊆ p.support 
   | cons _ _ ih =>
     simp! only
     split_ifs
-    · apply List.Subset.trans (support_dropUntil_subset _ _)
+    · apply List.Subset.trans (support_dropUntil_subset_support _ _)
       apply List.subset_cons_of_subset
       assumption
     · rw [support_cons]
@@ -792,7 +792,7 @@ theorem darts_bypass_subset (p : G.Walk u v) : p.bypass.darts ⊆ p.darts := by
   | cons _ _ ih =>
     simp! only
     split_ifs
-    · apply List.Subset.trans (darts_dropUntil_subset _ _)
+    · apply List.Subset.trans (darts_dropUntil_subset_darts _ _)
       apply List.subset_cons_of_subset _ ih
     · rw [darts_cons]
       exact List.cons_subset_cons _ ih
