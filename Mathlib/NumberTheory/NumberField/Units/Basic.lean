@@ -58,7 +58,7 @@ variable {K}
 
 theorem NumberField.isUnit_iff_norm [NumberField K] {x : 𝓞 K} :
     IsUnit x ↔ |(RingOfIntegers.norm ℚ x : ℚ)| = 1 := by
-  convert (RingOfIntegers.isUnit_norm ℚ (F := K)).symm
+  convert! (RingOfIntegers.isUnit_norm ℚ (F := K)).symm
   rw [← abs_one, abs_eq_abs, ← Rat.RingOfIntegers.isUnit_iff]
 
 end IsUnit
@@ -168,9 +168,9 @@ instance : Fintype (torsion K) := by
 instance : IsCyclic (torsion K) := isCyclic_subgroup_units _
 
 /-- The order of the torsion subgroup. -/
-def torsionOrder [NumberField K] : ℕ := Fintype.card (torsion K)
+def torsionOrder : ℕ := Fintype.card (torsion K)
 
-instance [NumberField K] : NeZero (torsionOrder K) :=
+instance : NeZero (torsionOrder K) :=
   inferInstanceAs (NeZero (Fintype.card (torsion K)))
 
 theorem torsionOrder_ne_zero :

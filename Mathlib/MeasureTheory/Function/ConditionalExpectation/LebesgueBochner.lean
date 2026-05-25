@@ -34,7 +34,7 @@ variable {𝓧 : Type*}
 Lebesgue integrals respectively) agree almost everywhere. -/
 lemma toReal_condLExp (m : MeasurableSpace 𝓧) {m𝓧 : MeasurableSpace 𝓧} {μ : Measure 𝓧}
     {f : 𝓧 → ℝ≥0∞} (hf_meas : AEMeasurable f μ) (hf : ∫⁻ x, f x ∂μ ≠ ∞) :
-    (fun x ↦ (μ⁻[f | m] x).toReal) =ᵐ[μ] μ[fun x ↦ (f x).toReal | m] := by
+    (fun x ↦ (μ⁻[f|m] x).toReal) =ᵐ[μ] μ[fun x ↦ (f x).toReal | m] := by
   by_cases hm : m ≤ m𝓧
   swap; · simp [condLExp_of_not_le hm, condExp_of_not_le hm]; rfl
   by_cases hμ : SigmaFinite (μ.trim hm)

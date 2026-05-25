@@ -105,7 +105,7 @@ lemma ShortComplex.ShortExact.mapShiftedHom_singleδ
     [HasDerivedCategory.{t} C] [HasDerivedCategory.{t'} D]
     {S : ShortComplex C} (hS : S.ShortExact) (F : C ⥤ D) [F.Additive]
     [PreservesFiniteLimits F] [PreservesFiniteColimits F] :
-    ShiftedHom.map hS.singleδ F.mapDerivedCategory  =
+    ShiftedHom.map hS.singleδ F.mapDerivedCategory =
       (F.mapDerivedCategorySingleFunctor 0).hom.app S.X₃ ≫
         (hS.map_of_exact F).singleδ ≫ ((F.mapDerivedCategorySingleFunctor 0).inv.app S.X₁)⟦1⟧' := by
   simp [← hS.mapShiftedHom_singleδ'_assoc, ← Functor.map_comp]
@@ -166,7 +166,7 @@ lemma Abelian.Ext.mapExactFunctor_add (f g : Ext.{w} X Y n) :
   aesop
 
 /-- Upgraded of `CategoryTheory.Abelian.Ext.mapExactFunctor` into an additive homomorphism. -/
-noncomputable def Functor.mapExtAddHom [HasExt.{w} C] [HasExt.{w'} D] (X Y : C) (n : ℕ) :
+noncomputable def Functor.mapExtAddHom (X Y : C) (n : ℕ) :
     Ext.{w} X Y n →+ Ext.{w'} (F.obj X) (F.obj Y) n where
   toFun e := e.mapExactFunctor F
   map_zero' := by simp
@@ -186,7 +186,7 @@ lemma Functor.mapExactFunctor_smul (r : R) (f : Ext.{w} X Y n) :
   aesop
 
 /-- Upgrade of `F.mapExtAddHom` assuming `F` is linear. -/
-noncomputable def Functor.mapExtLinearMap [HasExt.{w} C] [HasExt.{w'} D] (X Y : C) (n : ℕ) :
+noncomputable def Functor.mapExtLinearMap (X Y : C) (n : ℕ) :
     Ext.{w} X Y n →ₗ[R] Ext.{w'} (F.obj X) (F.obj Y) n where
   __ := F.mapExtAddHom X Y n
   map_smul' := by simp

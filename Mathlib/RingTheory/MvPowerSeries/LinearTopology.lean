@@ -94,7 +94,7 @@ theorem basis_le_iff {J K : TwoSidedIdeal R} {d e : σ →₀ ℕ} (hK : K ≠ �
     · intro x hx
       have (d' : _) : coeff d' (C (σ := σ) x) ∈ J := by
         rw [coeff_C]; split_ifs <;> [exact hx; exact J.zero_mem]
-      simpa using h (C x) (fun _ _ ↦ this _) _ (zero_le _)
+      simpa using h (C x) (fun _ _ ↦ this _) _ zero_le
     · by_contra h'
       apply hK
       rw [eq_top_iff]
@@ -125,7 +125,7 @@ lemma hasBasis_nhds_zero [IsLinearTopology R R] [IsLinearTopology Rᵐᵒᵖ R] 
   · intro ⟨D, I⟩ ⟨hD, hI⟩
     refine ⟨⟨I, Finset.sup hD.toFinset id⟩, hI, fun f hf d hd ↦ ?_⟩
     rw [SetLike.mem_coe, mem_basis_iff] at hf
-    convert hf _ <| Finset.le_sup (hD.mem_toFinset.mpr hd)
+    convert! hf _ <| Finset.le_sup (hD.mem_toFinset.mpr hd)
   · intro ⟨I, d⟩ hI
     refine ⟨⟨Iic d, I⟩, ⟨finite_Iic d, hI⟩, ?_⟩
     simpa [basis, coeff_apply, Iic, Set.pi] using subset_rfl
