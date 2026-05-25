@@ -22,31 +22,13 @@ a `p`-group (no finiteness hypothesis needed: the family of normal
 
 ## Main results
 
-* `Subgroup.pCore_normal` (instance) : `pCore p G` is normal in `G`.
-* `Subgroup.isPGroup_pCore` : `pCore p G` is itself a `p`-group.
-* `Subgroup.le_pCore` : every normal `p`-subgroup of `G` is contained in
-  `pCore p G`.
-* `Subgroup.normal_le_pCore` : for `N` normal in `G`, `N ≤ pCore p G`
-  iff `N` is a `p`-group.
-* `Subgroup.mem_pCore_iff` : an element lies in `pCore p G` iff it lies in
-  some normal `p`-subgroup.
-* `Subgroup.pCore_eq_bot_iff` : `pCore p G = ⊥` iff `G` has no non-trivial
-  normal `p`-subgroup.
-* `Subgroup.pCore_eq_top_iff` : `pCore p G = ⊤` iff `G` is itself a `p`-group.
-* `Subgroup.pCore_zero` : `pCore 0 G = ⊤`.
-* `Subgroup.pCore_one` : `pCore 1 G = ⊥`.
-* `Subgroup.pCore_eq_iInf_sylow` : for finite `G` and prime `p`, the
-  `p`-core equals the intersection of all Sylow `p`-subgroups.
-* `Subgroup.map_pCore_le_pCore` (surjective `f`) and
-  `Subgroup.comap_pCore_le_pCore` (`p`-group kernel) describe how the
-  `p`-core behaves under group homomorphisms;
-  `Subgroup.comap_pCore_eq_pCore` gives the equality when both
-  conditions hold, and `MulEquiv.map_pCore` is the isomorphism case.
-
-## Terminology
-
-The notation `O_p(G)` for the `p`-core is classical; in code we use the
-descriptive name `pCore`.
+* `Subgroup.pCore_normal` (instance), `Subgroup.isPGroup_pCore`:
+  `pCore p G` is a normal `p`-subgroup, with no finiteness hypothesis.
+* `Subgroup.normal_le_pCore`: for `N` normal in `G`, `N ≤ pCore p G ↔ IsPGroup p N`
+  — the universal property.
+* `Subgroup.pCore_eq_iInf_sylow`: `pCore p G = ⨅ P : Sylow p G, (P : Subgroup G)`.
+* `Subgroup.comap_pCore_eq_pCore`, `MulEquiv.map_pCore`, and surrounding
+  lemmas describe the behaviour of `pCore` under group homomorphisms.
 
 ## TODO
 
