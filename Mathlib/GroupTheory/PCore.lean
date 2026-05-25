@@ -33,6 +33,8 @@ a `p`-group (no finiteness hypothesis needed: the family of normal
 * `Subgroup.pCore_eq_bot_iff` : `pCore p G = ⊥` iff `G` has no non-trivial
   normal `p`-subgroup.
 * `Subgroup.pCore_eq_top_iff` : `pCore p G = ⊤` iff `G` is itself a `p`-group.
+* `Subgroup.pCore_zero` : `pCore 0 G = ⊤`.
+* `Subgroup.pCore_one` : `pCore 1 G = ⊥`.
 * `Subgroup.pCore_eq_iInf_sylow` : for finite `G` and prime `p`, the
   `p`-core equals the intersection of all Sylow `p`-subgroups.
 * `Subgroup.map_pCore_le_pCore` (surjective `f`) and
@@ -135,6 +137,22 @@ theorem pCore_eq_top_iff : pCore p G = ⊤ ↔ IsPGroup p (⊤ : Subgroup G) :=
 /-- If `G` itself is a `p`-group, then `pCore p G = ⊤`. -/
 theorem pCore_eq_top (h : IsPGroup p (⊤ : Subgroup G)) : pCore p G = ⊤ :=
   pCore_eq_top_iff.2 h
+
+/-- The `0`-core is the whole group: every group is a `0`-group, since
+`g ^ 0 ^ 1 = g ^ 0 = 1`. -/
+@[simp]
+theorem pCore_zero : pCore 0 G = ⊤ :=
+  pCore_eq_top fun _ => ⟨1, by simp⟩
+
+/-- The `1`-core is trivial: a `1`-group is necessarily the trivial group,
+since `g ^ 1 ^ k = g ^ 1 = g`. -/
+@[simp]
+theorem pCore_one : pCore 1 G = ⊥ := by
+  rw [eq_bot_iff_forall]
+  intro x hx
+  obtain ⟨k, hk⟩ := isPGroup_pCore ⟨x, hx⟩
+  rw [one_pow, pow_one] at hk
+  exact congrArg Subtype.val hk
 
 /-- The `p`-core is contained in every Sylow `p`-subgroup. The argument
 needs no finiteness or primality: `P ⊔ pCore p G` is a `p`-subgroup
