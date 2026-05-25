@@ -83,7 +83,7 @@ theorem continuous_base : Continuous (base (F := F)) := by
   lift U to Opens X using hUo
   rcases F.exists_le_germ_eq x.germ hxU with ⟨V, hVU, hxV, f, hf⟩
   refine x.eventually_nhds hxV f hf |>.mono ?_
-  simp +contextual [@hVU _]
+  aesop
 
 theorem exists_section_of_tendsto {α : Type*} {l : Filter α} {g : α → F.EtaleSpace}
     {g₀ : F.EtaleSpace} (h : Tendsto g l (𝓝 g₀)) :
