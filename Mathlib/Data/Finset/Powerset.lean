@@ -85,6 +85,11 @@ theorem injOn_image_of_biUnion_injOn {β : Type*} [DecidableEq α] [DecidableEq 
     (S : Set (Finset α)).InjOn (·.image f) :=
   (image_injOn_powerset_of_injOn hf).mono (by aesop (add simp Set.subset_def))
 
+/-- `s.biUnion id ⊆ t` iff every member of `s` is a subset of `t`, i.e. `s ⊆ t.powerset`. -/
+lemma biUnion_id_subset_iff_subset_powerset [DecidableEq α] {s : Finset (Finset α)} :
+    s.biUnion id ⊆ t ↔ s ⊆ t.powerset := by
+  aesop (add simp subset_iff)
+
 theorem image_surjOn_powerset {β : Type*} [DecidableEq β] {f : α → β} :
     Set.SurjOn (α := Finset α) (·.image f) s.powerset (s.image f).powerset :=
   fun t ht => ⟨{ x ∈ s | f x ∈ t}, by grind⟩

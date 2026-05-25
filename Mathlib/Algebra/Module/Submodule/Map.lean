@@ -629,17 +629,19 @@ end Submodule
 
 namespace LinearMap
 
-variable [Semiring R] [AddCommMonoid M] [AddCommMonoid M₁] [Module R M] [Module R M₁]
+variable [Semiring R] [Semiring R₂]
+variable [AddCommMonoid M] [AddCommMonoid M₂] [Module R M] [Module R₂ M₂]
+variable {σ₁₂ : R →+* R₂} {σ₂₁ : R₂ →+* R}
 
 /-- The `LinearMap` from the preimage of a submodule to itself.
 
 This is the linear version of `AddMonoidHom.addSubmonoidComap`
 and `AddMonoidHom.addSubgroupComap`. -/
 @[simps!]
-def submoduleComap (f : M →ₗ[R] M₁) (q : Submodule R M₁) : q.comap f →ₗ[R] q :=
+def submoduleComap (f : M →ₛₗ[σ₁₂] M₂) (q : Submodule R₂ M₂) : q.comap f →ₛₗ[σ₁₂] q :=
   f.restrict fun _ ↦ Submodule.mem_comap.1
 
-theorem submoduleComap_surjective_of_surjective (f : M →ₗ[R] M₁) (q : Submodule R M₁)
+theorem submoduleComap_surjective_of_surjective (f : M →ₛₗ[σ₁₂] M₂) (q : Submodule R₂ M₂)
     (hf : Surjective f) : Surjective (f.submoduleComap q) := fun y ↦ by
   obtain ⟨x, hx⟩ := hf y
   use ⟨x, Submodule.mem_comap.mpr (hx ▸ y.2)⟩
@@ -649,18 +651,25 @@ theorem submoduleComap_surjective_of_surjective (f : M →ₗ[R] M₁) (q : Subm
 /-- A linear map between two modules restricts to a linear map from any submodule p of the
 domain onto the image of that submodule.
 
-This is the linear version of `AddMonoidHom.addSubmonoidMap` and `AddMonoidHom.addSubgroupMap`. -/
-def submoduleMap (f : M →ₗ[R] M₁) (p : Submodule R M) : p →ₗ[R] p.map f :=
+This is the linear version of `AddMonoidHom.addSubmonoidMap` and `AddMonoidHom.addSubgroupMap`.
+
+TODO: Consider making this an `abbrev`, dropping its API, and renaming to something like
+`restrictSubmodule`. -/
+def submoduleMap [RingHomSurjective σ₁₂] (f : M →ₛₗ[σ₁₂] M₂) (p : Submodule R M) :
+    p →ₛₗ[σ₁₂] p.map f :=
   f.restrict fun x hx ↦ Submodule.mem_map.mpr ⟨x, hx, rfl⟩
 
 @[simp]
-theorem submoduleMap_coe_apply (f : M →ₗ[R] M₁) {p : Submodule R M} (x : p) :
-    ↑(f.submoduleMap p x) = f x := rfl
+theorem submoduleMap_coe_apply [RingHomSurjective σ₁₂] (f : M →ₛₗ[σ₁₂] M₂) {p : Submodule R M}
+    (x : p) : ↑(f.submoduleMap p x) = f x := rfl
 
-theorem submoduleMap_surjective (f : M →ₗ[R] M₁) (p : Submodule R M) :
+theorem submoduleMap_surjective [RingHomSurjective σ₁₂] (f : M →ₛₗ[σ₁₂] M₂) (p : Submodule R M) :
     Function.Surjective (f.submoduleMap p) := f.toAddMonoidHom.addSubmonoidMap_surjective _
 
-variable [Semiring R₂] [AddCommMonoid M₂] [Module R₂ M₂] {σ₂₁ : R₂ →+* R}
+@[grind inj]
+theorem submoduleMap_injective [RingHomSurjective σ₁₂] {f : M →ₛₗ[σ₁₂] M₂} (hf : Injective f)
+    (p : Submodule R M) : Injective (f.submoduleMap p) :=
+  f.toAddMonoidHom.addSubmonoidMap_injective hf _
 
 open Submodule
 
