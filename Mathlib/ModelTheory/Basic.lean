@@ -786,7 +786,7 @@ theorem empty.nonempty_embedding_iff :
 theorem empty.nonempty_equiv_iff :
     Nonempty (M ≃[Language.empty] N) ↔ Cardinal.lift.{w'} #M = Cardinal.lift.{w} #N :=
   _root_.trans ⟨Nonempty.map fun f => f.toEquiv, Nonempty.map fun f => { toEquiv := f }⟩
-    Cardinal.lift_mk_eq'.symm
+    Cardinal.mk_liftEq.symm
 
 /-- Makes a `Language.empty.Hom` out of any function.
 This is only needed because there is no instance of `FunLike (M → N) M N`, and thus no instance of

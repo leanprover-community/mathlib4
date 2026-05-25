@@ -64,6 +64,10 @@ lemma mk_preimage_down {s : Set α} : #(ULift.down.{v} ⁻¹' s) = lift.{v} (#s)
 theorem mk_shrink_liftEq (α : Type u) [Small.{v} α] : #(Shrink.{v} α) =ₗ #α :=
   mk_liftEq.2 ⟨(equivShrink α).symm⟩
 
+@[simp]
+theorem liftEq_mk_shrink (α : Type u) [Small.{v} α] : #α =ₗ #(Shrink.{v} α) :=
+  (mk_shrink_liftEq _).symm
+
 @[deprecated mk_shrink_liftEq (since := "2026-05-24")]
 theorem lift_mk_shrink (α : Type u) [Small.{v} α] :
     Cardinal.lift.{max u w} #(Shrink.{v} α) = Cardinal.lift.{max v w} #α := by

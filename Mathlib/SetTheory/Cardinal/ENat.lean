@@ -308,7 +308,7 @@ theorem toENat_lift : toENat (lift.{v} c) = toENat c := by
   | inr ha => simp [toENat_eq_top.2, ha]
 
 theorem toENat_congr {α : Type u} {β : Type v} (e : α ≃ β) : toENat #α = toENat #β := by
-  rw [← toENat_lift, lift_mk_eq.{_, _, v}.mpr ⟨e⟩, toENat_lift]
+  rw [← toENat_lift, mk_liftEq.mpr ⟨e⟩, toENat_lift]
 
 @[simp, norm_cast]
 lemma ofENat_add (m n : ℕ∞) : ofENat (m + n) = m + n := by apply toENat_injOn <;> simp

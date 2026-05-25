@@ -175,7 +175,7 @@ theorem lift_uzero (a : Cardinal.{u}) : lift.{0} a = a :=
   lift_id'.{0, u} a
 
 @[simp]
-theorem lift_lift (a : Cardinal.{u}) : lift.{w} (lift.{v} a) = lift.{max v w} a :=
+theorem lift_lift.{u_1} (a : Cardinal.{u_1}) : lift.{w} (lift.{v} a) = lift.{max v w} a :=
   inductionOn a fun _ => (Equiv.ulift.trans <| Equiv.ulift.trans Equiv.ulift.symm).cardinal_eq
 
 theorem out_lift_equiv (a : Cardinal.{u}) : Nonempty ((lift.{v} a).out ≃ a.out) := by
@@ -194,8 +194,11 @@ def liftEq (a : Cardinal.{u}) (b : Cardinal.{v}) : Prop := lift.{v} a = lift.{u}
 
 @[inherit_doc] infix:50 " =ₗ " => liftEq
 
+@[simp, refl] theorem liftEq_refl (a : Cardinal.{u}) : a =ₗ a := rfl
+theorem liftEq_rfl {a : Cardinal.{u}} : a =ₗ a := rfl
+
 theorem liftEq_comm {a : Cardinal.{u}} {b : Cardinal.{v}} : a =ₗ b ↔ b =ₗ a := eq_comm
-alias ⟨liftEq.symm, _⟩ := liftEq_comm
+@[symm] alias ⟨liftEq.symm, _⟩ := liftEq_comm
 
 @[simp]
 theorem liftEq_iff_eq {a b : Cardinal.{u}} : a =ₗ b ↔ a = b := by
@@ -225,6 +228,7 @@ theorem lift_injective : Injective lift.{u, v} :=
 theorem lift_inj {a b : Cardinal.{u}} : lift.{v, u} a = lift.{v, u} b ↔ a = b := by
   simp
 
+@[trans]
 theorem liftEq.trans {a : Cardinal.{u}} {b : Cardinal.{v}} {c : Cardinal.{w}}
     (h₁ : a =ₗ b) (h₂ : b =ₗ c) : a =ₗ c := by
   rw [liftEq, ← lift_inj.{_, max u v w}]

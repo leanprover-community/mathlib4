@@ -616,11 +616,11 @@ section Function
 
 variable {α β : Type u} {β' : Type v}
 
-theorem mk_equiv_eq_zero_iff_lift_ne : #(α ≃ β') = 0 ↔ lift.{v} #α ≠ lift.{u} #β' := by
-  rw [mk_eq_zero_iff, ← not_nonempty_iff, ← lift_mk_eq']
+theorem mk_equiv_eq_zero_iff_lift_ne : #(α ≃ β') = 0 ↔ ¬ #α =ₗ #β' := by
+  rw [mk_eq_zero_iff, ← not_nonempty_iff, ← mk_liftEq]
 
 theorem mk_equiv_eq_zero_iff_ne : #(α ≃ β) = 0 ↔ #α ≠ #β := by
-  rw [mk_equiv_eq_zero_iff_lift_ne, lift_id, lift_id]
+  rw [mk_equiv_eq_zero_iff_lift_ne, liftEq_iff_eq]
 
 /-- This lemma makes lemmas assuming `Infinite α` applicable to the situation where we have
   `Infinite β` instead. -/
@@ -669,12 +669,11 @@ theorem mk_perm_eq_self_power : #(Equiv.Perm α) = #α ^ #α :=
 theorem mk_perm_eq_two_power : #(Equiv.Perm α) = 2 ^ #α := by
   rw [mk_perm_eq_self_power, power_self_eq (aleph0_le_mk α)]
 
-theorem mk_equiv_eq_arrow_of_lift_eq (leq : lift.{v} #α = lift.{u} #β') :
-    #(α ≃ β') = #(α → β') := by
-  obtain ⟨e⟩ := lift_mk_eq'.mp leq
-  have e₁ := lift_mk_eq'.mpr ⟨.equivCongr (.refl α) e⟩
-  have e₂ := lift_mk_eq'.mpr ⟨.arrowCongr (.refl α) e⟩
-  rw [lift_id'.{u, v}] at e₁ e₂
+theorem mk_equiv_eq_arrow_of_lift_eq (leq : #α =ₗ #β') : #(α ≃ β') = #(α → β') := by
+  obtain ⟨e⟩ := mk_liftEq.mp leq
+  have e₁ := mk_liftEq.mpr ⟨.equivCongr (.refl α) e⟩
+  have e₂ := mk_liftEq.mpr ⟨.arrowCongr (.refl α) e⟩
+  rw [liftEq, lift_id'.{u, v}] at e₁ e₂
   rw [← e₁, ← e₂, lift_inj, mk_perm_eq_self_power, power_def]
 
 theorem mk_equiv_eq_arrow_of_eq (eq : #α = #β) : #(α ≃ β) = #(α → β) :=
@@ -702,7 +701,7 @@ theorem mk_surjective_eq_arrow_of_lift_le (lle : lift.{u} #β' ≤ lift.{v} #α)
     #{f : α → β' | Surjective f} = #(α → β') :=
   (mk_set_le _).antisymm <|
     have ⟨e⟩ : Nonempty (α ≃ α ⊕ β') := by
-      simp_rw [← lift_mk_eq', mk_sum, lift_add, lift_lift]; rw [lift_umax.{u, v}, eq_comm]
+      simp_rw [← mk_liftEq, liftEq, mk_sum, lift_add, lift_lift]; rw [lift_umax.{u, v}, eq_comm]
       exact add_eq_left (aleph0_le_lift.mpr <| aleph0_le_mk α) lle
     ⟨⟨fun f ↦ ⟨fun a ↦ (e a).elim f id, fun b ↦ ⟨e.symm (.inr b), congr_arg _ (e.right_inv _)⟩⟩,
       fun f g h ↦ funext fun a ↦ by
@@ -840,7 +839,7 @@ theorem mk_compl_eq_mk_compl_finite_lift {α : Type u} {β : Type v} [Finite α]
     (h2 : lift.{v, u} #s = lift.{u, v} #t) :
     lift.{v} #(sᶜ : Set α) = lift.{u} #(tᶜ : Set β) := by
   cases nonempty_fintype α
-  rcases lift_mk_eq'.1 h1 with ⟨e⟩; letI : Fintype β := Fintype.ofEquiv α e
+  rcases mk_liftEq.1 h1 with ⟨e⟩; letI : Fintype β := Fintype.ofEquiv α e
   replace h1 : Fintype.card α = Fintype.card β := (Fintype.ofEquiv_card _).symm
   classical
     lift s to Finset α using s.toFinite
@@ -876,8 +875,8 @@ theorem extend_function {α β : Type*} {s : Set α} (f : s ↪ β)
 theorem extend_function_finite {α : Type u} {β : Type v} [Finite α] {s : Set α} (f : s ↪ β)
     (h : Nonempty (α ≃ β)) : ∃ g : α ≃ β, ∀ x : s, g x = f x := by
   apply extend_function.{u, v} f
-  rw [← lift_mk_eq'] at h
-  rw [← lift_mk_eq', mk_compl_eq_mk_compl_finite_lift h]
+  rw [← mk_liftEq] at h
+  rw [← mk_liftEq, liftEq, mk_compl_eq_mk_compl_finite_lift h]
   rw [mk_range_eq_of_injective]; exact f.2
 
 theorem extend_function_of_lt {α β : Type*} {s : Set α} (f : s ↪ β) (hs : #s < #α)
@@ -887,7 +886,7 @@ theorem extend_function_of_lt {α β : Type*} {s : Set α} (f : s ↪ β) (hs : 
   · apply extend_function f
     obtain ⟨g⟩ := id h
     haveI := Infinite.of_injective _ g.injective
-    rw [← lift_mk_eq'] at h ⊢
+    rw [← mk_liftEq] at h ⊢
     rwa [mk_compl_of_infinite s hs, mk_compl_of_infinite]
     rwa [← lift_lt, mk_range_eq_of_injective f.injective, ← h, lift_lt]
 

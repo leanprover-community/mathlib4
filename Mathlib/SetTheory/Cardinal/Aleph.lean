@@ -777,14 +777,24 @@ theorem lift_lt_aleph_one : lift.{v} c < ℵ₁ ↔ c < ℵ₁ := by
 @[deprecated (since := "2025-12-22")] alias lift_lt_aleph1 := lift_lt_aleph_one
 
 @[simp]
-theorem aleph_one_eq_lift : ℵ₁ = lift.{v} c ↔ ℵ₁ = c := by
+theorem aleph_one_liftEq_iff {c : Cardinal.{v}} : (ℵ₁ : Cardinal.{u}) =ₗ c ↔ ℵ₁ = c := by
+  unfold liftEq
   simpa using lift_inj (a := ℵ₁)
+
+@[simp]
+theorem liftEq_aleph_one_iff {c : Cardinal.{v}} : c =ₗ (ℵ₁ : Cardinal.{u}) ↔ c = ℵ₁ := by
+  unfold liftEq
+  simpa using lift_inj (b := ℵ₁)
+
+@[deprecated aleph_one_liftEq_iff (since := "2026-05-24")]
+theorem aleph_one_eq_lift : ℵ₁ = lift.{v} c ↔ ℵ₁ = c := by
+  simp
 
 @[deprecated (since := "2025-12-22")] alias aleph1_eq_lift := aleph_one_eq_lift
 
-@[simp]
+@[deprecated liftEq_aleph_one_iff (since := "2026-05-24")]
 theorem lift_eq_aleph_one : lift.{v} c = ℵ₁ ↔ c = ℵ₁ := by
-  simp [eqComm]
+  simp
 
 @[deprecated (since := "2025-12-22")] alias lift_eq_aleph1 := lift_eq_aleph_one
 
@@ -805,12 +815,22 @@ theorem lift_lt_aleph_natCast : lift.{v} c < ℵ_ n ↔ c < ℵ_ n := by
   simpa using lift_lt (b := ℵ_ n)
 
 @[simp]
-theorem aleph_natCast_eq_lift : ℵ_ n = lift.{v} c ↔ ℵ_ n = c := by
+theorem aleph_natCast_liftEq_iff : (ℵ_ n : Cardinal.{v}) =ₗ c ↔ ℵ_ n = c := by
+  unfold liftEq
   simpa using lift_inj (a := ℵ_ n)
 
 @[simp]
+theorem liftEq_aleph_natCast_iff : c =ₗ (ℵ_ n : Cardinal.{v}) ↔ c = ℵ_ n := by
+  unfold liftEq
+  simpa using lift_inj (b := ℵ_ n)
+
+@[deprecated aleph_natCast_liftEq_iff (since := "2026-05-24")]
+theorem aleph_natCast_eq_lift : ℵ_ n = lift.{v} c ↔ ℵ_ n = c := by
+  simp
+
+@[deprecated liftEq_aleph_natCast_iff (since := "2026-05-24")]
 theorem lift_eq_aleph_natCast : lift.{v} c = ℵ_ n ↔ c = ℵ_ n := by
-  simp [eqComm]
+  simp
 
 @[simp]
 theorem aleph_ofNat_le_lift [n.AtLeastTwo] : ℵ_ ofNat(n) ≤ lift.{v} c ↔ ℵ_ ofNat(n) ≤ c :=
@@ -829,12 +849,22 @@ theorem lift_lt_aleph_ofNat [n.AtLeastTwo] : lift.{v} c < ℵ_ ofNat(n) ↔ c < 
   lift_lt_aleph_natCast
 
 @[simp]
-theorem aleph_ofNat_eq_lift [n.AtLeastTwo] : ℵ_ ofNat(n) = lift.{v} c ↔ ℵ_ ofNat(n) = c :=
-  aleph_natCast_eq_lift
+theorem aleph_ofNat_liftEq_iff [n.AtLeastTwo] :
+    (ℵ_ ofNat(n) : Cardinal.{v}) =ₗ c ↔ ℵ_ ofNat(n) = c :=
+  aleph_natCast_liftEq_iff
 
 @[simp]
-theorem lift_eq_aleph_ofNat [n.AtLeastTwo] : lift.{v} c = ℵ_ ofNat(n) ↔ c = ℵ_ ofNat(n) :=
-  lift_eq_aleph_natCast
+theorem liftEq_aleph_ofNat_iff [n.AtLeastTwo] :
+    c =ₗ (ℵ_ ofNat(n) : Cardinal.{v}) ↔ c = ℵ_ ofNat(n) :=
+  liftEq_aleph_natCast_iff
+
+@[deprecated aleph_ofNat_liftEq_iff (since := "2026-05-24")]
+theorem aleph_ofNat_eq_lift [n.AtLeastTwo] : ℵ_ ofNat(n) = lift.{v} c ↔ ℵ_ ofNat(n) = c := by
+  simp
+
+@[deprecated liftEq_aleph_ofNat_iff (since := "2026-05-24")]
+theorem lift_eq_aleph_ofNat [n.AtLeastTwo] : lift.{v} c = ℵ_ ofNat(n) ↔ c = ℵ_ ofNat(n) := by
+  simp
 
 @[simp]
 theorem beth_natCast_le_lift : ℶ_ n ≤ lift.{v} c ↔ ℶ_ n ≤ c := by
@@ -853,12 +883,22 @@ theorem lift_lt_beth_natCast : lift.{v} c < ℶ_ n ↔ c < ℶ_ n := by
   simpa using lift_lt (b := ℶ_ n)
 
 @[simp]
-theorem beth_natCast_eq_lift : ℶ_ n = lift.{v} c ↔ ℶ_ n = c := by
+theorem beth_natCast_liftEq_iff : (ℶ_ n : Cardinal.{v}) =ₗ c ↔ ℶ_ n = c := by
+  unfold liftEq
   simpa using lift_inj (a := ℶ_ n)
 
 @[simp]
+theorem liftEq_beth_natCast_iff : c =ₗ (ℶ_ n : Cardinal.{v}) ↔ c = ℶ_ n := by
+  unfold liftEq
+  simpa using lift_inj (b := ℶ_ n)
+
+@[deprecated beth_natCast_liftEq_iff (since := "2026-05-24")]
+theorem beth_natCast_eq_lift : ℶ_ n = lift.{v} c ↔ ℶ_ n = c := by
+  simp
+
+@[deprecated liftEq_beth_natCast_iff (since := "2026-05-24")]
 theorem lift_eq_beth_natCast : lift.{v} c = ℶ_ n ↔ c = ℶ_ n := by
-  simp [eqComm]
+  simp
 
 @[simp]
 theorem beth_ofNat_le_lift [n.AtLeastTwo] : ℶ_ ofNat(n) ≤ lift.{v} c ↔ ℶ_ ofNat(n) ≤ c :=
@@ -877,12 +917,22 @@ theorem lift_lt_beth_ofNat [n.AtLeastTwo] : lift.{v} c < ℶ_ ofNat(n) ↔ c < �
   lift_lt_beth_natCast
 
 @[simp]
-theorem beth_ofNat_eq_lift [n.AtLeastTwo] : ℶ_ ofNat(n) = lift.{v} c ↔ ℶ_ ofNat(n) = c :=
-  beth_natCast_eq_lift
+theorem beth_ofNat_liftEq_iff [n.AtLeastTwo] :
+    (ℶ_ ofNat(n) : Cardinal.{v}) =ₗ c ↔ ℶ_ ofNat(n) = c :=
+  beth_natCast_liftEq_iff
 
 @[simp]
-theorem lift_eq_beth_ofNat [n.AtLeastTwo] : lift.{v} c = ℶ_ ofNat(n) ↔ c = ℶ_ ofNat(n) :=
-  lift_eq_beth_natCast
+theorem liftEq_beth_ofNat_iff [n.AtLeastTwo] :
+    c =ₗ (ℶ_ ofNat(n) : Cardinal.{v}) ↔ c = ℶ_ ofNat(n) :=
+  liftEq_beth_natCast_iff
+
+@[deprecated beth_ofNat_liftEq_iff (since := "2026-05-24")]
+theorem beth_ofNat_eq_lift [n.AtLeastTwo] : ℶ_ ofNat(n) = lift.{v} c ↔ ℶ_ ofNat(n) = c := by
+  simp
+
+@[deprecated liftEq_beth_ofNat_iff (since := "2026-05-24")]
+theorem lift_eq_beth_ofNat [n.AtLeastTwo] : lift.{v} c = ℶ_ ofNat(n) ↔ c = ℶ_ ofNat(n) := by
+  simp
 
 end lift
 end Cardinal
