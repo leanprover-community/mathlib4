@@ -63,8 +63,8 @@ section Normed
 namespace MontelSpace
 
 variable {𝕜 E F : Type*}
-variable [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E] [CompleteSpace 𝕜]
-  [hM : MontelSpace 𝕜 E]
+variable [NontriviallyNormedField 𝕜] [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+  [CompleteSpace 𝕜] [hM : MontelSpace 𝕜 E]
 
 theorem finiteDimensional_of_normedSpace : FiniteDimensional 𝕜 E :=
   FiniteDimensional.of_isCompact_closedBall₀ 𝕜 zero_lt_one
