@@ -70,7 +70,7 @@ lemma CompactIccSpace.mk'' [TopologicalSpace α] [PartialOrder α]
 instance [TopologicalSpace α] [Preorder α] [CompactIccSpace α] : CompactIccSpace (αᵒᵈ) where
   isCompact_Icc := by
     intro a b
-    convert isCompact_Icc (α := α) (a := b) (b := a) using 1
+    convert! isCompact_Icc (α := α) (a := b) (b := a) using 1
     exact Icc_toDual (α := α)
 
 /-- A closed interval in a conditionally complete linear order is compact. -/
@@ -194,7 +194,7 @@ theorem atBot_le_cocompact [NoMinOrder α] [ClosedIicTopology α] :
   obtain ⟨t, ht, hts⟩ := mem_cocompact.mp hs
   refine (Set.eq_empty_or_nonempty t).casesOn (fun h_empty ↦ ?_) (fun h_nonempty ↦ ?_)
   · rewrite [compl_univ_iff.mpr h_empty, univ_subset_iff] at hts
-    convert univ_mem
+    convert! univ_mem
   · haveI := h_nonempty.nonempty
     obtain ⟨a, ha⟩ := ht.exists_isLeast h_nonempty
     obtain ⟨b, hb⟩ := exists_lt a
