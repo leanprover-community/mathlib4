@@ -59,9 +59,9 @@ theorem lowerCentralSeries_sup_le_sup_left (H K : Subgroup G) [K.Normal] :
       commutator_le_right _ K (commutator_mem_commutator ha hbcd)
     have had : ⁅a, d⁆ ∈ K := commutator_le_right _ K (commutator_mem_commutator ha hd)
     have hcad : ⁅c, ⁅a, d⁆⁆ ∈ K := commutator_le_right _ K (commutator_mem_commutator hc had)
-    rw [commutatorElement_mul_left]
+    rw [commutatorElement_mul_left_eq_commutator_mul]
     refine mul_mem (mul_mem (mem_sup_right habcd) (mem_sup_right hbcd)) ?_
-    rw [commutatorElement_mul_right]
+    rw [commutatorElement_mul_right_eq_mul_commutator]
     exact mul_mem (mul_mem (mem_sup_left (commutator_mem_commutator ha hc))
       (mem_sup_right hcad)) (mem_sup_right had)
 
@@ -131,11 +131,11 @@ private theorem commutator_diagonalBound_sup_le
     have hyd : ⁅y, d⁆ ∈ diagonalBound H K (n + 1) := mem_diagonalBound_succ_right H K hi
       (commutator_inf_lowerCentralSeries_right H K i.val (n - i.val)
         (commutator_mem_commutator hy hd))
-    rw [commutatorElement_mul_right]
+    rw [commutatorElement_mul_right_eq_mul_commutator]
     exact mul_mem (mul_mem hyc (commutator_le_right H _ (commutator_mem_commutator hc hyd))) hyd
   · simp
   · intro y₁ y₂ hy₁ hy₂
-    rw [commutatorElement_mul_left]
+    rw [commutatorElement_mul_left_eq_commutator_mul]
     refine mul_mem (mul_mem ?_ hy₂) hy₁
     exact commutator_le_right ⊤ _ (commutator_mem_commutator (mem_top y₁) hy₂)
 

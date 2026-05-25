@@ -81,13 +81,13 @@ theorem commutatorElement_mul_right_eq_mul_conj (a b c : G) :
   simp [mul_assoc, commutatorElement_def]
 
 @[to_additive]
-theorem commutatorElement_mul_left (x y z : G) :
-    ⁅x * y, z⁆ = ⁅x, ⁅y, z⁆⁆ * ⁅y, z⁆ * ⁅x, z⁆ := by
+theorem commutatorElement_mul_left_eq_commutator_mul (a b c : G) :
+    ⁅a * b, c⁆ = ⁅a, ⁅b, c⁆⁆ * ⁅b, c⁆ * ⁅a, c⁆ := by
   simp [commutatorElement_def, mul_assoc]
 
 @[to_additive]
-theorem commutatorElement_mul_right (x y z : G) :
-    ⁅x, y * z⁆ = ⁅x, y⁆ * ⁅y, ⁅x, z⁆⁆ * ⁅x, z⁆ := by
+theorem commutatorElement_mul_right_eq_mul_commutator (a b c : G) :
+    ⁅a, b * c⁆ = ⁅a, b⁆ * ⁅b, ⁅a, c⁆⁆ * ⁅a, c⁆ := by
   simp [commutatorElement_def, mul_assoc]
 
 namespace Subgroup
