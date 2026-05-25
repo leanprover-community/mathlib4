@@ -9,35 +9,24 @@ import Batteries.Util.ProofWanted
 /-!
 # Jacobians in algebraic geometry, expressed via `proof_wanted` / `construction_wanted`
 
-A faithful rewrite of Christian Merten's `JacobianChallenge.lean`
+Christian Merten's `JacobianChallenge.lean`
 (https://github.com/leanprover/lean-eval/blob/main/LeanEval/AlgebraicGeometry/JacobianChallenge.lean)
 demonstrating Batteries' `construction_wanted` / `proof_wanted` infrastructure
 (https://github.com/leanprover-community/batteries/pull/1818).
 
-Every dependency between wanted declarations is expressed via the `❰…❱` bracket syntax, so the
-recorded placeholder types carry the full dependency graph. Class-valued wanted refs
-(`instGrpObj`, `smoothOfRelativeDimension_genus`, `instIsProper`,
-`instGeometricallyIrreducible`) become instance-binder parameters at use sites, so Lean's
-typeclass synth resolves `η[❰Jacobian❱ C]` via Π-instance synthesis through the wanted
-`❰instGrpObj❱`.
+Every dependency between "wanted" declarations is expressed via the `❰…❱` bracket syntax, so the
+recorded placeholder types carry the full dependency graph.
 
 By a smooth curve we mean a geometrically irreducible, smooth scheme of relative dimension one
 over a field.
 -/
 
-set_option autoImplicit false
-
 universe u
 
 open CategoryTheory Limits MonoidalCategory CartesianMonoidalCategory MonObj
 
-namespace AlgebraicGeometry
+namespace AlgebraicGeometry.JacobianChallenge
 
-namespace JacobianChallenge
-
--- See the original file for the rationale: `C` is implicit at the variable level so wanted
--- declarations whose statement references the outer `C` elaborate without threading `C`
--- through every delegation.
 variable {k : Type u} [Field k] {C : Over (Spec (.of k))}
   [SmoothOfRelativeDimension 1 C.hom]
   [IsProper C.hom]
@@ -98,6 +87,4 @@ proof_wanted exists_unique_ofCurve_comp (C : Over (Spec (.of k))) [IsProper C.ho
 
 end Jacobian
 
-end JacobianChallenge
-
-end AlgebraicGeometry
+end AlgebraicGeometry.JacobianChallenge
