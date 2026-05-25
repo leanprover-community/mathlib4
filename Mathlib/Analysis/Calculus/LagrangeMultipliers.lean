@@ -36,9 +36,9 @@ open Filter Set
 
 open scoped Topology Filter
 
-variable {E F : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
-  [NormedAddCommGroup F] [NormedSpace ℝ F] [CompleteSpace F] {f : E → F} {φ : E → ℝ} {x₀ : E}
-  {f' : E →L[ℝ] F} {φ' : StrongDual ℝ E}
+variable {E F : Type*} [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
+  [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace ℝ F] [CompleteSpace F] {f : E → F}
+  {φ : E → ℝ} {x₀ : E} {f' : E →L[ℝ] F} {φ' : StrongDual ℝ E}
 
 /-- Lagrange multipliers theorem: if `φ : E → ℝ` has a local extremum on the set `{x | f x = f x₀}`
 at `x₀`, both `f : E → F` and `φ` are strictly differentiable at `x₀`, and the codomain of `f` is
