@@ -180,8 +180,7 @@ public def emojis : Array Char := #[
   .ofNat 0x1F50D,  -- 🔍️
   .ofNat 0x1F389,  -- 🎉️
   '\u23F3',        -- ⏳️
-  .ofNat 0x1F3C1,  -- 🏁️
-  '⚠'              -- ⚠️
+  .ofNat 0x1F3C1   -- 🏁️
 ]
 
 /-- Unicode symbols in mathlib that should always be followed by the text variant selector. -/
