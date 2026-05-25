@@ -349,7 +349,7 @@ theorem ContinuousOn.curveIntegrable_of_contDiffOn {s : Set E} (hω : Continuous
 @[fun_prop]
 theorem Path.segment_contDiffOn (a b : E) :
     ContDiffOn ℝ 1 (Path.segment a b).extend I :=
-  (AffineMap.lineMap_contDiff a b).contDiffOn.congr (Path.eqOn_extend_segment a b)
+  (AffineMap.contDiff_lineMap a b).contDiffOn.congr (Path.eqOn_extend_segment a b)
 
 theorem ContinuousOn.curveIntegrable_segment (hω : ContinuousOn ω [a -[ℝ] b]) :
     CurveIntegrable ω (.segment a b) :=
