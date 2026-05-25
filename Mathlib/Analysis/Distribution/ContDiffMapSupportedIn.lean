@@ -89,10 +89,10 @@ open TopologicalSpace Set Function UniformSpace WithSeminorms
 open scoped BoundedContinuousFunction Topology NNReal ContDiff
 
 variable (𝕜 E F F' : Type*) [NontriviallyNormedField 𝕜]
-  [NormedAddCommGroup E] [NormedSpace ℝ E]
-  [NormedAddCommGroup F] [NormedSpace ℝ F] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
-  [NormedAddCommGroup F'] [NormedSpace ℝ F'] [NormedSpace 𝕜 F'] [SMulCommClass ℝ 𝕜 F']
-  {n n₁ n₂ k : ℕ∞} {K K₁ K₂ : Compacts E}
+  [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℝ E]
+  [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace ℝ F] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
+  [AddCommGroup F'] [NormedAddCommGroup F'] [NormedSpace ℝ F'] [NormedSpace 𝕜 F']
+  [SMulCommClass ℝ 𝕜 F'] {n n₁ n₂ k : ℕ∞} {K K₁ K₂ : Compacts E}
 
 /-- The type of bundled `n`-times continuously differentiable maps which vanish outside of a fixed
 compact set `K`. -/
@@ -116,9 +116,9 @@ open Distributions
 
 /-- `ContDiffMapSupportedInClass B E F n K` states that `B` is a type of bundled `n`-times
 continuously differentiable functions with support in the compact set `K`. -/
-class ContDiffMapSupportedInClass (B : Type*) (E F : outParam <| Type*)
-    [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedSpace ℝ E] [NormedSpace ℝ F]
-    (n : outParam ℕ∞) (K : outParam <| Compacts E)
+class ContDiffMapSupportedInClass (B : Type*) (E F : outParam <| Type*) [AddCommGroup E]
+    [NormedAddCommGroup E] [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace ℝ E]
+    [NormedSpace ℝ F] (n : outParam ℕ∞) (K : outParam <| Compacts E)
     extends FunLike B E F where
   map_contDiff (f : B) : ContDiff ℝ n f
   map_zero_on_compl (f : B) : EqOn f 0 Kᶜ
@@ -127,16 +127,16 @@ open ContDiffMapSupportedInClass
 
 namespace ContDiffMapSupportedInClass
 
-instance (B : Type*) (E F : outParam <| Type*)
-    [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedSpace ℝ E] [NormedSpace ℝ F]
-    (n : outParam ℕ∞) (K : outParam <| Compacts E)
+instance (B : Type*) (E F : outParam <| Type*) [AddCommGroup E]
+    [NormedAddCommGroup E] [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace ℝ E]
+    [NormedSpace ℝ F] (n : outParam ℕ∞) (K : outParam <| Compacts E)
     [ContDiffMapSupportedInClass B E F n K] :
     ContinuousMapClass B E F where
   map_continuous f := (map_contDiff f).continuous
 
-instance (B : Type*) (E F : outParam <| Type*)
-    [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedSpace ℝ E] [NormedSpace ℝ F]
-    (n : outParam ℕ∞) (K : outParam <| Compacts E)
+instance (B : Type*) (E F : outParam <| Type*) [AddCommGroup E]
+    [NormedAddCommGroup E] [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace ℝ E]
+    [NormedSpace ℝ F] (n : outParam ℕ∞) (K : outParam <| Compacts E)
     [ContDiffMapSupportedInClass B E F n K] :
     BoundedContinuousMapClass B E F where
   map_bounded f := by
@@ -871,9 +871,9 @@ section Integral
 open MeasureTheory
 
 variable {𝕜} {m : MeasurableSpace E} [OpensMeasurableSpace E] {F₁ F₂ F₃ : Type*}
-  [NormedAddCommGroup F₁] [NormedSpace 𝕜 F₁] [NormedSpace ℝ F₁]
-  [NormedAddCommGroup F₂] [NormedSpace 𝕜 F₂]
-  [NormedAddCommGroup F₃] [NormedSpace 𝕜 F₃]
+  [AddCommGroup F₁] [NormedAddCommGroup F₁] [NormedSpace 𝕜 F₁] [NormedSpace ℝ F₁]
+  [AddCommGroup F₂] [NormedAddCommGroup F₂] [NormedSpace 𝕜 F₂]
+  [AddCommGroup F₃] [NormedAddCommGroup F₃] [NormedSpace 𝕜 F₃]
 
 @[fun_prop]
 protected theorem stronglyMeasurable (f : 𝓓^{n}_{K}(E, F)) :
