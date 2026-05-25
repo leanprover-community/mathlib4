@@ -10,6 +10,7 @@ public import Mathlib.Data.List.Lex
 public import Mathlib.Data.Char
 public import Mathlib.Algebra.Order.Group.Nat
 import all Init.Data.String.Iterator  -- for unfolding `Iterator.curr`
+import all Init.Data.Ord.String  -- for unfolding `String.compare`
 
 /-!
 # Strings
@@ -163,9 +164,11 @@ instance : LinearOrder String where
   toDecidableEq := inferInstance
   toDecidableLT := String.decidableLT'
   compare_eq_compareOfLessAndEq a b := by
-    simp +instances only [compare, compareOfLessAndEq, instLT, List.instLT, lt_iff_toList_lt]
-    split_ifs <;>
-    simp only [List.lt_iff_lex_lt] at *
+    change String.compare a b = compareOfLessAndEq a b
+    unfold String.compare compareOfLessAndEq
+    have hlt : @LT.lt String instLT a b ↔ @LT.lt String LT' a b :=
+      lt_iff_toList_lt.symm
+    split_ifs <;> simp_all
 
 theorem ofList_eq {l : List Char} {s : String} : ofList l = s ↔ l = s.toList := by
   simp [← toList_inj]
