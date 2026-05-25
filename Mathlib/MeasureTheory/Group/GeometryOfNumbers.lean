@@ -114,7 +114,8 @@ lemma exists_lt_finrank_span_smul_inter (hs : Absorbent ℝ s) (hi : i < finrank
     i < finrank ℤ L := hi
     _ = finrank ℤ (span ℤ (.range (Subtype.val ∘ b))) := by rw [hspan_eq]
     _ = finrank ℝ (span ℝ (.range (Subtype.val ∘ b))) :=
-        (Real.finrank_real_span_range_eq_finrank_int _).symm
+        (Real.finrank_real_span_range_eq_finrank_int _
+          (Set.range_subset_iff.mpr fun i => (b i).prop)).symm
     _ ≤ finrank ℝ (span ℝ <| r • s ∩ L) := by
       refine finrank_mono <| span_mono ?_
       rintro x ⟨j, rfl⟩
@@ -198,7 +199,8 @@ lemma isClosed_lt_finrank_span_smul_inter (hsc : Convex ℝ s) (hs : IsCompact s
         · have : .range (Subtype.val ∘ v₀) = L.subtype '' .range v₀ := by
             rw [range_comp]; rfl
           rw [this, ← Submodule.map_span, Submodule.finrank_map_subtype_eq]
-        · exact (Real.finrank_real_span_range_eq_finrank_int _).symm
+        · exact (Real.finrank_real_span_range_eq_finrank_int _
+            (Set.range_subset_iff.mpr fun j => (v₀ j).prop)).symm
     _ ≤ finrank ℝ (span ℝ <| r₀ • s ∩ L) := by
       refine finrank_mono <| span_mono ?_
       rintro x ⟨j, rfl⟩

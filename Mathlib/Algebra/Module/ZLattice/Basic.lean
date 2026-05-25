@@ -677,11 +677,9 @@ theorem Real.finrank_eq_int_finrank_of_discrete {E : Type*} [NormedAddCommGroup 
 
 omit [DiscreteTopology L] [ProperSpace E] in
 theorem Real.finrank_real_span_range_eq_finrank_int [hL : DiscreteTopology L] [NormedSpace ℝ E]
-    [FiniteDimensional ℝ E] {ι : Type*} {v : ι → L} :
-    finrank ℝ (span ℝ <| .range (Subtype.val ∘ v)) =
-      finrank ℤ (span ℤ <| .range (Subtype.val ∘ v)) := by
-  have hd : DiscreteTopology (span ℤ (.range (Subtype.val ∘ v))) :=
-    hL.of_subset (span_le.mpr <| Set.range_subset_iff.mpr fun j => (v j).prop)
+    [FiniteDimensional ℝ E] {s : Set E} (hs : s ⊆ L) :
+    finrank ℝ (span ℝ s) = finrank ℤ (span ℤ s) := by
+  have hd : DiscreteTopology (span ℤ s) := hL.of_subset (span_le.mpr hs)
   simpa only [Set.finrank] using Real.finrank_eq_int_finrank_of_discrete hd
 
 end NormedLinearOrderedField
