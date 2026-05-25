@@ -73,7 +73,7 @@ instance : AddSubgroupClass (LieRinehartSubalgebra A L) L where
 instance : SMulMemClass (LieRinehartSubalgebra A L) A L where
   smul_mem {s} := SMulMemClass.smul_mem (s := s.toSubmodule)
 
-/-- A Lie-Rinehart subalgebra forms a new Lie ring. -/
+/-- A Lie-Rinehart subalgebra forms a Lie ring. -/
 instance lieRing (L' : LieRinehartSubalgebra A L) : LieRing L' where
   bracket x y := ⟨⁅x.val, y.val⁆, L'.lie_mem' x.property y.property⟩
   lie_add := by
