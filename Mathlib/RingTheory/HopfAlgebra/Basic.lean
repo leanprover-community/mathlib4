@@ -6,6 +6,7 @@ Authors: Ali Ramsey
 module
 
 public import Mathlib.RingTheory.Bialgebra.Basic
+public import Mathlib.RingTheory.Bialgebra.Primitive
 public import Mathlib.RingTheory.Coalgebra.Convolution
 
 /-!
@@ -24,11 +25,11 @@ In this file we define `HopfAlgebra`, and provide instances for:
 
 * `HopfAlgebra.antipode_one` : the antipode of the unit is the unit.
 * `HopfAlgebra.antipode_mul` : the antipode is an antihomomorphism: `S(ab) = S(b)S(a)`.
+* `HopfAlgebra.antipode_unique` : the antipode is uniquely determined by the underlying bialgebra
+  structure.
+* `HopfAlgebra.antipode_of_isPrimitive` : the antipode sends primitive elements to their negation.
 
 ## TODO
-
-* Uniqueness of Hopf algebra structure on a bialgebra (i.e. if the algebra and coalgebra structures
-  agree then the antipodes must also agree).
 
 * If `A` is commutative then `antipode` is an algebra homomorphism.
 
@@ -49,7 +50,7 @@ so we could deduce the facts here from an equivalence `HopfAlgCat R ≌ Hopf (Mo
 
 public section
 
-open Bialgebra
+open Bialgebra Coalgebra WithConv
 
 universe u v w
 
@@ -94,8 +95,6 @@ theorem antipode_one :
     HopfAlgebra.antipode R (1 : A) = 1 := by
   simpa [Algebra.TensorProduct.one_def] using mul_antipode_rTensor_comul_apply (R := R) (1 : A)
 
-open Coalgebra
-
 lemma sum_antipode_mul_eq_algebraMap_counit (repr : Repr R a) :
     ∑ i ∈ repr.index, antipode R (repr.left i) * repr.right i =
       algebraMap R A (counit a) := by
@@ -133,7 +132,6 @@ equals right inverse" trick in the convolution algebra `(A ⊗ A) →ₗ[R] A`.
 -/
 
 open scoped TensorProduct
-open WithConv
 
 /-- The antipode reverses multiplication: `S(ab) = S(b)S(a)`. -/
 theorem antipode_mul (a b : A) :
@@ -212,6 +210,44 @@ theorem antipode_mul (a b : A) :
         simp only [smul_eq_mul, mul_comm (counit y)]
 
 end HopfAlgebra
+
+/-! ### Uniqueness and behavior on primitives -/
+
+/-- If `S₁` and `S₂` are left and right convolution inverses of the identity, then `S₁ = S₂`. -/
+theorem HopfAlgebra.antipode_unique {R : Type u} {A : Type v}
+    [CommSemiring R] [Semiring A] [Bialgebra R A] {S₁ S₂ : A →ₗ[R] A}
+    (h₁ : LinearMap.mul' R A ∘ₗ S₁.rTensor A ∘ₗ comul = Algebra.linearMap R A ∘ₗ counit)
+    (h₂ : LinearMap.mul' R A ∘ₗ S₂.lTensor A ∘ₗ comul = Algebra.linearMap R A ∘ₗ counit) :
+    S₁ = S₂ := by
+  refine toConv_injective <| left_inv_eq_right_inv
+    (a := toConv LinearMap.id) (b := toConv S₁) (c := toConv S₂) ?_ ?_
+  · exact WithConv.ext h₁
+  · exact WithConv.ext h₂
+
+/-- The antipode is the unique left convolution inverse of the identity. -/
+theorem HopfAlgebra.eq_antipode_of_mul_rTensor_comul {R : Type u} {A : Type v}
+    [CommSemiring R] [Semiring A] [HopfAlgebra R A] {S : A →ₗ[R] A}
+    (h : LinearMap.mul' R A ∘ₗ S.rTensor A ∘ₗ comul = Algebra.linearMap R A ∘ₗ counit) :
+    S = HopfAlgebra.antipode R :=
+  HopfAlgebra.antipode_unique h HopfAlgebra.mul_antipode_lTensor_comul
+
+/-- The antipode is the unique right convolution inverse of the identity. -/
+theorem HopfAlgebra.eq_antipode_of_mul_lTensor_comul {R : Type u} {A : Type v}
+    [CommSemiring R] [Semiring A] [HopfAlgebra R A] {S : A →ₗ[R] A}
+    (h : LinearMap.mul' R A ∘ₗ S.lTensor A ∘ₗ comul = Algebra.linearMap R A ∘ₗ counit) :
+    S = HopfAlgebra.antipode R :=
+  (HopfAlgebra.antipode_unique HopfAlgebra.mul_antipode_rTensor_comul h).symm
+
+/-- The antipode of a Hopf algebra sends primitive elements to their negation. -/
+theorem HopfAlgebra.antipode_of_isPrimitive {R : Type u} {A : Type v}
+    [CommSemiring R] [Ring A] [HopfAlgebra R A] {a : A} (ha : IsPrimitiveElem R a) :
+    HopfAlgebra.antipode R a = -a := by
+  have key := HopfAlgebra.mul_antipode_rTensor_comul_apply (R := R) a
+  rw [ha.comul_eq_tmul_one_add_one_tmul, ha.counit_eq_zero,
+    LinearMap.map_add, LinearMap.rTensor_tmul, LinearMap.rTensor_tmul,
+    HopfAlgebra.antipode_one, LinearMap.map_add, LinearMap.mul'_apply,
+    LinearMap.mul'_apply, mul_one, one_mul, RingHom.map_zero] at key
+  exact eq_neg_of_add_eq_zero_left key
 
 namespace CommSemiring
 
