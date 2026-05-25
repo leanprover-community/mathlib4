@@ -98,7 +98,7 @@ private lemma auxHom_auxInv : (auxHom S r).toRingHom.comp (auxInv S r) = RingHom
   ext x
   simp only [AlgHom.toRingHom_eq_coe, auxInv, RingHom.coe_comp, RingHom.coe_coe,
     Function.comp_apply, lift_eq, RingHomCompTriple.comp_eq]
-  erw [auxHom_mk, aeval_C]
+  rw (transparency := .default) [auxHom_mk, aeval_C]
 
 private lemma auxInv_auxHom : (auxInv S r).comp (auxHom (S := S) r).toRingHom = RingHom.id _ := by
   rw [← RingHom.cancel_right (Ideal.Quotient.mk_surjective)]

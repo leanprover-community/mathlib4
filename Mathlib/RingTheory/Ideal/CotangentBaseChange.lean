@@ -43,23 +43,36 @@ if `T` is `R`-flat (`tensorCotangentHom_injective_of_flat`). -/
 def tensorCotangentHom :
     T ⊗[R] I.Cotangent →ₗ[T]
       (I.map <| (Algebra.TensorProduct.includeRight.toRingHom : S →+* T ⊗[R] S)).Cotangent :=
+  let a : S →+* T ⊗[R] S := Algebra.TensorProduct.includeRight.toRingHom
+  letI : IsScalarTower R (T ⊗[R] S) (I.map a).Cotangent :=
+    Submodule.Quotient.isScalarTower
+      (P := ((I.map a) • ⊤ : Submodule (T ⊗[R] S) (I.map a)))
+      (S := R) (T := T ⊗[R] S)
+  letI : LinearMap.CompatibleSMul (I.map a) (I.map a).Cotangent R (T ⊗[R] S) :=
+    LinearMap.IsScalarTower.compatibleSMul
   LinearMap.liftBaseChange T <|
     Cotangent.lift
-      ((map (algebraMap S (T ⊗[R] S)) I).toCotangent.restrictScalars R ∘ₗ
+      ((I.map a).toCotangent.restrictScalars R ∘ₗ
         (Algebra.idealMap _ I).restrictScalars R) <| fun x y ↦ by
-    simp only [AlgHom.toRingHom_eq_coe, LinearMap.coe_comp, LinearMap.coe_restrictScalars,
-      Function.comp_apply, Algebra.idealMap_mul]
-    simp only [RingHom.algebraMap_toAlgebra, AlgHom.toRingHom_eq_coe, LinearMap.coe_restrictScalars,
-      toCotangent_eq_zero, sq, MulMemClass.coe_mul]
-    exact mul_mem_mul ((Algebra.idealMap (T ⊗[R] S) I) x).property
-      ((Algebra.idealMap (T ⊗[R] S) I) y).property
+    simp only [AlgHom.toRingHom_eq_coe, LinearMap.coe_comp, Function.comp_apply]
+    exact ((I.map a).toCotangent_eq_zero _).mpr <| by
+      have h :
+          ((((Algebra.idealMap (T ⊗[R] S) I).restrictScalars R) (x * y) :
+              I.map a) : T ⊗[R] S) =
+            ((Algebra.idealMap (T ⊗[R] S) I) x : T ⊗[R] S) *
+              ((Algebra.idealMap (T ⊗[R] S) I) y : T ⊗[R] S) := by
+        exact congrArg Subtype.val (Algebra.idealMap_mul (T ⊗[R] S) I x y)
+      exact h.symm ▸ (by
+        simpa [sq] using mul_mem_mul ((Algebra.idealMap (T ⊗[R] S) I) x).property
+          ((Algebra.idealMap (T ⊗[R] S) I) y).property)
 
 -- TODO: make this @[simp] when `Ideal.map` is refactored to only take `RingHom`s
 lemma tensorCotangentHom_tmul (t : T) (x : I) :
     tensorCotangentHom R T I (t ⊗ₜ[R] I.toCotangent x) =
       t • (I.map Algebra.TensorProduct.includeRight.toRingHom).toCotangent
         ⟨1 ⊗ₜ x, Ideal.mem_map_of_mem _ x.2⟩ := by
-  rfl
+  rw [tensorCotangentHom, LinearMap.liftBaseChange_tmul, Cotangent.lift_toCotangent]
+  congr 1
 
 lemma tensorCotangentHom_surjective :
     Function.Surjective (I.tensorCotangentHom R T) := by
@@ -84,6 +97,13 @@ lemma tensorCotangentHom_surjective :
 lemma tensorCotangentHom_injective_of_flat [Module.Flat R T] :
     Function.Injective (I.tensorCotangentHom R T) := by
   let a : S →+* T ⊗[R] S := Algebra.TensorProduct.includeRight.toRingHom
+  letI : IsScalarTower T (T ⊗[R] S) (I.map a).Cotangent :=
+    Submodule.Quotient.isScalarTower
+      (P := ((I.map a) • ⊤ : Submodule (T ⊗[R] S) (I.map a)))
+      (S := T) (T := T ⊗[R] S)
+  letI : LinearMap.CompatibleSMul (I.map a).Cotangent (T ⊗[R] S ⧸ (I.map a) ^ 2)
+      T (T ⊗[R] S) :=
+    LinearMap.IsScalarTower.compatibleSMul
   let f : (I.map a).Cotangent →ₗ[T] T ⊗[R] S ⧸ (I.map a) ^ 2 :=
     (Ideal.cotangentToQuotientSquare _).restrictScalars T
   suffices h : Function.Injective (f ∘ₗ tensorCotangentHom R T I) from .of_comp h
@@ -97,7 +117,15 @@ lemma tensorCotangentHom_injective_of_flat [Module.Flat R T] :
     obtain ⟨x, rfl⟩ := I.toCotangent_surjective x
     dsimp [f, g, hₐ]
     rw [tensorCotangentHom_tmul, one_smul, Ideal.toCotangent_to_quotient_square]
-    simp
+    have hq :
+        (Algebra.TensorProduct.tensorQuotientEquiv T S T (I ^ 2))
+            (1 ⊗ₜ[R] (Ideal.Quotient.mk (I ^ 2) (x : S))) =
+          Ideal.Quotient.mk ((I ^ 2).map
+            (Algebra.TensorProduct.includeRight : S →ₐ[R] T ⊗[R] S)) (1 ⊗ₜ[R] (x : S)) := by
+      exact Algebra.TensorProduct.tensorQuotientEquiv_apply_tmul
+        (R := R) (S := T) (T := S) (A := T) (I := I ^ 2) (a := 1) (t := (x : S))
+    rw [hq, Ideal.quotientEquivAlgOfEq_mk]
+    rfl
   rw [this, LinearMap.coe_comp]
   apply hₐ.injective.comp
   · apply Module.Flat.lTensor_preserves_injective_linearMap (M := T)
@@ -117,6 +145,6 @@ lemma tensorCotangentEquiv_tmul [Module.Flat R T] (t : T) (x : I) :
     I.tensorCotangentEquiv R T (t ⊗ₜ I.toCotangent x) =
       t • (I.map Algebra.TensorProduct.includeRight.toRingHom).toCotangent
         ⟨1 ⊗ₜ x, Ideal.mem_map_of_mem _ x.2⟩ :=
-  rfl
+  tensorCotangentHom_tmul R T I t x
 
 end Ideal
