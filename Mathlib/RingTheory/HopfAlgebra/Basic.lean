@@ -240,11 +240,7 @@ noncomputable abbrev ofAlgHom (antipode : A →ₐ[R] Aᵐᵒᵖ)
   mul_antipode_rTensor_comul := mul_antipode_rTensor_comul
   mul_antipode_lTensor_comul := mul_antipode_lTensor_comul
 
-/-! ### Construction on algebra generators
-
-The elements where each antipode axiom holds for a candidate `S : A →ₐ[R] Aᵐᵒᵖ` form a
-subalgebra, so the axioms can be verified on a generating set.
--/
+/-! ### Construction on algebra generators -/
 
 /-- The rTensor antipode axiom evaluated at `a`, for a candidate antipode `S : A →ₐ[R] Aᵐᵒᵖ`. -/
 @[mk_iff]
