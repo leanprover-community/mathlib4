@@ -206,6 +206,12 @@ end Ring
 
 variable {R K : Type*} [CommRing R] [Field K]
 
+/-- The determinant of the upper-triangular matrix `upperRightHom x = [[1, x], [0, 1]]` is `1`. -/
+lemma det_upperRightHom (x : R) :
+    ((Matrix.GeneralLinearGroup.upperRightHom x).det.val : R) = 1 := by
+  rw [Matrix.GeneralLinearGroup.val_det_apply]
+  simp [Matrix.GeneralLinearGroup.upperRightHom_apply, Matrix.det_fin_two]
+
 /-- Synonym of `Matrix.IsParabolic`, for dot-notation. -/
 abbrev IsParabolic (g : GL (Fin 2) R) : Prop := g.val.IsParabolic
 
