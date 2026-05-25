@@ -147,7 +147,8 @@ noncomputable def tensorModelOfHasCoeffsHom : R ⊗[R₀] P.ModelOfHasCoeffs R�
 
 @[simp]
 lemma tensorModelOfHasCoeffsHom_tmul (x : R) (y : MvPolynomial ι R₀) :
-    P.tensorModelOfHasCoeffsHom R₀ (x ⊗ₜ y) = algebraMap R S x * MvPolynomial.aeval P.val y :=
+    P.tensorModelOfHasCoeffsHom R₀ (x ⊗ₜ Ideal.Quotient.mk _ y) =
+      algebraMap R S x * MvPolynomial.aeval P.val y :=
   rfl
 
 variable (P) in
@@ -182,6 +183,7 @@ lemma tensorModelOfHasCoeffsHom_comp :
     AlgEquiv.symm_comp, AlgHom.id_comp]
   ext x
   simp
+  simpa using (P.quotientEquiv_mk (MvPolynomial.X x)).symm
 
 lemma tensorModelOfHasCoeffsInv_comp :
     (P.tensorModelOfHasCoeffsInv R₀).comp (P.tensorModelOfHasCoeffsHom R₀) = AlgHom.id R _ := by
@@ -196,7 +198,8 @@ noncomputable def tensorModelOfHasCoeffsEquiv : R ⊗[R₀] P.ModelOfHasCoeffs R
 
 @[simp]
 lemma tensorModelOfHasCoeffsEquiv_tmul (x : R) (y : MvPolynomial ι R₀) :
-    P.tensorModelOfHasCoeffsEquiv R₀ (x ⊗ₜ y) = algebraMap R S x * MvPolynomial.aeval P.val y :=
+    P.tensorModelOfHasCoeffsEquiv R₀ (x ⊗ₜ Ideal.Quotient.mk _ y) =
+      algebraMap R S x * MvPolynomial.aeval P.val y :=
   rfl
 
 @[simp]

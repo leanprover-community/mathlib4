@@ -85,7 +85,9 @@ noncomputable def quotMapEquivQuotQuotMap (hx : (conductor R x).comap (algebraMa
 
 lemma quotMapEquivQuotQuotMap_symm_apply (hx : (conductor R x).comap (algebraMap R S) ⊔ I = ⊤)
     (hx' : IsIntegral R x) (Q : R[X]) :
-    (quotMapEquivQuotQuotMap hx hx').symm (Q.map (Ideal.Quotient.mk I)) = Q.aeval x := by
+    (quotMapEquivQuotQuotMap hx hx').symm
+      (Ideal.Quotient.mk _ (Q.map (Ideal.Quotient.mk I))) =
+    Ideal.Quotient.mk _ (Q.aeval x) := by
   apply (quotMapEquivQuotQuotMap hx hx').injective
   rw [quotMapEquivQuotQuotMap, RingEquiv.symm_trans_apply,
     RingEquiv.symm_symm, RingEquiv.coe_trans, Function.comp_apply, RingEquiv.symm_apply_apply,
