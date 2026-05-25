@@ -53,7 +53,7 @@ lemma deGrootInfo_eq_riskIncrease :
 
 lemma deGrootInfo_eq_min_sub (μ ν : Measure 𝓧) (π : Measure Bool) :
     deGrootInfo μ ν π = min (π {false} * μ univ) (π {true} * ν univ) - bayesBinaryRisk μ ν π := by
-  simp_rw [deGrootInfo, Measure.discard_comp, bayesBinaryRisk_dirac]
+  simp_rw [deGrootInfo, Measure.discard_comp, bayesBinaryRisk_smul_dirac]
 
 @[simp] lemma deGrootInfo_zero_left : deGrootInfo 0 ν π = 0 := by simp [deGrootInfo]
 

@@ -6,7 +6,9 @@ Authors: Rémy Degenne
 module
 
 public import Mathlib.Probability.Decision.AuxLemmas
-public import Mathlib.Probability.Decision.Risk.Basic
+public import Mathlib.Probability.Decision.Risk.Defs
+
+import Mathlib.Probability.Decision.Risk.Basic
 
 /-!
 # Risk in countable spaces
@@ -87,7 +89,7 @@ lemma avgRisk_const_of_countable [Countable 𝓨] [MeasurableSingletonClass 𝓨
     avgRisk ℓ (Kernel.const Θ μ) κ π = ∑' y, ∫⁻ θ, ℓ θ y * (κ ∘ₘ μ) {y} ∂π := by
   simp [avgRisk_countable' hℓ]
 
-lemma bayesRisk_const_of_fintype [Nonempty 𝓨] [Finite 𝓨] [MeasurableSingletonClass 𝓨]
+lemma bayesRisk_const_of_finite [Nonempty 𝓨] [Finite 𝓨] [MeasurableSingletonClass 𝓨]
     (hℓ : Measurable (uncurry ℓ)) (μ : Measure 𝓧) (π : Measure Θ) :
     bayesRisk ℓ (Kernel.const Θ μ) π = ⨅ y, ∫⁻ θ, ℓ θ y * μ .univ ∂π := by
   have := Fintype.ofFinite 𝓨

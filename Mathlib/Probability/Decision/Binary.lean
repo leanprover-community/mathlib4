@@ -7,7 +7,9 @@ module
 
 public import Mathlib.Probability.Decision.BayesEstimator
 public import Mathlib.Probability.Decision.BoolMeasure
-public import Mathlib.Probability.Decision.Risk.Countable
+
+import Mathlib.Probability.Decision.Risk.Basic
+import Mathlib.Probability.Decision.Risk.Countable
 
 /-!
 # Simple Bayesian binary hypothesis testing
@@ -15,6 +17,8 @@ public import Mathlib.Probability.Decision.Risk.Countable
 ## Main definitions
 
 * `zeroOneLoss`
+* `binaryBayesEstimator`
+* `bayesBinaryRisk`
 
 ## Main statements
 
@@ -85,8 +89,9 @@ lemma binaryBayesEstimator_eq :
 
 @[fun_prop]
 lemma measurable_binaryBayesEstimator : Measurable (binaryBayesEstimator μ ν π) :=
-  Measurable.ite (measurableSet_le (by fun_prop) (by fun_prop)) (by fun_prop) (by fun_prop)
+  Measurable.ite (by measurability) (by fun_prop) (by fun_prop)
 
+/-- `binaryBayesEstimator` is an argmin estimator for the zero-one loss. -/
 lemma isArgminEstimator_binaryBayesEstimator (μ ν : Measure 𝓧) [IsFiniteMeasure μ]
     [IsFiniteMeasure ν] (π : Measure Bool) [IsFiniteMeasure π] :
     IsArgminEstimator zeroOneLoss (Kernel.boolKernel μ ν) (binaryBayesEstimator μ ν π) π := by
@@ -109,10 +114,15 @@ lemma isArgminEstimator_binaryBayesEstimator (μ ν : Measure 𝓧) [IsFiniteMea
 instance (P : Kernel Bool 𝓧) [IsFiniteKernel P] (π : Measure Bool) [IsFiniteMeasure π] :
     HasArgminEstimator zeroOneLoss P π :=
   ⟨binaryBayesEstimator (P false) (P true) π, by
-    convert isArgminEstimator_binaryBayesEstimator _ _ π
-    · rw [← @Kernel.eq_boolKernel]
-    · infer_instance
-    · infer_instance⟩
+    convert isArgminEstimator_binaryBayesEstimator (P false) (P true) π
+    rw [← Kernel.eq_boolKernel]⟩
+
+/-- `binaryBayesEstimator` is a Bayes estimator for the zero-one loss. -/
+lemma isBayesEstimator_binaryBayesEstimator (μ ν : Measure 𝓧) [IsFiniteMeasure μ]
+    [IsFiniteMeasure ν] (π : Measure Bool) [IsFiniteMeasure π] :
+    IsBayesEstimator zeroOneLoss (Kernel.boolKernel μ ν)
+      (Kernel.deterministic (binaryBayesEstimator μ ν π) measurable_binaryBayesEstimator) π :=
+  (isArgminEstimator_binaryBayesEstimator μ ν π).isBayesEstimator (by fun_prop)
 
 end BinaryBayesEstimator
 
@@ -146,10 +156,10 @@ lemma bayesBinaryRisk_self (μ : Measure 𝓧) (π : Measure Bool) :
     bayesBinaryRisk μ μ π = min (π {false}) (π {true}) * μ .univ := by
   have : Kernel.boolKernel μ μ = Kernel.const Bool μ := by ext; simp
   rw [bayesBinaryRisk, mul_comm, mul_min, this,
-    bayesRisk_const_of_fintype (by fun_prop)]
+    bayesRisk_const_of_finite (by fun_prop)]
   simp [lintegral_bool, zeroOneLoss, iInf_bool_eq]
 
-lemma bayesBinaryRisk_dirac (a b : ℝ≥0∞) (x : 𝓧) (π : Measure Bool) :
+lemma bayesBinaryRisk_smul_dirac (a b : ℝ≥0∞) (x : 𝓧) (π : Measure Bool) :
     bayesBinaryRisk (a • Measure.dirac x) (b • Measure.dirac x) π
       = min (π {false} * a) (π {true} * b) := by
   simp [bayesBinaryRisk_smul_smul]
@@ -157,7 +167,7 @@ lemma bayesBinaryRisk_dirac (a b : ℝ≥0∞) (x : 𝓧) (π : Measure Bool) :
 lemma bayesBinaryRisk_le_min (μ ν : Measure 𝓧) (π : Measure Bool) :
     bayesBinaryRisk μ ν π ≤ min (π {false} * μ .univ) (π {true} * ν .univ) := by
   refine (bayesBinaryRisk_le_bayesBinaryRisk_comp μ ν π (Kernel.discard 𝓧)).trans_eq ?_
-  rw [Measure.discard_comp, Measure.discard_comp, bayesBinaryRisk_dirac]
+  rw [Measure.discard_comp, Measure.discard_comp, bayesBinaryRisk_smul_dirac]
 
 @[simp] lemma bayesBinaryRisk_zero_left : bayesBinaryRisk 0 ν π = 0 :=
   le_antisymm ((bayesBinaryRisk_le_min _ _ _).trans (by simp)) zero_le'
@@ -187,9 +197,8 @@ lemma bayesBinaryRisk_comm (μ ν : Measure 𝓧) (π : Measure Bool) :
   simp only [bayesBinaryRisk_eq, Measure.map_not_apply_true, Measure.map_not_apply_false]
   simp_rw [add_comm, iInf_subtype']
   -- from this point on the proof is basically a change of variable inside the iInf,
-  -- to do this I define an equivalence between `Subtype IsMarkovKernel` and itself through
-  -- the `Bool.not` operation, maybe it can be shortened or something can be separated as
-  -- a different lemma, but I'm not sure how useful this would be
+  -- to do this we define an equivalence between `Subtype IsMarkovKernel` and itself through
+  -- the `Bool.not` operation
   have : Bool.not ∘ Bool.not = id := by ext; simp [Bool.not_not]
   let e : (Kernel 𝓧 Bool) ≃ (Kernel 𝓧 Bool) := by
     refine ⟨fun κ ↦ κ.map Bool.not, fun κ ↦ κ.map Bool.not, fun κ ↦ ?_, fun κ ↦ ?_⟩ <;>
@@ -203,12 +212,11 @@ lemma bayesBinaryRisk_comm (μ ν : Measure 𝓧) (π : Measure Bool) :
   congr with κ
   simp only [Equiv.coe_fn_mk, Equiv.coe_fn_symm_mk, e', e]
   congr 2 <;>
-  · rw [Measure.bind_apply (by trivial) (Kernel.aemeasurable _),
-      Measure.bind_apply (by trivial) (Kernel.aemeasurable _)]
+  · rw [Measure.bind_apply (by trivial) (by fun_prop),
+      Measure.bind_apply (by trivial) (by fun_prop)]
     congr with x
-    rw [Kernel.map_apply' _ (by fun_prop)]
-    · simp
-    · exact measurableSet_singleton _
+    rw [Kernel.map_apply' _ (by fun_prop) _ (by measurability)]
+    simp
 
 lemma bayesBinaryRisk_eq_bayesBinaryRisk_one_one (μ ν : Measure 𝓧) (π : Measure Bool) :
     bayesBinaryRisk μ ν π
@@ -273,13 +281,6 @@ lemma bayesBinaryRisk_eq_lintegral_min (μ ν : Measure 𝓧) [IsFiniteMeasure �
       (π {true} * ν.rnDeriv (Kernel.boolKernel μ ν ∘ₘ π) x) ∂(Kernel.boolKernel μ ν ∘ₘ π) := by
   simp [bayesBinaryRisk, bayesRisk_eq_of_hasArgminEstimator_binary .of_discrete,
     iInf_bool_eq, zeroOneLoss]
-
-lemma ENNReal.ofReal_min {a b : ℝ} : ENNReal.ofReal (min a b) = min (.ofReal a) (.ofReal b) := by
-  wlog hab : a ≤ b
-  · rw [min_comm a, min_comm (ENNReal.ofReal a)]
-    exact this (by linarith)
-  rw [min_eq_left hab, min_eq_left]
-  exact ENNReal.ofReal_le_ofReal hab
 
 lemma toReal_bayesBinaryRisk_eq_integral_min (μ ν : Measure 𝓧) [IsFiniteMeasure μ]
     [IsFiniteMeasure ν] (π : Measure Bool) [IsFiniteMeasure π] :

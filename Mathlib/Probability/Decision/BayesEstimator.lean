@@ -5,21 +5,33 @@ Authors: Rémy Degenne, Lorenzo Luccioli
 -/
 module
 
-public import Mathlib.Probability.Decision.AuxLemmas
-public import Mathlib.Probability.Decision.Risk.Basic
+--public import Mathlib.Probability.Decision.AuxLemmas
+public import Mathlib.Probability.Decision.Risk.Defs
 public import Mathlib.Probability.Kernel.Posterior
 
+import Mathlib.Probability.Decision.Risk.Basic
+
 /-!
-# Bayes estimator and generalized Bayes estimator
+# Bayes estimator
+
+Let `Θ` be a parameter space, `𝓧` a data space, `𝓨` a prediction space, `P : Kernel Θ 𝓧` a
+data generating kernel, `π` a prior on the parameter space, and `ℓ : Θ → 𝓨 → ℝ≥0∞` a loss function.
+
+An estimator (a `Kernel 𝓧 𝓨`) is said to be a Bayes estimator if it attains the Bayes risk for
+the estimation problem.
+It can be written as a measurable function `x ↦ argmin_y P†π(x)[θ ↦ ℓ θ y]`
+for `(P ∘ₘ π)`-almost every `x`, where `P†π` is the posterior kernel, whenever we can select
+the argmin in a measurable way.
 
 ## Main definitions
 
 * `IsBayesEstimator`: an estimator is a Bayes estimator if it attains the Bayes risk for the prior.
-* `IsArgminEstimator`: a measurable function `f : 𝓧 → 𝓨` is a generalized Bayes estimator
+* `IsArgminEstimator`: a measurable function `f : 𝓧 → 𝓨` is an argmin estimator
   with respect to the prior `π` if for `(P ∘ₘ π)`-almost every `x` it has
   the form `x ↦ argmin_y P†π(x)[θ ↦ ℓ θ y]`.
-* `HasArgminEstimator`: class that states that estimation problem admits a generalized Bayes
-  estimator with respect to the prior.
+* `HasArgminEstimator`: class that states that estimation problem admits an argmin Bayes
+  estimator with respect to the prior. That is, we can choose the argmin of the posterior expected
+  loss in a measurable way.
 
 ## Main statements
 
@@ -27,14 +39,10 @@ public import Mathlib.Probability.Kernel.Posterior
   from below by the integral over the data (with distribution `P ∘ₘ π`) of the infimum over the
   possible predictions `y` of the posterior loss `∫⁻ θ, ℓ θ y ∂((P†π) x)`:
   `∫⁻ x, ⨅ y : 𝓨, ∫⁻ θ, ℓ θ y ∂((P†π) x) ∂(P ∘ₘ π) ≤ bayesRisk ℓ P π`
-* `IsArgminEstimator.isBayesEstimator`: a generalized Bayes estimator is a Bayes estimator.
+* `IsArgminEstimator.isBayesEstimator`: an argmin Bayes estimator is a Bayes estimator.
   That is, it minimizes the Bayesian risk.
-* `bayesRisk_eq_of_hasArgminEstimator`: if the estimation problem admits a generalized Bayes
-estimator, then the Bayesian risk attains the risk lower bound
-`∫⁻ x, ⨅ y, ∫⁻ θ, ℓ θ y ∂(P†π) x ∂(P ∘ₘ π)`.
-
-## Implementation details
-
+* `bayesRisk_eq_of_hasArgminEstimator`: if the estimation problem admits an argmin estimator,
+  then the Bayesian risk attains the risk lower bound `∫⁻ x, ⨅ y, ∫⁻ θ, ℓ θ y ∂(P†π) x ∂(P ∘ₘ π)`.
 
 -/
 
@@ -142,6 +150,8 @@ class HasArgminEstimator {𝓨 : Type*} [MeasurableSpace 𝓨]
     Prop where
   exists_isArgminEstimator : ∃ f : 𝓧 → 𝓨, IsArgminEstimator ℓ P f π
 
+/-- An estimator for an estimation problem that for `(P ∘ₘ π)`-almost every `x` is of
+the form `x ↦ argmin_y P†π(x)[θ ↦ ℓ θ y]`. -/
 noncomputable
 def argminEstimator {𝓨 : Type*} [MeasurableSpace 𝓨]
     (ℓ : Θ → 𝓨 → ℝ≥0∞) (P : Kernel Θ 𝓧) [IsFiniteKernel P] (π : Measure Θ) [IsFiniteMeasure π]
@@ -160,19 +170,19 @@ lemma bayesRisk_eq_of_hasArgminEstimator
   rw [← isArgminEstimator_argminEstimator.isBayesEstimator hl,
     isArgminEstimator_argminEstimator.avgRisk_eq_lintegral_iInf hl]
 
-/-- If the set of labels `𝓨` is finite, the estimation problem admits a
-generalized Bayes estimator. -/
-lemma hasArgminEstimator_of_finite [Nonempty 𝓨] [Finite 𝓨] [MeasurableSingletonClass 𝓨]
-    (hl : Measurable (Function.uncurry ℓ)) :
-    HasArgminEstimator ℓ P π where
-  exists_isArgminEstimator := by
-    classical
-    have : Encodable 𝓨 := Encodable.ofCountable 𝓨
-    have h_meas y : Measurable (fun x ↦ ∫⁻ θ, ℓ θ y ∂(P†π) x) :=
-      (Measure.measurable_lintegral (by fun_prop)).comp (by fun_prop)
-    refine ⟨measurableArgmin (fun x y ↦ ∫⁻ θ, ℓ θ y ∂(P†π) x),
-      measurable_measurableArgmin h_meas, ae_of_all _ fun x ↦ ?_⟩
-    have h := isMinOn_measurableArgmin (fun x y ↦ ∫⁻ θ, ℓ θ y ∂(P†π) x) x
-    exact le_antisymm (by simpa using h) (iInf_le _ _)
+-- /-- If the set of labels `𝓨` is finite, the estimation problem admits a
+-- generalized Bayes estimator. -/
+-- lemma hasArgminEstimator_of_finite [Nonempty 𝓨] [Finite 𝓨] [MeasurableSingletonClass 𝓨]
+--     (hl : Measurable (Function.uncurry ℓ)) :
+--     HasArgminEstimator ℓ P π where
+--   exists_isArgminEstimator := by
+--     classical
+--     have : Encodable 𝓨 := Encodable.ofCountable 𝓨
+--     have h_meas y : Measurable (fun x ↦ ∫⁻ θ, ℓ θ y ∂(P†π) x) :=
+--       (Measure.measurable_lintegral (by fun_prop)).comp (by fun_prop)
+--     refine ⟨measurableArgmin (fun x y ↦ ∫⁻ θ, ℓ θ y ∂(P†π) x),
+--       measurable_measurableArgmin h_meas, ae_of_all _ fun x ↦ ?_⟩
+--     have h := isMinOn_measurableArgmin (fun x y ↦ ∫⁻ θ, ℓ θ y ∂(P†π) x) x
+--     exact le_antisymm (by simpa using h) (iInf_le _ _)
 
 end ProbabilityTheory
