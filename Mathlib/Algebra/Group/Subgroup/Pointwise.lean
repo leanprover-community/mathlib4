@@ -390,11 +390,7 @@ theorem normal_iSup_normal {ι : Sort*} {a : ι → Subgroup G}
       exact mem_iSup_of_mem i ((norm i).conj_mem y hy g)
     · simp
     · intro y z hy hz
-      change g * (y * z) * g⁻¹ ∈ iSup a
-      have h : g * (y * z) * g⁻¹ = (g * y * g⁻¹) * (g * z * g⁻¹) := by
-        simp only [mul_assoc, inv_mul_cancel_left]
-      rw [h]
-      exact mul_mem hy hz
+      simpa only [mul_assoc, inv_mul_cancel_left] using mul_mem hy hz
 
 @[to_additive]
 theorem smul_mem_of_mem_closure_of_mem {X : Type*} [MulAction G X] {s : Set G} {t : Set X}
