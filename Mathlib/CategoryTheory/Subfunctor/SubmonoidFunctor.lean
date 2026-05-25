@@ -106,12 +106,7 @@ instance : CompleteLattice (SubmonoidFunctor R) where
 /-- The inclusion of a submonoid functor `S` to the original functor of monoids `R`. -/
 @[simps]
 def ι : S.toMonoidFunctor ⟶ R where
-  app _ := MonCat.ofHom {
-      toFun := fun x ↦ x
-      map_one' := by simp only [OneMemClass.coe_one]
-      map_mul' _ _  := by simp only [Submonoid.coe_mul]
-    }
-  naturality _ _ _ := by cat_disch
+  app _ := MonCat.ofHom (Submonoid.subtype _)
 
 section range
 
