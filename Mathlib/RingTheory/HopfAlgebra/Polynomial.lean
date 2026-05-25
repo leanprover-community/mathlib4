@@ -105,12 +105,14 @@ theorem counit_C (r : R) :
   simp [counit_apply]
 
 -- Glue lemmas connecting rTensor/lTensor of AlgHom.toLinearMap to Algebra.TensorProduct.map
-private theorem rTensor_toLinearMap_eq (f : R[X] →ₐ[R] A) :
+private theorem rTensor_toLinearMap_eq {A : Type*} [CommSemiring A] [Algebra R A]
+    (f : R[X] →ₐ[R] A) :
     f.toLinearMap.rTensor R[X] =
     (Algebra.TensorProduct.map f (AlgHom.id R R[X])).toLinearMap := by
   ext x y; simp [LinearMap.rTensor_tmul]
 
-private theorem lTensor_toLinearMap_eq (f : R[X] →ₐ[R] A) :
+private theorem lTensor_toLinearMap_eq {A : Type*} [CommSemiring A] [Algebra R A]
+    (f : R[X] →ₐ[R] A) :
     f.toLinearMap.lTensor R[X] =
     (Algebra.TensorProduct.map (AlgHom.id R R[X]) f).toLinearMap := by
   ext x y; simp [LinearMap.lTensor_tmul]
