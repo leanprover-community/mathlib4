@@ -83,7 +83,7 @@ open scoped Filter ENNReal MeasureTheory NNReal Topology
 
 variable {α : Type*} [PseudoMetricSpace α] {m0 : MeasurableSpace α} {μ : Measure α}
   (v : VitaliFamily μ)
-  {E : Type*} [NormedAddCommGroup E]
+  {E : Type*} [AddCommGroup E] [NormedAddCommGroup E]
 
 namespace VitaliFamily
 
