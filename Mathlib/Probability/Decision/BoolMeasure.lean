@@ -10,29 +10,10 @@ public import Mathlib.MeasureTheory.Measure.WithDensity
 /-!
 # BoolMeasure
 
-## Main definitions
+We define `boolMeasure a b`, the measure on `Bool` that takes the value `a` on `{false}` and
+`b` on `{true}`.
+It is defined as `a • Measure.dirac false + b • Measure.dirac true`.
 
-* `FooBar`
-
-## Main statements
-
-* `fooBar_unique`
-
-## Notation
-
-
-
-## Implementation details
-
-
-
-## References
-
-* [F. Bar, *Quuxes*][bibkey]
-
-## Tags
-
-Foobars, barfoos
 -/
 
 @[expose] public section
@@ -41,24 +22,18 @@ open MeasureTheory
 
 open scoped ENNReal NNReal
 
-@[simp]
-lemma Bool.preimage_not_true : Bool.not ⁻¹' {true} = {false} := by ext; simp
-
-@[simp]
-lemma Bool.preimage_not_false : Bool.not ⁻¹' {false} = {true} := by ext; simp
-
 namespace MeasureTheory
 
 @[simp]
 lemma Measure.map_not_apply_true (π : Measure Bool) : π.map Bool.not {true} = π {false} := by
-  rw [Measure.map_apply (by exact fun _ a ↦ a) (by trivial)]; simp
+  rw [Measure.map_apply (by exact fun _ a ↦ a) (by trivial)]; congr 1; grind
 
 @[simp]
 lemma Measure.map_not_apply_false (π : Measure Bool) : π.map Bool.not {false} = π {true} := by
-  rw [Measure.map_apply (by exact fun _ a ↦ a) (by trivial)]; simp
+  rw [Measure.map_apply (by exact fun _ a ↦ a) (by trivial)]; congr 1; grind
 
 lemma lintegral_bool {f : Bool → ℝ≥0∞} (π : Measure Bool) :
-    ∫⁻ x, f x ∂π = f false * π {false} + f true * π {true} := by simp [add_comm, lintegral_fintype]
+    ∫⁻ x, f x ∂π = f true * π {true} + f false * π {false} := by simp [lintegral_fintype]
 
 section BoolMeasure
 

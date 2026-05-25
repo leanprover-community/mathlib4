@@ -64,6 +64,7 @@ lemma exists_isMinOn' {α : Type*} [LinearOrder α]
   obtain ⟨y, h⟩ := Finite.exists_min (f x)
   exact ⟨Encodable.encode y, y, rfl, h⟩
 
+/-- A function that selects an argmin of `f` over `𝓨` for each `x`, in a measurable way. -/
 noncomputable
 def measurableArgmin [Nonempty 𝓨] [Finite 𝓨] [Encodable 𝓨] [MeasurableSingletonClass 𝓨]
     (f : 𝓧 → 𝓨 → α)

@@ -27,8 +27,7 @@ the argmin in a measurable way.
 
 * `IsBayesEstimator`: an estimator is a Bayes estimator if it attains the Bayes risk for the prior.
 * `IsArgminEstimator`: a measurable function `f : 𝓧 → 𝓨` is an argmin estimator
-  with respect to the prior `π` if for `(P ∘ₘ π)`-almost every `x` it has
-  the form `x ↦ argmin_y P†π(x)[θ ↦ ℓ θ y]`.
+  if for `(P ∘ₘ π)`-almost every `x` the value `f x` belongs to `argmin_y P†π(x)[θ ↦ ℓ θ y]`.
 * `HasArgminEstimator`: class that states that estimation problem admits an argmin Bayes
   estimator with respect to the prior. That is, we can choose the argmin of the posterior expected
   loss in a measurable way.
@@ -109,19 +108,19 @@ variable [StandardBorelSpace Θ] [Nonempty Θ] {f : 𝓧 → 𝓨} [IsFiniteKern
 with respect to the prior `π` if for `(P ∘ₘ π)`-almost every `x` it is of
 the form `x ↦ argmin_y P†π(x)[θ ↦ ℓ θ y]`. -/
 structure IsArgminEstimator {𝓨 : Type*} [MeasurableSpace 𝓨]
-    (ℓ : Θ → 𝓨 → ℝ≥0∞) (P : Kernel Θ 𝓧) [IsFiniteKernel P] (f : 𝓧 → 𝓨)
-    (π : Measure Θ) [IsFiniteMeasure π] : Prop where
+    (ℓ : Θ → 𝓨 → ℝ≥0∞) (P : Kernel Θ 𝓧) [IsFiniteKernel P]
+    (π : Measure Θ) [IsFiniteMeasure π] (f : 𝓧 → 𝓨) : Prop where
   measurable : Measurable f
   property : ∀ᵐ x ∂(P ∘ₘ π), ∫⁻ θ, ℓ θ (f x) ∂(P†π) x = ⨅ y, ∫⁻ θ, ℓ θ y ∂(P†π) x
 
 /-- Given an argmin estimator `f`, we can define a deterministic kernel. -/
 noncomputable
-abbrev IsArgminEstimator.kernel (h : IsArgminEstimator ℓ P f π) : Kernel 𝓧 𝓨 :=
+abbrev IsArgminEstimator.kernel (h : IsArgminEstimator ℓ P π f) : Kernel 𝓧 𝓨 :=
   Kernel.deterministic f h.measurable
 
 /-- The risk of an argmin estimator is the risk lower bound
 `∫⁻ x, ⨅ z, ∫⁻ θ, ℓ θ z ∂(P†π) x ∂(P ∘ₘ π)`. -/
-lemma IsArgminEstimator.avgRisk_eq_lintegral_iInf (hf : IsArgminEstimator ℓ P f π)
+lemma IsArgminEstimator.avgRisk_eq_lintegral_iInf (hf : IsArgminEstimator ℓ P π f)
     (hl : Measurable (Function.uncurry ℓ)) :
     avgRisk ℓ P hf.kernel π = ∫⁻ x, ⨅ y, ∫⁻ θ, ℓ θ y ∂(P†π) x ∂(P ∘ₘ π) := by
   rw [avgRisk_eq_lintegral_lintegral_lintegral hl]
@@ -131,7 +130,7 @@ lemma IsArgminEstimator.avgRisk_eq_lintegral_iInf (hf : IsArgminEstimator ℓ P 
     lintegral_dirac' _ (Measurable.lintegral_prod_left (by fun_prop))]
 
 /-- An argmin estimator is a Bayes estimator: that is, it minimizes the Bayesian risk. -/
-lemma IsArgminEstimator.isBayesEstimator (hf : IsArgminEstimator ℓ P f π)
+lemma IsArgminEstimator.isBayesEstimator (hf : IsArgminEstimator ℓ P π f)
     (hl : Measurable (Function.uncurry ℓ)) :
     IsBayesEstimator ℓ P hf.kernel π := by
   simp_rw [IsBayesEstimator]
@@ -148,7 +147,7 @@ That is, we can choose the argmin of the posterior expected loss in a measurable
 class HasArgminEstimator {𝓨 : Type*} [MeasurableSpace 𝓨]
     (ℓ : Θ → 𝓨 → ℝ≥0∞) (P : Kernel Θ 𝓧) [IsFiniteKernel P] (π : Measure Θ) [IsFiniteMeasure π] :
     Prop where
-  exists_isArgminEstimator : ∃ f : 𝓧 → 𝓨, IsArgminEstimator ℓ P f π
+  exists_isArgminEstimator : ∃ f : 𝓧 → 𝓨, IsArgminEstimator ℓ P π f
 
 /-- An estimator for an estimation problem that for `(P ∘ₘ π)`-almost every `x` is of
 the form `x ↦ argmin_y P†π(x)[θ ↦ ℓ θ y]`. -/
@@ -159,7 +158,7 @@ def argminEstimator {𝓨 : Type*} [MeasurableSpace 𝓨]
   h.exists_isArgminEstimator.choose
 
 lemma isArgminEstimator_argminEstimator [h : HasArgminEstimator ℓ P π] :
-    IsArgminEstimator ℓ P (argminEstimator ℓ P π) π :=
+    IsArgminEstimator ℓ P π (argminEstimator ℓ P π) :=
   h.exists_isArgminEstimator.choose_spec
 
 /-- If the estimation problem admits a generalized Bayes estimator, then the Bayesian risk

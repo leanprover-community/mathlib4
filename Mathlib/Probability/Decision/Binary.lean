@@ -72,7 +72,7 @@ section BinaryBayesEstimator
 /-! ### Explicit form for the Bayes estimator. -/
 
 /-- The function `x ↦ 𝕀{π₀ * ∂μ/∂(boolKernel μ ν ∘ₘ π) x ≤ π₁ * ∂ν/∂(boolKernel μ ν ∘ₘ π) x}`.
-It is a generalized Bayes estimator for the simple binary hypothesis testing problem. -/
+It is a Bayes estimator for the simple binary hypothesis testing problem. -/
 noncomputable
 def binaryBayesEstimator (μ ν : Measure 𝓧) (π : Measure Bool) : 𝓧 → Bool :=
   fun x ↦ (π {false} * μ.rnDeriv (Kernel.boolKernel μ ν ∘ₘ π) x
@@ -94,7 +94,7 @@ lemma measurable_binaryBayesEstimator : Measurable (binaryBayesEstimator μ ν �
 /-- `binaryBayesEstimator` is an argmin estimator for the zero-one loss. -/
 lemma isArgminEstimator_binaryBayesEstimator (μ ν : Measure 𝓧) [IsFiniteMeasure μ]
     [IsFiniteMeasure ν] (π : Measure Bool) [IsFiniteMeasure π] :
-    IsArgminEstimator zeroOneLoss (Kernel.boolKernel μ ν) (binaryBayesEstimator μ ν π) π := by
+    IsArgminEstimator zeroOneLoss (Kernel.boolKernel μ ν) π (binaryBayesEstimator μ ν π) := by
   refine ⟨by fun_prop, ?_⟩
   simp only [zeroOneLoss, lintegral_bool, Bool.false_eq, ite_mul, zero_mul, one_mul,
     Bool.true_eq]
@@ -216,7 +216,8 @@ lemma bayesBinaryRisk_comm (μ ν : Measure 𝓧) (π : Measure Bool) :
       Measure.bind_apply (by trivial) (by fun_prop)]
     congr with x
     rw [Kernel.map_apply' _ (by fun_prop) _ (by measurability)]
-    simp
+    congr 1
+    grind
 
 lemma bayesBinaryRisk_eq_bayesBinaryRisk_one_one (μ ν : Measure 𝓧) (π : Measure Bool) :
     bayesBinaryRisk μ ν π
@@ -234,7 +235,7 @@ lemma avgRisk_binary_of_deterministic_indicator (μ ν : Measure 𝓧) (π : Mea
     Measurable.of_discrete.fun_comp (measurable_one.indicator hE)
   have h1 : (fun x ↦ Bool.ofNat (E.indicator 1 x)) ⁻¹' {false} = Eᶜ := by ext; simp [Bool.ofNat]
   have h2 : (fun x ↦ Bool.ofNat (E.indicator 1 x)) ⁻¹' {true} = E := by ext; simp [Bool.ofNat]
-  rw [avgRisk, lintegral_bool, mul_comm (π {false}), mul_comm (π {true})]
+  rw [avgRisk, lintegral_bool, mul_comm (π {false}), mul_comm (π {true}), add_comm]
   simp only [Kernel.comp_boolKernel, Kernel.boolKernel_apply, Bool.false_eq_true, ↓reduceIte,
     integral_zeroOneLoss_false, integral_zeroOneLoss_true]
   simp_rw [Measure.deterministic_comp_eq_map, Measure.map_apply h_meas trivial, h1, h2]
