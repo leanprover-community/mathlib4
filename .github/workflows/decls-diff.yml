@@ -196,6 +196,24 @@ jobs:
           fetch-depth: 0
           path: pr-branch
 
+      - name: Checkout workflow tooling
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.workflow_sha }}
+          fetch-depth: 1
+          sparse-checkout: |
+            .github/actions/decls-diff
+            scripts/declsDiff.sh
+            scripts/dumpReasonableDecls.lean
+          path: workflow-tooling
+
+      - name: Overlay workflow tooling onto the PR checkout
+        run: |
+          mkdir -p pr-branch/scripts
+          cp workflow-tooling/scripts/declsDiff.sh           pr-branch/scripts/declsDiff.sh
+          cp workflow-tooling/scripts/dumpReasonableDecls.lean pr-branch/scripts/dumpReasonableDecls.lean
+          chmod +x pr-branch/scripts/declsDiff.sh
+
       - name: Resolve merge-base against master
         id: resolve
         working-directory: pr-branch
@@ -252,7 +270,7 @@ jobs:
       - name: Compute Lean-aware declarations diff
         if: steps.master-run.outputs.found == 'true'
         id: diff
-        uses: ./pr-branch/.github/actions/decls-diff
+        uses: ./workflow-tooling/.github/actions/decls-diff
         with:
           reference-decls-file:   ./ref-artifact/decls.txt
           reference-imports-file: ./ref-artifact/imports.json
@@ -272,7 +290,7 @@ jobs:
           PLUS: ${{ steps.diff.outputs.plus-count }}
           MINUS: ${{ steps.diff.outputs.minus-count }}
         run: |
-          python3 ./pr-branch/.github/actions/decls-diff/updateDeclsDiffSection.py
+          python3 ./workflow-tooling/.github/actions/decls-diff/updateDeclsDiffSection.py
 
       - name: Patch PR summary comment (cache-missing path)
         if: steps.master-run.outputs.found != 'true' && steps.meta.outputs.should-patch == 'true'
@@ -283,4 +301,4 @@ jobs:
           MODE: warning
           DEFAULT_BRANCH: master
         run: |
-          python3 ./pr-branch/.github/actions/decls-diff/updateDeclsDiffSection.py
+          python3 ./workflow-tooling/.github/actions/decls-diff/updateDeclsDiffSection.py
