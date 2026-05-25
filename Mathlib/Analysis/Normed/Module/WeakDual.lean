@@ -113,7 +113,7 @@ open Filter Function Bornology Metric Set Topology Filter
 variable {𝕜 M E : Type*}
 variable [NontriviallyNormedField 𝕜]
 variable [AddCommGroup M] [TopologicalSpace M] [Module 𝕜 M]
-variable [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable [AddCommGroup E] [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
 
 namespace WeakDual
 
@@ -172,7 +172,7 @@ def continuousLinearMapToWeakDual : StrongDual 𝕜 E →L[𝕜] WeakDual 𝕜 E
 theorem dual_norm_topology_le_weak_dual_topology :
     (UniformSpace.toTopologicalSpace : TopologicalSpace (StrongDual 𝕜 E)) ≤
       (instTopologicalSpaceWeakDual .. : TopologicalSpace (WeakDual 𝕜 E)) := by
-  convert! (@toWeakDual_continuous _ _ _ _ (by assumption)).le_induced
+  convert! (@toWeakDual_continuous _ _ _ _ _ (by assumption)).le_induced
   exact induced_id.symm
 
 end Dual
