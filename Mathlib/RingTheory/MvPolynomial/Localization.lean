@@ -96,8 +96,9 @@ def auxInv : S →+* (MvPolynomial Unit R) ⧸ Ideal.span { C r * X () - 1 } :=
 private lemma auxHom_auxInv : (auxHom S r).toRingHom.comp (auxInv S r) = RingHom.id S := by
   apply IsLocalization.ringHom_ext (Submonoid.powers r)
   ext x
-  simp [auxInv]
-  rw (transparency := .default) [auxHom_mk, aeval_C]
+  simp only [AlgHom.toRingHom_eq_coe, auxInv, RingHom.coe_comp, RingHom.coe_coe,
+    Function.comp_apply, lift_eq, RingHomCompTriple.comp_eq]
+  erw [auxHom_mk, aeval_C]
 
 private lemma auxInv_auxHom : (auxInv S r).comp (auxHom (S := S) r).toRingHom = RingHom.id _ := by
   rw [← RingHom.cancel_right (Ideal.Quotient.mk_surjective)]
