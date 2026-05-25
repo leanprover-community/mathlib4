@@ -612,6 +612,13 @@ theorem lowerCentralSeries_mono (n : ℕ) :
   | zero => intro S T h; simpa
   | succ d hd => intro S T h; simp only [lowerCentralSeries_succ]; exact commutator_mono (hd h) h
 
+@[to_additive]
+instance lowerCentralSeries_normal (S : Subgroup G) [S.Normal] (n : ℕ) :
+    (S.lowerCentralSeries n).Normal := by
+  induction n with
+  | zero => simpa using ‹S.Normal›
+  | succ n _ => simp only [lowerCentralSeries_succ]; infer_instance
+
 /-- The lower central series commutes with images under a group homomorphism. -/
 @[to_additive]
 theorem map_lowerCentralSeries {H : Type*} [Group H] (f : G →* H) (S : Subgroup G) (n : ℕ) :
@@ -635,8 +642,8 @@ theorem top_subtype_lowerCentralSeries (H : Subgroup G) (n : ℕ) :
   congr 1
   ext; simp
 
-/-- A subgroup `H` of `G`'s lower central series (viewed in `G`) coincides with the lower
-central series of `H` as its own group, mapped back to `G`. -/
+/-- The lower central series of `H : Subgroup G`, computed in `G`, coincides with the lower
+central series of `H` viewed as its own group, mapped back to `G`. -/
 @[to_additive]
 theorem lowerCentralSeries_eq_map (H : Subgroup G) (n : ℕ) :
     H.lowerCentralSeries n = ((⊤ : Subgroup H).lowerCentralSeries n).map H.subtype :=
@@ -663,6 +670,28 @@ theorem nilpotencyClass_le (H : Subgroup G) [hG : IsNilpotent G] :
   rw [← Subgroup.map_injective H.subtype_injective |>.eq_iff' (Subgroup.map_bot H.subtype),
     top_subtype_lowerCentralSeries]
   exact le_bot_iff.mp <| (H.lowerCentralSeries_mono n le_top).trans_eq hG
+
+/-- A subgroup is nilpotent iff its lower central series (computed in the ambient group) eventually
+vanishes. -/
+@[to_additive /-- An additive subgroup is nilpotent iff its lower central series eventually
+vanishes. -/]
+theorem isNilpotent_iff_lowerCentralSeries (S : Subgroup G) :
+    Group.IsNilpotent S ↔ ∃ n, S.lowerCentralSeries n = ⊥ := by
+  rw [nilpotent_iff_lowerCentralSeries]
+  refine exists_congr fun n => ?_
+  rw [← Subgroup.map_injective S.subtype_injective |>.eq_iff' (Subgroup.map_bot S.subtype),
+    top_subtype_lowerCentralSeries]
+
+@[to_additive]
+theorem isNilpotent_of_lowerCentralSeries_eq_bot {S : Subgroup G} {n : ℕ}
+    (h : S.lowerCentralSeries n = ⊥) : Group.IsNilpotent S :=
+  (isNilpotent_iff_lowerCentralSeries S).mpr ⟨n, h⟩
+
+@[to_additive]
+theorem lowerCentralSeries_eq_bot_of_nilpotencyClass_le {S : Subgroup G}
+    [Group.IsNilpotent S] {n : ℕ} (hn : Group.nilpotencyClass S ≤ n) :
+    S.lowerCentralSeries n = ⊥ := by
+  rw [lowerCentralSeries_eq_map, lowerCentralSeries_eq_bot_iff_nilpotencyClass_le.mpr hn, map_bot]
 
 @[to_additive]
 instance (priority := 100) _root_.Group.isNilpotent_of_subsingleton [Subsingleton G] :
