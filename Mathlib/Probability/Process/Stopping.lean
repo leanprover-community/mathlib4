@@ -23,8 +23,8 @@ Definition and properties of stopping times.
 
 ## Main results
 
-* `ProgMeasurable.stoppedProcess`: the stopped process of a progressively measurable process is
-  progressively measurable.
+* `IsStronglyProgressive.stoppedProcess`: the stopped process of a progressively measurable process
+  is progressively measurable.
 * `memLp_stoppedProcess`: if a process belongs to `ℒp` at every time in `ℕ`, then its stopped
   process belongs to `ℒp` as well.
 
@@ -387,7 +387,7 @@ protected lemma iInf [ConditionallyCompleteLinearOrderBot ι] [TopologicalSpace 
     {κ : Type*} [Countable κ] {f : Filtration ι m} {τ : κ → Ω → WithTop ι}
     [f.IsRightContinuous] (hτ : ∀ n, IsStoppingTime f (τ n)) :
     IsStoppingTime f (fun ω ↦ ⨅ n, τ n ω) := by
-  convert IsStoppingTime.biInf (κ := κ) Set.countable_univ (fun n _ => hτ n) using 2
+  convert! IsStoppingTime.biInf (κ := κ) Set.countable_univ (fun n _ => hτ n) using 2
   simp
 
 theorem add_const [AddGroup ι] [Preorder ι] [AddRightMono ι]
@@ -762,7 +762,7 @@ theorem measurableSet_eq_stopping_time_min [TopologicalSpace ι]
     ext; simp only [Set.mem_setOf_eq, le_antisymm_iff, Set.mem_inter_iff]
   rw [this]
   refine MeasurableSet.inter (measurableSet_stopping_time_le_min hτ hπ) ?_
-  convert (measurableSet_stopping_time_le_min hπ hτ) using 3
+  convert! (measurableSet_stopping_time_le_min hπ hτ) using 3
   rw [min_comm]
 
 theorem measurableSet_eq_stopping_time [TopologicalSpace ι] [OrderTopology ι]
@@ -904,13 +904,14 @@ theorem stoppedProcess_stoppedProcess_of_le_right (h : σ ≤ τ) :
 theorem stoppedProcess_stoppedProcess_of_le_left (h : τ ≤ σ) :
     stoppedProcess (stoppedProcess u τ) σ = stoppedProcess u τ := by simp [h]
 
-section ProgMeasurable
+section Progressive
 
 variable [MeasurableSpace ι] [TopologicalSpace ι] [OrderTopology ι] [SecondCountableTopology ι]
   [BorelSpace ι] [TopologicalSpace β] {f : Filtration ι m}
 
-theorem progMeasurable_min_stopping_time [PseudoMetrizableSpace ι] (hτ : IsStoppingTime f τ) :
-    ProgMeasurable f fun i ω ↦ (min (i : WithTop ι) (τ ω)).untopA := by
+theorem isStronglyProgressive_min_stopping_time [PseudoMetrizableSpace ι]
+    (hτ : IsStoppingTime f τ) :
+    IsStronglyProgressive f fun i ω ↦ (min (i : WithTop ι) (τ ω)).untopA := by
   refine fun i ↦ (Measurable.untopA ?_).stronglyMeasurable
   let m_prod : MeasurableSpace (Set.Iic i × Ω) := Subtype.instMeasurableSpace.prod (f i)
   let m_set : ∀ t : Set (Set.Iic i × Ω), MeasurableSpace t := fun _ =>
@@ -950,13 +951,17 @@ theorem progMeasurable_min_stopping_time [PseudoMetrizableSpace ι] (hτ : IsSto
     · lift τ (ω : Set.Iic i × Ω).2 to ι using h with t ht
       norm_cast
       refine hx_fst_le.trans (le_of_lt ?_)
-      convert ω.prop
+      convert! ω.prop
       simp only [sc, s, not_le, Set.mem_compl_iff, Set.mem_setOf_eq, ← ht]
       norm_cast
 
-theorem ProgMeasurable.stoppedProcess [PseudoMetrizableSpace ι] (h : ProgMeasurable f u)
-    (hτ : IsStoppingTime f τ) : ProgMeasurable f (stoppedProcess u τ) := by
-  have h_meas := progMeasurable_min_stopping_time hτ
+@[deprecated (since := "2026-04-24")]
+alias progMeasurable_min_stopping_time := isStronglyProgressive_min_stopping_time
+
+theorem IsStronglyProgressive.stoppedProcess [PseudoMetrizableSpace ι]
+    (h : IsStronglyProgressive f u) (hτ : IsStoppingTime f τ) :
+    IsStronglyProgressive f (stoppedProcess u τ) := by
+  have h_meas := isStronglyProgressive_min_stopping_time hτ
   refine h.comp h_meas fun i ω ↦ ?_
   cases τ ω with
   | top => simp
@@ -965,18 +970,26 @@ theorem ProgMeasurable.stoppedProcess [PseudoMetrizableSpace ι] (h : ProgMeasur
     · simp [(mod_cast h_it : (i : WithTop ι) ≤ t)]
     · simpa [(mod_cast h_ti : t ≤ (i : WithTop ι))]
 
-theorem ProgMeasurable.stronglyAdapted_stoppedProcess [PseudoMetrizableSpace ι]
-    (h : ProgMeasurable f u) (hτ : IsStoppingTime f τ) :
+@[deprecated (since := "2026-04-24")]
+alias ProgMeasurable.stoppedProcess := IsStronglyProgressive.stoppedProcess
+
+theorem IsStronglyProgressive.stronglyAdapted_stoppedProcess [PseudoMetrizableSpace ι]
+    (h : IsStronglyProgressive f u) (hτ : IsStoppingTime f τ) :
     StronglyAdapted f (MeasureTheory.stoppedProcess u τ) :=
   (h.stoppedProcess hτ).stronglyAdapted
 
-theorem ProgMeasurable.stronglyMeasurable_stoppedProcess [PseudoMetrizableSpace ι]
-    (hu : ProgMeasurable f u) (hτ : IsStoppingTime f τ) (i : ι) :
+@[deprecated (since := "2026-04-24")]
+alias ProgMeasurable.stronglyAdapted_stoppedProcess :=
+  IsStronglyProgressive.stronglyAdapted_stoppedProcess
+
+theorem IsStronglyProgressive.stronglyMeasurable_stoppedProcess [PseudoMetrizableSpace ι]
+    (hu : IsStronglyProgressive f u) (hτ : IsStoppingTime f τ) (i : ι) :
     StronglyMeasurable (MeasureTheory.stoppedProcess u τ i) :=
   (hu.stronglyAdapted_stoppedProcess hτ i).mono (f.le _)
 
-theorem stronglyMeasurable_stoppedValue_of_le (h : ProgMeasurable f u) (hτ : IsStoppingTime f τ)
-    {n : ι} (hτ_le : ∀ ω, τ ω ≤ n) : StronglyMeasurable[f n] (stoppedValue u τ) := by
+theorem stronglyMeasurable_stoppedValue_of_le (h : IsStronglyProgressive f u)
+    (hτ : IsStoppingTime f τ) {n : ι} (hτ_le : ∀ ω, τ ω ≤ n) :
+    StronglyMeasurable[f n] (stoppedValue u τ) := by
   have hτ_le' ω : (τ ω).untopA ≤ n := untopA_le (hτ_le ω)
   have : stoppedValue u τ =
       (fun p : Set.Iic n × Ω => u (↑p.fst) p.snd) ∘ fun ω => (⟨(τ ω).untopA, hτ_le' ω⟩, ω) := by
@@ -988,7 +1001,7 @@ theorem stronglyMeasurable_stoppedValue_of_le (h : ProgMeasurable f u) (hτ : Is
 
 lemma measurableSet_preimage_stoppedValue_inter [PseudoMetrizableSpace β] [MeasurableSpace β]
     [BorelSpace β]
-    (hf_prog : ProgMeasurable f u) (hτ : IsStoppingTime f τ)
+    (hf_prog : IsStronglyProgressive f u) (hτ : IsStoppingTime f τ)
     {t : Set β} (ht : MeasurableSet t) (i : ι) :
     MeasurableSet[f i] (stoppedValue u τ ⁻¹' t ∩ {ω | τ ω ≤ i}) := by
   have h_str_meas : ∀ i, StronglyMeasurable[f i] (stoppedValue u fun ω => min (τ ω) i) := fun i =>
@@ -1003,7 +1016,7 @@ lemma measurableSet_preimage_stoppedValue_inter [PseudoMetrizableSpace β] [Meas
   rw [min_eq_left h]
 
 theorem measurable_stoppedValue [PseudoMetrizableSpace β] [MeasurableSpace β] [BorelSpace β]
-    (hf_prog : ProgMeasurable f u) (hτ : IsStoppingTime f τ) :
+    (hf_prog : IsStronglyProgressive f u) (hτ : IsStoppingTime f τ) :
     Measurable[hτ.measurableSpace] (stoppedValue u τ) := by
   have h_str_meas : ∀ i, StronglyMeasurable[f i] (stoppedValue u fun ω => min (τ ω) i) := fun i =>
     stronglyMeasurable_stoppedValue_of_le hf_prog (hτ.min_const i) fun _ => min_le_right _ _
@@ -1040,7 +1053,7 @@ theorem measurable_stoppedValue [PseudoMetrizableSpace β] [MeasurableSpace β] 
     exact (hf_prog.stronglyAdapted (Classical.arbitrary ι)).measurable.mono
       (f.le (Classical.arbitrary ι)) le_rfl
 
-end ProgMeasurable
+end Progressive
 
 end LinearOrder
 
@@ -1130,7 +1143,7 @@ theorem memLp_stoppedValue_of_mem_finset (hτ : IsStoppingTime ℱ τ) (hu : ∀
     {s : Finset ι} (hbdd : ∀ ω, τ ω ∈ WithTop.some '' s) :
     MemLp (stoppedValue u τ) p μ := by
   rw [stoppedValue_eq_of_mem_finset hbdd]
-  refine memLp_finset_sum' _ fun i _ => MemLp.indicator ?_ (hu i)
+  refine memLp_finsetSum' _ fun i _ => MemLp.indicator ?_ (hu i)
   refine ℱ.le i {a : Ω | τ a = i} (hτ.measurableSet_eq_of_countable_range ?_ i)
   have : Set.range τ ⊆ WithTop.some '' s := by
     rintro x ⟨y, rfl⟩
@@ -1178,8 +1191,8 @@ theorem memLp_stoppedProcess_of_mem_finset (hτ : IsStoppingTime ℱ τ) (hu : �
   refine MemLp.add ?_ ?_
   · exact MemLp.indicator (ℱ.le n {a : Ω | n ≤ τ a} (hτ.measurableSet_ge n)) (hu n)
   · suffices MemLp (fun ω => ∑ i ∈ s with i < n, {a : Ω | τ a = i}.indicator (u i) ω) p μ by
-      convert this using 1; ext1 ω; simp only [Finset.sum_apply]
-    refine memLp_finset_sum _ fun i _ => MemLp.indicator ?_ (hu i)
+      convert! this using 1; ext1 ω; simp only [Finset.sum_apply]
+    refine memLp_finsetSum _ fun i _ => MemLp.indicator ?_ (hu i)
     exact ℱ.le i {a : Ω | τ a = i} (hτ.measurableSet_eq i)
 
 theorem memLp_stoppedProcess [LocallyFiniteOrderBot ι] (hτ : IsStoppingTime ℱ τ)
@@ -1221,23 +1234,23 @@ variable [TopologicalSpace β] [PseudoMetrizableSpace β] [Nonempty ι] [LinearO
 theorem StronglyAdapted.stoppedProcess [MetrizableSpace ι] (hu : StronglyAdapted f u)
     (hu_cont : ∀ ω, Continuous fun i => u i ω) (hτ : IsStoppingTime f τ) :
     StronglyAdapted f (stoppedProcess u τ) :=
-  ((hu.progMeasurable_of_continuous hu_cont).stoppedProcess hτ).stronglyAdapted
+  ((hu.isStronglyProgressive_of_continuous hu_cont).stoppedProcess hτ).stronglyAdapted
 
 /-- If the indexing order has the discrete topology, then the stopped process of a strongly adapted
 process is strongly adapted. -/
 theorem StronglyAdapted.stoppedProcess_of_discrete [DiscreteTopology ι] (hu : StronglyAdapted f u)
     (hτ : IsStoppingTime f τ) : StronglyAdapted f (MeasureTheory.stoppedProcess u τ) :=
-  (hu.progMeasurable_of_discrete.stoppedProcess hτ).stronglyAdapted
+  (hu.isStronglyProgressive_of_discrete.stoppedProcess hτ).stronglyAdapted
 
 theorem StronglyAdapted.stronglyMeasurable_stoppedProcess [MetrizableSpace ι]
     (hu : StronglyAdapted f u) (hu_cont : ∀ ω, Continuous fun i => u i ω) (hτ : IsStoppingTime f τ)
     (n : ι) : StronglyMeasurable (MeasureTheory.stoppedProcess u τ n) :=
-  (hu.progMeasurable_of_continuous hu_cont).stronglyMeasurable_stoppedProcess hτ n
+  (hu.isStronglyProgressive_of_continuous hu_cont).stronglyMeasurable_stoppedProcess hτ n
 
 theorem StronglyAdapted.stronglyMeasurable_stoppedProcess_of_discrete [DiscreteTopology ι]
     (hu : StronglyAdapted f u) (hτ : IsStoppingTime f τ) (n : ι) :
     StronglyMeasurable (MeasureTheory.stoppedProcess u τ n) :=
-  hu.progMeasurable_of_discrete.stronglyMeasurable_stoppedProcess hτ n
+  hu.isStronglyProgressive_of_discrete.stronglyMeasurable_stoppedProcess hτ n
 
 end StronglyAdaptedStoppedProcess
 

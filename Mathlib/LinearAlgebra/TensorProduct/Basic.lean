@@ -328,6 +328,8 @@ def mapOfCompatibleSMul : M ⊗[A] N →ₗ[S] M ⊗[R] N where
 @[simp] theorem mapOfCompatibleSMul_tmul (m n) : mapOfCompatibleSMul R A S M N (m ⊗ₜ n) = m ⊗ₜ n :=
   rfl
 
+/- The map `mapOfCompatibleSMul` is surjective. Its kernel is characterized by the Lemma
+`TensorProduct.ker_mapOfCompatibleSMul`. -/
 theorem mapOfCompatibleSMul_surjective : Function.Surjective (mapOfCompatibleSMul R A S M N) :=
   fun x ↦ x.induction_on (⟨0, map_zero _⟩) (fun m n ↦ ⟨_, mapOfCompatibleSMul_tmul ..⟩)
     fun _ _ ⟨x, hx⟩ ⟨y, hy⟩ ↦ ⟨x + y, by simpa using congr($hx + $hy)⟩
@@ -378,7 +380,7 @@ instance neg : Neg (M ⊗[R] N) where
 protected theorem neg_add_cancel (x : M ⊗[R] N) : -x + x = 0 :=
   x.induction_on
     (by rw [add_zero]; apply (Neg.aux R).map_zero)
-    (fun x y => by convert (add_tmul (R := R) (-x) x y).symm; rw [neg_add_cancel, zero_tmul])
+    (fun x y => by convert! (add_tmul (R := R) (-x) x y).symm; rw [neg_add_cancel, zero_tmul])
     fun x y hx hy => by
     suffices -x + x + (-y + y) = 0 by
       rw [← this]

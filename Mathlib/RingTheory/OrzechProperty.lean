@@ -44,7 +44,7 @@ free module, rank, Orzech property, (strong) rank condition, invariant basis num
 
 -/
 
-@[expose] public section
+public section
 
 universe u v w
 
@@ -90,6 +90,12 @@ theorem injective_of_surjective_of_injective
   let f' := j.symm.toLinearMap ∘ₗ f ∘ₗ (LinearEquiv.ofInjective i' hi).symm.toLinearMap
   replace hf : Surjective f' := by simpa [f'] using hf
   simpa [f'] using injective_of_surjective_of_submodule' f' hf
+
+theorem bijective_of_surjective_of_injective
+    {N : Type w} [AddCommMonoid N] [Module R N]
+    (i f : N →ₗ[R] M) (hi : Function.Injective i)
+    (hf : Function.Surjective f) : Function.Bijective f :=
+  ⟨OrzechProperty.injective_of_surjective_of_injective _ _ hi hf, hf⟩
 
 theorem injective_of_surjective_of_submodule
     {N : Submodule R M} (f : N →ₗ[R] M) (hf : Surjective f) : Injective f :=

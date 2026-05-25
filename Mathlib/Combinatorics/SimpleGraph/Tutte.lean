@@ -62,7 +62,11 @@ lemma IsTutteViolator.mono {u : Set V} (h : G ≤ G') (ht : G'.IsTutteViolator u
   simp only [IsTutteViolator, Subgraph.induce_verts, Subgraph.verts_top] at *
   have := ncard_oddComponents_mono _ (Subgraph.deleteVerts_mono' (G := G) (G' := G') u h)
   simp only [oddComponents] at *
-  lia
+  #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/13166
+  (replacing grind's canonicalizer with a type-directed normalizer), `lia` closed this goal.
+  It is not yet clear whether this is due to defeq abuse in Mathlib or a problem in the new
+  canonicalizer; a minimization would help. The original proof was: `lia` -/
+  exact lt_of_lt_of_le ht this
 
 /-- Given a graph in which the universal vertices do not violate Tutte's condition,
 if the graph decomposes into cliques, there exists a matching that covers

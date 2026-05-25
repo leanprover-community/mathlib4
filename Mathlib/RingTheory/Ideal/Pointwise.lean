@@ -50,7 +50,7 @@ protected def pointwiseDistribMulAction : DistribMulAction M (Ideal R) where
 
 scoped[Pointwise] attribute [instance] Ideal.pointwiseDistribMulAction
 
-open Pointwise
+open scoped Pointwise
 
 /-- The action on an ideal corresponding to applying the action to every element.
 
@@ -111,7 +111,7 @@ section Group
 
 variable [Group M] [Semiring R] [MulSemiringAction M R]
 
-open Pointwise
+open scoped Pointwise
 
 theorem pointwise_smul_eq_comap {a : M} (S : Ideal R) :
     a • S = S.comap (MulSemiringAction.toRingAut _ _ a).symm := by

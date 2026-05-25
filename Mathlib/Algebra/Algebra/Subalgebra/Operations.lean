@@ -41,7 +41,7 @@ variable (S' : Subalgebra R S)
 /-- Suppose we are given `∑ i, lᵢ * sᵢ = 1` ∈ `S`, and `S'` a subalgebra of `S` that contains
 `lᵢ` and `sᵢ`. To check that an `x : S` falls in `S'`, we only need to show that
 `sᵢ ^ n • x ∈ S'` for some `n` for each `sᵢ`. -/
-theorem mem_of_finset_sum_eq_one_of_pow_smul_mem
+theorem mem_of_finsetSum_eq_one_of_pow_smul_mem
     {ι : Type*} (ι' : Finset ι) (s : ι → S) (l : ι → S)
     (e : ∑ i ∈ ι', l i * s i = 1) (hs : ∀ i, s i ∈ S') (hl : ∀ i, l i ∈ S') (x : S)
     (H : ∀ i, ∃ n : ℕ, (s i ^ n : S) • x ∈ S') : x ∈ S' := by
@@ -69,11 +69,14 @@ theorem mem_of_finset_sum_eq_one_of_pow_smul_mem
   refine Submodule.smul_mem _ (⟨_, pow_mem (hs i) _⟩ : S') ?_
   exact ⟨⟨_, hn i⟩, rfl⟩
 
+@[deprecated (since := "2026-04-08")]
+alias mem_of_finset_sum_eq_one_of_pow_smul_mem := mem_of_finsetSum_eq_one_of_pow_smul_mem
+
 theorem mem_of_span_eq_top_of_smul_pow_mem
     (s : Set S) (l : s →₀ S) (hs : Finsupp.linearCombination S ((↑) : s → S) l = 1)
     (hs' : s ⊆ S') (hl : ∀ i, l i ∈ S') (x : S) (H : ∀ r : s, ∃ n : ℕ, (r : S) ^ n • x ∈ S') :
     x ∈ S' :=
-  mem_of_finset_sum_eq_one_of_pow_smul_mem S' l.support (↑) l hs (fun x => hs' x.2) hl x H
+  mem_of_finsetSum_eq_one_of_pow_smul_mem S' l.support (↑) l hs (fun x => hs' x.2) hl x H
 
 end Subalgebra
 

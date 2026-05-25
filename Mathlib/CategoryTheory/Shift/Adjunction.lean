@@ -131,10 +131,9 @@ lemma compatibilityCounit_left (h : CompatibilityCounit adj e₁ e₂) (X : C) :
   have := h (F.obj X)
   rw [← cancel_epi (F.map (e₂.inv.app _)), ← assoc, ← F.map_comp, Iso.inv_hom_id_app, F.map_id,
     id_comp] at this
-  rw [this]
-  erw [e₁.hom.naturality_assoc]
-  rw [Functor.comp_map, ← Functor.map_comp, left_triangle_components]
-  simp only [Functor.comp_obj, Functor.id_obj, Functor.map_id, comp_id]
+  dsimp only [Functor.comp_obj, Functor.id_obj]
+  rw [this, dsimp% e₁.hom.naturality_assoc, ← Functor.map_comp, left_triangle_components]
+  simp only [Functor.map_id, comp_id]
 
 /-- Given an adjunction `adj : F ⊣ G`, `a` in `A` and commutation isomorphisms
 `e₁ : shiftFunctor C a ⋙ F ≅ F ⋙ shiftFunctor D a` and
@@ -248,8 +247,6 @@ lemma mk' (_ : NatTrans.CommShift adj.unit A) :
       Functor.commShiftIso_id_hom_app, comp_id]
     refine (compatibilityCounit_of_compatibilityUnit adj _ _ (fun X ↦ ?_) _).symm
     simpa [Functor.commShiftIso_comp_hom_app] using NatTrans.shift_app_comm adj.unit a X⟩
-
-variable [adj.CommShift A]
 
 /-- The identity adjunction is compatible with the trivial `CommShift` structure on the
 identity functor.

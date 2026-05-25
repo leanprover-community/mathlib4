@@ -137,6 +137,14 @@ lemma HurwitzZeta.expZeta_zero : expZeta 0 = riemannZeta := by
 theorem differentiableAt_riemannZeta {s : ℂ} (hs' : s ≠ 1) : DifferentiableAt ℂ riemannZeta s :=
   differentiableAt_hurwitzZetaEven _ hs'
 
+lemma differentiableOn_riemannZeta :
+    DifferentiableOn ℂ riemannZeta {1}ᶜ :=
+  fun _ hs ↦ (differentiableAt_riemannZeta hs).differentiableWithinAt
+
+lemma analyticOn_riemannZeta :
+    AnalyticOnNhd ℂ riemannZeta {1}ᶜ :=
+  differentiableOn_riemannZeta.analyticOnNhd isOpen_compl_singleton
+
 /-- We have `ζ(0) = -1 / 2`. -/
 theorem riemannZeta_zero : riemannZeta 0 = -1 / 2 := by
   simp_rw [riemannZeta, hurwitzZetaEven, Function.update_self, if_true]

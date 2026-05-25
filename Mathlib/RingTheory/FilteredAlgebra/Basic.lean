@@ -33,7 +33,7 @@ In this file, we define the concept of filtration for abelian groups, rings, and
 
 -/
 
-@[expose] public section
+public section
 
 section GeneralFiltration
 
