@@ -50,7 +50,6 @@ lemma AdjoinPthRoots.root_pow (x : k) :
   rw [← ringExpChar.eq k p]
   rfl
 
-@[simp]
 lemma AdjoinPthRoots.algebraMap_root_symm (x : AdjoinPthRoots k) :
     algebraMap k (AdjoinPthRoots k) ((AdjoinPthRoots.root k).symm x) = x ^ p := by
   rw [← ringExpChar.eq k p]
