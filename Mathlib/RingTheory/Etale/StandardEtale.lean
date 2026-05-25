@@ -244,7 +244,8 @@ set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma equivMvPolynomialQuotient_symm_apply :
     P.equivMvPolynomialQuotient.symm (Ideal.Quotient.mk _ (.X 0)) = P.X := by
-  simp [equivMvPolynomialQuotient, StandardEtalePair.Ring]; rfl
+  simp [equivMvPolynomialQuotient, StandardEtalePair.Ring, StandardEtalePair.X,
+    Ideal.quotientEquivAlg_symm]
 
 /-- Mapping a standard etale pair under a ring homomorphism. -/
 @[simps] protected noncomputable def map (f : R →+* S) : StandardEtalePair S where
