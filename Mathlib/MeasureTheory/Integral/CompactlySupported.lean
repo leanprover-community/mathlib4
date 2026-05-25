@@ -26,7 +26,7 @@ variable {X : Type*}
 namespace CompactlySupportedContinuousMap
 variable [TopologicalSpace X] [MeasurableSpace X] [OpensMeasurableSpace X]
 
-lemma integrable {E : Type*} [NormedAddCommGroup E] (f : C_c(X, E))
+lemma integrable {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] (f : C_c(X, E))
     {μ : Measure X} [IsFiniteMeasureOnCompacts μ] :
     Integrable f μ :=
   f.continuous.integrable_of_hasCompactSupport f.hasCompactSupport
