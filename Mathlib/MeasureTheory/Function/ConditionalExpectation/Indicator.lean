@@ -34,8 +34,8 @@ open scoped NNReal ENNReal Topology MeasureTheory
 
 namespace MeasureTheory
 
-variable {α E : Type*} {m m0 : MeasurableSpace α} [NormedAddCommGroup E] [NormedSpace ℝ E]
-  [CompleteSpace E] {μ : Measure α} {f : α → E} {s : Set α}
+variable {α E : Type*} {m m0 : MeasurableSpace α} [AddCommGroup E] [NormedAddCommGroup E]
+  [NormedSpace ℝ E] [CompleteSpace E] {μ : Measure α} {f : α → E} {s : Set α}
 
 theorem condExp_ae_eq_restrict_zero (hs : MeasurableSet[m] s) (hf : f =ᵐ[μ.restrict s] 0) :
     μ[f | m] =ᵐ[μ.restrict s] 0 := by
