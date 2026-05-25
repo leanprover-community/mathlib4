@@ -110,9 +110,7 @@ instance : CompleteLattice (SubmonoidFunctor R) where
   isGLB_sInf _ := ⟨fun _ _ _ _ ↦ by aesop, fun _ _ _ ↦ by aesop⟩
   bot := { obj _ := ⊥ }
   bot_le _ _ := bot_le
-  top :=
-    { obj _ := ⊤
-      map _ _ h:= Set.mem_preimage.mpr h }
+  top := { obj _ := ⊤ }
   le_top _ _ := le_top
 
 /-- The inclusion of a submonoid functor `S` to the original functor of monoids `R`. -/
