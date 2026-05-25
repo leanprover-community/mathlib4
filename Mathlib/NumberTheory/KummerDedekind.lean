@@ -86,10 +86,14 @@ noncomputable def quotMapEquivQuotQuotMap (hx : (conductor R x).comap (algebraMa
 lemma quotMapEquivQuotQuotMap_symm_apply (hx : (conductor R x).comap (algebraMap R S) ⊔ I = ⊤)
     (hx' : IsIntegral R x) (Q : R[X]) :
     (quotMapEquivQuotQuotMap hx hx').symm (Q.map (Ideal.Quotient.mk I)) = Q.aeval x := by
+  change (quotMapEquivQuotQuotMap hx hx').symm (Q.map (Ideal.Quotient.mk I)) =
+    Ideal.Quotient.mk (I.map (algebraMap R S)) (Q.aeval x)
   apply (quotMapEquivQuotQuotMap hx hx').injective
   rw [quotMapEquivQuotQuotMap, RingEquiv.symm_trans_apply,
     RingEquiv.symm_symm, RingEquiv.coe_trans, Function.comp_apply, RingEquiv.symm_apply_apply,
-    RingEquiv.symm_trans_apply, quotEquivOfEq_symm, quotEquivOfEq_mk]
+    RingEquiv.symm_trans_apply, quotEquivOfEq_symm]
+  simp only [OneHom.toFun_eq_coe]
+  rw (transparency := .default) [quotEquivOfEq_mk]
   congr
   convert! (adjoin.powerBasis' hx').quotientEquivQuotientMinpolyMap_symm_apply_mk I Q
   apply (quotAdjoinEquivQuotMap hx
@@ -222,13 +226,22 @@ theorem normalizedFactorsMapEquivNormalizedFactorsMinPolyMk_symm_apply_eq_span
   rw [IsDedekindDomain.normalizedFactorsEquivOfQuotEquiv_symm]
   dsimp [IsDedekindDomain.normalizedFactorsEquivOfQuotEquiv,
     IsDedekindDomain.idealFactorsEquivOfQuotEquiv, OrderIso.ofHomInv]
-  simp only [map_span, image_singleton, coe_coe, quotMapEquivQuotQuotMap_symm_apply hx hx' Q]
+  have hquot :
+      (quotMapEquivQuotQuotMap hx hx').symm
+          (Ideal.Quotient.mk (span {Polynomial.map (Ideal.Quotient.mk I) (minpoly R x)})
+            (Polynomial.map (Ideal.Quotient.mk I) Q)) =
+        Ideal.Quotient.mk (I.map (algebraMap R S)) (Polynomial.aeval x Q) := by
+    simpa using quotMapEquivQuotQuotMap_symm_apply hx hx' Q
+  simp only [map_span, image_singleton, coe_coe]
+  rw [hquot]
   refine le_antisymm (fun a ha ↦ ?_) (span_le.mpr <| union_subset_iff.mpr <|
     ⟨le_comap_of_map_le (by simp), by simp⟩)
   rw [mem_comap, Ideal.mem_span_singleton] at ha
   obtain ⟨a', ha'⟩ := ha
   obtain ⟨b, hb⟩ := Ideal.Quotient.mk_surjective a'
-  rw [← hb, ← map_mul, Quotient.mk_eq_mk_iff_sub_mem] at ha'
+  rw [← hb] at ha'
+  rw [← (Ideal.Quotient.mk (I.map (algebraMap R S))).map_mul,
+    Quotient.mk_eq_mk_iff_sub_mem] at ha'
   rw [union_comm, span_union, span_eq, mem_span_singleton_sup]
   exact ⟨b, a - Q.aeval x * b, ha', by ring⟩
 
