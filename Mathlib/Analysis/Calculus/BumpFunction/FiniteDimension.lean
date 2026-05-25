@@ -434,7 +434,7 @@ variable (E)
 theorem y_smooth : ContDiffOn ℝ ∞ (uncurry y) (Ioo (0 : ℝ) 1 ×ˢ (univ : Set E)) := by
   have hs : IsOpen (Ioo (0 : ℝ) (1 : ℝ)) := isOpen_Ioo
   have hk : IsCompact (closedBall (0 : E) 1) := ProperSpace.isCompact_closedBall _ _
-  refine contDiffOn_convolution_left_with_param (lsmul ℝ ℝ) (f := φ) («μ» := μ) hs hk ?_ ?_ ?_
+  refine contDiffOn_convolution_left_with_param (lsmul ℝ ℝ) hs hk ?_ ?_ ?_
   · rintro p x hp hx
     simp only [w, mul_inv_rev, smul_eq_mul, mul_eq_zero, inv_eq_zero]
     right

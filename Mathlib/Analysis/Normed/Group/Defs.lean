@@ -148,12 +148,10 @@ instance [TopologicalSpace E] [ContinuousENorm E] [Monoid E] [IsENormedMonoid E]
 class NormPseudoMetric (E : Type*) extends Norm E, PseudoMetricSpace E where
 
 /-- missing doc -/
-class NormMetric (E : Type*) extends Norm E, MetricSpace E where
+class NormMetric (E : Type*) extends NormPseudoMetric E, MetricSpace E where
 
-attribute [instance 100] NormPseudoMetric.toNorm NormMetric.toNorm
-attribute [instance 100] NormPseudoMetric.toPseudoMetricSpace NormMetric.toMetricSpace
-
-instance (priority := 100) NormMetric.toNormPseudoMetric [NormMetric E] : NormPseudoMetric E where
+attribute [instance 100] NormPseudoMetric.toNorm NormPseudoMetric.toPseudoMetricSpace
+attribute [instance 100] NormMetric.toMetricSpace NormMetric.toNormPseudoMetric
 
 /-- A seminormed group is an additive group endowed with a norm for which `dist x y = ‖-x + y‖`
 defines a pseudometric space structure. -/
