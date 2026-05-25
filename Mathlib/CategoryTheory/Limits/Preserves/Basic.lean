@@ -218,6 +218,10 @@ lemma preservesLimit_of_preserves_limit_cone {F : C ⥤ D} {t : Cone K} (h : IsL
     (hF : IsLimit (F.mapCone t)) : PreservesLimit K F where
   preserves h' := ⟨IsLimit.ofIsoLimit hF (Functor.mapIso _ (IsLimit.uniqueUpToIso h h'))⟩
 
+lemma preservesLimit_iff_isLimit_mapCone {F : C ⥤ D} {t : Cone K} (h : IsLimit t) :
+    PreservesLimit K F ↔ Nonempty (IsLimit (F.mapCone t)) :=
+  ⟨fun _ ↦ ⟨isLimitOfPreserves _ h⟩, fun h' ↦ preservesLimit_of_preserves_limit_cone h h'.some⟩
+
 set_option backward.defeqAttrib.useBackward true in
 /-- Transfer preservation of limits along a natural isomorphism in the diagram. -/
 lemma preservesLimit_of_iso_diagram {K₁ K₂ : J ⥤ C} (F : C ⥤ D) (h : K₁ ≅ K₂)
@@ -255,6 +259,10 @@ lemma preservesLimits_of_natIso {F G : C ⥤ D} (h : F ≅ G) [PreservesLimitsOf
     PreservesLimitsOfSize.{w, w'} G where
   preservesLimitsOfShape := preservesLimitsOfShape_of_natIso h
 
+lemma preservesLimitsOfSize_iff_of_natIso {F G : C ⥤ D} (h : F ≅ G) :
+    PreservesLimitsOfSize.{w, w'} F ↔ PreservesLimitsOfSize.{w, w'} G :=
+  ⟨fun _ ↦ preservesLimits_of_natIso h, fun _ ↦ preservesLimits_of_natIso h.symm⟩
+
 set_option backward.defeqAttrib.useBackward true in
 /-- Transfer preservation of limits along an equivalence in the shape. -/
 lemma preservesLimitsOfShape_of_equiv {J' : Type w₂} [Category.{w₂'} J'] (e : J ≌ J') (F : C ⥤ D)
@@ -289,6 +297,11 @@ lemma preservesSmallestLimits_of_preservesLimits (F : C ⥤ D) [PreservesLimitsO
 lemma preservesColimit_of_preserves_colimit_cocone {F : C ⥤ D} {t : Cocone K} (h : IsColimit t)
     (hF : IsColimit (F.mapCocone t)) : PreservesColimit K F :=
   ⟨fun h' => ⟨IsColimit.ofIsoColimit hF (Functor.mapIso _ (IsColimit.uniqueUpToIso h h'))⟩⟩
+
+lemma preservesColimit_iff_isColimit_mapCocone {F : C ⥤ D} {t : Cocone K} (h : IsColimit t) :
+    PreservesColimit K F ↔ Nonempty (IsColimit (F.mapCocone t)) :=
+  ⟨fun _ ↦ ⟨isColimitOfPreserves _ h⟩,
+    fun h' ↦ preservesColimit_of_preserves_colimit_cocone h h'.some⟩
 
 set_option backward.defeqAttrib.useBackward true in
 /-- Transfer preservation of colimits along a natural isomorphism in the shape. -/
@@ -327,6 +340,10 @@ lemma preservesColimitsOfShape_iff_of_natIso {F G : C ⥤ D} (h : F ≅ G) :
 lemma preservesColimits_of_natIso {F G : C ⥤ D} (h : F ≅ G) [PreservesColimitsOfSize.{w, w'} F] :
     PreservesColimitsOfSize.{w, w'} G where
   preservesColimitsOfShape {_J} _𝒥₁ := preservesColimitsOfShape_of_natIso h
+
+lemma preservesColimitsOfSize_iff_of_natIso {F G : C ⥤ D} (h : F ≅ G) :
+    PreservesColimitsOfSize.{w, w'} F ↔ PreservesColimitsOfSize.{w, w'} G :=
+  ⟨fun _ ↦ preservesColimits_of_natIso h, fun _ ↦ preservesColimits_of_natIso h.symm⟩
 
 set_option backward.defeqAttrib.useBackward true in
 /-- Transfer preservation of colimits along an equivalence in the shape. -/
