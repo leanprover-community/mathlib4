@@ -308,7 +308,7 @@ instance MonoidalCategory.instMonoidalCategoryStruct :
   rightUnitor M := (TensorProduct.rid R M).toModuleIso
 
 instance monoidalCategory : MonoidalCategory (ModuleCat.{u} R) :=
-  Monoidal.induced equivalenceSemimoduleCat.functor
+  fast_instance% Monoidal.induced equivalenceSemimoduleCat.functor
   { μIso _ _ := .refl _
     εIso := .refl _
     associator_eq _ _ _ := by ext1; exact TensorProduct.ext (TensorProduct.ext rfl)
