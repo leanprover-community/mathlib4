@@ -41,31 +41,10 @@ namespace Subgroup
 
 variable {G : Type*} [Group G]
 
-/-! ### Normality of the lower central series and a nilpotency criterion -/
-
-instance lowerCentralSeries_normal (S : Subgroup G) [S.Normal] (n : ℕ) :
-    (S.lowerCentralSeries n).Normal := by
-  induction n with
-  | zero => simpa using ‹S.Normal›
-  | succ n _ => simp only [lowerCentralSeries_succ]; infer_instance
-
-theorem isNilpotent_of_lowerCentralSeries_eq_bot {S : Subgroup G} {n : ℕ}
-    (h : S.lowerCentralSeries n = ⊥) : Group.IsNilpotent S := by
-  rw [nilpotent_iff_lowerCentralSeries]
-  refine ⟨n, ?_⟩
-  rw [← (Subgroup.map_injective S.subtype_injective).eq_iff' (Subgroup.map_bot S.subtype),
-    top_subtype_lowerCentralSeries]
-  exact h
-
-theorem lowerCentralSeries_eq_bot_of_nilpotencyClass_le {S : Subgroup G}
-    [Group.IsNilpotent S] {n : ℕ} (hn : Group.nilpotencyClass S ≤ n) :
-    S.lowerCentralSeries n = ⊥ := by
-  rw [lowerCentralSeries_eq_map, lowerCentralSeries_eq_bot_iff_nilpotencyClass_le.mpr hn, map_bot]
-
-/-! ### The key bound on the lower central series of a join -/
+/-! ### A key bound on the lower central series of a join -/
 
 /-- The lower central series of `H ⊔ K` lies in the lower central series of `H` joined with `K`. -/
-theorem lowerCentralSeries_sup_le_sup_left (H K : Subgroup G) [H.Normal] [K.Normal] :
+theorem lowerCentralSeries_sup_le_sup_left (H K : Subgroup G) [K.Normal] :
     ∀ n, (H ⊔ K).lowerCentralSeries n ≤ H.lowerCentralSeries n ⊔ K
   | 0 => by simp
   | n + 1 => by
@@ -86,19 +65,19 @@ theorem lowerCentralSeries_sup_le_sup_left (H K : Subgroup G) [H.Normal] [K.Norm
     exact mul_mem (mul_mem (mem_sup_left (commutator_mem_commutator ha hc))
       (mem_sup_right hcad)) (mem_sup_right had)
 
-/-! ### The diagonal bound -/
+/-! ### Diagonal bound (proof-internal) -/
 
 /-- The diagonal bound `⨆ i ≤ n, H.lowerCentralSeries i ⊓ K.lowerCentralSeries (n - i)`.
 Used to track the simultaneous decay of `H`- and `K`-flavoured iterations. -/
-def diagonalBound (H K : Subgroup G) (n : ℕ) : Subgroup G :=
+private def diagonalBound (H K : Subgroup G) (n : ℕ) : Subgroup G :=
   ⨆ i : Fin (n + 1), H.lowerCentralSeries i.val ⊓ K.lowerCentralSeries (n - i.val)
 
-theorem mem_diagonalBound {H K : Subgroup G} {n i : ℕ} (hi : i ≤ n) {g : G}
+private theorem mem_diagonalBound {H K : Subgroup G} {n i : ℕ} (hi : i ≤ n) {g : G}
     (hg : g ∈ H.lowerCentralSeries i ⊓ K.lowerCentralSeries (n - i)) :
     g ∈ diagonalBound H K n :=
   mem_iSup_of_mem ⟨i, Nat.lt_succ_of_le hi⟩ hg
 
-instance diagonalBound_normal (H K : Subgroup G) [H.Normal] [K.Normal] (n : ℕ) :
+private instance diagonalBound_normal (H K : Subgroup G) [H.Normal] [K.Normal] (n : ℕ) :
     (diagonalBound H K n).Normal where
   conj_mem x hx g := by
     refine iSup_induction (C := fun y => g * y * g⁻¹ ∈ diagonalBound H K n) _ hx ?_ ?_ ?_
@@ -111,37 +90,34 @@ instance diagonalBound_normal (H K : Subgroup G) [H.Normal] [K.Normal] (n : ℕ)
       convert (diagonalBound H K n).mul_mem ha hb using 1
       group
 
-/-! ### Cross-term bounds and the inductive step -/
-
-theorem commutator_inf_lowerCentralSeries_left (H K : Subgroup G)
-    [H.Normal] [K.Normal] (i j : ℕ) :
+private theorem commutator_inf_lowerCentralSeries_left (H K : Subgroup G) [K.Normal] (i j : ℕ) :
     ⁅H.lowerCentralSeries i ⊓ K.lowerCentralSeries j, H⁆ ≤
       H.lowerCentralSeries (i + 1) ⊓ K.lowerCentralSeries j := by
   simp only [lowerCentralSeries_succ]
   exact le_inf (commutator_mono inf_le_left le_rfl)
     ((commutator_mono inf_le_right le_rfl).trans (commutator_le_left _ _))
 
-theorem commutator_inf_lowerCentralSeries_right (H K : Subgroup G)
-    [H.Normal] [K.Normal] (i j : ℕ) :
+private theorem commutator_inf_lowerCentralSeries_right (H K : Subgroup G) [H.Normal] (i j : ℕ) :
     ⁅H.lowerCentralSeries i ⊓ K.lowerCentralSeries j, K⁆ ≤
       H.lowerCentralSeries i ⊓ K.lowerCentralSeries (j + 1) := by
   simp only [lowerCentralSeries_succ]
   exact le_inf ((commutator_mono inf_le_left le_rfl).trans (commutator_le_left _ _))
     (commutator_mono inf_le_right le_rfl)
 
-theorem mem_diagonalBound_succ_left (H K : Subgroup G) {n i : ℕ} (hi : i ≤ n) {g : G}
+private theorem mem_diagonalBound_succ_left (H K : Subgroup G) {n i : ℕ} (hi : i ≤ n) {g : G}
     (hg : g ∈ H.lowerCentralSeries (i + 1) ⊓ K.lowerCentralSeries (n - i)) :
     g ∈ diagonalBound H K (n + 1) := by
   have hidx : n + 1 - (i + 1) = n - i := by omega
   exact mem_diagonalBound (Nat.succ_le_succ hi) (hidx ▸ hg)
 
-theorem mem_diagonalBound_succ_right (H K : Subgroup G) {n i : ℕ} (hi : i ≤ n) {g : G}
+private theorem mem_diagonalBound_succ_right (H K : Subgroup G) {n i : ℕ} (hi : i ≤ n) {g : G}
     (hg : g ∈ H.lowerCentralSeries i ⊓ K.lowerCentralSeries (n - i + 1)) :
     g ∈ diagonalBound H K (n + 1) := by
   have hidx : n + 1 - i = n - i + 1 := by omega
   exact mem_diagonalBound (Nat.le_succ_of_le hi) (hidx ▸ hg)
 
-theorem commutator_diagonalBound_sup_le (H K : Subgroup G) [H.Normal] [K.Normal] (n : ℕ) :
+private theorem commutator_diagonalBound_sup_le
+    (H K : Subgroup G) [H.Normal] [K.Normal] (n : ℕ) :
     ⁅diagonalBound H K n, H ⊔ K⁆ ≤ diagonalBound H K (n + 1) := by
   refine commutator_le.mpr fun g hg h hh => ?_
   obtain ⟨c, hc, d, hd, rfl⟩ := mem_sup_of_normal_right.mp hh
@@ -163,16 +139,14 @@ theorem commutator_diagonalBound_sup_le (H K : Subgroup G) [H.Normal] [K.Normal]
     refine mul_mem (mul_mem ?_ hy₂) hy₁
     exact commutator_le_right ⊤ _ (commutator_mem_commutator (mem_top y₁) hy₂)
 
-/-! ### The bound on the lower central series of `H ⊔ K` via `diagonalBound` -/
-
-theorem lowerCentralSeries_sup_le_diagonalBound (H K : Subgroup G)
+private theorem lowerCentralSeries_sup_le_diagonalBound (H K : Subgroup G)
     [H.Normal] [K.Normal] [Group.IsNilpotent H] [Group.IsNilpotent K] :
     ∀ n, (H ⊔ K).lowerCentralSeries
           (max (Group.nilpotencyClass H) (Group.nilpotencyClass K) + n) ≤
         diagonalBound H K n
   | 0 => by
     set c := max (Group.nilpotencyClass H) (Group.nilpotencyClass K)
-    have aux (A B : Subgroup G) [A.Normal] [B.Normal] [Group.IsNilpotent A]
+    have aux (A B : Subgroup G) [B.Normal] [Group.IsNilpotent A]
         (hA : Group.nilpotencyClass A ≤ c) :
         (A ⊔ B).lowerCentralSeries c ≤ B := by
       have := lowerCentralSeries_sup_le_sup_left A B c
@@ -185,7 +159,7 @@ theorem lowerCentralSeries_sup_le_diagonalBound (H K : Subgroup G)
     exact (commutator_mono (lowerCentralSeries_sup_le_diagonalBound H K n) le_rfl).trans
       (commutator_diagonalBound_sup_le H K n)
 
-theorem diagonalBound_eq_bot_of_nilpotent (H K : Subgroup G)
+private theorem diagonalBound_eq_bot_of_nilpotent (H K : Subgroup G)
     [Group.IsNilpotent H] [Group.IsNilpotent K] :
     diagonalBound H K (Group.nilpotencyClass H + Group.nilpotencyClass K) = ⊥ := by
   refine iSup_eq_bot.mpr fun i => ?_
