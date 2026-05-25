@@ -351,7 +351,7 @@ instance IsClosedImmersion.isZariskiLocalAtTarget : IsZariskiLocalAtTarget @IsCl
 and being surjective on global sections. -/
 instance IsClosedImmersion.hasAffineProperty : HasAffineProperty @IsClosedImmersion
     (fun X _ f ↦ IsAffine X ∧ Function.Surjective (f.appTop)) := by
-  convert HasAffineProperty.of_isZariskiLocalAtTarget @IsClosedImmersion
+  convert! HasAffineProperty.of_isZariskiLocalAtTarget @IsClosedImmersion
   refine ⟨fun ⟨h₁, h₂⟩ ↦ of_surjective_of_isAffine _ h₂, by apply isAffine_surjective_of_isAffine⟩
 
 lemma isClosedImmersion_iff_isAffineHom {f : X ⟶ Y} :

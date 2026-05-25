@@ -266,9 +266,6 @@ where `ι` is a finite type. -/
 def ContinuousLinearEquiv.piRing (ι : Type*) [Fintype ι] [DecidableEq ι] :
     ((ι → 𝕜) →L[𝕜] E) ≃L[𝕜] ι → E :=
   { LinearMap.toContinuousLinearMap.symm.trans (LinearEquiv.piRing 𝕜 E ι 𝕜) with
-    continuous_toFun := by
-      refine continuous_pi fun i ↦ ?_
-      exact (apply 𝕜 E (Pi.single i 1)).continuous
     continuous_invFun := by
       simp_rw [LinearEquiv.invFun_eq_symm, LinearEquiv.trans_symm, LinearEquiv.symm_symm]
       refine AddMonoidHomClass.continuous_of_bound
@@ -644,8 +641,10 @@ theorem summable_norm_mul_geometric_of_norm_lt_one' {F : Type*} [NormedRing F]
       simpa [Nat.cast_pow] using
       (isBigO_norm_left.mpr (isBigO_norm_right.mpr hu)).mul (isBigO_refl (fun n ↦ (‖r‖ ^ n)) atTop)
   _ =O[atTop] fun n ↦ ‖r' ^ n‖ := by
-      convert isBigO_norm_right.mpr (isBigO_norm_left.mpr
-        (isLittleO_pow_const_mul_const_pow_const_pow_of_norm_lt k hrr').isBigO)
+      convert!
+        isBigO_norm_right.mpr
+          (isBigO_norm_left.mpr
+            (isLittleO_pow_const_mul_const_pow_const_pow_of_norm_lt k hrr').isBigO)
       simp only [norm_pow, norm_mul]
 
 theorem summable_of_isEquivalent {ι E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
