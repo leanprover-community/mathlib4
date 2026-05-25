@@ -255,23 +255,17 @@ theorem mul_rTensor_comul_eq_of_adjoin_eq_top
   have hS₀_antihom : ∀ x y : A, S₀ (x * y) = S₀ y * S₀ x := fun x y => by simp [hS₀, map_mul]
   let locus : Subalgebra R A :=
     { carrier := { a | LinearMap.mul' R A (S₀.rTensor A (comul a)) = algebraMap R A (counit a) }
-      add_mem' := fun ha hb => by
-        simp only [Set.mem_setOf_eq, map_add] at ha hb ⊢; rw [ha, hb, ← map_add]
-      algebraMap_mem' := fun r => show _ = _ by
-        rw [Bialgebra.comul_algebraMap, Bialgebra.counit_algebraMap,
-            Algebra.TensorProduct.algebraMap_apply, LinearMap.rTensor_tmul]
-        simp [hS₀]
+      add_mem' := fun ha hb => by simp [map_add, show _ = _ from ha, show _ = _ from hb]
+      algebraMap_mem' := fun r => show _ = _ by simp [hS₀]
       mul_mem' := fun {a b} ha hb => by
-        simp only [Set.mem_setOf_eq] at ha hb ⊢
+        simp only [Set.mem_setOf_eq] at *
         let ℛa := ℛ R a
         let ℛb := ℛ R b
         calc LinearMap.mul' R A (S₀.rTensor A (comul (a * b)))
-            _ = LinearMap.mul' R A (S₀.rTensor A (comul a * comul b)) := by
-              rw [Bialgebra.comul_mul]
             _ = ∑ p ∈ ℛa.index, ∑ q ∈ ℛb.index,
                   S₀ (ℛa.left p * ℛb.left q) * (ℛa.right p * ℛb.right q) := by
-              rw [← ℛa.eq, ← ℛb.eq, Finset.sum_mul_sum]
-              simp [Algebra.TensorProduct.tmul_mul_tmul, LinearMap.rTensor]
+              rw [Bialgebra.comul_mul, ← ℛa.eq, ← ℛb.eq, Finset.sum_mul_sum]
+              simp [Algebra.TensorProduct.tmul_mul_tmul]
             _ = ∑ p ∈ ℛa.index, ∑ q ∈ ℛb.index,
                   S₀ (ℛb.left q) * (S₀ (ℛa.left p) * ℛa.right p) * ℛb.right q := by
               simp_rw [hS₀_antihom, mul_assoc]
@@ -281,17 +275,14 @@ theorem mul_rTensor_comul_eq_of_adjoin_eq_top
             _ = ∑ q ∈ ℛb.index,
                   algebraMap R A (counit a) * S₀ (ℛb.left q) * ℛb.right q := by
               refine Finset.sum_congr rfl fun q _ => ?_
-              have hℛa : ∑ p ∈ ℛa.index, S₀ (ℛa.left p) * ℛa.right p
-                         = algebraMap R A (counit a) := by
-                simpa [LinearMap.rTensor, LinearMap.mul'_apply, ← ℛa.eq] using ha
-              rw [hℛa, show S₀ (ℛb.left q) * algebraMap R A (counit a)
-                  = algebraMap R A (counit a) * S₀ (ℛb.left q) from (Algebra.commutes _ _).symm]
+              rw [show ∑ p ∈ ℛa.index, S₀ (ℛa.left p) * ℛa.right p = algebraMap R A (counit a)
+                    from by simpa [← ℛa.eq] using ha, ← Algebra.commutes]
             _ = algebraMap R A (counit a) *
                   ∑ q ∈ ℛb.index, S₀ (ℛb.left q) * ℛb.right q := by
-              rw [Finset.mul_sum]; simp_rw [mul_assoc]
+              simp_rw [Finset.mul_sum, mul_assoc]
             _ = algebraMap R A (counit a) * algebraMap R A (counit b) := by
               congr 1
-              simpa [LinearMap.rTensor, LinearMap.mul'_apply, ← ℛb.eq] using hb
+              simpa [← ℛb.eq] using hb
             _ = algebraMap R A (counit (a * b)) := by
               rw [Bialgebra.counit_mul, map_mul] }
   ext x
@@ -312,23 +303,17 @@ theorem mul_lTensor_comul_eq_of_adjoin_eq_top
   have hS₀_antihom : ∀ x y : A, S₀ (x * y) = S₀ y * S₀ x := fun x y => by simp [hS₀, map_mul]
   let locus : Subalgebra R A :=
     { carrier := { a | LinearMap.mul' R A (S₀.lTensor A (comul a)) = algebraMap R A (counit a) }
-      add_mem' := fun ha hb => by
-        simp only [Set.mem_setOf_eq, map_add] at ha hb ⊢; rw [ha, hb, ← map_add]
-      algebraMap_mem' := fun r => show _ = _ by
-        rw [Bialgebra.comul_algebraMap, Bialgebra.counit_algebraMap,
-            Algebra.TensorProduct.algebraMap_apply, LinearMap.lTensor_tmul]
-        simp [hS₀]
+      add_mem' := fun ha hb => by simp [map_add, show _ = _ from ha, show _ = _ from hb]
+      algebraMap_mem' := fun r => show _ = _ by simp [hS₀]
       mul_mem' := fun {a b} ha hb => by
-        simp only [Set.mem_setOf_eq] at ha hb ⊢
+        simp only [Set.mem_setOf_eq] at *
         let ℛa := ℛ R a
         let ℛb := ℛ R b
         calc LinearMap.mul' R A (S₀.lTensor A (comul (a * b)))
-            _ = LinearMap.mul' R A (S₀.lTensor A (comul a * comul b)) := by
-              rw [Bialgebra.comul_mul]
             _ = ∑ p ∈ ℛa.index, ∑ q ∈ ℛb.index,
                   (ℛa.left p * ℛb.left q) * S₀ (ℛa.right p * ℛb.right q) := by
-              rw [← ℛa.eq, ← ℛb.eq, Finset.sum_mul_sum]
-              simp [Algebra.TensorProduct.tmul_mul_tmul, LinearMap.lTensor]
+              rw [Bialgebra.comul_mul, ← ℛa.eq, ← ℛb.eq, Finset.sum_mul_sum]
+              simp [Algebra.TensorProduct.tmul_mul_tmul]
             _ = ∑ p ∈ ℛa.index, ∑ q ∈ ℛb.index,
                   ℛa.left p * (ℛb.left q * S₀ (ℛb.right q)) * S₀ (ℛa.right p) := by
               simp_rw [hS₀_antihom, mul_assoc]
@@ -339,17 +324,14 @@ theorem mul_lTensor_comul_eq_of_adjoin_eq_top
             _ = ∑ p ∈ ℛa.index,
                   algebraMap R A (counit b) * ℛa.left p * S₀ (ℛa.right p) := by
               refine Finset.sum_congr rfl fun p _ => ?_
-              have hℛb : ∑ q ∈ ℛb.index, ℛb.left q * S₀ (ℛb.right q)
-                         = algebraMap R A (counit b) := by
-                simpa [LinearMap.lTensor, LinearMap.mul'_apply, ← ℛb.eq] using hb
-              rw [hℛb, show ℛa.left p * algebraMap R A (counit b)
-                  = algebraMap R A (counit b) * ℛa.left p from (Algebra.commutes _ _).symm]
+              rw [show ∑ q ∈ ℛb.index, ℛb.left q * S₀ (ℛb.right q) = algebraMap R A (counit b)
+                    from by simpa [← ℛb.eq] using hb, ← Algebra.commutes]
             _ = algebraMap R A (counit b) *
                   ∑ p ∈ ℛa.index, ℛa.left p * S₀ (ℛa.right p) := by
-              rw [Finset.mul_sum]; simp_rw [mul_assoc]
+              simp_rw [Finset.mul_sum, mul_assoc]
             _ = algebraMap R A (counit b) * algebraMap R A (counit a) := by
               congr 1
-              simpa [LinearMap.lTensor, LinearMap.mul'_apply, ← ℛa.eq] using ha
+              simpa [← ℛa.eq] using ha
             _ = algebraMap R A (counit (a * b)) := by
               rw [Bialgebra.counit_mul, mul_comm (counit a) (counit b), map_mul] }
   ext x
