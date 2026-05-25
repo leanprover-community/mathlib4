@@ -80,6 +80,16 @@ theorem commutatorElement_mul_right_eq_mul_conj (a b c : G) :
     ⁅a, b * c⁆ = ⁅a, b⁆ * b * ⁅a, c⁆ * b⁻¹ := by
   simp [mul_assoc, commutatorElement_def]
 
+@[to_additive]
+theorem commutatorElement_mul_left (x y z : G) :
+    ⁅x * y, z⁆ = ⁅x, ⁅y, z⁆⁆ * ⁅y, z⁆ * ⁅x, z⁆ := by
+  simp [commutatorElement_def, mul_assoc]
+
+@[to_additive]
+theorem commutatorElement_mul_right (x y z : G) :
+    ⁅x, y * z⁆ = ⁅x, y⁆ * ⁅y, ⁅x, z⁆⁆ * ⁅x, z⁆ := by
+  simp [commutatorElement_def, mul_assoc]
+
 namespace Subgroup
 
 /-- The commutator of two subgroups `H₁` and `H₂`. -/
