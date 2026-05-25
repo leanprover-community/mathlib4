@@ -290,6 +290,9 @@ theorem exists_of_lt : p < q → ∃ x ∈ q, x ∉ p := by
 theorem lt_iff_le_and_exists : p < q ↔ p ≤ q ∧ ∃ x ∈ q, x ∉ p := by
   rw [lt_iff_le_not_ge, not_le_iff_exists]
 
+theorem not_le_iff_exists_mem_notMem : ¬p ≤ q ↔ ∃ x, x ∈ p ∧ x ∉ q := by
+  simpa only [← coe_subset_coe] using Set.not_subset_iff_exists_mem_notMem
+
 /-- membership is inherited from `Set X` -/
 abbrev instSubtypeSet {X} {p : Set X → Prop} : SetLike {s // p s} X where
   coe := (↑)
@@ -313,5 +316,175 @@ attribute [local instance] instSubtypeSet instSubtype
 end
 
 end PartialOrder
+
+end SetLike
+
+class IsConcreteEmpty (A : Type*) (B : outParam Type*) [SetLike A B] [EmptyCollection A] where
+  protected coe_empty' : (∅ : A) = (∅ : Set B)
+
+namespace SetLike
+
+variable {A B : Type*} [setLike : SetLike A B] [EmptyCollection A] [IsConcreteEmpty A B]
+
+@[simp] lemma coe_empty : (∅ : A) = (∅ : Set B) := IsConcreteEmpty.coe_empty'
+
+@[simp, grind =, push]
+theorem mem_empty_iff_false {x : B} : x ∈ (∅ : A) ↔ False := by simp [← mem_coe]
+
+theorem eq_empty_iff_forall_notMem {a : A} : a = ∅ ↔ ∀ x, x ∉ a := by
+  simp [← coe_set_eq, ← mem_coe, Set.eq_empty_iff_forall_notMem]
+
+theorem eq_empty_of_forall_notMem {a : A} (h : ∀ x, x ∉ a) : a = ∅ :=
+  eq_empty_iff_forall_notMem.mpr h
+
+theorem forall_mem_empty {p : B → Prop} : (∀ x ∈ (∅ : A), p x) ↔ True := by simp
+
+section LE
+
+variable [LE A] [IsConcreteLE A B]
+
+include setLike in
+@[simp] theorem empty_le (a : A) : ∅ ≤ a := by simp [← coe_subset_coe]
+
+include setLike in
+@[simp, grind =]
+theorem le_empty_iff {a : A} : a ≤ ∅ ↔ a = ∅ := by simp [← coe_set_eq, ← coe_subset_coe]
+
+include setLike in
+theorem eq_empty_of_le_empty {a : A} : a ≤ ∅ → a = ∅ := le_empty_iff.1
+
+include setLike in
+theorem le_eq_empty {a b : A} (h : b ≤ a) (e : a = ∅) : b = ∅ := by
+  rw [← coe_set_eq] at ⊢ e
+  rw [← coe_subset_coe] at h
+  rw [coe_empty] at ⊢ e
+  exact Set.subset_eq_empty h e
+
+end LE
+
+-- TODO: theorems about SetLike.nonempty once implemented
+
+end SetLike
+
+class HasConcreteUniv (A : Type*) (B : outParam Type*) [SetLike A B] where
+  protected univ' : A
+  protected coe_univ' : (univ' : A) = (Set.univ : Set B)
+
+namespace SetLike
+
+variable {A B : Type*} [setLike : SetLike A B] [HasConcreteUniv A B]
+
+def univ : A := HasConcreteUniv.univ'
+
+@[simp] lemma coe_univ : (SetLike.univ : A) = (Set.univ : Set B) := HasConcreteUniv.coe_univ'
+
+section Empty
+
+variable [EmptyCollection A] [IsConcreteEmpty A B]
+
+theorem empty_ne_univ [Nonempty B] : (∅ : A) ≠ univ := by
+  simp only [ne_eq, ← coe_set_eq, coe_empty, coe_univ]
+  exact Set.empty_ne_univ
+
+end Empty
+
+theorem eq_univ_iff_forall {a : A} : a = univ ↔ ∀ x, x ∈ a := by
+  simp only [← coe_set_eq, coe_univ]
+  exact Set.eq_univ_iff_forall
+
+theorem eq_univ_of_forall {a : A} : (∀ x, x ∈ a) → a = univ := eq_univ_iff_forall.2
+
+variable (B) in
+theorem exists_mem_of_nonempty : ∀ [Nonempty B], ∃ x : B, x ∈ (univ : A) := by
+  simp_rw [← mem_coe, coe_univ]
+  exact Set.exists_mem_of_nonempty B
+
+theorem ne_univ_iff_exists_notMem (a : A) : a ≠ univ ↔ ∃ x, x ∉ a := by
+  rw [← not_forall, ← eq_univ_iff_forall]
+
+section LE
+
+variable [LE A] [IsConcreteLE A B]
+
+theorem not_univ_le {a : A} : ¬univ ≤ a ↔ ∃ x, x ∉ a := by
+  simp only [← coe_subset_coe, coe_univ]
+  exact Set.not_univ_subset
+
+@[simp, grind ←]
+theorem le_univ (a : A) : a ≤ univ := by simp [← coe_subset_coe]
+
+@[simp, grind =]
+theorem univ_le_iff {a : A} : univ ≤ a ↔ a = univ := by
+  simp [← coe_subset_coe, ← coe_set_eq]
+
+theorem eq_univ_of_le {a b : A} (h : a ≤ b) (hs : a = univ) : b = univ := by
+  rw [← coe_set_eq] at ⊢ hs
+  rw [← coe_subset_coe] at h
+  rw [coe_univ] at ⊢ hs
+  exact Set.eq_univ_of_subset h hs
+
+end LE
+
+section PartialOrder
+
+variable [PartialOrder A] [IsConcreteLE A B]
+
+theorem lt_univ_iff {a : A} : a < univ ↔ a ≠ univ := by
+  simp only [← coe_ssubset_coe, coe_univ, ne_eq, ← coe_set_eq]
+  exact Set.ssubset_univ_iff
+
+end PartialOrder
+
+-- TODO: theorems about SetLike.Nonempty once impemented
+
+end SetLike
+
+class IsConcreteSingleton (A : Type*) (B : outParam Type*) [SetLike A B] [Singleton B A] where
+  protected coe_singleton' (x : B) : ({x} : A) = ({x} : Set B)
+
+namespace SetLike
+
+variable {A B : Type*} [SetLike A B] [Singleton B A] [IsConcreteSingleton A B]
+
+@[simp] lemma coe_singleton (x : B) : ({x} : A) = ({x} : Set B) :=
+  IsConcreteSingleton.coe_singleton' x
+
+section Univ
+
+variable [HasConcreteUniv A B]
+
+theorem univ_unique [Unique B] : (univ : A) = {default} := by
+  simpa [← coe_set_eq] using Set.univ_unique
+
+end Univ
+
+-- TODO: add theorems
+
+end SetLike
+
+class IsConcreteInsert (A : Type*) (B : outParam Type*) [SetLike A B] [Insert B A] where
+  protected coe_insert' (x : B) (s : A) : (insert x s : A) = insert x (s : Set B)
+
+namespace SetLike
+
+variable {A B : Type*} [SetLike A B] [Insert B A] [IsConcreteInsert A B]
+
+@[simp] lemma coe_insert (x : B) (s : A) : (insert x s : A) = insert x (s : Set B) :=
+  IsConcreteInsert.coe_insert' x s
+
+-- TODO: add theorems
+
+end SetLike
+
+class IsConcreteCompl (A : Type*) (B : outParam Type*) [SetLike A B] [Compl A] where
+  protected coe_compl' (a : A) : (aᶜ : A) = (aᶜ : Set B)
+
+namespace SetLike
+
+variable {A B : Type*} [SetLike A B] [Compl A] [IsConcreteCompl A B]
+
+@[simp] lemma coe_compl (a : A) : (aᶜ : A) = (aᶜ : Set B) := IsConcreteCompl.coe_compl' a
+
+-- TODO: add theorems
 
 end SetLike
