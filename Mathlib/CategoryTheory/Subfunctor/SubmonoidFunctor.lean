@@ -39,7 +39,7 @@ structure SubmonoidFunctor where
   /-- A submonoid of `R.obj U` for all `U : C`. -/
   obj (U : C) : Submonoid (R.obj U)
   /-- For any `i : U ⟶ V`, `R.map i` maps the submonoid `obj U` into the submonoid `obj V`. -/
-  map {U V : C} (i : U ⟶ V) : obj U ≤ (obj V).comap (R.map i).hom
+  map {U V : C} (i : U ⟶ V) : obj U ≤ (obj V).comap (R.map i).hom := by cat_disch
 
 namespace SubmonoidFunctor
 
