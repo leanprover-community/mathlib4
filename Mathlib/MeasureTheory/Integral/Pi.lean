@@ -126,7 +126,7 @@ theorem integral_fintype_prod_volume_eq_pow {E : Type*} (f : E → 𝕜)
     ∫ x : ι → E, ∏ i, f (x i) = (∫ x, f x) ^ (card ι) := integral_fintype_prod_eq_pow _
 
 variable {X : ι → Type*} {mX : ∀ i, MeasurableSpace (X i)} {μ : (i : ι) → Measure (X i)}
-    {E : Type*} [NormedAddCommGroup E]
+    {E : Type*} [AddCommGroup E] [NormedAddCommGroup E]
 
 lemma integrable_comp_eval [∀ i, IsFiniteMeasure (μ i)] {i : ι} {f : X i → E}
     (hf : Integrable f (μ i)) :
@@ -136,8 +136,8 @@ lemma integrable_comp_eval [∀ i, IsFiniteMeasure (μ i)] {i : ι} {f : X i →
   rw [Measure.pi_map_eval]
   exact hf.smul_measure <| ENNReal.prod_ne_top (by finiteness)
 
-lemma integrable_eval [∀ i, NormedAddCommGroup (X i)] [∀ i, IsFiniteMeasure (μ i)] {i : ι}
-    (h : Integrable id (μ i)) :
+lemma integrable_eval [∀ i, AddCommGroup (X i)] [∀ i, NormedAddCommGroup (X i)]
+    [∀ i, IsFiniteMeasure (μ i)] {i : ι} (h : Integrable id (μ i)) :
     Integrable (fun x ↦ x i) (Measure.pi μ) :=
   integrable_comp_eval h
 
@@ -148,9 +148,9 @@ lemma integral_comp_eval [NormedSpace ℝ E] [∀ i, IsProbabilityMeasure (μ i)
   · exact Measurable.aemeasurable (by fun_prop)
   · rwa [(measurePreserving_eval μ i).map_eq]
 
-lemma integral_eval [∀ i, NormedAddCommGroup (X i)] [∀ i, NormedSpace ℝ (X i)]
-    [∀ i, IsProbabilityMeasure (μ i)] {i : ι} [OpensMeasurableSpace (X i)]
-    [SecondCountableTopology (X i)] :
+lemma integral_eval [∀ i, AddCommGroup (X i)] [∀ i, NormedAddCommGroup (X i)]
+    [∀ i, NormedSpace ℝ (X i)] [∀ i, IsProbabilityMeasure (μ i)] {i : ι}
+    [OpensMeasurableSpace (X i)] [SecondCountableTopology (X i)] :
     ∫ x, x i ∂Measure.pi μ = ∫ x, x ∂μ i :=
   integral_comp_eval aestronglyMeasurable_id
 
