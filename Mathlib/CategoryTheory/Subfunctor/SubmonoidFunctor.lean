@@ -44,7 +44,7 @@ namespace SubmonoidFunctors
 @[simps obj map]
 def toMonoidFunctor (S : SubmonoidFunctors R) : C ⥤ MonCat.{w} where
   obj _ := MonCat.of (S.obj _)
-  map i:=
+  map i :=
     MonCat.ofHom <| ((R.map i).hom.submonoidComap (S.obj _)).comp <| Submonoid.inclusion (S.map i)
   map_id _ := by cat_disch
   map_comp _ _ := by cat_disch
