@@ -91,7 +91,8 @@ theorem _root_.AccPt.not_isMin {a : α} {s : Set α} (h : AccPt a (𝓟 s)) : ¬
 @[to_dual]
 theorem _root_.AccPt.isSuccLimit {a : α} {s : Set α} (h : AccPt a (𝓟 s)) : IsSuccLimit a := by
   unfold IsSuccLimit IsSuccPrelimit
-  grind [accPt_iff, covBy_iff_Ioo_eq, Set.Nonempty]
+  simp_rw [accPt_iff, Set.Nonempty] at h
+  grind [covBy_iff_Ioo_eq]
 
 @[to_dual]
 theorem isSuccLimit_of_mem_frontier {a : α} {s : Set α} (ha : a ∈ frontier s) : IsSuccLimit a := by
