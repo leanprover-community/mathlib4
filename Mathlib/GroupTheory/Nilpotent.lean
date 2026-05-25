@@ -1098,8 +1098,8 @@ end FinitePi
 instance (priority := 100) IsNilpotent.to_isSolvable [h : IsNilpotent G] : IsSolvable G := by
   obtain ⟨n, hn⟩ := nilpotent_iff_lowerCentralSeries.1 h
   use n
-  rw [eq_bot_iff, ← hn]
-  exact derived_le_lower_central n
+  rw [eq_bot_iff, ← hn, ← Subgroup.top_derivedSeries_eq]
+  exact Subgroup.derivedSeries_le_lowerCentralSeries _ n
 
 instance [IsSimpleGroup G] [IsNilpotent G] : CommGroup G :=
   ⟨IsSimpleGroup.comm_iff_isSolvable.mpr inferInstance⟩
