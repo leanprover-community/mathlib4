@@ -22,8 +22,8 @@ noncomputable section
 namespace ContDiffAt
 
 variable {𝕂 : Type*} [RCLike 𝕂]
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕂 E]
-variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕂 F]
+variable {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace 𝕂 E]
+variable {F : Type*} [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace 𝕂 F]
 variable [CompleteSpace E] (f : E → F) {f' : E ≃L[𝕂] F} {a : E} {n : WithTop ℕ∞}
 
 /-- Given a `ContDiff` function over `𝕂` (which is `ℝ` or `ℂ`) with an invertible
