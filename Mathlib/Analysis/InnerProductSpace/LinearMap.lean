@@ -40,14 +40,14 @@ section Norm_Seminormed
 
 open scoped InnerProductSpace
 
-variable [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
-variable [SeminormedAddCommGroup F] [InnerProductSpace ℝ F]
+variable [AddCommGroup E] [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
+variable [AddCommGroup F] [SeminormedAddCommGroup F] [InnerProductSpace ℝ F]
 
 local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
 section Complex_Seminormed
 
-variable {V : Type*} [SeminormedAddCommGroup V] [InnerProductSpace ℂ V]
+variable {V : Type*} [AddCommGroup V] [SeminormedAddCommGroup V] [InnerProductSpace ℂ V]
 
 /-- A complex polarization identity, with a linear map. -/
 theorem inner_map_polarization (T : V →ₗ[ℂ] V) (x y : V) :
@@ -76,7 +76,7 @@ end Complex_Seminormed
 
 section Complex
 
-variable {V : Type*} [NormedAddCommGroup V] [InnerProductSpace ℂ V]
+variable {V : Type*} [AddCommGroup V] [NormedAddCommGroup V] [InnerProductSpace ℂ V]
 
 /-- A linear map `T` is zero, if and only if the identity `⟪T x, x⟫_ℂ = 0` holds for all `x`.
 -/
@@ -104,8 +104,8 @@ end Complex
 section
 
 variable {ι : Type*} {ι' : Type*} {ι'' : Type*}
-variable {E' : Type*} [SeminormedAddCommGroup E'] [InnerProductSpace 𝕜 E']
-variable {E'' : Type*} [SeminormedAddCommGroup E''] [InnerProductSpace 𝕜 E'']
+variable {E' : Type*} [AddCommGroup E'] [SeminormedAddCommGroup E'] [InnerProductSpace 𝕜 E']
+variable {E'' : Type*} [AddCommGroup E''] [SeminormedAddCommGroup E''] [InnerProductSpace 𝕜 E'']
 
 /-- A linear isometry preserves the inner product. -/
 @[simp]
@@ -177,7 +177,7 @@ theorem innerSL_apply_apply (v w : E) : innerSL 𝕜 v w = ⟪v, w⟫ :=
 
 /-- The inner product as a continuous sesquilinear map, with the two arguments flipped. -/
 def innerSLFlip : E →L[𝕜] E →L⋆[𝕜] 𝕜 :=
-  @ContinuousLinearMap.flipₗᵢ' 𝕜 𝕜 𝕜 E E 𝕜 _ _ _ _ _ _ _ _ _ (RingHom.id 𝕜) (starRingEnd 𝕜) _ _
+  ContinuousLinearMap.flipₗᵢ' (𝕜 := 𝕜) (𝕜₂ := 𝕜) (𝕜₃ := 𝕜) E E 𝕜 (RingHom.id 𝕜) (starRingEnd 𝕜)
     (innerSL 𝕜)
 
 @[simp]
@@ -193,7 +193,7 @@ variable {𝕜}
 
 namespace ContinuousLinearMap
 
-variable {E' : Type*} [SeminormedAddCommGroup E'] [InnerProductSpace 𝕜 E']
+variable {E' : Type*} [AddCommGroup E'] [SeminormedAddCommGroup E'] [InnerProductSpace 𝕜 E']
 
 -- Note: odd and expensive build behavior is explicitly turned off using `noncomputable`
 /-- Given `f : E →L[𝕜] E'`, construct the continuous sesquilinear form `fun x y ↦ ⟪x, A y⟫`, given
@@ -209,7 +209,7 @@ theorem toSesqForm_apply_coe (f : E →L[𝕜] E') (x : E') : toSesqForm f x = (
 theorem toSesqForm_apply_norm_le {f : E →L[𝕜] E'} {v : E'} : ‖toSesqForm f v‖ ≤ ‖f‖ * ‖v‖ := by
   refine opNorm_le_bound _ (by positivity) fun x ↦ ?_
   have h₁ : ‖f x‖ ≤ ‖f‖ * ‖x‖ := le_opNorm _ _
-  have h₂ := @norm_inner_le_norm 𝕜 E' _ _ _ v (f x)
+  have h₂ := norm_inner_le_norm (𝕜 := 𝕜) (E := E') v (f x)
   calc
     ‖⟪v, f x⟫‖ ≤ ‖v‖ * ‖f x‖ := h₂
     _ ≤ ‖v‖ * (‖f‖ * ‖x‖) := by gcongr
@@ -246,14 +246,15 @@ variable {G : Type*}
 
 /-- The inner product on an inner product space of dimension 2 can be evaluated in terms
 of a complex-number representation of the space. -/
-theorem inner_map_complex [SeminormedAddCommGroup G] [InnerProductSpace ℝ G] (f : G ≃ₗᵢ[ℝ] ℂ)
-    (x y : G) : ⟪x, y⟫_ℝ = (f y * conj (f x)).re := by rw [← Complex.inner, f.inner_map_map]
+theorem inner_map_complex [AddCommGroup G] [SeminormedAddCommGroup G] [InnerProductSpace ℝ G]
+    (f : G ≃ₗᵢ[ℝ] ℂ) (x y : G) :
+    ⟪x, y⟫_ℝ = (f y * conj (f x)).re := by rw [← Complex.inner, f.inner_map_map]
 
 end RCLikeToReal
 
 section ReApplyInnerSelf
 
-variable [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
+variable [AddCommGroup E] [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 
 local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
@@ -270,7 +271,7 @@ end ReApplyInnerSelf
 
 section ReApplyInnerSelf_Seminormed
 
-variable [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
+variable [AddCommGroup E] [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 
 local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
@@ -287,9 +288,9 @@ theorem ContinuousLinearMap.reApplyInnerSelf_smul (T : E →L[𝕜] E) (x : E) {
 end ReApplyInnerSelf_Seminormed
 
 namespace InnerProductSpace
-variable {𝕜 E F G : Type*} [RCLike 𝕜] [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
-  [SeminormedAddCommGroup F] [InnerProductSpace 𝕜 F]
-  [SeminormedAddCommGroup G] [InnerProductSpace 𝕜 G]
+variable {𝕜 E F G : Type*} [RCLike 𝕜] [AddCommGroup E] [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
+  [AddCommGroup F] [SeminormedAddCommGroup F] [InnerProductSpace 𝕜 F]
+  [AddCommGroup G] [SeminormedAddCommGroup G] [InnerProductSpace 𝕜 G]
 
 open ContinuousLinearMap
 
@@ -321,7 +322,7 @@ lemma toLinearMap_rankOne (x : E) (y : F) :
 
 @[simp] lemma rankOne_apply (x : E) (y z : F) : rankOne 𝕜 x y z = inner 𝕜 y z • x := rfl
 
-lemma comp_rankOne {G : Type*} [SeminormedAddCommGroup G] [NormedSpace 𝕜 G]
+lemma comp_rankOne {G : Type*} [AddCommGroup G] [SeminormedAddCommGroup G] [NormedSpace 𝕜 G]
     (x : E) (y : F) (f : E →L[𝕜] G) : f ∘L rankOne 𝕜 x y = rankOne 𝕜 (f x) y := by
   simp_rw [rankOne_def', ← comp_assoc, comp_toSpanSingleton]
 
@@ -345,8 +346,8 @@ lemma inner_right_rankOne_apply (x y : F) (z w : G) :
   simp [inner_smul_right, mul_comm]
 
 section Normed
-variable {F H : Type*} [NormedAddCommGroup F] [InnerProductSpace 𝕜 F]
-  [NormedAddCommGroup H] [InnerProductSpace 𝕜 H]
+variable {F H : Type*} [AddCommGroup F] [NormedAddCommGroup F] [InnerProductSpace 𝕜 F]
+  [AddCommGroup H] [NormedAddCommGroup H] [InnerProductSpace 𝕜 H]
 
 @[simp] theorem rankOne_eq_zero {x : E} {y : F} : rankOne 𝕜 x y = 0 ↔ x = 0 ∨ y = 0 := by
   simp [ContinuousLinearMap.ext_iff, rankOne_apply, forall_or_right, or_comm,
@@ -402,8 +403,8 @@ namespace ContinuousLinearMap
 
 open InnerProductSpace
 
-variable [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
-    [NormedAddCommGroup F] [InnerProductSpace 𝕜 F]
+variable [AddCommGroup E] [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
+    [AddCommGroup F] [NormedAddCommGroup F] [InnerProductSpace 𝕜 F]
 
 theorem opNorm_le_of_re_inner_le {T : E →L[𝕜] F} {C : ℝ} (hC : 0 ≤ C)
     (h : ∀ x y, ‖x‖ = 1 → ‖y‖ = 1 → re ⟪T x, y⟫_𝕜 ≤ C) : ‖T‖ ≤ C := by
