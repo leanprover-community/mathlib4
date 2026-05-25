@@ -71,16 +71,28 @@ omit [ContinuousSMul R E] in
     (μ + ν) f = μ f + ν f :=
   rfl
 
+/-- The defining equivalence between measures and continuous linear maps on continuous functions. -/
+def toCLMEquiv : AbstractMeasure X R E ≃ₗ[R] C(X, R) →L[R] E :=
+  LinearEquiv.refl _ _
+
+@[simp] lemma coe_toCLMEquiv (μ : AbstractMeasure X R E) (f : C(X, R)) :
+    toCLMEquiv μ f = μ f :=
+  (rfl)
+
+@[simp] lemma coe_symm_toCLMEquiv (L : C(X, R) →L[R] E) (f : C(X, R)) :
+    toCLMEquiv.symm L f = L f :=
+  (rfl)
+
 variable (R) in
 /-- The Dirac measure, "evaluation at `x`". -/
 def dirac (x : X) : D(X, R) :=
-  ContinuousMap.evalCLM R x
+  toCLMEquiv.symm (ContinuousMap.evalCLM R x)
 
 @[simp] lemma dirac_apply (x : X) (f : C(X, R)) : dirac R x f = f x := (rfl)
 
 section Map
 
-/-- Measures can be pushed forward (R-linearly) along continuous maps. -/
+/-- Measures can be pushed forward (`R`-linearly) along continuous maps. -/
 def map (f : C(X, Y)) : AbstractMeasure X R E →ₗ[R] AbstractMeasure Y R E where
   toFun μ := μ ∘L f.compCLM R R
   map_add' _ _ := rfl
