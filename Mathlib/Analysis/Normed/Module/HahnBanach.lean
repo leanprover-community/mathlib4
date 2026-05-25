@@ -37,7 +37,7 @@ universe u v
 
 namespace Real
 
-variable {E : Type*} [SeminormedAddCommGroup E] [NormedSpace ℝ E]
+variable {E : Type*} [AddCommGroup E] [SeminormedAddCommGroup E] [NormedSpace ℝ E]
 
 /-- **Hahn-Banach theorem** for continuous linear functions over `ℝ`.
 See also `exists_extension_norm_eq` in the root namespace for a more general version
@@ -67,8 +67,8 @@ section RCLike
 open RCLike
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [IsRCLikeNormedField 𝕜] {E F : Type*}
-  [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
-  [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+  [AddCommGroup E] [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
+  [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 
 /-- **Hahn-Banach theorem** for continuous linear functions over `𝕜`
 satisfying `IsRCLikeNormedField 𝕜`. -/
@@ -141,7 +141,7 @@ open ContinuousLinearEquiv Submodule
 
 section Seminormed
 
-variable {E : Type u} [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable {E : Type u} [AddCommGroup E] [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
 
 /-- Corollary of Hahn-Banach. Given an element `x` of a normed space with `‖x‖ ≠ 0`, there
 exists an element of the dual space, of norm `1`, whose value on `x` is `‖x‖`. -/
@@ -172,7 +172,7 @@ theorem exists_dual_vector'' (x : E) : ∃ g : StrongDual 𝕜 E, ‖g‖ ≤ 1 
 
 end Seminormed
 
-variable {E : Type u} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable {E : Type u} [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
 
 /-- Variant of Hahn-Banach, eliminating the hypothesis that `x` be nonzero, and choosing
 the dual element arbitrarily when `x = 0`. -/
