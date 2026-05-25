@@ -67,7 +67,7 @@ variable {E ι : Type*}
 section NormedLatticeField
 
 variable {K : Type*} [NormedField K]
-variable [NormedAddCommGroup E] [NormedSpace K E]
+variable [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace K E]
 variable (b : Basis ι K E)
 
 theorem span_top : span K (span ℤ (Set.range b) : Set E) = ⊤ := by simp [span_span_of_tower]
@@ -95,7 +95,8 @@ def fundamentalDomain : Set E := {m | ∀ i, b.repr m i ∈ Set.Ico (0 : K) 1}
 theorem mem_fundamentalDomain {m : E} :
     m ∈ fundamentalDomain b ↔ ∀ i, b.repr m i ∈ Set.Ico (0 : K) 1 := Iff.rfl
 
-theorem map_fundamentalDomain {F : Type*} [NormedAddCommGroup F] [NormedSpace K F] (f : E ≃ₗ[K] F) :
+theorem map_fundamentalDomain {F : Type*} [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace K F]
+    (f : E ≃ₗ[K] F) :
     f '' (fundamentalDomain b) = fundamentalDomain (b.map f) := by
   ext x
   rw [mem_fundamentalDomain, Basis.map_repr, LinearEquiv.trans_apply, ← mem_fundamentalDomain,
@@ -310,7 +311,7 @@ theorem discreteTopology_pi_basisFun [Finite ι] :
   · rw [← hy, ← Int.cast_abs, ← Int.cast_one, Int.cast_lt, Int.abs_lt_one_iff, Int.cast_eq_zero]
   exact ((Pi.basisFun ℝ ι).mem_span_iff_repr_mem ℤ x).mp (SetLike.coe_mem x) i
 
-variable [NormedAddCommGroup E] [NormedSpace ℝ E] (b : Basis ι ℝ E)
+variable [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℝ E] (b : Basis ι ℝ E)
 
 theorem fundamentalDomain_subset_parallelepiped [Fintype ι] :
     fundamentalDomain b ⊆ parallelepiped b := by
@@ -432,13 +433,13 @@ open Submodule Module ZSpan
 -- TODO: generalize this class to other rings than `ℤ`
 /-- `L : Submodule ℤ E` where `E` is a vector space over a normed field `K` is a `ℤ`-lattice if
 it is discrete and spans `E` over `K`. -/
-class IsZLattice (K : Type*) [NormedField K] {E : Type*} [NormedAddCommGroup E] [NormedSpace K E]
-    (L : Submodule ℤ E) [DiscreteTopology L] : Prop where
+class IsZLattice (K : Type*) [NormedField K] {E : Type*} [AddCommGroup E] [NormedAddCommGroup E]
+    [NormedSpace K E] (L : Submodule ℤ E) [DiscreteTopology L] : Prop where
   /-- `L` spans the full space `E` over `K`. -/
   span_top : span K (L : Set E) = ⊤
 
-instance instIsZLatticeRealSpan {E ι : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
-    [Finite ι] (b : Basis ι ℝ E) :
+instance instIsZLatticeRealSpan {E ι : Type*} [AddCommGroup E] [NormedAddCommGroup E]
+    [NormedSpace ℝ E] [Finite ι] (b : Basis ι ℝ E) :
     IsZLattice ℝ (span ℤ (Set.range b)) where
   span_top := ZSpan.span_top b
 
@@ -446,7 +447,8 @@ section NormedLinearOrderedField
 
 variable (K : Type*) [NormedField K] [LinearOrder K] [IsStrictOrderedRing K]
   [HasSolidNorm K] [FloorRing K]
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace K E] [FiniteDimensional K E]
+variable {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace K E]
+  [FiniteDimensional K E]
 variable [ProperSpace E] (L : Submodule ℤ E) [DiscreteTopology L]
 
 theorem ZLattice.FG [hs : IsZLattice K L] : L.FG := by
@@ -488,7 +490,7 @@ theorem ZLattice.FG [hs : IsZLattice K L] : L.FG := by
 theorem ZLattice.module_finite [IsZLattice K L] : Module.Finite ℤ L :=
   .of_fg (ZLattice.FG K L)
 
-instance instModuleFinite_of_discrete_submodule {E : Type*} [NormedAddCommGroup E]
+instance instModuleFinite_of_discrete_submodule {E : Type*} [AddCommGroup E] [NormedAddCommGroup E]
     [NormedSpace ℝ E] [FiniteDimensional ℝ E] (L : Submodule ℤ E) [DiscreteTopology L] :
     Module.Finite ℤ L := by
   let f := (span ℝ (L : Set E)).subtype
@@ -515,7 +517,7 @@ theorem ZLattice.module_free [IsZLattice K L] : Module.Free ℤ L := by
   have : IsAddTorsionFree E := .of_module_rat _
   infer_instance
 
-instance instModuleFree_of_discrete_submodule {E : Type*} [NormedAddCommGroup E]
+instance instModuleFree_of_discrete_submodule {E : Type*} [AddCommGroup E] [NormedAddCommGroup E]
     [NormedSpace ℝ E] [FiniteDimensional ℝ E] (L : Submodule ℤ E) [DiscreteTopology L] :
     Module.Free ℤ L := by
   have : Module ℚ E := Module.compHom E (algebraMap ℚ ℝ)
@@ -643,14 +645,16 @@ theorem ofZLatticeBasis_span : span ℤ (Set.range (b.ofZLatticeBasis K)) = L :=
 end Module.Basis
 
 open MeasureTheory in
-theorem ZLattice.isAddFundamentalDomain {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+theorem ZLattice.isAddFundamentalDomain {E : Type*} [AddCommGroup E] [NormedAddCommGroup E]
+    [NormedSpace ℝ E]
     [FiniteDimensional ℝ E] {L : Submodule ℤ E} [DiscreteTopology L] [IsZLattice ℝ L] [Finite ι]
     (b : Basis ι ℤ L) [MeasurableSpace E] [OpensMeasurableSpace E] (μ : Measure E) :
     IsAddFundamentalDomain L (fundamentalDomain (b.ofZLatticeBasis ℝ)) μ := by
   convert! ZSpan.isAddFundamentalDomain (b.ofZLatticeBasis ℝ) μ
   all_goals exact (b.ofZLatticeBasis_span ℝ).symm
 
-instance instCountable_of_discrete_submodule {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+instance instCountable_of_discrete_submodule {E : Type*} [AddCommGroup E] [NormedAddCommGroup E]
+    [NormedSpace ℝ E]
     [FiniteDimensional ℝ E] (L : Submodule ℤ E) [DiscreteTopology L] [IsZLattice ℝ L] :
     Countable L := by
   simp_rw [← (Module.Free.chooseBasis ℤ L).ofZLatticeBasis_span ℝ]
@@ -659,8 +663,8 @@ instance instCountable_of_discrete_submodule {E : Type*} [NormedAddCommGroup E] 
 /--
 Assume that the set `s` spans over `ℤ` a discrete set. Then its `ℝ`-rank is equal to its `ℤ`-rank.
 -/
-theorem Real.finrank_eq_int_finrank_of_discrete {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
-    [FiniteDimensional ℝ E] {s : Set E} (hs : DiscreteTopology (span ℤ s)) :
+theorem Real.finrank_eq_int_finrank_of_discrete {E : Type*} [AddCommGroup E] [NormedAddCommGroup E]
+    [NormedSpace ℝ E] [FiniteDimensional ℝ E] {s : Set E} (hs : DiscreteTopology (span ℤ s)) :
     Set.finrank ℝ s = Set.finrank ℤ s := by
   let F := span ℝ s
   let L : Submodule ℤ (span ℝ s) := comap (F.restrictScalars ℤ).subtype (span ℤ s)
@@ -691,8 +695,8 @@ end Basis
 
 section comap
 
-variable (K : Type*) [NormedField K] {E F : Type*} [NormedAddCommGroup E] [NormedSpace K E]
-    [NormedAddCommGroup F] [NormedSpace K F] (L : Submodule ℤ E)
+variable (K : Type*) [NormedField K] {E F : Type*} [AddCommGroup E] [NormedAddCommGroup E]
+    [NormedSpace K E] [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace K F] (L : Submodule ℤ E)
 
 /-- Let `e : E → F` a linear map, the map that sends a `L : Submodule ℤ E` to the
 `Submodule ℤ F` that is the pullback of `L` by `e`. If `IsZLattice L` and `e` is a continuous
@@ -731,7 +735,7 @@ instance instIsZLatticeComap [DiscreteTopology L] [IsZLattice K L] (e : F ≃L[K
 theorem ZLattice.comap_toAddSubgroup (e : F →ₗ[K] E) :
     (ZLattice.comap K L e).toAddSubgroup = L.toAddSubgroup.comap e.toAddMonoidHom := rfl
 
-theorem ZLattice.comap_comp {G : Type*} [NormedAddCommGroup G] [NormedSpace K G]
+theorem ZLattice.comap_comp {G : Type*} [AddCommGroup G] [NormedAddCommGroup G] [NormedSpace K G]
     (e : F →ₗ[K] E) (e' : G →ₗ[K] F) :
     (ZLattice.comap K (ZLattice.comap K L e) e') = ZLattice.comap K L (e ∘ₗ e') :=
   (Submodule.comap_comp _ _ L).symm
@@ -773,10 +777,10 @@ section NormedLinearOrderedField_comap
 
 variable (K : Type*) [NormedField K] [LinearOrder K] [IsStrictOrderedRing K] [HasSolidNorm K]
   [FloorRing K]
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace K E] [FiniteDimensional K E]
-  [ProperSpace E]
-variable {F : Type*} [NormedAddCommGroup F] [NormedSpace K F] [FiniteDimensional K F]
-  [ProperSpace F]
+variable {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace K E]
+  [FiniteDimensional K E] [ProperSpace E]
+variable {F : Type*} [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace K F]
+  [FiniteDimensional K F] [ProperSpace F]
 variable (L : Submodule ℤ E) [DiscreteTopology L] [IsZLattice K L]
 
 theorem Module.Basis.ofZLatticeBasis_comap (e : F ≃L[K] E) {ι : Type*} (b : Basis ι ℤ L) :
@@ -789,7 +793,7 @@ end NormedLinearOrderedField_comap
 
 /-- If `f` is periodic wrt a ℤ-lattice, then the range of `f` is compact. -/
 lemma IsZLattice.isCompact_range_of_periodic
-    {E F : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
+    {E F : Type*} [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
     [TopologicalSpace F]
     (L : Submodule ℤ E) [DiscreteTopology L] [IsZLattice ℝ L] (f : E → F) (hf : Continuous f)
     (hf' : ∀ z w, w ∈ L → f (z + w) = f z) : IsCompact (Set.range f) := by
