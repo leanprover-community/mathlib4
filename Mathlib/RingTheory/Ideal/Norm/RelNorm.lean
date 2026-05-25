@@ -161,7 +161,7 @@ theorem spanNorm_mul_spanNorm_le (I J : Ideal S) :
     spanNorm R I * spanNorm R J ≤ spanNorm R (I * J) := by
   rw [spanNorm, spanNorm, spanNorm]
   nth_rw 1 [map]; nth_rw 1 [map]
-  rw [Ideal.span_mul_span', ← Set.image_mul]
+  rw [Ideal.span_mul_span, ← Set.image_mul]
   refine Ideal.span_mono (Set.monotone_image ?_)
   rintro _ ⟨x, hxI, y, hyJ, rfl⟩
   exact Ideal.mul_mem_mul hxI hyJ
