@@ -30,6 +30,8 @@ namespace CategoryTheory
 variable {C : Type u} [Category.{v} C] {R : C ⥤ MonCat.{w}}
 
 variable (R) in
+/-- A submonoid functor consists of a submonoid of `R.obj U` for every `U`,
+compatible with the restriction maps `R.map i`. -/
 @[ext]
 structure SubmonoidFunctors where
   /-- a family of submonoids of `R.obj X` for all `X`. -/
