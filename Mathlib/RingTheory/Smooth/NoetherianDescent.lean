@@ -219,9 +219,12 @@ public theorem exists_subalgebra_fg [Smooth A B] :
   choose p homog hp using this
   have hsig (i : _) : f (h i) = P.val i := by
     rw [← AlgHom.kerSquareLift_mk]
-    -- Reducible def-eq issues caused by `RingHom.ker f.toRingHom` discrepancies
-    -- Can be fixed after #25138.
-    exact hh i ▸ congr($hsig (P.val i))
+    change f.kerSquareLift ((Ideal.Quotient.mk (RingHom.ker f ^ 2)) (h i)) = P.val i
+    calc
+      f.kerSquareLift ((Ideal.Quotient.mk (RingHom.ker f ^ 2)) (h i)) =
+          f.kerSquareLift (σ (P.val i)) :=
+        congrArg f.kerSquareLift (hh i)
+      _ = P.val i := by simpa [AlgHom.comp_apply] using AlgHom.congr_fun hsig (P.val i)
   have (i : Fin (Presentation.ofFinitePresentationVars A B)) :
       h i - X i ∈ Ideal.span (.range P.relation) := by
     simpa [P.span_range_relation_eq_ker, sub_eq_zero, f] using hsig i

@@ -88,7 +88,8 @@ abbrev gbar : D.T := D.g
 set_option backward.isDefEq.respectTransparency false in
 /-- `S` is the localization of `T` away from `S`. -/
 instance : IsLocalization.Away D.gbar S := by
-  refine .of_surjective_of_isScalarTower (n := 1) ?_ ?_ _ ?_ (by simpa using D.hg)
+  refine IsLocalization.Away.of_surjective_of_isScalarTower
+    (R := P.Ring) (S := D.T) (T := S) (n := 1) ?_ ?_ D.g ?_ ?_
   · refine .of_comp (g := algebraMap P.Ring D.T) ?_
     convert! P.algebraMap_surjective
     ext x
@@ -97,6 +98,7 @@ instance : IsLocalization.Away D.gbar S := by
   · suffices h : (algebraMap P.Ring S) D.g = 1 by simp [h]
     rw [← map_one (algebraMap P.Ring S), ← sub_eq_zero, ← map_sub, ← RingHom.mem_ker]
     exact D.hgmem
+  · simpa using D.hg
 
 open Classical in
 /-- The "naive" presentation of `T = R[X₁, ..., Xₙ] / (b₁, ..., bᵣ)` over `R`.
