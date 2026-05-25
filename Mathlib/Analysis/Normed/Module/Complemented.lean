@@ -18,6 +18,9 @@ a closed subspace of a normed space this condition is equivalent to existence of
 subspace `q` such that `p ⊓ q = ⊥`, `p ⊔ q = ⊤`. We also prove that a subspace of finite codimension
 is always a complemented subspace.
 
+Two submodules `p` and `q` of a Banach space are *topological complements* (`IsTopCompl`) if and
+only if they are algebraic complements and both are closed.
+
 ## Tags
 
 complemented subspace, normed vector space
@@ -82,6 +85,17 @@ def linearProjOfClosedCompl (h : IsCompl p q) (hp : IsClosed (p : Set E))
 
 variable {p q}
 
+theorem IsCompl.isTopCompl_of_isClosed (h : IsCompl p q) (hp : IsClosed (p : Set E))
+    (hq : IsClosed (q : Set E)) : IsTopCompl p q := by
+  rw [isTopCompl_iff_isHomeomorph_prodEquivOfIsCompl h]
+  exact (Submodule.prodEquivOfClosedCompl p q h hp hq).toHomeomorph.isHomeomorph
+
+theorem isTopCompl_iff_isCompl_isClosed_isClosed :
+    IsTopCompl p q ↔ IsCompl p q ∧ IsClosed (p : Set E) ∧ IsClosed (q : Set E) := by
+  refine ⟨fun h ↦ ⟨h.isCompl, ?_, ?_⟩, fun ⟨h, hp, hq⟩ ↦ IsCompl.isTopCompl_of_isClosed h hp hq⟩
+  · exact h.isClosed
+  · exact h.isClosed'
+
 @[simp]
 theorem coe_prodEquivOfClosedCompl (h : IsCompl p q) (hp : IsClosed (p : Set E))
     (hq : IsClosed (q : Set E)) :
@@ -104,7 +118,7 @@ theorem coe_continuous_linearProjOfClosedCompl' (h : IsCompl p q) (hp : IsClosed
 
 theorem ClosedComplemented.of_isCompl_isClosed (h : IsCompl p q) (hp : IsClosed (p : Set E))
     (hq : IsClosed (q : Set E)) : p.ClosedComplemented :=
-  ⟨p.linearProjOfClosedCompl q h hp hq, Submodule.projectionOnto_apply_left h⟩
+  (IsCompl.isTopCompl_of_isClosed h hp hq).closedComplemented
 
 alias IsCompl.closedComplemented_of_isClosed := ClosedComplemented.of_isCompl_isClosed
 
