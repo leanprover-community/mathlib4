@@ -139,7 +139,7 @@ theorem constant_descent_vieta_jumping (x y : ℕ) {claim : Prop} {H : ℕ → �
   -- and the conditions H(m_x, m_y) and m_x < m_y are satisfied.
   simp only at mx_lt_my hHm m_eq
   simp only [exceptional, hHm, Set.mem_setOf_eq, true_and] at h_base
-  push_neg at h_base
+  push Not at h_base
   -- Finally, it also means that (m_x, m_y) does not lie in the base locus,
   -- that m_x ≠ 0, m_x ≠ m_y, B(m_x) ≠ m_y, and B(m_x) ≠ m_x + m_y.
   rcases h_base with ⟨h_base, hmx, hm_diag, hm_B₁, hm_B₂⟩
@@ -179,7 +179,7 @@ theorem constant_descent_vieta_jumping (x y : ℕ) {claim : Prop} {H : ℕ → �
     suffices hc : c ≠ mx from lt_of_le_of_ne (mod_cast c_lt) hc
     -- However, recall that B(m_x) ≠ m_x + m_y.
     -- If c = m_x, we can prove B(m_x) = m_x + m_y.
-    contrapose! hm_B₂
+    contrapose hm_B₂
     subst c
     simp [hV₁]
     -- Hence p' = (c, m_x) lies on the upper branch, and we are done.
@@ -279,9 +279,9 @@ example {a b : ℕ} (h : a * b ∣ a ^ 2 + b ^ 2 + 1) : 3 * a * b = a ^ 2 + b ^ 
       lia
     · contrapose! hV₀ with x_lt_z
       apply ne_of_gt
-      push_neg at h_base
+      push Not at h_base
       calc
-        z * y > x * y := by apply mul_lt_mul_of_pos_right <;> lia
+        z * y > x * y := by gcongr; lia
         _ ≥ x * (x + 1) := by apply mul_le_mul <;> lia
         _ > x * x + 1 := by
           rw [mul_add]

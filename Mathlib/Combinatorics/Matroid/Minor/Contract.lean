@@ -415,7 +415,7 @@ lemma contract_spanning_iff (hC : C ⊆ M.E := by aesop_mat) :
   rwa [← union_diff_cancel (M.subset_closure_of_subset' subset_union_right hC), h,
     union_diff_cancel]
 
-/-- A version of `Matroid.contract_spanning_iff` without the supportedness hypothesis. -/
+/-- A version of `Matroid.contract_spanning_iff` without the ground-set hypothesis. -/
 lemma contract_spanning_iff' : (M ／ C).Spanning X ↔ M.Spanning (X ∪ (C ∩ M.E)) ∧ Disjoint X C := by
   rw [← contract_inter_ground_eq, contract_spanning_iff, and_congr_right_iff]
   refine fun h ↦ ⟨fun hdj ↦ ?_, Disjoint.mono_right inter_subset_left⟩

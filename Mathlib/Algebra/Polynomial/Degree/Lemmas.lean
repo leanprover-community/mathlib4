@@ -59,8 +59,7 @@ theorem natDegree_comp_le : natDegree (p.comp q) ≤ natDegree p * natDegree q :
                 simp
               _ ≤ (natDegree p * natDegree q : ℕ) :=
                 WithBot.coe_le_coe.2 <|
-                  mul_le_mul_of_nonneg_right (le_natDegree_of_ne_zero (mem_support_iff.1 hn))
-                    (Nat.zero_le _)
+                  by gcongr; exact le_natDegree_of_ne_zero (mem_support_iff.1 hn)
 
 theorem natDegree_comp_eq_of_mul_ne_zero (h : p.leadingCoeff * q.leadingCoeff ^ p.natDegree ≠ 0) :
     natDegree (p.comp q) = natDegree p * natDegree q := by
@@ -83,7 +82,7 @@ theorem natDegree_add_le_iff_left {n : ℕ} (p q : R[X]) (qn : q.natDegree ≤ n
     (p + q).natDegree ≤ n ↔ p.natDegree ≤ n := by
   refine ⟨fun h => ?_, fun h => natDegree_add_le_of_degree_le h qn⟩
   refine natDegree_le_iff_coeff_eq_zero.mpr fun m hm => ?_
-  convert natDegree_le_iff_coeff_eq_zero.mp h m hm using 1
+  convert! natDegree_le_iff_coeff_eq_zero.mp h m hm using 1
   rw [coeff_add, natDegree_le_iff_coeff_eq_zero.mp qn _ hm, add_zero]
 
 theorem natDegree_add_le_iff_right {n : ℕ} (p q : R[X]) (pn : p.natDegree ≤ n) :
@@ -155,7 +154,7 @@ theorem coeff_pow_of_natDegree_le (pn : p.natDegree ≤ n) :
   | succ m hm =>
     rw [pow_succ, pow_succ, ← hm, Nat.succ_mul, coeff_mul_add_eq_of_natDegree_le _ pn]
     refine natDegree_pow_le.trans (le_trans ?_ (le_refl _))
-    exact mul_le_mul_of_nonneg_left pn m.zero_le
+    gcongr
 
 theorem coeff_pow_eq_ite_of_natDegree_le_of_le {o : ℕ}
     (pn : natDegree p ≤ n) (mno : m * n ≤ o) :

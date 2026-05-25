@@ -151,12 +151,12 @@ def ZMod : ℕ → Type
   | n + 1 => Fin (n + 1)
 
 instance ZMod.decidableEq : ∀ n : ℕ, DecidableEq (ZMod n)
-  | 0 => (inferInstance : DecidableEq ℤ)
-  | n + 1 => (inferInstance : DecidableEq (Fin (n + 1)))
+  | 0 => inferInstanceAs <| DecidableEq ℤ
+  | n + 1 => inferInstanceAs <| DecidableEq (Fin (n + 1))
 
 instance ZMod.repr : ∀ n : ℕ, Repr (ZMod n)
-  | 0 => by dsimp [ZMod]; infer_instance
-  | n + 1 => by dsimp [ZMod]; infer_instance
+  | 0 => inferInstanceAs <| Repr ℤ
+  | n + 1 => inferInstanceAs <| Repr (Fin (n + 1))
 
 namespace ZMod
 
@@ -173,7 +173,7 @@ instance infinite : Infinite (ZMod 0) :=
 theorem card (n : ℕ) [Fintype (ZMod n)] : Fintype.card (ZMod n) = n := by
   cases n with
   | zero => exact (not_finite (ZMod 0)).elim
-  | succ n => convert Fintype.card_fin (n + 1) using 2
+  | succ n => convert! Fintype.card_fin (n + 1) using 2
 
 open Fin.CommRing in
 /- We define each field by cases, to ensure that the eta-expanded `ZMod.commRing` is defeq to the

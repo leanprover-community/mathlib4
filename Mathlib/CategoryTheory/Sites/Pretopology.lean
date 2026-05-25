@@ -150,9 +150,6 @@ def GrothendieckTopology.toPretopology (J : GrothendieckTopology C) : Pretopolog
     rintro Y g ⟨W, h, g, hg, rfl⟩
     exact ⟨_, h, _, ⟨_, _, _, hf, hg, rfl⟩, by simp⟩
 
-@[deprecated (since := "2025-09-19")]
-alias Pretopology.ofGrothendieck := GrothendieckTopology.toPretopology
-
 /-- We have a Galois insertion from pretopologies to Grothendieck topologies. -/
 def Pretopology.gi : GaloisInsertion
     (toGrothendieck (C := C)) (GrothendieckTopology.toPretopology (C := C)) where
@@ -170,9 +167,6 @@ def Pretopology.gi : GaloisInsertion
 lemma GrothendieckTopology.mem_toPretopology (t : GrothendieckTopology C) {X : C} (S : Presieve X) :
     S ∈ t.toPretopology X ↔ Sieve.generate S ∈ t X :=
   Iff.rfl
-
-@[deprecated (since := "2025-09-19")]
-alias Pretopology.mem_ofGrothendieck := GrothendieckTopology.mem_toPretopology
 
 namespace Pretopology
 
@@ -218,7 +212,6 @@ instance orderBot : OrderBot (Pretopology C) where
     rintro ⟨Y, f, hf, rfl⟩
     exact K.has_isos f
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The trivial pretopology induces the trivial Grothendieck topology. -/
 theorem toGrothendieck_bot : toGrothendieck (C := C) ⊥ = ⊥ :=
   (gi C).gc.l_bot

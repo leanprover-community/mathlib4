@@ -17,15 +17,14 @@ import Mathlib.Data.Set.Lattice
 A set `s` in an ordered type `α` is cofinal when for every `a : α` there exists an element of `s`
 greater or equal to it. This file provides a basic API for the `IsCofinal` predicate.
 
-For the cofinality of a set as a cardinal, see `Mathlib/SetTheory/Cardinal/Cofinality.lean`.
+For the cofinality of a set as a cardinal, see `Mathlib/SetTheory/Cardinal/Cofinality/Basic.lean`.
 
 ## TODO
 
-- Define `Order.cof` in terms of `Cofinal`.
 - Deprecate `Order.Cofinal` in favor of this predicate.
 -/
 
-@[expose] public section
+public section
 
 open Set
 
@@ -34,11 +33,11 @@ variable {α β : Type*}
 section LE
 variable [LE α]
 
-theorem IsCofinal.of_isEmpty [IsEmpty α] (s : Set α) : IsCofinal s :=
+theorem IsCofinal.of_isEmpty [IsEmpty α] {s : Set α} : IsCofinal s :=
   fun a ↦ isEmptyElim a
 
 theorem isCofinal_empty_iff : IsCofinal (∅ : Set α) ↔ IsEmpty α := by
-  refine ⟨fun h ↦ ⟨fun a ↦ ?_⟩, fun h ↦ .of_isEmpty _⟩
+  refine ⟨fun h ↦ ⟨fun a ↦ ?_⟩, fun h ↦ .of_isEmpty⟩
   simpa using h a
 
 @[simp]
@@ -58,6 +57,7 @@ end LE
 section Preorder
 variable [Preorder α] [Preorder β]
 
+@[simp]
 theorem IsCofinal.univ : IsCofinal (@univ α) :=
   fun a ↦ ⟨a, ⟨⟩, le_rfl⟩
 
@@ -89,6 +89,10 @@ alias GaloisConnection.map_cofinal := GaloisConnection.map_isCofinal
 
 theorem OrderIso.map_isCofinal (e : α ≃o β) {s : Set α} (hs : IsCofinal s) : IsCofinal (e '' s) :=
   e.symm.to_galoisConnection.map_isCofinal hs
+
+@[simp]
+theorem OrderIso.map_isCofinal_iff (e : α ≃o β) {s : Set α} : IsCofinal (e '' s) ↔ IsCofinal s :=
+  ⟨fun hs ↦ by simpa using e.symm.map_isCofinal hs, e.map_isCofinal⟩
 
 @[deprecated (since := "2026-03-15")]
 alias OrderIso.map_cofinal := OrderIso.map_isCofinal
@@ -140,7 +144,7 @@ theorem BddAbove.of_not_isCofinal {s : Set α} (h : ¬ IsCofinal s) : BddAbove s
   exact ⟨x, fun y hy ↦ (h y hy).le⟩
 
 theorem IsCofinal.of_not_bddAbove {s : Set α} (h : ¬ BddAbove s) : IsCofinal s := by
-  contrapose! h
+  contrapose h
   exact .of_not_isCofinal h
 
 /-- In a linear order with no maximum, cofinal sets are the same as unbounded sets. -/

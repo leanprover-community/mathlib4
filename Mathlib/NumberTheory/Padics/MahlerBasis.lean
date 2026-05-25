@@ -195,7 +195,6 @@ private lemma bojanic_mahler_step2 {f : C(ℤ_[p], E)} {s t : ℕ}
       apply hst
       rw [Nat.cast_pow, add_sub_cancel_left, norm_pow, norm_p, inv_pow, zpow_neg, zpow_natCast]
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 Explicit bound for the decay rate of the Mahler coefficients of a continuous function on `ℤ_[p]`.
 This will be used to prove Mahler's theorem.
@@ -343,7 +342,7 @@ lemma hasSum_mahler (f : C(ℤ_[p], E)) : HasSum (fun n ↦ mahlerTerm (Δ_[1]^[
       (mahlerSeries (Δ_[1]^[·] f 0) : C(ℤ_[p], E)) :=
     hasSum_mahlerSeries (fwdDiff_tendsto_zero f)
   -- Now show that the sum of the Mahler terms must equal `f` on a dense set, so it is actually `f`.
-  convert this using 1
+  convert! this using 1
   refine ContinuousMap.coe_injective (denseRange_natCast.equalizer
     (map_continuous f) (map_continuous _) (funext fun n ↦ ?_))
   simpa [mahlerSeries_apply_nat (fwdDiff_tendsto_zero f) le_rfl]

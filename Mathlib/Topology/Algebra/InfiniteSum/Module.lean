@@ -102,7 +102,7 @@ theorem HasSum.smul (hf : HasSum f s) (hg : HasSum g t)
   let ⟨_u, hu⟩ := hfg
   (hf.smul_eq hg hu).symm ▸ hu
 
-/-- Scalar product of two infinites sums indexed by arbitrary types. -/
+/-- Scalar product of two infinite sums indexed by arbitrary types. -/
 theorem tsum_smul_tsum (hf : Summable f) (hg : Summable g)
     (hfg : Summable fun x : ι × κ ↦ f x.1 • g x.2) :
     ((∑' x, f x) • ∑' y, g y) = ∑' z : ι × κ, f z.1 • g z.2 :=
@@ -192,7 +192,7 @@ noncomputable def MulAction.automorphize [Group α] [MulAction α β] (f : β �
   intro b₁ b₂ ⟨a, (ha : a • b₂ = b₁)⟩
   simp only
   rw [← ha]
-  convert (Equiv.mulRight a).tsum_eq (fun a' ↦ f (a' • b₂)) using 1
+  convert! (Equiv.mulRight a).tsum_eq (fun a' ↦ f (a' • b₂)) using 1
   simp only [Equiv.coe_mulRight]
   congr
   ext

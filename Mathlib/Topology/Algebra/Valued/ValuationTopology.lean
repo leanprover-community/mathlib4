@@ -167,7 +167,7 @@ theorem hasBasis_uniformity : (𝓤 R).HasBasis (fun _ ↦ True)
 theorem toUniformSpace_eq : toUniformSpace =
     @IsTopologicalAddGroup.rightUniformSpace R _ v.subgroups_basis.topology _ := by
   refine UniformSpace.ext ((hasBasis_uniformity R Γ₀).eq_of_same_basis ?_)
-  convert v.subgroups_basis.hasBasis_nhds_zero.comap _
+  convert! v.subgroups_basis.hasBasis_nhds_zero.comap _
   simp_rw [restrict_lt_iff_lt_embedding, sub_eq_add_neg]
   simp
 
@@ -265,9 +265,6 @@ theorem isOpen_closedBall {r : ValueGroup₀ _i.v} (hr : r ≠ 0) :
   simp only [setOf_subset_setOf]
   exact ⟨Units.mk0 _ hr, fun y hy ↦
     (sub_add_cancel y x).symm ▸ le_trans (v.restrict.map_add _ _) (max_le (le_of_lt hy) hx)⟩
-
-@[deprecated (since := "2025-10-09")]
-alias isOpen_closedball := isOpen_closedBall
 
 /-- A closed ball centred at the origin in a valued ring is closed. -/
 theorem isClosed_closedBall (r : ValueGroup₀ _i.v) : IsClosed (X := R) {x | v.restrict x ≤ r} := by

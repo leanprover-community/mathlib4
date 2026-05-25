@@ -166,8 +166,7 @@ lemma hasSum_int_evenKernel (a : ℝ) {t : ℝ} (ht : 0 < t) :
   have (n : ℤ) : cexp (-(π * (n + a) ^ 2 * t)) = cexp (-(π * a ^ 2 * t)) *
       jacobiTheta₂_term n (a * I * t) (I * t) := by
     rw [jacobiTheta₂_term, ← Complex.exp_add]
-    ring_nf
-    simp
+    grind [I_sq]
   simpa [this] using (hasSum_jacobiTheta₂_term _ (by simpa)).mul_left _
 
 lemma hasSum_int_cosKernel (a : ℝ) {t : ℝ} (ht : 0 < t) :
@@ -655,8 +654,10 @@ lemma differentiable_hurwitzZetaEven_sub_hurwitzZetaEven (a b : UnitAddCircle) :
   intro z
   rcases ne_or_eq z 1 with hz | rfl
   · exact (differentiableAt_hurwitzZetaEven a hz).sub (differentiableAt_hurwitzZetaEven b hz)
-  · convert (differentiableAt_hurwitzZetaEven_sub_one_div a).fun_sub
-      (differentiableAt_hurwitzZetaEven_sub_one_div b) using 2 with s
+  · convert!
+    (differentiableAt_hurwitzZetaEven_sub_one_div a).fun_sub
+      (differentiableAt_hurwitzZetaEven_sub_one_div b) using
+    2 with s
     abel
 
 /--

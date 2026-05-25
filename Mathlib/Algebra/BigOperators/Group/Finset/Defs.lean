@@ -400,13 +400,13 @@ end ToList
 @[to_additive]
 theorem _root_.Equiv.Perm.prod_comp (σ : Equiv.Perm ι) (s : Finset ι) (f : ι → M)
     (hs : { a | σ a ≠ a } ⊆ s) : (∏ x ∈ s, f (σ x)) = ∏ x ∈ s, f x := by
-  convert (prod_map s σ.toEmbedding f).symm
+  convert! (prod_map s σ.toEmbedding f).symm
   exact (map_perm hs).symm
 
 @[to_additive]
 theorem _root_.Equiv.Perm.prod_comp' (σ : Equiv.Perm ι) (s : Finset ι) (f : ι → ι → M)
     (hs : { a | σ a ≠ a } ⊆ s) : (∏ x ∈ s, f (σ x) x) = ∏ x ∈ s, f x (σ.symm x) := by
-  convert σ.prod_comp s (fun x => f x (σ.symm x)) hs
+  convert! σ.prod_comp s (fun x => f x (σ.symm x)) hs
   rw [Equiv.symm_apply_apply]
 
 end CommMonoid
@@ -702,7 +702,13 @@ lemma prod_bijective (e : ι → κ) (he : e.Bijective) (f : ι → M) (g : κ �
     (h : ∀ x, f x = g (e x)) : ∏ x, f x = ∏ x, g x :=
   prod_equiv (.ofBijective e he) (by simp) (by simp [h])
 
-@[to_additive] alias _root_.Function.Bijective.finset_prod := prod_bijective
+@[to_additive] alias _root_.Function.Bijective.finsetProd := prod_bijective
+
+@[deprecated (since := "2026-04-08")]
+alias _root_.Function.Bijective.finset_sum := _root_.Function.Bijective.finsetSum
+
+@[to_additive existing, deprecated (since := "2026-04-08")]
+alias _root_.Function.Bijective.finset_prod := _root_.Function.Bijective.finsetProd
 
 /-- `Fintype.prod_equiv` is a specialization of `Finset.prod_bij` that
 automatically fills in most arguments.
@@ -774,14 +780,18 @@ theorem disjoint_sum_right {a : Multiset α} {i : Multiset (Multiset α)} :
     Disjoint a i.sum ↔ ∀ b ∈ i, Disjoint a b := by
   simpa only [disjoint_comm (a := a)] using disjoint_sum_left
 
-theorem disjoint_finset_sum_left {i : Finset ι} {f : ι → Multiset α} {a : Multiset α} :
+theorem disjoint_finsetSum_left {i : Finset ι} {f : ι → Multiset α} {a : Multiset α} :
     Disjoint (i.sum f) a ↔ ∀ b ∈ i, Disjoint (f b) a := by
-  convert @disjoint_sum_left _ a (map f i.val)
+  convert! @disjoint_sum_left _ a (map f i.val)
   simp
 
-theorem disjoint_finset_sum_right {i : Finset ι} {f : ι → Multiset α}
+@[deprecated (since := "2026-04-08")] alias disjoint_finset_sum_left := disjoint_finsetSum_left
+
+theorem disjoint_finsetSum_right {i : Finset ι} {f : ι → Multiset α}
     {a : Multiset α} : Disjoint a (i.sum f) ↔ ∀ b ∈ i, Disjoint a (f b) := by
-  simpa only [disjoint_comm] using disjoint_finset_sum_left
+  simpa only [disjoint_comm] using disjoint_finsetSum_left
+
+@[deprecated (since := "2026-04-08")] alias disjoint_finset_sum_right := disjoint_finsetSum_right
 
 variable [DecidableEq α]
 
