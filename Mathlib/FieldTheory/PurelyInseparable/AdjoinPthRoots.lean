@@ -17,8 +17,9 @@ field of characteristic `p`.
 
 # Main definitions and results
 
-* `AdjoinPthRoots`: the field extension adjoining all `p`-th roots, defined as the field itself,
-  with the algebra map being the frobenius map.
+* `AdjoinPthRoots`: the field extension adjoining all `p`-th roots.
+  It is defined as a typeclass synonym of the field `k` itself with a `k`-algebra structure
+  given by the frobenius map.
 * `AdjoinPthRoots.root`: the `p`-th root map `k → AdjoinPthRoots k p`, mapping an element
   to its unique `p`-th root in `AdjoinPthRoots`. It is implemented as a `RingEquiv` with underlying
   identity map.
@@ -40,6 +41,8 @@ noncomputable instance : Algebra k (AdjoinPthRoots k) := (frobenius k (ringExpCh
 instance (p : ℕ) [ExpChar k p] : ExpChar (AdjoinPthRoots k) p := inferInstanceAs (ExpChar k p)
 
 /-- The `p`-th root map `k → AdjoinPthRoots k p`, as a `RingEquiv`. -/
+-- Note: It is defined as a typeclass synonym of the field `k` itself
+-- with a `k`-algebra structure given by the frobenius map.
 noncomputable def AdjoinPthRoots.root : k ≃+* AdjoinPthRoots k := RingEquiv.refl k
 
 variable (p : ℕ) [ExpChar k p]
