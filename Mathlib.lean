@@ -2083,6 +2083,7 @@ public import Mathlib.Analysis.Normed.Affine.ContinuousAffineMap
 public import Mathlib.Analysis.Normed.Affine.Convex
 public import Mathlib.Analysis.Normed.Affine.Isometry
 public import Mathlib.Analysis.Normed.Affine.MazurUlam
+public import Mathlib.Analysis.Normed.Affine.Menelaus
 public import Mathlib.Analysis.Normed.Affine.Simplex
 public import Mathlib.Analysis.Normed.Algebra.Basic
 public import Mathlib.Analysis.Normed.Algebra.DualNumber
@@ -4867,6 +4868,7 @@ public import Mathlib.LinearAlgebra.AffineSpace.Defs
 public import Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional
 public import Mathlib.LinearAlgebra.AffineSpace.Independent
 public import Mathlib.LinearAlgebra.AffineSpace.Matrix
+public import Mathlib.LinearAlgebra.AffineSpace.Menelaus
 public import Mathlib.LinearAlgebra.AffineSpace.Midpoint
 public import Mathlib.LinearAlgebra.AffineSpace.MidpointZero
 public import Mathlib.LinearAlgebra.AffineSpace.Ordered
