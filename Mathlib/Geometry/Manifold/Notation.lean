@@ -108,8 +108,8 @@ private def findSomeLocalInstanceOf? (c : Name) {α} (p : Expr → Expr → Meta
     MetaM (Option α) := do
   (← getLocalInstances).findSomeM? fun inst ↦ do
     if inst.className == c then
-      let type ← whnfR <| ← instantiateMVars <| ← inferType inst.val
-      p inst.val type
+      let type ← whnfR <| ← instantiateMVars <| ← inferType inst.fvar
+      p inst.fvar type
     else return none
 
 /-- Finds the most recent local declaration for which `p fvar type` produces `some a`.
