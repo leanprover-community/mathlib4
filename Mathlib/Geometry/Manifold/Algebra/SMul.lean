@@ -42,8 +42,10 @@ have to be required separately. For example, to state that `G` is a Cⁿ additiv
 additive action on a Cⁿ manifold `M`, one can use the typeclasses
 `[LieAddGroup I n G] [IsManifold I' n M] [ContMDiffVAdd I I' n G M]`. -/
 class ContMDiffVAdd {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [TopologicalSpace H]
-    {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] (I : ModelWithCorners 𝕜 E H)
-    {H' : Type*} [TopologicalSpace H'] {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
+    {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+    (I : ModelWithCorners 𝕜 E H)
+    {H' : Type*} [TopologicalSpace H'] {E' : Type*} [AddCommGroup E'] [NormedAddCommGroup E']
+    [NormedSpace 𝕜 E']
     (I' : ModelWithCorners 𝕜 E' H') (n : ℕ∞ω)
     (G : Type*) [TopologicalSpace G] [ChartedSpace H G]
     (M : Type*) [TopologicalSpace M] [ChartedSpace H' M] [VAdd G M] : Prop where
@@ -59,8 +61,10 @@ a Cⁿ manifold `M`, one can use the typeclasses
 `[LieGroup I n G] [IsManifold I' n M] [ContMDiffSMul I I' n G M]`. -/
 @[to_additive]
 class ContMDiffSMul {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [TopologicalSpace H]
-    {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] (I : ModelWithCorners 𝕜 E H)
-    {H' : Type*} [TopologicalSpace H'] {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
+    {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+    (I : ModelWithCorners 𝕜 E H)
+    {H' : Type*} [TopologicalSpace H'] {E' : Type*} [AddCommGroup E'] [NormedAddCommGroup E']
+    [NormedSpace 𝕜 E']
     (I' : ModelWithCorners 𝕜 E' H') (n : ℕ∞ω)
     (G : Type*) [TopologicalSpace G] [ChartedSpace H G]
     (M : Type*) [TopologicalSpace M] [ChartedSpace H' M] [SMul G M] : Prop where
@@ -71,9 +75,10 @@ export ContMDiffVAdd (contMDiff_vadd)
 export ContMDiffSMul (contMDiff_smul)
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [TopologicalSpace H]
-  {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] {I : ModelWithCorners 𝕜 E H}
-  {H' : Type*} [TopologicalSpace H'] {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
-  {I' : ModelWithCorners 𝕜 E' H'} {H'' : Type*} [TopologicalSpace H''] {E'' : Type*}
+  {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace 𝕜 E] {I : ModelWithCorners 𝕜 E H}
+  {H' : Type*} [TopologicalSpace H'] {E' : Type*} [AddCommGroup E'] [NormedAddCommGroup E']
+  [NormedSpace 𝕜 E'] {I' : ModelWithCorners 𝕜 E' H'} {H'' : Type*} [TopologicalSpace H'']
+  {E'' : Type*} [AddCommGroup E'']
   [NormedAddCommGroup E''] [NormedSpace 𝕜 E''] {I'' : ModelWithCorners 𝕜 E'' H''}
   {G : Type*} [TopologicalSpace G] [ChartedSpace H G]
   {M : Type*} [TopologicalSpace M] [ChartedSpace H' M]
