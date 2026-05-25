@@ -43,7 +43,7 @@ structure SubmonoidFunctor where
 
 namespace SubmonoidFunctor
 
-/-- The functor of monoids associated to a subfunctor of submonoids. -/
+/-- The functor of monoids associated to a functor of submonoids. -/
 @[simps obj map]
 def toMonoidFunctor (S : SubmonoidFunctor R) : C ⥤ MonCat.{w} where
   obj _ := MonCat.of (S.obj _)
