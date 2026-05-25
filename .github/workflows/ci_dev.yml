@@ -32,6 +32,16 @@ on:
         required: false
         type: string
         default: ''
+      decls_diff_master_run_id:
+        description: >-
+          Master-side Build run ID to use as the reference artifact.
+          When set, decls-diff skips its auto-lookup (which only finds
+          real `ci` runs on master). Use a prior `ci dev` run that built
+          the merge-base SHA to exercise the success path before the
+          modified template reaches master.
+        required: false
+        type: string
+        default: ''
       decls_diff_patch_comment:
         description: >-
           Default false. Flip to true to also PATCH the PR-summary
@@ -81,5 +91,6 @@ jobs:
     with:
       run_id: ${{ github.run_id }}
       pr_number: ${{ inputs.decls_diff_pr_number }}
+      master_run_id: ${{ inputs.decls_diff_master_run_id }}
       patch_comment: ${{ inputs.decls_diff_patch_comment }}
     secrets: inherit

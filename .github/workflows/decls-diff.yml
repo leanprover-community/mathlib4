@@ -50,6 +50,16 @@ on:
         required: false
         type: string
         default: ''
+      master_run_id:
+        description: >-
+          Master-side Build run ID. When set, bypasses the auto-lookup
+          (which only matches `ci` runs on `master`) and uses the given
+          run's artifact as the reference side — handy for testing the
+          success path from a `ci dev` run that built a merge-base SHA
+          before the modified template reaches master.
+        required: false
+        type: string
+        default: ''
       patch_comment:
         description: >-
           Default `false`: compute and log the diff into the step summary
@@ -65,6 +75,10 @@ on:
         type: string
         default: ''
       run_id:
+        required: false
+        type: string
+        default: ''
+      master_run_id:
         required: false
         type: string
         default: ''
@@ -200,15 +214,22 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           REPO: ${{ github.repository }}
           MB: ${{ steps.resolve.outputs.merge-base }}
+          OVERRIDE_RUN_ID: ${{ inputs.master_run_id }}
         run: |
           set -euo pipefail
-          RUN="$(gh api "repos/$REPO/actions/runs?head_sha=$MB&event=push&status=success&branch=master" \
-                  --jq '[.workflow_runs[] | select(.name=="ci")] | .[0].id // ""')"
-          if [ -n "$RUN" ]; then
+          if [ -n "$OVERRIDE_RUN_ID" ]; then
             echo "found=true" >> "$GITHUB_OUTPUT"
-            echo "run-id=$RUN" >> "$GITHUB_OUTPUT"
+            echo "run-id=$OVERRIDE_RUN_ID" >> "$GITHUB_OUTPUT"
+            echo "Using override master_run_id=$OVERRIDE_RUN_ID"
           else
-            echo "found=false" >> "$GITHUB_OUTPUT"
+            RUN="$(gh api "repos/$REPO/actions/runs?head_sha=$MB&event=push&status=success&branch=master" \
+                    --jq '[.workflow_runs[] | select(.name=="ci")] | .[0].id // ""')"
+            if [ -n "$RUN" ]; then
+              echo "found=true" >> "$GITHUB_OUTPUT"
+              echo "run-id=$RUN" >> "$GITHUB_OUTPUT"
+            else
+              echo "found=false" >> "$GITHUB_OUTPUT"
+            fi
           fi
 
       - name: Download master-side artifact
