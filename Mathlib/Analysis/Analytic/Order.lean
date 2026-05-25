@@ -385,7 +385,7 @@ lemma AnalyticAt.exists_eventuallyEq_sum_add_pow_mul [CharZero 𝕜] [CompleteSp
       (fun z : 𝕜 ↦ ∑ i ∈ .range n, (z ^ i / i.factorial) • iteratedDeriv i f 0) 0 := by
     refine Finset.analyticAt_fun_sum _ fun i hi ↦ ?_
     fun_prop
-  convert (natCast_le_analyticOrderAt (hf.fun_sub this)).mp ?_
+  convert! (natCast_le_analyticOrderAt (hf.fun_sub this)).mp ?_
   · simp
   · rw [natCast_le_analyticOrderAt_iff_iteratedDeriv_eq_zero (hf.fun_sub this)]
     intro i hi
