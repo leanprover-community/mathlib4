@@ -160,7 +160,7 @@ theorem Gamma1_mem (N : ℕ) (A : SL(2, ℤ)) : A ∈ Gamma1 N ↔
     rw [Gamma1_to_Gamma0_mem] at hx
     simp only [Subgroup.mem_top, true_and] at hxx
     rw [← hxx]
-    convert hx
+    convert! hx
   · intro ha
     simp_rw [Gamma1, Subgroup.mem_map]
     have hA : A ∈ Gamma0 N := by simp [ha.right.right, Gamma0_mem]
