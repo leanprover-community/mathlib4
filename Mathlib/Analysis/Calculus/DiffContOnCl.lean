@@ -24,9 +24,9 @@ open Set Filter Metric
 
 open scoped Topology
 
-variable (𝕜 : Type*) {E F G : Type*} [NontriviallyNormedField 𝕜] [NormedAddCommGroup E]
-  [NormedAddCommGroup F] [NormedSpace 𝕜 E] [NormedSpace 𝕜 F] [NormedAddCommGroup G]
-  [NormedSpace 𝕜 G] {f g : E → F} {s t : Set E} {x : E}
+variable (𝕜 : Type*) {E F G : Type*} [NontriviallyNormedField 𝕜] [AddCommGroup E]
+  [NormedAddCommGroup E] [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace 𝕜 E] [NormedSpace 𝕜 F]
+  [AddCommGroup G] [NormedAddCommGroup G] [NormedSpace 𝕜 G] {f g : E → F} {s t : Set E} {x : E}
 
 /-- A predicate saying that a function is differentiable on a set and is continuous on its
 closure. This is a common assumption in complex analysis. -/
