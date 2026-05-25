@@ -819,7 +819,7 @@ theorem stoppedProcess_eq_stoppedValue_apply (i : ι) (ω : Ω) :
 @[simp] lemma stoppedProcess_comp {γ : Type*} (f : β → γ) :
     stoppedProcess (fun t ω ↦ f (u t ω)) τ = fun i ω ↦ f (stoppedProcess u τ i ω) := rfl
 
-@[simp] lemma stoppedProcess_norm [SeminormedAddCommGroup β] :
+lemma stoppedProcess_norm [SeminormedAddCommGroup β] :
     stoppedProcess (fun t ω ↦ ‖u t ω‖) τ = fun i ω ↦ ‖stoppedProcess u τ i ω‖ := rfl
 
 @[to_additive (attr := simp)]
