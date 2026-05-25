@@ -588,23 +588,23 @@ lemma tensorProduct_isReduced_of_localization_of_finiteType [IsReduced S] [Algeb
 
 lemma isReduced_of_tensorProduct_adjoinPthRoots_reduced_of_finiteType (p : ℕ) (hp : Nat.Prime p)
     [ExpChar k p] (K : Type*) [Field K] [Algebra k K]
-    [Algebra.FiniteType k S] (red : IsReduced (adjoinPthRoots k p ⊗[k] S)) :
+    [Algebra.FiniteType k S] (red : IsReduced (AdjoinPthRoots k ⊗[k] S)) :
     IsReduced (K ⊗[k] S) := by
   have redS : IsReduced S := isReduced_of_injective _
-    (Algebra.TensorProduct.includeRight_injective (algebraMap k (adjoinPthRoots k p)).injective)
+    (Algebra.TensorProduct.includeRight_injective (algebraMap k (AdjoinPthRoots k)).injective)
   refine tensorProduct_isReduced_of_localization_of_finiteType k K S (fun q hq ↦ ?_)
   have := hq.isPrime
   let := (localization_minimal_isField q hq).toField
-  have h : IsReduced ((adjoinPthRoots k p) ⊗[k] (Localization.AtPrime q)) := by
-    let : Algebra (adjoinPthRoots k p ⊗[k] S) (adjoinPthRoots k p ⊗[k] Localization.AtPrime q) :=
-      (Algebra.TensorProduct.lTensor (S := adjoinPthRoots k p) _
+  have h : IsReduced ((AdjoinPthRoots k) ⊗[k] (Localization.AtPrime q)) := by
+    let : Algebra (AdjoinPthRoots k ⊗[k] S) (AdjoinPthRoots k ⊗[k] Localization.AtPrime q) :=
+      (Algebra.TensorProduct.lTensor (S := AdjoinPthRoots k) _
         (IsScalarTower.toAlgHom k S (Localization.AtPrime q))).toRingHom.toAlgebra
-    let qc' : Submonoid (adjoinPthRoots k p ⊗[k] S) :=
+    let qc' : Submonoid (AdjoinPthRoots k ⊗[k] S) :=
       q.primeCompl.map Algebra.TensorProduct.includeRight
     have isl : IsLocalization qc' _ := IsLocalization.tensorProduct_tensorProduct_right k _
       q.primeCompl (Localization.AtPrime q) (by ext; simp [RingHom.algebraMap_toAlgebra])
     exact isReduced_of_injective _ (IsLocalization.algEquiv qc'
-      (adjoinPthRoots k p ⊗[k] Localization.AtPrime q) (Localization qc')).injective
+      (AdjoinPthRoots k ⊗[k] Localization.AtPrime q) (Localization qc')).injective
   have sep : Algebra.IsTranscendentalSeparable k (Localization.AtPrime q) :=
     ((Algebra.isTranscendentalSeparable_tfae k (Localization.AtPrime q) p hp).out 0 2).mpr h
   have : IsReduced (Localization.AtPrime q ⊗[k] K) :=
@@ -613,11 +613,11 @@ lemma isReduced_of_tensorProduct_adjoinPthRoots_reduced_of_finiteType (p : ℕ) 
 
 lemma isReduced_of_tensorProduct_adjoinPthRoots_reduced (p : ℕ) (hp : Nat.Prime p)
     [ExpChar k p] (K : Type*) [Field K] [Algebra k K]
-    (red : IsReduced ((adjoinPthRoots k p) ⊗[k] S)) : IsReduced (K ⊗[k] S) := by
+    (red : IsReduced (AdjoinPthRoots k ⊗[k] S)) : IsReduced (K ⊗[k] S) := by
   refine IsReduced.tensorProduct_of_flat_of_forall_fg (fun T Tfg ↦ ?_)
   have : Algebra.FiniteType k T := T.fg_iff_finiteType.mp Tfg
   apply isReduced_of_tensorProduct_adjoinPthRoots_reduced_of_finiteType k T p hp K
-  exact isReduced_of_injective (Algebra.TensorProduct.lTensor (S := k) (adjoinPthRoots k p) T.val)
+  exact isReduced_of_injective (Algebra.TensorProduct.lTensor (S := k) (AdjoinPthRoots k) T.val)
     (Module.Flat.lTensor_preserves_injective_linearMap _ Subtype.val_injective)
 
 lemma tensorProduct_isReduced_of_isGeometricallyReduced_field (K : Type*) [Field K] [Algebra k K]
@@ -627,9 +627,9 @@ lemma tensorProduct_isReduced_of_isGeometricallyReduced_field (K : Type*) [Field
       (Algebra.TensorProduct.includeRight_injective (algebraMap k (AlgebraicClosure k)).injective)
     exact isReduced_of_perfectField k S K
   · apply isReduced_of_tensorProduct_adjoinPthRoots_reduced k S p hp.out K
-    let f : (adjoinPthRoots k p) →ₐ[k] (AlgebraicClosure k) :=
-      (IsAlgClosure.equiv k (AlgebraicClosure (adjoinPthRoots k p))
-        (AlgebraicClosure k)).toAlgHom.comp (IsScalarTower.toAlgHom k (adjoinPthRoots k p) _)
+    let f : AdjoinPthRoots k →ₐ[k] (AlgebraicClosure k) :=
+      (IsAlgClosure.equiv k (AlgebraicClosure (AdjoinPthRoots k))
+        (AlgebraicClosure k)).toAlgHom.comp (IsScalarTower.toAlgHom k (AdjoinPthRoots k) _)
     have : Function.Injective (Algebra.TensorProduct.rTensor S f) :=
       Module.Flat.rTensor_preserves_injective_linearMap _ (RingHom.injective _)
     exact isReduced_of_injective _ this
