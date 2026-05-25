@@ -6,12 +6,14 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.Algebra.Order.Field.Pointwise
-public import Mathlib.Analysis.Calculus.AddTorsor.AffineMap
 public import Mathlib.Analysis.Calculus.ContDiff.Deriv
 public import Mathlib.Analysis.Calculus.Deriv.AffineMap
 public import Mathlib.Analysis.Calculus.Deriv.Shift
 public import Mathlib.Analysis.Normed.Module.Convex
-public import Mathlib.MeasureTheory.Integral.IntervalIntegral.FundThmCalculus
+public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
+
+import Mathlib.Analysis.Calculus.AddTorsor.AffineMap
+import Mathlib.MeasureTheory.Integral.IntervalIntegral.FundThmCalculus
 
 /-!
 # Integral of a 1-form along a path
@@ -347,13 +349,13 @@ theorem ContinuousOn.curveIntegrable_of_contDiffOn {s : Set E} (hω : Continuous
   · exact hγ.continuousOn_derivWithin uniqueDiffOn_Icc_zero_one le_rfl
 
 @[fun_prop]
-theorem Path.segment_contDiffOn (a b : E) :
+theorem Path.contDiffOn_segment_extend (a b : E) :
     ContDiffOn ℝ 1 (Path.segment a b).extend I :=
   (AffineMap.contDiff_lineMap a b).contDiffOn.congr (Path.eqOn_extend_segment a b)
 
 theorem ContinuousOn.curveIntegrable_segment (hω : ContinuousOn ω [a -[ℝ] b]) :
     CurveIntegrable ω (.segment a b) :=
-  hω.curveIntegrable_of_contDiffOn (Path.segment_contDiffOn a b)
+  hω.curveIntegrable_of_contDiffOn (Path.contDiffOn_segment_extend a b)
     fun t ↦ Path.range_segment a b ▸ Set.mem_range_self t
 
 theorem Continuous.curveIntegrable_segment (hω : Continuous ω) :
