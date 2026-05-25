@@ -1240,3 +1240,74 @@ theorem FlowInducesValidVertexFlow (V : Type*) [DecidableEq V] [Fintype V] (G : 
         linarith [g.nonneg_flow (x, In) (u, In)]
       -- chain: ∑(x,Out)->(u,In) ≤ ∑ x->(u,In) = ∑ (u,In)->x = (u,In)->(u,Out) ≤ vc u
       linarith [g.nonneg_flow (u, Out) (u, In)]
+
+noncomputable
+def imbalance {V : Type*} [Fintype V] (f : V → V → ℝ) (x : V) : ℝ := ∑ y, (f x y - f y x)
+
+def is_supply {V : Type*} [Fintype V] (f : V → V → ℝ) (x : V) : Prop := imbalance f x > 0
+
+def is_demand {V : Type*} [Fintype V] (f : V → V → ℝ) (x : V) : Prop := imbalance f x < 0
+
+def is_balanced {V : Type*} [Fintype V] (f : V → V → ℝ) (x : V) : Prop := imbalance f x = 0
+
+structure PseudoFlow (V : Type*) [Fintype V] where
+  f : V → V → ℝ
+  nonneg_flow : ∀ u v : V, f u v ≥ 0
+
+structure Circulation (V : Type*) [Fintype V] where
+  f : V → V → ℝ
+  nonneg_flow : ∀ u v : V, f u v ≥ 0
+  conservation : ∀ x : V, imbalance f x = 0
+
+structure SimpleCycle {V : Type*} [Fintype V] [DecidableEq V] (G : FlowNetwork V) where
+  verts : List V
+  nonempty : verts ≠ []
+  nodup : verts.Nodup
+  length_ge_two : verts.length ≥ 2
+  edge_valid : ∀ (i : ℕ) (h : i < verts.length - 1), G.c verts[i] verts[i+1] > 0
+  closing_edge : G.c (verts.getLast nonempty) (verts.head nonempty) > 0
+
+structure CycleFlow (V : Type*) [Fintype V] [DecidableEq V]
+    (G : FlowNetwork V) where
+  circ : Circulation V
+  cycle : SimpleCycle G
+  pos_on_cycle : ∀ (i : ℕ) (h : i < cycle.verts.length - 1),
+      circ.f cycle.verts[i] cycle.verts[i+1] > 0
+  pos_on_closing : circ.f (cycle.verts.getLast cycle.nonempty) (cycle.verts.head cycle.nonempty) > 0
+  zero_off_cycle : ∀ u v : V, circ.f u v > 0 →
+      (∃ (i : ℕ) (h : i < cycle.verts.length - 1),
+          u = cycle.verts[i] ∧
+          v = cycle.verts[i+1])
+      ∨
+      (u = cycle.verts.getLast cycle.nonempty ∧
+       v = cycle.verts.head cycle.nonempty)
+
+structure PathFlow (V : Type*) [Fintype V] [DecidableEq V] (G : FlowNetwork V) where
+  s : V
+  t : V
+  path : validuvPath G s t
+  f : V → V → ℝ
+  nonneg_flow : ∀ u v : V, f u v ≥ 0
+  pos_on_path : ∀ (i : ℕ) (h : i < path.verts.length - 1), f path.verts[i] path.verts[i+1] > 0
+  zero_off_path : ∀ u v : V, f u v > 0 →
+      ∃ (i : ℕ) (h : i < path.verts.length - 1), u = path.verts[i] ∧ v = path.verts[i+1]
+  conservation : ∀ x : V, x ≠ s → x ≠ t → ∑ y, (f x y - f y x) = 0
+
+def positiveReachable {V : Type*} [Fintype V] [DecidableEq V]
+ (G : FlowNetwork V) (f : V → V → ℝ) (u v : V) : Prop := Nonempty
+    (validuvPath { G with
+        c := fun x y => if f x y > 0 then 1 else 0
+        nonneg_capacity := by
+          intro x y
+          split_ifs <;> norm_num
+      } u v)
+
+/-- number of nonzero imbalance vertices -/
+noncomputable
+def Ψ {V : Type*} [Fintype V] (f : V → V → ℝ) : Nat :=
+  Fintype.card {x | imbalance f x ≠ 0}
+
+/-- number of edges with positive flow -/
+noncomputable
+def Φ {V : Type*} [Fintype V] (f : V → V → ℝ) : Nat :=
+  Fintype.card {p : V × V | f p.1 p.2 > 0}
