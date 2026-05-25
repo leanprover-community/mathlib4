@@ -45,18 +45,18 @@ namespace MeasureTheory
 variable {α E E' F G G' 𝕜 : Type*} [RCLike 𝕜]
   -- 𝕜 for ℝ or ℂ
   -- E for an inner product space
-  [NormedAddCommGroup E]
+  [AddCommGroup E] [NormedAddCommGroup E]
   [InnerProductSpace 𝕜 E] [CompleteSpace E]
   -- E' for an inner product space on which we compute integrals
-  [NormedAddCommGroup E']
+  [AddCommGroup E'] [NormedAddCommGroup E']
   [InnerProductSpace 𝕜 E'] [CompleteSpace E'] [NormedSpace ℝ E']
   -- F for a Lp submodule
-  [NormedAddCommGroup F]
+  [AddCommGroup F] [NormedAddCommGroup F]
   [NormedSpace 𝕜 F]
   -- G for a Lp add_subgroup
-  [NormedAddCommGroup G]
+  [AddCommGroup G] [NormedAddCommGroup G]
   -- G' for integrals on a Lp add_subgroup
-  [NormedAddCommGroup G']
+  [AddCommGroup G'] [NormedAddCommGroup G']
   [NormedSpace ℝ G'] [CompleteSpace G']
 
 variable {m m0 : MeasurableSpace α} {μ : Measure α} {s t : Set α}
@@ -85,12 +85,12 @@ theorem integrable_condExpL2_of_isFiniteMeasure (hm : m ≤ m0) [IsFiniteMeasure
     Integrable (ε := E) (condExpL2 E 𝕜 hm f) μ :=
   integrableOn_univ.mp <| integrableOn_condExpL2_of_measure_ne_top hm (measure_ne_top _ _) f
 
-theorem norm_condExpL2_le_one (hm : m ≤ m0) : ‖@condExpL2 α E 𝕜 _ _ _ _ _ _ μ hm‖ ≤ 1 :=
+theorem norm_condExpL2_le_one (hm : m ≤ m0) : ‖@condExpL2 α E 𝕜 _ _ _ _ _ _ _ μ hm‖ ≤ 1 :=
   haveI : Fact (m ≤ m0) := ⟨hm⟩
   Submodule.orthogonalProjection_norm_le _
 
 theorem norm_condExpL2_le (hm : m ≤ m0) (f : α →₂[μ] E) : ‖condExpL2 E 𝕜 hm f‖ ≤ ‖f‖ :=
-  ((@condExpL2 _ E 𝕜 _ _ _ _ _ _ μ hm).le_opNorm f).trans
+  ((@condExpL2 _ E 𝕜 _ _ _ _ _ _ _ μ hm).le_opNorm f).trans
     (mul_le_of_le_one_left (norm_nonneg _) (norm_condExpL2_le_one hm))
 
 theorem eLpNorm_condExpL2_le (hm : m ≤ m0) (f : α →₂[μ] E) :
@@ -193,7 +193,7 @@ theorem lintegral_nnnorm_condExpL2_indicator_le_real (hs : MeasurableSet s) (hμ
     ∫⁻ x in t, ‖(indicatorConstLp 2 hs hμs (1 : ℝ)) x‖₊ ∂μ =
       ∫⁻ x in t, s.indicator (fun _ => (1 : ℝ≥0∞)) x ∂μ := by
     refine lintegral_congr_ae (ae_restrict_of_ae ?_)
-    refine (@indicatorConstLp_coeFn _ _ _ 2 _ _ _ hs hμs (1 : ℝ)).mono fun x hx => ?_
+    refine (@indicatorConstLp_coeFn _ _ _ 2 _ _ _ _ hs hμs (1 : ℝ)).mono fun x hx => ?_
     dsimp only
     rw [hx]
     classical
@@ -252,8 +252,8 @@ theorem integral_condExpL2_eq (hm : m ≤ m0) (f : Lp E' 2 μ) (hs : MeasurableS
     setIntegral_congr_ae (hm s hs) (h_ae_eq_f.mono fun x hx _ => hx)]
   exact integral_condExpL2_eq_of_fin_meas_real _ hs hμs
 
-variable {E'' 𝕜' : Type*} [RCLike 𝕜'] [NormedAddCommGroup E''] [InnerProductSpace 𝕜' E'']
-  [CompleteSpace E''] [NormedSpace ℝ E'']
+variable {E'' 𝕜' : Type*} [RCLike 𝕜'] [AddCommGroup E''] [NormedAddCommGroup E'']
+  [InnerProductSpace 𝕜' E''] [CompleteSpace E''] [NormedSpace ℝ E'']
 
 variable (𝕜 𝕜')
 
@@ -419,7 +419,7 @@ theorem setIntegral_condExpL2_indicator (hs : MeasurableSet[m] s) (ht : Measurab
   calc
     ∫ x in s, (condExpL2 ℝ ℝ hm (indicatorConstLp 2 ht hμt 1) : α → ℝ) x ∂μ =
         ∫ x in s, indicatorConstLp 2 ht hμt (1 : ℝ) x ∂μ :=
-      @integral_condExpL2_eq α _ ℝ _ _ _ _ _ _ _ _ _ hm (indicatorConstLp 2 ht hμt (1 : ℝ)) hs hμs
+      @integral_condExpL2_eq α _ ℝ _ _ _ _ _ _ _ _ _ _ hm (indicatorConstLp 2 ht hμt (1 : ℝ)) hs hμs
     _ = μ.real (t ∩ s) • (1 : ℝ) := setIntegral_indicatorConstLp (hm s hs) ht hμt 1
     _ = μ.real (t ∩ s) := by rw [smul_eq_mul, mul_one]
 
@@ -457,7 +457,7 @@ theorem condExpL2_indicator_nonneg (hm : m ≤ m0) (hs : MeasurableSet s) (hμs 
       setIntegral_condExpL2_indicator ht hs ((le_trim hm).trans_lt hμt).ne hμs]
     exact ENNReal.toReal_nonneg
 
-theorem condExpIndSMul_nonneg {E}
+theorem condExpIndSMul_nonneg {E} [AddCommGroup E]
     [NormedAddCommGroup E] [PartialOrder E] [NormedSpace ℝ E] [IsOrderedModule ℝ E]
     [SigmaFinite (μ.trim hm)] (hs : MeasurableSet s) (hμs : μ s ≠ ∞) (x : E) (hx : 0 ≤ x) :
     (0 : α → E) ≤ᵐ[μ] condExpIndSMul hm hs hμs x := by
