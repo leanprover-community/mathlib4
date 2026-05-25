@@ -42,7 +42,6 @@ class IsNormedRing (α : Type*) [NormPseudoMetric α] [NonUnitalRing α] extends
   protected norm_mul_le : ∀ a b : α, norm (a * b) ≤ norm a * norm b
 
 /-- missing doc -/
-@[class_abbrev]
 structure NonUnitalSeminormedRing (E : Type*) where
   /-- missing doc -/
   [toNormPseudoMetric : NormPseudoMetric E]
@@ -51,7 +50,6 @@ structure NonUnitalSeminormedRing (E : Type*) where
   [toIsNormedRing : IsNormedRing E]
 
 /-- missing doc -/
-@[class_abbrev]
 structure SeminormedRing (E : Type*) where
   /-- missing doc -/
   [toNormPseudoMetric : NormPseudoMetric E]
@@ -60,7 +58,6 @@ structure SeminormedRing (E : Type*) where
   [toIsNormedRing : IsNormedRing E]
 
 /-- missing doc -/
-@[class_abbrev]
 structure NonUnitalNormedRing (E : Type*) where
   /-- missing doc -/
   [toNormMetric : NormMetric E]
@@ -69,7 +66,6 @@ structure NonUnitalNormedRing (E : Type*) where
   [toIsNormedRing : IsNormedRing E]
 
 /-- missing doc -/
-@[class_abbrev]
 structure NormedRing (E : Type*) where
   /-- missing doc -/
   [toNormMetric : NormMetric E]
@@ -78,7 +74,6 @@ structure NormedRing (E : Type*) where
   [toIsNormedRing : IsNormedRing E]
 
 /-- missing doc -/
-@[class_abbrev]
 structure NonUnitalSeminormedCommRing (E : Type*) where
   /-- missing doc -/
   [toNormPseudoMetric : NormPseudoMetric E]
@@ -87,7 +82,6 @@ structure NonUnitalSeminormedCommRing (E : Type*) where
   [toIsNormedRing : IsNormedRing E]
 
 /-- missing doc -/
-@[class_abbrev]
 structure NonUnitalNormedCommRing (E : Type*) where
   /-- missing doc -/
   [toNormMetric : NormMetric E]
@@ -96,7 +90,6 @@ structure NonUnitalNormedCommRing (E : Type*) where
   [toIsNormedRing : IsNormedRing E]
 
 /-- missing doc -/
-@[class_abbrev]
 structure SeminormedCommRing (E : Type*) where
   /-- missing doc -/
   [toNormPseudoMetric : NormPseudoMetric E]
@@ -105,13 +98,16 @@ structure SeminormedCommRing (E : Type*) where
   [toIsNormedRing : IsNormedRing E]
 
 /-- missing doc -/
-@[class_abbrev]
 structure NormedCommRing (E : Type*) where
   /-- missing doc -/
   [toNormMetric : NormMetric E]
   /-- missing doc -/
   [toCommRing : CommRing E]
   [toIsNormedRing : IsNormedRing E]
+
+attribute [deprecated IsNormedRing (since := "2026-05-25")]
+  NonUnitalSeminormedRing SeminormedRing NonUnitalNormedRing NormedRing
+  NonUnitalSeminormedCommRing NonUnitalNormedCommRing SeminormedCommRing NormedCommRing
 
 instance PUnit.instIsNormedRing : IsNormedRing PUnit where
   norm_mul_le _ _ := by simp

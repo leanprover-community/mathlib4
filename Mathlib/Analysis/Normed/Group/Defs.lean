@@ -162,7 +162,6 @@ class IsNormedAddGroup (E : Type*) [NormPseudoMetric E] [AddGroup E] where
   dist_eq : ∀ x y : E, dist x y = ‖-x + y‖ := by aesop
 
 /-- missing doc -/
-@[class_abbrev]
 structure SeminormedAddGroup (E : Type*) where
   /-- missing doc -/
   [toNormPseudoMetric : NormPseudoMetric E]
@@ -178,7 +177,7 @@ class IsNormedGroup (E : Type*) [NormPseudoMetric E] [Group E] where
   dist_eq : ∀ x y : E, dist x y = ‖x⁻¹ * y‖ := by aesop
 
 /-- missing doc -/
-@[class_abbrev, to_additive]
+@[to_additive]
 structure SeminormedGroup (E : Type*) where
   /-- missing doc -/
   [toNormPseudoMetric : NormPseudoMetric E]
@@ -187,7 +186,6 @@ structure SeminormedGroup (E : Type*) where
   [toIsNormedGroup : IsNormedGroup E]
 
 /-- missing doc -/
-@[class_abbrev]
 structure NormedAddGroup (E : Type*) where
   /-- missing doc -/
   [toNormMetric : NormMetric E]
@@ -196,7 +194,7 @@ structure NormedAddGroup (E : Type*) where
   [toIsNormedAddGroup : IsNormedAddGroup E]
 
 /-- missing doc -/
-@[class_abbrev, to_additive]
+@[to_additive]
 structure NormedGroup (E : Type*) where
   /-- missing doc -/
   [toNormMetric : NormMetric E]
@@ -205,7 +203,6 @@ structure NormedGroup (E : Type*) where
   [toIsNormedGroup : IsNormedGroup E]
 
 /-- missing doc -/
-@[class_abbrev]
 structure SeminormedAddCommGroup (E : Type*) where
   /-- missing doc -/
   [toNormPseudoMetric : NormPseudoMetric E]
@@ -214,7 +211,7 @@ structure SeminormedAddCommGroup (E : Type*) where
   [toIsNormedAddGroup : IsNormedAddGroup E]
 
 /-- missing doc -/
-@[class_abbrev, to_additive]
+@[to_additive]
 structure SeminormedCommGroup (E : Type*) where
   /-- missing doc -/
   [toNormPseudoMetric : NormPseudoMetric E]
@@ -223,7 +220,6 @@ structure SeminormedCommGroup (E : Type*) where
   [toIsNormedGroup : IsNormedGroup E]
 
 /-- missing doc -/
-@[class_abbrev]
 structure NormedAddCommGroup (E : Type*) where
   /-- missing doc -/
   [toNormMetric : NormMetric E]
@@ -232,13 +228,19 @@ structure NormedAddCommGroup (E : Type*) where
   [toIsNormedAddGroup : IsNormedAddGroup E]
 
 /-- missing doc -/
-@[class_abbrev, to_additive]
+@[to_additive]
 structure NormedCommGroup (E : Type*) where
   /-- missing doc -/
   [toNormMetric : NormMetric E]
   /-- missing doc -/
   [toCommGroup : CommGroup E]
   [toIsNormedGroup : IsNormedGroup E]
+
+attribute [deprecated IsNormedAddGroup (since := "2026-05-25")]
+  SeminormedAddGroup NormedAddGroup SeminormedAddCommGroup NormedAddCommGroup
+
+attribute [deprecated IsNormedGroup (since := "2026-05-25")]
+  SeminormedGroup NormedGroup SeminormedCommGroup NormedCommGroup
 
 -- See note [reducible non-instances]
 /-- missing doc -/
