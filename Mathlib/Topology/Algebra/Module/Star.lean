@@ -33,8 +33,6 @@ then `star` is a continuous semilinear equivalence. -/
 @[simps! apply]
 def starL : A ≃L⋆[R] A where
   toLinearEquiv := starLinearEquiv R
-  continuous_toFun := continuous_star
-  continuous_invFun := continuous_star
 
 @[deprecated "Use `symm_starL` and `starL_apply` instead" (since := "2026-05-24")]
 theorem starL_symm_apply (x : A) : (starL R).symm x = starAddEquiv.symm x :=
