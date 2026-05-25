@@ -28,7 +28,7 @@ between short complexes or homological complexes in `C`.
 
 -/
 
-@[expose] public section
+public section
 
 namespace CategoryTheory
 
@@ -107,7 +107,7 @@ section
 variable {α : Type*} {c : ComplexShape α} {K L : HomologicalComplex C c}
 
 lemma quasiIsoAt_iff (f : K ⟶ L) (a : α) :
-    QuasiIsoAt f a ↔ ∀ (i : I), QuasiIsoAt (((F i).mapHomologicalComplex c).map f) a  := by
+    QuasiIsoAt f a ↔ ∀ (i : I), QuasiIsoAt (((F i).mapHomologicalComplex c).map f) a := by
   simpa only [quasiIsoAt_iff' _ _ _ _ rfl rfl] using
     hP.shortComplexQuasiIso_iff _
 

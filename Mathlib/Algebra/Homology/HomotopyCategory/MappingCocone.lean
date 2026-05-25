@@ -243,7 +243,7 @@ lemma δ_liftCochain (n' : ℤ) (hn' : n + 1 = n') :
   dsimp [liftCochain, inl, inr]
   ext p q hpq
   simp [mappingCone.δ_liftCochain _ _ _ _ n' hn',
-    Cochain.δ_rightShift _ (-1) _ n' _ n  (by lia),
+    Cochain.δ_rightShift _ (-1) _ n' _ n (by lia),
     Cochain.rightShift_v (n := n) _ _ _ _ p _ _ (q + -1) (by lia),
     Cochain.rightShift_v _ _ _ _ _ _ _ (q + -1) rfl,
     Cochain.rightShift_v _ _ _ _ _ _ _ _ (add_zero (q + -1)),

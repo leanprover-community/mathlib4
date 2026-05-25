@@ -49,12 +49,12 @@ variable (R)
 
 instance ResidueField.algebra {R₀} [CommRing R₀] [Algebra R₀ R] :
     Algebra R₀ (ResidueField R) :=
-  Ideal.Quotient.algebra _
+  inferInstanceAs <| Algebra R₀ (_ ⧸ _)
 
 instance {R₁ R₂} [CommRing R₁] [CommRing R₂]
     [Algebra R₁ R₂] [Algebra R₁ R] [Algebra R₂ R] [IsScalarTower R₁ R₂ R] :
-    IsScalarTower R₁ R₂ (IsLocalRing.ResidueField R) := by
-  delta IsLocalRing.ResidueField; infer_instance
+    IsScalarTower R₁ R₂ (ResidueField R) :=
+  inferInstanceAs <| IsScalarTower R₁ R₂ (_ ⧸ _)
 
 @[simp]
 theorem ResidueField.algebraMap_eq : algebraMap R (ResidueField R) = residue R :=
@@ -207,9 +207,6 @@ lemma finite_of_finite [Module.Finite R S] (hfin : Finite (ResidueField R)) :
 end FiniteDimensional
 
 end ResidueField
-
-@[deprecated (since := "2025-10-06")]
-  alias isLocalHom_residue := instIsLocalHomResidueFieldRingHomResidue
 
 end
 

@@ -211,11 +211,6 @@ lemma _root_.IsUnit.isSelfAdjoint_conjugate_iff' {a u : R} (hu : IsUnit u) :
     IsSelfAdjoint (star u * a * u) ↔ IsSelfAdjoint a := by
   simpa using hu.star.isSelfAdjoint_conjugate_iff
 
-@[deprecated (since := "2025-09-28")] alias _root_.isSelfAdjoint_conjugate_iff_of_isUnit :=
-  IsUnit.isSelfAdjoint_conjugate_iff
-@[deprecated (since := "2025-09-28")] alias _root_.isSelfAdjoint_conjugate_iff_of_isUnit' :=
-  IsUnit.isSelfAdjoint_conjugate_iff'
-
 end Monoid
 
 section Semiring
@@ -671,6 +666,12 @@ instance IsStarNormal.one_add [NonAssocSemiring R] [StarRing R] {a : R}
 instance IsStarNormal.one_sub [NonAssocRing R] [StarRing R] {a : R}
     [ha : IsStarNormal a] : IsStarNormal (1 - a) :=
   Commute.one_left (star a) |>.isStarNormal_sub
+
+lemma IsSelfAdjoint.commute_of_mul_eq_zero [NonUnitalNonAssocRing R] [StarRing R]
+    {a b : R} (ha : IsSelfAdjoint a) (hb : IsSelfAdjoint b) (hab : a * b = 0) :
+    Commute a b := by
+  have : b * a = 0 := by simpa [ha.star_eq, hb.star_eq] using congr(star $hab)
+  grind [commute_iff_eq]
 
 namespace Pi
 variable {ι : Type*} {α : ι → Type*} [∀ i, Star (α i)] {f : ∀ i, α i}

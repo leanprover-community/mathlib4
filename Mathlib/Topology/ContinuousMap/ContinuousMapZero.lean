@@ -388,7 +388,8 @@ section UniformSpace
 variable {X R : Type*} [Zero X] [TopologicalSpace X]
 variable [Zero R] [UniformSpace R]
 
-protected instance instUniformSpace : UniformSpace C(X, R)₀ := .comap toContinuousMap inferInstance
+protected instance instUniformSpace : UniformSpace C(X, R)₀ :=
+  fast_instance% .comap toContinuousMap inferInstance
 
 lemma isUniformEmbedding_toContinuousMap :
     IsUniformEmbedding ((↑) : C(X, R)₀ → C(X, R)) where

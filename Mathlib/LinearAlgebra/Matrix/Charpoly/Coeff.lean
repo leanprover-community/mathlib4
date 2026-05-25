@@ -144,7 +144,6 @@ theorem trace_eq_neg_charpoly_nextCoeff (M : Matrix n n R) : M.trace = -M.charpo
   nontriviality
   simp [trace_eq_neg_charpoly_coeff, nextCoeff]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem det_eq_sign_charpoly_coeff (M : Matrix n n R) :
     M.det = (-1) ^ Fintype.card n * M.charpoly.coeff 0 := by
   rw [coeff_zero_eq_eval_zero, charpoly, eval_det, matPolyEquiv_charmatrix, ← det_smul]
@@ -155,7 +154,7 @@ lemma derivative_det_one_add_X_smul_aux {n} (M : Matrix (Fin n) (Fin n) R) :
   induction n with
   | zero => simp
   | succ n IH =>
-    rw [det_succ_row_zero, map_sum, eval_finset_sum]
+    rw [det_succ_row_zero, map_sum, eval_finsetSum]
     simp only [add_apply, smul_apply, map_apply, smul_eq_mul, X_mul_C, submatrix_add,
       submatrix_smul, Pi.add_apply, Pi.smul_apply, submatrix_map, derivative_mul, map_add,
       derivative_C, zero_mul, derivative_X, mul_one, zero_add, eval_add, eval_mul, eval_C, eval_X,
@@ -181,7 +180,7 @@ lemma derivative_det_one_add_X_smul (M : Matrix n n R) :
     (derivative <| det (1 + (X : R[X]) • M.map C)).eval 0 = trace M := by
   let e := Matrix.reindexLinearEquiv R R (Fintype.equivFin n) (Fintype.equivFin n)
   rw [← Matrix.det_reindexLinearEquiv_self R[X] (Fintype.equivFin n)]
-  convert derivative_det_one_add_X_smul_aux (e M)
+  convert! derivative_det_one_add_X_smul_aux (e M)
   · ext; simp [map_add, e]
   · delta trace
     rw [← (Fintype.equivFin n).symm.sum_comp]
@@ -198,7 +197,7 @@ lemma det_one_add_X_smul (M : Matrix n n R) :
   rw [Algebra.smul_def (trace M), ← C_eq_algebraMap, pow_two, ← mul_assoc, add_assoc,
     ← add_mul, ← coeff_det_one_add_X_smul_one, ← coeff_divX, add_comm (C _), divX_mul_X_add,
     add_comm (1 : R[X]), ← C.map_one]
-  convert (divX_mul_X_add _).symm
+  convert! (divX_mul_X_add _).symm
   rw [coeff_zero_eq_eval_zero, eval_det_add_X_smul, det_one, eval_one]
 
 /-- The first two terms of the Taylor expansion of `det (1 + r • M)` at `r = 0`. -/
@@ -261,7 +260,7 @@ set_option backward.isDefEq.respectTransparency false in
 theorem coeff_charpoly_mem_ideal_pow {I : Ideal R} (h : ∀ i j, M i j ∈ I) (k : ℕ) :
     M.charpoly.coeff k ∈ I ^ (Fintype.card n - k) := by
   delta charpoly
-  rw [Matrix.det_apply, finset_sum_coeff]
+  rw [Matrix.det_apply, finsetSum_coeff]
   apply sum_mem
   rintro c -
   rw [coeff_smul, Submodule.smul_mem_iff']
@@ -341,7 +340,7 @@ lemma isUnit_charpolyRev_of_isNilpotent (hM : IsNilpotent M) :
     IsUnit M.charpolyRev := by
   obtain ⟨k, hk⟩ := hM
   replace hk : 1 - (X : R[X]) • M.map C ∣ 1 := by
-    convert one_sub_dvd_one_sub_pow ((X : R[X]) • M.map C) k
+    convert! one_sub_dvd_one_sub_pow ((X : R[X]) • M.map C) k
     rw [← C.mapMatrix_apply, smul_pow, ← map_pow, hk, map_zero, smul_zero, sub_zero]
   apply isUnit_of_dvd_one
   rw [← det_one (R := R[X]) (n := n)]

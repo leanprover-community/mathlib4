@@ -242,18 +242,14 @@ def augmentedCechConerve : Arrow C ⥤ CosimplicialObject.Augmented C where
   obj f := f.augmentedCechConerve
   map F := Arrow.mapAugmentedCechConerve F
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A helper function used in defining the Čech conerve adjunction. -/
-@[simps]
+@[simps!]
 def equivalenceLeftToRight (F : Arrow C) (X : CosimplicialObject.Augmented C)
-    (G : F.augmentedCechConerve ⟶ X) : F ⟶ Augmented.toArrow.obj X where
-  left := G.left
-  right := (WidePushout.ι _ 0 ≫ G.right.app ⦋0⦌ :)
-  w := by
+    (G : F.augmentedCechConerve ⟶ X) : F ⟶ Augmented.toArrow.obj X :=
+  Arrow.homMk G.left (WidePushout.ι _ 0 ≫ G.right.app ⦋0⦌ :) (by
     dsimp
-    rw [@WidePushout.arrow_ι_assoc _ _ _ _ _ (fun (_ : Fin 1) => F.hom)
-      (by dsimp; infer_instance)]
-    exact congr_app G.w ⦋0⦌
+    rw [WidePushout.arrow_ι_assoc (fun (_ : Fin 1) => F.hom)]
+    exact congr_app G.w ⦋0⦌)
 
 set_option backward.isDefEq.respectTransparency false in
 /-- A helper function used in defining the Čech conerve adjunction. -/
@@ -310,7 +306,7 @@ def cechConerveEquiv (F : Arrow C) (X : CosimplicialObject.Augmented C) :
       rw [WidePushout.ι_desc]
       nth_rw 2 [← Category.comp_id A.right]
       congr 1
-      convert X.right.map_id _
+      convert! X.right.map_id _
       ext ⟨a, ha⟩
       simp
 

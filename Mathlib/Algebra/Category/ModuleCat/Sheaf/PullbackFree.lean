@@ -107,7 +107,7 @@ instance [F.Final] : IsIso (pullbackObjUnitToUnit φ) := by
   intro M
   rw [← ((pullbackPushforwardAdjunction.{u} φ).homEquiv _ _).bijective.of_comp_iff',
     ← (unitHomEquiv _).bijective.of_comp_iff']
-  convert (bijective_pushforwardSections φ M).comp (unitHomEquiv _).bijective
+  convert! (bijective_pushforwardSections φ M).comp (unitHomEquiv _).bijective
   ext f : 1
   dsimp
   rw [pushforwardSections_unitHomEquiv, EmbeddingLike.apply_eq_iff_eq,
@@ -142,6 +142,6 @@ lemma pullbackObjFreeIso_hom_naturality {I J : Type u} (f : I → J) :
 continuous map between ringed sites, when the underlying functor between the sites
 is final. -/
 noncomputable def freeFunctorCompPullbackIso : freeFunctor ⋙ pullback φ ≅ freeFunctor :=
-  NatIso.ofComponents (pullbackObjFreeIso φ)
+  NatIso.ofComponents (fun X ↦ pullbackObjFreeIso φ X)
 
 end SheafOfModules
