@@ -117,14 +117,6 @@ lemma tensorCotangentHom_injective_of_flat [Module.Flat R T] :
     obtain ⟨x, rfl⟩ := I.toCotangent_surjective x
     dsimp [f, g, hₐ]
     rw [tensorCotangentHom_tmul, one_smul, Ideal.toCotangent_to_quotient_square]
-    have hq :
-        (Algebra.TensorProduct.tensorQuotientEquiv T S T (I ^ 2))
-            (1 ⊗ₜ[R] (Ideal.Quotient.mk (I ^ 2) (x : S))) =
-          Ideal.Quotient.mk ((I ^ 2).map
-            (Algebra.TensorProduct.includeRight : S →ₐ[R] T ⊗[R] S)) (1 ⊗ₜ[R] (x : S)) := by
-      exact Algebra.TensorProduct.tensorQuotientEquiv_apply_tmul
-        (R := R) (S := T) (T := S) (A := T) (I := I ^ 2) (a := 1) (t := (x : S))
-    rw [hq, Ideal.quotientEquivAlgOfEq_mk]
     rfl
   rw [this, LinearMap.coe_comp]
   apply hₐ.injective.comp

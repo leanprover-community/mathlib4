@@ -357,7 +357,7 @@ theorem IsFractionRing.stabilizerHom_apply_apply_mk (σ : MulAction.stabilizer G
       algebraMap _ L (Ideal.Quotient.mk Q (σ.val • x)) := by
   simp only [IsFractionRing.stabilizerHom, MonoidHom.coe_comp, Function.comp_apply,
     IsFractionRing.fieldEquivOfAlgEquivHom_apply, IsFractionRing.fieldEquivOfAlgEquiv_algebraMap]
-  simpa using congrArg (algebraMap (B ⧸ Q) L)
+  simpa only using congrArg (algebraMap (B ⧸ Q) L)
     (Ideal.Quotient.stabilizerHom_apply (P := Q) (p := P) (G := G) σ x)
 
 /-- This theorem will be made redundant by `IsFractionRing.stabilizerHom_surjective`. -/
