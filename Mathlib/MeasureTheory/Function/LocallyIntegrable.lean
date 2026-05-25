@@ -33,8 +33,9 @@ open scoped Topology Interval ENNReal
 variable {X Y ε ε' ε'' E F R : Type*} [MeasurableSpace X] [TopologicalSpace X]
 variable [MeasurableSpace Y] [TopologicalSpace Y]
 variable [TopologicalSpace ε] [ContinuousENorm ε] [TopologicalSpace ε'] [ContinuousENorm ε']
-  [TopologicalSpace ε''] [ESeminormedAddMonoid ε'']
-  [NormedAddCommGroup E] [NormedAddCommGroup F] {f g : X → ε} {μ ν : Measure X} {s : Set X}
+  [TopologicalSpace ε''] [AddMonoid ε''] [ESeminormedAddMonoid ε''] [AddCommGroup E]
+  [NormedAddCommGroup E] [AddCommGroup F] [NormedAddCommGroup F]
+  {f g : X → ε} {μ ν : Measure X} {s : Set X}
 
 namespace MeasureTheory
 
@@ -196,9 +197,9 @@ theorem locallyIntegrableOn_iff [PseudoMetrizableSpace ε]
   exact hf (Z ∩ K) (fun y hy ↦ ⟨hKU hy.2, hy.1⟩) (.inter_left hK hZ)
 
 theorem _root_.ContinuousLinearMap.locallyIntegrableOn_comp {E H 𝕜 𝕜' : Type*}
-    [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕜']
-    [NormedAddCommGroup E] [NormedSpace 𝕜' E] [NormedAddCommGroup H] [NormedSpace 𝕜 H]
-    {σ : 𝕜 →+* 𝕜'} [RingHomIsometric σ] {f : X → H} (L : H →SL[σ] E)
+    [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕜'] [AddCommGroup E]
+    [NormedAddCommGroup E] [NormedSpace 𝕜' E] [AddCommGroup H] [NormedAddCommGroup H]
+    [NormedSpace 𝕜 H] {σ : 𝕜 →+* 𝕜'} [RingHomIsometric σ] {f : X → H} (L : H →SL[σ] E)
     (hf : LocallyIntegrableOn f s μ) : LocallyIntegrableOn (L ∘ f) s μ :=
   (L.integrableAtFilter_comp <| hf · ·)
 
@@ -414,8 +415,9 @@ protected theorem LocallyIntegrable.neg {f : X → E} (hf : LocallyIntegrable f 
     LocallyIntegrable (-f) μ ↔ LocallyIntegrable f μ := by
   simp [← locallyIntegrableOn_univ]
 
-protected theorem LocallyIntegrable.smul {f : X → E} {𝕜 : Type*} [NormedAddCommGroup 𝕜]
-    [SMulZeroClass 𝕜 E] [IsBoundedSMul 𝕜 E] (hf : LocallyIntegrable f μ) (c : 𝕜) :
+protected theorem LocallyIntegrable.smul {f : X → E} {𝕜 : Type*} [AddCommGroup 𝕜]
+    [NormedAddCommGroup 𝕜] [SMulZeroClass 𝕜 E] [IsBoundedSMul 𝕜 E] (hf : LocallyIntegrable f μ)
+    (c : 𝕜) :
     LocallyIntegrable (c • f) μ := fun x ↦ (hf x).smul c
 
 -- TODO: generalise this to ENormed spaces, once there are suitable typeclasses
@@ -424,7 +426,7 @@ protected theorem LocallyIntegrable.smul {f : X → E} {𝕜 : Type*} [NormedAdd
     LocallyIntegrable (c • f) μ ↔ c = 0 ∨ LocallyIntegrable f μ := by
   simp [← locallyIntegrableOn_univ]
 
-variable {ε''' : Type*} [TopologicalSpace ε'''] [ESeminormedAddCommMonoid ε''']
+variable {ε''' : Type*} [TopologicalSpace ε'''] [AddCommMonoid ε'''] [ESeminormedAddCommMonoid ε''']
   [ContinuousAdd ε'''] in
 theorem locallyIntegrable_finsetSum' {ι} (s : Finset ι) {f : ι → X → ε'''}
     (hf : ∀ i ∈ s, LocallyIntegrable (f i) μ) : LocallyIntegrable (∑ i ∈ s, f i) μ :=
@@ -434,7 +436,7 @@ theorem locallyIntegrable_finsetSum' {ι} (s : Finset ι) {f : ι → X → ε''
 @[deprecated (since := "2026-04-08")]
 alias locallyIntegrable_finset_sum' := locallyIntegrable_finsetSum'
 
-variable {ε''' : Type*} [TopologicalSpace ε'''] [ESeminormedAddCommMonoid ε''']
+variable {ε''' : Type*} [TopologicalSpace ε'''] [AddCommMonoid ε'''] [ESeminormedAddCommMonoid ε''']
   [ContinuousAdd ε'''] in
 theorem locallyIntegrable_finsetSum {ι} (s : Finset ι) {f : ι → X → ε'''}
     (hf : ∀ i ∈ s, LocallyIntegrable (f i) μ) : LocallyIntegrable (fun a ↦ ∑ i ∈ s, f i a) μ := by
