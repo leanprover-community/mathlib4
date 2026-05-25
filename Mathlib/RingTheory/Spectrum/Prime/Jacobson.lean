@@ -23,7 +23,7 @@ public import Mathlib.Topology.JacobsonSpace
     (i.e. `x` is both a minimal prime and a maximal ideal)
 -/
 
-@[expose] public section
+public section
 
 open Ideal
 

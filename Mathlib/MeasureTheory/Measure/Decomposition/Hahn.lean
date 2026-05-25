@@ -30,7 +30,7 @@ This file proves the unsigned version of the Hahn decomposition theorem.
 Hahn decomposition
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists MeasureTheory.Measure.rnDeriv
 assert_not_exists MeasureTheory.VectorMeasure

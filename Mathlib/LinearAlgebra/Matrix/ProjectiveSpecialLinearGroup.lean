@@ -17,7 +17,7 @@ In the `MatrixGroups` locale:
 * `PSL(n, R)` is a shorthand for `Matrix.ProjectiveSpecialLinearGroup (Fin n) R`
 -/
 
-@[expose] public section
+public section
 
 namespace Matrix
 
