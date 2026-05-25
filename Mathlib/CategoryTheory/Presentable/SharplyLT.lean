@@ -121,12 +121,10 @@ lemma exists_isCardinalFiltered_set_of_exists_cofinal (h₀ : κ₁ < κ₂)
       refine hasCardinalLT_iUnion _ (hY _ _)
         (fun ⟨C, hC⟩ ↦ hasCardinalLT_union hκ₂.aleph0_le ?_
           (hasCardinalLT_of_finite _ _ hκ₂.aleph0_le))
-      refine (C.prop.of_le h₀.le).of_injective (fun ⟨c, hc⟩ ↦ ⟨⟨c, ?_⟩, ?_⟩)
+      refine (C.prop.of_le h₀.le).of_injective (fun ⟨c, hc⟩ ↦ ?_)
         (fun c₁ c₂ hc ↦ ?_)
       · simp only [Set.mem_image, Subtype.exists, exists_and_right, exists_eq_right] at hc
-        exact hc.choose
-      · simp only [Set.mem_image, Subtype.exists, exists_and_right, exists_eq_right] at hc
-        exact hc.choose_spec
+        exact ⟨⟨c, hc.choose⟩, hc.choose_spec⟩
       · simpa only [Subtype.ext_iff] using hc
     | isSuccLimit j hj hj' =>
       dsimp [s]
