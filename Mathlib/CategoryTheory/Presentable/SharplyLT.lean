@@ -32,6 +32,10 @@ structure SharplyLT : Prop where
   isCardinalAccessible_cardinalDirectedPoset :
     IsCardinalAccessibleCategory (CardinalFilteredPoset κ₁) κ₂
 
+namespace SharplyLT
+
+lemma le (h : SharplyLT κ₁ κ₂) : κ₁ ≤ κ₂ := h.lt.le
+
 open CardinalFilteredPoset in
 lemma exists_cofinal_of_isCardinalAccessibleCategory_cardinalFilteredPoset
     (h : κ₁ ≤ κ₂) [IsCardinalAccessibleCategory (CardinalFilteredPoset κ₁) κ₂]
@@ -148,10 +152,6 @@ lemma exists_isCardinalFiltered_set_of_exists_cofinal (h₀ : κ₁ < κ₂)
     dsimp [s]
     rwa [transfiniteIterate_succ _ _ _ (not_isMax j), φ_eq _ (hs' _)]
   · exact hasCardinalLT_iUnion _ (by simpa [hasCardinalLT_iff_cardinal_mk_lt]) hs'
-
-namespace SharplyLT
-
-lemma le (h : SharplyLT κ₁ κ₂) : κ₁ ≤ κ₂ := h.lt.le
 
 section
 
