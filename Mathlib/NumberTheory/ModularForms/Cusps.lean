@@ -438,40 +438,43 @@ lemma widthInfty_pos [𝒢.IsArithmetic] : 0 < 𝒢.widthInfty := by
 
 section IntegerCuspWidth
 
+/-- A finite-index subgroup of `𝒮ℒ` always has a positive natural number in its strict periods,
+namely the order of `T` modulo `𝒢 ⊓ 𝒮ℒ`. -/
+lemma exists_pos_nat_mem_strictPeriods (𝒢 : Subgroup (GL (Fin 2) ℝ))
+    [𝒢.IsFiniteRelIndex 𝒮ℒ] :
+    ∃ n : ℕ, 0 < n ∧ (n : ℝ) ∈ 𝒢.strictPeriods := by
+  set T_SL : 𝒮ℒ := (Matrix.SpecialLinearGroup.mapGL ℝ).rangeRestrict ModularGroup.T with hT_SL
+  have hidx : ((𝒢 : Subgroup (GL (Fin 2) ℝ)).subgroupOf 𝒮ℒ).index ≠ 0 :=
+    Subgroup.FiniteIndex.index_ne_zero
+  obtain ⟨n, hn_pos, _, hn_mem⟩ :=
+    Subgroup.exists_pow_mem_of_index_ne_zero hidx T_SL
+  refine ⟨n, hn_pos, ?_⟩
+  rw [Subgroup.mem_subgroupOf] at hn_mem
+  have hcoe : ((T_SL ^ n : 𝒮ℒ) : GL (Fin 2) ℝ) =
+      Matrix.SpecialLinearGroup.mapGL ℝ ((ModularGroup.T : SL(2, ℤ))^n) := by
+    rw [Subgroup.coe_pow, hT_SL, MonoidHom.coe_rangeRestrict, ← map_pow]
+  rw [hcoe, show ((ModularGroup.T : SL(2, ℤ))^n) = ((ModularGroup.T : SL(2, ℤ))^((n : ℤ))) from
+      (zpow_natCast _ n).symm,
+    ModularGroup.mapGL_T_zpow_eq_upperRightHom] at hn_mem
+  rw [Subgroup.mem_strictPeriods_iff]
+  exact_mod_cast hn_mem
+
 /-- The smallest positive integer `n` such that the upper-triangular matrix `[1, n; 0, 1]` lies in
 `𝒢` (taking `0` if no such integer exists; one always exists when `𝒢` has finite index in `𝒮ℒ`). -/
 noncomputable def integerCuspWidth (𝒢 : Subgroup (GL (Fin 2) ℝ))
     [𝒢.IsFiniteRelIndex 𝒮ℒ] : ℕ :=
-  open Classical in
-  Nat.find (p := fun n => 0 < n ∧ (n : ℝ) ∈ 𝒢.strictPeriods) (by
-    set T_SL : 𝒮ℒ := (Matrix.SpecialLinearGroup.mapGL ℝ).rangeRestrict ModularGroup.T with hT_SL
-    have hidx : ((𝒢 : Subgroup (GL (Fin 2) ℝ)).subgroupOf 𝒮ℒ).index ≠ 0 :=
-      Subgroup.FiniteIndex.index_ne_zero
-    obtain ⟨n, hn_pos, _, hn_mem⟩ :=
-      Subgroup.exists_pow_mem_of_index_ne_zero hidx T_SL
-    refine ⟨n, hn_pos, ?_⟩
-    rw [Subgroup.mem_subgroupOf] at hn_mem
-    have hcoe : ((T_SL ^ n : 𝒮ℒ) : GL (Fin 2) ℝ) =
-        Matrix.SpecialLinearGroup.mapGL ℝ ((ModularGroup.T : SL(2, ℤ))^n) := by
-      rw [Subgroup.coe_pow, hT_SL, MonoidHom.coe_rangeRestrict, ← map_pow]
-    rw [hcoe, show ((ModularGroup.T : SL(2, ℤ))^n) = ((ModularGroup.T : SL(2, ℤ))^((n : ℤ))) from
-        (zpow_natCast _ n).symm,
-      ModularGroup.mapGL_T_zpow_eq_upperRightHom] at hn_mem
-    rw [Subgroup.mem_strictPeriods_iff]
-    exact_mod_cast hn_mem)
+  open Classical in Nat.find (exists_pos_nat_mem_strictPeriods 𝒢)
 
 variable {𝒢} [𝒢.IsFiniteRelIndex 𝒮ℒ]
 
 /-- The integer cusp width is positive. -/
 lemma integerCuspWidth_pos : 0 < integerCuspWidth 𝒢 := by
-  classical
-  exact (Nat.find_spec (p := fun n => 0 < n ∧ (n : ℝ) ∈ 𝒢.strictPeriods) _).1
+  classical exact (Nat.find_spec (exists_pos_nat_mem_strictPeriods 𝒢)).1
 
 /-- The integer cusp width, viewed in `ℝ`, lies in the strict-periods subgroup of `𝒢`. -/
 lemma integerCuspWidth_mem_strictPeriods :
     (integerCuspWidth 𝒢 : ℝ) ∈ 𝒢.strictPeriods := by
-  classical
-  exact (Nat.find_spec (p := fun n => 0 < n ∧ (n : ℝ) ∈ 𝒢.strictPeriods) _).2
+  classical exact (Nat.find_spec (exists_pos_nat_mem_strictPeriods 𝒢)).2
 
 /-- The matrix `T ^ integerCuspWidth 𝒢` lies in `𝒢`. -/
 lemma T_zpow_integerCuspWidth_mem :
@@ -515,17 +518,18 @@ lemma quotient_T_pow_injective_integerCuspWidth
   have h_min_zero : ∀ d : ℕ, d < integerCuspWidth 𝒢 → (d : ℝ) ∈ 𝒢.strictPeriods → d = 0 :=
     fun d hd_lt hd_mem => by
       by_contra hd_ne
-      exact Nat.find_min (p := fun n => 0 < n ∧ (n : ℝ) ∈ 𝒢.strictPeriods) _ hd_lt
+      have hd_lt' : d < Nat.find (exists_pos_nat_mem_strictPeriods 𝒢) := hd_lt
+      exact Nat.find_min (exists_pos_nat_mem_strictPeriods 𝒢) hd_lt'
         ⟨Nat.pos_of_ne_zero hd_ne, hd_mem⟩
   rcases le_total (j₁ : ℕ) (j₂ : ℕ) with hle | hle
   · have : (j₂ : ℕ) - (j₁ : ℕ) = 0 :=
-      h_min_zero _ (by have := j₂.isLt; omega) (by rw [Nat.cast_sub hle]; exact hj)
-    exact Fin.ext (by omega)
+      h_min_zero _ (by have := j₂.isLt; lia) (by rw [Nat.cast_sub hle]; exact hj)
+    exact Fin.ext (by lia)
   · have : (j₁ : ℕ) - (j₂ : ℕ) = 0 :=
-      h_min_zero _ (by have := j₁.isLt; omega) <| by
+      h_min_zero _ (by have := j₁.isLt; lia) <| by
         rw [Nat.cast_sub hle]
         simpa [neg_sub] using neg_mem hj
-    exact Fin.ext (by omega)
+    exact Fin.ext (by lia)
 
 /-- The integer cusp width is a positive integer multiple of the strict width at `∞`. -/
 lemma integerCuspWidth_eq_nat_mul_strictWidthInfty [DiscreteTopology 𝒢.strictPeriods] :
@@ -544,7 +548,7 @@ lemma integerCuspWidth_eq_nat_mul_strictWidthInfty [DiscreteTopology 𝒢.strict
   have hm_pos : 0 < m := by
     by_contra hle
     nlinarith [(Int.cast_nonpos (R := ℝ)).mpr (not_lt.mp hle), hw_pos.le]
-  refine ⟨m.toNat, by omega, ?_⟩
+  refine ⟨m.toNat, by lia, ?_⟩
   rw [hm]
   congr 1
   exact_mod_cast (Int.toNat_of_nonneg hm_pos.le).symm

@@ -49,6 +49,12 @@ lemma slash_S_apply (f : ℍ → ℂ) (k : ℤ) (z : ℍ) :
   rw [SL_slash_apply, modular_S_smul]
   simp [ModularGroup.S, denom]
 
+/-- The denominator of an `upperRightHom x = [[1, x], [0, 1]]` matrix at any `τ` is `1`. -/
+@[simp]
+lemma denom_upperRightHom (x : ℝ) (τ : ℂ) :
+    denom (Matrix.GeneralLinearGroup.upperRightHom x) τ = 1 := by
+  simp [denom, Matrix.GeneralLinearGroup.upperRightHom_apply]
+
 /-- The action of `T^j` on a function `g : ℍ → ℂ` via the slash action of weight `k` is the
 shift `g((j : ℝ) +ᵥ τ)`. -/
 lemma slash_T_zpow_apply_general (k : ℤ) (j : ℤ) (g : ℍ → ℂ) (τ : ℍ) :
