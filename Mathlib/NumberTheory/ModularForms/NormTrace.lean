@@ -243,8 +243,7 @@ lemma galoisProd_periodic_one (hN : 0 < N)
     (hf_per : Function.Periodic (f ∘ ofComplex) (N : ℝ)) :
     Function.Periodic (galoisProd N f ∘ ofComplex) 1 := by
   intro w
-  simp only [Function.comp_apply]
-  unfold galoisProd
+  simp only [Function.comp_apply, galoisProd_apply]
   obtain ⟨n, rfl⟩ : ∃ n, N = n + 1 := ⟨N - 1, by lia⟩
   by_cases hw : 0 < w.im
   · have hw1 : 0 < (w + 1).im := by simpa using hw
@@ -335,8 +334,7 @@ lemma cuspFunction_one_galoisProd_pow_eq (hN : 0 < N)
       Complex.ofReal_natCast]
     congr 1
     field_simp
-  rw [hqN, eq_cuspFunction τ one_ne_zero (galoisProd_periodic_one hN hf_per)]
-  unfold galoisProd
+  rw [hqN, eq_cuspFunction τ one_ne_zero (galoisProd_periodic_one hN hf_per), galoisProd_apply]
   refine Finset.prod_congr rfl fun j _ => ?_
   have him : 0 < ((τ : ℂ) - ↑j).im := by
     simp [Complex.sub_im, Complex.natCast_im, τ.im_pos]
