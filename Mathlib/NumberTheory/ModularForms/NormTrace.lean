@@ -195,6 +195,40 @@ noncomputable def galoisProd (τ : ℍ) : ℂ :=
 
 variable {N f}
 
+@[simp]
+lemma galoisProd_apply (τ : ℍ) :
+    galoisProd N f τ = ∏ j ∈ Finset.range N, f (ofComplex ((τ : ℂ) - j)) := rfl
+
+/-- The Galois product of the zero function is zero when `N > 0`. -/
+@[simp]
+lemma galoisProd_zero (hN : 0 < N) : galoisProd N (0 : ℍ → ℂ) = 0 := by
+  ext τ
+  simp [Finset.prod_eq_zero (Finset.mem_range.mpr hN)]
+
+/-- The Galois product over an empty range is the constant function `1`. -/
+@[simp]
+lemma galoisProd_zero_nat (g : ℍ → ℂ) : galoisProd 0 g = 1 := by
+  ext τ
+  simp
+
+/-- The Galois product of a constant function `c` is `c^N`. -/
+@[simp]
+lemma galoisProd_const (c : ℂ) (τ : ℍ) :
+    galoisProd N (fun _ => c) τ = c ^ N := by
+  simp [Finset.prod_const, Finset.card_range]
+
+/-- The Galois product distributes over pointwise multiplication of functions. -/
+lemma galoisProd_mul (g h : ℍ → ℂ) :
+    galoisProd N (g * h) = galoisProd N g * galoisProd N h := by
+  ext τ
+  simp [Pi.mul_apply, Finset.prod_mul_distrib]
+
+/-- The Galois product distributes over pointwise scalar multiplication. -/
+lemma galoisProd_smul (c : ℂ) (g : ℍ → ℂ) :
+    galoisProd N (c • g) = c ^ N • galoisProd N g := by
+  ext τ
+  simp [Pi.smul_apply, smul_eq_mul, Finset.prod_mul_distrib, Finset.prod_const, Finset.card_range]
+
 /-- If `f` has period `N` along `ofComplex`, then `galoisProd N f` has period `1`. -/
 lemma galoisProd_periodic_one (hN : 0 < N)
     (hf_per : Function.Periodic (f ∘ ofComplex) (N : ℝ)) :
