@@ -24,7 +24,7 @@ public section
 
 namespace MeasureTheory
 variable {α E : Type*} {m : MeasurableSpace α} {p : ℝ≥0∞} {q : ℝ} {μ ν : Measure α}
-  [NormedAddCommGroup E] {f g h : α → E}
+  [AddCommGroup E] [NormedAddCommGroup E] {f g h : α → E}
 
 lemma toReal_eLpNorm (hf : AEStronglyMeasurable f μ) : (eLpNorm f p μ).toReal = lpNorm f p μ := by
   rw [lpNorm, if_pos hf]
