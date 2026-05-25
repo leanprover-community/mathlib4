@@ -26,7 +26,7 @@ function of the set. Note that if `α = ℕ`, then this definition matches `Nat.
 - `Order.enum_eq_iff`: `Order.enum s _` is the unique strictly monotonic function with range `s`.
 - `Order.isNormal_enum_iff`: club sets correspond one to one with normal functions.
 
-## Todo
+## TODO
 
 - Deprecate `Ordinal.enumOrd` in favor of `Order.enum`.
 - Prove that `Order.enum` on the naturals coincides with `Nat.nth`.
@@ -47,13 +47,13 @@ If `α` is infinite, this implies that `α` is order isomorphic to `Iio c.ord` f
 cardinal `c`. In the informal literature, one often says that `α` is a regular cardinal, by abuse
 of notation. -/
 class IsRegularCardinalOrder (α : Type*) [LinearOrder α] [WellFoundedLT α] where
-  type_le_ord_cof : typeLT α ≤ (cof α).ord
+  type_lt_le_ord_cof : typeLT α ≤ (cof α).ord
 
 instance : IsRegularCardinalOrder ℕ := ⟨by simp⟩
 
 instance (priority := low) [LinearOrder α] [WellFoundedLT α] [Subsingleton α] :
     IsRegularCardinalOrder α where
-  type_le_ord_cof := by
+  type_lt_le_ord_cof := by
     cases isEmpty_or_nonempty α
     · simpa
     · cases nonempty_unique α
@@ -61,7 +61,7 @@ instance (priority := low) [LinearOrder α] [WellFoundedLT α] [Subsingleton α]
       simp
 
 instance : IsRegularCardinalOrder Ordinal where
-  type_le_ord_cof := by
+  type_lt_le_ord_cof := by
     rw [type_lt_ordinal, ← ord_univ, ord_le_ord, le_cof_iff]
     intro s hs
     contrapose! hs
@@ -73,41 +73,39 @@ namespace Order
 variable [LinearOrder α] [WellFoundedLT α] [IsRegularCardinalOrder α]
 
 theorem ord_cof_eq_type_lt : (cof α).ord = typeLT α := by
-  apply IsRegularCardinalOrder.type_le_ord_cof.antisymm'
+  apply IsRegularCardinalOrder.type_lt_le_ord_cof.antisymm'
   rw [ord_le, card_type]
   exact cof_le_cardinalMk α
 
 @[simp]
-theorem cof_eq_card : cof α = #α := by
+theorem cof_eq_cardinalMk : cof α = #α := by
   rw [← card_type LT.lt, ← ord_cof_eq_type_lt, card_ord]
 
 @[simp]
-theorem _root_.Cardinal.ord_cardinalMk : ord (#α) = typeLT α := by
-  rw [← ord_cof_eq_type_lt, cof_eq_card]
+theorem _root_.Cardinal.ord_cardinalMk : ord #α = typeLT α := by
+  rw [← ord_cof_eq_type_lt, cof_eq_cardinalMk]
 
 theorem cof_ordinal : cof Ordinal.{u} = Cardinal.univ.{u, u + 1} := by
   simp
 
-theorem ordinalType_eq_of_isCofinal {s : Set α} (hs : IsCofinal s) : typeLT s = typeLT α := by
+theorem type_eq_of_isCofinal {s : Set α} (hs : IsCofinal s) : typeLT s = typeLT α := by
   apply (RelEmbedding.ofMonotone Subtype.val (by simp)).ordinal_type_le.antisymm
-  rw [← ord_cardinalMk, ord_le, card_type, ← cof_eq_card]
+  rw [← ord_cardinalMk, ord_le, card_type, ← cof_eq_cardinalMk]
   exact cof_le hs
 
 /-- Enumerate the elements of a cofinal subset of `α` by `α` itself. This is a generalization of
 `Nat.nth`. -/
 noncomputable def enum (s : Set α) (hs : IsCofinal s) : α ≃o s :=
-  .ofRelIsoLT (type_eq.1 (ordinalType_eq_of_isCofinal hs).symm).some
+  .ofRelIsoLT (type_eq.1 (type_eq_of_isCofinal hs).symm).some
 
-variable {s : Set α} {hs : IsCofinal s}
-
-theorem enum_le_of_forall_lt {a o : α} (ho : o ∈ s) (H : ∀ b < a, enum s hs b < o) :
-    enum s hs a ≤ o := by
+theorem enum_le_of_forall_lt {a o : α} {s : Set α} {hs : IsCofinal s} (ho : o ∈ s)
+    (H : ∀ b < a, enum s hs b < o) : enum s hs a ≤ o := by
   rw [← Subtype.coe_mk o ho, Subtype.coe_le_coe, ← OrderIso.le_symm_apply]
   apply le_of_forall_lt
   simpa [OrderIso.lt_symm_apply]
 
-theorem enum_succ_le_of_lt [SuccOrder α] {a o : α} (ha : o ∈ s) (H : enum s hs a < o) :
-    enum s hs (succ a) ≤ o := by
+theorem enum_succ_le_of_lt [SuccOrder α] {a o : α} {s : Set α} {hs : IsCofinal s} (ha : o ∈ s)
+    (H : enum s hs a < o) : enum s hs (succ a) ≤ o := by
   refine enum_le_of_forall_lt ha fun b hb ↦ H.trans_le' ?_
   simpa using le_of_lt_succ hb
 
