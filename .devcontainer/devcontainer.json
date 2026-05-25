@@ -1,5 +1,6 @@
 {
   "name": "Mathlib4 dev container",
+  "remoteUser": "vscode",
 
   "build": {
     "dockerfile": "Dockerfile"
