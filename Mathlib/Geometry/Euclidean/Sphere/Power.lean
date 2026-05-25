@@ -35,7 +35,7 @@ secants) in spheres in real inner product spaces and Euclidean affine spaces.
 
 open Real EuclideanGeometry RealInnerProductSpace Real Module FiniteDimensional
 
-variable {V : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V]
+variable {V : Type*} [AddCommGroup V] [NormedAddCommGroup V] [InnerProductSpace ℝ V]
 
 namespace InnerProductGeometry
 
