@@ -298,7 +298,6 @@ end Ring
 
 /-- The image of `T : SL(2, ℤ)` in `GL(2, S)` for any commutative ring `S` is the
 upper-triangular matrix `[1, 1; 0, 1]`. -/
-@[simp]
 lemma _root_.ModularGroup.mapGL_T_eq_upperRightHom {S : Type*} [CommRing S] :
     Matrix.SpecialLinearGroup.mapGL S (ModularGroup.T : SL(2, ℤ)) =
       Matrix.GeneralLinearGroup.upperRightHom (1 : S) := by
@@ -308,7 +307,6 @@ lemma _root_.ModularGroup.mapGL_T_eq_upperRightHom {S : Type*} [CommRing S] :
 
 /-- The image of `T^n : SL(2, ℤ)` in `GL(2, S)` for any commutative ring `S` is the
 upper-triangular matrix `[1, n; 0, 1]`. -/
-@[simp]
 lemma _root_.ModularGroup.mapGL_T_zpow_eq_upperRightHom {S : Type*} [CommRing S] (n : ℤ) :
     Matrix.SpecialLinearGroup.mapGL S ((ModularGroup.T : SL(2, ℤ))^n) =
       Matrix.GeneralLinearGroup.upperRightHom ((n : S)) := by
