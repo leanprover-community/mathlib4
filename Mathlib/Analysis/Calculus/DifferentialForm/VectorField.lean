@@ -41,8 +41,8 @@ open scoped Topology
 
 variable {𝕜 E F : Type*}
   [NontriviallyNormedField 𝕜]
-  [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-  [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+  [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+  [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace 𝕜 F]
   {n m k : ℕ} {r : WithTop ℕ∞}
   {s t : Set E} {x : E}
 
