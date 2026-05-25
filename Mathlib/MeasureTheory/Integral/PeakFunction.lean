@@ -48,8 +48,8 @@ open scoped Topology ENNReal
 open Set
 
 variable {α E ι : Type*} {hm : MeasurableSpace α} {μ : Measure α} [TopologicalSpace α]
-  [BorelSpace α] [NormedAddCommGroup E] [NormedSpace ℝ E] {g : α → E} {l : Filter ι} {x₀ : α}
-  {s t : Set α} {φ : ι → α → ℝ} {a : E}
+  [BorelSpace α] [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℝ E] {g : α → E}
+  {l : Filter ι} {x₀ : α} {s t : Set α} {φ : ι → α → ℝ} {a : E}
 
 /-- If a sequence of peak functions `φᵢ` converges uniformly to zero away from a point `x₀`, and
 `g` is integrable and has a limit at `x₀`, then `φᵢ • g` is eventually integrable. -/
@@ -384,8 +384,8 @@ theorem tendsto_setIntegral_pow_smul_of_unique_maximum_of_isCompact_of_continuou
 
 open Module Bornology
 
-variable {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F] [FiniteDimensional ℝ F]
-  [MeasurableSpace F] [BorelSpace F] {μ : Measure F} [IsAddHaarMeasure μ]
+variable {F : Type*} [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace ℝ F]
+  [FiniteDimensional ℝ F] [MeasurableSpace F] [BorelSpace F] {μ : Measure F} [IsAddHaarMeasure μ]
 
 /-- Consider a nonnegative function `φ` with integral one, decaying quickly enough at infinity.
 Then suitable renormalizations of `φ` form a sequence of peak functions around the origin:
