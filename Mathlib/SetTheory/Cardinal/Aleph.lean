@@ -122,7 +122,6 @@ def preOmega : Ordinal.{u} ↪o Ordinal.{u} where
   inj' _ _ h := Subtype.coe_injective.comp (OrderIso.injective _) h
   map_rel_iff' := (Order.enum _ isCofinal_setOf_isInitial).le_iff_le
 
-@[deprecated "this is an implementation detail" (since := "2026-05-25")]
 theorem coe_preOmega : preOmega = Subtype.val ∘ Order.enum _ isCofinal_setOf_isInitial :=
   rfl
 
@@ -145,9 +144,8 @@ theorem le_preOmega_self (o : Ordinal) : o ≤ preOmega o :=
   preOmega_strictMono.le_apply
 
 @[simp]
-theorem preOmega_zero : preOmega 0 = 0 := by
-  rw [coe_preOmega, Order.enum_zero]
-  exact csInf_eq_bot_of_bot_mem isInitial_zero
+theorem preOmega_zero : preOmega 0 = 0 :=
+  Order.enum_bot.trans <| csInf_eq_bot_of_bot_mem isInitial_zero
 
 @[simp]
 theorem preOmega_natCast (n : ℕ) : preOmega n = n := by
@@ -155,9 +153,7 @@ theorem preOmega_natCast (n : ℕ) : preOmega n = n := by
   | zero => exact preOmega_zero
   | succ n IH =>
     apply (le_preOmega_self _).antisymm'
-    apply enumOrd_succ_le not_bddAbove_isInitial (isInitial_natCast _) (IH.trans_lt _)
-    rw [Nat.cast_lt]
-    exact lt_succ n
+    exact enum_succ_le_of_lt (isInitial_natCast _) (IH.trans_lt (by simp))
 
 @[simp]
 theorem preOmega_ofNat (n : ℕ) [n.AtLeastTwo] : preOmega ofNat(n) = n :=
@@ -165,7 +161,7 @@ theorem preOmega_ofNat (n : ℕ) [n.AtLeastTwo] : preOmega ofNat(n) = n :=
 
 theorem preOmega_le_of_forall_lt {o a : Ordinal} (ha : IsInitial a) (H : ∀ b < o, preOmega b < a) :
     preOmega o ≤ a :=
-  enumOrd_le_of_forall_lt ha H
+  enum_le_of_forall_lt ha H
 
 theorem isNormal_preOmega : IsNormal preOmega := by
   rw [isNormal_iff]
@@ -177,8 +173,9 @@ theorem isNormal_preOmega : IsNormal preOmega := by
   exact lt_succ b
 
 @[simp]
-theorem range_preOmega : range preOmega = {x | IsInitial x} :=
-  range_enumOrd not_bddAbove_isInitial
+theorem range_preOmega : range preOmega = {x | IsInitial x} := by
+  apply (EquivLike.range_comp Subtype.val _).trans
+  simp
 
 theorem mem_range_preOmega_iff {x : Ordinal} : x ∈ range preOmega ↔ IsInitial x := by
   rw [range_preOmega, mem_setOf]
@@ -292,7 +289,7 @@ namespace Cardinal
 
 For the more common aleph function skipping over finite cardinals, see `Cardinal.aleph`. -/
 def preAleph : Ordinal.{u} ≃o Cardinal.{u} :=
-  (enumOrdOrderIso _ not_bddAbove_isInitial).trans isInitialIso
+  (enum _ isCofinal_setOf_isInitial).trans isInitialIso
 
 @[simp]
 theorem _root_.Ordinal.card_preOmega (o : Ordinal) : (preOmega o).card = preAleph o :=
