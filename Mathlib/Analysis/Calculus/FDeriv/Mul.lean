@@ -30,9 +30,9 @@ open Asymptotics ContinuousLinearMap Topology
 section
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-variable {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 G]
+variable {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable {F : Type*} [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+variable {G : Type*} [AddCommGroup G] [NormedAddCommGroup G] [NormedSpace 𝕜 G]
 variable {f : E → F}
 variable {f' : E →L[𝕜] F}
 variable {x : E}
