@@ -155,112 +155,119 @@ lemma exists_isCardinalFiltered_set_of_exists_cofinal (h₀ : κ₁ < κ₂)
 
 section
 
-/-- Whan `k₁` is sharply smaller than `κ₂`, and `C` is a `κ₁`-accessible category, this
-is a property of objects which allows to show that `C` is a `κ₂`-accessible category.
-This property is defined as the closure of `κ₁`-presentable objects under
-colimits of shape `J` for categories `J` such that `Arrow J` is of cardinality `< κ₂`. -/
-abbrev generator (_ : SharplyLT κ₁ κ₂) (C : Type u) [Category.{v} C] :
+variable (hκ : κ₁ < κ₂)
+  (hκ' : ∀ {X : Type w} [PartialOrder X] [IsCardinalFiltered X κ₁]
+    (A : Set X) (_ : HasCardinalLT A κ₂),
+    ∃ (B : Set X), A ⊆ B ∧ IsCardinalFiltered B κ₁ ∧ HasCardinalLT B κ₂)
+
+namespace isCardinalAccessible
+
+variable (κ₁ κ₂) in
+abbrev generator (C : Type u) [Category.{v} C] :
     ObjectProperty C :=
   (isCardinalPresentable C κ₁).colimitsCardinalClosure κ₂
 
-variable (h : SharplyLT κ₁ κ₂) (C : Type u) [Category.{v} C]
+variable (C : Type u) [Category.{v} C]
 
+include hκ in
 lemma generator_le_isCardinalPresentable [LocallySmall.{w} C] :
-    h.generator C ≤ isCardinalPresentable C κ₂ :=
+    generator κ₁ κ₂ C ≤ isCardinalPresentable C κ₂ :=
   ObjectProperty.colimitsCardinalClosure_le _ _
     (fun _ _ hJ ↦ isClosedUnderColimitsOfShape_isCardinalPresentable C hJ)
-    (isCardinalPresentable_monotone _ h.le)
+    (isCardinalPresentable_monotone _ hκ.le)
 
 variable [IsCardinalAccessibleCategory C κ₁]
 
-namespace isCardinalFilteredGenerator
-
-def prop (_ : SharplyLT κ₁ κ₂) (J : Type w) [PartialOrder J] (A : Set J) : Prop :=
+def prop (_ : κ₁ < κ₂) (J : Type w) [PartialOrder J] (A : Set J) : Prop :=
   IsCardinalFiltered (Subtype A) κ₁ ∧ HasCardinalLT (Subtype A) κ₂
 
-variable {h} {C} {X : C} {J : Type w} [PartialOrder J]
+variable {C} {X : C} {J : Type w} [PartialOrder J]
   (p : (isCardinalPresentable C κ₁).ColimitOfShape J X)
 
-instance (A : Subtype (prop h J)) :
+instance (A : Subtype (prop hκ J)) :
     HasColimit ((Subtype.mono_coe A.val).functor ⋙ p.diag) := by
   have := A.prop.1
   infer_instance
 
-noncomputable abbrev colimit (A : Subtype (prop h J)) : C :=
+variable {hκ}
+noncomputable abbrev colimit (A : Subtype (prop hκ J)) : C :=
     Limits.colimit ((Subtype.mono_coe A.val).functor ⋙ p.diag)
 
-noncomputable abbrev colimit.ι (A : Subtype (prop h J)) (a : J) (ha : a ∈ A.val) :
+noncomputable abbrev colimit.ι (A : Subtype (prop hκ J)) (a : J) (ha : a ∈ A.val) :
     p.diag.obj a ⟶ colimit p A :=
   Limits.colimit.ι ((Subtype.mono_coe A.val).functor ⋙ p.diag) ⟨a, ha⟩
 
+omit [Fact κ₂.IsRegular] in
 @[reassoc (attr := simp)]
-lemma colimit.w (A : Subtype (prop h J)) {a b : J} (hab : a ≤ b) (ha : a ∈ A.val)
+lemma colimit.w (A : Subtype (prop hκ J)) {a b : J} (hab : a ≤ b) (ha : a ∈ A.val)
     (hb : b ∈ A.val) :
     p.diag.map (homOfLE hab) ≫ colimit.ι p A b hb = colimit.ι p A a ha :=
   Limits.colimit.w ((Subtype.mono_coe A.val).functor ⋙ p.diag)
     (j := ⟨a, ha⟩) (j' := ⟨b, hb⟩) (homOfLE hab)
 
-noncomputable def colimit.map {A₁ A₂ : Subtype (prop h J)} (hA : A₁ ≤ A₂) :
+noncomputable def colimit.map {A₁ A₂ : Subtype (prop hκ J)} (hA : A₁ ≤ A₂) :
     colimit p A₁ ⟶ colimit p A₂ :=
   colimit.desc _ (Cocone.mk _
     { app j := colimit.ι p A₂ j.val (hA j.prop)
       naturality j₁ j₂ f := by
         simpa using colimit.w p A₂ (leOfHom f) (hA j₁.prop) (hA j₂.prop) })
 
+omit [Fact κ₂.IsRegular] in
 @[reassoc (attr := simp)]
-lemma colimit.ι_map {A₁ A₂ : Subtype (prop h J)} (hA : A₁ ≤ A₂) (j : J) (hj : j ∈ A₁.val) :
+lemma colimit.ι_map {A₁ A₂ : Subtype (prop hκ J)} (hA : A₁ ≤ A₂) (j : J) (hj : j ∈ A₁.val) :
     colimit.ι p A₁ j hj ≫ colimit.map p hA = colimit.ι p A₂ j (hA hj) :=
   colimit.ι_desc ..
 
+omit [Fact κ₂.IsRegular] in
 @[ext high]
-lemma colimit.hom_ext {A : Subtype (prop h J)} {T : C} {φ₁ φ₂ : colimit p A ⟶ T}
+lemma colimit.hom_ext {A : Subtype (prop hκ J)} {T : C} {φ₁ φ₂ : colimit p A ⟶ T}
     (h : ∀ (j : J) (hj : j ∈ A.val), colimit.ι p A j hj ≫ φ₁ = colimit.ι p A j hj ≫ φ₂) :
     φ₁ = φ₂ := by
   ext
   apply h
 
-noncomputable def colimit.π (A : Subtype (prop h J)) : colimit p A ⟶ X :=
+noncomputable def colimit.π (A : Subtype (prop hκ J)) : colimit p A ⟶ X :=
   colimit.desc _ (Cocone.mk _
     { app a := by exact p.ι.app a
       naturality _ _ _ := by simpa using p.ι.naturality _ })
 
+omit [Fact κ₂.IsRegular] in
 @[reassoc (attr := simp)]
-lemma colimit.ι_π (A : Subtype (prop h J)) (a : J) (ha : a ∈ A.val) :
+lemma colimit.ι_π (A : Subtype (prop hκ J)) (a : J) (ha : a ∈ A.val) :
     colimit.ι p A a ha ≫ colimit.π p A = p.ι.app a :=
   colimit.ι_desc ..
 
+omit [Fact κ₂.IsRegular] in
 @[reassoc (attr := simp)]
-lemma colimit.map_π {A₁ A₂ : Subtype (prop h J)} (hA : A₁ ≤ A₂) :
+lemma colimit.map_π {A₁ A₂ : Subtype (prop hκ J)} (hA : A₁ ≤ A₂) :
     colimit.map p hA ≫ colimit.π p A₂ = colimit.π p A₁ := by
   ext
   simp
 
-variable (h) in
+variable (hκ)
+
 @[simps]
-noncomputable def functor : Subtype (prop h J) ⥤ C where
+noncomputable def functor : Subtype (prop hκ J) ⥤ C where
   obj A := colimit p A
   map f := colimit.map p f.le
   map_id _ := by ext; simp
   map_comp f g := by ext; simp
 
-variable (h) in
 @[simps]
-noncomputable def cocone : Cocone (functor h p) where
+noncomputable def cocone : Cocone (functor hκ p) where
   pt := X
   ι.app j := colimit.π p j
 
-variable (h) in
-def isColimit [IsCardinalFiltered J κ₁] : IsColimit (cocone h p) := sorry
+def isColimit [IsCardinalFiltered J κ₁] : IsColimit (cocone hκ p) := sorry
 
-instance [IsCardinalFiltered J κ₁] : IsCardinalFiltered (Subtype (prop h J)) κ₂ := by
+instance [IsCardinalFiltered J κ₁] : IsCardinalFiltered (Subtype (prop hκ J)) κ₂ := by
   sorry
 
-end isCardinalFilteredGenerator
-
-open isCardinalFilteredGenerator in
+variable (C) in
+include hκ hκ' in
 lemma isCardinalFilteredGenerator :
-    (h.generator C).IsCardinalFilteredGenerator κ₂ where
-  le_isCardinalPresentable := h.generator_le_isCardinalPresentable C
+    (generator κ₁ κ₂ C).IsCardinalFilteredGenerator κ₂ where
+  le_isCardinalPresentable := generator_le_isCardinalPresentable hκ C
   exists_colimitsOfShape X := by
     have hκ₁ := isCardinalFilteredGenerator_isCardinalPresentable C κ₁
     obtain ⟨J, _, _, ⟨p⟩⟩ :
@@ -269,24 +276,68 @@ lemma isCardinalFilteredGenerator :
         obtain ⟨J₀, _, _, ⟨p₀⟩⟩ := hκ₁.exists_colimitsOfShape X
         obtain ⟨J, _, _, F, _⟩ := IsCardinalFiltered.exists_cardinal_directed J₀ κ₁
         exact ⟨_, _, inferInstance, ⟨p₀.reindex F⟩⟩
-    refine ⟨Subtype (prop h J), inferInstance, inferInstance,
-      ⟨{ diag := _, ι := _, isColimit := isColimit h p, prop_diag_obj A := ?_ }⟩⟩
-    have : (h.generator C).IsClosedUnderColimitsOfShape (Subtype A.val) := by
+    refine ⟨Subtype (prop hκ J), inferInstance, inferInstance,
+      ⟨{ diag := _, ι := _, isColimit := isColimit hκ p, prop_diag_obj A := ?_ }⟩⟩
+    have : (generator κ₁ κ₂ C).IsClosedUnderColimitsOfShape (Subtype A.val) := by
       apply ObjectProperty.isClosedUnderColimitsOfShape_colimitsCardinalClosure
       have := A.prop.2
+      have := @hκ'
       sorry
     exact ObjectProperty.prop_colimit _ _
       (fun ⟨a, ha⟩ ↦ ObjectProperty.le_colimitsCardinalClosure _ _ _
         (p.prop_diag_obj a))
 
+
+end isCardinalAccessible
+
+include hκ hκ' in
+open isCardinalAccessible in
+lemma isCardinalAccessible'
+    (C : Type u) [Category.{v} C] [IsCardinalAccessibleCategory C κ₁] :
+    IsCardinalAccessibleCategory C κ₂ where
+  toHasCardinalFilteredColimits := .of_le C hκ.le
+  exists_generator := ⟨_, inferInstance, isCardinalFilteredGenerator hκ hκ' C⟩
+
 end
+
+lemma tfae (h : κ₁ < κ₂) :
+    List.TFAE [SharplyLT κ₁ κ₂,
+      IsCardinalAccessibleCategory (CardinalFilteredPoset κ₁) κ₂,
+      ∀ (C : Type (w + 1)) [Category.{w} C] [IsCardinalAccessibleCategory C κ₁],
+        IsCardinalAccessibleCategory C κ₂,
+      ∀ (X : Type w) (_ : HasCardinalLT X κ₂),
+        ∃ (A : Set (CardinalFilteredPoset.SetCardinalLT κ₁ X)), HasCardinalLT A κ₂ ∧ IsCofinal A,
+      ∀ ⦃X : Type w⦄ [PartialOrder X] [IsCardinalFiltered X κ₁] (A : Set X)
+          (_ : HasCardinalLT A κ₂),
+        ∃ (B : Set X), A ⊆ B ∧ IsCardinalFiltered B κ₁ ∧ HasCardinalLT B κ₂] := by
+  tfae_have 1 ↔ 2 :=
+    ⟨fun h ↦ h.isCardinalAccessible_cardinalDirectedPoset, fun _ ↦ ⟨h, inferInstance⟩⟩
+  tfae_have 3 → 2 := fun h' ↦ h' _
+  tfae_have 2 → 4 := fun _ X hX ↦
+    exists_cofinal_of_isCardinalAccessibleCategory_cardinalFilteredPoset h.le hX
+  tfae_have 4 → 5 := fun h' X _ _ A hA ↦
+    exists_isCardinalFiltered_set_of_exists_cofinal h h' _ hA
+  tfae_have 5 → 3 := fun h' C _ _ ↦ isCardinalAccessible' h (fun A hA ↦ h' A hA) C
+  tfae_finish
+
+lemma exists_cofinal (h : SharplyLT κ₁ κ₂)
+    {X : Type w} (hX : HasCardinalLT X κ₂) :
+    ∃ (A : Set (CardinalFilteredPoset.SetCardinalLT κ₁ X)),
+      HasCardinalLT A κ₂ ∧ IsCofinal A := by
+  have := (tfae h.lt).out 1 3
+  exact this.1 h.isCardinalAccessible_cardinalDirectedPoset X hX
+
+lemma exists_isCardinalFiltered_set (h : SharplyLT κ₁ κ₂)
+    {X : Type w} [PartialOrder X] [IsCardinalFiltered X κ₁]
+    (A : Set X) (hA : HasCardinalLT A κ₂) :
+    ∃ (B : Set X), A ⊆ B ∧ IsCardinalFiltered B κ₁ ∧ HasCardinalLT B κ₂ := by
+  have := (tfae h.lt).out 1 4
+  exact this.1 h.isCardinalAccessible_cardinalDirectedPoset A hA
 
 lemma isCardinalAccessible (h : SharplyLT κ₁ κ₂)
     (C : Type u) [Category.{v} C] [IsCardinalAccessibleCategory C κ₁] :
-    IsCardinalAccessibleCategory C κ₂ where
-  toHasCardinalFilteredColimits := .of_le C h.le
-  exists_generator :=
-    ⟨_, inferInstance, h.isCardinalFilteredGenerator C⟩
+    IsCardinalAccessibleCategory C κ₂ :=
+  isCardinalAccessible' h.lt h.exists_isCardinalFiltered_set C
 
 lemma trans (h₁₂ : SharplyLT κ₁ κ₂) {κ₃ : Cardinal.{w}} [Fact κ₃.IsRegular]
     (h₂₃ : SharplyLT κ₂ κ₃) :
