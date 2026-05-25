@@ -35,6 +35,11 @@ a `p`-group (no finiteness hypothesis needed: the family of normal
 * `Subgroup.pCore_eq_top_iff` : `pCore p G = ⊤` iff `G` is itself a `p`-group.
 * `Subgroup.pCore_eq_iInf_sylow` : for finite `G` and prime `p`, the
   `p`-core equals the intersection of all Sylow `p`-subgroups.
+* `Subgroup.map_pCore_le_pCore` (surjective `f`) and
+  `Subgroup.comap_pCore_le_pCore` (`p`-group kernel) describe how the
+  `p`-core behaves under group homomorphisms;
+  `Subgroup.comap_pCore_eq_pCore` gives the equality when both
+  conditions hold, and `MulEquiv.map_pCore` is the isomorphism case.
 
 ## Terminology
 
@@ -43,7 +48,6 @@ descriptive name `pCore`.
 
 ## TODO
 
-* Behaviour of `pCore` under group homomorphisms.
 * Interaction with `IsSolvable` and the upper Fitting series.
 -/
 
@@ -162,5 +166,41 @@ intersection of all Sylow `p`-subgroups. -/
 theorem pCore_eq_iInf_sylow [Fact p.Prime] [Finite G] :
     pCore p G = ⨅ P : Sylow p G, (P : Subgroup G) :=
   le_antisymm (le_iInf pCore_le_sylow) (le_pCore normal_iInf_sylow isPGroup_iInf_sylow)
+
+section Hom
+
+variable {H : Type*} [Group H]
+
+/-- A surjective group homomorphism sends the `p`-core into the `p`-core. -/
+theorem map_pCore_le_pCore {f : G →* H} (hf : Function.Surjective f) :
+    (pCore p G).map f ≤ pCore p H :=
+  le_pCore (pCore_normal.map f hf) (isPGroup_pCore.map f)
+
+/-- A surjective group homomorphism pulls back the `p`-core to a subgroup
+containing the source's `p`-core. (Equivalent to `map_pCore_le_pCore`
+by the `map`/`comap` adjunction.) -/
+theorem pCore_le_comap_pCore {f : G →* H} (hf : Function.Surjective f) :
+    pCore p G ≤ (pCore p H).comap f :=
+  map_le_iff_le_comap.mp (map_pCore_le_pCore hf)
+
+/-- If the kernel of `f : G →* H` is a `p`-group, then the preimage of the
+`p`-core of `H` is contained in the `p`-core of `G`. -/
+theorem comap_pCore_le_pCore {f : G →* H} (hker : IsPGroup p f.ker) :
+    (pCore p H).comap f ≤ pCore p G :=
+  le_pCore (pCore_normal.comap f) (isPGroup_pCore.comap_of_ker_isPGroup f hker)
+
+/-- If `f : G →* H` is surjective with `p`-group kernel, then the `p`-core
+of `G` is the preimage of the `p`-core of `H`. -/
+theorem comap_pCore_eq_pCore {f : G →* H} (hf : Function.Surjective f) (hker : IsPGroup p f.ker) :
+    (pCore p H).comap f = pCore p G :=
+  le_antisymm (comap_pCore_le_pCore hker) (pCore_le_comap_pCore hf)
+
+/-- A group isomorphism preserves the `p`-core. -/
+theorem _root_.MulEquiv.map_pCore (e : G ≃* H) :
+    (pCore p G).map e.toMonoidHom = pCore p H := by
+  rw [map_equiv_eq_comap_symm']
+  exact comap_pCore_eq_pCore e.symm.surjective (IsPGroup.ker_isPGroup_of_injective e.symm.injective)
+
+end Hom
 
 end Subgroup
