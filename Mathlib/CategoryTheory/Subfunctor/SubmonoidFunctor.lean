@@ -62,9 +62,7 @@ instance : CompleteLattice (SubmonoidFunctor R) where
     }
   le_sup_left _ _ _ := by simp
   le_sup_right _ _ _ := by simp
-  sup_le F G H h₁ h₂ U := by
-    simp only [sup_le_iff]
-    tauto
+  sup_le F G H h₁ h₂ U := by simp [h₁ U, h₂ U]
   inf S T :=
     { obj _ := S.obj _ ⊓ T.obj _
       map _ _ h := ⟨S.map _ h.1, T.map _ h.2⟩}
