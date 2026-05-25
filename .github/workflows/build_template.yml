@@ -733,6 +733,19 @@ jobs:
         run: |
           lake exe graph
 
+      # Sparse-checkout of the tools branch so we can find
+      # scripts/dumpReasonableDecls.lean even when the PR branch doesn't yet
+      # contain it (the file lives on master after this PR lands; before that,
+      # we read it from `tools_branch_ref`, which `ci_dev.yml`/`build.yml`
+      # default to the same trusted ref the build job uses for tools).
+      - name: Checkout tools branch for PR-summary scripts
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ inputs.tools_branch_ref != '' && inputs.tools_branch_ref || (github.repository == 'leanprover-community/mathlib4-nightly-testing' && 'nightly-testing-green' || 'master') }}
+          sparse-checkout: |
+            scripts/dumpReasonableDecls.lean
+          path: tools-branch-scripts
+
       - name: dump declarations and transitive-import counts for PR summary
         # Runs on every successful build (the env is hot in the page cache
         # from the `lake build` immediately above). Master pushes' artifacts
@@ -740,7 +753,7 @@ jobs:
         # artifacts are kept just long enough for their own post-build
         # decls-diff workflow to read them.
         run: |
-          lake env lean --run scripts/dumpReasonableDecls.lean \
+          lake env lean --run "$GITHUB_WORKSPACE/tools-branch-scripts/scripts/dumpReasonableDecls.lean" \
             --out decls.txt --imports-out imports.json Mathlib
 
       - name: upload the import graph
