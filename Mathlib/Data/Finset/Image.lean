@@ -357,6 +357,9 @@ theorem image_comp [DecidableEq γ] {g : β → γ} : s.image (g ∘ f) = (s.ima
 theorem image_comp_image [DecidableEq γ] {g : β → γ} :
     image g ∘ image f = image (g ∘ f) := by ext s; simp [image_image]
 
+theorem image_comp_eq [DecidableEq γ] {g : β → γ} :
+    image (g ∘ f) = image g ∘ image f := by ext s; simp [image_image]
+
 theorem image_comm {β'} [DecidableEq β'] [DecidableEq γ] {f : β → γ} {g : α → β} {f' : α → β'}
     {g' : β' → γ} (h_comm : ∀ a, f (g a) = g' (f' a)) :
     (s.image g).image f = (s.image f').image g' := by simp_rw [image_image, comp_def, h_comm]
