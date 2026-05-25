@@ -296,27 +296,23 @@ instance instDiscreteTopPeriods [T2Space R] [hG : DiscreteTopology 𝒢] :
 
 end Ring
 
+/-- The image of `T : SL(2, ℤ)` in `GL(2, ℝ)` is the upper-triangular matrix `[1, 1; 0, 1]`. -/
+@[simp]
+lemma _root_.ModularGroup.mapGL_T_eq_upperRightHom :
+    Matrix.SpecialLinearGroup.mapGL ℝ (ModularGroup.T : SL(2, ℤ)) =
+      Matrix.GeneralLinearGroup.upperRightHom (1 : ℝ) := by
+  ext i j
+  fin_cases i <;> fin_cases j <;>
+    simp [Matrix.SpecialLinearGroup.mapGL_coe_matrix, ModularGroup.coe_T]
+
 /-- The image of `T^n : SL(2, ℤ)` in `GL(2, ℝ)` is the upper-triangular matrix `[1, n; 0, 1]`. -/
+@[simp]
 lemma _root_.ModularGroup.mapGL_T_zpow_eq_upperRightHom (n : ℤ) :
     Matrix.SpecialLinearGroup.mapGL ℝ ((ModularGroup.T : SL(2, ℤ))^n) =
       Matrix.GeneralLinearGroup.upperRightHom ((n : ℝ)) := by
-  have hT : Matrix.SpecialLinearGroup.mapGL ℝ (ModularGroup.T : SL(2, ℤ)) =
-      Matrix.GeneralLinearGroup.upperRightHom (1 : ℝ) := by
-    ext i j
-    fin_cases i <;> fin_cases j <;>
-      simp [Matrix.SpecialLinearGroup.mapGL_coe_matrix, ModularGroup.coe_T]
-  rw [map_zpow, hT, ← AddChar.map_zsmul_eq_zpow, zsmul_one]
+  rw [Matrix.SpecialLinearGroup.mapGL_zpow, ModularGroup.mapGL_T_eq_upperRightHom,
+    ← AddChar.map_zsmul_eq_zpow, zsmul_one]
 
-/-- The form Lean elaborates `((T : SL(2, ℤ))^n : GL (Fin 2) ℝ)` to: coerce `T` to `GL(2, ℝ)`
-first, then raise to the `n`-th power. Equals `upperRightHom n`. Variant of
-`mapGL_T_zpow_eq_upperRightHom`. -/
-@[simp]
-lemma _root_.ModularGroup.coe_GL_T_zpow_eq_upperRightHom (n : ℤ) :
-    (((ModularGroup.T : SL(2, ℤ)) : GL (Fin 2) ℝ))^n =
-      Matrix.GeneralLinearGroup.upperRightHom ((n : ℝ)) := by
-  rw [show (((ModularGroup.T : SL(2, ℤ)) : GL (Fin 2) ℝ)) =
-      Matrix.SpecialLinearGroup.mapGL ℝ (ModularGroup.T : SL(2, ℤ)) from rfl, ← map_zpow]
-  exact ModularGroup.mapGL_T_zpow_eq_upperRightHom n
 
 lemma strictPeriods_eq_zmultiples_one_of_T_mem {Γ : Subgroup SL(2, ℤ)} (hΓ : ModularGroup.T ∈ Γ) :
     strictPeriods (Γ : Subgroup (GL (Fin 2) ℝ)) = AddSubgroup.zmultiples 1 := by
