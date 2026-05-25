@@ -45,7 +45,7 @@ open ComplexConjugate
 section Seminormed
 
 variable {𝕜 E : Type*} [RCLike 𝕜]
-variable [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
+variable [AddCommGroup E] [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 
 local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
@@ -171,7 +171,7 @@ structure IsSymmetricProjection (T : E →ₗ[𝕜] E) : Prop where
 
 section Complex
 
-variable {V : Type*} [SeminormedAddCommGroup V] [InnerProductSpace ℂ V]
+variable {V : Type*} [AddCommGroup V] [SeminormedAddCommGroup V] [InnerProductSpace ℂ V]
 
 attribute [local simp] map_ofNat in -- use `ofNat` simp theorem with bad keys
 open scoped InnerProductSpace in
@@ -216,8 +216,8 @@ theorem IsSymmetric.inner_map_polarization {T : E →ₗ[𝕜] E} (hT : T.IsSymm
       ← mul_assoc, mul_neg, h, neg_neg, one_mul, neg_one_mul]
     ring
 
-theorem isSymmetric_linearIsometryEquiv_conj_iff {F : Type*} [SeminormedAddCommGroup F]
-    [InnerProductSpace 𝕜 F] (T : E →ₗ[𝕜] E) (f : E ≃ₗᵢ[𝕜] F) :
+theorem isSymmetric_linearIsometryEquiv_conj_iff {F : Type*} [AddCommGroup F]
+    [SeminormedAddCommGroup F] [InnerProductSpace 𝕜 F] (T : E →ₗ[𝕜] E) (f : E ≃ₗᵢ[𝕜] F) :
     (f.toLinearMap ∘ₗ T ∘ₗ f.symm.toLinearMap).IsSymmetric ↔ T.IsSymmetric := by
   refine ⟨fun h x y => ?_, fun h x y => ?_⟩
   · simpa [LinearIsometryEquiv.inner_map_eq_flip] using h (f x) (f y)
@@ -245,7 +245,7 @@ end Seminormed
 section Normed
 
 variable {𝕜 E : Type*} [RCLike 𝕜]
-variable [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
+variable [AddCommGroup E] [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 
 local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
