@@ -37,8 +37,8 @@ public section
 open scoped unitInterval Interval Pointwise Topology
 open AffineMap Filter Function MeasureTheory Set
 
-variable {𝕜 E F : Type*} [RCLike 𝕜]
-  [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+variable {𝕜 E F : Type*} [RCLike 𝕜] [AddCommGroup E]
+  [NormedAddCommGroup E] [NormedSpace 𝕜 E] [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 
 namespace ContinuousMap.Homotopy
 
