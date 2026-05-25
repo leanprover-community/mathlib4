@@ -128,7 +128,7 @@ theorem Coloring.color_classes_independent (c : α) : IsAntichain G.Adj (C.color
   C.isIndepSet_colorClass c
 
 /-- Coloring induced from a homomorphism to a colored graph. -/
-abbrev Coloring.ofHom {V' : Type*} {G' : SimpleGraph V'} {α : Type*} (C : G'.Coloring α)
+abbrev Coloring.comap {V' : Type*} {G' : SimpleGraph V'} {α : Type*} (C : G'.Coloring α)
     (f : G →g G') : G.Coloring α :=
   C.comp f
 
@@ -297,7 +297,7 @@ noncomputable def Colorable.toColoring [Fintype α] {n : ℕ} (hc : G.Colorable 
 
 theorem Colorable.of_hom {V' : Type*} {G' : SimpleGraph V'} {n : ℕ} (f : G →g G')
     (h : G'.Colorable n) : G.Colorable n :=
-  ⟨h.some.ofHom f⟩
+  ⟨h.some.comap f⟩
 
 theorem colorable_iff_exists_bdd_nat_coloring (n : ℕ) :
     G.Colorable n ↔ ∃ C : G.Coloring ℕ, ∀ v, C v < n := by
