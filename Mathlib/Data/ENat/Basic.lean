@@ -351,6 +351,28 @@ lemma add_lt_add_iff_right {k : ℕ∞} (h : k ≠ ⊤) : n + k < m + k ↔ n < 
 lemma add_lt_add_iff_left {k : ℕ∞} (h : k ≠ ⊤) : k + n < k + m ↔ n < m :=
   WithTop.add_lt_add_iff_left h
 
+theorem mul_left_cancel₀ {a b c : ℕ∞} (ha : a ≠ 0) (ha_ne_top : a ≠ ⊤) (h : a * b = a * c) :
+    b = c := by
+  lift a to ℕ using ha_ne_top
+  have han : a ≠ 0 := by exact_mod_cast ha
+  rcases eq_or_ne b ⊤ with rfl | hb
+  · rcases eq_or_ne c ⊤ with rfl | hc
+    · rfl
+    · lift c to ℕ using hc
+      rw [ENat.mul_top ha, ← Nat.cast_mul, eq_comm] at h
+      exact absurd h (ENat.coe_ne_top _)
+  · lift b to ℕ using hb
+    rcases eq_or_ne c ⊤ with rfl | hc
+    · rw [ENat.mul_top ha, ← Nat.cast_mul] at h
+      exact absurd h (ENat.coe_ne_top _)
+    · lift c to ℕ using hc
+      rw [← Nat.cast_mul, ← Nat.cast_mul, Nat.cast_inj] at h
+      exact_mod_cast Nat.eq_of_mul_eq_mul_left (Nat.pos_of_ne_zero han) h
+
+theorem mul_right_cancel₀ {a b c : ℕ∞} (hc : c ≠ 0) (hc_ne_top : c ≠ ⊤) (h : a * c = b * c) :
+    a = b :=
+  mul_left_cancel₀ hc hc_ne_top (by rw [mul_comm, h, mul_comm])
+
 protected lemma add_lt_add (hac : a < c) (hbd : b < d) : a + b < c + d :=
   WithTop.add_lt_add hac hbd
 
