@@ -48,13 +48,13 @@ noncomputable def AdjoinPthRoots.root : k ≃+* AdjoinPthRoots k := RingEquiv.re
 variable (p : ℕ) [ExpChar k p]
 
 @[simp]
-lemma AdjoinPthRoots.root_apply_pow (x : k) :
+lemma AdjoinPthRoots.root_pow (x : k) :
     (AdjoinPthRoots.root k x) ^ p = algebraMap k (AdjoinPthRoots k) x := by
   rw [← ringExpChar.eq k p]
   rfl
 
 @[simp]
-lemma AdjoinPthRoots.root_symm_apply_eq_pow (x : AdjoinPthRoots k) :
+lemma AdjoinPthRoots.algebraMap_root_symm (x : AdjoinPthRoots k) :
     algebraMap k (AdjoinPthRoots k) ((AdjoinPthRoots.root k).symm x) = x ^ p := by
   rw [← ringExpChar.eq k p]
   rfl
@@ -64,4 +64,4 @@ instance AdjoinPthRoots.isPurelyInseparable : IsPurelyInseparable k (AdjoinPthRo
   rw [isPurelyInseparable_iff_pow_mem k p]
   intro x
   use 1, (AdjoinPthRoots.root k).symm x
-  simp [AdjoinPthRoots.root_symm_apply_eq_pow k p]
+  simp [AdjoinPthRoots.algebraMap_root_symm k p]
