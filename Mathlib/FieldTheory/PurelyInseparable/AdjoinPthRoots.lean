@@ -44,11 +44,13 @@ noncomputable def AdjoinPthRoots.root : k ≃+* AdjoinPthRoots k := RingEquiv.re
 
 variable (p : ℕ) [ExpChar k p]
 
+@[simp]
 lemma AdjoinPthRoots.root_apply_pow (x : k) :
     (AdjoinPthRoots.root k x) ^ p = algebraMap k (AdjoinPthRoots k) x := by
   rw [← ringExpChar.eq k p]
   rfl
 
+@[simp]
 lemma AdjoinPthRoots.root_symm_apply_eq_pow (x : AdjoinPthRoots k) :
     algebraMap k (AdjoinPthRoots k) ((AdjoinPthRoots.root k).symm x) = x ^ p := by
   rw [← ringExpChar.eq k p]
