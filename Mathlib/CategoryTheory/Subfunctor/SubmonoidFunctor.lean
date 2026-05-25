@@ -67,7 +67,7 @@ instance {U : C} : CoeHead (S.toMonoidFunctor.obj U) (R.obj U) where
   coe := Subtype.val
 
 instance : PartialOrder (SubmonoidFunctor R) :=
-  PartialOrder.lift SubmonoidFunctor.obj (fun _ _ => SubmonoidFunctor.ext)
+  PartialOrder.lift SubmonoidFunctor.obj fun _ _ => SubmonoidFunctor.ext
 
 instance : CompleteLattice (SubmonoidFunctor R) where
   sup F G := {
