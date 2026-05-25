@@ -70,23 +70,12 @@ instance : CompleteLattice (SubmonoidFunctor R) where
   inf_le_right _ _ _ _ h := h.2
   le_inf _ _ _ h₁ h₂ _ _ h := ⟨h₁ _ h, h₂ _ h⟩
   sSup S :=
-    { obj _ := sSup (Set.image (fun T ↦ T.obj _) S)
-      map f x hx := by
-        erw [sSup_image', Submonoid.mem_iSup]
-        rw [sSup_image',Submonoid.mem_iSup ] at hx
-        intro N hN
-        expose_names
-        have : ∀ (i : S), ⇑(hom (R.map f)) ⁻¹' ((@Subtype.val (SubmonoidFunctor R)
-          (fun x ↦ x ∈ S) i).obj V) ≤ ⇑(hom (R.map f)) ⁻¹' N.carrier := by tauto
-        have : ∀ (i : S), ((@Subtype.val (SubmonoidFunctor R) (fun x ↦ x ∈ S) i).obj U) ≤
-          ⇑(hom (R.map f)) ⁻¹' N.carrier := by
-          intro i
-          simp_all only [Subtype.forall, Set.le_eq_subset]
-          obtain ⟨val, property⟩ := i
-          have : (val.obj U).carrier ⊆ ⇑(hom (R.map f)) ⁻¹' ↑(val.obj V).carrier := val.map f
-          tauto
-        apply hx (Submonoid.comap (MonCat.Hom.hom (R.map f)) N) this
-        }
+    { obj U := ⨆ F ∈ S, F.obj U
+      map {U V} f := by
+        nth_rw 2 [← sSup_image]
+        refine le_trans ?_ Submonoid.monotone_comap.le_map_sSup
+        rw [iSup_image]
+        exact iSup₂_mono fun F _ ↦ F.map f }
   isLUB_sSup _ := ⟨fun _ _ _ _ ↦ by
     intro a
     simp only [sSup_image', Submonoid.mem_iSup];
