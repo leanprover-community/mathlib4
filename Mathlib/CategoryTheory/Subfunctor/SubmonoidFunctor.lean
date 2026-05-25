@@ -16,6 +16,9 @@ Given a functor `M : C ⥤ MonCat`, we define a functor of submonoids `S` to be 
 family `Submonoid (M.obj U)` for all `U : C` that are compatible with the maps induced by `M`.
 
 We provide the complete lattice structure and the basic functoriality properties.
+
+TODO: show the Galois connection between SubmonoidFunctor.image and SubmonoidFunctor.comap
+
 -/
 
 @[expose] public section
@@ -124,16 +127,23 @@ end image
 
 section comap
 
+variable (p : M ⟶ M') (S'' : SubmonoidFunctor M'')
+
 /-- The submonoid functor defined by the preimage along a morphism of functors of monoids. -/
 @[simps]
-def comap (S' : SubmonoidFunctor M') (p : M ⟶ M') : SubmonoidFunctor M where
+def comap (S' : SubmonoidFunctor M') : SubmonoidFunctor M where
   obj _ := Submonoid.comap (MonCat.Hom.hom (p.app _)) (S'.obj _)
   map _ _ h := by
     simp_rw [Submonoid.mem_comap, NatTrans.naturality_apply]
     exact Submonoid.mem_comap.mp (Set.mem_of_mem_of_subset h (S'.map _))
 
+variable (M) in
+lemma comap_id : comap (𝟙 M) ⊤ = ⊤ := rfl
+
+lemma comap_comp (p' : M' ⟶ M'') : S''.comap (p ≫ p') = (S''.comap p').comap p := by rfl
+
 @[simp]
-lemma image_comap_ι : image (S.ι) (comap S (S.ι)) = S := by aesop
+lemma image_comap_ι : image (S.ι) (comap (S.ι) S) = S := by aesop
 
 end comap
 
