@@ -842,7 +842,7 @@ theorem leadingTerm_mul_of_mul_leadingCoeff_ne_zero {f g : MvPolynomial σ R}
     degree_mul_of_mul_leadingCoeff_ne_zero]
 
 theorem leadingTerm_mul_of_left_mem_nonZeroDivisors {f g : MvPolynomial σ R}
-    (hf : m.leadingCoeff f ∈ nonZeroDivisors _) :
+    (hf : m.leadingCoeff f ∈ R⁰) :
     m.leadingTerm (f * g) = m.leadingTerm f * m.leadingTerm g := by
   by_cases hg : g = 0
   · simp [hg]
@@ -850,7 +850,7 @@ theorem leadingTerm_mul_of_left_mem_nonZeroDivisors {f g : MvPolynomial σ R}
       degree_mul_of_left_mem_nonZeroDivisors]
 
 theorem leadingTerm_mul_of_right_mem_nonZeroDivisors {f g : MvPolynomial σ R}
-    (hg : m.leadingCoeff g ∈ nonZeroDivisors _) :
+    (hg : m.leadingCoeff g ∈ R⁰) :
     m.leadingTerm (f * g) = m.leadingTerm f * m.leadingTerm g := by
   by_cases hf : f = 0
   · simp [hf]
@@ -880,7 +880,7 @@ theorem leadingTerm_mul [NoZeroDivisors R] (p q : MvPolynomial σ R) :
 
 theorem leadingTerm_prod_of_mem_nonZeroDivisors {ι : Type*}
     {P : ι → MvPolynomial σ R} {s : Finset ι}
-    (H : ∀ i ∈ s, m.leadingCoeff (P i) ∈ nonZeroDivisors _) :
+    (H : ∀ i ∈ s, m.leadingCoeff (P i) ∈ R⁰) :
     m.leadingTerm (∏ i ∈ s, P i) = ∏ i ∈ s, m.leadingTerm (P i) := by
   simp [leadingTerm, degree_prod_of_mem_nonZeroDivisors H, monomial_sum_prod,
     leadingCoeff_prod_of_mem_nonZeroDivisors H]
