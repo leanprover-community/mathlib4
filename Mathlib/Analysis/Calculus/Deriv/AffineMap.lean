@@ -28,7 +28,7 @@ affine map, derivative, differentiability
 public section
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-  {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+  {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
   (f : 𝕜 →ᵃ[𝕜] E) {a b : E} {L : Filter (𝕜 × 𝕜)} {s : Set 𝕜} {x : 𝕜}
 
 namespace AffineMap
