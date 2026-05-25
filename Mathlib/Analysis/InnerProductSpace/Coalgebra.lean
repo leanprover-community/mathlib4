@@ -30,19 +30,22 @@ This comes up in non-commutative graph theory for example.
 
 @[expose] public section
 
-variable {𝕜 E : Type*} [RCLike 𝕜] [NormedAddCommGroup E]
+variable {𝕜 E : Type*} [RCLike 𝕜] [AddCommGroup E] [NormedAddCommGroup E]
   [InnerProductSpace 𝕜 E] [FiniteDimensional 𝕜 E]
 
 open TensorProduct LinearMap LinearIsometryEquiv Coalgebra
 
+-- This needs some annotiation...
 open EuclideanSpace in
 /-- The comultiplication on `n → 𝕜` corresponds to the Euclidean space adjoint of the
 multiplication map. -/
 theorem Pi.comul_eq_adjoint {n : Type*} [Fintype n] [DecidableEq n] :
-    comul = map (equiv n 𝕜).toLinearMap (equiv n 𝕜).toLinearMap ∘ₗ
-      ((equiv n 𝕜).symm.toLinearMap ∘ₗ mul' 𝕜 (n → 𝕜) ∘ₗ
-        map (equiv n 𝕜).toLinearMap (equiv n 𝕜).toLinearMap).adjoint ∘ₗ
-      (equiv n 𝕜).symm.toLinearMap := by
+    letI f₁ : EuclideanSpace 𝕜 n ⊗[𝕜] EuclideanSpace 𝕜 n →ₗ[𝕜] (n → 𝕜) ⊗[𝕜] (n → 𝕜) :=
+      map (equiv n 𝕜).toLinearMap (equiv n 𝕜).toLinearMap
+    letI f₂ : (n → 𝕜) →ₗ[𝕜] EuclideanSpace 𝕜 n := (equiv n 𝕜).symm.toLinearMap
+    letI f : EuclideanSpace 𝕜 n ⊗[𝕜] EuclideanSpace 𝕜 n →ₗ[𝕜] EuclideanSpace 𝕜 n :=
+      f₂ ∘ₗ mul' 𝕜 (n → 𝕜) ∘ₗ f₁
+    comul = f₁ ∘ₗ (f.adjoint (E := EuclideanSpace 𝕜 n ⊗[𝕜] EuclideanSpace 𝕜 n)) ∘ₗ f₂ := by
   ext
   simp only [comp_apply, ← toLinearMap_congr, LinearEquiv.coe_coe, ← LinearEquiv.symm_apply_eq]
   simp [TensorProduct.ext_iff_inner_left, adjoint_inner_right, inner_eq_star_dotProduct]
