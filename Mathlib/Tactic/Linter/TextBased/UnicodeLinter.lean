@@ -183,7 +183,7 @@ public def emojis : Array Char := #[
   .ofNat 0x1F3C1   -- 🏁️
 ]
 
-/-- Unicode symbols in mathlib that may be followed -/
+/-- Unicode symbols in mathlib that have no restrictions on which selector they are followed by. -/
 public def maybeEmojis : Array Char := #[
   '⚠' -- ⚠️
 ]
