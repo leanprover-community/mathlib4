@@ -40,8 +40,7 @@ This section constructs the type `Code`, which is a data type of programs with `
 output, with enough expressivity to write any partial recursive function. The primitives are:
 
 * `zero'` appends a `0` to the input. That is, `zero' v = 0 :: v`.
-* `succ` returns the successor of the head of the input, defaulting to zero if there
-  is no head:
+* `succ` returns the successor of the head of the input, defaulting to zero if there is no head:
   * `succ [] = [1]`
   * `succ (n :: v) = [n + 1]`
 * `tail` returns the tail of the input
@@ -51,13 +50,13 @@ output, with enough expressivity to write any partial recursive function. The pr
   * `cons f fs v = (f v).head :: fs v`
 * `comp f g` calls `f` on the output of `g`:
   * `comp f g v = f (g v)`
-* `case f g` cases on the head of the input, calling `f` or `g` depending on whether
-  it is zero or a successor (similar to `Nat.casesOn`).
+* `case f g` cases on the head of the input, calling `f` or `g` depending on whether it is zero or
+  a successor (similar to `Nat.casesOn`).
   * `case f g [] = f []`
   * `case f g (0 :: v) = f v`
   * `case f g (n+1 :: v) = g (n :: v)`
-* `fix f` calls `f` repeatedly, using the head of the result of `f` to decide whether
-  to call `f` again or finish:
+* `fix f` calls `f` repeatedly, using the head of the result of `f` to decide whether to call `f`
+  again or finish:
   * `fix f v = []` if `f v = []`
   * `fix f v = w` if `f v = 0 :: w`
   * `fix f v = fix f w` if `f v = n+1 :: w` (the exact value of `n` is discarded)
@@ -73,8 +72,7 @@ evaluator for this basis, which we take up in the next section.
 namespace ToPartrec
 
 /-- The type of codes for primitive recursive functions. Unlike `Nat.Partrec.Code`, this uses a set
-of operations on `List ℕ`.
-See `Code.eval` for a description of the behavior of the primitives. -/
+of operations on `List ℕ`. See `Code.eval` for a description of the behavior of the primitives. -/
 inductive Code
   | zero'
   | succ
@@ -90,8 +88,7 @@ By convention, functions that return a single result return a singleton `[n]`,
 or in some cases `n :: v` where `v` will be ignored by a subsequent function.
 
 * `zero'` appends a `0` to the input. That is, `zero' v = 0 :: v`.
-* `succ` returns the successor of the head of the input, defaulting to zero if there
-  is no head:
+* `succ` returns the successor of the head of the input, defaulting to zero if there is no head:
   * `succ [] = [1]`
   * `succ (n :: v) = [n + 1]`
 * `tail` returns the tail of the input
@@ -101,13 +98,13 @@ or in some cases `n :: v` where `v` will be ignored by a subsequent function.
   * `cons f fs v = (f v).head :: fs v`
 * `comp f g` calls `f` on the output of `g`:
   * `comp f g v = f (g v)`
-* `case f g` cases on the head of the input, calling `f` or `g` depending on whether
-  it is zero or a successor (similar to `Nat.casesOn`).
+* `case f g` cases on the head of the input, calling `f` or `g` depending on whether it is zero or
+  a successor (similar to `Nat.casesOn`).
   * `case f g [] = f []`
   * `case f g (0 :: v) = f v`
   * `case f g (n+1 :: v) = g (n :: v)`
-* `fix f` calls `f` repeatedly, using the head of the result of `f` to decide whether
-  to call `f` again or finish:
+* `fix f` calls `f` repeatedly, using the head of the result of `f` to decide whether to call `f`
+  again or finish:
   * `fix f v = []` if `f v = []`
   * `fix f v = w` if `f v = 0 :: w`
   * `fix f v = fix f w` if `f v = n+1 :: w` (the exact value of `n` is discarded)
@@ -116,32 +113,41 @@ def Code.eval : Code → List ℕ →. List ℕ
   | Code.zero' => PFun.lift fun v => 0 :: v
   | Code.succ => PFun.lift fun v => [v.headI.succ]
   | Code.tail => PFun.lift fun v => v.tail
-  | Code.cons f fs => PFun.mk fun v =>
-    f.eval v >>= fun n => fs.eval v >>= fun ns => pure (n.headI :: ns)
-  | Code.comp f g => PFun.mk fun v => g.eval v >>= fun x => f.eval x
-  | Code.case f g => PFun.mk fun v => v.headI.rec (f.eval v.tail) (fun y _ => g.eval (y::v.tail))
+  | Code.cons f fs => PFun.mk fun v => do
+    let n ← Code.eval f v
+    let ns ← Code.eval fs v
+    pure (n.headI :: ns)
+  | Code.comp f g => PFun.mk fun v => g.eval v >>= f.eval
+  | Code.case f g => PFun.mk fun v => v.headI.rec (f.eval v.tail) fun y _ => g.eval (y::v.tail)
   | Code.fix f =>
     PFun.fix (PFun.mk fun v => (f.eval v).map fun v' =>
       if v'.headI = 0 then Sum.inl v'.tail else Sum.inr v'.tail)
 
 namespace Code
 
-@[simp] theorem zero'_eval (v) : zero'.eval v = pure (0 :: v) := rfl
+@[simp]
+theorem zero'_eval (v) : zero'.eval v = pure (0 :: v) := rfl
 
-@[simp] theorem succ_eval (v) : succ.eval v = pure [v.headI.succ] := rfl
+@[simp]
+theorem succ_eval (v) : succ.eval v = pure [v.headI.succ] := rfl
 
-@[simp] theorem tail_eval (v) : tail.eval v = pure v.tail := rfl
+@[simp]
+theorem tail_eval (v) : tail.eval v = pure v.tail := rfl
 
-@[simp] theorem cons_eval (f fs v) :
+@[simp]
+theorem cons_eval (f fs v) :
     (cons f fs).eval v = (f.eval v >>= fun n => fs.eval v >>= fun ns => pure (n.headI :: ns)) := rfl
 
-@[simp] theorem comp_eval (f g v) :
+@[simp]
+theorem comp_eval (f g v) :
     (comp f g).eval v = (g.eval v >>= fun x => f.eval x) := rfl
 
-@[simp] theorem case_eval (f g v) :
+@[simp]
+theorem case_eval (f g v) :
     (case f g).eval v = v.headI.rec (f.eval v.tail) (fun y _ => g.eval (y::v.tail)) := rfl
 
-@[simp] theorem fix_eval (f v) :
+@[simp]
+theorem fix_eval (f v) :
     (fix f).eval v =
       PFun.fix (PFun.mk fun v' => (f.eval v').map fun v'' =>
         if v''.headI = 0 then Sum.inl v''.tail else Sum.inr v''.tail) v := rfl
@@ -175,15 +181,13 @@ def zero : Code :=
 theorem zero_eval (v) : zero.eval v = pure [0] := by simp [zero]
 
 /-- `pred` returns the predecessor of the head of the input:
-`pred [] = [0]`, `pred (0 :: v) = [0]`, `pred (n+1 :: v) = [n]`.
--/
+`pred [] = [0]`, `pred (0 :: v) = [0]`, `pred (n+1 :: v) = [n]`. -/
 def pred : Code :=
   case zero head
 
 @[simp]
 theorem pred_eval (v) : pred.eval v = pure [v.headI.pred] := by
-  simp [pred];
-  cases v.headI <;> simp
+  simp [pred]; cases v.headI <;> simp
 
 /-- `rfind f` performs the function of the `rfind` primitive of partial recursive functions.
 `rfind f v` returns the smallest `n` such that `(f (n :: v)).head = 0`.
@@ -193,17 +197,14 @@ It is implemented as:
     rfind f v = pred (fix (fun (n::v) => f (n::v) :: n+1 :: v) (0 :: v))
 
 The idea is that the initial state is `0 :: v`, and the `fix` keeps `n :: v` as its internal state;
-it calls `f (n :: v)` as the exit test and `n+1 :: v` as the next state.
-At the end we get
+it calls `f (n :: v)` as the exit test and `n+1 :: v` as the next state. At the end we get
 `n+1 :: v` where `n` is the desired output, and `pred (n+1 :: v) = [n]` returns the result.
 -/
 def rfind (f : Code) : Code :=
-  comp pred <|
-    comp (fix <| cons f <| cons succ tail) zero'
+  comp pred <| comp (fix <| cons f <| cons succ tail) zero'
 
 /-- `prec f g` implements the `prec` (primitive recursion) operation of partial recursive
-functions.
-`prec f g` evaluates as:
+functions. `prec f g` evaluates as:
 
 * `prec f g [] = [f []]`
 * `prec f g (0 :: v) = [f v]`
@@ -214,7 +215,6 @@ It is implemented as:
     G (a :: b :: IH :: v) = (b :: a+1 :: b-1 :: g (a :: IH :: v) :: v)
     F (0 :: f_v :: v) = (f_v :: v)
     F (n+1 :: f_v :: v) = (fix G (0 :: n :: f_v :: v)).tail.tail
-
     prec f g (a :: v) = [(F (a :: f v :: v)).head]
 
 Because `fix` always evaluates its body at least once, we must special case the `0` case to avoid
@@ -224,22 +224,18 @@ we evaluate the function from the bottom up, with initial state `0 :: n :: f v :
 number counts up, providing arguments for the applications to `g`, while the second number counts
 down, providing the exit condition (this is the initial `b` in the return value of `G`, which is
 stripped by `fix`). After the `fix` is complete, the final state is `n :: 0 :: res :: v` where
-`res` is the desired result, and the rest reduces this to `[res]`.
--/
+`res` is the desired result, and the rest reduces this to `[res]`. -/
 def prec (f g : Code) : Code :=
   let G :=
     cons tail <|
       cons succ <|
         cons (comp pred tail) <|
-          cons (comp g <| cons id <| comp tail tail) <|
-            comp tail <| comp tail tail
-  let F := case id <|
-    comp (comp (comp tail tail) (fix G)) zero'
+          cons (comp g <| cons id <| comp tail tail) <| comp tail <| comp tail tail
+  let F := case id <| comp (comp (comp tail tail) (fix G)) zero'
   cons (comp F (cons head <| cons (comp f tail) tail)) nil
 
 attribute [-simp] Part.bind_eq_bind Part.map_eq_map Part.pure_eq_some
 
--- TODO: golf this proof (PFun refactor)
 theorem exists_code.comp {m n} {f : List.Vector ℕ n →. ℕ} {g : Fin n → List.Vector ℕ m →. ℕ}
     (hf : ∃ c : Code, ∀ v : List.Vector ℕ n, c.eval v.1 = pure <$> f v)
     (hg : ∀ i, ∃ c : Code, ∀ v : List.Vector ℕ m, c.eval v.1 = pure <$> g i v) :
@@ -432,8 +428,7 @@ The continuations are:
   final result. In our notation this is just `_`.
 * `cons₁ fs v k`: evaluating the first part of a `cons`, that is `k (_ :: fs v)`, where `k` is the
   outer continuation.
-* `cons₂ ns k`: evaluating the second part of a `cons`: `k (ns.headI :: _)`.
-  (Technically we don't
+* `cons₂ ns k`: evaluating the second part of a `cons`: `k (ns.headI :: _)`. (Technically we don't
   need to hold on to all of `ns` here since we are already committed to taking the head, but this
   is more regular.)
 * `comp f k`: evaluating the first part of a composition: `k (f _)`.
@@ -442,10 +437,12 @@ The continuations are:
 
 The type `Cfg` of evaluation states is:
 
-* `halt v`: The machine is about to stop and `v : List ℕ` is the result.
-* `ret k v`: The machine is about to pass `v : List ℕ` to continuation `k : Cont`.
-We don't have a state corresponding to normal evaluation because these are evaluated immediately
-to a `ret` "in zero steps" using the `stepNormal` function.
+* `ret k v`: we have received a result, and are now evaluating the continuation `k` with result
+  `v`; that is, `k v` where `k` is ready to evaluate.
+* `halt v`: we are done and the result is `v`.
+
+The main theorem of this section is that for each code `c`, the state `stepNormal c halt v` steps
+to `v'` in finitely many steps if and only if `Code.eval c v = some v'`.
 -/
 
 
@@ -458,8 +455,7 @@ inductive Cont
   | fix : Code → Cont → Cont
   deriving Inhabited
 
-/-- The semantics of a continuation.
--/
+/-- The semantics of a continuation. -/
 def Cont.eval : Cont → List ℕ →. List ℕ
   | Cont.halt => PFun.id _
   | Cont.cons₁ fs as k => PFun.mk fun v =>
@@ -471,17 +467,22 @@ def Cont.eval : Cont → List ℕ →. List ℕ
 
 namespace Cont
 
-@[simp, grind =] theorem halt_eval (v) : halt.eval v = pure v := rfl
+@[simp]
+theorem halt_eval (v) : halt.eval v = pure v := rfl
 
-@[simp, grind =] theorem cons₁_eval (fs as k v) :
+@[simp]
+theorem cons₁_eval (fs as k v) :
     (cons₁ fs as k).eval v = (Code.eval fs as >>= fun ns => k.eval (v.headI :: ns)) := rfl
 
-@[simp, grind =] theorem cons₂_eval (ns k v) :
- (cons₂ ns k).eval v = k.eval (ns.headI :: v) := rfl
+@[simp]
+theorem cons₂_eval (ns k v) :
+    (cons₂ ns k).eval v = k.eval (ns.headI :: v) := rfl
 
-@[simp, grind =] theorem comp_eval (f k v) : (comp f k).eval v = (Code.eval f v >>= k.eval) := rfl
+@[simp]
+theorem comp_eval (f k v) : (comp f k).eval v = (Code.eval f v >>= k.eval) := rfl
 
-@[simp, grind =] theorem fix_eval (f k v) :
+@[simp]
+theorem fix_eval (f k v) :
     (fix f k).eval v =
       (if v.headI = 0 then k.eval v.tail else f.fix.eval v.tail >>= k.eval) := rfl
 
@@ -491,17 +492,17 @@ end Cont
 
 * `halt v`: The machine is about to stop and `v : List ℕ` is the result.
 * `ret k v`: The machine is about to pass `v : List ℕ` to continuation `k : Cont`.
+
 We don't have a state corresponding to normal evaluation because these are evaluated immediately
-to a `ret` "in zero steps" using the `stepNormal` function.
--/
+to a `ret` "in zero steps" using the `stepNormal` function. -/
 inductive Cfg
   | halt : List ℕ → Cfg
   | ret : Cont → List ℕ → Cfg
   deriving Inhabited
 
-/-- Evaluating `c : Code` in a continuation `k : Cont` and input `v : List ℕ`.
-This goes by
+/-- Evaluating `c : Code` in a continuation `k : Cont` and input `v : List ℕ`. This goes by
 recursion on `c`, building an augmented continuation and a value to pass to it.
+
 * `zero' v = 0 :: v` evaluates immediately, so we return it to the parent continuation
 * `succ v = [v.headI.succ]` evaluates immediately, so we return it to the parent continuation
 * `tail v = v.tail` evaluates immediately, so we return it to the parent continuation
@@ -526,19 +527,18 @@ def stepNormal : Code → Cont → List ℕ → Cfg
     v.headI.rec (stepNormal f k v.tail) fun y _ => stepNormal g k (y::v.tail)
   | Code.fix f => fun k v => stepNormal f (Cont.fix f k) v
 
-/-- Evaluating a continuation `k : Cont` on input `v : List ℕ`.
-This is the second part of
+/-- Evaluating a continuation `k : Cont` on input `v : List ℕ`. This is the second part of
 evaluation, when we receive results from continuations built by `stepNormal`.
+
 * `Cont.halt v = v`, so we are done and transition to the `Cfg.halt v` state
 * `Cont.cons₁ fs as k v = k (v.headI :: fs as)`, so we evaluate `fs as` now with the continuation
   `k (v.headI :: _)` (called `cons₂ v k`).
 * `Cont.cons₂ ns k v = k (ns.headI :: v)`, where we now have everything we need to evaluate
   `ns.headI :: v`, so we return it to `k`.
 * `Cont.comp f k v = k (f v)`, so we call `f v` with `k` as the continuation.
-* `Cont.fix f k v = k (if v.headI = 0 then k v.tail else fix f v.tail)`, where `v` is a
-  value, so we evaluate the if statement and either call `k` with `v.tail`, or call
-  `fix f v` with `k` as the continuation (which immediately calls `f` with
-  `Cont.fix f k` as the continuation).
+* `Cont.fix f k v = k (if v.headI = 0 then k v.tail else fix f v.tail)`, where `v` is a value,
+  so we evaluate the if statement and either call `k` with `v.tail`, or call `fix f v` with `k` as
+  the continuation (which immediately calls `f` with `Cont.fix f k` as the continuation).
 -/
 def stepRet : Cont → List ℕ → Cfg
   | Cont.halt, v => Cfg.halt v
@@ -548,25 +548,21 @@ def stepRet : Cont → List ℕ → Cfg
   | Cont.fix f k, v => if v.headI = 0 then stepRet k v.tail else stepNormal f (Cont.fix f k) v.tail
 
 /-- If we are not done (in `Cfg.halt` state), then we must be still stuck on a continuation, so
-this main loop calls `stepRet` with the new continuation.
-The overall `step` function transitions
-from one `Cfg` to another, only halting at the `Cfg.halt` state.
--/
+this main loop calls `stepRet` with the new continuation. The overall `step` function transitions
+from one `Cfg` to another, only halting at the `Cfg.halt` state. -/
 def step : Cfg → Option Cfg
   | Cfg.halt _ => none
   | Cfg.ret k v => some (stepRet k v)
 
 /-- In order to extract a compositional semantics from the sequential execution behavior of
 configurations, we observe that continuations have a monoid structure, with `Cont.halt` as the unit
-and `Cont.then` as the multiplication.
-`Cont.then k₁ k₂` runs `k₁` until it halts, and then takes
+and `Cont.then` as the multiplication. `Cont.then k₁ k₂` runs `k₁` until it halts, and then takes
 the result of `k₁` and passes it to `k₂`.
+
 We will not prove it is associative (although it is), but we are instead interested in the
-associativity law `k₂ (eval c k₁) = eval c (k₁.then k₂)`.
-This holds at both the sequential and
+associativity law `k₂ (eval c k₁) = eval c (k₁.then k₂)`. This holds at both the sequential and
 compositional levels, and allows us to express running a machine without the ambient continuation
-and relate it to the original machine's evaluation steps.
-In the literature this is usually
+and relate it to the original machine's evaluation steps. In the literature this is usually
 where one uses Turing machines embedded inside other Turing machines, but this approach allows us
 to avoid changing the ambient type `Cfg` in the middle of the recursion.
 -/
@@ -596,20 +592,16 @@ theorem Cont.then_eval {k k' : Cont} {v} : (k.then k').eval v = k.eval v >>= k'.
       funext x
       exact k_ih
 
-/-- The `then k` function is a "configuration homomorphism".
-Its operation on states is to append
+/-- The `then k` function is a "configuration homomorphism". Its operation on states is to append
 `k` to the continuation of a `Cfg.ret` state, and to run `k` on `v` if we are in the `Cfg.halt v`
-state.
--/
+state. -/
 def Cfg.then : Cfg → Cont → Cfg
   | Cfg.halt v => fun k' => stepRet k' v
   | Cfg.ret k v => fun k' => Cfg.ret (k.then k') v
 
-/-- The `stepNormal` function respects the `then k'` homomorphism.
-Note that this is an exact
+/-- The `stepNormal` function respects the `then k'` homomorphism. Note that this is an exact
 equality, not a simulation; the original and embedded machines move in lock-step until the
-embedded machine reaches the halt state.
--/
+embedded machine reaches the halt state. -/
 theorem stepNormal_then (c) (k k' : Cont) (v) :
     stepNormal c (k.then k') v = (stepNormal c k v).then k' := by
   induction c generalizing k v with simp only [stepNormal, *]
@@ -619,11 +611,9 @@ theorem stepNormal_then (c) (k k' : Cont) (v) :
   | fix c ih => rw [← ih, Cont.then]
   | _ => simp only [Cfg.then]
 
-/-- The `stepRet` function respects the `then k'` homomorphism.
-Note that this is an exact
+/-- The `stepRet` function respects the `then k'` homomorphism. Note that this is an exact
 equality, not a simulation; the original and embedded machines move in lock-step until the
-embedded machine reaches the halt state.
--/
+embedded machine reaches the halt state. -/
 theorem stepRet_then {k k' : Cont} {v} : stepRet (k.then k') v = (stepRet k v).then k' := by
   induction k generalizing v with simp only [Cont.then, stepRet, *]
   | cons₁ =>
@@ -644,28 +634,29 @@ open StateTransition
 It asserts that `c` is semantically correct; that is, for any `k` and `v`,
 `eval (stepNormal c k v) = eval (Cfg.ret k (Code.eval c v))`, as an equality of partial values
 (so one diverges iff the other does).
+
 In particular, we can let `k = Cont.halt`, and then this asserts that `stepNormal c Cont.halt v`
-evaluates to `Cfg.halt (Code.eval c v)`.
--/
+evaluates to `Cfg.halt (Code.eval c v)`. -/
 def Code.Ok (c : Code) :=
   ∀ k v, StateTransition.eval step (stepNormal c k v) =
     Code.eval c v >>= fun v => StateTransition.eval step (Cfg.ret k v)
 
 theorem Code.Ok.zero {c} (h : Code.Ok c) {v} :
     StateTransition.eval step (stepNormal c Cont.halt v) = Cfg.halt <$> Code.eval c v := by
-  rw [h, ← bind_pure_comp];
-  congr; funext v
+  rw [h, ← bind_pure_comp]; congr; funext v
   exact Part.eq_some_iff.2 (mem_eval.2 ⟨ReflTransGen.single rfl, rfl⟩)
 
-theorem stepNormal.is_ret (c : Code) (k : Cont) (v : List ℕ) :
-    ∃ k' v', stepNormal c k v = Cfg.ret k' v' := by
-  induction c generalizing k v <;> try exact ⟨_, _, rfl⟩
-  case cons IHf _ => apply IHf
-  case comp _ IHg => apply IHg
-  case case IHf IHg => unfold stepNormal; cases v.headI <;> [apply IHf; apply IHg]
-  case fix IHf => apply IHf
+theorem stepNormal.is_ret (c k v) : ∃ k' v', stepNormal c k v = Cfg.ret k' v' := by
+  induction c generalizing k v with
+  | cons _f fs IHf _IHfs => apply IHf
+  | comp f _g _IHf IHg => apply IHg
+  | case f g IHf IHg =>
+    rw [stepNormal]
+    simp only []
+    cases v.headI <;> [apply IHf; apply IHg]
+  | fix f IHf => apply IHf
+  | _ => exact ⟨_, _, rfl⟩
 
--- TODO: golf this proof (PFun refactor)
 theorem cont_eval_fix {f k v} (fok : Code.Ok f) :
     eval step (stepNormal f (Cont.fix f k) v) =
       f.fix.eval v >>= fun v => eval step (Cfg.ret k v) := by
@@ -674,13 +665,12 @@ theorem cont_eval_fix {f k v} (fok : Code.Ok f) :
   constructor
   · suffices ∀ c, x ∈ eval step c → ∀ v c', c = Cfg.then c' (Cont.fix f k) →
       Reaches step (stepNormal f Cont.halt v) c' →
-        ∃ v₁ ∈ f.eval v, ∃ v₂ ∈ if v₁.headI = 0 then pure v₁.tail else f.fix.eval v₁.tail,
+        ∃ v₁ ∈ f.eval v, ∃ v₂ ∈ if List.headI v₁ = 0 then pure v₁.tail else f.fix.eval v₁.tail,
           x ∈ eval step (Cfg.ret k v₂) by
       intro h
       obtain ⟨v₁, hv₁, v₂, hv₂, h₃⟩ :=
         this _ h _ _ (stepNormal_then _ Cont.halt _ _) ReflTransGen.refl
       refine ⟨v₂, PFun.mem_fix_iff.2 ?_, h₃⟩
-      -- We explicitly unfold the PFun structure here
       simp only [PFun.coe_mk, Part.eq_some_iff.2 hv₁, Part.map_some]
       split_ifs at hv₂ ⊢
       · rw [Part.mem_some_iff.1 hv₂]

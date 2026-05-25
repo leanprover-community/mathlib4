@@ -26,9 +26,7 @@ namespace Nat
 
 open Vector Part
 
-/-- A simplified basis for `Partrec`.
-Note: Since `PFun` is a structure, all underlying partial functions in the constructors
-are explicitly wrapped in `PFun.mk` or `PFun.lift`. -/
+/-- A simplified basis for `Partrec`. -/
 inductive Partrec' : ∀ {n}, (List.Vector ℕ n →. ℕ) → Prop
   | prim {n f} : @Primrec' n f → @Partrec' n (PFun.lift f)
   | comp {m n f} (g : Fin n → List.Vector ℕ m →. ℕ) :
@@ -58,10 +56,10 @@ theorem of_eq {n} {f g : List.Vector ℕ n →. ℕ} (hf : Partrec' f) (H : ∀ 
     Partrec' g :=
   (DFunLike.ext _ _ H : f = g) ▸ hf
 
-theorem of_prim {n} {f : List.Vector ℕ n → ℕ} (hf : Primrec f) : @Partrec' n (PFun.lift f) :=
+theorem of_prim {n} {f : List.Vector ℕ n → ℕ} (hf : Primrec f) : @Partrec' n f :=
   prim (Nat.Primrec'.of_prim hf)
 
-theorem head {n : ℕ} : @Partrec' n.succ (PFun.lift (@head ℕ n)) :=
+theorem head {n : ℕ} : @Partrec' n.succ (@head ℕ n) :=
   prim Nat.Primrec'.head
 
 theorem tail {n f} (hf : @Partrec' n f) : @Partrec' n.succ (PFun.mk fun v => f v.tail) :=
@@ -105,7 +103,6 @@ theorem comp₁ {n} (f : ℕ →. ℕ) {g : List.Vector ℕ n → ℕ}
     (hg : @Partrec' n (PFun.lift g)) : @Partrec' n (PFun.mk fun v => f (g v)) := by
   simpa using hf.comp' (Partrec'.cons hg Partrec'.nil)
 
--- TODO(PFun-refactor): golf this proof once global simp sets for PFun are established
 theorem rfindOpt {n} {f : List.Vector ℕ (n + 1) → ℕ} (hf : @Partrec' (n + 1) (PFun.lift f)) :
     @Partrec' n (PFun.mk fun v => Nat.rfindOpt fun a => ofNat (Option ℕ) (f (a ::ᵥ v))) :=
   ((rfind <|

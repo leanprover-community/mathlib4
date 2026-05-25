@@ -28,14 +28,11 @@ This file defines partial functions. Partial functions are like functions, excep
 * `PFun.evalOpt`: Returns a partial function with a decidable `Dom` as a function `a → Option β`.
 * `PFun.lift`: Turns a function into a partial function.
 * `PFun.id`: The identity as a partial function.
-* `PFun.const`: A constant partial function.
-* `PFun.empty`: The everywhere-undefined partial function.
 * `PFun.comp`: Composition of partial functions.
 * `PFun.restrict`: Restriction of a partial function to a smaller `Dom`.
 * `PFun.res`: Turns a function into a partial function with a prescribed domain.
 * `PFun.fix` : First return map of a partial function `f : α →. β ⊕ α`.
 * `PFun.fixInduction`: A recursion principle for `PFun.fix`.
-* `PFun.ofOption`: Turns a function returning an Option into a partial function.
 
 ### Partial functions as relations
 
@@ -54,13 +51,7 @@ Monad operations:
 * `PFun.bind`: The monad `bind` function, pointwise `Part.bind`
 * `PFun.map`: The monad `map` function, pointwise `Part.map`.
 
-## Implementation notes
-
-* `mem_lift_iff` uses `@[simp↓]` to ensure it applies before `lift_apply` where needed.
-* `coe_val` is intentionally not a `@[simp]` lemma to prevent simpNF loops and overlapping rewrite
-rules with the new structure.
-* The `@[simp]` lemma `prodLift_fst_comp_snd_comp` intentionally uses explicit `PFun.mk`
-on its LHS. This is strictly required to prevent `simpNF` overlap with `comp_lift`. -/
+-/
 
 @[expose] public section
 
@@ -78,6 +69,9 @@ infixr:25 " →. " => PFun
 namespace PFun
 
 variable {α β γ δ ε ι : Type*}
+
+instance inhabited : Inhabited (α →. β) :=
+  ⟨PFun.mk fun _ => Part.none⟩
 
 instance : FunLike (α →. β) α (Part β) where
   coe := PFun.toFun
@@ -153,13 +147,10 @@ protected def lift (f : α → β) : α →. β := PFun.mk fun a => Part.some (f
 theorem lift_apply (f : α → β) (x : α) : PFun.lift f x = Part.some (f x) :=
   rfl
 
-theorem mem_lift_iff {f : α → β} {x : α} {y : β} : y ∈ PFun.lift f x ↔ y = f x :=
-  Part.mem_some_iff
-
 instance coe : Coe (α → β) (α →. β) :=
   ⟨PFun.lift⟩
 
--- intentionally not `@[simp]`, see module docstring
+@[simp]
 theorem coe_val (f : α → β) (a : α) : (f : α →. β) a = Part.some (f a) :=
   rfl
 
@@ -199,7 +190,6 @@ def res (f : α → β) (s : Set α) : α →. β :=
 theorem mem_res (f : α → β) (s : Set α) (a : α) (b : β) : b ∈ res f s a ↔ a ∈ s ∧ f a = b := by
   simp [res, @eq_comm _ b]
 
-@[simp]
 theorem res_univ (f : α → β) : PFun.res f Set.univ = f := by
   ext; rfl
 
@@ -234,22 +224,6 @@ instance lawfulMonad : LawfulMonad (PFun α) := LawfulMonad.mk'
   (bind_assoc := fun f g k =>
     DFunLike.ext _ _ fun a =>
       (f a).bind_assoc (fun b => g b a) fun b => k b a)
-
-@[simp]
-theorem monad_pure_apply (x : β) (a : α) : (pure x : α →. β) a = Part.some x :=
-  rfl
-
-/-- Note: `Type _` is required here for correct universe unification with the Monad instance. -/
-@[simp]
-theorem monad_bind_apply {β γ : Type _} (f : α →. β) (g : β → α →. γ) (a : α) :
-    (f >>= g) a = (f a).bind (fun b => g b a) :=
-  rfl
-
--- Note: `Type _` is required here for correct universe unification with the Monad instance.
-@[simp]
-theorem monad_map_apply {β γ : Type _} (f : β → γ) (g : α →. β) (a : α) :
-    (f <$> g) a = (g a).map f :=
-  rfl
 
 theorem pure_defined (p : Set α) (x : β) : p ⊆ (@PFun.pure α _ x).Dom :=
   p.subset_univ
@@ -511,18 +485,9 @@ theorem mem_toSubtype_iff {p : β → Prop} {f : α → β} {a : α} {b : Subtyp
     b ∈ toSubtype p f a ↔ ↑b = f a := by
   rw [toSubtype_apply, Part.mem_mk_iff, exists_subtype_mk_eq_iff, eq_comm]
 
-/-- Evaluates Part.toOption on a partial function restricted to a subtype. -/
-theorem toOption_toSubtype {p : β → Prop} (f : α → β) (a : α)
-    [D : Decidable (p (f a))] :
-    @Part.toOption _ (toSubtype p f a) D = if h : p (f a) then some ⟨f a, h⟩ else none := by
-  dsimp [Part.toOption]
-
 /-- The identity as a partial function -/
 protected def id (α : Type*) : α →. α :=
   PFun.mk Part.some
-
-@[simp]
-theorem const_part_some (b : β) : (PFun.mk fun _ : α => Part.some b) = PFun.pure b := rfl
 
 @[simp, norm_cast]
 theorem coe_id (α : Type*) : ((id : α → α) : α →. α) = PFun.id α :=
@@ -572,39 +537,6 @@ theorem comp_assoc (f : γ →. δ) (g : β →. γ) (h : α →. β) : (f.comp 
 theorem coe_comp (g : β → γ) (f : α → β) : ((g ∘ f : α → γ) : α →. γ) = (g : β →. γ).comp f :=
   ext fun _ _ => by simp only [coe_val, comp_apply, Function.comp, Part.bind_some]
 
-theorem coe_comp_apply (f : β →. γ) (g : α → β) (a : α) :
-    (f.comp ↑g) a = f (g a) := by
-  simp [comp_apply, Part.bind_some]
-
-@[simp]
-theorem comp_lift (f : β →. γ) (g : α → β) : f.comp (PFun.lift g) = PFun.mk (fun a => f (g a)) := by
-  ext a
-  simp
-
-@[simp]
-theorem lift_comp (f : β → γ) (g : α →. β) :
-    (PFun.lift f).comp g = PFun.mk (fun a => (g a).map f) := by
-  ext a b
-  simp [eq_comm]
-
--- Intentionally not `@[simp]` because `comp_lift` and `lift_comp` will fire first.
-theorem lift_comp_lift (f : β → γ) (g : α → β) :
-    (PFun.lift f).comp (PFun.lift g) = PFun.lift (f ∘ g) := by
-  ext a
-  simp
-
-@[simp]
-theorem comp_mk (f : β →. γ) (g : α → Part β) :
-    f.comp (PFun.mk g) = PFun.mk (fun a => (g a).bind f) := by
-  ext a
-  rfl
-
-@[simp]
-theorem mk_comp (f : β → Part γ) (g : α →. β) :
-    (PFun.mk f).comp g = PFun.mk (fun a => (g a).bind f) := by
-  ext a
-  rfl
-
 /-- Product of partial functions. -/
 def prodLift (f : α →. β) (g : α →. γ) : α →. β × γ := PFun.mk fun x =>
   ⟨(f x).Dom ∧ (g x).Dom, fun h => ((f x).get h.1, (g x).get h.2)⟩
@@ -653,18 +585,11 @@ theorem mem_prodMap {f : α →. γ} {g : β →. δ} {x : α × β} {y : γ × 
   · simp only [prodMap, Part.mem_mk_iff, And.exists, Prod.ext_iff, coe_mk]
   · simp only [exists_and_left, exists_and_right, Membership.mem, Part.Mem]
 
-/-- Companion to `prodLift_fst_comp_snd_comp` using coerced functions on the LHS.
-This lemma is intentionally not marked `@[simp]` to avoid `simpNF` conflicts with `comp_lift`. -/
-theorem prodLift_comp_fst_comp_snd (f : α →. γ) (g : β →. δ) :
+@[simp]
+theorem prodLift_fst_comp_snd_comp (f : α →. γ) (g : β →. δ) :
     prodLift (f.comp ((Prod.fst : α × β → α) : α × β →. α))
         (g.comp ((Prod.snd : α × β → β) : α × β →. β)) =
       prodMap f g := by
-  aesop
-
--- Note: Explicit `PFun.mk` used on LHS to prevent `simpNF` overlapping with `comp_lift`.
-@[simp]
-theorem prodLift_fst_comp_snd_comp (f : α →. γ) (g : β →. δ) :
-    prodLift (PFun.mk fun a => f a.1) (PFun.mk fun a => g a.2) = prodMap f g := by
   aesop
 
 @[simp]

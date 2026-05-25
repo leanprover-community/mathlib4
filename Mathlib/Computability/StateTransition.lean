@@ -29,7 +29,7 @@ namespace StateTransition
 /-- Run a state transition function `σ → Option σ` "to completion". The return value is the last
 state returned before a `none` result. If the state transition function always returns `some`,
 then the computation diverges, returning `Part.none`. -/
-def eval {σ} (f : σ → Option σ) : σ →. σ :=
+def eval {σ} (f : σ → Option σ) : σ → Part σ :=
   PFun.fix (PFun.lift fun s ↦ (f s).elim (Sum.inl s) Sum.inr)
 
 /-- The reflexive transitive closure of a state transition function. `Reaches f a b` means
@@ -102,24 +102,19 @@ holds of any point where `eval f a` evaluates to `b`. This formalizes the notion
 @[elab_as_elim]
 def evalInduction {σ} {f : σ → Option σ} {b : σ} {C : σ → Sort*} {a : σ}
     (h : b ∈ eval f a) (H : ∀ a, b ∈ eval f a → (∀ a', f a = some a' → C a') → C a) : C a :=
-  -- Note: Explicit named arguments `f` and `C` are required here to help the
-  -- elaborator unify the motive with the `PFun` structure.
   PFun.fixInduction
     (f := PFun.lift fun s ↦ (f s).elim (Sum.inl s) Sum.inr)
     (C := C) h fun a' ha' h' ↦
     H a' ha' fun b' e ↦
       h' b' <| by simp [e]
 
-/-- Unfolds one step of the evaluation of a state transition function.
-Intentionally not marked `@[simp]` to prevent infinite recursion loops. -/
-theorem eval_step {σ} {f : σ → Option σ} {a b} :
-    b ∈ eval f a ↔ (f a = none ∧ a = b) ∨ ∃ a', f a = some a' ∧ b ∈ eval f a' := by
-  unfold eval
-  rw [PFun.mem_fix_iff]
-  simp only [PFun.mem_lift_iff]
-  cases h : f a <;> simp [eq_comm]
-
 theorem mem_eval {σ} {f : σ → Option σ} {a b} : b ∈ eval f a ↔ Reaches f a b ∧ f b = none := by
+  have eval_step {a b} :
+      b ∈ eval f a ↔ (f a = none ∧ a = b) ∨ ∃ a', f a = some a' ∧ b ∈ eval f a' := by
+    unfold eval
+    rw [PFun.mem_fix_iff]
+    simp only [PFun.lift_apply, Part.mem_some_iff]
+    cases h : f a <;> simp [eq_comm]
   refine ⟨fun h ↦ ?_, fun ⟨h₁, h₂⟩ ↦ ?_⟩
   · refine evalInduction h fun a_ind h_ind IH ↦ ?_
     rcases eval_step.1 h_ind with ⟨e, rfl⟩ | ⟨a', e, _⟩

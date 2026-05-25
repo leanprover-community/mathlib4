@@ -84,6 +84,31 @@ end Nat
 def RecursiveIn {α σ} [Primcodable α] [Primcodable σ] (O : Set (ℕ →. ℕ)) (f : α →. σ) : Prop :=
   Nat.RecursiveIn O (PFun.mk fun n => Part.bind (decode (α := α) n) fun a => (f a).map encode)
 
+lemma RecursiveIn.iff_nat {f : ℕ →. ℕ} {O} : RecursiveIn O f ↔ Nat.RecursiveIn O f := by
+  unfold RecursiveIn
+  change
+    Nat.RecursiveIn O
+        (PFun.mk fun n => Part.bind (decode (α := ℕ) n) fun a => (f a).map encode) ↔
+      Nat.RecursiveIn O f
+  rw [show
+      PFun.mk (fun n => Part.bind (decode (α := ℕ) n) fun a => (f a).map encode) = f by
+    ext n b
+    simp [Part.map_id']]
+
+/-- A binary partial function is recursive in `O` if the curried form is. -/
+def RecursiveIn₂ {α β σ} [Primcodable α] [Primcodable β] [Primcodable σ]
+    (O : Set (ℕ →. ℕ)) (f : α → β →. σ) : Prop :=
+  RecursiveIn O (PFun.mk fun p : α × β => f p.1 p.2)
+
+/-- A total function is computable in `O` if its constant lift is recursive in `O`. -/
+def ComputableIn {α σ} [Primcodable α] [Primcodable σ] (O : Set (ℕ →. ℕ)) (f : α → σ) : Prop :=
+  RecursiveIn O (f : α →. σ)
+
+/-- A binary total function is computable in `O`. -/
+def ComputableIn₂ {α β σ} [Primcodable α] [Primcodable β] [Primcodable σ]
+    (O : Set (ℕ →. ℕ)) (f : α → β → σ) : Prop :=
+  ComputableIn O (fun p : α × β => f p.1 p.2)
+
 namespace Nat.RecursiveIn
 
 variable {f g : ℕ →. ℕ}
@@ -93,7 +118,7 @@ theorem of_eq {O} (hf : Nat.RecursiveIn O f) (H : ∀ n, f n = g n) :
   (DFunLike.ext _ _ H : f = g) ▸ hf
 
 theorem of_eq_tot {g : ℕ → ℕ} {O} (hf : Nat.RecursiveIn O f)
-    (H : ∀ n, g n ∈ f n) : Nat.RecursiveIn O (PFun.lift g) :=
+    (H : ∀ n, g n ∈ f n) : Nat.RecursiveIn O g :=
   of_eq hf fun n => eq_some_iff.2 (H n)
 
 /-- If every element of `O` is `Nat.RecursiveIn O'`, then any function which is
@@ -121,26 +146,6 @@ theorem partrec_of_oracle {f : ℕ →. ℕ} {O}
   | rfind _ ih => exact .rfind ih
 
 end Nat.RecursiveIn
-
--- Note: Explicit `of_eq` with `Part.map_id'` is required here as `simp`
--- can no longer automatically reduce through the `PFun` structure.
-lemma RecursiveIn.iff_nat {f : ℕ →. ℕ} {O} : RecursiveIn O f ↔ Nat.RecursiveIn O f :=
-  ⟨fun h => Nat.RecursiveIn.of_eq h fun _ => by simp [Part.map_id'],
-   fun h => Nat.RecursiveIn.of_eq h fun _ => by simp [Part.map_id']⟩
-
-/-- A binary partial function is recursive in `O` if the curried form is. -/
-def RecursiveIn₂ {α β σ} [Primcodable α] [Primcodable β] [Primcodable σ]
-    (O : Set (ℕ →. ℕ)) (f : α → β →. σ) : Prop :=
-  RecursiveIn O (PFun.mk fun p : α × β => f p.1 p.2)
-
-/-- A total function is computable in `O` if its constant lift is recursive in `O`. -/
-def ComputableIn {α σ} [Primcodable α] [Primcodable σ] (O : Set (ℕ →. ℕ)) (f : α → σ) : Prop :=
-  RecursiveIn O (PFun.lift f)
-
-/-- A binary total function is computable in `O`. -/
-def ComputableIn₂ {α β σ} [Primcodable α] [Primcodable β] [Primcodable σ]
-    (O : Set (ℕ →. ℕ)) (f : α → β → σ) : Prop :=
-  ComputableIn O (fun p : α × β => f p.1 p.2)
 
 /-- If a function is partial recursive, then it is recursive in every partial function. -/
 lemma Nat.Partrec.recursiveIn {f : ℕ →. ℕ} {O} (pF : Nat.Partrec f) :

@@ -35,8 +35,7 @@ open CategoryTheory Option
 universe u
 
 /-- The category of types equipped with partial functions. -/
-def PartialFun : Type (u + 1) :=
-  Type u
+def PartialFun : Type (u + 1) := Type u
 
 namespace PartialFun
 
@@ -44,71 +43,67 @@ instance : CoeSort PartialFun Type* :=
   ⟨id⟩
 
 /-- Turns a type into a `PartialFun`. -/
-def of (X : Type u) : PartialFun :=
-  X
+def of : Type* → PartialFun :=
+  id
 
 instance : Inhabited PartialFun.{u} :=
   ⟨PartialFun.of PUnit⟩
 
+-- TODO: wrap morphisms in this category into a one-field `PFun.Hom` structure
 instance largeCategory : LargeCategory.{u} PartialFun where
   Hom X Y := X →. Y
   id X := PFun.id X
   comp f g := g.comp f
 
 /-- Constructs a partial function isomorphism between types from an equivalence between them. -/
-@[simps!]
+@[simps]
 def Iso.mk {α β : PartialFun.{u}} (e : α ≃ β) : α ≅ β where
   hom := PFun.lift e
   inv := PFun.lift e.symm
   hom_inv_id := (PFun.coe_comp _ _).symm.trans (by
-    simp only [Equiv.symm_comp_self, PFun.coe_id]; rfl)
+    simp only [Equiv.symm_comp_self, PFun.coe_id]
+    rfl)
   inv_hom_id := (PFun.coe_comp _ _).symm.trans (by
-    simp only [Equiv.self_comp_symm, PFun.coe_id]; rfl)
+    simp only [Equiv.self_comp_symm, PFun.coe_id]
+    rfl)
 
 end PartialFun
 
 /-- The forgetful functor from `Type` to `PartialFun` which forgets that the maps are total. -/
-@[simps!]
 def typeToPartialFun : Type u ⥤ PartialFun where
-  obj X := X
-  map f := PFun.lift f
-  map_comp f g := PFun.coe_comp g f
+  obj := id
+  map f := PFun.lift (f : _ → _)
+  map_comp _ _ := PFun.coe_comp _ _
 
 instance : typeToPartialFun.Faithful where
-  map_injective {_ _} _ _ h := by
-    ext x; exact congrFun (PFun.lift_injective h) x
-
-namespace PartialFun
-
-/-- Internal helper lemma for `pointedToPartialFun.map_comp`. -/
-theorem pointed_comp_toSubtype_aux {X Y Z : Pointed} (f : X ⟶ Y) (g : Y ⟶ Z) :
-    (PFun.mk (PFun.toSubtype (fun x => x ≠ Z.point) g.toFun ∘
-      (Subtype.val : {y : Y // y ≠ Y.point} → Y))).comp
-      (PFun.mk (PFun.toSubtype (fun x => x ≠ Y.point) f.toFun ∘
-        (Subtype.val : {x : X // x ≠ X.point} → X))) =
-    PFun.mk (PFun.toSubtype (fun x => x ≠ Z.point) (g.toFun ∘ f.toFun) ∘
-      (Subtype.val : {x : X // x ≠ X.point} → X)) := by
-  ext ⟨a, ha⟩ ⟨c, hc⟩
-  simp only [PFun.comp_apply, PFun.mk_apply, Function.comp_apply,
-             Part.mem_bind_iff, PFun.mem_toSubtype_iff]
-  constructor
-  · rintro ⟨b, hb_eq, h_final⟩
-    rw [← hb_eq]; exact h_final
-  · intro h
-    exact ⟨⟨f.toFun a, fun h_eq => hc (h ▸ h_eq ▸ g.map_point)⟩, rfl, h⟩
-
-end PartialFun
+  map_injective h := by
+    ext x
+    exact congrFun (PFun.lift_injective h) x
 
 /-- The functor which deletes the point of a pointed type. In return, this makes the maps partial.
 This is the computable part of the equivalence `PartialFunEquivPointed`. -/
-@[simps! obj map]
+@[simps obj map]
 def pointedToPartialFun : Pointed.{u} ⥤ PartialFun where
   obj X := PartialFun.of { x : X // x ≠ X.point }
   map f := PFun.mk (PFun.toSubtype _ f.toFun ∘ Subtype.val)
   map_id _ :=
     PFun.ext fun _ b =>
       PFun.mem_toSubtype_iff (b := b).trans (Subtype.coe_inj.trans Part.mem_some_iff.symm)
-  map_comp f g := (PartialFun.pointed_comp_toSubtype_aux f g).symm
+  map_comp {X} {Y} {Z} f g := (show
+      (PFun.mk (PFun.toSubtype (fun x => x ≠ Z.point) g.toFun ∘
+        (Subtype.val : {y : Y // y ≠ Y.point} → Y))).comp
+        (PFun.mk (PFun.toSubtype (fun x => x ≠ Y.point) f.toFun ∘
+          (Subtype.val : {x : X // x ≠ X.point} → X))) =
+      PFun.mk (PFun.toSubtype (fun x => x ≠ Z.point) (g.toFun ∘ f.toFun) ∘
+        (Subtype.val : {x : X // x ≠ X.point} → X)) by
+    ext ⟨a, ha⟩ ⟨c, hc⟩
+    simp only [PFun.comp_apply, PFun.mk_apply, Function.comp_apply,
+      Part.mem_bind_iff, PFun.mem_toSubtype_iff]
+    constructor
+    · rintro ⟨b, hb_eq, h_final⟩
+      rw [← hb_eq]; exact h_final
+    · intro h
+      exact ⟨⟨f.toFun a, fun h_eq => hc (h ▸ h_eq ▸ g.map_point)⟩, rfl, h⟩).symm
 
 open Classical in
 /-- The functor which maps undefined values to a new point. This makes the maps total and creates
@@ -129,8 +124,9 @@ noncomputable def partialFunToPointed : PartialFun ⥤ Pointed where
     dsimp [CategoryStruct.comp]
     rw [Option.elim'_eq_elim]
     convert! Part.bind_toOption (g : PFun Y Z).toFun ((f : PFun X Y).toFun a)
-/-- The equivalence induced by `PartialFunToPointed` and `PointedToPartialFun`. -/
-@[simps! functor inverse]
+/-- The equivalence induced by `PartialFunToPointed` and `PointedToPartialFun`.
+`Part.equivOption` made functorial. -/
+@[simps!]
 noncomputable def partialFunEquivPointed : PartialFun.{u} ≌ Pointed where
   functor := partialFunToPointed
   inverse := pointedToPartialFun
@@ -178,7 +174,7 @@ noncomputable def partialFunEquivPointed : PartialFun.{u} ≌ Pointed where
         dsimp [CategoryStruct.comp, partialFunToPointed, pointedToPartialFun]
         change Equiv.optionSubtypeNe Y.point
           ((PFun.toSubtype (fun x => x ≠ Y.point) f.toFun a).toOption) = f.toFun a
-        simp only [PFun.toOption_toSubtype]
+        dsimp only [PFun.toSubtype, Part.toOption]
         split_ifs with h <;> aesop
   functor_unitIso_comp X := by
     ext (_ | x)

@@ -29,7 +29,6 @@ namespace ComputablePred
 
 variable {α : Type*} [Primcodable α]
 
---TODO: golf this proof (PFun refactor)
 /-- **Rice's Theorem** -/
 theorem rice (C : Set (ℕ →. ℕ)) (h : ComputablePred fun c => eval c ∈ C) {f g} (hf : Nat.Partrec f)
     (hg : Nat.Partrec g) (fC : f ∈ C) : g ∈ C := by
