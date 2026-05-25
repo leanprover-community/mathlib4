@@ -399,7 +399,7 @@ where
       trace[Elab.DiffGeo.MDiff] "Using base info `{src}`, `{srcI}`"
       let some K ← findSomeLocalInstanceOf? ``NormedSpace fun _ type ↦ do
           match_expr type with
-          | NormedSpace K E _ _ =>
+          | NormedSpace K E _ _ _ =>
             if ← withReducible (pureIsDefEq E F) then
               trace[Elab.DiffGeo.MDiff] "`{F}` is a normed field over `{K}`"; return some K
             else return none
@@ -415,7 +415,7 @@ where
   /-- Attempt to find a model from the total space of a tangent bundle. -/
   fromTotalSpace.tangentSpace (V : Expr) : TermElabM Expr := do
     match_expr V with
-    | TangentSpace _k _ _E _ _ _H _ I M _ _ => do
+    | TangentSpace _k _ _E _ _ _ _H _ I M _ _ => do
       trace[Elab.DiffGeo.MDiff] "`{V}` is the total space of the `TangentBundle` of `{M}`"
       let srcIT : Term ← Term.exprToSyntax I
       let resTerm : Term ← ``(ModelWithCorners.prod $srcIT (ModelWithCorners.tangent $srcIT))
@@ -424,7 +424,7 @@ where
   /-- Attempt to find a model on a `TangentBundle` -/
   fromTangentBundle : TermElabM Expr := do
     match_expr e with
-    | TangentBundle _k _ _E _ _ _H _ I M _ _ => do
+    | TangentBundle _k _ _E _ _ _ _H _ I M _ _ => do
       trace[Elab.DiffGeo.MDiff] "`{e}` is a `TangentBundle` over model `{I}` on `{M}`"
       let srcIT : Term ← Term.exprToSyntax I
       let resTerm : Term ← ``(ModelWithCorners.tangent $srcIT)
@@ -434,14 +434,14 @@ where
   fromNormedSpace : TermElabM FindModelResult := do
     let some (inst, K) ← findSomeLocalInstanceOf? ``NormedSpace fun inst type ↦ do
         match_expr type with
-        | NormedSpace K E _ _ =>
+        | NormedSpace K E _ _ _ =>
           if ← withReducible (pureIsDefEq E e) then return some (inst, K)
           else return none
         | _ => return none
       | throwError "Couldn't find a `NormedSpace` structure on `{e}` among local instances."
     trace[Elab.DiffGeo.MDiff] "`{e}` is a normed space over the field `{K}`"
     return {
-      model := ← mkAppOptM ``modelWithCornersSelf #[K, none, e, none, inst]
+      model := ← mkAppOptM ``modelWithCornersSelf #[K, none, e, none, none, inst]
       normedSpaceInfo? := some { normedSpace := e, baseField := K }
     }
   /-- Attempt to find the trivial model on an inner product space. -/
@@ -458,7 +458,7 @@ where
     -- Convert the InnerProductSpace to a NormedSpace instance.
     let inst' ← mkAppOptM `InnerProductSpace.toNormedSpace #[K, e, none, none, inst]
     return {
-      model := ← mkAppOptM ``modelWithCornersSelf #[K, none, e, none, inst']
+      model := ← mkAppOptM ``modelWithCornersSelf #[K, none, e, none, none, inst']
       normedSpaceInfo? := some { normedSpace := e, baseField := K }
     }
   /-- Attempt to find a model with corners on a manifold, or on the charted space of a manifold. -/
@@ -480,7 +480,7 @@ where
           and `{e}` is not the charted space of some type in the local context either."
     let some m ← findSomeLocalHyp? fun fvar type ↦ do
         match_expr type with
-        | ModelWithCorners _ _ _ _ _ H' _ => do
+        | ModelWithCorners _ _ _ _ _ _ H' _ => do
           if ← withReducible (pureIsDefEq H' H) then return some fvar else return none
         | _ => return none
       | throwError "Couldn't find a `ModelWithCorners` with model space `{H}` in the local context."
