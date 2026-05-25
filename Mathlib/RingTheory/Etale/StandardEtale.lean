@@ -244,8 +244,23 @@ set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma equivMvPolynomialQuotient_symm_apply :
     P.equivMvPolynomialQuotient.symm (Ideal.Quotient.mk _ (.X 0)) = P.X := by
-  simp [equivMvPolynomialQuotient, StandardEtalePair.Ring, StandardEtalePair.X,
+  let I : Ideal (MvPolynomial (Fin 2) R) := Ideal.span
+    {(Bivariate.equivMvPolynomial R) (C P.f),
+      (Bivariate.equivMvPolynomial R) (Y * C P.g - 1)}
+  let J : Ideal R[X][Y] := Ideal.span {C P.f, Y * C P.g - 1}
+  let e : R[X][Y] ≃ₐ[R] MvPolynomial (Fin 2) R := Bivariate.equivMvPolynomial R
+  have hIJ : I = J.map (e : R[X][Y] →+* MvPolynomial (Fin 2) R) := by
+    simp only [I, J, e, Ideal.map_span, Set.image_insert_eq, Set.image_singleton]
+    rfl
+  have hJI : J = I.map (e.symm : MvPolynomial (Fin 2) R →+* R[X][Y]) := by
+    simp only [← AlgEquiv.toAlgHom_toRingHom, hIJ, Ideal.map_map,
+      ← AlgHom.comp_toRingHom, AlgEquiv.symm_comp, AlgHom.id_toRingHom, Ideal.map_id]
+  simp only [equivMvPolynomialQuotient, StandardEtalePair.Ring, StandardEtalePair.X,
     Ideal.quotientEquivAlg_symm]
+  change (Ideal.quotientEquivAlg I J e.symm hJI)
+      (Ideal.Quotient.mk I (MvPolynomial.X 0)) = Ideal.Quotient.mk J (C X)
+  simpa only [e, Bivariate.equivMvPolynomial_symm_X_0] using
+    (Ideal.quotientEquivAlg_mk (I := I) J e.symm hJI (MvPolynomial.X (0 : Fin 2)))
 
 /-- Mapping a standard etale pair under a ring homomorphism. -/
 @[simps] protected noncomputable def map (f : R →+* S) : StandardEtalePair S where

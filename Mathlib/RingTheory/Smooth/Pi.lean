@@ -73,7 +73,11 @@ theorem pi_iff [Finite I] :
         rw [← Ideal.ker_quotientMap_mk]; exact hix
       rw [Ideal.map_span, Set.image_singleton, Ideal.mem_span_singleton] at this
       obtain ⟨c, rfl⟩ := this
-      rw [← mul_assoc, ← map_mul, mul_sub, mul_one, (he.idem i).eq, sub_self, map_zero, zero_mul]
+      have hzero : Ideal.Quotient.mk J (e i) * Ideal.Quotient.mk J (1 - e i) = 0 := by
+        rw [← (Ideal.Quotient.mk J).map_mul, mul_sub, mul_one, (he.idem i).eq, sub_self,
+          map_zero]
+      change Ideal.Quotient.mk J (e i) * (Ideal.Quotient.mk J (1 - e i) * c) = 0
+      rw [← mul_assoc, hzero, zero_mul]
     have : ∀ i : I, ∃ a : A i →ₐ[R] B ⧸ Ideal.span {1 - e i}, ∀ x,
         Ideal.Quotient.mk (J' i) (a x) = ι i (g (Pi.single i x)) := by
       intro i
@@ -115,8 +119,11 @@ theorem pi_iff [Finite I] :
           Ideal.Quotient.algebraMap_eq, Ideal.Quotient.mkₐ_eq_mk, ι]
       rw [← sub_eq_zero, ← map_sub] at this
       replace this := hι _ _ this
-      rwa [mul_sub, ← map_mul, mul_comm, mul_assoc, (he.idem i).eq, he', ← map_mul, ← Pi.single_mul,
-        one_mul, sub_eq_zero] at this
+      rw [mul_sub] at this
+      change Ideal.Quotient.mk J (e i) * Ideal.Quotient.mk J (y * e i) -
+          Ideal.Quotient.mk J (e i) * g (Pi.single i x) = 0 at this
+      rwa [← (Ideal.Quotient.mk J).map_mul, mul_comm, mul_assoc, (he.idem i).eq, he',
+        ← map_mul, ← Pi.single_mul, one_mul, sub_eq_zero] at this
 
 instance [Finite I] [∀ i, FormallySmooth R (A i)] : FormallySmooth R (Π i, A i) :=
   (pi_iff _).mpr ‹_›
