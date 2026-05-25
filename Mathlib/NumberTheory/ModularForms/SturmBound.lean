@@ -58,9 +58,7 @@ private lemma qExpansion_norm_order_ge_qExpansion_order
   have hf_n_per : Function.Periodic ((f : ℍ → ℂ) ∘ ofComplex)
       ((integerCuspWidth 𝒢 : ℕ) : ℝ) := by
     rw [hnRw]
-    convert hf_w_per.nat_mul m' using 1
-    push_cast
-    ring
+    exact_mod_cast hf_w_per.nat_mul m'
   have h_w_le_n : (qExpansion 𝒢.strictWidthInfty (f : ℍ → ℂ)).order ≤
       (qExpansion ((integerCuspWidth 𝒢 : ℕ) : ℝ) (f : ℍ → ℂ)).order := by
     rw [hnRw]
