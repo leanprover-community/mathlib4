@@ -398,7 +398,7 @@ lemma card_fun {α β : Type*} : card (α → β) = (card β) ^ card α := by
       exact (top_epow (one_le_iff_ne_zero.1 ((one_le_card_iff_nonempty α).2 α_emp))).symm
   · rw [card_eq_top_of_infinite (α := α)]
     rcases lt_trichotomy (card β) 1 with b_0 | b_1 | b_2
-    · rw [lt_one_iff_eq_zero, card_eq_zero_iff_empty] at b_0
+    · rw [Order.lt_one_iff, card_eq_zero_iff_empty] at b_0
       rw [(card_eq_zero_iff_empty β).2 b_0, zero_epow_top, card_eq_zero_iff_empty]
       simp [b_0]
     · rw [b_1, one_epow]
