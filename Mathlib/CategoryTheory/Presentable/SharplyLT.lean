@@ -64,7 +64,7 @@ lemma exists_cofinal_of_isCardinalAccessibleCategory_cardinalFilteredPoset
 
 open CardinalFilteredPoset Classical in
 lemma exists_isCardinalFiltered_set_of_exists_cofinal (h₀ : κ₁ < κ₂)
-    (h : ∀ (X : Type w) (hX : HasCardinalLT X κ₂),
+    (h : ∀ (X : Type w) (_ : HasCardinalLT X κ₂),
     ∃ (A : Set (SetCardinalLT κ₁ X)), HasCardinalLT A κ₂ ∧ IsCofinal A)
     {X : Type w} [PartialOrder X] [IsCardinalFiltered X κ₁]
     (A : Set X) (hA : HasCardinalLT A κ₂) :
@@ -84,7 +84,12 @@ lemma exists_isCardinalFiltered_set_of_exists_cofinal (h₀ : κ₁ < κ₂)
     ⋃ (C : Y B hB), Subtype.val '' C.val.val ∪ {m B hB _ C.prop}
   have hφ₀ (B : Set X) (hB : HasCardinalLT B κ₂) {T : Type w} (f : T → B)
       (hT : HasCardinalLT T κ₁) :
-    ∃ (m : φ₀ B hB), ∀ (t : T), f t ≤ m.val := sorry
+    ∃ (m : φ₀ B hB), ∀ (t : T), f t ≤ m.val := by
+      let C₀ : SetCardinalLT κ₁ B :=
+        ⟨Set.range f, hT.of_surjective _ Set.rangeFactorization_surjective⟩
+      obtain ⟨C, hC, hC'⟩ := hY' B hB C₀
+      exact ⟨⟨m B hB C hC, Set.subset_iUnion _ ⟨C, hC⟩ (Or.inr (by simp))⟩,
+        fun t ↦ hm B hB C hC (f t) (hC' (by simp [C₀]))⟩
   let φ (B : Set X) : Set X :=
     if hB : HasCardinalLT B κ₂ then φ₀ B hB else B
   have φ_eq (B : Set X) (hB : HasCardinalLT B κ₂) : φ B = φ₀ B hB := dif_pos hB
