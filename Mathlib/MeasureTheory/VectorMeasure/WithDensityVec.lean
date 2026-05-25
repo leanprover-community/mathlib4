@@ -75,6 +75,8 @@ lemma restrict_withDensity (hf : μ.Integrable f B) :
     simp only [hs, ht, restrict_apply]
     rw [withDensity_apply hf, withDensity_apply hf.restrict, restrict_restrict _ ht hs]
 
+#check Finset.sum_sigma
+
 lemma variation_withDensity (hf : μ.Integrable f B) :
     (μ.withDensity f B).variation = (μ.transpose B).variation.withDensity (fun x ↦ ‖f x‖ₑ) := by
   apply le_antisymm
@@ -137,8 +139,29 @@ lemma variation_withDensity (hf : μ.Integrable f B) :
     rw [variation_restrict hs]
     exact (g.integrable_iff.1 (memLp_one_iff_integrable.1 gmem).restrict i hi).ne
   choose P Pg Pdisj Pmeas hP using C
+  have I3 : ∑ i ∈ g.range, ‖i‖ₑ * ((μ.transpose B).restrict s).variation (g ⁻¹' {i}) ≤
+      ∑ i ∈ g.range.sigma P, ‖i.1‖ₑ * ‖(μ.transpose B).restrict s i.2‖ₑ + δ := calc
+    ∑ i ∈ g.range, ‖i‖ₑ * ((μ.transpose B).restrict s).variation (g ⁻¹' {i})
+    _ ≤ ∑ i ∈ g.range, ‖i‖ₑ * ((∑ p ∈ P i, ‖(μ.transpose B).restrict s p‖ₑ) + ρ) := by
+      gcongr 1 with i hi
+      exact hP i
+    _ ≤ ∑ i ∈ g.range, ∑ p ∈ P i, ‖i‖ₑ * ‖(μ.transpose B).restrict s p‖ₑ + δ := by
+      simp_rw [mul_add, Finset.sum_add_distrib, Finset.mul_sum]
+      gcongr
+    _ = ∑ i ∈ g.range.sigma P, ‖i.1‖ₑ * ‖(μ.transpose B).restrict s i.2‖ₑ + δ := by
+      rw [Finset.sum_sigma']
+  have I4 : ∑ i ∈ g.range.sigma P, ‖i.1‖ₑ * ‖(μ.transpose B).restrict s i.2‖ₑ
+      ≤ ∑ i ∈ g.range.sigma P, ‖∫ᵛ x in i.2, f x ∂[B; μ.restrict s]‖ₑ + δ := calc
+    ∑ i ∈ g.range.sigma P, ‖i.1‖ₑ * ‖(μ.transpose B).restrict s i.2‖ₑ
+    _ = ∑ i ∈ g.range.sigma P, ‖∫ᵛ x in i.2, i.1 ∂[B; μ.restrict s]‖ₑ := by
+      congr! with ⟨i, p⟩ hi
+      rw [setIntegral_const]
 
 
+    _ = ∑ i ∈ g.range.sigma P, ‖∫ᵛ x in i.2, g x ∂[B; μ.restrict s]‖ₑ := by
+      congr! with i hi
+      sorry
+    _ ≤ _ := sorry
 
 
 
