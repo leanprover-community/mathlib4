@@ -21,9 +21,9 @@ We construct an equivalence `equiv` between the type of functors from `WalkingIs
 and the type of isomorphisms in that category.
 
 Then we define the simplicial set `coherentIso` as the nerve of `WalkingIso`.
-Lastly, we show that `hom : coherentIso _⦋1⦌` (the edge from `false` to `true`) has an inverse,
-and `invStructOfEqMapHom` concludes from this that for any simplicial set `X`,
-any morphism `g : coherentIso ⟶ X` and any `f : X _⦋1⦌`,
+Lastly, we show that `hom : Edge f t` (where `f` and `t` are the `0`-simplices corresponding to
+`false` and `true`) has an inverse, and `invStructOfEqMapHom` concludes from this that for all
+simplicial sets `X`, and all `g : coherentIso ⟶ X`, `x₀ x₁: X _⦋0⦌` and `f : Edge x₀ x₁`,
 if `g` sends `hom` to `f`, then `f` has an inverse.
 
 -/
@@ -185,7 +185,7 @@ def invStructHom : Edge.InvStruct.{u} coherentIso.hom where
 
 /-- If an edge is equal to the image of `hom` under a morphism of simplicial sets,
 this edge has an inverse. -/
-def invStructOfEqMapHom {X : SSet.{u}} {x₀ x₁ : X _⦋0⦌}
+abbrev invStructOfEqMapHom {X : SSet.{u}} {x₀ x₁ : X _⦋0⦌}
     {f : Edge x₀ x₁}
     {g : coherentIso ⟶ X}
     (hfg : f.edge = g.app _ hom.edge) :
