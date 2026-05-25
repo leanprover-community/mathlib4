@@ -55,7 +55,7 @@ variable {mX : MeasurableSpace X}
 
 section NormedAddCommGroup
 
-variable [NormedAddCommGroup E] [NormedSpace ℝ E]
+variable [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℝ E]
   {f g : X → E} {s t : Set X} {μ : Measure X}
 
 theorem setIntegral_congr_ae₀ (hs : NullMeasurableSet s μ) (h : ∀ᵐ x ∂μ, x ∈ s → f x = g x) :
@@ -716,7 +716,7 @@ end NormedAddCommGroup
 
 section Mono
 
-variable [NormedAddCommGroup E] [NormedSpace ℝ E] [PartialOrder E]
+variable [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℝ E] [PartialOrder E]
     [IsOrderedAddMonoid E] [IsOrderedModule ℝ E]
     {μ : Measure X} {f g : X → E} {s t : Set X}
 
@@ -872,7 +872,7 @@ end Nonneg
 
 section IntegrableUnion
 
-variable {ι : Type*} [Countable ι] {μ : Measure X} [NormedAddCommGroup E]
+variable {ι : Type*} [Countable ι] {μ : Measure X} [AddCommGroup E] [NormedAddCommGroup E]
 
 theorem integrableOn_iUnion_of_summable_integral_norm {f : X → E} {s : ι → Set X}
     (hi : ∀ i : ι, IntegrableOn f (s i) μ)
@@ -919,9 +919,9 @@ We prove that for any set `s`, the function
 
 section ContinuousSetIntegral
 
-variable [NormedAddCommGroup E]
-  {𝕜 : Type*} [NormedRing 𝕜] [NormedAddCommGroup F] [Module 𝕜 F] [IsBoundedSMul 𝕜 F]
-  {p : ℝ≥0∞} {μ : Measure X}
+variable [AddCommGroup E] [NormedAddCommGroup E]
+  {𝕜 : Type*} [NormedRing 𝕜] [AddCommGroup F] [NormedAddCommGroup F] [Module 𝕜 F]
+  [IsBoundedSMul 𝕜 F] {p : ℝ≥0∞} {μ : Measure X}
 
 /-- For `f : Lp E p μ`, we can define an element of `Lp E p (μ.restrict s)` by
 `(Lp.memLp f).restrict s).toLp f`. This map is additive. -/
@@ -963,7 +963,7 @@ variable (X F 𝕜) in
 `Lp F p (μ.restrict s)`. -/
 noncomputable def LpToLpRestrictCLM (μ : Measure X) (p : ℝ≥0∞) [hp : Fact (1 ≤ p)] (s : Set X) :
     Lp F p μ →L[𝕜] Lp F p (μ.restrict s) :=
-  @LinearMap.mkContinuous 𝕜 𝕜 (Lp F p μ) (Lp F p (μ.restrict s)) _ _ _ _ _ _ (RingHom.id 𝕜)
+  @LinearMap.mkContinuous 𝕜 𝕜 (Lp F p μ) (Lp F p (μ.restrict s)) _ _ _ _ _ _ _ _ (RingHom.id 𝕜)
     ⟨⟨fun f => MemLp.toLp f ((Lp.memLp f).restrict s), fun f g => Lp_toLp_restrict_add f g s⟩,
       fun c f => Lp_toLp_restrict_smul c f s⟩
     1 (by intro f; rw [one_mul]; exact norm_Lp_toLp_restrict_le s f)
@@ -1006,8 +1006,8 @@ end OpenPos
 
 section Support
 
-variable {M : Type*} [NormedAddCommGroup M] [NormedSpace ℝ M] {mX : MeasurableSpace X}
-  {ν : Measure X} {F : X → M}
+variable {M : Type*} [AddCommGroup M] [NormedAddCommGroup M] [NormedSpace ℝ M]
+  {mX : MeasurableSpace X} {ν : Measure X} {F : X → M}
 
 theorem MeasureTheory.setIntegral_support : ∫ x in support F, F x ∂ν = ∫ x, F x ∂ν := by
   nth_rw 2 [← setIntegral_univ]
@@ -1083,8 +1083,9 @@ section ParametricIntegral
 
 variable {G 𝕜 : Type*} [TopologicalSpace X]
   [TopologicalSpace Y] [MeasurableSpace Y] [OpensMeasurableSpace Y] {μ : Measure Y}
-  [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace ℝ E]
-  [NormedAddCommGroup F] [NormedSpace 𝕜 F] [NormedAddCommGroup G] [NormedSpace 𝕜 G]
+  [NontriviallyNormedField 𝕜] [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℝ E]
+  [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+  [AddCommGroup G] [NormedAddCommGroup G] [NormedSpace 𝕜 G]
 
 open Metric ContinuousLinearMap
 
