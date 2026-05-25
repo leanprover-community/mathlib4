@@ -733,17 +733,32 @@ jobs:
         run: |
           lake exe graph
 
+      - name: dump declarations and transitive-import counts for PR summary
+        # Runs on every successful build (the env is hot in the page cache
+        # from the `lake build` immediately above). Master pushes' artifacts
+        # are kept long enough for downstream PRs to consume them; PR pushes'
+        # artifacts are kept just long enough for their own post-build
+        # decls-diff workflow to read them.
+        run: |
+          lake env lean --run scripts/dumpReasonableDecls.lean \
+            --out decls.txt --imports-out imports.json Mathlib
+
       - name: upload the import graph
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: import-graph
-          path: import_graph.dot
-          ## the default is 90, but we build often, so unless there's a reason
-          ## to care about old copies in the future, just say 7 days for now
-          retention-days: 7
+          path: |
+            import_graph.dot
+            decls.txt
+            imports.json
+          ## Master pushes: 90 days, so PRs forked from these commits can
+          ## reuse the dump in their post-build decls-diff workflow without
+          ## recomputing. Other branches (incl. PR builds): keep 7 days —
+          ## only the PR's own post-build run consumes them.
+          retention-days: ${{ github.ref == 'refs/heads/master' && '90' || '7' }}
 
       - name: clean up the import graph file
-        run: rm import_graph.dot
+        run: rm -f import_graph.dot decls.txt imports.json
 
       - name: check all scripts build successfully
         run: |

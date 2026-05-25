@@ -1,0 +1,143 @@
+name: 'Declarations diff (post-build)'
+description: >-
+  Compute the Lean-aware declarations diff from two pre-computed
+  `decls.txt` files (produced by `dumpReasonableDecls.lean` during each
+  commit's Build job and downloaded from CI artifacts). Emits a Markdown
+  override snippet ready for mathlib-ci's `build_summary_body.sh` to
+  splice into the `#### Declarations diff` section. Does NO env loading.
+author: 'Damiano Testa'
+branding:
+  icon: 'git-pull-request'
+  color: 'purple'
+
+inputs:
+  reference-decls-file:
+    description: 'Path to the reference commit''s `decls.txt`.'
+    required: true
+  new-decls-file:
+    description: 'Path to the new commit''s `decls.txt`.'
+    required: true
+  reference-imports-file:
+    description: >-
+      Path to the reference commit's `imports.json`. Surfaced as an output
+      so the consuming workflow can pass it (alongside the new one) to
+      `build_summary_body.sh` as `BASE_JSON`.
+    required: true
+  new-imports-file:
+    description: >-
+      Path to the new commit's `imports.json`. Surfaced as `HEAD_JSON` for
+      `build_summary_body.sh`.
+    required: true
+  new-sha:
+    description: 'Full SHA of the new commit (shown in the stamp).'
+    required: false
+    default: ''
+  script-path:
+    description: >-
+      Path of `dumpReasonableDecls.lean` (for the `--diff` mode, the only
+      Lean call the action makes — pure file comparison, no env load).
+    required: false
+    default: 'scripts/dumpReasonableDecls.lean'
+  working-directory:
+    description: >-
+      Lake project root. Default: `$GITHUB_WORKSPACE`.
+    required: false
+    default: ''
+
+outputs:
+  decls-override-file:
+    description: >-
+      Absolute path to the Markdown override snippet (inner content of
+      `#### Declarations diff`, no heading, no details wrap — both added
+      by `build_summary_body.sh` based on length).
+    value: ${{ steps.run.outputs.decls-override-file }}
+  diff-file:
+    description: 'Absolute path to the raw `+NAME` / `-NAME` diff.'
+    value: ${{ steps.run.outputs.diff-file }}
+  base-json:
+    description: 'Pass-through: reference `imports.json` (= `BASE_JSON`).'
+    value: ${{ inputs.reference-imports-file }}
+  head-json:
+    description: 'Pass-through: new `imports.json` (= `HEAD_JSON`).'
+    value: ${{ inputs.new-imports-file }}
+  plus-count:
+    description: 'Number of declarations only in the new commit.'
+    value: ${{ steps.run.outputs.plus-count }}
+  minus-count:
+    description: 'Number of declarations only in the reference commit.'
+    value: ${{ steps.run.outputs.minus-count }}
+  has-changes:
+    description: '`true` iff plus-count + minus-count > 0.'
+    value: ${{ steps.run.outputs.has-changes }}
+
+runs:
+  using: 'composite'
+  steps:
+    - id: run
+      shell: bash
+      env:
+        IN_WORKDIR:     ${{ inputs.working-directory }}
+        IN_SCRIPT:      ${{ inputs.script-path }}
+        IN_REF_DECLS:   ${{ inputs.reference-decls-file }}
+        IN_NEW_DECLS:   ${{ inputs.new-decls-file }}
+        IN_NEW_SHA:     ${{ inputs.new-sha }}
+        IN_REF_IMPORTS: ${{ inputs.reference-imports-file }}
+        IN_NEW_IMPORTS: ${{ inputs.new-imports-file }}
+      run: |
+        set -euo pipefail
+        WD="${IN_WORKDIR:-$GITHUB_WORKSPACE}"
+        cd "$WD"
+
+        DRIVER="$WD/scripts/declsDiff.sh"
+        if [ ! -x "$DRIVER" ]; then
+          echo "decls-diff action: expected driver at $DRIVER" >&2
+          exit 1
+        fi
+
+        # Stage outputs in $RUNNER_TEMP so subsequent steps can find them by path.
+        STAGE="${RUNNER_TEMP:-/tmp}/decls-diff-action"
+        mkdir -p "$STAGE"
+        DECLS_OVERRIDE="$STAGE/decls_override.md"
+        DIFF_FILE="$STAGE/decls_diff.txt"
+        COUNTS="$STAGE/decls_counts.txt"
+
+        "$DRIVER" \
+          --ref-decls      "$IN_REF_DECLS" \
+          --new-decls      "$IN_NEW_DECLS" \
+          --new-sha        "$IN_NEW_SHA" \
+          --decls-override "$DECLS_OVERRIDE" \
+          --diff-out       "$DIFF_FILE" \
+          --counts-file    "$COUNTS" \
+          --script-path    "$WD/$IN_SCRIPT"
+
+        PLUS=0; MINUS=0
+        read -r PLUS MINUS < "$COUNTS" || true
+        : "${PLUS:=0}"; : "${MINUS:=0}"
+        HAS=false
+        if [ "$PLUS" -gt 0 ] || [ "$MINUS" -gt 0 ]; then HAS=true; fi
+
+        {
+          echo "decls-override-file=$DECLS_OVERRIDE"
+          echo "diff-file=$DIFF_FILE"
+          echo "plus-count=$PLUS"
+          echo "minus-count=$MINUS"
+          echo "has-changes=$HAS"
+        } >> "$GITHUB_OUTPUT"
+
+        # Visible-in-Actions-UI summary
+        SHORT="${IN_NEW_SHA:0:7}"
+        {
+          echo "## Declarations diff"
+          echo
+          echo "* new:       \`$IN_NEW_SHA\` (\`$SHORT\`)"
+          echo "* ref decls: \`$IN_REF_DECLS\`"
+          echo "* new decls: \`$IN_NEW_DECLS\`"
+          echo
+          echo "**+$PLUS** new / **−$MINUS** removed"
+          echo
+          echo "<details><summary>Override snippet (what gets spliced into #### Declarations diff)</summary>"
+          echo
+          cat "$DECLS_OVERRIDE"
+          echo
+          echo "</details>"
+        } >> "$GITHUB_STEP_SUMMARY"

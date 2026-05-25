@@ -1,0 +1,256 @@
+/-
+Copyright (c) 2026 Damiano Testa. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Damiano Testa
+-/
+import Lean
+import Std.Data.HashSet
+import ImportGraph.Imports.ImportGraph
+import ImportGraph.Graph.TransitiveClosure
+
+/-!
+# Dump "reasonable" declarations and/or transitive-import counts, or diff two
+declaration dumps
+
+This script has three independent jobs, factored so that they share a single
+`withImportModules` env load (which is the expensive part — minutes — and was
+previously paid twice when running the two specialised scripts back-to-back):
+
+* `--out FILE` (declarations dump): writes the names of every "reasonable"
+  declaration whose source module sits under a configured root, one per
+  line, sorted by name. "Reasonable" means: not `private`, not `unsafe`, and
+  not flagged as an internal detail (`Lean.Name.isInternalDetail`).
+  `to_additive`/`to_dual`/`to_op` outputs are kept.
+
+* `--imports-out FILE` (transitive-import counts): writes a single-line JSON
+  object mapping each root-prefixed module to the size of its transitive
+  closure in the module import graph. Format-compatible with
+  `mathlib/scripts/pr_summary/count-trans-deps.py`, but using the compiled
+  environment's `Lean.Environment.importGraph` (so it doesn't get fooled by
+  `-- shake: keep`-style trailing comments on `import` lines, which the
+  regex script silently truncates).
+
+* `--diff FILE1 FILE2` (declarations diff): reads two dump files and writes a
+  `+NAME` / `-NAME` diff sorted by name only. No env load.
+
+The three modes are not mutually exclusive: `--out` and `--imports-out` can be
+combined (and that's the intended CI shape — both dumps from one env load).
+
+## Usage
+
+```
+lake env lean --run Mathlib/adomaniLeanUtils/dumpReasonableDecls.lean \
+    [-o DECLS_OUT | --out DECLS_OUT] \
+    [--imports-out IMPORTS_OUT] \
+    [ROOT ...]
+
+lake env lean --run Mathlib/adomaniLeanUtils/dumpReasonableDecls.lean \
+    --diff DECLS_FILE1 DECLS_FILE2 [-o OUT]
+```
+
+If neither `--out`, `--imports-out`, nor `--diff` is given, defaults to
+dumping declarations to `reasonable_decls.txt` (backward compat with the
+original script behaviour).
+
+Each `ROOT` is a Lean module name (e.g. `Mathlib`, `Plausible`). Used both
+as an `import` target and as a `Name`-prefix filter on both outputs. Default:
+`Mathlib`.
+
+## Notes for use as a CI action
+
+This file `import`s only `Lean`, `Std.Data.HashSet`, and `ImportGraph.*` — it
+pulls user-specified roots in at runtime via `withImportModules`. It will
+work in any Lake project whose `LEAN_PATH` (via `lake env`) sees the roots
+*and* depends on the `importGraph` package. Mathlib does.
+-/
+
+open Lean
+
+/-- Command-line configuration. -/
+structure Config where
+  /-- Path for the declarations dump; `none` means "don't dump declarations". -/
+  declsOut   : Option System.FilePath := none
+  /-- Path for the transitive-import counts JSON; `none` means "don't dump imports". -/
+  importsOut : Option System.FilePath := none
+  /-- Module roots to import and filter by. Empty → default to `[Mathlib]`. -/
+  roots      : Array Name := #[]
+  /-- Diff-mode arguments (replaces env load entirely). -/
+  diff?      : Option (System.FilePath × System.FilePath) := none
+  deriving Inhabited
+
+def helpText : String :=
+"Dump declarations + transitive imports from a Lean environment, or diff
+two declaration dumps.
+
+Usage:
+  lake env lean --run dumpReasonableDecls.lean [OPTIONS] [ROOT ...]
+  lake env lean --run dumpReasonableDecls.lean --diff FILE1 FILE2 [-o OUT]
+
+Outputs (any combination; both can run in one env load):
+  -o, --out FILE        write 'reasonable' declaration names (one per line)
+      --imports-out F   write transitive-import counts as JSON
+                        (object keyed by module name)
+
+Diff mode (--diff): reads two declaration dump files (one name per line) and
+writes:
+    +NAME   for declarations only in FILE1
+    -NAME   for declarations only in FILE2
+sorted by name only.
+
+If none of the output flags are given (and not in --diff mode), defaults to
+`-o reasonable_decls.txt`.
+
+Each ROOT (e.g. Mathlib) is imported, and both outputs are filtered to
+modules under the root prefix. Default: Mathlib.
+
+Options:
+  -o, --out FILE        decls output file
+      --imports-out F   transitive-imports JSON file
+      --diff F1 F2      run in diff mode on the given decl files
+  -h, --help            show this message and exit
+"
+
+/-- Parse a `--out=`-style argument. Returns the embedded path if matched. -/
+def parseOutEq? (arg : String) : Option String :=
+  if arg.startsWith "--out=" then some (arg.drop "--out=".length).toString
+  else if arg.startsWith "-o=" then some (arg.drop "-o=".length).toString
+  else if arg.startsWith "--imports-out=" then
+    -- Handled separately by the caller via a different field; here we just
+    -- match `--out=...` shape. Return none and let the loop fall through.
+    none
+  else none
+
+partial def parseArgs : List String → Config → IO Config
+  | [],                                  cfg => pure cfg
+  | ("-h" :: _),                         _   => do IO.println helpText; IO.Process.exit 0
+  | ("--help" :: _),                     _   => do IO.println helpText; IO.Process.exit 0
+  | ("-o" :: f :: rest),                 cfg => parseArgs rest { cfg with declsOut := some f }
+  | ("--out" :: f :: rest),              cfg => parseArgs rest { cfg with declsOut := some f }
+  | ("--imports-out" :: f :: rest),      cfg => parseArgs rest { cfg with importsOut := some f }
+  | ("--imports-out" :: _),              _   =>
+      throw <| IO.userError "--imports-out requires a file argument"
+  | ("--diff" :: f1 :: f2 :: rest),      cfg =>
+      parseArgs rest { cfg with diff? := some (f1, f2) }
+  | ("--diff" :: _),                     _   =>
+      throw <| IO.userError "--diff requires two file arguments: --diff FILE1 FILE2"
+  | (a :: rest),                         cfg =>
+    if let some f := parseOutEq? a then
+      parseArgs rest { cfg with declsOut := some f }
+    else if a.startsWith "--imports-out=" then
+      parseArgs rest { cfg with importsOut := some (a.drop "--imports-out=".length).toString }
+    else if a.startsWith "-" then
+      throw <| IO.userError s!"unknown option: {a}\n\n{helpText}"
+    else
+      parseArgs rest { cfg with roots := cfg.roots.push a.toName }
+
+/-- A constant is "reasonable" iff it is not `private`, not `unsafe`, and not
+flagged as an internal detail (`Lean.Name.isInternalDetail`). -/
+def isReasonable (n : Name) (ci : ConstantInfo) : Bool :=
+  !n.isInternalDetail && !isPrivateName n && !ci.isUnsafe
+
+/-- The `Name` of the module in which `n` is defined, or `none` if `n` has no
+source module (e.g. it was synthesised in the current "input" module). -/
+def sourceModule? (env : Environment) (n : Name) : Option Name := do
+  let idx ← env.getModuleIdxFor? n
+  env.allImportedModuleNames[idx.toNat]?
+
+/-- True iff `n`'s source module is `prefix.<...>` for some `prefix` in `roots`.
+An empty `roots` accepts everything. -/
+def inAnyRoot (env : Environment) (roots : Array Name) (n : Name) : Bool :=
+  if roots.isEmpty then true
+  else match sourceModule? env n with
+    | none   => false
+    | some m => roots.any fun p => p.isPrefixOf m
+
+/-- Iterate the constants once and write the reasonable-declaration dump. -/
+private def writeDeclsDump (env : Environment) (roots : Array Name)
+    (outFile : System.FilePath) : IO Nat := do
+  let decls : Array Name :=
+    env.constants.fold (init := #[]) fun acc n ci =>
+      if isReasonable n ci && inAnyRoot env roots n then acc.push n
+      else acc
+  let sorted := decls.qsort (fun a b => a.toString < b.toString)
+  IO.FS.withFile outFile .write fun h => do
+    for n in sorted do h.putStrLn n.toString
+  return sorted.size
+
+/-- Build the module import graph, compute transitive closure, and write the
+counts JSON. Mirrors `count-trans-deps.py`'s output shape: strict descendants
+of a root only; non-root boundary leaves are dropped from the key set. -/
+private def writeImportsDump (env : Environment) (roots : Array Name)
+    (outFile : System.FilePath) : IO Nat := do
+  let fullGraph := env.importGraph
+  -- Drop edges whose source is NOT under any configured root. Non-root
+  -- targets survive only as leaves — they have no outgoing edges in the
+  -- restricted graph, so they get counted once as a direct import of any
+  -- root module that mentions them, but the search does not descend.
+  let restricted : NameMap (Array Name) :=
+    fullGraph.foldl (init := ({} : NameMap (Array Name))) fun acc src deps =>
+      if roots.any (·.isPrefixOf src) then acc.insert src deps
+      else acc
+  let closure := Lean.NameMap.transitiveClosure restricted
+  -- Restrict to strict descendants of a root (drops the root itself and
+  -- any non-root keys that snuck in). Sort by key for deterministic bytes.
+  let pairs : Array (String × Json) :=
+    closure.foldl (init := #[]) fun acc n s =>
+      if roots.any (fun p => p != n && p.isPrefixOf n) then
+        acc.push (n.toString, Json.num s.size)
+      else acc
+  let sorted := pairs.qsort (fun a b => a.1 < b.1)
+  let json := Json.mkObj sorted.toList
+  IO.FS.writeFile outFile json.compress
+  return sorted.size
+
+unsafe def runDump (cfg : Config) : IO UInt32 := do
+  Lean.initSearchPath (← Lean.findSysroot)
+  Lean.enableInitializersExecution
+  let imports : Array Import := cfg.roots.map ({ module := · })
+  Lean.withImportModules imports {} (trustLevel := 1024) fun env => do
+    let rootsStr := " ".intercalate (cfg.roots.toList.map toString)
+    if let some path := cfg.declsOut then
+      let n ← writeDeclsDump env cfg.roots path
+      IO.println s!"Wrote {n} reasonable declarations from [{rootsStr}] to {path}"
+    if let some path := cfg.importsOut then
+      let n ← writeImportsDump env cfg.roots path
+      IO.println s!"Wrote {n} transitive-import counts from [{rootsStr}] to {path}"
+    return 0
+
+/-- Read declaration names (one per line, blanks ignored) into both an array
+(for ordering) and a `HashSet` (for membership tests). -/
+def readDeclSet (path : System.FilePath) : IO (Array String × Std.HashSet String) := do
+  let raw ← IO.FS.lines path
+  let lines := raw.filter (! ·.isEmpty)
+  let set := lines.foldl (init := (∅ : Std.HashSet String)) fun s n => s.insert n
+  return (lines, set)
+
+def runDiff (f1 f2 outFile : System.FilePath) : IO UInt32 := do
+  let (l1, s1) ← readDeclSet f1
+  let (l2, s2) ← readDeclSet f2
+  let plus  : Array (String × String) :=
+    l1.filterMap fun n => if s2.contains n then none else some ("+", n)
+  let minus : Array (String × String) :=
+    l2.filterMap fun n => if s1.contains n then none else some ("-", n)
+  let combined := plus ++ minus
+  -- Sort by NAME only; the +/- does not influence ordering.
+  let sorted := combined.qsort (fun a b => a.2 < b.2)
+  IO.FS.withFile outFile .write fun h =>
+    sorted.forM fun (sign, name) => h.putStrLn s!"{sign}{name}"
+  IO.println s!"Wrote {sorted.size} diff entries \
+                ({plus.size}+ / {minus.size}-) to {outFile}"
+  return 0
+
+def main (args : List String) : IO UInt32 := do
+  let mut cfg ← parseArgs args {}
+  match cfg.diff? with
+  | some (f1, f2) =>
+    -- Diff mode is decls-only and writes to declsOut (default
+    -- `reasonable_decls.txt`); --imports-out has no effect here.
+    let out := cfg.declsOut.getD "reasonable_decls.txt"
+    runDiff f1 f2 out
+  | none =>
+    if cfg.roots.isEmpty then cfg := { cfg with roots := #[`Mathlib] }
+    -- Backward compat: if no output was explicitly requested, default to
+    -- writing decls to `reasonable_decls.txt`.
+    if cfg.declsOut.isNone && cfg.importsOut.isNone then
+      cfg := { cfg with declsOut := some "reasonable_decls.txt" }
+    unsafe runDump cfg

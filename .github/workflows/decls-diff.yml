@@ -1,0 +1,186 @@
+# Reference
+#
+# Post-build workflow that updates the "### PR summary" comment's
+# `#### Declarations diff` section with a Lean-aware diff derived from the
+# `decls.txt`/`imports.json` files emitted by `build_template.yml`'s upload
+# step and stored in the `import-graph` artifact.
+#
+# Triggers
+#   workflow_run: completion of `ci` (or `ci dev`) — production trigger.
+#   workflow_dispatch (input: run_id): for manual testing from a feature
+#     branch (workflow_run only fires from workflows on the default branch).
+#
+# Inputs (workflow_dispatch only)
+#   run_id  — Build run ID whose artifact to consume. Defaults to the most
+#             recent successful run on a `ci-dev/*` branch.
+#
+# Outputs
+#   Comment side-effect on the PR associated with the Build's head SHA:
+#     * declarations-diff section replaced with the Lean-aware version
+#       (success path), or
+#     * a `merge master and retry` warning appended (cache-missing path,
+#       when no master Build artifact exists for the resolved merge-base).
+
+name: Declarations diff (post-build)
+
+on:
+  workflow_run:
+    workflows: ["ci", "ci dev"]
+    types: [completed]
+  workflow_dispatch:
+    inputs:
+      run_id:
+        description: >-
+          Build run ID whose artifact to consume (defaults to the most
+          recent successful `ci-dev/*` run).
+        required: false
+        type: string
+        default: ''
+
+permissions:
+  contents: read
+  actions: read           # for cross-workflow artifact downloads
+  pull-requests: write    # for PATCHing the PR-summary comment
+
+jobs:
+  diff:
+    if: >-
+      github.repository == 'leanprover-community/mathlib4'
+      && (
+        github.event_name == 'workflow_dispatch'
+        || (
+          github.event.workflow_run.conclusion == 'success'
+          && (
+            github.event.workflow_run.event == 'pull_request'
+            || (github.event.workflow_run.event == 'workflow_dispatch'
+                && startsWith(github.event.workflow_run.head_branch, 'ci-dev/'))
+          )
+        )
+      )
+    runs-on: ubuntu-latest
+    steps:
+      - name: Resolve Build run + SHA
+        id: meta
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          INPUT_RUN_ID: ${{ inputs.run_id }}
+        run: |
+          set -euo pipefail
+          if [ "${{ github.event_name }}" = "workflow_run" ]; then
+            RUN_ID="${{ github.event.workflow_run.id }}"
+            NEW_SHA="${{ github.event.workflow_run.head_sha }}"
+            HEAD_BRANCH="${{ github.event.workflow_run.head_branch }}"
+          else
+            # workflow_dispatch — find or accept a run id
+            if [ -n "$INPUT_RUN_ID" ]; then
+              RUN_ID="$INPUT_RUN_ID"
+            else
+              RUN_ID="$(gh api "repos/$REPO/actions/runs?status=success&per_page=50" \
+                          --jq '[.workflow_runs[]
+                                  | select((.head_branch // "") | startswith("ci-dev/"))]
+                                | .[0].id // ""')"
+              if [ -z "$RUN_ID" ]; then
+                echo "No recent successful ci-dev/* run found." >&2
+                exit 1
+              fi
+            fi
+            INFO="$(gh api "repos/$REPO/actions/runs/$RUN_ID" --jq '{sha:.head_sha, branch:.head_branch}')"
+            NEW_SHA="$(jq -r '.sha' <<< "$INFO")"
+            HEAD_BRANCH="$(jq -r '.branch' <<< "$INFO")"
+          fi
+          {
+            echo "run-id=$RUN_ID"
+            echo "new-sha=$NEW_SHA"
+            echo "head-branch=$HEAD_BRANCH"
+          } >> "$GITHUB_OUTPUT"
+          echo "Resolved: run=$RUN_ID sha=$NEW_SHA branch=$HEAD_BRANCH"
+
+      - name: Checkout new commit
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ steps.meta.outputs.new-sha }}
+          fetch-depth: 0
+          path: pr-branch
+
+      - name: Resolve merge-base against master
+        id: resolve
+        working-directory: pr-branch
+        env:
+          NEW_SHA: ${{ steps.meta.outputs.new-sha }}
+        run: |
+          set -euo pipefail
+          git fetch --quiet origin master
+          MB="$(git merge-base "$NEW_SHA" origin/master)"
+          echo "merge-base=$MB" >> "$GITHUB_OUTPUT"
+          echo "merge-base: $MB"
+
+      - name: Download new-side artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: import-graph
+          path: ./new-artifact
+          run-id: ${{ steps.meta.outputs.run-id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Find master Build for the merge-base
+        id: master-run
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          MB: ${{ steps.resolve.outputs.merge-base }}
+        run: |
+          set -euo pipefail
+          RUN="$(gh api "repos/$REPO/actions/runs?head_sha=$MB&event=push&status=success&branch=master" \
+                  --jq '[.workflow_runs[] | select(.name=="ci")] | .[0].id // ""')"
+          if [ -n "$RUN" ]; then
+            echo "found=true" >> "$GITHUB_OUTPUT"
+            echo "run-id=$RUN" >> "$GITHUB_OUTPUT"
+          else
+            echo "found=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Download master-side artifact
+        if: steps.master-run.outputs.found == 'true'
+        uses: actions/download-artifact@v4
+        with:
+          name: import-graph
+          path: ./ref-artifact
+          run-id: ${{ steps.master-run.outputs.run-id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Compute Lean-aware declarations diff
+        if: steps.master-run.outputs.found == 'true'
+        id: diff
+        uses: ./pr-branch/.github/actions/decls-diff
+        with:
+          reference-decls-file:   ./ref-artifact/decls.txt
+          reference-imports-file: ./ref-artifact/imports.json
+          new-decls-file:         ./new-artifact/decls.txt
+          new-imports-file:       ./new-artifact/imports.json
+          new-sha:                ${{ steps.meta.outputs.new-sha }}
+          working-directory:      ${{ github.workspace }}/pr-branch
+
+      - name: Patch PR summary comment (success path)
+        if: steps.master-run.outputs.found == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          PR_HEAD_SHA: ${{ steps.meta.outputs.new-sha }}
+          MODE: success
+          DIFF_FILE: ${{ steps.diff.outputs.diff-file }}
+          PLUS: ${{ steps.diff.outputs.plus-count }}
+          MINUS: ${{ steps.diff.outputs.minus-count }}
+        run: |
+          python3 ./pr-branch/.github/actions/decls-diff/updateDeclsDiffSection.py
+
+      - name: Patch PR summary comment (cache-missing path)
+        if: steps.master-run.outputs.found != 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          PR_HEAD_SHA: ${{ steps.meta.outputs.new-sha }}
+          MODE: warning
+          DEFAULT_BRANCH: master
+        run: |
+          python3 ./pr-branch/.github/actions/decls-diff/updateDeclsDiffSection.py
