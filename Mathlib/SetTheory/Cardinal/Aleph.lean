@@ -9,7 +9,6 @@ public import Mathlib.Algebra.Order.Monoid.Basic
 public import Mathlib.SetTheory.Cardinal.Cofinality.Enum
 public import Mathlib.SetTheory.Cardinal.ToNat
 public import Mathlib.SetTheory.Cardinal.ENat
-public import Mathlib.SetTheory.Ordinal.Enum
 public import Mathlib.SetTheory.Ordinal.Univ
 
 import Mathlib.SetTheory.Ordinal.Principal
@@ -98,11 +97,12 @@ theorem isInitial_succ {o : Ordinal} : IsInitial (succ o) ↔ o < ω :=
   ⟨Function.mtr fun hwo ↦ ne_of_lt <| by simp_all [ord_card_le],
   fun how ↦ (Ordinal.lt_omega0.1 how).rec fun n h ↦ h ▸ isInitial_natCast (n + 1)⟩
 
-theorem not_bddAbove_isInitial : ¬ BddAbove {x | IsInitial x} := by
-  rintro ⟨a, ha⟩
-  have := ha (isInitial_ord (succ a.card))
-  rw [ord_le] at this
-  exact (lt_succ _).not_ge this
+theorem isCofinal_setOf_isInitial : IsCofinal {x | IsInitial x} :=
+  fun _ ↦ ⟨_, isInitial_ord _, (lt_ord_succ_card _).le⟩
+
+@[deprecated isCofinal_setOf_isInitial (since := "2026-05-25")]
+theorem not_bddAbove_isInitial : ¬ BddAbove {x | IsInitial x} :=
+  isCofinal_setOf_isInitial.not_bddAbove
 
 /-- Initial ordinals are order-isomorphic to the cardinals. -/
 @[simps!]
@@ -118,11 +118,12 @@ def isInitialIso : {x // IsInitial x} ≃o Cardinal where
 
 For the more common omega function skipping over finite ordinals, see `Ordinal.omega`. -/
 def preOmega : Ordinal.{u} ↪o Ordinal.{u} where
-  toFun := enumOrd {x | IsInitial x}
-  inj' _ _ h := enumOrd_injective not_bddAbove_isInitial h
-  map_rel_iff' := enumOrd_le_enumOrd not_bddAbove_isInitial
+  toFun x := Order.enum _ isCofinal_setOf_isInitial x
+  inj' _ _ h := Subtype.coe_injective.comp (OrderIso.injective _) h
+  map_rel_iff' := (Order.enum _ isCofinal_setOf_isInitial).le_iff_le
 
-theorem coe_preOmega : preOmega = enumOrd {x | IsInitial x} :=
+@[deprecated "this is an implementation detail" (since := "2026-05-25")]
+theorem coe_preOmega : preOmega = Subtype.val ∘ Order.enum _ isCofinal_setOf_isInitial :=
   rfl
 
 theorem preOmega_strictMono : StrictMono preOmega :=
@@ -138,14 +139,14 @@ theorem preOmega_max (o₁ o₂ : Ordinal) : preOmega (max o₁ o₂) = max (pre
   preOmega.monotone.map_max
 
 theorem isInitial_preOmega (o : Ordinal) : IsInitial (preOmega o) :=
-  enumOrd_mem not_bddAbove_isInitial o
+  Subtype.prop _
 
 theorem le_preOmega_self (o : Ordinal) : o ≤ preOmega o :=
   preOmega_strictMono.le_apply
 
 @[simp]
 theorem preOmega_zero : preOmega 0 = 0 := by
-  rw [coe_preOmega, enumOrd_zero]
+  rw [coe_preOmega, Order.enum_zero]
   exact csInf_eq_bot_of_bot_mem isInitial_zero
 
 @[simp]

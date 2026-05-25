@@ -155,9 +155,13 @@ theorem not_isCofinal_iff_bddAbove [NoMaxOrder α] {s : Set α} : ¬ IsCofinal s
   obtain ⟨z, hz⟩ := exists_gt x
   exact ⟨z, fun y hy ↦ (h hy).trans_lt hz⟩
 
+alias ⟨_, BddAbove.not_isCofinal⟩ := not_isCofinal_iff_bddAbove
+
 /-- In a linear order with no maximum, cofinal sets are the same as unbounded sets. -/
 theorem not_bddAbove_iff_isCofinal [NoMaxOrder α] {s : Set α} : ¬ BddAbove s ↔ IsCofinal s :=
   not_iff_comm.1 not_isCofinal_iff_bddAbove
+
+alias ⟨_, IsCofinal.not_bddAbove⟩ := not_bddAbove_iff_isCofinal
 
 /-- The set of "records" (the smallest inputs yielding the highest values) with respect to a
 well-ordering of `α` is a cofinal set. -/
