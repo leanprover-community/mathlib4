@@ -81,12 +81,6 @@ theorem toSubsemiring_strictMono : StrictMono (toSubsemiring : Subring R → Sub
 theorem toSubsemiring_mono : Monotone (toSubsemiring : Subring R → Subsemiring R) :=
   toSubsemiring_strictMono.monotone
 
-@[deprecated toSubsemiring_strictMono (since := "2025-10-20")]
-lemma toSubsemiring_lt_toSubsemiring (hst : s < t) : s.toSubsemiring < t.toSubsemiring := hst
-
-@[deprecated toSubsemiring_mono (since := "2025-10-20")]
-lemma toSubsemiring_le_toSubsemiring (hst : s ≤ t) : s.toSubsemiring ≤ t.toSubsemiring := hst
-
 @[gcongr, mono]
 theorem toAddSubgroup_strictMono : StrictMono (toAddSubgroup : Subring R → AddSubgroup R) :=
   fun _ _ => id
@@ -94,12 +88,6 @@ theorem toAddSubgroup_strictMono : StrictMono (toAddSubgroup : Subring R → Add
 @[gcongr, mono]
 theorem toAddSubgroup_mono : Monotone (toAddSubgroup : Subring R → AddSubgroup R) :=
   toAddSubgroup_strictMono.monotone
-
-@[deprecated toAddSubgroup_strictMono (since := "2025-10-20")]
-lemma toAddSubgroup_lt_toAddSubgroup (hst : s < t) : s.toAddSubgroup < t.toAddSubgroup := hst
-
-@[deprecated toAddSubgroup_mono (since := "2025-10-20")]
-lemma toAddSubgroup_le_toAddSubgroup (hst : s ≤ t) : s.toAddSubgroup ≤ t.toAddSubgroup := hst
 
 @[mono]
 theorem toSubmonoid_strictMono : StrictMono (fun s : Subring R => s.toSubmonoid) := fun _ _ => id
@@ -1164,7 +1152,7 @@ theorem comap_map_eq (f : R →+* S) (s : Subring R) :
 
 theorem comap_map_eq_self {f : R →+* S} {s : Subring R}
     (h : f ⁻¹' {0} ⊆ s) : (s.map f).comap f = s := by
-  convert comap_map_eq f s
+  convert! comap_map_eq f s
   rwa [left_eq_sup, closure_le]
 
 theorem comap_map_eq_self_of_injective
@@ -1175,5 +1163,5 @@ end Subring
 
 theorem AddSubgroup.int_mul_mem {G : AddSubgroup R} (k : ℤ) {g : R} (h : g ∈ G) :
     (k : R) * g ∈ G := by
-  convert AddSubgroup.zsmul_mem G h k using 1
+  convert! AddSubgroup.zsmul_mem G h k using 1
   rw [zsmul_eq_mul]
