@@ -167,6 +167,7 @@ lemma mapsTo_of_subsingleton' [Subsingleton β] (f : α → β) (h : s.Nonempty 
 lemma mapsTo_of_subsingleton [Subsingleton α] (f : α → α) (s : Set α) : MapsTo f s s :=
   mapsTo_of_subsingleton' _ id
 
+@[gcongr]
 theorem MapsTo.mono (hf : MapsTo f s₁ t₁) (hs : s₂ ⊆ s₁) (ht : t₁ ⊆ t₂) : MapsTo f s₂ t₂ :=
   fun _ hx => ht (hf <| hs hx)
 
@@ -270,6 +271,7 @@ theorem InjOn.congr (h₁ : InjOn f₁ s) (h : EqOn f₁ f₂ s) : InjOn f₂ s 
 theorem EqOn.injOn_iff (H : EqOn f₁ f₂ s) : InjOn f₁ s ↔ InjOn f₂ s :=
   ⟨fun h => h.congr H, fun h => h.congr H.symm⟩
 
+@[gcongr]
 theorem InjOn.mono (h : s₁ ⊆ s₂) (ht : InjOn f s₂) : InjOn f s₁ := fun _ hx _ hy H =>
   ht (h hx) (h hy) H
 
@@ -289,9 +291,6 @@ theorem injOn_insert {f : α → β} {s : Set α} {a : α} (has : a ∉ s) :
   simp
 
 @[simp] lemma injOn_univ : InjOn f univ ↔ Injective f := by simp [InjOn, Injective]
-
-@[deprecated injOn_univ (since := "2025-10-27")]
-theorem injective_iff_injOn_univ : Injective f ↔ InjOn f univ := injOn_univ.symm
 
 theorem injOn_of_injective (h : Injective f) {s : Set α} : InjOn f s := fun _ _ _ _ hxy => h hxy
 
@@ -485,6 +484,7 @@ theorem SurjOn.congr (h : SurjOn f₁ s t) (H : EqOn f₁ f₂ s) : SurjOn f₂ 
 theorem EqOn.surjOn_iff (h : EqOn f₁ f₂ s) : SurjOn f₁ s t ↔ SurjOn f₂ s t :=
   ⟨fun H => H.congr h, fun H => H.congr h.symm⟩
 
+@[gcongr]
 theorem SurjOn.mono (hs : s₁ ⊆ s₂) (ht : t₁ ⊆ t₂) (hf : SurjOn f s₁ t₂) : SurjOn f s₂ t₁ :=
   Subset.trans ht <| Subset.trans hf <| image_mono hs
 
@@ -547,9 +547,6 @@ protected lemma _root_.Function.Surjective.surjOn (hf : Surjective f) : SurjOn f
 
 lemma SurjOn.surjective (hf : SurjOn f s .univ) : f.Surjective :=
   surjOn_univ.1 <| hf.mono s.subset_univ .rfl
-
-@[deprecated surjOn_univ (since := "2025-10-31")]
-theorem surjective_iff_surjOn_univ : Surjective f ↔ SurjOn f univ univ := surjOn_univ.symm
 
 theorem SurjOn.image_eq_of_mapsTo (h₁ : SurjOn f s t) (h₂ : MapsTo f s t) : f '' s = t :=
   eq_of_subset_of_subset h₂.image_subset h₁
@@ -650,6 +647,11 @@ theorem BijOn.subset_range (h : BijOn f s t) : t ⊆ range f :=
 theorem InjOn.bijOn_image (h : InjOn f s) : BijOn f s (f '' s) :=
   BijOn.mk (mapsTo_image f s) h (Subset.refl _)
 
+theorem SurjOn.preimage (h : SurjOn f s t) : SurjOn f (f ⁻¹' t) t := by
+  intro u hu
+  rw [image_preimage_eq_inter_range]
+  exact ⟨hu, mem_range.mpr (subset_range h hu)⟩
+
 theorem BijOn.congr (h₁ : BijOn f₁ s t) (h : EqOn f₁ f₂ s) : BijOn f₂ s t :=
   BijOn.mk (h₁.mapsTo.congr h) (h₁.injOn.congr h) (h₁.surjOn.congr h)
 
@@ -727,8 +729,14 @@ theorem BijOn.bijective (h : BijOn f s t) : Bijective (h.mapsTo.restrict f s t) 
 
 protected alias ⟨_, _root_.Function.Bijective.bijOn_univ⟩ := bijOn_univ
 
-@[deprecated bijOn_univ (since := "2025-10-31")]
-theorem bijective_iff_bijOn_univ : Bijective f ↔ BijOn f univ univ := bijOn_univ.symm
+lemma _root_.Function.Injective.bijOn_image (hf : f.Injective) : BijOn f s (f '' s) :=
+  hf.injOn.bijOn_image
+
+lemma _root_.Function.Surjective.surjOn_preimage (hf : f.Surjective) : SurjOn f (f ⁻¹' t) t :=
+  hf.surjOn.preimage
+
+lemma _root_.Function.Bijective.bijOn_preimage (hf : f.Bijective) : BijOn f (f ⁻¹' t) t :=
+  ⟨fun _ ↦ id, hf.injective.injOn, hf.surjective.surjOn_preimage⟩
 
 theorem BijOn.compl (hst : BijOn f s t) (hf : Bijective f) : BijOn f sᶜ tᶜ :=
   ⟨hst.surjOn.mapsTo_compl hf.1, hf.1.injOn, hst.mapsTo.surjOn_compl hf.2⟩
@@ -768,7 +776,7 @@ theorem BijOn.insert (h₁ : BijOn f s t) (h₂ : f a ∉ t) :
 
 theorem BijOn.sdiff_singleton (h₁ : BijOn f s t) (h₂ : a ∈ s) :
     BijOn f (s \ {a}) (t \ {f a}) := by
-  convert h₁.subset_left diff_subset
+  convert! h₁.subset_left diff_subset
   simp [h₁.injOn.image_diff, h₁.image_eq, h₂, inter_eq_self_of_subset_right]
 
 end bijOn

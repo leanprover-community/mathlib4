@@ -30,8 +30,8 @@ instance Subtype.orderBot (s : Set ℕ) [DecidablePred (· ∈ s)] [h : Nonempty
   bot := ⟨Nat.find (nonempty_subtype.1 h), Nat.find_spec (nonempty_subtype.1 h)⟩
   bot_le x := Nat.find_min' _ x.2
 
-instance Subtype.semilatticeSup (s : Set ℕ) : SemilatticeSup s :=
-  { Subtype.instLinearOrder (· ∈ s), LinearOrder.toLattice with }
+instance Subtype.semilatticeSup (p : ℕ → Prop) : SemilatticeSup (Subtype p) :=
+  { Subtype.instLinearOrder p, LinearOrder.toLattice with }
 
 theorem Subtype.coe_bot {s : Set ℕ} [DecidablePred (· ∈ s)] [h : Nonempty s] :
     ((⊥ : s) : ℕ) = Nat.find (nonempty_subtype.1 h) :=
