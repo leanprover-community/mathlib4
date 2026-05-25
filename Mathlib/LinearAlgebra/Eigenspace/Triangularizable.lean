@@ -28,7 +28,6 @@ This file contains basic results relevant to the triangularizability of linear e
 * `Module.End.exists_invariantFlag_of_iSup_maxGenEigenspace_eq_top`
 * `Module.End.exists_basis_forall_flag_mem_invtSubmodule_iff_iSup_maxGenEigenspace_eq_top`
 * `Module.End.exists_blockTriangular_toMatrix_iff_iSup_maxGenEigenspace_eq_top`
-* `Module.End.exists_basis_forall_flag_mem_invtSubmodule_finrank_of_iSup_maxGenEigenspace_eq_top`
 
 Triangularizability is stated in terms of the existing objects `Basis.flag`,
 `Matrix.BlockTriangular`, `Flag`, and `Module.End.invtSubmodule`.
@@ -71,7 +70,7 @@ theorem exists_invariantFlag_of_forall_flag_mem_invtSubmodule
     ∃ c : Flag (Submodule K V), ∀ ⦃p : Submodule K V⦄, p ∈ c → p ∈ f.invtSubmodule :=
   ⟨b.toFlag, forall_flag_mem_invtSubmodule_iff_forall_mem_toFlag.mp hb⟩
 
-theorem forall_flag_mem_invtSubmodule_map {V₂ : Type*} [AddCommGroup V₂] [Module K V₂]
+private theorem forall_flag_mem_invtSubmodule_map {V₂ : Type*} [AddCommGroup V₂] [Module K V₂]
     (hb : ∀ k : Fin (n + 1), b.flag k ∈ f.invtSubmodule) (e : V ≃ₗ[K] V₂) :
     ∀ k : Fin (n + 1), (b.map e).flag k ∈ (e.conj f).invtSubmodule := by
   intro k
@@ -99,7 +98,7 @@ theorem forall_flag_mem_invtSubmodule_iff_blockTriangular_toMatrix :
       rw [← LinearMap.toMatrix_apply b b f l i]
       exact hf (Fin.castSucc_lt_castSucc_iff.mp (lt_of_lt_of_le hik hlk))
 
-theorem charpoly_splits_of_forall_flag_mem_invtSubmodule [FiniteDimensional K V]
+private theorem charpoly_splits_of_forall_flag_mem_invtSubmodule [FiniteDimensional K V]
     (hb : ∀ k : Fin (n + 1), b.flag k ∈ f.invtSubmodule) :
     f.charpoly.Splits := by
   rw [← LinearMap.charpoly_toMatrix (f := f) b]
@@ -165,7 +164,7 @@ theorem exists_hasEigenvalue_of_genEigenspace_eq_top [Nontrivial M] {f : End R M
     exact HasUnifEigenvalue.lt zero_lt_one hμ
   simp [HasUnifEigenvalue, ← not_forall, ← iSup_eq_bot, hf]
 
-theorem exists_hasEigenvalue_of_iSup_maxGenEigenspace_eq_top [Nontrivial M] {f : End R M}
+private lemma exists_hasEigenvalue_of_iSup_maxGenEigenspace_eq_top [Nontrivial M] {f : End R M}
     (hf : ⨆ μ, f.maxGenEigenspace μ = ⊤) :
     ∃ μ, f.HasEigenvalue μ :=
   exists_hasEigenvalue_of_genEigenspace_eq_top ⊤ hf
@@ -279,29 +278,7 @@ theorem exists_blockTriangular_toMatrix_of_iSup_maxGenEigenspace_eq_top [FiniteD
   obtain ⟨n, b, hb⟩ := exists_basis_forall_flag_mem_invtSubmodule_of_iSup_maxGenEigenspace_eq_top hf
   exact ⟨n, b, forall_flag_mem_invtSubmodule_iff_blockTriangular_toMatrix.mp hb⟩
 
-/-- If the maximal generalized eigenspaces of a finite-dimensional endomorphism span the whole
-space, then there is a basis indexed by the dimension whose associated flag is invariant. -/
-theorem exists_basis_forall_flag_mem_invtSubmodule_finrank_of_iSup_maxGenEigenspace_eq_top
-    [FiniteDimensional K V]
-    {f : End K V} (hf : ⨆ μ, f.maxGenEigenspace μ = ⊤) :
-    ∃ b : Basis (Fin (finrank K V)) K V,
-      ∀ k : Fin (finrank K V + 1), b.flag k ∈ f.invtSubmodule := by
-  obtain ⟨n, b, hb⟩ := exists_basis_forall_flag_mem_invtSubmodule_of_iSup_maxGenEigenspace_eq_top hf
-  have h : n = finrank K V := by
-    simpa using (Module.finrank_eq_card_basis b).symm
-  subst n
-  exact ⟨b, hb⟩
-
-/-- If the maximal generalized eigenspaces of a finite-dimensional endomorphism span the whole
-space, then its matrix in some dimension-indexed basis is upper triangular. -/
-theorem exists_blockTriangular_toMatrix_finrank_of_iSup_maxGenEigenspace_eq_top
-    [FiniteDimensional K V] {f : End K V} (hf : ⨆ μ, f.maxGenEigenspace μ = ⊤) :
-    ∃ b : Basis (Fin (finrank K V)) K V, (LinearMap.toMatrix b b f).BlockTriangular id := by
-  obtain ⟨b, hb⟩ :=
-    exists_basis_forall_flag_mem_invtSubmodule_finrank_of_iSup_maxGenEigenspace_eq_top hf
-  exact ⟨b, forall_flag_mem_invtSubmodule_iff_blockTriangular_toMatrix.mp hb⟩
-
-theorem finrank_finset_sup_maxGenEigenspace [FiniteDimensional K V]
+private lemma finrank_finset_sup_maxGenEigenspace [FiniteDimensional K V]
     (f : End K V) (s : Finset K) :
     finrank K (s.sup (fun μ => f.maxGenEigenspace μ) : Submodule K V) =
       ∑ μ ∈ s, finrank K (f.maxGenEigenspace μ) := by
@@ -399,23 +376,6 @@ theorem exists_basis_forall_flag_mem_invtSubmodule [IsAlgClosed K] [FiniteDimens
     (f : End K V) :
     ∃ n, ∃ b : Basis (Fin n) K V, ∀ k : Fin (n + 1), b.flag k ∈ f.invtSubmodule :=
   exists_basis_forall_flag_mem_invtSubmodule_of_iSup_maxGenEigenspace_eq_top
-    (iSup_maxGenEigenspace_eq_top f)
-
-/-- In finite dimensions over an algebraically closed field, every endomorphism admits a basis
-indexed by the dimension whose associated flag is invariant. -/
-theorem exists_basis_forall_flag_mem_invtSubmodule_finrank [IsAlgClosed K] [FiniteDimensional K V]
-    (f : End K V) :
-    ∃ b : Basis (Fin (finrank K V)) K V,
-      ∀ k : Fin (finrank K V + 1), b.flag k ∈ f.invtSubmodule :=
-  exists_basis_forall_flag_mem_invtSubmodule_finrank_of_iSup_maxGenEigenspace_eq_top
-    (iSup_maxGenEigenspace_eq_top f)
-
-/-- In finite dimensions over an algebraically closed field, every endomorphism has an upper
-triangular matrix in some dimension-indexed basis. -/
-theorem exists_blockTriangular_toMatrix_finrank [IsAlgClosed K] [FiniteDimensional K V]
-    (f : End K V) :
-    ∃ b : Basis (Fin (finrank K V)) K V, (LinearMap.toMatrix b b f).BlockTriangular id :=
-  exists_blockTriangular_toMatrix_finrank_of_iSup_maxGenEigenspace_eq_top
     (iSup_maxGenEigenspace_eq_top f)
 
 /-- In finite dimensions over an algebraically closed field, every endomorphism admits an invariant
