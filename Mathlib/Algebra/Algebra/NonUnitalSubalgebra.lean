@@ -986,6 +986,18 @@ theorem coe_iSup_of_directed [Nonempty ι] {S : ι → NonUnitalSubalgebra R A}
     (iSup_le fun i ↦ le_iSup (fun i ↦ (S i : Set A)) i) (Set.iUnion_subset fun _ ↦ le_iSup S _)
   this.symm ▸ rfl
 
+theorem isMulCommutative_iSup {ι : Sort*} [Nonempty ι] {S : ι → NonUnitalSubalgebra R A}
+    [hS : ∀ i, IsMulCommutative (S i)] (dir : Directed (· ≤ ·) S) :
+    IsMulCommutative (⨆ i, S i : NonUnitalSubalgebra R A) := by
+  have := NonUnitalSubsemiring.isMulCommutative_iSup dir
+  simpa [isMulCommutative_iff, ← SetLike.mem_coe, coe_iSup_of_directed dir,
+    NonUnitalSubsemiring.coe_iSup_of_directed dir]
+
+instance instIsMulCommutative_iSup {ι : Type*} [Nonempty ι] [Preorder ι] [IsDirectedOrder ι]
+    {S : ι →o NonUnitalSubalgebra R A} [hS : ∀ i, IsMulCommutative (S i)] :
+    IsMulCommutative (⨆ i, S i : NonUnitalSubalgebra R A) :=
+  isMulCommutative_iSup S.monotone.directed_le
+
 /-- Define an algebra homomorphism on a directed supremum of non-unital subalgebras by defining
 it on each non-unital subalgebra, and proving that it agrees on the intersection of
 non-unital subalgebras. -/
