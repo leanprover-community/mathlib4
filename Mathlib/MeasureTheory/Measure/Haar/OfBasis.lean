@@ -178,7 +178,8 @@ end AddCommGroup
 
 section NormedSpace
 
-variable [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedSpace ℝ E] [NormedSpace ℝ F]
+variable [AddCommGroup E] [NormedAddCommGroup E] [AddCommGroup F] [NormedAddCommGroup F]
+  [NormedSpace ℝ E] [NormedSpace ℝ F]
 
 namespace Module.Basis
 
@@ -306,11 +307,11 @@ This instance creates:
 However, we've decided not to refactor until one of these diamonds starts creating issues, see
 https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Hausdorff.20measure.20normalisation
 -/
-instance (priority := 100) measureSpaceOfInnerProductSpace [NormedAddCommGroup E]
+instance (priority := 100) measureSpaceOfInnerProductSpace [AddCommGroup E] [NormedAddCommGroup E]
     [InnerProductSpace ℝ E] [FiniteDimensional ℝ E] [MeasurableSpace E] [BorelSpace E] :
     MeasureSpace E where volume := (stdOrthonormalBasis ℝ E).toBasis.addHaar
 
-instance [NormedAddCommGroup E] [InnerProductSpace ℝ E] [FiniteDimensional ℝ E]
+instance [AddCommGroup E] [NormedAddCommGroup E] [InnerProductSpace ℝ E] [FiniteDimensional ℝ E]
     [MeasurableSpace E] [BorelSpace E] : IsAddHaarMeasure (volume : Measure E) :=
   isAddHaarMeasure_basis_addHaar _
 
