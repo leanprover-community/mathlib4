@@ -919,7 +919,6 @@ theorem image_iterate_stabilises_lt_card [DecidableEq α] {f : α → α} {s : F
     (hs : Set.MapsTo f s s) (hs₀ : s.Nonempty) :
     ∃ n < #s, ∀ m, n ≤ m → s.image f^[m] = s.image f^[n] := by
   let g (i : ℕ) : Finset α := s.image f^[i]
-  have : g 0 = s := by simp [g]
   have (i : ℕ) : 0 < #(g i) := (hs₀.image _).card_pos
   let G (i : ℕ) : ℕ := #(g i) - 1
   have hg : Antitone g := antitone_nat_of_succ_le <| fun i ↦ by
@@ -931,9 +930,8 @@ theorem image_iterate_stabilises_lt_card [DecidableEq α] {f : α → α} {s : F
     exact ⟨fun h ↦ eq_of_subset_of_card_le (hg hij) (by grind), by grind⟩
   have hG : Antitone G := fun i j h ↦ by simp only [G]; gcongr #?_ - 1; exact hg h
   have hG₁ (m : ℕ) : G m = G (m + 1) → G (m + 1) = G (m + 2) := by
-    simp only [G_eq, g, Function.iterate_succ', ← image_image]
-    grind
-  obtain ⟨n, hn, hn'⟩ := Nat.stabilises_of_antitone hG hG₁
+    grind [=_ image_image, iterate_succ']
+  rcases Nat.stabilises_of_antitone hG hG₁ with ⟨n, hn, hn'⟩
   exact ⟨n, by grind⟩
 
 /--
