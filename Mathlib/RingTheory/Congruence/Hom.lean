@@ -193,21 +193,21 @@ theorem lift_unique (H : c ≤ ker f) (g : c.Quotient →+* P) (Hg : g.comp c.mk
     g = c.lift f H :=
   Quotient.hom_ext (by aesop)
 
-/-- Surjective ring homomorphisms constant on a the equivalence classes
+/-- Surjective ring homomorphisms constant on the equivalence classes
 of a ring congruence relation induce a surjective homomorphism on the quotient. -/
 theorem lift_surjective_iff {h : c ≤ ker f} :
     Surjective (c.lift f h) ↔ Surjective f := by
   refine ⟨fun H ↦ (Quot.surjective_lift fun x x_1 h_1 ↦ h h_1).mp H,
     fun H ↦ AddCon.lift_surjective_of_surjective h H⟩
 
-/-- Surjective ring homomorphisms constant on a the equivalence classes
+/-- Surjective ring homomorphisms constant on the equivalence classes
 of a ring congruence relation induce a surjective homomorphism on the quotient. -/
 theorem lift_surjective_of_surjective (h : c ≤ ker f) (hf : Surjective f) :
     Surjective (c.lift f h) :=
   lift_surjective_iff.mpr hf
 
 /-- Given a ring homomorphism `f` from `M` to `P` whose kernel contains `c`,
-the lift of `M`to `N` is injective iff `ker f = c`. -/
+the lift of `M` to `P` is injective iff `ker f = c`. -/
 theorem lift_injective_iff {h : c ≤ ker f} :
     Function.Injective (c.lift f h) ↔ c = ker f := by
   refine ⟨fun H ↦ ext'' (Setoid.ker_eq_lift_of_injective f h H).symm, ?_⟩
@@ -314,7 +314,7 @@ noncomputable def quotientKerEquivOfSurjective (f : M →+* P) (hf : Surjective 
 @[simp] theorem quotientKerEquivOfSurjective_mk (f : M →+* P) (hf : Surjective f) (x : M) :
     quotientKerEquivOfSurjective f hf x = f x := rfl
 
-/-- A surjective ring homomorphisms`f : M →+* N` induces
+/-- A surjective ring homomorphism `f : M →+* N` induces
 a ring equivalence `d.Quotient ≃+* c.Quotient`,
 whenever `c : RingCon M` and `d : RingCon N` are such that `d = c.comap f`. -/
 noncomputable def comapQuotientEquivOfSurj
@@ -340,7 +340,7 @@ noncomputable def comapQuotientEquivOfSurj
 @[simp] lemma comapQuotientEquivOfSurj_symm_mk' (c : RingCon M) (f : N ≃+* M)
     {d : RingCon N} (hcd : d = c.comap f) (x : N) :
     (comapQuotientEquivOfSurj c (f : N →+* M) f.surjective hcd).symm ⟦f x⟧ = ↑x := by
-  convert RingEquiv.symm_apply_apply _ _
+  convert! RingEquiv.symm_apply_apply _ _
   rw [comapQuotientEquivOfSurj_mk, RingEquiv.coe_toRingHom]
   rfl
 
@@ -358,7 +358,7 @@ noncomputable def comapQuotientEquivRangeS (f : N →+* M)
 @[simp] theorem comapQuotientEquivRangeS_symm_mk (f : N →+* M)
     {d : RingCon N} (hcd : d = comap c f) (x : N) :
     (c.comapQuotientEquivRangeS f hcd).symm
-      (⟨f x, RingHom.mem_rangeS_self (c.mk'.comp f) x ⟩) = x :=  by
+      (⟨f x, RingHom.mem_rangeS_self (c.mk'.comp f) x ⟩) = x := by
   simp [RingEquiv.symm_apply_eq]
 
 /-- The **third isomorphism theorem for (semi-)rings**. -/
@@ -436,7 +436,7 @@ theorem comapQuotientEquivRange_mk
 @[simp] theorem comapQuotientEquivRange_symm_mk (f : N →+* M)
     {d : RingCon N} (hcd : d = comap c f) (x : N) :
     (c.comapQuotientEquivRange f hcd).symm
-      (⟨f x, RingHom.mem_range_self (c.mk'.comp f) x ⟩) = x :=  by
+      (⟨f x, RingHom.mem_range_self (c.mk'.comp f) x ⟩) = x := by
   simp [RingEquiv.symm_apply_eq, ← Subtype.coe_inj]
 
 end
@@ -496,7 +496,7 @@ def kerLiftₐ : (ker f.toRingHom).Quotient →ₐ[R] P :=
   liftₐ (ker f.toRingHom) f (le_refl _)
 
 /- Note : This can't be @[simp] because
-  `(ker f.toRingHom).Quotient` is tranformed into `(ker ↑f).Quotient`.
+  `(ker f.toRingHom).Quotient` is transformed into `(ker ↑f).Quotient`.
   Maybe `kerLiftₐ` should use the latter. -/
 /-- The diagram described by the universal property for quotients of rings, when
 the ring congruence relation is the kernel of the homomorphism, commutes. -/
@@ -554,6 +554,10 @@ theorem quotientKerEquivRangeₐ_mkₐ (f : M →ₐ[R] P) (x : M) :
 @[simp]
 theorem coe_quotientKerEquivRangeₐ_mkₐ (f : M →ₐ[R] P) (x : M) :
     (quotientKerEquivRangeₐ f x : P) = f x := by
+  rfl
+
+theorem quotientKerEquivRangeₐ_comp_mkₐ (φ : M →ₐ[R] N) :
+    ((quotientKerEquivRangeₐ φ).toAlgHom.comp ((ker (φ : M →+* N)).mkₐ R)) = φ.rangeRestrict :=
   rfl
 
 /-- The **second isomorphism theorem for algebras**. -/

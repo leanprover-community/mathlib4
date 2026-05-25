@@ -13,7 +13,7 @@ public import Mathlib.Algebra.Order.Group.Unbundled.Basic
 # Least upper bound and the greatest lower bound in linear ordered additive commutative groups
 -/
 
-@[expose] public section
+public section
 
 section LinearOrderedAddCommGroup
 

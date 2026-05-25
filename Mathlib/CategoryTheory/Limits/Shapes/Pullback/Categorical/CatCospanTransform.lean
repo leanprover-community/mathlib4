@@ -149,7 +149,7 @@ instance category : Category (CatCospanTransform F G F' G') where
   comp α β :=
     { left := α.left ≫ β.left
       right := α.right ≫ β.right
-      base := α.base ≫ β.base}
+      base := α.base ≫ β.base }
 
 attribute [local ext] CatCospanTransformMorphism in
 @[ext]
@@ -176,6 +176,7 @@ lemma right_coherence_app {ψ ψ' : CatCospanTransform F G F' G'}
     α.base.app (G.obj x) ≫ ψ'.squareRight.iso.hom.app x :=
   congr_app α.right_coherence x
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Whiskering left of a `CatCospanTransformMorphism` by a `CatCospanTransform`. -/
 @[simps]
 def whiskerLeft (φ : CatCospanTransform F G F' G')
@@ -185,6 +186,7 @@ def whiskerLeft (φ : CatCospanTransform F G F' G')
   right := Functor.whiskerLeft φ.right α.right
   base := Functor.whiskerLeft φ.base α.base
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Whiskering right of a `CatCospanTransformMorphism` by a `CatCospanTransform`. -/
 @[simps]
 def whiskerRight {ψ ψ' : CatCospanTransform F G F' G'} (α : ψ ⟶ ψ')
@@ -306,23 +308,26 @@ lemma isIso_iff : IsIso f ↔ IsIso f.left ∧ IsIso f.base ∧ IsIso f.right wh
   mpr h := by
     obtain ⟨_, _, _⟩ := h
     use mkIso (asIso f.left) (asIso f.right) (asIso f.base)
-      f.left_coherence f.right_coherence|>.inv
+      f.left_coherence f.right_coherence |>.inv
     aesop_cat
 
 end Iso
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The left unitor isomorphism for categorical cospan transformations. -/
 @[simps!]
 def leftUnitor (φ : CatCospanTransform F G F' G') :
     (CatCospanTransform.id F G).comp φ ≅ φ :=
   mkIso φ.left.leftUnitor φ.right.leftUnitor φ.base.leftUnitor
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The right unitor isomorphism for categorical cospan transformations. -/
 @[simps!]
 def rightUnitor (φ : CatCospanTransform F G F' G') :
     φ.comp (.id F' G') ≅ φ :=
   mkIso φ.left.rightUnitor φ.right.rightUnitor φ.base.rightUnitor
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The associator isomorphism for categorical cospan transformations. -/
 @[simps!]
 def associator {A''' : Type u₁₀} {B''' : Type u₁₁} {C''' : Type u₁₂}
@@ -373,7 +378,7 @@ lemma comp_whiskerRight : (η ≫ η') ▷ φ = η ▷ φ ≫ η' ▷ φ := by c
 
 @[reassoc]
 lemma whiskerRight_comp :
-    η ▷ (φ.comp τ) = (α_ _ _ _).inv ≫ (η ▷ φ) ▷ τ ≫ (α_ _ _ _ ).hom := by
+    η ▷ (φ.comp τ) = (α_ _ _ _).inv ≫ (η ▷ φ) ▷ τ ≫ (α_ _ _ _).hom := by
   cat_disch
 
 @[simp]

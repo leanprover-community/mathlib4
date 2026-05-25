@@ -10,6 +10,7 @@ public import Mathlib.Algebra.Lie.InvariantForm
 public import Mathlib.Algebra.Lie.Weights.Cartan
 public import Mathlib.Algebra.Lie.Weights.Linear
 public import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
+public import Mathlib.LinearAlgebra.BilinearForm.TensorProduct
 public import Mathlib.LinearAlgebra.PID
 
 /-!
@@ -105,6 +106,32 @@ lemma traceForm_lieInvariant : (traceForm R L M).lieInvariant L := by
   apply LinearMap.isNilpotent_trace_of_isNilpotent
   exact isNilpotent_toEnd_of_isNilpotent₂ R L M x y
 
+open scoped TensorProduct in
+@[simp] lemma traceForm_baseChange [Module.Free R M] [Module.Finite R M]
+    (A : Type*) [CommRing A] [Algebra R A] :
+    traceForm A (A ⊗[R] L) (A ⊗[R] M) = (traceForm R L M).baseChange A := by
+  ext; simp [traceForm_apply_apply, ← LinearMap.baseChange_comp, Algebra.algebraMap_eq_smul_one]
+
+variable {R L M} in
+lemma trace_toEnd_mul_eq_zero_of_traceForm_eq_zero (h : traceForm R L M = 0)
+    (y : End R M) (hy : ∀ z ∈ LieHom.range φ, ⁅y, z⁆ ∈ LieHom.range φ)
+    (x : L) (hx : x ∈ LieAlgebra.derivedSeries R L 1) :
+    trace R M (φ x * y) = 0 := by
+  replace hx : x ∈ Submodule.span R {⁅u, v⁆ | (u : L) (v : L)} := by
+    rw [← LieAlgebra.coe_derivedSeries_one_eq]; exact hx
+  induction hx using Submodule.span_induction with
+  | mem u hu =>
+    obtain ⟨a, b, rfl⟩ := hu
+    obtain ⟨c : L, hbc : φ c = ⁅y, φ b⁆⟩ := hy (φ b) (LieHom.mem_range_self φ b)
+    replace hbc : ⁅φ b, y⁆ = -φ c := by rw [hbc, Module.End.instLieRingModule_eq, lie_skew]
+    rw [LieHom.map_lie, LinearMap.trace_lie_mul_eq, Ring.lie_def,
+      ← LieRing.of_associative_ring_bracket, ← Module.End.instLieRingModule_eq, hbc, mul_neg,
+      map_neg, neg_eq_zero, Module.End.mul_eq_comp, ← traceForm_apply_apply, h,
+      LinearMap.zero_apply, LinearMap.zero_apply]
+  | zero => simp
+  | add u v _ _ hu hv => simp [add_mul, hu, hv]
+  | smul t u _ hu => simp [hu]
+
 @[simp]
 lemma traceForm_genWeightSpace_eq [Module.Free R M]
     [IsDomain R] [IsPrincipalIdealRing R]
@@ -154,12 +181,12 @@ lemma traceForm_apply_eq_zero_of_mem_lcs_of_mem_center {x y : L}
   · simpa using hy
 
 -- This is barely worth having: it usually follows from `LieModule.traceForm_eq_zero_of_isNilpotent`
-@[simp] lemma traceForm_eq_zero_of_isTrivial [IsTrivial L M] :
+lemma traceForm_eq_zero_of_isTrivial [IsTrivial L M] :
     traceForm R L M = 0 := by
   ext x y
   suffices φ x ∘ₗ φ y = 0 by simp [traceForm_apply_apply, this]
   ext m
-  simp
+  simp [trivial_lie_zero]
 
 /-- Given a bilinear form `B` on a representation `M` of a nilpotent Lie algebra `L`, if `B` is
 invariant (in the sense that the action of `L` is skew-adjoint w.r.t. `B`) then components of the
@@ -168,13 +195,13 @@ lemma eq_zero_of_mem_genWeightSpace_mem_posFitting [LieRing.IsNilpotent L]
     {B : LinearMap.BilinForm R M} (hB : ∀ (x : L) (m n : M), B ⁅x, m⁆ n = -B m ⁅x, n⁆)
     {m₀ m₁ : M} (hm₀ : m₀ ∈ genWeightSpace M (0 : L → R)) (hm₁ : m₁ ∈ posFittingComp R L M) :
     B m₀ m₁ = 0 := by
-  replace hB : ∀ x (k : ℕ) m n, B m ((φ x ^ k) n) = (- 1 : R) ^ k • B ((φ x ^ k) m) n := by
+  replace hB : ∀ x (k : ℕ) m n, B m ((φ x ^ k) n) = (-1 : R) ^ k • B ((φ x ^ k) m) n := by
     intro x k
     induction k with
     | zero => simp
     | succ k ih =>
     intro m n
-    replace hB : ∀ m, B m (φ x n) = (- 1 : R) • B (φ x m) n := by simp [hB]
+    replace hB : ∀ m, B m (φ x n) = (-1 : R) • B (φ x m) n := by simp [hB]
     have : (-1 : R) ^ k • (-1 : R) = (-1 : R) ^ (k + 1) := by rw [pow_succ (-1 : R), smul_eq_mul]
     conv_lhs => rw [pow_succ, Module.End.mul_eq_comp, LinearMap.comp_apply, ih, hB,
       ← (φ x).comp_apply, ← Module.End.mul_eq_comp, ← pow_succ', ← smul_assoc, this]
@@ -215,10 +242,10 @@ lemma traceForm_lieSubalgebra_mk_right (L' : LieSubalgebra R L) {x : L'} {y : L}
 
 open TensorProduct
 
-variable [LieRing.IsNilpotent L] [IsDomain R] [IsPrincipalIdealRing R]
+variable [LieRing.IsNilpotent L] [IsDomain R]
 
-lemma traceForm_eq_sum_genWeightSpaceOf
-    [NoZeroSMulDivisors R M] [IsNoetherian R M] [IsTriangularizable R L M] (z : L) :
+lemma traceForm_eq_sum_genWeightSpaceOf [IsPrincipalIdealRing R]
+    [Module.IsTorsionFree R M] [IsNoetherian R M] [IsTriangularizable R L M] (z : L) :
     traceForm R L M =
     ∑ χ ∈ (finite_genWeightSpaceOf_ne_bot R L M z).toFinset,
       traceForm R L (genWeightSpaceOf M χ z) := by
@@ -227,8 +254,8 @@ lemma traceForm_eq_sum_genWeightSpaceOf
       (genWeightSpaceOf M χ z) (genWeightSpaceOf M χ z) :=
     fun χ m hm ↦ LieSubmodule.lie_mem _ <| LieSubmodule.lie_mem _ hm
   have hfin : {χ : R | (genWeightSpaceOf M χ z : Submodule R M) ≠ ⊥}.Finite := by
-    convert finite_genWeightSpaceOf_ne_bot R L M z
-    exact LieSubmodule.toSubmodule_eq_bot (genWeightSpaceOf M _ _)
+    simp_rw [ne_eq, LieSubmodule.toSubmodule_eq_bot (genWeightSpaceOf M _ _)]
+    exact finite_genWeightSpaceOf_ne_bot R L M z
   classical
   have h := LieSubmodule.iSupIndep_toSubmodule.mpr <| iSupIndep_genWeightSpaceOf R L M z
   have hds := DirectSum.isInternal_submodule_of_iSupIndep_of_iSup_eq_top h <| by
@@ -266,7 +293,7 @@ lemma lowerCentralSeries_one_inf_center_le_ker_traceForm [Module.Free R M] [Modu
   rw [traceForm_apply_apply, LinearMap.zero_apply]
   let A := AlgebraicClosure (FractionRing R)
   suffices algebraMap R A (trace R _ ((φ z).comp (φ x))) = 0 by
-    have _i : NoZeroSMulDivisors R A := NoZeroSMulDivisors.trans_faithfulSMul R (FractionRing R) A
+    have that : Module.IsTorsionFree R A := .trans_faithfulSMul R (FractionRing R) A
     rw [← map_zero (algebraMap R A)] at this
     exact FaithfulSMul.algebraMap_injective R A this
   rw [← LinearMap.trace_baseChange, LinearMap.baseChange_comp, ← toEnd_baseChange,
@@ -283,7 +310,7 @@ lemma lowerCentralSeries_one_inf_center_le_ker_traceForm [Module.Free R M] [Modu
   apply LinearMap.trace_comp_eq_zero_of_commute_of_trace_restrict_eq_zero
   · exact IsTriangularizable.maxGenEigenspace_eq_top (1 ⊗ₜ[R] x)
   · exact fun μ ↦ trace_toEnd_eq_zero_of_mem_lcs A (A ⊗[R] L)
-      (genWeightSpaceOf (A ⊗[R] M) μ ((1:A) ⊗ₜ[R] x)) (le_refl 1) hz
+      (genWeightSpaceOf (A ⊗[R] M) μ ((1 : A) ⊗ₜ[R] x)) (le_refl 1) hz
   · exact commute_toEnd_of_mem_center_right (A ⊗[R] M) hzc (1 ⊗ₜ x)
 
 /-- A nilpotent Lie algebra with a representation whose trace form is non-singular is Abelian. -/
@@ -425,7 +452,7 @@ lemma traceForm_eq_sum_finrank_nsmul :
       (χ : L →ₗ[K] K).smulRight (χ : L →ₗ[K] K) := by
   ext
   rw [traceForm_eq_sum_finrank_nsmul_mul, ← Finset.sum_attach]
-  simp
+  simp [-LinearMap.coe_smul]
 
 /-- A variant of `LieModule.traceForm_eq_sum_finrank_nsmul` in which the sum is taken only over the
 non-zero weights. -/

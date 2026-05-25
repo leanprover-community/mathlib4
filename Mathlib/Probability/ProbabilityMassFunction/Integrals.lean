@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Probability.ProbabilityMassFunction.Basic
 public import Mathlib.Probability.ProbabilityMassFunction.Constructions
-public import Mathlib.MeasureTheory.Integral.Bochner.Basic
+public import Mathlib.MeasureTheory.Integral.Bochner.SumMeasure
 
 /-!
 # Integrals with a measure derived from probability mass functions.
@@ -18,7 +18,7 @@ value) with regard to a measure derived from a `PMF` is a sum weighted by the `P
 It also provides the expected value for specific probability mass functions.
 -/
 
-@[expose] public section
+public section
 
 namespace PMF
 
@@ -33,7 +33,7 @@ theorem integral_eq_tsum (p : PMF α) (f : α → E) (hf : Integrable f p.toMeas
     ∫ a, f a ∂(p.toMeasure) = ∑' a, (p a).toReal • f a := calc
   _ = ∫ a in p.support, f a ∂(p.toMeasure) := by rw [restrict_toMeasure_support p]
   _ = ∑' (a : support p), (p.toMeasure {a.val}).toReal • f a := by
-    apply integral_countable f p.support_countable
+    apply setIntegral_countable f p.support_countable
     rwa [IntegrableOn, restrict_toMeasure_support p]
   _ = ∑' (a : support p), (p a).toReal • f a := by
     congr with x; congr 2
@@ -46,7 +46,7 @@ theorem integral_eq_tsum (p : PMF α) (f : α → E) (hf : Integrable f p.toMeas
 
 theorem integral_eq_sum [Fintype α] (p : PMF α) (f : α → E) :
     ∫ a, f a ∂(p.toMeasure) = ∑ a, (p a).toReal • f a := by
-  rw [integral_fintype _ .of_finite]
+  rw [integral_fintype .of_finite]
   congr with x
   rw [measureReal_def]
   congr 2

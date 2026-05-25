@@ -5,6 +5,7 @@ Authors: Damiano Testa
 -/
 module
 
+public import Mathlib.Algebra.MonoidAlgebra.MapDomain
 public import Mathlib.Algebra.Polynomial.Degree.Support
 public import Mathlib.Tactic.NoncommRing
 
@@ -30,18 +31,18 @@ namespace Polynomial
 /-- Ring isomorphism between `R[X]ᵐᵒᵖ` and `Rᵐᵒᵖ[X]` sending each coefficient of a polynomial
 to the corresponding element of the opposite ring. -/
 def opRingEquiv (R : Type*) [Semiring R] : R[X]ᵐᵒᵖ ≃+* Rᵐᵒᵖ[X] :=
-  ((toFinsuppIso R).op.trans AddMonoidAlgebra.opRingEquiv).trans (toFinsuppIso _).symm
+  ((toFinsuppIso R).op.trans <| AddMonoidAlgebra.opRingEquiv.trans <|
+    AddMonoidAlgebra.mapDomainRingEquiv _ AddOpposite.opAddEquiv.symm).trans (toFinsuppIso _).symm
 
 /-!  Lemmas to get started, using `opRingEquiv R` on the various expressions of
 `Finsupp.single`: `monomial`, `C a`, `X`, `C a * X ^ n`. -/
 
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem opRingEquiv_op_monomial (n : ℕ) (r : R) :
     opRingEquiv R (op (monomial n r : R[X])) = monomial n (op r) := by
-  simp only [opRingEquiv, RingEquiv.coe_trans, Function.comp_apply,
-    AddMonoidAlgebra.opRingEquiv_apply, RingEquiv.op_apply_apply, toFinsuppIso_apply, unop_op,
-    toFinsupp_monomial, Finsupp.mapRange_single, toFinsuppIso_symm_apply, ofFinsupp_single]
+  simp [opRingEquiv]
 
 @[simp]
 theorem opRingEquiv_op_C (a : R) : opRingEquiv R (op (C a)) = C (op a) :=
@@ -78,14 +79,14 @@ theorem opRingEquiv_symm_C_mul_X_pow (r : Rᵐᵒᵖ) (n : ℕ) :
 
 /-!  Lemmas about more global properties of polynomials and opposites. -/
 
-
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem coeff_opRingEquiv (p : R[X]ᵐᵒᵖ) (n : ℕ) :
-    (opRingEquiv R p).coeff n = op ((unop p).coeff n) := rfl
+    (opRingEquiv R p).coeff n = op ((unop p).coeff n) := by simp [opRingEquiv, coeff]
 
 @[simp]
-theorem support_opRingEquiv (p : R[X]ᵐᵒᵖ) : (opRingEquiv R p).support = (unop p).support :=
-  Finsupp.support_mapRange_of_injective (by simp) _ op_injective
+theorem support_opRingEquiv (p : R[X]ᵐᵒᵖ) : (opRingEquiv R p).support = (unop p).support := by
+  ext; simp
 
 @[simp]
 theorem natDegree_opRingEquiv (p : R[X]ᵐᵒᵖ) : (opRingEquiv R p).natDegree = (unop p).natDegree := by

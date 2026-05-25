@@ -59,6 +59,7 @@ variable [DistribMulAction M A]
 /-- The action on an additive submonoid corresponding to applying the action to every element.
 
 This is available as an instance in the `Pointwise` locale. -/
+@[instance_reducible]
 protected def pointwiseMulAction : MulAction M (AddSubmonoid A) where
   smul a S := S.map (DistribMulAction.toAddMonoidEnd _ A a)
   one_smul S :=

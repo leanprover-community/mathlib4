@@ -26,6 +26,7 @@ universe v u
 
 variable (R : Type u) [CommRing R]
 
+set_option backward.privateInPublic true in
 /-- The category of `R`-Hopf algebras. -/
 structure HopfAlgCat where
   private mk ::
@@ -34,6 +35,7 @@ structure HopfAlgCat where
   [instRing : Ring carrier]
   [instHopfAlgebra : HopfAlgebra R carrier]
 
+initialize_simps_projections HopfAlgCat (-instRing, -instHopfAlgebra)
 attribute [instance] HopfAlgCat.instHopfAlgebra HopfAlgCat.instRing
 
 variable {R}
@@ -46,6 +48,8 @@ instance : CoeSort (HopfAlgCat.{v} R) (Type v) :=
   ⟨(·.carrier)⟩
 
 variable (R) in
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- The object in the category of `R`-Hopf algebras associated to an `R`-Hopf algebra. -/
 abbrev of (X : Type v) [Ring X] [HopfAlgebra R X] :
     HopfAlgCat R where

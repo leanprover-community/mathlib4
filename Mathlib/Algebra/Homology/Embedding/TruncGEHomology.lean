@@ -29,7 +29,7 @@ open CategoryTheory Category Limits
 namespace HomologicalComplex
 
 variable {ι ι' : Type*} {c : ComplexShape ι} {c' : ComplexShape ι'}
-  {C : Type*} [Category C] [HasZeroMorphisms C]
+  {C : Type*} [Category* C] [HasZeroMorphisms C]
   (K L : HomologicalComplex C c') (φ : K ⟶ L) (e : c.Embedding c') [e.IsTruncGE]
   [∀ i', K.HasHomology i'] [∀ i', L.HasHomology i']
 
@@ -37,6 +37,7 @@ namespace truncGE'
 
 variable (i j k : ι) (hi : c.prev j = i) (hk : c.next j = k)
 
+set_option backward.isDefEq.respectTransparency false in
 include hi hk in
 lemma hasHomology_sc'_of_not_mem_boundary (hj : ¬ e.BoundaryGE j) :
     ((K.truncGE' e).sc' i j k).HasHomology := by
@@ -54,6 +55,7 @@ lemma hasHomology_of_not_mem_boundary (hj : ¬ e.BoundaryGE j) :
     (K.truncGE' e).HasHomology j :=
   hasHomology_sc'_of_not_mem_boundary K e _ j _ rfl rfl hj
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `K.restrictionToTruncGE' e` is a quasi-isomorphism in degrees that are not at the boundary. -/
 lemma quasiIsoAt_restrictionToTruncGE' (hj : ¬ e.BoundaryGE j)
     [(K.restriction e).HasHomology j] [(K.truncGE' e).HasHomology j] :
@@ -125,6 +127,7 @@ instance (i' : ι') : (K.truncGE e).HasHomology i' := by
   dsimp [truncGE]
   infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The right homology data which allows to show that `K.πTruncGE e`
 induces an isomorphism in homology in degrees `j'` such that `e.f j = j'` for some `j`. -/
 @[simps]
@@ -149,7 +152,7 @@ noncomputable def rightHomologyMapData {i j k : ι} {j' : ι'} (hj' : e.f j = j'
     · simp [K.truncGE'_d_eq_fromOpcycles e hjk hj' hk' hj,
         K.restrictionToTruncGE'_f_eq_iso_hom_iso_inv e hk' (e.not_boundaryGE_next hjk)]
       rfl
-    · obtain rfl : k = j := by rw [← c.next_eq_self j  (by simpa only [hk] using hjk), hk]
+    · obtain rfl : k = j := by rw [← c.next_eq_self j (by simpa only [hk] using hjk), hk]
       rw [shape _ _ _ hjk, zero_comp, comp_zero,
         K.restrictionToTruncGE'_f_eq_iso_hom_pOpcycles_iso_inv e hk' hj]
       simp only [restriction_X, restrictionXIso, eqToIso.inv, eqToIso.hom, assoc,
@@ -160,6 +163,7 @@ noncomputable def rightHomologyMapData {i j k : ι} {j' : ι'} (hj' : e.f j = j'
 
 end truncGE
 
+set_option backward.isDefEq.respectTransparency false in
 lemma quasiIsoAt_πTruncGE {j : ι} {j' : ι'} (hj' : e.f j = j') :
     QuasiIsoAt (K.πTruncGE e) j' := by
   rw [quasiIsoAt_iff]
@@ -208,8 +212,7 @@ lemma acyclic_truncGE_iff_isSupportedOutside :
     (K.truncGE e).Acyclic ↔ K.IsSupportedOutside e := by
   constructor
   · intro hK
-    exact ⟨fun i =>
-      by simpa only [exactAt_iff_of_quasiIsoAt (K.πTruncGE e)] using hK (e.f i)⟩
+    exact ⟨fun i ↦ by simpa only [exactAt_iff_of_quasiIsoAt (K.πTruncGE e)] using hK (e.f i)⟩
   · intro hK i'
     by_cases hi' : ∃ i, e.f i = i'
     · obtain ⟨i, rfl⟩ := hi'

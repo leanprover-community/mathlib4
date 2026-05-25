@@ -16,7 +16,7 @@ because this would create a circular dependency once we redefine `exp` using
 `FormalMultilinearSeries`.
 -/
 
-@[expose] public section
+public section
 
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]

@@ -27,7 +27,7 @@ for any `X₁ : C₁`, the map `α.app (Φ.functor.obj X₁)` is an isomorphism.
 
 -/
 
-@[expose] public section
+public section
 
 universe v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄
 
@@ -74,6 +74,7 @@ lemma isIso (X₁ : C₁) [RF.IsRightDerivedFunctor α W₂] :
   rw [← Φ.isIso_iff_of_isRightDerivabilityStructure W₁.Q L₂ F G eG.inv RF α]
   infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isRightDerivedFunctor_of_isIso (hα : ∀ (X₁ : C₁), IsIso (α.app (Φ.functor.obj X₁))) :
     RF.IsRightDerivedFunctor α W₂ := by
   have := h.hasPointwiseRightDerivedFunctor

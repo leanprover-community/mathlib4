@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.Field.Equiv
 public import Mathlib.Algebra.Polynomial.Div
 public import Mathlib.Algebra.Polynomial.Eval.SMul
-public import Mathlib.GroupTheory.GroupAction.Ring
 public import Mathlib.RingTheory.Ideal.Quotient.Operations
 public import Mathlib.RingTheory.Polynomial.Basic
 public import Mathlib.RingTheory.Polynomial.Ideal
@@ -51,7 +50,8 @@ theorem quotientSpanXSubCAlgEquiv_symm_apply (x : R) (y : R) :
 isomorphism of $R$-algebras $R[X] / \langle x, X - y \rangle \cong R / \langle x \rangle$. -/
 noncomputable def quotientSpanCXSubCAlgEquiv (x y : R) :
     (R[X] ⧸ (Ideal.span {C x, X - C y} : Ideal R[X])) ≃ₐ[R] R ⧸ (Ideal.span {x} : Ideal R) :=
-  (Ideal.quotientEquivAlgOfEq R <| by rw [Ideal.span_insert, sup_comm]).trans <|
+  (Ideal.quotientEquivAlgOfEq R (J := _ ⊔ Ideal.span {C x}) <| by
+      rw [Ideal.span_insert, sup_comm]).trans <|
     (DoubleQuot.quotQuotEquivQuotSupₐ R _ _).symm.trans <|
       (Ideal.quotientEquivAlg _ _ (quotientSpanXSubCAlgEquiv y) rfl).trans <|
         Ideal.quotientEquivAlgOfEq R <| by
@@ -139,9 +139,9 @@ def polynomialQuotientEquivQuotientPolynomial (I : Ideal R) :
 @[simp]
 theorem polynomialQuotientEquivQuotientPolynomial_symm_mk (I : Ideal R) (f : R[X]) :
     I.polynomialQuotientEquivQuotientPolynomial.symm (Quotient.mk _ f) = f.map (Quotient.mk I) := by
-  rw [polynomialQuotientEquivQuotientPolynomial, RingEquiv.symm_mk, RingEquiv.coe_mk,
-    Equiv.coe_fn_mk, Quotient.lift_mk, coe_eval₂RingHom, eval₂_eq_eval_map, ← Polynomial.map_map,
-    ← eval₂_eq_eval_map, Polynomial.eval₂_C_X]
+  simp only [polynomialQuotientEquivQuotientPolynomial, coe_eval₂RingHom, RingEquiv.symm_mk,
+    RingEquiv.coe_mk, Equiv.coe_fn_symm_mk, Quotient.lift_mk]
+  rw [eval₂_eq_eval_map, ← Polynomial.map_map, ← eval₂_eq_eval_map, Polynomial.eval₂_C_X]
 
 @[simp]
 theorem polynomialQuotientEquivQuotientPolynomial_map_mk (I : Ideal R) (f : R[X]) :
@@ -227,8 +227,7 @@ lemma quotientEquivQuotientMvPolynomial_rightInverse (I : Ideal R) :
   apply induction_on f
   · intro r
     obtain ⟨r, rfl⟩ := Ideal.Quotient.mk_surjective r
-    rw [eval₂_C, Ideal.Quotient.lift_mk, RingHom.comp_apply, Ideal.Quotient.lift_mk, eval₂Hom_C,
-      RingHom.comp_apply]
+    simp
   · intro p q hp hq
     simp only [map_add, MvPolynomial.eval₂_add]
       at hp hq ⊢

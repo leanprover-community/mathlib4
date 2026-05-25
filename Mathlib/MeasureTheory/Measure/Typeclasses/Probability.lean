@@ -17,7 +17,7 @@ We introduce the following typeclasses for measures:
 * `IsProbabilityMeasure μ`: `μ univ = 1`.
 -/
 
-@[expose] public section
+public section
 
 namespace MeasureTheory
 
@@ -74,6 +74,12 @@ instance (priority := 100) (μ : Measure α) [IsProbabilityMeasure μ] :
     IsZeroOrProbabilityMeasure μ :=
   ⟨Or.inr measure_univ⟩
 
+theorem nonempty_of_isProbabilityMeasure (μ : Measure α) [IsProbabilityMeasure μ] : Nonempty α := by
+  by_contra! maybe_empty
+  have : μ Set.univ = 0 := by
+    rw [Set.univ_eq_empty_iff.mpr maybe_empty, measure_empty]
+  simp at this
+
 theorem IsProbabilityMeasure.ne_zero (μ : Measure α) [IsProbabilityMeasure μ] : μ ≠ 0 :=
   mt measure_univ_eq_zero.2 <| by simp [measure_univ]
 
@@ -104,11 +110,15 @@ instance isProbabilityMeasure_ite {p : Prop} [Decidable p] {μ ν : Measure α}
 open unitInterval in
 instance {μ ν : Measure α} [IsProbabilityMeasure μ] [IsProbabilityMeasure ν] {p : I} :
     IsProbabilityMeasure (toNNReal p • μ + toNNReal (σ p) • ν) where
-  measure_univ := by simp [← add_smul]
+  measure_univ := by simp [← ENNReal.coe_add]
 
 variable [IsProbabilityMeasure μ] {p : α → Prop} {f : β → α}
 
-@[simp] lemma probReal_univ : μ.real .univ = 1 := by simp [Measure.real]
+@[simp] lemma probReal_univ : μ.real univ = 1 := by simp [Measure.real]
+
+lemma isProbabilityMeasure_iff_real {μ : Measure α} :
+    IsProbabilityMeasure μ ↔ μ.real univ = 1 := by
+  refine ⟨fun h ↦ probReal_univ, fun h ↦ ⟨(ENNReal.toReal_eq_one_iff (μ univ)).mp h⟩⟩
 
 theorem Measure.isProbabilityMeasure_map {f : α → β} (hf : AEMeasurable f μ) :
     IsProbabilityMeasure (map f μ) :=
@@ -218,7 +228,7 @@ lemma prob_compl_lt_one_sub_of_lt_prob {p : ℝ≥0∞} (hμs : p < μ s) (s_mbl
   · simp at hμs
   · rw [prob_compl_eq_one_sub s_mble]
     apply ENNReal.sub_lt_of_sub_lt prob_le_one (Or.inl one_ne_top)
-    convert hμs
+    convert! hμs
     exact ENNReal.sub_sub_cancel one_ne_top (lt_of_lt_of_le hμs prob_le_one).le
 
 lemma prob_compl_le_one_sub_of_le_prob {p : ℝ≥0∞} (hμs : p ≤ μ s) (s_mble : MeasurableSet s) :

@@ -40,7 +40,7 @@ lemma toTensorPower_apply_ιMulti {n : ℕ} (v : Fin n → M) :
     MultilinearMap.alternatization_apply, MultilinearMap.domDomCongr_apply]
 
 /-- The canonical `n`-alternating map from the dual of the `R`-module `M`
-to the dual of `⨂[R]^n M`. -/
+to the dual of `⋀[R]^n M`. -/
 noncomputable def alternatingMapToDual (n : ℕ) :
     AlternatingMap R (Module.Dual R M) (Module.Dual R (⋀[R]^n M)) (Fin n) where
   toMultilinearMap := (toTensorPower R M n).dualMap.compMultilinearMap
@@ -76,7 +76,7 @@ lemma pairingDual_ιMulti_ιMulti {n : ℕ} (f : (_ : Fin n) → Module.Dual R M
 
 section
 
-/-! If a `R`-module `M` has a family of vectors `x : ι → M` and linear maps `f : ι → M`
+/-! If an `R`-module `M` has a family of vectors `x : ι → M` and linear maps `f : ι → M`
 such that `f i (x j)` is `1` or `0` depending on `i = j` or `i ≠ j`, then if `ι` has
 a linear order, then a similar property regarding `pairingDual R M n`
 applies to the family of vectors indexed

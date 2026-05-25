@@ -61,7 +61,7 @@ alias ⟨_, sized.union⟩ := sized_union
 @[simp]
 theorem sized_iUnion {f : ι → Set (Finset α)} : (⋃ i, f i).Sized r ↔ ∀ i, (f i).Sized r := by
   simp_rw [Set.Sized, Set.mem_iUnion, forall_exists_index]
-  exact forall_swap
+  exact forall_comm
 
 -- `simp` normal form is `sized_iUnion`.
 theorem sized_iUnion₂ {f : ∀ i, κ i → Set (Finset α)} :

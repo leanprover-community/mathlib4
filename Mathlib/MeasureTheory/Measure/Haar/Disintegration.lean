@@ -24,7 +24,7 @@ TODO: this holds more generally in any locally compact group, see
 [Fremlin, *Measure Theory* (volume 4, 443Q)][fremlin_vol4]
 -/
 
-@[expose] public section
+public section
 
 open MeasureTheory Measure Set
 
@@ -52,7 +52,7 @@ theorem LinearMap.exists_map_addHaar_eq_smul_addHaar' (h : Function.Surjective L
   projection `P` on a complement `T` to its kernel `S`, together with a linear equivalence. -/
   have : FiniteDimensional 𝕜 E := .of_locallyCompactSpace 𝕜
   have : ProperSpace F := by
-    rcases subsingleton_or_nontrivial E with hE|hE
+    rcases subsingleton_or_nontrivial E with hE | hE
     · have : Subsingleton F := Function.Surjective.subsingleton h
       infer_instance
     · have : ProperSpace 𝕜 := .of_locallyCompact_module 𝕜 E
@@ -123,7 +123,7 @@ lemma ae_comp_linearMap_mem_iff (h : Function.Surjective L) {s : Set F} (hs : Me
   apply (ae_map_iff this hs).symm.trans
   rcases L.exists_map_addHaar_eq_smul_addHaar μ ν h with ⟨c, c_pos, hc⟩
   rw [hc]
-  exact ae_smul_measure_iff c_pos.ne'
+  exact ae_ennreal_smul_measure_iff c_pos.ne'
 
 /-- Given a linear map `L : E → F`, a property holds almost everywhere in `F` if and only if,
 almost everywhere in `F`, it holds almost everywhere along the subspace spanned by the

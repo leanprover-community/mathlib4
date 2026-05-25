@@ -20,7 +20,7 @@ The lemmas in this file state that addition maps intervals bijectively. The type
 `OrderedAddCommGroup`, but also to `ℕ` and `ℝ≥0`, which are not groups.
 -/
 
-@[expose] public section
+public section
 
 
 namespace Set

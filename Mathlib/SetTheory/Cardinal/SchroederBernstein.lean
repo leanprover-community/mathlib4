@@ -27,7 +27,7 @@ Cardinals are naturally ordered by `α ≤ β ↔ ∃ f : a → β, Injective f`
 Cardinals are defined and further developed in the folder `SetTheory.Cardinal`.
 -/
 
-@[expose] public section
+public section
 
 
 open Set Function

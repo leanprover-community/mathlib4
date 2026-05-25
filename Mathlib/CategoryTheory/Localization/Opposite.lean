@@ -25,19 +25,19 @@ open CategoryTheory CategoryTheory.Category
 
 namespace CategoryTheory
 
-variable {C D : Type*} [Category C] [Category D] {L : C ⥤ D} {W : MorphismProperty C}
+variable {C D : Type*} [Category* C] [Category* D] {L : C ⥤ D} {W : MorphismProperty C}
 
 namespace Localization
 
 /-- If `L : C ⥤ D` satisfies the universal property of the localisation
 for `W : MorphismProperty C`, then `L.op` also does. -/
-def StrictUniversalPropertyFixedTarget.op {E : Type*} [Category E]
+def StrictUniversalPropertyFixedTarget.op {E : Type*} [Category* E]
     (h : StrictUniversalPropertyFixedTarget L W Eᵒᵖ) :
     StrictUniversalPropertyFixedTarget L.op W.op E where
   inverts := h.inverts.op
   lift F hF := (h.lift F.rightOp hF.rightOp).leftOp
   fac F hF := by
-    convert congr_arg Functor.leftOp (h.fac F.rightOp hF.rightOp)
+    convert! congr_arg Functor.leftOp (h.fac F.rightOp hF.rightOp)
   uniq F₁ F₂ eq := by
     suffices F₁.rightOp = F₂.rightOp by
       rw [← F₁.rightOp_leftOp_eq, ← F₂.rightOp_leftOp_eq, this]
@@ -72,10 +72,12 @@ instance IsLocalization.unop (L : Cᵒᵖ ⥤ Dᵒᵖ) (W : MorphismProperty C�
       infer_instance)
 
 @[simp]
-lemma op_iff (L : C ⥤ D) (W : MorphismProperty C) :
+lemma IsLocalization.op_iff (L : C ⥤ D) (W : MorphismProperty C) :
     L.op.IsLocalization W.op ↔ L.IsLocalization W :=
   ⟨fun _ ↦ inferInstanceAs (L.op.unop.IsLocalization W.op.unop),
     fun _ ↦ inferInstance⟩
+
+@[deprecated (since := "2025-12-10")] alias op_iff := IsLocalization.op_iff
 
 end Functor
 

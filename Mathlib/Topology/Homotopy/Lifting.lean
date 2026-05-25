@@ -8,7 +8,7 @@ module
 public import Mathlib.AlgebraicTopology.FundamentalGroupoid.FundamentalGroup
 public import Mathlib.AlgebraicTopology.FundamentalGroupoid.SimplyConnected
 public import Mathlib.Topology.Connected.LocPathConnected
-public import Mathlib.Topology.Covering
+public import Mathlib.Topology.Covering.Basic
 public import Mathlib.Topology.Homotopy.Path
 public import Mathlib.Topology.UnitInterval
 
@@ -64,7 +64,7 @@ theorem exists_lift_nhds {f : C(I × A, X)} {g : I × A → E} (g_lifts : p ∘ 
       p ∘ g' = f ∧ (∀ a, g' (0, a) = g (0, a)) ∧ ∀ t' ≤ t n, g' (t', a) = g (t', a) by
     obtain ⟨N, haN, N_open, hN⟩ := this n_max
     simp_rw [h_max _ le_rfl] at hN
-    refine ⟨N, N_open.mem_nhds haN, ?_⟩; convert hN
+    refine ⟨N, N_open.mem_nhds haN, ?_⟩; convert! hN
     · rw [eq_comm, Set.eq_univ_iff_forall]; exact fun t ↦ ⟨bot_le, le_top⟩
     · rw [imp_iff_right]; exact le_top
   refine Nat.rec ⟨_, Set.mem_univ a, isOpen_univ, g, ?_, g_lifts, fun a ↦ rfl, fun _ _ ↦ rfl⟩
@@ -179,8 +179,8 @@ theorem existsUnique_continuousMap_lifts [PathConnectedSpace A] [LocPathConnecte
     DFunLike.ext _ _ fun a ↦ ?_⟩
   · obtain ⟨p, hep, rfl⟩ := homeo (F a)
     have hfap : f a ∈ p.target := by rw [← this]; exact p.map_source hep
-    refine ContinuousAt.congr (f := p.symm ∘ f) ((p.continuousOn_symm.continuousAt <|
-      p.open_target.mem_nhds hfap).comp f.2.continuousAt) ?_
+    refine ContinuousAt.congr (f := p.symm ∘ f)
+      ((p.continuousAt_symm hfap).comp f.2.continuousAt) ?_
     have ⟨U, ⟨haU, U_conn⟩, hUp⟩ := (path_connected_basis a).mem_iff.mp
       ((p.open_target.preimage f.continuous).mem_nhds hfap)
     refine Filter.mem_of_superset haU fun x hxU ↦ ?_
@@ -224,7 +224,7 @@ theorem exists_path_lifts : ∃ Γ : C(I, E), p ∘ Γ = γ ∧ Γ 0 = e := by
     obtain ⟨Γ, cont, eqOn, Γ_0⟩ := this n_max
     rw [h_max _ le_rfl] at cont eqOn
     exact ⟨⟨Γ, continuousOn_univ.mp
-      (by convert cont; rw [eq_comm, Set.eq_univ_iff_forall]; exact fun t ↦ ⟨bot_le, le_top⟩)⟩,
+      (by convert! cont; rw [eq_comm, Set.eq_univ_iff_forall]; exact fun t ↦ ⟨bot_le, le_top⟩)⟩,
       funext fun _ ↦ eqOn ⟨bot_le, le_top⟩, Γ_0⟩
   intro n
   induction n with
@@ -299,7 +299,7 @@ variable (H : C(I × A, X)) (f : C(A, E)) (H_0 : ∀ a, H (0, a) = p (f a))
     (f ta.2) (H_0 ta.2) ta.1
   continuous_toFun := cov.isLocalHomeomorph.continuous_lift cov.isSeparatedMap H
     (by ext ⟨t, a⟩; exact congr_fun (cov.liftPath_lifts ..) t)
-    (by convert f.continuous with a; exact cov.liftPath_zero ..)
+    (by convert! f.continuous with a; exact cov.liftPath_zero ..)
     fun a ↦ by dsimp only; exact (cov.liftPath (γ_0 := by simp [*])).2
 
 lemma liftHomotopy_lifts : p ∘ cov.liftHomotopy H f H_0 = H :=
@@ -354,7 +354,7 @@ theorem homotopicRel_iff_comp [PreconnectedSpace A] {f₀ f₁ : C(A, E)} {S : S
       (ContinuousMap.comp ⟨p, cov.continuous⟩ f₀).HomotopicRel (.comp ⟨p, cov.continuous⟩ f₁) S :=
   ⟨fun ⟨F⟩ ↦ ⟨F.compContinuousMap _⟩, fun ⟨F⟩ ↦ ⟨cov.liftHomotopyRel F he rfl rfl⟩⟩
 
-/-- Lifting two paths that are homotopic relative to {0,1}
+/-- Lifting two paths that are homotopic relative to `{0,1}`
   starting from the same point also ends up in the same point. -/
 theorem liftPath_apply_one_eq_of_homotopicRel {γ₀ γ₁ : C(I, X)}
     (h : γ₀.HomotopicRel γ₁ {0,1}) (e : E) (h₀ : γ₀ 0 = p e) (h₁ : γ₁ 0 = p e) :
@@ -393,9 +393,9 @@ open CategoryTheory
 https://ncatlab.org/nlab/show/monodromy. -/
 @[simps] noncomputable def monodromyFunctor : FundamentalGroupoid X ⥤ Type _ where
   obj x := p ⁻¹' {x.as}
-  map := cov.monodromy
-  map_id _ := cov.monodromy_refl
-  map_comp _ _ := funext (cov.monodromy_trans_apply _ _)
+  map f := ↾(cov.monodromy f)
+  map_id _ := by ext x : 3; simpa using congr_fun cov.monodromy_refl x
+  map_comp _ _ := by ext : 3; simpa using cov.monodromy_trans_apply _ _ _
 
 theorem monodromy_bijective {x y : X} (γ : Path.Homotopic.Quotient x y) :
     (cov.monodromy γ).Bijective :=
@@ -426,8 +426,11 @@ theorem existsUnique_continuousMap_lifts [SimplyConnectedSpace A] [LocPathConnec
   · simpa [and_comm] using cov.exists_path_lifts (f.comp γ) e₀ (by simp [γ_0, he])
   let pγ : Path a₀ (γ 1) := ⟨γ, γ_0, rfl⟩
   let pγ' : Path a₀ (γ 1) := ⟨γ', γ'_0, γγ'1.symm⟩
-  convert cov.liftPath_apply_one_eq_of_homotopicRel (ContinuousMap.HomotopicRel.comp_continuousMap
-    (SimplyConnectedSpace.paths_homotopic pγ pγ') f) e₀ (by simp [he]) (by simp [he]) <;>
+  convert!
+    cov.liftPath_apply_one_eq_of_homotopicRel
+      (ContinuousMap.HomotopicRel.comp_continuousMap (SimplyConnectedSpace.paths_homotopic pγ pγ')
+        f)
+      e₀ (by simp [he]) (by simp [he]) <;>
     rw [eq_liftPath_iff']
   exacts [⟨Γ_lifts, Γ_0⟩, ⟨Γ'_lifts, Γ'_0⟩]
 
@@ -464,3 +467,32 @@ theorem existsUnique_continuousMap_lifts_of_range_le
 end homotopy_lifting
 
 end IsCoveringMap
+
+/-- A version of `IsCoveringMap.existsUnique_continuousMap_lifts` for maps
+that are covering on a subset of the codomain.
+
+Let `p` be a covering map on `s`.
+Let `f` be a continuous map with a simply connected locally path connected domain
+such that all values of `f` belong to `s`.
+Given a point `a₀` in the domain of `f` and a lift `e₀` of `f a₀` along `p`,
+there exists a unique lift `F` of `f` along `p` such that `F a₀ = e₀`.
+-/
+theorem IsCoveringMapOn.existsUnique_continuousMap_lifts [SimplyConnectedSpace A]
+    [LocPathConnectedSpace A] {s : Set X} (cov : IsCoveringMapOn p s) (f : C(A, X)) {a₀ : A}
+    {e₀ : E} (he : p e₀ = f a₀) (hs : ∀ a, f a ∈ s) :
+    ∃! F : C(A, E), F a₀ = e₀ ∧ p ∘ F = f := by
+  obtain ⟨f, rfl⟩ : ∃ f' : C(A, s), f = .comp ⟨Subtype.val, by fun_prop⟩ f' :=
+    ⟨⟨fun a ↦ ⟨f a, hs a⟩, by fun_prop⟩, rfl⟩
+  lift e₀ to p ⁻¹' s using by rw [Set.mem_preimage, he]; apply hs
+  rcases cov.isCoveringMap_restrictPreimage.existsUnique_continuousMap_lifts f a₀ e₀
+    (Subtype.ext he) with ⟨F, ⟨rfl, hF⟩, hF_unique⟩
+  refine ⟨.comp ⟨Subtype.val, by fun_prop⟩ F, ⟨rfl, ?_⟩, ?_⟩
+  · simp [← hF, Function.comp_def]
+  · rintro F' ⟨hF'₁, hF'₂⟩
+    simp only [ContinuousMap.coe_comp, ContinuousMap.coe_mk, funext_iff,
+      Function.comp_apply] at hF'₂
+    specialize hF_unique
+      ⟨fun a ↦ ⟨F' a, by rw [Set.mem_preimage, hF'₂]; exact (f a).2⟩, by fun_prop⟩
+      ⟨Subtype.ext hF'₁, ?_⟩
+    · ext; simp [← hF'₂]
+    · ext; simp [← hF_unique]

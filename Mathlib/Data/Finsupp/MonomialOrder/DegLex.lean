@@ -9,11 +9,11 @@ public import Mathlib.Algebra.Group.TransferInstance
 public import Mathlib.Data.Finsupp.MonomialOrder
 public import Mathlib.Data.Finsupp.Weight
 
-/-! Homogeneous lexicographic monomial ordering
+/-! # Homogeneous lexicographic monomial ordering
 
 * `MonomialOrder.degLex`: a variant of the lexicographic ordering that first compares degrees.
-For this, `σ` needs to be embedded with an ordering relation which satisfies `WellFoundedGT σ`.
-(This last property is automatic when `σ` is finite).
+  For this, `σ` needs to be embedded with an ordering relation which satisfies `WellFoundedGT σ`.
+  (This last property is automatic when `σ` is finite).
 
 The type synonym is `DegLex (σ →₀ ℕ)` and the two lemmas `MonomialOrder.degLex_le_iff`
 and `MonomialOrder.degLex_lt_iff` rewrite the ordering as comparisons in the type `Lex (σ →₀ ℕ)`.
@@ -88,7 +88,7 @@ theorem degLex_def {r : α → α → Prop} {s : ℕ → ℕ → Prop} {a b : α
 namespace DegLex
 
 theorem wellFounded
-    {r : α → α → Prop} [IsTrichotomous α r] (hr : WellFounded (Function.swap r))
+    {r : α → α → Prop} [Std.Trichotomous r] (hr : WellFounded (Function.swap r))
     {s : ℕ → ℕ → Prop} (hs : WellFounded s) (hs0 : ∀ ⦃n⦄, ¬ s n 0) :
     WellFounded (Finsupp.DegLex r s) := by
   have wft := WellFounded.prod_lex hs (Finsupp.Lex.wellFounded' hs0 hs hr)
@@ -126,8 +126,8 @@ instance isStrictOrder : IsStrictOrder (DegLex (α →₀ ℕ)) (· < ·) where
       · right; exact ⟨Eq.trans hab.1 hbc.1, lt_trans hab.2 hbc.2⟩
 
 /-- The linear order on `Finsupp`s obtained by the homogeneous lexicographic ordering. -/
-instance : LinearOrder (DegLex (α →₀ ℕ)) :=
-  LinearOrder.lift'
+noncomputable instance : LinearOrder (DegLex (α →₀ ℕ)) :=
+  fast_instance% LinearOrder.lift'
     (fun (f : DegLex (α →₀ ℕ)) ↦ toLex ((ofDegLex f).degree, toLex (ofDegLex f)))
     (fun f g ↦ by simp)
 
@@ -183,9 +183,8 @@ noncomputable instance orderBot : OrderBot (DegLex (α →₀ ℕ)) where
       exact bot_le
     · simp [h]
 
-instance wellFoundedLT [WellFoundedGT α] :
-    WellFoundedLT (DegLex (α →₀ ℕ)) :=
-  ⟨wellFounded wellFounded_gt wellFounded_lt fun n ↦ (zero_le n).not_gt⟩
+instance wellFoundedLT [WellFoundedGT α] : WellFoundedLT (DegLex (α →₀ ℕ)) :=
+  ⟨wellFounded wellFounded_gt wellFounded_lt fun _ ↦ not_lt_zero⟩
 
 end DegLex
 
@@ -238,7 +237,7 @@ example : single (1 : Fin 2) 1 ≺[degLex] single 0 1 := by
   exact Nat.one_pos
 
 /-- for the deg-lexicographic ordering, X 0 * X 1 < X 0  ^ 2 -/
-example : (single 0 1 + single 1 1) ≺[degLex] single (0 : Fin 2) 2  := by
+example : (single 0 1 + single 1 1) ≺[degLex] single (0 : Fin 2) 2 := by
   rw [degLex_lt_iff, lt_iff, ofDegLex_toDegLex]
   simp only [Fin.isValue, map_add, degree_single, Nat.reduceAdd, ofDegLex_toDegLex,
     lt_self_iff_false, toLex_add, true_and, false_or]

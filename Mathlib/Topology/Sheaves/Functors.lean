@@ -104,9 +104,55 @@ def pullbackPushforwardAdjunction (f : X ⟶ Y) :
     pullback A f ⊣ pushforward A f :=
   (Opens.map f).sheafAdjunctionContinuous _ _ _
 
-instance : (pullback A f).IsLeftAdjoint  := (pullbackPushforwardAdjunction A f).isLeftAdjoint
+instance : (pullback A f).IsLeftAdjoint := (pullbackPushforwardAdjunction A f).isLeftAdjoint
 instance : (pushforward A f).IsRightAdjoint := (pullbackPushforwardAdjunction A f).isRightAdjoint
 
 end Sheaf
 
 end TopCat
+
+namespace Topology.IsOpenEmbedding
+
+open TopCat Sheaf
+
+variable (A : Type*) [Category.{w} A]
+variable {f : X ⟶ Y} (hf : IsOpenEmbedding f)
+
+/--
+The "naive" sheaf pullback by an open embedding `f`: on the underlying presheaf, this is just
+composition by the functor `IsOpenMap.functor f` (sending an open `U` to `f '' U`).
+-/
+def sheafPullback : Y.Sheaf A ⥤ X.Sheaf A :=
+  haveI := Topology.IsOpenEmbedding.functor_isContinuous hf
+  hf.functor.sheafPushforwardContinuous _ _ _
+
+variable {FA : A → A → Type*} {CA : A → Type w}
+variable [∀ X Y, FunLike (FA X Y) (CA X) (CA Y)] [ConcreteCategory.{w} A FA] [HasColimits A]
+variable [HasLimits A] [PreservesLimits (CategoryTheory.forget A)]
+variable [PreservesFilteredColimits (CategoryTheory.forget A)]
+variable [(CategoryTheory.forget A).ReflectsIsomorphisms]
+
+set_option backward.isDefEq.respectTransparency false in
+/--
+The pullback of a sheaf by an open embedding `f` is isomorphic to its naive pullback
+`IsOpenEmbedding.sheafPullback`, i.e. to the composition by the functor `IsOpenMap.functor f`.
+Also, this is an isomorphism of functors.
+-/
+def sheafPullbackIso : Sheaf.pullback A f ≅ hf.sheafPullback A := by
+  refine Sheaf.pullbackIso A f ≪≫ NatIso.ofComponents (fun F ↦ ?_) (fun u ↦ ?_)
+  · exact (presheafToSheaf (Opens.grothendieckTopology ↑X) A).mapIso
+      (hf.isOpenMap.pullbackIso.app _) ≪≫
+      (fullyFaithfulSheafToPresheaf (Opens.grothendieckTopology X) A).preimageIso
+      (isoSheafify (Opens.grothendieckTopology X)
+      (TopCat.Presheaf.isSheaf_of_isOpenEmbedding hf F.2)).symm
+  · dsimp
+    rw [← Functor.map_comp_assoc, hf.isOpenMap.pullbackIso.hom.naturality, Sheaf.hom_ext_iff]
+    simp only [Functor.whiskeringLeft_obj_obj, Functor.whiskeringLeft_obj_map, Functor.map_comp,
+      isoSheafify_inv, Category.assoc]
+    rw [ObjectProperty.FullSubcategory.comp_hom, ObjectProperty.FullSubcategory.comp_hom,
+      ObjectProperty.FullSubcategory.comp_hom, ObjectProperty.FullSubcategory.comp_hom]
+    dsimp [sheafPullback, Functor.sheafPushforwardContinuous, Sheaf.forget]
+    simp only [sheafifyMap_sheafifyLift, Category.comp_id, sheafifyMap_sheafifyLift_assoc]
+    rw [CategoryTheory.sheafifyLift_comp]
+
+end Topology.IsOpenEmbedding

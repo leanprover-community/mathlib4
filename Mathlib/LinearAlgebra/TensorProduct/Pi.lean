@@ -43,7 +43,8 @@ section
 
 variable {ι} (M : ι → Type*) [∀ i, AddCommMonoid (M i)] [∀ i, Module R (M i)]
 
-private def piRightHomBil : N →ₗ[S] (∀ i, M i) →ₗ[R] ∀ i, N ⊗[R] M i where
+/-- (Implementation): Bilinear map for defining `TensorProduct.piRightHom`. -/
+def piRightHomBil : N →ₗ[S] (∀ i, M i) →ₗ[R] ∀ i, N ⊗[R] M i where
   toFun n := LinearMap.pi (fun i ↦ mk R N (M i) n ∘ₗ LinearMap.proj i)
   map_add' _ _ := by
     ext
@@ -62,7 +63,7 @@ lemma piRightHom_tmul (x : N) (f : ∀ i, M i) :
 
 variable [Fintype ι] [DecidableEq ι]
 
-private
+/-- (Implementation): Inverse for `TensorProduct.piRight`. -/
 def piRightInv : (∀ i, N ⊗[R] M i) →ₗ[S] N ⊗[R] ∀ i, M i :=
   LinearMap.lsum S (fun i ↦ N ⊗[R] M i) S <| fun i ↦
     AlgebraTensorModule.map LinearMap.id (single R M i)
@@ -116,7 +117,8 @@ TODO: generalize to `S`-linear. -/
 
 end
 
-private def piScalarRightHomBil : N →ₗ[S] (ι → R) →ₗ[R] (ι → N) where
+/-- (Implementation): Bilinear map for defining `TensorProduct.piScalarRightHom`. -/
+def piScalarRightHomBil : N →ₗ[S] (ι → R) →ₗ[R] (ι → N) where
   toFun n := LinearMap.compLeft (toSpanSingleton R N n) ι
   map_add' x y := by
     ext i j
@@ -141,7 +143,7 @@ lemma piScalarRightHom_tmul (x : N) (f : ι → R) :
 
 variable [Fintype ι] [DecidableEq ι]
 
-private
+/-- (Implementation): Inverse for `TensorProduct.piScalarRight`. -/
 def piScalarRightInv : (ι → N) →ₗ[S] N ⊗[R] (ι → R) :=
   LinearMap.lsum S (fun _ ↦ N) S <| fun i ↦ {
     toFun := fun n ↦ n ⊗ₜ Pi.single i 1

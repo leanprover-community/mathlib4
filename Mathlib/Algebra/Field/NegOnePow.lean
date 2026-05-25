@@ -11,7 +11,7 @@ public import Mathlib.Tactic.NormNum
 
 /-! # Integer powers of `-1` in a field -/
 
-@[expose] public section
+public section
 
 namespace Int
 

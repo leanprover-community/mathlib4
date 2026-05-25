@@ -16,7 +16,7 @@ public import Mathlib.Order.Interval.Finset.Basic
 
 -/
 
-@[expose] public section
+public section
 
 variable {X : Type*} [LinearOrder X] [LocallyFiniteOrder X]
 

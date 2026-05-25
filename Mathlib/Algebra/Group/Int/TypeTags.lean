@@ -12,7 +12,7 @@ public import Mathlib.Algebra.Group.TypeTags.Basic
 # Lemmas about `Multiplicative ℤ`.
 -/
 
-@[expose] public section
+public section
 
 
 open Nat

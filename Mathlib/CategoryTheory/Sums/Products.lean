@@ -28,7 +28,7 @@ open scoped Prod
 
 universe v u
 
-variable (A : Type*) [Category A] (A' : Type*) [Category A']
+variable (A : Type*) [Category* A] (A' : Type*) [Category* A']
   (B : Type u) [Category.{v} B]
 
 namespace Sum
@@ -123,6 +123,7 @@ lemma natTransOfWhiskerLeftInlInr_comp {F G H : A ⊕ A' ⥤ B}
       natTransOfWhiskerLeftInlInr ν₁ ν₂ := by
   cat_disch
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A consequence of `functorEquiv`: we can construct a natural isomorphism of functors
 `A ⊕ A' ⥤ B` from the data of natural isomorphisms of their whiskering with `inl_` and `inr_`. -/
 @[simps]
@@ -156,7 +157,7 @@ end Swap
 
 section CompatibilityWithProductAssociator
 
-variable (T : Type*) [Category T]
+variable (T : Type*) [Category* T]
 
 /-- The equivalence `Sum.functorEquiv` sends associativity of sums to associativity of products -/
 @[simps! hom_app_fst hom_app_snd_fst hom_app_snd_snd inv_app_fst inv_app_snd_fst inv_app_snd_snd]

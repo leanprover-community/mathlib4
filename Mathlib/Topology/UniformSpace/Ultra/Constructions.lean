@@ -27,16 +27,13 @@ The `Prod` instance only requires `Mathlib/Topology/UniformSpace/Basic.lean`.
 
 -/
 
-@[expose] public section
+public section
 
 variable {X Y : Type*}
 
 instance SetRel.isTrans_entourageProd {s : SetRel X X} {t : SetRel Y Y} [s.IsTrans] [t.IsTrans] :
     (entourageProd s t).IsTrans where
   trans _ _ _ h h' := ⟨s.trans h.left h'.left, t.trans h.right h'.right⟩
-
-@[deprecated (since := "2025-10-17")]
-alias IsTransitiveRel.entourageProd := SetRel.isTrans_entourageProd
 
 lemma IsUltraUniformity.comap {u : UniformSpace Y} (h : IsUltraUniformity Y) (f : X → Y) :
     @IsUltraUniformity _ (u.comap f) := by
@@ -77,13 +74,13 @@ instance IsUltraUniformity.pi {ι : Type*} {X : ι → Type*} [U : Π i, Uniform
     [h : ∀ i, IsUltraUniformity (X i)] :
     IsUltraUniformity (Π i, X i) := by
   suffices @IsUltraUniformity _ (⨅ i, UniformSpace.comap (Function.eval i) (U i)) by
-    simpa [Pi.uniformSpace_eq _] using this
+    simpa +instances [Pi.uniformSpace_eq _] using this
   exact .iInf fun i ↦ .comap (h i) (Function.eval i)
 
 set_option linter.flexible false in -- simp followed by infer_instance
 instance IsUltraUniformity.bot [UniformSpace X] [DiscreteUniformity X] : IsUltraUniformity X := by
   have := Filter.hasBasis_principal (SetRel.id (α := X))
-  rw [← DiscreteUniformity.eq_principal_relId] at this
+  rw [← DiscreteUniformity.eq_principal_setRelId] at this
   apply mk_of_hasBasis this <;> { simp; infer_instance }
 
 set_option linter.flexible false in -- simp followed by infer_instance

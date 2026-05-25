@@ -27,8 +27,8 @@ along the localization functor `L`.
 ## TODO
 
 - refactor `Functor.rightDerived` (and `Functor.leftDerived`) when the necessary
-material enters mathlib: derived categories, injective/projective derivability
-structures, existence of derived functors from derivability structures.
+  material enters mathlib: derived categories, injective/projective derivability
+  structures, existence of derived functors from derivability structures.
 
 ## References
 
@@ -42,8 +42,8 @@ namespace CategoryTheory
 
 namespace Functor
 
-variable {C C' D D' H H' : Type _} [Category C] [Category C']
-  [Category D] [Category D'] [Category H] [Category H']
+variable {C C' D D' H H' : Type _} [Category* C] [Category* C']
+  [Category* D] [Category* D'] [Category* H] [Category* H']
   (RF RF' RF'' : D ⥤ H) {F F' F'' : C ⥤ H} (e : F ≅ F') {L : C ⥤ D}
   (α : F ⟶ L ⋙ RF) (α' : F' ⟶ L ⋙ RF') (α'' : F'' ⟶ L ⋙ RF'') (α'₂ : F ⟶ L ⋙ RF')
   (W : MorphismProperty C)
@@ -107,6 +107,7 @@ lemma rightDerivedNatTrans_fac (τ : F ⟶ F') :
   dsimp only [rightDerivedNatTrans]
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma rightDerivedNatTrans_app (τ : F ⟶ F') (X : C) :
     α.app X ≫ (rightDerivedNatTrans RF RF' α α' W τ).app (L.obj X) =

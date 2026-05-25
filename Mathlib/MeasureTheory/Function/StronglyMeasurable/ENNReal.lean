@@ -16,7 +16,7 @@ whose support has finite measure.
 
 -/
 
-@[expose] public section
+public section
 
 open MeasureTheory
 open scoped ENNReal

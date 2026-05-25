@@ -11,7 +11,7 @@ public import Mathlib.Data.List.Basic
 # Properties of `List.enum`
 -/
 
-@[expose] public section
+public section
 
 namespace List
 

@@ -102,7 +102,7 @@ theorem image₂_subset_iff_left : image₂ f s t ⊆ u ↔ ∀ a ∈ s, (t.imag
   simp_rw [image₂_subset_iff, image_subset_iff]
 
 theorem image₂_subset_iff_right : image₂ f s t ⊆ u ↔ ∀ b ∈ t, (s.image fun a => f a b) ⊆ u := by
-  simp_rw [image₂_subset_iff, image_subset_iff, @forall₂_swap α]
+  simp_rw [image₂_subset_iff, image_subset_iff, @forall₂_comm α]
 
 @[simp]
 theorem image₂_nonempty_iff : (image₂ f s t).Nonempty ↔ s.Nonempty ∧ t.Nonempty := by
@@ -129,7 +129,7 @@ theorem image₂_empty_right : image₂ f s ∅ = ∅ :=
 
 @[simp]
 theorem image₂_eq_empty_iff : image₂ f s t = ∅ ↔ s = ∅ ∨ t = ∅ := by
-  simp_rw [← not_nonempty_iff_eq_empty, image₂_nonempty_iff, not_and_or]
+  contrapose!; exact image₂_nonempty_iff
 
 @[simp]
 theorem image₂_singleton_left : image₂ f {a} t = t.image fun b => f a b :=

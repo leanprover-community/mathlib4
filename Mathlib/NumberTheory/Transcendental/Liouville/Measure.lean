@@ -27,7 +27,7 @@ measure. The fact that the filters are disjoint means that two mutually exclusiv
 Liouville number, Lebesgue measure, residual, generic property
 -/
 
-@[expose] public section
+public section
 
 open scoped Filter ENNReal Topology NNReal
 

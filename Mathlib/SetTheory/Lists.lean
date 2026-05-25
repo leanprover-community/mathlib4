@@ -9,6 +9,7 @@ public import Mathlib.Algebra.Order.Group.Nat
 public import Mathlib.Algebra.Order.Monoid.NatCast
 public import Mathlib.Algebra.Ring.Nat
 public import Mathlib.Data.Sigma.Basic
+public import Batteries.Tactic.Lint.TypeClass
 
 /-!
 # A computable model of ZFA without infinity
@@ -97,8 +98,7 @@ theorem to_ofList (l : List (Lists α)) : toList (ofList l) = l := by induction 
 
 @[simp]
 theorem of_toList : ∀ l : Lists' α true, ofList (toList l) = l :=
-  suffices
-    ∀ (b) (h : true = b) (l : Lists' α b),
+  suffices ∀ (b) (h : true = b) (l : Lists' α b),
       let l' : Lists' α true := h ▸ l
       ofList (toList l') = l'
     from this _ rfl
@@ -231,17 +231,16 @@ theorem of_toList : ∀ {l : Lists α}, IsList l → ofList (toList l) = l
 instance : Inhabited (Lists α) :=
   ⟨of' Lists'.nil⟩
 
-instance [DecidableEq α] : DecidableEq (Lists α) := by unfold Lists; infer_instance
+instance [DecidableEq α] : DecidableEq (Lists α) := inferInstanceAs <| DecidableEq (Sigma _)
 
-instance [SizeOf α] : SizeOf (Lists α) := by unfold Lists; infer_instance
+instance [SizeOf α] : SizeOf (Lists α) := inferInstanceAs <| SizeOf (Sigma _)
 
 /-- A recursion principle for pairs of ZFA lists and proper ZFA prelists. -/
 def inductionMut (C : Lists α → Sort*) (D : Lists' α true → Sort*)
     (C0 : ∀ a, C (atom a)) (C1 : ∀ l, D l → C (of' l))
     (D0 : D Lists'.nil) (D1 : ∀ a l, C a → D l → D (Lists'.cons a l)) :
     PProd (∀ l, C l) (∀ l, D l) := by
-  suffices
-    ∀ {b} (l : Lists' α b),
+  suffices ∀ {b} (l : Lists' α b),
       PProd (C ⟨_, l⟩)
         (match b, l with
         | true, l => D l
@@ -326,6 +325,7 @@ theorem lt_sizeof_cons' {b} (a : Lists' α b) (l) :
 variable [DecidableEq α]
 
 mutual
+  @[implicit_reducible]
   instance Equiv.decidable : ∀ l₁ l₂ : Lists α, Decidable (l₁ ~ l₂)
     | ⟨false, l₁⟩, ⟨false, l₂⟩ =>
       decidable_of_iff' (l₁ = l₂) <| by
@@ -348,6 +348,7 @@ mutual
         Subset.decidable l₂ l₁
       exact decidable_of_iff' _ Equiv.antisymm_iff
   termination_by x y => sizeOf x + sizeOf y
+  @[implicit_reducible]
   instance Subset.decidable : ∀ l₁ l₂ : Lists' α true, Decidable (l₁ ⊆ l₂)
     | Lists'.nil, _ => isTrue Lists'.Subset.nil
     | @Lists'.cons' _ b a l₁, l₂ => by
@@ -361,6 +362,7 @@ mutual
         Subset.decidable l₁ l₂
       exact decidable_of_iff' _ (@Lists'.cons_subset _ ⟨_, _⟩ _ _)
   termination_by x y => sizeOf x + sizeOf y
+  @[implicit_reducible]
   instance mem.decidable : ∀ (a : Lists α) (l : Lists' α true), Decidable (a ∈ l)
     | a, Lists'.nil => isFalse <| by rintro ⟨_, ⟨⟩, _⟩
     | a, Lists'.cons' b l₂ => by

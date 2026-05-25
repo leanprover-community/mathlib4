@@ -118,12 +118,12 @@ theorem liftNormedAddGroupHom_normNoninc {N : Type*} [SeminormedAddCommGroup N]
 
 /-- The operator norm of the projection is `1` if there is an element whose norm is different from
 `0`. -/
-theorem norm_normedMk_eq_one (h : ∃ x : M, ‖x‖ ≠ 0) :
+theorem norm_normedMk_eq_one [NontrivialTopology M] :
     ‖normedMk (M := M)‖ = 1 := by
   apply NormedAddGroupHom.opNorm_eq_of_bounds _ zero_le_one
   · simpa only [normedMk_apply, one_mul] using fun _ ↦ le_rfl
   · intro N _ hle
-    obtain ⟨x, _⟩ := h
+    obtain ⟨x, _⟩ := exists_norm_ne_zero M
     exact one_le_of_le_mul_right₀ (by positivity) (hle x)
 
 /-- The projection is `0` if and only if all the elements have norm `0`. -/

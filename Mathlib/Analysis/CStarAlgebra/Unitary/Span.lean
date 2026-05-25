@@ -43,7 +43,7 @@ lemma IsSelfAdjoint.self_add_I_smul_cfcSqrt_sub_sq_mem_unitary (a : A) (ha : IsS
       rwa [sub_nonneg, ← CStarAlgebra.norm_le_one_iff_of_nonneg (a ^ 2), sq, ha.norm_mul_self,
         sq_le_one_iff₀ (by positivity)]
     rw [cfc_add .., cfc_const_mul .., ← cfc_real_eq_complex (fun x ↦ x) ha, cfc_id' ℝ a,
-      ← cfc_real_eq_complex (fun x ↦ √(1 - x ^2)) ha, cfcₙ_eq_cfc, cfc_comp' (√·) (1 - · ^ 2) a,
+      ← cfc_real_eq_complex (fun x ↦ √(1 - x ^ 2)) ha, cfcₙ_eq_cfc, cfc_comp' (√·) (1 - · ^ 2) a,
       cfc_sub .., cfc_pow .., cfc_const_one .., cfc_id' ..]
   rw [key, cfc_unitary_iff ..]
   intro x hx

@@ -209,8 +209,9 @@ private lemma Nat.isSemilinearSet_preimage_of_isLinearSet [Finite ι] {F : Type*
   change IsSemilinearSet { x | f x ∈ _ }
   simp only [mem_vadd_set, mem_range, vadd_eq_add, exists_exists_eq_and]
   apply IsSemilinearSet.proj'
-  convert isSemilinearSet_setOf_eq a 0 (g.comp (LinearMap.funLeft ℕ ℕ Sum.inr).toAddMonoidHom)
-    ((f : (ι → ℕ) →+ M).comp (LinearMap.funLeft ℕ ℕ Sum.inl).toAddMonoidHom)
+  convert!
+    isSemilinearSet_setOf_eq a 0 (g.comp (LinearMap.funLeft ℕ ℕ Sum.inr).toAddMonoidHom)
+      ((f : (ι → ℕ) →+ M).comp (LinearMap.funLeft ℕ ℕ Sum.inl).toAddMonoidHom)
   simp [LinearMap.funLeft]
 
 private theorem Nat.isSemilinearSet_preimage [Finite ι] {F : Type*}
@@ -275,8 +276,9 @@ private lemma Nat.isSemilinearSet_inter_of_isLinearSet [Finite ι] {s₁ s₂ : 
   rcases hs₂ with ⟨v, m, B, rfl⟩
   simp_rw [← setOf_and, exists_and_exists_comm]
   refine IsSemilinearSet.proj' (IsSemilinearSet.proj' ?_)
-  convert isSemilinearSet_setOf_mulVec_eq (κ := (ι ⊕ Fin n) ⊕ Fin m) (Sum.elim u v) 0
-    (fromBlocks (fromCols 0 A) 0 0 B) (fromBlocks (fromCols 1 0) 0 (fromCols 1 0) 0)
+  convert!
+    isSemilinearSet_setOf_mulVec_eq (κ := (ι ⊕ Fin n) ⊕ Fin m) (Sum.elim u v) 0
+      (fromBlocks (fromCols 0 A) 0 0 B) (fromBlocks (fromCols 1 0) 0 (fromCols 1 0) 0)
   simp [fromBlocks_mulVec, fromCols_mulVec, ← Sum.elim_add_add, Sum.elim_eq_iff]
 
 private theorem Nat.isSemilinearSet_inter [Finite ι] {s₁ s₂ : Set (ι → ℕ)}
@@ -366,7 +368,7 @@ private theorem linearIndepOn_toRatVec {s : Set (ι → ℕ)} (hs : LinearIndepO
   rw [linearIndepOn_iff_linearIndepOn_finset] at hs
   specialize hs t ht
   rw [linearIndepOn_finset_iffₛ] at hs
-  specialize hs (Int.toNat ∘ f) (Int.toNat ∘ (- ·) ∘ f) ?_ i hi
+  specialize hs (Int.toNat ∘ f) (Int.toNat ∘ (-·) ∘ f) ?_ i hi
   · simp_rw [← toRatVec_inj, map_sum]
     rw [← sub_eq_zero, ← Finset.sum_sub_distrib, ← heq]
     refine Finset.sum_congr rfl fun j hj => ?_
@@ -420,7 +422,7 @@ private theorem span_basisSet : span ℚ (toRatVec '' hs.basisSet) = ⊤ := by
     ← top_le_iff]
   apply (span_mono (image_mono subset_union_right)).trans'
   rw [top_le_iff]
-  convert (Pi.basisFun ℚ ι).span_eq
+  convert! (Pi.basisFun ℚ ι).span_eq
   ext
   simp only [mem_image, mem_range, exists_exists_eq_and]
   congr!
@@ -454,7 +456,7 @@ private noncomputable def floor (x i) :=
   ⌊hs.basis.repr (toRatVec x - toRatVec hs.base) i⌋
 
 private noncomputable def fract (x) :=
-  x + ∑ i, (- hs.floor x i).toNat • i.1 - ∑ i, (hs.floor x i).toNat • i.1
+  x + ∑ i, (-hs.floor x i).toNat • i.1 - ∑ i, (hs.floor x i).toNat • i.1
 
 private theorem floor_base (i) : hs.floor hs.base i = 0 := by simp [floor]
 
@@ -481,7 +483,7 @@ private theorem floor_le_floor_add_of_mem_closure {x y i} (hy : y ∈ closure hs
   simp_rw [map_add, add_sub_right_comm, map_add, Finsupp.add_apply, le_add_iff_nonneg_right]
   rw [mem_closure_iff_of_fintype] at hy
   rcases hy with ⟨f, rfl⟩
-  simp_rw [map_sum, Finsupp.coe_finset_sum, Finset.sum_apply]
+  simp_rw [map_sum, Finsupp.coe_finsetSum, Finset.sum_apply]
   apply Finset.sum_nonneg
   simp [-nsmul_eq_mul, ← hs.basis_apply, Finsupp.single_apply, ite_nonneg]
 
@@ -498,7 +500,7 @@ private theorem floor_add_of_mem_closure {x y i t} (ht : t ⊆ hs.basisSet) (hi 
   | add _ _ _ _ ih₁ ih₂ => simp [ih₁, ih₂]
 
 private theorem floor_toNat_sum_le (x) :
-    ∑ i, (hs.floor x i).toNat • i.1 ≤ x + ∑ i, (- hs.floor x i).toNat • i.1 := by
+    ∑ i, (hs.floor x i).toNat • i.1 ≤ x + ∑ i, (-hs.floor x i).toNat • i.1 := by
   rw [← toRatVec_mono]
   simp only [floor, map_add, map_sum, map_nsmul]
   rw [← sub_le_iff_le_add, ← Finset.sum_sub_distrib]
@@ -514,7 +516,7 @@ private theorem floor_toNat_sum_le (x) :
   · simp [toRatVec_nonneg]
 
 private theorem add_floor_neg_toNat_sum_eq (x) :
-    x + ∑ i, (- hs.floor x i).toNat • i.1 = hs.fract x + ∑ i, (hs.floor x i).toNat • i.1 := by
+    x + ∑ i, (-hs.floor x i).toNat • i.1 = hs.fract x + ∑ i, (hs.floor x i).toNat • i.1 := by
   simp only [fract]
   rw [tsub_add_cancel_of_le (hs.floor_toNat_sum_le x)]
 
@@ -584,7 +586,7 @@ private theorem mem_iff_fract_eq_and_floor_nonneg (x) :
     rw [Finset.sum_filter, ← hx₁]
     conv_rhs =>
       rw [← add_zero x, ← Finset.sum_const_zero (ι := hs.basisSet) (s := Finset.univ)]
-    convert (hs.add_floor_neg_toNat_sum_eq x).symm using 3 with i _ i
+    convert! (hs.add_floor_neg_toNat_sum_eq x).symm using 3 with i _ i
     · split_ifs with hi
       · simp
       · simp [(hx₂ i).2 hi]
@@ -619,9 +621,10 @@ private theorem isSemilinearSet_setOfFractNe : IsSemilinearSet hs.setOfFractNe :
       (.closure_of_finite hs.finite_basisSet) (LinearMap.funLeft ℕ ℕ Sum.inr)
     classical
     haveI := Fintype.ofFinite ι
-    convert Nat.isSemilinearSet_setOf_mulVec_eq (κ := (ι ⊕ ι) ⊕ ι) 0 i
-      (Matrix.fromCols (Matrix.fromCols 1 0) 1) (Matrix.fromCols (Matrix.fromCols 0 1) 0)
-      using 4 <;> simp [fromCols_mulVec]
+    convert!
+      Nat.isSemilinearSet_setOf_mulVec_eq (κ := (ι ⊕ ι) ⊕ ι) 0 i
+        (Matrix.fromCols (Matrix.fromCols 1 0) 1) (Matrix.fromCols (Matrix.fromCols 0 1) 0) using
+      4 <;> simp [fromCols_mulVec]
 
 private noncomputable def setOfFloorNeg : Set (ι → ℕ) :=
   { x | hs.fract x = hs.base ∧ ∃ i, hs.floor x i < 0 }
@@ -647,7 +650,7 @@ private theorem isSemilinearSet_setOfFloorNeg : IsSemilinearSet hs.setOfFloorNeg
           tsub_add_cancel_of_le
             ((Int.le_toNat (neg_pos.2 hi).le).2 (le_neg.1 (Int.cast_le_neg_one_of_neg hi))),
           add_assoc x,
-          Finset.add_sum_erase _ (fun j => (- hs.floor x j).toNat • j.1) (Finset.mem_univ i),
+          Finset.add_sum_erase _ (fun j => (-hs.floor x j).toNat • j.1) (Finset.mem_univ i),
           ← add_zero (Finset.sum (Finset.univ.erase i) _),
           ← zero_nsmul i.1, ← Int.toNat_eq_zero.2 hi.le,
           Finset.sum_erase_add _ _ (Finset.mem_univ i), ← hx]
@@ -680,9 +683,10 @@ private theorem isSemilinearSet_setOfFloorNeg : IsSemilinearSet hs.setOfFloorNeg
     apply Nat.isSemilinearSet_inter <| Nat.isSemilinearSet_preimage
       (.closure_of_finite hs.finite_basisSet.diff) (LinearMap.funLeft ℕ ℕ Sum.inr)
     haveI := Fintype.ofFinite ι
-    convert Nat.isSemilinearSet_setOf_mulVec_eq (κ := ((ι ⊕ ι) ⊕ ι) ⊕ ι) i.1 hs.base
-      (Matrix.fromCols (Matrix.fromCols (Matrix.fromCols 1 1) 0) 1)
-      (Matrix.fromCols (Matrix.fromCols (Matrix.fromCols 0 0) 1) 0) using 4
+    convert!
+      Nat.isSemilinearSet_setOf_mulVec_eq (κ := ((ι ⊕ ι) ⊕ ι) ⊕ ι) i.1 hs.base
+        (Matrix.fromCols (Matrix.fromCols (Matrix.fromCols 1 1) 0) 1)
+        (Matrix.fromCols (Matrix.fromCols (Matrix.fromCols 0 0) 1) 0) using 4
       <;> simp [add_comm _ i.1, add_assoc, fromCols_mulVec]
 
 private noncomputable def setOfFloorPos : Set (ι → ℕ) :=
@@ -740,7 +744,8 @@ private theorem isSemilinearSet_setOfFloorPos : IsSemilinearSet hs.setOfFloorPos
     apply Nat.isSemilinearSet_inter <| Nat.isSemilinearSet_preimage
       (.closure_of_finite hs.finite_basisSet.diff) (LinearMap.funLeft ℕ ℕ Sum.inr)
     haveI := Fintype.ofFinite ι
-    convert Nat.isSemilinearSet_setOf_mulVec_eq (κ := ((ι ⊕ ι) ⊕ ι) ⊕ ι) 0 (hs.base + i.1)
+    convert!
+      Nat.isSemilinearSet_setOf_mulVec_eq (κ := ((ι ⊕ ι) ⊕ ι) ⊕ ι) 0 (hs.base + i.1)
         (Matrix.fromCols (Matrix.fromCols (Matrix.fromCols 1 0) 0) 1)
         (Matrix.fromCols (Matrix.fromCols (Matrix.fromCols 0 1) 1) 0) using 4
       <;> simp [add_assoc, fromCols_mulVec]
@@ -749,8 +754,9 @@ end IsProperLinearSet
 
 private lemma Nat.isSemilinearSet_compl_of_isProperLinearSet [Finite ι] {s : Set (ι → ℕ)}
     (hs : IsProperLinearSet s) : IsSemilinearSet sᶜ := by
-  convert hs.isSemilinearSet_setOfFractNe.union <| hs.isSemilinearSet_setOfFloorNeg.union <|
-    hs.isSemilinearSet_setOfFloorPos using 1
+  convert!
+    hs.isSemilinearSet_setOfFractNe.union <|
+      hs.isSemilinearSet_setOfFloorNeg.union <| hs.isSemilinearSet_setOfFloorPos using 1
   ext
   simp only [mem_compl_iff, hs.mem_iff_fract_eq_and_floor_nonneg, IsProperLinearSet.setOfFractNe,
     IsProperLinearSet.setOfFloorNeg, IsProperLinearSet.setOfFloorPos, mem_union, mem_setOf_eq]

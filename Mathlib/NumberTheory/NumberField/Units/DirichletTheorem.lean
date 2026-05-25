@@ -54,7 +54,7 @@ We define a group morphism from `(𝓞 K)ˣ` to `logSpace K`, defined as
 `{w : InfinitePlace K // w ≠ w₀} → ℝ` where `w₀` is a distinguished (arbitrary) infinite place,
 prove that its kernel is the torsion subgroup (see `logEmbedding_eq_zero_iff`) and that its image,
 called `unitLattice`, is a full `ℤ`-lattice. It follows that `unitLattice` is a free `ℤ`-module
-(see `instModuleFree_unitLattice`) of rank `card (InfinitePlaces K) - 1` (see `unitLattice_rank`).
+(see `instModuleFree_unitLattice`) of rank `card (InfinitePlace K) - 1` (see `unitLattice_rank`).
 To prove that the `unitLattice` is a full `ℤ`-lattice, we need to prove that it is discrete
 (see `unitLattice_inter_ball_finite`) and that it spans the full space over `ℝ`
 (see `unitLattice_span_eq_top`); this is the main part of the proof, see the section `span_top`
@@ -176,7 +176,7 @@ open scoped Classical in
 theorem unitLattice_inter_ball_finite (r : ℝ) :
     ((unitLattice K : Set (logSpace K)) ∩ Metric.closedBall 0 r).Finite := by
   obtain hr | hr := lt_or_ge r 0
-  · convert Set.finite_empty
+  · convert! Set.finite_empty
     rw [Metric.closedBall_eq_empty.mpr hr]
     exact Set.inter_empty _
   · suffices {x : (𝓞 K)ˣ | IsIntegral ℤ (x : K) ∧
@@ -213,6 +213,7 @@ open NumberField.mixedEmbedding NNReal
 
 variable (w₁ : InfinitePlace K) {B : ℕ} (hB : minkowskiBound K 1 < (convexBodyLTFactor K) * B)
 
+set_option backward.isDefEq.respectTransparency false in
 include hB in
 /-- This result shows that there always exists a next term in the sequence. -/
 theorem seq_next {x : 𝓞 K} (hx : x ≠ 0) :
@@ -225,7 +226,7 @@ theorem seq_next {x : 𝓞 K} (hx : x ≠ 0) :
   suffices ∀ w, w ≠ w₁ → f w ≠ 0 by
     obtain ⟨g, h_geqf, h_gprod⟩ := adjust_f K B this
     obtain ⟨y, h_ynz, h_yle⟩ := exists_ne_zero_mem_ringOfIntegers_lt K (f := g)
-      (by rw [convexBodyLT_volume]; convert hB; exact congr_arg ((↑) : NNReal → ENNReal) h_gprod)
+      (by rw [convexBodyLT_volume]; convert! hB; exact congr_arg ((↑) : NNReal → ENNReal) h_gprod)
     refine ⟨y, h_ynz, fun w hw ↦ (h_geqf w hw ▸ h_yle w).trans ?_, ?_⟩
     · rw [← Rat.cast_le (K := ℝ), Rat.cast_natCast]
       calc
@@ -359,7 +360,7 @@ instance instDiscrete_unitLattice : DiscreteTopology (unitLattice K) := by
   refine isOpen_singleton_of_finite_mem_nhds 0 (s := Metric.closedBall 0 1) ?_ ?_
   · exact Metric.closedBall_mem_nhds _ (by simp)
   · refine Set.Finite.of_finite_image ?_ (Set.injOn_of_injective Subtype.val_injective)
-    convert unitLattice_inter_ball_finite K 1
+    convert! unitLattice_inter_ball_finite K 1
     ext x
     refine ⟨?_, fun ⟨hx1, hx2⟩ ↦ ⟨⟨x, hx1⟩, hx2, rfl⟩⟩
     rintro ⟨x, hx, rfl⟩
@@ -369,6 +370,7 @@ open scoped Classical in
 instance instZLattice_unitLattice : IsZLattice ℝ (unitLattice K) where
   span_top := unitLattice_span_eq_top K
 
+set_option backward.isDefEq.respectTransparency false in
 protected theorem finrank_eq_rank :
     finrank ℝ (logSpace K) = Units.rank K := by
   classical

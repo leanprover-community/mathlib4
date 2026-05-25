@@ -56,13 +56,13 @@ open Limits Category
 
 section
 
-variable (C : Type*) [Category C] (A : Type*) [AddMonoid A] [HasShift C A]
+variable (C : Type*) [Category* C] (A : Type*) [AddMonoid A] [HasShift C A]
 
 namespace HasShift
 
 /-- Construction of the naive shift on the opposite category of a category `C`:
 the shiftfunctor by `n` is `(shiftFunctor C n).op`. -/
-noncomputable def mkShiftCoreOp : ShiftMkCore Cᵒᵖ A where
+def mkShiftCoreOp : ShiftMkCore Cᵒᵖ A where
   F n := (shiftFunctor C n).op
   zero := (NatIso.op (shiftFunctorZero C A)).symm
   add a b := (NatIso.op (shiftFunctorAdd C a b)).symm
@@ -83,9 +83,10 @@ def OppositeShift (A : Type*) [AddMonoid A] [HasShift C A] := Cᵒᵖ
 
 instance : Category (OppositeShift C A) := inferInstanceAs (Category Cᵒᵖ)
 
-noncomputable instance : HasShift (OppositeShift C A) A :=
+instance : HasShift (OppositeShift C A) A :=
   hasShiftMk Cᵒᵖ A (HasShift.mkShiftCoreOp C A)
 
+set_option backward.isDefEq.respectTransparency false in
 instance [HasZeroObject C] : HasZeroObject (OppositeShift C A) := by
   dsimp only [OppositeShift]
   infer_instance
@@ -102,6 +103,7 @@ lemma oppositeShiftFunctorZero_inv_app (X : OppositeShift C A) :
     (shiftFunctorZero (OppositeShift C A) A).inv.app X =
       ((shiftFunctorZero C A).hom.app X.unop).op := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 lemma oppositeShiftFunctorZero_hom_app (X : OppositeShift C A) :
     (shiftFunctorZero (OppositeShift C A) A).hom.app X =
       ((shiftFunctorZero C A).inv.app X.unop).op := by
@@ -117,6 +119,7 @@ lemma oppositeShiftFunctorAdd_inv_app :
     (shiftFunctorAdd (OppositeShift C A) a b).inv.app X =
       ((shiftFunctorAdd C a b).hom.app X.unop).op := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 lemma oppositeShiftFunctorAdd_hom_app :
     (shiftFunctorAdd (OppositeShift C A) a b).hom.app X =
       ((shiftFunctorAdd C a b).inv.app X.unop).op := by
@@ -139,7 +142,7 @@ lemma oppositeShiftFunctorAdd'_hom_app :
 
 end
 
-variable {C D : Type*} [Category C] [Category D] (A : Type*) [AddMonoid A]
+variable {C D : Type*} [Category* C] [Category* D] (A : Type*) [AddMonoid A]
   [HasShift C A] [HasShift D A] (F : C ⥤ D)
 
 /--
@@ -165,7 +168,7 @@ namespace Functor
 Given a `CommShift` structure on `F`, this is the corresponding `CommShift` structure on
 `OppositeShift.functor F` (for the naive shifts on the opposite categories).
 -/
-noncomputable instance commShiftOp [CommShift F A] :
+instance commShiftOp [CommShift F A] :
     CommShift (OppositeShift.functor A F) A where
   commShiftIso a := (NatIso.op (F.commShiftIso a)).symm
   commShiftIso_zero := by
@@ -186,12 +189,13 @@ noncomputable instance commShiftOp [CommShift F A] :
 lemma commShiftOp_iso_eq [CommShift F A] (a : A) :
     (OppositeShift.functor A F).commShiftIso a = (NatIso.op (F.commShiftIso a)).symm := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 Given a `CommShift` structure on `OppositeShift.functor F` (for the naive shifts on the opposite
 categories), this is the corresponding `CommShift` structure on `F`.
 -/
-@[simps -isSimp]
-noncomputable def commShiftUnop
+@[simps -isSimp, implicit_reducible]
+def commShiftUnop
     [CommShift (OppositeShift.functor A F) A] : CommShift F A where
   commShiftIso a := NatIso.removeOp ((OppositeShift.functor A F).commShiftIso a).symm
   commShiftIso_zero := by
@@ -216,12 +220,13 @@ namespace NatTrans
 
 variable {F} {G : C ⥤ D} [F.CommShift A] [G.CommShift A]
 
+set_option backward.isDefEq.respectTransparency false in
 open Opposite in
 instance commShift_op (τ : F ⟶ G) [NatTrans.CommShift τ A] :
     NatTrans.CommShift (OppositeShift.natTrans A τ) A where
   shift_comm _ := by
     ext
-    rw [← cancel_mono (((OppositeShift.functor A F).commShiftIso _ ).inv.app _),
+    rw [← cancel_mono (((OppositeShift.functor A F).commShiftIso _).inv.app _),
       ← cancel_epi (((OppositeShift.functor A G).commShiftIso _).inv.app _)]
     dsimp
     simp only [assoc, Iso.inv_hom_id_app_assoc, Iso.hom_inv_id_app, Functor.comp_obj,
@@ -238,6 +243,7 @@ variable (C) in
 -/
 def OppositeShift.natIsoId : 𝟭 (OppositeShift C A) ≅ OppositeShift.functor A (𝟭 C) := Iso.refl _
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 The natural isomorphism `NatTrans.OppositeShift.natIsoId C A` commutes with shifts.
 -/
@@ -249,7 +255,7 @@ instance : NatTrans.CommShift (OppositeShift.natIsoId C A).hom A where
       comp_id, Functor.commShiftIso_id_inv_app, CategoryTheory.op_id, id_comp]
     rfl
 
-variable {E : Type*} [Category E] [HasShift E A] (G : D ⥤ E)
+variable {E : Type*} [Category* E] [HasShift E A] (G : D ⥤ E)
 
 /-- The obvious isomorphism between `OppositeShift.functor (F ⋙ G)` and the
 composition of `OppositeShift.functor F` and `OppositeShift.functor G`.
@@ -257,6 +263,7 @@ composition of `OppositeShift.functor F` and `OppositeShift.functor G`.
 def OppositeShift.natIsoComp : OppositeShift.functor A (F ⋙ G) ≅
     OppositeShift.functor A F ⋙ OppositeShift.functor A G := Iso.refl _
 
+set_option backward.isDefEq.respectTransparency false in
 instance [F.CommShift A] [G.CommShift A] :
     NatTrans.CommShift (OppositeShift.natIsoComp A F G).hom A where
   shift_comm _ := by
@@ -267,6 +274,7 @@ instance [F.CommShift A] [G.CommShift A] :
 
 end NatTrans
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 The adjunction `adj`, seen as an adjunction between `OppositeShift.functor G`
 and `OppositeShift.functor F`.

@@ -129,7 +129,7 @@ lemma exists_constructibleSetData_iff {s : Set (PrimeSpectrum R)} :
         compl_sdiff_compl, ← zeroLocus_iUnion₂, Set.biUnion_of_singleton]
     congr! 2
     ext
-    simp [← (Finite.equivFin s).exists_congr_right, - Nat.card_coe_set_eq]
+    simp [← (Finite.equivFin s).exists_congr_right, -Nat.card_coe_set_eq]
   | union s hs t ht Hs Ht =>
     obtain ⟨S, rfl⟩ := Hs
     obtain ⟨T, rfl⟩ := Ht
@@ -145,7 +145,7 @@ lemma exists_range_eq_of_isConstructible {R : Type u} [CommRing R]
   obtain ⟨s, rfl⟩ := exists_constructibleSetData_iff.mpr hs
   refine ⟨Π i : s, Localization.Away (Ideal.Quotient.mk (Ideal.span (Set.range i.1.g)) i.1.f),
     inferInstance, algebraMap _ _, ?_⟩
-  rw [coe_comap, ← iUnion_range_specComap_comp_evalRingHom, ConstructibleSetData.toSet]
+  rw [← iUnion_range_comap_comp_evalRingHom, ConstructibleSetData.toSet]
   simp_rw [← Finset.mem_coe, Set.biUnion_eq_iUnion]
   congr! with _ _ C
   let I := Ideal.span (Set.range C.1.g)
@@ -153,9 +153,9 @@ lemma exists_range_eq_of_isConstructible {R : Type u} [CommRing R]
   trans comap (Ideal.Quotient.mk I) '' (Set.range (comap (algebraMap _ (Localization.Away f))))
   · rw [← Set.range_comp]; rfl
   · rw [localization_away_comap_range _ f, ← comap_basicOpen, TopologicalSpace.Opens.coe_comap,
-      Set.image_preimage_eq_inter_range, range_comap_of_surjective _ _ Ideal.Quotient.mk_surjective,
-      BasicConstructibleSetData.toSet, Set.diff_eq_compl_inter, basicOpen_eq_zeroLocus_compl,
-      Ideal.mk_ker, zeroLocus_span]
+      ContinuousMap.coe_mk, Set.image_preimage_eq_inter_range,
+      range_comap_of_surjective _ _ Ideal.Quotient.mk_surjective, BasicConstructibleSetData.toSet,
+      Set.diff_eq_compl_inter, basicOpen_eq_zeroLocus_compl, Ideal.mk_ker, zeroLocus_span]
 
 @[stacks 00I0 "(1)"]
 lemma isClosed_of_stableUnderSpecialization_of_isConstructible {R : Type*} [CommRing R]

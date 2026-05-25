@@ -24,7 +24,7 @@ open Category Limits
 
 namespace Square
 
-variable {C : Type*} [Category C] [Preadditive C]
+variable {C : Type*} [Category* C] [Preadditive C]
   (sq : Square C) [HasBinaryBiproduct sq.X₂ sq.X₃]
 
 /-- The cokernel cofork attached to a commutative square in a preadditive category. -/

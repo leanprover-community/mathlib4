@@ -13,7 +13,7 @@ public import Mathlib.Data.List.Basic
 In this file we prove basic lemmas about `List.reduceOption`.
 -/
 
-@[expose] public section
+public section
 
 namespace List
 
