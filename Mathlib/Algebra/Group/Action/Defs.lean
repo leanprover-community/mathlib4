@@ -59,14 +59,6 @@ variable {M N G H α β γ δ : Type*}
 /- See also `Monoid.toMulAction` and `MulZeroClass.toSMulWithZero`. -/
 attribute [instance 1100, to_additive /-- See also `AddMonoid.toAddAction` -/] instSMulOfMul
 
-/-- See also `Monoid.toMulAction` and `MulZeroClass.toSMulWithZero`. -/
-@[deprecated instSMulOfMul (since := "2025-10-18"), implicit_reducible]
-def Mul.toSMul (α : Type*) [Mul α] : SMul α α := ⟨(· * ·)⟩
-
-/-- See also `AddMonoid.toAddAction` -/
-@[deprecated instVAddOfAdd (since := "2025-10-18"), implicit_reducible]
-def Add.toVAdd (α : Type*) [Add α] : VAdd α α := ⟨(· + ·)⟩
-
 /-- Like `Mul.toSMul`, but multiplies on the right.
 
 See also `Monoid.toOppositeMulAction` and `MonoidWithZero.toOppositeMulActionWithZero`. -/
@@ -478,6 +470,11 @@ instance (priority := 1100) Monoid.toMulAction : MulAction M M where
 @[to_additive]
 instance IsScalarTower.left : IsScalarTower M M α where
   smul_assoc x y z := mul_smul x y z
+
+@[to_additive]
+instance {R M : Type*} [CommMonoid M] [SMul R M] [IsScalarTower R M M] : SMulCommClass R M M where
+  smul_comm r s x := by
+    rw [← one_smul M (s • x), ← smul_assoc, smul_comm, smul_assoc, one_smul]
 
 variable {M}
 
