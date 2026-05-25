@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten, Kim Morrison
 -/
 import Mathlib
-import Batteries.Util.ProofWanted
 
 /-!
 # Jacobians in algebraic geometry, expressed via `proof_wanted` / `construction_wanted`
@@ -25,7 +24,7 @@ universe u
 
 open CategoryTheory MonoidalCategory MonObj
 
-namespace AlgebraicGeometry.JacobianChallenge
+namespace AlgebraicGeometry
 
 variable {k : Type u} [Field k] {C : Over (Spec (.of k))}
   [SmoothOfRelativeDimension 1 C.hom]
@@ -82,4 +81,4 @@ proof_wanted exists_unique_ofCurve_comp (C : Over (Spec (.of k))) [IsProper C.ho
 
 end Jacobian
 
-end AlgebraicGeometry.JacobianChallenge
+end AlgebraicGeometry
