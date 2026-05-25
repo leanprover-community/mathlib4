@@ -39,7 +39,7 @@ variable {α β R : Type*}
 
 namespace Finset
 
-variable {s t : Finset α} {a b : α}
+variable {s t : Finset α} {a b c : α}
 
 /-- `s.card` is the number of elements of `s`, aka its cardinality.
 
