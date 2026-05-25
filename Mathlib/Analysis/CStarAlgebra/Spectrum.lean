@@ -118,7 +118,7 @@ theorem IsSelfAdjoint.spectralRadius_eq_nnnorm {a : A} (ha : IsSelfAdjoint a) :
     spectralRadius ℂ a = ‖a‖₊ := by
   have hconst : Tendsto (fun _n : ℕ => (‖a‖₊ : ℝ≥0∞)) atTop _ := tendsto_const_nhds
   refine tendsto_nhds_unique ?_ hconst
-  convert
+  convert!
     (spectrum.pow_nnnorm_pow_one_div_tendsto_nhds_spectralRadius (a : A)).comp
       (tendsto_pow_atTop_atTop_of_one_lt one_lt_two) using 1
   refine funext fun n => ?_
@@ -145,7 +145,7 @@ theorem IsStarNormal.spectralRadius_eq_nnnorm (a : A) [IsStarNormal a] :
     ((ENNReal.continuous_pow 2).tendsto (spectralRadius ℂ a)).comp
       (spectrum.pow_nnnorm_pow_one_div_tendsto_nhds_spectralRadius a)
   rw [← heq] at h₂
-  convert tendsto_nhds_unique h₂ (pow_nnnorm_pow_one_div_tendsto_nhds_spectralRadius (a⋆ * a))
+  convert! tendsto_nhds_unique h₂ (pow_nnnorm_pow_one_div_tendsto_nhds_spectralRadius (a⋆ * a))
   rw [(IsSelfAdjoint.star_mul_self a).spectralRadius_eq_nnnorm, sq, nnnorm_star_mul_self, coe_mul]
 
 namespace CStarAlgebra
@@ -213,7 +213,7 @@ lemma IsSelfAdjoint.isConnected_spectrum_compl {a : A} (ha : IsSelfAdjoint a) :
   suffices IsConnected (((σ ℂ a)ᶜ ∩ {z | 0 ≤ z.im}) ∪ (σ ℂ a)ᶜ ∩ {z | z.im ≤ 0}) by
     rw [← Set.inter_union_distrib_left, ← Set.setOf_or] at this
     rw [← Set.inter_univ (σ ℂ a)ᶜ]
-    convert this using 2
+    convert! this using 2
     exact Eq.symm <| Set.eq_univ_of_forall (fun z ↦ le_total 0 z.im)
   refine IsConnected.union ?nonempty ?upper ?lower
   case nonempty =>

@@ -261,7 +261,7 @@ noncomputable def isColimitCofanMkYoneda {ι : Type*} (X : ι → C) {c : Cofan 
     · obtain ⟨h⟩ := hdisj h a b hab
       have := Types.isTerminalEquivUnique _ (Sheaf.isTerminalOfBotCover s.pt _ (hempty Y h))
       exact Subsingleton.elim _ _
-  refine mkCofanColimit _ (fun s ↦ ⟨?_⟩) (fun s j ↦ ?_) fun s m hm ↦ ?_
+  refine Cofan.IsColimit.mk _ (fun s ↦ ⟨?_⟩) (fun s j ↦ ?_) fun s m hm ↦ ?_
   · refine (s.pt.2.isSheafFor _ H).extend ?_
     refine ⟨fun Y ↦ ↾fun g ↦ ((s.inj (Sieve.ofArrows.i g.2)).hom.app Y)
       (Sieve.ofArrows.h g.2), ?_⟩
