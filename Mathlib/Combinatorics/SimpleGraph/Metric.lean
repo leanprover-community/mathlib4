@@ -157,8 +157,8 @@ lemma edist_eq_two_iff {u v : V} :
     rw [mem_commonNeighbors] at hw
     have := (Walk.cons hw.1 <| .cons hw.2.symm .nil).edist_le
     simp_all
-  · by_contra! hc
-    cases Order.le_one_iff.mp (Order.le_of_lt_succ hc) <;> simp_all
+  · by_contra
+    simp_all [Order.le_one_iff]
 
 lemma two_lt_edist_iff {u v : V} :
     2 < G.edist u v ↔ u ≠ v ∧ ¬ G.Adj u v ∧ (G.commonNeighbors u v) = ∅ := by

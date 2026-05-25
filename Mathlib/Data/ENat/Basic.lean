@@ -298,6 +298,10 @@ lemma le_one_iff_eq_zero_or_eq_one : n ≤ 1 ↔ n = 0 ∨ n = 1 :=
 theorem lt_add_one_iff (hm : n ≠ ⊤) : m < n + 1 ↔ m ≤ n :=
   Order.lt_add_one_iff_of_not_isMax (not_isMax_iff_ne_top.mpr hm)
 
+@[simp]
+theorem lt_two_iff : n < 2 ↔ n ≤ 1 := by
+  rw [← one_add_one_eq_two, lt_add_one_iff one_ne_top]
+
 theorem add_le_add_iff_left {m n k : ENat} (h : k ≠ ⊤) :
     k + n ≤ k + m ↔ n ≤ m :=
   WithTop.add_le_add_iff_left h
