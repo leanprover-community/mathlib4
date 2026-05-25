@@ -16,7 +16,7 @@ public section
 
 
 variable {α : Type*} {𝕜 : Type*} {E : Type*}
-variable [RCLike 𝕜] [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
+variable [RCLike 𝕜] [AddCommGroup E] [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 
 local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
