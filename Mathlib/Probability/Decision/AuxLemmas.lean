@@ -66,7 +66,6 @@ lemma exists_isMinOn' {α : Type*} [LinearOrder α]
 
 noncomputable
 def measurableArgmin [Nonempty 𝓨] [Finite 𝓨] [Encodable 𝓨] [MeasurableSingletonClass 𝓨]
-    [(x : ℕ) → Decidable (x ∈ Set.range (Encodable.encode (α := 𝓨)))]
     (f : 𝓧 → 𝓨 → α)
     [∀ x, DecidablePred fun n ↦ ∃ y, n = Encodable.encode y ∧ ∀ (z : 𝓨), f x y ≤ f x z]
     (x : 𝓧) :
@@ -74,7 +73,6 @@ def measurableArgmin [Nonempty 𝓨] [Finite 𝓨] [Encodable 𝓨] [MeasurableS
   (measurableEmbedding_encode 𝓨).invFun (Nat.find (exists_isMinOn' f x))
 
 lemma measurable_measurableArgmin [Nonempty 𝓨] [Finite 𝓨] [Encodable 𝓨] [MeasurableSingletonClass 𝓨]
-    [(x : ℕ) → Decidable (x ∈ Set.range (Encodable.encode (α := 𝓨)))]
     {f : 𝓧 → 𝓨 → α}
     [∀ x, DecidablePred fun n ↦ ∃ y, n = Encodable.encode y ∧ ∀ (z : 𝓨), f x y ≤ f x z]
     (hf : ∀ y, Measurable (fun x ↦ f x y)) :
@@ -89,7 +87,6 @@ lemma measurable_measurableArgmin [Nonempty 𝓨] [Finite 𝓨] [Encodable 𝓨]
 
 lemma isMinOn_measurableArgmin {α : Type*} [LinearOrder α]
     [Nonempty 𝓨] [Finite 𝓨] [Encodable 𝓨] [MeasurableSingletonClass 𝓨]
-    [(x : ℕ) → Decidable (x ∈ Set.range (Encodable.encode (α := 𝓨)))]
     (f : 𝓧 → 𝓨 → α)
     [∀ x, DecidablePred fun n ↦ ∃ y, n = Encodable.encode y ∧ ∀ (z : 𝓨), f x y ≤ f x z]
     (x : 𝓧) (z : 𝓨) :
