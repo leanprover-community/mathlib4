@@ -18,11 +18,8 @@ field of characteristic `p`.
 # Main definitions and results
 
 * `AdjoinPthRoots`: the field extension adjoining all `p`-th roots.
-  It is defined as a typeclass synonym of the field `k` itself with a `k`-algebra structure
-  given by the frobenius map.
 * `AdjoinPthRoots.root`: the `p`-th root map `k → AdjoinPthRoots k p`, mapping an element
-  to its unique `p`-th root in `AdjoinPthRoots`. It is implemented as a `RingEquiv` with underlying
-  identity map.
+  to its unique `p`-th root in `AdjoinPthRoots`.
 
 -/
 
