@@ -108,9 +108,7 @@ instance : CompleteLattice (SubmonoidFunctor R) where
         have : (i.obj U).carrier ⊆ ⇑(hom (R.map f)) ⁻¹' ↑(i.obj V).carrier := i.map f
         tauto  }
   isGLB_sInf _ := ⟨fun _ _ _ _ ↦ by aesop, fun _ _ _ ↦ by aesop⟩
-  bot :=
-    { obj _ := ⊥
-      map _ _ h := by simp_all only [Submonoid.mem_bot, one_mem]}
+  bot := { obj _ := ⊥ }
   bot_le _ _ := bot_le
   top :=
     { obj _ := ⊤
