@@ -728,23 +728,26 @@ variable {s : Set V} {t : Set W} {r : Set X}
          (φ : G ≃g G') (φst : Set.BijOn φ s t) (ψ : G' ≃g G'') (ψtr : Set.BijOn ψ t r)
 
 /-- The restriction of an isomorphism of graphs to induced subgraphs. -/
-def induceIso : G.induce s ≃g G'.induce t where
+protected def induce : G.induce s ≃g G'.induce t where
   toFun v := ⟨φ v.val, φst.mapsTo v.property⟩
   invFun w := ⟨φ.symm w.val, (φ.bijOn_symm.mpr φst).mapsTo w.property⟩
   left_inv v := by simp
   right_inv w := by simp
   map_rel_iff' := by simp [map_adj_iff φ]
 
-@[simp, norm_cast] lemma coe_induceIso :
-    ⇑(induceIso φ φst) = Set.MapsTo.restrict φ s t (φst.mapsTo) := rfl
+@[simp, norm_cast]
+protected lemma coe_induce :
+    ⇑(Iso.induce φ φst) = Set.MapsTo.restrict φ s t (φst.mapsTo) := rfl
 
-@[simp] lemma induceIso_id (G : SimpleGraph V) (s : Set V) :
-    induceIso (.refl : G ≃g G) (Set.bijOn_id s) = .refl := by
+@[simp]
+protected lemma induce_refl (G : SimpleGraph V) (s : Set V) :
+    Iso.induce (.refl : G ≃g G) (Set.bijOn_id s) = .refl := by
   ext x
   rfl
 
-@[simp] lemma induceIso_comp :
-    (induceIso ψ ψtr).comp (induceIso φ φst) = induceIso (ψ.comp φ) (ψtr.comp φst) := by
+@[simp]
+protected lemma induce_comp_induce :
+    (Iso.induce ψ ψtr).comp (Iso.induce φ φst) = Iso.induce (ψ.comp φ) (ψtr.comp φst) := by
   ext x
   rfl
 
