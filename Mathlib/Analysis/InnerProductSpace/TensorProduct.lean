@@ -47,10 +47,10 @@ inner product spaces.
 @[expose] public section
 
 variable {𝕜 E F G H : Type*} [RCLike 𝕜]
-  [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
-  [NormedAddCommGroup F] [InnerProductSpace 𝕜 F]
-  [NormedAddCommGroup G] [InnerProductSpace 𝕜 G]
-  [NormedAddCommGroup H] [InnerProductSpace 𝕜 H]
+  [AddCommGroup E] [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
+  [AddCommGroup F] [NormedAddCommGroup F] [InnerProductSpace 𝕜 F]
+  [AddCommGroup G] [NormedAddCommGroup G] [InnerProductSpace 𝕜 G]
+  [AddCommGroup H] [NormedAddCommGroup H] [InnerProductSpace 𝕜 H]
 
 open scoped TensorProduct
 
@@ -351,12 +351,21 @@ noncomputable def commIsometry : E ⊗[𝕜] F ≃ₗᵢ[𝕜] F ⊗[𝕜] E :=
 @[simp] lemma enorm_comm (x : E ⊗[𝕜] F) :
     ‖TensorProduct.comm 𝕜 E F x‖ₑ = ‖x‖ₑ := commIsometry 𝕜 E F |>.toLinearIsometry.enorm_map x
 
+-- This broke in a somewhat strange way...
 @[simp] theorem inner_lid_lid (x y : 𝕜 ⊗[𝕜] E) :
-    inner 𝕜 (TensorProduct.lid 𝕜 E x) (TensorProduct.lid 𝕜 E y) = inner 𝕜 x y :=
-  x.induction_on (by simp) (fun _ _ =>
-    y.induction_on (by simp) (by simp [inner_smul_left, inner_smul_right, mul_assoc])
-    fun _ _ h1 h2 => by simp only [inner_add_right, map_add, h1, h2])
-  fun _ _ h1 h2 => by simp only [inner_add_left, map_add, h1, h2]
+    inner 𝕜 (TensorProduct.lid 𝕜 E x) (TensorProduct.lid 𝕜 E y) = inner 𝕜 x y := by
+  have hl : 0 = inner 𝕜 0 y := (inner_zero_left x).symm
+  have hr : 0 = inner 𝕜 x 0 := (inner_zero_right x).symm
+  set f := fun x y ↦ inner 𝕜 ((TensorProduct.lid 𝕜 E) x) ((TensorProduct.lid 𝕜 E) y) = inner 𝕜 x y
+    with hf
+  refine x.induction_on (by simp [hl]) (fun x' y' ↦ ?_)
+    fun _ _ h1 h2 => by simp only [map_add, inner_add_left, h1, h2]; rw [inner_add_left _ _ y]
+  refine
+    y.induction_on (by
+      simp only [lid_tmul, map_zero, inner_zero_right, hr]
+      rw [inner_zero_right x, inner_zero_right (x' ⊗ₜ[𝕜] y')])
+      (by simp [inner_smul_left, inner_smul_right, mul_assoc])
+    fun z z' h1 h2 => by simp only [inner_add_right, map_add, h1, h2]; rw [inner_add_right _ z z']
 
 variable (𝕜 E) in
 /-- The linear isometry equivalence version of `TensorProduct.lid`. -/
