@@ -785,7 +785,7 @@ lemma reProdIm_subset_iff {s s₁ t t₁ : Set ℝ} : s ×ℂ t ⊆ s₁ ×ℂ t
 /-- If `s ⊆ s₁ ⊆ ℝ` and `t ⊆ t₁ ⊆ ℝ`, then `s × t ⊆ s₁ × t₁` in `ℂ`. -/
 lemma reProdIm_subset_iff' {s s₁ t t₁ : Set ℝ} :
     s ×ℂ t ⊆ s₁ ×ℂ t₁ ↔ s ⊆ s₁ ∧ t ⊆ t₁ ∨ s = ∅ ∨ t = ∅ := by
-  convert prod_subset_prod_iff
+  convert! prod_subset_prod_iff
   exact reProdIm_subset_iff
 
 variable {s t : Set ℝ}

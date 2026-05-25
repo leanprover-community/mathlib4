@@ -173,7 +173,7 @@ theorem MemLp.exists_hasCompactSupport_eLpNorm_sub_le
   rcases exists_continuous_eLpNorm_sub_le_of_closed hp s_closed isOpen_interior sk hsμ.ne c δpos.ne'
     with ⟨f, f_cont, I2, _f_bound, f_support, f_mem⟩
   have I3 : eLpNorm (f - t.indicator fun _y => c) p μ ≤ ε := by
-    convert
+    convert!
       (hδ _ _
           (f_mem.aestronglyMeasurable.sub
             (aestronglyMeasurable_const.indicator s_closed.measurableSet))
@@ -270,7 +270,7 @@ theorem MemLp.exists_boundedContinuous_eLpNorm_sub_le [μ.WeaklyRegular] (hp : p
       δpos.ne' with
     ⟨f, f_cont, I2, f_bound, -, f_mem⟩
   have I3 : eLpNorm (f - t.indicator fun _y => c) p μ ≤ ε := by
-    convert
+    convert!
       (hδ _ _
           (f_mem.aestronglyMeasurable.sub
             (aestronglyMeasurable_const.indicator s_closed.measurableSet))
