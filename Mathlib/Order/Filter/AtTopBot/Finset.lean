@@ -93,28 +93,22 @@ theorem tendsto_finset_Ici_atBot_atTop [Preorder α] [LocallyFiniteOrderTop α] 
 section Card
 
 /-- Every finset is eventually a subset of `s` along `atTop`. -/
-lemma eventually_finset_subset_atTop (i : Finset α) : ∀ᶠ s : Finset α in atTop, i ⊆ s :=
+lemma eventually_finset_atTop_subset (i : Finset α) : ∀ᶠ s : Finset α in atTop, i ⊆ s :=
   eventually_ge_atTop _
 
 /-- Every element of `α` is eventually a member of `s` along `atTop` on `Finset α`. -/
 lemma eventually_finset_mem_atTop (i : α) : ∀ᶠ s : Finset α in atTop, i ∈ s := by
-  simpa using eventually_finset_subset_atTop {i}
+  simpa using eventually_finset_atTop_subset {i}
 
 /-- The pushforward of `atTop` on `Finset α` along `Finset.card` is `atTop` on `ℕ`, when `α` is
 infinite. -/
 lemma map_card_atTop [Infinite α] :
     map (Finset.card (α := α)) atTop = atTop := by
-  refine le_antisymm ?_ ?_
-  · refine tendsto_atTop_atTop.2 fun n ↦ ?_
-    obtain ⟨s, rfl⟩ := Infinite.exists_subset_card_eq α n
-    exact ⟨s, fun _ ↦ Finset.card_le_card⟩
-  · intro s
-    simp only [Filter.mem_map, mem_atTop_sets, ge_iff_le, Finset.le_eq_subset, Set.mem_preimage,
-      forall_exists_index]
-    intro a ha
-    refine ⟨a.card, fun b hb ↦ ?_⟩
-    obtain ⟨t, ht, rfl⟩ := Infinite.exists_superset_card_eq a b hb
-    exact ha _ ht
+  rw [map_atTop_eq, atTop]
+  refine Function.Surjective.iInf_congr Finset.card Finset.exists_card_eq fun s ↦ congr(𝓟 $(?_))
+  ext
+  refine ⟨Infinite.exists_superset_card_eq _ _, ?_⟩
+  aesop (add safe apply Finset.card_le_card)
 
 /-- The pushforward of `atTop` on `Finset α` along `Finset.card` is `pure (Fintype.card α)`, when
 `α` is finite. -/
@@ -126,6 +120,11 @@ lemma map_card_atTop_of_fintype [Fintype α] :
 lemma tendsto_card_atTop_atTop [Infinite α] :
     Tendsto (Finset.card (α := α)) atTop atTop := by
   rw [Tendsto, map_card_atTop]
+
+/-- `Finset.card` tends to `pure (Fintype.card α)`, when `α` is finite. -/
+lemma tendsto_card_atTop_pure_of_fintype [Fintype α] :
+    Tendsto (Finset.card : Finset α → ℕ) atTop (pure (Fintype.card α)) := by
+  rw [Tendsto, map_card_atTop_of_fintype]
 
 /-- Tendsto along `atTop` for a function precomposed with `Finset.card` reduces to tendsto along
 `atTop` on `ℕ`, when `α` is infinite. -/
