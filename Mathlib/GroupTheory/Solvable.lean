@@ -71,69 +71,6 @@ instance derivedSeries_characteristic (n : ℕ) : (derivedSeries G n).Characteri
 
 end derivedSeries
 
-section SubgroupDerivedSeries
-
-/-- The derived series of a subgroup `S` of `G`, computed in the ambient group `G`. This is the
-sequence `S, ⁅S, S⁆, ⁅⁅S, S⁆, ⁅S, S⁆⁆, …` of subgroups of `G`. The classical `derivedSeries G` is
-the case `S = ⊤`. -/
-def Subgroup.derivedSeries (S : Subgroup G) : ℕ → Subgroup G
-  | 0 => S
-  | n + 1 => ⁅Subgroup.derivedSeries S n, Subgroup.derivedSeries S n⁆
-
-namespace Subgroup
-
-@[simp]
-theorem derivedSeries_zero (S : Subgroup G) : S.derivedSeries 0 = S := rfl
-
-@[simp]
-theorem derivedSeries_succ (S : Subgroup G) (n : ℕ) :
-    S.derivedSeries (n + 1) = ⁅S.derivedSeries n, S.derivedSeries n⁆ := rfl
-
-theorem derivedSeries_le_self (S : Subgroup G) (n : ℕ) : S.derivedSeries n ≤ S := by
-  induction n with
-  | zero => simp
-  | succ d hd =>
-    simpa using (Subgroup.commutator_le_sup _ _).trans (by simp [hd])
-
-theorem derivedSeries_antitone (S : Subgroup G) : Antitone S.derivedSeries := by
-  refine antitone_nat_of_succ_le fun n => ?_
-  simpa using (Subgroup.commutator_le_sup _ _).trans (by simp)
-
-theorem map_derivedSeries {H : Type*} [Group H] (f : G →* H) (S : Subgroup G) (n : ℕ) :
-    (S.derivedSeries n).map f = (S.map f).derivedSeries n := by
-  induction n with
-  | zero => simp
-  | succ d hd => rw [derivedSeries_succ, derivedSeries_succ, Subgroup.map_commutator, hd]
-
-theorem derivedSeries_mono (n : ℕ) :
-    Monotone (fun S : Subgroup G => S.derivedSeries n) := by
-  induction n with
-  | zero => intro S T h; simpa
-  | succ d hd =>
-    intro S T h; simp only [derivedSeries_succ]; exact Subgroup.commutator_mono (hd h) (hd h)
-
-@[simp]
-theorem top_derivedSeries_eq (n : ℕ) :
-    (⊤ : Subgroup G).derivedSeries n = _root_.derivedSeries G n := by
-  induction n with
-  | zero => simp
-  | succ d hd => rw [derivedSeries_succ, _root_.derivedSeries_succ, hd]
-
-theorem top_subtype_derivedSeries (H : Subgroup G) (n : ℕ) :
-    ((⊤ : Subgroup H).derivedSeries n).map H.subtype = H.derivedSeries n := by
-  induction n with
-  | zero => ext; simp
-  | succ d hd =>
-    simp only [derivedSeries_succ, Subgroup.map_commutator, hd]
-
-theorem derivedSeries_eq_map (H : Subgroup G) (n : ℕ) :
-    H.derivedSeries n = ((⊤ : Subgroup H).derivedSeries n).map H.subtype :=
-  (top_subtype_derivedSeries H n).symm
-
-end Subgroup
-
-end SubgroupDerivedSeries
-
 section CommutatorMap
 
 section DerivedSeriesMap
