@@ -136,18 +136,19 @@ theorem pCore_eq_top_iff : pCore p G = ⊤ ↔ IsPGroup p (⊤ : Subgroup G) :=
 theorem pCore_eq_top (h : IsPGroup p (⊤ : Subgroup G)) : pCore p G = ⊤ :=
   pCore_eq_top_iff.2 h
 
-/-- The `p`-core is contained in every Sylow `p`-subgroup. -/
-theorem pCore_le_sylow [Fact p.Prime] [Finite G] (P : Sylow p G) : pCore p G ≤ P := by
-  have hpg : IsPGroup p (pCore p G) := isPGroup_pCore
-  obtain ⟨P₀, hP₀⟩ := hpg.exists_le_sylow
-  obtain ⟨g, rfl⟩ := MulAction.exists_smul_eq G P₀ P
-  rw [Sylow.coe_subgroup_smul, ← pCore_normal.conj_smul_eq_self g]
-  exact smul_le_smul_left (MulAut.conj g) hP₀
+/-- The `p`-core is contained in every Sylow `p`-subgroup. The argument
+needs no finiteness or primality: `P ⊔ pCore p G` is a `p`-subgroup
+(as the join of a `p`-subgroup with a normal `p`-subgroup), so by
+maximality of `P` it equals `P`. -/
+theorem pCore_le_sylow (P : Sylow p G) : pCore p G ≤ P := by
+  have hpsup : IsPGroup p ((P : Subgroup G) ⊔ pCore p G : Subgroup G) :=
+    P.2.to_sup_of_normal_right isPGroup_pCore
+  have heq : (P : Subgroup G) ⊔ pCore p G = P := P.3 hpsup le_sup_left
+  exact le_sup_right.trans heq.le
 
 /-- The intersection of all Sylow `p`-subgroups is normal: conjugation
 permutes the Sylow `p`-subgroups, so the intersection is fixed. -/
-theorem normal_iInf_sylow [Fact p.Prime] [Finite G] :
-    (⨅ P : Sylow p G, (P : Subgroup G)).Normal where
+theorem normal_iInf_sylow : (⨅ P : Sylow p G, (P : Subgroup G)).Normal where
   conj_mem n hn g := by
     simp only [mem_iInf] at hn ⊢
     intro P
@@ -157,14 +158,14 @@ theorem normal_iInf_sylow [Fact p.Prime] [Finite G] :
 
 /-- The intersection of all Sylow `p`-subgroups is a `p`-group, being
 contained in any single Sylow `p`-subgroup. -/
-theorem isPGroup_iInf_sylow [Fact p.Prime] :
-    IsPGroup p ↥(⨅ P : Sylow p G, (P : Subgroup G)) :=
+theorem isPGroup_iInf_sylow : IsPGroup p ↥(⨅ P : Sylow p G, (P : Subgroup G)) :=
   (Classical.arbitrary (Sylow p G)).2.to_le (iInf_le _ _)
 
-/-- For a finite group `G` and a prime `p`, the `p`-core equals the
-intersection of all Sylow `p`-subgroups. -/
-theorem pCore_eq_iInf_sylow [Fact p.Prime] [Finite G] :
-    pCore p G = ⨅ P : Sylow p G, (P : Subgroup G) :=
+/-- The `p`-core equals the intersection of all Sylow `p`-subgroups.
+This holds for arbitrary groups and arbitrary `p`: each Sylow contains
+`pCore p G` by maximality, and the intersection of Sylows is itself a
+normal `p`-subgroup hence contained in `pCore p G`. -/
+theorem pCore_eq_iInf_sylow : pCore p G = ⨅ P : Sylow p G, (P : Subgroup G) :=
   le_antisymm (le_iInf pCore_le_sylow) (le_pCore normal_iInf_sylow isPGroup_iInf_sylow)
 
 section Hom
