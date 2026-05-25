@@ -74,8 +74,9 @@ open Set Filter TopologicalSpace ENNReal
 
 namespace MeasureTheory
 
-variable {α E F F' G 𝕜 : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
-  [NormedAddCommGroup F] [NormedSpace ℝ F] [NormedAddCommGroup F'] [NormedSpace ℝ F']
+variable {α E F F' G 𝕜 : Type*} [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℝ E]
+  [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace ℝ F] [AddCommGroup F']
+  [NormedAddCommGroup F'] [NormedSpace ℝ F'] [AddCommGroup G]
   [NormedAddCommGroup G] {m : MeasurableSpace α} {μ μ' μ'' : Measure α}
 
 namespace L1
@@ -229,10 +230,10 @@ theorem setToL1S_const [IsFiniteMeasure μ] {T : Set α → E →L[ℝ] F}
 
 section Order
 
-variable {G'' G' : Type*}
+variable {G'' G' : Type*} [AddCommGroup G']
   [NormedAddCommGroup G'] [PartialOrder G'] [IsOrderedAddMonoid G'] [NormedSpace ℝ G']
-  [NormedAddCommGroup G''] [PartialOrder G''] [IsOrderedAddMonoid G''] [NormedSpace ℝ G'']
-  {T : Set α → G'' →L[ℝ] G'}
+  [AddCommGroup G''] [NormedAddCommGroup G''] [PartialOrder G''] [IsOrderedAddMonoid G'']
+  [NormedSpace ℝ G''] {T : Set α → G'' →L[ℝ] G'}
 
 theorem setToL1S_mono_left {T T' : Set α → E →L[ℝ] G''} (hTT' : ∀ s x, T s x ≤ T' s x)
     (f : α →₁ₛ[μ] E) : setToL1S T f ≤ setToL1S T' f :=
@@ -350,9 +351,10 @@ theorem setToL1SCLM_const [IsFiniteMeasure μ] {T : Set α → E →L[ℝ] F} {C
 
 section Order
 
-variable {G' G'' : Type*}
+variable {G' G'' : Type*} [AddCommGroup G'']
   [NormedAddCommGroup G''] [PartialOrder G''] [IsOrderedAddMonoid G''] [NormedSpace ℝ G'']
-  [NormedAddCommGroup G'] [PartialOrder G'] [IsOrderedAddMonoid G'] [NormedSpace ℝ G']
+  [AddCommGroup G'] [NormedAddCommGroup G'] [PartialOrder G'] [IsOrderedAddMonoid G']
+  [NormedSpace ℝ G']
 
 theorem setToL1SCLM_mono_left {T T' : Set α → E →L[ℝ] G''} {C C' : ℝ}
     (hT : DominatedFinMeasAdditive μ T C) (hT' : DominatedFinMeasAdditive μ T' C')
@@ -523,9 +525,9 @@ theorem setToL1_const [IsFiniteMeasure μ] (hT : DominatedFinMeasAdditive μ T C
 
 section Order
 
-variable {G' G'' : Type*}
+variable {G' G'' : Type*} [AddCommGroup G'']
   [NormedAddCommGroup G''] [PartialOrder G''] [IsOrderedAddMonoid G'']
-  [NormedSpace ℝ G''] [CompleteSpace G'']
+  [NormedSpace ℝ G''] [CompleteSpace G''] [AddCommGroup G']
   [NormedAddCommGroup G'] [PartialOrder G'] [NormedSpace ℝ G']
 
 theorem setToL1_mono_left' [OrderClosedTopology G''] {T T' : Set α → E →L[ℝ] G''} {C C' : ℝ}
@@ -820,7 +822,7 @@ theorem setToFun_toL1 (hT : DominatedFinMeasAdditive μ T C) (hf : Integrable f 
 theorem setToFun_indicator_const [CompleteSpace F] (hT : DominatedFinMeasAdditive μ T C) {s : Set α}
     (hs : MeasurableSet s) (hμs : μ s ≠ ∞) (x : E) :
     setToFun μ T hT (s.indicator fun _ => x) = T s x := by
-  rw [setToFun_congr_ae hT (@indicatorConstLp_coeFn _ _ _ 1 _ _ _ hs hμs x).symm]
+  rw [setToFun_congr_ae hT (@indicatorConstLp_coeFn _ _ _ 1 _ _ _ _ hs hμs x).symm]
   rw [L1.setToFun_eq_setToL1 hT]
   exact L1.setToL1_indicatorConstLp hT hs hμs x
 
@@ -843,9 +845,9 @@ theorem setToFun_simpleFunc [CompleteSpace F] (hT : DominatedFinMeasAdditive μ 
 
 section Order
 
-variable {G' G'' : Type*}
+variable {G' G'' : Type*} [AddCommGroup G'']
   [NormedAddCommGroup G''] [PartialOrder G''] [IsOrderedAddMonoid G'']
-  [NormedSpace ℝ G'']
+  [NormedSpace ℝ G''] [AddCommGroup G']
   [NormedAddCommGroup G'] [PartialOrder G'] [NormedSpace ℝ G']
 
 theorem setToFun_mono_left' [OrderClosedTopology G''] {T T' : Set α → E →L[ℝ] G''} {C C' : ℝ}
