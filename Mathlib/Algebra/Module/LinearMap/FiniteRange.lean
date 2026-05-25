@@ -161,6 +161,11 @@ theorem hasNoetherianRange_iff_quotient_ker {f : V →ₗ[K] V₂} :
     f.HasNoetherianRange ↔ IsNoetherian K (V ⧸ f.ker) :=
   f.quotKerEquivRange.isNoetherian_iff.symm
 
+@[simp]
+theorem ker_coFG_iff_hasFiniteRange {f : V →ₗ[K] V₂} :
+    f.ker.CoFG ↔ f.HasFiniteRange :=
+  range_fg_iff_ker_cofg.symm
+
 theorem hasFiniteRange_iff_ker {f : V →ₗ[K] V₂} :
     f.HasFiniteRange ↔ f.ker.CoFG :=
   range_fg_iff_ker_cofg
@@ -218,8 +223,8 @@ namespace FiniteRangeSetoid
 /-- This is the equivalence relation on linear maps such that `u ≈ v` precisely
 when `u - v` is a linear map with noetherian range. We allow ourself this slightly abusive name
 because the more natural definition (`u - v` has finitely generated range) only yields a
-well-behaved relation (more precisely, an additive congruence relation) over a noetherian ring,
-in which case the two notions agree.
+well-behaved relation (more precisely, an additive congruence relation compatible with composition
+on both sides) over a noetherian ring, in which case the two notions agree.
 
 This setoid is declared as an instance in scope `LinearMap.FiniteRangeSetoid`. -/
 scoped instance setoid : Setoid (V →ₗ[K] V₂) := (LinearMap.finiteRange K V V₂).quotientRel
