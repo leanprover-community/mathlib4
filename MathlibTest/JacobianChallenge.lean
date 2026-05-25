@@ -46,18 +46,18 @@ namespace Jacobian
 /-! ## The Jacobian of `C` is an abelian variety. -/
 
 /-- The group scheme structure on the Jacobian of the curve `C`. -/
-construction_wanted instGrpObj : GrpObj (❰Jacobian❱ C)
+instance_wanted instGrpObj : GrpObj (❰Jacobian❱ C)
 
 /-- The Jacobian of `C` is smooth of relative dimension `g` over `k`, where `g` is the
 genus of `C`. -/
-proof_wanted smoothOfRelativeDimension_genus :
+instance_wanted smoothOfRelativeDimension_genus :
     SmoothOfRelativeDimension (❰genus❱ C) (❰Jacobian❱ C).hom
 
 /-- The Jacobian of `C` is proper over `k`. -/
-proof_wanted instIsProper : IsProper (❰Jacobian❱ C).hom
+instance_wanted instIsProper : IsProper (❰Jacobian❱ C).hom
 
 /-- The Jacobian of `C` is geometrically irreducible over `k`. -/
-proof_wanted instGeometricallyIrreducible : GeometricallyIrreducible (❰Jacobian❱ C).hom
+instance_wanted instGeometricallyIrreducible : GeometricallyIrreducible (❰Jacobian❱ C).hom
 
 /-- The Abel-Jacobi map from a smooth, proper curve to its Jacobian associated to a
 `k`-rational point of `C`. -/
@@ -69,10 +69,6 @@ is the neutral element of the group scheme `Jacobian C`. -/
 proof_wanted comp_ofCurve (C : Over (Spec (.of k))) [IsProper C.hom]
     [SmoothOfRelativeDimension 1 C.hom] [GeometricallyIrreducible C.hom]
     (P : 𝟙_ (Over (Spec (.of k))) ⟶ C) :
-    -- `❰instGrpObj❱` is referenced (in `instGrpObj`'s typeclass slot) to add the GrpObj
-    -- parameter; Lean's instance synth then resolves `η[❰Jacobian❱ C]`. The `(@❰Jacobian❱)`
-    -- threads the chained Jacobian dependency through `❰ofCurve❱`'s signature.
-    haveI := @❰instGrpObj❱
     P ≫ ❰ofCurve❱ P = η[❰Jacobian❱ C]
 
 /-- The universal property of the Jacobian variety: for any abelian variety `A`, any morphism
