@@ -401,7 +401,7 @@ lemma image_T_pow_invariant_under_T_mul
   · exact ⟨⟨(j : ℕ) + 1, hj1⟩, Finset.mem_univ _, rfl⟩
   · have hj_eq : (j : ℕ) + 1 = 𝒢.integerCuspWidth := by
       have := j.isLt
-      omega
+      lia
     refine ⟨⟨0, Subgroup.integerCuspWidth_pos⟩, Finset.mem_univ _, ?_⟩
     rw [hj_eq, QuotientGroup.eq, Subgroup.mem_subgroupOf]
     simpa using Subgroup.T_zpow_integerCuspWidth_mem (𝒢 := 𝒢)
