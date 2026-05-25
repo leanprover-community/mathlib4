@@ -32,8 +32,8 @@ open MeasureTheory MeasureTheory.Measure Metric Filter Set Module Asymptotics
 
 open scoped NNReal ENNReal Topology Pointwise
 
-variable {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F] {s : Set ℝ} {f f' : ℝ → ℝ}
-  {g : ℝ → F}
+variable {F : Type*} [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace ℝ F] {s : Set ℝ}
+  {f f' : ℝ → ℝ} {g : ℝ → F}
 
 namespace MeasureTheory
 
