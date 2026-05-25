@@ -51,7 +51,7 @@ namespace NormedSpace
 section inclusionInDoubleDual
 
 variable (𝕜 : Type*) [NontriviallyNormedField 𝕜]
-variable (E : Type*) [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable (E : Type*) [AddCommGroup E] [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
 
 /-- The inclusion of a normed space in its double (topological) strong dual, considered
 as a bounded linear map. -/
@@ -81,7 +81,7 @@ variable (𝕜 : Type v) [RCLike 𝕜] {E : Type u}
 
 section Seminormed
 
-variable [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable [AddCommGroup E] [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
 
 /-- The inclusion of a normed space in its double strong dual is an isometry onto its image. -/
 def inclusionInDoubleDualLi : E →ₗᵢ[𝕜] StrongDual 𝕜 (StrongDual 𝕜 E) :=
@@ -106,7 +106,7 @@ end BidualIsometry
 section Embedding
 
 variable (𝕜 : Type*) [NontriviallyNormedField 𝕜]
-variable (X : Type*) [SeminormedAddCommGroup X] [NormedSpace 𝕜 X]
+variable (X : Type*) [AddCommGroup X] [SeminormedAddCommGroup X] [NormedSpace 𝕜 X]
 
 /-- The map from a normed space with the weak topology into the weak-star bidual, as a continuous
 linear map. Built using `LinearEquiv.arrowCongr` to properly bundle the topology changes via
@@ -125,7 +125,8 @@ lemma toLinearMap_inclusionInDoubleDualWeak :
       (toWeakSpace 𝕜 X).arrowCongr StrongDual.toWeakDual (inclusionInDoubleDual 𝕜 X).toLinearMap :=
   rfl
 
-variable (𝕜 : Type*) [RCLike 𝕜] (X : Type*) [NormedAddCommGroup X] [NormedSpace 𝕜 X]
+variable (𝕜 : Type*) [RCLike 𝕜] (X : Type*) [AddCommGroup X] [NormedAddCommGroup X]
+  [NormedSpace 𝕜 X]
 
 /-- `inclusionInDoubleDualWeak` is a topological embedding from the weak topology to the weak-star
 topology. -/
