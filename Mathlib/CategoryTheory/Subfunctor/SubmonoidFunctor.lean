@@ -63,7 +63,7 @@ def toSubfunctor : Subfunctor (M ⋙ forget MonCat) where
 
 variable {M M' M'' : C ⥤ MonCat.{w}} (S : SubmonoidFunctor M) (S' : SubmonoidFunctor M')
 
-instance {U : C} : CoeHead (S.toMonoidFunctor.obj U) (M.obj U) where
+instance {U : C} : CoeHead (S.toFunctor.obj U) (M.obj U) where
   coe := Subtype.val
 
 instance : PartialOrder (SubmonoidFunctor M) :=
@@ -102,7 +102,7 @@ instance : CompleteLattice (SubmonoidFunctor M) where
 
 /-- The inclusion of a submonoid functor `S` to the original functor of monoids `M`. -/
 @[simps]
-def ι : S.toMonoidFunctor ⟶ M where
+def ι : S.toFunctor ⟶ M where
   app _ := MonCat.ofHom (Submonoid.subtype _)
 
 section image
@@ -148,7 +148,7 @@ variable (p : M ⟶ M') (S : SubmonoidFunctor M) (S' : SubmonoidFunctor M')
 /-- If the image of morphism `M' ⟶ M` lands in a submonoid functor `S`,
 then the morphism factors through it. -/
 @[simps! app]
-def lift : M ⟶ S'.toMonoidFunctor where
+def lift : M ⟶ S'.toFunctor where
   app U := MonCat.ofHom <| MonoidHom.codRestrict (p.app U).hom _ fun x ↦ hp _ (by simp; )
 
 @[reassoc (attr := simp)]
