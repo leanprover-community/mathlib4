@@ -285,6 +285,7 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           REPO: ${{ github.repository }}
           PR_HEAD_SHA: ${{ steps.meta.outputs.new-sha }}
+          PR_NUMBER: ${{ inputs.pr_number }}
           MODE: success
           DIFF_FILE: ${{ steps.diff.outputs.diff-file }}
           PLUS: ${{ steps.diff.outputs.plus-count }}
@@ -298,6 +299,7 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           REPO: ${{ github.repository }}
           PR_HEAD_SHA: ${{ steps.meta.outputs.new-sha }}
+          PR_NUMBER: ${{ inputs.pr_number }}
           MODE: warning
           DEFAULT_BRANCH: master
         run: |

@@ -253,15 +253,30 @@ def main() -> int:
     head_sha = os.environ["PR_HEAD_SHA"]
     mode = os.environ.get("MODE", "success")
 
-    try:
-        pulls = gh_json(f"repos/{repo}/commits/{head_sha}/pulls")
-    except subprocess.CalledProcessError as e:
-        print(f"updateDeclsDiffSection: gh api failed: {e.stderr}", file=sys.stderr)
-        return 1
-    if not pulls:
-        print(f"updateDeclsDiffSection: no PR associated with {head_sha}; nothing to patch.")
-        return 0
-    pr = pulls[0]["number"]
+    # PR-number resolution: PR_NUMBER env var > SHA-based lookup.
+    # The SHA lookup uses `repos/<repo>/commits/<sha>/pulls`, which only
+    # returns PRs whose head branch lives in this repo — so it MISSES fork
+    # PRs (the common case for Mathlib). Callers that know the PR number
+    # (e.g. via `inputs.pr_number` on `decls-diff.yml`) should pass it
+    # via PR_NUMBER to bypass the unreliable lookup.
+    pr_env = os.environ.get("PR_NUMBER", "").strip()
+    if pr_env:
+        try:
+            pr = int(pr_env)
+        except ValueError:
+            print(f"updateDeclsDiffSection: invalid PR_NUMBER={pr_env!r}", file=sys.stderr)
+            return 1
+    else:
+        try:
+            pulls = gh_json(f"repos/{repo}/commits/{head_sha}/pulls")
+        except subprocess.CalledProcessError as e:
+            print(f"updateDeclsDiffSection: gh api failed: {e.stderr}", file=sys.stderr)
+            return 1
+        if not pulls:
+            print(f"updateDeclsDiffSection: no PR associated with {head_sha} "
+                  "(set PR_NUMBER to override); nothing to patch.")
+            return 0
+        pr = pulls[0]["number"]
 
     try:
         comments = gh_json(f"repos/{repo}/issues/{pr}/comments")
