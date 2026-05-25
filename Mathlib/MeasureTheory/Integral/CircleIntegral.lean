@@ -67,7 +67,7 @@ integral, circle, Cauchy integral
 
 @[expose] public section
 
-variable {E : Type*} [NormedAddCommGroup E]
+variable {E : Type*} [AddCommGroup E] [NormedAddCommGroup E]
 
 noncomputable section
 
@@ -238,7 +238,8 @@ theorem const_fun_smul {f : ℂ → A} (h : CircleIntegrable f c R) :
     CircleIntegrable (fun z ↦ a • f z) c R := const_smul h
 
 variable
-  {𝕜 F : Type*} [NormedRing 𝕜] [NormedAddCommGroup F] [Module 𝕜 F] [NormSMulClass 𝕜 F]
+  {𝕜 F : Type*} [NormedRing 𝕜] [AddCommGroup F] [NormedAddCommGroup F] [Module 𝕜 F]
+  [NormSMulClass 𝕜 F]
 
 /--
 If `g` is continuous on the circle `sphere c |R|` and `f` is circle integrable, then `g • f` is
