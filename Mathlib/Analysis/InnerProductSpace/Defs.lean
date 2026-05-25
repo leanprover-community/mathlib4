@@ -415,6 +415,7 @@ lemma toIsNormedAddGroup : IsNormedAddGroup F where
 attribute [local instance] toIsNormedAddGroup
 
 set_option linter.deprecated false in
+/-- Seminormed group structure constructed from a `PreInnerProductSpace.Core` structure -/
 @[deprecated toIsNormedAddGroup (since := "2026-05-17")]
 def toSeminormedAddCommGroup : SeminormedAddCommGroup F where
 
@@ -498,6 +499,7 @@ attribute [local instance] toNormMetric
 attribute [local instance] toIsNormedAddGroup
 
 set_option linter.deprecated false in
+/-- Normed group structure constructed from an `InnerProductSpace.Core` structure -/
 @[deprecated toIsNormedAddGroup (since := "2026-05-17")]
 def toNormedAddCommGroup : NormedAddCommGroup F where
 
@@ -542,7 +544,7 @@ lemma topology_eq
     exact Iio_mem_nhds (by positivity)
   exact A B
 
-/-- Normed space structure constructed from an `InnerProductSpace.Core` structure, adjusting the
+/-- `NormMetric` structure constructed from an `InnerProductSpace.Core` structure, adjusting the
 topology to make sure it is defeq to an already existing topology. -/
 @[reducible] def toNormMetricOfTopology
     [tF : TopologicalSpace F] [IsTopologicalAddGroup F] [ContinuousConstSMul 𝕜 F]
@@ -551,9 +553,7 @@ topology to make sure it is defeq to an already existing topology. -/
     NormMetric F :=
   .ofCoreReplaceTopology cd.toNormedSpaceCore (cd.topology_eq h h')
 
-/-- Normed space structure constructed from an `InnerProductSpace.Core` structure, adjusting the
-topology to make sure it is defeq to an already existing topology. -/
-@[reducible] def toIsNormedAddGroupOfTopology
+lemma toIsNormedAddGroupOfTopology
     [tF : TopologicalSpace F] [IsTopologicalAddGroup F] [ContinuousConstSMul 𝕜 F]
     (h : ContinuousAt (fun (v : F) ↦ cd.inner v v) 0)
     (h' : IsVonNBounded 𝕜 {v : F | re (cd.inner v v) < 1}) :

@@ -25,7 +25,7 @@ variable {α β : Type*}
 namespace Equiv
 
 /-- Transfer a `IsNormedRing` across an `Equiv` -/
-protected abbrev isNormedRing [NormPseudoMetric β] [Ring β] [IsNormedRing β] (e : α ≃ β) :
+protected lemma isNormedRing [NormPseudoMetric β] [Ring β] [IsNormedRing β] (e : α ≃ β) :
     letI := e.ring
     letI := NormPseudoMetric.induced _ _ e
     IsNormedRing α :=

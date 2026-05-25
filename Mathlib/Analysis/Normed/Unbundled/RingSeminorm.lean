@@ -158,7 +158,7 @@ abbrev toNormPseudoMetric : NormPseudoMetric R :=
   p.toAddGroupSeminorm.toNormPseudoMetric
 
 /-- The `IsNormedRing` structure on a ring `R` determined by a `RingSeminorm`. -/
-abbrev toIsNormedRing :
+lemma toIsNormedRing :
     letI := p.toNormPseudoMetric
     IsNormedRing R :=
   letI := p.toNormPseudoMetric

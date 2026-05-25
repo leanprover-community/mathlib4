@@ -265,10 +265,8 @@ abbrev NormedGroup.ofSeparation [NormPseudoMetric E] [Group E] [IsNormedGroup E]
   toNormMetric := .ofMulSeparation h
 
 -- See note [reducible non-instances]
-/-- Construct a seminormed group from a multiplication-invariant distance. -/
-@[to_additive
-  /-- Construct a seminormed group from a translation-invariant distance. -/]
-abbrev IsNormedGroup.ofMulDist [NormPseudoMetric E] [Group E]
+@[to_additive]
+lemma IsNormedGroup.ofMulDist [NormPseudoMetric E] [Group E]
     (h₁ : ∀ x : E, ‖x‖ = dist 1 x) (h₂ : ∀ x y z : E, dist x y ≤ dist (z * x) (z * y)) :
     IsNormedGroup E where
   dist_eq x y := by
@@ -277,10 +275,8 @@ abbrev IsNormedGroup.ofMulDist [NormPseudoMetric E] [Group E]
     · simpa only [mul_inv_cancel, mul_one, ← mul_assoc, one_mul] using h₂ 1 (x⁻¹ * y) x
 
 -- See note [reducible non-instances]
-/-- Construct a seminormed group from a multiplication-invariant pseudodistance. -/
-@[to_additive
-  /-- Construct a seminormed group from a translation-invariant pseudodistance. -/]
-abbrev IsNormedGroup.ofMulDist' [NormPseudoMetric E] [Group E]
+@[to_additive]
+lemma IsNormedGroup.ofMulDist' [NormPseudoMetric E] [Group E]
     (h₁ : ∀ x : E, ‖x‖ = dist 1 x) (h₂ : ∀ x y z : E, dist (z * x) (z * y) ≤ dist x y) :
     IsNormedGroup E where
   dist_eq x y := by

@@ -589,7 +589,7 @@ section Induced
 
 variable {F : Type*} (R S : Type*) [FunLike F R S]
 
-abbrev IsNormedRing.induced [NonUnitalRing R] [NormPseudoMetric S] [NonUnitalRing S] [IsNormedRing S]
+lemma IsNormedRing.induced [NonUnitalRing R] [NormPseudoMetric S] [NonUnitalRing S] [IsNormedRing S]
     [NonUnitalRingHomClass F R S] (f : F) :
     letI := NormPseudoMetric.induced R S f
     IsNormedRing R :=
