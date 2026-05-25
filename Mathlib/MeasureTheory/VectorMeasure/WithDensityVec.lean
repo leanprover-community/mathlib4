@@ -75,19 +75,23 @@ lemma restrict_withDensity (hf : μ.Integrable f B) :
     simp only [hs, ht, restrict_apply]
     rw [withDensity_apply hf, withDensity_apply hf.restrict, restrict_restrict _ ht hs]
 
-#check Finset.sum_sigma
-
-lemma variation_withDensity (hf : μ.Integrable f B) :
-    (μ.withDensity f B).variation = (μ.transpose B).variation.withDensity (fun x ↦ ‖f x‖ₑ) := by
-  apply le_antisymm
+lemma variation_WithDensity_le :
+    (μ.withDensity f B).variation ≤ (μ.transpose B).variation.withDensity (fun x ↦ ‖f x‖ₑ) := by
+  by_cases hf : μ.Integrable f B
   · apply variation_le_of_forall_enorm_le (fun s hs ↦ ?_)
     rw [withDensity_apply hf, MeasureTheory.withDensity_apply _ hs]
     apply enorm_setIntegral_le_lintegral_enorm
+  · simp [withDensity, hf, Measure.zero_le ]
+
+lemma variation_withDensity [CompleteSpace G]
+    (hf : μ.Integrable f B) (hB : ∀ x y, ‖B x y‖₊ = ‖B.flip y‖₊ * ‖x‖₊) :
+    (μ.withDensity f B).variation = (μ.transpose B).variation.withDensity (fun x ↦ ‖f x‖ₑ) := by
+  apply le_antisymm variation_WithDensity_le
   apply Measure.le_iff.2 (fun s hs ↦ ?_)
   rw [MeasureTheory.withDensity_apply _ hs]
   apply ENNReal.le_of_forall_pos_le_add
   rintro ε εpos -
-  let δ := ε / 10
+  let δ := ε / 3
   have δpos : 0 < δ := div_pos εpos (by norm_num)
   obtain ⟨g, hg, gmem⟩ : ∃ (g : X →ₛ E), eLpNorm (f - ⇑g) 1 (μ.transpose B).variation < δ
       ∧ MemLp (⇑g) 1 (μ.transpose B).variation :=
@@ -155,23 +159,127 @@ lemma variation_withDensity (hf : μ.Integrable f B) :
     ∑ i ∈ g.range.sigma P, ‖i.1‖ₑ * ‖(μ.transpose B).restrict s i.2‖ₑ
     _ = ∑ i ∈ g.range.sigma P, ‖∫ᵛ x in i.2, i.1 ∂[B; μ.restrict s]‖ₑ := by
       congr! with ⟨i, p⟩ hi
-      rw [setIntegral_const]
-
-
+      rcases eq_or_ne i 0 with rfl | h'i
+      · simp
+      simp only [Finset.mem_sigma] at hi
+      have pmeas : MeasurableSet p := Pmeas i _ hi.2
+      have : IsFiniteMeasure (((μ.restrict s).restrict p).transpose B).variation := by
+        constructor
+        rw [restrict_restrict _ pmeas hs, transpose_restrict, variation_restrict (pmeas.inter hs),
+          MeasureTheory.Measure.restrict_apply_univ]
+        apply lt_of_le_of_lt ?_ (g.integrable_iff.1 (memLp_one_iff_integrable.1 gmem) i h'i)
+        exact measure_mono (inter_subset_left.trans (Pg i _ hi.2))
+      rw [setIntegral_const, restrict_apply _ hs pmeas, restrict_apply _ hs pmeas]
+      simp [transpose, hB, enorm_eq_nnnorm, mul_comm]
     _ = ∑ i ∈ g.range.sigma P, ‖∫ᵛ x in i.2, g x ∂[B; μ.restrict s]‖ₑ := by
+      congr! 2 with ⟨i, p⟩ hi
+      simp only [Finset.mem_sigma] at hi
+      apply setIntegral_congr_ae
+      filter_upwards with x hx using (Pg i _ hi.2 hx).symm
+    _ = ∑ i ∈ g.range.sigma P, ‖∫ᵛ x in i.2, (g x - f x) + f x ∂[B; μ.restrict s]‖ₑ := by simp
+    _ = ∑ i ∈ g.range.sigma P, ‖∫ᵛ x in i.2, (g x - f x) ∂[B; μ.restrict s]
+          + ∫ᵛ x in i.2, f x ∂[B; μ.restrict s]‖ₑ := by
       congr! with i hi
-      sorry
-    _ ≤ _ := sorry
-
-
-
-
-
-
-
-
-
-
-
+      rw [integral_fun_add]
+      · apply Integrable.restrict
+        apply Integrable.restrict
+        apply Integrable.sub (memLp_one_iff_integrable.1 gmem) hf
+      · apply hf.restrict.restrict
+    _ ≤ ∑ i ∈ g.range.sigma P, ‖∫ᵛ x in i.2, (g x - f x) ∂[B; μ.restrict s]‖ₑ
+        + ∑ i ∈ g.range.sigma P, ‖∫ᵛ x in i.2, f x ∂[B; μ.restrict s]‖ₑ := by
+      rw [← Finset.sum_add_distrib]
+      gcongr with i hi
+      apply enorm_add_le
+    _ ≤ ∑ i ∈ g.range.sigma P, ∫⁻ x in i.2, ‖g x - f x‖ₑ ∂(μ.transpose B).variation
+        + ∑ i ∈ g.range.sigma P, ‖∫ᵛ x in i.2, f x ∂[B; μ.restrict s]‖ₑ := by
+      gcongr with i hi
+      grw [enorm_setIntegral_le_lintegral_enorm]
+      apply lintegral_mono' _ le_rfl
+      apply Measure.restrict_mono le_rfl
+      rw [transpose_restrict, variation_restrict hs]
+      apply Measure.restrict_le_self
+    _ = ∫⁻ x in (⋃ i ∈ g.range.sigma P, i.2), ‖g x - f x‖ₑ ∂(μ.transpose B).variation
+        + ∑ i ∈ g.range.sigma P, ‖∫ᵛ x in i.2, f x ∂[B; μ.restrict s]‖ₑ := by
+      rw [lintegral_biUnion_finset]
+      · rintro ⟨i, p⟩ hi ⟨j, q⟩ hj hijpq
+        simp only [Finset.coe_sigma, SimpleFunc.coe_range, mem_sigma_iff, mem_range,
+          SetLike.mem_coe] at hi hj
+        rcases eq_or_ne i j with rfl | hij
+        · simp only [ne_eq, Sigma.mk.injEq, heq_eq_eq, true_and] at hijpq
+          exact Pdisj i hi.2 hj.2 hijpq
+        · have : Disjoint (g ⁻¹' {i}) (g ⁻¹' {j}) := by grind
+          exact this.mono (Pg i p hi.2) (Pg j q hj.2)
+      · rintro ⟨i, p⟩ hip
+        simp only [Finset.mem_sigma, SimpleFunc.mem_range, mem_range] at hip
+        exact Pmeas i p hip.2
+    _ ≤ ∑ i ∈ g.range.sigma P, ‖∫ᵛ x in i.2, f x ∂[B; μ.restrict s]‖ₑ +
+        ∫⁻ x, ‖g x - f x‖ₑ ∂(μ.transpose B).variation := by
+      rw [add_comm]
+      gcongr
+      apply Measure.restrict_le_self
+    _ ≤ ∑ i ∈ g.range.sigma P, ‖∫ᵛ x in i.2, f x ∂[B; μ.restrict s]‖ₑ + δ := by
+      gcongr
+      simp_rw [enorm_sub_rev, ← eLpNorm_one_eq_lintegral_enorm]
+      exact hg.le
+  have I5 : ∑ i ∈ g.range.sigma P, ‖∫ᵛ x in i.2, f x ∂[B; μ.restrict s]‖ₑ
+      ≤ (μ.withDensity f B).variation s := by
+    let Q : Finset (Set X) := (g.range.sigma P).image (fun p ↦ p.2 ∩ s)
+    have Qmeas (t : Set X) (ht : t ∈ Q) : MeasurableSet t := by
+      simp only [Finset.mem_image, Finset.mem_sigma, SimpleFunc.mem_range, mem_range, Sigma.exists,
+        ↓existsAndEq, true_and, exists_and_right, Q] at ht
+      rcases ht with ⟨a, ⟨i, hi⟩, rfl⟩
+      exact (Pmeas _ _ hi).inter hs
+    calc ∑ i ∈ g.range.sigma P, ‖∫ᵛ x in i.2, f x ∂[B; μ.restrict s]‖ₑ
+    _ = ∑ j ∈ Q, ‖∫ᵛ x in j, f x ∂[B; μ]‖ₑ := by
+      simp only [Q]
+      rw [Finset.sum_image_of_pairwise_eq_zero]; swap
+      · rintro ⟨i, p⟩ hi ⟨j, q⟩ hj hijpq h'ij
+        simp only [Finset.coe_sigma, SimpleFunc.coe_range, mem_sigma_iff, mem_range,
+          SetLike.mem_coe] at hi hj
+        suffices H : Disjoint p q by
+          have : Disjoint (p ∩ s) (q ∩ s) := H.mono inter_subset_left inter_subset_left
+          rw [← h'ij, disjoint_self] at this
+          simp [this]
+        rcases eq_or_ne i j with rfl | hij
+        · simp only [ne_eq, Sigma.mk.injEq, heq_eq_eq, true_and] at hijpq
+          exact Pdisj i hi.2 hj.2 hijpq
+        · have : Disjoint (g ⁻¹' {i}) (g ⁻¹' {j}) := by grind
+          exact this.mono (Pg i p hi.2) (Pg j q hj.2)
+      apply Finset.sum_congr rfl
+      rintro ⟨i, p⟩ hi
+      simp only [Finset.mem_sigma, SimpleFunc.mem_range, mem_range] at hi
+      rw [restrict_restrict _ (Pmeas i p hi.2) hs]
+    _ = ∑ j ∈ Q, ‖μ.withDensity f B j‖ₑ :=
+      Finset.sum_congr rfl (fun t ht ↦ by rw [withDensity_apply hf])
+    _ ≤ (μ.withDensity f B).variation s := by
+      apply le_variation _ hs
+      · intro t ht
+        simp only [Finset.mem_image, Finset.mem_sigma, SimpleFunc.mem_range, mem_range,
+          Sigma.exists, ↓existsAndEq, true_and, exists_and_right, Q] at ht
+        rcases ht with ⟨p, -, rfl⟩
+        exact inter_subset_right
+      · intro t ht u hu htu
+        simp only [Finset.coe_image, Finset.coe_sigma, SimpleFunc.coe_range, mem_image,
+          mem_sigma_iff, mem_range, SetLike.mem_coe, Sigma.exists, ↓existsAndEq, true_and,
+          exists_and_right, Q] at ht hu
+        rcases ht with ⟨p, ⟨i, hi⟩, rfl⟩
+        rcases hu with ⟨q, ⟨j, hj⟩, rfl⟩
+        have hpq : p ≠ q := by grind only
+        suffices H : Disjoint p q from H.mono inter_subset_left inter_subset_left
+        rcases eq_or_ne (g i) (g j) with hij | hij
+        · rw [← hij] at hj
+          exact Pdisj (g i) hi hj hpq
+        · have : Disjoint (g ⁻¹' {g i}) (g ⁻¹' {g j}) := by grind
+          exact this.mono (Pg (g i) p hi) (Pg (g j) q hj)
+  calc ∫⁻ (a : X) in s, ‖f a‖ₑ ∂(μ.transpose B).variation
+  _ ≤ ∫⁻ a in s, ‖g a‖ₑ ∂(μ.transpose B).variation + δ := I1
+  _ = ∑ i ∈ g.range, ‖i‖ₑ * ((μ.transpose B).restrict s).variation (g ⁻¹' {i}) + δ := by rw [I2]
+  _ ≤ (∑ i ∈ g.range.sigma P, ‖i.1‖ₑ * ‖(μ.transpose B).restrict s i.2‖ₑ + δ) + δ := by gcongr
+  _ ≤ ((∑ i ∈ g.range.sigma P, ‖∫ᵛ x in i.2, f x ∂[B; μ.restrict s]‖ₑ + δ) + δ) + δ := by gcongr
+  _ = (∑ i ∈ g.range.sigma P, ‖∫ᵛ x in i.2, f x ∂[B; μ.restrict s]‖ₑ) + 3 * δ := by ring
+  _ ≤ (μ.withDensity f B).variation s + 3 * δ := by gcongr
+  _ ≤ (μ.withDensity f B).variation s + ε := by
+    simp only [ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true, ENNReal.coe_div, ENNReal.coe_ofNat, δ]
+    rw [ENNReal.mul_div_cancel (by simp) (by simp)]
 
 end MeasureTheory.VectorMeasure
