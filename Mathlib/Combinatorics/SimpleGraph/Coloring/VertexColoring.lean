@@ -185,7 +185,6 @@ theorem colorable_one_iff : G.Colorable 1 ↔ G = ⊥ := by
 /-- A coloring of a graph `G` is a homomorphism from it to the mapped graph.
 This is `Hom.map` spelled using colorings. The mapped graph `G.map f` can be thought of as taking
 the original graph `G` and considering every color class (independent set) as a single vertex. -/
-@[simps!]
 abbrev Coloring.homMap {α : Type*} (f : G.Coloring α) : G →g G.map f :=
   .map f G f.map_adj
 
