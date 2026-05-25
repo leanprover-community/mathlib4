@@ -43,9 +43,9 @@ open ENNReal MeasureTheory MeasureTheory.Measure Metric Set Filter TopologicalSp
 
 open scoped Topology ENNReal Convex
 
-variable {α E F : Type*} {m0 : MeasurableSpace α} [NormedAddCommGroup E] [NormedSpace ℝ E]
-  [NormedAddCommGroup F] [NormedSpace ℝ F] [CompleteSpace F] {μ ν : Measure α}
-  {s t : Set α}
+variable {α E F : Type*} {m0 : MeasurableSpace α} [AddCommGroup E] [NormedAddCommGroup E]
+  [NormedSpace ℝ E] [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace ℝ F] [CompleteSpace F]
+  {μ ν : Measure α} {s t : Set α}
 
 /-!
 ### Average value of a function w.r.t. a measure
