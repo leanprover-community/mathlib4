@@ -52,6 +52,7 @@ variable {X : Type*} [MeasurableSpace X]
 noncomputable def diracProba (x : X) : ProbabilityMeasure X :=
   ⟨Measure.dirac x, Measure.dirac.isProbabilityMeasure⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The assignment `x ↦ diracProba x` is injective if all singletons are measurable. -/
 lemma injective_diracProba {X : Type*} [MeasurableSpace X] [MeasurableSpace.SeparatesPoints X] :
     Function.Injective (fun (x : X) ↦ diracProba x) := by
@@ -149,7 +150,7 @@ lemma tendsto_diracProbaEquivSymm_iff_tendsto [T0Space X] [CompletelyRegularSpac
   rw [← (diracProbaEquiv (X := X)).symm_comp_self, ← tendsto_map'_iff] at key
   simp only [tendsto_map'_iff, map_map, Equiv.self_comp_symm, map_id] at key
   simp only [← key, diracProba_comp_diracProbaEquiv_symm_eq_val]
-  convert tendsto_subtype_rng.symm
+  convert! tendsto_subtype_rng.symm
   exact apply_rangeSplitting (fun x ↦ diracProba x) μ
 
 /-- In a T0 topological space, `diracProbaEquiv` is continuous. -/

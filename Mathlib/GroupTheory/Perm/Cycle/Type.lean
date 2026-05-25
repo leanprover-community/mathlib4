@@ -129,8 +129,6 @@ theorem Disjoint.cycleType_mul {σ τ : Perm α} (h : Disjoint σ τ) :
     Multiset.map_add, Finset.union_val, Multiset.add_eq_union_iff_disjoint.mpr _]
   exact Finset.disjoint_val.2 h.disjoint_cycleFactorsFinset
 
-@[deprecated (since := "2025-08-26")] alias Disjoint.cycleType := Disjoint.cycleType_mul
-
 @[simp]
 theorem cycleType_inv (σ : Perm α) : σ⁻¹.cycleType = σ.cycleType :=
   cycle_induction_on (P := fun τ : Perm α => τ⁻¹.cycleType = τ.cycleType) σ rfl
@@ -310,7 +308,8 @@ theorem cycleType_extendDomain {β : Type*} [Fintype β] [DecidableEq β] {p : �
   | induction_disjoint σ τ hd _ hσ hτ =>
     rw [hd.cycleType_mul, ← extendDomain_mul, (hd.extendDomain f).cycleType_mul, hσ, hτ]
 
-theorem cycleType_ofSubtype {p : α → Prop} [DecidablePred p] {g : Perm (Subtype p)} :
+theorem cycleType_ofSubtype {p : α → Prop} [DecidablePred p] [Fintype (Subtype p)]
+    {g : Perm (Subtype p)} :
     cycleType (ofSubtype g) = cycleType g :=
   cycleType_extendDomain (Equiv.refl (Subtype p))
 
@@ -490,6 +489,7 @@ theorem rotate_length : rotate v n = v :=
 
 end VectorsProdEqOne
 
+set_option backward.isDefEq.respectTransparency false in
 -- TODO: Make the `Finite` version of this theorem the default
 /-- For every prime `p` dividing the order of a finite group `G` there exists an element of order
 `p` in `G`. This is known as Cauchy's theorem. -/
@@ -530,7 +530,7 @@ theorem _root_.exists_prime_orderOf_dvd_card {G : Type*} [Group G] [Fintype G] (
 order `p` in `G`. This is the additive version of Cauchy's theorem. -/
 theorem _root_.exists_prime_addOrderOf_dvd_card {G : Type*} [AddGroup G] [Fintype G] (p : ℕ)
     [Fact p.Prime] (hdvd : p ∣ Fintype.card G) : ∃ x : G, addOrderOf x = p :=
-  @exists_prime_orderOf_dvd_card (Multiplicative G) _ _ _ _ (by convert hdvd)
+  @exists_prime_orderOf_dvd_card (Multiplicative G) _ _ _ _ (by convert! hdvd)
 
 attribute [to_additive existing] exists_prime_orderOf_dvd_card
 
@@ -627,6 +627,10 @@ variable [DecidableEq α] {σ : Perm α}
 
 theorem cycleType (h : IsThreeCycle σ) : σ.cycleType = {3} :=
   h
+
+theorem ne_one (h : IsThreeCycle σ) : σ ≠ 1 := by
+  rintro rfl
+  simpa using h.cycleType
 
 theorem card_support (h : IsThreeCycle σ) : #σ.support = 3 := by
   rw [← sum_cycleType, h.cycleType, Multiset.sum_singleton]

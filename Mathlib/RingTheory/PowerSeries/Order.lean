@@ -116,7 +116,7 @@ theorem le_order (φ : R⟦X⟧) (n : ℕ∞) (h : ∀ i : ℕ, ↑i < n → coe
   cases n with
   | top => simpa using ext (by simpa using h)
   | coe n =>
-    convert nat_le_order φ n _
+    convert! nat_le_order φ n _
     simpa using h
 
 /-- The order of a formal power series is exactly `n` if the `n`th coefficient is nonzero,
@@ -175,8 +175,6 @@ theorem order_add_of_order_ne (φ ψ : R⟦X⟧) (h : order φ ≠ order ψ) :
   rcases h.lt_or_gt with (φ_lt_ψ | ψ_lt_φ)
   · apply order_add_of_order_ne.aux _ _ φ_lt_ψ
   · simpa only [add_comm, inf_comm] using order_add_of_order_ne.aux _ _ ψ_lt_φ
-
-@[deprecated (since := "2025-09-17")] alias order_add_of_order_eq := order_add_of_order_ne
 
 theorem le_order_map {S : Type*} [Semiring S] (f : R →+* S) :
     φ.order ≤ (φ.map f).order :=
@@ -320,7 +318,7 @@ theorem X_pow_order_mul_divXPowOrder {f : R⟦X⟧} :
   rw [coeff_X_pow_mul']
   split_ifs with h
   · simp [h]
-  · push_neg at h
+  · push Not at h
     rw [coeff_of_lt_order_toNat _ h]
 
 theorem X_pow_order_dvd : X ^ φ.order.toNat ∣ φ := by
@@ -431,11 +429,6 @@ theorem divXPowOrder_mul {f g : R⟦X⟧} :
         rw [mul_assoc, X_pow_mul, X_pow_mul, ← mul_assoc, mul_assoc, ← pow_add]
     _ = X ^ (f.order.toNat + g.order.toNat) * (f.divXPowOrder * g.divXPowOrder) := by
         rw [X_pow_mul, add_comm]
-
-@[deprecated divXPowOrder_mul "use `divXPowOrder_mul.symm` instead" (since := "2025-11-06")]
-theorem divXPowOrder_mul_divXPowOrder {f g : R⟦X⟧} :
-    divXPowOrder f * divXPowOrder g = divXPowOrder (f * g) :=
-  divXPowOrder_mul.symm
 
 variable [Nontrivial R]
 

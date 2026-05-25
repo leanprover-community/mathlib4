@@ -169,7 +169,7 @@ theorem convex_segment [IsOrderedRing 𝕜] (x y : E) : Convex 𝕜 [x -[𝕜] y
   · rw [add_add_add_comm, ← mul_add, ← mul_add, habp, habq, mul_one, mul_one, hab]
   · match_scalars <;> noncomm_ring
 
-/-- See `Convex.semilinear_image` for a version for semilinar maps, but requiring that `𝕜` be a
+/-- See `Convex.semilinear_image` for a version for semilinear maps, but requiring that `𝕜` be a
   linear order, instead of just a partial order. -/
 theorem Convex.linear_image (hs : Convex 𝕜 s) (f : E →ₗ[𝕜] F) : Convex 𝕜 (f '' s) := by
   rintro _ ⟨x, hx, rfl⟩ _ ⟨y, hy, rfl⟩ a b ha hb hab
@@ -335,23 +335,24 @@ variable [AddCommMonoid E] [LinearOrder E] [IsOrderedAddMonoid E]
 theorem MonotoneOn.convex_le (hf : MonotoneOn f s) (hs : Convex 𝕜 s) (r : β) :
     Convex 𝕜 ({ x ∈ s | f x ≤ r }) := fun x hx y hy _ _ ha hb hab =>
   ⟨hs hx.1 hy.1 ha hb hab,
-    (hf (hs hx.1 hy.1 ha hb hab) (max_rec' s hx.1 hy.1) (Convex.combo_le_max x y ha hb hab)).trans
-      (max_rec' { x | f x ≤ r } hx.2 hy.2)⟩
+    (hf (hs hx.1 hy.1 ha hb hab) (max_rec' (· ∈ s) hx.1 hy.1)
+      (Convex.combo_le_max x y ha hb hab)).trans
+      (max_rec' (f · ≤ r) hx.2 hy.2)⟩
 
 theorem MonotoneOn.convex_lt (hf : MonotoneOn f s) (hs : Convex 𝕜 s) (r : β) :
     Convex 𝕜 ({ x ∈ s | f x < r }) := fun x hx y hy _ _ ha hb hab =>
   ⟨hs hx.1 hy.1 ha hb hab,
-    (hf (hs hx.1 hy.1 ha hb hab) (max_rec' s hx.1 hy.1)
+    (hf (hs hx.1 hy.1 ha hb hab) (max_rec' (· ∈ s) hx.1 hy.1)
           (Convex.combo_le_max x y ha hb hab)).trans_lt
-      (max_rec' { x | f x < r } hx.2 hy.2)⟩
+      (max_rec' (f · < r) hx.2 hy.2)⟩
 
 theorem MonotoneOn.convex_ge (hf : MonotoneOn f s) (hs : Convex 𝕜 s) (r : β) :
     Convex 𝕜 ({ x ∈ s | r ≤ f x }) :=
-  MonotoneOn.convex_le (E := Eᵒᵈ) (β := βᵒᵈ) hf.dual hs r
+  MonotoneOn.convex_le (E := Eᵒᵈ) (β := βᵒᵈ) hf.dual (by exact hs) r
 
 theorem MonotoneOn.convex_gt (hf : MonotoneOn f s) (hs : Convex 𝕜 s) (r : β) :
     Convex 𝕜 ({ x ∈ s | r < f x }) :=
-  MonotoneOn.convex_lt (E := Eᵒᵈ) (β := βᵒᵈ) hf.dual hs r
+  MonotoneOn.convex_lt (E := Eᵒᵈ) (β := βᵒᵈ) hf.dual (by exact hs) r
 
 theorem AntitoneOn.convex_le (hf : AntitoneOn f s) (hs : Convex 𝕜 s) (r : β) :
     Convex 𝕜 ({ x ∈ s | f x ≤ r }) :=
@@ -569,6 +570,11 @@ protected theorem Convex.add_smul (h_conv : Convex 𝕜 s) {p q : 𝕜} (hp : 0 
   rintro _ ⟨_, ⟨v₁, h₁, rfl⟩, _, ⟨v₂, h₂, rfl⟩, rfl⟩
   exact h_conv.exists_mem_add_smul_eq h₁ h₂ hp hq
 
+theorem Convex.add_half_self_eq_self (h_conv : Convex 𝕜 s) : (2 : 𝕜)⁻¹ • s + (2 : 𝕜)⁻¹ • s = s := by
+  rw [← h_conv.add_smul (by norm_num) (by norm_num)]
+  ring_nf
+  rw [one_smul]
+
 end AddCommGroup
 
 end LinearOrderedField
@@ -637,7 +643,7 @@ lemma convex_of_nonneg_surjective_algebraMap [FaithfulSMul R A] {s : Set M}
   intro u hu v hv a b ha hb hab
   obtain ⟨c, hc1, hc2⟩ := halg ha
   obtain ⟨d, hd1, hd2⟩ := halg hb
-  convert hs hu hv hc1 hd1 _ using 2
+  convert! hs hu hv hc1 hd1 _ using 2
   · rw [← hc2, algebraMap_smul]
   · rw [← hd2, algebraMap_smul]
   rw [← hc2, ← hd2, ← algebraMap.coe_add] at hab

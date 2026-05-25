@@ -6,7 +6,7 @@ Authors: Mario Carneiro
 module
 
 public import Mathlib.Data.Ordering.Basic
-public import Mathlib.Order.Synonym
+public import Mathlib.Order.OrderDual
 
 /-!
 # Comparison
@@ -126,13 +126,10 @@ theorem Ordering.Compares.cmp_eq [LinearOrder α] {a b : α} {o : Ordering} (h :
     cmp a b = o :=
   (cmp_compares a b).inj h
 
--- TODO: is there a nice way to avoid the non-terminal simp?
-set_option linter.flexible false in
 @[simp]
 theorem cmp_swap [Preorder α] [DecidableLT α] (a b : α) : (cmp a b).swap = cmp b a := by
   unfold cmp cmpUsing
-  by_cases h : a < b <;> by_cases h₂ : b < a <;> simp [h, h₂, Ordering.swap]
-  exact lt_asymm h h₂
+  by_cases h : a < b <;> by_cases h₂ : b < a <;> simp_all [lt_asymm]
 
 @[simp]
 theorem cmpLE_toDual [LE α] [DecidableLE α] (x y : α) : cmpLE (toDual x) (toDual y) = cmpLE y x :=
@@ -151,10 +148,11 @@ theorem cmp_ofDual [LT α] [DecidableLT α] (x y : αᵒᵈ) : cmp (ofDual x) (o
   rfl
 
 /-- Generate a linear order structure from a preorder and `cmp` function. -/
+@[implicit_reducible]
 def linearOrderOfCompares [Preorder α] (cmp : α → α → Ordering)
     (h : ∀ a b, (cmp a b).Compares a b) : LinearOrder α :=
   let H : DecidableLE α := fun a b => decidable_of_iff _ (h a b).ne_gt
-  { inferInstanceAs (Preorder α) with
+  { (inferInstance : Preorder α) with
     le_antisymm := fun a b => (h a b).le_antisymm,
     le_total := fun a b => (h a b).le_total,
     toMin := minOfLe,

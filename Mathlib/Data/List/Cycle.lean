@@ -184,18 +184,8 @@ theorem next_getLast_cons (h : x ∈ l) (y : α) (h : x ∈ y :: l) (hy : x ≠ 
   · simp at hk
   · rw [nodup_iff_injective_get] at hl
     rw [length, Nat.succ_inj]
-    refine Fin.val_eq_of_eq <| @hl ⟨k, Nat.lt_of_succ_lt <| by simpa using hk⟩
-      ⟨tl.length, by simp⟩ ?_
-    rw [← Option.some_inj] at hk'
-    rw [← getElem?_eq_getElem, dropLast_eq_take, getElem?_take_of_lt, getElem?_cons_succ,
-      getElem?_eq_getElem, Option.some_inj] at hk'
-    · rw [get_eq_getElem, hk']
-      simp only [getLast_eq_getElem, length_cons, Nat.succ_sub_succ_eq_sub,
-        Nat.sub_zero, get_eq_getElem, getElem_cons_succ]
-    · simp only [dropLast_cons₂, length_cons, length_dropLast, Nat.add_one_sub_one,
-        Nat.add_lt_add_iff_right] at hk ⊢
-      lia
-    simpa using hk
+    exact Fin.val_eq_of_eq <| @hl ⟨k, Nat.lt_of_succ_lt <| by simpa using hk⟩
+      ⟨tl.length, by simp⟩ (by grind)
 
 theorem prev_getLast_cons' (y : α) (hxy : x ∈ y :: l) (hx : x = y) :
     prev (y :: l) x hxy = getLast (y :: l) (cons_ne_nil _ _) := by cases l <;> simp [prev, hx]
@@ -398,7 +388,7 @@ theorem prev_reverse_eq_next (l : List α) (h : Nodup l) (x : α) (hx : x ∈ l)
 
 theorem next_reverse_eq_prev (l : List α) (h : Nodup l) (x : α) (hx : x ∈ l) :
     next l.reverse x (mem_reverse.mpr hx) = prev l x hx := by
-  convert (prev_reverse_eq_next l.reverse (nodup_reverse.mpr h) x (mem_reverse.mpr hx)).symm
+  convert! (prev_reverse_eq_next l.reverse (nodup_reverse.mpr h) x (mem_reverse.mpr hx)).symm
   exact (reverse_reverse l).symm
 
 theorem isRotated_next_eq {l l' : List α} (h : l ~r l') (hn : Nodup l) {x : α} (hx : x ∈ l) :
@@ -886,20 +876,11 @@ theorem chain_of_pairwise : (∀ a ∈ s, ∀ b ∈ s, r a b) → Chain r s := b
   rw [Cycle.chain_coe_cons]
   apply Pairwise.isChain
   rw [pairwise_cons]
-  refine
-    ⟨fun b hb => ?_,
+  exact
+    ⟨fun b hb => by grind,
       pairwise_append.2
         ⟨pairwise_of_forall_mem_list fun b hb c hc => hs b (Hl hb) c (Hl hc),
-          pairwise_singleton r a, fun b hb c hc => ?_⟩⟩
-  · rw [mem_append] at hb
-    rcases hb with hb | hb
-    · exact hs a Ha b (Hl hb)
-    · rw [mem_singleton] at hb
-      rw [hb]
-      exact hs a Ha a Ha
-  · rw [mem_singleton] at hc
-    rw [hc]
-    exact hs b (Hl hb) a Ha
+          pairwise_singleton r a, fun b hb c hc => by grind⟩⟩
 
 theorem chain_iff_pairwise [IsTrans α r] : Chain r s ↔ ∀ a ∈ s, ∀ b ∈ s, r a b :=
   ⟨by

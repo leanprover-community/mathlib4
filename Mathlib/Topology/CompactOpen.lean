@@ -76,7 +76,7 @@ lemma eventually_range_subset [CompactSpace X] {f : C(X, Y)} (hU : IsOpen U) (h 
 lemma nhds_compactOpen (f : C(X, Y)) :
     𝓝 f = ⨅ (K : Set X) (_ : IsCompact K) (U : Set Y) (_ : IsOpen U) (_ : MapsTo f K U),
       𝓟 {g : C(X, Y) | MapsTo g K U} := by
-  simp_rw [compactOpen_eq, nhds_generateFrom, mem_setOf_eq, @and_comm (f ∈ _), iInf_and,
+  simp_rw +instances [compactOpen_eq, nhds_generateFrom, mem_setOf_eq, @and_comm (f ∈ _), iInf_and,
     ← image_prod, iInf_image, biInf_prod, mem_setOf_eq]
 
 lemma tendsto_nhds_compactOpen {l : Filter α} {f : α → C(Y, Z)} {g : C(Y, Z)} :
@@ -130,8 +130,15 @@ lemma _root_.Filter.HasBasis.nhds_continuousMapConst {ι : Type*} {c : Y} {p : �
 section Functorial
 
 /-- `C(X, ·)` is a functor. -/
+@[fun_prop]
 theorem continuous_postcomp (g : C(Y, Z)) : Continuous (ContinuousMap.comp g : C(X, Y) → C(X, Z)) :=
   continuous_compactOpen.2 fun _K hK _U hU ↦ isOpen_setOf_mapsTo hK (hU.preimage g.2)
+
+/-- If `g : C(Y, Z)` is injective,
+then the composition `ContinuousMap.comp g : C(X, Y) → C(X, Z)` is injective too. -/
+theorem postcomp_injective (g : C(Y, Z)) (hg : Function.Injective g) :
+    Function.Injective (ContinuousMap.comp g : C(X, Y) → C(X, Z)) :=
+  fun _ _ ↦ (cancel_left hg).1
 
 /-- If `g : C(Y, Z)` is a topology inducing map,
 then the composition `ContinuousMap.comp g : C(X, Y) → C(X, Z)` is a topology inducing map too. -/
@@ -145,7 +152,7 @@ theorem isInducing_postcomp (g : C(Y, Z)) (hg : IsInducing g) :
 then the composition `ContinuousMap.comp g : C(X, Y) → C(X, Z)` is an embedding too. -/
 theorem isEmbedding_postcomp (g : C(Y, Z)) (hg : IsEmbedding g) :
     IsEmbedding (g.comp : C(X, Y) → C(X, Z)) :=
-  ⟨isInducing_postcomp g hg.1, fun _ _ ↦ (cancel_left hg.2).1⟩
+  ⟨isInducing_postcomp g hg.1, postcomp_injective g hg.2⟩
 
 /-- `C(·, Z)` is a functor. -/
 @[continuity, fun_prop]
@@ -332,7 +339,7 @@ theorem compactOpen_eq_iInf_induced :
   refine le_antisymm (le_iInf₂ fun s _ ↦ compactOpen_le_induced s) ?_
   refine le_generateFrom <| forall_mem_image2.2 fun K (hK : IsCompact K) U hU ↦ ?_
   refine TopologicalSpace.le_def.1 (iInf₂_le K hK) _ ?_
-  convert isOpen_induced (isOpen_setOf_mapsTo (isCompact_iff_isCompact_univ.1 hK) hU)
+  convert! isOpen_induced (isOpen_setOf_mapsTo (isCompact_iff_isCompact_univ.1 hK) hU)
   simp [Subtype.forall, MapsTo]
 
 theorem nhds_compactOpen_eq_iInf_nhds_induced (f : C(X, Y)) :
@@ -464,6 +471,7 @@ def const' : C(Y, C(X, Y)) :=
 theorem coe_const' : (const' : Y → C(X, Y)) = const X :=
   rfl
 
+@[fun_prop]
 theorem continuous_const' : Continuous (const X : Y → C(X, Y)) :=
   const'.continuous
 

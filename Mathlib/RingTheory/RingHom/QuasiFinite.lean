@@ -44,6 +44,10 @@ lemma QuasiFinite.of_comp {f : S →+* T} {g : R →+* S} (h : (f.comp g).QuasiF
   algebraize [f, g, (f.comp g)]
   exact .of_restrictScalars R S T
 
+lemma QuasiFinite.comp_iff {f : S →+* T} {g : R →+* S} (hg : g.QuasiFinite) :
+    (f.comp g).QuasiFinite ↔ f.QuasiFinite :=
+  ⟨.of_comp, (.comp · hg)⟩
+
 lemma QuasiFinite.of_finite {f : S →+* T} (hf : f.Finite) : f.QuasiFinite := by
   algebraize [f]
   exact inferInstanceAs (Algebra.QuasiFinite _ _)

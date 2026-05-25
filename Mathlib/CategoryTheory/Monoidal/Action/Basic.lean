@@ -6,7 +6,6 @@ Authors: Robin Carlier
 module
 
 public import Mathlib.CategoryTheory.Monoidal.Category
-public import Mathlib.CategoryTheory.Functor.Trifunctor
 
 /-!
 
@@ -114,6 +113,7 @@ open scoped MonoidalLeftAction in
   `f : (d : D) ⟶ d'`, a morphism `f ⊙ₗ f' : c ⊙ₗ d ⟶ c' ⊙ₗ d'`.
 - A structure isomorphism `αₗ c c' d : c ⊗ c' ⊙ₗ d ≅ c ⊙ₗ c' ⊙ₗ d`.
 - A structure isomorphism `λₗ d : (𝟙_ C) ⊙ₗ d ≅ d`.
+
 Furthermore, we require identities that turn `- ⊙ₗ -` into a bifunctor,
 ensure naturality of `αₗ` and `λₗ`, and ensure compatibilities with
 the associator and unitor isomorphisms in `C`. -/
@@ -426,6 +426,7 @@ open scoped MonoidalRightAction in
   `f : (d : D) ⟶ d'`, a morphism `f ⊙ᵣₘ f' : c ⊙ᵣ d ⟶ c' ⊙ᵣ d'`.
 - A structure isomorphism `αᵣ c c' d : c ⊗ c' ⊙ᵣ d ≅ c ⊙ᵣ c' ⊙ᵣ d`.
 - A structure isomorphism `ρᵣ d : (𝟙_ C) ⊙ᵣ d ≅ d`.
+
 Furthermore, we require identities that turn `- ⊙ᵣ -` into a bifunctor,
 ensure naturality of `αᵣ` and `ρᵣ`, and ensure compatibilities with
 the associator and unitor isomorphisms in `C`. -/

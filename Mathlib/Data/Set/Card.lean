@@ -72,9 +72,6 @@ noncomputable def encard (s : Set α) : ℕ∞ := ENat.card s
 
 @[simp] theorem _root_.ENat.card_coe_set_eq (s : Set α) : ENat.card s = s.encard := rfl
 
-@[deprecated "Use simp" (since := "2025-09-23")]
-theorem encard_univ_coe (s : Set α) : encard (univ : Set s) = encard s := by simp
-
 theorem Finite.encard_eq_coe_toFinset_card (h : s.Finite) : s.encard = h.toFinset.card := by
   have := h.fintype
   rw [encard, ENat.card_eq_coe_fintype_card, toFinite_toFinset, toFinset_card]
@@ -89,7 +86,8 @@ theorem toENat_cardinalMk_subtype (P : α → Prop) :
     (Cardinal.mk {x // P x}).toENat = {x | P x}.encard :=
   rfl
 
-@[simp] theorem coe_fintypeCard (s : Set α) [Fintype s] : Fintype.card s = s.encard := by
+variable (s) in
+theorem coe_fintypeCard [Fintype s] : Fintype.card s = s.encard := by
   simp [encard_eq_coe_toFinset_card]
 
 @[simp, norm_cast] theorem encard_coe_eq_coe_finsetCard (s : Finset α) :
@@ -120,6 +118,7 @@ protected alias ⟨_, Nonempty.encard_pos⟩ := encard_pos
 theorem encard_ne_zero_of_mem {a : α} (h : a ∈ s) : s.encard ≠ 0 :=
   (encard_pos.mpr ⟨a, h⟩).ne.symm
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] theorem encard_singleton (e : α) : ({e} : Set α).encard = 1 := by
   rw [encard, ENat.card_eq_coe_fintype_card, Fintype.card_ofSubsingleton, Nat.cast_one]
 
@@ -186,6 +185,7 @@ theorem encard_pi_eq_prod_encard [h : Fintype α] {ι : α → Type*} {s : ∀ i
 
 section Lattice
 
+@[gcongr]
 theorem encard_le_encard (h : s ⊆ t) : s.encard ≤ t.encard := by
   rw [← union_diff_cancel h, encard_union_eq disjoint_sdiff_right]; exact le_self_add
 
@@ -206,6 +206,8 @@ theorem encard_diff (h : s ⊆ t) (hs : s.Finite) :
 @[simp] theorem one_le_encard_iff_nonempty : 1 ≤ s.encard ↔ s.Nonempty := by
   rw [nonempty_iff_ne_empty, Ne, ← encard_eq_zero, ENat.one_le_iff_ne_zero]
 
+@[simp] lemma encard_lt_one : s.encard < 1 ↔ s = ∅ := by simp [← not_le, not_nonempty_iff_eq_empty]
+
 theorem encard_diff_add_encard_inter (s t : Set α) :
     (s \ t).encard + (s ∩ t).encard = s.encard := by
   rw [← encard_union_eq disjoint_sdiff_inter, diff_union_inter]
@@ -215,16 +217,19 @@ theorem encard_union_add_encard_inter (s t : Set α) :
   rw [← diff_union_self, encard_union_eq disjoint_sdiff_left, add_right_comm,
     encard_diff_add_encard_inter]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem encard_eq_encard_iff_encard_diff_eq_encard_diff (h : (s ∩ t).Finite) :
     s.encard = t.encard ↔ (s \ t).encard = (t \ s).encard := by
   rw [← encard_diff_add_encard_inter s t, ← encard_diff_add_encard_inter t s, inter_comm t s,
     WithTop.add_right_inj h.encard_lt_top.ne]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem encard_le_encard_iff_encard_diff_le_encard_diff (h : (s ∩ t).Finite) :
     s.encard ≤ t.encard ↔ (s \ t).encard ≤ (t \ s).encard := by
   rw [← encard_diff_add_encard_inter s t, ← encard_diff_add_encard_inter t s, inter_comm t s,
     WithTop.add_le_add_iff_right h.encard_lt_top.ne]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem encard_lt_encard_iff_encard_diff_lt_encard_diff (h : (s ∩ t).Finite) :
     s.encard < t.encard ↔ (s \ t).encard < (t \ s).encard := by
   rw [← encard_diff_add_encard_inter s t, ← encard_diff_add_encard_inter t s, inter_comm t s,
@@ -243,6 +248,7 @@ theorem Finite.finite_of_encard_le {s : Set α} {t : Set β} (hs : s.Finite)
     (h : t.encard ≤ s.encard) : t.Finite :=
   encard_lt_top_iff.1 (h.trans_lt hs.encard_lt_top)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma Finite.eq_of_subset_of_encard_le' (ht : t.Finite) (hst : s ⊆ t) (hts : t.encard ≤ s.encard) :
     s = t := by
   rw [← zero_add (a := encard s), ← encard_diff_add_encard_of_subset hst] at hts
@@ -262,6 +268,9 @@ theorem encard_strictMono [Finite α] : StrictMono (encard : Set α → ℕ∞) 
 
 theorem Finite.encard_strictMonoOn : StrictMonoOn (α := Set α) encard (setOf Set.Finite) :=
   fun _ hs _ _ hlt ↦ hs.encard_lt_encard hlt.ssubset
+
+theorem Finite.encard_lt_card (hfin : s.Finite) (hne : s ≠ univ) : s.encard < ENat.card α :=
+  encard_univ α ▸ hfin.encard_lt_encard (ssubset_univ_iff.mpr hne)
 
 theorem encard_diff_add_encard (s t : Set α) : (s \ t).encard + t.encard = (s ∪ t).encard := by
   rw [← encard_union_eq disjoint_sdiff_left, diff_union_self]
@@ -288,12 +297,13 @@ theorem one_le_encard_insert (s : Set α) : 1 ≤ (insert a s).encard :=
   ENat.one_le_iff_ne_zero.mpr <| encard_ne_zero_of_mem (mem_insert a s)
 
 theorem encard_singleton_inter (s : Set α) (x : α) : ({x} ∩ s).encard ≤ 1 := by
-  rw [← encard_singleton x]; exact encard_le_encard inter_subset_left
+  grw [← encard_singleton x, inter_subset_left]
 
 theorem encard_diff_singleton_add_one (h : a ∈ s) :
     (s \ {a}).encard + 1 = s.encard := by
   rw [← encard_insert_of_notMem (fun h ↦ h.2 rfl), insert_diff_singleton, insert_eq_of_mem h]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem encard_diff_singleton_of_mem (h : a ∈ s) :
     (s \ {a}).encard = s.encard - 1 := by
   rw [← encard_diff_singleton_add_one h, ← WithTop.add_right_inj WithTop.one_ne_top,
@@ -310,6 +320,7 @@ theorem encard_exchange (ha : a ∉ s) (hb : b ∈ s) : (insert a (s \ {b})).enc
 theorem encard_exchange' (ha : a ∉ s) (hb : b ∈ s) : (insert a s \ {b}).encard = s.encard := by
   rw [← insert_diff_singleton_comm (by rintro rfl; exact ha hb), encard_exchange ha hb]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem encard_eq_add_one_iff {k : ℕ∞} :
     s.encard = k + 1 ↔ (∃ a t, a ∉ t ∧ insert a t = s ∧ t.encard = k) := by
   refine ⟨fun h ↦ ?_, ?_⟩
@@ -320,6 +331,7 @@ theorem encard_eq_add_one_iff {k : ℕ∞} :
   rintro ⟨a, t, h, rfl, rfl⟩
   rw [encard_insert_of_notMem h]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Every set is either empty, infinite, or can have its `encard` reduced by a removal. Intended
   for well-founded induction on the value of `encard`. -/
 theorem eq_empty_or_encard_eq_top_or_encard_diff_singleton_lt (s : Set α) :
@@ -333,6 +345,7 @@ end InsertErase
 
 section SmallSets
 
+set_option backward.isDefEq.respectTransparency false in
 theorem encard_pair {x y : α} (hne : x ≠ y) : ({x, y} : Set α).encard = 2 := by
   rw [encard_insert_of_notMem (by simpa), ← one_add_one_eq_two,
     WithTop.add_right_inj WithTop.one_ne_top, encard_singleton]
@@ -369,6 +382,7 @@ theorem exists_ne_of_one_lt_encard (h : 1 < s.encard) (a : α) : ∃ b ∈ s, b 
   apply hne
   rw [h' b hb, h' b' hb']
 
+set_option backward.isDefEq.respectTransparency false in
 theorem encard_eq_two : s.encard = 2 ↔ ∃ x y, x ≠ y ∧ s = {x, y} := by
   refine ⟨fun h ↦ ?_, fun ⟨x, y, hne, hs⟩ ↦ by rw [hs, encard_pair hne]⟩
   obtain ⟨x, hx⟩ := nonempty_of_encard_ne_zero (s := s) (by rw [h]; simp)
@@ -378,6 +392,7 @@ theorem encard_eq_two : s.encard = 2 ↔ ∃ x y, x ≠ y ∧ s = {x, y} := by
   refine ⟨x, y, by rintro rfl; exact (h.symm.subset rfl).2 rfl, ?_⟩
   rw [← h, insert_diff_singleton, insert_eq_of_mem hx]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem encard_eq_three {α : Type u_1} {s : Set α} :
     encard s = 3 ↔ ∃ x y z, x ≠ y ∧ x ≠ z ∧ y ≠ z ∧ s = {x, y, z} := by
   refine ⟨fun h ↦ ?_, fun ⟨x, y, z, hxy, hyz, hxz, hs⟩ ↦ ?_⟩
@@ -392,6 +407,7 @@ theorem encard_eq_three {α : Type u_1} {s : Set α} :
     rw [← hs, insert_diff_singleton, insert_eq_of_mem hx]
   rw [hs, encard_insert_of_notMem, encard_insert_of_notMem, encard_singleton] <;> aesop
 
+set_option backward.isDefEq.respectTransparency false in
 theorem encard_eq_four {α : Type u_1} {s : Set α} :
     encard s = 4 ↔ ∃ x y z w, x ≠ y ∧ x ≠ z ∧ x ≠ w ∧ y ≠ z ∧ y ≠ w ∧ z ≠ w ∧ s = {x, y, z, w} := by
   refine ⟨fun h ↦ ?_, fun ⟨x, y, z, w, hxy, hxz, hxw, hyz, hyw, hzw, hs⟩ ↦ ?_⟩
@@ -409,12 +425,13 @@ theorem encard_eq_four {α : Type u_1} {s : Set α} :
     encard_singleton] <;> grind
 
 theorem Nat.encard_range (k : ℕ) : {i | i < k}.encard = k := by
-  convert encard_coe_eq_coe_finsetCard (Finset.range k) using 1
+  convert! encard_coe_eq_coe_finsetCard (Finset.range k) using 1
   · rw [Finset.coe_range, Iio_def]
   rw [Finset.card_range]
 
 end SmallSets
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Finite.eq_insert_of_subset_of_encard_eq_succ (hs : s.Finite) (h : s ⊆ t)
     (hst : t.encard = s.encard + 1) : ∃ a, t = insert a s := by
   rw [← encard_diff_add_encard_of_subset h, add_comm, WithTop.add_left_inj hs.encard_lt_top.ne,
@@ -470,9 +487,7 @@ theorem _root_.Function.Embedding.encard_le (e : s ↪ t) : s.encard ≤ t.encar
 theorem encard_image_le (f : α → β) (s : Set α) : (f '' s).encard ≤ s.encard := by
   obtain (h | h) := isEmpty_or_nonempty α
   · rw [s.eq_empty_of_isEmpty]; simp
-  rw [← (f.invFunOn_injOn_image s).encard_image]
-  apply encard_le_encard
-  exact f.invFunOn_image_image_subset s
+  grw [← (f.invFunOn_injOn_image s).encard_image, f.invFunOn_image_image_subset s]
 
 theorem Finite.injOn_of_encard_image_eq (hs : s.Finite) (h : (f '' s).encard = s.encard) :
     InjOn f s := by
@@ -491,7 +506,7 @@ lemma encard_preimage_of_bijective (hf : f.Bijective) (t : Set β) : (f ⁻¹' t
 
 theorem encard_le_encard_of_injOn (hf : MapsTo f s t) (f_inj : InjOn f s) :
     s.encard ≤ t.encard := by
-  rw [← f_inj.encard_image]; apply encard_le_encard; rintro _ ⟨x, hx, rfl⟩; exact hf hx
+  grw [← f_inj.encard_image, hf.image_subset]
 
 open Notation in
 lemma encard_preimage_val_le_encard_left (P Q : Set α) : (P ↓∩ Q).encard ≤ P.encard :=
@@ -502,6 +517,7 @@ lemma encard_preimage_val_le_encard_right (P Q : Set α) : (P ↓∩ Q).encard �
   Function.Embedding.encard_le ⟨fun ⟨⟨x, _⟩, hx⟩ ↦ ⟨x, hx⟩, fun _ _ h ↦ by
     simpa [Subtype.coe_inj] using h⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Finite.exists_injOn_of_encard_le [Nonempty β] {s : Set α} {t : Set β} (hs : s.Finite)
     (hle : s.encard ≤ t.encard) : ∃ (f : α → β), s ⊆ f ⁻¹' t ∧ InjOn f s := by
   classical
@@ -529,7 +545,7 @@ termination_by encard s
 theorem Finite.exists_bijOn_of_encard_eq [Nonempty β] (hs : s.Finite) (h : s.encard = t.encard) :
     ∃ (f : α → β), BijOn f s t := by
   obtain ⟨f, hf, hinj⟩ := hs.exists_injOn_of_encard_le h.le; use f
-  convert hinj.bijOn_image
+  convert! hinj.bijOn_image
   rw [(hs.image f).eq_of_subset_of_encard_le (image_subset_iff.mpr hf)
     (h.symm.trans hinj.encard_image.symm).le]
 
@@ -574,6 +590,11 @@ theorem ncard_def (s : Set α) : s.ncard = ENat.toNat s.encard := rfl
 theorem Finite.cast_ncard_eq (hs : s.Finite) : s.ncard = s.encard := by
   rwa [ncard, ENat.coe_toNat_eq_self, ne_eq, encard_eq_top_iff, Set.Infinite, not_not]
 
+variable (s) in
+@[simp]
+theorem coe_ncard_eq_encard [Finite s] : s.ncard = s.encard :=
+  s.toFinite.cast_ncard_eq
+
 lemma ncard_le_encard (s : Set α) : s.ncard ≤ s.encard := ENat.coe_toNat_le_self _
 
 @[simp] theorem _root_.Nat.card_coe_set_eq (s : Set α) : Nat.card s = s.ncard := rfl
@@ -586,6 +607,11 @@ theorem ncard_eq_toFinset_card (s : Set α) (hs : s.Finite := by toFinite_tac) :
 theorem ncard_eq_toFinset_card' (s : Set α) [Fintype s] :
     s.ncard = s.toFinset.card := by
   simp [← _root_.Nat.card_coe_set_eq, Nat.card_eq_fintype_card]
+
+variable (s) in
+@[simp]
+theorem fintypeCard_eq_ncard [Fintype s] : Fintype.card s = s.ncard := by
+  rw [ncard_eq_toFinset_card', toFinset_card]
 
 lemma cast_ncard {s : Set α} (hs : s.Finite) :
     (s.ncard : Cardinal) = Cardinal.mk s := @Nat.cast_card _ hs
@@ -710,8 +736,8 @@ theorem ncard_diff_singleton_lt_of_mem {a : α} (h : a ∈ s) (hs : s.Finite := 
 theorem ncard_diff_singleton_le (s : Set α) (a : α) : (s \ {a}).ncard ≤ s.ncard := by
   obtain hs | hs := s.finite_or_infinite
   · apply ncard_le_ncard diff_subset hs
-  convert zero_le (α := ℕ) _
-  exact (hs.diff (by simp : Set.Finite {a})).ncard
+  convert! Nat.zero_le _
+  exact (hs.diff (by simp)).ncard
 
 theorem pred_ncard_le_ncard_diff_singleton (s : Set α) (a : α) : s.ncard - 1 ≤ (s \ {a}).ncard := by
   by_cases h : a ∈ s
@@ -777,7 +803,7 @@ theorem fiber_ncard_ne_zero_iff_mem_image {y : β} (hs : s.Finite := by toFinite
 
 @[simp] theorem ncard_subtype (P : α → Prop) (s : Set α) :
     { x : Subtype P | (x : α) ∈ s }.ncard = (s ∩ setOf P).ncard := by
-  convert (ncard_image_of_injective _ (@Subtype.coe_injective _ P)).symm
+  convert! (ncard_image_of_injective _ (@Subtype.coe_injective _ P)).symm
   ext x
   simp [← and_assoc, exists_eq_right]
 
@@ -862,6 +888,8 @@ theorem ncard_range_of_injective (hf : Function.Injective f) :
     (range f).ncard = Nat.card α := by
   rw [← image_univ, ncard_image_of_injective univ hf, ncard_univ]
 
+theorem BijOn.ncard_eq {t : Set β} (h : Set.BijOn f s t) : s.ncard = t.ncard := ncard_congr' h.equiv
+
 /-- A version of the pigeonhole principle for `Set`s rather than `Finset`s.
 
 See also `Finset.exists_ne_map_eq_of_card_lt_of_maps_to` and
@@ -892,7 +920,7 @@ theorem surj_on_of_inj_on_of_ncard_le {t : Set β} (f : ∀ a ∈ s, β) (hf : �
   have hft := ht.fintype
   have hft' := Fintype.ofInjective f' finj
   set f'' : ∀ a, a ∈ s.toFinset → β := fun a h ↦ f a (by simpa using h)
-  convert @Finset.surj_on_of_inj_on_of_card_le _ _ _ t.toFinset f'' _ _ _ _ (by simpa) using 1
+  convert! @Finset.surj_on_of_inj_on_of_card_le _ _ _ t.toFinset f'' _ _ _ _ (by simpa) using 1
   · simp [f'']
   · simp [f'', hf]
   · intro a₁ a₂ ha₁ ha₂ h
@@ -983,7 +1011,7 @@ theorem ncard_le_ncard_diff_add_ncard (s t : Set α) (ht : t.Finite := by toFini
   · to_encard_tac
     rw [ht.cast_ncard_eq, hs.cast_ncard_eq, hs.diff.cast_ncard_eq]
     apply encard_le_encard_diff_add_encard
-  convert Nat.zero_le _
+  convert! Nat.zero_le _
   rw [hs.ncard]
 
 theorem le_ncard_diff (s t : Set α) (hs : s.Finite := by toFinite_tac) :
@@ -1134,7 +1162,7 @@ theorem exists_eq_insert_iff_ncard (hs : s.Finite := by toFinite_tac) :
   rcases t.finite_or_infinite with ht | ht
   · rw [ncard_eq_toFinset_card _ hs, ncard_eq_toFinset_card _ ht,
       ← @Finite.toFinset_subset_toFinset _ _ _ hs ht, ← Finset.exists_eq_insert_iff]
-    convert Iff.rfl using 2; simp only [Finite.mem_toFinset]
+    convert! Iff.rfl using 2; simp only [Finite.mem_toFinset]
     ext x
     simp [Finset.ext_iff, Set.ext_iff]
   simp only [ht.ncard, add_eq_zero, and_false, iff_false, not_exists, not_and,
@@ -1254,6 +1282,13 @@ theorem ncard_eq_four : s.ncard = 4 ↔
     ∃ x y z w, x ≠ y ∧ x ≠ z ∧ x ≠ w ∧ y ≠ z ∧ y ≠ w ∧ z ≠ w ∧ s = {x, y, z, w} := by
   rw [← encard_eq_four, ncard_def]
   simp
+
+theorem ncard_sumEquiv_symm_apply {α : Type*} (s : Set α) :
+    (Set.sumEquiv.symm (s, s)).ncard = s.ncard + s.ncard := by
+  by_cases hs : s.Finite
+  · simp [(ncard_union_eq_iff (.image _ hs) (.image _ hs)).2 disjoint_image_inl_image_inr,
+      ncard_image_of_injective _ Sum.inl_injective, ncard_image_of_injective _ Sum.inr_injective]
+  · simp [(infinite_union.2 <| .inl <| .image Sum.inl_injective.injOn hs).ncard, Infinite.ncard hs]
 
 end ncard
 end Set

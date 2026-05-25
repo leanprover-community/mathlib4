@@ -275,15 +275,18 @@ theorem charpoly_vecMulVec (u v : n → R) :
     rw [vecMulVec_eq (ι := Unit), charpoly_mul_comm_of_le (n := Unit) _ _ h, charpoly, charmatrix]
     simp [-Matrix.map_mul, mul_sub, ← pow_succ, h, dotProduct_comm, smul_eq_C_mul]
 
+@[simp]
 theorem charpoly_units_conj (M : (Matrix n n R)ˣ) (N : Matrix n n R) :
-    (M.val * N * M⁻¹.val).charpoly = N.charpoly := by
+    (M.val * N * M.val⁻¹).charpoly = N.charpoly := by
   rw [Matrix.charpoly_mul_comm, ← mul_assoc]
   simp
 
+@[simp]
 theorem charpoly_units_conj' (M : (Matrix n n R)ˣ) (N : Matrix n n R) :
-    (M⁻¹.val * N * M.val).charpoly = N.charpoly :=
-  charpoly_units_conj M⁻¹ N
+    (M.val⁻¹ * N * M.val).charpoly = N.charpoly := by
+  simpa using charpoly_units_conj M⁻¹ N
 
+set_option backward.isDefEq.respectTransparency false in
 theorem charpoly_sub_scalar (M : Matrix n n R) (μ : R) :
     (M - scalar n μ).charpoly = M.charpoly.comp (X + C μ) := by
   simp_rw [charpoly, det_apply, Polynomial.sum_comp, Polynomial.smul_comp, Polynomial.prod_comp]

@@ -123,9 +123,6 @@ lemma Set.MapsTo.lipschitzOnWith_iff_restrict {t : Set β} (h : MapsTo f s t) :
 
 alias ⟨LipschitzOnWith.mapsToRestrict, _⟩ := Set.MapsTo.lipschitzOnWith_iff_restrict
 
-@[deprecated (since := "2025-09-05")]
-alias LipschitzOnWith.to_restric_mapsTo := LipschitzOnWith.mapsToRestrict
-
 end PseudoEMetricSpace
 
 namespace LipschitzWith
@@ -221,7 +218,7 @@ theorem subtype_mk (hf : LipschitzWith K f) {p : β → Prop} (hp : ∀ x, p (f 
 
 protected theorem eval {α : ι → Type u} [∀ i, PseudoEMetricSpace (α i)] [Fintype ι] (i : ι) :
     LipschitzWith 1 (Function.eval i : (∀ i, α i) → α i) :=
-  LipschitzWith.of_edist_le fun f g => by convert edist_le_pi_edist f g i
+  LipschitzWith.of_edist_le fun f g => by convert! edist_le_pi_edist f g i
 
 /-- The restriction of a `K`-Lipschitz function is `K`-Lipschitz. -/
 protected theorem restrict (hf : LipschitzWith K f) (s : Set α) : LipschitzWith K (s.restrict f) :=
@@ -314,6 +311,10 @@ protected theorem uniformContinuousOn (hf : LipschitzOnWith K f s) : UniformCont
 
 protected theorem continuousOn (hf : LipschitzOnWith K f s) : ContinuousOn f s :=
   hf.uniformContinuousOn.continuousOn
+
+protected theorem weaken (hf : LipschitzOnWith K f s) {K' : ℝ≥0} (h : K ≤ K') :
+    LipschitzOnWith K' f s :=
+  fun _ hx _ hy => (hf hx hy).trans <| mul_left_mono (ENNReal.coe_le_coe.2 h)
 
 theorem edist_le_mul_of_le (h : LipschitzOnWith K f s) {x y : α} (hx : x ∈ s) (hy : y ∈ s)
     {r : ℝ≥0∞} (hr : edist x y ≤ r) :

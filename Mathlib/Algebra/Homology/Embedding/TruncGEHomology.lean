@@ -37,6 +37,7 @@ namespace truncGE'
 
 variable (i j k : ι) (hi : c.prev j = i) (hk : c.next j = k)
 
+set_option backward.isDefEq.respectTransparency false in
 include hi hk in
 lemma hasHomology_sc'_of_not_mem_boundary (hj : ¬ e.BoundaryGE j) :
     ((K.truncGE' e).sc' i j k).HasHomology := by
@@ -54,6 +55,7 @@ lemma hasHomology_of_not_mem_boundary (hj : ¬ e.BoundaryGE j) :
     (K.truncGE' e).HasHomology j :=
   hasHomology_sc'_of_not_mem_boundary K e _ j _ rfl rfl hj
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `K.restrictionToTruncGE' e` is a quasi-isomorphism in degrees that are not at the boundary. -/
 lemma quasiIsoAt_restrictionToTruncGE' (hj : ¬ e.BoundaryGE j)
     [(K.restriction e).HasHomology j] [(K.truncGE' e).HasHomology j] :
@@ -125,6 +127,7 @@ instance (i' : ι') : (K.truncGE e).HasHomology i' := by
   dsimp [truncGE]
   infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The right homology data which allows to show that `K.πTruncGE e`
 induces an isomorphism in homology in degrees `j'` such that `e.f j = j'` for some `j`. -/
 @[simps]
@@ -160,6 +163,7 @@ noncomputable def rightHomologyMapData {i j k : ι} {j' : ι'} (hj' : e.f j = j'
 
 end truncGE
 
+set_option backward.isDefEq.respectTransparency false in
 lemma quasiIsoAt_πTruncGE {j : ι} {j' : ι'} (hj' : e.f j = j') :
     QuasiIsoAt (K.πTruncGE e) j' := by
   rw [quasiIsoAt_iff]

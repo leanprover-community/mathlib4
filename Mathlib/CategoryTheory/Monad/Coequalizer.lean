@@ -66,6 +66,7 @@ theorem FreeCoequalizer.condition :
       FreeCoequalizer.bottomMap X ≫ FreeCoequalizer.π X :=
   Algebra.Hom.ext X.assoc.symm
 
+set_option backward.isDefEq.respectTransparency false in
 instance : IsReflexivePair (FreeCoequalizer.topMap X) (FreeCoequalizer.bottomMap X) := by
   apply IsReflexivePair.mk' _ _ _
   · apply (free T).map (T.η.app X.A)
@@ -82,6 +83,7 @@ coequalizer.
 def beckAlgebraCofork : Cofork (FreeCoequalizer.topMap X) (FreeCoequalizer.bottomMap X) :=
   Cofork.ofπ _ (FreeCoequalizer.condition X)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The cofork constructed is a colimit. This shows that any algebra is a (reflexive) coequalizer of
 free algebras.
 -/

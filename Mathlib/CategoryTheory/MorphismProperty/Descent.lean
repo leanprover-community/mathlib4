@@ -16,7 +16,7 @@ if whenever `Q` holds for `X ⟶ Z`, `P` holds for `X ×[Z] Y ⟶ X` implies `P`
 Dually, we define `P.CodescendsAlong Q`.
 -/
 
-@[expose] public section
+public section
 
 namespace CategoryTheory.MorphismProperty
 
@@ -87,6 +87,7 @@ instance [Q.IsStableUnderBaseChange] [P.HasOfPrecompProperty Q] [P.RespectsRight
     rw [← h.1.1]
     exact RespectsRight.postcomp _ hf _ hfst
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `P` descends along `Q`, then `P.diagonal` descends along `Q`. -/
 instance [HasPullbacks C] (P Q : MorphismProperty C) [P.DescendsAlong Q] [P.RespectsIso]
     [Q.IsStableUnderBaseChange] :
@@ -128,6 +129,7 @@ lemma eq_of_isomorphisms_descendsAlong [(MorphismProperty.isomorphisms C).Descen
     ext <;> simp [pullback.condition]
   simpa [this] using equalizer.ι_of_eq H
 
+set_option backward.isDefEq.respectTransparency false in
 lemma faithful_overPullback_of_isomorphisms_descendAlong
     [(MorphismProperty.isomorphisms C).DescendsAlong P] [P.IsStableUnderBaseChange]
     [HasPullbacks C] [HasEqualizers C] {S T : C} {f : T ⟶ S} (hf : P f) :
@@ -135,7 +137,7 @@ lemma faithful_overPullback_of_isomorphisms_descendAlong
   refine ⟨fun {X} Y a b hab ↦ ?_⟩
   ext
   apply P.eq_of_isomorphisms_descendsAlong (Over.w a) (Over.w b) f hf
-  convert congr($(hab).left) <;> ext <;> simp
+  convert! congr($(hab).left) <;> ext <;> simp
 
 end DescendsAlong
 

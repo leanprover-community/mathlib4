@@ -220,7 +220,7 @@ theorem norm_fract_le [HasSolidNorm K] (m : E) : ‖fract b m‖ ≤ ∑ i, ‖b
     _ = ∑ i, ‖Int.fract (b.repr m i)‖ * ‖b i‖ := by simp_rw [norm_smul]
     _ ≤ ∑ i, ‖b i‖ := Finset.sum_le_sum fun i _ => ?_
   suffices ‖Int.fract ((b.repr m) i)‖ ≤ 1 by
-    convert mul_le_mul_of_nonneg_right this (norm_nonneg _ : 0 ≤ ‖b i‖)
+    convert! mul_le_mul_of_nonneg_right this (norm_nonneg _ : 0 ≤ ‖b i‖)
     exact (one_mul _).symm
   rw [(norm_one.symm : 1 = ‖(1 : K)‖)]
   apply norm_le_norm_of_abs_le_abs
@@ -265,6 +265,7 @@ theorem exist_unique_vadd_mem_fundamentalDomain [Finite ι] (x : E) :
   · exact (vadd_mem_fundamentalDomain b (-floor b x) x).mpr rfl
   · exact (vadd_mem_fundamentalDomain b y x).mp h
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The map `ZSpan.fractRestrict` defines an equiv map between `E ⧸ span ℤ (Set.range b)`
 and `ZSpan.fundamentalDomain b`. -/
 def quotientEquiv [Fintype ι] :
@@ -273,7 +274,8 @@ def quotientEquiv [Fintype ι] :
   · refine fun q => Quotient.liftOn q (fractRestrict b) (fun _ _ h => ?_)
     rw [Subtype.mk.injEq, fractRestrict_apply, fractRestrict_apply, fract_eq_fract]
     exact QuotientAddGroup.leftRel_apply.mp h
-  · refine Quotient.inductionOn₂ x y (fun _ _ hxy => ?_)
+  · induction x, y using Quotient.inductionOn₂
+    intro hxy
     rw [Quotient.liftOn_mk (s := quotientRel (span ℤ (Set.range b))), fractRestrict,
       Quotient.liftOn_mk (s := quotientRel (span ℤ (Set.range b))), fractRestrict,
       Subtype.mk.injEq] at hxy
@@ -319,7 +321,7 @@ instance [Finite ι] : DiscreteTopology (span ℤ (Set.range b)) := by
   have h : Set.MapsTo b.equivFun (span ℤ (Set.range b)) (span ℤ (Set.range (Pi.basisFun ℝ ι))) := by
     intro _ hx
     rwa [SetLike.mem_coe, Basis.mem_span_iff_repr_mem] at hx ⊢
-  convert DiscreteTopology.of_continuous_injective ((continuous_equivFun_basis b).restrict h) ?_
+  convert! DiscreteTopology.of_continuous_injective ((continuous_equivFun_basis b).restrict h) ?_
   · exact discreteTopology_pi_basisFun
   · refine Subtype.map_injective _ (Basis.equivFun b).injective
 
@@ -364,14 +366,14 @@ protected theorem isAddFundamentalDomain' [Finite ι] [MeasurableSpace E] [Opens
 theorem measure_fundamentalDomain_ne_zero [Finite ι] [MeasurableSpace E] [BorelSpace E]
     {μ : Measure E} [Measure.IsAddHaarMeasure μ] :
     μ (fundamentalDomain b) ≠ 0 := by
-  convert (ZSpan.isAddFundamentalDomain b μ).measure_ne_zero (NeZero.ne μ)
+  convert! (ZSpan.isAddFundamentalDomain b μ).measure_ne_zero (NeZero.ne μ)
   exact inferInstanceAs <| VAddInvariantMeasure (span ℤ (Set.range b)).toAddSubgroup E μ
 
 theorem measure_fundamentalDomain [Fintype ι] [DecidableEq ι] [MeasurableSpace E] (μ : Measure E)
     [BorelSpace E] [Measure.IsAddHaarMeasure μ] (b₀ : Basis ι ℝ E) :
     μ (fundamentalDomain b) = ENNReal.ofReal |b₀.det b| * μ (fundamentalDomain b₀) := by
   have : FiniteDimensional ℝ E := b.finiteDimensional_of_finite
-  convert μ.addHaar_preimage_linearEquiv (b.equiv b₀ (Equiv.refl ι)) (fundamentalDomain b₀)
+  convert! μ.addHaar_preimage_linearEquiv (b.equiv b₀ (Equiv.refl ι)) (fundamentalDomain b₀)
   · rw [Set.eq_preimage_iff_image_eq (LinearEquiv.bijective _), map_fundamentalDomain,
       Basis.map_equiv, Equiv.refl_symm, Basis.reindex_refl]
   · simp
@@ -498,7 +500,7 @@ instance instModuleFinite_of_discrete_submodule {E : Type*} [NormedAddCommGroup 
   suffices Module.Finite ℤ L₀ by
     have : L₀.map (f.restrictScalars ℤ) = L :=
       SetLike.ext'_iff.mpr h_img
-    convert this ▸ Module.Finite.map L₀ (f.restrictScalars ℤ)
+    convert! this ▸ Module.Finite.map L₀ (f.restrictScalars ℤ)
   have : DiscreteTopology L₀ := by
     refine DiscreteTopology.preimage_of_continuous_injective (L : Set E) ?_ (injective_subtype _)
     exact LinearMap.continuous_of_finiteDimensional f
@@ -532,7 +534,7 @@ theorem ZLattice.rank [hs : IsZLattice K L] : finrank ℤ L = finrank K E := by
     LinearIndependent.map' b₀.linearIndependent (L.subtype) (ker_subtype _)
   -- We prove some assertions that will be useful later on
   have h_spanL : span ℤ (Set.range b) = L := by
-    convert congrArg (map (Submodule.subtype L)) b₀.span_eq
+    convert! congrArg (map (Submodule.subtype L)) b₀.span_eq
     · rw [map_span, Set.range_comp]
       rfl
     · exact (map_subtype_top _).symm
@@ -565,7 +567,7 @@ theorem ZLattice.rank [hs : IsZLattice K L] : finrank ℤ L = finrank K E := by
       rwa [h_card, ← topEquiv.finrank_eq, ← h_spanE, ← ht_span, finrank_span_set_eq_card ht_lin]
     -- Assume that `e ∪ {v}` is not `ℤ`-linear independent then we get the contradiction
     suffices ¬ LinearIndepOn ℤ id (insert v (Set.range e)) by
-      contrapose! this
+      contrapose this
       refine this.mono ?_
       exact Set.insert_subset (Set.mem_of_mem_diff hv) (by simp [e, ht_inc])
     -- We prove finally that `e ∪ {v}` is not ℤ-linear independent or, equivalently,
@@ -589,7 +591,7 @@ theorem ZLattice.rank [hs : IsZLattice K L] : finrank ℤ L = finrank K E := by
       have : DiscreteTopology L.toAddSubgroup := (inferInstance : DiscreteTopology L)
       exact Metric.finite_isBounded_inter_isClosed DiscreteTopology.isDiscrete
         Metric.isBounded_closedBall inferInstance
-    obtain ⟨n, -, m, -, h_neq, h_eq⟩ := Set.Infinite.exists_ne_map_eq_of_mapsTo
+    obtain ⟨n, -, m, -, h_ne, h_eq⟩ := Set.Infinite.exists_ne_map_eq_of_mapsTo
       Set.infinite_univ h_mapsto h_finite
     have h_nz : (-n + m : ℚ) ≠ 0 := by
       rwa [Ne, add_eq_zero_iff_eq_neg.not, neg_inj, Rat.coe_int_inj, ← Ne]
@@ -600,7 +602,7 @@ theorem ZLattice.rank [hs : IsZLattice K L] : finrank ℤ L = finrank K E := by
   · -- To prove that `finrank K E ≤ finrank ℤ L`, we use the fact `b` generates `E` over `K`
     -- and thus `finrank K E ≤ card b = finrank ℤ L`
     rw [← topEquiv.finrank_eq, ← h_spanE]
-    convert finrank_span_le_card (R := K) (Set.range b)
+    convert! finrank_span_le_card (R := K) (Set.range b)
 
 variable {ι : Type*} [hs : IsZLattice K L] (b : Basis ι ℤ L)
 
@@ -645,7 +647,7 @@ theorem ZLattice.isAddFundamentalDomain {E : Type*} [NormedAddCommGroup E] [Norm
     [FiniteDimensional ℝ E] {L : Submodule ℤ E} [DiscreteTopology L] [IsZLattice ℝ L] [Finite ι]
     (b : Basis ι ℤ L) [MeasurableSpace E] [OpensMeasurableSpace E] (μ : Measure E) :
     IsAddFundamentalDomain L (fundamentalDomain (b.ofZLatticeBasis ℝ)) μ := by
-  convert ZSpan.isAddFundamentalDomain (b.ofZLatticeBasis ℝ) μ
+  convert! ZSpan.isAddFundamentalDomain (b.ofZLatticeBasis ℝ) μ
   all_goals exact (b.ofZLatticeBasis_span ℝ).symm
 
 instance instCountable_of_discrete_submodule {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
@@ -793,7 +795,7 @@ lemma IsZLattice.isCompact_range_of_periodic
     (hf' : ∀ z w, w ∈ L → f (z + w) = f z) : IsCompact (Set.range f) := by
   have := ZLattice.module_free ℝ L
   let b := Module.Free.chooseBasis ℤ L
-  convert (b.ofZLatticeBasis ℝ).parallelepiped.isCompact.image hf
+  convert! (b.ofZLatticeBasis ℝ).parallelepiped.isCompact.image hf
   refine le_antisymm ?_ (Set.image_subset_range _ _)
   rintro _ ⟨x, rfl⟩
   let x' : L := b.repr.symm (Finsupp.equivFunOnFinite.symm

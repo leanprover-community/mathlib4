@@ -14,9 +14,9 @@ public import Mathlib.Algebra.Order.Group.Nat
 
 * `Finsupp.linearEquivFunOnFinite`: `α →₀ β` and `a → β` are equivalent if `α` is finite
 * `FunOnFinite.map`: the map `(X → M) → (Y → M)` induced by a map `f : X ⟶ Y` when
-`X` and `Y` are finite.
+  `X` and `Y` are finite.
 * `FunOnFinite.linearMmap`: the linear map `(X → M) →ₗ[R] (Y → M)` induced
-by a map `f : X ⟶ Y` when `X` and `Y` are finite.
+  by a map `f : X ⟶ Y` when `X` and `Y` are finite.
 
 ## Tags
 
@@ -31,35 +31,46 @@ open Set LinearMap Submodule
 
 namespace Finsupp
 
-section LinearEquiv.finsuppUnique
+section uniqueLinearEquiv
 
-variable (R : Type*) {S : Type*} (M : Type*)
+variable (R : Type*) {S α : Type*} (M : Type*)
 variable [AddCommMonoid M] [Semiring R] [Module R M]
-variable (α : Type*) [Unique α]
 
 /-- If `α` has a unique term, then the type of finitely supported functions `α →₀ M` is
 `R`-linearly equivalent to `M`. -/
-noncomputable def LinearEquiv.finsuppUnique : (α →₀ M) ≃ₗ[R] M :=
+@[simps! apply symm_apply]
+noncomputable def uniqueLinearEquiv [Subsingleton α] (a : α) : (α →₀ M) ≃ₗ[R] M where
+  toAddEquiv := uniqueAddEquiv a
+  map_smul' _ _ := rfl
+
+-- We want this lemma to fire before `uniqueRingEquiv_symm_apply`.
+@[simp↓ high] lemma uniqueLinearEquiv_symm_apply_apply (a : α) [Subsingleton α] (m : M) (b : α) :
+    (uniqueLinearEquiv R M a).symm m b = m := by simp [Subsingleton.elim b a]
+
+/-- If `α` has a unique term, then the type of finitely supported functions `α →₀ M` is
+`R`-linearly equivalent to `M`. -/
+@[deprecated uniqueLinearEquiv (since := "2026-05-06")]
+noncomputable def LinearEquiv.finsuppUnique (α : Type*) [Unique α] : (α →₀ M) ≃ₗ[R] M :=
   { Finsupp.equivFunOnFinite.trans (Equiv.funUnique α M) with
     map_add' := fun _ _ => rfl
     map_smul' := fun _ _ => rfl }
 
 variable {R M}
 
-@[simp]
-theorem LinearEquiv.finsuppUnique_apply (f : α →₀ M) :
+set_option linter.deprecated false in
+@[deprecated uniqueLinearEquiv_apply (since := "2026-05-06")]
+theorem LinearEquiv.finsuppUnique_apply (α : Type*) [Unique α] (f : α →₀ M) :
     LinearEquiv.finsuppUnique R M α f = f default :=
   rfl
 
-variable {α}
-
-@[simp]
-theorem LinearEquiv.finsuppUnique_symm_apply (m : M) :
+set_option linter.deprecated false in
+@[deprecated uniqueLinearEquiv_symm_apply (since := "2026-05-06")]
+theorem LinearEquiv.finsuppUnique_symm_apply (α : Type*) [Unique α] (m : M) :
     (LinearEquiv.finsuppUnique R M α).symm m = Finsupp.single default m := by
   ext; simp [LinearEquiv.finsuppUnique, Equiv.funUnique, single, Pi.single,
     equivFunOnFinite, Function.update]
 
-end LinearEquiv.finsuppUnique
+end uniqueLinearEquiv
 
 variable {α : Type*} {M : Type*} {N : Type*} {P : Type*} {R : Type*} {S : Type*}
 variable [Semiring R] [Semiring S] [AddCommMonoid M] [Module R M]
@@ -108,7 +119,7 @@ def prodOfFinsuppNat : (ℕ →₀ P) →ₗ[R] P × M :=
 
 theorem fst_prodOfFinsuppNat (x : ℕ →₀ P) : (prodOfFinsuppNat f x).1 = x 0 := by
   simp_rw [prodOfFinsuppNat, coe_lsum, sum, Prod.fst_sum]
-  rw [Finset.sum_eq_single 0 (fun n _ hn ↦ ?_) (by simp_all)]
+  rw [Finset.sum_eq_single 0 (fun n _ hn ↦ ?_) (by simp)]
   · simp
   obtain ⟨n, rfl⟩ := n.exists_eq_succ_of_ne_zero hn
   simp [pow_succ']
@@ -214,7 +225,7 @@ theorem range_mapRange_linearMap (f : M →ₗ[R] N) (hf : LinearMap.ker f = ⊥
     choose y hy using hx
     refine ⟨⟨x.support, y, fun i => ?_⟩, by ext; simp_all⟩
     constructor
-    <;> contrapose!
+    <;> contrapose
     <;> simp_all +contextual [← hy, map_zero, LinearMap.ker_eq_bot'.1 hf]
 
 end Finsupp
@@ -235,7 +246,7 @@ lemma map_apply_apply [Fintype X] [Finite Y] [DecidableEq Y] (f : X → Y) (s : 
   dsimp [map]
   simp only [Equiv.symm_apply_apply]
   nth_rw 1 [← Finsupp.univ_sum_single s]
-  rw [Finsupp.mapDomain_finset_sum]
+  rw [Finsupp.mapDomain_finsetSum]
   simp [Finset.sum_filter]
   congr
   aesop

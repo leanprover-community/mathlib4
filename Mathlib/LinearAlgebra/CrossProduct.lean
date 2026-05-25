@@ -126,6 +126,7 @@ theorem leibniz_cross (u v w : Fin 3 → R) : u ⨯₃ (v ⨯₃ w) = u ⨯₃ v
 /-- The three-dimensional vectors together with the operations + and ⨯₃ form a Lie ring.
 Note we do not make this an instance as a conflicting one already exists
 via `LieRing.ofAssociativeRing`. -/
+@[instance_reducible]
 def Cross.lieRing : LieRing (Fin 3 → R) :=
   { Pi.addCommGroup with
     bracket := fun u v => u ⨯₃ v

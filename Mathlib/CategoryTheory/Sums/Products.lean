@@ -123,6 +123,7 @@ lemma natTransOfWhiskerLeftInlInr_comp {F G H : A ⊕ A' ⥤ B}
       natTransOfWhiskerLeftInlInr ν₁ ν₂ := by
   cat_disch
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A consequence of `functorEquiv`: we can construct a natural isomorphism of functors
 `A ⊕ A' ⥤ B` from the data of natural isomorphisms of their whiskering with `inl_` and `inr_`. -/
 @[simps]

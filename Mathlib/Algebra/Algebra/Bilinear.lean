@@ -32,7 +32,7 @@ variable [SMulCommClass R A A] [IsScalarTower R A A]
 /-- The multiplication in a non-unital non-associative algebra is a bilinear map.
 
 A weaker version of this for semirings exists as `AddMonoidHom.mul`. -/
-@[simps!]
+@[instance_reducible, simps!]
 def mul : A →ₗ[R] A →ₗ[R] A :=
   LinearMap.mk₂ R (· * ·) add_mul smul_mul_assoc mul_add mul_smul_comm
 
@@ -52,6 +52,12 @@ theorem mul_apply' (a b : A) : mul R A a b = a * b :=
 @[simp]
 theorem mul'_apply {a b : A} : mul' R A (a ⊗ₜ b) = a * b :=
   rfl
+
+lemma restrictScalars_mul {S : Type*} [CommSemiring S] [Module S A] [SMulCommClass S A A]
+    [IsScalarTower S A A] [CompatibleSMul A A R S] (a : A) :
+    LinearMap.restrictScalars R (LinearMap.mul S A a) = LinearMap.mul R A a := by
+  ext x
+  simp
 
 variable {M : Type*} [AddCommMonoid M] [Module R M]
 

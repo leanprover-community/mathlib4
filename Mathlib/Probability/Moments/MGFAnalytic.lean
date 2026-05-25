@@ -60,7 +60,7 @@ section DerivMGF
 `μ[X * exp (t * X)]`. -/
 lemma hasDerivAt_mgf (h : t ∈ interior (integrableExpSet X μ)) :
     HasDerivAt (mgf X μ) (μ[fun ω ↦ X ω * exp (t * X ω)]) t := by
-  convert hasDerivAt_integral_pow_mul_exp_real h 0
+  convert! hasDerivAt_integral_pow_mul_exp_real h 0
   · simp [mgf]
   · simp
 
@@ -124,7 +124,7 @@ lemma hasFPowerSeriesAt_mgf (hv : v ∈ interior (integrableExpSet X μ)) :
     HasFPowerSeriesAt (mgf X μ)
       (FormalMultilinearSeries.ofScalars ℝ
         (fun n ↦ (μ[fun ω ↦ X ω ^ n * exp (v * X ω)] : ℝ) / n !)) v := by
-  convert (analyticAt_mgf hv).hasFPowerSeriesAt
+  convert! (analyticAt_mgf hv).hasFPowerSeriesAt
   rw [iteratedDeriv_mgf hv]
 
 lemma differentiableAt_mgf (ht : t ∈ interior (integrableExpSet X μ)) :
@@ -140,7 +140,7 @@ lemma continuousOn_mgf : ContinuousOn (mgf X μ) (interior (integrableExpSet X �
 lemma continuous_mgf (h : ∀ t, Integrable (fun ω ↦ exp (t * X ω)) μ) :
     Continuous (mgf X μ) := by
   rw [← continuousOn_univ]
-  convert continuousOn_mgf
+  convert! continuousOn_mgf
   symm
   rw [interior_eq_univ]
   ext t
@@ -233,7 +233,7 @@ lemma iteratedDeriv_two_cgf (h : v ∈ interior (integrableExpSet X μ)) :
       ring
   _ = (∫ ω, (X ω) ^ 2 * exp (v * X ω) ∂μ) / mgf X μ v - deriv (cgf X μ) v ^ 2 := by
     congr
-    convert (hasDerivAt_integral_pow_mul_exp_real h 1).deriv using 1
+    convert! (hasDerivAt_integral_pow_mul_exp_real h 1).deriv using 1
     simp
 
 lemma iteratedDeriv_two_cgf_eq_integral (h : v ∈ interior (integrableExpSet X μ)) :
@@ -259,7 +259,7 @@ lemma iteratedDeriv_two_cgf_eq_integral (h : v ∈ interior (integrableExpSet X 
       refine Integrable.const_mul ?_ _
       simp_rw [← mul_assoc]
       refine Integrable.mul_const ?_ _
-      convert integrable_pow_mul_exp_of_mem_interior_integrableExpSet h 1
+      convert! integrable_pow_mul_exp_of_mem_interior_integrableExpSet h 1
       simp
     rw [integral_add]
     rotate_left
@@ -281,12 +281,15 @@ lemma exists_cgf_eq_iteratedDeriv_two_cgf_mul [IsZeroOrProbabilityMeasure μ] (h
   have hu : UniqueDiffOn ℝ (Set.Icc 0 t) := uniqueDiffOn_Icc ht
   rw [← sub_zero (cgf X μ t)]
   nth_rw 3 [← sub_zero t]
-  convert taylor_mean_remainder_lagrange_iteratedDeriv ht ((analyticOn_cgf.mono hs).contDiffOn hu)
-  have hd : derivWithin (cgf X μ) (Set.Icc 0 t) 0 = 0 := by
-    convert (analyticAt_cgf (hs ⟨le_refl 0, le_of_lt ht⟩)).differentiableAt.derivWithin _
-    · simpa [hc] using (deriv_cgf_zero (hs ⟨le_refl 0, le_of_lt ht⟩)).symm
-    · exact hu 0 ⟨le_refl 0, le_of_lt ht⟩
-  simp [hd]
+  rw [← Set.uIoo_of_lt ht]
+  convert! taylor_mean_remainder_lagrange_iteratedDeriv ht.ne ?_
+  · have hd : derivWithin (cgf X μ) (Set.Icc 0 t) 0 = 0 := by
+      convert! (analyticAt_cgf (hs ⟨le_refl 0, le_of_lt ht⟩)).differentiableAt.derivWithin _
+      · simpa [hc] using (deriv_cgf_zero (hs ⟨le_refl 0, le_of_lt ht⟩)).symm
+      · exact hu 0 ⟨le_refl 0, le_of_lt ht⟩
+    simp [hd, Set.uIcc_of_lt ht]
+  · rw [Set.uIcc_of_lt ht]
+    exact (analyticOn_cgf.mono hs).contDiffOn hu
 
 end DerivCGF
 

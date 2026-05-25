@@ -231,7 +231,7 @@ instance (priority := 50) MeasurableSingletonClass.of_separatesPoints [Measurabl
     [Countable α] [SeparatesPoints α] : MeasurableSingletonClass α where
   measurableSet_singleton x := by
     choose s hsm hxs hys using fun y (h : x ≠ y) ↦ exists_measurableSet_of_ne h
-    convert MeasurableSet.iInter fun y ↦ .iInter fun h ↦ hsm y h
+    convert! MeasurableSet.iInter fun y ↦ .iInter fun h ↦ hsm y h
     ext y
     rcases eq_or_ne x y with rfl | h
     · simpa
@@ -251,7 +251,7 @@ instance countablySeparated_of_separatesPoints [MeasurableSpace α]
   rcases h with ⟨b, hbc, hb⟩
   refine ⟨⟨b, hbc, fun t ht ↦ hb.symm ▸ .basic t ht, ?_⟩⟩
   rw [hb] at ‹SeparatesPoints _›
-  convert separating_of_generateFrom b
+  convert! separating_of_generateFrom b
   simp
 
 variable (α)
@@ -303,7 +303,7 @@ theorem measurableEquiv_nat_bool_of_countablyGenerated [MeasurableSpace α]
   use range (mapNatBool α), Equiv.ofInjective _ <|
     injective_mapNatBool _,
     Measurable.subtype_mk <| measurable_mapNatBool _
-  simp_rw [← generateFrom_natGeneratingSequence α]
+  simp_rw +instances [← generateFrom_natGeneratingSequence α]
   apply measurable_generateFrom
   rintro _ ⟨n, rfl⟩
   rw [← Equiv.image_eq_preimage_symm _ _]

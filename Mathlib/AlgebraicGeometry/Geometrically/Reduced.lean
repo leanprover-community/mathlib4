@@ -16,7 +16,7 @@ public import Mathlib.AlgebraicGeometry.Morphisms.SchemeTheoreticallyDominant
 - `AlgebraicGeometry.GeometricallyReduced`:
   We say that morphism `f : X ⟶ Y` is geometrically reduced if for all `Spec K ⟶ Y` with `K`
   a field, `X ×[Y] Spec K` is reduced.
-  We also provide the fact that this is stable under base change (by infer_instance)
+  We also provide the fact that this is stable under base change (by `infer_instance`)
 - `GeometricallyReduced.iff_geometricallyReduced_fiber`:
   A scheme is geometrically reduced over `S` iff the fibers of all
   `s : S` are geometrically reduced.
@@ -24,13 +24,13 @@ public import Mathlib.AlgebraicGeometry.Morphisms.SchemeTheoreticallyDominant
   If `X` is geometrically reduced and flat over a reduced and locally noetherian scheme,
   then `X` is also reduced.
   In particular, the base change of a geometrically reduced and flat scheme to an
-  reduced and locally noetherian scheme is reduced (by infer_instance).
+  reduced and locally noetherian scheme is reduced (by `infer_instance`).
 
 ## TODO
 Get rid of the noetherian assumption.
 -/
 
-@[expose] public section
+public section
 
 open CategoryTheory MorphismProperty Limits
 
@@ -39,7 +39,7 @@ namespace AlgebraicGeometry
 variable {X Y Z S : Scheme} (f : X ⟶ S) (g : Y ⟶ S)
 
 /-- We say that morphism `f : X ⟶ Y` is geometrically reduced if for all `Spec K ⟶ Y` with `K`
-a field, `X ×[Y] Spec K` is irrreducible. -/
+a field, `X ×[Y] Spec K` is reduced. -/
 @[mk_iff]
 class GeometricallyReduced (f : X ⟶ Y) : Prop where
   geometrically_isReduced : geometrically IsReduced f
@@ -67,6 +67,7 @@ instance (s : S) [GeometricallyReduced f] :
 instance (s : S) [GeometricallyReduced f] : IsReduced (f.fiber s) :=
   GeometricallyReduced.geometrically_isReduced _ _ _ (.of_hasPullback _ _)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma GeometricallyReduced.isReduced_of_flat_of_finite_irreducibleComponents
     (f : X ⟶ Y) [GeometricallyReduced f] [Flat f]
     [IsReduced Y] [Finite (irreducibleComponents Y)] : IsReduced X := by
@@ -101,6 +102,7 @@ lemma GeometricallyReduced.isReduced_of_flat_of_finite_irreducibleComponents
   apply +allowSynthFailures @IsReduced.of_openCover (𝒰 := sigmaOpenCover _)
   exact fun i ↦ GeometricallyReduced.geometrically_isReduced _ _ _ (.of_hasPullback _ _)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma GeometricallyReduced.isReduced_of_flat_of_isLocallyNoetherian
     (f : X ⟶ Y) [GeometricallyReduced f] [Flat f]
     [IsReduced Y] [IsLocallyNoetherian Y] : IsReduced X := by

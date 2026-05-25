@@ -46,6 +46,7 @@ def graph (f : Fin n → α) : Finset (α ×ₗ Fin n) :=
 -/
 def graph.proj {f : Fin n → α} : graph f → α := fun p => p.1.1
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem graph.card (f : Fin n → α) : (graph f).card = n := by
   rw [graph, Finset.card_image_of_injective]
@@ -62,11 +63,7 @@ def graphEquiv₁ (f : Fin n → α) : Fin n ≃ graph f where
   invFun p := p.1.2
   left_inv i := by simp
   right_inv := fun ⟨⟨x, i⟩, h⟩ => by
-    -- Porting note: was `simpa [graph] using h`
-    simp only [graph, Finset.mem_image, Finset.mem_univ, true_and] at h
-    obtain ⟨i', hi'⟩ := h
-    obtain ⟨-, rfl⟩ := Prod.mk_inj.mp hi'
-    simpa
+    simpa [graph, eq_comm, eqComm] using h
 
 @[simp]
 theorem proj_equiv₁' (f : Fin n → α) : graph.proj ∘ graphEquiv₁ f = f :=

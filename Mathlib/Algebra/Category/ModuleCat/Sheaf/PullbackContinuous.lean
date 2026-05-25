@@ -40,7 +40,7 @@ variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
   {D' : Type u₃} [Category.{v₃} D'] {D'' : Type u₄} [Category.{v₄} D'']
   {J : GrothendieckTopology C} {K : GrothendieckTopology D} {F : C ⥤ D}
   {S : Sheaf J RingCat.{u}} {R : Sheaf K RingCat.{u}}
-  [Functor.IsContinuous.{u} F J K] [Functor.IsContinuous.{v} F J K]
+  [Functor.IsContinuous F J K]
   (φ : S ⟶ (F.sheafPushforwardContinuous RingCat.{u} J K).obj R)
 
 section
@@ -67,20 +67,21 @@ end
 
 section
 
-variable [(PresheafOfModules.pushforward.{v} φ.val).IsRightAdjoint]
+variable [(PresheafOfModules.pushforward.{v} φ.hom).IsRightAdjoint]
   [HasWeakSheafify K AddCommGrpCat.{v}] [K.WEqualsLocallyBijective AddCommGrpCat.{v}]
 
 namespace PullbackConstruction
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Construction of a left adjoint to the functor `pushforward.{v} φ` by using the
 pullback of presheaves of modules and the sheafification. -/
 noncomputable def adjunction :
-    (forget S ⋙ PresheafOfModules.pullback.{v} φ.val ⋙
-      PresheafOfModules.sheafification (𝟙 R.val)) ⊣ pushforward.{v} φ :=
+    (forget S ⋙ PresheafOfModules.pullback.{v} φ.hom ⋙
+      PresheafOfModules.sheafification (R₀ := R.obj) (𝟙 R.obj)) ⊣ pushforward.{v} φ :=
   Adjunction.mkOfHomEquiv
     { homEquiv := fun F G ↦
-        ((PresheafOfModules.sheafificationAdjunction (𝟙 R.val)).homEquiv _ _).trans
-            (((PresheafOfModules.pullbackPushforwardAdjunction φ.val).homEquiv F.val G.val).trans
+        ((PresheafOfModules.sheafificationAdjunction (𝟙 R.obj)).homEquiv _ _).trans
+            (((PresheafOfModules.pullbackPushforwardAdjunction φ.hom).homEquiv F.val G.val).trans
               ((fullyFaithfulForget S).homEquiv (Y := (pushforward φ).obj G)).symm)
       homEquiv_naturality_left_symm := by
         intros
@@ -103,8 +104,8 @@ of the forget functor to presheaves, the pullback on presheaves of modules, and
 the sheafification functor. -/
 noncomputable def pullbackIso :
     pullback.{v} φ ≅
-      forget S ⋙ PresheafOfModules.pullback.{v} φ.val ⋙
-        PresheafOfModules.sheafification (𝟙 R.val) :=
+      forget S ⋙ PresheafOfModules.pullback.{v} φ.hom ⋙
+        PresheafOfModules.sheafification (R₀ := R.obj) (𝟙 R.obj) :=
   Adjunction.leftAdjointUniq (pullbackPushforwardAdjunction φ)
     (PullbackConstruction.adjunction φ)
 
@@ -114,14 +115,14 @@ variable [HasWeakSheafify J AddCommGrpCat.{v}] [J.WEqualsLocallyBijective AddCom
 
 /-- The pullback of (pre)sheaves of modules commutes with the sheafification. -/
 noncomputable def sheafificationCompPullback :
-    PresheafOfModules.sheafification (𝟙 S.val) ⋙ pullback.{v} φ ≅
-      PresheafOfModules.pullback.{v} φ.val ⋙
-        PresheafOfModules.sheafification (𝟙 R.val) :=
+    PresheafOfModules.sheafification (𝟙 S.obj) ⋙ pullback.{v} φ ≅
+      PresheafOfModules.pullback.{v} φ.hom ⋙
+        PresheafOfModules.sheafification (R₀ := R.obj) (𝟙 R.obj) :=
   Adjunction.leftAdjointUniq
-    ((PresheafOfModules.sheafificationAdjunction (𝟙 S.val)).comp
+    ((PresheafOfModules.sheafificationAdjunction (𝟙 S.obj)).comp
       (pullbackPushforwardAdjunction φ))
-    ((PresheafOfModules.pullbackPushforwardAdjunction φ.val).comp
-      (PresheafOfModules.sheafificationAdjunction (𝟙 R.val)))
+    ((PresheafOfModules.pullbackPushforwardAdjunction φ.hom).comp
+      (PresheafOfModules.sheafificationAdjunction (𝟙 R.obj)))
 
 end
 
@@ -150,8 +151,8 @@ section
 
 variable {K' : GrothendieckTopology D'} {K'' : GrothendieckTopology D''}
   {G : D ⥤ D'} {R' : Sheaf K' RingCat.{u}}
-  [Functor.IsContinuous.{u} G K K'] [Functor.IsContinuous.{v} G K K']
-  [Functor.IsContinuous.{u} (F ⋙ G) J K'] [Functor.IsContinuous.{v} (F ⋙ G) J K']
+  [Functor.IsContinuous G K K']
+  [Functor.IsContinuous (F ⋙ G) J K']
   (ψ : R ⟶ (G.sheafPushforwardContinuous RingCat.{u} K K').obj R')
 
 variable [(pushforward.{v} ψ).IsRightAdjoint]
@@ -180,13 +181,10 @@ lemma conjugateEquiv_pullbackComp_inv :
   Adjunction.conjugateEquiv_leftAdjointCompIso_inv _ _ _ _
 
 variable {G' : D' ⥤ D''} {R'' : Sheaf K'' RingCat.{u}}
-  [Functor.IsContinuous.{u} G' K' K''] [Functor.IsContinuous.{v} G' K' K'']
-  [Functor.IsContinuous.{u} (G ⋙ G') K K'']
-  [Functor.IsContinuous.{v} (G ⋙ G') K K'']
-  [Functor.IsContinuous.{u} ((F ⋙ G) ⋙ G') J K'']
-  [Functor.IsContinuous.{v} ((F ⋙ G) ⋙ G') J K'']
-  [Functor.IsContinuous.{u} (F ⋙ G ⋙ G') J K'']
-  [Functor.IsContinuous.{v} (F ⋙ G ⋙ G') J K'']
+  [Functor.IsContinuous G' K' K'']
+  [Functor.IsContinuous (G ⋙ G') K K'']
+  [Functor.IsContinuous ((F ⋙ G) ⋙ G') J K'']
+  [Functor.IsContinuous (F ⋙ G ⋙ G') J K'']
   (ψ' : R' ⟶ (G'.sheafPushforwardContinuous RingCat.{u} K' K'').obj R'')
 
 variable [(pushforward.{v} ψ').IsRightAdjoint]

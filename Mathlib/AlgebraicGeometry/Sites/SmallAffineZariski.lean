@@ -220,6 +220,7 @@ category instance on the indices. -/
       ((iSup_affineOpens_eq_top X).ge (Set.mem_univ x))
     exact ⟨U, ⟨x, hxU⟩, rfl⟩
 
+set_option backward.isDefEq.respectTransparency false in
 noncomputable instance : (Scheme.AffineZariskiSite.directedCover X).LocallyDirected where
   trans f := X.homOfLE (((Scheme.AffineZariskiSite.toOpensFunctor _).map f).le)
   directed {U V} x := by
@@ -261,6 +262,7 @@ variable (X) in
   ι.app U := U.2.fromSpec
   ι.naturality {U V} f := by dsimp; rw [V.2.map_fromSpec U.2]; simp
 
+set_option backward.isDefEq.respectTransparency false in
 lemma coequifibered_iff_forall_isLocalizationAway {F : X.AffineZariskiSiteᵒᵖ ⥤ CommRingCat}
     {α : (AffineZariskiSite.toOpensFunctor X).op ⋙ X.presheaf ⟶ F} :
     α.Coequifibered ↔ ∀ (U : X.AffineZariskiSite) (f : Γ(X, U.1)),
@@ -335,6 +337,7 @@ lemma PreservesLocalization.colimitDesc_preimage (F : X.AffineZariskiSiteᵒᵖ 
 alias _root_.AlgebraicGeometry.Scheme.preservesLocalization_toOpensFunctor :=
   NatTrans.Coequifibered.of_isIso
 
+set_option backward.isDefEq.respectTransparency false in
 variable (X) in
 /-- `X` is the colimit of its affine opens. -/
 noncomputable def isColimitCocone : IsColimit (cocone X) :=
@@ -352,12 +355,12 @@ noncomputable def isColimitCocone : IsColimit (cocone X) :=
       (U.2.isoSpec.hom ≫ colimit.ι F U) <| by
       rw [Pullback.range_fst, Opens.range_ι, ← Hom.coe_opensRange, Hom.opensRange_comp_of_isIso,
         ← Scheme.Hom.coe_preimage]
-      convert congr($(D.toBase_preimage_eq_opensRange_ι U).1)
+      convert! congr($(D.toBase_preimage_eq_opensRange_ι U).1)
       · delta cocone
         congr with U
         simp [D, relativeGluingData, restrictIsoSpec]
       · simp
-    convert inferInstanceAs (IsIso e.hom)
+    convert! (inferInstance : IsIso e.hom)
     rw [← cancel_mono U.1.ι, ← Iso.inv_comp_eq]
     simp [e, ← pullback.condition, IsAffineOpen.isoSpec_hom]
   .ofPointIso (colimit.isColimit F)
