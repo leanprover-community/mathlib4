@@ -192,9 +192,9 @@ theorem lt_lift_iff {a : Cardinal.{u}} {b : Cardinal.{max u v}} :
 
 /-! ### Basic cardinals -/
 
-@[simp]
-theorem lift_eq_zero {a : Cardinal.{v}} : lift.{u} a = 0 ↔ a = 0 :=
-  lift_injective.eq_iff' lift_zero
+@[deprecated liftEq_zero_iff (since := "2026-05-25")]
+theorem lift_eq_zero {a : Cardinal.{v}} : lift.{u} a = 0 ↔ a = 0 := by
+  simp
 
 @[simp]
 theorem mk_fintype (α : Type u) [h : Fintype α] : #α = Fintype.card α :=
@@ -241,9 +241,9 @@ theorem power_mul {a b c : Cardinal} : a ^ (b * c) = (a ^ b) ^ c := by
 theorem power_natCast (a : Cardinal.{u}) (n : ℕ) : a ^ (↑n : Cardinal.{u}) = a ^ n :=
   rfl
 
-@[simp]
-theorem lift_eq_one {a : Cardinal.{v}} : lift.{u} a = 1 ↔ a = 1 :=
-  lift_injective.eq_iff' lift_one
+@[deprecated liftEq_one_iff (since := "2026-05-25")]
+theorem lift_eq_one {a : Cardinal.{v}} : lift.{u} a = 1 ↔ a = 1 := by
+  simp
 
 @[simp]
 theorem lift_mul (a b : Cardinal.{u}) : lift.{v} (a * b) = lift.{v} a * lift.{v} b :=

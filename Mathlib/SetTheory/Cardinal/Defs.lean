@@ -195,7 +195,7 @@ def LiftEq (a : Cardinal.{u}) (b : Cardinal.{v}) : Prop := lift.{v} a = lift.{u}
 @[inherit_doc] infix:50 " =ₗ " => LiftEq
 recommended_spelling "liftEq" for "=ₗ" in [LiftEq, «term_=ₗ_»]
 
-@[simp, refl] theorem liftEq_refl (a : Cardinal.{u}) : a =ₗ a := rfl
+@[refl] theorem liftEq_refl (a : Cardinal.{u}) : a =ₗ a := rfl
 theorem liftEq_rfl {a : Cardinal.{u}} : a =ₗ a := rfl
 
 theorem liftEq_comm {a : Cardinal.{u}} {b : Cardinal.{v}} : a =ₗ b ↔ b =ₗ a := eq_comm
