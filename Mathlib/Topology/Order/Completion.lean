@@ -21,7 +21,7 @@ Let `α` be a linear order.
 * `DedekindCut.continuous_principal`: the map `DedekindCut.principal : α → DedekindCut α`
   that embeds `α` in its Dedekind completion is continuous for the order topologies.
 * `Order.Fill α`: this is a type with a dense linear order endowed
-with a continuous order-embedding `Order.Fill.some` of `α`.
+  with a continuous order-embedding `Order.Fill.some` of `α`.
   It is defined as a subtype of `α × ℚ` and its order is induced by the lexicographic order.
 * `Order.Fill.some`: the order embedding `α ↪o Order.Fill α` given by `a ↦ (a, 0)`.
 * `Order.Fill.continuous_some`: the map `⇑Order.Fill.some` is continuous for the order topologies.
@@ -98,7 +98,7 @@ theorem continuous_some [TopologicalSpace α] [OrderTopology α] : Continuous (X
     · convert isOpen_Ioi (a := x)
       ext
       simp [some, Prod.Lex.lt_iff, hq.not_gt]
-    · obtain ⟨y, hy⟩ := (not_isSuccPrelimit_iff_exists_covBy _).1 <| mt hx₁ hq.not_ge
+    · obtain ⟨y, hy⟩ := not_isSuccPrelimit_iff.1 <| mt hx₁ hq.not_ge
       convert isOpen_Ioi (a := y)
       ext
       simpa [some, Prod.Lex.lt_iff, hq, le_iff_lt_or_eq] using hy.le_iff_lt_right
@@ -106,7 +106,7 @@ theorem continuous_some [TopologicalSpace α] [OrderTopology α] : Continuous (X
     · convert isOpen_Iio (a := x)
       ext
       simp [some, Prod.Lex.lt_iff, hq.not_gt]
-    · obtain ⟨y, hy⟩ := (not_isPredPrelimit_iff_exists_covBy _).1 <| mt hx₂ hq.not_ge
+    · obtain ⟨y, hy⟩ := not_isPredPrelimit_iff.1 <| mt hx₂ hq.not_ge
       convert isOpen_Iio (a := y)
       ext
       simpa [some, Prod.Lex.lt_iff, hq, le_iff_lt_or_eq] using hy.le_iff_lt_left
