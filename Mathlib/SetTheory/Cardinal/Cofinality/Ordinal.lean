@@ -176,7 +176,7 @@ theorem ord_cof_eq_of_isCofinal [LinearOrder α] [WellFoundedLT α] {s : Set α}
   refine ⟨t, ?_, hs.trans ht, ?_⟩
   · simp
   · rw [← ht']
-    exact ((Subtype.strictMono_coe _).strictMonoOn _).orderIso.ordinal_type_eq.symm
+    exact ((Subtype.strictMono_coe _).strictMonoOn _).orderIso.ordinalType_congr.symm
 
 @[simp]
 theorem _root_.Order.cof_ord_cof (α : Type*) [LinearOrder α] [WellFoundedLT α] :
