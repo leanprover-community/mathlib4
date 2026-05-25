@@ -269,14 +269,12 @@ theorem mul_rTensor_comul_eq_of_adjoin_eq_top
             _ = ∑ p ∈ ℛa.index, ∑ q ∈ ℛb.index,
                   S₀ (ℛb.left q) * (S₀ (ℛa.left p) * ℛa.right p) * ℛb.right q := by
               simp_rw [hS₀_antihom, mul_assoc]
-            _ = ∑ q ∈ ℛb.index, S₀ (ℛb.left q) *
-                  (∑ p ∈ ℛa.index, S₀ (ℛa.left p) * ℛa.right p) * ℛb.right q := by
-              rw [Finset.sum_comm]; simp_rw [← Finset.sum_mul, ← Finset.mul_sum]
             _ = ∑ q ∈ ℛb.index,
                   algebraMap R A (counit a) * S₀ (ℛb.left q) * ℛb.right q := by
-              refine Finset.sum_congr rfl fun q _ => ?_
-              rw [show ∑ p ∈ ℛa.index, S₀ (ℛa.left p) * ℛa.right p = algebraMap R A (counit a)
-                    from by simpa [← ℛa.eq] using ha, ← Algebra.commutes]
+              have hu : ∑ p ∈ ℛa.index, S₀ (ℛa.left p) * ℛa.right p
+                        = algebraMap R A (counit a) := by simpa [← ℛa.eq] using ha
+              rw [Finset.sum_comm]
+              simp_rw [← Finset.sum_mul, ← Finset.mul_sum, hu, ← Algebra.commutes]
             _ = algebraMap R A (counit a) *
                   ∑ q ∈ ℛb.index, S₀ (ℛb.left q) * ℛb.right q := by
               simp_rw [Finset.mul_sum, mul_assoc]
@@ -318,14 +316,10 @@ theorem mul_lTensor_comul_eq_of_adjoin_eq_top
                   ℛa.left p * (ℛb.left q * S₀ (ℛb.right q)) * S₀ (ℛa.right p) := by
               simp_rw [hS₀_antihom, mul_assoc]
             _ = ∑ p ∈ ℛa.index,
-                  ℛa.left p * (∑ q ∈ ℛb.index, ℛb.left q * S₀ (ℛb.right q)) *
-                    S₀ (ℛa.right p) := by
-              simp_rw [← Finset.sum_mul, ← Finset.mul_sum]
-            _ = ∑ p ∈ ℛa.index,
                   algebraMap R A (counit b) * ℛa.left p * S₀ (ℛa.right p) := by
-              refine Finset.sum_congr rfl fun p _ => ?_
-              rw [show ∑ q ∈ ℛb.index, ℛb.left q * S₀ (ℛb.right q) = algebraMap R A (counit b)
-                    from by simpa [← ℛb.eq] using hb, ← Algebra.commutes]
+              have hv : ∑ q ∈ ℛb.index, ℛb.left q * S₀ (ℛb.right q)
+                        = algebraMap R A (counit b) := by simpa [← ℛb.eq] using hb
+              simp_rw [← Finset.sum_mul, ← Finset.mul_sum, hv, ← Algebra.commutes]
             _ = algebraMap R A (counit b) *
                   ∑ p ∈ ℛa.index, ℛa.left p * S₀ (ℛa.right p) := by
               simp_rw [Finset.mul_sum, mul_assoc]
