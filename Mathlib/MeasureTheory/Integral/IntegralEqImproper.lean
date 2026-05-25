@@ -410,7 +410,8 @@ end Lintegral
 
 section Integrable
 
-variable {α ι E : Type*} [MeasurableSpace α] {μ : Measure α} {l : Filter ι} [NormedAddCommGroup E]
+variable {α ι E : Type*} [MeasurableSpace α] {μ : Measure α} {l : Filter ι} [AddCommGroup E]
+  [NormedAddCommGroup E]
 
 theorem AECover.integrable_of_lintegral_enorm_bounded [l.NeBot] [l.IsCountablyGenerated]
     {φ : ι → Set α} (hφ : AECover μ l φ) {f : α → E} (I : ℝ) (hfm : AEStronglyMeasurable f μ)
@@ -446,7 +447,7 @@ theorem AECover.integrable_of_integral_norm_bounded [l.NeBot] [l.IsCountablyGene
     hφ.aestronglyMeasurable fun i => (hfi i).aestronglyMeasurable
   refine hφ.integrable_of_lintegral_enorm_bounded I hfm ?_
   conv at hbounded in integral _ _ =>
-    rw [integral_eq_lintegral_of_nonneg_ae (ae_of_all _ fun x => @norm_nonneg E _ (f x))
+    rw [integral_eq_lintegral_of_nonneg_ae (ae_of_all _ fun x => norm_nonneg (E := E) (f x))
         hfm.norm.restrict]
   conv at hbounded in ENNReal.ofReal _ =>
     rw [← coe_nnnorm, ENNReal.ofReal_coe_nnreal]
@@ -477,8 +478,8 @@ end Integrable
 
 section Integral
 
-variable {α ι E : Type*} [MeasurableSpace α] {μ : Measure α} {l : Filter ι} [NormedAddCommGroup E]
-  [NormedSpace ℝ E]
+variable {α ι E : Type*} [MeasurableSpace α] {μ : Measure α} {l : Filter ι} [AddCommGroup E]
+  [NormedAddCommGroup E] [NormedSpace ℝ E]
 
 theorem AECover.integral_tendsto_of_countably_generated [l.IsCountablyGenerated] {φ : ι → Set α}
     (hφ : AECover μ l φ) {f : α → E} (hfi : Integrable f μ) :
@@ -508,7 +509,7 @@ end Integral
 section IntegrableOfIntervalIntegral
 
 variable {ι E : Type*} {μ : Measure ℝ} {l : Filter ι} [Filter.NeBot l] [IsCountablyGenerated l]
-  [NormedAddCommGroup E] {a b : ι → ℝ} {f : ℝ → E}
+  [AddCommGroup E] [NormedAddCommGroup E] {a b : ι → ℝ} {f : ℝ → E}
 
 theorem integrable_of_intervalIntegral_norm_bounded (I : ℝ)
     (hfi : ∀ i, IntegrableOn f (Ioc (a i) (b i)) μ) (ha : Tendsto a l atBot)
@@ -605,7 +606,7 @@ end IntegrableOfIntervalIntegral
 
 section IntegralOfIntervalIntegral
 
-variable {ι E : Type*} {μ : Measure ℝ} {l : Filter ι} [IsCountablyGenerated l]
+variable {ι E : Type*} {μ : Measure ℝ} {l : Filter ι} [IsCountablyGenerated l] [AddCommGroup E]
   [NormedAddCommGroup E] [NormedSpace ℝ E] {a b : ι → ℝ} {f : ℝ → E}
 
 theorem intervalIntegral_tendsto_integral (hfi : Integrable f μ) (ha : Tendsto a l atBot)
@@ -705,8 +706,8 @@ open scoped Interval
 
 section IoiFTC
 
-variable {E : Type*} {f f' : ℝ → E} {g g' : ℝ → ℝ} {a l : ℝ} {m : E} [NormedAddCommGroup E]
-  [NormedSpace ℝ E]
+variable {E : Type*} {f f' : ℝ → E} {g g' : ℝ → ℝ} {a l : ℝ} {m : E} [AddCommGroup E]
+  [NormedAddCommGroup E] [NormedSpace ℝ E]
 
 /-- If the derivative of a function defined on the real line is integrable close to `+∞`, then
 the function has a limit at `+∞`. -/
@@ -927,7 +928,7 @@ end IoiFTC
 
 section IicFTC
 
-variable {E : Type*} {f f' : ℝ → E} {a : ℝ} {m : E} [NormedAddCommGroup E]
+variable {E : Type*} {f f' : ℝ → E} {a : ℝ} {m : E} [AddCommGroup E] [NormedAddCommGroup E]
   [NormedSpace ℝ E]
 
 /-- If the derivative of a function defined on the real line is integrable close to `-∞`, then
@@ -1026,7 +1027,7 @@ theorem _root_.HasCompactSupport.integral_Iic_deriv_eq (hf : ContDiff ℝ 1 f)
 
 open UniformSpace in
 lemma _root_.HasCompactSupport.enorm_le_lintegral_Ici_deriv
-    {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
+    {F : Type*} [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace ℝ F]
     {f : ℝ → F} (hf : ContDiff ℝ 1 f) (h'f : HasCompactSupport f) (x : ℝ) :
     ‖f x‖ₑ ≤ ∫⁻ y in Iic x, ‖deriv f y‖ₑ := by
   let I : F →L[ℝ] Completion F := Completion.toComplL
@@ -1046,7 +1047,7 @@ end IicFTC
 
 section UnivFTC
 
-variable {E : Type*} {f f' : ℝ → E} {m n : E} [NormedAddCommGroup E]
+variable {E : Type*} {f f' : ℝ → E} {m n : E} [AddCommGroup E] [NormedAddCommGroup E]
   [NormedSpace ℝ E]
 
 /-- **Fundamental theorem of calculus-2**, on the whole real line
@@ -1088,7 +1089,7 @@ open Real
 
 open scoped Interval
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+variable {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℝ E]
 
 /-- Change-of-variables formula for `Ioi` integrals of vector-valued functions, proved by taking
 limits from the result for finite intervals. -/
@@ -1181,7 +1182,7 @@ open Real
 
 open scoped Interval
 
-variable {E : Type*} [NormedAddCommGroup E]
+variable {E : Type*} [AddCommGroup E] [NormedAddCommGroup E]
 
 /-- The substitution `y = x ^ p` in integrals over `Ioi 0` preserves integrability. -/
 theorem integrableOn_Ioi_comp_rpow_iff [NormedSpace ℝ E] (f : ℝ → E) {p : ℝ} (hp : p ≠ 0) :
@@ -1236,8 +1237,8 @@ end IoiIntegrability
 
 section IntegrationByPartsBilinear
 
-variable {E F G : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
-  [NormedAddCommGroup F] [NormedSpace ℝ F] [NormedAddCommGroup G] [NormedSpace ℝ G]
+variable {E F G : Type*} [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℝ E] [AddCommGroup F]
+  [NormedAddCommGroup F] [NormedSpace ℝ F] [AddCommGroup G] [NormedAddCommGroup G] [NormedSpace ℝ G]
   {L : E →L[ℝ] F →L[ℝ] G} {u : ℝ → E} {v : ℝ → F} {u' : ℝ → E} {v' : ℝ → F}
   {m n : G}
 
