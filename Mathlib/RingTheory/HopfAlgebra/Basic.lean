@@ -238,8 +238,6 @@ noncomputable abbrev ofAlgHom (antipode : A →ₐ[R] Aᵐᵒᵖ)
   mul_antipode_rTensor_comul := mul_antipode_rTensor_comul
   mul_antipode_lTensor_comul := mul_antipode_lTensor_comul
 
-/-! ### Construction on generators -/
-
 /-- A candidate antipode `S : A →ₐ[R] Aᵐᵒᵖ` satisfies the rTensor antipode axiom on all of `A`
 if it satisfies it on a set whose algebra-adjoint is everything. -/
 theorem mul_rTensor_comul_eq_of_adjoin_eq_top
