@@ -409,12 +409,9 @@ theorem chromaticNumber_mono (G' : SimpleGraph V)
     (h : G ≤ G') : G.chromaticNumber ≤ G'.chromaticNumber :=
   chromaticNumber_le_of_forall_imp fun _ => Colorable.mono_left h
 
-theorem Hom.chromaticNumber_le {V' : Type*} {G' : SimpleGraph V'} (f : G →g G') :
+theorem chromaticNumber_mono_of_hom {V' : Type*} {G' : SimpleGraph V'} (f : G →g G') :
     G.chromaticNumber ≤ G'.chromaticNumber :=
   chromaticNumber_le_of_forall_imp fun _ hc => hc.of_hom f
-
-@[deprecated Hom.chromaticNumber_le (since := "2026-04-03")]
-alias chromaticNumber_mono_of_hom := Hom.chromaticNumber_le
 
 lemma card_le_chromaticNumber_iff_forall_surjective [Fintype α] :
     card α ≤ G.chromaticNumber ↔ ∀ C : G.Coloring α, Surjective C := by
@@ -491,7 +488,7 @@ theorem chromaticNumber_eq_card_iff [Fintype V] :
 
 theorem chromaticNumber_le_card [Fintype V] : G.chromaticNumber ≤ Fintype.card V := by
   rw [← chromaticNumber_top]
-  exact G.selfColoring.chromaticNumber_le
+  exact chromaticNumber_mono_of_hom G.selfColoring
 
 theorem two_le_chromaticNumber_of_adj {u v : V} (hadj : G.Adj u v) : 2 ≤ G.chromaticNumber := by
   refine le_of_not_gt fun h ↦ ?_
@@ -638,7 +635,7 @@ lemma Iso.colorable_iff (f : G ≃g H) : G.Colorable n ↔ H.Colorable n :=
   ⟨fun hc ↦ hc.of_hom f.symm.toHom, fun hc ↦ hc.of_hom f.toHom⟩
 
 lemma Iso.chromaticNumber_eq (f : G ≃g H) : G.chromaticNumber = H.chromaticNumber :=
-  le_antisymm f.toHom.chromaticNumber_le f.symm.toHom.chromaticNumber_le
+  le_antisymm (chromaticNumber_mono_of_hom f.toHom) (chromaticNumber_mono_of_hom f.symm.toHom)
 
 
 end SimpleGraph
