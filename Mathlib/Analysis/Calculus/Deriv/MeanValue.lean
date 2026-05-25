@@ -507,7 +507,7 @@ lemma antitone_of_hasDerivAt_nonpos {f f' : ℝ → ℝ} (hf : ∀ x, HasDerivAt
 
 /-! ### Functions `f : E → ℝ` -/
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+variable {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℝ E]
 
 /-- Lagrange's **Mean Value Theorem**, applied to convex domains. -/
 theorem domain_mvt {f : E → ℝ} {s : Set E} {x y : E} {f' : E → StrongDual ℝ E}
