@@ -111,8 +111,21 @@ namespace ModuleCat.MonoidalCategory
 
 variable {R : Type u} [CommRing R]
 
+local instance : equivalenceSemimoduleCat (R := R).functor.Monoidal :=
+  CategoryTheory.Monoidal.fromInducedMonoidal equivalenceSemimoduleCat.functor
+  { μIso _ _ := .refl _
+    εIso := .refl _
+    associator_eq _ _ _ := by ext1; exact TensorProduct.ext (TensorProduct.ext rfl)
+    leftUnitor_eq _ := by ext1; exact TensorProduct.ext rfl
+    rightUnitor_eq _ := by ext1; exact TensorProduct.ext rfl }
+
 instance : BraidedCategory (ModuleCat.{u} R) :=
   .ofFaithful equivalenceSemimoduleCat.functor (fun M N ↦ (TensorProduct.comm R M N).toModuleIso)
+    (fun M N ↦ by
+      ext : 1
+      apply TensorProduct.ext'
+      intro m n
+      rfl)
 
 instance : equivalenceSemimoduleCat (R := R).functor.Braided where
 
@@ -129,14 +142,18 @@ theorem braiding_inv_apply {M N : ModuleCat.{u} R} (m : M) (n : N) :
     ((β_ M N).inv : N ⊗ M ⟶ M ⊗ N) (n ⊗ₜ m) = m ⊗ₜ n :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem tensorμ_eq_tensorTensorTensorComm {A B C D : ModuleCat R} :
     tensorμ A B C D = ofHom (TensorProduct.tensorTensorTensorComm R A B C D).toLinearMap :=
-  ModuleCat.hom_ext <| TensorProduct.ext <| TensorProduct.ext <| LinearMap.ext₂ fun _ _ =>
-    TensorProduct.ext <| LinearMap.ext₂ fun _ _ => rfl
+  ModuleCat.hom_ext <| TensorProduct.ext <| TensorProduct.ext <| LinearMap.ext₂ fun a b =>
+    TensorProduct.ext <| LinearMap.ext₂ fun c d => by
+      rfl
 
 @[simp]
 theorem tensorμ_apply
     {A B C D : ModuleCat R} (x : A) (y : B) (z : C) (w : D) :
-    tensorμ A B C D ((x ⊗ₜ y) ⊗ₜ (z ⊗ₜ w)) = (x ⊗ₜ z) ⊗ₜ (y ⊗ₜ w) := rfl
+    tensorμ A B C D ((x ⊗ₜ y) ⊗ₜ (z ⊗ₜ w)) = (x ⊗ₜ z) ⊗ₜ (y ⊗ₜ w) := by
+  rw [tensorμ_eq_tensorTensorTensorComm]
+  rfl
 
 end ModuleCat.MonoidalCategory

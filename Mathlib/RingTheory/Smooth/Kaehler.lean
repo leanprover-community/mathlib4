@@ -273,6 +273,7 @@ def derivationQuotKerSq :
 lemma derivationQuotKerSq_mk (x : P) :
     derivationQuotKerSq R P S x = 1 ⊗ₜ .D R P x := rfl
 
+set_option linter.flexible false in
 variable (R P S) in
 /--
 Given a tower of algebras `S/P/R`, with `I = ker(P → S)` and `Q := P/I²`,
@@ -294,17 +295,32 @@ def tensorKaehlerQuotKerSqEquiv :
       ext a
       obtain ⟨a, rfl⟩ := Ideal.Quotient.mk_surjective a
       simp [f₁, f₂, f₃, f₄, f₅]
+      have hd :
+          (derivationQuotKerSq R P S)
+            ((Ideal.Quotient.mk (RingHom.ker (algebraMap P S) ^ 2)) a) =
+              1 ⊗ₜ[P] KaehlerDifferential.D R P a :=
+        derivationQuotKerSq_mk (R := R) (P := P) (S := S) a
+      rw [hd]
+      simp [KaehlerDifferential.map_D]
     right_inv := by
       suffices f₂.comp f₅ = LinearMap.id from LinearMap.congr_fun this
       ext a
-      simp [f₁, f₂, f₃, f₄, f₅] }
+      simp [f₁, f₂, f₃, f₄, f₅]
+      exact derivationQuotKerSq_mk (R := R) (P := P) (S := S) a }
 
 @[simp]
 lemma tensorKaehlerQuotKerSqEquiv_tmul_D (s t) :
     tensorKaehlerQuotKerSqEquiv R P S (s ⊗ₜ .D _ _ (Ideal.Quotient.mk _ t)) = s ⊗ₜ .D _ _ t := by
   change s • (derivationQuotKerSq R P S).liftKaehlerDifferential
     (.D _ _ (Ideal.Quotient.mk _ t)) = _
-  simp [smul_tmul']
+  rw [Derivation.liftKaehlerDifferential_comp_D]
+  have hd :
+      (derivationQuotKerSq R P S)
+        ((Ideal.Quotient.mk (RingHom.ker (algebraMap P S) ^ 2)) t) =
+          1 ⊗ₜ[P] KaehlerDifferential.D R P t :=
+    derivationQuotKerSq_mk (R := R) (P := P) (S := S) t
+  rw [hd]
+  rw [TensorProduct.smul_tmul', smul_eq_mul, mul_one]
 
 @[simp]
 lemma tensorKaehlerQuotKerSqEquiv_symm_tmul_D (s t) :

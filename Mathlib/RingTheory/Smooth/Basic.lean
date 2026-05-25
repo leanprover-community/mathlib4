@@ -91,8 +91,11 @@ lemma FormallySmooth.comp_surjective [FormallySmooth R A] (I : Ideal B) (hI : I 
       l.restrictScalars P.toExtension.Ring, LinearMap.ext fun x ↦ congr($hl x)⟩
   let σ := Function.surjInv (f := algebraMap B (B ⧸ I)) Ideal.Quotient.mk_surjective
   have H (x : P.Ring) : ↑(aeval (σ ∘ f) x) = f (algebraMap _ A x) := by
-    rw [← Ideal.Quotient.algebraMap_eq, ← aeval_algebraMap_apply, P.algebraMap_eq,
-      AlgHom.coe_toRingHom, comp_aeval_apply, ← Function.comp_assoc, Function.comp_surjInv,]
+    change algebraMap B (B ⧸ I) (MvPolynomial.aeval (σ ∘ f) x) =
+      f (algebraMap P.Ring A x)
+    rw [← MvPolynomial.aeval_algebraMap_apply (B := B ⧸ I) (x := σ ∘ f) (p := x),
+      P.algebraMap_eq, AlgHom.coe_toRingHom, comp_aeval_apply,
+      ← Function.comp_assoc, Function.comp_surjInv]
     simp [P]
   let l : P.Ring ⧸ (RingHom.ker (algebraMap P.Ring A)) ^ 2 →ₐ[R] B :=
     Ideal.Quotient.liftₐ _ (aeval (σ ∘ f)) <|

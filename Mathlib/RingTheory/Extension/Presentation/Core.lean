@@ -179,14 +179,37 @@ lemma tensorModelOfHasCoeffsHom_comp :
     (P.quotientEquiv.restrictScalars R).surjective.comp Ideal.Quotient.mk_surjective
   simp only [← AlgHom.cancel_right h, tensorModelOfHasCoeffsInv, AlgHom.id_comp]
   rw [AlgHom.comp_assoc, AlgHom.comp_assoc, ← AlgHom.comp_assoc _ _ (Ideal.Quotient.mkₐ R P.ker),
-    AlgEquiv.symm_comp, AlgHom.id_comp]
+    AlgEquiv.symm_comp, AlgHom.id_comp, Ideal.Quotient.liftₐ_comp]
   ext x
-  simp
+  calc
+    _ = P.tensorModelOfHasCoeffsHom R₀
+        (1 ⊗ₜ[R₀] (Ideal.Quotient.mk
+          (Ideal.span <| Set.range (P.relationOfHasCoeffs R₀)) (MvPolynomial.X x))) := by
+      simp [MvPolynomial.algebraTensorAlgEquiv_symm_X]
+    _ = MvPolynomial.aeval P.val (MvPolynomial.X x) := by
+      have hhom :
+          P.tensorModelOfHasCoeffsHom R₀
+            (1 ⊗ₜ[R₀] (Ideal.Quotient.mk
+              (Ideal.span <| Set.range (P.relationOfHasCoeffs R₀)) (MvPolynomial.X x))) =
+            algebraMap R S (1 : R) * MvPolynomial.aeval P.val (MvPolynomial.X x) := rfl
+      simpa using hhom
+    _ = P.quotientEquiv ((Ideal.Quotient.mk P.ker) (MvPolynomial.X x)) := by
+      change MvPolynomial.aeval (R := R) P.val (MvPolynomial.X x) =
+        algebraMap P.Ring S (MvPolynomial.X x : P.Ring)
+      rw [P.algebraMap_apply]
 
 lemma tensorModelOfHasCoeffsInv_comp :
     (P.tensorModelOfHasCoeffsInv R₀).comp (P.tensorModelOfHasCoeffsHom R₀) = AlgHom.id R _ := by
-  ext x
+  apply Algebra.TensorProduct.ext'
+  intro r x
   obtain ⟨x, rfl⟩ := Ideal.Quotient.mk_surjective x
+  have hhom :
+      P.tensorModelOfHasCoeffsHom R₀
+        (r ⊗ₜ[R₀] (Ideal.Quotient.mk
+          (Ideal.span <| Set.range (P.relationOfHasCoeffs R₀)) x)) =
+        algebraMap R S r * MvPolynomial.aeval P.val x := rfl
+  simp only [AlgHom.comp_apply, AlgHom.id_apply]
+  rw [hhom, map_mul, tensorModelOfHasCoeffsInv_aeval_val]
   simp
 
 /-- The natural isomorphism `R ⊗[R₀] S₀ ≃ₐ[R] S`. -/

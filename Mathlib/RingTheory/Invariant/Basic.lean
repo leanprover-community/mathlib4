@@ -355,7 +355,10 @@ omit [Finite G] [Q.IsPrime] [Algebra.IsInvariant A B G] in
 theorem IsFractionRing.stabilizerHom_apply_apply_mk (σ : MulAction.stabilizer G Q) (x : B) :
     IsFractionRing.stabilizerHom G P Q K L σ (algebraMap _ L (Ideal.Quotient.mk Q x)) =
       algebraMap _ L (Ideal.Quotient.mk Q (σ.val • x)) := by
-  simp [IsFractionRing.stabilizerHom, MulAction.subgroup_smul_def]
+  simp only [IsFractionRing.stabilizerHom, MonoidHom.coe_comp, Function.comp_apply,
+    IsFractionRing.fieldEquivOfAlgEquivHom_apply, IsFractionRing.fieldEquivOfAlgEquiv_algebraMap]
+  simpa using congrArg (algebraMap (B ⧸ Q) L)
+    (Ideal.Quotient.stabilizerHom_apply (P := Q) (p := P) (G := G) σ x)
 
 /-- This theorem will be made redundant by `IsFractionRing.stabilizerHom_surjective`. -/
 private theorem fixed_of_fixed2 (f : Gal(L/K)) (x : L)
