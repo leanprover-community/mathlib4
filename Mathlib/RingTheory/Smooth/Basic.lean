@@ -118,7 +118,7 @@ instance instFormallySmoothMvPolynomial (σ : Type*) : FormallySmooth R (MvPolyn
   have := P.toExtension.h1Cotangentι_injective.subsingleton
   exact ⟨inferInstance, P.equivH1Cotangent.symm.subsingleton⟩
 
-@[deprecated (since := "2026-05-22")] alias mvPolynomial := FormallySmooth.mvPolynomial
+@[deprecated (since := "2026-05-22")] alias mvPolynomial := instFormallySmoothMvPolynomial
 
 end
 
