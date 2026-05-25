@@ -17,11 +17,9 @@ field of characteristic `p`.
 
 # Main definitions and results
 
-* `adjoinPthRoots`: the field extension adjoining all `p`-th roots, defined as the field itself,
-  with the algebra map being the frobenius map.
-* `adjoinPthRootsPthRoot`: the `p`-th root map `k → adjoinPthRoots k p`, mapping an element
-  to its unique `p`-th root in `adjoinPthRoots`. It is implemented as a `RingEquiv` with underlying
-  identity map.
+* `AdjoinPthRoots`: the field extension adjoining all `p`-th roots.
+* `AdjoinPthRoots.root`: the `p`-th root map `k → AdjoinPthRoots k p`, mapping an element
+  to its unique `p`-th root in `AdjoinPthRoots`.
 
 -/
 
@@ -30,28 +28,37 @@ public section
 variable (k : Type*) [Field k]
 
 /-- Adjoining all `p`-th root to a field of characteristic `p`. -/
-@[nolint unusedArguments, expose]
-def adjoinPthRoots (p : ℕ) [ExpChar k p] := k
+def AdjoinPthRoots := k
+
+noncomputable instance : Field (AdjoinPthRoots k) := inferInstanceAs (Field k)
+
+@[no_expose]
+noncomputable instance : Algebra k (AdjoinPthRoots k) := (frobenius k (ringExpChar k)).toAlgebra
+
+instance (p : ℕ) [ExpChar k p] : ExpChar (AdjoinPthRoots k) p := inferInstanceAs (ExpChar k p)
+
+/-- The `p`-th root map `k → AdjoinPthRoots k p`, as a `RingEquiv`. -/
+-- Note: It is defined as a typeclass synonym of the field `k` itself
+-- with a `k`-algebra structure given by the frobenius map.
+noncomputable def AdjoinPthRoots.root : k ≃+* AdjoinPthRoots k := RingEquiv.refl k
 
 variable (p : ℕ) [ExpChar k p]
 
-instance : Field (adjoinPthRoots k p) := inferInstanceAs (Field k)
-
-instance : Algebra k (adjoinPthRoots k p) := (frobenius k p).toAlgebra
-
-/-- The `p`-th root map `k → adjoinPthRoots k p`, as a `RingEquiv`. -/
-def adjoinPthRootsPthRoot : k ≃+* adjoinPthRoots k p := RingEquiv.refl k
-
-lemma adjoinPthRootsPthRoot_apply_pow (x : k) :
-    (adjoinPthRootsPthRoot k p x) ^ p = algebraMap k (adjoinPthRoots k p) x := by
+@[simp]
+lemma AdjoinPthRoots.root_pow (x : k) :
+    (AdjoinPthRoots.root k x) ^ p = algebraMap k (AdjoinPthRoots k) x := by
+  rw [← ringExpChar.eq k p]
   rfl
 
-lemma adjoinPthRootsPthRoot_symm_apply_eq_pow (x : adjoinPthRoots k p) :
-    algebraMap k (adjoinPthRoots k p) ((adjoinPthRootsPthRoot k p).symm x) = x ^ p := by
+@[simp]
+lemma AdjoinPthRoots.algebraMap_root_symm (x : AdjoinPthRoots k) :
+    algebraMap k (AdjoinPthRoots k) ((AdjoinPthRoots.root k).symm x) = x ^ p := by
+  rw [← ringExpChar.eq k p]
   rfl
 
-instance adjoinPthRoots_purelyInseparable : IsPurelyInseparable k (adjoinPthRoots k p) := by
+instance AdjoinPthRoots.isPurelyInseparable : IsPurelyInseparable k (AdjoinPthRoots k) := by
+  obtain ⟨p, hp⟩ := ExpChar.exists k
   rw [isPurelyInseparable_iff_pow_mem k p]
   intro x
-  use 1, (adjoinPthRootsPthRoot k p).symm x
-  simp [adjoinPthRootsPthRoot_symm_apply_eq_pow]
+  use 1, (AdjoinPthRoots.root k).symm x
+  simp [AdjoinPthRoots.algebraMap_root_symm k p]
