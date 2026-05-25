@@ -29,7 +29,7 @@ open Opposite CategoryTheory ConcreteCategory
 
 namespace CategoryTheory
 
-variable {C : Type u} [Category.{v} C] {R : C ⥤ MonCat.{w}}
+variable {C : Type u} [Category.{v} C] {M : C ⥤ MonCat.{w}}
 
 variable (R) in
 /-- A submonoid functor consists of a submonoid of `R.obj U` for every `U`,
