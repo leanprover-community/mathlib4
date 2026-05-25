@@ -114,13 +114,10 @@ section range
 @[simps]
 def range (S : SubmonoidFunctor R) (p : R ⟶ R') : SubmonoidFunctor R' where
   obj _ := Submonoid.map (MonCat.Hom.hom (p.app _)) (S.obj _)
-  map := by
-    rintro U V i a h
-    obtain ⟨x, h ⟩ := h
-    use (hom (R.map i)) x
-    have : x ∈ (hom (R.map i)) ⁻¹' (S.obj V).carrier := by
-      exact (Set.mem_of_mem_of_subset h.1 (S.map i))
-    cat_disch
+  map i := by
+    rw [← Submonoid.map_le_iff_le_comap, Submonoid.map_map, ← MonCat.hom_comp, ← p.naturality,
+      MonCat.hom_comp, ← Submonoid.map_map]
+    grw [S.map_le]
 
 variable (R) in
 lemma range_id : range ⊤ (𝟙 R) = ⊤ := by aesop
