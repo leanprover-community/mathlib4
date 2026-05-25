@@ -64,9 +64,9 @@ public section
 open Set MeasureTheory VectorMeasure ContinuousLinearMap
 
 variable {X E F G : Type*} {mX : MeasurableSpace X}
-  [NormedAddCommGroup E] [NormedSpace ℝ E]
-  [NormedAddCommGroup F] [NormedSpace ℝ F]
-  [NormedAddCommGroup G] [NormedSpace ℝ G]
+  [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℝ E]
+  [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace ℝ F]
+  [AddCommGroup G] [NormedAddCommGroup G] [NormedSpace ℝ G]
 
 namespace MeasureTheory
 
