@@ -97,16 +97,9 @@ instance : CompleteLattice (SubmonoidFunctor R) where
     aesop, fun _ _ _ ↦ by aesop⟩
   sInf S :=
     { obj U := sInf (Set.image (fun T ↦ T.obj U) S)
-      map f x hx := by
-        rintro _ ⟨s, h, rfl⟩
-        rw [Submonoid.mem_sInf] at hx
-        simp_all only [Set.mem_image, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂,
-          Set.iInter_exists, Set.mem_iInter, SetLike.mem_coe]
-        intro i a a_1
-        subst a_1
-        expose_names
-        have : (i.obj U).carrier ⊆ ⇑(hom (R.map f)) ⁻¹' ↑(i.obj V).carrier := i.map f
-        tauto  }
+      map f := by
+        rw [(Submonoid.gc_map_comap (R.map f).hom).u_iInf₂]
+        exact iInf₂_mono fun F _ ↦ F.map f }
   isGLB_sInf _ := ⟨fun _ _ _ _ ↦ by aesop, fun _ _ _ ↦ by aesop⟩
   bot := { obj _ := ⊥ }
   bot_le _ _ := bot_le
