@@ -778,12 +778,12 @@ theorem lift_lt_aleph_one : lift.{v} c < ℵ₁ ↔ c < ℵ₁ := by
 
 @[simp]
 theorem aleph_one_liftEq_iff {c : Cardinal.{v}} : (ℵ₁ : Cardinal.{u}) =ₗ c ↔ ℵ₁ = c := by
-  unfold liftEq
+  unfold LiftEq
   simpa using lift_inj (a := ℵ₁)
 
 @[simp]
 theorem liftEq_aleph_one_iff {c : Cardinal.{v}} : c =ₗ (ℵ₁ : Cardinal.{u}) ↔ c = ℵ₁ := by
-  unfold liftEq
+  unfold LiftEq
   simpa using lift_inj (b := ℵ₁)
 
 @[deprecated aleph_one_liftEq_iff (since := "2026-05-24")]
@@ -816,12 +816,12 @@ theorem lift_lt_aleph_natCast : lift.{v} c < ℵ_ n ↔ c < ℵ_ n := by
 
 @[simp]
 theorem aleph_natCast_liftEq_iff : (ℵ_ n : Cardinal.{v}) =ₗ c ↔ ℵ_ n = c := by
-  unfold liftEq
+  unfold LiftEq
   simpa using lift_inj (a := ℵ_ n)
 
 @[simp]
 theorem liftEq_aleph_natCast_iff : c =ₗ (ℵ_ n : Cardinal.{v}) ↔ c = ℵ_ n := by
-  unfold liftEq
+  unfold LiftEq
   simpa using lift_inj (b := ℵ_ n)
 
 @[deprecated aleph_natCast_liftEq_iff (since := "2026-05-24")]
@@ -884,12 +884,12 @@ theorem lift_lt_beth_natCast : lift.{v} c < ℶ_ n ↔ c < ℶ_ n := by
 
 @[simp]
 theorem beth_natCast_liftEq_iff : (ℶ_ n : Cardinal.{v}) =ₗ c ↔ ℶ_ n = c := by
-  unfold liftEq
+  unfold LiftEq
   simpa using lift_inj (a := ℶ_ n)
 
 @[simp]
 theorem liftEq_beth_natCast_iff : c =ₗ (ℶ_ n : Cardinal.{v}) ↔ c = ℶ_ n := by
-  unfold liftEq
+  unfold LiftEq
   simpa using lift_inj (b := ℶ_ n)
 
 @[deprecated beth_natCast_liftEq_iff (since := "2026-05-24")]

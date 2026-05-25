@@ -673,7 +673,7 @@ theorem mk_equiv_eq_arrow_of_lift_eq (leq : #α =ₗ #β') : #(α ≃ β') = #(�
   obtain ⟨e⟩ := mk_liftEq.mp leq
   have e₁ := mk_liftEq.mpr ⟨.equivCongr (.refl α) e⟩
   have e₂ := mk_liftEq.mpr ⟨.arrowCongr (.refl α) e⟩
-  rw [liftEq, lift_id'.{u, v}] at e₁ e₂
+  rw [LiftEq, lift_id'.{u, v}] at e₁ e₂
   rw [← e₁, ← e₂, lift_inj, mk_perm_eq_self_power, power_def]
 
 theorem mk_equiv_eq_arrow_of_eq (eq : #α = #β) : #(α ≃ β) = #(α → β) :=
@@ -701,7 +701,7 @@ theorem mk_surjective_eq_arrow_of_lift_le (lle : lift.{u} #β' ≤ lift.{v} #α)
     #{f : α → β' | Surjective f} = #(α → β') :=
   (mk_set_le _).antisymm <|
     have ⟨e⟩ : Nonempty (α ≃ α ⊕ β') := by
-      simp_rw [← mk_liftEq, liftEq, mk_sum, lift_add, lift_lift]; rw [lift_umax.{u, v}, eq_comm]
+      simp_rw [← mk_liftEq, LiftEq, mk_sum, lift_add, lift_lift]; rw [lift_umax.{u, v}, eq_comm]
       exact add_eq_left (aleph0_le_lift.mpr <| aleph0_le_mk α) lle
     ⟨⟨fun f ↦ ⟨fun a ↦ (e a).elim f id, fun b ↦ ⟨e.symm (.inr b), congr_arg _ (e.right_inv _)⟩⟩,
       fun f g h ↦ funext fun a ↦ by
@@ -876,7 +876,7 @@ theorem extend_function_finite {α : Type u} {β : Type v} [Finite α] {s : Set 
     (h : Nonempty (α ≃ β)) : ∃ g : α ≃ β, ∀ x : s, g x = f x := by
   apply extend_function.{u, v} f
   rw [← mk_liftEq] at h
-  rw [← mk_liftEq, liftEq, mk_compl_eq_mk_compl_finite_lift h]
+  rw [← mk_liftEq, LiftEq, mk_compl_eq_mk_compl_finite_lift h]
   rw [mk_range_eq_of_injective]; exact f.2
 
 theorem extend_function_of_lt {α β : Type*} {s : Set α} (f : s ↪ β) (hs : #s < #α)

@@ -636,12 +636,12 @@ theorem lift_natCast (n : ℕ) : lift.{u} (n : Cardinal.{v}) = n := by induction
 
 @[simp]
 theorem natCast_liftEq_iff {c : Cardinal.{v}} {n : ℕ} : (n : Cardinal.{u}) =ₗ c ↔ n = c := by
-  unfold liftEq
+  unfold LiftEq
   simpa using lift_inj (a := n)
 
 @[simp]
 theorem liftEq_natCast_iff {n : ℕ} {c : Cardinal.{v}} : c =ₗ (n : Cardinal.{u}) ↔ c = n := by
-  unfold liftEq
+  unfold LiftEq
   simpa using lift_inj (b := n)
 
 @[simp]
