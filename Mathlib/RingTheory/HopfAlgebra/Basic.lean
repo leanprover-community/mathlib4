@@ -240,21 +240,19 @@ noncomputable abbrev ofAlgHom (antipode : A →ₐ[R] Aᵐᵒᵖ)
   mul_antipode_rTensor_comul := mul_antipode_rTensor_comul
   mul_antipode_lTensor_comul := mul_antipode_lTensor_comul
 
-/-! ### Construction on algebra generators -/
+/-! ### Construction on generators -/
 
 /-- The rTensor antipode axiom evaluated at `a`, for a candidate antipode `S : A →ₐ[R] Aᵐᵒᵖ`. -/
-@[mk_iff]
-structure IsRTensorAntipodeAt (R) [CommSemiring R] {A} [Semiring A] [Bialgebra R A]
-    (S : A →ₐ[R] Aᵐᵒᵖ) (a : A) : Prop where
-  eq : LinearMap.mul' R A
+def IsRTensorAntipodeAt (R) [CommSemiring R] {A} [Semiring A] [Bialgebra R A]
+    (S : A →ₐ[R] Aᵐᵒᵖ) (a : A) : Prop :=
+  LinearMap.mul' R A
       (((opLinearEquiv R).symm.toLinearMap ∘ₗ S.toLinearMap).rTensor A (comul a)) =
     algebraMap R A (counit a)
 
 /-- The lTensor antipode axiom evaluated at `a`, for a candidate antipode `S : A →ₐ[R] Aᵐᵒᵖ`. -/
-@[mk_iff]
-structure IsLTensorAntipodeAt (R) [CommSemiring R] {A} [Semiring A] [Bialgebra R A]
-    (S : A →ₐ[R] Aᵐᵒᵖ) (a : A) : Prop where
-  eq : LinearMap.mul' R A
+def IsLTensorAntipodeAt (R) [CommSemiring R] {A} [Semiring A] [Bialgebra R A]
+    (S : A →ₐ[R] Aᵐᵒᵖ) (a : A) : Prop :=
+  LinearMap.mul' R A
       (((opLinearEquiv R).symm.toLinearMap ∘ₗ S.toLinearMap).lTensor A (comul a)) =
     algebraMap R A (counit a)
 
@@ -271,12 +269,16 @@ theorem mul_rTensor_comul_eq_of_adjoin_eq_top
   have hS₀_antihom : ∀ x y : A, S₀ (x * y) = S₀ y * S₀ x := fun x y => by simp [hS₀, map_mul]
   let locus : Subalgebra R A :=
     { carrier := { a | IsRTensorAntipodeAt R S a }
-      add_mem' := fun ha hb => ⟨by simp only [map_add]; rw [ha.eq, hb.eq, ← map_add]⟩
-      algebraMap_mem' := fun r => ⟨by
+      add_mem' := fun {a b} ha hb => by
+        change LinearMap.mul' R A _ = _ at ha hb ⊢
+        simp only [map_add]; rw [ha, hb, ← map_add]
+      algebraMap_mem' := fun r => by
+        change LinearMap.mul' R A _ = _
         rw [Bialgebra.comul_algebraMap, Bialgebra.counit_algebraMap,
             Algebra.TensorProduct.algebraMap_apply, LinearMap.rTensor_tmul]
-        simp⟩
-      mul_mem' := fun {a b} ha hb => ⟨by
+        simp
+      mul_mem' := fun {a b} ha hb => by
+        change LinearMap.mul' R A _ = _ at ha hb ⊢
         let ℛa := ℛ R a
         let ℛb := ℛ R b
         calc LinearMap.mul' R A (S₀.rTensor A (comul (a * b)))
@@ -297,7 +299,7 @@ theorem mul_rTensor_comul_eq_of_adjoin_eq_top
               refine Finset.sum_congr rfl fun q _ => ?_
               have hℛa : ∑ p ∈ ℛa.index, S₀ (ℛa.left p) * ℛa.right p
                          = algebraMap R A (counit a) := by
-                have := ha.eq; rw [← ℛa.eq] at this
+                have := ha; rw [← ℛa.eq] at this
                 simpa [LinearMap.rTensor, LinearMap.mul'_apply] using this
               rw [hℛa, show S₀ (ℛb.left q) * algebraMap R A (counit a)
                   = algebraMap R A (counit a) * S₀ (ℛb.left q) from (Algebra.commutes _ _).symm]
@@ -306,12 +308,12 @@ theorem mul_rTensor_comul_eq_of_adjoin_eq_top
               rw [Finset.mul_sum]; simp_rw [mul_assoc]
             _ = algebraMap R A (counit a) * algebraMap R A (counit b) := by
               congr 1
-              have := hb.eq; rw [← ℛb.eq] at this
+              have := hb; rw [← ℛb.eq] at this
               simpa [LinearMap.rTensor, LinearMap.mul'_apply] using this
             _ = algebraMap R A (counit (a * b)) := by
-              rw [Bialgebra.counit_mul, map_mul]⟩ }
+              rw [Bialgebra.counit_mul, map_mul] }
   ext x
-  exact (Algebra.adjoin_le (S := locus) h (hs ▸ Algebra.mem_top : x ∈ Algebra.adjoin R s)).eq
+  exact Algebra.adjoin_le (S := locus) h (hs ▸ Algebra.mem_top : x ∈ Algebra.adjoin R s)
 
 /-- A candidate antipode `S : A →ₐ[R] Aᵐᵒᵖ` satisfies the lTensor antipode axiom on all of `A`
 if it satisfies it on a set whose algebra-adjoint is everything. -/
@@ -326,12 +328,16 @@ theorem mul_lTensor_comul_eq_of_adjoin_eq_top
   have hS₀_antihom : ∀ x y : A, S₀ (x * y) = S₀ y * S₀ x := fun x y => by simp [hS₀, map_mul]
   let locus : Subalgebra R A :=
     { carrier := { a | IsLTensorAntipodeAt R S a }
-      add_mem' := fun ha hb => ⟨by simp only [map_add]; rw [ha.eq, hb.eq, ← map_add]⟩
-      algebraMap_mem' := fun r => ⟨by
+      add_mem' := fun {a b} ha hb => by
+        change LinearMap.mul' R A _ = _ at ha hb ⊢
+        simp only [map_add]; rw [ha, hb, ← map_add]
+      algebraMap_mem' := fun r => by
+        change LinearMap.mul' R A _ = _
         rw [Bialgebra.comul_algebraMap, Bialgebra.counit_algebraMap,
             Algebra.TensorProduct.algebraMap_apply, LinearMap.lTensor_tmul]
-        simp⟩
-      mul_mem' := fun {a b} ha hb => ⟨by
+        simp
+      mul_mem' := fun {a b} ha hb => by
+        change LinearMap.mul' R A _ = _ at ha hb ⊢
         let ℛa := ℛ R a
         let ℛb := ℛ R b
         calc LinearMap.mul' R A (S₀.lTensor A (comul (a * b)))
@@ -353,7 +359,7 @@ theorem mul_lTensor_comul_eq_of_adjoin_eq_top
               refine Finset.sum_congr rfl fun p _ => ?_
               have hℛb : ∑ q ∈ ℛb.index, ℛb.left q * S₀ (ℛb.right q)
                          = algebraMap R A (counit b) := by
-                have := hb.eq; rw [← ℛb.eq] at this
+                have := hb; rw [← ℛb.eq] at this
                 simpa [LinearMap.lTensor, LinearMap.mul'_apply] using this
               rw [hℛb, show ℛa.left p * algebraMap R A (counit b)
                   = algebraMap R A (counit b) * ℛa.left p from (Algebra.commutes _ _).symm]
@@ -362,12 +368,12 @@ theorem mul_lTensor_comul_eq_of_adjoin_eq_top
               rw [Finset.mul_sum]; simp_rw [mul_assoc]
             _ = algebraMap R A (counit b) * algebraMap R A (counit a) := by
               congr 1
-              have := ha.eq; rw [← ℛa.eq] at this
+              have := ha; rw [← ℛa.eq] at this
               simpa [LinearMap.lTensor, LinearMap.mul'_apply] using this
             _ = algebraMap R A (counit (a * b)) := by
-              rw [Bialgebra.counit_mul, mul_comm (counit a) (counit b), map_mul]⟩ }
+              rw [Bialgebra.counit_mul, mul_comm (counit a) (counit b), map_mul] }
   ext x
-  exact (Algebra.adjoin_le (S := locus) h (hs ▸ Algebra.mem_top : x ∈ Algebra.adjoin R s)).eq
+  exact Algebra.adjoin_le (S := locus) h (hs ▸ Algebra.mem_top : x ∈ Algebra.adjoin R s)
 
 end HopfAlgebra
 
