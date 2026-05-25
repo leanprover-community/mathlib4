@@ -253,6 +253,8 @@ noncomputable abbrev ofAlgHomOp (antipode : A →ₐ[R] Aᵐᵒᵖ)
   mul_antipode_rTensor_comul := mul_antipode_rTensor_comul
   mul_antipode_lTensor_comul := mul_antipode_lTensor_comul
 
+/-- Upgrade a commutative bialgebra to a Hopf algebra by specifying the antipode `A →ₐ[R] A`
+with appropriate conditions. -/
 noncomputable abbrev ofAlgHom {A : Type*} [CommSemiring A] [Bialgebra R A]
     (antipode : A →ₐ[R] A)
     (mul_antipode_rTensor_comul :
