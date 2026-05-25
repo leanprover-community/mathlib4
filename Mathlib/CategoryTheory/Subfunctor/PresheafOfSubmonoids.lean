@@ -1,3 +1,8 @@
+/-
+Copyright (c) 2026 John Rozmarynowycz. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: John Rozmarynowycz
+-/
 module
 
 public import Mathlib.Algebra.Category.MonCat.Limits
@@ -6,12 +11,12 @@ public import Mathlib.CategoryTheory.Sites.Sheaf
 public import Mathlib.Combinatorics.Quiver.ReflQuiver
 public import Mathlib.Order.CompletePartialOrder
 
-/-
+/-!
 
 ## Presheaf Of Submonoids
 
 Given a presheaf of monoids `R`, we define a presheaf of submonoids. We also define
-a sheaf of monoids when `R` is a sheaf.
+a sheaf of submonoids when `R` is a sheaf.
 
 -/
 
