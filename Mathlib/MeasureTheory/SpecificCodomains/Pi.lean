@@ -24,8 +24,8 @@ variable {X : Type*} {mX : MeasurableSpace X} {μ : Measure X} {p : ℝ≥0∞}
 
 section Pi
 
-variable {ι : Type*} [Fintype ι] {E : ι → Type*} [∀ i, NormedAddCommGroup (E i)]
-    {f : X → Π i, E i}
+variable {ι : Type*} [Fintype ι] {E : ι → Type*} [∀ i, AddCommGroup (E i)]
+  [∀ i, NormedAddCommGroup (E i)] {f : X → Π i, E i}
 
 lemma memLp_pi_iff : MemLp f p μ ↔ ∀ i, MemLp (f · i) p μ where
   mp hf i := (LipschitzWith.eval (α := E) i).comp_memLp rfl hf
@@ -54,7 +54,8 @@ end Pi
 
 section Prod
 
-variable {E F : Type*} [NormedAddCommGroup E] [NormedAddCommGroup F] {f : X → E × F}
+variable {E F : Type*} [AddCommGroup E] [NormedAddCommGroup E] [AddCommGroup F]
+  [NormedAddCommGroup F] {f : X → E × F}
 
 lemma memLp_prod_iff :
     MemLp f p μ ↔ MemLp (fun x ↦ (f x).fst) p μ ∧ MemLp (fun x ↦ (f x).snd) p μ where
