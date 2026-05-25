@@ -85,7 +85,7 @@ instance pCore_normal : (pCore p G).Normal :=
 /-- The indexing family of normal `p`-subgroups is directed under `≤`:
 for any two normal `p`-subgroups, their join is again a normal
 `p`-subgroup. -/
-theorem directed_normal_isPGroup :
+theorem directed_pCore :
     Directed (· ≤ ·)
       (fun N : {N : Subgroup G // N.Normal ∧ IsPGroup p N} => (N : Subgroup G)) := by
   rintro ⟨N₁, h₁N, h₁P⟩ ⟨N₂, h₂N, h₂P⟩
@@ -99,7 +99,7 @@ theorem directed_normal_isPGroup :
 already lies in one of them. -/
 theorem isPGroup_pCore : IsPGroup p (pCore p G) := by
   intro ⟨x, hx⟩
-  obtain ⟨N, hxN⟩ := (mem_iSup_of_directed directed_normal_isPGroup).mp hx
+  obtain ⟨N, hxN⟩ := (mem_iSup_of_directed directed_pCore).mp hx
   obtain ⟨k, hk⟩ := N.2.2 ⟨x, hxN⟩
   refine ⟨k, ?_⟩
   ext
@@ -115,7 +115,7 @@ theorem normal_le_pCore {N : Subgroup G} [hN : N.Normal] :
 `pCore p G` iff it lies in some normal `p`-subgroup of `G`. -/
 theorem mem_pCore_iff {x : G} :
     x ∈ pCore p G ↔ ∃ N : Subgroup G, N.Normal ∧ IsPGroup p N ∧ x ∈ N := by
-  rw [pCore, mem_iSup_of_directed directed_normal_isPGroup]
+  rw [pCore, mem_iSup_of_directed directed_pCore]
   exact ⟨fun ⟨N, hxN⟩ => ⟨N, N.2.1, N.2.2, hxN⟩,
     fun ⟨N, hN, hP, hxN⟩ => ⟨⟨N, hN, hP⟩, hxN⟩⟩
 
