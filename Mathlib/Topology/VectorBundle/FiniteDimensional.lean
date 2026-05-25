@@ -18,7 +18,7 @@ open Bundle FiberBundle
 variable (R : Type*) {B : Type*} (F : Type*) (E : B → Type*)
   [NontriviallyNormedField R] [TopologicalSpace B]
   [TopologicalSpace (TotalSpace F E)]
-  [NormedAddCommGroup F] [NormedSpace R F]
+  [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace R F]
   [(x : B) → TopologicalSpace (E x)] [FiberBundle F E]
   [(x : B) → AddCommGroup (E x)] [(x : B) → Module R (E x)] [VectorBundle R F E]
 
