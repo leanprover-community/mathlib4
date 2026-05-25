@@ -21,7 +21,7 @@ open NormedSpace
 
 open scoped Real NNReal RealInnerProductSpace
 
-variable {V : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V]
+variable {V : Type*} [AddCommGroup V] [NormedAddCommGroup V] [InnerProductSpace ℝ V]
 
 namespace InnerProductGeometry
 
@@ -282,8 +282,8 @@ end InnerProductGeometry
 
 namespace EuclideanGeometry
 
-variable {V P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
-  [NormedAddTorsor V P]
+variable {V P : Type*} [AddCommGroup V] [NormedAddCommGroup V] [InnerProductSpace ℝ V]
+  [MetricSpace P] [NormedAddTorsor V P]
 
 /-- **Triangle inequality** for angles in Euclidean geometry. -/
 public theorem angle_le_angle_add_angle (p p₁ p₂ p₃ : P) : ∠ p₁ p p₃ ≤ ∠ p₁ p p₂ + ∠ p₂ p p₃ :=
