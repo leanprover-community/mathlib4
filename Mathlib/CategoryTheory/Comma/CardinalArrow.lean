@@ -112,4 +112,13 @@ lemma hasCardinalLT_of_hasCardinalLT_arrow
     HasCardinalLT C κ :=
   h.of_injective (fun X ↦ Arrow.mk (𝟙 X)) (fun _ _ h ↦ congr_arg Comma.left h)
 
+lemma hasCardinalLT_arrow_iff_of_isThin (C : Type u) [Category.{v} C]
+    [Quiver.IsThin C] (κ : Cardinal.{w}) (hκ : Cardinal.aleph0 ≤ κ) :
+    HasCardinalLT (Arrow C) κ ↔ HasCardinalLT C κ :=
+  ⟨hasCardinalLT_of_hasCardinalLT_arrow, fun h ↦
+    (hasCardinalLT_prod hκ h h).of_injective (fun f ↦ (f.left, f.right))
+      (fun f g h ↦
+        Arrow.ext (congr_arg _root_.Prod.fst h) (congr_arg _root_.Prod.snd h)
+          (by subsingleton))⟩
+
 end CategoryTheory

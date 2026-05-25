@@ -179,14 +179,14 @@ lemma generator_le_isCardinalPresentable [LocallySmall.{w} C] :
 variable [IsCardinalAccessibleCategory C κ₁]
 
 def prop (_ : κ₁ < κ₂) (J : Type w) [PartialOrder J] (A : Set J) : Prop :=
-  IsCardinalFiltered (Subtype A) κ₁ ∧ HasCardinalLT (Subtype A) κ₂
+  IsCardinalFiltered A κ₁ ∧ HasCardinalLT A κ₂
 
 variable {C} {X : C} {J : Type w} [PartialOrder J]
   (p : (isCardinalPresentable C κ₁).ColimitOfShape J X)
 
 instance (A : Subtype (prop hκ J)) :
     HasColimit ((Subtype.mono_coe A.val).functor ⋙ p.diag) := by
-  have := A.prop.1
+  have : IsCardinalFiltered (Subtype A.val) κ₁ := A.prop.1
   infer_instance
 
 variable {hκ}
@@ -219,7 +219,7 @@ lemma colimit.ι_map {A₁ A₂ : Subtype (prop hκ J)} (hA : A₁ ≤ A₂) (j 
   colimit.ι_desc ..
 
 omit [Fact κ₂.IsRegular] in
-@[ext high]
+@[ext]
 lemma colimit.hom_ext {A : Subtype (prop hκ J)} {T : C} {φ₁ φ₂ : colimit p A ⟶ T}
     (h : ∀ (j : J) (hj : j ∈ A.val), colimit.ι p A j hj ≫ φ₁ = colimit.ι p A j hj ≫ φ₂) :
     φ₁ = φ₂ := by
@@ -258,10 +258,19 @@ noncomputable def cocone : Cocone (functor hκ p) where
   pt := X
   ι.app j := colimit.π p j
 
-def isColimit [IsCardinalFiltered J κ₁] : IsColimit (cocone hκ p) := sorry
+def isColimit [IsCardinalFiltered J κ₁] : IsColimit (cocone hκ p) where
+  desc := sorry
+  fac := sorry
+  uniq := sorry
 
-instance [IsCardinalFiltered J κ₁] : IsCardinalFiltered (Subtype (prop hκ J)) κ₂ := by
-  sorry
+include hκ' in
+lemma isCardinalFiltered_subtype_prop [IsCardinalFiltered J κ₁] :
+    IsCardinalFiltered (Subtype (prop hκ J)) κ₂ :=
+  isCardinalFiltered_preorder _ _ (fun K f hK ↦ by
+    rw [← hasCardinalLT_iff_cardinal_mk_lt] at hK
+    obtain ⟨B, hB₁, hB₂, hB₃⟩ := hκ' (⋃ (k : K), (f k).val)
+      (hasCardinalLT_iUnion _ hK (fun k ↦ (f k).prop.2))
+    exact ⟨⟨B, hB₂, hB₃⟩, fun k ↦ (Set.subset_iUnion _ k).trans hB₁⟩)
 
 variable (C) in
 include hκ hκ' in
@@ -276,17 +285,15 @@ lemma isCardinalFilteredGenerator :
         obtain ⟨J₀, _, _, ⟨p₀⟩⟩ := hκ₁.exists_colimitsOfShape X
         obtain ⟨J, _, _, F, _⟩ := IsCardinalFiltered.exists_cardinal_directed J₀ κ₁
         exact ⟨_, _, inferInstance, ⟨p₀.reindex F⟩⟩
-    refine ⟨Subtype (prop hκ J), inferInstance, inferInstance,
+    refine ⟨Subtype (prop hκ J), inferInstance, isCardinalFiltered_subtype_prop _ hκ',
       ⟨{ diag := _, ι := _, isColimit := isColimit hκ p, prop_diag_obj A := ?_ }⟩⟩
     have : (generator κ₁ κ₂ C).IsClosedUnderColimitsOfShape (Subtype A.val) := by
       apply ObjectProperty.isClosedUnderColimitsOfShape_colimitsCardinalClosure
-      have := A.prop.2
-      have := @hκ'
-      sorry
+      rw [hasCardinalLT_arrow_iff_of_isThin _ _ (IsRegular.aleph0_le Fact.out)]
+      exact A.prop.2
     exact ObjectProperty.prop_colimit _ _
       (fun ⟨a, ha⟩ ↦ ObjectProperty.le_colimitsCardinalClosure _ _ _
         (p.prop_diag_obj a))
-
 
 end isCardinalAccessible
 
