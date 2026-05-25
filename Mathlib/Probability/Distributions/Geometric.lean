@@ -97,7 +97,7 @@ instance isProbabilityMeasure_geometricMeasure :
 
 section Integral
 
-variable {E : Type*} [NormedAddCommGroup E] {f : ℕ → E}
+variable {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] {f : ℕ → E}
 
 lemma integrable_geometricMeasure_iff (hp : p ≠ 0) :
     Integrable f (geometricMeasure p) ↔ Summable (fun n ↦ (1 - p : ℝ) ^ n * p * ‖f n‖) := by
