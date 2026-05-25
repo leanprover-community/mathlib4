@@ -170,6 +170,7 @@ lemma Functor.isContinuous_of_coverPreserving (hF₁ : CompatiblePreserving.{max
       rintro Y _ ⟨Z, g, h, hg, rfl⟩
       simpa using congrArg _ ((hy₁ g hg).trans (hy₂ g hg).symm)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- If `C` has pullbacks and `F : C ⥤ D` preserves pullbacks, any cover preserving
 functor preserves all `1`-hypercovers. -/
 lemma Functor.PreservesOneHypercovers.of_coverPreserving [HasPullbacks C]
