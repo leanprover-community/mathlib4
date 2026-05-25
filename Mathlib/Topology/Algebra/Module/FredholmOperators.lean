@@ -19,22 +19,24 @@ public import Mathlib.Topology.Homeomorph.Defs
 
 section FindHome
 
-lemma sum_neg_one_pow_eq_zero_of_telescope {n : ℕ} (d : Fin (n + 3) → ℤ) (r : Fin (n + 2) → ℤ)
-    (h_first : d 0 = r 0) (h_mid : ∀ i : Fin (n + 1), d i.succ.castSucc = r i.castSucc + r i.succ)
-    (h_last : d (Fin.last _) = r (Fin.last _)) : ∑ i, (-1) ^ i.val * d i = 0 := by
-  have h_spl1 : ∑ i : Fin (n + 3), (-1 : ℤ) ^ (i.val) * (d i) = (-1 : ℤ) ^ 0 * (d 0) +
-    ∑ i : Fin (n + 1), (-1 : ℤ) ^ (i.val + 1) * (d (Fin.succ (Fin.castSucc i))) +
-      (-1 : ℤ) ^ (n + 2) * (d (Fin.last (n + 2))) := by
-    have h_spl2 : ∑ i : Fin (n + 3), (-1 : ℤ) ^ (i.val) * (d i) = (-1 : ℤ) ^ 0 * (d 0) +
-      ∑ i : Fin (n + 2), (-1 : ℤ) ^ (i.val + 1) * (d (Fin.succ i)) := by
+lemma sum_neg_one_pow_eq_zero_of_telescope {n : ℕ} (d : Fin (n + 2) → ℤ) (r : Fin (n + 1) → ℤ)
+    (h_first : d 0 = r 0)
+    (h_mid : ∀ i : Fin n, d i.succ.castSucc = r i.castSucc + r i.succ)
+    (h_last : d (Fin.last _) = r (Fin.last _)) :
+    ∑ i, (-1) ^ i.val * d i = 0 := by
+  have h_spl1 : ∑ i : Fin (n + 2), (-1 : ℤ) ^ (i.val) * (d i) = (-1 : ℤ) ^ 0 * (d 0) +
+    ∑ i : Fin n, (-1 : ℤ) ^ (i.val + 1) * (d (Fin.succ (Fin.castSucc i))) +
+      (-1 : ℤ) ^ (n + 1) * (d (Fin.last (n + 1))) := by
+    have h_spl2 : ∑ i : Fin (n + 2), (-1 : ℤ) ^ (i.val) * (d i) = (-1 : ℤ) ^ 0 * (d 0) +
+      ∑ i : Fin (n + 1), (-1 : ℤ) ^ (i.val + 1) * (d (Fin.succ i)) := by
         rw [Fin.sum_univ_succ]
         aesop
     simp only [h_spl2, Int.reduceNeg, pow_zero, one_mul, Fin.sum_univ_castSucc, Fin.val_castSucc,
       Fin.val_last, Fin.succ_last, Nat.succ_eq_add_one]
     ring
-  have h_middle : ∑ i : Fin (n + 1), (-1 : ℤ) ^ (i.val + 1) * ((r (Fin.castSucc i)) +
-    (r (Fin.succ i))) = ∑ i : Fin (n + 1), (-1 : ℤ) ^ (i.val + 1) * (r (Fin.castSucc i)) +
-      ∑ i : Fin (n + 1), (-1 : ℤ) ^ (i.val + 1) * (r (Fin.succ i)) := by
+  have h_middle : ∑ i : Fin n, (-1 : ℤ) ^ (i.val + 1) * ((r (Fin.castSucc i)) +
+    (r (Fin.succ i))) = ∑ i : Fin n, (-1 : ℤ) ^ (i.val + 1) * (r (Fin.castSucc i)) +
+      ∑ i : Fin n, (-1 : ℤ) ^ (i.val + 1) * (r (Fin.succ i)) := by
     simp only [mul_add, Finset.sum_add_distrib]
   have := Fin.sum_univ_castSucc fun i ↦ (-1 : ℤ) ^ (i : ℕ) * r i
   have := Fin.sum_univ_succ fun i ↦ (-1 : ℤ) ^ (i : ℕ) * r i
@@ -43,32 +45,74 @@ lemma sum_neg_one_pow_eq_zero_of_telescope {n : ℕ} (d : Fin (n + 3) → ℤ) (
 
 open Function Module
 
-lemma Function.Exact.finrank_range_add_finrank_range {k V₀ V₁ V₂ : Type*} [Field k]
-    [AddCommGroup V₀] [Module k V₀] [AddCommGroup V₁] [Module k V₁] [FiniteDimensional k V₁]
-    [AddCommGroup V₂] [Module k V₂] {f : V₀ →ₗ[k] V₁} {g : V₁ →ₗ[k] V₂} (h : Function.Exact f g) :
-    finrank k (LinearMap.range f) + finrank k (LinearMap.range g) = (finrank k V₁ : ℤ) := by
-  have h_ker_eq_range : LinearMap.ker g = LinearMap.range f := by
-    simp_all [SetLike.ext_iff, LinearMap.mem_ker, LinearMap.mem_range, LinearMap.exact_iff]
-  convert congr_arg Nat.cast (LinearMap.finrank_range_add_finrank_ker g)
-  rw [Nat.cast_add, h_ker_eq_range]
-  ring
-
-lemma Function.Exact.sum_neg_one_pow_finrank_eq_zero {n : ℕ} {k : Type*}
-    (V : Fin (n + 3) → Type*) [Field k] [∀ i, AddCommGroup (V i)] [∀ i, Module k (V i)]
-    [∀ i, FiniteDimensional k (V i)] (f : (i : Fin (n + 2)) → V i.castSucc →ₗ[k] V i.succ)
-    (inj : Function.Injective (f 0)) (h_exact : ∀ i : Fin (n + 1), Exact (f i.castSucc) (f i.succ))
-    (surj : Function.Surjective (f (Fin.last _))) : ∑ i, (-1) ^ i.val * (finrank k (V i) : ℤ) = 0
-      := by
+lemma Module.sum_neg_one_pow_finrank_eq_zero_of_exact {n : ℕ} {k : Type*} (V : Fin (n + 2) → Type*)
+    [Field k] [∀ i, AddCommGroup (V i)] [∀ i, Module k (V i)] [∀ i, FiniteDimensional k (V i)]
+    (f : (i : Fin (n + 1)) → V i.castSucc →ₗ[k] V i.succ)
+    (inj : Injective (f 0))
+    (h_exact : ∀ i : Fin n, Exact (f i.castSucc) (f i.succ))
+    (surj : Surjective (f (Fin.last _))) :
+    ∑ i, (-1) ^ i.val * (finrank k (V i) : ℤ) = 0 := by
   apply sum_neg_one_pow_eq_zero_of_telescope _ _ _ _ _
   · use fun i ↦ finrank k <| LinearMap.range (f i)
   · exact ((fun {m n} ↦ Int.ofNat_inj.mpr) <| LinearMap.finrank_range_of_inj inj).symm
-  · exact fun i ↦ (Function.Exact.finrank_range_add_finrank_range (h_exact i)).symm
+  · intro i
+    grind [(h_exact i).linearMap_ker_eq, (f i.succ).finrank_range_add_finrank_ker]
   · rw [LinearMap.range_eq_top.mpr surj, finrank_top]
     rfl
 
--- Can we have a simproc write this using `Module.sum_neg_one_pow_finrank_eq_zero_of_exact`
--- Note the key point that the universes of the `Vᵢ` are allowed be different here.
-open Function Module in
+universe u
+
+-- Still not universe polymorphic; exposes some annoying typeclass wrangling.
+lemma Module.sum_neg_one_pow_finrank_eq_zero_of_exact_six' {k V₀ V₁ V₂ V₃ V₄ V₅ : Type u} [Field k]
+    [AddCommGroup V₀] [Module k V₀] [FiniteDimensional k V₀]
+    [AddCommGroup V₁] [Module k V₁] [FiniteDimensional k V₁]
+    [AddCommGroup V₂] [Module k V₂] [FiniteDimensional k V₂]
+    [AddCommGroup V₃] [Module k V₃] [FiniteDimensional k V₃]
+    [AddCommGroup V₄] [Module k V₄] [FiniteDimensional k V₄]
+    [AddCommGroup V₅] [Module k V₅] [FiniteDimensional k V₅]
+    (f₀ : V₀ →ₗ[k] V₁) (f₁ : V₁ →ₗ[k] V₂) (f₂ : V₂ →ₗ[k] V₃) (f₃ : V₃ →ₗ[k] V₄) (f₄ : V₄ →ₗ[k] V₅)
+    (inj : Injective f₀)
+    (exact₁ : Exact f₀ f₁)
+    (exact₂ : Exact f₁ f₂)
+    (exact₃ : Exact f₂ f₃)
+    (exact₄ : Exact f₃ f₄)
+    (surj : Surjective f₄) :
+    (finrank k V₀ : ℤ) - finrank k V₁ + finrank k V₂ -
+      finrank k V₃ + finrank k V₄ - finrank k V₅ = 0 := by
+  letI Vs := ![V₀, V₁, V₂, V₃, V₄, V₅]
+  letI _i1 (i : Fin 6) : AddCommGroup (Vs i) := by unfold Vs; exact match i with
+  | 0 => inferInstanceAs (AddCommGroup V₀)
+  | 1 => inferInstanceAs (AddCommGroup V₁)
+  | 2 => inferInstanceAs (AddCommGroup V₂)
+  | 3 => inferInstanceAs (AddCommGroup V₃)
+  | 4 => inferInstanceAs (AddCommGroup V₄)
+  | 5 => inferInstanceAs (AddCommGroup V₅)
+  letI _i2 (i : Fin 6) : Module k (Vs i) := by unfold _i1; exact match i with
+  | 0 => inferInstanceAs (Module k V₀)
+  | 1 => inferInstanceAs (Module k V₁)
+  | 2 => inferInstanceAs (Module k V₂)
+  | 3 => inferInstanceAs (Module k V₃)
+  | 4 => inferInstanceAs (Module k V₄)
+  | 5 => inferInstanceAs (Module k V₅)
+  have (i : Fin 6) : FiniteDimensional k (Vs i) := match i with
+  | 0 => inferInstanceAs (FiniteDimensional k V₀)
+  | 1 => inferInstanceAs (FiniteDimensional k V₁)
+  | 2 => inferInstanceAs (FiniteDimensional k V₂)
+  | 3 => inferInstanceAs (FiniteDimensional k V₃)
+  | 4 => inferInstanceAs (FiniteDimensional k V₄)
+  | 5 => inferInstanceAs (FiniteDimensional k V₅)
+  letI fs (i : Fin 5) : Vs i.castSucc →ₗ[k] Vs i.succ := match i with
+  | 0 => f₀
+  | 1 => f₁
+  | 2 => f₂
+  | 3 => f₃
+  | 4 => f₄
+  simpa [Fin.sum_univ_six] using Module.sum_neg_one_pow_finrank_eq_zero_of_exact
+    ![V₀, V₁, V₂, V₃, V₄, V₅] fs inj
+    (fun i ↦ by fin_cases i; exacts [exact₁, exact₂, exact₃, exact₄]) surj
+
+-- This is what we actually need (I guess we should do some `ULift`ing).
+-- Would be nice to obtain via a `simproc`.
 lemma Module.sum_neg_one_pow_finrank_eq_zero_of_exact_six {k V₀ V₁ V₂ V₃ V₄ V₅ : Type*} [Field k]
     [AddCommGroup V₀] [Module k V₀] [FiniteDimensional k V₀]
     [AddCommGroup V₁] [Module k V₁] [FiniteDimensional k V₁]
@@ -84,10 +128,11 @@ lemma Module.sum_neg_one_pow_finrank_eq_zero_of_exact_six {k V₀ V₁ V₂ V₃
     (exact₄ : Exact f₃ f₄)
     (surj : Surjective f₄) :
     (finrank k V₀ : ℤ) - finrank k V₁ + finrank k V₂ -
-    finrank k V₃ + finrank k V₄ - finrank k V₅ = 0 := by
+      finrank k V₃ + finrank k V₄ - finrank k V₅ = 0 := by
   sorry
 
 end FindHome
+
 public noncomputable section FredholmOperators
 
 variable {𝕜 : Type*} [NormedField 𝕜]
