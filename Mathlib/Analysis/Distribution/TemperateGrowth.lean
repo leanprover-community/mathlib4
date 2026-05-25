@@ -120,7 +120,7 @@ lemma _root_.HasCompactSupport.hasTemperateGrowth {f : E → F} (h₁ : HasCompa
   refine ⟨h₂, fun n ↦ ?_⟩
   set g := fun x ↦ ‖iteratedFDeriv ℝ n f x‖
   have hg : Continuous g := (h₂.continuous_iteratedFDeriv <| mod_cast le_top).norm
-  obtain ⟨x₀, hx₀⟩ := hg.exists_forall_ge_of_hasCompactSupport ((h₁.iteratedFDeriv (𝕜 := ℝ) _).norm)
+  obtain ⟨x₀, hx₀⟩ := hg.exists_forall_ge_of_hasCompactSupport ((h₁.iteratedFDeriv _).norm)
   refine ⟨0, g x₀, fun x ↦ ?_⟩
   simpa using hx₀ x
 
