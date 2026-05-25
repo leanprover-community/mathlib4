@@ -116,7 +116,7 @@ theorem rangeRestrict_surjective (f : G →* N) : Function.Surjective f.rangeRes
 
 @[to_additive (attr := simp)]
 lemma rangeRestrict_injective_iff {f : G →* N} : Injective f.rangeRestrict ↔ Injective f := by
-  convert Set.injective_codRestrict _
+  convert! Set.injective_codRestrict _
 
 @[to_additive]
 theorem map_range (g : N →* P) (f : G →* N) : f.range.map g = (g.comp f).range := by
@@ -558,9 +558,6 @@ theorem subgroupOf_sup {A A' B : Subgroup G} (hA : A ≤ B) (hA' : A' ≤ B) :
       (le_trans (ker_le_comap B.subtype _) le_sup_left) ?_
   simp only [subgroupOf, map_comap_eq, map_sup, range_subtype]
   rw [inf_of_le_right (sup_le hA hA'), inf_of_le_right hA', inf_of_le_right hA]
-
-@[deprecated "Use in reverse direction." (since := "2025-11-03")] alias sup_subgroupOf_eq :=
-  subgroupOf_sup
 
 @[to_additive]
 theorem codisjoint_subgroupOf_sup (H K : Subgroup G) :

@@ -468,6 +468,20 @@ theorem distribBaseChange_symm_tmul
   rw [tmul_eq_smul_one_tmul b, ← smul_tmul, smul_tmul', mul_comm]
   simp
 
+lemma cancelBaseChange_self_eq_lid :
+    cancelBaseChange R A A A N = TensorProduct.lid A (A ⊗[R] N) := by
+  ext x
+  induction x using TensorProduct.induction_on with
+  | zero => simp only [map_zero]
+  | tmul b y =>
+    induction y using TensorProduct.induction_on with
+    | zero => simp
+    | tmul a m =>
+      simp only [cancelBaseChange_tmul, lid_tmul, smul_tmul', smul_eq_mul, mul_comm]
+    | add x y hx hy =>
+      simp only [tmul_add, map_add, lid_tmul, hx, hy]
+  | add x y hx hy => simp [hx, hy]
+
 end cancelBaseChange
 
 section leftComm
@@ -866,3 +880,21 @@ lemma toBaseChange_surjective' {y : A ⊗[R] M} (hy : y ∈ p.baseChange A) :
   exact ⟨x, congr($hx)⟩
 
 end Submodule
+
+namespace TensorProduct.AlgebraTensorModule
+
+variable {R A M N : Type*} [CommSemiring R] [CommSemiring A] [Algebra R A]
+variable [AddCommGroup M] [Module R M] [AddCommGroup N] [Module A N]
+
+lemma baseChange_comp_cancelBaseChange_symm_self (f : (A ⊗[R] M) →ₗ[A] N) :
+    f.baseChange A ∘ₗ (cancelBaseChange R A A A M).symm = (TensorProduct.lid A N).symm ∘ₗ f := by
+  rw [cancelBaseChange_self_eq_lid]
+  ext x
+  simp
+
+lemma ker_baseChange_comp_cancelBaseChange_symm (f : (A ⊗[R] M) →ₗ[A] N) :
+    (f.baseChange A ∘ₗ (cancelBaseChange R A A A M).symm).ker = f.ker := by
+  rw [baseChange_comp_cancelBaseChange_symm_self, LinearMap.ker_comp,
+    LinearEquiv.ker, Submodule.comap_bot]
+
+end TensorProduct.AlgebraTensorModule
