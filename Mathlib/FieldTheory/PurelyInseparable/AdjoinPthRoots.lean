@@ -19,7 +19,7 @@ field of characteristic `p`.
 
 * `AdjoinPthRoots`: the field extension adjoining all `p`-th roots, defined as the field itself,
   with the algebra map being the frobenius map.
-* `AdjoinPthRootsPthRoot`: the `p`-th root map `k → AdjoinPthRoots k p`, mapping an element
+* `AdjoinPthRoots.root`: the `p`-th root map `k → AdjoinPthRoots k p`, mapping an element
   to its unique `p`-th root in `AdjoinPthRoots`. It is implemented as a `RingEquiv` with underlying
   identity map.
 
@@ -29,8 +29,10 @@ public section
 
 variable (k : Type*) [Field k]
 
-/-- Adjoining all `p`-th root to a field of characteristic `p`. -/
-@[nolint unusedArguments]
+/-- Adjoining all `p`-th root to a field of characteristic `p`.
+
+Note: It is defined as a typeclass synonym of the field `k` itself
+with a `k`-algebra structure given by the frobenius map. -/
 def AdjoinPthRoots := k
 
 noncomputable instance : Field (AdjoinPthRoots k) := inferInstanceAs (Field k)
