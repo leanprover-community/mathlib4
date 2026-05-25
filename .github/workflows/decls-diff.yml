@@ -128,8 +128,13 @@ jobs:
             HEAD_BRANCH="${{ github.event.workflow_run.head_branch }}"
             SHOULD_PATCH=true
           else
-            # workflow_dispatch — resolution priority:
-            #   pr_number  >  run_id  >  most-recent ci-dev/* run
+            # Resolution model for workflow_dispatch / workflow_call:
+            #   * RUN_ID  (which artifact to download as the new side):
+            #       run_id  >  ci-run found via pr_number  >  most-recent ci-dev/*
+            #   * NEW_SHA (PR head SHA, used for merge-base + stamp):
+            #       pr_number's head  >  run's head_sha
+            #   (Setting BOTH run_id AND pr_number is supported and is what
+            #    `ci_dev.yml`'s chained call does.)
             if [ -n "$INPUT_PR_NUMBER" ]; then
               NEW_SHA="$(gh pr view "$INPUT_PR_NUMBER" --repo "$REPO" \
                             --json headRefOid --jq '.headRefOid')"
@@ -137,15 +142,18 @@ jobs:
                 echo "Could not resolve head SHA for PR #$INPUT_PR_NUMBER" >&2
                 exit 1
               fi
+              HEAD_BRANCH="(PR #$INPUT_PR_NUMBER)"
+            fi
+
+            if [ -n "$INPUT_RUN_ID" ]; then
+              RUN_ID="$INPUT_RUN_ID"
+            elif [ -n "$INPUT_PR_NUMBER" ]; then
               RUN_ID="$(gh api "repos/$REPO/actions/runs?head_sha=$NEW_SHA&status=success&per_page=50" \
                           --jq '[.workflow_runs[] | select(.name == "ci")] | .[0].id // ""')"
               if [ -z "$RUN_ID" ]; then
                 echo "No successful 'ci' run found for PR #$INPUT_PR_NUMBER (head $NEW_SHA)." >&2
                 exit 1
               fi
-              HEAD_BRANCH="(PR #$INPUT_PR_NUMBER)"
-            elif [ -n "$INPUT_RUN_ID" ]; then
-              RUN_ID="$INPUT_RUN_ID"
             else
               RUN_ID="$(gh api "repos/$REPO/actions/runs?status=success&per_page=50" \
                           --jq '[.workflow_runs[]
@@ -157,7 +165,7 @@ jobs:
               fi
             fi
 
-            # If we didn't already resolve NEW_SHA via pr_number, fetch from the run.
+            # If NEW_SHA still unresolved (no pr_number given), pull it from the run.
             if [ -z "${NEW_SHA:-}" ]; then
               INFO="$(gh api "repos/$REPO/actions/runs/$RUN_ID" \
                         --jq '{sha:.head_sha, branch:.head_branch}')"
