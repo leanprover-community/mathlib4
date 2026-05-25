@@ -59,25 +59,25 @@ instance : PartialOrder (SubmonoidFunctors R) :=
   PartialOrder.lift SubmonoidFunctors.obj (fun _ _ => SubmonoidFunctors.ext)
 
 instance : CompleteLattice (SubmonoidFunctors R) where
-  sup F G :=
-    { obj U := F.obj U ⊔ G.obj U
-      map i _ := by
-        expose_names
-        simp only [Submonoid.mem_comap, Submonoid.sup_eq_closure,
-          Submonoid.mem_closure]
-        intro h T hT
-        have : (R.map i)⁻¹' (↑(F.obj V) ∪ ↑(G.obj V)) ⊆ (R.map i)⁻¹' T := by cat_disch
-        have : ((F.obj U).carrier ∪ (G.obj U).carrier) ⊆ (R.map i)⁻¹' T := by
-          simp_all only [Set.union_subset_iff, SetLike.coe_subset_coe, and_imp, Set.preimage_union]
-          obtain ⟨left, right⟩ := hT
-          obtain ⟨left_1, right_1⟩ := this
-          apply And.intro
-          · have : (F.obj U).carrier ⊆ ⇑(hom (R.map i)) ⁻¹' ↑(F.obj V).carrier :=  F.map i
-            tauto
-          · have : (G.obj U).carrier ⊆ ⇑(hom (R.map i)) ⁻¹' ↑(G.obj V).carrier :=  G.map i
-            tauto
-        exact h (Submonoid.comap (MonCat.Hom.hom (R.map i)) T) this
-         }
+  sup F G := {
+    obj U := F.obj U ⊔ G.obj U
+    map i _ := by
+      expose_names
+      simp only [Submonoid.mem_comap, Submonoid.sup_eq_closure,
+        Submonoid.mem_closure]
+      intro h T hT
+      have : (R.map i)⁻¹' (↑(F.obj V) ∪ ↑(G.obj V)) ⊆ (R.map i)⁻¹' T := by cat_disch
+      have : ((F.obj U).carrier ∪ (G.obj U).carrier) ⊆ (R.map i)⁻¹' T := by
+        simp_all only [Set.union_subset_iff, SetLike.coe_subset_coe, and_imp, Set.preimage_union]
+        obtain ⟨left, right⟩ := hT
+        obtain ⟨left_1, right_1⟩ := this
+        apply And.intro
+        · have : (F.obj U).carrier ⊆ ⇑(hom (R.map i)) ⁻¹' ↑(F.obj V).carrier :=  F.map i
+          tauto
+        · have : (G.obj U).carrier ⊆ ⇑(hom (R.map i)) ⁻¹' ↑(G.obj V).carrier :=  G.map i
+          tauto
+      exact h (Submonoid.comap (MonCat.Hom.hom (R.map i)) T) this
+    }
   le_sup_left _ _ _ := by simp
   le_sup_right _ _ _ := by simp
   sup_le F G H h₁ h₂ U := by
