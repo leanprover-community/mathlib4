@@ -9,6 +9,7 @@ public import Mathlib.CategoryTheory.ObjectProperty.ColimitsCardinalClosure
 public import Mathlib.CategoryTheory.Presentable.CardinalDirectedPoset
 public import Mathlib.CategoryTheory.Presentable.Dense
 public import Mathlib.CategoryTheory.Presentable.Directed
+public import Mathlib.Order.TransfiniteIteration
 
 /-!
 # Sharply smaller regular cardinals
@@ -61,14 +62,87 @@ lemma exists_cofinal_of_isCardinalAccessibleCategory_cardinalFilteredPoset
   convert Set.mem_singleton b
   exact Subtype.ext_iff.1 (hy' b)
 
-open CardinalFilteredPoset in
+open CardinalFilteredPoset Classical in
 lemma exists_isCardinalFiltered_set_of_exists_cofinal (h₀ : κ₁ < κ₂)
     (h : ∀ (X : Type w) (hX : HasCardinalLT X κ₂),
     ∃ (A : Set (SetCardinalLT κ₁ X)), HasCardinalLT A κ₂ ∧ IsCofinal A)
     {X : Type w} [PartialOrder X] [IsCardinalFiltered X κ₁]
     (A : Set X) (hA : HasCardinalLT A κ₂) :
     ∃ (B : Set X), A ⊆ B ∧ IsCardinalFiltered B κ₁ ∧ HasCardinalLT B κ₂ := by
-  sorry
+  have hκ₁ : κ₁.IsRegular := Fact.out
+  have hκ₂ : κ₂.IsRegular := Fact.out
+  have : NoMaxOrder κ₁.ord.ToType := noMaxOrder (hκ₁.aleph0_le)
+  choose Y hY hY' using fun (B : Set X) hB ↦ h B hB
+  have hY'' (B : Set X) (hB : HasCardinalLT B κ₂)
+      (C : SetCardinalLT κ₁ B) (hC : C ∈ Y B hB) :
+    ∃ (m : X), ∀ (b : B), b ∈ C.val → b ≤ m :=
+      ⟨IsCardinalFiltered.max (fun (c : C.val) ↦ c.val.val) C.prop,
+        fun b hb ↦ leOfHom (IsCardinalFiltered.toMax
+          (fun (c : C.val) ↦ c.val.val) C.prop ⟨_, hb⟩)⟩
+  choose m hm using hY''
+  let φ₀ (B : Set X) (hB : HasCardinalLT B κ₂) : Set X :=
+    ⋃ (C : Y B hB), Subtype.val '' C.val.val ∪ {m B hB _ C.prop}
+  have hφ₀ (B : Set X) (hB : HasCardinalLT B κ₂) {T : Type w} (f : T → B)
+      (hT : HasCardinalLT T κ₁) :
+    ∃ (m : φ₀ B hB), ∀ (t : T), f t ≤ m.val := sorry
+  let φ (B : Set X) : Set X :=
+    if hB : HasCardinalLT B κ₂ then φ₀ B hB else B
+  have φ_eq (B : Set X) (hB : HasCardinalLT B κ₂) : φ B = φ₀ B hB := dif_pos hB
+  have hφ (B : Set X) : B ≤ φ B := by
+    dsimp [φ]
+    split_ifs with hB
+    · intro b hb
+      obtain ⟨C, hC, hC'⟩ := hY' B hB ⟨{⟨b, hb⟩}, hasCardinalLT_of_finite _ _ hκ₁.aleph0_le⟩
+      refine Set.subset_iUnion _ ⟨C, hC⟩ (Or.inl ?_)
+      simp only [Set.mem_image, Subtype.exists, exists_and_right, exists_eq_right]
+      refine ⟨hb, @hC' ⟨b, hb⟩ (by simp)⟩
+    · simp
+  let : Nonempty κ₁.ord.ToType := by
+    rw [Ordinal.nonempty_toType_iff, ne_eq, ord_eq_zero]
+    exact IsRegular.ne_zero Fact.out
+  let : OrderBot κ₁.ord.ToType := WellFoundedLT.toOrderBot _
+  let s (j : κ₁.ord.ToType) : Set X := transfiniteIterate φ j A
+  have hs : Monotone s := monotone_transfiniteIterate _ _ hφ
+  have hs' (j) : HasCardinalLT (s j) κ₂ := by
+    induction j using SuccOrder.limitRecOn with
+    | isMin j hj => simpa [hj.eq_bot, s]
+    | succ j hj hj' =>
+      dsimp [s]
+      rw [transfiniteIterate_succ _ _ _ hj, φ_eq _ hj']
+      refine hasCardinalLT_iUnion _ (hY _ _)
+        (fun ⟨C, hC⟩ ↦ hasCardinalLT_union hκ₂.aleph0_le ?_
+          (hasCardinalLT_of_finite _ _ hκ₂.aleph0_le))
+      refine (C.prop.of_le h₀.le).of_injective (fun ⟨c, hc⟩ ↦ ⟨⟨c, ?_⟩, ?_⟩)
+        (fun c₁ c₂ hc ↦ ?_)
+      · simp only [Set.mem_image, Subtype.exists, exists_and_right, exists_eq_right] at hc
+        exact hc.choose
+      · simp only [Set.mem_image, Subtype.exists, exists_and_right, exists_eq_right] at hc
+        exact hc.choose_spec
+      · simpa only [Subtype.ext_iff] using hc
+    | isSuccLimit j hj hj' =>
+      dsimp [s]
+      rw [transfiniteIterate_limit _ _ _ hj, Set.iSup_eq_iUnion]
+      refine hasCardinalLT_iUnion _
+        (HasCardinalLT.of_injective ?_ _ Subtype.val_injective) (fun ⟨k, hk⟩ ↦ hj' _ hk)
+      simpa [hasCardinalLT_iff_cardinal_mk_lt]
+  refine ⟨⋃ j, s j, ?_, ?_, ?_⟩
+  · exact subset_trans (by simp [s]) (Set.subset_iUnion _ ⊥)
+  · suffices ∀ ⦃K : Type w⦄ (j : κ₁.ord.ToType) (f : K → s j) (hK : HasCardinalLT K κ₁),
+        ∃ (x : s (Order.succ j)), ∀ (k : K), (f k).val ≤ x.val by
+      refine isCardinalFiltered_preorder _ _ (fun K f hK ↦ ?_)
+      rw [← hasCardinalLT_iff_cardinal_mk_lt] at hK
+      have (k : K) : ∃ (j : κ₁.ord.ToType), (f k).val ∈ s j := by
+        simpa only [Set.mem_iUnion] using (f k).prop
+      choose a ha using this
+      obtain ⟨⟨z, hz⟩, hz'⟩ := this (IsCardinalFiltered.max a hK) (fun k ↦
+        ⟨(f k).val, hs (leOfHom (IsCardinalFiltered.toMax a hK k)) (ha k)⟩) hK
+      exact ⟨⟨z, Set.subset_iUnion _ _ hz⟩, hz'⟩
+    intro K j f hK
+    obtain ⟨⟨x, hx⟩, hx'⟩ := hφ₀ _ (hs' _) f hK
+    refine ⟨⟨x, ?_⟩, hx'⟩
+    dsimp [s]
+    rwa [transfiniteIterate_succ _ _ _ (not_isMax j), φ_eq _ (hs' _)]
+  · exact hasCardinalLT_iUnion _ (by simpa [hasCardinalLT_iff_cardinal_mk_lt]) hs'
 
 namespace SharplyLT
 
