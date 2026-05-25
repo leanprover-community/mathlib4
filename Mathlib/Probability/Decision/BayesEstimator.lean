@@ -15,10 +15,10 @@ public import Mathlib.Probability.Kernel.Posterior
 ## Main definitions
 
 * `IsBayesEstimator`: an estimator is a Bayes estimator if it attains the Bayes risk for the prior.
-* `IsGenBayesEstimator`: a measurable function `f : 𝓧 → 𝓨` is a generalized Bayes estimator
+* `IsArgminEstimator`: a measurable function `f : 𝓧 → 𝓨` is a generalized Bayes estimator
   with respect to the prior `π` if for `(P ∘ₘ π)`-almost every `x` it has
   the form `x ↦ argmin_y P†π(x)[θ ↦ ℓ θ y]`.
-* `HasGenBayesEstimator`: class that states that estimation problem admits a generalized Bayes
+* `HasArgminEstimator`: class that states that estimation problem admits a generalized Bayes
   estimator with respect to the prior.
 
 ## Main statements
@@ -27,9 +27,9 @@ public import Mathlib.Probability.Kernel.Posterior
   from below by the integral over the data (with distribution `P ∘ₘ π`) of the infimum over the
   possible predictions `y` of the posterior loss `∫⁻ θ, ℓ θ y ∂((P†π) x)`:
   `∫⁻ x, ⨅ y : 𝓨, ∫⁻ θ, ℓ θ y ∂((P†π) x) ∂(P ∘ₘ π) ≤ bayesRisk ℓ P π`
-* `IsGenBayesEstimator.isBayesEstimator`: a generalized Bayes estimator is a Bayes estimator.
+* `IsArgminEstimator.isBayesEstimator`: a generalized Bayes estimator is a Bayes estimator.
   That is, it minimizes the Bayesian risk.
-* `bayesRisk_eq_of_hasGenBayesEstimator`: if the estimation problem admits a generalized Bayes
+* `bayesRisk_eq_of_hasArgminEstimator`: if the estimation problem admits a generalized Bayes
 estimator, then the Bayesian risk attains the risk lower bound
 `∫⁻ x, ⨅ y, ∫⁻ θ, ℓ θ y ∂(P†π) x ∂(P ∘ₘ π)`.
 
@@ -97,23 +97,23 @@ def IsBayesEstimator (ℓ : Θ → 𝓨 → ℝ≥0∞) (P : Kernel Θ 𝓧) (κ
 
 variable [StandardBorelSpace Θ] [Nonempty Θ] {f : 𝓧 → 𝓨} [IsFiniteKernel P] [IsFiniteMeasure π]
 
-/-- We say that a measurable function `f : 𝓧 → 𝓨` is a generalized Bayes estimator
+/-- We say that a measurable function `f : 𝓧 → 𝓨` is an argmin estimator
 with respect to the prior `π` if for `(P ∘ₘ π)`-almost every `x` it is of
 the form `x ↦ argmin_y P†π(x)[θ ↦ ℓ θ y]`. -/
-structure IsGenBayesEstimator {𝓨 : Type*} [MeasurableSpace 𝓨]
+structure IsArgminEstimator {𝓨 : Type*} [MeasurableSpace 𝓨]
     (ℓ : Θ → 𝓨 → ℝ≥0∞) (P : Kernel Θ 𝓧) [IsFiniteKernel P] (f : 𝓧 → 𝓨)
     (π : Measure Θ) [IsFiniteMeasure π] : Prop where
   measurable : Measurable f
   property : ∀ᵐ x ∂(P ∘ₘ π), ∫⁻ θ, ℓ θ (f x) ∂(P†π) x = ⨅ y, ∫⁻ θ, ℓ θ y ∂(P†π) x
 
-/-- Given a generalized Bayes estimator `f`, we can define a deterministic kernel. -/
+/-- Given an argmin estimator `f`, we can define a deterministic kernel. -/
 noncomputable
-abbrev IsGenBayesEstimator.kernel (h : IsGenBayesEstimator ℓ P f π) : Kernel 𝓧 𝓨 :=
+abbrev IsArgminEstimator.kernel (h : IsArgminEstimator ℓ P f π) : Kernel 𝓧 𝓨 :=
   Kernel.deterministic f h.measurable
 
-/-- The risk of a generalized Bayes estimator is the risk lower bound
+/-- The risk of an argmin estimator is the risk lower bound
 `∫⁻ x, ⨅ z, ∫⁻ θ, ℓ θ z ∂(P†π) x ∂(P ∘ₘ π)`. -/
-lemma IsGenBayesEstimator.avgRisk_eq_lintegral_iInf (hf : IsGenBayesEstimator ℓ P f π)
+lemma IsArgminEstimator.avgRisk_eq_lintegral_iInf (hf : IsArgminEstimator ℓ P f π)
     (hl : Measurable (Function.uncurry ℓ)) :
     avgRisk ℓ P hf.kernel π = ∫⁻ x, ⨅ y, ∫⁻ θ, ℓ θ y ∂(P†π) x ∂(P ∘ₘ π) := by
   rw [avgRisk_eq_lintegral_lintegral_lintegral hl]
@@ -122,8 +122,8 @@ lemma IsGenBayesEstimator.avgRisk_eq_lintegral_iInf (hf : IsGenBayesEstimator �
   rwa [Kernel.deterministic_apply,
     lintegral_dirac' _ (Measurable.lintegral_prod_left (by fun_prop))]
 
-/-- A generalized Bayes estimator is a Bayes estimator: that is, it minimizes the Bayesian risk. -/
-lemma IsGenBayesEstimator.isBayesEstimator (hf : IsGenBayesEstimator ℓ P f π)
+/-- An argmin estimator is a Bayes estimator: that is, it minimizes the Bayesian risk. -/
+lemma IsArgminEstimator.isBayesEstimator (hf : IsArgminEstimator ℓ P f π)
     (hl : Measurable (Function.uncurry ℓ)) :
     IsBayesEstimator ℓ P hf.kernel π := by
   simp_rw [IsBayesEstimator]
@@ -132,34 +132,38 @@ lemma IsGenBayesEstimator.isBayesEstimator (hf : IsGenBayesEstimator ℓ P f π)
     exact lintegral_iInf_posterior_le_bayesRisk hl _ _
   · exact bayesRisk_le_avgRisk _ _ _ _
 
-/-- The estimation problem admits a generalized Bayes estimator with respect to the prior `π`. -/
-class HasGenBayesEstimator {𝓨 : Type*} [MeasurableSpace 𝓨]
+-- TODO: delete this and replace it in theorems with hypotheses on `𝓧` and `𝓨`
+-- once we have measurable selection theorems?
+/-- The estimation problem admits an argmin estimator with respect to the prior `π`.
+
+That is, we can choose the argmin of the posterior expected loss in a measurable way. -/
+class HasArgminEstimator {𝓨 : Type*} [MeasurableSpace 𝓨]
     (ℓ : Θ → 𝓨 → ℝ≥0∞) (P : Kernel Θ 𝓧) [IsFiniteKernel P] (π : Measure Θ) [IsFiniteMeasure π] :
     Prop where
-  exists_isGenBayesEstimator : ∃ f : 𝓧 → 𝓨, IsGenBayesEstimator ℓ P f π
+  exists_isArgminEstimator : ∃ f : 𝓧 → 𝓨, IsArgminEstimator ℓ P f π
 
 noncomputable
-def HasGenBayesEstimator.estimator (h : HasGenBayesEstimator ℓ P π) : 𝓧 → 𝓨 :=
-  h.exists_isGenBayesEstimator.choose
+def HasArgminEstimator.estimator (h : HasArgminEstimator ℓ P π) : 𝓧 → 𝓨 :=
+  h.exists_isArgminEstimator.choose
 
-lemma HasGenBayesEstimator.isGenBayesEstimator (h : HasGenBayesEstimator ℓ P π) :
-    IsGenBayesEstimator ℓ P h.estimator π :=
-  h.exists_isGenBayesEstimator.choose_spec
+lemma HasArgminEstimator.isArgminEstimator (h : HasArgminEstimator ℓ P π) :
+    IsArgminEstimator ℓ P h.estimator π :=
+  h.exists_isArgminEstimator.choose_spec
 
 /-- If the estimation problem admits a generalized Bayes estimator, then the Bayesian risk
 attains the risk lower bound `∫⁻ x, ⨅ y, ∫⁻ θ, ℓ θ y ∂((P†π) x) ∂(P ∘ₘ π)`. -/
-lemma bayesRisk_eq_of_hasGenBayesEstimator
-    (hl : Measurable (Function.uncurry ℓ)) [h : HasGenBayesEstimator ℓ P π] :
+lemma bayesRisk_eq_of_hasArgminEstimator
+    (hl : Measurable (Function.uncurry ℓ)) [h : HasArgminEstimator ℓ P π] :
     bayesRisk ℓ P π = ∫⁻ x, ⨅ y, ∫⁻ θ, ℓ θ y ∂((P†π) x) ∂(P ∘ₘ π) := by
-  rw [← h.isGenBayesEstimator.isBayesEstimator hl,
-    h.isGenBayesEstimator.avgRisk_eq_lintegral_iInf hl]
+  rw [← h.isArgminEstimator.isBayesEstimator hl,
+    h.isArgminEstimator.avgRisk_eq_lintegral_iInf hl]
 
 /-- If the set of labels `𝓨` is finite, the estimation problem admits a
 generalized Bayes estimator. -/
-lemma hasGenBayesEstimator_of_finite [Nonempty 𝓨] [Finite 𝓨] [MeasurableSingletonClass 𝓨]
+lemma hasArgminEstimator_of_finite [Nonempty 𝓨] [Finite 𝓨] [MeasurableSingletonClass 𝓨]
     (hl : Measurable (Function.uncurry ℓ)) :
-    HasGenBayesEstimator ℓ P π where
-  exists_isGenBayesEstimator := by
+    HasArgminEstimator ℓ P π where
+  exists_isArgminEstimator := by
     classical
     have : Encodable 𝓨 := Encodable.ofCountable 𝓨
     have h_meas y : Measurable (fun x ↦ ∫⁻ θ, ℓ θ y ∂(P†π) x) :=

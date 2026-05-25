@@ -6161,7 +6161,6 @@ public import Mathlib.Probability.Decision.Risk.Basic
 public import Mathlib.Probability.Decision.Risk.Countable
 public import Mathlib.Probability.Decision.Risk.Defs
 public import Mathlib.Probability.Decision.RiskIncrease
-public import Mathlib.Probability.Decision.ZeroOneLoss
 public import Mathlib.Probability.Density
 public import Mathlib.Probability.Distributions.Beta
 public import Mathlib.Probability.Distributions.Binomial

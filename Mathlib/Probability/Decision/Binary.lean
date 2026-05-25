@@ -14,7 +14,7 @@ public import Mathlib.Probability.Decision.Risk.Countable
 
 ## Main definitions
 
-* `binaryLoss`
+* `zeroOneLoss`
 
 ## Main statements
 
@@ -48,24 +48,24 @@ variable {Θ 𝓧 𝓧' 𝓨 : Type*} {mΘ : MeasurableSpace Θ} {m𝓧 : Measur
   {m𝓧' : MeasurableSpace 𝓧'} {m𝓨 : MeasurableSpace 𝓨}
   {μ ν : Measure 𝓧} {p : ℝ≥0∞} {π : Measure Bool}
 
-section BinaryLoss
+section zeroOneLoss
 
 /-- The binary loss function, which is 0 if the two arguments are equal and 1 otherwise. -/
-def binaryLoss [DecidableEq Θ] : Θ → Θ → ℝ≥0∞ := fun θ y ↦ if θ = y then 0 else 1
+def zeroOneLoss [DecidableEq Θ] : Θ → Θ → ℝ≥0∞ := fun θ y ↦ if θ = y then 0 else 1
 
 @[simp]
-lemma integral_binaryLoss_true (ν : Measure Bool) : ∫⁻ y, binaryLoss true y ∂ν = ν {false} := by
-  simp [binaryLoss, lintegral_bool]
+lemma integral_zeroOneLoss_true (ν : Measure Bool) : ∫⁻ y, zeroOneLoss true y ∂ν = ν {false} := by
+  simp [zeroOneLoss, lintegral_bool]
 
 @[simp]
-lemma integral_binaryLoss_false (ν : Measure Bool) : ∫⁻ y, binaryLoss false y ∂ν = ν {true} := by
-  simp [binaryLoss, lintegral_bool]
+lemma integral_zeroOneLoss_false (ν : Measure Bool) : ∫⁻ y, zeroOneLoss false y ∂ν = ν {true} := by
+  simp [zeroOneLoss, lintegral_bool]
 
 instance (P : Kernel Bool 𝓧) [IsFiniteKernel P] (π : Measure Bool) [IsFiniteMeasure π] :
-    HasGenBayesEstimator binaryLoss P π :=
-  hasGenBayesEstimator_of_finite (by fun_prop)
+    HasArgminEstimator zeroOneLoss P π :=
+  hasArgminEstimator_of_finite (by fun_prop)
 
-end BinaryLoss
+end zeroOneLoss
 
 section BinaryBayesEstimator
 
@@ -91,11 +91,11 @@ lemma binaryBayesEstimator_eq :
 lemma measurable_binaryBayesEstimator : Measurable (binaryBayesEstimator μ ν π) :=
   Measurable.ite (measurableSet_le (by fun_prop) (by fun_prop)) (by fun_prop) (by fun_prop)
 
-lemma isGenBayesEstimator_binaryBayesEstimator (μ ν : Measure 𝓧) [IsFiniteMeasure μ]
+lemma isArgminEstimator_binaryBayesEstimator (μ ν : Measure 𝓧) [IsFiniteMeasure μ]
     [IsFiniteMeasure ν] (π : Measure Bool) [IsFiniteMeasure π] :
-    IsGenBayesEstimator binaryLoss (Kernel.boolKernel μ ν) (binaryBayesEstimator μ ν π) π := by
+    IsArgminEstimator zeroOneLoss (Kernel.boolKernel μ ν) (binaryBayesEstimator μ ν π) π := by
   refine ⟨by fun_prop, ?_⟩
-  simp only [binaryLoss, lintegral_bool, Bool.false_eq, ite_mul, zero_mul, one_mul,
+  simp only [zeroOneLoss, lintegral_bool, Bool.false_eq, ite_mul, zero_mul, one_mul,
     Bool.true_eq]
   filter_upwards [posterior_boolKernel_apply_true μ ν π,
     posterior_boolKernel_apply_false μ ν π] with x h_true h_false
@@ -115,7 +115,7 @@ end BinaryBayesEstimator
 /-- The Bayes risk of simple binary hypothesis testing with respect to a prior. -/
 noncomputable
 def bayesBinaryRisk (μ ν : Measure 𝓧) (π : Measure Bool) : ℝ≥0∞ :=
-  bayesRisk binaryLoss (Kernel.boolKernel μ ν) π
+  bayesRisk zeroOneLoss (Kernel.boolKernel μ ν) π
 
 lemma bayesBinaryRisk_eq (μ ν : Measure 𝓧) (π : Measure Bool) :
     bayesBinaryRisk μ ν π
@@ -143,7 +143,7 @@ lemma bayesBinaryRisk_self (μ : Measure 𝓧) (π : Measure Bool) :
   have : Kernel.boolKernel μ μ = Kernel.const Bool μ := by ext; simp
   rw [bayesBinaryRisk, mul_comm, mul_min, this,
     bayesRisk_const_of_fintype (by fun_prop)]
-  simp [lintegral_bool, binaryLoss, iInf_bool_eq]
+  simp [lintegral_bool, zeroOneLoss, iInf_bool_eq]
 
 lemma bayesBinaryRisk_dirac (a b : ℝ≥0∞) (x : 𝓧) (π : Measure Bool) :
     bayesBinaryRisk (a • Measure.dirac x) (b • Measure.dirac x) π
@@ -153,7 +153,7 @@ lemma bayesBinaryRisk_dirac (a b : ℝ≥0∞) (x : 𝓧) (π : Measure Bool) :
 lemma bayesBinaryRisk_le_min (μ ν : Measure 𝓧) (π : Measure Bool) :
     bayesBinaryRisk μ ν π ≤ min (π {false} * μ .univ) (π {true} * ν .univ) := by
   refine (bayesBinaryRisk_le_bayesBinaryRisk_comp μ ν π (Kernel.discard 𝓧)).trans_eq ?_
-  simp_rw [Measure.discard_comp, bayesBinaryRisk_dirac]
+  rw [Measure.discard_comp, Measure.discard_comp, bayesBinaryRisk_dirac]
 
 @[simp] lemma bayesBinaryRisk_zero_left : bayesBinaryRisk 0 ν π = 0 :=
   le_antisymm ((bayesBinaryRisk_le_min _ _ _).trans (by simp)) zero_le'
@@ -214,17 +214,17 @@ lemma bayesBinaryRisk_eq_bayesBinaryRisk_one_one (μ ν : Measure 𝓧) (π : Me
 
 lemma avgRisk_binary_of_deterministic_indicator (μ ν : Measure 𝓧) (π : Measure Bool)
     {E : Set 𝓧} (hE : MeasurableSet E) :
-    avgRisk binaryLoss (Kernel.boolKernel μ ν)
+    avgRisk zeroOneLoss (Kernel.boolKernel μ ν)
       (Kernel.deterministic (fun x ↦ Bool.ofNat (E.indicator 1 x))
-        (Measurable.of_discrete.comp' (measurable_one.indicator hE))) π
+        (Measurable.of_discrete.fun_comp (measurable_one.indicator hE))) π
       = π {false} * μ E + π {true} * ν Eᶜ := by
   have h_meas : Measurable fun x ↦ Bool.ofNat (E.indicator 1 x) :=
-    Measurable.of_discrete.comp' (measurable_one.indicator hE)
+    Measurable.of_discrete.fun_comp (measurable_one.indicator hE)
   have h1 : (fun x ↦ Bool.ofNat (E.indicator 1 x)) ⁻¹' {false} = Eᶜ := by ext; simp [Bool.ofNat]
   have h2 : (fun x ↦ Bool.ofNat (E.indicator 1 x)) ⁻¹' {true} = E := by ext; simp [Bool.ofNat]
   rw [avgRisk, lintegral_bool, mul_comm (π {false}), mul_comm (π {true})]
   simp only [Kernel.comp_boolKernel, Kernel.boolKernel_apply, Bool.false_eq_true, ↓reduceIte,
-    integral_binaryLoss_false, integral_binaryLoss_true]
+    integral_zeroOneLoss_false, integral_zeroOneLoss_true]
   simp_rw [Measure.deterministic_comp_eq_map, Measure.map_apply h_meas trivial, h1, h2]
 
 lemma bayesBinaryRisk_eq_iInf_measurableSet (μ ν : Measure 𝓧) [IsFiniteMeasure μ]
@@ -238,20 +238,20 @@ lemma bayesBinaryRisk_eq_iInf_measurableSet (μ ν : Measure 𝓧) [IsFiniteMeas
   · let E := {x | π {false} * (∂μ/∂Kernel.boolKernel μ ν ∘ₘ π) x
       ≤ π {true} * (∂ν/∂Kernel.boolKernel μ ν ∘ₘ π) x}
     have hE : MeasurableSet E := measurableSet_le (by fun_prop) (by fun_prop)
-    rw [bayesBinaryRisk, ← IsGenBayesEstimator.isBayesEstimator
-      (isGenBayesEstimator_binaryBayesEstimator μ ν π) .of_discrete, IsGenBayesEstimator.kernel]
+    rw [bayesBinaryRisk, ← IsArgminEstimator.isBayesEstimator
+      (isArgminEstimator_binaryBayesEstimator μ ν π) .of_discrete, IsArgminEstimator.kernel]
     simp_rw [binaryBayesEstimator_eq]
     rw [avgRisk_binary_of_deterministic_indicator _ _ _ hE]
     exact iInf_le_of_le E (iInf_le _ hE)
 
-lemma bayesRisk_eq_of_hasGenBayesEstimator_binary {𝓨 : Type*} [MeasurableSpace 𝓨]
+lemma bayesRisk_eq_of_hasArgminEstimator_binary {𝓨 : Type*} [MeasurableSpace 𝓨]
     {ℓ : Bool → 𝓨 → ℝ≥0∞} (hl : Measurable (Function.uncurry ℓ))
     (P : Kernel Bool 𝓧) [IsFiniteKernel P] (π : Measure Bool) [IsFiniteMeasure π]
-    [h : HasGenBayesEstimator ℓ P π] :
+    [h : HasArgminEstimator ℓ P π] :
     bayesRisk ℓ P π
       = ∫⁻ x, ⨅ z, π {true} * (P true).rnDeriv (P ∘ₘ π) x * ℓ true z
         + π {false} * (P false).rnDeriv (P ∘ₘ π) x * ℓ false z ∂(P ∘ₘ π) := by
-  rw [bayesRisk_eq_of_hasGenBayesEstimator hl]
+  rw [bayesRisk_eq_of_hasArgminEstimator hl]
   have h2 : P = Kernel.boolKernel (P false) (P true) := Kernel.eq_boolKernel P
   have h3 : (P†π) = (Kernel.boolKernel (P false) (P true))†π := by congr
   nth_rw 1 3 [h2]
@@ -267,8 +267,8 @@ lemma bayesBinaryRisk_eq_lintegral_min (μ ν : Measure 𝓧) [IsFiniteMeasure �
     [IsFiniteMeasure ν] (π : Measure Bool) [IsFiniteMeasure π] :
     bayesBinaryRisk μ ν π = ∫⁻ x, min (π {false} * μ.rnDeriv (Kernel.boolKernel μ ν ∘ₘ π) x)
       (π {true} * ν.rnDeriv (Kernel.boolKernel μ ν ∘ₘ π) x) ∂(Kernel.boolKernel μ ν ∘ₘ π) := by
-  simp [bayesBinaryRisk, bayesRisk_eq_of_hasGenBayesEstimator_binary .of_discrete,
-    iInf_bool_eq, binaryLoss]
+  simp [bayesBinaryRisk, bayesRisk_eq_of_hasArgminEstimator_binary .of_discrete,
+    iInf_bool_eq, zeroOneLoss]
 
 lemma ENNReal.ofReal_min {a b : ℝ} : ENNReal.ofReal (min a b) = min (.ofReal a) (.ofReal b) := by
   wlog hab : a ≤ b

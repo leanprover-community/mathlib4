@@ -36,41 +36,6 @@ lemma withDensity_mono_measure (h : μ ≤ ν) {f : α → ℝ≥0∞} : μ.with
   rw [withDensity_apply _ hs, withDensity_apply _ hs]
   gcongr
 
-lemma rnDeriv_add_self_right (ν μ : Measure α) [SigmaFinite μ] [SigmaFinite ν] :
-    ν.rnDeriv (μ + ν) =ᵐ[ν] fun x ↦ (μ.rnDeriv ν x + 1)⁻¹ := by
-  have hν_ac : ν ≪ μ + ν := by rw [add_comm]; exact rfl.absolutelyContinuous.add_right _
-  filter_upwards [μ.rnDeriv_add' ν ν, ν.rnDeriv_self, Measure.inv_rnDeriv hν_ac] with a h1 h2 h3
-  rw [Pi.inv_apply, h1, Pi.add_apply, h2, inv_eq_iff_eq_inv] at h3
-  rw [h3]
-
-lemma rnDeriv_add_self_left (μ ν : Measure α) [SigmaFinite μ] [SigmaFinite ν] :
-    μ.rnDeriv (μ + ν) =ᵐ[ν] fun x ↦ μ.rnDeriv ν x / (μ.rnDeriv ν x + 1) := by
-  have h_add : (μ + ν).rnDeriv (μ + ν) =ᵐ[ν] μ.rnDeriv (μ + ν) + ν.rnDeriv (μ + ν) :=
-    (ae_add_measure_iff.mp (μ.rnDeriv_add' ν (μ + ν))).2
-  have h_one_add := (ae_add_measure_iff.mp (μ + ν).rnDeriv_self).2
-  have : (μ.rnDeriv (μ + ν)) =ᵐ[ν] fun x ↦ 1 - (μ.rnDeriv ν x + 1)⁻¹ := by
-    filter_upwards [h_add, h_one_add, rnDeriv_add_self_right ν μ] with a h4 h5 h6
-    rw [h5, Pi.add_apply] at h4
-    nth_rewrite 1 [h4]
-    simp [h6]
-  filter_upwards [this, μ.rnDeriv_lt_top ν] with a ha ha_lt_top
-  rw [ha, div_eq_mul_inv]
-  refine ENNReal.sub_eq_of_eq_add (by simp) ?_
-  nth_rewrite 2 [← one_mul (μ.rnDeriv ν a + 1)⁻¹]
-  have h := add_mul (μ.rnDeriv ν a) 1 (μ.rnDeriv ν a + 1)⁻¹
-  rwa [ENNReal.mul_inv_cancel] at h
-  · simp
-  · simp [ha_lt_top.ne]
-
-lemma rnDeriv_eq_div (μ ν : Measure α) [SigmaFinite μ] [SigmaFinite ν] :
-    μ.rnDeriv ν =ᵐ[ν] fun x ↦ μ.rnDeriv (μ + ν) x / ν.rnDeriv (μ + ν) x := by
-  filter_upwards [rnDeriv_add_self_right ν μ, rnDeriv_add_self_left μ ν, μ.rnDeriv_lt_top ν]
-      with a ha1 ha2 ha_lt_top
-  rw [ha1, ha2, ENNReal.div_eq_inv_mul, inv_inv, ENNReal.div_eq_inv_mul, ← mul_assoc,
-      ENNReal.mul_inv_cancel, one_mul]
-  · simp
-  · simp [ha_lt_top.ne]
-
 end MeasureTheory.Measure
 
 namespace ProbabilityTheory
@@ -97,13 +62,13 @@ lemma mutuallySingular_iff_rnDeriv_eq_zero [SigmaFinite μ] [SigmaFinite ν] :
     have hν_ac : ν ≪ μ + ν := by
       rw [add_comm]
       exact (Measure.AbsolutelyContinuous.refl _).add_right _
-    filter_upwards [μ.rnDeriv_eq_div ν, h, Measure.rnDeriv_pos hν_ac,
+    filter_upwards [μ.rnDeriv_eq_div_rnDeriv_add ν, h, Measure.rnDeriv_pos hν_ac,
       hν_ac (Measure.rnDeriv_ne_top ν (μ+ ν))] with x hx_div hx_zero hx_pos hx_ne_top
     rw [hx_div] at hx_zero
     simp only [Pi.zero_apply, ENNReal.div_eq_zero_iff, hx_ne_top, _root_.or_false] at hx_zero
     simp [hx_zero]
   · rw [← Measure.rnDeriv_eq_zero]
-    filter_upwards [μ.rnDeriv_eq_div ν, Measure.rnDeriv_pos hν_ac, hν_ac h]
+    filter_upwards [μ.rnDeriv_eq_div_rnDeriv_add ν, Measure.rnDeriv_pos hν_ac, hν_ac h]
       with x hx_div hx_pos hx_min
     rw [hx_div]
     simp only [Pi.zero_apply, ENNReal.div_eq_zero_iff]

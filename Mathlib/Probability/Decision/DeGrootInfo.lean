@@ -41,10 +41,11 @@ the prior `π` on `Bool`.
 This is the difference of the Bayes risks between estimation without seeing the data and with it. -/
 noncomputable
 def deGrootInfo (μ ν : Measure 𝓧) (π : Measure Bool) : ℝ≥0∞ :=
-  bayesBinaryRisk (Kernel.discard 𝓧 ∘ₘ μ) (Kernel.discard 𝓧 ∘ₘ ν) π - bayesBinaryRisk μ ν π
+  bayesBinaryRisk (Kernel.discard 𝓧 ∘ₘ μ : Measure Unit) (Kernel.discard 𝓧 ∘ₘ ν) π -
+    bayesBinaryRisk μ ν π
 
 lemma deGrootInfo_eq_riskIncrease :
-  deGrootInfo μ ν π = riskIncrease binaryLoss (Kernel.boolKernel μ ν) π := by
+  deGrootInfo μ ν π = riskIncrease zeroOneLoss (Kernel.boolKernel μ ν) π := by
   simp only [deGrootInfo, Measure.discard_comp, riskIncrease, Kernel.comp_discard',
     Kernel.boolKernel_apply, bayesBinaryRisk]
   congr with a
@@ -84,7 +85,7 @@ lemma deGrootInfo_of_measure_false_eq_zero (μ ν : Measure 𝓧) (hπ : π {fal
 lemma deGrootInfo_comp_le (μ ν : Measure 𝓧) (π : Measure Bool) (η : Kernel 𝓧 𝓨) [IsMarkovKernel η] :
     deGrootInfo (η ∘ₘ μ) (η ∘ₘ ν) π ≤ deGrootInfo μ ν π := by
   simp_rw [deGrootInfo_eq_riskIncrease, ← Kernel.comp_boolKernel]
-  exact riskIncrease_comp_le binaryLoss (Kernel.boolKernel μ ν) π η
+  exact riskIncrease_comp_le zeroOneLoss (Kernel.boolKernel μ ν) π η
 
 /-- **Data processing inequality** for the statistical information. -/
 lemma deGrootInfo_map_le (μ ν : Measure 𝓧) (π : Measure Bool) {f : 𝓧 → 𝓨} (hf : Measurable f) :
@@ -102,7 +103,7 @@ lemma deGrootInfo_boolMeasure_le_deGrootInfo {E : Set 𝓧} (hE : MeasurableSet 
     deGrootInfo (boolMeasure (μ Eᶜ) (μ E)) (boolMeasure (ν Eᶜ) (ν E)) π
       ≤ deGrootInfo μ ν π := by
   have h_meas : Measurable fun x ↦ Bool.ofNat (E.indicator 1 x) :=
-    (Measurable.of_discrete.comp' (measurable_one.indicator hE))
+    (Measurable.of_discrete.fun_comp (measurable_one.indicator hE))
   let η : Kernel 𝓧 Bool := Kernel.deterministic (fun x ↦ Bool.ofNat (E.indicator 1 x)) h_meas
   have h_false : (fun x ↦ Bool.ofNat (E.indicator 1 x)) ⁻¹' {false} = Eᶜ := by
     ext x; simp [Bool.ofNat]
