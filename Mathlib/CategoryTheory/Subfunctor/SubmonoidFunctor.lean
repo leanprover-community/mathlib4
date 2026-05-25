@@ -15,8 +15,8 @@ public import Mathlib.Order.CompletePartialOrder
 
 # Functors of submonoids
 
-Given a functor `R : C ⥤ MonCat`, we define a functor of submonoids `S` to be a
-family `Submonoid (R.obj U)` for all `U : C` that are compatible with the maps induced by `R`.
+Given a functor `M : C ⥤ MonCat`, we define a functor of submonoids `S` to be a
+family `Submonoid (M.obj U)` for all `U : C` that are compatible with the maps induced by `M`.
 
 We provide the complete lattice structure and the basic functoriality properties.
 -/
@@ -31,46 +31,46 @@ namespace CategoryTheory
 
 variable {C : Type u} [Category.{v} C] {M : C ⥤ MonCat.{w}}
 
-variable (R) in
-/-- A submonoid functor consists of a submonoid of `R.obj U` for every `U`,
-compatible with the restriction maps `R.map i`. -/
+variable (M) in
+/-- A submonoid functor consists of a submonoid of `M.obj U` for every `U`,
+compatible with the restriction maps `M.map i`. -/
 @[ext]
 structure SubmonoidFunctor where
-  /-- A submonoid of `R.obj U` for all `U : C`. -/
-  obj (U : C) : Submonoid (R.obj U)
-  /-- For any `i : U ⟶ V`, `R.map i` maps the submonoid `obj U` into the submonoid `obj V`. -/
-  map {U V : C} (i : U ⟶ V) : obj U ≤ (obj V).comap (R.map i).hom := by cat_disch
+  /-- A submonoid of `M.obj U` for all `U : C`. -/
+  obj (U : C) : Submonoid (M.obj U)
+  /-- For any `i : U ⟶ V`, `M.map i` maps the submonoid `obj U` into the submonoid `obj V`. -/
+  map {U V : C} (i : U ⟶ V) : obj U ≤ (obj V).comap (M.map i).hom := by cat_disch
 
 namespace SubmonoidFunctor
 
+variable (S : SubmonoidFunctor M)
+
+lemma map_le {U V : C} (f : U ⟶ V) : (S.obj U).map (M.map f).hom ≤ S.obj V := by
+  grw [Submonoid.map_le_iff_le_comap, S.map f]
+
 /-- The functor of monoids associated to a functor of submonoids. -/
 @[simps obj map]
-def toMonoidFunctor (S : SubmonoidFunctor R) : C ⥤ MonCat.{w} where
+def toMonoidFunctor : C ⥤ MonCat.{w} where
   obj _ := MonCat.of (S.obj _)
   map i :=
-    MonCat.ofHom <| ((R.map i).hom.submonoidComap (S.obj _)).comp <| Submonoid.inclusion (S.map i)
+    MonCat.ofHom <| ((M.map i).hom.submonoidComap (S.obj _)).comp <| Submonoid.inclusion (S.map i)
 
 /-- The subfunctor associated to a functor of submonoids. -/
 @[simps obj]
-def toSubfunctor (S : SubmonoidFunctor R) : Subfunctor (R ⋙ forget MonCat) where
+def toSubfunctor : Subfunctor (M ⋙ forget MonCat) where
   obj _ := (S.obj _).carrier
   map := S.map
 
-variable {R R' : C ⥤ MonCat.{w}} (S : SubmonoidFunctor R) (S' : SubmonoidFunctor R')
+variable {M M' : C ⥤ MonCat.{w}} (S : SubmonoidFunctor M) (S' : SubmonoidFunctor M')
 
-lemma map_le {U V : C} (f : U ⟶ V) : (S.obj U).map (R.map f).hom ≤ S.obj V := by
-  grw [Submonoid.map_le_iff_le_comap, S.map f]
-
-attribute [gcongr] Submonoid.monotone_map Submonoid.monotone_comap
-
-instance {U : C} : CoeHead (S.toMonoidFunctor.obj U) (R.obj U) where
+instance {U : C} : CoeHead (S.toMonoidFunctor.obj U) (M.obj U) where
   coe := Subtype.val
 
-instance : PartialOrder (SubmonoidFunctor R) :=
+instance : PartialOrder (SubmonoidFunctor M) :=
   PartialOrder.lift SubmonoidFunctor.obj fun _ _ => SubmonoidFunctor.ext
 
-@[simps top_obj bot_obj sup_obj inf_obj sInf_obj sSup_obj]
-instance : CompleteLattice (SubmonoidFunctor R) where
+@[simps! top_obj bot_obj sup_obj inf_obj sInf_obj sSup_obj]
+instance : CompleteLattice (SubmonoidFunctor M) where
   sup F G := {
     obj U := F.obj U ⊔ G.obj U
     map i := by grw [F.map i, G.map i, (Submonoid.monotone_comap).le_map_sup]
@@ -78,22 +78,22 @@ instance : CompleteLattice (SubmonoidFunctor R) where
   le_sup_left _ _ _ := by simp
   le_sup_right _ _ _ := by simp
   sup_le F G H h₁ h₂ U := by simp [h₁ U, h₂ U]
-  inf S T :=
-    { obj _ := S.obj _ ⊓ T.obj _
+  inf S T := {
+      obj _ := S.obj _ ⊓ T.obj _
       map _ _ h := ⟨S.map _ h.1, T.map _ h.2⟩}
   inf_le_left _ _ _ _ h := h.1
   inf_le_right _ _ _ _ h := h.2
   le_inf _ _ _ h₁ h₂ _ _ h := ⟨h₁ _ h, h₂ _ h⟩
-  sSup S :=
-    { obj U := ⨆ F ∈ S, F.obj U
+  sSup S := {
+      obj _ := ⨆ F ∈ S, F.obj _
       map {U V} f := by
         grw [← Submonoid.monotone_comap.le_map_iSup₂]
         exact iSup₂_mono fun F _ ↦ F.map f }
   isLUB_sSup _ := ⟨fun a ha U ↦ le_iSup₂_of_le a ha le_rfl, fun _ _ _ ↦ by aesop⟩
-  sInf S :=
-    { obj U := sInf (Set.image (fun T ↦ T.obj U) S)
+  sInf S := {
+      obj _ := ⨅ F ∈ S, F.obj _
       map f := by
-        rw [(Submonoid.gc_map_comap (R.map f).hom).u_iInf₂]
+        rw [(Submonoid.gc_map_comap (M.map f).hom).u_iInf₂]
         exact iInf₂_mono fun F _ ↦ F.map f }
   isGLB_sInf _ := ⟨fun _ _ _ _ ↦ by aesop, fun _ _ _ ↦ by aesop⟩
   bot := { obj _ := ⊥ }
@@ -101,24 +101,24 @@ instance : CompleteLattice (SubmonoidFunctor R) where
   top := { obj _ := ⊤ }
   le_top _ _ := le_top
 
-/-- The inclusion of a submonoid functor `S` to the original functor of monoids `R`. -/
+/-- The inclusion of a submonoid functor `S` to the original functor of monoids `M`. -/
 @[simps]
-def ι : S.toMonoidFunctor ⟶ R where
+def ι : S.toMonoidFunctor ⟶ M where
   app _ := MonCat.ofHom (Submonoid.subtype _)
 
 section image
 
 /-- The submonoid functor defined by the image along a morphism of functors of monoids. -/
 @[simps]
-def image (S : SubmonoidFunctor R) (p : R ⟶ R') : SubmonoidFunctor R' where
+def image (S : SubmonoidFunctor M) (p : M ⟶ M') : SubmonoidFunctor M' where
   obj _ := Submonoid.map (MonCat.Hom.hom (p.app _)) (S.obj _)
   map i := by
     rw [← Submonoid.map_le_iff_le_comap, Submonoid.map_map, ← MonCat.hom_comp, ← p.naturality,
       MonCat.hom_comp, ← Submonoid.map_map]
     grw [S.map_le]
 
-variable (R) in
-lemma image_id : image ⊤ (𝟙 R) = ⊤ := by aesop
+variable (M) in
+lemma image_id : image ⊤ (𝟙 M) = ⊤ := by aesop
 
 end image
 
@@ -126,7 +126,7 @@ section comap
 
 /-- The submonoid functor defined by the preimage along a morphism of functors of monoids. -/
 @[simps]
-def comap (S' : SubmonoidFunctor R') (p : R ⟶ R') : SubmonoidFunctor R where
+def comap (S' : SubmonoidFunctor M') (p : M ⟶ M') : SubmonoidFunctor M where
   obj _ := Submonoid.comap (MonCat.Hom.hom (p.app _)) (S'.obj _)
   map _ _ h := by
     simp_rw [Submonoid.mem_comap, NatTrans.naturality_apply]
@@ -139,17 +139,17 @@ end comap
 
 section lift
 
-variable (p' : R' ⟶ R) (S : SubmonoidFunctor R) (S' : SubmonoidFunctor R')
+variable (p' : M' ⟶ M) (S : SubmonoidFunctor M) (S' : SubmonoidFunctor M')
   (hp' : image ⊤ p' ≤ S)
 
-/-- If the image of morphism `R' ⟶ R` lands in a submonoid functor `S`,
+/-- If the image of morphism `M' ⟶ M` lands in a submonoid functor `S`,
 then the morphism factors through it. -/
 @[simps! app]
-def lift : R' ⟶ S.toMonoidFunctor where
-  app U := MonCat.ofHom <| MonoidHom.codRestrict (p'.app U).hom _ fun x ↦ hp' _ (by simp)
+def lift : M' ⟶ S.toMonoidFunctor where
+  app U := MonCat.ofHom <| MonoidHom.codRestrict (p'.app U).hom _ fun x ↦ hp' _ (by simp; )
 
 @[reassoc (attr := simp)]
-theorem lift_ι : lift p' S S' hp' ≫ S.ι = S'.ι ≫ p' := rfl
+theorem lift_ι : lift p' S hp' ≫ S.ι = p' := rfl
 
 end lift
 
