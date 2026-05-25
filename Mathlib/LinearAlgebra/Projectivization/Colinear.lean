@@ -96,10 +96,10 @@ lemma isColin_pair (a b : ℙ K V) : IsColinear {a, b} := by
   induction b using Projectivization.ind with | h w hw =>
   change _ ≠ _ at h
   rw [← independent_pair_iff_ne, independent_mk_iff_LinearIndependent] at h
-  refine ⟨(Submodule.span K {w, v}).projectivization, ?_, ?_, fun s hs ↦ hs.casesOn ?_ ?_⟩
+  refine ⟨(Submodule.span K {v, w}).projectivization, ?_, ?_, fun s hs ↦ hs.casesOn ?_ ?_⟩
   · rw [Subspace.submodule.apply_symm_apply]
     exact Module.Finite.span_of_finite _ (Set.toFinite _)
-  · rw [Subspace.submodule.apply_symm_apply, show {w, v} = Set.range ![v, w] by simp]
+  · rw [Subspace.submodule.apply_symm_apply, ← Matrix.range_cons_cons_empty v w ![]]
     simp [finrank_span_eq_card h]
   all_goals rintro rfl; simp [Submodule.mem_span_of_mem]
 
@@ -117,7 +117,7 @@ lemma line_unique' {u v : V} (hu : u ≠ 0) (hv : v ≠ 0) (huv : LinearIndepend
     refine hx.casesOn ?_ ?_ <;> simp_all
   have : Module.Finite K p := Module.finite_of_finrank_eq_succ hp1
   refine Submodule.eq_of_le_of_finrank_eq h1 ?_ |>.symm
-  rw [hp1, show {u, v} = Set.range ![u, v] by simp [Set.pair_comm]]
+  rw [hp1, ← Matrix.range_cons_cons_empty _ _ ![]]
   simp [finrank_span_eq_card huv]
 
 lemma line_unique {x y : ℙ K V} (hxy : x ≠ y) (p q : Submodule K V) (hp1 : Module.finrank K p = 2)
