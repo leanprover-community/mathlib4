@@ -267,6 +267,16 @@ jobs:
           run-id: ${{ steps.master-run.outputs.run-id }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Configure Lean
+        if: steps.master-run.outputs.found == 'true'
+        uses: leanprover/lean-action@38fbc41a8c28c4cbaec22d7f7de508ec2e7c0dd9 # v1.5.0
+        with:
+          lake-package-directory: pr-branch
+          auto-config: false
+          use-github-cache: false
+          use-mathlib-cache: false
+          reinstall-transient-toolchain: true
+
       - name: Compute Lean-aware declarations diff
         if: steps.master-run.outputs.found == 'true'
         id: diff
