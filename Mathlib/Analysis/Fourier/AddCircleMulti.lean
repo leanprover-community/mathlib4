@@ -193,7 +193,7 @@ theorem lintegral_preimage (f : UnitAddTorus d → ℝ≥0∞) (a : d → ℝ) :
   · rw [← lintegral_subtype_comap (MeasurableSet.univ_pi' (fun i => measurableSet_Ioc))]
     rfl
 
-theorem integral_preimage {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+theorem integral_preimage {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℝ E]
     (f : UnitAddTorus d → E) (a : d → ℝ) :
     ∫ x : UnitAddTorus d, f x =
     ∫ (x : d → ℝ) in {x : d → ℝ | ∀ i, x i ∈ Ioc (a i) (a i + 1)}, f (fun i => x i) := by
@@ -242,7 +242,7 @@ end Lp
 
 section fourierCoeff
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E]
+variable {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℂ E]
 
 /-- The `n`-th Fourier coefficient of a function `UnitAddTorus d → E`, for `E` a complete normed
 `ℂ`-vector space, defined as the integral over `UnitAddTorus d` of `mFourier (-n) t • f t`. -/
