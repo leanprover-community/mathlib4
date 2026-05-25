@@ -12,9 +12,12 @@ public import Mathlib.MeasureTheory.VectorMeasure.SetIntegral
 
 -/
 
-open Set
+open Set Filter
+open scoped Topology ENNReal
 
 namespace MeasureTheory.VectorMeasure
+
+local infixr:25 " →ₛ " => SimpleFunc
 
 variable {X E F G : Type*} {mX : MeasurableSpace X}
   [NormedAddCommGroup E] [NormedSpace ℝ E]
@@ -72,16 +75,6 @@ lemma restrict_withDensity (hf : μ.Integrable f B) :
     simp only [hs, ht, restrict_apply]
     rw [withDensity_apply hf, withDensity_apply hf.restrict, restrict_restrict _ ht hs]
 
-
-#check MemLp.exists_simpleFunc_eLpNorm_sub_lt
-local infixr:25 " →ₛ " => SimpleFunc
-
-#check SimpleFunc.lintegral
-
-#check SimpleFunc.map
-
-#check SimpleFunc.map_lintegral
-
 lemma variation_withDensity (hf : μ.Integrable f B) :
     (μ.withDensity f B).variation = (μ.transpose B).variation.withDensity (fun x ↦ ‖f x‖ₑ) := by
   apply le_antisymm
@@ -94,11 +87,11 @@ lemma variation_withDensity (hf : μ.Integrable f B) :
   rintro ε εpos -
   let δ := ε / 10
   have δpos : 0 < δ := div_pos εpos (by norm_num)
-  obtain ⟨g, hg, -⟩ : ∃ (g : X →ₛ E), eLpNorm (f - ⇑g) 1 (μ.transpose B).variation < δ
+  obtain ⟨g, hg, gmem⟩ : ∃ (g : X →ₛ E), eLpNorm (f - ⇑g) 1 (μ.transpose B).variation < δ
       ∧ MemLp (⇑g) 1 (μ.transpose B).variation :=
     (memLp_one_iff_integrable.2 hf).exists_simpleFunc_eLpNorm_sub_lt (by simp)
       (by simpa using δpos.ne')
-  have A : ∫⁻ a in s, ‖f a‖ₑ ∂(μ.transpose B).variation
+  have I1 : ∫⁻ a in s, ‖f a‖ₑ ∂(μ.transpose B).variation
         ≤ ∫⁻ a in s, ‖g a‖ₑ ∂(μ.transpose B).variation + δ := calc
     _ ≤ ∫⁻ a in s, ‖f a - g a‖ₑ + ‖g a‖ₑ ∂(μ.transpose B).variation := by
       gcongr with a
@@ -116,7 +109,7 @@ lemma variation_withDensity (hf : μ.Integrable f B) :
       rw [eLpNorm_one_eq_lintegral_enorm] at hg
       gcongr
       exact hg.le
-  have B : ∫⁻ a in s, ‖g a‖ₑ ∂(μ.transpose B).variation =
+  have I2 : ∫⁻ a in s, ‖g a‖ₑ ∂(μ.transpose B).variation =
       ∑ i ∈ g.range, ‖i‖ₑ * ((μ.transpose B).restrict s).variation (g ⁻¹' {i}) := calc
     _ = (g.map (‖·‖ₑ)).lintegral ((μ.transpose B).variation.restrict s) :=
       SimpleFunc.lintegral_eq_lintegral _ _
@@ -124,6 +117,32 @@ lemma variation_withDensity (hf : μ.Integrable f B) :
       SimpleFunc.map_lintegral _ _
     _ = ∑ i ∈ g.range, ‖i‖ₑ * ((μ.transpose B).restrict s).variation (g ⁻¹' {i}) := by
       simp_rw [variation_restrict hs]
+  obtain ⟨ρ,ρpos, hρ⟩ : ∃ ρ > 0, ∑ i ∈ g.range, ‖i‖ₑ * ρ ≤ δ := by
+    refine ⟨δ * (∑ i ∈ g.range, ‖i‖ₑ)⁻¹, by simp [δpos], ?_⟩
+    grw [← Finset.sum_mul, mul_comm (δ : ℝ≥0∞), ← mul_assoc, ENNReal.mul_inv_le_one, one_mul]
+  have C i : ∃ (P : Finset (Set X)), (∀ t ∈ P, t ⊆ g ⁻¹' {i})
+      ∧ ((P : Set (Set X)).PairwiseDisjoint id) ∧
+      (∀ t ∈ P, MeasurableSet t) ∧
+      ‖i‖ₑ * ((μ.transpose B).restrict s).variation (g ⁻¹' {i}) ≤
+        ‖i‖ₑ * (∑ p ∈ P, ‖(μ.transpose B).restrict s p‖ₑ + ρ) := by
+    rcases eq_or_ne i 0 with rfl | hi
+    · exact ⟨∅, by simp⟩
+    suffices ∃ (P : Finset (Set X)), (∀ t ∈ P, t ⊆ g ⁻¹' {i})
+        ∧ ((P : Set (Set X)).PairwiseDisjoint id) ∧ (∀ t ∈ P, MeasurableSet t) ∧
+        ((μ.transpose B).restrict s).variation (g ⁻¹' {i}) ≤
+        (∑ p ∈ P, ‖(μ.transpose B).restrict s p‖ₑ + ρ) by
+      obtain ⟨P, hP, h'P, h''P, h'''P⟩ := this
+      exact ⟨P, hP, h'P, h''P, by gcongr⟩
+    apply exists_variation_le_add' _ (g.measurableSet_fiber i) ρpos
+    rw [variation_restrict hs]
+    exact (g.integrable_iff.1 (memLp_one_iff_integrable.1 gmem).restrict i hi).ne
+  choose P Pg Pdisj Pmeas hP using C
+
+
+
+
+
+
 
 
 
