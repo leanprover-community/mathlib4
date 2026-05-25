@@ -169,8 +169,8 @@ theorem ord_cof_eq [LinearOrder α] [WellFoundedLT α] :
       exact (hz _ hxy').asymm hxy
 
 /-- Every cofinal set has a cofinal subset of order type `(cof α).ord`. -/
-theorem exists_ord_cof_eq_of_isCofinal [LinearOrder α] [WellFoundedLT α] {s : Set α} (hs : IsCofinal s) :
-    ∃ t ⊆ s, IsCofinal t ∧ typeLT t = (Order.cof α).ord := by
+theorem exists_ord_cof_eq_of_isCofinal [LinearOrder α] [WellFoundedLT α]
+    {s : Set α} (hs : IsCofinal s) : ∃ t ⊆ s, IsCofinal t ∧ typeLT t = (Order.cof α).ord := by
   obtain ⟨t, ht, ht'⟩ := ord_cof_eq s
   rw [cof_eq_of_isCofinal hs] at ht'
   refine ⟨t, ?_, hs.trans ht, ?_⟩
