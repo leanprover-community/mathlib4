@@ -166,12 +166,8 @@ theorem ker_coFG_iff_hasFiniteRange {f : V →ₗ[K] V₂} :
     f.ker.CoFG ↔ f.HasFiniteRange :=
   range_fg_iff_ker_cofg.symm
 
-theorem hasFiniteRange_iff_ker {f : V →ₗ[K] V₂} :
-    f.HasFiniteRange ↔ f.ker.CoFG :=
-  range_fg_iff_ker_cofg
-
 alias ⟨HasNoetherianRange.quotient_ker, _⟩ := hasNoetherianRange_iff_quotient_ker
-alias ⟨HasFiniteRange.cofg_ker, _⟩ := hasFiniteRange_iff_ker
+alias ⟨_, HasFiniteRange.cofg_ker⟩ := ker_coFG_iff_hasFiniteRange
 
 end Ring
 
@@ -242,7 +238,7 @@ lemma equiv_iff_isNoetherian_quotient_eqLocus {u v : V →ₗ[K] V₂} :
 
 lemma equiv_iff_eqLocus_coFG [IsNoetherianRing K] {u v : V →ₗ[K] V₂} :
     u ≈ v ↔ (eqLocus u v).CoFG := by
-  rw [equiv_iff_hasFiniteRange, hasFiniteRange_iff_ker, eqLocus_eq_ker_sub]
+  rw [eqLocus_eq_ker_sub, ker_coFG_iff_hasFiniteRange, equiv_iff_hasFiniteRange]
 
 lemma equiv_of_eqOn_of_isNoetherian {u v : V →ₗ[K] V₂} (A : Submodule K V)
     [quot_A_noeth : IsNoetherian K (V ⧸ A)] (eqOn_A : Set.EqOn u v A) : u ≈ v := by
