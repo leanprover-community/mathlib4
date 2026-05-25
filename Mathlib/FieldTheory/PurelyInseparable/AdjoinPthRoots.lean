@@ -30,17 +30,19 @@ public section
 variable (k : Type*) [Field k]
 
 /-- Adjoining all `p`-th root to a field of characteristic `p`. -/
-@[nolint unusedArguments, expose]
+@[nolint unusedArguments]
 def adjoinPthRoots (p : ℕ) [ExpChar k p] := k
 
 variable (p : ℕ) [ExpChar k p]
 
-instance : Field (adjoinPthRoots k p) := inferInstanceAs (Field k)
+@[no_expose]
+noncomputable instance : Field (adjoinPthRoots k p) := inferInstanceAs (Field k)
 
-instance : Algebra k (adjoinPthRoots k p) := (frobenius k p).toAlgebra
+@[no_expose]
+noncomputable instance : Algebra k (adjoinPthRoots k p) := (frobenius k p).toAlgebra
 
 /-- The `p`-th root map `k → adjoinPthRoots k p`, as a `RingEquiv`. -/
-def adjoinPthRootsPthRoot : k ≃+* adjoinPthRoots k p := RingEquiv.refl k
+noncomputable def adjoinPthRootsPthRoot : k ≃+* adjoinPthRoots k p := RingEquiv.refl k
 
 lemma adjoinPthRootsPthRoot_apply_pow (x : k) :
     (adjoinPthRootsPthRoot k p x) ^ p = algebraMap k (adjoinPthRoots k p) x := by
