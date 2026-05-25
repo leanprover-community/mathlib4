@@ -36,8 +36,6 @@ variable
 
 open MvPowerSeries.WithPiTopology
 
-attribute [local instance] DiscreteTopology.instContinuousSMul
-
 /-- (Possibly multivariate) power series which can be substituted in a `PowerSeries`. -/
 abbrev HasSubst (a : MvPowerSeries τ S) : Prop :=
   IsNilpotent (MvPowerSeries.constantCoeff a)
@@ -589,6 +587,8 @@ end IsUnit
 end substInv
 
 section
+
+attribute [local instance] DiscreteTopology.instContinuousSMul
 
 variable {x : ℕ → PowerSeries R} {a : MvPowerSeries τ S}
   [UniformSpace R] [DiscreteUniformity R] [UniformSpace S] [DiscreteUniformity S]
