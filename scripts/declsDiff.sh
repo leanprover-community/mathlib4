@@ -81,11 +81,17 @@ fi
 WORK="$(mktemp -d -t declsDiff.XXXXXX)"
 trap "rm -rf '$WORK'" EXIT INT TERM
 
-# Compute the diff via the Lean script's --diff mode. This is pure file I/O
-# (set difference of two sorted name lists); no env load.
+# Set-difference of two sorted declaration lists, output sorted by NAME
+# (the leading `+`/`-` does not influence ordering). Pure shell — no lake
+# or lean required for the diff itself; the Lean script's `--diff` mode
+# exists for local use but isn't reached from this driver.
 DIFF="$WORK/diff.txt"
-lake env lean --run "$LEAN_SCRIPT" \
-  --diff "$NEW_DECLS" "$REF_DECLS" --out="$DIFF" >&2
+grep -v '^$' "$REF_DECLS" | LC_ALL=C sort -u > "$WORK/ref-sorted.txt"
+grep -v '^$' "$NEW_DECLS" | LC_ALL=C sort -u > "$WORK/new-sorted.txt"
+{
+  LC_ALL=C comm -13 "$WORK/ref-sorted.txt" "$WORK/new-sorted.txt" | sed 's/^/+/'
+  LC_ALL=C comm -23 "$WORK/ref-sorted.txt" "$WORK/new-sorted.txt" | sed 's/^/-/'
+} | LC_ALL=C sort -k1.2 > "$DIFF"
 
 PLUS="$(grep -c '^+' "$DIFF" 2>/dev/null || true)"
 MINUS="$(grep -c '^-' "$DIFF" 2>/dev/null || true)"
