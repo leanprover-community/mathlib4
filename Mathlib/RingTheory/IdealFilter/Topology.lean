@@ -29,7 +29,7 @@ uniform ideal filters in terms of ring filter bases.
 
 ## References
 
-* [nLab: Uniform filter](<https://ncatlab.org/nlab/show/uniform+filter>)
+* [nLab: Uniform filter](https://ncatlab.org/nlab/show/uniform+filter)
 
 ## Tags
 

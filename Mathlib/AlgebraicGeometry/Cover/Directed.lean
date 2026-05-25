@@ -186,7 +186,7 @@ instance locallyDirectedPullbackCover : Cover.LocallyDirected (𝒰.pullback₁ 
     simp only [Precoverage.ZeroHypercover.pullback₁_toPreZeroHypercover,
       PreZeroHypercover.pullback₁_X, Iso.trans_inv, Iso.symm_inv, pullback.congrHom_inv,
       Category.assoc, iso]
-    convert P.pullback_fst (pullback.snd f (𝒰.f j)) _ (𝒰.property_trans hij)
+    convert! P.pullback_fst (pullback.snd f (𝒰.f j)) _ (𝒰.property_trans hij)
     apply pullback.hom_ext <;> simp [pullback.condition]
 
 end BaseChange
@@ -231,7 +231,6 @@ def isColimitCoconeOfLocallyDirected : IsColimit 𝒰.coconeOfLocallyDirected wh
   desc s := 𝒰.glueMorphismsOfLocallyDirected s.ι.app fun _ ↦ s.ι.naturality _
   uniq s m hm := 𝒰.hom_ext _ _ fun j ↦ by simpa using hm j
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `𝒰` is a directed open cover of `X`, to glue morphisms `{gᵢ : 𝒰ᵢ ⟶ Y}` over `S` it suffices
 to check compatibility with the transition maps. -/
 def glueMorphismsOverOfLocallyDirected {S : Scheme.{u}} {X : Over S}
@@ -316,7 +315,7 @@ instance : Preorder X.directedAffineCover.I₀ := inferInstanceAs <| Preorder X.
 
 instance : Scheme.Cover.LocallyDirected X.directedAffineCover :=
   .ofIsBasisOpensRange (by intros; simp; rfl) <| by
-    convert X.isBasis_affineOpens
+    convert! X.isBasis_affineOpens
     simp
 
 @[simp]

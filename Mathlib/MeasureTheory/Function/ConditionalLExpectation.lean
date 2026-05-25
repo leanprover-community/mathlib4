@@ -333,12 +333,14 @@ theorem condLExp_tsum [Countable ι] {X : ι → Ω → ℝ≥0∞}
   congr with i
   exact setLIntegral_condLExp hm P (X i) hs
 
-theorem condLExp_finset_sum (s : Finset ι) {X : ι → Ω → ℝ≥0∞}
+theorem condLExp_finsetSum (s : Finset ι) {X : ι → Ω → ℝ≥0∞}
     (hX : ∀ i, AEMeasurable[mΩ₀] (X i) P) :
     P⁻[∑ i ∈ s, X i|mΩ] =ᵐ[P] ∑ i ∈ s, P⁻[X i|mΩ] := by
-  convert condLExp_tsum mΩ (fun i : s ↦ hX i)
+  convert! condLExp_tsum mΩ (fun i : s ↦ hX i)
   · simp [Finset.sum_attach]
   · simp [Finset.sum_attach _ (f := (P⁻[X ·|mΩ]))]
+
+@[deprecated (since := "2026-04-08")] alias condLExp_finset_sum := condLExp_finsetSum
 
 end Sum
 
