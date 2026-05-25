@@ -188,9 +188,9 @@ then the morphism factors through it. -/
 @[simps! app]
 def lift : S'.toMonoidFunctor ⟶ S.toMonoidFunctor where
   app U := MonCat.ofHom {
-      toFun := (↾fun x => ⟨p'.app U x, hp' U (by aesop)⟩)
-      map_one' := by aesop
-      map_mul' := by aesop
+    toFun := (↾fun x => ⟨p'.app U x, hp' U (by aesop)⟩)
+    map_one' := by aesop
+    map_mul' := by aesop
   }
   naturality _ _ g := by
     ext x
