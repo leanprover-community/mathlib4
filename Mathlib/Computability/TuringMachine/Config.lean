@@ -5,7 +5,7 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Mathlib.Computability.Halting
+public import Mathlib.Computability.PartrecBasis
 public import Mathlib.Computability.TuringMachine.PostTuringMachine
 
 /-!

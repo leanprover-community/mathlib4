@@ -527,7 +527,7 @@ theorem compl_gt [LinearOrder α] : (· > · : α → α → _)ᶜ = (· ≤ ·)
 theorem compl_ge [LinearOrder α] : (· ≥ · : α → α → _)ᶜ = (· < ·) := by simp [compl]
 
 instance Ne.instIsEquiv_compl : IsEquiv α (· ≠ ·)ᶜ := by
-  convert eq_isEquiv α
+  convert! eq_isEquiv α
   simp [compl]
 
 /-! ### Order instances on the function space -/
@@ -536,6 +536,7 @@ instance Ne.instIsEquiv_compl : IsEquiv α (· ≠ ·)ᶜ := by
 instance Pi.hasLe [∀ i, LE (π i)] :
     LE (∀ i, π i) where le x y := ∀ i, x i ≤ y i
 
+@[to_dual self]
 theorem Pi.le_def [∀ i, LE (π i)] {x y : ∀ i, π i} :
     x ≤ y ↔ ∀ i, x i ≤ y i :=
   Iff.rfl
@@ -545,6 +546,7 @@ instance Pi.preorder [∀ i, Preorder (π i)] : Preorder (∀ i, π i) where
   le_refl := fun a i ↦ le_refl (a i)
   le_trans := fun _ _ _ h₁ h₂ i ↦ le_trans (h₁ i) (h₂ i)
 
+@[to_dual self]
 theorem Pi.lt_def [∀ i, Preorder (π i)] {x y : ∀ i, π i} :
     x < y ↔ x ≤ y ∧ ∃ i, x i < y i := by
   simp +contextual [lt_iff_le_not_ge, Pi.le_def]
@@ -1097,23 +1099,3 @@ instance Prop.partialOrder : PartialOrder Prop where
   le_antisymm _ _ Hab Hba := propext ⟨Hab, Hba⟩
 
 end «Prop»
-
-/-- Type synonym to create an instance of `LinearOrder` from a `PartialOrder` and `IsTotal α (≤)`.
-
-**Do not use this**: instead, build a `LinearOrder` instance directly. -/
-@[deprecated "build a `LinearOrder` instance directly instead" (since := "2025-10-28")]
-def AsLinearOrder (α : Type*) :=
-  α
-
-set_option linter.deprecated false in
-@[deprecated "`AsLinearOrder` is deprecated" (since := "2025-10-28")]
-instance [Inhabited α] : Inhabited (AsLinearOrder α) :=
-  ⟨(default : α)⟩
-
-set_option linter.deprecated false in
-@[deprecated "`AsLinearOrder` is deprecated" (since := "2025-10-28")]
-noncomputable instance AsLinearOrder.linearOrder [PartialOrder α] [IsTotal α (· ≤ ·)] :
-    LinearOrder (AsLinearOrder α) where
-  __ := (inferInstance : PartialOrder α)
-  le_total := @total_of α (· ≤ ·) _
-  toDecidableLE := Classical.decRel _

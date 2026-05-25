@@ -19,7 +19,7 @@ This defines `PartOrd`, the category of partial orders with monotone maps.
 
 open CategoryTheory
 
-universe u
+universe v u
 
 /-- The category of partial orders. -/
 structure PartOrd where
@@ -162,6 +162,13 @@ def dualEquiv : PartOrd ≌ PartOrd where
   inverse := dual
   unitIso := NatIso.ofComponents fun X => Iso.mk <| OrderIso.dualDual X
   counitIso := NatIso.ofComponents fun X => Iso.mk <| OrderIso.dualDual X
+
+/-- The ulift functor `PartOrd.{u} ⥤ PartOrd.{max u v}`. -/
+@[simps]
+def uliftFunctor : PartOrd.{u} ⥤ PartOrd.{max u v} where
+  obj X := .of (ULift.{v} X)
+  map f := PartOrd.ofHom ⟨fun x ↦ ULift.up (f (ULift.down x)),
+    fun x y hxy ↦ f.hom.monotone hxy⟩
 
 end PartOrd
 

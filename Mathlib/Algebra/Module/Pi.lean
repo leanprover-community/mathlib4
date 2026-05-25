@@ -16,7 +16,7 @@ public import Mathlib.Algebra.Ring.Pi
 This file defines instances for module and related structures on Pi Types
 -/
 
-@[expose] public section
+public section
 
 
 universe u v w

@@ -254,8 +254,8 @@ noncomputable def transfiniteCompositionOfShapeMapFromBot (j : J) :
   isColimit := colimitOfDiagramTerminal isTerminalTop _
   map_mem k hk := by
     dsimp [MonoOver.forget]
-    convert pushouts_ofLE_le_largerSubobject hG
-      (transfiniteIterate (largerSubobject hG) k.1 A₀) using 2
+    convert!
+      pushouts_ofLE_le_largerSubobject hG (transfiniteIterate (largerSubobject hG) k.1 A₀) using 2
     all_goals
       rw [Set.Iic.succ_eq_of_not_isMax hk,
         transfiniteIterate_succ _ _ _ (Set.not_isMax_coe _ hk)]

@@ -23,7 +23,7 @@ This file is a place for results related to nilpotency in (single-variable) poly
 
 -/
 
-@[expose] public section
+public section
 
 namespace Polynomial
 

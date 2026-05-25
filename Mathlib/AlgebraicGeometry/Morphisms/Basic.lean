@@ -207,11 +207,11 @@ lemma coprodMap {X Y X' Y' : Scheme.{u}} (f : X ⟶ X') (g : Y ⟶ Y') (hf : P f
   rintro (⟨⟨⟩⟩ | ⟨⟨⟩⟩)
   · rw [← MorphismProperty.cancel_left_of_respectsIso P
       (isPullback_inl_inl_coprodMap f g).flip.isoPullback.hom]
-    convert hf
+    convert! hf
     simp [Scheme.Cover.pullbackHom, coprodOpenCover]
   · rw [← MorphismProperty.cancel_left_of_respectsIso P
       (isPullback_inr_inr_coprodMap f g).flip.isoPullback.hom]
-    convert hg
+    convert! hg
     simp [Scheme.Cover.pullbackHom, coprodOpenCover]
 
 end IsZariskiLocalAtTarget
@@ -473,6 +473,7 @@ schemes, it is equivalent to `Q : AffineTargetMorphismProperty`.
 To make the proofs easier, we state it instead as
 1. `Q` is local at the target
 2. `P f` if and only if `∀ U, Q (f ∣_ U)` ranging over all affine opens of the target of `f`.
+
 See `HasAffineProperty.iff`.
 -/
 class HasAffineProperty (P : MorphismProperty Scheme)

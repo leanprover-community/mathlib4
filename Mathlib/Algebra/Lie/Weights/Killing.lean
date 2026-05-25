@@ -160,7 +160,7 @@ variable [FiniteDimensional K L] [IsKilling K L]
 instance : InvolutiveNeg (Weight K H L) where
   neg α := ⟨-α, by
     by_cases hα : α.IsZero
-    · convert α.genWeightSpace_ne_bot; rw [hα, neg_zero]
+    · convert! α.genWeightSpace_ne_bot; rw [hα, neg_zero]
     · intro e
       obtain ⟨x, hx, x_ne0⟩ := α.exists_ne_zero
       have := mem_ker_killingForm_of_mem_rootSpace_of_forall_rootSpace_neg K L H hx
@@ -222,7 +222,7 @@ lemma corootSpace_zero_eq_bot :
   rintro - ⟨y, hy, z, hz, rfl⟩
   suffices ⁅(⟨y, hy⟩ : H), (⟨z, hz⟩ : H)⁆ = 0 by
     simpa only [Subtype.ext_iff, LieSubalgebra.coe_bracket, ZeroMemClass.coe_zero] using this
-  simp
+  simp [trivial_lie_zero]
 
 variable {K L} in
 /-- The restriction of the Killing form to a Cartan subalgebra, as a linear equivalence to the

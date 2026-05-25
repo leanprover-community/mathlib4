@@ -536,7 +536,7 @@ lemma isField_of_isDomain [IsDomain R] : IsField R := by
   obtain ⟨n, y, hy⟩ := IsArtinian.exists_pow_succ_smul_dvd x (1 : R)
   replace hy : x ^ n * (x * y - 1) = 0 := by
     rw [mul_sub, sub_eq_zero]
-    convert hy using 1
+    convert! hy using 1
     simp [Nat.succ_eq_add_one, pow_add, mul_assoc]
   rw [mul_eq_zero, sub_eq_zero] at hy
   exact ⟨_, hy.resolve_left <| pow_ne_zero _ hx⟩
@@ -624,7 +624,6 @@ noncomputable def equivPi [IsReduced R] : R ≃ₐ[R] ∀ I : MaximalSpectrum R,
   .trans (.symm <| .quotientBot R R) <| .trans
     (Ideal.quotientEquivAlgOfEq R (nilradical_eq_zero R).symm) (quotNilradicalEquivPi R)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem isSemisimpleRing_of_isReduced [IsReduced R] : IsSemisimpleRing R :=
   (equivPi R).symm.isSemisimpleRing
 

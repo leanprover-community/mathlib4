@@ -17,7 +17,7 @@ there is a `MulAction`/`MulDistribMulAction` of the quotient group `G ⧸ H` on 
 
 -/
 
-@[expose] public section
+public section
 
 namespace MulAction
 
