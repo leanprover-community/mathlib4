@@ -39,6 +39,7 @@ additive character
 
 @[expose] public section
 
+assert_not_exists MeasureTheory.integral
 
 universe u v
 
