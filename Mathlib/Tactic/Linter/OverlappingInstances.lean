@@ -184,7 +184,7 @@ def runLinter (ctx : ContextInfo) (lctx : LocalContext) (expectedType? : Option 
       let fvarTypes := .andList <| fvarTypes.toList.map (m!"`{.sbracket ·}`")
       let overlaps := .andList <| overlaps.toList.map (m!"`{.sbracket ·}`")
       let mut msg :=
-        m!"{fvarTypes} {ite propOverlap "each imply"
+        m!"{fvarTypes} {if propOverlap then "each imply" else
           "can be used to infer conflicting versions of"} {overlaps}."
       unless redundant.isEmpty do
         let redundant' := .andList <| redundant.toList.map (m!"`{.sbracket ·}`")
