@@ -118,7 +118,7 @@ theorem cof_add_one (o) : cof (o + 1) = 1 :=
 theorem cof_one : cof 1 = 1 := by
   simpa using cof_add_one 0
 
--- TODO: deprecate in favor of `cof_add_one`
+@[deprecated cof_add_one (since := "2026-05-25")]
 theorem cof_succ (o) : cof (succ o) = 1 :=
   cof_add_one o
 
@@ -235,12 +235,12 @@ alias cof_eq_of_isNormal := cof_map_of_isNormal
 alias IsNormal.cof_eq := cof_eq_of_isNormal
 
 theorem le_cof_map_of_isNormal {f} (hf : IsNormal f) (a) : cof a ≤ cof (f a) := by
-  rcases zero_or_succ_or_isSuccLimit a with (rfl | ⟨b, rfl⟩ | ha)
-  · rw [cof_zero]
-    exact zero_le
-  · rw [cof_succ, Cardinal.one_le_iff_ne_zero, cof_eq_zero.ne]
-    exact (hf.strictMono (lt_succ b)).ne_zero
-  · rw [cof_map_of_isNormal hf ha]
+  cases a using limitRecOn with
+  | zero => simp
+  | add_one a =>
+    rw [cof_add_one, Cardinal.one_le_iff_ne_zero, cof_eq_zero.ne]
+    exact (hf.strictMono (lt_succ a)).ne_zero
+  | limit a ha => rw [cof_map_of_isNormal hf ha]
 
 @[deprecated (since := "2026-03-19")]
 alias cof_le_of_isNormal := le_cof_map_of_isNormal
