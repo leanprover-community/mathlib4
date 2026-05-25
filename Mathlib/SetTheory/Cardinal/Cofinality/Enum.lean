@@ -98,14 +98,16 @@ theorem type_eq_of_isCofinal {s : Set α} (hs : IsCofinal s) : typeLT s = typeLT
 noncomputable def enum (s : Set α) (hs : IsCofinal s) : α ≃o s :=
   .ofRelIsoLT (type_eq.1 (type_eq_of_isCofinal hs).symm).some
 
-theorem enum_le_of_forall_lt {a o : α} {s : Set α} {hs : IsCofinal s} (ho : o ∈ s)
-    (H : ∀ b < a, enum s hs b < o) : enum s hs a ≤ o := by
+variable {s : Set α} {hs : IsCofinal s}
+
+theorem enum_le_of_forall_lt {a o : α} (ho : o ∈ s) (H : ∀ b < a, enum s hs b < o) :
+    enum s hs a ≤ o := by
   rw [← Subtype.coe_mk o ho, Subtype.coe_le_coe, ← OrderIso.le_symm_apply]
   apply le_of_forall_lt
   simpa [OrderIso.lt_symm_apply]
 
-theorem enum_succ_le_of_lt [SuccOrder α] {a o : α} {s : Set α} {hs : IsCofinal s} (ha : o ∈ s)
-    (H : enum s hs a < o) : enum s hs (succ a) ≤ o := by
+theorem enum_succ_le_of_lt [SuccOrder α] {a o : α} (ha : o ∈ s) (H : enum s hs a < o) :
+    enum s hs (succ a) ≤ o := by
   refine enum_le_of_forall_lt ha fun b hb ↦ H.trans_le' ?_
   simpa using le_of_lt_succ hb
 
@@ -114,13 +116,14 @@ theorem enum_univ (x : α) : enum univ .univ x = ⟨x, mem_univ x⟩ := by
   rw [← Subsingleton.allEq OrderIso.Set.univ.symm (enum univ .univ)]
   rfl
 
-theorem enum_anti {t : Set α} {x : α} (h : s ⊆ t) : enum t (hs.mono h) x ≤ (enum s hs x).1 := by
+theorem enum_anti {hs : IsCofinal s} {t : Set α} {x : α} (h : s ⊆ t) :
+    enum t (hs.mono h) x ≤ (enum s hs x).1 := by
   induction x using WellFoundedLT.induction with | ind x IH
   exact enum_le_of_forall_lt (h (Subtype.prop _)) fun y hy ↦
     (IH y hy).trans_lt ((enum s hs).strictMono hy)
 
-/-- A characterization of `Order.enum s _`: it is the unique strict monotonic function with range
-`s`. -/
+/-- A characterization of `Order.enum s _`: it is the unique strict monotonic function
+with range `s`. -/
 theorem enum_eq_iff {f : α → α} : Subtype.val ∘ enum s hs = f ↔ StrictMono f ∧ range f = s := by
   have H := (Subtype.strictMono_coe _).comp (enum s hs).strictMono
   constructor
@@ -147,8 +150,7 @@ theorem enum_bot {α : Type*} [ConditionallyCompleteLinearOrderBot α] [WellFoun
   rfl
 
 /-- Club sets correspond one to one with normal functions. -/
-theorem isNormal_enum_iff {s : Set α} {hs : IsCofinal s} :
-    IsNormal (Subtype.val ∘ enum s hs) ↔ DirSupClosed s := by
+theorem isNormal_enum_iff : IsNormal (Subtype.val ∘ enum s hs) ↔ DirSupClosed s := by
   let H := (Subtype.strictMono_coe _).comp (enum s hs).strictMono
   refine ⟨fun he ↦ by simpa using he.dirSupClosed_range, ?_⟩
   rw [isNormal_iff, dirSupClosed_iff_of_linearOrder]
