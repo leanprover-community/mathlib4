@@ -920,18 +920,15 @@ theorem image_iterate_stabilises_lt_card [DecidableEq α] {f : α → α} {s : F
     ∃ n < #s, ∀ m, n ≤ m → s.image f^[m] = s.image f^[n] := by
   let g (i : ℕ) : Finset α := s.image f^[i]
   have (i : ℕ) : 0 < #(g i) := (hs₀.image _).card_pos
-  let G (i : ℕ) : ℕ := #(g i) - 1
   have hg : Antitone g := antitone_nat_of_succ_le <| fun i ↦ by
     simp_rw [le_iff_subset, g, Function.iterate_succ, ← image_image]
     grw [hs.finsetImage_subset]
-  have G_eq (i j : ℕ) : G i = G j ↔ g i = g j := by
+  have eq_iff (i j : ℕ) : #(g i) - 1 = #(g j) - 1 ↔ g i = g j := by
     wlog hij : j ≤ i generalizing i j
     · grind
     exact ⟨fun h ↦ eq_of_subset_of_card_le (hg hij) (by grind), by grind⟩
-  have hG : Antitone G := fun i j h ↦ by simp only [G]; gcongr #?_ - 1; exact hg h
-  have hG₁ (m : ℕ) : G m = G (m + 1) → G (m + 1) = G (m + 2) := by
-    grind [=_ image_image, iterate_succ']
-  rcases Nat.stabilises_of_antitone hG hG₁ with ⟨n, hn, hn'⟩
+  have hG : Antitone (fun i ↦ #(g i) - 1) := fun i j h ↦ by dsimp; gcongr #?_ - 1; exact hg h
+  rcases Nat.stabilises_of_antitone hG (by grind [=_ image_image, iterate_succ']) with ⟨n, hn, hn'⟩
   exact ⟨n, by grind⟩
 
 /--
