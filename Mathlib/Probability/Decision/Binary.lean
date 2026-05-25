@@ -61,10 +61,6 @@ lemma integral_zeroOneLoss_true (ν : Measure Bool) : ∫⁻ y, zeroOneLoss true
 lemma integral_zeroOneLoss_false (ν : Measure Bool) : ∫⁻ y, zeroOneLoss false y ∂ν = ν {true} := by
   simp [zeroOneLoss, lintegral_bool]
 
-instance (P : Kernel Bool 𝓧) [IsFiniteKernel P] (π : Measure Bool) [IsFiniteMeasure π] :
-    HasArgminEstimator zeroOneLoss P π :=
-  hasArgminEstimator_of_finite (by fun_prop)
-
 end zeroOneLoss
 
 section BinaryBayesEstimator
@@ -109,6 +105,14 @@ lemma isArgminEstimator_binaryBayesEstimator (μ ν : Measure 𝓧) [IsFiniteMea
   · simp [hπ, not_lt.mpr hπ]
   · simp [hπ, not_le.mp hπ]
   · simpa [hπ, not_le.mp hπ] using (not_le.mp hπ).le
+
+instance (P : Kernel Bool 𝓧) [IsFiniteKernel P] (π : Measure Bool) [IsFiniteMeasure π] :
+    HasArgminEstimator zeroOneLoss P π :=
+  ⟨binaryBayesEstimator (P false) (P true) π, by
+    convert isArgminEstimator_binaryBayesEstimator _ _ π
+    · rw [← @Kernel.eq_boolKernel]
+    · infer_instance
+    · infer_instance⟩
 
 end BinaryBayesEstimator
 

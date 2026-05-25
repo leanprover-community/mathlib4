@@ -143,20 +143,22 @@ class HasArgminEstimator {𝓨 : Type*} [MeasurableSpace 𝓨]
   exists_isArgminEstimator : ∃ f : 𝓧 → 𝓨, IsArgminEstimator ℓ P f π
 
 noncomputable
-def HasArgminEstimator.estimator (h : HasArgminEstimator ℓ P π) : 𝓧 → 𝓨 :=
+def argminEstimator {𝓨 : Type*} [MeasurableSpace 𝓨]
+    (ℓ : Θ → 𝓨 → ℝ≥0∞) (P : Kernel Θ 𝓧) [IsFiniteKernel P] (π : Measure Θ) [IsFiniteMeasure π]
+    [h : HasArgminEstimator ℓ P π] : 𝓧 → 𝓨 :=
   h.exists_isArgminEstimator.choose
 
-lemma HasArgminEstimator.isArgminEstimator (h : HasArgminEstimator ℓ P π) :
-    IsArgminEstimator ℓ P h.estimator π :=
+lemma isArgminEstimator_argminEstimator [h : HasArgminEstimator ℓ P π] :
+    IsArgminEstimator ℓ P (argminEstimator ℓ P π) π :=
   h.exists_isArgminEstimator.choose_spec
 
 /-- If the estimation problem admits a generalized Bayes estimator, then the Bayesian risk
 attains the risk lower bound `∫⁻ x, ⨅ y, ∫⁻ θ, ℓ θ y ∂((P†π) x) ∂(P ∘ₘ π)`. -/
 lemma bayesRisk_eq_of_hasArgminEstimator
-    (hl : Measurable (Function.uncurry ℓ)) [h : HasArgminEstimator ℓ P π] :
+    (hl : Measurable (Function.uncurry ℓ)) [HasArgminEstimator ℓ P π] :
     bayesRisk ℓ P π = ∫⁻ x, ⨅ y, ∫⁻ θ, ℓ θ y ∂((P†π) x) ∂(P ∘ₘ π) := by
-  rw [← h.isArgminEstimator.isBayesEstimator hl,
-    h.isArgminEstimator.avgRisk_eq_lintegral_iInf hl]
+  rw [← isArgminEstimator_argminEstimator.isBayesEstimator hl,
+    isArgminEstimator_argminEstimator.avgRisk_eq_lintegral_iInf hl]
 
 /-- If the set of labels `𝓨` is finite, the estimation problem admits a
 generalized Bayes estimator. -/
