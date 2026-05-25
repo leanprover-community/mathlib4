@@ -126,7 +126,7 @@ noncomputable abbrev toNormedAddCommGroup (M : Matrix n n 𝕜) (hM : M.PosDef) 
 /-- A positive semi-definite matrix `M` induces an inner product `⟪x, y⟫ = xᴴMy`. -/
 @[implicit_reducible]
 def toInnerProductSpace (M : Matrix n n 𝕜) (hM : M.PosSemidef) :
-    @InnerProductSpace 𝕜 (n → 𝕜) _ (M.toSeminormedAddCommGroup hM) :=
+    @InnerProductSpace 𝕜 (n → 𝕜) _ _ (M.toSeminormedAddCommGroup hM) :=
   InnerProductSpace.ofCore _
 
 end Matrix
