@@ -18,8 +18,8 @@ a closed subspace of a normed space this condition is equivalent to existence of
 subspace `q` such that `p ⊓ q = ⊥`, `p ⊔ q = ⊤`. We also prove that a subspace of finite codimension
 is always a complemented subspace.
 
-Two submodules `p` and `q` of a Banach space are *topological complements* (`Submodule.IsTopCompl`) if and
-only if they are algebraic complements and both are closed.
+Two submodules `p` and `q` of a Banach space are *topological complements* (`Submodule.IsTopCompl`)
+if and only if they are algebraic complements and both are closed.
 
 ## Tags
 
