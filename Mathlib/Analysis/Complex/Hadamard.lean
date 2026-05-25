@@ -74,7 +74,7 @@ def verticalClosedStrip (a : ℝ) (b : ℝ) : Set ℂ := re ⁻¹' Icc a b
 
 /-- The supremum of the norm of `f` on imaginary lines. (Fixed real part)
 This is also known as the function `M` -/
-noncomputable def sSupNormIm {E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E]
+noncomputable def sSupNormIm {E : Type*} [NormMetric E]
     (f : ℂ → E) (x : ℝ) : ℝ :=
   sSup ((norm ∘ f) '' (re ⁻¹' {x}))
 

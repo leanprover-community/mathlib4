@@ -469,13 +469,13 @@ lemma isometry_toContinuousMap [MetricSpace R] [Zero R] :
     Isometry (toContinuousMap : C(α, R)₀ → C(α, R)) :=
   fun _ _ ↦ rfl
 
-noncomputable instance [NormMetric R] [AddCommGroup R] [IsNormedAddGroup R] : Norm C(α, R)₀ where
+noncomputable instance [NormMetric R] [AddCommGroup R] : Norm C(α, R)₀ where
   norm f := ‖(f : C(α, R))‖
 
-lemma norm_def [NormMetric R] [AddCommGroup R] [IsNormedAddGroup R] (f : C(α, R)₀) : ‖f‖ = ‖(f : C(α, R))‖ :=
+lemma norm_def [NormMetric R] [AddCommGroup R] (f : C(α, R)₀) : ‖f‖ = ‖(f : C(α, R))‖ :=
   rfl
 
-noncomputable instance [NormMetric R] [AddCommGroup R] [IsNormedAddGroup R] : NormMetric C(α, R)₀ where
+noncomputable instance [NormMetric R] [AddCommGroup R] : NormMetric C(α, R)₀ where
 
 instance [NormMetric R] [AddCommGroup R] [IsNormedAddGroup R] : IsNormedAddGroup C(α, R)₀ where
   dist_eq f g := IsNormedAddGroup.dist_eq (f : C(α, R)) g

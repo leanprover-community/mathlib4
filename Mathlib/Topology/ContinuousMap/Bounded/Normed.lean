@@ -204,7 +204,7 @@ instance instNormPseudoMetric : NormPseudoMetric (α →ᵇ β) where
 instance instIsNormedAddGroup : IsNormedAddGroup (α →ᵇ β) where
   dist_eq f g := by simp only [norm_eq, dist_eq, dist_eq_norm_neg_add, add_apply, neg_apply]
 
-instance instNormMetric {α β} [TopologicalSpace α] [NormMetric β] [AddCommGroup β] [IsNormedAddGroup β] :
+instance instNormMetric {α β} [TopologicalSpace α] [NormMetric β] [AddCommGroup β] :
     NormMetric (α →ᵇ β) where
 
 theorem nnnorm_def : ‖f‖₊ = nndist f 0 := rfl

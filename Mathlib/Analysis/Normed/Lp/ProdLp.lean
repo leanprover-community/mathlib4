@@ -671,7 +671,7 @@ lemma prod_isometry_ofLp_infty [PseudoEMetricSpace α] [PseudoEMetricSpace β] :
       simpa only [ENNReal.div_top, ENNReal.toReal_zero, NNReal.rpow_zero, ENNReal.coe_one,
         one_mul] using prod_antilipschitzWith_ofLp ∞ α β x y)
 
-instance [NormPseudoMetric α] [AddCommGroup α] [IsNormedAddGroup α] [NormPseudoMetric β] [AddCommGroup β] [IsNormedAddGroup β] :
+instance [NormPseudoMetric α] [NormPseudoMetric β] :
     NormPseudoMetric (WithLp p (α × β)) where
 
 /-- Seminormed group instance on the product of two normed groups, using the `L^p`
@@ -723,7 +723,7 @@ theorem norm_snd_le [NormPseudoMetric α] [AddCommGroup α] [IsNormedAddGroup α
 
 end
 
-instance instProdNormMetric [NormMetric α] [AddCommGroup α] [IsNormedAddGroup α] [NormMetric β] [AddCommGroup β] [IsNormedAddGroup β] :
+instance instProdNormMetric [NormMetric α] [NormMetric β] :
     NormMetric (WithLp p (α × β)) where
 
 /-- normed group instance on the product of two normed groups, using the `L^p` norm. -/
@@ -1034,7 +1034,7 @@ lemma dist_pseudoMetricSpaceToProd [PseudoMetricSpace α] [PseudoMetricSpace β]
 /-- This definition allows to endow `α × β` with the Lp norm with the uniformity and bornology
 being defeq to the product ones. It is useful to endow a type synonym of `a × β` with the
 Lp norm. -/
-abbrev normPseudoMetricToProd [NormPseudoMetric α] [AddCommGroup α] [IsNormedAddGroup α] [NormPseudoMetric β] [AddCommGroup β] [IsNormedAddGroup β] :
+abbrev normPseudoMetricToProd [NormPseudoMetric α] [NormPseudoMetric β] :
     NormPseudoMetric (α × β) where
   norm x := ‖toLp p x‖
   toPseudoMetricSpace := pseudoMetricSpaceToProd p α β
@@ -1105,7 +1105,7 @@ abbrev normedSpaceSeminormedAddCommGroupToProd
 /-- This definition allows to endow `α × β` with the Lp norm with the uniformity and bornology
 being defeq to the product ones. It is useful to endow a type synonym of `α × β` with the
 Lp norm. -/
-abbrev normMetricToProd [NormMetric α] [AddCommGroup α] [IsNormedAddGroup α] [NormMetric β] [AddCommGroup β] [IsNormedAddGroup β] :
+abbrev normMetricToProd [NormMetric α] [NormMetric β] :
     NormMetric (α × β) where
   norm x := ‖toLp p x‖
   toPseudoMetricSpace := pseudoMetricSpaceToProd p α β

@@ -174,7 +174,7 @@ instance : IsNormedAddGroup C(α, E) where
   dist_eq x y := by rw [← norm_mkOfCompact, ← dist_mkOfCompact, dist_eq_norm_neg_add,
     mkOfCompact_add, mkOfCompact_neg]
 
-instance {E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] : NormMetric C(α, E) where
+instance {E : Type*} [NormMetric E] [AddCommGroup E] : NormMetric C(α, E) where
 
 example {E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] : NormedAddCommGroup C(α, E) where
 

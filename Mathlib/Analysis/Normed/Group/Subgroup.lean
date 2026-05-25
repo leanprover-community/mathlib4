@@ -61,11 +61,6 @@ theorem norm_coe {s : Subgroup E} (x : s) : ‖(x : E)‖ = ‖x‖ :=
 
 end SeminormedGroup
 
-/-- missing doc -/
-@[to_additive /-- missing doc -/]
-instance [NormMetric E] [Group E] [IsNormedGroup E] {s : Subgroup E} : NormMetric s :=
-  fast_instance% NormMetric.induced _ _ s.subtype Subtype.coe_injective
-
 end Subgroup
 
 /-! ### Subgroup classes of normed groups -/
@@ -98,11 +93,5 @@ theorem coe_norm (x : s) : ‖x‖ = ‖(x : E)‖ :=
   rfl
 
 end SeminormedGroup
-
-/-- missing doc -/
-@[to_additive /-- missing doc -/]
-instance (priority := 75) [NormMetric E] [Group E] [IsNormedGroup E] {S : Type*} [SetLike S E] [SubgroupClass S E]
-    (s : S) : NormMetric s :=
-  fast_instance% NormMetric.induced _ _ (SubgroupClass.subtype s) Subtype.coe_injective
 
 end SubgroupClass

@@ -134,7 +134,7 @@ end FinMeasAdditive
 
 /-- A `FinMeasAdditive` set function whose norm on every set is less than the measure of the
 set (up to a multiplicative constant). -/
-def DominatedFinMeasAdditive {β} [NormPseudoMetric β] [AddCommGroup β] [IsNormedAddGroup β] {_ : MeasurableSpace α} (μ : Measure α)
+def DominatedFinMeasAdditive {β} [NormPseudoMetric β] [AddCommGroup β] {_ : MeasurableSpace α} (μ : Measure α)
     (T : Set α → β) (C : ℝ) : Prop :=
   FinMeasAdditive μ T ∧ ∀ s, MeasurableSet s → μ s < ∞ → ‖T s‖ ≤ C * μ.real s
 

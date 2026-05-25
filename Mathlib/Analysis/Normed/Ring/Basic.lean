@@ -382,7 +382,7 @@ lemma nnnorm_commutator_units_sub_one_le (a b : αˣ) :
 
 /-- A homomorphism `f` between semi_normed_rings is bounded if there exists a positive
   constant `C` such that for all `x` in `α`, `norm (f x) ≤ C * norm x`. -/
-def RingHom.IsBounded {α : Type*} [NormPseudoMetric α] [Ring α] [IsNormedRing α] {β : Type*} [NormPseudoMetric β] [Ring β] [IsNormedRing β]
+def RingHom.IsBounded {α : Type*} [NormPseudoMetric α] [Ring α] {β : Type*} [NormPseudoMetric β] [Ring β]
     (f : α →+* β) : Prop :=
   ∃ C : ℝ, 0 < C ∧ ∀ x : α, norm (f x) ≤ C * norm x
 

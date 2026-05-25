@@ -70,7 +70,7 @@ open scoped MeasureTheory Topology Pointwise
 elements within a distance `δ` of a point of order `n`. -/
 @[to_additive /-- In a seminormed additive group `A`, given `n : ℕ` and `δ : ℝ`,
 `approxAddOrderOf A n δ` is the set of elements within a distance `δ` of a point of order `n`. -/]
-def approxOrderOf (A : Type*) [NormPseudoMetric A] [Group A] [IsNormedGroup A] (n : ℕ) (δ : ℝ) : Set A :=
+def approxOrderOf (A : Type*) [NormPseudoMetric A] [Group A] (n : ℕ) (δ : ℝ) : Set A :=
   thickening δ {y | orderOf y = n}
 
 @[to_additive mem_approx_add_orderOf_iff]
@@ -85,7 +85,7 @@ lie in infinitely many of the sets `approxOrderOf A n δₙ`. -/
 distances `δ₁, δ₂, ...`, `addWellApproximable A δ` is the limsup as `n → ∞` of the sets
 `approxAddOrderOf A n δₙ`. Thus, it is the set of points that lie in infinitely many of the sets
 `approxAddOrderOf A n δₙ`. -/]
-def wellApproximable (A : Type*) [NormPseudoMetric A] [Group A] [IsNormedGroup A] (δ : ℕ → ℝ) : Set A :=
+def wellApproximable (A : Type*) [NormPseudoMetric A] [Group A] (δ : ℕ → ℝ) : Set A :=
   blimsup (fun n => approxOrderOf A n (δ n)) atTop fun n => 0 < n
 
 @[to_additive mem_add_wellApproximable_iff]
