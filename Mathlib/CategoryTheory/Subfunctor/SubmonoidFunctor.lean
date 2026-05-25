@@ -86,9 +86,7 @@ instance : CompleteLattice (SubmonoidFunctor R) where
   sSup S :=
     { obj U := ⨆ F ∈ S, F.obj U
       map {U V} f := by
-        nth_rw 2 [← sSup_image]
-        refine le_trans ?_ Submonoid.monotone_comap.le_map_sSup
-        rw [iSup_image]
+        grw [← Submonoid.monotone_comap.le_map_iSup₂]
         exact iSup₂_mono fun F _ ↦ F.map f }
   isLUB_sSup _ := ⟨fun a ha U ↦ le_iSup₂_of_le a ha le_rfl, fun _ _ _ ↦ by aesop⟩
   sInf S :=
