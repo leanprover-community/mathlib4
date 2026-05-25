@@ -137,7 +137,7 @@ noncomputable def self [Projective Z] : ProjectiveResolution Z where
 
 variable {Z} {Z' : C} (P' : ProjectiveResolution Z')
 
-/-- Given injective resolutions `P` and `P'` of two objects `Z` and `Z'`,
+/-- Given projective resolutions `P` and `P'` of two objects `Z` and `Z'`,
 and a morphism `f : Z ⟶ Z'`, this structure contains the data of a morphism
 `P.complex ⟶ P'.complex` which is compatible with `f` -/
 structure Hom (f : Z ⟶ Z') where

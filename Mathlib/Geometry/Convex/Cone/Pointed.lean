@@ -56,13 +56,11 @@ lemma mem_ofSubmodule_iff {S : Submodule R E} {x : E} : x ∈ (S : PointedCone R
 lemma ofSubmodule_inj {S T : Submodule R E} : ofSubmodule S = ofSubmodule T ↔ S = T :=
   restrictScalars_inj ..
 
-set_option backward.isDefEq.respectTransparency false in
 lemma ofSubmodule_le_ofSubmodule {S T : Submodule R E} : ofSubmodule S ≤ ofSubmodule T ↔ S ≤ T :=
-  restrictScalars_le ..
+  .rfl
 
-set_option backward.isDefEq.respectTransparency false in
 lemma ofSubmodule_lt_ofSubmodule {S T : Submodule R E} : ofSubmodule S < ofSubmodule T ↔ S < T :=
-  restrictScalars_lt ..
+  .rfl
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Coercion from submodules to pointed cones as an order embedding. -/
@@ -141,10 +139,10 @@ def _root_.ConvexCone.toPointedCone (C : ConvexCone R E) (hC : C.Pointed) : Poin
     simp_rw [SetLike.mem_coe]
     rcases eq_or_lt_of_le hc with hzero | hpos
     · unfold ConvexCone.Pointed at hC
-      convert hC
+      convert! hC
       simp [← hzero]
     · apply ConvexCone.smul_mem
-      · convert hpos
+      · convert! hpos
       · exact hx
 
 @[simp]

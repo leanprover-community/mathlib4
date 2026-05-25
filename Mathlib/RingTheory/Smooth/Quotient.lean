@@ -104,14 +104,14 @@ lemma Algebra.FormallySmooth.of_surjective_of_ker_eq_map_of_flat [Module.Flat R 
     (sq0 : (RingHom.ker (algebraMap R R')) ^ 2 = ⊥) (smoothq : Algebra.FormallySmooth R' S') :
     Algebra.FormallySmooth R S := by
   let P := (Algebra.Generators.self R S).toExtension
-  let : Algebra.FormallySmooth R P.Ring := Algebra.mvPolynomial S
+  let : Algebra.FormallySmooth R P.Ring := instFormallySmoothMvPolynomial S
   let IP := (RingHom.ker (algebraMap R R')).map (algebraMap R P.Ring)
   let Gen : Algebra.Generators R' S' S := {
     val := algebraMap S S'
     σ' := fun s' ↦ MvPolynomial.X (Classical.choose (surjS s'))
     aeval_val_σ' s' := by simp [Classical.choose_spec (surjS s')] }
   let P' := Gen.toExtension
-  let : Algebra.FormallySmooth R' P'.Ring := Algebra.mvPolynomial S
+  let : Algebra.FormallySmooth R' P'.Ring := instFormallySmoothMvPolynomial S
   let : Algebra P.Ring P'.Ring := MvPolynomial.algebraMvPolynomial
   let : IsScalarTower R P.Ring P'.Ring :=
     IsScalarTower.of_algebraMap_eq (fun x ↦ (MvPolynomial.map_C _ x).symm)
