@@ -676,8 +676,85 @@ jobs:
       - name: Upload staged cache to Azure
         shell: bash
         run: |
-          echo "Uploading cache to Azure..."
-          MATHLIB_CACHE_USE_CLOUDFLARE=0 lake env "$CACHE_BIN" put-staged --staging-dir="cache-staging" --repo=${{ github.event.pull_request.head.repo.full_name || github.repository }}
+          REPO="${{ github.event.pull_request.head.repo.full_name || github.repository }}"
+          # `head_ref` is the PR branch on PR events (empty otherwise); `ref_name`
+          # is the branch name for push events. One of them is always populated
+          # in the contexts that trigger this workflow.
+          BRANCH="${{ github.head_ref || github.ref_name }}"
+
+          # Pick the trust-level-appropriate dedicated container based on which
+          # repo+branch we're uploading on behalf of. The cache tool refuses to
+          # default uploads to a container, so this dispatch must be explicit.
+          #
+          # Security note: this YAML-level dispatch is *not* the trust boundary.
+          # The real enforcement is at the Azure side via the OIDC bearer token
+          # minted above (`Azure CLI OIDC login and mint storage bearer token`):
+          # the token is issued with a scope that authorizes writes only to the
+          # container(s) appropriate for the workflow context (e.g. a fork PR's
+          # token is not authorized to write `mathlib4-master`). Even if a
+          # malicious actor modified this dispatch — or hard-coded
+          # `--container=master` from a fork build — Azure would 403 the PUT.
+          # The dispatch exists so the workflow does the *right* thing in the
+          # honest case; defence in depth lives in the OIDC trust relationship.
+          case "$REPO" in
+            "leanprover-community/mathlib4")
+              # Canonical mathlib4. The dispatch must match the per-trust
+              # `cache_application_id` chosen by the caller workflow:
+              #   - master, staging       → master writer (MASTER container)
+              #   - trying                → non-master writer (FORKS container).
+              #                             bors `try` is experimental, NOT master-trust.
+              #   - other dev branches    → non-master writer (FORKS container).
+              # The non-master writer's RBAC scope is limited to FORKS, so it
+              # cannot write to MASTER under any of these paths.
+              case "$BRANCH" in
+                "master"|"staging")
+                  PRIMARY="master"
+                  ;;
+                "trying")
+                  PRIMARY="forks"
+                  ;;
+                *)
+                  PRIMARY="forks"
+                  ;;
+              esac
+              ;;
+            "leanprover-community/mathlib4-nightly-testing")
+              # The nightly-testing repo hosts both trusted nightly branches
+              # and arbitrary toolchain-PR test branches. Trusted refs go to
+              # the dedicated nightly container; everything else lands in
+              # the least-trusted `pr-toolchain-tests` catch-all, since
+              # toolchain-test branches can build with arbitrary upstream
+              # toolchains and their artifacts must not be confused with
+              # nightly-trusted ones.
+              case "$BRANCH" in
+                "nightly-testing"|"nightly-testing-green"|"staging"|bump/*)
+                  PRIMARY="nightly-testing"
+                  ;;
+                *)
+                  PRIMARY="pr-toolchain-tests"
+                  ;;
+              esac
+              ;;
+            *)
+              PRIMARY="forks"
+              ;;
+          esac
+
+          echo "Uploading cache to Azure (container: $PRIMARY)..."
+          lake env "$CACHE_BIN" put-staged --container="$PRIMARY" --staging-dir="cache-staging" --repo="$REPO"
+
+          # Dual-write to the legacy `mathlib4` container, but ONLY from master
+          # CI. Old cache tools (forks that haven't synced past this PR) read
+          # from `legacy`, so we keep it fresh with master-built artifacts for
+          # backward compatibility. We deliberately do NOT dual-write from
+          # forks/nightly: allowing low-trust writers into `legacy` would
+          # re-introduce the cross-trust poisoning vector this migration is
+          # designed to eliminate. Once all readers have moved to the new
+          # containers, this second call can be removed.
+          if [ "$PRIMARY" = "master" ]; then
+            echo "Dual-writing to legacy container for backward compatibility (master only)..."
+            lake env "$CACHE_BIN" put-staged --container=legacy --staging-dir="cache-staging" --repo="$REPO"
+          fi
 
   post_steps:
     name: Post-Build Step

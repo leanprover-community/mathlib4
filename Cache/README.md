@@ -61,6 +61,90 @@ When arguments are provided, only the specified files and their transitive impor
 | Option              | Description                                                                                |
 |---------------------|--------------------------------------------------------------------------------------------|
 | `--repo=OWNER/REPO` | Override the repository to fetch cache from (e.g., `--repo=leanprover-community/mathlib4`) |
+| `--cache-from=LIST` | For `get`/`get!`/`get-`/`lookup`: trust-ordered, comma-separated list of containers to read from. Overrides the per-repo default (see [Trust-ordered containers](#trust-ordered-containers)). |
+| `--container=NAME`  | For `put`/`put!`/`put-unpacked`/`put-staged`/`commit`/`commit!`: target container for upload. Required unless `MATHLIB_CACHE_PUT_URL` is set. |
+
+Container names (known to both flags): `master`, `forks`, `nightly-testing`, `pr-toolchain-tests`, `legacy`.
+
+## Trust-ordered containers
+
+The cache is split across multiple Azure Blob Storage containers on the
+`lakecache` storage account, each fed by a CI job at a known trust level:
+
+| Container                          | Written by                          | Trust  |
+|------------------------------------|-------------------------------------|--------|
+| `mathlib4-master`                  | master CI                           | high   |
+| `mathlib4-forks`                   | PR builds (forks)                   | medium |
+| `mathlib4-nightly-testing`         | `nightly-testing` branch builds     | medium |
+| `mathlib4-pr-toolchain-tests`      | toolchain-PR test runs              | medium |
+| `mathlib4` (legacy)                | master CI only, during the migration | high (writes restricted) |
+
+`cache get` tries each repo's dedicated container first and falls back to the
+**legacy** `mathlib4` container as a universal last-resort. A poisoned artifact
+in a low-trust source will only be served when the higher-trust source does
+not have it — the worst case is a missed cache hit (rebuild from source)
+rather than a corrupted build.
+
+> **Where the trust is actually enforced.** The CLI dispatch in CI is best-effort;
+> the real boundary is at the Azure auth layer. Each CI job mints an OIDC-issued
+> bearer token whose scope authorizes writes only to the container(s) appropriate
+> for that job's context. A fork PR's token cannot write `mathlib4-master` even
+> if the cache invocation were tampered with — Azure would reject the PUT.
+
+The `mathlib4` container is the historical monolithic bucket where every CI
+job used to write. During the migration, **only master CI dual-writes to
+`legacy`** (alongside its own `mathlib4-master` upload) so that consumers
+running older cache tools — which only know how to read from `mathlib4` —
+keep finding master-built artifacts at the historical location. Fork and
+nightly-testing CI **do not** write to `legacy`: allowing low-trust writers
+into it would re-introduce the cross-trust poisoning vector this migration
+is designed to eliminate. Once all readers have moved to the new containers,
+the master dual-write to `legacy` can be turned off.
+
+The default trust-ordered list applied to each repo is:
+
+| GitHub repo                                     | Container order tried             |
+|-------------------------------------------------|-----------------------------------|
+| `leanprover-community/mathlib4` (master)        | `master`, `legacy`                |
+| `leanprover-community/mathlib4-nightly-testing` | `nightly-testing`, `legacy` *(strict)* |
+| any fork (PRs)                                  | `forks`, `legacy`                 |
+
+Note that `master` is *not* in the fork/nightly fallback lists: that container
+stores only canonical mathlib4 paths (`/f/{hash}.ltar`), never fork-prefixed
+ones, so a lookup there from a fork iteration would always 404. Fork PRs still
+read master-built artifacts — via the outer repo loop iteration where
+`repo = MATHLIBREPO` uses the canonical path scheme against `master`.
+
+**Branch-aware widening for the nightly-testing repo.** The default above is
+the *strict* trusted-nightly view: `pr-toolchain-tests` is deliberately
+excluded so trusted consumers (`nightly-testing`, `nightly-testing-green`,
+`bump/*`) never silently fall back to artifacts uploaded by low-trust
+toolchain-PR test branches. When the cache tool detects it's running on a
+toolchain-test branch (`lean-pr-testing-*`, `batteries-pr-testing-*`, etc.)
+via `getRemoteRepo`, it widens the allowlist for that run to
+`[pr-toolchain-tests, nightly-testing, legacy]` so the branch can read its
+own previously-uploaded artifacts. The classification lives in
+`containersForRepoAndBranch` (in `Cache/Infra.lean`).
+
+Use `--cache-from=master` to read **only** from the new master container
+(strictest mode). Use `--cache-from=master,legacy` (the migration default for
+the master branch) or any other explicit ordering for ad-hoc situations.
+
+Uploads should explicitly target a single container via `--container=NAME`.
+If neither `--container` nor `MATHLIB_CACHE_PUT_URL` is set, the upload
+defaults to **`legacy`** with a deprecation warning to stderr — a transitional
+fallback so workflow files written before the per-trust-level split keep
+working while every branch is being rebased onto the new YAMLs. The default
+will be tightened to a hard error once all known consumers have migrated.
+
+To keep unmigrated readers' hit rates during the transition, **only master CI**
+runs `put` twice: once with `--container=master` and once with
+`--container=legacy`. Fork and nightly-testing CI write only to their own
+dedicated containers (`forks`, `nightly-testing`) and never to `legacy`.
+
+> **Note**: `MATHLIB_CACHE_GET_URL` and `MATHLIB_CACHE_PUT_URL` (see below)
+> still work as a back-compat single-URL override; when either is set, the
+> multi-container logic is bypassed for that direction.
 
 ## Environment Variables
 
@@ -70,28 +154,21 @@ When arguments are provided, only the specified files and their transitive impor
 |---------------------|------------------------------------|-------------------------------------------------|
 | `MATHLIB_CACHE_DIR` | Directory for cached `.ltar` files | `$XDG_CACHE_HOME/mathlib` or `~/.cache/mathlib` |
 
-### Cache Backend Selection
-
-| Variable                       | Description                                              | Default     |
-|--------------------------------|----------------------------------------------------------|-------------|
-| `MATHLIB_CACHE_USE_CLOUDFLARE` | Set to `1` or `true` to use Cloudflare R2 instead of Azure | Azure cache |
-
 ### Custom Cache URLs
 
 These allow overriding the cache endpoints, useful for mirrors or custom deployments:
 
-| Variable                | Description                     | Default                                                           |
-|-------------------------|---------------------------------|-------------------------------------------------------------------|
-| `MATHLIB_CACHE_GET_URL` | URL for downloading cache files | Azure or Cloudflare URL based on `MATHLIB_CACHE_USE_CLOUDFLARE`   |
-| `MATHLIB_CACHE_PUT_URL` | URL for uploading cache files   | Azure or Cloudflare URL based on `MATHLIB_CACHE_USE_CLOUDFLARE`   |
+| Variable                | Description                     | Default                                              |
+|-------------------------|---------------------------------|------------------------------------------------------|
+| `MATHLIB_CACHE_GET_URL` | URL for downloading cache files | Azure container URLs (see [containers](#trust-ordered-containers)) |
+| `MATHLIB_CACHE_PUT_URL` | URL for uploading cache files   | Azure container URL chosen by `--container=NAME`     |
 
 ### Authentication (for uploads)
 
-| Variable                 | Description                                    |
-|--------------------------|------------------------------------------------|
-| `MATHLIB_CACHE_AZURE_BEARER_TOKEN` | Azure bearer token (preferred for Azure backend) |
-| `MATHLIB_CACHE_SAS`      | Azure SAS token fallback (for Azure backend)   |
-| `MATHLIB_CACHE_S3_TOKEN` | S3 credentials (when using Cloudflare backend) |
+| Variable                 | Description                            |
+|--------------------------|----------------------------------------|
+| `MATHLIB_CACHE_AZURE_BEARER_TOKEN` | Azure bearer token (preferred)  |
+| `MATHLIB_CACHE_SAS`      | Azure SAS token fallback               |
 
 ## How It Works
 
@@ -140,63 +217,41 @@ The cache covers these packages:
 - `Archive`
 - `Counterexamples`
 
-## Default Cache Backends
+## Default Cache Backend
 
-### Azure Blob Storage (Default)
+### Azure Blob Storage
 
-- **Download URL**: `https://lakecache.blob.core.windows.net/mathlib4`
-- Used by default for downloads and uploads
-
-### Cloudflare R2
-
-- **Download URL**: `https://mathlib4.lean-cache.cloud`
-- **Upload URL**: `https://a09a7664adc082e00f294ac190827820.r2.cloudflarestorage.com/mathlib4`
-- Enable with `MATHLIB_CACHE_USE_CLOUDFLARE=1`
+All cache containers live on the `lakecache` Azure storage account; see
+[Trust-ordered containers](#trust-ordered-containers) for the per-container URLs.
 
 ## Setting Up Your Own Cache Endpoint
 
-You can host your own cache mirror or private cache using any S3-compatible storage or HTTP server.
+You can host your own cache mirror or private cache on any HTTP server with
+Azure-compatible PUT semantics.
 
 ### Requirements
 
 Your endpoint must support:
 
 1. **GET requests** for downloading files at:
-   - `/f/{repo}/{hash}.ltar` - for fork caches
-   - `/f/{hash}.ltar` - for main mathlib cache (Azure only)
-   - `/c/{commit_hash}` - for commit manifests
+   - `/f/{hash}.ltar` — for the canonical mathlib4 cache
+   - `/f/{repo}/{hash}.ltar` — for fork caches
+   - `/c/{commit_hash}` — for commit manifests
 
 2. **PUT requests** for uploading (if you need upload capability)
 
 ### Using a Custom Endpoint
 
 ```bash
-# Download from a custom mirror
+# Download from a custom mirror (bypasses multi-container logic)
 export MATHLIB_CACHE_GET_URL="https://my-mirror.example.com/mathlib4"
 lake exe cache get
 
 # Upload to a custom endpoint
 export MATHLIB_CACHE_PUT_URL="https://my-upload.example.com/mathlib4"
-export MATHLIB_CACHE_AZURE_BEARER_TOKEN="your-bearer-token"  # preferred for Azure
-# export MATHLIB_CACHE_SAS="your-sas-token"                  # Azure fallback
-# export MATHLIB_CACHE_S3_TOKEN="ACCESS_KEY:SECRET_KEY"      # for S3/Cloudflare
+export MATHLIB_CACHE_AZURE_BEARER_TOKEN="your-bearer-token"  # preferred
+# export MATHLIB_CACHE_SAS="your-sas-token"                  # fallback
 lake exe cache put
-```
-
-### Example: S3-Compatible Storage
-
-For S3-compatible storage (MinIO, Cloudflare R2, AWS S3, etc.):
-
-1. Create a bucket (e.g., `mathlib-cache`)
-2. Configure public read access for downloads (or use signed URLs)
-3. Set up authentication for uploads
-4. Set the environment variables:
-
-```bash
-export MATHLIB_CACHE_GET_URL="https://your-bucket.s3.region.amazonaws.com/mathlib-cache"
-export MATHLIB_CACHE_PUT_URL="https://your-bucket.s3.region.amazonaws.com/mathlib-cache"
-export MATHLIB_CACHE_USE_CLOUDFLARE=1  # Use S3-style auth
-export MATHLIB_CACHE_S3_TOKEN="ACCESS_KEY:SECRET_KEY"
 ```
 
 ### Example: Simple HTTP Mirror
@@ -226,6 +281,23 @@ Where:
 - `{repo}` is like `leanprover-community/mathlib4` or `username/mathlib4`
 - `{filename}` is a hash like `1234567890abcdef`
 - `{commit_hash}` is a git commit SHA
+
+## Tests
+
+The cache tool's pure logic (container URL construction, per-repo allowlist,
+CLI parsing) is covered by a standalone test exe:
+
+```bash
+lake exe cache-test
+```
+
+The exe builds only `Cache.*` and its direct deps — it does not require
+Mathlib or `MathlibTest`. Exits 0 on success, non-zero on failure.
+
+> A Lake package has a single `testDriver`, which the enclosing `mathlib`
+> package already binds to `MathlibTest`. If the cache tool ever moves to
+> its own Lake project, the `cache-test` exe can be promoted to that
+> project's `testDriver` so `lake test` invokes it directly.
 
 ## Dependencies
 
