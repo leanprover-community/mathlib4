@@ -15,7 +15,10 @@ public import Mathlib.Order.CompletePartialOrder
 
 # Functors of submonoids
 
-Given a functor `R: C ⥤ MonCat`, we define a subfunctor of submonoids.
+Given a functor `R : C ⥤ MonCat`, we define a functor of submonoids `S` to be a
+family `Submonoid (R.obj U)` for all `U : C` that are compatible with the maps induced by `R`.
+
+We provide the complete lattice structure and the basic functoriality properties.
 -/
 
 @[expose] public section
