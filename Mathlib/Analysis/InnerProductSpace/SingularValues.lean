@@ -76,8 +76,10 @@ open Module InnerProductSpace
 namespace LinearMap
 
 variable {𝕜 : Type*} [RCLike 𝕜]
-  {E : Type*} [NormedAddCommGroup E] [InnerProductSpace 𝕜 E] [FiniteDimensional 𝕜 E]
-  {F : Type*} [NormedAddCommGroup F] [InnerProductSpace 𝕜 F] [FiniteDimensional 𝕜 F]
+  {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
+  [FiniteDimensional 𝕜 E]
+  {F : Type*} [AddCommGroup F] [NormedAddCommGroup F] [InnerProductSpace 𝕜 F]
+  [FiniteDimensional 𝕜 F]
   (T : E →ₗ[𝕜] F)
 
 /--
