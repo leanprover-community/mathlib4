@@ -54,7 +54,7 @@ def mk_out {V α : Type*} [Fintype V] [Ring α]
 /-- A relaxedFlow is defined on a complete graph with source and sink and assigns to each edge
   a nonnegative flow value that satisfies flow conservation and does not send flow into the
   source or out of the sink. -/
-structure RelaxedFlow (V α : Type*) [Fintype V] [Ring α] [LinearOrder α] (G : STVertices V) where
+structure RelaxedFlow {V : Type*} (α : Type*) [Fintype V] [Ring α] [LinearOrder α] (G : STVertices V) where
   f : V → V → α
   nonneg_flow : ∀ u v : V, f u v ≥ 0
   conservation : ∀ v : V, v ≠ G.s → v ≠ G.t → mk_out f {v} = mk_in f {v}
@@ -64,7 +64,7 @@ structure RelaxedFlow (V α : Type*) [Fintype V] [Ring α] [LinearOrder α] (G :
 open Classical in
 /-- An S-T cut partitions the set of vertices into a set S that
  contains the source and a set T that contains the sink. -/
-structure Cut (V α : Type*) [Fintype V] [Ring α] [LinearOrder α] (G : FlowNetwork V α) where
+structure Cut {V α : Type*} [Fintype V] [Ring α] [LinearOrder α] (G : FlowNetwork V α) where
   S : Finset V
   T : Finset V
   hT : T = univ \ S
@@ -77,11 +77,11 @@ structure Cut (V α : Type*) [Fintype V] [Ring α] [LinearOrder α] (G : FlowNet
 
 /-- A ValidFlow is a relaxedFlow that also satisfies capacity constraints which are
   defined in a FlowNetwork. -/
-def ValidFlow (V α : Type*) [Fintype V] [Ring α] [LinearOrder α] (G : FlowNetwork V α) (g : RelaxedFlow V α G.toSTVertices) : Prop :=
+def ValidFlow {V α : Type*} [Fintype V] [Ring α] [LinearOrder α] (G : FlowNetwork V α) (g : RelaxedFlow α G.toSTVertices) : Prop :=
   ∀ u v : V, g.f u v ≤ G.c u v
 
 /-- An (explicit) equivalent definition for flow conservation. -/
-lemma eq_conservation (V α : Type*) [Fintype V] [Ring α] [LinearOrder α] (G : STVertices V) (flow : RelaxedFlow V α G) :
+lemma eq_conservation {V α : Type*} [Fintype V] [Ring α] [LinearOrder α] (G : STVertices V) (flow : RelaxedFlow α G) :
  ∀ v : V, v ≠ G.s → v ≠ G.t → ∑ x, (flow.f x v - flow.f v x) = 0 := by
   intro v vns vnt
   have : mk_out flow.f {v} = mk_in flow.f {v} := flow.conservation v vns vnt
@@ -93,7 +93,7 @@ lemma eq_conservation (V α : Type*) [Fintype V] [Ring α] [LinearOrder α] (G :
   guaranteeing that flow cannot move between two vertices in both directions. This is
   necessary to guarantee augmenting a valid flow from the original network with the residual
   network results in a valid flow in the original network. -/
-instance (V α : Type*) [Fintype V] [Ring α] [LinearOrder α] [IsStrictOrderedRing α] (G : STVertices V) : Mul (RelaxedFlow V α G) where
+instance {V α : Type*} [Fintype V] [Ring α] [LinearOrder α] [IsStrictOrderedRing α] {G : STVertices V} : Mul (RelaxedFlow α G) where
   mul g h := {
     f u v := max (g.f u v + h.f u v - g.f v u - h.f v u) 0
     nonneg_flow := by simp
@@ -109,8 +109,8 @@ instance (V α : Type*) [Fintype V] [Ring α] [LinearOrder α] [IsStrictOrderedR
           = ∑ x, (g.f x v - g.f v x) + ∑ x, (h.f x v - h.f v x) := by
             simp [Finset.sum_add_distrib]; grind
           _ = 0 := by
-            simp only [add_eq_right, eq_conservation V α G g v vns vnt,
-              eq_conservation V α G h v vns vnt];
+            simp only [add_eq_right, eq_conservation G g v vns vnt,
+              eq_conservation G h v vns vnt];
       symm
       rw [←sub_eq_zero]
       have : ∀ x, -(g.f x v + h.f x v - g.f v x - h.f v x)
@@ -130,15 +130,15 @@ instance (V α : Type*) [Fintype V] [Ring α] [LinearOrder α] [IsStrictOrderedR
 /-- The value of a flow: the amount of flow going out of the sink. -/
 noncomputable
 def Flow_value {V α : Type*} [Fintype V] [Ring α] [LinearOrder α] (G : STVertices V)
-    (flow : RelaxedFlow V α G) : α := mk_out flow.f {G.s}
+    (flow : RelaxedFlow α G) : α := mk_out flow.f {G.s}
 
 /-- The value of a flow is nonnegative. -/
 lemma nonneg_flow_value {V α : Type*} [Fintype V] [Ring α] [LinearOrder α] [IsStrictOrderedRing α] (G : STVertices V) :
-  ∀F : RelaxedFlow V α G, Flow_value G F ≥ 0 := by
+  ∀F : RelaxedFlow α G, Flow_value G F ≥ 0 := by
   intro F; simp [Flow_value, mk_out, F.no_edges_in_source, sum_nonneg, F.nonneg_flow]
 
 /-- The value of a flow is additive under augmentation. -/
-lemma add_flow {V α : Type*} [Fintype V] [Ring α] [LinearOrder α] [IsStrictOrderedRing α] (G : STVertices V) (flow₁ flow₂ : RelaxedFlow V α G) :
+lemma add_flow {V α : Type*} [Fintype V] [Ring α] [LinearOrder α] [IsStrictOrderedRing α] (G : STVertices V) (flow₁ flow₂ : RelaxedFlow α G) :
   Flow_value G (flow₁ * flow₂) = Flow_value G flow₁ + Flow_value G flow₂ := by
   have: ∀ x, (flow₁.f G.s x + flow₂.f G.s x) ≥ 0 := by
     intro x; grind [flow₁.nonneg_flow G.s x, flow₂.nonneg_flow G.s x]
@@ -148,33 +148,33 @@ lemma add_flow {V α : Type*} [Fintype V] [Ring α] [LinearOrder α] [IsStrictOr
 /-- The capacity of an S-T cut is the sum of edge capacities of edges going from S to T. -/
 noncomputable
 def cut_cap {V α : Type*} [Fintype V] [Ring α] [LinearOrder α] {G : FlowNetwork V α}
-    (c : Cut V α G) : α := mk_out G.c c.S
+    (c : Cut G) : α := mk_out G.c c.S
 
 /-- The flow of an S-T cut given a RelaxedFlow is the sum of flows going over edges going
   from S to T. -/
 noncomputable
 def cut_flow {V α : Type*} [Fintype V] [Ring α] [LinearOrder α] {G : FlowNetwork V α}
-  (g : RelaxedFlow V α G.toSTVertices)
-    (c : Cut V α G) : α := mk_out g.f c.S
+  (g : RelaxedFlow α G.toSTVertices)
+    (c : Cut G) : α := mk_out g.f c.S
 
 /-- A flow is maximal if it respects capacities and has the largest flow value compared to
  other flows that respect capacities. -/
 def is_max_flow {V α : Type*} [Fintype V] [Ring α] [LinearOrder α] {G : FlowNetwork V α}
-    (fn : RelaxedFlow V α G.toSTVertices) : Prop :=
-  ValidFlow V α G fn ∧ ∀ fn' : RelaxedFlow V α G.toSTVertices, ValidFlow V α G fn' →
+    (fn : RelaxedFlow α G.toSTVertices) : Prop :=
+  ValidFlow G fn ∧ ∀ fn' : RelaxedFlow α G.toSTVertices, ValidFlow G fn' →
     Flow_value G.toSTVertices fn' ≤ Flow_value G.toSTVertices fn
 
 /-- A cut is minimal if its capapcity is minimal. -/
 def is_min_cut {V α : Type*} [Fintype V] [Ring α] [LinearOrder α] (G : FlowNetwork V α)
-    (fn : Cut V α G) : Prop :=
-  ∀ fn' : Cut V α G, cut_cap fn ≤ cut_cap fn'
+    (fn : Cut G) : Prop :=
+  ∀ fn' : Cut G, cut_cap fn ≤ cut_cap fn'
 
 /-- The residual network is a flow network defined using an existing flow network and flow.
   It uses the same source and sink. The capacity of an edge u v is given by its original capacity
   minus the amount of flow going over this edge plus the amount of flow going in the opposite
   direction. -/
-def ResidualNetwork {V α : Type*} [Fintype V] [Ring α] [LinearOrder α] [IsStrictOrderedRing α] (G : FlowNetwork V α) (F : RelaxedFlow V α G.toSTVertices)
-  (h : ValidFlow V α G F) : FlowNetwork V α where
+def ResidualNetwork {V α : Type*} [Fintype V] [Ring α] [LinearOrder α] [IsStrictOrderedRing α] (G : FlowNetwork V α) (F : RelaxedFlow α G.toSTVertices)
+  (h : ValidFlow G F) : FlowNetwork V α where
   s := G.s
   t := G.t
   source_not_sink := G.source_not_sink
@@ -184,8 +184,8 @@ def ResidualNetwork {V α : Type*} [Fintype V] [Ring α] [LinearOrder α] [IsStr
 /-- Augmenting a valid flow in the original network with a valid flow in its residual network
   results in a new valid flow. -/
 lemma valid_augmentation {V α : Type*} [Fintype V] [Ring α] [LinearOrder α] [IsStrictOrderedRing α] (G : FlowNetwork V α)
-  (F : RelaxedFlow V α G.toSTVertices) (h : ValidFlow V α G F) :
-  ∀F' : (RelaxedFlow V α G.toSTVertices), ValidFlow V α (ResidualNetwork G F h) F' →
+  (F : RelaxedFlow α G.toSTVertices) (h : ValidFlow G F) :
+  ∀F' : (RelaxedFlow α G.toSTVertices), ValidFlow (ResidualNetwork G F h) F' →
   ∀ u v : V, (F * F').f u v ≤ G.c u v := by
   intro F' val_F' u v
   simp [(· * ·), Mul.mul]
@@ -196,8 +196,8 @@ lemma valid_augmentation {V α : Type*} [Fintype V] [Ring α] [LinearOrder α] [
 
 /-- If a flow is maximal, all flows in its residual graph have value 0. -/
 lemma max_flow_no_augmenting {V α : Type*} [Fintype V] [Ring α] [LinearOrder α] [IsStrictOrderedRing α] (G : FlowNetwork V α)
-  (F : RelaxedFlow V α G.toSTVertices) (h : is_max_flow F) :
-  ∀F' : (RelaxedFlow V α G.toSTVertices), ValidFlow V α (ResidualNetwork G F h.1) F' →
+  (F : RelaxedFlow α G.toSTVertices) (h : is_max_flow F) :
+  ∀F' : (RelaxedFlow α G.toSTVertices), ValidFlow (ResidualNetwork G F h.1) F' →
   Flow_value G.toSTVertices F' = 0 := by
   intro F' g
   by_contra con
@@ -211,7 +211,7 @@ lemma max_flow_no_augmenting {V α : Type*} [Fintype V] [Ring α] [LinearOrder �
    Flow_value G.toSTVertices optF = Flow_value G.toSTVertices F + Flow_value G.toSTVertices F' :=
    by exact add_flow G.toSTVertices F F'
    _ > Flow_value G.toSTVertices F := by grind
-  have optval : ValidFlow V α G optF := by
+  have optval : ValidFlow G optF := by
    apply valid_augmentation G F h.1 F' g
   have: ¬is_max_flow F := by
    simp only [is_max_flow, not_and, not_forall, not_le]; intro _; use optF;
@@ -222,8 +222,8 @@ lemma max_flow_no_augmenting {V α : Type*} [Fintype V] [Ring α] [LinearOrder �
 -- ============================================================
 
 /-- The flow of a cut is no more than the capacity of a cut. -/
-lemma cut_flow_le_cut_cap {V α : Type*} [Fintype V] [Ring α] [LinearOrder α] [IsStrictOrderedRing α] (G : FlowNetwork V α) (C : Cut V α G)
-  (g : RelaxedFlow V α G.toSTVertices) (h : ValidFlow V α G g) :
+lemma cut_flow_le_cut_cap {V α : Type*} [Fintype V] [Ring α] [LinearOrder α] [IsStrictOrderedRing α] {G : FlowNetwork V α} (C : Cut G)
+  (g : RelaxedFlow α G.toSTVertices) (h : ValidFlow G g) :
   cut_flow g C ≤ cut_cap C := by
     simp only [cut_flow, cut_cap, mk_out]
     apply sum_le_sum
@@ -234,8 +234,8 @@ lemma cut_flow_le_cut_cap {V α : Type*} [Fintype V] [Ring α] [LinearOrder α] 
 
 open Classical in
 /-- Flow conservation of the vertices in S without the source. -/
-lemma helper {V α : Type*} [Fintype V] [Ring α] [LinearOrder α] (G : FlowNetwork V α) (C : Cut V α G)
-  (g : RelaxedFlow V α G.toSTVertices) :
+lemma helper {V α : Type*} [Fintype V] [Ring α] [LinearOrder α] {G : FlowNetwork V α} (C : Cut G)
+  (g : RelaxedFlow α G.toSTVertices) :
   ∑ v ∈ C.S \ {G.s}, ∑ w : V, (g.f v w - g.f w v) = 0 := by
     apply sum_eq_zero
     intro v vinsns
@@ -249,28 +249,28 @@ lemma helper {V α : Type*} [Fintype V] [Ring α] [LinearOrder α] (G : FlowNetw
       have STempty : C.S ∩ C.T = ∅ := by simp [C.hT];
       contradiction
     rw [sum_sub_distrib, ←zero_eq_neg, neg_sub, ←sum_sub_distrib,
-    eq_conservation V α G.toSTVertices g v vns vnt]
+    eq_conservation G.toSTVertices g v vns vnt]
 
 /-- You can add a singleton value in the sum. -/
-lemma helper2 {V α : Type*} [DecidableEq V] [Ring α] (S : Finset V) (a : V) (h : a ∈ S)
+lemma helper2 {V α : Type*} [DecidableEq V] [Ring α] {S : Finset V} {a : V} (h : a ∈ S)
   (f : V → α) : f a + ∑ b ∈ S \ {a}, f b = ∑ b ∈ S, f b := by
   refine add_eq_of_eq_sub ?_
   have : ∑ b ∈ S, f b - ∑ b ∈ S \ {a}, f b = f a := by simp [h]
   rw [this]
 
 /-- If summing over a subset evaluates to 0, you can that subset from the original sum. -/
-lemma helper3 {V α : Type*} [DecidableEq V] [Ring α] (S : Finset V) (T : Finset V)
-  (h : T ⊆ S) (f : V → α) (h' : ∑ x ∈ T, f x = 0) : ∑ b ∈ S, f b = ∑ b ∈ S \ T, f b := by
+lemma helper3 {V α : Type*} [DecidableEq V] [Ring α] {S : Finset V} {T : Finset V}
+  (f : V → α) (h : T ⊆ S) (h' : ∑ x ∈ T, f x = 0) : ∑ b ∈ S, f b = ∑ b ∈ S \ T, f b := by
   simp [h, h']
 
 open Classical in
 /-- For any cut, the value of a flow is equal to the sum of flows over edges from S to T
   minus the flow over edges from T to S. -/
 lemma flow_value_eq_net_flow {V α : Type*} [Fintype V] [Ring α] [LinearOrder α]
-    (G : FlowNetwork V α) (C : Cut V α G) (g : RelaxedFlow V α G.toSTVertices) :
+    {G : FlowNetwork V α} (C : Cut G) (g : RelaxedFlow α G.toSTVertices) :
     Flow_value G.toSTVertices g =
       ∑ v ∈ C.S, ∑ w ∈ univ \ C.S, (g.f v w - g.f w v) := by
-  rw [← add_zero (Flow_value G.toSTVertices g), ← helper G C g]
+  rw [← add_zero (Flow_value G.toSTVertices g), ← helper C g]
   simp only [Flow_value, mk_out]
   have hsum : ∑ x ∈ ({G.s} : Finset V), ∑ y ∈ univ \ {G.s}, g.f x y =
       ∑ x ∈ ({G.s} : Finset V), ∑ y ∈ univ \ {G.s}, (g.f x y - g.f y x) := by
@@ -287,32 +287,32 @@ lemma flow_value_eq_net_flow {V α : Type*} [Fintype V] [Ring α] [LinearOrder �
           simp [g.no_edges_in_source]
     _ = ∑ v ∈ C.S, ∑ w, (g.f v w - g.f w v) := by
           simp only [sum_singleton]
-          rw [helper2  C.S G.s C.sins (fun v => ∑ w, (g.f v w - g.f w v))]
+          rw [helper2 C.sins (fun v => ∑ w, (g.f v w - g.f w v))]
     _ = ∑ v ∈ C.S, ∑ w ∈ univ \ C.S, (g.f v w - g.f w v) := by
           rw [sum_comm]
-          have htmp := helper3 univ C.S (subset_univ C.S) (fun v => ∑ w ∈ C.S, (g.f w v - g.f v w)) hinner
+          have htmp := helper3 (fun v => ∑ w ∈ C.S, (g.f w v - g.f v w)) (subset_univ C.S) hinner
           rw [htmp, sum_comm]
 
 /-- The value of a flow is no more than the flow of any cut. -/
 lemma flow_le_cut_flow {V α : Type*} [Fintype V] [Ring α] [LinearOrder α] [IsStrictOrderedRing α]
-    (G : FlowNetwork V α) (C : Cut V α G) (g : RelaxedFlow V α G.toSTVertices) :
+    {G : FlowNetwork V α} (C : Cut G) (g : RelaxedFlow α G.toSTVertices) :
     Flow_value G.toSTVertices g ≤ cut_flow g C := by
   classical
-  rw [flow_value_eq_net_flow G C g]
+  rw [flow_value_eq_net_flow C g]
   simp only [cut_flow, mk_out]
   apply Finset.sum_le_sum; intro v _
   apply Finset.sum_le_sum; intro w _
   grind [g.nonneg_flow w v]
 
 /-- The value of a flow is no more than the capacity of any cut. -/
-theorem weak_duality {V α : Type*} [Fintype V] [Ring α] [LinearOrder α] [IsStrictOrderedRing α] (G : FlowNetwork V α) (C : Cut V α G)
-  (g : RelaxedFlow V α G.toSTVertices) (h : ValidFlow V α G g) :
+theorem weak_duality {V α : Type*} [Fintype V] [Ring α] [LinearOrder α] [IsStrictOrderedRing α] {G : FlowNetwork V α} (C : Cut G)
+  (g : RelaxedFlow α G.toSTVertices) (h : ValidFlow G g) :
   Flow_value G.toSTVertices g ≤ cut_cap C := by
-  grind [cut_flow_le_cut_cap G C g h, flow_le_cut_flow G C g]
+  grind [cut_flow_le_cut_cap C g h, flow_le_cut_flow C g]
 
 /-- If the value of a flow is equal to the capacity of any cut, the flow value is maximal. -/
-lemma max_flow_if_eq_cut {V α : Type*} [Fintype V] [Ring α] [LinearOrder α] [IsStrictOrderedRing α] (G : FlowNetwork V α) (C : Cut V α G)
-  (g : RelaxedFlow V α G.toSTVertices) (h : ValidFlow V α G g) :
+lemma max_flow_if_eq_cut {V α : Type*} [Fintype V] [Ring α] [LinearOrder α] [IsStrictOrderedRing α] {G : FlowNetwork V α} (C : Cut G)
+  (g : RelaxedFlow α G.toSTVertices) (h : ValidFlow G g) :
   Flow_value G.toSTVertices g = cut_cap C → is_max_flow g := by
     intro h'
     constructor
@@ -324,7 +324,7 @@ lemma max_flow_if_eq_cut {V α : Type*} [Fintype V] [Ring α] [LinearOrder α] [
 -- TRIVIAL (ZERO) FLOWS
 -- ===========================================================
 /-- The trivial (zero) flow that doesn't send flow over any edge -/
-def trivial_flow {V α : Type*} [Fintype V] [Ring α] [LinearOrder α] (G : STVertices V) : RelaxedFlow V α G where
+def trivial_flow {V α : Type*} [Fintype V] [Ring α] [LinearOrder α] (G : STVertices V) : RelaxedFlow α G where
   f := fun x y => 0
   nonneg_flow := by simp only [ge_iff_le, Std.le_refl, implies_true]
   conservation := by grind [mk_out, mk_in]
@@ -344,13 +344,13 @@ lemma zero_trivial_flow {V α : Type*} [Fintype V] [Ring α] [LinearOrder α] (G
 
 /-- The trivial flow is always valid -/
 lemma valid_zero_flow {V α : Type*} [Fintype V] [Ring α] [LinearOrder α] [IsStrictOrderedRing α] (G : FlowNetwork V α) :
-  ValidFlow V α G (trivial_flow G.toSTVertices) := by
+  ValidFlow G (trivial_flow G.toSTVertices) := by
     simp only [ValidFlow, zero_flow, G.nonneg_capacity, implies_true]
 
 /-- Augmenting a valid flow with the trivial flow results in a valid flow -/
 lemma valid_zero_augmentation {V α : Type*} [Fintype V] [Ring α] [LinearOrder α] [IsStrictOrderedRing α] (G : FlowNetwork V α)
-  (F : RelaxedFlow V α G.toSTVertices) (validF : ValidFlow V α G F) :
-  ValidFlow V α G (F * (trivial_flow G.toSTVertices)) := by
+  (F : RelaxedFlow α G.toSTVertices) (validF : ValidFlow G F) :
+  ValidFlow G (F * (trivial_flow G.toSTVertices)) := by
   rw [ValidFlow] at validF
   simp only [ValidFlow, HMul.hMul, Mul.mul, zero_flow, add_zero, sub_zero, sup_le_iff,
     tsub_le_iff_right, G.nonneg_capacity, and_true]
@@ -531,7 +531,7 @@ lemma pathlike_flow_in {V α : Type*} [Fintype V] [DecidableEq V] [Ring α] [Lin
       ∑ y ≠ p.verts[i-1], pathFlow p y p.verts[i] := by simp
     rw [this]; simp [zsum]
   have : pathFlow p p.verts[i - 1] p.verts[i] =
-    uvPath.bottleneck G p.touvPath G.source_not_sink := by
+    p.touvPath.bottleneck G G.source_not_sink := by
     rw [pathFlow]
     have : i - 1 < p.verts.length - 1 := by grind
     have : ∃ j, ∃ (hv : j < p.verts.length - 1), p.verts[i - 1] = p.verts[j] ∧
@@ -541,7 +541,7 @@ lemma pathlike_flow_in {V α : Type*} [Fintype V] [DecidableEq V] [Ring α] [Lin
 
 /-- An augmenting path induces a relaxed flow. -/
 def augmentingPath.toFlow {V α : Type*} [Fintype V] [DecidableEq V] [Ring α] [LinearOrder α]
-    {G : FlowNetwork V α} (p : augmentingPath G) : RelaxedFlow V α G.toSTVertices where
+    {G : FlowNetwork V α} (p : augmentingPath G) : RelaxedFlow α G.toSTVertices where
     f := pathFlow p
     nonneg_flow := by
       intro u v; rw [pathFlow]
@@ -592,7 +592,7 @@ lemma bottleneck_eq_flow {V α : Type*} [Fintype V] [DecidableEq V] [Ring α] [L
 
 /-- The flow induced by an augmenting path is valid. -/
 lemma augmentingPath.valid_toFlow {V α : Type*} [Fintype V] [DecidableEq V] [Ring α] [LinearOrder α]
-  {G : FlowNetwork V α} (p : augmentingPath G) : ValidFlow V α G p.toFlow := by
+  {G : FlowNetwork V α} (p : augmentingPath G) : ValidFlow G p.toFlow := by
   simp only [ValidFlow, toFlow, pathFlow]
   intro u v
   by_cases h : ∃ i, ∃ (h : i < p.verts.length - 1), u = p.verts[i] ∧ v = p.verts[i + 1]
@@ -604,7 +604,7 @@ lemma augmentingPath.valid_toFlow {V α : Type*} [Fintype V] [DecidableEq V] [Ri
 open Classical in
 /-- If F is a max flow, there is no augmenting path in its residual network. -/
 lemma max_flow_no_augmenting' {V α : Type*} [Fintype V] [Ring α] [LinearOrder α] [IsStrictOrderedRing α]
-    {G : FlowNetwork V α} (F : RelaxedFlow V α G.toSTVertices) (h : is_max_flow F) :
+    {G : FlowNetwork V α} (F : RelaxedFlow α G.toSTVertices) (h : is_max_flow F) :
       augmentingPath (ResidualNetwork G F h.1) → False := by
   intro p
   have pos := pos_bottleneck p G.source_not_sink
@@ -672,7 +672,7 @@ lemma validuvPath.prefix {V α : Type*} [Fintype V] [DecidableEq V] [Ring α] [L
 open Classical in
 /-- If s can reach u in the residual and there is a residual edge u → v, then s can reach v. -/
 lemma reach_extend {V α : Type*} [Fintype V] [Ring α] [LinearOrder α] [IsStrictOrderedRing α]
-    {G : FlowNetwork V α} {F : RelaxedFlow V α G.toSTVertices} {h : ValidFlow V α G F} {u v : V}
+    {G : FlowNetwork V α} {F : RelaxedFlow α G.toSTVertices} {h : ValidFlow G F} {u v : V}
     (hu : Nonempty (validuvPath (ResidualNetwork G F h) G.s u))
     (hedge : (ResidualNetwork G F h).c u v > 0) :
     Nonempty (validuvPath (ResidualNetwork G F h) G.s v) := by
@@ -683,20 +683,20 @@ lemma reach_extend {V α : Type*} [Fintype V] [Ring α] [LinearOrder α] [IsStri
 
 /-- No augmenting path: t is not reachable from s via a valid path in the residual network. -/
 def no_augmenting_path {V α : Type*} [Fintype V] [Ring α] [LinearOrder α] [IsStrictOrderedRing α] (G : FlowNetwork V α)
-    (F : RelaxedFlow V α G.toSTVertices) (h : ValidFlow V α G F) : Prop :=
+    (F : RelaxedFlow α G.toSTVertices) (h : ValidFlow G F) : Prop :=
   ¬ Nonempty (augmentingPath (ResidualNetwork G F h))
 
 open Classical in
 /-- The set of vertices reachable from s via a valid path in the residual network. -/
 noncomputable def mk_cut_set {V α : Type*} [Fintype V] [Ring α] [LinearOrder α] [IsStrictOrderedRing α] (G : FlowNetwork V α)
-    (F : RelaxedFlow V α G.toSTVertices) (h : ValidFlow V α G F) : Finset V :=
+    (F : RelaxedFlow α G.toSTVertices) (h : ValidFlow G F) : Finset V :=
   Finset.univ.filter (fun x => Nonempty (validuvPath (ResidualNetwork G F h) G.s x))
 
 open Classical in
 /-- Construct a cut from the reachable set when there is no augmenting path. -/
 noncomputable def mk_cut_from_S {V α : Type*} [Fintype V] [Ring α] [LinearOrder α] [IsStrictOrderedRing α] (G : FlowNetwork V α)
-    (F : RelaxedFlow V α G.toSTVertices) (h : ValidFlow V α G F)
-    (hno : no_augmenting_path G F h) : Cut V α G :=
+    (F : RelaxedFlow α G.toSTVertices) (h : ValidFlow G F)
+    (hno : no_augmenting_path G F h) : Cut G :=
   { S  := mk_cut_set G F h
     T  := Finset.univ \ mk_cut_set G F h
     hT := by ext a : 1; simp_all only [mem_sdiff, mem_univ, true_and]
@@ -709,7 +709,7 @@ noncomputable def mk_cut_from_S {V α : Type*} [Fintype V] [Ring α] [LinearOrde
 
 /-- Every forward arc from S to T is saturated. -/
 lemma saturated_forward_arcs {V α : Type*} [Fintype V] [Ring α] [LinearOrder α] [IsStrictOrderedRing α] (G : FlowNetwork V α)
-    (F : RelaxedFlow V α G.toSTVertices) (h : ValidFlow V α G F) :
+    (F : RelaxedFlow α G.toSTVertices) (h : ValidFlow G F) :
     ∀ v w : V, v ∈ mk_cut_set G F h → w ∉ mk_cut_set G F h →
     F.f v w = G.c v w := by
   intro u v huS hvnS
@@ -723,7 +723,7 @@ lemma saturated_forward_arcs {V α : Type*} [Fintype V] [Ring α] [LinearOrder �
 
 /-- Every backward arc from T to S carries zero flow. -/
 lemma zero_backward_arcs {V α : Type*} [Fintype V] [Ring α] [LinearOrder α] [IsStrictOrderedRing α] (G : FlowNetwork V α)
-    (F : RelaxedFlow V α G.toSTVertices) (h : ValidFlow V α G F) :
+    (F : RelaxedFlow α G.toSTVertices) (h : ValidFlow G F) :
     ∀ v w : V, v ∉ mk_cut_set G F h → w ∈ mk_cut_set G F h →
     F.f v w = 0 := by
   intro v w hvnS hwS
@@ -736,13 +736,13 @@ lemma zero_backward_arcs {V α : Type*} [Fintype V] [Ring α] [LinearOrder α] [
 
 /-- When there is no augmenting path, the flow value equals the cut capacity. -/
 lemma flow_eq_cut_cap {V α : Type*} [Fintype V] [Ring α] [LinearOrder α] [IsStrictOrderedRing α] (G : FlowNetwork V α)
-    (F : RelaxedFlow V α G.toSTVertices) (h : ValidFlow V α G F)
+    (F : RelaxedFlow α G.toSTVertices) (h : ValidFlow G F)
     (hno : no_augmenting_path G F h) :
     let C := mk_cut_from_S G F h hno
     Flow_value G.toSTVertices F = cut_cap C := by
   classical
   let C := mk_cut_from_S G F h hno
-  rw [flow_value_eq_net_flow G C F]
+  rw [flow_value_eq_net_flow C F]
   apply Finset.sum_congr rfl; intro v hv
   apply Finset.sum_congr rfl; intro w hw
   have hv' : v ∈ mk_cut_set G F h := hv
@@ -752,7 +752,7 @@ lemma flow_eq_cut_cap {V α : Type*} [Fintype V] [Ring α] [LinearOrder α] [IsS
 
 /-- If F is a max flow, there is no augmenting path. -/
 lemma max_flow_no_augmenting_path {V α : Type*} [Fintype V] [Ring α] [LinearOrder α] [IsStrictOrderedRing α] (G : FlowNetwork V α)
-    (F : RelaxedFlow V α G.toSTVertices) (h : is_max_flow F) :
+    (F : RelaxedFlow α G.toSTVertices) (h : is_max_flow F) :
     no_augmenting_path G F h.1 :=
   fun ⟨p⟩ => max_flow_no_augmenting' F h p
 
@@ -763,7 +763,7 @@ lemma max_flow_no_augmenting_path {V α : Type*} [Fintype V] [Ring α] [LinearOr
 open Classical in
 /-- The S-T cut whose S consists of only the source -/
 noncomputable
-def sCut {V : Type*} [Fintype V] (G : FlowNetwork V ℤ) : Cut V ℤ G where
+def sCut {V : Type*} [Fintype V] (G : FlowNetwork V ℤ) : Cut G where
   S := {G.s}
   T := univ \ {G.s}
   hT := rfl
@@ -772,30 +772,30 @@ def sCut {V : Type*} [Fintype V] (G : FlowNetwork V ℤ) : Cut V ℤ G where
 
 /-- For an integer flow network setting, there is a flow that attains the maximum flow -/
 lemma max_flow_attained_Z {V : Type*} [Fintype V] (G : FlowNetwork V ℤ) :
-  ∃ F : RelaxedFlow V ℤ G.toSTVertices, is_max_flow F := by
+  ∃ F : RelaxedFlow ℤ G.toSTVertices, is_max_flow F := by
     let B : ℤ := cut_cap (sCut G)
-    have bound : ∀ F : RelaxedFlow V ℤ G.toSTVertices, ValidFlow V ℤ G F →
-      Flow_value G.toSTVertices F ≤ B := by intro F val; exact weak_duality G (sCut G) F val
-    have improv : ∀ F : RelaxedFlow V ℤ G.toSTVertices, ValidFlow V ℤ G F → ¬ is_max_flow F →
-      ∃ F', ValidFlow V ℤ G F' ∧ Flow_value G.toSTVertices F' >= Flow_value G.toSTVertices F + 1 := by
+    have bound : ∀ F : RelaxedFlow ℤ G.toSTVertices, ValidFlow G F →
+      Flow_value G.toSTVertices F ≤ B := by intro F val; exact weak_duality (sCut G) F val
+    have improv : ∀ F : RelaxedFlow ℤ G.toSTVertices, ValidFlow G F → ¬ is_max_flow F →
+      ∃ F', ValidFlow G F' ∧ Flow_value G.toSTVertices F' >= Flow_value G.toSTVertices F + 1 := by
       intro F val nmax
       dsimp [is_max_flow] at nmax
       simp only [val, true_and, not_forall, not_le] at nmax
       obtain ⟨F', ⟨val', lt⟩⟩ := nmax
       use F'
       refine ⟨val', lt⟩
-    let F0 : RelaxedFlow V ℤ G.toSTVertices := trivial_flow G.toSTVertices
-    have hF0 : ValidFlow V ℤ G F0 := valid_zero_flow G
+    let F0 : RelaxedFlow ℤ G.toSTVertices := trivial_flow G.toSTVertices
+    have hF0 : ValidFlow G F0 := valid_zero_flow G
     let P : ℕ → Prop := fun n =>
-      ∃ F : RelaxedFlow V ℤ G.toSTVertices,
-      ValidFlow V ℤ G F ∧
+      ∃ F : RelaxedFlow ℤ G.toSTVertices,
+      ValidFlow G F ∧
       Flow_value G.toSTVertices F ≥ n
     have hP0 : P 0 := by
       refine ⟨F0, hF0, ?_⟩
       simp [F0, zero_trivial_flow]
     have hstep :
       ∀ n : ℕ, P n →
-        (∃ F : RelaxedFlow V ℤ G.toSTVertices, is_max_flow F) ∨ P (n + 1) := by
+        (∃ F : RelaxedFlow ℤ G.toSTVertices, is_max_flow F) ∨ P (n + 1) := by
       intro n hn
       rcases hn with ⟨F, hvalid, hval⟩
       by_cases hmax : is_max_flow F
@@ -811,7 +811,7 @@ lemma max_flow_attained_Z {V : Type*} [Fintype V] (G : FlowNetwork V ℤ) :
       simp only [zero_trivial_flow, F0] at this
       exact this
     let N : ℕ := Int.toNat B + 1
-    have : (∃ F : RelaxedFlow V ℤ G.toSTVertices, is_max_flow F) ∨ P N := by
+    have : (∃ F : RelaxedFlow ℤ G.toSTVertices, is_max_flow F) ∨ P N := by
       induction N with
       | zero => exact Or.inr hP0
       | succ n ih => cases ih with
@@ -933,8 +933,8 @@ lemma max_flow_attained'_R {V : Type*} [Fintype V] (G : FlowNetwork V ℝ) :
   exact hmax hgF
 
 /-- Any valid flow from the structure defintion is a feasible flow in the predicate definition -/
-lemma flow_toFlowSet {V : Type*} [Fintype V] (G : FlowNetwork V ℝ) (g : RelaxedFlow V ℝ G.toSTVertices)
-  (gval : ValidFlow V ℝ G g) : g.f ∈ FeasibleFlowSet G := by
+lemma flow_toFlowSet {V : Type*} [Fintype V] (G : FlowNetwork V ℝ) (g : RelaxedFlow ℝ G.toSTVertices)
+  (gval : ValidFlow G g) : g.f ∈ FeasibleFlowSet G := by
   rw [ValidFlow] at gval
   simp only [FeasibleFlowSet, ne_eq, Set.mem_setOf_eq, g.nonneg_flow, implies_true, gval,
     g.no_edges_in_source, g.no_edges_out_sink, and_self, and_true, true_and]
@@ -943,7 +943,7 @@ lemma flow_toFlowSet {V : Type*} [Fintype V] (G : FlowNetwork V ℝ) (g : Relaxe
 
 /-- For a flow network over reals setting, there is a flow that attains the maximum flow -/
 lemma max_flow_attained_R {V : Type*} [Fintype V] (G : FlowNetwork V ℝ) :
-  ∃ F : RelaxedFlow V ℝ G.toSTVertices, is_max_flow F := by
+  ∃ F : RelaxedFlow ℝ G.toSTVertices, is_max_flow F := by
     obtain ⟨g, gfeas, gopt⟩ := max_flow_attained'_R G
     rw [FeasibleFlowSet] at gfeas
     use ⟨g, by grind, by grind, by grind, by grind⟩
@@ -963,33 +963,33 @@ lemma max_flow_attained_R {V : Type*} [Fintype V] (G : FlowNetwork V ℝ) :
 
 /-- The max-flow min-cut theorem: the maximum flow value equals the minimum cut capacity. -/
 theorem max_flow_iff_eq_min_cut {V α : Type*} [Fintype V] [Ring α] [LinearOrder α] [IsStrictOrderedRing α] (G : FlowNetwork V α)
-    (F : RelaxedFlow V α G.toSTVertices) (h : ValidFlow V α G F) :
+    (F : RelaxedFlow α G.toSTVertices) (h : ValidFlow G F) :
     is_max_flow F ↔
-      ∃ C : Cut V α G, is_min_cut G C ∧ Flow_value G.toSTVertices F = cut_cap C := by
+      ∃ C : Cut G, is_min_cut G C ∧ Flow_value G.toSTVertices F = cut_cap C := by
   constructor
   · -- forward
     intro hmax
     classical
     have hno : no_augmenting_path G F hmax.1 := fun ⟨p⟩ => max_flow_no_augmenting' F hmax p
     let C := mk_cut_from_S G F hmax.1 hno
-    exact ⟨C, fun C' => by grind [flow_eq_cut_cap G F hmax.1 hno, weak_duality G C' F hmax.1],
+    exact ⟨C, fun C' => by grind [flow_eq_cut_cap G F hmax.1 hno, weak_duality C' F hmax.1],
               flow_eq_cut_cap G F hmax.1 hno⟩
   · --reverse
     rintro ⟨C, _, heq⟩
-    exact max_flow_if_eq_cut G C F h heq
+    exact max_flow_if_eq_cut C F h heq
 
 /-- Corollary: every maximum flow witnesses a minimum cut with equal value. -/
 theorem max_flow_min_cut {V α : Type*} [Fintype V] [Ring α] [LinearOrder α] [IsStrictOrderedRing α] (G : FlowNetwork V α)
-    (F : RelaxedFlow V α G.toSTVertices) (h : is_max_flow F) :
-    ∃ C : Cut V α G, is_min_cut G C ∧ Flow_value G.toSTVertices F = cut_cap C :=
+    (F : RelaxedFlow α G.toSTVertices) (h : is_max_flow F) :
+    ∃ C : Cut G, is_min_cut G C ∧ Flow_value G.toSTVertices F = cut_cap C :=
   (max_flow_iff_eq_min_cut G F h.1).mp h
 
 /-- For flow types that have proofs that the max flow is attained,
   a stronger version of min-cut max-flow theorem that states that
   there exist a maximum flow and a minimum cut with equal value -/
 lemma max_flow_min_cut_eq {V α : Type*} [Fintype V] [Ring α] [LinearOrder α] [IsStrictOrderedRing α]
-  (G : FlowNetwork V α) (h : ∃ F : RelaxedFlow V α G.toSTVertices, is_max_flow F) :
-  ∃ (F : RelaxedFlow V α G.toSTVertices), ∃ C : Cut V α G,
+  (G : FlowNetwork V α) (h : ∃ F : RelaxedFlow α G.toSTVertices, is_max_flow F) :
+  ∃ (F : RelaxedFlow α G.toSTVertices), ∃ C : Cut G,
   is_max_flow F ∧ is_min_cut G C ∧ Flow_value G.toSTVertices F = cut_cap C := by
     obtain ⟨F, hF⟩ := h
     obtain ⟨C, hC⟩ := max_flow_min_cut G F hF
@@ -997,13 +997,13 @@ lemma max_flow_min_cut_eq {V α : Type*} [Fintype V] [Ring α] [LinearOrder α] 
 
 /-- There exist a maximum flow and a minimum cut with equal value (ℝ version). -/
 lemma max_flow_min_cut_eq_R {V : Type*} [Fintype V] (G : FlowNetwork V ℝ) :
-  ∃ (F : RelaxedFlow V ℝ G.toSTVertices), ∃ C : Cut V ℝ G,
+  ∃ (F : RelaxedFlow ℝ G.toSTVertices), ∃ C : Cut G,
   is_max_flow F ∧ is_min_cut G C ∧ Flow_value G.toSTVertices F = cut_cap C :=
     max_flow_min_cut_eq G <| max_flow_attained_R G
 
 /-- There exist a maximum flow and a minimum cut with equal value (ℤ version). -/
 lemma max_flow_min_cut_eq_Z {V : Type*} [Fintype V] (G : FlowNetwork V ℤ) :
-  ∃ (F : RelaxedFlow V ℤ G.toSTVertices), ∃ C : Cut V ℤ G,
+  ∃ (F : RelaxedFlow ℤ G.toSTVertices), ∃ C : Cut G,
   is_max_flow F ∧ is_min_cut G C ∧ Flow_value G.toSTVertices F = cut_cap C :=
     max_flow_min_cut_eq G <| max_flow_attained_Z G
 
@@ -1024,9 +1024,9 @@ def NatFlowNetwork.toFlowNetwork {V : Type*} [Fintype V]
     norm_num
 
 theorem max_flow_iff_eq_min_cut_N {V : Type*} [Fintype V] (G : NatFlowNetwork V)
-    (F : RelaxedFlow V ℤ G.toSTVertices) (h : ValidFlow V ℤ G.toFlowNetwork F) :
+    (F : RelaxedFlow ℤ G.toSTVertices) (h : ValidFlow G.toFlowNetwork F) :
     is_max_flow (G := G.toFlowNetwork) F ↔
-      ∃ C : Cut V ℤ G.toFlowNetwork, is_min_cut G.toFlowNetwork C ∧
+      ∃ C : Cut G.toFlowNetwork, is_min_cut G.toFlowNetwork C ∧
         Flow_value G.toSTVertices F = cut_cap C :=
   max_flow_iff_eq_min_cut G.toFlowNetwork F h
 
@@ -1036,7 +1036,7 @@ theorem max_flow_iff_eq_min_cut_N {V : Type*} [Fintype V] (G : NatFlowNetwork V)
 
 /-- Augmentation cancels out any 2-cycles: flow can't go both ways after augmentation -/
 lemma no_bidirectional_flow {V α : Type*} [Fintype V] [Ring α] [LinearOrder α] [IsStrictOrderedRing α] (G : STVertices V) :
-  ∀ F F' : RelaxedFlow V α G, ∀ u v, (F * F').f u v = 0 ∨ (F * F').f v u = 0 := by
+  ∀ F F' : RelaxedFlow α G, ∀ u v, (F * F').f u v = 0 ∨ (F * F').f v u = 0 := by
     intro F F' u v
     simp only [HMul.hMul, Mul.mul, sup_eq_right, tsub_le_iff_right, zero_add]
     have : F'.f v u + F.f v u = F.f v u + F'.f v u := by grind
@@ -1053,18 +1053,18 @@ structure Undirected_FlowNetwork (V α : Type*) [Fintype V] [Ring α] [LinearOrd
 /-- A valid undirected flow additionally requires that flow can only go in 1 direction:
   no 2-cycles are allowed -/
 def ValidFlow_undirected (V α : Type*) [Fintype V] [Ring α] [LinearOrder α] (G : Undirected_FlowNetwork V α)
-  (F : RelaxedFlow V α G.toSTVertices) : Prop :=
-  (ValidFlow V α G.toFlowNetwork F) ∧ (∀ u v, F.f u v = 0 ∨ F.f v u = 0)
+  (F : RelaxedFlow α G.toSTVertices) : Prop :=
+  (ValidFlow G.toFlowNetwork F) ∧ (∀ u v, F.f u v = 0 ∨ F.f v u = 0)
 
 /-- An undirected flow is maximal if it's a valid undirected flow and its flow value is
   no less than any other valid undirected flow -/
 def is_max_undirected_flow {V α : Type*} [Fintype V] [Ring α] [LinearOrder α] {G : Undirected_FlowNetwork V α}
-    (fn : RelaxedFlow V α G.toSTVertices) : Prop :=
-  ValidFlow_undirected V α G fn ∧ ∀ fn' : RelaxedFlow V α G.toSTVertices, ValidFlow_undirected V α G fn' →
+    (fn : RelaxedFlow α G.toSTVertices) : Prop :=
+  ValidFlow_undirected V α G fn ∧ ∀ fn' : RelaxedFlow α G.toSTVertices, ValidFlow_undirected V α G fn' →
     Flow_value G.toSTVertices fn' ≤ Flow_value G.toSTVertices fn
 
 /-- Any undirected maximal flow is also a directed maximal flow -/
-lemma undirected_max_directed_max {V α : Type*} [Fintype V] [Ring α] [LinearOrder α] [IsStrictOrderedRing α] (G : Undirected_FlowNetwork V α) (F : RelaxedFlow V α G.toSTVertices) :
+lemma undirected_max_directed_max {V α : Type*} [Fintype V] [Ring α] [LinearOrder α] [IsStrictOrderedRing α] (G : Undirected_FlowNetwork V α) (F : RelaxedFlow α G.toSTVertices) :
   is_max_undirected_flow F → is_max_flow F := by
   intro h
   constructor
@@ -1079,9 +1079,9 @@ lemma undirected_max_directed_max {V α : Type*} [Fintype V] [Ring α] [LinearOr
 
 /-- The max-flow min-cut theorem: the maximum flow value equals the minimum cut capacity. -/
 theorem undirected_max_flow_iff_eq_min_cut {V α : Type*} [Fintype V] [Ring α] [LinearOrder α] [IsStrictOrderedRing α] (G : Undirected_FlowNetwork V α)
-    (F : RelaxedFlow V α G.toSTVertices) (h : ValidFlow_undirected V α G F) :
+    (F : RelaxedFlow α G.toSTVertices) (h : ValidFlow_undirected V α G F) :
     is_max_undirected_flow F ↔
-      ∃ C : Cut V α G.toFlowNetwork, is_min_cut G.toFlowNetwork C ∧ Flow_value G.toSTVertices F = cut_cap C := by
+      ∃ C : Cut G.toFlowNetwork, is_min_cut G.toFlowNetwork C ∧ Flow_value G.toSTVertices F = cut_cap C := by
   constructor
   · -- forward
     intro h'
@@ -1101,7 +1101,7 @@ theorem undirected_max_flow_iff_eq_min_cut {V α : Type*} [Fintype V] [Ring α] 
 
 /-- every maximum flow witnesses a minimum cut with equal value -/
 theorem undirected_max_flow_min_cut {V α : Type*} [Fintype V] [Ring α] [LinearOrder α] [IsStrictOrderedRing α] (G : Undirected_FlowNetwork V α)
-  (F : RelaxedFlow V α G.toSTVertices) (h : is_max_undirected_flow F) :
+  (F : RelaxedFlow α G.toSTVertices) (h : is_max_undirected_flow F) :
     ∃ C, is_min_cut G.toFlowNetwork C ∧ Flow_value G.toSTVertices F = cut_cap C := (undirected_max_flow_iff_eq_min_cut G F h.1).mp h
 
 /-- An equivalent for the max flow min cut theorem for ℤ for undirected flow networks -/
