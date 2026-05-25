@@ -460,11 +460,8 @@ theorem finrank_range_le_card {ι : Type*} [Fintype ι] (b : ι → M) :
 theorem finrank_span_eq_card [Nontrivial R] {ι : Type*} [Fintype ι] {b : ι → M}
     (hb : LinearIndependent R b) :
     finrank R (span R (Set.range b)) = Fintype.card ι :=
-  finrank_eq_of_rank_eq
-    (by
-      have : Module.rank R (span R (Set.range b)) = #(Set.range b) := rank_span hb
-      rwa [← lift_inj, mk_range_eq_of_injective hb.injective, Cardinal.mk_fintype, lift_natCast,
-        lift_eq_nat_iff] at this)
+  finrank_eq_of_rank_eq <|
+    by simpa [rank_span hb] using mk_range_eq_of_injective hb.injective
 
 theorem finrank_span_set_eq_card {s : Set M} [Fintype s] (hs : LinearIndepOn R id s) :
     finrank R (span R s) = s.toFinset.card :=
