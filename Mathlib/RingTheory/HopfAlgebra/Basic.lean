@@ -19,9 +19,9 @@ In this file we define `HopfAlgebra`, and provide instances for:
 
 * `HopfAlgebra R A` : the Hopf algebra structure on an `R`-bialgebra `A`.
 * `HopfAlgebra.antipode` : the `R`-linear map `A →ₗ[R] A`.
-* `HopfAlgebra.ofAlgHomOp` : construct a Hopf algebra structure from an algebra hom
-  `A →ₐ[R] Aᵐᵒᵖ` satisfying the antipode identities.
-* `HopfAlgebra.ofAlgHom` : the same for commutative `A`.
+* `HopfAlgebra.ofConvInverse` : construct a Hopf algebra from a two-sided convolution inverse
+  of the identity.
+* `HopfAlgebra.ofAlgHom` : the same for commutative `A`, with `AlgHom` hypotheses.
 
 ## Main results
 
@@ -237,22 +237,23 @@ namespace HopfAlgebra
 
 variable {R A : Type*}
 
-open Coalgebra MulOpposite
+open Coalgebra WithConv LinearMap
 
-/-- Upgrade a bialgebra to a Hopf algebra by specifying the antipode as an algebra map
-`A →ₐ[R] Aᵐᵒᵖ` with appropriate conditions. -/
-noncomputable abbrev ofAlgHomOp [CommSemiring R] [Semiring A] [Bialgebra R A]
-    (antipode : A →ₐ[R] Aᵐᵒᵖ)
+/-- Upgrade a bialgebra to a Hopf algebra by specifying a convolution inverse of the identity. -/
+noncomputable abbrev ofConvInverse [CommSemiring R] [Semiring A] [Bialgebra R A]
+    (antipode : A →ₗ[R] A)
     (mul_antipode_rTensor_comul :
-      LinearMap.mul' R A ∘ₗ ((opLinearEquiv R).symm.toLinearMap ∘ₗ
-        antipode.toLinearMap).rTensor A ∘ₗ comul = Algebra.linearMap R A ∘ₗ counit)
+      toConv antipode * toConv LinearMap.id = (1 : WithConv (A →ₗ[R] A)))
     (mul_antipode_lTensor_comul :
-      LinearMap.mul' R A ∘ₗ ((opLinearEquiv R).symm.toLinearMap ∘ₗ
-        antipode.toLinearMap).lTensor A ∘ₗ comul = Algebra.linearMap R A ∘ₗ counit) :
+      toConv LinearMap.id * toConv antipode = (1 : WithConv (A →ₗ[R] A))) :
     HopfAlgebra R A where
-  antipode := (opLinearEquiv R).symm.toLinearMap ∘ₗ antipode.toLinearMap
-  mul_antipode_rTensor_comul := mul_antipode_rTensor_comul
-  mul_antipode_lTensor_comul := mul_antipode_lTensor_comul
+  antipode := antipode
+  mul_antipode_rTensor_comul := by
+    simpa [convMul_def, convOne_def, ofConv_toConv, rTensor]
+      using congr(($mul_antipode_rTensor_comul).ofConv)
+  mul_antipode_lTensor_comul := by
+    simpa [convMul_def, convOne_def, ofConv_toConv, lTensor]
+      using congr(($mul_antipode_lTensor_comul).ofConv)
 
 /-- Upgrade a commutative bialgebra to a Hopf algebra by specifying the antipode `A →ₐ[R] A`
 with appropriate conditions. -/
@@ -265,10 +266,12 @@ noncomputable abbrev ofAlgHom [CommSemiring R] [CommSemiring A] [Bialgebra R A]
       (Algebra.TensorProduct.lift (.id R A) antipode fun _ _ ↦ .all _ _).comp
         (Bialgebra.comulAlgHom R A) = (Algebra.ofId R A).comp (Bialgebra.counitAlgHom R A)) :
     HopfAlgebra R A :=
-  ofAlgHomOp (antipode.toOpposite fun _ _ ↦ .all _ _)
-    (by simpa [← Algebra.TensorProduct.lmul'_comp_map]
-          using congr(($mul_antipode_rTensor_comul).toLinearMap))
-    (by simpa [← Algebra.TensorProduct.lmul'_comp_map]
-          using congr(($mul_antipode_lTensor_comul).toLinearMap))
+  ofConvInverse antipode.toLinearMap
+    (WithConv.ext (by
+      simpa [← Algebra.TensorProduct.lmul'_comp_map, rTensor]
+        using congr(($mul_antipode_rTensor_comul).toLinearMap)))
+    (WithConv.ext (by
+      simpa [← Algebra.TensorProduct.lmul'_comp_map, lTensor]
+        using congr(($mul_antipode_lTensor_comul).toLinearMap)))
 
 end HopfAlgebra
