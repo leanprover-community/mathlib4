@@ -626,7 +626,7 @@ private theorem IsMaximalTrail.not_closed_of_card_odd_degree_eq_two
 
 /-- **Existence of an Eulerian walk** in a connected graph with exactly two odd-degree
 vertices. -/
-theorem exists_isEulerian_of_connected_card_oddDegree_eq_two
+theorem exists_isEulerian_of_connected_card_odd_degree_eq_two
     (hconn : G.Connected)
     (hodd : Fintype.card {v : V | Odd (G.degree v)} = 2) :
     ∃ u v, ∃ p : G.Walk u v, p.IsEulerian := by
@@ -639,7 +639,7 @@ theorem exists_isEulerian_of_connected_card_oddDegree_eq_two
   exact hpmax.mem_edges_of_connected_card_two hconn huv huOdd hvOdd hodd
 
 omit [DecidableEq V] in
-private theorem forall_even_degree_of_card_oddDegree_eq_zero
+private theorem forall_even_degree_of_card_odd_degree_eq_zero
     (hodd : Fintype.card {v : V | Odd (G.degree v)} = 0) :
     ∀ v : V, Even (G.degree v) := by
   intro v
@@ -647,20 +647,20 @@ private theorem forall_even_degree_of_card_oddDegree_eq_zero
   have hvOdd : Odd (G.degree v) := Nat.not_even_iff_odd.mp hvEven
   exact (Fintype.card_eq_zero_iff.mp hodd).false ⟨v, hvOdd⟩
 
-/-- **Main theorem.** A connected finite simple graph has an Eulerian walk iff it has
+/-- **Main theorem.** A connected finite simple graph has an Eulerian walk if it has
 zero or two odd-degree vertices; this is the existence direction. -/
-theorem exists_isEulerian_of_connected_card_oddDegree_eq_zero_or_two
+theorem exists_isEulerian_of_connected_card_odd_degree_eq_zero_or_two
     (hconn : G.Connected)
     (hodd : Fintype.card {v : V | Odd (G.degree v)} = 0 ∨
       Fintype.card {v : V | Odd (G.degree v)} = 2) :
     ∃ u v, ∃ p : G.Walk u v, p.IsEulerian := by
   rcases hodd with hzero | htwo
   · obtain ⟨u₀⟩ := hconn.nonempty
-    have heven := forall_even_degree_of_card_oddDegree_eq_zero (G := G) hzero
+    have heven := forall_even_degree_of_card_odd_degree_eq_zero (G := G) hzero
     obtain ⟨u, p, hp⟩ :=
       exists_isEulerian_of_connected_forall_even_degree u₀ hconn heven
     exact ⟨u, u, p, hp⟩
-  · exact exists_isEulerian_of_connected_card_oddDegree_eq_two hconn htwo
+  · exact exists_isEulerian_of_connected_card_odd_degree_eq_two hconn htwo
 
 end Fintype
 end Walk
