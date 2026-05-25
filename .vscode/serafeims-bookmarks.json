@@ -1,0 +1,6 @@
+[
+  {
+    "filename": "Mathlib/CategoryTheory/MeromorphicFunctions copy.lean",
+    "lineContent": "noncomputable instance {X : Cᵒᵖ} : CommRing ((PresheafOfMeromorphicFunctions"
+  }
+]
