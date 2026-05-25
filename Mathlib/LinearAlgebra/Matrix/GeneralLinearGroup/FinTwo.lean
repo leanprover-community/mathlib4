@@ -207,7 +207,6 @@ end Ring
 variable {R K : Type*} [CommRing R] [Field K]
 
 /-- The determinant of the upper-triangular matrix `upperRightHom x = [[1, x], [0, 1]]` is `1`. -/
-@[simp]
 lemma det_upperRightHom (x : R) :
     ((Matrix.GeneralLinearGroup.upperRightHom x).det.val : R) = 1 := by
   rw [Matrix.GeneralLinearGroup.val_det_apply]
