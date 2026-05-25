@@ -30,8 +30,9 @@ open Set Metric TopologicalSpace Function Asymptotics Filter
 
 open scoped Topology NNReal
 
-variable {α β 𝕜 E F : Type*} [NontriviallyNormedField 𝕜] [IsRCLikeNormedField 𝕜]
-  [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedAddCommGroup F] [CompleteSpace F] {u : α → ℝ}
+variable {α β 𝕜 E F : Type*} [NontriviallyNormedField 𝕜] [IsRCLikeNormedField 𝕜] [AddCommGroup E]
+  [NormedAddCommGroup E] [NormedSpace 𝕜 E] [AddCommGroup F] [NormedAddCommGroup F] [CompleteSpace F]
+  {u : α → ℝ}
 
 /-! ### Differentiability -/
 
