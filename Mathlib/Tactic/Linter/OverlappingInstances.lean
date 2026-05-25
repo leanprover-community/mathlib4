@@ -221,7 +221,8 @@ def overlappingInstances : Linter where
     for t in ← getInfoTrees do
       for (ref, ctx, info) in t.getDeclBodyInfos do
         let some (lctx, expectedType?) := info.getLCtx? | pure ()
-        withTraceNode `overlappingInstances (fun _ ↦ return m!"linting `{ctx.parentDecl?}`") do
+        withTraceNode `overlappingInstances
+          (fun _ ↦ return m!"linting `{.ofConstName <| ctx.parentDecl?.getD .anonymous}`") do
         let some msg ← runLinter ctx lctx expectedType? | pure ()
         /- Log the warning from the declaration's selection range (usually the declaration name,
         or `instance`) to the body if possible. This underlines the hypotheses and type,
