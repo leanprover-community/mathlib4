@@ -40,19 +40,13 @@ variable {ι : Sort*} {α β : Type*} {S : Set (Set α)} {s t : Set α} {a b : �
 section Set
 open Set
 
-/-- A set `s` is closed under countable supremum if `⨆ n, A n ∈ s` for all `A : ι → α`
-with `ι` nonempty countable and `A n ∈ s` for all `n`.
-
-The definition uses `ι = ℕ`.
-See `CountableSupClosed.iSup_mem` for a supremum over any nonempty countable type. -/
+/-- A set `s` is closed under countable supremum if every nonempty countable subset of `s` has
+a least upper bound in `s`. -/
 structure CountableSupClosed [LE α] (s : Set α) : Prop where
   exists_isLUB : ∀ t ⊆ s, t.Nonempty → t.Countable → ∃ x ∈ s, IsLUB t x
 
-/-- A set `s` is closed under countable infimum if `⨅ n, A n ∈ s` for all `A : ι → α`
-with `ι` nonempty countable and `A n ∈ s` for all `n`.
-
-The definition uses `ι = ℕ`.
-See `CountableInfClosed.iInf_mem` for an infimum over any nonempty countable type. -/
+/-- A set `s` is closed under countable infimum if every nonempty countable subset of `s` has
+a greatest lower bound in `s`. -/
 @[to_dual existing]
 structure CountableInfClosed [LE α] (s : Set α) : Prop where
   exists_isGLB : ∀ t ⊆ s, t.Nonempty → t.Countable → ∃ x ∈ s, IsGLB t x
