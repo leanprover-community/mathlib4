@@ -195,6 +195,14 @@ lemma Directed.finite_le {ι κ : Sort*} [Nonempty ι] [Finite κ] {f : ι → �
   simpa using
     (hf.comp_of_surjective PLift.down_surjective).finite_set_le (Set.finite_range (PLift.up ∘ g))
 
+theorem DirectedOn.finite_le {s : Set α} (hs₀ : s.Nonempty) (D : DirectedOn r s)
+    (hs : s.Finite) : ∃ z ∈ s, ∀ i ∈ s, r i z := by
+  have := hs₀.to_subtype
+  have := hs.to_subtype
+  obtain ⟨⟨z, hzs⟩, hz⟩ := D.directed_val.finite_le id
+  use z, hzs
+  simpa using hz
+
 variable [Nonempty α] [Preorder α]
 
 theorem Finite.exists_le [IsDirectedOrder α] (f : β → α) : ∃ M, ∀ i, f i ≤ M :=
