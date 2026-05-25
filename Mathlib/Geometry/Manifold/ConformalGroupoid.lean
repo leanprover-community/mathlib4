@@ -25,7 +25,7 @@ conformal, groupoid
 @[expose] public section
 
 
-variable {X : Type*} [NormedAddCommGroup X] [NormedSpace ℝ X]
+variable {X : Type*} [AddCommGroup X] [NormedAddCommGroup X] [NormedSpace ℝ X]
 
 /-- The pregroupoid of conformal maps. -/
 def conformalPregroupoid : Pregroupoid X where
