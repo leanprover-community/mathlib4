@@ -23,7 +23,7 @@ over a field.
 
 universe u
 
-open CategoryTheory Limits MonoidalCategory CartesianMonoidalCategory MonObj
+open CategoryTheory MonoidalCategory MonObj
 
 namespace AlgebraicGeometry.JacobianChallenge
 
@@ -46,18 +46,17 @@ namespace Jacobian
 /-! ## The Jacobian of `C` is an abelian variety. -/
 
 /-- The group scheme structure on the Jacobian of the curve `C`. -/
-instance_wanted instGrpObj : GrpObj (❰Jacobian❱ C)
+instance_wanted : GrpObj (❰Jacobian❱ C)
 
 /-- The Jacobian of `C` is smooth of relative dimension `g` over `k`, where `g` is the
 genus of `C`. -/
-instance_wanted smoothOfRelativeDimension_genus :
-    SmoothOfRelativeDimension (❰genus❱ C) (❰Jacobian❱ C).hom
+instance_wanted : SmoothOfRelativeDimension (❰genus❱ C) (❰Jacobian❱ C).hom
 
 /-- The Jacobian of `C` is proper over `k`. -/
-instance_wanted instIsProper : IsProper (❰Jacobian❱ C).hom
+instance_wanted : IsProper (❰Jacobian❱ C).hom
 
 /-- The Jacobian of `C` is geometrically irreducible over `k`. -/
-instance_wanted instGeometricallyIrreducible : GeometricallyIrreducible (❰Jacobian❱ C).hom
+instance_wanted : GeometricallyIrreducible (❰Jacobian❱ C).hom
 
 /-- The Abel-Jacobi map from a smooth, proper curve to its Jacobian associated to a
 `k`-rational point of `C`. -/
