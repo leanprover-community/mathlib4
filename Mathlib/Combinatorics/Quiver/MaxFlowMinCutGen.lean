@@ -95,9 +95,9 @@ lemma conservation_eq {V α : Type*} [Fintype V] [Ring α] [LinearOrder α] (G :
   guaranteeing that flow cannot move between two vertices in both directions. This is
   necessary to guarantee augmenting a valid flow from the original network with the residual
   network results in a valid flow in the original network. -/
-instance {V α : Type*} [Fintype V] [Ring α] [LinearOrder α] [IsStrictOrderedRing α]
-    {G : STVertices V} : Mul (RelaxedFlow α G) where
-  mul g h := {
+def augment {V α : Type*} [Fintype V] [Ring α] [LinearOrder α] [IsStrictOrderedRing α]
+    {G : STVertices V} : RelaxedFlow α G → RelaxedFlow α G → RelaxedFlow α G :=
+  fun g h => {
     f u v := max (g.f u v + h.f u v - g.f v u - h.f v u) 0
     nonneg_flow := by simp
     conservation := by
@@ -130,6 +130,20 @@ instance {V α : Type*} [Fintype V] [Ring α] [LinearOrder α] [IsStrictOrderedR
       grind [g.nonneg_flow u G.t, h.nonneg_flow u G.t]
     }
 
+infixl:70 " ⋄ "   => augment
+
+lemma augment_comm {V α : Type*} [Fintype V] [Ring α] [LinearOrder α] [IsStrictOrderedRing α]
+    {G : STVertices V} : ∀ F F' : RelaxedFlow α G, F ⋄ F' = F' ⋄ F := by
+  intro F F'
+  simp only [augment, RelaxedFlow.mk.injEq]
+  grind
+
+lemma augment_assoc {V α : Type*} [Fintype V] [Ring α] [LinearOrder α] [IsStrictOrderedRing α]
+    {G : STVertices V} : ∀ F F' F'' : RelaxedFlow α G, (F ⋄ F') ⋄ F'' = F ⋄ (F' ⋄ F'') := by
+  intro F F' F''
+  simp only [augment, RelaxedFlow.mk.injEq]
+  grind
+
 /-- The value of a flow: the amount of flow going out of the sink. -/
 noncomputable
 def flowValue {V α : Type*} [Fintype V] [Ring α] [LinearOrder α] (G : STVertices V)
@@ -143,10 +157,10 @@ lemma flow_value_nonneg {V α : Type*} [Fintype V] [Ring α] [LinearOrder α] [I
 /-- The value of a flow is additive under augmentation. -/
 lemma add_flow {V α : Type*} [Fintype V] [Ring α] [LinearOrder α] [IsStrictOrderedRing α]
     (G : STVertices V) (flow₁ flow₂ : RelaxedFlow α G) :
-      flowValue G (flow₁ * flow₂) = flowValue G flow₁ + flowValue G flow₂ := by
+      flowValue G (flow₁ ⋄ flow₂) = flowValue G flow₁ + flowValue G flow₂ := by
   have: ∀ x, (flow₁.f G.s x + flow₂.f G.s x) ≥ 0 := by
     intro x; grind [flow₁.nonneg_flow G.s x, flow₂.nonneg_flow G.s x]
-  simp [flowValue, (· * ·), Mul.mul, outgoing_cut_f,
+  simp [flowValue, (· ⋄ ·), outgoing_cut_f,
    flow₁.no_edges_in_source, flow₂.no_edges_in_source, this, sum_add_distrib]
 
 /-- The capacity of an S-T cut is the sum of edge capacities of edges going from S to T. -/
@@ -190,9 +204,9 @@ lemma valid_augmentation_of_valid_residual {V α : Type*} [Fintype V] [Ring α] 
     [IsStrictOrderedRing α] (G : FlowNetwork V α) (F : RelaxedFlow α G.toSTVertices)
       (h : ValidFlow G F) :
         ∀F' : (RelaxedFlow α G.toSTVertices), ValidFlow (ResidualNetwork G F h) F' →
-          ∀ u v : V, (F * F').f u v ≤ G.c u v := by
+          ∀ u v : V, (F ⋄ F').f u v ≤ G.c u v := by
   intro F' val_F' u v
-  simp [(· * ·), Mul.mul]
+  simp [(· ⋄ ·)]
   constructor
   · have : F'.f u v ≤ G.c u v - F.f u v + F.f v u := by exact val_F' u v
     grind [F'.nonneg_flow v u, F.nonneg_flow u v]
@@ -211,7 +225,7 @@ lemma no_augmenting_of_max_flow {V α : Type*} [Fintype V] [Ring α] [LinearOrde
    apply lt_of_le_of_ne;
    · grind [flow_value_nonneg G.toSTVertices F']
    · symm; exact con
-  let optF := F * F'
+  let optF := F ⋄ F'
   have optge : flowValue G.toSTVertices optF > flowValue G.toSTVertices F := by calc
    flowValue G.toSTVertices optF = flowValue G.toSTVertices F + flowValue G.toSTVertices F' :=
    by exact add_flow G.toSTVertices F F'
@@ -356,9 +370,9 @@ lemma valid_flow_of_trivialFlow {V α : Type*} [Fintype V] [Ring α] [LinearOrde
 /-- Augmenting a valid flow with the trivial flow results in a valid flow -/
 lemma valid_augmentation_of_trivialFlow {V α : Type*} [Fintype V] [Ring α] [LinearOrder α]
     [IsStrictOrderedRing α] (G : FlowNetwork V α) (F : RelaxedFlow α G.toSTVertices)
-      (validF : ValidFlow G F) : ValidFlow G (F * (trivialFlow G.toSTVertices)) := by
+      (validF : ValidFlow G F) : ValidFlow G (F ⋄ (trivialFlow G.toSTVertices)) := by
   rw [ValidFlow] at validF
-  simp only [ValidFlow, HMul.hMul, Mul.mul, zero_edge_flow_of_trivialFlow, add_zero, sub_zero,
+  simp only [ValidFlow, (· ⋄ ·), zero_edge_flow_of_trivialFlow, add_zero, sub_zero,
     sup_le_iff, tsub_le_iff_right, G.nonneg_capacity, and_true]
   intro u v
   trans G.c u v
@@ -1046,9 +1060,9 @@ theorem max_flow_iff_eq_min_cut_N {V : Type*} [Fintype V] (G : NatFlowNetwork V)
 /-- Augmentation cancels out any 2-cycles: flow can't go both ways after augmentation -/
 lemma no_bidirectional_flow {V α : Type*} [Fintype V] [Ring α] [LinearOrder α]
     [IsStrictOrderedRing α] (G : STVertices V) :
-      ∀ F F' : RelaxedFlow α G, ∀ u v, (F * F').f u v = 0 ∨ (F * F').f v u = 0 := by
+      ∀ F F' : RelaxedFlow α G, ∀ u v, (F ⋄ F').f u v = 0 ∨ (F ⋄ F').f v u = 0 := by
   intro F F' u v
-  simp only [HMul.hMul, Mul.mul, sup_eq_right, tsub_le_iff_right, zero_add]
+  simp only [(· ⋄ ·), sup_eq_right, tsub_le_iff_right, zero_add]
   have : F'.f v u + F.f v u = F.f v u + F'.f v u := by grind
   rw [this]
   have : F'.f u v + F.f u v = F.f u v + F'.f u v := by grind
@@ -1084,7 +1098,7 @@ lemma undirected_max_directed_max {V α : Type*} [Fintype V] [Ring α] [LinearOr
   · exact h.1.1
   · intro fn valfn
     have : flowValue G.toSTVertices fn =
-      flowValue G.toSTVertices (fn * (trivialFlow G.toSTVertices)) := by simp [add_flow]
+      flowValue G.toSTVertices (fn ⋄ (trivialFlow G.toSTVertices)) := by simp [add_flow]
     rw [this]
     apply h.2
     constructor
@@ -1126,7 +1140,7 @@ theorem ex_undirected_max_flow_min_cut {V α : Type*} [Fintype V] [Ring α] [Lin
         is_max_undirected_flow F ∧ IsMinCut G.toFlowNetwork C ∧ flowValue G.toSTVertices F =
           cutCap C := by
   obtain ⟨F, C, hF, hC, FCeq⟩ := h
-  use F * (trivialFlow G.toSTVertices), C
+  use F ⋄ (trivialFlow G.toSTVertices), C
   constructor
   · constructor
     · rw [ValidFlowUndirected]
