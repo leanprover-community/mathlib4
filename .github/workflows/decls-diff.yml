@@ -272,10 +272,10 @@ jobs:
         id: diff
         uses: ./workflow-tooling/.github/actions/decls-diff
         with:
-          reference-decls-file:   ./ref-artifact/decls.txt
-          reference-imports-file: ./ref-artifact/imports.json
-          new-decls-file:         ./new-artifact/decls.txt
-          new-imports-file:       ./new-artifact/imports.json
+          reference-decls-file:   ${{ github.workspace }}/ref-artifact/decls.txt
+          reference-imports-file: ${{ github.workspace }}/ref-artifact/imports.json
+          new-decls-file:         ${{ github.workspace }}/new-artifact/decls.txt
+          new-imports-file:       ${{ github.workspace }}/new-artifact/imports.json
           new-sha:                ${{ steps.meta.outputs.new-sha }}
           working-directory:      ${{ github.workspace }}/pr-branch
 
