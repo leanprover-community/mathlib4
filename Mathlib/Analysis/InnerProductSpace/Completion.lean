@@ -24,7 +24,7 @@ variable {𝕜 E F : Type*} [RCLike 𝕜]
 local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
 section SeparationQuotient
-variable [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
+variable [AddCommGroup E] [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 
 theorem Inseparable.inner_eq_inner {x₁ x₂ y₁ y₂ : E}
     (hx : Inseparable x₁ x₂) (hy : Inseparable y₁ y₂) :
@@ -52,7 +52,7 @@ end SeparationQuotient
 
 section UniformSpace.Completion
 
-variable [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
+variable [AddCommGroup E] [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 
 namespace UniformSpace.Completion
 
