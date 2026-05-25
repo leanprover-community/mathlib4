@@ -90,7 +90,7 @@ the ring of finite adeles of `K`, defined as the restricted product of the compl
 and the restricted product is the subring of `∏_v K_v` consisting of elements which
 are in `R_v` for all but finitely many `v`.
 -/
-def FiniteAdeleRing : Type _ :=
+@[implicit_reducible] def FiniteAdeleRing : Type _ :=
   Πʳ v : HeightOneSpectrum R, [v.adicCompletion K, v.adicCompletionIntegers K]
 
 instance : CommRing (FiniteAdeleRing R K) := inferInstanceAs <|
