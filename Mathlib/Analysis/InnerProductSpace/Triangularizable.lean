@@ -11,18 +11,12 @@ public import Mathlib.LinearAlgebra.Eigenspace.Triangularizable
 /-!
 # Orthonormal triangularization
 
-This file connects algebraic triangularization by invariant flags with the Gram-Schmidt
-construction of an orthonormal basis adapted to the same flag.
+Gram–Schmidt on a `Fin`-indexed basis preserves each initial `Basis.flag` subspace.
 
 ## Main results
 
-* `Module.Basis.flag_gramSchmidtOrthonormalBasis_toBasis`: applying Gram-Schmidt to a
-  `Fin`-indexed basis preserves each initial flag subspace.
-* A basis whose associated flag is invariant can be replaced by an orthonormal basis with the same
-  property.
-* `Module.End.exists_orthonormalBasis_blockTriangular_toMatrix_finrank`: over an algebraically
-  closed `RCLike` field, every finite-dimensional endomorphism has a block-upper-triangular matrix
-  in some orthonormal basis.
+* `Module.Basis.flag_gramSchmidtOrthonormalBasis_toBasis`
+* `Module.End.exists_orthonormalBasis_blockTriangular_toMatrix_finrank`
 -/
 
 @[expose] public section
@@ -34,7 +28,7 @@ namespace InnerProductSpace
 
 variable {𝕜 E : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 
-theorem gramSchmidtOrthonormalBasis_toBasis_flag_le [FiniteDimensional 𝕜 E]
+private theorem gramSchmidtOrthonormalBasis_toBasis_flag_le [FiniteDimensional 𝕜 E]
     {n : ℕ} (b : Basis (Fin n) 𝕜 E) (k : Fin (n + 1)) :
     (gramSchmidtOrthonormalBasis (Module.finrank_eq_card_basis b) b).toBasis.flag k ≤
       b.flag k := by
@@ -52,7 +46,7 @@ theorem gramSchmidtOrthonormalBasis_toBasis_flag_le [FiniteDimensional 𝕜 E]
     lt_of_le_of_lt (Fin.castSucc_le_castSucc_iff.mpr hj) hi)
     (gramSchmidt_mem_span 𝕜 b le_rfl)
 
-theorem flag_le_gramSchmidtOrthonormalBasis_toBasis_flag [FiniteDimensional 𝕜 E]
+private theorem flag_le_gramSchmidtOrthonormalBasis_toBasis_flag [FiniteDimensional 𝕜 E]
     {n : ℕ} (b : Basis (Fin n) 𝕜 E) (k : Fin (n + 1)) :
     b.flag k ≤
       (gramSchmidtOrthonormalBasis (Module.finrank_eq_card_basis b) b).toBasis.flag k := by
@@ -72,7 +66,7 @@ theorem flag_le_gramSchmidtOrthonormalBasis_toBasis_flag [FiniteDimensional 𝕜
   rw [← hu j]
   exact ⟨j, lt_of_le_of_lt (Fin.castSucc_le_castSucc_iff.mpr hj) hi, rfl⟩
 
-/-- Gram-Schmidt applied to a `Fin`-indexed basis preserves each initial flag subspace. -/
+/-- `gramSchmidtOrthonormalBasis` preserves each initial `Basis.flag`. -/
 theorem _root_.Module.Basis.flag_gramSchmidtOrthonormalBasis_toBasis [FiniteDimensional 𝕜 E]
     {n : ℕ} (b : Basis (Fin n) 𝕜 E) (k : Fin (n + 1)) :
     (gramSchmidtOrthonormalBasis (Module.finrank_eq_card_basis b) b).toBasis.flag k =
@@ -87,8 +81,7 @@ namespace Module.End
 variable {𝕜 E : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 variable {n : ℕ} {f : End 𝕜 E}
 
-/-- A basis whose associated flag is invariant can be replaced by an orthonormal basis whose
-associated flag is invariant. -/
+/-- An invariant `Basis.flag` admits an orthonormal basis with the same invariant flags. -/
 theorem exists_orthonormalBasis_forall_flag_mem_invtSubmodule_of_forall_flag_mem_invtSubmodule
     [FiniteDimensional 𝕜 E] (b : Basis (Fin n) 𝕜 E)
     (hb : ∀ k : Fin (n + 1), b.flag k ∈ f.invtSubmodule) :
@@ -96,51 +89,20 @@ theorem exists_orthonormalBasis_forall_flag_mem_invtSubmodule_of_forall_flag_mem
       u.toBasis.flag k ∈ f.invtSubmodule := by
   let u := InnerProductSpace.gramSchmidtOrthonormalBasis (Module.finrank_eq_card_basis b) b
   refine ⟨u, fun k => ?_⟩
-  change
-    (InnerProductSpace.gramSchmidtOrthonormalBasis (Module.finrank_eq_card_basis b) b).toBasis.flag
-      k ∈ f.invtSubmodule
   rw [Module.Basis.flag_gramSchmidtOrthonormalBasis_toBasis b k]
   exact hb k
 
-/-- If the maximal generalized eigenspaces of a finite-dimensional endomorphism span the whole
-space, then there is an orthonormal basis indexed by the dimension whose associated flag is
-invariant. -/
-theorem
-    exists_orthonormalBasis_forall_flag_mem_invtSubmodule_finrank_of_iSup_maxGenEigenspace_eq_top
-    [FiniteDimensional 𝕜 E] {f : End 𝕜 E} (hf : ⨆ μ, f.maxGenEigenspace μ = ⊤) :
-    ∃ u : OrthonormalBasis (Fin (finrank 𝕜 E)) 𝕜 E,
-      ∀ k : Fin (finrank 𝕜 E + 1), u.toBasis.flag k ∈ f.invtSubmodule := by
-  obtain ⟨b, hb⟩ :=
-    exists_basis_forall_flag_mem_invtSubmodule_finrank_of_iSup_maxGenEigenspace_eq_top hf
-  exact exists_orthonormalBasis_forall_flag_mem_invtSubmodule_of_forall_flag_mem_invtSubmodule b hb
-
-/-- If the maximal generalized eigenspaces of a finite-dimensional endomorphism span the whole
-space, then its matrix in some dimension-indexed orthonormal basis is block upper triangular. -/
-theorem exists_orthonormalBasis_blockTriangular_toMatrix_finrank_of_iSup_maxGenEigenspace_eq_top
-    [FiniteDimensional 𝕜 E] {f : End 𝕜 E} (hf : ⨆ μ, f.maxGenEigenspace μ = ⊤) :
-    ∃ u : OrthonormalBasis (Fin (finrank 𝕜 E)) 𝕜 E,
-      (LinearMap.toMatrix u.toBasis u.toBasis f).BlockTriangular id := by
-  obtain ⟨u, hu⟩ :=
-    exists_orthonormalBasis_forall_flag_mem_invtSubmodule_finrank_of_iSup_maxGenEigenspace_eq_top hf
-  exact ⟨u, forall_flag_mem_invtSubmodule_iff_blockTriangular_toMatrix.mp hu⟩
-
-/-- In finite dimensions over an algebraically closed `RCLike` field, every endomorphism admits an
-orthonormal basis indexed by the dimension whose associated flag is invariant. -/
-theorem exists_orthonormalBasis_forall_flag_mem_invtSubmodule_finrank
-    [IsAlgClosed 𝕜] [FiniteDimensional 𝕜 E] (f : End 𝕜 E) :
-    ∃ u : OrthonormalBasis (Fin (finrank 𝕜 E)) 𝕜 E,
-      ∀ k : Fin (finrank 𝕜 E + 1), u.toBasis.flag k ∈ f.invtSubmodule :=
-  exists_orthonormalBasis_forall_flag_mem_invtSubmodule_finrank_of_iSup_maxGenEigenspace_eq_top
-    (iSup_maxGenEigenspace_eq_top f)
-
-/-- In finite dimensions over an algebraically closed `RCLike` field, every endomorphism has a
-block-upper-triangular matrix in some orthonormal basis indexed by the dimension. -/
+/-- `f` has a block-upper-triangular matrix in some orthonormal `finrank`-indexed basis. -/
 theorem exists_orthonormalBasis_blockTriangular_toMatrix_finrank
     [IsAlgClosed 𝕜] [FiniteDimensional 𝕜 E] (f : End 𝕜 E) :
     ∃ u : OrthonormalBasis (Fin (finrank 𝕜 E)) 𝕜 E,
-      (LinearMap.toMatrix u.toBasis u.toBasis f).BlockTriangular id :=
-  exists_orthonormalBasis_blockTriangular_toMatrix_finrank_of_iSup_maxGenEigenspace_eq_top
-    (iSup_maxGenEigenspace_eq_top f)
+      (LinearMap.toMatrix u.toBasis u.toBasis f).BlockTriangular id := by
+  obtain ⟨n, b, hb⟩ := exists_basis_forall_flag_mem_invtSubmodule f
+  have hn : n = finrank 𝕜 E := by
+    simpa [Fintype.card_fin] using (Module.finrank_eq_card_basis b).symm
+  subst hn
+  obtain ⟨u, hu⟩ :=
+    exists_orthonormalBasis_forall_flag_mem_invtSubmodule_of_forall_flag_mem_invtSubmodule b hb
+  exact ⟨u, forall_flag_mem_invtSubmodule_iff_blockTriangular_toMatrix.mp hu⟩
 
 end Module.End
-

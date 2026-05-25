@@ -11,20 +11,12 @@ public import Mathlib.Analysis.InnerProductSpace.Triangularizable
 /-!
 # Schur triangulation
 
-Schur triangulation is also known as Schur decomposition or Schur triangularization. It states that
-a square matrix over an algebraically closed field, for example `ℂ`, is unitarily similar to an
-upper triangular matrix.
-
-The statements in this file are theorem-first: they assert existence of a unitary matrix and a
-block-upper-triangular matrix, rather than making noncanonical choices.
+Existence of a unitary matrix `U` and block-upper-triangular `T` with `A = U * T * star U`.
 
 ## Main results
 
-* `Matrix.exists_orthonormalBasis_blockTriangular_toEuclideanLin`: every matrix over an
-  algebraically closed `RCLike` field has an orthonormal basis in which the associated linear map is
-  block upper triangular.
-* `Matrix.exists_unitaryGroup_blockTriangular`: every matrix over an algebraically closed `RCLike`
-  field is unitarily similar to a matrix satisfying `Matrix.BlockTriangular id`.
+* `Matrix.exists_unitaryGroup_blockTriangular`
+* `Matrix.exists_orthonormalBasis_blockTriangular_toEuclideanLin`
 -/
 
 @[expose] public section
@@ -37,8 +29,6 @@ open scoped InnerProductSpace
 variable {𝕜 : Type*} [RCLike 𝕜] [IsAlgClosed 𝕜]
 variable {n : Type*} [Fintype n] [LinearOrder n] (A : Matrix n n 𝕜)
 
-/-- Every matrix over an algebraically closed `RCLike` field has an orthonormal basis in which its
-associated linear map has a block-upper-triangular matrix. -/
 theorem exists_orthonormalBasis_blockTriangular_toEuclideanLin :
     ∃ b : OrthonormalBasis n 𝕜 (EuclideanSpace 𝕜 n),
       (LinearMap.toMatrixOrthonormal b (toEuclideanLin A)).BlockTriangular id := by
@@ -58,9 +48,7 @@ theorem exists_orthonormalBasis_blockTriangular_toEuclideanLin :
         rfl
     _ = 0 := hb (e.symm.lt_iff_lt.mpr hji)
 
-/-- **Schur triangulation**, **Schur decomposition** for matrices over an algebraically closed
-`RCLike` field, eventhough the only relevant cases are for complex matrices.
-In particular, a complex matrix is unitarily similar to an upper triangular matrix. -/
+/-- **Schur triangulation**: unitary similarity to a block-upper-triangular matrix. -/
 theorem exists_unitaryGroup_blockTriangular :
     ∃ U : Matrix.unitaryGroup n 𝕜, ∃ T : Matrix n n 𝕜,
       T.BlockTriangular id ∧ A = U * T * star (U : Matrix n n 𝕜) := by
