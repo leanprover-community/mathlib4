@@ -175,28 +175,52 @@ theorem lift_uzero (a : Cardinal.{u}) : lift.{0} a = a :=
   lift_id'.{0, u} a
 
 @[simp]
-theorem lift_lift.{u_1} (a : Cardinal.{u_1}) : lift.{w} (lift.{v} a) = lift.{max v w} a :=
+theorem lift_lift (a : Cardinal.{u}) : lift.{w} (lift.{v} a) = lift.{max v w} a :=
   inductionOn a fun _ => (Equiv.ulift.trans <| Equiv.ulift.trans Equiv.ulift.symm).cardinal_eq
 
 theorem out_lift_equiv (a : Cardinal.{u}) : Nonempty ((lift.{v} a).out ≃ a.out) := by
   rw [← mk_out a, ← mk_uLift, mk_out]
   exact ⟨outMkEquiv.trans Equiv.ulift⟩
 
-theorem lift_mk_eq {α : Type u} {β : Type v} :
+-- TODO: remove primes once the other theorems are deprecated
+private theorem lift_mk_eq'' {α : Type u} {β : Type v} :
     lift.{max v w} #α = lift.{max u w} #β ↔ Nonempty (α ≃ β) :=
   Quotient.eq'.trans
     ⟨fun ⟨f⟩ => ⟨Equiv.ulift.symm.trans <| f.trans Equiv.ulift⟩, fun ⟨f⟩ =>
       ⟨Equiv.ulift.trans <| f.trans Equiv.ulift.symm⟩⟩
 
-/-- A variant of `Cardinal.lift_mk_eq` with specialized universes.
-Because Lean often cannot realize it should use this specialization itself,
-we provide this statement separately so you don't have to solve the specialization problem either.
--/
-theorem lift_mk_eq' {α : Type u} {β : Type v} : lift.{v} #α = lift.{u} #β ↔ Nonempty (α ≃ β) :=
-  lift_mk_eq.{u, v, 0}
+/-- Universe-heterogeneous cardinal equality. -/
+def liftEq (a : Cardinal.{u}) (b : Cardinal.{v}) : Prop := lift.{v} a = lift.{u} b
 
-theorem mk_congr_lift {α : Type u} {β : Type v} (e : α ≃ β) : lift.{v} #α = lift.{u} #β :=
-  lift_mk_eq'.2 ⟨e⟩
+@[inherit_doc] infix:50 " =ₗ " => liftEq
+
+theorem liftEq_comm {a : Cardinal.{u}} {b : Cardinal.{v}} : a =ₗ b ↔ b =ₗ a := eq_comm
+alias ⟨liftEq_symm, _⟩ := liftEq_comm
+
+@[simp]
+theorem liftEq_iff_eq {a b : Cardinal.{u}} : a =ₗ b ↔ a = b := by
+  simp [liftEq]
+
+@[simp]
+theorem lift_liftEq_iff {a : Cardinal.{u}} {b : Cardinal.{v}} : lift.{w} a =ₗ b ↔ a =ₗ b := by
+  induction a, b using inductionOn₂ with | mk α β
+  rw [liftEq, lift_lift]
+  rw [liftEq, lift_mk_eq''.{u, v, w}, lift_mk_eq''.{u, v, 0}]
+
+@[simp]
+theorem liftEq_lift_iff {a : Cardinal.{u}} {b : Cardinal.{v}} : a =ₗ lift.{w} b ↔ a =ₗ b := by
+  rw [liftEq_comm, lift_liftEq_iff, liftEq_comm]
+
+theorem mk_liftEq {α : Type u} {β : Type v} : #α =ₗ #β ↔ Nonempty (α ≃ β) :=
+  Quotient.eq'.trans
+    ⟨fun ⟨f⟩ => ⟨Equiv.ulift.symm.trans <| f.trans Equiv.ulift⟩, fun ⟨f⟩ =>
+      ⟨Equiv.ulift.trans <| f.trans Equiv.ulift.symm⟩⟩
+
+@[deprecated (since := "2026-05-24")] alias lift_mk_eq := mk_liftEq
+@[deprecated (since := "2026-05-24")] alias lift_mk_eq' := mk_liftEq
+
+theorem mk_congr_lift {α : Type u} {β : Type v} (e : α ≃ β) : #α =ₗ #β :=
+  mk_liftEq.2 ⟨e⟩
 
 alias _root_.Equiv.lift_cardinal_eq := mk_congr_lift
 
@@ -341,7 +365,7 @@ theorem mk_sigma {ι} (f : ι → Type*) : #(Σ i, f i) = sum fun i => #(f i) :=
 theorem mk_sigma_congr_lift {ι : Type v} {ι' : Type v'} {f : ι → Type w} {g : ι' → Type w'}
     (e : ι ≃ ι') (h : ∀ i, lift.{w'} #(f i) = lift.{w} #(g (e i))) :
     lift.{max v' w'} #(Σ i, f i) = lift.{max v w} #(Σ i, g i) :=
-  Cardinal.lift_mk_eq'.2 ⟨.sigmaCongr e fun i ↦ Classical.choice <| Cardinal.lift_mk_eq'.1 (h i)⟩
+  Cardinal.mk_liftEq.2 ⟨.sigmaCongr e fun i ↦ Classical.choice <| Cardinal.mk_liftEq.1 (h i)⟩
 
 theorem mk_sigma_congr {ι ι' : Type u} {f : ι → Type v} {g : ι' → Type v} (e : ι ≃ ι')
     (h : ∀ i, #(f i) = #(g (e i))) : #(Σ i, f i) = #(Σ i, g i) :=
@@ -383,11 +407,8 @@ theorem sum_const' (ι : Type u) (a : Cardinal.{u}) : (sum fun _ : ι => a) = #�
 @[simp]
 theorem lift_sum {ι : Type u} (f : ι → Cardinal.{v}) :
     Cardinal.lift.{w} (Cardinal.sum f) = Cardinal.sum fun i => Cardinal.lift.{w} (f i) :=
-  Equiv.cardinal_eq <|
-    Equiv.ulift.trans <|
-      Equiv.sigmaCongrRight fun a =>
-    -- Porting note: Inserted universe hint .{_,_,v} below
-        Nonempty.some <| by rw [← lift_mk_eq.{_, _, v}, mk_out, mk_out, lift_lift]
+  Equiv.cardinal_eq <| Equiv.ulift.trans <| Equiv.sigmaCongrRight fun a ↦
+    Nonempty.some <| by simp [← mk_liftEq]
 
 theorem sum_nat_eq_add_sum_succ (f : ℕ → Cardinal.{u}) :
     Cardinal.sum f = f 0 + Cardinal.sum fun i => f (i + 1) := by
@@ -408,7 +429,7 @@ theorem mk_pi {ι : Type u} (α : ι → Type v) : #(Π i, α i) = prod fun i =>
 theorem mk_pi_congr_lift {ι : Type v} {ι' : Type v'} {f : ι → Type w} {g : ι' → Type w'}
     (e : ι ≃ ι') (h : ∀ i, lift.{w'} #(f i) = lift.{w} #(g (e i))) :
     lift.{max v' w'} #(Π i, f i) = lift.{max v w} #(Π i, g i) :=
-  Cardinal.lift_mk_eq'.2 ⟨.piCongr e fun i ↦ Classical.choice <| Cardinal.lift_mk_eq'.1 (h i)⟩
+  Cardinal.mk_liftEq.2 ⟨.piCongr e fun i ↦ Classical.choice <| Cardinal.mk_liftEq.1 (h i)⟩
 
 theorem mk_pi_congr {ι ι' : Type u} {f : ι → Type v} {g : ι' → Type v} (e : ι ≃ ι')
     (h : ∀ i, #(f i) = #(g (e i))) : #(Π i, f i) = #(Π i, g i) :=
