@@ -378,67 +378,70 @@ theorem nilpotent_iff_finite_descending_central_series :
     rw [tsub_self]
     exact hH.1
 
-/-- The lower central series of a group `G` is a sequence `H n` of subgroups of `G`, defined
-by `H 0` is all of `G` and for `n≥1`, `H (n + 1) = ⁅H n, G⁆` -/
-def lowerCentralSeries (G : Type*) [Group G] : ℕ → Subgroup G
-  | 0 => ⊤
-  | n + 1 => ⁅lowerCentralSeries G n, ⊤⁆
+/-- The lower central series of a subgroup `S` of `G`, computed in the ambient group `G`.
+This is the iterated commutator `⁅⁅⋯⁅S, S⁆, S⁆⋯, S⁆`, a subgroup of `G`. The lower central series
+of `G` itself is the case `S = ⊤`. -/
+def lowerCentralSeries {G : Type*} [Group G] (S : Subgroup G) : ℕ → Subgroup G
+  | 0 => S
+  | n + 1 => ⁅lowerCentralSeries S n, S⁆
 
-/-- The lower central series of an additive group `G` is a sequence `H n` of additive
-subgroups of `G`, defined by `H 0` is all of `G` and for `n≥1`, `H (n + 1) = ⁅H n, G⁆` -/
-def _root_.AddSubgroup.lowerCentralSeries (G : Type*) [AddGroup G] : ℕ → AddSubgroup G
-  | 0 => ⊤
-  | n + 1 => ⁅lowerCentralSeries G n, ⊤⁆
+/-- The lower central series of an additive subgroup `S` of `G`, computed in the ambient additive
+group `G`. -/
+def _root_.AddSubgroup.lowerCentralSeries {G : Type*} [AddGroup G] (S : AddSubgroup G) :
+    ℕ → AddSubgroup G
+  | 0 => S
+  | n + 1 => ⁅lowerCentralSeries S n, S⁆
 
 attribute [to_additive existing] lowerCentralSeries
 
 variable {G}
 
 @[to_additive (attr := simp)]
-theorem lowerCentralSeries_zero : lowerCentralSeries G 0 = ⊤ := rfl
+theorem lowerCentralSeries_zero (S : Subgroup G) : S.lowerCentralSeries 0 = S := rfl
 
-theorem lowerCentralSeries_one : lowerCentralSeries G 1 = _root_.commutator G := rfl
+@[to_additive (attr := simp)]
+theorem lowerCentralSeries_succ (S : Subgroup G) (n : ℕ) :
+    S.lowerCentralSeries (n + 1) = ⁅S.lowerCentralSeries n, S⁆ := rfl
 
-theorem _root_.AddSubgroup.lowerCentralSeries_one {G : Type*} [AddGroup G] :
-    AddSubgroup.lowerCentralSeries G 1 = _root_.addCommutator G :=
+theorem top_lowerCentralSeries_one : (⊤ : Subgroup G).lowerCentralSeries 1 = _root_.commutator G :=
   rfl
 
-attribute [to_additive existing (attr := simp) AddSubgroup.lowerCentralSeries_one]
-  lowerCentralSeries_one
-
-@[to_additive]
-theorem mem_lowerCentralSeries_succ_iff (n : ℕ) (q : G) :
-    q ∈ lowerCentralSeries G (n + 1) ↔
-    q ∈ closure { x | ∃ p ∈ lowerCentralSeries G n,
-                        ∃ q ∈ (⊤ : Subgroup G), ⁅p, q⁆ = x } := Iff.rfl
-
-@[to_additive]
-theorem lowerCentralSeries_succ (n : ℕ) :
-    lowerCentralSeries G (n + 1) =
-      closure { x | ∃ p ∈ lowerCentralSeries G n, ∃ q ∈ (⊤ : Subgroup G), ⁅p, q⁆ = x } :=
+theorem _root_.AddSubgroup.top_lowerCentralSeries_one {G : Type*} [AddGroup G] :
+    (⊤ : AddSubgroup G).lowerCentralSeries 1 = _root_.addCommutator G :=
   rfl
 
+attribute [to_additive existing (attr := simp) AddSubgroup.top_lowerCentralSeries_one]
+  top_lowerCentralSeries_one
+
 @[to_additive]
-instance (n : ℕ) : Characteristic (lowerCentralSeries G n) := by
+theorem mem_lowerCentralSeries_succ_iff (S : Subgroup G) (n : ℕ) (q : G) :
+    q ∈ S.lowerCentralSeries (n + 1) ↔
+    q ∈ closure { x | ∃ p ∈ S.lowerCentralSeries n, ∃ q ∈ S, ⁅p, q⁆ = x } := Iff.rfl
+
+@[to_additive]
+instance (n : ℕ) : Characteristic ((⊤ : Subgroup G).lowerCentralSeries n) := by
   induction n with
   | zero => simp [topCharacteristic]
-  | succ d hd => unfold lowerCentralSeries; infer_instance
+  | succ d hd => simp only [lowerCentralSeries_succ]; infer_instance
 
 @[to_additive]
-theorem lowerCentralSeries_antitone : Antitone (lowerCentralSeries G) := by
-  refine antitone_nat_of_succ_le fun n x hx => ?_
-  simp only [mem_lowerCentralSeries_succ_iff, mem_top,
-    true_and] at hx
-  refine
-    closure_induction ?_ (Subgroup.one_mem _) (fun _ _ _ _ ↦ mul_mem) (fun _ _ ↦ inv_mem) hx
-  rintro y ⟨z, hz, a, ha⟩
-  rw [← ha, commutatorElement_def, mul_assoc, mul_assoc, ← mul_assoc a z⁻¹ a⁻¹]
-  exact mul_mem hz (Normal.conj_mem inferInstance z⁻¹ (inv_mem hz) a)
+theorem self_le_normalizer_lowerCentralSeries (S : Subgroup G) :
+    ∀ n, S ≤ Subgroup.normalizer (S.lowerCentralSeries n : Set G)
+  | 0 => Subgroup.le_normalizer
+  | n + 1 => by
+    rw [lowerCentralSeries_succ]
+    exact normalizer_commutator_ge_right _ _
+
+@[to_additive]
+theorem lowerCentralSeries_antitone (S : Subgroup G) : Antitone S.lowerCentralSeries := by
+  refine antitone_nat_of_succ_le fun n => ?_
+  rw [lowerCentralSeries_succ, ← le_normalizer_iff_commutator_le_left]
+  exact S.self_le_normalizer_lowerCentralSeries n
 
 /-- The lower central series of a group is a descending central series. -/
 @[to_additive /-- The lower central series of an additive group is a descending central series. -/]
 theorem lowerCentralSeries_isDescendingCentralSeries :
-    IsDescendingCentralSeries (lowerCentralSeries G) := by
+    IsDescendingCentralSeries ((⊤ : Subgroup G).lowerCentralSeries) := by
   constructor
   · rfl
   intro x n hxn g
@@ -448,7 +451,7 @@ theorem lowerCentralSeries_isDescendingCentralSeries :
 @[to_additive /-- Any descending central series for an additive group is bounded below by the lower
 central series. -/]
 theorem descending_central_series_ge_lower (H : ℕ → Subgroup G) (hH : IsDescendingCentralSeries H) :
-    ∀ n : ℕ, lowerCentralSeries G n ≤ H n
+    ∀ n : ℕ, (⊤ : Subgroup G).lowerCentralSeries n ≤ H n
   | 0 => hH.1.symm ▸ le_refl ⊤
   | n + 1 => commutator_le.mpr fun x hx q _ =>
       hH.2 x n (descending_central_series_ge_lower H hH n hx) q
@@ -457,7 +460,8 @@ theorem descending_central_series_ge_lower (H : ℕ → Subgroup G) (hH : IsDesc
 the trivial subgroup. -/
 @[to_additive /-- An additive group is nilpotent if and only if its lower central series eventually
 reaches the trivial additive subgroup. -/]
-theorem nilpotent_iff_lowerCentralSeries : IsNilpotent G ↔ ∃ n, lowerCentralSeries G n = ⊥ := by
+theorem nilpotent_iff_lowerCentralSeries :
+    IsNilpotent G ↔ ∃ n, (⊤ : Subgroup G).lowerCentralSeries n = ⊥ := by
   rw [nilpotent_iff_finite_descending_central_series]
   constructor
   · rintro ⟨n, H, ⟨h0, hs⟩, hn⟩
@@ -465,7 +469,8 @@ theorem nilpotent_iff_lowerCentralSeries : IsNilpotent G ↔ ∃ n, lowerCentral
     rw [eq_bot_iff, ← hn]
     exact descending_central_series_ge_lower H ⟨h0, hs⟩ n
   · rintro ⟨n, hn⟩
-    exact ⟨n, lowerCentralSeries G, lowerCentralSeries_isDescendingCentralSeries, hn⟩
+    exact ⟨n, (⊤ : Subgroup G).lowerCentralSeries,
+      lowerCentralSeries_isDescendingCentralSeries, hn⟩
 
 end Subgroup
 
@@ -564,18 +569,19 @@ theorem lowerCentralSeries_length_eq_nilpotencyClass :
     rw [← le_bot_iff, ← hn]
     exact descending_central_series_ge_lower H hH n
   · rintro n h
-    exact ⟨lowerCentralSeries G, ⟨lowerCentralSeries_isDescendingCentralSeries, h⟩⟩
+    exact ⟨(⊤ : Subgroup G).lowerCentralSeries,
+      ⟨lowerCentralSeries_isDescendingCentralSeries, h⟩⟩
 
 @[to_additive (attr := simp)]
 theorem lowerCentralSeries_nilpotencyClass :
-    lowerCentralSeries G (Group.nilpotencyClass G) = ⊥ := by
+    (⊤ : Subgroup G).lowerCentralSeries (Group.nilpotencyClass G) = ⊥ := by
   classical
   rw [← lowerCentralSeries_length_eq_nilpotencyClass]
   exact Nat.find_spec (nilpotent_iff_lowerCentralSeries.mp hG)
 
 @[to_additive]
 theorem lowerCentralSeries_eq_bot_iff_nilpotencyClass_le {n : ℕ} :
-    lowerCentralSeries G n = ⊥ ↔ Group.nilpotencyClass G ≤ n := by
+    (⊤ : Subgroup G).lowerCentralSeries n = ⊥ ↔ Group.nilpotencyClass G ≤ n := by
   classical
   constructor
   · intro h
@@ -583,7 +589,7 @@ theorem lowerCentralSeries_eq_bot_iff_nilpotencyClass_le {n : ℕ} :
     exact Nat.find_le h
   · intro h
     rw [eq_bot_iff, ← lowerCentralSeries_nilpotencyClass]
-    exact lowerCentralSeries_antitone h
+    exact lowerCentralSeries_antitone _ h
 
 end Subgroup
 
@@ -592,25 +598,46 @@ end Classical
 namespace Subgroup
 
 @[to_additive]
-theorem lowerCentralSeries_map_subtype_le (H : Subgroup G) (n : ℕ) :
-    (lowerCentralSeries H n).map H.subtype ≤ lowerCentralSeries G n := by
+theorem lowerCentralSeries_le_self (S : Subgroup G) (n : ℕ) :
+    S.lowerCentralSeries n ≤ S := by
   induction n with
   | zero => simp
   | succ d hd =>
-    rw [lowerCentralSeries_succ, lowerCentralSeries_succ, MonoidHom.map_closure]
-    apply Subgroup.closure_mono
-    rintro x1 ⟨x2, ⟨x3, hx3, x4, _hx4, rfl⟩, rfl⟩
-    exact ⟨x3, hd (mem_map.mpr ⟨x3, hx3, rfl⟩), x4, by simp⟩
+    simpa using (commutator_le_sup _ _).trans (by simp [hd])
+
+@[to_additive]
+theorem lowerCentralSeries_mono (n : ℕ) :
+    Monotone (fun S : Subgroup G => S.lowerCentralSeries n) := by
+  induction n with
+  | zero => intro S T h; simpa
+  | succ d hd => intro S T h; simp only [lowerCentralSeries_succ]; exact commutator_mono (hd h) h
+
+@[to_additive (attr := simp)]
+theorem top_subtype_lowerCentralSeries (H : Subgroup G) (n : ℕ) :
+    ((⊤ : Subgroup H).lowerCentralSeries n).map H.subtype = H.lowerCentralSeries n := by
+  induction n with
+  | zero => ext; simp
+  | succ d hd =>
+    simp only [lowerCentralSeries_succ, Subgroup.map_commutator, hd]
+    congr 1
+    ext; simp
+
+/-- A subgroup `H` of `G`'s lower central series (viewed in `G`) coincides with the lower
+central series of `H` as its own group, mapped back to `G`. -/
+@[to_additive]
+theorem lowerCentralSeries_eq_map (H : Subgroup G) (n : ℕ) :
+    H.lowerCentralSeries n = ((⊤ : Subgroup H).lowerCentralSeries n).map H.subtype :=
+  (top_subtype_lowerCentralSeries H n).symm
 
 /-- A subgroup of a nilpotent group is nilpotent. -/
 @[to_additive /-- An additive subgroup of a nilpotent group is nilpotent. -/]
 instance isNilpotent (H : Subgroup G) [hG : IsNilpotent G] : IsNilpotent H := by
   rw [nilpotent_iff_lowerCentralSeries] at *
   rcases hG with ⟨n, hG⟩
-  use n
-  have := lowerCentralSeries_map_subtype_le H n
-  simp only [hG, SetLike.le_def, mem_map, exists_imp] at this
-  exact eq_bot_iff.mpr fun x hx => Subtype.ext (this x ⟨hx, rfl⟩)
+  refine ⟨n, ?_⟩
+  rw [← Subgroup.map_injective H.subtype_injective |>.eq_iff' (Subgroup.map_bot H.subtype),
+    top_subtype_lowerCentralSeries]
+  exact le_bot_iff.mp <| (H.lowerCentralSeries_mono n le_top).trans_eq hG
 
 /-- The nilpotency class of a subgroup is less or equal to the nilpotency class of the group. -/
 @[to_additive /-- The nilpotency class of an additive subgroup is less or equal to the nilpotency
@@ -620,9 +647,9 @@ theorem nilpotencyClass_le (H : Subgroup G) [hG : IsNilpotent G] :
   repeat rw [← lowerCentralSeries_length_eq_nilpotencyClass]
   classical apply Nat.find_mono
   intro n hG
-  have := lowerCentralSeries_map_subtype_le H n
-  simp only [hG, SetLike.le_def, mem_map, exists_imp] at this
-  exact eq_bot_iff.mpr fun x hx => Subtype.ext (this x ⟨hx, rfl⟩)
+  rw [← Subgroup.map_injective H.subtype_injective |>.eq_iff' (Subgroup.map_bot H.subtype),
+    top_subtype_lowerCentralSeries]
+  exact le_bot_iff.mp <| (H.lowerCentralSeries_mono n le_top).trans_eq hG
 
 @[to_additive]
 instance (priority := 100) _root_.Group.isNilpotent_of_subsingleton [Subsingleton G] :
@@ -640,23 +667,18 @@ theorem upperCentralSeries.map {H : Type*} [Group H] {f : G →* H} (h : Functio
     simpa using hd (mem_map_of_mem f (hx y))
 
 @[to_additive]
-theorem lowerCentralSeries.map {H : Type*} [Group H] (f : G →* H) (n : ℕ) :
-    Subgroup.map f (lowerCentralSeries G n) ≤ lowerCentralSeries H n := by
+theorem map_lowerCentralSeries {H : Type*} [Group H] (f : G →* H) (S : Subgroup G) (n : ℕ) :
+    (S.lowerCentralSeries n).map f = (S.map f).lowerCentralSeries n := by
   induction n with
   | zero => simp
   | succ d hd =>
-    rintro a ⟨x, hx : x ∈ lowerCentralSeries G d.succ, rfl⟩
-    refine closure_induction (hx := hx) ?_ (by simp [f.map_one, Subgroup.one_mem _])
-      (fun y z _ _ hy hz => by simp [map_mul, Subgroup.mul_mem _ hy hz]) (fun y _ hy => by
-        rw [f.map_inv]; exact Subgroup.inv_mem _ hy)
-    rintro a ⟨y, hy, z, ⟨-, rfl⟩⟩
-    apply mem_closure.mpr
-    exact fun K hK => hK ⟨f y, hd (mem_map_of_mem f hy), by simp [commutatorElement_def]⟩
+    rw [lowerCentralSeries_succ, lowerCentralSeries_succ, Subgroup.map_commutator, hd]
 
 @[to_additive]
-theorem lowerCentralSeries_succ_eq_bot {n : ℕ} (h : lowerCentralSeries G n ≤ center G) :
-    lowerCentralSeries G (n + 1) = ⊥ := by
-  rw [lowerCentralSeries_succ, closure_eq_bot_iff, Set.subset_singleton_iff]
+theorem top_lowerCentralSeries_succ_eq_bot {n : ℕ}
+    (h : (⊤ : Subgroup G).lowerCentralSeries n ≤ center G) :
+    (⊤ : Subgroup G).lowerCentralSeries (n + 1) = ⊥ := by
+  rw [lowerCentralSeries_succ, commutator_def, closure_eq_bot_iff, Set.subset_singleton_iff]
   rintro x ⟨y, hy1, z, ⟨⟩, rfl⟩
   rw [commutatorElement_def, mul_assoc, ← mul_inv_rev, mul_inv_eq_one, eq_comm]
   exact mem_center_iff.mp (h hy1) z
@@ -669,9 +691,10 @@ theorem isNilpotent_of_ker_le_center {H : Type*} [Group H] (f : G →* H) (hf1 :
     [IsNilpotent H] : IsNilpotent G := by
   rw [nilpotent_iff_lowerCentralSeries]
   rcases nilpotent_iff_lowerCentralSeries.mp ‹_› with ⟨n, hn⟩
-  use n + 1
-  refine lowerCentralSeries_succ_eq_bot (le_trans ((Subgroup.map_eq_bot_iff _).mp ?_) hf1)
-  exact eq_bot_iff.mpr (hn ▸ lowerCentralSeries.map f n)
+  refine ⟨n + 1, top_lowerCentralSeries_succ_eq_bot
+    (le_trans ((Subgroup.map_eq_bot_iff _).mp ?_) hf1)⟩
+  rw [map_lowerCentralSeries, ← le_bot_iff]
+  exact hn ▸ Subgroup.lowerCentralSeries_mono n le_top
 
 end Subgroup
 
@@ -684,10 +707,11 @@ theorem nilpotencyClass_le_of_ker_le_center {H : Type*} [Group H] (f : G →* H)
   have : IsNilpotent G := isNilpotent_of_ker_le_center f hf1
   rw [← lowerCentralSeries_length_eq_nilpotencyClass]
   classical apply Nat.find_min'
-  refine lowerCentralSeries_succ_eq_bot (le_trans ((Subgroup.map_eq_bot_iff _).mp ?_) hf1)
-  rw [eq_bot_iff]
-  apply le_trans (lowerCentralSeries.map f _)
-  simp only [lowerCentralSeries_nilpotencyClass, le_bot_iff]
+  refine top_lowerCentralSeries_succ_eq_bot
+    (le_trans ((Subgroup.map_eq_bot_iff _).mp ?_) hf1)
+  rw [map_lowerCentralSeries, ← le_bot_iff,
+    ← lowerCentralSeries_nilpotencyClass (G := H)]
+  exact Subgroup.lowerCentralSeries_mono _ le_top
 
 /-- The range of a surjective homomorphism from a nilpotent group is nilpotent. -/
 @[to_additive /-- The range of a surjective homomorphism from a nilpotent additive group is
@@ -846,11 +870,19 @@ theorem nilpotent_center_quotient_ind {P : ∀ (G) [Group G] [IsNilpotent G], Pr
 
 end Group
 
--- todo: namespace `derivedSeries` and to_additivize.
-theorem Subgroup.derived_le_lower_central (n : ℕ) : derivedSeries G n ≤ lowerCentralSeries G n := by
+-- todo: to_additivize.
+theorem Subgroup.derivedSeries_le_lowerCentralSeries (S : Subgroup G) (n : ℕ) :
+    S.derivedSeries n ≤ S.lowerCentralSeries n := by
   induction n with
   | zero => simp
-  | succ i ih => apply commutator_mono ih; simp
+  | succ i ih =>
+    apply (Subgroup.commutator_mono ih (S.derivedSeries_le_self i)).trans
+    simp
+
+@[deprecated Subgroup.derivedSeries_le_lowerCentralSeries (since := "2026-05-25")]
+theorem Subgroup.derived_le_lower_central (n : ℕ) :
+    _root_.derivedSeries G n ≤ (⊤ : Subgroup G).lowerCentralSeries n := by
+  simpa using (⊤ : Subgroup G).derivedSeries_le_lowerCentralSeries n
 
 /-- Abelian groups are nilpotent. -/
 @[to_additive /-- Abelian groups are nilpotent. -/]
@@ -943,26 +975,26 @@ section Prod
 variable {G₁ G₂ : Type*} [Group G₁] [Group G₂]
 
 @[to_additive]
-theorem Subgroup.lowerCentralSeries_prod (n : ℕ) :
-    lowerCentralSeries (G₁ × G₂) n = (lowerCentralSeries G₁ n).prod (lowerCentralSeries G₂ n) := by
+theorem Subgroup.lowerCentralSeries_prod (S₁ : Subgroup G₁) (S₂ : Subgroup G₂) (n : ℕ) :
+    (S₁.prod S₂).lowerCentralSeries n =
+      (S₁.lowerCentralSeries n).prod (S₂.lowerCentralSeries n) := by
   induction n with
   | zero => simp
   | succ n ih =>
     calc
-      lowerCentralSeries (G₁ × G₂) n.succ = ⁅lowerCentralSeries (G₁ × G₂) n, ⊤⁆ := rfl
-      _ = ⁅(lowerCentralSeries G₁ n).prod (lowerCentralSeries G₂ n), ⊤⁆ := by rw [ih]
-      _ = ⁅(lowerCentralSeries G₁ n).prod (lowerCentralSeries G₂ n), (⊤ : Subgroup G₁).prod ⊤⁆ := by
-        simp
-      _ = ⁅lowerCentralSeries G₁ n, (⊤ : Subgroup G₁)⁆.prod ⁅lowerCentralSeries G₂ n, ⊤⁆ :=
-        (commutator_prod_prod _ _ _ _)
-      _ = (lowerCentralSeries G₁ n.succ).prod (lowerCentralSeries G₂ n.succ) := rfl
+      (S₁.prod S₂).lowerCentralSeries n.succ
+          = ⁅(S₁.prod S₂).lowerCentralSeries n, S₁.prod S₂⁆ := rfl
+      _ = ⁅(S₁.lowerCentralSeries n).prod (S₂.lowerCentralSeries n), S₁.prod S₂⁆ := by rw [ih]
+      _ = ⁅S₁.lowerCentralSeries n, S₁⁆.prod ⁅S₂.lowerCentralSeries n, S₂⁆ :=
+        commutator_prod_prod _ _ _ _
+      _ = (S₁.lowerCentralSeries n.succ).prod (S₂.lowerCentralSeries n.succ) := rfl
 
 /-- Products of nilpotent groups are nilpotent. -/
 @[to_additive /-- Products of nilpotent groups are nilpotent. -/]
 instance Group.isNilpotent_prod [IsNilpotent G₁] [IsNilpotent G₂] : IsNilpotent (G₁ × G₂) := by
   rw [nilpotent_iff_lowerCentralSeries]
   refine ⟨max (Group.nilpotencyClass G₁) (Group.nilpotencyClass G₂), ?_⟩
-  rw [lowerCentralSeries_prod,
+  rw [← top_prod_top (G := G₁) (N := G₂), lowerCentralSeries_prod,
     lowerCentralSeries_eq_bot_iff_nilpotencyClass_le.mpr (le_max_left _ _),
     lowerCentralSeries_eq_bot_iff_nilpotencyClass_le.mpr (le_max_right _ _), bot_prod_bot]
 
@@ -973,8 +1005,10 @@ theorem Group.nilpotencyClass_prod [IsNilpotent G₁] [IsNilpotent G₂] :
     Group.nilpotencyClass (G₁ × G₂) =
     max (Group.nilpotencyClass G₁) (Group.nilpotencyClass G₂) := by
   refine eq_of_forall_ge_iff fun k => ?_
-  simp only [max_le_iff, ← lowerCentralSeries_eq_bot_iff_nilpotencyClass_le,
-    lowerCentralSeries_prod, prod_eq_bot_iff]
+  rw [max_le_iff, ← lowerCentralSeries_eq_bot_iff_nilpotencyClass_le,
+    ← lowerCentralSeries_eq_bot_iff_nilpotencyClass_le,
+    ← lowerCentralSeries_eq_bot_iff_nilpotencyClass_le,
+    ← top_prod_top (G := G₁) (N := G₂), lowerCentralSeries_prod, prod_eq_bot_iff]
 
 end Prod
 
@@ -984,19 +1018,21 @@ section BoundedPi
 variable {η : Type*} {Gs : η → Type*} [∀ i, Group (Gs i)]
 
 @[to_additive]
-theorem Subgroup.lowerCentralSeries_pi_le (n : ℕ) :
-    lowerCentralSeries (∀ i, Gs i) n ≤ Subgroup.pi Set.univ
-      fun i => lowerCentralSeries (Gs i) n := by
+theorem Subgroup.lowerCentralSeries_pi_le (Ss : ∀ i, Subgroup (Gs i)) (n : ℕ) :
+    (Subgroup.pi Set.univ Ss).lowerCentralSeries n ≤ Subgroup.pi Set.univ
+      fun i => (Ss i).lowerCentralSeries n := by
   let pi := fun f : ∀ i, Subgroup (Gs i) => Subgroup.pi Set.univ f
   induction n with
-  | zero => simp [pi_top]
+  | zero => simp
   | succ n ih =>
     calc
-      lowerCentralSeries (∀ i, Gs i) n.succ = ⁅lowerCentralSeries (∀ i, Gs i) n, ⊤⁆ := rfl
-      _ ≤ ⁅pi fun i => lowerCentralSeries (Gs i) n, ⊤⁆ := commutator_mono ih (le_refl _)
-      _ = ⁅pi fun i => lowerCentralSeries (Gs i) n, pi fun i => ⊤⁆ := by simp [pi, pi_top]
-      _ ≤ pi fun i => ⁅lowerCentralSeries (Gs i) n, ⊤⁆ := commutator_pi_pi_le _ _
-      _ = pi fun i => lowerCentralSeries (Gs i) n.succ := rfl
+      (Subgroup.pi Set.univ Ss).lowerCentralSeries n.succ
+          = ⁅(Subgroup.pi Set.univ Ss).lowerCentralSeries n, pi Ss⁆ := rfl
+      _ ≤ ⁅pi fun i => (Ss i).lowerCentralSeries n, pi Ss⁆ :=
+        commutator_mono ih (le_refl _)
+      _ ≤ pi fun i => ⁅(Ss i).lowerCentralSeries n, Ss i⁆ :=
+        commutator_pi_pi_le _ _
+      _ = pi fun i => (Ss i).lowerCentralSeries n.succ := rfl
 
 /-- Products of nilpotent groups are nilpotent if their nilpotency class is bounded. -/
 @[to_additive /-- Products of nilpotent additive groups are nilpotent if their nilpotency class is
@@ -1005,8 +1041,8 @@ theorem Group.isNilpotent_pi_of_bounded_class [∀ i, IsNilpotent (Gs i)] (n : �
     (h : ∀ i, Group.nilpotencyClass (Gs i) ≤ n) : IsNilpotent (∀ i, Gs i) := by
   rw [nilpotent_iff_lowerCentralSeries]
   refine ⟨n, ?_⟩
-  rw [eq_bot_iff]
-  apply le_trans (lowerCentralSeries_pi_le _)
+  rw [eq_bot_iff, ← pi_top (I := Set.univ)]
+  apply le_trans (lowerCentralSeries_pi_le _ _)
   rw [← eq_bot_iff, pi_eq_bot_iff]
   intro i
   apply lowerCentralSeries_eq_bot_iff_nilpotencyClass_le.mpr (h i)
@@ -1019,19 +1055,20 @@ section FinitePi
 variable {η : Type*} {Gs : η → Type*} [∀ i, Group (Gs i)]
 
 @[to_additive]
-theorem Subgroup.lowerCentralSeries_pi_of_finite [Finite η] (n : ℕ) :
-    lowerCentralSeries (∀ i, Gs i) n = Subgroup.pi Set.univ
-      fun i => lowerCentralSeries (Gs i) n := by
+theorem Subgroup.lowerCentralSeries_pi_of_finite [Finite η] (Ss : ∀ i, Subgroup (Gs i)) (n : ℕ) :
+    (Subgroup.pi Set.univ Ss).lowerCentralSeries n = Subgroup.pi Set.univ
+      fun i => (Ss i).lowerCentralSeries n := by
   let pi := fun f : ∀ i, Subgroup (Gs i) => Subgroup.pi Set.univ f
   induction n with
-  | zero => simp [pi_top]
+  | zero => simp
   | succ n ih =>
     calc
-      lowerCentralSeries (∀ i, Gs i) n.succ = ⁅lowerCentralSeries (∀ i, Gs i) n, ⊤⁆ := rfl
-      _ = ⁅pi fun i => lowerCentralSeries (Gs i) n, ⊤⁆ := by rw [ih]
-      _ = ⁅pi fun i => lowerCentralSeries (Gs i) n, pi fun i => ⊤⁆ := by simp [pi, pi_top]
-      _ = pi fun i => ⁅lowerCentralSeries (Gs i) n, ⊤⁆ := commutator_pi_pi_of_finite _ _
-      _ = pi fun i => lowerCentralSeries (Gs i) n.succ := rfl
+      (Subgroup.pi Set.univ Ss).lowerCentralSeries n.succ
+          = ⁅(Subgroup.pi Set.univ Ss).lowerCentralSeries n, pi Ss⁆ := rfl
+      _ = ⁅pi fun i => (Ss i).lowerCentralSeries n, pi Ss⁆ := by rw [ih]
+      _ = pi fun i => ⁅(Ss i).lowerCentralSeries n, Ss i⁆ :=
+        commutator_pi_pi_of_finite _ _
+      _ = pi fun i => (Ss i).lowerCentralSeries n.succ := rfl
 
 /-- n-ary products of nilpotent groups are nilpotent. -/
 @[to_additive /-- n-ary products of nilpotent groups are nilpotent. -/]
@@ -1039,7 +1076,7 @@ instance Group.isNilpotent_pi [Finite η] [∀ i, IsNilpotent (Gs i)] : IsNilpot
   cases nonempty_fintype η
   rw [nilpotent_iff_lowerCentralSeries]
   refine ⟨Finset.univ.sup fun i => Group.nilpotencyClass (Gs i), ?_⟩
-  rw [lowerCentralSeries_pi_of_finite, pi_eq_bot_iff]
+  rw [← pi_top (I := Set.univ), lowerCentralSeries_pi_of_finite, pi_eq_bot_iff]
   intro i
   rw [lowerCentralSeries_eq_bot_iff_nilpotencyClass_le]
   exact Finset.le_sup (f := fun i => Group.nilpotencyClass (Gs i)) (Finset.mem_univ i)
@@ -1052,7 +1089,8 @@ theorem Group.nilpotencyClass_pi [Fintype η] [∀ i, IsNilpotent (Gs i)] :
   apply eq_of_forall_ge_iff
   intro k
   simp only [Finset.sup_le_iff, ← lowerCentralSeries_eq_bot_iff_nilpotencyClass_le,
-    lowerCentralSeries_pi_of_finite, pi_eq_bot_iff, Finset.mem_univ, true_imp_iff]
+    ← pi_top (I := Set.univ), lowerCentralSeries_pi_of_finite, pi_eq_bot_iff, Finset.mem_univ,
+    true_imp_iff]
 
 end FinitePi
 
@@ -1190,7 +1228,7 @@ open Group
   nilpotent_iff_finite_descending_central_series
 @[deprecated (since := "2026-03-25")] alias lowerCentralSeries := lowerCentralSeries
 @[deprecated (since := "2026-03-25")] alias lowerCentralSeries_zero := lowerCentralSeries_zero
-@[deprecated (since := "2026-03-25")] alias lowerCentralSeries_one := lowerCentralSeries_one
+@[deprecated (since := "2026-05-25")] alias lowerCentralSeries_one := top_lowerCentralSeries_one
 @[deprecated (since := "2026-03-25")] alias mem_lowerCentralSeries_succ_iff :=
   mem_lowerCentralSeries_succ_iff
 @[deprecated (since := "2026-03-25")] alias lowerCentralSeries_succ := lowerCentralSeries_succ
@@ -1218,12 +1256,10 @@ alias least_descending_central_series_length_eq_nilpotencyClass :=
   lowerCentralSeries_nilpotencyClass
 @[deprecated (since := "2026-03-25")] alias lowerCentralSeries_eq_bot_iff_nilpotencyClass_le :=
   lowerCentralSeries_eq_bot_iff_nilpotencyClass_le
-@[deprecated (since := "2026-03-25")] alias lowerCentralSeries_map_subtype_le :=
-  lowerCentralSeries_map_subtype_le
 @[deprecated (since := "2026-03-25")] alias upperCentralSeries.map := upperCentralSeries.map
-@[deprecated (since := "2026-03-25")] alias lowerCentralSeries.map := lowerCentralSeries.map
-@[deprecated (since := "2026-03-25")] alias lowerCentralSeries_succ_eq_bot :=
-  lowerCentralSeries_succ_eq_bot
+@[deprecated (since := "2026-05-25")] alias lowerCentralSeries.map := map_lowerCentralSeries
+@[deprecated (since := "2026-05-25")] alias lowerCentralSeries_succ_eq_bot :=
+  top_lowerCentralSeries_succ_eq_bot
 @[deprecated (since := "2026-03-25")] alias isNilpotent_of_ker_le_center :=
   isNilpotent_of_ker_le_center
 @[deprecated (since := "2026-03-25")] alias nilpotencyClass_le_of_ker_le_center :=
@@ -1261,14 +1297,12 @@ alias least_descending_central_series_length_eq_nilpotencyClass :=
 @[deprecated (since := "2026-03-25")]
 alias upperCentralSeries.card_image_eq_of_le_nilpotencyClass :=
   upperCentralSeries.card_image_eq_of_le_nilpotencyClass
-@[deprecated (since := "2026-03-25")] alias lowerCentralSeries_prod := lowerCentralSeries_prod
+-- `Subgroup.lowerCentralSeries_prod` is now generalized; no deprecation needed.
 @[deprecated (since := "2026-03-25")] alias isNilpotent_prod := isNilpotent_prod
 @[deprecated (since := "2026-03-25")] alias nilpotencyClass_prod := nilpotencyClass_prod
-@[deprecated (since := "2026-03-25")] alias lowerCentralSeries_pi_le := lowerCentralSeries_pi_le
+-- `Subgroup.lowerCentralSeries_pi_le` and `_pi_of_finite` are now generalized.
 @[deprecated (since := "2026-03-25")] alias isNilpotent_pi_of_bounded_class :=
   isNilpotent_pi_of_bounded_class
-@[deprecated (since := "2026-03-25")] alias lowerCentralSeries_pi_of_finite :=
-  lowerCentralSeries_pi_of_finite
 @[deprecated (since := "2026-03-25")] alias isNilpotent_pi := isNilpotent_pi
 @[deprecated (since := "2026-03-25")] alias nilpotencyClass_pi := nilpotencyClass_pi
 @[deprecated (since := "2026-03-25")] alias nilpotencyClass_le_one_of_isSimple_of_isNilpotent :=
