@@ -39,7 +39,7 @@ open scoped Congruent
 namespace EuclideanGeometry
 
 variable {ι V₁ V₂ P₁ P₂ : Type*}
-  [NormedAddCommGroup V₁] [NormedAddCommGroup V₂]
+  [AddCommGroup V₁] [NormedAddCommGroup V₁] [AddCommGroup V₂] [NormedAddCommGroup V₂]
   [InnerProductSpace ℝ V₁] [InnerProductSpace ℝ V₂]
   [MetricSpace P₁] [MetricSpace P₂]
   [NormedAddTorsor V₁ P₁] [NormedAddTorsor V₂ P₂]
