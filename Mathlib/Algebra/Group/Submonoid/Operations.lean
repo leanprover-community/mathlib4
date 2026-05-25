@@ -268,7 +268,7 @@ theorem le_comap_map {f : F} : S ≤ (S.map f).comap f :=
 theorem map_comap_le {S : Submonoid N} {f : F} : (S.comap f).map f ≤ S :=
   (gc_map_comap f).l_u_le _
 
-@[to_additive, gcongr]
+@[to_additive (attr := gcongr)]
 theorem monotone_map {f : F} : Monotone (map f) :=
   (gc_map_comap f).monotone_l
 
