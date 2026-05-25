@@ -47,7 +47,19 @@ def toMonoidFunctor (S : SubmonoidFunctor R) : C ⥤ MonCat.{w} where
   map i :=
     MonCat.ofHom <| ((R.map i).hom.submonoidComap (S.obj _)).comp <| Submonoid.inclusion (S.map i)
 
+/-- the subfunctor associated to a functor of submonoids -/
+@[simps obj map]
+def toSubfunctor (S : SubmonoidFunctor R) :
+    Subfunctor (Functor.comp R (CategoryTheory.forget MonCat)) where
+      obj _ := (S.obj _).carrier
+      map := S.map
+
 variable {R R' : C ⥤ MonCat.{w}} (S : SubmonoidFunctor R) (S' : SubmonoidFunctor R')
+
+lemma map_le {U V : C} (f : U ⟶ V) : (S.obj U).map (R.map f).hom ≤ S.obj V := by
+  grw [Submonoid.map_le_iff_le_comap, S.map f]
+
+attribute [gcongr] Submonoid.monotone_map Submonoid.monotone_comap
 
 instance {U : C} : CoeHead (S.toMonoidFunctor.obj U) (R.obj U) where
   coe := Subtype.val
@@ -78,7 +90,7 @@ instance : CompleteLattice (SubmonoidFunctor R) where
         exact iSup₂_mono fun F _ ↦ F.map f }
   isLUB_sSup _ := ⟨fun _ _ _ _ ↦ by
     intro a
-    simp only [sSup_image', Submonoid.mem_iSup];
+    simp only [Submonoid.mem_iSup];
     intro N i
     aesop, fun _ _ _ ↦ by aesop⟩
   sInf S :=
@@ -108,11 +120,11 @@ instance : CompleteLattice (SubmonoidFunctor R) where
 def ι : S.toMonoidFunctor ⟶ R where
   app _ := MonCat.ofHom (Submonoid.subtype _)
 
-section range
+section image
 
 /-- The submonoid functor defined by the image along a morphism of functors of monoids. -/
 @[simps]
-def range (S : SubmonoidFunctor R) (p : R ⟶ R') : SubmonoidFunctor R' where
+def image (S : SubmonoidFunctor R) (p : R ⟶ R') : SubmonoidFunctor R' where
   obj _ := Submonoid.map (MonCat.Hom.hom (p.app _)) (S.obj _)
   map i := by
     rw [← Submonoid.map_le_iff_le_comap, Submonoid.map_map, ← MonCat.hom_comp, ← p.naturality,
@@ -120,9 +132,9 @@ def range (S : SubmonoidFunctor R) (p : R ⟶ R') : SubmonoidFunctor R' where
     grw [S.map_le]
 
 variable (R) in
-lemma range_id : range ⊤ (𝟙 R) = ⊤ := by aesop
+lemma image_id : image ⊤ (𝟙 R) = ⊤ := by aesop
 
-end range
+end image
 
 section comap
 
@@ -135,14 +147,14 @@ def comap (S' : SubmonoidFunctor R') (p : R ⟶ R') : SubmonoidFunctor R where
     exact Submonoid.mem_comap.mp (Set.mem_of_mem_of_subset h (S'.map _))
 
 @[simp]
-lemma range_comap_ι : range (comap S (S.ι)) (S.ι) = S := by aesop
+lemma image_comap_ι : image (comap S (S.ι)) (S.ι) = S := by aesop
 
 end comap
 
 section lift
 
 variable (p' : R' ⟶ R) (S : SubmonoidFunctor R) (S' : SubmonoidFunctor R')
-  (hp' : range S' p' ≤ S)
+  (hp' : image S' p' ≤ S)
 
 /-- If the image of a submonoid functor `S'` under a morphism of
 functors of monoids falls in another submonoid functor `S`,
