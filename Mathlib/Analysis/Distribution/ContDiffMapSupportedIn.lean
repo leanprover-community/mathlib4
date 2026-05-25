@@ -871,9 +871,9 @@ section Integral
 open MeasureTheory
 
 variable {𝕜} {m : MeasurableSpace E} [OpensMeasurableSpace E] {F₁ F₂ F₃ : Type*}
-  [NormedAddCommGroup F₁] [NormedSpace 𝕜 F₁] [NormedSpace ℝ F₁]
-  [NormedAddCommGroup F₂] [NormedSpace 𝕜 F₂]
-  [NormedAddCommGroup F₃] [NormedSpace 𝕜 F₃]
+  [NormMetric F₁] [AddCommGroup F₁] [IsNormedAddGroup F₁] [NormedSpace 𝕜 F₁] [NormedSpace ℝ F₁]
+  [NormMetric F₂] [AddCommGroup F₂] [IsNormedAddGroup F₂] [NormedSpace 𝕜 F₂]
+  [NormMetric F₃] [AddCommGroup F₃] [IsNormedAddGroup F₃] [NormedSpace 𝕜 F₃]
 
 @[fun_prop]
 protected theorem stronglyMeasurable (f : 𝓓^{n}_{K}(E, F)) :

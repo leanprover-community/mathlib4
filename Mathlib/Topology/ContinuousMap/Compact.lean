@@ -178,7 +178,7 @@ instance {E : Type*} [NormMetric E] [AddCommGroup E] : NormMetric C(α, E) where
 
 example {E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] : NormedAddCommGroup C(α, E) where
 
-instance [Nonempty α] {E : Type*} [NormedAddCommGroup E] [Nontrivial E] :
+instance [Nonempty α] {E : Type*} [NormMetric E] [AddCommGroup E] [IsNormedAddGroup E] [Nontrivial E] :
     NontrivialTopology C(α, E) := by
   simpa [nontrivialTopology_iff_exists_norm_ne_zero] using exists_ne (0 : C(α, E))
 

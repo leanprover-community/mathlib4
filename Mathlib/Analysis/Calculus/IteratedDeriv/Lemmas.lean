@@ -305,7 +305,7 @@ end
 
 /-- If two functions agree in a neighborhood, then so do their iterated derivatives. -/
 protected lemma Filter.EventuallyEq.iteratedDeriv
-    {𝕜 : Type*} [NontriviallyNormedField 𝕜] {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+    {𝕜 : Type*} [NontriviallyNormedField 𝕜] {F : Type*} [NormMetric F] [AddCommGroup F] [IsNormedAddGroup F] [NormedSpace 𝕜 F]
     {f₁ f₂ : 𝕜 → F} {x : 𝕜} (h : f₁ =ᶠ[𝓝 x] f₂) (n : ℕ) :
     iteratedDeriv n f₁ =ᶠ[𝓝 x] iteratedDeriv n f₂ := by
   simp_all [← nhdsWithin_univ, ← iteratedDerivWithin_univ, EventuallyEq.iteratedDerivWithin]

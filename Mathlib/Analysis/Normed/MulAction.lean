@@ -185,7 +185,7 @@ lemma NormedDivisionRing.toNormSMulClass : NormSMulClass α β where
 end NormedDivisionRing
 
 section NormedDivisionRingModule
-variable [NormedDivisionRing α] [SeminormedAddCommGroup β] [Module α β] [NormSMulClass α β]
+variable [NormedDivisionRing α] [NormPseudoMetric β] [AddCommGroup β] [IsNormedAddGroup β] [Module α β] [NormSMulClass α β]
 
 theorem Metric.smul_image_ball {s : α} (hs : s ≠ 0) (x : β) (ε : ℝ) :
     (s • ·) '' ball x ε = ball (s • x) (‖s‖ * ε) := by

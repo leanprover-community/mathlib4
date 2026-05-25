@@ -241,9 +241,9 @@ protected theorem div [Group β] [MeasurableDiv₂ β] (hu : IsProgressive f u)
   fun i ↦ Measurable.div (hu i) (hv i)
 
 /-- The norm of a progressive process is progressive. -/
-protected lemma norm [NormedAddCommGroup β] [OpensMeasurableSpace β] (hu : IsProgressive f u) :
+protected lemma norm [NormMetric β] [AddCommGroup β] [IsNormedAddGroup β] [OpensMeasurableSpace β] (hu : IsProgressive f u) :
     IsProgressive f fun t ω ↦ ‖u t ω‖ :=
-  fun i ↦ by apply @(hu i).norm; infer_instance
+  fun i ↦ by apply @(hu i).norm; all_goals infer_instance
 
 end Arithmetic
 

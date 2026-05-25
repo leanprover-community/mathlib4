@@ -101,7 +101,7 @@ lemma differentiableOn_tprod_one_sub_pow_pow (k : ℕ) :
 
 theorem summable_eta_q (z : ℍ) : Summable fun n ↦ ‖-eta_q n z‖ := by
   simpa [summable_nat_add_iff] using
-    summable_geometric_of_lt_one (norm_nonneg _) (mod_cast norm_qParam_lt_one 1 z)
+    summable_geometric_of_lt_one (norm_nonneg _) (norm_qParam_lt_one 1 z)
 
 lemma multipliableLocallyUniformlyOn_eta :
     MultipliableLocallyUniformlyOn (fun n a ↦ 1 - eta_q n a) ℍₒ :=

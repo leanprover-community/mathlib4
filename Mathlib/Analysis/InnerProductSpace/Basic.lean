@@ -873,7 +873,7 @@ end Norm
 
 section Induced
 
-variable {G : Type*} [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E] [AddCommGroup G]
+variable {G : Type*} [NormPseudoMetric E] [AddCommGroup E] [IsNormedAddGroup E] [InnerProductSpace 𝕜 E] [AddCommGroup G]
     [Module 𝕜 G]
 
 /-- A linear map from a `Module` to an `InnerProductSpace` induces an `InnerProductSpace`
@@ -881,9 +881,11 @@ structure on the domain using the `SeminormedAddCommGroup.induced` norm.
 
 See note [reducible non-instances]. -/
 abbrev InnerProductSpace.induced {F : Type*} [FunLike F G E] [LinearMapClass F 𝕜 G E] (f : F) :
-    letI := SeminormedAddCommGroup.induced G E f
+    letI := NormPseudoMetric.induced G E f
+    haveI := IsNormedAddGroup.induced G E f
     InnerProductSpace 𝕜 G :=
-  letI := SeminormedAddCommGroup.induced G E f
+  letI := NormPseudoMetric.induced G E f
+  haveI := IsNormedAddGroup.induced G E f
   letI := NormedSpace.induced 𝕜 G E f
   { inner x y := inner 𝕜 (f x) (f y)
     add_left x y z := by rw [map_add, inner_add_left]

@@ -433,7 +433,7 @@ open Bundle PrettyPrinter Delaborator SubExpr
 -- can never be.
 @[app_delab mvfderiv] meta def delab_mvfderiv : Delab := do
   whenPPOption getPPNotation do
-  withOverApp 15 do
+  withOverApp 19 do
   let fs ← withAppArg delab
   `(d% $fs) >>= annotateGoToSyntaxDef
 
