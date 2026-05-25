@@ -104,7 +104,7 @@ is homeomorphic to the product of `U` and the stalk of `F` at `x` with discrete 
 noncomputable def homeomorph (U : Opens X)
     (hF_bij : ∀ (x : X) (hx : x ∈ U), Bijective (F.germ U x hx))
     (x : X) (hx : x ∈ U) :
-    (base (F := F) ⁻¹' U) ≃ₜ U × WithTopology (ToType (F.stalk x)) ⊥ where
+    (base (F := F) ⁻¹' U) ≃ₜ U × WithDiscreteTopology (ToType (F.stalk x)) where
   toFun s := (⟨s.1.base, s.2⟩,
     .toTopology ⊥ <| F.germ U x hx <| surjInv (hF_bij s.1.base s.2).surjective s.1.germ)
   invFun
@@ -152,7 +152,7 @@ Then the projection from the etale space of `F` to the base is a covering map. -
 theorem isCoveringMap_base
     (hF_bij : ∀ x, ∃ (U : Opens X), x ∈ U ∧ ∀ y (hyU : y ∈ U), Bijective (F.germ U y hyU)) :
     IsCoveringMap (base (F := F)) := by
-  refine fun x ↦ .to_isEvenlyCovered_preimage (I := WithTopology (ToType (F.stalk x)) ⊥) ?_
+  refine fun x ↦ .to_isEvenlyCovered_preimage (I := WithDiscreteTopology (ToType (F.stalk x))) ?_
   use inferInstance
   rcases hF_bij x with ⟨U, hxU, hU_bij⟩
   use U, hxU, U.isOpen, U.isOpen.preimage (continuous_base F), homeomorph U hU_bij x hxU
