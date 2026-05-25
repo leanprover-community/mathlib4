@@ -7,9 +7,10 @@ module
 
 public import Mathlib.Algebra.Category.MonCat.Limits
 public import Mathlib.Algebra.Group.Submonoid.Operations
-public import Mathlib.CategoryTheory.Sites.Sheaf
+public import Mathlib.CategoryTheory.Subfunctor.Basic
 public import Mathlib.Combinatorics.Quiver.ReflQuiver
 public import Mathlib.Order.CompletePartialOrder
+public import Mathlib.Order.ConditionallyCompleteLattice.Basic
 
 /-!
 
