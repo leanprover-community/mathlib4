@@ -164,22 +164,45 @@ def splice(body: str, new_section: str) -> tuple[str, str]:
     """Success-mode splice: replace the entire Declarations-diff section.
 
     Returns `(new_body, mode)` where `mode` is one of `markers`,
-    `header-fallback`, `append`."""
+    `wrapped-header-fallback`, `header-fallback`, `append`.
 
+    The fallback regexes handle the two shapes the pre-build PR_summary
+    emits: when the regex content is long it wraps the section in
+    `<details><summary>#### Declarations diff</summary>…</details>`,
+    otherwise just `#### Declarations diff` followed by content."""
+
+    # Marker form. Also greedily absorb an orphan `<details><summary>` opener
+    # that some older patcher revisions left immediately before BEGIN (the
+    # outer wrap whose `</details>` was eaten by the bare-header-fallback
+    # replacement). The non-capturing optional prefix is a no-op when no
+    # orphan is present.
     marker_re = re.compile(
-        re.escape(BEGIN) + r".*?" + re.escape(END),
+        r"(?:<details>\s*<summary>\s*\n+\s*)?"
+        + re.escape(BEGIN) + r".*?" + re.escape(END),
         re.DOTALL,
     )
     if marker_re.search(body):
         return marker_re.sub(new_section, body, count=1), "markers"
 
-    # Fallback: match the `#### Declarations diff` heading and consume until
-    # the next horizontal rule, the next `####`, or end-of-body.
-    section_re = re.compile(
+    # Wrapped form: `<details><summary>#### Declarations diff</summary>…</details>`
+    # followed by `---`/`####`/EOF. The non-greedy `[\s\S]*?` lets nested
+    # `<details>...</details>` inside the content pass through unmatched,
+    # because the lookahead only succeeds at the OUTER `</details>` (the
+    # one followed by a section boundary).
+    wrapped_re = re.compile(
+        r"<details>\s*<summary>\s*\n+\s*#### Declarations diff\s*\n+\s*</summary>"
+        r"[\s\S]*?</details>(?=\s*\n+(?:---\s*$|####\s|\Z))",
+        re.MULTILINE,
+    )
+    if wrapped_re.search(body):
+        return wrapped_re.sub(new_section, body, count=1), "wrapped-header-fallback"
+
+    # Bare form: just `#### Declarations diff` heading + content, no wrap.
+    bare_re = re.compile(
         r"####\s*Declarations diff[\s\S]*?(?=^---\s*$|^####\s|\Z)",
         re.MULTILINE,
     )
-    m = section_re.search(body)
+    m = bare_re.search(body)
     if m:
         return body[: m.start()] + new_section + "\n" + body[m.end():], "header-fallback"
 
