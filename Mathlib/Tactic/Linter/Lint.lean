@@ -89,20 +89,6 @@ namespace DupNamespaceLinter
 
 open Lean Parser Elab Command Meta Linter
 
-def hasDuplicates (items : List Name) : Bool := Id.run do
-  return !items.Nodup
-
-#guard hasDuplicates [`Foo, `Foo] == true
-#guard hasDuplicates [`Bar, `Foo, `Foo] == true
-#guard hasDuplicates [`Foo, `Foo, `Bar] == true
-#guard hasDuplicates [`Foo, `Foo, `Bar, `Baz, `hoge] == true
-#guard hasDuplicates [`Foo, `Foos, `Bar, `Baz] == false
-#guard hasDuplicates [`Foo, `Bar, `Foo, `baz] == true
-#guard hasDuplicates [`Foo, `Bar, `Foo, `Bar, `baz] == true
-#guard hasDuplicates [`Foo, `Bar, `Baz, `Hoge, `Foo, `Baz, `baz] == true -- `Foo duplicate
-#guard hasDuplicates [`Foo, `Bar, `Baz, `Hoge, `Foo, `Bar, `baz] == true -- `Foo, `Bar duplicate
-#guard hasDuplicates [`Foo, `Bar, `Baz, `Hoge, `Foo, `Bar, `Baz, `baz] == true -- `Foo, `Bar duplicate
-
 @[inherit_doc linter.dupNamespace]
 def dupNamespace : Linter where run := withSetOptionIn fun stx ↦ do
   if getLinterValue linter.dupNamespace (← getLinterOptions) then
