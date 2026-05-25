@@ -202,6 +202,7 @@ public import Mathlib.Tactic.Monotonicity.Basic
 public import Mathlib.Tactic.Monotonicity.Lemmas
 public import Mathlib.Tactic.MoveAdd
 public import Mathlib.Tactic.NoncommRing
+public import Mathlib.Tactic.NonemptyAttr
 public import Mathlib.Tactic.Nontriviality
 public import Mathlib.Tactic.Nontriviality.Core
 public import Mathlib.Tactic.NormNum
