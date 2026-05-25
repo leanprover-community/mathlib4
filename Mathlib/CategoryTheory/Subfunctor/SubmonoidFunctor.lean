@@ -33,7 +33,7 @@ variable (R) in
 compatible with the restriction maps `R.map i`. -/
 @[ext]
 structure SubmonoidFunctors where
-  /-- a family of submonoids of `R.obj X` for all `X`. -/
+  /-- A family of submonoids of `R.obj X` for all `X`. -/
   obj : ∀ U, Submonoid (R.obj U)
   /-- If `S` is a submonoid functor of `R` and `i : U ⟶ V`, then for each `S`-sections on `U`
   `x`, `R i x` is in `S(V)`. -/
