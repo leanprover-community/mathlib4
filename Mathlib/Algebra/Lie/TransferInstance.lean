@@ -14,13 +14,10 @@ public import Mathlib.Algebra.Module.TransferInstance
 
 Main definitions:
 * `AddEquiv.lieRing` transferring a LieRing structure along an additive equivalence.
+* `LinearEquiv.lieAlgebra` transferring a Lie algebra structure along a linear equivalence.
 * `Equiv.lieRing` transferring a LieRing structure along an equivalence (transfers the additive
   structure using `Equiv.addCommGroup` and then the bracket using `AddEquiv.lieRing`)
 * `Equiv.lieAlgebra` transferring a Lie algebra structure along an equivalence
-
-Remark:
-* `LinearEquiv.lieAlgebra` is an instance rather than a def, since the additional compatibility of
-  scalar multiplication and bracket is automatic when transferring along a LinearEquivalence.
 
 -/
 
@@ -43,7 +40,7 @@ lemma AddEquiv.bracket_def (e : α ≃+ β) (x y : α) :
     ⁅x, y⁆ = e.symm ⁅e x, e y⁆ := rfl
 
 /-- Transfer `LieAlgebra` across a `LinearEquiv` -/
-instance LinearEquiv.lieAlgebra (e : α ≃ₗ[R] β) :
+protected abbrev LinearEquiv.lieAlgebra (e : α ≃ₗ[R] β) :
     letI := e.toAddEquiv.lieRing
     LieAlgebra R α :=
   letI := e.toAddEquiv.lieRing
@@ -54,8 +51,10 @@ variable (R) in
 on `α` is the one obtained by transporting a Lie Bracket on `β` back along `e`. -/
 def LinearEquiv.lieEquiv (e : α ≃ₗ[R] β) :
     letI := e.toAddEquiv.lieRing
+    letI := e.lieAlgebra
     α ≃ₗ⁅R⁆ β :=
   letI := e.toAddEquiv.lieRing
+  letI := e.lieAlgebra
   { e with map_lie' := by simp [AddEquiv.bracket_def] }
 
 @[simp]
@@ -65,6 +64,7 @@ lemma LinearEquiv.lieEquiv_apply (e : α ≃ₗ[R] β) (a : α) :
 @[simp]
 lemma LinearEquiv.lieEquiv_symm_apply (e : α ≃ₗ[R] β) (b : β) :
     letI := e.toAddEquiv.lieRing
+    letI := e.lieAlgebra
     (e.lieEquiv R).symm b = e.symm b := rfl
 
 end
