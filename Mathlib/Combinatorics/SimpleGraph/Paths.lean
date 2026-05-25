@@ -614,7 +614,7 @@ lemma endpoint_notMem_support_takeUntil {p : G.Walk u v} (hp : p.IsPath) (hw : w
 
 end WalkDecomp
 
-theorem isPath_iff_isSubwalk_nil {u v} {p : G.Walk u v} :
+theorem isPath_iff_isSubwalk_imp_nil {u v} {p : G.Walk u v} :
     p.IsPath ↔ ∀ (v : V) (w : G.Walk v v), w.IsSubwalk p → w.Nil := by
   refine ⟨fun hp v w hwp ↦ ?_, fun h ↦ .mk' ?_⟩
   · simp [w.isPath_iff_eq_nil.mp <| isPath_of_isSubwalk hwp hp]
@@ -624,14 +624,14 @@ theorem isPath_iff_isSubwalk_nil {u v} {p : G.Walk u v} :
     have : p'.IsSubwalk p := isSubwalk_drop _ i |>.trans <| p.isSubwalk_take j
     grind [take_getVert, getVert_eq_support_getElem]
 
-theorem IsTrail.isPath_iff_isSubwalk_not_isCycle {u v} {p : G.Walk u v} (ht : p.IsTrail) :
+theorem IsTrail.isPath_iff_isSubwalk_imp_not_isCycle {u v} {p : G.Walk u v} (ht : p.IsTrail) :
     p.IsPath ↔ ∀ (v : V) (w : G.Walk v v), w.IsSubwalk p → ¬w.IsCycle := by
-  refine ⟨by grind [isPath_iff_isSubwalk_nil, IsCycle.not_nil], fun h ↦ ?_⟩
+  refine ⟨by grind [isPath_iff_isSubwalk_imp_nil, IsCycle.not_nil], fun h ↦ ?_⟩
   classical
   match p with
   | .nil => simp
   | .cons hadj p =>
-    have hp : p.IsPath := isPath_iff_isSubwalk_not_isCycle ht.of_cons |>.mpr (h · · <| ·.cons hadj)
+    have hp := isPath_iff_isSubwalk_imp_not_isCycle ht.of_cons |>.mpr (h · · <| ·.cons hadj)
     refine cons_isPath_iff .. |>.mpr ⟨hp, fun hup ↦ h u (p.takeUntil u hup |>.cons hadj) ?_ ?_⟩
     · rw [isSubwalk_iff_support_isInfix, support_cons, support_cons]
       exact (List.prefix_cons_inj u |>.mpr <| p.support_takeUntil_prefix hup).isInfix
