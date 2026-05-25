@@ -97,15 +97,19 @@ private lemma auxHom_auxInv : (auxHom S r).toRingHom.comp (auxInv S r) = RingHom
   apply IsLocalization.ringHom_ext (Submonoid.powers r)
   ext x
   simp [auxInv]
+  rw (transparency := .default) [auxHom_mk, aeval_C]
 
 private lemma auxInv_auxHom : (auxInv S r).comp (auxHom (S := S) r).toRingHom = RingHom.id _ := by
   rw [← RingHom.cancel_right (Ideal.Quotient.mk_surjective)]
   ext x
-  · simp [auxInv]
+  · simp only [RingHom.coe_comp, Function.comp_apply, RingHom.id_apply]
+    rw (transparency := .default) [auxHom_mk, aeval_C]
+    simp [auxInv]
   · simp only [auxInv, AlgHom.toRingHom_eq_coe, RingHom.coe_comp, RingHom.coe_coe,
-      Function.comp_apply, auxHom_mk, aeval_X, RingHomCompTriple.comp_eq, invSelf, Away.lift,
-      lift_mk'_spec]
-    simp only [map_one]
+      Function.comp_apply, RingHomCompTriple.comp_eq]
+    rw (transparency := .default) [auxHom_mk, aeval_X]
+    simp only [invSelf, Away.lift, lift_mk'_spec]
+    simp only [RingHom.comp_apply, map_one]
     rw [← map_one (Ideal.Quotient.mk _), ← map_mul, Ideal.Quotient.mk_eq_mk_iff_sub_mem,
       ← Ideal.neg_mem_iff, neg_sub]
     exact Ideal.mem_span_singleton_self (C r * X x - 1)
