@@ -52,10 +52,9 @@ def toMonoidFunctor (S : SubmonoidFunctor R) : C ⥤ MonCat.{w} where
 
 /-- the subfunctor associated to a functor of submonoids -/
 @[simps obj]
-def toSubfunctor (S : SubmonoidFunctor R) :
-    Subfunctor (Functor.comp R (CategoryTheory.forget MonCat)) where
-      obj _ := (S.obj _).carrier
-      map := S.map
+def toSubfunctor (S : SubmonoidFunctor R) : Subfunctor (R ⋙ forget MonCat) where
+  obj _ := (S.obj _).carrier
+  map := S.map
 
 variable {R R' : C ⥤ MonCat.{w}} (S : SubmonoidFunctor R) (S' : SubmonoidFunctor R')
 
