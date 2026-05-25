@@ -2,7 +2,7 @@ import Batteries.Tactic.Alias
 import Mathlib.Tactic.Linter.Lint
 import Mathlib.Tactic.ToAdditive
 /--
-warning: The namespace 'add' is duplicated in the declaration 'add.add'
+warning: The namespace `add` is duplicated in the declaration `add.add`
 
 Note: This linter can be disabled with `set_option linter.dupNamespace false`
 -/
@@ -12,7 +12,7 @@ def add.add := True
 namespace Foo
 
 /--
-warning: The namespace 'Foo' is duplicated in the declaration 'Foo.Foo.foo'
+warning: The namespace `Foo` is duplicated in the declaration `Foo.Foo.foo`
 
 Note: This linter can be disabled with `set_option linter.dupNamespace false`
 -/
@@ -21,7 +21,7 @@ def Foo.foo := True
 
 set_option linter.translateRedundant false in
 /--
-warning: The namespace 'add' is duplicated in the declaration 'Foo.add.add'
+warning: The namespace `add` is duplicated in the declaration `Foo.add.add`
 
 Note: This linter can be disabled with `set_option linter.dupNamespace false`
 -/
@@ -37,7 +37,7 @@ run_cmd Lean.Elab.Command.liftTermElabM do
 namespace Nat
 
 /--
-warning: The namespace 'Nat' is duplicated in the declaration 'Foo.Nat.Nat.Nats'
+warning: The namespace `Nat` is duplicated in the declaration `Foo.Nat.Nat.Nats`
 
 Note: This linter can be disabled with `set_option linter.dupNamespace false`
 -/
@@ -50,11 +50,11 @@ end Foo
 namespace add
 
 /--
-warning: The namespace 'add' is duplicated in the declaration 'add.add'
+warning: The namespace `add` is duplicated in the declaration `add.add`
 
 Note: This linter can be disabled with `set_option linter.dupNamespace false`
 ---
-warning: The namespace 'add' is duplicated in the declaration 'add.add'
+warning: The namespace `add` is duplicated in the declaration `add.add`
 
 Note: This linter can be disabled with `set_option linter.dupNamespace false`
 -/

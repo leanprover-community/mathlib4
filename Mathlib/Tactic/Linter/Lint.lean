@@ -12,6 +12,7 @@ public import Batteries.Tactic.Lint -- shake: keep
 public import Lean.Linter.Deprecated
 public import Mathlib.Tactic.DeclarationNames
 public import Batteries.Tactic.Lint.Basic
+public meta import Batteries.Data.List.Basic
 
 /-!
 # Linters for Mathlib
@@ -115,10 +116,11 @@ def dupNamespace : Linter where run := withSetOptionIn fun stx ↦ do
       if !nm.Nodup then
         -- There are duplicate naming components: find the longest substring of duplicate
         -- component(s).
-        let duplicated := nm.filter (fun comp ↦ nm.count comp > 1)
-        let (s, verb) := if duplicated.length > 1 then ("s", "are") else ("", "is")
-        Linter.logLint linter.dupNamespace id
-          m!"The namespace component{s} `{duplicated}` {verb} duplicated in the declaration `{declName}`"
+        let duplicated := List.pwFilter (· ≠ ·) <| nm.filter (fun comp ↦ nm.count comp > 1)
+        let msg := if let [ns] := duplicated then
+          m!"The namespace `{ns}` is duplicated in the declaration `{declName}`"
+        else m!"The namespaces `{duplicated}` are duplicated in the declaration `{declName}`"
+        Linter.logLint linter.dupNamespace id msg
 
 initialize addLinter dupNamespace
 
