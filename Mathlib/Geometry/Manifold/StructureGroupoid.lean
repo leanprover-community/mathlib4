@@ -303,7 +303,7 @@ def Pregroupoid.groupoid (PG : Pregroupoid H) : StructureGroupoid H where
     · refine PG.locality e.open_source fun x xu ↦ ?_
       rcases he x xu with ⟨s, s_open, xs, hs⟩
       refine ⟨s, s_open, xs, ?_⟩
-      convert hs.1 using 1
+      convert! hs.1 using 1
       dsimp [OpenPartialHomeomorph.restr]
       rw [s_open.interior_eq]
     · refine PG.locality e.open_target fun x xu ↦ ?_
@@ -311,7 +311,7 @@ def Pregroupoid.groupoid (PG : Pregroupoid H) : StructureGroupoid H where
       refine ⟨e.target ∩ e.symm ⁻¹' s, ?_, ⟨xu, xs⟩, ?_⟩
       · exact ContinuousOn.isOpen_inter_preimage e.continuousOn_invFun e.open_target s_open
       · rw [← inter_assoc, inter_self]
-        convert hs.2 using 1
+        convert! hs.2 using 1
         dsimp [OpenPartialHomeomorph.restr]
         rw [s_open.interior_eq]
   mem_of_eqOnSource' e e' he ee' := by
@@ -320,7 +320,7 @@ def Pregroupoid.groupoid (PG : Pregroupoid H) : StructureGroupoid H where
       simp only [ee'.1, he.1]
     · have A := EqOnSource.symm' ee'
       apply PG.congr e'.symm.open_source A.2
-      convert he.2 using 1
+      convert! he.2 using 1
       rw [A.1, symm_toPartialEquiv, PartialEquiv.symm_source]
 
 theorem mem_groupoid_of_pregroupoid {PG : Pregroupoid H} {e : OpenPartialHomeomorph H H} :
@@ -434,7 +434,7 @@ theorem closedUnderRestriction_iff_id_le (G : StructureGroupoid H) :
     rw [StructureGroupoid.le_iff]
     rintro e ⟨s, hs, hes⟩
     refine G.mem_of_eqOnSource ?_ hes
-    convert closedUnderRestriction' G.id_mem hs
+    convert! closedUnderRestriction' G.id_mem hs
     ext <;> simp [hs.interior_eq]
   · intro h
     constructor
