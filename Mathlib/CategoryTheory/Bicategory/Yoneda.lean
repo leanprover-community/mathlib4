@@ -102,7 +102,7 @@ This is an implementation detail, and `Bicategory.yoneda.map` should be preferre
 @[simps!]
 def postcomposing₂ (a b : B) : (a ⟶ b) ⥤ (yoneda₀ a ⟶ yoneda₀ b) where
   obj := postcomp₂
-  map η := { as := { app x := (postcomposingCat (unop x) a b).map η }}
+  map η := { as := { app x := (postcomposingCat (unop x) a b).map η } }
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The Yoneda pseudofunctor from `B` to `Bᵒᵖ ⥤ᵖ Cat`.

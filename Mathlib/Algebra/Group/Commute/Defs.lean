@@ -68,7 +68,7 @@ protected theorem symm {a b : S} (h : Commute a b) : Commute b a :=
 protected theorem semiconjBy {a b : S} (h : Commute a b) : SemiconjBy a b b :=
   h
 
-@[to_additive]
+@[to_additive (attr := grind =)]
 protected theorem symm_iff {a b : S} : Commute a b ↔ Commute b a :=
   ⟨Commute.symm, Commute.symm⟩
 

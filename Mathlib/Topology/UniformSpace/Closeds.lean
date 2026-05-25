@@ -187,20 +187,10 @@ theorem isUniformEmbedding_singleton : IsUniformEmbedding ({·} : α → Set α)
 theorem isClosedEmbedding_singleton [T0Space α] :
     Topology.IsClosedEmbedding ({·} : α → Set α) where
   __ := isUniformEmbedding_singleton.isEmbedding
-  isClosed_range := by
-    rw [← isOpen_compl_iff, isOpen_iff_mem_nhds]
-    intro s hs
-    rcases Set.eq_empty_or_nonempty s with rfl | h
-    · rwa [(isOpen_singleton_iff_nhds_eq_pure _).mp isClopen_singleton_empty.isOpen,
-        Filter.mem_pure]
-    rcases h.exists_eq_singleton_or_nontrivial with ⟨x, rfl⟩ | ⟨x, hx, y, hy, hxy⟩
-    · cases hs <| Set.mem_range_self x
-    obtain ⟨U, V, hU, hV, hxU, hyV, hUV⟩ := t2_separation hxy
-    filter_upwards [(isOpen_inter_nonempty_of_isOpen hU).inter (isOpen_inter_nonempty_of_isOpen hV)
-      |>.mem_nhds ⟨⟨x, hx, hxU⟩, ⟨y, hy, hyV⟩⟩]
-    rintro _ ⟨hzU, hzV⟩ ⟨z, rfl⟩
-    rw [Set.mem_setOf, Set.singleton_inter_nonempty] at hzU hzV
-    exact hUV.notMem_of_mem_left hzU hzV
+  isClosed_range :=
+    TopologicalSpace.isClosed_range_singleton
+      isClopen_singleton_empty.isOpen
+      isOpen_inter_nonempty_of_isOpen
 
 theorem uniformContinuous_union : UniformContinuous (fun x : Set α × Set α => x.1 ∪ x.2) := by
   refine Filter.tendsto_lift'.mpr fun U hU => ?_
@@ -257,7 +247,7 @@ theorem isClosed_setOf_totallyBounded : IsClosed {s : Set α | TotallyBounded s}
 
 instance [DiscreteUniformity α] : DiscreteUniformity (Set α) := by
   rw [discreteUniformity_iff_setRelId_mem_uniformity]
-  convert Filter.mem_lift' (DiscreteUniformity.relId_mem_uniformity α)
+  convert! Filter.mem_lift' (DiscreteUniformity.relId_mem_uniformity α)
   rw [hausdorffEntourage_id]
 
 end UniformSpace.hausdorff
@@ -382,8 +372,7 @@ theorem isClosed_subsets_of_isClosed {s : Set α} (hs : IsClosed s) :
   isClosed_induced hs.powerset_hausdorff
 
 theorem isClopen_singleton_bot : IsClopen {(⊥ : Closeds α)} := by
-  convert UniformSpace.hausdorff.isClopen_singleton_empty.preimage
-    uniformContinuous_coe.continuous
+  convert! UniformSpace.hausdorff.isClopen_singleton_empty.preimage uniformContinuous_coe.continuous
   ext; simp
 
 theorem totallyBounded_subsets_of_totallyBounded {t : Set α} (ht : TotallyBounded t) :
@@ -546,7 +535,7 @@ theorem isClosedEmbedding_toCloseds [T2Space α] [CompleteSpace α] :
     IsClosedEmbedding (toCloseds (α := α)) where
   __ := isEmbedding_toCloseds
   isClosed_range := by
-    convert Closeds.isClosed_setOf_totallyBounded
+    convert! Closeds.isClosed_setOf_totallyBounded
     exact subset_antisymm
       (Set.range_subset_iff.mpr fun K => K.isCompact.totallyBounded)
       (fun K hK => ⟨⟨K, hK.isCompact_of_isClosed K.isClosed⟩, rfl⟩)

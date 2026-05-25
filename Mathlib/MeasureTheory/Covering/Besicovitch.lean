@@ -441,7 +441,7 @@ theorem color_lt {i : Ordinal.{u}} (hi : i < p.lastStep) {N : ℕ}
         have I : (a : ℕ) < N := ha
         have J : G (Fin.last N) = i := by dsimp; simp only [G, if_true]
         have K : G a = g a := by simp [G, I.ne]
-        convert dist_le_add_of_nonempty_closedBall_inter_closedBall (hg _ I).2.1 }
+        convert! dist_le_add_of_nonempty_closedBall_inter_closedBall (hg _ I).2.1 }
   -- this is a contradiction
   exact hN.false sc
 
@@ -736,7 +736,7 @@ theorem exists_disjoint_closedBall_covering_ae_of_finiteMeasure_aux (μ : Measur
       · exact ht.2.2 p h'p
       · rcases Finset.mem_image.1 h'p with ⟨p', p'v, rfl⟩
         exact (hr p' (vs' p'v)).1.1
-    · convert hμv using 2
+    · convert! hμv using 2
       rw [Finset.set_biUnion_union, ← diff_diff, Finset.set_biUnion_finset_image]
   /- Define `F` associating to a finite good covering the above enlarged good covering, covering
     a proportion `1/(N+1)` of leftover points. Iterating `F`, one will get larger and larger good
@@ -1041,8 +1041,7 @@ protected def vitaliFamily (μ : Measure α) [SFinite μ] : VitaliFamily μ wher
       obtain ⟨r, rpos, rfl⟩ : ∃ r : ℝ, 0 < r ∧ closedBall x r = t := by simpa using fsubset x xs tf
       rcases le_total r (δ / 2) with (H | H)
       · exact ⟨r, ⟨rpos, tf⟩, ⟨rpos, H.trans_lt (half_lt_self δpos)⟩⟩
-      · have : closedBall x r = closedBall x (δ / 2) :=
-          Subset.antisymm ht (closedBall_subset_closedBall H)
+      · have : closedBall x r = closedBall x (δ / 2) := Subset.antisymm ht (by gcongr)
         rw [this] at tf
         exact ⟨δ / 2, ⟨half_pos δpos, tf⟩, ⟨half_pos δpos, half_lt_self δpos⟩⟩
     obtain ⟨t, r, _, ts, tg, μt, tdisj⟩ :

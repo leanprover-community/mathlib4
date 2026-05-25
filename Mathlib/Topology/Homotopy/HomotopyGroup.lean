@@ -127,7 +127,7 @@ instance instContinuousEvalConst : ContinuousEvalConst (Ω^ N X x) (I^N) X := in
 /-- Copy of a `GenLoop` with a new map from the unit cube equal to the old one.
   Useful to fix definitional equalities. -/
 def copy (f : Ω^ N X x) (g : (I^N) → X) (h : g = f) : Ω^ N X x :=
-  ⟨⟨g, h.symm ▸ f.1.2⟩, by convert f.2⟩
+  ⟨⟨g, h.symm ▸ f.1.2⟩, by convert! f.2⟩
 
 theorem coe_copy (f : Ω^ N X x) {g : (I^N) → X} (h : g = f) : ⇑(copy f g h) = g :=
   rfl
@@ -597,7 +597,8 @@ theorem inv_spec [Nonempty N] {i} {p : Ω^ N X x} :
   In particular, multiplication on `π_(n+2)` is commutative. -/
 instance commGroup [Nontrivial N] : CommGroup (HomotopyGroup N X x) :=
   let h := exists_ne (Classical.arbitrary N)
-  @EckmannHilton.commGroup (HomotopyGroup N X x) _ 1 (isUnital_auxGroup <| Classical.choose h) _
+  fast_instance% @EckmannHilton.commGroup (HomotopyGroup N X x) _ 1
+    (isUnital_auxGroup <| Classical.choose h) _
     (by
       rintro ⟨a⟩ ⟨b⟩ ⟨c⟩ ⟨d⟩
       apply congr_arg Quotient.mk'

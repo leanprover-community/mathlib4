@@ -108,7 +108,7 @@ lemma truncLEIsoTruncLT_inv_ι_app (a b : ℤ) (h : a + 1 = b) (X : C) :
 /-- The natural transformation `t.truncLE a ⟶ t.truncLE b` when `a ≤ b`. -/
 noncomputable def natTransTruncLEOfLE (a b : ℤ) (h : a ≤ b) :
     t.truncLE a ⟶ t.truncLE b :=
-  t.natTransTruncLTOfLE (a+1) (b+1) (by lia)
+  t.natTransTruncLTOfLE (a + 1) (b + 1) (by lia)
 
 @[reassoc (attr := simp)]
 lemma natTransTruncLEOfLE_ι_app (n₀ n₁ : ℤ) (h : n₀ ≤ n₁) (X : C) :
@@ -206,7 +206,7 @@ lemma triangleLEGE_distinguished (a b : ℤ) (h : a + 1 = b) (X : C) :
 for `n : ℤ`, as a natural transformation. -/
 noncomputable def truncGTδLE (n : ℤ) :
     t.truncGT n ⟶ t.truncLE n ⋙ shiftFunctor C (1 : ℤ) :=
-  (t.truncGTIsoTruncGE n (n+1) rfl).hom ≫ t.truncGEδLE n (n + 1) (by lia)
+  (t.truncGTIsoTruncGE n (n + 1) rfl).hom ≫ t.truncGEδLE n (n + 1) (by lia)
 
 /-- The distinguished triangle `(t.truncLE n).obj A ⟶ A ⟶ (t.truncGT n).obj A ⟶ ...`
 as a functor `C ⥤ Triangle C` when `t` is a t-structure on a pretriangulated
@@ -229,8 +229,8 @@ noncomputable def triangleLEGTIsoTriangleLEGE (a b : ℤ) (h : a + 1 = b) :
 
 lemma triangleLEGT_distinguished (n : ℤ) (X : C) :
     (t.triangleLEGT n).obj X ∈ distTriang C :=
-  isomorphic_distinguished _ (t.triangleLEGE_distinguished n (n+1) rfl X) _
-    ((t.triangleLEGTIsoTriangleLEGE n (n+1) rfl).app X)
+  isomorphic_distinguished _ (t.triangleLEGE_distinguished n (n + 1) rfl X) _
+    ((t.triangleLEGTIsoTriangleLEGE n (n + 1) rfl).app X)
 
 lemma isLE_iff_isIso_truncLEι_app (n : ℤ) (X : C) :
     t.IsLE X n ↔ IsIso ((t.truncLEι n).app X) :=
@@ -244,7 +244,7 @@ lemma isGE_iff_isIso_truncGTπ_app (n₀ n₁ : ℤ) (hn₁ : n₀ + 1 = n₁) (
     (Arrow.isoMk (Iso.refl _) ((t.truncGTIsoTruncGE _ _ hn₁).symm.app X))
 
 instance (X : C) (n : ℤ) [t.IsLE X n] : IsIso ((t.truncLEι n).app X) := by
-  rw [← isLE_iff_isIso_truncLEι_app ]
+  rw [← isLE_iff_isIso_truncLEι_app]
   infer_instance
 
 lemma isLE_iff_isZero_truncGT_obj (n : ℤ) (X : C) :
@@ -278,7 +278,7 @@ variable {X Y : C} (f : X ⟶ Y) (n : ℤ) [t.IsLE X n]
 lemma liftTruncLE_aux :
     ∃ (f' : X ⟶ (t.truncLE n).obj Y), f = f' ≫ (t.truncLEι n).app Y :=
   Triangle.coyoneda_exact₂ _ (t.triangleLEGT_distinguished n Y) f
-    (t.zero_of_isLE_of_isGE  _ n (n + 1) (by lia) inferInstance (by dsimp; infer_instance))
+    (t.zero_of_isLE_of_isGE _ n (n + 1) (by lia) inferInstance (by dsimp; infer_instance))
 
 /-- Constructor for morphisms to `(t.truncLE n).obj Y`. -/
 noncomputable def liftTruncLE :

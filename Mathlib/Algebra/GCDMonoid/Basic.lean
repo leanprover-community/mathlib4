@@ -624,7 +624,7 @@ theorem isUnit_gcd_of_eq_mul_gcd {α : Type*} [CommMonoidWithZero α] [GCDMonoid
     IsUnit (gcd x' y') := by
   rw [← associated_one_iff_isUnit]
   refine Associated.of_mul_left ?_ (Associated.refl <| gcd x y) h
-  convert (gcd_mul_left' (gcd x y) x' y').symm using 1
+  convert! (gcd_mul_left' (gcd x y) x' y').symm using 1
   rw [← ex, ← ey, mul_one]
 
 theorem extract_gcd {α : Type*} [CommMonoidWithZero α] [GCDMonoid α] (x y : α) :
@@ -1013,7 +1013,7 @@ noncomputable def gcdMonoidOfGCD [DecidableEq α] (gcd : α → α → α)
       · rfl
       have h := (Classical.choose_spec ((gcd_dvd_left a 0).trans (Dvd.intro 0 rfl))).symm
       have a0' : gcd a 0 ≠ 0 := by
-        contrapose! a0
+        contrapose a0
         rw [← associated_zero_iff_eq_zero, ← a0]
         exact associated_of_dvd_dvd (dvd_gcd (dvd_refl a) (dvd_zero a)) (gcd_dvd_left _ _)
       apply Or.resolve_left (mul_eq_zero.1 _) a0'
@@ -1051,7 +1051,7 @@ noncomputable def normalizedGCDMonoidOfGCD [NormalizationMonoid α] [DecidableEq
           · rw [hl, zero_mul]
         have h1 : gcd a b ≠ 0 := by
           have hab : a * b ≠ 0 := mul_ne_zero a0 hb
-          contrapose! hab
+          contrapose hab
           rw [← normalize_eq_zero, ← this, hab, zero_mul]
         have h2 : normalize (gcd a b * l) = gcd a b * l := by rw [this, normalize_idem]
         rw [← normalize_gcd] at this
