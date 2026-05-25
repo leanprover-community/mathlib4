@@ -45,7 +45,7 @@ For `A : DedekindCut α`, the sets `A.left` and `A.right` are related by
 
 The theorem `DedekindCut.principalEmbedding_trans_factorEmbedding` proves that if `α` is a partial
 order and `β` is a complete lattice, any embedding `α ↪o β` factors through `DedekindCut α`. -/
-@[to_dual_do_translate]
+@[to_dual_ignore_args 1]
 abbrev DedekindCut [Preorder α] := Concept α α (· ≤ ·)
 
 namespace DedekindCut
@@ -60,7 +60,6 @@ abbrev left (A : DedekindCut α) : Set α := A.extent
 @[to_dual existing left]
 abbrev right (A : DedekindCut α) : Set α := A.intent
 
-set_option trace.translate_detail true in
 /-- See `DedekindCut.ext'` for a version using the right set instead. -/
 @[ext] theorem ext {A B : DedekindCut α} (h : A.left = B.left) : A = B := Concept.ext h
 
@@ -95,18 +94,21 @@ def principal (a : α) : DedekindCut α :=
     (by ext; simp)
 
 @[simp] theorem left_principal (a : α) : (principal a).left = Iic a := rfl
-@[simp] theorem right_principal (a : α) : (principal a).right = Ici a := rfl
+@[to_dual existing left_principal, simp]
+theorem right_principal (a : α) : (principal a).right = Ici a := rfl
 
 @[simp] theorem ofObject_eq_principal (a : α) : ofObject (· ≤ ·) a = principal a :=
   (copy_eq ..).symm
 @[simp] theorem ofAttribute_eq_principal (a : α) : ofAttribute (· ≤ ·) a = principal a := by
   ext; simp
 
-@[simp]
+@[to_dual le_principal_iff', simp]
 lemma principal_le_iff {a : α} {c : DedekindCut α} :
     principal a ≤ c ↔ a ∈ c.left := by
   simp only [← extent_subset_extent_iff, left_principal]
   exact ⟨fun h ↦ h self_mem_Iic, fun h y hy ↦ mem_extent_of_rel_extent hy h⟩
+
+#print le_principal_iff'
 
 @[simp]
 lemma le_principal_iff {a : α} {c : DedekindCut α} :
