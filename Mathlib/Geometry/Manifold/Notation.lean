@@ -994,7 +994,7 @@ open Bundle PrettyPrinter Delaborator SubExpr
   `(⟨$bd, $vd⟩)
 
 /-- Delaborator for `Bundle.TotalSpace.mk'` using anonymous constructor notation. -/
-@[app_delab Bundle.TotalSpace.mk'] meta def delabTotalSpaceMk' : Delab := do
+@[app_delab Bundle.TotalSpace.mk'] meta def delabTotalSpaceMkPrime : Delab := do
   whenPPOption getPPNotation do
   withOverApp 5 do
   let bd ← withNaryArg 3 <| delab
