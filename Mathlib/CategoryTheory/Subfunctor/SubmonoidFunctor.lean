@@ -90,11 +90,7 @@ instance : CompleteLattice (SubmonoidFunctor R) where
         refine le_trans ?_ Submonoid.monotone_comap.le_map_sSup
         rw [iSup_image]
         exact iSup₂_mono fun F _ ↦ F.map f }
-  isLUB_sSup _ := ⟨fun _ _ _ _ ↦ by
-    intro a
-    simp only [Submonoid.mem_iSup];
-    intro N i
-    aesop, fun _ _ _ ↦ by aesop⟩
+  isLUB_sSup _ := ⟨fun a ha U ↦ le_iSup₂_of_le a ha le_rfl, fun _ _ _ ↦ by aesop⟩
   sInf S :=
     { obj U := sInf (Set.image (fun T ↦ T.obj U) S)
       map f := by
