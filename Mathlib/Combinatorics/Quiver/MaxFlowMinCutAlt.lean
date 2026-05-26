@@ -8,12 +8,13 @@ import Mathlib.Data.Real.Basic
 import Mathlib.Data.Set.Finite.Basic
 import Mathlib.Data.Finset.Basic
 import Mathlib.Data.Fintype.Basic
+import Mathlib.Data.Fintype.Prod
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.Ring
-import Mathlib.Combinatorics.Quiver.Path
 import Init.Data.List.BasicAux
 import Mathlib.Data.List.Intervals
-
+import Mathlib.Topology.Basic
+import Mathlib.Topology.Instances.Real.Lemmas
 
 open Finset
 open scoped BigOperators
@@ -54,7 +55,7 @@ def mk_out {V : Type*} [Fintype V]
 /-- A relaxedFlow is defined on a complete graph with source and sink and assigns to each edge
   a nonnegative flow value that satisfies flow conservation and does not send flow into the
   source or out of the sink. -/
-structure RelaxedFlow (V : Type*) [Fintype V] (G : STVertices V) where
+structure RelaxedFlow {V : Type*} [Fintype V] (G : STVertices V) where
   f : V → V → ℝ
   nonneg_flow : ∀ u v : V, f u v ≥ 0
   conservation : ∀ v : V, v ≠ G.s → v ≠ G.t → mk_out f {v} = mk_in f {v}
@@ -64,7 +65,7 @@ structure RelaxedFlow (V : Type*) [Fintype V] (G : STVertices V) where
 open Classical in
 /-- An S-T cut partitions the set of vertices into a set S that
  contains the source and a set T that contains the sink. -/
-structure Cut (V : Type*) [Fintype V] (G : FlowNetwork V) where
+structure Cut {V : Type*} [Fintype V] (G : FlowNetwork V) where
   S : Finset V
   T : Finset V
   hT : T = univ \ S
@@ -72,17 +73,17 @@ structure Cut (V : Type*) [Fintype V] (G : FlowNetwork V) where
   tint : G.t ∈ T
 
 -- ============================================================
--- NO AUGMENTING PATHS
+-- FLOWS
 -- ============================================================
 
 /-- A ValidFlow is a relaxedFlow that also satisfies capacity constraints which are
   defined in a FlowNetwork. -/
 def ValidFlow
-(V : Type*) [Fintype V] (G : FlowNetwork V) (g : RelaxedFlow V G.toSTVertices) : Prop :=
+{V : Type*} [Fintype V] (G : FlowNetwork V) (g : RelaxedFlow G.toSTVertices) : Prop :=
   ∀ u v : V, g.f u v ≤ G.c u v
 
 /-- An (explicit) equivalent definition for flow conservation. -/
-lemma eq_conservation (V : Type*) [Fintype V] (G : STVertices V) (flow : RelaxedFlow V G) :
+lemma eq_conservation {V : Type*} [Fintype V] (G : STVertices V) (flow : RelaxedFlow G) :
  ∀ v : V, v ≠ G.s → v ≠ G.t → ∑ x, (flow.f x v - flow.f v x) = 0 := by
   intro v vns vnt
   have : mk_out flow.f {v} = mk_in flow.f {v} := flow.conservation v vns vnt
@@ -94,7 +95,7 @@ lemma eq_conservation (V : Type*) [Fintype V] (G : STVertices V) (flow : Relaxed
   guaranteeing that flow cannot move between two vertices in both directions. This is
   necessary to guarantee augmenting a valid flow from the original network with the residual
   network results in a valid flow in the original network. -/
-instance (V : Type*) [Fintype V] (G : STVertices V) : Mul (RelaxedFlow V G) where
+instance {V : Type*} [Fintype V] {G : STVertices V} : Mul (RelaxedFlow G) where
   mul g h := {
     f u v := max (g.f u v + h.f u v - g.f v u - h.f v u) 0
     nonneg_flow := by simp
@@ -110,8 +111,8 @@ instance (V : Type*) [Fintype V] (G : STVertices V) : Mul (RelaxedFlow V G) wher
           = ∑ x, (g.f x v - g.f v x) + ∑ x, (h.f x v - h.f v x) := by
             simp [Finset.sum_add_distrib]; linarith
           _ = 0 := by
-            simp only [add_eq_right, eq_conservation V G g v vns vnt,
-              eq_conservation V G h v vns vnt];
+            simp only [add_eq_right, eq_conservation G g v vns vnt,
+              eq_conservation G h v vns vnt];
       symm
       rw [←sub_eq_zero]
       have : ∀ x, -(g.f x v + h.f x v - g.f v x - h.f v x)
@@ -131,15 +132,15 @@ instance (V : Type*) [Fintype V] (G : STVertices V) : Mul (RelaxedFlow V G) wher
 /-- The value of a flow: the amount of flow going out of the sink. -/
 noncomputable
 def Flow_value {V : Type*} [Fintype V] (G : STVertices V)
-    (flow : RelaxedFlow V G) : ℝ := mk_out flow.f {G.s}
+    (flow : RelaxedFlow G) : ℝ := mk_out flow.f {G.s}
 
 /-- The value of a flow is nonnegative. -/
 lemma nonneg_flow_value {V : Type*} [Fintype V] (G : STVertices V) :
-  ∀F : RelaxedFlow V G, Flow_value G F ≥ 0 := by
+  ∀F : RelaxedFlow G, Flow_value G F ≥ 0 := by
   intro F; simp [Flow_value, mk_out, F.no_edges_in_source, sum_nonneg, F.nonneg_flow]
 
 /-- The value of a flow is additive under augmentation. -/
-lemma add_flow {V : Type*} [Fintype V] (G : STVertices V) (flow₁ flow₂ : RelaxedFlow V G) :
+lemma add_flow {V : Type*} [Fintype V] (G : STVertices V) (flow₁ flow₂ : RelaxedFlow G) :
   Flow_value G (flow₁ * flow₂) = Flow_value G flow₁ + Flow_value G flow₂ := by
   have: ∀ x, (flow₁.f G.s x + flow₂.f G.s x) ≥ 0 := by
     intro x; linarith [flow₁.nonneg_flow G.s x, flow₂.nonneg_flow G.s x]
@@ -149,33 +150,33 @@ lemma add_flow {V : Type*} [Fintype V] (G : STVertices V) (flow₁ flow₂ : Rel
 /-- The capacity of an S-T cut is the sum of edge capacities of edges going from S to T. -/
 noncomputable
 def cut_cap {V : Type*} [Fintype V] {G : FlowNetwork V}
-    (c : Cut V G) : ℝ := mk_out G.c c.S
+    (c : Cut G) : ℝ := mk_out G.c c.S
 
 /-- The flow of an S-T cut given a RelaxedFlow is the sum of flows going over edges going
   from S to T. -/
 noncomputable
 def cut_flow {V : Type*} [Fintype V] {G : FlowNetwork V}
-  (g : RelaxedFlow V G.toSTVertices)
-    (c : Cut V G) : ℝ := mk_out g.f c.S
+  (g : RelaxedFlow G.toSTVertices)
+    (c : Cut G) : ℝ := mk_out g.f c.S
 
 /-- A flow is maximal if it respects capacities and has the largest flow value compared to
  other flows that respect capacities. -/
 def is_max_flow {V : Type*} [Fintype V] {G : FlowNetwork V}
-    (fn : RelaxedFlow V G.toSTVertices) : Prop :=
-  ValidFlow V G fn ∧ ∀ fn' : RelaxedFlow V G.toSTVertices, ValidFlow V G fn' →
+    (fn : RelaxedFlow G.toSTVertices) : Prop :=
+  ValidFlow G fn ∧ ∀ fn' : RelaxedFlow G.toSTVertices, ValidFlow G fn' →
     Flow_value G.toSTVertices fn' ≤ Flow_value G.toSTVertices fn
 
 /-- A cut is minimal if its capapcity is minimal. -/
 def is_min_cut {V : Type*} [Fintype V] (G : FlowNetwork V)
-    (fn : Cut V G) : Prop :=
-  ∀ fn' : Cut V G, cut_cap fn ≤ cut_cap fn'
+    (fn : Cut G) : Prop :=
+  ∀ fn' : Cut G, cut_cap fn ≤ cut_cap fn'
 
 /-- The residual network is a flow network defined using an existing flow network and flow.
   It uses the same source and sink. The capacity of an edge u v is given by its original capacity
   minus the amount of flow going over this edge plus the amount of flow going in the opposite
   direction. -/
-def ResidualNetwork {V : Type*} [Fintype V] (G : FlowNetwork V) (F : RelaxedFlow V G.toSTVertices)
-  (h : ValidFlow V G F) : FlowNetwork V where
+def ResidualNetwork {V : Type*} [Fintype V] (G : FlowNetwork V) (F : RelaxedFlow G.toSTVertices)
+  (h : ValidFlow G F) : FlowNetwork V where
   s := G.s
   t := G.t
   source_not_sink := G.source_not_sink
@@ -185,8 +186,8 @@ def ResidualNetwork {V : Type*} [Fintype V] (G : FlowNetwork V) (F : RelaxedFlow
 /-- Augmenting a valid flow in the original network with a valid flow in its residual network
   results in a new valid flow. -/
 lemma valid_augmentation {V : Type*} [Fintype V] (G : FlowNetwork V)
-  (F : RelaxedFlow V G.toSTVertices) (h : ValidFlow V G F) :
-  ∀F' : (RelaxedFlow V G.toSTVertices), ValidFlow V (ResidualNetwork G F h) F' →
+  (F : RelaxedFlow G.toSTVertices) (h : ValidFlow G F) :
+  ∀F' : (RelaxedFlow G.toSTVertices), ValidFlow (ResidualNetwork G F h) F' →
   ∀ u v : V, (F * F').f u v ≤ G.c u v := by
   intro F' val_F' u v
   simp [(· * ·), Mul.mul]
@@ -197,8 +198,8 @@ lemma valid_augmentation {V : Type*} [Fintype V] (G : FlowNetwork V)
 
 /-- If a flow is maximal, all flows in its residual graph have value 0. -/
 lemma max_flow_no_augmenting {V : Type*} [Fintype V] (G : FlowNetwork V)
-  (F : RelaxedFlow V G.toSTVertices) (h : is_max_flow F) :
-  ∀F' : (RelaxedFlow V G.toSTVertices), ValidFlow V (ResidualNetwork G F h.1) F' →
+  (F : RelaxedFlow G.toSTVertices) (h : is_max_flow F) :
+  ∀F' : (RelaxedFlow G.toSTVertices), ValidFlow (ResidualNetwork G F h.1) F' →
   Flow_value G.toSTVertices F' = 0 := by
   intro F' g
   by_contra con
@@ -212,7 +213,7 @@ lemma max_flow_no_augmenting {V : Type*} [Fintype V] (G : FlowNetwork V)
    Flow_value G.toSTVertices optF = Flow_value G.toSTVertices F + Flow_value G.toSTVertices F' :=
    by exact add_flow G.toSTVertices F F'
    _ > Flow_value G.toSTVertices F := by linarith
-  have optval : ValidFlow V G optF := by
+  have optval : ValidFlow G optF := by
    apply valid_augmentation G F h.1 F' g
   have: ¬is_max_flow F := by
    simp only [is_max_flow, not_and, not_forall, not_le]; intro _; use optF;
@@ -223,8 +224,8 @@ lemma max_flow_no_augmenting {V : Type*} [Fintype V] (G : FlowNetwork V)
 -- ============================================================
 
 /-- The flow of a cut is no more than the capacity of a cut. -/
-lemma cut_flow_le_cut_cap {V : Type*} [Fintype V] (G : FlowNetwork V) (C : Cut V G)
-  (g : RelaxedFlow V G.toSTVertices) (h : ValidFlow V G g) :
+lemma cut_flow_le_cut_cap {V : Type*} [Fintype V] {G : FlowNetwork V} (C : Cut G)
+  (g : RelaxedFlow G.toSTVertices) (h : ValidFlow G g) :
   cut_flow g C ≤ cut_cap C := by
     simp only [cut_flow, cut_cap, mk_out]
     apply sum_le_sum
@@ -235,8 +236,8 @@ lemma cut_flow_le_cut_cap {V : Type*} [Fintype V] (G : FlowNetwork V) (C : Cut V
 
 open Classical in
 /-- Flow conservation of the vertices in S without the source. -/
-lemma helper {V : Type*} [Fintype V] (G : FlowNetwork V) (C : Cut V G)
-  (g : RelaxedFlow V G.toSTVertices) :
+lemma helper {V : Type*} [Fintype V] {G : FlowNetwork V} (C : Cut G)
+  (g : RelaxedFlow G.toSTVertices) :
   ∑ v ∈ C.S \ {G.s}, ∑ w : V, (g.f v w - g.f w v) = 0 := by
     apply sum_eq_zero
     intro v vinsns
@@ -250,28 +251,28 @@ lemma helper {V : Type*} [Fintype V] (G : FlowNetwork V) (C : Cut V G)
       have STempty : C.S ∩ C.T = ∅ := by simp [C.hT];
       contradiction
     rw [sum_sub_distrib, ←zero_eq_neg, neg_sub, ←sum_sub_distrib,
-    eq_conservation V G.toSTVertices g v vns vnt]
+    eq_conservation G.toSTVertices g v vns vnt]
 
 /-- You can add a singleton value in the sum. -/
-lemma helper2 {V : Type*} [DecidableEq V] (S : Finset V) (a : V) (h : a ∈ S)
+lemma helper2 {V : Type*} [DecidableEq V] {S : Finset V} {a : V} (h : a ∈ S)
   (f : V → ℝ) : f a + ∑ b ∈ S \ {a}, f b = ∑ b ∈ S, f b := by
   refine add_eq_of_eq_sub ?_
   have : ∑ b ∈ S, f b - ∑ b ∈ S \ {a}, f b = f a := by simp [h]
   rw [this]
 
 /-- If summing over a subset evaluates to 0, you can that subset from the original sum. -/
-lemma helper3 {V : Type*} [DecidableEq V] (S : Finset V) (T : Finset V)
-  (h : T ⊆ S) (f : V → ℝ) (h' : ∑ x ∈ T, f x = 0) : ∑ b ∈ S, f b = ∑ b ∈ S \ T, f b := by
+lemma helper3 {V : Type*} [DecidableEq V] {S : Finset V} {T : Finset V} (f : V → ℝ)
+  (h : T ⊆ S) (h' : ∑ x ∈ T, f x = 0) : ∑ b ∈ S, f b = ∑ b ∈ S \ T, f b := by
   simp [h, h']
 
 open Classical in
 /-- For any cut, the value of a flow is equal to the sum of flows over edges from S to T
   minus the flow over edges from T to S. -/
 lemma flow_value_eq_net_flow {V : Type*} [Fintype V]
-    (G : FlowNetwork V) (C : Cut V G) (g : RelaxedFlow V G.toSTVertices) :
+    {G : FlowNetwork V} (C : Cut G) (g : RelaxedFlow G.toSTVertices) :
     Flow_value G.toSTVertices g =
       ∑ v ∈ C.S, ∑ w ∈ univ \ C.S, (g.f v w - g.f w v) := by
-  rw [← add_zero (Flow_value G.toSTVertices g), ← helper G C g]
+  rw [← add_zero (Flow_value G.toSTVertices g), ← helper C g]
   simp only [Flow_value, mk_out]
   have hsum : ∑ x ∈ ({G.s} : Finset V), ∑ y ∈ univ \ {G.s}, g.f x y =
       ∑ x ∈ ({G.s} : Finset V), ∑ y ∈ univ \ {G.s}, (g.f x y - g.f y x) := by
@@ -288,34 +289,32 @@ lemma flow_value_eq_net_flow {V : Type*} [Fintype V]
           simp [g.no_edges_in_source]
     _ = ∑ v ∈ C.S, ∑ w, (g.f v w - g.f w v) := by
           simp only [sum_singleton]
-          rw [@helper2 V (Classical.decEq V) C.S G.s C.sins
-            (fun v => ∑ w, (g.f v w - g.f w v))]
+          rw [helper2 C.sins (fun v => ∑ w, (g.f v w - g.f w v))]
     _ = ∑ v ∈ C.S, ∑ w ∈ univ \ C.S, (g.f v w - g.f w v) := by
           rw [sum_comm]
-          have htmp := @helper3 V (Classical.decEq V) univ C.S (subset_univ C.S)
-            (fun v => ∑ w ∈ C.S, (g.f w v - g.f v w)) hinner
+          have htmp := helper3 (fun v => ∑ w ∈ C.S, (g.f w v - g.f v w)) (subset_univ C.S) hinner
           rw [htmp, sum_comm]
 
 /-- The value of a flow is no more than the flow of any cut. -/
 lemma flow_le_cut_flow {V : Type*} [Fintype V]
-    (G : FlowNetwork V) (C : Cut V G) (g : RelaxedFlow V G.toSTVertices) :
+    {G : FlowNetwork V} (C : Cut G) (g : RelaxedFlow G.toSTVertices) :
     Flow_value G.toSTVertices g ≤ cut_flow g C := by
   classical
-  rw [flow_value_eq_net_flow G C g]
+  rw [flow_value_eq_net_flow C g]
   simp only [cut_flow, mk_out]
   apply Finset.sum_le_sum; intro v _
   apply Finset.sum_le_sum; intro w _
   linarith [g.nonneg_flow w v]
 
 /-- The value of a flow is no more than the capacity of any cut. -/
-theorem weak_duality {V : Type*} [Fintype V] (G : FlowNetwork V) (C : Cut V G)
-  (g : RelaxedFlow V G.toSTVertices) (h : ValidFlow V G g) :
+theorem weak_duality {V : Type*} [Fintype V] {G : FlowNetwork V} (C : Cut G)
+  (g : RelaxedFlow G.toSTVertices) (h : ValidFlow G g) :
   Flow_value G.toSTVertices g ≤ cut_cap C := by
-  linarith [cut_flow_le_cut_cap G C g h, flow_le_cut_flow G C g]
+  linarith [cut_flow_le_cut_cap C g h, flow_le_cut_flow C g]
 
 /-- If the value of a flow is equal to the capacity of any cut, the flow value is maximal. -/
-lemma max_flow_if_eq_cut {V : Type*} [Fintype V] (G : FlowNetwork V) (C : Cut V G)
-  (g : RelaxedFlow V G.toSTVertices) (h : ValidFlow V G g) :
+lemma max_flow_if_eq_cut {V : Type*} [Fintype V] {G : FlowNetwork V} (C : Cut G)
+  (g : RelaxedFlow G.toSTVertices) (h : ValidFlow G g) :
   Flow_value G.toSTVertices g = cut_cap C → is_max_flow g := by
     intro h'
     constructor
@@ -323,83 +322,50 @@ lemma max_flow_if_eq_cut {V : Type*} [Fintype V] (G : FlowNetwork V) (C : Cut V 
     · rw [h']
       apply weak_duality
 
--- ============================================================
--- CONSTRUCTING THE MINIMUM CUT
--- ============================================================
+-- ===========================================================
+-- TRIVIAL (ZERO) FLOWS
+-- ===========================================================
+/-- The trivial (zero) flow that doesn't send flow over any edge -/
+def trivial_flow {V : Type*} [Fintype V] (G : STVertices V) : RelaxedFlow G where
+  f := fun x y => 0
+  nonneg_flow := by simp only [ge_iff_le, Std.le_refl, implies_true]
+  conservation := by grind [mk_out, mk_in]
+  no_edges_in_source := by simp only [implies_true]
+  no_edges_out_sink := by simp only [implies_true]
 
-def ResidualReach {V : Type*} [Fintype V] (G : FlowNetwork V)
-    (F : RelaxedFlow V G.toSTVertices) : V → V → Prop :=
-  Relation.ReflTransGen (fun u v => G.c u v - F.f u v + F.f v u > 0)
+/-- The trivial flow doesn't send any flow over an edge -/
+@[simp]
+lemma zero_flow {V : Type*} [Fintype V] (G : STVertices V) :
+  ∀ x y, (trivial_flow G).f x y = 0 := by simp [trivial_flow]
 
-def no_augmenting_path {V : Type*} [Fintype V] (G : FlowNetwork V)
-    (F : RelaxedFlow V G.toSTVertices) : Prop :=
-  ¬ ResidualReach G F G.s G.t
+/-- The value of the trivial flow is 0 -/
+@[simp]
+lemma zero_trivial_flow {V : Type*} [Fintype V] (G : STVertices V) :
+  Flow_value G (trivial_flow G) = 0 := by
+    simp only [Flow_value, mk_out, zero_flow, sum_const_zero]
 
-open Classical in
-noncomputable def mk_cut_set {V : Type*} [Fintype V] (G : FlowNetwork V)
-    (F : RelaxedFlow V G.toSTVertices) : Finset V :=
-  Finset.univ.filter (fun x => ResidualReach G F G.s x)
+/-- The trivial flow is always valid -/
+lemma valid_zero_flow {V : Type*} [Fintype V] (G : FlowNetwork V) :
+  ValidFlow G (trivial_flow G.toSTVertices) := by
+    simp only [ValidFlow, zero_flow, G.nonneg_capacity, implies_true]
 
-open Classical in
-noncomputable def mk_cut_from_S {V : Type*} [Fintype V] (G : FlowNetwork V)
-    (F : RelaxedFlow V G.toSTVertices)
-    (hno : no_augmenting_path G F) : Cut V G :=
-  { S  := mk_cut_set G F
-    T  := Finset.univ \ mk_cut_set G F
-    hT := rfl
-    sins := by
-      simp only [mk_cut_set, mem_filter, mem_univ, true_and]
-      exact Relation.ReflTransGen.refl
-    tint := by
-      simp only [mem_sdiff, mem_univ, true_and, mk_cut_set, mem_filter];
-      exact hno
-  }
-
-lemma saturated_forward_arcs {V : Type*} [Fintype V] (G : FlowNetwork V)
-    (F : RelaxedFlow V G.toSTVertices) (h : ValidFlow V G F) :
-    ∀ v w : V, v ∈ mk_cut_set G F → w ∉ mk_cut_set G F →
-    F.f v w = G.c v w := by
-  intro u v huS hvnS
-  simp_all only [mk_cut_set, mem_filter, mem_univ, true_and]
-  apply le_antisymm (h u v)
-  by_contra hlt
-  have hres : (ResidualNetwork G F h).c u v > 0 := by
-    simp only [ResidualNetwork, gt_iff_lt]; linarith [F.nonneg_flow v u]
-  exact hvnS (huS.trans (Relation.ReflTransGen.single hres))
-
-lemma zero_backward_arcs {V : Type*} [Fintype V] (G : FlowNetwork V)
-    (F : RelaxedFlow V G.toSTVertices) (h : ValidFlow V G F) :
-    ∀ v w : V, v ∉ mk_cut_set G F → w ∈ mk_cut_set G F →
-    F.f v w = 0 := by
-  intro v w hvnS hwS
-  by_contra hne
-  simp only [mk_cut_set, mem_filter, mem_univ, true_and] at hwS hvnS
-  have hpos : F.f v w > 0 :=
-    lt_of_le_of_ne (F.nonneg_flow v w) (Ne.symm hne)
-  have hres : (ResidualNetwork G F h).c w v > 0 := by
-    simp only [ResidualNetwork]
-    linarith [F.nonneg_flow w v, h w v]
-  exact hvnS (hwS.trans (Relation.ReflTransGen.single hres))
-
-lemma flow_eq_cut_cap {V : Type*} [Fintype V] (G : FlowNetwork V)
-    (F : RelaxedFlow V G.toSTVertices) (h : ValidFlow V G F)
-    (hno : no_augmenting_path G F) :
-    let C := mk_cut_from_S G F hno
-    Flow_value G.toSTVertices F = cut_cap C := by
-  classical
-  let C := mk_cut_from_S G F hno
-  rw [flow_value_eq_net_flow G C F]
-  apply Finset.sum_congr rfl; intro v hv
-  apply Finset.sum_congr rfl; intro w hw
-  have hv' : v ∈ mk_cut_set G F := hv
-  have hw' : w ∉ mk_cut_set G F := mem_compl.mp hw
-  rw [zero_backward_arcs G F h w v hw' hv', sub_zero]
-  exact saturated_forward_arcs G F h v w hv hw'
+/-- Augmenting a valid flow with the trivial flow results in a valid flow -/
+lemma valid_zero_augmentation {V : Type*} [Fintype V] (G : FlowNetwork V)
+  (F : RelaxedFlow G.toSTVertices) (validF : ValidFlow G F) :
+  ValidFlow G (F * (trivial_flow G.toSTVertices)) := by
+  rw [ValidFlow] at validF
+  simp only [ValidFlow, HMul.hMul, Mul.mul, zero_flow, add_zero, sub_zero, sup_le_iff,
+    tsub_le_iff_right, G.nonneg_capacity, and_true]
+  intro u v
+  trans G.c u v
+  · exact validF u v
+  · linarith [F.nonneg_flow v u]
 
 -- ============================================================
 -- AUGMENTING PATHS
 -- ============================================================
 
+/-- A simple path from u to v, represented as a nodup list of vertices. -/
 structure uvPath {V : Type*} [Fintype V] (u v : V) where
   verts : List V
   nonempty : verts ≠ []
@@ -407,18 +373,21 @@ structure uvPath {V : Type*} [Fintype V] (u v : V) where
   ustart : verts.head nonempty = u
   vend : verts.getLast nonempty = v
 
+/-- A valid path in a flow network: every consecutive pair has positive capacity. -/
 structure validuvPath {V : Type*} [Fintype V] [DecidableEq V] (G : FlowNetwork V) (u v : V)
   extends uvPath u v where
   valid : ∀ (i : ℕ) (h : i < verts.length - 1), G.c (verts[i]) (verts[i+1]) > 0
 
+/-- An augmenting path is a valid path from s to t. -/
 def augmentingPath {V : Type*} [Fintype V] [DecidableEq V] (G : FlowNetwork V) :=
   validuvPath G G.s G.t
 
-@[simp]
+/-- A path between two distinct vertices has length at least 2 -/
 lemma ge_two_vertices {V : Type*} [Fintype V] {u v : V} (p : uvPath u v) (h : u ≠ v) :
  p.verts.length ≥ 2 := by
   grind [p.ustart, p.vend]
 
+/-- The bottleneck capacity of a path: the minimum edge capacity along it. -/
 def uvPath.bottleneck {V : Type*} [Fintype V] [DecidableEq V]
     (G : FlowNetwork V) {u v : V} (p : uvPath u v) (h : u ≠ v) : ℝ := by
     have : p.verts.length ≥ 2 := by apply ge_two_vertices p h
@@ -427,7 +396,7 @@ def uvPath.bottleneck {V : Type*} [Fintype V] [DecidableEq V]
     have : J.length ≥ 1 := by grind
     exact J.min (by grind)
 
-@[simp]
+/-- The bottleneck is not more than any of the capacities of edges in the path -/
 lemma lb_bottleneck {V : Type*} [Fintype V] [DecidableEq V] (G : FlowNetwork V)
   {u v : V} (p : uvPath u v) (h : u ≠ v) :
     ∀ (i : ℕ) (h' : i < p.verts.length - 1), p.bottleneck G h ≤ G.c p.verts[i] p.verts[i+1] := by
@@ -438,7 +407,7 @@ lemma lb_bottleneck {V : Type*} [Fintype V] [DecidableEq V] (G : FlowNetwork V)
         by grind
       grind [uvPath.bottleneck]
 
-@[simp]
+/-- Some edge in the path has capacity equal to the bottleneck -/
 lemma ub_bottleneck {V : Type*} [Fintype V] [DecidableEq V] (G : FlowNetwork V) {u v : V}
   (p : uvPath u v) (h : u ≠ v) :
     ∃ (i : ℕ) (h' : i < p.verts.length - 1), p.bottleneck G h = G.c p.verts[i] p.verts[i+1] := by
@@ -455,28 +424,33 @@ lemma ub_bottleneck {V : Type*} [Fintype V] [DecidableEq V] (G : FlowNetwork V) 
   have : G.c p.verts[i] p.verts[i+1] = xs.min (by grind):= by grind
   grind
 
-
+/-- The bottleneck of a valid path is positive. -/
 lemma pos_bottleneck {V : Type*} [Fintype V] [DecidableEq V]
   {G : FlowNetwork V} {u v : V} (p : validuvPath G u v) (h : u ≠ v) :
     p.touvPath.bottleneck G h > 0 := by
     obtain ⟨i, ⟨h', h''⟩⟩ := ub_bottleneck G p.touvPath h
     linarith [h'', lb_bottleneck G p.touvPath h i h', p.valid i h']
 
+/-- The flow induced by an augmenting path: send bottleneck flow along each edge of the path. -/
 def pathFlow {V : Type*} [Fintype V] [DecidableEq V] {G : FlowNetwork V} (p : augmentingPath G) :
   V → V → ℝ := fun a b => if ∃ (i : ℕ) (h : i < p.verts.length - 1),
     a = p.verts[i] ∧ b = p.verts[i+1] then p.bottleneck G G.source_not_sink else 0
 
+/-- If a list has no duplicates, then no two distinct entries of it are equal -/
 lemma neq_if_nodup {V : Type*} (l : List V) (i j : ℕ) (h₀ : i < l.length)
   (h₁ : j < l.length) (h₂ : i ≠ j) : l.Nodup → l[i] ≠ l[j] := by
   intro hnodup hEq
   apply h₂
   exact hnodup.getElem_inj_iff.mp hEq
 
+/-- If two lookups in a list with no duplicates are equal, the lookup positions must be equal -/
 lemma eq_index_if_nodup {V : Type*} (l : List V) (i j : ℕ) (h₀ : i < l.length)
     (h₁ : j < l.length) (h₂ : l[i] = l[j]) : l.Nodup → i = j := by
   intro hnodup
   exact (List.getElem_inj hnodup).mp h₂
 
+/-- The amount of flow leaving a vertex that is contained in an augmenting path equals
+  the bottleneck of the augmenting path -/
 lemma pathlike_flow_out {V : Type*} [Fintype V] [DecidableEq V] {G : FlowNetwork V}
  (p : augmentingPath G) (i : ℕ) (h : i < p.verts.length - 1) :
  mk_out (pathFlow p) {p.verts[i]} = p.bottleneck G G.source_not_sink := by
@@ -502,12 +476,10 @@ lemma pathlike_flow_out {V : Type*} [Fintype V] [DecidableEq V] {G : FlowNetwork
       simp [hz p.verts[i] (neq_if_nodup p.verts i (i+1) h₁ h₂ h₃ p.nodup)]
     simp only [this, sub_zero]
     have zsum : ∑ y ≠ p.verts[i+1], pathFlow p p.verts[i] y = 0 := by
-      apply sum_eq_zero
-      grind
+      apply sum_eq_zero; grind
     have : ∑ y, pathFlow p p.verts[i] y = pathFlow p p.verts[i] p.verts[i+1] +
       ∑ y ≠ p.verts[i+1], pathFlow p p.verts[i] y := by simp
-    rw [this]
-    simp [zsum]
+    rw [this]; simp [zsum]
   have : pathFlow p p.verts[i] p.verts[i + 1] =
     uvPath.bottleneck G p.touvPath G.source_not_sink := by
     rw [pathFlow]
@@ -516,6 +488,8 @@ lemma pathlike_flow_out {V : Type*} [Fintype V] [DecidableEq V] {G : FlowNetwork
     simp [this]
   grind
 
+/-- The amount of flow entering a vertex that is contained in an augmenting path equals
+  the bottleneck of the augmenting path -/
 lemma pathlike_flow_in {V : Type*} [Fintype V] [DecidableEq V] {G : FlowNetwork V}
  (p : augmentingPath G) (i : ℕ) (h₁ : i > 0) (h : i < p.verts.length - 1) :
  mk_in (pathFlow p) {p.verts[i]} = p.bottleneck G G.source_not_sink := by
@@ -542,14 +516,12 @@ lemma pathlike_flow_in {V : Type*} [Fintype V] [DecidableEq V] {G : FlowNetwork 
       simp [hz p.verts[i] (neq_if_nodup p.verts i (i-1) h₁ h₂ h₃ p.nodup)]
     simp only [this, sub_zero]
     have zsum : ∑ y ≠ p.verts[i-1], pathFlow p y p.verts[i] = 0 := by
-      apply sum_eq_zero
-      grind
+      apply sum_eq_zero; grind
     have : ∑ y, pathFlow p y p.verts[i] = pathFlow p p.verts[i-1] p.verts[i] +
       ∑ y ≠ p.verts[i-1], pathFlow p y p.verts[i] := by simp
-    rw [this]
-    simp [zsum]
+    rw [this]; simp [zsum]
   have : pathFlow p p.verts[i - 1] p.verts[i] =
-    uvPath.bottleneck G p.touvPath G.source_not_sink := by
+    p.touvPath.bottleneck G G.source_not_sink := by
     rw [pathFlow]
     have : i - 1 < p.verts.length - 1 := by grind
     have : ∃ j, ∃ (hv : j < p.verts.length - 1), p.verts[i - 1] = p.verts[j] ∧
@@ -557,15 +529,14 @@ lemma pathlike_flow_in {V : Type*} [Fintype V] [DecidableEq V] {G : FlowNetwork 
     simp [this]
   grind
 
+/-- An augmenting path induces a relaxed flow. -/
 def augmentingPath.toFlow {V : Type*} [Fintype V] [DecidableEq V]
-    {G : FlowNetwork V} (p : augmentingPath G) : RelaxedFlow V G.toSTVertices where
+    {G : FlowNetwork V} (p : augmentingPath G) : RelaxedFlow G.toSTVertices where
     f := pathFlow p
     nonneg_flow := by
-      intro u v;
-      rw [pathFlow];
+      intro u v; rw [pathFlow]
       by_cases h : ∃ (i : ℕ) (h : i < p.verts.length - 1), u = p.verts[i] ∧ v = p.verts[i+1]
-      · simp [h]
-        linarith [pos_bottleneck p G.source_not_sink]
+      · simp [h]; linarith [pos_bottleneck p G.source_not_sink]
       · simp [h]
     conservation := by
       intro u gns gnt
@@ -583,28 +554,22 @@ def augmentingPath.toFlow {V : Type*} [Fintype V] [DecidableEq V]
         rw [this]
       · grind [mk_out, mk_in, pathFlow]
     no_edges_in_source := by
-      intro u
-      rw [pathFlow]
+      intro u; rw [pathFlow]
       by_cases h : ∃ (i : ℕ) (h : i < p.verts.length - 1), u = p.verts[i] ∧ G.s = p.verts[i+1]
       · obtain ⟨i, ⟨h', ⟨_, h''⟩⟩⟩ := h
-        have ne : 0 ≠ i+1 := by simp
         have : p.verts[0] = p.verts[i+1] := by grind [p.ustart]
-        have : p.verts[0] ≠ p.verts[i+1] :=
-          neq_if_nodup p.verts 0 (i+1) (by grind) (by grind) ne p.nodup
-        contradiction
+        exact absurd this (neq_if_nodup p.verts 0 (i+1) (by grind) (by grind) (by simp) p.nodup)
       · simp [h]
     no_edges_out_sink := by
-      intro v
-      rw [pathFlow]
+      intro v; rw [pathFlow]
       by_cases h : ∃ (i : ℕ) (h : i < p.verts.length - 1), G.t = p.verts[i] ∧ v = p.verts[i+1]
       · obtain ⟨i, ⟨h', ⟨h'', _⟩⟩⟩ := h
-        have ne : i ≠ p.verts.length - 1 := by grind
         have : p.verts[i] = p.verts[p.verts.length - 1] := by grind [p.vend]
-        have : p.verts[i] ≠ p.verts[p.verts.length - 1] :=
-          neq_if_nodup p.verts i (p.verts.length - 1) (by grind) (by grind) ne p.nodup
-        contradiction
+        exact absurd this (neq_if_nodup p.verts i (p.verts.length - 1)
+          (by grind) (by grind) (by grind) p.nodup)
       · simp [h]
 
+/-- The flow value of an augmenting path's induced flow equals its bottleneck. -/
 lemma bottleneck_eq_flow {V : Type*} [Fintype V] [DecidableEq V]
   {G : FlowNetwork V} (p : augmentingPath G) :
   p.bottleneck G G.source_not_sink = Flow_value G.toSTVertices p.toFlow := by
@@ -615,20 +580,20 @@ lemma bottleneck_eq_flow {V : Type*} [Fintype V] [DecidableEq V]
   have := pathlike_flow_out p 0 (by grind [p.ustart, p.vend, G.source_not_sink])
   rw [this]
 
+/-- The flow induced by an augmenting path is valid. -/
 lemma augmentingPath.valid_toFlow {V : Type*} [Fintype V] [DecidableEq V]
-  {G : FlowNetwork V} (p : augmentingPath G) : ValidFlow V G p.toFlow := by
+  {G : FlowNetwork V} (p : augmentingPath G) : ValidFlow G p.toFlow := by
   simp only [ValidFlow, toFlow, pathFlow]
   intro u v
   by_cases h : ∃ i, ∃ (h : i < p.verts.length - 1), u = p.verts[i] ∧ v = p.verts[i + 1]
   · simp only [h, ↓reduceIte]
     obtain ⟨i, ⟨h, ⟨rfl, rfl⟩⟩⟩ := h
-    have := lb_bottleneck G p.touvPath (G.source_not_sink) i h
-    exact this
-  · simp only [h, ↓reduceIte]
-    exact G.nonneg_capacity u v
+    exact lb_bottleneck G p.touvPath G.source_not_sink i h
+  · simp only [h, ↓reduceIte]; exact G.nonneg_capacity u v
 
+/-- If F is a max flow, there is no augmenting path in its residual network. -/
 lemma max_flow_no_augmenting' {V : Type*} [Fintype V] [DecidableEq V]
-    {G : FlowNetwork V} (F : RelaxedFlow V G.toSTVertices) (h : is_max_flow F) :
+    {G : FlowNetwork V} (F : RelaxedFlow G.toSTVertices) (h : is_max_flow F) :
       augmentingPath (ResidualNetwork G F h.1) → False := by
   intro p
   have pos := pos_bottleneck p G.source_not_sink
@@ -641,3 +606,801 @@ lemma max_flow_no_augmenting' {V : Type*} [Fintype V] [DecidableEq V]
     have := pos_bottleneck p G.source_not_sink
     grind
   linarith
+
+-- ============================================================
+-- CONSTRUCTING THE MINIMUM CUT
+-- ============================================================
+
+/-- Extending a valid path u~>w by a fresh edge w->v yields a valid path u~>v.
+  Requires v not already in the path (to preserve nodup). -/
+lemma validuvPath.attachNode {V : Type*} [Fintype V] [DecidableEq V] {G : FlowNetwork V} {u w v : V}
+    (p : validuvPath G u w) (hv : v ∉ p.verts.toFinset) (hedge : G.c w v > 0) :
+    Nonempty (validuvPath G u v) := by
+  let newverts := p.verts ++ [v]
+  refine ⟨⟨⟨newverts, ?nonempty, ?nodup, ?ustart, ?vend⟩, ?valid⟩⟩
+  · -- non-empty
+    exact List.concat_ne_nil v p.verts
+  · -- nodub
+    simp only [List.nodup_append, List.nodup_cons, List.not_mem_nil, not_false_eq_true,
+    List.nodup_nil, and_self, List.mem_cons, or_false, ne_eq, forall_eq, true_and, newverts]
+    rw [List.mem_toFinset] at hv
+    constructor
+    · -- original list was nodup
+      exact p.nodup
+    · -- no element in the original list equals v
+      exact fun a a_1 ↦ ne_of_mem_of_not_mem a_1 hv
+  · -- old head stays old head
+    grind only [= List.head_append_of_ne_nil, p.ustart]
+  · -- new element becomes new last
+    exact List.getLast_concat
+  · -- is valid, i.e. every consectutive pair still has postive capacity
+    intro i
+    by_cases h' : i < p.verts.length - 1
+    · grind only [= List.getElem_append, p.valid]
+    · grind [p.vend]
+
+/-- Given a path u~>w and a vertex v already on the path, extract the prefix path u~>v. -/
+lemma validuvPath.prefix {V : Type*} [Fintype V] [DecidableEq V] {G : FlowNetwork V} {u w : V}
+    (p : validuvPath G u w) {v : V} (hv : v ∈ p.verts.toFinset) :
+    Nonempty (validuvPath G u v) := by
+  rw [List.mem_toFinset] at hv
+  obtain ⟨i, hi_lt, hi_eq⟩ := List.mem_iff_getElem.mp hv
+  refine ⟨⟨⟨p.verts.take (i + 1), ?_, p.nodup.take, ?_, ?_⟩, ?_⟩⟩
+  · -- non-empty
+    simp only [ne_eq, List.take_eq_nil_iff, Nat.add_eq_zero_iff, one_ne_zero, and_false, false_or];
+    exact p.nonempty
+  · -- head
+    simp [List.head_take, p.ustart]
+  · -- last
+    rw [List.getLast_take]; simp_all only [add_tsub_cancel_right, getElem?_pos, Option.getD_some]
+  · -- valid
+    intro j hj
+    have hj' : j < p.verts.length - 1 := by simp [List.length_take] at hj; omega
+    simp only [List.getElem_take, gt_iff_lt]; exact p.valid j hj'
+
+/-- If s can reach u in the residual and there is a residual edge u -> v, then s can reach v. -/
+lemma reach_extend {V : Type*} [Fintype V] [DecidableEq V]
+    {G : FlowNetwork V} {F : RelaxedFlow G.toSTVertices} {h : ValidFlow G F} {u v : V}
+    (hu : Nonempty (validuvPath (ResidualNetwork G F h) G.s u))
+    (hedge : (ResidualNetwork G F h).c u v > 0) :
+    Nonempty (validuvPath (ResidualNetwork G F h) G.s v) := by
+  obtain ⟨p⟩ := hu
+  by_cases hv : v ∈ p.verts.toFinset
+  · exact p.prefix hv
+  · exact p.attachNode hv hedge
+
+/-- No augmenting path: t is not reachable from s via a valid path in the residual network. -/
+def no_augmenting_path {V : Type*} [Fintype V] [DecidableEq V] (G : FlowNetwork V)
+    (F : RelaxedFlow G.toSTVertices) (h : ValidFlow G F) : Prop :=
+  ¬ Nonempty (augmentingPath (ResidualNetwork G F h))
+
+open Classical in
+/-- The set of vertices reachable from s via a valid path in the residual network. -/
+noncomputable def mk_cut_set {V : Type*} [Fintype V] [DecidableEq V] (G : FlowNetwork V)
+    (F : RelaxedFlow G.toSTVertices) (h : ValidFlow G F) : Finset V :=
+  Finset.univ.filter (fun x => Nonempty (validuvPath (ResidualNetwork G F h) G.s x))
+
+open Classical in
+/-- Construct a cut from the reachable set when there is no augmenting path. -/
+noncomputable def mk_cut_from_S {V : Type*} [Fintype V] [DecidableEq V] (G : FlowNetwork V)
+    (F : RelaxedFlow G.toSTVertices) (h : ValidFlow G F)
+    (hno : no_augmenting_path G F h) : Cut G :=
+  { S  := mk_cut_set G F h
+    T  := Finset.univ \ mk_cut_set G F h
+    hT := by ext a : 1; simp_all only [mem_sdiff, mem_univ, true_and]
+    sins := by
+      simp only [mk_cut_set, mem_filter, mem_univ, true_and]
+      exact ⟨⟨[G.s], by simp, by simp, by simp, by simp⟩, fun i hi => by simp at hi⟩
+    tint := by
+      simp only [mem_sdiff, mem_univ, true_and, mk_cut_set, mem_filter]
+      exact hno }
+
+/-- Every forward arc from S to T is saturated. -/
+lemma saturated_forward_arcs {V : Type*} [Fintype V] [DecidableEq V] (G : FlowNetwork V)
+    (F : RelaxedFlow G.toSTVertices) (h : ValidFlow G F) :
+    ∀ v w : V, v ∈ mk_cut_set G F h → w ∉ mk_cut_set G F h →
+    F.f v w = G.c v w := by
+  intro u v huS hvnS
+  simp only [mk_cut_set, mem_filter, mem_univ, true_and] at huS hvnS
+  apply le_antisymm (h u v)
+  by_contra hlt
+  push Not at hlt
+  have hres : (ResidualNetwork G F h).c u v > 0 := by
+    simp only [ResidualNetwork]; linarith [F.nonneg_flow v u]
+  exact hvnS (reach_extend huS hres)
+
+/-- Every backward arc from T to S carries zero flow. -/
+lemma zero_backward_arcs {V : Type*} [Fintype V] [DecidableEq V] (G : FlowNetwork V)
+    (F : RelaxedFlow G.toSTVertices) (h : ValidFlow G F) :
+    ∀ v w : V, v ∉ mk_cut_set G F h → w ∈ mk_cut_set G F h →
+    F.f v w = 0 := by
+  intro v w hvnS hwS
+  by_contra hne
+  simp only [mk_cut_set, mem_filter, mem_univ, true_and] at hwS hvnS
+  have hpos : F.f v w > 0 := lt_of_le_of_ne (F.nonneg_flow v w) (Ne.symm hne)
+  have hres : (ResidualNetwork G F h).c w v > 0 := by
+    simp only [ResidualNetwork]; linarith [F.nonneg_flow w v, h w v]
+  exact hvnS (reach_extend hwS hres)
+
+/-- When there is no augmenting path, the flow value equals the cut capacity. -/
+lemma flow_eq_cut_cap {V : Type*} [Fintype V] [DecidableEq V] (G : FlowNetwork V)
+    (F : RelaxedFlow G.toSTVertices) (h : ValidFlow G F)
+    (hno : no_augmenting_path G F h) :
+    let C := mk_cut_from_S G F h hno
+    Flow_value G.toSTVertices F = cut_cap C := by
+  classical
+  let C := mk_cut_from_S G F h hno
+  rw [flow_value_eq_net_flow C F]
+  apply Finset.sum_congr rfl; intro v hv
+  apply Finset.sum_congr rfl; intro w hw
+  have hv' : v ∈ mk_cut_set G F h := hv
+  have hw' : w ∉ mk_cut_set G F h := by simp_all only [mem_sdiff, mem_univ, true_and, C]; exact hw
+  rw [zero_backward_arcs G F h w v hw' hv', sub_zero]
+  exact saturated_forward_arcs G F h v w hv hw'
+
+/-- If F is a max flow, there is no augmenting path. -/
+lemma max_flow_no_augmenting_path {V : Type*} [Fintype V] [DecidableEq V] (G : FlowNetwork V)
+    (F : RelaxedFlow G.toSTVertices) (h : is_max_flow F) :
+    no_augmenting_path G F h.1 :=
+  fun ⟨p⟩ => max_flow_no_augmenting' F h p
+
+-- ============================================================
+-- MAX FLOW ATTAINED
+-- ============================================================
+
+/-- The set of valid flows, now written as a set that satisfy a predicate rather than a structure -/
+def FeasibleFlowSet {V : Type*} [Fintype V] (G : FlowNetwork V) : Set (V → V → ℝ) :=
+  { f |
+      (∀ u v, 0 ≤ f u v) ∧
+      (∀ u v, f u v ≤ G.c u v) ∧
+      (∀ v, v ≠ G.s → v ≠ G.t →
+          mk_out f {v} = mk_in f {v}) ∧
+      (∀ u, f u G.s = 0) ∧
+      (∀ u, f G.t u = 0) }
+
+/-- Equivalent definition of the value of a flow without a flow structure -/
+noncomputable
+def flowValueFn {V : Type*} [Fintype V] (G : FlowNetwork V) : (V → V → ℝ) → ℝ :=
+  fun f => mk_out f {G.s}
+
+/-- The set of functions that satisfy the capacity constraints -/
+def capacityBox {V : Type*} [Fintype V] (G : FlowNetwork V) : Set (V → V → ℝ) :=
+  { f | ∀ u v, f u v ∈ Set.Icc (0 : ℝ) (G.c u v) }
+
+/-- The set of feasible flows is a subset of
+  the set of functions that satisfy the capacity constraints -/
+lemma feasible_subset_box {V : Type*} [Fintype V] (G : FlowNetwork V) :
+  FeasibleFlowSet G ⊆ capacityBox G := by
+  intro f hf u v
+  exact ⟨hf.1 u v, hf.2.1 u v⟩
+
+/-- mk_out is continuous in perturbations of the input function -/
+lemma continuous_mk_out {V : Type*} [Fintype V] (S : Finset V) :
+  Continuous (fun f : V → V → ℝ => mk_out f S) := by
+  simp [mk_out]
+  continuity
+
+/-- mk_in is continuous in perturbations of the input function -/
+lemma continuous_mk_in {V : Type*} [Fintype V] (S : Finset V) :
+  Continuous (fun f : V → V → ℝ => mk_in f S) := by
+  simp [mk_in]
+  continuity
+
+/-- The value of a flow is continuous in perturbations of the flow -/
+lemma continuous_flowValueFn {V : Type*} [Fintype V] (G : FlowNetwork V) :
+  Continuous (flowValueFn G) := continuous_mk_out {G.s}
+
+/-- The set of feasible flows is closed -/
+lemma isClosed_feasibleFlowSet {V : Type*} [Fintype V] (G : FlowNetwork V) :
+  IsClosed (FeasibleFlowSet G) := by
+  simp only [FeasibleFlowSet, ne_eq]
+  have hnonneg : IsClosed {f : V → V → ℝ | ∀ u v, 0 ≤ f u v} := by
+    simpa [Set.setOf_forall] using (isClosed_iInter (fun u =>
+      isClosed_iInter (fun v => isClosed_le continuous_const (continuous_apply_apply u v))))
+  have hcap : IsClosed {f : V → V → ℝ | ∀ u v, f u v ≤ G.c u v} := by
+    simpa [Set.setOf_forall] using (isClosed_iInter (fun u =>
+      isClosed_iInter (fun v => isClosed_le (continuous_apply_apply u v) continuous_const)))
+  have hcons : IsClosed {f : V → V → ℝ | ∀ v, v ≠ G.s → v ≠ G.t → mk_out f {v} = mk_in f {v}} := by
+    simpa [Set.setOf_forall] using (isClosed_iInter (fun v => isClosed_iInter (fun hs =>
+       isClosed_iInter (fun ht => isClosed_eq (continuous_mk_out {v}) (continuous_mk_in {v})))))
+  have hsource : IsClosed {f : V → V → ℝ | ∀ u, f u G.s = 0} := by
+    simpa [Set.setOf_forall] using (isClosed_iInter (fun u =>
+        isClosed_eq (continuous_apply_apply u G.s) continuous_const))
+  have hsink : IsClosed {f : V → V → ℝ | ∀ u, f G.t u = 0} := by
+    simpa [Set.setOf_forall] using (isClosed_iInter (fun u =>
+        isClosed_eq (continuous_apply_apply G.t u) continuous_const))
+  exact hnonneg.inter (hcap.inter (hcons.inter (hsource.inter hsink)))
+
+/-- The set of functions that satisfy capacity constraints is compact -/
+lemma isCompact_capacityBox {V : Type*} [Fintype V]
+  (G : FlowNetwork V) : IsCompact (capacityBox G) := by
+  unfold capacityBox
+  simp only [Set.mem_Icc]
+  simpa [Set.pi, Set.iInter] using
+    (isCompact_univ_pi fun u =>
+      isCompact_univ_pi fun v =>
+        (isCompact_Icc : IsCompact (Set.Icc (0 : ℝ) (G.c u v))))
+
+/-- The set of feasible functions is compact -/
+lemma isCompact_feasibleFlowSet {V : Type*} [Fintype V] (G : FlowNetwork V) :
+  IsCompact (FeasibleFlowSet G) :=
+  (isCompact_capacityBox G).of_isClosed_subset (isClosed_feasibleFlowSet G) (feasible_subset_box G)
+
+/-- The set of feasible flows is nonempty -/
+lemma feasibleFlowSet_nonempty {V : Type*} [Fintype V] (G : FlowNetwork V) :
+  (FeasibleFlowSet G).Nonempty := by
+  use ((trivial_flow G.toSTVertices).f)
+  simp only [trivial_flow]
+  rw [FeasibleFlowSet]
+  simp only [ne_eq, mk_out, subset_univ, sum_sdiff_eq_sub, sum_singleton, sum_sub_distrib,
+    mk_in, sub_left_inj, Set.mem_setOf_eq, Std.le_refl, implies_true, G.nonneg_capacity,
+    sum_const_zero, and_self]
+
+/-- There is a flow that attains the maximum flow in the predicate defintion -/
+lemma max_flow_attained' {V : Type*} [Fintype V] (G : FlowNetwork V) :
+  ∃ f ∈ FeasibleFlowSet G, ∀ g ∈ FeasibleFlowSet G, flowValueFn G g ≤ flowValueFn G f := by
+  rcases (isCompact_feasibleFlowSet G).exists_isMaxOn (feasibleFlowSet_nonempty G)
+    (continuous_flowValueFn G).continuousOn with ⟨f, hfF, hmax⟩
+  use f, hfF
+  intro _ hgF
+  exact hmax hgF
+
+/-- Any valid flow from the structure defintion is a feasible flow in the predicate definition -/
+lemma flow_toFlowSet {V : Type*} [Fintype V] (G : FlowNetwork V) (g : RelaxedFlow G.toSTVertices)
+  (gval : ValidFlow G g) : g.f ∈ FeasibleFlowSet G := by
+  rw [ValidFlow] at gval
+  simp only [FeasibleFlowSet, ne_eq, Set.mem_setOf_eq, g.nonneg_flow, implies_true, gval,
+    g.no_edges_in_source, g.no_edges_out_sink, and_self, and_true, true_and]
+  intro v vngs vngt
+  exact g.conservation v vngs vngt
+
+/-- There is a flow that attains the maximum flow -/
+lemma max_flow_attained {V : Type*} [Fintype V] (G : FlowNetwork V) :
+  ∃ F : RelaxedFlow G.toSTVertices, is_max_flow F := by
+    obtain ⟨g, gfeas, gopt⟩ := max_flow_attained' G
+    rw [FeasibleFlowSet] at gfeas
+    use ⟨g, by grind, by grind, by grind, by grind⟩
+    rw [is_max_flow]
+    constructor
+    · grind [ValidFlow]
+    · intro fn fnfeas
+      have := gopt fn.f (flow_toFlowSet G fn fnfeas)
+      rw [flowValueFn, flowValueFn] at this
+      rw [Flow_value, Flow_value]
+      simp only [ge_iff_le]
+      exact this
+
+
+-- ============================================================
+-- MAX FLOW MIN CUT THEOREM
+-- ============================================================
+
+/-- The max-flow min-cut theorem: the maximum flow value equals the minimum cut capacity. -/
+theorem max_flow_iff_eq_min_cut {V : Type*} [Fintype V] (G : FlowNetwork V)
+    (F : RelaxedFlow G.toSTVertices) (h : ValidFlow G F) :
+    is_max_flow F ↔
+      ∃ C : Cut G, is_min_cut G C ∧ Flow_value G.toSTVertices F = cut_cap C := by
+  constructor
+  · -- forward
+    intro hmax
+    classical
+    have hno : no_augmenting_path G F hmax.1 := fun ⟨p⟩ => max_flow_no_augmenting' F hmax p
+    let C := mk_cut_from_S G F hmax.1 hno
+    exact ⟨C, fun C' => by linarith [flow_eq_cut_cap G F hmax.1 hno, weak_duality C' F hmax.1],
+              flow_eq_cut_cap G F hmax.1 hno⟩
+  · --reverse
+    rintro ⟨C, _, heq⟩
+    exact max_flow_if_eq_cut C F h heq
+
+/-- Corollary: every maximum flow witnesses a minimum cut with equal value. -/
+theorem max_flow_min_cut {V : Type*} [Fintype V] (G : FlowNetwork V)
+    (F : RelaxedFlow G.toSTVertices) (h : is_max_flow F) :
+    ∃ C : Cut G, is_min_cut G C ∧ Flow_value G.toSTVertices F = cut_cap C :=
+  (max_flow_iff_eq_min_cut G F h.1).mp h
+
+/-- Corollary: there exist a maximum flow and a minimum cut with equal value. -/
+lemma max_flow_min_cut' {V : Type*} [Fintype V] (G : FlowNetwork V) :
+  ∃ (F : RelaxedFlow G.toSTVertices), ∃ C : Cut G,
+  is_max_flow F ∧ is_min_cut G C ∧ Flow_value G.toSTVertices F = cut_cap C := by
+    obtain ⟨F, hF⟩ := max_flow_attained G
+    obtain ⟨C, hC, hFC⟩ := max_flow_min_cut G F hF
+    exact ⟨F, C, hF, hC, hFC⟩
+
+-- ============================================================
+-- MAX FLOW MIN CUT THEOREM (natural numbers edition)
+-- ============================================================
+
+structure NatFlowNetwork (V : Type*) [Fintype V] extends STVertices V where
+  c : V → V → ℕ
+
+def NatFlowNetwork.toFlowNetwork {V : Type*} [Fintype V]
+    (G : NatFlowNetwork V) : FlowNetwork V where
+  s := G.s
+  t := G.t
+  source_not_sink := G.source_not_sink
+  c := fun u v => (G.c u v : ℝ)
+  nonneg_capacity := by
+    norm_num
+
+theorem max_flow_iff_eq_min_cut_N {V : Type*} [Fintype V] (G : NatFlowNetwork V)
+    (F : RelaxedFlow G.toSTVertices) (h : ValidFlow G.toFlowNetwork F) :
+    is_max_flow (G := G.toFlowNetwork) F ↔
+      ∃ C : Cut G.toFlowNetwork, is_min_cut G.toFlowNetwork C ∧
+        Flow_value G.toSTVertices F = cut_cap C :=
+  max_flow_iff_eq_min_cut G.toFlowNetwork F h
+
+-- ===========================================================
+-- UNDIRECTED MAX FLOW MIN CUT THEOREM
+-- ===========================================================
+
+/-- Augmentation cancels out any 2-cycles: flow can't go both ways after augmentation -/
+lemma no_bidirectional_flow {V : Type*} [Fintype V] (G : STVertices V) :
+  ∀ F F' : RelaxedFlow G, ∀ u v, (F * F').f u v = 0 ∨ (F * F').f v u = 0 := by
+    intro F F' u v
+    simp only [HMul.hMul, Mul.mul, sup_eq_right, tsub_le_iff_right, zero_add]
+    have : F'.f v u + F.f v u = F.f v u + F'.f v u := by ring
+    rw [this]
+    have : F'.f u v + F.f u v = F.f u v + F'.f u v := by ring
+    rw [this]
+    exact le_total (F.f u v + F'.f u v) (F.f v u + F'.f v u)
+
+/-- An undirected flow network can be modeled as a directed flow network
+  where flow can only go in 1 direction -/
+structure Undirected_FlowNetwork (V : Type*) [Fintype V] extends FlowNetwork V where
+  c_symm : ∀ u v, c u v = c v u
+
+/-- A valid undirected flow additionally requires that flow can only go in 1 direction:
+  no 2-cycles are allowed -/
+def ValidFlow_undirected (V : Type*) [Fintype V] (G : Undirected_FlowNetwork V)
+  (F : RelaxedFlow G.toSTVertices) : Prop :=
+  (ValidFlow G.toFlowNetwork F) ∧ (∀ u v, F.f u v = 0 ∨ F.f v u = 0)
+
+/-- An undirected flow is maximal if it's a valid undirected flow and its flow value is
+  no less than any other valid undirected flow -/
+def is_max_undirected_flow {V : Type*} [Fintype V] {G : Undirected_FlowNetwork V}
+    (fn : RelaxedFlow G.toSTVertices) : Prop :=
+  ValidFlow_undirected V G fn ∧ ∀ fn' : RelaxedFlow G.toSTVertices, ValidFlow_undirected V G fn' →
+    Flow_value G.toSTVertices fn' ≤ Flow_value G.toSTVertices fn
+
+/-- every maximum flow witnesses a minimum cut with equal value -/
+theorem undirected_max_flow_min_cut {V : Type*} [Fintype V] (G : Undirected_FlowNetwork V)
+  (F : RelaxedFlow G.toSTVertices) (h : is_max_undirected_flow F) :
+    ∃ C, is_min_cut G.toFlowNetwork C ∧ Flow_value G.toSTVertices F = cut_cap C := by
+      have : is_max_flow F := by
+        constructor
+        · exact h.1.1
+        · intro fn valfn
+          have : Flow_value G.toSTVertices fn =
+            Flow_value G.toSTVertices (fn * (trivial_flow G.toSTVertices)) := by simp [add_flow]
+          rw [this]
+          apply h.2
+          constructor
+          · exact valid_zero_augmentation G.toFlowNetwork _ valfn
+          · exact no_bidirectional_flow G.toSTVertices fn (trivial_flow G.toSTVertices)
+      obtain ⟨C, hC, FCeq⟩ := max_flow_min_cut G.toFlowNetwork F this
+      use C
+
+/-- An equivalent for the max flow min cut theorem for undirected flow networks -/
+theorem undirected_max_flow_min_cut' {V : Type*} [Fintype V] (G : Undirected_FlowNetwork V) :
+    ∃ F C, is_max_undirected_flow F ∧ is_min_cut G.toFlowNetwork C ∧
+      Flow_value G.toSTVertices F = cut_cap C := by
+      obtain ⟨F, C, hF, hC, FCeq⟩ := max_flow_min_cut' G.toFlowNetwork
+      use F * (trivial_flow G.toSTVertices), C
+      constructor
+      · constructor
+        · rw [ValidFlow_undirected]
+          constructor
+          · exact valid_zero_augmentation G.toFlowNetwork F hF.1
+          · exact no_bidirectional_flow G.toSTVertices F (trivial_flow G.toSTVertices)
+        · intro fn vfn;
+          rw [is_max_flow] at hF
+          simp [add_flow, hF.2 fn vfn.1]
+      · constructor
+        · exact hC
+        · simp [add_flow, FCeq]
+
+-- ============================================================
+-- VERTEX CAPCACITY
+-- ============================================================
+
+structure FlowNetworkVertex (V : Type*) [Fintype V] extends FlowNetwork V where
+  vc : V → ℝ
+  vc_nonneg : ∀ u, vc u ≥ 0
+
+/-- A ValidVertexFlow is a relaxedFlow that also satisfies both edge and vertex capacity
+  constraints defined in a FlowNetworkVertex. -/
+def ValidVertexFlow
+(V : Type*) [Fintype V] (G : FlowNetworkVertex V) (g : RelaxedFlow G.toSTVertices) : Prop :=
+  ValidFlow G.toFlowNetwork g ∧ ∀ u : V, mk_in g.f {u} ≤ G.vc u
+
+/-- just a simple set with two elements to indicate whether a node is an in or an out
+   node. I could have used booleans (which already has nice properties like finiteness and norm_num)
+   it would be confusing what True and False meant in that case -/
+inductive NodeSide | In | Out
+  deriving DecidableEq, Repr
+
+-- For some reason, lean did not see that a set of two elements is finite :(
+instance : Fintype NodeSide where
+  elems := ⟨[NodeSide.In, NodeSide.Out], by decide⟩
+  complete := fun x => by cases x <;> decide
+
+-- This is so that things like norm_num work, just like boolens
+@[simp] lemma NodeSide.in_ne_out : NodeSide.In ≠ NodeSide.Out := by decide
+@[simp] lemma NodeSide.out_ne_in : NodeSide.Out ≠ NodeSide.In := by decide
+
+open NodeSide in
+/-- Ordinary flow network derived from vertex capacity network -/
+@[simp]
+def ExpandedFlowNetworkVertex (V : Type*) [DecidableEq V] [Fintype V] (G : FlowNetworkVertex V) :
+    FlowNetwork (V × NodeSide) where
+    -- Canonical source: In vertex of the real source
+  s := (G.s, In)
+  -- Canonical sink: Out veterx of real sink
+  t := (G.t, Out)
+  -- This would be really ugly if we didn't define in_ne_out
+  source_not_sink := by norm_num
+  c := fun x y =>
+    match x, y with
+    | (u, In), (v, Out) =>
+        if h : u = v then G.vc u else 0
+    | (u, Out), (v, In) =>
+        if v = G.s then 0
+        else if u = G.t then 0
+        else G.c u v
+    | _, _ =>
+        0
+  nonneg_capacity := by
+    intro x y
+    rcases x with ⟨u, bu⟩
+    rcases y with ⟨v, bv⟩
+    -- split by each In/Out case
+    -- In/In and Out/Out are trivial
+    -- In/Out is because vc is nonneg
+    -- Out/In because regular edge capacities
+    cases bu <;> cases bv
+    · grind
+    · grind [G.vc_nonneg u]
+    · grind [G.nonneg_capacity u v]
+    · gcongr
+
+
+open NodeSide in
+/-- Flow into an Out vertex is the same has the flow into an In vertex -/
+lemma flow_in_out_eq_flow_in_in
+    (V : Type*) [DecidableEq V] [Fintype V]
+    (G : FlowNetworkVertex V)
+    (g : RelaxedFlow (ExpandedFlowNetworkVertex V G).toSTVertices)
+    (hg : ValidFlow (ExpandedFlowNetworkVertex V G) g)
+    (u : V) :
+    g.f (u, In) (u, Out) = ∑ x, g.f (u, In) x := by
+  have h1 := hg (u, Out) (u, Out)
+  have h2 := hg (u, In) (u, In)
+  have hzero : ∀ (a b : V × NodeSide),
+    (ExpandedFlowNetworkVertex V G).c a b = 0 → g.f a b = 0 := by
+      intro a b hc
+      have hle := hg a b
+      linarith [hg a b, g.nonneg_flow a b]
+  have hzeroin : ∀ (v : V) (b : NodeSide), (v, b) ≠ (u, In) →
+      g.f (v, b) (u, Out) = 0 := by
+    intro v b hvb
+    apply hzero
+    simp only [ExpandedFlowNetworkVertex]
+    rcases b with _ | _
+    · simp_all only [ExpandedFlowNetworkVertex, dite_eq_ite, ne_eq, Std.le_refl, Prod.forall,
+      Prod.mk.injEq, and_true, ↓reduceDIte]
+    · simp
+  have lhs : ∑ x, g.f x (u, Out) = g.f (u, In) (u, Out) :=
+  Finset.sum_eq_single (u, In)
+    (fun ⟨v, b⟩ _ hvb => hzeroin v b (by grind))
+    (by simp)
+  have hzeroout : ∀ (v : V) (b : NodeSide), (v, b) ≠ (u, Out) →
+      g.f (u, In) (v, b)  = 0 := by
+    intro v b hvb
+    apply hzero
+    simp only [ExpandedFlowNetworkVertex]
+    rcases b with _ | _
+    · simp_all only [ExpandedFlowNetworkVertex, dite_eq_ite, ne_eq, Std.le_refl, Prod.forall,
+      Prod.mk.injEq, not_and]
+    · exact dif_neg fun a ↦ hvb (congrFun (congrArg Prod.mk (id (Eq.symm a))) Out)
+  have rhs : ∑ x, g.f (u, In) x = g.f (u, In) (u, Out) :=
+  Finset.sum_eq_single (u, Out)
+    (fun ⟨v, b⟩ _ hvb => hzeroout v b (by grind))
+    (by simp)
+  simp_all
+
+open NodeSide in
+/-- Given a flow on the expanded network, recover the corresponding flow on the original
+  FlowNetworkVertex by reading off the flow on edges (u, Out) -> (v, In), which correspond
+  to the original edges u -> v.
+
+  We have to use ValidFlow on the expanded graph here because otherwise conservation may not hold -/
+def ContractedFlow (V : Type*) [DecidableEq V] [Fintype V] (G : FlowNetworkVertex V)
+    (g : RelaxedFlow (ExpandedFlowNetworkVertex V G).toSTVertices)
+    (hg : ValidFlow (ExpandedFlowNetworkVertex V G) g) :
+    RelaxedFlow G.toSTVertices where
+  f u v := g.f (u, Out) (v, In)
+  nonneg_flow := fun u v => g.nonneg_flow (u, Out) (v, In)
+  conservation := by
+    intro v vns vnt
+    have hIn  := g.conservation (v, NodeSide.In)
+      (by simp_all only [ExpandedFlowNetworkVertex, dite_eq_ite, ne_eq, Prod.mk.injEq, and_true,
+        not_false_eq_true] )
+      (by simp  [ExpandedFlowNetworkVertex, vnt])
+    have hOut := g.conservation (v, NodeSide.Out)
+      (by simp [ExpandedFlowNetworkVertex, vns])
+      (by simp_all only [ExpandedFlowNetworkVertex, dite_eq_ite, ne_eq, Prod.mk.injEq, and_true,
+        not_false_eq_true])
+    -- zero capacity implies zero flow
+    have hzero : ∀ (a b : V × NodeSide),
+    (ExpandedFlowNetworkVertex V G).c a b = 0 → g.f a b = 0 := by
+      intro a b hc
+      linarith [hg a b, g.nonneg_flow a b]
+    -- I am not proud of this code, but it works :)
+    have hzeroout : ∀ (w : V) (b : NodeSide), (w, b) ≠ (v, In) →
+    g.f (w, b) (v, Out) = 0 := by
+      aesop
+    simp only [mk_out, ExpandedFlowNetworkVertex, dite_eq_ite, subset_univ, sum_sdiff_eq_sub,
+      sum_singleton, sum_sub_distrib, mk_in, sub_left_inj] at hIn hOut
+    simp only [mk_out, mk_in, Finset.sum_singleton]
+    have hzOut : ∀ x : V, g.f (v, Out) (x, Out) = 0 := fun x =>
+      hzero (v, Out) (x, Out) (by simp)
+    have hzIn : ∀ x : V, g.f (x, In) (v, In) = 0 := fun x =>
+      hzero (x, In) (v, In) (by simp)
+    have NodeSide_sum_out :
+    ∀ x : V, ∑ b : NodeSide, g.f (v, Out) (x, b) = g.f (v, Out) (x, In) := by
+      intro x; have : (Finset.univ : Finset NodeSide) = {In, Out} := by decide
+      simp only [this, ExpandedFlowNetworkVertex, dite_eq_ite, Finset.sum_pair NodeSide.in_ne_out,
+        hzOut, add_zero]
+    have NodeSide_sum_in : ∀ x : V, ∑ b : NodeSide, g.f (x, b) (v, In) = g.f (x, Out) (v, In) := by
+      intro x; have : (Finset.univ : Finset NodeSide) = {In, Out} := by decide
+      simp [this, Finset.sum_pair NodeSide.in_ne_out, hzIn]
+    have lhs_collapse : ∑ x : V × NodeSide, g.f (v, Out) x = ∑ x : V, g.f (v, Out) (x, In) := by
+      rw [← Finset.univ_product_univ, Finset.sum_product]; simp [NodeSide_sum_out]
+    have rhs_collapse : ∑ x : V × NodeSide, g.f x (v, In) = ∑ x : V, g.f (x, Out) (v, In) := by
+      rw [← Finset.univ_product_univ, Finset.sum_product]; simp [NodeSide_sum_in]
+    have mid : ∑ x : V × NodeSide, g.f (v, Out) x = ∑ x : V × NodeSide, g.f x (v, In) := by
+      have hA : ∑ x : V × NodeSide, g.f (v, In) x = g.f (v, In) (v, Out) :=
+        (flow_in_out_eq_flow_in_in V G g hg v).symm
+      have hB : ∑ x : V × NodeSide, g.f x (v, Out) = g.f (v, In) (v, Out) :=
+        Finset.sum_eq_single (f := fun x => g.f x (v, Out)) (v, In)
+          (fun p _ hp => by obtain ⟨w, b⟩ := p; exact hzeroout w b hp) (by simp)
+      linarith [hIn, hOut, hA, hB]
+    have total_eq : ∑ x : V, g.f (v, Out) (x, In) = ∑ x : V, g.f (x, Out) (v, In) := by
+      linarith [lhs_collapse, rhs_collapse, mid]
+    have split : ∀ (f : V → ℝ), ∑ x : V, f x = f v + ∑ x ∈ Finset.univ \ {v}, f x := fun f => by
+      rw [← Finset.sum_sdiff (Finset.subset_univ {v})]; simp
+    have s1 : ∑ x : V, g.f (v, Out) (x, In) =
+        g.f (v, Out) (v, In) + ∑ x ∈ Finset.univ \ {v}, g.f (v, Out) (x, In) := split _
+    have s2 : ∑ x : V, g.f (x, Out) (v, In) =
+        g.f (v, Out) (v, In) + ∑ x ∈ Finset.univ \ {v}, g.f (x, Out) (v, In) := split _
+    have total_eq' :
+        ∑ x ∈ Finset.univ \ {v}, g.f (v, Out) (x, In) =
+          ∑ x ∈ Finset.univ \ {v}, g.f (x, Out) (v, In) := by
+      linarith [total_eq, s1, s2]
+    clear hzOut hzIn NodeSide_sum_out NodeSide_sum_in
+      lhs_collapse rhs_collapse mid total_eq split s1 s2
+    simp_all only [ExpandedFlowNetworkVertex, dite_eq_ite, ne_eq, Prod.forall, Prod.mk.injEq,
+      not_and, subset_univ, sum_sdiff_eq_sub, sum_singleton, sub_left_inj]
+  no_edges_in_source := by
+    intro u
+    apply le_antisymm _ (g.nonneg_flow (u, Out) (G.s, In))
+    have key := hg (u, Out) (G.s, In)
+    simp only [ExpandedFlowNetworkVertex, dite_eq_ite, ↓reduceIte] at key
+    exact key
+  no_edges_out_sink := by
+    intro u
+    apply le_antisymm _ (g.nonneg_flow (G.t, Out) (u, In))
+    have key := hg (G.t, Out) (u, In)
+    simp only [ExpandedFlowNetworkVertex, dite_eq_ite, ↓reduceIte, ite_self] at key
+    exact key
+
+
+open NodeSide in
+theorem FlowInducesValidVertexFlow (V : Type*) [DecidableEq V] [Fintype V] (G : FlowNetworkVertex V)
+    (g : RelaxedFlow (ExpandedFlowNetworkVertex V G).toSTVertices)
+    (hg : ValidFlow (ExpandedFlowNetworkVertex V G) g) :
+    ValidVertexFlow V G (ContractedFlow V G g hg) := by
+  constructor
+  · intro u v
+    have hcg := hg (u, Out) (v, In)
+    have h1 := hg (u, Out) (v, In)
+    simp only [ContractedFlow, ExpandedFlowNetworkVertex] at *
+    split_ifs at h1 <;> linarith [G.nonneg_capacity u v, g.nonneg_flow (u, Out) (v, In)]
+  · intro u
+    by_cases h : u = G.s
+    · simp_all only [mk_in, ContractedFlow, ExpandedFlowNetworkVertex, dite_eq_ite, sum_singleton,
+      subset_univ, sum_sdiff_eq_sub, tsub_le_iff_right]
+      have hs0 : ∀ vs : (V × NodeSide), g.f vs (u, In) = 0 := by
+          intro vs
+          have hcg := hg vs (u, In)
+          apply le_antisymm
+          · aesop
+          · exact g.nonneg_flow vs (u, In)
+      have rhs : ∑ x, g.f (x, Out) (G.s, In) = 0 :=
+        by simp_all only [ExpandedFlowNetworkVertex, dite_eq_ite, Prod.forall, sum_const_zero]
+      rw [rhs]
+      linarith [g.nonneg_flow (G.s, Out) (G.s, In), G.vc_nonneg G.s]
+    · push Not at h
+      simp only [mk_in, ContractedFlow, ExpandedFlowNetworkVertex, dite_eq_ite, sum_singleton,
+        subset_univ, sum_sdiff_eq_sub, tsub_le_iff_right]
+      have key     := g.conservation (u, In) (by simp [h]) (by simp)
+      have hInOut  := hg (u, In) (u, Out)
+      simp only [ExpandedFlowNetworkVertex, dite_eq_ite, ↓reduceIte] at hInOut
+      -- conservation: mk_out {(u,In)} = mk_in {(u,In)}, unfold to get the sum equation
+      have hcons : ∑ x, g.f x (u, In) = ∑ x, g.f (u, In) x := by
+        simp only [mk_out, mk_in, Finset.sum_singleton, subset_univ, sum_sdiff_eq_sub] at key
+        linarith
+      -- flow_in_out_eq_flow_in_in: g.f (u,In) (u,Out) = ∑ x, g.f (u,In) x
+      have hfio := flow_in_out_eq_flow_in_in V G g hg u
+      have h3 : ∑ x, g.f (x, Out) (u, In) ≤ ∑ x, g.f x (u, In) := by
+        rw [← Finset.univ_product_univ, Finset.sum_product]
+        apply Finset.sum_le_sum; intro x _
+        have : (Finset.univ : Finset NodeSide) = {In, Out} := by decide
+        simp only [this, Finset.sum_pair NodeSide.in_ne_out]
+        linarith [g.nonneg_flow (x, In) (u, In)]
+      -- chain: ∑(x,Out)->(u,In) ≤ ∑ x->(u,In) = ∑ (u,In)->x = (u,In)->(u,Out) ≤ vc u
+      linarith [g.nonneg_flow (u, Out) (u, In)]
+
+noncomputable
+def imbalance {V : Type*} [Fintype V] (f : V → V → ℝ) (x : V) : ℝ := ∑ y, (f x y - f y x)
+
+def is_supply {V : Type*} [Fintype V] (f : V → V → ℝ) (x : V) : Prop := imbalance f x > 0
+
+def is_demand {V : Type*} [Fintype V] (f : V → V → ℝ) (x : V) : Prop := imbalance f x < 0
+
+def is_balanced {V : Type*} [Fintype V] (f : V → V → ℝ) (x : V) : Prop := imbalance f x = 0
+
+structure PseudoFlow (V : Type*) [Fintype V] where
+  f : V → V → ℝ
+  nonneg_flow : ∀ u v : V, f u v ≥ 0
+
+structure Circulation (V : Type*) [Fintype V] where
+  f : V → V → ℝ
+  nonneg_flow : ∀ u v : V, f u v ≥ 0
+  conservation : ∀ x : V, imbalance f x = 0
+
+structure SimpleCycle {V : Type*} [Fintype V] [DecidableEq V] (G : FlowNetwork V) where
+  verts : List V
+  nonempty : verts ≠ []
+  nodup : verts.Nodup
+  length_ge_two : verts.length ≥ 2
+  edge_valid : ∀ (i : ℕ) (h : i < verts.length - 1), G.c verts[i] verts[i+1] > 0
+  closing_edge : G.c (verts.getLast nonempty) (verts.head nonempty) > 0
+
+structure CycleFlow (V : Type*) [Fintype V] [DecidableEq V]
+    (G : FlowNetwork V) where
+  circ : Circulation V
+  cycle : SimpleCycle G
+  pos_on_cycle : ∀ (i : ℕ) (h : i < cycle.verts.length - 1),
+      circ.f cycle.verts[i] cycle.verts[i+1] > 0
+  pos_on_closing : circ.f (cycle.verts.getLast cycle.nonempty) (cycle.verts.head cycle.nonempty) > 0
+  zero_off_cycle : ∀ u v : V, circ.f u v > 0 →
+      (∃ (i : ℕ) (h : i < cycle.verts.length - 1),
+          u = cycle.verts[i] ∧
+          v = cycle.verts[i+1])
+      ∨
+      (u = cycle.verts.getLast cycle.nonempty ∧
+       v = cycle.verts.head cycle.nonempty)
+
+structure PathFlow (V : Type*) [Fintype V] [DecidableEq V] (G : FlowNetwork V) where
+  s : V
+  t : V
+  path : validuvPath G s t
+  f : V → V → ℝ
+  nonneg_flow : ∀ u v : V, f u v ≥ 0
+  pos_on_path : ∀ (i : ℕ) (h : i < path.verts.length - 1), f path.verts[i] path.verts[i+1] > 0
+  zero_off_path : ∀ u v : V, f u v > 0 →
+      ∃ (i : ℕ) (h : i < path.verts.length - 1), u = path.verts[i] ∧ v = path.verts[i+1]
+  conservation : ∀ x : V, x ≠ s → x ≠ t → ∑ y, (f x y - f y x) = 0
+
+def positiveReachable {V : Type*} [Fintype V] [DecidableEq V]
+ (G : FlowNetwork V) (f : V → V → ℝ) (u v : V) : Prop := Nonempty
+    (validuvPath { G with
+        c := fun x y => if f x y > 0 then 1 else 0
+        nonneg_capacity := by
+          intro x y
+          split_ifs <;> norm_num
+      } u v)
+
+lemma uvPath_extend {V : Type*} [Fintype V] [DecidableEq V] {G : FlowNetwork V} {u v w : V}
+  (p : validuvPath G u v) (hw_notin : w ∉ p.verts) (hedge : G.c v w > 0) :
+  Nonempty (validuvPath G u w) := by sorry
+
+lemma positiveReachable_step {V : Type*} [Fintype V] [DecidableEq V]
+    (G : FlowNetwork V) (f : V → V → ℝ) (s v w : V)
+    (hreach : positiveReachable G f s v)
+    (hflow : f v w > 0) :
+    positiveReachable G f s w := by
+  by_cases hw_in : w ∈ hreach.some.verts;
+  · sorry
+  · exact uvPath_extend ( hreach.some ) hw_in ( by simp [ hflow ] )
+
+lemma no_outflow_from_reachable {V : Type*} [Fintype V] [DecidableEq V] (G : FlowNetwork V)
+  (f : V → V → ℝ) (hnonneg : ∀ u v, f u v ≥ 0) (s v w : V) (hv : positiveReachable G f s v)
+  (hw : ¬ positiveReachable G f s w) : f v w = 0 := by
+  exact Classical.not_not.1 fun h => hw
+    ( positiveReachable_step G f s v w hv ( lt_of_le_of_ne ( hnonneg v w ) ( Ne.symm h ) ) )
+
+lemma sum_imbalance_reachable_le {V : Type*} [Fintype V] (f : V → V → ℝ)
+  (hnonneg : ∀ u v, f u v ≥ 0) : ∀ R : Finset V, (∀ v ∈ R, ∀ w ∉ R, f v w = 0) →
+  R.sum (fun v => ∑ w, (f v w - f w v)) ≤ 0 := by
+  classical
+  intro R hR
+  have h_sum_zero : ∑ v ∈ R, ∑ w,
+    (f v w - f w v) = ∑ v ∈ R, ∑ w ∈ Finset.univ \ R, (f v w - f w v) := by
+    simp +decide [ Finset.sum_sub_distrib];
+    linarith [ show ∑ x ∈ R, ∑ x_1 ∈ R, f x x_1 = ∑ x ∈ R, ∑ x_1 ∈ R, f x_1 x from Finset.sum_comm ]
+  rw [h_sum_zero];
+  exact Finset.sum_nonpos fun v hv => Finset.sum_nonpos fun w hw => by
+    rw [ hR v hv w ( Finset.mem_sdiff.mp hw |>.2 ) ] ; linarith [ hnonneg w v ] ;
+
+
+lemma exist_flow_path {V : Type*} [Fintype V] [DecidableEq V] (G : FlowNetwork V) (F : PseudoFlow V)
+ (hex : ∃ x : V, imbalance F.f x ≠ 0) (hsum_zero : ∑ x : V, imbalance F.f x = 0) :
+  ∃ s t : V, is_supply F.f s ∧ is_demand F.f t ∧ positiveReachable G F.f s t := by
+  classical
+  have hposneg :
+    (∃ s, imbalance F.f s > 0) ∧ (∃ t, imbalance F.f t < 0) := by
+    constructor
+    · by_contra h
+      push Not at h
+      have hall : ∀ x, imbalance F.f x = 0 := by
+        intro x
+        have hle : imbalance F.f x ≤ 0 := h x
+        have hge : 0 ≤ imbalance F.f x := by
+          have key : -imbalance F.f x ≤ ∑ y : V, (-imbalance F.f y) :=
+            Finset.single_le_sum (f := fun x => -imbalance F.f x)
+              (fun (i : V) _ => by linarith [h i]) (Finset.mem_univ x)
+          simp [hsum_zero] at key
+          linarith
+        linarith
+      exact (hex.choose_spec (hall _))
+    · by_contra h
+      push Not at h
+      have hall : ∀ x, imbalance F.f x = 0 := by
+        intro x
+        have hge : 0 ≤ imbalance F.f x := h x
+        have hle : imbalance F.f x ≤ 0 := by
+          have key : imbalance F.f x ≤ ∑ y : V, imbalance F.f y :=
+            Finset.single_le_sum (fun (i : V) _ => h i) (Finset.mem_univ x)
+          linarith
+        linarith
+      exact (hex.choose_spec (hall _))
+  obtain ⟨s, hs⟩ := hposneg.1
+  have hs_reach : positiveReachable G F.f s s := by
+    unfold positiveReachable
+    refine ⟨⟨⟨[s], ?_, ?_, ?_, ?_⟩, ?_⟩⟩
+    · exact List.cons_ne_nil _ _
+    · exact List.nodup_singleton s
+    · rfl
+    · rfl
+    · intro i hi; simp at hi
+  let R := Finset.univ.filter (fun v => positiveReachable G F.f s v)
+  have hs_in_R : s ∈ R := Finset.mem_filter.mpr ⟨Finset.mem_univ _, hs_reach⟩
+  have hR_closed : ∀ v ∈ R, ∀ w ∉ R, F.f v w = 0 := by
+    intro v hv w hw
+    exact no_outflow_from_reachable G F.f F.nonneg_flow s v w
+      (Finset.mem_filter.mp hv).2 (fun h => hw (Finset.mem_filter.mpr ⟨Finset.mem_univ _, h⟩))
+  have hsum_R : R.sum (fun v => ∑ w, (F.f v w - F.f w v)) ≤ 0 := by
+    refine sum_imbalance_reachable_le F.f ?_ R hR_closed
+    exact fun u v ↦ F.nonneg_flow u v
+  have hsum_imb : R.sum (imbalance F.f) ≤ 0 := by
+    convert hsum_R using 1
+  have : ∃ t' ∈ R, imbalance F.f t' < 0 := by
+    by_contra hall
+    push Not at hall
+    have hge_s : imbalance F.f s ≤ R.sum (imbalance F.f) :=
+      Finset.single_le_sum (fun i hi => hall i hi) hs_in_R
+    linarith
+  obtain ⟨t', ht'R, ht'neg⟩ := this
+  exact ⟨s, t', hs, ht'neg, (Finset.mem_filter.mp ht'R).2⟩
+
+/-- number of nonzero imbalance vertices -/
+noncomputable
+def Ψ {V : Type*} [Fintype V] (f : V → V → ℝ) : Nat :=
+  Fintype.card {x | imbalance f x ≠ 0}
+
+/-- number of edges with positive flow -/
+noncomputable
+def Φ {V : Type*} [Fintype V] (f : V → V → ℝ) : Nat :=
+  Fintype.card {p : V × V | f p.1 p.2 > 0}
