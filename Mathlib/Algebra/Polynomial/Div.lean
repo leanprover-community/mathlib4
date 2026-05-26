@@ -666,18 +666,25 @@ lemma modByMonic_eq_of_dvd_sub (hq : q.Monic) (h : q ∣ p₁ - p₂) : p₁ %�
   refine (div_modByMonic_unique (p₂ /ₘ q + f) _ hq ⟨?_, degree_modByMonic_lt _ hq⟩).2
   rw [sub_eq_iff_eq_add.mp sub_eq, mul_add, ← add_assoc, modByMonic_add_div, add_comm]
 
-lemma add_modByMonic (p₁ p₂ : R[X]) : (p₁ + p₂) %ₘ q = p₁ %ₘ q + p₂ %ₘ q := by
+lemma add_div_modByMonic (p₁ p₂ : R[X]) :
+    (p₁ + p₂) /ₘ q = p₁ /ₘ q + p₂ /ₘ q ∧
+    (p₁ + p₂) %ₘ q = p₁ %ₘ q + p₂ %ₘ q := by
   by_cases hq : q.Monic
   · rcases subsingleton_or_nontrivial R with hR | hR
-    · simp only [eq_iff_true_of_subsingleton]
-    · exact
-      (div_modByMonic_unique (p₁ /ₘ q + p₂ /ₘ q) _ hq
-          ⟨by
-            rw [mul_add, add_left_comm, add_assoc, modByMonic_add_div, ← add_assoc,
-              add_comm (q * _), modByMonic_add_div],
-            (degree_add_le _ _).trans_lt
-              (max_lt (degree_modByMonic_lt _ hq) (degree_modByMonic_lt _ hq))⟩).2
-  · simp_rw [modByMonic_eq_of_not_monic _ hq]
+    · simp [eq_iff_true_of_subsingleton]
+    · exact div_modByMonic_unique (p₁ /ₘ q + p₂ /ₘ q) (p₁ %ₘ q + p₂ %ₘ q) hq
+        ⟨by
+          rw [mul_add, add_left_comm, add_assoc, modByMonic_add_div, ← add_assoc,
+            add_comm (q * _), modByMonic_add_div],
+          (degree_add_le _ _).trans_lt
+            (max_lt (degree_modByMonic_lt _ hq) (degree_modByMonic_lt _ hq))⟩
+  · simp [divByMonic_eq_of_not_monic _ hq, modByMonic_eq_of_not_monic _ hq]
+
+lemma add_divByMonic (p₁ p₂ : R[X]) : (p₁ + p₂) /ₘ q = p₁ /ₘ q + p₂ /ₘ q :=
+  (add_div_modByMonic p₁ p₂).1
+
+lemma add_modByMonic (p₁ p₂ : R[X]) : (p₁ + p₂) %ₘ q = p₁ %ₘ q + p₂ %ₘ q :=
+  (add_div_modByMonic p₁ p₂).2
 
 lemma neg_modByMonic (p q : R[X]) : (-p) %ₘ q = -(p %ₘ q) := by
   rw [eq_neg_iff_add_eq_zero, ← add_modByMonic, neg_add_cancel, zero_modByMonic]
