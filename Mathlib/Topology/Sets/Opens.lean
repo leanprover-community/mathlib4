@@ -264,8 +264,7 @@ theorem himp_eq {U V : Opens α} : Opens.interior ((U : Set α)ᶜ ∪ V) = U �
     refine ⟨Opens.interior ((U : Set α)ᶜ ∪ V), ?_, mem_interior.mpr h⟩
     grind [interior_subset, coe_interior]
   · intro ⟨W, hW, hx⟩
-    refine mem_interior.mpr ⟨↑W, ⟨W.isOpen, ?_⟩, hx⟩
-    grind
+    exact mem_interior.mpr ⟨↑W, ⟨W.isOpen, by grind⟩, hx⟩
 
 theorem compl_eq_interior_compl {U : Opens α} : Opens.interior (U : Set α)ᶜ = Uᶜ := by
   simp [←himp_bot, ←himp_eq]
