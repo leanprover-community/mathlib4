@@ -141,7 +141,7 @@ lemma totalWeight_pos : 0 < totalWeight K := by
       (Function.ne_iff.mpr ⟨default, (default : InfinitePlace K).mult_ne_zero⟩).pos
 
 open IsDedekindDomain.HeightOneSpectrum Ideal FinitePlace Finite in
-/- This statement is a stepping stone for the proof of the next one, which is strictly stronger. -/
+-- This statement is a stepping stone for the proof of the next one, which is strictly stronger.
 private lemma absNorm_mul_finprod_finitePlace_eq_one_aux {ι : Type*} [Finite ι] [Nonempty ι]
     {x : ι → 𝓞 K} (hx : ∀ i, x i ≠ 0) :
     (span <| Set.range x).absNorm * ∏ᶠ v : FinitePlace K, ⨆ i, v (x i) = 1 := by
