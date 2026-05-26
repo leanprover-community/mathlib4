@@ -638,8 +638,9 @@ variable (M) [Mul M]
 /-- The group operation on multiplicative automorphisms is defined by `g h => MulEquiv.trans h g`.
 This means that multiplication agrees with composition, `(g*h)(x) = g (h x)`.
 -/
-@[to_additive /-- We give the additive automorphisms of type with addition the structure of an
-additive group (as opposed to a multiplicative group) to help `to_additive`. -/]
+@[to_additive /-- If `M` is a type with addition, then additive automorphisms of `M` have the
+structure of a group. We give `AddAut M` the structure of an additive group rather than a
+multiplicative group to help with `to_additive` translation. -/]
 instance : Group (MulAut M) where
   mul g h := MulEquiv.trans h g
   one := MulEquiv.refl _
@@ -712,7 +713,7 @@ def toPerm : MulAut M →* Equiv.Perm M where
 mapping multiplication in `G` into multiplication in the automorphism group `MulAut G`.
 See also the type `ConjAct G` for any group `G`, which has a `MulAction (ConjAct G) G` instance
 where `conj G` acts on `G` by conjugation. -/
-@[to_additive /-- Group conjugation, `AddAut.conj g h = g + h + -g`, as a monoid homomorphism
+@[to_additive /-- Group conjugation, `AddAut.addConj g h = g + h + -g`, as a monoid homomorphism
 mapping addition in `G` into addition in the automorphism group `AddAut G`. -/]
 def conj [Group G] : G →* MulAut G where
   toFun g :=

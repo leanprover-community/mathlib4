@@ -636,7 +636,7 @@ group then there is a natural instance of `AddDistribAddAction Γ G`. -/
 class AddDistribAddAction (M N : Type*) [AddMonoid M] [AddMonoid N] extends AddAction M N where
   /-- Multiplying `1` by a scalar gives `1` -/
   vadd_zero : ∀ r : M, r +ᵥ (0 : N) = 0
-  /-- Distributivity of `•` across `*` -/
+  /-- Distributivity of `+ᵥ` across `+` -/
   vadd_add : ∀ (r : M) (x y : N), r +ᵥ (x + y) = (r +ᵥ x) + (r +ᵥ y)
 
 export MulDistribMulAction (smul_one)
