@@ -197,7 +197,7 @@ theorem eq_zero {β : Type*} [NormedAddCommGroup β] {T : Set α → β} {C : �
     T s = 0 :=
   eq_zero_of_measure_zero hT hs (by simp only [Measure.coe_zero, Pi.zero_apply])
 
-theorem le (hT : DominatedFinMeasAdditive μ T C) (hC : C ≤ C') :
+theorem of_le (hT : DominatedFinMeasAdditive μ T C) (hC : C ≤ C') :
     DominatedFinMeasAdditive μ T C' :=
   ⟨hT.1, fun s hs hμs => (hT.2 s hs hμs).trans <| mul_le_mul_of_nonneg_right hC measureReal_nonneg⟩
 
