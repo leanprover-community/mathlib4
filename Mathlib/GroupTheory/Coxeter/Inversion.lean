@@ -138,7 +138,7 @@ theorem isRightInversion_inv_iff {w t : W} :
 
 theorem isLeftInversion_inv_iff {w t : W} :
     cs.IsLeftInversion w⁻¹ t ↔ cs.IsRightInversion w t := by
-  convert cs.isRightInversion_inv_iff.symm
+  convert! cs.isRightInversion_inv_iff.symm
   simp
 
 namespace IsReflection

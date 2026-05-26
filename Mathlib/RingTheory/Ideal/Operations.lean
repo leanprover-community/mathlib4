@@ -48,10 +48,10 @@ lemma coe_span_smul {R' M' : Type*} [CommSemiring R'] [AddCommMonoid M'] [Module
           exact mem_set_smul_of_mem_mem (hc hi) <| Submodule.smul_mem _ _ hn) <|
     set_smul_mono_left _ Submodule.subset_span
 
-lemma span_singleton_toAddSubgroup_eq_zmultiples (a : ℤ) :
-    (span ℤ {a}).toAddSubgroup = AddSubgroup.zmultiples a := by
+lemma span_singleton_toAddSubgroup_eq_zmultiples {M : Type*} [AddCommGroup M] (a : M) :
+    (span ℤ ({a} : Set M)).toAddSubgroup = AddSubgroup.zmultiples a := by
   ext i
-  simp [Ideal.mem_span_singleton', AddSubgroup.mem_zmultiples_iff]
+  simp [Submodule.mem_span_singleton, AddSubgroup.mem_zmultiples_iff]
 
 @[simp] lemma _root_.Ideal.span_singleton_toAddSubgroup_eq_zmultiples (a : ℤ) :
     (Ideal.span {a}).toAddSubgroup = AddSubgroup.zmultiples a :=
@@ -434,6 +434,12 @@ theorem span_singleton_mul_left_inj [IsDomain R] [I.IsTwoSided] [J.IsTwoSided]
 
 theorem mul_le_inf [I.IsTwoSided] : I * J ≤ I ⊓ J :=
   mul_le.2 fun r hri s hsj => ⟨I.mul_mem_right s hri, J.mul_mem_left r hsj⟩
+
+lemma inf_ne_bot_of_ne_bot [NoZeroDivisors R] {I J : Ideal R} [I.IsTwoSided] [J.IsTwoSided]
+    (hI : I ≠ ⊥) (hJ : J ≠ ⊥) :
+    I ⊓ J ≠ ⊥ := by
+  grw [← bot_lt_iff_ne_bot, ← mul_le_inf, bot_lt_iff_ne_bot, Ne, mul_eq_bot]
+  exact not_or_intro hI hJ
 
 theorem sup_mul_eq_of_coprime_left [I.IsTwoSided] (h : I ⊔ J = ⊤) : I ⊔ J * K = I ⊔ K :=
   le_antisymm (sup_le_sup_left mul_le_left _) fun i hi => by
