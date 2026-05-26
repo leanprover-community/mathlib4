@@ -604,6 +604,27 @@ lemma expectedResCap_pos (X : ℝ) (hX : X > 2) (k : ℕ) (step : Fin 4) (p : uv
                  expectedResCap] <;>
       linarith [hpow k, hpow (k + 1), hle k]
 
+open FFVert in
+noncomputable def base_step_as_augmentingPath (X : ℝ) (hX : X > 2) :
+    augmentingPath (ResidualNetwork (FFNetwork X hX)
+      (trivial_flow (FFNetwork X hX).toSTVertices)
+      (valid_zero_flow (FFNetwork X hX))) := {
+  touvPath := rawPath1
+  valid := by
+    intro i h_len
+    simp only [rawPath1, List.length_cons, List.length_nil] at h_len
+    interval_cases i
+    · -- i = 0: Edge (s, b)
+      simp only [ResidualNetwork, FFNetwork, trivial_flow, sub_zero, add_zero, zero_add, gt_iff_lt]
+      positivity
+    · -- i = 1: Edge (b, c)
+      simp [ResidualNetwork, FFNetwork, trivial_flow, rawPath1]
+    · -- i = 2: Edge (c, t)
+      simp only [ResidualNetwork, FFNetwork, trivial_flow, sub_zero, add_zero, Nat.reduceAdd,
+        gt_iff_lt]
+      positivity
+}
+
 /-- If the cycle invariant holds for a step, the chosen path is a valid augmentingPath. -/
 noncomputable def step_as_augmentingPath
     (F : RelaxedFlow (FFNetwork X hX).toSTVertices) (h_valid : ValidFlow (FFNetwork X hX) F)
@@ -642,66 +663,3 @@ theorem step_flow_value_eq_bottleneck
      := by
   intro augPath
   exact (bottleneck_eq_flow augPath).symm
-
--- ============================================================
--- AUGMENTATION STEPS AND VALID FLOWS
--- ============================================================
-
-def convertFlow {V : Type*} [Fintype V] {G : FlowNetwork V}
-  {F : RelaxedFlow G.toSTVertices} {hF : ValidFlow G F}
-  (p_flow : RelaxedFlow (ResidualNetwork G F hF).toSTVertices) : RelaxedFlow G.toSTVertices :=
-  {
-    f := p_flow.f
-    nonneg_flow := p_flow.nonneg_flow
-    conservation := p_flow.conservation
-    no_edges_in_source := p_flow.no_edges_in_source
-    no_edges_out_sink := p_flow.no_edges_out_sink
-  }
-
-/-- Given a flow and an augmenting path in its residual network, we get a new valid flow. -/
-noncomputable def new_ValidFlow_from_augmentingPath {V : Type*} [Fintype V] [DecidableEq V]
-  (G : FlowNetwork V)
-  (F : RelaxedFlow G.toSTVertices)
-  (hF : ValidFlow G F)
-  (p : augmentingPath (ResidualNetwork G F hF)) :
-  RelaxedFlow G.toSTVertices := F * (convertFlow p.toFlow)
-
-lemma valid_new_ValidFlow_from_augmentingPath {V : Type*} [Fintype V] [DecidableEq V]
-  (G : FlowNetwork V)
-  (F : RelaxedFlow G.toSTVertices)
-  (hF : ValidFlow G F)
-  (p : augmentingPath (ResidualNetwork G F hF)) :
-  ValidFlow G (new_ValidFlow_from_augmentingPath G F hF p) := by
-  intro u v
-  apply valid_augmentation G F hF (convertFlow p.toFlow)
-  exact p.valid_toFlow
-
-/-- A structure to capture a flow that comes from augmenting a valid flow -/
-structure AugmentationStep {V : Type*} [Fintype V] [DecidableEq V] (G : FlowNetwork V) where
-  new_flow : RelaxedFlow G.toSTVertices
-  is_valid : ValidFlow G new_flow
-  flow_value : ℝ
-
-noncomputable def createAugmentationStep {V : Type*} [Fintype V] [DecidableEq V]
-  (G : FlowNetwork V)
-  (F : RelaxedFlow G.toSTVertices)
-  (hF : ValidFlow G F)
-  (p : augmentingPath (ResidualNetwork G F hF)) : AugmentationStep G where
-  new_flow := new_ValidFlow_from_augmentingPath G F hF p
-  is_valid := valid_new_ValidFlow_from_augmentingPath G F hF p
-  flow_value := Flow_value G.toSTVertices (new_ValidFlow_from_augmentingPath G F hF p)
-
-/-- Using the cycleChoice we can construct sequence of flows if needed,
-  but here we capture the result of just one augmentation mapping back to ValidFlow -/
-noncomputable def cycleChoiceAugmentationStep
-  (F : RelaxedFlow (FFNetwork X hX).toSTVertices) (h_valid : ValidFlow (FFNetwork X hX) F)
-  (k : ℕ) (step : Fin 4) (p : uvPath FFVert.s FFVert.t)
-  (h_path : p = match step with
-    | 0 => rawPath2
-    | 1 => rawPath3
-    | 2 => rawPath2
-    | 3 => rawPath4)
-  (h_inv : cycleInvariant X hX F.f k step) : AugmentationStep (FFNetwork X hX) :=
-  let augPath := step_as_augmentingPath X hX F h_valid k step p h_path h_inv
-  createAugmentationStep (FFNetwork X hX) F h_valid augPath
-
