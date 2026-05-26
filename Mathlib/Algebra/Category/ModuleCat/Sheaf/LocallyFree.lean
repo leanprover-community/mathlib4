@@ -52,11 +52,18 @@ class IsLocallyFreeData {M : SheafOfModules.{u} R} (q : M.LocalGeneratorsData) :
 
 attribute [instance] IsLocallyFreeData.iso
 
+instance IsLocallyFreeData.shrink {M : SheafOfModules.{u} R} (q : M.LocalGeneratorsData)
+    [q.IsLocallyFreeData] : q.shrink.IsLocallyFreeData where
+  iso i := inferInstanceAs (IsIso (q.generators i.2.choose).π)
+
 end LocalGeneratorsData
 
 /-- A sheaf of modules is locally free if there exists locally free data for it. -/
 class IsLocallyFree (M : SheafOfModules.{u} R) : Prop where
-  exists_locallyFreeData : ∃ q : M.LocalGeneratorsData, q.IsLocallyFreeData
+  exists_locallyFreeData : ∃ q : LocalGeneratorsData.{u₁} M, q.IsLocallyFreeData
+
+theorem LocalGeneratorsData.isLocallyFree {M : SheafOfModules.{u} R} (q : M.LocalGeneratorsData)
+    [q.IsLocallyFreeData] : M.IsLocallyFree := ⟨q.shrink, inferInstance⟩
 
 end
 
