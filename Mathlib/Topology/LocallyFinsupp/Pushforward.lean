@@ -31,7 +31,6 @@ In the case of algebraic cycles, the weight function used in `Function.locallyFi
 
 open Set Order Topology TopologicalSpace
 
-universe u v
 variable {X Y R : Type*} [TopologicalSpace X] [TopologicalSpace Y]
   {f : X → Y} (hf : IsSpectralMap f) (w : X → R)
 
