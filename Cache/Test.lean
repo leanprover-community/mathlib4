@@ -249,6 +249,27 @@ def test_mkFileURL : IO Unit := do
   assertEq "env-var override × fork (legacy semantics: prefixed)"
     "https://custom.example/cache/f/alice/mathlib4/abc.ltar"
     (mkFileURL none "alice/mathlib4" "https://custom.example/cache" "abc.ltar")
+  -- Per-SHA scoping (via `MATHLIB_CACHE_REPO_SCOPE`): when present, the
+  -- scope is appended as an extra path component after the repo prefix.
+  -- This prevents within-fork temporal replay: each commit's CI run gets
+  -- its own namespace, so a closed/hidden PR's uploads cannot poison a
+  -- later honest PR from the same fork. The scope is only applied to
+  -- non-flat (prefixed) paths; flat paths ignore it.
+  assertEq "forks × fork + scope (per-SHA namespace)"
+    "https://lakecache.blob.core.windows.net/mathlib4-forks/f/alice/mathlib4/abc123def/H.ltar"
+    (mkFileURL (some .forks) "alice/mathlib4" Container.forks.azureURL "H.ltar" (some "abc123def"))
+  assertEq "forks × mathlib4 + scope (ci-dev/* trust dispatch)"
+    "https://lakecache.blob.core.windows.net/mathlib4-forks/f/leanprover-community/mathlib4/abc123def/H.ltar"
+    (mkFileURL (some .forks) MATHLIBREPO Container.forks.azureURL "H.ltar" (some "abc123def"))
+  -- Scope is ignored on flat paths (master container, legacy × MATHLIBREPO):
+  -- the master container has a single writer so per-commit isolation is
+  -- moot, and the legacy flat layout is fixed for back-compat.
+  assertEq "master × mathlib4 + scope (scope ignored, still flat)"
+    "https://lakecache.blob.core.windows.net/mathlib4-master/f/abc.ltar"
+    (mkFileURL (some .master) MATHLIBREPO Container.master.azureURL "abc.ltar" (some "abc123def"))
+  assertEq "legacy × mathlib4 + scope (scope ignored, still flat)"
+    "https://lakecache.blob.core.windows.net/mathlib4/f/abc.ltar"
+    (mkFileURL (some .legacy) MATHLIBREPO Container.legacy.azureURL "abc.ltar" (some "abc123def"))
 
 end MkFileURL
 

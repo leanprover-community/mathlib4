@@ -159,6 +159,30 @@ in YAML; user-machine logic in Lean* principle: explicit, auditable trust
 choices on the runners that hold the credentials, conservative defaults
 everywhere else.
 
+## Per-commit namespace for fork-trust uploads
+
+Fork-trust uploads (anything dispatched to `mathlib4-forks`) are namespaced
+not only by repo but also by the head commit SHA: paths take the shape
+`/f/{repo}/{sha}/{hash}.ltar`. The SHA is sourced from
+`github.event.pull_request.head.sha || github.sha` in
+`cache-trust-dispatch`, propagated to the cache binary via the
+`MATHLIB_CACHE_REPO_SCOPE` environment variable, and applied in
+`Cache/Requests.lean:mkFileURL` only when the resulting path is prefixed
+(flat paths in `master`/`legacy×MATHLIBREPO` are unaffected).
+
+This isolates each commit's CI run into its own namespace, which closes
+the within-fork temporal replay window: artifacts uploaded by a closed,
+hidden, or force-pushed-away PR cannot be read by a later honest PR from
+the same fork, because their head SHAs differ. The `--repo` segment is
+kept alongside `--scope` as an audit/discoverability handle (it lets you
+list all of a given fork's uploads in one place), not as a security
+layer; the per-SHA segment is the actual isolation primitive.
+
+`master`, `nightly-testing`, and `pr-toolchain-tests` uploads are *not*
+SHA-scoped. Master has a single writer so within-trust replay is moot;
+the other two are kept simpler at the per-trust-level isolation that
+their dedicated containers already provide.
+
 ## URL shaping (why containers, not repos, decide flat vs prefixed)
 
 `Cache/Infra.lean:Container.flatPath` determines whether artifacts in a
