@@ -218,7 +218,7 @@ theorem subtype_mk (hf : LipschitzWith K f) {p : β → Prop} (hp : ∀ x, p (f 
 
 protected theorem eval {α : ι → Type u} [∀ i, PseudoEMetricSpace (α i)] [Fintype ι] (i : ι) :
     LipschitzWith 1 (Function.eval i : (∀ i, α i) → α i) :=
-  LipschitzWith.of_edist_le fun f g => by convert edist_le_pi_edist f g i
+  LipschitzWith.of_edist_le fun f g => by convert! edist_le_pi_edist f g i
 
 /-- The restriction of a `K`-Lipschitz function is `K`-Lipschitz. -/
 protected theorem restrict (hf : LipschitzWith K f) (s : Set α) : LipschitzWith K (s.restrict f) :=
