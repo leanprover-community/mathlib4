@@ -82,6 +82,11 @@ def CuspForm.equivCuspFormSubmodule (Γ : Subgroup (GL (Fin 2) ℝ)) (k : ℤ) [
     CuspForm Γ k ≃ₗ[ℂ] cuspFormSubmodule Γ k :=
   LinearEquiv.ofInjective CuspForm.toModularFormₗ CuspForm.toModularFormₗ_injective
 
+/-- The underlying modular form (via `toModularFormₗ`) of a `CuspForm` is itself a cusp form. -/
+lemma CuspForm.isCuspForm_toModularFormₗ {Γ : Subgroup (GL (Fin 2) ℝ)} [Γ.HasDetOne]
+    (f : CuspForm Γ k) : ModularForm.IsCuspForm f.toModularFormₗ := by
+  simp [← mem_cuspFormSubmodule_iff, ModularForm.cuspFormSubmodule]
+
 /-- A modular form is a cusp form if and only if it vanishes at every cusp. This is the
 general characterization valid for any subgroup. -/
 lemma isCuspForm_iff [Γ.HasDetOne] (f : ModularForm Γ k) :
@@ -141,16 +146,11 @@ gives a cusp form. -/
 lemma sub_smul_isCuspForm (f g : ModularForm 𝒮ℒ k)
     (hg : (qExpansion 1 g).coeff 0 = 1) :
     ModularForm.IsCuspForm (f - (qExpansion 1 f).coeff 0 • g) := by
-  set c := (qExpansion 1 f).coeff 0
-  rw [ModularForm.isCuspForm_iff_coeffZero_eq_zero,
-    show qExpansion 1 ⇑(f - c • g : ModularForm 𝒮ℒ k) =
-          qExpansion 1 ⇑f - qExpansion 1 ⇑(c • g : ModularForm 𝒮ℒ k) from
-        (ModularForm.qExpansionAddHom one_pos one_mem_strictPeriods_SL k).map_sub f (c • g),
-    show qExpansion 1 ⇑(c • g : ModularForm 𝒮ℒ k) = c • qExpansion 1 ⇑g from
-      ModularForm.qExpansion_smul (h := 1) (Γ := 𝒮ℒ) (k := k)
-        one_pos one_mem_strictPeriods_SL c g,
+  rw [isCuspForm_iff_coeffZero_eq_zero, ModularForm.coe_sub,
+    ModularForm.qExpansion_sub one_pos one_mem_strictPeriods_SL, IsGLPos.coe_smul,
+    ModularForm.qExpansion_smul one_pos one_mem_strictPeriods_SL,
     map_sub, PowerSeries.coeff_smul]
-  simp [hg, c]
+  simp [hg]
 
 end SL2Z
 

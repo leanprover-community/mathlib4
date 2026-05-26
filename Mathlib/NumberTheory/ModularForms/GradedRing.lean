@@ -9,10 +9,10 @@ public import Mathlib.NumberTheory.ModularForms.LevelOne.GradedRing
 public import Mathlib.RingTheory.MvPolynomial.WeightedHomogeneous
 
 /-!
-# The graded ring of level-1 modular forms
+# Surjectivity of `ℂ[X₀, X₁] → ⨁ k, ModularForm 𝒮ℒ k`
 
-This file collects structural results about the graded ring `⨁ k, ModularForm 𝒮ℒ k` of
-level-1 modular forms.
+This file defines the evaluation map `evalE₄E₆ : ℂ[X₀, X₁] →ₐ[ℂ] ⨁ k, ModularForm 𝒮ℒ k`
+sending `X₀ ↦ E₄`, `X₁ ↦ E₆`, and proves it is surjective.
 
 ## Main definitions
 
@@ -21,12 +21,8 @@ level-1 modular forms.
 
 ## Main results
 
-* `ModularForm.evalE₄E₆_surjective`: `evalE₄E₆` is surjective.
-* `ModularForm.evalE₄E₆_injective`: `evalE₄E₆` is injective (E₄ and E₆ are algebraically
-  independent).
-* `ModularForm.modularFormsEquivMvPolynomial`: the algebra isomorphism
-  `ℂ[X₀, X₁] ≃ₐ[ℂ] ⨁ k, ModularForm 𝒮ℒ k`.
-* `ModularForm.E₄E₆_generate`: `E₄, E₆` generate the graded ring as an ℂ-algebra.
+* `ModularForm.evalE₄E₆_surjective`: `evalE₄E₆` is surjective — every level-1 modular form is
+  a polynomial in `E₄` and `E₆`.
 -/
 
 @[expose] public noncomputable section
@@ -133,10 +129,7 @@ private lemma cuspForm_eq_discriminant_mul {n : ℕ} (g : ModularForm 𝒮ℒ �
   let hcusp := (ModularForm.isCuspForm_iff_coeffZero_eq_zero g).mp hg
   change ((CuspForm.discriminantEquiv (ModularForm.toCuspForm g hcusp)).mul
       ((CuspForm.discriminant : CuspForm 𝒮ℒ 12) : ModularForm 𝒮ℒ 12)) z = g z
-  rw [ModularForm.coe_mul, Pi.mul_apply,
-    show (CuspForm.discriminantEquiv (ModularForm.toCuspForm g hcusp)) z =
-        g z / ModularForm.discriminant z from
-      CuspForm.divDiscriminant_apply (ModularForm.toCuspForm g hcusp) z]
+  rw [ModularForm.coe_mul, Pi.mul_apply, CuspForm.discriminantEquiv_apply]
   exact div_mul_cancel₀ _ (discriminant_ne_zero z)
 
 private noncomputable def discriminantPoly : MvPolynomial (Fin 2) ℂ :=
