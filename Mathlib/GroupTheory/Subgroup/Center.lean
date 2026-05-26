@@ -98,6 +98,19 @@ def _root_.Group.commGroupOfCenterEqTop (h : center G = ⊤) : CommGroup G :=
       exact h y
   }
 
+@[to_additive]
+theorem center_prod {H : Type*} [Group H] : center (G × H) = .prod (center G) (center H) := by
+  ext ⟨g, h⟩
+  simp_rw [mem_prod, mem_center_iff, Prod.forall, Prod.mk_mul_mk, Prod.mk.injEq, forall_and_left,
+    forall_and_right]
+
+@[to_additive]
+theorem center_pi {η : Type*} {Gs : η → Type*} [∀ i, Group (Gs i)] :
+    center (∀ i, Gs i) = Subgroup.pi .univ fun i ↦ center (Gs i) := by
+  ext g
+  simp_rw [mem_pi, Set.mem_univ, forall_const, mem_center_iff, Pi.mul_def, funext_iff]
+  exact Pi.forall_forall (P := fun i gi ↦ gi * g i = g i * gi)
+
 variable {H : Subgroup G}
 
 section Normalizer
