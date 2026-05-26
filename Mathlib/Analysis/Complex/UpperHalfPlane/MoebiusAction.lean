@@ -327,7 +327,7 @@ instance isPretransitiveSL2R : MulAction.IsPretransitive SL(2, ℝ) ℍ :=
 
 /-- `GL(2, ℝ)` acts transitively on the upper half-plane. -/
 instance isPretransitiveGL2R : MulAction.IsPretransitive (GL (Fin 2) ℝ) ℍ :=
-  .of_smul_eq ((↑) : SL(2, ℝ) → _) fun {g z} ↦ (SMul.comp_smul_def _ g z).symm
+  .of_smul_eq ((↑) : SL(2, ℝ) → _) fun {g z} ↦ by exact SMul.comp_smul_def _ g z |>.symm
 
 end toSL2R
 
