@@ -1099,9 +1099,9 @@ theorem setToFun_add_measure {ν : Measure α} (hTμ : DominatedFinMeasAdditive 
     setToFun (μ + ν) (T + T') (hTμ.add_measure μ ν hTν) f =
       setToFun μ T hTμ f + setToFun ν T' hTν f :=
   have hTμ_add : DominatedFinMeasAdditive (μ + ν) T (max C 0) :=
-    (hTμ.le (le_max_left C 0)).add_measure_right μ ν (le_max_right C 0)
+    (hTμ.of_le (le_max_left C 0)).add_measure_right μ ν (le_max_right C 0)
   have hTν_add : DominatedFinMeasAdditive (μ + ν) T' (max C' 0) :=
-    (hTν.le (le_max_left C' 0)).add_measure_left μ ν (le_max_right C' 0)
+    (hTν.of_le (le_max_left C' 0)).add_measure_left μ ν (le_max_right C' 0)
   calc
     setToFun (μ + ν) (T + T') (hTμ.add_measure μ ν hTν) f =
       setToFun (μ + ν) T hTμ_add f + setToFun (μ + ν) T' hTν_add f :=
