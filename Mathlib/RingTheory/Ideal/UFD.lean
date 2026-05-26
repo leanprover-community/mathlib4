@@ -23,18 +23,18 @@ public section
 
 variable {R : Type*} [CommRing R] [IsDomain R]
 
-theorem UniqueFactorizationMonoid.height_one_primes_principal [UniqueFactorizationMonoid R]
+theorem UniqueFactorizationMonoid.isPrincipal_of_height_eq_one [UniqueFactorizationMonoid R]
     {p : Ideal R} [p.IsPrime] (hph : p.height = 1) : p.IsPrincipal := by
   have hpn : p ≠ ⊥ := p.height_eq_zero_iff_eq_bot.not.1 (ne_zero_of_eq_one hph)
   obtain ⟨x, hxmem, hxp⟩ := Ideal.IsPrime.exists_mem_prime_of_ne_bot ‹_› hpn
   exact ⟨x, p.eq_span_singleton_of_height_eq_one hph hxmem hxp⟩
 
-theorem UniqueFactorizationMonoid.of_height_one_primes_principal [IsNoetherianRing R]
-    (h : ∀ (p : Ideal R) [p.IsPrime] (_ : p.height = 1), p.IsPrincipal) :
+theorem UniqueFactorizationMonoid.of_forall_isPrincipal_of_height_eq_one [IsNoetherianRing R]
+    (h : ∀ (p : Ideal R) [p.IsPrime], p.height = 1 → p.IsPrincipal) :
     UniqueFactorizationMonoid R := by
   rw [UniqueFactorizationMonoid.iff_exists_prime_mem_of_isPrime]
   intro I hIn _
-  rcases I.ne_bot_iff.1 hIn with ⟨x, hxI, hx0⟩
+  rcases I.ne_bot_iff.mp hIn with ⟨x, hxI, hx0⟩
   rcases Ideal.exists_minimalPrimes_le (I.span_singleton_le_iff_mem.2 hxI) with ⟨p, hpmin, hpl⟩
   have : p.IsPrime := hpmin.isPrime
   have hpn : p ≠ ⊥ := fun hpb ↦ hx0 <|
@@ -47,7 +47,7 @@ theorem UniqueFactorizationMonoid.of_height_one_primes_principal [IsNoetherianRi
 /-- Let `R` be a Noetherian domain. Then `R` is a UFD if and only if every height `1` prime ideal is
   principal. -/
 @[stacks 0AFT]
-theorem UniqueFactorizationMonoid.iff_height_one_primes_principal [IsNoetherianRing R] :
+theorem UniqueFactorizationMonoid.iff_forall_isPrincipal_of_height_eq_one [IsNoetherianRing R] :
     UniqueFactorizationMonoid R ↔ ∀ (p : Ideal R) [p.IsPrime], p.height = 1 → p.IsPrincipal :=
   ⟨fun _ _ _ ↦ height_one_primes_principal, of_height_one_primes_principal⟩
 
@@ -66,20 +66,11 @@ theorem Ideal.isPrincipal_of_isPrincipal_isLocalization_away_of_prime
     obtain ⟨a, n, hxa, hag⟩ := exists_reduced_fraction' x S hg0 hx.irreducible
     have hu : IsUnit (selfZPow x S n) :=
       IsUnit.of_mul_eq_one (selfZPow x S (- n)) (selfZPow_mul_neg x S n)
-    have : algebraMap R S a ∈ map (algebraMap R S) p := by
-      rw [← Ideal.unit_mul_mem_iff_mem (map (algebraMap R S) p) hu, hag, hg]
-      simp
-    have haeq : map (algebraMap R S) p = map (algebraMap R S) (span {a}) := by
-      simp [hg, map_span, ← span_singleton_mul_left_unit hu (algebraMap R S a), hag]
-    refine ⟨a, le_antisymm (fun z hz ↦ ?_) (p.span_singleton_le_iff_mem.2 <| by
-      rwa [← IsLocalization.under_map_of_isPrime_disjoint (Submonoid.powers x) S ‹_› hd])⟩
-    have hzmap := mem_map_of_mem (algebraMap R S) hz
-    rw [haeq, IsLocalization.algebraMap_mem_map_algebraMap_iff (Submonoid.powers x)] at hzmap
-    rcases hzmap with ⟨s, ⟨n, rfl⟩, hsz⟩
-    rw [mem_span_singleton] at hsz ⊢
-    rcases hsz with ⟨a, ha⟩
-    rcases hx.pow_dvd_of_dvd_mul_right n hxa ⟨z, by rw [mul_comm, ← ha]⟩ with ⟨b, hb⟩
-    exact ⟨b, mul_left_cancel₀ (pow_ne_zero n hx.ne_zero) <| by simp [ha, hb, mul_assoc, mul_comm]⟩
+    refine ⟨a, Ideal.eq_of_map_algebraMap_le S x ?_ (by simp [IsPrime.mul_mem_left_iff hxp]) ?_⟩
+    · simp [hg, map_span, ← span_singleton_mul_left_unit hu (algebraMap R S a), hag]
+    · intro y hy
+      rw [mem_span_singleton] at hy ⊢
+      exact (hx.left_dvd_or_dvd_right_of_dvd_mul hy).resolve_left hxa
 
 theorem Ideal.isPrincipal_of_isPrincipal_localization_away_of_prime
     [WfDvdMonoid R] {x : R} (hx : Prime x) {p : Ideal R} [p.IsPrime] (hxp : x ∉ p)
