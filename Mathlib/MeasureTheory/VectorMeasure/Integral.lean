@@ -342,8 +342,8 @@ theorem integral_sub_vectorMeasure (hμ : μ.Integrable f B) (hν : ν.Integrabl
   by_cases hG : CompleteSpace G
   · simp only [integral, hG, ↓reduceDIte, transpose_sub_vectorMeasure, coe_sub,
       transpose_eq_cbmApplyMeasure, ← setToFun_sub_measure
-      (dominatedFinMeasAdditive_cbmApplyMeasure μ B) (dominatedFinMeasAdditive_cbmApplyMeasure ν B)
-      hμ hν]
+        (dominatedFinMeasAdditive_cbmApplyMeasure μ B)
+        (dominatedFinMeasAdditive_cbmApplyMeasure ν B) hμ hν]
     refine (setToFun_congr_measure_of_integrable 1 ENNReal.one_ne_top ?_ _ _ f ?_).symm
     · simpa using variation_sub_le
     · exact hμ.add_measure hν
