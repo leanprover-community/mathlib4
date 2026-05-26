@@ -257,7 +257,7 @@ theorem continuousSMul_iff_stabilizer_isOpen [DiscreteTopology X] :
   have hU : IsOpen U := by
     by_cases hU' : U ≠ ∅
     · obtain ⟨m, (hm : m • y = x)⟩ := Set.nonempty_iff_empty_ne.mpr hU'.symm
-      convert (h x).preimage (by fun_prop : Continuous fun m' : M ↦ m' * m⁻¹)
+      convert! (h x).preimage (by fun_prop : Continuous fun m' : M ↦ m' * m⁻¹)
       ext; simp [← smul_smul, U, eq_inv_smul_iff.mpr hm]
     simp_all
   simpa using hU
@@ -349,7 +349,7 @@ include G in
 it loops for a group as a torsor over itself. -/
 protected theorem AddTorsor.connectedSpace : ConnectedSpace P :=
   { isPreconnected_univ := by
-      convert
+      convert!
         isPreconnected_univ.image (Equiv.vaddConst (Classical.arbitrary P) : G → P)
           (continuous_id.vadd continuous_const).continuousOn
       rw [Set.image_univ, Equiv.range_eq_univ]
