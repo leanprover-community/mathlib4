@@ -37,9 +37,10 @@ namespace SchwartzMap
 
 variable
   (𝕜 : Type*) [RCLike 𝕜]
-  {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E] [NormedSpace 𝕜 E] [SMulCommClass ℂ 𝕜 E]
-  {V : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [FiniteDimensional ℝ V]
-  [MeasurableSpace V] [BorelSpace V]
+  {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℂ E] [NormedSpace 𝕜 E]
+  [SMulCommClass ℂ 𝕜 E]
+  {V : Type*} [AddCommGroup V] [NormedAddCommGroup V] [InnerProductSpace ℝ V]
+  [FiniteDimensional ℝ V] [MeasurableSpace V] [BorelSpace V]
 
 section definition
 
@@ -153,8 +154,9 @@ end definition
 section eval
 
 variable {𝕜' : Type*} [NormedField 𝕜']
-  {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
-  {G : Type*} [NormedAddCommGroup G] [NormedSpace ℂ G] [NormedSpace 𝕜' G] [SMulCommClass ℝ 𝕜' G]
+  {F : Type*} [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace ℝ F]
+  {G : Type*} [AddCommGroup G] [NormedAddCommGroup G] [NormedSpace ℂ G] [NormedSpace 𝕜' G]
+  [SMulCommClass ℝ 𝕜' G]
 
 variable (𝕜') in
 theorem fourier_evalCLM_eq (f : 𝓢(V, F →L[ℝ] G)) (m : F) :
@@ -228,8 +230,8 @@ end deriv
 section fubini
 
 variable
-  {F : Type*} [NormedAddCommGroup F] [NormedSpace ℂ F]
-  {G : Type*} [NormedAddCommGroup G] [NormedSpace ℂ G]
+  {F : Type*} [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace ℂ F]
+  {G : Type*} [AddCommGroup G] [NormedAddCommGroup G] [NormedSpace ℂ G]
 
 variable [CompleteSpace E] [CompleteSpace F]
 
@@ -292,7 +294,7 @@ end fubini
 
 section L1
 
-variable {F : Type*} [NormedAddCommGroup F] [NormedSpace ℂ F]
+variable {F : Type*} [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace ℂ F]
 
 theorem norm_fourier_apply_le_toLp_one (f : 𝓢(V, F)) (x : V) :
     ‖𝓕 f x‖ ≤ ‖f.toLp 1‖ := calc
@@ -314,7 +316,8 @@ end L1
 
 section L2
 
-variable {H : Type*} [NormedAddCommGroup H] [InnerProductSpace ℂ H] [CompleteSpace H]
+variable {H : Type*} [AddCommGroup H] [NormedAddCommGroup H] [InnerProductSpace ℂ H]
+  [CompleteSpace H]
 
 /-- Plancherel's theorem for Schwartz functions. -/
 @[simp] theorem integral_inner_fourier_fourier (f g : 𝓢(V, H)) :
