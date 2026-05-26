@@ -196,8 +196,9 @@ public def unrestricted : Array Char := #[
 
 Implemented using an allowlist consisting of:
 - certain ASCII characters
-- certain emojis (`emojis` and `maybeEmojis`)
-- certain non-emoji variants of emojifiable characters (`nonEmojis` and `maybeEmojis`)
+- certain emojis (`emojis`)
+- certain non-emoji variants of emojifiable characters (`nonEmojis`)
+- certain characters with no selector restrictions (`unrestricted`)
 - characters with abbreviations in the VSCode extension (`withVSCodeAbbrev`)
 - "the rest" (`othersInMathlib`)
 
