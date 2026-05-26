@@ -160,6 +160,22 @@ def build_warning(default_branch: str) -> str:
     ])
 
 
+def _normalize_section_spacing(body: str) -> str:
+    """Collapse any run of newlines immediately above BEGIN and immediately
+    below END to exactly one blank line. Idempotent."""
+    body = re.sub(
+        r"(\S)[ \t]*\n+(?=" + re.escape(BEGIN) + r")",
+        r"\1\n\n",
+        body, count=1,
+    )
+    body = re.sub(
+        re.escape(END) + r"[ \t]*\n+(?=\S)",
+        END + "\n\n",
+        body, count=1,
+    )
+    return body
+
+
 def splice(body: str, new_section: str) -> tuple[str, str]:
     """Success-mode splice: replace the entire Declarations-diff section.
 
@@ -182,7 +198,9 @@ def splice(body: str, new_section: str) -> tuple[str, str]:
         re.DOTALL,
     )
     if marker_re.search(body):
-        return marker_re.sub(new_section, body, count=1), "markers"
+        return _normalize_section_spacing(
+            marker_re.sub(new_section, body, count=1)
+        ), "markers"
 
     # Wrapped form: `<details><summary>#### Declarations diff</summary>…</details>`
     # followed by `---`/`####`/EOF. The non-greedy `[\s\S]*?` lets nested
@@ -195,7 +213,9 @@ def splice(body: str, new_section: str) -> tuple[str, str]:
         re.MULTILINE,
     )
     if wrapped_re.search(body):
-        return wrapped_re.sub(new_section, body, count=1), "wrapped-header-fallback"
+        return _normalize_section_spacing(
+            wrapped_re.sub(new_section, body, count=1)
+        ), "wrapped-header-fallback"
 
     # Bare form: just `#### Declarations diff` heading + content, no wrap.
     bare_re = re.compile(
@@ -204,7 +224,9 @@ def splice(body: str, new_section: str) -> tuple[str, str]:
     )
     m = bare_re.search(body)
     if m:
-        return body[: m.start()] + new_section + "\n" + body[m.end():], "header-fallback"
+        return _normalize_section_spacing(
+            body[: m.start()] + new_section + "\n" + body[m.end():]
+        ), "header-fallback"
 
     # Nothing matched: append at the end so reviewers still see *something*.
     return body.rstrip() + "\n\n---\n\n" + new_section + "\n", "append"
