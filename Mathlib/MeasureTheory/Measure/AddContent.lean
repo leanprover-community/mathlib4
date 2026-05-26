@@ -121,7 +121,7 @@ lemma addContent_biUnion {ι : Type*} {a : Finset ι} {f : ι → Set α} (hf : 
 lemma addContent_iUnion {ι : Type*} [Fintype ι] {f : ι → Set α} (hf : ∀ i, f i ∈ C)
     (h_dis : Pairwise (Disjoint on f)) (h_mem : ⋃ i, f i ∈ C) :
     m (⋃ i, f i) = ∑ i, m (f i) := by
-  convert addContent_biUnion (a := Finset.univ) (f := f) (m := m) ?_ ?_ ?_ using 1
+  convert! addContent_biUnion (a := Finset.univ) (f := f) (m := m) ?_ ?_ ?_ using 1
   · simp
   · simpa
   · simpa [Set.PairwiseDisjoint, Set.pairwise_univ] using h_dis
@@ -253,7 +253,7 @@ private lemma AddContent.supClosureFun_apply_of_mem (hC : IsSetSemiring C)
         have := hI hs
         rwa [hC.mem_supClosure_iff] at this
       refine ⟨P.parts, PC, P.disjoint, ?_⟩
-      convert P.sup_parts.symm
+      convert! P.sup_parts.symm
       simp [sUnion_eq_biUnion]
     choose! J hJC hJdisj hJs using A
     have H {a i} (hi : i ∈ I) (ha : a ∈ J i) : a ⊆ i := by

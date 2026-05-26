@@ -306,8 +306,11 @@ theorem card_filter_mk_eq [NumberField K] (w : InfinitePlace K) : #{φ | mk φ =
     rwa [Ne, eq_comm, ← ComplexEmbedding.isReal_iff, ← isReal_iff]
 
 open scoped Classical in
-noncomputable instance NumberField.InfinitePlace.fintype [NumberField K] :
+protected noncomputable instance fintype [NumberField K] :
     Fintype (InfinitePlace K) := Set.fintypeRange _
+
+@[deprecated (since := "2026-05-24")]
+alias NumberField.InfinitePlace.fintype := InfinitePlace.fintype
 
 open scoped Classical in
 @[to_additive]
@@ -353,7 +356,7 @@ variable [NumberField K]
 theorem prod_eq_abs_norm (x : K) :
     ∏ w : InfinitePlace K, w x ^ mult w = abs (Algebra.norm ℚ x) := by
   classical
-  convert (congr_arg (‖·‖) (Algebra.norm_eq_prod_embeddings ℚ ℂ x)).symm
+  convert! (congr_arg (‖·‖) (Algebra.norm_eq_prod_embeddings ℚ ℂ x)).symm
   · rw [norm_prod, ← Fintype.prod_equiv RingHom.equivRatAlgHom (fun f => ‖f x‖)
       (fun φ => ‖φ x‖) fun _ => by simp [RingHom.equivRatAlgHom_apply]]
     rw [← Finset.prod_fiberwise Finset.univ mk (fun φ => ‖φ x‖)]
@@ -442,7 +445,7 @@ theorem card_complex_embeddings :
     simp_rw [Finset.sum_const, this, smul_eq_mul, mul_one, Fintype.card, Finset.card_eq_sum_ones,
       Finset.mul_sum, Finset.sum_const, smul_eq_mul, mul_one]
   rintro ⟨w, hw⟩
-  convert card_filter_mk_eq w
+  convert! card_filter_mk_eq w
   · rw [← Fintype.card_subtype, ← Fintype.card_subtype]
     refine Fintype.card_congr (Equiv.ofBijective ?_ ⟨fun _ _ h => ?_, fun ⟨φ, hφ⟩ => ?_⟩)
     · exact fun ⟨φ, hφ⟩ => ⟨φ.val, by rwa [Subtype.ext_iff] at hφ⟩

@@ -173,6 +173,36 @@ instance Subtype.instFrechetUrysohnSpace [FrechetUrysohnSpace X] {p : X → Prop
 theorem isSeqClosed_iff_isClosed [SequentialSpace X] {M : Set X} : IsSeqClosed M ↔ IsClosed M :=
   ⟨IsSeqClosed.isClosed, IsClosed.isSeqClosed⟩
 
+/-- If `x : ℕ → X` has no convergent subsequence, then `⋃ i, closure {x i}` is closed. -/
+lemma isClosed_iUnion_closure_singleton_of_not_tendsto {x : ℕ → X} [SequentialSpace X]
+    (hx : ∀ (l : X) (φ : ℕ → ℕ), StrictMono φ → ¬Tendsto (x ∘ φ) atTop (𝓝 l)) :
+    IsClosed (⋃ i, closure {x i}) := by
+  refine IsSeqClosed.isClosed fun y l hy hy' => ?_
+  by_cases! hm : ∃ m, ∃ᶠ n in atTop, y n ∈ closure {x m}
+  · obtain ⟨m, pm⟩ := hm
+    exact subset_iUnion _ m (isClosed_closure.mem_of_frequently_of_tendsto pm hy')
+  · have (j : ℕ) : ∃ᶠ k in atTop, ∃ n ≥ j, y n ∈ closure {x k} := by
+      refine frequently_atTop.2 fun a => ?_
+      have := (Filter.eventually_all_finite (by simp : (Iic a).Finite)).2 fun i hi => hm i
+      simp only [mem_Iic, eventually_atTop, ge_iff_le] at this
+      obtain ⟨c, hc⟩ := this
+      obtain ⟨b, hb⟩ := mem_iUnion.1 (hy (c + j))
+      refine ⟨b, ?_, c + j, j.le_add_left c, hb⟩
+      by_contra! hab
+      simp_all [hc (c + j) (c.le_add_right j) b hab.le]
+    obtain ⟨φ, hφ⟩ := extraction_forall_of_frequently this
+    choose ψ hψ1 hψ2 using hφ.2
+    have : Tendsto ψ atTop atTop := tendsto_atTop_mono hψ1 tendsto_id
+    refine (hx l φ hφ.1 (Tendsto.specializes (hy'.comp this) (fun n => ?_))).elim
+    exact specializes_iff_mem_closure.2 (hψ2 n)
+
+/-- If `x : ℕ → X` has no convergent subsequence in a T₁ sequential space, then its range is
+closed. -/
+lemma isClosed_range_of_not_tendsto {x : ℕ → X} [SequentialSpace X] [T1Space X]
+    (hx : ∀ (l : X) (φ : ℕ → ℕ), StrictMono φ → ¬Tendsto (x ∘ φ) atTop (𝓝 l)) :
+    IsClosed (range x) := by
+  simpa using isClosed_iUnion_closure_singleton_of_not_tendsto hx
+
 /-- The preimage of a sequentially closed set under a sequentially continuous map is sequentially
 closed. -/
 theorem IsSeqClosed.preimage {f : X → Y} {s : Set Y} (hs : IsSeqClosed s) (hf : SeqContinuous f) :

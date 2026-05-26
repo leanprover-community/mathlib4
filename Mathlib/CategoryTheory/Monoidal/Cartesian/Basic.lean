@@ -277,6 +277,14 @@ lemma lift_comp_fst_snd {X Y Z : C} (f : X ⟶ Y ⊗ Z) :
     lift (f ≫ fst _ _) (f ≫ snd _ _) = f := by
   cat_disch
 
+/-- The universal property of a cartesian `⊗` as an equivalence. -/
+@[simps]
+def liftEquiv {T X Y : C} : (T ⟶ X) × (T ⟶ Y) ≃ (T ⟶ X ⊗ Y) where
+  toFun f := lift f.1 f.2
+  invFun f := ⟨f ≫ fst _ _, f ≫ snd _ _⟩
+  left_inv := by cat_disch
+  right_inv := by cat_disch
+
 @[reassoc (attr := simp)]
 lemma whiskerLeft_fst (X : C) {Y Z : C} (f : Y ⟶ Z) : X ◁ f ≫ fst _ _ = fst _ _ := by
   simp [fst_def, ← whiskerLeft_comp_assoc]

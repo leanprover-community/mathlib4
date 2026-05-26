@@ -176,6 +176,9 @@ nonrec def mk (A M N : Type*) [Semiring A]
 
 variable {R A B M N P Q}
 
+/-- The heterobasic version of `mk` coincides with the regular version. -/
+lemma mk_eq : mk R R M N = TensorProduct.mk R M N := rfl
+
 /-- Heterobasic version of `TensorProduct.map` -/
 def map (f : M →ₗ[A] P) (g : N →ₗ[R] Q) : M ⊗[R] N →ₗ[A] P ⊗[R] Q :=
   lift <|

@@ -319,7 +319,7 @@ theorem mkPiRing_coeff_eq (p : FormalMultilinearSeries 𝕜 𝕜 E) (n : ℕ) :
 
 @[simp]
 theorem apply_eq_prod_smul_coeff : p n y = (∏ i, y i) • p.coeff n := by
-  convert (p n).toMultilinearMap.map_smul_univ y 1
+  convert! (p n).toMultilinearMap.map_smul_univ y 1
   simp only [Pi.one_apply, smul_eq_mul, mul_one]
 
 theorem coeff_eq_zero : p.coeff n = 0 ↔ p n = 0 := by

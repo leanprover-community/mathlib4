@@ -99,7 +99,7 @@ variable (f)
 
 lemma finite_hasEigenvalue : Set.Finite {μ | f.HasEigenvalue μ} := by
   have h : minpoly R f ≠ 0 := minpoly.ne_zero (Algebra.IsIntegral.isIntegral (R := R) f)
-  convert (minpoly R f).rootSet_finite R
+  convert! (minpoly R f).rootSet_finite R
   ext μ
   change f.HasEigenvalue μ ↔ _
   rw [hasEigenvalue_iff_isRoot, mem_rootSet_of_ne h, IsRoot, coe_aeval_eq_eval]
