@@ -704,8 +704,8 @@ def morphismRestrictRestrict {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Y.Opens) (V :
 lemma morphismRestrict_ι_image_ι_isoImage_inv
     {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Y.Opens) (V : U.toScheme.Opens) :
     f ∣_ U.ι ''ᵁ V ≫ (U.ι.isoImage V).inv = (X.homOfLE (image_morphismRestrict_preimage f U V).ge ≫
-      ((f ⁻¹ᵁ U).ι.isoImage ((f ∣_ U) ⁻¹ᵁ V)).inv) ≫ f ∣_ U ∣_ V :=
-  (morphismRestrictRestrict f U V).inv.w'
+      ((f ⁻¹ᵁ U).ι.isoImage ((f ∣_ U) ⁻¹ᵁ V)).inv) ≫ f ∣_ U ∣_ V := by
+  simp [← cancel_mono (Scheme.Opens.ι _)]
 
 @[reassoc]
 lemma morphismRestrict_morphismRestrict_ι_isoImage_hom
