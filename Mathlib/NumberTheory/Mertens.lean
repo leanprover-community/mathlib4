@@ -451,19 +451,6 @@ lemma primeLogSum_sub_log_lt_theta_div {n : ℕ} (hn : 0 < n) :
   rw [le_div_iff₀ hnpos]
   linarith
 
-lemma primeLogSum_sub_log_lt_two {n : ℕ} :
-    ∑ p ∈ Ioc 0 n with p.Prime, log p / p - log n < 2 := by
-  by_cases hn : 0 < n
-  · calc
-      _ ≤ Chebyshev.theta n / n := primeLogSum_sub_log_lt_theta_div hn
-      _ ≤ log 4 := by
-        have hnpos : (0 : ℝ) < n := by exact_mod_cast (by lia)
-        simpa [div_le_iff₀ hnpos, mul_comm] using Chebyshev.theta_le_log4_mul_x (by positivity)
-      _ < _ := by
-        rw [show (4 : ℝ) = 2 * 2 by norm_num, log_mul (by norm_num) (by norm_num)]
-        linarith [log_two_lt_d9]
-  · simp_all
-
 lemma factorial_prime_exponent_upper_split {n p : ℕ} (hp : p.Prime) :
     (Nat.factorization n.factorial p : ℝ) ≤ n / p + n / (p * (p - 1)) := by
   calc
@@ -512,27 +499,29 @@ lemma finite_primeLogDivMulPred_lt_one {n : ℕ} :
       linarith [log_two_lt_d9, log_three_lt_d9, prime_tail_lt_odd_tail,
         odd_tail_lt_seven_log_five_add_five_div_forty, log_five_lt_d9]
 
-lemma log_factorial_lt_mul_primeLogSum_add_self {n : ℕ} (hn : 1 ≤ n) :
-    log (n.factorial) ≤ n * (∑ p ∈ Ioc 0 n with p.Prime, log p / p) + n := by
-  have hnpos : (0 : ℝ) < n := by exact_mod_cast lt_of_lt_of_le (by norm_num) hn
-  linarith [mul_lt_mul_of_pos_left (finite_primeLogDivMulPred_lt_one (n := n)) hnpos,
-    log_factorial_le_mul_primeLogSum_add_error (n := n)]
-
-lemma neg_two_lt_primeLogSum_sub_log {n : ℕ} :
-    -2 < ∑ p ∈ Ioc 0 n with p.Prime, log p / p - log n := by
-  by_cases hn : 1 ≤ n
-  · have hfactorial_lower : n * log n - n < log (n.factorial) := by
-      have hn0 : n ≠ 0 := by lia
-      have : 0 < log (2 * π) := log_pos (by nlinarith [pi_gt_three])
-      linarith [log_natCast_nonneg n, Stirling.le_log_factorial_stirling hn0]
-    nlinarith [hfactorial_lower, log_factorial_lt_mul_primeLogSum_add_self hn]
-  · simp_all
-
 /-- **Mertens' first theorem**: for every natural number `n`, the sum of `log p / p` over
 primes `p ≤ n` differs from `log n` by at most `2`. -/
 theorem mertens_first_theorem_nat {n : ℕ} :
     |∑ p ∈ Ioc 0 n with p.Prime, log p / p - log n| < 2 := by
+  by_cases hn : n = 0
+  · simp_all
+  have hn : n ≥ 1 := by lia
   rw [abs_lt]
-  exact ⟨neg_two_lt_primeLogSum_sub_log, primeLogSum_sub_log_lt_two⟩
+  constructor
+  · have hfactorial_lower : n * log n - n < log (n.factorial) := by
+      have hn0 : n ≠ 0 := by lia
+      have : 0 < log (2 * π) := log_pos (by nlinarith [pi_gt_three])
+      linarith [log_natCast_nonneg n, Stirling.le_log_factorial_stirling hn0]
+    have hnpos : (0 : ℝ) < n := by norm_cast
+    nlinarith [mul_lt_mul_of_pos_left (finite_primeLogDivMulPred_lt_one (n := n)) hnpos,
+      log_factorial_le_mul_primeLogSum_add_error (n := n), hfactorial_lower]
+  · calc
+      _ ≤ Chebyshev.theta n / n := primeLogSum_sub_log_lt_theta_div hn
+      _ ≤ log 4 := by
+        have hnpos : (0 : ℝ) < n := by exact_mod_cast (by lia)
+        simpa [div_le_iff₀ hnpos, mul_comm] using Chebyshev.theta_le_log4_mul_x (by positivity)
+      _ < _ := by
+        rw [show (4 : ℝ) = 2 * 2 by norm_num, log_mul (by norm_num) (by norm_num)]
+        linarith [log_two_lt_d9]
 
 end Mertens
