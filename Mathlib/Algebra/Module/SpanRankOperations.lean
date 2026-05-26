@@ -26,7 +26,7 @@ In this file we show how operations on submodules interact with `Submodule.spanR
 
 -/
 
-@[expose] public section
+public section
 
 open IsLocalRing TensorProduct Submodule
 
@@ -36,7 +36,7 @@ variable {R A : Type*} [CommRing R] [CommRing A] [Algebra R A]
 lemma Submodule.spanRank_baseChange_le : (N.baseChange A).spanRank ≤ N.spanRank.lift := by
   obtain ⟨s, hs₁, hs₂⟩ := N.exists_span_set_card_eq_spanRank
   grw [← hs₁, ← hs₂, baseChange_span, spanRank_span_le_card]
-  convert Cardinal.mk_image_le_lift (f := TensorProduct.mk R A M 1) (s := s)
+  convert! Cardinal.mk_image_le_lift (f := TensorProduct.mk R A M 1) (s := s)
   · exact (Cardinal.lift_id' _).symm
   · exact Cardinal.lift_umax.symm
 
@@ -55,7 +55,6 @@ lemma TensorProduct.spanFinrank_top_le_of_fg (fg : N.FG) :
 variable [IsLocalRing R]
 local notation "𝓀" => ResidueField R
 
-set_option backward.isDefEq.respectTransparency false in
 lemma TensorProduct.spanFinrank_top_eq_of_residueField (fg : N.FG) :
     (⊤ : Submodule 𝓀 (𝓀 ⊗[R] N)).spanFinrank = N.spanFinrank := by
   let : Module.Finite R N := Module.Finite.iff_fg.mpr fg

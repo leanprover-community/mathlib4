@@ -5,7 +5,7 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Mathlib.Tactic.Lemma
+public import Mathlib.Init
 
 /-!
 # Extra definitions on `Option`

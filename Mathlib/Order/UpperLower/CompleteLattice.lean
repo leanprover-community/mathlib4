@@ -326,7 +326,7 @@ variable [Preorder α] [Preorder β] [Preorder γ]
 variable {f : α ≃o β} {s t : UpperSet α} {a : α} {b : β}
 
 /-- An order isomorphism of Preorders induces an order isomorphism of their upper sets. -/
-@[to_dual
+@[to_dual (attr := simps)
 /-- An order isomorphism of Preorders induces an order isomorphism of their lower sets. -/]
 def map (f : α ≃o β) : UpperSet α ≃o UpperSet β where
   toFun s := ⟨f '' s, s.upper.image f⟩

@@ -31,7 +31,7 @@ namespace Submodule
 
 open Function Set
 
-open Pointwise
+open scoped Pointwise
 
 section AddCommMonoid
 
@@ -226,9 +226,6 @@ theorem span_nat_eq_addSubmonoidClosure (s : Set M) :
   rw [span_le]
   exact AddSubmonoid.subset_closure
 
-@[deprecated (since := "2025-08-20")]
-alias span_nat_eq_addSubmonoid_closure := span_nat_eq_addSubmonoidClosure
-
 @[simp]
 theorem span_nat_eq (s : AddSubmonoid M) : (span ℕ (s : Set M)).toAddSubmonoid = s := by
   rw [span_nat_eq_addSubmonoidClosure, s.closure_eq]
@@ -239,9 +236,6 @@ theorem span_int_eq_addSubgroupClosure {M : Type*} [AddCommGroup M] (s : Set M) 
     AddSubgroup.closure_eq_of_le _ subset_span fun _ hx =>
       span_induction (fun _ hx => AddSubgroup.subset_closure hx) (AddSubgroup.zero_mem _)
         (fun _ _ _ _ => AddSubgroup.add_mem _) (fun _ _ _ _ => AddSubgroup.zsmul_mem _ ‹_› _) hx
-
-@[deprecated (since := "2025-08-20")]
-alias span_int_eq_addSubgroup_closure := span_int_eq_addSubgroupClosure
 
 @[simp]
 theorem span_int_eq {M : Type*} [AddCommGroup M] (s : AddSubgroup M) :
@@ -494,7 +488,7 @@ theorem span_singleton_smul_le {S} [SMul S R] [SMul S M] [IsScalarTower S R M]
 theorem span_singleton_group_smul_eq {G} [Group G] [SMul G R] [MulAction G M] [IsScalarTower G R M]
     (g : G) (x : M) : R ∙ g • x = R ∙ x := by
   refine le_antisymm (span_singleton_smul_le R g x) ?_
-  convert span_singleton_smul_le R g⁻¹ (g • x)
+  convert! span_singleton_smul_le R g⁻¹ (g • x)
   exact (inv_smul_smul g x).symm
 
 variable {R}

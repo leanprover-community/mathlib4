@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.Notation.Indicator
 public import Mathlib.Combinatorics.Enumerative.DoubleCounting
-public import Mathlib.Combinatorics.SimpleGraph.Coloring
+public import Mathlib.Combinatorics.SimpleGraph.Coloring.VertexColoring
 public import Mathlib.Combinatorics.SimpleGraph.Copy
 public import Mathlib.Combinatorics.SimpleGraph.DegreeSum
 
@@ -20,7 +20,7 @@ This file proves results about bipartite simple graphs, including several double
 
 * `SimpleGraph.IsBipartiteWith G s t` is the condition that a simple graph `G` is bipartite in sets
   `s`, `t`, that is, `s` and `t` are disjoint and vertices `v`, `w` being adjacent in `G` implies
-  that `v ∈ s` and `w ∈ t`, or `v ∈ s` and `w ∈ t`.
+  that `v ∈ s` and `w ∈ t`, or `v ∈ t` and `w ∈ s`.
 
   Note that in this implementation, if `G.IsBipartiteWith s t`, `s ∪ t` need not cover the vertices
   of `G`, instead `s ∪ t` is only required to cover the *support* of `G`, that is, the vertices
@@ -306,6 +306,16 @@ theorem isBipartite_iff_exists_isBipartiteWith :
     G.IsBipartite ↔ ∃ s t : Set V, G.IsBipartiteWith s t :=
   ⟨IsBipartite.exists_isBipartiteWith, fun ⟨_, _, h⟩ ↦ h.isBipartite⟩
 
+theorem chromaticNumber_le_two_iff_isBipartite : G.chromaticNumber ≤ 2 ↔ G.IsBipartite :=
+  chromaticNumber_le_iff_colorable
+
+theorem chromaticNumber_eq_two_iff : G.chromaticNumber = 2 ↔ G.IsBipartite ∧ G ≠ ⊥ :=
+  ⟨fun h ↦ ⟨chromaticNumber_le_two_iff_isBipartite.mp (by simp [h]),
+            two_le_chromaticNumber_iff_ne_bot.mp (by simp [h])⟩,
+   fun ⟨h₁, h₂⟩ ↦ ENat.eq_of_forall_natCast_le_iff fun _ ↦
+      ⟨fun h ↦ h.trans <| chromaticNumber_le_two_iff_isBipartite.mpr h₁,
+       fun h ↦ h.trans <| two_le_chromaticNumber_iff_ne_bot.mpr h₂⟩⟩
+
 end IsBipartite
 
 section Copy
@@ -365,6 +375,14 @@ theorem completeBipartiteGraph_isContained_iff :
     ⟨.completeBipartiteGraph left right card_left card_right h⟩
 
 end Copy
+
+lemma IsBipartiteWith.subgraph (h : G.IsBipartiteWith s t) (H : Subgraph G) :
+    H.coe.IsBipartiteWith {x : H.verts | ↑x ∈ s} {x : H.verts | ↑x ∈ t} :=
+  ⟨by grind [h.disjoint], fun _ _ hadj' ↦ h.mem_of_adj <| H.adj_sub hadj'⟩
+
+lemma IsBipartite.subgraph (h : G.IsBipartite) (H : Subgraph G) : H.coe.IsBipartite :=
+  let ⟨_, _, hst⟩ := isBipartite_iff_exists_isBipartiteWith.mp h
+  isBipartite_iff_exists_isBipartiteWith.mpr ⟨_, _, IsBipartiteWith.subgraph hst H⟩
 
 section Between
 
@@ -448,6 +466,59 @@ theorem degree_le_between_add_compl (hw : w ∈ sᶜ) :
   exact card_le_card (neighborFinset_subset_between_union_compl hw)
 
 end Between
+
+section completeBipartiteGraph
+
+variable {W₁ W₂ : Type*}
+
+theorem edgeSet_completeBipartiteGraph :
+    (completeBipartiteGraph W₁ W₂).edgeSet =
+    .range (fun x : W₁ × W₂ ↦ s(.inl x.1, .inr x.2)) := by
+  refine Set.ext <| Sym2.ind fun u v ↦ ⟨fun h ↦ ?_, fun ⟨⟨a, b⟩, z⟩ ↦ ?_⟩
+  · cases u <;> cases v <;> simp_all
+  · grind [completeBipartiteGraph_adj, mem_edgeSet]
+
+theorem encard_edgeSet_completeBipartiteGraph :
+    (completeBipartiteGraph W₁ W₂).edgeSet.encard = ENat.card W₁ * ENat.card W₂ := by
+  rw [edgeSet_completeBipartiteGraph, ← ENat.card_prod, ← Set.encard_univ, ← Set.image_univ]
+  exact Function.Injective.encard_image (by grind [Function.Injective]) Set.univ
+
+/-- An embedding of the edges of a bipartite graph into the edges of the complete bipartite graph -/
+def IsBipartiteWith.edgeSetEmbeddingCompleteBipartiteGraph [DecidableRel (· ∈ · : V → Set V → _)]
+    (hG : G.IsBipartiteWith s t) : G.edgeSet ↪ (completeBipartiteGraph s t).edgeSet where
+  toFun := fun ⟨e, he⟩ ↦
+    e.hrec (fun u v h ↦ hG.mem_of_adj h |>.by_cases
+      (fun h ↦ ⟨s(.inl ⟨u, h.left⟩, .inr ⟨v, h.right⟩), .inl ⟨rfl, rfl⟩⟩)
+      (fun h ↦ ⟨s(.inl ⟨v, h.right⟩, .inr ⟨u, h.left⟩), .inl ⟨rfl, rfl⟩⟩)
+    ) (fun _ _ ↦ Function.hfunext (by grind) <| by grind [Or.by_cases, hG.disjoint]) he
+  inj' := by
+    rintro ⟨⟨⟩⟩ ⟨⟨⟩⟩
+    change (if _ : _ then _ else _) = (if _ : _ then _ else _) → _
+    grind
+
+end completeBipartiteGraph
+
+section
+
+/-- The cardinality of the edge set of a bipartite graph is upper bounded by the product
+of the cardinality of the two partitions. -/
+theorem IsBipartiteWith.encard_edgeSet_le (hG : G.IsBipartiteWith s t) :
+    G.edgeSet.encard ≤ s.encard * t.encard := by
+  classical
+  grw [hG.edgeSetEmbeddingCompleteBipartiteGraph.encard_le]
+  simp [encard_edgeSet_completeBipartiteGraph]
+
+theorem IsBipartite.four_mul_encard_edgeSet_le (h : G.IsBipartite) :
+    4 * G.edgeSet.encard ≤ ENat.card V ^ 2 := by
+  refine finite_or_infinite V |>.elim (fun hv ↦ ?_) (fun _ ↦ by simp)
+  have ⟨s, t, h⟩ := h.exists_isBipartiteWith
+  grw [h.encard_edgeSet_le]
+  have := Set.encard_union_eq h.disjoint ▸ Set.encard_le_card
+  rw [ENat.card_eq_coe_natCard, ← s.toFinite.cast_ncard_eq, ← t.toFinite.cast_ncard_eq] at this ⊢
+  norm_cast at this ⊢
+  grind [Nat.pow_le_pow_left this 2, four_mul_le_sq_add s.ncard t.ncard]
+
+end
 
 section BipartiteDoubleCover
 

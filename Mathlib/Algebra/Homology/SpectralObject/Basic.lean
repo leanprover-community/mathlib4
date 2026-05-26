@@ -74,7 +74,7 @@ lemma δ_naturality {i j k : ι} (f : i ⟶ j) (g : j ⟶ k)
     (homMk₂ (α.app 0) (α.app 1) (β.app 1) (naturality' α 0 1)
       (by simpa only [hαβ] using naturality' β 0 1) : mk₂ f g ⟶ mk₂ f' g')
   dsimp at h
-  convert h <;> cat_disch
+  convert! h <;> cat_disch
 
 end
 
@@ -120,7 +120,7 @@ def sc₃ (n₀ n₁ : ℤ) (hn₁ : n₀ + 1 = n₁ := by lia) : ShortComplex C
   ShortComplex.mk _ _ (X.zero₃ f g fg h n₀ n₁ hn₁)
 
 lemma exact₁ (n₀ n₁ : ℤ) (hn₁ : n₀ + 1 = n₁ := by lia) :
-    (X.sc₁ f g fg h n₀ n₁ hn₁ ).Exact := by
+    (X.sc₁ f g fg h n₀ n₁ hn₁).Exact := by
   subst h
   exact (X.exact₁' n₀ n₁ hn₁ (mk₂ f g)).exact 0
 

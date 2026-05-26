@@ -110,7 +110,6 @@ namespace ValuativeCriterion.Existence
 
 open IsLocalRing
 
-set_option backward.isDefEq.respectTransparency false in
 @[stacks 01KE]
 lemma specializingMap (H : ValuativeCriterion.Existence f) :
     SpecializingMap f := by

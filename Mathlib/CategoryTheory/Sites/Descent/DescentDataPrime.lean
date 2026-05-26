@@ -199,7 +199,7 @@ lemma pullHom'_eq_hom (D : F.DescentData' sq sq₃) (i₁ i₂ : ι) :
 
 instance (D : F.DescentData' sq sq₃) (i₁ i₂ : ι) :
     IsIso (D.hom i₁ i₂) := by
-  simpa using inferInstanceAs (IsIso (pullHom' D.hom (sq i₁ i₂).p (sq i₁ i₂).p₁ (sq i₁ i₂).p₂))
+  simpa using (inferInstance : IsIso (pullHom' D.hom (sq i₁ i₂).p (sq i₁ i₂).p₁ (sq i₁ i₂).p₂))
 
 /-- The type of morphisms in the category `F.DescentData' sq sq₃`. -/
 @[ext]

@@ -99,9 +99,6 @@ lemma exists_nat_rpow_iff_isEquiv : (∃ c : ℝ, 0 < c ∧ ∀ n : ℕ, f n ^ c
   rw [← Rat.num_div_den x, map_div₀, map_div₀, div_rpow (by positivity) (by positivity), h x.den,
     ← apply_natAbs_eq, ← apply_natAbs_eq, h (natAbs x.num)]
 
-@[deprecated (since := "2025-09-12")]
-alias equiv_on_nat_iff_equiv := exists_nat_rpow_iff_isEquiv
-
 section Non_archimedean
 
 /-!
@@ -364,8 +361,7 @@ variable {m n : ℕ} (hm : 1 < m) (hn : 1 < n) (notbdd : ¬ ∀ n : ℕ, f n ≤
 
 include hm notbdd in
 private lemma expr_pos : 0 < m * f m / (f m - 1) := by
-  apply div_pos (mul_pos (mod_cast zero_lt_of_lt hm)
-    (map_pos_of_ne_zero f (mod_cast ne_zero_of_lt hm)))
+  apply div_pos (mul_pos (mod_cast hm.pos) (map_pos_of_ne_zero f (mod_cast hm.ne_zero)))
   linarith only [one_lt_of_not_bounded notbdd hm]
 
 include hn hm notbdd in
@@ -479,8 +475,5 @@ lemma not_real_isEquiv_padic (p : ℕ) [Fact p.Prime] : ¬ real.IsEquiv (padic p
   apply_fun (· 2) at hc
   simp only [real_eq_abs, abs_ofNat, cast_ofNat] at hc
   exact ((padic_le_one p 2).trans_lt <| one_lt_rpow one_lt_two hc₀).ne' hc
-
-@[deprecated (since := "2025-09-12")]
-alias not_real_equiv_padic := not_real_isEquiv_padic
 
 end Rat.AbsoluteValue

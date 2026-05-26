@@ -83,11 +83,11 @@ instance {n : ℕ} : Mono (ballInclusion n) := TopCat.mono_iff_injective _ |>.mp
   congr
 
 instance (n : ℕ) : CompactSpace (𝔻 n) := by
-  convert Homeomorph.compactSpace Homeomorph.ulift.symm
+  convert! Homeomorph.compactSpace Homeomorph.ulift.symm
   infer_instance
 
 instance (n : ℕ) : CompactSpace (∂𝔻 n) := by
-  convert Homeomorph.compactSpace Homeomorph.ulift.symm
+  convert! Homeomorph.compactSpace Homeomorph.ulift.symm
   infer_instance
 
 end TopCat

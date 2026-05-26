@@ -100,7 +100,7 @@ noncomputable def isColimitMapBifunctor :
     (fun s ↦ by simpa using (exists_desc hc₁ hc₂ F s).choose_spec)
     (fun s m hm ↦ hom_ext hc₁ hc₂ F (by
       dsimp
-      rw [dsimp% (exists_desc hc₁ hc₂ F s).choose_spec, ← dsimp% hm, Category.assoc]))
+      rw [(exists_desc hc₁ hc₂ F s).choose_spec, ← dsimp% hm, Category.assoc]))
 
 end CokernelCofork
 

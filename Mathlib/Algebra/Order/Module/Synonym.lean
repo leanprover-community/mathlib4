@@ -22,13 +22,12 @@ the `SMul` instances are already defined in `Mathlib/Algebra/Order/Group/Synonym
 * `Mathlib/Algebra/Order/GroupWithZero/Action/Synonym.lean`
 -/
 
-@[expose] public section
+public section
 
 variable {α β : Type*}
 
 namespace OrderDual
 
-set_option backward.isDefEq.respectTransparency false in
 instance instModule [Semiring α] [AddCommMonoid β] [Module α β] : Module αᵒᵈ β where
   add_smul := add_smul (R := α)
   zero_smul := zero_smul _

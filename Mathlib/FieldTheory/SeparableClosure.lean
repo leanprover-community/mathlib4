@@ -212,7 +212,7 @@ or `IsSepClosure.isGalois`, and every separable extension embeds into it (`IsSep
 abbrev SeparableClosure : Type _ := separableClosure F (AlgebraicClosure F)
 
 instance SeparableClosure.isSepClosed : IsSepClosed (SeparableClosure F) :=
-  (inferInstanceAs (IsSepClosure F (SeparableClosure F))).sep_closed
+  (inferInstance : IsSepClosure F (SeparableClosure F)).sep_closed
 
 /-- `F(S) / F` is a separable extension if and only if all elements of `S` are
 separable elements. -/
@@ -370,6 +370,7 @@ end Field
 
 namespace IntermediateField
 
+set_option maxHeartbeats 800000 in -- This blows up after leanprover/lean4#12897
 /-- In a finitely generated field extension, there exists a maximal
 separably generated field extension. -/
 lemma exists_finset_maximalFor_isTranscendenceBasis_separableClosure
@@ -394,7 +395,7 @@ lemma exists_finset_maximalFor_isTranscendenceBasis_separableClosure
   have : Module.Finite (adjoin F (s : Set E)) E := by
     apply +allowSynthFailures Algebra.finite_of_essFiniteType_of_isAlgebraic
     · exact .of_comp F _ _
-    · convert hs.isAlgebraic_field <;> simp [s]
+    · convert! hs.isAlgebraic_field <;> simp [s]
   have : Module.Finite ((separableClosure (adjoin F (s : Set E)) E).restrictScalars F) E :=
     inferInstanceAs <| Module.Finite (separableClosure (adjoin F (s : Set E)) E) E
   exact d.not_lt_argminOn _ ht (by apply finrank_lt_of_gt H)
