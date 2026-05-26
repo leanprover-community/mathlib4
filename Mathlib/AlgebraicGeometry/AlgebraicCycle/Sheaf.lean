@@ -644,6 +644,18 @@ lemma genericStalkToFunctionFieldModuleHom_isIso {X : Scheme} [IsIntegral X]
     [IsRegularInCodimensionOne X] (D : AlgebraicCycle X ℤ) :
     IsIso D.genericStalkToFunctionFieldModuleHom := sorry-/
 
+def Valuation.integer' {R : Type u} {Γ₀ : Type v} [Ring R] [LinearOrderedCommGroupWithZero Γ₀]
+  (v : Valuation R Γ₀) (n : Γ₀) : Submodule v.integer R where
+    carrier := {x : R | v x ≤ n}
+    add_mem' {x y} hx hy := le_trans (v.map_add x y) (max_le hx hy)
+    zero_mem' := by simp only [Set.mem_setOf_eq, map_zero, zero_le']
+    smul_mem' := by
+      intro ⟨x, hx⟩ y hy
+      have : v x ≤ 1 := hx
+      suffices x • y ∈ {x | v x ≤ n} by exact Set.mem_setOf.mpr this
+      simp only [smul_eq_mul, Set.mem_setOf_eq, map_mul]
+      exact mul_le_of_le_one_of_le hx hy
+
 noncomputable
 def genericStalkToFunctionField {X : Scheme} [IsIntegral X] [IsLocallyNoetherian X]
     [IsRegularInCodimensionOne X] (D : AlgebraicCycle X ℤ) :
