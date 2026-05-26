@@ -127,6 +127,7 @@ def image (S : SubmonoidFunctor M) : SubmonoidFunctor M' where
     grw [S.map_le]
 
 variable (M) in
+@[simp]
 lemma image_id : image (𝟙 M) ⊤ = ⊤ := by aesop
 
 lemma image_comp (p' : M' ⟶ M'') : S.image (p ≫ p') = (S.image p).image p' := by cat_disch
