@@ -36,8 +36,8 @@ open scoped Topology RealInnerProductSpace ENNReal
 
 namespace MeasureTheory
 
-variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E] [FiniteDimensional ℝ E]
-  [MeasurableSpace E] [BorelSpace E]
+variable {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] [InnerProductSpace ℝ E]
+  [FiniteDimensional ℝ E] [MeasurableSpace E] [BorelSpace E]
 
 /-- If the characteristic functions of a sequence of measures `μ : ℕ → Measure E` converge pointwise
 to a function which is continuous at 0, then `{μ n | n}` is tight. -/
