@@ -151,7 +151,7 @@ theorem isClosed_image_extensionEmbeddingOfIsReal {v : InfinitePlace K} (hv : Is
 
 theorem subfield_ne_real_of_isComplex {v : InfinitePlace K} (hv : IsComplex v) :
     (extensionEmbedding v).fieldRange ≠ Complex.ofRealHom.fieldRange := by
-  contrapose! hv
+  contrapose hv
   simp only [not_isComplex_iff_isReal, isReal_iff]
   ext x
   obtain ⟨r, hr⟩ := hv ▸ RingHom.mem_fieldRange_self (extensionEmbedding v) (x : v.Completion)
