@@ -146,8 +146,7 @@ lemma map [TopologicalSpace 𝓨] [MeasurableSpace 𝓨] [OpensMeasurableSpace �
   exact subset_preimage_image f K
 
 /-- A set of measures on a product space is tight if both marginals are tight. -/
-lemma prodMk {m𝓨 : MeasurableSpace 𝓨} [TopologicalSpace 𝓨] [OpensMeasurableSpace 𝓧]
-    [OpensMeasurableSpace 𝓨] {μ : Set (Measure (𝓧 × 𝓨))}
+lemma prodMk {m𝓨 : MeasurableSpace 𝓨} [TopologicalSpace 𝓨] {μ : Set (Measure (𝓧 × 𝓨))}
     (hμ₁ : IsTightMeasureSet (Measure.fst '' μ)) (hμ₂ : IsTightMeasureSet (Measure.snd '' μ)) :
     IsTightMeasureSet μ := by
   rw [isTightMeasureSet_iff_exists_isCompact_measure_compl_le] at hμ₁ hμ₂ ⊢
