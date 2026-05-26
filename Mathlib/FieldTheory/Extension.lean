@@ -244,7 +244,7 @@ private theorem exists_algHom_adjoin_of_splits'' {L : IntermediateField F E}
   have := φ.exists_lift_of_splits' (hK s h).1.tower_top ((hK s h).1.minpoly_splits_tower_top' ?_)
   · obtain ⟨y, h1, h2⟩ := this
     exact (hφ h1).1 h2
-  · convert (hK s h).2; ext; apply hfφ.2
+  · convert! (hK s h).2; ext; apply hfφ.2
 
 variable {L : Type*} [Field L] [Algebra F L] [Algebra L E] [IsScalarTower F L E]
   (f : L →ₐ[F] K) (hK : ∀ s ∈ S, IsIntegral L s ∧ ((minpoly L s).map f.toRingHom).Splits)
@@ -267,7 +267,7 @@ theorem exists_algHom_adjoin_of_splits' :
   letI : Algebra L L' := (AlgEquiv.ofInjectiveField _).toRingHom.toAlgebra
   have : IsScalarTower L L' E := IsScalarTower.of_algebraMap_eq' rfl
   refine ⟨(hK s hs).1.tower_top, (hK s hs).1.minpoly_splits_tower_top' ?_⟩
-  convert (hK s hs).2
+  convert! (hK s hs).2
   ext
   simp only [AlgHom.toRingHom_eq_coe, RingHom.coe_comp, RingHom.coe_coe,
     AlgHom.coe_comp, Function.comp_apply, f']

@@ -231,6 +231,10 @@ lemma preservesLimit_of_iso_diagram {K₁ K₂ : J ⥤ C} (F : C ⥤ D) (h : K�
     apply IsLimit.ofIsoLimit (isLimitOfPreserves F this)
     exact Cone.ext (Iso.refl _)⟩
 
+lemma preservesLimit_iff_of_iso_diagram {K₁ K₂ : J ⥤ C} (F : C ⥤ D) (h : K₁ ≅ K₂) :
+    PreservesLimit K₁ F ↔ PreservesLimit K₂ F :=
+  ⟨fun _ ↦ preservesLimit_of_iso_diagram _ h, fun _ ↦ preservesLimit_of_iso_diagram _ h.symm⟩
+
 /-- Transfer preservation of a limit along a natural isomorphism in the functor. -/
 lemma preservesLimit_of_natIso (K : J ⥤ C) {F G : C ⥤ D} (h : F ≅ G) [PreservesLimit K F] :
     PreservesLimit K G where
@@ -306,6 +310,10 @@ lemma preservesColimit_of_iso_diagram {K₁ K₂ : J ⥤ C} (F : C ⥤ D) (h : K
     have := (IsColimit.precomposeHomEquiv h c).symm t
     apply IsColimit.ofIsoColimit (isColimitOfPreserves F this)
     exact Cocone.ext (Iso.refl _)⟩
+
+lemma preservesColimit_iff_of_iso_diagram {K₁ K₂ : J ⥤ C} (F : C ⥤ D) (h : K₁ ≅ K₂) :
+    PreservesColimit K₁ F ↔ PreservesColimit K₂ F :=
+  ⟨fun _ ↦ preservesColimit_of_iso_diagram _ h, fun _ ↦ preservesColimit_of_iso_diagram _ h.symm⟩
 
 /-- Transfer preservation of a colimit along a natural isomorphism in the functor. -/
 lemma preservesColimit_of_natIso (K : J ⥤ C) {F G : C ⥤ D} (h : F ≅ G) [PreservesColimit K F] :
@@ -761,7 +769,7 @@ lemma isIso_app_coconePt_of_preservesColimit
     IsIso (α.app c.pt) := by
   let e := IsColimit.coconePointsIsoOfNatIso
     (isColimitOfPreserves L hc) (isColimitOfPreserves L' hc) (asIso (whiskerLeft K α))
-  convert (inferInstance : IsIso e.hom)
+  convert! (inferInstance : IsIso e.hom)
   apply (isColimitOfPreserves L hc).hom_ext fun j ↦ ?_
   simp only [Functor.comp_obj, Functor.mapCocone_pt, Functor.const_obj_obj, Functor.mapCocone_ι_app,
     NatTrans.naturality, IsColimit.coconePointsIsoOfNatIso_hom, asIso_hom, e]

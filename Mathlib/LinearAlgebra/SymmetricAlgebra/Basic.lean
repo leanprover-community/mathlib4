@@ -125,6 +125,8 @@ lemma lift_ι : lift (ι R M) = .id R (SymmetricAlgebra R M) := by
 def algebraMapInv : SymmetricAlgebra R M →ₐ[R] R :=
   lift (0 : M →ₗ[R] R)
 
+theorem algebraMapInv_ι (x : M) : algebraMapInv (ι R M x) = 0 := lift_ι_apply 0 x
+
 variable (M)
 
 theorem algebraMap_leftInverse :
