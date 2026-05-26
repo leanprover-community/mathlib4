@@ -52,21 +52,10 @@ lemma image_symm_eq_preimage (e : α ≃ β) (s : Set β) : e.symm '' s = e ⁻�
 lemma image_eq_preimage_symm (e : α ≃ β) (s : Set α) : e '' s = e.symm ⁻¹' s :=
   e.symm.image_symm_eq_preimage _
 
-@[deprecated (since := "2025-11-05")]
-protected alias image_eq_preimage := image_eq_preimage_symm
-
 @[simp 1001]
 theorem _root_.Set.mem_image_equiv {α β} {S : Set α} {f : α ≃ β} {x : β} :
     x ∈ f '' S ↔ f.symm x ∈ S :=
   Set.ext_iff.mp (image_eq_preimage_symm ..) x
-
-@[deprecated image_eq_preimage_symm (since := "2025-10-31")]
-theorem _root_.Set.image_equiv_eq_preimage_symm {α β} (S : Set α) (f : α ≃ β) :
-    f '' S = f.symm ⁻¹' S := image_eq_preimage_symm ..
-
-@[deprecated Equiv.image_symm_eq_preimage (since := "2025-10-31")]
-theorem _root_.Set.preimage_equiv_eq_image_symm {α β} (S : Set α) (f : β ≃ α) :
-    f ⁻¹' S = f.symm '' S := (f.image_symm_eq_preimage S).symm
 
 -- Increased priority so this fires before `image_subset_iff`
 @[simp high]
@@ -82,7 +71,7 @@ protected theorem subset_symm_image {α β} (e : α ≃ β) (s : Set α) (t : Se
     _ ↔ e '' s ⊆ t := by rw [e.symm_symm]
 
 @[simp]
-theorem symm_image_image {α β} (e : α ≃ β) (s : Set α) : e.symm '' (e '' s) = s :=
+theorem symm_image_image {α β} (e : α ≃ β) (s : Set α) : e.symm '' e '' s = s :=
   e.leftInverse_symm.image_image s
 
 theorem eq_image_iff_symm_image_eq {α β} (e : α ≃ β) (s : Set α) (t : Set β) :
@@ -90,26 +79,26 @@ theorem eq_image_iff_symm_image_eq {α β} (e : α ≃ β) (s : Set α) (t : Set
   (e.symm.injective.image_injective.eq_iff' (e.symm_image_image s)).symm
 
 @[simp]
-theorem image_symm_image {α β} (e : α ≃ β) (s : Set β) : e '' (e.symm '' s) = s :=
+theorem image_symm_image {α β} (e : α ≃ β) (s : Set β) : e '' e.symm '' s = s :=
   e.symm.symm_image_image s
 
 @[simp]
-theorem image_preimage {α β} (e : α ≃ β) (s : Set β) : e '' (e ⁻¹' s) = s :=
+theorem image_preimage {α β} (e : α ≃ β) (s : Set β) : e '' e ⁻¹' s = s :=
   e.surjective.image_preimage s
 
 @[simp]
-theorem preimage_image {α β} (e : α ≃ β) (s : Set α) : e ⁻¹' (e '' s) = s :=
+theorem preimage_image {α β} (e : α ≃ β) (s : Set α) : e ⁻¹' e '' s = s :=
   e.injective.preimage_image s
 
 protected theorem image_compl {α β} (f : Equiv α β) (s : Set α) : f '' sᶜ = (f '' s)ᶜ :=
   image_compl_eq f.bijective
 
 @[simp]
-theorem symm_preimage_preimage {α β} (e : α ≃ β) (s : Set β) : e.symm ⁻¹' (e ⁻¹' s) = s :=
+theorem symm_preimage_preimage {α β} (e : α ≃ β) (s : Set β) : e.symm ⁻¹' e ⁻¹' s = s :=
   e.rightInverse_symm.preimage_preimage s
 
 @[simp]
-theorem preimage_symm_preimage {α β} (e : α ≃ β) (s : Set α) : e ⁻¹' (e.symm ⁻¹' s) = s :=
+theorem preimage_symm_preimage {α β} (e : α ≃ β) (s : Set α) : e ⁻¹' e.symm ⁻¹' s = s :=
   e.leftInverse_symm.preimage_preimage s
 
 theorem preimage_subset {α β} (e : α ≃ β) (s t : Set β) : e ⁻¹' s ⊆ e ⁻¹' t ↔ s ⊆ t :=
@@ -257,8 +246,10 @@ protected def singleton {α} (a : α) : ({a} : Set α) ≃ PUnit.{u} :=
     subst x
     rfl, fun ⟨⟩ => rfl⟩
 
-lemma Equiv.strictMono_setCongr {α : Type*} [Preorder α] {S T : Set α} (h : S = T) :
+lemma _root_.Equiv.strictMono_setCongr {α : Type*} [Preorder α] {S T : Set α} (h : S = T) :
     StrictMono (setCongr h) := fun _ _ ↦ id
+
+@[deprecated (since := "2026-05-24")] alias Equiv.strictMono_setCongr := Equiv.strictMono_setCongr
 
 /-- If `a ∉ s`, then `insert a s` is equivalent to `s ⊕ PUnit`. -/
 protected def insert {α} {s : Set.{u} α} [DecidablePred (· ∈ s)] {a : α} (H : a ∉ s) :
@@ -438,7 +429,7 @@ protected theorem image_symm_apply {α β} (f : α → β) (s : Set α) (H : Inj
   (Equiv.symm_apply_eq _).2 rfl
 
 theorem image_symm_preimage {α β} {f : α → β} (hf : Injective f) (u s : Set α) :
-    (fun x => (Set.image f s hf).symm x : f '' s → α) ⁻¹' u = Subtype.val ⁻¹' (f '' u) := by
+    (fun x => (Set.image f s hf).symm x : f '' s → α) ⁻¹' u = Subtype.val ⁻¹' f '' u := by
   ext ⟨b, a, has, rfl⟩
   simp [hf.eq_iff]
 

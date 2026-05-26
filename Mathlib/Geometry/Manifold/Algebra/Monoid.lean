@@ -45,7 +45,9 @@ library_note «Design choices about smooth algebraic structures» /--
 -- See note [Design choices about smooth algebraic structures]
 /-- Basic hypothesis to talk about a `C^n` (Lie) additive monoid or a `C^n` additive
 semigroup. A `C^n` additive monoid over `G`, for example, is obtained by requiring both the
-instances `AddMonoid G` and `ContMDiffAdd I n G`. -/
+instances `AddMonoid G` and `ContMDiffAdd I n G`.
+
+See also `ContMDiffVAdd I I' n G M` for `C^n` actions of `G` on a manifold `M`. -/
 class ContMDiffAdd {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [TopologicalSpace H]
     {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
     (I : ModelWithCorners 𝕜 E H) (n : ℕ∞ω)
@@ -56,7 +58,9 @@ class ContMDiffAdd {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [To
 -- See note [Design choices about smooth algebraic structures]
 /-- Basic hypothesis to talk about a `C^n` (Lie) monoid or a `C^n` semigroup.
 A `C^n` monoid over `G`, for example, is obtained by requiring both the instances `Monoid G`
-and `ContMDiffMul I n G`. -/
+and `ContMDiffMul I n G`.
+
+See also `ContMDiffSMul I I' n G M` for `C^n` actions of `G` on a manifold `M`. -/
 @[to_additive]
 class ContMDiffMul {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [TopologicalSpace H]
     {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
@@ -344,6 +348,9 @@ theorem contMDiffWithinAt_finsetProd' (h : ∀ i ∈ t, CMDiffAt[s] n (f i) x) :
     (contMDiffWithinAt_const (c := 1)) h
 
 @[deprecated (since := "2026-04-08")]
+alias contMDiffWithinAt_finset_sum' := contMDiffWithinAt_finsetSum'
+
+@[to_additive existing, deprecated (since := "2026-04-08")]
 alias contMDiffWithinAt_finset_prod' := contMDiffWithinAt_finsetProd'
 
 @[to_additive]
@@ -353,6 +360,9 @@ theorem contMDiffWithinAt_finsetProd (h : ∀ i ∈ t, CMDiffAt[s] n (f i) x) :
   exact contMDiffWithinAt_finsetProd' h
 
 @[deprecated (since := "2026-04-08")]
+alias contMDiffWithinAt_finset_sum := contMDiffWithinAt_finsetSum
+
+@[to_additive existing, deprecated (since := "2026-04-08")]
 alias contMDiffWithinAt_finset_prod := contMDiffWithinAt_finsetProd
 
 @[to_additive]
@@ -372,14 +382,20 @@ theorem contMDiffAt_finsetProd' (h : ∀ i ∈ t, CMDiffAt n (f i) x) :
     CMDiffAt n (∏ i ∈ t, f i) x :=
   contMDiffWithinAt_finsetProd' h
 
-@[deprecated (since := "2026-04-08")] alias contMDiffAt_finset_prod' := contMDiffAt_finsetProd'
+@[deprecated (since := "2026-04-08")] alias contMDiffAt_finset_sum' := contMDiffAt_finsetSum'
+
+@[to_additive existing, deprecated (since := "2026-04-08")]
+alias contMDiffAt_finset_prod' := contMDiffAt_finsetProd'
 
 @[to_additive]
 theorem contMDiffAt_finsetProd (h : ∀ i ∈ t, CMDiffAt n (f i) x) :
     CMDiffAt n (fun x ↦ ∏ i ∈ t, f i x) x :=
   contMDiffWithinAt_finsetProd h
 
-@[deprecated (since := "2026-04-08")] alias contMDiffAt_finset_prod := contMDiffAt_finsetProd
+@[deprecated (since := "2026-04-08")] alias contMDiffAt_finset_sum := contMDiffAt_finsetSum
+
+@[to_additive existing, deprecated (since := "2026-04-08")]
+alias contMDiffAt_finset_prod := contMDiffAt_finsetProd
 
 @[to_additive]
 theorem contMDiffOn_finprod
@@ -392,14 +408,20 @@ theorem contMDiffOn_finsetProd' (h : ∀ i ∈ t, CMDiff[s] n (f i)) :
     CMDiff[s] n (∏ i ∈ t, f i) :=
   fun x hx ↦ contMDiffWithinAt_finsetProd' fun i hi ↦ h i hi x hx
 
-@[deprecated (since := "2026-04-08")] alias contMDiffOn_finset_prod' := contMDiffOn_finsetProd'
+@[deprecated (since := "2026-04-08")] alias contMDiffOn_finset_sum' := contMDiffOn_finsetSum'
+
+@[to_additive existing, deprecated (since := "2026-04-08")]
+alias contMDiffOn_finset_prod' := contMDiffOn_finsetProd'
 
 @[to_additive]
 theorem contMDiffOn_finsetProd (h : ∀ i ∈ t, CMDiff[s] n (f i)) :
     CMDiff[s] n (fun x ↦ ∏ i ∈ t, f i x) :=
   fun x hx ↦ contMDiffWithinAt_finsetProd fun i hi ↦ h i hi x hx
 
-@[deprecated (since := "2026-04-08")] alias contMDiffOn_finset_prod := contMDiffOn_finsetProd
+@[deprecated (since := "2026-04-08")] alias contMDiffOn_finset_sum := contMDiffOn_finsetSum
+
+@[to_additive existing, deprecated (since := "2026-04-08")]
+alias contMDiffOn_finset_prod := contMDiffOn_finsetProd
 
 @[to_additive]
 theorem ContMDiff.prod (h : ∀ i ∈ t, CMDiff n (f i)) :
@@ -410,14 +432,20 @@ theorem ContMDiff.prod (h : ∀ i ∈ t, CMDiff n (f i)) :
 theorem contMDiff_finsetProd' (h : ∀ i ∈ t, CMDiff n (f i)) :
     CMDiff n (∏ i ∈ t, f i) := fun x ↦ contMDiffAt_finsetProd' fun i hi ↦ h i hi x
 
-@[deprecated (since := "2026-04-08")] alias contMDiff_finset_prod' := contMDiff_finsetProd'
+@[deprecated (since := "2026-04-08")] alias contMDiff_finset_sum' := contMDiff_finsetSum'
+
+@[to_additive existing, deprecated (since := "2026-04-08")]
+alias contMDiff_finset_prod' := contMDiff_finsetProd'
 
 @[to_additive]
 theorem contMDiff_finsetProd (h : ∀ i ∈ t, CMDiff n (f i)) :
     CMDiff n fun x ↦ ∏ i ∈ t, f i x :=
   fun x ↦ contMDiffAt_finsetProd fun i hi ↦ h i hi x
 
-@[deprecated (since := "2026-04-08")] alias contMDiff_finset_prod := contMDiff_finsetProd
+@[deprecated (since := "2026-04-08")] alias contMDiff_finset_sum := contMDiff_finsetSum
+
+@[to_additive existing, deprecated (since := "2026-04-08")]
+alias contMDiff_finset_prod := contMDiff_finsetProd
 
 @[to_additive]
 theorem contMDiff_finprod (h : ∀ i, CMDiff n (f i))

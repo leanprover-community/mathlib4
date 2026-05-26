@@ -313,7 +313,8 @@ alias ⟨IsContained.exists_iso_subgraph, IsContained.of_exists_iso_subgraph⟩ 
 
 theorem Copy.degree_le (f : Copy G H) (v : V) [Fintype <| G.neighborSet v]
     [Fintype <| H.neighborSet (f v)] : G.degree v ≤ H.degree (f v) := by
-  simpa using Fintype.card_le_of_injective _ (f.mapNeighborSet v).injective
+  simpa [card_neighborSet_eq_degree] using
+    Fintype.card_le_of_injective _ (f.mapNeighborSet v).injective
 
 theorem Copy.max_degree_le [Fintype V] [Fintype W] [DecidableRel G.Adj] [DecidableRel H.Adj]
     (f : Copy G H) : G.maxDegree ≤ H.maxDegree := by
@@ -445,6 +446,9 @@ lemma isIndContained_iff_exists_iso_subgraph :
 alias ⟨IsIndContained.exists_iso_subgraph, IsIndContained.of_exists_iso_subgraph⟩ :=
   isIndContained_iff_exists_iso_subgraph
 
+theorem isIndContained_iff_exists_iso_induce : G ⊴ H ↔ ∃ s, Nonempty (G ≃g H.induce s) :=
+  ⟨fun ⟨f⟩ ↦ ⟨Set.range f, ⟨f.isoInduceRange⟩⟩, fun ⟨s, ⟨f⟩⟩ ↦ ⟨.comp (.induce s) f⟩⟩
+
 @[simp] lemma top_isIndContained_iff_top_isContained :
     (⊤ : SimpleGraph V) ⊴ H ↔ (⊤ : SimpleGraph V) ⊑ H :=
   ⟨IsIndContained.isContained, fun ⟨f⟩ ↦ ⟨f.topEmbedding⟩⟩
@@ -479,7 +483,7 @@ noncomputable def labelledCopyCount (G : SimpleGraph V) (H : SimpleGraph W) : �
 
 @[simp] lemma labelledCopyCount_of_isEmpty [IsEmpty W] (G : SimpleGraph V) (H : SimpleGraph W) :
     G.labelledCopyCount H = 1 := by
-  convert Fintype.card_unique
+  convert! Fintype.card_unique
   exact { default := ⟨default, isEmptyElim⟩, uniq := fun _ ↦ Subsingleton.elim _ _ }
 
 @[simp] lemma labelledCopyCount_eq_zero : G.labelledCopyCount H = 0 ↔ H.Free G := by
@@ -521,11 +525,12 @@ lemma copyCount_le_labelledCopyCount [Fintype W] : G.copyCount H ≤ G.labelledC
 @[simp] lemma copyCount_bot (G : SimpleGraph V) : copyCount G (⊥ : SimpleGraph V) = 1 := by
   classical
   rw [copyCount]
-  convert card_singleton (α := G.Subgraph)
-    { verts := .univ
-      Adj := ⊥
-      adj_sub := False.elim
-      edge_vert := False.elim }
+  convert!
+    card_singleton (α := G.Subgraph)
+      { verts := .univ
+        Adj := ⊥
+        adj_sub := False.elim
+        edge_vert := False.elim }
   simp only [eq_singleton_iff_unique_mem, mem_filter_univ, Nonempty.forall]
   refine ⟨⟨⟨(Equiv.Set.univ _).symm, by simp⟩⟩, fun H' e ↦
     Subgraph.ext ((set_fintype_card_eq_univ_iff _).1 <| Fintype.card_congr e.toEquiv.symm) ?_⟩

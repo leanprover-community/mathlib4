@@ -32,7 +32,7 @@ namespace RatFunc
 
 section Infinity
 
-open FunctionField Polynomial Valuation
+open Polynomial Valuation
 
 lemma valuation_eq_valuation_X_zpow_intDegree_of_one_lt_valuation_X {f : RatFunc K}
     [v.IsTrivialOn K] (hlt : 1 < v X) (hf : f ≠ 0) : v f = v RatFunc.X ^ f.intDegree := by
@@ -58,7 +58,7 @@ lemma valuation_isEquiv_inftyValuation_of_one_lt_valuation_X [v.IsTrivialOn K] (
 
 end Infinity
 
-open IsDedekindDomain HeightOneSpectrum Set Valuation FunctionField Polynomial
+open IsDedekindDomain HeightOneSpectrum Set Valuation Polynomial
 
 lemma setOf_polynomial_valuation_lt_one_and_ne_zero_nonempty [v.IsNontrivial] [v.IsTrivialOn K]
     (hle : v RatFunc.X ≤ 1) : {p : K[X] | v p < 1 ∧ p ≠ 0}.Nonempty := by

@@ -47,7 +47,7 @@ def isOpenEmbedding : MorphismProperty TopCat :=
   fun _ _ f ↦ Topology.IsOpenEmbedding f
 
 @[simp]
-lemma isOpenEmbedding_iff {X Y : TopCat} (f : X ⟶ Y) :
+lemma isOpenEmbedding_iff {X Y : TopCat.{u}} (f : X ⟶ Y) :
     isOpenEmbedding f ↔ Topology.IsOpenEmbedding f := .rfl
 
 instance : isOpenEmbedding.IsMultiplicative where
@@ -72,11 +72,11 @@ jointly surjective open embeddings. -/
 abbrev grothendieckTopology : GrothendieckTopology TopCat.{u} :=
   precoverage.toGrothendieck
 
-lemma exists_mem_zeroHypercover_range {X : TopCat} (E : precoverage.ZeroHypercover X) :
+lemma exists_mem_zeroHypercover_range {X : TopCat.{u}} (E : precoverage.ZeroHypercover X) :
     ∀ x, ∃ (i : E.I₀), x ∈ Set.range (E.f i) := by
   simpa using E.mem₀.left
 
-lemma isOpenEmbedding_f_zeroHypercover {X : TopCat} (E : precoverage.ZeroHypercover X) :
+lemma isOpenEmbedding_f_zeroHypercover {X : TopCat.{u}} (E : precoverage.ZeroHypercover X) :
     ∀ i, Topology.IsOpenEmbedding (E.f i) := by
   simpa using E.mem₀.right
 

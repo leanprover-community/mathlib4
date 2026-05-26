@@ -183,7 +183,7 @@ theorem iIndepFun.congr' {β : ι → Type*} {mβ : ∀ i, MeasurableSpace (β i
     filter_upwards [(ae_ball_iff (Finset.countable_toSet S)).2 ha] with ω hω
     change (ω ∈ ⋂ i ∈ S, g i ⁻¹' sets i) = (ω ∈ ⋂ i ∈ S, f i ⁻¹' sets i)
     simp +contextual [hω]
-  convert h'a using 2 with i hi
+  convert! h'a using 2 with i hi
   exact A i hi
 
 theorem iIndepFun_congr' {β : ι → Type*} {mβ : ∀ i, MeasurableSpace (β i)}
@@ -317,7 +317,7 @@ theorem indepFun_iff_compProd_map_prod_eq_compProd_prod_map_map
     specialize h hu hs ht
     rw [Measure.compProd_apply_prod hu (hs.prod ht),
       Measure.compProd_apply_prod hu (hs.prod ht)] at h
-    convert h with ω ω
+    convert! h with ω ω
     · rw [map_apply' _ (by fun_prop) _ (hs.prod ht), mk_preimage_prod]
     · rw [prod_apply_prod, map_apply' _ (by fun_prop) _ hs, map_apply' _ (by fun_prop) _ ht]
 
@@ -635,6 +635,9 @@ theorem iIndepFun.indepFun_finsetProd_of_notMem (hf_Indep : iIndepFun f κ μ)
       h_meas_left h_meas_right
 
 @[deprecated (since := "2026-04-08")]
+alias iIndepFun.indepFun_finset_sum_of_notMem := iIndepFun.indepFun_finsetSum_of_notMem
+
+@[to_additive existing, deprecated (since := "2026-04-08")]
 alias iIndepFun.indepFun_finset_prod_of_notMem := iIndepFun.indepFun_finsetProd_of_notMem
 
 @[to_additive]
@@ -655,6 +658,9 @@ theorem iIndepFun.indepFun_finsetProd_of_notMem₀ (hf_Indep : iIndepFun f κ μ
   · exact Measure.ae_ae_of_ae_comp (hf_meas i).ae_eq_mk.symm
 
 @[deprecated (since := "2026-04-08")]
+alias iIndepFun.indepFun_finset_sum_of_notMem₀ := iIndepFun.indepFun_finsetSum_of_notMem₀
+
+@[to_additive existing, deprecated (since := "2026-04-08")]
 alias iIndepFun.indepFun_finset_prod_of_notMem₀ := iIndepFun.indepFun_finsetProd_of_notMem₀
 
 

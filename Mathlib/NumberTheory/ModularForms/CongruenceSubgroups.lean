@@ -160,7 +160,7 @@ theorem Gamma1_mem (N : ℕ) (A : SL(2, ℤ)) : A ∈ Gamma1 N ↔
     rw [Gamma1_to_Gamma0_mem] at hx
     simp only [Subgroup.mem_top, true_and] at hxx
     rw [← hxx]
-    convert hx
+    convert! hx
   · intro ha
     simp_rw [Gamma1, Subgroup.mem_map]
     have hA : A ∈ Gamma0 N := by simp [ha.right.right, Gamma0_mem]
@@ -213,7 +213,8 @@ end CongruenceSubgroups
 
 section Conjugation
 
-open Pointwise ConjAct
+open scoped Pointwise
+open ConjAct
 
 /-- The subgroup `SL(2, ℤ) ∩ g⁻¹ Γ g`, for `Γ` a subgroup of `SL(2, ℤ)` and `g ∈ GL(2, ℝ)`. -/
 def conjGL (Γ : Subgroup SL(2, ℤ)) (g : GL (Fin 2) ℝ) : Subgroup SL(2, ℤ) :=

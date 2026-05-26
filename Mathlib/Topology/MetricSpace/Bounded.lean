@@ -382,12 +382,12 @@ variable {α : Type*} [AddCommGroup α] [LinearOrder α] [IsOrderedAddMonoid α]
   [CompactIccSpace α]
 
 lemma isBounded_of_abs_le (C : α) : Bornology.IsBounded {x : α | |x| ≤ C} := by
-  convert Metric.isBounded_Icc (-C) C
+  convert! Metric.isBounded_Icc (-C) C
   ext1 x
   simp [abs_le]
 
 lemma isBounded_of_abs_lt (C : α) : Bornology.IsBounded {x : α | |x| < C} := by
-  convert Metric.isBounded_Ioo (-C) C
+  convert! Metric.isBounded_Ioo (-C) C
   ext1 x
   simp [abs_lt]
 
@@ -555,7 +555,7 @@ theorem _root_.IsComplete.nonempty_iInter_of_nonempty_biInter {s : ℕ → Set �
     intro m n N hm hn
     exact dist_le_diam_of_mem (h's N) (I _ _ hm) (I _ _ hn)
   obtain ⟨x, -, xlim⟩ : ∃ x ∈ s 0, Tendsto (fun n : ℕ => u n) atTop (𝓝 x) :=
-    cauchySeq_tendsto_of_isComplete h0 (fun n => I 0 n (zero_le _)) this
+    cauchySeq_tendsto_of_isComplete h0 (fun n => I 0 n zero_le) this
   refine ⟨x, mem_iInter.2 fun n => ?_⟩
   apply (hs n).mem_of_tendsto xlim
   filter_upwards [Ici_mem_atTop n] with p hp

@@ -258,7 +258,7 @@ def Continuous.connectedComponentsLift (h : Continuous f) : ConnectedComponents 
 @[continuity]
 theorem Continuous.connectedComponentsLift_continuous (h : Continuous f) :
     Continuous h.connectedComponentsLift :=
-  h.quotient_liftOn' <| by convert h.image_eq_of_connectedComponent_eq
+  h.quotient_liftOn' <| by convert! h.image_eq_of_connectedComponent_eq
 
 @[simp]
 theorem Continuous.connectedComponentsLift_apply_coe (h : Continuous f) (x : α) :
@@ -306,7 +306,7 @@ theorem Continuous.connectedComponentsMap_continuous {β : Type*} [TopologicalSp
 lemma Topology.IsCoinducing.connectedComponentsMap {β : Type*} [TopologicalSpace β] {f : α → β}
     (hf : IsCoinducing f) :
     IsCoinducing hf.continuous.connectedComponentsMap := by
-  rw [← ConnectedComponents.isQuotientMap_coe.of_comp_iff]
+  rw [← ConnectedComponents.isQuotientMap_coe.isCoinducing.of_comp_iff]
   exact ConnectedComponents.isQuotientMap_coe.isCoinducing.comp hf
 
 @[simp]
