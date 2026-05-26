@@ -45,6 +45,10 @@ theorem HasCompactFixedSupport_iff [R1Space α] :
   refine ⟨fun ⟨K, hK₁, hK₂, hf⟩ ↦ ⟨K, hK₂, hf⟩, fun ⟨K, hK, hf⟩ ↦ ?_⟩
   exact ⟨closure K, isClosed_closure, hK.closure, hf.trans subset_closure⟩
 
+variable (α) in
+theorem hasCompactFixedSupport_id : HasCompactFixedSupport (id : α → α) := by
+  simp [HasCompactFixedSupport, fixedSupport]
+
 /-- If `f` and `g` have compact fixed support, then so does their composition `f ∘ g`. -/
 theorem HasCompactFixedSupport.comp (hf : HasCompactFixedSupport f)
     (hg : HasCompactFixedSupport g) : HasCompactFixedSupport (f ∘ g) := by
@@ -56,7 +60,6 @@ theorem HasCompactFixedSupport.comp (hf : HasCompactFixedSupport f)
 
 theorem HasCompactFixedSupport.symm {f : α ≃ α} (hf : HasCompactFixedSupport f) :
     HasCompactFixedSupport f.symm := by
-  rw [HasCompactFixedSupport_iff'] at *
-  rwa [fixedPoints_symm]
+  rwa [HasCompactFixedSupport, fixedSupport, fixedPoints_symm]
 
 end Function
