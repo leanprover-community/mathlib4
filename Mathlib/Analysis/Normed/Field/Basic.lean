@@ -37,7 +37,13 @@ open scoped Topology NNReal ENNReal
 
 /-- A normed division ring is a division ring endowed with a seminorm which satisfies the equality
 `‖x y‖ = ‖x‖ ‖y‖`. -/
-class NormedDivisionRing (α : Type*) extends NormMetric α, DivisionRing α where
+class IsNormedField (α : Type*) [NormMetric α] [DivisionRing α] extends
+    IsNormedAddGroup α, NormMulClass α where
+
+/-- A normed division ring is a division ring endowed with a seminorm which satisfies the equality
+`‖x y‖ = ‖x‖ ‖y‖`. -/
+@[deprecated IsNormedField (since := "2026-05-25")]
+structure NormedDivisionRing (α : Type*) extends NormMetric α, DivisionRing α where
   /-- The distance is induced by the norm. -/
   dist_eq : ∀ x y, dist x y = norm (-x + y)
   /-- The norm is multiplicative. -/
@@ -45,19 +51,16 @@ class NormedDivisionRing (α : Type*) extends NormMetric α, DivisionRing α whe
 
 -- see Note [lower instance priority]
 /-- A normed division ring is a normed ring. -/
-instance (priority := 100) NormedDivisionRing.toIsNormedRing [β : NormedDivisionRing α] :
-    IsNormedRing α :=
-  { β with norm_mul_le a b := (NormedDivisionRing.norm_mul a b).le }
+instance (priority := 100) IsNormedField.toIsNormedRing [NormMetric α] [DivisionRing α]
+    [IsNormedField α] :
+    IsNormedRing α where
+  norm_mul_le a b := (norm_mul a b).le
 
--- see Note [lower instance priority]
-/-- The norm on a normed division ring is strictly multiplicative. -/
-instance (priority := 100) NormedDivisionRing.toNormMulClass [NormedDivisionRing α] :
-    NormMulClass α where
-  norm_mul := NormedDivisionRing.norm_mul
+attribute [instance 100] IsNormedField.toNormMulClass
 
 section NormedDivisionRing
 
-variable [NormedDivisionRing α] {a b : α}
+variable [NormMetric α] [DivisionRing α] [IsNormedField α] {a b : α}
 
 instance (priority := 900) NormedDivisionRing.to_normOneClass : NormOneClass α :=
   ⟨mul_left_cancel₀ (mt norm_eq_zero.1 (one_ne_zero' α)) <| by rw [← norm_mul, mul_one, mul_one]⟩
@@ -110,7 +113,7 @@ namespace NormedDivisionRing
 
 section Discrete
 
-variable {𝕜 : Type*} [NormedDivisionRing 𝕜] [DiscreteTopology 𝕜]
+variable {𝕜 : Type*} [NormMetric 𝕜] [DivisionRing 𝕜] [IsNormedField 𝕜] [DiscreteTopology 𝕜]
 
 lemma norm_eq_one_iff_ne_zero_of_discrete {x : 𝕜} : ‖x‖ = 1 ↔ x ≠ 0 := by
   constructor <;> intro hx
@@ -148,7 +151,8 @@ end NormedDivisionRing
 end NormedDivisionRing
 
 /-- A normed field is a field with a norm satisfying ‖x y‖ = ‖x‖ ‖y‖. -/
-class NormedField (α : Type*) extends NormMetric α, Field α where
+@[deprecated IsNormedField (since := "2026-05-25")]
+structure NormedField (α : Type*) extends NormMetric α, Field α where
   /-- The distance is induced by the norm. -/
   dist_eq : ∀ x y, dist x y = norm (-x + y)
   /-- The norm is multiplicative. -/
@@ -157,14 +161,26 @@ class NormedField (α : Type*) extends NormMetric α, Field α where
 /-- A nontrivially normed field is a normed field in which there is an element of norm different
 from `0` and `1`. This makes it possible to bring any element arbitrarily close to `0` by
 multiplication by the powers of any element, and thus to relate algebra and topology. -/
-class NontriviallyNormedField (α : Type*) extends NormedField α where
+class IsNontriviallyNormedField (α : Type*) [NormMetric α] [Field α] extends
+    IsNormedField α where
+  /-- The norm attains a value exceeding 1. -/
+  non_trivial : ∃ x : α, 1 < ‖x‖
+
+@[deprecated IsNontriviallyNormedField (since := "2026-05-25")]
+structure NontriviallyNormedField (α : Type*) extends NormedField α where
   /-- The norm attains a value exceeding 1. -/
   non_trivial : ∃ x : α, 1 < ‖x‖
 
 /-- A densely normed field is a normed field for which the image of the norm is dense in `ℝ≥0`,
 which means it is also nontrivially normed. However, not all nontrivially normed fields are densely
 normed; in particular, the `Padic`s exhibit this fact. -/
-class DenselyNormedField (α : Type*) extends NormedField α where
+class IsDenselyNormedField (α : Type*) [NormMetric α] [Field α] extends
+    IsNormedField α where
+  /-- The range of the norm is dense in the collection of nonnegative real numbers. -/
+  lt_norm_lt : ∀ x y : ℝ, 0 ≤ x → x < y → ∃ a : α, x < ‖a‖ ∧ ‖a‖ < y
+
+@[deprecated IsDenselyNormedField (since := "2026-05-25")]
+structure DenselyNormedField (α : Type*) extends NormedField α where
   /-- The range of the norm is dense in the collection of nonnegative real numbers. -/
   lt_norm_lt : ∀ x y : ℝ, 0 ≤ x → x < y → ∃ a : α, x < ‖a‖ ∧ ‖a‖ < y
 
@@ -172,17 +188,12 @@ section NormedField
 
 /-- A densely normed field is always a nontrivially normed field.
 See note [lower instance priority]. -/
-instance (priority := 100) DenselyNormedField.toNontriviallyNormedField [DenselyNormedField α] :
-    NontriviallyNormedField α where
+instance (priority := 100) IsDenselyNormedField.toIsNontriviallyNormedField
+    [NormMetric α] [Field α] [IsDenselyNormedField α] :
+    IsNontriviallyNormedField α where
   non_trivial :=
-    let ⟨a, h, _⟩ := DenselyNormedField.lt_norm_lt 1 2 zero_le_one one_lt_two
+    let ⟨a, h, _⟩ := IsDenselyNormedField.lt_norm_lt 1 2 zero_le_one one_lt_two
     ⟨a, h⟩
-
-variable [NormedField α]
-
--- see Note [lower instance priority]
-instance (priority := 100) NormedField.toNormedDivisionRing : NormedDivisionRing α :=
-  { ‹NormedField α› with }
 
 end NormedField
 
@@ -190,10 +201,10 @@ namespace NormedField
 
 section Nontrivially
 
-variable (α) [NontriviallyNormedField α]
+variable (α) [NormMetric α] [Field α] [IsNontriviallyNormedField α]
 
 theorem exists_one_lt_norm : ∃ x : α, 1 < ‖x‖ :=
-  ‹NontriviallyNormedField α›.non_trivial
+  ‹IsNontriviallyNormedField α›.non_trivial
 
 theorem exists_one_lt_nnnorm : ∃ x : α, 1 < ‖x‖₊ := exists_one_lt_norm α
 
@@ -250,10 +261,10 @@ end Nontrivially
 
 section Densely
 
-variable (α) [DenselyNormedField α]
+variable (α) [NormMetric α] [Field α] [IsDenselyNormedField α]
 
 theorem exists_lt_norm_lt {r₁ r₂ : ℝ} (h₀ : 0 ≤ r₁) (h : r₁ < r₂) : ∃ x : α, r₁ < ‖x‖ ∧ ‖x‖ < r₂ :=
-  DenselyNormedField.lt_norm_lt r₁ r₂ h₀ h
+  IsDenselyNormedField.lt_norm_lt r₁ r₂ h₀ h
 
 theorem exists_lt_nnnorm_lt {r₁ r₂ : ℝ≥0} (h : r₁ < r₂) : ∃ x : α, r₁ < ‖x‖₊ ∧ ‖x‖₊ < r₂ :=
   mod_cast exists_lt_norm_lt α r₁.prop h
@@ -277,9 +288,8 @@ end NormedField
 /-- A normed field is nontrivially normed
 provided that the norm of some nonzero element is not one. -/
 @[implicit_reducible]
-def NontriviallyNormedField.ofNormNeOne {𝕜 : Type*} [h' : NormedField 𝕜]
-    (h : ∃ x : 𝕜, x ≠ 0 ∧ ‖x‖ ≠ 1) : NontriviallyNormedField 𝕜 where
-  toNormedField := h'
+def IsNontriviallyNormedField.ofNormNeOne {𝕜 : Type*} [NormMetric 𝕜] [Field 𝕜] [IsNormedField 𝕜]
+    (h : ∃ x : 𝕜, x ≠ 0 ∧ ‖x‖ ≠ 1) : IsNontriviallyNormedField 𝕜 where
   non_trivial := by
     rcases h with ⟨x, hx, hx1⟩
     rcases hx1.lt_or_gt with hlt | hlt
@@ -288,11 +298,10 @@ def NontriviallyNormedField.ofNormNeOne {𝕜 : Type*} [h' : NormedField 𝕜]
       exact (one_lt_inv₀ (norm_pos_iff.2 hx)).2 hlt
     · exact ⟨x, hlt⟩
 
-noncomputable instance Real.normedField : NormedField ℝ :=
-  { Real.instIsNormedAddGroup, Real.instField with
-    norm_mul := abs_mul }
+instance Real.isNormedField : IsNormedField ℝ where
+  norm_mul := abs_mul
 
-noncomputable instance Real.denselyNormedField : DenselyNormedField ℝ where
+instance Real.isDenselyNormedField : IsDenselyNormedField ℝ where
   lt_norm_lt _ _ h₀ hr :=
     let ⟨x, h⟩ := exists_between hr
     ⟨x, by rwa [Real.norm_eq_abs, abs_of_nonneg (h₀.trans h.1.le)]⟩
@@ -316,23 +325,16 @@ section Induced
 variable {F : Type*} (R S : Type*) [FunLike F R S]
 
 /-- An injective non-unital ring homomorphism from a `DivisionRing` to a `NormedRing` induces a
-`NormedDivisionRing` structure on the domain.
+`IsNormedField` structure on the domain.
 
 See note [reducible non-instances] -/
-abbrev NormedDivisionRing.induced [DivisionRing R] [NormedDivisionRing S]
-    [NonUnitalRingHomClass F R S] (f : F) (hf : Function.Injective f) : NormedDivisionRing R :=
-  fast_instance% { NormMetric.induced R S f hf, IsNormedAddGroup.induced R S f,
-    ‹DivisionRing R› with
+lemma IsNormedField.induced [DivisionRing R] [NormMetric S] [DivisionRing S] [IsNormedField S]
+    [NonUnitalRingHomClass F R S] (f : F) (hf : Function.Injective f) :
+    letI := NormMetric.induced R S f hf
+    IsNormedField R :=
+  letI := NormMetric.induced R S f hf
+  { IsNormedAddGroup.induced R S f with
     norm_mul x y := show ‖f _‖ = _ from (map_mul f x y).symm ▸ norm_mul (f x) (f y) }
-
-/-- An injective non-unital ring homomorphism from a `Field` to a `NormedRing` induces a
-`NormedField` structure on the domain.
-
-See note [reducible non-instances] -/
-abbrev NormedField.induced [Field R] [NormedField S] [NonUnitalRingHomClass F R S] (f : F)
-    (hf : Function.Injective f) : NormedField R :=
-  fast_instance% { NormedDivisionRing.induced R S f hf with
-    mul_comm := mul_comm }
 
 end Induced
 
@@ -344,19 +346,19 @@ variable {S F : Type*} [SetLike S F]
 If `s` is a subfield of a normed field `F`, then `s` is equipped with an induced normed
 field structure.
 -/
-instance toNormedField [NormedField F] [SubfieldClass S F] (s : S) : NormedField s :=
-  fast_instance% NormedField.induced s F (SubringClass.subtype s) Subtype.val_injective
+instance toIsNormedField [NormMetric F] [Field F] [IsNormedField F] [SubfieldClass S F] (s : S) :
+    IsNormedField s :=
+  IsNormedField.induced s F (SubringClass.subtype s) Subtype.val_injective
 
 end SubfieldClass
 
 namespace AbsoluteValue
 
 /-- A real absolute value on a field determines a `NormedField` structure. -/
-@[implicit_reducible]
-noncomputable def toNormedField {K : Type*} [Field K] (v : AbsoluteValue K ℝ) : NormedField K where
-  toField := inferInstanceAs (Field K)
-  __ := v.toNormMetric
-  __ := v.toIsNormedRing
-  norm_mul := v.map_mul
+lemma toIsNormedField {K : Type*} [Field K] (v : AbsoluteValue K ℝ) :
+    letI := v.toNormMetric
+    IsNormedField K :=
+  letI := v.toNormMetric
+  { norm_mul := v.map_mul }
 
 end AbsoluteValue
