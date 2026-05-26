@@ -21,7 +21,7 @@ public section
 
 open Real Complex Set MeasureTheory
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E]
+variable {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℂ E]
 
 open scoped FourierTransform
 
