@@ -209,6 +209,7 @@ lemma isStrictMap_iff_isOpenQuotientMap_rangeRestrict :
 
 variable [TopologicalSpace G'] [IsTopologicalGroup G'] [TopologicalSpace H']
 
+/-- The range of a product of two group homomorphisms is homeomorphic to the product of ranges. -/
 noncomputable def rangeProdMapHomeomorph :
     (f.prodMap g).range ≃ₜ f.range × g.range :=
   (Homeomorph.setCongr (by simp [range_prodMap, Subgroup.coe_prod])).trans
