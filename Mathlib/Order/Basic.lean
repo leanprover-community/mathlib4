@@ -835,10 +835,10 @@ theorem coe_lt_coe [LT α] {p : α → Prop} {x y : Subtype p} : (x : α) < y �
   Iff.rfl
 
 instance preorder [Preorder α] (p : α → Prop) : Preorder (Subtype p) :=
-  Preorder.lift (fun (a : Subtype p) ↦ (a : α))
+  fast_instance% Preorder.lift (fun (a : Subtype p) ↦ (a : α))
 
 instance partialOrder [PartialOrder α] (p : α → Prop) : PartialOrder (Subtype p) :=
-  PartialOrder.lift (fun (a : Subtype p) ↦ (a : α)) Subtype.coe_injective
+  fast_instance% PartialOrder.lift (fun (a : Subtype p) ↦ (a : α)) Subtype.coe_injective
 
 instance decidableLE [Preorder α] [h : DecidableLE α] {p : α → Prop} :
     DecidableLE (Subtype p) := fun a b ↦ h a b
@@ -850,7 +850,7 @@ instance decidableLT [Preorder α] [h : DecidableLT α] {p : α → Prop} :
 equality and decidable order in order to ensure the decidability instances are all definitionally
 equal. -/
 instance instLinearOrder [LinearOrder α] (p : α → Prop) : LinearOrder (Subtype p) :=
-  @LinearOrder.lift (Subtype p) _ _ ⟨fun x y ↦ ⟨max x y, max_rec' _ x.2 y.2⟩⟩
+  fast_instance% @LinearOrder.lift (Subtype p) _ _ ⟨fun x y ↦ ⟨max x y, max_rec' _ x.2 y.2⟩⟩
     ⟨fun x y ↦ ⟨min x y, min_rec' _ x.2 y.2⟩⟩ (fun (a : Subtype p) ↦ (a : α))
     Subtype.coe_injective (fun _ _ ↦ rfl) fun _ _ ↦
     rfl

@@ -394,6 +394,8 @@ def Ω₀ : Subobject Ω := h.homEquiv (𝟙 Ω)
 
 @[deprecated (since := "2026-03-06")]
 alias _root.CategoryTheory.Classifier.SubobjectRepresentableBy.Ω₀ := Ω₀
+@[deprecated (since := "2026-03-06")]
+alias _root_.CategoryTheory.Classifier.SubobjectRepresentableBy.Ω₀ := Ω₀
 
 /-- `h.homEquiv` acts like an "object comprehension" operator: it maps any characteristic map
 `f : X ⟶ Ω` to the associated subobject of `X`, obtained by pulling back `h.Ω₀` along `f`. -/
@@ -403,6 +405,8 @@ lemma homEquiv_eq {X : C} (f : X ⟶ Ω) :
 
 @[deprecated (since := "2026-03-06")]
 alias _root.CategoryTheory.Classifier.SubobjectRepresentableBy.homEquiv_eq := homEquiv_eq
+@[deprecated (since := "2026-03-06")]
+alias _root_.CategoryTheory.Classifier.SubobjectRepresentableBy.homEquiv_eq := homEquiv_eq
 
 /-- For any subobject `x`, the pullback of `h.Ω₀` along the characteristic map of `x`
 given by `h.homEquiv` is `x` itself. -/
@@ -412,6 +416,9 @@ lemma pullback_homEquiv_symm_obj_Ω₀ {X : C} (x : Subobject X) :
 
 @[deprecated (since := "2026-03-06")]
 alias _root.CategoryTheory.Classifier.SubobjectRepresentableBy.pullback_homEquiv_symm_obj_Ω₀ :=
+  pullback_homEquiv_symm_obj_Ω₀
+@[deprecated (since := "2026-03-06")]
+alias _root_.CategoryTheory.Classifier.SubobjectRepresentableBy.pullback_homEquiv_symm_obj_Ω₀ :=
   pullback_homEquiv_symm_obj_Ω₀
 
 section
@@ -423,6 +430,8 @@ def χ : X ⟶ Ω := h.homEquiv.symm (Subobject.mk m)
 
 @[deprecated (since := "2026-03-06")]
 alias _root.CategoryTheory.Classifier.SubobjectRepresentableBy.χ := χ
+@[deprecated (since := "2026-03-06")]
+alias _root_.CategoryTheory.Classifier.SubobjectRepresentableBy.χ := χ
 
 /-- `h.iso m` is the isomorphism between `m` and the pullback of `Ω₀`
     along the characteristic map of `m`. -/
@@ -433,6 +442,8 @@ noncomputable def iso : MonoOver.mk m ≅
 
 @[deprecated (since := "2026-03-06")]
 alias _root.CategoryTheory.Classifier.SubobjectRepresentableBy.iso := iso
+@[deprecated (since := "2026-03-06")]
+alias _root_.CategoryTheory.Classifier.SubobjectRepresentableBy.iso := iso
 
 /-- `h.π m` is the first projection in the following pullback square:
 
@@ -450,6 +461,8 @@ noncomputable def π : U ⟶ Subobject.underlying.obj h.Ω₀ :=
 
 @[deprecated (since := "2026-03-06")]
 alias _root.CategoryTheory.Classifier.SubobjectRepresentableBy.π := π
+@[deprecated (since := "2026-03-06")]
+alias _root_.CategoryTheory.Classifier.SubobjectRepresentableBy.π := π
 
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
@@ -462,6 +475,8 @@ lemma iso_inv_left_π :
 
 @[deprecated (since := "2026-03-06")]
 alias _root.CategoryTheory.Classifier.SubobjectRepresentableBy.iso_inv_left_π := iso_inv_left_π
+@[deprecated (since := "2026-03-06")]
+alias _root_.CategoryTheory.Classifier.SubobjectRepresentableBy.iso_inv_left_π := iso_inv_left_π
 
 @[reassoc (attr := simp)]
 lemma iso_inv_hom_left_comp :
@@ -471,6 +486,9 @@ lemma iso_inv_hom_left_comp :
 
 @[deprecated (since := "2026-03-06")]
 alias _root.CategoryTheory.Classifier.SubobjectRepresentableBy.iso_inv_hom_left_comp :=
+  iso_inv_hom_left_comp
+@[deprecated (since := "2026-03-06")]
+alias _root_.CategoryTheory.Classifier.SubobjectRepresentableBy.iso_inv_hom_left_comp :=
   iso_inv_hom_left_comp
 
 @[deprecated (since := "2025-12-18")]
@@ -487,6 +505,8 @@ lemma isPullback {U X : C} (m : U ⟶ X) [Mono m] :
 
 @[deprecated (since := "2026-03-06")]
 alias _root.CategoryTheory.Classifier.SubobjectRepresentableBy.isPullback := isPullback
+@[deprecated (since := "2026-03-06")]
+alias _root_.CategoryTheory.Classifier.SubobjectRepresentableBy.isPullback := isPullback
 
 variable {m}
 lemma uniq {χ' : X ⟶ Ω} {π : U ⟶ h.Ω₀}
@@ -497,6 +517,8 @@ lemma uniq {χ' : X ⟶ Ω} {π : U ⟶ h.Ω₀}
 
 @[deprecated (since := "2026-03-06")]
 alias _root.CategoryTheory.Classifier.SubobjectRepresentableBy.uniq := uniq
+@[deprecated (since := "2026-03-06")]
+alias _root_.CategoryTheory.Classifier.SubobjectRepresentableBy.uniq := uniq
 
 end
 
@@ -512,18 +534,24 @@ noncomputable def isTerminalΩ₀ : IsTerminal (h.Ω₀ : C) :=
 
 @[deprecated (since := "2026-03-06")]
 alias _root.CategoryTheory.Classifier.SubobjectRepresentableBy.isTerminalΩ₀ := isTerminalΩ₀
+@[deprecated (since := "2026-03-06")]
+alias _root_.CategoryTheory.Classifier.SubobjectRepresentableBy.isTerminalΩ₀ := isTerminalΩ₀
 
 /-- The unique map to the terminal object. -/
 noncomputable def χ₀ (U : C) : U ⟶ h.Ω₀ := h.isTerminalΩ₀.from U
 
 @[deprecated (since := "2026-03-06")]
 alias _root.CategoryTheory.Classifier.SubobjectRepresentableBy.χ₀ := χ₀
+@[deprecated (since := "2026-03-06")]
+alias _root_.CategoryTheory.Classifier.SubobjectRepresentableBy.χ₀ := χ₀
 
 include h in
 lemma hasTerminal : HasTerminal C := h.isTerminalΩ₀.hasTerminal
 
 @[deprecated (since := "2026-03-06")]
 alias _root.CategoryTheory.Classifier.SubobjectRepresentableBy.hasTerminal := hasTerminal
+@[deprecated (since := "2026-03-06")]
+alias _root_.CategoryTheory.Classifier.SubobjectRepresentableBy.hasTerminal := hasTerminal
 
 variable [HasTerminal C]
 
@@ -533,6 +561,8 @@ noncomputable def isoΩ₀ : (h.Ω₀ : C) ≅ ⊤_ C :=
 
 @[deprecated (since := "2026-03-06")]
 alias _root.CategoryTheory.Classifier.SubobjectRepresentableBy.isoΩ₀ := isoΩ₀
+@[deprecated (since := "2026-03-06")]
+alias _root_.CategoryTheory.Classifier.SubobjectRepresentableBy.isoΩ₀ := isoΩ₀
 
 /-- Any representation `Ω` of `Subobject.presheaf C` gives a subobject classifier with truth values
 object `Ω`. -/
@@ -554,6 +584,8 @@ noncomputable def classifier : Subobject.Classifier C where
 
 @[deprecated (since := "2026-03-06")]
 alias _root.CategoryTheory.Classifier.SubobjectRepresentableBy.classifier := classifier
+@[deprecated (since := "2026-03-06")]
+alias _root_.CategoryTheory.Classifier.SubobjectRepresentableBy.classifier := classifier
 
 end SubobjectRepresentableBy
 end FromRepresentation

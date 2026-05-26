@@ -113,7 +113,7 @@ lemma FormallySmooth.comp_surjective [FormallySmooth R A] (I : Ideal B) (hI : I 
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
-instance mvPolynomial (σ : Type*) : FormallySmooth R (MvPolynomial σ R) := by
+instance instFormallySmoothMvPolynomial (σ : Type*) : FormallySmooth R (MvPolynomial σ R) := by
   let P : Generators R (MvPolynomial σ R) σ :=
     .ofSurjective X (by simp [aeval_X_left, Function.Surjective])
   have : Subsingleton ↥P.toExtension.ker :=
@@ -122,6 +122,8 @@ instance mvPolynomial (σ : Type*) : FormallySmooth R (MvPolynomial σ R) := by
   have : Subsingleton P.toExtension.Cotangent := Cotangent.mk_surjective.subsingleton
   have := P.toExtension.h1Cotangentι_injective.subsingleton
   exact ⟨inferInstance, P.equivH1Cotangent.symm.subsingleton⟩
+
+@[deprecated (since := "2026-05-22")] alias mvPolynomial := instFormallySmoothMvPolynomial
 
 end
 

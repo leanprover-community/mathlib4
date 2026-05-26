@@ -2,7 +2,7 @@
 -- Core Lean 4 generates deprecation warnings at import time.
 module -- deprecated_module: ignore
 
-meta import MathlibTest.DeprecatedModuleNew
+meta import MathlibTest.Linter.DeprecatedModule.ImportBase
 
 /-!
 This file imports a deprecated module with `meta import`.

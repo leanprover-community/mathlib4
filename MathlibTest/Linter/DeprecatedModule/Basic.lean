@@ -6,7 +6,7 @@ deprecated_module (since := "2025-04-10")
 /--
 info: Deprecated modules
 
-'MathlibTest.DeprecatedModule' deprecates to
+'MathlibTest.Linter.DeprecatedModule.Basic' deprecates to
 #[Mathlib.Tactic.Linter.DocPrime, Mathlib.Tactic.Linter.DocString]
 with no message
 -/
