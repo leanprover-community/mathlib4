@@ -55,6 +55,12 @@ section onFun
 theorem onFun_apply (f : β → β → γ) (g : α → β) (a b : α) : onFun f g a b = f (g a) (g b) :=
   rfl
 
+theorem onFun_onFun_eq {δ : Sort*} (f : α → α → γ) (g : β → α) (h : δ → β) :
+    (f.onFun g).onFun h = f.onFun (g ∘ h) := rfl
+
+theorem onFun_comp_eq {δ : Sort*} (f : α → α → γ) (g : β → α) (h : δ → β) :
+    f.onFun (g ∘ h) = (f.onFun g).onFun h := rfl
+
 variable (r : β → β → Prop) (f : α → β)
 
 instance [Std.Refl r] : Std.Refl (r on f) where
