@@ -627,11 +627,27 @@ class MulDistribMulAction (M N : Type*) [Monoid M] [Monoid N] extends MulAction 
   /-- Distributivity of `•` across `*` -/
   smul_mul : ∀ (r : M) (x y : N), r • (x * y) = r • x * r • y
 
+/-- Typeclass for additive actions on additive structures.
+
+The key axiom here is `vadd_add : g +ᵥ (x + y) = (g +ᵥ x) + (g +ᵥ y)`.
+If `G` is a additive group (with group law multiplication) and `Γ` is its additive automorphism
+group then there is a natural instance of `AddDistribAddAction Γ G`. -/
+@[ext]
+class AddDistribAddAction (M N : Type*) [AddMonoid M] [AddMonoid N] extends AddAction M N where
+  /-- Multiplying `1` by a scalar gives `1` -/
+  vadd_zero : ∀ r : M, r +ᵥ (0 : N) = 0
+  /-- Distributivity of `•` across `*` -/
+  vadd_add : ∀ (r : M) (x y : N), r +ᵥ (x + y) = (r +ᵥ x) + (r +ᵥ y)
+
 export MulDistribMulAction (smul_one)
+export AddDistribAddAction (vadd_zero)
+
+attribute [to_additive existing] MulDistribMulAction
 
 section MulDistribMulAction
 variable [Monoid M] [Monoid N] [MulDistribMulAction M N]
 
+@[to_additive]
 lemma smul_mul' (a : M) (b₁ b₂ : N) : a • (b₁ * b₂) = a • b₁ * a • b₂ :=
   MulDistribMulAction.smul_mul ..
 
