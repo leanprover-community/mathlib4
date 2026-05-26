@@ -144,9 +144,8 @@ lemma Module.sum_neg_one_pow_finrank_eq_zero_of_exact_six {k : Type*} [Field k]
     (inj := by simpa [f₀']) (surj := by simpa [f₄'])
   simp only [finrank_ulift] at this
   apply this <;>
-  simp only [f₀', f₁', f₂', f₃', f₄'] <;>
-  rwa [LinearEquiv.postcomp_exact_iff_exact, ← LinearMap.comp_assoc,
-    LinearEquiv.precomp_exact_iff_exact, LinearEquiv.conj_symm_exact_iff_exact]
+  simpa only [f₀', f₁', f₂', f₃', f₄', LinearEquiv.postcomp_exact_iff_exact,
+    LinearEquiv.conj_symm_exact_iff_exact, LinearEquiv.precomp_exact_iff_exact]
 
 end FindHome
 
