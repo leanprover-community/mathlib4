@@ -112,7 +112,7 @@ lemma incrementsToRestrict_increments_orderEmbOfFinWithBot_ae_eq_restrict [Bot T
 
 /-- A stochastic process `X` with independent increments, such that `X t` is Gaussian for
 all `t` and such that `X ⊥ = 0` almost surely is a Gaussian process. -/
-public lemma HasIndepIncrements.isGaussianProcess [OrderBot T]
+public lemma HasIndepIncrements.isGaussianProcess [OrderBot T] [AddCommGroup E]
     [NormedAddCommGroup E] [NormedSpace ℝ E] [MeasurableSpace E] [BorelSpace E]
     [SecondCountableTopology E] [CompleteSpace E]
     {X : T → Ω → E} (law : ∀ t, HasGaussianLaw (X t) P) (h_bot : ∀ᵐ ω ∂P, X ⊥ ω = 0)
