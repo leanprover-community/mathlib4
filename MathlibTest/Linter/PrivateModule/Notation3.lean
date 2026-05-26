@@ -10,10 +10,10 @@ local notation3 "MyList[" (x", "* => foldr (a b => List.cons a b) List.nil) "]" 
 /- Check that we have indeed created declarations, and aren't not linting just due to being an
 empty file: -/
 /--
-info: [_private.MathlibTest.PrivateModuleLinter.notation3.0.«_aux_MathlibTest_PrivateModuleLinter_notation3___delab_app__private_MathlibTest_PrivateModuleLinter_notation3_0_termMyList[_,]_2»,
- _private.MathlibTest.PrivateModuleLinter.notation3.0.«termMyList[_,]»,
- _private.MathlibTest.PrivateModuleLinter.notation3.0.«_aux_MathlibTest_PrivateModuleLinter_notation3___delab_app__private_MathlibTest_PrivateModuleLinter_notation3_0_termMyList[_,]_1»,
- _private.MathlibTest.PrivateModuleLinter.notation3.0.«_aux_MathlibTest_PrivateModuleLinter_notation3___macroRules__private_MathlibTest_PrivateModuleLinter_notation3_0_termMyList[_,]_1»]
+info: [_private.MathlibTest.Linter.PrivateModule.Notation3.0.«termMyList[_,]»,
+ _private.MathlibTest.Linter.PrivateModule.Notation3.0.«_aux_MathlibTest_Linter_PrivateModule_Notation3___macroRules__private_MathlibTest_Linter_PrivateModule_Notation3_0_termMyList[_,]_1»,
+ _private.MathlibTest.Linter.PrivateModule.Notation3.0.«_aux_MathlibTest_Linter_PrivateModule_Notation3___delab_app__private_MathlibTest_Linter_PrivateModule_Notation3_0_termMyList[_,]_2»,
+ _private.MathlibTest.Linter.PrivateModule.Notation3.0.«_aux_MathlibTest_Linter_PrivateModule_Notation3___delab_app__private_MathlibTest_Linter_PrivateModule_Notation3_0_termMyList[_,]_1»]
 -/
 #guard_msgs in
 run_cmd do
