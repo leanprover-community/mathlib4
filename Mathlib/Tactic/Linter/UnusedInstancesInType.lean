@@ -7,11 +7,12 @@ module
 
 public meta import Mathlib.Lean.Expr.Basic
 public meta import Mathlib.Lean.Environment
-public meta import Mathlib.Lean.Elab.InfoTree
+public meta import Batteries.Lean.Position
 public meta import Lean.Linter.Basic
 -- Import this linter explicitly to ensure that
 -- this file has a valid copyright header and module docstring.
 public import Mathlib.Tactic.Linter.Header  --shake: keep
+public import Batteries.Tactic.Alias
 public import Batteries.Tactic.Lint.Basic
 public import Batteries.Tactic.Lint.Misc
 
@@ -24,8 +25,11 @@ in the remainder of the type.
 Currently, these linters only handle theorems. (This also includes `lemma`s and `instance`s of
 `Prop` classes.)
 
-- `unusedDecidableInType` linter (currently off by default): suggests replacing type-unused
-  `Decidable*` instance hypotheses, and could therefore be replaced by `classical` in the proof.
+- `unusedDecidableInType` linter: suggests replacing
+  `Decidable*` instance hypotheses that are either (1) not used in the type (2) only used in proofs
+  in the type. These can be replaced by `classical` in the proof(s).
+- `unusedFintypeInType` linter: suggests replacing `Fintype` with `Finite` under the same
+  circumstances, and suggests importing `Finite` if necessary
 
 TODO: log on type signature instead of whole command
 TODO: add more linters!
@@ -125,6 +129,7 @@ within proof terms.
 
 The indices start at 0, and do not count `let`s.
 -/
+@[specialize p]
 partial def _root_.Lean.Expr.collectUnnecessaryInstanceBinderIdxsWhere (p : Expr → Bool)
     (e : Expr) : MetaM (Array Nat) := do
   let (instances, fvarIdSet) ← go e 0 #[] |>.run {}
@@ -141,7 +146,7 @@ where
   Used fvarIds (i.e., instances of concern) are recorded in the `StateRefT`'s `FVarIdSet`; the
   returned `Array InstanceOfConcern` records all instances of concern that have been introduced,
   used or not. -/
-  go (e : Expr) (currentBinderIdx : Nat) (currentFVars : Array InstanceOfConcern) :
+  @[specialize p] go (e : Expr) (currentBinderIdx : Nat) (currentFVars : Array InstanceOfConcern) :
       StateRefT FVarIdSet MetaM (Array InstanceOfConcern) := do
     let e := e.cleanupAnnotations
     if h : e.isForall then
@@ -187,11 +192,14 @@ Note that `p` is non-monadic, and may encounter loose bvars in its argument. Thi
 optimization. However, the `Parameter`s are created in a telescope, and their fields will *not*
 have loose bound variables.
 -/
+@[specialize p logOnUnused]
 def _root_.Lean.ConstantVal.onUnusedInstancesWhere (decl : ConstantVal)
     (p : Expr → Bool) (logOnUnused : Array Parameter → TermElabM Unit) :
     TermElabM Unit := do
   let unusedInstances ← decl.type.collectUnnecessaryInstanceBinderIdxsWhere p
   if let some maxIdx := unusedInstances.back? then
+    -- Don't lint after all if the declaration is an alias:
+    if (← Batteries.Tactic.Alias.getAliasInfo decl.name).isSome then return
     unless decl.type.hasSorry do -- only check for `sorry` in the "expensive" interactive case
       forallBoundedTelescope decl.type (some <| maxIdx + 1)
         (cleanupAnnotations := true) fun fvars _ => do
@@ -221,6 +229,9 @@ types and free variables of the unused parameters are available as
 `unusedParams : Array Parameter := #[p₁, p₂, ..., pₙ]`, as well as the theorem `thm : ConstantVal`
 and current infotree `t`, and run `log t thm unusedParams`.
 
+Logs on the "selection range" of the declaration if available. (TODO: log on the signature, or
+ideally the specific offending binder.)
+
 A simple pattern is therefore
 ```
 fun _ thm unusedParams => do
@@ -243,22 +254,24 @@ Note: This linter can be disabled with `set_option {linter.fooLinter.name} false
 ```
 pluralizing as appropriate.
 -/
-@[nolint unusedArguments] -- TODO: we plan to use `_cmd` in future
-def _root_.Lean.Syntax.logUnusedInstancesInTheoremsWhere (_cmd : Syntax)
+@[specialize instanceTypeFilter log declFilter]
+def _root_.Lean.Syntax.logUnusedInstancesInTheoremsWhere (cmd : Syntax)
     (instanceTypeFilter : Expr → Bool)
-    (log : InfoTree → ConstantVal → Array Parameter → TermElabM Unit)
+    (log : ConstantVal → Array Parameter → TermElabM Unit)
     (declFilter : ConstantVal → Bool := fun _ => true) :
     CommandElabM Unit := do
-  for t in ← getInfoTrees do
-    let thms := t.getTheorems (← getEnv) |>.filter fun thm =>
-      declFilter thm && thm.type.hasInstanceBinderOf instanceTypeFilter
-    -- use `liftTermElabM` on the outside in the hopes of sharing a cache
-    unless thms.isEmpty do liftTermElabM do for thm in thms do
-      thm.onUnusedInstancesWhere instanceTypeFilter
-        fun unusedParams =>
-          -- TODO: restore in order to log on type signature. See (#31729)[https://github.com/leanprover-community/mathlib4/pull/31729].
-          -- t.withDeclSigRef cmd thm.name do
-          log t thm unusedParams
+  let some pos := cmd.getPos? | return
+  let thms := pos.getDeclsAfter (← getEnv) (← getFileMap)
+    |>.filterMap (← getEnv).findTheoremConstVal?
+    |>.filter fun thm => declFilter thm && thm.type.hasInstanceBinderOf instanceTypeFilter
+  -- use `liftTermElabM` on the outside in the hopes of sharing a cache
+  unless thms.isEmpty do liftTermElabM do for thm in thms do
+    thm.onUnusedInstancesWhere instanceTypeFilter
+      fun unusedParams =>
+        -- TODO: restore in order to log on type signature. See (#31729)[https://github.com/leanprover-community/mathlib4/pull/31729].
+        -- `t.withDeclSigRef cmd thm.name do`
+        -- In the meantime, log on the token.
+        withDeclRef? thm.name <| log thm unusedParams
 
 section Decidable
 
@@ -283,25 +296,6 @@ def isDecidableVariant (type : Expr) : Bool :=
     n == ``DecidableLE   ||
     n == ``DecidableLT
 
-/-- `withSetOptionIn` currently breaks infotree searches, so we simply set `Bool` options
-until this is fixed in [lean4#11313](https://github.com/leanprover/lean4/pull/11313). -/
-partial def withSetBoolOptionIn (x : CommandElab) : CommandElab
-  | `(command| set_option $opt:ident $val in $cmd:command) => do
-    match val.raw with
-    | Syntax.atom _ "true"  =>
-      withBoolOption opt.getId true <| withSetBoolOptionIn x cmd
-    | Syntax.atom _ "false" =>
-      withBoolOption opt.getId false <| withSetBoolOptionIn x cmd
-    | _ => withSetBoolOptionIn x cmd
-  | `(command| $_:command in $cmd:command) => withSetBoolOptionIn x cmd
-  | stx => x stx
-where
-  /-- Set a `Bool` option in `CommandElabM`. Ideally, `CommandElabM` would have a
-  `MonadWithOptions` instance to this effect. -/
-  withBoolOption (n : Name) (val : Bool) (k : CommandElabM Unit) : CommandElabM Unit := do
-    let opts := (← getOptions).setBool n val
-    Command.withScope (fun scope => { scope with opts }) k
-
 /--
 The `unusedDecidableInType` linter checks if a theorem's hypotheses include `Decidable*` instances
 which are not used in the remainder of the type. If so, it suggests removing the instances and using
@@ -323,7 +317,7 @@ public register_option linter.unusedDecidableInType : Bool := {
 remainder of the type, and suggests replacing them with a use of `classical` in the proof or
 `open scoped Classical in` at the term level. -/
 def unusedDecidableInType : Linter where
-  run := withSetBoolOptionIn fun cmd => do
+  run := withSetOptionIn fun cmd => do
     unless getLinterValue linter.unusedDecidableInType (← getLinterOptions) do
       return
     cmd.logUnusedInstancesInTheoremsWhere
@@ -331,7 +325,7 @@ def unusedDecidableInType : Linter where
       on decidable instances without using them in the type. -/
       (declFilter := (!(`Decidable).isPrefixOf ·.name))
       isDecidableVariant
-      fun _ thm unusedParams => do
+      fun thm unusedParams => do
         logLint linter.unusedDecidableInType (← getRef) m!"\
           {thm.name.unusedInstancesMsg unusedParams}\n\n\
           Consider removing \
@@ -364,7 +358,7 @@ public register_option linter.unusedFintypeInType : Bool := {
 remainder of the type, and suggests replacing them with the corresponding hypothesis of `Finite`
 and the use of `Fintype.ofFinite` in the proof. -/
 def unusedFintypeInType : Linter where
-  run := withSetBoolOptionIn fun cmd => do
+  run := withSetOptionIn fun cmd => do
     unless getLinterValue linter.unusedFintypeInType (← getLinterOptions) do
       return
     -- Cheap early exit if `Fintype` is not imported.
@@ -372,7 +366,7 @@ def unusedFintypeInType : Linter where
       return
     cmd.logUnusedInstancesInTheoremsWhere
       (·.isAppOrForallOfConst `Fintype)
-      fun _ thm unusedParams => do
+      fun thm unusedParams => do
         let importFintypeOfFiniteNote? :=
           if (← getEnv).isImportedConst `Fintype.ofFinite then none else
             some <| .note "Add `import Mathlib.Data.Fintype.EquivFin` \

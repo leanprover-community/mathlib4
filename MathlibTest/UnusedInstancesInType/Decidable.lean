@@ -7,6 +7,7 @@ set_option linter.unusedDecidableInType true
 section unused
 
 /--
+@ +1:8...11
 warning: `foo` does not use the following hypothesis in its type:
   • [DecidableEq α] (#2)
 
@@ -14,7 +15,7 @@ Consider removing this hypothesis and using `classical` in the proof instead. Fo
 
 Note: This linter can be disabled with `set_option linter.unusedDecidableInType false`
 -/
-#guard_msgs in
+#guard_msgs (positions := true) in
 theorem foo {α} [DecidableEq α] : True := True.intro
 
 def Foo (α) [DecidableEq α] := Unit
@@ -33,6 +34,19 @@ Note: This linter can be disabled with `set_option linter.unusedDecidableInType 
 #guard_msgs in
 theorem foo₂ (a : Type) [∀ α : Type, Decidable (Nonempty α)] (_ : Unit) [Nonempty a] : True :=
   trivial
+
+
+/--
+warning: `fooUnfinished` does not use the following hypothesis in its type:
+  • [(α : Type) → Decidable (Nonempty α)] (#2)
+
+Consider removing this hypothesis and using `classical` in the proof instead. For terms, consider using `open scoped Classical in` at the term level (not the command level).
+
+Note: This linter can be disabled with `set_option linter.unusedDecidableInType false`
+-/
+#guard_msgs(warning, drop error) in
+theorem fooUnfinished (a : Type) [∀ α : Type, Decidable (Nonempty α)] (_ : Unit) [Nonempty a] :
+    True := by skip
 
 /--
 warning: `foo₃` does not use the following hypotheses in its type:
