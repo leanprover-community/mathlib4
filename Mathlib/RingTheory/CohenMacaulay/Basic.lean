@@ -178,7 +178,7 @@ abbrev LinearMapOfSemiLinearMapAlgebraMap {R A : Type*} [CommRing R] [CommRing A
 variable (Rₚ) in
 /-- Given `R`-algebra `Rₚ`, `R`-module `M` and `Rₚ`-module `Mₚ` and `f : M →ₗ[R] Mₚ`,
 The linear map `QuotSMulTop x M →ₗ[R] QuotSMulTop ((algebraMap R Rₚ) x) Mₚ` lifted from `f`. -/
-abbrev quotSMulTop_isLocalizedModule_map (x : R) (M : Type*) [AddCommGroup M] [Module R M]
+abbrev quotSMulTopIsLocalizedModuleMap (x : R) (M : Type*) [AddCommGroup M] [Module R M]
     (Mₚ : Type*) [AddCommGroup Mₚ] [Module R Mₚ] [Module Rₚ Mₚ] [IsScalarTower R Rₚ Mₚ]
     (f : M →ₗ[R] Mₚ) :
     QuotSMulTop x M →ₗ[R] QuotSMulTop ((algebraMap R Rₚ) x) Mₚ :=
@@ -196,10 +196,10 @@ abbrev quotSMulTop_isLocalizedModule_map (x : R) (M : Type*) [AddCommGroup M] [M
 
 variable (Rₚ) in
 omit [IsLocalRing R] [IsNoetherianRing R] [Small.{v, u} R] in
-lemma isLocalizedModule_quotSMulTop_isLocalizedModule_map (x : R)
+lemma isLocalizedModule_quotSMulTopIsLocalizedModuleMap (x : R)
     (M : Type*) [AddCommGroup M] [Module R M] (Mₚ : Type*) [AddCommGroup Mₚ] [Module R Mₚ]
     [Module Rₚ Mₚ] [IsScalarTower R Rₚ Mₚ] (f : M →ₗ[R] Mₚ) [IsLocalizedModule.AtPrime p f] :
-    IsLocalizedModule.AtPrime p (quotSMulTop_isLocalizedModule_map Rₚ x M Mₚ f) where
+    IsLocalizedModule.AtPrime p (quotSMulTopIsLocalizedModuleMap Rₚ x M Mₚ f) where
   map_units r := by
     let alg := (Algebra.algHom R Rₚ (Module.End Rₚ (QuotSMulTop ((algebraMap R Rₚ) x) Mₚ)))
     rcases isUnit_iff_exists.mp (IsUnit.algebraMap_of_algebraMap (r := r.1) alg.toLinearMap
@@ -354,8 +354,8 @@ lemma isLocalize_at_prime_dim_eq_prime_depth_of_isCohenMacaulay
     have eq_succ : Module.supportDim Rₚ M'ₚ + 1 = Module.supportDim Rₚ Mₚ :=
       Module.supportDim_quotSMulTop_succ_eq_supportDim
         (reg.of_isLocalizedModule Rₚ p.primeCompl f) map_mem
-    have := isLocalizedModule_quotSMulTop_isLocalizedModule_map p Rₚ a M Mₚ f
-    simp [← eq_succ, ← hn, depth_eq, ih M' M'ₚ (quotSMulTop_isLocalizedModule_map Rₚ a M Mₚ f)
+    have := isLocalizedModule_quotSMulTopIsLocalizedModuleMap p Rₚ a M Mₚ f
+    simp [← eq_succ, ← hn, depth_eq, ih M' M'ₚ (quotSMulTopIsLocalizedModuleMap Rₚ a M Mₚ f)
       inferInstance ‹_› netop' depth_eq.symm]
 
 lemma isLocalize_at_prime_isCohenMacaulay_of_isCohenMacaulay [IsLocalRing Rₚ] [Module.Finite R M]

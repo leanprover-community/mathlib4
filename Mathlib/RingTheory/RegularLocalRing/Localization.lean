@@ -32,11 +32,7 @@ theorem Auslander_Buchsbaum_Serre [IsLocalRing R] [IsNoetherianRing R] [Small.{v
 lemma isRegularLocalRing_localization [IsRegularLocalRing R] (p : Ideal R) [p.IsPrime] :
     IsRegularLocalRing (Localization.AtPrime p) := by
   apply IsRegularLocalRing.of_globalDimension_lt_top.{u, u}
-  have : globalDimension.{u} (Localization.AtPrime p) ≤ globalDimension.{u} R := by
-    rw [globalDimension_eq_iSup_loclization_prime R]
-    apply le_iSup (fun (q : PrimeSpectrum R) ↦ globalDimension.{u} (Localization.AtPrime q.1))
-      ⟨p, inferInstance⟩
-  apply lt_of_le_of_lt this
+  apply lt_of_le_of_lt (globalDimension_localization_le p.primeCompl)
   rw [IsRegularLocalRing.globalDimension_eq_ringKrullDim]
   exact ringKrullDim_lt_top
 
@@ -50,11 +46,8 @@ lemma isRegularRing_of_globalDimension_lt_top [IsNoetherianRing R] [Small.{v} R]
     (h : globalDimension.{v} R < ⊤) :  IsRegularRing R := by
   apply isRegularRing_iff.mpr (fun p hp ↦ ?_)
   have : Small.{v} (Localization.AtPrime p) := small_of_surjective Localization.mkHom_surjective
-  have : globalDimension.{v} (Localization.AtPrime p) ≤ globalDimension.{v} R := by
-    rw [globalDimension_eq_iSup_loclization_prime R]
-    apply le_iSup (fun (q : PrimeSpectrum R) ↦ globalDimension.{v} (Localization.AtPrime q.1))
-      ⟨p, hp⟩
-  exact IsRegularLocalRing.of_globalDimension_lt_top.{u, v} (lt_of_le_of_lt this h)
+  exact IsRegularLocalRing.of_globalDimension_lt_top.{u, v}
+    (lt_of_le_of_lt (globalDimension_localization_le p.primeCompl) h)
 
 lemma isRegularRing_of_isRegularLocalRing [IsRegularLocalRing R] : IsRegularRing R := by
   apply isRegularRing_of_globalDimension_lt_top.{u, u}
