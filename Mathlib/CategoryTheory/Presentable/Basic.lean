@@ -149,7 +149,7 @@ abbrev IsCardinalPresentable : Prop := (coyoneda.obj (op X)).IsCardinalAccessibl
 
 variable (C) in
 /-- The property of objects that are `κ`-presentable. -/
-def isCardinalPresentable : ObjectProperty C := fun X ↦ IsCardinalPresentable X κ
+abbrev isCardinalPresentable : ObjectProperty C := fun X ↦ IsCardinalPresentable X κ
 
 instance (X : (isCardinalPresentable C κ).FullSubcategory) :
     IsCardinalPresentable X.obj κ :=
