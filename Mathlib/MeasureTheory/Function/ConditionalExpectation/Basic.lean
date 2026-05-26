@@ -144,7 +144,8 @@ theorem condExp_const (hm : m ≤ m₀) (c : E) [IsFiniteMeasure μ] :
     μ[fun _ : α ↦ c | m] = fun _ ↦ c :=
   condExp_of_stronglyMeasurable hm stronglyMeasurable_const (integrable_const c)
 
-theorem condExp_ae_eq_condExpL1 (hm : m ≤ m₀) [hμm : SigmaFinite (μ.trim hm)] (f : α → E) :
+theorem condExp_ae_eq_condExpL1 [CompleteSpace E]
+    (hm : m ≤ m₀) [hμm : SigmaFinite (μ.trim hm)] (f : α → E) :
     μ[f | m] =ᵐ[μ] condExpL1 hm μ f := by
   rw [condExp_of_sigmaFinite hm]
   by_cases hfi : Integrable f μ
@@ -157,7 +158,8 @@ theorem condExp_ae_eq_condExpL1 (hm : m ≤ m₀) [hμm : SigmaFinite (μ.trim h
   rw [if_neg hfi, condExpL1_undef hfi]
   exact (coeFn_zero _ _ _).symm
 
-theorem condExp_ae_eq_condExpL1CLM (hm : m ≤ m₀) [SigmaFinite (μ.trim hm)] (hf : Integrable f μ) :
+theorem condExp_ae_eq_condExpL1CLM [CompleteSpace E]
+    (hm : m ≤ m₀) [SigmaFinite (μ.trim hm)] (hf : Integrable f μ) :
     μ[f | m] =ᵐ[μ] condExpL1CLM E hm μ (hf.toL1 f) := by
   refine (condExp_ae_eq_condExpL1 hm f).trans (Eventually.of_forall fun x => ?_)
   rw [condExpL1_eq hf]
@@ -188,6 +190,8 @@ theorem stronglyMeasurable_condExp : StronglyMeasurable[m] (μ[f | m]) := by
   · exact hfm
   · exact aestronglyMeasurable_condExpL1.stronglyMeasurable_mk
   · exact stronglyMeasurable_zero
+
+variable [CompleteSpace E]
 
 @[gcongr]
 theorem condExp_congr_ae (h : f =ᵐ[μ] g) : μ[f | m] =ᵐ[μ] μ[g | m] := by
@@ -399,7 +403,7 @@ end RCLike
 end NormedSpace
 
 section Real
-variable [InnerProductSpace ℝ E]
+variable [InnerProductSpace ℝ E] [CompleteSpace E]
 
 -- TODO: Generalize via the conditional Jensen inequality
 lemma eLpNorm_condExp_le : eLpNorm (μ[f | m]) 2 μ ≤ eLpNorm f 2 μ := by
@@ -450,6 +454,8 @@ theorem tendsto_condExpL1_of_dominated_convergence (hm : m ≤ m₀) [SigmaFinit
     (hfs : ∀ᵐ x ∂μ, Tendsto (fun n => fs n x) atTop (𝓝 (f x))) :
     Tendsto (fun n => condExpL1 hm μ (fs n)) atTop (𝓝 (condExpL1 hm μ f)) :=
   tendsto_setToFun_of_dominated_convergence _ bound_fs hfs_meas h_int_bound_fs hfs_bound hfs
+
+variable [CompleteSpace E]
 
 /-- If two sequences of functions have a.e. equal conditional expectations at each step, converge
 and verify dominated convergence hypotheses, then the conditional expectations of their limits are

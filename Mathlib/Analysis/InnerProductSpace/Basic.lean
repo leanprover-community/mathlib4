@@ -1001,6 +1001,8 @@ example :
     (instInnerProductSpaceRealComplex : InnerProductSpace ℝ ℂ) = RCLike.toInnerProductSpaceReal :=
   rfl
 
+theorem Real.inner_apply (x y : ℝ) : inner ℝ x y = x * y := by rw [mul_comm]; rfl
+
 section IsPosSemidef
 
 variable [AddCommGroup E] [NormedAddCommGroup E] [InnerProductSpace ℝ E]

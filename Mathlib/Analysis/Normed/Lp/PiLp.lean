@@ -1148,8 +1148,6 @@ variable [Semiring 𝕜] [∀ i, AddCommGroup (β i)] [∀ i, SeminormedAddCommG
 @[simps! apply symm_apply]
 def continuousLinearEquiv : PiLp p β ≃L[𝕜] ∀ i, β i where
   toLinearEquiv := WithLp.linearEquiv _ _ _
-  continuous_toFun := continuous_ofLp _ _
-  continuous_invFun := continuous_toLp p _
 
 lemma coe_continuousLinearEquiv :
     ⇑(PiLp.continuousLinearEquiv p 𝕜 β) = ofLp := rfl

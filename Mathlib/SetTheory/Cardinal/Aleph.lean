@@ -6,6 +6,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Floris van Doorn, Violeta Hernández P
 module
 
 public import Mathlib.Algebra.Order.Monoid.Basic
+public import Mathlib.SetTheory.Cardinal.Cofinality.Enum
 public import Mathlib.SetTheory.Cardinal.ToNat
 public import Mathlib.SetTheory.Cardinal.ENat
 public import Mathlib.SetTheory.Ordinal.Enum
@@ -309,6 +310,11 @@ theorem _root_.Ordinal.type_lt_cardinal : typeLT Cardinal = Ordinal.univ.{u, u +
 @[simp]
 theorem mk_cardinal : #Cardinal = univ.{u, u + 1} := by
   simpa only [card_type, card_univ] using congr_arg card type_lt_cardinal
+
+theorem _root_.Order.cof_cardinal : Order.cof Cardinal.{u} = Cardinal.univ.{u, u + 1} := by
+  simpa using preAleph.cof_congr.symm
+
+instance : IsRegularCardinalOrder Cardinal := ⟨by simp [Order.cof_cardinal]⟩
 
 theorem preAleph_lt_preAleph {o₁ o₂ : Ordinal} : preAleph o₁ < preAleph o₂ ↔ o₁ < o₂ :=
   preAleph.lt_iff_lt
