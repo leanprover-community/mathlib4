@@ -35,6 +35,9 @@ public import Mathlib.RingTheory.Extension.Basic
 - `Algebra.Generators.Cotangent`: The cotangent space w.r.t. `P = R[X] → S`, i.e. the
   space `I/I²` with `I` being the kernel of the presentation.
 
+- `Algebra.Generators.mvPolynomial`: The canonical `R`-generators of the polynomial algebra
+  `MvPolynomial ι R`, indexed by `ι` via the variables `X`.
+
 ## TODOs
 
 Currently, Lean does not see through the `ι` field of terms of `Generators R S` obtained
