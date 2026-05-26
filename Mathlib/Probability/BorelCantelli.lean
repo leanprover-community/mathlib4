@@ -37,8 +37,8 @@ variable {Ω : Type*} {m0 : MeasurableSpace Ω} {μ : Measure Ω}
 
 section BorelCantelli
 
-variable {ι β : Type*} [LinearOrder ι] [mβ : MeasurableSpace β] [NormedAddCommGroup β]
-  [BorelSpace β] {f : ι → Ω → β} {i j : ι} {s : ι → Set Ω}
+variable {ι β : Type*} [LinearOrder ι] [mβ : MeasurableSpace β] [AddCommGroup β]
+  [NormedAddCommGroup β] [BorelSpace β] {f : ι → Ω → β} {i j : ι} {s : ι → Set Ω}
 
 theorem iIndepFun.indep_comap_natural_of_lt (hf : ∀ i, StronglyMeasurable (f i))
     (hfi : iIndepFun f μ) (hij : i < j) :
