@@ -259,17 +259,17 @@ instance instFrame : Frame (Opens α) := fast_instance% .ofMinimalAxioms frameMi
 theorem mem_himp {U V : Opens α} {x : α} : x ∈ U ⇨ V ↔ ∃ W : Opens α, W ⊓ U ≤ V ∧ x ∈ W := by
   simp [himp_eq_sSup]
 
-theorem himp_eq {U V : Opens α} : Opens.interior ((U : Set α)ᶜ ∪ V) = U ⇨ V := by
+theorem himp_def {U V : Opens α} : U ⇨ V = Opens.interior ((U : Set α)ᶜ ∪ V) := by
   ext x
   simp_rw [coe_interior, _root_.mem_interior, SetLike.mem_coe, mem_himp, ← SetLike.coe_subset_coe,
     coe_inf, Set.inter_subset]
-  exact ⟨fun ⟨W, hsub, hW, hx⟩ => ⟨⟨W, hW⟩, hsub, hx⟩, fun ⟨⟨W, hW⟩, hsub, hx⟩ => ⟨W, hsub, hW, hx⟩⟩
+  exact ⟨fun ⟨⟨W, hW⟩, hsub, hx⟩ => ⟨W, hsub, hW, hx⟩, fun ⟨W, hsub, hW, hx⟩ => ⟨⟨W, hW⟩, hsub, hx⟩⟩
 
 theorem mem_compl {U : Opens α} {x : α} : x ∈ Uᶜ ↔ ∃ V : Opens α, Disjoint V U ∧ x ∈ V := by
   simp [compl_eq_sSup_disjoint]
 
-theorem compl_eq_interior_compl {U : Opens α} : Opens.interior (U : Set α)ᶜ = Uᶜ := by
-  simp [←himp_bot, ←himp_eq]
+theorem interior_compl {U : Opens α} : Opens.interior (U : Set α)ᶜ = Uᶜ := by
+  simp [←himp_bot, himp_def]
 
 /-- The coercion from open sets to sets as a `FrameHom`. -/
 @[simps] protected def frameHom : FrameHom (Opens α) (Set α) where
