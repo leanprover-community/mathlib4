@@ -130,6 +130,7 @@ variable (M) in
 @[simp]
 lemma image_id : image (𝟙 M) ⊤ = ⊤ := by aesop
 
+@[simp]
 lemma image_comp (p' : M' ⟶ M'') : S.image (p ≫ p') = (S.image p).image p' := by cat_disch
 
 end image
