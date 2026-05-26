@@ -28,6 +28,7 @@ universe u v
 open Cardinal Order
 
 /-- A club set is closed under suprema and cofinal. -/
+@[mk_iff]
 structure IsClub {α : Type*} [LinearOrder α] (s : Set α) where
   /-- Club sets are closed under suprema. If `α` is a well-order with the order topology, this
   condition is equivalent to `IsClosed s`. -/
@@ -143,9 +144,14 @@ theorem _root_.Order.IsNormal.isClub_fixedPoints {f : α → α} (hα : cof α �
         ((aleph0_le_cof.lt_of_ne' hα).trans_le' ?_)
       simpa using mk_range_le_lift (f := fun n : ℕ ↦ f^[n] a)
 
+/-- Club sets in regular cardinals correspond one to one with normal functions. -/
+theorem _root_.Order.isNormal_enum_iff_isClub [IsRegularCardinalOrder α]
+    {s : Set α} {hs : IsCofinal s} : IsNormal (Subtype.val ∘ enum s hs) ↔ IsClub s := by
+  simp_rw [isClub_iff, hs, and_true, isNormal_enum_iff_dirSupClosed]
+
 theorem isNormal_enum [IsRegularCardinalOrder α] {s : Set α} (hs : IsClub s) :
     IsNormal (Subtype.val ∘ enum s hs.isCofinal) :=
-  isNormal_enum_iff.2 hs.dirSupClosed
+  isNormal_enum_iff_isClub.2 hs
 
 end WellFoundedLT
 end IsClub

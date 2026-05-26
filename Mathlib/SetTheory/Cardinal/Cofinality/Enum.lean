@@ -149,10 +149,11 @@ theorem enum_bot {α : Type*} [ConditionallyCompleteLinearOrderBot α] [WellFoun
   rw [OrderIso.map_bot]
   rfl
 
-/-- Club sets correspond one to one with normal functions.
+/-- Club sets in regular cardinals correspond one to one with normal functions.
 
-See also `Order.IsClub.isNormal_enum`. -/
-theorem isNormal_enum_iff : IsNormal (Subtype.val ∘ enum s hs) ↔ DirSupClosed s := by
+See also `Order.isNormal_enum_iff_isClub`. -/
+theorem isNormal_enum_iff_dirSupClosed :
+    IsNormal (Subtype.val ∘ enum s hs) ↔ DirSupClosed s := by
   let H := (Subtype.strictMono_coe _).comp (enum s hs).strictMono
   refine ⟨fun he ↦ by simpa using he.dirSupClosed_range, ?_⟩
   rw [isNormal_iff, dirSupClosed_iff_of_linearOrder]
