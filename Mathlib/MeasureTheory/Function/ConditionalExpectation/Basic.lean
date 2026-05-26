@@ -82,7 +82,7 @@ variable {α β E 𝕜 : Type*} [RCLike 𝕜] {m m₀ : MeasurableSpace α} {μ 
   {s : Set α}
 
 section NormedAddCommGroup
-variable [AddCommGroup E] [NormedAddCommGroup E] [CompleteSpace E]
+variable [AddCommGroup E] [NormedAddCommGroup E]
 
 section NormedSpace
 variable [NormedSpace ℝ E]
@@ -442,7 +442,7 @@ lemma condExp_ofNat (n : ℕ) [n.AtLeastTwo] (f : α → R) :
 end NormedRing
 
 section NormedLatticeAddCommGroup
-variable [AddCommGroup E] [NormedAddCommGroup E] [CompleteSpace E] [NormedSpace ℝ E]
+variable [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℝ E]
 
 /-- **Lebesgue dominated convergence theorem**: sufficient conditions under which almost
   everywhere convergence of a sequence of functions implies the convergence of their image by
