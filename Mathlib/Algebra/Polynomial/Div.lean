@@ -698,6 +698,13 @@ lemma sub_divByMonic (p₁ p₂ q : R[X]) : (p₁ - p₂) /ₘ q = p₁ /ₘ q -
 lemma sub_modByMonic (p₁ p₂ q : R[X]) : (p₁ - p₂) %ₘ q = p₁ %ₘ q - p₂ %ₘ q := by
   simp [sub_eq_add_neg, add_modByMonic, neg_modByMonic]
 
+lemma mul_divByMonic_assoc (p₁ p₂ q : R[X]) (hd : q ∣ p₂) :
+    (p₁ * p₂) /ₘ q = p₁ * (p₂ /ₘ q) := by
+  by_cases h : q.Monic
+  · obtain ⟨k, rfl⟩ := hd
+    rw [mul_left_comm]; simp only [mul_divByMonic_cancel_left _ h]
+  · simp [divByMonic_eq_of_not_monic _ h]
+
 lemma mul_modByMonic (p₁ p₂ q : R[X]) : (p₁ * p₂) %ₘ q = (p₁ %ₘ q) * (p₂ %ₘ q) %ₘ q := by
   by_cases! h : ¬ q.Monic
   · simp [Polynomial.modByMonic_eq_of_not_monic _ h]
