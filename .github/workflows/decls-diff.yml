@@ -34,8 +34,7 @@ jobs:
           {
             echo "run-id=$RUN_ID"
             echo "new-sha=$NEW_SHA"
-          } >> "$GITHUB_OUTPUT"
-          echo "Resolved: run=$RUN_ID sha=$NEW_SHA"
+          } | tee -a "$GITHUB_OUTPUT"
 
       - name: Checkout new commit
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -51,8 +50,7 @@ jobs:
           set -euo pipefail
           git fetch --quiet origin master
           MB="$(git merge-base "$NEW_SHA" origin/master)"
-          echo "merge-base=$MB" >> "$GITHUB_OUTPUT"
-          echo "merge-base: $MB"
+          echo "merge-base=$MB" | tee -a "$GITHUB_OUTPUT"
 
       - name: Download new-side artifact
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
@@ -73,10 +71,12 @@ jobs:
           RUN="$(gh api "repos/$REPO/actions/runs?head_sha=$MB&event=push&status=success&branch=master" \
                   --jq '[.workflow_runs[] | select(.name=="ci")] | .[0].id // ""')"
           if [ -n "$RUN" ]; then
-            echo "found=true" >> "$GITHUB_OUTPUT"
-            echo "run-id=$RUN" >> "$GITHUB_OUTPUT"
+            {
+              echo "found=true"
+              echo "run-id=$RUN"
+            } | tee -a "$GITHUB_OUTPUT"
           else
-            echo "found=false" >> "$GITHUB_OUTPUT"
+            echo "found=false" | tee -a "$GITHUB_OUTPUT"
             echo "No master Build found for merge-base $MB (cache miss)."
           fi
 
