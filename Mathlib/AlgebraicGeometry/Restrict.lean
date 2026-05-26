@@ -650,7 +650,7 @@ theorem morphismRestrict_appLE {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Y.Opens) (V
     Scheme.Hom.appLE_map]
 
 @[reassoc]
-theorem morphismRestrict_homOfLE_ι_isoImage_hom
+theorem morphismRestrict_homOfLE_isoImage_ι_hom
     {X : Scheme.{u}} {U V : X.Opens} (e : U ≤ V) (W : Opens V) :
     X.homOfLE e ∣_ W ≫ (V.ι.isoImage W).hom =
       (U.ι.isoImage (X.homOfLE e ⁻¹ᵁ W)).hom ≫ X.homOfLE (X.ι_image_homOfLE_le_ι_image e W) := by
