@@ -65,7 +65,7 @@ noncomputable def isColimitOf (t : Cocone F) (hsurj : ∀ x : t.pt, ∃ i xi, x 
   let f : ∀ (x : t.pt), F.obj (α x) := fun x => (hsurj x).choose_spec.choose
   have hf : ∀ (x : t.pt), x = t.ι.app _ (f x) := fun x => (hsurj x).choose_spec.choose_spec
   exact
-    { desc s := TypeCat.ofHom (fun x => s.ι.app _ (f x))
+    { desc s := ↾fun x => s.ι.app _ (f x)
       fac := fun s j => by
         ext y
         obtain ⟨k, l, g, eq⟩ := hinj _ _ _ _ (hf (t.ι.app j y))
@@ -131,7 +131,7 @@ theorem isColimit_eq_iff {t : Cocone F} (ht : IsColimit t) {i j : J} {xi : F.obj
   have : HasColimit F := ⟨_, ht⟩
   refine Iff.trans ?_ (colimit_eq_iff_aux F)
   rw [← (IsColimit.coconePointUniqueUpToIso ht (colimitCoconeIsColimit F)).toEquiv.injective.eq_iff]
-  convert Iff.rfl
+  convert! Iff.rfl
   · exact (congr_hom
       (IsColimit.comp_coconePointUniqueUpToIso_hom ht (colimitCoconeIsColimit F) _) xi).symm
   · exact (congr_hom

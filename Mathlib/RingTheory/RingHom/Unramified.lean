@@ -81,7 +81,7 @@ lemma ofLocalizationPrime :
     OfLocalizationPrime FormallyUnramified := by
   intro R S _ _ f H
   algebraize [f]
-  rw [FormallyUnramified, ← Algebra.unramifiedLocus_eq_univ_iff, Set.eq_univ_iff_forall]
+  rw [FormallyUnramified, Algebra.formallyUnramified_iff_forall]
   intro x
   let Rₓ := Localization.AtPrime (x.asIdeal.comap f)
   let Sₓ := Localization.AtPrime x.asIdeal
@@ -95,13 +95,13 @@ lemma ofLocalizationSpanTarget :
     OfLocalizationSpanTarget FormallyUnramified := by
   intro R S _ _ f s hs H
   algebraize [f]
-  rw [FormallyUnramified, ← Algebra.unramifiedLocus_eq_univ_iff, Set.eq_univ_iff_forall]
+  rw [FormallyUnramified, Algebra.formallyUnramified_iff_forall]
   intro x
   obtain ⟨r, hr, hrx⟩ : ∃ r ∈ s, x ∈ PrimeSpectrum.basicOpen r := by
     simpa using (PrimeSpectrum.iSup_basicOpen_eq_top_iff'.mpr hs).ge
       (TopologicalSpace.Opens.mem_top x)
   refine Algebra.basicOpen_subset_unramifiedLocus_iff.mpr ?_ hrx
-  convert H ⟨r, hr⟩
+  convert! H ⟨r, hr⟩
   dsimp
   rw [← algebraMap_toAlgebra f, ← IsScalarTower.algebraMap_eq,
     formallyUnramified_algebraMap]
