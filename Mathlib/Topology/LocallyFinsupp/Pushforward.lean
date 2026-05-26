@@ -12,18 +12,19 @@ public import Mathlib.Topology.Spectral.Basic
 # Pushforward of functions with locally finite support
 
 In this file we define the notion of the pushforward of a function with locally finite support
-between prespectral spaces. This is a nonstandard notion that arises because of our choice in
-mathlib to model algebraic cycles as functions with locally finite support.
-This makes it so that standard notions in the theory of cycles can be defined in more generality
-than usual, and allows us to reuse a lot of API to develop the theory of cycles.
+between prespectral spaces along a spectral map. This is used for defining the (proper) pushforward
+of algebraic cycles in algebraic geometry.
 
-In the usual definition of the proper pushforward of algebraic cycles, one needs to adjust the
-coefficients by scaling by the degree of the corresponding extension of residue fields (assuming
-the dimensions are the same and hence that this is a finite extension), or in the case where the
-dimensions of the points differ scaling by zero. This is described in more detail in stacks 02R4.
-The exact values of this scaling function are not relevant for the mere construction of the
-pushforward, so our definition of the pushforward of a cycle `c` on a scheme `X` with coefficients
-in `R` is done with respect to some `w : X → R`, about which we do not assume anything.
+## Main declarations
+
+- `Function.locallyFinsupp.map`: If `f : X → Y` is a spectral map between spectral spaces and `c : X → R` is a
+  locally of finite support, the pushforward of `c` along `f` at `y : Y` is `∑ᶠ x ∈ f ⁻¹' {z}, c x * w x`, where
+  `w : X → R` is a weight function.
+
+## Notes
+
+In the case of algebraic cycles, the weight function used in `Function.locallyFinsupp.map` will be specialized to the degree of the residue field extension
+(see https://stacks.math.columbia.edu/tag/02R4).
 -/
 
 @[expose] public section
