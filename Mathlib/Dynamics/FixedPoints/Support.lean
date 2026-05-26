@@ -58,4 +58,5 @@ theorem HasCompactFixedSupport.symm {f : α ≃ α} (hf : HasCompactFixedSupport
     HasCompactFixedSupport f.symm := by
   rw [HasCompactFixedSupport_iff'] at *
   rwa [fixedPoints_symm]
+
 end Function
