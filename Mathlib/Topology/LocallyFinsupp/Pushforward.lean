@@ -77,5 +77,4 @@ lemma map_id [PrespectralSpace X] (hw : ∀ z : X, w z = 1) :
   ext
   simp [map, hw]
 
-end map
 end Function.locallyFinsupp
