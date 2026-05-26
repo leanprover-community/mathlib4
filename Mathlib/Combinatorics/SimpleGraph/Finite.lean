@@ -549,7 +549,7 @@ theorem card_commonNeighbors_top [DecidableEq V] {v w : V} (h : v ≠ w) :
 
 @[simp] lemma insert_neighborFinset_eq_univ [DecidableEq V] [DecidableRel G.Adj] (v : V) :
     insert v (G.neighborFinset v) = univ ↔ G.IsUniversal v := by
-  simp [IsUniversal, Finset.ext_iff]
+  simp only [Finset.ext_iff, mem_insert, mem_neighborFinset, IsUniversal]
   grind
 
 @[simp] lemma neighborFinset_eq_erase_univ [DecidableEq V] [DecidableRel G.Adj] (v : V) :

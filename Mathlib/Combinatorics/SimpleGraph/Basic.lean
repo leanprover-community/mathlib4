@@ -1030,7 +1030,7 @@ def IsUniversal (G : SimpleGraph V) (v : V) : Prop := ∀ ⦃w⦄, v ≠ w → G
 
 @[simp] lemma insert_neighborSet_eq_univ :
     insert v (G.neighborSet v) = Set.univ ↔ G.IsUniversal v := by
-  simp [IsUniversal, Set.ext_iff]
+  simp only [Set.ext_iff, Set.mem_insert_iff, mem_neighborSet, IsUniversal]
   grind
 
 @[simp] lemma neighborSet_eq_compl : G.neighborSet v = {v}ᶜ ↔ G.IsUniversal v := by
