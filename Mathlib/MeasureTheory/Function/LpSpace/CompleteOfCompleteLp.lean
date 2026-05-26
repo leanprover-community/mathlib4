@@ -21,7 +21,8 @@ open Filter ContinuousLinearMap
 
 namespace MeasureTheory
 
-variable {α E : Type*} [NormedAddCommGroup E] {mα : MeasurableSpace α} {p : ℝ≥0∞} {μ : Measure α}
+variable {α E : Type*} [AddCommGroup E] [NormedAddCommGroup E] {mα : MeasurableSpace α} {p : ℝ≥0∞}
+  {μ : Measure α}
 
 lemma FinStronglyMeasurable.exists_measurableSet_measure_pos_lt_top {f : α → E}
     (hf : FinStronglyMeasurable f μ) (h'f : ¬(f =ᵐ[μ] 0)) :
