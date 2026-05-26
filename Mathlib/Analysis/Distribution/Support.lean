@@ -169,7 +169,8 @@ end normed
 
 open SchwartzMap Distribution TemperedDistribution
 
-variable [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedSpace ℝ E] [NormedSpace ℂ F]
+variable [AddCommGroup E] [NormedAddCommGroup E] [AddCommGroup F] [NormedAddCommGroup F]
+  [NormedSpace ℝ E] [NormedSpace ℂ F]
 
 variable {f : 𝓢'(E, F)} {s : Set E}
 
