@@ -121,7 +121,8 @@ end cbmApplyMeasure
 
 namespace VectorMeasure
 
-variable (μ ν : VectorMeasure X F) (B : E →L[ℝ] F →L[ℝ] G) {f g : X → E} {φ : X → Y}
+variable (μ ν : VectorMeasure X F) (B : E →L[ℝ] F →L[ℝ] G) {C : E →L[ℝ] F →L[ℝ] G}
+  {f g : X → E} {φ : X → Y}
 
 @[simp] lemma transpose_zero : (0 : VectorMeasure X F).transpose B = 0 := by
   simp [transpose]
@@ -267,43 +268,10 @@ variable {μ ν B}
 lemma integral_eq_setToFun : ∫ᵛ x, f x ∂[B; μ] = setToFun (μ.transpose B).variation (μ.transpose B)
     (dominatedFinMeasAdditive_cbmApplyMeasure μ B) f := by rfl
 
-@[simp] lemma integrable_zero_vectorMeasure : (0 : VectorMeasure X F).Integrable f B := by
-  simp [VectorMeasure.Integrable, transpose]
-
-lemma integrable_add_vectorMeasure (hμ : μ.Integrable f B) (hν : ν.Integrable f B) :
-    (μ + ν).Integrable f B := by
-  apply Integrable.mono_measure (integrable_add_measure.2 ⟨hμ, hν⟩)
-  grw [transpose_add, variation_add_le]
-
-lemma integrable_finsetSum_vectorMeasure {ι : Type*} {μ : ι → VectorMeasure X F} {s : Finset ι}
-    (h : ∀ i ∈ s, (μ i).Integrable f B) :
-    (∑ i ∈ s, μ i).Integrable f B := by
-  classical
-  induction s using Finset.induction_on with
-  | empty => simp
-  | insert a s ha ih =>
-      simp only [Finset.mem_insert, forall_eq_or_imp, ha, not_false_eq_true,
-        Finset.sum_insert] at h ⊢
-      exact integrable_add_vectorMeasure h.1 (ih h.2)
-
-lemma Integrable.restrict (hf : μ.Integrable f B) {s : Set X} :
-    (μ.restrict s).Integrable f B := by
-  by_cases hs : MeasurableSet s
-  · simp only [VectorMeasure.Integrable, transpose_restrict, variation_restrict hs]
-    exact MeasureTheory.Integrable.restrict hf
-  · simp [restrict_not_measurable _ hs]
-
-@[simp] theorem integral_zero_vectorMeasure : ∫ᵛ x, f x ∂[B; (0 : VectorMeasure X F)] = 0 := by
-  apply setToFun_zero_left'
-  simp [transpose]
-
 theorem integral_of_not_completeSpace (hG : ¬CompleteSpace G) :
     ∫ᵛ x, f x ∂[B; μ] = 0 := by
   simp [integral, setToFun, hG]
 
-theorem integral_fun_add (hf : μ.Integrable f B) (hg : μ.Integrable g B) :
-    ∫ᵛ x, f x + g x ∂[B; μ] = ∫ᵛ x, f x ∂[B; μ] + ∫ᵛ x, g x ∂[B; μ] :=
-  setToFun_add (dominatedFinMeasAdditive_cbmApplyMeasure μ B) hf hg
 variable {f g : X → E} {μ ν : VectorMeasure X F} {B C : E →L[ℝ] F →L[ℝ] G}
 
 @[simp]
@@ -373,71 +341,46 @@ section Function
 
 theorem integral_undef (h : ¬ μ.Integrable f B) :
     ∫ᵛ x, f x ∂[B; μ] = 0 := by
-  by_cases hG : CompleteSpace G
-  · simp [integral, setToFun_undef _ h]
-  · simp [integral, hG]
+  simp [integral, setToFun_undef _ h]
 
 @[simp]
-theorem integral_zero : ∫ᵛ _, 0 ∂[B; μ] = 0 := by
-  by_cases hG : CompleteSpace G
-  · simp only [integral, hG]
-    exact setToFun_zero (dominatedFinMeasAdditive_cbmApplyMeasure μ B)
-  · simp [integral, hG]
+theorem integral_zero : ∫ᵛ _, 0 ∂[B; μ] = 0 :=
+  setToFun_zero _
 
 theorem integral_congr_ae (h : f =ᵐ[(μ.transpose B).variation] g) :
-    ∫ᵛ x, f x ∂[B; μ] = ∫ᵛ x, g x ∂[B; μ] := by
-  by_cases hG : CompleteSpace G
-  · simp only [integral, hG]
-    exact setToFun_congr_ae (dominatedFinMeasAdditive_cbmApplyMeasure μ B) h
-  · simp [integral, hG]
+    ∫ᵛ x, f x ∂[B; μ] = ∫ᵛ x, g x ∂[B; μ] :=
+  setToFun_congr_ae _ h
 
 theorem integral_eq_zero_of_ae (hf : f =ᵐ[(μ.transpose B).variation] 0) :
     ∫ᵛ x, f x ∂[B; μ] = 0 := by
   simp [integral_congr_ae hf]
 
 theorem integral_fun_add (hf : μ.Integrable f B) (hg : μ.Integrable g B) :
-    ∫ᵛ x, f x + g x ∂[B; μ] = ∫ᵛ x, f x ∂[B; μ] + ∫ᵛ x, g x ∂[B; μ] := by
-  by_cases hG : CompleteSpace G
-  · simp only [integral, hG]
-    exact setToFun_add (dominatedFinMeasAdditive_cbmApplyMeasure μ B) hf hg
-  · simp [integral, hG]
+    ∫ᵛ x, f x + g x ∂[B; μ] = ∫ᵛ x, f x ∂[B; μ] + ∫ᵛ x, g x ∂[B; μ] :=
+  setToFun_add _ hf hg
 
 theorem integral_add (hf : μ.Integrable f B) (hg : μ.Integrable g B) :
     ∫ᵛ x, (f + g) x ∂[B; μ] = ∫ᵛ x, f x ∂[B; μ] + ∫ᵛ x, g x ∂[B; μ] := integral_fun_add hf hg
 
 theorem integral_finsetSum (s : Finset ι) {f : ι → X → E}
     (hf : ∀ i ∈ s, μ.Integrable (f i) B) :
-    ∫ᵛ x, ∑ i ∈ s, f i x ∂[B; μ] = ∑ i ∈ s, ∫ᵛ x, f i x ∂[B; μ] := by
-  by_cases hG : CompleteSpace G
-  · simp only [integral, hG]
-    exact setToFun_finsetSum (dominatedFinMeasAdditive_cbmApplyMeasure μ B) s hf
-  · simp [integral, hG]
+    ∫ᵛ x, ∑ i ∈ s, f i x ∂[B; μ] = ∑ i ∈ s, ∫ᵛ x, f i x ∂[B; μ] :=
+  setToFun_finsetSum _ s hf
 
 variable (f μ B) in
 @[integral_simps]
 theorem integral_fun_neg (f : X → E) :
     ∫ᵛ x, -f x ∂[B; μ]= -∫ᵛ x, f x ∂[B; μ] :=
-  setToFun_neg (dominatedFinMeasAdditive_cbmApplyMeasure μ B) f
-theorem integral_fun_neg :
-    ∫ᵛ x, -f x ∂[B; μ]= -∫ᵛ x, f x ∂[B; μ] := by
-  by_cases hG : CompleteSpace G
-  · simp only [integral, hG, ↓reduceDIte, transpose_eq_cbmApplyMeasure]
-    exact setToFun_neg (dominatedFinMeasAdditive_cbmApplyMeasure μ B) f
-  · simp [integral, hG]
+  setToFun_neg _ f
 
 variable (f μ B) in
 @[integral_simps]
 theorem integral_neg :
-    ∫ᵛ x, (-f) x ∂[B; μ] = -∫ᵛ x, f x ∂[B; μ] := integral_fun_neg f μ B
+    ∫ᵛ x, (-f) x ∂[B; μ] = -∫ᵛ x, f x ∂[B; μ] := integral_fun_neg μ B f
 
 theorem integral_fun_sub (hf : μ.Integrable f B) (hg : μ.Integrable g B) :
     ∫ᵛ x, f x - g x ∂[B; μ] = ∫ᵛ x, f x ∂[B; μ] - ∫ᵛ x, g x ∂[B; μ] :=
-  setToFun_sub (dominatedFinMeasAdditive_cbmApplyMeasure μ B) hf hg
-    ∫ᵛ x, f x - g x ∂[B; μ] = ∫ᵛ x, f x ∂[B; μ] - ∫ᵛ x, g x ∂[B; μ] := by
-  by_cases hG : CompleteSpace G
-  · simp only [integral, hG]
-    exact setToFun_sub (dominatedFinMeasAdditive_cbmApplyMeasure μ B) hf hg
-  · simp [integral, hG]
+  setToFun_sub _ hf hg
 
 theorem integral_sub (hf : μ.Integrable f B) (hg : μ.Integrable g B) :
     ∫ᵛ x, (f - g) x ∂[B; μ] = ∫ᵛ x, f x ∂[B; μ] - ∫ᵛ x, g x ∂[B; μ] := integral_fun_sub hf hg
@@ -446,79 +389,112 @@ variable (f μ B) in
 @[integral_simps]
 theorem integral_fun_smul (c : ℝ) (f : X → E) :
     ∫ᵛ x, c • f x ∂[B; μ] = c • ∫ᵛ x, f x ∂[B; μ] :=
-  setToFun_smul (dominatedFinMeasAdditive_cbmApplyMeasure μ B) (by simp) c f
-theorem integral_fun_smul (c : ℝ) :
-    ∫ᵛ x, c • f x ∂[B; μ] = c • ∫ᵛ x, f x ∂[B; μ] := by
-  by_cases hG : CompleteSpace G
-  · simp only [integral, hG]
-    exact setToFun_smul (dominatedFinMeasAdditive_cbmApplyMeasure μ B) (by simp) c f
-  · simp [integral, hG]
+  setToFun_smul _ (by simp) c f
 
 variable (f μ B) in
 @[integral_simps]
 theorem integral_smul (c : ℝ) :
-    ∫ᵛ x, (c • f) x ∂[B; μ] = c • ∫ᵛ x, f x ∂[B; μ] := integral_fun_smul f μ B c
+    ∫ᵛ x, (c • f) x ∂[B; μ] = c • ∫ᵛ x, f x ∂[B; μ] := integral_fun_smul μ B c f
 
 end Function
 
 section VectorMeasure
 
-variable (f μ B) in
+@[simp] lemma integrable_zero_vectorMeasure : (0 : VectorMeasure X F).Integrable f B := by
+  simp [VectorMeasure.Integrable, transpose]
+
+lemma integrable_add_vectorMeasure (hμ : μ.Integrable f B) (hν : ν.Integrable f B) :
+    (μ + ν).Integrable f B := by
+  apply Integrable.mono_measure (integrable_add_measure.2 ⟨hμ, hν⟩)
+  grw [transpose_add, variation_add_le]
+
+lemma integrable_finsetSum_vectorMeasure {ι : Type*} {μ : ι → VectorMeasure X F} {s : Finset ι}
+    (h : ∀ i ∈ s, (μ i).Integrable f B) :
+    (∑ i ∈ s, μ i).Integrable f B := by
+  classical
+  induction s using Finset.induction_on with
+  | empty => simp
+  | insert a s ha ih =>
+      simp only [Finset.mem_insert, forall_eq_or_imp, ha, not_false_eq_true,
+        Finset.sum_insert] at h ⊢
+      exact integrable_add_vectorMeasure h.1 (ih h.2)
+
+lemma Integrable.restrict (hf : μ.Integrable f B) {s : Set X} :
+    (μ.restrict s).Integrable f B := by
+  by_cases hs : MeasurableSet s
+  · simp only [VectorMeasure.Integrable, transpose_restrict, variation_restrict hs]
+    exact MeasureTheory.Integrable.restrict hf
+  · simp [restrict_not_measurable _ hs]
+
 @[simp]
 theorem integral_zero_vectorMeasure :
     ∫ᵛ x, f x ∂[B; (0 : VectorMeasure X F)] = 0 := by simp [integral]
 
 lemma integral_of_isEmpty [IsEmpty X] : ∫ᵛ x, f x ∂[B; μ] = 0 := by simp [eq_zero_of_isEmpty]
 
+@[simp]
+theorem integral_smul_vectorMeasure (f : X → E) (c : ℝ) :
+    ∫ᵛ x, f x ∂[B; c • μ] = c • ∫ᵛ x, f x ∂[B; μ] := by
+  by_cases hG : CompleteSpace G; swap
+  · simp [integral, setToFun, hG]
+  simp_rw [integral, ← setToFun_smul_left]
+  have : ((c • μ).transpose B).variation = ‖c‖₊ • (μ.transpose B).variation := by
+    simp [transpose, mapRange_smul, variation_smul]
+  simp only [this, mul_one]
+  have : DominatedFinMeasAdditive (μ.transpose B).variation ((c • μ).transpose B) ‖c‖ := by
+    simp only [transpose_smul, coe_smul, Real.norm_eq_abs]
+    simpa [← transpose_eq_cbmApplyMeasure] using
+      (dominatedFinMeasAdditive_cbmApplyMeasure μ B).smul c
+  rw! [← setToFun_congr_smul_measure' _ this, transpose_smul]
+  rfl
+
 theorem integral_add_vectorMeasure (hμ : μ.Integrable f B) (hν : ν.Integrable f B) :
-    ∫ᵛ x, f x ∂[B; μ + ν] = ∫ᵛ x, f x ∂[B; μ] + ∫ᵛ x, f x ∂[B; ν] := by
-  by_cases hG : CompleteSpace G
-  · simp only [integral, hG, ↓reduceDIte, transpose_add_vectorMeasure, coe_add,
-      transpose_eq_cbmApplyMeasure, ← setToFun_add_measure
-        (dominatedFinMeasAdditive_cbmApplyMeasure μ B)
-        (dominatedFinMeasAdditive_cbmApplyMeasure ν B) hμ hν]
-    refine (setToFun_congr_measure_of_integrable 1 ENNReal.one_ne_top ?_ _ _ f ?_).symm
-    · simpa using variation_add_le
-    · exact hμ.add_measure hν
-  · simp [integral, hG]
+    ∫ᵛ x, f x ∂[B; μ + ν] = ∫ᵛ x, f x ∂[B; μ] + ∫ᵛ x, f x ∂[B; ν] :=
+  setToFun_add_left'' (by simp [transpose]) hμ hν (by grw [transpose_add, variation_add_le])
+    zero_le_one zero_le_one zero_le_one
 
 theorem integral_finsetSum_vectorMeasure {μ : ι → VectorMeasure X F}
     {s : Finset ι} (hf : ∀ i ∈ s, (μ i).Integrable f B) :
     ∫ᵛ x, f x ∂[B; ∑ i ∈ s, μ i] = ∑ i ∈ s, ∫ᵛ x, f x ∂[B; μ i] := by
-  by_cases hG : CompleteSpace G
-  · by_cases! hs : s.Nonempty
-    · simp only [integral, hG, ↓reduceDIte, transpose_finsetSum_vectorMeasure, coe_finsetSum,
-        transpose_eq_cbmApplyMeasure, ← setToFun_finsetSum_measure hs
-          (fun i ↦ dominatedFinMeasAdditive_cbmApplyMeasure (μ i) B) hf]
-      refine (setToFun_congr_measure_of_integrable 1 ENNReal.one_ne_top ?_ _ _ f ?_).symm
-      · simpa using variation_finsetSum_le s _
-      · exact integrable_finsetSum_measure.2 hf
-    · simp_all
-  · simp [integral, hG]
+  classical
+  induction s using Finset.induction_on with
+  | empty => simp
+  | insert a s ha ih =>
+    simp only [Finset.mem_insert, forall_eq_or_imp, ha, not_false_eq_true,
+      Finset.sum_insert] at hf ⊢
+    rw [integral_add_vectorMeasure hf.1 (integrable_finsetSum_vectorMeasure hf.2), ih hf.2]
 
-variable (f μ B) in
 @[integral_simps]
 theorem integral_neg_vectorMeasure :
     ∫ᵛ x, f x ∂[B; -μ] = -∫ᵛ x, f x ∂[B; μ] := by
-  by_cases hG : CompleteSpace G
-  · simp [integral, hG, ← setToFun_neg']
-  · simp [integral, hG]
+  simp [integral, ← setToFun_neg']
 
 theorem integral_sub_vectorMeasure (hμ : μ.Integrable f B) (hν : ν.Integrable f B) :
     ∫ᵛ x, f x ∂[B; μ - ν] = ∫ᵛ x, f x ∂[B; μ] - ∫ᵛ x, f x ∂[B; ν] := by
-  by_cases hG : CompleteSpace G
-  · simp only [integral, hG, ↓reduceDIte, transpose_sub_vectorMeasure, coe_sub,
-      transpose_eq_cbmApplyMeasure, ← setToFun_sub_measure
-        (dominatedFinMeasAdditive_cbmApplyMeasure μ B)
-        (dominatedFinMeasAdditive_cbmApplyMeasure ν B) hμ hν]
-    refine (setToFun_congr_measure_of_integrable 1 ENNReal.one_ne_top ?_ _ _ f ?_).symm
-    · simpa using variation_sub_le
-    · exact hμ.add_measure hν
-  · simp [integral, hG]
+  rw [sub_eq_add_neg, integral_add_vectorMeasure hμ, integral_neg_vectorMeasure, ← sub_eq_add_neg]
+  simpa [VectorMeasure.Integrable] using hν
 
 end VectorMeasure
 
 section cbm
+
+@[simp] lemma integrable_zero_cbm : μ.Integrable f (0 : E →L[ℝ] F →L[ℝ] G) := by
+  simp [VectorMeasure.Integrable]
+
+lemma integrable_add_cbm (hB : μ.Integrable f B) (hC : μ.Integrable f C) :
+    μ.Integrable f (B + C) := by
+  apply Integrable.mono_measure (integrable_add_measure.2 ⟨hB, hC⟩)
+  grw [transpose_add_cbm, variation_add_le]
+
+lemma integrable_finsetSum_cbm {ι : Type*} {B : ι → E →L[ℝ] F →L[ℝ] G} {s : Finset ι}
+    (h : ∀ i ∈ s, μ.Integrable f (B i)) : μ.Integrable f (∑ i ∈ s, B i) := by
+  classical
+  induction s using Finset.induction_on with
+  | empty => simp
+  | insert a s ha ih =>
+      simp only [Finset.mem_insert, forall_eq_or_imp, ha, not_false_eq_true,
+        Finset.sum_insert] at h ⊢
+      exact integrable_add_cbm h.1 (ih h.2)
 
 variable (f μ) in
 @[simp]
@@ -527,58 +503,32 @@ theorem integral_zero_cbm :
   simp [integral]
 
 theorem integral_add_cbm (hB : μ.Integrable f B) (hC : μ.Integrable f C) :
-    ∫ᵛ x, f x ∂[B + C; μ] = ∫ᵛ x, f x ∂[B; μ] + ∫ᵛ x, f x ∂[C; μ] := by
-  by_cases hG : CompleteSpace G
-  · simp only [integral, hG, ↓reduceDIte, transpose_add_cbm, coe_add, transpose_eq_cbmApplyMeasure,
-      ← setToFun_add_measure (dominatedFinMeasAdditive_cbmApplyMeasure μ B)
-        (dominatedFinMeasAdditive_cbmApplyMeasure μ C) hB hC]
-    refine (setToFun_congr_measure_of_integrable 1 ENNReal.one_ne_top ?_ _ _ f ?_).symm
-    · simpa using variation_add_le
-    · exact hB.add_measure hC
-  · simp [integral, hG]
+    ∫ᵛ x, f x ∂[B + C; μ] = ∫ᵛ x, f x ∂[B; μ] + ∫ᵛ x, f x ∂[C; μ] :=
+  setToFun_add_left'' (by simp [transpose]) hB hC (by simp [variation_add_le])
+    zero_le_one zero_le_one zero_le_one
 
 theorem integral_finsetSum_cbm {B : ι → E →L[ℝ] F →L[ℝ] G}
     {s : Finset ι} (hf : ∀ i ∈ s, μ.Integrable f (B i)) :
     ∫ᵛ x, f x ∂[∑ i ∈ s, B i; μ] = ∑ i ∈ s, ∫ᵛ x, f x ∂[B i; μ] := by
-  by_cases hG : CompleteSpace G
-  · by_cases! hs : s.Nonempty
-    · simp only [integral, hG, ↓reduceDIte, transpose_finsetSum_cbm, coe_finsetSum,
-        transpose_eq_cbmApplyMeasure, ← setToFun_finsetSum_measure hs
-          (fun i ↦ dominatedFinMeasAdditive_cbmApplyMeasure μ (B i)) hf]
-      refine (setToFun_congr_measure_of_integrable 1 ENNReal.one_ne_top ?_ _ _ f ?_).symm
-      · simpa using variation_finsetSum_le s _
-      · exact integrable_finsetSum_measure.2 hf
-    · simp_all
-  · simp [integral, hG]
+  classical
+  induction s using Finset.induction_on with
+  | empty => simp
+  | insert a s ha ih =>
+    simp only [Finset.mem_insert, forall_eq_or_imp, ha, not_false_eq_true,
+      Finset.sum_insert] at hf ⊢
+    rw [integral_add_cbm hf.1 (integrable_finsetSum_cbm hf.2), ih hf.2]
 
 @[integral_simps]
 theorem integral_neg_cbm :
     ∫ᵛ x, f x ∂[-B; μ] = -∫ᵛ x, f x ∂[B; μ] := by
-  by_cases hG : CompleteSpace G
-  · simp [integral, hG, ← setToFun_neg']
-  · simp [integral, hG]
+  simp [integral, ← setToFun_neg']
 
 theorem integral_sub_cbm (hB : μ.Integrable f B) (hC : μ.Integrable f C) :
     ∫ᵛ x, f x ∂[B - C; μ] = ∫ᵛ x, f x ∂[B; μ] - ∫ᵛ x, f x ∂[C; μ] := by
-  by_cases hG : CompleteSpace G
-  · simp only [integral, hG, ↓reduceDIte, transpose_sub_cbm, coe_sub,
-      transpose_eq_cbmApplyMeasure, ← setToFun_sub_measure
-        (dominatedFinMeasAdditive_cbmApplyMeasure μ B)
-        (dominatedFinMeasAdditive_cbmApplyMeasure μ C) hB hC]
-    refine (setToFun_congr_measure_of_integrable 1 ENNReal.one_ne_top ?_ _ _ f ?_).symm
-    · simpa using variation_sub_le
-    · exact hB.add_measure hC
-  · simp [integral, hG]
+  rw [sub_eq_add_neg, integral_add_cbm hB, integral_neg_cbm, ← sub_eq_add_neg]
+  simpa [VectorMeasure.Integrable] using hC
 
 end cbm
-
-theorem integral_finsetSum {ι} (s : Finset ι) {f : ι → X → E} (hf : ∀ i ∈ s, μ.Integrable (f i) B) :
-    ∫ᵛ a, ∑ i ∈ s, f i a ∂[B; μ] = ∑ i ∈ s, ∫ᵛ a, f i a ∂[B; μ] :=
-  setToFun_finsetSum _ s hf
-
-theorem integral_undef (hf : ¬ μ.Integrable f B) :
-    ∫ᵛ x, f x ∂[B; μ] = 0 :=
-  setToFun_undef _ hf
 
 theorem Integrable.of_integral_ne_zero (h : ∫ᵛ a, f a ∂[B; μ] ≠ 0) : μ.Integrable f B :=
   Not.imp_symm integral_undef h
@@ -588,17 +538,9 @@ theorem integral_non_aestronglyMeasurable {f : X → E}
     ∫ᵛ a, f a ∂[B; μ] = 0 :=
   integral_undef <| not_and_of_not_left _ h
 
-@[simp]
-theorem integral_zero : ∫ᵛ _, (0 : E) ∂[B; μ] = (0 : G) :=
-  setToFun_zero _
-
 lemma integral_indicator₂ {β : Type*} (f : β → X → E) (s : Set β) (b : β) :
     ∫ᵛ y, s.indicator (f · y) b ∂[B; μ] = s.indicator (fun x ↦ ∫ᵛ y, f x y ∂[B; μ]) b := by
   by_cases hb : b ∈ s <;> simp [hb]
-
-theorem integral_congr_ae (h : f =ᵐ[(μ.transpose B).variation] g) :
-    ∫ᵛ a, f a ∂[B; μ] = ∫ᵛ a, g a ∂[B; μ] :=
-  setToFun_congr_ae _ h
 
 theorem norm_integral_le_lintegral_norm :
     ‖∫ᵛ a, f a ∂[B; μ]‖ ≤ ENNReal.toReal (∫⁻ a, ENNReal.ofReal ‖f a‖ ∂(μ.transpose B).variation) :=
@@ -619,10 +561,6 @@ theorem edist_integral_le_lintegral_edist (hf : μ.Integrable f B) (hg : μ.Inte
       ∫⁻ a, edist (f a) (g a) ∂(μ.transpose B).variation := by
   rw [edist_dist]
   exact ENNReal.ofReal_le_of_le_toReal (dist_integral_le_lintegral_edist hf hg)
-
-theorem integral_eq_zero_of_ae (hf : f =ᵐ[(μ.transpose B).variation] 0) :
-    ∫ᵛ a, f a ∂[B; μ] = 0 := by
-  simp [integral_congr_ae hf, integral_zero]
 
 theorem frequently_ae_ne_zero_of_integral_ne_zero
     (h : ∫ᵛ a, f a ∂[B; μ] ≠ 0) : ∃ᶠ a in ae (μ.transpose B).variation, f a ≠ 0 :=
@@ -773,12 +711,6 @@ theorem enorm_integral_le_of_enorm_le_const
     ‖∫ᵛ x, f x ∂[B; μ]‖ₑ ≤ C * (μ.transpose B).variation univ :=
   enorm_integral_le_lintegral_enorm.trans ((lintegral_mono_ae h).trans (by simp))
 
-theorem integral_add_vectorMeasure {ν : VectorMeasure X F}
-    (hμ : μ.Integrable f B) (hν : ν.Integrable f B) :
-    ∫ᵛ x, f x ∂[B; (μ + ν)] = ∫ᵛ x, f x ∂[B; μ] + ∫ᵛ x, f x ∂[B; ν] :=
-  setToFun_add_left'' (by simp [transpose]) hμ hν (by grw [transpose_add, variation_add_le])
-    zero_le_one zero_le_one zero_le_one
-
 theorem setIntegral_vectorMeasure_zero (f : X → E) {s : Set X}
     (hs : (μ.transpose B).variation s = 0) :
     ∫ᵛ x in s, f x ∂[B; μ] = 0 := by
@@ -790,42 +722,12 @@ theorem setIntegral_vectorMeasure_zero (f : X → E) {s : Set X}
   have : (μ.restrict s).transpose B = 0 := variation_eq_zero.1 this
   simp [integral, this]
 
-lemma integral_of_isEmpty [IsEmpty X] : ∫ᵛ x, f x ∂[B; μ] = 0 :=
-  μ.eq_zero_of_isEmpty ▸ integral_zero_vectorMeasure
-
-theorem integral_finsetSum_vectorMeasure {ι : Type*} {μ : ι → VectorMeasure X F}
-    {s : Finset ι} (hf : ∀ i ∈ s, (μ i).Integrable f B) :
-    ∫ᵛ a, f a ∂[B; ∑ i ∈ s, μ i] = ∑ i ∈ s, ∫ᵛ a, f a ∂[B; μ i] := by
-  classical
-  induction s using Finset.induction_on with
-  | empty => simp
-  | insert a s ha ih =>
-    simp only [Finset.mem_insert, forall_eq_or_imp, ha, not_false_eq_true,
-      Finset.sum_insert] at hf ⊢
-    rw [integral_add_vectorMeasure hf.1 (integrable_finsetSum_vectorMeasure hf.2), ih hf.2]
-
 theorem nndist_integral_add_vectorMeasure_le_lintegral
     (h₁ : μ.Integrable f B) (h₂ : ν.Integrable f B) :
     (nndist (∫ᵛ x, f x ∂[B; μ]) (∫ᵛ x, f x ∂[B; (μ + ν)]) : ℝ≥0∞) ≤
       ∫⁻ x, ‖f x‖ₑ ∂(ν.transpose B).variation := by
   rw [integral_add_vectorMeasure h₁ h₂, nndist_comm, nndist_eq_nnnorm, add_sub_cancel_left]
   exact enorm_integral_le_lintegral_enorm
-
-@[simp]
-theorem integral_smul_vectorMeasure (f : X → E) (c : ℝ) :
-    ∫ᵛ x, f x ∂[B; c • μ] = c • ∫ᵛ x, f x ∂[B; μ] := by
-  by_cases hG : CompleteSpace G; swap
-  · simp [integral, setToFun, hG]
-  simp_rw [integral, ← setToFun_smul_left]
-  have : ((c • μ).transpose B).variation = ‖c‖₊ • (μ.transpose B).variation := by
-    simp [transpose, mapRange_smul, variation_smul]
-  simp only [this, mul_one]
-  have : DominatedFinMeasAdditive (μ.transpose B).variation ((c • μ).transpose B) ‖c‖ := by
-    simp only [transpose_smul, coe_smul, Real.norm_eq_abs]
-    simpa [← transpose_eq_cbmApplyMeasure] using
-      (dominatedFinMeasAdditive_cbmApplyMeasure μ B).smul c
-  rw! [← setToFun_congr_smul_measure' _ this, transpose_smul]
-  rfl
 
 @[simp]
 theorem integral_smul_nnreal_vectorMeasure (f : X → E) (c : ℝ≥0) :
