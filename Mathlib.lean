@@ -162,6 +162,7 @@ public import Mathlib.Algebra.Category.ModuleCat.Differentials.Basic
 public import Mathlib.Algebra.Category.ModuleCat.Differentials.Presheaf
 public import Mathlib.Algebra.Category.ModuleCat.EnoughInjectives
 public import Mathlib.Algebra.Category.ModuleCat.EpiMono
+public import Mathlib.Algebra.Category.ModuleCat.Ext.Basic
 public import Mathlib.Algebra.Category.ModuleCat.Ext.DimensionShifting
 public import Mathlib.Algebra.Category.ModuleCat.Ext.Finite
 public import Mathlib.Algebra.Category.ModuleCat.Ext.HasExt
@@ -783,6 +784,7 @@ public import Mathlib.Algebra.Module.LinearMap.Basic
 public import Mathlib.Algebra.Module.LinearMap.Defs
 public import Mathlib.Algebra.Module.LinearMap.DivisionRing
 public import Mathlib.Algebra.Module.LinearMap.End
+public import Mathlib.Algebra.Module.LinearMap.FiniteRange
 public import Mathlib.Algebra.Module.LinearMap.Polynomial
 public import Mathlib.Algebra.Module.LinearMap.Prod
 public import Mathlib.Algebra.Module.LinearMap.Rat
@@ -1577,6 +1579,7 @@ public import Mathlib.AlgebraicTopology.SimplicialSet.NerveNondegenerate
 public import Mathlib.AlgebraicTopology.SimplicialSet.NonDegenerateSimplices
 public import Mathlib.AlgebraicTopology.SimplicialSet.NonDegenerateSimplicesSubcomplex
 public import Mathlib.AlgebraicTopology.SimplicialSet.Nonempty
+public import Mathlib.AlgebraicTopology.SimplicialSet.Nonsingular
 public import Mathlib.AlgebraicTopology.SimplicialSet.Op
 public import Mathlib.AlgebraicTopology.SimplicialSet.Path
 public import Mathlib.AlgebraicTopology.SimplicialSet.PiZero
@@ -1693,6 +1696,7 @@ public import Mathlib.Analysis.CStarAlgebra.Unitary.Maps
 public import Mathlib.Analysis.CStarAlgebra.Unitary.Span
 public import Mathlib.Analysis.CStarAlgebra.Unitization
 public import Mathlib.Analysis.CStarAlgebra.lpSpace
+public import Mathlib.Analysis.Calculus.AbsolutelyMonotone
 public import Mathlib.Analysis.Calculus.AddTorsor.AffineMap
 public import Mathlib.Analysis.Calculus.AddTorsor.Coord
 public import Mathlib.Analysis.Calculus.BumpFunction.Basic
@@ -5346,6 +5350,7 @@ public import Mathlib.MeasureTheory.Function.LpSeminorm.TriangleInequality
 public import Mathlib.MeasureTheory.Function.LpSeminorm.Trim
 public import Mathlib.MeasureTheory.Function.LpSpace.Basic
 public import Mathlib.MeasureTheory.Function.LpSpace.Complete
+public import Mathlib.MeasureTheory.Function.LpSpace.CompleteOfCompleteLp
 public import Mathlib.MeasureTheory.Function.LpSpace.ContinuousCompMeasurePreserving
 public import Mathlib.MeasureTheory.Function.LpSpace.ContinuousFunctions
 public import Mathlib.MeasureTheory.Function.LpSpace.DomAct.Basic
@@ -5522,6 +5527,7 @@ public import Mathlib.MeasureTheory.Measure.QuasiMeasurePreserving
 public import Mathlib.MeasureTheory.Measure.Real
 public import Mathlib.MeasureTheory.Measure.Regular
 public import Mathlib.MeasureTheory.Measure.RegularityCompacts
+public import Mathlib.MeasureTheory.Measure.ResolventTransform
 public import Mathlib.MeasureTheory.Measure.Restrict
 public import Mathlib.MeasureTheory.Measure.SeparableMeasure
 public import Mathlib.MeasureTheory.Measure.Stieltjes
@@ -5690,6 +5696,7 @@ public import Mathlib.NumberTheory.LSeries.ZMod
 public import Mathlib.NumberTheory.LSeries.ZetaZeros
 public import Mathlib.NumberTheory.LegendreSymbol.AddCharacter
 public import Mathlib.NumberTheory.LegendreSymbol.Basic
+public import Mathlib.NumberTheory.LegendreSymbol.Complex
 public import Mathlib.NumberTheory.LegendreSymbol.GaussEisensteinLemmas
 public import Mathlib.NumberTheory.LegendreSymbol.JacobiSymbol
 public import Mathlib.NumberTheory.LegendreSymbol.QuadraticChar.Basic
@@ -6362,10 +6369,12 @@ public import Mathlib.RingTheory.Artinian.Module
 public import Mathlib.RingTheory.Artinian.Ring
 public import Mathlib.RingTheory.Bezout
 public import Mathlib.RingTheory.Bialgebra.Basic
+public import Mathlib.RingTheory.Bialgebra.Convolution
 public import Mathlib.RingTheory.Bialgebra.Equiv
 public import Mathlib.RingTheory.Bialgebra.GroupLike
 public import Mathlib.RingTheory.Bialgebra.Hom
 public import Mathlib.RingTheory.Bialgebra.MonoidAlgebra
+public import Mathlib.RingTheory.Bialgebra.SymmetricAlgebra
 public import Mathlib.RingTheory.Bialgebra.TensorProduct
 public import Mathlib.RingTheory.Binomial
 public import Mathlib.RingTheory.ChainOfDivisors
@@ -6617,6 +6626,7 @@ public import Mathlib.RingTheory.LittleWedderburn
 public import Mathlib.RingTheory.LocalIso
 public import Mathlib.RingTheory.LocalProperties.Basic
 public import Mathlib.RingTheory.LocalProperties.Exactness
+public import Mathlib.RingTheory.LocalProperties.FinitePresentation
 public import Mathlib.RingTheory.LocalProperties.Injective
 public import Mathlib.RingTheory.LocalProperties.InjectiveDimension
 public import Mathlib.RingTheory.LocalProperties.IntegrallyClosed
@@ -7009,6 +7019,7 @@ public import Mathlib.SetTheory.Cardinal.Arithmetic
 public import Mathlib.SetTheory.Cardinal.Basic
 public import Mathlib.SetTheory.Cardinal.Cofinality.Basic
 public import Mathlib.SetTheory.Cardinal.Cofinality.Club
+public import Mathlib.SetTheory.Cardinal.Cofinality.Enum
 public import Mathlib.SetTheory.Cardinal.Cofinality.Ordinal
 public import Mathlib.SetTheory.Cardinal.Continuum
 public import Mathlib.SetTheory.Cardinal.CountableCover
@@ -7479,6 +7490,8 @@ public import Mathlib.Topology.Algebra.Module.Determinant
 public import Mathlib.Topology.Algebra.Module.Equiv
 public import Mathlib.Topology.Algebra.Module.FiniteDimension
 public import Mathlib.Topology.Algebra.Module.FiniteDimensionBilinear
+public import Mathlib.Topology.Algebra.Module.LinearMap
+public import Mathlib.Topology.Algebra.Module.LinearMapPiProd
 public import Mathlib.Topology.Algebra.Module.LinearPMap
 public import Mathlib.Topology.Algebra.Module.LocallyConvex
 public import Mathlib.Topology.Algebra.Module.ModuleTopology
@@ -7977,6 +7990,7 @@ public import Mathlib.Topology.Sheaves.Abelian
 public import Mathlib.Topology.Sheaves.AddCommGrpCat
 public import Mathlib.Topology.Sheaves.Alexandrov
 public import Mathlib.Topology.Sheaves.CommRingCat
+public import Mathlib.Topology.Sheaves.EtaleSpace
 public import Mathlib.Topology.Sheaves.Flasque
 public import Mathlib.Topology.Sheaves.Forget
 public import Mathlib.Topology.Sheaves.Functors

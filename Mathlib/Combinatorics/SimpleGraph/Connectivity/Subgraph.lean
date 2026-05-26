@@ -257,7 +257,7 @@ theorem finite_neighborSet_toSubgraph (p : G.Walk u v) : (p.toSubgraph.neighborS
 
 lemma toSubgraph_le_induce_support (p : G.Walk u v) :
     p.toSubgraph ≤ (⊤ : G.Subgraph).induce {v | v ∈ p.support} := by
-  convert Subgraph.le_induce_top_verts
+  convert! Subgraph.le_induce_top_verts
   exact p.verts_toSubgraph.symm
 
 theorem toSubgraph_adj_getVert {u v} (w : G.Walk u v) {i : ℕ} (hi : i < w.length) :
@@ -505,7 +505,7 @@ lemma exists_mem_support_mem_erase_mem_support_takeUntil_eq_empty (s : Finset V)
     have := p.length_takeUntil_le hx
     lia
   obtain ⟨y, hys, hyp, h⟩ := ih _ this (s.erase x) h rfl
-  use y, mem_of_mem_erase hys, support_takeUntil_subset p hx hyp
+  use y, mem_of_mem_erase hys, support_takeUntil_subset_support p hx hyp
   rwa [takeUntil_takeUntil, erase_right_comm, filter_erase, erase_eq_of_notMem] at h
   simp only [mem_filter, mem_erase, ne_eq, not_and, and_imp]
   rintro hxy -

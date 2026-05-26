@@ -447,6 +447,36 @@ info: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
 #check "                              \"                \
                                                                   "
 
+/-! Tests for the `nameCheck` linter -/
+section
+
+open Mathlib.Linter.Style.nameCheck
+
+/- Unit tests for the `defsWithUnderscore` linter. -/
+#guard isBadNameWithUnderscore `Foo == false
+#guard isBadNameWithUnderscore `fooBarBaz == false
+#guard isBadNameWithUnderscore `foo_bar == true
+#guard isBadNameWithUnderscore `_fooFoo == true
+#guard isBadNameWithUnderscore `Foo._bar == true
+-- A namespace `Mathlib` in the middle does not silence the linter: we only test for a *prefix*
+-- `Mathlib`, `Mathlib.Parser` or `Mathlib.Tactic`.
+#guard isBadNameWithUnderscore `Nat.Mathlib.foo_bar == true
+#guard isBadNameWithUnderscore `Mathlib.Parser.foo_bar == false
+#guard isBadNameWithUnderscore `Mathlib.Tactic.foo_bar == false
+#guard isBadNameWithUnderscore `AlgebraicGeometry.Scheme.IdealSheafData.Simps.coe_support == false
+
+#guard isBadNameWithUnderscore `Mathlib.Mat._Foo == true
+#guard isBadNameWithUnderscore `Mathlib.foo_ == false
+#guard isBadNameWithUnderscore `«termXYZ» == false
+#guard isBadNameWithUnderscore `ExteriorAlgebra.«term⋀[_]^_» == false
+#guard isBadNameWithUnderscore `Nat.term_! == false
+#guard isBadNameWithUnderscore `Nat.foo_bar2 == true
+#guard isBadNameWithUnderscore `Nat.fooBar_2 == false
+#guard isBadNameWithUnderscore `Nat.foo_bar_2 == false
+#guard isBadNameWithUnderscore `LibraryNote.coercion_into_rings == false
+
+end
+
 /- Tests for the `openClassical` linter -/
 section openClassical
 
@@ -635,14 +665,21 @@ open Mathlib.Linter.TextBased.UnicodeLinter
 /- A character either does or doesn't have an abbreviation in the VSCode extension. -/
 #guard withVSCodeAbbrev.toList ∩ othersInMathlib.toList = ∅
 
-/- A character either is or isn't an emoji. -/
+/- No character is both an emoji and not an emoji. -/
 #guard emojis.toList ∩ nonEmojis.toList = ∅
+
+/- No character is both an emoji and unrestricted. -/
+#guard emojis.toList ∩ unrestricted.toList = ∅
+
+/- No character is both a non-emoji and unrestricted. -/
+#guard nonEmojis.toList ∩ unrestricted.toList = ∅
 
 def allLinterDefinedCharacterLists : List (List Char) := [
   withVSCodeAbbrev,
   othersInMathlib,
   emojis,
-  nonEmojis
+  nonEmojis,
+  unrestricted
 ].map Array.toList
 
 /- Ensure none of the lists contain duplicates -/
