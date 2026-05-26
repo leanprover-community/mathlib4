@@ -55,6 +55,12 @@ section onFun
 theorem onFun_apply (f : β → β → γ) (g : α → β) (a b : α) : onFun f g a b = f (g a) (g b) :=
   rfl
 
+theorem onFun_onFun_eq {δ : Sort*} (f : α → α → γ) (g : β → α) (h : δ → β) :
+    (f.onFun g).onFun h = f.onFun (g ∘ h) := rfl
+
+theorem onFun_comp_eq {δ : Sort*} (f : α → α → γ) (g : β → α) (h : δ → β) :
+    f.onFun (g ∘ h) = (f.onFun g).onFun h := rfl
+
 variable (r : β → β → Prop) (f : α → β)
 
 instance [Std.Refl r] : Std.Refl (r on f) where
@@ -675,7 +681,7 @@ theorem eq_update_iff {a : α} {b : β a} {f g : ∀ a, β a} :
 
 @[simp] lemma update_eq_self_iff : update f a b = f ↔ b = f a := by simp [update_eq_iff]
 
-@[simp] lemma eq_update_self_iff : f = update f a b ↔ f a = b := by simp [eq_update_iff]
+@[simp] lemma eq_update_self_iff : f = update f a b ↔ f a = b := by simp [eqComm]
 
 lemma ne_update_self_iff : f ≠ update f a b ↔ f a ≠ b := eq_update_self_iff.not
 
