@@ -92,7 +92,7 @@ def synthesizeArgs (thmId : Origin) (xs : Array Expr)
             logError s!"Failed to prove necessary assumption `{← ppExpr type}` \
                         when applying theorem `{← ppOrigin' thmId}`."
 
-      if ¬(← isProp type) then
+      if ¬(← isProp type) || (← isClass? type).isSome && (← instantiateMVars type).hasMVar then
         postponed := postponed.push x
         continue
       else
