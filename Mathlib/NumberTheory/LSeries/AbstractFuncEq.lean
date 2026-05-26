@@ -70,7 +70,7 @@ noncomputable section
 
 open Real Complex Filter Topology Asymptotics Set MeasureTheory
 
-variable (E : Type*) [NormedAddCommGroup E] [NormedSpace ℂ E]
+variable (E : Type*) [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℂ E]
 
 /-!
 ## Definitions and symmetry
