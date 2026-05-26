@@ -267,8 +267,6 @@ lemma mul_vle_mul {x x' y y' : R} (h1 : x ≤ᵥ y) (h2 : x' ≤ᵥ y') : x * x'
 
 @[deprecated (since := "2025-12-20")] alias mul_srel_mul_iff_right := mul_vlt_mul_iff_right
 
-@[deprecated (since := "2025-11-04")] alias rel_mul := mul_vle_mul
-
 @[gcongr]
 lemma mul_veq_mul {x x' y y' : R} (h1 : x =ᵥ y) (h2 : x' =ᵥ y') : x * x' =ᵥ y * y' :=
   ⟨mul_vle_mul h1.vle h2.vle, mul_vle_mul h1.vge h2.vge⟩
@@ -1149,7 +1147,7 @@ where the first row is the map `v` factored through its image group (with zero) 
 @[simp]
 lemma embed_valuation_eq_restrict₀ [v.Compatible] (x : R) :
     embed v (valuation R x) = ValueGroup₀.restrict₀ v x := by
-  convert embed_mk v x 1
+  convert! embed_mk v x 1
   simp
 
 /--

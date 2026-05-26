@@ -639,7 +639,7 @@ theorem minpoly_eq [IsDomain R] [IsDomain S] [IsTorsionFree R S] [IsIntegrallyCl
   let ⟨q, hq⟩ := minpoly.isIntegrallyClosed_dvd h.isIntegral_root h.aeval_root_self
   symm <|
     eq_of_monic_of_associated h.monic (minpoly.monic h.isIntegral_root) <| by
-      convert
+      convert!
         Associated.mul_left (minpoly R h.root) <|
           associated_one_iff_isUnit.2 <|
             (hirr.isUnit_or_isUnit hq).resolve_left <| minpoly.not_isUnit R h.root
