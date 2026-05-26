@@ -701,44 +701,6 @@ theorem analyticAt_iff_eventually_differentiableAt {f : ℂ → E} {c : ℂ} :
       exact (d z m).differentiableWithinAt
     exact h _ m
 
-open scoped Nat in
-/-- If a function `R : 𝕜 → 𝕜` factors as `R z = (z - z₀) ^ (k + t) * R₁ z`, where `R₁` is
-analytic everywhere, then there exists an everywhere analytic function `R₂ : 𝕜 → 𝕜` such that
-the `k`-th iterated derivative of `R` is given by
-`deriv^[k] R z = (z - z₀) ^ t * ((k + t)! / t ! * R₁ z + (z - z₀) * R₂ z)`. -/
-lemma iterated_deriv_mul_pow_sub_of_analytic {𝕜 : Type*} [NontriviallyNormedField 𝕜] [CharZero 𝕜]
-    [CompleteSpace 𝕜] {k t : ℕ} {z₀ : 𝕜} {R R₁ : 𝕜 → 𝕜}
-    (hf1 : ∀ z, AnalyticAt 𝕜 R₁ z) (hR₁ : ∀ z, R z = (z - z₀) ^ (k + t) * R₁ z) :
-    ∃ R₂, (∀ z, AnalyticAt 𝕜 R₂ z) ∧ ∀ z, deriv^[k] R z =
-      (z - z₀) ^ t * ((k + t)! / t ! * R₁ z + (z - z₀) * R₂ z) := by
-  induction k generalizing t with
-  | zero =>
-    have : (t ! : 𝕜) ≠ 0 := mod_cast t.factorial_ne_zero
-    exact ⟨0, fun _ ↦ analyticAt_const, fun z ↦ by simp [hR₁, div_self this]⟩
-  | succ k IH =>
-    rw [add_right_comm, add_assoc] at hR₁
-    obtain ⟨R₂, hR₂, hR₂_eq⟩ := IH hR₁
-    refine ⟨fun z ↦ (t + 1 : 𝕜) * R₂ z + ((k + (t + 1))! / (t + 1)! * deriv R₁ z +
-      (R₂ z + (z - z₀) * deriv R₂ z)), fun _ ↦ by fun_prop, fun z ↦ ?_⟩
-    have hsub : HasDerivAt (fun w : 𝕜 ↦ w - z₀) (1 : 𝕜) z := (hasDerivAt_id z).sub_const z₀
-    calc deriv^[k + 1] R z
-        = (t + 1 : 𝕜) * (z - z₀) ^ t *
-            ((k + (t + 1))! / (t + 1)! * R₁ z + (z - z₀) * R₂ z) +
-          (z - z₀) ^ (t + 1) * ((k + (t + 1))! / (t + 1)! * deriv R₁ z +
-            (R₂ z + (z - z₀) * deriv R₂ z)) := ?_
-      _ = (z - z₀) ^ t * ((k + 1 + t)! / t ! * R₁ z + (z - z₀) *
-            ((t + 1 : 𝕜) * R₂ z + ((k + (t + 1))! / (t + 1)! * deriv R₁ z +
-              (R₂ z + (z - z₀) * deriv R₂ z)))) := ?_
-    · rw [Function.iterate_succ_apply' deriv k R, funext hR₂_eq]
-      simpa using ((hsub.fun_pow (t + 1)).mul
-        (((hf1 z).differentiableAt.hasDerivAt.const_mul ((k + (t + 1))! / (t + 1)! : 𝕜)).add
-          (hsub.mul (hR₂ z).differentiableAt.hasDerivAt))).deriv
-    · have : (t ! : 𝕜) ≠ 0 := mod_cast t.factorial_ne_zero
-      have : ((t : 𝕜) + 1) ≠ 0 := mod_cast t.succ_ne_zero
-      have h : ((t + 1)! : 𝕜) = (t + 1) * t ! := by push_cast [Nat.factorial_succ]; ring
-      rw [show k + 1 + t = k + (t + 1) by ring, h]
-      field_simp; ring
-
 end analyticity
 
 section derivatives
