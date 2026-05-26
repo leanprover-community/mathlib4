@@ -22,7 +22,7 @@ We provide the complete lattice structure and the basic functoriality properties
 ## TODO
 
 - Show the Galois connection between `SubmonoidFunctor.image` and `SubmonoidFunctor.comap`
-and provide the related API.
+  and provide the related API.
 -/
 
 @[expose] public section
