@@ -148,16 +148,14 @@ recognizes `q`, returning the cast of `q`. -/
     return .isNegNNRat dα qa na da q(isRat_ratCast $pa)
   | _ => failure
 
-/-- The `norm_num` extension which identifies an expression `RatCast.ratCast q` where `norm_num`
+/-- The `norm_num` extension which identifies an expression `NNRat.cast q` where `norm_num`
 recognizes `q`, returning the cast of `q`. -/
 @[norm_num NNRat.cast _, NNRatCast.nnratCast _]
 def evalNNRatCast : NormNumExt where eval {u α} e := do
   let dα ← inferDivisionSemiring α
   let ~q(@NNRat.cast _ $dα' $a) := e | failure
   guard <| ← matchesInstance dα' q(@DivisionSemiring.toNNRatCast _ $dα)
-  let r ← derive q($a)
-  have : $e =Q NNRat.cast $a := ⟨⟩
-  match r with
+  match ← derive q($a) with
   | .isNat _ na pa =>
     assumeInstancesCommute
     return .isNat _ na q(isNat_nnratCast $pa)
