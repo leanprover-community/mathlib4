@@ -267,11 +267,11 @@ noncomputable abbrev ofAlgHom [CommSemiring R] [CommSemiring A] [Bialgebra R A]
         (Bialgebra.comulAlgHom R A) = (Algebra.ofId R A).comp (Bialgebra.counitAlgHom R A)) :
     HopfAlgebra R A :=
   ofConvInverse antipode.toLinearMap
-    (WithConv.ext (by
-      simpa [← Algebra.TensorProduct.lmul'_comp_map, rTensor]
-        using congr(($mul_antipode_rTensor_comul).toLinearMap)))
-    (WithConv.ext (by
-      simpa [← Algebra.TensorProduct.lmul'_comp_map, lTensor]
-        using congr(($mul_antipode_lTensor_comul).toLinearMap)))
+    (WithConv.ext <| by
+      simpa [← Algebra.TensorProduct.lmul'_comp_map]
+        using congr(($mul_antipode_rTensor_comul).toLinearMap))
+    (WithConv.ext <| by
+      simpa [← Algebra.TensorProduct.lmul'_comp_map]
+        using congr(($mul_antipode_lTensor_comul).toLinearMap))
 
 end HopfAlgebra
