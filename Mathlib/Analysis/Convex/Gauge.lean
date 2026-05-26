@@ -473,7 +473,7 @@ theorem closure_eq_iInter_gt_smul (hc : Convex ℝ s) (hs₀ : s ∈ 𝓝 0) :
     (Set.ext fun x => (gauge_le_one_iff_mem_closure hc hs₀).symm)]
   exact gauge_le_eq hc (mem_of_mem_nhds hs₀) (absorbent_nhds_zero hs₀) zero_le_one
 
-theorem gauge_le_eq_closure_smul_of_pos (hc : Convex ℝ s) (hs₀ : s ∈ 𝓝 0)
+theorem setOf_gauge_le_eq_closure_smul_of_pos (hc : Convex ℝ s) (hs₀ : s ∈ 𝓝 0)
     (ha : 0 < a) : { x | gauge s x ≤ a } = closure (a • s) := by
   rw [closure_smul₀' ha.ne']
   ext x
@@ -482,8 +482,8 @@ theorem gauge_le_eq_closure_smul_of_pos (hc : Convex ℝ s) (hs₀ : s ∈ 𝓝 
     gauge_smul_of_nonneg (inv_nonneg.mpr ha.le), smul_eq_mul,
     inv_mul_le_iff₀ ha, mul_one]
 
-/-- If `E` is a `T1Space` and `s` is von Neumann bounded, then `gauge_le_eq_closure_smul` is true
-for all nonnegative `a`. -/
+/-- See `gauge_le_eq_closure_smul` for the version where `E` isn't assumed to be T1 in exchange of
+requiring `a` to be strictly positive. -/
 theorem gauge_le_eq_closure_smul [T1Space E] (hc : Convex ℝ s) (hb : Bornology.IsVonNBounded ℝ s)
     (hs₀ : s ∈ 𝓝 0) (ha : 0 ≤ a) : { x | gauge s x ≤ a } = closure (a • s) := by
   obtain rfl | ha := eq_or_lt_of_le ha
