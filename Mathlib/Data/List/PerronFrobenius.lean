@@ -5,20 +5,24 @@ Authors: Matteo Cipollina
 -/
 module
 
-public import Mathlib.Tactic
+public import Mathlib.Data.Bool.Basic
+public import Mathlib.Data.List.Basic
 public import Mathlib.Data.List.Infix
 public import Mathlib.Data.List.Nodup
-public import Mathlib.Data.Nat.Cast.Order.Ring
-public import Mathlib.Algebra.Order.Ring.Star
-public import Mathlib.Analysis.Normed.Ring.Lemmas
-public import Mathlib.Data.Int.Star
-public import Mathlib.Data.List.Basic
+public import Mathlib.Data.Nat.Basic
+public import Mathlib.Tactic.Common
 
+/-!
+# List lemmas for Perron–Frobenius theory
+
+This file collects list lemmas used in the graph-theoretic development of
+Perron–Frobenius theory for non-negative matrices.
+-/
 
 @[expose] public section
 
 namespace List
-open List
+open List Nat
 variable {α : Type*}
 
 /--
@@ -37,21 +41,13 @@ An element `a` is a member of `l.concat x` if and only if it is a member of `l` 
 theorem mem_concat {a x : α} {l : List α} : a ∈ l.concat x ↔ a ∈ l ∨ a = x := by
   rw [concat_eq_append,List.mem_append, List.mem_singleton, or_comm]
 
-lemma dropLast_append_singleton {l : List α} {a : α} (h : l.length > 0) :
+lemma dropLast_append_singleton {l : List α} {a : α} (_h : l.length > 0) :
   (l.concat a).dropLast = l := by
-  induction l with
-  | nil => simp at h
-  | cons hd tl ih =>
-    cases tl with
-    | nil => simp only [concat_eq_append, cons_append, nil_append, dropLast_cons₂,
-      dropLast_singleton]
-    | cons tl_hd tl_tl => simp_all only [List.length_cons, gt_iff_lt, lt_add_iff_pos_left,
-      add_pos_iff, Nat.lt_one_iff, pos_of_gt, or_true, _root_.List.concat_eq_append, List.cons_append, forall_const,
-      Nat.ofNat_pos, List.dropLast_cons₂]
+  rw [concat_eq_append, dropLast_concat]
 
 lemma length_pos_of_append_singleton (l : List α) (a : α) : (l ++ [a]).length > 0 := by
-  simp only [length_append, length_cons, length_nil, zero_add, gt_iff_lt, lt_add_iff_pos_left,
-    add_pos_iff, Nat.lt_one_iff, pos_of_gt, or_true]
+  simp only [length_append, length_cons, length_nil]
+  omega
 
 /-- Any `x ∈ l` gives a decomposition `l = l₁ ++ x :: l₂`. -/
 lemma exists_mem_split {l : List α} {x : α} (h : x ∈ l) :
@@ -66,11 +62,6 @@ lemma exists_mem_split {l : List α} {x : α} (h : x ∈ l) :
     · rcases ih h' with ⟨l₁, l₂, rfl⟩
       use y :: l₁, l₂
       simp only [List.cons_append]
-
-lemma dropLast_cons_cons (a b : α) (l : List α) : (a :: b :: l).dropLast = a :: (b :: l).dropLast := by
-  have h : (a :: b :: l).length > 0 := by simp only [List.length_cons, gt_iff_lt,
-    lt_add_iff_pos_left, add_pos_iff, Nat.ofNat_pos, or_true]
-  rw [@List.dropLast_cons₂]
 
 lemma append_left_cancel {l₁ l₂ l₃ : List α} (h_len : l₁.length = l₂.length)
     (h : l₁ ++ l₃ = l₂ ++ l₃) : l₁ = l₂ := by
@@ -90,25 +81,14 @@ variable {α : Type*} {l m : List α} {n : ℕ}
 If `l.length ≤ n` and `n < (l ++ m).length`, then fetching the `n`-th element
 of `l ++ m` lands in `m`, at index `n - l.length`.
 -/
-
 theorem get_append_right {α : Type*} {l m : List α} {n : ℕ}
     (hl : l.length ≤ n) (hn : n < (l ++ m).length) :
   (l ++ m).get ⟨n, hn⟩ =
-    m.get ⟨n - l.length, by
-      simpa [List.length_append] using Nat.sub_lt_left_of_lt_add hl (by simpa [List.length_append] using hn)⟩ := by
-  induction l generalizing n with
-  | nil =>
-    simp only [List.nil_append, List.get_eq_getElem, List.length_nil, tsub_zero]
-  | cons x xs ih =>
-    simp only [List.length_cons, List.cons_append] at hl hn
-    dsimp [get]
-    cases' n with n'
-    · exact (Nat.not_succ_le_zero _ hl).elim
-    have hℓ : xs.length ≤ n' := Nat.le_of_succ_le_succ hl
-    have hδ : n' < (xs ++ m).length := by simp_all only [List.length_append, List.get_eq_getElem,
-      List.getElem_append_right, implies_true, add_le_add_iff_right, add_lt_add_iff_right]
-    have IH := ih hℓ hδ
-    simpa [Nat.sub_sub] using IH
+    m.get ⟨n - l.length,
+      by simpa [List.length_append] using
+        Nat.sub_lt_left_of_lt_add hl (by simpa [List.length_append] using hn)⟩ := by
+  simp only [get_eq_getElem]
+  exact getElem_append_right hl
 
 variable {α : Type*} [DecidableEq α]
 
@@ -137,19 +117,9 @@ lemma nodup_iff_not_contains_dup {α : Type*} [DecidableEq α] {l : List α} :
 
 variable {α : Type*} [DecidableEq α]
 
-lemma idxOf_append_left {v : α} {l₁ l₂ : List α}
-    (hv : v ∈ l₁) :
-    List.idxOf v (l₁ ++ l₂) = List.idxOf v l₁ := by
-  induction l₁ with
-  | nil => cases hv
-  | cons x xs ih =>
-    by_cases h : v = x
-    · simp only [h, cons_append, idxOf_cons_self]
-    · have hvxs : v ∈ xs := by simpa [h] using hv
-      dsimp only [cons_append, idxOf]
-      rw [← cons_append]
-      simp only [cons_append, findIdx_cons]
-      congr! 1; exact congrFun (congrArg HAdd.hAdd (ih hvxs)) 1
+lemma idxOf_append_left {v : α} {l₁ l₂ : List α} (hv : v ∈ l₁) :
+    List.idxOf v (l₁ ++ l₂) = List.idxOf v l₁ :=
+  idxOf_append_of_mem hv
 
 lemma ne_nil_of_head?_eq_some {α : Type*} {l : List α} {x : α} (h : l.head? = some x) : l ≠ [] := by
   by_contra heq
@@ -160,9 +130,8 @@ lemma ne_nil_of_head?_eq_some {α : Type*} {l : List α} {x : α} (h : l.head? =
     indices of `v` coincide. -/
 lemma idxOf_eq_idxOf_of_isPrefix {v : α} {l₁ l₂ : List α}
     (hpref : List.IsPrefix l₁ l₂) (hv : v ∈ l₁) :
-    List.idxOf v l₂ = List.idxOf v l₁ := by
-  rcases hpref with ⟨t, rfl⟩
-  simpa using idxOf_append_left hv
+    List.idxOf v l₂ = List.idxOf v l₁ :=
+  (hpref.idxOf_eq_of_mem hv).symm
 
 omit [DecidableEq α] in
 /--
@@ -178,12 +147,12 @@ lemma mem_tail_of_count_ge_two [DecidableEq α] {x : α} {l : List α}
       · have h_tl : tl.count x ≥ 1 := by
           have : tl.count x + 1 ≥ 2 := by
             simpa [hhd] using h
-          linarith
-        have h_pos : 0 < tl.count x := by linarith
+          omega
+        have h_pos : 0 < tl.count x := by omega
         have : x ∈ tl := (List.count_pos_iff).1 h_pos
         simpa using this
       · have h_tl : tl.count x ≥ 2 := by simpa [hhd] using h
-        have h_pos : 0 < tl.count x := by linarith
+        have h_pos : 0 < tl.count x := by omega
         have : x ∈ tl := (List.count_pos_iff).1 h_pos
         simpa using this
 
@@ -192,8 +161,7 @@ namespace Nat
   le_antisymm h (Nat.zero_le _)
 end Nat
 
-omit [DecidableEq α] in
-/--  For a *non-empty* list the first element is not contained in the `tail`,
+/-- For a *non-empty* list the first element is not contained in the `tail`,
     provided the list has no duplicates. -/
 lemma head_not_mem_tail_of_nodup {l : List α} [DecidableEq α] (h : l.Nodup) (h_nonempty : l ≠ []) :
     l.head h_nonempty ∉ l.tail := by
@@ -218,7 +186,7 @@ lemma count_ge_two_of_mem_head_and_tail {l : List α} {x : α}
 
 omit [DecidableEq α] in
 /-- A list with its head not in its tail has no duplicates if its tail has no duplicates -/
-lemma nodup_of_head_not_mem_tail   {l : List α} {x : α} (h_nonempty : l ≠ []) (h_head : l.head h_nonempty = x)
+lemma nodup_of_head_not_mem_tail {l : List α} {x : α} (h_nonempty : l ≠ []) (h_head : l.head h_nonempty = x)
     (h_not_in_tail : x ∉ l.tail) (h_nodup_tail : l.tail.Nodup) : l.Nodup := by
   cases l with
   | nil => contradiction
@@ -232,10 +200,9 @@ lemma nodup_of_head_not_mem_tail   {l : List α} {x : α} (h_nonempty : l ≠ []
     · simpa using h_nodup_tail
 
 /-- The index of an element in a prefix equals the index in the whole list -/
-lemma idxOf_eq_of_isPrefix{l₁ l₂ : List α} (h_prefix : l₁.IsPrefix l₂) {x : α} (h_mem : x ∈ l₁) :
-    l₁.idxOf x = l₂.idxOf x := by
-  rcases h_prefix with ⟨t, rfl⟩
-  exact (idxOf_append_left h_mem).symm
+lemma idxOf_eq_of_isPrefix {l₁ l₂ : List α} (h_prefix : l₁.IsPrefix l₂) {x : α} (h_mem : x ∈ l₁) :
+    l₁.idxOf x = l₂.idxOf x :=
+  h_prefix.idxOf_eq_of_mem h_mem
 
 /-- For an element x in a list l, if x appears exactly once and is not in the tail,
     then its count is less than 2 -/
@@ -251,13 +218,13 @@ lemma count_lt_of_mem_of_not_mem_tail {l : List α} {x : α}
       · exact rfl
       · (expose_names; exact False.elim (h_not_in_tail h))
     subst hxy
-    simp only [List.count_cons_self]
     have h0 : ys.count x = 0 := by
       by_contra h1
       have hpos : ys.count x > 0 := Nat.pos_of_ne_zero h1
       have hmem' := (List.count_pos_iff).mp hpos
       exact h_not_in_tail hmem'
-    simp only [h0, le_refl, Nat.eq_of_le_zero, zero_add, Nat.one_lt_ofNat]
+    simp only [List.count_cons_self, h0]
+    omega
 
 omit [DecidableEq α] in
 /-- Count an element in a head-tail splitting of a list.
@@ -298,26 +265,11 @@ lemma count_eq_one_of_idxOf_eq_length_sub_one [DecidableEq α] {l : List α} {x 
 @[simp] lemma idxOf_eq_length_sub_one_of_getLast
     {l : List α} {x : α}
     (h_nonempty : l ≠ [])
-    (h_last    : l.getLast h_nonempty = x)
-    (h_unique  : x ∉ l.dropLast) :
+    (h_last : l.getLast h_nonempty = x)
+    (h_unique : x ∉ l.dropLast) :
     l.idxOf x = l.length - 1 := by
-  have hx : x ∈ l := by
-    rw [← h_last]
-    exact getLast_mem h_nonempty
-  have h_idx_ge : l.length - 1 ≤ l.idxOf x := by
-    by_contra h
-    rw [not_le] at h
-    have h_mem_dropLast : x ∈ l.dropLast := by
-      rw [dropLast_eq_take]; rw [@mem_take_iff_getElem]
-      use l.idxOf x
-      constructor
-      · (expose_names; (expose_names; refine List.getElem_idxOf (by exact List.idxOf_lt_length_of_mem hx)))
-      · subst h_last
-        simp_all only [getLast_mem, tsub_le_iff_right, le_add_iff_nonneg_right, le_refl, Nat.eq_of_le_zero, zero_le,
-          inf_of_le_left]
-    contradiction
-  have h_idx_lt : l.idxOf x < l.length := List.idxOf_lt_length_of_mem hx
-  exact Nat.le_antisymm (Nat.le_sub_one_of_lt h_idx_lt) h_idx_ge
+  rw [← h_last]
+  exact idxOf_getLast h_nonempty (h_last ▸ h_unique)
 
 @[simp] lemma not_gt {n m : ℕ} : (¬ n > m) ↔ n ≤ m := Nat.not_lt
 
@@ -387,62 +339,17 @@ lemma idxOf_cons_of_ne [DecidableEq α] {hd : α} {tl : List α} {x : α} (h_neq
 
 -- This helper lemma addresses many of the beq_iff_eq rewrite failures
 lemma not_beq_eq_true_iff_ne {a b : α} : ¬(a == b) = true ↔ a ≠ b := by
-  rw [@Bool.bool_iff_false]
-  rw [beq_eq_false_iff_ne]
+  rw [Bool.eq_false_eq_not_eq_true, beq_eq_false_iff_ne]
 
 /-- If the index of `x` is less than the length of `l`, then `x` is in `l`. -/
-lemma mem_of_idxOf_lt_length {l : List α} {x : α} (h : idxOf x l < l.length) : x ∈ l := by
-  induction l with
-  | nil => simp only [idxOf_nil, le_refl, Nat.eq_of_le_zero, length_nil, lt_self_iff_false] at h
-  | cons hd tl ih =>
-    dsimp [idxOf, findIdx, length] at h
-    simp only [findIdx.go] at h
-    by_cases h_eq : hd == x
-    · simp only [h_eq, le_refl, zero_add, cond_true, Nat.eq_of_le_zero, lt_add_iff_pos_left] at h
-      rw [beq_iff_eq] at h_eq
-      simp only [h_eq, mem_cons, true_or]
-    · simp only [h_eq, zero_add, cond_false] at h
-      have h_neq : hd ≠ x := by
-        simp_all only [beq_iff_eq, ne_eq, not_false_eq_true]
-      have h_tl : idxOf x tl < tl.length := by
-        dsimp only [idxOf] at h ⊢
-        rw [findIdx_go_succ] at h
-        exact Nat.lt_of_succ_lt_succ h
-      have h_mem : x ∈ tl := ih h_tl
-      simp only [mem_cons, h_mem, or_true]
+lemma mem_of_idxOf_lt_length {l : List α} {x : α} (h : idxOf x l < l.length) : x ∈ l :=
+  idxOf_lt_length_iff.mp h
 
 /-- If `x` is in `l`, then getting the element at index `idxOf x l` gives `x`. -/
 lemma get_idxOf_of_mem {l : List α} {x : α} (h : x ∈ l) :
   l.get ⟨idxOf x l, idxOf_lt_length_of_mem h⟩ = x := by
-  induction l with
-  | nil => simp only [not_mem_nil] at h
-  | cons hd tl ih =>
-    by_cases h_eq : hd = x
-    · subst h_eq
-      have h_idx : idxOf hd (hd :: tl) = 0 := by
-        dsimp [idxOf, findIdx]
-        simp only [findIdx.go]
-        simp only [BEq.rfl, le_refl, zero_add, cond_true, Nat.eq_of_le_zero]
-      simp only [h_idx, get_eq_getElem, getElem_cons_zero]
-    · simp only [mem_cons] at h
-      cases h with
-      | inl h_hd =>
-        subst h_hd
-        contradiction
-      | inr h_tl =>
-        have ih' := ih h_tl
-        have h_idxOf : idxOf x (hd :: tl) = idxOf x tl + 1 := idxOf_cons_of_ne h_eq
-        have hl : idxOf x tl < tl.length := idxOf_lt_length_of_mem h_tl
-        have hl' : idxOf x tl + 1 < (hd :: tl).length := by
-          rw [length_cons]
-          exact Nat.add_lt_add_right hl 1
-        have helper : (hd :: tl).get ⟨idxOf x (hd :: tl), idxOf_lt_length_of_mem (mem_cons.mpr (Or.inr h_tl))⟩ =
-                      (hd :: tl).get ⟨idxOf x tl + 1, hl'⟩ := by
-          congr
-        have h_getElem : (hd :: tl).get ⟨idxOf x tl + 1, hl'⟩ = tl.get ⟨idxOf x tl, hl⟩ := by
-          simp only [get_eq_getElem]
-          apply getElem_cons_succ
-        exact Eq.trans helper (Eq.trans h_getElem ih')
+  simp only [get_eq_getElem]
+  exact getElem_idxOf (idxOf_lt_length_of_mem h)
 
 omit [DecidableEq α] in
 /-- If `l.get i = x`, then `idxOf x l ≤ i.val`. -/
@@ -499,8 +406,10 @@ lemma idxOf_pos_of_ne_head {α} [DecidableEq α] {v : α} {l : List α}
       rw [idxOf_cons_of_ne h]
       exact Nat.succ_pos _
 
-/-- If an element `x` is in the tail of a list `l` without duplicates, its first index in `l` must be positive. -/
-lemma idxOf_pos_of_mem_tail  {l : List α} (h_nodup : l.Nodup) {x : α} (h : x ∈ l.tail) : 0 < l.idxOf x := by
+/-- If an element `x` is in the tail of a list `l` without duplicates, its first index in `l`
+    must be positive. -/
+lemma idxOf_pos_of_mem_tail {l : List α} (h_nodup : l.Nodup) {x : α} (h : x ∈ l.tail) :
+    0 < l.idxOf x := by
   cases l with
   | nil => simp only [tail_nil, not_mem_nil] at h
   | cons hd tl =>
@@ -512,7 +421,7 @@ lemma idxOf_pos_of_mem_tail  {l : List α} (h_nodup : l.Nodup) {x : α} (h : x �
     rw [idxOf_cons_of_ne h_ne]
     exact Nat.succ_pos _
 
-/--  Membership in the tail of `l.concat y`.
+/-- Membership in the tail of `l.concat y`.
 It is only useful if `l` is **non-empty** – we require `hl : l ≠ []`. -/
 @[simp] lemma mem_tail_concat_of_ne_nil
     {α : Type*} [DecidableEq α] {l : List α} (hl : l ≠ []) (x y : α) :
@@ -522,8 +431,7 @@ It is only useful if `l` is **non-empty** – we require `hl : l ≠ []`. -/
   | cons _ t => simp only [concat_eq_append, cons_append, tail_cons, mem_append, mem_cons,
     not_mem_nil, or_false]
 
-/--  Membership in the tail of a concatenation splits into the two obvious
-    alternatives. -/
+/-- Membership in the tail of a concatenation splits into the two obvious alternatives. -/
 lemma mem_tail_append {α : Type*} {x : α} {L₁ L₂ : List α} :
     x ∈ (L₁ ++ L₂).tail ↔ (L₁ = nil ∧ x ∈ L₂.tail) ∨ (L₁ ≠ nil ∧ x ∈ L₁.tail ++ L₂) := by
   cases L₁ with
@@ -533,7 +441,7 @@ lemma mem_tail_append {α : Type*} {x : α} {L₁ L₂ : List α} :
       simp only [tail, cons_append, mem_append, reduceCtorEq, false_and, ne_eq, not_false_eq_true,
         true_and, false_or]
 
-/--  For a non-empty list `L`, membership in the tail of `L.concat a`
+/-- For a non-empty list `L`, membership in the tail of `L.concat a`
     means “either in the tail of `L` or equal to the new element `a`”. -/
 lemma mem_tail_concat_of_ne_nil' {α : Type*} {L : List α} (hL : L ≠ []) {x a : α} :
     x ∈ (L.concat a).tail ↔ x ∈ L.tail ∨ x = a := by
@@ -563,15 +471,15 @@ lemma mem_of_mem_tail_dropLast {α} {x : α} {l : List α} :
 /-- The last element of a list of length at least 2 is in its tail. -/
 @[simp]
 lemma getLast_mem_tail {α : Type*} {l : List α} (h : l.length ≥ 2) :
-    l.getLast (List.ne_nil_of_length_pos (by linarith)) ∈ l.tail := by
+    l.getLast (ne_nil_of_length_pos (by omega : 0 < l.length)) ∈ l.tail := by
   cases l with
-  | nil => simp only [length_nil, le_refl, Nat.eq_of_le_zero, ge_iff_le, nonpos_iff_eq_zero,
-    OfNat.ofNat_ne_zero] at h
+  | nil => simp at h
   | cons hd tl =>
-    have h_tl_len : tl.length ≥ 1 := Nat.le_of_succ_le_succ h
-    have h_tl_nonempty : tl ≠ [] := List.ne_nil_of_length_pos (by linarith)
-    simp only [tail_cons]
-    simp_all only [ge_iff_le, ne_eq, not_false_eq_true, getLast_cons, getLast_mem]
+    have h_tl : tl ≠ [] := by
+      intro hnil
+      simp [hnil] at h
+    simp only [tail_cons, getLast_cons h_tl]
+    exact getLast_mem h_tl
 
 omit [DecidableEq α] in
 @[simp]
@@ -666,25 +574,6 @@ is one greater than `findIdx` on the tail.
 -/
 lemma findIdx_cons_of_ne {p : α → Bool} {hd : α} {tl : List α} (h : p hd = false) :
     findIdx p (hd :: tl) = 1 + findIdx p tl := by
-  unfold findIdx
-  unfold findIdx.go
-  rw [h]
-  induction tl with
-  | nil =>
-    simp only [findIdx.go, zero_add, cond_false, add_zero]
-  | cons hd' tl' ih =>
-    simp only [findIdx.go, zero_add, Nat.reduceAdd, cond_false]
-    by_cases h' : p hd' = true
-    · simp only [h', cond_true, le_refl, Nat.eq_of_le_zero, add_zero]
-    · simp only [h', cond_false]
-      induction tl' with
-      | nil => simp only [findIdx.go, Nat.reduceAdd]
-      | cons a l ih' =>
-        simp [findIdx.go]
-        by_cases ha : p a = true
-        · simp only [ha, cond_true, Nat.reduceAdd]
-        · simp only [ha, cond_false]
-          rw [Nat.one_add]
-          exact findIdx_go_succ' p l 2
+  simp [findIdx, findIdx.go, h, findIdx_go_succ, Nat.add_comm]
 
 end List
