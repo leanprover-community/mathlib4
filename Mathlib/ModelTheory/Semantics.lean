@@ -31,8 +31,8 @@ in a style inspired by the [Flypitch project](https://flypitch.github.io/).
 ## Main Results
 
 - Several results in this file show that syntactic constructions such as `relabel`, `castLE`,
-  `liftAt`, `subst`, and the actions of language maps commute with realization of terms, formulas,
-  sentences, and theories.
+  `liftAt`, `subst`, `toFormula`, and the actions of language maps commute with realization of
+  terms, formulas, sentences, and theories.
 
 ## Implementation Notes
 
@@ -857,6 +857,26 @@ theorem realize_toFormula (φ : L.BoundedFormula α n) (v : α ⊕ (Fin n) → M
           rw [← castSucc]
           simp
     · exact Fin.elim0 x
+
+/-- Realizing `φ.toFormula` after putting the unique bound variable in the right summand. -/
+theorem realize_toFormula_snoc (φ : L.BoundedFormula α 1) (v : α → M) (b : M) :
+    φ.toFormula.Realize (Sum.elim v (Fin.snoc default b)) ↔
+      φ.Realize v (Fin.snoc default b) := by
+  rw [realize_toFormula]
+  refine iff_of_eq <| congrArg₂ _ ?_ ?_
+  · exact Sum.elim_comp_inl v (Fin.snoc default b)
+  · exact Sum.elim_comp_inr v (Fin.snoc default b)
+
+/-- View a formula over `α ⊕ Fin 1` as a bounded formula over `α` with one bound variable. -/
+theorem realize_relabel_id_snoc (φ : L.Formula (α ⊕ Fin 1)) (v : α → M) (b : M) :
+    (BoundedFormula.relabel (id : α ⊕ Fin 1 → α ⊕ Fin 1) φ).Realize v
+        (Fin.snoc default b) ↔
+      φ.Realize (Sum.elim v (Fin.snoc default b)) := by
+  rw [realize_relabel]
+  simp only [Function.comp_id, Fin.castAdd_zero, Fin.cast_refl]
+  rw [Subsingleton.elim (Fin.snoc (default : Fin 0 → M) b ∘ Fin.natAdd 1 : Fin 0 → M)
+    default]
+  rfl
 
 @[simp]
 theorem realize_iSup [Finite β] {f : β → L.BoundedFormula α n}
