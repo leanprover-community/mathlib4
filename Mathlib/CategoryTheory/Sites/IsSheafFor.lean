@@ -496,7 +496,7 @@ noncomputable def shrinkFunctorHomEquiv [LocallySmall.{w} C] {F : Cᵒᵖ ⥤ Ty
       naturality Y Z g := by
         ext ⟨f, hf⟩
         dsimp
-        convert! t.2.to_sieveCompatible _ _ _
+        convert t.2.to_sieveCompatible _ _ _
         simp only [Opposite.op_unop, shrinkYonedaObjObjEquiv_obj_map]
         rfl }
   left_inv t := by cat_disch

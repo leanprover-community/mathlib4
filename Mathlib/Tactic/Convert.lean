@@ -206,68 +206,6 @@ elab_rules : tactic
       return (← g.convert e sym.isSome (n.map (·.getNat)) config patterns) ++ gs
 
 /--
-`convert! e`, where the term `e` is inferred to have type `t`, replaces the main goal `⊢ t'` with
-new goals for proving the equality `t' = t` using congruence. The goals are created like `congr!`
-would. Like `refine e`, any holes (`?_` or `?x`) in `e` that are not solved by unification are
-converted into new goals, using the hole's name, if any, as the goal case name.
-Like `congr!`, `convert!` introduces variables while applying congruence rules. These can be
-pattern-matched, like `rintro` would, using the `with` keyword.
-
-See also `convert_to t`, where `t` specifies the expected type, instead of a proof term of type `t`.
-In other words, `convert_to t` works like `convert (?_ : t)`. Both tactics use the same options.
-
-* `convert! ← e` creates equality goals in the opposite direction (with the goal type on the right).
-* `convert! e using n`, where `n` is a positive numeral, controls the depth with which congruence is
-  applied. For example, if the main goal is `⊢ Prime (n + n + 1)` and `e : Prime (2 * n + 1)`, then
-  `convert! e using 2` results in one goal, `⊢ n + n = 2 * n`, and `convert! e using 3` (or more)
-  results in two (impossible) goals `⊢ HAdd.hAdd = HMul.hMul` and `⊢ n = 2`.
-  By default, the depth is unlimited.
-* `convert! e with x ⟨y₁, y₂⟩ (z₁ | z₂)` names or pattern-matches the variables introduced by
-  congruence rules, like `rintro x ⟨y₁, y₂⟩ (z₁ | z₂)` would.
-* `convert! (config := cfg) e` uses the configuration options in `cfg` to control the congruence
-  rules (see `Congr!.Config`).
-
-Examples:
-
-```lean
--- `convert! using` controls the depth of congruence.
-example {n : ℕ} (e : Prime (2 * n + 1)) :
-    Prime (n + n + 1) := by
-  convert! e using 2
-  -- One goal: ⊢ n + n = 2 * n
-  ring
-
--- `convert!` can fail where `exact` succeeds.
-example (h : p 0) : p 1 := by
-  fail_if_success
-    convert! h -- fails, left-over goal 1 = 0
-    done
-  exact h -- succeeds
-
--- `convert! with` names introduced variables.
-example (p q : Nat → Prop) (h : ∀ ε > 0, p ε) :
-    ∀ ε > 0, q ε := by
-  convert! h using 2 with ε hε
-  -- Goal now looks like:
-  -- hε : ε > 0
-  -- ⊢ q ε ↔ p ε
-  sorry
-```
--/
-syntax (name := convert!) "convert!" Lean.Parser.Tactic.optConfig " ←"? ppSpace term
-  (" using " num)? (" with" (ppSpace colGt rintroPat)*)? : tactic
-
-elab_rules : tactic
-| `(tactic| convert! $cfg $[←%$sym]? $term $[using $n]? $[with $ps?*]?) =>
-  withMainContext do
-    let config := { ← Congr!.elabConfig cfg with }
-    let patterns := (Lean.Elab.Tactic.RCases.expandRIntroPats (ps?.getD #[])).toList
-    let expectedType ← mkFreshExprMVar (mkSort (← getLevel (← getMainTarget)))
-    let (e, gs) ← elabTermForConvert term expectedType
-    liftMetaTactic fun g ↦
-      return (← g.convert e sym.isSome (n.map (·.getNat)) config patterns) ++ gs
-
-/--
 `convert_to t` on a goal `⊢ t'` changes the goal to `⊢ t` and adds new goals for proving the
 equality `t' = t` using congruence. The goals are created like `congr!` would.
 Any remaining congruence goals come before the main goal.

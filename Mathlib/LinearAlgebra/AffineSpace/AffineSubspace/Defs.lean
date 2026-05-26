@@ -241,7 +241,8 @@ theorem vadd_mem_of_mem_direction {s : AffineSubspace k P} {v : V} (hv : v ∈ s
   rw [mem_direction_iff_eq_vsub ⟨p, hp⟩] at hv
   rcases hv with ⟨p₁, hp₁, p₂, hp₂, hv⟩
   rw [hv]
-  simpa using s.smul_vsub_vadd_mem 1 hp₁ hp₂ hp
+  convert s.smul_vsub_vadd_mem 1 hp₁ hp₂ hp
+  rw [one_smul]
 
 /-- Subtracting two points in the subspace produces a vector in the direction. -/
 theorem vsub_mem_direction {s : AffineSubspace k P} {p₁ p₂ : P} (hp₁ : p₁ ∈ s) (hp₂ : p₂ ∈ s) :

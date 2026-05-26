@@ -408,7 +408,6 @@ lemma triangle_aux₃ {X Y : LocalizedMonoidal L W ε} {X' Y' : C}
     ← rightUnitor_naturality, rightUnitor_hom_app,
     ← tensorHom_id, ← id_tensorHom, ← tensor_comp_assoc, comp_id, id_comp]
 
-set_option backward.isDefEq.respectTransparency false in
 variable {L W ε} in
 lemma triangle (X Y : LocalizedMonoidal L W ε) :
     (α_ X (𝟙_ _) Y).hom ≫ X ◁ (λ_ Y).hom = (ρ_ X).hom ▷ Y := by
