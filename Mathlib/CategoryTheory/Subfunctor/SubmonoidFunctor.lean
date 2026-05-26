@@ -19,8 +19,9 @@ family `Submonoid (M.obj U)` for all `U : C` that are compatible with the maps i
 
 We provide the complete lattice structure and the basic functoriality properties.
 
-TODO: show the Galois connection between SubmonoidFunctor.image and SubmonoidFunctor.comap
+## TODO
 
+- Show the Galois connection between `SubmonoidFunctor.image` and `SubmonoidFunctor.comap` and provide the related API.
 -/
 
 @[expose] public section
