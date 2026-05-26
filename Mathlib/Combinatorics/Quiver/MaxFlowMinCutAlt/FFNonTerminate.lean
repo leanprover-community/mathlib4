@@ -601,27 +601,6 @@ lemma expectedResCap_pos (X : ℝ) (hX : X > 2) (k : ℕ) (step : Fin 4) (p : uv
                  expectedResCap] <;>
       linarith [hpow k, hpow (k + 1), hle k]
 
-open FFVert in
-noncomputable def base_step_as_augmentingPath (X : ℝ) (hX : X > 2) :
-    augmentingPath (ResidualNetwork (FFNetwork X hX)
-      (trivial_flow (FFNetwork X hX).toSTVertices)
-      (valid_zero_flow (FFNetwork X hX))) := {
-  touvPath := rawPath1
-  valid := by
-    intro i h_len
-    simp only [rawPath1, List.length_cons, List.length_nil] at h_len
-    interval_cases i
-    · -- i = 0: Edge (s, b)
-      simp only [ResidualNetwork, FFNetwork, trivial_flow, sub_zero, add_zero, zero_add, gt_iff_lt]
-      positivity
-    · -- i = 1: Edge (b, c)
-      simp [ResidualNetwork, FFNetwork, trivial_flow, rawPath1]
-    · -- i = 2: Edge (c, t)
-      simp only [ResidualNetwork, FFNetwork, trivial_flow, sub_zero, add_zero, Nat.reduceAdd,
-        gt_iff_lt]
-      positivity
-}
-
 /-- If the cycle invariant holds for a step, the chosen path is a valid augmentingPath. -/
 noncomputable def step_as_augmentingPath
     (F : RelaxedFlow (FFNetwork X hX).toSTVertices) (h_valid : ValidFlow (FFNetwork X hX) F)
@@ -1011,24 +990,6 @@ lemma sum_peel_4 (f : ℕ → ℝ) (k : ℕ) :
   -- sum_range_succ automatically peels off the `n` from `range (n + 1)`
   rw [Finset.sum_range_succ, Finset.sum_range_succ,
       Finset.sum_range_succ, Finset.sum_range_succ]
-
-lemma expectedFlowValues_explicit (X : ℝ) (hX : X > 2) (M : ℕ) :
-    expectedFlowValues X hX (4 * M + 1) =
-    1 + ∑ i ∈ Finset.range M, (2 * ρ ^ (2 * i + 1) + 2 * ρ ^ (2 * i + 2)) := by
-  rw [expectedFlowValues_eq_sum]
-  induction M with
-  | zero =>
-    simp [rawBottleneck_n0]
-  | succ M ih =>
-    -- Rewrite the index to expose the `+ 4` offset, then use our helper
-    have h_idx : 4 * (M + 1) + 1 = (4 * M + 1) + 4 := by omega
-    rw [h_idx, sum_peel_4]
-    -- Substitute the bottleneck values for the 4 newly peeled steps
-    rw [rawBottleneck_4m1 X hX M, rawBottleneck_4m2 X hX M,
-        rawBottleneck_4m3 X hX M, rawBottleneck_4m4 X hX M]
-    -- Apply the induction hypothesis and absorb the new term into the sum
-    rw [ih, Finset.sum_range_succ]
-    ring
 
 /-- The explicit bottleneck for ANY arbitrary step n -/
 noncomputable def explicitBottleneck (n : ℕ) : ℝ :=
