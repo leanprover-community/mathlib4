@@ -162,6 +162,46 @@ lemma hasPointwiseRightKanExtensionAt_iff_of_equivalence
         isoWhiskerLeft L E.unitIso.symm ≪≫ L.rightUnitor) Y' Y
       (E.inverse.mapIso e.symm ≪≫ E.unitIso.symm.app Y)
 
+set_option backward.isDefEq.respectTransparency false in
+lemma HasPointwiseLeftKanExtensionAt.of_natIso {L L' : C ⥤ D} {F F' : C ⥤ H} (Y : D)
+    [L.HasPointwiseLeftKanExtensionAt F Y] (e₁ : L ≅ L') (e₂ : F ≅ F') :
+    L'.HasPointwiseLeftKanExtensionAt F' Y := by
+  rw [hasPointwiseLeftKanExtensionAt_iff_of_natIso _ e₁.symm]
+  let e : CostructuredArrow.proj L Y ⋙ F' ≅ CostructuredArrow.proj L Y ⋙ F :=
+    NatIso.ofComponents fun X ↦ (e₂.app _).symm
+  rw [HasPointwiseLeftKanExtensionAt, hasColimit_iff_of_iso e]
+  infer_instance
+
+set_option backward.isDefEq.respectTransparency false in
+lemma HasPointwiseRightKanExtensionAt.of_natIso {L L' : C ⥤ D} {F F' : C ⥤ H} (Y : D)
+    [L.HasPointwiseRightKanExtensionAt F Y] (e₁ : L ≅ L') (e₂ : F ≅ F') :
+    L'.HasPointwiseRightKanExtensionAt F' Y := by
+  rw [hasPointwiseRightKanExtensionAt_iff_of_natIso _ e₁.symm]
+  let e : StructuredArrow.proj Y L ⋙ F' ≅ StructuredArrow.proj Y L ⋙ F :=
+    NatIso.ofComponents fun X ↦ (e₂.app _).symm
+  rw [HasPointwiseRightKanExtensionAt, hasLimit_iff_of_iso e]
+  infer_instance
+
+lemma HasPointwiseLeftKanExtension.of_iso {L L' : C ⥤ D} {F F' : C ⥤ H}
+    [L.HasPointwiseLeftKanExtension F] (e₁ : L ≅ L') (e₂ : F ≅ F') :
+    L'.HasPointwiseLeftKanExtension F' :=
+  fun _ ↦ .of_natIso _ e₁ e₂
+
+lemma HasPointwiseRightKanExtension.of_iso {L L' : C ⥤ D} {F F' : C ⥤ H}
+    [L.HasPointwiseRightKanExtension F] (e₁ : L ≅ L') (e₂ : F ≅ F') :
+    L'.HasPointwiseRightKanExtension F' :=
+  fun _ ↦ .of_natIso _ e₁ e₂
+
+lemma hasPointwiseLeftKanExtension_iff_of_iso {L L' : C ⥤ D} {F F' : C ⥤ H} (e₁ : L ≅ L')
+    (e₂ : F ≅ F') :
+    L.HasPointwiseLeftKanExtension F ↔ L'.HasPointwiseLeftKanExtension F' :=
+  ⟨fun _ ↦ .of_iso e₁ e₂, fun _ ↦ .of_iso e₁.symm e₂.symm⟩
+
+lemma hasPointwiseRightKanExtension_iff_of_iso {L L' : C ⥤ D} {F F' : C ⥤ H} (e₁ : L ≅ L')
+    (e₂ : F ≅ F') :
+    L.HasPointwiseRightKanExtension F ↔ L'.HasPointwiseRightKanExtension F' :=
+  ⟨fun _ ↦ .of_iso e₁ e₂, fun _ ↦ .of_iso e₁.symm e₂.symm⟩
+
 namespace LeftExtension
 
 variable {F L}
