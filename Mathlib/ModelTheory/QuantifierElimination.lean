@@ -325,6 +325,42 @@ private theorem exists_model_realize_with_qf_realized_at
   by_contra hψv0
   exact hqfIncl ψ.not hψ.not (by simpa [Formula.realize_not] using hψv0) hψw
 
+/-- Forward direction of `isQFEquivalent_iff_realize_iff_of_embeddings`: a quantifier-free
+equivalent of `φ` is preserved by embeddings, so `φ`'s realization on the image of a common
+substructure agrees between any two models of `T`. -/
+private theorem realize_iff_of_embeddings_of_isQFEquivalent
+    {T : L.Theory} {α : Type u'} {φ : L.Formula α} (hφ : T.IsQFEquivalent φ)
+    {M N A : Type (max u v u')} [L.Structure M] [L.Structure N] [L.Structure A]
+    [T.Model M] [T.Model N] [Nonempty M] [Nonempty N]
+    (f : A ↪[L] M) (g : A ↪[L] N) (a : α → A) :
+    φ.Realize (f ∘ a) ↔ φ.Realize (g ∘ a) := by
+  obtain ⟨ψ, hψ, hiff⟩ := hφ
+  have hf : ψ.Realize (f ∘ a) ↔ ψ.Realize a := by
+    simpa [Formula.Realize, Unique.eq_default (f ∘ default)] using
+      hψ.realize_embedding (f := f) (v := a) (xs := default)
+  have hg : ψ.Realize (g ∘ a) ↔ ψ.Realize a := by
+    simpa [Formula.Realize, Unique.eq_default (g ∘ default)] using
+      hψ.realize_embedding (f := g) (v := a) (xs := default)
+  rw [hiff.realize_iff (M := M) (v := f ∘ a), hiff.realize_iff (M := N) (v := g ∘ a), hf, hg]
+
+/-- Backward direction of `isQFEquivalent_iff_realize_iff_of_embeddings`: if `φ`'s realization is
+invariant under any pair of embeddings from a common substructure into nonempty models of `T`,
+then `φ` is quantifier-free equivalent over `T`. -/
+private theorem isQFEquivalent_of_realize_iff_of_embeddings
+    {T : L.Theory} {α : Type u'} {φ : L.Formula α}
+    (hcommon : ∀ {M N A : Type (max u v u')} [L.Structure M] [L.Structure N] [L.Structure A]
+      [T.Model M] [T.Model N] [Nonempty M] [Nonempty N]
+      (f : A ↪[L] M) (g : A ↪[L] N) (a : α → A),
+      φ.Realize (f ∘ a) ↔ φ.Realize (g ∘ a)) :
+    T.IsQFEquivalent φ := by
+  by_contra hqe
+  obtain ⟨M1, v0, hnotφv0, hqfConseq⟩ := exists_model_not_realize_with_qf_consequences hqe
+  obtain ⟨N1, w, hφw, hqfEq⟩ := exists_model_realize_with_qf_realized_at φ v0 hqfConseq
+  obtain ⟨S, g, a, ha, hg⟩ := exists_substructure_embedding_of_agree_qf v0 w hqfEq
+  have hsame := hcommon (M := M1.Carrier) (N := N1.Carrier) (A := S) S.subtype g a
+  have hφga : φ.Realize (g ∘ a) := by simpa [hg] using hφw
+  exact hnotφv0 (by simpa [ha] using hsame.mpr hφga)
+
 /-- A formula is equivalent over `T` to a quantifier-free formula iff its truth is invariant under
 pairs of embeddings from a common structure into nonempty models of `T`.
 
@@ -336,23 +372,9 @@ theorem isQFEquivalent_iff_realize_iff_of_embeddings
         [T.Model M] [T.Model N] [Nonempty M] [Nonempty N]
         (f : A ↪[L] M) (g : A ↪[L] N)
         (a : α → A), φ.Realize (f ∘ a) ↔ φ.Realize (g ∘ a)) := by
-  constructor
-  · rintro ⟨ψ, hψ, hiff⟩ M N A _ _ _ _ _ _ _ f g a
-    have hf : ψ.Realize (f ∘ a) ↔ ψ.Realize a := by
-      simpa [Formula.Realize, Unique.eq_default (f ∘ default)] using
-        hψ.realize_embedding (f := f) (v := a) (xs := default)
-    have hg : ψ.Realize (g ∘ a) ↔ ψ.Realize a := by
-      simpa [Formula.Realize, Unique.eq_default (g ∘ default)] using
-        hψ.realize_embedding (f := g) (v := a) (xs := default)
-    rw [hiff.realize_iff (M := M) (v := f ∘ a), hiff.realize_iff (M := N) (v := g ∘ a), hf, hg]
-  · intro hcommon
-    by_contra hqe
-    obtain ⟨M1, v0, hnotφv0, hqfConseq⟩ := exists_model_not_realize_with_qf_consequences hqe
-    obtain ⟨N1, w, hφw, hqfEq⟩ := exists_model_realize_with_qf_realized_at φ v0 hqfConseq
-    obtain ⟨S, g, a, ha, hg⟩ := exists_substructure_embedding_of_agree_qf v0 w hqfEq
-    have hsame := hcommon (M := M1.Carrier) (N := N1.Carrier) (A := S) S.subtype g a
-    have hφga : φ.Realize (g ∘ a) := by simpa [hg] using hφw
-    exact hnotφv0 (by simpa [ha] using hsame.mpr hφga)
+  refine ⟨fun hφ => ?_, isQFEquivalent_of_realize_iff_of_embeddings⟩
+  intro _ _ _ _ _ _ _ _ _ _ f g a
+  exact realize_iff_of_embeddings_of_isQFEquivalent hφ f g a
 
 /-- Promote the single-bound-variable elimination hypothesis to any number of bound variables: if
 existential closures of quantifier-free formulas over one bound variable are quantifier-free
