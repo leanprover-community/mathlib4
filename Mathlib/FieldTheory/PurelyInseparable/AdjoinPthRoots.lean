@@ -30,6 +30,7 @@ variable (k : Type*) [Field k]
 /-- Adjoining all `p`-th root to a field of characteristic `p`. -/
 def AdjoinPthRoots := k
 
+@[no_expose]
 noncomputable instance : Field (AdjoinPthRoots k) := inferInstanceAs (Field k)
 
 @[no_expose]
