@@ -449,14 +449,14 @@ where
     let some (inst, K) ← findSomeLocalInstanceOf? `InnerProductSpace fun inst type ↦ do
       -- We don't use `match_expr` here to avoid importing `InnerProductSpace`.
       match (← instantiateMVars type).cleanupAnnotations with
-        | mkApp4 (.const `InnerProductSpace _) k E _ _ =>
+        | mkApp5 (.const `InnerProductSpace _) k E _ _ _ =>
           if ← withReducible (pureIsDefEq E e) then return some (inst, k)
           else return none
         | _ => return none
       | throwError "Couldn't find an `InnerProductSpace` structure on `{e}` among local instances."
     trace[Elab.DiffGeo.MDiff] "`{e}` is an inner product space over the field `{K}`"
     -- Convert the InnerProductSpace to a NormedSpace instance.
-    let inst' ← mkAppOptM `InnerProductSpace.toNormedSpace #[K, e, none, none, inst]
+    let inst' ← mkAppOptM `InnerProductSpace.toNormedSpace #[K, e, none, none, none, inst]
     return {
       model := ← mkAppOptM ``modelWithCornersSelf #[K, none, e, none, none, inst']
       normedSpaceInfo? := some { normedSpace := e, baseField := K }
@@ -627,7 +627,7 @@ where
           trace[Elab.DiffGeo.MDiff] "considering instance of type `{type}`"
           -- We don't use `match_expr` here to avoid importing `InnerProductSpace`.
           match type with
-          | mkApp4 (.const `InnerProductSpace _) k E _ _ =>
+          | mkApp5 (.const `InnerProductSpace _) k E _ _ _ =>
             -- We use reducible transparency to allow using a type synonym: this should not
             -- be unfolded.
             if ← withReducible (pureIsDefEq E α) then
