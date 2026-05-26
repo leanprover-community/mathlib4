@@ -102,3 +102,15 @@ instance instSemifield : Semifield ℚ≥0 where
   zpow_neg' n a := by ext; apply Field.zpow_neg'
 
 end NNRat
+
+theorem NNRatCast.ofScientific_eq_ite {K} [NNRatCast K] (m : ℕ) (b : Bool) (d : ℕ) :
+    (OfScientific.ofScientific m b d : K) =
+      if b = true then NNRat.divNat m (10 ^ d) else ↑(m * 10 ^ d) := by
+  rw [NNRatCast.toOfScientific_def]
+  split_ifs
+  · congr 2
+    rw [← Rat.ofScientific_eq_ofScientific, Rat.ofScientific_def, if_pos ‹_›]
+    congr
+  · congr 2
+    rw [← Rat.ofScientific_eq_ofScientific, Rat.ofScientific_def, if_neg ‹_›]
+    congr

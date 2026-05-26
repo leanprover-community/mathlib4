@@ -24,24 +24,18 @@ open Qq
 variable {α : Type*}
 
 -- see note [norm_num lemma function equality]
-theorem isNNRat_ofScientific_of_true [DivisionSemiring α] {m e : ℕ} {n : ℕ} {d : ℕ} :
+theorem isNNRat_ofScientific_of_true [DivisionSemiring α] :
+    {m e : ℕ} → {n : ℕ} → {d : ℕ} →
     IsNNRat (NNRat.divNat m (10 ^ e) : α) n d → IsNNRat (OfScientific.ofScientific m true e : α) n d
-  | ⟨_, eq⟩ => ⟨‹_›, by
-    rw [NNRatCast.toOfScientific_def, ← eq]
-    congr
-    rw [← Rat.ofScientific_eq_ofScientific, Rat.ofScientific_def, Rat.divInt.eq_def]
-    congr
-    ⟩
+  | _, _, _, _, ⟨_, eq⟩ => ⟨‹_›, by rwa [NNRatCast.ofScientific_eq_ite, if_pos rfl]⟩
 
 -- see note [norm_num lemma function equality]
-theorem isNat_ofScientific_of_false [DivisionSemiring α] {m e nm ne n : ℕ}
-    (hm : IsNat m nm) (he : IsNat e ne) (hn : n = Nat.mul nm ((10 : ℕ) ^ ne)) :
-    IsNat (OfScientific.ofScientific m false e : α) n where
-  out := by
-    rw [hm.out, he.out, NNRatCast.toOfScientific_def, ← NNRat.cast_natCast, hn]
-    congr
-    rw [← Rat.ofScientific_eq_ofScientific, Rat.ofScientific_def]
-    congr
+theorem isNat_ofScientific_of_false [DivisionSemiring α] : {m e nm ne n : ℕ} →
+    IsNat m nm → IsNat e ne → n = Nat.mul nm ((10 : ℕ) ^ ne) →
+    IsNat (OfScientific.ofScientific m false e : α) n
+  | _, _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, (rfl : (_ : ℕ) = _ * _) => ⟨by
+    rw [NNRatCast.ofScientific_eq_ite, if_neg Bool.false_ne_true]
+    norm_cast⟩
 
 /-- The `norm_num` extension which identifies expressions in scientific notation, normalizing them
 to rat casts if the scientific notation is inherited from the one for rationals. -/
