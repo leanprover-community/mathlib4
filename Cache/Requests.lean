@@ -14,18 +14,6 @@ namespace Cache.Requests
 open System (FilePath)
 
 /--
-Process-wide branch-trust classification, set by `getRemoteRepo` when it
-detects a nightly-testing-repo branch. Lets `effectiveGetURLs` (defined
-later in this file) pick a toolchain-test-aware fallback chain — widening
-the strict trusted-nightly default to include `pr-toolchain-tests` — without
-threading the branch name through every download API.
-
-Declared near the top of the file because `getRemoteRepo` writes to it
-before `effectiveGetURLs` reads it.
--/
-initialize branchTrust : IO.Ref (Option BranchTrust) ← IO.mkRef none
-
-/--
 Structure to hold repository information with priority ordering
 -/
 structure RepoInfo where
@@ -188,19 +176,6 @@ def getRemoteRepo (mathlibDepPath : FilePath) : IO (Option RepoInfo) := do
 
     if shouldUseNightlyTesting then
       let repo := "leanprover-community/mathlib4-nightly-testing"
-      -- Classify the branch's trust level so `effectiveGetURLs` can pick
-      -- the right read fallback. Toolchain-PR test branches (`lean-pr-testing-*`,
-      -- `batteries-pr-testing-*`) need to opt into `pr-toolchain-tests`;
-      -- the trusted-nightly refs must stay strictly out of it.
-      let trust : BranchTrust :=
-        if branchName == "nightly-testing".toSlice ||
-           branchName == "nightly-testing-green".toSlice ||
-           branchName.startsWith "bump/" ||
-           isDetachedAtNightlyTesting then
-          .trustedNightly
-        else
-          .toolchainTest
-      branchTrust.set (some trust)
       IO.println s!"Using cache from nightly-testing remote: {repo}"
       return some {repo := repo, useFirst := true}
 
@@ -287,23 +262,36 @@ def masterContainerURL : String := Container.master.azureURL
 Compute the trust-ordered list of container base URLs to try when downloading
 files for a given GitHub repo.
 
-Precedence:
+Precedence (most specific wins):
 1. `MATHLIB_CACHE_GET_URL` env var, if set, returns a single anonymous URL
-   (preserves the existing dev/local override path).
-2. `--cache-from` override (set on the CLI, lives in `cacheFromOverride`).
-3. The branch-aware default `containersForRepoAndBranch`, using whatever
-   classification `getRemoteRepo` left in `branchTrust`. For the nightly
-   repo, this lets toolchain-PR test branches read their own previously-
-   uploaded artifacts while keeping trusted-nightly consumers strictly
-   isolated from `pr-toolchain-tests`.
+   (single-URL escape hatch — bypasses multi-container logic entirely).
+2. `--cache-from` CLI override (set via `cacheFromOverride`). The most
+   deliberate signal — a user explicitly typing it at the call site.
+3. `MATHLIB_CACHE_FROM` env var (comma-separated container list, same
+   shape as `--cache-from`). This is how CI workflows widen the read
+   chain to match their trust-dispatched write target without editing
+   every `cache get` call. Branch-class-aware trust dispatch lives in
+   YAML, not here — see `build_template.yml`.
+4. `defaultContainersForRepo repo` — the repo-level fallback that runs on
+   any machine (CI or user) when no override is set.
 -/
 def effectiveGetURLs (repo : String) : IO (List (Option Container × String)) := do
   if let some url ← IO.getEnv "MATHLIB_CACHE_GET_URL" then
     return [(none, url)]
   let cliOverride? ← cacheFromOverride.get
-  let branchTrust? ← branchTrust.get
+  let envOverride? ← do
+    match (← IO.getEnv "MATHLIB_CACHE_FROM") with
+    | none => pure none
+    | some s =>
+      match parseCacheFromList s with
+      | some cs => pure (some cs)
+      | none =>
+        IO.eprintln s!"Warning: ignoring MATHLIB_CACHE_FROM={s} \
+          (unrecognized container name). Known containers: \
+          {", ".intercalate (Container.all.map Container.name)}."
+        pure none
   let containers :=
-    cliOverride?.getD (containersForRepoAndBranch repo branchTrust?)
+    cliOverride?.getD (envOverride?.getD (defaultContainersForRepo repo))
   return containers.map fun c => (some c, c.azureURL)
 
 /-- Authentication method used for cache upload operations. -/

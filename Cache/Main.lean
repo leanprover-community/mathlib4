@@ -81,6 +81,10 @@ Valid arguments are:
 * MATHLIB_CACHE_GET_URL   Override the download URL (single-URL escape hatch;
                           bypasses multi-container logic when set)
 * MATHLIB_CACHE_PUT_URL   Override the upload URL (single-URL escape hatch)
+* MATHLIB_CACHE_FROM      Comma-separated container list for the read fallback,
+                          same shape as --cache-from. Intended for CI workflows
+                          to widen reads per job; --cache-from (CLI) takes
+                          precedence when both are set.
 
 See Cache/README.md for more details.
 "

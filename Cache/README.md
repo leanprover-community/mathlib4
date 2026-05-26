@@ -115,20 +115,24 @@ ones, so a lookup there from a fork iteration would always 404. Fork PRs still
 read master-built artifacts — via the outer repo loop iteration where
 `repo = MATHLIBREPO` uses the canonical path scheme against `master`.
 
-**Branch-aware widening for the nightly-testing repo.** The default above is
-the *strict* trusted-nightly view: `pr-toolchain-tests` is deliberately
-excluded so trusted consumers (`nightly-testing`, `nightly-testing-green`,
-`bump/*`) never silently fall back to artifacts uploaded by low-trust
-toolchain-PR test branches. When the cache tool detects it's running on a
-toolchain-test branch (`lean-pr-testing-*`, `batteries-pr-testing-*`, etc.)
-via `getRemoteRepo`, it widens the allowlist for that run to
-`[pr-toolchain-tests, nightly-testing, legacy]` so the branch can read its
-own previously-uploaded artifacts. The classification lives in
-`containersForRepoAndBranch` (in `Cache/Infra.lean`).
+**Trust widening is a CI policy, not a Lean policy.** The defaults above are
+deliberately *strict* — no branch class affects them. When CI needs a wider
+chain (e.g. a `lean-pr-testing-*` build needs `pr-toolchain-tests` first, or
+a `bors trying` build on the canonical repo needs `forks`), the workflow
+exports `MATHLIB_CACHE_FROM=...` for that job. The cache tool reads the env
+var and uses it as the fallback chain.
 
-Use `--cache-from=master` to read **only** from the new master container
-(strictest mode). Use `--cache-from=master,legacy` (the migration default for
-the master branch) or any other explicit ordering for ad-hoc situations.
+This keeps the trust-class taxonomy in one place — `build_template.yml`'s
+existing `case "$REPO"/"$BRANCH"` dispatch table, which already picks the
+write target via `--container=NAME` — and avoids silently auto-widening the
+read chain on user machines (a maintainer running `lake exe cache get`
+locally on `lean-pr-testing-X` should explicitly opt into reading from the
+least-trusted container).
+
+Use `--cache-from=master` (or `MATHLIB_CACHE_FROM=master`) to read **only**
+from the new master container (strictest mode). Use `--cache-from=master,legacy`
+(the migration default for the master branch) or any other explicit ordering
+for ad-hoc situations.
 
 Uploads should explicitly target a single container via `--container=NAME`.
 If neither `--container` nor `MATHLIB_CACHE_PUT_URL` is set, the upload
@@ -162,6 +166,12 @@ These allow overriding the cache endpoints, useful for mirrors or custom deploym
 |-------------------------|---------------------------------|------------------------------------------------------|
 | `MATHLIB_CACHE_GET_URL` | URL for downloading cache files | Azure container URLs (see [containers](#trust-ordered-containers)) |
 | `MATHLIB_CACHE_PUT_URL` | URL for uploading cache files   | Azure container URL chosen by `--container=NAME`     |
+
+### Read fallback chain
+
+| Variable             | Description                                                          | Default                          |
+|----------------------|----------------------------------------------------------------------|----------------------------------|
+| `MATHLIB_CACHE_FROM` | Comma-separated container list (same shape as `--cache-from`). The CI hook for trust-class-aware widening — `build_template.yml` exports this per job to widen reads to match its dispatched write container. `--cache-from` (CLI) takes precedence when both are set. | `defaultContainersForRepo repo` |
 
 ### Authentication (for uploads)
 
