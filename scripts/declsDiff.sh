@@ -14,9 +14,6 @@
 #   --counts-file FILE     `<plus> <minus>\n`
 #
 # Misc:
-#   --script-path PATH     path to `dumpReasonableDecls.lean`
-#                            (default: `dumpReasonableDecls.lean` in the
-#                            same directory as this script).
 #   -h, --help
 
 set -euo pipefail
@@ -27,8 +24,6 @@ NEW_SHA=""
 DECLS_OVERRIDE=""
 DIFF_OUT=""
 COUNTS_FILE=""
-HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-LEAN_SCRIPT="$HERE/dumpReasonableDecls.lean"
 
 while [ $# -gt 0 ]; do
   case "$1" in
@@ -44,8 +39,6 @@ while [ $# -gt 0 ]; do
     --diff-out=*)        DIFF_OUT="${1#*=}";    shift   ;;
     --counts-file)       COUNTS_FILE="$2";     shift 2 ;;
     --counts-file=*)     COUNTS_FILE="${1#*=}"; shift   ;;
-    --script-path)       LEAN_SCRIPT="$2";     shift 2 ;;
-    --script-path=*)     LEAN_SCRIPT="${1#*=}"; shift   ;;
     -h|--help)
       sed -n '2,35p' "$0" | sed 's/^# \{0,1\}//'
       exit 0 ;;
@@ -63,18 +56,12 @@ if [ ! -s "$NEW_DECLS" ]; then
   echo "declsDiff.sh: --new-decls is missing or empty: '$NEW_DECLS'" >&2
   exit 1
 fi
-if [ ! -f "$LEAN_SCRIPT" ]; then
-  echo "declsDiff.sh: Lean script not found: '$LEAN_SCRIPT'" >&2
-  exit 1
-fi
 
 WORK="$(mktemp -d -t declsDiff.XXXXXX)"
 trap "rm -rf '$WORK'" EXIT INT TERM
 
 # Set-difference of two sorted declaration lists, output sorted by NAME
-# (the leading `+`/`-` does not influence ordering). Pure shell — no lake
-# or lean required for the diff itself; the Lean script's `--diff` mode
-# exists for local use but isn't reached from this driver.
+# (the leading `+`/`-` does not influence ordering).
 DIFF="$WORK/diff.txt"
 grep -v '^$' "$REF_DECLS" | LC_ALL=C sort -u > "$WORK/ref-sorted.txt"
 grep -v '^$' "$NEW_DECLS" | LC_ALL=C sort -u > "$WORK/new-sorted.txt"

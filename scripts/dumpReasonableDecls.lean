@@ -106,10 +106,6 @@ Options:
 def parseOutEq? (arg : String) : Option String :=
   if arg.startsWith "--out=" then some (arg.drop "--out=".length).toString
   else if arg.startsWith "-o=" then some (arg.drop "-o=".length).toString
-  else if arg.startsWith "--imports-out=" then
-    -- Handled separately by the caller via a different field; here we just
-    -- match `--out=...` shape. Return none and let the loop fall through.
-    none
   else none
 
 partial def parseArgs : List String → Config → IO Config

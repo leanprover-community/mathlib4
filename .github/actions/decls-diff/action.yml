@@ -19,10 +19,6 @@ inputs:
     description: 'Full SHA of the new commit.'
     required: false
     default: ${{ github.sha }}
-  script-path:
-    description: 'Path to the `dumpReasonableDecls.lean` script.'
-    required: false
-    default: 'scripts/dumpReasonableDecls.lean'
   working-directory:
     description: 'Lake project root.'
     required: false
@@ -55,7 +51,6 @@ runs:
       shell: bash
       env:
         IN_WORKDIR:     ${{ inputs.working-directory }}
-        IN_SCRIPT:      ${{ inputs.script-path }}
         IN_REF_DECLS:   ${{ inputs.reference-decls-file }}
         IN_NEW_DECLS:   ${{ inputs.new-decls-file }}
         IN_NEW_SHA:     ${{ inputs.new-sha }}
@@ -84,8 +79,7 @@ runs:
           --new-sha        "$IN_NEW_SHA" \
           --decls-override "$DECLS_OVERRIDE" \
           --diff-out       "$DIFF_FILE" \
-          --counts-file    "$COUNTS" \
-          --script-path    "$WD/$IN_SCRIPT"
+          --counts-file    "$COUNTS"
 
         PLUS=0; MINUS=0
         read -r PLUS MINUS < "$COUNTS" || true
