@@ -1,48 +1,31 @@
 #!/usr/bin/env python3
-"""Patch the `#### Declarations diff` section of an existing "### PR summary"
-comment with a Lean-aware diff produced by the decls-diff action.
+"""Patch the `#### Declarations diff` section of an existing `### PR summary`
+comment with a Lean-aware diff.
 
-This script is intentionally policy-light: the *action* produces the data
-(plus/minus counts, the diff file); *this* script knows how to splice it into
-the existing comment without disturbing the rest of the summary.
+Inputs (environment variables):
+    GH_TOKEN       passed through to the `gh` CLI
+    REPO           `owner/repo`
+    PR_HEAD_SHA    head SHA of the PR (the workflow_run head_sha)
+    PR_NUMBER      PR number (optional; resolved from PR_HEAD_SHA when empty)
+    MODE           `success` (default) or `warning`
+    DIFF_FILE      success mode: path to the `+NAME` / `-NAME` diff
+    PLUS, MINUS    success mode: counts of `+`/`-` lines
+    DEFAULT_BRANCH warning mode: default branch shown in the rebase suggestion
+                     (default: `master`)
 
-Inputs are read from environment variables:
-    GH_TOKEN       — passed through to the `gh` CLI for auth
-    REPO           — `owner/repo`
-    PR_HEAD_SHA    — head SHA of the PR (the workflow_run head_sha)
-    MODE           — `success` (default) or `warning`
-    DIFF_FILE      — (success mode) path to the +/- diff file from the dumper
-    PLUS, MINUS    — (success mode) counts of `+NAME` / `-NAME` lines
-    DEFAULT_BRANCH — (warning mode, optional) shown in the rebase suggestion
-                     (defaults to `master`)
+Modes:
+    success — replace the section between `<!-- DECLS_DIFF_BEGIN -->` and
+              `<!-- DECLS_DIFF_END -->` (or fall back to a header-based
+              detection of `#### Declarations diff`) with a freshly-built
+              Lean-aware section.
+    warning — append a single explanatory blockquote inside the existing
+              section. Idempotent via the `WARNING_MARKER` sentinel.
 
-Behaviour:
-
-  1. Resolve the PR number from PR_HEAD_SHA via `gh api /commits/<sha>/pulls`.
-     If no PR is associated (e.g. push to a branch without a PR), exit 0
-     silently — there's nothing to patch.
-
-  2. Find the comment whose body starts with `### PR summary` (the convention
-     `update_PR_comment.sh` uses). If no such comment exists yet — the
-     pre-build `PR_summary` workflow may not have finished — exit 0 silently.
-
-  3. Mode `success`:
-       Replace text between `<!-- DECLS_DIFF_BEGIN -->` and
-       `<!-- DECLS_DIFF_END -->` (or fall back to a header-based detection of
-       the `#### Declarations diff` block) with a freshly-built Lean-aware
-       section, including the post-build stamp.
-
-     Mode `warning`:
-       Leave the existing section's body untouched and append a single
-       blockquote that explains why no Lean-aware diff was produced and asks
-       the PR author to merge the default branch. Idempotent via the
-       `WARNING_MARKER` sentinel.
-
-  4. PATCH the comment via `gh api -X PATCH ... --input -`.
+The comment is PATCHed via `gh api -X PATCH ... --input -`.
 
 Exit codes:
-    0 — patched successfully, or skipped because there was nothing to patch
-    1 — a non-recoverable error (gh CLI failure, malformed env, ...)
+    0 — patched, or skipped because there was nothing to patch
+    1 — non-recoverable error (gh CLI failure, malformed env, ...)
 """
 
 from __future__ import annotations
@@ -58,10 +41,8 @@ BEGIN = "<!-- DECLS_DIFF_BEGIN -->"
 END   = "<!-- DECLS_DIFF_END -->"
 WARNING_MARKER = "<!-- DECLS_DIFF_WARNING -->"
 PR_SUMMARY_PREFIX = "### PR summary"
-# Matches `PR_summary.yml`'s heuristic for `declarations_diff.sh`: wrap the
-# whole section in `<details>` once the rendered body exceeds this many
-# newlines. Kept identical so reviewers see the same collapse threshold for
-# the pre-build and post-build versions.
+# Newline-count threshold above which the rendered section is wrapped in
+# `<details>`. Matches `PR_summary.yml`'s heuristic.
 DETAILS_LINE_THRESHOLD = 15
 
 
@@ -79,14 +60,10 @@ def short(sha: str) -> str:
 
 
 def build_section(plus: int, minus: int, diff_text: str, head_sha: str) -> str:
-    """Render the Lean-aware `#### Declarations diff` section, including the
-    sentinel markers and the post-build stamp.
-
-    Mirrors the collapse heuristic from `.github/workflows/PR_summary.yml`:
-    when the rendered body has more than `DETAILS_LINE_THRESHOLD` newlines,
-    the whole section is wrapped in `<details><summary>#### Declarations
-    diff</summary>…</details>`; otherwise the heading and body render
-    inline."""
+    """Render the Lean-aware `#### Declarations diff` section, including
+    sentinel markers and the post-build stamp. When the rendered body has
+    more than `DETAILS_LINE_THRESHOLD` newlines, the section is wrapped in
+    `<details>`; otherwise the heading and body render inline."""
     diff_lines = diff_text.splitlines()
     total = len(diff_lines)
     preview_lines = diff_lines[:200]
@@ -137,12 +114,8 @@ def build_section(plus: int, minus: int, diff_text: str, head_sha: str) -> str:
 
 
 def build_warning(default_branch: str) -> str:
-    """Render a `<details>` block whose `<summary>` is just the one-line
-    status (`⚠️ **Lean-aware diff unavailable**`) and whose body holds the
-    explanation + rebase suggestion. Lives inside the existing
-    `#### Declarations diff` section without disturbing the pre-build (regex)
-    content above it. The unique `WARNING_MARKER` HTML comment makes the
-    patcher idempotent on re-runs."""
+    """Render the `Lean-aware diff unavailable` `<details>` block. The leading
+    `WARNING_MARKER` HTML comment makes the patcher idempotent on re-runs."""
     return "\n".join([
         WARNING_MARKER,
         "<details><summary>",
@@ -178,20 +151,11 @@ def _normalize_section_spacing(body: str) -> str:
 
 def splice(body: str, new_section: str) -> tuple[str, str]:
     """Success-mode splice: replace the entire Declarations-diff section.
-
     Returns `(new_body, mode)` where `mode` is one of `markers`,
-    `wrapped-header-fallback`, `header-fallback`, `append`.
+    `wrapped-header-fallback`, `header-fallback`, `append`."""
 
-    The fallback regexes handle the two shapes the pre-build PR_summary
-    emits: when the regex content is long it wraps the section in
-    `<details><summary>#### Declarations diff</summary>…</details>`,
-    otherwise just `#### Declarations diff` followed by content."""
-
-    # Marker form. Also greedily absorb an orphan `<details><summary>` opener
-    # that some older patcher revisions left immediately before BEGIN (the
-    # outer wrap whose `</details>` was eaten by the bare-header-fallback
-    # replacement). The non-capturing optional prefix is a no-op when no
-    # orphan is present.
+    # The optional `<details><summary>` prefix absorbs an orphan opener left
+    # by older patcher revisions before BEGIN.
     marker_re = re.compile(
         r"(?:<details>\s*<summary>\s*\n+\s*)?"
         + re.escape(BEGIN) + r".*?" + re.escape(END),
@@ -234,11 +198,9 @@ def splice(body: str, new_section: str) -> tuple[str, str]:
 
 def splice_warning(body: str, warning_md: str) -> tuple[str, str]:
     """Warning-mode splice: append `warning_md` inside the existing
-    `#### Declarations diff` section without disturbing anything else.
-
-    Returns `(new_body, mode)`. If `WARNING_MARKER` is already present in
-    the section, the body is returned unchanged with mode suffixed
-    `+already-warned` so the caller can skip the PATCH."""
+    `#### Declarations diff` section. Returns `(new_body, mode)`. If
+    `WARNING_MARKER` is already present, returns the body unchanged with
+    mode suffixed `+already-warned`."""
 
     marker_re = re.compile(
         re.escape(BEGIN) + r"(.*?)" + re.escape(END),
@@ -299,11 +261,8 @@ def main() -> int:
     mode = os.environ.get("MODE", "success")
 
     # PR-number resolution: PR_NUMBER env var > SHA-based lookup.
-    # The SHA lookup uses `repos/<repo>/commits/<sha>/pulls`, which only
-    # returns PRs whose head branch lives in this repo — so it MISSES fork
-    # PRs (the common case for Mathlib). Callers that know the PR number
-    # (e.g. via `inputs.pr_number` on `decls-diff.yml`) should pass it
-    # via PR_NUMBER to bypass the unreliable lookup.
+    # The SHA lookup via `repos/<repo>/commits/<sha>/pulls` misses fork PRs;
+    # pass PR_NUMBER directly when known.
     pr_env = os.environ.get("PR_NUMBER", "").strip()
     if pr_env:
         try:

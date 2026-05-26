@@ -1,31 +1,6 @@
-# Reference
-#
-# Post-build workflow that updates the "### PR summary" comment's
-# `#### Declarations diff` section with a Lean-aware diff derived from the
-# `decls.txt`/`imports.json` files emitted by `build_template.yml`'s upload
-# step and stored in the `import-graph` artifact.
-#
-# Triggers
-#   workflow_run: completion of `ci` (or `ci dev`) — production trigger.
-#   workflow_dispatch: manual run, for testing from a feature branch
-#     (workflow_run only fires from workflows on the default branch).
-#
-# Inputs (workflow_dispatch only; resolution priority is `pr_number` >
-# `run_id` > most-recent `ci-dev/*` run)
-#   pr_number      — PR to evaluate. Resolves its head SHA and most recent
-#                    successful `ci` Build to consume the artifact from.
-#   run_id         — Build run ID whose artifact to consume.
-#   patch_comment  — Default `false`: just compute and log the diff into
-#                    the step summary. Flip to `true` to also PATCH the
-#                    PR-summary comment (use only when testing the
-#                    comment-update path end-to-end).
-#
-# Outputs
-#   * Step summary: rendered Markdown override + counts.
-#   * On workflow_run, or workflow_dispatch with `patch_comment: true`: the
-#     `### PR summary` comment is updated — declarations-diff section
-#     replaced with the Lean-aware version (success path), or a
-#     `merge master and retry` warning appended (cache-missing path).
+# Post-build workflow: update the `### PR summary` comment's `#### Declarations diff`
+# section with a Lean-aware diff derived from the `decls.txt` / `imports.json` files
+# produced by `build_template.yml` and stored in the `import-graph` artifact.
 
 name: Declarations diff (post-build)
 
@@ -36,35 +11,22 @@ on:
   workflow_dispatch:
     inputs:
       pr_number:
-        description: >-
-          PR number to evaluate. When set, resolves the PR's head SHA and
-          finds the most recent successful `ci` Build for it; takes
-          precedence over `run_id`.
+        description: 'PR number to evaluate (takes precedence over `run_id`).'
         required: false
         type: string
         default: ''
       run_id:
-        description: >-
-          Build run ID whose artifact to consume (defaults to the most
-          recent successful `ci-dev/*` run when `pr_number` is empty).
+        description: 'Build run ID whose artifact to consume.'
         required: false
         type: string
         default: ''
       master_run_id:
-        description: >-
-          Master-side Build run ID. When set, bypasses the auto-lookup
-          (which only matches `ci` runs on `master`) and uses the given
-          run's artifact as the reference side — handy for testing the
-          success path from a `ci dev` run that built a merge-base SHA
-          before the modified template reaches master.
+        description: 'Master-side Build run ID. Bypasses the auto-lookup of the reference artifact.'
         required: false
         type: string
         default: ''
       patch_comment:
-        description: >-
-          Default `false`: compute and log the diff into the step summary
-          only. Flip to `true` to also PATCH the `### PR summary` comment
-          (only use when testing the comment-update path end-to-end).
+        description: '`true` to also PATCH the `### PR summary` comment; otherwise log to step summary only.'
         required: false
         type: boolean
         default: false

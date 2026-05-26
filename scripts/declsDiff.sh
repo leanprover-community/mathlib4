@@ -1,14 +1,7 @@
 #!/usr/bin/env bash
-# declsDiff.sh — given two pre-computed declarations dumps (decls.txt files
-# produced by `dumpReasonableDecls.lean`), produce:
-#   * the raw `+NAME` / `-NAME` diff (sorted by NAME),
-#   * a Markdown override snippet ready for mathlib-ci's `build_summary_body.sh`
-#     to splice into the `#### Declarations diff` section.
-#
-# This script does NO env loading, NO cache operations, NO worktrees — it
-# just compares two pre-existing text files. The expensive work
-# (`withImportModules`) has already happened in each commit's Build job and
-# the results are downloaded from CI artifacts.
+# declsDiff.sh — given two pre-computed `decls.txt` dumps (produced by
+# `dumpReasonableDecls.lean`), emit the `+NAME` / `-NAME` diff and a
+# Markdown override snippet for the `#### Declarations diff` section.
 #
 # Inputs:
 #   --ref-decls FILE       declarations dump of the reference commit
@@ -16,17 +9,14 @@
 #   --new-sha SHA          full SHA of the new commit (for the stamp)
 #
 # Outputs (any combination):
-#   --decls-override FILE  Markdown override snippet (no `#### Declarations diff`
-#                            heading, no outer <details> wrap — both are added
-#                            by build_summary_body.sh based on length)
-#   --diff-out FILE        raw +/- lines (one entry per line)
-#   --counts-file FILE     "<plus> <minus>\n"
+#   --decls-override FILE  Markdown override snippet
+#   --diff-out FILE        raw `+NAME` / `-NAME` lines
+#   --counts-file FILE     `<plus> <minus>\n`
 #
 # Misc:
-#   --script-path PATH     path to `dumpReasonableDecls.lean` (for --diff
-#                            mode, which is the only Lean call we make).
-#                            Default: ../dumpReasonableDecls.lean relative
-#                            to this script.
+#   --script-path PATH     path to `dumpReasonableDecls.lean`
+#                            (default: `dumpReasonableDecls.lean` in the
+#                            same directory as this script).
 #   -h, --help
 
 set -euo pipefail

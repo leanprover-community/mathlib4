@@ -1,73 +1,54 @@
 name: 'Declarations diff (post-build)'
-description: >-
-  Compute the Lean-aware declarations diff from two pre-computed
-  `decls.txt` files (produced by `dumpReasonableDecls.lean` during each
-  commit's Build job and downloaded from CI artifacts). Emits a Markdown
-  override snippet ready for mathlib-ci's `build_summary_body.sh` to
-  splice into the `#### Declarations diff` section. Does NO env loading.
+description: 'Compute the Lean-aware declarations diff from two pre-computed `decls.txt` files and emit a Markdown override snippet.'
 author: 'Damiano Testa'
-branding:
-  icon: 'git-pull-request'
-  color: 'purple'
 
 inputs:
   reference-decls-file:
-    description: 'Path to the reference commit''s `decls.txt`.'
+    description: 'Path to the file containing the declarations in the reference commit'
     required: true
   new-decls-file:
-    description: 'Path to the new commit''s `decls.txt`.'
+    description: 'Path to the file containing the declarations in the new commit'
     required: true
   reference-imports-file:
-    description: >-
-      Path to the reference commit's `imports.json`. Surfaced as an output
-      so the consuming workflow can pass it (alongside the new one) to
-      `build_summary_body.sh` as `BASE_JSON`.
+    description: 'Path to the `imports.json` file for the reference commit.'
     required: true
   new-imports-file:
-    description: >-
-      Path to the new commit's `imports.json`. Surfaced as `HEAD_JSON` for
-      `build_summary_body.sh`.
+    description: 'Path to the `imports.json` file for the new commit.'
     required: true
   new-sha:
-    description: 'Full SHA of the new commit (shown in the stamp).'
+    description: 'Full SHA of the new commit.'
     required: false
     default: ''
   script-path:
-    description: >-
-      Path of `dumpReasonableDecls.lean` (for the `--diff` mode, the only
-      Lean call the action makes — pure file comparison, no env load).
+    description: 'Path to the `dumpReasonableDecls.lean` script.'
     required: false
     default: 'scripts/dumpReasonableDecls.lean'
   working-directory:
-    description: >-
-      Lake project root. Default: `$GITHUB_WORKSPACE`.
+    description: 'Lake project root.'
     required: false
-    default: ''
+    default: ${{ github.workspace }}
 
 outputs:
   decls-override-file:
-    description: >-
-      Absolute path to the Markdown override snippet (inner content of
-      `#### Declarations diff`, no heading, no details wrap — both added
-      by `build_summary_body.sh` based on length).
+    description: 'Path to the Markdown override snippet for the `#### Declarations diff` section.'
     value: ${{ steps.run.outputs.decls-override-file }}
   diff-file:
-    description: 'Absolute path to the raw `+NAME` / `-NAME` diff.'
+    description: 'Path to the raw `+NAME` / `-NAME` diff file.'
     value: ${{ steps.run.outputs.diff-file }}
   base-json:
-    description: 'Pass-through: reference `imports.json` (= `BASE_JSON`).'
+    description: 'Path to the `imports.json` file for the reference commit.'
     value: ${{ inputs.reference-imports-file }}
   head-json:
-    description: 'Pass-through: new `imports.json` (= `HEAD_JSON`).'
+    description: 'Path to the `imports.json` file for the new commit.'
     value: ${{ inputs.new-imports-file }}
   plus-count:
-    description: 'Number of declarations only in the new commit.'
+    description: 'Number of declarations present only in the new commit.'
     value: ${{ steps.run.outputs.plus-count }}
   minus-count:
-    description: 'Number of declarations only in the reference commit.'
+    description: 'Number of declarations present only in the reference commit.'
     value: ${{ steps.run.outputs.minus-count }}
   has-changes:
-    description: '`true` iff plus-count + minus-count > 0.'
+    description: '`true` if any declarations differ between the two commits, `false` otherwise.'
     value: ${{ steps.run.outputs.has-changes }}
 
 runs:
@@ -94,7 +75,6 @@ runs:
           exit 1
         fi
 
-        # Stage outputs in $RUNNER_TEMP so subsequent steps can find them by path.
         STAGE="${RUNNER_TEMP:-/tmp}/decls-diff-action"
         mkdir -p "$STAGE"
         DECLS_OVERRIDE="$STAGE/decls_override.md"
@@ -124,7 +104,6 @@ runs:
           echo "has-changes=$HAS"
         } >> "$GITHUB_OUTPUT"
 
-        # Visible-in-Actions-UI summary
         SHORT="${IN_NEW_SHA:0:7}"
         {
           echo "## Declarations diff"

@@ -24,29 +24,17 @@ on:
         type: string
         default: 'master'
       decls_diff_pr_number:
-        description: >-
-          For testing the post-build decls-diff workflow: PR number to
-          replay the diff against. Reads decls.txt/imports.json from the
-          PR's own (most recent) Build artifact. Leave empty to skip the
-          post-build job entirely.
+        description: 'PR number to replay the decls-diff against. Leave empty to skip the post-build job.'
         required: false
         type: string
         default: ''
       decls_diff_master_run_id:
-        description: >-
-          Master-side Build run ID to use as the reference artifact.
-          When set, decls-diff skips its auto-lookup (which only finds
-          real `ci` runs on master). Use a prior `ci dev` run that built
-          the merge-base SHA to exercise the success path before the
-          modified template reaches master.
+        description: 'Master-side Build run ID to use as the reference artifact (bypasses auto-lookup).'
         required: false
         type: string
         default: ''
       decls_diff_patch_comment:
-        description: >-
-          Default false. Flip to true to also PATCH the PR-summary
-          comment with the Lean-aware section. Only relevant when
-          decls_diff_pr_number is set.
+        description: '`true` to also PATCH the PR-summary comment. Only relevant when `decls_diff_pr_number` is set.'
         required: false
         type: boolean
         default: false
