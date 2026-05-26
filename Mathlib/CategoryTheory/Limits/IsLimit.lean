@@ -157,22 +157,22 @@ theorem hom_isIso {s t : Cone F} (P : IsLimit s) (Q : IsLimit t) (f : s ⟶ t) :
 def conePointUniqueUpToIso {s t : Cone F} (P : IsLimit s) (Q : IsLimit t) : s.pt ≅ t.pt :=
   (Cone.forget F).mapIso (uniqueUpToIso P Q)
 
-@[to_dual (attr := reassoc (attr := simp)) comp_coconePointUniqueUpToIso_hom]
+@[to_dual (attr := reassoc (attr := simp)) comp_coconePointUniqueUpToIso_inv]
 theorem conePointUniqueUpToIso_hom_comp {s t : Cone F} (P : IsLimit s) (Q : IsLimit t) (j : J) :
     (conePointUniqueUpToIso P Q).hom ≫ t.π.app j = s.π.app j :=
   (uniqueUpToIso P Q).hom.w _
 
-@[to_dual (attr := reassoc (attr := simp)) comp_coconePointUniqueUpToIso_inv]
+@[to_dual (attr := reassoc (attr := simp)) comp_coconePointUniqueUpToIso_hom]
 theorem conePointUniqueUpToIso_inv_comp {s t : Cone F} (P : IsLimit s) (Q : IsLimit t) (j : J) :
     (conePointUniqueUpToIso P Q).inv ≫ s.π.app j = t.π.app j :=
   (uniqueUpToIso P Q).inv.w _
 
-@[to_dual (attr := reassoc (attr := simp)) coconePointUniqueUpToIso_hom_desc]
+@[to_dual (attr := reassoc (attr := simp)) coconePointUniqueUpToIso_inv_desc]
 theorem lift_comp_conePointUniqueUpToIso_hom {r s t : Cone F} (P : IsLimit s) (Q : IsLimit t) :
     P.lift r ≫ (conePointUniqueUpToIso P Q).hom = Q.lift r :=
   Q.uniq _ _ (by simp)
 
-@[to_dual (attr := reassoc (attr := simp)) coconePointUniqueUpToIso_inv_desc]
+@[to_dual (attr := reassoc (attr := simp)) coconePointUniqueUpToIso_hom_desc]
 theorem lift_comp_conePointUniqueUpToIso_inv {r s t : Cone F} (P : IsLimit s) (Q : IsLimit t) :
     Q.lift r ≫ (conePointUniqueUpToIso P Q).inv = P.lift r :=
   P.uniq _ _ (by simp)
