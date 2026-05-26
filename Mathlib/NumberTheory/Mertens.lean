@@ -200,9 +200,7 @@ lemma prime_tail_lt_odd_tail : ∑' p : {p : Nat.Primes // 5 ≤ p.1}, log p / (
     intro p hp
     have hdiv : (p : ℕ) / 2 = 4 := congrArg (fun k : Set.Ici 2 ↦ (k : ℕ)) hp
     have hpodd : Odd (p : ℕ) := p.1.property.odd_of_ne_two (by lia)
-    have hp_eq : 2 * ((p : ℕ) / 2) + 1 = (p : ℕ) :=
-      Nat.two_mul_div_two_add_one_of_odd hpodd
-    have hp9 : (p : ℕ) = 9 := by lia
+    have hp9 : (p : ℕ) = 9 := by grind
     have hnot : ¬ Nat.Prime (p : ℕ) := by
       rw [hp9]
       decide
@@ -210,21 +208,16 @@ lemma prime_tail_lt_odd_tail : ∑' p : {p : Nat.Primes // 5 ≤ p.1}, log p / (
   have hterm (p : P) : log p / (p * (p - 1)) = oddLogDivMulPred ((e p : Set.Ici 2) : ℕ) := by
     unfold oddLogDivMulPred e
     have hpodd : Odd (p : ℕ) := p.1.property.odd_of_ne_two (by lia)
-    have hp_eq : 2 * (p / 2) + 1 = (p : ℕ) :=
-      Nat.two_mul_div_two_add_one_of_odd hpodd
-    have hpeq_real : 2 * (p / 2 : ℕ) + 1 = (p : ℝ) := by exact_mod_cast hp_eq
+    have hpeq_real : 2 * (p / 2 : ℕ) + 1 = (p : ℝ) := by norm_cast; grind
     have hppred_real : 2 * ((p / 2 : ℕ) : ℝ) = (p : ℝ) - 1 := by
       calc
-        _ = (((p : ℕ) - 1 : ℕ) : ℝ) := by norm_cast; lia
+        _ = (((p : ℕ) - 1 : ℕ) : ℝ) := by norm_cast; grind
         _ = (p : ℝ) - 1 := by norm_num [Nat.cast_sub (by lia : 1 ≤ (p : ℕ))]
     rw [hpeq_real, hppred_real]
   have hodd_nonneg (k : Set.Ici 2) : 0 ≤ oddLogDivMulPred k :=
-    oddLogDivMulPred_nonneg (by simp; grind)
-  let rest := fun k ↦ if k = k4 then 0 else oddLogDivMulPred k
-  have hrest_nonneg (k : Set.Ici 2) : 0 ≤ rest k := by
-    by_cases h : k = k4
-    · simp [rest, h]
-    · simpa [rest, h] using hodd_nonneg k
+    oddLogDivMulPred_nonneg (by grind [Nat.one_le_cast])
+  let rest := fun k ↦ if k  = k4 then 0 else oddLogDivMulPred k
+  have hrest_nonneg (k : Set.Ici 2) : 0 ≤ rest k := by grind
   have hrest_le (k : Set.Ici 2) : rest k ≤ oddLogDivMulPred k := by
     by_cases h : k = k4
     · subst k
@@ -238,8 +231,7 @@ lemma prime_tail_lt_odd_tail : ∑' p : {p : Nat.Primes // 5 ≤ p.1}, log p / (
       (summable_primeLogDivMulPred.subtype fun q ↦ 5 ≤ (q : ℕ)) hrest_summable
   have hk4_pos : 0 < oddLogDivMulPred ((k4 : ℕ) : ℝ) := by
     have hlog : 0 < log 9 := log_pos (by norm_num)
-    norm_num [oddLogDivMulPred]
-    exact hlog
+    grind [oddLogDivMulPred]
   rw [summable_oddLogDivMulPred_nat_tail.tsum_eq_add_tsum_ite k4]
   exact lt_of_le_of_lt hleRest (by linarith)
 
@@ -391,13 +383,12 @@ lemma odd_tail_lt_seven_log_five_add_five_div_forty :
       _ < oddLogDivMulPred 2 + ∫ x in Set.Ioi 2, oddLogDivMulPred x := by
         simpa [add_comm, add_left_comm, add_assoc] using
           add_lt_add_left tsum_oddLogDivMulPred_nat_tail_lt_integral (oddLogDivMulPred 2)
-      _ = _ := by simp; norm_num [oddLogDivMulPred]
+      _ = _ := by norm_num [oddLogDivMulPred]
   linarith [integral_oddLogDivMulPred_le_log_five_add_one_div_eight]
 
 lemma log_factorial_eq_sum_prime_factorization {n : ℕ} : log (n.factorial) =
     ∑ p ∈ Ioc 0 n with p.Prime, (Nat.factorization n.factorial p) * log p := by
-  rw [log_nat_eq_sum_factorization n.factorial,
-    Finsupp.sum_of_support_subset (Nat.factorization n.factorial)]
+  rw [log_nat_eq_sum_factorization n.factorial, n.factorial.factorization.sum_of_support_subset]
   · intro p hp
     rw [mem_filter, mem_Ioc]
     have hpPrime : p.Prime := Nat.prime_of_mem_primeFactors hp
@@ -413,11 +404,11 @@ lemma factorial_prime_exponent_lower {n p : ℕ} (hp : p.Prime) (hpn : p ≤ n) 
     linarith
   _ ≤ _ := by
     norm_cast
-    rw [Nat.factorization_factorial hp (Nat.lt_succ_of_le (Nat.log_le_self p n))]
     have hmem : 1 ∈ Ico 1 n.succ := by
       rw [mem_Ico]
       exact ⟨le_rfl, Nat.lt_succ_of_le (le_trans hp.one_le hpn)⟩
-    simpa using (single_le_sum (fun k _ ↦ Nat.zero_le (n / p ^ k)) hmem)
+    simpa [Nat.factorization_factorial hp <| Nat.lt_succ_of_le <| p.log_le_self n]
+      using (single_le_sum (fun k _ ↦ Nat.zero_le (n / p ^ k)) hmem)
 
 lemma primeLogSum_sub_log_lt_theta_div {n : ℕ} (hn : 0 < n) :
     ∑ p ∈ Ioc 0 n with p.Prime, log p / p - log n ≤ Chebyshev.theta n / n := by
@@ -463,10 +454,7 @@ lemma log_factorial_le_mul_primeLogSum_add_error {n : ℕ} : log (n.factorial) �
     _ = (n : ℝ) * (∑ p ∈ Iic n with p.Prime, log p / p) +
         (n : ℝ) * ∑ p ∈ Iic n with p.Prime, log p / (p * (p - 1)) := by
       rw [mul_sum, mul_sum, ← sum_add_distrib]
-      refine sum_congr rfl ?_
-      intro p hp
-      rw [mem_filter] at hp
-      field_simp
+      exact sum_congr rfl fun p hp ↦ by field_simp
 
 lemma finite_primeLogDivMulPred_lt_one {n : ℕ} :
     ∑ p ∈ Ioc 0 n with p.Prime, log p / (p * (p - 1)) < 1 := by
