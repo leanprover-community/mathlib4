@@ -15,6 +15,8 @@ public import Mathlib.MeasureTheory.VectorMeasure.SetIntegral
 open Set Filter
 open scoped Topology ENNReal
 
+@[expose] public section
+
 namespace MeasureTheory.VectorMeasure
 
 local infixr:25 " →ₛ " => SimpleFunc

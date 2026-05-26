@@ -383,7 +383,7 @@ theorem _root_.MeasurableEmbedding.setIntegral_map_vectorMeasure {β : Type*} [M
     ∫ᵛ y in s, f y ∂[B; μ.map φ] = ∫ᵛ x in φ ⁻¹' s, f (φ x) ∂[B; μ] := by
   rw [restrict_map μ hφ.measurable hs, hφ.integral_map_vectorMeasure]
 
-theorem _root_.Topology.IsClosedEmbedding.setIntegral_map
+theorem _root_.Topology.IsClosedEmbedding.setIntegral_map_vectorMeasure
     [TopologicalSpace X] [BorelSpace X] {β : Type*}
     [MeasurableSpace β] [TopologicalSpace β] [BorelSpace β] {φ : X → β} {f : β → E} {s : Set β}
     (hs : MeasurableSet s) (hφ : IsClosedEmbedding φ) :
