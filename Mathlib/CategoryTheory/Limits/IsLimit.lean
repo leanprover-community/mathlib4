@@ -737,6 +737,15 @@ def coconePointsIsoOfEquivalence {F : J ⥤ C} {s : Cocone F} {G : K ⥤ C} {t :
 
 end Equivalence
 
+@[simp]
+theorem homIso_hom (h : IsColimit t) {W : C} :
+    (IsColimit.homIso h W).hom = ↾fun f ↦ (t.extend f.down).ι :=
+  rfl
+
+/-- The colimit of `F` represents the functor taking `W` to
+  the set of cocones on `F` with cone point `W`. -/
+def natIso (h : IsColimit t) : coyoneda.obj (op t.pt) ⋙ uliftFunctor.{u₁} ≅ F.cocones :=
+  NatIso.ofComponents (IsColimit.homIso h)
 
 /-- Another, more explicit, formulation of the universal property of a colimit cocone.
 See also `homIso`. -/
