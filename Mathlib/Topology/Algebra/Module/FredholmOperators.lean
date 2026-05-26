@@ -130,21 +130,22 @@ lemma Module.sum_neg_one_pow_finrank_eq_zero_of_exact_six {k : Type*} [Field k]
     (surj : Surjective f₄) :
     (finrank k V₀ : ℤ) - finrank k V₁ + finrank k V₂ -
       finrank k V₃ + finrank k V₄ - finrank k V₅ = 0 := by
-  let f₀' : ULift.{max u₀ u₁ u₂ u₃ u₄ u₅} V₀ →ₗ[k] ULift.{max u₀ u₁ u₂ u₃ u₄ u₅} V₁ :=
-    ULift.moduleEquiv.symm.toLinearMap ∘ₗ f₀ ∘ₗ ULift.moduleEquiv.toLinearMap
-  let f₁' : ULift.{max u₀ u₁ u₂ u₃ u₄ u₅} V₁ →ₗ[k] ULift.{max u₀ u₁ u₂ u₃ u₄ u₅} V₂ :=
-    ULift.moduleEquiv.symm.toLinearMap ∘ₗ f₁ ∘ₗ ULift.moduleEquiv.toLinearMap
-  let f₂' : ULift.{max u₀ u₁ u₂ u₃ u₄ u₅} V₂ →ₗ[k] ULift.{max u₀ u₁ u₂ u₃ u₄ u₅} V₃ :=
-    ULift.moduleEquiv.symm.toLinearMap ∘ₗ f₂ ∘ₗ ULift.moduleEquiv.toLinearMap
-  let f₃' : ULift.{max u₀ u₁ u₂ u₃ u₄ u₅} V₃ →ₗ[k] ULift.{max u₀ u₁ u₂ u₃ u₄ u₅} V₄ :=
-    ULift.moduleEquiv.symm.toLinearMap ∘ₗ f₃ ∘ₗ ULift.moduleEquiv.toLinearMap
-  let f₄' : ULift.{max u₀ u₁ u₂ u₃ u₄ u₅} V₄ →ₗ[k] ULift.{max u₀ u₁ u₂ u₃ u₄ u₅} V₅ :=
-    ULift.moduleEquiv.symm.toLinearMap ∘ₗ f₄ ∘ₗ ULift.moduleEquiv.toLinearMap
-  have := sum_neg_one_pow_finrank_eq_zero_of_exact_six' f₀' f₁' f₂' f₃' f₄'
-    (inj := by simpa [f₀']) (surj := by simpa [f₄'])
-  simp only [finrank_ulift] at this
+  let W₀ := ULift.{max u₀ u₁ u₂ u₃ u₄ u₅} V₀
+  let W₁ := ULift.{max u₀ u₁ u₂ u₃ u₄ u₅} V₁
+  let W₂ := ULift.{max u₀ u₁ u₂ u₃ u₄ u₅} V₂
+  let W₃ := ULift.{max u₀ u₁ u₂ u₃ u₄ u₅} V₃
+  let W₄ := ULift.{max u₀ u₁ u₂ u₃ u₄ u₅} V₄
+  let W₅ := ULift.{max u₀ u₁ u₂ u₃ u₄ u₅} V₅
+  let g₀ : W₀ →ₗ[k] W₁ := ULift.moduleEquiv.symm.toLinearMap ∘ₗ f₀ ∘ₗ ULift.moduleEquiv.toLinearMap
+  let g₁ : W₁ →ₗ[k] W₂ := ULift.moduleEquiv.symm.toLinearMap ∘ₗ f₁ ∘ₗ ULift.moduleEquiv.toLinearMap
+  let g₂ : W₂ →ₗ[k] W₃ := ULift.moduleEquiv.symm.toLinearMap ∘ₗ f₂ ∘ₗ ULift.moduleEquiv.toLinearMap
+  let g₃ : W₃ →ₗ[k] W₄ := ULift.moduleEquiv.symm.toLinearMap ∘ₗ f₃ ∘ₗ ULift.moduleEquiv.toLinearMap
+  let g₄ : W₄ →ₗ[k] W₅ := ULift.moduleEquiv.symm.toLinearMap ∘ₗ f₄ ∘ₗ ULift.moduleEquiv.toLinearMap
+  have := sum_neg_one_pow_finrank_eq_zero_of_exact_six' g₀ g₁ g₂ g₃ g₄
+    (inj := by simpa [g₀]) (surj := by simpa [g₄])
+  simp only [W₀, W₁, W₂, W₃, W₄, W₅, finrank_ulift] at this
   apply this <;>
-  simpa only [f₀', f₁', f₂', f₃', f₄', LinearEquiv.postcomp_exact_iff_exact,
+  simpa only [g₀, g₁, g₂, g₃, g₄, LinearEquiv.postcomp_exact_iff_exact,
     LinearEquiv.conj_symm_exact_iff_exact, LinearEquiv.precomp_exact_iff_exact]
 
 end FindHome
