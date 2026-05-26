@@ -114,7 +114,7 @@ lemma exists_lt_finrank_span_smul_inter (hs : Absorbent ℝ s) (hi : i < finrank
     i < finrank ℤ L := hi
     _ = finrank ℤ (span ℤ (.range (Subtype.val ∘ b))) := by rw [hspan_eq]
     _ = finrank ℝ (span ℝ (.range (Subtype.val ∘ b))) :=
-        (Real.finrank_real_span_range_eq_finrank_int _
+        (finrank_real_span_eq_finrank_int_span _
           (Set.range_subset_iff.mpr fun i => (b i).prop)).symm
     _ ≤ finrank ℝ (span ℝ <| r • s ∩ L) := by
       refine finrank_mono <| span_mono ?_
@@ -147,7 +147,7 @@ lemma exists_linearIndependent_of_successiveMin_lt {r : ℝ≥0} (hsc : Convex �
   · refine ((hf_li.comp _ (Fin.castLE_injective hri)).restrict_scalars ?_).of_comp L.subtype
     exact fun a b h ↦ by simpa using h
 
-lemma isClosed_lt_finrank_span_smul_inter (hsc : Convex ℝ s) (hs : IsCompact s) (hs₀ : s ∈ 𝓝 0)
+lemma isClosed_setOf_lt_finrank_span_smul_inter (hsc : Convex ℝ s) (hs : IsCompact s) (hs₀ : s ∈ 𝓝 0)
     (hi : i < finrank ℤ L) :
     IsClosed {r : ℝ≥0 | i < finrank ℝ (span ℝ (r • s ∩ L))} := by
   have hs₀' : (0 : E) ∈ s := mem_of_mem_nhds hs₀
@@ -199,7 +199,7 @@ lemma isClosed_lt_finrank_span_smul_inter (hsc : Convex ℝ s) (hs : IsCompact s
         · have : .range (Subtype.val ∘ v₀) = L.subtype '' .range v₀ := by
             rw [range_comp]; rfl
           rw [this, ← Submodule.map_span, Submodule.finrank_map_subtype_eq]
-        · exact (Real.finrank_real_span_range_eq_finrank_int _
+        · exact (finrank_real_span_eq_finrank_int_span _
             (Set.range_subset_iff.mpr fun j => (v₀ j).prop)).symm
     _ ≤ finrank ℝ (span ℝ <| r₀ • s ∩ L) := by
       refine finrank_mono <| span_mono ?_
@@ -207,7 +207,7 @@ lemma isClosed_lt_finrank_span_smul_inter (hsc : Convex ℝ s) (hs : IsCompact s
       simp only [Function.comp_apply, mem_inter_iff, Subtype.coe_prop, and_true]
       have : r₀ • s = ⋂ (r : ℝ) (_ : r₀ < r), r • s := by
         have h1 := (gauge_le_eq hsc hs₀' (absorbent_nhds_zero hs₀) r₀.2)
-        have h2 := gauge_le_eq_closure_smul (a := r₀) hsc
+        have h2 := setOf_gauge_le_eq_closure_smul (a := r₀) hsc
           (NormedSpace.isVonNBounded_of_isBounded ℝ hs.isBounded) hs₀ (by simp)
         have h3 := (hs.isClosed.smul₀ (r₀ : ℝ)).closure_eq
         have : r₀ • s = (r₀ : ℝ) • s := rfl
@@ -224,7 +224,7 @@ lemma isClosed_lt_finrank_span_smul_inter (hsc : Convex ℝ s) (hs : IsCompact s
 lemma lt_finrank_span_successiveMin (hsc : Convex ℝ s) (hs : IsCompact s)
     (hs₀ : s ∈ 𝓝 0) (hi : i < finrank ℤ L) :
     i < finrank ℝ (span ℝ <| successiveMin L s i • s ∩ L) :=
-  (isClosed_lt_finrank_span_smul_inter hsc hs hs₀ hi).csInf_mem
+  (isClosed_setOf_lt_finrank_span_smul_inter hsc hs hs₀ hi).csInf_mem
     (exists_lt_finrank_span_smul_inter (absorbent_nhds_zero hs₀) hi) (OrderBot.bddBelow _)
 
 variable (L) in

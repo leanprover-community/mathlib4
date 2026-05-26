@@ -484,8 +484,9 @@ theorem setOf_gauge_le_eq_closure_smul_of_pos (hc : Convex ℝ s) (hs₀ : s ∈
 
 /-- See `gauge_le_eq_closure_smul` for the version where `E` isn't assumed to be T1 in exchange of
 requiring `a` to be strictly positive. -/
-theorem gauge_le_eq_closure_smul [T1Space E] (hc : Convex ℝ s) (hb : Bornology.IsVonNBounded ℝ s)
-    (hs₀ : s ∈ 𝓝 0) (ha : 0 ≤ a) : { x | gauge s x ≤ a } = closure (a • s) := by
+theorem setOf_gauge_le_eq_closure_smul [T1Space E] (hc : Convex ℝ s)
+    (hb : Bornology.IsVonNBounded ℝ s) (hs₀ : s ∈ 𝓝 0) (ha : 0 ≤ a) :
+    { x | gauge s x ≤ a } = closure (a • s) := by
   obtain rfl | ha := eq_or_lt_of_le ha
   · ext x
     simp only [Set.mem_setOf_eq, show (0 : ℝ) • s = ({0} : Set E) from

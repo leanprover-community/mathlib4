@@ -676,11 +676,18 @@ theorem Real.finrank_eq_int_finrank_of_discrete {E : Type*} [NormedAddCommGroup 
   exact (ZLattice.rank ℝ L).symm
 
 omit [DiscreteTopology L] [ProperSpace E] in
-theorem Real.finrank_real_span_range_eq_finrank_int [hL : DiscreteTopology L] [NormedSpace ℝ E]
+theorem finrank_real_span_eq_finrank_int_span [hL : DiscreteTopology L] [NormedSpace ℝ E]
     [FiniteDimensional ℝ E] {s : Set E} (hs : s ⊆ L) :
     finrank ℝ (span ℝ s) = finrank ℤ (span ℤ s) := by
   have hd : DiscreteTopology (span ℤ s) := hL.of_subset (span_le.mpr hs)
   simpa only [Set.finrank] using Real.finrank_eq_int_finrank_of_discrete hd
+
+omit [ProperSpace E] in
+@[simp] theorem Real.finrank_real_span_eq_finrank_int [NormedSpace ℝ E] [FiniteDimensional ℝ E] :
+    Set.finrank ℝ (L : Set E) = finrank ℤ L := by
+  have h := finrank_real_span_eq_finrank_int_span L (le_refl _)
+  rw [L.span_eq] at h
+  simpa only [Set.finrank] using h
 
 end NormedLinearOrderedField
 
