@@ -249,17 +249,13 @@ theorem edges_dropUntil_subset_edges (p : G.Walk v w) (h : u ∈ p.support) :
 
 theorem length_takeUntil_le_length {u v w : V} (p : G.Walk v w) (h : u ∈ p.support) :
     (p.takeUntil u h).length ≤ p.length := by
-  have := congr_arg Walk.length (p.take_spec h)
-  rw [length_append] at this
-  exact Nat.le.intro this
+  simpa using p.darts_takeUntil_prefix_darts h |>.length_le
 
 @[deprecated (since := "2026-05-25")] alias length_takeUntil_le := length_takeUntil_le_length
 
 theorem length_dropUntil_le_length {u v w : V} (p : G.Walk v w) (h : u ∈ p.support) :
     (p.dropUntil u h).length ≤ p.length := by
-  have := congr_arg Walk.length (p.take_spec h)
-  rw [length_append, add_comm] at this
-  exact Nat.le.intro this
+  simpa using p.darts_dropUntil_suffix_darts h |>.length_le
 
 @[deprecated (since := "2026-05-25")] alias length_dropUntil_le := length_dropUntil_le_length
 
