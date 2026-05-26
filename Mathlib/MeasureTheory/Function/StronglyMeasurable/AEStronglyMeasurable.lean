@@ -135,6 +135,30 @@ theorem aestronglyMeasurable_zero_measure (f : α → β) :
 theorem SimpleFunc.aestronglyMeasurable (f : α →ₛ β) : AEStronglyMeasurable f μ :=
   f.stronglyMeasurable.aestronglyMeasurable
 
+/-- In a pseudometrizable space, if a measure `μ` is supported on
+a separable set then the identity function is `AEStronglyMeasurable` with respect to `μ`. -/
+lemma aestronglyMeasurable_id_of_isSeparable [TopologicalSpace α]
+    [TopologicalSpace.PseudoMetrizableSpace α] [OpensMeasurableSpace α]
+    {s : Set α} (h1 : TopologicalSpace.IsSeparable s) (h2 : μ sᶜ = 0) :
+    AEStronglyMeasurable id μ := by
+  nontriviality α
+  obtain ⟨a, -⟩ := exists_pair_ne α
+  classical
+  refine ⟨(closure s).piecewise id (fun _ ↦ a), ?_,
+    Filter.mem_of_superset h2 (fun x hx ↦ by simp [subset_closure hx])⟩
+  have h : StronglyMeasurable ((↑) : closure s → α) := by
+    have := h1.closure.secondCountableTopology
+    exact continuous_subtype_val.stronglyMeasurable
+  have : (closure s).piecewise id (fun _ ↦ a) =
+      ((↑) : closure s → α).extend ((↑) : closure s → α) (fun _ ↦ a) := by
+    ext x
+    by_cases hx : x ∈ closure s
+    · simp [Function.extend_val_apply, hx]
+    · simp [hx]
+  rw [this]
+  exact (MeasurableEmbedding.subtype_coe isClosed_closure.measurableSet).stronglyMeasurable_extend
+    h stronglyMeasurable_const
+
 namespace AEStronglyMeasurable
 
 @[fun_prop]
@@ -584,6 +608,17 @@ theorem isSeparable_ae_range (hf : AEStronglyMeasurable f μ) :
   refine ⟨range (hf.mk f), hf.stronglyMeasurable_mk.isSeparable_range, ?_⟩
   filter_upwards [hf.ae_eq_mk] with x hx
   simp [hx]
+
+/-- If `μ : Measure α` and `f : α → β` is `AEStronglyMeasurable` where `β` is a pseudometrizable
+space and a Borel space, then the identity is a.e.-strongly measurable w.r.t. `μ.map f`. -/
+lemma aestronglyMeasurable_id_map {mβ : MeasurableSpace β}
+    [TopologicalSpace.PseudoMetrizableSpace β] [BorelSpace β]
+    {f : α → β} (hf : AEStronglyMeasurable f μ) :
+    AEStronglyMeasurable id (μ.map f) := by
+  obtain ⟨t, ht1, ht2⟩ := hf.isSeparable_ae_range
+  refine aestronglyMeasurable_id_of_isSeparable ht1.closure ?_
+  refine ae_map_iff hf.aemeasurable isClosed_closure.measurableSet |>.2 ?_
+  filter_upwards [ht2] with ω hω using subset_closure hω
 
 /-- A function is almost everywhere strongly measurable if and only if it is almost everywhere
 measurable, and up to a zero measure set its range is contained in a separable set. -/
