@@ -129,10 +129,7 @@ private lemma cuspForm_eq_discriminant_mul {n : ℕ} (g : ModularForm 𝒮ℒ �
   let hcusp := (ModularForm.isCuspForm_iff_coeffZero_eq_zero g).mp hg
   change ((CuspForm.discriminantEquiv (ModularForm.toCuspForm g hcusp)).mul
       ((CuspForm.discriminant : CuspForm 𝒮ℒ 12) : ModularForm 𝒮ℒ 12)) z = g z
-  rw [ModularForm.coe_mul, Pi.mul_apply,
-    show (CuspForm.discriminantEquiv (ModularForm.toCuspForm g hcusp)) z =
-        g z / ModularForm.discriminant z from
-      CuspForm.divDiscriminant_apply (ModularForm.toCuspForm g hcusp) z]
+  rw [ModularForm.coe_mul, Pi.mul_apply, CuspForm.discriminantEquiv_apply]
   exact div_mul_cancel₀ _ (discriminant_ne_zero z)
 
 private noncomputable def discriminantPoly : MvPolynomial (Fin 2) ℂ :=

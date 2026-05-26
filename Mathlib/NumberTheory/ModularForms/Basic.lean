@@ -565,11 +565,19 @@ def mcast {a b : ℤ} {Γ Γ' : Subgroup (GL (Fin 2) ℝ)} (h : a = b) (f : Modu
   holo' := f.holo'
   bdd_at_cusps' hc := h ▸ f.bdd_at_cusps' (hΓ ▸ hc)
 
+/-- Transporting a `ModularForm` along an equality of weights does not change its pointwise
+values. -/
 theorem cast_apply {Γ : Subgroup (GL (Fin 2) ℝ)} {k₁ k₂ : ℤ}
     (heq : k₁ = k₂) (f : ModularForm Γ k₁) (z : ℍ) :
     (heq ▸ f : ModularForm Γ k₂) z = f z := by
   subst heq
   rfl
+
+@[simp]
+lemma mcast_eq_zero_iff {a b : ℤ} {Γ Γ' : Subgroup (GL (Fin 2) ℝ)} (h : a = b)
+    (hΓ : Γ' = Γ) (f : ModularForm Γ a) : mcast h f hΓ = 0 ↔ f = 0 := by
+  simp [← coe_eq_zero_iff, ← coe_eq_zero_iff (f := f)]
+
 
 @[ext (iff := false)]
 theorem gradedMonoid_eq_of_cast {Γ : Subgroup (GL (Fin 2) ℝ)} {a b : GradedMonoid (ModularForm Γ)}
