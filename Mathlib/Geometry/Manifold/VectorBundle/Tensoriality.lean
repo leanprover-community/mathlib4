@@ -39,7 +39,7 @@ open Bundle FiberBundle Topology Module
 
 open scoped Manifold ContDiff
 
-@[expose] public section
+public section
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
@@ -217,7 +217,7 @@ theorem mkHom_apply {Φ : (Π x : M, V x) → A} {x} (hΦ : TensorialAt I F (Φ 
 
 theorem mkHom_apply_eq_extend {Φ : (Π x : M, V x) → A} {x} (hΦ : TensorialAt I F Φ x) (σ : V x) :
     mkHom Φ x hΦ σ = Φ (extend F σ) :=
-  rfl
+  (rfl)
 
 /-- Given an `A`-valued operation `Φ` on sections of vector bundles `V` and `V'` which is tensorial
 at `x` in each argument, the construction `TensorialAt.mkHom₂` provides the associated continuous
@@ -291,7 +291,7 @@ theorem mkHom₂_apply_eq_extend
     (hΦ₂ : ∀ σ, MDiffAt (T% σ) x → TensorialAt I F' (Φ σ) x)
     (σ : V x) (τ : V' x) :
     mkHom₂ Φ x hΦ₁ hΦ₂ σ τ = Φ (extend F σ) (extend F' τ) :=
-  rfl
+  (rfl)
 
 /-- Given an `A`-valued operation `Φ` on sections of vector bundles `V`, `V'` and `V''` which is
 tensorial at `x` in each argument, the construction `TensorialAt.mkHom₃` provides the associated
