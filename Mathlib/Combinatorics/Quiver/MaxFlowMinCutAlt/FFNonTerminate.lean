@@ -82,7 +82,6 @@ lemma ρ_lt_1 : ρ < 1 := by
       · grind
       · grind
 
-
 lemma ρ_pow (k : ℕ) : ρ ^ k ≤ ρ ^ (k - 1) := by
       have h_pos := ρ_pos
       have h_lt_1 := ρ_lt_1
@@ -543,3 +542,166 @@ lemma ffState_induction (n : ℕ) :
   · have : m = n := by omega
     subst this; exact hc
   all_goals omega
+
+
+/-- The raw residual capacity function is definitionally equal to the capacity
+    of the formalized ResidualNetwork. -/
+lemma rawResCap_eq_residualCap {V : Type*} [Fintype V] (G : FlowNetwork V)
+    (F : RelaxedFlow G.toSTVertices) (h_valid : ValidFlow G F) (u v : V) :
+    rawResCap G F.f u v = (ResidualNetwork G F h_valid).c u v := by
+  unfold rawResCap ResidualNetwork
+  rfl
+
+
+/-- If a path is valid in the raw sense, its raw bottleneck equals the formal
+    bottleneck in the residual network. -/
+lemma rawBottleneck_eq_formal_bottleneck {V : Type*} [Fintype V] [DecidableEq V]
+    (G : FlowNetwork V) (F : RelaxedFlow G.toSTVertices) (h_valid : ValidFlow G F)
+    (p : uvPath G.s G.t) :
+    rawBottleneck G F.f p = p.bottleneck (ResidualNetwork G F h_valid) G.source_not_sink := by
+  unfold rawBottleneck uvPath.bottleneck
+  congr 1
+
+open FFVert in
+lemma expectedResCap_pos (X : ℝ) (hX : X > 2) (k : ℕ) (step : Fin 4) (p : uvPath s t)
+    (h_path : p = match step with
+      | 0 => rawPath2
+      | 1 => rawPath3
+      | 2 => rawPath2
+      | 3 => rawPath4) :
+    ∀ (i : ℕ) (h : i < p.verts.length - 1),
+        expectedResCap X k step p.verts[i] p.verts[i+1] > 0 := by
+  -- Hoist all arithmetic facts once; linarith picks them up in every branch
+  have hρ  := ρ_pos
+  have hρ1 := ρ_lt_1
+  have hpow  : ∀ n : ℕ, 0 < ρ ^ n   := fun n => pow_pos hρ n
+  have hle   : ∀ n : ℕ, ρ ^ (n + 1) ≤ ρ ^ n :=
+    fun n => pow_le_pow_of_le_one hρ.le hρ1.le (Nat.le_succ n)
+  intro i hi
+  fin_cases step <;> subst h_path
+  · -- step = 0 : p = rawPath2 = [s, d, c, b, a, t]  (5 edges)
+    simp only [rawPath2, List.length_cons, List.length_nil] at hi
+    interval_cases i <;>
+      simp only [rawPath2, List.getElem_cons_zero, List.getElem_cons_succ,
+                 expectedResCap] <;>
+      linarith [hpow k, hpow (k - 1), hle k, hle (k - 1)]
+  · -- step = 1 : p = rawPath3 = [s, b, c, d, t]  (4 edges)
+    simp only [rawPath3, List.length_cons, List.length_nil] at hi
+    interval_cases i <;>
+      simp only [rawPath3, List.getElem_cons_zero, List.getElem_cons_succ,
+                 expectedResCap] <;>
+      linarith [hpow k, hpow (k - 1), hpow (k + 1), hle k, hle (k - 1)]
+  · -- step = 2 : p = rawPath2 again  (5 edges)
+    simp only [rawPath2, List.length_cons, List.length_nil] at hi
+    interval_cases i <;>
+      simp only [rawPath2, List.getElem_cons_zero, List.getElem_cons_succ,
+                 expectedResCap] <;>
+      linarith [hpow k, hpow (k - 1), hpow (k + 1), hle k, hle (k - 1), hle (k + 1)]
+  · -- step = 3 : p = rawPath4 = [s, a, b, c, t]  (4 edges)
+    simp only [rawPath4, List.length_cons, List.length_nil] at hi
+    interval_cases i <;>
+      simp only [rawPath4, List.getElem_cons_zero, List.getElem_cons_succ,
+                 expectedResCap] <;>
+      linarith [hpow k, hpow (k + 1), hle k]
+
+/-- If the cycle invariant holds for a step, the chosen path is a valid augmentingPath. -/
+noncomputable def step_as_augmentingPath
+    (F : RelaxedFlow (FFNetwork X hX).toSTVertices) (h_valid : ValidFlow (FFNetwork X hX) F)
+    (k : ℕ) (step : Fin 4) (p : uvPath FFVert.s FFVert.t)
+    (h_path : p = match step with
+      | 0 => rawPath2
+      | 1 => rawPath3
+      | 2 => rawPath2
+      | 3 => rawPath4)
+    (h_inv : cycleInvariant X hX F.f k step) :
+    augmentingPath (ResidualNetwork (FFNetwork X hX) F h_valid) := {
+  touvPath := p
+  valid := by
+    intro i h_len
+    rw [← rawResCap_eq_residualCap (FFNetwork X hX) F h_valid]
+    have h_eq := h_inv p.verts[i] p.verts[i+1]
+    rw [h_eq]
+    exact expectedResCap_pos X hX k step p h_path i h_len
+}
+
+/-- Main Theorem: At each step, the chosen path is a valid augmenting path
+    whose formal Flow_value equals its bottleneck. -/
+theorem step_flow_value_eq_bottleneck
+    (F : RelaxedFlow (FFNetwork X hX).toSTVertices)
+    (h_valid : ValidFlow (FFNetwork X hX) F)
+    (k : ℕ) (step : Fin 4) (p : uvPath FFVert.s FFVert.t)
+    (h_path : p = match step with
+      | 0 => rawPath2
+      | 1 => rawPath3
+      | 2 => rawPath2
+      | 3 => rawPath4)
+    (h_inv : cycleInvariant X hX F.f k step) :
+    let augPath := step_as_augmentingPath X hX F h_valid k step p h_path h_inv
+    Flow_value (FFNetwork X hX).toSTVertices augPath.toFlow =
+    augPath.bottleneck (ResidualNetwork (FFNetwork X hX) F h_valid) (FFNetwork X hX).source_not_sink
+     := by
+  intro augPath
+  exact (bottleneck_eq_flow augPath).symm
+
+-- ============================================================
+-- AUGMENTATION STEPS AND VALID FLOWS
+-- ============================================================
+
+def convertFlow {V : Type*} [Fintype V] {G : FlowNetwork V}
+  {F : RelaxedFlow G.toSTVertices} {hF : ValidFlow G F}
+  (p_flow : RelaxedFlow (ResidualNetwork G F hF).toSTVertices) : RelaxedFlow G.toSTVertices :=
+  {
+    f := p_flow.f
+    nonneg_flow := p_flow.nonneg_flow
+    conservation := p_flow.conservation
+    no_edges_in_source := p_flow.no_edges_in_source
+    no_edges_out_sink := p_flow.no_edges_out_sink
+  }
+
+/-- Given a flow and an augmenting path in its residual network, we get a new valid flow. -/
+noncomputable def new_ValidFlow_from_augmentingPath {V : Type*} [Fintype V] [DecidableEq V]
+  (G : FlowNetwork V)
+  (F : RelaxedFlow G.toSTVertices)
+  (hF : ValidFlow G F)
+  (p : augmentingPath (ResidualNetwork G F hF)) :
+  RelaxedFlow G.toSTVertices := F * (convertFlow p.toFlow)
+
+lemma valid_new_ValidFlow_from_augmentingPath {V : Type*} [Fintype V] [DecidableEq V]
+  (G : FlowNetwork V)
+  (F : RelaxedFlow G.toSTVertices)
+  (hF : ValidFlow G F)
+  (p : augmentingPath (ResidualNetwork G F hF)) :
+  ValidFlow G (new_ValidFlow_from_augmentingPath G F hF p) := by
+  intro u v
+  apply valid_augmentation G F hF (convertFlow p.toFlow)
+  exact p.valid_toFlow
+
+/-- A structure to capture a flow that comes from augmenting a valid flow -/
+structure AugmentationStep {V : Type*} [Fintype V] [DecidableEq V] (G : FlowNetwork V) where
+  new_flow : RelaxedFlow G.toSTVertices
+  is_valid : ValidFlow G new_flow
+  flow_value : ℝ
+
+noncomputable def createAugmentationStep {V : Type*} [Fintype V] [DecidableEq V]
+  (G : FlowNetwork V)
+  (F : RelaxedFlow G.toSTVertices)
+  (hF : ValidFlow G F)
+  (p : augmentingPath (ResidualNetwork G F hF)) : AugmentationStep G where
+  new_flow := new_ValidFlow_from_augmentingPath G F hF p
+  is_valid := valid_new_ValidFlow_from_augmentingPath G F hF p
+  flow_value := Flow_value G.toSTVertices (new_ValidFlow_from_augmentingPath G F hF p)
+
+/-- Using the cycleChoice we can construct sequence of flows if needed,
+  but here we capture the result of just one augmentation mapping back to ValidFlow -/
+noncomputable def cycleChoiceAugmentationStep
+  (F : RelaxedFlow (FFNetwork X hX).toSTVertices) (h_valid : ValidFlow (FFNetwork X hX) F)
+  (k : ℕ) (step : Fin 4) (p : uvPath FFVert.s FFVert.t)
+  (h_path : p = match step with
+    | 0 => rawPath2
+    | 1 => rawPath3
+    | 2 => rawPath2
+    | 3 => rawPath4)
+  (h_inv : cycleInvariant X hX F.f k step) : AugmentationStep (FFNetwork X hX) :=
+  let augPath := step_as_augmentingPath X hX F h_valid k step p h_path h_inv
+  createAugmentationStep (FFNetwork X hX) F h_valid augPath
+
