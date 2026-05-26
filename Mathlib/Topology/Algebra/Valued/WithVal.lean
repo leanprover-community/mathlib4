@@ -62,14 +62,6 @@ section Ring
 
 variable [Ring R] (v : Valuation R Γ₀)
 
-instance : Ring (WithVal v) := fast_instance% Equiv.ring { toFun := ofVal, invFun := toVal v }
-instance : Inhabited (WithVal v) := ⟨0⟩
-instance : Preorder (WithVal v) := .lift (v ∘ ofVal)
-
-theorem le_def {v : Valuation R Γ₀} {a b : WithVal v} : a ≤ b ↔ v a.ofVal ≤ v b.ofVal := .rfl
-
-theorem lt_def {v : Valuation R Γ₀} {a b : WithVal v} : a < b ↔ v a.ofVal < v b.ofVal := .rfl
-
 lemma ofVal_toVal (x : R) : ofVal (toVal v x) = x := rfl
 @[simp] lemma toVal_ofVal (x : WithVal v) : toVal v (ofVal x) = x := rfl
 
@@ -90,6 +82,18 @@ lemma ofVal_bijective : Function.Bijective (ofVal (v := v)) :=
 
 lemma toVal_bijective : Function.Bijective (toVal v) :=
   ⟨toVal_injective v, toVal_surjective v⟩
+
+
+instance : Zero (WithVal v) where zero := toVal _ 0
+instance : One (WithVal v) where one := toVal _ 1
+instance : Add (WithVal v) where add x y := toVal _ (x.ofVal + y.ofVal)
+instance : Sub (WithVal v) where sub x y := toVal _ (x.ofVal - y.ofVal)
+instance : Neg (WithVal v) where neg x := toVal _ (-x.ofVal)
+instance : Mul (WithVal v) where mul x y := toVal _ (x.ofVal * y.ofVal)
+instance {S} [SMul S R] : SMul S (WithVal v) where smul s x := toVal _ (s • x.ofVal)
+instance : Pow (WithVal v) ℕ where pow x n := toVal _ (x.ofVal ^ n)
+instance : NatCast (WithVal v) where natCast n := toVal _ n
+instance : IntCast (WithVal v) where intCast z := toVal _ z
 
 @[simp] lemma toVal_zero : toVal v 0 = 0 := rfl
 
@@ -118,6 +122,30 @@ lemma toVal_bijective : Function.Bijective (toVal v) :=
 @[simp] lemma toVal_pow (x : R) (n : ℕ) : toVal v (x ^ n) = (toVal v x) ^ n := rfl
 
 @[simp] lemma ofVal_pow (x : WithVal v) (n : ℕ) : ofVal (x ^ n) = (ofVal x) ^ n := rfl
+
+@[simp] theorem toVal_smul {S} [SMul S R] (s : S) (r : R) : toVal v (s • r) = s • toVal v r := rfl
+
+@[simp] theorem ofVal_smul {S} [SMul S R] (s : S) (x : WithVal v) : ofVal (s • x) = s • ofVal x :=
+  rfl
+
+@[simp] lemma toVal_natCast (n : ℕ) : toVal v n = n := rfl
+
+@[simp] lemma ofVal_natCast (n : ℕ) : ofVal (n : WithVal v) = n := rfl
+
+@[simp] lemma toVal_intCast (z : ℤ) : toVal v z = z := rfl
+
+@[simp] lemma ofVal_intCast (z : ℤ) : ofVal (z : WithVal v) = z := rfl
+
+instance : Ring (WithVal v) := fast_instance% ofVal_injective v |>.ring _
+  (ofVal_zero _) (ofVal_one _) (ofVal_add _) (ofVal_mul _) (ofVal_neg _) (ofVal_sub _)
+  (ofVal_smul _) (ofVal_smul _) (ofVal_pow _) (ofVal_natCast _) (ofVal_intCast _)
+
+instance : Inhabited (WithVal v) := ⟨0⟩
+instance : Preorder (WithVal v) := .lift (v ∘ ofVal)
+
+theorem le_def {v : Valuation R Γ₀} {a b : WithVal v} : a ≤ b ↔ v a.ofVal ≤ v b.ofVal := .rfl
+
+theorem lt_def {v : Valuation R Γ₀} {a b : WithVal v} : a < b ↔ v a.ofVal < v b.ofVal := .rfl
 
 @[simp] lemma toVal_eq_zero (x : R) : toVal v x = 0 ↔ x = 0 := (toVal_injective v).eq_iff
 
@@ -208,8 +236,6 @@ theorem smul_left_def [SMul R S] (x : WithVal v) (s : S) : x • s = ofVal x •
 instance [SMul R S] [FaithfulSMul R S] : FaithfulSMul (WithVal v) S where
   eq_of_smul_eq_smul h := ofVal_injective v <| FaithfulSMul.eq_of_smul_eq_smul h
 
-instance [SMul S R] : SMul S (WithVal v) := (equiv v).smul S
-
 theorem smul_right_def [SMul S R] (s : S) (x : WithVal v) : s • x = toVal v (s • ofVal x) := rfl
 
 instance [SMul S R] [FaithfulSMul S R] : FaithfulSMul S (WithVal v) where
@@ -227,7 +253,7 @@ instance {P : Type*} [Ring S] [SMul P S] [SMul R S] [SMul P R]
 
 instance {P : Type*} [Ring S] [SMul P R] [SMul S R] [SMul P S]
     [IsScalarTower P S R] (v : Valuation S Γ₀) : IsScalarTower P (WithVal v) R where
-  smul_assoc := by simp [smul_right_def, smul_left_def]
+  smul_assoc := by simp [smul_right_def, smul_left_def, - toVal_smul]
 
 instance [AddCommMonoid S] [Module R S] : Module (WithVal v) S :=
   .compHom S (equiv v).toRingHom
@@ -238,10 +264,6 @@ instance [AddCommMonoid S] [Module R S] [Module.Finite R S] :
 
 instance [Semiring S] [Module S R] : Module S (WithVal v) :=
   fast_instance% (equiv v).module S
-
-@[simp] theorem toVal_smul [SMul S R] (s : S) (r : R) : toVal v (s • r) = s • toVal v r := rfl
-
-@[simp] theorem ofVal_smul [SMul S R] (s : S) (x : WithVal v) : ofVal (s • x) = s • ofVal x := rfl
 
 variable [Ring S] [Module R S] (v : Valuation S Γ₀)
 
@@ -315,9 +337,11 @@ section Field
 
 variable [Field R] (v : Valuation R Γ₀)
 
-instance : Field (WithVal v) := fast_instance% (equiv v).field
-
-instance [NumberField R] : NumberField (WithVal v) where
+instance : Div (WithVal v) where div x y := toVal _ (x.ofVal / y.ofVal)
+instance : Inv (WithVal v) where inv x := toVal _ x.ofVal⁻¹
+instance : Pow (WithVal v) ℤ where pow x z := toVal _ (x.ofVal ^ z)
+instance : NNRatCast (WithVal v) where nnratCast q := toVal _ q
+instance : RatCast (WithVal v) where ratCast q := toVal _ q
 
 @[simp] lemma toVal_div (x y : R) : toVal v (x / y) = toVal v x / toVal v y := rfl
 
@@ -326,6 +350,26 @@ instance [NumberField R] : NumberField (WithVal v) where
 @[simp] lemma toVal_inv (x : R) : toVal v x⁻¹ = (toVal v x)⁻¹ := rfl
 
 @[simp] lemma ofVal_inv (x : WithVal v) : ofVal (x⁻¹) = (ofVal x)⁻¹ := rfl
+
+@[simp] lemma toVal_zpow (x : R) (z : ℤ) : toVal v (x ^ z) = (toVal v x) ^ z := rfl
+
+@[simp] lemma ofVal_zpow (x : WithVal v) (z : ℤ) : ofVal (x ^ z) = (ofVal x) ^ z := rfl
+
+@[simp] lemma toVal_nnratCast (q : ℚ≥0) : toVal v q = q := rfl
+
+@[simp] lemma ofVal_nnratCast (q : ℚ≥0) : ofVal (q : WithVal v) = q := rfl
+
+@[simp] lemma toVal_ratCast (q : ℚ) : toVal v q = q := rfl
+
+@[simp] lemma ofVal_ratCast (q : ℚ) : ofVal (q : WithVal v) = q := rfl
+
+instance : Field (WithVal v) := fast_instance% ofVal_injective v |>.field _
+  (ofVal_zero _) (ofVal_one _) (ofVal_add _) (ofVal_mul _) (ofVal_neg _) (ofVal_sub _)
+  (ofVal_inv _) (ofVal_div _)
+  (ofVal_smul _) (ofVal_smul _) (ofVal_smul _) (ofVal_smul _) (ofVal_pow _) (ofVal_zpow _)
+  (ofVal_natCast _) (ofVal_intCast _) (ofVal_nnratCast _) (ofVal_ratCast _)
+
+instance [NumberField R] : NumberField (WithVal v) where
 
 end Field
 
@@ -591,8 +635,9 @@ theorem IsEquiv.valuedCompletion_le_one_iff {K : Type*} [Field K] {v : Valuation
     have h1 (x : UniformSpace.Completion (WithVal v)) :
       Valued.v x ≤ 1 ↔ Valued.v.restrict x ≤ 1 := by rw [restrict_le_one_iff]
     simp_rw [h1]
-    convert (mapEquiv h.uniformEquiv).toHomeomorph.isClosed_setOf_iff
-      (Valued.isClopen_closedBall _ one_ne_zero) (Valued.isClopen_closedBall _ one_ne_zero)
+    convert!
+      (mapEquiv h.uniformEquiv).toHomeomorph.isClosed_setOf_iff
+        (Valued.isClopen_closedBall _ one_ne_zero) (Valued.isClopen_closedBall _ one_ne_zero)
     rw [restrict_le_one_iff]
     rfl
   | ih a =>
