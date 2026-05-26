@@ -6,6 +6,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Floris van Doorn, Violeta Hernández P
 module
 
 public import Mathlib.Algebra.Order.Monoid.Basic
+public import Mathlib.SetTheory.Cardinal.Cofinality.Enum
 public import Mathlib.SetTheory.Cardinal.ToNat
 public import Mathlib.SetTheory.Cardinal.ENat
 public import Mathlib.SetTheory.Ordinal.Enum
@@ -82,7 +83,7 @@ theorem isInitial_ord (c : Cardinal) : IsInitial c.ord := by
 
 @[simp]
 theorem isInitial_natCast (n : ℕ) : IsInitial n := by
-  rw [IsInitial, card_nat, ord_nat]
+  rw [IsInitial, card_nat, ord_natCast]
 
 theorem isInitial_zero : IsInitial 0 := by
   exact_mod_cast isInitial_natCast 0
@@ -309,6 +310,11 @@ theorem _root_.Ordinal.type_lt_cardinal : typeLT Cardinal = Ordinal.univ.{u, u +
 @[simp]
 theorem mk_cardinal : #Cardinal = univ.{u, u + 1} := by
   simpa only [card_type, card_univ] using congr_arg card type_lt_cardinal
+
+theorem _root_.Order.cof_cardinal : Order.cof Cardinal.{u} = Cardinal.univ.{u, u + 1} := by
+  simpa using preAleph.cof_congr.symm
+
+instance : IsRegularCardinalOrder Cardinal := ⟨by simp [Order.cof_cardinal]⟩
 
 theorem preAleph_lt_preAleph {o₁ o₂ : Ordinal} : preAleph o₁ < preAleph o₂ ↔ o₁ < o₂ :=
   preAleph.lt_iff_lt
@@ -600,9 +606,7 @@ theorem isNormal_preBeth : Order.IsNormal preBeth := by
 
 theorem preBeth_nat : ∀ n : ℕ, preBeth n = (2 ^ ·)^[n] (0 : ℕ)
   | 0 => by simp
-  | n + 1 => by
-    rw [natCast_succ, preBeth_succ, Function.iterate_succ_apply', preBeth_nat]
-    simp
+  | n + 1 => by simp [Function.iterate_succ_apply', preBeth_nat]
 
 @[simp]
 theorem preBeth_one : preBeth 1 = 1 := by
