@@ -695,7 +695,7 @@ theorem tendsto_measure_biInter_gt {ι : Type*} [LinearOrder ι] [TopologicalSpa
     · rwa [Subtype.forall]
     · exact fun i j h ↦ hm i j i.2 h
     · simpa only [Subtype.exists, exists_prop]
-  · rw [Order.not_isPredPrelimit_iff_exists_covBy] at ha
+  · rw [Order.not_isPredPrelimit_iff] at ha
     rcases ha with ⟨b, hab⟩
     simp [hab.nhdsGT]
 
@@ -853,6 +853,7 @@ lemma apply_eq_zero_of_isEmpty [IsEmpty α] {_ : MeasurableSpace α} (μ : Measu
 instance instSubsingleton [IsEmpty α] {m : MeasurableSpace α} : Subsingleton (Measure α) :=
   ⟨fun μ ν => by ext1 s _; rw [apply_eq_zero_of_isEmpty, apply_eq_zero_of_isEmpty]⟩
 
+@[nontriviality]
 theorem eq_zero_of_isEmpty [IsEmpty α] {_m : MeasurableSpace α} (μ : Measure α) : μ = 0 :=
   Subsingleton.elim μ 0
 

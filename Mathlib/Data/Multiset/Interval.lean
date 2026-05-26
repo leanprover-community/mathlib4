@@ -31,7 +31,7 @@ public section
 
 open Finset DFinsupp Function
 
-open Pointwise
+open scoped Pointwise
 
 variable {α : Type*}
 

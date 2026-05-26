@@ -154,7 +154,7 @@ theorem monomial_def [DecidableEq σ] (n : σ →₀ ℕ) :
     monomial n = LinearMap.single R (fun _ ↦ R) n := by
   rw [monomial]
   -- unify the `Decidable` arguments
-  convert rfl
+  convert! rfl
 
 set_option backward.isDefEq.respectTransparency false in
 theorem coeff_monomial [DecidableEq σ] (m n : σ →₀ ℕ) (a : R) :
@@ -564,8 +564,8 @@ section toSubring
 variable [Ring R] (p : MvPowerSeries σ R) (T : Subring R) (hp : ∀ n, p.coeff n ∈ T)
 
 /-- Given a multivariate formal power series `p` and a subring `T` that contains the
- coefficients of `p`, return the corresponding multivariate formal power series
- whose coefficients are in `T`. -/
+coefficients of `p`, return the corresponding multivariate formal power series
+whose coefficients are in `T`. -/
 def toSubring : MvPowerSeries σ T := fun n => ⟨p.coeff n, hp n⟩
 
 @[simp]
@@ -747,7 +747,7 @@ theorem coeff_eq_zero_of_constantCoeff_nilpotent {f : MvPowerSeries σ R} {m : �
   simp only [add_comm m, Nat.add_le_add_iff_right, ← hk.1,
     ← sum_sdiff (hs), sum_eq_zero (s := s) hs'', add_zero]
   rw [← hs_def]
-  convert Finset.card_nsmul_le_sum (range n \ s) (fun x ↦ degree (k x)) 1 _
+  convert! Finset.card_nsmul_le_sum (range n \ s) (fun x ↦ degree (k x)) 1 _
   · simp only [smul_eq_mul, mul_one]
   · simp only [degree_eq_weight_one, map_sum]
   · simp only [hs_def, mem_filter, mem_sdiff, mem_range, not_and, and_imp]
@@ -927,6 +927,11 @@ theorem _root_.MvPowerSeries.monomial_smul_eq (e : σ →₀ ℕ) (p : ℕ) (r :
   rw [MvPowerSeries.monomial_eq', Finsupp.prod_of_support_subset _ Finsupp.support_smul _
     (by simp), Finsupp.prod]
   simp [pow_mul]
+
+theorem _root_.MvPowerSeries.monomial_mapDomain_apply_one {τ : Type*} (d : σ →₀ ℕ) (f : σ → τ) :
+    MvPowerSeries.monomial (mapDomain f d) (1 : R) =
+      d.prod fun s e ↦ MvPowerSeries.X (f s) ^ e := by
+  simp [pow_add, prod_sum_index, MvPowerSeries.monomial_one_eq, mapDomain]
 
 section Algebra
 
