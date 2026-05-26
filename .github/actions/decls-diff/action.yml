@@ -47,9 +47,6 @@ outputs:
   minus-count:
     description: 'Number of declarations present only in the reference commit.'
     value: ${{ steps.run.outputs.minus-count }}
-  has-changes:
-    description: '`true` if any declarations differ between the two commits, `false` otherwise.'
-    value: ${{ steps.run.outputs.has-changes }}
 
 runs:
   using: 'composite'
@@ -93,15 +90,12 @@ runs:
         PLUS=0; MINUS=0
         read -r PLUS MINUS < "$COUNTS" || true
         : "${PLUS:=0}"; : "${MINUS:=0}"
-        HAS=false
-        if [ "$PLUS" -gt 0 ] || [ "$MINUS" -gt 0 ]; then HAS=true; fi
 
         {
           echo "decls-override-file=$DECLS_OVERRIDE"
           echo "diff-file=$DIFF_FILE"
           echo "plus-count=$PLUS"
           echo "minus-count=$MINUS"
-          echo "has-changes=$HAS"
         } >> "$GITHUB_OUTPUT"
 
         SHORT="${IN_NEW_SHA:0:7}"
