@@ -253,6 +253,9 @@ def pullbackOverHomComp (X : C) :
       J (K.over (F.obj X))).obj (R.over (F.obj X)) :=
   φ ≫ (F.sheafPushforwardContinuous RingCat.{u} J K).map (pushforwardOver (R := R) (F.obj X))
 
+-- The componentwise reduction in `overPullbackHomComp_eq` unfolds several
+-- sheaf-pushforward definitions.
+set_option linter.flexible false in
 omit [(pushforward φ).IsRightAdjoint] [HasSheafify K AddCommGrpCat]
   [K.WEqualsLocallyBijective AddCommGrpCat]
   [K.HasSheafCompose (forget₂ RingCat AddCommGrpCat)]
@@ -296,11 +299,7 @@ lemma overPullbackHomComp_eq (X : C) :
       R.obj.map (F.map (prod.snd : X ⨯ U.unop ⟶ U.unop)).op ≫
           inv (R.obj.map (prodComparison F X U.unop).op) =
         R.obj.map prod.snd.op := by
-    rw [← Functor.map_inv]
-    rw [← Functor.map_comp]
-    rw [← op_inv, ← op_comp]
-    exact congrArg R.obj.map
-      (congrArg Quiver.Hom.op (inv_prodComparison_map_snd (F := F) (A := X) (B := U.unop)))
+    simp [← Functor.map_comp, ← op_comp]
   simpa [Category.assoc] using congrArg (fun f => φ.hom.app U ≫ f) hbc
 
 def overPullbackRightAdjointIso (X : C) :
@@ -321,7 +320,7 @@ def pullbackOverIso (X : C) :
     ((pullbackPushforwardAdjunction φ).comp
       (overPushforwardOverAdj (R := R) (F.obj X)))
 
-def LocalGeneratorsData.pullback' (q : M.LocalGeneratorsData)
+def LocalGeneratorsData.pullback (q : M.LocalGeneratorsData)
     (hX : K.CoversTop (fun i => F.obj (q.X i))) :
     ((pullback φ).obj M).LocalGeneratorsData where
   I := q.I
@@ -330,8 +329,6 @@ def LocalGeneratorsData.pullback' (q : M.LocalGeneratorsData)
   generators i :=
     ((q.generators i).pullback (overPullbackHom φ (q.X i))).ofEpi
       ((pullbackOverIso φ (q.X i)).app M).hom
-
-#check LocalGeneratorsData.pullback'
 
 end
 
