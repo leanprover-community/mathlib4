@@ -72,7 +72,7 @@ def map (hf : IsSpectralMap f) (c : locallyFinsupp X R) : Function.locallyFinsup
 lemma map_apply (hf : IsSpectralMap f) (c : locallyFinsupp X R) (y : Y) :
     map f w hf c y = ∑ᶠ x ∈ f ⁻¹' {y}, c x * w x := rfl
 
-lemma map_homogeneous (s : Set X) (t : Set Y) (hc : c.support ⊆ s)
+lemma support_map_subset_of_forall_mem (s : Set X) (t : Set Y) (hc : c.support ⊆ s)
     (h : ∀ x : X, x ∈ s → w x ≠ 0 → f x ∈ t) : (map f w hf c).support ⊆ t := by
   intro y hy
   obtain ⟨x, (rfl : f x = y), h'⟩ := exists_ne_zero_of_finsum_mem_ne_zero hy
