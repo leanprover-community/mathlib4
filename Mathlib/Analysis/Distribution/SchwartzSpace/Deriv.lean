@@ -44,7 +44,8 @@ variable {ι 𝕜 𝕜' D E F V F F₁ F₂ F₃ : Type*}
 
 namespace SchwartzMap
 
-variable [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedSpace ℝ F]
+variable [AddCommGroup E] [NormedAddCommGroup E] [AddCommGroup F] [NormedAddCommGroup F]
+  [NormedSpace ℝ F]
 
 section Derivatives
 
@@ -165,7 +166,7 @@ alias iteratedPDeriv_eq_iteratedFDeriv := iteratedLineDerivOp_eq_iteratedFDeriv
 
 end fderiv
 
-variable [NormedAddCommGroup D] [NormedSpace ℝ D]
+variable [AddCommGroup D] [NormedAddCommGroup D] [NormedSpace ℝ D]
 
 theorem lineDerivOp_compCLMOfContinuousLinearEquiv (m : D) (g : D ≃L[ℝ] E) (f : 𝓢(E, F)) :
     ∂_{m} (compCLMOfContinuousLinearEquiv 𝕜 g f) =
@@ -244,7 +245,7 @@ open ENNReal MeasureTheory
 
 section one_dim
 
-variable [NormedAddCommGroup V] [NormedSpace ℝ V]
+variable [AddCommGroup V] [NormedAddCommGroup V] [NormedSpace ℝ V]
 
 /-- Integration by parts of Schwartz functions for the 1-dimensional derivative.
 
@@ -283,8 +284,8 @@ theorem integral_clm_comp_deriv_right_eq_neg_left (f : 𝓢(ℝ, F →L[𝕜] V)
 
 end one_dim
 
-variable [NormedAddCommGroup V] [NormedSpace ℝ V]
-  [NormedAddCommGroup D] [NormedSpace ℝ D]
+variable [AddCommGroup V] [NormedAddCommGroup V] [NormedSpace ℝ V]
+  [AddCommGroup D] [NormedAddCommGroup D] [NormedSpace ℝ D]
   [MeasurableSpace D] {μ : Measure D} [BorelSpace D] [FiniteDimensional ℝ D] [μ.IsAddHaarMeasure]
 
 open scoped LineDeriv
@@ -335,9 +336,9 @@ open MeasureTheory Laplacian LineDeriv
 /-! ### Integration by parts -/
 
 variable [InnerProductSpace ℝ E] [FiniteDimensional ℝ E]
-  [NormedAddCommGroup F₁] [NormedSpace ℝ F₁]
-  [NormedAddCommGroup F₂] [NormedSpace ℝ F₂]
-  [NormedAddCommGroup F₃] [NormedSpace ℝ F₃]
+  [AddCommGroup F₁] [NormedAddCommGroup F₁] [NormedSpace ℝ F₁]
+  [AddCommGroup F₂] [NormedAddCommGroup F₂] [NormedSpace ℝ F₂]
+  [AddCommGroup F₃] [NormedAddCommGroup F₃] [NormedSpace ℝ F₃]
   [MeasurableSpace E] {μ : Measure E} [BorelSpace E] [μ.IsAddHaarMeasure]
 
 /-- Integration by parts of Schwartz functions for the Laplacian.
