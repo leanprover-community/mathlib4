@@ -78,11 +78,6 @@ lemma map_homogeneous (s : Set X) (t : Set Y) (hc : c.support ⊆ s)
   obtain ⟨x, (rfl : f x = y), h'⟩ := exists_ne_zero_of_finsum_mem_ne_zero hy
   grind [mem_support]
 
-/--
-The pushforward of `c` along the identity morphism is `c` as long as the weight function is `1`
-everywhere. One should note that typically this weight function depends on the map, so this
-condition that the weight function must be trivial here is less strange than it may appear at first.
--/
 @[simp]
 lemma map_id [PrespectralSpace X] (hw : ∀ z : X, w z = 1) :
     map id w isSpectralMap_id c = c := by
