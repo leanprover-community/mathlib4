@@ -103,12 +103,12 @@ theorem exists_ratio_hasDerivAt_eq_ratio_slope' {lfa lga lfb lgb : ℝ}
   have hha : Tendsto h (𝓝[>] a) (𝓝 <| lgb * lfa - lfb * lga) := by
     have : Tendsto h (𝓝[>] a) (𝓝 <| (lgb - lga) * lfa - (lfb - lfa) * lga) :=
       (tendsto_const_nhds.mul hfa).sub (tendsto_const_nhds.mul hga)
-    convert this using 2
+    convert! this using 2
     ring
   have hhb : Tendsto h (𝓝[<] b) (𝓝 <| lgb * lfa - lfb * lga) := by
     have : Tendsto h (𝓝[<] b) (𝓝 <| (lgb - lga) * lfb - (lfb - lfa) * lgb) :=
       (tendsto_const_nhds.mul hfb).sub (tendsto_const_nhds.mul hgb)
-    convert this using 2
+    convert! this using 2
     ring
   let h' x := (lgb - lga) * f' x - (lfb - lfa) * g' x
   have hhh' : ∀ x ∈ Ioo a b, HasDerivAt h (h' x) x := by

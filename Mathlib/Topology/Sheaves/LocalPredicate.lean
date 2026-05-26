@@ -160,7 +160,7 @@ namespace PrelocalPredicate
 
 theorem sheafifyOf {T : X → Type*} {P : PrelocalPredicate T} {U : Opens X}
     {f : ∀ x : U, T x} (h : P.pred f) : P.sheafify.pred f := fun x ↦
-  ⟨U, x.2, 𝟙 _, by convert h⟩
+  ⟨U, x.2, 𝟙 _, by convert! h⟩
 
 /-- For a unary operation (e.g. `x ↦ -x`) defined at each stalk, if a prelocal predicate is closed
 under the operation on each open set (possibly by refinement), then the sheafified predicate is
@@ -264,7 +264,7 @@ theorem isSheaf (P : LocalPredicate T) : (subpresheafToTypes P.toPrelocalPredica
       -- We claim that the predicate holds in `U i`
       use U i, hi, Opens.leSupr U i
       -- This follows, since our original family `sf` satisfies the predicate
-      convert (sf i).property using 1
+      convert! (sf i).property using 1
       exact gl_spec i
     -- It remains to show that the chosen lift is really a gluing for the subsheaf and
     -- that it is unique. Both of which follow immediately from the corresponding facts
@@ -361,8 +361,8 @@ the presheaf of continuous functions.
 def subpresheafContinuousPrelocalIsoPresheafToTop {X : TopCat.{u}} (T : TopCat.{u}) :
     subpresheafToTypes (continuousPrelocal X T) ≅ presheafToTop X T :=
   NatIso.ofComponents fun X ↦
-    { hom := ↾(by rintro ⟨f, c⟩; exact ofHom ⟨f, c⟩)
-      inv := ↾(by rintro ⟨f, c⟩; exact ⟨f, c⟩) }
+    { hom := ↾fun f ↦ ofHom ⟨f.1, f.2⟩
+      inv := ↾fun f ↦ ⟨f.1, f.1.2⟩ }
 
 /-- The sheaf of continuous functions on `X` with values in a space `T`.
 -/

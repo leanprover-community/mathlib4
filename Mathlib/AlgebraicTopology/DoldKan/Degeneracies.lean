@@ -136,7 +136,7 @@ theorem degeneracy_comp_PInfty (X : SimplicialObject C) (n : ℕ) {Δ' : Simplex
     fin_cases y
     rfl
   · obtain ⟨i, α, h⟩ := SimplexCategory.eq_σ_comp_of_not_injective θ hθ
-    rw [h, op_comp, X.map_comp, assoc, show X.map (SimplexCategory.σ i).op = X.σ i by rfl,
+    rw [h, op_comp, X.map_comp, assoc, ← SimplicialObject.σ_def,
       σ_comp_PInfty, comp_zero]
 
 section
