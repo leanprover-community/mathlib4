@@ -311,16 +311,45 @@ lemma variation_withDensity [CompleteSpace G]
     simp only [ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true, ENNReal.coe_div, ENNReal.coe_ofNat, δ]
     rw [ENNReal.mul_div_cancel (by simp) (by simp)]
 
-#where
+/- TODO: move -/
+@[simp] lemma variation_toSignedMeasure {μ : Measure X} [IsFiniteMeasure μ] :
+    variation μ.toSignedMeasure = μ := by
+  apply le_antisymm
+  · apply variation_le_of_forall_enorm_le (fun s hs ↦ ?_)
+    simp [Measure.toSignedMeasure_apply, hs, Measure.real, Real.enorm_eq_ofReal]
+  · apply Measure.le_iff.2 (fun s hs ↦ ?_)
+    apply le_trans ?_ (enorm_measure_le_variation _ _)
+    simp [Measure.toSignedMeasure_apply, hs, Measure.real, Real.enorm_eq_ofReal]
+
+@[simp] lemma foo {μ : Measure X} [IsFiniteMeasure μ] {f : X → G} :
+    ∫ᵛ x, f x ∂[(ContinuousLinearMap.lsmul ℝ ℝ).flip ; μ.toSignedMeasure]
+    = ∫ x, f x ∂μ := by
+  by_cases hG : CompleteSpace G; swap
+  · simp [integral_of_not_completeSpace, hG]
+    sorry
+
+
+
+#exit
+
 
 lemma variation_withDensityᵥ {μ : Measure X} {f : X → E} (hf : Integrable f μ) :
     (μ.withDensityᵥ f).variation = μ.withDensity (fun x ↦ ‖f x‖ₑ) := by
-  have : μ.withDensityᵥ f = (μ.withDensity (‖f ·‖ₑ)).withDensityᵥ (fun x ↦ ‖f x‖⁻¹ • f x) := by
+  have : IsFiniteMeasure (μ.withDensity fun x ↦ ‖f x‖ₑ) := ⟨by simpa using hf.2⟩
+  have : μ.withDensityᵥ f = (μ.withDensity (‖f ·‖ₑ)).toSignedMeasure.withDensity
+      (fun x ↦ ‖f x‖⁻¹ • f x) (ContinuousLinearMap.lsmul ℝ ℝ).flip := by
     ext s hs
-    rw [withDensityᵥ_apply hf hs, withDensityᵥ_apply _ hs]; swap
-    · have : IsFiniteMeasure (μ.withDensity fun x ↦ ‖f x‖ₑ) := ⟨by simpa using hf.2⟩
+    rw [withDensityᵥ_apply hf hs, withDensity_apply]; swap
+    · simp only [VectorMeasure.Integrable]
+      apply Integrable.mono_measure _ (variation_transpose_le _ _)
+      apply Integrable.smul_measure_nnreal
+      simp only [variation_toSignedMeasure]
       apply Integrable.of_bound (C := 1)
-      · have W := hf.aestronglyMeasurable.norm.inv
+      · apply AEStronglyMeasurable.mono_ac (withDensity_absolutelyContinuous _ _)
+        exact hf.aestronglyMeasurable.norm.inv₀.smul hf.aestronglyMeasurable
+      · filter_upwards with x using by simp [norm_smul, inv_mul_le_one]
+
+
 
 
 
