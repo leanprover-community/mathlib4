@@ -109,14 +109,10 @@ instance : CompleteLattice (SubmonoidFunctor M) where
 def ι : S.toFunctor ⟶ M where
   app _ := MonCat.ofHom (Submonoid.subtype _)
 
-instance : Mono S.ι := @CategoryTheory.NatTrans.mono_of_mono_app _ _ _ _ _ _ S.ι (by
-  intro U
-  apply (CategoryTheory.mono_iff_forall_injective (S.ι.app U)).mpr
-  intro _ g f h
-  ext x
-  have hx : (g ≫ MonCat.ofHom (S.obj U).subtype) x = (f ≫ MonCat.ofHom (S.obj U).subtype) x := by
-    aesop
-  exact (Submonoid.subtype_injective (S.obj U)) hx)
+instance : Mono S.ι := by
+  suffices ∀ (X : C), Mono (S.ι.app X) from NatTrans.mono_of_mono_app _
+  intro X
+  exact ConcreteCategory.mono_of_injective _ Subtype.val_injective
 
 section image
 
