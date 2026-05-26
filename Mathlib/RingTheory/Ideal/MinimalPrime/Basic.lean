@@ -65,7 +65,7 @@ abbrev minimalPrimes : Set (Ideal R) :=
 
 lemma minimalPrimes_eq_minimals : minimalPrimes R = {x | Minimal Ideal.IsPrime x} := by
   ext
-  simp [minimalPrimes, Ideal.minimalPrimes]
+  simp [IsMinimalPrime, Ideal.IsMinimalPrime]
 
 variable {I J}
 
