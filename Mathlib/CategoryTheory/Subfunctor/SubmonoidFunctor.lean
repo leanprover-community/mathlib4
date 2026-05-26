@@ -155,7 +155,7 @@ lemma comap_id : comap (𝟙 M) ⊤ = ⊤ := rfl
 lemma comap_comp (p' : M' ⟶ M'') : S''.comap (p ≫ p') = (S''.comap p').comap p := by rfl
 
 @[simp]
-lemma image_comap_ι : image (S.ι) (comap (S.ι) S) = S := by aesop
+lemma image_comap_ι : image S.ι (comap S.ι S) = S := by aesop
 
 end comap
 
