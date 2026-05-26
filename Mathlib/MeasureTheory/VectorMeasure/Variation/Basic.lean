@@ -318,6 +318,15 @@ instance {x : X} {v : V} : IsFiniteMeasure (VectorMeasure.dirac x v).variation :
   simp only [variation_dirac, enorm_eq_nnnorm, Measure.coe_nnreal_smul]
   infer_instance
 
+@[simp] lemma variation_toSignedMeasure {μ : Measure X} [IsFiniteMeasure μ] :
+    variation μ.toSignedMeasure = μ := by
+  apply le_antisymm
+  · apply variation_le_of_forall_enorm_le (fun s hs ↦ ?_)
+    simp [Measure.toSignedMeasure_apply, hs, Measure.real, Real.enorm_eq_ofReal]
+  · apply Measure.le_iff.2 (fun s hs ↦ ?_)
+    apply le_trans ?_ (enorm_measure_le_variation _ _)
+    simp [Measure.toSignedMeasure_apply, hs, Measure.real, Real.enorm_eq_ofReal]
+
 end NormedAddCommGroup
 
 end MeasureTheory.VectorMeasure

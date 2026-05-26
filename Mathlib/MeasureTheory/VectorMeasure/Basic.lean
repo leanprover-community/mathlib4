@@ -734,6 +734,13 @@ theorem restrict_map {f : α → β} (hf : Measurable f) {s : Set β} (hs : Meas
   ext t ht
   simp [map_apply, hs, hf hs, restrict_apply, ht, hf, hf ht]
 
+theorem restrict_toSignedMeasure {μ : Measure α} [IsFiniteMeasure μ]
+    {s : Set α} (hs : MeasurableSet s) :
+    μ.toSignedMeasure.restrict s = (μ.restrict s).toSignedMeasure := by
+  ext t ht
+  rw [restrict_apply _ hs ht, Measure.toSignedMeasure_apply_measurable (ht.inter hs),
+    Measure.toSignedMeasure_apply_measurable ht, measureReal_restrict_apply ht]
+
 section ContinuousAdd
 
 variable [ContinuousAdd M]

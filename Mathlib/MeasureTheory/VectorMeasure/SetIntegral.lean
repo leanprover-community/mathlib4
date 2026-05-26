@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2020 Zhouhang Zhou. All rights reserved.
+Copyright (c) 2026 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Zhouhang Zhou, Yury Kudryashov
+Authors: Sébastien Gouëzel
 -/
 module
 
@@ -442,5 +442,11 @@ theorem norm_setIntegral_le_of_norm_le_const {C : ℝ}
     positivity
   apply norm_setIntegral_le_of_norm_le_const_ae
   filter_upwards [ae_restrict_mem hs] with x hx using hC x hx
+
+@[simp] theorem setIntegral_toSignedMeasure {μ : Measure X} [IsFiniteMeasure μ]
+    {f : X → G} {s : Set X} (hs : MeasurableSet s) :
+    ∫ᵛ x in s, f x ∂[(ContinuousLinearMap.lsmul ℝ ℝ).flip; μ.toSignedMeasure]
+      = ∫ x in s, f x ∂μ := by
+  rw [← integral_toSignedMeasure, restrict_toSignedMeasure hs]
 
 end MeasureTheory.VectorMeasure

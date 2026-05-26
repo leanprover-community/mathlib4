@@ -1,10 +1,11 @@
 /-
 Copyright (c) 2025 Yoh Tanimoto. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yoh Tanimoto
+Authors: Yoh Tanimoto, Sébastien Gouëzel
 -/
 module
 
+public import Mathlib.MeasureTheory.Integral.Bochner.Basic
 public import Mathlib.MeasureTheory.Integral.IntegrableOn
 public import Mathlib.MeasureTheory.Integral.SetToL1
 public import Mathlib.MeasureTheory.VectorMeasure.Variation.Basic
@@ -106,7 +107,7 @@ theorem cbmApplyMeasure_union (μ : VectorMeasure X F) (B : E →L[ℝ] F →L[�
 
 theorem dominatedFinMeasAdditive_cbmApplyMeasure (μ : VectorMeasure X F) (B : E →L[ℝ] F →L[ℝ] G) :
     DominatedFinMeasAdditive (μ.transpose B).variation
-    (cbmApplyMeasure μ B : Set X → E →L[ℝ] G) 1 := by
+    (μ.transpose B) 1 := by
   refine ⟨fun s t hs ht _ _ hdisj ↦ cbmApplyMeasure_union μ B hs ht hdisj, fun s hs hsf ↦ ?_⟩
   simpa using norm_measure_le_variation hsf.ne
 
@@ -205,9 +206,19 @@ lemma variation_transpose_eq [Nontrivial E] (hB : ∀ x y, ‖B x y‖₊ = ‖x
   apply variation_transpose_eq_smul
   simpa using hB
 
+/-- Control of the variation of the vector measure which appears in the integral of scalar functions
+with respect to a vector measure. -/
 @[simp] lemma variation_transpose_lsmul :
-    (μ.transpose (ContinuousLinearMap.lsmul ℝ ℝ)).variation = μ.variation :=
-  variation_transpose_eq _ _ (by simp [nnnorm_smul])
+    (μ.transpose (ContinuousLinearMap.lsmul ℝ ℝ)).variation = μ.variation := by
+  apply variation_transpose_eq
+  simp [nnnorm_smul, mul_comm]
+
+/-- Control of the variation of the vector measure which appears in the integral of a vector
+function with respect to a signed measure. -/
+@[simp] lemma variation_transpose_lsmul_flip [Nontrivial E] {μ : SignedMeasure X} :
+    (μ.transpose (ContinuousLinearMap.lsmul ℝ ℝ (E := E)).flip).variation = μ.variation := by
+  apply variation_transpose_eq
+  simp [nnnorm_smul, mul_comm]
 
 /-- `f : X → E` is said to be integrable with respect to `μ` and `B` if it is integrable with
 respect to `(μ.transpose B).variation`. -/
@@ -224,7 +235,13 @@ protected abbrev IntegrableOn
 open Classical in
 /-- The `G`-valued integral of `E`-valued function and the `F`-valued vector measure `μ` with linear
 paring `B : E →L[ℝ] F →L[ℝ] G` . This is set to be `0` if `G` is not complete or if `f` is not
-integrable with respect to `(μ.transpose B).variation`. -/
+integrable with respect to `(μ.transpose B).variation`.
+
+When `μ` is a signed measure, to get the integral in `G` of a `G`-valued function, take
+`B = (ContinousLinearMap.lsmul ℝ ℝ).flip`.
+When `μ` is `G`-valued, to get the integral in `G` of a real-valued function, take
+`B = ContinousLinearMap.lsmul ℝ ℝ`.
+-/
 noncomputable def integral (μ : VectorMeasure X F) (f : X → E) (B : E →L[ℝ] F →L[ℝ] G) : G :=
   setToFun (μ.transpose B).variation (μ.transpose B)
     (dominatedFinMeasAdditive_cbmApplyMeasure μ B) f
@@ -246,6 +263,9 @@ notation3 "∫ᵛ "(...)" in "s", "r:60:(scoped f => f)" ∂•"μ:70 =>
   integral (VectorMeasure.restrict μ s) r (lsmul ℝ ℝ)
 
 variable {μ ν B}
+
+lemma integral_eq_setToFun : ∫ᵛ x, f x ∂[B; μ] = setToFun (μ.transpose B).variation (μ.transpose B)
+    (dominatedFinMeasAdditive_cbmApplyMeasure μ B) f := by rfl
 
 @[simp] lemma integrable_zero_vectorMeasure : (0 : VectorMeasure X F).Integrable f B := by
   simp [VectorMeasure.Integrable, transpose]
@@ -376,6 +396,18 @@ theorem frequently_ae_ne_zero_of_integral_ne_zero
 theorem exists_ne_zero_of_integral_ne_zero
     (h : ∫ᵛ a, f a ∂[B; μ] ≠ 0) : ∃ a, f a ≠ 0 :=
   (frequently_ae_ne_zero_of_integral_ne_zero h).exists
+
+@[simp] lemma integral_toSignedMeasure {μ : Measure X} [IsFiniteMeasure μ] {f : X → G} :
+    ∫ᵛ x, f x ∂[(ContinuousLinearMap.lsmul ℝ ℝ).flip; μ.toSignedMeasure] = ∫ x, f x ∂μ := by
+  rcases subsingleton_or_nontrivial G with h'G | h'G
+  · apply Subsingleton.elim
+  rw [integral_eq_setToFun, MeasureTheory.integral_eq_setToFun]
+  simp only [variation_transpose_lsmul_flip, variation_toSignedMeasure]
+  apply setToFun_congr_left' _ _ (fun s hs h's ↦ ?_)
+  simp only [transpose, ContinuousLinearMap.flip_flip, mapRange_apply,
+    Measure.toSignedMeasure_apply, hs, ↓reduceIte, LinearMap.toAddMonoidHom_coe,
+    ContinuousLinearMap.coe_coe, weightedSMul]
+  rfl
 
 /-- If `f` is integrable, then `∫ᵛ x in s, f x ∂[B; μ]` is absolutely continuous in `s`:
 it tends to zero as `(μ.transpose B).variation s` tends to zero. -/

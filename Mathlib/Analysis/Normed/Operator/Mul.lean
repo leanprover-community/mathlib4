@@ -259,6 +259,19 @@ theorem opNorm_lsmul [NormedDivisionRing R] [NormedAlgebra 𝕜 R] [Module R E] 
   refine le_of_mul_le_mul_right ?_ (norm_pos_iff.mpr hy)
   simpa using le_of_opNorm_le _ (h 1) y
 
+
+/-- The norm of `lsmul x` equals `‖x‖` in any nontrivial normed group.
+
+This is `ContinuousLinearMap.opNorm_lsmul_apply_le` as an equality. -/
+@[simp]
+theorem opNorm_lsmul_apply [NormedDivisionRing R] [NormedAlgebra 𝕜 R] [Module R E] [NormSMulClass R E]
+    [IsScalarTower 𝕜 R E] [Nontrivial E] {a : R} : ‖(lsmul 𝕜 R a : E →L[𝕜] E)‖ = ‖a‖ := by
+  refine ContinuousLinearMap.opNorm_eq_of_bounds (norm_nonneg _) (fun x => ?_) fun N _ h => ?_
+  · simp [norm_smul]
+  obtain ⟨y, hy⟩ := exists_ne (0 : E)
+  refine le_of_mul_le_mul_right ?_ (norm_pos_iff.mpr hy)
+  simpa [norm_smul] using h y
+
 end ContinuousLinearMap
 
 end Normed
