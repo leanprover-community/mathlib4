@@ -75,7 +75,7 @@ instance : PartialOrder (SubmonoidFunctor M) :=
 @[simps! top_obj bot_obj sup_obj inf_obj sInf_obj sSup_obj]
 instance : CompleteLattice (SubmonoidFunctor M) where
   sup F G :=
-    { obj U := F.obj U ⊔ G.obj U
+    { obj _ := F.obj _ ⊔ G.obj _
       map i := by grw [F.map i, G.map i, (Submonoid.monotone_comap).le_map_sup] }
   le_sup_left _ _ _ := by simp
   le_sup_right _ _ _ := by simp
