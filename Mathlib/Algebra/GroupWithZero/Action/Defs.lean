@@ -240,7 +240,7 @@ variable (A)
 /-- Compose a `MulActionWithZero` with a `MonoidWithZeroHom`, with action `f r' • m` -/
 @[implicit_reducible]
 def MulActionWithZero.compHom (f : M₀' →*₀ M₀) : MulActionWithZero M₀' A where
-  toSMul := SMul.comp _ f -- re-supply this to avoid `f.toZeroHom` when unfolding
+  toSMul := SMul.comp _ f  -- resupplied to avoid `⇑↑f`
   __ := SMulWithZero.compHom A f.toZeroHom
   -- `MulAction.compHom` is not imported here, so we reprove these two fields
   mul_smul r s m := by simp [SMul.comp_smul_def, mul_smul]

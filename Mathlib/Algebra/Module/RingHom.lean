@@ -55,7 +55,7 @@ variable {R} (M)
 
 See note [reducible non-instances]. -/
 abbrev Module.compHom [Semiring S] (f : S →+* R) : Module S M where
-  toSMul := SMul.comp _ f  -- to avoid intermediate morphism casts
+  toSMul := SMul.comp _ f  -- resupplied to avoid `⇑↑f`
   __ := MulActionWithZero.compHom M f.toMonoidWithZeroHom
   __ := DistribMulAction.compHom M (f : S →* R)
   add_smul r s x := by simp [SMul.comp_smul_def, add_smul]

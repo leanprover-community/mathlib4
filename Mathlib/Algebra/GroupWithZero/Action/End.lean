@@ -37,7 +37,7 @@ variable (A) [AddMonoid A] [Monoid M] [DistribMulAction M A]
 /-- Compose a `DistribMulAction` with a `MonoidHom`, with action `f r' • m`.
 See note [reducible non-instances]. -/
 abbrev DistribMulAction.compHom [Monoid N] (f : N →* M) : DistribMulAction N A where
-  toSMul := SMul.comp _ f  -- to avoid intermediate morphism casts
+  toSMul := SMul.comp _ f  -- resupplied to avoid `⇑↑f`
   __ := DistribSMul.compFun A f
   __ := MulAction.compHom A f
 
@@ -50,7 +50,7 @@ variable (A) [Monoid A] [Monoid M] [MulDistribMulAction M A]
 /-- Compose a `MulDistribMulAction` with a `MonoidHom`, with action `f r' • m`.
 See note [reducible non-instances]. -/
 abbrev MulDistribMulAction.compHom [Monoid N] (f : N →* M) : MulDistribMulAction N A where
-  toSMul := SMul.comp _ f  -- to avoid intermediate morphism casts
+  toSMul := SMul.comp _ f  -- resupplied to avoid `⇑↑f`
   __ := MulAction.compHom A f
   smul_one x := smul_one (f x)
   smul_mul x := smul_mul' (f x)
