@@ -294,12 +294,7 @@ section VectorMeasure
 variable (f μ B) in
 @[simp]
 theorem integral_zero_vectorMeasure :
-    ∫ᵛ x, f x ∂[B; (0 : VectorMeasure X F)] = 0 := by
-  by_cases hG : CompleteSpace G
-  · simp only [integral, hG]
-    refine setToFun_measure_zero (dominatedFinMeasAdditive_cbmApplyMeasure 0 B) ?_
-    simp [variation_zero]
-  · simp [integral, hG]
+    ∫ᵛ x, f x ∂[B; (0 : VectorMeasure X F)] = 0 := by simp [integral]
 
 lemma integral_of_isEmpty [IsEmpty X] : ∫ᵛ x, f x ∂[B; μ] = 0 := by simp [eq_zero_of_isEmpty]
 
