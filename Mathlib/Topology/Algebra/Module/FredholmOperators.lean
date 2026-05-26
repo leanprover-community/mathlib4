@@ -63,7 +63,8 @@ lemma Module.sum_neg_one_pow_finrank_eq_zero_of_exact {n : ℕ} {k : Type*} (V :
 universe u
 
 -- Still not universe polymorphic; exposes some annoying typeclass wrangling.
-lemma Module.sum_neg_one_pow_finrank_eq_zero_of_exact_six' {k V₀ V₁ V₂ V₃ V₄ V₅ : Type u} [Field k]
+lemma Module.sum_neg_one_pow_finrank_eq_zero_of_exact_six' {k : Type*} [Field k]
+    {V₀ V₁ V₂ V₃ V₄ V₅ : Type u}
     [AddCommGroup V₀] [Module k V₀] [FiniteDimensional k V₀]
     [AddCommGroup V₁] [Module k V₁] [FiniteDimensional k V₁]
     [AddCommGroup V₂] [Module k V₂] [FiniteDimensional k V₂]
@@ -111,15 +112,15 @@ lemma Module.sum_neg_one_pow_finrank_eq_zero_of_exact_six' {k V₀ V₁ V₂ V�
     ![V₀, V₁, V₂, V₃, V₄, V₅] fs inj
     (fun i ↦ by fin_cases i; exacts [exact₁, exact₂, exact₃, exact₄]) surj
 
--- This is what we actually need (I guess we should do some `ULift`ing).
 -- Would be nice to obtain via a `simproc`.
-lemma Module.sum_neg_one_pow_finrank_eq_zero_of_exact_six {k V₀ V₁ V₂ V₃ V₄ V₅ : Type*} [Field k]
-    [AddCommGroup V₀] [Module k V₀] [FiniteDimensional k V₀]
-    [AddCommGroup V₁] [Module k V₁] [FiniteDimensional k V₁]
-    [AddCommGroup V₂] [Module k V₂] [FiniteDimensional k V₂]
-    [AddCommGroup V₃] [Module k V₃] [FiniteDimensional k V₃]
-    [AddCommGroup V₄] [Module k V₄] [FiniteDimensional k V₄]
-    [AddCommGroup V₅] [Module k V₅] [FiniteDimensional k V₅]
+universe u₀ u₁ u₂ u₃ u₄ u₅
+lemma Module.sum_neg_one_pow_finrank_eq_zero_of_exact_six {k : Type*} [Field k]
+    {V₀ : Type u₀} [AddCommGroup V₀] [Module k V₀] [FiniteDimensional k V₀]
+    {V₁ : Type u₁} [AddCommGroup V₁] [Module k V₁] [FiniteDimensional k V₁]
+    {V₂ : Type u₂} [AddCommGroup V₂] [Module k V₂] [FiniteDimensional k V₂]
+    {V₃ : Type u₃} [AddCommGroup V₃] [Module k V₃] [FiniteDimensional k V₃]
+    {V₄ : Type u₄} [AddCommGroup V₄] [Module k V₄] [FiniteDimensional k V₄]
+    {V₅ : Type u₅} [AddCommGroup V₅] [Module k V₅] [FiniteDimensional k V₅]
     (f₀ : V₀ →ₗ[k] V₁) (f₁ : V₁ →ₗ[k] V₂) (f₂ : V₂ →ₗ[k] V₃) (f₃ : V₃ →ₗ[k] V₄) (f₄ : V₄ →ₗ[k] V₅)
     (inj : Injective f₀)
     (exact₁ : Exact f₀ f₁)
@@ -129,7 +130,23 @@ lemma Module.sum_neg_one_pow_finrank_eq_zero_of_exact_six {k V₀ V₁ V₂ V₃
     (surj : Surjective f₄) :
     (finrank k V₀ : ℤ) - finrank k V₁ + finrank k V₂ -
       finrank k V₃ + finrank k V₄ - finrank k V₅ = 0 := by
-  sorry
+  let f₀' : ULift.{max u₀ u₁ u₂ u₃ u₄ u₅} V₀ →ₗ[k] ULift.{max u₀ u₁ u₂ u₃ u₄ u₅} V₁ :=
+    ULift.moduleEquiv.symm.toLinearMap ∘ₗ f₀ ∘ₗ ULift.moduleEquiv.toLinearMap
+  let f₁' : ULift.{max u₀ u₁ u₂ u₃ u₄ u₅} V₁ →ₗ[k] ULift.{max u₀ u₁ u₂ u₃ u₄ u₅} V₂ :=
+    ULift.moduleEquiv.symm.toLinearMap ∘ₗ f₁ ∘ₗ ULift.moduleEquiv.toLinearMap
+  let f₂' : ULift.{max u₀ u₁ u₂ u₃ u₄ u₅} V₂ →ₗ[k] ULift.{max u₀ u₁ u₂ u₃ u₄ u₅} V₃ :=
+    ULift.moduleEquiv.symm.toLinearMap ∘ₗ f₂ ∘ₗ ULift.moduleEquiv.toLinearMap
+  let f₃' : ULift.{max u₀ u₁ u₂ u₃ u₄ u₅} V₃ →ₗ[k] ULift.{max u₀ u₁ u₂ u₃ u₄ u₅} V₄ :=
+    ULift.moduleEquiv.symm.toLinearMap ∘ₗ f₃ ∘ₗ ULift.moduleEquiv.toLinearMap
+  let f₄' : ULift.{max u₀ u₁ u₂ u₃ u₄ u₅} V₄ →ₗ[k] ULift.{max u₀ u₁ u₂ u₃ u₄ u₅} V₅ :=
+    ULift.moduleEquiv.symm.toLinearMap ∘ₗ f₄ ∘ₗ ULift.moduleEquiv.toLinearMap
+  have := sum_neg_one_pow_finrank_eq_zero_of_exact_six' f₀' f₁' f₂' f₃' f₄'
+    (inj := by simpa [f₀']) (surj := by simpa [f₄'])
+  simp only [finrank_ulift] at this
+  apply this <;>
+  simp only [f₀', f₁', f₂', f₃', f₄'] <;>
+  rwa [LinearEquiv.postcomp_exact_iff_exact, ← LinearMap.comp_assoc,
+    LinearEquiv.precomp_exact_iff_exact, LinearEquiv.conj_symm_exact_iff_exact]
 
 end FindHome
 
