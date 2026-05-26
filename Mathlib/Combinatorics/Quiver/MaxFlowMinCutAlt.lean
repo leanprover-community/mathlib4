@@ -1302,6 +1302,99 @@ def positiveReachable {V : Type*} [Fintype V] [DecidableEq V]
           split_ifs <;> norm_num
       } u v)
 
+lemma uvPath_extend {V : Type*} [Fintype V] [DecidableEq V] {G : FlowNetwork V} {u v w : V}
+  (p : validuvPath G u v) (hw_notin : w ∉ p.verts) (hedge : G.c v w > 0) :
+  Nonempty (validuvPath G u w) := by sorry
+
+lemma positiveReachable_step {V : Type*} [Fintype V] [DecidableEq V]
+    (G : FlowNetwork V) (f : V → V → ℝ) (s v w : V)
+    (hreach : positiveReachable G f s v)
+    (hflow : f v w > 0) :
+    positiveReachable G f s w := by
+  by_cases hw_in : w ∈ hreach.some.verts;
+  · sorry
+  · exact uvPath_extend ( hreach.some ) hw_in ( by simp [ hflow ] )
+
+lemma no_outflow_from_reachable {V : Type*} [Fintype V] [DecidableEq V] (G : FlowNetwork V)
+  (f : V → V → ℝ) (hnonneg : ∀ u v, f u v ≥ 0) (s v w : V) (hv : positiveReachable G f s v)
+  (hw : ¬ positiveReachable G f s w) : f v w = 0 := by
+  exact Classical.not_not.1 fun h => hw
+    ( positiveReachable_step G f s v w hv ( lt_of_le_of_ne ( hnonneg v w ) ( Ne.symm h ) ) )
+
+lemma sum_imbalance_reachable_le {V : Type*} [Fintype V] (f : V → V → ℝ)
+  (hnonneg : ∀ u v, f u v ≥ 0) : ∀ R : Finset V, (∀ v ∈ R, ∀ w ∉ R, f v w = 0) →
+  R.sum (fun v => ∑ w, (f v w - f w v)) ≤ 0 := by
+  classical
+  intro R hR
+  have h_sum_zero : ∑ v ∈ R, ∑ w,
+    (f v w - f w v) = ∑ v ∈ R, ∑ w ∈ Finset.univ \ R, (f v w - f w v) := by
+    simp +decide [ Finset.sum_sub_distrib];
+    linarith [ show ∑ x ∈ R, ∑ x_1 ∈ R, f x x_1 = ∑ x ∈ R, ∑ x_1 ∈ R, f x_1 x from Finset.sum_comm ]
+  rw [h_sum_zero];
+  exact Finset.sum_nonpos fun v hv => Finset.sum_nonpos fun w hw => by
+    rw [ hR v hv w ( Finset.mem_sdiff.mp hw |>.2 ) ] ; linarith [ hnonneg w v ] ;
+
+
+lemma exist_flow_path {V : Type*} [Fintype V] [DecidableEq V] (G : FlowNetwork V) (F : PseudoFlow V)
+ (hex : ∃ x : V, imbalance F.f x ≠ 0) (hsum_zero : ∑ x : V, imbalance F.f x = 0) :
+  ∃ s t : V, is_supply F.f s ∧ is_demand F.f t ∧ positiveReachable G F.f s t := by
+  classical
+  have hposneg :
+    (∃ s, imbalance F.f s > 0) ∧ (∃ t, imbalance F.f t < 0) := by
+    constructor
+    · by_contra h
+      push Not at h
+      have hall : ∀ x, imbalance F.f x = 0 := by
+        intro x
+        have hle : imbalance F.f x ≤ 0 := h x
+        have hge : 0 ≤ imbalance F.f x := by
+          have key : -imbalance F.f x ≤ ∑ y : V, (-imbalance F.f y) :=
+            Finset.single_le_sum (f := fun x => -imbalance F.f x)
+              (fun (i : V) _ => by linarith [h i]) (Finset.mem_univ x)
+          simp [hsum_zero] at key
+          linarith
+        linarith
+      exact (hex.choose_spec (hall _))
+    · by_contra h
+      push Not at h
+      have hall : ∀ x, imbalance F.f x = 0 := by
+        intro x
+        have hge : 0 ≤ imbalance F.f x := h x
+        have hle : imbalance F.f x ≤ 0 := by
+          have key : imbalance F.f x ≤ ∑ y : V, imbalance F.f y :=
+            Finset.single_le_sum (fun (i : V) _ => h i) (Finset.mem_univ x)
+          linarith
+        linarith
+      exact (hex.choose_spec (hall _))
+  obtain ⟨s, hs⟩ := hposneg.1
+  have hs_reach : positiveReachable G F.f s s := by
+    unfold positiveReachable
+    refine ⟨⟨⟨[s], ?_, ?_, ?_, ?_⟩, ?_⟩⟩
+    · exact List.cons_ne_nil _ _
+    · exact List.nodup_singleton s
+    · rfl
+    · rfl
+    · intro i hi; simp at hi
+  let R := Finset.univ.filter (fun v => positiveReachable G F.f s v)
+  have hs_in_R : s ∈ R := Finset.mem_filter.mpr ⟨Finset.mem_univ _, hs_reach⟩
+  have hR_closed : ∀ v ∈ R, ∀ w ∉ R, F.f v w = 0 := by
+    intro v hv w hw
+    exact no_outflow_from_reachable G F.f F.nonneg_flow s v w
+      (Finset.mem_filter.mp hv).2 (fun h => hw (Finset.mem_filter.mpr ⟨Finset.mem_univ _, h⟩))
+  have hsum_R : R.sum (fun v => ∑ w, (F.f v w - F.f w v)) ≤ 0 := by
+    refine sum_imbalance_reachable_le F.f ?_ R hR_closed
+    exact fun u v ↦ F.nonneg_flow u v
+  have hsum_imb : R.sum (imbalance F.f) ≤ 0 := by
+    convert hsum_R using 1
+  have : ∃ t' ∈ R, imbalance F.f t' < 0 := by
+    by_contra hall
+    push Not at hall
+    have hge_s : imbalance F.f s ≤ R.sum (imbalance F.f) :=
+      Finset.single_le_sum (fun i hi => hall i hi) hs_in_R
+    linarith
+  obtain ⟨t', ht'R, ht'neg⟩ := this
+  exact ⟨s, t', hs, ht'neg, (Finset.mem_filter.mp ht'R).2⟩
+
 /-- number of nonzero imbalance vertices -/
 noncomputable
 def Ψ {V : Type*} [Fintype V] (f : V → V → ℝ) : Nat :=
