@@ -131,6 +131,7 @@ jobs:
         with:
           repo: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
           branch: ${{ github.head_ref || github.ref_name }}
+          head-sha: ${{ github.event.pull_request.head.sha || github.sha }}
 
       # Checkout the PR branch into a subdirectory
       - name: Checkout PR branch
@@ -640,6 +641,7 @@ jobs:
         with:
           repo: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
           branch: ${{ github.head_ref || github.ref_name }}
+          head-sha: ${{ github.event.pull_request.head.sha || github.sha }}
 
       - name: Configure Lean
         uses: leanprover/lean-action@38fbc41a8c28c4cbaec22d7f7de508ec2e7c0dd9 # v1.5.0
@@ -753,6 +755,7 @@ jobs:
         with:
           repo: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
           branch: ${{ github.head_ref || github.ref_name }}
+          head-sha: ${{ github.event.pull_request.head.sha || github.sha }}
 
       - name: Configure Lean
         uses: leanprover/lean-action@38fbc41a8c28c4cbaec22d7f7de508ec2e7c0dd9 # v1.5.0

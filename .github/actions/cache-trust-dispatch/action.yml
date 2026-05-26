@@ -16,6 +16,13 @@ inputs:
   branch:
     description: Branch name (`github.head_ref || github.ref_name`).
     required: true
+  head-sha:
+    description: |
+      Head commit SHA for the ref being built. Used as the per-commit cache
+      namespace (`MATHLIB_CACHE_REPO_SCOPE`) for fork-trust uploads, so a
+      closed/hidden PR's poisoned artifacts cannot be served to a later
+      honest PR from the same fork.
+    required: true
 
 # Outputs are mirrored to $GITHUB_ENV inside the step, which is what
 # downstream `cache get` / `cache put-staged` calls actually read. We
@@ -30,6 +37,13 @@ outputs:
       Comma-separated read fallback chain for `MATHLIB_CACHE_FROM`. Empty
       when the job should use the cache tool's repo-level default.
     value: ${{ steps.dispatch.outputs.read-chain }}
+  repo-scope:
+    description: |
+      Per-commit namespace suffix for `MATHLIB_CACHE_REPO_SCOPE`. Set to
+      the head SHA when uploading to fork-trust containers; empty for
+      master / nightly / pr-toolchain-tests uploads where scoping isn't
+      applied.
+    value: ${{ steps.dispatch.outputs.repo-scope }}
 
 runs:
   using: composite
@@ -40,8 +54,10 @@ runs:
       run: |
         REPO="${{ inputs.repo }}"
         BRANCH="${{ inputs.branch }}"
+        HEAD_SHA="${{ inputs.head-sha }}"
         PRIMARY=""
         READ_CHAIN=""
+        REPO_SCOPE=""
 
         # Security note: this dispatch is NOT the trust boundary for writes.
         # The real enforcement is the OIDC bearer token minted in upload_cache:
@@ -99,16 +115,36 @@ runs:
             ;;
         esac
 
+        # Per-commit cache namespace, only for fork-trust uploads. Closes the
+        # within-fork temporal replay attack: each commit's CI run gets its
+        # own /f/{repo}/{sha}/... namespace, so artifacts from a closed/
+        # hidden PR cannot be served to a later honest build on the same
+        # fork. Master / nightly / pr-toolchain-tests uploads stay un-scoped:
+        # master has a single writer (no replay risk), and the per-toolchain
+        # hash partitioning isolates nightly and toolchain-test classes via
+        # their root-hash inputs.
+        if [ "$PRIMARY" = "forks" ]; then
+          REPO_SCOPE="$HEAD_SHA"
+        fi
+
         echo "primary=$PRIMARY"           >> "$GITHUB_OUTPUT"
         echo "read-chain=$READ_CHAIN"     >> "$GITHUB_OUTPUT"
+        echo "repo-scope=$REPO_SCOPE"     >> "$GITHUB_OUTPUT"
         echo "MATHLIB_CACHE_PRIMARY=$PRIMARY" >> "$GITHUB_ENV"
         if [ -n "$READ_CHAIN" ]; then
           echo "MATHLIB_CACHE_FROM=$READ_CHAIN" >> "$GITHUB_ENV"
         fi
+        if [ -n "$REPO_SCOPE" ]; then
+          echo "MATHLIB_CACHE_REPO_SCOPE=$REPO_SCOPE" >> "$GITHUB_ENV"
+        fi
         # Visible in CI logs so a glance at any cache-touching step shows
         # what trust class the job is operating under.
+        SCOPE_NOTE=""
+        if [ -n "$REPO_SCOPE" ]; then
+          SCOPE_NOTE=", MATHLIB_CACHE_REPO_SCOPE=$REPO_SCOPE"
+        fi
         if [ -n "$READ_CHAIN" ]; then
-          echo "cache-trust-dispatch: REPO=$REPO BRANCH=$BRANCH → container=$PRIMARY, MATHLIB_CACHE_FROM=$READ_CHAIN"
+          echo "cache-trust-dispatch: REPO=$REPO BRANCH=$BRANCH → container=$PRIMARY, MATHLIB_CACHE_FROM=$READ_CHAIN$SCOPE_NOTE"
         else
-          echo "cache-trust-dispatch: REPO=$REPO BRANCH=$BRANCH → container=$PRIMARY, MATHLIB_CACHE_FROM=<default>"
+          echo "cache-trust-dispatch: REPO=$REPO BRANCH=$BRANCH → container=$PRIMARY, MATHLIB_CACHE_FROM=<default>$SCOPE_NOTE"
         fi

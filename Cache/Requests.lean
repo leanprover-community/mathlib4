@@ -330,13 +330,34 @@ we don't know which container's policy to apply; we fall back to the legacy
 "flat for canonical, prefixed otherwise" rule there so dev/local overrides
 behave exactly as they did before the per-container split.
 -/
-def mkFileURL (container : Option Container) (repo containerURL fileName : String) :
-    String :=
+def mkFileURL (container : Option Container) (repo containerURL fileName : String)
+    (repoScope : Option String := none) : String :=
   let flat := match container with
     | some c => c.flatPath repo
     | none => repo == MATHLIBREPO
-  let pre := if flat then "" else s!"{repo}/"
+  let pre := if flat then ""
+    else match repoScope with
+      | some s => s!"{repo}/{s}/"
+      | none => s!"{repo}/"
   s!"{containerURL}/f/{pre}{fileName}"
+
+/--
+Optional extra path component appended to the per-repo prefix for non-flat
+container paths, read from `MATHLIB_CACHE_REPO_SCOPE`. CI sets this to the
+PR head's commit SHA when uploading to a fork-trust container, so each
+commit's uploads land in their own namespace and stale artifacts from
+closed/hidden PRs cannot be served to later honest builds.
+
+Returns `none` on user machines and in CI jobs where the dispatch decided
+no scoping is needed (master CI, trusted-nightly).
+-/
+def getRepoScope : IO (Option String) := do
+  let s? ← IO.getEnv "MATHLIB_CACHE_REPO_SCOPE"
+  match s? with
+  | some s =>
+    let trimmed := s.trimAscii.toString
+    pure (if trimmed.isEmpty then none else some trimmed)
+  | none => pure none
 
 section Get
 
@@ -344,6 +365,7 @@ section Get
 from a single container's base URL. -/
 def mkGetConfigContent (container : Option Container) (repo containerURL : String)
     (hashMap : IO.ModuleHashMap) : IO String := do
+  let scope? ← getRepoScope
   hashMap.toArray.foldlM (init := "") fun acc ⟨_, hash⟩ => do
     let fileName := hash.asLTar
     -- Below we use `String.quote`, which is intended for quoting for use in Lean code
@@ -359,15 +381,16 @@ def mkGetConfigContent (container : Option Container) (repo containerURL : Strin
 
     -- Note we append a '.part' to the filenames here,
     -- which `downloadFiles` then removes when the download is successful.
-    pure <| acc ++ s!"url = {mkFileURL container repo containerURL fileName}\n\
+    pure <| acc ++ s!"url = {mkFileURL container repo containerURL fileName scope?}\n\
       -o {(IO.CACHEDIR / (fileName ++ ".part")).toString.quote}\n"
 
 /-- Calls `curl` to download a single file from a specific container to `CACHEDIR`
 (`.cache`). Returns `true` on success, `false` on any error including 404. -/
 def downloadFile (container : Option Container) (repo containerURL : String)
     (hash : UInt64) : IO Bool := do
+  let scope? ← getRepoScope
   let fileName := hash.asLTar
-  let url := mkFileURL container repo containerURL fileName
+  let url := mkFileURL container repo containerURL fileName scope?
   let path := IO.CACHEDIR / fileName
   let partFileName := fileName ++ ".part"
   let partPath := IO.CACHEDIR / partFileName
@@ -876,11 +899,12 @@ threaded through to `mkFileURL` so the per-container URL-shape policy applies;
 it is `none` only when `MATHLIB_CACHE_PUT_URL` is overriding the endpoint. -/
 def mkPutConfigContent (container : Option Container) (repo uploadURL : String)
     (files : Array FilePath) (auth : UploadAuth) : IO String := do
+  let scope? ← getRepoScope
   let token := match auth with
     | .azureSas token => s!"?{token}"
     | _ => ""
   let l ← files.toList.mapM fun file : FilePath => do
-    pure s!"-T {file.toString}\nurl = {mkFileURL container repo uploadURL file.fileName.get!}{token}"
+    pure s!"-T {file.toString}\nurl = {mkFileURL container repo uploadURL file.fileName.get! scope?}{token}"
   return "\n".intercalate l
 
 /-- Calls `curl` to send a set of files to the server. The destination container
