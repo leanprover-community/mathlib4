@@ -50,7 +50,7 @@ the definition of the Sobolev spaces.
 @[expose] public noncomputable section
 
 variable {E F : Type*}
-  [NormedAddCommGroup E] [NormedAddCommGroup F]
+  [AddCommGroup E] [NormedAddCommGroup E] [AddCommGroup F] [NormedAddCommGroup F]
   [InnerProductSpace ℝ E] [FiniteDimensional ℝ E] [MeasurableSpace E] [BorelSpace E]
 
 open FourierTransform TemperedDistribution ENNReal MeasureTheory
