@@ -1208,8 +1208,9 @@ theorem ff_non_termination (X : ℝ) (hX : X > 2) :
     (∀ n : ℕ, rawPathValid (FFNetwork X hX) (ffRawFlows X hX n) (cycleChoice n)) ∧
     -- (2) The flow values converge to 2 + √5
     Filter.Tendsto (ffFlowValues X hX) Filter.atTop (nhds ffFlowLimit) ∧
-    -- (3) The limit is strictly less than the true maximum flow
-    ffFlowLimit < 2 * X + 1 := by
+    -- (3) The limit is strictly less than the true maximum flow value
+    ∀ F : RelaxedFlow (FFNetwork X hX).toSTVertices, is_max_flow F →
+        ffFlowLimit < Flow_value (FFNetwork X hX).toSTVertices F := by
   refine ⟨?_, ?_, ?_⟩
   · exact ffRawFlows_valid_step X hX
   · -- Step 1: Rewrite ffFlowValues as explicitFlowSum pointwise
@@ -1229,5 +1230,6 @@ theorem ff_non_termination (X : ℝ) (hX : X > 2) :
     -- Step 3: Combine to get the desired convergence
     rw [h_eq, ← h_lim_eq]
     exact explicitFlowSum_converges
-  · have := ffFlowLimit_lt_five
-    linarith [ffNetwork_maxFlow_value X hX]
+  · -- For any maximum flow F, its value is ≥ 2X+1 > 5 > ffFlowLimit
+    intro F hF
+    linarith [maxFlow_value_ge X hX F hF, ffFlowLimit_lt_five, ffNetwork_maxFlow_value X hX]
