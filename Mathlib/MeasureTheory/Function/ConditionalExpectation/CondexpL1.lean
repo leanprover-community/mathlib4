@@ -48,7 +48,7 @@ variable {α F F' G G' 𝕜 : Type*} [RCLike 𝕜]
   [NormedSpace 𝕜 F]
   -- F' for integrals on a Lp submodule
   [AddCommGroup F'] [NormedAddCommGroup F']
-  [NormedSpace 𝕜 F'] [NormedSpace ℝ F'] [CompleteSpace F']
+  [NormedSpace 𝕜 F'] [NormedSpace ℝ F']
   -- G for a Lp add_subgroup
   [AddCommGroup G] [NormedAddCommGroup G]
   -- G' for integrals on a Lp add_subgroup
