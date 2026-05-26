@@ -140,6 +140,10 @@ theorem directSum_isInternal_of_pairwise_commute [DecidableEq (n → 𝕜)]
   · rw [iSup_iInf_eq_top_of_commute hT hC, top_orthogonal_eq_bot]
   · exact orthogonalFamily_iInf_eigenspaces hT
 
+@[deprecated (since := "2026-05-24")]
+alias LinearMap.IsSymmetric.directSum_isInternal_of_pairwise_commute :=
+  directSum_isInternal_of_pairwise_commute
+
 end RCLike
 
 end IsSymmetric
