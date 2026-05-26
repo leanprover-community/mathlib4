@@ -19,7 +19,7 @@ of algebraic cycles in algebraic geometry.
 
 - `Function.locallyFinsupp.map`: If `f : X → Y` is a spectral map between spectral spaces and
   `c : X → R` is locally of finite support, the pushforward of `c` along `f` at `y : Y` is
-  `∑ᶠ x ∈ f ⁻¹' {z}, c x * w x`, where `w : X → R` is a weight function.
+  `∑ᶠ x ∈ f ⁻¹' {y}, c x * w x`, where `w : X → R` is a weight function.
 
 ## Notes
 
