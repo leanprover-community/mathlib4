@@ -540,13 +540,9 @@ lemma Algebra.isTranscendentalSeparable_of_perfectField [PerfectField k] :
   rcases CharP.exists' k with char0|⟨p, prime, charp⟩
   · exact Algebra.isTranscendentalSeparable_of_charZero k K
   · apply ((Algebra.isTranscendentalSeparable_tfae k K p prime.out).out 0 2).mpr
-    have perf : PerfectRing k p := inferInstance
-    have bij : Function.Bijective (Algebra.ofId k (AdjoinPthRoots k)) := by
-      refine ⟨RingHom.injective _, fun x ↦ ?_⟩
-      obtain ⟨y, hy⟩ := perf.bijective_frobenius.2 ((AdjoinPthRoots.root k).symm x)
-      use y
-      apply (frobenius _ p).injective
-      simp [frobenius, ← map_pow, hy, AdjoinPthRoots.algebraMap_root_symm k p]
+    have bij : Function.Bijective (Algebra.ofId k (AdjoinPthRoots k)) :=
+      ⟨RingHom.injective _,
+        IsPurelyInseparable.surjective_algebraMap_of_isSeparable k (AdjoinPthRoots k)⟩
     let e := (Algebra.TensorProduct.congr (AlgEquiv.ofBijective _ bij).symm AlgEquiv.refl).trans
       (Algebra.TensorProduct.lid k K)
     exact isReduced_of_injective _ e.injective
