@@ -167,7 +167,7 @@ set_option backward.isDefEq.respectTransparency false in
 instance whiskerLeft_counit_iso_of_L_fully_faithful [L.Full] [L.Faithful] :
     IsIso (whiskerLeft L h.counit) := by
   have := h.left_triangle
-  rw [← IsIso.eq_inv_comp] at this
+  erw [hom_comp_eq_id] at this
   rw [this]
   infer_instance
 
@@ -175,25 +175,23 @@ set_option backward.isDefEq.respectTransparency false in
 instance whiskerRight_counit_iso_of_L_fully_faithful [L.Full] [L.Faithful] :
     IsIso (whiskerRight h.counit R) := by
   have := h.right_triangle
-  rw [← IsIso.eq_inv_comp] at this
+  erw [hom_comp_eq_id] at this
   rw [this]
-  dsimp [Functor.id_comp, Functor.comp_id]
   infer_instance
 
 set_option backward.isDefEq.respectTransparency false in
 instance whiskerLeft_unit_iso_of_R_fully_faithful [R.Full] [R.Faithful] :
     IsIso (whiskerLeft R h.unit) := by
   have := h.right_triangle
-  rw [← IsIso.eq_comp_inv] at this
+  erw [comp_hom_eq_id] at this
   rw [this]
-  dsimp [Functor.id_comp, Functor.comp_id]
   infer_instance
 
 set_option backward.isDefEq.respectTransparency false in
 instance whiskerRight_unit_iso_of_R_fully_faithful [R.Full] [R.Faithful] :
     IsIso (whiskerRight h.unit L) := by
   have := h.left_triangle
-  rw [← IsIso.eq_comp_inv] at this
+  erw [comp_hom_eq_id] at this
   rw [this]
   infer_instance
 

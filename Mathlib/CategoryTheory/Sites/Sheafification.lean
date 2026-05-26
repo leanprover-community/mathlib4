@@ -148,7 +148,7 @@ variable {D}
 
 theorem isIso_toSheafify {P : Cᵒᵖ ⥤ D} (hP : Presheaf.IsSheaf J P) : IsIso (toSheafify J P) := by
   refine ⟨(sheafificationAdjunction J D |>.counit.app ⟨P, hP⟩).hom, ?_, ?_⟩
-  · change _ = (𝟙 (sheafToPresheaf J D ⋙ 𝟭 (Cᵒᵖ ⥤ D)) :).app ⟨P, hP⟩
+  · change _ = (𝟙 (sheafToPresheaf J D) :).app ⟨P, hP⟩
     rw [← sheafificationAdjunction J D |>.right_triangle]
     rfl
   · change (sheafToPresheaf _ _).map _ ≫ _ = _
