@@ -153,6 +153,7 @@ instance (h : ShiftMkCore C A) : (Discrete.functor h.F).Monoidal :=
         simp [h.add_zero_inv_app] }
 
 /-- Constructs a `HasShift C A` instance from `ShiftMkCore`. -/
+@[implicit_reducible]
 def hasShiftMk (h : ShiftMkCore C A) : HasShift C A where
   shift := Discrete.functor h.F
 
@@ -405,9 +406,11 @@ def shiftEquiv' (i j : A) (h : i + j = 0) : C ≌ C where
   counitIso := shiftFunctorCompIsoId C j i
     (by rw [← add_left_inj j, add_assoc, h, zero_add, add_zero])
   functor_unitIso_comp X := by
-    convert (equivOfTensorIsoUnit (shiftMonoidalFunctor C A) ⟨i⟩ ⟨j⟩ (Discrete.eqToIso h)
-      (Discrete.eqToIso (by dsimp; rw [← add_left_inj j, add_assoc, h, zero_add, add_zero]))
-      (Subsingleton.elim _ _)).functor_unitIso_comp X
+    convert!
+      (equivOfTensorIsoUnit (shiftMonoidalFunctor C A) ⟨i⟩ ⟨j⟩ (Discrete.eqToIso h)
+            (Discrete.eqToIso (by dsimp; rw [← add_left_inj j, add_assoc, h, zero_add, add_zero]))
+            (Subsingleton.elim _ _)).functor_unitIso_comp
+        X
     all_goals
       ext X
       dsimp [shiftFunctorCompIsoId, unitOfTensorIsoUnit,
@@ -756,6 +759,7 @@ set_option backward.isDefEq.respectTransparency false in
 open hasShift in
 /-- Given a family of endomorphisms of `C` which are intertwined by a fully faithful `F : C ⥤ D`
 with shift functors on `D`, we can promote that family to shift functors on `C`. -/
+@[implicit_reducible]
 def hasShift :
     HasShift C A :=
   hasShiftMk C A

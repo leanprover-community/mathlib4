@@ -130,20 +130,10 @@ lemma whiskerRight_app_snd {F₁ F₁' : J ⥤ C} (f : F₁ ⟶ F₁') (F₂ : J
     (f ▷ F₂).app j ≫ snd _ _ = snd _ _ := by
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma associator_hom_app (F₁ F₂ F₃ : J ⥤ C) (j : J) :
     (α_ F₁ F₂ F₃).hom.app j = (α_ _ _ _).hom := by
-  apply hom_ext
-  · rw [← fst_app, ← NatTrans.comp_app, associator_hom_fst]
-    simp
-  · apply hom_ext
-    · rw [← snd_app, ← NatTrans.comp_app, ← fst_app, ← NatTrans.comp_app, Category.assoc,
-        associator_hom_snd_fst]
-      simp
-    · rw [← snd_app, ← NatTrans.comp_app, ← snd_app, ← NatTrans.comp_app, Category.assoc,
-        associator_hom_snd_snd]
-      simp
+  simp
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
@@ -151,7 +141,6 @@ lemma associator_inv_app (F₁ F₂ F₃ : J ⥤ C) (j : J) :
     (α_ F₁ F₂ F₃).inv.app j = (α_ _ _ _).inv := by
   rw [← cancel_mono ((α_ _ _ _).hom), Iso.inv_hom_id, ← associator_hom_app, Iso.inv_hom_id_app]
 
-set_option backward.isDefEq.respectTransparency false in
 instance {K : Type*} [Category* K] [HasColimitsOfShape K C]
     [∀ X : C, PreservesColimitsOfShape K (tensorLeft X)] {F : J ⥤ C} :
     PreservesColimitsOfShape K (tensorLeft F) := by

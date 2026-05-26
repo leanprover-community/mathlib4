@@ -456,7 +456,6 @@ local notation "Integral" => integralCLM α E μ
 
 open ContinuousLinearMap
 
-set_option backward.isDefEq.respectTransparency false in
 theorem norm_Integral_le_one : ‖Integral‖ ≤ 1 :=
   LinearMap.mkContinuous_norm_le _ zero_le_one fun f ↦ by
     simpa [one_mul] using norm_integral_le_norm f
@@ -469,7 +468,7 @@ theorem posPart_toSimpleFunc (f : α →₁ₛ[μ] ℝ) :
   have ae_eq : ∀ᵐ a ∂μ, toSimpleFunc (posPart f) a = max ((toSimpleFunc f) a) 0 := by
     filter_upwards [toSimpleFunc_eq_toFun (posPart f), Lp.coeFn_posPart (f : α →₁[μ] ℝ),
       toSimpleFunc_eq_toFun f] with _ _ h₂ h₃
-    convert h₂ using 1
+    convert! h₂ using 1
     rw [h₃]
   refine ae_eq.mono fun a h => ?_
   rw [h, eq]

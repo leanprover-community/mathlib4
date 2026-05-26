@@ -66,17 +66,14 @@ instance (e : C ≌ D) [MonoidalCategory C] [BraidedCategory C] :
     (e' e).functor.Braided where
   braided X Y := by
     apply (e' e).inverse.map_injective
-    have : Functor.LaxMonoidal.μ (((e' e).functor ⋙ (e' e).inverse)) X Y ≫
-        ((e' e).functor ⋙ (e' e).inverse).map (β_ X Y).hom ≫
-          Functor.OplaxMonoidal.δ ((e' e).functor ⋙ (e' e).inverse) Y X =
-            (β_ (((e' e).functor ⋙ (e' e).inverse).obj X)
-              (((e' e).functor ⋙ (e' e).inverse).obj Y)).hom := by
+    have : (β_ (((e' e).functor ⋙ (e' e).inverse).obj X)
+        (((e' e).functor ⋙ (e' e).inverse).obj Y)).hom =
+          Functor.LaxMonoidal.μ (((e' e).functor ⋙ (e' e).inverse)) X Y ≫
+            ((e' e).functor ⋙ (e' e).inverse).map (β_ X Y).hom ≫
+              Functor.OplaxMonoidal.δ ((e' e).functor ⋙ (e' e).inverse) Y X := by
       simp only [((e' e).functor ⋙ (e' e).inverse).map_braiding X Y,
         assoc, Functor.Monoidal.μ_δ, comp_id, Functor.Monoidal.μ_δ_assoc]
-    simp? [-Adjunction.rightAdjointLaxMonoidal_μ] at this says
-      simp only [Functor.comp_obj, comp_μ, Functor.comp_map,
-        Equivalence.inv_fun_map, Functor.id_obj, comp_δ, assoc] at this
-    simp [-Adjunction.rightAdjointLaxMonoidal_μ, ← this]
+    simp_all
 
 end
 

@@ -19,7 +19,7 @@ This is in some sense a finitary version of the second Borel-Cantelli lemma.
 ## References
 
 [Bergelson, *Sets of recurrence of `ℤᵐ`-actions and properties of sets of differences in
-`ℤᵐ`][bergelson1985]
+`ℤᵐ`*][bergelson1985]
 
 ## TODO
 
@@ -37,7 +37,6 @@ open scoped ENNReal
 
 variable {ι α : Type*} [MeasurableSpace α] {μ : Measure α} [IsFiniteMeasure μ] {r : ℝ≥0∞}
 
-set_option backward.isDefEq.respectTransparency false in
 /-- **Bergelson Intersectivity Lemma**: In a finite measure space, a sequence of events that have
 measure at least `r` has an infinite subset whose finite intersections all have positive volume.
 
@@ -79,7 +78,7 @@ lemma bergelson' {s : ℕ → Set α} (hs : ∀ n, MeasurableSet (s n)) (hr₀ :
     simp_rw [hfapp]
     rw [lintegral_const_mul _ <| Finset.measurable_fun_sum _
         fun _ _ ↦ measurable_one.indicator <| hs _,
-      lintegral_finset_sum _ fun _ _ ↦ measurable_one.indicator (hs _)]
+      lintegral_finsetSum _ fun _ _ ↦ measurable_one.indicator (hs _)]
     simp only [lintegral_indicator_one (hs _)]
     rw [← ENNReal.div_eq_inv_mul, ENNReal.le_div_iff_mul_le (by simp) (by simp), ← nsmul_eq_mul']
     simpa using Finset.card_nsmul_le_sum (Finset.range (n + 1)) _ _ fun _ _ ↦ hr _

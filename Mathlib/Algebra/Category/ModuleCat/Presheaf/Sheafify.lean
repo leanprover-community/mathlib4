@@ -169,6 +169,7 @@ def SMulCandidate.mk' (S : Sieve X.unop) (hS : S ∈ J X.unop)
     · rw [← RingCat.comp_apply, NatTrans.naturality, RingCat.comp_apply, ha₀]
       apply (hr₀ _ hg).symm.trans
       simp
+      rfl
     · erw [NatTrans.naturality_apply φ, hb₀]
       apply (hm₀ _ hg).symm.trans
       dsimp
@@ -288,6 +289,7 @@ variable (X)
 
 /-- The module structure on the sections of the sheafification of the underlying
 presheaf of abelian groups of a presheaf of modules. -/
+@[implicit_reducible]
 noncomputable def module : Module (R.obj.obj X) (A.obj.obj X) where
   smul r m := smul α φ r m
   one_smul := Sheafify.one_smul α φ

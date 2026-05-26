@@ -6,12 +6,9 @@ Authors: Floris van Doorn, Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 module
 
 public import Batteries.Tactic.Alias
-public import Mathlib.Init
+public import Batteries.Util.LibraryNote
 public import Mathlib.Data.Int.Notation
 public import Mathlib.Data.Nat.Notation
-public import Mathlib.Tactic.Basic
-public import Mathlib.Tactic.Lemma
-public import Mathlib.Tactic.TypeStar
 
 /-!
 # Basic operations on the natural numbers
@@ -69,8 +66,6 @@ lemma succ_pos' : 0 < succ n := succ_pos n
 alias _root_.LT.lt.nat_succ_le := succ_le_of_lt
 
 alias ⟨of_le_succ, _⟩ := le_succ_iff
-
-@[deprecated (since := "2025-08-21")] alias forall_lt_succ := forall_lt_succ_right
 
 lemma two_lt_of_ne : ∀ {n}, n ≠ 0 → n ≠ 1 → n ≠ 2 → 2 < n
   | 0, h, _, _ => (h rfl).elim
@@ -276,11 +271,24 @@ lemma le_induction {m : ℕ} {P : ∀ n, m ≤ n → Prop} (base : P m m.le_refl
   @Nat.leRec (motive := P) _ base succ
 
 /-- Induction principle deriving the next case from the two previous ones. -/
-def twoStepInduction {P : ℕ → Sort*} (zero : P 0) (one : P 1)
-    (more : ∀ n, P n → P (n + 1) → P (n + 2)) : ∀ a, P a
+@[elab_as_elim]
+def twoStepInduction {motive : ℕ → Sort*} (zero : motive 0) (one : motive 1)
+    (more : ∀ n, motive n → motive (n + 1) → motive (n + 2)) : ∀ a, motive a
   | 0 => zero
   | 1 => one
   | _ + 2 => more _ (twoStepInduction zero one more _) (twoStepInduction zero one more _)
+
+/-- Induction principle deriving the next case from the `k` previous ones. Use as
+```
+induction n using stepInduction 3 with
+| base n hn => ...
+| step n ih => ...
+``` -/
+@[elab_as_elim]
+def stepInduction {motive : ℕ → Sort*} (k : ℕ) (base : ∀ i < k, motive i)
+    (step : ∀ n, (∀ i < k, motive (n + i)) → motive (n + k)) (a : ℕ) : motive a :=
+  if h : a < k then base _ h else
+  (show a - k + k = a by lia) ▸ step (a - k) fun _ _ ↦ stepInduction k base step _
 
 @[elab_as_elim]
 protected theorem strong_induction_on {p : ℕ → Prop} (n : ℕ)

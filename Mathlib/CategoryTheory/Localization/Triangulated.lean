@@ -159,8 +159,6 @@ lemma complete_distinguished_triangle_morphism (T₁ T₂ : Triangle D)
   obtain ⟨α, hα⟩ := exists_leftFraction L W a
   obtain ⟨β, hβ⟩ := (MorphismProperty.RightFraction.mk α.s α.hs T₂.mor₁).exists_leftFraction
   obtain ⟨γ, hγ⟩ := exists_leftFraction L W (b ≫ L.map β.s)
-  have := inverts L W β.s β.hs
-  have := inverts L W γ.s γ.hs
   dsimp at hβ
   obtain ⟨Z₂, σ, hσ, fac⟩ := (MorphismProperty.map_eq_iff_postcomp L W
     (α.f ≫ β.f ≫ γ.s) (T₁.mor₁ ≫ γ.f)).1 (by
@@ -193,6 +191,7 @@ lemma complete_distinguished_triangle_morphism (T₁ T₂ : Triangle D)
 variable [HasZeroObject D] [Preadditive D] [∀ (n : ℤ), (shiftFunctor D n).Additive] [L.Additive]
 
 /-- The pretriangulated structure on the localized category. -/
+@[implicit_reducible]
 def pretriangulated : Pretriangulated D where
   distinguishedTriangles := L.essImageDistTriang
   isomorphic_distinguished _ hT₁ _ e := L.essImageDistTriang_mem_of_iso e hT₁

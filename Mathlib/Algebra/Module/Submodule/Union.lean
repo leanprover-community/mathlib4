@@ -20,7 +20,7 @@ This file is a home for results about unions of submodules.
 
 ## Main results:
 * `Submodule.iUnion_ssubset_of_forall_ne_top_of_card_lt`: a finite union of proper submodules is
-a proper subset, provided the coefficients are a sufficiently large field.
+  a proper subset, provided the coefficients are a sufficiently large field.
 
 -/
 
@@ -43,7 +43,7 @@ lemma Submodule.iUnion_ssubset_of_forall_ne_top_of_card_lt (s : Finset ι) (p : 
     · simpa using h₁ j
     replace h₂ : s.card + 1 < ENat.card K := by simpa [Finset.card_insert_of_notMem hj] using h₂
     specialize hj' (lt_trans ENat.natCast_lt_succ h₂)
-    contrapose! hj'
+    contrapose hj'
     replace hj' : (p j : Set M) ∪ (⋃ i ∈ s, p i) = univ := by
       simpa only [Finset.mem_insert, iUnion_iUnion_eq_or_left] using hj'
     suffices (p j : Set M) ⊆ ⋃ i ∈ s, p i by rwa [union_eq_right.mpr this] at hj'
@@ -79,10 +79,10 @@ lemma Submodule.iUnion_ssubset_of_forall_ne_top_of_card_lt (s : Finset ι) (p : 
       obtain ⟨z₁, -, z₂, -, h⟩ := exists_ne_map_eq_of_encard_lt_of_maps_to (by simpa) hf'
       exact ⟨z₁, z₂, h⟩
     replace ht : y ∈ p k := by
-      have : (t₁ - t₂) • y ∈ p k := by convert sub_mem ht₁ ht₂ using 1; module
+      have : (t₁ - t₂) • y ∈ p k := by convert! sub_mem ht₁ ht₂ using 1; module
       refine ((p k).smul_mem_iff ?_).mp this
       rwa [sub_ne_zero]
-    replace ht : x ∈ p k := by convert sub_mem ht₁ ((p k).smul_mem t₁ ht); simp
+    replace ht : x ∈ p k := by convert! sub_mem ht₁ ((p k).smul_mem t₁ ht); simp
     simpa using ⟨k, hk, ht⟩
 
 variable [Finite ι] [Infinite K]

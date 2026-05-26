@@ -184,14 +184,14 @@ theorem prod_piecewise [DecidableEq ι] (s t : Finset ι) (f g : ι → M) :
 @[to_additive]
 theorem prod_inter_mul_prod_diff [DecidableEq ι] (s t : Finset ι) (f : ι → M) :
     (∏ x ∈ s ∩ t, f x) * ∏ x ∈ s \ t, f x = ∏ x ∈ s, f x := by
-  convert (s.prod_piecewise t f f).symm
+  convert! (s.prod_piecewise t f f).symm
   simp +unfoldPartialApp [Finset.piecewise]
 
 @[to_additive]
 theorem prod_eq_mul_prod_diff_singleton [DecidableEq ι] {s : Finset ι} (i : ι) (f : ι → M)
     (h : i ∉ s → f i = 1) : ∏ x ∈ s, f x = f i * ∏ x ∈ s \ {i}, f x := by
   by_cases hs : i ∈ s
-  · convert (s.prod_inter_mul_prod_diff {i} f).symm
+  · convert! (s.prod_inter_mul_prod_diff { i } f).symm
     simp [hs]
   · simp_all only [not_false_eq_true, forall_const, one_mul]
     apply Finset.prod_congr <;> aesop
@@ -246,7 +246,7 @@ theorem prod_ite_one (s : Finset ι) (p : ι → Prop) [DecidablePred p]
   · obtain ⟨i, hi, hpi⟩ := h
     rw [prod_eq_single_of_mem _ hi, if_pos hpi]
     exact fun j hj hji ↦ if_neg fun hpj ↦ hji <| h _ hj _ hi hpj hpi
-  · push_neg at h
+  · push Not at h
     rw [prod_eq_one]
     exact fun i hi => if_neg (h i hi)
 

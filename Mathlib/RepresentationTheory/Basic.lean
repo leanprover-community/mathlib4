@@ -532,7 +532,7 @@ lemma leftRegular_norm_apply :
       linearCombination _ (fun _ => 1) := by
   ext i : 2
   simpa [Representation.norm] using Finset.sum_bijective _
-    (Group.mulRight_bijective i) (by simp_all) (by simp_all)
+    (Group.mulRight_bijective i) (by simp) (by simp)
 
 lemma leftRegular_norm_eq_zero_iff (x : G →₀ k) :
     (leftRegular k G).norm x = 0 ↔ x.linearCombination k (fun _ => (1 : k)) = 0 := by
@@ -725,7 +725,7 @@ noncomputable abbrev free (k G : Type*) [CommSemiring k] [Monoid G] (α : Type*)
 
 noncomputable instance (k G : Type*) [CommRing k] [Monoid G] (α : Type*) :
     AddCommGroup (free k G α).asModule :=
-  Finsupp.instAddCommGroup
+  inferInstanceAs <| AddCommGroup (α →₀ G →₀ k)
 
 lemma free_single_single (g h : G) (i : α) (r : k) :
     free k G α g (single i (single h r)) = single i (single (g * h) r) := by

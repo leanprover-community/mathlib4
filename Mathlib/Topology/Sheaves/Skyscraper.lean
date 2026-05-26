@@ -240,6 +240,7 @@ theorem skyscraperPresheaf_isSheaf : (skyscraperPresheaf p₀ A).IsSheaf := by
 The skyscraper presheaf supported at `p₀` with value `A` is the sheaf that assigns `A` to all opens
 `U` that contain `p₀` and assigns `*` otherwise.
 -/
+@[simps!]
 def skyscraperSheaf : Sheaf C X :=
   ⟨skyscraperPresheaf p₀ A, skyscraperPresheaf_isSheaf _ _⟩
 
@@ -298,15 +299,13 @@ lemma germ_fromStalk {𝓕 : Presheaf C X} {c : C} (f : 𝓕 ⟶ skyscraperPresh
     𝓕.germ U p₀ hU ≫ fromStalk p₀ f = f.app (op U) ≫ eqToHom (if_pos hU) :=
   colimit.ι_desc _ _
 
-set_option backward.isDefEq.respectTransparency false in
 theorem to_skyscraper_fromStalk {𝓕 : Presheaf C X} {c : C} (f : 𝓕 ⟶ skyscraperPresheaf p₀ c) :
     toSkyscraperPresheaf p₀ (fromStalk _ f) = f := by
   apply NatTrans.ext
   ext U
   dsimp
   split_ifs with h
-  · rw [← Category.assoc, germ_fromStalk, Category.assoc, eqToHom_trans, eqToHom_refl,
-      Category.comp_id]
+  · simp
   · exact ((if_neg h).symm.ndrec terminalIsTerminal).hom_ext ..
 
 theorem fromStalk_to_skyscraper {𝓕 : Presheaf C X} {c : C} (f : 𝓕.stalk p₀ ⟶ c) :
@@ -367,7 +366,7 @@ def skyscraperPresheafStalkAdjunction [HasColimits C] :
   right_triangle_components Y := by
     ext
     simp only [skyscraperPresheafFunctor_obj, Functor.id_obj, skyscraperPresheaf_obj,
-      Functor.comp_obj, Presheaf.stalkFunctor_obj, unit_app, counit_app,
+      Presheaf.stalkFunctor_obj, unit_app, counit_app,
       skyscraperPresheafStalkOfSpecializes, skyscraperPresheafFunctor_map, Presheaf.comp_app,
       toSkyscraperPresheaf_app, Category.id_comp, SkyscraperPresheafFunctor.map'_app]
     split_ifs with h
@@ -411,6 +410,18 @@ only when the fact that `skyscraperPresheafFunctor` factors through `Sheaf C X` 
 noncomputable def skyscraperSheafForgetAdjunction [HasColimits C] :
     Presheaf.stalkFunctor C p₀ ⊣ skyscraperSheafFunctor p₀ ⋙ Sheaf.forget C X :=
   skyscraperPresheafStalkAdjunction p₀
+
+variable {A p₀} in
+/--
+On an open set not containing `p₀`, the value of skyscraper sheaf supported at `p₀` is a terminal
+object.
+-/
+noncomputable
+def isTerminalSkyscraperSheafObjObjOfNotMem {U : (Opens X)ᵒᵖ} (h : p₀ ∉ unop U) :
+    IsTerminal ((skyscraperSheaf p₀ A).obj.obj U) := by
+  dsimp
+  rw [if_neg h]
+  exact terminalIsTerminal
 
 end
 

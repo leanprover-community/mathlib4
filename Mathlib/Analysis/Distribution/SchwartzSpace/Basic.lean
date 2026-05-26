@@ -5,13 +5,19 @@ Authors: Moritz Doll
 -/
 module
 
-public import Mathlib.Analysis.LocallyConvex.WithSeminorms
-public import Mathlib.Analysis.Normed.Group.ZeroAtInfty
-public import Mathlib.Analysis.Normed.Lp.SmoothApprox
-public import Mathlib.Analysis.SpecialFunctions.Pow.Real
+public import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
 public import Mathlib.Analysis.Distribution.TemperateGrowth
-public import Mathlib.Topology.Algebra.UniformFilterBasis
+public import Mathlib.Analysis.Normed.Group.ZeroAtInfty
+public import Mathlib.Analysis.SpecialFunctions.Pow.Real
 public import Mathlib.MeasureTheory.Function.L2Space
+public import Mathlib.Tactic.FunProp
+public import Mathlib.Topology.Algebra.UniformFilterBasis
+
+import Mathlib.Analysis.Calculus.ContDiff.Bounds
+import Mathlib.Analysis.Calculus.ContDiff.Operations
+import Mathlib.Analysis.Normed.Lp.SmoothApprox
+import Mathlib.Tactic.MoveAdd
+
 
 /-!
 # Schwartz space
@@ -230,7 +236,7 @@ variable [NormedField 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F] [Nor
 instance instSMul : SMul 𝕜 𝓢(E, F) :=
   ⟨fun c f =>
     { toFun := c • (f : E → F)
-      smooth' := (f.smooth _).const_smul c
+      smooth' := by exact (f.smooth _).const_smul c
       decay' k n := by
         use f.seminormAux k n * ‖c‖
         intro x
@@ -257,18 +263,19 @@ private theorem seminormAux_smul_le (k n : ℕ) (c : 𝕜) (f : 𝓢(E, F)) :
   refine (c • f).seminormAux_le_bound k n (mul_nonneg (norm_nonneg _) (seminormAux_nonneg _ _ _))
       fun x => (decay_smul_aux k n f c x).trans_le ?_
   rw [mul_assoc]
-  exact mul_le_mul_of_nonneg_left (f.le_seminormAux k n x) (norm_nonneg _)
+  gcongr
+  exact f.le_seminormAux k n x
 
 instance instNSMul : SMul ℕ 𝓢(E, F) :=
   ⟨fun c f =>
     { toFun := c • (f : E → F)
-      smooth' := (f.smooth _).const_smul c
+      smooth' := by exact (f.smooth _).const_smul c
       decay' := by simpa [← Nat.cast_smul_eq_nsmul ℝ] using ((c : ℝ) • f).decay' }⟩
 
 instance instZSMul : SMul ℤ 𝓢(E, F) :=
   ⟨fun c f =>
     { toFun := c • (f : E → F)
-      smooth' := (f.smooth _).const_smul c
+      smooth' := by exact (f.smooth _).const_smul c
       decay' := by simpa [← Int.cast_smul_eq_zsmul ℝ] using ((c : ℝ) • f).decay' }⟩
 
 end SMul
@@ -277,7 +284,7 @@ section Zero
 
 instance instZero : Zero 𝓢(E, F) :=
   ⟨{  toFun := fun _ => 0
-      smooth' := contDiff_const
+      smooth' := by exact contDiff_const
       decay' := fun _ _ => ⟨1, fun _ => by simp⟩ }⟩
 
 instance instInhabited : Inhabited 𝓢(E, F) :=
@@ -304,7 +311,7 @@ section Neg
 
 instance instNeg : Neg 𝓢(E, F) :=
   ⟨fun f =>
-    ⟨-f, (f.smooth _).neg, fun k n => by
+    ⟨-f, by exact (f.smooth _).neg, fun k n => by
       use f.seminormAux k n
       intro x
       grw [f.decay_neg_aux k n x, f.le_seminormAux k n x]⟩⟩
@@ -318,7 +325,7 @@ section Add
 
 instance instAdd : Add 𝓢(E, F) :=
   ⟨fun f g =>
-    ⟨f + g, (f.smooth _).add (g.smooth _), fun k n => by
+    ⟨f + g, by exact (f.smooth _).add (g.smooth _), fun k n => by
       use f.seminormAux k n + g.seminormAux k n
       intro x
       grw [decay_add_le_aux k n f g x, f.le_seminormAux k n x, g.le_seminormAux k n x]⟩⟩
@@ -340,7 +347,7 @@ section Sub
 
 instance instSub : Sub 𝓢(E, F) :=
   ⟨fun f g =>
-    ⟨f - g, (f.smooth _).sub (g.smooth _), by
+    ⟨f - g, by exact (f.smooth _).sub (g.smooth _), by
       intro k n
       refine ⟨f.seminormAux k n + g.seminormAux k n, fun x => ?_⟩
       grw [← f.le_seminormAux k n x, ← g.le_seminormAux k n x]
@@ -513,7 +520,6 @@ variable (𝕜 E F)
 instance instTopologicalSpace : TopologicalSpace 𝓢(E, F) :=
   (schwartzSeminormFamily ℝ E F).moduleFilterBasis.topology'
 
-set_option backward.isDefEq.respectTransparency false in
 theorem _root_.schwartz_withSeminorms : WithSeminorms (schwartzSeminormFamily 𝕜 E F) := by
   have A : WithSeminorms (schwartzSeminormFamily ℝ E F) := ⟨rfl⟩
   rw [SeminormFamily.withSeminorms_iff_nhds_eq_iInf] at A ⊢
@@ -530,7 +536,7 @@ instance instIsTopologicalAddGroup : IsTopologicalAddGroup 𝓢(E, F) :=
   (schwartzSeminormFamily ℝ E F).addGroupFilterBasis.isTopologicalAddGroup
 
 instance instUniformSpace : UniformSpace 𝓢(E, F) :=
-  (schwartzSeminormFamily ℝ E F).addGroupFilterBasis.uniformSpace
+  fast_instance% (schwartzSeminormFamily ℝ E F).addGroupFilterBasis.uniformSpace
 
 instance instIsUniformAddGroup : IsUniformAddGroup 𝓢(E, F) :=
   (schwartzSeminormFamily ℝ E F).addGroupFilterBasis.isUniformAddGroup
@@ -611,7 +617,7 @@ def mkCLM [RingHomIsometric σ] (A : 𝓢(D, E) → F → G)
   cont := by
     change Continuous (mkLM A hadd hsmul hsmooth hbound : 𝓢(D, E) →ₛₗ[σ] 𝓢(F, G))
     refine
-      Seminorm.continuous_from_bounded (schwartz_withSeminorms 𝕜 D E)
+      WithSeminorms.continuous_of_isBounded (schwartz_withSeminorms 𝕜 D E)
         (schwartz_withSeminorms 𝕜' F G) _ fun n => ?_
     rcases hbound n with ⟨s, C, hC, h⟩
     refine ⟨s, ⟨C, hC⟩, fun f => ?_⟩
@@ -632,7 +638,7 @@ def mkCLMtoNormedSpace [RingHomIsometric σ] (A : 𝓢(D, E) → G)
   { toLinearMap := f
     cont := by
       change Continuous (LinearMap.mk _ _)
-      apply Seminorm.cont_withSeminorms_normedSpace G (schwartz_withSeminorms 𝕜 D E)
+      apply WithSeminorms.continuous_normedSpace_rng G (schwartz_withSeminorms 𝕜 D E)
       rcases hbound with ⟨s, C, hC, h⟩
       exact ⟨s, ⟨C, hC⟩, h⟩ }
 
@@ -678,15 +684,14 @@ section bilin
 
 variable [NormedSpace 𝕜 E] [NormedSpace 𝕜 G]
 
-#adaptation_note /-- After nightly-2026-02-23 we need this to avoid a PANIC. -/
 /-- The map `f ↦ (x ↦ B (f x) (g x))` as a continuous `𝕜`-linear map on Schwartz space,
 where `B` is a continuous `𝕜`-linear map and `g` is a function of temperate growth. -/
 def bilinLeftCLM (B : E →L[𝕜] F →L[𝕜] G) {g : D → F} (hg : g.HasTemperateGrowth) :
-    𝓢(D, E) →L[𝕜] 𝓢(D, G) := by
-  refine mkCLM (fun f x => B (f x) (g x))
+    𝓢(D, E) →L[𝕜] 𝓢(D, G) :=
+  mkCLM (fun f x => B (f x) (g x))
     (fun _ _ _ => by simp) (fun _ _ _ => by simp)
     (fun f => (B.bilinearRestrictScalars ℝ).isBoundedBilinearMap.contDiff.comp
-      ((f.smooth ⊤).prodMk hg.1)) ?_
+      ((f.smooth ⊤).prodMk hg.1)) <| by
   rintro ⟨k, n⟩
   rcases hg.norm_iteratedFDeriv_le_uniform n with ⟨l, C, hC, hgrowth⟩
   use
@@ -774,7 +779,7 @@ theorem smulLeftCLM_compL_smulLeftCLM {g₁ g₂ : E → 𝕜} (hg₁ : g₁.Has
 theorem smulLeftCLM_smul {g : E → 𝕜} (hg : g.HasTemperateGrowth) (c : 𝕜) :
     smulLeftCLM F (c • g) = c • smulLeftCLM F g := by
   have : (fun (_ : E) ↦ c).HasTemperateGrowth := by fun_prop
-  convert (smulLeftCLM_compL_smulLeftCLM this hg).symm using 1
+  convert! (smulLeftCLM_compL_smulLeftCLM this hg).symm using 1
   simp
 
 theorem smulLeftCLM_add {g₁ g₂ : E → 𝕜} (hg₁ : g₁.HasTemperateGrowth)
@@ -913,14 +918,14 @@ section Comp
 variable (𝕜)
 variable [RCLike 𝕜]
 variable [NormedAddCommGroup D] [NormedSpace ℝ D]
-variable [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
+variable [NormedSpace 𝕜 F]
 
 /-- Composition with a function on the right is a continuous linear map on Schwartz space
 provided that the function is temperate and growths polynomially near infinity. -/
 def compCLM {g : D → E} (hg : g.HasTemperateGrowth)
-    (hg_upper : ∃ (k : ℕ) (C : ℝ), ∀ x, ‖x‖ ≤ C * (1 + ‖g x‖) ^ k) : 𝓢(E, F) →L[𝕜] 𝓢(D, F) := by
-  refine mkCLM (fun f => f ∘ g) (fun _ _ _ => by simp) (fun _ _ _ => rfl)
-    (fun f => (f.smooth ⊤).comp hg.1) ?_
+    (hg_upper : ∃ (k : ℕ) (C : ℝ), ∀ x, ‖x‖ ≤ C * (1 + ‖g x‖) ^ k) : 𝓢(E, F) →L[𝕜] 𝓢(D, F) :=
+  mkCLM (fun f => f ∘ g) (fun _ _ _ => by simp) (fun _ _ _ => rfl)
+    (fun f => (f.smooth ⊤).comp hg.1) <| by
   rintro ⟨k, n⟩
   rcases hg.norm_iteratedFDeriv_le_uniform n with ⟨l, C, hC, hgrowth⟩
   rcases hg_upper with ⟨kg, Cg, hg_upper'⟩
@@ -1061,6 +1066,35 @@ theorem postcompCLM_postcompCLM (L₁ : F →L[𝕜] G) (L₂ : G →L[𝕜] H) 
 
 end Postcomp
 
+section Translate
+
+variable [RCLike 𝕜] [NormedSpace 𝕜 F]
+
+variable (𝕜) in
+/-- Translating the argument as a continuous linear map on Schwartz space. -/
+def compSubConstCLM (a : E) : 𝓢(E, F) →L[𝕜] 𝓢(E, F) :=
+  compCLMOfAntilipschitz (g := fun x ↦ x - a) (K := 1) 𝕜 (by fun_prop)
+    (fun _ _ ↦ by simp [edist_dist, dist_eq_norm])
+
+@[simp]
+theorem compSubConstCLM_apply (f : 𝓢(E, F)) (a x : E) :
+    f.compSubConstCLM 𝕜 a x = f (x - a) := rfl
+
+@[simp]
+theorem compSubConstCLM_zero : compSubConstCLM 𝕜 (0 : E) (F := F) = ContinuousLinearMap.id _ _ := by
+  ext f x
+  simp
+
+@[simp]
+theorem compSubConstCLM_comp (f : 𝓢(E, F)) (a b : E) :
+    (f.compSubConstCLM 𝕜 a).compSubConstCLM 𝕜 b = f.compSubConstCLM 𝕜 (a + b) := by
+  ext x
+  simp only [compSubConstCLM_apply]
+  congr 1
+  exact (sub_add_eq_sub_sub_swap x a b).symm
+
+end Translate
+
 section Integration
 
 /-! ### Integration -/
@@ -1097,9 +1131,10 @@ lemma integrable_pow_mul_iteratedFDeriv
 variable (μ) in
 lemma integrable_pow_mul (f : 𝓢(D, V))
     (k : ℕ) : Integrable (fun x ↦ ‖x‖ ^ k * ‖f x‖) μ := by
-  convert integrable_pow_mul_iteratedFDeriv μ f k 0 with x
+  convert! integrable_pow_mul_iteratedFDeriv μ f k 0 with x
   simp
 
+@[fun_prop]
 lemma integrable (f : 𝓢(D, V)) : Integrable f μ :=
   (f.integrable_pow_mul μ 0).mono f.continuous.aestronglyMeasurable
     (Eventually.of_forall (fun _ ↦ by simp))
@@ -1155,6 +1190,10 @@ theorem toBoundedContinuousFunction_apply (f : 𝓢(E, F)) (x : E) :
 def toContinuousMap (f : 𝓢(E, F)) : C(E, F) :=
   f.toBoundedContinuousFunction.toContinuousMap
 
+theorem norm_toBoundedContinuousFunction_le (f : 𝓢(E, F)) :
+    ‖f.toBoundedContinuousFunction‖ ≤ SchwartzMap.seminorm ℝ 0 0 f :=
+  BoundedContinuousFunction.norm_ofNormedAddCommGroup_le f.continuous (by positivity) _
+
 variable (𝕜 E F)
 variable [RCLike 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
 
@@ -1194,6 +1233,10 @@ def toZeroAtInfty (f : 𝓢(E, F)) : C₀(E, F) where
 @[simp] theorem toZeroAtInfty_toBCF (f : 𝓢(E, F)) :
     f.toZeroAtInfty.toBCF = f.toBoundedContinuousFunction :=
   rfl
+
+@[simp] theorem norm_toZeroAtInfty (f : 𝓢(E, F)) :
+    ‖f.toZeroAtInfty‖ = ‖f.toBoundedContinuousFunction‖ := by
+  rw [← ZeroAtInftyContinuousMap.norm_toBCF_eq_norm, toZeroAtInfty_toBCF]
 
 variable (𝕜 E F)
 variable [RCLike 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
@@ -1284,6 +1327,22 @@ theorem coeFn_toLp (f : 𝓢(E, F)) (p : ℝ≥0∞) (μ : Measure E := by volum
 theorem norm_toLp {f : 𝓢(E, F)} {p : ℝ≥0∞} {μ : Measure E} [hμ : μ.HasTemperateGrowth] :
     ‖f.toLp p μ‖ = ENNReal.toReal (eLpNorm f p μ) := by
   rw [Lp.norm_def, eLpNorm_congr_ae (coeFn_toLp f p μ)]
+
+theorem norm_toLp' {f : 𝓢(E, F)} {p : ℝ≥0∞} {μ : Measure E} (hp₁ : p ≠ 0) (hp₂ : p ≠ ⊤)
+    [hμ : μ.HasTemperateGrowth] :
+    ‖f.toLp p μ‖ = (∫ x, ‖f x‖ ^ p.toReal ∂μ) ^ p.toReal⁻¹ := by
+  rw [norm_toLp, MeasureTheory.MemLp.eLpNorm_eq_integral_rpow_norm hp₁ hp₂ (f.memLp p μ),
+    ENNReal.toReal_ofReal (by positivity)]
+
+theorem norm_toLp_one {f : 𝓢(E, F)} {μ : Measure E} [hμ : μ.HasTemperateGrowth] :
+    ‖f.toLp 1 μ‖ = ∫ x, ‖f x‖ ∂μ := by
+  simpa using norm_toLp' (p := 1) (by simp) (by simp)
+
+theorem norm_toLp_top_le {f : 𝓢(E, F)} {μ : Measure E} [hμ : μ.HasTemperateGrowth] :
+    ‖f.toLp ⊤ μ‖ ≤ SchwartzMap.seminorm ℝ 0 0 f := by
+  rw [norm_toLp, ← ENNReal.ofReal_le_ofReal_iff (by positivity),
+    ENNReal.ofReal_toReal (memLp_top f μ).eLpNorm_ne_top]
+  exact eLpNormEssSup_le_of_ae_bound <| .of_forall <| norm_le_seminorm ℝ f
 
 theorem injective_toLp (p : ℝ≥0∞) (μ : Measure E := by volume_tac) [hμ : μ.HasTemperateGrowth]
     [μ.IsOpenPosMeasure] : Function.Injective (fun f : 𝓢(E, F) ↦ f.toLp p μ) :=

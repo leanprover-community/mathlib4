@@ -78,7 +78,7 @@ The images of `x` by the embeddings of `K` in `A` are exactly the roots in `A` o
 the minimal polynomial of `x` over `ℚ`. -/
 theorem range_eval_eq_rootSet_minpoly :
     (range fun φ : K →+* A => φ x) = (minpoly ℚ x).rootSet A := by
-  convert (NumberField.isAlgebraic K).range_eval_eq_rootSet_minpoly A x using 1
+  convert! (NumberField.isAlgebraic K).range_eval_eq_rootSet_minpoly A x using 1
   ext a
   exact ⟨fun ⟨φ, hφ⟩ => ⟨φ.toRatAlgHom, hφ⟩, fun ⟨φ, hφ⟩ => ⟨φ.toRingHom, hφ⟩⟩
 
@@ -238,7 +238,7 @@ lemma IsReal.comp (f : k →+* K) {φ : K →+* ℂ} (hφ : IsReal φ) :
 
 lemma isReal_comp_iff {f : k ≃+* K} {φ : K →+* ℂ} :
     IsReal (φ.comp (f : k →+* K)) ↔ IsReal φ :=
-  ⟨fun H ↦ by convert H.comp f.symm.toRingHom; ext1; simp, IsReal.comp _⟩
+  ⟨fun H ↦ by convert! H.comp f.symm.toRingHom; ext1; simp, IsReal.comp _⟩
 
 lemma exists_comp_symm_eq_of_comp_eq [Algebra k K] [IsGalois k K] (φ ψ : K →+* ℂ)
     (h : φ.comp (algebraMap k K) = ψ.comp (algebraMap k K)) :
@@ -308,7 +308,14 @@ variable {K : Type*} {L : Type*} [Field K] [Field L] (ψ : K →+* ℂ) [Algebra
 /-- If `L/K`, `ψ : K →+* ℂ`, and `φ : L →+* ℂ`, then `φ` lies over `ψ` if the restriction of
 `φ` to `K` is `ψ`. -/
 protected class LiesOver (φ : L →+* ℂ) (ψ : K →+* ℂ) : Prop where
-  over (ψ φ) : φ.comp (algebraMap K L) = ψ
+  over (φ ψ) : φ.comp (algebraMap K L) = ψ
+
+theorem LiesOver.over_apply (φ : L →+* ℂ) (ψ : K →+* ℂ) [ComplexEmbedding.LiesOver φ ψ] {x : K} :
+    φ (algebraMap K L x) = ψ x := RingHom.ext_iff.1 (LiesOver.over φ ψ) _
+
+theorem liesOver_iff {φ : L →+* ℂ} {ψ : K →+* ℂ} :
+    ComplexEmbedding.LiesOver φ ψ ↔ φ.comp (algebraMap K L) = ψ :=
+  ⟨fun _ ↦ LiesOver.over φ ψ, fun h ↦ ⟨h⟩⟩
 
 variable (L)
 

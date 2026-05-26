@@ -19,7 +19,7 @@ be automatically satisfied (TODO)).
 
 -/
 
-@[expose] public section
+public section
 
 universe w v v' u u'
 

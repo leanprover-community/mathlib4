@@ -240,7 +240,7 @@ theorem norm_image_sub_le_of_bound' [DecidableEq ι] (f : MultilinearMap 𝕜 E 
           (add_le_add Hrec I)
         _ = C * ∑ i ∈ insert i s, ∏ j, if j = i then ‖m₁ i - m₂ i‖ else max ‖m₁ j‖ ‖m₂ j‖ := by
           simp [his, add_comm, left_distrib]
-  convert A univ
+  convert! A univ
   simp
 
 /-- If `f` satisfies a boundedness property around `0`, one can deduce a bound on `f m₁ - f m₂`
@@ -313,11 +313,11 @@ theorem restr_norm_le {k n : ℕ} (f : MultilinearMap 𝕜 (fun _ : Fin n => G) 
     (s : Finset (Fin n)) (hk : #s = k) (z : G) {C : ℝ} (H : ∀ m, ‖f m‖ ≤ C * ∏ i, ‖m i‖)
     (v : Fin k → G) : ‖f.restr s hk z v‖ ≤ C * ‖z‖ ^ (n - k) * ∏ i, ‖v i‖ := by
   rw [mul_right_comm, mul_assoc]
-  convert H _ using 2
+  convert! H _ using 2
   simp only [apply_dite norm, Fintype.prod_dite, prod_const ‖z‖, Finset.card_univ,
     Fintype.card_of_subtype sᶜ fun _ => mem_compl, card_compl, Fintype.card_fin, hk, ←
     (s.orderIsoOfFin hk).symm.bijective.prod_comp fun x => ‖v x‖]
-  convert rfl
+  convert! rfl
 
 end MultilinearMap
 
@@ -450,8 +450,7 @@ so that it is definitionally equal to the one coming from the topologies on `E` 
 protected def seminorm : Seminorm 𝕜 (ContinuousMultilinearMap 𝕜 E G) :=
   .ofSMulLE norm opNorm_zero opNorm_add_le fun c f ↦ f.opNorm_smul_le c
 
-set_option backward.privateInPublic true in
-private lemma uniformity_eq_seminorm :
+lemma uniformity_eq_seminorm :
     𝓤 (ContinuousMultilinearMap 𝕜 E G) = ⨅ r > 0, 𝓟 {f | ‖-f.1 + f.2‖ < r} := by
   have A (f : ContinuousMultilinearMap 𝕜 E G × ContinuousMultilinearMap 𝕜 E G) :
       ‖-f.1 + f.2‖ = ‖f.1 - f.2‖ := by rw [← opNorm_neg, neg_add, neg_neg, sub_eq_add_neg]
@@ -484,8 +483,6 @@ private lemma uniformity_eq_seminorm :
       _ ≤ δ * ε ^ Fintype.card ι := by have := (norm_nonneg x).trans hx; gcongr
       _ ≤ r := (mul_comm _ _).trans_le hδ.le
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 instance instPseudoMetricSpace : PseudoMetricSpace (ContinuousMultilinearMap 𝕜 E G) :=
   .replaceUniformity
     (ContinuousMultilinearMap.seminorm 𝕜 E G).toSeminormedAddCommGroup.toPseudoMetricSpace
@@ -537,7 +534,6 @@ theorem isLeast_opNNNorm (f : ContinuousMultilinearMap 𝕜 E G) :
     IsLeast {C : ℝ≥0 | ∀ m, ‖f m‖₊ ≤ C * ∏ i, ‖m i‖₊} ‖f‖₊ := by
   simpa only [← opNNNorm_le_iff] using isLeast_Ici
 
-set_option backward.isDefEq.respectTransparency false in
 theorem opNNNorm_prod (f : ContinuousMultilinearMap 𝕜 E G) (g : ContinuousMultilinearMap 𝕜 E G') :
     ‖f.prod g‖₊ = max ‖f‖₊ ‖g‖₊ :=
   eq_of_forall_ge_iff fun _ ↦ by
@@ -550,7 +546,7 @@ theorem opNorm_prod (f : ContinuousMultilinearMap 𝕜 E G) (g : ContinuousMulti
 theorem opNNNorm_pi
     [∀ i', SeminormedAddCommGroup (E' i')] [∀ i', NormedSpace 𝕜 (E' i')]
     (f : ∀ i', ContinuousMultilinearMap 𝕜 E (E' i')) : ‖pi f‖₊ = ‖f‖₊ :=
-  eq_of_forall_ge_iff fun _ ↦ by simpa [opNNNorm_le_iff, pi_nnnorm_le_iff] using forall_swap
+  eq_of_forall_ge_iff fun _ ↦ by simpa [opNNNorm_le_iff, pi_nnnorm_le_iff] using forall_comm
 
 theorem opNorm_pi {ι' : Type v'} [Fintype ι'] {E' : ι' → Type wE'}
     [∀ i', SeminormedAddCommGroup (E' i')] [∀ i', NormedSpace 𝕜 (E' i')]
@@ -722,7 +718,7 @@ theorem norm_mkPiAlgebra_of_empty [IsEmpty ι] :
     ‖ContinuousMultilinearMap.mkPiAlgebra 𝕜 ι A‖ = ‖(1 : A)‖ := by
   apply le_antisymm
   · apply opNorm_le_bound <;> simp
-  · convert ratio_le_opNorm (ContinuousMultilinearMap.mkPiAlgebra 𝕜 ι A) fun _ => 1
+  · convert! ratio_le_opNorm (ContinuousMultilinearMap.mkPiAlgebra 𝕜 ι A) fun _ => 1
     simp
 
 @[simp]
@@ -730,7 +726,7 @@ theorem norm_mkPiAlgebra [NormOneClass A] : ‖ContinuousMultilinearMap.mkPiAlge
   cases isEmpty_or_nonempty ι
   · simp [norm_mkPiAlgebra_of_empty]
   · refine le_antisymm norm_mkPiAlgebra_le ?_
-    convert ratio_le_opNorm (ContinuousMultilinearMap.mkPiAlgebra 𝕜 ι A) fun _ => 1
+    convert! ratio_le_opNorm (ContinuousMultilinearMap.mkPiAlgebra 𝕜 ι A) fun _ => 1
     simp
 
 end
@@ -757,7 +753,7 @@ theorem norm_mkPiAlgebraFin_zero : ‖ContinuousMultilinearMap.mkPiAlgebraFin �
   refine le_antisymm ?_ ?_
   · refine opNorm_le_bound (norm_nonneg (1 : A)) ?_
     simp
-  · convert ratio_le_opNorm (ContinuousMultilinearMap.mkPiAlgebraFin 𝕜 0 A) fun _ => (1 : A)
+  · convert! ratio_le_opNorm (ContinuousMultilinearMap.mkPiAlgebraFin 𝕜 0 A) fun _ => (1 : A)
     simp
 
 theorem norm_mkPiAlgebraFin_le :
@@ -779,7 +775,6 @@ theorem norm_mkPiAlgebraFin [NormOneClass A] :
 
 end
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem nnnorm_smulRight (f : ContinuousMultilinearMap 𝕜 E 𝕜) (z : G) :
     ‖f.smulRight z‖₊ = ‖f‖₊ * ‖z‖₊ := by
@@ -1077,13 +1072,13 @@ def compContinuousLinearMapLRight (g : ContinuousMultilinearMap 𝕜 E₁ G) :
         intro h f i f₁ f₂
         ext x
         simp only [compContinuousLinearMap_apply, add_apply]
-        convert g.map_update_add (fun j ↦ f j (x j)) i (f₁ (x i)) (f₂ (x i)) <;>
+        convert! g.map_update_add (fun j ↦ f j (x j)) i (f₁ (x i)) (f₂ (x i)) <;>
           exact apply_update (fun (i : ι) (f : E i →L[𝕜] E₁ i) ↦ f (x i)) f i _ _
       map_update_smul' := by
         intro h f i a f₀
         ext x
         simp only [compContinuousLinearMap_apply, smul_apply]
-        convert g.map_update_smul (fun j ↦ f j (x j)) i a (f₀ (x i)) <;>
+        convert! g.map_update_smul (fun j ↦ f j (x j)) i a (f₀ (x i)) <;>
           exact apply_update (fun (i : ι) (f : E i →L[𝕜] E₁ i) ↦ f (x i)) f i _ _ }
     (‖g‖) (fun f ↦ by simp [norm_compContinuousLinearMap_le])
 
@@ -1112,12 +1107,12 @@ noncomputable def compContinuousLinearMapMultilinear :
     ext g x
     change (g fun j ↦ update f i (f₁ + f₂) j <| x j) =
         (g fun j ↦ update f i f₁ j <| x j) + g fun j ↦ update f i f₂ j (x j)
-    convert g.map_update_add (fun j ↦ f j (x j)) i (f₁ (x i)) (f₂ (x i)) <;>
+    convert! g.map_update_add (fun j ↦ f j (x j)) i (f₁ (x i)) (f₂ (x i)) <;>
       exact apply_update (fun (i : ι) (f : E i →L[𝕜] E₁ i) ↦ f (x i)) f i _ _
   map_update_smul' f i a f₀ := by
     ext g x
     change (g fun j ↦ update f i (a • f₀) j <| x j) = a • g fun j ↦ update f i f₀ j (x j)
-    convert g.map_update_smul (fun j ↦ f j (x j)) i a (f₀ (x i)) <;>
+    convert! g.map_update_smul (fun j ↦ f j (x j)) i a (f₀ (x i)) <;>
       exact apply_update (fun (i : ι) (f : E i →L[𝕜] E₁ i) ↦ f (x i)) f i _ _
 
 /-- If `f` is a collection of continuous linear maps, then the construction

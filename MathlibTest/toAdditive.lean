@@ -15,6 +15,28 @@ namespace Test
 -- set_option pp.explicit true
 -- set_option pp.notation false
 
+/- ! Tests for namespaces of the resulting aliases -/
+section
+
+variable {G : Type*} [CommGroup G]
+@[to_additive Bars.baz]
+lemma Foo.Bar.baz (g h : G) : g * h = h * g := mul_comm g h
+/-- info: Test.Foo.Bars.baz.{u_1} {G : Type u_1} [AddCommGroup G] (g h : G) : g + h = h + g -/
+#guard_msgs in #check Foo.Bars.baz
+
+@[to_additive Test.Baz.Bars.baz]
+lemma Foo.Bar.baz' (g h : G) : g * h = h * g := mul_comm g h
+/-- info: Test.Baz.Bars.baz.{u_1} {G : Type u_1} [AddCommGroup G] (g h : G) : g + h = h + g -/
+#guard_msgs in #check Baz.Bars.baz
+
+-- Specifying more components than the original lemma is fine.
+@[to_additive Bar.Bars.Stars.Bazzz.b]
+lemma Foo.Bar.baz'' (g h : G) : g * h = h * g := mul_comm g h
+/-- info: Bar.Bars.Stars.Bazzz.b.{u_1} {G : Type u_1} [AddCommGroup G] (g h : G) : g + h = h + g -/
+#guard_msgs in #check Bar.Bars.Stars.Bazzz.b
+
+end
+
 @[to_additive bar0]
 def foo0 {α} [Mul α] [One α] (x y : α) : α := x * y * 1
 
@@ -267,9 +289,11 @@ def foo_mul {I J K : Type} (n : ℕ) {f : I → Type} (L : Type) [∀ i, One (f 
 instance pi.has_one {I : Type} {f : I → Type} [(i : I) → One <| f i] : One ((i : I) → f i) :=
   ⟨fun _ => 1⟩
 
+set_option warn.classDefReducibility false in
 @[to_additive]
 def nat_pi_has_one {α : Type} [One α] : One ((x : Nat) → α) := by infer_instance
 
+set_option warn.classDefReducibility false in
 @[to_additive]
 def pi_nat_has_one {I : Type} : One ((x : I) → Nat)  := pi.has_one
 
@@ -893,3 +917,13 @@ def dontTranslateId {α} : α → α := id
 @[to_additive]
 theorem functionTypeMonoid {ι : Type*} {R : ι → Type*} [(i : ι) → Monoid (R i)] (i : ι)
   (a : R (dontTranslateId i)) : a * a = a * a := rfl
+
+class AddClass (α : Type) extends Add α where
+class MulClass (α : Type) extends Mul α where
+-- Test that the reserved `MulClass.mk.congr_simp` can be translated to `AddClass.mk.congr_cimp`
+attribute [to_additive existing] MulClass MulClass.mk.congr_simp
+
+/-- error: `to_additive` cannot translate `MulAxiom` because it has no value. -/
+#guard_msgs in
+@[to_additive]
+axiom MulAxiom {α} : Mul α

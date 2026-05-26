@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Analysis.InnerProductSpace.Adjoint
 public import Mathlib.Analysis.InnerProductSpace.Calculus
+public import Mathlib.Analysis.Normed.Algebra.Spectrum
 public import Mathlib.Analysis.Calculus.LagrangeMultipliers
 public import Mathlib.LinearAlgebra.Eigenspace.Basic
 
@@ -134,6 +135,61 @@ theorem norm_eq_iSup_rayleighQuotient (hT : T.IsSymmetric) :
   · rw [parallelogram_law_with_norm 𝕜 x y, hx, hy]
     grind
 
+private theorem rayleighQuotient_le_of_mem_resolventSet
+    (t : ℝ) (ht : 0 < t) (hT' : (algebraMap ℝ 𝕜) t ∈ resolventSet 𝕜 T) :
+    ∃ c > 0, ∀ x, T.rayleighQuotient x ≤ (t ^ 2 + ‖T‖ ^ 2) / (2 * t) - c := by
+  by_cases hT0 : T = 0
+  · exact ⟨t ^ 2 / (2 * t), by positivity, by simp [hT0]⟩
+  obtain ⟨c, hc0, hc⟩ := antilipschitzWith_iff_exists_mul_le_norm.mp
+    (antilipschitz_of_isEmbedding _ (isHomeomorph_of_isUnit hT').isEmbedding)
+  refine ⟨min (c ^ 2 / (2 * t)) ((t ^ 2 + ‖T‖ ^ 2) / (2 * t)), by positivity, fun x ↦ ?_⟩
+  by_cases hx : x = 0
+  · simp [hx]
+  suffices T.rayleighQuotient x ≤ (t ^ 2 + ‖T‖ ^ 2) / (2 * t) - c ^ 2 / (2 * t) by
+    grw [this, min_le_left]
+  rw [rayleighQuotient, reApplyInnerSelf_apply]
+  specialize hc x
+  rw [← sq_le_sq₀ (by positivity) (by positivity), sub_apply, algebraMap_apply,
+    norm_sub_sq (𝕜 := 𝕜), inner_re_symm] at hc
+  grw [le_opNorm] at hc
+  simp [inner_smul_right, norm_smul, abs_of_pos ht] at hc
+  field_simp
+  grind
+
+/-- If `‖T‖` is not in the spectrum, then `T.rayleighQuotient x` don't reach `‖T‖`. -/
+theorem rayleighQuotient_le_of_norm_mem_resolventSet [Nontrivial E]
+    (hT' : algebraMap ℝ 𝕜 ‖T‖ ∈ resolventSet 𝕜 T) :
+    ∃ ε > 0, ∀ x, T.rayleighQuotient x ≤ ‖T‖ - ε := by
+  by_cases hT0 : T = 0
+  · simp [hT0, spectrum.mem_resolventSet_iff] at hT'
+  obtain ⟨ε, hε0, hε⟩ := T.rayleighQuotient_le_of_mem_resolventSet ‖T‖ (by positivity) hT'
+  refine ⟨ε, hε0, fun x ↦ ?_⟩
+  grw [hε]
+  field_simp
+  grind
+
+/-- If `±‖T‖` are not in the spectrum, then `|T.rayleighQuotient x|` doesn't reach `‖T‖`. -/
+theorem abs_rayleighQuotient_le_of_norm_mem_resolventSet [Nontrivial E]
+    (hT' : algebraMap ℝ 𝕜 ‖T‖ ∈ resolventSet 𝕜 T) (hT'' : -algebraMap ℝ 𝕜 ‖T‖ ∈ resolventSet 𝕜 T) :
+    ∃ ε > 0, ∀ x, |T.rayleighQuotient x| ≤ ‖T‖ - ε := by
+  obtain ⟨ε, hε0, hε⟩ := T.rayleighQuotient_le_of_norm_mem_resolventSet hT'
+  obtain ⟨ε', hε'0, hε'⟩ := (-T).rayleighQuotient_le_of_norm_mem_resolventSet <| by
+    simpa [resolventSet_neg]
+  exact ⟨min ε ε', by grind, fun x ↦ by grind [rayleighQuotient_neg_apply, norm_neg]⟩
+
+-- TODO: Prove this from `IsSelfAdjoint.toReal_spectralRadius_eq_norm` using complexification.
+/-- The spectral radius of a self-adjoint operator on a complete space equals the norm. -/
+theorem spectralRadius_eq_nnnorm [CompleteSpace E] (hT : IsSelfAdjoint T) :
+    spectralRadius 𝕜 T = ‖T‖₊ := by
+  nontriviality E
+  apply le_antisymm (spectrum.spectralRadius_le_nnnorm T)
+  suffices h : algebraMap ℝ 𝕜 ‖T‖ ∈ spectrum 𝕜 T ∨ algebraMap ℝ 𝕜 (-‖T‖) ∈ spectrum 𝕜 T by
+    rcases h with h | h <;> exact le_trans (by simp) (le_biSup _ h)
+  simp_rw [spectrum, Set.mem_compl_iff, map_neg]
+  by_contra! h
+  obtain ⟨c, hc0, hc⟩ := T.abs_rayleighQuotient_le_of_norm_mem_resolventSet h.1 h.2
+  grind [ciSup_le hc, norm_eq_iSup_rayleighQuotient T hT.isSymmetric]
+
 end ContinuousLinearMap
 
 namespace IsSelfAdjoint
@@ -145,7 +201,7 @@ variable {F : Type*} [NormedAddCommGroup F] [InnerProductSpace ℝ F]
 theorem _root_.LinearMap.IsSymmetric.hasStrictFDerivAt_reApplyInnerSelf {T : F →L[ℝ] F}
     (hT : (T : F →ₗ[ℝ] F).IsSymmetric) (x₀ : F) :
     HasStrictFDerivAt T.reApplyInnerSelf (2 • (innerSL ℝ (T x₀))) x₀ := by
-  convert T.hasStrictFDerivAt.inner ℝ (hasStrictFDerivAt_id x₀) using 1
+  convert! T.hasStrictFDerivAt.inner ℝ (hasStrictFDerivAt_id x₀) using 1
   ext y
   rw [ContinuousLinearMap.smul_apply, ContinuousLinearMap.comp_apply, fderivInnerCLM_apply,
     ContinuousLinearMap.prod_apply, innerSL_apply_apply, id, ContinuousLinearMap.id_apply,
@@ -157,7 +213,7 @@ theorem linearly_dependent_of_isLocalExtrOn (hT : IsSelfAdjoint T) {x₀ : F}
     (hextr : IsLocalExtrOn T.reApplyInnerSelf (sphere (0 : F) ‖x₀‖) x₀) :
     ∃ a b : ℝ, (a, b) ≠ 0 ∧ a • x₀ + b • T x₀ = 0 := by
   have H : IsLocalExtrOn T.reApplyInnerSelf {x : F | ‖x‖ ^ 2 = ‖x₀‖ ^ 2} x₀ := by
-    convert hextr
+    convert! hextr
     ext x
     simp
   -- find Lagrange multipliers for the function `T.re_apply_inner_self` and the
@@ -189,7 +245,7 @@ theorem eq_smul_self_of_isLocalExtrOn_real (hT : IsSelfAdjoint T) {x₀ : F}
   have hc : T x₀ = (-b⁻¹ * a) • x₀ := by
     linear_combination (norm := match_scalars <;> field) b⁻¹ • h₂
   set c : ℝ := -b⁻¹ * a
-  convert hc
+  convert! hc
   simpa [field, inner_smul_left, mul_comm a] using congr_arg (fun x => ⟪x, x₀⟫_ℝ) hc
 
 end Real
@@ -220,7 +276,7 @@ quotient. -/
 theorem hasEigenvector_of_isMaxOn (hT : IsSelfAdjoint T) {x₀ : E} (hx₀ : x₀ ≠ 0)
     (hextr : IsMaxOn T.reApplyInnerSelf (sphere (0 : E) ‖x₀‖) x₀) :
     HasEigenvector (T : E →ₗ[𝕜] E) (⨆ x : { x : E // x ≠ 0 }, T.rayleighQuotient x : ℝ) x₀ := by
-  convert hT.hasEigenvector_of_isLocalExtrOn hx₀ (Or.inr hextr.localize)
+  convert! hT.hasEigenvector_of_isLocalExtrOn hx₀ (Or.inr hextr.localize)
   have hx₀' : 0 < ‖x₀‖ := by simp [hx₀]
   have hx₀'' : x₀ ∈ sphere (0 : E) ‖x₀‖ := by simp
   rw [T.iSup_rayleigh_eq_iSup_rayleigh_sphere hx₀']
@@ -239,7 +295,7 @@ quotient. -/
 theorem hasEigenvector_of_isMinOn (hT : IsSelfAdjoint T) {x₀ : E} (hx₀ : x₀ ≠ 0)
     (hextr : IsMinOn T.reApplyInnerSelf (sphere (0 : E) ‖x₀‖) x₀) :
     HasEigenvector (T : E →ₗ[𝕜] E) (⨅ x : { x : E // x ≠ 0 }, T.rayleighQuotient x : ℝ) x₀ := by
-  convert hT.hasEigenvector_of_isLocalExtrOn hx₀ (Or.inl hextr.localize)
+  convert! hT.hasEigenvector_of_isLocalExtrOn hx₀ (Or.inl hextr.localize)
   have hx₀' : 0 < ‖x₀‖ := by simp [hx₀]
   have hx₀'' : x₀ ∈ sphere (0 : E) ‖x₀‖ := by simp
   rw [T.iInf_rayleigh_eq_iInf_rayleigh_sphere hx₀']

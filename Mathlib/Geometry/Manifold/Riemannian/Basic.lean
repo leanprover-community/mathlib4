@@ -60,7 +60,7 @@ noncomputable section
 
 variable
   {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
-  {H : Type*} [TopologicalSpace H] {I : ModelWithCorners ℝ E H} {n : WithTop ℕ∞}
+  {H : Type*} [TopologicalSpace H] {I : ModelWithCorners ℝ E H} {n : ℕ∞ω}
   {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
 
 section
@@ -119,10 +119,9 @@ noncomputable def riemannianMetricVectorSpace :
   contMDiff := by
     intro x
     rw [contMDiffAt_section]
-    convert contMDiffAt_const (c := innerSL ℝ)
+    convert! contMDiffAt_const (c := innerSL ℝ)
     ext v w
-    simp [hom_trivializationAt_apply, ContinuousLinearMap.inCoordinates,
-      Trivialization.linearMapAt_apply, TangentSpace]
+    simp [hom_trivializationAt_apply, ContinuousLinearMap.inCoordinates, TangentSpace]
 
 noncomputable instance : RiemannianBundle (fun (x : F) ↦ TangentSpace 𝓘(ℝ, F) x) :=
   ⟨(riemannianMetricVectorSpace F).toRiemannianMetric⟩
@@ -154,7 +153,6 @@ lemma lintegral_fderiv_lineMap_eq_edist {x y : E} :
   exact fderivWithin_eq_fderiv (uniqueDiffOn_Icc zero_lt_one _ hz)
     (ContinuousAffineMap.differentiableAt _)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- An inner product vector space is a Riemannian manifold, i.e., the distance between two points
 is the infimum of the lengths of paths between these points. -/
 instance : IsRiemannianManifold 𝓘(ℝ, F) F := by
@@ -211,8 +209,6 @@ the image of the neighborhood in the extended chart.
 
 open Manifold Metric
 open scoped NNReal
-
-set_option backward.isDefEq.respectTransparency false
 
 variable [RiemannianBundle (fun (x : M) ↦ TangentSpace I x)]
   [IsManifold I 1 M] [IsContinuousRiemannianBundle E (fun (x : M) ↦ TangentSpace I x)]
@@ -271,7 +267,7 @@ lemma eventually_norm_mfderivWithin_symm_extChartAt_comp_lt (x : M) :
   rw [TangentBundle.symmL_trivializationAt h'y] at hy
   have A : (extChartAt I x).symm (extChartAt I x y) = y :=
     (extChartAt I x).left_inv (by simpa using h'y)
-  convert hy using 3 <;> congr
+  convert! hy using 3 <;> congr
 
 lemma eventually_norm_mfderivWithin_symm_extChartAt_lt (x : M) :
     ∃ C > 0, ∀ᶠ y in 𝓝[range I] (extChartAt I x x),
@@ -285,7 +281,7 @@ lemma eventually_norm_mfderivWithin_symm_extChartAt_lt (x : M) :
     extChartAt_target_mem_nhdsWithin x] with y hy h'y
   have : y = (extChartAt I x) ((extChartAt I x).symm y) := by simp [-extChartAt, h'y]
   simp only [preimage_setOf_eq, mem_setOf_eq] at hy
-  convert hy
+  convert! hy
 
 lemma eventually_enorm_mfderivWithin_symm_extChartAt_lt (x : M) :
     ∃ C > (0 : ℝ≥0), ∀ᶠ y in 𝓝[range I] (extChartAt I x x),
@@ -381,9 +377,6 @@ lemma eventually_riemannianEDist_lt (x : M) {c : ℝ≥0∞} (hc : 0 < c) :
   rwa [ENNReal.lt_div_iff_mul_lt, mul_comm] at this
   · exact Or.inl (mod_cast C_pos.ne')
   · simp
-
-@[deprecated (since := "2025-09-18")]
-alias eventually_riemmanianEDist_lt := eventually_riemannianEDist_lt
 
 /-- Any neighborhood of `x` contains all the points which are close enough to `x` for the
 Riemannian distance, `ℝ≥0` version. -/
@@ -491,14 +484,11 @@ lemma setOf_riemannianEDist_lt_subset_nhds [RegularSpace M] {x : M} {s : Set M} 
   have : γ' t₁ ∈ (extChartAt I x).symm ⁻¹' v := by
     apply hr
     rw [← Metric.eball_coe, Metric.mem_eball, edist_eq_enorm_sub]
-    convert this
+    convert! this
     simp [γ', hγx]
-  convert mem_preimage.1 this
+  convert! mem_preimage.1 this
   simp only [Function.comp_apply, γ', (extChartAt I x).left_inv <| uc <| t₁_mem
     (right_mem_Icc.mpr ht₁0)]
-
-@[deprecated (since := "2025-09-18")]
-alias setOf_riemmanianEDist_lt_subset_nhds := setOf_riemannianEDist_lt_subset_nhds
 
 /-- Any neighborhood of `x` contains all the points which are close enough to `x` for the
 Riemannian distance, `ℝ≥0∞` version. -/
@@ -506,9 +496,6 @@ lemma setOf_riemannianEDist_lt_subset_nhds' [RegularSpace M] {x : M} {s : Set M}
     ∃ c > 0, {y | riemannianEDist I x y < c} ⊆ s := by
   rcases setOf_riemannianEDist_lt_subset_nhds I hs with ⟨c, c_pos, hc⟩
   exact ⟨c, mod_cast c_pos, hc⟩
-
-@[deprecated (since := "2025-09-18")]
-alias setOf_riemmanianEDist_lt_subset_nhds' := setOf_riemannianEDist_lt_subset_nhds'
 
 variable (M) in
 /-- The pseudoemetric space structure associated to a Riemannian metric on a manifold. Designed

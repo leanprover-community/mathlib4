@@ -123,7 +123,7 @@ meta def condExpUnexpander : Lean.PrettyPrinter.Unexpander
 theorem condExp_of_not_le (hm_not : ¬m ≤ m₀) : μ[f | m] = 0 := by rw [condExp, dif_neg hm_not]
 
 theorem condExp_of_not_sigmaFinite (hm : m ≤ m₀) (hμm_not : ¬SigmaFinite (μ.trim hm)) :
-    μ[f | m] = 0 := by rw [condExp, dif_pos hm, dif_neg]; push_neg; exact fun h => absurd h hμm_not
+    μ[f | m] = 0 := by rw [condExp, dif_pos hm, dif_neg]; push Not; exact fun h => absurd h hμm_not
 
 open scoped Classical in
 theorem condExp_of_sigmaFinite (hm : m ≤ m₀) [hμm : SigmaFinite (μ.trim hm)] :
@@ -276,6 +276,7 @@ theorem condExp_bot_ae_eq (f : α → E) :
   · rw [ae_zero]; exact eventually_bot
   · exact Eventually.of_forall <| congr_fun (condExp_bot' f)
 
+@[simp]
 theorem condExp_bot [IsProbabilityMeasure μ] (f : α → E) : μ[f | ⊥] = fun _ => ∫ x, f x ∂μ := by
   refine (condExp_bot' f).trans ?_
   rw [probReal_univ, inv_one, one_smul]
@@ -291,7 +292,7 @@ theorem condExp_add (hf : Integrable f μ) (hg : Integrable g μ) (m : Measurabl
   exact (coeFn_add _ _).trans
     ((condExp_ae_eq_condExpL1 hm _).symm.add (condExp_ae_eq_condExpL1 hm _).symm)
 
-theorem condExp_finset_sum {ι : Type*} {s : Finset ι} {f : ι → α → E}
+theorem condExp_finsetSum {ι : Type*} {s : Finset ι} {f : ι → α → E}
     (hf : ∀ i ∈ s, Integrable (f i) μ) (m : MeasurableSpace α) :
     μ[∑ i ∈ s, f i | m] =ᵐ[μ] ∑ i ∈ s, μ[f i | m] := by
   classical
@@ -300,8 +301,10 @@ theorem condExp_finset_sum {ι : Type*} {s : Finset ι} {f : ι → α → E}
   | insert i s his heq =>
     rw [Finset.sum_insert his, Finset.sum_insert his]
     exact (condExp_add (hf i <| Finset.mem_insert_self i s)
-      (integrable_finset_sum' _ <| Finset.forall_of_forall_insert hf) _).trans
+      (integrable_finsetSum' _ <| Finset.forall_of_forall_insert hf) _).trans
         ((EventuallyEq.refl _ _).add <| heq <| Finset.forall_of_forall_insert hf)
+
+@[deprecated (since := "2026-04-08")] alias condExp_finset_sum := condExp_finsetSum
 
 theorem condExp_smul [NormedSpace 𝕜 E] (c : 𝕜) (f : α → E) (m : MeasurableSpace α) :
     μ[c • f | m] =ᵐ[μ] c • μ[f | m] := by

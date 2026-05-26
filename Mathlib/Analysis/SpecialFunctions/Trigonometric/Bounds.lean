@@ -115,7 +115,6 @@ lemma sin_sq_le_sq : sin x ^ 2 ≤ x ^ 2 := by
 lemma abs_sin_lt_abs (hx : x ≠ 0) : |sin x| < |x| := sq_lt_sq.1 (sin_sq_lt_sq hx)
 lemma abs_sin_le_abs : |sin x| ≤ |x| := sq_le_sq.1 sin_sq_le_sq
 
-set_option backward.isDefEq.respectTransparency false in
 lemma one_sub_sq_div_two_lt_cos (hx : x ≠ 0) : 1 - x ^ 2 / 2 < cos x := by
   have := (sin_sq_lt_sq (by positivity)).trans_eq' (sin_sq_eq_half_sub (x / 2))
   ring_nf at this
@@ -135,7 +134,6 @@ lemma one_sub_mul_le_cos (hx₀ : 0 ≤ x) (hx : x ≤ π / 2) : 1 - 2 / π * x 
 lemma one_add_mul_le_cos (hx₀ : -(π / 2) ≤ x) (hx : x ≤ 0) : 1 + 2 / π * x ≤ cos x := by
   simpa using one_sub_mul_le_cos (x := -x) (by linarith) (by linarith)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma cos_le_one_sub_mul_cos_sq (hx : |x| ≤ π) : cos x ≤ 1 - 2 / π ^ 2 * x ^ 2 := by
   wlog hx₀ : 0 ≤ x
   case inr => simpa using this (by rwa [abs_neg]) <| neg_nonneg.2 <| le_of_not_ge hx₀
@@ -211,7 +209,7 @@ theorem cos_lt_one_div_sqrt_sq_add_one {x : ℝ} (hx1 : -(3 * π / 2) ≤ x) (hx
   suffices ∀ {y : ℝ}, 0 < y → y ≤ 3 * π / 2 → cos y < 1 / √(y ^ 2 + 1) by
     rcases lt_or_lt_iff_ne.mpr hx3.symm with ⟨h⟩
     · exact this h hx2
-    · convert this (by linarith : 0 < -x) (by linarith) using 1
+    · convert! this (by linarith : 0 < -x) (by linarith) using 1
       · rw [cos_neg]
       · rw [neg_sq]
   intro y hy1 hy2

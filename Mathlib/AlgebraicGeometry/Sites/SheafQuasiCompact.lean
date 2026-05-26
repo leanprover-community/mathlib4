@@ -8,14 +8,14 @@ module
 public import Mathlib.AlgebraicGeometry.Sites.QuasiCompact
 
 /-!
-# Sheafs for the quasi-compact topology
+# Sheaves for the quasi-compact topology
 
 In this file we show that a presheaf is a sheaf in the `AlgebraicGeometry.Scheme.propQCTopology`
 if and only if it is a sheaf in the Zariski topology and a sheaf on single object
 `P`-coverings of affine schemes.
 -/
 
-@[expose] public section
+public section
 
 universe w' w v u
 
@@ -30,7 +30,7 @@ variable {P : MorphismProperty Scheme.{u}} [P.IsStableUnderBaseChange]
 set_option backward.isDefEq.respectTransparency false in
 /-- A presheaf of types is a sheaf for the `P`-qc topology if and only if it is a sheaf
 for the Zariski topology and satisfies the sheaf property for all single object coverings
-`{ f : Spec S ⟶ Spec R }` where `f` satisifies `P`. -/
+`{ f : Spec S ⟶ Spec R }` where `f` satisfies `P`. -/
 @[stacks 022H]
 nonrec lemma isSheaf_type_propQCTopology_iff [P.IsMultiplicative] (F : Scheme.{u}ᵒᵖ ⥤ Type*)
     [IsZariskiLocalAtSource P] :
@@ -94,7 +94,7 @@ variable {A : Type*} [Category* A]
 
 /-- A presheaf is a sheaf for the `P`-qc topology if and only if it is a sheaf
 for the Zariski topology and satisfies the sheaf property for all single object coverings
-`{ f : Spec S ⟶ Spec R }` where `f` satisifies `P`. -/
+`{ f : Spec S ⟶ Spec R }` where `f` satisfies `P`. -/
 @[stacks 022H]
 nonrec lemma isSheaf_propQCTopology_iff [P.IsMultiplicative] (F : Scheme.{u}ᵒᵖ ⥤ A)
     [IsZariskiLocalAtSource P] :

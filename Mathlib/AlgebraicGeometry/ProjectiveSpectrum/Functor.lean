@@ -159,7 +159,6 @@ noncomputable def map : Proj ℬ ⟶ Proj 𝒜 where
 theorem ι_comp_map (s : A) : (basicOpen ℬ (f s)).ι ≫ map f hf =
     (map f hf).resLE _ _ le_rfl ≫ (basicOpen 𝒜 s).ι := by simp
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc] lemma awayToSection_comp_appLE {i : ℕ} {s : A} (hs : s ∈ 𝒜 i) :
     awayToSection 𝒜 s ≫
       Scheme.Hom.appLE (map f hf) (basicOpen 𝒜 s) (basicOpen ℬ (f s)) (by rfl) =
@@ -211,7 +210,7 @@ theorem map_comp : map (g.comp f) (irrelevant_le_map_comp hf hg) = map g hg ≫ 
 set_option backward.isDefEq.respectTransparency false in
 theorem map_id : map (.id 𝒜) (by simp) = 𝟙 (Proj 𝒜) := by
   refine (affineOpenCover _).openCover.hom_ext _ _ fun s ↦ ?_
-  convert awayι_comp_map (.id 𝒜) _ _ _ s.2.2 using 1
+  convert! awayι_comp_map (.id 𝒜) _ _ _ s.2.2 using 1
   simp
 
 end Proj

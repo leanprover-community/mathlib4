@@ -42,6 +42,8 @@ universe s w w' v u t r
 
 namespace CategoryTheory.Limits.Concrete
 
+open ConcreteCategory
+
 variable {C : Type u} [Category.{v} C]
 
 section Products
@@ -55,12 +57,13 @@ variable [ConcreteCategory.{max w v} C FC] {J : Type w} (F : J → C)
 /-- The equivalence `ToType (∏ᶜ F) ≃ ∀ j, ToType (F j)` if `F : J → C` is a family of objects
 in a concrete category `C`. -/
 noncomputable def productEquiv : ToType (∏ᶜ F) ≃ ∀ j, ToType (F j) :=
-  ((PreservesProduct.iso (forget C) F) ≪≫ (Types.productIso.{w, v} fun j => ToType (F j))).toEquiv
+  ((PreservesProduct.iso (forget C) F) ≪≫ (Types.productIso.{w, v} fun j =>
+    (ToType (F j)))).toEquiv
 
 @[simp]
 lemma productEquiv_apply_apply (x : ToType (∏ᶜ F)) (j : J) :
     productEquiv F x j = Pi.π F j x :=
-  congr_fun (piComparison_comp_π (forget C) F j) x
+  congr_hom (piComparison_comp_π (forget C) F j) x
 
 @[simp]
 lemma productEquiv_symm_apply_π (x : ∀ j, ToType (F j)) (j : J) :
@@ -99,6 +102,7 @@ variable [ConcreteCategory.{w} C FC]
 
 /-- If `forget C` preserves terminals and `X` is terminal, then `ToType X` is a
 singleton. -/
+@[implicit_reducible]
 noncomputable def uniqueOfTerminalOfPreserves [PreservesLimit (Functor.empty.{0} C) (forget C)]
     (X : C) (h : IsTerminal X) : Unique (ToType X) :=
   Types.isTerminalEquivUnique (ToType X) <| IsTerminal.isTerminalObj (forget C) X h
@@ -106,7 +110,8 @@ noncomputable def uniqueOfTerminalOfPreserves [PreservesLimit (Functor.empty.{0}
 /-- If `forget C` reflects terminals and `ToType X` is a singleton, then `X` is terminal. -/
 noncomputable def terminalOfUniqueOfReflects [ReflectsLimit (Functor.empty.{0} C) (forget C)]
     (X : C) (h : Unique (ToType X)) : IsTerminal X :=
-  IsTerminal.isTerminalOfObj (forget C) X <| (Types.isTerminalEquivUnique (ToType X)).symm h
+  IsTerminal.isTerminalOfObj (forget C) X <|
+    (Types.isTerminalEquivUnique (ToType X)).symm h
 
 /-- The equivalence `IsTerminal X ≃ Unique (ToType X)` if the forgetful functor
 preserves and reflects terminals. -/
@@ -151,7 +156,6 @@ lemma initial_iff_empty_of_preserves_of_reflects [PreservesColimit (Functor.empt
     [ReflectsColimit (Functor.empty.{0} C) (forget C)] (X : C) :
     Nonempty (IsInitial X) ↔ IsEmpty (ToType X) := by
   rw [← Types.initial_iff_empty, (IsInitial.isInitialIffObj (forget C) X).nonempty_congr]
-  rfl
 
 end Initial
 
@@ -168,13 +172,13 @@ noncomputable def prodEquiv : ToType (X₁ ⨯ X₂) ≃ ToType X₁ × ToType X
 
 @[simp]
 lemma prodEquiv_apply_fst (x : ToType (X₁ ⨯ X₂)) :
-    (prodEquiv X₁ X₂ x).fst = (Limits.prod.fst : X₁ ⨯ X₂ ⟶ X₁) x :=
-  congr_fun (prodComparison_fst (forget C) X₁ X₂) x
+    (prodEquiv X₁ X₂ x).fst = (Limits.prod.fst : X₁ ⨯ X₂ ⟶ X₁) x := by
+  simpa using congr_hom (prodComparison_fst (forget C) X₁ X₂) x
 
 @[simp]
 lemma prodEquiv_apply_snd (x : ToType (X₁ ⨯ X₂)) :
-    (prodEquiv X₁ X₂ x).snd = (Limits.prod.snd : X₁ ⨯ X₂ ⟶ X₂) x :=
-  congr_fun (prodComparison_snd (forget C) X₁ X₂) x
+    (prodEquiv X₁ X₂ x).snd = (Limits.prod.snd : X₁ ⨯ X₂ ⟶ X₂) x := by
+  simpa using congr_hom (prodComparison_snd (forget C) X₁ X₂) x
 
 @[simp]
 lemma prodEquiv_symm_apply_fst (x : ToType X₁ × ToType X₂) :
@@ -203,7 +207,7 @@ elements in `X₁` and `X₂`. -/
 noncomputable def pullbackEquiv :
     ToType (pullback f₁ f₂) ≃ { p : ToType X₁ × ToType X₂ // f₁ p.1 = f₂ p.2 } :=
   (PreservesPullback.iso (forget C) f₁ f₂ ≪≫
-    Types.pullbackIsoPullback ⇑(ConcreteCategory.hom f₁) ⇑(ConcreteCategory.hom f₂)).toEquiv
+    Types.pullbackIsoPullback (↾f₁) (↾f₂)).toEquiv
 
 /-- Constructor for elements in a pullback in a concrete category. -/
 noncomputable def pullbackMk (x₁ : ToType X₁) (x₂ : ToType X₂) (h : f₁ x₁ = f₂ x₂) :
@@ -218,16 +222,14 @@ lemma pullbackMk_surjective (x : ToType (pullback f₁ f₂)) :
 @[simp]
 lemma pullbackMk_fst (x₁ : ToType X₁) (x₂ : ToType X₂) (h : f₁ x₁ = f₂ x₂) :
     pullback.fst f₁ f₂ (pullbackMk f₁ f₂ x₁ x₂ h) = x₁ :=
-  (congr_fun (PreservesPullback.iso_inv_fst (forget C) f₁ f₂) _).trans
-    (congr_fun (Types.pullbackIsoPullback_inv_fst ⇑(ConcreteCategory.hom f₁)
-      ⇑(ConcreteCategory.hom f₂)) _)
+  (congr_hom (PreservesPullback.iso_inv_fst (forget C) f₁ f₂) _).trans
+    (congr_hom (Types.pullbackIsoPullback_inv_fst (↾f₁) (↾f₂)) _)
 
 @[simp]
 lemma pullbackMk_snd (x₁ : ToType X₁) (x₂ : ToType X₂) (h : f₁ x₁ = f₂ x₂) :
     pullback.snd f₁ f₂ (pullbackMk f₁ f₂ x₁ x₂ h) = x₂ :=
-  (congr_fun (PreservesPullback.iso_inv_snd (forget C) f₁ f₂) _).trans
-    (congr_fun (Types.pullbackIsoPullback_inv_snd ⇑(ConcreteCategory.hom f₁)
-      ⇑(ConcreteCategory.hom f₂)) _)
+  (congr_hom (PreservesPullback.iso_inv_snd (forget C) f₁ f₂) _).trans
+    (congr_hom (Types.pullbackIsoPullback_inv_snd (↾f₁) (↾f₂)) _)
 
 end Pullbacks
 
@@ -276,6 +278,7 @@ theorem multiequalizer_ext {J : MulticospanShape.{w, w'}}
       ConcreteCategory.comp_apply]
     simp [h]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- An auxiliary equivalence to be used in `multiequalizerEquiv` below. -/
 def multiequalizerEquivAux {J : MulticospanShape.{w, w'}} (I : MulticospanIndex J C) :
     (I.multicospan ⋙ forget C).sections ≃

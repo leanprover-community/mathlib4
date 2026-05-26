@@ -173,7 +173,7 @@ theorem t2Space_iff_of_isOpenQuotientMap [TopologicalSpace Y] {π : X → Y}
   replace h := IsOpenQuotientMap.prodMap h h
   refine ⟨fun H ↦ H.preimage h.continuous, fun H ↦ ?_⟩
   simp_rw [← isOpen_compl_iff] at H ⊢
-  convert h.isOpenMap _ H
+  convert! h.isOpenMap _ H
   exact (h.surjective.image_preimage _).symm
 
 theorem tendsto_nhds_unique [T2Space X] {f : Y → X} {l : Filter Y} {a b : X} [NeBot l]
@@ -404,6 +404,7 @@ section
 variable (X)
 
 /-- The smallest equivalence relation on a topological space giving a T2 quotient. -/
+@[implicit_reducible]
 def t2Setoid : Setoid X := sInf {s | T2Space (Quotient s)}
 
 /-- The largest T2 quotient of a topological space. This construction is left-adjoint to the
@@ -572,6 +573,11 @@ section SeparatedFinset
 theorem SeparatedNhds.of_finset_finset [T2Space X] (s t : Finset X) (h : Disjoint s t) :
     SeparatedNhds (s : Set X) t :=
   .of_isCompact_isCompact s.finite_toSet.isCompact t.finite_toSet.isCompact <| mod_cast h
+
+theorem SeparatedNhds.of_finite [T2Space X] {s t : Set X} (hs : s.Finite) (ht : t.Finite)
+    (h : Disjoint s t) : SeparatedNhds s t := by
+  rw [← hs.coe_toFinset, ← ht.coe_toFinset]
+  exact SeparatedNhds.of_finset_finset _ _ (Finite.disjoint_toFinset.2 h)
 
 theorem SeparatedNhds.of_singleton_finset [T2Space X] {x : X} {s : Finset X} (h : x ∉ s) :
     SeparatedNhds ({x} : Set X) s :=

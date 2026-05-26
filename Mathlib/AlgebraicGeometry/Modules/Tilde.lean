@@ -38,7 +38,6 @@ namespace AlgebraicGeometry
 
 open _root_.PrimeSpectrum
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The forgetful functor from `𝒪_{Spec R}` modules to sheaves of `R`-modules. -/
 def modulesSpecToSheaf :
     (Spec R).Modules ⥤ TopCat.Sheaf (ModuleCat R) (Spec R) :=
@@ -104,7 +103,7 @@ def modulesSpecToSheafIso :
       map_smul' r m := IsScalarTower.algebraMap_smul (M := ((structureSheafInType R M).obj.obj U))
         ((structureSheafInType R R).obj.obj U) r m }) fun _ ↦ rfl
 
-/-- The map from `M` to `Γ(M, U)`. This is a localiation map when `U = D(f)`. -/
+/-- The map from `M` to `Γ(M, U)`. This is a localization map when `U = D(f)`. -/
 def toOpen (U : (Spec R).Opens) : M ⟶ (modulesSpecToSheaf.obj (tilde M)).presheaf.obj (.op U) :=
   ModuleCat.ofHom (StructureSheaf.toOpenₗ R M U) ≫ ((modulesSpecToSheafIso M).app _).inv
 
@@ -113,7 +112,7 @@ theorem toOpen_res (U V : Opens (PrimeSpectrum.Top R)) (i : V ⟶ U) :
     toOpen M U ≫ (modulesSpecToSheaf.obj (tilde M)).presheaf.map i.op = toOpen M V :=
   rfl
 
-instance (f : R) : IsLocalizedModule (.powers f) (toOpen M (basicOpen f)).hom :=
+instance (f : R) : IsLocalizedModule.Away f (toOpen M (basicOpen f)).hom :=
   .of_linearEquiv (.powers f) (StructureSheaf.toOpenₗ R M (basicOpen f))
     ((modulesSpecToSheafIso M).app _).toLinearEquiv.symm
 
@@ -276,7 +275,7 @@ def tilde.toTildeΓNatIso : 𝟭 _ ≅ tilde.functor R ⋙ moduleSpecΓFunctor :
 
 set_option backward.isDefEq.respectTransparency false in
 open Scheme.Modules in
-/-- The tilde-Gamma adjuntion. -/
+/-- The tilde-Gamma adjunction. -/
 def tilde.adjunction : tilde.functor R ⊣ moduleSpecΓFunctor where
   unit := toTildeΓNatIso.hom
   counit := fromTildeΓNatTrans
@@ -385,14 +384,13 @@ def presentationTilde (s : Set M) (hs : Submodule.span R s = ⊤)
           tilde.map (ModuleCat.ofHom (Finsupp.linearCombination R (↑)))) (by
     simp only [Category.assoc, Iso.hom_inv_id_assoc, Preadditive.IsIso.comp_left_eq_zero]
     rw [← tilde.map_comp, ← ModuleCat.ofHom_comp]
-    convert tilde.map_zero
+    convert! tilde.map_zero
     exact congr(ModuleCat.ofHom $(H₁.linearMap_comp_eq_zero))) ?_
   letI h₁ := ModuleCat.isColimitCokernelCofork _ _ H₁
     (by simp [← LinearMap.range_eq_top, Finsupp.range_linearCombination, hs])
   refine IsCokernel.ofIso _ (CokernelCofork.mapIsColimit _ h₁ (tilde.functor R)) _ (tildeFinsupp t)
     (tildeFinsupp s) (.refl _) (by simp) (by simp)
 
-set_option backward.isDefEq.respectTransparency false in
 instance : (tilde M).IsQuasicoherent :=
   (presentationTilde.{u} _ .univ (by simp) _ (Submodule.span_eq _)).isQuasicoherent
 

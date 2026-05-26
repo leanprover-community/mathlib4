@@ -14,7 +14,7 @@ We show that if `f` is holomorphic on an open disk `B(c,r)` and all iterated der
 at `c` are nonnegative real, then `f z ≥ 0` for all `z ≥ c` in the disk; see
 `DifferentiableOn.nonneg_of_iteratedDeriv_nonneg`. We also provide a
 variant `Differentiable.nonneg_of_iteratedDeriv_nonneg` for entire functions and versions
-showing `f z ≥ f c` when all iterated derivatives except `f` itseld are nonnegative.
+showing `f z ≥ f c` when all iterated derivatives except `f` itself are nonnegative.
 -/
 
 public section
@@ -75,8 +75,9 @@ set `c - ℝ≥0`. -/
 theorem apply_le_of_iteratedDeriv_alternating {f : ℂ → ℂ} {c : ℂ} (hf : Differentiable ℂ f)
     (h : ∀ n ≠ 0, 0 ≤ (-1) ^ n * iteratedDeriv n f c) ⦃z : ℂ⦄ (hz : z ≤ c) :
     f c ≤ f z := by
-  convert apply_le_of_iteratedDeriv_nonneg (f := fun z ↦ f (-z))
-    (hf.comp <| differentiable_neg) (fun n hn ↦ ?_) (neg_le_neg_iff.mpr hz) using 1
+  convert!
+    apply_le_of_iteratedDeriv_nonneg (f := fun z ↦ f (-z)) (hf.comp <| differentiable_neg)
+      (fun n hn ↦ ?_) (neg_le_neg_iff.mpr hz) using 1
   · simp only [neg_neg]
   · simp only [neg_neg]
   · simpa only [iteratedDeriv_comp_neg, neg_neg, smul_eq_mul] using h n hn

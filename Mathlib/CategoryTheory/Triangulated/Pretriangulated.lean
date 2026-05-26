@@ -454,6 +454,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- If the first and third components of a morphism of distinguished triangles are
 isomorphisms, the second component is as well. This can be thought of as a
 pretriangulated category theoretical version of the five lemma. -/
+@[stacks 014A]
 lemma isIso₂_of_isIso₁₃ {T T' : Triangle C} (φ : T ⟶ T') (hT : T ∈ distTriang C)
     (hT' : T' ∈ distTriang C) (h₁ : IsIso φ.hom₁) (h₃ : IsIso φ.hom₃) : IsIso φ.hom₂ := by
   have : Mono φ.hom₂ := by
@@ -489,6 +490,7 @@ lemma isIso₂_of_isIso₁₃ {T T' : Triangle C} (φ : T ⟶ T') (hT : T ∈ di
 /-- If the first and second components of a morphism of distinguished triangles are
 isomorphisms, the third component is as well. This can be thought of as a
 pretriangulated category theoretical version of the five lemma. -/
+@[stacks 014A]
 lemma isIso₃_of_isIso₁₂ {T T' : Triangle C} (φ : T ⟶ T') (hT : T ∈ distTriang C)
     (hT' : T' ∈ distTriang C) (h₁ : IsIso φ.hom₁) (h₂ : IsIso φ.hom₂) : IsIso φ.hom₃ :=
   isIso₂_of_isIso₁₃ ((rotate C).map φ) (rot_of_distTriang _ hT)
@@ -497,6 +499,7 @@ lemma isIso₃_of_isIso₁₂ {T T' : Triangle C} (φ : T ⟶ T') (hT : T ∈ di
 /-- If the second and third components of a morphism of distinguished triangles are
 isomorphisms, the first component is as well. This can be thought of as a
 pretriangulated category theoretical version of the five lemma. -/
+@[stacks 014A]
 lemma isIso₁_of_isIso₂₃ {T T' : Triangle C} (φ : T ⟶ T') (hT : T ∈ distTriang C)
     (hT' : T' ∈ distTriang C) (h₂ : IsIso φ.hom₂) (h₃ : IsIso φ.hom₃) : IsIso φ.hom₁ :=
   isIso₂_of_isIso₁₃ ((invRotate C).map φ) (inv_rot_of_distTriang _ hT)
@@ -711,7 +714,7 @@ def isoTriangleOfIso₁₃ (T₁ T₂ : Triangle C) (hT₁ : T₁ ∈ distTriang
   have h₄ := (shiftFunctorCompIsoId C (-1 : ℤ) 1 (by simp)).inv.naturality e₃.hom
   dsimp at h₁ h₂ h₃ h₄
   refine Triangle.isoMk _ _ e₁ (Triangle.π₃.mapIso e) e₃ ?_ ?_ comm
-  · convert e.hom.comm₂ using 2
+  · convert! e.hom.comm₂ using 2
   · simp [← cancel_mono ((shiftFunctorCompIsoId C (-1) 1 (neg_add_cancel 1)).inv.app T₂.obj₃),
       ← h₃, assoc, h₁, h₄]
 

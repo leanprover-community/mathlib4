@@ -12,7 +12,7 @@ public import Mathlib.RingTheory.LocalProperties.Reduced
 # Strongly transcendental elements
 
 In this file, we provide basic properties for strongly transcendental elements in an algebra.
-This is a relatively niche notion, but is useful for proving Zarkisi's main theorem.
+This is a relatively niche notion, but is useful for proving Zariski's main theorem.
 
 ## Reference
 - https://stacks.math.columbia.edu/tag/00PZ
@@ -119,7 +119,6 @@ lemma IsStronglyTranscendental.of_transcendental {K : Type*} [Field K] [Algebra 
   rw [← isStronglyTranscendental_iff_of_field] at H
   exact .of_map (f := IsScalarTower.toAlgHom R S K) (FaithfulSMul.algebraMap_injective _ _) H
 
-set_option backward.isDefEq.respectTransparency false in
 @[stacks 00Q0]
 lemma isStronglyTranscendental_mk_of_mem_minimalPrimes [IsReduced S]
     {x : S} (hx : IsStronglyTranscendental R x) (q : Ideal S) (hq : q ∈ minimalPrimes S) :

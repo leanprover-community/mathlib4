@@ -179,6 +179,7 @@ instance (priority := 75) toModule : Module R S' := fast_instance%
 
 /-- This can't be an instance because Lean wouldn't know how to find `R`, but we can still use
 this to manually derive `Module` on specific types. -/
+@[implicit_reducible]
 def toModule' (S R' R A : Type*) [Semiring R] [NonUnitalNonAssocSemiring A]
     [Module R A] [Semiring R'] [SMul R' R] [Module R' A] [IsScalarTower R' R A]
     [SetLike S A] [AddSubmonoidClass S A] [SMulMemClass S R A] (s : S) :
@@ -292,8 +293,7 @@ theorem coe_mem (x : p) : (x : M) ∈ p :=
 
 variable (p)
 
-instance addCommMonoid : AddCommMonoid p := fast_instance%
-  { p.toAddSubmonoid.toAddCommMonoid with }
+instance addCommMonoid : AddCommMonoid p := AddSubmonoidClass.toAddCommMonoid p
 
 instance module' [Semiring S] [SMul S R] [Module S M] [IsScalarTower S R M] :
     Module S p := fast_instance%
@@ -363,8 +363,7 @@ theorem sub_mem_iff_left (hy : y ∈ p) : x - y ∈ p ↔ x ∈ p := by
 theorem sub_mem_iff_right (hx : x ∈ p) : x - y ∈ p ↔ y ∈ p := by
   rw [sub_eq_add_neg, p.add_mem_iff_right hx, p.neg_mem_iff]
 
-instance addCommGroup : AddCommGroup p := fast_instance%
-  { p.toAddSubgroup.toAddCommGroup with }
+instance addCommGroup : AddCommGroup p := AddSubgroupClass.toAddCommGroup p
 
 end AddCommGroup
 

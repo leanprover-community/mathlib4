@@ -5,7 +5,7 @@ Authors: Robin Carlier, Jovan Gerbscheid
 -/
 module
 
-public import Mathlib.Lean.Meta.Simp
+public import Mathlib.Init
 
 /-!
 `dsimp% […] t` runs `dsimp […]` on term `t`.
@@ -48,12 +48,17 @@ def dsimpPercentElaborator : TermElab := fun stx expectedType => do
     let e ← Term.elabTerm stx[5] expectedType
     -- `stx` has the same shape as a normal `dsimp` call, so we can pass it to `mkSimpContext`.
     let { ctx, simprocs, .. } ← mkSimpContext stx (eraseLocal := false) (kind := .dsimp)
-    if (← isProof e) then
-      let (dsimpResult, _) ← Meta.dsimp (← inferType e) ctx simprocs
-      mkExpectedTypeHint e dsimpResult
-    else
+    let dsimp (e : Expr) : MetaM Expr := do
+      -- Ensure that only instantiating metavariables isn't counted as progress.
+      let e ← instantiateMVars e
       let (dsimpResult, _) ← Meta.dsimp e ctx simprocs
+      if dsimpResult == e then
+        throwError "`dsimp%` made no progress"
       return dsimpResult
+    if ← isProof e then
+      mkExpectedTypeHint e (← dsimp (← inferType e))
+    else
+      dsimp e
   go { elaborator := .anonymous } |>.run' { goals := [fresh.mvarId!] }
 
 end Mathlib.Tactic

@@ -92,8 +92,6 @@ variable {J} in
 theorem IsSheaf.isSeparated {P : Cᵒᵖ ⥤ Type w} (h : IsSheaf J P) : IsSeparated J P :=
   fun _ S hS => (h S hS).isSeparatedFor
 
-@[deprecated (since := "2025-08-28")] alias isSeparated_of_isSheaf := IsSheaf.isSeparated
-
 variable {J} in
 /-- If `P` is separated and every compatible family of elements of `P` for a covering
 sieve has an amalgamation, `P` is a sheaf. -/
@@ -162,7 +160,7 @@ theorem isSheafFor_comp_uliftFunctor_iff {R : Presieve X} :
     R.IsSheafFor (P ⋙ uliftFunctor.{w'}) ↔ R.IsSheafFor P :=
   (isSheafFor_iff_of_nat_equiv (fun _ => Equiv.ulift.symm) (fun _ _ _ _ => rfl)).symm
 
-/-- A presheaf is a sheaf after composiing with a universe lift if and only if it is a sheaf. -/
+/-- A presheaf is a sheaf after composing with a universe lift if and only if it is a sheaf. -/
 @[simp]
 theorem isSheaf_comp_uliftFunctor_iff : IsSheaf J (P ⋙ uliftFunctor.{w'}) ↔ IsSheaf J P :=
   (isSheaf_iff_of_nat_equiv (fun _ => Equiv.ulift.symm) (fun _ _ _ _ => rfl)).symm
@@ -171,7 +169,6 @@ theorem isSheaf_comp_uliftFunctor_iff : IsSheaf J (P ⋙ uliftFunctor.{w'}) ↔ 
 theorem isSheaf_comp_uliftFunctor (h : IsSheaf J P) : IsSheaf J (P ⋙ uliftFunctor.{w'}) := by
   rwa [isSheaf_comp_uliftFunctor_iff]
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 For a presheaf of the form `yoneda.obj W`, a compatible family of elements on a sieve
 is the same as a co-cone over the sieve. Constructing a co-cone from a compatible family works for
@@ -187,12 +184,9 @@ def compatibleYonedaFamily_toCocone (R : Presieve X) (W : C) (x : FamilyOfElemen
     { app := fun f => x f.obj.hom f.property
       naturality := by
         intro g₁ g₂ F
-        simp only [Functor.id_obj, Functor.comp_obj, ObjectProperty.ι_obj, Over.forget_obj,
-          Functor.const_obj_obj, Functor.comp_map, ObjectProperty.ι_map, Over.forget_map,
-          Functor.const_obj_map, comp_id]
-        rw [← Category.id_comp (x g₁.obj.hom g₁.property)]
-        apply hx
-        simp only [Functor.id_obj, Over.w, Opposite.unop_op, Category.id_comp] }
+        dsimp
+        rw [comp_id, ← id_comp (x g₁.obj.hom g₁.property)]
+        exact hx _ _ _ _ (by simp) }
 
 /-- Construct a family of elements from a cocone. -/
 def yonedaFamilyOfElements_fromCocone (R : Presieve X) (s : Cocone (diagram R)) :

@@ -71,14 +71,28 @@ def sieve₁ {i₁ i₂ : E.I₀} {W : C} (p₁ : W ⟶ E.X i₁) (p₂ : W ⟶ 
     rintro Z Z' g ⟨j, h, fac₁, fac₂⟩ φ
     exact ⟨j, φ ≫ h, by simpa using φ ≫= fac₁, by simpa using φ ≫= fac₂⟩
 
+lemma pullback_sieve₁ {i₁ i₂ : E.I₀} {W : C} (p₁ : W ⟶ E.X i₁) (p₂ : W ⟶ E.X i₂)
+    {T : C} (f : T ⟶ W) :
+    Sieve.pullback f (E.sieve₁ p₁ p₂) = E.sieve₁ (f ≫ p₁) (f ≫ p₂) := by
+  refine le_antisymm ?_ ?_ <;>
+  · intro Z g ⟨k, u, hu₁, hu₂⟩
+    cat_disch
+
 section
 
 variable {i₁ i₂ : E.I₀} [HasPullback (E.f i₁) (E.f i₂)]
 
 /-- The obvious morphism `E.Y j ⟶ pullback (E.f i₁) (E.f i₂)` given by `E : PreOneHypercover S`. -/
-noncomputable abbrev toPullback (j : E.I₁ i₁ i₂) [HasPullback (E.f i₁) (E.f i₂)] :
-    E.Y j ⟶ pullback (E.f i₁) (E.f i₂) :=
+noncomputable abbrev toPullback (j : E.I₁ i₁ i₂) : E.Y j ⟶ pullback (E.f i₁) (E.f i₂) :=
   pullback.lift (E.p₁ j) (E.p₂ j) (E.w j)
+
+@[reassoc (attr := simp)]
+lemma toPullback_fst (k : E.I₁ i₁ i₂) : E.toPullback k ≫ pullback.fst _ _ = E.p₁ k := by
+  rw [pullback.lift_fst]
+
+@[reassoc (attr := simp)]
+lemma toPullback_snd (k : E.I₁ i₁ i₂) : E.toPullback k ≫ pullback.snd _ _ = E.p₂ k := by
+  rw [pullback.lift_snd]
 
 variable (i₁ i₂) in
 /-- The sieve of `pullback (E.f i₁) (E.f i₂)` given by `E : PreOneHypercover S`. -/
@@ -755,7 +769,7 @@ def Hom.mapMulticospan {E : PreOneHypercover.{w} S} {F : PreOneHypercover.{w'} S
     | .snd _, .id _ => by simp
 
 set_option backward.isDefEq.respectTransparency false in
-/-- Isomorphic pre-`1`-hypercovers have equivalent mutifork index categories. -/
+/-- Isomorphic pre-`1`-hypercovers have equivalent multifork index categories. -/
 @[simps! functor inverse]
 def equivalenceMulticospanOfIso {E F : PreOneHypercover.{w} S} (f : E ≅ F) :
     WalkingMulticospan E.multicospanShape ≌ WalkingMulticospan F.multicospanShape where
@@ -776,7 +790,7 @@ def equivalenceMulticospanOfIso {E F : PreOneHypercover.{w} S} (f : E ≅ F) :
 
 set_option backward.isDefEq.respectTransparency false in
 /-- If `E` and `F` are isomorphic pre-`1`-hypercovers and `G` is a presheaf,
-the multifork for `E` is exact if and only if the multifork for `E` is exact. -/
+the multifork for `E` is exact if and only if the multifork for `F` is exact. -/
 noncomputable
 def isLimitEquivOfIso {E F : PreOneHypercover.{w} S} (f : E ≅ F) (G : Cᵒᵖ ⥤ A) :
     IsLimit (E.multifork G) ≃ IsLimit (F.multifork G) := by

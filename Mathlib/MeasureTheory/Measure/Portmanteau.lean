@@ -517,7 +517,7 @@ lemma integral_le_liminf_integral_of_forall_isOpen_measure_le_liminf_measure
                   f.continuous f_nn h_opens
   rw [@integral_eq_lintegral_of_nonneg_ae Ω _ μ f (Eventually.of_forall f_nn)
         f.continuous.measurable.aestronglyMeasurable]
-  convert ENNReal.toReal_mono ?_ same
+  convert! ENNReal.toReal_mono ?_ same
   · simp only [fun i ↦ @integral_eq_lintegral_of_nonneg_ae Ω _ (μs i) f (Eventually.of_forall f_nn)
                         f.continuous.measurable.aestronglyMeasurable]
     let g := BoundedContinuousFunction.comp _ Real.lipschitzWith_toNNReal f
@@ -530,11 +530,11 @@ lemma integral_le_liminf_integral_of_forall_isOpen_measure_le_liminf_measure
     simp only [measure_univ, mul_one] at obs
     apply lt_of_le_of_lt _ (show (‖f‖₊ : ℝ≥0∞) < ∞ from ENNReal.coe_lt_top)
     apply liminf_le_of_le
-    · refine ⟨0, .of_forall (by simp only [ge_iff_le, zero_le, forall_const])⟩
+    · refine ⟨0, .of_forall (by simp)⟩
     · intro x hx
       obtain ⟨i, hi⟩ := hx.exists
       apply le_trans hi
-      convert obs i with x
+      convert! obs i with x
       have aux := ENNReal.ofReal_eq_coe_nnreal (f_nn x)
       simp only [ContinuousMap.toFun_eq_coe, BoundedContinuousFunction.coe_toContinuousMap] at aux
       rw [aux]
@@ -549,7 +549,6 @@ theorem tendsto_of_forall_isOpen_le_liminf_nat' {μ : ProbabilityMeasure Ω}
   refine tendsto_integral_of_forall_integral_le_liminf_integral fun f f_nn ↦ ?_
   exact integral_le_liminf_integral_of_forall_isOpen_measure_le_liminf_measure f_nn h_opens
 
-set_option backward.isDefEq.respectTransparency false in
 /-- One implication of the portmanteau theorem: if for all open sets `G` we have the liminf
 condition `μ(G) ≤ liminf μsₙ(G)`, then the measures `μsₙ` converge weakly to the measure `μ`.
 Superseded by `tendsto_of_forall_isOpen_le_liminf` which works for all countably
@@ -568,7 +567,7 @@ theorem tendsto_of_forall_isOpen_le_liminf_nat {μ : ProbabilityMeasure Ω}
     · exact ⟨0, by simp⟩
   have obs := ENNReal.coe_mono h_opens
   simp only [ProbabilityMeasure.ennreal_coeFn_eq_coeFn_toMeasure, aux] at obs
-  convert obs
+  convert! obs
   simp only [Function.comp_apply, ProbabilityMeasure.ennreal_coeFn_eq_coeFn_toMeasure]
 
 /-- One implication of the portmanteau theorem: if for all open sets `G` we have the liminf
@@ -618,7 +617,6 @@ lemma tendsto_of_forall_isClosed_limsup_le'
   refine tendsto_of_forall_isOpen_le_liminf' ?_
   rwa [← limsup_measure_closed_le_iff_liminf_measure_open_ge]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma tendsto_of_forall_isClosed_limsup_le_nat {μs : ℕ → ProbabilityMeasure Ω}
     (h : ∀ F : Set Ω, IsClosed F → limsup (fun i ↦ μs i F) atTop ≤ μ F) :
     Tendsto μs atTop (𝓝 μ) := by
@@ -630,10 +628,9 @@ lemma tendsto_of_forall_isClosed_limsup_le_nat {μs : ℕ → ProbabilityMeasure
       ⟨1, by simp⟩ ⟨0, by simp⟩
   have obs := ENNReal.coe_mono h
   simp only [ProbabilityMeasure.ennreal_coeFn_eq_coeFn_toMeasure, aux] at obs
-  convert obs
+  convert! obs
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 /-- One implication of the portmanteau theorem: if for all closed sets `F` we have the limsup
 condition `limsup μsₙ(F) ≤ μ(F)`, then the measures `μsₙ` converge weakly to the measure `μ`.
 Formulated here for countably generated filters. -/
@@ -734,7 +731,7 @@ lemma _root_.IsPiSystem.tendsto_measureReal_biUnion
       (fun s hs ↦ hμ _ (ht _ hs) i)
   simp_rw [A, measureReal_biUnion_eq_sum_powerset (fun s hs ↦ hmeas _ (ht _ hs))
     (fun s hs ↦ hν _ (ht _ hs))]
-  refine tendsto_finset_sum _ (fun u hu ↦ ?_)
+  refine tendsto_finsetSum _ (fun u hu ↦ ?_)
   simp only [Finset.mem_filter, Finset.mem_powerset] at hu
   apply Filter.Tendsto.const_mul
   rcases eq_empty_or_nonempty (⋂ s ∈ u, s) with h'u | h'u
@@ -793,11 +790,10 @@ lemma ProbabilityMeasure.exists_lt_measure_biUnion_of_isOpen
   rw [← G_eq] at this
   rcases ((tendsto_order.1 this).1 r hr).exists with ⟨n, hn⟩
   refine ⟨(Finset.range (n + 1)).image f, by grind, ?_, ?_⟩
-  · convert hn
+  · convert! hn
     simp [accumulate_def]
   · simpa [G_eq] using fun i _ ↦ subset_iUnion f i
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Assume that, applied to all the elements of a π-system, a sequence of probability measures
 converges to a limiting probability measure. Assume also that the π-system contains arbitrarily
 small neighborhoods of any point. Then the sequence of probability measures converges for the
