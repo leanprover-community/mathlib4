@@ -160,10 +160,7 @@ theorem measure_eq_dirac [OrderTop α] : measure (α := α) = Measure.dirac ⊤ 
     rwa [← isStationary_iff_top_mem]
 
 instance [NoMaxOrder α] : NoAtoms (α := α) measure where
-  measure_singleton x := by
-    apply measure_of_not_isStationary
-    rw [isStationary_singleton_iff]
-    exact not_isMax _
+  measure_singleton x := measure_of_not_isStationary (by simp)
 
 @[simp]
 theorem support_measure [NoMaxOrder α] [TopologicalSpace α] [ClosedIciTopology α] :

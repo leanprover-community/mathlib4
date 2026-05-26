@@ -277,6 +277,8 @@ theorem isStationary_singleton_iff : IsStationary {x} ↔ IsMax x where
     use x
     simpa using hs.isCofinal.mem_of_isMax h
 
+theorem not_isStationary_singleton [NoMaxOrder α] (x : α) : ¬ IsStationary {x} := by simp
+
 theorem IsStationary.singleton_top [OrderTop α] : IsStationary {(⊤ : α)} := by simp
 
 section WellFoundedLT
