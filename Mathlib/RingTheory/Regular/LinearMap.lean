@@ -38,7 +38,7 @@ certain `Ext` groups and the length of a maximal regular sequence in a certain i
 
 -/
 
-@[expose] public section
+public section
 
 open IsLocalRing LinearMap Module
 
@@ -71,8 +71,8 @@ lemma subsingleton_linearMap_iff [IsNoetherianRing R] [Module.Finite R M] [Modul
     have loc_ne_zero : p' ∈ Module.support R N := Module.mem_support_iff_of_finite.mpr hp
     rw [Module.mem_support_iff] at loc_ne_zero
     let Rₚ := Localization.AtPrime p
-    let Nₚ := LocalizedModule.AtPrime p'.asIdeal N
-    let Mₚ := LocalizedModule.AtPrime p'.asIdeal M
+    let Nₚ := LocalizedModule.AtPrime p N
+    let Mₚ := LocalizedModule.AtPrime p M
     let Nₚ' := Nₚ ⧸ (maximalIdeal (Localization.AtPrime p)) • (⊤ : Submodule Rₚ Nₚ)
     have ntr : Nontrivial Nₚ' := Submodule.Quotient.nontrivial_iff.mpr <|
       (Submodule.top_ne_ideal_smul_of_le_jacobson_annihilator (maximalIdeal_le_jacobson _)).symm
@@ -105,7 +105,7 @@ lemma subsingleton_linearMap_iff [IsNoetherianRing R] [Module.Finite R M] [Modul
       have : f np = i 0 := by simp [eq0]
       exact inj1 this
     absurd hom0
-    let _ := Module.finitePresentation_of_finite R N
+    have := Module.finitePresentation_of_finite R N
     contrapose f_ne0
     exact (Module.FinitePresentation.linearEquivMapExtendScalars
       p'.asIdeal.primeCompl).symm.map_eq_zero_iff.mp (Subsingleton.eq_zero _)
