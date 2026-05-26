@@ -256,15 +256,17 @@ def frameMinimalAxioms : Frame.MinimalAxioms (Opens α) where
 
 instance instFrame : Frame (Opens α) := fast_instance% .ofMinimalAxioms frameMinimalAxioms
 
+theorem mem_himp {U V : Opens α} {x : α} : x ∈ U ⇨ V ↔ ∃ W : Opens α, W ⊓ U ≤ V ∧ x ∈ W := by
+  simp [himp_eq_sSup]
+
 theorem himp_eq {U V : Opens α} : Opens.interior ((U : Set α)ᶜ ∪ V) = U ⇨ V := by
   ext x
-  simp_rw [himp_eq_sSup, coe_sSup, mem_iUnion, ←SetLike.coe_subset_coe, coe_inf]
-  constructor
-  · intro h
-    refine ⟨Opens.interior ((U : Set α)ᶜ ∪ V), ?_, mem_interior.mpr h⟩
-    grind [interior_subset, coe_interior]
-  · intro ⟨W, hW, hx⟩
-    exact mem_interior.mpr ⟨↑W, ⟨W.isOpen, by grind⟩, hx⟩
+  simp_rw [coe_interior, _root_.mem_interior, SetLike.mem_coe, mem_himp, ← SetLike.coe_subset_coe,
+    coe_inf, Set.inter_subset]
+  exact ⟨fun ⟨W, hsub, hW, hx⟩ => ⟨⟨W, hW⟩, hsub, hx⟩, fun ⟨⟨W, hW⟩, hsub, hx⟩ => ⟨W, hsub, hW, hx⟩⟩
+
+theorem mem_compl {U : Opens α} {x : α} : x ∈ Uᶜ ↔ ∃ V : Opens α, Disjoint V U ∧ x ∈ V := by
+  simp [compl_eq_sSup_disjoint]
 
 theorem compl_eq_interior_compl {U : Opens α} : Opens.interior (U : Set α)ᶜ = Uᶜ := by
   simp [←himp_bot, ←himp_eq]
