@@ -1,0 +1,62 @@
+# Cross-reference tag review (workflow_run)
+#
+# Privileged companion to the `dump cross-reference tags to TSV` step in
+# `build_template.yml`. Downloads the bridge artifact emitted by the build,
+# hands off to mathlib-ci's orchestrator, which in turn invokes the
+# pinned `leanprover-community/external-tags` tool to fetch snippets and
+# produce the PR comment body, then posts/updates the comment.
+#
+# The privileged job runs with `pull-requests: write`, but it executes only
+# code from mathlib-ci (which executes only code from external-tags at a
+# pinned SHA). Nothing from the build artifact is interpreted as code; the
+# TSV is parsed as untrusted data.
+name: cross-reference review (workflow_run)
+
+on:
+  workflow_run:
+    workflows:
+      - continuous integration
+      - continuous integration (mathlib forks)
+    types:
+      - completed
+
+permissions:
+  actions: read
+  contents: read
+  pull-requests: write
+
+jobs:
+  review:
+    name: Post cross-reference review comment
+    runs-on: ubuntu-latest
+    if: ${{ github.repository == 'leanprover-community/mathlib4' && github.event.workflow_run.conclusion == 'success' }}
+    steps:
+      - name: Consume bridge artifact
+        id: bridge
+        uses: leanprover-community/privilege-escalation-bridge/consume@f5dfe313a79647c07315b451b2dc2a81a161a50d # v1.2.0
+        with:
+          token: ${{ github.token }}
+          artifact: crossref-tags-bridge
+          # Pushes (non-PR builds) intentionally skip the emit step, so a
+          # missing artifact is the common case for non-PR runs.
+          fail_on_missing: false
+          extract: |
+            pr_number=outputs.pr_number
+            head_sha=outputs.head_sha
+
+      - name: Checkout mathlib-ci
+        if: steps.bridge.outputs.pr_number != ''
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          repository: leanprover-community/mathlib-ci
+          ref: master
+          path: mathlib-ci
+
+      - name: Run cross-reference review
+        if: steps.bridge.outputs.pr_number != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ steps.bridge.outputs.pr_number }}
+          HEAD_SHA: ${{ steps.bridge.outputs.head_sha }}
+          TSV_PATH: ${{ github.workspace }}/.bridge/crossref-tags.tsv
+        run: bash mathlib-ci/scripts/crossref_review/post-comment.sh

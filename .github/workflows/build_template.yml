@@ -745,6 +745,41 @@ jobs:
       - name: clean up the import graph file
         run: rm import_graph.dot
 
+      - name: dump cross-reference tags to TSV
+        # Walks Mathlib.CrossRef.tagExt and writes one TSV row per @[stacks ...] /
+        # @[kerodon ...] / @[wikidata ...] tag for the privileged workflow_run
+        # job (crossref_review.yml) to consume. The script has no network access
+        # and enforces a 2 MB output cap.
+        run: lake env lean --run scripts/dump_crossref_tags.lean crossref-tags.tsv
+
+      - name: prepare crossref bridge outputs
+        # We only emit the crossref bridge artifact when this build is for a PR
+        # (the `crossref_review.yml` workflow_run job has nothing to post otherwise).
+        id: crossref_outputs
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          HEAD_SHA: ${{ inputs.pr_branch_ref }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          if [ "$EVENT_NAME" = "pull_request_target" ] && [ -n "$PR_NUMBER" ]; then
+            jq -n --arg n "$PR_NUMBER" --arg s "$HEAD_SHA" \
+              '{ pr_number: $n, head_sha: $s }' > crossref-bridge-outputs.json
+            echo "emit=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "emit=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: emit crossref bridge artifact
+        if: steps.crossref_outputs.outputs.emit == 'true'
+        uses: leanprover-community/privilege-escalation-bridge/emit@f5dfe313a79647c07315b451b2dc2a81a161a50d # v1.2.0
+        with:
+          artifact: crossref-tags-bridge
+          outputs_file: crossref-bridge-outputs.json
+          include_event: minimal
+          files: |
+            crossref-tags.tsv
+          retention_days: 5
+
       - name: check all scripts build successfully
         run: |
           lake env lean scripts/create_deprecated_modules.lean
