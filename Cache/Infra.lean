@@ -152,53 +152,21 @@ def defaultContainersForRepo (repo : String) : List Container :=
   if repo == MATHLIBREPO then
     [.master, .legacy]
   else if repo == NIGHTLY_TESTING_REPO then
-    -- Strict default for the nightly-testing repo: only `nightly-testing` +
-    -- `legacy`. Crucially, **`pr-toolchain-tests` is NOT included here** —
-    -- trusted-nightly consumers (`nightly-testing`, `nightly-testing-green`,
-    -- `bump/*`) must not silently fall back to artifacts uploaded by
-    -- low-trust toolchain-PR test branches.
+    -- Strict default for the nightly-testing repo: `nightly-testing` + `legacy`.
+    -- **`pr-toolchain-tests` is deliberately NOT in this default** — trusted-
+    -- nightly consumers (`nightly-testing`, `nightly-testing-green`, `bump/*`)
+    -- must not silently fall back to artifacts uploaded by low-trust
+    -- toolchain-PR test branches.
     --
-    -- Toolchain-PR test branches widen this default via
-    -- `containersForRepoAndBranch` once their branch context is known.
+    -- Toolchain-PR test branches (`lean-pr-testing-*`, `batteries-pr-testing-*`)
+    -- need to read their own previously-uploaded artifacts from
+    -- `pr-toolchain-tests`. That widening is CI-only and lives in the workflow
+    -- (`build_template.yml` exports `MATHLIB_CACHE_FROM=pr-toolchain-tests,
+    -- nightly-testing,legacy` for those refs). On a user machine, a maintainer
+    -- working locally on `lean-pr-testing-*` can opt in with `--cache-from=...`
+    -- — auto-widening locally would silently subject every consumer to the
+    -- least-trusted container.
     [.nightlyTesting, .legacy]
   else
     -- Fork repos (PRs) and anything else default to the `forks` container.
     [.forks, .legacy]
-
-/--
-Branch-level trust classification within the nightly-testing repo. Set by
-`getRemoteRepo` once it has detected the current branch, and consulted by
-`containersForRepoAndBranch` to widen the read allowlist for the low-trust
-toolchain-test class.
--/
-inductive BranchTrust where
-  /-- Trusted nightly refs: `nightly-testing`, `nightly-testing-green`,
-  `bump/*`. Read only from `nightly-testing` (+ `legacy` fallback). -/
-  | trustedNightly
-  /-- Low-trust toolchain-PR test refs: `lean-pr-testing-*`,
-  `batteries-pr-testing-*`, etc. Read from `pr-toolchain-tests` first so
-  these branches' own previously-uploaded artifacts are recovered, with
-  `nightly-testing` and `legacy` as harmless tail fallbacks. -/
-  | toolchainTest
-  deriving DecidableEq, Repr, BEq, Inhabited
-
-/--
-Branch-aware fallback chain. The `branchTrust` argument is `none` when the
-caller hasn't classified the branch yet (e.g. CLI `--repo` override, no git
-context); in that case we fall back to the repo-only default.
-
-Within the nightly-testing repo, the branch class determines whether
-`pr-toolchain-tests` is in the chain: trusted-nightly branches strictly
-exclude it (so a poisoned upload from a `lean-pr-testing-*` branch can
-never be served to a `nightly-testing-green` consumer); toolchain-test
-branches include it as the primary container.
--/
-def containersForRepoAndBranch (repo : String) (branchTrust : Option BranchTrust) :
-    List Container :=
-  if repo == NIGHTLY_TESTING_REPO then
-    match branchTrust with
-    | some .toolchainTest => [.prToolchainTests, .nightlyTesting, .legacy]
-    | some .trustedNightly => [.nightlyTesting, .legacy]
-    | none => defaultContainersForRepo repo
-  else
-    defaultContainersForRepo repo

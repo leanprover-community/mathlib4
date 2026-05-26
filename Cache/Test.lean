@@ -161,8 +161,8 @@ def test_defaultContainersForRepo : IO Unit := do
   -- nightly container and legacy. `pr-toolchain-tests` is deliberately
   -- excluded so trusted consumers (`nightly-testing`, `nightly-testing-green`,
   -- `bump/*`) don't silently fall back to low-trust toolchain-PR test
-  -- artifacts. Toolchain-test branches widen this via
-  -- `containersForRepoAndBranch` once their branch class is known.
+  -- artifacts. Toolchain-test branches widen this from the CI workflow via
+  -- `MATHLIB_CACHE_FROM` rather than from any branch detection in Lean.
   assert "nightly-testing repo → [nightly-testing, legacy] (strict default)"
     (defaultContainersForRepo NIGHTLY_TESTING_REPO == [.nightlyTesting, .legacy])
   -- A PR from a fork: its own container first, legacy as the tail.
@@ -182,34 +182,6 @@ def test_defaultContainersForRepo : IO Unit := do
     ((defaultContainersForRepo MATHLIBREPO).getLast? == some Container.legacy)
   assert "legacy is always last for nightly-testing repo"
     ((defaultContainersForRepo NIGHTLY_TESTING_REPO).getLast? == some Container.legacy)
-
-/-- Branch-aware read allowlist: classifies refs on the nightly-testing repo
-into trusted vs toolchain-test, with different fallback chains. The strict
-trusted-nightly chain prevents low-trust `lean-pr-testing-*` artifacts from
-being silently served to `nightly-testing-green` consumers. -/
-def test_containersForRepoAndBranch : IO Unit := do
-  IO.println "containersForRepoAndBranch:"
-  -- Trusted-nightly branches on the nightly-testing repo: strict, no
-  -- `pr-toolchain-tests` in the fallback. This is the actual trust boundary.
-  assert "nightly-testing repo + trustedNightly → [nightly-testing, legacy]"
-    (containersForRepoAndBranch NIGHTLY_TESTING_REPO (some .trustedNightly) ==
-      [.nightlyTesting, .legacy])
-  -- Toolchain-test branches: widen so they can read their own previously-
-  -- uploaded artifacts from `pr-toolchain-tests` first. Trusted nightly
-  -- artifacts are still preferred where hash spaces happen to align;
-  -- legacy is the universal tail.
-  assert "nightly-testing repo + toolchainTest → [pr-toolchain-tests, nightly-testing, legacy]"
-    (containersForRepoAndBranch NIGHTLY_TESTING_REPO (some .toolchainTest) ==
-      [.prToolchainTests, .nightlyTesting, .legacy])
-  -- When the branch hasn't been classified (e.g. CLI --repo override,
-  -- no git context, dev runs), fall back to the strict repo-only default.
-  assert "nightly-testing repo + no branch info → strict default"
-    (containersForRepoAndBranch NIGHTLY_TESTING_REPO none == [.nightlyTesting, .legacy])
-  -- Branch trust is irrelevant for non-nightly-testing repos.
-  assert "mathlib4 repo + trustedNightly (ignored) → master default"
-    (containersForRepoAndBranch MATHLIBREPO (some .trustedNightly) == [.master, .legacy])
-  assert "fork repo + toolchainTest (ignored) → forks default"
-    (containersForRepoAndBranch "alice/mathlib4" (some .toolchainTest) == [.forks, .legacy])
 
 end PerRepoAllowlist
 
@@ -482,7 +454,6 @@ def runAll : IO Unit := do
   test_Container_azureURL
   test_Container_flatPath
   test_defaultContainersForRepo
-  test_containersForRepoAndBranch
   test_mkFileURL
   test_parseCacheFromList
   test_extractRepoFromUrl
