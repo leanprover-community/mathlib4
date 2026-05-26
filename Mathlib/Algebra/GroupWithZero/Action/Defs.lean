@@ -161,7 +161,7 @@ variable (A)
 /-- Compose a `SMulWithZero` with a `ZeroHom`, with action `f r' • m` -/
 @[implicit_reducible]
 def SMulWithZero.compHom (f : ZeroHom M₀' M₀) : SMulWithZero M₀' A where
-  toSMul := SMul.comp _ f  -- to avoid intermediate morphism casts
+  toSMul := SMul.comp _ f
   smul_zero m := smul_zero (f m)
   zero_smul m := by change (f 0) • m = 0; rw [map_zero, zero_smul]
 
@@ -240,7 +240,7 @@ variable (A)
 /-- Compose a `MulActionWithZero` with a `MonoidWithZeroHom`, with action `f r' • m` -/
 @[implicit_reducible]
 def MulActionWithZero.compHom (f : M₀' →*₀ M₀) : MulActionWithZero M₀' A where
-  toSMul := SMul.comp _ f
+  toSMul := SMul.comp _ f -- re-supply this to avoid `f.toZeroHom` when unfolding
   __ := SMulWithZero.compHom A f.toZeroHom
   mul_smul r s m := by simp [SMul.comp_smul_def, mul_smul]
   one_smul m := by simp [SMul.comp_smul_def]
