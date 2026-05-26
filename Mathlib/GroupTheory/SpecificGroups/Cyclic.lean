@@ -175,10 +175,11 @@ variable [Group G] [Group G']
 /-- A group is commutative if the quotient by the center is cyclic.
   Also see `commGroupOfCyclicCenterQuotient` for the `CommGroup` instance. -/
 @[to_additive
-      /-- A group is commutative if the quotient by the center is cyclic.
-      Also see `addCommGroupOfCyclicCenterQuotient` for the `AddCommGroup` instance. -/]
-theorem commutative_of_cyclic_center_quotient [IsCyclic G'] (f : G →* G') (hf : f.ker ≤ center G)
-    (a b : G) : a * b = b * a :=
+/-- A group is commutative if the quotient by the center is cyclic.
+Also see `addCommGroupOfCyclicCenterQuotient` for the `AddCommGroup` instance. -/]
+theorem MonoidHom.isMulCommutative_of_isCyclic_of_ker_le_center [IsCyclic G'] (f : G →* G')
+    (hf : f.ker ≤ center G) : IsMulCommutative G := by
+  refine ⟨⟨fun a b ↦ ?_⟩⟩
   let ⟨⟨x, y, (hxy : f y = x)⟩, (hx : ∀ a : f.range, a ∈ zpowers _)⟩ :=
     IsCyclic.exists_generator (α := f.range)
   let ⟨m, hm⟩ := hx ⟨f a, a, rfl⟩
@@ -196,12 +197,31 @@ theorem commutative_of_cyclic_center_quotient [IsCyclic G'] (f : G →* G') (hf 
     _ = y ^ m * y ^ n * y ^ (-m) * (y ^ (-n) * b * a) := by rw [mem_center_iff.1 hb]
     _ = b * a := by group
 
+@[deprecated AddMonoidHom.isAddCommutative_of_isAddCyclic_of_ker_le_center (since := "2026-05-26")]
+theorem commutative_of_addCyclic_center_quotient {G G' : Type*} [AddGroup G] [AddGroup G']
+    [IsAddCyclic G'] (f : G →+ G') (hf : f.ker ≤ .center G) (a b : G) : a + b = b + a :=
+  f.isAddCommutative_of_isAddCyclic_of_ker_le_center hf |>.is_comm.comm a b
+
+@[to_additive existing (attr := deprecated MonoidHom.isMulCommutative_of_isCyclic_of_ker_le_center
+  (since := "2026-05-26"))]
+theorem commutative_of_cyclic_center_quotient [IsCyclic G'] (f : G →* G') (hf : f.ker ≤ center G)
+    (a b : G) : a * b = b * a :=
+  f.isMulCommutative_of_isCyclic_of_ker_le_center hf |>.is_comm.comm a b
+
 /-- A group is commutative if the quotient by the center is cyclic. -/
 @[to_additive (attr := implicit_reducible)
 /-- A group is commutative if the quotient by the center is cyclic. -/]
 def commGroupOfCyclicCenterQuotient [IsCyclic G'] (f : G →* G') (hf : f.ker ≤ center G) :
     CommGroup G where
-  mul_comm := commutative_of_cyclic_center_quotient f hf
+  mul_comm := f.isMulCommutative_of_isCyclic_of_ker_le_center hf |>.is_comm.comm
+
+variable (G) in
+/-- If the quotient by the center of a group is cyclic, then the group is commutative. -/
+@[to_additive
+/-- If the quotient by the center of a group is cyclic, then the group is commutative. -/]
+theorem isMulCommutative_of_isCyclic_quotient_center_self [IsCyclic (G ⧸ Subgroup.center G)] :
+    IsMulCommutative G := by
+  simp [(QuotientGroup.mk' <| .center G).isMulCommutative_of_isCyclic_of_ker_le_center]
 
 end QuotientCenter
 
