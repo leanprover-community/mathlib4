@@ -810,12 +810,12 @@ theorem ContDiff.contDiff_fderiv_apply {f : E → F} (hf : ContDiff 𝕜 n f) (h
 theorem ContDiffWithinAt.continuousWithinAt_fderivWithin
     (hf : ContDiffWithinAt 𝕜 n f s x) (hs : UniqueDiffOn 𝕜 s) (hn : n ≠ 0) (hx : x ∈ s) :
     ContinuousWithinAt (fderivWithin 𝕜 f s) s x :=
-  hf.fderivWithin_right (m := 0) hs (by simpa [Order.one_le_iff_ne_zero_withTop]) hx
+  hf.fderivWithin_right (m := 0) hs (by simpa [ENat.one_le_iff_ne_zero_withTop]) hx
     |>.continuousWithinAt
 
 theorem ContDiffAt.continuousAt_fderiv (hf : ContDiffAt 𝕜 n f x) (hn : n ≠ 0) :
     ContinuousAt (fderiv 𝕜 f) x :=
-  hf.fderiv_right (m := 0) (by simpa [Order.one_le_iff_ne_zero_withTop]) |>.continuousAt
+  hf.fderiv_right (m := 0) (by simpa [ENat.one_le_iff_ne_zero_withTop]) |>.continuousAt
 
 theorem ContDiffWithinAt.continuousWithinAt_iteratedFDerivWithin {k : ℕ}
     (hf : ContDiffWithinAt 𝕜 n f s x) (hs : UniqueDiffOn 𝕜 s) (hk : k ≤ n) (hx : x ∈ s) :

@@ -39,14 +39,14 @@ theorem HasFTaylorSeriesUpToOn.hasStrictFDerivAt {n : WithTop ℕ∞}
     (hs : s ∈ 𝓝 x) : HasStrictFDerivAt f ((continuousMultilinearCurryFin1 𝕂 E' F') (p x 1)) x :=
   hasStrictFDerivAt_of_hasFDerivAt_of_continuousAt (hf.eventually_hasFDerivAt hn hs) <|
     (continuousMultilinearCurryFin1 𝕂 E' F').continuousAt.comp <|
-      (hf.cont 1 <| Order.one_le_iff_ne_zero_withTop.mpr hn).continuousAt hs
+      (hf.cont 1 <| ENat.one_le_iff_ne_zero_withTop.mpr hn).continuousAt hs
 
 /-- If a function is `C^n` with `n ≠ 0` around a point, and its derivative at that point is given to
 us as `f'`, then `f'` is also a strict derivative. -/
 theorem ContDiffAt.hasStrictFDerivAt' {f : E' → F'} {f' : E' →L[𝕂] F'} {x : E'}
     (hf : ContDiffAt 𝕂 n f x) (hf' : HasFDerivAt f f' x) (hn : n ≠ 0) :
     HasStrictFDerivAt f f' x := by
-  rcases hf.of_le (Order.one_le_iff_ne_zero_withTop.mpr hn) 1 le_rfl with ⟨u, H, p, hp⟩
+  rcases hf.of_le (ENat.one_le_iff_ne_zero_withTop.mpr hn) 1 le_rfl with ⟨u, H, p, hp⟩
   simp only [nhdsWithin_univ, mem_univ, insert_eq_of_mem] at H
   have := hp.hasStrictFDerivAt one_ne_zero H
   rwa [hf'.unique this.hasFDerivAt]
@@ -150,7 +150,7 @@ theorem ContDiffOn.exists_lipschitzOnWith {s : Set E} {f : E → F} {n} (hf : Co
     (hn : n ≠ 0) (hs : Convex ℝ s) (hs' : IsCompact s) :
     ∃ K, LipschitzOnWith K f s := by
   apply LocallyLipschitzOn.exists_lipschitzOnWith_of_compact hs'
-  exact (hf.of_le <| Order.one_le_iff_ne_zero_withTop.2 hn).locallyLipschitzOn hs
+  exact (hf.of_le <| ENat.one_le_iff_ne_zero_withTop.2 hn).locallyLipschitzOn hs
 
 /-- A `C^n` function with compact support is Lipschitz. -/
 theorem ContDiff.lipschitzWith_of_hasCompactSupport {f : E' → F'}

@@ -339,7 +339,7 @@ theorem contDiffWithinAt_diff_singleton {y : E} :
 within this set at this point. -/
 theorem ContDiffWithinAt.differentiableWithinAt' (h : ContDiffWithinAt 𝕜 n f s x) (hn : n ≠ 0) :
     DifferentiableWithinAt 𝕜 f (insert x s) x := by
-  rcases contDiffWithinAt_nat.1 (h.of_le <| Order.one_le_iff_ne_zero_withTop.mpr hn)
+  rcases contDiffWithinAt_nat.1 (h.of_le <| ENat.one_le_iff_ne_zero_withTop.mpr hn)
     with ⟨u, hu, p, H⟩
   rcases mem_nhdsWithin.1 hu with ⟨t, t_open, xt, tu⟩
   rw [inter_comm] at tu
@@ -1261,7 +1261,7 @@ theorem contDiff_infty_iff_fderiv :
 
 theorem ContDiff.continuous_fderiv (h : ContDiff 𝕜 n f) (hn : n ≠ 0) :
     Continuous (fderiv 𝕜 f) :=
-  (contDiff_one_iff_fderiv.1 (h.of_le <| Order.one_le_iff_ne_zero_withTop.mpr hn)).2
+  (contDiff_one_iff_fderiv.1 (h.of_le <| ENat.one_le_iff_ne_zero_withTop.mpr hn)).2
 
 /-- If a function is at least `C^1`, its bundled derivative (mapping `(x, v)` to `Df(x) v`) is
 continuous. -/
