@@ -568,7 +568,7 @@ theorem fromBlocks₂₂ [DecidableEq n] (A : Matrix m m R')
     (fromBlocks A B Bᴴ D).PosSemidef ↔ (A - B * D⁻¹ * Bᴴ).PosSemidef := by
   rw [← posSemidef_submatrix_equiv (Equiv.sumComm n m), Equiv.sumComm_apply,
     fromBlocks_submatrix_sum_swap_sum_swap]
-  convert fromBlocks₁₁ Bᴴ A hD <;> simp
+  convert! fromBlocks₁₁ Bᴴ A hD <;> simp
 
 end SchurComplement
 

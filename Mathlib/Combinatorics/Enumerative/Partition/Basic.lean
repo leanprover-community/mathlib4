@@ -154,7 +154,7 @@ theorem toFinsuppAntidiag_mem_finsuppAntidiag {n : ℕ} (p : Partition n) :
   have hp : p.parts.toFinset ⊆ Finset.Icc 1 n := by
     grind
   suffices ∑ m ∈ Finset.Icc 1 n, Multiset.count m p.parts * m = n by simpa [toFinsuppAntidiag, hp]
-  convert ← p.parts_sum
+  convert! ← p.parts_sum
   rw [Finset.sum_multiset_count]
   apply Finset.sum_subset hp
   suffices ∀ (x : ℕ), 1 ≤ x → x ≤ n → x ∉ p.parts → x ∉ p.parts ∨ x = 0 by simpa
