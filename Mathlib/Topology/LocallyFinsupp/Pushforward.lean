@@ -36,8 +36,6 @@ variable {X Y R : Type*} [TopologicalSpace X] [TopologicalSpace Y]
 
 namespace Function.locallyFinsupp
 
-section map
-
 variable [Semiring R] {W : Set Y} (hW : IsOpen W) (c : Function.locallyFinsupp X R)
   [PrespectralSpace Y]
 
