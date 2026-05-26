@@ -18,7 +18,7 @@ inputs:
   new-sha:
     description: 'Full SHA of the new commit.'
     required: false
-    default: ''
+    default: ${{ github.sha }}
   script-path:
     description: 'Path to the `dumpReasonableDecls.lean` script.'
     required: false
