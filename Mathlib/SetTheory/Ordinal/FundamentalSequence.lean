@@ -111,7 +111,7 @@ end IsFundamentalSeq
 /-- Every ordinal has a fundamental sequence. -/
 theorem exists_isFundamentalSeq (ha : o.cof.ord = a) : ∃ f : Iio a → Iio o, IsFundamentalSeq f := by
   subst ha
-  obtain ⟨s, hs, hs'⟩ := ord_cof_eq o.ToType
+  obtain ⟨s, hs, hs'⟩ := exists_ord_cof_eq o.ToType
   rw [cof_toType] at hs'
   let g := (OrderIso.setCongr _ _ (congrArg _ hs'.symm)).trans <|
     .ofRelIsoLT (enum (α := s) (· < ·))
