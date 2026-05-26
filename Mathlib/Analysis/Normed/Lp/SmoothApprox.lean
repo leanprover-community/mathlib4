@@ -24,15 +24,15 @@ This result is recorded in `MeasureTheory.MemLp.exist_sub_eLpNorm_le`.
 
 public section
 
-variable {α β E F : Type*} [MeasurableSpace E] [NormedAddCommGroup F]
+variable {α β E F : Type*} [MeasurableSpace E] [AddCommGroup F] [NormedAddCommGroup F]
 
 open scoped Nat NNReal ContDiff
 open MeasureTheory Pointwise ENNReal
 
 namespace HasCompactSupport
 
-variable [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E] [BorelSpace E]
-  [NormedSpace ℝ F]
+variable [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
+  [BorelSpace E] [NormedSpace ℝ F]
 
 /-- For every continuous compactly supported function `f` there exists a smooth compactly supported
 function `g` such that `f - g` is arbitrary small in the `Lp`-norm for `p < ∞`. -/
@@ -73,9 +73,8 @@ end HasCompactSupport
 
 namespace MeasureTheory.MemLp
 
-variable [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E] [BorelSpace E]
-  [NormedSpace ℝ F]
-  {μ : Measure E} [IsFiniteMeasureOnCompacts μ]
+variable [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
+  [BorelSpace E] [NormedSpace ℝ F] {μ : Measure E} [IsFiniteMeasureOnCompacts μ]
 
 /-- Every `Lp` function can be approximated by a smooth compactly supported function provided that
 `p < ∞`. -/
