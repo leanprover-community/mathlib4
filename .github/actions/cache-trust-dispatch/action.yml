@@ -1,0 +1,114 @@
+# Single source of truth mapping (repo, branch) → (upload container,
+# read fallback chain) for Mathlib's multi-container cache.
+#
+# Called by build, upload_cache, and post_steps in build_template.yml so
+# trust classification is decided in exactly one place. Lean-side cache
+# logic stays branch-agnostic; this composite is the seam where CI-only
+# trust policy lives.
+
+name: Cache trust dispatch
+description: Compute the cache container target and read fallback for this job.
+
+inputs:
+  repo:
+    description: GitHub repo full name (`owner/name`).
+    required: true
+  branch:
+    description: Branch name (`github.head_ref || github.ref_name`).
+    required: true
+
+# Outputs are mirrored to $GITHUB_ENV inside the step, which is what
+# downstream `cache get` / `cache put-staged` calls actually read. We
+# also expose them as action outputs for callers that need them in
+# `with:` blocks (e.g. constructing further `if:` conditions).
+outputs:
+  primary:
+    description: Container name for uploads (master, forks, nightly-testing, pr-toolchain-tests).
+    value: ${{ steps.dispatch.outputs.primary }}
+  read-chain:
+    description: |
+      Comma-separated read fallback chain for `MATHLIB_CACHE_FROM`. Empty
+      when the job should use the cache tool's repo-level default.
+    value: ${{ steps.dispatch.outputs.read-chain }}
+
+runs:
+  using: composite
+  steps:
+    - name: Compute trust dispatch
+      id: dispatch
+      shell: bash
+      run: |
+        REPO="${{ inputs.repo }}"
+        BRANCH="${{ inputs.branch }}"
+        PRIMARY=""
+        READ_CHAIN=""
+
+        # Security note: this dispatch is NOT the trust boundary for writes.
+        # The real enforcement is the OIDC bearer token minted in upload_cache:
+        # the token is scoped to a specific container, so a malicious actor
+        # rewriting this case to `--container=master` from a fork build would
+        # be 403'd by Azure regardless. The dispatch exists so the workflow
+        # does the right thing in the honest case; defence in depth is RBAC.
+
+        case "$REPO" in
+          "leanprover-community/mathlib4")
+            case "$BRANCH" in
+              "master"|"staging")
+                # Master / staging: trusted writers. Default read chain
+                # [master, legacy] from defaultContainersForRepo is correct,
+                # so MATHLIB_CACHE_FROM is left unset (strict).
+                PRIMARY="master"
+                ;;
+              *)
+                # `bors trying`, `ci-dev/*`, maintainer dev branches on the
+                # canonical repo: trust level is fork-equivalent (the OIDC
+                # token's RBAC scopes them to `forks`). Reads must widen
+                # past the default [master, legacy] so the post-build
+                # verification finds the just-uploaded fork-trust artifacts.
+                PRIMARY="forks"
+                READ_CHAIN="master,forks,legacy"
+                ;;
+            esac
+            ;;
+          "leanprover-community/mathlib4-nightly-testing")
+            case "$BRANCH" in
+              "nightly-testing"|"nightly-testing-green"|"staging"|bump/*)
+                # Trusted nightly refs. Default [nightly-testing, legacy]
+                # is correct — `pr-toolchain-tests` is deliberately excluded
+                # so a poisoned upload from a `lean-pr-testing-*` branch
+                # never reaches a trusted-nightly consumer.
+                PRIMARY="nightly-testing"
+                ;;
+              *)
+                # `lean-pr-testing-*`, `batteries-pr-testing-*`, etc.:
+                # least-trusted (can build with arbitrary toolchains). Widen
+                # reads to recover this branch's own previously-uploaded
+                # artifacts; trusted-nightly stays preferred where hash
+                # spaces happen to align.
+                PRIMARY="pr-toolchain-tests"
+                READ_CHAIN="pr-toolchain-tests,nightly-testing,legacy"
+                ;;
+            esac
+            ;;
+          *)
+            # Foreign fork. Default [forks, legacy] is correct for the
+            # fork-iteration of `cache.exe`'s outer repo loop; the
+            # MATHLIBREPO iteration uses default [master, legacy] for
+            # unchanged upstream artifacts. No widening needed.
+            PRIMARY="forks"
+            ;;
+        esac
+
+        echo "primary=$PRIMARY"           >> "$GITHUB_OUTPUT"
+        echo "read-chain=$READ_CHAIN"     >> "$GITHUB_OUTPUT"
+        echo "MATHLIB_CACHE_PRIMARY=$PRIMARY" >> "$GITHUB_ENV"
+        if [ -n "$READ_CHAIN" ]; then
+          echo "MATHLIB_CACHE_FROM=$READ_CHAIN" >> "$GITHUB_ENV"
+        fi
+        # Visible in CI logs so a glance at any cache-touching step shows
+        # what trust class the job is operating under.
+        if [ -n "$READ_CHAIN" ]; then
+          echo "cache-trust-dispatch: REPO=$REPO BRANCH=$BRANCH → container=$PRIMARY, MATHLIB_CACHE_FROM=$READ_CHAIN"
+        else
+          echo "cache-trust-dispatch: REPO=$REPO BRANCH=$BRANCH → container=$PRIMARY, MATHLIB_CACHE_FROM=<default>"
+        fi
