@@ -621,7 +621,7 @@ noncomputable def step_as_augmentingPath
     exact expectedResCap_pos X hX k step p h_path i h_len
 }
 
-/-- Main Theorem: At each step, the chosen path is a valid augmenting path
+/-- Important Theorem: At each step, the chosen path is a valid augmenting path
     whose formal Flow_value equals its bottleneck. -/
 theorem step_flow_value_eq_bottleneck
     (F : RelaxedFlow (FFNetwork X hX).toSTVertices)
@@ -873,14 +873,6 @@ lemma ffFlowValues_eq_expected (X : ℝ) (hX : X > 2) (n : ℕ) :
     congr 2
     exact (sequence_of_flows X hX n).h_eq
 
-lemma expectedFlowValues_eq_sum (X : ℝ) (hX : X > 2) (n : ℕ) :
-    expectedFlowValues X hX n =
-    ∑ i ∈ Finset.range n,
-      rawBottleneck (FFNetwork X hX) (ffRawFlows X hX i) (cycleChoice i) := by
-  induction n with
-  | zero => simp [expectedFlowValues]
-  | succ n ih =>
-    simp only [expectedFlowValues, Finset.sum_range_succ, ← ih]
 lemma rawBottleneck_n0 (X : ℝ) (hX : X > 2) :
     rawBottleneck (FFNetwork X hX) (ffRawFlows X hX 0) (cycleChoice 0) = 1 := by
   simp only [cycleChoice, ffRawFlows, rawFFFlows]
@@ -982,14 +974,6 @@ lemma rawBottleneck_4m4 (X : ℝ) (hX : X > 2) (m : ℕ) :
     rw [← fold]; exact step2_to_3 X hX _ _ (by omega) h2
   have := rawBottleneck_path4 X hX _ _ (by omega) hc3
   convert this using 2
-
--- Helper lemma: Peels off the last 4 elements of the sum cleanly
-lemma sum_peel_4 (f : ℕ → ℝ) (k : ℕ) :
-  ∑ i ∈ Finset.range (k + 4), f i =
-  (∑ i ∈ Finset.range k, f i) + f k + f (k + 1) + f (k + 2) + f (k + 3) := by
-  -- sum_range_succ automatically peels off the `n` from `range (n + 1)`
-  rw [Finset.sum_range_succ, Finset.sum_range_succ,
-      Finset.sum_range_succ, Finset.sum_range_succ]
 
 /-- The explicit bottleneck for ANY arbitrary step n -/
 noncomputable def explicitBottleneck (n : ℕ) : ℝ :=
