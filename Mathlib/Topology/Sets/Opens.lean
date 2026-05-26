@@ -256,6 +256,20 @@ def frameMinimalAxioms : Frame.MinimalAxioms (Opens α) where
 
 instance instFrame : Frame (Opens α) := fast_instance% .ofMinimalAxioms frameMinimalAxioms
 
+theorem himp_eq {U V : Opens α} : Opens.interior ((U : Set α)ᶜ ∪ V) = U ⇨ V := by
+  ext x
+  simp_rw [himp_eq_sSup, coe_sSup, mem_iUnion, ←SetLike.coe_subset_coe, coe_inf]
+  constructor
+  · intro h
+    refine ⟨Opens.interior ((U : Set α)ᶜ ∪ V), ?_, mem_interior.mpr h⟩
+    grind [interior_subset, coe_interior]
+  · intro ⟨W, hW, hx⟩
+    refine mem_interior.mpr ⟨↑W, ⟨W.isOpen, ?_⟩, hx⟩
+    grind
+
+theorem compl_eq_interior_compl {U : Opens α} : Opens.interior (U : Set α)ᶜ = Uᶜ := by
+  simp [←himp_bot, ←himp_eq]
+
 /-- The coercion from open sets to sets as a `FrameHom`. -/
 @[simps] protected def frameHom : FrameHom (Opens α) (Set α) where
   toFun := (·)
