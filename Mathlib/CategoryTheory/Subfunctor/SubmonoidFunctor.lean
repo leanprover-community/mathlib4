@@ -8,6 +8,8 @@ module
 public import Mathlib.Algebra.Category.MonCat.Basic
 public import Mathlib.Algebra.Group.Submonoid.Operations
 public import Mathlib.CategoryTheory.Subfunctor.Basic
+public import Mathlib.CategoryTheory.Monoidal.Mon
+public import Mathlib.Algebra.Category.Grp.EpiMono
 
 /-!
 # Functors of submonoids
@@ -104,6 +106,15 @@ instance : CompleteLattice (SubmonoidFunctor M) where
 @[simps]
 def ι : S.toFunctor ⟶ M where
   app _ := MonCat.ofHom (Submonoid.subtype _)
+
+instance : Mono S.ι := @CategoryTheory.NatTrans.mono_of_mono_app _ _ _ _ _ _ S.ι (by
+  intro U
+  apply (CategoryTheory.mono_iff_forall_injective (S.ι.app U)).mpr
+  intro _ g f h
+  ext x
+  have hx : (g ≫ MonCat.ofHom (S.obj U).subtype) x = (f ≫ MonCat.ofHom (S.obj U).subtype) x := by
+    aesop
+  exact (Submonoid.subtype_injective (S.obj U)) hx)
 
 section image
 
